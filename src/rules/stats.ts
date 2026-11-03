@@ -263,7 +263,9 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   if (feats.armoredAcBonus && ar.type !== 'none') acParts.push({ kind: 'feat', value: feats.armoredAcBonus, name: 'Defense' });
   for (const n of activeItemNames(sheet)) {
     const e = findItem(n).effects;
-    const v = (e.acBonus ?? 0) + (ar.type === 'none' && !sheet.shield ? (e.unarmoredAcBonus ?? 0) : 0);
+    // Kuyruk 19: Armor/Shield +N yalnızca zırh/kalkan varken.
+    const v = (e.acBonus ?? 0) + (ar.type === 'none' && !sheet.shield ? (e.unarmoredAcBonus ?? 0) : 0)
+      + (ar.type !== 'none' ? (e.armorAcBonus ?? 0) : 0) + (sheet.shield ? (e.shieldAcBonus ?? 0) : 0);
     if (v) acParts.push({ kind: 'item', value: v, name: n });
   }
   const ac = acParts.reduce((n, p) => n + p.value, 0);

@@ -1,20 +1,5 @@
 [
   {
-    "id": "potion-of-healing",
-    "name": "Potion of Healing",
-    "srd": "magic-items:potions-of-healing",
-    "attunement": false,
-    "weight": 0.5,
-    "text": "2d4+2 HP",
-    "effects": {},
-    "use": {
-      "kind": "heal",
-      "dice": "2d4+2",
-      "action": "bonus",
-      "reachFt": 5
-    }
-  },
-  {
     "id": "potion-of-greater-healing",
     "name": "Potion of Greater Healing",
     "srd": "magic-items:potions-of-healing",
@@ -26,6 +11,21 @@
     "use": {
       "kind": "heal",
       "dice": "4d4+4",
+      "action": "bonus",
+      "reachFt": 5
+    }
+  },
+  {
+    "id": "potion-of-healing",
+    "name": "Potion of Healing",
+    "srd": "magic-items:potions-of-healing",
+    "attunement": false,
+    "weight": 0.5,
+    "text": "2d4+2 HP",
+    "effects": {},
+    "use": {
+      "kind": "heal",
+      "dice": "2d4+2",
       "action": "bonus",
       "reachFt": 5
     }
@@ -63,31 +63,37 @@
     }
   },
   {
-    "id": "alchemists-fire",
-    "name": "Alchemist's fire",
-    "srd": "gear:alchemists-fire",
-    "attunement": false,
-    "weight": 1,
-    "text": "1d4 fire/tur, DC 10 DEX ile söndür",
-    "effects": {}
-  },
-  {
     "id": "acid",
     "name": "Acid (vial)",
     "srd": "gear:acid",
     "attunement": false,
     "weight": 1,
     "text": "2d6 acid, 20 ft",
-    "effects": {}
+    "effects": {},
+    "use": {
+      "kind": "throw",
+      "rangeFt": 20,
+      "save": "dex",
+      "damage": "2d6",
+      "damageType": "acid"
+    }
   },
   {
-    "id": "holy-water",
-    "name": "Holy water",
-    "srd": "gear:holy-water",
+    "id": "alchemists-fire",
+    "name": "Alchemist's fire",
+    "srd": "gear:alchemists-fire",
     "attunement": false,
     "weight": 1,
-    "text": "2d6 radiant (fiend/undead)",
-    "effects": {}
+    "text": "1d4 fire/tur, DC 10 DEX ile söndür",
+    "effects": {},
+    "use": {
+      "kind": "throw",
+      "rangeFt": 20,
+      "save": "dex",
+      "damage": "1d4",
+      "damageType": "fire",
+      "burning": "1d4"
+    }
   },
   {
     "id": "antitoxin",
@@ -96,7 +102,18 @@
     "attunement": false,
     "weight": 0,
     "text": "1 saat poison save advantage",
-    "effects": {}
+    "effects": {},
+    "use": {
+      "kind": "effect",
+      "action": "bonus",
+      "reachFt": 0,
+      "rounds": 600,
+      "effect": {
+        "saveAdvAgainst": [
+          "Poisoned"
+        ]
+      }
+    }
   },
   {
     "id": "healers-kit",
@@ -105,32 +122,88 @@
     "attunement": false,
     "weight": 3,
     "text": "10 kullanım, stabilize",
-    "effects": {}
-  },
-  {
-    "id": "ring-of-protection",
-    "name": "Ring of Protection",
-    "srd": "magic-items:ring-of-protection",
-    "attunement": true,
-    "weight": 0,
-    "weightApprox": true,
-    "text": "+1 AC ve tüm save",
-    "effects": {
-      "acBonus": 1,
-      "saveBonus": 1
+    "effects": {},
+    "passive": {
+      "traits": [
+        "healers-kit"
+      ]
     }
   },
   {
-    "id": "cloak-of-protection",
-    "name": "Cloak of Protection",
-    "srd": "magic-items:cloak-of-protection",
+    "id": "holy-water",
+    "name": "Holy water",
+    "srd": "gear:holy-water",
+    "attunement": false,
+    "weight": 1,
+    "text": "2d6 radiant (fiend/undead)",
+    "effects": {},
+    "use": {
+      "kind": "throw",
+      "rangeFt": 20,
+      "save": "dex",
+      "damage": "2d8",
+      "damageType": "radiant",
+      "vs": [
+        "fiend",
+        "undead"
+      ]
+    }
+  },
+  {
+    "id": "amulet-of-health",
+    "name": "Amulet of Health",
+    "srd": "magic-items:amulet-of-health",
     "attunement": true,
     "weight": 0,
     "weightApprox": true,
-    "text": "+1 AC ve tüm save",
+    "text": "CON 19",
     "effects": {
-      "acBonus": 1,
-      "saveBonus": 1
+      "setAbility": {
+        "con": 19
+      }
+    }
+  },
+  {
+    "id": "bag-of-holding",
+    "name": "Bag of Holding",
+    "srd": "magic-items:bag-of-holding",
+    "attunement": false,
+    "weight": 5,
+    "text": "500 lb taşıma",
+    "effects": {},
+    "offCombat": "savaşta mekanik etkisi yok (hikâye, keşif, yolculuk)"
+  },
+  {
+    "id": "belt-of-hill-giant-strength",
+    "name": "Belt of Hill Giant Strength",
+    "srd": "magic-items:belt-of-giant-strength",
+    "attunement": true,
+    "weight": 0,
+    "weightApprox": true,
+    "text": "STR 21",
+    "effects": {
+      "setAbility": {
+        "str": 21
+      }
+    }
+  },
+  {
+    "id": "boots-of-speed",
+    "name": "Boots of Speed",
+    "srd": "magic-items:boots-of-speed",
+    "attunement": true,
+    "weight": 0,
+    "weightApprox": true,
+    "text": "bonus, hız×2 (10 dk/gün)",
+    "effects": {},
+    "use": {
+      "kind": "effect",
+      "action": "bonus",
+      "reachFt": 0,
+      "rounds": 100,
+      "effect": {
+        "speedMult": 2
+      }
     }
   },
   {
@@ -146,17 +219,29 @@
     }
   },
   {
-    "id": "amulet-of-health",
-    "name": "Amulet of Health",
-    "srd": "magic-items:amulet-of-health",
+    "id": "cloak-of-displacement",
+    "name": "Cloak of Displacement",
+    "srd": "magic-items:cloak-of-displacement",
     "attunement": true,
     "weight": 0,
     "weightApprox": true,
-    "text": "CON 19",
+    "text": "sana saldırılar disadvantage",
+    "effects": {},
+    "passive": {
+      "attackedDis": true
+    }
+  },
+  {
+    "id": "cloak-of-protection",
+    "name": "Cloak of Protection",
+    "srd": "magic-items:cloak-of-protection",
+    "attunement": true,
+    "weight": 0,
+    "weightApprox": true,
+    "text": "+1 AC ve tüm save",
     "effects": {
-      "setAbility": {
-        "con": 19
-      }
+      "acBonus": 1,
+      "saveBonus": 1
     }
   },
   {
@@ -188,67 +273,26 @@
     }
   },
   {
-    "id": "belt-of-hill-giant-strength",
-    "name": "Belt of Hill Giant Strength",
-    "srd": "magic-items:belt-of-giant-strength",
+    "id": "poisoners-kit",
+    "name": "Poisoner's Kit",
+    "srd": "tools:poisoners-kit",
+    "attunement": false,
+    "weight": 2,
+    "text": "Cunning Strike: Poison (Kuyruk 19)",
+    "effects": {}
+  },
+  {
+    "id": "ring-of-protection",
+    "name": "Ring of Protection",
+    "srd": "magic-items:ring-of-protection",
     "attunement": true,
     "weight": 0,
     "weightApprox": true,
-    "text": "STR 21",
+    "text": "+1 AC ve tüm save",
     "effects": {
-      "setAbility": {
-        "str": 21
-      }
+      "acBonus": 1,
+      "saveBonus": 1
     }
-  },
-  {
-    "id": "boots-of-speed",
-    "name": "Boots of Speed",
-    "srd": "magic-items:boots-of-speed",
-    "attunement": true,
-    "weight": 0,
-    "weightApprox": true,
-    "text": "bonus, hız×2 (10 dk/gün)",
-    "effects": {}
-  },
-  {
-    "id": "cloak-of-displacement",
-    "name": "Cloak of Displacement",
-    "srd": "magic-items:cloak-of-displacement",
-    "attunement": true,
-    "weight": 0,
-    "weightApprox": true,
-    "text": "sana saldırılar disadvantage",
-    "effects": {}
-  },
-  {
-    "id": "bag-of-holding",
-    "name": "Bag of Holding",
-    "srd": "magic-items:bag-of-holding",
-    "attunement": false,
-    "weight": 5,
-    "text": "500 lb taşıma",
-    "effects": {}
-  },
-  {
-    "id": "wand-of-magic-missiles",
-    "name": "Wand of Magic Missiles",
-    "srd": "magic-items:wand-of-magic-missiles",
-    "attunement": false,
-    "weight": 1,
-    "weightApprox": true,
-    "text": "7 charge, magic missile",
-    "effects": {}
-  },
-  {
-    "id": "wand-of-fireballs",
-    "name": "Wand of Fireballs",
-    "srd": "magic-items:wand-of-fireballs",
-    "attunement": true,
-    "weight": 1,
-    "weightApprox": true,
-    "text": "7 charge, fireball DC 15",
-    "effects": {}
   },
   {
     "id": "staff-of-healing",
@@ -258,15 +302,51 @@
     "weight": 4,
     "weightApprox": true,
     "text": "10 charge, cure wounds ve diğerleri",
-    "effects": {}
+    "effects": {},
+    "spells": [
+      {
+        "name": "Cure Wounds"
+      },
+      {
+        "name": "Lesser Restoration"
+      },
+      {
+        "name": "Mass Cure Wounds"
+      }
+    ],
+    "charges": 10
   },
   {
-    "id": "poisoners-kit",
-    "name": "Poisoner's Kit",
-    "srd": "tools:poisoners-kit",
+    "id": "wand-of-fireballs",
+    "name": "Wand of Fireballs",
+    "srd": "magic-items:wand-of-fireballs",
+    "attunement": true,
+    "weight": 1,
+    "weightApprox": true,
+    "text": "7 charge, fireball DC 15",
+    "effects": {},
+    "spells": [
+      {
+        "name": "Fireball"
+      }
+    ],
+    "charges": 7,
+    "dc": 15
+  },
+  {
+    "id": "wand-of-magic-missiles",
+    "name": "Wand of Magic Missiles",
+    "srd": "magic-items:wand-of-magic-missiles",
     "attunement": false,
-    "weight": 2,
-    "text": "Cunning Strike: Poison (Kuyruk 19)",
-    "effects": {}
+    "weight": 1,
+    "weightApprox": true,
+    "text": "7 charge, magic missile",
+    "effects": {},
+    "spells": [
+      {
+        "name": "Magic Missile"
+      }
+    ],
+    "charges": 7
   }
 ]

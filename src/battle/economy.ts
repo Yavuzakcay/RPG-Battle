@@ -212,7 +212,13 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'use_item': {
       // Kuyruk 43: iksir (SRD 5.2.1): bonus eylem; verisinde `action` ise eylem.
       const it = items.find((x) => x.id === cmd.itemId);
-      return spend(actor, it?.use?.action === 'action' ? 'action' : 'bonus', it?.name ?? 'Eşya');
+      const u = it?.use;
+      // Kuyruk 19: fırlatılan eşya (Acid, Alchemist's Fire, Holy Water, Net) Attack eyleminin bir saldırısı yerine.
+      if (u?.kind === 'throw') {
+        if (e.attacksLeft > 0) return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: it?.name ?? 'Fırlatma', attacksLeft: e.attacksLeft - 1 } };
+        return spend(actor, 'action', 'Attack', { attacksLeft: actionAttacks(actor, false) - 1 });
+      }
+      return spend(actor, u && 'action' in u && u.action === 'action' ? 'action' : 'bonus', it?.name ?? 'Eşya');
     }
     case 'monster_attack':
       if (actor.attacks[cmd.attackIndex]?.bonusAction) return spend(actor, 'bonus', actor.attacks[cmd.attackIndex]?.name ?? 'Bonus saldırı');

@@ -616,6 +616,9 @@ export interface ItemEffects {
   unarmoredAcBonus?: number;
   /** Skoru en az bu değere çeker (Gauntlets of Ogre Power gibi). */
   setAbility?: Partial<Record<Ability, number>>;
+  /** Kuyruk 19: Armor +N (zırh giyiliyken) ve Shield +N (kalkan taşınırken). */
+  armorAcBonus?: number;
+  shieldAcBonus?: number;
 }
 
 export interface Item {
@@ -631,8 +634,31 @@ export interface Item {
   text: string;
   effects: ItemEffects;
   /** Kuyruk 43: savaşta kullanılan sarf eşyası (iksir: bonus eylem, kendine ya da 5 ft içindeki birine; SRD 5.2.1). */
-  use?: { kind: 'heal'; dice: string; action: 'bonus' | 'action'; reachFt: number };
+  use?: ItemUse;
+  /** Kuyruk 19 (SRD denetimi): taşınırken/giyilirken savaşta kalıcı etki (savaşçıda `item:<id>` süren etkisi; ActiveEffect alanları). */
+  passive?: Record<string, unknown>;
+  /** Kuyruk 19: büyülü bonus: zırh AC'si, kalkan AC'si, silah saldırı ve hasarı, büyü saldırısı ve DC'si. */
+  bonus?: { armor?: number; shield?: number; weapon?: number; spell?: number };
+  /** Kuyruk 19: silah isabetinde ek hasar (Flame Tongue, Dragon Slayer…); `vs` yaratık türleri; `ranged`/`melee` silah türü. */
+  onHit?: { dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; label?: string; /** yalnızca doğal 20 */ critOnly?: boolean };
+  /** Kuyruk 19: yüklü büyüler (değnek, asa, yüzük): her yapım `cost` yük harcar; DC/saldırı eşyanınki (yoksa büyücününki). */
+  spells?: Array<{ name: string; cost?: number; level?: number }>;
+  charges?: number;
+  dc?: number;
+  attack?: number;
+  /** Kuyruk 19: savaşta etkisi yok (gerekçe; envanterde "savaş dışı" etiketi). */
+  offCombat?: string;
 }
+
+/** Kuyruk 19: savaşta kullanılan eşya türleri. */
+export type ItemUse =
+  | { kind: 'heal'; dice: string; action: 'bonus' | 'action'; reachFt: number }
+  /** İçilen/uygulanan: kendine ya da 5 ft içindeki dosta süreli etki (iksirler, Antitoxin), geçici HP ya da hasar (Potion of Poison). */
+  | { kind: 'effect'; action: 'bonus' | 'action'; reachFt: number; rounds: number; effect?: Record<string, unknown>; tempHp?: string; damage?: string; damageType?: string; save?: { ability: 'con'; dc: number } }
+  /** Fırlatılan (Attack eyleminde bir saldırının yerine): DEX save (DC 8 + DEX + PB ya da sabit), hasar, durum, yanma. */
+  | { kind: 'throw'; rangeFt: number; save: 'dex' | 'str' | 'con'; dc?: number; damage?: string; damageType?: string; vs?: string[]; grants?: string[]; escapeDc?: number; burning?: string; radiusFt?: number }
+  /** Silaha sürülen (Basic Poison): sonraki isabetlere ek hasar. */
+  | { kind: 'coat'; action: 'bonus'; dice: string; damageType: string; rounds: number };
 
 export type EnvironmentCategory = 'spell' | 'race' | 'class' | 'weapon';
 
@@ -961,6 +987,8 @@ export type FeatureEffect =
   | { kind: 'sanctuary'; rangeFt: number; radius: number; rounds: number; moveFt: number }
   /** Kuyruk 19 (Epic Boon): Blink Steps: Attack ya da Magic eyleminden sonra ışınlanma; Merge with Shadows: loşta Invisible. */
   | { kind: 'blinkStep'; rangeFt: number }
+  /** Kuyruk 19 (tür özellikleri): kendine süreli etki (Stonecunning, Draconic Flight, Large Form), isteğe bağlı Dash ve geçici HP (Adrenaline Rush). */
+  | { kind: 'selfEffect'; rounds: number; effect: Record<string, unknown>; dash?: boolean; tempHp?: number }
   | { kind: 'shadowMerge' };
 
 export interface ResourceDef {

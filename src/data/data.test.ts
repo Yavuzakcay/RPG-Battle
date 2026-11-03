@@ -132,8 +132,8 @@ describe('büyüler', () => {
 
 describe('itemler', () => {
   it('etkiler sayı ve geçerli ability içerir', () => {
-    // Kuyruk 19: Poisoner's Kit (Cunning Strike: Poison) eklendi.
-    expect(items.length).toBe(23);
+    // Kuyruk 19: Poisoner's Kit; görev 7: SRD'nin bütün maceracı eşyaları ve sihirli eşyaları (çeşitleriyle).
+    expect(items.length).toBe(399);
     for (const it of items) {
       for (const k of Object.keys(it.effects.setAbility ?? {})) expect(isAbility(k)).toBe(true);
     }

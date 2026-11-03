@@ -713,6 +713,7 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
     set({ shield: !s.shield, ...(!s.shield ? { offHand: undefined } : {}) });
   };
   const profBadge = (ok: boolean) => <span className={`prof-badge${ok ? ' ok' : ' no'}`}>{ok ? W.proficient : W.notProficient}</span>;
+  const [itemQ, setItemQ] = useState('');
   const attuned = s.itemNames.filter((n) => items.find((i) => i.name === n)?.attunement).length;
   const shown = weapons.filter((w) => !onlyProficient || weaponProficient(s.classId, w, s.featureChoices) || (s.weapons ?? []).some((x) => x.name === w.name));
   const K = L.carry;
@@ -784,14 +785,16 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
       </div>
       <OffHandPicker sheet={s} set={set} />
       <p className="mute">{T.items}: <span className={attuned > MAX_ATTUNED ? 'error' : ''}>{W.attunedCount(attuned, MAX_ATTUNED)}</span></p>
+      {/* Kuyruk 19: SRD'nin bütün eşyaları (≈400): ada göre süzme. */}
+      <input className="item-filter" type="search" placeholder={W.itemFilter} value={itemQ} onChange={(e: { target: { value: string } }) => setItemQ(e.target.value)} />
       <div className="chips equip-chips">
-        {items.map((it) => (
+        {items.filter((it) => !itemQ || s.itemNames.includes(it.name) || it.name.toLowerCase().includes(itemQ.toLowerCase())).map((it) => (
           <label key={it.name} className={`chip equip${s.itemNames.includes(it.name) ? ' on' : ''}`} title={itemDetail(it)}>
             {/* Görev K4: uyum (attunement) sınırı: dördüncü uyumlu eşya seçilemez. */}
             <input type="checkbox" checked={s.itemNames.includes(it.name)}
               disabled={!s.itemNames.includes(it.name) && it.attunement && attuned >= MAX_ATTUNED}
               onChange={(e: { target: { checked: boolean } }) => set({ itemNames: toggle(s.itemNames, it.name, e.target.checked) })} />
-            <span><b>{it.name}</b><small>{itemSummary(it)}</small>{lb(it.weight, it.weightApprox)}</span>
+            <span><b>{it.name}</b><small>{itemSummary(it)}</small>{it.offCombat && <small className="mute" title={it.offCombat}>{W.offCombat.split(':')[0]}</small>}{lb(it.weight, it.weightApprox)}</span>
           </label>
         ))}
       </div>

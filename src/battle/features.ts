@@ -9,6 +9,8 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { isAirborne } from './flight';
+import { swimsByTrait } from './flight';
 import { knowsWhere } from './sight';
 import { featuresOn, shiftGrant } from './shift';
 import { gap } from './body';
@@ -35,6 +37,7 @@ import { distance as hexDistance } from '../rules/hex';
 import { markSources, masteryEvents } from './mastery';
 import { giantHit } from './giant';
 import { hurlEvents } from './apex';
+import { itemAttackPlus, itemHitsFor } from './itemEffects';
 import { divineStrikeHit } from './cleric';
 import { canFrenzy, withRageDamage } from './rage';
 import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
@@ -184,7 +187,9 @@ export function weaponAttackEvents(
   const allyAlive = Object.values(state.combatants).some((c) => c.id !== actor.id && c.side === actor.side && c.hp > 0);
   // Su altında (derin suda) SRD'nin su altı kuralları ortamdan bağımsız işler.
   const beyond = !!option.range && !!actor.pos && !!target.pos && hexDistance(actor.pos, target.pos) * 5 > option.range[0];
-  const water = isUnderwater(state, actor) ? underwaterSources(option.ranged, option.damageType, beyond) : { sources: [], autoMiss: false };
+  // Kuyruk 19 (SRD Underwater Combat, `srdK19`): yüzme hızı olanın yakın dövüşü dezavantajsız.
+  const swimmer = !!globalRule(state, 'srdK19') && !option.ranged && swimsByTrait(actor, state);
+  const water = isUnderwater(state, actor) && !swimmer ? underwaterSources(option.ranged, option.damageType, beyond) : { sources: [], autoMiss: false };
   const sources = [
     ...environmentSources(env, option.tag, { weapon: true, ranged: option.ranged }),
     ...attackSources({
@@ -216,10 +221,12 @@ export function weaponAttackEvents(
   const beast = option.beast ? riderOf(option.beast.monster, option.beast.attack) : undefined;
   const swap = riderReplace(beast, mode, actor, target);
   const dmgType = swap?.type ?? option.damageType;
-  const targetAc = effectiveAc(state, target) + reach.cover;
+  // Kuyruk 19 (Arrow-Catching Shield): menzilli saldırıya ek AC; Adamantine Armor: kritik yok (`srdK19`).
+  const k19i = !!globalRule(state, 'srdK19');
+  const targetAc = effectiveAc(state, target) + reach.cover + (option.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
   const rolled = resolveAttack(
     {
-      attackBonus: option.attackBonus, targetAc, mode, damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
+      attackBonus: option.attackBonus + itemAttackPlus(actor, option, k19i), targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
       extra: attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
       // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
@@ -236,7 +243,9 @@ export function weaponAttackEvents(
   const rawDamage = penalty?.total ?? result.damage?.total ?? 0;
   // Kuyruk 19 (Irresistible Offense): Overcome Defenses: B/P/S hasarı direnci yok sayar.
   const overcome = !!actor.k19Traits && !!actor.traits?.includes('overcome-defenses') && ['bludgeoning', 'piercing', 'slashing'].includes(dmgType ?? '');
-  const tprof = overcome ? { ...profileOf(target), resistances: profileOf(target).resistances.filter((x) => x !== dmgType) } : profileOf(target);
+  const tprof0 = overcome ? { ...profileOf(target), resistances: profileOf(target).resistances.filter((x) => x !== dmgType) } : profileOf(target);
+  // Kuyruk 19 (SRD Underwater Combat): tamamen su altındaki yaratık Fire hasarına dirençli.
+  const tprof = k19i && isUnderwater(state, target) && !tprof0.resistances.includes('fire') ? { ...tprof0, resistances: [...tprof0.resistances, 'fire'] } : tprof0;
   const adjusted = result.hit ? adjustDamage(rawDamage, dmgType, tprof) : { amount: 0, note: null };
   let bonus: ReturnType<typeof hitExtras> = result.hit
     ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option, ...(opts.cunning ? { cunning: opts.cunning } : {}) }, rng)
@@ -252,6 +261,23 @@ export function weaponAttackEvents(
   if (result.hit && result.d20.kept === 20 && actor.k19Traits && actor.traits?.includes('overcome-defenses') && actor.boonScore) {
     const adj = adjustDamage(actor.boonScore, dmgType, tprof);
     bonus = { ...bonus, extras: [...bonus.extras, { label: 'Overwhelming Strike', rolls: [], raw: actor.boonScore, applied: adj.amount, type: dmgType ?? '', note: adj.note }] };
+  }
+  // Kuyruk 19 (SRD Basic Poison, sihirli silah eşyaları): sürülmüş zehir (ilk hasarla biter) ve eşyanın isabet eki.
+  const coat = result.hit && !option.spell ? (actor.effects ?? []).find((e) => e.coated) : undefined;
+  if (coat?.coated) {
+    const cd = rollDice(coat.coated.dice, rollTag(rng, { kind: 'damage', by: actor.id }), result.critical);
+    const ca = adjustDamage(cd.total, coat.coated.type, tprof);
+    bonus = { ...bonus, extras: [...bonus.extras, { label: coat.name, rolls: cd.rolls, raw: cd.total, applied: ca.amount, type: coat.coated.type, note: ca.note }] };
+  }
+  const plus = result.hit ? itemAttackPlus(actor, option, k19i) : 0;
+  if (plus > 0) {
+    const pa = adjustDamage(plus, dmgType, tprof);
+    bonus = { ...bonus, extras: [...bonus.extras, { label: 'Eşya bonusu', rolls: [], raw: plus, applied: pa.amount, type: dmgType ?? '', note: pa.note }] };
+  }
+  for (const oh of result.hit && !option.spell && k19i ? itemHitsFor(actor, option, target, result.d20.kept === 20) : []) {
+    const od = rollDice(oh.dice, rollTag(rng, { kind: 'damage', by: actor.id }), result.critical);
+    const oa = adjustDamage(od.total, oh.type, tprof);
+    bonus = { ...bonus, extras: [...bonus.extras, { label: oh.label, rolls: od.rolls, raw: od.total, applied: oa.amount, type: oh.type, note: oa.note }] };
   }
   if (brutal && result.hit) bonus = { ...bonus, extras: [...bonus.extras, brutalExtra(target, dmgType ?? '', result.critical, rng, profileOf(target), actor)] };
   // Hedefin isabet tepkisi (Görev R1): Shield/Parry ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
@@ -290,7 +316,8 @@ export function weaponAttackEvents(
     ...(hr?.deflected ? { deflected: hr.deflected } : {}),
     ...(result.extra ? { bonusDice: result.extra } : {}),
   };
-  const before = [...marks.used, ...(hr?.events ?? []), ...(giant && hit ? giant.before : []), attackEvent];
+  const before = [...marks.used, ...(hr?.events ?? []), ...(giant && hit ? giant.before : []), attackEvent,
+    ...(coat && hit ? [{ type: 'effect_ended' as const, targetId: actor.id, effectId: coat.id, name: coat.name, reason: 'used' as const }] : [])];
   if (giant && hit) before.push(...giant.after(applyEvents(state, before)));
   // K13: biçim saldırısının süreli etkisi ve rider durumları (Prone, yakalama, zehir…), canavar saldırısındaki gibi isabette.
   if (hit && option.beast) {
@@ -369,6 +396,8 @@ export function opportunityAttacks(
 ): BattleEvent[] {
   const mover0 = state.combatants[moverId];
   if (!mover0 || mover0.economy.disengaged || mover0.hp <= 0) return [];
+  // Kuyruk 19 (canavar Flyby): uçarken erişimden çıkması fırsat saldırısı doğurmaz.
+  if (mover0.traits?.includes('flyby') && isAirborne(mover0)) return [];
   const events: BattleEvent[] = [];
   let current = state;
   for (const id of state.order) {

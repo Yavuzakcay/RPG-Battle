@@ -3,6 +3,7 @@
  * yaratık Invisible durumundan yararlanamaz (`revealed`); See Invisibility'li yaratık görünmezi görür (`seeInvisible`).
  * Saldırı bağlamına verilen durum listelerinden Invisible bu durumlarda çıkarılır (durumun kendisi kalır).
  */
+import { isAirborne } from './flight';
 import { withinFiveFt } from './common';
 import { frightenedNow, srdConditions } from './ruleVersion';
 import { globalRule } from './ruleControl';
@@ -22,8 +23,10 @@ export function senseSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | unde
   const feral = observer.traits?.includes('feral-senses') && globalRule(state, 'featuresK19') ? 30 : 0;
   // Kuyruk 19 (Epic Boon): Boon of Truesight: 60 ft Truesight.
   const boon = observer.traits?.includes('boon-truesight') && globalRule(state, 'featuresK19') ? 60 : 0;
-  if (!feral && !boon && (!observer.senses || !globalRule(state, 'specialSenses'))) return false;
-  const ft = Math.max(observer.senses?.blindsight ?? 0, observer.senses?.truesight ?? 0, feral, boon);
+  // Kuyruk 19 (Dwarf Stonecunning): süreli Tremorsense (yerdeki yaratıklar).
+  const tremor = !isAirborne(target) ? Math.max(0, ...(observer.effects ?? []).map((e) => e.tremorsense ?? 0)) : 0;
+  if (!feral && !boon && !tremor && (!observer.senses || !globalRule(state, 'specialSenses'))) return false;
+  const ft = Math.max(observer.senses?.blindsight ?? 0, observer.senses?.truesight ?? 0, feral, boon, tremor);
   return ft > 0 && distance(observer.pos, target.pos) * 5 <= ft;
 }
 const drop = (conds: string[]) => conds.filter((x) => x !== 'Invisible');

@@ -9,6 +9,7 @@
  * düşman seni her zaman fark eder (gizlenemezsin, gizliysen turunun başında bulur); yürüyünce de ortaya çıkarsın.
  * Gece (`night` kuralı): ışıksız altıgende karanlık görüşü olmayan gözcünün pasif Algısı düşer, Stealth avantajlı.
  */
+import { sizeRank } from './forced';
 import { checkBase } from './ruleVersion';
 import { extrasTotal, rollExtras } from '../rules/attack';
 import { finishCheck } from './effectDice';
@@ -99,7 +100,10 @@ export interface HideCheck {
 export function hideCheck(state: BattleState, actor: Combatant, at: Offset | null = actor.pos): HideCheck {
   const base: HideCheck = { ok: false, reason: 'noMap', spot: null, dc: HIDE_DC, watcher: null, advantage: false, unlit: false, adjacentId: null };
   if (!state.map || !at) return base;
-  const spot = hideSpot(state, at);
+  // Kuyruk 19 (Halfling Naturally Stealthy): en az bir boy büyük bir yaratığın yanında da gizlenebilir.
+  const shield = actor.traits?.includes('naturally-stealthy') && Object.values(state.combatants).some((o) => o.id !== actor.id && o.hp > 0 && !!o.pos
+    && distance(o.pos, at) <= 1 && sizeRank(o.size) > sizeRank(actor.size));
+  const spot = hideSpot(state, at) ?? (shield ? { bonus: 0, char: 'creature', adjacent: true } : null);
   const lit = litHexes(state);
   const unlit = isUnlit(state, at, lit);
   const night = nightStealth(state);

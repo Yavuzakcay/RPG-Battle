@@ -20,6 +20,7 @@ function effectText(e: DamageEffect): string {
     case 'undead_fortitude': return L.undeadFortitude(e.natural, e.total, e.dc, e.success);
     case 'death_ward': return L.deathWard(e.name);
     case 'relentless_rage': return L.relentlessRage(e.natural, e.total, e.dc, e.success, e.hp);
+    case 'relentless_endurance': return L.relentlessEndurance;
     case 'dying': return L.dying;
     case 'instant_death': return L.instantDeath;
     case 'death_save_failed': return L.deathSaveFailed(e.died, e.failures);
@@ -216,6 +217,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.lifeRestored(n(event.targetId), event.life === 'alive', event.label);
     case 'teleported':
       return L.teleported(n(event.actorId), event.label);
+    case 'mounted':
+      return L.mounted(n(event.actorId), n(event.mountId));
+    case 'dismounted':
+      return L.dismounted(n(event.actorId));
     case 'exhaustion_changed':
       return L.exhaustion(n(event.targetId), event.level);
     case 'summon_steered':

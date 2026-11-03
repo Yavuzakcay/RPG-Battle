@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { globalRule } from './ruleControl';
 import { presetObjects } from './objects';
 import { goalsFromData } from './goals';
 import { groupsFrom } from './alarm';
@@ -9,7 +10,7 @@ import type { Offset } from '../rules/hex';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import type { DiceMode } from '../rules/manualDice';
 import { skillBonus, type Skill } from '../rules/skills';
-import { armorProficient, deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
+import { activeItemNames, armorProficient, deriveStats, raceResistances, type CharacterSheet, type Scores } from '../rules/stats';
 import { armor, getClass, getMonster, getRace, items, spells, weapons, type Lineage, type Monster, type ReactionMechanic } from '../data';
 import { lineageOf, lineageSpells, raceDarkvision } from '../rules/lineage';
 import { featEffects, sheetFeats } from '../rules/advancement';
@@ -17,6 +18,9 @@ import { featFreeSpells, featResources, magicInitiateAbilities, magicInitiateSpe
 import { carryLoad, carrySpeedPenalty, heavilyLoaded, type CarryRule } from '../rules/carry';
 import { GIANT_RESOURCE } from './giant';
 import { boonResources } from './boons';
+import { itemParts } from './itemEffects';
+import { speciesParts } from './species';
+import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
 import yuzeyler from '../../data/yuzeyler.json';
@@ -30,7 +34,7 @@ import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttack
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
 import { classKit, classResources, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
-import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
+import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type AttackOption, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 
@@ -62,6 +66,43 @@ function monsterReactionFields(monsterId: string): Partial<Combatant> {
 }
 
 /** Görev K3: Goliath Cloud's Jaunt (bonus eylemle 30 ft ışınlanma; Giant Ancestry kaynağı). */
+/** Kuyruk 19 (görev 7): tür özelliklerinin kalanları (`species.ts`) anahtar açıkken savaş başında eklenir. */
+function withSpecies(state: BattleState): BattleState {
+  const combatants: Record<string, Combatant> = {};
+  for (const [id, c0] of Object.entries(state.combatants)) {
+    const sp = c0.raceId && !c0.monsterId ? speciesParts(c0.raceId, c0.level, c0.proficiency, c0.speed, id) : null;
+    combatants[id] = !sp || (!sp.effects.length && !sp.features.length && !sp.traits.length) ? c0 : {
+      ...c0,
+      effects: [...(c0.effects ?? []), ...sp.effects],
+      ...(sp.features.length ? { features: [...(c0.features ?? []), ...sp.features] } : {}),
+      resources: { ...c0.resources, ...sp.resources },
+      ...(sp.traits.length ? { traits: [...new Set([...(c0.traits ?? []), ...sp.traits])] } : {}),
+    };
+  }
+  return { ...state, combatants };
+}
+
+/**
+ * Kuyruk 19 (SRD denetimi): eşyanın savaş etkileri (`item:` süren etkileri, isabet ekleri, yüklü büyüler) `srdK19`
+ * anahtarıyla; kapalıyken savaş başında kaldırılır (eski davranış: yalnızca AC/save/yetenek bonusları ve iksirler).
+ */
+function stripItemsWhenOff(state: BattleState): BattleState {
+  if (globalRule(state, 'srdK19')) return withMonsterTraits(withSpecies(state));
+  const combatants: Record<string, Combatant> = {};
+  for (const [id, c] of Object.entries(state.combatants)) {
+    const effects = (c.effects ?? []).filter((e) => !e.id.startsWith('item:') && !e.id.startsWith('srd19:'));
+    const features = (c.features ?? []).filter((f) => !f.key.startsWith('srd19:'));
+    const freeSpells = Object.fromEntries(Object.entries(c.freeSpells ?? {}).filter(([, r]) => !r.startsWith('item:')));
+    const itemSpells = new Set(Object.entries(c.freeSpells ?? {}).filter(([, r]) => r.startsWith('item:')).map(([n]) => n));
+    const { itemHits: _h, itemTraits: _t, ...rest } = c;
+    const traits = (c.traits ?? []).filter((t) => !(c.itemTraits ?? []).includes(t));
+    const reactions = (c.reactions ?? []).filter((r) => !r.id.startsWith('item:'));
+    combatants[id] = { ...rest, effects, ...(c.features ? { features } : {}), ...(c.traits ? { traits } : {}), ...(c.reactions ? { reactions } : {}), ...(Object.keys(freeSpells).length || c.freeSpells ? { freeSpells } : {}),
+      spellNames: c.spellNames.filter((n) => !itemSpells.has(n) || !(c.itemOnlySpells ?? []).includes(n)) } as Combatant;
+  }
+  return { ...state, combatants };
+}
+
 /** Kuyruk 19 (Epic Boon): Blink Steps ve Merge with Shadows kullanılabilir özellik olarak (savaş menüsü). */
 function boonFeatures(traits: string[]): UsableFeature[] {
   const out: UsableFeature[] = [];
@@ -103,7 +144,51 @@ export { characterTokenFile, monsterAvatar, sheetAvatar } from './avatar';
 const armorStealthDisadvantage = (name: string): boolean =>
   armor.find((a) => a.name === name)?.stealthDisadvantage === true;
 
+/**
+ * Kuyruk 19 (SRD denetimi): sihirli eşyaların savaş parçaları (`itemEffects.ts`) temel savaşçıya eklenir: kalıcı
+ * etkiler, isabet ekleri, silah ve büyü bonusu, yüklü büyüler (slotsuz, kaynak `item:<id>`).
+ */
 export function combatantFromSheet(
+  sheet: CharacterSheet,
+  opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
+): Combatant {
+  const c = combatantFromSheetBase(sheet, opts);
+  const p = itemParts(activeItemNames(sheet), opts.id);
+  if (!p.effects.length && !p.hits.length && !p.weaponBonus && !p.spellBonus && !p.addSpells.length && !p.traits.length && !p.fallReduction && !p.noStealthDis && !p.rangedReduce) return c;
+  const newSpells = p.addSpells.filter((n) => !c.spellNames.includes(n));
+  return {
+    ...c,
+    ...(p.effects.length ? { effects: [...(c.effects ?? []), ...p.effects] } : {}),
+    ...(p.hits.length ? { itemHits: p.hits } : {}),
+    ...(p.traits.length ? { traits: [...new Set([...(c.traits ?? []), ...p.traits])], itemTraits: [...(c.itemTraits ?? []), ...p.traits.filter((t) => !(c.traits ?? []).includes(t))] } : {}),
+    ...(p.fallReduction ? { fallReduction: Math.max(c.fallReduction ?? 0, p.fallReduction) } : {}),
+    ...(p.noStealthDis ? { stealthDisadvantage: false } : {}),
+    // Gloves of Missile Snaring: menzilli silah isabetine tepkiyle 1d10 + DEX azaltma.
+    ...(p.rangedReduce ? { reactions: [...(c.reactions ?? []), { id: 'item:gloves-of-missile-snaring', name: 'Gloves of Missile Snaring', kind: 'reduce' as const, dice: `${p.rangedReduce}${c.modifiers.dex >= 0 ? '+' : ''}${c.modifiers.dex}`, ranged: true }] } : {}),
+    ...(Object.keys(p.casts).length ? { itemCasts: p.casts } : {}),
+    ...(p.weaponBonus ? { weaponOptions: c.weaponOptions.map((o) => (o.weaponId === 'unarmed-strike' ? o : withWeaponBonus(o, p.weaponBonus))) } : {}),
+    ...(p.spellBonus && c.spellSaveDc !== null ? { spellSaveDc: c.spellSaveDc + p.spellBonus } : {}),
+    ...(p.spellBonus && c.spellAttack !== null ? { spellAttack: c.spellAttack + p.spellBonus } : {}),
+    ...(p.addSpells.length ? {
+      spellNames: [...c.spellNames, ...newSpells],
+      ...(newSpells.length ? { itemOnlySpells: newSpells } : {}),
+      resources: { ...c.resources, ...p.addResources },
+      freeSpells: { ...p.addFree, ...(c.freeSpells ?? {}) },
+    } : {}),
+  };
+}
+
+/** Büyülü silah bonusu (eşya: Weapon +N): saldırı ve hasar; silahın kendi büyüsü büyükse o kalır. */
+function withWeaponBonus(o: AttackOption, n: number): AttackOption {
+  const extra = Math.max(0, n - (o.enchant ?? 0));
+  if (!extra) return o;
+  const m = /^(.*?)([+-]\d+)?$/.exec(o.damage.replace(/\s/g, ''));
+  const base = m?.[1] ?? o.damage;
+  const bonus = Number(m?.[2] ?? 0) + extra;
+  return { ...o, attackBonus: o.attackBonus + extra, damage: bonus === 0 ? base : `${base}${bonus > 0 ? '+' : ''}${bonus}`, enchant: n };
+}
+
+function combatantFromSheetBase(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
 ): Combatant {
@@ -624,7 +709,9 @@ export function startBattle(
     // avantajla birlikte birbirini götürür. Durumsuz yaratıkta zar sayısı eskisiyle aynı (eski senaryolar bit bit aynı).
     // Kuyruk 16 K16E (kural sürümü 2): inisiyatif atılırken Invisible olan avantajlı atar (SRD 5.2.1 Invisible "Surprise").
     // Kuyruk 39: Feral Instinct (Barbarian 7) aynı kanca.
-    const adv = p.traits?.includes('remarkable-athlete') === true || p.traits?.includes('feral-instinct') === true || (rules >= 2 && p.conditions.includes('Invisible'));
+    const adv = p.traits?.includes('remarkable-athlete') === true || p.traits?.includes('feral-instinct') === true || (rules >= 2 && p.conditions.includes('Invisible'))
+      // Kuyruk 19 (Rod of Alertness, Sentinel Shield, Weapon of Warning): inisiyatif avantajı (`srdK19`).
+      || (p.traits?.includes('initiative-advantage') === true && !!globalRule({ map, kuralSurumu: rules } as unknown as BattleState, 'srdK19'));
     const dis = isIncapacitated(p.conditions);
     const d = adv !== dis ? rollD20(adv ? 'advantage' : 'disadvantage', tag).kept : rollDie(20, tag);
     // Bitkinlik (Görev S1): inisiyatif DEX kontrolü, −2 × seviye.
@@ -658,6 +745,6 @@ export function startBattle(
     ...(groups ? { groups } : {}),
   };
   // Kuyruk 24: Orman mekaniklerinin savaş başı kısmı (alarm grupları, kütük siperi, nehir; kural sürümü 3 ve Game Master anahtarı).
-  const final = map ? applyForestStart(state) : state;
+  const final = stripItemsWhenOff(map ? applyForestStart(state) : state);
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }

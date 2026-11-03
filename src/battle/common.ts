@@ -193,6 +193,7 @@ export function damageProfile(t: Combatant): { resistances: string[]; immunities
   return {
     resistances: extra.length ? [...new Set([...t.resistances, ...extra])] : t.resistances,
     immunities: t.immunities,
-    vulnerabilities: t.vulnerabilities,
+    // Kuyruk 19: Armor of Vulnerability (eşya etkisi `vulnerable`).
+    vulnerabilities: t.effects?.some((e) => e.vulnerable?.length) ? [...new Set([...t.vulnerabilities, ...(t.effects ?? []).flatMap((e) => e.vulnerable ?? [])])] : t.vulnerabilities,
   };
 }

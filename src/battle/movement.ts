@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { sizeRank } from './forced';
 import { interposeCost } from './arcaneHand';
 import { globalRule } from './ruleControl';
 import { spells } from '../data';
@@ -227,7 +228,9 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const zc = freeMove && zc0 !== null ? 1 : zc0;
     const ground0 = base === null || zc === null ? null : Math.max(base, zc);
     const ground = ground0 !== null && allyAt.has(hexKey(h)) ? Math.max(through, ground0) : ground0;
-    const cost = ground === null || !enemy ? ground : phase ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
+    // Kuyruk 19 (Halfling Nimbleness): en az bir boy büyük yaratığın altıgeninden geçer (zorlu arazi gibi).
+    const nimble = !!enemy && !!actor.traits?.includes('halfling-nimbleness') && sizeRank(enemy.size) > sizeRank(actor.size);
+    const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
     const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1);
     return cost === null ? null : cost * slow;
   };

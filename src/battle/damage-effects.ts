@@ -63,6 +63,13 @@ export function damageEffects(
     if (total >= dc) hpAfter = Math.min(target.maxHp, hp);
   }
 
+  // Kuyruk 19 (Orc Relentless Endurance): 0 HP'ye düşüp ölmeyen 1 HP'de kalır (uzun dinlenmede bir; `srdK19` savaş başı).
+  if (hpAfter === 0 && target.hp > 0 && applied > 0 && target.traits?.includes('relentless-endurance') && (target.resources.relentlessEndurance ?? 0) > 0
+    && applied - target.hp < target.maxHp) {
+    effects.push({ kind: 'relentless_endurance' });
+    hpAfter = 1;
+  }
+
   // Yenilenme: 0 HP'de ama acid/fire ile engellenmediyse tur başında ayağa kalkabilir.
   if (hpAfter === 0 && target.regeneration > 0 && !blockedNow && !target.regenBlocked) {
     effects.push({ kind: 'regen_pending' });

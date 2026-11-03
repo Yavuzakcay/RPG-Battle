@@ -43,12 +43,20 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on === 'attack' && c.k19Traits && c.traits?.includes('peerless-aim') && resourceLeft(c, 'peerlessAim') > 0) {
     k18.unshift({ label: 'Peerless Aim', die: 'hit', sign: 1, reroll: 'success', resource: 'peerlessAim', holderId: c.id });
   }
+  // Kuyruk 19 (sihirli eşyalar, Antitoxin): belli durumlara/büyülere karşı save avantajı = başarısızlıkta yeniden atış (olasılık aynı).
+  if (on === 'save') {
+    const against = [...new Set((c.effects ?? []).flatMap((e) => e.saveAdvAgainst ?? []))];
+    if (against.length) k18.push({ label: 'Avantaj (eşya)', die: 'd20', sign: 1, reroll: 'd20', against, holderId: c.id });
+  }
   // Kuyruk 19: Disciplined Survivor (Monk 14): başarısız save 1 Focus ile yeniden atılır.
   if (on === 'save' && c.traits?.includes('disciplined-survivor') && resourceLeft(c, 'focus') > 0) {
     k18.push({ label: 'Disciplined Survivor', die: 'd20', sign: 1, reroll: 'd20', resource: 'focus', holderId: c.id });
   }
+  // Kuyruk 19 (Halfling Luck): doğal 1 yeniden atılır (önce; kaynak harcamaz).
+  if (c.traits?.includes('halfling-luck')) k18.unshift({ label: 'Luck', die: 'd20', sign: 1, reroll: 'd20', onNatural1: true, holderId: c.id });
   // Kuyruk 18 H3: Heroic Warrior: Heroic Inspiration ile başarısız d20 bir kez yeniden atılır (tur başında yenilenir).
-  if (c.traits?.includes('heroic-warrior') && resourceLeft(c, 'heroicInspiration') > 0) {
+  // Kuyruk 19: Human Resourceful aynı kaynakla (savaş başında bir).
+  if ((c.traits?.includes('heroic-warrior') || c.traits?.includes('resourceful')) && resourceLeft(c, 'heroicInspiration') > 0) {
     k18.push({ label: 'Heroic Inspiration', die: 'd20', sign: 1, reroll: 'd20', resource: 'heroicInspiration', holderId: c.id });
   }
   const traits = c.traits;

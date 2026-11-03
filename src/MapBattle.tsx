@@ -8,6 +8,7 @@
 import { changeFloorProblem, floorLinkOf } from './battle/floors';
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { overchannelProblem } from './battle/apex';
+import { mountProblem } from './battle/mounted';
 import { eldritchSmiteProblem } from './battle/warlock';
 import { availableForms, wildShapeFeature } from './battle/druid';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
@@ -1215,6 +1216,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         else { setPickCmd({ make: (id) => ({ type: 'steed_action', actorId, kind: k, targetId: id }) }); setMode('pick'); } setMenuOpen(false); } })),
     // Kuyruk 19: Monk 18 Superior Defense (tur başında 3 Focus).
     ...(actor.traits?.includes('superior-defense') ? [{ key: 'superiorDefense', label: N.superiorDefense, reason: why({ type: 'superior_defense', actorId }) ?? undefined, act: () => run({ type: 'superior_defense', actorId }) }] : []),
+    // Kuyruk 19 (SRD Mounted Combat): bin / in.
+    ...(globalRule(state, 'srdK19') && !actor.riding && Object.values(state.combatants).some((m) => !mountProblem(state, actor, m.id))
+      ? [{ key: 'mount', label: N.mount, act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'mount', actorId, mountId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
+    ...(actor.riding ? [{ key: 'dismount', label: N.dismount, act: () => { reset(); setPickHexCmd({ make: (h) => ({ type: 'dismount', actorId, to: h }) }); setMode('pickHex'); setMenuOpen(false); } }] : []),
     // Kuyruk 19: Alert'in Initiative Swap'ı (1. tur, sırasını oynamamış dostla).
     ...(actor.traits?.includes('alert') && state.round === 1 && globalRule(state, 'featuresK19') && !actor.traitTurns?.['initiative-swap']
       ? [{ key: 'iswap', label: N.iswap, act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'initiative_swap', actorId, allyId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),

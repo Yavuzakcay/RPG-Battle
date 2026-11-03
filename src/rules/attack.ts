@@ -16,6 +16,8 @@ export interface ExtraDie {
   /** Kuyruk 19: `floor`: toplam `rerollBonus`'tan küçükse o sayılır (Indomitable Might: STR skoru); diğer ikinci şanslardan önce. */
   /** Kuyruk 19: `onSuccess`: başarılı zardan `die` düşülür, sonucu bozarsa harcanır (Improve Fate, düşmana). */
   reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor' | 'onSuccess';
+  /** Kuyruk 19 (Halfling Luck): yalnızca doğal 1'de. */
+  onNatural1?: boolean;
   rerollBonus?: number;
   resource?: string;
   /** Kuyruk 18 H3: yalnızca bu durumlara karşı save'de (Countercharm: Charmed, Frightened). */
@@ -49,7 +51,7 @@ export function secondChance(
   if (floor && (floor.rerollBonus ?? 0) >= fail.need) {
     return { total: floor.rerollBonus as number, natural: fail.natural, entry: { label: floor.label, die: 'STR', value: (floor.rerollBonus as number) - fail.total } };
   }
-  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && e.reroll !== 'onSuccess' && (!e.against || e.against.some((c) => fail.against?.includes(c))));
+  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && e.reroll !== 'onSuccess' && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c))));
   if (!x) return null;
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
   const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };
@@ -75,6 +77,8 @@ export interface AttackInput {
   damage: string;
   /** Hedef durumu yüzünden isabet kritik sayılır (Paralyzed gibi). */
   autoCritical?: boolean;
+  /** Kuyruk 19 (Adamantine Armor): kritik vuruş normal isabet sayılır. */
+  noCrit?: boolean;
   /** Hasar zarında bundan küçük değer bu sayılır (Great Weapon Fighting: 1 ve 2 → 3). */
   minDie?: number;
   /** Saldırı zarına eklenti zarları (Bless, Bane). */
@@ -130,7 +134,7 @@ export function resolveAttack(input: AttackInput, rng: Rng = Math.random): Attac
     const spoil = spoilChance(input.extra, { total, need: input.targetAc, kind: 'attack' }, rng);
     if (spoil) { total = spoil.total; extra.push(spoil.entry); hit = false; }
   }
-  const critical = crit(natural) || (hit && !!input.autoCritical);
+  const critical = !input.noCrit && (crit(natural) || (hit && !!input.autoCritical));
   const roll = () => withMinDie(rollDice(input.damage, rollTag(rng, { kind: 'damage' }), critical), input.minDie);
   const first = hit ? roll() : null;
   // F1: Savage Attacker: ikinci atış; büyük olan kullanılır (eşitse ilki).

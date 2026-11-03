@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeDismount, executeMount, riderCleanup } from './mounted';
 import { brutalOptions } from './brutal';
 import { executeShiftMove, featuresOn } from './shift';
 import { executeInitiativeSwap } from './alert';
@@ -195,6 +196,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   const loose = grappleCleanup(next);
   if (loose.length) { next = applyEvents(next, loose); events = [...events, ...loose]; }
   // Çağrılmış yaratıklar (Görev R3): 0 HP, konsantrasyon, sahibin ölümü ya da süre bitince kaybolur.
+  // Kuyruk 19 (Mounted Combat): bineği düşen binici.
+  const fell = globalRule(next, 'srdK19') ? riderCleanup(next, rng) : [];
+  if (fell.length) { next = applyEvents(next, fell); events = [...events, ...fell]; }
   const vanished = summonCleanup(next);
   if (vanished.length) { next = applyEvents(next, vanished); events = [...events, ...vanished]; }
   // Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar büyücüye (her hasar yolunda, komutun sonunda).
@@ -518,8 +522,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!target) return fail('Hedef bulunamadı.');
     if (target.id === actor.id) return fail('Kendini stabilize edemezsin.');
     if (target.life !== 'dying') return fail('Hedef ölmekte değil.');
-    const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.modifiers.wis }));
-    const success = roll.kept === 20 || (roll.kept !== 1 && roll.kept + actor.modifiers.wis >= 10);
+    // Kuyruk 19 (SRD Healer's Kit): kitle zarsız stabilize; kitsiz WIS (Medicine) DC 10 (`srdK19`; eskide yalnızca WIS).
+    const k19s = !!globalRule(state, 'srdK19');
+    if (k19s && actor.traits?.includes('healers-kit')) {
+      events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: 20, success: true });
+      return { ok: true, state: applyEvents(state, events), events };
+    }
+    const med = k19s ? actor.skills?.medicine ?? actor.modifiers.wis : actor.modifiers.wis;
+    const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: med }));
+    const success = roll.kept === 20 || (roll.kept !== 1 && roll.kept + med >= 10);
     events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: roll.kept, success });
     return { ok: true, state: applyEvents(state, events), events };
   }
@@ -568,6 +579,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const r = executeCommand(up, cmd, ctx, rng);
     return r.ok ? { ok: true, state: r.state, events: [...stood, ...r.events] } : r;
   }
+  if (cmd.type === 'mount') return executeMount(state, actor, cmd.mountId);
+  if (cmd.type === 'dismount') return executeDismount(state, actor, cmd.to);
+  // Kuyruk 19 (Mounted Combat): binici kendi yürümez; bineği taşır.
+  if (actor.riding && (cmd.type === 'move' || cmd.type === 'jump' || cmd.type === 'shift_move')) return fail('Bineğin üstündesin: önce in (bineğin hareketiyle taşınırsın).');
   if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'shift_move') return executeShiftMove(state, actor, cmd.to, rng);
   if (cmd.type === 'superior_defense') return executeSuperiorDefense(state, actor);

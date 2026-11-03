@@ -250,7 +250,7 @@ const tr = {
       wearAnyway: 'Yine de kuşan',
       armorUntrained: '⚠ Bu zırhta eğitimin yok: Güç ve Çeviklik d20 testleri (saldırı, save, kontrol) dezavantajlı, büyü yapılamaz.',
       shieldUntrained: '⚠ Kalkan eğitimin yok: kalkan AC vermez.',
-      attunedCount: (n: number, max: number) => `uyum ${n} / ${max}`,
+      itemFilter: 'Eşya ara…', attunedCount: (n: number, max: number) => `uyum ${n} / ${max}`,
       arrayTitle: (box: string) => `${box} için değer seç:`,
       arrayHelp: 'Bu altı değeri yeteneklere birer kez dağıt: 15, 14, 13, 12, 10, 8. Bir karta dokun, sonra bir değer seç.',
       rolledHelp: 'Atılan altı değeri yeteneklere birer kez dağıt. Bir karta dokun, sonra bir değer seç.',

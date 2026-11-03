@@ -35,6 +35,7 @@ export type DamageEffect =
   | { kind: 'death_ward'; effectId: string; name: string }
   /** Kuyruk 19: Relentless Rage (Barbarian 11): öfkedeyken 0 HP'de CON save; başarıda HP = 2 × seviye. */
   | { kind: 'relentless_rage'; dc: number; natural: number; total: number; success: boolean; hp: number }
+  | { kind: 'relentless_endurance' }
   /** Karakter 0 HP'ye düştü: ölüm save'lerine başlar. */
   | { kind: 'dying' }
   /** Kalan hasar maksimum HP'ye eşit veya fazla: anında ölüm. */
@@ -99,6 +100,18 @@ export interface ActiveEffect {
   breakOnIncapacitated?: boolean;
   /** Kuyruk 19 (11–20): bu yaratık türlerinin etkilerine save'ler avantajlı (Holy Nimbus: fiend, undead). */
   saveAdvVs?: string[];
+  /** Kuyruk 19 (sihirli eşyalar): bu durumlara/kaynaklara karşı save'ler avantajlı (`spell`: büyüler), hasar kırılganlığı, kritik vuruş normal sayılır, menzilli saldırıya AC, tur başı yenilenme, silah bonusu, STR skoru tabanı. */
+  saveAdvAgainst?: string[];
+  /** Kuyruk 19 (Stonecunning): süreli Tremorsense (ft). */
+  tremorsense?: number;
+  vulnerable?: string[];
+  noCrit?: boolean;
+  acRanged?: number;
+  regen?: number;
+  weaponPlus?: number;
+  strFloor?: number;
+  /** Kuyruk 19 (Basic Poison): silah isabetlerine ek hasar (süre ya da ilk hasara dek). */
+  coated?: { dice: string; type: string };
   /** Kuyruk 19 (11–20): bu savaşçının turu bitince biter (Superior Hunter's Defense: "geçerli turun sonuna dek"). */
   turnEndOf?: string;
   /** Kuyruk 19 (11–20): en az yarım siper (Smite of Protection). */
@@ -523,6 +536,14 @@ export interface Combatant {
   /** Kuyruk 19 (Epic Boon): Improve Fate sahibi (60 ft; dost için ve düşman için), `syncAuras` yazar. */
   fateBy?: string;
   fateFoe?: string;
+  /** Kuyruk 19 (SRD denetimi): eşya isabet ekleri, yüklü büyülerin DC/saldırısı (kaynak → değer), yalnızca eşyadan bilinen büyüler. */
+  itemHits?: Array<{ label: string; dice: string; type: string; vs?: string[]; ranged?: boolean; melee?: boolean; critOnly?: boolean }>;
+  itemCasts?: Record<string, { dc?: number; attack?: number }>;
+  itemOnlySpells?: string[];
+  itemTraits?: string[];
+  /** Kuyruk 19 (Mounted Combat): bindiği yaratık ve üstündeki binici. */
+  riding?: string;
+  rider?: string;
   /** Kuyruk 19 (SRD Ammunition): türe göre kalan cephane (savaş başında 20; kılıf/sadak). */
   ammo?: Record<string, number>;
   /** Kuyruk 19 (Irresistible Offense): artırılan yetenek skoru (doğal 20 ek hasarı). */
@@ -1174,6 +1195,9 @@ export type Command =
   | { type: 'attack_gate'; actorId: string; at: Offset; option: AttackOption }
   /** Batağa saplanmış savaşçı kendini çıkarmaya çalışır (Athletics). */
   | { type: 'escape'; actorId: string }
+  /** Kuyruk 19 (SRD Mounted Combat): bin / in. */
+  | { type: 'mount'; actorId: string; mountId: string }
+  | { type: 'dismount'; actorId: string; to?: Offset }
   /** CILA: Haste'in ek eylemi (turda bir; eylem kullanıldıktan sonra). */
   | { type: 'haste_action'; actorId: string }
   /** CILA: sahibi bonus eylemle çağrısını taşır (Flaming Sphere, ruh sürüsü); `ramId` bitişik yaratığa çarptırma. */
@@ -1450,6 +1474,8 @@ export type BattleEvent =
   | { type: 'dice_rolled'; rolls: DiceRoll[] }
   | { type: 'combat_started' }
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
+  | { type: 'mounted'; actorId: string; mountId: string; cost: number }
+  | { type: 'dismounted'; actorId: string; at: Offset; cost: number }
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number; /** Kuyruk 19: serbest kayma (`shiftLeft`'ten düşer). */ free?: boolean }
   | { type: 'shift_granted'; actorId: string; hexes: number }
   | { type: 'initiative_swapped'; actorId: string; allyId: string }

@@ -59,8 +59,12 @@ export function loadClassData(): Promise<void> {
   classLoading ??= Promise.all([
     import('../../data/srd/progression.json'), import('../../data/class-features.json'), import('../../data/srd/feats.json'),
     import('../../data/srd/weapons.json'), import('../../data/subclasses.json'), import('../../data/spells-45.json'),
-  ]).then(([p, m, f, w, sc, s45]) => {
+    import('../../data/items-srd.json'),
+  ]).then(([p, m, f, w, sc, s45, isrd]) => {
     if (classDataLoaded()) return;
+    // Kuyruk 19 (görev 7): SRD'nin geri kalan eşyaları (ana parça sınırı; oluşturucu ve savaştan önce yüklenir).
+    const moreItems = (isrd.default as unknown as Item[]).filter((x) => !items.some((y) => y.id === x.id));
+    items.push(...moreItems);
     // Kuyruk 40: 4.–5. seviye büyüler (yalnızca 7+ seviye karakterler; ana parça sınırı) sınıf verisiyle gelir.
     const more = (s45.default as unknown as Spell[]).filter((s) => !spells.some((x) => x.id === s.id));
     spells.push(...more);

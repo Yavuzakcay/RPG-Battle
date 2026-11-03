@@ -1,4 +1,5 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
+import { globalRule } from './ruleControl';
 import { profileIn } from './zones';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
@@ -110,7 +111,8 @@ export function monsterAttackEvents(
     sources.length = 0;
     sources.push(...kept);
     const mode = combineModes(sources);
-    const targetAc = effectiveAc(state, target) + inReach.cover;
+    const k19i = !!globalRule(state, 'srdK19');
+    const targetAc = effectiveAc(state, target) + inReach.cover + (atk.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
     // Ek etkiler (rider, data/attack-riders.json): koşulu tutarsa hasar ifadesi değişir (Bloodied sürü, avantajlı Chimera).
     const spec = riderOf(actor.monsterId, atk.name);
     const swap = riderReplace(spec, mode, actor, target);
@@ -131,7 +133,7 @@ export function monsterAttackEvents(
     let bonusDice: RolledExtra[] | undefined;
     if (atk.damageDice) {
       const res = resolveAttack(
-        { attackBonus: atk.bonus, targetAc, mode, damage: dmgDice as string, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !atk.ranged)), extra: attackDice(actor) },
+        { attackBonus: atk.bonus, targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: dmgDice as string, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !atk.ranged)), extra: attackDice(actor) },
         rollTag(rng, { by: actor.id }),
       );
       d20 = res.d20.rolls; natural = res.d20.kept; total = res.total; hit = res.hit; bonusDice = res.extra;

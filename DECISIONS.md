@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (7): SRD tam denetim — eşyalar, türler, binek, canavar yetenekleri
+
+- Denetim tablosu `docs/SRD-DENETIM.md` (`npx vite-node scripts/srd-denetim.ts`): silah, zırh, donanım, sihirli eşya, feat, tür, geçmiş, kural ve canavar yeteneği satır satır.
+- Tek global anahtar `srdK19` (sürüm 16). Kapalıyken anahtara bağlı eşyalar, tür özellikleri ve canavar özellikleri savaş başında hiç işlenmez (`stripItemsWhenOff`).
+- **Eşyalar**: `scripts/k19-esyalar.py` SRD'nin 399 eşyasını üretir. 23 temel eşya `items.json`'a, kalanı tembel `items-srd.json`'a gider (ana parça 430,6 kB). Savaşta etkisi olmayanlar `offCombat` gerekçesiyle "savaş dışı" sayılır (yolculuk, iletişim, inşa).
+  - Sınırlama: kritiğe bağlı eşyalar (`critOnly`) yalnızca doğal 20'de etki eder.
+  - Sınırlama: Potion of Giant Strength yalnızca STR saldırılarını etkiler.
+  - Sınırlama: yapay zekâ eşya kullanmaz.
+- **Tür özellikleri** savaş başında `species.ts`'ten (Luck, Brave, Resourceful, Adrenaline Rush, Relentless Endurance, Stonecunning, Draconic Flight, Large Form). Oluşturucuda eklenmez, böylece eski karakterlerin kaynakları değişmez.
+- **Binek** (`mounted.ts`): mount/dismount yarım hız; binicinin konumu bineği izler; binek düşerse DEX DC 10 save, kaybedilirse Prone.
+  - Su altı: yüzme hızı olmayan yakın dövüşte dezavantaj; suya batmış hedef Fire direnci kazanır.
+- **Canavar yetenekleri** (`monsterTraits.ts`): veri değişmez; `unsupported` metninden durum bağışıklığı, duyular, Magic Resistance, Sunlight Sensitivity, Flyby, Fire Aura/Stench auraları ayrıştırılır.
+
 ## 2026-11-03 — Kuyruk 19 (4c): Epic Boon feat'leri
 
 - Yeni modül `src/battle/boons.ts`; hepsi `featuresK19` (zar yollarında savaşçıda `k19Traits`).

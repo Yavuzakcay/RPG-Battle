@@ -26,10 +26,10 @@ import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
 import { saveDice } from './effectDice';
 import { globalRule } from './ruleControl';
-import { resourceLeft, type BattleEvent, type BattleState, type Combatant, type UsableFeature } from './types';
+import { resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type UsableFeature } from './types';
 
 type Use = { feature: string; targetId?: string; to?: Offset };
-export const APEX_KINDS = ['fearAura', 'nimbus', 'wings', 'quiveringPalm', 'sanctuary', 'blinkStep', 'shadowMerge'] as const;
+export const APEX_KINDS = ['fearAura', 'nimbus', 'wings', 'quiveringPalm', 'sanctuary', 'blinkStep', 'shadowMerge', 'selfEffect'] as const;
 export const isApex = (f: UsableFeature): boolean => (APEX_KINDS as readonly string[]).includes(f.effect.kind);
 
 const on = (state: BattleState) => !!globalRule(state, 'featuresK19');
@@ -95,6 +95,13 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
     if (!actor.economy.action) return 'Önce Attack ya da Magic eylemini kullan.';
     if (cmd.to) return teleportProblem(state, actor, cmd.to, { rangeFt: e.rangeFt, sight: true });
     return teleportHexes(state, actor, { rangeFt: e.rangeFt, sight: true }).length ? null : 'Işınlanılacak boş altıgen yok.';
+  }
+  // Kuyruk 19 (tür özellikleri, `srdK19`): kendine süreli etki.
+  if (e.kind === 'selfEffect') {
+    if (!globalRule(state, 'srdK19')) return `${f.name} bu kural sürümünde ya da Game Master ayarında kapalı.`;
+    if (f.resource && resourceLeft(actor, f.resource) <= 0) return `${f.name}: kullanım kalmadı.`;
+    if (actor.effects?.some((x) => x.id === f.key) && !e.dash) return `${f.name} zaten etkin.`;
+    return null;
   }
   if (e.kind === 'shadowMerge') {
     if (!inShadow(state, actor)) return 'Merge with Shadows yalnızca loş ışıkta ya da karanlıkta.';
@@ -202,6 +209,13 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
   if (e.kind === 'blinkStep') {
     if (!cmd.to) return fail('Işınlanılacak altıgeni seç.');
     events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource as string, remaining: 0 }, teleportEvent(actor, cmd.to, f.name));
+    return finish(state, events);
+  }
+  if (e.kind === 'selfEffect') {
+    if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
+    if (Object.keys(e.effect).length) events.push({ type: 'effect_added', targetId: actor.id, effect: { ...(e.effect as Partial<ActiveEffect>), id: f.key, name: f.name, sourceId: actor.id, until: state.round + e.rounds - 1 } as ActiveEffect });
+    if (e.tempHp) events.push({ type: 'temp_hp', targetId: actor.id, amount: e.tempHp, label: f.name });
+    if (e.dash) events.push({ type: 'dashed', actorId: actor.id });
     return finish(state, events);
   }
   if (e.kind === 'shadowMerge') {

@@ -207,7 +207,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const dexCover = ability === 'dex' ? lof.cover : 0;
     // Görev SORCERER: Heightened Spell: alandaki ilk düşmanın save'i dezavantajlı.
     const height = actor.traits?.includes('mm-heightened') && t.id === reached.find((x) => x.c.side !== actor.side)?.c.id;
-    const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: t.id }));
+    const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
     const adjusted = amount > 0 ? adjustDamage(amount, damageType, profileIn(state, t)) : { amount: 0, note: null };
     const amount2 = second ? saveDamage(t, ability, save.success, second.total, !!m.halfOnSave) : 0;
@@ -288,7 +288,11 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * Büyü yapma. Counterspell (Görev R1): büyüyü görebilen bir düşmanın tepkisi varsa önce büyü zarsız denenir
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
-export function executeCast(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+export function executeCast(state: BattleState, actor0: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+  // Kuyruk 19 (SRD sihirli eşyalar): yüklü eşyadan (değnek, asa) yapılan büyü eşyanın DC'si ve saldırı bonusuyla.
+  const res = actor0.freeSpells?.[cmd.spellName];
+  const ic = res?.startsWith('item:') && cmd.slotLevel === undefined && (actor0.resources[res] ?? 0) > 0 ? actor0.itemCasts?.[res] : undefined;
+  const actor00 = ic ? { ...actor0, ...(ic.dc !== undefined ? { spellSaveDc: ic.dc } : {}), ...(ic.attack !== undefined ? { spellAttack: ic.attack } : {}) } : actor0;
   const r = executeCastOver(state, actor00, cmd, rng);
   if (!r.ok) return r;
   // Kuyruk 19 (Spell Recall): Free Casting: 1–4. seviye slot 1d4 tutarsa geri gelir.
@@ -575,7 +579,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const autoFail = typeFail || ((ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions));
     const dexCover = ability === 'dex' ? cover : 0;
     const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
-      mode: saveMode(mode, target, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }, rollTag(rng, { by: target.id }));
+      mode: saveMode(mode, target, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {
@@ -1241,7 +1245,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (hostile && ability) {
       const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
       const base0 = spec.saveAdvantage ? 'advantage' : 'normal';
-      const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability, actor), autoFail, against: spec.grants ?? [] }, rollTag(rng, { by: t.id }));
+      const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability, actor), autoFail, against: [...(spec.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
       const ev: BattleEvent = {
         type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: base0, reasons: [],
         d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,

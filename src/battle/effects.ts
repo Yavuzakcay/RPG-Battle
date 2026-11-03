@@ -92,6 +92,8 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
     const c = current.combatants[id] as Combatant;
     if (c.hp <= 0) break;
     let evs: BattleEvent[] = [];
+    // Kuyruk 19 (Ring of Regeneration): tur başında yenilenme.
+    if (e.regen && c.hp > 0 && c.hp < c.maxHp) evs.push({ type: 'healed', actorId: id, targetId: id, label: e.name, amount: Math.min(e.regen, c.maxHp - c.hp), targetHpAfter: Math.min(c.maxHp, c.hp + e.regen) });
     if (e.tempHp && e.tempHp > 0) evs = [{ type: 'temp_hp', targetId: id, amount: e.tempHp, label: e.name }];
     if (e.ongoing) evs = ongoingEvents(c, e, rng);
     // Görev CLERIC: Bestow Curse: tur başında WIS save; başarısızsa bu tur eylem yok.

@@ -3,6 +3,7 @@
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
 import { BOON_TURN_REFILL } from './boons';
+import { syncRiders } from './mounted';
 import { spells } from '../data';
 import { homeSide, syncAllegiance } from './allegiance';
 import { syncAuras } from './auras';
@@ -229,6 +230,10 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
         if (w) next = withCombatant(next, gift, { resources: { ...w.resources, 'protectors-gift': 0 } });
       } else next = dropEffects(next, id, (x) => x.id === e.effectId);
     }
+    if (e.kind === 'relentless_endurance') {
+      const h = next.combatants[id];
+      if (h) next = withCombatant(next, id, { resources: { ...h.resources, relentlessEndurance: 0 } });
+    }
     if (e.kind === 'relentless_rage') {
       const h = next.combatants[id];
       if (h) next = withCombatant(next, id, { resources: { ...h.resources, relentlessRage: Math.max(0, (h.resources.relentlessRage ?? 10) - 1) } });
@@ -254,7 +259,7 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event))));
+  return syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)))));
 }
 
 /**
@@ -1097,6 +1102,22 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         hp: event.hpAfter, life: event.life, deathSaves: { successes: 0, failures: 0 },
         conditions: event.life === 'alive' ? c.conditions.filter((x) => x !== 'Unconscious') : c.conditions,
       });
+    }
+    case 'mounted': {
+      const c = state.combatants[event.actorId];
+      const m = state.combatants[event.mountId];
+      if (!c || !m) return state;
+      const s1 = withCombatant(state, c.id, { riding: m.id, pos: m.pos, movementUsed: c.movementUsed + event.cost });
+      return withCombatant(s1, m.id, { rider: c.id });
+    }
+    case 'dismounted': {
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      const { riding: mid, ...rest } = c;
+      let s1: BattleState = { ...state, combatants: { ...state.combatants, [c.id]: { ...rest, pos: event.at, movementUsed: c.movementUsed + event.cost } as Combatant } };
+      const m = mid ? s1.combatants[mid] : undefined;
+      if (m) { const { rider: _r, ...mr } = m; s1 = { ...s1, combatants: { ...s1.combatants, [m.id]: mr as Combatant } }; }
+      return s1;
     }
     case 'teleported': {
       const c = state.combatants[event.actorId];
