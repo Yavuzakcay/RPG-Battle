@@ -852,6 +852,9 @@ export interface SpellZone {
   /** Kuyruk 19: kaplanan merkez altıgen (`occupy`) ve verilen toplam hasar (`budget`). */
   center?: Offset;
   dealt?: number;
+  /** Kuyruk 19: Wall of Stone panel hasarı (altıgen anahtarı → hasar) ve Wall of Fire hasar yüzü. */
+  panelDamage?: Record<string, number>;
+  endHexes?: Offset[];
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -1139,7 +1142,7 @@ export type Command =
       /** Find Familiar: familiar biçimi (data/monsters.json kimliği; data/summons.json `forms`). */
       form?: string;
       /** CILA (Wind Wall): duvar biçimi; `arc` büyücünün çevresinde yay (yoksa düz). */
-      wallShape?: 'arc';
+      wallShape?: 'arc' | 'ring';
     }
   /** Yalnızca GM: bir savaşçıya durum ekler veya kaldırır. */
   | { type: 'set_condition'; targetId: string; condition: string; present: boolean }
@@ -1572,6 +1575,7 @@ export type BattleEvent =
   | { type: 'zone_triggered'; zoneId: string; targetId: string; turn: string }
   /** Kuyruk 19: alanın verdiği hasar bütçeye yazılır (Guardian of Faith). */
   | { type: 'zone_dealt'; zoneId: string; amount: number }
+  | { type: 'zone_panel_damaged'; zoneId: string; hex: Offset; amount: number }
   | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' | 'reacted' }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */

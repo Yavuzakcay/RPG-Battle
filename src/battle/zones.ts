@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { fireSideHexes, wallOpenEvents } from './walls';
 import { AXIAL_DIRECTIONS, axialToOffset, distance, isInside, offsetToAxial } from '../rules/hex';
 import { globalRule } from './ruleControl';
 import { spells, type Spell, type ZoneSpec } from '../data';
@@ -207,7 +208,8 @@ export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 
   const c = state.combatants[id];
   if (!c?.pos || !state.map?.zones?.length) return [];
   const k19 = globalRule(state, 'spellsK19');
-  const here = strongestPerSpell((state.map.zones ?? []).filter((z) => bodyInZone(state, z, c, c.pos) && zoneSpecOf(z)?.on?.includes(phase) && !(k19 && zoneSpecOf(z)?.casterTurn)));
+  const here = strongestPerSpell((state.map.zones ?? []).filter((z) => (bodyInZone(state, z, c, c.pos) || (phase === 'end' && !!z.endHexes?.some((h) => sameHex(h, c.pos as Offset))))
+    && zoneSpecOf(z)?.on?.includes(phase) && !(k19 && zoneSpecOf(z)?.casterTurn)));
   return chain(state, here.map((z) => (s: BattleState) => { const live = liveZone(s, z.id); return live ? triggerEvents(s, live, id, rng) : []; }));
 }
 
@@ -334,7 +336,7 @@ function repelled(state: BattleState, z: SpellZone, c: Combatant): boolean {
 }
 
 /** Alan büyüsü yapılırken ya da taşınırken altıgenler (büyünün alanı; duvar şekli `rules/area.ts`). */
-function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offset | null, wallShape?: 'arc'): Offset[] | CommandResult {
+function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offset | null, wallShape?: 'arc' | 'ring'): Offset[] | CommandResult {
   if (!state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
   if (!spell.area) return fail(`${spell.name}: alan tanımı yok.`);
   // CILA: duvar yay biçiminde de kurulabilir (Wind Wall).
@@ -395,12 +397,16 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
       dc: actor.spellSaveDc ?? 10, slotLevel: slot.slotLevel ?? spell.level, hexes,
       // Kuyruk 19: kaplanan merkez (Guardian of Faith) ve taşınabilir merkez (Faithful Hound).
       ...((spec.occupy || spec.casterTurn) && aim && globalRule(state, 'spellsK19') ? { center: aim } : {}),
+      // Kuyruk 19: Wall of Fire: hasar veren yüz (varsayılan büyücüden uzak yan).
+      ...(spec.sideDamage && globalRule(state, 'spellsK19') ? { endHexes: fireSideHexes(state, actor, hexes, cmd.choice === 'near' ? 'near' : 'far') } : {}),
       // Görev K13B: yüzey olan alan (Stinking Cloud → zehir bulutu): kural ve tepkimeler yüzey yolundan.
       ...(spec.surface ? { surface: spec.surface } : {}),
       ...(spell.concentration ? { concentration: spell.name } : {}),
       ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
     };
     events.push({ type: 'zone_created', zone });
+    // Kuyruk 19: duvarın açıldığı altıgendeki yaratık yana itilir (Wall of Force/Stone); kapatılan DEX save.
+    events.push(...wallOpenEvents(applyEvents(state, events), actor, zone, cmd.choice === 'near' || cmd.choice === 'far' ? cmd.choice : undefined, rng));
     // Görev B4: Daylight örtüştüğü Darkness alanlarını kaldırır (büyücünün konsantrasyonu sürer, alan yok olur).
     for (const other of state.map?.zones ?? []) {
       if (spec.dispels?.includes(other.spellId) && zoneHexes(state, other).some((h) => hexes.some((x) => sameHex(x, h)))) {

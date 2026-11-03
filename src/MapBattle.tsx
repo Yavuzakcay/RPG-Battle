@@ -311,6 +311,7 @@ function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | nul
 
 /** Savaşta kullanılabilen (özelliği uygulanan) ve kalan kaynaklar, veri sırasıyla. */
 const spellOf = (name: string): Spell | undefined => spells.find((s) => s.name === name);
+const spellById = (id: string): Spell | undefined => spells.find((s) => s.id === id);
 /** Kuyruk 19: altıgen hedefli sürdürmede motorun kabul ettiği altıgenler (Tree Stride, Faithful Hound). */
 function hexFollowKeys(state: BattleState, actorId: string): string[] {
   const a = state.combatants[actorId];
@@ -358,7 +359,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [mmPick, setMmPick] = useState<string[]>([]);
   const [tmPick, setTmPick] = useState<string>('cold');
   // CILA: duvar biçimi (Wind Wall): düz ya da yay.
-  const [wallArc, setWallArc] = useState(false);
+  const [wallShape, setWallShape] = useState<'line' | 'arc' | 'ring'>('line');
+  // Kuyruk 19: duvarın yanı (itme yönü, Wall of Fire'ın hasar yüzü).
+  const [wallSide, setWallSide] = useState<'near' | 'far'>('far');
   // Etki büyüsü (Görev R2): seçilen hedefler ve seçim (beceri, hasar türü, komut).
   const [picked, setPicked] = useState<string[]>([]);
   const [choicePick, setChoicePick] = useState<string | null>(null);
@@ -742,8 +745,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   useEffect(() => { if (targetId && !glowing.has(targetId)) setTargetId(null); }, [glowing, targetId]);
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
   const areaInfo = useMemo(() => (mode === 'aim' && areaAct && actor
-    ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : aimHex, wallArc ? 'arc' : null) : null),
-  [state, actor, areaAct, aimHex, mode, wallArc]);
+    ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : aimHex, wallShape === 'line' ? null : wallShape) : null),
+  [state, actor, areaAct, aimHex, mode, wallShape]);
   const area = areaInfo?.hexes ?? [];
   const areaFriends = new Set((areaInfo?.friends ?? []).map((c) => c.id));
   const areaFoes = new Set((areaInfo?.foes ?? []).map((c) => c.id));
@@ -820,6 +823,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'spell' && spell && (fireKeys.has(hexKey(h)) || (freeFireKeys.has(hexKey(h)) && !Object.values(state.combatants).some((c) => c.pos && c.hp > 0 && sameHex(c.pos, h))))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...slotFields(slotPick) }); return; }
     // Görev S2: nesneye saldırı (saldırı kipinde nesne altıgeni) ve nesne kullanımı.
     // Kuyruk 30 D1: bulunmamış gizli nesne yalnızca Game Master görünümünde (gizlileri göster) seçilir ve Game Master olarak çalışır.
+    // Kuyruk 19: saldırı kipinde Wall of Stone paneline saldırı.
+    const panelZone = mode === 'attack' && active && actor ? (state.map?.zones ?? []).find((z) => spellById(z.spellId)?.mechanics.zone?.panels && z.hexes.some((x) => sameHex(x, h))) : undefined;
+    if (panelZone && actor) {
+      const cmd = objectAttack(actor, { id: `wall:${panelZone.id}:${h.col},${h.row}`, kind: 'crackedWall', at: h, hp: 90 });
+      if (cmd) run(cmd);
+      return;
+    }
     const obj0 = objectAt(state, h);
     const secretObj = !!obj0 && concealed(state, obj0);
     const obj = obj0 && (!secretObj || showHidden) ? obj0 : null;
@@ -1870,13 +1880,18 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 )}
                 {sp.spec.shape === 'wall' && (
                   <div className="wall-shape" role="group" aria-label={A.wallShape}>
-                    <button type="button" className={wallArc ? '' : 'on'} aria-pressed={!wallArc} onClick={() => setWallArc(false)}>{A.wallStraight}</button>
-                    <button type="button" className={wallArc ? 'on' : ''} aria-pressed={wallArc} onClick={() => setWallArc(true)}>{A.wallArc}</button>
+                    <button type="button" className={wallShape === 'line' ? 'on' : ''} aria-pressed={wallShape === 'line'} onClick={() => setWallShape('line')}>{A.wallStraight}</button>
+                    <button type="button" className={wallShape === 'arc' ? 'on' : ''} aria-pressed={wallShape === 'arc'} onClick={() => setWallShape('arc')}>{A.wallArc}</button>
+                    {areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) && (state.kuralSurumu ?? 1) >= 16 && (<>
+                      <button type="button" className={wallSide === 'near' ? 'on' : ''} aria-pressed={wallSide === 'near'} onClick={() => setWallSide('near')}>{A.wallNear}</button>
+                      <button type="button" className={wallSide === 'far' ? 'on' : ''} aria-pressed={wallSide === 'far'} onClick={() => setWallSide('far')}>{A.wallFar}</button></>)}
+                    {sp.spec.ring && <button type="button" className={wallShape === 'ring' ? 'on' : ''} aria-pressed={wallShape === 'ring'} onClick={() => setWallShape('ring')}>{A.wallRing}</button>}
                   </div>
                 )}
                 {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
-                  onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallArc ? 'arc' : null))}>
+                  onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' ? null : wallShape,
+                    areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null))}>
                   {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}
                 </button>
               </div>

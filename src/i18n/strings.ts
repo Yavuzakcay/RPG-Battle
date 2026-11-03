@@ -577,7 +577,7 @@ const tr = {
     head: (label: string, size: number, shape: string): string => `${label}: ${size} ft ${shape}`,
     pickDir: 'Yön seç: bir altıgene dokun ya da yön oklarını kullan.',
     pickPoint: 'Alanın merkezini seç: bir altıgene dokun.',
-    wallShape: 'Duvar biçimi', wallStraight: 'Düz', wallArc: 'Yay',
+    wallShape: 'Duvar biçimi', wallStraight: 'Düz', wallArc: 'Yay', wallRing: 'Halka / kubbe', wallNear: 'Yakın yan', wallFar: 'Uzak yan',
     foes: (n: number): string => `${n} düşman`,
     friends: (n: number): string => `${n} dost`,
     directions: 'Yön okları',

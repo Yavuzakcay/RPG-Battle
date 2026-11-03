@@ -938,6 +938,7 @@
     "rangeFt": 120,
     "concentration": true,
     "area": {
+      "ring": true,
       "shape": "wall",
       "sizeFt": 60,
       "origin": "point",
@@ -955,6 +956,7 @@
         "applied": true
       },
       "zone": {
+        "sideDamage": true,
         "rounds": 10,
         "obscured": "heavy",
         "on": [
@@ -971,7 +973,7 @@
         "color": "#ff7a2a",
         "icon": "🔥"
       },
-      "approx": "hasar duvarın tek yüzünden değil altıgenlerden; halka biçimi yok; görüşü kesmez"
+      "k19": "Kuyruk 19: düz/yay ya da halka (20 ft çap); opak (yoğun örtü). Açılınca duvardakiler DEX save; tur sonu hasarı yalnızca büyücünün seçtiği yüzde (duvara 10 ft; varsayılan büyücüden uzak yan) ve duvarın içinde; duvara giren de hasar alır (anahtar spellsK19). 20 ft yükseklik: oyunda dikey irtifa yok (uçanlar da duvarda sayılır)."
     },
     "school": "Evocation",
     "srdPage": 172
@@ -1203,16 +1205,18 @@
     "mechanics": {
       "kind": "zone",
       "zone": {
+        "transparent": true,
         "rounds": 100,
         "solid": true,
         "color": "#b9a7ff",
         "icon": "▦"
       },
-      "approx": "K17: düz ya da yay duvar (kubbe/küre yok); görünür engel gibi hattı keser (şeffaflık ayrımı yok); duvarın açıldığı altıgendeki yaratık itilmez"
+      "k19": "K17: düz ya da yay duvar. Kuyruk 19: kubbe/küre (10 ft yarıçap halka), görünmez (görüşü kesmez, hiçbir şey geçemez: saldırı ve alan tam siperde), açıldığı altıgendeki yaratık büyücünün seçtiği yana itilir (anahtar spellsK19). Engelden geçen (Incorporeal) de geçemez (Ethereal'i keser). Disintegrate (6. seviye) duvarı yok eder: Görev 3 ile."
     },
     "school": "Evocation",
     "srdPage": 172,
     "area": {
+      "ring": true,
       "shape": "wall",
       "sizeFt": 100,
       "origin": "point",
@@ -1236,16 +1240,19 @@
     "mechanics": {
       "kind": "zone",
       "zone": {
+        "panels": true,
+        "permanent": true,
         "rounds": 100,
         "solid": true,
         "color": "#9a8f80",
         "icon": "🧱"
       },
-      "approx": "K17: düz ya da yay duvar; panel HP'si/kırılma yok, kalıcılık (10 dakika konsantrasyon) yok; duvarın açıldığı altıgendeki yaratık itilmez ve DEX save yok"
+      "k19": "K17: düz ya da yay duvar. Kuyruk 19: halka biçimi, açıldığı altıgendeki yaratık seçilen yana itilir, her yandan kapatılan DEX save ile tepkisiyle dışarı çıkar; altıgen başına panel AC 15, 90 HP (Poison/Psychic bağışık), 0'da yıkılır (saldırı ve alan hasarı); konsantrasyon tam süre (10 dk) sürerse kalıcı (anahtar spellsK19). Köprü/rampa ve mazgal biçimi: oyunda dikey katman yok, düz zemin duvarı (savaş dışı)."
     },
     "school": "Evocation",
     "srdPage": 173,
     "area": {
+      "ring": true,
       "shape": "wall",
       "sizeFt": 100,
       "origin": "point",

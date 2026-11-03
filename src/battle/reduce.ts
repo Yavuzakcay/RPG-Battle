@@ -2,6 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import { spells } from '../data';
 import { homeSide, syncAllegiance } from './allegiance';
 import { syncAuras } from './auras';
 import { applyFloorChange } from './floorState';
@@ -241,7 +242,11 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
 function pruneZones(state: BattleState): BattleState {
   const zones = state.map?.zones;
   if (!zones?.length) return state;
+  const permanent: string[] = [];
   const kept = zones.filter((z) => {
+    // Kuyruk 19: Wall of Stone: konsantrasyon tam süre sürdüyse duvar kalıcı (süre ve konsantrasyon bağı düşer).
+    if (z.until !== undefined && z.until < state.round && z.concentration && state.combatants[z.casterId]?.concentration?.spell === z.concentration
+      && spells.find((s) => s.id === z.spellId)?.mechanics.zone?.permanent && globalRule(state, 'spellsK19')) { permanent.push(z.id); return true; }
     if (z.until !== undefined && z.until < state.round) return false;
     const caster = state.combatants[z.casterId];
     if (z.concentration && caster?.concentration?.spell !== z.concentration) return false;
@@ -251,7 +256,8 @@ function pruneZones(state: BattleState): BattleState {
     }
     return true;
   });
-  return kept.length === zones.length ? state : { ...state, map: { ...(state.map as NonNullable<BattleState['map']>), zones: kept } };
+  const fixed = permanent.length ? kept.map((z) => (permanent.includes(z.id) ? { ...z, until: undefined, concentration: undefined } : z)) : kept;
+  return kept.length === zones.length && !permanent.length ? state : { ...state, map: { ...(state.map as NonNullable<BattleState['map']>), zones: fixed } };
 }
 
 /** Görev B3: savaşçının bazı etkilerini kaldırır (verdiği durumlar da düşer). */
@@ -939,6 +945,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'zone_triggered':
       return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId
         ? { ...z, hits: { ...Object.fromEntries(Object.entries(z.hits ?? {}).filter(([, t]) => t === event.turn)), [event.targetId]: event.turn } } : z)) } } : state;
+    case 'zone_panel_damaged': {
+      const k = `${event.hex.col},${event.hex.row}`;
+      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, panelDamage: { ...z.panelDamage, [k]: (z.panelDamage?.[k] ?? 0) + event.amount } } : z)) } } : state;
+    }
     case 'zone_dealt':
       return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, dealt: (z.dealt ?? 0) + event.amount } : z)) } } : state;
     case 'zone_ended':

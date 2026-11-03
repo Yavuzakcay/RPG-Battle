@@ -920,7 +920,7 @@ export const en: Strings = {
     head: (label: string, size: number, shape: string): string => `${label}: ${size} ft ${shape}`,
     pickDir: 'Pick a direction: tap a hex or use the arrows.',
     pickPoint: 'Pick the centre of the area: tap a hex.',
-    wallShape: 'Wall shape', wallStraight: 'Straight', wallArc: 'Arc',
+    wallShape: 'Wall shape', wallStraight: 'Straight', wallArc: 'Arc', wallRing: 'Ring / dome', wallNear: 'Near side', wallFar: 'Far side',
     foes: (n: number): string => `${n} ${n === 1 ? 'enemy' : 'enemies'}`,
     friends: (n: number): string => `${n} ${n === 1 ? 'ally' : 'allies'}`,
     directions: 'Direction arrows',

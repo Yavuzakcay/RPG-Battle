@@ -429,3 +429,36 @@ describe('Kuyruk 19: Resilient Sphere', () => {
     expect(execute({ ...old.state, order: ['F0', 'A', 'B'], turnIndex: 0 }, { type: 'sphere_roll', actorId: 'F0', to: { col: 8, row: 3 } }, GM, seededRng(1)).ok).toBe(false);
   });
 });
+
+describe('Kuyruk 19: duvarlar', () => {
+  const pos = { A: { col: 2, row: 3 }, F0: { col: 6, row: 3 } };
+  const party = (spell: string) => [caster({ spellNames: [spell], hp: 300, maxHp: 300 }), ...foes(1)];
+  it('Wall of Force: içindeki yaratık uzak yana itilir, görüşü kesmez; halka biçimi; eski sürümde itme yok', async () => {
+    const { terrainAt } = await import('./movement');
+    const r = run(field(party('Wall of Force'), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Wall of Force', targetHex: { col: 6, row: 3 }, wallShape: 'ring' });
+    const z = r.state.map?.zones?.find((x) => x.spellId === 'wall-of-force');
+    expect(z?.hexes.length).toBe(12);
+    const ring = run(field(party('Wall of Force'), pos), { type: 'cast_spell', actorId: 'A', spellName: 'Wall of Force', targetHex: { col: 6, row: 3 } });
+    const wz = ring.state.map?.zones?.find((x) => x.spellId === 'wall-of-force');
+    expect(wz?.hexes.some((h) => h.col === ring.state.combatants.F0?.pos?.col && h.row === ring.state.combatants.F0?.pos?.row)).toBe(false);
+    expect(terrainAt(ring.state, (wz?.hexes[0]) as { col: number; row: number }).blocksSight).toBe(false);
+    const old = run(field(party('Wall of Force'), pos, 15), { type: 'cast_spell', actorId: 'A', spellName: 'Wall of Force', targetHex: { col: 6, row: 3 } });
+    expect(old.state.combatants.F0?.pos).toEqual({ col: 6, row: 3 });
+  });
+  it('Wall of Stone: panel 90 HP, saldırıyla yıkılır; Wall of Fire: hasar yüzü büyücüden uzak yanda', async () => {
+    const r = run(field(party('Wall of Stone'), { A: { col: 2, row: 3 }, F0: { col: 12, row: 6 } }), { type: 'cast_spell', actorId: 'A', spellName: 'Wall of Stone', targetHex: { col: 6, row: 3 } });
+    const z = r.state.map?.zones?.find((x) => x.spellId === 'wall-of-stone') as NonNullable<BattleState['map']>['zones'] extends (infer U)[] | undefined ? U : never;
+    const h = z.hexes[0] as { col: number; row: number };
+    const big = { label: 'Balyoz', attackBonus: 99, damage: '100', damageType: 'bludgeoning', reachFt: 500, ranged: false } as never;
+    const fresh = { ...r.state, combatants: { ...r.state.combatants, A: { ...(r.state.combatants.A as Combatant), economy: { ...(r.state.combatants.A as Combatant).economy, action: false, attacksLeft: 1 } } } };
+    const hit = run(fresh, { type: 'attack_object', actorId: 'A', objectId: `wall:${z.id}:${h.col},${h.row}`, option: big });
+    expect(hit.state.map?.zones?.find((x) => x.id === z.id)?.hexes.some((x) => x.col === h.col && x.row === h.row)).toBe(false);
+    const f = run(field(party('Wall of Fire'), { A: { col: 2, row: 3 }, F0: { col: 12, row: 6 } }), { type: 'cast_spell', actorId: 'A', spellName: 'Wall of Fire', targetHex: { col: 6, row: 3 } });
+    const fz = f.state.map?.zones?.find((x) => x.spellId === 'wall-of-fire');
+    expect((fz?.endHexes ?? []).length).toBeGreaterThan(0);
+    const { distance } = await import('../rules/hex');
+    const A = { col: 2, row: 3 };
+    const nearestWall = (e: { col: number; row: number }) => (fz?.hexes ?? []).reduce((a, b) => (distance(e, b) < distance(e, a) ? b : a));
+    expect(fz?.endHexes?.every((e) => distance(A, e) >= distance(A, nearestWall(e)))).toBe(true);
+  });
+});

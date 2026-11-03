@@ -8,7 +8,8 @@ import { stormRangeBonusFt } from './desert';
 import { againstStrongWind } from './forest';
 import { gap } from './body';
 import { isIncapacitated } from '../rules/conditions';
-import { distance } from '../rules/hex';
+import { distance, line } from '../rules/hex';
+import { solidWallAt } from './movement';
 import type { ModeSource } from '../rules/modes';
 import type { Cover } from '../map/terrain';
 import { fail, isIntangible, isTargetable, type Failure } from './common';
@@ -83,6 +84,12 @@ export function checkReach(
   }
   const lof = lineOfFire(state, attacker, target);
   if (lof.blocked) return fail(`Hedef görülemiyor: arada ${lof.blockedBy ?? 'engel'} var.`);
+  // Kuyruk 19: görünmez duvar (Wall of Force) görüşü kesmez ama hiçbir şey geçemez.
+  if (state.map.zones?.length) {
+    const path = line(attacker.pos, target.pos).slice(1, -1);
+    const wall = path.map((h) => solidWallAt(state, h)).find((w) => !!w);
+    if (wall) return fail(`Hedefe ulaşılamıyor: arada ${wall} var.`);
+  }
   // Harita kuralları: kum fırtınası, fırtına, karanlık, mazgal (Adım 8).
   const map = mapAttackSources(state, attacker, target, reach.kind === 'ranged');
   if ('ok' in map) return map;

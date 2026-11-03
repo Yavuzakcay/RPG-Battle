@@ -16,7 +16,7 @@
  * Hepsi ızgaranın dışına taşan altıgenleri atar.
  */
 import {
-  axialToOffset, distance, isInside, line, offsetToAxial, sameHex, withinRange, type GridSize, type Offset,
+  axialToOffset, distance, isInside, line, offsetToAxial, ring, sameHex, withinRange, type GridSize, type Offset,
 } from './hex';
 
 export type AreaShape = 'sphere' | 'cube' | 'cone' | 'line' | 'emanation' | 'wall';
@@ -30,7 +30,9 @@ export interface AreaSpec {
   /** Çizginin genişliği (ft; varsayılan 5). */
   widthFt?: number;
   /** CILA (Wind Wall): duvar düz değil, büyücünün çevresinde yay (seçilen noktanın uzaklığında). */
-  bend?: 'arc';
+  bend?: 'arc' | 'ring';
+  /** Kuyruk 19: duvar halka/kubbe biçiminde de kurulabilir (Wall of Fire 20 ft çap, Wall of Force kubbe/küre 10 ft yarıçap). */
+  ring?: boolean;
 }
 
 /** Düz üstlü altıgen merkezinin kartezyen konumu (altıgen boyu birimi). */
@@ -175,6 +177,8 @@ export function areaHexes(spec: AreaSpec, caster: Offset, aim: Offset | null, si
   const inGrid = (xs: Offset[]) => xs.filter((h) => isInside(h, size));
   if (spec.shape === 'emanation') return withinRange(caster, Math.floor(hexes), size).filter((h) => !sameHex(h, caster));
   if (!aim) return [];
+  // Kuyruk 19: halka (seçilen nokta merkez, 10 ft yarıçap).
+  if (spec.shape === 'wall' && spec.bend === 'ring') return ring(aim, 2, size);
   if (spec.shape === 'wall') return inGrid(spec.bend === 'arc' ? wallArc(caster, aim, Math.floor(hexes)) : wall(caster, aim, Math.floor(hexes)));
   if (spec.origin === 'point') {
     const radius = spec.shape === 'cube' ? Math.floor(spec.sizeFt / 10) : Math.floor(hexes);

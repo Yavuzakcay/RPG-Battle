@@ -317,6 +317,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'zone_moved':
       return L.zoneMoved(event.hexes.length ? (state.map?.zones?.find((z) => z.id === event.zoneId)?.name ?? '') : '');
     case 'zone_dealt':
+    case 'zone_panel_damaged':
     case 'zone_triggered':
       return '';
     case 'zone_ended':

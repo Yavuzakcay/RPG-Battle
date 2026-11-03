@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { globalRule } from './ruleControl';
 import { spells } from '../data';
 import { fearBlocksStep, srdConditions } from './ruleVersion';
 import { phaseOf } from './phase';
@@ -35,13 +36,19 @@ export function terrainAt(state: BattleState, o: Offset): TerrainType {
   const t = terrainOf(state.map?.tiles[o.row]?.[o.col] ?? '#');
   // K17 G1: geçilmez büyü duvarı (Wall of Force, Wall of Stone) altıgeni engel yapar (hareket, siper, görüş/hat).
   const wall = state.map?.zones?.length ? solidWallAt(state, o) : null;
-  if (wall) return { ...t, name: wall, movement: 'blocked', cover: 5, blocksSight: true };
+  if (wall) return { ...t, name: wall, movement: 'blocked', cover: 5, blocksSight: !transparentWallAt(state, o) };
   // Kuyruk 19: alanın kapladığı merkez (Guardian of Faith): geçilmez, görüşü kesmez.
   const held = state.map?.zones?.find((z) => z.center && z.center.col === o.col && z.center.row === o.row && spells.find((s) => s.id === z.spellId)?.mechanics.zone?.occupy);
   if (held) return { ...t, name: held.name, movement: 'blocked' };
   // Görev S2: altıgendeki nesne etkin zemini değiştirir (hareket, örtü, görüş).
   const obj = state.map?.objects?.length ? objectAt(state, o) : undefined;
   return obj ? withObject(t, obj) : t;
+}
+
+/** Kuyruk 19: görünmez duvar (Wall of Force) görüşü kesmez. */
+function transparentWallAt(state: BattleState, h: Offset): boolean {
+  return (state.map?.zones ?? []).some((z) => z.hexes.some((x) => x.col === h.col && x.row === h.row) && !!spells.find((s) => s.id === z.spellId)?.mechanics.zone?.transparent
+    && globalRule(state, 'spellsK19'));
 }
 
 /** K17 G1: geçilmez büyü duvarı bu altıgende mi (alan verisinde `solid`); varsa duvarın adı. */

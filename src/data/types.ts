@@ -318,6 +318,13 @@ export interface SpellMechanics {
  * düşmanları). `move`: sonraki turlarda alan taşınır (`spell_followup`; maliyet ve ft).
  */
 export interface ZoneSpec {
+  /** Kuyruk 19: Wall of Stone: altıgen başına kırılabilir panel (walls.ts); `permanent` konsantrasyon tam sürerse kalıcı. */
+  panels?: boolean;
+  permanent?: boolean;
+  /** Kuyruk 19: Wall of Force: görünmez (görüşü kesmez, geçilmez). */
+  transparent?: boolean;
+  /** Kuyruk 19: Wall of Fire: tur sonu hasarı seçilen yüzde (10 ft) ve duvarın içinde. */
+  sideDamage?: boolean;
   /** Kuyruk 19: toplam bu kadar hasar verince alan biter (Guardian of Faith 60). */
   budget?: number;
   /** Kuyruk 19: alanın merkez altıgeni dolu (Guardian of Faith; geçilmez, görüşü kesmez). */

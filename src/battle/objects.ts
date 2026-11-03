@@ -18,6 +18,7 @@
  *   - kolu çek (eylem; yürüyen merdiveni durdurur, Kuyruk 21 D2b).
  * Bütün sonuçlar olaylarda; zarlar rng'den (zar defteri, replay). Saf.
  */
+import { executeAttackPanel, panelAreaEvents } from './walls';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
 import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
@@ -152,6 +153,8 @@ export function damageObjectEvents(state: BattleState, obj: MapObject, damage: n
 
 /** Silahla nesneye saldırı (SRD: nesne AC'si; erişim/menzil). */
 export function executeAttackObject(state: BattleState, actor: Combatant, objectId: string, option: AttackOption, rng: Rng): CommandResult {
+  // Kuyruk 19: Wall of Stone paneli.
+  if (objectId.startsWith('wall:')) return executeAttackPanel(state, actor, objectId, option, rng);
   const obj = live(state, objectId);
   if (!obj) return fail('Nesne yok.');
   if (!actor.pos) return fail('Konum yok.');
@@ -246,7 +249,11 @@ export function executeObjectUse(state: BattleState, actor: Combatant, objectId:
  * (alanda yaratık yok) hasar zarı burada atılır.
  */
 export function objectAreaEvents(next: BattleState, events: BattleEvent[], rng: Rng): BattleEvent[] {
-  if (!next.map?.objects?.length) return [];
+  // Kuyruk 19: alan hasarı Wall of Stone panellerine de.
+  const panels = next.map?.zones?.length ? panelAreaEvents(next, areaDamageOf(events).map((h) => ({ hexes: h.hexes, damageType: h.damageType,
+    damage: h.damage ?? (h.dice ? rollDice(h.dice, rollTag(rng, { kind: 'damage', by: h.actorId })).total : 0) }))) : [];
+  if (!next.map?.objects?.length) return panels;
+  next = panels.length ? applyEvents(next, panels) : next;
   const out: BattleEvent[] = [];
   let s = next;
   for (const hit of areaDamageOf(events)) {
@@ -262,7 +269,7 @@ export function objectAreaEvents(next: BattleState, events: BattleEvent[], rng: 
       s = applyEvents(s, evs);
     }
   }
-  return out;
+  return [...panels, ...out];
 }
 
 /** Yapay zekâ: altıgenin nesne riski (patlayacak barut fıçısının yanı; ev kuralı kapalıysa yok). */

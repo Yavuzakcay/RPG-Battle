@@ -215,15 +215,15 @@ export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetS
   return s ? { spec: { shape: s.shape, sizeFt: s.sizeFt, origin: 'self', targets: 'all', ...(s.widthFt ? { widthFt: s.widthFt } : {}) }, rangeFt: 0, label: 'Breath Weapon' } : null;
 }
 
-export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | null): Command {
-  if (act.kind === 'spell') return { type: 'cast_spell', actorId, spellName: act.spell.name, ...(aim ? { targetHex: aim } : {}), ...(slotLevel ? { slotLevel } : {}),
+export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | 'ring' | null, choice?: string | null): Command {
+  if (act.kind === 'spell') return { type: 'cast_spell', actorId, spellName: act.spell.name, ...(aim ? { targetHex: aim } : {}), ...(slotLevel ? { slotLevel } : {}), ...(choice ? { choice } : {}),
     ...(wallShape && act.spell.area?.shape === 'wall' ? { wallShape } : {}) };
   if (act.kind === 'monster') return { type: 'monster_attack', actorId, targetId: '', attackIndex: act.index, ...(aim ? { targetHex: aim } : {}) };
   return { type: 'breath_weapon', actorId, shape: act.shape, targetHex: aim ?? { col: 0, row: 0 } };
 }
 
 /** Önizleme: kaplanan altıgenler, etkilenecek dostlar ve düşmanlar (motorla aynı), yapılamıyorsa nedeni. */
-export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAct, aim: Offset | null, wallShape?: 'arc' | null):
+export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAct, aim: Offset | null, wallShape?: 'arc' | 'ring' | null):
   { hexes: Offset[]; friends: Combatant[]; foes: Combatant[]; error: string | null } {
   const s = areaActSpec(actor, act);
   if (!s) return { hexes: [], friends: [], foes: [], error: null };
