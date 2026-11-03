@@ -23,7 +23,8 @@ import { carryLoad, type CarryLoad, type CarryRule } from '../rules/carry';
 import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import { levelCap } from '../app/limits';
-import { upperLevelsEnabled } from '../app/features';
+import { celestialEnabled, upperLevelsEnabled } from '../app/features';
+import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
 import { subclassLabel, subclassMissing } from '../rules/subclasses';
 import {
@@ -319,10 +320,11 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
     <>
       <p className="mute race-note">{W.raceBonusNote}</p>
       <div className="card-grid">
-        {races.map((r) => (
+        {/* Kuyruk K20: ev kuralı türü (Celestial) yalnızca Ayarlar'da açıkken (seçili eski karakterde her zaman) görünür. */}
+        {races.filter((r) => !r.evKurali || celestialEnabled() || r.id === s.raceId).map((r) => (
           <button key={r.id} className={`pick-card${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
             onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id })}>
-            <b>{r.name}</b><small>{W.speed(r.speed)}{r.darkvision ? ` · ${W.darkvision(r.darkvision)}` : ''}</small>
+            <b>{r.name}{r.evKurali ? <em className="mute"> ({W.houseRuleTag})</em> : null}</b><small>{W.speed(r.speed)}{r.darkvision ? ` · ${W.darkvision(r.darkvision)}` : ''}</small>
           </button>
         ))}
       </div>
@@ -346,9 +348,33 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           <h3>{W.raceTraits}: {race.name}</h3>
           <p>{W.speed(raceSpeed(s))}{raceDarkvision(s) ? ` · ${W.darkvision(raceDarkvision(s))}` : ''}{race.resistances?.length || lineage?.resistances.length
             ? ` · ${W.resist([...new Set([...race.resistances, ...(lineage?.resistances ?? [])])].join(', '))}` : ''}</p>
-          <p className="mute">{race.traits}</p>
+          <p className="mute">{race.evKurali ? CELESTIAL.hikaye[getLang()] : race.traits}</p>
+          {race.evKurali && (
+            <ul className="celestial-traits">
+              {CELESTIAL.ozellikler.map((o) => <li key={o.id}><b>{o[getLang()]}</b>: {o.metin[getLang()]}</li>)}
+            </ul>
+          )}
           {abilities.length > 0 && <LineageAbilities list={abilities} />}
         </div>
+      )}
+      {race?.evKurali && (
+        <>
+          <h4 className="lineage-title">{W.awakeningTitle}{s.level < CELESTIAL.awakening.minLevel ? ` · ${W.awakeningLocked}` : ''}</h4>
+          {/* Kuyruk K20: Göksel Uyanış biçimi (soy kartlarıyla aynı yapı; 3. seviyeden etkin). */}
+          <div className="card-grid lineage-grid" role="radiogroup" aria-label={W.awakeningTitle}>
+            {AWAKENING_OPTIONS.map((id) => {
+              const opt = CELESTIAL.awakening.secenekler[id] as AwakeningOption;
+              const on = (s.celestialAwakening ?? CELESTIAL.awakening.default) === id;
+              return (
+                <button key={id} role="radio" aria-checked={on} className={`pick-card lineage-card${on ? ' on' : ''}`}
+                  onClick={() => set({ celestialAwakening: id })}>
+                  <b>{opt[getLang()]}</b>
+                  <small>{opt.metin[getLang()]}</small>
+                </button>
+              );
+            })}
+          </div>
+        </>
       )}
     </>
   );

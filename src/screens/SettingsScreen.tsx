@@ -3,7 +3,7 @@
  * klasör seçiciyle içe aktarılır; liste, tek tek açma/kapama ve silme. Hata mesajları TR/EN, bozuk dosya uygulamayı
  * bozmaz. Kod çalıştırılmaz: yalnızca JSON veri.
  */
-import { journeyEnabled, setJourneyEnabled, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
+import { celestialEnabled, journeyEnabled, setCelestialEnabled, setJourneyEnabled, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
 import { useState } from 'react';
 import { getLang, t } from '../i18n';
 import { textOf } from '../rules/subclasses';
@@ -35,6 +35,7 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const V = t().endVideo;
   const [video, setVideo] = useState<boolean>(storedEndVideo);
   const [upper, setUpper] = useState<boolean>(upperLevelsEnabled);
+  const [celestial, setCelestial] = useState<boolean>(celestialEnabled);
   const MT = t().mapTint;
   const CV = t().cityView;
   const [tint, setTint] = useState<boolean>(storedMapTint);
@@ -58,6 +59,9 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
           {/* Kuyruk 38: Game Master "Üst seviye (6–20)" (varsayılan kapalı). */}
           <label><input type="checkbox" checked={upper} onChange={(e) => { setUpperLevelsEnabled(e.target.checked); setUpper(e.target.checked); }} /> {t().journey.upperFlag}</label>
           <p className="mute">{t().journey.upperNote}</p>
+          {/* Kuyruk K20: Celestial (Düşmüş) ırkı ev kuralı (varsayılan kapalı). */}
+          <label><input type="checkbox" checked={celestial} onChange={(e) => { setCelestialEnabled(e.target.checked); setCelestial(e.target.checked); }} /> {t().journey.celestialFlag}</label>
+          <p className="mute">{t().journey.celestialNote}</p>
           <p className="mute">{t().journey.flagNote}</p>
         </section>
         {/* Görev K5: taşıma yükü kuralı. */}

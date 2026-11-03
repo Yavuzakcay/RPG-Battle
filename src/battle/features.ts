@@ -31,6 +31,7 @@ import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type Command
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
+import { celestialStrikeOf } from './celestial';
 import { brutalAfterEvents, brutalExtra, brutalOptions, brutalReady, type BrutalBlow } from './brutal';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
@@ -161,6 +162,9 @@ export function hitExtras(
     // Foe Slayer (Görev F): zar d10.
     add(c.spell, markDie(actor, m?.damage ?? '1d6'), m?.damageType ?? 'force');
   }
+  // Kuyruk K20 (ev kuralı): Celestial Göksel Uyanış: kendi turunda bir kez isabete +PB.
+  const cel = celestialStrikeOf(state, actor);
+  if (cel && !usedThisTurn(state, actor, 'celestial-strike')) { add('Göksel Uyanış', String(cel.bonus), cel.type); traitTurns['celestial-strike'] = turnKey(state); }
   // Görev CLERIC: Bestow Curse: lanetleyenin saldırı isabetlerine ek zar (silah ve büyü saldırısı).
   for (const e of target.effects ?? []) if (e.curseDamage && e.sourceId === actor.id) add(e.name, e.curseDamage.dice, e.curseDamage.type);
   return { extras, ...(sneakTurn ? { sneakTurn } : {}), ...(frenzyTurn ? { frenzyTurn } : {}),

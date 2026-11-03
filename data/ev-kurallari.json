@@ -10,6 +10,7 @@
     "alarmKosusu": { "default": false, "sefer": true, "tr": "Alarm koşusu (haber taşıyan)", "en": "Alarm runner (messenger)" },
     "lair": { "default": false, "sefer": true, "tr": "Yuva (lair) olayları", "en": "Lair events" },
     "asitHavuzu": { "default": false, "sefer": true, "tr": "Asit havuzu", "en": "Acid pool" },
-    "yuksekAvantaj": { "default": false, "tr": "Yüksekten menzilli saldırıya avantaj", "en": "Advantage on ranged attacks from height" }
+    "yuksekAvantaj": { "default": false, "tr": "Yüksekten menzilli saldırıya avantaj", "en": "Advantage on ranged attacks from height" },
+    "celestialIrki": { "default": false, "karakter": true, "tr": "Celestial (Düşmüş) ırkı: Şifa Eli, Light, Göksel Uyanış", "en": "Celestial (Fallen) ancestry: Healing Touch, Light, Celestial Awakening" }
   }
 }

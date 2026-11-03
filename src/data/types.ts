@@ -52,6 +52,11 @@ export interface Race {
   /** Seçim yapılmamışsa kullanılan miras (oluşturucu ekranı gelene kadar geçici). */
   defaultLineage?: string;
   traits: string;
+  /** Kuyruk K20: ev kuralı türü (Celestial): bu ev kuralı açık değilse oluşturucuda seçilemez (`data/ev-kurallari.json`). */
+  evKurali?: string;
+  /** Kuyruk K20: hikâye yurdu ve oyuna başladığı bölge (kefaret yolu henüz yok). */
+  yurt?: string;
+  baslangic?: string;
   /**
    * Dragonborn Breath Weapon (Görev R4; SRD tür özelliği `species:<tür>/<özellik>`): şekil seçenekleri (koni ya da
    * çizgi), save, karakter seviyesine göre zar, kullanım kaynağı (uzun dinlenmede dolar). Hasar türü mirasın direnci.
@@ -1000,7 +1005,10 @@ export type FeatureEffect =
   | { kind: 'blinkStep'; rangeFt: number }
   /** Kuyruk 19 (tür özellikleri): kendine süreli etki (Stonecunning, Draconic Flight, Large Form), isteğe bağlı Dash ve geçici HP (Adrenaline Rush). */
   | { kind: 'selfEffect'; rounds: number; effect: Record<string, unknown>; dash?: boolean; tempHp?: number }
-  | { kind: 'shadowMerge' };
+  | { kind: 'shadowMerge' }
+  /** Kuyruk K20 (ev kuralı): Celestial Şifa Eli (dokunuş, PB × d4) ve Göksel Uyanış (seçilen biçim; `src/battle/celestial.ts`). */
+  | { kind: 'celestialHeal' }
+  | { kind: 'celestialAwakening'; option: string };
 
 export interface ResourceDef {
   name: string;

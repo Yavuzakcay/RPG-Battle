@@ -25,6 +25,7 @@
     "sim:bolge": "vite-node src/sim/bolgeRun.ts --",
     "harita-karo": "node scripts/harita-karo.mjs",
     "sim:liste": "vite-node src/sim/listeRun.ts --",
+    "sim:irk": "vite-node src/sim/irkRun.ts --",
     "check:harita": "node scripts/kara-ekran.mjs",
     "masumlar": "node scripts/masumlar.mjs",
     "efektler": "node scripts/efektler.mjs",

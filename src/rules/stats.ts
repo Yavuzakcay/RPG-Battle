@@ -54,6 +54,8 @@ export interface CharacterSheet {
   expertise?: Skill[];
   /** Görev F: seçenekli sınıf özelliklerinin seçimi (özellik anahtarı → seçenek; Hunter's Prey, Defensive Tactics). */
   featureChoices?: Record<string, string>;
+  /** Kuyruk K20 (ev kuralı): Celestial Göksel Uyanış biçimi (`data/celestial.json` `awakening.secenekler`). */
+  celestialAwakening?: string;
   /** Taşıdığı silahlar (data/weapons.json adları), isteğe bağlı büyülü bonusla. */
   weapons?: Array<{ name: string; enchant?: number }>;
   /** Yan eldeki Light silah (data/weapons.json adı; Görev P1): Light özelliğinin ek saldırısı. Kalkanla olmaz. */

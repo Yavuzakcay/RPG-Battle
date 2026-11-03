@@ -711,6 +711,16 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
       if (ok(cmd)) return cmd;
     }
   }
+  // Kuyruk K20 (ev kuralı, basit kural): Celestial Şifa Eli: bitişikte düşmüş dost, yoksa HP'si üçte birin altındaki dost ya da kendisi.
+  const touch = (actor.features ?? []).find((f) => f.effect.kind === 'celestialHeal');
+  if (touch) {
+    const hurt = Object.values(state.combatants).filter((c) => c.side === actor.side && !c.civilian && c.life !== 'dead' && c.hp < c.maxHp)
+      .sort((a, b) => (a.hp <= 0 ? -1 : 0) - (b.hp <= 0 ? -1 : 0) || a.hp / a.maxHp - b.hp / b.maxHp);
+    for (const c of hurt.filter((x) => x.hp <= 0 || x.hp <= x.maxHp / 3)) {
+      const cmd: Command = { type: 'use_feature', actorId: id, feature: touch.key, targetId: c.id };
+      if (ok(cmd)) return cmd;
+    }
+  }
   const foes = byPriority(actor, foesOf(state, actor), state);
   // Rage (basit kural): yaralıysa ya da 10 ft içinde düşman varsa öfkelenir; sürüyorsa ve bu tur saldıramadıysa
   // (eylem bitti, uzatılmadı) bonus eylemle uzatır.
@@ -1151,6 +1161,13 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       const cmd: Command = { type: 'use_feature', actorId, feature: f.key };
       if (near && tryCmd(state, actor, cmd).ok) return cmd;
     }
+  }
+  // Kuyruk K20 (ev kuralı, basit kural): Göksel Uyanış: bonus eylem boşken 10 ft içinde düşman varsa.
+  if (!actor.economy.bonus) {
+    const wake = (actor.features ?? []).find((f) => f.effect.kind === 'celestialAwakening');
+    const near = foesOf(state, actor).some((c) => (state.map ? !!c.pos && !!actor.pos && gap(state, c, actor) <= 2 : heightOf(state, c) === heightOf(state, actor)));
+    const cmd: Command | null = wake ? { type: 'use_feature', actorId, feature: wake.key } : null;
+    if (cmd && near && tryCmd(state, actor, cmd).ok) return cmd;
   }
   // Görev SORCERER (basit kural): Innate Sorcery, eylemi duruyorsa ve menzilde düşman varken büyü yapabiliyorsa.
   if (canAct && !actor.economy.bonus) {

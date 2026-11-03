@@ -2,6 +2,21 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — K20: Celestial (Düşmüş) ırkı, ev kuralı
+
+- **Telif:** Aasimar adı ve metni kullanılmadı; özellik adları ve TR/EN metinleri özgün (`data/celestial.json`). Kıyaslanan yalnızca güç bütçesi: 60 ft karanlık görüş, iki direnç, bir küçük hile, PB × d4 iyileştirme (uzun dinlenme), 3. seviyede uzun dinlenmede bir 1 dakikalık dönüşüm + turda bir PB ek hasar.
+- **Kayıt:** yeni ırk açılmadı; mevcut `celestial` kaydı (id aynı, jetonlar aynı) `evKurali: "celestialIrki"`, `yurt: "goksel-ada"`, `baslangic: "bati-kiyisi"` aldı; `traits` metni hikâyesel. Başlangıç bölgesi zaten `irkBaslangic` (Batı Kıyısı); kefaret yolu yapılmadı.
+- **İki anahtar:** oluşturucu için Ayarlar > "Celestial ırkı (ev kuralı)" (yerel, `rpg-battle-deneysel.celestial`; kapalıyken kart görünmez, seçili eski Celestial karakter yine görünür ve düzenlenir). Savaş için ev kuralı `celestialIrki` (`data/ev-kurallari.json`, varsayılan kapalı, `karakter: true`: Game Master kurulumundaki ev kuralı listesi ve Serüven/yolculuk savaşları Ayarlar değeriyle başlar, `createMapBattle`). Mekanik ayrıca kural sürümü 18'e bağlı: eski kayıt ve replay (≤ 17) kural açık olsa da eski davranış (yalnızca karanlık görüş ve direnç).
+- **Kural kapalıyken** Celestial karakter savaşta karanlık görüş + ışıltı/ölümsüz direnciyle oynar (eski davranış); özellikler savaş başında kaldırılır (`withCelestial`).
+- **Şifa Eli:** eylem, dokunuş (bitişik ya da kendisi), PB × d4, kaynak `celestialHeal` (1, uzun dinlenme; karakter durumunda kalır). 0 HP'deki dostu kaldırır. Yapay zekâ: bitişikte düşmüş ya da HP'si üçte birin altındaki dost.
+- **Göksel Uyanış:** bonus eylem, 10 tur, kaynak `celestialAwakening` (3. seviye, uzun dinlenmede 1). Biçim karakter oluşturulurken seçilir (`celestialAwakening`; soy kartlarıyla aynı yapı; varsayılan Parlayan Ruh) — Aasimar'daki "her kullanımda seç" yerine sabit seçim (görev: "seviye 3 seçim arayüzü"). Her biçimde kendi turunda bir kez saldırı isabetine +PB (`celestialStrike`, `traitTurns['celestial-strike']`); save'li büyü hasarına eklenmez (yaklaşık). Yapay zekâ: 10 ft içinde düşman varken.
+  - **Parlayan Ruh:** 10 ft parlak ışık; turunun sonunda 10 ft içindeki her düşmana PB ışıltı (kendine ve dostlara yok; Aasimar'ın kendine hasarı da yok). Ek hasar ışıltı.
+  - **Gece Gözyaşı:** uyanınca 10 ft içindeki gördüğü düşmanlar WIS save (DC 8 + PB + CHA), başarısızsa Frightened, Celestial'ın bir sonraki turunun başına dek ("1 tur"; `untilSourceTurn`). Ek hasar ölümsüz.
+  - **Kırık Kanat:** yalnızca kendi turunda uçuş = yürüme hızının yarısı (5 ft'e aşağı yuvarlanır); tur sonunda uçuş alt etkisi biter (yere iner), sonraki turun başında yeniden açılır. Tam uçuş yok: başkasının turunda havada sayılmaz. Yürünemez altıgende turunu bitirirse orada kalır; zemin etkileri (lav vb.) tur sonu tetikleriyle işler (yaklaşık). Ek hasar ışıltı.
+- **Light:** kural açıkken bilinenlere eklenir (slotsuz küçük hile; Karizma, Light'ta saldırı/save yok).
+- **Parametreler** `data/celestial.json`'da (zar, sayı `pb`, yarıçap, DC yeteneği, süre, hız oranı); kodda sabit yok.
+- **Denge ölçümü** (`npm run sim:irk`; aynı standart parti bütün üyeler aynı türde, Çöl + Kale, 100 tohum): sonuçlar `harita/belgeler/DENGE.md` "K20" bölümünde.
+
 ## 2026-11-03 — K47: Serüven serbest gezinti (dünya haritasında tıkla-yürü, saat, hızlı seyahat, yumuşak kilitler)
 
 - **Yürünebilirlik** (`scripts/yurume-izgara.py` → `data/harita/yurume-izgara.json`, 429×188 hücre, 32 dünya pikseli, RLE): taslak maske (`yurume-maliyet-1_4.png`) doğrulandı; düzeltmeler: yol katmanı boyunca koridor (14 hücre; yollar maskede nehir çizgisiyle kesiliyordu), 9 köprü çevresi (39), 13 bölge geçit kapısı (9), geçilmez hücreye düşen 10 düğüm (44: Buz tapınağı, Mielikki Gölü, Vaha, Kanyon nehri, Liman iskelesi, Fener, Maden girişi, Göl, Buzul girişi, Dağ çıkışı), Vaha cebinden kıtaya 2 hücrelik koridor. Sonuç: kıta düğümlerinin hepsi tek parça; Volkan adası ayrı (doğru: portal). Açık kalan: büyük nehirlerin köprüsüz noktaları maskede olduğu gibi (yüzme geçitleri yok).

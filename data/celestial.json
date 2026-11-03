@@ -1,0 +1,46 @@
+{
+  "not": "Kuyruk K20: Celestial (Düşmüş) oynanabilir ırkı, EV KURALI (SRD 5.2.1 dışı; ev kuralı `celestialIrki`, varsayılan kapalı; oluşturucuda Ayarlar > Celestial ırkı). Metinler özgün; güç bütçesi yalnızca sayılarla kıyaslandı. Kimlikler `ev:celestial/<özellik>`; parametreler burada (src/battle/celestial.ts okur). `pb` = yeterlilik bonusu.",
+  "ad": { "tr": "Celestial", "en": "Celestial" },
+  "altBaslik": { "tr": "Düşmüş", "en": "Fallen" },
+  "hikaye": {
+    "tr": "Göksel Ada'nın yedi yüzen adasında doğdun. Bir gün kanatların kırıldı, gökten düştün ve kıtada sıfırdan başlıyorsun. Gökyüzü hâlâ içinde: karanlıkta görürsün, ışık ve gölge sana pek işlemez, dokunuşun yaralıları iyileştirir. Ama düşüş iz bıraktı: kanatların artık seni taşımaz, yalnızca süzülürsün. Yedi erdemi kıtada yeniden kanıtlarsan evinin yolu açılır.",
+    "en": "You were born on one of the seven floating islands of the Celestial Isle. One day your wings broke and you fell, and now you start again on the continent with nothing. The sky is still in you: you see in the dark, light and shadow barely touch you, and your hands mend the wounded. But the fall left its mark: your wings no longer carry you, they only let you glide. Prove the seven virtues again and the way home will open."
+  },
+  "yurt": "goksel-ada",
+  "baslangic": "bati-kiyisi",
+  "ozellikler": [
+    { "id": "fallen-sight", "tr": "Düşmüşün Görüşü", "en": "Fallen Sight",
+      "metin": { "tr": "Karanlıkta 60 ft görürsün; gece göğünün izleri hâlâ gözlerinde.", "en": "You see 60 ft in darkness; the night sky still lingers in your eyes." } },
+    { "id": "sky-and-shadow", "tr": "Gök ve Gölge Direnci", "en": "Sky and Shadow Resistance",
+      "metin": { "tr": "Işıltı (radiant) ve ölümsüz (necrotic) hasarı sana yarım işler.", "en": "Radiant and necrotic damage only half harms you." } },
+    { "id": "light-trick", "tr": "Işık Hilesi", "en": "Light Trick",
+      "metin": { "tr": "Light küçük hilesini bilirsin; büyü yeteneğin Karizma.", "en": "You know the Light cantrip; Charisma is your spellcasting ability for it." } },
+    { "id": "healing-touch", "tr": "Şifa Eli", "en": "Healing Touch",
+      "metin": { "tr": "Eylemle dokunduğun bir yaratık, yeterlilik bonusun kadar d4 can kazanır. Uzun dinlenmede yenilenir.", "en": "As an action, a creature you touch regains hit points equal to a number of d4s equal to your proficiency bonus. Recharges on a long rest." } },
+    { "id": "awakening", "tr": "Göksel Uyanış", "en": "Celestial Awakening", "minLevel": 3,
+      "metin": { "tr": "3. seviyeden itibaren bonus eylemle 1 dakika içindeki göğü uyandırırsın (uzun dinlenmede bir kez). Seçtiğin biçim karakterle birlikte gelir; her turunda bir kez, saldırıyla vurduğun hedefe yeterlilik bonusun kadar ek hasar verirsin.", "en": "From 3rd level, as a bonus action you wake the sky within you for 1 minute (once per long rest). Your chosen form comes with the character; once on each of your turns, a target you hit with an attack takes extra damage equal to your proficiency bonus." } }
+  ],
+  "lightSpell": "Light",
+  "lightAbility": "cha",
+  "healingTouch": { "die": "d4", "count": "pb", "touch": true, "resource": "celestialHeal" },
+  "awakening": {
+    "minLevel": 3, "rounds": 10, "resource": "celestialAwakening", "bonus": "pb", "default": "parlayan-ruh",
+    "secenekler": {
+      "parlayan-ruh": {
+        "tr": "Parlayan Ruh", "en": "Radiant Soul", "strikeType": "radiant", "icon": "☀",
+        "metin": { "tr": "Çevren göğün ışığıyla yanar: 10 ft içi aydınlıktır; turunun sonunda 10 ft içindeki her düşman yeterlilik bonusun kadar ışıltı hasarı alır.", "en": "The sky's light burns around you: 10 ft of bright light; at the end of your turn every enemy within 10 ft takes radiant damage equal to your proficiency bonus." },
+        "radiusFt": 10, "auraDamage": "pb", "auraType": "radiant", "lightFt": 10
+      },
+      "gece-gozyasi": {
+        "tr": "Gece Gözyaşı", "en": "Night Tears", "strikeType": "necrotic", "icon": "💧",
+        "metin": { "tr": "Gözlerinden karanlık yaşlar akar: uyandığında 10 ft içindeki düşmanlar Bilgelik kurtarma zarı atar (DC 8 + yeterlilik + Karizma), başaramayan bir sonraki turunun başına dek korkar.", "en": "Dark tears run from your eyes: when you awaken, enemies within 10 ft make a Wisdom saving throw (DC 8 + proficiency + Charisma) or are frightened until the start of your next turn." },
+        "radiusFt": 10, "save": "wis", "dcAbility": "cha", "condition": "Frightened"
+      },
+      "kirik-kanat": {
+        "tr": "Kırık Kanat", "en": "Broken Wing", "strikeType": "radiant", "icon": "🪶",
+        "metin": { "tr": "Kanatların açılır ama seni taşımaz: hareketinin yarısı kadar süzülürsün ve turun sonunda yere inmen gerekir.", "en": "Your wings open but cannot carry you: you glide for half your movement and must land at the end of your turn." },
+        "flyFraction": 0.5
+      }
+    }
+  }
+}

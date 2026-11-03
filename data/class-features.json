@@ -812,6 +812,29 @@
         "maxLevel": 9,
         "perLevel": 1
       }
+    },
+    "celestialHeal": {
+      "name": "Şifa Eli",
+      "feature": "ev:celestial/healing-touch",
+      "race": "celestial",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
+    },
+    "celestialAwakening": {
+      "name": "Göksel Uyanış",
+      "feature": "ev:celestial/awakening",
+      "race": "celestial",
+      "minLevel": 3,
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "long": "all"
+      }
     }
   },
   "features": {

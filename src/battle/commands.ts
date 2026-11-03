@@ -53,6 +53,7 @@ import { executeBonusStrike, executeFocusAction, executeStunningStrike, metaboli
 import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
+import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
 import { casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, sanctuaryCheck } from './wards';
 import { executeFontOfMagic } from './sorcerer';
@@ -402,6 +403,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const fxEnd = [...effectTurnEndEvents(current, actor.id, rng)];
     events.push(...fxEnd);
     current = applyEvents(current, fxEnd);
+    // Kuyruk K20 (ev kuralı): Celestial Kırık Kanat iner, Parlayan Ruh aurası.
+    const celEnd = celestialTurnEndEvents(current, actor.id, rng);
+    events.push(...celEnd);
+    current = applyEvents(current, celEnd);
     // Kuyruk 19: Telekinesis: önceki turun hedefi bırakılır (havadaysa düşer).
     const tkEnd = telekinesisTurnEndEvents(current, actor.id, rng);
     events.push(...tkEnd);
@@ -523,6 +528,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const fx = effectTurnStartEvents(current, next.id, rng);
       events.push(...fx.events);
       current = applyEvents(current, fx.events);
+      const celStart = celestialTurnStartEvents(current, next.id);
+      events.push(...celStart);
+      current = applyEvents(current, celStart);
       // Kuyruk 19: Animate Objects: sahibi bonus eylemle emretmediyse nesne yalnızca Kaçın yapar (turu geçer).
       const nx = current.combatants[next.id];
       const ownerOf = nx?.summon?.commandBonus ? current.combatants[nx.summon.by] : undefined;

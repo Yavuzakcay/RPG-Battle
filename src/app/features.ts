@@ -18,3 +18,10 @@ export const upperLevelsEnabled = (): boolean => read().ustSeviye === true;
 export function setUpperLevelsEnabled(on: boolean): void {
   try { localStorage.setItem(KEY, JSON.stringify({ ...read(), ustSeviye: on })); } catch { /* depolama yok */ }
 }
+
+/** Kuyruk K20: Celestial (Düşmüş) ırkı ev kuralı (Game Master; varsayılan kapalı): oluşturucuda seçilir, yeni savaşlarda `celestialIrki` açık gelir. */
+export const celestialEnabled = (): boolean => read().celestial === true;
+
+export function setCelestialEnabled(on: boolean): void {
+  try { localStorage.setItem(KEY, JSON.stringify({ ...read(), celestial: on })); } catch { /* depolama yok */ }
+}

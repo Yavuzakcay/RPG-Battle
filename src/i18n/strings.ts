@@ -259,7 +259,7 @@ const tr = {
       chipNote: 'Değerin altındaki kısa ad (WIS, CON…) o değerin şu an hangi kartta olduğunu gösterir; ona dokunursan iki kart değerlerini takas eder.',
       arrayValue: (v: number, holder: string | null) => (holder ? `${v} (şu an ${holder})` : String(v)),
       pickBox: (box: string, v: number) => `${box}: ${v}. Değer seçmek için dokun`,
-      identityTitle: 'Kimlik', raceTitle: 'Tür', classTitle: 'Sınıf', lineageTitle: 'Soy',
+      identityTitle: 'Kimlik', raceTitle: 'Tür', classTitle: 'Sınıf', lineageTitle: 'Soy', awakeningTitle: 'Göksel Uyanış (3. seviye)', awakeningLocked: '3. seviyede açılır', houseRuleTag: 'ev kuralı',
       backgroundTitle: 'Geçmiş', backgroundHelp: 'Geçmiş; yetenek bonusunun hangi üç yeteneğe gideceğini, köken feat\'ini ve iki beceriyi belirler.',
       backgroundTool: (tool: string) => `Alet: ${tool} (yalnızca bilgi)`, backgroundOriginal: 'özgün',
       backgroundMissing: 'Geçmiş seçilmemiş (eski kayıt): eski köken feat\'i ve bonus olduğu gibi kalır. Geçmiş seç.',
@@ -518,6 +518,7 @@ const tr = {
   },
   journey: {
     menu: 'Yolculuk (deneme)', menuDesc: 'Game Master gerektirmeyen ana mod: tek başına ya da partiyle, savaşları kalıcı parti durumuyla bir rotada oynayın.',
+    celestialFlag: 'Game Master: Celestial ırkı (ev kuralı)', celestialNote: 'SRD 5.2.1 dışı özgün ırk (Düşmüş). Açıkken oluşturucuda seçilir ve yeni savaşlarda Şifa Eli, Light ve Göksel Uyanış çalışır; kapalıyken Celestial karakterler yalnızca karanlık görüş ve dirençle oynar.',
     upperFlag: 'Game Master: Üst seviye (6–20)', upperNote: 'Açıkken karakter oluşturma ve Serüven seviye atlaması 20. seviyeye dek; kapalıyken 5. Daha yüksek seviyeli eski karakterler korunur.',
     title: 'Yolculuk (deneme)', flag: 'Deneysel: Yolculuk', flagNote: 'Ana menüde "Yolculuk (deneme)" girişini açar. Kayıt ayrı tutulur.',
     newTitle: 'Yeni yolculuk', route: 'Güzergâh', party: 'Parti', difficulty: 'Zorluk', progression: 'İlerleme',

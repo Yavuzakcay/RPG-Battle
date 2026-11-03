@@ -21,6 +21,7 @@ import { GIANT_RESOURCE } from './giant';
 import { boonResources } from './boons';
 import { itemParts } from './itemEffects';
 import { speciesParts } from './species';
+import { celestialFeatures, withCelestial } from './celestial';
 import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
@@ -375,7 +376,7 @@ function combatantFromSheetBase(
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
-    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
     // Kuyruk 19 (Irresistible Offense): artırılan skor (Overwhelming Strike).
     ...((): Partial<Combatant> => {
       const adv = (sheet.advancements ?? []).find((a) => a.featId === 'boon-of-irresistible-offense');
@@ -748,7 +749,7 @@ export function startBattle(
     ...(groups ? { groups } : {}),
   };
   // Kuyruk 24: Orman mekaniklerinin savaş başı kısmı (alarm grupları, kütük siperi, nehir; kural sürümü 3 ve Game Master anahtarı).
-  const final = stripItemsWhenOff(map ? applyForestStart(state) : state);
+  const final = withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state));
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

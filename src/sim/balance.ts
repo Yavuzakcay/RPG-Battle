@@ -6,7 +6,7 @@ import aiData from '../../data/yapay-zeka.json';
 import { combatantFromMonster, combatantFromSheet, execute, startBattle, type BattleState, type Combatant, type Command } from '../battle';
 import { currentActorId } from '../battle/common';
 import { chooseCommand } from '../battle/ai';
-import { getMonster } from '../data';
+import { getMonster, races } from '../data';
 import { seededRng, type Rng } from '../rules/dice';
 import type { CharacterSheet } from '../rules/stats';
 import { alternativeCantrips, spellOptions } from '../rules/builder';
@@ -138,8 +138,16 @@ export function enemiesAt(s: Scenario, level: number = DEFAULT_LEVEL): Record<st
 let partyDarkvision: number | null = null;
 export const setPartyDarkvision = (ft: number | null) => { partyDarkvision = ft; };
 
+/** Kuyruk K20: ırk karşılaştırması: bütün parti bu türde (soy türün varsayılanı; null: veri sheet'i). */
+let partyRace: string | null = null;
+export const setPartyRace = (raceId: string | null) => { partyRace = raceId; };
+/** Kuyruk K20: simülasyonda ev kuralları (Celestial `celestialIrki`). */
+let simHouseRules: Record<string, boolean> | null = null;
+export const setSimHouseRules = (r: Record<string, boolean> | null) => { simHouseRules = r; };
+
 function participants(s: Scenario, level: number = DEFAULT_LEVEL): Combatant[] {
-  const party = partyAt(level).map((sheet, i) => combatantFromSheet(sheet, { id: `pc${i + 1}`, ownerId: `p${i + 1}` }))
+  const party = partyAt(level).map((sheet) => (partyRace === null ? sheet : { ...sheet, raceId: partyRace, lineageId: races.find((r) => r.id === partyRace)?.defaultLineage }))
+    .map((sheet, i) => combatantFromSheet(sheet, { id: `pc${i + 1}`, ownerId: `p${i + 1}` }))
     .map((c) => (partyDarkvision === null ? c : { ...c, darkvision: partyDarkvision }));
   const foes: Combatant[] = [];
   for (const [id, count] of Object.entries(enemiesAt(s, level))) {
@@ -161,7 +169,7 @@ export function setupBattle(s: Scenario, rng: Rng, level: number = DEFAULT_LEVEL
     : alarmMode === 'yok' ? { ...st, alarmEnabled: false } : { ...st, groups: st.groups.map((g) => ({ ...g, state: 'alarmed' as const })) });
   const flag = (st: BattleState): BattleState => alarm(surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false });
   if (!s.map) return flag(startBattle('sim', 'd-z-zemin', participants(s, level), rng).state);
-  const session = createMapBattle(participants(s, level), { ...s.map, mirrored: false }, rng);
+  const session = createMapBattle(participants(s, level), { ...s.map, mirrored: false, ...(simHouseRules ? { houseRules: simHouseRules } : {}) }, rng);
   const gm = { playerId: 'gm', isGm: true };
   const state = session.state;
   const r = execute(flag(state), { type: 'start_battle' }, gm, rng);

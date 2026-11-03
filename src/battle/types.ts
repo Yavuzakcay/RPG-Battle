@@ -131,6 +131,10 @@ export interface ActiveEffect {
   images?: number;
   /** Görev B4: taşıyan çevresine ışık yayar (altıgen; karanlık/gece haritasında `litHexes`). */
   light?: number;
+  /** Kuyruk K20 (Celestial Göksel Uyanış): kendi turunda bir kez saldırı isabetine ek hasar; tur sonu aura hasarı; Kırık Kanat süzülme hızı (ft). */
+  celestialStrike?: { bonus: number; type: string };
+  celestialAura?: { radiusFt: number; damage: number; type: string };
+  glide?: number;
   /** Görev B4: görünmez olamaz (Faerie Fire, Starry Wisp); görünmezi görür (See Invisibility); ona saldırılar avantajlı. */
   revealed?: boolean;
   seeInvisible?: boolean;

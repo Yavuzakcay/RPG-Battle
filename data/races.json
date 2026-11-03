@@ -12,7 +12,10 @@
       "necrotic",
       "radiant"
     ],
-    "traits": "Bu oyuna özgü tür: göksel bir soydan gelir. Necrotic ve radiant direnci, 60 ft karanlıkta görme, günde bir kez dokunarak yara sarma, çevresine ışık saçma; 3. seviyeden itibaren kısa süreliğine göksel bir biçime bürünebilir."
+    "traits": "Düşmüş: Göksel Ada'nın yedi yüzen adasında doğdun; kanatların kırıldı, kıtada sıfırdan başlıyorsun. Karanlıkta görürsün, ışıltı ve ölümsüz hasarı sana yarım işler, Light küçük hilesini bilirsin, dokunuşun yaraları sarar (Şifa Eli); 3. seviyeden itibaren Göksel Uyanış (Parlayan Ruh, Gece Gözyaşı ya da Kırık Kanat). Ev kuralı: Ayarlar'da açılır.",
+    "evKurali": "celestialIrki",
+    "yurt": "goksel-ada",
+    "baslangic": "bati-kiyisi"
   },
   {
     "id": "dragonborn",
