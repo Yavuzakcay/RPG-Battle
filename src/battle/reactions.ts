@@ -26,12 +26,19 @@ import { askReaction, type ReactionAnswer, type ReactionOption, type ReactionReq
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
-import { canSee } from './maprules';
+import { canSee, saveEffect } from './maprules';
 import { applyEvents } from './reduce';
 import { mirrorImageHit } from './mind';
 import { freeSpellResource } from '../rules/classFeatures';
 import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
 import { globalRule } from './ruleControl';
+
+/** Kuyruk 19 (srdK19): Ink Cloud kancası (`monsterAbilities.ts` yükleyince kaydeder; döngüsel içe aktarma yok). */
+type InkHook = (state: BattleState, id: string, on: 'turnEnd' | 'damaged', rng: Rng) => BattleEvent[];
+let inkHook: InkHook | null = null;
+export const registerInk = (f: InkHook): void => { inkHook = f; };
+/** Kuyruk 19: tepki kullanılabilir mi (havuz, şarj, kaynak; `monsterAbilities.ts` için). */
+export const reactionUsable = (c: Combatant, spec: ReactionSpec): boolean => usable(c, spec);
 
 /** Fırsat saldırısının kimliği (her yaratıkta; SRD 5.2.1 Opportunity Attacks). */
 export const OPPORTUNITY = 'opportunity-attack';
@@ -164,6 +171,8 @@ export interface HitOutcome {
   redirect?: boolean;
   /** Parry'nin karşılık saldırısı (Riposte): ıskalatınca. */
   counter?: string;
+  /** Kuyruk 19 (srdK19): Deflect Missile hasarı 0'a indirdi: save'li geri yöneltme. */
+  missileBack?: NonNullable<ReactionSpec['redirectSave']>;
 }
 
 /** Bu isabete verilebilecek tepkiler ve yapay zekâ önerisi. */
@@ -205,6 +214,9 @@ export function hitReactions(state: BattleState, ctx: HitContext, rng: Rng): Hit
     ? { ...own0, damage: cr.damage, events: [...own0.events, reactionUsed(cr.owner, { id: 'chain-resist', name: 'Investment: direnç' }, 'hit', ctx.attacker.id)] }
     : own0;
   if (!own.hit || own.damage <= 0) return own;
+  // Kuyruk 19 (srdK19): Shield Guardian Protection: 5 ft içindeki dosta AC +5 (isabet yeniden hesaplanır).
+  const gd = guardHit(own.events.length ? applyEvents(state, own.events) : state, { ...ctx, ac: own.ac }, rng);
+  if (gd) return { ...own, events: [...own.events, ...gd.events], hit: gd.hit, ac: gd.ac, damage: gd.hit ? own.damage : 0, reacted: gd.reacted };
   // Görev BARD: hedefin tepkisinden sonra dost Bard'ın Cutting Words'ü.
   const cw = cuttingWords(own.events.length ? applyEvents(state, own.events) : state, { ...ctx, ac: own.ac, damage: own.damage }, rng);
   if (!cw) return own;
@@ -278,6 +290,8 @@ function ownHitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutc
     events.push(reactionUsed(t, spec, 'hit', ctx.attacker.id, mark ? { mark } : {}));
     const ac = ctx.ac + bonus;
     const hit = ctx.critical || ctx.total >= ac;
+    // Kuyruk 19 (srdK19): Whirlwind of Sand: AC'nin ardından ışınlanma ve varışta kör etme.
+    if (spec.teleportFt && globalRule(state, 'srdK19')) events.push(...whirlwindEvents(state, t, spec));
     return { events, hit, ac, damage: hit ? ctx.damage : 0, reacted: { name: spec.name, ac: bonus },
       ...(!hit && spec.counterAttack ? { counter: spec.counterAttack } : {}) };
   }
@@ -300,8 +314,9 @@ function ownHitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutc
   if (spec.kind === 'reduce' && spec.dice) {
     reduced = Math.min(ctx.damage, rollDice(spec.dice, rollTag(rng, { kind: 'damage', by: t.id })).total);
   }
+  const back = spec.redirectSave && reduced >= ctx.damage && globalRule(state, 'srdK19') ? spec.redirectSave : undefined;
   return {
-    events, hit: true, ac: ctx.ac, damage: ctx.damage - reduced, reacted: { name: spec.name, reduced },
+    events, hit: true, ac: ctx.ac, damage: ctx.damage - reduced, reacted: { name: spec.name, reduced }, ...(back ? { missileBack: back } : {}),
     ...(deflected !== undefined ? { deflected } : {}), ...(redirect ? { redirect: true } : {}),
   };
 }
@@ -316,6 +331,9 @@ export function afterAttackReactions(state: BattleState, attackerId: string, tar
   let current = state;
   const add = (evs: BattleEvent[]) => { events.push(...evs); current = applyEvents(current, evs); };
   if (outcome?.redirect) add(redirectEvents(current, targetId, attackerId, info.melee, info.damageType, rng));
+  // Kuyruk 19 (srdK19): Deflect Missile geri yöneltmesi ve Reflexive Antennae.
+  if (outcome?.missileBack) add(missileBackEvents(current, targetId, attackerId, outcome.missileBack, rng));
+  if (outcome?.hit && info.melee) add(antennaeReaction(current, targetId, attackerId, rng));
   if (outcome?.counter && strikes && strikes.can(current, targetId, attackerId)) add(strikes.strike(current, targetId, attackerId, rng, outcome.counter));
   if (info.dealt > 0) add(damagedReactions(current, targetId, attackerId, rng));
   // Kuyruk 19: Fire Shield: 5 ft içinden yakın dövüşle vurana 2d8 (sıcak kalkan Fire, soğuk kalkan Cold). Anahtar `spellsK19`.
@@ -333,6 +351,92 @@ function retortEvents(state: BattleState, holderId: string, attackerId: string, 
   const fx = damageEffects(a, adj.amount, e.retort.type, false, rng);
   return [{ type: 'effect_tick', targetId: attackerId, effectId: e.id, name: e.name, damageRolls: d.rolls, appliedDamage: adj.amount, damageType: e.retort.type,
     targetHpAfter: fx.hpAfter, effects: fx.effects }];
+}
+
+// ---------------------------------------------------------------- Kuyruk 19: SRD canavar tepkileri (srdK19)
+
+/** Whirlwind of Sand: 60 ft içinde boş, düşmanları en çok kör edecek altıgene ışınlanır; varışta 5 ft'teki düşmanlar Blinded. */
+function whirlwindEvents(state: BattleState, m: Combatant, spec: ReactionSpec): BattleEvent[] {
+  const map = state.map;
+  if (!map || !m.pos) return [];
+  const rows = map.tiles.length, cols = map.tiles[0]?.length ?? 0;
+  const r = Math.floor((spec.teleportFt ?? 60) / 5);
+  const taken = new Set(Object.values(state.combatants).filter((c) => c.id !== m.id && c.hp > 0 && c.pos).map((c) => `${c.pos!.col},${c.pos!.row}`));
+  const foes = Object.values(state.combatants).filter((c) => c.side !== m.side && c.hp > 0 && c.pos && !c.civilian && isTargetableFoe(c));
+  let best: { h: { col: number; row: number }; n: number; d: number } | null = null;
+  for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
+    const h = { col, row };
+    const d = distance(h, m.pos);
+    const ch = map.tiles[row]?.[col] ?? '#';
+    if (d === 0 || d > r || taken.has(`${col},${row}`) || !WALKABLE.test(ch)) continue;
+    const n = foes.filter((f) => distance(f.pos!, h) <= 1).length;
+    if (!best || n > best.n || (n === best.n && d < best.d)) best = { h, n, d };
+  }
+  if (!best) return [];
+  const out: BattleEvent[] = [{ type: 'teleported', actorId: m.id, from: m.pos, to: best.h, label: spec.name }];
+  for (const f of foes) {
+    if (distance(f.pos!, best.h) > 1 || f.conditions.includes('Blinded')) continue;
+    out.push({ type: 'effect_added', targetId: f.id, effect: { id: `whirlwind:${m.id}:${f.id}`, name: spec.name, sourceId: m.id, grants: ['Blinded'], turnEndOf: m.id, icon: '🌪' } });
+  }
+  return out;
+}
+/** Haritada yürünebilir zemin harfleri (engel `#`, ağaç `a`, uçurum `u`, harita dışı `x` değil). */
+const WALKABLE = /^[^#aux]$/;
+const isTargetableFoe = (c: Combatant): boolean => !c.summon || !c.effects?.some((e) => e.id.startsWith('intangible'));
+
+/** Deflect Missile: 60 ft içinde görülen saldıran (yoksa en yakın görülen düşman) DEX save, başarısızsa Force hasarı. */
+function missileBackEvents(state: BattleState, reactorId: string, attackerId: string, back: NonNullable<ReactionSpec['redirectSave']>, rng: Rng): BattleEvent[] {
+  const g = state.combatants[reactorId];
+  if (!g || g.hp <= 0) return [];
+  const cands = Object.values(state.combatants).filter((c) => c.side !== g.side && c.hp > 0 && feetBetween(state, g, c) <= back.rangeFt && sees(state, g, c))
+    .sort((a, b) => (a.id === attackerId ? -1 : b.id === attackerId ? 1 : feetBetween(state, g, a) - feetBetween(state, g, b)));
+  const t = cands[0];
+  if (!t) return [];
+  return [saveEffect(t, 'srdK19', `${g.name}: Deflect Missile`, back.ability, back.dc, rng, { hit: { dice: back.dice, type: back.type } })];
+}
+
+/** Reflexive Antennae: yakın dövüşle vuran 5 ft içindeyse silahına Antennae (DEX save ya da silah saldırılarına −1, birikir). */
+function antennaeReaction(state: BattleState, reactorId: string, attackerId: string, rng: Rng): BattleEvent[] {
+  const m = state.combatants[reactorId];
+  const a = state.combatants[attackerId];
+  if (!m || !a || !globalRule(state, 'srdK19') || !canReact(m) || feetBetween(state, m, a) > 5) return [];
+  const spec = specsOf(m, ['antennae']).find((r) => usable(m, r));
+  if (!spec) return [];
+  const answer = askReaction(rng, { reactorId: m.id, trigger: 'hit', sourceId: a.id, options: [{ id: spec.id, name: spec.name }], suggested: { option: spec.id } });
+  if (answer?.option !== spec.id) return [];
+  return [reactionUsed(m, spec, 'hit', a.id), ...corrodeEvents(m, a, spec.dc ?? 11, rng)];
+}
+
+/** Rust Monster Antennae (eylem ya da tepki): DEX save; başarısızsa metal silahın saldırılarına −1 (en çok −5). */
+export function corrodeEvents(m: Combatant, t: Combatant, dc: number, rng: Rng): BattleEvent[] {
+  const ev = saveEffect(t, 'srdK19', `${m.name}: Antennae`, 'dex', dc, rng);
+  const failed = ev.type === 'map_effect' && ev.roll && !ev.roll.success;
+  const now = (t.effects ?? []).find((e) => e.id === `corrode:${t.id}`);
+  const pen = Math.min(5, (now?.dice ? Number(now.dice.die) : 0) + 1);
+  if (!failed || (now && pen === Number(now.dice?.die ?? 0))) return [ev];
+  return [ev, ...(now ? [{ type: 'effect_ended' as const, targetId: t.id, effectId: now.id, name: now.name, reason: 'expired' as const }] : []),
+    { type: 'effect_added' as const, targetId: t.id, effect: { id: `corrode:${t.id}`, name: 'Paslanmış silah', sourceId: m.id, dice: { die: String(pen), sign: -1, on: ['attack'] }, icon: '🦀' } }];
+}
+
+/** Protection (Shield Guardian): 5 ft içindeki dosta isabet edince AC +5 (muhafızın sonraki turuna dek). */
+function guardHit(state: BattleState, ctx: HitContext, rng: Rng): { events: BattleEvent[]; hit: boolean; ac: number; reacted: HitOutcome['reacted'] } | null {
+  if (!globalRule(state, 'srdK19') || ctx.critical) return null;
+  const t = ctx.target;
+  for (const g of Object.values(state.combatants)) {
+    if (g.id === t.id || g.side !== t.side || !canReact(g) || feetBetween(state, g, t) > 5) continue;
+    const spec = specsOf(g, ['guard']).find((r) => usable(g, r));
+    if (!spec) continue;
+    const bonus = spec.acBonus ?? 5;
+    const turns = ctx.total < ctx.ac + bonus;
+    const answer = askReaction(rng, { reactorId: g.id, trigger: 'hit', sourceId: ctx.attacker.id, info: { label: ctx.label, total: ctx.total, ac: ctx.ac, damage: ctx.damage },
+      options: [{ id: spec.id, name: spec.name }], suggested: turns ? { option: spec.id } : null });
+    if (answer?.option !== spec.id) continue;
+    const ac = ctx.ac + bonus;
+    return { events: [reactionUsed(g, spec, 'hit', ctx.attacker.id),
+      { type: 'effect_added', targetId: t.id, effect: { id: `guard:${g.id}`, name: spec.name, sourceId: g.id, ac: bonus, untilSourceTurn: true, icon: '🛡' } }],
+      hit: ctx.total >= ac, ac, reacted: { name: spec.name, ac: bonus } };
+  }
+  return null;
 }
 
 /**
@@ -437,6 +541,11 @@ export const strikeApi = (): Strikes | null => strikes;
 export function damagedReactions(state: BattleState, victimId: string, sourceId: string, rng: Rng): BattleEvent[] {
   const v = state.combatants[victimId];
   const src = state.combatants[sourceId];
+  // Kuyruk 19 (srdK19): Giant Octopus Ink Cloud (hasar alınca; `monsterAbilities.ts` kaydeder).
+  if (inkHook && v && v.hp > 0 && globalRule(state, 'srdK19')) {
+    const ink = inkHook(state, victimId, 'damaged', rng);
+    if (ink.length) return ink;
+  }
   if (!canReact(v) || !src || src.hp <= 0 || src.side === v.side) return [];
   const specs: ReactionSpec[] = [];
   for (const r of specsOf(v, ['rebuke', 'retaliate', 'thunder'])) {

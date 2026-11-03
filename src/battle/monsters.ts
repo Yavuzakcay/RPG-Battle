@@ -28,7 +28,7 @@ import type { BattleEvent, BattleState, Combatant, MultiStep } from './types';
 import multiData from '../../data/multiattack.json';
 import { castWithoutAction } from './castHook';
 import { effectiveAc, wardSources } from './divine';
-import { afterAttackReactions, hitReactions, type HitOutcome } from './reactions';
+import { afterAttackReactions, corrodeEvents, hitReactions, targetedReactions, type HitOutcome } from './reactions';
 
 
 /** Tek bir canavar saldırısını çözer ve olaylarını döndürür. */
@@ -45,6 +45,20 @@ export function monsterAttackEvents(
   if (atk.recharge && actor.rechargeUsed.includes(index)) return fail(`${atk.name} henüz şarj olmadı.`);
   const inReach = checkReach(state, actor, target, monsterAttackReach(atk));
   if (!inReach.ok) return { ok: false, error: `${atk.name}: ${inReach.error}` };
+  // Kuyruk 19 (srdK19): Rust Monster Antennae: metal silah aşınması (DEX save; `reactions.ts` `corrodeEvents`).
+  if (globalRule(state, 'srdK19') && actor.monsterId === 'rust-monster' && atk.name === 'Antennae') {
+    return { ok: true, events: corrodeEvents(actor, target, atk.save?.dc ?? 11, rng) };
+  }
+  // Kuyruk 19 (srdK19): Redirect Attack canavar saldırı zarlarında da (yer değiştiren dosta gider).
+  if (globalRule(state, 'srdK19') && !atk.save && !opportunity) {
+    const tr = targetedReactions(state, actor, target, rng);
+    const other = tr.targetId !== target.id ? applyEvents(state, tr.events) : null;
+    const next = other?.combatants[tr.targetId];
+    if (other && next) {
+      const r = monsterAttackEvents(other, other.combatants[actor.id] as Combatant, next, index, rng, opportunity);
+      return r.ok ? { ok: true, events: [...tr.events, ...r.events] } : r;
+    }
+  }
 
   const env = getEnvironment(state.environmentId);
   const tag = `${actor.casterTag} ${atk.name} ${atk.text}`.toLowerCase();

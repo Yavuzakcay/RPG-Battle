@@ -1,5 +1,63 @@
 # Sabah raporu
 
+## Gece kuyruğu 19: tek sayfa özet
+
+**Dal:** `wip/k19` (K18 `0c75c0c` üstünde), her büyük görevde commit'lendi ve pushlandı. Yeni mekaniklerin hepsi Game Master anahtarlı ve kural sürümü 16'ya bağlı; eski kayıt ve replay'ler aynı kalıyor. Anahtarlar: `spellsK19`, `featuresK19`, `invocationsK19`, `srdK19`, `spells69`, `monsterDrain`, `bardicInspirationFix`, `nightVision`, `stormRules`. Kararlar DECISIONS.md'de, ölçümler `harita/belgeler/DENGE.md`'de, SRD durumu `docs/SRD-DENETIM.md`'de.
+
+### Yapıldı / yapılmadı
+
+| Görev | Yapıldı | Yapılmadı |
+|---|---|---|
+| -1 harf büyüklüğü çakışması | `endVideo.ts` → `endVideoPlan.ts`; çakışma testi eklendi | – |
+| -2 aynalama, check:harita | Aynalama kaldırıldı (eski kayıt yüklenir). check:harita her harita/mod için bir kez çalışıyor (96 kontrol). Game Master ekranı açılmama hatası (create.ts TDZ) düzeltildi | – |
+| 0a 4–5. seviye kısmi büyüler | Kısmi 38 → 0 | – |
+| 0b sınıf/alt sınıf kısmileri | `featuresK19`: serbest kayma, Knock Out, Poison, Grapple, Feral Senses, Roving, Divine Sense, Natural Recovery, Jumper ve diğerleri | – |
+| 0c savaş dışı büyülerin savaş yönü | Passwall, Stone Shape, Control Water, Modify Memory | – |
+| 0f invocation'lar, Flaming Sphere | Kalan bütün invocation'lar; Flaming Sphere yol üstündeki yaratığa çarpıyor | – |
+| 0g arayüz maddeleri (24–30, Durum) | Menü katmanı ve kaydırma, ölü hedef işareti, savaş sonu ses/görsel, giriş müziği önçözme; madde 26, 29, 32 ve Durum düğmesi doğrulandı; eylem duman testi | – |
+| 1 Bardic Inspiration | Düzeltildi (`bardicInspirationFix`, sürüm 16) | – |
+| 2 seviye tavanı 20 | `UPPER_LEVEL_CAP` 20; XP, slot, Extra Attack, ASI/Epic Boon tablodan | – |
+| 4–5 11–20 sınıf/alt sınıf özellikleri | 12 sınıf ve 12 SRD alt sınıfının hepsi; Epic Boon'lar; Spell Mastery/Signature Spells seçimi | – |
+| 3+6 6.–9. seviye büyüler, Yakında 12 | 84 büyü (`spells69`; 33 savaş dışı); Mystic Arcanum, Greater Divine Intervention (Wish), Words of Creation, Use Magic Device. Yakında listesi zaten boştu | – |
+| 7 SRD tam denetim | Silah, zırh, eşya, sihirli eşya, feat, tür, geçmiş, savaş kuralı, büyü ve canavar yeteneği: **"yok" 0, "kısmi" 0**. Son 8 canavar tepkisi bu turda kapandı | – (savaş dışı: 67 eşya, 87 sihirli eşya, 112 büyü, 55 canavar yeteneği, 2 tür özelliği) |
+| 8 11–20 karşılaşmaları | Çöl/Kale/Mağara/Orman için `enemies.11/15/20`; 100 tohum ölçüldü; 11+ katmanı senaryo listeleri (seçicide "Efsanevi CR 15+" kademesi zaten var) | – (ayar yapılmadı; kural gereği yalnızca kayıt) |
+| 9 K18-3 düşmanları | Nöbetçi +Ghast/Wight; Kamp/Karakol Bandit 3→5; Kayalık Harpy 2→4; 30 tohum | – |
+| 10 gece ve fırtına görüşü | `nightVision`, `stormRules` (varsayılan kapalı); SRD görüşü, düz ceza yok; gece açık/kapalı 30 tohum | – |
+| 11 duman testleri ve kontroller | 12 sınıf × 12/16/20 duman testi; typecheck, tam test, build, check:harita, check:ses | – |
+
+**"Tam" sayılanların bir kısmı yaklaşık.** SRD-DENETIM.md'de "tam" olarak sayılan 227 büyünün 73'ü "yaklaşık" notlu, canavar tepkilerinden bazıları da öyle. Yaklaşıkların her biri DECISIONS.md'de gerekçesiyle yazılı. Örnekler:
+- Beacon of Hope'ta hedef sayısı 6 ile sınırlı.
+- Shield Guardian'da muska yerine 5 ft içindeki herhangi bir dost korunuyor.
+- Rust Monster yalnızca silahı aşındırıyor, zırhı değil.
+
+### Bu turda bulunan ve düzeltilen hatalar (srdK19 açıkken)
+
+1. **Web Walker ve Ice Walk**, Freedom of Movement gibi bütün zorlu araziyi yok saydırıyordu. Orman Gece'de kazanma %80'den %10'a düşmüştü; düzeltmeden sonra %70 (10 tohum).
+2. **Burrow'lu canavarlar** (Adult Blue Dragon gibi) bir turda sınırsız Multiattack yapıyordu. Freedom of Movement istisnası `multiattack`, `dodge`, `search` gibi komutları da bedava yapıyordu.
+3. **Treant Animate Trees** canlandırdığı ağaçlara da yeteneği veriyordu; ağaçlar üstel olarak çoğalıyordu.
+4. Dış içerik doğrulayıcısında `use-magic-device` ve `words-of-creation` işaretleri eksikti.
+
+### Ölçüm özeti (yalnızca kayıt)
+
+- **11/15/20. seviye** (100 tohum): 12 satırdan 2'si aralıkta. Çöl 15 %70, Kale 20 %73.
+  - Mağara 11/15 %99–100 (tek boss).
+  - Kale 15 %29, Orman 15/20 %21/%38.
+- **K18-3 düşmanları:** Nöbetçi %100, Buzul Kamp %97, Dağ Karakol %100, Dağ Kayalık %100. Hâlâ kolay.
+- **Gece görüşü** (kapalı → açık): Orman Gece %43 → %53, Kale Gece %73 → %90, Büyük suç %100 → %100.
+  - Partinin 3/5'inde Darkvision olduğu için kural partiye yarıyor.
+  - Darkvision'sız üyeler (Human, Halfling) karanlıkta 2 altıgen ötesini göremiyor.
+- **Orman Gece** kapalıyken %43; K18'in 30 tohumluk %59–61'inin altında. Kalan fark srdK19 canavar özelliklerinden (tırmanma, bağışıklıklar).
+
+### Karar bekleyenler (öneriyle)
+
+1. **11+ dengesi**: Mağara 11/15'e ikinci bir boss ya da yardımcılar eklenmeli. Kale 15'te bir Cloud Giant çıkarılmalı; Orman 15/20'de Treant sayısı azaltılmalı. Ayrı denge görevi olarak önerilir.
+2. **K18-3 senaryoları** hâlâ %97–100. Öneri: düşmanlara bir kademe daha eklemek ya da bu dört senaryoyu "kolay" olarak etiketlemek.
+3. **Orman Gece** srdK19 açıkken %43. Öneri: srdK19 varsayılan açık kalsın; Orman Gece listesinden bir Giant Spider çıkarılsın.
+4. **Gece görüşü** açıkken parti güçleniyor. Öneri: anahtar varsayılan kapalı kalsın; düşman listelerinde Darkvision'lı canavar oranı artırıldıktan sonra yeniden ölçülsün.
+
+**Doğrulama:** typecheck temiz. Tam test 236 dosya, 2212 test, hepsi geçti. Build ana parça **430,77 kB** (≤ 440). check:harita 96 kontrol, 0 hata. check:ses 15 kontrol, 0 hata. Tarayıcı kontrolleri `PW_CHROMIUM=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell` ile çalıştı: projenin Playwright'ı eski headless modunu istiyor, bu ortamın tam Chromium'u da onu kaldırmış.
+
+
 ## Gece kuyruğu 18 (+ K18b): tek sayfa özet
 
 **Dal:** her şey `wip/k18` dalının çalışma ağacında (K17/K26/K44b commit'lerinin üstünde, `claude/rpg-battle-project-wu0f4f` ile aynı noktadan). Commit/push/pull yapılmadı. Kural sürümü **15** (Kuyruk 18: 14, K18b: 15). Goliath dosyalarına dokunulmadı.

@@ -15,7 +15,7 @@
 - **Geçmiş**: tam 4
 - **Savaş kuralı**: tam 8
 - **Büyü**: tam 227, savaş dışı 112
-- **Canavar yeteneği**: tam 131, savaş dışı 55, yok 8
+- **Canavar yeteneği**: tam 139, savaş dışı 55
 
 ## Tablo
 
@@ -900,7 +900,7 @@
 | Canavar yeteneği | Inscrutable (2) | savaş dışı | zihin okunamaz (hikâye) |
 | Canavar yeteneği | Divine Awareness (2) | savaş dışı | yalanı sezme |
 | Canavar yeteneği | Agile (2) | tam | monsterAbilities.ts (pasif) |
-| Canavar yeteneği | Tepki: Ink Cloud (2) | yok | açık iş |
+| Canavar yeteneği | Tepki: Ink Cloud (2) | tam | monster-reactions.json |
 | Canavar yeteneği | Saldırı yok (2) | savaş dışı | basit vuruş eklendi (savaş dışı yaratık) |
 | Canavar yeteneği | Bloodied Fury (2) | tam | monsterAbilities.ts (pasif) |
 | Canavar yeteneği | Eylem: Swallow (2) | tam | monster_ability / Spellcasting |
@@ -922,8 +922,8 @@
 | Canavar yeteneği | Eylem: Fog Cloud (1) | tam | monster_ability / Spellcasting |
 | Canavar yeteneği | Speak with Beasts and Plants (1) | savaş dışı | iletişim |
 | Canavar yeteneği | Bonus eylem: Tree Stride (1) | tam | monster_ability / Spellcasting |
-| Canavar yeteneği | Tepki: Redirect Attack (1) | yok | açık iş |
-| Canavar yeteneği | Tepki: Burst of Ingenuity (1) | yok | açık iş |
+| Canavar yeteneği | Tepki: Redirect Attack (1) | tam | monster-reactions.json |
+| Canavar yeteneği | Tepki: Burst of Ingenuity (1) | tam | monster-reactions.json |
 | Canavar yeteneği | Bonus eylem: Trampling Charge (1) | tam | monster_ability / Spellcasting |
 | Canavar yeteneği | Bonus eylem: Reel (1) | tam | monster_ability / Spellcasting |
 | Canavar yeteneği | Aberrant Ground (1) | tam | monsterAbilities.ts (pasif) |
@@ -954,7 +954,7 @@
 | Canavar yeteneği | Bonus eylem: Captain’s Charm (1) | tam | monster_ability / Spellcasting |
 | Canavar yeteneği | Tepki: Riposte (1) | tam | monster-reactions.json |
 | Canavar yeteneği | Bonus eylem: Invisibility (1) | tam | monster_ability / Spellcasting |
-| Canavar yeteneği | Tepki: Deflect Missile (1) | yok | açık iş |
+| Canavar yeteneği | Tepki: Deflect Missile (1) | tam | monster-reactions.json |
 | Canavar yeteneği | Evasion (1) | tam | monsterAbilities.ts (pasif) |
 | Canavar yeteneği | Tepki: Unnerving Gaze (1) | tam | monster-reactions.json |
 | Canavar yeteneği | Light Sensitivity (1) | tam | monsterAbilities.ts (pasif) |
@@ -973,11 +973,11 @@
 | Canavar yeteneği | Magic Rope (1) | savaş dışı | ip nesnesi (Entangling Rope saldırısı veride) |
 | Canavar yeteneği | Eylem: Teleport (1) | tam | monster_ability / Spellcasting |
 | Canavar yeteneği | Bonus eylem: Horror Nimbus (1) | tam | monster_ability / Spellcasting |
-| Canavar yeteneği | Tepki: Pursuit (1) | yok | açık iş |
+| Canavar yeteneği | Tepki: Pursuit (1) | tam | monster-reactions.json |
 | Canavar yeteneği | Greater Magic Resistance (1) | tam | monsterAbilities.ts (pasif) |
 | Canavar yeteneği | Eylem: Ice Wall (1) | tam | monster_ability / Spellcasting |
 | Canavar yeteneği | Undead Restoration (1) | savaş dışı | 24 saat sonra dirilme |
-| Canavar yeteneği | Tepki: Whirlwind of Sand (1) | yok | açık iş |
+| Canavar yeteneği | Tepki: Whirlwind of Sand (1) | tam | monster-reactions.json |
 | Canavar yeteneği | Fire Absorption (1) | tam | monsterAbilities.ts (pasif) |
 | Canavar yeteneği | Roar (1) | tam | monsterAbilities.ts (pasif) |
 | Canavar yeteneği | Death Throes (1) | tam | monsterAbilities.ts (pasif) |
@@ -995,7 +995,7 @@
 | Canavar yeteneği | Bonus eylem: Ignited Illumination (1) | tam | monster_ability / Spellcasting |
 | Canavar yeteneği | Iron Scent (1) | savaş dışı | metal sezme (keşif) |
 | Canavar yeteneği | Destroy Metal (1) | savaş dışı | giyilmeyen metal nesne (savaş dışı) |
-| Canavar yeteneği | Tepki: Reflexive Antennae (1) | yok | açık iş |
+| Canavar yeteneği | Tepki: Reflexive Antennae (1) | tam | monster-reactions.json |
 | Canavar yeteneği | Blood Frenzy (1) | tam | monsterAbilities.ts (pasif) |
 | Canavar yeteneği | Limited Amphibiousness (1) | savaş dışı | nefes alma (4 saatte bir) |
 | Canavar yeteneği | Shark Telepathy (1) | savaş dışı | telepatiyle köpekbalığı yönetme (hikâye) |
@@ -1022,7 +1022,7 @@
 | Canavar yeteneği | Treasure Sense (1) | savaş dışı | hazine sezme (keşif) |
 | Canavar yeteneği | Bound (1) | savaş dışı | muska bağı (hikâye) |
 | Canavar yeteneği | Spell Storing (1) | savaş dışı | muska sahibinin büyü saklaması (kurulum) |
-| Canavar yeteneği | Tepki: Protection (1) | yok | açık iş |
+| Canavar yeteneği | Tepki: Protection (1) | tam | monster-reactions.json |
 | Canavar yeteneği | Multiple Heads (1) | tam | monsterAbilities.ts (pasif) |
 | Canavar yeteneği | Reactive Heads (1) | tam | monsterAbilities.ts (pasif) |
 | Canavar yeteneği | Acid Absorption (1) | tam | monsterAbilities.ts (pasif) |

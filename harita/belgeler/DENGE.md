@@ -52,6 +52,17 @@ Standart parti 11/15/20. seviyede (sim partisi üreteci, `levels.<N>` seçimleri
 
 Aralıkta 2/12. Ortalama tur 4–9; ölen PC 0,02–1,22. Mağara 11/15 tek boss'a karşı çok kolay; Kale 15 ve Orman 15/20 zor (devlerin taş atışı ve iki Treant). Ayar ayrı denge görevine kaldı.
 
+### Hızlı regresyon — SRD canavar tepkileri sonrası (5. seviye, 30 tohum)
+
+| Senaryo | Kazanma | Berabere | Ort. tur | Ort. düşmüş PC |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 90% | 0% | 6.6 | 0.53 |
+| Kale — Gündüz | 73% | 0% | 7.0 | 1.57 |
+| Mağara — karanlık | 67% | 7% | 7.8 | 1.53 |
+| Orman — Gece | 43% | 0% | 6.0 | 2.83 |
+
+Orman — Gece yukarıdaki görev 10 ölçümüyle aynı (%43). Yeni tepkiler bu listelerdeki canavarlarda yok; sapma beklenmiyordu.
+
 ## Kuyruk 17 G1/G2 — hızlı regresyon (2026-11-02)
 
 `npm run sim:a2 -- 30 --parti a2-klasik --seviye 9 --zorluk normal` (kural sürümü 13; yeni büyüler partide yok, yeni sınıf özellikleri Monk/Paladin 10'da). Önceki satır Kuyruk 43b (200 tohum). 30 tohumda ±9 puan gürültü; belirgin kırılma yok, ayar yapılmadı.

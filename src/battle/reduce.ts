@@ -193,7 +193,8 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
     // Kuyruk 18 H3: Countercharm sahibinin tepkisini harcar.
     if (x.reaction && x.holderId) {
       const h = next.combatants[x.holderId];
-      if (h) next = withCombatant(next, h.id, { economy: { ...h.economy, reaction: true } });
+      // Kuyruk 19: Burst of Ingenuity tepki havuzunu da azaltır.
+      if (h) next = withCombatant(next, h.id, { economy: { ...h.economy, reaction: true }, ...(x.pool ? { reactionUses: { ...h.reactionUses, [x.pool.id]: x.pool.remaining } } : {}) });
       continue;
     }
     // Görev F: ikinci şansın kaynağı (Indomitable, Stroke of Luck, Tactical Mind → Second Wind).

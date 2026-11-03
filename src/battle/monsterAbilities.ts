@@ -21,6 +21,9 @@ import { castWithoutAction } from './castHook';
 import { k19Legendary, legendarySave, legendaryTeleport, pounceMove, type LegendaryAction } from './boss';
 import { executeHide } from './stealth';
 import { occupantAt, terrainAt } from './movement';
+import { canReact, reactionUsable, reactionUsed, registerInk } from './reactions';
+import { retreatMove } from './boss';
+import { speedHexes } from './reduce';
 import { timedCondition } from './durations';
 import { combatantFromMonster } from './create';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
@@ -574,3 +577,60 @@ export function monsterAfterEvents(state: BattleState, rng: Rng, cmdEvents: Batt
 }
 
 export const hasMonsterTrait = (state: BattleState, c: Combatant | undefined, t: string): boolean => !!c && on(state) && !!c.traits?.includes(t);
+
+// ------------------------------------------------------------------ Kuyruk 19: tepkiler (Ink Cloud, Pursuit; srdK19)
+
+/** Ink Cloud (SRD): su altında; ahtapotun altıgeni (10 ft küpte komşuları da) 10 tur yoğun örtü, yüzme hızı kadar uzaklaşır. */
+export function inkEvents(state: BattleState, id: string, on: 'turnEnd' | 'damaged', rng: Rng): BattleEvent[] {
+  const o = state.combatants[id];
+  if (!o || !o.pos || !state.map || !canReact(o) || !isUnderwater(state, o)) return [];
+  const spec = (o.reactions ?? []).find((r) => r.kind === 'ink' && (r.on ?? 'turnEnd') === on && reactionUsable(o, r));
+  if (!spec) return [];
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const hexes = (spec.sizeFt ?? 5) >= 10 ? [o.pos, ...ring(o.pos, 1, size)] : [o.pos];
+  const zone: SpellZone = { id: `ink:${o.id}:${state.round}`, spellId: 'ink-cloud', name: spec.name, casterId: o.id, side: o.side, dc: 0, slotLevel: 0, hexes,
+    until: state.round + 10, spec: { obscured: 'heavy', color: '#1d1a2e', icon: '🦑' } } as SpellZone;
+  const out: BattleEvent[] = [reactionUsed(o, spec, on === 'damaged' ? 'damaged' : 'turnStart'), { type: 'zone_created', zone }];
+  const after = applyEvents(state, out);
+  const me = after.combatants[o.id] as Combatant;
+  const foes = Object.values(after.combatants).filter((c) => c.side !== o.side && c.hp > 0 && c.pos);
+  // Yüzme hızı kadar: geri çekilme yarım hız kullanır; harcanmış hareket eksiye çekilerek bütçe ikiye katlanır.
+  out.push(...retreatMove(after, { ...me, movementUsed: -speedHexes(me) }, foes, rng));
+  return out;
+}
+registerInk(inkEvents);
+
+/**
+ * Tur sonu tepkileri: Ink Cloud (Octopus: bir yaratık 5 ft'te turunu bitirince) ve Pursuit (Nalfeshnee: 120 ft'te
+ * gördüğü bir düşman hareket ederek turunu bitirince, ona 10 ft içindeki boş altıgene ışınlanır).
+ */
+export function reactionTurnEndEvents(state: BattleState, enderId: string, rng: Rng): BattleEvent[] {
+  if (!on(state) || !state.map) return [];
+  const ender = state.combatants[enderId];
+  if (!ender || !ender.pos || ender.hp <= 0) return [];
+  const out: BattleEvent[] = [];
+  let cur = state;
+  for (const c of Object.values(state.combatants)) {
+    if (c.side === ender.side || !c.pos || !c.reactions?.length) continue;
+    const me = cur.combatants[c.id] as Combatant;
+    if (!me.pos || !canReact(me)) continue;
+    if (me.reactions?.some((r) => r.kind === 'ink') && distance(me.pos, ender.pos) <= 1) {
+      const ev = inkEvents(cur, me.id, 'turnEnd', rng);
+      out.push(...ev); cur = applyEvents(cur, ev);
+      continue;
+    }
+    const spec = me.reactions?.find((r) => r.kind === 'pursuit' && reactionUsable(me, r));
+    if (!spec || (ender.movementUsed ?? 0) <= 0 || !canSee(cur, me, ender)) continue;
+    const d = distance(me.pos, ender.pos);
+    if (d * 5 > (spec.rangeFt ?? 120) || d <= 2) continue;
+    const size = { cols: cur.map!.tiles[0]?.length ?? 0, rows: cur.map!.tiles.length };
+    const spots = [...ring(ender.pos, 1, size), ...ring(ender.pos, 2, size)]
+      .filter((h) => !occupantAt(cur, h, me.id) && terrainAt(cur, h).movement === 'normal')
+      .sort((a, b) => distance(a, ender.pos as Offset) - distance(b, ender.pos as Offset) || distance(a, me.pos as Offset) - distance(b, me.pos as Offset));
+    const to = spots[0];
+    if (!to) continue;
+    const ev: BattleEvent[] = [reactionUsed(me, spec, 'turnStart', ender.id), { type: 'teleported', actorId: me.id, from: me.pos, to, label: spec.name }];
+    out.push(...ev); cur = applyEvents(cur, ev);
+  }
+  return out;
+}

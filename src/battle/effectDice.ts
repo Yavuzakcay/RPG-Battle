@@ -36,6 +36,9 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on === 'save' && c.countercharmBy) {
     k18.push({ label: 'Countercharm', die: 'd20', sign: 1, reroll: 'd20', rerollMode: 'advantage', against: ['Charmed', 'Frightened'], reaction: true, holderId: c.countercharmBy });
   }
+  // Kuyruk 19 (srdK19): Burst of Ingenuity (Sphinx of Wonder): kendisi ya da 30 ft'teki dostunun başarısız save/kontrolüne +2,
+  // yalnızca başarıya çevirecekse; sfenksin tepkisi ve 2/Day havuzu harcanır (`burstBy`: reducer `syncAuras` yazar).
+  if (on !== 'attack' && c.burstBy) k18.push({ label: 'Burst of Ingenuity', die: '+2', sign: 1, reroll: 'plus', rerollBonus: 2, reaction: true, holderId: c.burstBy.id, pool: c.burstBy.pool });
   // Kuyruk 19 (Epic Boon): Improve Fate: 60 ft'teki boon sahibi dostun başarısızına +2d4, düşmanın başarısına −2d4.
   if (c.fateBy) k18.push({ label: 'Improve Fate', die: '2d4', sign: 1, reroll: 'onFail', resource: 'improveFate', holderId: c.fateBy });
   if (c.fateFoe) k18.push({ label: 'Improve Fate', die: '2d4', sign: -1, reroll: 'onSuccess', resource: 'improveFate', holderId: c.fateFoe });

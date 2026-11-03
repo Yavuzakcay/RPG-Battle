@@ -2,6 +2,32 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (7 kapanışı): SRD denetiminde kalan 8 canavar tepkisi (srdK19)
+
+Hepsi `srdK19` anahtarına ve kural sürümü 16'ya bağlı. Veri `data/monster-reactions.json`, motor `reactions.ts` ve `monsterAbilities.ts`, test `k19reactions.test.ts` (açık, kapalı, sürüm 15).
+
+- **Protection (Shield Guardian)**: muska kavramı oyunda yok. Muhafız, 5 ft içindeki herhangi bir dostuna isabet edince tepkisiyle o dosta AC +5 verir; etki muhafızın sonraki turuna dek sürer.
+- **Whirlwind of Sand (Mummy Lord)**: AC +2'nin ardından 60 ft içindeki boş altıgene ışınlanır. Varış yeri, en çok düşmanı kör edecek altıgen seçilir; eşitlikte en yakını. Varışta 5 ft'teki düşmanlar mumyanın turunun sonuna dek Blinded.
+- **Deflect Missile (Stone Giant)**: hasar 0'a inerse geri yöneltilir. Hedef, 60 ft içinde görülen saldırandır; o yoksa en yakın görülen düşman. DEX 17 save, başarısızsa 1d10 + 6 Force.
+- **Reflexive Antennae ve Antennae eylemi (Rust Monster)**:
+  - Yalnızca yakın dövüş isabetinde ve saldıranın silahına uygulanır.
+  - Zırh hedeflenmez, çünkü savaşçıda zırhın AC katkısı ayrı tutulmuyor.
+  - Silah saldırılarına −1 birikir ve −5'te durur (silah yok edilmez; Mending savaş dışı).
+- **Redirect Attack (Goblin Boss)**: canavar saldırı zarlarında ve büyü saldırı zarlarında da çalışır (ilk ışın).
+- **Ink Cloud (Octopus, Giant Octopus)**:
+  - Tetik: Octopus'ta 5 ft'te tur bitiren bir yaratık, Giant Octopus'ta hasar almak.
+  - Yalnızca su altında (`w` zemini).
+  - 5 ft (1 altıgen) ya da 10 ft (7 altıgen) yoğun örtü, 10 tur sürer. Ardından yüzme hızı kadar uzaklaşır; yol bulma yürüme hızıyla yapılır.
+  - Giant Octopus yalnızca saldırı ve tek hedefli büyü hasarında tetiklenir; alan hasarında tetiklenmez.
+- **Pursuit (Nalfeshnee)**: "hareketini bitirince" tetiği, hareket etmiş bir düşmanın tur sonu sayılır. Nalfeshnee 120 ft içindeyse ve görüyorsa, o düşmanın 10 ft içindeki boş altıgene ışınlanır.
+- **Burst of Ingenuity (Sphinx of Wonder)**:
+  - Kendisinin ya da 30 ft içindeki dostunun başarısız save'ine veya kontrolüne +2 ekler; yalnızca sonucu başarıya çevirecekse kullanılır.
+  - Tepki ve 2/Day havuzu harcanır.
+  - Bağ `syncAuras` (`burstBy`) üzerinden kurulur; ikinci şans türü `plus`.
+- **Split (Ochre Jelly, Black Pudding)**: tepki listesinde değil, canavar yeteneği olarak çalışır.
+- **Shriek**: savaş dışı.
+- `docs/SRD-DENETIM.md`: canavar yeteneği tam 139, savaş dışı 55, yok 0.
+
 ## 2026-11-03 — Kuyruk 19 (8–11): 11+ karşılaşmalar, K18-3 düşmanları, gece/fırtına kuralları, üç motor hatası
 
 - **11+ zorluk katmanı (görev 8)**:

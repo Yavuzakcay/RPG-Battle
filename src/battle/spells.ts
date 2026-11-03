@@ -646,9 +646,12 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   // Otomatik isabet eden büyüyü kesen tepki (Shield → Magic Missile; Görev R1).
   const guard = m.kind === 'auto' ? targetedReactions(current, actor, target, rng, { srd: spell.srd, name: spell.name }) : null;
   if (guard?.events.length) { events.push(...guard.events); current = applyEvents(current, guard.events); }
+  // Kuyruk 19 (srdK19): Redirect Attack büyü saldırı zarında da: ilk ışın yer değiştiren dosta gider.
+  const redirected = m.kind === 'attack' && globalRule(state, 'srdK19') ? targetedReactions(current, actor, target, rng) : null;
+  if (redirected?.events.length) { events.push(...redirected.events); current = applyEvents(current, redirected.events); }
   // Görev WIZARD: Chromatic Orb sıçraması: hasar zarlarından ikisi aynıysa küre hedefin 30 ft içindeki başka bir yaratığa
   // sıçrar (yeni saldırı); slot seviyesi kadar, her yaratık bir kez (SRD 5.2.1).
-  let curId = target.id;
+  let curId = redirected?.targetId ?? target.id;
   let raysLeft = rays;
   let leapsLeft = m.leap ? slotLevel ?? spell.level : 0;
   const struck = new Set<string>();

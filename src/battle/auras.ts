@@ -58,6 +58,20 @@ export function auraResistOf(state: BattleState, c: Combatant): string[] {
   return [...out].sort();
 }
 
+/** Kuyruk 19 (srdK19): 30 ft içindeki (kendisi dahil) tepkisi ve havuzu duran Burst of Ingenuity sahibi. */
+export function burstOf(state: BattleState, c: Combatant): Combatant['burstBy'] {
+  if (c.hp <= 0 || !c.pos) return undefined;
+  for (const b of Object.values(state.combatants)) {
+    if (b.side !== c.side || b.hp <= 0 || !b.pos || b.economy.reaction || isIncapacitated(b.conditions)) continue;
+    const spec = b.reactions?.find((r) => r.kind === 'burst');
+    if (!spec?.pool) continue;
+    const left = b.reactionUses?.[spec.pool] ?? spec.uses ?? 0;
+    if (left <= 0 || (b.id !== c.id && gap(state, b, c) * 5 > (spec.rangeFt ?? 30))) continue;
+    return { id: b.id, pool: { id: spec.pool, remaining: left - 1 } };
+  }
+  return undefined;
+}
+
 export function syncAuras(state: BattleState): BattleState {
   const on = !!globalRule(state, 'auraOfProtection');
   const charmOn = !!globalRule(state, 'countercharm');
@@ -67,6 +81,7 @@ export function syncAuras(state: BattleState): BattleState {
   const k19On = !!globalRule(state, 'featuresK19');
   const anyLife = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.auraLife) || c.traits?.includes('night-spirit')) || !!state.map?.zones?.some((z) => z.spec?.resist?.length);
   const anyFate = k19On && Object.values(state.combatants).some((c) => c.traits?.includes('improve-fate'));
+  const anyBurst = !!globalRule(state, 'srdK19') && Object.values(state.combatants).some((c) => c.reactions?.some((r) => r.kind === 'burst'));
   let next = state;
   for (const c of Object.values(state.combatants)) {
     const want = on ? auraSaveOf(state, c) : 0;
@@ -76,12 +91,13 @@ export function syncAuras(state: BattleState): BattleState {
     const k19 = k19On && !!c.traits?.some((x) => K19_SYNC.includes(x));
     const fateBy = anyFate ? fateHolder(state, c, true) : undefined;
     const fateFoe = anyFate ? fateHolder(state, c, false) : undefined;
-    if ((c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
+    const burst = anyBurst ? burstOf(state, c) : undefined;
+    if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
       && c.fateBy === fateBy && c.fateFoe === fateFoe) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, ...rest } = next.combatants[c.id] as Combatant;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, ...rest } = next.combatants[c.id] as Combatant;
     next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
       ...(fix ? { inspireFix: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
-      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}) } as Combatant } };
+      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}) } as Combatant } };
   }
   return next;
 }

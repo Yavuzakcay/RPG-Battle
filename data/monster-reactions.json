@@ -26,7 +26,7 @@
       { "id": "pirate-captain:riposte", "name": "Riposte", "status": "ok", "kind": "parry", "acBonus": 3, "melee": true, "counterAttack": "Rapier", "note": "Iskalatınca erişimdeyse saldırana Rapier saldırısı" }
     ],
     "mummy-lord": [
-      { "id": "mummy-lord:whirlwind-of-sand", "name": "Whirlwind of Sand", "status": "partial", "kind": "parry", "acBonus": 2, "note": "AC +2 çalışıyor; 60 ft ışınlanma ve varış yerindeki yaratıklara etki yok" }
+      { "id": "mummy-lord:whirlwind-of-sand", "name": "Whirlwind of Sand", "status": "ok", "kind": "parry", "acBonus": 2, "note": "AC +2; ışınlanma 60 ft (düşmanları en çok kör edecek boş altıgen), varışta 5 ft'teki düşmanlar mumyanın sonraki turunun sonuna dek Blinded (srdK19)", "teleportFt": 60 }
     ],
     "mage": [
       { "id": "mage:protective-magic-shield", "name": "Protective Magic (Shield)", "status": "ok", "kind": "shield", "acBonus": 5, "pool": "protective-magic", "uses": 3, "blocks": ["spells:magic-missile"] },
@@ -41,40 +41,40 @@
       { "id": "lich:protective-magic-counterspell", "name": "Protective Magic (Counterspell)", "status": "ok", "kind": "counterspell", "save": "con", "dc": 20, "rangeFt": 60 }
     ],
     "stone-giant": [
-      { "id": "stone-giant:deflect-missile", "name": "Deflect Missile", "status": "partial", "kind": "reduce", "ranged": true, "types": ["bludgeoning", "piercing", "slashing"], "dice": "1d10+6", "recharge": 5, "note": "Menzilli B/P/S isabetinde hasar 1d10 + 6 azalır (Recharge 5–6); hasar 0'a inince geri yöneltme yok" }
+      { "id": "stone-giant:deflect-missile", "name": "Deflect Missile", "status": "ok", "kind": "reduce", "ranged": true, "types": ["bludgeoning", "piercing", "slashing"], "dice": "1d10+6", "recharge": 5, "note": "Menzilli B/P/S isabetinde hasar 1d10 + 6 azalır (Recharge 5–6); hasar 0'a inerse 60 ft içinde görülen saldırana DEX 17 ya da 1d10 + 6 Force (srdK19)", "redirectSave": { "ability": "dex", "dc": 17, "dice": "1d10+6", "type": "force", "rangeFt": 60 } }
     ],
     "goblin-boss": [
-      { "id": "goblin-boss:redirect-attack", "name": "Redirect Attack", "status": "partial", "kind": "redirectAttack", "note": "Yalnızca silah saldırılarında; büyü ve canavar saldırılarında sorulmaz" }
+      { "id": "goblin-boss:redirect-attack", "name": "Redirect Attack", "status": "ok", "kind": "redirectAttack", "note": "Silah, canavar ve büyü saldırı zarlarında: 5 ft'teki Small/Medium dostla yer değiştirir, saldırı dosta gider (canavar ve büyü saldırıları srdK19)" }
     ],
     "chain-devil": [
       { "id": "chain-devil:unnerving-gaze", "name": "Unnerving Gaze", "status": "ok", "kind": "gaze", "save": "wis", "dc": 15, "condition": "Frightened", "rangeFt": 30, "note": "Başarılı save'de bu savaş boyunca bağışık (SRD: 24 saat)" }
     ],
     "octopus": [
-      { "id": "octopus:ink-cloud", "name": "Ink Cloud", "status": "none", "note": "Karartılmış alan (Heavily Obscured bulut) ve Dash ile kaçış modellenmedi" }
+      { "id": "octopus:ink-cloud", "name": "Ink Cloud", "status": "ok", "note": "Bir yaratık 5 ft'te turunu bitirince (su altında): 5 ft küp yoğun örtü 10 tur, yüzme hızı kadar uzaklaşır (1/Day, srdK19)", "kind": "ink", "pool": "octopus:ink", "uses": 1, "sizeFt": 5, "on": "turnEnd" }
     ],
     "giant-octopus": [
-      { "id": "giant-octopus:ink-cloud", "name": "Ink Cloud", "status": "none", "note": "Karartılmış alan (Heavily Obscured bulut) ve Dash ile kaçış modellenmedi" }
+      { "id": "giant-octopus:ink-cloud", "name": "Ink Cloud", "status": "ok", "note": "Hasar alınca (su altında): 10 ft küp yoğun örtü 10 tur, yüzme hızı kadar uzaklaşır (1/Day, srdK19)", "kind": "ink", "pool": "giant-octopus:ink", "uses": 1, "sizeFt": 10, "on": "damaged" }
     ],
     "ochre-jelly": [
-      { "id": "ochre-jelly:split", "name": "Split", "status": "none", "note": "Savaş sırasında yeni yaratık doğurma (bölünme) motorda yok" }
+      { "id": "ochre-jelly:split", "name": "Split", "status": "none", "note": "Tepki listesinde yok; Split srdK19 anahtarıyla canavar yeteneği olarak çalışır (src/battle/monsterAbilities.ts, data/canavar-yetenekleri.json)" }
     ],
     "black-pudding": [
-      { "id": "black-pudding:split", "name": "Split", "status": "none", "note": "Savaş sırasında yeni yaratık doğurma (bölünme) motorda yok" }
+      { "id": "black-pudding:split", "name": "Split", "status": "none", "note": "Tepki listesinde yok; Split srdK19 anahtarıyla canavar yeteneği olarak çalışır (src/battle/monsterAbilities.ts, data/canavar-yetenekleri.json)" }
     ],
     "nalfeshnee": [
-      { "id": "nalfeshnee:pursuit", "name": "Pursuit", "status": "none", "note": "Teleport eylemi ve hareket bitince tetik yok" }
+      { "id": "nalfeshnee:pursuit", "name": "Pursuit", "status": "ok", "note": "120 ft içinde gördüğü bir düşman hareketli turunu bitirince ona 10 ft içindeki boş altıgene ışınlanır (srdK19)", "kind": "pursuit", "rangeFt": 120 }
     ],
     "shrieker-fungus": [
       { "id": "shrieker-fungus:shriek", "name": "Shriek", "status": "none", "note": "Savaşta mekanik etkisi yok (300 ft duyulan çığlık)" }
     ],
     "rust-monster": [
-      { "id": "rust-monster:reflexive-antennae", "name": "Reflexive Antennae", "status": "none", "note": "Antennae eylemi (metal eşya aşındırma) oyunda yok" }
+      { "id": "rust-monster:reflexive-antennae", "name": "Reflexive Antennae", "status": "ok", "note": "Yakın dövüş isabetinde saldıranın silahına Antennae: DEX 11 ya da silah saldırılarına −1 (birikir, −5'te durur; srdK19)", "kind": "antennae", "dc": 11 }
     ],
     "sphinx-of-wonder": [
-      { "id": "sphinx-of-wonder:burst-of-ingenuity", "name": "Burst of Ingenuity", "status": "none", "note": "Yetenek kontrolü ve save sonrasına eklenen tepki tetiği yok" }
+      { "id": "sphinx-of-wonder:burst-of-ingenuity", "name": "Burst of Ingenuity", "status": "ok", "note": "Kendisi ya da 30 ft'teki dostu save'i +2 ile tutturabiliyorsa +2 (2/Day; yetenek kontrolü harita kontrollerinde; srdK19)", "kind": "burst", "pool": "sphinx-of-wonder:burst", "uses": 2, "rangeFt": 30 }
     ],
     "shield-guardian": [
-      { "id": "shield-guardian:protection", "name": "Protection", "status": "none", "note": "Muskayı takan (sahip) kavramı yok" }
+      { "id": "shield-guardian:protection", "name": "Protection", "status": "ok", "note": "Muska kavramı yok: 5 ft içindeki bir dosta isabet edince o dosta muhafızın sonraki turuna dek AC +5 (srdK19)", "kind": "guard", "acBonus": 5 }
     ]
   }
 }

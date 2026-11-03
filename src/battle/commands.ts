@@ -17,7 +17,7 @@ import { selfRestorationEvents } from './classTraits';
 import { executeHighlandsUse, highlandsAfterEvents, highlandsRoundEvents } from './highlands';
 import { desertRoundEvents } from './desert';
 import { lairEvents, legendaryEvents, legendaryRefreshEvents, registerLegendaryCaster } from './boss';
-import { anyTurnEndEvents, executeMonsterAbility, monsterAfterEvents, monsterTurnEvents, abilitiesOf } from './monsterAbilities';
+import { anyTurnEndEvents, reactionTurnEndEvents, executeMonsterAbility, monsterAfterEvents, monsterTurnEvents, abilitiesOf } from './monsterAbilities';
 import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
 import { collapseFallEvents, executeClimb } from './climb';
@@ -421,6 +421,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const anyEnd = anyTurnEndEvents(current);
     events.push(...anyEnd);
     current = applyEvents(current, anyEnd);
+    // Kuyruk 19 (srdK19): tur sonu canavar tepkileri (Ink Cloud, Pursuit).
+    const reactEnd = reactionTurnEndEvents(current, actor.id, rng);
+    events.push(...reactEnd);
+    current = applyEvents(current, reactEnd);
     // Kuyruk 33: başka bir yaratığın turunun hemen ardından boss'un efsanevi eylemi (kural sürümü 11, anahtar).
     const legend = legendaryEvents(current, actor.id, rng);
     events.push(...legend);

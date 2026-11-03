@@ -15,7 +15,9 @@ export interface ExtraDie {
   /** Kuyruk 43: `success`: başarısız save başarıya döner (Legendary Resistance). */
   /** Kuyruk 19: `floor`: toplam `rerollBonus`'tan küçükse o sayılır (Indomitable Might: STR skoru); diğer ikinci şanslardan önce. */
   /** Kuyruk 19: `onSuccess`: başarılı zardan `die` düşülür, sonucu bozarsa harcanır (Improve Fate, düşmana). */
-  reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor' | 'onSuccess';
+  reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor' | 'onSuccess' | 'plus';
+  /** Kuyruk 19 (`plus`): sahibinin tepki havuzu ve kalan (kullanılınca bir azalır). */
+  pool?: { id: string; remaining: number };
   /** Kuyruk 19 (Halfling Luck): yalnızca doğal 1'de. */
   onNatural1?: boolean;
   rerollBonus?: number;
@@ -28,7 +30,8 @@ export interface ExtraDie {
   reaction?: boolean;
 }
 /** Atılmış eklenti zarı: işaretli değer (−1d4 ise negatif). `resource`: kullanılan kaynak (Görev F). */
-export interface RolledExtra { label: string; die: string; value: number; effectId?: string; holderId?: string; single?: boolean; resource?: string; /** Kuyruk 18 H3: sahibinin tepkisi harcandı. */ reaction?: boolean }
+export interface RolledExtra { label: string; die: string; value: number; effectId?: string; holderId?: string; single?: boolean; resource?: string; /** Kuyruk 18 H3: sahibinin tepkisi harcandı. */ reaction?: boolean;
+  /** Kuyruk 19: sahibinin tepki havuzu (Burst of Ingenuity 2/Day): kalan. */ pool?: { id: string; remaining: number } }
 
 /** Eklenti zarlarını atar (d20'nin ardından, aynı türde zar isteğiyle). */
 export function rollExtras(extra: ExtraDie[] | undefined, kind: RollKind, rng: Rng): RolledExtra[] {
@@ -51,10 +54,16 @@ export function secondChance(
   if (floor && (floor.rerollBonus ?? 0) >= fail.need) {
     return { total: floor.rerollBonus as number, natural: fail.natural, entry: { label: floor.label, die: 'STR', value: (floor.rerollBonus as number) - fail.total } };
   }
-  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && e.reroll !== 'onSuccess' && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c))));
+  // Kuyruk 19 (`plus`, Burst of Ingenuity): sabit ek yalnızca başarıya çevirecekse seçilir.
+  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && e.reroll !== 'onSuccess' && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c)))
+    && (e.reroll !== 'plus' || fail.total + (e.rerollBonus ?? 0) >= fail.need));
   if (!x) return null;
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
   const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };
+  if (x.reroll === 'plus') {
+    const v = x.rerollBonus ?? 0;
+    return { total: fail.total + v, natural: fail.natural, entry: { ...base, die: x.die, value: v, ...(x.reaction ? { reaction: true } : {}), ...(x.pool ? { pool: x.pool } : {}) } };
+  }
   if (x.reroll === 'success') {
     return { total: fail.need, natural: fail.natural, entry: { ...base, die: x.die, value: fail.need - fail.total, ...(x.resource ? { resource: x.resource } : {}) } };
   }

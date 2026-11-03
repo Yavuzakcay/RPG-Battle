@@ -551,8 +551,18 @@ export interface ReactionMechanic {
     /** Görev K3: Storm's Thunder (hasar verene zar kadar hasar; saldırı ya da save yok). */
     | 'thunder'
     /** Görev BARD: Cutting Words (dosta isabet eden saldırıda Bardic Inspiration zarı düşülür). */
-    | 'cutting';
+    | 'cutting'
+    /** Kuyruk 19 (srdK19, SRD canavar tepkileri): Protection (5 ft'teki dosta AC), Reflexive Antennae, Ink Cloud,
+     * Pursuit, Burst of Ingenuity. */
+    | 'guard' | 'antennae' | 'ink' | 'pursuit' | 'burst';
   acBonus?: number;
+  /** Kuyruk 19: Whirlwind of Sand: AC'nin ardından ışınlanma (ft) ve varışta 5 ft'tekilere Blinded. */
+  teleportFt?: number;
+  /** Kuyruk 19: Deflect Missile: hasar 0'a inerse görülen bir yaratığa save'li geri yöneltme. */
+  redirectSave?: { ability: 'dex'; dc: number; dice: string; type: string; rangeFt: number };
+  /** Kuyruk 19: Ink Cloud: küp kenarı (ft) ve tetik (tur sonu yakında / hasar). */
+  sizeFt?: number;
+  on?: 'turnEnd' | 'damaged';
   /** Yalnızca yakın dövüş (`melee`) ya da menzilli (`ranged`) saldırıda. */
   melee?: boolean;
   ranged?: boolean;

@@ -635,6 +635,8 @@ export interface Combatant {
   consumables?: Record<string, number>;
   /** Kuyruk 43: Legendary Resistance bu turlar arasında kullanıldı (kendi turunun başında kalkar). */
   lrLock?: boolean;
+  /** Kuyruk 19 (srdK19): 30 ft içindeki Sphinx of Wonder'ın Burst of Ingenuity'si (reducer `syncAuras` yazar). */
+  burstBy?: { id: string; pool: { id: string; remaining: number } };
   legendaryUsed?: string[];
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
   heavyArmor: boolean;
