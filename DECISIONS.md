@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Denge turu onayları (kullanıcı)
+
+- Bölge üreteci seviye çarpanı: 9. seviye ×1,3, 13. seviye ×0,8, diğerleri 1 (`data/bolge-karsilasma.json` `seviyeCarpani`).
+- Sessiz Nöbetçi olduğu gibi kalır.
+- Seferlere uzun dinlenme durağı: Volkan "Dinlenme" (`kamp`) 13 saat yürüyüşle akşama varılır; Derinlikler uzun yolunda yeni "Gece Kampı" (`gece-kampi`, Mantar → Sandık). Motor değişmedi: 06:00 başlangıç + 16 saat kuralı veriyle karşılanır (`travelHours: 13`, bilgi alanı `uzunDinlenme`). Lav dalı (kısa yol) durak almadı.
+- Volkan Lav Tapınağı 3. seviye: Cultist Fanatic çıktı, 2 Scout + 3 Cultist + Magma Mephit. Sonuç: Volkan 3 %20 → %80, Derinlikler 5 (Mantar) %57 → %97 (DENGE.md).
+
 ## 2026-11-03 — Denge turu (wip/denge)
 
 Ölçümler `harita/belgeler/DENGE.md` "Denge turu". Uygulananlar:
