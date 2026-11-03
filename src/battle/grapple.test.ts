@@ -73,7 +73,12 @@ describe('yakalama (Grappled)', () => {
     expect(grappleCleanup(withB({ pos: o(9, 3) }))[0]).toMatchObject({ reason: 'aralarında mesafe açıldı' });
   });
   it('yakalayan yürürse hedefi sürükler; her adımı iki kat hareket harcar', () => {
-    const s = hit(field([monster('bugbear-warrior', 'B'), hero()], { B: o(5, 3), A: o(5, 2) }), 'B', 'Grab', scripted([20, 15], [6, 3], [6, 3])).state;
+    const s0 = hit(field([monster('bugbear-warrior', 'B'), hero()], { B: o(5, 3), A: o(5, 2) }), 'B', 'Grab', scripted([20, 15], [6, 3], [6, 3])).state;
+    // Kuyruk 19: Bugbear'ın SRD Abduct'ı (srdK19) sürüklemeyi bedava yapar; genel kural için işaret kaldırılır.
+    const B0 = s0.combatants.B as Combatant;
+    const s = { ...s0, combatants: { ...s0.combatants, B: { ...B0, traits: (B0.traits ?? []).filter((t) => t !== 'abduct') } } };
+    const abduct = run(s0, { type: 'move', actorId: 'B', to: o(5, 5) }, GM);
+    expect(abduct.state.combatants.B).toMatchObject({ pos: o(5, 5), movementUsed: 2 });
     const r = run(s, { type: 'move', actorId: 'B', to: o(5, 5) }, GM);
     expect(r.state.combatants.B).toMatchObject({ pos: o(5, 5), movementUsed: 4 });
     expect(r.state.combatants.A?.pos).toEqual(o(5, 4));

@@ -46,7 +46,9 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   // Kuyruk 19 (sihirli eşyalar, Antitoxin): belli durumlara/büyülere karşı save avantajı = başarısızlıkta yeniden atış (olasılık aynı).
   if (on === 'save') {
     const against = [...new Set((c.effects ?? []).flatMap((e) => e.saveAdvAgainst ?? []))];
-    if (against.length) k18.push({ label: 'Avantaj (eşya)', die: 'd20', sign: 1, reroll: 'd20', against, holderId: c.id });
+    // Kuyruk 19 (Rakshasa Greater Magic Resistance): büyülere karşı save kendiliğinden başarılı.
+    if (c.traits?.includes('greater-magic-resistance')) k18.push({ label: 'Greater Magic Resistance', die: 'd20', sign: 1, reroll: 'success', against: ['spell'], holderId: c.id });
+    else if (against.length) k18.push({ label: 'Avantaj (eşya)', die: 'd20', sign: 1, reroll: 'd20', against, holderId: c.id });
   }
   // Kuyruk 19: Disciplined Survivor (Monk 14): başarısız save 1 Focus ile yeniden atılır.
   if (on === 'save' && c.traits?.includes('disciplined-survivor') && resourceLeft(c, 'focus') > 0) {

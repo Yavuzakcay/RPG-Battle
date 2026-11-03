@@ -36,6 +36,9 @@ export type DamageEffect =
   /** Kuyruk 19: Relentless Rage (Barbarian 11): öfkedeyken 0 HP'de CON save; başarıda HP = 2 × seviye. */
   | { kind: 'relentless_rage'; dc: number; natural: number; total: number; success: boolean; hp: number }
   | { kind: 'relentless_endurance' }
+  /** Kuyruk 19: emilen hasar (iyileşme) ve hasar türüne bağlı canavar tepkisi (Freeze, Aversion to Fire, Hydra ateşi). */
+  | { kind: 'absorbed'; amount: number }
+  | { kind: 'trait_fx'; name: string; effect: Partial<ActiveEffect>; headsFire?: boolean }
   /** Karakter 0 HP'ye düştü: ölüm save'lerine başlar. */
   | { kind: 'dying' }
   /** Kalan hasar maksimum HP'ye eşit veya fazla: anında ölüm. */
@@ -209,6 +212,22 @@ export interface ActiveEffect {
   polymorph?: boolean;
   /** K17 G1: Banishment: savaştan geçici çıkış (Ethereal gibi hedef alınamaz; tur başında dönmez, konsantrasyonla biter). */
   banished?: boolean;
+  /** Kuyruk 19 (SRD canavar yetenekleri, `monsterAbilities.ts`): hasar türü emme (Fire/Lightning/Acid Absorption), hasar
+   * tepkisi (Freeze, Aversion to Fire), Bloodied'da avantaj, Blood Frenzy, Aura of Authority (ft), yaratık altıgenlerinden
+   * geçme (Swarm, Air/Water/Fire Form), saldırılarda avantaj (War Cry), çılgınlık (Berserk), yutulma, iyileşmeme (Swarm, Mucus Cloud). */
+  absorb?: string[];
+  onDamageFx?: Array<{ type: string; effect: Partial<ActiveEffect>; name: string }>;
+  bloodiedAdv?: { attack?: boolean; save?: boolean };
+  bloodFrenzy?: boolean;
+  authority?: number;
+  passCreatures?: boolean;
+  attackAdv?: boolean;
+  berserk?: boolean;
+  swallowedBy?: string;
+  swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number };
+  noHeal?: boolean;
+  /** Kuyruk 19 (Corrosive Form): silah başına birikmiş saldırı cezası. */
+  corroded?: Record<string, number>;
   /** Kuyruk 19 (Cloud of Insects): konsantrasyon save'ine dezavantaj. */
   concDis?: boolean;
   /** Kuyruk 19: büyücünün o turdan sonraki turunun sonunda biter (Telekinesis; değer: uygulandığı tur). */
@@ -660,6 +679,10 @@ export interface Combatant {
   castLevels?: Record<string, number>;
   /** Kuyruk 19 (Hydra Multiple Heads): canlı baş sayısı, son turundan beri ölen baş, ateş hasarı aldı mı, turun başındaki HP. */
   heads?: number; headsLost?: number; headsFire?: boolean; headsTurnHp?: number;
+  /** Kuyruk 19: şarj bekleyen canavar yetenekleri (`monster_ability`) ve ölüm patlaması yapıldı mı. */
+  abilityRecharge?: string[]; burstDone?: boolean;
+  /** Kuyruk 19: Aura of Authority içinde (türetilir, `authority.ts`). */
+  authorityAdv?: boolean;
   /** Ortam kurallarında aranan küçük harfli tarif (ırk ve sınıf). */
   casterTag: string;
   attacks: CombatantAttack[];
@@ -1290,6 +1313,8 @@ export type Command =
    * saldırının yerine geçen nefes/büyü/özel eylem ve ek kullanımlar; her adımın kendi hedefi olabilir.
    */
   | { type: 'multiattack'; actorId: string; targetId: string; plan?: MultiStep[] }
+  /** Kuyruk 19 (srdK19): SRD canavar yeteneği (`data/canavar-yetenekleri.json`); `option` Cunning Action/büyü seçimi. */
+  | { type: 'monster_ability'; actorId: string; abilityId: string; targetId?: string; targetHex?: Offset; option?: string }
   /**
    * İtme (Unarmed Strike'ın Shove seçeneği): Attack eylemindeki bir saldırının yerine. Hedef STR
    * ya da DEX save'i yapar; başarısızsa 5 ft itilir (`push`) ya da Prone olur (`prone`).
@@ -1755,6 +1780,12 @@ export type BattleEvent =
   | { type: 'teleported'; actorId: string; from: Offset; to: Offset; label: string; /** Kuyruk 19: harcanan hareket (altıgen) ve Tree Stride işareti. */ cost?: number; stride?: boolean }
   /** Görev S1: bitkinlik seviyesi değişti (6'da ölür). */
   | { type: 'exhaustion_changed'; targetId: string; level: number; reason: string }
+  /** Kuyruk 19: canavar yeteneğinin şarjı (kullanıldı ya da tur başı d6). */
+  | { type: 'ability_recharge'; actorId: string; abilityId: string; used?: boolean; d6?: number; recharged?: boolean }
+  /** Kuyruk 19 (Hydra Multiple Heads): baş sayısı, son turundan beri ölen, ateş hasarı aldı mı, turun başındaki HP. */
+  | { type: 'heads_changed'; actorId: string; heads: number; lost: number; fire: boolean; turnHp: number }
+  /** Kuyruk 19: ölüm patlaması yapıldı (bir kez). */
+  | { type: 'burst_done'; actorId: string }
   | { type: 'battle_finished'; winner: Side }
   /** Kuyruk 31: keşif adımı öncesi hareket sayacı sıfırlanır. */
   | { type: 'explore_step'; actorId: string }

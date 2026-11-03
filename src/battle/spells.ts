@@ -649,6 +649,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const mode = combineModes(elusiveFilter(t, sources));
       const attackInput = { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, withinFiveFt(current, actor, t, !rangedSpell)), extra: attackDice(actor) };
       let res = resolveAttack(attackInput, rollTag(rng, { by: actor.id }));
+      // Kuyruk 19 (srdK19): Greater Magic Resistance (büyü saldırıları kendiliğinden ıskalar), Reflective Carapace (menzilli büyü saldırısı etkilemez).
+      if (t.traits?.includes('greater-magic-resistance') || (rangedSpell && t.traits?.includes('reflective-carapace'))) res = { ...res, hit: false, critical: false, damage: null };
       // K11: Seeking Spell: ıskada 1 Sorcery Point ile d20 bir kez yeniden (yeni sonuç geçerli); büyünün ilk ıskasında.
       const points = resourceLeft(current.combatants[actor.id] as Combatant, POINTS);
       if (!res.hit && !seekUsed && actor.traits?.includes('mm-seeking') && points >= 1) {

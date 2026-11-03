@@ -31,6 +31,8 @@ export function polymorphForm(caster: Combatant, target: Combatant, choice?: str
 export function polymorphEvents(state: BattleState, caster: Combatant, target: Combatant, choice?: string): BattleEvent[] {
   const m = polymorphForm(caster, target, choice);
   if (!m) return [];
+  // Kuyruk 19 (Golem Immutable Form; srdK19): şekil değiştirmez.
+  if (target.traits?.includes('immutable-form')) return [{ type: 'map_note', text: `${target.name}: Immutable Form (şekil değiştirmez).` }];
   const beast = combatantFromMonster(m, { id: `${target.id}:poly`, name: m.name });
   const base = target.shape ? { ...target, ...target.shape.prev } : target;
   const stats = { ...shapeStats(m, base), polymorph: true, attacks: beast.attacks, multiattack: beast.multiattack };

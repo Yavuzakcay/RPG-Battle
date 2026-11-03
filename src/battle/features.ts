@@ -38,6 +38,14 @@ import { markSources, masteryEvents } from './mastery';
 import { giantHit } from './giant';
 import { hurlEvents } from './apex';
 import { itemAttackPlus, itemHitsFor } from './itemEffects';
+
+/** Kuyruk 19 (Corrosive Form): oozea vuran büyüsüz silahın birikimli cezası (−5'te silah yok olur, burada −5'te kalır). */
+function corrodeEvent(a: Combatant, o: AttackOption): BattleEvent {
+  const key = o.weaponId ?? o.label;
+  const cur = a.effects?.find((e) => e.id === `corrode:${a.id}`)?.corroded ?? {};
+  return { type: 'effect_added', targetId: a.id, effect: { id: `corrode:${a.id}`, name: 'Corrosive Form', sourceId: a.id, until: 1e9, corroded: { ...cur, [key]: (cur[key] ?? 0) + 1 } } };
+}
+const corrodedOf = (a: Combatant, o: AttackOption): number => Math.min(5, a.effects?.find((e) => e.id === `corrode:${a.id}`)?.corroded?.[o.weaponId ?? o.label] ?? 0);
 import { divineStrikeHit } from './cleric';
 import { canFrenzy, withRageDamage } from './rage';
 import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } from './divine';
@@ -226,7 +234,7 @@ export function weaponAttackEvents(
   const targetAc = effectiveAc(state, target) + reach.cover + (option.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
   const rolled = resolveAttack(
     {
-      attackBonus: option.attackBonus + itemAttackPlus(actor, option, k19i), targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
+      attackBonus: option.attackBonus + itemAttackPlus(actor, option, k19i) - corrodedOf(actor, option), targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
       extra: attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
       // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
@@ -343,6 +351,8 @@ export function weaponAttackEvents(
       ...(hit && result.critical && hasTrait(a1, 'remarkable-athlete') && featuresOn(s1) ? [shiftGrant(s1, a1)] : []),
       // Kuyruk 19 (11–20): Hurl Through Hell (Fiend 14): isabette CHA save.
       ...(hit ? hurlEvents(s1, a1, t1, rng) : []),
+      // Kuyruk 19 (srdK19 Corrosive Form): büyüsüz silah oozea hasar verince birikimli −1.
+      ...(hit && !option.spell && t1.traits?.includes('corrosive-form') && itemAttackPlus(a1, option, k19i) === 0 ? [corrodeEvent(a1, option)] : []),
     ];
     // Kuyruk 19: Lifedrinker: HP zarı harcayıp zar + CON kadar iyileşme (eksik HP en az ortalama zar kadarsa).
     if (hit && bonus.extras.some((x) => x.label === 'Lifedrinker') && globalRule(state, 'lifedrinkerFull') && (a1.hitDice?.left ?? 0) > 0) {
@@ -398,6 +408,8 @@ export function opportunityAttacks(
   if (!mover0 || mover0.economy.disengaged || mover0.hp <= 0) return [];
   // Kuyruk 19 (canavar Flyby): uçarken erişimden çıkması fırsat saldırısı doğurmaz.
   if (mover0.traits?.includes('flyby') && isAirborne(mover0)) return [];
+  // Kuyruk 19 (Deer, Rat Agile): erişimden çıkması fırsat saldırısı doğurmaz.
+  if (mover0.traits?.includes('agile')) return [];
   const events: BattleEvent[] = [];
   let current = state;
   for (const id of state.order) {

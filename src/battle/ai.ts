@@ -47,6 +47,7 @@ import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from
 import { bonusOptionsOf, freeCast } from './economy';
 import { bestAim } from './areaAttack';
 import { multiSpecOf, multiTotal } from './monsters';
+import { abilitiesOf, abilityReady } from './monsterAbilities';
 import { checkReach as reachOk, monsterAttackReach as atkReach } from './range';
 import type { MultiStep } from './types';
 import { center as hexCenter } from '../rules/area';
@@ -417,6 +418,9 @@ function bestNow(state: BattleState, actor: Combatant): Command | null {
     }
     return null;
   }
+  // Kuyruk 19 (srdK19): SRD canavar yetenekleri (bonus eylemler önce; eylemler yalnızca saldırıdan iyiyse).
+  const ab = abilityCommand(state, actor);
+  if (ab) return ab;
   const area = areaAttack(state, actor);
   if (area) return area;
   // CILA: büyü listesi olan düşman tarafı (çağrılmış ya da Game Master'ın büyücüsü) da zemin büyüsünü kullanır.
@@ -494,6 +498,22 @@ function multiPlanCommand(state: BattleState, actor: Combatant, foes: Combatant[
   if (!steps.length) return null;
   const first = steps.find((x) => x.targetId)?.targetId ?? foes[0]!.id;
   return { type: 'multiattack', actorId: actor.id, targetId: first, plan: steps };
+}
+
+/**
+ * Kuyruk 19: canavar yeteneği komutu. Bonus eylemli yetenekler (Charge, Leap, Petrifying Gaze, War Cry, Moan…) her
+ * uygun turda; eylemli yetenekler yalnızca save/çağırma/yutma/büyü/ışınlanma türünde. Ethereal ve kendine aç/kapa
+ * yetenekleri yapay zekâ kullanmaz (Game Master seçer).
+ */
+function abilityCommand(state: BattleState, actor: Combatant): Command | null {
+  for (const a of abilitiesOf(state, actor)) {
+    if (!abilityReady(actor, a) || a.kind === 'ethereal' || a.toggle || (a.kind === 'grant' && !a.jumpFt && !a.grant?.includes('dash'))) continue;
+    if (a.cost === 'action' && !['save', 'summon', 'swallow', 'spell', 'teleport'].includes(a.kind)) continue;
+    if (a.kind === 'grant' && a.grant?.includes('dash') && foesOf(state, actor).some((f) => f.pos && actor.pos && gap(state, f, actor) <= 1)) continue;
+    const cmd: Command = { type: 'monster_ability', actorId: actor.id, abilityId: a.id };
+    if (worthIt(state, actor, cmd)) return cmd;
+  }
+  return null;
 }
 
 /** Canavarın bir eylemde saldırılarıyla ortalama hasarı (Multiattack'ta tekrar sayılarıyla). */
@@ -1626,6 +1646,14 @@ function companionCommand(state: BattleState, actor: Combatant, canAct: boolean,
 export function chooseEnemyCommand(state: BattleState): Command {
   const actor = state.combatants[currentActorId(state)];
   if (!actor || actor.side !== 'enemies') return { type: 'end_turn', actorId: currentActorId(state) };
+  // Kuyruk 19 (srdK19): hareket veren bonus eylem yetenekleri (Charge, Leap, Aquatic Charge) yürümeden önce, düşman yanında değilken.
+  if (!actor.economy.bonus && actor.movementUsed === 0 && !foesOf(state, actor).some((f) => f.pos && actor.pos && gap(state, f, actor) <= 1)) {
+    for (const a of abilitiesOf(state, actor)) {
+      if (a.cost !== 'bonus' || !abilityReady(actor, a) || !(a.moveOnly || a.jumpFt || a.leapFt)) continue;
+      const cmd: Command = { type: 'monster_ability', actorId: actor.id, abilityId: a.id };
+      if (worthIt(state, actor, cmd)) return cmd;
+    }
+  }
   return chooseCommand(state);
 }
 

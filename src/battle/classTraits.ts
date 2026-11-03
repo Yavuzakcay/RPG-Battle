@@ -36,6 +36,12 @@ export function traitSources(state: BattleState, actor: Combatant, target: Comba
     out.push({ effect: 'advantage', reason: 'Precise Hunter' });
   }
   if (opts.opportunity && hasTrait(target, 'escape-the-horde')) out.push({ effect: 'disadvantage', reason: 'Escape the Horde' });
+  // Kuyruk 19 (srdK19 canavar yetenekleri): Bloodied Fury/Frenzy, Blood Frenzy, War Cry, Aura of Authority.
+  const fx = actor.effects ?? [];
+  if (fx.some((e) => e.bloodiedAdv?.attack) && actor.hp <= actor.maxHp / 2) out.push({ effect: 'advantage', reason: 'Bloodied Fury' });
+  else if (fx.some((e) => e.bloodFrenzy) && target.hp < target.maxHp) out.push({ effect: 'advantage', reason: 'Blood Frenzy' });
+  else if (fx.some((e) => e.attackAdv)) out.push({ effect: 'advantage', reason: 'War Cry' });
+  else if (actor.authorityAdv) out.push({ effect: 'advantage', reason: 'Aura of Authority' });
   return out;
 }
 

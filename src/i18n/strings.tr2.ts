@@ -8,7 +8,7 @@ const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg
 export const TR_EXTRA = {
   log: {
     hex: (col: number, row: number) => `sütun ${col}, satır ${row}`,
-    note: { immune: 'bağışık', vulnerable: 'zayıflık ×2', resistant: 'direnç ½' } as Record<string, string>,
+    note: { immune: 'bağışık', vulnerable: 'zayıflık ×2', resistant: 'direnç ½', absorbed: 'emildi (iyileştirdi)' } as Record<string, string>,
     mode: { advantage: ' (avantaj)', disadvantage: ' (dezavantaj)', normal: '' } as Record<string, string>,
     regenBlocked: 'yenilenme engellendi', regenPending: 'yenilenmeyi bekliyor',
     itemUsed: (who: string, item: string, target: string, left: number) => `${who} ${item} kullanıyor → ${target} (kalan ${left})`,
@@ -111,6 +111,10 @@ export const TR_EXTRA = {
     became: (c: string) => `${c} oldu`, wore: (c: string) => `${c} geçti`, sink: (n: number) => `batma sayacı ${n}`, stop: 'hareketi bitti',
     toLava: (at: string) => `${at} lava döndü.`, tile: (at: string, name: string) => `${at}: ${name}.`,
     lavaWarning: (n: number) => `Uyarı: lav yükseliyor! ${n} kıyı altıgeni bir sonraki tur başında lav olacak.`,
+    abilityRecharge: (who: string, what: string, d6: number, ok: boolean) => `${who}: ${what} şarj d6 ${d6} → ${ok ? 'hazır' : 'hazır değil'}.`,
+    headsChanged: (who: string, heads: number) => `${who}: ${heads} baş.`,
+    absorbedFx: (n: number) => `hasarı emdi: +${n} HP`,
+    traitFx: (name: string) => `${name} tetiklendi`,
     legendaryUsed: (who: string, what: string, left: number) => `Efsanevi eylem: ${who} — ${what} (kalan ${left}).`,
     shoveWhat: (push: boolean): string => (push ? '5 ft itme' : 'yere düşürme'),
     shoveAuto: 'otomatik başarısız', shoveRoll: (d20: string, total: number | null) => `zar ${d20}, toplam ${total ?? 0}`,

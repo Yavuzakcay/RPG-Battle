@@ -17,6 +17,7 @@ import {
 } from '../rules/hex';
 import { canControl, fail, finish, isIntangible, isTargetable, type CommandResult, type Failure } from './common';
 import { vortexBlocks, zoneMoveCost, zoneStepEvents } from './zones';
+import { monsterStepEvents } from './monsterSteps';
 import { applyEvents, speedHexes } from './reduce';
 import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBog } from './maprules';
 import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
@@ -179,7 +180,8 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const SZ = ['T', 'S', 'M', 'L', 'H', 'G'];
   const sizeRank = (x: string) => SZ.indexOf(x);
   const wrestler = !!actor.traits?.includes('grappler') && !!globalRule(state, 'featuresK19');
-  const dragging = Object.values(state.combatants).some((c) => c.grapple?.by === actor.id && !(wrestler && sizeRank(c.size) <= sizeRank(actor.size)));
+  // Kuyruk 19 (Bugbear Abduct): yakaladığını taşımak ek hareket istemez.
+  const dragging = !actor.traits?.includes('abduct') && Object.values(state.combatants).some((c) => c.grapple?.by === actor.id && !(wrestler && sizeRank(c.size) <= sizeRank(actor.size)));
   const enemyAt = new Map<string, Combatant>();
   for (const c of Object.values(state.combatants)) {
     // Dokunulamaz çağrının (ruh sürüsü, Flaming Sphere) içinden geçilir (Görev B2).
@@ -229,7 +231,9 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const ground0 = base === null || zc === null ? null : Math.max(base, zc);
     const ground = ground0 !== null && allyAt.has(hexKey(h)) ? Math.max(through, ground0) : ground0;
     // Kuyruk 19 (Halfling Nimbleness): en az bir boy büyük yaratığın altıgeninden geçer (zorlu arazi gibi).
-    const nimble = !!enemy && !!actor.traits?.includes('halfling-nimbleness') && sizeRank(enemy.size) > sizeRank(actor.size);
+    const nimble = !!enemy && ((!!actor.traits?.includes('halfling-nimbleness') && sizeRank(enemy.size) > sizeRank(actor.size))
+      // Kuyruk 19 (Swarm, Air/Water/Fire Form): yaratık altıgenlerinden geçer; sürünün altıgeninden de herkes geçer.
+      || !!actor.effects?.some((e) => e.passCreatures) || !!enemy.effects?.some((e) => e.passCreatures && e.noHeal));
     const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
     const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1);
     return cost === null ? null : cost * slow;
@@ -299,6 +303,10 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     const zoned = down() ? [] : zoneStepEvents(current, actor.id, prev, step, rng);
     effects.push(...zoned);
     current = applyEvents(current, zoned);
+    // Kuyruk 19 (srdK19): Fire Form (girdiği yaratık altıgenine turda bir 1d10 ateş), Water Susceptibility (suda her 5 ft 1d6 soğuk).
+    const formed = down() ? [] : monsterStepEvents(current, actor.id, step, rng);
+    effects.push(...formed);
+    current = applyEvents(current, formed);
     prev = step;
     if (entered.stop || down()) break;
   }

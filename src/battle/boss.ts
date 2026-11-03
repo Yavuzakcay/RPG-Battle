@@ -167,7 +167,7 @@ export function legendaryEvents(state: BattleState, endedId: string, rng: Rng): 
 }
 
 /** Kuyruk 43: Pounce hareketi: hızın yarısı kadar, en yakın düşmanın bitişiğine (yol bulma, fırsat saldırısı dahil). */
-function pounceMove(state: BattleState, b: Combatant, foes: Combatant[], rng: Rng): BattleEvent[] {
+export function pounceMove(state: BattleState, b: Combatant, foes: Combatant[], rng: Rng, allowFar = false): BattleEvent[] {
   if (!state.map || !b.pos) return [];
   const budget = Math.floor(speedHexes(b) / 2);
   if (budget <= 0) return [];
@@ -182,7 +182,7 @@ function pounceMove(state: BattleState, b: Combatant, foes: Combatant[], rng: Rn
     const d = Math.min(...foes.map((f) => distance(to, f.pos as Offset)));
     if (!best || d < best.d || (d === best.d && cost < best.cost)) best = { to, d, cost };
   }
-  if (!best || best.d > 1) return [];
+  if (!best || (best.d > 1 && !allowFar)) return [];
   // Hareket bütçesi: kendi turunun dışında; hızın yarısı (yürüyüş sınırı için harcanmış sayılır).
   const mover = { ...b, movementUsed: speedHexes(b) - budget };
   const r = executeMove({ ...state, combatants: { ...state.combatants, [b.id]: mover } }, mover, best.to, rng);
@@ -263,7 +263,7 @@ function namedStrike(s: BattleState, b: Combatant, names: string[], foes: Combat
 }
 
 /** Yeni efsanevi eylem türleri (SRD 5.2.1; veri `data/efsanevi.json`, `k19: true`). */
-function k19Legendary(s: BattleState, b: Combatant, a: LegendaryAction, foes: Combatant[], rng: Rng): BattleEvent[] {
+export function k19Legendary(s: BattleState, b: Combatant, a: LegendaryAction, foes: Combatant[], rng: Rng): BattleEvent[] {
   const names = [a.attack, a.alt].filter((x): x is string => !!x);
   if (a.kind === 'strike') {
     let cur = s; let pre: BattleEvent[] = [];
@@ -344,7 +344,7 @@ function legendarySpell(s: BattleState, b: Combatant, a: LegendaryAction, foes: 
 }
 
 /** Uzaklaşma hareketi (Cloaked Flight): hızın yarısı, en yakın düşmandan en uzak altıgen. */
-function retreatMove(s: BattleState, b: Combatant, foes: Combatant[], rng: Rng): BattleEvent[] {
+export function retreatMove(s: BattleState, b: Combatant, foes: Combatant[], rng: Rng): BattleEvent[] {
   if (!s.map || !b.pos) return [];
   const budget = Math.floor(speedHexes(b) / 2);
   const costs = costsFrom(b.pos, sizeOfMap(s), moveCostFn(s, b), budget);
@@ -364,7 +364,7 @@ function retreatMove(s: BattleState, b: Combatant, foes: Combatant[], rng: Rng):
 }
 
 /** Efsanevi save'li etki: canavar saldırısı yolundan (tek hedef ya da alan), başarısızlara durum/etki/itme/Exhaustion. */
-function legendarySave(s: BattleState, b: Combatant, a: LegendaryAction, foes0: Combatant[], rng: Rng): BattleEvent[] {
+export function legendarySave(s: BattleState, b: Combatant, a: LegendaryAction, foes0: Combatant[], rng: Rng): BattleEvent[] {
   if (!a.save) return [];
   if (a.underwater && !isUnderwater(s, b)) return [];
   const foes = foes0.filter((f) => !(a.skipTypes ?? []).includes(f.creatureType ?? ''));
@@ -409,7 +409,7 @@ function legendarySave(s: BattleState, b: Combatant, a: LegendaryAction, foes0: 
 }
 
 /** Işınlanma (Deathly Teleport: düşmanlardan uzağa, kalkıştaki 10 ft'e hasar; Radiant Teleport: en çok düşmanın yanına, varışta DEX save). */
-function legendaryTeleport(s: BattleState, b: Combatant, a: LegendaryAction, foes: Combatant[], rng: Rng): BattleEvent[] {
+export function legendaryTeleport(s: BattleState, b: Combatant, a: LegendaryAction, foes: Combatant[], rng: Rng): BattleEvent[] {
   if (!s.map || !b.pos) return [];
   const r = Math.floor((a.ft ?? 60) / 5);
   const near = (h: Offset, rad: number) => foes.filter((f) => distance(hexOf(f), h) * 5 <= rad);
@@ -446,7 +446,7 @@ function legendaryTeleport(s: BattleState, b: Combatant, a: LegendaryAction, foe
 }
 
 /** Düz itme (Cold Gale): kaynaktan uzağa `hexes` altıgen, engelde durur. */
-function pushAway(s: BattleState, src: Combatant, t: Combatant, hexes: number, _rng: Rng): BattleEvent[] {
+export function pushAway(s: BattleState, src: Combatant, t: Combatant, hexes: number, _rng: Rng): BattleEvent[] {
   let at = hexOf(t);
   const size = sizeOfMap(s);
   for (let i = 0; i < hexes; i++) {

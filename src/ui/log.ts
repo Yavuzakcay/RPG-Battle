@@ -21,6 +21,8 @@ function effectText(e: DamageEffect): string {
     case 'death_ward': return L.deathWard(e.name);
     case 'relentless_rage': return L.relentlessRage(e.natural, e.total, e.dc, e.success, e.hp);
     case 'relentless_endurance': return L.relentlessEndurance;
+    case 'absorbed': return L.absorbedFx(e.amount);
+    case 'trait_fx': return L.traitFx(e.name);
     case 'dying': return L.dying;
     case 'instant_death': return L.instantDeath;
     case 'death_save_failed': return L.deathSaveFailed(e.died, e.failures);
@@ -265,6 +267,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.lavaWarning(event.hexes.length);
     case 'map_note':
       return event.text;
+    case 'ability_recharge':
+      return event.used ? '' : L.abilityRecharge(n(event.actorId), event.abilityId, event.d6 ?? 0, !!event.recharged);
+    case 'heads_changed':
+      return L.headsChanged(n(event.actorId), event.heads);
+    case 'burst_done':
+      return '';
     case 'legendary_used':
       return L.legendaryUsed(n(event.actorId), event.name, event.left);
     case 'legendary_refresh':

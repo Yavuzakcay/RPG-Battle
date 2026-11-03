@@ -4,9 +4,12 @@ export interface DamageProfile {
   resistances?: string[];
   immunities?: string[];
   vulnerabilities?: string[];
+  /** Kuyruk 19: hasar yerine iyileştiren türler (canavar yeteneği, `srdK19`). */
+  absorb?: string[];
 }
 
-export type DamageNote = 'immune' | 'vulnerable' | 'resistant' | null;
+/** Kuyruk 19: `absorbed` (Fire/Lightning/Acid Absorption): hasar yerine o kadar HP (miktar eksi). */
+export type DamageNote = 'immune' | 'vulnerable' | 'resistant' | 'absorbed' | null;
 
 const has = (list: string[] | undefined, type: string) =>
   (list ?? []).some((t) => t.trim().toLowerCase() === type);
@@ -19,6 +22,7 @@ export function adjustDamage(
 ): { amount: number; note: DamageNote } {
   const t = (type ?? '').trim().toLowerCase();
   if (t === '') return { amount, note: null };
+  if (has(profile.absorb, t)) return { amount: -amount, note: 'absorbed' };
   if (has(profile.immunities, t)) return { amount: 0, note: 'immune' };
   if (has(profile.vulnerabilities, t)) return { amount: amount * 2, note: 'vulnerable' };
   if (has(profile.resistances, t)) return { amount: Math.floor(amount / 2), note: 'resistant' };

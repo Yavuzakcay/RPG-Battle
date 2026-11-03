@@ -65,21 +65,68 @@ const RULES: Array<[string, string, string]> = [
   ['Underwater Combat', 'tam', 'yakın dövüş dezavantajı (piercing ve yüzme hızı istisna), menzilli dezavantaj ve menzil ötesi ıska; Kuyruk 19: su altındakine ateş direnci'],
 ];
 for (const [n, st, note] of RULES) add('Savaş kuralı', n, st, note);
-// Canavar yetenekleri: verideki "desteklenmiyor" notları kategoriye göre (Kuyruk 19 monsterTraits.ts ile kapatılanlar tam).
+// Canavar yetenekleri: verideki "desteklenmiyor" notları ad bazında; Kuyruk 19 modülleriyle kapatılanlar tam.
 const monsters = J('data/monsters.json') as Array<{ id: string; unsupported?: string[] }>;
-const TAM = new Set(['Durum bağışıklığı', 'Hız: Climb', 'Hız: Swim', 'Duyu', 'Trait: Magic Resistance', 'Trait: Sunlight Sensitivity', 'Trait: Illumination', 'Trait: Flyby', 'Trait: Ice Walk', 'Trait: Web Walker',
-  'Trait: Fire Aura', 'Trait: Stench', 'Trait: Spider Climb', 'Trait: Legendary Resistance', 'Trait: Incorporeal Movement', 'Legendary Actions', 'Boyut Large', 'Boyut Huge', 'Boyut Gargantuan']);
-const DISI = new Set(['Trait: Amphibious', 'Trait: Water Breathing', 'Trait: Hold Breath', 'Trait: Diabolical Restoration', 'Trait: Demonic Restoration', 'Trait: Exalted Restoration', 'Trait: Fiendish Restoration', 'Trait: Elemental Restoration',
-  'Trait: Mimicry', 'Trait: Telepathic Bond', 'Trait: Speak with Beasts and Plants', 'Trait: Divine Awareness', 'Trait: Inscrutable', 'Trait: Ethereal Sight', 'Trait: Coven Magic', 'Trait: Wishes', 'Trait: Running Water', 'Trait: Stake to the Heart', 'Trait: Forbiddance', 'Trait: Amorphous', 'Trait: Immutable Form', 'Trait: Siege Monster', 'Hover']);
-const monCat: Record<string, number> = {};
+const abil = J('data/canavar-yetenekleri.json') as Record<string, { abilities?: Array<{ en: string }>; passive?: Record<string, unknown> }>;
+const mreact = (J('data/monster-reactions.json') as { monsters: Record<string, Array<{ name: string; status: string }>> }).monsters;
+const legend = (J('data/efsanevi.json') as { monsters: Record<string, unknown> }).monsters;
+const mspells = J('data/canavar-buyuleri.json') as Record<string, unknown>;
+const multi = J('data/multiattack.json') as Record<string, unknown>;
+const abilityNames = new Set(Object.values(abil).flatMap((e) => (e.abilities ?? []).map((a) => a.en)));
+const PASSIVE_KEYS: Record<string, string> = {
+  'Blurred Form': 'blurred', 'Light Sensitivity': 'lightSensitivity', 'Sunlight Weakness': 'sunlightWeak', Sunlight: 'sunlight', 'Running Water': 'runningWater',
+  'Bloodied Fury': 'bloodied', 'Bloodied Frenzy': 'bloodied', 'Blood Frenzy': 'bloodFrenzy', 'Aura of Authority': 'authority', 'Multiple Heads': 'heads', Berserk: 'berserk',
+  'Misty Escape': 'mistyEscape', Transparent: 'transparent', 'Siege Monster': 'siegeMonster', 'Greater Magic Resistance': 'greaterMagicResistance',
+  'Reflective Carapace': 'reflectiveCarapace', 'Corrosive Form': 'corrosive', Swarm: 'swarm', 'Air Form': 'passCreatures', 'Water Form': 'passCreatures',
+  'Fire Form': 'fireForm', 'Water Susceptibility': 'waterSusceptible', 'Earth Glide': 'earthGlide', Abduct: 'abduct', 'Standing Leap': 'jump', 'Running Leap': 'jump',
+  Jumper: 'jump', 'Loathsome Limbs': 'loathsomeLimbs', 'Death Burst': 'deathBurst', 'Death Throes': 'deathBurst', 'Heat Aura': 'ownerTurn', 'Barbed Hide': 'ownerTurn',
+  'Mucus Cloud': 'ownerTurn', 'Vile Appearance': 'auras', 'Fear Aura': 'auras', 'Aberrant Ground': 'auras', Gibbering: 'auras', 'Lightning Absorption': 'absorb',
+  'Fire Absorption': 'absorb', 'Acid Absorption': 'absorb', Freeze: 'onDamage', 'Aversion to Fire': 'onDamage', Agile: 'traits', Reactive: 'traits', Evasion: 'traits',
+  'Immutable Form': 'traits', 'Reactive Heads': 'heads', 'Cunning Action': 'bonusGrant', 'Deathless Agility': 'bonusGrant', 'Vampire Weakness': 'sunlight',
+  Roar: 'roarSequence', Tunneler: 'tunneler', Split: 'split',
+};
+const DISI: Record<string, string> = {
+  Amphibious: 'nefes alma (savaşta boğulma yok)', 'Water Breathing': 'nefes alma', 'Hold Breath': 'nefes alma', 'Limited Amphibiousness': 'nefes alma (4 saatte bir)',
+  'Diabolical Restoration': 'günler sonra başka düzlemde dirilme', 'Demonic Restoration': 'günler sonra dirilme', 'Exalted Restoration': 'günler sonra dirilme',
+  'Fiendish Restoration': 'günler sonra dirilme', 'Elemental Restoration': 'günler sonra dirilme', 'Celestial Restoration': 'günler sonra dirilme',
+  'Eldritch Restoration': 'günler sonra dirilme', 'Undead Restoration': '24 saat sonra dirilme', 'Hellish Restoration': 'Cehennem’de günler sonra dirilme', 'Spirit Jar': 'günler sonra dirilme',
+  Mimicry: 'ses taklidi (hikâye)', 'Telepathic Bond': 'telepati (hikâye)', 'Speak with Beasts and Plants': 'iletişim', 'Divine Awareness': 'yalanı sezme', Inscrutable: 'zihin okunamaz (hikâye)',
+  'Ethereal Sight': 'Ethereal düzlemi görme (harita tek düzlem)', 'Coven Magic': 'kehanet/keşif büyüleri (savaş dışı)', Wishes: 'Wish (hikâye)', Forbiddance: 'davetsiz eve giremez',
+  'Stake to the Heart': 'kalbe kazık (hikâye, Game Master)', Amorphous: '1 inçlik aralıktan geçme (altıgen haritada dar geçit yok)', Compression: '1 inçlik aralık (dar geçit yok)',
+  Ephemeral: 'eşya taşıyamaz', 'Probing Telepathy': 'telepati', 'Shark Telepathy': 'telepatiyle köpekbalığı yönetme (hikâye)', 'Vampiric Connection': 'telepati',
+  'Shielded Mind': 'zihin okunamaz', 'Succubus Form': 'uzun dinlenmede biçim', 'Incubus Form': 'uzun dinlenmede biçim', 'Draconic Origin': 'Game Master seçimi (veride tür)',
+  'Iron Scent': 'metal sezme (keşif)', 'Treasure Sense': 'hazine sezme (keşif)', 'Sense Magic': 'büyü sezme (keşif)', 'Beast of Burden': 'taşıma kapasitesi', Training: 'beceri (keşif)',
+  'Troll Spawn': '24 saat sonra trol olma', 'Soul Bag': 'Nightmare Haunting (savaş dışı)', 'Nightmare Haunting': 'Dream (savaş dışı)', Bound: 'muska bağı (hikâye)',
+  'Spell Storing': 'muska sahibinin büyü saklaması (kurulum)', 'Magic Rope': 'ip nesnesi (Entangling Rope saldırısı veride)', 'Illusory Appearance': 'Disguise Self (savaş dışı)',
+  'Read Thoughts': 'Detect Thoughts (savaş dışı)', 'Shape-Shift': 'biçim değişimi yalnız görünüm/hız (stat bloğu aynı)', 'Destroy Metal': 'giyilmeyen metal nesne (savaş dışı)',
+  'Confer Fire Resistance': 'binek bineğe direnç (binicilik `mounted.ts`; nightmare binek değil)', 'Ooze Cube': 'Engulf saldırısı veride', Hover: 'uçan yaratık düşmez (motor uçuşta düşürmez)',
+  'Saldırı yok': 'basit vuruş eklendi (savaş dışı yaratık)', Adhesive: 'yalnızca nesne biçiminde (pusu; keşif)', Shriek: 'uyarı sesi (harita alarmına bağlı değil; hikâye)', Hellfire: '',
+};
+const monCat: Record<string, { n: number; st: string; note: string }> = {};
+const mark = (key: string, st: string, note: string) => { const c = monCat[key] ??= { n: 0, st, note }; c.n++; };
 for (const m of monsters) for (const u of m.unsupported ?? []) {
-  const key = u.startsWith('Trait:') ? u.split(/[(:]/).slice(0, 2).join(':').trim() : u.startsWith('Hız:') ? u.split(' ').slice(0, 2).join(' ') : u.split(':')[0]!.trim();
-  monCat[key] = (monCat[key] ?? 0) + 1;
+  const nm = u.replace(/^(Trait|Eylem|Bonus eylem|Tepki): /, '').split(' (')[0]!.split(':')[0]!.trim();
+  const kind = u.split(':')[0]!.trim();
+  const p = abil[m.id]?.passive ?? {};
+  if (u.startsWith('Multiattack')) mark('Multiattack (bileşim, yerine geçen, ek kullanım)', multi[m.id] ? 'tam' : 'yok', 'data/multiattack.json');
+  else if (u.startsWith('Eylem: Spellcasting') || u.startsWith('Eylem: Hellfire')) mark('Spellcasting', mspells[m.id] || abil[m.id] ? 'tam' : 'yok', 'data/canavar-buyuleri.json (6.+ seviye büyüler görev 3+6 ile)');
+  else if (u.startsWith('Legendary Actions')) mark('Legendary Actions', legend[m.id] ? 'tam' : 'yok', 'data/efsanevi.json');
+  else if (kind === 'Tepki') { const r = (mreact[m.id] ?? []).find((x) => x.name.startsWith(nm)); const pk = PASSIVE_KEYS[nm]; mark(`Tepki: ${nm}`, r?.status === 'ok' || (pk && p[pk] !== undefined) ? 'tam' : DISI[nm] !== undefined ? 'savaş dışı' : 'yok', r?.status === 'ok' ? 'monster-reactions.json' : pk && p[pk] !== undefined ? 'monsterAbilities.ts' : DISI[nm] ?? 'açık iş'); }
+  else if (DISI[nm] !== undefined) mark(nm, 'savaş dışı', DISI[nm]!);
+  else if (abilityNames.has(nm) || (mspells[m.id] as { bonus?: Array<{ entry: string }>; action?: Array<{ entry: string }> } | undefined)?.bonus?.some((b) => b.entry === nm)
+    || (mspells[m.id] as { action?: Array<{ entry: string }> } | undefined)?.action?.some((b) => b.entry === nm)) mark(`${kind}: ${nm}`, 'tam', 'monster_ability / Spellcasting');
+  else if (PASSIVE_KEYS[nm] && (p[PASSIVE_KEYS[nm]!] !== undefined || ((p.traits as string[] | undefined) ?? []).length)) mark(nm, 'tam', 'monsterAbilities.ts (pasif)');
+  else if (/^(Durum bağışıklığı|Duyu|Hız: Climb|Hız: Swim)/.test(u) || ['Magic Resistance', 'Legendary Resistance', 'Spider Climb', 'Flyby', 'Web Walker', 'Sunlight Sensitivity', 'Illumination', 'Fire Aura', 'Stench', 'Ice Walk', 'Incorporeal Movement'].includes(nm)) mark(nm.startsWith('Durum') ? 'Durum bağışıklığı' : nm.split(' ')[0] === 'Hız' ? nm.split(' ').slice(0, 2).join(' ') : nm, 'tam', 'monsterTraits.ts / önceki kuyruklar');
+  else if (u.startsWith('Boyut')) mark('Boyut (çok altıgen)', 'tam', 'multiHex bayrağı (Görev A6)');
+  else if (u.startsWith(': 1/Day') || /1\/Day \(Recharge 6 olarak\)/.test(u)) mark('1/Day saldırıları', 'tam', 'savaşta bir kez (şarj olmaz)');
+  else if (u.startsWith('Sabit hasar')) mark('Sabit hasar', 'tam', 'savaş başında SRD sabit değeri (monsterAbilities.ts)');
+  else if (u.startsWith('Hız: Burrow')) mark('Hız: Burrow', 'tam', 'yer altından: yaratıkların altından geçer, zorlu arazi yok');
+  else if (u.startsWith('Spellcasting:')) mark('Spellcasting alan şekli', 'tam', 'büyüler motorun alan şekilleriyle');
+  else if (/^[^:]+: \d\/Day \(Recharge/.test(u)) mark('N/Day saldırıları', 'tam', 'savaşta N kez');
+  else mark(`${kind}: ${nm}`, 'yok', 'açık iş');
 }
-for (const [k, n] of Object.entries(monCat).sort((a, b) => b[1] - a[1])) {
-  const st = TAM.has(k) ? 'tam' : DISI.has(k) ? 'savaş dışı' : 'yok';
-  add('Canavar yeteneği', `${k} (${n} canavar)`, st, st === 'tam' ? 'Kuyruk 19 monsterTraits.ts / önceki kuyruklar' : st === 'savaş dışı' ? 'savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim)' : 'açık iş');
-}
+for (const [k, v] of Object.entries(monCat).sort((a, b) => b[1].n - a[1].n)) add('Canavar yeteneği', `${k} (${v.n})`, v.st, v.note);
+
 const md = `# SRD 5.2.1 tam denetim (Kuyruk 19, görev 7)
 
 Üretim: \`npx vite-node scripts/srd-denetim.ts\`. Durum: **tam** (oyunda kural gibi çalışır), **kısmi**, **yok**, **savaş dışı** (savaşta mekanik karşılığı yok; gerekçe notta). Kuyruk 19 eklentileri Game Master anahtarı \`srdK19\` (kural sürümü 16) ile.

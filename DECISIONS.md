@@ -2,6 +2,39 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk 19 (7d): SRD canavar yetenekleri
+
+- Bu görevdeki her şey `srdK19` anahtarına ve kural sürümü 16'ya bağlı. Canavar verisi (`data/monsters.json`) değişmedi; yeni veriler betikle üretilir:
+  - `canavar-buyuleri.json` ← `scripts/k19-canavar-buyuleri.mjs`
+  - `efsanevi.json` ← `scripts/k19-efsanevi.mjs`
+  - `multiattack.json` ← `scripts/k19-multiattack.py`
+  - `canavar-yetenekleri.json` ← `scripts/k19-canavar-yetenek.py`
+- **Spellcasting**:
+  - At Will büyüler slotsuz ve sınırsız; N/Day büyülerin her biri N kullanımlık.
+  - "level N version" büyünün seviyesini belirler (`castLevels`).
+  - Oyunda kaydı olmayan büyüler (6.+ seviye) listeye girmez. 3+6. görevle büyü eklendikçe kendiliğinden açılır.
+  - Yapay zekâ önce alan büyüsünü dener (en az iki düşman, dost yok). Tek hedefli büyüyü yalnızca saldırılarının ortalamasından iyiyse seçer.
+- **Efsanevi eylemler**: SRD'de efsanevi eylemi olan 30 canavarın hepsi veride.
+  - Yeni türler: spell, save, teleport, buff, quake, drain.
+  - Sınırlama: Kraken'ın Toxic Ink'i yalnızca su altındayken çalışır.
+- **Multiattack** iki yolla kurulabilir:
+  - Plan: herhangi bir bileşim, saldırının yerine nefes ya da büyü, ek kullanımlar; her adımın ayrı hedefi olabilir.
+  - Sınırlama: sabit sayılı metinlerde ad başına üst sınır uygulanır, kalan seçim serbesttir.
+  - Plansız komut eskisi gibi çalışır.
+- **Yetenekler** iki biçimde gelir:
+  - Komutla (`monster_ability`): eylem ya da bonus eylem; kullanım hakkı ya da şarj.
+  - Pasif: savaş başında, tur başı/sonu ve komut sonu kancalarıyla işlenir.
+- Yaklaşıklamalar ve sınırlamalar:
+  - Trampling Charge ve Leap: hedefin içine girmek yerine yanına iner.
+  - Gibbering: yalnızca save'i işler.
+  - Animate Trees: ağaç zemini olmayan haritada kullanılamaz.
+  - Balor Death Throes: iki hasar türü iki ayrı save'le uygulanır.
+  - Reflective Carapace: menzilli büyü saldırısı etkilemez, ama büyüyü geri yansıtmaz.
+  - Loathsome Limbs: tur başına 15+ hasar sayılır; yalnızca kesici hasar ayrımı yapılmaz.
+- **Savaş dışı** sayılanlar: günler sonra dirilme, telepati, nefes alma, keşif sezgileri, dar aralıktan geçme (altıgen haritada dar geçit yok).
+- **Hâlâ eksik**: 8 canavar tepkisi (Ink Cloud, Redirect Attack, Burst of Ingenuity, Deflect Missile'ın geri yöneltmesi, Pursuit, Whirlwind of Sand, Reflexive Antennae, Protection). Bunlar `docs/SRD-DENETIM.md`'de "yok" olarak duruyor.
+- Test değeri değişti: `grapple.test.ts`'teki Bugbear sürükleme testi SRD Abduct yüzünden iki parçaya ayrıldı. Abduct'la sürükleme bedava; genel kural işaretsiz yaratıkla sınanıyor.
+
 ## 2026-11-03 — Kuyruk 19 (7): SRD tam denetim — eşyalar, türler, binek, canavar yetenekleri
 
 - Denetim tablosu `docs/SRD-DENETIM.md` (`npx vite-node scripts/srd-denetim.ts`): silah, zırh, donanım, sihirli eşya, feat, tür, geçmiş, kural ve canavar yeteneği satır satır.

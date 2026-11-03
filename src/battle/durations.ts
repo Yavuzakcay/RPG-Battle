@@ -124,7 +124,8 @@ export function dodgeActive(conds: string[]): boolean {
 }
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
-export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; rage?: unknown; rageStrAdvantage?: boolean; effects?: Array<{ saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[] }> };
+export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean;
+  effects?: Array<{ saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean } }> };
 
 /**
  * Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı; Danger Sense gibi avantajlı save'ler (Incapacitated
@@ -139,7 +140,10 @@ export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: A
     || (!!s.saveAdvantage?.includes(ability) && !isIncapacitated(s.conditions))
     || (ability === 'str' && !!s.rage && s.rageStrAdvantage === true)
     // Görev B1: süren etkilerin save avantajı (Haste DEX, Beacon of Hope WIS, Gaseous Form, Enlarge STR).
-    || !!s.effects?.some((e) => e.saveAdv?.includes(ability));
+    || !!s.effects?.some((e) => e.saveAdv?.includes(ability))
+    // Kuyruk 19 (SRD canavar yetenekleri): Bloodied Frenzy (Bloodied'da save avantajı), Aura of Authority.
+    || (!!s.effects?.some((e) => e.bloodiedAdv?.save) && s.hp !== undefined && s.hp <= (s.maxHp ?? 0) / 2)
+    || !!s.authorityAdv;
   // Görev B1: süren etkinin save dezavantajı (Reduce, Ray of Enfeeblement: STR).
   const dis = !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll);
   // Avantaj ve dezavantaj (tabanla birlikte) birbirini götürür (SRD).

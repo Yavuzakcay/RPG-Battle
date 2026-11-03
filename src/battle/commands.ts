@@ -17,6 +17,7 @@ import { selfRestorationEvents } from './classTraits';
 import { executeHighlandsUse, highlandsAfterEvents, highlandsRoundEvents } from './highlands';
 import { desertRoundEvents } from './desert';
 import { lairEvents, legendaryEvents, legendaryRefreshEvents, registerLegendaryCaster } from './boss';
+import { anyTurnEndEvents, executeMonsterAbility, monsterAfterEvents, monsterTurnEvents, abilitiesOf } from './monsterAbilities';
 import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
 import { collapseFallEvents, executeClimb } from './climb';
@@ -202,6 +203,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk 19 (Mounted Combat): bineği düşen binici.
   const fell = globalRule(next, 'srdK19') ? riderCleanup(next, rng) : [];
   if (fell.length) { next = applyEvents(next, fell); events = [...events, ...fell]; }
+  // Kuyruk 19: ölüm patlaması, yutulanlar, Hydra başları, Misty Escape.
+  const mon = monsterAfterEvents(next, rng, events);
+  if (mon.length) { next = applyEvents(next, mon); events = [...events, ...mon]; }
   const vanished = summonCleanup(next);
   if (vanished.length) { next = applyEvents(next, vanished); events = [...events, ...vanished]; }
   // Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar büyücüye (her hasar yolunda, komutun sonunda).
@@ -403,6 +407,13 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const zoneEnd = zoneTurnEvents(current, actor.id, 'end', rng);
     events.push(...zoneEnd);
     current = applyEvents(current, zoneEnd);
+    // Kuyruk 19 (srdK19): canavarın tur sonu yetenekleri (Heat Aura, Mucus Cloud, akan su, Hydra başları).
+    const monEnd = monsterTurnEvents(current, current.combatants[actor.id] as Combatant, 'end', rng);
+    events.push(...monEnd);
+    current = applyEvents(current, monEnd);
+    const anyEnd = anyTurnEndEvents(current);
+    events.push(...anyEnd);
+    current = applyEvents(current, anyEnd);
     // Kuyruk 33: başka bir yaratığın turunun hemen ardından boss'un efsanevi eylemi (kural sürümü 11, anahtar).
     const legend = legendaryEvents(current, actor.id, rng);
     events.push(...legend);
@@ -459,6 +470,13 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const start = startOfTurnEvents(nextCombatant, rng);
       events.push(...start);
       current = applyEvents(current, start);
+      // Kuyruk 19 (srdK19): canavar yeteneklerinin şarjı ve tur başı yetenekleri (güneş, Barbed Hide, yutulanlar, Berserk).
+      const monStart = [...abilitiesOf(current, nextCombatant).filter((a) => a.recharge !== undefined && nextCombatant.abilityRecharge?.includes(a.id)).map((a) => {
+        const d6 = rollDie(6, rollTag(rng, { kind: 'recharge', by: nextCombatant.id }));
+        return { type: 'ability_recharge', actorId: nextCombatant.id, abilityId: a.id, d6, recharged: d6 >= (a.recharge ?? 6) } as BattleEvent;
+      }), ...monsterTurnEvents(current, current.combatants[next.id] as Combatant, 'start', rng)];
+      events.push(...monStart);
+      current = applyEvents(current, monStart);
       // Bitişikteki gizli düşmanları fark eder (Görev K).
       const noticed = noticeEvents(current, current.combatants[next.id] as Combatant);
       events.push(...noticed);
@@ -685,6 +703,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'familiar_strike') return executeFamiliarStrike(state, actor, cmd.targetId, rng);
   if (cmd.type === 'familiar_order') return executeFamiliarOrder(state, actor);
   if (cmd.type === 'gaze') return executeGaze(state, actor, cmd.targetId);
+  if (cmd.type === 'monster_ability') return executeMonsterAbility(state, actor, cmd.abilityId, cmd.targetId, cmd.targetHex, rng, cmd.option);
 
   // Silah saldırısı
   const target = state.combatants[cmd.targetId];

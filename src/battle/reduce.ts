@@ -4,6 +4,7 @@
  */
 import { BOON_TURN_REFILL } from './boons';
 import { syncRiders } from './mounted';
+import { syncAuthority } from './authority';
 import { spells } from '../data';
 import { homeSide, syncAllegiance } from './allegiance';
 import { syncAuras } from './auras';
@@ -230,6 +231,12 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
         if (w) next = withCombatant(next, gift, { resources: { ...w.resources, 'protectors-gift': 0 } });
       } else next = dropEffects(next, id, (x) => x.id === e.effectId);
     }
+    if (e.kind === 'trait_fx') {
+      const h = next.combatants[id];
+      if (h && e.headsFire) next = withCombatant(next, id, { headsFire: true });
+      else if (h && Object.keys(e.effect).length) next = withCombatant(next, id, { effects: [...(h.effects ?? []).filter((x) => x.id !== `srd19:${id}:fx:${e.name}`),
+        { ...e.effect, id: `srd19:${id}:fx:${e.name}`, name: e.name, sourceId: id, until: next.round + 1 } as ActiveEffect] });
+    }
     if (e.kind === 'relentless_endurance') {
       const h = next.combatants[id];
       if (h) next = withCombatant(next, id, { resources: { ...h.resources, relentlessEndurance: 0 } });
@@ -259,7 +266,7 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)))));
+  return syncAuthority(syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event))))));
 }
 
 /**
@@ -472,6 +479,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // Kuyruk 19 (11–20): "geçerli turun sonuna dek" süren etkiler (Superior Hunter's Defense) biten turla biter.
       for (const c of Object.values(next.combatants)) {
         if (c.effects?.some((e) => e.turnEndOf === event.actorId)) next = withCombatant(next, c.id, { effects: c.effects.filter((e) => e.turnEndOf !== event.actorId) });
+      }
+      // Kuyruk 19 (Marilith Reactive): her turda bir tepki.
+      for (const c of Object.values(next.combatants)) {
+        if (c.traits?.includes('reactive') && c.economy.reaction) next = withCombatant(next, c.id, { economy: { ...c.economy, reaction: false } });
       }
       // Turda bir hasar azaltma (Resistance; Görev R2): her tur geçişinde yeniden kullanılabilir.
       for (const c of Object.values(next.combatants)) {
@@ -826,6 +837,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'healed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      // Kuyruk 19 (Swarm, Mucus Cloud): HP kazanamaz.
+      if (c.effects?.some((e) => e.noHeal) && event.targetHpAfter > c.hp) return state;
       // 0 HP'deki karakter iyileşince ayağa kalkar.
       if (c.hp === 0 && event.targetHpAfter > 0 && (c.life === 'dying' || c.life === 'stable')) {
         return withCombatant(state, event.targetId, {
@@ -1125,6 +1138,17 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, c.id, { pos: event.to, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
         ...(event.stride ? { economy: { ...c.economy, treeStride: true } } : {}) });
     }
+    case 'ability_recharge': {
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      const have = c.abilityRecharge ?? [];
+      if (event.used) return withCombatant(state, event.actorId, { abilityRecharge: have.includes(event.abilityId) ? have : [...have, event.abilityId] });
+      return event.recharged ? withCombatant(state, event.actorId, { abilityRecharge: have.filter((x) => x !== event.abilityId) }) : state;
+    }
+    case 'heads_changed':
+      return withCombatant(state, event.actorId, { heads: event.heads, headsLost: event.lost, headsFire: event.fire, headsTurnHp: event.turnHp });
+    case 'burst_done':
+      return withCombatant(state, event.actorId, { burstDone: true });
     case 'exhaustion_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);

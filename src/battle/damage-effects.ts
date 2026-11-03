@@ -15,6 +15,14 @@ export function damageEffects(
 ): { hpAfter: number; effects: DamageEffect[] } {
   const type = damageType.trim().toLowerCase();
   const effects: DamageEffect[] = [];
+  // Kuyruk 19 (Fire/Lightning/Acid Absorption): emilen hasar (eksi miktar) HP verir.
+  if (applied < 0) return { hpAfter: Math.min(target.maxHp, target.hp - applied), effects: [{ kind: 'absorbed', amount: -applied }] };
+  // Kuyruk 19 (Freeze, Aversion to Fire; srdK19): belirli türde hasar alınca süreli etki (sonraki turunun sonuna dek).
+  for (const e of target.effects ?? []) for (const fx of e.onDamageFx ?? []) {
+    if (applied > 0 && fx.type === type) effects.push({ kind: 'trait_fx', name: fx.name, effect: fx.effect });
+  }
+  // Hydra (Multiple Heads): ateş hasarı yeni başları engeller.
+  if (applied > 0 && type === 'fire' && target.heads !== undefined) effects.push({ kind: 'trait_fx', name: 'Multiple Heads', effect: {}, headsFire: true });
   // Hasar azaltma etkisi (Resistance; Görev R2): seçilen türde, turda bir, zar kadar.
   const red = applied > 0 ? (target.effects ?? []).find((e) => e.reduce && !e.reduce.spent && e.reduce.types.includes(type)) : undefined;
   if (red?.reduce) {

@@ -7,6 +7,7 @@
  * Komut başarılı olursa `action_used` olayı komutun olaylarının ardına eklenir; başarısız
  * komut hiçbir şey harcamaz.
  */
+import { abilitiesOf } from './monsterAbilities';
 import { apexCost, isApex } from './apex';
 import { globalRule } from './ruleControl';
 import { movableZoneOf } from './zones';
@@ -236,6 +237,12 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'help':
     case 'distract':
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
+    case 'monster_ability': {
+      // Kuyruk 19: SRD canavar yeteneği (eylem ya da bonus eylem; `monsterAbilities.ts`).
+      const ab = abilitiesOf(state, actor).find((x) => x.id === cmd.abilityId);
+      if (!ab) return fail('Bu yaratığın böyle bir yeteneği yok.');
+      return spend(actor, ab.cost, ab.tr);
+    }
     case 'hide':
     case 'dash':
     case 'disengage': {

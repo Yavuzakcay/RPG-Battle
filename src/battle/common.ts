@@ -186,7 +186,7 @@ export function withinFiveFt(state: BattleState, a: Combatant, b: Combatant, mel
  * Protection from Energy, Gaseous Form). Hasar ayarlamanın tek yolu (`adjustDamage` çağıranlar).
  */
 const SEALED_IMMUNE = ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'];
-export function damageProfile(t: Combatant): { resistances: string[]; immunities: string[]; vulnerabilities: string[] } {
+export function damageProfile(t: Combatant): { resistances: string[]; immunities: string[]; vulnerabilities: string[]; absorb?: string[] } {
   const extra = [...(t.effects ?? []).flatMap((e) => e.resist ?? []), ...(t.auraResist ?? [])];
   // K17 G1: Resilient Sphere: kürenin içindeki yaratık hasar almaz (SRD 5.2.1: dışarıdan gelen saldırı ve etkiler).
   if (t.effects?.some((e) => e.sealed)) return { resistances: t.resistances, immunities: [...SEALED_IMMUNE], vulnerabilities: [] };
@@ -195,5 +195,7 @@ export function damageProfile(t: Combatant): { resistances: string[]; immunities
     immunities: t.immunities,
     // Kuyruk 19: Armor of Vulnerability (eşya etkisi `vulnerable`).
     vulnerabilities: t.effects?.some((e) => e.vulnerable?.length) ? [...new Set([...t.vulnerabilities, ...(t.effects ?? []).flatMap((e) => e.vulnerable ?? [])])] : t.vulnerabilities,
+    // Kuyruk 19 (srdK19 canavar yetenekleri): emilen hasar türleri (iyileştirir).
+    ...(t.effects?.some((e) => e.absorb?.length) ? { absorb: (t.effects ?? []).flatMap((e) => e.absorb ?? []) } : {}),
   };
 }

@@ -1,0 +1,1481 @@
+{
+ "troll": {
+  "abilities": [
+   {
+    "id": "charge",
+    "en": "Charge",
+    "tr": "Hücum",
+    "cost": "bonus",
+    "kind": "strike",
+    "halfMove": true,
+    "moveOnly": true
+   }
+  ],
+  "passive": {
+   "loathsomeLimbs": {
+    "uses": 4,
+    "slashing": 15
+   }
+  }
+ },
+ "xorn": {
+  "abilities": [
+   {
+    "id": "charge",
+    "en": "Charge",
+    "tr": "Hücum",
+    "cost": "bonus",
+    "kind": "strike",
+    "halfMove": true,
+    "moveOnly": true
+   }
+  ],
+  "passive": {
+   "passCreatures": false,
+   "earthGlide": true
+  }
+ },
+ "spy": {
+  "passive": {
+   "bonusGrant": [
+    "dash",
+    "disengage",
+    "hide"
+   ]
+  }
+ },
+ "assassin": {
+  "passive": {
+   "bonusGrant": [
+    "dash",
+    "disengage",
+    "hide"
+   ],
+   "traits": [
+    "evasion"
+   ]
+  }
+ },
+ "vampire-familiar": {
+  "passive": {
+   "bonusGrant": [
+    "dash",
+    "disengage"
+   ]
+  }
+ },
+ "vampire-spawn": {
+  "passive": {
+   "bonusGrant": [
+    "dash",
+    "disengage"
+   ],
+   "sunlight": {
+    "dice": "20",
+    "type": "radiant"
+   },
+   "runningWater": {
+    "dice": "20",
+    "type": "acid"
+   }
+  }
+ },
+ "clay-golem": {
+  "abilities": [
+   {
+    "id": "hasten",
+    "en": "Hasten",
+    "tr": "Hızlan",
+    "cost": "bonus",
+    "kind": "grant",
+    "grant": [
+     "dash",
+     "disengage"
+    ],
+    "recharge": 5
+   }
+  ],
+  "passive": {
+   "absorb": [
+    "acid"
+   ],
+   "berserk": true,
+   "traits": [
+    "immutable-form"
+   ]
+  }
+ },
+ "weretiger": {
+  "abilities": [
+   {
+    "id": "prowl",
+    "en": "Prowl",
+    "tr": "Sinsi Yürüyüş",
+    "cost": "bonus",
+    "kind": "grant",
+    "grant": [
+     "dash",
+     "disengage",
+     "hide"
+    ],
+    "fullMoveNoOA": true
+   }
+  ]
+ },
+ "shadow": {
+  "abilities": [
+   {
+    "id": "shadow-stealth",
+    "en": "Shadow Stealth",
+    "tr": "Gölge Gizlenmesi",
+    "cost": "bonus",
+    "kind": "grant",
+    "grant": [
+     "hide"
+    ],
+    "dimOnly": true
+   }
+  ],
+  "passive": {
+   "sunlightWeak": true
+  }
+ },
+ "sahuagin-warrior": {
+  "abilities": [
+   {
+    "id": "aquatic-charge",
+    "en": "Aquatic Charge",
+    "tr": "Suda Hücum",
+    "cost": "bonus",
+    "kind": "strike",
+    "fullMove": true,
+    "moveOnly": true,
+    "waterOnly": true
+   }
+  ],
+  "passive": {
+   "bloodFrenzy": true
+  }
+ },
+ "seahorse": {
+  "abilities": [
+   {
+    "id": "bubble-dash",
+    "en": "Bubble Dash",
+    "tr": "Kabarcık Atılışı",
+    "cost": "action",
+    "kind": "grant",
+    "grant": [
+     "dash",
+     "disengage"
+    ],
+    "waterOnly": true
+   }
+  ]
+ },
+ "giant-seahorse": {
+  "abilities": [
+   {
+    "id": "bubble-dash",
+    "en": "Bubble Dash",
+    "tr": "Kabarcık Atılışı",
+    "cost": "bonus",
+    "kind": "grant",
+    "grant": [
+     "dash",
+     "disengage"
+    ],
+    "waterOnly": true
+   }
+  ]
+ },
+ "centaur-trooper": {
+  "abilities": [
+   {
+    "id": "trampling-charge",
+    "en": "Trampling Charge",
+    "tr": "Çiğneyen Hücum",
+    "cost": "bonus",
+    "kind": "save",
+    "recharge": 5,
+    "trample": true,
+    "save": "str",
+    "dc": 14,
+    "damage": "1d6+4",
+    "damageType": "bludgeoning",
+    "conditions": [
+     "Prone"
+    ],
+    "noHalf": true
+   }
+  ]
+ },
+ "gorgon": {
+  "abilities": [
+   {
+    "id": "trample",
+    "en": "Trample",
+    "tr": "Çiğneme",
+    "cost": "bonus",
+    "kind": "save",
+    "save": "dex",
+    "dc": 16,
+    "rangeFt": 5,
+    "damage": "2d10+5",
+    "damageType": "bludgeoning",
+    "half": true,
+    "needsCondition": "Prone"
+   }
+  ]
+ },
+ "elephant": {
+  "abilities": [
+   {
+    "id": "trample",
+    "en": "Trample",
+    "tr": "Çiğneme",
+    "cost": "bonus",
+    "kind": "save",
+    "save": "dex",
+    "dc": 12,
+    "rangeFt": 5,
+    "damage": "2d10+4",
+    "damageType": "bludgeoning",
+    "half": true,
+    "needsCondition": "Prone"
+   }
+  ]
+ },
+ "mammoth": {
+  "abilities": [
+   {
+    "id": "trample",
+    "en": "Trample",
+    "tr": "Çiğneme",
+    "cost": "bonus",
+    "kind": "save",
+    "save": "dex",
+    "dc": 18,
+    "rangeFt": 5,
+    "damage": "4d10+7",
+    "damageType": "bludgeoning",
+    "half": true,
+    "needsCondition": "Prone"
+   }
+  ]
+ },
+ "gnoll-warrior": {
+  "abilities": [
+   {
+    "id": "rampage",
+    "en": "Rampage",
+    "tr": "Kudurma",
+    "cost": "bonus",
+    "kind": "strike",
+    "uses": 1,
+    "halfMove": true,
+    "attack": "Rend",
+    "afterBloodiedHit": true
+   }
+  ]
+ },
+ "giant-hyena": {
+  "abilities": [
+   {
+    "id": "rampage",
+    "en": "Rampage",
+    "tr": "Kudurma",
+    "cost": "bonus",
+    "kind": "strike",
+    "uses": 1,
+    "halfMove": true,
+    "attack": "Bite",
+    "afterBloodiedHit": true
+   }
+  ]
+ },
+ "bulette": {
+  "abilities": [
+   {
+    "id": "leap",
+    "en": "Leap",
+    "tr": "Sıçrama",
+    "cost": "bonus",
+    "kind": "save",
+    "leapFt": 15,
+    "save": "dex",
+    "dc": 15,
+    "damage": "3d12",
+    "damageType": "bludgeoning",
+    "conditions": [
+     "Prone"
+    ],
+    "half": true,
+    "pushOnSave": 5
+   }
+  ]
+ },
+ "half-dragon": {
+  "abilities": [
+   {
+    "id": "leap",
+    "en": "Leap",
+    "tr": "Sıçrama",
+    "cost": "bonus",
+    "kind": "grant",
+    "jumpFt": 30
+   }
+  ]
+ },
+ "giant-ape": {
+  "abilities": [
+   {
+    "id": "leap",
+    "en": "Leap",
+    "tr": "Sıçrama",
+    "cost": "bonus",
+    "kind": "grant",
+    "jumpFt": 30
+   }
+  ]
+ },
+ "giant-frog": {
+  "abilities": [
+   {
+    "id": "leap",
+    "en": "Leap",
+    "tr": "Sıçrama",
+    "cost": "bonus",
+    "kind": "grant",
+    "jumpFt": 20
+   },
+   {
+    "id": "swallow",
+    "en": "Swallow",
+    "tr": "Yutma",
+    "cost": "action",
+    "kind": "swallow",
+    "save": "str",
+    "dc": 11,
+    "dice": "2d4",
+    "type": "acid",
+    "escapeDamage": 0,
+    "escapeDc": 11,
+    "small": true
+   }
+  ],
+  "passive": {
+   "jump": {
+    "long": 20
+   }
+  }
+ },
+ "giant-toad": {
+  "abilities": [
+   {
+    "id": "leap",
+    "en": "Leap",
+    "tr": "Sıçrama",
+    "cost": "bonus",
+    "kind": "grant",
+    "jumpFt": 20
+   },
+   {
+    "id": "swallow",
+    "en": "Swallow",
+    "tr": "Yutma",
+    "cost": "action",
+    "kind": "swallow",
+    "save": "str",
+    "dc": 13,
+    "dice": "3d6",
+    "type": "acid",
+    "escapeDamage": 0,
+    "escapeDc": 13,
+    "small": true
+   }
+  ],
+  "passive": {
+   "jump": {
+    "long": 20
+   }
+  }
+ },
+ "frog": {
+  "passive": {
+   "jump": {
+    "long": 10
+   }
+  }
+ },
+ "cat": {
+  "passive": {
+   "jump": {
+    "long": 10
+   }
+  }
+ },
+ "lion": {
+  "passive": {
+   "jump": {
+    "long": 25
+   }
+  }
+ },
+ "saber-toothed-tiger": {
+  "passive": {
+   "jump": {
+    "long": 25
+   }
+  }
+ },
+ "deer": {
+  "passive": {
+   "traits": [
+    "agile"
+   ]
+  }
+ },
+ "rat": {
+  "passive": {
+   "traits": [
+    "agile"
+   ]
+  }
+ },
+ "medusa": {
+  "abilities": [
+   {
+    "id": "petrifying-gaze",
+    "en": "Petrifying Gaze",
+    "tr": "Taşlaştıran Bakış",
+    "cost": "bonus",
+    "kind": "save",
+    "recharge": 5,
+    "save": "con",
+    "dc": 13,
+    "area": {
+     "shape": "cone",
+     "sizeFt": 30,
+     "origin": "self"
+    },
+    "conditions": [
+     "Restrained"
+    ],
+    "escalate": "Petrified"
+   }
+  ]
+ },
+ "basilisk": {
+  "abilities": [
+   {
+    "id": "petrifying-gaze",
+    "en": "Petrifying Gaze",
+    "tr": "Taşlaştıran Bakış",
+    "cost": "bonus",
+    "kind": "save",
+    "recharge": 4,
+    "save": "con",
+    "dc": 12,
+    "area": {
+     "shape": "cone",
+     "sizeFt": 30,
+     "origin": "self"
+    },
+    "conditions": [
+     "Restrained"
+    ],
+    "escalate": "Petrified"
+   }
+  ]
+ },
+ "balor": {
+  "abilities": [
+   {
+    "id": "teleport",
+    "en": "Teleport",
+    "tr": "Işınlanma",
+    "cost": "bonus",
+    "kind": "teleport",
+    "ft": 60,
+    "toward": true
+   }
+  ],
+  "passive": {
+   "deathBurst": {
+    "radiusFt": 30,
+    "save": "dex",
+    "dc": 20,
+    "dice": "9d6",
+    "type": "fire",
+    "dice2": "9d6",
+    "type2": "force",
+    "half": true
+   }
+  }
+ },
+ "blink-dog": {
+  "abilities": [
+   {
+    "id": "teleport",
+    "en": "Teleport",
+    "tr": "Işınlanma",
+    "cost": "bonus",
+    "kind": "teleport",
+    "ft": 40,
+    "recharge": 4,
+    "away": true
+   }
+  ]
+ },
+ "marilith": {
+  "abilities": [
+   {
+    "id": "teleport",
+    "en": "Teleport",
+    "tr": "Işınlanma",
+    "cost": "bonus",
+    "kind": "teleport",
+    "ft": 120,
+    "recharge": 5,
+    "toward": true
+   }
+  ],
+  "passive": {
+   "traits": [
+    "reactive"
+   ]
+  }
+ },
+ "nalfeshnee": {
+  "abilities": [
+   {
+    "id": "teleport",
+    "en": "Teleport",
+    "tr": "Işınlanma",
+    "cost": "action",
+    "kind": "teleport",
+    "ft": 120,
+    "toward": true
+   },
+   {
+    "id": "horror-nimbus",
+    "en": "Horror Nimbus",
+    "tr": "Dehşet Halesi",
+    "cost": "bonus",
+    "kind": "save",
+    "recharge": 5,
+    "save": "wis",
+    "dc": 15,
+    "area": {
+     "shape": "emanation",
+     "sizeFt": 15,
+     "origin": "self"
+    },
+    "damage": "8d6",
+    "damageType": "psychic",
+    "conditions": [
+     "Frightened"
+    ],
+    "minute": true,
+    "breakOnDamage": true
+   }
+  ]
+ },
+ "phase-spider": {
+  "abilities": [
+   {
+    "id": "ethereal-jaunt",
+    "en": "Ethereal Jaunt",
+    "tr": "Ruhani Sıçrayış",
+    "cost": "bonus",
+    "kind": "ethereal"
+   }
+  ]
+ },
+ "nightmare": {
+  "abilities": [
+   {
+    "id": "ethereal-stride",
+    "en": "Ethereal Stride",
+    "tr": "Ruhani Adım",
+    "cost": "action",
+    "kind": "ethereal"
+   }
+  ],
+  "passive": {
+   "illumination": 2
+  }
+ },
+ "ghost": {
+  "abilities": [
+   {
+    "id": "etherealness",
+    "en": "Etherealness",
+    "tr": "Ruhanilik",
+    "cost": "action",
+    "kind": "ethereal"
+   }
+  ]
+ },
+ "dryad": {
+  "abilities": [
+   {
+    "id": "tree-stride",
+    "en": "Tree Stride",
+    "tr": "Ağaç Geçişi",
+    "cost": "bonus",
+    "kind": "teleport",
+    "ft": 60,
+    "nearTree": true
+   }
+  ]
+ },
+ "ettercap": {
+  "abilities": [
+   {
+    "id": "reel",
+    "en": "Reel",
+    "tr": "Sarma",
+    "cost": "bonus",
+    "kind": "pull",
+    "rangeFt": 30,
+    "pullFt": 25,
+    "needsCondition": "Restrained"
+   }
+  ]
+ },
+ "roper": {
+  "abilities": [
+   {
+    "id": "reel",
+    "en": "Reel",
+    "tr": "Sarma",
+    "cost": "action",
+    "kind": "pull",
+    "rangeFt": 60,
+    "pullFt": 30,
+    "needsCondition": "Grappled"
+   }
+  ]
+ },
+ "roc": {
+  "abilities": [
+   {
+    "id": "swoop",
+    "en": "Swoop",
+    "tr": "Pike",
+    "cost": "bonus",
+    "kind": "drop",
+    "recharge": 5
+   }
+  ]
+ },
+ "bugbear-stalker": {
+  "abilities": [
+   {
+    "id": "quick-grapple",
+    "en": "Quick Grapple",
+    "tr": "Çabuk Kavrayış",
+    "cost": "bonus",
+    "kind": "save",
+    "save": "dex",
+    "dc": 13,
+    "rangeFt": 10,
+    "conditions": [
+     "Grappled"
+    ],
+    "grappleDc": 13,
+    "untilEscape": true
+   }
+  ],
+  "passive": {
+   "abduct": true
+  }
+ },
+ "bugbear-warrior": {
+  "passive": {
+   "abduct": true
+  }
+ },
+ "frost-giant": {
+  "abilities": [
+   {
+    "id": "war-cry",
+    "en": "War Cry",
+    "tr": "Savaş Narası",
+    "cost": "bonus",
+    "kind": "buff",
+    "recharge": 5,
+    "tempHp": "2d10+5",
+    "attackAdv": true,
+    "rangeFt": 60
+   }
+  ]
+ },
+ "pirate-captain": {
+  "abilities": [
+   {
+    "id": "captains-charm",
+    "en": "Captain’s Charm",
+    "tr": "Kaptan Cazibesi",
+    "cost": "bonus",
+    "kind": "save",
+    "save": "wis",
+    "dc": 14,
+    "rangeFt": 30,
+    "conditions": [
+     "Charmed"
+    ]
+   }
+  ]
+ },
+ "incubus": {
+  "abilities": [
+   {
+    "id": "nightmare",
+    "en": "Nightmare",
+    "tr": "Kâbus",
+    "cost": "bonus",
+    "kind": "save",
+    "recharge": 6,
+    "save": "wis",
+    "dc": 15,
+    "rangeFt": 60,
+    "damage": "4d8",
+    "damageType": "psychic",
+    "sleepUnder": 20
+   }
+  ]
+ },
+ "will-o-wisp": {
+  "abilities": [
+   {
+    "id": "consume-life",
+    "en": "Consume Life",
+    "tr": "Can Emme",
+    "cost": "bonus",
+    "kind": "heal",
+    "save": "con",
+    "dc": 10,
+    "rangeFt": 5,
+    "healDice": "3d6"
+   },
+   {
+    "id": "vanish",
+    "en": "Vanish",
+    "tr": "Kayboluş",
+    "cost": "bonus",
+    "kind": "buff",
+    "self": true,
+    "grants": [
+     "Invisible"
+    ],
+    "breakOnAct": true,
+    "concentration": true
+   }
+  ]
+ },
+ "cloaker": {
+  "abilities": [
+   {
+    "id": "moan",
+    "en": "Moan",
+    "tr": "İnilti",
+    "cost": "bonus",
+    "kind": "save",
+    "save": "wis",
+    "dc": 13,
+    "area": {
+     "shape": "emanation",
+     "sizeFt": 60,
+     "origin": "self"
+    },
+    "conditions": [
+     "Frightened"
+    ]
+   },
+   {
+    "id": "phantasms",
+    "en": "Phantasms",
+    "tr": "Hayaletler",
+    "cost": "bonus",
+    "kind": "spell",
+    "uses": 1,
+    "spell": "Mirror Image",
+    "self": true
+   }
+  ],
+  "passive": {
+   "lightSensitivity": true
+  }
+ },
+ "oni": {
+  "abilities": [
+   {
+    "id": "invisibility",
+    "en": "Invisibility",
+    "tr": "Görünmezlik",
+    "cost": "bonus",
+    "kind": "spell",
+    "spell": "Invisibility",
+    "self": true
+   }
+  ]
+ },
+ "magmin": {
+  "abilities": [
+   {
+    "id": "ignited-illumination",
+    "en": "Ignited Illumination",
+    "tr": "Tutuşan Işık",
+    "cost": "bonus",
+    "kind": "buff",
+    "self": true,
+    "light": 2,
+    "toggle": true
+   }
+  ],
+  "passive": {
+   "deathBurst": {
+    "radiusFt": 10,
+    "save": "dex",
+    "dc": 11,
+    "dice": "2d6",
+    "type": "fire",
+    "half": true
+   }
+  }
+ },
+ "treant": {
+  "abilities": [
+   {
+    "id": "animate-trees",
+    "en": "Animate Trees",
+    "tr": "Ağaçları Canlandır",
+    "cost": "action",
+    "kind": "summon",
+    "uses": 1,
+    "monster": "treant",
+    "count": 2,
+    "noRepeat": true
+   }
+  ],
+  "passive": {
+   "siegeMonster": true
+  }
+ },
+ "wraith": {
+  "abilities": [
+   {
+    "id": "create-specter",
+    "en": "Create Specter",
+    "tr": "Hortlak Yarat",
+    "cost": "action",
+    "kind": "summon",
+    "monster": "specter",
+    "count": 1,
+    "fromCorpse": true
+   }
+  ]
+ },
+ "tarrasque": {
+  "abilities": [
+   {
+    "id": "swallow",
+    "en": "Swallow",
+    "tr": "Yutma",
+    "cost": "bonus",
+    "kind": "swallow",
+    "save": "str",
+    "dc": 27,
+    "dice": "16d6",
+    "type": "acid",
+    "escapeDamage": 60,
+    "escapeDc": 20
+   }
+  ],
+  "passive": {
+   "siegeMonster": true,
+   "reflectiveCarapace": true
+  }
+ },
+ "behir": {
+  "abilities": [
+   {
+    "id": "swallow",
+    "en": "Swallow",
+    "tr": "Yutma",
+    "cost": "bonus",
+    "kind": "swallow",
+    "save": "dex",
+    "dc": 18,
+    "dice": "6d6",
+    "type": "acid",
+    "escapeDamage": 30,
+    "escapeDc": 14
+   }
+  ]
+ },
+ "remorhaz": {
+  "abilities": [
+   {
+    "id": "swallow",
+    "en": "Swallow",
+    "tr": "Yutma",
+    "cost": "bonus",
+    "kind": "swallow",
+    "save": "str",
+    "dc": 17,
+    "dice": "3d6",
+    "type": "acid",
+    "dice2": "5d6",
+    "type2": "fire",
+    "escapeDamage": 30,
+    "escapeDc": 15
+   }
+  ],
+  "passive": {
+   "ownerTurn": [
+    {
+     "when": "end",
+     "radiusFt": 5,
+     "dice": "3d10",
+     "type": "fire"
+    }
+   ]
+  }
+ },
+ "purple-worm": {
+  "abilities": [
+   {
+    "id": "swallow",
+    "en": "Swallow",
+    "tr": "Yutma",
+    "cost": "bonus",
+    "kind": "swallow",
+    "save": "dex",
+    "dc": 19,
+    "dice": "5d6",
+    "type": "acid",
+    "escapeDamage": 30,
+    "escapeDc": 21
+   }
+  ],
+  "passive": {
+   "tunneler": true
+  }
+ },
+ "drider": {
+  "abilities": [
+   {
+    "id": "spider-queen",
+    "en": "Magic of the Spider Queen",
+    "tr": "Örümcek Kraliçe Büyüsü",
+    "cost": "bonus",
+    "kind": "spell",
+    "recharge": 5,
+    "spells": [
+     "Web",
+     "Faerie Fire",
+     "Darkness"
+    ],
+    "dc": 14
+   }
+  ]
+ },
+ "stone-golem": {
+  "abilities": [
+   {
+    "id": "slow",
+    "en": "Slow",
+    "tr": "Yavaşlat",
+    "cost": "bonus",
+    "kind": "spell",
+    "recharge": 5,
+    "spell": "Slow",
+    "dc": 17
+   }
+  ],
+  "passive": {
+   "traits": [
+    "immutable-form"
+   ]
+  }
+ },
+ "cultist-fanatic": {
+  "abilities": [
+   {
+    "id": "spiritual-weapon",
+    "en": "Spiritual Weapon",
+    "tr": "Ruhani Silah",
+    "cost": "bonus",
+    "kind": "spell",
+    "uses": 2,
+    "spell": "Spiritual Weapon"
+   }
+  ]
+ },
+ "ice-devil": {
+  "abilities": [
+   {
+    "id": "ice-wall",
+    "en": "Ice Wall",
+    "tr": "Buz Duvarı",
+    "cost": "action",
+    "kind": "spell",
+    "recharge": 6,
+    "spell": "Wall of Ice",
+    "level": 8,
+    "dc": 17
+   }
+  ]
+ },
+ "pit-fiend": {
+  "abilities": [
+   {
+    "id": "hellfire",
+    "en": "Hellfire Spellcasting",
+    "tr": "Cehennem Ateşi Büyüsü",
+    "cost": "action",
+    "kind": "spell",
+    "recharge": 4,
+    "spell": "Fireball",
+    "level": 5,
+    "dc": 21,
+    "twice": true
+   }
+  ],
+  "passive": {
+   "auras": [
+    {
+     "name": "Fear Aura",
+     "radiusFt": 20,
+     "save": "wis",
+     "dc": 21,
+     "conditions": [
+      "Frightened"
+     ],
+     "on": [
+      "start"
+     ],
+     "targets": "enemies"
+    }
+   ]
+  }
+ },
+ "darkmantle": {
+  "abilities": [
+   {
+    "id": "darkness-aura",
+    "en": "Darkness Aura",
+    "tr": "Karanlık Hale",
+    "cost": "action",
+    "kind": "spell",
+    "uses": 1,
+    "spell": "Darkness",
+    "self": true
+   }
+  ]
+ },
+ "sphinx-of-valor": {
+  "passive": {
+   "roarSequence": [
+    "First Roar",
+    "Second Roar",
+    "Third Roar"
+   ]
+  }
+ },
+ "unicorn": {
+  "abilities": [
+   {
+    "id": "blessing",
+    "en": "Unicorn’s Blessing",
+    "tr": "Tekboynuz Kutsaması",
+    "cost": "bonus",
+    "kind": "spell",
+    "uses": 3,
+    "spells": [
+     "Cure Wounds",
+     "Lesser Restoration"
+    ],
+    "ally": true
+   }
+  ]
+ },
+ "djinni": {
+  "abilities": [
+   {
+    "id": "storm-bolt",
+    "en": "Storm Bolt",
+    "tr": "Fırtına Şimşeği",
+    "cost": "action",
+    "kind": "save",
+    "rangeFt": 120,
+    "attackBonus": 9,
+    "damage": "3d8",
+    "damageType": "thunder",
+    "conditions": [
+     "Prone"
+    ]
+   }
+  ]
+ },
+ "steam-mephit": {
+  "passive": {
+   "blurred": true,
+   "deathBurst": {
+    "radiusFt": 5,
+    "save": "dex",
+    "dc": 10,
+    "dice": "2d4",
+    "type": "fire",
+    "half": true
+   }
+  }
+ },
+ "dust-mephit": {
+  "passive": {
+   "deathBurst": {
+    "radiusFt": 5,
+    "save": "con",
+    "dc": 10,
+    "conditions": [
+     "Blinded"
+    ]
+   }
+  },
+  "abilities": [
+   {
+    "id": "sleep",
+    "en": "Sleep",
+    "tr": "Uyku",
+    "cost": "action",
+    "kind": "spell",
+    "uses": 1,
+    "spell": "Sleep",
+    "dc": 10
+   }
+  ]
+ },
+ "ice-mephit": {
+  "passive": {
+   "deathBurst": {
+    "radiusFt": 5,
+    "save": "con",
+    "dc": 10,
+    "dice": "2d6",
+    "type": "cold",
+    "half": true
+   }
+  }
+ },
+ "magma-mephit": {
+  "passive": {
+   "deathBurst": {
+    "radiusFt": 5,
+    "save": "dex",
+    "dc": 11,
+    "dice": "2d6",
+    "type": "fire",
+    "half": true
+   }
+  }
+ },
+ "swarm-of-bats": {
+  "passive": {
+   "swarm": true
+  }
+ },
+ "swarm-of-ravens": {
+  "passive": {
+   "swarm": true
+  }
+ },
+ "swarm-of-insects": {
+  "passive": {
+   "swarm": true
+  }
+ },
+ "swarm-of-piranhas": {
+  "passive": {
+   "swarm": true
+  }
+ },
+ "swarm-of-rats": {
+  "passive": {
+   "swarm": true
+  }
+ },
+ "swarm-of-venomous-snakes": {
+  "passive": {
+   "swarm": true
+  }
+ },
+ "swarm-of-crawling-claws": {
+  "passive": {
+   "swarm": true
+  }
+ },
+ "air-elemental": {
+  "passive": {
+   "passCreatures": true
+  }
+ },
+ "water-elemental": {
+  "passive": {
+   "passCreatures": true,
+   "onDamage": [
+    {
+     "type": "cold",
+     "effect": {
+      "speedFt": -20
+     },
+     "name": "Freeze"
+    }
+   ]
+  }
+ },
+ "fire-elemental": {
+  "passive": {
+   "passCreatures": true,
+   "fireForm": {
+    "dice": "1d10",
+    "type": "fire"
+   },
+   "waterSusceptible": {
+    "dice": "1d6",
+    "type": "cold"
+   }
+  }
+ },
+ "earth-elemental": {
+  "passive": {
+   "siegeMonster": true,
+   "earthGlide": true
+  }
+ },
+ "kraken": {
+  "passive": {
+   "siegeMonster": true
+  }
+ },
+ "hobgoblin-captain": {
+  "passive": {
+   "authority": {
+    "radiusFt": 10
+   }
+  }
+ },
+ "boar": {
+  "passive": {
+   "bloodied": {
+    "attack": true
+   }
+  }
+ },
+ "giant-boar": {
+  "passive": {
+   "bloodied": {
+    "attack": true
+   }
+  }
+ },
+ "berserker": {
+  "passive": {
+   "bloodied": {
+    "attack": true,
+    "save": true
+   }
+  }
+ },
+ "flesh-golem": {
+  "passive": {
+   "absorb": [
+    "lightning"
+   ],
+   "berserk": true,
+   "traits": [
+    "immutable-form"
+   ],
+   "onDamage": [
+    {
+     "type": "fire",
+     "effect": {
+      "attackDis": {},
+      "checkDis": [
+       "str",
+       "dex",
+       "con",
+       "int",
+       "wis",
+       "cha"
+      ]
+     },
+     "name": "Aversion to Fire"
+    }
+   ]
+  }
+ },
+ "shambling-mound": {
+  "passive": {
+   "absorb": [
+    "lightning"
+   ]
+  }
+ },
+ "iron-golem": {
+  "passive": {
+   "absorb": [
+    "fire"
+   ],
+   "traits": [
+    "immutable-form"
+   ]
+  }
+ },
+ "gray-ooze": {
+  "passive": {
+   "corrosive": true
+  }
+ },
+ "black-pudding": {
+  "passive": {
+   "corrosive": true,
+   "split": true
+  }
+ },
+ "gibbering-mouther": {
+  "passive": {
+   "auras": [
+    {
+     "name": "Aberrant Ground",
+     "radiusFt": 10,
+     "difficult": true
+    },
+    {
+     "name": "Gibbering",
+     "radiusFt": 20,
+     "save": "wis",
+     "dc": 10,
+     "on": [
+      "start"
+     ],
+     "targets": "all",
+     "gibbering": true
+    }
+   ]
+  }
+ },
+ "sea-hag": {
+  "passive": {
+   "auras": [
+    {
+     "name": "Vile Appearance",
+     "radiusFt": 30,
+     "save": "wis",
+     "dc": 11,
+     "conditions": [
+      "Frightened"
+     ],
+     "on": [
+      "start"
+     ],
+     "targets": "enemies"
+    }
+   ]
+  }
+ },
+ "barbed-devil": {
+  "passive": {
+   "ownerTurn": [
+    {
+     "when": "start",
+     "grappled": true,
+     "dice": "1d10",
+     "type": "piercing"
+    }
+   ]
+  }
+ },
+ "aboleth": {
+  "passive": {
+   "ownerTurn": [
+    {
+     "when": "end",
+     "radiusFt": 5,
+     "underwater": true,
+     "save": "con",
+     "dc": 14,
+     "effect": {
+      "noHeal": true
+     },
+     "name": "Mucus Cloud"
+    }
+   ]
+  }
+ },
+ "vampire": {
+  "passive": {
+   "sunlight": {
+    "dice": "20",
+    "type": "radiant"
+   },
+   "runningWater": {
+    "dice": "20",
+    "type": "acid"
+   },
+   "mistyEscape": true
+  },
+  "abilities": [
+   {
+    "id": "charm",
+    "en": "Charm",
+    "tr": "Büyüleme",
+    "cost": "bonus",
+    "kind": "spell",
+    "recharge": 5,
+    "spell": "Charm Person",
+    "dc": 17
+   }
+  ]
+ },
+ "hydra": {
+  "passive": {
+   "heads": 5
+  }
+ },
+ "rakshasa": {
+  "passive": {
+   "greaterMagicResistance": true
+  }
+ },
+ "gelatinous-cube": {
+  "passive": {
+   "transparent": 15
+  }
+ },
+ "shield-guardian": {
+  "passive": {
+   "traits": [
+    "immutable-form"
+   ]
+  }
+ },
+ "invisible-stalker": {
+  "passive": {
+   "passCreatures": true
+  }
+ },
+ "ankheg": {
+  "passive": {
+   "tunneler": true
+  }
+ },
+ "ochre-jelly": {
+  "passive": {
+   "split": true
+  }
+ }
+}

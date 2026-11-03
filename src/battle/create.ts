@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { withMonsterAbilities } from './monsterAbilities';
 import { globalRule } from './ruleControl';
 import { presetObjects } from './objects';
 import { goalsFromData } from './goals';
@@ -87,7 +88,7 @@ function withSpecies(state: BattleState): BattleState {
  * anahtarıyla; kapalıyken savaş başında kaldırılır (eski davranış: yalnızca AC/save/yetenek bonusları ve iksirler).
  */
 function stripItemsWhenOff(state: BattleState): BattleState {
-  if (globalRule(state, 'srdK19')) return withMonsterTraits(withSpecies(state));
+  if (globalRule(state, 'srdK19')) return withMonsterAbilities(withMonsterTraits(withSpecies(state)));
   const combatants: Record<string, Combatant> = {};
   for (const [id, c] of Object.entries(state.combatants)) {
     const effects = (c.effects ?? []).filter((e) => !e.id.startsWith('item:') && !e.id.startsWith('srd19:'));

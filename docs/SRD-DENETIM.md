@@ -14,7 +14,7 @@
 - **Tür özelliği**: tam 38, savaş dışı 2, kapsam dışı 1
 - **Geçmiş**: tam 4
 - **Savaş kuralı**: tam 8
-- **Canavar yeteneği**: tam 19, yok 88, savaş dışı 23
+- **Canavar yeteneği**: tam 131, savaş dışı 55, yok 8
 
 ## Tablo
 
@@ -497,133 +497,197 @@
 | Savaş kuralı | Two-Weapon Fighting | tam | Light ek saldırısı, Nick, TWF stili |
 | Savaş kuralı | Mounted Combat | tam | Kuyruk 19 (srdK19): bin/in (hızın yarısı), binici bineğiyle taşınır, binek düşünce DEX DC 10; bağımsız binek |
 | Savaş kuralı | Underwater Combat | tam | yakın dövüş dezavantajı (piercing ve yüzme hızı istisna), menzilli dezavantaj ve menzil ötesi ıska; Kuyruk 19: su altındakine ateş direnci |
-| Canavar yeteneği | Boyut Large (107 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Duyu (101 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Durum bağışıklığı (75 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Eylem (73 canavar) | yok | açık iş |
-| Canavar yeteneği | Bonus eylem (70 canavar) | yok | açık iş |
-| Canavar yeteneği | Multiattack (kısmi) (61 canavar) | yok | açık iş |
-| Canavar yeteneği | Hız: Swim (57 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Hız: Climb (50 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Multiattack (kısmi, ilk saldırı tekrarlanır) (35 canavar) | yok | açık iş |
-| Canavar yeteneği | Boyut Huge (34 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Magic Resistance (34 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Legendary Resistance (32 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Amphibious (31 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Legendary Actions (30 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Tepki (24 canavar) | yok | açık iş |
-| Canavar yeteneği | Hız: Burrow (21 canavar) | yok | açık iş |
-| Canavar yeteneği | Sabit hasar → 1d2 + (N − 1) yaklaşığı (zar motoru d1 kabul etmez) (21 canavar) | yok | açık iş |
-| Canavar yeteneği | Hover (16 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Boyut Gargantuan (15 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Spider Climb (14 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Water Breathing (9 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Flyby (7 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Swarm (7 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Diabolical Restoration (7 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Hold Breath (6 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Web Walker (5 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Sunlight Sensitivity (5 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Death Burst (5 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Illumination (5 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Demonic Restoration (5 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Ice Walk (4 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Incorporeal Movement (4 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Siege Monster (4 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Fire Aura (4 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Immutable Form (4 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Amorphous (4 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Coven Magic (3 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Exalted Restoration (3 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Standing Leap (3 canavar) | yok | açık iş |
-| Canavar yeteneği | Spellcasting (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Mimicry (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Abduct (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Running Leap (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Tunneler (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Ethereal Sight (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Air Form (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Earth Glide (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Fiendish Restoration (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Elemental Restoration (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Wishes (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Inscrutable (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Divine Awareness (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Agile (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Saldırı yok (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Bloodied Fury (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Corrosive Form (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Stench (2 canavar) | tam | Kuyruk 19 monsterTraits.ts / önceki kuyruklar |
-| Canavar yeteneği | Trait: Berserk (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Lightning Absorption (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Vampire Weakness (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Forbiddance (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Running Water (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Stake to the Heart (2 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Trait: Sunlight (2 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Loathsome Limbs (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Telepathic Bond (1 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Fetid Cloud (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Blurred Form (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Speak with Beasts and Plants (1 canavar) | savaş dışı | savaşta mekanik karşılığı yok (hikâye, iyileşme günler sonra, iletişim) |
-| Canavar yeteneği | Scare (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Aberrant Ground (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Gibbering (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Vile Appearance (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Ephemeral (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Aura of Authority (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Confer Fire Resistance (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Vampiric Connection (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Shielded Mind (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Succubus Form (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Incubus Form (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Barbed Hide (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Draconic Origin (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Invisibility (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Stunning Screech (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Evasion (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Light Sensitivity (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Eldritch Restoration (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Mucus Cloud (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Probing Telepathy (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Dominate Mind (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Celestial Restoration (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Magic Rope (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Greater Magic Resistance (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Undead Restoration (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Fire Absorption (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Death Throes (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Fear Aura (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Spirit Jar (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Reflective Carapace (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Jumper (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Training (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Hellish Restoration (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Compression (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Beast of Burden (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Iron Scent (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Blood Frenzy (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Limited Amphibiousness (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Shark Telepathy (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Sunlight Weakness (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Troll Spawn (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Bloodied Frenzy (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Ooze Cube (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Transparent (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Adhesive (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Sense Magic (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Fire Form (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Water Susceptibility (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Aversion to Fire (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Soul Bag (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Freeze (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Water Form (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Treasure Sense (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Bound (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Spell Storing (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Multiple Heads (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Reactive Heads (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Acid Absorption (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Heat Aura (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Misty Escape (1 canavar) | yok | açık iş |
-| Canavar yeteneği | Trait: Reactive (1 canavar) | yok | açık iş |
+| Canavar yeteneği | Boyut (çok altıgen) (156) | tam | multiHex bayrağı (Görev A6) |
+| Canavar yeteneği | Hız (107) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Duyu (101) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Multiattack (bileşim, yerine geçen, ek kullanım) (96) | tam | data/multiattack.json |
+| Canavar yeteneği | Durum bağışıklığı (75) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Spellcasting (47) | tam | data/canavar-buyuleri.json (6.+ seviye büyüler görev 3+6 ile) |
+| Canavar yeteneği | Magic Resistance (34) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Legendary Resistance (32) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Amphibious (31) | savaş dışı | nefes alma (savaşta boğulma yok) |
+| Canavar yeteneği | Legendary Actions (30) | tam | data/efsanevi.json |
+| Canavar yeteneği | Hız: Burrow (21) | tam | yer altından: yaratıkların altından geçer, zorlu arazi yok |
+| Canavar yeteneği | Sabit hasar (21) | tam | savaş başında SRD sabit değeri (monsterAbilities.ts) |
+| Canavar yeteneği | Hover (16) | savaş dışı | uçan yaratık düşmez (motor uçuşta düşürmez) |
+| Canavar yeteneği | Spider Climb (14) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Shape-Shift (13) | savaş dışı | biçim değişimi yalnız görünüm/hız (stat bloğu aynı) |
+| Canavar yeteneği | Water Breathing (9) | savaş dışı | nefes alma |
+| Canavar yeteneği | Tepki: Parry (7) | tam | monster-reactions.json |
+| Canavar yeteneği | Flyby (7) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Swarm (7) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Diabolical Restoration (7) | savaş dışı | günler sonra başka düzlemde dirilme |
+| Canavar yeteneği | Bonus eylem: Divine Aid (6) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Hold Breath (6) | savaş dışı | nefes alma |
+| Canavar yeteneği | Web Walker (5) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Sunlight Sensitivity (5) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Death Burst (5) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Illumination (5) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Bonus eylem: Leap (5) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Demonic Restoration (5) | savaş dışı | günler sonra dirilme |
+| Canavar yeteneği | Ice Walk (4) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Incorporeal Movement (4) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Siege Monster (4) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Fire Aura (4) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Immutable Form (4) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Bonus eylem: Swallow (4) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Amorphous (4) | savaş dışı | 1 inçlik aralıktan geçme (altıgen haritada dar geçit yok) |
+| Canavar yeteneği | 1/Day saldırıları (3) | tam | savaşta bir kez (şarj olmaz) |
+| Canavar yeteneği | Eylem: Invisibility (3) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Coven Magic (3) | savaş dışı | kehanet/keşif büyüleri (savaş dışı) |
+| Canavar yeteneği | Bonus eylem: Trample (3) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Misty Step (3) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Tepki: Protective Magic (3) | tam | monster-reactions.json |
+| Canavar yeteneği | Exalted Restoration (3) | savaş dışı | günler sonra dirilme |
+| Canavar yeteneği | Bonus eylem: Teleport (3) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Standing Leap (3) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Bonus eylem: Charge (2) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Spellcasting alan şekli (2) | tam | büyüler motorun alan şekilleriyle |
+| Canavar yeteneği | Mimicry (2) | savaş dışı | ses taklidi (hikâye) |
+| Canavar yeteneği | Bonus eylem: Rampage (2) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Abduct (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Running Leap (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Cunning Action (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Tunneler (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Deathless Agility (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Ethereal Sight (2) | savaş dışı | Ethereal düzlemi görme (harita tek düzlem) |
+| Canavar yeteneği | Air Form (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Earth Glide (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Bonus eylem: Petrifying Gaze (2) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Fiendish Restoration (2) | savaş dışı | günler sonra dirilme |
+| Canavar yeteneği | Elemental Restoration (2) | savaş dışı | günler sonra dirilme |
+| Canavar yeteneği | Wishes (2) | savaş dışı | Wish (hikâye) |
+| Canavar yeteneği | Inscrutable (2) | savaş dışı | zihin okunamaz (hikâye) |
+| Canavar yeteneği | Divine Awareness (2) | savaş dışı | yalanı sezme |
+| Canavar yeteneği | Agile (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Tepki: Ink Cloud (2) | yok | açık iş |
+| Canavar yeteneği | Saldırı yok (2) | savaş dışı | basit vuruş eklendi (savaş dışı yaratık) |
+| Canavar yeteneği | Bloodied Fury (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Eylem: Swallow (2) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Corrosive Form (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Stench (2) | tam | monsterTraits.ts / önceki kuyruklar |
+| Canavar yeteneği | Tepki: Split (2) | tam | monsterAbilities.ts |
+| Canavar yeteneği | Berserk (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Lightning Absorption (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Vampire Weakness (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Forbiddance (2) | savaş dışı | davetsiz eve giremez |
+| Canavar yeteneği | Running Water (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Stake to the Heart (2) | savaş dışı | kalbe kazık (hikâye, Game Master) |
+| Canavar yeteneği | Sunlight (2) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Loathsome Limbs (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Telepathic Bond (1) | savaş dışı | telepati (hikâye) |
+| Canavar yeteneği | Blurred Form (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Eylem: Darkness Aura (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Eylem: Sleep (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Eylem: Fog Cloud (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Speak with Beasts and Plants (1) | savaş dışı | iletişim |
+| Canavar yeteneği | Bonus eylem: Tree Stride (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Tepki: Redirect Attack (1) | yok | açık iş |
+| Canavar yeteneği | Tepki: Burst of Ingenuity (1) | yok | açık iş |
+| Canavar yeteneği | Bonus eylem: Trampling Charge (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Reel (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Aberrant Ground (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Gibbering (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Vile Appearance (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Illusory Appearance (1) | savaş dışı | Disguise Self (savaş dışı) |
+| Canavar yeteneği | Ephemeral (1) | savaş dışı | eşya taşıyamaz |
+| Canavar yeteneği | Bonus eylem: Consume Life (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Vanish (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Quick Grapple (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Read Thoughts (1) | savaş dışı | Detect Thoughts (savaş dışı) |
+| Canavar yeteneği | Aura of Authority (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Confer Fire Resistance (1) | savaş dışı | binek bineğe direnç (binicilik `mounted.ts`; nightmare binek değil) |
+| Canavar yeteneği | Eylem: Ethereal Stride (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Vampiric Connection (1) | savaş dışı | telepati |
+| Canavar yeteneği | Shielded Mind (1) | savaş dışı | zihin okunamaz |
+| Canavar yeteneği | Eylem: Etherealness (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Succubus Form (1) | savaş dışı | uzun dinlenmede biçim |
+| Canavar yeteneği | Bonus eylem: Nightmare (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Incubus Form (1) | savaş dışı | uzun dinlenmede biçim |
+| Canavar yeteneği | Eylem: Charm (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Prowl (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Barbed Hide (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Draconic Origin (1) | savaş dışı | Game Master seçimi (veride tür) |
+| Canavar yeteneği | Eylem: Create Specter (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Magic of the Spider Queen (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Trait: Invisibility (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Captain’s Charm (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Tepki: Riposte (1) | tam | monster-reactions.json |
+| Canavar yeteneği | Bonus eylem: Invisibility (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Tepki: Deflect Missile (1) | yok | açık iş |
+| Canavar yeteneği | Evasion (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Tepki: Unnerving Gaze (1) | tam | monster-reactions.json |
+| Canavar yeteneği | Light Sensitivity (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Bonus eylem: Moan (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Phantasms (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: War Cry (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Eylem: Animate Trees (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Eldritch Restoration (1) | savaş dışı | günler sonra dirilme |
+| Canavar yeteneği | Mucus Cloud (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Probing Telepathy (1) | savaş dışı | telepati |
+| Canavar yeteneği | N/Day saldırıları (1) | tam | savaşta N kez |
+| Canavar yeteneği | Celestial Restoration (1) | savaş dışı | günler sonra dirilme |
+| Canavar yeteneği | Bonus eylem: Slow (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Eylem: Storm Bolt (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Swoop (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Magic Rope (1) | savaş dışı | ip nesnesi (Entangling Rope saldırısı veride) |
+| Canavar yeteneği | Eylem: Teleport (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Horror Nimbus (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Tepki: Pursuit (1) | yok | açık iş |
+| Canavar yeteneği | Greater Magic Resistance (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Eylem: Ice Wall (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Undead Restoration (1) | savaş dışı | 24 saat sonra dirilme |
+| Canavar yeteneği | Tepki: Whirlwind of Sand (1) | yok | açık iş |
+| Canavar yeteneği | Fire Absorption (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Roar (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Death Throes (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Fear Aura (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Spirit Jar (1) | savaş dışı | günler sonra dirilme |
+| Canavar yeteneği | Reflective Carapace (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Jumper (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Training (1) | savaş dışı | beceri (keşif) |
+| Canavar yeteneği | Hellish Restoration (1) | savaş dışı | Cehennem’de günler sonra dirilme |
+| Canavar yeteneği | Compression (1) | savaş dışı | 1 inçlik aralık (dar geçit yok) |
+| Canavar yeteneği | Eylem: Bubble Dash (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Tepki: Shriek (1) | savaş dışı | uyarı sesi (harita alarmına bağlı değil; hikâye) |
+| Canavar yeteneği | Beast of Burden (1) | savaş dışı | taşıma kapasitesi |
+| Canavar yeteneği | Bonus eylem: Bubble Dash (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Ignited Illumination (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Iron Scent (1) | savaş dışı | metal sezme (keşif) |
+| Canavar yeteneği | Destroy Metal (1) | savaş dışı | giyilmeyen metal nesne (savaş dışı) |
+| Canavar yeteneği | Tepki: Reflexive Antennae (1) | yok | açık iş |
+| Canavar yeteneği | Blood Frenzy (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Limited Amphibiousness (1) | savaş dışı | nefes alma (4 saatte bir) |
+| Canavar yeteneği | Shark Telepathy (1) | savaş dışı | telepatiyle köpekbalığı yönetme (hikâye) |
+| Canavar yeteneği | Bonus eylem: Aquatic Charge (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Sunlight Weakness (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Bonus eylem: Shadow Stealth (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Troll Spawn (1) | savaş dışı | 24 saat sonra trol olma |
+| Canavar yeteneği | Bloodied Frenzy (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Bonus eylem: Spiritual Weapon (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Ooze Cube (1) | savaş dışı | Engulf saldırısı veride |
+| Canavar yeteneği | Transparent (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Adhesive (1) | savaş dışı | yalnızca nesne biçiminde (pusu; keşif) |
+| Canavar yeteneği | Bonus eylem: Ethereal Jaunt (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Sense Magic (1) | savaş dışı | büyü sezme (keşif) |
+| Canavar yeteneği | Fire Form (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Water Susceptibility (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Aversion to Fire (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Soul Bag (1) | savaş dışı | Nightmare Haunting (savaş dışı) |
+| Canavar yeteneği | Nightmare Haunting (1) | savaş dışı | Dream (savaş dışı) |
+| Canavar yeteneği | Eylem: Reel (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Bonus eylem: Unicorn’s Blessing (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Freeze (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Water Form (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Treasure Sense (1) | savaş dışı | hazine sezme (keşif) |
+| Canavar yeteneği | Bound (1) | savaş dışı | muska bağı (hikâye) |
+| Canavar yeteneği | Spell Storing (1) | savaş dışı | muska sahibinin büyü saklaması (kurulum) |
+| Canavar yeteneği | Tepki: Protection (1) | yok | açık iş |
+| Canavar yeteneği | Multiple Heads (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Reactive Heads (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Acid Absorption (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Bonus eylem: Hasten (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Heat Aura (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Misty Escape (1) | tam | monsterAbilities.ts (pasif) |
+| Canavar yeteneği | Bonus eylem: Charm (1) | tam | monster_ability / Spellcasting |
+| Canavar yeteneği | Reactive (1) | tam | monsterAbilities.ts (pasif) |
