@@ -1,7 +1,7 @@
 /**
  * Kuyruk K20: ırk karşılaştırması. Aynı parti (bütün üyeler aynı türde) aynı senaryolarda; tablo tür × seviye kazanma
  * oranı. Celestial ev kuralı açık (`celestialIrki`).
- *   npm run sim:irk -- 100 [--seviye 1,2,3,4,5,9] [--senaryo col,kale] [--irk celestial,human] [--parti standart]
+ *   npm run sim:irk -- 100 [--seviye 1,2,3,4,5,9] [--senaryo col,kale] [--irk celestial,human] [--soy high-elf] [--parti standart]
  */
 import { loadTrExtra } from '../i18n';
 import { loadClassData, loadMonsters, races } from '../data';
@@ -21,7 +21,7 @@ const scen = ids.map((id) => { const s = SCENARIOS.find((x) => x.id === id); if 
 console.log(`| Tür | ${levels.map((l) => `Sv ${l}`).join(' | ')} | Ort. |`);
 console.log(`|---|${levels.map(() => '---').join('|')}|---|`);
 for (const r of raceIds) {
-  setPartyRace(r);
+  setPartyRace(r, opt('--soy'));
   const row = levels.map((lv) => {
     let w = 0, n = 0;
     for (const s of scen) { const m = measure(s, runs, 1, lv); w += m.partyWins; n += m.runs; }

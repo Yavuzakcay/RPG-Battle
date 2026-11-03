@@ -140,13 +140,15 @@ export const setPartyDarkvision = (ft: number | null) => { partyDarkvision = ft;
 
 /** Kuyruk K20: ırk karşılaştırması: bütün parti bu türde (soy türün varsayılanı; null: veri sheet'i). */
 let partyRace: string | null = null;
-export const setPartyRace = (raceId: string | null) => { partyRace = raceId; };
+let partyLineage: string | undefined;
+/** `lineageId` verilmezse türün varsayılan soyu. */
+export const setPartyRace = (raceId: string | null, lineageId?: string) => { partyRace = raceId; partyLineage = lineageId; };
 /** Kuyruk K20: simülasyonda ev kuralları (Celestial `celestialIrki`). */
 let simHouseRules: Record<string, boolean> | null = null;
 export const setSimHouseRules = (r: Record<string, boolean> | null) => { simHouseRules = r; };
 
 function participants(s: Scenario, level: number = DEFAULT_LEVEL): Combatant[] {
-  const party = partyAt(level).map((sheet) => (partyRace === null ? sheet : { ...sheet, raceId: partyRace, lineageId: races.find((r) => r.id === partyRace)?.defaultLineage }))
+  const party = partyAt(level).map((sheet) => (partyRace === null ? sheet : { ...sheet, raceId: partyRace, lineageId: partyLineage ?? races.find((r) => r.id === partyRace)?.defaultLineage }))
     .map((sheet, i) => combatantFromSheet(sheet, { id: `pc${i + 1}`, ownerId: `p${i + 1}` }))
     .map((c) => (partyDarkvision === null ? c : { ...c, darkvision: partyDarkvision }));
   const foes: Combatant[] = [];
