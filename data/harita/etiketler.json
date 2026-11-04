@@ -10,11 +10,12 @@
    "id": "kita",
    "tr": "Hexonya",
    "en": "Hexonia",
-   "x": 6300,
-   "y": 2250,
+   "x": 4600,
+   "y": 220,
    "seviye": 1,
    "tip": "kita",
-   "konum_kesin": false
+   "konum_kesin": true,
+   "yalnizUzak": true
   },
   {
    "id": "deniz_kuzey",
@@ -118,8 +119,8 @@
   },
   {
    "id": "bolge_bataklik",
-   "tr": "Cadı Bataklığı",
-   "en": "Witch Swamp",
+   "tr": "Cadı Kazanı",
+   "en": "Witch's Cauldron",
    "x": 4750,
    "y": 4550,
    "seviye": 1,
@@ -531,12 +532,12 @@
    "id": "yer3_19",
    "tr": "İklim Vadisi",
    "en": "Clime Valley",
-   "x": 5496,
-   "y": 4589,
+   "x": 7150,
+   "y": 3800,
    "seviye": 3,
    "tip": "yer",
-   "konum_kesin": true,
-   "not": "bataklik"
+   "konum_kesin": false,
+   "not": "K49 C2: orman-kar-çöl kavşağı (Oduncu kampı ile Hutame Çölü arası); eskiden 5496,4589 (Cadı Kazanı ile çakışıyordu)"
   },
   {
    "id": "yer3_20",

@@ -18,7 +18,7 @@ import prisonUrl from '../../../data/harita/hapishane-su-alti-katman.png?url';
 import './world.css';
 
 export interface WorldNode { key: string; page: string; id: string; pos: Pt; done: boolean; open: boolean; label?: string; kind?: MarkerKind }
-export interface WorldLabel { id: string; tr: string; en: string; x: number; y: number; seviye: 1 | 2 | 3; tip?: string; konum_kesin?: boolean; gizli_kesfedilince?: boolean }
+export interface WorldLabel { id: string; tr: string; en: string; x: number; y: number; seviye: 1 | 2 | 3; tip?: string; konum_kesin?: boolean; gizli_kesfedilince?: boolean; /** K49 C1: yalnızca uzak yakınlaştırmada (kıta adı). */ yalnizUzak?: boolean }
 export interface WorldHub { id: string; label: string; pos: Pt; open: boolean; ship: boolean; fly: boolean; tur?: 'yerlesim' | 'iskele'; ad?: { tr: string; en: string } }
 export interface WorldMapProps {
   /** Keşif sisi (null: bütün harita açık). */
@@ -70,7 +70,8 @@ export default function WorldMapViewer(props: WorldMapProps) {
   const [vp, setVp] = useState<Viewport>({ w: 800, h: 500 });
   const [cam, setCam] = useState<Camera | null>(null);
   const [manifest, setManifest] = useState<TileManifest | null | 'yok'>(null);
-  const [layers, setLayers] = useState<Record<Layer, boolean>>(() => Object.fromEntries(LAYERS.map((l) => [l, true])) as Record<Layer, boolean>);
+  const [layers, setLayers] = useState<Record<Layer, boolean>>(() => Object.fromEntries(LAYERS.map((l) => [l, l !== 'passes'])) as Record<Layer, boolean>);
+  // K49 C3: köprü/geçit kapısı noktaları (yürüme ızgarasının açık koridor işaretleri; yollarda "minik yuvarlaklar") varsayılan kapalı, Katmanlar menüsünden açılır.
   const [showLayers, setShowLayers] = useState(false);
   const [tick, setTick] = useState(0);
   const prisonImg = useRef<HTMLImageElement | null>(null);
@@ -79,7 +80,6 @@ export default function WorldMapViewer(props: WorldMapProps) {
   const loading = useRef(new Set<string>());
   const camRef = useRef<Camera | null>(null);
   camRef.current = cam;
-  const [showTravel, setShowTravel] = useState(false);
   // Kuyruk H2: dokunulan merkezin kartı; çizilen işaretlerin ekran konumları (tıklama alanı = çizildiği yer).
   const [hubCard, setHubCard] = useState<WorldHub | null>(null);
   const markRef = useRef<Array<{ x: number; y: number; r: number; hub?: WorldHub; node?: WorldNode }>>([]);
@@ -293,7 +293,7 @@ export default function WorldMapViewer(props: WorldMapProps) {
       const level = cam.scale > 8 ? 1 : cam.scale > 3 ? 2 : 3;
       const known = !!props.hiddenFlag && props.flags.includes(props.hiddenFlag);
       g.textAlign = 'center'; g.textBaseline = 'middle';
-      for (const l of LABELS.filter((x) => x.seviye <= level && (!x.gizli_kesfedilince || known))) {
+      for (const l of LABELS.filter((x) => x.seviye <= level && (!x.yalnizUzak || level === 1) && (!x.gizli_kesfedilince || known))) {
         const open = !props.fog || !layers.fog || l.tip === 'kita' || l.tip === 'deniz' || !!props.fog[Math.floor(l.y / (WORLD.h / FOG_ROWS)) * FOG_COLS + Math.floor(l.x / (WORLD.w / FOG_COLS))];
         if (!open) continue;
         const [sx, sy] = toScreen(cam, vp, l.x, l.y);
@@ -425,7 +425,6 @@ export default function WorldMapViewer(props: WorldMapProps) {
           ))}
           <button type="button" className="chip" onClick={() => setCam(fitWorld(vp))}>{W.fit}</button>
         </div>
-        {props.hubs && props.onTravel && <button type="button" className="ghost" onClick={() => setShowTravel((v) => !v)} aria-expanded={showTravel}>{W.travelTitle}</button>}
         <button type="button" className="ghost" onClick={() => setShowLayers((v) => !v)} aria-expanded={showLayers}>{W.layers}</button>
         <button type="button" className="ghost" onClick={props.onClose}>{W.close}</button>
       </header>
@@ -434,18 +433,6 @@ export default function WorldMapViewer(props: WorldMapProps) {
           {LAYERS.filter((l) => (l === 'fog' ? !!props.fog : l === 'hidden' ? !!props.hiddenFlag && props.flags.includes(props.hiddenFlag) : l === 'labels' ? LABELS.length > 0 : true)).map((l) => (
             <label key={l}><input type="checkbox" checked={layers[l]} onChange={() => setLayers((s) => ({ ...s, [l]: !s[l] }))} /> {W.layer[l]}</label>
           ))}
-        </div>
-      )}
-      {showTravel && props.hubs && props.onTravel && (
-        <div className="world-travel">
-          {props.hubs.filter((h) => h.ship || h.fly).map((h) => (
-            <span key={h.id} className="world-hub">
-              <strong>{h.label}</strong>
-              {h.ship && <button type="button" onClick={() => { setShowTravel(false); props.onTravel?.(h.id, 'gemi'); }}>{W.ship}</button>}
-              {h.fly && <button type="button" onClick={() => { setShowTravel(false); props.onTravel?.(h.id, 'ucus'); }}>{W.fly}</button>}
-            </span>
-          ))}
-          {!props.hubs.some((h) => h.ship || h.fly) && <span>{W.noTravel}</span>}
         </div>
       )}
       <div className="world-view" ref={wrapRef}>

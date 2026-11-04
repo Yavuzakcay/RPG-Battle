@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-04 — Kuyruk K49 Adım C: ana harita verisi ve temizlik
+
+- **C1 Hexonya:** kıta adı (`kita`) z2 karolarında piksel analiziyle (180×28 px pencere, renk sapması en düşük, kıta dışı, "Kuzey Buz Denizi" etiketinden uzak) haritanın üstündeki boş denize taşındı: **(4600, 220)** (eskiden 6300, 2250). Yeni etiket alanı `yalnizUzak: true`: yalnızca uzak yakınlaştırmada (seviye 1 görünümü) çizilir.
+- **C2 adlar:** "Cadı Bataklığı" → **Cadı Kazanı** (EN "Witch's Cauldron"; kimlik `bolge_bataklik` aynı; başka geçiş yoktu). "İklim Vadisi" `yer3_19` etiketi (5496, 4589) Cadı Kazanı yazısıyla çakışıyordu; kullanıcının tarifine göre orman–kar–çöl kavşağına (Oduncu kampı ile Hutame Çölü arası) taşındı: **(7150, 3800)**, `konum_kesin: false` (kullanıcı `etiketler.json`'dan düzeltebilir).
+- **C3 yollardaki yuvarlaklar:** köprü (5 px, `kopruler`) ve bölge geçit kapısı (4 px, `kenarlar` `kapi_a/kapi_b`) noktaları; yürüme ızgarasının açık bıraktığı koridorları gösteren geliştirici işareti. "Köprü/geçit" katmanı artık varsayılan kapalı; Katmanlar menüsünden açılır.
+- **C4 Hızlı seyahat düğmesi** ve paneli kaldırıldı. Mekanik aynı: gemi/uçuş merkez kartından (iskele, binek), `fast_travel` komutu ve `hizliSeyahat` anahtarı duruyor.
+- **C5 bölgeler arası yollar:** `python scripts/k49-bolge-yollari.py` (A* yürüme ızgarasında, komşu bölge çiftleri `komsuluk-grafi.json` kenarlarından, geçit kapılarından geçerek). Zayıf ölçütü: yol ağıyla bağlı değil, yol ağı/A* uzunluğu > 1,6 ya da en ucuz yürüyüşün yol hücresi oranı < %50. Tek zayıf çift Karkedon–Cüce Eyeri kuzey geçidi (%36 yol): `k49-buzul-dag-1` patikası eklendi, maliyet 3175 → 1406; yürüme ızgarası yeniden üretildi. Tablo `harita/belgeler/bolge-yollari.md`. Görüntüleyicide `patika` ince çizgi.
+- **C6 ana haritada olmayan haritalar:** `harita/belgeler/ana-haritada-olmayanlar.md` (`scripts/k49-yetim-haritalar.py`): 59 haritadan 47'si dünyada, 2'si yeraltı, 10'u başka yerde (sim/sefer/test/vitrin) kullanılıyor; **yetim yok**, kaldırılan harita yok.
+- **C7 deniz animasyonu yapılmadı** (kullanıcı kararı: yük ve kalite riski). Yazım düzeltmesi "Çeren Ürperten" → "Ceren Ürperten": 1 geçiş (`icerik-liste.txt`); paketin kendisi (`icerik/ek-sorcerer.json`) depo dışı, orada da düzeltilmeli.
+
 ## 2026-11-04 — Kuyruk K49 Adım B: oluşturucu ve Game Master düzeltmeleri
 
 - **B1 seviye 1–20:** oluşturucuda seviye seçimi her zaman 1–20 (`UPPER_LEVEL_CAP`). 11+ seviyede verisi olmayan sınıf özelliği "henüz yok" notuyla listelenir (oyunu bozmaz).
