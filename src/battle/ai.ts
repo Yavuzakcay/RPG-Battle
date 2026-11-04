@@ -72,11 +72,43 @@ import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
 import { steerableSummon, steerHexes } from './summons';
 import { steedActions } from './steed';
+import { GAZE_KEY, SPIDER_KEY } from './karadul';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
   c.side === 'enemies' || c.civilian ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
 const tryCmd = (state: BattleState, actor: Combatant, cmd: Command) => execute(state, cmd, ctxOf(actor), noRoll);
+
+/**
+ * Kuyruk K48 (ev kuralı, basit kural): Karadul. Biçimde değilken menzildeki en güçlü uygun düşmana Büyüleyici Bakış;
+ * büyülü düşman varsa (ya da slot kalmadıysa) Örümcek Biçimi; dönüşülen turda büyülü hedef erişimdeyse sürpriz vuruş.
+ */
+function karadulAi(state: BattleState, actor: Combatant): Command | null {
+  const gaze = actor.features?.find((f) => f.key === GAZE_KEY);
+  const spider = actor.features?.find((f) => f.key === SPIDER_KEY);
+  if (!gaze && !spider) return null;
+  const foes = foesOf(state, actor).sort((a, b) => b.hp - a.hp);
+  const charmed = foes.filter((f) => f.effects?.some((e) => e.id === `karadul:gaze:${actor.id}`));
+  const bonusFree = !actor.economy.bonus;
+  if (spider && actor.shape?.spider && actor.traitTurns?.['karadul-transform'] === turnKey(state)) {
+    const bite = actor.weaponOptions[0];
+    for (const t of charmed) {
+      const cmd: Command | null = bite ? { type: 'attack', actorId: actor.id, targetId: t.id, option: bite } : null;
+      if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  if (!actor.shape && gaze && (gaze.type === 'bonus' ? bonusFree : !actor.economy.action) && !charmed.length) {
+    for (const t of foes) {
+      const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: gaze.key, targetId: t.id };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  if (!actor.shape && spider && bonusFree && (charmed.length || actor.spellSlots.every((n) => n <= 0))) {
+    const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: spider.key };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
+}
 /** CILA: komut yapılabilir ve boşa gitmez (rüzgâr duvarından geçen menzilli saldırı otomatik ıskalar). */
 const worthIt = (state: BattleState, actor: Combatant, cmd: Command): boolean => {
   const r = tryCmd(state, actor, cmd);
@@ -95,11 +127,14 @@ function avg(dice: string | undefined): number {
 /** Saldırılabilir karşı taraf: ayakta, gizlenmemiş, görülen. */
 function foesOf(state: BattleState, actor: Combatant): Combatant[] {
   const other = actor.side === 'enemies' ? 'party' : 'enemies';
-  return Object.values(state.combatants).filter(
+  const all = Object.values(state.combatants).filter(
     (c) => c.side === other && c.hp > 0 && isTargetable(c) && !c.hidden && !c.asleep && canSee(state, actor, c) && !(c.summon?.intangible && !c.summon.gone)
       // Görev S4: açık bir sızma hedefi (ulaş, yok et, al) varken parti habersiz düşmana dokunmaz.
       && !(c.unaware && sneaking(state)),
   );
+  // Kuyruk K48 (Karadul, basit kural): dostun büyülediği düşmana (Tatlı Tuzak bekliyor) başka hedef varken dokunulmaz.
+  const spared = all.filter((c) => !c.effects?.some((e) => e.id.startsWith('karadul:gaze:') && e.sourceId !== actor.id && state.combatants[e.sourceId]?.side === actor.side));
+  return spared.length ? spared : all;
 }
 
 /**
@@ -1088,6 +1123,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const canAct = !actor.economy.action || actor.economy.attacksLeft > 0;
   const feature = bonusFeature(state, actor, canAct);
   if (feature) return feature;
+  // Kuyruk K48 (Karadul, basit kural): bakış → dönüşüm → büyülü hedefe sürpriz vuruş.
+  const widow = karadulAi(state, actor);
+  if (widow) return widow;
   // Kuyruk K48 (Moral tam modu, basit kural): eylemi duruyorsa menzildeki çökmüş dostu toparla.
   if (!actor.economy.action && actor.moralMax !== undefined) {
     for (const c of Object.values(state.combatants)) {

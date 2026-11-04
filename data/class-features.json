@@ -110,6 +110,9 @@
         "long": "all"
       }
     },
+    "karadulGaze": { "name": "Büyüleyici Bakış", "feature": "druid/karadul-cemberi:bewitching-gaze", "uses": { "proficiency": true }, "recharge": { "long": "all" } },
+    "karadulSpider": { "name": "Örümcek Biçimi", "feature": "druid/karadul-cemberi:spider-shape", "uses": { "proficiency": true }, "recharge": { "short": "all", "long": "all" } },
+    "karadulKiss": { "name": "Son Öpücük", "feature": "druid/karadul-cemberi:final-kiss", "uses": { "fixed": 1 }, "recharge": { "long": "all" } },
     "wildShape": {
       "name": "Wild Shape",
       "feature": "druid:wild-shape",

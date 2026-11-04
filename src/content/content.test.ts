@@ -49,7 +49,8 @@ describe('SRD alt sınıfları (data/subclasses.json)', () => {
     }
   });
   it('şemaya uyar: etkiler mevcut mekanizmalarla, "çalışır" yalnızca uygulanan etkiyle', () => {
-    for (const s of classData.subclasses) {
+    // Kuyruk K48: ev kuralı alt sınıfının (Karadul) mekaniği kodda (`src/battle/karadul.ts`), veride `effect` yok.
+    for (const s of classData.subclasses.filter((x) => !x.ev)) {
       for (const f of s.features) {
         if (f.effect) expect(effectErrors(f.effect, `${s.id}.${f.id}`)).toEqual([]);
         const works = !!f.effect && (f.effect.status === 'ok' || f.effect.status === 'partial');

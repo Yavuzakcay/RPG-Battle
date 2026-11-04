@@ -62,8 +62,8 @@ export function loadClassData(): Promise<void> {
   classLoading ??= Promise.all([
     import('../../data/srd/progression.json'), import('../../data/class-features.json'), import('../../data/srd/feats.json'),
     import('../../data/srd/weapons.json'), import('../../data/subclasses.json'), import('../../data/spells-45.json'),
-    import('../../data/items-srd.json'), import('../../data/spells-69.json'),
-  ]).then(([p, m, f, w, sc, s45, isrd, s69]) => {
+    import('../../data/items-srd.json'), import('../../data/spells-69.json'), import('../../data/karadul.json'),
+  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd]) => {
     if (classDataLoaded()) return;
     // Kuyruk 19 (görev 7): SRD'nin geri kalan eşyaları (ana parça sınırı; oluşturucu ve savaştan önce yüklenir).
     const moreItems = (isrd.default as unknown as Item[]).filter((x) => !items.some((y) => y.id === x.id));
@@ -72,7 +72,8 @@ export function loadClassData(): Promise<void> {
     // Kuyruk 19 (görev 3): 6.–9. seviye büyüler (`data/spells-69.json`, scripts/k19-buyu-69.py).
     const more = [...(s45.default as unknown as Spell[]), ...(s69.default as unknown as Spell[])].filter((s) => !spells.some((x) => x.id === s.id));
     spells.push(...more);
-    classData.subclasses = (sc.default as unknown as { subclasses: SubclassDef[] }).subclasses;
+    // Kuyruk K48: ev kuralı alt sınıfı Karadul Çemberi (data/karadul.json) SRD alt sınıflarının ardından.
+    classData.subclasses = [...(sc.default as unknown as { subclasses: SubclassDef[] }).subclasses, (kd.default as unknown as { subclass: SubclassDef }).subclass];
     classData.mechanics = m.default as unknown as ClassMechanics;
     classData.feats = (f.default as unknown as { feats: SrdFeat[] }).feats;
     const sw = w.default as unknown as { weapons: SrdWeapon[]; masteries: SrdMastery[] };

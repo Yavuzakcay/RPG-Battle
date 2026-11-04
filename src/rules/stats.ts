@@ -8,6 +8,7 @@ import { isSkill, skillTable, type Skill } from './skills';
 import { classKit, gainedFeatures, optionTraining, speedBonus } from './classFeatures';
 import { applyIncreases, featEffects, sheetFeats, type Advancement } from './advancement';
 import { raceSpeed } from './lineage';
+import { findSubclass } from './subclasses';
 import { bonusesOf, type MagicInitiatePick } from './backgrounds';
 
 export type Scores = Record<Ability, number>;
@@ -200,6 +201,14 @@ export function spellSlotsFor(classId: string, level: number): number[] {
   return slots;
 }
 
+/** Kuyruk K48: alt sınıfın ek beceri yetkinlikleri (alt sınıf seviyesinden; Karadul: Persuasion, Deception). */
+function subclassSkills(sheet: CharacterSheet): Skill[] {
+  const own = sheet.skills ?? [];
+  const sub = sheet.subclassId && sheet.level >= 3 ? findSubclass(sheet.classId, sheet.subclassId) : undefined;
+  const extra = (sub?.ekBeceriler ?? []).filter((s): s is Skill => isSkill(s) && !own.includes(s));
+  return extra.length ? [...own, ...extra] : own;
+}
+
 /** Beceri listeleri geçerli mi: bilinen adlar, tekrar yok, uzmanlık yalnızca yetkin olunanlarda. */
 function checkSkills(sheet: CharacterSheet): void {
   const skills = sheet.skills ?? [];
@@ -315,7 +324,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     jack,
     saves,
     saveProficiencies: [...cls.saves, ...kit.saveProficiencies.filter((a) => !cls.saves.includes(a))],
-    skills: skillTable(modifiers, prof, sheet.skills ?? [], sheet.expertise ?? []),
+    skills: skillTable(modifiers, prof, subclassSkills(sheet), sheet.expertise ?? []),
     spellSaveDc: cls.casting ? 8 + prof + castMod : null,
     spellAttack: cls.casting ? prof + castMod : null,
     spellSlots: spellSlotsFor(cls.id, level),

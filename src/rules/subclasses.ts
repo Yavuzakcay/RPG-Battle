@@ -31,6 +31,14 @@ const norm = (x: string | undefined) => (x ?? '').trim().toLocaleLowerCase('tr')
 const sameAs = (a: SubclassDef, b: SubclassDef) => a.class === b.class
   && (a.id === b.id || (!!norm(a.name.tr) && norm(a.name.tr) === norm(b.name.tr)) || (!!norm(a.name.en) && norm(a.name.en) === norm(b.name.en)));
 
+/**
+ * Kuyruk K48: ev kuralı alt sınıfı oluşturucuda görünür mü (Ayarlar anahtarı; kadın kısıtı açıkken yalnız kadın
+ * karakter). Karakterin mevcut seçimi her zaman görünür (eski kayıt bozulmaz). SRD/dış içerik alt sınıfı hep görünür.
+ */
+export function houseSubclassVisible(sub: SubclassDef, sheet: { subclassId?: string; gender?: string }, enabled: boolean, womenOnly: boolean): boolean {
+  return !sub.ev || sub.id === sheet.subclassId || (enabled && (!womenOnly || sheet.gender === 'kadin'));
+}
+
 /** Seçimde görünen alt sınıflar (kopyalarda politikaya göre tek sürüm). */
 export function visibleSubclasses(classId: string, p: DuplicatePolicy = policy): SubclassDef[] {
   const srd = classData.subclasses.filter((s) => s.class === classId);

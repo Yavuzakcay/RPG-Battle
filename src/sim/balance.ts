@@ -9,6 +9,7 @@ import { chooseCommand } from '../battle/ai';
 import { getMonster, races } from '../data';
 import { seededRng, type Rng } from '../rules/dice';
 import type { CharacterSheet } from '../rules/stats';
+import type { Ability } from '../rules/abilities';
 import { alternativeCantrips, spellOptions } from '../rules/builder';
 import { classKit } from '../rules/classFeatures';
 import { createMapBattle } from '../app/setup';
@@ -147,8 +148,18 @@ export const setPartyRace = (raceId: string | null, lineageId?: string) => { par
 let simHouseRules: Record<string, boolean> | null = null;
 export const setSimHouseRules = (r: Record<string, boolean> | null) => { simHouseRules = r; };
 
+/** Kuyruk K48: alt sınıf karşılaştırması (Karadul ↔ Toprak): bu sınıftaki üyelerin alt sınıfı ve isteğe bağlı skor değişimi. */
+let partySubclass: { classId: string; subclassId: string; swap?: [Ability, Ability] } | null = null;
+export const setPartySubclass = (v: typeof partySubclass) => { partySubclass = v; };
+function withSubclass(sheet: CharacterSheet): CharacterSheet {
+  if (!partySubclass || sheet.classId !== partySubclass.classId) return sheet;
+  const [a, b] = partySubclass.swap ?? [];
+  const base = a && b && sheet.baseScores ? { ...sheet.baseScores, [a]: sheet.baseScores[b], [b]: sheet.baseScores[a] } : sheet.baseScores;
+  return { ...sheet, subclassId: partySubclass.subclassId, ...(base ? { baseScores: base } : {}) };
+}
+
 function participants(s: Scenario, level: number = DEFAULT_LEVEL): Combatant[] {
-  const party = partyAt(level).map((sheet) => (partyRace === null ? sheet : { ...sheet, raceId: partyRace, lineageId: partyLineage ?? races.find((r) => r.id === partyRace)?.defaultLineage }))
+  const party = partyAt(level).map(withSubclass).map((sheet) => (partyRace === null ? sheet : { ...sheet, raceId: partyRace, lineageId: partyLineage ?? races.find((r) => r.id === partyRace)?.defaultLineage }))
     .map((sheet, i) => combatantFromSheet(sheet, { id: `pc${i + 1}`, ownerId: `p${i + 1}` }))
     .map((c) => (partyDarkvision === null ? c : { ...c, darkvision: partyDarkvision }));
   const foes: Combatant[] = [];

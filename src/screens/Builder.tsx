@@ -22,11 +22,12 @@ import { classSpellList, type ClassSpell } from '../rules/spellList';
 import { carryLoad, type CarryLoad, type CarryRule } from '../rules/carry';
 import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
+import karadulData from '../../data/karadul.json';
 import { levelCap } from '../app/limits';
-import { celestialEnabled, upperLevelsEnabled } from '../app/features';
+import { celestialEnabled, karadulEnabled, karadulWomenOnly, upperLevelsEnabled } from '../app/features';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
-import { subclassLabel, subclassMissing } from '../rules/subclasses';
+import { houseSubclassVisible, subclassLabel, subclassMissing } from '../rules/subclasses';
 import {
   ASI_FEAT, advancementSlots, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
   originFeats, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
@@ -95,6 +96,12 @@ export function wizardSteps(sheet: CharacterSheet): BuilderStep[] {
  * Kayıt açılırken (Görev K1): sınıfta bulunmayan alt sınıf boşa çevrilir (dolgu ya da başka sınıfın alt sınıfı);
  * döner: temizlenen kimlik (bir kerelik not için) ya da null.
  */
+/** Kuyruk K48: Karadul skor takası (insan → örümcek; iki sütun tek satırda): "STR 8→16 · CHA 16→8 …". */
+function karadulSwapText(sheet: CharacterSheet): string {
+  const sc = deriveStats(sheet).scores;
+  return (karadulData.skorTakasi as Array<[Ability, Ability]>).flatMap(([a, b]) => [`${a.toUpperCase()} ${sc[a]}→${sc[b]}`, `${b.toUpperCase()} ${sc[b]}→${sc[a]}`]).join(' · ');
+}
+
 export function clearInvalidSubclass(c: SavedCharacter): { character: SavedCharacter; cleared: string | null } {
   const id = c.sheet.subclassId;
   if (!id || !classDataLoaded() || subclassesOf(c.sheet.classId).some((x) => x.id === id)) return { character: c, cleared: null };
@@ -426,7 +433,10 @@ function ClassStep({ c, setC, set }: StepProps) {
   const s = c.sheet;
   const cls = getClass(s.classId);
   const subLevel = subclassLevel(s.classId);
-  const subs = subclassesOf(s.classId);
+  // Kuyruk K48: ev kuralı alt sınıfları (Karadul) yalnızca Ayarlar anahtarıyla ve (kısıt açıkken) kadın karakterde; mevcut seçim kalır.
+  const subs = subclassesOf(s.classId).filter((x) => houseSubclassVisible(x, s, karadulEnabled(), karadulWomenOnly()));
+  const chosen = subs.find((x) => x.id === s.subclassId);
+  const swap = chosen?.ev && chosen.replaces?.length ? karadulSwapText(s) : null;
   // Görev K17: eski sınıfın seçimleri taslakta saklanır, geri dönünce uyanları gelir (`switchClass`).
   const choose = (id: string) => setC((x) => switchClass(x, id, x.method === 'standard' ? { baseScores: suggestedScores(id) } : {}));
   return (
@@ -449,11 +459,12 @@ function ClassStep({ c, setC, set }: StepProps) {
         <label>{T.subclass}
           <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
             <option value="">{T.subclassNone}</option>
-            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang())}{x.pack ? ` (${T.subclassExternal})` : ''}</option>)}
+            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang())}{x.pack ? ` (${T.subclassExternal})` : ''}{x.ev ? ` (${T.subclassHouse})` : ''}</option>)}
             {subclassMissing(s.classId, s.subclassId) && <option value={s.subclassId}>{T.subclassMissing(s.subclassId ?? '')}</option>}
           </select>
         </label>
       )}
+      {swap && <p className="warn">{T.karadulWarn} {T.karadulSwap(swap)}</p>}
       {subLevel !== null && subs.length > 0 && s.level < subLevel && <p className="mute">{T.subclass}: {T.subclassAt(subLevel)}</p>}
       <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={experimentalFrom(s.classId, s.subclassId)}
         choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })}

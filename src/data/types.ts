@@ -822,6 +822,12 @@ export interface SubclassDef {
   name: LocalText;
   role: LocalText;
   features: SubclassFeatureDef[];
+  /** Kuyruk K48: ev kuralı alt sınıfı (SRD dışı; oluşturucuda Ayarlar anahtarıyla görünür). */
+  ev?: boolean;
+  /** Kuyruk K48: bu alt sınıf seçilince kaybedilen sınıf özellikleri (anahtar; ör. `druid:wild-shape`). */
+  replaces?: string[];
+  /** Kuyruk K48: alt sınıf seviyesinde ek beceri yetkinlikleri. */
+  ekBeceriler?: string[];
 }
 
 export type FeatureType = 'passive' | 'resource' | 'action' | 'bonus' | 'reaction' | 'free';
@@ -1008,7 +1014,10 @@ export type FeatureEffect =
   | { kind: 'shadowMerge' }
   /** Kuyruk K20 (ev kuralı): Celestial Şifa Eli (dokunuş, PB × d4) ve Göksel Uyanış (seçilen biçim; `src/battle/celestial.ts`). */
   | { kind: 'celestialHeal' }
-  | { kind: 'celestialAwakening'; option: string };
+  | { kind: 'celestialAwakening'; option: string }
+  /** Kuyruk K48 (ev kuralı): Karadul Büyüleyici Bakış ve Örümcek Biçimi (`src/battle/karadul.ts`). */
+  | { kind: 'karadulGaze' }
+  | { kind: 'karadulSpider' };
 
 export interface ResourceDef {
   name: string;

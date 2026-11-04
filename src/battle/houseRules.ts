@@ -23,6 +23,8 @@ export function houseRule(state: Pick<BattleState, 'houseRules' | 'map'>, id: Ho
 
 /** Bir haritanın (sefer bayrağıyla) varsayılan değerleri: kurulum listesinin başlangıcı. */
 /** `karakter`: oluşturucu ayarına bağlı ev kuralları (Celestial; Kuyruk K20) bu değerle başlar. */
-export function houseRuleDefaults(seferKurallari: string[] = [], karakter = false): Record<HouseRuleId, boolean> {
-  return Object.fromEntries(HOUSE_RULE_IDS.map((id) => [id, HOUSE_RULES[id]?.karakter ? karakter : HOUSE_RULES[id]?.sefer ? seferKurallari.includes(id) : !!HOUSE_RULES[id]?.default])) as Record<HouseRuleId, boolean>;
+/** Kuyruk K48: `karakter` kural başına da verilebilir (`{ celestialIrki, karadulCemberi }`). */
+export function houseRuleDefaults(seferKurallari: string[] = [], karakter: boolean | Partial<Record<string, boolean>> = false): Record<HouseRuleId, boolean> {
+  const own = (id: string) => (typeof karakter === 'boolean' ? karakter : !!karakter[id]);
+  return Object.fromEntries(HOUSE_RULE_IDS.map((id) => [id, HOUSE_RULES[id]?.karakter ? own(id) : HOUSE_RULES[id]?.sefer ? seferKurallari.includes(id) : !!HOUSE_RULES[id]?.default])) as Record<HouseRuleId, boolean>;
 }

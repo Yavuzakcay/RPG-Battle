@@ -1193,6 +1193,8 @@ export interface ShapeStats {
   avatar: Combatant['avatar'];
   /** Kuyruk 18 H2: Polymorph (büyüyle dönüşüm): canavar saldırıları ve Multiattack biçiminkiyle değişir; geçici HP bitince biter. */
   polymorph?: boolean;
+  /** Kuyruk K48: Karadul Örümcek Biçimi (biçim canı = geçici HP; bitince ya da bırakınca biter). */
+  spider?: boolean;
   attacks?: CombatantAttack[];
   multiattack?: boolean;
 }

@@ -140,6 +140,8 @@ const tr = {
     sumSpellDc: (dc: number, atk: string) => `Büyü DC ${dc} · saldırı ${atk}`,
     sumEquip: 'Donanımın etkisi',
     subclass: 'Alt sınıf', subclassAt: (lvl: number) => `${lvl}. seviyede seçilir.`, subclassNone: 'Seçilmedi (zorunlu)',
+    subclassHouse: 'ev kuralı', karadulWarn: 'Karadul Çemberi Wild Shape\'i kaldırır; yerine Örümcek Biçimi gelir. Alt sınıf DC\'si CHA ile.',
+    karadulSwap: (rows: string) => `Örümcek biçiminde skorlar: ${rows}`,
     subclassExternal: 'dış içerik', subclassMissing: (id: string) => `${id} (içerik eksik)`,
     featureOption: { 'gr-auto': 'Otomatik (ilk uygun)', 'gr-exhaustion': '1 Exhaustion', 'gr-curse': 'Lanet', 'gr-maxhp': 'HP maksimumu azalması', 'gr-ability': 'Yetenek puanı azalması', Charmed: 'Charmed', Petrified: 'Petrified', protector: 'Protector (Heavy zırh ve Martial silah eğitimi)', thaumaturge: 'Thaumaturge (ek Cleric cantrip\'i)', 'divine-strike': 'Divine Strike (turda bir silah isabetine +1d8)', 'potent-spellcasting': 'Potent Spellcasting (cantrip hasarına WIS)', 'colossus-slayer': 'Colossus Slayer (yaralı hedefe +1d8)', 'horde-breaker': 'Horde Breaker (yandaki ikinci hedefe ek saldırı)',
       'escape-the-horde': 'Escape the Horde (fırsat saldırıları dezavantajlı)', 'multiattack-defense': 'Multiattack Defense (isabet edenin sonraki saldırıları dezavantajlı)',
@@ -519,6 +521,8 @@ const tr = {
   },
   journey: {
     menu: 'Yolculuk (deneme)', menuDesc: 'Game Master gerektirmeyen ana mod: tek başına ya da partiyle, savaşları kalıcı parti durumuyla bir rotada oynayın.',
+    karadulFlag: 'Game Master: Karadul Çemberi (Druid alt sınıfı, ev kuralı)', karadulWomen: 'Karadul yalnız kadın karakterlere (karadulKadinKisiti)',
+    karadulNote: 'SRD 5.2.1 dışı özgün alt sınıf. Açıkken oluşturucuda 3. seviye Druid seçebilir (Wild Shape yerine Örümcek Biçimi); yeni savaşlarda özellikleri çalışır.',
     celestialFlag: 'Game Master: Celestial ırkı (ev kuralı)', celestialNote: 'SRD 5.2.1 dışı özgün ırk (Düşmüş). Açıkken oluşturucuda seçilir ve yeni savaşlarda Şifa Eli, Light ve Göksel Uyanış çalışır; kapalıyken Celestial karakterler yalnızca karanlık görüş ve dirençle oynar.',
     upperFlag: 'Game Master: Üst seviye (6–20)', upperNote: 'Açıkken karakter oluşturma ve Serüven seviye atlaması 20. seviyeye dek; kapalıyken 5. Daha yüksek seviyeli eski karakterler korunur.',
     title: 'Yolculuk (deneme)', flag: 'Deneysel: Yolculuk', flagNote: 'Ana menüde "Yolculuk (deneme)" girişini açar. Kayıt ayrı tutulur.',

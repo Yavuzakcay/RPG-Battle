@@ -25,3 +25,14 @@ export const celestialEnabled = (): boolean => read().celestial === true;
 export function setCelestialEnabled(on: boolean): void {
   try { localStorage.setItem(KEY, JSON.stringify({ ...read(), celestial: on })); } catch { /* depolama yok */ }
 }
+
+/** Kuyruk K48: Karadul Çemberi ev kuralı (Game Master; varsayılan kapalı): oluşturucuda seçilir, yeni savaşlarda `karadulCemberi` açık gelir. */
+export const karadulEnabled = (): boolean => read().karadul === true;
+export function setKaradulEnabled(on: boolean): void {
+  try { localStorage.setItem(KEY, JSON.stringify({ ...read(), karadul: on })); } catch { /* depolama yok */ }
+}
+/** Kuyruk K48: Karadul yalnız kadın karakterlere (varsayılan açık; yalnızca oluşturucuda seçimi kapatır, savaşı etkilemez). */
+export const karadulWomenOnly = (): boolean => read().karadulKadinKisiti !== false;
+export function setKaradulWomenOnly(on: boolean): void {
+  try { localStorage.setItem(KEY, JSON.stringify({ ...read(), karadulKadinKisiti: on })); } catch { /* depolama yok */ }
+}

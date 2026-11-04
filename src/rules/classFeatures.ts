@@ -60,6 +60,8 @@ export function gainedFeatures(classId: string, level: number, subclassId?: stri
       const key = `${classId}/${sub.id}:${f.id}`;
       out.push({ key, id: f.id, name: f.name.en, level: at, from: 'subclass', mechanic: f.effect });
     }
+    // Kuyruk K48: alt sınıfın yerini aldığı sınıf özellikleri (Karadul: Wild Shape) ve onların kaynakları düşer.
+    if (sub.replaces?.length) return out.filter((f) => !sub.replaces?.includes(f.key)).sort((a, b) => a.level - b.level);
   }
   return out.sort((a, b) => a.level - b.level);
 }

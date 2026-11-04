@@ -3,7 +3,7 @@
  * klasör seçiciyle içe aktarılır; liste, tek tek açma/kapama ve silme. Hata mesajları TR/EN, bozuk dosya uygulamayı
  * bozmaz. Kod çalıştırılmaz: yalnızca JSON veri.
  */
-import { celestialEnabled, journeyEnabled, setCelestialEnabled, setJourneyEnabled, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
+import { celestialEnabled, journeyEnabled, karadulEnabled, karadulWomenOnly, setCelestialEnabled, setJourneyEnabled, setKaradulEnabled, setKaradulWomenOnly, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
 import { useState } from 'react';
 import { getLang, t } from '../i18n';
 import { textOf } from '../rules/subclasses';
@@ -36,6 +36,8 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [video, setVideo] = useState<boolean>(storedEndVideo);
   const [upper, setUpper] = useState<boolean>(upperLevelsEnabled);
   const [celestial, setCelestial] = useState<boolean>(celestialEnabled);
+  const [karadul, setKaradul] = useState<boolean>(karadulEnabled);
+  const [karadulWomen, setKaradulWomen] = useState<boolean>(karadulWomenOnly);
   const MT = t().mapTint;
   const CV = t().cityView;
   const [tint, setTint] = useState<boolean>(storedMapTint);
@@ -62,6 +64,9 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
           {/* Kuyruk K20: Celestial (Düşmüş) ırkı ev kuralı (varsayılan kapalı). */}
           <label><input type="checkbox" checked={celestial} onChange={(e) => { setCelestialEnabled(e.target.checked); setCelestial(e.target.checked); }} /> {t().journey.celestialFlag}</label>
           <p className="mute">{t().journey.celestialNote}</p>
+          <label><input type="checkbox" checked={karadul} onChange={(e) => { setKaradulEnabled(e.target.checked); setKaradul(e.target.checked); }} /> {t().journey.karadulFlag}</label>
+          <label><input type="checkbox" checked={karadulWomen} disabled={!karadul} onChange={(e) => { setKaradulWomenOnly(e.target.checked); setKaradulWomen(e.target.checked); }} /> {t().journey.karadulWomen}</label>
+          <p className="mute">{t().journey.karadulNote}</p>
           <p className="mute">{t().journey.flagNote}</p>
         </section>
         {/* Görev K5: taşıma yükü kuralı. */}

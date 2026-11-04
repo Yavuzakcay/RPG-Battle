@@ -22,7 +22,8 @@ describe('SRD sınıf verisi (npm run srd)', () => {
       expect(c.features.every((f) => f.source.page > 0 && f.text.length > 0)).toBe(true);
     }
     expect(srdSubclasses.subclasses.map((s) => s.classId)).toEqual(classes.map((c) => c.id));
-    for (const id of classes.map((c) => c.id)) expect(subclassesOf(id)).toHaveLength(1);
+    // Kuyruk K48: ev kuralı alt sınıfı (Karadul, SRD dışı) sayılmaz.
+    for (const id of classes.map((c) => c.id)) expect(subclassesOf(id).filter((s) => !s.ev)).toHaveLength(1);
   });
   it('isabet zarı ve kurtarma zarları sınıf verisiyle (data/classes.json) aynı', () => {
     for (const p of classData.progression) {
@@ -45,6 +46,8 @@ describe('SRD sınıf verisi (npm run srd)', () => {
     const known = new Set(classData.progression.flatMap((p) => [
       ...p.rows.flatMap((r) => r.features.map((f) => `${p.id}:${f.id}`)),
       ...p.subclasses.flatMap((s) => s.features.map((f) => `${p.id}/${s.id}:${f.id}`)),
+      // Kuyruk K48: ev kuralı alt sınıfının (Karadul) kaynakları kendi verisindeki özelliğe bağlı.
+      ...classData.subclasses.filter((s) => s.ev).flatMap((s) => s.features.map((f) => `${s.class}/${s.id}:${f.id}`)),
     ]));
     for (const key of Object.keys(classData.mechanics.features)) expect(known.has(key), key).toBe(true);
     // Tür kaynakları (Görev R4; Dragonborn Breath Weapon) SRD tür özelliğine bağlı: `species:<tür>/<özellik>`.

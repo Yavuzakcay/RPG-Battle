@@ -12,6 +12,7 @@
     "asitHavuzu": { "default": false, "sefer": true, "tr": "Asit havuzu", "en": "Acid pool" },
     "yuksekAvantaj": { "default": false, "tr": "Yüksekten menzilli saldırıya avantaj", "en": "Advantage on ranged attacks from height" },
     "moralSistemi": { "default": false, "tr": "Moral (tam mod): 0'da Çökmüş, eşik cezaları, toparlama, zafer ödülü (data/moral.json; kural sürümü 20)", "en": "Morale (full mode): Broken at 0, threshold penalties, rally, victory reward (data/moral.json; rules version 20)" },
+    "karadulCemberi": { "default": false, "karakter": true, "tr": "Karadul Çemberi (Druid alt sınıfı, ev kuralı): Büyüleyici Bakış, Örümcek Biçimi, Karadul Zehri, Tatlı Tuzak, Ağ Duyusu, Son Öpücük", "en": "Circle of the Black Widow (Druid subclass, house rule): Bewitching Gaze, Spider Shape, Widow's Venom, Sweet Snare, Web Sense, Final Kiss" },
     "celestialIrki": { "default": false, "karakter": true, "tr": "Celestial (Düşmüş) ırkı: Şifa Eli, Light, Göksel Uyanış", "en": "Celestial (Fallen) ancestry: Healing Touch, Light, Celestial Awakening" }
   }
 }

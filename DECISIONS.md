@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-04 — Kuyruk K48 Adım C: Karadul Çemberi (ev kuralı; kural sürümü 21)
+
+- **Yer:** veri `data/karadul.json` (alt sınıf tanımı + bütün sayılar), mekanik `src/battle/karadul.ts`, saldırı kancaları `features.ts` (`snareReady`, `kissReady`, `karadulHit`, `gazeBreakEvents`), yapay zekâ `ai.ts` `karadulAi`, ölçüm `npm run sim:karadul` (`src/sim/karadulRun.ts`).
+- **Kayıt:** alt sınıf `classData.subclasses`'a sınıf verisiyle tembel eklenir (`ev: true`; SRD karşılığı yok, içerik testleri `ev`'i ayırır). Oluşturucuda yalnızca Ayarlar "Game Master: Karadul Çemberi" açıkken ve (varsayılan açık) "yalnız kadın" kısıtında `gender: 'kadin'` karakterde görünür (`houseSubclassVisible`; mevcut seçim hep görünür, eski kayıt bozulmaz). Karar: kâğıttaki mevcut `gender` alanı kullanılır (ayrı "hitap" alanı açılmadı; "Belirtmek istemiyorum" kısıt kapatılarak karşılanır).
+- **Kaldır/değiştir kancası:** `SubclassDef.replaces` (`gainedFeatures` o sınıf özelliklerini düşer; kaynakları da: Wild Shape kullanımı yok). Seçim satırında uyarı ve skor takası satırı (insan → örümcek).
+- **Ek beceriler:** `SubclassDef.ekBeceriler` (3. seviyeden; `deriveStats`): Persuasion, Deception.
+- **Savaş (ev kuralı `karadulCemberi` + sürüm 21; kapalıyken özellikler kaldırılır, Wild Shape yine yok):** `use_feature` ile `ev:karadul/gaze` (6. seviyeden bonus eylem) ve `ev:karadul/spider` (gir/bırak). DC her zaman insan biçimindeki CHA'dan (`shape.prev`).
+  - **Bakış:** humanoid/monstrosity (veri `turler`; "canavar" = Monstrosity kararı), 30 ft, WIS save, Charmed `charm` (büyüleyene saldıramaz), 600 tur. Kırılma: büyüleyenin tarafından hasar (`breakOnDamage: 'casterSide'`) ve ıskalasa da saldırı (`gazeBreakEvents`). En çok CHA (en az 1) hedef. Hedefin bizim dostlarımıza saldırması büyüyü bozmaz (SRD Charmed gibi).
+  - **Örümcek Biçimi:** SRD canavar verisinden (3 Giant Wolf Spider, 6 Giant Spider, 10 Phase Spider); AC/hız/boyut canavarın; biçim canı = canavarın HP'si (geçici HP), bitince ya da bırakınca biter (kalan geçici HP silinir). Skor takası `skorTakasi` (STR↔CHA, CON↔WIS) insan skorlarından; save'ler yetkinlikle kaydırılır. Isırık = yeterlilik + max(STR, DEX) (takastan sonra), zarı canavarın. Beceri tablosu biçimde değişmez (kısmi; not).
+  - **Zehir/Tuzak/Öpücük:** isabette ek zehir 1d6 (10: 2d6) + CON save ya da bir tur Poisoned; Tatlı Tuzak: bu tur dönüşüldüyse büyülü hedefe ilk ısırık avantajlı + 2d8/3d8/4d8, turda bir (`traitTurns`); Son Öpücük (14, uzun dinlenme): sürpriz vuruşta otomatik kritik, CON save başarısızsa zarlar en yüksek (`maxOf`) + bir tur Stunned; vuruştan sonra canı yarının altında, efsanevi değil (`legendaryLeft`/`legendaryResistance` yok) ve CR ≤ seviye/2 ise kalan canı kadar ek hasar (ölüm).
+  - **Ağ Duyusu (10):** savaş başında zehir hasarı ve Poisoned bağışıklığı; titreşim algısı algılama sistemi gelene kadar yok.
+- **Yapay zekâ:** biçimde değilken bakış; büyülü düşman varken dönüş; dönüşülen turda büyülü hedefe ısırık. Dostlar başka hedef varken büyülü düşmana dokunmaz (`foesOf`; tuzak bekliyor).
+- Test `src/battle/karadul.test.ts`.
+
 ## 2026-11-04 — Kuyruk K48 Adım B: Moral (ev kuralı; kural sürümü 20)
 
 - **Yer:** veri `data/moral.json` (bütün sayılar), saf çekirdek `src/rules/moral.ts`, savaş `src/battle/morale.ts`, Serüven `src/journey/moral.ts`, karakter durumunda `CharacterStatus.moral` (yoksa dolu = eski kayıt) ve `moralOlum`. Dinlenmeler alanı taşır, değiştirmez (kazanç Serüven katmanında).

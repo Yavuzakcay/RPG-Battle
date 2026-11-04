@@ -32,6 +32,7 @@ import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
 import { celestialStrikeOf } from './celestial';
+import { gazeBreakEvents, karadulHit, karadulOn, kissReady, snareReady } from './karadul';
 import { brutalAfterEvents, brutalExtra, brutalOptions, brutalReady, type BrutalBlow } from './brutal';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
@@ -228,6 +229,8 @@ export function weaponAttackEvents(
   // Kuyruk 18 H3: Brutal Strike: Reckless sürerken bir STR saldırısında avantajdan vazgeçilir (dezavantajlı olmamalı).
   const brutal = opts.brutal && !opportunity && brutalReady(state, actor, option) && !sources.some((x) => x.effect === 'disadvantage') ? opts.brutal : undefined;
   if (brutal) { const keep = sources.filter((x) => x.effect !== 'advantage'); sources.length = 0; sources.push(...keep); }
+  // Kuyruk K48 (ev kuralı): Karadul Tatlı Tuzak: dönüşülen turun ilk ısırığı büyülü hedefe avantajlı.
+  if (snareReady(state, actor, target, option)) sources.push({ effect: 'advantage', reason: 'Tatlı Tuzak' });
   const mode = combineModes(sources);
   // K13: Wild Shape biçiminin saldırısında canavarın ek etkileri (data/attack-riders.json): hasar değişimi, ek hasar, durumlar.
   const beast = option.beast ? riderOf(option.beast.monster, option.beast.attack) : undefined;
@@ -238,7 +241,7 @@ export function weaponAttackEvents(
   const targetAc = effectiveAc(state, target) + reach.cover + (option.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
   const rolled = resolveAttack(
     {
-      attackBonus: option.attackBonus + itemAttackPlus(actor, option, k19i) - corrodedOf(actor, option), targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
+      attackBonus: option.attackBonus + itemAttackPlus(actor, option, k19i) - corrodedOf(actor, option), targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)) || kissReady(state, actor, target, option),
       extra: attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
       // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
@@ -269,6 +272,9 @@ export function weaponAttackEvents(
   // Görev CLERIC: Divine Strike (Blessed Strikes): turda bir silah isabetine +1d8 (2d8) Necrotic/Radiant.
   const divine = result.hit && rawDamage > 0 ? divineStrikeHit(state, actor, target, option, result.critical, rng) : null;
   if (divine) bonus = { ...bonus, extras: [...bonus.extras, divine.extra], traitTurns: { ...bonus.traitTurns, ...divine.traitTurns } };
+  // Kuyruk K48 (ev kuralı): Karadul Zehri, Tatlı Tuzak, Son Öpücük (örümcek ısırığı isabetinde).
+  const widow = result.hit ? karadulHit(state, actor, target, option, { critical: result.critical, weaponRaw: rawDamage }, rng) : null;
+  if (widow) bonus = { ...bonus, extras: [...bonus.extras, ...widow.extras], traitTurns: { ...bonus.traitTurns, ...widow.traitTurns } };
   // Kuyruk 19 (Irresistible Offense): Overwhelming Strike: doğal 20'de artırılan skor kadar ek hasar (saldırının türünde).
   if (result.hit && result.d20.kept === 20 && actor.k19Traits && actor.traits?.includes('overcome-defenses') && actor.boonScore) {
     const adj = adjustDamage(actor.boonScore, dmgType, tprof);
@@ -331,6 +337,9 @@ export function weaponAttackEvents(
   const before = [...marks.used, ...(hr?.events ?? []), ...(giant && hit ? giant.before : []), attackEvent,
     ...(coat && hit ? [{ type: 'effect_ended' as const, targetId: actor.id, effectId: coat.id, name: coat.name, reason: 'used' as const }] : [])];
   if (giant && hit) before.push(...giant.after(applyEvents(state, before)));
+  // Kuyruk K48: Karadul vuruş sonrası (zehir, Stunned, Son Öpücük kullanımı) ve büyüleyenin tarafı saldırınca bakışın bitmesi.
+  if (widow && hit) before.push(...widow.after);
+  if (karadulOn(state)) { const s0 = applyEvents(state, before); const t0 = s0.combatants[target.id]; if (t0) before.push(...gazeBreakEvents(s0, actor, t0)); }
   // K13: biçim saldırısının süreli etkisi ve rider durumları (Prone, yakalama, zehir…), canavar saldırısındaki gibi isabette.
   if (hit && option.beast) {
     const s0 = applyEvents(state, before);

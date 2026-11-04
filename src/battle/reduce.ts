@@ -760,7 +760,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         // Kuyruk 18 H2: Polymorph canavar saldırılarını da değiştirir.
         ...(event.stats?.attacks ? { attacks: c.attacks, multiattack: c.multiattack } : {}) };
       if (!event.stats) {
-        const { shape: _s, ...rest } = c;
+        // Kuyruk K48: Örümcek Biçimi bitince biçim canı (geçici HP) da gider.
+        const { shape: _s, ...rest0 } = c;
+        const rest = c.shape?.spider ? { ...rest0, tempHp: 0 } : rest0;
         return withCombatant({ ...state, combatants: { ...state.combatants, [c.id]: rest as Combatant } }, c.id, base);
       }
       const s = event.stats;
