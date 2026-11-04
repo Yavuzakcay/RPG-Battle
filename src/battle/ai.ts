@@ -103,7 +103,13 @@ function karadulAi(state: BattleState, actor: Combatant): Command | null {
       if (tryCmd(state, actor, cmd).ok) return cmd;
     }
   }
-  if (!actor.shape && spider && bonusFree && (charmed.length || actor.spellSlots.every((n) => n <= 0))) {
+  // Biçimde kalmanın tek nedeni tuzak ısırığı ya da slotsuzluk: tuzak turu değilse ve slot duruyorsa biçimi bırak (büyüye dön).
+  const slotsLeft = actor.spellSlots.some((n) => n > 0);
+  if (spider && actor.shape?.spider && actor.traitTurns?.['karadul-transform'] !== turnKey(state) && slotsLeft && !actor.economy.action) {
+    const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: spider.key };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  if (!actor.shape && spider && bonusFree && (charmed.length || !slotsLeft)) {
     const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: spider.key };
     if (tryCmd(state, actor, cmd).ok) return cmd;
   }
