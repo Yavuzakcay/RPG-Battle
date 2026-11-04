@@ -24,7 +24,7 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import karadulData from '../../data/karadul.json';
 import { levelCap } from '../app/limits';
-import { celestialEnabled, karadulEnabled, karadulWomenOnly, upperLevelsEnabled } from '../app/features';
+import { karadulEnabled, karadulWomenOnly, upperLevelsEnabled } from '../app/features';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
 import { houseSubclassVisible, subclassLabel, subclassMissing } from '../rules/subclasses';
@@ -328,10 +328,10 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
       <p className="mute race-note">{W.raceBonusNote}</p>
       <div className="card-grid">
         {/* Kuyruk K20: ev kuralı türü (Celestial) yalnızca Ayarlar'da açıkken (seçili eski karakterde her zaman) görünür. */}
-        {races.filter((r) => !r.evKurali || celestialEnabled() || r.id === s.raceId).map((r) => (
+        {races.map((r) => (
           <button key={r.id} className={`pick-card${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
             onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id })}>
-            <b>{r.name}{r.evKurali ? <em className="mute"> ({W.houseRuleTag})</em> : null}</b><small>{W.speed(r.speed)}{r.darkvision ? ` · ${W.darkvision(r.darkvision)}` : ''}</small>
+            <b>{r.name}</b><small>{W.speed(r.speed)}{r.darkvision ? ` · ${W.darkvision(r.darkvision)}` : ''}</small>
           </button>
         ))}
       </div>

@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
 import type { DragonWakeMode } from '../battle/types';
 import { isWideMap, maps, pickerVisible, variantLabel } from '../map/maps';
-import { celestialEnabled, karadulEnabled, upperLevelsEnabled } from '../app/features';
+import { karadulEnabled, upperLevelsEnabled } from '../app/features';
 import REGIONS from '../../harita/_ortak/harita-bolgeleri.json';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
@@ -472,7 +472,7 @@ export function GmScreen(props: {
           </label>
           <MapRulesPanel key={`${map.id}/${variant.id}`} mapId={map.id} variantId={variant.id} toggles={ruleToggles} params={ruleParams}
             onChange={(tg, ps) => { setRuleToggles(tg); setRuleParams(ps); }} />
-          <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer, { celestialIrki: celestialEnabled(), karadulCemberi: karadulEnabled() })} onChange={setHouseRules} />
+          <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer, { karadulCemberi: karadulEnabled() })} onChange={setHouseRules} />
           <GroupsPanel groups={map?.groups ?? []} value={groupStates} onChange={setGroupStates} />
           <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
           <button className="cta" disabled={problems.length > 0}
@@ -481,7 +481,7 @@ export function GmScreen(props: {
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, { celestialIrki: celestialEnabled(), karadulCemberi: karadulEnabled() }), ...(multiHex ? { multiHex: true } : {}), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, { karadulCemberi: karadulEnabled() }), ...(multiHex ? { multiHex: true } : {}), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

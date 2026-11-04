@@ -2,7 +2,7 @@
  * Bütünleşik uygulamanın saf yardımcıları (Adım 13): GM'in savaş kurması (parti, düşmanlar,
  * harita), özel canavar, savaş sonu özeti. Ekranı bilmez.
  */
-import { celestialEnabled, karadulEnabled } from './features';
+import { karadulEnabled } from './features';
 import type { CarryRule } from '../rules/carry';
 import { CUSTOM_ATTACK_MAX, CUSTOM_NAME_MAX, MAX_PARTY } from './limits';
 import { CR_STEPS, estimateCr, type CrEstimate } from '../rules/crEstimate';
@@ -266,7 +266,7 @@ export function createMapBattle(
     },
     ...(choice.diceMode ? { diceMode: choice.diceMode } : {}),
     // Kuyruk K20: Celestial ev kuralı Ayarlar'dan (Game Master kurulumunun seçimi önce gelir).
-    ...(choice.houseRules || celestialEnabled() || karadulEnabled() ? { houseRules: { ...(celestialEnabled() ? { celestialIrki: true } : {}), ...(karadulEnabled() ? { karadulCemberi: true } : {}), ...choice.houseRules } } : {}),
+    ...(choice.houseRules || karadulEnabled() ? { houseRules: { ...(karadulEnabled() ? { karadulCemberi: true } : {}), ...choice.houseRules } } : {}),
     ...(choice.goals !== undefined ? { goals: choice.goals } : {}),
     ...(choice.groupStates ? { groupStates: choice.groupStates } : {}),
     ...(choice.explore ? { explore: choice.explore } : {}),

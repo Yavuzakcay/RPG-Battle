@@ -56,8 +56,13 @@ function arena(a: Combatant, opts: { on?: boolean; kuralSurumu?: number; b?: Par
 }
 
 describe('Celestial ev kuralı', () => {
-  it('kural kapalıyken özellik ve Light yok; direnç ve karanlık görüş eskisi gibi', () => {
+  it('Kuyruk K49: kalıcı ırk (sürüm 22): ev kuralı verilmese de özellikler ve Light var', () => {
     const r = arena(hero(), { on: false });
+    expect(r.c('A').spellNames).toContain('Light');
+    expect(r.c('A').features?.map((f) => f.key)).toEqual(expect.arrayContaining([HEAL_KEY, AWAKEN_KEY]));
+  });
+  it('eski kayıt (sürüm 18–21) ev kuralı kapalıyken özellik ve Light yok; direnç ve karanlık görüş eskisi gibi', () => {
+    const r = arena(hero(), { on: false, kuralSurumu: 21 });
     expect(r.c('A').features?.some((f) => f.key.startsWith('ev:celestial/'))).toBeFalsy();
     expect(r.c('A').spellNames).not.toContain('Light');
     expect(r.c('A').resistances).toEqual(expect.arrayContaining(['necrotic', 'radiant']));

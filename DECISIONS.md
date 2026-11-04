@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-04 — Kuyruk K49 Adım A: Celestial kalıcı ırk (kural sürümü 22)
+
+- **Neden görünmüyordu:** K20'de ev kuralı yapıldı; oluşturucuda kart Ayarlar'daki `rpg-battle-deneysel.celestial` kapalıyken gizliydi.
+- **Karar (kullanıcı):** Celestial kalıcı ırk. Oluşturucuda her zaman görünür ("ev kuralı" etiketi yok); Ayarlar anahtarı kaldırıldı (`celestialEnabled` artık okunmuyor, kayıt alanı zararsız kalır); `data/ev-kurallari.json`'dan `celestialIrki` çıktı (Game Master listesinde yok).
+- **Savaş:** kural sürümü 22'den beri özellikler her zaman açık (`CELESTIAL_PERMANENT`). Sürüm 18–21 savaşları/replay'leri eski kuralla: yalnızca başlangıç durumunda `houseRules.celestialIrki === true` ise (eski varsayılan kapalı); < 18 hiç yok. Böylece eski kayıtlar aynı sonucu verir.
+- Serüven'de bağımsız: ırka göre başlangıç (Batı Kıyısı) zaten vardı. "Aasimar" adı hiçbir yerde geçmiyor (test).
+
 ## 2026-11-04 — Kuyruk K48 Adım C: Karadul Çemberi (ev kuralı; kural sürümü 21)
 
 - **Yer:** veri `data/karadul.json` (alt sınıf tanımı + bütün sayılar), mekanik `src/battle/karadul.ts`, saldırı kancaları `features.ts` (`snareReady`, `kissReady`, `karadulHit`, `gazeBreakEvents`), yapay zekâ `ai.ts` `karadulAi`, ölçüm `npm run sim:karadul` (`src/sim/karadulRun.ts`).

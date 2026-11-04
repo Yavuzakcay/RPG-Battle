@@ -23,8 +23,8 @@ if (typeof localStorage === 'undefined') {
 afterEach(() => setCelestialEnabled(false));
 
 describe('Celestial oluşturucuda', () => {
-  it('ev kuralı kapalıyken kart yok; eski Celestial karakterde kart görünür', () => {
-    expect(html(char({ raceId: 'human' }))).not.toContain('>Celestial<');
+  it('Kuyruk K49: Celestial kalıcı ırk: kart her zaman görünür (Ayarlar anahtarı yok)', () => {
+    expect(html(char({ raceId: 'human' }))).toContain('Celestial');
     expect(html(char({ raceId: 'celestial' }))).toContain('Celestial');
   });
   it('açıkken seçilir: hikâye, özellikler ve üç Göksel Uyanış kartı', () => {

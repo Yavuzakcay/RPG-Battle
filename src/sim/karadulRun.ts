@@ -2,7 +2,7 @@
  * Kuyruk K48 Adım C: Karadul Çemberi denge ölçümü. Druid partisi (`k18-druid`) aynı senaryolarda, druid'in alt sınıfı
  * Toprak Çemberi (SRD'nin tek Druid alt sınıfı) ve Karadul (ev kuralı açık; insan biçiminde CON↔CHA temel skor
  * değişimi: CHA'ya dayanan yapı). Tablo alt sınıf × seviye kazanma oranı.
- *   npm run sim:karadul -- 100 [--seviye 3,7,11,15] [--senaryo col,kale,magara,orman]
+ *   npm run sim:karadul -- 100 [--seviye 3,7,11,15] [--senaryo col,kale,magara,orman] [--alt karadul-cemberi]
  */
 import { loadTrExtra } from '../i18n';
 import { loadClassData, loadMonsters } from '../data';
@@ -20,7 +20,8 @@ setSimHouseRules({ karadulCemberi: true });
 const scen = ids.map((id) => { const s = SCENARIOS.find((x) => x.id === id); if (!s) throw new Error(`senaryo yok: ${id}`); return s; });
 console.log(`| Alt sınıf | ${levels.map((l) => `Sv ${l}`).join(' | ')} | Ort. |`);
 console.log(`|---|${levels.map(() => '---').join('|')}|---|`);
-for (const [label, sub, swap] of [['Toprak Çemberi', 'circle-of-the-land', undefined], ['Karadul Çemberi', 'karadul-cemberi', ['con', 'cha']]] as const) {
+const only = opt('--alt');
+for (const [label, sub, swap] of ([['Toprak Çemberi', 'circle-of-the-land', undefined], ['Karadul Çemberi', 'karadul-cemberi', ['con', 'cha']]] as const).filter(([, id]) => !only || id === only)) {
   setPartySubclass({ classId: 'druid', subclassId: sub, ...(swap ? { swap: [swap[0], swap[1]] } : {}) });
   const row = levels.map((lv) => {
     let w = 0, n = 0;
