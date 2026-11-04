@@ -109,6 +109,7 @@ import { objectAttack, objectCommand } from './ui/gm/objectActions';
 import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
+import { MoralBar } from './ui/MoralBar';
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -171,6 +172,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
         <div>
           <strong>{displayName(c)}</strong>
           <small>{c.civilian ? `${c.name} · ` : ''}{D.stats(c.hp, c.maxHp, c.ac, c.speed, c.fly)}</small>
+          {c.moralMax !== undefined && <MoralBar moral={c.moral ?? 0} max={c.moralMax} />}
           {c.effects?.some((e) => e.noCast) && <span className="armor-badge" title={D.untrainedArmorTip}>⚠ {D.untrainedArmor}</span>}
         </div>
         <button className="hud-btn" aria-label={t().common.close} onClick={props.onClose}>✕</button>
@@ -1220,6 +1222,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...(globalRule(state, 'srdK19') && !actor.riding && Object.values(state.combatants).some((m) => !mountProblem(state, actor, m.id))
       ? [{ key: 'mount', label: N.mount, act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'mount', actorId, mountId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
     ...(actor.riding ? [{ key: 'dismount', label: N.dismount, act: () => { reset(); setPickHexCmd({ make: (h) => ({ type: 'dismount', actorId, to: h }) }); setMode('pickHex'); setMenuOpen(false); } }] : []),
+    // Kuyruk K48: Moral tam modu: çökmüş dostu toparla (eylem; motorda denenerek).
+    ...(actor.moralMax !== undefined && Object.values(state.combatants).some((c) => c.moralMax !== undefined && c.effects?.some((e) => e.id === 'moral:cokmus') && c.id !== actorId)
+      ? [{ key: 'rally', label: t().view.moral.rally, reason: why({ type: 'moral_rally', actorId, targetId: Object.values(state.combatants).find((c) => c.id !== actorId && c.effects?.some((e) => e.id === 'moral:cokmus'))?.id ?? '' }) ?? undefined,
+        act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'moral_rally', actorId, targetId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
     // Kuyruk 19: Alert'in Initiative Swap'ı (1. tur, sırasını oynamamış dostla).
     ...(actor.traits?.includes('alert') && state.round === 1 && globalRule(state, 'featuresK19') && !actor.traitTurns?.['initiative-swap']
       ? [{ key: 'iswap', label: N.iswap, act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'initiative_swap', actorId, allyId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
@@ -1526,6 +1532,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
+                    {/* Kuyruk K48: Moral çubuğu (tam mod; HP'nin altında, ayrı renk). */}
+                    {c.moralMax !== undefined && (<>
+                      <rect x={p.x - r} y={p.y + r + 12} width={2 * r} height={4} className="hpbg" />
+                      <rect x={p.x - r} y={p.y + r + 12} width={2 * r * Math.max(0, (c.moral ?? 0) / Math.max(1, c.moralMax))} height={4} className="moral" />
+                    </>)}
                     {[...statusIcons(c), ...effectIcons(state, c)].length > 0 && (
                       <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
                         {[...statusIcons(c), ...effectIcons(state, c)].map((s, i) => <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>)}

@@ -585,6 +585,9 @@ export interface Combatant {
   inspireFix?: true;
   /** Kuyruk K48 (sürüm 19, `bardicInspirationChain`): ilham zarı önceki ikinci şans tutmazsa da atılır (reducer `syncAuras`). */
   inspireChain?: true;
+  /** Kuyruk K48: Moral tam modu (savaş başında `withMorale`; yoksa sistem kapalı): kalan ve en çok. */
+  moral?: number;
+  moralMax?: number;
   ownerId: string | null;
   ac: number;
   hp: number;
@@ -1352,6 +1355,8 @@ export type Command =
   | { type: 'distract'; actorId: string; at: Offset }
   /** Kuyruk 43: sarf eşyası (iksir) kullan: kendine ya da erişimdeki dosta. */
   | { type: 'use_item'; actorId: string; itemId: string; targetId: string }
+  /** Kuyruk K48: Moral tam modu: çökmüş dosta toparlama (eylem). */
+  | { type: 'moral_rally'; actorId: string; targetId: string }
   /** Fighter: Action Surge (eylemini kullandıktan sonra bir eylem daha). */
   | { type: 'action_surge'; actorId: string }
   /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
@@ -1485,6 +1490,8 @@ export type BattleEvent =
   | { type: 'distracted'; actorId: string; at: Offset; targetIds: string[] }
   /** Kuyruk 43: sarf eşyası kullanıldı (adet azalır; iyileşme ayrı `healed`). */
   | { type: 'item_used'; actorId: string; itemId: string; name: string; targetId: string; left: number }
+  /** Kuyruk K48: Moral değişti (dost düştü, korku, toparlama); `moral` yeni değer. */
+  | { type: 'moral_changed'; targetId: string; delta: number; moral: number; reason: 'dost' | 'korku' | 'toparlama' | 'zafer'; byId?: string }
   /** Süren etki bitti (save, süre, kullanım, komutun turu). */
   | { type: 'effect_ended'; targetId: string; effectId: string; name: string; reason: 'save' | 'used' | 'expired' | 'turn' | 'dispelled' }
   /** Geçici HP (Heroism): yığılmaz, yüksek olan kalır. */

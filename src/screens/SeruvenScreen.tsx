@@ -27,6 +27,9 @@ const yerFilter = (s: SeruvenState): string | undefined => {
 import { stopParticipants } from '../app/journeyBattle';
 import { statusBlock } from '../app/partyStatus';
 import { fullStatus } from '../rules/characterRest';
+import { MORAL, moralDeathText } from '../rules/moral';
+import { memberMoral, memberMoralMax, reviveCaster } from '../journey/moral';
+import { MoralBar } from '../ui/MoralBar';
 import { MAX_PARTY } from '../app/limits';
 import type { SavedCharacter } from '../rules/builder';
 import type { BattleState } from '../battle';
@@ -384,8 +387,16 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
         )}
         {state.party.map((m) => {
           const max = fullStatus(m.sheet).hp;
+          // Kuyruk K48: Moral (anahtar açıksa): çubuk, Moral ölümü anlatımı, diriltme (tapınak ya da büyü).
+          const moralOn = toggleOn(state, 'moralSistemi');
+          const caster = moralOn && m.status.dead ? reviveCaster(state.party) : null;
+          const temple = moralOn && m.status.dead && !!(state.yerlesim && yerlesimById(state.yerlesim.id)?.hub.tapinak);
           return <span key={m.id} className={`journey-member${m.status.dead ? ' dead' : m.status.hp <= 0 ? ' down' : ''}${prisonerLook(state) ? ' mahkum' : ''}`}>
             <strong>{m.name}</strong> {m.status.dead ? S.dead : m.status.hp <= 0 ? S.down : `${m.status.hp}/${max}`}
+            {moralOn && !m.status.dead && <> <MoralBar moral={memberMoral(m)} max={memberMoralMax(m)} /></>}
+            {m.status.moralOlum && <> <span className="moral-dead">{moralDeathText(m.name, getLang())}</span></>}
+            {temple && <> <button type="button" className="ghost" disabled={state.gold < MORAL.dirilme.tapinakUcreti} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'tapinak' })}>{t().view.moral.reviveTemple(MORAL.dirilme.tapinakUcreti)}</button></>}
+            {caster && <> <button type="button" className="ghost" disabled={state.gold < caster.gold} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'buyu' })}>{t().view.moral.reviveSpell(caster.spell, caster.gold)}</button></>}
           </span>;
         })}
         {state.tasma && <span className="journey-member" title={S.collarHelp}>⛓ {S.collarOn}</span>}

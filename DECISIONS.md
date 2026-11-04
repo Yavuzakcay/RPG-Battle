@@ -2,6 +2,23 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-04 — Kuyruk K48 Adım B: Moral (ev kuralı; kural sürümü 20)
+
+- **Yer:** veri `data/moral.json` (bütün sayılar), saf çekirdek `src/rules/moral.ts`, savaş `src/battle/morale.ts`, Serüven `src/journey/moral.ts`, karakter durumunda `CharacterStatus.moral` (yoksa dolu = eski kayıt) ve `moralOlum`. Dinlenmeler alanı taşır, değiştirmez (kazanç Serüven katmanında).
+- **İki anahtar, iki mod:** Serüven anahtarı `moralSistemi` (hafif: yalnızca Serüven kayıp/kazancı, savaşa etkisi yok) ve `moralTam` (tam). Tam modda Serüven savaşları ev kuralı `moralSistemi`yle kurulur (`moralHouse`); Game Master kurulumundaki ev kuralı listesinde de var (varsayılan kapalı). Savaş etkisi yalnızca ev kuralı + kural sürümü ≥ 20 (`moraleOn`); eski savaş/replay ve kapalı kural eski davranış (savaş başında `withMorale` kayıttan gelen Moral alanını siler).
+- **Havuz:** 3 + WIS + yeterlilik (en az 1; `havuz`).
+- **Savaşta 0 = Çökmüş:** süren etki `moral:cokmus`: `grants: Incapacitated` (eylem/bonus/tepki yok), `speedZero` (yerinde kalır), `attackedAdv`; HP'ye dokunmaz, savaştan çıkmaz ve tarafı ayakta tutar (HP de 0'a düşerse mevcut ölüm kuralları). Moral ≥ 1 olunca çökme komut sonunda biter.
+- **Savaş içi kayıp** (komut sonu `moraleAfterEvents`): dost karakter 0 HP'ye düşünce ayaktaki öbür karakterler −1, yeni korkan (Frightened alan) karakter −1 (`savasKayip`).
+- **Toparlama** (`moral_rally`, eylem, 30 ft): çökmüş dosta +1; `ekBonus.ozellikler` (Bardic Inspiration, Channel Divinity) olan +1 daha. Kodda sınıf adı yok (özellik kimlikleri veride). Yapay zekâ eylemi duruyorsa menzildeki çökmüş dostu toparlar.
+- **Bunalmış:** Moral 0 ile giren karakter ilk tur Incapacitated ve yarım hız (`until` = ilk tur). Karar: savaş başında 0 olan çökmez, yalnızca Bunalmış olur (çökme yalnızca savaş içinde 0'a düşünce); pratikte yalnızca Game Master savaşında görülür (Serüven'de 0 = ölüm).
+- **Eşikler:** Moral ≤ yarı: WIS/CHA save ve WIS/CHA becerili kontrollere −1 (`effectDice`). ≤ üçte bir: Frightened/Charmed'a karşı save'de dezavantaj; motor bunu "başarıda ikinci d20, küçüğü" olarak uygular (`ExtraDie.reroll: 'worse'`, yalnızca `against` bilinen save'lerde ve zar kipi normalken; avantajla birlikte iptal yaklaşık: uygulanmaz).
+- **Savaş sonu:** kazanılırsa (motorda, `battle_finished` ile aynı komutta) yaşayan her karaktere +1, çökmüş kalıp kazanana +2. Yenilgi/kaçış: ödül yok, 0'da kalan savaş dışı kuralla ölür (`dead` + `moralOlum`; `app/partyStatus.ts`). Ödül motorda olduğu için ana parça Moral verisini içe aktarmaz (index 434,18 kB).
+- **Serüven tablosu** (`seruven.kayip/kazanc`; hafif ve tam modda, savaş sonucu yalnızca hafif modda): yenilgi −2, dost düştü −1 (bozgun dinlenmesinden önceki durum `seruven_result.downed`), zafer +1, başarısız dünya kontrolü −1, başarılı kontrol +1, korku yeri (ilk varış; `korkuYerleri`) −1, hapse düşme −2, serbest gezintide gece yarısı geçişi (sığınaksız gece) −1, görev +1, kamp/dinlenme düğümü/bozgun dinlenmesi en çoğun yarısı, han hepsi. Önce kayıplar, sonra kazançlar: 0'a düşen önce ölür. Açlık/yorgunluk ve yemek/müzik sistemleri yok (tabloda değer var, bağlı değil). Sayılar denge turunda.
+- **Moral ölümü:** savaş dışında 0 → `dead` + `moralOlum`; anlatım nötr ("{ad} umudunu yitirdi, sönüp gitti."; TR/EN `metin.olum`). Kimse ayakta kalmazsa Serüven yenilgiyle biter.
+- **Diriltme** (`moral_dirilt`, Moral açıkken): tapınaklı yerleşimde `tapinakUcreti` (300) altın ya da partide SRD diriltme büyüsünü (Raise Dead, Resurrection, True Resurrection) bilen ve slotu olan üye + maddi bileşenin altını (slot harcanır). Dirilen 1 HP ve Moral 1 ile döner; kalıcı ceza yok. Revivify savaş dışı (1 dakika) olduğundan listede yok.
+- **Arayüz:** jetonda HP'nin altında mor Moral çubuğu, ayrıntı çekmecesinde `MoralBar`, çökmüş jetonda 💔 (Incapacitated simgesinin yerine), eylem menüsünde "Toparla", Serüven parti şeridinde Moral çubuğu, Moral ölümü metni ve diriltme düğmeleri. Metinler tembel parçada (`view.moral`).
+- Testler `src/battle/morale.test.ts`, `src/journey/moral.test.ts`.
+
 ## 2026-11-04 — Kuyruk K48 Adım A: Bardic Inspiration zinciri (kural sürümü 19)
 
 - **Durum:** görevdeki "özellikli savaşçıda ilham zarı düşüyor" hatasının ilk yarısı Kuyruk 19'da düzeltilmişti (`bardicInspirationFix`, sürüm 16: işaretli savaşçıda zar ikinci şans listesine giriyor). Yeniden taramada (12 sınıf × 3 tür × 3 seviye) liste artık her yerde zarı içeriyor.

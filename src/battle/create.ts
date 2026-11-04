@@ -22,6 +22,7 @@ import { boonResources } from './boons';
 import { itemParts } from './itemEffects';
 import { speciesParts } from './species';
 import { celestialFeatures, withCelestial } from './celestial';
+import { withMorale } from './morale';
 import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
@@ -749,7 +750,8 @@ export function startBattle(
     ...(groups ? { groups } : {}),
   };
   // Kuyruk 24: Orman mekaniklerinin savaş başı kısmı (alarm grupları, kütük siperi, nehir; kural sürümü 3 ve Game Master anahtarı).
-  const final = withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state));
+  // Kuyruk K48: Moral tam modu (ev kuralı + sürüm 20): karakterlere havuz; kapalıysa kayıtlı Moral alanı silinir.
+  const final = withMorale(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state)));
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

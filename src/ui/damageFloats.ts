@@ -63,8 +63,11 @@ export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Par
   if ((c.exhaustion ?? 0) > 0) out.push({ key: 'exhaustion', icon: `😩${c.exhaustion}`, title: S.exhaustion(c.exhaustion ?? 0) });
   if (c.effects?.some((e) => e.fly || e.airborne)) out.push({ key: 'flying', icon: '🪽', title: S.flying });
   if (c.conditions.includes('Invisible')) out.push({ key: 'invisible', icon: '👁', title: S.invisible });
+  // Kuyruk K48: Moral 0'da Çökmüş (belirgin simge; Incapacitated simgesinin yerine).
+  const broken = c.effects?.some((e) => e.id === 'moral:cokmus');
+  if (broken) out.push({ key: 'broken', icon: '💔', title: S.broken });
   // Etkisiz bırakan durumlar (Görev H): Paralyzed ve Stunned Incapacitated'ı içerir, yalnızca biri gösterilir.
-  if (c.conditions.includes('Paralyzed')) out.push({ key: 'paralyzed', icon: '⛓', title: S.paralyzed });
+  if (broken) { /* Çökmüş: Incapacitated simgesi yinelenmez */ } else if (c.conditions.includes('Paralyzed')) out.push({ key: 'paralyzed', icon: '⛓', title: S.paralyzed });
   else if (c.conditions.includes('Stunned')) out.push({ key: 'stunned', icon: '💫', title: S.stunned });
   else if (c.conditions.includes('Incapacitated')) out.push({ key: 'incapacitated', icon: '⊘', title: S.incapacitated });
   return out;

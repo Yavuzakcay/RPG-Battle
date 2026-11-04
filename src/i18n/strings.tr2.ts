@@ -12,6 +12,8 @@ export const TR_EXTRA = {
     mode: { advantage: ' (avantaj)', disadvantage: ' (dezavantaj)', normal: '' } as Record<string, string>,
     regenBlocked: 'yenilenme engellendi', regenPending: 'yenilenmeyi bekliyor',
     itemUsed: (who: string, item: string, target: string, left: number) => `${who} ${item} kullanıyor → ${target} (kalan ${left})`,
+    moralChanged: (who: string, delta: number, moral: number, reason: string, by: string) =>
+      `${who}: Moral ${delta > 0 ? '+' : ''}${delta} → ${moral}${reason === 'dost' ? ' (dostu düştü)' : reason === 'korku' ? ' (korku)' : reason === 'zafer' ? ' (zafer)' : by ? ` (${by} toparladı)` : ''}${moral <= 0 ? ' — Çökmüş' : ''}`,
     distracted: (who: string, at: string, names: string) => `${who} ${at} altıgenine ses çıkarıp dikkat dağıtıyor${names ? `: ${names} bir sonraki turunun sonuna dek pasif Algıda −5` : ': yakında kimse yok'}`,
     summonsCommanded: (name: string) => `${name}: canlandırdığı nesnelere emir verdi (bonus eylem)`,
     exiled: (name: string, label: string) => `${name}: ${label} — kendi düzlemine gönderildi, savaştan çıktı`,
@@ -333,6 +335,7 @@ export const TR_EXTRA = {
     mount: 'Bitişikteki gönüllü ve senden büyük bir dosta bin (hızının yarısı); bineğin yürüdükçe onunla taşınırsın.',
     dismount: 'Binekten bitişik boş bir altıgene in (hızının yarısı).',
     iswap: 'Alert: 1. turda sırasını oynamamış gönüllü bir dostla inisiyatifini değiş tokuş et.',
+    rally: 'Moral (ev kuralı): eylem. 30 ft içindeki çökmüş dost Moral kazanır (+1; Bardic Inspiration ya da Channel Divinity ile +2); 1 ve üstünde çökme biter.',
     haste: 'Hızlı eylem (Haste): eylemini kullandıktan sonra bir ek eylem: tek silah saldırısı, Dash, Disengage ya da Hide.',
     wind: 'İkinci Soluk (Second Wind): bonus eylemle 1d10 + seviye kadar HP iyileş. Fighter.',
     rage: 'Öfke (Rage): bonus eylem. Kesici/delici/ezici hasara direnç, Güç saldırılarına ek hasar, Güç save ve Athletics avantajı; büyü yapamazsın. Sonraki turunun sonuna dek sürer; düşmana saldırınca ya da bonus eylemle uzar.',
@@ -355,6 +358,16 @@ export const TR_EXTRA = {
     unavailable: (reason: string) => ` Şu an kullanılamaz: ${reason}`, unavailablePlain: ' Şu an kullanılamaz.',
   },
   view: {
+    /** Kuyruk K48: Moral (ev kuralı; tembel parça). */
+    moral: {
+      label: (m: number, max: number) => `Moral ${m}/${max}`,
+      tip: 'Moral: ikinci can havuzu (ev kuralı). Savaşta 0\'da Çökmüş; savaş dışında 0\'da Moral ölümü.',
+      rally: 'Toparla', rallyTip: (name: string) => `${name}: çökmüş dostu toparla (eylem, +Moral)`,
+      reviveTemple: (cost: number) => `Dirilt (tapınak, ${cost} altın)`,
+      reviveSpell: (spell: string, gold: number) => `Dirilt (${spell}, ${gold} altın)`,
+      reasons: { dostDustu: 'dost düştü', yenilgi: 'yenilgi', zafer: 'zafer', kamp: 'kamp', han: 'han', gorev: 'görev', beyazKontrol: 'başarılı kontrol', kirmiziKontrol: 'başarısız kontrol', korkuYeri: 'korkunç yer', hapis: 'hapis', siginaksizGece: 'sığınaksız gece' } as Record<string, string>,
+      changed: (reasons: string) => `Moral değişti: ${reasons}`,
+    },
     distance: (d: number) => `${d} altıgen (${d * 5} ft)`, cover: (c: number) => `${c === 5 ? '3/4' : 'yarım'} siper +${c}`,
     highGround: 'yüksekten: avantaj', lowGround: 'alçaktan: dezavantaj', adv: 'avantaj', dis: 'dezavantaj', noRecharge: 'Şarj olmadı',
     move: { normal: 'normal zemin', difficult: 'zorlu zemin (2)', blocked: 'geçilmez', deadly: 'ölümcül (lav)' } as Record<string, string>,
@@ -384,6 +397,7 @@ export const TR_EXTRA = {
       stunned: 'Sersemledi (Stunned): eylem, bonus eylem ve tepki yok; STR/DEX save otomatik başarısız; ona saldırılar avantajlı',
       paralyzed: 'Felç (Paralyzed): eylem ve tepki yok, hız 0; STR/DEX save otomatik başarısız; ona saldırılar avantajlı, 5 ft içinden isabet kritik',
       incapacitated: 'Etkisiz (Incapacitated): eylem, bonus eylem ve tepki yok; konsantrasyon kesilir',
+      broken: 'Çökmüş (Moral 0): hareket ve eylem yok; ona saldırı avantajlı; bir dost toparlayabilir',
       bleeding: 'Kanıyor', restrained: 'Bağlandı (Restrained)', charmed: 'Büyülendi (Charmed)', frightened: 'Korkuyor (Frightened)',
       exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', invisible: 'Görünmez (Invisible)' },
     outcome: { crit: 'Kritik', hit: 'İsabet', miss: 'Iska', saved: 'Kurtardı', failed: 'Kurtaramadı', resisted: 'Direndi', prone: 'Yere düştü',

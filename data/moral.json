@@ -1,0 +1,23 @@
+{
+  "note": "Kuyruk K48 Adım B: Moral (ikinci can havuzu, ev kuralı; harita/belgeler ve DECISIONS.md). Serüven anahtarları `moralSistemi` (hafif: yalnızca Serüven'de kayıp/kazanç) ve `moralTam` (tam: savaşa etkili; savaşta ev kuralı `moralSistemi`, kural sürümü `surum`). Karakter durumunda `moral` (yoksa dolu). Sayılar denge turunda ayarlanacak (makul varsayılanlar).",
+  "surum": 20,
+  "havuz": { "taban": 3, "yetenek": "wis", "yeterlilik": true, "enAz": 1 },
+  "etkiler": {
+    "yariOran": 0.5, "yariCeza": 1, "yariYetenekler": ["wis", "cha"],
+    "ucteBirOran": 0.3334, "ucteBirDezavantaj": ["Frightened", "Charmed"]
+  },
+  "cokmus": { "saldiriAvantaj": true },
+  "bunalmis": { "hizCarpani": 0.5 },
+  "zafer": { "odul": 1, "cokmusOdul": 2 },
+  "moralToparlamaEylem": { "miktar": 1, "menzilFt": 30, "ekBonus": { "ozellikler": ["bard:bardic-inspiration", "cleric:channel-divinity"], "miktar": 1 } },
+  "dirilme": { "moral": 1, "tapinakUcreti": 300, "buyuler": { "Raise Dead": { "seviye": 5, "altin": 500 }, "Resurrection": { "seviye": 7, "altin": 1000 }, "True Resurrection": { "seviye": 9, "altin": 25000 } } },
+  "savasKayip": { "dostDustu": 1, "korkuBasarisiz": 1 },
+  "seruven": {
+    "kayip": { "dostDustu": 1, "yenilgi": 2, "kirmiziKontrol": 1, "korkuYeri": 1, "hapis": 2, "siginaksizGece": 1 },
+    "kazanc": { "zafer": 1, "han": "hepsi", "kamp": "yarisi", "beyazKontrol": 1, "gorev": 1, "yemekMuzik": 1 },
+    "korkuYerleri": ["orman/kemik-acikligi", "derinlikler/mezar", "orman/heykel-magarasi"]
+  },
+  "metin": {
+    "olum": { "tr": "{ad} umudunu yitirdi, sönüp gitti.", "en": "{ad} lost all hope and faded away." }
+  }
+}

@@ -107,6 +107,16 @@
    "default": false,
    "tr": "Dünya gezintisinde karşılaşma yok (Game Master; karşılaşma çarpanı 0)",
    "en": "No encounters while roaming the world map (Game Master; encounter multiplier 0)"
+  },
+  "moralSistemi": {
+   "default": false,
+   "tr": "Moral (hafif): karakter başına ikinci can havuzu; Serüven'de kayıp/kazanç, 0'da Moral ölümü (data/moral.json)",
+   "en": "Morale (light): a second per-character pool; Adventure losses/gains, death at 0 (data/moral.json)"
+  },
+  "moralTam": {
+   "default": false,
+   "tr": "Moral (tam): savaşa etkili (0'da Çökmüş, eşiklerde ceza, toparlama, zafer ödülü); Moral açıkken",
+   "en": "Morale (full): affects combat (Broken at 0, threshold penalties, rally, victory reward); needs Morale on"
   }
  },
  "yurumeMs": 700,

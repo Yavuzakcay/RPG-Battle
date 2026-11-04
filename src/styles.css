@@ -186,6 +186,12 @@ input[type='number'] { width: 90px; }
 .token .initials { font-weight: 700; fill: #fff; text-anchor: middle; pointer-events: none; }
 .token .hpbg { fill: rgba(0, 0, 0, 0.6); }
 .token .hp { fill: #7ee07e; }
+/* Kuyruk K48: Moral çubuğu (HP'den ayrı renk). */
+.token .moral { fill: #b48cff; }
+.moral-bar { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85em; }
+.moral-bar .track { width: 80px; height: 6px; border-radius: 3px; background: rgba(0, 0, 0, 0.35); overflow: hidden; }
+.moral-bar .fill { display: block; height: 100%; background: #b48cff; }
+.moral-dead { color: var(--muted, #999); font-style: italic; }
 .token.enemies .hp { fill: #ff8b8b; }
 .info { font-size: 14px; color: var(--mute); margin: 6px 0; min-height: 1.4em; }
 

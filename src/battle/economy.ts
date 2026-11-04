@@ -22,6 +22,7 @@ import { ruleVersion } from './ruleVersion';
 const hasTrait = (c: Pick<Combatant, 'traits'>, t: string): boolean => !!c.traits?.includes(t);
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
+  moral_rally: 'Toparla',
   attack: 'Attack',
   monster_attack: 'saldırı',
   multiattack: 'Multiattack',
@@ -237,6 +238,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'help':
     case 'distract':
+    case 'moral_rally':
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'monster_ability': {
       // Kuyruk 19: SRD canavar yeteneği (eylem ya da bonus eylem; `monsterAbilities.ts`).

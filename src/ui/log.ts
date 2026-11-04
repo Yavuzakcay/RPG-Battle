@@ -182,6 +182,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return '';
     case 'item_used':
       return L.itemUsed(n(event.actorId), event.name, n(event.targetId), event.left);
+    case 'moral_changed':
+      return L.moralChanged(n(event.targetId), event.delta, event.moral, event.reason, event.byId ? n(event.byId) : '');
     case 'distracted':
       return L.distracted(n(event.actorId), hexText(event.at), event.targetIds.map(n).join(', '));
     case 'combat_started':

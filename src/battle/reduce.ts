@@ -519,6 +519,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'dice_rolled':
     case 'distracted':
       return state;
+    case 'moral_changed': return withCombatant(state, event.targetId, { moral: event.moral });
     case 'item_used': {
       const c = state.combatants[event.actorId];
       if (!c) return state;

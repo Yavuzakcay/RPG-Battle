@@ -12,6 +12,8 @@ export function withStatus(c: Combatant, ch: Pick<SavedCharacter, 'sheet' | 'sta
   if (!ch.status) return c;
   const s = currentStatus(ch.sheet, ch.status);
   return { ...c, hp: Math.max(1, s.hp), resources: { ...s.resources }, spellSlots: [...s.slots], ...(s.exhaustion ? { exhaustion: s.exhaustion } : {}),
+    // Kuyruk K48: kayıtlı Moral (savaş başında kural kapalıysa `withMorale` siler).
+    ...(s.moral !== undefined ? { moral: s.moral } : {}),
     // Kuyruk 19: savaşta harcanan HP zarı (Lifedrinker) kayıtlı durumdan.
     ...(c.hitDice ? { hitDice: { ...c.hitDice, left: Math.max(0, ch.sheet.level - s.hitDiceSpent) } } : {}) };
 }
@@ -21,6 +23,17 @@ export function statusBlock(ch: Pick<SavedCharacter, 'sheet' | 'status'>): 'dead
   if (!ch.status) return null;
   if (ch.status.dead) return 'dead';
   return currentStatus(ch.sheet, ch.status).hp <= 0 ? 'down' : null;
+}
+
+/**
+ * Kuyruk K48: Moral. Tam modda (savaşçıda `moralMax`) zafer ödülü savaş biterken motorda verilir (`moraleAfterEvents`);
+ * burada yalnızca yazılır: 0'da kalan (yenilgi/kaçış) savaş dışı kuralla ölür (Moral ölümü). Tam mod yoksa kayıtlı
+ * değer olduğu gibi.
+ */
+function moralResult(c: Combatant, prev: CharacterStatus): Pick<CharacterStatus, 'moral' | 'moralOlum' | 'dead'> {
+  if (c.moralMax === undefined) return prev.moral !== undefined ? { moral: prev.moral, ...(prev.moralOlum ? { moralOlum: true } : {}) } : {};
+  const moral = Math.max(0, c.moral ?? 0);
+  return { moral, ...(moral <= 0 && c.life !== 'dead' ? { dead: true, moralOlum: true } : {}) };
 }
 
 /** Biten savaştan karakterlerin yeni durumu (sahibi karakterin kimliği olan oyuncu savaşçıları). */
@@ -40,6 +53,7 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
       ...(prev.hpMax !== undefined ? { hpMax: prev.hpMax } : {}),
       ...(c.life === 'dead' ? { dead: true } : {}),
       ...((c.exhaustion ?? 0) > 0 && c.life !== 'dead' ? { exhaustion: c.exhaustion } : {}),
+      ...moralResult(c, prev),
     };
     return { ...ch, status: next };
   });

@@ -75,6 +75,7 @@ import { caveDiscoveryEvents, executeForestUse, forestAfterEvents, forestRoundEv
 import { greaseAfterEvents } from './ignite';
 import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
+import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -225,6 +226,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev WARLOCK: Dark One's Blessing (düşman 0 HP'ye düşünce geçici HP).
   const blessed = blessingEvents(state, next, 'actorId' in cmd ? cmd.actorId : undefined);
   if (blessed.length) { next = applyEvents(next, blessed); events = [...events, ...blessed]; }
+  // Kuyruk K48: Moral tam modu (dost düştü, korku; 0'da çökme, ≥ 1'de çökmenin bitmesi).
+  const morale = moraleAfterEvents(state, next, events);
+  if (morale.length) { next = applyEvents(next, morale); events = [...events, ...morale]; }
   const reveal = revealEvent(state, next, cmd);
   if (reveal) { next = applyEvents(next, [reveal]); events = [...events, reveal]; }
   // Görev A1: ortak can havuzu üyeleri komutun sonunda havuzun HP'sine eşitlenir.
@@ -244,6 +248,11 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (goal.length) { next = applyEvents(next, goal); events = [...events, ...goal]; }
     const winner = next.status === 'active' ? winnerOf(next) : null;
     if (winner) { const done: BattleEvent = { type: 'battle_finished', winner }; next = applyEvents(next, [done]); events = [...events, done]; }
+  }
+  // Kuyruk K48: hedefle biten savaşta da Moral zafer ödülü (komut sonu kancası bitişten önce çalıştıysa).
+  if (state.status === 'active' && next.status === 'finished' && !events.some((e) => e.type === 'moral_changed' && e.reason === 'zafer')) {
+    const won = moraleAfterEvents(state, next, events);
+    if (won.length) { next = applyEvents(next, won); events = [...events, ...won]; }
   }
   return { ok: true, state: next, events };
 }
@@ -274,6 +283,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (formed) meta.push(formed);
     // Kuyruk 19: Gift of the Protectors: kitaptaki adlar.
     meta.push(...protectorsGiftEvents(begun.state));
+    // Kuyruk K48: Moral 0 ile giren Bunalmış (ilk tur).
+    meta.push(...moraleStartEvents(begun.state));
     const started = meta.length > 0 ? { ok: true as const, state: applyEvents(begun.state, meta), events: [...begun.events, ...meta] } : begun;
     // Sıra bir masumla (ya da uyuyan/habersiz grup üyesiyle, Görev S4) başlıyorsa turu hemen atlanır.
     const first = started.state.combatants[currentActorId(started.state)];
@@ -649,6 +660,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId);
   if (cmd.type === 'distract') return executeDistract(state, actor, cmd.at);
   if (cmd.type === 'use_item') return executeUseItem(state, actor, cmd.itemId, cmd.targetId, rng);
+  if (cmd.type === 'moral_rally') return executeRally(state, cmd);
   if (cmd.type === 'dash') {
     const dashed: BattleEvent[] = [{ type: 'dashed', actorId: actor.id }];
     return { ok: true, state: applyEvents(state, dashed), events: dashed };

@@ -1088,6 +1088,14 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const canAct = !actor.economy.action || actor.economy.attacksLeft > 0;
   const feature = bonusFeature(state, actor, canAct);
   if (feature) return feature;
+  // Kuyruk K48 (Moral tam modu, basit kural): eylemi duruyorsa menzildeki çökmüş dostu toparla.
+  if (!actor.economy.action && actor.moralMax !== undefined) {
+    for (const c of Object.values(state.combatants)) {
+      if (c.id === actorId || !c.effects?.some((e) => e.id === 'moral:cokmus')) continue;
+      const cmd: Command = { type: 'moral_rally', actorId, targetId: c.id };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
   const surged = canAct ? null : surge(state, actor);
   if (surged) return surged;
   const hasted = canAct ? null : hasteNow(state, actor);

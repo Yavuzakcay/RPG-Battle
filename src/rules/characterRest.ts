@@ -39,7 +39,15 @@ export interface CharacterStatus {
   dead?: boolean;
   /** Görev S1: bitkinlik seviyesi (yoksa 0); uzun dinlenme 1 azaltır. */
   exhaustion?: number;
+  /** Kuyruk K48: Moral (ev kuralı; yoksa dolu). Dinlenmeler değiştirmez (kazanç Serüven katmanında). */
+  moral?: number;
+  /** Kuyruk K48: Moral 0'da savaş dışında öldü (diriltilince kalkar). */
+  moralOlum?: true;
 }
+
+/** Kuyruk K48: Moral alanları olduğu gibi taşınır (yoksa yazılmaz; eski kayıt aynı). */
+const moralPart = (s: CharacterStatus): Pick<CharacterStatus, 'moral' | 'moralOlum'> =>
+  ({ ...(s.moral !== undefined ? { moral: s.moral } : {}), ...(s.moralOlum ? { moralOlum: true as const } : {}) });
 
 /** Dinlenmiş (tam) durum. */
 export function fullStatus(sheet: CharacterSheet): CharacterStatus {
@@ -76,6 +84,7 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
     hpMax: full.hp,
     ...(status.dead ? { dead: true } : {}),
     ...((status.exhaustion ?? 0) > 0 ? { exhaustion: Math.min(MAX_EXHAUSTION, status.exhaustion ?? 0) } : {}),
+    ...moralPart(status),
   };
 }
 
@@ -114,6 +123,7 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
         max, 'short', sheet.level), max),
       // Kuyruk 18 H3: Tireless (Ranger 10): kısa dinlenme Exhaustion'ı 1 azaltır.
       ...(tirelessAfter(sheet, s.exhaustion) ? { exhaustion: tirelessAfter(sheet, s.exhaustion) } : {}),
+      ...moralPart(s),
     },
     rolls: r.rolls,
     healed: r.healed,
@@ -177,6 +187,7 @@ export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | 
     resources: rechargeResources(s.resources, fullStatus(sheet).resources, 'long', sheet.level),
     // Bitkinlik (SRD 5.2.1): uzun dinlenme 1 seviye azaltır.
     ...(exhaustionAfterLongRest(s.exhaustion) > 0 ? { exhaustion: exhaustionAfterLongRest(s.exhaustion) } : {}),
+    ...moralPart(s),
   };
 }
 

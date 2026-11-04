@@ -15,7 +15,8 @@ export interface ExtraDie {
   /** Kuyruk 43: `success`: başarısız save başarıya döner (Legendary Resistance). */
   /** Kuyruk 19: `floor`: toplam `rerollBonus`'tan küçükse o sayılır (Indomitable Might: STR skoru); diğer ikinci şanslardan önce. */
   /** Kuyruk 19: `onSuccess`: başarılı zardan `die` düşülür, sonucu bozarsa harcanır (Improve Fate, düşmana). */
-  reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor' | 'onSuccess' | 'plus';
+  /** Kuyruk K48: `worse` (Moral ≤ üçte bir): `against` durumlarına karşı başarılı save'de d20 yeniden, küçüğü (dezavantaj). */
+  reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor' | 'onSuccess' | 'plus' | 'worse';
   /** Kuyruk 19 (`plus`): sahibinin tepki havuzu ve kalan (kullanılınca bir azalır). */
   pool?: { id: string; remaining: number };
   /** Kuyruk 19 (Halfling Luck): yalnızca doğal 1'de. */
@@ -60,7 +61,7 @@ export function secondChance(
     return { total: floor.rerollBonus as number, natural: fail.natural, entry: { label: floor.label, die: 'STR', value: (floor.rerollBonus as number) - fail.total } };
   }
   // Kuyruk 19 (`plus`, Burst of Ingenuity): sabit ek yalnızca başarıya çevirecekse seçilir.
-  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && e.reroll !== 'onSuccess' && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c)))
+  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && e.reroll !== 'onSuccess' && e.reroll !== 'worse' && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c)))
     && (e.reroll !== 'plus' || fail.total + (e.rerollBonus ?? 0) >= fail.need));
   if (!x) return null;
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
@@ -225,7 +226,13 @@ export function resolveSave(input: SaveInput, rng: Rng = Math.random): SaveResul
     const again = secondChanceAll(input.extra, { total, natural: d20.kept, bonus: input.modifier, need: input.dc, mode: input.mode, kind: 'save', ...(input.against ? { against: input.against } : {}) }, rng);
     if (again) { total = again.total; extra.push(...again.entries); }
   } else {
-    const spoil = spoilChance(input.extra, { total, need: input.dc, kind: 'save' }, rng);
+    // Kuyruk K48 (Moral): belli durumlara karşı dezavantaj = başarıda ikinci d20, küçüğü sayılır.
+    const worse = input.mode !== 'normal' ? undefined : (input.extra ?? []).find((e) => e.reroll === 'worse' && e.against?.some((c) => input.against?.includes(c)));
+    if (worse) {
+      const again = rollD20('normal', rollTag(rng, { kind: 'save', bonus: input.modifier })).kept;
+      if (again < d20.kept) { const v = again - d20.kept; total += v; extra.push({ label: worse.label, die: 'd20', value: v }); }
+    }
+    const spoil = total >= input.dc ? spoilChance(input.extra, { total, need: input.dc, kind: 'save' }, rng) : null;
     if (spoil) { total = spoil.total; extra.push(spoil.entry); }
   }
   return { d20, total, success: total >= input.dc, ...(extra.length ? { extra } : {}) };

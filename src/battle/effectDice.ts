@@ -3,6 +3,7 @@
  * zarına eklenecek ±zarlar. Saf; zarlar `rules/attack.ts` `rollExtras` ile atılır.
  */
 import { exhaustionD20Penalty } from '../rules/exhaustion';
+import { moraleCheckDice, moraleSaveDice } from './morale';
 import { extrasTotal, rollExtras, secondChanceAll, spoilChance, type ExtraDie, type RolledExtra } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { resourceLeft, type Combatant } from './types';
@@ -114,12 +115,12 @@ const auraDice = (c: Combatant | undefined): ExtraDie[] => (c?.auraSave ? [{ lab
 
 /** Kurtarma zarına (Bless, Bane; CILA: yetenek verilirse sabit eklentiler, Slow DEX −2). */
 export const saveDice = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
-  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...exhaustionDice(c), ...secondChances(c, 'save'), ...mightFloor(c, ability)];
+  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...exhaustionDice(c), ...secondChances(c, 'save'), ...mightFloor(c, ability), ...moraleSaveDice(c, ability)];
 /** Kuyruk 19: Indomitable Might (Barbarian 18): STR save/kontrol toplamı STR skorundan küçükse skor sayılır. */
 const mightFloor = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
   c && ability === 'str' && c.traits?.includes('indomitable-might') ? [{ label: 'Indomitable Might', die: 'STR', sign: 1, reroll: 'floor', rerollBonus: c.strScore }] : [];
 /** Yetenek kontrolüne (Guidance: seçilen beceri). */
-export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...exhaustionDice(c), ...secondChances(c, 'check'), ...(skill === 'athletics' ? mightFloor(c, 'str') : [])];
+export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...exhaustionDice(c), ...secondChances(c, 'check'), ...(skill === 'athletics' ? mightFloor(c, 'str') : []), ...moraleCheckDice(c, skill)];
 
 /**
  * Görev F, Reliable Talent: yetkin olunan becerinin kontrolünde 9 ve altı d20 10 sayılır (`skills` yalnızca yetkin
