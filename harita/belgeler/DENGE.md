@@ -2436,3 +2436,18 @@ Dokuz SRD türünün ortalaması %75.0; Celestial %72,5 (fark −2,5 puan): ±5 
 | elf (sonra) | 68% | 83% | 64% | 54% | 67,3% |
 
 Dokuz SRD türü ortalamasının (%75,0) altında ama ±10 içinde; 9. seviye düşüklüğü Elf'e özgü değil (Celestial %55, insan %60). Orc (%84,8), Tiefling (%83,5), Dragonborn (%82,5) yüksek: SRD tür özellikleri (Relentless Endurance, soydan Fire Bolt, nefes silahı); değer değiştirilmedi.
+
+## 2026-11-04 — Kuyruk K48 C: Karadul Çemberi ↔ Toprak Çemberi (k18-druid partisi, 100 tohum, Çöl/Kale/Mağara/Orman)
+
+`npm run sim:karadul -- 100 --seviye N --alt <alt sınıf>`. Hedef: fark ±5 puan. SRD'de Druid'in tek alt sınıfı Toprak Çemberi (Moon/Sea/Stars SRD 5.2.1'de yok); karşılaştırma ona göre.
+
+| Seviye | Toprak | Karadul (ilk) | Karadul (1. ayar) | Karadul (2. ayar, son) | Fark | Durum |
+|---|---|---|---|---|---|---|
+| 3 | %88 | %79 | %86 | %86 | −2 | aralıkta |
+| 7 | %41 | %18 | — | %19 | −22 | **aralık dışı** |
+| 11 | %47 | %31 | %32 | %40 | −7 | **aralık dışı** |
+| 15 | %22 | %14 | %15 | %19 | −3 | aralıkta |
+
+- 1. ayar: yapay zekâ örümcek biçiminden (tuzak turu değilse ve slot varken) çıkıp büyüye döner; Büyüleyici Bakış 3. seviyeden bonus eylem (`bakis.bonusSeviye` 6 → 3).
+- 2. ayar: her zaman hazır Karadul büyüleri (Toprak'ın çember büyülerinin karşılığı): Ray of Sickness, Web (3), Stinking Cloud (5), Blight (7), Cloudkill (9).
+- Açık: 7. seviyedeki büyük fark (6. seviyede gelen Giant Spider biçimi + Tatlı Tuzak döngüsü yakın dövüşe sokuyor olabilir). Ölçüm/ayar "Dungeondex öncesi tam test turu"na kaldı (hafif doğrulama modu: en çok birkaç deneme).
