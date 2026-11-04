@@ -77,6 +77,8 @@ export function syncAuras(state: BattleState): BattleState {
   const charmOn = !!globalRule(state, 'countercharm');
   // Kuyruk 19 (karar 1): özellik işaretli savaşçıda Bardic Inspiration zarı ikinci şans listesinden düşmesin (kural sürümü 16).
   const inspireOn = !!globalRule(state, 'bardicInspirationFix');
+  // Kuyruk K48 (sürüm 19): ilk ikinci şans tutmazsa ilham zarı da denenir (zincir).
+  const chainOn = !!globalRule(state, 'bardicInspirationChain');
   // Kuyruk 19 (11–20): devlet bilmeyen zar yollarında (ikinci şans) `featuresK19` anahtarı savaşçıda işaret olarak.
   const k19On = !!globalRule(state, 'featuresK19');
   const anyLife = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.auraLife) || c.traits?.includes('night-spirit')) || !!state.map?.zones?.some((z) => z.spec?.resist?.length);
@@ -87,16 +89,17 @@ export function syncAuras(state: BattleState): BattleState {
     const want = on ? auraSaveOf(state, c) : 0;
     const by = charmOn ? countercharmOf(state, c) : undefined;
     const fix = inspireOn && !!c.traits?.length && (c.effects ?? []).some((e) => e.inspire);
+    const chain = chainOn && (c.effects ?? []).some((e) => e.inspire);
     const life = anyLife ? auraResistOf(state, c) : [];
     const k19 = k19On && !!c.traits?.some((x) => K19_SYNC.includes(x));
     const fateBy = anyFate ? fateHolder(state, c, true) : undefined;
     const fateFoe = anyFate ? fateHolder(state, c, false) : undefined;
     const burst = anyBurst ? burstOf(state, c) : undefined;
-    if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
+    if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && !!c.inspireChain === chain && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
       && c.fateBy === fateBy && c.fateFoe === fateFoe) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, ...rest } = next.combatants[c.id] as Combatant;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, ...rest } = next.combatants[c.id] as Combatant;
     next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
-      ...(fix ? { inspireFix: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
+      ...(fix ? { inspireFix: true } : {}), ...(chain ? { inspireChain: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
       ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}) } as Combatant } };
   }
   return next;

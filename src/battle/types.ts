@@ -583,6 +583,8 @@ export interface Combatant {
   boonScore?: number;
   /** Kuyruk 19: Bardic Inspiration zarı özellik işaretli savaşçıda da ikinci şans listesinde (reducer `syncAuras`, kural sürümü 16). */
   inspireFix?: true;
+  /** Kuyruk K48 (sürüm 19, `bardicInspirationChain`): ilham zarı önceki ikinci şans tutmazsa da atılır (reducer `syncAuras`). */
+  inspireChain?: true;
   ownerId: string | null;
   ac: number;
   hp: number;

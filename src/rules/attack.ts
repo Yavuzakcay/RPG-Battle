@@ -28,6 +28,11 @@ export interface ExtraDie {
   rerollMode?: RollMode;
   /** Kuyruk 18 H3: kullanılınca sahibinin tepkisi harcanır (Countercharm). */
   reaction?: boolean;
+  /**
+   * Kuyruk K48 (kural sürümü 19): ilk ikinci şans (Indomitable, Luck, Tactical Mind…) sonucu yine başarısızsa bu giriş
+   * ayrıca denenir (Bardic Inspiration: "when the creature fails a D20 Test").
+   */
+  chain?: boolean;
 }
 /** Atılmış eklenti zarı: işaretli değer (−1d4 ise negatif). `resource`: kullanılan kaynak (Görev F). */
 export interface RolledExtra { label: string; die: string; value: number; effectId?: string; holderId?: string; single?: boolean; resource?: string; /** Kuyruk 18 H3: sahibinin tepkisi harcandı. */ reaction?: boolean;
@@ -75,6 +80,25 @@ export function secondChance(
   const natural = x.reroll === 'twenty' ? 20 : rollD20(x.rerollMode ?? fail.mode, rollTag(rng, { kind: fail.kind, bonus: fail.bonus })).kept;
   const total = fail.total - fail.natural + natural + (x.rerollBonus ?? 0);
   return { total, natural, entry: { ...base, die: x.reroll === 'twenty' ? '20' : 'd20', value: total - fail.total, ...(x.resource ? { resource: x.resource } : {}), ...(x.reaction ? { reaction: true } : {}) } };
+}
+/**
+ * Kuyruk K48: ikinci şans zinciri. Önce `secondChance`; sonuç yine başarısızsa ve seçilmeyen `chain` girişi (Bardic
+ * Inspiration) varsa o da atılır. Girişler sırayla döner (olaydaki `bonusDice`). `chain` yoksa eski davranış (tek giriş).
+ */
+export function secondChanceAll(
+  extra: ExtraDie[] | undefined, fail: Parameters<typeof secondChance>[1], rng: Rng,
+): { total: number; natural: number; entries: RolledExtra[] } | null {
+  const first = secondChance(extra, fail, rng);
+  if (!first) return null;
+  const entries = [first.entry];
+  let { total, natural } = first;
+  const ok = () => (fail.kind === 'attack' ? natural === 20 || (natural !== 1 && total >= fail.need) : total >= fail.need);
+  if (!ok()) {
+    const rest = (extra ?? []).filter((e) => e.chain && !(e.effectId && e.effectId === first.entry.effectId));
+    const again = rest.length ? secondChance(rest, { ...fail, total, natural }, rng) : null;
+    if (again) { total = again.total; natural = again.natural; entries.push(again.entry); }
+  }
+  return { total, natural, entries };
 }
 export const extrasTotal = (xs: RolledExtra[] | undefined): number => (xs ?? []).reduce((n, x) => n + x.value, 0);
 
@@ -137,8 +161,8 @@ export function resolveAttack(input: AttackInput, rng: Rng = Math.random): Attac
   let hit = crit(natural) || (!fumble && total >= input.targetAc);
   // Görev F: ıskada ikinci şans (Stroke of Luck: zar 20 sayılır).
   if (!hit) {
-    const again = secondChance(input.extra, { total, natural, bonus: input.attackBonus, need: input.targetAc, mode: input.mode, kind: 'attack' }, rng);
-    if (again) { natural = again.natural; total = again.total; extra.push(again.entry); hit = crit(natural) || (natural !== 1 && total >= input.targetAc); }
+    const again = secondChanceAll(input.extra, { total, natural, bonus: input.attackBonus, need: input.targetAc, mode: input.mode, kind: 'attack' }, rng);
+    if (again) { natural = again.natural; total = again.total; extra.push(...again.entries); hit = crit(natural) || (natural !== 1 && total >= input.targetAc); }
   } else if (!crit(natural)) {
     const spoil = spoilChance(input.extra, { total, need: input.targetAc, kind: 'attack' }, rng);
     if (spoil) { total = spoil.total; extra.push(spoil.entry); hit = false; }
@@ -198,8 +222,8 @@ export function resolveSave(input: SaveInput, rng: Rng = Math.random): SaveResul
   let total = d20.kept + input.modifier + extrasTotal(extra);
   // Görev F: başarısız save'de ikinci şans (Indomitable, Stroke of Luck).
   if (total < input.dc) {
-    const again = secondChance(input.extra, { total, natural: d20.kept, bonus: input.modifier, need: input.dc, mode: input.mode, kind: 'save', ...(input.against ? { against: input.against } : {}) }, rng);
-    if (again) { total = again.total; extra.push(again.entry); }
+    const again = secondChanceAll(input.extra, { total, natural: d20.kept, bonus: input.modifier, need: input.dc, mode: input.mode, kind: 'save', ...(input.against ? { against: input.against } : {}) }, rng);
+    if (again) { total = again.total; extra.push(...again.entries); }
   } else {
     const spoil = spoilChance(input.extra, { total, need: input.dc, kind: 'save' }, rng);
     if (spoil) { total = spoil.total; extra.push(spoil.entry); }

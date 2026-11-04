@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-04 — Kuyruk K48 Adım A: Bardic Inspiration zinciri (kural sürümü 19)
+
+- **Durum:** görevdeki "özellikli savaşçıda ilham zarı düşüyor" hatasının ilk yarısı Kuyruk 19'da düzeltilmişti (`bardicInspirationFix`, sürüm 16: işaretli savaşçıda zar ikinci şans listesine giriyor). Yeniden taramada (12 sınıf × 3 tür × 3 seviye) liste artık her yerde zarı içeriyor.
+- **Kalan neden:** `secondChance` (`src/rules/attack.ts`) listedeki *ilk* uygun ikinci şansı kullanır. İşaretli savaşçıda kendi ikinci şansları (Indomitable, Halfling Luck, Tactical Mind, Stroke of Luck, Heroic Inspiration…) ilham zarından önce gelir; o tutmazsa ilham zarı hiç atılmıyordu (zar fiilen düşüyordu, etki de harcanmadan kalıyordu). SRD 5.2.1: ilham zarı "başarısız D20 Testine" eklenir; yeniden atış başarısız kalırsa test hâlâ başarısızdır.
+- **Karar:** yeni sürüm **19** (Celestial 18'i aldı; plandaki "16" Kuyruk 19'un düzeltmesiydi). Global Game Master anahtarı `bardicInspirationChain` (varsayılan açık): reducer `syncAuras` ilhamlı savaşçıya `inspireChain` yazar, ilham girişi `chain: true` olur; `secondChanceAll` ilk ikinci şanstan sonra sonuç hâlâ başarısızsa seçilmemiş `chain` girişini dener (saldırı, save, kontrol). Sürüm < 19 ya da anahtar kapalıyken eski davranış (replay aynı). Moral (Adım B) sürüm 20'yi alır.
+- Test `src/battle/k48bard.test.ts`.
+
 ## 2026-11-03 — Kuyruk H3: dünya haritası karo dikişleri
 
 - **Değişiklik** (`src/world/tiles.ts` `tileDeviceRect`, `WorldMapViewer` `putTile`): karolar artık dünya dönüşümüyle (kesirli ölçek) değil, cihaz pikselinde çizilir: sol/üst ve sağ/alt kenarlar ayrı ayrı `Math.round` edilir (komşu iki karonun ortak kenarı aynı piksele düşer), genişlik/yükseklik bu farktan, ardından sağa ve aşağıya 1 px taşma. Eskiden z0 zemin `r.w × r.h`, üst zoom `+0,5` ile kesirli koordinatta çiziliyordu. z0 zemini de aynı yoldan.

@@ -3,7 +3,7 @@
  * zarına eklenecek ±zarlar. Saf; zarlar `rules/attack.ts` `rollExtras` ile atılır.
  */
 import { exhaustionD20Penalty } from '../rules/exhaustion';
-import { extrasTotal, rollExtras, secondChance, spoilChance, type ExtraDie, type RolledExtra } from '../rules/attack';
+import { extrasTotal, rollExtras, secondChanceAll, spoilChance, type ExtraDie, type RolledExtra } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { resourceLeft, type Combatant } from './types';
 import type { Ability } from '../rules/abilities';
@@ -24,7 +24,9 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (!c) return [];
   // Görev BARD: Bardic Inspiration (dosttaki süren etki): başarısız D20 Testine zar; atılınca etki biter.
   const inspired: ExtraDie[] = (c.effects ?? []).filter((e) => e.inspire)
-    .map((e) => ({ label: e.name, die: e.inspire as string, sign: 1, reroll: 'onFail', single: true, effectId: e.id, holderId: c.id }));
+    .map((e) => ({ label: e.name, die: e.inspire as string, sign: 1, reroll: 'onFail', single: true, effectId: e.id, holderId: c.id,
+      // Kuyruk K48 (sürüm 19, `bardicInspirationChain`): önceki ikinci şans tutmazsa ilham zarı yine atılır.
+      ...(c.inspireChain ? { chain: true } : {}) }));
   // Kuyruk 43: Legendary Resistance (SRD 5.2.1; günde N): başarısız save'i başarıya çevirir; boss'un turları arasında en
   // çok bir kez (`lrLock`, kendi turunun başında kalkar: aynı tur içinde art arda harcamaz).
   if (on === 'save' && resourceLeft(c, 'legendaryResistance') > 0 && !c.lrLock) {
@@ -87,7 +89,7 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on === 'check' && traits.includes('tactical-mind') && resourceLeft(c, 'secondWind') > 0) {
     out.push({ label: 'Tactical Mind', die: '1d10', sign: 1, reroll: 'onFail', resource: 'secondWind', holderId: c.id });
   }
-  return [...out, ...(c.inspireFix ? inspired : []), ...k18];
+  return [...out, ...(c.inspireFix || c.inspireChain ? inspired : []), ...k18];
 }
 
 /** Görev S1: bitkinlik (Exhaustion) her d20 Testine −2 × seviye (sabit eklenti; zar atılmaz). */
@@ -139,8 +141,8 @@ export function finishCheck(
   const extra = rollExtras(dice, 'check', rollTag(rng, { by: c.id }));
   let total = natural + bonus + extrasTotal(extra);
   if (dc !== null && total < dc) {
-    const again = secondChance(dice, { total, natural, bonus, need: dc, mode, kind: 'check' }, rollTag(rng, { by: c.id }));
-    if (again) { total = again.total; extra.push(again.entry); }
+    const again = secondChanceAll(dice, { total, natural, bonus, need: dc, mode, kind: 'check' }, rollTag(rng, { by: c.id }));
+    if (again) { total = again.total; extra.push(...again.entries); }
   } else if (dc !== null) {
     const spoil = spoilChance(dice, { total, need: dc, kind: 'check' }, rollTag(rng, { by: c.id }));
     if (spoil) { total = spoil.total; extra.push(spoil.entry); }
