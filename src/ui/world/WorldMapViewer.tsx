@@ -12,6 +12,7 @@ import { t } from '../../i18n';
 import { clampCamera, fitRect, fitWorld, panBy, scaleBar, toScreen, toWorld, viewRect, zoomAt, type Camera, type Viewport } from '../../world/camera';
 import { Lru, tileDeviceRect, tileRect, tilesInView, zoomFor, type TileManifest } from '../../world/tiles';
 import { FOG_COLS, FOG_ROWS, type Fog } from '../../world/fog';
+import { cellIndex, swimAt } from '../../world/regions';
 import { BRIDGES, CAMERAS, FOG_RULES, HIDDEN_PASSES, PASSES, ROADS, SEA_ROUTES, WORLD, type Pt } from '../../world/worldData';
 import etiketler from '../../../data/harita/etiketler.json';
 import prisonUrl from '../../../data/harita/hapishane-su-alti-katman.png?url';
@@ -35,7 +36,7 @@ export interface WorldMapProps {
   onNode?: (page: string, id: string, pos: [number, number]) => void;
   onClose: () => void;
   /** K47: tıkla-yürü (açıkken boş yere dokunuş yürür); son yolun noktaları ve kipi (animasyon). */
-  walk?: { enabled: boolean; path: Pt[] | null; mode: 'yurume' | 'gemi' | 'ucus'; onWalk: (p: Pt) => void };
+  walk?: { enabled: boolean; path: Pt[] | null; mode: 'yurume' | 'gemi' | 'ucus' | 'yuzme'; onWalk: (p: Pt) => void };
   /** K47: hızlı seyahat merkezleri (açık olanlar çizilir; panelde gemi/uçuş). */
   hubs?: WorldHub[];
   /** Kuyruk H2: Harita Keşfi (`#dunya`): bütün merkezler veriden (tıklayınca kart; yürüme yok, "Buraya git" kamerayı götürür). */
@@ -85,20 +86,30 @@ export default function WorldMapViewer(props: WorldMapProps) {
   const markRef = useRef<Array<{ x: number; y: number; r: number; hub?: WorldHub; node?: WorldNode }>>([]);
   const hubList = props.hubs ?? (props.exploreHubs ? ALL_HUBS : undefined);
   // K47: yürüyüş/seyahat animasyonu (yol boyunca; dokununca atlanır; hareketi azaltmada anlık).
-  const anim = useRef<{ path: Pt[]; t0: number; dur: number; mode: 'yurume' | 'gemi' | 'ucus' } | null>(null);
+  type AnimMode = 'yurume' | 'gemi' | 'ucus' | 'yuzme';
+  const anim = useRef<{ path: Pt[]; t0: number; dur: number; mode: AnimMode } | null>(null);
   const lastPath = useRef<Pt[] | null>(null);
+  const rafRef = useRef(0);
+  const play = (path: Pt[], mode: AnimMode, force = false) => {
+    const dur = reducedMotion() && !force ? 0 : mode === 'ucus' ? 2500 : mode === 'gemi' ? 3500 : Math.min(2500, 400 + path.length * 60);
+    anim.current = { path, t0: performance.now(), dur, mode };
+    cancelAnimationFrame(rafRef.current);
+    const step = () => { setTick((n) => n + 1); if (anim.current && performance.now() - anim.current.t0 < anim.current.dur) rafRef.current = requestAnimationFrame(step); else anim.current = null; };
+    rafRef.current = requestAnimationFrame(step);
+  };
   useEffect(() => {
     const path = props.walk?.path ?? null;
     if (!path || path === lastPath.current || path.length < 2) { lastPath.current = path; return; }
     lastPath.current = path;
-    const mode = props.walk?.mode ?? 'yurume';
-    const dur = reducedMotion() ? 0 : mode === 'ucus' ? 2500 : mode === 'gemi' ? 3500 : Math.min(2500, 400 + path.length * 60);
-    anim.current = { path, t0: performance.now(), dur, mode };
-    let raf = 0;
-    const step = () => { setTick((n) => n + 1); if (anim.current && performance.now() - anim.current.t0 < anim.current.dur) raf = requestAnimationFrame(step); else anim.current = null; };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [props.walk?.path, props.walk?.mode]);
+    play(path, props.walk?.mode ?? 'yurume');
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [props.walk?.path, props.walk?.mode]); // eslint-disable-line react-hooks/exhaustive-deps
+  /** K49 D: "Animasyon önizleme": parti bu hareketi yapmasa da gösterir (hareketi azaltmada da oynar; elle istenir). */
+  const preview = (mode: 'ucus' | 'gemi' | 'yuzme') => {
+    const p = props.party;
+    if (!p) return;
+    play([p, [p[0] + 700, p[1] - (mode === 'ucus' ? 200 : 0)], [p[0] + 1400, p[1]]], mode, true);
+  };
 
   // Boyut: kapsayıcıyı izle.
   useEffect(() => {
@@ -243,7 +254,9 @@ export default function WorldMapViewer(props: WorldMapProps) {
       const k = a ? Math.min(1, (performance.now() - a.t0) / Math.max(1, a.dur)) : 1;
       const lead = a ? along(a.path, k) : props.party;
       const mode = a?.mode ?? 'yurume';
-      const sway = a && mode === 'yurume' ? Math.sin(performance.now() / 90) * 1.5 * lw : 0;
+      // K49 D: yüzme (önizleme ya da yürüyüşte dar su hücresi): yarı suya gömülü jeton + halka dalgalar.
+      const swimming = mode === 'yuzme' || (!!a && mode === 'yurume' && swimAt(cellIndex(lead)));
+      const sway = a && mode === 'yurume' && !swimming ? Math.sin(performance.now() / 90) * 1.5 * lw : 0;
       const n = Math.max(1, Math.min(6, props.partySize ?? 1));
       for (let i = n - 1; i >= 1; i--) {
         const f = a ? along(a.path, Math.max(0, k - i * 0.04)) : ([props.party[0] - i * 14 * lw, props.party[1] + (i % 2 ? 8 : -8) * lw] as Pt);
@@ -251,7 +264,14 @@ export default function WorldMapViewer(props: WorldMapProps) {
       }
       const lift = a && mode === 'ucus' ? Math.sin(Math.PI * k) : 0;
       if (lift > 0) dot([lead[0], lead[1] + 6 * lw], 7 * (1 - lift * 0.6), 'rgba(0,0,0,.35)', 'rgba(0,0,0,0)');
-      dot([lead[0], lead[1] + sway - lift * 40 * lw], 10 * (1 + lift * 0.6), '#ff5a4f', '#fff');
+      if (swimming && a) {
+        const ph = (performance.now() / 900) % 1;
+        for (const k2 of [ph, (ph + 0.5) % 1]) { g.beginPath(); g.ellipse(lead[0], lead[1] + 3 * lw, (10 + 22 * k2) * lw, (4 + 9 * k2) * lw, 0, 0, Math.PI * 2); g.strokeStyle = `rgba(220,240,255,${0.8 * (1 - k2)})`; g.lineWidth = 1.5 * lw; g.setLineDash([]); g.stroke(); }
+        const bob = Math.sin(performance.now() / 250) * 1.5 * lw;
+        g.save(); g.beginPath(); g.rect(lead[0] - 14 * lw, lead[1] - 20 * lw + bob, 28 * lw, 20 * lw); g.clip();
+        dot([lead[0], lead[1] + 4 * lw + bob], 10, '#ff5a4f', '#fff'); g.restore();
+        g.beginPath(); g.ellipse(lead[0], lead[1] + bob, 12 * lw, 3.5 * lw, 0, 0, Math.PI * 2); g.fillStyle = 'rgba(90,170,220,.75)'; g.fill();
+      } else dot([lead[0], lead[1] + sway - lift * 40 * lw], 10 * (1 + lift * 0.6), '#ff5a4f', '#fff');
       if (a && mode === 'gemi') { g.font = `${22 * lw}px system-ui`; g.fillText('⛵', lead[0] - 11 * lw, lead[1] - 14 * lw); }
     }
     if (layers.grid) {
@@ -433,6 +453,14 @@ export default function WorldMapViewer(props: WorldMapProps) {
           {LAYERS.filter((l) => (l === 'fog' ? !!props.fog : l === 'hidden' ? !!props.hiddenFlag && props.flags.includes(props.hiddenFlag) : l === 'labels' ? LABELS.length > 0 : true)).map((l) => (
             <label key={l}><input type="checkbox" checked={layers[l]} onChange={() => setLayers((s) => ({ ...s, [l]: !s[l] }))} /> {W.layer[l]}</label>
           ))}
+          {props.party && (
+            <span className="world-anim-preview" role="group" aria-label={W.animPreview}>
+              <small>{W.animPreview}:</small>
+              <button type="button" className="chip" onClick={() => preview('ucus')}>{W.animFly}</button>
+              <button type="button" className="chip" onClick={() => preview('gemi')}>{W.animShip}</button>
+              <button type="button" className="chip" onClick={() => preview('yuzme')}>{W.animSwim}</button>
+            </span>
+          )}
         </div>
       )}
       <div className="world-view" ref={wrapRef}>

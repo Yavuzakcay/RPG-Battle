@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-04 — Kuyruk K49 Adım D: bölgeler, yükleme ekranı, yüzme
+
+- **Bölgeler:** 8 kıta bölgesi (Karkedon, Cüce Eyeri, Ahmak Ormanı, Hutame Çölü, Cadı Kazanı, Gözcü Kıyısı, Tenhausser, Kum Buzulu) + 6 ada (Dragos, Orion Yamaçları, Akhalat, Akrepler, Negatif Alan Zaptı, Mânâ 42). Tohumlar `etiketler.json` `bolge`/`ada` etiketleri; kara + yüzme hücrelerinde çok kaynaklı Dijkstra (arazi maliyetiyle, sınırlar dağ/su hattına oturur). Izgara `data/harita/bolge-izgara.json` (`python scripts/k49-bolgeler.py`), parametreler `data/harita/bolge-yukleme.json`. `sayfa-dunya-esleme` kullanılmadı: etiket tohumları ve arazi maskesi yeterli, sayfa sınırları bölge adlarıyla zaten örtüşüyor.
+- **Yükleme ekranı:** yürüyüş yolu bölge değiştirince (`arrivalRegion`) bölge adı + koyu arka plan; yeni bölgenin z3–z4 karoları gerçekten önyüklenir (en çok 120). Süre önyükleme bitince, en az 0,6 en çok 1,2 sn; hareketi azaltmada 250 ms solma. Aynı bölge içinde ekran yok.
+- **Yüzme:** göl ve nehir (dar su) yüzülür; açık deniz, uçurum ve kayalık geçilmez. Su: geçilmez hücre + z2 renginde mavi/camgöbeği baskın; "dar": kapalı su kütlesi (kenara değmeyen, ≤ 900 hücre) ya da dört eksenin en az üçünde iki yanda da 3 hücre içinde kara. Maliyet 70 (orman 52, dağ 80). Yüzülen yolda bir Atletizm beyaz kontrolü (DC 10, partinin en iyisi; zar Serüven tohumundan, replay aynı); başarısızsa +2 saat. Ağır zırhlı üye varsa önce yüzmeden yol denenir, yoksa red (`agirZirh: "red"`). Olayda `swim` alanı (eski kayıtta yok).
+- **Anahtar** `bolgeYukleme` (Serüven anahtarı, varsayılan açık); kapalıyken K47 (yüzme yok, geçiş ekranı yok).
+- **Animasyon:** yüzme (yarı suya gömülü jeton, halka dalgalar; yürüyüşte dar su hücresinde kendiliğinden). Dünya haritası Katmanlar menüsünde "Animasyon önizleme": Uçuş, Gemi, Yüzme (parti bu hareketi yapmasa da; hareketi azaltmada da oynar çünkü elle istenir).
+- **Açık kalan:** Karkedon'daki buz yarıklarının bir kısmı renk ölçütüyle "dar su" sayıldı (buzlu suda yüzme gibi davranıyor); istenirse `uretim.maviFark` artırılır ya da yarıklar elle maskelenir.
+
 ## 2026-11-04 — Kuyruk K49 Adım C: ana harita verisi ve temizlik
 
 - **C1 Hexonya:** kıta adı (`kita`) z2 karolarında piksel analiziyle (180×28 px pencere, renk sapması en düşük, kıta dışı, "Kuzey Buz Denizi" etiketinden uzak) haritanın üstündeki boş denize taşındı: **(4600, 220)** (eskiden 6300, 2250). Yeni etiket alanı `yalnizUzak: true`: yalnızca uzak yakınlaştırmada (seviye 1 görünümü) çizilir.

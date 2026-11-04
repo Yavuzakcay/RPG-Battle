@@ -657,6 +657,8 @@ export const en: Strings = {
       noTiles: 'No map tiles (npm run harita-karo, docs/harita/DUNYA-KARO.md); regions shown as placeholders.',
       prisonUnder: (d: number) => `Prison Island is under water (surfaces in ${d} days); no ship can go.`, prisonUp: 'Prison Island is surfaced today: ships may go.',
       hubGo: 'Go here', hubKind: { yerlesim: 'Settlement', iskele: 'Pier' },
+      regionEnter: 'Entering region', animPreview: 'Animation preview', animFly: 'Flight', animShip: 'Ship', animSwim: 'Swim',
+      swimLog: (by: string, total: number, dc: number, ok: boolean, h: number) => `Swimming (Athletics, ${by}): ${total} vs DC ${dc}: ${ok ? 'made it across' : `the current wore you out, ${h} hours lost`}.`,
       travelTitle: 'Fast travel', ship: 'Ship', fly: 'Fly', noTravel: 'No fast travel from here (not at a port; flying needs a mount or key).', walkHint: 'Tap the map: the party walks there (tap to skip the animation).',
       clock: (d: number, h: number) => `Day ${d}, ${String(h).padStart(2, '0')}:00`, encounter: (r: string) => `Encounter on the road (${r})! The walk stopped.`, hint: 'Something hidden here: tap to search',
       checked: (ok: boolean, t: number, dc: number) => (ok ? `Found (${t} / DC ${dc}).` : `Not found (${t} / DC ${dc}).`),

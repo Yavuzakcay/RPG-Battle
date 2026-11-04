@@ -28,3 +28,18 @@
 /* Kuyruk H2: merkez kartı (ad + Buraya git). */
 .world-hub-card { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); z-index: 5; display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; min-width: 200px; max-width: calc(100% - 32px); background: rgba(10, 16, 24, .92); border: 1px solid rgba(255, 255, 255, .25); border-radius: 8px; }
 .world-hub-card-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* K49 D: animasyon önizleme düğmeleri, yüzme notu ve bölge geçiş/yükleme ekranı. */
+.world-anim-preview { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-left: 8px; }
+.world-swim-note { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 61; margin: 0; padding: 6px 12px; border-radius: 8px; background: rgba(10, 30, 50, .85); color: #dff1ff; font-size: 13px; max-width: calc(100vw - 32px); }
+.region-loading { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: radial-gradient(ellipse at center, rgba(20, 28, 40, .82), rgba(5, 8, 14, .96)); animation: region-in 160ms ease-out both; transition: opacity 180ms ease; }
+.region-loading.out { opacity: 0; }
+.region-loading.reduced { animation: none; transition: opacity 120ms linear; }
+.region-loading-card { display: grid; justify-items: center; gap: 8px; padding: 18px 28px; color: #f3ead2; text-align: center; }
+.region-loading-card small { letter-spacing: .2em; text-transform: uppercase; opacity: .7; font-size: 11px; }
+.region-loading-card strong { font: 600 clamp(22px, 5vw, 40px) Georgia, serif; text-shadow: 0 2px 12px rgba(0, 0, 0, .6); }
+.region-loading-bar { width: min(220px, 60vw); height: 2px; background: rgba(255, 255, 255, .15); overflow: hidden; border-radius: 2px; }
+.region-loading-bar i { display: block; height: 100%; width: 40%; background: #e9c46a; animation: region-bar 900ms ease-in-out infinite; }
+.region-loading.reduced .region-loading-bar i { animation: none; width: 100%; }
+@keyframes region-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes region-bar { from { transform: translateX(-100%); } to { transform: translateX(250%); } }

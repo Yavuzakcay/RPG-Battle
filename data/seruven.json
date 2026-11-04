@@ -2,6 +2,11 @@
  "note": "Kuyruk 31: Serüven (kıta) sayfaları ve düğümleri. Koordinatlar sayfa resmine oransal (0–1; x soldan, y üstten). Sayfa sırası doğudan batıya (`next`); Derinlikler'den Lav Salonu üstünden Volkan Adası'na portal (`portal`). Düğüm `scenario` (data/sim-senaryolar.json; haritası ve seviyeye göre düşmanları) ya da `sefer` (`<sefer>:<düğüm>`, data/seferler.json düğümü: hedef, giriş, düşmanlar, ödül, anlatım aynen). `requires`: önceki düğümlerden biri (all: hepsi) tamamlanınca açılır; boşsa sayfa girişinden açık. `optional`: çıkış için gerekmez. `gece`: gece senaryosu (yoksa haritanın `gece` varyantı). Ad: haritanın görünen adı (mapInfo) ya da sefer düğümünün adı. `susler`: tıklanmayan süs simgeleri. Koordinat ince ayarı: Serüven ekranında düğüm modu (#dugum) ya da `npm run seruven-dugum -- <sayfa> <düğüm> <x> <y>`. Kuyruk 32: `baglantilar` sayfalar arası savaşsız geçit (yeraltı nehri: Vaha ↔ Mielikki Gölü; a ucundaki düğüm tamamlanınca beceri sınavıyla açılır; geçiş koridor haritasında keşif yürüyüşüyle); `bayrak` düğümü keşif bayrağıyla görünür; dinlenme düğümü sefer dinlenme düğümüne bağlı. Kuyruk 33: Batı Kıyısı sayfası Çöl ile Derinlikler arasında; yerleşim düğümleri (`yerlesim`, K34) savaşsız ve geçilebilir.",
  "baslangic": "buzul",
  "anahtarlar": {
+  "bolgeYukleme": {
+   "default": true,
+   "tr": "Bölge geçişinde yükleme ekranı ve bölge içinde yüzme (göl/nehir; Atletizm, ağır zırhla yüzülmez)",
+   "en": "Region loading screen and swimming within regions (lakes/rivers; Athletics, no swimming in heavy armor)"
+  },
   "kesfeDevam": {
    "default": true,
    "tr": "Savaştan sonra keşfe devam (çıkış altıgenine yürü)",

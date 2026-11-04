@@ -13,6 +13,7 @@ import type { CharacterSheet } from '../rules/stats';
 import { seferById, seferRoute } from './sefer';
 import { nextLevelXp } from './engine';
 import { combatantFromSheet } from '../battle/create';
+import { armor } from '../data';
 import { skillBonus, type Skill } from '../rules/skills';
 import type { JourneyMember, JourneyStop } from './types';
 import { gorevById, irkBaslangic, urunById, satisFiyati, yerlesimById, yerlesimHarita, YERLESIM } from '../yerlesim/yerlesim';
@@ -337,7 +338,7 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
     }
     case 'moral_dirilt': return moralRevive(state, cmd);
     case 'world_walk': case 'fast_travel': case 'world_check': {
-      const r = roamEvents(state, cmd, (k) => toggleOn(state, k), bestSkill);
+      const r = roamEvents(state, cmd, (k) => toggleOn(state, k), bestSkill, heavyArmorMember);
       return typeof r === 'string' ? fail(r) : done(state, r);
     }
     default: return yerlesimCommand(state, page, cmd);
@@ -459,7 +460,15 @@ export function linkCrossable(s: SeruvenState, l: SeruvenLink): boolean {
   return !back || !l.geriKilit || s.done.includes(l.geriKilit) || toggleOn(s, 'serbestGezinti');
 }
 
-/** Partinin bu becerilerdeki en iyi bonusu (karakter sayfasından türetilen savaşçı). */
+/** K49 D: ağır zırh giyen yaşayan üye (yüzme kuralı); yoksa null. */
+export function heavyArmorMember(s: SeruvenState): string | null {
+  for (const m of s.party) {
+    if (m.status.dead || m.status.hp <= 0) continue;
+    if (armor.find((a) => a.name === m.sheet.armorName)?.type === 'heavy') return m.name;
+  }
+  return null;
+}
+
 /** Partide becerilerden en yüksek bonusu olan üye (K47: dünya kontrolleri ve pasif Algı da kullanır). */
 export function bestSkill(s: SeruvenState, skills: readonly string[]): { bonus: number; name: string } {
   let best = { bonus: -99, name: '' };
