@@ -112,8 +112,8 @@
       "ozgun": true,
       "kita": "buzul",
       "name": {
-        "tr": "Dağ ve Buz Madencisi",
-        "en": "Ice-Vein Miner"
+        "tr": "Madenci",
+        "en": "Miner"
       },
       "abilities": [
         "str",
@@ -139,8 +139,8 @@
       "ozgun": true,
       "kita": "orman",
       "name": {
-        "tr": "Çiftçi",
-        "en": "Smallholder"
+        "tr": "Köylü",
+        "en": "Villager"
       },
       "abilities": [
         "str",
@@ -167,8 +167,8 @@
       "ozgun": true,
       "kita": "col",
       "name": {
-        "tr": "Kervan Tüccarı",
-        "en": "Caravan Trader"
+        "tr": "Tüccar",
+        "en": "Merchant"
       },
       "abilities": [
         "dex",
@@ -194,8 +194,8 @@
       "ozgun": true,
       "kita": "bati-kiyisi",
       "name": {
-        "tr": "Kıyı Tayfası",
-        "en": "Coastal Deckhand"
+        "tr": "Mürettebat",
+        "en": "Crew"
       },
       "abilities": [
         "str",
@@ -221,8 +221,8 @@
       "ozgun": true,
       "kita": "dag",
       "name": {
-        "tr": "Gezgin Ozan",
-        "en": "Roaming Minstrel"
+        "tr": "Soytarı",
+        "en": "Jester"
       },
       "abilities": [
         "dex",
@@ -249,8 +249,8 @@
       "ozgun": true,
       "kita": "bataklik",
       "name": {
-        "tr": "Şifacı Çırağı",
-        "en": "Healer's Apprentice"
+        "tr": "Şifacı",
+        "en": "Healer"
       },
       "abilities": [
         "con",
@@ -277,8 +277,8 @@
       "ozgun": true,
       "kita": "orman",
       "name": {
-        "tr": "Avcı İzci",
-        "en": "Trail Hunter"
+        "tr": "Ödül Avcısı",
+        "en": "Bounty Hunter"
       },
       "abilities": [
         "dex",
@@ -304,8 +304,8 @@
       "ozgun": true,
       "kita": "bati-kiyisi",
       "name": {
-        "tr": "Beyaz Şehir Soylusu",
-        "en": "White City Noble"
+        "tr": "Soylu",
+        "en": "Noble"
       },
       "abilities": [
         "str",

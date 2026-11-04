@@ -40,6 +40,8 @@ export interface SavedCharacter {
   sheet: CharacterSheet;
   /** Savaşlar arası durum (kalan HP, HP zarı, kaynak, slot); yoksa dinlenmiş (Görev N). */
   status?: CharacterStatus;
+  /** Kuyruk K49: Game Master seviye değişiklikleri (olay günlüğü; yalnızca eklenir). Yoksa değişiklik yapılmamış. */
+  levelLog?: Array<{ from: number; to: number; at: string; by: 'gm' }>;
   /**
    * Görev K17: oluşturucu taslağı; sınıf değişince eski sınıfın seçimleri burada sınıf kimliğiyle saklanır (eski sınıfa
    * dönünce uyanları geri gelir). Kayıtlı karaktere yazılmaz (`savableCharacter`).

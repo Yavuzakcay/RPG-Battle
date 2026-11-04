@@ -13,6 +13,7 @@ import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../dat
 import { optionalRules } from '../battle/maprules';
 import { characterProblems, type SavedCharacter } from '../rules/builder';
 import { currentStatus, fullStatus, isRested, longRestStatus } from '../rules/characterRest';
+import { MAX_LEVEL, changeLevel } from '../app/levelChange';
 import { statusBlock } from '../app/partyStatus';
 import { regenWarning } from '../battle/encounterWarn';
 import { createMapBattle, customMonster, customMonsterCr, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput, civilianHexProblem, civilianRule, dragonSetup, maxCivilians, type CivilianPlacement } from '../app/setup';
@@ -231,6 +232,23 @@ export function GmScreen(props: {
               <span key={c.id} className="chip off">{c.sheet.name} · {G.blocked[statusBlock(c) ?? ''] ?? ''}</span>
             ))}
           </div>
+          {/* Kuyruk K49: Game Master seviye değiştirir (yükseltme: ortalama HP, yeni özellik ve slotlar; düşürme onaylı). */}
+          {props.onUpdateCharacters && ready.length > 0 && (
+            <details className="gm-levels">
+              <summary>{G.levelChange}</summary>
+              {ready.map((c) => (
+                <label key={c.id} className="gm-row">{c.sheet.name}
+                  <select value={c.sheet.level} onChange={(e: { target: { value: string } }) => {
+                    const to = Number(e.target.value);
+                    if (to < c.sheet.level && !window.confirm(G.levelDownConfirm(c.sheet.name, c.sheet.level, to))) return;
+                    props.onUpdateCharacters?.(props.characters.map((x) => (x.id === c.id ? changeLevel(x, to, new Date().toISOString()) : x)));
+                  }}>
+                    {Array.from({ length: MAX_LEVEL }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+                  </select>
+                </label>
+              ))}
+            </details>
+          )}
           {tired.length > 0 && props.onUpdateCharacters && (
             <div className="gm-row">
               <small className="mute">{G.restNote}</small>

@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-04 — Kuyruk K49 Adım B: oluşturucu ve Game Master düzeltmeleri
+
+- **B1 seviye 1–20:** oluşturucuda seviye seçimi her zaman 1–20 (`UPPER_LEVEL_CAP`). 11+ seviyede verisi olmayan sınıf özelliği "henüz yok" notuyla listelenir (oyunu bozmaz).
+- **B2 Game Master "Seviye değiştir":** Game Master kurulumunda karakter başına seviye seçimi (`src/app/levelChange.ts`). Düşürme `confirm` ister. Durum (HP, slot, kaynak) yeni seviyeye göre yeniden hesaplanır, değişiklik karakterin `levelLog` alanına yazılır (eski kayıtta yok = boş). Yalnızca yerel Game Master ekranı; ağ yok.
+- **B3 geçmiş adları:** yalnızca görünen ad değişti (Madenci, Tüccar, Soytarı, Şifacı, Soylu, Mürettebat, Köylü, Ödül Avcısı); kimlikler aynı. "özgün" etiketi kalktı, SRD geçmişlerinde "SRD" etiketi kalır.
+- **B4 adlar:** "dış içerik" son eki kalktı. Parantezli takma adlı alt sınıf yalnızca takma adla gösterilir ("Psişik Hançerler (Kirpi)" → "Kirpi"); kural `displayName` (`src/rules/subclasses.ts`), tarama TR ve EN adlarda parantez arar.
+- **B5 sekiz alt sınıf:** Berserker, Lore, Life, Open Hand, Devotion, Draconic, Fiend, Evoker seçim listesinden kalktı (`data/alt-sinif-gorunum.json` `kaldirilan`; SRD kopyası ve aynı adlı paket kopyası birlikte). Depoda bu sekiz sınıfın tek alt sınıfı SRD'ninki olduğundan, sınıfın başka seçeneği yoksa liste olduğu gibi kalır (sınıf boş kalmaz); dış paket yüklüyken gizlenir. Veri ve motor değişmedi: eski kayıt açılır, seçili alt sınıf listede görünmeye devam eder.
+- **B6 eşya kategorileri:** tür (silah, zırh, kalkan, tüketilebilir, aksesuar ve takı, sihirli eşya, araç gereç) ve etki seviyesi (sıradan…efsanevi) SRD kaydından türetilir (`src/rules/itemCategory.ts`, `data/esya-kategori.json`; büyülü eşya türü/nadirliği `node scripts/esya-kategori.mjs` ile küçük tabloya, 225 kB'lık SRD dosyası oluşturucuya yüklenmez). Donanım "sıradan"; "Varies" nadirliği "olağandışı". Çip süzgeçleri + katlanır gruplar + mevcut arama; seçili eşya süzgeçte de görünür. Sayılar ve fiyatlar aynı.
+- **B7 Cleric:** "… Alanı" → "… Manastırı" görünen ad kuralı; Barış Alanı → Birlik Manastırı (EN Unity Domain). **Birlik özelliklerinin yeniden yazımı yapılmadı:** kaynak belge `docs/imza-alt-siniflar/imza-cleric-birlik-manastiri.md` depoda, origin/main'de ve hiçbir dalda yok; özellikler eski hâliyle duruyor.
+
 ## 2026-11-04 — Kuyruk K49 Adım A: Celestial kalıcı ırk (kural sürümü 22)
 
 - **Neden görünmüyordu:** K20'de ev kuralı yapıldı; oluşturucuda kart Ayarlar'daki `rpg-battle-deneysel.celestial` kapalıyken gizliydi.
