@@ -1,0 +1,74 @@
+{
+ "not": "K45: dünya haritası karoları (npm run harita-karo). Yol: {z}/{x}/{y}.webp; z = 0 tüm harita, 5 = 1:1. Elle düzenlenmez. H2c: kalite 95; ilk yükleme 1 MB'ı aşarsa z0–z2 85 (zoom başına `kalite`).",
+ "tuval": [
+  13704,
+  5998
+ ],
+ "karo": 512,
+ "seviye": 6,
+ "kalite": 95,
+ "zoomlar": [
+  {
+   "z": 0,
+   "olcek": 0.03125,
+   "genislik": 429,
+   "yukseklik": 188,
+   "sutun": 1,
+   "satir": 1,
+   "kalite": 95
+  },
+  {
+   "z": 1,
+   "olcek": 0.0625,
+   "genislik": 857,
+   "yukseklik": 375,
+   "sutun": 2,
+   "satir": 1,
+   "kalite": 95
+  },
+  {
+   "z": 2,
+   "olcek": 0.125,
+   "genislik": 1713,
+   "yukseklik": 750,
+   "sutun": 4,
+   "satir": 2,
+   "kalite": 95
+  },
+  {
+   "z": 3,
+   "olcek": 0.25,
+   "genislik": 3426,
+   "yukseklik": 1500,
+   "sutun": 7,
+   "satir": 3,
+   "kalite": 95
+  },
+  {
+   "z": 4,
+   "olcek": 0.5,
+   "genislik": 6852,
+   "yukseklik": 2999,
+   "sutun": 14,
+   "satir": 6,
+   "kalite": 95
+  },
+  {
+   "z": 5,
+   "olcek": 1,
+   "genislik": 13704,
+   "yukseklik": 5998,
+   "sutun": 27,
+   "satir": 12,
+   "kalite": 95
+  }
+ ],
+ "kaynak": {
+  "dosya": "dunya-final-v47.png",
+  "sha256": "82982381816b963979179c8cbc12c3a24f04d9d9863f7206b126fde75d27c01d",
+  "bayt": 88948391
+ },
+ "karoSayisi": 440,
+ "toplamBayt": 16719626,
+ "ilkYuklemeBayt": 579288
+}
