@@ -275,7 +275,11 @@ function controlArea(state: BattleState, actor: Combatant): Command | null {
       if (!r.ok) continue;
       const ids = r.events.filter((e) => e.type === 'save_resolved').map((e) => (e.type === 'save_resolved' ? e.targetId : ''));
       const sides = ids.map((id) => state.combatants[id]?.side);
-      if (sides.filter((x) => x !== actor.side).length >= 3 && !sides.includes(actor.side)) return cmd;
+      // Denge turu (K20 ölçümü, Drow): aynı büyünün etkisi zaten üstünde olan düşman sayılmaz (dört Drow aynı düşmanlara
+      // sırayla Faerie Fire atıp eylemlerini harcıyordu).
+      const fresh = ids.filter((id) => state.combatants[id]?.side !== actor.side && !(state.combatants[id]?.effects ?? []).some((x) => x.name === spell.name));
+      // Yeni hedef en az üç ve hedeflerin çoğu (yoksa aynı büyünün tekrarı).
+      if (fresh.length >= 3 && fresh.length * 2 > ids.length && !sides.includes(actor.side)) return cmd;
     }
   }
   return null;
@@ -1183,7 +1187,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev WIZARD (basit kural): felç eden save büyüsü (Hold Person) güçlü düşmanlara; yukarı slotta ek hedef.
   if (canAct) {
-    const cmd = holdChoice(state, actor) ?? blindChoice(state, actor) ?? sphereGuard(state, actor) ?? banishChoice(state, actor) ?? wallChoice(state, actor) ?? controlArea(state, actor);
+    const cmd = holdChoice(state, actor) ?? blindChoice(state, actor) ?? sphereGuard(state, actor) ?? banishChoice(state, actor) ?? wallChoice(state, actor)
+      // Denge turu (K20 ölçümü): üç+ düşmana hasar veren alan büyüsü (Fireball) varken kontrol alanı (Faerie Fire) beklemeli.
+      ?? (areaSpell(state, actor, foesOf(state, actor)) ? null : controlArea(state, actor));
     if (cmd) return cmd;
   }
   // Görev DRUID (basit kural): slotu kalmamış ve konsantre olmayan Druid bonus eylemle en güçlü bilinen biçime girer.

@@ -10,7 +10,7 @@ import { avoidLabels, drawMarker, markerStyle, type Box, type MarkerKind } from 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { t } from '../../i18n';
 import { clampCamera, fitRect, fitWorld, panBy, scaleBar, toScreen, toWorld, viewRect, zoomAt, type Camera, type Viewport } from '../../world/camera';
-import { Lru, tileRect, tilesInView, zoomFor, type TileManifest } from '../../world/tiles';
+import { Lru, tileDeviceRect, tileRect, tilesInView, zoomFor, type TileManifest } from '../../world/tiles';
 import { FOG_COLS, FOG_ROWS, type Fog } from '../../world/fog';
 import { BRIDGES, CAMERAS, FOG_RULES, HIDDEN_PASSES, PASSES, ROADS, SEA_ROUTES, WORLD, type Pt } from '../../world/worldData';
 import etiketler from '../../../data/harita/etiketler.json';
@@ -188,17 +188,25 @@ export default function WorldMapViewer(props: WorldMapProps) {
     g.save();
     g.setTransform(dpr * k, 0, 0, dpr * k, dpr * ox, dpr * oy);
     const m = manifest && manifest !== 'yok' ? manifest : null;
+    // Dikiş düzeltmesi: karolar cihaz pikseline yuvarlanmış konum ve boyutla, 1 px taşırılarak çizilir (dünya dönüşümü
+    // dışında; ardından geri konur).
+    const putTile = (img: HTMLImageElement, r: { x: number; y: number; w: number; h: number }) => {
+      const d = tileDeviceRect(r, k, ox, oy, dpr);
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.drawImage(img, d.x, d.y, d.w, d.h);
+      g.setTransform(dpr * k, 0, 0, dpr * k, dpr * ox, dpr * oy);
+    };
     if (m) {
       // Önce z0 zemin (boşluk kalmasın), sonra uygun zoom.
       const z0 = m.zoomlar[0];
       if (z0) for (const tr of tilesInView(m, z0, cam, vp, TILE_BASE, 0)) {
         const img = cache.current.get(tr.key);
-        if (img) { const r = tileRect(m, z0, tr.x, tr.y); g.drawImage(img, r.x, r.y, r.w, r.h); } else loadTile(tr.key, tr.url);
+        if (img) putTile(img, tileRect(m, z0, tr.x, tr.y)); else loadTile(tr.key, tr.url);
       }
       const z = zoomFor(m, cam, dpr);
       if (z.z > 0) for (const tr of tilesInView(m, z, cam, vp, TILE_BASE, 1)) {
         const img = cache.current.get(tr.key);
-        if (img) { const r = tileRect(m, z, tr.x, tr.y); g.drawImage(img, r.x, r.y, r.w + 0.5, r.h + 0.5); } else loadTile(tr.key, tr.url);
+        if (img) putTile(img, tileRect(m, z, tr.x, tr.y)); else loadTile(tr.key, tr.url);
       }
     } else {
       g.fillStyle = '#183049';

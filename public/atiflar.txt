@@ -1,6 +1,6 @@
-RPG-Battle — Hakkında / Atıflar
+Dice & Hex — Hakkında / Atıflar
 
-RPG-Battle, rol yapma oyunları için bir savaş alanı simülatörüdür. 5E uyumludur (5E compatible).
+Dice & Hex, rol yapma oyunları için bir savaş alanı simülatörüdür. 5E uyumludur (5E compatible).
 
 Atıflar
 

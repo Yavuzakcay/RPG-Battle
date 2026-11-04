@@ -2,6 +2,25 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-03 — Kuyruk H3: dünya haritası karo dikişleri
+
+- **Değişiklik** (`src/world/tiles.ts` `tileDeviceRect`, `WorldMapViewer` `putTile`): karolar artık dünya dönüşümüyle (kesirli ölçek) değil, cihaz pikselinde çizilir: sol/üst ve sağ/alt kenarlar ayrı ayrı `Math.round` edilir (komşu iki karonun ortak kenarı aynı piksele düşer), genişlik/yükseklik bu farktan, ardından sağa ve aşağıya 1 px taşma. Eskiden z0 zemin `r.w × r.h`, üst zoom `+0,5` ile kesirli koordinatta çiziliyordu. z0 zemini de aynı yoldan.
+- **Doğrulama:** birim test: z3, z4, z5 × 8 kesirli ölçek × dpr 1/1,5/2/2,625'te komşu karonun sağ ve alt kenarı tam sayı ve tam 1 px örtüşür. Tarayıcıda: tek renkli yapay dünya görselinden üretilmiş karolar, z0 macenta (boşluk olursa görünsün), 20 yakınlaştırma adımı (bütün haritadan z5'e) × dpr 1, 1,25, 1,75, 2, 2,625: yeni çizimde açık/farklı renkli satır ya da sütun yok. Not: aynı tarama eski kodda da dikiş bulmadı (başsız Chromium); cihazdaki çizgi büyük olasılıkla tarayıcının kesirli koordinatta kenar yumuşatması, gerçek cihazda gözle bakılmalı. Geçici karolar silindi.
+
+## 2026-11-03 — Denge turu (2): onaylar ve K20 tür sapmaları
+
+- **(e) Onaylar zaten bu dalda** (`bf42177`, `6cff51c`; `wip/denge` ileri sarıldı): seviye çarpanı 9 ×1,3 ve 13 ×0,8 (diğerleri 1), Nöbetçi olduğu gibi, her seferde bir uzun dinlenme durağı (Volkan `kamp`, Derinlikler `gece-kampi`; veride yalnız bu iki sefer var), Volkan 3. seviye Lav Tapınağı listesi hafif. Yeni değişiklik gerekmedi.
+- **(f) Elf 5. seviye %36: neden yapay zekâ, özellik verisi değil.** Elf'in varsayılan soyu Drow; her üyede soydan Faerie Fire (3. seviye, uzun dinlenmede bir, slotsuz). `controlArea` (hasarsız alan kontrolü) "alanda en az üç düşman" görünce büyüyü yapıyordu ve (1) düşmanın aynı büyünün etkisinde olup olmadığına bakmıyordu, (2) Fireball gibi hasar alanından önce geliyordu. 5. seviyede düşman grupları kalabalık (9–11): dört üye ilk turda sırayla Faerie Fire atıyor, büyücü Fireball yerine, savaşçı Extra Attack yerine. Ölçüm (25 tohum × Çöl + Kale, 5. seviye): Drow %28 (50 savaşta 181 Faerie Fire, 58 Fireball), High Elf %64, Wood Elf %66, insan %70. Düzeltme (`ai.ts` `controlArea` ve çağrısı): yalnız etkisi henüz olmayan düşmanlar sayılır ve bunlar hedeflerin çoğu olmalı; üç+ düşmana hasar veren alan büyüsü varken kontrol alanı beklenir. Sonra Drow %60 (105 Faerie Fire, 92 Fireball); 3. seviye %82. Hızlı regresyon (büyücü partisi, 5. seviye, 40 tohum): Çöl 100/100, Kale 100/100, Mağara 88 → 83 (gürültü içinde).
+- **Orc, Tiefling, Dragonborn yüksek (%82–85): SRD özellikleri, hata değil; değer değiştirilmedi.** Orc: Relentless Endurance (0 HP'de bir kez 1 HP, dört üyede) — Adrenaline Rush'ı yapay zekâ hiç kullanmıyor; karanlık görüşü 120 ft ama ölçüm haritaları gündüz. Dragonborn: nefes silahı (50 savaşta 170 kullanım, kalabalık gruplarda alan hasarı). Tiefling (Infernal): soydan Fire Bolt (slotsuz, 50 savaşta 716 atış) ve yüksek seviyede soy büyüleri; 9. seviyede %81. Tür verisi SRD'den geldiği için ayar düşman listesiyle yapılır; ayrıntı `harita/belgeler/DENGE.md`.
+- `sim:irk` `--soy` (soy seçimi; `setPartyRace(tür, soy)`).
+
+## 2026-11-03 — Kuyruk N1: oyun adı Dice & Hex (görünen her yer)
+
+- `APP_NAME` zaten "Dice & Hex" (Görev N1'in ilk adımı); başlık, açılış ekranı ve giriş ekranı ondan okur. Kodda ad sabit yazılan başka yer bulunmadı; i18n metinlerinde ürün adı geçmiyor.
+- Değişenler: `README.md` ve `CLAUDE.md` başlığı, `package.json`/`package-lock.json` `name` = `dice-and-hex` (+ `description`), `public/atiflar.txt` ürün adı satırları (SRD atfı aynen), `index.html` `description` ve `application-name` meta etiketleri (`%APP_NAME%`).
+- Bilerek bırakılanlar: kayıt/depolama anahtarları ve biçim kimlikleri (`rpg-battle-*`, `rpg-battle-icerik`), dal adları (`claude/rpg-battle-project-…`), `NOTICE` (lisans/atıf dosyası, dokunulmaz), tarihli DECISIONS/SABAH-RAPORU satırları (geçmiş), harita prompt'undaki "tabletop RPG battle map" (görsel türü, ürün adı değil). PWA manifesti, service worker ve mobil (Capacitor/Cordova) yok. Depo/klasör adı kullanıcıda.
+- Tarama: `rg -i "hex ?& ?dice|hexa ?dice"` yalnızca tarihli kayıtlarda (DECISIONS, SABAH-RAPORU) ve görev belgesinde.
+
 ## 2026-11-03 — Kuyruk H2: harita düzeltmeleri (2)
 
 - **(a) Hapishane su altı katmanı** yeni görselle (1600×1300, sol üst aynı 10800,500; `kesif-kurallari.json` `hapishane.katman`; kodda sabit boyut yoktu). Su altı günlerinde katmanın içindeki işaretler (Hapishane iskelesi çapası) katmanla birlikte kaybolur, yüzeye çıkış geçişinde onunla belirir (deniz yolu zaten katmanın altında). Not: görsel sol ve üst kenarda daireyi kesiyor (içerik resmin sınırına dayanıyor); haritada o kenar düz görünür, görsel üstünde düzeltilmeli.

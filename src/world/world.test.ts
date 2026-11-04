@@ -1,7 +1,7 @@
 /** K45/K46: dünya haritası saf modülleri (kamera, karo, keşif sisi, Hapishane takvimi). Görsel yok. */
 import { describe, expect, it } from 'vitest';
 import { clampCamera, fitRect, fitWorld, scaleBar, toScreen, toWorld, viewRect, zoomAt } from './camera';
-import { Lru, tilesInView, zoomFor, type TileManifest } from './tiles';
+import { Lru, tileDeviceRect, tileRect, tilesInView, zoomFor, type TileManifest } from './tiles';
 import { CELL_H, CELL_W, decodeFog, emptyFog, encodeFog, isRevealed, revealCircle, revealPath, revealedCount, unlockIslands } from './fog';
 import { CAMERAS, ISLANDS, WORLD, cellName, inPolygon, nodeWorld, pxToMiles, rectCenter, type Pt } from './worldData';
 import { partyWorld, seruvenFog, startFog } from './seruvenFog';
@@ -45,6 +45,22 @@ describe('kamera', () => {
 });
 
 describe('karolar', () => {
+  it('dikiş yok: z3, z4, z5 ve kesirli ölçekte komşu karolar aynı pikselde birleşir ve 1 px örtüşür', () => {
+    for (const zi of [3, 4, 5]) {
+      const z = synthetic.zoomlar[zi]!;
+      for (const scale of [0.37, 0.5, 0.73, 1, 1.29, 2.17, 3.3, 7.9]) for (const dpr of [1, 1.5, 2, 2.625]) {
+        const k = 1 / scale, ox = 13.37, oy = -201.7;
+        for (let x = 0; x + 1 < Math.min(z.sutun, 4); x++) for (let y = 0; y + 1 < Math.min(z.satir, 4); y++) {
+          const a = tileDeviceRect(tileRect(synthetic, z, x, y), k, ox, oy, dpr);
+          const right = tileDeviceRect(tileRect(synthetic, z, x + 1, y), k, ox, oy, dpr);
+          const below = tileDeviceRect(tileRect(synthetic, z, x, y + 1), k, ox, oy, dpr);
+          for (const v of [a.x, a.y, a.w, a.h]) expect(Number.isInteger(v)).toBe(true);
+          expect(a.x + a.w).toBe(right.x + 1); // sağ kenar komşunun 1 px içine taşar
+          expect(a.y + a.h).toBe(below.y + 1);
+        }
+      }
+    }
+  });
   it('manifest (K45, varsa) tutarlı: 6 zoom, z5 1:1, sütun/satır tuvalden', () => {
     const m = Object.values(manifests)[0] ?? synthetic;
     expect(m.zoomlar).toHaveLength(6);

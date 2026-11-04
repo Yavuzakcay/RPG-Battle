@@ -1,4 +1,4 @@
-# RPG-Battle
+# Dice & Hex
 
 ## Proje özeti
 
