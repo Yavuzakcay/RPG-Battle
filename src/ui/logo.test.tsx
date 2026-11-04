@@ -261,8 +261,8 @@ describe('Üretilen logolar (data/logo.json, npm run logo)', () => {
     expect((a.y0 + a.y1) / 2).toBeCloseTo(0.5, 2);
     expect(files('/public/ikon')).toEqual(new Set(['ikon/apple-touch-icon.png']));
     expect(files('/public/favicon')).toEqual(new Set(['favicon.ico']));
-    // Android/iOS/Windows yapısı ya da PWA manifesti yok: onlara ait dosya üretilmez.
-    expect(Object.keys(import.meta.glob('/public/**/*.webmanifest')).length + Object.keys(import.meta.glob('/public/**/manifest.json')).length).toBe(0);
+    // Android/iOS/Windows yapısı ya da PWA manifesti yok: onlara ait dosya üretilmez (harita karolarının kendi manifest.json'u hariç: public/maps).
+    expect(Object.keys(import.meta.glob('/public/**/*.webmanifest')).length + Object.keys(import.meta.glob('/public/**/manifest.json')).filter((k) => !k.startsWith('/public/maps/')).length).toBe(0);
   });
 });
 
