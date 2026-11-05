@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54c G2: İmparator (kural sürümü 28)
+
+- **Buyruk:** sürüm 28'de dostun tepkisi harcanır (belgedeki gibi; tepkisi yoksa kullanılamaz). Yeni kip "Buyruk: Yer değiştir": dost hızının yarısı kadar boş altıgene ışınlanma olayıyla geçer (fırsat saldırısı yok, K53 varış kancaları), aynı kaynak.
+- **Hükümdar Sözü:** sürüm 28 eylemi `royal-word-2`: etkide `attackDisNear` (imparatora ve onun 5 ft içindeki dostlarına saldırı dezavantajlı); eski `royal-word` 23–27.
+- **Ferman (10):** Action Surge'de (`executeActionSurge`) 60 ft içindeki bir dost (en çok saldırılı, sonra en yakın; seçim otomatik) tek seferlik ek eylem kazanır: Haste ek eylem yolu (`haste_action`: tek saldırı, Dash, Disengage, Hide; belgedeki Dodge/Help yok). Uzun dinlenmede 1. Ek eylem dostun sonraki turunun sonuna dek; kullanılınca biter.
+- **Genişleyen Taht / Taht Varlığı:** değişmedi (veri 10/20 ft, `syncAuras`). K53 aura altyapısına taşınmadı: davranış aynı, çıkış tetiği gerekmiyor (pasif bonus her olayda yeniden hesaplanıyor).
+- **Ölümsüz Taht (15):** Death Ward tetiklenince (komut sonu: etki düştü, ayakta) 30 ft içindeki dostlara `firstRoll` avantaj (ilk saldırı, 10 tur içinde).
+- **Yapay zekâ:** Ferman kendiliğinden (Action Surge YZ'si zaten kullanıyor; dost YZ'si `hasteNow` ile ek eylemi kullanır). Buyruk: Yer değiştir'i YZ kullanmaz.
+
 ## 2026-11-05 — Kuyruk K54c G1: Şair Koleji (kural sürümü 28)
 
 - **Kural sürümü** 27 → 28 (`data/imza.json` `surumK54c`; eylem/pasif `surumMin: 28`, eski kipler `surumMax: 27`). Eski kayıt/replay kendi sürümünün eylemleriyle açılır.

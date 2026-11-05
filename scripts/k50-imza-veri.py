@@ -56,23 +56,31 @@ sub(s, 'fighter', 'İmparator', 'Emperor', 'Komutan: dostlarını büyüten hük
     F('decree', 3, 'Buyruk', 'Decree', 'Bir dostuna seslen: hemen bir saldırı yapar. Dinlenmeden önce birkaç kez kullanırsın.', 'Call to an ally: they make an attack at once. A few times between rests.'),
     F('crown-presence', 7, 'Taht Varlığı', 'Crown Presence', 'Etrafındaki dostlar (sen dahil) korkuya ve büyülenmeye karşı daha dirençli olur.', 'Nearby allies (you included) resist fear and charm better.'),
     F('royal-word', 7, 'Hükümdar Sözü', 'Royal Word', 'Bir düşmana emret; direnemezse bir tur boyunca sana vurmakta zorlanır.', 'Command a foe; if it fails to resist it struggles to hit you for a round.'),
-    F('edict', 10, 'Ferman', 'Edict', 'Ek eylem kullandığında bir dostun da ek bir eylem kazanır.', 'When you surge, an ally also gains an extra action.', 'planli'),
+    F('edict', 10, 'Ferman', 'Edict', 'Ek eylem kullandığında bir dostun da ek bir eylem kazanır.', 'When you surge, an ally also gains an extra action.'),
     F('wider-throne', 10, 'Genişleyen Taht', 'Wider Throne', "Taht Varlığı'nın alanı büyür.", 'Crown Presence reaches farther.'),
     F('exalted-throne', 15, 'Yüce Taht', 'Exalted Throne', '10 tur boyunca dostların daha sert vurur, sen hasara dayanıklı olur ve canın yenilenir.', 'For 10 rounds allies hit harder, you resist damage and regain vigor.'),
     F('undying-throne', 15, 'Ölümsüz Taht', 'Undying Throne', 'Ölecekken bir kez 1 canla ayakta kalırsın.', 'Once, when you would drop, you stay up at 1 HP.'),
 ], beceri=['persuasion'])
 act(s, 'decree', seviye=3, tur='bonus', kaynak={'id': 'imzaBuyruk', **PB}, hedef='ally', menzilFt=30, ozel='buyruk',
-    ad='Buyruk', not_='Dost tepkisini harcamadan en yakın düşmana tek silah saldırısı yapar (yer değiştirme seçeneği yok).')
+    ad='Buyruk', not_='En yakın düşmana tek silah saldırısı; sürüm 28+ dostun tepkisi harcanır.')
+act(s, 'decree-move', seviye=3, tur='bonus', kaynak={'id': 'imzaBuyruk', **PB}, hedef='ally', menzilFt=30, hedefVeHex=True, ozel='buyrukYer', ozellikAdi='decree',
+    ad='Buyruk: Yer değiştir', k54c=True, not_='Dost tepkisiyle hızının yarısı kadar boş altıgene geçer (fırsat saldırısı yok).')
 act(s, 'royal-word', seviye=7, tur='bonus', kaynak={'id': 'imzaHukumdar', 'sayi': 1, 'yenilenme': 'short'}, hedef='enemy', menzilFt=60,
     save={'yetenek': 'wis', 'dc': ['str', 'cha']}, etki={'name': 'Hükümdar Sözü', 'sure': 1, 'attackDisVs': '$actor', 'icon': '👑'},
-    ad='Hükümdar Sözü', not_='Dezavantaj yalnız sana karşı (yanındaki dostlar hariç).')
+    ad='Hükümdar Sözü', eski28=True, not_='Sürüm 23–27: dezavantaj yalnız sana karşı.')
+act(s, 'royal-word-2', seviye=7, tur='bonus', kaynak={'id': 'imzaHukumdar', 'sayi': 1, 'yenilenme': 'short'}, hedef='enemy', menzilFt=60, ozellikAdi='royal-word',
+    save={'yetenek': 'wis', 'dc': ['str', 'cha']}, etki={'name': 'Hükümdar Sözü', 'sure': 1, 'attackDisNear': {'id': '$actor', 'ft': 5}, 'icon': '👑'},
+    ad='Hükümdar Sözü', k54c=True, not_='Sana ve 5 ft içindeki dostlarına saldırırken dezavantaj (1 tur).')
 act(s, 'exalted-throne', seviye=15, tur='bonus', kaynak={'id': 'imzaYuceTaht', 'sayi': 1, 'yenilenme': 'long'}, hedef='allies', yaricapFt=30, kendisi=True,
     etki={'name': 'Yüce Taht', 'sure': 10, 'dice': {'die': '$pbHalf', 'sign': 1, 'on': ['attack']}, 'hitDie': '$pbHalf', 'icon': '👑'},
     kendiEtki={'name': 'Yüce Taht', 'sure': 10, 'resist': ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'], 'tempHp': '$lvl2', 'icon': '👑'},
     ad='Yüce Taht')
 pas(s, 'crown-presence', 7, {'aura': {'yaricapFt': {'7': 10, '10': 20}, 'save': {'7': 1, '15': 2}, 'yetenekler': ['wis']}},
     'Kurtulma bonusu WIS kurtulmalarına (korku ve büyülenme çoğunlukla WIS); auranın içi savaş başında ve her olayda yenilenir.')
-pas(s, 'undying-throne', 15, {'name': 'Ölümsüz Taht', 'deathWard': True, 'icon': '👑'}, 'Dostlara avantaj kısmı yok.')
+pas(s, 'undying-throne', 15, {'name': 'Ölümsüz Taht', 'deathWard': True, 'icon': '👑'}, 'Sürüm 28+: tetiklenince 30 ft içindeki dostların sonraki saldırısı avantajlı.')
+pas(s, 'undying-throne-allies', 15, {'olumsuzTaht': {'menzilFt': 30}}, 'Ölümsüz Taht tetiklenince 30 ft içindeki dostlara ilk saldırı avantajı.', k54c=True)
+pas(s, 'edict', 10, {'ferman': {'menzilFt': 60, 'kaynak': 'imzaFerman'}, 'kaynak': {'id': 'imzaFerman', 'sayi': 1, 'yenilenme': 'long'}},
+    'Action Surge kullanınca 60 ft içindeki bir dost (en çok saldırılı, sonra en yakın) bir kez ek eylem kazanır (Haste ek eylem yolu: tek saldırı, Dash, Disengage, Hide).', k54c=True)
 
 # ---------------- Rogue: İnfazcı ----------------
 s = 'imza_infazci'

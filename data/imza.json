@@ -102,7 +102,7 @@
       "tr": "Ferman",
       "en": "Edict"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Ek eylem kullandığında bir dostun da ek bir eylem kazanır.",
       "en": "When you surge, an ally also gains an extra action."
@@ -1424,6 +1424,18 @@
     "long": "all"
    }
   },
+  "imzaFerman": {
+   "name": "edict",
+   "feature": [
+    "fighter/imza_imparator:edict"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
   "imzaInfaz": {
    "name": "execution",
    "feature": [
@@ -1500,7 +1512,25 @@
    "menzilFt": 30,
    "ozel": "buyruk",
    "ad": "Buyruk",
-   "not": "Dost tepkisini harcamadan en yakın düşmana tek silah saldırısı yapar (yer değiştirme seçeneği yok)."
+   "not": "En yakın düşmana tek silah saldırısı; sürüm 28+ dostun tepkisi harcanır."
+  },
+  "imza:imza_imparator/decree-move": {
+   "sinif": "imza_imparator",
+   "ozellik": "decree",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaBuyruk",
+    "sayi": "pb",
+    "yenilenme": "short"
+   },
+   "hedef": "ally",
+   "menzilFt": 30,
+   "hedefVeHex": true,
+   "ozel": "buyrukYer",
+   "ad": "Buyruk: Yer değiştir",
+   "not": "Dost tepkisiyle hızının yarısı kadar boş altıgene geçer (fırsat saldırısı yok).",
+   "surumMin": 28
   },
   "imza:imza_imparator/royal-word": {
    "sinif": "imza_imparator",
@@ -1528,7 +1558,40 @@
     "icon": "👑"
    },
    "ad": "Hükümdar Sözü",
-   "not": "Dezavantaj yalnız sana karşı (yanındaki dostlar hariç)."
+   "not": "Sürüm 23–27: dezavantaj yalnız sana karşı.",
+   "surumMax": 27
+  },
+  "imza:imza_imparator/royal-word-2": {
+   "sinif": "imza_imparator",
+   "ozellik": "royal-word",
+   "seviye": 7,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaHukumdar",
+    "sayi": 1,
+    "yenilenme": "short"
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "str",
+     "cha"
+    ]
+   },
+   "etki": {
+    "name": "Hükümdar Sözü",
+    "sure": 1,
+    "attackDisNear": {
+     "id": "$actor",
+     "ft": 5
+    },
+    "icon": "👑"
+   },
+   "ad": "Hükümdar Sözü",
+   "not": "Sana ve 5 ft içindeki dostlarına saldırırken dezavantaj (1 tur).",
+   "surumMin": 28
   },
   "imza:imza_imparator/exalted-throne": {
    "sinif": "imza_imparator",
@@ -2841,7 +2904,37 @@
     "deathWard": true,
     "icon": "👑"
    },
-   "not": "Dostlara avantaj kısmı yok."
+   "not": "Sürüm 28+: tetiklenince 30 ft içindeki dostların sonraki saldırısı avantajlı."
+  },
+  {
+   "sinif": "imza_imparator",
+   "ozellik": "undying-throne-allies",
+   "seviye": 15,
+   "etki": {
+    "olumsuzTaht": {
+     "menzilFt": 30
+    }
+   },
+   "not": "Ölümsüz Taht tetiklenince 30 ft içindeki dostlara ilk saldırı avantajı.",
+   "surumMin": 28
+  },
+  {
+   "sinif": "imza_imparator",
+   "ozellik": "edict",
+   "seviye": 10,
+   "etki": {
+    "ferman": {
+     "menzilFt": 60,
+     "kaynak": "imzaFerman"
+    },
+    "kaynak": {
+     "id": "imzaFerman",
+     "sayi": 1,
+     "yenilenme": "long"
+    }
+   },
+   "not": "Action Surge kullanınca 60 ft içindeki bir dost (en çok saldırılı, sonra en yakın) bir kez ek eylem kazanır (Haste ek eylem yolu: tek saldırı, Dash, Disengage, Hide).",
+   "surumMin": 28
   },
   {
    "sinif": "imza_infazci",
