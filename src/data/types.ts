@@ -828,6 +828,8 @@ export interface SubclassDef {
   replaces?: string[];
   /** Kuyruk K48: alt sınıf seviyesinde ek beceri yetkinlikleri. */
   ekBeceriler?: string[];
+  /** Kuyruk K50: imza alt sınıfın ev kuralı kimliği (`imza_<ad>`); null her zaman açık (Birlik Manastırı). */
+  evKurali?: string | null;
 }
 
 export type FeatureType = 'passive' | 'resource' | 'action' | 'bonus' | 'reaction' | 'free';
@@ -1017,7 +1019,9 @@ export type FeatureEffect =
   | { kind: 'celestialAwakening'; option: string }
   /** Kuyruk K48 (ev kuralı): Karadul Büyüleyici Bakış ve Örümcek Biçimi (`src/battle/karadul.ts`). */
   | { kind: 'karadulGaze' }
-  | { kind: 'karadulSpider' };
+  | { kind: 'karadulSpider' }
+  /** Kuyruk K50 (ev kuralı): imza alt sınıf eylemleri (`src/battle/imza.ts`, `data/imza.json` `eylemler`). */
+  | { kind: 'imza' };
 
 export interface ResourceDef {
   name: string;

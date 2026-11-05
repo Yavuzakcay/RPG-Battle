@@ -697,6 +697,7 @@ export const en: Strings = {
   journey: {
     menu: 'Journey (beta)', menuDesc: 'The main mode without a Game Master: alone or with a party, play battles along a route with a persistent party state.',
     karadulFlag: 'Game Master: Circle of the Black Widow (Druid subclass, house rule)', karadulWomen: 'Black Widow for women characters only (karadulKadinKisiti)',
+    imzaTitle: 'Signature subclasses (house rules)', imzaNote: 'Subclasses unique to Dice & Hex; enabled ones can be picked in the builder and their house rule starts on in new battles. Unity Monastery (Cleric) is always on. Planned features show on the card but do not work yet.',
     karadulNote: 'An original subclass outside SRD 5.2.1. When on, a level 3+ Druid can choose it in the builder (Spider Shape replaces Wild Shape); new battles use its features.',
     celestialFlag: 'Game Master: Celestial ancestry (house rule)', celestialNote: 'An original ancestry outside SRD 5.2.1 (Fallen). When on, it can be chosen in the builder and new battles use Healing Touch, Light and Celestial Awakening; when off, Celestial characters play with darkvision and resistances only.',
     upperFlag: 'Game Master: Upper levels (6–20)', upperNote: 'When on, character creation and Adventure level-ups go up to level 20; when off, 5. Older higher-level characters are kept.',

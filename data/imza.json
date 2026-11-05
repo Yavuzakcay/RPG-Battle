@@ -1,0 +1,2268 @@
+{
+ "note": "K50: imza alt sınıflar (ev kuralı; kaynak docs/imza-alt-siniflar/). `python scripts/k50-imza-veri.py` üretir; elle düzenleme betikte. `altSiniflar` oluşturucu kaydı (SubclassDef; `evKurali` ev kuralı kimliği, Birlik Manastırı için null: her zaman açık), `eylemler` savaşta use_feature (src/battle/imza.ts), `pasifler` savaş başı etkileri. `$pb`, `$lvl`, `$wis` gibi belirteçler savaşçıdan.",
+ "surum": 23,
+ "kapaliOrtam": {
+  "bolgeler": [
+   "derinlikler",
+   "yeralti",
+   "hapishane"
+  ],
+  "varyantSozcukleri": [
+   "karanlik",
+   "los",
+   "ic"
+  ],
+  "haritalar": [
+   "kale-taht-salonu",
+   "kasaba-lagim",
+   "magara",
+   "magara-genis",
+   "dungeon",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
+  ]
+ },
+ "eskiKimlik": {
+  "baris-alani": "imza_birlik"
+ },
+ "altSiniflar": [
+  {
+   "id": "imza_imparator",
+   "class": "fighter",
+   "ev": true,
+   "evKurali": "imza_imparator",
+   "name": {
+    "tr": "İmparator",
+    "en": "Emperor"
+   },
+   "role": {
+    "tr": "Komutan: dostlarını büyüten hükümdar",
+    "en": "Commander: a ruler who lifts allies"
+   },
+   "features": [
+    {
+     "id": "noble-upbringing",
+     "level": 3,
+     "name": {
+      "tr": "Asil Terbiye",
+      "en": "Noble Upbringing"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "İkna becerisinde ustasın (Korkutma yerine İkna varsayılan), bir dil daha bilirsin.",
+      "en": "You gain Persuasion proficiency (default over Intimidation) and one language."
+     }
+    },
+    {
+     "id": "decree",
+     "level": 3,
+     "name": {
+      "tr": "Buyruk",
+      "en": "Decree"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Bir dostuna seslen: hemen bir saldırı yapar. Dinlenmeden önce birkaç kez kullanırsın.",
+      "en": "Call to an ally: they make an attack at once. A few times between rests."
+     }
+    },
+    {
+     "id": "crown-presence",
+     "level": 7,
+     "name": {
+      "tr": "Taht Varlığı",
+      "en": "Crown Presence"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Etrafındaki dostlar (sen dahil) korkuya ve büyülenmeye karşı daha dirençli olur.",
+      "en": "Nearby allies (you included) resist fear and charm better."
+     }
+    },
+    {
+     "id": "royal-word",
+     "level": 7,
+     "name": {
+      "tr": "Hükümdar Sözü",
+      "en": "Royal Word"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Bir düşmana emret; direnemezse bir tur boyunca sana vurmakta zorlanır.",
+      "en": "Command a foe; if it fails to resist it struggles to hit you for a round."
+     }
+    },
+    {
+     "id": "edict",
+     "level": 10,
+     "name": {
+      "tr": "Ferman",
+      "en": "Edict"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Ek eylem kullandığında bir dostun da ek bir eylem kazanır.",
+      "en": "When you surge, an ally also gains an extra action."
+     }
+    },
+    {
+     "id": "wider-throne",
+     "level": 10,
+     "name": {
+      "tr": "Genişleyen Taht",
+      "en": "Wider Throne"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Taht Varlığı'nın alanı büyür.",
+      "en": "Crown Presence reaches farther."
+     }
+    },
+    {
+     "id": "exalted-throne",
+     "level": 15,
+     "name": {
+      "tr": "Yüce Taht",
+      "en": "Exalted Throne"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "10 tur boyunca dostların daha sert vurur, sen hasara dayanıklı olur ve canın yenilenir.",
+      "en": "For 10 rounds allies hit harder, you resist damage and regain vigor."
+     }
+    },
+    {
+     "id": "undying-throne",
+     "level": 15,
+     "name": {
+      "tr": "Ölümsüz Taht",
+      "en": "Undying Throne"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Ölecekken bir kez 1 canla ayakta kalırsın.",
+      "en": "Once, when you would drop, you stay up at 1 HP."
+     }
+    }
+   ],
+   "ekBeceriler": [
+    "persuasion"
+   ]
+  },
+  {
+   "id": "imza_infazci",
+   "class": "rogue",
+   "ev": true,
+   "evKurali": "imza_infazci",
+   "name": {
+    "tr": "İnfazcı",
+    "en": "Vigilante"
+   },
+   "role": {
+    "tr": "Hüküm veren gizli avcı",
+    "en": "A hidden hunter who passes verdicts"
+   },
+   "features": [
+    {
+     "id": "verdict",
+     "level": 3,
+     "name": {
+      "tr": "Hüküm",
+      "en": "Verdict"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Gördüğün birini \"hükümlü\" ilan et: 10 tur boyunca ona karşı gizli saldırın çok daha sert vurur.",
+      "en": "Declare a foe \"condemned\": for 10 rounds your sneak attacks hit it much harder."
+     }
+    },
+    {
+     "id": "masked-justice",
+     "level": 3,
+     "name": {
+      "tr": "Maskeli Adalet",
+      "en": "Masked Justice"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Kılık değiştirmede ustasın; sezgide de ustasın.",
+      "en": "You master disguise and gain Insight proficiency."
+     }
+    },
+    {
+     "id": "final-warning",
+     "level": 9,
+     "name": {
+      "tr": "Son Uyarı",
+      "en": "Final Warning"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Hükümlüye bir uyarı yap: direnemezse korkar ve sana vurmakta zorlanır.",
+      "en": "Warn the condemned: if it fails to resist it is frightened and struggles to hit you."
+     }
+    },
+    {
+     "id": "intervention",
+     "level": 9,
+     "name": {
+      "tr": "Müdahale",
+      "en": "Intervention"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Hükümlü dostuna vurursa hemen yetişir ve ona karşılık verirsin.",
+      "en": "If the condemned hits an ally you rush in and strike back."
+     }
+    },
+    {
+     "id": "relentless-pursuit",
+     "level": 13,
+     "name": {
+      "tr": "Peşini Bırakmayan",
+      "en": "Relentless Pursuit"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Hükümlü kaçamaz; nerede olduğunu bilirsin ve peşinden gidersin.",
+      "en": "The condemned cannot escape you."
+     }
+    },
+    {
+     "id": "execution",
+     "level": 17,
+     "name": {
+      "tr": "İnfaz",
+      "en": "Execution"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Hükümlüye bir kez, ölümcül bir vuruş yaparsın; zayıflamışsa bu vuruş onu öldürür.",
+      "en": "Once, a deadly strike on the condemned; if weakened it dies."
+     }
+    }
+   ],
+   "ekBeceriler": [
+    "insight"
+   ]
+  },
+  {
+   "id": "imza_ciftci",
+   "class": "ranger",
+   "ev": true,
+   "evKurali": "imza_ciftci",
+   "name": {
+    "tr": "Çiftçi",
+    "en": "Farmer"
+   },
+   "role": {
+    "tr": "Ürünüyle besleyen, mantarıyla zehirleyen",
+    "en": "Feeds with grain, poisons with fungus"
+   },
+   "features": [
+    {
+     "id": "farm-lore",
+     "level": 3,
+     "name": {
+      "tr": "Çiftlik Bilgisi",
+      "en": "Farm Lore"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Doğa'da ustalık (Hayvan Bakımı yerine varsayılan) ve Şifacı Takımı.",
+      "en": "Nature proficiency (default over Animal Handling) and the Herbalism Kit."
+     }
+    },
+    {
+     "id": "provisions",
+     "level": 3,
+     "name": {
+      "tr": "Erzak",
+      "en": "Provisions"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Dinlenirken ürün hazırlarsın: başak dostunu iyileştirir, mantar düşmanını zehirler ve yavaşlatır.",
+      "en": "You prepare produce while resting: grain heals an ally, fungus poisons and slows a foe."
+     }
+    },
+    {
+     "id": "harvest",
+     "level": 7,
+     "name": {
+      "tr": "Hasat",
+      "en": "Harvest"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "İki ürünü birden harca: yakındaki dostları iyileştirir, yanındaki düşmanları oraklarsın ya da mantar sporlarını saçıp zehirlersin.",
+      "en": "Spend two produce: heal nearby allies, scythe adjacent foes or scatter poisoning spores."
+     }
+    },
+    {
+     "id": "spore-hardened",
+     "level": 7,
+     "name": {
+      "tr": "Mantar Tutkunu",
+      "en": "Spore-Hardened"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Zehirden etkilenmezsin.",
+      "en": "Poison does not affect you."
+     }
+    },
+    {
+     "id": "bounty",
+     "level": 11,
+     "name": {
+      "tr": "Bereket",
+      "en": "Bounty"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Ürünlerin daha güçlüdür; başağı yiyen dostların bir süre zehire karşı dirençli olur.",
+      "en": "Your produce is stronger; grain grants poison resistance for a while."
+     }
+    }
+   ],
+   "ekBeceriler": [
+    "nature"
+   ]
+  },
+  {
+   "id": "imza_dunganga",
+   "class": "sorcerer",
+   "ev": true,
+   "evKurali": "imza_dunganga",
+   "name": {
+    "tr": "Dunganga",
+    "en": "Dunganga"
+   },
+   "role": {
+    "tr": "Ninniyle uyutan, sepete atan",
+    "en": "Lulls foes to sleep and baskets them"
+   },
+   "features": [
+    {
+     "id": "lullaby-blood",
+     "level": 3,
+     "name": {
+      "tr": "Ninni Kanı",
+      "en": "Lullaby Blood"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Uyku, korku ve kabus büyüleri hep elinin altında. Bir ninni mırıldan: duyan düşmanlar uykulanır, yavaşlar ve vurmakta zorlanır.",
+      "en": "Sleep, fear and nightmare spells are always at hand. Hum a lullaby: listening foes grow drowsy, slow and clumsy."
+     },
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "alwaysPrepared": {
+       "3": [
+        "Sleep",
+        "Bane",
+        "Invisibility",
+        "Darkness",
+        "Fear",
+        "Hypnotic Pattern"
+       ],
+       "7": [
+        "Phantasmal Killer",
+        "Confusion"
+       ],
+       "9": [
+        "Dream",
+        "Modify Memory"
+       ]
+      }
+     }
+    },
+    {
+     "id": "basket",
+     "level": 6,
+     "name": {
+      "tr": "Sepet",
+      "en": "Basket"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Bir düşmanı sepete at: direnemezse birkaç tur uykuya dalıp beklemek zorunda kalır.",
+      "en": "Toss a foe into the basket: if it fails to resist it sleeps for a few rounds."
+     }
+    },
+    {
+     "id": "nightmare",
+     "level": 14,
+     "name": {
+      "tr": "Kâbus",
+      "en": "Nightmare"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Uykudan, korkudan ve büyüden etkilenmezsin; korkan düşmanlar her tur acı çeker. Ninni daha çok kişiye ulaşır.",
+      "en": "Sleep, fear and charm do not affect you; frightened foes suffer each round."
+     }
+    },
+    {
+     "id": "call",
+     "level": 18,
+     "name": {
+      "tr": "Dunganga Çağrısı",
+      "en": "Call of Dunganga"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "10 tur boyunca etrafını karanlık bir ninni sarar: içindeki düşmanlar uykulanır, acı çeker ve can yenileyemez.",
+      "en": "For 10 rounds a dark lullaby surrounds you: foes grow drowsy, suffer and cannot heal."
+     }
+    },
+    {
+     "id": "standing-firm",
+     "level": 3,
+     "name": {
+      "tr": "Cesaret",
+      "en": "Standing Firm"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Etkiye direnen yaratık, o etkiye 10 tur bağışık olur.",
+      "en": "A creature that resists an effect is immune to it for 10 rounds."
+     }
+    }
+   ]
+  },
+  {
+   "id": "imza_astrolog",
+   "class": "warlock",
+   "ev": true,
+   "evKurali": "imza_astrolog",
+   "name": {
+    "tr": "Astrolog",
+    "en": "Astrologer"
+   },
+   "role": {
+    "tr": "Yıldızlardan yazgı okuyan",
+    "en": "Reads and bends fate from the stars"
+   },
+   "features": [
+    {
+     "id": "expanded",
+     "level": 3,
+     "name": {
+      "tr": "Genişletilmiş büyüler",
+      "en": "Expanded Spells"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Işık, ay ve kehanet büyüleri listene eklenir.",
+      "en": "Light, moon and divination spells join your list."
+     },
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "alwaysPrepared": {
+       "3": [
+        "Guiding Bolt",
+        "Faerie Fire",
+        "Augury",
+        "Moonbeam"
+       ],
+       "5": [
+        "Clairvoyance",
+        "Daylight"
+       ],
+       "7": [
+        "Divination",
+        "Guardian of Faith"
+       ],
+       "9": [
+        "Scrying",
+        "Flame Strike"
+       ]
+      },
+      "note": "Genişletilmiş liste her zaman hazır sayılır (Warlock büyü seçiminde ayrı liste yok)."
+     }
+    },
+    {
+     "id": "star-reading",
+     "level": 3,
+     "name": {
+      "tr": "Yıldız Falı",
+      "en": "Star Reading"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Bir dostuna uğur, bir düşmanına uğursuzluk getir: ilk zarı daha iyi ya da daha kötü gelir.",
+      "en": "Bring luck to an ally or ill luck to a foe: their first roll goes better or worse."
+     }
+    },
+    {
+     "id": "sky-guide",
+     "level": 3,
+     "name": {
+      "tr": "Gök Rehberi",
+      "en": "Sky Guide"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Arcana becerisinde ustasın. Yıldızlı gecede dinlenmek partinin cesaretini artırır.",
+      "en": "You gain Arcana proficiency. Resting under stars lifts the party."
+     }
+    },
+    {
+     "id": "fate-turned",
+     "level": 6,
+     "name": {
+      "tr": "Yazgı Değişir",
+      "en": "Fate Turned"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Bir dostuna isabet eden saldırıyı iskaya çevirirsin; karşılığında sonraki turunda vurmak zorlaşır.",
+      "en": "Turn a hit on an ally into a miss; your own attacks suffer next turn."
+     }
+    },
+    {
+     "id": "comet",
+     "level": 10,
+     "name": {
+      "tr": "Kuyruklu Yıldız",
+      "en": "Comet"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Açık havada gökten yıldız düşür: alandakiler ışıkla yanar. Kapalı yerde çalışmaz.",
+      "en": "Under open sky, call down a star: all in the area burn with light."
+     }
+    },
+    {
+     "id": "seal-of-fate",
+     "level": 14,
+     "name": {
+      "tr": "Yazgı Mührü",
+      "en": "Seal of Fate"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Açık havada bir düşmanın yazgısını mühürle: ona vurmak kolaylaşır, o ise zor kurtulur.",
+      "en": "Under open sky, seal a foe’s fate: easier to hit, harder to resist."
+     }
+    }
+   ],
+   "ekBeceriler": [
+    "arcana"
+   ]
+  },
+  {
+   "id": "imza_birlik",
+   "class": "cleric",
+   "ev": true,
+   "evKurali": null,
+   "name": {
+    "tr": "Birlik Manastırı",
+    "en": "Unity Monastery"
+   },
+   "role": {
+    "tr": "Yükü paylaşan: bağ, ortak can",
+    "en": "Shares the burden: bonds and a shared life pool"
+   },
+   "features": [
+    {
+     "id": "forge-bond",
+     "level": 3,
+     "name": {
+      "tr": "Bağ Kurma",
+      "en": "Forge Bond"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Yakındaki üç dostunu birbirine bağlarsın, 10 tur sürer.",
+      "en": "Bind up to three nearby allies together for 10 rounds."
+     }
+    },
+    {
+     "id": "lend-shoulder",
+     "level": 3,
+     "name": {
+      "tr": "Omuz Ver",
+      "en": "Lend a Shoulder"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Bağlı bir dost zar tutturamazsa yanındaki bir dost ona destek olur.",
+      "en": "When a bonded ally fails a roll, another bonded ally steadies them."
+     }
+    },
+    {
+     "id": "vigil",
+     "level": 3,
+     "name": {
+      "tr": "Teselli Nöbeti",
+      "en": "Vigil of Solace"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Bağlı dostların geçici can ve biraz cesaret kazanır.",
+      "en": "Bonded allies gain temporary HP and a little heart."
+     }
+    },
+    {
+     "id": "shared-vitality",
+     "level": 6,
+     "name": {
+      "tr": "Birlik Can Havuzu",
+      "en": "Shared Vitality"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Bağlı dostların canı tek bir havuzda toplanır, hasar havuzdan düşer. Dikkat: havuz biterse bağlı herkes ölür.",
+      "en": "Bonded allies pool their HP; damage comes off the pool. Warning: if the pool empties, all of them die."
+     }
+    },
+    {
+     "id": "common-cure",
+     "level": 8,
+     "name": {
+      "tr": "Ortak Şifa",
+      "en": "Common Cure"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Birini iyileştirince diğer bağlı dostlar da biraz iyileşir.",
+      "en": "Healing one bonded ally heals the others a little."
+     }
+    },
+    {
+     "id": "unbroken-union",
+     "level": 17,
+     "name": {
+      "tr": "Yıkılmaz Birlik",
+      "en": "Unbroken Union"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.",
+      "en": "When the pool would empty, it holds."
+     }
+    }
+   ]
+  },
+  {
+   "id": "imza_geride_kalan",
+   "class": "barbarian",
+   "ev": true,
+   "evKurali": "imza_geride_kalan",
+   "name": {
+    "tr": "Geride Kalanın Yolu",
+    "en": "Path of the Survivor"
+   },
+   "role": {
+    "tr": "Yıpranmışlığından güç alan",
+    "en": "Draws power from being worn down"
+   },
+   "features": [
+    {
+     "id": "wounded-heart",
+     "level": 3,
+     "name": {
+      "tr": "Yaralı Kalp",
+      "en": "Wounded Heart"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Umudun hiçbir zaman tam dolmaz; en çok üçte birine kadar toparlanırsın.",
+      "en": "Your heart never fills; it recovers to a third at most."
+     }
+    },
+    {
+     "id": "strength-of-the-worn",
+     "level": 3,
+     "name": {
+      "tr": "Yıpranmışlığın Gücü",
+      "en": "Strength of the Worn"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Ne kadar yıpranmışsan, öfkeyle o kadar sert vurursun.",
+      "en": "The more worn you are, the harder you hit in rage."
+     }
+    },
+    {
+     "id": "standing-in-rage",
+     "level": 3,
+     "name": {
+      "tr": "Öfkeyle Ayakta",
+      "en": "Standing in Rage"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Öfkedeyken umudun bitse bile yıkılmazsın; öfken bitince yıkılırsın.",
+      "en": "While raging you do not break even at zero heart."
+     }
+    },
+    {
+     "id": "mourning-wrath",
+     "level": 6,
+     "name": {
+      "tr": "Dostunun Yası",
+      "en": "Mourning Wrath"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Bir dostun düşünce öfken taşar: hemen öfkelenir, dayanıklılık kazanırsın.",
+      "en": "When an ally falls your rage overflows."
+     }
+    },
+    {
+     "id": "used-to-grief",
+     "level": 10,
+     "name": {
+      "tr": "Alışkın Acı",
+      "en": "Used to Grief"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Yıpranmışlığın seni artık zayıflatmaz; ölümün eşiğinde daha dirençlisin.",
+      "en": "Wear no longer weakens you; you resist death better."
+     }
+    },
+    {
+     "id": "risen-from-ashes",
+     "level": 14,
+     "name": {
+      "tr": "Küllerden Doğan",
+      "en": "Risen from Ashes"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Ölecekken bir kez ayağa kalkarsın.",
+      "en": "Once, when you would drop, you rise."
+     }
+    }
+   ]
+  },
+  {
+   "id": "imza_sair",
+   "class": "bard",
+   "ev": true,
+   "evKurali": "imza_sair",
+   "name": {
+    "tr": "Şair Koleji",
+    "en": "College of Poets"
+   },
+   "role": {
+    "tr": "Övgüyle kaldıran, hicivle sarsan",
+    "en": "Lifts with praise, shakes with satire"
+   },
+   "features": [
+    {
+     "id": "verse",
+     "level": 3,
+     "name": {
+      "tr": "Mısra",
+      "en": "Verse"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Bir dize söyle: dostuna dayanıklılık ve umut verir, düşmanı sözlerinle sarsar; direnemezse hasar görür ve bir sonraki saldırısını kötü yapar.",
+      "en": "Speak a verse: an ally gains resilience and heart, or a foe is shaken, taking damage and fumbling its next attack."
+     }
+    },
+    {
+     "id": "pens-power",
+     "level": 3,
+     "name": {
+      "tr": "Kalemin Gücü",
+      "en": "Pen's Power"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "İki becerinde daha usta olursun.",
+      "en": "You gain two more skill proficiencies."
+     }
+    },
+    {
+     "id": "night-verse",
+     "level": 3,
+     "name": {
+      "tr": "Gece Şiiri",
+      "en": "Night Verse"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Dinlenirken şiir okursun, dostlarının Motivasyonu daha çok yenilenir.",
+      "en": "Your poetry at rest restores more heart."
+     }
+    },
+    {
+     "id": "refrain",
+     "level": 6,
+     "name": {
+      "tr": "Nakarat",
+      "en": "Refrain"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Dizen ikinci bir kişiye de ulaşır, ama etkisi daha zayıftır.",
+      "en": "Your verse reaches a second target, more weakly."
+     }
+    },
+    {
+     "id": "undying-verse",
+     "level": 14,
+     "name": {
+      "tr": "Ölümsüz Dize",
+      "en": "Undying Verse"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Bir dostun ölecekken dizenle ayakta kalır.",
+      "en": "An ally about to fall stays up with your verse."
+     }
+    },
+    {
+     "id": "master-poet",
+     "level": 14,
+     "name": {
+      "tr": "Usta Şair",
+      "en": "Master Poet"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Bir mısra için artık ilham zarı harcamazsın (kısa dinlenmede bir kez).",
+      "en": "Once per short rest a verse costs no inspiration."
+     }
+    }
+   ],
+   "ekBeceriler": [
+    "performance",
+    "history"
+   ]
+  },
+  {
+   "id": "imza_bilge",
+   "class": "monk",
+   "ev": true,
+   "evKurali": "imza_bilge",
+   "name": {
+    "tr": "Yaşlı Bilge Disiplini",
+    "en": "Elder Sage Discipline"
+   },
+   "role": {
+    "tr": "Gücü sabrından gelen yaşlı usta",
+    "en": "An old master whose power is patience"
+   },
+   "features": [
+    {
+     "id": "elder-wisdom",
+     "level": 3,
+     "name": {
+      "tr": "Yaşlı Bilgelik",
+      "en": "Elder Wisdom"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "İçgörü'de ustasın.",
+      "en": "You gain Insight proficiency."
+     }
+    },
+    {
+     "id": "mind-might",
+     "level": 3,
+     "name": {
+      "tr": "Zihin Gücü",
+      "en": "Mind Might"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Zihninle bir düşmanı itersin.",
+      "en": "You push a foe with your mind."
+     }
+    },
+    {
+     "id": "patience",
+     "level": 3,
+     "name": {
+      "tr": "Sabır",
+      "en": "Patience"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Bir düşman sana vurmayı kaçırırsa karşılık verirsin.",
+      "en": "When a foe misses you, you strike back."
+     }
+    },
+    {
+     "id": "calm-word",
+     "level": 6,
+     "name": {
+      "tr": "Sakin Söz",
+      "en": "Calm Word"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Bir dostunun korkusunu ve büyüsünü dağıtır, cesaretini tazelersin.",
+      "en": "Dispel an ally’s fear and charm and lift their heart."
+     }
+    },
+    {
+     "id": "greater-mind-might",
+     "level": 11,
+     "name": {
+      "tr": "Zihin Gücü genişler",
+      "en": "Greater Mind Might"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Daha uzağa iter; bir nesneyi fırlatıp hedefe çarpabilirsin.",
+      "en": "Push farther; hurl an object at a target."
+     }
+    },
+    {
+     "id": "nimble-elder",
+     "level": 11,
+     "name": {
+      "tr": "Çevik Yaşlı",
+      "en": "Nimble Elder"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Daha hızlısın.",
+      "en": "You move faster."
+     }
+    },
+    {
+     "id": "final-lesson",
+     "level": 17,
+     "name": {
+      "tr": "Son Ders",
+      "en": "Final Lesson"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "10 tur boyunca dostların etrafında dinginlik yayılır: daha dirençli olurlar.",
+      "en": "For 10 rounds calm spreads around your allies: they resist better."
+     }
+    }
+   ],
+   "ekBeceriler": [
+    "insight"
+   ]
+  },
+  {
+   "id": "imza_hizir",
+   "class": "paladin",
+   "ev": true,
+   "evKurali": "imza_hizir",
+   "name": {
+    "tr": "Hızır Yemini",
+    "en": "Oath of Hızır"
+   },
+   "role": {
+    "tr": "İmdada yetişen",
+    "en": "Arrives just in time"
+   },
+   "features": [
+    {
+     "id": "oath-spells",
+     "level": 3,
+     "name": {
+      "tr": "Yemin büyüleri",
+      "en": "Oath Spells"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "İyileştirme ve koruma büyüleri listene eklenir.",
+      "en": "Healing and warding spells join your list."
+     },
+     "effect": {
+      "type": "passive",
+      "status": "ok",
+      "alwaysPrepared": {
+       "3": [
+        "Cure Wounds",
+        "Sanctuary"
+       ],
+       "5": [
+        "Aid",
+        "Warding Bond"
+       ],
+       "9": [
+        "Beacon of Hope",
+        "Revivify"
+       ],
+       "13": [
+        "Death Ward",
+        "Guardian of Faith"
+       ],
+       "17": [
+        "Mass Cure Wounds",
+        "Greater Restoration"
+       ]
+      },
+      "note": "Büyü listesi belgede yok: SRD iyileştirme/koruma büyülerinden seçildi."
+     }
+    },
+    {
+     "id": "just-in-time",
+     "level": 3,
+     "name": {
+      "tr": "Tam Zamanında",
+      "en": "Just in Time"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Bir dostuna vurulurken yanına belirir, vuruşu sen karşılarsın.",
+      "en": "You appear beside an ally as they are struck and take the blow."
+     }
+    },
+    {
+     "id": "sense-of-need",
+     "level": 3,
+     "name": {
+      "tr": "Muhtaç Sezgisi",
+      "en": "Sense of Need"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Yere düşen ya da cesareti tükenen dostlarını her yerde bilirsin.",
+      "en": "You always know where fallen allies are."
+     }
+    },
+    {
+     "id": "aura-hard-times",
+     "level": 7,
+     "name": {
+      "tr": "Dar Gün Aurası",
+      "en": "Aura of Hard Times"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Zor durumdaki dostların ölüme daha dirençli olur ve geçici can kazanır.",
+      "en": "Struggling allies resist death and gain temporary HP."
+     }
+    },
+    {
+     "id": "miracle-in-time",
+     "level": 15,
+     "name": {
+      "tr": "Yetişen Mucize",
+      "en": "Miracle in Time"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Ölecek dostunun yanına yetişir, ölümü engellersin.",
+      "en": "You reach a dying ally and stop death."
+     }
+    },
+    {
+     "id": "hastening-road",
+     "level": 20,
+     "name": {
+      "tr": "Yetişen Yol",
+      "en": "The Hastening Road"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "10 tur boyunca dostların daha dirençli.",
+      "en": "For 10 rounds your allies are hardier."
+     }
+    }
+   ]
+  },
+  {
+   "id": "imza_harita",
+   "class": "wizard",
+   "ev": true,
+   "evKurali": "imza_harita",
+   "name": {
+    "tr": "Harita Öğretisi",
+    "en": "Doctrine of the Map"
+   },
+   "role": {
+    "tr": "Araziyi yeniden yazan",
+    "en": "Rewrites the battlefield"
+   },
+   "features": [
+    {
+     "id": "read-the-land",
+     "level": 3,
+     "name": {
+      "tr": "Arazi Okuma",
+      "en": "Read the Land"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Doğa'da ustasın. Haritada daha uzağı keşfedersin.",
+      "en": "You gain Nature proficiency and scout farther."
+     }
+    },
+    {
+     "id": "mark-the-ground",
+     "level": 3,
+     "name": {
+      "tr": "Mevzi İşareti",
+      "en": "Mark the Ground"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Birkaç altıgeni işaretle: üzerindeki dostlar zemin engellerinden etkilenmez, daha dirençli olur.",
+      "en": "Mark a few hexes: allies there ignore ground hazards."
+     }
+    },
+    {
+     "id": "rewrite-the-ground",
+     "level": 6,
+     "name": {
+      "tr": "Zemin Yeniden Yaz",
+      "en": "Rewrite the Ground"
+     },
+     "status": "calisir",
+     "description": {
+      "tr": "Bir alanın zeminini değiştir: düşmanı yavaşlat.",
+      "en": "Rewrite an area’s ground: slow your foes."
+     }
+    },
+    {
+     "id": "drawn-wall",
+     "level": 10,
+     "name": {
+      "tr": "Çizili Duvar",
+      "en": "Drawn Wall"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "Yere duvar çiz: geçici bir engel yükselir.",
+      "en": "Draw a wall: a temporary barrier rises."
+     }
+    },
+    {
+     "id": "birds-eye",
+     "level": 14,
+     "name": {
+      "tr": "Kuşbakışı Plan",
+      "en": "Bird's-Eye Plan"
+     },
+     "status": "planli",
+     "description": {
+      "tr": "10 tur boyunca savaşı tepeden yönet.",
+      "en": "Command the battle from above for 10 rounds."
+     }
+    }
+   ],
+   "ekBeceriler": [
+    "nature"
+   ]
+  }
+ ],
+ "kaynaklar": {
+  "imzaBuyruk": {
+   "name": "Buyruk",
+   "feature": [
+    "fighter/imza_imparator:decree"
+   ],
+   "uses": {
+    "proficiency": true
+   },
+   "recharge": {
+    "short": "all",
+    "long": "all"
+   }
+  },
+  "imzaHukumdar": {
+   "name": "Hükümdar Sözü",
+   "feature": [
+    "fighter/imza_imparator:royal-word"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "short": "all",
+    "long": "all"
+   }
+  },
+  "imzaYuceTaht": {
+   "name": "Yüce Taht",
+   "feature": [
+    "fighter/imza_imparator:exalted-throne"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaHukum": {
+   "name": "Hüküm",
+   "feature": [
+    "rogue/imza_infazci:verdict"
+   ],
+   "uses": {
+    "proficiency": true
+   },
+   "recharge": {
+    "short": "all",
+    "long": "all"
+   }
+  },
+  "imzaSonUyari": {
+   "name": "Son Uyarı",
+   "feature": [
+    "rogue/imza_infazci:final-warning"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "short": "all",
+    "long": "all"
+   }
+  },
+  "imzaUrun": {
+   "name": "Başak",
+   "feature": [
+    "ranger/imza_ciftci:provisions",
+    "ranger/imza_ciftci:harvest"
+   ],
+   "uses": {
+    "proficiency": true
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaNinni": {
+   "name": "Ninni",
+   "feature": [
+    "sorcerer/imza_dunganga:lullaby-blood"
+   ],
+   "uses": {
+    "proficiency": true
+   },
+   "recharge": {
+    "short": "all",
+    "long": "all"
+   }
+  },
+  "imzaSepet": {
+   "name": "Sepet",
+   "feature": [
+    "sorcerer/imza_dunganga:basket"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaCagri": {
+   "name": "Dunganga Çağrısı",
+   "feature": [
+    "sorcerer/imza_dunganga:call"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaFal": {
+   "name": "Yıldız Falı: Uğur",
+   "feature": [
+    "warlock/imza_astrolog:star-reading"
+   ],
+   "uses": {
+    "proficiency": true
+   },
+   "recharge": {
+    "short": "all",
+    "long": "all"
+   }
+  },
+  "imzaKuyruklu": {
+   "name": "Kuyruklu Yıldız",
+   "feature": [
+    "warlock/imza_astrolog:comet"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "short": "all",
+    "long": "all"
+   }
+  },
+  "imzaMuhur": {
+   "name": "Yazgı Mührü",
+   "feature": [
+    "warlock/imza_astrolog:seal-of-fate"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaBag": {
+   "name": "Bağ Kurma",
+   "feature": [
+    "cleric/imza_birlik:forge-bond"
+   ],
+   "uses": {
+    "proficiency": true
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaHavuz": {
+   "name": "Birlik Can Havuzu",
+   "feature": [
+    "cleric/imza_birlik:shared-vitality"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaSonDers": {
+   "name": "Son Ders",
+   "feature": [
+    "monk/imza_bilge:final-lesson"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaYetisenYol": {
+   "name": "Yetişen Yol",
+   "feature": [
+    "paladin/imza_hizir:hastening-road"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaZemin": {
+   "name": "Zemin Yeniden Yaz",
+   "feature": [
+    "wizard/imza_harita:rewrite-the-ground"
+   ],
+   "uses": {
+    "abilityMod": "int",
+    "min": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaInfaz": {
+   "name": "execution",
+   "feature": [
+    "rogue/imza_infazci:execution"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  }
+ },
+ "eylemler": {
+  "imza:imza_imparator/decree": {
+   "sinif": "imza_imparator",
+   "ozellik": "decree",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaBuyruk",
+    "sayi": "pb",
+    "yenilenme": "short"
+   },
+   "hedef": "ally",
+   "menzilFt": 30,
+   "ozel": "buyruk",
+   "ad": "Buyruk",
+   "not": "Dost tepkisini harcamadan en yakın düşmana tek silah saldırısı yapar (yer değiştirme seçeneği yok)."
+  },
+  "imza:imza_imparator/royal-word": {
+   "sinif": "imza_imparator",
+   "ozellik": "royal-word",
+   "seviye": 7,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaHukumdar",
+    "sayi": 1,
+    "yenilenme": "short"
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "str",
+     "cha"
+    ]
+   },
+   "etki": {
+    "name": "Hükümdar Sözü",
+    "sure": 1,
+    "attackDisVs": "$actor",
+    "icon": "👑"
+   },
+   "ad": "Hükümdar Sözü",
+   "not": "Dezavantaj yalnız sana karşı (yanındaki dostlar hariç)."
+  },
+  "imza:imza_imparator/exalted-throne": {
+   "sinif": "imza_imparator",
+   "ozellik": "exalted-throne",
+   "seviye": 15,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaYuceTaht",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "allies",
+   "yaricapFt": 30,
+   "kendisi": true,
+   "etki": {
+    "name": "Yüce Taht",
+    "sure": 10,
+    "dice": {
+     "die": "$pbHalf",
+     "sign": 1,
+     "on": [
+      "attack"
+     ]
+    },
+    "hitDie": "$pbHalf",
+    "icon": "👑"
+   },
+   "kendiEtki": {
+    "name": "Yüce Taht",
+    "sure": 10,
+    "resist": [
+     "acid",
+     "bludgeoning",
+     "cold",
+     "fire",
+     "force",
+     "lightning",
+     "necrotic",
+     "piercing",
+     "poison",
+     "psychic",
+     "radiant",
+     "slashing",
+     "thunder"
+    ],
+    "tempHp": "$lvl2",
+    "icon": "👑"
+   },
+   "ad": "Yüce Taht"
+  },
+  "imza:imza_infazci/verdict": {
+   "sinif": "imza_infazci",
+   "ozellik": "verdict",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaHukum",
+    "sayi": "pb",
+    "yenilenme": "short"
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "tek": true,
+   "etki": {
+    "name": "Hükümlü",
+    "sure": 10,
+    "icon": "⚖"
+   },
+   "ad": "Hüküm",
+   "not": "Sneak Attack d6 → d8: hükümlüye isabette Sneak Attack zarı başına +1 ek hasar (ortalama eşdeğer)."
+  },
+  "imza:imza_infazci/final-warning": {
+   "sinif": "imza_infazci",
+   "ozellik": "final-warning",
+   "seviye": 9,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaSonUyari",
+    "sayi": 1,
+    "yenilenme": "short"
+   },
+   "hedef": "enemy",
+   "menzilFt": 30,
+   "yalnizIsaretli": "verdict",
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "dex"
+    ]
+   },
+   "etki": {
+    "name": "Son Uyarı",
+    "sure": 2,
+    "sureEfsanevi": 1,
+    "grants": [
+     "Frightened"
+    ],
+    "attackDisVs": "$actor",
+    "icon": "⚖"
+   },
+   "ad": "Son Uyarı"
+  },
+  "imza:imza_ciftci/grain": {
+   "sinif": "imza_ciftci",
+   "ozellik": "provisions",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaUrun",
+    "sayi": "pb",
+    "yenilenme": "long"
+   },
+   "hedef": "allyOrSelf",
+   "menzilFt": 30,
+   "iyilestir": {
+    "3": "1d4+$wis",
+    "11": "1d8+$wis"
+   },
+   "etkiSeviye": {
+    "11": {
+     "name": "Bereket",
+     "sure": 10,
+     "resist": [
+      "poison"
+     ],
+     "saveAdvVs": [
+      "Poisoned"
+     ],
+     "icon": "🌾"
+    }
+   },
+   "ad": "Başak"
+  },
+  "imza:imza_ciftci/fungus": {
+   "sinif": "imza_ciftci",
+   "ozellik": "provisions",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaUrun",
+    "sayi": "pb",
+    "yenilenme": "long"
+   },
+   "hedef": "enemy",
+   "menzilFt": 30,
+   "hasar": {
+    "zar": {
+     "3": "1d4",
+     "11": "1d8"
+    },
+    "tur": "poison"
+   },
+   "etki": {
+    "name": "Mantar",
+    "sure": 1,
+    "speedMult": 0.5,
+    "icon": "🍄"
+   },
+   "ad": "Mantar"
+  },
+  "imza:imza_ciftci/feed": {
+   "sinif": "imza_ciftci",
+   "ozellik": "harvest",
+   "seviye": 7,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaUrun",
+    "sayi": "pb",
+    "yenilenme": "long"
+   },
+   "maliyet": 2,
+   "hedef": "allies",
+   "yaricapFt": 30,
+   "kendisi": true,
+   "iyilestir": {
+    "7": "2d6+$wis"
+   },
+   "ad": "Hasat: Besle"
+  },
+  "imza:imza_ciftci/scythe": {
+   "sinif": "imza_ciftci",
+   "ozellik": "harvest",
+   "seviye": 7,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaUrun",
+    "sayi": "pb",
+    "yenilenme": "long"
+   },
+   "maliyet": 2,
+   "hedef": "adjEnemies",
+   "save": {
+    "yetenek": "dex",
+    "dc": [
+     "wis"
+    ]
+   },
+   "yari": true,
+   "hasar": {
+    "zar": {
+     "7": "2d6+$wis"
+    },
+    "tur": "slashing"
+   },
+   "ad": "Hasat: Orakla"
+  },
+  "imza:imza_ciftci/spores": {
+   "sinif": "imza_ciftci",
+   "ozellik": "harvest",
+   "seviye": 7,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaUrun",
+    "sayi": "pb",
+    "yenilenme": "long"
+   },
+   "maliyet": 2,
+   "hedef": "adjEnemies",
+   "save": {
+    "yetenek": "con",
+    "dc": [
+     "wis"
+    ]
+   },
+   "yari": true,
+   "hasar": {
+    "zar": {
+     "7": "2d6"
+    },
+    "tur": "poison"
+   },
+   "etki": {
+    "name": "Spor",
+    "sure": 2,
+    "grants": [
+     "Poisoned"
+    ],
+    "icon": "🍄"
+   },
+   "ad": "Hasat: Spor Saç",
+   "not": "\"En az bir Mantar\" koşulu yok (ürün türü ayrımı tutulmaz; tek sayaç)."
+  },
+  "imza:imza_dunganga/lullaby": {
+   "sinif": "imza_dunganga",
+   "ozellik": "lullaby-blood",
+   "seviye": 3,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaNinni",
+    "sayi": "pb",
+    "yenilenme": "short"
+   },
+   "hedef": "enemies",
+   "yaricapFt": 30,
+   "enCok": "$cha",
+   "enCokCarpan": {
+    "14": 2
+   },
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ],
+    "dezVs": [
+     "Frightened"
+    ]
+   },
+   "cesaret": 10,
+   "etki": {
+    "name": "Uykulu",
+    "sure": 1,
+    "speedMult": 0.5,
+    "attackDis": {},
+    "icon": "💤"
+   },
+   "ad": "Ninni",
+   "not": "Ücretsiz kullanım bitince Büyücülük Puanı seçeneği yok."
+  },
+  "imza:imza_dunganga/basket": {
+   "sinif": "imza_dunganga",
+   "ozellik": "basket",
+   "seviye": 6,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaSepet",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "enemy",
+   "menzilFt": 30,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ],
+    "dezVs": [
+     "Frightened"
+    ],
+    "dezEtki": [
+     "Uykulu"
+    ]
+   },
+   "cesaret": 10,
+   "etki": {
+    "name": "Sepet",
+    "sure": 2,
+    "sureEfsanevi": 1,
+    "grants": [
+     "Incapacitated"
+    ],
+    "speedZero": true,
+    "breakOnDamage": true,
+    "icon": "🧺"
+   },
+   "ad": "Sepet",
+   "not": "3 Büyücülük Puanıyla ek kullanım yok (uzun dinlenmede bir kez)."
+  },
+  "imza:imza_dunganga/call": {
+   "sinif": "imza_dunganga",
+   "ozellik": "call",
+   "seviye": 18,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaCagri",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "enemies",
+   "yaricapFt": 30,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ]
+   },
+   "cesaret": 10,
+   "hasar": {
+    "zar": {
+     "18": "2d10"
+    },
+    "tur": "psychic"
+   },
+   "hasarHep": true,
+   "etki": {
+    "name": "Uykulu",
+    "sure": 10,
+    "speedMult": 0.5,
+    "attackDis": {},
+    "icon": "💤",
+    "noHeal": true
+   },
+   "ad": "Dunganga Çağrısı",
+   "not": "Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler bir kez kurtulma atar (başarısızsa 10 tur Uykulu + can yenileyemez); hasar kurtulma başarısında yarı değil, yalnız başarısızsa."
+  },
+  "imza:imza_astrolog/luck": {
+   "sinif": "imza_astrolog",
+   "ozellik": "star-reading",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaFal",
+    "sayi": "pb",
+    "yenilenme": "short"
+   },
+   "hedef": "ally",
+   "menzilFt": 60,
+   "etki": {
+    "name": "Uğurlu",
+    "sure": 2,
+    "dice": {
+     "die": "1d6",
+     "sign": 1,
+     "on": [
+      "attack",
+      "save",
+      "check"
+     ],
+     "single": true
+    },
+    "icon": "⭐"
+   },
+   "ad": "Yıldız Falı: Uğur",
+   "not": "Avantaj yerine ilk zara +1d6 (tek kullanım)."
+  },
+  "imza:imza_astrolog/ill-luck": {
+   "sinif": "imza_astrolog",
+   "ozellik": "star-reading",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaFal",
+    "sayi": "pb",
+    "yenilenme": "short"
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ]
+   },
+   "etki": {
+    "name": "Uğursuz",
+    "sure": 2,
+    "dice": {
+     "die": "1d6",
+     "sign": -1,
+     "on": [
+      "attack",
+      "save",
+      "check"
+     ],
+     "single": true
+    },
+    "icon": "🌑"
+   },
+   "ad": "Yıldız Falı: Uğursuzluk",
+   "not": "Dezavantaj yerine ilk zardan −1d6 (tek kullanım)."
+  },
+  "imza:imza_astrolog/comet": {
+   "sinif": "imza_astrolog",
+   "ozellik": "comet",
+   "seviye": 10,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaKuyruklu",
+    "sayi": 1,
+    "yenilenme": "short"
+   },
+   "hedef": "areaEnemies",
+   "menzilFt": 120,
+   "yaricapFt": 20,
+   "acikHava": true,
+   "save": {
+    "yetenek": "dex",
+    "dc": [
+     "cha"
+    ]
+   },
+   "yari": true,
+   "hasar": {
+    "zar": {
+     "10": "6d10"
+    },
+    "tur": "radiant"
+   },
+   "ad": "Kuyruklu Yıldız",
+   "dostlarDahil": true,
+   "not": "Merkez seçilen düşmanın altıgeni; alandaki dostlar da kurtulma atar."
+  },
+  "imza:imza_astrolog/seal-of-fate": {
+   "sinif": "imza_astrolog",
+   "ozellik": "seal-of-fate",
+   "seviye": 14,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaMuhur",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "acikHava": true,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ]
+   },
+   "efsaneviBasariSure": 1,
+   "etki": {
+    "name": "Yazgı Mührü",
+    "sure": 3,
+    "attackedAdv": true,
+    "dice": {
+     "die": "$cha",
+     "sign": -1,
+     "on": [
+      "save"
+     ]
+    },
+    "icon": "🔯"
+   },
+   "ad": "Yazgı Mührü",
+   "not": "Kendiliğinden isabet yerine ona yapılan saldırılar avantajlı; dostlara ek hasar yok."
+  },
+  "imza:imza_birlik/forge-bond": {
+   "sinif": "imza_birlik",
+   "ozellik": "forge-bond",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaBag",
+    "sayi": "pb",
+    "yenilenme": "long"
+   },
+   "hedef": "allies",
+   "yaricapFt": 30,
+   "kendisi": true,
+   "enCok": 3,
+   "bag": true,
+   "etki": {
+    "name": "Bağlı",
+    "sure": 10,
+    "icon": "🔗"
+   },
+   "ad": "Bağ Kurma",
+   "not": "Rahip kendisini de bağlar (3 dosta ek); yeni bağ eskisini bitirir."
+  },
+  "imza:imza_birlik/vigil": {
+   "sinif": "imza_birlik",
+   "ozellik": "vigil",
+   "seviye": 3,
+   "tur": "action",
+   "kullan": {
+    "id": "channelDivinity",
+    "maliyet": 1
+   },
+   "hedef": "bonded",
+   "tempHp": "$lvl",
+   "moral": 1,
+   "ad": "Teselli Nöbeti"
+  },
+  "imza:imza_birlik/shared-vitality": {
+   "sinif": "imza_birlik",
+   "ozellik": "shared-vitality",
+   "seviye": 6,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaHavuz",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "bonded",
+   "ozel": "havuz",
+   "ad": "Birlik Can Havuzu",
+   "uyari": {
+    "tr": "Dikkat: havuz biterse bağlı herkes ölür.",
+    "en": "Warning: if the pool empties, everyone bonded dies."
+   }
+  },
+  "imza:imza_sair/praise": {
+   "sinif": "imza_sair",
+   "ozellik": "verse",
+   "seviye": 3,
+   "tur": "bonus",
+   "kullan": {
+    "id": "bardicInspiration",
+    "maliyet": 1
+   },
+   "hedef": "ally",
+   "menzilFt": 60,
+   "tempHp": "$bardic+$cha",
+   "moral": 1,
+   "ad": "Mısra: Övgü"
+  },
+  "imza:imza_sair/satire": {
+   "sinif": "imza_sair",
+   "ozellik": "verse",
+   "seviye": 3,
+   "tur": "bonus",
+   "kullan": {
+    "id": "bardicInspiration",
+    "maliyet": 1
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ]
+   },
+   "hasar": {
+    "zar": {
+     "3": "$bardic+$cha"
+    },
+    "tur": "psychic"
+   },
+   "etki": {
+    "name": "Hiciv",
+    "sure": 1,
+    "attackDis": {
+     "single": true
+    },
+    "icon": "📜"
+   },
+   "ad": "Mısra: Hiciv"
+  },
+  "imza:imza_bilge/mind-might": {
+   "sinif": "imza_bilge",
+   "ozellik": "mind-might",
+   "seviye": 3,
+   "tur": "bonus",
+   "kullan": {
+    "id": "focus",
+    "maliyet": 1
+   },
+   "hedef": "enemy",
+   "menzilFt": 30,
+   "save": {
+    "yetenek": "str",
+    "dc": [
+     "wis"
+    ]
+   },
+   "itme": 10,
+   "ad": "Zihin Gücü",
+   "not": "Yalnız itme (çekme ve nesne yok); Large ve küçük sınırı yok."
+  },
+  "imza:imza_bilge/calm-word": {
+   "sinif": "imza_bilge",
+   "ozellik": "calm-word",
+   "seviye": 6,
+   "tur": "bonus",
+   "kullan": {
+    "id": "focus",
+    "maliyet": 1
+   },
+   "hedef": "allyOrSelf",
+   "menzilFt": 30,
+   "temizle": [
+    "Frightened",
+    "Charmed"
+   ],
+   "moral": 1,
+   "ad": "Sakin Söz"
+  },
+  "imza:imza_bilge/final-lesson": {
+   "sinif": "imza_bilge",
+   "ozellik": "final-lesson",
+   "seviye": 17,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaSonDers",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "allies",
+   "yaricapFt": 30,
+   "kendisi": true,
+   "etki": {
+    "name": "Son Ders",
+    "sure": 10,
+    "dice": {
+     "die": "$wis",
+     "sign": 1,
+     "on": [
+      "save"
+     ]
+    },
+    "icon": "🍃"
+   },
+   "ad": "Son Ders",
+   "not": "Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler etkilenir; tur başı Motivasyon ve fırsat saldırısı dezavantajı yok."
+  },
+  "imza:imza_hizir/hastening-road": {
+   "sinif": "imza_hizir",
+   "ozellik": "hastening-road",
+   "seviye": 20,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaYetisenYol",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "allies",
+   "yaricapFt": 30,
+   "kendisi": true,
+   "etki": {
+    "name": "Yetişen Yol",
+    "sure": 10,
+    "resist": [
+     "acid",
+     "bludgeoning",
+     "cold",
+     "fire",
+     "force",
+     "lightning",
+     "necrotic",
+     "piercing",
+     "poison",
+     "psychic",
+     "radiant",
+     "slashing",
+     "thunder"
+    ],
+    "icon": "🕊"
+   },
+   "ad": "Yetişen Yol",
+   "not": "Işınlanma ve hasar devralma yok."
+  },
+  "imza:imza_harita/rewrite-the-ground": {
+   "sinif": "imza_harita",
+   "ozellik": "rewrite-the-ground",
+   "seviye": 6,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaZemin",
+    "sayi": "int",
+    "yenilenme": "long"
+   },
+   "hedef": "areaEnemies",
+   "menzilFt": 60,
+   "yaricapFt": 20,
+   "etki": {
+    "name": "Yeniden Yazılmış Zemin",
+    "sure": 10,
+    "speedMult": 0.5,
+    "icon": "🗺"
+   },
+   "ad": "Zemin Yeniden Yaz",
+   "not": "Zemin değişmez: alandaki düşmanlar 10 tur yarı hızda (zor zemin karşılığı); dost temizliği ve yüzey seçeneği yok."
+  }
+ },
+ "pasifler": [
+  {
+   "sinif": "imza_imparator",
+   "ozellik": "crown-presence",
+   "seviye": 7,
+   "etki": {
+    "aura": {
+     "yaricapFt": {
+      "7": 10,
+      "10": 20
+     },
+     "save": {
+      "7": 1,
+      "15": 2
+     },
+     "yetenekler": [
+      "wis"
+     ]
+    }
+   },
+   "not": "Kurtulma bonusu WIS kurtulmalarına (korku ve büyülenme çoğunlukla WIS); auranın içi savaş başında ve her olayda yenilenir."
+  },
+  {
+   "sinif": "imza_imparator",
+   "ozellik": "undying-throne",
+   "seviye": 15,
+   "etki": {
+    "name": "Ölümsüz Taht",
+    "deathWard": true,
+    "icon": "👑"
+   },
+   "not": "Dostlara avantaj kısmı yok."
+  },
+  {
+   "sinif": "imza_infazci",
+   "ozellik": "execution",
+   "seviye": 17,
+   "etki": {
+    "kaynak": {
+     "id": "imzaInfaz",
+     "sayi": 1,
+     "yenilenme": "long"
+    }
+   },
+   "not": "Hükümlüye Sneak Attack isabetinde: zarlar en yüksek; canı Rogue seviyesi × 4 altındaysa ve efsanevi değilse CON kurtulması, başarısızsa ölür (kritik sayılmaz)."
+  },
+  {
+   "sinif": "imza_ciftci",
+   "ozellik": "spore-hardened",
+   "seviye": 7,
+   "etki": {
+    "name": "Mantar Tutkunu",
+    "immune": [
+     "Poisoned"
+    ],
+    "immuneDamage": [
+     "poison"
+    ],
+    "icon": "🍄"
+   }
+  },
+  {
+   "sinif": "imza_dunganga",
+   "ozellik": "nightmare",
+   "seviye": 14,
+   "etki": {
+    "name": "Kâbus",
+    "immune": [
+     "Frightened",
+     "Charmed",
+     "Unconscious"
+    ],
+    "icon": "🌙"
+   },
+   "not": "Korkan düşmana tur başı hasar yok (planlı)."
+  },
+  {
+   "sinif": "imza_geride_kalan",
+   "ozellik": "strength-of-the-worn",
+   "seviye": 3,
+   "etki": {
+    "yipranma": {
+     "tavanBolen": 3,
+     "carpan": 0.5
+    }
+   },
+   "not": "Öfkedeyken silah isabetine +min(PB, ⌊eksik puan / 2⌋); puan Moral (tam mod) ya da yoksa sabit üçte bir (Yıpranma sayacı tutulmaz)."
+  },
+  {
+   "sinif": "imza_geride_kalan",
+   "ozellik": "used-to-grief",
+   "seviye": 10,
+   "etki": {
+    "name": "Alışkın Acı",
+    "deathSaveAdv": true,
+    "icon": "🔥"
+   }
+  },
+  {
+   "sinif": "imza_geride_kalan",
+   "ozellik": "risen-from-ashes",
+   "seviye": 14,
+   "etki": {
+    "name": "Küllerden Doğan",
+    "deathWard": true,
+    "icon": "🔥"
+   },
+   "not": "Öfkeye kendiliğinden girme ve dostlara geçici can yok."
+  },
+  {
+   "sinif": "imza_bilge",
+   "ozellik": "nimble-elder",
+   "seviye": 11,
+   "etki": {
+    "name": "Çevik Yaşlı",
+    "speedFt": 10,
+    "icon": "🍃"
+   },
+   "not": "Fırsat saldırısı muafiyeti ve Yönlendir yok."
+  }
+ ]
+}

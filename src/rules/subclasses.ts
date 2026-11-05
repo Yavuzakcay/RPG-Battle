@@ -55,10 +55,11 @@ export function visibleSubclasses(classId: string, p: DuplicatePolicy = policy):
  * kalır). Veri silinmez: kayıtlı karakter açılır, motor bulur (`findSubclass` → `subclassDefs`).
  */
 export const isRemovedSubclass = (s: SubclassDef): boolean =>
-  view.kaldirilan.some((r) => r.id === s.id || norm(r.en) === norm(s.name.en));
+  view.kaldirilan.some((r) => r.id === s.id || (!!r.en && norm(r.en) === norm(s.name.en)));
 function withoutRemoved(list: SubclassDef[]): SubclassDef[] {
   const kept = list.filter((s) => !isRemovedSubclass(s));
-  return kept.length ? kept : list;
+  // Kuyruk K50: ev kuralı alt sınıfları (Karadul, imza) seçenek sayılmaz: SRD/paket seçeneği kalmazsa kaldırılan kalır.
+  return kept.some((s) => !s.ev) ? kept : list;
 }
 
 /** Kuyruk K49 B4/B7: görünen ad: parantezli takma ad yalnız takma adla; Cleric "… Alanı" → "… Manastırı"; istisnalar (Barış → Birlik). */
@@ -72,8 +73,11 @@ export function displayName(name: LocalText, classId?: string): LocalText {
 }
 
 /** Kimlikle alt sınıf: aynı kimlikte görünen sürüm önce (paket politikasında paket). */
-export const findSubclass = (classId: string, id: string | undefined): SubclassDef | undefined =>
-  id ? visibleSubclasses(classId).find((s) => s.id === id) ?? subclassDefs(classId).find((s) => s.id === id) : undefined;
+export const findSubclass = (classId: string, id0: string | undefined): SubclassDef | undefined => {
+  // Kuyruk K50: eski kimlik (dış paketin Barış Alanı) imza alt sınıfına (Birlik Manastırı) yönlenir.
+  const id = id0 ? (view.eskiKimlik as Record<string, string>)[id0] ?? id0 : undefined;
+  return id ? visibleSubclasses(classId).find((s) => s.id === id) ?? subclassDefs(classId).find((s) => s.id === id) : undefined;
+};
 
 /** Karakterin alt sınıfı seçilmiş ama kayıtta yok (dış içerik silindi ya da kapalı): "içerik eksik". */
 export const subclassMissing = (classId: string, id: string | undefined): boolean =>

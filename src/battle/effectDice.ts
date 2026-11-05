@@ -112,10 +112,12 @@ function saveModDice(c: Combatant | undefined, ability: Ability | undefined): Ex
 
 /** Kuyruk 18 H3: dost Paladin'in Aura of Protection'ı (sabit eklenti; `syncAuras` yazar). */
 const auraDice = (c: Combatant | undefined): ExtraDie[] => (c?.auraSave ? [{ label: 'Aura of Protection', die: String(c.auraSave), sign: 1 }] : []);
+/** Kuyruk K50: Taht Varlığı (İmparator) WIS kurtulma bonusu (`syncAuras` yazar). */
+const throneDice = (c: Combatant | undefined, ability: Ability | undefined): ExtraDie[] => (c?.imzaWisSave && ability === 'wis' ? [{ label: 'Taht Varlığı', die: String(c.imzaWisSave), sign: 1 }] : []);
 
 /** Kurtarma zarına (Bless, Bane; CILA: yetenek verilirse sabit eklentiler, Slow DEX −2). */
 export const saveDice = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
-  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...exhaustionDice(c), ...secondChances(c, 'save'), ...mightFloor(c, ability), ...moraleSaveDice(c, ability)];
+  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...throneDice(c, ability), ...exhaustionDice(c), ...secondChances(c, 'save'), ...mightFloor(c, ability), ...moraleSaveDice(c, ability)];
 /** Kuyruk 19: Indomitable Might (Barbarian 18): STR save/kontrol toplamı STR skorundan küçükse skor sayılır. */
 const mightFloor = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
   c && ability === 'str' && c.traits?.includes('indomitable-might') ? [{ label: 'Indomitable Might', die: 'STR', sign: 1, reroll: 'floor', rerollBonus: c.strScore }] : [];

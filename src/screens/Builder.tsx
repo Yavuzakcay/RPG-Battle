@@ -24,7 +24,7 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import karadulData from '../../data/karadul.json';
 import { UPPER_LEVEL_CAP } from '../app/limits';
-import { karadulEnabled, karadulWomenOnly } from '../app/features';
+import { imzaEnabled, karadulEnabled, karadulWomenOnly } from '../app/features';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
 import { findSubclass, houseSubclassVisible, subclassLabel, subclassMissing } from '../rules/subclasses';
@@ -439,7 +439,10 @@ function ClassStep({ c, setC, set }: StepProps) {
   const cls = getClass(s.classId);
   const subLevel = subclassLevel(s.classId);
   // Kuyruk K48: ev kuralı alt sınıfları (Karadul) yalnızca Ayarlar anahtarıyla ve (kısıt açıkken) kadın karakterde; mevcut seçim kalır.
-  const subs = subclassesOf(s.classId).filter((x) => houseSubclassVisible(x, s, karadulEnabled(), karadulWomenOnly()));
+  // Kuyruk K50: imza alt sınıflar kendi ev kuralı açıkken (Birlik Manastırı her zaman); Karadul kendi anahtarıyla.
+  const subs = subclassesOf(s.classId).filter((x) => (x.evKurali !== undefined
+    ? x.evKurali === null || x.id === s.subclassId || imzaEnabled(x.evKurali)
+    : houseSubclassVisible(x, s, karadulEnabled(), karadulWomenOnly())));
   const chosen = subs.find((x) => x.id === s.subclassId);
   const swap = chosen?.ev && chosen.replaces?.length ? karadulSwapText(s) : null;
   // Görev K17: eski sınıfın seçimleri taslakta saklanır, geri dönünce uyanları gelir (`switchClass`).

@@ -36,3 +36,22 @@ export const karadulWomenOnly = (): boolean => read().karadulKadinKisiti !== fal
 export function setKaradulWomenOnly(on: boolean): void {
   try { localStorage.setItem(KEY, JSON.stringify({ ...read(), karadulKadinKisiti: on })); } catch { /* depolama yok */ }
 }
+
+/**
+ * Kuyruk K50: imza alt sınıf ev kuralları (Game Master; her biri varsayılan kapalı; `imza_<ad>`): açık olan oluşturucuda
+ * seçilir, yeni savaşlarda o ev kuralı açık gelir. Birlik Manastırı ev kuralı değil (her zaman).
+ */
+export const imzaEnabledList = (): string[] => {
+  const v = (read() as Record<string, unknown>).imza;
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
+};
+export const imzaEnabled = (rule: string): boolean => imzaEnabledList().includes(rule);
+export function setImzaEnabled(rule: string, on: boolean): void {
+  const list = new Set(imzaEnabledList());
+  if (on) list.add(rule); else list.delete(rule);
+  try { localStorage.setItem(KEY, JSON.stringify({ ...read(), imza: [...list] })); } catch { /* depolama yok */ }
+}
+/** Karakter ev kuralı varsayılanları (Game Master kurulumu ve yeni savaş): Karadul + açık imza kuralları. */
+export const characterHouseRules = (): Record<string, boolean> => ({
+  karadulCemberi: karadulEnabled(), ...Object.fromEntries(imzaEnabledList().map((r) => [r, true])),
+});

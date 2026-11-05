@@ -2,6 +2,54 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K50: imza alt sınıflar (ev kuralı; kural sürümü 23)
+
+- **Dal:** kullanıcı kararıyla `wip/k48` üstünde (main birleştirildi); görev belgesindeki `wip/k50` açılmadı.
+- **Tek motor, veri:** `data/imza.json` (`python scripts/k50-imza-veri.py` üretir; sayılar orada), motor `src/battle/imza.ts` + çekirdek `src/battle/imzaCore.ts` (kural açık mı, Taht aurası). Eylemler `use_feature` (`kind: 'imza'`): hedef seçimi, kurtulma (DC 8 + yeterlilik + belgedeki yetenek), hasar/yarı hasar, iyileştirme, geçici can, Motivasyon (yalnız `moralSistemi` açıkken), durum temizleme, itme, süreli etki (mevcut `ActiveEffect` alanları; yeni durum yok: "Uykulu" = yarı hız + saldırı dezavantajı, "Sepet" = Incapacitated + hız 0 + hasarla biter), **Cesaret** (kurtulmayı başaran 10 tur aynı özelliğe bağışık). Pasifler savaş başında (bağışıklık, Ölümsüz Taht/Küllerden Doğan = Death Ward, Alışkın Acı, Çevik Yaşlı); saldırı kancası `imzaHit` (Hüküm, İnfaz, Yıpranmışlığın Gücü); Taht Varlığı `syncAuras` → `imzaWisSave`.
+- **Ev kuralları:** `data/ev-kurallari.json` `imza_<ad>` (10 tane, `karakter: true`, varsayılan kapalı); Ayarlar'da "İmza alt sınıflar" listesi (`rpg-battle-deneysel.imza`), açık olan oluşturucuda görünür ve yeni savaşta kuralı açık gelir (`characterHouseRules`). Kural kapalıyken ya da sürüm < 23 savaşta imza özellikleri yok (eski kayıt/replay aynı).
+- **Birlik Manastırı ev kuralı değil** (belgesi öyle diyor; K50 genel metni "hepsi ev kuralı" dese de alt sınıfa özel belge esas alındı): her zaman görünür, savaşta sürüm 23+. Dış paketin "Barış Alanı" (`baris-alani`) listeden kalktı, eski kayıt `imza_birlik`'e yönlenir (`alt-sinif-gorunum.json` `eskiKimlik`, `findSubclass`). Havuz kuralı mevcut Ortak Can altyapısı: havuz 0 → bağlı herkes ölür; uyarı Birlik Can Havuzu kartında ve Ayarlar notunda (ayrı onay ekranı yok).
+- **Seçim 3. seviyede**; belgedeki 1./2. seviye özellikleri 3'te açılır. Seçenekli yeterlilikler varsayılanla (İkna, İçgörü, Doğa, Arcana; Şair: Performance + History).
+- **Her zaman hazır büyüler:** Dunganga soy büyüleri, Astrolog genişletilmiş listesi (Warlock'ta ayrı seçim listesi olmadığından her zaman hazır), Hızır yemin büyüleri (belgede liste yok: SRD iyileştirme/koruma büyüleri seçildi: Cure Wounds, Sanctuary, Aid, Warding Bond, Beacon of Hope, Revivify, Death Ward, Guardian of Faith, Mass Cure Wounds, Greater Restoration).
+- **Açık gökyüzü:** `kapaliOrtam` (bölge derinlikler/yeralti/hapishane, iç mekân haritaları, varyant adında karanlık/loş/iç) dışında her yer.
+- **Yapay zekâ:** basit kural (`imzaAi`): bonus eylemler bonus boşken; eylemler 2+ hedefte ya da durum verdiğinde; iyileştirme yalnız ≤ %60 cana.
+- **Durum (çalışan / planlı):**
+  - **İmparator** (Fighter, `imza_imparator`): çalışan Asil Terbiye, Buyruk, Taht Varlığı, Hükümdar Sözü, Genişleyen Taht, Yüce Taht, Ölümsüz Taht; planlı Ferman.
+  - **İnfazcı** (Rogue, `imza_infazci`): çalışan Hüküm, Maskeli Adalet, Son Uyarı, İnfaz; planlı Müdahale, Peşini Bırakmayan.
+  - **Çiftçi** (Ranger, `imza_ciftci`): çalışan Çiftlik Bilgisi, Erzak, Hasat, Mantar Tutkunu, Bereket; planlı yok.
+  - **Dunganga** (Sorcerer, `imza_dunganga`): çalışan Ninni Kanı, Sepet, Kâbus, Dunganga Çağrısı, Cesaret; planlı yok.
+  - **Astrolog** (Warlock, `imza_astrolog`): çalışan Genişletilmiş büyüler, Yıldız Falı, Kuyruklu Yıldız, Yazgı Mührü; planlı Gök Rehberi, Yazgı Değişir.
+  - **Birlik Manastırı** (Cleric, `imza_birlik`): çalışan Bağ Kurma, Teselli Nöbeti, Birlik Can Havuzu; planlı Omuz Ver, Ortak Şifa, Yıkılmaz Birlik.
+  - **Geride Kalanın Yolu** (Barbarian, `imza_geride_kalan`): çalışan Yaralı Kalp, Yıpranmışlığın Gücü, Alışkın Acı, Küllerden Doğan; planlı Öfkeyle Ayakta, Dostunun Yası.
+  - **Şair Koleji** (Bard, `imza_sair`): çalışan Mısra, Kalemin Gücü; planlı Gece Şiiri, Nakarat, Ölümsüz Dize, Usta Şair.
+  - **Yaşlı Bilge Disiplini** (Monk, `imza_bilge`): çalışan Yaşlı Bilgelik, Zihin Gücü, Sakin Söz, Çevik Yaşlı, Son Ders; planlı Sabır, Zihin Gücü genişler.
+  - **Hızır Yemini** (Paladin, `imza_hizir`): çalışan Yemin büyüleri, Yetişen Yol; planlı Tam Zamanında, Muhtaç Sezgisi, Dar Gün Aurası, Yetişen Mucize.
+  - **Harita Öğretisi** (Wizard, `imza_harita`): çalışan Arazi Okuma, Zemin Yeniden Yaz; planlı Mevzi İşareti, Çizili Duvar, Kuşbakışı Plan.
+- **Yaklaşık uygulananlar:**
+  - Buyruk: Dost tepkisini harcamadan en yakın düşmana tek silah saldırısı yapar (yer değiştirme seçeneği yok).
+  - Hükümdar Sözü: Dezavantaj yalnız sana karşı (yanındaki dostlar hariç).
+  - Hüküm: Sneak Attack d6 → d8: hükümlüye isabette Sneak Attack zarı başına +1 ek hasar (ortalama eşdeğer).
+  - Hasat: Spor Saç: "En az bir Mantar" koşulu yok (ürün türü ayrımı tutulmaz; tek sayaç).
+  - Ninni: Ücretsiz kullanım bitince Büyücülük Puanı seçeneği yok.
+  - Sepet: 3 Büyücülük Puanıyla ek kullanım yok (uzun dinlenmede bir kez).
+  - Dunganga Çağrısı: Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler bir kez kurtulma atar (başarısızsa 10 tur Uykulu + can yenileyemez); hasar kurtulma başarısında yarı değil, yalnız başarısızsa.
+  - Yıldız Falı: Uğur: Avantaj yerine ilk zara +1d6 (tek kullanım).
+  - Yıldız Falı: Uğursuzluk: Dezavantaj yerine ilk zardan −1d6 (tek kullanım).
+  - Kuyruklu Yıldız: Merkez seçilen düşmanın altıgeni; alandaki dostlar da kurtulma atar.
+  - Yazgı Mührü: Kendiliğinden isabet yerine ona yapılan saldırılar avantajlı; dostlara ek hasar yok.
+  - Bağ Kurma: Rahip kendisini de bağlar (3 dosta ek); yeni bağ eskisini bitirir.
+  - Zihin Gücü: Yalnız itme (çekme ve nesne yok); Large ve küçük sınırı yok.
+  - Son Ders: Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler etkilenir; tur başı Motivasyon ve fırsat saldırısı dezavantajı yok.
+  - Yetişen Yol: Işınlanma ve hasar devralma yok.
+  - Zemin Yeniden Yaz: Zemin değişmez: alandaki düşmanlar 10 tur yarı hızda (zor zemin karşılığı); dost temizliği ve yüzey seçeneği yok.
+  - crown-presence: Kurtulma bonusu WIS kurtulmalarına (korku ve büyülenme çoğunlukla WIS); auranın içi savaş başında ve her olayda yenilenir.
+  - undying-throne: Dostlara avantaj kısmı yok.
+  - execution: Hükümlüye Sneak Attack isabetinde: zarlar en yüksek; canı Rogue seviyesi × 4 altındaysa ve efsanevi değilse CON kurtulması, başarısızsa ölür (kritik sayılmaz).
+  - nightmare: Korkan düşmana tur başı hasar yok (planlı).
+  - strength-of-the-worn: Öfkedeyken silah isabetine +min(PB, ⌊eksik puan / 2⌋); puan Moral (tam mod) ya da yoksa sabit üçte bir (Yıpranma sayacı tutulmaz).
+  - risen-from-ashes: Öfkeye kendiliğinden girme ve dostlara geçici can yok.
+  - nimble-elder: Fırsat saldırısı muafiyeti ve Yönlendir yok.
+- **Aşama C (Monk Zihin Gücü fırlatma, Paladin ışınlanma/yeniden hedefleme, Wizard zemin/duvar/takas):** en küçük sürüm: Zihin Gücü itme (mevcut itme altyapısı), Zemin Yeniden Yaz = alandaki düşmanlara 10 tur yarı hız; ışınlanma tepkileri, çizili duvar, yer takası ve keşif yarıçapı **planlı** (kart "planlı" der, motor çalıştırmaz). Kullanıcı kararı bekler.
+
 ## 2026-11-04 — Kuyruk K49 Adım D: bölgeler, yükleme ekranı, yüzme
 
 - **Bölgeler:** 8 kıta bölgesi (Karkedon, Cüce Eyeri, Ahmak Ormanı, Hutame Çölü, Cadı Kazanı, Gözcü Kıyısı, Tenhausser, Kum Buzulu) + 6 ada (Dragos, Orion Yamaçları, Akhalat, Akrepler, Negatif Alan Zaptı, Mânâ 42). Tohumlar `etiketler.json` `bolge`/`ada` etiketleri; kara + yüzme hücrelerinde çok kaynaklı Dijkstra (arazi maliyetiyle, sınırlar dağ/su hattına oturur). Izgara `data/harita/bolge-izgara.json` (`python scripts/k49-bolgeler.py`), parametreler `data/harita/bolge-yukleme.json`. `sayfa-dunya-esleme` kullanılmadı: etiket tohumları ve arazi maskesi yeterli, sayfa sınırları bölge adlarıyla zaten örtüşüyor.

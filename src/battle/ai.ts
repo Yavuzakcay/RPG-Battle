@@ -72,6 +72,7 @@ import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
 import { steerableSummon, steerHexes } from './summons';
 import { steedActions } from './steed';
+import { IMZA_SPECS } from './imza';
 import { GAZE_KEY, SPIDER_KEY } from './karadul';
 
 const noRoll = () => 0.5;
@@ -112,6 +113,41 @@ function karadulAi(state: BattleState, actor: Combatant): Command | null {
   if (!actor.shape && spider && bonusFree && (charmed.length || !slotsLeft)) {
     const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: spider.key };
     if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
+}
+/**
+ * Kuyruk K50: imza alt sınıf eylemleri (basit kural). Bonus eylemliler bonus boşken; eylemliler yalnızca çok hedefli
+ * (2+) ya da kontrol (durum veren) olduğunda. İyileştirme yalnız yaralıya (≤ %60), işaret/bağ zaten varsa tekrarlanmaz.
+ */
+function imzaAi(state: BattleState, actor: Combatant): Command | null {
+  const feats = (actor.features ?? []).filter((f) => f.key.startsWith('imza:'));
+  if (!feats.length) return null;
+  const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && c.hp > 0 && c.life !== 'dead' && !c.summon?.gone);
+  const foes = foesOf(state, actor).sort((a, b) => a.hp - b.hp);
+  const wounded = [...allies].filter((c) => c.hp <= c.maxHp * 0.6).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+  for (const f of feats) {
+    const spec = IMZA_SPECS[f.key];
+    if (!spec) continue;
+    if (spec.tur === 'bonus' ? actor.economy.bonus : actor.economy.action) continue;
+    const marked = (id: string) => Object.values(state.combatants).some((c) => c.effects?.some((e) => e.id === `${id}:${actor.id}`));
+    if ((spec.tek || spec.bag) && marked(f.key)) continue;
+    let cands: Array<string | undefined> = [undefined];
+    if (spec.hedef === 'enemy' || spec.hedef === 'areaEnemies') cands = foes.map((c) => c.id);
+    else if (spec.iyilestir) cands = spec.hedef === 'allies' ? (wounded.length >= 2 ? [undefined] : []) : wounded.map((c) => c.id);
+    else if (spec.hedef === 'ally' || spec.hedef === 'allyOrSelf') cands = spec.temizle ? allies.filter((c) => c.conditions.some((x) => spec.temizle?.includes(x))).map((c) => c.id)
+      : allies.filter((c) => c.id !== actor.id).sort((a, b) => b.hp - a.hp).map((c) => c.id);
+    for (const targetId of cands.slice(0, 6)) {
+      const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: f.key, ...(targetId ? { targetId } : {}) };
+      const r = tryCmd(state, actor, cmd);
+      if (!r.ok) continue;
+      if (spec.tur === 'action') {
+        const hits = new Set(r.events.filter((e) => e.type === 'save_resolved' || e.type === 'effect_added' || e.type === 'healed').map((e) => ('targetId' in e ? e.targetId : '')));
+        const control = !!spec.etki && Array.isArray(spec.etki.grants);
+        if (hits.size < 2 && !control && spec.ozel !== 'havuz') continue;
+      }
+      return cmd;
+    }
   }
   return null;
 }
@@ -1132,6 +1168,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Kuyruk K48 (Karadul, basit kural): bakış → dönüşüm → büyülü hedefe sürpriz vuruş.
   const widow = karadulAi(state, actor);
   if (widow) return widow;
+  // Kuyruk K50: imza alt sınıf eylemleri (basit kural).
+  const sig = imzaAi(state, actor);
+  if (sig) return sig;
   // Kuyruk K48 (Moral tam modu, basit kural): eylemi duruyorsa menzildeki çökmüş dostu toparla.
   if (!actor.economy.action && actor.moralMax !== undefined) {
     for (const c of Object.values(state.combatants)) {

@@ -6,6 +6,7 @@
  * `saveDice` (bütün save'lerin ortak eklentisi) sabit eklenti olarak okur. Game Master anahtarı `auraOfProtection`
  * (global, kural sürümü 14); kapalıyken yalnızca Paladin'in kendi bonusu.
  */
+import { imzaAuraBonus } from './imzaCore';
 import { isIncapacitated } from '../rules/conditions';
 import { gap } from './body';
 import { globalRule } from './ruleControl';
@@ -85,8 +86,11 @@ export function syncAuras(state: BattleState): BattleState {
   const anyFate = k19On && Object.values(state.combatants).some((c) => c.traits?.includes('improve-fate'));
   const anyBurst = !!globalRule(state, 'srdK19') && Object.values(state.combatants).some((c) => c.reactions?.some((r) => r.kind === 'burst'));
   let next = state;
+  // Kuyruk K50: Taht Varlığı (İmparator) aurası; imza savaşçısı yoksa hesap yok.
+  const anyImza = Object.values(state.combatants).some((c) => c.imza);
   for (const c of Object.values(state.combatants)) {
     const want = on ? auraSaveOf(state, c) : 0;
+    const throne = anyImza ? imzaAuraBonus(state, c, 'wis') : 0;
     const by = charmOn ? countercharmOf(state, c) : undefined;
     const fix = inspireOn && !!c.traits?.length && (c.effects ?? []).some((e) => e.inspire);
     const chain = chainOn && (c.effects ?? []).some((e) => e.inspire);
@@ -96,11 +100,11 @@ export function syncAuras(state: BattleState): BattleState {
     const fateFoe = anyFate ? fateHolder(state, c, false) : undefined;
     const burst = anyBurst ? burstOf(state, c) : undefined;
     if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && !!c.inspireChain === chain && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
-      && c.fateBy === fateBy && c.fateFoe === fateFoe) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, ...rest } = next.combatants[c.id] as Combatant;
+      && c.fateBy === fateBy && c.fateFoe === fateFoe && (c.imzaWisSave ?? 0) === throne) continue;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, ...rest } = next.combatants[c.id] as Combatant;
     next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
       ...(fix ? { inspireFix: true } : {}), ...(chain ? { inspireChain: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
-      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}) } as Combatant } };
+      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}), ...(throne > 0 ? { imzaWisSave: throne } : {}) } as Combatant } };
   }
   return next;
 }

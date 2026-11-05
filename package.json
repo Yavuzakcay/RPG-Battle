@@ -27,6 +27,7 @@
     "harita-karo": "node scripts/harita-karo.mjs",
     "sim:liste": "vite-node src/sim/listeRun.ts --",
     "sim:irk": "vite-node src/sim/irkRun.ts --",
+    "sim:imza": "vite-node src/sim/imzaRun.ts",
     "sim:karadul": "vite-node src/sim/karadulRun.ts --",
     "check:harita": "node scripts/kara-ekran.mjs",
     "masumlar": "node scripts/masumlar.mjs",

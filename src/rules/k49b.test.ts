@@ -11,9 +11,9 @@ afterEach(() => setExternalSubclasses([]));
 
 describe('alt sınıf görünümü', () => {
   it('kaldırılan sekiz alt sınıf başka seçenek varken listede yok (SRD ve paket kopyası); son seçenek kalır', () => {
-    expect(visibleSubclasses('barbarian').map((s) => s.id)).toEqual(['path-of-the-berserker']); // başka yok → kalır
+    expect(visibleSubclasses('barbarian').filter((s) => !s.ev).map((s) => s.id)).toEqual(['path-of-the-berserker']); // başka yok → kalır (ev kuralı alt sınıfları sayılmaz)
     setExternalSubclasses([ext('paket-berserker', 'barbarian', 'Çılgın', 'Path of the Berserker'), ext('ofke', 'barbarian', 'Öfke', 'Rage Path')]);
-    expect(visibleSubclasses('barbarian').map((s) => s.id)).toEqual(['ofke']);
+    expect(visibleSubclasses('barbarian').filter((s) => !s.ev).map((s) => s.id)).toEqual(['ofke']);
     // Eski kayıt: motor yine bulur.
     expect(findSubclass('barbarian', 'path-of-the-berserker')?.id).toBe('path-of-the-berserker');
     expect(isRemovedSubclass(ext('x', 'wizard', 'a', 'Evoker'))).toBe(true);

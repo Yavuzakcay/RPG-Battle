@@ -3,7 +3,8 @@
  * klasör seçiciyle içe aktarılır; liste, tek tek açma/kapama ve silme. Hata mesajları TR/EN, bozuk dosya uygulamayı
  * bozmaz. Kod çalıştırılmaz: yalnızca JSON veri.
  */
-import { journeyEnabled, karadulEnabled, karadulWomenOnly, setJourneyEnabled, setKaradulEnabled, setKaradulWomenOnly, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
+import { imzaEnabledList, journeyEnabled, karadulEnabled, karadulWomenOnly, setImzaEnabled, setJourneyEnabled, setKaradulEnabled, setKaradulWomenOnly, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
+import { HOUSE_RULES, HOUSE_RULE_IDS } from '../battle/houseRules';
 import { useState } from 'react';
 import { getLang, t } from '../i18n';
 import { textOf } from '../rules/subclasses';
@@ -37,6 +38,7 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [upper, setUpper] = useState<boolean>(upperLevelsEnabled);
   const [karadul, setKaradul] = useState<boolean>(karadulEnabled);
   const [karadulWomen, setKaradulWomen] = useState<boolean>(karadulWomenOnly);
+  const [imza, setImza] = useState<string[]>(imzaEnabledList);
   const MT = t().mapTint;
   const CV = t().cityView;
   const [tint, setTint] = useState<boolean>(storedMapTint);
@@ -64,6 +66,13 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
           <label><input type="checkbox" checked={karadul} onChange={(e) => { setKaradulEnabled(e.target.checked); setKaradul(e.target.checked); }} /> {t().journey.karadulFlag}</label>
           <label><input type="checkbox" checked={karadulWomen} disabled={!karadul} onChange={(e) => { setKaradulWomenOnly(e.target.checked); setKaradulWomen(e.target.checked); }} /> {t().journey.karadulWomen}</label>
           <p className="mute">{t().journey.karadulNote}</p>
+          {/* Kuyruk K50: imza alt sınıflar (her biri ev kuralı, varsayılan kapalı). */}
+          <fieldset className="imza-flags"><legend>{t().journey.imzaTitle}</legend>
+            {HOUSE_RULE_IDS.filter((id) => id.startsWith('imza_')).map((id) => (
+              <label key={id}><input type="checkbox" checked={imza.includes(id)} onChange={(e) => { setImzaEnabled(id, e.target.checked); setImza(imzaEnabledList()); }} /> {getLang() === 'en' ? HOUSE_RULES[id]?.en : HOUSE_RULES[id]?.tr}</label>
+            ))}
+            <p className="mute">{t().journey.imzaNote}</p>
+          </fieldset>
           <p className="mute">{t().journey.flagNote}</p>
         </section>
         {/* Görev K5: taşıma yükü kuralı. */}

@@ -24,6 +24,7 @@ import { speciesParts } from './species';
 import { celestialFeatures, withCelestial } from './celestial';
 import { withMorale } from './morale';
 import { karadulFeatures, withKaradul } from './karadul';
+import { imzaFeatures, imzaId, isImza, withImza } from './imza';
 import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
@@ -378,7 +379,9 @@ function combatantFromSheetBase(
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
-    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...imzaFeatures(sheet), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    // Kuyruk K50: imza alt sınıfı (pasifler ve saldırı kancası; kural kapalıysa `withImza` etkisiz bırakır).
+    ...(isImza(sheet.subclassId) && sheet.level >= 3 ? { imza: imzaId(sheet.subclassId) as string } : {}),
     // Kuyruk 19 (Irresistible Offense): artırılan skor (Overwhelming Strike).
     ...((): Partial<Combatant> => {
       const adv = (sheet.advancements ?? []).find((a) => a.featId === 'boon-of-irresistible-offense');
@@ -752,7 +755,7 @@ export function startBattle(
   };
   // Kuyruk 24: Orman mekaniklerinin savaş başı kısmı (alarm grupları, kütük siperi, nehir; kural sürümü 3 ve Game Master anahtarı).
   // Kuyruk K48: Moral tam modu (ev kuralı + sürüm 20): karakterlere havuz; kapalıysa kayıtlı Moral alanı silinir.
-  const final = withKaradul(withMorale(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state))));
+  const final = withImza(withKaradul(withMorale(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state)))));
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

@@ -528,6 +528,7 @@ const tr = {
   journey: {
     menu: 'Yolculuk (deneme)', menuDesc: 'Game Master gerektirmeyen ana mod: tek başına ya da partiyle, savaşları kalıcı parti durumuyla bir rotada oynayın.',
     karadulFlag: 'Game Master: Karadul Çemberi (Druid alt sınıfı, ev kuralı)', karadulWomen: 'Karadul yalnız kadın karakterlere (karadulKadinKisiti)',
+    imzaTitle: 'İmza alt sınıflar (ev kuralı)', imzaNote: 'Dice & Hex’e özel alt sınıflar; açık olan oluşturucuda seçilir, yeni savaşlarda ev kuralı açık gelir. Birlik Manastırı (Cleric) her zaman açıktır. Planlı özellikler kartta görünür ama henüz çalışmaz.',
     karadulNote: 'SRD 5.2.1 dışı özgün alt sınıf. Açıkken oluşturucuda 3. seviye Druid seçebilir (Wild Shape yerine Örümcek Biçimi); yeni savaşlarda özellikleri çalışır.',
     celestialFlag: 'Game Master: Celestial ırkı (ev kuralı)', celestialNote: 'SRD 5.2.1 dışı özgün ırk (Düşmüş). Açıkken oluşturucuda seçilir ve yeni savaşlarda Şifa Eli, Light ve Göksel Uyanış çalışır; kapalıyken Celestial karakterler yalnızca karanlık görüş ve dirençle oynar.',
     upperFlag: 'Game Master: Üst seviye (6–20)', upperNote: 'Açıkken karakter oluşturma ve Serüven seviye atlaması 20. seviyeye dek; kapalıyken 5. Daha yüksek seviyeli eski karakterler korunur.',

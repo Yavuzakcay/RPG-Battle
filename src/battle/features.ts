@@ -33,6 +33,7 @@ import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
 import { celestialStrikeOf } from './celestial';
 import { gazeBreakEvents, karadulHit, karadulOn, kissReady, snareReady } from './karadul';
+import { imzaHit } from './imza';
 import { brutalAfterEvents, brutalExtra, brutalOptions, brutalReady, type BrutalBlow } from './brutal';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
@@ -275,6 +276,9 @@ export function weaponAttackEvents(
   // Kuyruk K48 (ev kuralı): Karadul Zehri, Tatlı Tuzak, Son Öpücük (örümcek ısırığı isabetinde).
   const widow = result.hit ? karadulHit(state, actor, target, option, { critical: result.critical, weaponRaw: rawDamage }, rng) : null;
   if (widow) bonus = { ...bonus, extras: [...bonus.extras, ...widow.extras], traitTurns: { ...bonus.traitTurns, ...widow.traitTurns } };
+  // Kuyruk K50 (ev kuralı): Hüküm, İnfaz, Yıpranmışlığın Gücü (imza alt sınıf saldırı kancası).
+  const sig = result.hit && !option.spell && actor.imza ? imzaHit(state, actor, target, bonus.extras, rawDamage, rng) : null;
+  if (sig) bonus = { ...bonus, extras: [...bonus.extras, ...sig.extras] };
   // Kuyruk 19 (Irresistible Offense): Overwhelming Strike: doğal 20'de artırılan skor kadar ek hasar (saldırının türünde).
   if (result.hit && result.d20.kept === 20 && actor.k19Traits && actor.traits?.includes('overcome-defenses') && actor.boonScore) {
     const adj = adjustDamage(actor.boonScore, dmgType, tprof);
@@ -339,6 +343,7 @@ export function weaponAttackEvents(
   if (giant && hit) before.push(...giant.after(applyEvents(state, before)));
   // Kuyruk K48: Karadul vuruş sonrası (zehir, Stunned, Son Öpücük kullanımı) ve büyüleyenin tarafı saldırınca bakışın bitmesi.
   if (widow && hit) before.push(...widow.after);
+  if (sig && hit) before.push(...sig.after);
   if (karadulOn(state)) { const s0 = applyEvents(state, before); const t0 = s0.combatants[target.id]; if (t0) before.push(...gazeBreakEvents(s0, actor, t0)); }
   // K13: biçim saldırısının süreli etkisi ve rider durumları (Prone, yakalama, zehir…), canavar saldırısındaki gibi isabette.
   if (hit && option.beast) {

@@ -543,6 +543,10 @@ export interface Combatant {
   allegiance?: { side: Side; ownerId: string | null };
   /** Kuyruk 18 H3: yakındaki dost Paladin'in Aura of Protection save bonusu (reducer `syncAuras` yazar). */
   auraSave?: number;
+  /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
+  imza?: string;
+  /** Kuyruk K50: Taht Varlığı aurasından WIS kurtulma bonusu (reducer sonu `syncAuras`). */
+  imzaWisSave?: number;
   /** Kuyruk 18 H4: başka kattaki savaşçı (o katın harita kimliği) ve oradaki konumu. */
   offFloor?: string;
   floorPos?: Offset;

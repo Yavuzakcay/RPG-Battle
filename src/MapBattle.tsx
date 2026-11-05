@@ -5,6 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
+import { imzaTargeted } from './battle/imza';
 import { changeFloorProblem, floorLinkOf } from './battle/floors';
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { overchannelProblem } from './battle/apex';
@@ -404,7 +405,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const featureCommand = (me: Combatant, c: Combatant): Command => {
     const f = (me.features ?? []).find((x) => x.key === featureKey);
     // Görev CLERIC: Divine Spark hedef seçer (dosta iyileştirme, düşmana hasar; tür motorda hedefe göre).
-    if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash' || f?.effect.kind === 'celestialHeal' || f?.effect.kind === 'karadulGaze') return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
+    if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash' || f?.effect.kind === 'celestialHeal' || f?.effect.kind === 'karadulGaze' || (f && imzaTargeted(f.key))) return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
     const pool = f?.resource ? resourceLeft(me, f.resource) : 0;
     const missing = Math.max(0, c.maxHp - c.hp);
     const cure = f?.effect.kind === 'healPool' && missing === 0 && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
@@ -1200,9 +1201,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Kuyruk 19 (11–20): Nature Magician: Wild Shape kullanımları → tek slot (kullanım başına 2 seviye).
     ...(actor.traits?.includes('nature-magician') && globalRule(state, 'featuresK19') ? [1, 2, 3, 4].map((n) => ({ key: `magician-${n}`, label: N.natureMagician(n, Math.min(9, 2 * n)),
       reason: why({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) })) : []),
-    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash' || f.effect.kind === 'celestialHeal' || f.effect.kind === 'karadulGaze'
+    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash' || f.effect.kind === 'celestialHeal' || f.effect.kind === 'karadulGaze' || imzaTargeted(f.key)
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
-        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
+        // Kuyruk K50: hedefli imza eylemi hedef seçilene dek yalnız kaynak denetlenir.
+        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? (imzaTargeted(f.key) ? undefined : why({ type: 'use_feature', actorId, feature: f.key })) ?? undefined,
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
       : { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,

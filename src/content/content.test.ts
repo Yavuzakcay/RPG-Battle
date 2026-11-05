@@ -154,7 +154,7 @@ describe('yükleme, açma/kapama, silme', () => {
   it('içe aktarılan alt sınıf normal alt sınıf gibi görünür; ikinci kez yükleme reddedilir', () => {
     const s = memStore();
     expect(importTexts([text(sample)], s)).toEqual([{ file: 'p.json', ok: true, packId: 'ornek-kurgusal', errors: [] }]);
-    expect(subclassesOf('fighter').map((x) => x.id)).toEqual(['champion', 'kehribar-muhafizi']);
+    expect(subclassesOf('fighter').filter((x) => !x.ev).map((x) => x.id)).toEqual(['champion', 'kehribar-muhafizi']);
     expect(findSubclass('rogue', 'sis-yolcusu')?.pack).toBe('ornek-kurgusal');
     const again = importTexts([text(sample)], s);
     expect(again[0]).toMatchObject({ ok: false, errors: expect.arrayContaining([expect.objectContaining({ code: 'packTaken' })]) });
