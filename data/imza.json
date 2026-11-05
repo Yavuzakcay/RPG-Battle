@@ -591,7 +591,7 @@
       "tr": "Omuz Ver",
       "en": "Lend a Shoulder"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Bağlı bir dost zar tutturamazsa yanındaki bir dost ona destek olur.",
       "en": "When a bonded ally fails a roll, another bonded ally steadies them."
@@ -630,7 +630,7 @@
       "tr": "Ortak Şifa",
       "en": "Common Cure"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Birini iyileştirince diğer bağlı dostlar da biraz iyileşir.",
       "en": "Healing one bonded ally heals the others a little."
@@ -643,7 +643,7 @@
       "tr": "Yıkılmaz Birlik",
       "en": "Unbroken Union"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.",
       "en": "When the pool would empty, it holds."
@@ -1422,6 +1422,18 @@
     "long": "all"
    }
   },
+  "imzaBirlik": {
+   "name": "unbroken-union",
+   "feature": [
+    "cleric/imza_birlik:unbroken-union"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
   "imzaSabir": {
    "name": "patience",
    "feature": [
@@ -2134,6 +2146,7 @@
     "icon": "🔗"
    },
    "ad": "Bağ Kurma",
+   "yz": "bag",
    "not": "Rahip kendisini de bağlar (3 dosta ek); yeni bağ eskisini bitirir."
   },
   "imza:imza_birlik/vigil": {
@@ -2148,7 +2161,8 @@
    "hedef": "bonded",
    "tempHp": "$lvl",
    "moral": 1,
-   "ad": "Teselli Nöbeti"
+   "ad": "Teselli Nöbeti",
+   "yz": "nobet"
   },
   "imza:imza_birlik/shared-vitality": {
    "sinif": "imza_birlik",
@@ -2796,6 +2810,48 @@
     ]
    },
    "not": "Frightened düşman kendi turunun başında 1d10 + CHA zihin hasarı (harita genelinde).",
+   "surumMin": 27
+  },
+  {
+   "sinif": "imza_birlik",
+   "ozellik": "lend-shoulder",
+   "seviye": 3,
+   "etki": {
+    "omuz": {
+     "menzilFt": 30
+    }
+   },
+   "not": "Tepki (destek veren Bağlı dostun): başarısız kurtulmaya WIS (en az 1); yalnız başarıya çevirecekse kullanılır.",
+   "surumMin": 27
+  },
+  {
+   "sinif": "imza_birlik",
+   "ozellik": "common-cure",
+   "seviye": 8,
+   "etki": {
+    "ortakSifa": {
+     "enAz": 1
+    }
+   },
+   "not": "Rahibin büyüsüyle bir Bağlı dost iyileşince diğer Bağlı dostlar WIS (en az 1) can kazanır; turda bir; havuzdakilerin payı havuza.",
+   "surumMin": 27
+  },
+  {
+   "sinif": "imza_birlik",
+   "ozellik": "unbroken-union",
+   "seviye": 17,
+   "etki": {
+    "yikilmaz": {
+     "carpan": 2,
+     "kaynak": "imzaBirlik"
+    },
+    "kaynak": {
+     "id": "imzaBirlik",
+     "sayi": 1,
+     "yenilenme": "long"
+    }
+   },
+   "not": "Tepki (uzun dinlenmede 1): havuz 0'a düşecekken 2 × seviye canla ayakta; Bağlı dostların Motivasyonu dolar. Bağ sayısının 6'ya çıkması yok.",
    "surumMin": 27
   },
   {

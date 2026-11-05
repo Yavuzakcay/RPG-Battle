@@ -179,15 +179,19 @@ pas(s, 'expanded', 3, {'alwaysPrepared': {'3': ['Guiding Bolt', 'Faerie Fire', '
 s = 'imza_birlik'
 sub(s, 'cleric', 'Birlik Manastırı', 'Unity Monastery', 'Yükü paylaşan: bağ, ortak can', 'Shares the burden: bonds and a shared life pool', [
     F('forge-bond', 3, 'Bağ Kurma', 'Forge Bond', 'Yakındaki üç dostunu birbirine bağlarsın, 10 tur sürer.', 'Bind up to three nearby allies together for 10 rounds.'),
-    F('lend-shoulder', 3, 'Omuz Ver', 'Lend a Shoulder', 'Bağlı bir dost zar tutturamazsa yanındaki bir dost ona destek olur.', 'When a bonded ally fails a roll, another bonded ally steadies them.', 'planli'),
+    F('lend-shoulder', 3, 'Omuz Ver', 'Lend a Shoulder', 'Bağlı bir dost zar tutturamazsa yanındaki bir dost ona destek olur.', 'When a bonded ally fails a roll, another bonded ally steadies them.'),
     F('vigil', 3, 'Teselli Nöbeti', 'Vigil of Solace', 'Bağlı dostların geçici can ve biraz cesaret kazanır.', 'Bonded allies gain temporary HP and a little heart.'),
     F('shared-vitality', 6, 'Birlik Can Havuzu', 'Shared Vitality', 'Bağlı dostların canı tek bir havuzda toplanır, hasar havuzdan düşer. Dikkat: havuz biterse bağlı herkes ölür.', 'Bonded allies pool their HP; damage comes off the pool. Warning: if the pool empties, all of them die.'),
-    F('common-cure', 8, 'Ortak Şifa', 'Common Cure', 'Birini iyileştirince diğer bağlı dostlar da biraz iyileşir.', 'Healing one bonded ally heals the others a little.', 'planli'),
-    F('unbroken-union', 17, 'Yıkılmaz Birlik', 'Unbroken Union', 'Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.', 'When the pool would empty, it holds.', 'planli'),
+    F('common-cure', 8, 'Ortak Şifa', 'Common Cure', 'Birini iyileştirince diğer bağlı dostlar da biraz iyileşir.', 'Healing one bonded ally heals the others a little.'),
+    F('unbroken-union', 17, 'Yıkılmaz Birlik', 'Unbroken Union', 'Havuz bitecekken ayakta kalır ve herkesin cesareti tazelenir.', 'When the pool would empty, it holds.'),
 ], kural=False)
 act(s, 'forge-bond', seviye=3, tur='bonus', kaynak={'id': 'imzaBag', 'sayi': 'pb', 'yenilenme': 'long'}, hedef='allies', yaricapFt=30, kendisi=True, enCok=3, bag=True,
-    etki={'name': 'Bağlı', 'sure': 10, 'icon': '🔗'}, ad='Bağ Kurma', not_='Rahip kendisini de bağlar (3 dosta ek); yeni bağ eskisini bitirir.')
-act(s, 'vigil', seviye=3, tur='action', kullan={'id': 'channelDivinity', 'maliyet': 1}, hedef='bonded', tempHp='$lvl', moral=1, ad='Teselli Nöbeti')
+    etki={'name': 'Bağlı', 'sure': 10, 'icon': '🔗'}, ad='Bağ Kurma', yz='bag', not_='Rahip kendisini de bağlar (3 dosta ek); yeni bağ eskisini bitirir.')
+act(s, 'vigil', seviye=3, tur='action', kullan={'id': 'channelDivinity', 'maliyet': 1}, hedef='bonded', tempHp='$lvl', moral=1, ad='Teselli Nöbeti', yz='nobet')
+pas(s, 'lend-shoulder', 3, {'omuz': {'menzilFt': 30}}, 'Tepki (destek veren Bağlı dostun): başarısız kurtulmaya WIS (en az 1); yalnız başarıya çevirecekse kullanılır.', k54b=True)
+pas(s, 'common-cure', 8, {'ortakSifa': {'enAz': 1}}, 'Rahibin büyüsüyle bir Bağlı dost iyileşince diğer Bağlı dostlar WIS (en az 1) can kazanır; turda bir; havuzdakilerin payı havuza.', k54b=True)
+pas(s, 'unbroken-union', 17, {'yikilmaz': {'carpan': 2, 'kaynak': 'imzaBirlik'}, 'kaynak': {'id': 'imzaBirlik', 'sayi': 1, 'yenilenme': 'long'}},
+    'Tepki (uzun dinlenmede 1): havuz 0\'a düşecekken 2 × seviye canla ayakta; Bağlı dostların Motivasyonu dolar. Bağ sayısının 6\'ya çıkması yok.', k54b=True)
 act(s, 'shared-vitality', seviye=6, tur='action', kaynak={'id': 'imzaHavuz', 'sayi': 1, 'yenilenme': 'long'}, hedef='bonded', ozel='havuz', ad='Birlik Can Havuzu',
     uyari={'tr': 'Dikkat: havuz biterse bağlı herkes ölür.', 'en': 'Warning: if the pool empties, everyone bonded dies.'})
 

@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54b G3: Birlik Manastırı (kural sürümü 27)
+
+- **Omuz Ver:** destek veren Bağlı dostun tepkisi; bonus onun WIS'i (en az 1). Burst of Ingenuity ile aynı ikinci şans yolu (`reroll: 'plus'`): yalnız başarısızlığı başarıya çevirecekse kullanılır, yoksa tepki harcanmaz. Hesap reducer sonu `syncAuras` → `shoulderBy` (30 ft, tepkisi hazır, Incapacitated değil). Yalnız kurtulma zarları (belgedeki "kurtulma"); saldırı/kontrol yok.
+- **Ortak Şifa:** komut sonu kancası (`registerCommandEnd`): rahibin `cast_spell` komutunda bir Bağlı dost iyileşince diğer Bağlılar WIS (en az 1) can; turda bir (`trait_turn imza:ortak-sifa`). Havuzdaki üyelerin payı havuza eklenir (her üye için; belgedeki "havuz açıksa havuza eklenir").
+- **Yıkılmaz Birlik:** havuz kurulurken rahip 17+ ve kaynak duruyorsa `guard` (2 × seviye). Havuz 0'a düşecekken reducer (`trackPools` → `holdPool`) havuzu tutar, rahibin kaynağı −1 ve tepkisi harcanır, üyelerin Motivasyonu dolar (Moral tam modu yoksa Motivasyon alanı yok, sessizce atlanır). Tepki sorusu sorulmaz (her zaman kullanılır; ölümü önleyen tek seçenek). Bağ sayısının 6'ya çıkması yok (açık).
+- **Havuz kuralı** (havuz 0 → herkes ölür, uyarı) ve K52 vicdan kaybı değişmedi; Motivasyon kaybı paylaşımı (belgede "Tek bağ") bu kuyrukta yok (açık).
+- **Yapay zekâ:** Bağ Kurma (bağ yokken, 30 ft içinde en az bir dost), Teselli Nöbeti (en az 2 Bağlı ve biri yarı canın altında, geçici canı yok; slot dursa da). Omuz Ver ve Yıkılmaz Birlik kendiliğinden.
+
 ## 2026-11-05 — Kuyruk K54b G2: Dunganga (kural sürümü 27)
 
 - **Yedek kaynak** (`spec.yedek`, yalnız sürüm 27+): Ninni ücretsiz kullanımı bitince 1 Büyücülük Puanı, Sepet 3 Büyücülük Puanı (`sorceryPoints`). Önce ücretsiz kullanım harcanır.
