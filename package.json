@@ -26,6 +26,7 @@
     "sim:bolge": "vite-node src/sim/bolgeRun.ts --",
     "harita-karo": "node scripts/harita-karo.mjs",
     "sim:liste": "vite-node src/sim/listeRun.ts --",
+    "sim:yz-sure": "vite-node src/sim/yzSureRun.ts --",
     "sim:irk": "vite-node src/sim/irkRun.ts --",
     "sim:imza": "vite-node src/sim/imzaRun.ts",
     "sim:karadul": "vite-node src/sim/karadulRun.ts --",

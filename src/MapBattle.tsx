@@ -554,6 +554,21 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     : null);
   const setup = state.status === 'setup';
   const active = state.status === 'active';
+  // Y2 G2: "Düşmanı oynat" düşman turlarını tek tek oynatır, aralarında bir çerçeve bırakır (yapay zekâ kararları arayüzü
+  // uzun süre bloklamasın). Zar ya da tepki beklerken durur; zar istemi iptal edilince zincir de biter.
+  const [enemyRun, setEnemyRun] = useState(0);
+  useEffect(() => {
+    if (!enemyRun || dice.pending || dice.reaction) return;
+    if (!active || actor?.side !== 'enemies') { setEnemyRun(0); return; }
+    const timer = window.setTimeout(() => dice.play((rng) => {
+      const next = autoplayEnemyTurns(session, rng, 1);
+      // Tur ilerlemediyse (hata) zincir durur.
+      if (next.state === session.state) setEnemyRun(0);
+      return next;
+    }), 0);
+    return () => window.clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enemyRun, session, dice.pending, dice.reaction]);
 
   // Yeni günlük satırları ve hatalar kısa süre toast olarak görünür.
   useEffect(() => {
@@ -2173,7 +2188,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             );
           })()}
           {active && actor?.side === 'enemies' && (
-            <button className="hud-btn enemy-play" onClick={() => dice.play((rng) => autoplayEnemyTurns(session, rng))}>{B.enemyPlay}</button>
+            <button className="hud-btn enemy-play" onClick={() => setEnemyRun((n) => n + 1)}>{B.enemyPlay}</button>
           )}
           {active && actor?.side === 'party' && actor.summon && (
             <button className="hud-btn enemy-play" onClick={() => { dice.play((rng) => autoplaySummonTurn(session, rng)); reset(); }}>{t().summons.autoplay}</button>
@@ -2285,7 +2300,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}
               whoName={dice.pending.request.by ? state.combatants[dice.pending.request.by]?.name ?? null : null}
-              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={dice.cancel} />
+              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={() => { setEnemyRun(0); dice.cancel(); }} />
           )}
 
           {drawerId && state.combatants[drawerId] && (

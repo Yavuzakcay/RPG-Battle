@@ -9,7 +9,7 @@
 import { distance, type Offset } from '../../rules/hex';
 import data from '../../../data/yz-roller.json';
 import type { BattleState, Combatant, Command } from '../types';
-import { previewCommand, type CommandPreview } from './preview';
+import { aiStats, previewCommand, type CommandPreview } from './preview';
 import type { AiHelpers, Candidate } from './actions';
 
 export type AiRole = 'hasarci' | 'kontrolcu' | 'destek' | 'tank';
@@ -147,6 +147,7 @@ export function scoreCommand(state: BattleState, actor: Combatant, cmd: Command,
 export function evaluateCandidates(state: BattleState, actor: Combatant, cands: Candidate[], helpers: AiHelpers, role: AiRole, legacy?: Command | null): Scored[] {
   const legacyKey = legacy ? JSON.stringify(legacy) : '';
   const out: Scored[] = [];
+  aiStats.candidates += cands.length;
   for (const c of cands) {
     const r = scoreCommand(state, actor, c.cmd, helpers, role);
     if (!Number.isFinite(r.score)) continue;

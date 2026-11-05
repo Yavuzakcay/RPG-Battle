@@ -9,10 +9,14 @@ export { chooseEnemyCommand };
 /** Bir düşmanın turunda en çok kaç komut denenir (yürü, saldır, yürü...). */
 const MAX_STEPS = 6;
 
-/** Sıra bir oyuncuya gelene veya savaş bitene kadar düşman turlarını oynatır. */
-export function autoplayEnemyTurns(session: Session, rng: Rng): Session {
+/**
+ * Sıra bir oyuncuya gelene veya savaş bitene kadar düşman turlarını oynatır. Y2 G2: `maxTurns` (arayüz 1 verir) en çok
+ * kaç düşman turu oynanacağı: arayüz turlar arasında bir çerçeve bırakır (`MapBattle` sıradaki düşmanı zamanlayıcıyla
+ * oynatır), elle zarda da girilen zarla yalnız o düşmanın turu yeniden çalışır.
+ */
+export function autoplayEnemyTurns(session: Session, rng: Rng, maxTurns = 40): Session {
   let s = session;
-  for (let guard = 0; guard < 40; guard++) {
+  for (let guard = 0; guard < Math.min(40, maxTurns); guard++) {
     const st = s.state;
     if (st.status !== 'active') break;
     const actor = st.combatants[currentActorId(st)];

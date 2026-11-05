@@ -79,11 +79,28 @@ import { GAZE_KEY, SPIDER_KEY } from './karadul';
 import { candidatesFor, registerAction, type AiHelpers, type Candidate } from './ai/actions';
 import { difficultyOf, evaluateCandidates, pickByDifficulty, roleOf } from './ai/evaluate';
 import { bonusPoolCands } from './ai/behaviors';
+import { aiStats } from './ai/preview';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
   c.side === 'enemies' || c.civilian ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
-const tryCmd = (state: BattleState, actor: Combatant, cmd: Command) => execute(state, cmd, ctxOf(actor), noRoll);
+/**
+ * Y2 G2: aynı durumda aynı komutun deneme sonucu önbellekte (durum değişmez nesne; `noRoll` deterministik): karar
+ * içinde ve ardışık kararlarda (metamagic, Usta ileri bakışı, hareket yeri taraması) tekrar eden `execute` çağrıları.
+ */
+const tryCache = new WeakMap<BattleState, Map<string, ReturnType<typeof execute>>>();
+const tryCmd = (state: BattleState, actor: Combatant, cmd: Command) => {
+  let m = tryCache.get(state);
+  if (!m) { m = new Map(); tryCache.set(state, m); }
+  const k = `${actor.side}|${actor.civilian ? 1 : 0}|${actor.ownerId}|${JSON.stringify(cmd)}`;
+  const hit = m.get(k);
+  aiStats.tries++;
+  if (hit) return hit;
+  aiStats.tryMisses++;
+  const r = execute(state, cmd, ctxOf(actor), noRoll);
+  m.set(k, r);
+  return r;
+};
 
 /**
  * Kuyruk K48 (ev kuralı, basit kural): Karadul. Biçimde değilken menzildeki en güçlü uygun düşmana Büyüleyici Bakış;
@@ -485,8 +502,25 @@ function commandScore(state: BattleState, actor: Combatant, cmd: Command): numbe
   return (same?.score ?? 0) + sneakBonus(state, actor, cmd);
 }
 
-/** Şu an yapılabilen en iyi eylem. */
+/**
+ * Şu an yapılabilen en iyi eylem (eski kural zinciri). Y2 G2: (durum, yaratık) başına önbellekte; yaratık durumdaki
+ * kaydın kendisi ya da `at` ile kopyası (aynı ekonomi, can, konum) olmalı.
+ */
+const bestCache = new WeakMap<BattleState, Map<string, Command | null>>();
 function bestNow(state: BattleState, actor: Combatant): Command | null {
+  const cur = state.combatants[actor.id];
+  const same = !!cur && (cur === actor || (cur.economy === actor.economy && cur.hp === actor.hp && cur.movementUsed === actor.movementUsed
+    && cur.pos?.col === actor.pos?.col && cur.pos?.row === actor.pos?.row));
+  if (!same) return bestNowUncached(state, actor);
+  let m = bestCache.get(state);
+  if (!m) { m = new Map(); bestCache.set(state, m); }
+  if (m.has(actor.id)) return m.get(actor.id) ?? null;
+  const r = bestNowUncached(state, actor);
+  m.set(actor.id, r);
+  return r;
+}
+
+function bestNowUncached(state: BattleState, actor: Combatant): Command | null {
   const foes = byPriority(actor, foesOf(state, actor), state);
   const shove = deadlyShove(state, actor, foes);
   if (shove) return shove;
@@ -781,8 +815,25 @@ function firstMove(state: BattleState, actor: Combatant, order: Spot[]): Command
   return null;
 }
 
-const at = (state: BattleState, actor: Combatant, to: Offset): BattleState =>
-  ({ ...state, combatants: { ...state.combatants, [actor.id]: { ...actor, pos: to } } });
+/**
+ * Varsayımsal konum durumu. Y2 G2: aynı (durum, yaratık, altıgen) için aynı nesne döner; böylece hareket yeri
+ * taramaları (daha iyi yer, Sneak Attack yeri, kötü koşul, tehlikeden çıkış) aynı karar içinde `tryCmd`/`bestNow`
+ * önbelleklerini paylaşır.
+ */
+const atCache = new WeakMap<BattleState, Map<string, BattleState>>();
+const at = (state: BattleState, actor: Combatant, to: Offset): BattleState => {
+  let m = atCache.get(state);
+  if (!m) { m = new Map(); atCache.set(state, m); }
+  const k = `${actor.id}|${to.col},${to.row}`;
+  const cur = state.combatants[actor.id];
+  // Önbellek yalnız durumdaki yaratığın kendisinden türetilen konumlar için (geçici ekonomi değişikliği yok).
+  const plain = cur === actor;
+  const hit = plain ? m.get(k) : undefined;
+  if (hit) return hit;
+  const out: BattleState = { ...state, combatants: { ...state.combatants, [actor.id]: { ...actor, pos: to } } };
+  if (plain) m.set(k, out);
+  return out;
+};
 
 /**
  * Bonus eylemle yapılacak sınıf özelliği veya büyü sürdürme: Second Wind (HP yarı veya altı),

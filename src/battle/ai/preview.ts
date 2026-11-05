@@ -114,7 +114,7 @@ const ctxOf = (c: Combatant): CommandContext =>
   c.side === 'enemies' || c.civilian ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
 
 /** Zorlanmış zar kancalı Rng. */
-function forcedRng(sc: Scenario | 'probe', hitFace: number): () => number {
+function forcedRng(sc: Scenario | 'probe', hitFace: number, seen?: { varied: boolean }): () => number {
   const rng = (() => 0.5) as (() => number) & { dice?: (r: DiceRequest) => number[] };
   const dieValue = (s: number): number => {
     const lvl = sc === 'probe' ? 'low' : sc.dice;
@@ -133,6 +133,8 @@ function forcedRng(sc: Scenario | 'probe', hitFace: number): () => number {
       return Array.from({ length: n }, () => face);
     }
     if (req.sides === 20 && req.kind !== 'damage' && req.kind !== 'heal') return Array.from({ length: n }, () => 10);
+    // Y2 G2: alt/üst orta yalnız çift yüzlü zarda ayrışır; en düşük/en yüksek her zarda (1 yüzlü hariç).
+    if (seen && n > 0 && req.sides > 1) seen.varied = true;
     return Array.from({ length: n }, () => dieValue(req.sides));
   };
   return rng;
@@ -140,9 +142,9 @@ function forcedRng(sc: Scenario | 'probe', hitFace: number): () => number {
 
 interface RunOut { ok: boolean; error?: string; state?: BattleState; events: BattleEvent[] }
 
-function run(state: BattleState, cmd: Command, ctx: CommandContext, sc: Scenario | 'probe', hitFace: number): RunOut {
+function run(state: BattleState, cmd: Command, ctx: CommandContext, sc: Scenario | 'probe', hitFace: number, seen?: { varied: boolean }): RunOut {
   try {
-    const r = execute(state, cmd, ctx, forcedRng(sc, hitFace));
+    const r = execute(state, cmd, ctx, forcedRng(sc, hitFace, seen));
     return r.ok ? { ok: true, state: r.state, events: r.events } : { ok: false, error: r.error, events: [] };
   } catch (e) {
     return { ok: false, error: String((e as Error)?.message ?? e), events: [] };
@@ -213,6 +215,30 @@ function outcomeOf(before: BattleState, r: RunOut): Outcome {
  * `ok: false` ve motorun hata metni.
  */
 export function previewCommand(state: BattleState, cmd: Command, ctx?: CommandContext, opts: PreviewOptions = {}): CommandPreview {
+  // Y2 G2: aynı durumda aynı komutun önizlemesi önbellekte (durum değişmez nesne; kuru çalıştırma saf).
+  let m = previewCache.get(state);
+  if (!m) { m = new Map(); previewCache.set(state, m); }
+  const k = `${ctx ? `${ctx.playerId}|${ctx.isGm ? 1 : 0}` : '-'}|${opts.range === false ? 0 : 1}|${JSON.stringify(cmd)}`;
+  const hit = m.get(k);
+  aiStats.previews++;
+  if (hit) return hit;
+  const out = previewUncached(state, cmd, ctx, opts);
+  aiStats.previewRuns += out.runs;
+  aiStats.previewMisses++;
+  m.set(k, out);
+  return out;
+}
+
+/**
+ * Y2 G2: başarım sayaçları (yalnız ölçüm betikleri okur; kararı etkilemez): önizleme çağrısı / önbellek dışı /
+ * kuru çalıştırma (`execute`) sayısı, `tryCmd` çağrısı / önbellek dışı, puanlanan aday sayısı.
+ */
+export const aiStats = { previews: 0, previewMisses: 0, previewRuns: 0, tries: 0, tryMisses: 0, candidates: 0 };
+export function resetAiStats(): void { for (const k of Object.keys(aiStats) as Array<keyof typeof aiStats>) aiStats[k] = 0; }
+
+const previewCache = new WeakMap<BattleState, Map<string, CommandPreview>>();
+
+function previewUncached(state: BattleState, cmd: Command, ctx: CommandContext | undefined, opts: PreviewOptions): CommandPreview {
   const actorId = (cmd as { actorId?: string }).actorId ?? '';
   const actor = state.combatants[actorId];
   const context = ctx ?? (actor ? ctxOf(actor) : { playerId: 'gm', isGm: true });
@@ -256,10 +282,17 @@ export function previewCommand(state: BattleState, cmd: Command, ctx?: CommandCo
   let midEvents: BattleEvent[] = probe.events;
   let midState: BattleState | undefined = probe.state;
   const key = (s: Scenario) => `${s.attack}/${s.save}/${s.dice}`;
+  // Y2 G2: aynı saldırı/save sınıfında alt-orta çalıştırma hiç (2+ yüzlü) hasar zarı istemediyse üst-orta ve en
+  // düşük/en yüksek çalıştırmalar aynı sonucu verir (zar dışında her şey deterministik): yeniden çalıştırılmaz.
+  const noDice = new Set<string>();
   for (const attack of aClasses) for (const save of sClasses) for (const dice of ['low', 'high'] as DieLevel[]) {
     const sc = { attack, save, dice };
-    const r = run(state, cmd, context, sc, hitFace);
+    const twin = dice === 'high' && noDice.has(`${attack}/${save}`) ? outs.get(key({ attack, save, dice: 'low' })) : undefined;
+    if (twin) { outs.set(key(sc), twin); continue; }
+    const seen = { varied: false };
+    const r = run(state, cmd, context, sc, hitFace, seen);
     runs++;
+    if (r.ok && dice === 'low' && !seen.varied) noDice.add(`${attack}/${save}`);
     if (r.ok) outs.set(key(sc), outcomeOf(state, r));
     if (r.ok && attack === 'hit' && save === 'fail' && dice === 'low') { midEvents = r.events; midState = r.state; }
   }
@@ -267,6 +300,8 @@ export function previewCommand(state: BattleState, cmd: Command, ctx?: CommandCo
   if (ranged) {
     for (const dice of ['min', 'max'] as DieLevel[]) {
       const sc: Scenario = { attack: 'hit', save: 'fail', dice };
+      const twin = noDice.has('hit/fail') ? outs.get(key({ attack: 'hit', save: 'fail', dice: 'low' })) : undefined;
+      if (twin) { outs.set(key(sc), twin); continue; }
       const r = run(state, cmd, context, sc, hitFace);
       runs++;
       if (r.ok) outs.set(key(sc), outcomeOf(state, r));
