@@ -32,14 +32,14 @@ import { resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, ty
 
 type Etki = Record<string, unknown> & { name: string; sure: number; sureEfsanevi?: number; icon?: string };
 export interface ImzaSpec {
-  sinif: string; ozellik: string; seviye: number; tur: 'action' | 'bonus'; ad: string; not?: string;
+  sinif: string; ozellik: string; seviye: number; tur: 'action' | 'bonus' | 'free'; ad: string; not?: string;
   kaynak?: { id: string; sayi: number | string; yenilenme: string }; kullan?: { id: string; maliyet: number }; maliyet?: number;
   hedef: 'self' | 'ally' | 'allyOrSelf' | 'enemy' | 'allies' | 'enemies' | 'adjEnemies' | 'areaEnemies' | 'bonded' | 'hex';
   menzilFt?: number; yaricapFt?: number; kendisi?: boolean; enCok?: number | string; enCokCarpan?: Record<string, number>; tek?: boolean;
   yalnizIsaretli?: string; save?: { yetenek: Ability; dc: Ability[]; dezVs?: string[]; dezEtki?: string[] }; yari?: boolean; cesaret?: number;
   hasar?: { zar: Record<string, string>; tur: string }; hasarHep?: boolean; iyilestir?: Record<string, string>; tempHp?: string; moral?: number;
   etki?: Etki; etkiSeviye?: Record<string, Etki>; kendiEtki?: Etki; temizle?: string[]; itme?: number; bag?: boolean;
-  ozel?: 'buyruk' | 'havuz' | 'zihin' | 'zihinNesne' | 'firlat' | 'duvar' | 'isaret' | 'zemin' | 'plan' | 'ferman';
+  ozel?: 'buyruk' | 'havuz' | 'zihin' | 'zihinNesne' | 'firlat' | 'duvar' | 'isaret' | 'zemin' | 'plan' | 'ferman' | 'yolAdimi';
   acikHava?: boolean; dostlarDahil?: boolean; efsaneviBasariSure?: number;
   /** Kuyruk K54 (sürüm 25+): yeni eylem; eski savaşta yok. `etki25` sürüm 25'te `etki` yerine (Son Ders aurası). */
   k54?: boolean; etki25?: Etki; menzilSeviye?: Record<string, number>; boyutEnCok?: string; kip?: string; mesafe?: number;
@@ -104,7 +104,7 @@ export function withImza(state: BattleState): BattleState {
     const feats = old ? (c.features ?? []).filter((f) => !IMZA_SPECS[f.key]?.k54) : c.features;
     if (feats !== c.features) c = { ...c, ...(feats ? { features: feats } : {}) };
     const adds: ActiveEffect[] = pasifler(c).filter((p) => typeof p.etki.name === 'string' && !(old && p.k54))
-      .map((p) => ({ ...(p.etki as Partial<ActiveEffect>), id: `imza:${p.sinif}/${p.ozellik}`, name: p.etki.name as string, sourceId: c.id }) as ActiveEffect);
+      .map((p) => { const out: Record<string, unknown> = { ...p.etki, id: `imza:${p.sinif}/${p.ozellik}`, name: p.etki.name as string, sourceId: c.id }; resolveAuras(out, c); return out as unknown as ActiveEffect; });
     combatants[id] = adds.length ? { ...c, effects: [...(c.effects ?? []), ...adds] } : c;
   }
   return changed ? { ...state, combatants } : state;
@@ -204,12 +204,15 @@ function makeEffect(e: Etki, id: string, actor: Combatant, state: BattleState, l
   if (typeof out.hitDie === 'string') out.hitDie = expr(out.hitDie, actor);
   if (out.dice && typeof (out.dice as { die: string }).die === 'string') out.dice = { ...(out.dice as object), die: expr((out.dice as { die: string }).die, actor) };
   if (typeof out.tempHp === 'string') out.tempHp = num(out.tempHp, actor);
-  // Kuyruk K54: aura miktarları belirteçle ($wis, $cha…).
+  resolveAuras(out, actor);
+  return out as unknown as ActiveEffect;
+}
+/** Kuyruk K54: aura miktarları belirteçle ($wis, $cha…; en az 1). */
+function resolveAuras(out: Record<string, unknown>, actor: Combatant): void {
   if (Array.isArray(out.auras)) out.auras = (out.auras as Array<Record<string, unknown>>).map((a) => {
     const e = a.effect as Record<string, unknown>;
     return { ...a, effect: { ...e, ...(typeof e.amount === 'string' ? { amount: Math.max(1, num(e.amount, actor)) } : {}) } };
   });
-  return out as unknown as ActiveEffect;
 }
 
 export function executeImza(state: BattleState, actor: Combatant, f: UsableFeature, targetId: string | undefined, rng?: Rng, to?: Offset): CommandResult {

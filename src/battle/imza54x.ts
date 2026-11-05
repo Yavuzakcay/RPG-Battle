@@ -3,7 +3,7 @@
  * aşamalı (yaratık + altıgen) eylemler burada. Saf.
  */
 import { byLevel } from './imzaCore';
-import { mindObjectEvents, mindObjectProblem, hurlEvents } from './imza54';
+import { mindObjectEvents, mindObjectProblem, hurlEvents, roadStepEvents, roadStepProblem } from './imza54';
 import type { ImzaSpec } from './imza';
 import type { Rng } from '../rules/dice';
 import type { Offset } from '../rules/hex';
@@ -14,6 +14,7 @@ const rangeOf = (spec: ImzaSpec, c: Combatant): number => byLevel(spec.menzilSev
 /** Hedef ve altıgen denetimi (hedef listesi geçerli olduktan sonra). */
 export function k54Problem(state: BattleState, actor: Combatant, spec: ImzaSpec, _targets: Combatant[], to: Offset | undefined): string | null {
   if (spec.ozel === 'zihinNesne') return mindObjectProblem(state, actor, to, rangeOf(spec, actor), byLevel(spec.agirlikSeviye, actor.level) ?? ['hafif']);
+  if (spec.ozel === 'yolAdimi') return roadStepProblem(state, actor, _targets[0]);
   if (spec.hedefVeHex && !to) return 'Bir altıgen seç.';
   return null;
 }
@@ -22,6 +23,7 @@ export function k54Problem(state: BattleState, actor: Combatant, spec: ImzaSpec,
 export function k54Special(state: BattleState, actor: Combatant, spec: ImzaSpec, _key: string, targets: Combatant[], to: Offset | undefined, dc: number,
   rng: Rng): BattleEvent[] | string | null {
   if (spec.ozel === 'zihinNesne' && to) return mindObjectEvents(state, actor, to, spec.mesafe ?? 10, rng);
+  if (spec.ozel === 'yolAdimi') return targets[0] ? roadStepEvents(state, actor, targets[0], rng) : 'Hedef yok.';
   if (spec.ozel === 'firlat') {
     const t = targets[0];
     if (!t) return 'Hedef yok.';

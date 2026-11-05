@@ -32,6 +32,7 @@ import { apexProblem, executeApex, isApex } from './apex';
 import { celestialProblem, executeCelestial } from './celestial';
 import { executeKaradul, karadulProblem } from './karadul';
 import { executeImza, imzaProblem } from './imza';
+import { needHealMoral } from './imza54';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
 
 type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string };
@@ -145,6 +146,8 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
     if (amount > 0) {
       const hpAfter = applyHealing(target.hp, target.maxHp, amount);
       events.push({ type: 'healed', actorId: actor.id, targetId: target.id, label: f.name, amount: hpAfter - target.hp, targetHpAfter: hpAfter });
+      // Kuyruk K54: Muhtaç Sezgisi: Çökmüş dost Elle Şifa'yla 1 Motivasyon kazanır.
+      events.push(...needHealMoral(state, actor, target));
     }
     return finish(state, events);
   }

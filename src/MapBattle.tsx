@@ -6,6 +6,7 @@
  * en sona bırakıldı (Adım 12).
  */
 import { imzaHex, imzaTargeted } from './battle/imza';
+import { needSensed } from './battle/imza54';
 import { changeFloorProblem, floorLinkOf } from './battle/floors';
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { overchannelProblem } from './battle/apex';
@@ -1551,9 +1552,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       <rect x={p.x - r} y={p.y + r + 12} width={2 * r} height={4} className="hpbg" />
                       <rect x={p.x - r} y={p.y + r + 12} width={2 * r * Math.max(0, (c.moral ?? 0) / Math.max(1, c.moralMax))} height={4} className="moral" />
                     </>)}
-                    {[...statusIcons(c), ...effectIcons(state, c)].length > 0 && (
+                    {[...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])].length > 0 && (
                       <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
-                        {[...statusIcons(c), ...effectIcons(state, c)].map((s, i) => <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>)}
+                        {[...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])].map((s, i) => <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>)}
                       </g>
                     )}
                     {c.asleep && (

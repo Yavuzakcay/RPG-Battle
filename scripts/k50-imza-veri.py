@@ -232,15 +232,27 @@ pas(s, 'nimble-elder', 11, {'name': 'Çevik Yaşlı', 'speedFt': 10, 'noProvoke'
 s = 'imza_hizir'
 sub(s, 'paladin', 'Hızır Yemini', 'Oath of Hızır', 'İmdada yetişen', 'Arrives just in time', [
     F('oath-spells', 3, 'Yemin büyüleri', 'Oath Spells', 'İyileştirme ve koruma büyüleri listene eklenir.', 'Healing and warding spells join your list.'),
-    F('just-in-time', 3, 'Tam Zamanında', 'Just in Time', 'Bir dostuna vurulurken yanına belirir, vuruşu sen karşılarsın.', 'You appear beside an ally as they are struck and take the blow.', 'planli'),
-    F('sense-of-need', 3, 'Muhtaç Sezgisi', 'Sense of Need', 'Yere düşen ya da cesareti tükenen dostlarını her yerde bilirsin.', 'You always know where fallen allies are.', 'planli'),
-    F('aura-hard-times', 7, 'Dar Gün Aurası', 'Aura of Hard Times', 'Zor durumdaki dostların ölüme daha dirençli olur ve geçici can kazanır.', 'Struggling allies resist death and gain temporary HP.', 'planli'),
-    F('miracle-in-time', 15, 'Yetişen Mucize', 'Miracle in Time', 'Ölecek dostunun yanına yetişir, ölümü engellersin.', 'You reach a dying ally and stop death.', 'planli'),
+    F('just-in-time', 3, 'Tam Zamanında', 'Just in Time', 'Bir dostuna vurulurken yanına belirir, vuruşu sen karşılarsın.', 'You appear beside an ally as they are struck and take the blow.'),
+    F('sense-of-need', 3, 'Muhtaç Sezgisi', 'Sense of Need', 'Yere düşen ya da cesareti tükenen dostlarını her yerde bilirsin.', 'You always know where fallen allies are.'),
+    F('aura-hard-times', 7, 'Dar Gün Aurası', 'Aura of Hard Times', 'Zor durumdaki dostların ölüme daha dirençli olur ve geçici can kazanır.', 'Struggling allies resist death and gain temporary HP.'),
+    F('miracle-in-time', 15, 'Yetişen Mucize', 'Miracle in Time', 'Ölecek dostunun yanına yetişir, ölümü engellersin.', 'You reach a dying ally and stop death.'),
     F('hastening-road', 20, 'Yetişen Yol', 'The Hastening Road', '10 tur boyunca dostların daha dirençli.', 'For 10 rounds your allies are hardier.'),
 ])
 act(s, 'hastening-road', seviye=20, tur='action', kaynak={'id': 'imzaYetisenYol', 'sayi': 1, 'yenilenme': 'long'}, hedef='allies', yaricapFt=30, kendisi=True,
     etki={'name': 'Yetişen Yol', 'sure': 10, 'resist': ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'], 'icon': '🕊'},
-    ad='Yetişen Yol', not_='Işınlanma ve hasar devralma yok.')
+    ad='Yetişen Yol', not_='Sürüm 25+: tur başı dosta ışınlanma (Yetişen Yol: Adım) ve turda bir hasar devralma.')
+act(s, 'road-step', seviye=20, tur='free', hedef='ally', menzilFt=60, ozel='yolAdimi', ad='Yetişen Yol: Adım', ozellikAdi='hastening-road', k54=True,
+    not_='Yetişen Yol sürerken turda bir: 60 ft içindeki dostun yanına ışınlanma (hareket harcamaz).')
+pas(s, 'just-in-time', 3, {'tamZamaninda': {'menzilFt': 60, 'kaynak': 'channelDivinity', 'hasarPayi': 0.5}},
+    'Tepki (Kanal Gücü): 60 ft içindeki dost saldırı zarından önce hedef alınınca yanına ışınlanır, saldırı sana yönelir; isabette hasarın yarısını alırsın.', k54=True)
+pas(s, 'sense-of-need', 3, {'muhtac': {'menzilFt': 120, 'moral': 1}},
+    '120 ft içindeki 0 HP ya da Çökmüş dostlar haritada işaretli; Elle Şifa ile iyileştirilen Çökmüş dost 1 Motivasyon kazanır (Moral tam modu).', k54=True)
+pas(s, 'aura-hard-times', 7, {'name': 'Dar Gün Aurası', 'icon': '🕊', 'auras': [
+    {'id': 'dar-gun', 'name': 'Dar Gün Aurası', 'radius': 2, 'filter': 'allies', 'trigger': 'passive', 'effect': {'kind': 'deathSaveAdv', 'belowHalf': True}},
+    {'id': 'dar-gun-can', 'name': 'Dar Gün Aurası', 'radius': 2, 'filter': 'allies', 'trigger': 'turnStart', 'effect': {'kind': 'tempHp', 'amount': '$cha', 'belowHalf': True}}]},
+    '10 ft aura (K53 auraCore): yarı canın altındaki dostlara ölüm save avantajı ve tur başı CHA (en az 1) geçici can.', k54=True)
+pas(s, 'miracle-in-time', 15, {'mucize': {'menzilFt': 120, 'kaynak': 'imzaMucize', 'pay': 0.5, 'tavanSeviye': 3}, 'kaynak': {'id': 'imzaMucize', 'sayi': 1, 'yenilenme': 'long'}},
+    'Tepki: 120 ft içindeki dost saldırıyla 0 HP\'ye düşünce yanına ışınlanıp 1 HP\'de tutarsın (Motivasyon tam); hasarın yarısı sana (en çok seviye × 3). Yalnız saldırı hasarında.', k54=True)
 pas(s, 'oath-spells', 3, {'alwaysPrepared': {'3': ['Cure Wounds', 'Sanctuary'], '5': ['Aid', 'Warding Bond'], '9': ['Beacon of Hope', 'Revivify'], '13': ['Death Ward', 'Guardian of Faith'], '17': ['Mass Cure Wounds', 'Greater Restoration']}},
     'Büyü listesi belgede yok: SRD iyileştirme/koruma büyülerinden seçildi.')
 

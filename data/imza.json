@@ -1013,7 +1013,7 @@
       "tr": "Tam Zamanında",
       "en": "Just in Time"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Bir dostuna vurulurken yanına belirir, vuruşu sen karşılarsın.",
       "en": "You appear beside an ally as they are struck and take the blow."
@@ -1026,7 +1026,7 @@
       "tr": "Muhtaç Sezgisi",
       "en": "Sense of Need"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Yere düşen ya da cesareti tükenen dostlarını her yerde bilirsin.",
       "en": "You always know where fallen allies are."
@@ -1039,7 +1039,7 @@
       "tr": "Dar Gün Aurası",
       "en": "Aura of Hard Times"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Zor durumdaki dostların ölüme daha dirençli olur ve geçici can kazanır.",
       "en": "Struggling allies resist death and gain temporary HP."
@@ -1052,7 +1052,7 @@
       "tr": "Yetişen Mucize",
       "en": "Miracle in Time"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Ölecek dostunun yanına yetişir, ölümü engellersin.",
       "en": "You reach a dying ally and stop death."
@@ -1391,6 +1391,18 @@
    ],
    "uses": {
     "proficiency": true
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaMucize": {
+   "name": "miracle-in-time",
+   "feature": [
+    "paladin/imza_hizir:miracle-in-time"
+   ],
+   "uses": {
+    "fixed": 1
    },
    "recharge": {
     "long": "all"
@@ -2313,7 +2325,19 @@
     "icon": "🕊"
    },
    "ad": "Yetişen Yol",
-   "not": "Işınlanma ve hasar devralma yok."
+   "not": "Sürüm 25+: tur başı dosta ışınlanma (Yetişen Yol: Adım) ve turda bir hasar devralma."
+  },
+  "imza:imza_hizir/road-step": {
+   "sinif": "imza_hizir",
+   "ozellik": "hastening-road",
+   "seviye": 20,
+   "tur": "free",
+   "hedef": "ally",
+   "menzilFt": 60,
+   "ozel": "yolAdimi",
+   "ad": "Yetişen Yol: Adım",
+   "k54": true,
+   "not": "Yetişen Yol sürerken turda bir: 60 ft içindeki dostun yanına ışınlanma (hareket harcamaz)."
   },
   "imza:imza_harita/rewrite-the-ground": {
    "sinif": "imza_harita",
@@ -2476,6 +2500,89 @@
     "icon": "🍃"
    },
    "not": "Fırsat saldırısı muafiyeti sürüm 25+ (Disengage gibi); Yönlendir yok."
+  },
+  {
+   "sinif": "imza_hizir",
+   "ozellik": "just-in-time",
+   "seviye": 3,
+   "etki": {
+    "tamZamaninda": {
+     "menzilFt": 60,
+     "kaynak": "channelDivinity",
+     "hasarPayi": 0.5
+    }
+   },
+   "not": "Tepki (Kanal Gücü): 60 ft içindeki dost saldırı zarından önce hedef alınınca yanına ışınlanır, saldırı sana yönelir; isabette hasarın yarısını alırsın.",
+   "k54": true
+  },
+  {
+   "sinif": "imza_hizir",
+   "ozellik": "sense-of-need",
+   "seviye": 3,
+   "etki": {
+    "muhtac": {
+     "menzilFt": 120,
+     "moral": 1
+    }
+   },
+   "not": "120 ft içindeki 0 HP ya da Çökmüş dostlar haritada işaretli; Elle Şifa ile iyileştirilen Çökmüş dost 1 Motivasyon kazanır (Moral tam modu).",
+   "k54": true
+  },
+  {
+   "sinif": "imza_hizir",
+   "ozellik": "aura-hard-times",
+   "seviye": 7,
+   "etki": {
+    "name": "Dar Gün Aurası",
+    "icon": "🕊",
+    "auras": [
+     {
+      "id": "dar-gun",
+      "name": "Dar Gün Aurası",
+      "radius": 2,
+      "filter": "allies",
+      "trigger": "passive",
+      "effect": {
+       "kind": "deathSaveAdv",
+       "belowHalf": true
+      }
+     },
+     {
+      "id": "dar-gun-can",
+      "name": "Dar Gün Aurası",
+      "radius": 2,
+      "filter": "allies",
+      "trigger": "turnStart",
+      "effect": {
+       "kind": "tempHp",
+       "amount": "$cha",
+       "belowHalf": true
+      }
+     }
+    ]
+   },
+   "not": "10 ft aura (K53 auraCore): yarı canın altındaki dostlara ölüm save avantajı ve tur başı CHA (en az 1) geçici can.",
+   "k54": true
+  },
+  {
+   "sinif": "imza_hizir",
+   "ozellik": "miracle-in-time",
+   "seviye": 15,
+   "etki": {
+    "mucize": {
+     "menzilFt": 120,
+     "kaynak": "imzaMucize",
+     "pay": 0.5,
+     "tavanSeviye": 3
+    },
+    "kaynak": {
+     "id": "imzaMucize",
+     "sayi": 1,
+     "yenilenme": "long"
+    }
+   },
+   "not": "Tepki: 120 ft içindeki dost saldırıyla 0 HP'ye düşünce yanına ışınlanıp 1 HP'de tutarsın (Motivasyon tam); hasarın yarısı sana (en çok seviye × 3). Yalnız saldırı hasarında.",
+   "k54": true
   }
  ]
 }

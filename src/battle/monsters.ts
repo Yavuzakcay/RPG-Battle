@@ -28,7 +28,7 @@ import type { BattleEvent, BattleState, Combatant, MultiStep } from './types';
 import multiData from '../../data/multiattack.json';
 import { castWithoutAction } from './castHook';
 import { effectiveAc, wardSources } from './divine';
-import { afterAttackReactions, corrodeEvents, hitReactions, targetedReactions, type HitOutcome } from './reactions';
+import { afterAttackReactions, corrodeEvents, hitReactions, targetedHookReactions, targetedReactions, type HitOutcome } from './reactions';
 
 
 /** Tek bir canavar saldırısını çözer ve olaylarını döndürür. */
@@ -50,8 +50,8 @@ export function monsterAttackEvents(
     return { ok: true, events: corrodeEvents(actor, target, atk.save?.dc ?? 11, rng) };
   }
   // Kuyruk 19 (srdK19): Redirect Attack canavar saldırı zarlarında da (yer değiştiren dosta gider).
-  if (globalRule(state, 'srdK19') && !atk.save && !opportunity) {
-    const tr = targetedReactions(state, actor, target, rng);
+  if (!atk.save && !opportunity) {
+    const tr = globalRule(state, 'srdK19') ? targetedReactions(state, actor, target, rng) : targetedHookReactions(state, actor, target, rng);
     const other = tr.targetId !== target.id ? applyEvents(state, tr.events) : null;
     const next = other?.combatants[tr.targetId];
     if (other && next) {

@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54 G2: Hızır Yemini (kural sürümü 25)
+
+- Tam Zamanında: yeni kanca `registerTargeted` (hedef alınma, saldırı zarından önce; Redirect Attack ile aynı yol). 60 ft içindeki dost silah/canavar saldırısıyla hedef alınınca paladin (tepki + 1 Kanal Gücü) dostun yanına ışınlanır (K53 `withArrival`; yakın dövüşte saldırganın erişimindeki altıgen), saldırı ona yönelir; tek saldırılık tüm türlere direnç = "hasarın yarısı" (saldırı sonrası kalkar). Büyü saldırıları ve fırsat saldırıları kapsam dışı. Canavar saldırısında srdK19 kapalıyken yalnız bu kanca çalışır. Öneri (yapay zekâ): dostun canı ≤ paladinin canı.
+- Muhtaç Sezgisi: 120 ft içindeki 0 HP / Çökmüş dost jetonunda 🕯 işareti (`needSensed`; harita dışı görünürlük değiştirilmez: savaşta düşenler zaten görünür). Elle Şifa (Lay On Hands) zaten bonus eylem; Çökmüş dosta +1 Motivasyon (Moral tam modu).
+- Dar Gün Aurası: K53 aurası (10 ft; yarı canın altındaki dostlara pasif ölüm save avantajı + tur başı CHA (en az 1) geçici can). Pasif etkilerde de aura belirteçleri çözülür.
+- Yetişen Mucize: yalnız saldırı hasarında (saldırı sonrası kanca; büyü/alan/harita hasarı yok, sonradan K59'da genişletilebilir). Dost 0 HP'ye düşüp ölmediyse: ışınlanma, 1 HP, Motivasyon tam, hasarın yarısı (en çok seviye × 3) paladine kuvvet hasarı. Uzun dinlenmede 1 (`imzaMucize`).
+- Yetişen Yol: ayrı serbest eylem "Yetişen Yol: Adım" (turda bir, 60 ft içindeki dostun yanına; "tur başında" yerine turun herhangi bir anında, hareket harcamaz) ve turda bir hasar devralma (dost iyileşir, hasar paladine; paladinin direnci uygulanır). Öneri: paladin canı > 2 × hasar.
+
 ## 2026-11-05 — Kuyruk K54 G1: Yaşlı Bilge Disiplini (kural sürümü 25)
 
 - Kural sürümü 24 → 25 (`data/imza.json` `surumK54`, `data/kural-surumu.json`). K54'ün yeni eylemleri (`k54: true`) ve pasifleri sürüm 25 öncesi savaşta yüklenmez; `etki25` sürüm 25'te `etki` yerine geçer (Son Ders). Eski kayıt/replay K50 davranışıyla açılır.

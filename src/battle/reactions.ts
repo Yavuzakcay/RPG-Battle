@@ -321,6 +321,16 @@ function ownHitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutc
   };
 }
 
+/** Kuyruk K54: hedef alınma kancaları (saldırı zarından önce; başka bir dost saldırıyı üstlenir). */
+export type TargetedHook = (state: BattleState, attacker: Combatant, target: Combatant, rng: Rng) => { events: BattleEvent[]; targetId: string } | null;
+const targetHooks: TargetedHook[] = [];
+export function registerTargeted(h: TargetedHook): void { if (!targetHooks.includes(h)) targetHooks.push(h); }
+/** Yalnız kayıtlı kancalar (srdK19 kapalıyken canavar saldırısı için). */
+export function targetedHookReactions(state: BattleState, attacker: Combatant, target: Combatant, rng: Rng): { events: BattleEvent[]; targetId: string } {
+  if (target.side !== attacker.side) for (const h of targetHooks) { const r = h(state, attacker, target, rng); if (r) return r; }
+  return { events: [], targetId: target.id };
+}
+
 /** Kuyruk K54: saldırı sonrası tepki kancaları (imza alt sınıflar; `registerAfterAttack`). */
 export type AfterAttackHook = (state: BattleState, attackerId: string, targetId: string, info: { melee: boolean; damageType: string; dealt: number; hit: boolean }, rng: Rng) => BattleEvent[];
 const afterHooks: AfterAttackHook[] = [];
@@ -498,6 +508,8 @@ function saveDamage(actor: Combatant, target: Combatant, label: string, ability:
 export function targetedReactions(state: BattleState, attacker: Combatant, target: Combatant, rng: Rng, spell?: { srd: string; name: string }):
   { events: BattleEvent[]; targetId: string; blocked?: boolean } {
   const none = { events: [], targetId: target.id };
+  // Kuyruk K54: dostun yerine saldırıyı üstlenen tepkiler (Tam Zamanında); kayıtlı kancalar.
+  if (!spell && target.side !== attacker.side) for (const h of targetHooks) { const r = h(state, attacker, target, rng); if (r) return r; }
   if (!canReact(target) || target.side === attacker.side) return none;
   if (spell) {
     const shield = specsOf(target, ['shield']).find((s) => usable(target, s) && s.blocks?.includes(spell.srd));
