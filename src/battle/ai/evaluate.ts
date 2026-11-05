@@ -35,6 +35,15 @@ export function roleOf(actor: Combatant, spellKinds?: { heal: number; control: n
   return 'hasarci';
 }
 
+/**
+ * Y2 G3: zorluk etiketi (K58 arayüzü okuyacak): Usta "deneysel" ve dürüst açıklama (`data/yz-roller.json`).
+ */
+export function difficultyNote(d: AiDifficulty, lang: 'tr' | 'en' = 'tr'): { experimental: boolean; text: string } | null {
+  if (d !== 'usta') return null;
+  const u = data.zorluk.usta;
+  return { experimental: !!u.deneysel, text: u.aciklama[lang] };
+}
+
 export function difficultyOf(state: BattleState, side: Combatant['side']): AiDifficulty {
   return state.yz?.zorluk?.[side] ?? 'normal';
 }

@@ -11,7 +11,7 @@ import { currentActorId } from '../common';
 import { GM, P1, mk } from '../fixtures';
 import { seededRng } from '../../rules/dice';
 import { distance } from '../../rules/hex';
-import { scoreCommand } from './evaluate';
+import { difficultyNote, scoreCommand } from './evaluate';
 import { SCENARIOS, setupBattle, seeded } from '../../sim/balance';
 import { contextFor } from '../../ui/session';
 import type { BattleState, Combatant, Command } from '../types';
@@ -133,5 +133,13 @@ describe('Y2 G3: Usta', () => {
     // Normal'de Usta terimleri yok.
     const n = scoredCandidates(r.state, r.c('A')).scored[0];
     expect(n?.parts.kesin).toBeUndefined();
+  });
+
+  it('Usta deneysel etiketli ve açıklaması dürüst (Normal\'den belirgin güçlü değil)', () => {
+    const n = difficultyNote('usta');
+    expect(n?.experimental).toBe(true);
+    expect(n?.text).toMatch(/Normal'den belirgin güçlü değil/);
+    expect(difficultyNote('usta', 'en')?.text).toMatch(/not clearly stronger/);
+    expect(difficultyNote('normal')).toBeNull();
   });
 });
