@@ -8,6 +8,7 @@
  * (taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış) CSS. Oyun akışı işaretleri ışık hüzmesi (`beamFor`).
  */
 import spriteData from '../../data/efekt-sprites.json';
+import baglama from '../../data/efekt-baglama.json';
 import type { Combatant } from '../battle/types';
 
 export interface LoopSprite { id: string; file: string; frames: number; size: number; frameMs: number; priority: number; conditions: string[] }
@@ -26,10 +27,17 @@ export const LOOP_SCALE = 1.15;
 /** Birden çok durum varken sıradaki efekte geçiş aralığı (ms; Görev V2). */
 export const ROTATE_MS = 2500;
 
-export const STATUS_SPRITES: LoopSprite[] = Object.entries(DATA.effects)
-  .filter(([, e]) => e.kind === 'status' && e.loop)
-  .map(([id, e]) => ({ id, file: e.file, frames: e.frames, size: e.size, frameMs: DATA.frameMs, priority: e.priority ?? 99, conditions: e.conditions ?? [] }))
-  .sort((a, b) => a.priority - b.priority);
+// Görev E1: Görev V şeritlerine ek durum bağları (data/efekt-baglama.json `jetonDongu`: zehir şeridi Poisoned döngüsü).
+const EXTRA = baglama.jetonDongu as Record<string, { durumlar: string[]; oncelik: number }>;
+export const STATUS_SPRITES: LoopSprite[] = [
+  ...Object.entries(DATA.effects)
+    .filter(([, e]) => e.kind === 'status' && e.loop)
+    .map(([id, e]) => ({ id, file: e.file, frames: e.frames, size: e.size, frameMs: DATA.frameMs, priority: e.priority ?? 99, conditions: e.conditions ?? [] })),
+  ...Object.entries(EXTRA).flatMap(([id, x]) => {
+    const e = DATA.effects[id];
+    return e ? [{ id, file: e.file, frames: e.frames, size: e.size, frameMs: DATA.frameMs, priority: x.oncelik, conditions: x.durumlar }] : [];
+  }),
+].sort((a, b) => a.priority - b.priority);
 
 export const ENGEL_SPRITES: EngelSprite[] = Object.entries(DATA.effects)
   .filter(([, e]) => e.kind === 'engel' && e.phases)
@@ -83,7 +91,7 @@ export function beamFor(flags: Partial<Record<BeamKind, boolean>>): BeamKind | n
   return BEAM_PRIORITY.find((k) => flags[k]) ?? null;
 }
 
-export type TokenFilter = 'petrified' | 'invisible' | 'unconscious' | 'prone' | 'exhaustion' | 'spirit';
+export type TokenFilter = 'petrified' | 'invisible' | 'unconscious' | 'prone' | 'exhaustion' | 'spirit' | 'blinded';
 
 /**
  * Jeton filtreleri (durum adları data/conditions.json'dan; yeni durum yok). Baygınlık: Unconscious ya da 0 HP'de
@@ -94,6 +102,8 @@ export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon'
   const out: TokenFilter[] = [];
   const has = (n: string) => c.conditions.includes(n);
   if (has('Petrified')) out.push('petrified');
+  // Görev E1: kör jeton kısık/karartılmış (yalnızca görsel).
+  if (has('Blinded')) out.push('blinded');
   if (has('Invisible')) out.push('invisible');
   if (has('Unconscious') || c.life === 'dying' || c.life === 'stable') out.push('unconscious');
   if (has('Prone')) out.push('prone');
@@ -103,17 +113,22 @@ export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon'
 }
 
 /** Filtrelerin birleşik görünümü: CSS filtresi, saydamlık ve küçültme (birden çok filtre üst üste binebilir). */
-export function filterStyle(filters: TokenFilter[]): { filter: string; opacity: number; shrink: number } {
+export function filterStyle(filters: TokenFilter[]): { filter: string; opacity: number; shrink: number; tilt?: number } {
   const parts: string[] = [];
+  const J = baglama.jeton;
   let opacity = 1;
   let shrink = 1;
+  let tilt = 0;
   for (const f of filters) {
     if (f === 'petrified') parts.push('grayscale(1)', 'contrast(0.85)');
-    if (f === 'invisible') opacity = Math.min(opacity, 0.45);
+    // Görev E1: görünmez %40 saydam (opaklık veriden).
+    if (f === 'invisible') opacity = Math.min(opacity, J.gorunmezOpaklik);
+    if (f === 'blinded') parts.push(`brightness(${J.korParlaklik})`);
     if (f === 'unconscious') parts.push('brightness(0.6)');
-    if (f === 'prone') shrink = 0.82;
+    // Yerde: küçülme ve yatık eğim (Görev E1).
+    if (f === 'prone') { shrink = 0.82; tilt = J.yatikDerece; }
     if (f === 'exhaustion') parts.push('saturate(0.45)', 'brightness(0.92)');
     if (f === 'spirit') { parts.push('grayscale(0.5)', 'sepia(0.4)', 'hue-rotate(170deg)', 'brightness(1.15)'); opacity = Math.min(opacity, 0.7); }
   }
-  return { filter: parts.join(' '), opacity, shrink };
+  return { filter: parts.join(' '), opacity, shrink, ...(tilt ? { tilt } : {}) };
 }

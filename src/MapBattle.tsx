@@ -58,7 +58,7 @@ import { movableZoneOf } from './battle/zones';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionTip } from './ui/actionHints';
-import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark } from './ui/damageFloats';
+import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -76,7 +76,7 @@ import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './ba
 import { getMonster, monsters, spells } from './data';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
-import { LOOP_SCALE, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
+import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { ReactionPrompt } from './ui/ReactionPrompt';
@@ -98,6 +98,9 @@ const DiceTray = lazy(() => import('./ui/DiceTray'));
 const EffectsLayer = lazy(() => import('./ui/EffectsLayer'));
 // Savaş sonu efekti (Görev U): yalnızca savaş bu ekranda bitince yüklenir.
 const EndFx = lazy(() => import('./ui/EndFx'));
+// Görev E1: efekt katmanları (tek seferlik vuruş/alan/ışın…, aura ve duvar) ayrı parça.
+const FxShots = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.FxShots })));
+const FxGround = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.FxGround })));
 const EndVideo = lazy(() => import('./ui/EndVideo'));
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
@@ -523,6 +526,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Görev V2: birden çok durumlu jetonda döngü efekti ROTATE_MS'de bir sıradakine geçer; yalnızca gerekince sayar.
   const rotating = fxOn && !reduceMotion && Object.values(state.combatants).some((c) => c.pos && loopEffectsFor(c).length > 1);
   const [fxNow, setFxNow] = useState(0);
+  // Görev E1: oynayan tek seferlik efektler (hedef jetonların durum döngüsü durur; ekran bütçesi paylaşılır).
+  const [fxShotInfo, setFxShotInfo] = useState<{ targets: Set<string>; count: number; loopBudget: number }>(() => ({ targets: new Set(), count: 0, loopBudget: MAX_ANIMATED }));
+  const fxGeo = useMemo(() => ({ hexCenter, tokenCenter: (c: Combatant) => tokenCenter(state, c), hexW: HEX_W, hexH: HEX_H }), [state]);
   useEffect(() => {
     if (!rotating) return;
     const timer = window.setInterval(() => setFxNow((n) => n + ROTATE_MS), ROTATE_MS);
@@ -1481,7 +1487,20 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const r = TOKEN_R;
             // Sürekli durum efektleri (Görev V, V2): jeton başına tek efekt (çoklu durumda sırayla), ekranda en çok sekiz
             // animasyon; efekt ayarı kapalıysa yok; tek seferlik hasar efekti oynarken o jetonun döngüsü duraklar.
-            const loops = placeLoops(ordered.map((x) => x.c), { enabled: fxOn, reduceMotion, now: fxNow, paused: new Set(floats.map((f) => f.targetId)) });
+            // Görev E1: efekt ayarı kapalıyken de durum gösterilir, yalnızca animasyonsuz (tek sabit kare). Tek seferlik efekt
+            // oynayan jetonun döngüsü durur; ekran bütçesi (12) tek seferliklerle paylaşılır.
+            const loops = placeLoops(ordered.map((x) => x.c), { enabled: true, reduceMotion: reduceMotion || !fxOn, now: fxNow,
+              budget: Math.max(0, Math.min(MAX_ANIMATED, fxShotInfo.loopBudget - floats.length)),
+              paused: new Set([...floats.map((f) => f.targetId), ...fxShotInfo.targets]) });
+            const loopAnimated = [...loops.entries()].filter(([, l]) => l.animated);
+            const tokenUsed = new Map<string, number>([...fxShotInfo.targets].map((id) => [id, 1]));
+            for (const [id] of loopAnimated) tokenUsed.set(id, (tokenUsed.get(id) ?? 0) + 1);
+            const ground = (
+              <Suspense key="fx-ground" fallback={null}>
+                <FxGround state={state} enabled={fxOn} reduceMotion={reduceMotion} geo={fxGeo} tokenUsed={tokenUsed}
+                  used={fxShotInfo.count + loopAnimated.length + floats.length} />
+              </Suspense>
+            );
             // Oyun akışı işaretleri (Görev V2): altıgen tabanından yukarı ışık hüzmesi, bütün jetonların arkasında ayrı katman.
             const beamOf = (c: Combatant): BeamKind | null => beamFor({
               turn: c.id === actorId && active, selected: c.id === selected && setup, target: c.id === targetId,
@@ -1520,6 +1539,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               </g>
             );
             return [
+              ground,
               beams,
               ...ordered.map(({ c, view, scale }) => {
                 const p = tokenCenter(state, c);
@@ -1538,13 +1558,17 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   <g key={c.id} className={cls}>
                     {filters.includes('prone') && <ellipse cx={p.x} cy={p.y + r * 0.62} rx={r * 0.95} ry={r * 0.32} className="prone-shadow" aria-hidden="true" />}
                     <g className="token-filter" style={look.filter || look.opacity < 1 ? { filter: look.filter || undefined, opacity: look.opacity } : undefined}
-                      transform={look.shrink < 1 ? `translate(${p.x} ${p.y}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
+                      transform={look.shrink < 1 || look.tilt ? `translate(${p.x} ${p.y}) rotate(${look.tilt ?? 0}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
                       <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
                         flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
                       {/* Takım halkası yalnızca resimsiz (baş harfli) jetonda: resimli jetonda `.fig ~ .ring` gizler (Görev V2). */}
                       <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     </g>
                     {c.unaware && <text x={p.x + r * 0.7} y={top + 6} className="unaware-mark" aria-hidden="true">?</text>}
+                    {/* Görev E1: baygın jetonun üstünde yüzen Z (uyuyanın Zzz rozeti ayrı); animasyon ayarı/hareketi azalt kapatır. */}
+                    {filters.includes('unconscious') && !c.asleep && (
+                      <text x={p.x + r * 0.55} y={top + 4} className={`fx-z${fxOn && !reduceMotion ? '' : ' still'}`} aria-hidden="true">Z</text>
+                    )}
                     {(() => {
                       // Tek döngü efekti (Görev V2); halka jetonun üstünde ortalı (ortası boş). Sıradakine geçişte kısa belirme.
                       const fx = loops.get(c.id);
@@ -1584,7 +1608,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     </>)}
                     {[...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])].length > 0 && (
                       <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
-                        {[...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])].map((s, i) => <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>)}
+                        {([...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])] as StatusIcon[]).map((s, i) => (s.img
+                          // Görev E1: ikon görseli (bitkinlikte kum saati + seviye).
+                          ? <g key={s.key}><title>{s.title}</title><image href={`${BASE}${s.img}`} x={-i * 20 - 11} y={-17} width={22} height={22} className="status-img" />
+                            {s.count ? <text x={-i * 20 + 8} y={4} className="status-count">{s.count}</text> : null}</g>
+                          : <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>))}
                       </g>
                     )}
                     {c.asleep && (
@@ -1640,6 +1668,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               </g>
             );
           })}
+          <Suspense fallback={null}>
+            <FxShots state={state} events={session.events} enabled={fxOn} reduceMotion={reduceMotion} geo={fxGeo} onActive={setFxShotInfo}
+              lead={(fresh) => diceLead(liveDiceRolls(fresh, 0).length, timings)} />
+          </Suspense>
           {outcomes.map((m) => {
             const c = state.combatants[m.targetId];
             if (!c?.pos) return null;

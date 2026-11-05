@@ -1,0 +1,36 @@
+{
+  "not": "Görev E1: jetonDongu: Görev V döngü şeritlerine (data/efekt-sprites.json) eklenen durum bağları (zehir şeridi Poisoned döngüsü). jeton: CSS katmanları (görünmez %40 saydam = opaklık 0,6; kör karartma; yerde eğim derecesi). Motor olayı → efekt sprite'ı (yalnızca görsel; kural, sayı ve kural sürümü değişmez). Sprite adları data/sprite-esleme.json `efektler` (efekt- öneki olmadan). butce: ekranda aynı anda en çok animasyonlu efekt ve jeton başına animasyonlu katman; aşan statik tek kare. darbe: isabetli saldırının hasar türü → darbe satırı (kritikte kritik-vurus). alan: alan hasarı türü → patlama satırı (çizgi alanda isin). iyilestirBuyuk: bu miktar ve üstü iyilestir-buyuk. koruma: süren etkinin alanı → koruma satırı (ilk eşleşen). cagir: büyü kimliği → çağırma satırı (yoksa varsayilan). moral: moral_changed nedeni → satır. aura: auranın hasar türü / filtresi → renk. duvar: engel türü ya da büyü kimliği → duvar satırı; cizili duvar Harita Öğretisi tonuna boyanır (ton). olcek: jeton çapına göre çizim boyu.",
+  "jetonDongu": { "poison": { "durumlar": ["Poisoned"], "oncelik": 8 } },
+  "jeton": { "gorunmezOpaklik": 0.6, "korParlaklik": 0.55, "yatikDerece": -70 },
+  "butce": { "ekran": 12, "jeton": 2 },
+  "darbe": { "slashing": "darbe-kesik", "bludgeoning": "darbe-ezme", "piercing": "darbe-delme", "varsayilan": "darbe-buyu", "kritik": "kritik-vurus" },
+  "alan": { "fire": "alan-ates", "lightning": "alan-yildirim", "radiant": "alan-isik", "necrotic": "alan-nekrotik", "psychic": "alan-psisik", "force": "alan-kuvvet", "thunder": "alan-ses" },
+  "isin": { "fire": "isin-ates", "radiant": "isin-isik", "lightning": "isin-sok", "cold": "isin-buz" },
+  "iyilestirBuyuk": 10,
+  "isinlan": { "cikis": "isinlan-cikis", "giris": "isinlan-giris", "girisGecikme": 280 },
+  "koruma": [
+    { "alan": "ac", "sprite": "koruma-kalkan" },
+    { "alan": "acMin", "sprite": "koruma-kalkan" },
+    { "alan": "wardedFrom", "sprite": "koruma-ruh" },
+    { "alan": "resist", "sprite": "koruma-ruh" },
+    { "alan": "immune", "sprite": "koruma-ruh" },
+    { "alan": "dice", "isaret": 1, "sprite": "koruma-kutsama" },
+    { "alan": "tempHp", "sprite": "koruma-kutsama" },
+    { "alan": "saveAdv", "sprite": "koruma-kutsama" }
+  ],
+  "cagir": {
+    "varsayilan": "cagir-portal",
+    "ruh": "cagir-ruh",
+    "dogal": "cagir-dogal",
+    "dogalBuyuler": ["find-familiar", "find-steed", "conjure-animals", "conjure-woodland-beings", "summon-beast", "giant-insect"],
+    "ruhBuyuler": ["spirit-guardians", "spiritual-weapon", "animate-dead", "summon-undead", "summon-celestial", "guardian-of-faith"]
+  },
+  "olum": "olum-toz",
+  "itme": "itme-toz",
+  "carpma": { "carpmaHasari": "carpma-sok", "nesne": "carpma-enkaz", "objectThrow": "carpma-enkaz" },
+  "moral": { "toparlama": "moral-yeniyol", "zafer": "moral-huzur", "dost": "moral-vicdan", "korku": "moral-vicdan" },
+  "aura": { "fire": "aura-kirmizi", "necrotic": "aura-kirmizi", "cold": "aura-buz", "enemies": "aura-kirmizi", "varsayilan": "aura-altin" },
+  "duvar": { "cizili-duvar": "duvar-cizili", "wall-of-force": "duvar-kuvvet", "wall-of-fire": "duvar-ates", "wall-of-ice": "duvar-buz", "wind-wall": "duvar-kuvvet" },
+  "ton": { "duvar-cizili": "#8a6d4a" },
+  "olcek": { "vurus": 1.9, "iyilestir": 2.2, "isinlan": 2.4, "koruma": 2.2, "cagir": 2.6, "olum": 1.9, "itme": 1.9, "carpma": 1.9, "moral": 1.9 }
+}

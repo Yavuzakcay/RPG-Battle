@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — E1: efektleri bağlama (yalnızca görsel)
+
+- **Kapsam:** oyun kuralı, sayılar ve kural sürümü değişmedi; yeni olay yok. Efekt kodu tembel parça `src/ui/fx/` (`FxLayer`), ana paket 439,59 kB (değişmedi).
+- **İçe aktarma:** `npm run sprite-ice -- --efekt` (kesim tablosu `data/efekt-kesim.json`): 12 yeni sayfa → 41 şerit `public/sprites/efekt-*.webp` + 15 durum ikonu `efekt-ikon-*`; kayıtlar `data/sprite-esleme.json` `efektler`/`efektIkonlari`. Siyah zeminde alfa parlaklıktan ((max − 12)/243), renk alfaya bölünür, `screen` karışımı; ikonlar macenta anahtarla (tolerans 40: soluk pembe hayalet ikonu korunur). Görev V'nin 13 şeridi yeniden alınmadı (ham dosyalar depodakilerle bayt bayt aynı).
+- **Izgara sapmaları:** `duvar-parcalar` sayfasında 3 satır var (beklenen 4; 4. satır zaten ayrı `duvar-cizili` ile değişecekti, sonuç aynı). Sondaki boş kareler atıldı: kritik-vurus, darbe-ezme, darbe-buyu, alan-ates, alan-kuvvet, koruma-kalkan, cagir-portal/ruh/dogal 7; alan-ses 6; itme-toz 6. `alan-yildirim`ın son iki karesi ateş közü (sayfada böyle; olduğu gibi bırakıldı).
+- **Bağlama kuralları veride** (`data/efekt-baglama.json`): saldırı isabeti hasar türüne göre darbe (kritikte kritik-vurus), `healed` (10+ büyük), `teleported` (çıkış + giriş), `area_used`/`spell_cast.area` (hasar türüne göre patlama; çizgi alanda ışın parçaları, %12 bindirme), `effect_added` dosta (AC → kalkan, olumlu zar/geçici can/save avantajı → kutsama, koruma/direnç → ruh), `summoned` (doğal/ruh/portal), `pushed` (itme-toz itilme yönüne döner), `map_effect` çarpma (yaratık → şok, nesne → enkaz), `moral_changed` (toparlama → yeni yol, zafer → huzur, dost/korku → vicdan). Ölüm olay değil: önceki durumda haritada olup şimdi ölü/kaybolmuş jeton → toz.
+- **Kalıcı:** K53 aura etkisi ve yaratığa bağlı alan (Spirit Guardians) → aura halkası (soğuk buz, ateş/nekrotik ya da düşmana yönelik kırmızı, yoksa altın); engel/duvar alanları → duvar parçaları (dikey eksene göre 0°/60°/120°), Çizili Duvar Harita Öğretisi tonunda (#8a6d4a).
+- **Bütçe ve ayar:** ekranda en çok 12 animasyon, jeton başına 2 (tek seferlik efekt oynayan jetonun durum döngüsü durur). Efekt ayarı kapalı ya da hareketi azalt açıkken her efekt tek sabit kare (durum döngüleri de artık gizlenmez, statik görünür).
+- **Jeton katmanları:** Poisoned zehir şeridiyle döngü; Blinded karartma, Invisible %40 saydam (opaklık 0,45 → 0,6), Prone yatık eğim (−70°), Unconscious yüzen Z, Deafened rozet, bitkinlik kum saati + seviye.
+- **Bağlanmayanlar:** `goz-nabiz` (olay yok), `engel-melodi` (Şair'in engel altıgeni yok), Paladin Aura of Protection halkası (olay/aura etkisi değil), Hizalanma Moral bağı (savaşa girmez).
+
 ## 2026-11-05 — Y2: Y1 regresyon düzeltmesi (yapay zekâ davranışı, başarım, Usta)
 
 - **Kapsam:** yeni mekanik yok, oyun sayıları (data/ hasar, HP, DC) değişmedi, kural sürümü aynı (YZ kararı olay değil). Değişen: yapay zekâ karar mantığı ve `data/yz-roller.json` ağırlıkları, iki motor hatası. Ayrıntı ve sayılar: `harita/belgeler/YZ-DENETIM.md` "Y2 bulguları", `harita/belgeler/DENGE.md` "Kuyruk Y2".

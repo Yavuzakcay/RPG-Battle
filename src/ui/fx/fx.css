@@ -1,0 +1,15 @@
+/* Görev E1: efekt katmanları (tembel parça). Siyah zeminli sayfalardan gelen şeritler `screen` karışımıyla. */
+.fx-e1, .fx-e1 image { pointer-events: none; }
+.fx-e1 { mix-blend-mode: screen; }
+.fx-aura { opacity: 0.85; }
+@keyframes fx-appear { from { opacity: 0; } to { opacity: 1; } }
+/* Hareketi azalt: animasyon yok (bileşen zaten statik tek kare çizer; bu ikinci güvence). */
+@media (prefers-reduced-motion: reduce) { .fx-e1 image { animation: none !important; } }
+/* Durum ikon görselleri ve bitkinlik seviyesi (jeton rozetleri). */
+.token .status-icons .status-img { image-rendering: pixelated; }
+.token .status-icons .status-count { font-size: 12px; font-weight: 700; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.8); stroke-width: 3px; }
+/* Baygın jetonda yüzen Z (uyuyanın Zzz rozeti ayrı). */
+.fx-z { font: 700 20px sans-serif; fill: #dfe8ff; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 3px; pointer-events: none; animation: fx-z-float 2.4s ease-in-out infinite; }
+.fx-z.still { animation: none; }
+@keyframes fx-z-float { 0% { transform: translateY(0); opacity: 0.2; } 40% { opacity: 1; } 100% { transform: translateY(-14px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .fx-z { animation: none; opacity: 1; } }

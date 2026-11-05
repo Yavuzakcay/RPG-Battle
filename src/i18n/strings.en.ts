@@ -986,7 +986,7 @@ export const en: Strings = {
       incapacitated: 'Incapacitated: no action, Bonus Action or Reaction; Concentration is broken',
       broken: 'Broken (Morale 0): cannot move or act; attacks against it have Advantage; an ally can rally it',
       bleeding: 'Bleeding', restrained: 'Restrained', charmed: 'Charmed', frightened: 'Frightened',
-      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', invisible: 'Invisible' },
+      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', invisible: 'Invisible', deafened: 'Deafened' },
     outcome: { crit: 'Critical', hit: 'Hit', miss: 'Miss', saved: 'Saved', failed: 'Failed', resisted: 'Resisted', prone: 'Knocked down',
       pushed: 'Pushed', escaped: 'Escaped', stuck: 'Still held', success: 'Success', failure: 'Failure', jumped: 'Jumped', burned: 'Burned', fell: 'Fell' },
   },

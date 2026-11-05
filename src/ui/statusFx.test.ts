@@ -15,8 +15,10 @@ describe('efekt verisi', () => {
   it('hasar efektleri tek seferlik, durum efektleri döngü, engel ayrı tür; kare sayıları', () => {
     for (const id of ['burn', 'poison', 'freeze', 'acid', 'bleed']) expect(effects[id]).toMatchObject({ kind: 'damage', loop: false });
     const frames = Object.fromEntries(STATUS_SPRITES.map((s) => [s.id, s.frames]));
-    expect(frames).toEqual({ paralyzed: 8, stunned: 8, incapacitated: 8, frightened: 10, charmed: 10, restrained: 10, grappled: 10 });
-    for (const s of STATUS_SPRITES) expect(effects[s.id]).toMatchObject({ kind: 'status', loop: true, size: 128, file: `efektler/${s.id}.webp` });
+    // Görev E1: zehir şeridi (hasar efekti) Poisoned döngüsü olarak da oynar (data/efekt-baglama.json `jetonDongu`).
+    expect(frames).toEqual({ paralyzed: 8, stunned: 8, incapacitated: 8, frightened: 10, charmed: 10, restrained: 10, grappled: 10, poison: 6 });
+    for (const s of STATUS_SPRITES.filter((x) => x.id !== 'poison')) expect(effects[s.id]).toMatchObject({ kind: 'status', loop: true, size: 128, file: `efektler/${s.id}.webp` });
+    expect(STATUS_SPRITES.find((x) => x.id === 'poison')).toMatchObject({ conditions: ['Poisoned'], file: 'efektler/poison.webp' });
     const files = Object.keys(import.meta.glob('../../public/efektler/*.webp')).map((p) => `efektler/${p.split('/').pop() ?? ''}`).sort();
     expect(files).toEqual(Object.values(effects).map((e) => e.file).sort());
     expect(ENGEL_SPRITES).toEqual([expect.objectContaining({ id: 'engel-melodi', frames: 7, phases: { appear: [0, 3], loop: [4, 5], break: [6, 6] } })]);
@@ -30,10 +32,11 @@ describe('efekt verisi', () => {
 
 describe('döngü efektleri', () => {
   it('öncelik paralyzed > stunned > incapacitated > frightened > charmed > restrained > grappled', () => {
-    expect(ids(STATUS_SPRITES)).toEqual(['paralyzed', 'stunned', 'incapacitated', 'frightened', 'charmed', 'restrained', 'grappled']);
+    expect(ids(STATUS_SPRITES)).toEqual(['paralyzed', 'stunned', 'incapacitated', 'frightened', 'charmed', 'restrained', 'grappled', 'poison']);
     expect(ids(loopEffectsFor(c('a', ['Grappled', 'Charmed', 'Restrained'])))).toEqual(['charmed', 'restrained', 'grappled']);
     expect(ids(loopEffectsFor(c('a', ['Frightened', 'Paralyzed', 'Stunned', 'Grappled'])))).toEqual(['paralyzed', 'stunned', 'frightened', 'grappled']);
-    expect(loopEffectsFor(c('a', ['Prone', 'Poisoned']))).toEqual([]);
+    expect(loopEffectsFor(c('a', ['Prone', 'Deafened']))).toEqual([]);
+    expect(ids(loopEffectsFor(c('a', ['Prone', 'Poisoned', 'Grappled'])))).toEqual(['grappled', 'poison']);
   });
   it('Incapacitated\'ı içeren durumda ayrıca incapacitated efekti yok', () => {
     expect(ids(loopEffectsFor(c('a', ['Stunned', 'Incapacitated', 'Charmed'])))).toEqual(['stunned', 'charmed']);
@@ -104,12 +107,15 @@ describe('jeton filtreleri', () => {
   });
   it('birleşik görünüm: gri tonlama, saydamlık, küçülme, hayalet', () => {
     expect(filterStyle(['petrified'])).toEqual({ filter: 'grayscale(1) contrast(0.85)', opacity: 1, shrink: 1 });
-    expect(filterStyle(['invisible']).opacity).toBe(0.45);
+    // Görev E1: görünmez %40 saydam (opaklık 0,6; eskiden 0,45), kör karartılmış, yerde yatık eğim.
+    expect(filterStyle(['invisible']).opacity).toBe(0.6);
+    expect(filterStyle(['blinded']).filter).toContain('brightness(0.55)');
+    expect(filterStyle(['prone']).tilt).toBe(-70);
     expect(filterStyle(['prone']).shrink).toBeLessThan(1);
     expect(filterStyle(['unconscious']).filter).toContain('brightness(0.6)');
     expect(filterStyle(['spirit'])).toMatchObject({ opacity: 0.7 });
     expect(filterStyle(['spirit']).filter).toContain('hue-rotate');
-    expect(filterStyle(['invisible', 'spirit']).opacity).toBe(0.45);
+    expect(filterStyle(['invisible', 'spirit']).opacity).toBe(0.6);
     expect(filterStyle([])).toEqual({ filter: '', opacity: 1, shrink: 1 });
   });
 });

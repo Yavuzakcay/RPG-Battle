@@ -429,7 +429,7 @@ export const TR_EXTRA = {
       incapacitated: 'Etkisiz (Incapacitated): eylem, bonus eylem ve tepki yok; konsantrasyon kesilir',
       broken: 'Çökmüş (Moral 0): hareket ve eylem yok; ona saldırı avantajlı; bir dost toparlayabilir',
       bleeding: 'Kanıyor', restrained: 'Bağlandı (Restrained)', charmed: 'Büyülendi (Charmed)', frightened: 'Korkuyor (Frightened)',
-      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', invisible: 'Görünmez (Invisible)' },
+      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', invisible: 'Görünmez (Invisible)', deafened: 'Sağır (Deafened)' },
     outcome: { crit: 'Kritik', hit: 'İsabet', miss: 'Iska', saved: 'Kurtardı', failed: 'Kurtaramadı', resisted: 'Direndi', prone: 'Yere düştü',
       pushed: 'İtildi', escaped: 'Kurtuldu', stuck: 'Kurtulamadı', success: 'Başarılı', failure: 'Başarısız', jumped: 'Atladı', burned: 'Yandı', fell: 'Düştü' },
   },

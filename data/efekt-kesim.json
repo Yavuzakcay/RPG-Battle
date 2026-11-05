@@ -1,0 +1,33 @@
+{
+  "not": "Görev E1: assets-ham/efekt/ efekt sayfalarının kesim tablosu (`npm run sprite-ice -- --efekt`). Eşleme dosya ADIYLA (uzantıdan bağımsız). satir/sutun: ölçülen ızgara; adlar: satır sırası (blokSatir > 1 ise her ad o kadar satırı sırayla birleştirir). kesim: 'esit' (düzenli ızgara: eşit bölme, `kenar` px içeriden), 'oluk' (gri ızgara çizgileri: boydan boya en düşük parlaklığı eşiğin üstündeki çizgiler oluktur), 'karanlik' (siyah zemin: beklenen sınırın ±%22 penceresinde en karanlık çizgiden kesilir; sütunlar satır bandı içinde ayrı bulunur). Alfa parlaklıktan: (max(R,G,B) − 12) / (255 − 12), renk alfaya bölünür (siyah üstünde screen ile aynı görünüm). Sondaki boş kareler (en yüksek alfa < bosEsik) atılır. kare: 'kare' (hücre ortası çıpa, kare tuvale ortalanır) ya da 'serit' (en-boy korunur, satır içeriğinin dikey bandına kırpılır; ışın ve duvar). boyut: kare kenarı ya da şeridin eni (px). kareMs: kare süresi. yon: şeritte içeriğin baktığı yön (itme-toz sağa). mevcut: Görev V'de public/efektler/'e alınmış şeritler (data/efekt-sprites.json); yeniden içe aktarılmaz, klasörde olmaları uyarı vermez. İkon sayfası macenta anahtarla (sprite-ice processSprite), 128 px kare.",
+  "bosEsik": 0.04,
+  "mevcut": ["acid", "bleed", "burn", "charmed", "engel-melodi", "freeze", "frightened", "grappled", "incapacitated", "paralyzed", "poison", "restrained", "stunned"],
+  "sayfalar": {
+    "durum-ikonlari": { "ikon": true, "satir": 3, "sutun": 5, "boyut": 128, "tolerans": 40,
+      "adlar": ["blinded", "charmed", "deafened", "frightened", "grappled", "incapacitated", "invisible", "paralyzed", "petrified", "poisoned", "prone", "restrained", "stunned", "unconscious", "exhaustion"] },
+    "kritik-darbe": { "satir": 5, "sutun": 8, "kesim": "oluk", "kenar": 3, "kare": "kare", "boyut": 128, "kareMs": 55, "tur": "vurus", "dongu": false,
+      "adlar": ["kritik-vurus", "darbe-kesik", "darbe-ezme", "darbe-delme", "darbe-buyu"] },
+    "iyilestir": { "satir": 2, "sutun": 8, "kesim": "karanlik", "kare": "kare", "boyut": 160, "kareMs": 80, "tur": "iyilestir", "dongu": false,
+      "adlar": ["iyilestir-kucuk", "iyilestir-buyuk"] },
+    "isinlan": { "satir": 2, "sutun": 8, "kesim": "karanlik", "kare": "kare", "boyut": 160, "kareMs": 70, "tur": "isinlan", "dongu": false,
+      "adlar": ["isinlan-cikis", "isinlan-giris"] },
+    "alan-patlamalari": { "satir": 7, "sutun": 8, "kesim": "karanlik", "kare": "kare", "boyut": 192, "kareMs": 80, "tur": "alan", "dongu": false,
+      "adlar": ["alan-ates", "alan-yildirim", "alan-isik", "alan-nekrotik", "alan-psisik", "alan-kuvvet", "alan-ses"] },
+    "aura-renkler": { "satir": 9, "sutun": 4, "blokSatir": 3, "kesim": "karanlik", "kare": "kare", "boyut": 192, "kareMs": 110, "tur": "aura", "dongu": true,
+      "adlar": ["aura-altin", "aura-kirmizi", "aura-buz"] },
+    "koruma-cagir": { "satir": 6, "sutun": 8, "kesim": "karanlik", "kare": "kare", "boyut": 160, "kareMs": 80, "tur": "koruma", "dongu": false,
+      "adlar": ["koruma-kalkan", "koruma-kutsama", "koruma-ruh", "cagir-portal", "cagir-ruh", "cagir-dogal"], "turler": { "cagir-portal": "cagir", "cagir-ruh": "cagir", "cagir-dogal": "cagir" } },
+    "olum-itme-moral": { "satir": 7, "sutun": 7, "kesim": "karanlik", "kare": "kare", "boyut": 128, "kareMs": 85, "tur": "olum", "dongu": false,
+      "adlar": ["olum-toz", "itme-toz", "carpma-sok", "carpma-enkaz", "moral-huzur", "moral-vicdan", "goz-nabiz"],
+      "turler": { "itme-toz": "itme", "carpma-sok": "carpma", "carpma-enkaz": "carpma", "moral-huzur": "moral", "moral-vicdan": "moral", "goz-nabiz": "moral" },
+      "yonler": { "itme-toz": "sag" } },
+    "moral-yeniyol": { "satir": 1, "sutun": 8, "kesim": "karanlik", "kare": "kare", "boyut": 128, "kareMs": 100, "tur": "moral", "dongu": false,
+      "adlar": ["moral-yeniyol"] },
+    "isin-parcalari": { "satir": 4, "sutun": 4, "kesim": "karanlik", "kare": "serit", "boyut": 256, "kareMs": 90, "tur": "isin", "dongu": true, "ortusme": 0.12,
+      "adlar": ["isin-ates", "isin-isik", "isin-sok", "isin-buz"], "yonler": { "isin-ates": "sag", "isin-isik": "sag", "isin-sok": "sag", "isin-buz": "sag" } },
+    "duvar-parcalar": { "satir": 3, "sutun": 4, "kesim": "esit", "kenar": 4, "kare": "serit", "boyut": 192, "kareMs": 120, "tur": "duvar", "dongu": true,
+      "adlar": ["duvar-kuvvet", "duvar-ates", "duvar-buz"], "yonler": { "duvar-kuvvet": "sag", "duvar-ates": "sag", "duvar-buz": "sag" } },
+    "duvar-cizili": { "satir": 1, "sutun": 4, "kesim": "karanlik", "kare": "serit", "boyut": 192, "kareMs": 140, "tur": "duvar", "dongu": true,
+      "adlar": ["duvar-cizili"], "yonler": { "duvar-cizili": "sag" } }
+  }
+}

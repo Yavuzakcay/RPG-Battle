@@ -10,7 +10,8 @@ describe('sprite eşlemesi', () => {
     for (const need of ['sis', 'ağ', 'gres', 'yağ', 'alev', 'buhar', 'buz', 'su', 'zehir bulutu']) expect(z).toContain(need);
     expect(esleme.effects.patlama.sprites).toEqual(['yuzey-patlama']);
     expect(Object.keys(esleme.objects)).toEqual(['oilBarrel', 'powderKeg']);
-    for (const n of mappedSpriteNames()) expect(n).toMatch(/^(yuzey|nesne)-[a-z0-9]+(-[a-z0-9]+)*$/);
+    // Görev E1: efekt şeritleri ve durum ikonları `efekt-` önekli (sprite-ice --efekt).
+    for (const n of mappedSpriteNames()) expect(n).toMatch(/^(yuzey|nesne|efekt)-[a-z0-9]+(-[a-z0-9]+)*$/);
   });
   it('K15C: depodaki her sprite eşlemede; zorunlu türlerin hepsi gerçek dosyaya çözülür', () => {
     const have = new Set(mevcut.sprites);
