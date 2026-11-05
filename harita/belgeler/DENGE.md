@@ -2,6 +2,43 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk Y1: ortak yapay zekâ değerlendiricisi — regresyon ve zorluk (2026-11-05)
+
+Ayarlama yok (K59). Aynı kod (`wip/y1`), aynı tohumlar (50); "eski" = `YZ_ESKI=1` (Y1 öncesi kural zinciri), "yeni" = değerlendirici (Normal). Kural sürümü değişmedi (28; yapay zekâ kararı olay değil).
+
+**SRD partisi** (`npm run sim -- 50 duz col orman magara kale dungeon --seviye 5`, standart parti):
+
+| Senaryo | Eski kazanma | Yeni kazanma | Fark | Berabere (eski / yeni) | Ort. tur (eski / yeni) | Ort. düşmüş PC (eski / yeni) |
+|---|---:|---:|---:|---:|---:|---:|
+| Düz — haritasız | 94% | 98% | +4 | 0% / 0% | 6.5 / 5.5 | 0.44 / 0.16 |
+| Çöl — Gündüz | 90% | 94% | +4 | 0% / 0% | 6.7 / 7.5 | 0.50 / 0.56 |
+| Orman | 48% | 62% | **+14** | 0% / 0% | 5.8 / 6.1 | 2.62 / 2.12 |
+| Mağara — karanlık | 74% | 56% | **−18** | 4% / 14% | 7.0 / 9.5 | 1.30 / 1.66 |
+| Dungeon — Koridor (meşale) | 100% | 100% | 0 | 0% / 0% | 5.3 / 5.6 | 0.10 / 0.18 |
+| Kale — Gündüz | 68% | 58% | **−10** | 0% / 0% | 6.9 / 6.5 | 1.78 / 2.24 |
+
+**İmza alt sınıflar** (`npm run sim:imza -- 50 --alt <id> --seviye 7 --senaryo col,orman,magara,kale,duz,dungeon`; 6 senaryo ortalaması):
+
+| Alt sınıf | Eski | Yeni | Fark | SRD karşılığı (eski / yeni) | Sapma (eski → yeni) |
+|---|---:|---:|---:|---:|---:|
+| Dunganga | 64% | 76% | **+12** | Ejderha Büyücülüğü 85% / 87% | −21 → −11 |
+| Harita Öğretisi | 57% | 62% | +5 | Evokasyon Ustası 72% / 71% | −15 → −9 |
+
+**Zorluk** (parti tarafı `YZ_ZORLUK`, düşman Normal; `npm run sim -- 50 col orman kale --seviye 5`):
+
+| Senaryo | Kolay | Normal | Usta |
+|---|---:|---:|---:|
+| Çöl — Gündüz | 80% | 94% | 90% |
+| Orman | 46% | 62% | 64% |
+| Kale — Gündüz | 20% | 58% | 56% |
+| Ortalama | 48.7% | 71.3% | 70.0% |
+
+Notlar:
+- **8 puandan büyük farklar** (rapor, ayar yok): Orman +14, Mağara −18, Kale −10 (SRD); Dunganga +12 (imza). Mağara'da beraberlik %4 → %14 ve ortalama tur 7.0 → 9.5: yeni yapay zekâ karanlıkta daha temkinli (tehlike/korunma puanı), 20 tur sınırına daha sık takılıyor. Kale'de düşmüş PC artıyor (1.78 → 2.24). İki tarafı da aynı yapay zekâ oynadığı için fark parti ya da düşman lehine tek yönlü değil; nedeni K59'da ayrıştırılmalı.
+- İmza alt sınıfların SRD karşılığına sapması küçüldü (Dunganga −21 → −11, Harita −15 → −9): değerlendirici imza eylemlerini (kapılı ipuçları yerine) puanla seçiyor; K50/K54b sorununun hedeflenen sonucu.
+- **Kolay ≤ Normal ≤ Usta:** Kolay < Normal her senaryoda (ortalama −22.6 puan). **Usta ≈ Normal** (−1.3 puan; satır farkları ±4, 50 tohumda standart hata ≈ ±7): Usta'nın bir adım ileri bakışı ölçülebilir kazanç getirmiyor; açık madde.
+- Süre: yeni yapay zekâ senaryo başına ≈ 1,5–2,3× daha yavaş (ör. Kale 140 sn → 310 sn, 4 paralel süreç).
+
 ## Kuyruk K55: altıgen etki çözücüsü — hızlı regresyon (2026-11-05)
 
 Ayarlama yok (K59). `npm run sim -- 30 col kale magara orman --seviye 5 --parti buyucu`; sürüm 26 (çözücü) ile `KURAL_SURUMU=25` (eski geçişler) aynı tohumlar.
