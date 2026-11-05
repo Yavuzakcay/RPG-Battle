@@ -325,6 +325,8 @@ export interface ActiveEffect {
   icon?: string;
   /** Görev B1: koyanın (`sourceId`) sonraki turunun başında biter (Heat Metal dezavantajı, Ray of Enfeeblement başarısı). */
   untilSourceTurn?: boolean;
+  /** Kuyruk A2: bu yaratığın yakalaması sürdükçe (Roper, Rug of Smothering, Vortex…); yakalama bitince etki düşer. */
+  whileGrappledBy?: string;
 }
 
 /** Savaşçının tepkisi (Görev R1): kimlik (SRD), ad, mekanik; tepki büyüsünde büyünün adı. */

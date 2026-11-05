@@ -1,0 +1,914 @@
+{
+ "not": "Kuyruk A2: canavar saldırı eklerinin bağlanması (yalnız veri bağlama; kural sürümü 30+, eski kayıt/replay eski davranış). Anahtar `<canavar>:<saldırı>` (data/attack-riders.json ile aynı). Alanlar: conditions (süreli durum sayacı: owner/end/rounds/saveEnds/maxRounds/escalate/wakeOnDamage/dot; condition-effects.json biçimi), conditionSave (durumlardan önce save), push (K53 forcedMove: mode push|pull, ft, maxSize, adjacent: bitişiğe dek çek), effect (süren etki; sure: ownTurnEnd | sourceTurnStart | rounds:N | grapple (yakalama sürdükçe); unique: zaten etkilenene yeniden işlemez; replaceOwn: aynı saldıranın önceki etkisini kaldırır), self (saldıranın kendisine süren etki), extra (isabette ek hasar; sabit sayı da olur), areaDamage (hasarsız save saldırısına hasar), kill (save başarısızsa HP eşiği: hpAtMost, dies: ölür, değilse 0 HP; else: eşik üstünde hasar), zeroHp (bu saldırı 0 HP'ye düşürünce: dies ya da stable + conditions), swallow (yutma yolu, monsterAbilities.ts swallowedBy), corrode (zırh AC −1 / silah −1). tur: rapor kategorisi. not_: SRD'ye yaklaşım, kalan: uygulanmayan kısım.",
+ "ekler": {
+  "brass-dragon-wyrmling:Sleep Breath": {
+   "conditions": [
+    {
+     "condition": "Incapacitated",
+     "saveEnds": {
+      "ability": "con",
+      "dc": 11
+     },
+     "maxRounds": 1,
+     "escalate": {
+      "condition": "Unconscious",
+      "rounds": 10
+     },
+     "wakeOnDamage": true
+    }
+   ],
+   "tur": "ikinciAsama",
+   "not_": "Incapacitated sonraki turunun sonuna dek, orada tekrar CON save; ikinci başarısızlık Unconscious (1 dk = 10 tur, 10 dk = 100 tur), hasarla uyanır. Yaklaşım: hasarla uyanma ilk aşamada da geçerli; '5 ft içindeki yaratığın eylemiyle uyandırma' yok."
+  },
+  "young-brass-dragon:Sleep Breath": {
+   "conditions": [
+    {
+     "condition": "Incapacitated",
+     "saveEnds": {
+      "ability": "con",
+      "dc": 14
+     },
+     "maxRounds": 1,
+     "escalate": {
+      "condition": "Unconscious",
+      "rounds": 10
+     },
+     "wakeOnDamage": true
+    }
+   ],
+   "tur": "ikinciAsama",
+   "not_": "Incapacitated sonraki turunun sonuna dek, orada tekrar CON save; ikinci başarısızlık Unconscious (1 dk = 10 tur, 10 dk = 100 tur), hasarla uyanır. Yaklaşım: hasarla uyanma ilk aşamada da geçerli; '5 ft içindeki yaratığın eylemiyle uyandırma' yok."
+  },
+  "adult-brass-dragon:Sleep Breath": {
+   "conditions": [
+    {
+     "condition": "Incapacitated",
+     "saveEnds": {
+      "ability": "con",
+      "dc": 18
+     },
+     "maxRounds": 1,
+     "escalate": {
+      "condition": "Unconscious",
+      "rounds": 100
+     },
+     "wakeOnDamage": true
+    }
+   ],
+   "tur": "ikinciAsama",
+   "not_": "Incapacitated sonraki turunun sonuna dek, orada tekrar CON save; ikinci başarısızlık Unconscious (1 dk = 10 tur, 10 dk = 100 tur), hasarla uyanır. Yaklaşım: hasarla uyanma ilk aşamada da geçerli; '5 ft içindeki yaratığın eylemiyle uyandırma' yok."
+  },
+  "ancient-brass-dragon:Sleep Breath": {
+   "conditions": [
+    {
+     "condition": "Incapacitated",
+     "saveEnds": {
+      "ability": "con",
+      "dc": 21
+     },
+     "maxRounds": 1,
+     "escalate": {
+      "condition": "Unconscious",
+      "rounds": 100
+     },
+     "wakeOnDamage": true
+    }
+   ],
+   "tur": "ikinciAsama",
+   "not_": "Incapacitated sonraki turunun sonuna dek, orada tekrar CON save; ikinci başarısızlık Unconscious (1 dk = 10 tur, 10 dk = 100 tur), hasarla uyanır. Yaklaşım: hasarla uyanma ilk aşamada da geçerli; '5 ft içindeki yaratığın eylemiyle uyandırma' yok."
+  },
+  "silver-dragon-wyrmling:Paralyzing Breath": {
+   "conditions": [
+    {
+     "condition": "Incapacitated",
+     "saveEnds": {
+      "ability": "con",
+      "dc": 13
+     },
+     "maxRounds": 1,
+     "escalate": {
+      "condition": "Paralyzed",
+      "rounds": 10,
+      "saveEnds": true
+     }
+    }
+   ],
+   "tur": "ikinciAsama",
+   "not_": "Incapacitated sonraki turunun sonuna dek, sonra tekrar save; ikinci başarısızlık Paralyzed, her tur sonu save, 1 dk sonra kendiliğinden biter."
+  },
+  "young-silver-dragon:Paralyzing Breath": {
+   "conditions": [
+    {
+     "condition": "Incapacitated",
+     "saveEnds": {
+      "ability": "con",
+      "dc": 17
+     },
+     "maxRounds": 1,
+     "escalate": {
+      "condition": "Paralyzed",
+      "rounds": 10,
+      "saveEnds": true
+     }
+    }
+   ],
+   "tur": "ikinciAsama",
+   "not_": "Incapacitated sonraki turunun sonuna dek, sonra tekrar save; ikinci başarısızlık Paralyzed, her tur sonu save, 1 dk sonra kendiliğinden biter."
+  },
+  "adult-silver-dragon:Paralyzing Breath": {
+   "conditions": [
+    {
+     "condition": "Incapacitated",
+     "saveEnds": {
+      "ability": "con",
+      "dc": 20
+     },
+     "maxRounds": 1,
+     "escalate": {
+      "condition": "Paralyzed",
+      "rounds": 10,
+      "saveEnds": true
+     }
+    }
+   ],
+   "tur": "ikinciAsama",
+   "not_": "Incapacitated sonraki turunun sonuna dek, sonra tekrar save; ikinci başarısızlık Paralyzed, her tur sonu save, 1 dk sonra kendiliğinden biter."
+  },
+  "ancient-silver-dragon:Paralyzing Breath": {
+   "conditions": [
+    {
+     "condition": "Incapacitated",
+     "saveEnds": {
+      "ability": "con",
+      "dc": 24
+     },
+     "maxRounds": 1,
+     "escalate": {
+      "condition": "Paralyzed",
+      "rounds": 10,
+      "saveEnds": true
+     }
+    }
+   ],
+   "tur": "ikinciAsama",
+   "not_": "Incapacitated sonraki turunun sonuna dek, sonra tekrar save; ikinci başarısızlık Paralyzed, her tur sonu save, 1 dk sonra kendiliğinden biter."
+  },
+  "gorgon:Petrifying Breath": {
+   "conditions": [
+    {
+     "condition": "Restrained",
+     "saveEnds": {
+      "ability": "con",
+      "dc": 15
+     },
+     "maxRounds": 1,
+     "escalate": {
+      "condition": "Petrified",
+      "rounds": 14400
+     }
+    }
+   ],
+   "tur": "ikinciAsama",
+   "not_": "Restrained, sonraki turunun sonunda tekrar save (başarıda biter); ikinci başarısızlık Petrified (kalıcı; savaş boyunca 14400 tur)."
+  },
+  "bronze-dragon-wyrmling:Repulsion Breath": {
+   "push": {
+    "mode": "push",
+    "ft": 30
+   },
+   "tur": "itme",
+   "not_": "30 ft ejderhadan dümdüz uzağa (K53 forcedMove; çarpma ev kuralı carpmaHasari), sonra Prone (mevcut ek)."
+  },
+  "young-bronze-dragon:Repulsion Breath": {
+   "push": {
+    "mode": "push",
+    "ft": 40
+   },
+   "tur": "itme",
+   "not_": "40 ft ejderhadan dümdüz uzağa (K53 forcedMove; çarpma ev kuralı carpmaHasari), sonra Prone (mevcut ek)."
+  },
+  "adult-bronze-dragon:Repulsion Breath": {
+   "push": {
+    "mode": "push",
+    "ft": 60
+   },
+   "tur": "itme",
+   "not_": "60 ft ejderhadan dümdüz uzağa (K53 forcedMove; çarpma ev kuralı carpmaHasari), sonra Prone (mevcut ek)."
+  },
+  "ancient-bronze-dragon:Repulsion Breath": {
+   "push": {
+    "mode": "push",
+    "ft": 60
+   },
+   "tur": "itme",
+   "not_": "60 ft ejderhadan dümdüz uzağa (K53 forcedMove; çarpma ev kuralı carpmaHasari), sonra Prone (mevcut ek)."
+  },
+  "satyr:Hooves": {
+   "push": {
+    "mode": "push",
+    "ft": 10,
+    "maxSize": "M"
+   },
+   "tur": "itme",
+   "not_": "Medium ya da küçükse 10 ft itme."
+  },
+  "merrow:Harpoon": {
+   "push": {
+    "mode": "pull",
+    "ft": 15,
+    "maxSize": "L"
+   },
+   "tur": "itme",
+   "not_": "Large ya da küçükse 15 ft çekme."
+  },
+  "merrow:Harpoon (menzilli)": {
+   "push": {
+    "mode": "pull",
+    "ft": 15,
+    "maxSize": "L"
+   },
+   "tur": "itme",
+   "not_": "Large ya da küçükse 15 ft çekme."
+  },
+  "tough-boss:Warhammer": {
+   "push": {
+    "mode": "push",
+    "ft": 10,
+    "maxSize": "L"
+   },
+   "tur": "itme",
+   "not_": "Large ya da küçükse 10 ft itme."
+  },
+  "air-elemental:Whirlwind": {
+   "push": {
+    "mode": "push",
+    "ft": 20
+   },
+   "tur": "itme",
+   "not_": "20 ft itme (save başarısızsa), sonra Prone (mevcut ek)."
+  },
+  "fire-giant:Hammer Throw": {
+   "push": {
+    "mode": "push",
+    "ft": 15
+   },
+   "effect": {
+    "name": "Hammer Throw",
+    "attackDis": {
+     "single": true
+    },
+    "sure": "ownTurnEnd"
+   },
+   "tur": "itme",
+   "not_": "15 ft itme ve sonraki turunun sonuna dek ilk saldırısı dezavantajlı."
+  },
+  "balor:Flame Whip": {
+   "push": {
+    "mode": "pull",
+    "ft": 25,
+    "maxSize": "H"
+   },
+   "tur": "itme",
+   "not_": "Huge ya da küçükse 25 ft çekme, sonra Prone (mevcut ek)."
+  },
+  "shambling-mound:Charged Tendril": {
+   "push": {
+    "mode": "pull",
+    "ft": 5,
+    "maxSize": "M"
+   },
+   "tur": "itme",
+   "not_": "Medium ya da küçükse 5 ft çekme."
+  },
+  "copper-dragon-wyrmling:Slowing Breath": {
+   "effect": {
+    "name": "Slowing Breath",
+    "noReactions": true,
+    "speedMult": 0.5,
+    "slowed": true,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Tepki yok, hız yarı, eylem ya da bonus eylem (ikisi değil; Slow büyüsünün `slowed` yolu), sonraki turunun sonuna dek."
+  },
+  "young-copper-dragon:Slowing Breath": {
+   "effect": {
+    "name": "Slowing Breath",
+    "noReactions": true,
+    "speedMult": 0.5,
+    "slowed": true,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Tepki yok, hız yarı, eylem ya da bonus eylem (ikisi değil; Slow büyüsünün `slowed` yolu), sonraki turunun sonuna dek."
+  },
+  "adult-copper-dragon:Slowing Breath": {
+   "effect": {
+    "name": "Slowing Breath",
+    "noReactions": true,
+    "speedMult": 0.5,
+    "slowed": true,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Tepki yok, hız yarı, eylem ya da bonus eylem (ikisi değil; Slow büyüsünün `slowed` yolu), sonraki turunun sonuna dek."
+  },
+  "ancient-copper-dragon:Slowing Breath": {
+   "effect": {
+    "name": "Slowing Breath",
+    "noReactions": true,
+    "speedMult": 0.5,
+    "slowed": true,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Tepki yok, hız yarı, eylem ya da bonus eylem (ikisi değil; Slow büyüsünün `slowed` yolu), sonraki turunun sonuna dek."
+  },
+  "merfolk-skirmisher:Ocean Spear": {
+   "effect": {
+    "name": "Ocean Spear",
+    "speedFt": -10,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Hız −10 ft, sonraki turunun sonuna dek."
+  },
+  "merfolk-skirmisher:Ocean Spear (menzilli)": {
+   "effect": {
+    "name": "Ocean Spear",
+    "speedFt": -10,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Hız −10 ft, sonraki turunun sonuna dek."
+  },
+  "frost-giant:Great Bow": {
+   "effect": {
+    "name": "Great Bow",
+    "speedFt": -10,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Hız −10 ft, sonraki turunun sonuna dek."
+  },
+  "steam-mephit:Steam Breath": {
+   "effect": {
+    "name": "Steam Breath",
+    "speedFt": -10,
+    "sure": "rounds:1"
+   },
+   "tur": "hizEylem",
+   "not_": "Hız −10 ft, mefitin sonraki turunun sonuna dek (yaklaşık: sonraki turun sonuna dek, `until` tur+1)."
+  },
+  "dretch:Fetid Cloud": {
+   "effect": {
+    "name": "Fetid Cloud",
+    "slowed": true,
+    "noReactions": true,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Poisoned (mevcut süreli etki) sürerken eylem ya da bonus eylem, tepki yok; sonraki turunun sonuna dek."
+  },
+  "ice-devil:Ice Spear": {
+   "effect": {
+    "name": "Ice Spear",
+    "noBonus": true,
+    "noReactions": true,
+    "speedFt": -10,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Bonus eylem ve tepki yok, hız −10 ft, sonraki turunun sonuna dek.",
+   "kalan": "'hareket ya da eylem, ikisi değil' kısıtı yok (yeni ekonomi kuralı)."
+  },
+  "ice-devil:Ice Spear (menzilli)": {
+   "effect": {
+    "name": "Ice Spear",
+    "noBonus": true,
+    "noReactions": true,
+    "speedFt": -10,
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Bonus eylem ve tepki yok, hız −10 ft, sonraki turunun sonuna dek.",
+   "kalan": "'hareket ya da eylem, ikisi değil' kısıtı yok (yeni ekonomi kuralı)."
+  },
+  "balor:Lightning Blade": {
+   "effect": {
+    "name": "Lightning Blade",
+    "noReactions": true,
+    "sure": "sourceTurnStart"
+   },
+   "tur": "hizEylem",
+   "not_": "Balor'un sonraki turunun başına dek tepki yok."
+  },
+  "ettin:Morningstar": {
+   "effect": {
+    "name": "Morningstar",
+    "attackDis": {
+     "single": true
+    },
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Sonraki turunun sonuna dek ilk saldırısı dezavantajlı."
+  },
+  "worg:Bite": {
+   "effect": {
+    "name": "Worg Bite",
+    "attackedAdv": true,
+    "consumeOnAttacked": true,
+    "sure": "sourceTurnStart"
+   },
+   "tur": "hizEylem",
+   "not_": "Worg'un sonraki turunun başına dek hedefe yapılan ilk saldırı avantajlı (yaklaşım: worg'un kendi saldırısı etkiyi tüketmez)."
+  },
+  "pirate-captain:Rapier": {
+   "self": {
+    "name": "Rapier",
+    "firstRoll": {
+     "mode": "advantage",
+     "on": [
+      "attack"
+     ]
+    },
+    "sure": "ownTurnEnd"
+   },
+   "tur": "hizEylem",
+   "not_": "Korsan kaptan bu turun sonuna dek ilk saldırısında avantajlı."
+  },
+  "gold-dragon-wyrmling:Weakening Breath": {
+   "effect": {
+    "name": "Weakening Breath",
+    "checkDis": [
+     "str"
+    ],
+    "saveDis": [
+     "str"
+    ],
+    "attackDis": {
+     "melee": true
+    },
+    "damagePenalty": {
+     "die": "1d4"
+    },
+    "repeatSave": {
+     "ability": "str",
+     "dc": 13
+    },
+    "sure": "rounds:10",
+    "unique": true
+   },
+   "tur": "hizEylem",
+   "not_": "STR tabanlı d20 Testlerinde dezavantaj (saldırıda yakın dövüş sayılır), hasar zarlarından −1d4; her tur sonu STR save, 1 dk sonra biter; zaten etkilenene yeniden işlemez."
+  },
+  "young-gold-dragon:Weakening Breath": {
+   "effect": {
+    "name": "Weakening Breath",
+    "checkDis": [
+     "str"
+    ],
+    "saveDis": [
+     "str"
+    ],
+    "attackDis": {
+     "melee": true
+    },
+    "damagePenalty": {
+     "die": "1d6"
+    },
+    "repeatSave": {
+     "ability": "str",
+     "dc": 17
+    },
+    "sure": "rounds:10",
+    "unique": true
+   },
+   "tur": "hizEylem",
+   "not_": "STR tabanlı d20 Testlerinde dezavantaj (saldırıda yakın dövüş sayılır), hasar zarlarından −1d6; her tur sonu STR save, 1 dk sonra biter; zaten etkilenene yeniden işlemez."
+  },
+  "adult-gold-dragon:Spellcasting": {
+   "effect": {
+    "name": "Weakening Breath",
+    "checkDis": [
+     "str"
+    ],
+    "saveDis": [
+     "str"
+    ],
+    "attackDis": {
+     "melee": true
+    },
+    "damagePenalty": {
+     "die": "1d6"
+    },
+    "repeatSave": {
+     "ability": "str",
+     "dc": 21
+    },
+    "sure": "rounds:10",
+    "unique": true
+   },
+   "tur": "hizEylem",
+   "not_": "SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni). STR tabanlı d20 Testlerinde dezavantaj, hasardan −1d6, her tur sonu STR save, 1 dk."
+  },
+  "ancient-gold-dragon:Spellcasting": {
+   "effect": {
+    "name": "Weakening Breath",
+    "checkDis": [
+     "str"
+    ],
+    "saveDis": [
+     "str"
+    ],
+    "attackDis": {
+     "melee": true
+    },
+    "damagePenalty": {
+     "die": "1d10"
+    },
+    "repeatSave": {
+     "ability": "str",
+     "dc": 24
+    },
+    "sure": "rounds:10",
+    "unique": true
+   },
+   "tur": "hizEylem",
+   "not_": "SRD aktarımında saldırı adı 'Spellcasting' (Weakening Breath metni). STR tabanlı d20 Testlerinde dezavantaj, hasardan −1d10, her tur sonu STR save, 1 dk."
+  },
+  "harpy:Luring Song": {
+   "effect": {
+    "name": "Luring Song",
+    "grants": [
+     "Charmed",
+     "Incapacitated"
+    ],
+    "repeatSave": {
+     "ability": "wis",
+     "dc": 11
+    },
+    "sure": "rounds:10"
+   },
+   "tur": "sure",
+   "not_": "Charmed + Incapacitated, her tur sonu WIS save (başarıda biter).",
+   "kalan": "harpiye doğru yürüme ve 'şarkı bitince' (harpi konsantrasyonu) yok."
+  },
+  "djinni:Create Whirlwind": {
+   "conditions": [
+    {
+     "condition": "Restrained",
+     "saveEnds": {
+      "ability": "str",
+      "dc": 17
+     },
+     "maxRounds": 10,
+     "dot": {
+      "dice": "6d6",
+      "type": "thunder"
+     }
+    }
+   ],
+   "tur": "sure",
+   "not_": "Restrained, her tur başında 6d6 thunder, her tur sonu STR save.",
+   "kalan": "hedef kasırgayla birlikte hareket etmez."
+  },
+  "erinyes:Entangling Rope": {
+   "effect": {
+    "name": "Entangling Rope",
+    "grants": [
+     "Restrained"
+    ],
+    "escapeCheck": {
+     "dc": 16
+    },
+    "sure": "rounds:10",
+    "replaceOwn": true
+   },
+   "tur": "sure",
+   "not_": "Restrained; yeniden kullanınca öncekini bırakır; kaçış STR (Athletics) DC 16 (yaklaşım: SRD'de ip yok edilir/serbest bırakılır).",
+   "kalan": "ipin AC/HP'si ve bonus eylemle serbest bırakma yok."
+  },
+  "lamia:Corrupting Touch": {
+   "conditions": [
+    {
+     "condition": "Charmed",
+     "rounds": 600
+    },
+    {
+     "condition": "Poisoned",
+     "rounds": 600
+    }
+   ],
+   "tur": "sure",
+   "not_": "1 saat (600 tur) Charmed ve Poisoned (lanet)."
+  },
+  "death-dog:Bite": {
+   "conditions": [
+    {
+     "condition": "Poisoned",
+     "rounds": 14400
+    }
+   ],
+   "tur": "sure",
+   "conditionSave": {
+    "ability": "con",
+    "dc": 12
+   },
+   "not_": "CON save başarısızsa Poisoned (savaş boyunca).",
+   "kalan": "Uzun dinlenmede HP maksimumu dönmemesi ve 24 saatte bir tekrar save savaş dışı."
+  },
+  "roper:Tentacle": {
+   "effect": {
+    "name": "Tentacle",
+    "grants": [
+     "Poisoned"
+    ],
+    "sure": "grapple"
+   },
+   "tur": "sure",
+   "not_": "Yakalama sürdükçe Poisoned.",
+   "kalan": "dokunaçların AC/HP'si yok."
+  },
+  "animated-rug-of-smothering:Smother": {
+   "effect": {
+    "name": "Smother",
+    "grants": [
+     "Blinded",
+     "Restrained"
+    ],
+    "sourceTurnDamage": {
+     "dice": "2d6+3",
+     "type": "bludgeoning"
+    },
+    "sure": "grapple"
+   },
+   "tur": "sure",
+   "not_": "Yakalama sürdükçe Blinded ve Restrained, hasar (yaklaşım: halının tur başında; SRD hedefin tur başında).",
+   "kalan": "'hasar yerine yakalama' seçimi ve boğulma yok."
+  },
+  "shambling-mound:Engulf": {
+   "push": {
+    "mode": "pull",
+    "ft": 5,
+    "adjacent": true
+   },
+   "effect": {
+    "name": "Engulf",
+    "grants": [
+     "Blinded",
+     "Restrained"
+    ],
+    "sourceTurnDamage": {
+     "dice": "3d6",
+     "type": "lightning"
+    },
+    "sure": "grapple"
+   },
+   "tur": "sure",
+   "not_": "Yığına bitişiğe çekilir; yakalama sürdükçe Blinded + Restrained, 3d6 lightning (yaklaşım: yığının tur başında).",
+   "kalan": "yığının altıgenine girme ve birlikte taşınma yok (sürükleme mevcut yakalama kuralıyla)."
+  },
+  "invisible-stalker:Vortex": {
+   "effect": {
+    "name": "Vortex",
+    "sourceTurnDamage": {
+     "dice": "2d6",
+     "type": "thunder"
+    },
+    "sure": "grapple"
+   },
+   "tur": "surekli",
+   "not_": "Yakalama sürdükçe stalker'ın her tur başında 2d6 thunder.",
+   "kalan": "sözlü bileşenli büyü yasağı yok."
+  },
+  "water-elemental:Whelm": {
+   "effect": {
+    "name": "Whelm",
+    "sourceTurnDamage": {
+     "dice": "2d8",
+     "type": "bludgeoning"
+    },
+    "sure": "grapple"
+   },
+   "tur": "surekli",
+   "not_": "Yakalama sürdükçe elementalin her tur başında 2d8 bludgeoning.",
+   "kalan": "boğulma yok."
+  },
+  "kraken:Swallow": {
+   "swallow": {
+    "dice": "7d6",
+    "type": "acid",
+    "escapeDamage": 50,
+    "escapeDc": 25,
+    "maxSize": "L",
+    "grappledOnly": true
+   },
+   "tur": "yutma",
+   "not_": "Krakenin yakaladığı Large ya da küçük hedef yutulur (Görev K19 yutma yolu: Blinded/Restrained, hedef alınamaz, krakenin tur başında 7d6 acid, bir turda 50+ hasarda DC 25 CON ile kusma)."
+  },
+  "gelatinous-cube:Engulf": {
+   "swallow": {
+    "dice": "3d6",
+    "type": "acid",
+    "escapeDamage": 0,
+    "escapeDc": 12,
+    "maxSize": "L",
+    "escapeCheck": 12
+   },
+   "tur": "yutma",
+   "not_": "İçine alınır (yutma yolu: Restrained, küpün tur başında 3d6 acid); kaçış eylemle STR (Athletics) DC 12.",
+   "kalan": "boğulma, sözlü bileşen yasağı ve küple birlikte taşınma yok (yutulan hedef alınamaz)."
+  },
+  "vampire-familiar:Umbral Dagger": {
+   "zeroHp": {
+    "stable": true,
+    "conditions": [
+     {
+      "condition": "Poisoned",
+      "rounds": 600
+     },
+     {
+      "condition": "Paralyzed",
+      "rounds": 600
+     }
+    ]
+   },
+   "tur": "sifirHp",
+   "not_": "Bu saldırı 0 HP'ye düşürürse hedef Stable olur, 1 saat Poisoned ve Paralyzed."
+  },
+  "vampire-familiar:Umbral Dagger (menzilli)": {
+   "zeroHp": {
+    "stable": true,
+    "conditions": [
+     {
+      "condition": "Poisoned",
+      "rounds": 600
+     },
+     {
+      "condition": "Paralyzed",
+      "rounds": 600
+     }
+    ]
+   },
+   "tur": "sifirHp",
+   "not_": "Bu saldırı 0 HP'ye düşürürse hedef Stable olur, 1 saat Poisoned ve Paralyzed."
+  },
+  "phase-spider:Bite": {
+   "zeroHp": {
+    "stable": true,
+    "conditions": [
+     {
+      "condition": "Poisoned",
+      "rounds": 600
+     },
+     {
+      "condition": "Paralyzed",
+      "rounds": 600
+     }
+    ]
+   },
+   "tur": "sifirHp",
+   "not_": "Bu saldırı 0 HP'ye düşürürse hedef Stable olur, 1 saat Poisoned ve Paralyzed."
+  },
+  "gibbering-mouther:Bite": {
+   "zeroHp": {
+    "dies": true
+   },
+   "tur": "sifirHp",
+   "not_": "Bu saldırıyla 0 HP'ye düşen ölür (beden emilir)."
+  },
+  "mummy:Rotting Fist": {
+   "zeroHp": {
+    "dies": true
+   },
+   "effect": {
+    "name": "Mummy Rot",
+    "noHeal": true,
+    "sure": "rounds:14400"
+   },
+   "tur": "sifirHp",
+   "not_": "Lanet: HP kazanamaz (savaş boyunca); bu saldırıyla 0 HP'ye düşen ölür (toza döner).",
+   "kalan": "24 saatte bir HP maksimumu azalması savaş dışı."
+  },
+  "mummy-lord:Rotting Fist": {
+   "zeroHp": {
+    "dies": true
+   },
+   "effect": {
+    "name": "Mummy Rot",
+    "noHeal": true,
+    "sure": "rounds:14400"
+   },
+   "tur": "sifirHp",
+   "not_": "Lanet: HP kazanamaz; bu saldırıyla 0 HP'ye düşen ölür.",
+   "kalan": "24 saatte bir HP maksimumu azalması ve uzun dinlenme yasağı savaş dışı."
+  },
+  "sea-hag:Death Glare": {
+   "kill": {
+    "hpAtMost": 20,
+    "else": {
+     "dice": "3d8",
+     "type": "psychic"
+    }
+   },
+   "tur": "hpEsigi",
+   "not_": "WIS save başarısızsa: HP ≤ 20 ise 0 HP'ye düşer, değilse 3d8 psychic."
+  },
+  "solar:Slaying Bow": {
+   "kill": {
+    "hpAtMost": 100,
+    "dies": true,
+    "else": {
+     "dice": "4d8+6",
+     "type": "piercing",
+     "dice2": "8d8",
+     "type2": "radiant"
+    }
+   },
+   "tur": "hpEsigi",
+   "not_": "DEX save başarısızsa: HP ≤ 100 ise ölür, değilse 4d8+6 piercing + 8d8 radiant."
+  },
+  "cultist:Ritual Sickle": {
+   "extra": [
+    {
+     "dice": "1",
+     "type": "necrotic"
+    }
+   ],
+   "tur": "ozel",
+   "not_": "Artı 1 necrotic (sabit)."
+  },
+  "half-dragon:Claw": {
+   "extra": [
+    {
+     "dice": "2d6",
+     "type": "fire"
+    }
+   ],
+   "tur": "ozel",
+   "not_": "Artı 2d6 Draconic Origin türü; tür seçimi yok, varsayılan ateş (DECISIONS.md)."
+  },
+  "half-dragon:Dragon’s Breath": {
+   "areaDamage": {
+    "dice": "8d6",
+    "type": "fire"
+   },
+   "tur": "ozel",
+   "not_": "8d6 Draconic Origin türü (DEX save yarı); varsayılan ateş."
+  },
+  "gray-ooze:Pseudopod": {
+   "corrode": {
+    "armor": true
+   },
+   "tur": "ozel",
+   "not_": "Zırhlı hedefin AC'si −1 birikimli (en çok AC 10'a dek; yaklaşım: her zırh büyüsüz sayılır)."
+  },
+  "black-pudding:Dissolving Pseudopod": {
+   "corrode": {
+    "armor": true
+   },
+   "tur": "ozel",
+   "not_": "Zırhlı hedefin AC'si −1 birikimli (AC 10'a dek)."
+  },
+  "rust-monster:Antennae": {
+   "corrode": {
+    "armor": true,
+    "weapon": true
+   },
+   "tur": "ozel",
+   "not_": "DEX save başarısızsa zırh AC −1 (zırhlıysa) yoksa silah saldırısı −1 (−5'e dek; Corrosive Form yolu)."
+  },
+  "magmin:Touch": {
+   "effect": {
+    "name": "Yanıyor",
+    "ongoing": {
+     "dice": "1d4",
+     "type": "fire",
+     "save": "dex",
+     "dc": 10
+    },
+    "sure": "rounds:100",
+    "icon": "🔥"
+   },
+   "tur": "ozel",
+   "not_": "Tutuşur: tur başında 1d4 fire, ardından DEX DC 10 ile söner (yaklaşım: SRD Burning; harita Burning durumu kullanılmadı)."
+  },
+  "fire-elemental:Burn": {
+   "effect": {
+    "name": "Yanıyor",
+    "ongoing": {
+     "dice": "1d4",
+     "type": "fire",
+     "save": "dex",
+     "dc": 10
+    },
+    "sure": "rounds:100",
+    "icon": "🔥"
+   },
+   "tur": "ozel",
+   "not_": "Tutuşur: tur başında 1d4 fire, ardından DEX DC 10 ile söner (yaklaşım: SRD Burning)."
+  }
+ }
+}

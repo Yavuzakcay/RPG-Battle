@@ -88,7 +88,7 @@ describe('A1 Görev 3: Grappled saldırı dezavantajı (sürüm 29)', () => {
   const attack = (s: BattleState, targetId: string) => ok(s, { type: 'attack', actorId: 'A', targetId, option: sword }).events.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
   it('yakalayana normal, başkasına dezavantaj', () => {
     const s = grabbed();
-    expect(s.kuralSurumu).toBe(29);
+    expect(s.kuralSurumu).toBeGreaterThanOrEqual(29); // A2 sürümü 30 yaptı; kural 29+ geçerli
     expect(attack(s, 'B').reasons).not.toContain(REASON);
     const other = attack(s, 'C');
     expect(other.reasons).toContain(REASON);

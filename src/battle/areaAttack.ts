@@ -7,6 +7,7 @@
  * - `areaSaveEvents`: hasar bir kez atılır (SRD: bütün hedefler için aynı zar), her hedef ayrı save yapar (elle zarda
  *   her hedef için ayrı istek), başarıda yarım hasar; hasar alanın tepkisi (Hellish Rebuke) her hedeften sonra.
  */
+import { a2AreaDamage } from './ridersA2';
 import { bodyOf } from './body';
 import { profileIn } from './zones';
 import { saveDamage } from './classTraits';
@@ -149,13 +150,16 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaP
 }
 
 /** Canavarın alanlı saldırısının verisi. */
-export function monsterAreaOf(actor: Combatant, index: number): { spec: AttackArea; save: AreaSave } | null {
+export function monsterAreaOf(actor: Combatant, index: number, state?: Pick<BattleState, 'kuralSurumu'>): { spec: AttackArea; save: AreaSave } | null {
   const atk = actor.attacks[index];
   if (!atk?.area || !atk.save) return null;
+  // Kuyruk A2 (sürüm 30+): hasarsız alan saldırısına veriden hasar (Yarı-Ejderha nefesi).
+  const a2d = !atk.damageDice && state ? a2AreaDamage(state, actor.monsterId, atk.name) : undefined;
   return {
     spec: atk.area,
     save: { label: atk.name, ability: atk.save.ability, dc: atk.save.dc, halfOnSave: atk.save.halfOnSave,
       ...(atk.damageDice ? { damageDice: atk.damageDice } : {}), ...(atk.damageType ? { damageType: atk.damageType } : {}),
+      ...(a2d ? { damageDice: a2d.dice, damageType: a2d.type } : {}),
       monster: { attackName: atk.name } },
   };
 }
@@ -166,7 +170,7 @@ export function monsterAreaOf(actor: Combatant, index: number): { spec: AttackAr
  */
 export function monsterAreaEvents(state: BattleState, actor: Combatant, index: number, aim: Offset | null, targetId: string | null,
   rng: Rng): { ok: true; events: BattleEvent[] } | Failure {
-  const area = monsterAreaOf(actor, index);
+  const area = monsterAreaOf(actor, index, state);
   const atk = actor.attacks[index];
   if (!area || !atk) return fail('Bu saldırının alanı yok.');
   if (atk.recharge && actor.rechargeUsed.includes(index)) return fail(`${atk.name} henüz şarj olmadı.`);

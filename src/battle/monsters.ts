@@ -26,6 +26,7 @@ import { distance, type Offset } from '../rules/hex';
 import { executeMonsterArea, monsterAreaEvents } from './areaAttack';
 import type { BattleEvent, BattleState, Combatant, MultiStep } from './types';
 import multiData from '../../data/multiattack.json';
+import { a2AreaDamage, withA2Extras } from './ridersA2';
 import { castWithoutAction } from './castHook';
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, corrodeEvents, hitReactions, targetedHookReactions, targetedReactions, type HitOutcome } from './reactions';
@@ -78,15 +79,19 @@ export function monsterAttackEvents(
       { extra: saveDice(target, atk.save.ability), modifier: target.saves[atk.save.ability] + dexCover, dc: atk.save.dc, mode: saveMode(mode, target, atk.save.ability, actor), autoFail },
       rollTag(rng, { by: target.id }),
     );
-    const raw = atk.damageDice ? rollDice(atk.damageDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
+    // Kuyruk A2 (sürüm 30+): hasarsız save saldırısına veriden hasar (Yarı-Ejderha nefesi).
+    const a2d = !atk.damageDice ? a2AreaDamage(state, actor.monsterId, atk.name) : undefined;
+    const sDice = atk.damageDice ?? a2d?.dice;
+    const sType = atk.damageType ?? a2d?.type;
+    const raw = sDice ? rollDice(sDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
     const amount = saveDamage(target, atk.save.ability, save.success, raw.total, !!atk.save.halfOnSave);
-    const adj = amount > 0 ? adjustDamage(amount, atk.damageType, profileIn(state, target)) : { amount: 0, note: null };
-    const fx = damageEffects(target, adj.amount, atk.damageType ?? '', false, rng);
+    const adj = amount > 0 ? adjustDamage(amount, sType, profileIn(state, target)) : { amount: 0, note: null };
+    const fx = damageEffects(target, adj.amount, sType ?? '', false, rng);
     events.push({
       type: 'save_resolved', actorId: actor.id, targetId: target.id, label: atk.name,
       ability: atk.save.ability, dc: atk.save.dc, mode, reasons: reasons.map((r) => r.reason),
       d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
-      damageRolls: raw.rolls, rawDamage: raw.total, appliedDamage: adj.amount, damageType: atk.damageType ?? '',
+      damageRolls: raw.rolls, rawDamage: raw.total, appliedDamage: adj.amount, damageType: sType ?? '',
       damageNote: adj.note, targetHpAfter: fx.hpAfter, conditionsAdded: [], effects: fx.effects,
       ...(atk.rider ? { rider: atk.rider } : {}),
       ...(dexCover ? { cover: dexCover } : {}),
@@ -130,7 +135,8 @@ export function monsterAttackEvents(
     const k19i = !!globalRule(state, 'srdK19');
     const targetAc = effectiveAc(state, target) + inReach.cover + (atk.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
     // Ek etkiler (rider, data/attack-riders.json): koşulu tutarsa hasar ifadesi değişir (Bloodied sürü, avantajlı Chimera).
-    const spec = riderOf(actor.monsterId, atk.name);
+    // Kuyruk A2 (sürüm 30+): veriden ek hasar (Kültist +1 nekrotik, Yarı-Ejderha pençesi).
+    const spec = withA2Extras(state, riderOf(actor.monsterId, atk.name), actor.monsterId, atk.name);
     const swap = riderReplace(spec, mode, actor, target);
     const dmgDice = swap?.dice ?? atk.damageDice;
     const dmgType0 = swap?.type ?? atk.damageType;

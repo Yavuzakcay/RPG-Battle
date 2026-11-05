@@ -23,6 +23,7 @@ import { fail, finish, isTargetable, type CommandResult } from './common';
 import { attackEffect, makeTimer, saveMode, timedCondition } from './durations';
 import { speedHexes } from './reduce';
 import type { RiderSpec } from './riders';
+import { a2Events } from './ridersA2';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
 import { flySpeed } from './flight';
 import { globalRule } from './ruleControl';
@@ -131,7 +132,9 @@ export function riderConditionEvents(
   state: BattleState, actor: Combatant, target: Combatant, spec: RiderSpec | undefined, attackName: string, rng: Rng,
   monsterId: string | undefined = actor.monsterId,
 ): BattleEvent[] {
-  if (!spec || target.hp <= 0) return [];
+  // Kuyruk A2 (sürüm 30+): veriyle bağlanan ekler (süre, itme/çekme, hız/eylem kısıtı, ikinci aşama, 0 HP…); 0 HP'de de.
+  const a2 = a2Events(state, actor, target, attackName, rng, monsterId);
+  if (!spec || target.hp <= 0) return a2;
   const out: BattleEvent[] = [];
   const label = `${actor.name}: ${attackName}`;
   if (spec.conditions?.length && !attackEffect(monsterId, attackName)) {
@@ -154,7 +157,7 @@ export function riderConditionEvents(
   if (spec.grapple && !target.grapple && fitsSize(target, spec.grapple.maxSize)) {
     out.push({ type: 'grappled', targetId: target.id, by: actor.id, escapeDc: spec.grapple.escapeDc, restrained: spec.grapple.restrained, label });
   }
-  return out;
+  return [...out, ...a2];
 }
 
 /**

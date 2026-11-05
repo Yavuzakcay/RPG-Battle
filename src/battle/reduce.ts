@@ -156,6 +156,8 @@ function pruneEffects(state: BattleState): BattleState {
     const kept = gone ? [] : c.effects.filter((e) => {
       if (e.until !== undefined && e.until < state.round) { if (e.banishForever) exile.push(c.id); return false; }
       if (e.dropAtZero && c.hp <= 0) return false;
+      // Kuyruk A2: yakalamaya bağlı etki yakalama bitince biter.
+      if (e.whileGrappledBy && c.grapple?.by !== e.whileGrappledBy) return false;
       // Kuyruk 19: Incapacitated olunca biten etki (Superior Defense).
       if (e.breakOnIncapacitated && c.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
       if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
