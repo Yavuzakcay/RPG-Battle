@@ -521,7 +521,7 @@
       "tr": "Yazgı Değişir",
       "en": "Fate Turned"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Bir dostuna isabet eden saldırıyı iskaya çevirirsin; karşılığında sonraki turunda vurmak zorlaşır.",
       "en": "Turn a hit on an ally into a miss; your own attacks suffer next turn."
@@ -1448,6 +1448,18 @@
     "long": "all"
    }
   },
+  "imzaYazgi": {
+   "name": "fate-turned",
+   "feature": [
+    "warlock/imza_astrolog:fate-turned"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
   "imzaBirlik": {
    "name": "unbroken-union",
    "feature": [
@@ -2113,7 +2125,8 @@
     "icon": "⭐"
    },
    "ad": "Yıldız Falı: Uğur",
-   "not": "Avantaj yerine ilk zara +1d6 (tek kullanım)."
+   "not": "Avantaj yerine ilk zara +1d6 (tek kullanım).",
+   "surumMax": 27
   },
   "imza:imza_astrolog/ill-luck": {
    "sinif": "imza_astrolog",
@@ -2149,7 +2162,72 @@
     "icon": "🌑"
    },
    "ad": "Yıldız Falı: Uğursuzluk",
-   "not": "Dezavantaj yerine ilk zardan −1d6 (tek kullanım)."
+   "not": "Dezavantaj yerine ilk zardan −1d6 (tek kullanım).",
+   "surumMax": 27
+  },
+  "imza:imza_astrolog/luck-2": {
+   "sinif": "imza_astrolog",
+   "ozellik": "star-reading",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaFal",
+    "sayi": "pb",
+    "yenilenme": "short"
+   },
+   "hedef": "ally",
+   "menzilFt": 60,
+   "yz": "fal",
+   "etki": {
+    "name": "Uğurlu",
+    "sure": 2,
+    "firstRoll": {
+     "mode": "advantage",
+     "on": [
+      "attack",
+      "save"
+     ]
+    },
+    "icon": "⭐"
+   },
+   "ad": "Yıldız Falı: Uğur",
+   "not": "İlk saldırı ya da kurtulma zarı avantajlı (beceri zarı yok).",
+   "surumMin": 28
+  },
+  "imza:imza_astrolog/ill-luck-2": {
+   "sinif": "imza_astrolog",
+   "ozellik": "star-reading",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaFal",
+    "sayi": "pb",
+    "yenilenme": "short"
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ]
+   },
+   "yz": "falDusman",
+   "etki": {
+    "name": "Uğursuz",
+    "sure": 2,
+    "firstRoll": {
+     "mode": "disadvantage",
+     "on": [
+      "attack",
+      "save"
+     ]
+    },
+    "icon": "🌑"
+   },
+   "ad": "Yıldız Falı: Uğursuzluk",
+   "not": "İlk saldırı ya da kurtulma zarı dezavantajlı (beceri zarı yok).",
+   "surumMin": 28
   },
   "imza:imza_astrolog/comet": {
    "sinif": "imza_astrolog",
@@ -2216,7 +2294,47 @@
     "icon": "🔯"
    },
    "ad": "Yazgı Mührü",
-   "not": "Kendiliğinden isabet yerine ona yapılan saldırılar avantajlı; dostlara ek hasar yok."
+   "not": "Sürüm 23–27: kendiliğinden isabet yerine ona yapılan saldırılar avantajlı; dostlara ek hasar yok.",
+   "surumMax": 27
+  },
+  "imza:imza_astrolog/seal-of-fate-2": {
+   "sinif": "imza_astrolog",
+   "ozellik": "seal-of-fate",
+   "seviye": 14,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaMuhur",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "acikHava": true,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ]
+   },
+   "efsaneviBasariSure": 1,
+   "etki": {
+    "name": "Yazgı Mührü",
+    "sure": 3,
+    "fateSeal": {
+     "pb": "$pb"
+    },
+    "dice": {
+     "die": "$cha",
+     "sign": -1,
+     "on": [
+      "save"
+     ]
+    },
+    "icon": "🔯"
+   },
+   "ad": "Yazgı Mührü",
+   "not": "Her dostun mühürlüye turdaki ilk silah saldırısı kendiliğinden isabet (kritik değil); dostların isabetine +yeterlilik hasar; kurtulmalarına −CHA.",
+   "surumMin": 28
   },
   "imza:imza_birlik/forge-bond": {
    "sinif": "imza_birlik",
@@ -3028,6 +3146,24 @@
    },
    "not": "Frightened düşman kendi turunun başında 1d10 + CHA zihin hasarı (harita genelinde).",
    "surumMin": 27
+  },
+  {
+   "sinif": "imza_astrolog",
+   "ozellik": "fate-turned",
+   "seviye": 6,
+   "etki": {
+    "yazgi": {
+     "menzilFt": 60,
+     "kaynak": "imzaYazgi"
+    },
+    "kaynak": {
+     "id": "imzaYazgi",
+     "sayi": 1,
+     "yenilenme": "long"
+    }
+   },
+   "not": "Tepki: 60 ft içindeki dosta isabet ıskalanmış sayılır; bedel: sonraki turunun sonuna dek saldırıların dezavantajlı.",
+   "surumMin": 28
   },
   {
    "sinif": "imza_birlik",

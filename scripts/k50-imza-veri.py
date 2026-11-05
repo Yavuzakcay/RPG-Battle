@@ -172,23 +172,35 @@ sub(s, 'warlock', 'Astrolog', 'Astrologer', 'Yıldızlardan yazgı okuyan', 'Rea
     F('expanded', 3, 'Genişletilmiş büyüler', 'Expanded Spells', 'Işık, ay ve kehanet büyüleri listene eklenir.', 'Light, moon and divination spells join your list.'),
     F('star-reading', 3, 'Yıldız Falı', 'Star Reading', 'Bir dostuna uğur, bir düşmanına uğursuzluk getir: ilk zarı daha iyi ya da daha kötü gelir.', 'Bring luck to an ally or ill luck to a foe: their first roll goes better or worse.'),
     F('sky-guide', 3, 'Gök Rehberi', 'Sky Guide', 'Arcana becerisinde ustasın. Yıldızlı gecede dinlenmek partinin cesaretini artırır.', 'You gain Arcana proficiency. Resting under stars lifts the party.', 'planli'),
-    F('fate-turned', 6, 'Yazgı Değişir', 'Fate Turned', 'Bir dostuna isabet eden saldırıyı iskaya çevirirsin; karşılığında sonraki turunda vurmak zorlaşır.', 'Turn a hit on an ally into a miss; your own attacks suffer next turn.', 'planli'),
+    F('fate-turned', 6, 'Yazgı Değişir', 'Fate Turned', 'Bir dostuna isabet eden saldırıyı iskaya çevirirsin; karşılığında sonraki turunda vurmak zorlaşır.', 'Turn a hit on an ally into a miss; your own attacks suffer next turn.'),
     F('comet', 10, 'Kuyruklu Yıldız', 'Comet', 'Açık havada gökten yıldız düşür: alandakiler ışıkla yanar. Kapalı yerde çalışmaz.', 'Under open sky, call down a star: all in the area burn with light.'),
     F('seal-of-fate', 14, 'Yazgı Mührü', 'Seal of Fate', 'Açık havada bir düşmanın yazgısını mühürle: ona vurmak kolaylaşır, o ise zor kurtulur.', 'Under open sky, seal a foe’s fate: easier to hit, harder to resist.'),
 ], beceri=['arcana'])
 act(s, 'luck', seviye=3, tur='bonus', kaynak={'id': 'imzaFal', **PB}, hedef='ally', menzilFt=60,
-    etki={'name': 'Uğurlu', 'sure': 2, 'dice': {'die': '1d6', 'sign': 1, 'on': ['attack', 'save', 'check'], 'single': True}, 'icon': '⭐'}, ad='Yıldız Falı: Uğur', ozellikAdi='star-reading',
+    etki={'name': 'Uğurlu', 'sure': 2, 'dice': {'die': '1d6', 'sign': 1, 'on': ['attack', 'save', 'check'], 'single': True}, 'icon': '⭐'}, ad='Yıldız Falı: Uğur', ozellikAdi='star-reading', eski28=True,
     not_='Avantaj yerine ilk zara +1d6 (tek kullanım).')
 act(s, 'ill-luck', seviye=3, tur='bonus', kaynak={'id': 'imzaFal', **PB}, hedef='enemy', menzilFt=60, save={'yetenek': 'wis', 'dc': ['cha']},
-    etki={'name': 'Uğursuz', 'sure': 2, 'dice': {'die': '1d6', 'sign': -1, 'on': ['attack', 'save', 'check'], 'single': True}, 'icon': '🌑'}, ad='Yıldız Falı: Uğursuzluk', ozellikAdi='star-reading',
+    etki={'name': 'Uğursuz', 'sure': 2, 'dice': {'die': '1d6', 'sign': -1, 'on': ['attack', 'save', 'check'], 'single': True}, 'icon': '🌑'}, ad='Yıldız Falı: Uğursuzluk', ozellikAdi='star-reading', eski28=True,
     not_='Dezavantaj yerine ilk zardan −1d6 (tek kullanım).')
+act(s, 'luck-2', seviye=3, tur='bonus', kaynak={'id': 'imzaFal', **PB}, hedef='ally', menzilFt=60, yz='fal',
+    etki={'name': 'Uğurlu', 'sure': 2, 'firstRoll': {'mode': 'advantage', 'on': ['attack', 'save']}, 'icon': '⭐'}, ad='Yıldız Falı: Uğur', ozellikAdi='star-reading', k54c=True,
+    not_='İlk saldırı ya da kurtulma zarı avantajlı (beceri zarı yok).')
+act(s, 'ill-luck-2', seviye=3, tur='bonus', kaynak={'id': 'imzaFal', **PB}, hedef='enemy', menzilFt=60, save={'yetenek': 'wis', 'dc': ['cha']}, yz='falDusman',
+    etki={'name': 'Uğursuz', 'sure': 2, 'firstRoll': {'mode': 'disadvantage', 'on': ['attack', 'save']}, 'icon': '🌑'}, ad='Yıldız Falı: Uğursuzluk', ozellikAdi='star-reading', k54c=True,
+    not_='İlk saldırı ya da kurtulma zarı dezavantajlı (beceri zarı yok).')
 act(s, 'comet', seviye=10, tur='action', kaynak={'id': 'imzaKuyruklu', 'sayi': 1, 'yenilenme': 'short'}, hedef='areaEnemies', menzilFt=120, yaricapFt=20, acikHava=True,
     save={'yetenek': 'dex', 'dc': ['cha']}, yari=True, hasar={'zar': {'10': '6d10'}, 'tur': 'radiant'}, ad='Kuyruklu Yıldız', dostlarDahil=True,
     not_='Merkez seçilen düşmanın altıgeni; alandaki dostlar da kurtulma atar.')
 act(s, 'seal-of-fate', seviye=14, tur='action', kaynak={'id': 'imzaMuhur', 'sayi': 1, 'yenilenme': 'long'}, hedef='enemy', menzilFt=60, acikHava=True,
     save={'yetenek': 'wis', 'dc': ['cha']}, efsaneviBasariSure=1,
-    etki={'name': 'Yazgı Mührü', 'sure': 3, 'attackedAdv': True, 'dice': {'die': '$cha', 'sign': -1, 'on': ['save']}, 'icon': '🔯'}, ad='Yazgı Mührü',
-    not_='Kendiliğinden isabet yerine ona yapılan saldırılar avantajlı; dostlara ek hasar yok.')
+    etki={'name': 'Yazgı Mührü', 'sure': 3, 'attackedAdv': True, 'dice': {'die': '$cha', 'sign': -1, 'on': ['save']}, 'icon': '🔯'}, ad='Yazgı Mührü', eski28=True,
+    not_='Sürüm 23–27: kendiliğinden isabet yerine ona yapılan saldırılar avantajlı; dostlara ek hasar yok.')
+act(s, 'seal-of-fate-2', seviye=14, tur='action', kaynak={'id': 'imzaMuhur', 'sayi': 1, 'yenilenme': 'long'}, hedef='enemy', menzilFt=60, acikHava=True, ozellikAdi='seal-of-fate',
+    save={'yetenek': 'wis', 'dc': ['cha']}, efsaneviBasariSure=1,
+    etki={'name': 'Yazgı Mührü', 'sure': 3, 'fateSeal': {'pb': '$pb'}, 'dice': {'die': '$cha', 'sign': -1, 'on': ['save']}, 'icon': '🔯'}, ad='Yazgı Mührü', k54c=True,
+    not_='Her dostun mühürlüye turdaki ilk silah saldırısı kendiliğinden isabet (kritik değil); dostların isabetine +yeterlilik hasar; kurtulmalarına −CHA.')
+pas(s, 'fate-turned', 6, {'yazgi': {'menzilFt': 60, 'kaynak': 'imzaYazgi'}, 'kaynak': {'id': 'imzaYazgi', 'sayi': 1, 'yenilenme': 'long'}},
+    'Tepki: 60 ft içindeki dosta isabet ıskalanmış sayılır; bedel: sonraki turunun sonuna dek saldırıların dezavantajlı.', k54c=True)
 pas(s, 'expanded', 3, {'alwaysPrepared': {'3': ['Guiding Bolt', 'Faerie Fire', 'Augury', 'Moonbeam'], '5': ['Clairvoyance', 'Daylight'], '7': ['Divination', 'Guardian of Faith'], '9': ['Scrying', 'Flame Strike']}},
     'Genişletilmiş liste her zaman hazır sayılır (Warlock büyü seçiminde ayrı liste yok).')
 

@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54c G3: Astrolog (kural sürümü 28)
+
+- **Yıldız Falı:** sürüm 28 eylemleri `luck-2`/`ill-luck-2`: `firstRoll` avantaj/dezavantaj ilk saldırı ya da kurtulma zarına (belgedeki "beceri zarı" savaşta nadir, yok). Eski ±1d6 eylemleri 23–27.
+- **Yazgı Değişir (6):** `registerAllyHit` tepkisi: 60 ft içindeki dosta isabet (hasar hesaplandıktan sonra) ıskalanmış sayılır; bedel: astrologa sonraki turunun sonuna dek saldırı dezavantajı. Uzun dinlenmede 1. Öneri (YZ): hasar ≥ max(6, dostun canının üçte biri), dostu düşürecek ya da kritik.
+- **Kuyruklu Yıldız:** değişmedi (açık hava şartı K50'den beri var).
+- **Yazgı Mührü (14):** sürüm 28 eylemi `seal-of-fate-2`: etkide `fateSeal` (mühürleyenin PB'si). Her dostun mühürlüye o turdaki ilk silah saldırısı kendiliğinden isabet: saldırı zarına ikinci şans `reroll: 'success'` (Peerless Aim yolu; kritik değil; doğal 1 yine ıska); dostların isabetine +PB hasar (`sealBonus`). Kurtulmalarına −CHA aynı. Silah saldırıları; büyü saldırılarında yok.
+- **Gök Rehberi:** Serüven dinlenme Moral'i; Serüven kilitli olduğu için yok.
+- **Yapay zekâ:** Uğur en çok saldırılı Uğurlu olmayan dosta, Uğursuzluk en canlı Uğursuz olmayan düşmana (`yz: fal/falDusman`); Yazgı Değişir öneriyle kendiliğinden.
+
 ## 2026-11-05 — Kuyruk K54c G2: İmparator (kural sürümü 28)
 
 - **Buyruk:** sürüm 28'de dostun tepkisi harcanır (belgedeki gibi; tepkisi yoksa kullanılamaz). Yeni kip "Buyruk: Yer değiştir": dost hızının yarısı kadar boş altıgene ışınlanma olayıyla geçer (fırsat saldırısı yok, K53 varış kancaları), aynı kaynak.
