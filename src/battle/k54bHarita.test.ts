@@ -87,7 +87,12 @@ describe('K54b Harita Öğretisi', () => {
     expect(endTurn(old, last).some((e) => e.type === 'trait_turn' && e.trait === 'imza:arazi')).toBe(false);
   });
   it('YZ: Çizili Duvar ve Zor zemin kullanır', () => {
+    // 3.+ seviye slot dururken tek düşmana duvar çizmez (güçlü büyü önce); slotlar bitince çizer.
     const r = H(10, { place: { B: o(7, 3) } });
+    const c0 = chooseCommand(r.state);
+    expect(c0.type === 'use_feature' && c0.feature === 'imza:imza_harita/drawn-wall').toBe(false);
+    const a = r.c('A');
+    r.state = { ...r.state, combatants: { ...r.state.combatants, A: { ...a, spellSlots: a.spellSlots.map((n, i) => (i >= 2 ? 0 : n)) } } };
     const cmd = chooseCommand(r.state);
     expect(cmd.type === 'use_feature' && cmd.feature).toBe('imza:imza_harita/drawn-wall');
   });

@@ -74,11 +74,13 @@ describe('K54b Dunganga', () => {
     expect(r.c('E').conditions).toContain('Incapacitated');
     expect(D(18, { kuralSurumu: 26 }).keys()).toContain('imza:imza_dunganga/call');
   });
-  it('YZ: iki düşman yakınken Ninni, tek güçlü düşmanda Sepet', () => {
-    const r = D(6, { extra: [foe('E', o(5, 3))] });
+  it('YZ: üç düşman yakınken Ninni ya da Sepet; 3.+ slot bitince tek düşmanda Sepet', () => {
+    const r = D(6, { extra: [foe('E', o(5, 3)), foe('F', o(2, 4))] });
     const c = chooseCommand(r.state);
     expect(c.type === 'use_feature' && c.feature).toMatch(/imza:imza_dunganga\/(lullaby|basket)/);
     const one = D(6, { place: { B: o(6, 3) } });
+    const a = one.c('A');
+    one.state = { ...one.state, combatants: { ...one.state.combatants, A: { ...a, spellSlots: a.spellSlots.map((n, i) => (i >= 2 ? 0 : n)) } } };
     const c1 = chooseCommand(one.state);
     expect(c1.type === 'use_feature' && c1.feature).toBe('imza:imza_dunganga/basket');
   });
