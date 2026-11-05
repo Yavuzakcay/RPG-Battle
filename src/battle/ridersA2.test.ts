@@ -235,3 +235,22 @@ describe('yakalamaya bağlı, 0 HP, HP eşiği, yutma, aşındırma, ek hasar', 
     expect(r.state.combatants.A!.effects?.find((e) => e.ongoing)).toMatchObject({ ongoing: { dice: '1d4', type: 'fire', save: 'dex', dc: 10 } });
   });
 });
+
+describe('duman: her A2 bağlaması gerçek saldırıyla çökmez, replay aynı', () => {
+  it('68 saldırı × (isabet/başarısız save, ıska/başarılı save)', () => {
+    let ran = 0;
+    for (const key of Object.keys(A2_RIDERS)) {
+      const [mid, name] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)];
+      for (const rng of [HIGH, LOW]) {
+        const s = field([monster(mid, 'X'), hero({ hp: 400, maxHp: 400, ac: 14 })], { X: o(6, 3), A: o(7, 3) });
+        const i = idx(s.combatants.X!, name);
+        expect(i, key).toBeGreaterThanOrEqual(0);
+        const r = execute(s, { type: 'monster_attack', actorId: 'X', targetId: 'A', attackIndex: i }, GM, rng);
+        if (!r.ok) continue;
+        ran++;
+        expect(replay([{ type: 'battle_started', state: s }, ...r.events]), key).toEqual(r.state);
+      }
+    }
+    expect(ran).toBeGreaterThan(100);
+  });
+});
