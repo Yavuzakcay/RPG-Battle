@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — A2 G0: ana paket sınırı 440 → 500 kB
+
+- **Ana paket sınırı 440 → 500 kB** (kullanıcı kararı; gerekçe: sıkıştırılmış ≈150 kB, telefona kurulan paket). Sınır eskiden yalnız belgelerde (CLAUDE.md, görev metinleri) yazılıydı, kodda denetlenmiyordu; artık `data/paket-siniri.json` `anaParcaKb` ve `npm run build`'in son adımı `scripts/paket-siniri.mjs` (aşarsa build başarısız).
+- Ölçü dosyanın **gerçek bayt boyutu** (1 kB = 1000 bayt). Vite'in yazdığı kB karakter sayısıdır; Türkçe metin UTF-8'de çok baytlı olduğu için ≈%1,3 küçük görünür (E1 sonunda Vite 439,59 kB, dosya 445,33 kB). Yeni kod yine tembel parçalara girer.
+
 ## 2026-11-05 — E1: efektleri bağlama (yalnızca görsel)
 
 - **Kapsam:** oyun kuralı, sayılar ve kural sürümü değişmedi; yeni olay yok. Efekt kodu tembel parça `src/ui/fx/` (`FxLayer`), ana paket 439,59 kB (değişmedi).
