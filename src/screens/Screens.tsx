@@ -3,6 +3,7 @@
  * karakterler). Game Master (GmScreen.tsx) ve durum (StatusScreen.tsx) ayrı, tembel yüklenen parçalar. Tek cihaz: rol seçimi yalnızca hangi ekranın
  * açılacağını belirler; online sürüm sonra.
  */
+import { alignmentLongRest } from '../rules/alignmentRest';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { classes, races, weapons } from '../data';
 import { lineageLine } from '../ui/lineageText';
@@ -251,7 +252,7 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
           <button onClick={() => {
             setNote(R.longDone);
             if (masteryRight(sheet)) setDrills(sheet.weaponMasteries ?? []);
-            props.onUpdate({ ...props.c, status: longRestStatus(sheet, props.c.status) });
+            props.onUpdate(alignmentLongRest({ ...props.c, status: longRestStatus(sheet, props.c.status) }));
           }}>{R.long}</button>
         </div>
       )}

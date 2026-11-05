@@ -25,7 +25,15 @@ export interface AlignmentEntry {
   geriAlindi?: boolean;
   /** Azalan getiri uygulandı (aynı olay art arda 3. kez ve sonrası). */
   yarim?: boolean;
+  /** Kuyruk K52: savrulma çarpanı (Moral ≤ 1/3 iken ×1.5); yoksa 1. */
+  carpan?: number;
+  /** Kuyruk K52: bu kayıttan doğan Moral değişimi (vicdan çatışması / iç huzur / yeni yol). Geri alma Moral'e dokunmaz. */
+  moral?: { delta: number; nedenler: MoralReasonA[] };
 }
+/** Kuyruk K52: hizalanma kaynaklı Moral nedenleri. */
+export type MoralReasonA = 'vicdan' | 'huzur' | 'yeniYol';
+/** Kuyruk K52: Moral bağının sayaçları (günlük kayıp, uzun dinlenme başına huzur, eksen başına yeni yol). */
+export interface ConscienceBook { gun?: string; kayip?: number; huzurAlindi?: true; yeniYol?: Partial<Record<Axis, true>> }
 export interface Alignment {
   duzen: number;
   iyilik: number;
@@ -36,11 +44,15 @@ export interface Alignment {
   gizli?: boolean;
   /** Son etiket kovaları (histerezis). */
   kova?: { duzen: Bucket; iyilik: Bucket };
+  /** Kuyruk K52: Moral bağı sayaçları (yoksa boş). */
+  vicdan?: ConscienceBook;
 }
 export interface Contribution { kaynak: 'sinif' | 'gecmis' | 'altSinif' | 'irk'; id: string; duzen: number; iyilik: number; gerekce: { tr: string; en: string } }
 
 export const ALIGN = cfg;
-export const ALIGN_EVENTS = events.olaylar as Array<{ id: string; ad: { tr: string; en: string }; duzen: number; iyilik: number }>;
+/** Hazır olaylar: her biri tek `hizalanmaEtki` (Moral bağı bundan türer; ayrı moral etkisi yok). */
+export const ALIGN_EVENTS = (events.olaylar as Array<{ id: string; ad: { tr: string; en: string }; hizalanmaEtki: { duzen: number; iyilik: number } }>)
+  .map((e) => ({ ...e, duzen: e.hizalanmaEtki.duzen, iyilik: e.hizalanmaEtki.iyilik }));
 const T = table as unknown as Record<'sinif' | 'gecmis' | 'altSinif' | 'irk', Record<string, { duzen: number; iyilik: number; gerekce: { tr: string; en: string } }>>;
 
 const clamp = (v: number, n: number) => Math.max(-n, Math.min(n, Math.round(v)));
@@ -113,11 +125,14 @@ export function newAlignment(computed: { duzen: number; iyilik: number }, kind: 
 export const alignmentOf = (a: Alignment | undefined): Alignment => a ?? recompute({ duzen: 0, iyilik: 0, baslangic: { duzen: 0, iyilik: 0 }, baslangicTuru: 'orta', gunluk: [] });
 export const labelOf = (a: Alignment, lang: 'tr' | 'en'): string => alignmentLabel(a.kova?.duzen ?? bucketOf(a.duzen), a.kova?.iyilik ?? bucketOf(a.iyilik), lang);
 
+/** Kuyruk K52: savrulma çarpanı (yarım yukarı, işaret korunur; ×1'de aynen). */
+const swing = (x: number, k: number): number => (k === 1 || !x ? x : Math.sign(x) * Math.round(Math.abs(x) * k));
+
 let seq = 0;
 const entryId = (zaman: string) => `h${Date.parse(zaman) || 0}-${(seq++).toString(36)}`;
 
 /** Hazır olay (azalan getiri: aynı olay art arda 3. kez ve sonrası yarı etki; yalnız hazır düğmeler). */
-export function addEvent(a: Alignment, olayId: string, kim: string, zaman: string, oturum?: string, gerekce = ''): Alignment {
+export function addEvent(a: Alignment, olayId: string, kim: string, zaman: string, oturum?: string, gerekce = '', carpan = 1): Alignment {
   const ev = ALIGN_EVENTS.find((e) => e.id === olayId);
   if (!ev) return a;
   const live = a.gunluk.filter((e) => !e.geriAlindi);
@@ -125,15 +140,16 @@ export function addEvent(a: Alignment, olayId: string, kim: string, zaman: strin
   for (let i = live.length - 1; i >= 0 && live[i]?.tur === 'olay' && live[i]?.olay === olayId; i--) streak++;
   const half = streak + 1 >= events.azalanGetiri.tekrar;
   const k = half ? events.azalanGetiri.carpan : 1;
-  const scale = (x: number) => (half ? Math.sign(x) * Math.ceil(Math.abs(x) * k) : x);
+  const scale = (x: number) => swing(half ? Math.sign(x) * Math.ceil(Math.abs(x) * k) : x, carpan);
   return recompute({ ...a, gunluk: [...a.gunluk, { id: entryId(zaman), tur: 'olay', kim, olay: olayId, duzen: scale(ev.duzen), iyilik: scale(ev.iyilik),
-    gerekce: gerekce || ev.ad.tr, zaman, ...(oturum ? { oturum } : {}), ...(half ? { yarim: true } : {}) }] });
+    gerekce: gerekce || ev.ad.tr, zaman, ...(oturum ? { oturum } : {}), ...(half ? { yarim: true } : {}), ...(carpan !== 1 ? { carpan } : {}) }] });
 }
 /** Serbest giriş (eksen + miktar −10…+10 + gerekçe). */
-export function addFree(a: Alignment, eksen: Axis, miktar: number, gerekce: string, kim: string, zaman: string, oturum?: string): Alignment {
-  const m = clamp(miktar, cfg.serbestEnCok);
+export function addFree(a: Alignment, eksen: Axis, miktar: number, gerekce: string, kim: string, zaman: string, oturum?: string, carpan = 1): Alignment {
+  const m = swing(clamp(miktar, cfg.serbestEnCok), carpan);
   if (!m) return a;
-  return recompute({ ...a, gunluk: [...a.gunluk, { id: entryId(zaman), tur: 'serbest', kim, duzen: eksen === 'duzen' ? m : 0, iyilik: eksen === 'iyilik' ? m : 0, gerekce, zaman, ...(oturum ? { oturum } : {}) }] });
+  return recompute({ ...a, gunluk: [...a.gunluk, { id: entryId(zaman), tur: 'serbest', kim, duzen: eksen === 'duzen' ? m : 0, iyilik: eksen === 'iyilik' ? m : 0, gerekce, zaman,
+    ...(oturum ? { oturum } : {}), ...(carpan !== 1 ? { carpan } : {}) }] });
 }
 /** Geri al / geri getir. */
 export const toggleUndo = (a: Alignment, id: string): Alignment =>

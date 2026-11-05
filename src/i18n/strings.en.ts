@@ -937,6 +937,13 @@ export const en: Strings = {
       redetermineReason: 'Redetermined by the Game Master', empty: 'No entries yet.',
       flag: 'Alignment (house rule)', raceFlag: 'Race/culture contribution', autoFlag: 'Start automatic only (no rejecting)',
       note: 'No effect on combat. Hidden everywhere when off.',
+      moralFlag: 'Alignment ↔ Morale link (with alignment and Morale on)',
+      moralLine: (m: number, max: number) => `Morale ${m}/${max}`, swing: (k: number) => `swing ×${k}`,
+      moralOff: 'No Morale effect for this event',
+      reasons: { vicdan: 'conscience conflict', huzur: 'inner peace', yeniYol: 'new path' } as Record<string, string>,
+      moralDelta: (d: number, why: string) => `Morale ${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)} (${why})`,
+      cardTag: { vicdan: 'Conscience', huzur: 'Peace', yeniYol: 'New path' } as Record<string, string>,
+      cardNote: (tag: string, d: number) => `${tag}: Morale ${d > 0 ? '+' : '−'}${Math.abs(d)}`,
     },
     moral: {
       label: (m: number, max: number) => `Morale ${m}/${max}`,

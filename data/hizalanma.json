@@ -36,5 +36,21 @@
  "gercekTarafsiz": {
   "tr": "Gerçek Tarafsız",
   "en": "True Neutral"
+ },
+ "moral": {
+  "not": "Kuyruk K52: Moral (Motivasyon) bağı (ev kuralı hizalanmaMoral; hizalanma ve moralSistemi de açıkken). Sayılar Moral denge turunda ayarlanacak.",
+  "esik": 17,
+  "catismaEnAz": 3,
+  "catismaBuyuk": 5,
+  "kayip": 1,
+  "kayipBuyuk": 2,
+  "olayEnCok": 2,
+  "gunlukEnCok": 3,
+  "taban": 1,
+  "huzurEnAz": 3,
+  "huzur": 1,
+  "huzurDinlenmeEnCok": 1,
+  "yeniYol": 2,
+  "savrulmaCarpan": 1.5
  }
 }

@@ -377,6 +377,13 @@ export const TR_EXTRA = {
       redetermineReason: 'Game Master yeniden belirledi', empty: 'Henüz kayıt yok.',
       flag: 'Hizalanma (ev kuralı)', raceFlag: 'Irk/kültür katkısı', autoFlag: 'Başlangıç yalnız otomatik (kabul etmeme kapalı)',
       note: 'Savaş hesabına girmez. Kapalıyken hiçbir yerde görünmez.',
+      moralFlag: 'Hizalanma ↔ Moral bağı (hizalanma ve Moral de açıkken)',
+      moralLine: (m: number, max: number) => `Moral ${m}/${max}`, swing: (k: number) => `savrulma ×${k}`,
+      moralOff: 'Bu olayda Moral etkisi yok',
+      reasons: { vicdan: 'vicdan çatışması', huzur: 'iç huzur', yeniYol: 'yeni yol' } as Record<string, string>,
+      moralDelta: (d: number, why: string) => `Moral ${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d)} (${why})`,
+      cardTag: { vicdan: 'Vicdan', huzur: 'Huzur', yeniYol: 'Yeni yol' } as Record<string, string>,
+      cardNote: (tag: string, d: number) => `${tag}: Moral ${d > 0 ? '+' : '−'}${Math.abs(d)}`,
     },
     /** Kuyruk K48: Moral (ev kuralı; tembel parça). */
     moral: {

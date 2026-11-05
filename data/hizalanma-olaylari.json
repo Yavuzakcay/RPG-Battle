@@ -1,36 +1,117 @@
 {
- "not": "K51: Game Master hazır eylem düğmeleri ve eksen puanları (Game Master burada değiştirir). Taslaktaki liste depoda yok: K51 varsayılanı (DECISIONS.md). Aynı olay art arda 3. kez yarı etki (`azalanGetiri`).",
+ "not": "K52: Game Master hazır eylem düğmeleri; her olay tek `hizalanmaEtki` (±50 ölçeği) taşır, Moral bağı (hizalanmaMoral) bundan türer. İlk 9 olay docs/hizalanma-sistemi-taslak.md 'GM aracı' listesi (kaynak taslak), kalan 6 K51 varsayılanı. Aynı olay art arda 3. kez yarı etki (`azalanGetiri`).",
  "azalanGetiri": {
   "tekrar": 3,
   "carpan": 0.5
  },
  "olaylar": [
   {
-   "id": "yardim",
-   "ad": {
-    "tr": "Masuma yardım etti",
-    "en": "Helped an innocent"
-   },
-   "duzen": 0,
-   "iyilik": 3
-  },
-  {
    "id": "merhamet",
    "ad": {
     "tr": "Merhamet gösterdi",
     "en": "Showed mercy"
    },
-   "duzen": 0,
-   "iyilik": 2
+   "hizalanmaEtki": {
+    "duzen": 0,
+    "iyilik": 3
+   },
+   "kaynak": "taslak"
+  },
+  {
+   "id": "teslim-oldurdu",
+   "ad": {
+    "tr": "Teslim olanı öldürdü",
+    "en": "Killed one who surrendered"
+   },
+   "hizalanmaEtki": {
+    "duzen": -2,
+    "iyilik": -5
+   },
+   "kaynak": "taslak"
+  },
+  {
+   "id": "soz-tuttu",
+   "ad": {
+    "tr": "Söz tuttu",
+    "en": "Kept their word"
+   },
+   "hizalanmaEtki": {
+    "duzen": 3,
+    "iyilik": 0
+   },
+   "kaynak": "taslak"
+  },
+  {
+   "id": "soz-bozdu",
+   "ad": {
+    "tr": "Yeminini bozdu",
+    "en": "Broke an oath"
+   },
+   "hizalanmaEtki": {
+    "duzen": -5,
+    "iyilik": 0
+   },
+   "kaynak": "taslak"
+  },
+  {
+   "id": "yasa-cigner",
+   "ad": {
+    "tr": "Yasayı çiğnedi (haklı gerekçeyle)",
+    "en": "Broke the law (for a just cause)"
+   },
+   "hizalanmaEtki": {
+    "duzen": -3,
+    "iyilik": 0
+   },
+   "kaynak": "taslak"
+  },
+  {
+   "id": "yardim",
+   "ad": {
+    "tr": "Masumu korudu",
+    "en": "Protected an innocent"
+   },
+   "hizalanmaEtki": {
+    "duzen": 0,
+    "iyilik": 4
+   },
+   "kaynak": "taslak"
+  },
+  {
+   "id": "zulum",
+   "ad": {
+    "tr": "Zorbalık/işkence",
+    "en": "Bullying/torture"
+   },
+   "hizalanmaEtki": {
+    "duzen": 0,
+    "iyilik": -5
+   },
+   "kaynak": "taslak"
+  },
+  {
+   "id": "hirsizlik",
+   "ad": {
+    "tr": "Rüşvet/hırsızlık",
+    "en": "Bribery/theft"
+   },
+   "hizalanmaEtki": {
+    "duzen": -3,
+    "iyilik": -2
+   },
+   "kaynak": "taslak"
   },
   {
    "id": "fedakarlik",
    "ad": {
     "tr": "Kendini feda etti",
-    "en": "Sacrificed for others"
+    "en": "Sacrificed themself"
    },
-   "duzen": 0,
-   "iyilik": 5
+   "hizalanmaEtki": {
+    "duzen": 0,
+    "iyilik": 5
+   },
+   "kaynak": "taslak"
   },
   {
    "id": "bencillik",
@@ -38,17 +119,11 @@
     "tr": "Bencil davrandı",
     "en": "Acted selfishly"
    },
-   "duzen": 0,
-   "iyilik": -2
-  },
-  {
-   "id": "zulum",
-   "ad": {
-    "tr": "Zulmetti",
-    "en": "Was cruel"
+   "hizalanmaEtki": {
+    "duzen": 0,
+    "iyilik": -2
    },
-   "duzen": 0,
-   "iyilik": -4
+   "kaynak": "K51"
   },
   {
    "id": "masum-oldurdu",
@@ -56,26 +131,11 @@
     "tr": "Masum öldürdü",
     "en": "Killed an innocent"
    },
-   "duzen": -2,
-   "iyilik": -8
-  },
-  {
-   "id": "soz-tuttu",
-   "ad": {
-    "tr": "Sözünü tuttu",
-    "en": "Kept their word"
+   "hizalanmaEtki": {
+    "duzen": -2,
+    "iyilik": -8
    },
-   "duzen": 3,
-   "iyilik": 0
-  },
-  {
-   "id": "soz-bozdu",
-   "ad": {
-    "tr": "Sözünü bozdu",
-    "en": "Broke their word"
-   },
-   "duzen": -3,
-   "iyilik": 0
+   "kaynak": "K51"
   },
   {
    "id": "yasaya-uydu",
@@ -83,17 +143,11 @@
     "tr": "Yasaya uydu",
     "en": "Obeyed the law"
    },
-   "duzen": 2,
-   "iyilik": 0
-  },
-  {
-   "id": "yasa-cigner",
-   "ad": {
-    "tr": "Yasayı çiğnedi",
-    "en": "Broke the law"
+   "hizalanmaEtki": {
+    "duzen": 2,
+    "iyilik": 0
    },
-   "duzen": -3,
-   "iyilik": 0
+   "kaynak": "K51"
   },
   {
    "id": "isyan",
@@ -101,17 +155,11 @@
     "tr": "Otoriteye başkaldırdı",
     "en": "Defied authority"
    },
-   "duzen": -4,
-   "iyilik": 0
-  },
-  {
-   "id": "hirsizlik",
-   "ad": {
-    "tr": "Çaldı",
-    "en": "Stole"
+   "hizalanmaEtki": {
+    "duzen": -4,
+    "iyilik": 0
    },
-   "duzen": -2,
-   "iyilik": -1
+   "kaynak": "K51"
   },
   {
    "id": "ihanet",
@@ -119,8 +167,11 @@
     "tr": "Dostuna ihanet etti",
     "en": "Betrayed an ally"
    },
-   "duzen": -4,
-   "iyilik": -3
+   "hizalanmaEtki": {
+    "duzen": -4,
+    "iyilik": -3
+   },
+   "kaynak": "K51"
   },
   {
    "id": "adalet",
@@ -128,8 +179,11 @@
     "tr": "Adil yargıladı",
     "en": "Judged fairly"
    },
-   "duzen": 2,
-   "iyilik": 2
+   "hizalanmaEtki": {
+    "duzen": 2,
+    "iyilik": 2
+   },
+   "kaynak": "K51"
   }
  ]
 }

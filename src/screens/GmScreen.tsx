@@ -9,6 +9,8 @@ import type { DragonWakeMode } from '../battle/types';
 import { isWideMap, maps, pickerVisible, variantLabel } from '../map/maps';
 import { alignmentEnabled, characterHouseRules, upperLevelsEnabled } from '../app/features';
 import { AlignmentPanel } from '../ui/gm/AlignmentPanel';
+import { alignmentMoralOn } from '../rules/alignmentMoral';
+import { alignmentLongRest } from '../rules/alignmentRest';
 import REGIONS from '../../harita/_ortak/harita-bolgeleri.json';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
@@ -252,13 +254,13 @@ export function GmScreen(props: {
           )}
           {/* Kuyruk K51: hizalanma paneli (ev kuralı açıkken). */}
           {props.onUpdateCharacters && alignmentEnabled() && props.characters.length > 0 && (
-            <AlignmentPanel characters={props.characters} onUpdate={(list) => props.onUpdateCharacters?.(list)} />
+            <AlignmentPanel characters={props.characters} onUpdate={(list) => props.onUpdateCharacters?.(list)} moralBond={alignmentMoralOn(houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()))} />
           )}
           {tired.length > 0 && props.onUpdateCharacters && (
             <div className="gm-row">
               <small className="mute">{G.restNote}</small>
               <button className="ghost" onClick={() => props.onUpdateCharacters?.(props.characters.map((c) =>
-                (tired.includes(c) ? { ...c, status: longRestStatus(c.sheet, c.status) } : c)))}>{G.restAll}</button>
+                (tired.includes(c) ? alignmentLongRest({ ...c, status: longRestStatus(c.sheet, c.status) }) : c)))}>{G.restAll}</button>
             </div>
           )}
         </section>

@@ -28,3 +28,6 @@
 .gm-align .align-log li.undone { opacity: .45; text-decoration: line-through; }
 .align-chip { display: inline-flex; align-items: center; min-height: 32px; padding: 2px 8px; border-radius: 12px; border: 1px solid var(--line, #555); background: transparent; color: inherit; font-size: 12px; cursor: pointer; }
 .align-pop { padding: 8px; }
+.align-note { margin-left: 6px; font-size: 11px; opacity: .85; }
+.align-moral.bad { color: #d77; }
+.align-moral.good { color: #7c9; }

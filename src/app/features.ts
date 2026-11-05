@@ -53,7 +53,7 @@ export function setImzaEnabled(rule: string, on: boolean): void {
 }
 /** Karakter ev kuralı varsayılanları (Game Master kurulumu ve yeni savaş): Karadul + açık imza kuralları. */
 export const characterHouseRules = (): Record<string, boolean> => ({
-  karadulCemberi: karadulEnabled(), ...Object.fromEntries(imzaEnabledList().map((r) => [r, true])), ...(read().hizalanma === true ? { hizalanma: true } : {}),
+  karadulCemberi: karadulEnabled(), ...Object.fromEntries(imzaEnabledList().map((r) => [r, true])), ...(read().hizalanma === true ? { hizalanma: true } : {}), ...(read().hizalanmaMoral === true ? { hizalanmaMoral: true } : {}),
 });
 
 /** Kuyruk K51: hizalanma ev kuralı (Game Master; varsayılan kapalı; kapalıyken hiçbir yerde görünmez). */
@@ -70,4 +70,10 @@ export function setAlignmentRace(on: boolean): void {
 export const alignmentAutoOnly = (): boolean => (read() as Record<string, unknown>).hizalanmaYalnizOtomatik === true;
 export function setAlignmentAutoOnly(on: boolean): void {
   try { localStorage.setItem(KEY, JSON.stringify({ ...read(), hizalanmaYalnizOtomatik: on })); } catch { /* depolama yok */ }
+}
+
+/** Kuyruk K52: hizalanma ↔ Moral bağı (ev kuralı `hizalanmaMoral`, varsayılan kapalı; hizalanma ve moralSistemi de açıkken çalışır). */
+export const alignmentMoralEnabled = (): boolean => read().hizalanmaMoral === true;
+export function setAlignmentMoralEnabled(on: boolean): void {
+  try { localStorage.setItem(KEY, JSON.stringify({ ...read(), hizalanmaMoral: on })); } catch { /* depolama yok */ }
 }

@@ -115,7 +115,7 @@ describe('günlük', () => {
     const ev = ALIGN_EVENTS.find((e) => e.id === 'zulum')!;
     let a = newAlignment({ duzen: 0, iyilik: 0 }, 'otomatik');
     a = addEvent(addEvent(addEvent(a, 'zulum', 'gm', Z), 'zulum', 'gm', Z), 'zulum', 'gm', Z);
-    expect(a.gunluk.map((e) => e.iyilik)).toEqual([ev.iyilik, ev.iyilik, ev.iyilik / 2]);
+    expect(a.gunluk.map((e) => e.iyilik)).toEqual([ev.iyilik, ev.iyilik, -Math.ceil(Math.abs(ev.iyilik) / 2)]); // K52: Zorbalık −5 → −3 (yarım yukarı)
     expect(a.gunluk.at(-1)?.yarim).toBe(true);
     a = addEvent(addEvent(a, 'merhamet', 'gm', Z), 'zulum', 'gm', Z);
     expect(a.gunluk.at(-1)?.yarim).toBeFalsy();
@@ -127,7 +127,7 @@ describe('günlük', () => {
     a = gmRedetermine(a, { duzen: -20, iyilik: 0 }, 'gm', Z, 'yeniden');
     expect(a.baslangicTuru).toBe('gm');
     expect(a.duzen).toBe(-20);
-    expect(a.iyilik).toBe(3);
+    expect(a.iyilik).toBe(4); // K52: Masumu korudu İ +4 (taslak)
     expect(a.gunluk.at(-1)?.tur).toBe('yeniden');
   });
   it('eski kayıt (alan yok) 0/0 açılır; etiket Gerçek Tarafsız', () => {
