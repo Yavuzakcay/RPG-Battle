@@ -56,3 +56,53 @@ Tek giriş `chooseCommand` / `chooseEnemyCommand` (`src/battle/ai.ts`, ~1.960 sa
 | K54b | Kontrol ipuçları güçlü büyünün yerine geçiyordu (ölçümde Dunganga %27, Harita %9) | kaynak maliyeti |
 | K54c | Buyruk: Yer değiştir | değerlendirilmez (kalan) |
 | A0 | Sarf eşyası | eylem açıklayıcı (iyileştirme iksiri) |
+
+## Y1 sonrası
+
+Karar noktası (`bestNow`'un yeri ve bonus/serbest havuz) artık **değerlendirici**: bütün adaylar gerçek çözücüyle kuru çalıştırılır (`previewCommand`, `src/battle/ai/preview.ts`) ve aynı puanla karşılaştırılır (`src/battle/ai/evaluate.ts`, ağırlıklar `data/yz-roller.json`). Eski elle yazılmış kurallar açıklayıcı olarak kayıtlı (`src/battle/ai/actions.ts` `registerAction`; kural önceliği `kuralOnceligi`); `state.yz.eski` eski zinciri çalıştırır.
+
+### Kuru çalıştırma API'si
+
+```ts
+previewCommand(state: BattleState, cmd: Command, ctx?: CommandContext, opts?: { range?: boolean }): CommandPreview
+// CommandPreview: { ok, error?, targets: TargetPreview[], friendlyFire, selfDamage, opportunity: {attackerId, damage}[],
+//                   triggers: string[], events, spent: { slots: number[], resources: Record<string, number> }, actorPos?, runs }
+// TargetPreview:  { id, ally, self, hitP?, critP?, saveP?, damage: {min, avg, max}, healing: {min, avg, max}, killP,
+//                   conditions: Record<durum, P>, effects: Record<etki, P>, flags: Record<bayrak, P>, movedTo?, moveBy?, teleportedTo? }
+```
+
+Senaryolar: yoklama (d20 = 10) → saldırı ıska/isabet/kritik × save başarı/başarısız × hasar zarı alt/üst orta (+ en düşük/en yüksek). İsabet ve save olasılığı analitik (zar kipi dahil); ikinci şans (Heroic Inspiration, Indomitable, Lucky; Peerless Aim/Yazgı Mührü kendiliğinden isabet; Legendary Resistance) ıska/başarısız senaryosundan algılanır. Sınama: tam sayımla sapma < %1, 1000 isabetlik tohumlu gerçek saldırıyla isabet oranı 4 standart hata içinde (`preview.test.ts`).
+
+### Kayıtlı açıklayıcılar (19)
+
+| Kimlik | Tür | Kural önceliği | Not |
+|---|---|---|---|
+| `eski:itme` | hasar | 9 | ölümcül itme (lav, uçurum, batak, 20+ ft) |
+| `eski:yenilenme` | hasar | 9 | yerdeki yenilenen düşmana ateş/asit |
+| `eski:kontrol` | kontrol | 7 | Hold Person, Blindness, Resilient Sphere, Banishment/Dominate/Polymorph, Wall, kontrol alanı |
+| `eski:iyilestir` | iyileştirme | 6 | ölmekte olan / çok yaralı dosta |
+| `eski:soz` | hasar | 6 | Power Word Kill/Stun, Mass Heal |
+| `eski:imzaIpucu` | kontrol | 5 | imza ipuçları, slot kapısından geçen |
+| `eski:alan`, `eski:zemin`, `eski:nefes`, `eski:alanSaldiri` | hasar/kontrol | 3 | alan büyüsü, kalıcı zemin, Dragonborn nefesi, canavar alanı |
+| `eski:yetenek` | hasar | 2 | SRD canavar yeteneği (ilk geçerli) |
+| `eski:coklu` | hasar | 1 | SRD Multiattack planı |
+| `eski:tek`, `eski:saldiri` | hasar | – | tek hedefli silah/büyü (4 düşman × 3 seçenek), canavar saldırıları (3 düşman) |
+| `eski:imza`, `eski:imzaIpucuKapisiz` | kontrol | – | eylem harcayan imza özellikleri (yalnız puanıyla) |
+| `g3:zihin` | kontrol | – | Zihin Gücü: Fırlat |
+| `g3:itme` | kontrol | – | İt: çarpma, yere düşürme |
+| `g3:yetenek` | hasar | – | canavar yetenekleri tek tek (ışınlanma, çekme, çağırma…) |
+
+Bonus/serbest havuz (`bonusPoolCands`): Zihin Gücü İt/Çek/Yana/Taşı/Nesne, Yetişen Yol: Adım, Cloud's Jaunt / Blink Steps kaçışı, iyileştirme iksiri + bonus/serbest imza özellikleri. Hareket: tehlikeli altıgenden çıkış (`leaveHazard`), menzilli yer seçiminde yükseklik.
+
+### Hâlâ kullanılmayan eylemler
+
+| Eylem | Neden |
+|---|---|
+| Buyruk: Yer değiştir (İmparator) | dostun tepkisini harcar; değeri (dostun yeni konumu) önizlemede görünmez; aday üretilmez |
+| Kuşbakışı Yerleştir, Zemin: Yol aç / Buz (Harita) | değeri harita geometrisine bağlı (yol açma, köprü); önizleme yalnız etkiyi görür; aday yok |
+| Çizili Duvar, Zemin Yeniden Yaz (slot kapısı kapalıyken) | aday var ama değeri önizlemede sıfır, kaynak maliyeti eksi: seçilmez (kapı açıkken kural önceliğiyle seçilir) |
+| Hazırla (Ready), Gizlen (yapay zekâ) | yok (eski) |
+| Wild Shape biçim seçimi, çağırma büyüleri | eski basit kural (değerlendiricide değil) |
+| Tepkiler | öneriyle (`askReaction` `suggested`); değerlendirici tepki seçmez |
+| Hareket yeri seçimi | eski hızlı puan (`bestNow(there)`); her altıgen için kuru çalıştırma pahalı |
+| Usta ileri bakış | yalnız aynı yaratığın aynı turdaki sonraki komutu; rakibin yanıtı değil |
