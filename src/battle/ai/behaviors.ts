@@ -18,6 +18,8 @@ import { teleportHexes } from '../teleport';
 import { abilitiesOf, abilityReady } from '../monsterAbilities';
 import type { BattleState, Combatant, Command } from '../types';
 import { registerAction, type AiHelpers } from './actions';
+import { difficultyOf } from './evaluate';
+import { playerThrowObject, throwProblem } from '../objectMotion';
 
 const sizeOf = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 });
 const free = (s: BattleState, h: Offset, self?: string) => !occupantAt(s, h, self) && terrainAt(s, h).movement !== 'blocked';
@@ -141,3 +143,24 @@ export function bonusPoolCands(s: BattleState, a: Combatant, h: AiHelpers): Comm
   ];
 }
 
+
+/**
+ * Kuyruk A2: Nesne fırlat (A1'in oyuncu komutu `object_use` `throw`; K53 nesne hareketi). Bitişikteki hafif/orta nesne,
+ * fırlatma menzilindeki ilk üç düşmana; puanı değerlendiricinin kuru çalıştırması (beklenen hasar) verir, silah saldırısı
+ * genelde daha yüksek puan alır (düşük öncelik). Kolay zorlukta üretilmez.
+ */
+function throwCands(s: BattleState, a: Combatant, h: AiHelpers): Command[] {
+  if (!h.canAct || a.economy.action || !a.pos || difficultyOf(s, a.side) === 'kolay') return [];
+  const out: Command[] = [];
+  for (const o of s.map?.objects ?? []) {
+    if (throwProblem(s, a, o)) continue;
+    for (const f of h.foes.slice(0, 3)) {
+      if (!f.pos) continue;
+      const p = playerThrowObject(s, a, o.id, f.pos);
+      if ('problem' in p || distance(o.at, f.pos) * 5 > p.range) continue;
+      out.push({ type: 'object_use', actorId: a.id, objectId: o.id, action: 'throw', to: f.pos } as Command);
+    }
+  }
+  return out;
+}
+registerAction({ id: 'a2:firlat', kind: 'damage', note: 'Nesne fırlat (bitişik hafif/orta nesne, menzildeki düşmana; Kolay\'da yok)', gen: (s, a, h) => throwCands(s, a, h) });

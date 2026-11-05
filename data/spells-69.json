@@ -224,6 +224,24 @@
     "Frightened",
     "Poisoned"
    ],
+   "choiceEffects": {
+    "Unconscious": {
+     "grants": [
+      "Unconscious"
+     ],
+     "breakOnDamage": true
+    },
+    "Frightened": {
+     "grants": [
+      "Frightened"
+     ],
+     "command": [
+      "flee"
+     ],
+     "commandPersist": true,
+     "fleeDash": true
+    }
+   },
    "repeat": {
     "cost": "action",
     "target": "enemy",

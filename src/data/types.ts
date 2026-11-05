@@ -252,6 +252,8 @@ export interface SpellMechanics {
    * Görev B3: alan save'inde başarısız olana süren etki (Fear: kaçış; Hypnotic Pattern: hasarla biten Charmed +
    * Incapacitated, hız 0). `grants` varsa büyünün düz `conditions`'ı kullanılmaz (durumlar etkiyle gelir ve gider).
    */
+  /** Kuyruk A2 (sürüm 30+): seçilen duruma göre başarısızlığın süren etkisi (Eyebite: Asleep hasarla biter, Panicked kaçış + Dash); `grants` durumu etkiye bağlar. */
+  choiceEffects?: Record<string, Partial<EffectSpec> & { grants?: string[]; breakOnDamage?: boolean; command?: string[]; commandPersist?: boolean; fleeDash?: boolean; rounds?: number }>;
   failEffect?: Partial<EffectSpec> & { grants?: string[]; delayed?: { dice: string; type: string }; repeatFailDamage?: { dice: string; type: string }; compel?: boolean;
     /** Kuyruk 19: Contagion: tur sonu save'i N başarıda biter, N başarısızlıkta kalıcı (sayaç); seçilen yetenekte save dezavantajı; durumu kaldıran etkiye CON save. */
     repeatTally?: number; saveDisChoice?: boolean; stubborn?: boolean; confused?: boolean; noBonus?: boolean;

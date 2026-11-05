@@ -11,6 +11,7 @@ import type { Ability } from '../rules/abilities';
 import { attackDice, saveDice } from './effectDice';
 import { saveMode, spellTimerEvents } from './durations';
 import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
+import { ruleVersion } from './ruleVersion';
 import type { AreaShape } from '../rules/area';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
@@ -642,6 +643,10 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     // Yinelenen hasar yukarı slotla büyür (büyünün kendi hasar ifadesi).
     const fe1u = fe1?.repeatFailDamage && m.damage ? { ...fe1, repeatFailDamage: { ...fe1.repeatFailDamage, dice: damageExpr(m, actor, tier, upcast, spell.school, spell.name) } } : fe1;
     if (fe1u && m.failEffectGate && !save.success && fx.hpAfter > 0) events.push(failEffectEvent(state, actor, spell, fe1u, ability, target.id, cmd.choice));
+    // Kuyruk A2 (sürüm 30+): seçilen duruma bağlı süren etki (Eyebite: Asleep hasarla biter; Panicked her tur başı
+    // büyücüden uzaklaşmak için Dash, Fear'in kaçış yolu). Durum etkinin `grants`'ı olur: etki düşünce durum da kalkar.
+    const ce = !save.success && fx.hpAfter > 0 && ruleVersion(state) >= 30 ? m.choiceEffects?.[added[0] ?? ''] : undefined;
+    if (ce) events.push(failEffectEvent(state, actor, spell, { rounds: 10, ...ce } as NonNullable<SpellMechanics['failEffect']>, ability, target.id, cmd.choice));
     // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
     if (adjusted.amount > 0) events.push(...damagedReactions(applyEvents(state, events), target.id, actor.id, rng));
     return finish(state, events);
