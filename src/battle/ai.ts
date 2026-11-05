@@ -58,6 +58,7 @@ import { hideCheck } from './stealth';
 import { OBJECTS, OBJECT_DATA } from './objectData';
 import { houseRule } from './houseRules';
 import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
+import { reactionHurtsSide } from './hexResolver';
 import aiData from '../../data/yapay-zeka.json';
 
 /** Kuyruk 41b: yenilenen hedefe ateş/asit (yenilenmeyi keser) seçeneğinin puan çarpanı. */
@@ -316,7 +317,9 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const best = bestAim(state, actor, s.area, s.rangeFt, (c) => visible.has(c.id));
       if (!best?.aim || best.allies > 0 || best.foes < 2) continue;
       const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: best.aim };
-      if (tryCmd(state, actor, cmd).ok) return cmd;
+      const r0 = tryCmd(state, actor, cmd);
+      // Kuyruk K55: tepkime zinciri (tutuşan gres, patlama, suda yıldırım) dostu yakacaksa seçme.
+      if (r0.ok && !reactionHurtsSide(state, r0.events, actor.side)) return cmd;
       continue;
     }
     for (const f of state.map ? foes : foes.slice(0, 1)) {
@@ -331,7 +334,7 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const steams = r.events.some((e) => e.type === 'surface_reacted' && e.reaction === 'steam');
       // Kuyruk 19: büyü yapan canavar da kullanır (taraflar büyücüye göre).
       const foeSide = actor.side === 'enemies' ? 'party' : 'enemies';
-      if (sides.filter((x) => x === foeSide).length >= (steams ? 3 : 2) && !sides.includes(actor.side)) return cmd;
+      if (sides.filter((x) => x === foeSide).length >= (steams ? 3 : 2) && !sides.includes(actor.side) && !reactionHurtsSide(state, r.events, actor.side)) return cmd;
     }
   }
   return null;

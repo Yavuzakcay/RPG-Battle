@@ -1,0 +1,844 @@
+{
+ "note": "Kuyruk K55 G2: büyü ve yüzey etiketleri (scripts/k55-buyu-etiketleri.mjs üretir; elle düzenleme betiğin ELLE tablosunda). element: fire, cold, lightning, acid, poison, force, thunder, radiant (ışık), necrotic, psychic, water. tur: alan, isin, duvar, gaz, yuzey, cagri, ruzgar. katman (yüzey ve alanlar): zemin, gaz, nesne — aynı altıgende katman başına en çok bir yüzey (K55 çözücüsü, kural sürümü 26). Etiketsiz büyü etkileşimsiz sayılır.",
+ "elementler": [
+  "fire",
+  "cold",
+  "lightning",
+  "acid",
+  "poison",
+  "force",
+  "thunder",
+  "radiant",
+  "necrotic",
+  "psychic",
+  "water"
+ ],
+ "yuzeyler": {
+  "oil": {
+   "katman": "zemin",
+   "etiket": [
+    "yanici"
+   ]
+  },
+  "water": {
+   "katman": "zemin",
+   "etiket": [
+    "water"
+   ]
+  },
+  "ice": {
+   "katman": "zemin",
+   "etiket": [
+    "cold"
+   ]
+  },
+  "fire": {
+   "katman": "zemin",
+   "etiket": [
+    "fire"
+   ]
+  },
+  "slick": {
+   "katman": "zemin",
+   "etiket": []
+  },
+  "warning": {
+   "katman": "isaret",
+   "etiket": []
+  },
+  "burningWeb": {
+   "katman": "nesne",
+   "etiket": [
+    "fire"
+   ]
+  },
+  "steam": {
+   "katman": "gaz",
+   "etiket": [
+    "water"
+   ]
+  },
+  "poison": {
+   "katman": "gaz",
+   "etiket": [
+    "poison"
+   ]
+  }
+ },
+ "alanlar": {
+  "grease": {
+   "katman": "zemin",
+   "etiket": [
+    "yanici"
+   ]
+  },
+  "web": {
+   "katman": "nesne",
+   "etiket": [
+    "yanici"
+   ]
+  },
+  "fog-cloud": {
+   "katman": "gaz",
+   "etiket": [
+    "water"
+   ]
+  },
+  "stinking-cloud": {
+   "katman": "gaz",
+   "etiket": [
+    "poison"
+   ]
+  },
+  "cloudkill": {
+   "katman": "gaz",
+   "etiket": [
+    "poison"
+   ]
+  },
+  "sleet-storm": {
+   "katman": "zemin",
+   "etiket": [
+    "cold",
+    "water"
+   ]
+  }
+ },
+ "buyuler": {
+  "fire-bolt": {
+   "element": [
+    "fire"
+   ]
+  },
+  "ray-of-frost": {
+   "element": [
+    "cold"
+   ]
+  },
+  "shocking-grasp": {
+   "element": [
+    "lightning"
+   ]
+  },
+  "acid-splash": {
+   "element": [
+    "acid"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "poison-spray": {
+   "element": [
+    "poison"
+   ]
+  },
+  "chill-touch": {
+   "element": [
+    "necrotic"
+   ]
+  },
+  "eldritch-blast": {
+   "element": [
+    "force"
+   ]
+  },
+  "sacred-flame": {
+   "element": [
+    "radiant"
+   ]
+  },
+  "produce-flame": {
+   "element": [
+    "fire"
+   ]
+  },
+  "vicious-mockery": {
+   "element": [
+    "psychic"
+   ]
+  },
+  "burning-hands": {
+   "element": [
+    "fire"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "find-familiar": {
+   "tur": [
+    "cagri"
+   ]
+  },
+  "magic-missile": {
+   "element": [
+    "force"
+   ]
+  },
+  "sleep": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "thunderwave": {
+   "element": [
+    "thunder"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "chromatic-orb": {
+   "element": [
+    "acid",
+    "cold",
+    "fire",
+    "lightning",
+    "poison",
+    "thunder"
+   ]
+  },
+  "ray-of-sickness": {
+   "element": [
+    "poison"
+   ]
+  },
+  "dissonant-whispers": {
+   "element": [
+    "psychic"
+   ]
+  },
+  "guiding-bolt": {
+   "element": [
+    "radiant"
+   ]
+  },
+  "inflict-wounds": {
+   "element": [
+    "necrotic"
+   ]
+  },
+  "searing-smite": {
+   "element": [
+    "fire"
+   ]
+  },
+  "entangle": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "faerie-fire": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "hunters-mark": {
+   "element": [
+    "force"
+   ]
+  },
+  "hex": {
+   "element": [
+    "necrotic"
+   ]
+  },
+  "hellish-rebuke": {
+   "element": [
+    "fire"
+   ]
+  },
+  "scorching-ray": {
+   "element": [
+    "fire"
+   ]
+  },
+  "shatter": {
+   "element": [
+    "thunder"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "web": {
+   "tur": [
+    "alan",
+    "yuzey"
+   ]
+  },
+  "darkness": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "acid-arrow": {
+   "element": [
+    "acid"
+   ]
+  },
+  "flaming-sphere": {
+   "element": [
+    "fire"
+   ],
+   "tur": [
+    "cagri"
+   ]
+  },
+  "moonbeam": {
+   "element": [
+    "radiant"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "heat-metal": {
+   "element": [
+    "fire"
+   ]
+  },
+  "spiritual-weapon": {
+   "element": [
+    "force"
+   ]
+  },
+  "shining-smite": {
+   "element": [
+    "radiant"
+   ]
+  },
+  "spike-growth": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "fireball": {
+   "element": [
+    "fire"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "lightning-bolt": {
+   "element": [
+    "lightning"
+   ],
+   "tur": [
+    "alan",
+    "isin"
+   ]
+  },
+  "fear": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "hypnotic-pattern": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "stinking-cloud": {
+   "tur": [
+    "alan",
+    "gaz"
+   ]
+  },
+  "vampiric-touch": {
+   "element": [
+    "necrotic"
+   ]
+  },
+  "spirit-guardians": {
+   "element": [
+    "radiant"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "call-lightning": {
+   "element": [
+    "lightning"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "conjure-animals": {
+   "tur": [
+    "cagri"
+   ]
+  },
+  "divine-smite": {
+   "element": [
+    "radiant"
+   ]
+  },
+  "find-steed": {
+   "tur": [
+    "cagri"
+   ]
+  },
+  "summon-dragon": {
+   "tur": [
+    "cagri"
+   ]
+  },
+  "cone-of-cold": {
+   "element": [
+    "cold"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "animate-dead": {
+   "tur": [
+    "cagri"
+   ]
+  },
+  "mind-spike": {
+   "element": [
+    "psychic"
+   ]
+  },
+  "gaseous-form": {
+   "tur": [
+    "gaz"
+   ]
+  },
+  "gust-of-wind": {
+   "tur": [
+    "alan",
+    "isin",
+    "ruzgar"
+   ]
+  },
+  "fog-cloud": {
+   "tur": [
+    "alan",
+    "gaz"
+   ]
+  },
+  "grease": {
+   "tur": [
+    "alan",
+    "yuzey"
+   ]
+  },
+  "silence": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "plant-growth": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "sleet-storm": {
+   "element": [
+    "cold",
+    "water"
+   ],
+   "tur": [
+    "alan",
+    "yuzey"
+   ]
+  },
+  "wind-wall": {
+   "tur": [
+    "alan",
+    "duvar",
+    "ruzgar"
+   ]
+  },
+  "calm-emotions": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "dancing-lights": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "daylight": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "starry-wisp": {
+   "element": [
+    "radiant"
+   ]
+  },
+  "flame-blade": {
+   "element": [
+    "fire"
+   ]
+  },
+  "sorcerous-burst": {
+   "element": [
+    "acid",
+    "cold",
+    "fire",
+    "lightning",
+    "poison",
+    "psychic",
+    "thunder"
+   ]
+  },
+  "color-spray": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "dragons-breath": {
+   "element": [
+    "acid",
+    "cold",
+    "fire",
+    "lightning",
+    "poison"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "create-or-destroy-water": {
+   "element": [
+    "water"
+   ],
+   "tur": [
+    "yuzey"
+   ]
+  },
+  "blight": {
+   "element": [
+    "necrotic"
+   ]
+  },
+  "conjure-woodland-beings": {
+   "element": [
+    "force"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "ice-storm": {
+   "element": [
+    "cold"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "phantasmal-killer": {
+   "element": [
+    "psychic"
+   ]
+  },
+  "vitriolic-sphere": {
+   "element": [
+    "acid"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "flame-strike": {
+   "element": [
+    "radiant"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "insect-plague": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "black-tentacles": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "compulsion": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "confusion": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "cloudkill": {
+   "element": [
+    "poison"
+   ],
+   "tur": [
+    "alan",
+    "gaz"
+   ]
+  },
+  "wall-of-fire": {
+   "element": [
+    "fire"
+   ],
+   "tur": [
+    "alan",
+    "duvar"
+   ]
+  },
+  "telekinesis": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "wall-of-force": {
+   "tur": [
+    "alan",
+    "duvar"
+   ]
+  },
+  "wall-of-stone": {
+   "tur": [
+    "alan",
+    "duvar"
+   ]
+  },
+  "contagion": {
+   "element": [
+    "necrotic"
+   ]
+  },
+  "giant-insect": {
+   "tur": [
+    "cagri"
+   ]
+  },
+  "faithful-hound": {
+   "element": [
+    "force"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "guardian-of-faith": {
+   "element": [
+    "radiant"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "animate-objects": {
+   "tur": [
+    "cagri"
+   ]
+  },
+  "antilife-shell": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "arcane-hand": {
+   "tur": [
+    "cagri"
+   ]
+  },
+  "conjure-elemental": {
+   "element": [
+    "force"
+   ],
+   "tur": [
+    "cagri"
+   ]
+  },
+  "control-water": {
+   "element": [
+    "water"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "passwall": {
+   "tur": [
+    "duvar"
+   ]
+  },
+  "blade-barrier": {
+   "tur": [
+    "alan",
+    "duvar"
+   ]
+  },
+  "chain-lightning": {
+   "element": [
+    "lightning"
+   ]
+  },
+  "circle-of-death": {
+   "element": [
+    "necrotic"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "conjure-fey": {
+   "element": [
+    "psychic"
+   ]
+  },
+  "disintegrate": {
+   "element": [
+    "force"
+   ]
+  },
+  "freezing-sphere": {
+   "element": [
+    "cold"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "harm": {
+   "element": [
+    "necrotic"
+   ]
+  },
+  "sunbeam": {
+   "element": [
+    "radiant"
+   ],
+   "tur": [
+    "alan",
+    "isin"
+   ]
+  },
+  "wall-of-ice": {
+   "element": [
+    "cold"
+   ],
+   "tur": [
+    "alan",
+    "duvar"
+   ]
+  },
+  "wall-of-thorns": {
+   "tur": [
+    "alan",
+    "duvar"
+   ]
+  },
+  "arcane-sword": {
+   "element": [
+    "force"
+   ]
+  },
+  "conjure-celestial": {
+   "element": [
+    "radiant"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "delayed-blast-fireball": {
+   "element": [
+    "fire"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "finger-of-death": {
+   "element": [
+    "necrotic"
+   ]
+  },
+  "fire-storm": {
+   "element": [
+    "fire"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "befuddlement": {
+   "element": [
+    "psychic"
+   ]
+  },
+  "earthquake": {
+   "tur": [
+    "alan"
+   ]
+  },
+  "incendiary-cloud": {
+   "element": [
+    "fire"
+   ],
+   "tur": [
+    "alan",
+    "gaz"
+   ]
+  },
+  "sunburst": {
+   "element": [
+    "radiant"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "tsunami": {
+   "tur": [
+    "alan",
+    "duvar"
+   ]
+  },
+  "meteor-swarm": {
+   "element": [
+    "fire"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "prismatic-wall": {
+   "tur": [
+    "alan",
+    "duvar"
+   ]
+  },
+  "storm-of-vengeance": {
+   "element": [
+    "thunder"
+   ],
+   "tur": [
+    "alan"
+   ]
+  },
+  "weird": {
+   "element": [
+    "psychic"
+   ],
+   "tur": [
+    "alan"
+   ]
+  }
+ }
+}

@@ -1017,7 +1017,8 @@ export type SurfaceKind = 'oil' | 'water' | 'ice' | 'fire' | 'burningWeb' | 'ste
   | 'warning';
 /** Görev Y1: yüzey tepkimesi (günlük için; durumu değiştirmez, değişiklik ardından gelen alan olaylarında). */
 export type SurfaceReaction = 'ignite' | 'webBurn' | 'melt' | 'steam' | 'freeze' | 'explode' | 'chain' | 'douse'
-  /** Kuyruk 18b */ | 'fogBurn' | 'crack' | 'condense' | 'splash' | 'dissolve' | 'wash' | 'dilute';
+  /** Kuyruk 18b */ | 'fogBurn' | 'crack' | 'condense' | 'splash' | 'dissolve' | 'wash' | 'dilute'
+  /** Kuyruk K55: katmanda yerine geçme, zincir sınırı */ | 'replace' | 'chainLimit';
 
 /**
  * Bir durumun süresi. `ownerId` kimin turunda sayıldığı (etkiyi veren ya da hedefin kendisi):
@@ -1107,6 +1108,8 @@ export interface BattleState {
    * yalnızca `false` kapatır (eski kayıt: açık).
    */
   yuzeyEtkilesimi?: boolean;
+  /** Kuyruk K55: bu turda zincirle çalışan tepkime ikilileri (`<satır>@<altıgen>`; aynı ikili turda bir kez). */
+  hexReacted?: { turn: string; keys: string[] };
   /** Görev K13B: Game Master'ın kurulumda açıp kapattığı ev kuralları (`data/ev-kurallari.json`); verilmeyen varsayılan. */
   houseRules?: Record<string, boolean>;
   /** Kuyruk 24b: savaşta kazanılan sonuç bayrakları (ör. `heykel-magarasi-kesfedildi`; sefer ekranı okuyacak). */
@@ -1796,7 +1799,8 @@ export type BattleEvent =
       /** Görev Y1: alan büyüsünün altıgenleri, hasar türü, zorluk sınıfı, zarı ve etkilenenler (yüzey tepkimeleri). */
       area?: { hexes: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[] } }
   /** Görev Y1: yüzey tepkimesi (yalnızca günlük; alan değişiklikleri `zone_*` olaylarında). */
-  | { type: 'surface_reacted'; reaction: SurfaceReaction; hexes: Offset[]; sourceId?: string; label: string }
+  /** Kuyruk K55: `row` tablo satırı (data/yuzey-etkilesimleri.json; keşif defteri), `pairs` zincirde çalışan ikililer (turda bir). */
+  | { type: 'surface_reacted'; reaction: SurfaceReaction; hexes: Offset[]; sourceId?: string; label: string; row?: string; pairs?: string[] }
   /** Görev S2: nesne olayları (yerleşti, kaldırıldı, hasar aldı, yıkıldı, durumu değişti). */
   | { type: 'object_placed'; object: MapObject }
   | { type: 'object_removed'; objectId: string }

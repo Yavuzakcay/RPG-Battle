@@ -2,6 +2,20 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K55: altıgen etki çözücüsü — hızlı regresyon (2026-11-05)
+
+Ayarlama yok (K59). `npm run sim -- 30 col kale magara orman --seviye 5 --parti buyucu`; sürüm 26 (çözücü) ile `KURAL_SURUMU=25` (eski geçişler) aynı tohumlar.
+
+| Senaryo | Sürüm 25 kazanma | Sürüm 26 kazanma | Ort. tur (25 / 26) | Ort. düşmüş PC (25 / 26) |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 100% | 100% | 3.4 / 3.4 | 0.00 / 0.00 |
+| Kale — Gündüz | 100% | 100% | 3.5 / 3.5 | 0.03 / 0.03 |
+| Mağara — karanlık | 77% (17% berabere) | 77% (17% berabere) | 4.0 / 4.0 | 0.67 / 0.67 |
+| Orman | 100% | 100% | 3.7 / 3.7 | 0.17 / 0.17 |
+
+Fark yok: bu senaryolarda yüzey tepkimesi seyrek. Duman testi (12 sınıf × 3/7/11, yüzeyli Ortamlar Diyarı, `src/sim/k55smoke.test.ts`) çökmesiz.
+Aralık dışı satır: Mağara 77% (beraberlik %17; K55 öncesiyle aynı, çözücüden bağımsız).
+
 ## Kuyruk K53: ortak savaş sistemleri (2026-11-05)
 
 Denge ölçümü yapılmadı (denge turuna). Duman: 12 sınıf × 3/7/11. seviye, kural sürümü 24, Kale haritası, 6 tur: çökme yok (`src/sim/k53smoke.test.ts`).

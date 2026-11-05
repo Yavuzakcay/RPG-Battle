@@ -974,8 +974,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, event.actorId, { resources, economy });
     }
     case 'area_used':
-    case 'surface_reacted':
       return state;
+    case 'surface_reacted': {
+      // Kuyruk K55: zincirle çalışan ikililer turda bir kez (çözücü okur).
+      if (!event.pairs?.length) return state;
+      const turn = `${state.round}:${state.turnIndex}`;
+      const prev = state.hexReacted?.turn === turn ? state.hexReacted.keys : [];
+      return { ...state, hexReacted: { turn, keys: [...prev, ...event.pairs] } };
+    }
     case 'object_placed':
       return state.map ? { ...state, map: { ...state.map, objects: [...(state.map.objects ?? []).filter((o) => o.id !== event.object.id), event.object] } } : state;
     case 'object_removed':

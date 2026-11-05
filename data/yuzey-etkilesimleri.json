@@ -1,0 +1,858 @@
+{
+ "note": "Kuyruk K55: altıgen etki çözücüsünün tek tablosu (src/battle/hexResolver.ts, kural sürümü 26, Game Master anahtarı hexResolver). Satır: id, oncelik (1 engel — çözücü sabit, 2 yüzey × yüzey, 3 büyü × yüzey, 4 aura/durum kancası, 5 hasar ve save; 0 = başka motor, çözücü çalıştırmaz), tetik (element: komutun hasar dokunuşu; olusan: bu adımda oluşan yüzey/alan), a (element listesi ya da oluşan yüzey/alan), b (yuzey/alan/su/zemin eşleşmesi), kapsam (degen: değen altıgenler, tum: bütün alan, bitisik: değen + komşu), sonuc (genel: kaldir, yuzey, sure, yoksa, konsantrasyon) ya da isleyici (kodlu özel: gres, patlama, zincir, tasma, agCoz, agYak, yayilma), gate (srd | ev <houseRule> | anahtar <globalRule> | anahtarDegil), tepkime (günlük kimliği; keşif defteri K58 buna bağlanır). Yeni ikili: yalnız satır ekle (genel sonuçla kod gerekmez). Aynı öncelikte tablo sırası; altıgenler indeks (satır × en + sütun) artan sırada; zincir derinliği en çok 3; aynı turda aynı ikili aynı altıgende zincirle iki kez çalışmaz.",
+ "params": {
+  "waterGreaseRounds": 2,
+  "waterPoisonRounds": 1,
+  "forceWaterRing": 1,
+  "zincirDerinligi": 3
+ },
+ "katmanlar": [
+  "zemin",
+  "gaz",
+  "nesne"
+ ],
+ "satirlar": [
+  {
+   "id": "douse",
+   "oncelik": 2,
+   "tetik": "olusan",
+   "a": {
+    "douses": true
+   },
+   "b": {
+    "yuzey": [
+     "fire",
+     "burningWeb"
+    ]
+   },
+   "tepkime": "douse",
+   "gate": [
+    {
+     "tur": "srd"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "kaldir": true
+   },
+   "not": "Sleet Storm gibi söndüren alan alevi söndürür (SRD)."
+  },
+  {
+   "id": "waterFire",
+   "oncelik": 2,
+   "tetik": "olusan",
+   "a": {
+    "yuzey": [
+     "water"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "fire",
+     "burningWeb"
+    ]
+   },
+   "tepkime": "douse",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixWaterFire"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "kaldir": true,
+    "yuzey": "steam"
+   },
+   "not": "Alevin üstüne su: söner, 1 tur buhar."
+  },
+  {
+   "id": "waterGrease",
+   "oncelik": 2,
+   "tetik": "olusan",
+   "a": {
+    "yuzey": [
+     "water"
+    ]
+   },
+   "b": {
+    "alan": [
+     "grease"
+    ]
+   },
+   "tepkime": "wash",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixWaterGrease"
+    }
+   ],
+   "kapsam": "tum",
+   "sonuc": {
+    "sure": "waterGreaseRounds"
+   },
+   "not": "Gres 2 turda dağılır."
+  },
+  {
+   "id": "waterPoison",
+   "oncelik": 2,
+   "tetik": "olusan",
+   "a": {
+    "yuzey": [
+     "water"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "poison"
+    ],
+    "alan": [
+     "stinking-cloud"
+    ]
+   },
+   "tepkime": "dilute",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixWaterPoison"
+    }
+   ],
+   "kapsam": "tum",
+   "sonuc": {
+    "sure": "waterPoisonRounds"
+   },
+   "not": "Zehir bulutu 1 turda seyrelir."
+  },
+  {
+   "id": "waterWeb",
+   "oncelik": 2,
+   "tetik": "olusan",
+   "a": {
+    "yuzey": [
+     "water"
+    ]
+   },
+   "b": {
+    "alan": [
+     "web"
+    ]
+   },
+   "tepkime": "dissolve",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixWaterWeb"
+    }
+   ],
+   "kapsam": "degen",
+   "isleyici": "agCoz",
+   "not": "Ağ ıslanınca çözülür, tutsak kurtulur."
+  },
+  {
+   "id": "oilSpread",
+   "oncelik": 2,
+   "tetik": "olusan",
+   "a": {
+    "yuzey": [
+     "fire"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "oil"
+    ],
+    "alan": [
+     "grease"
+    ]
+   },
+   "tepkime": "ignite",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixOilSpread"
+    }
+   ],
+   "kapsam": "bitisik",
+   "isleyici": "yayilma",
+   "not": "Tutuşan yağa bitişik yağ ve gres tutuşur; yağdan doğan alevin üstündekiler hemen yanar (aynı kaynaktan bir kez)."
+  },
+  {
+   "id": "fireOil",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "fire"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "oil"
+    ]
+   },
+   "tepkime": "ignite",
+   "gate": [
+    {
+     "tur": "srd"
+    }
+   ],
+   "kapsam": "tum",
+   "sonuc": {
+    "kaldir": true,
+    "yuzey": "fire"
+   },
+   "not": "Bütün yağ birikintisi 2 tur alev (SRD Oil)."
+  },
+  {
+   "id": "fireWeb",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "fire"
+    ]
+   },
+   "b": {
+    "alan": [
+     "web"
+    ]
+   },
+   "tepkime": "webBurn",
+   "gate": [
+    {
+     "tur": "srd"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "kaldir": true,
+    "yuzey": "burningWeb",
+    "konsantrasyon": true
+   },
+   "not": "Değen ağ altıgenleri 1 tur yanan ağ (SRD Web); Web konsantrasyonu bitince yanan ağ da biter."
+  },
+  {
+   "id": "fireIce",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "fire"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "ice"
+    ]
+   },
+   "tepkime": "melt",
+   "gate": [
+    {
+     "tur": "ev",
+     "id": "erime"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "kaldir": true,
+    "yuzey": "water"
+   },
+   "not": "Buz erir, su."
+  },
+  {
+   "id": "fireWater",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "fire"
+    ]
+   },
+   "b": {
+    "su": true
+   },
+   "tepkime": "steam",
+   "gate": [
+    {
+     "tur": "ev",
+     "id": "buhar"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "yuzey": "steam"
+   },
+   "not": "Su (yüzey ya da su zemini) üstünde 1 tur buhar; su kalır."
+  },
+  {
+   "id": "fireGrease",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "fire"
+    ]
+   },
+   "b": {
+    "alan": [
+     "grease"
+    ]
+   },
+   "tepkime": "ignite",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "greaseFlammable"
+    }
+   ],
+   "kapsam": "tum",
+   "isleyici": "gres",
+   "dokunus": "genis",
+   "not": "Gres alev olur (burnRounds); dokunuş geniş: tek hedef ateş save'i ve harita ateşi de tutuşturur (Kuyruk 24c davranışı)."
+  },
+  {
+   "id": "fireFog",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "fire"
+    ]
+   },
+   "b": {
+    "alan": [
+     "fog-cloud"
+    ]
+   },
+   "tepkime": "fogBurn",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixFireFog"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "kaldir": true
+   },
+   "not": "Sis buharlaşır."
+  },
+  {
+   "id": "coldWater",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "cold"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "water"
+    ]
+   },
+   "tepkime": "freeze",
+   "gate": [
+    {
+     "tur": "ev",
+     "id": "donma"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "kaldir": true,
+    "yuzey": "ice"
+   },
+   "not": "Su yüzeyi donar (10 tur)."
+  },
+  {
+   "id": "coldTile",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "cold"
+    ]
+   },
+   "b": {
+    "zemin": "freezeTiles"
+   },
+   "tepkime": "freeze",
+   "gate": [
+    {
+     "tur": "ev",
+     "id": "donma"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "yuzey": "ice",
+    "yoksa": true
+   },
+   "not": "Sığ su zemini donar (derin su donmaz)."
+  },
+  {
+   "id": "coldSteam",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "cold"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "steam"
+    ]
+   },
+   "tepkime": "condense",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixColdSteam"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "kaldir": true,
+    "yuzey": "water"
+   },
+   "not": "Buhar yoğuşur, su."
+  },
+  {
+   "id": "lightningIce",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "lightning"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "ice"
+    ]
+   },
+   "tepkime": "crack",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixLightningIce"
+    }
+   ],
+   "kapsam": "degen",
+   "sonuc": {
+    "kaldir": true
+   },
+   "not": "Buz çatlar, kalkar."
+  },
+  {
+   "id": "lightningOil",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "lightning"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "oil"
+    ]
+   },
+   "tepkime": "ignite",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixLightningIgnite"
+    }
+   ],
+   "kapsam": "tum",
+   "sonuc": {
+    "kaldir": true,
+    "yuzey": "fire"
+   },
+   "not": "Yıldırım yağı tutuşturur."
+  },
+  {
+   "id": "lightningGrease",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "lightning"
+    ]
+   },
+   "b": {
+    "alan": [
+     "grease"
+    ]
+   },
+   "tepkime": "ignite",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixLightningIgnite"
+    },
+    {
+     "tur": "anahtar",
+     "id": "greaseFlammable"
+    }
+   ],
+   "kapsam": "tum",
+   "isleyici": "gres",
+   "not": "Yıldırım gresi tutuşturur."
+  },
+  {
+   "id": "forceWater",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "force",
+     "thunder"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "water"
+    ]
+   },
+   "tepkime": "splash",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixForceWater"
+    }
+   ],
+   "kapsam": "tum",
+   "isleyici": "tasma",
+   "not": "Su bir halka taşar."
+  },
+  {
+   "id": "acidWeb",
+   "oncelik": 3,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "acid"
+    ]
+   },
+   "b": {
+    "alan": [
+     "web"
+    ]
+   },
+   "tepkime": "dissolve",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixAcidWeb"
+    }
+   ],
+   "kapsam": "degen",
+   "isleyici": "agCoz",
+   "not": "Ağ erir, tutsak kurtulur."
+  },
+  {
+   "id": "webFree",
+   "oncelik": 4,
+   "tetik": "olusan",
+   "a": {
+    "yuzey": [
+     "burningWeb"
+    ]
+   },
+   "b": {
+    "alan": [
+     "web"
+    ]
+   },
+   "tepkime": "webBurn",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixWebFree"
+    }
+   ],
+   "kapsam": "degen",
+   "isleyici": "agYak",
+   "not": "Yanan altıgendeki tutsak serbest kalır ve yanan ağın hasarını hemen alır (aynı kaynaktan bir kez)."
+  },
+  {
+   "id": "firePoison",
+   "oncelik": 5,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "fire"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "poison"
+    ],
+    "alan": [
+     "stinking-cloud"
+    ]
+   },
+   "tepkime": "explode",
+   "gate": [
+    {
+     "tur": "ev",
+     "id": "zehirPatlama"
+    },
+    {
+     "tur": "anahtarDegil",
+     "id": "mixPoisonInert"
+    }
+   ],
+   "kapsam": "tum",
+   "isleyici": "patlama",
+   "not": "Ev kuralı patlama (2d6 ateş, DEX yarı); Kuyruk 18b anahtarı mixPoisonInert (varsayılan açık) kapatır."
+  },
+  {
+   "id": "lightningWater",
+   "oncelik": 5,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "lightning"
+    ]
+   },
+   "b": {
+    "su": true
+   },
+   "tepkime": "chain",
+   "gate": [
+    {
+     "tur": "ev",
+     "id": "suYildirim"
+    }
+   ],
+   "kapsam": "tum",
+   "isleyici": "zincir",
+   "not": "Bağlı suya yayılır (en çok chainMax), sudakilere DEX save'li aynı hasar."
+  },
+  {
+   "id": "windClouds",
+   "oncelik": 0,
+   "tetik": "turBasi",
+   "a": {
+    "ruzgar": true
+   },
+   "b": {
+    "yuzey": [
+     "poison",
+     "steam"
+    ],
+    "alan": [
+     "fog-cloud",
+     "stinking-cloud"
+    ]
+   },
+   "tepkime": "drift",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixWindClouds"
+    }
+   ],
+   "kapsam": "tum",
+   "motor": "surfaceMix.windDriftEvents",
+   "not": "Tur başı rüzgâr yönüne bir altıgen; şiddetli rüzgârda süre kısalır."
+  },
+  {
+   "id": "gustClouds",
+   "oncelik": 0,
+   "tetik": "buyu",
+   "a": {
+    "buyu": [
+     "gust-of-wind"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "poison",
+     "steam"
+    ],
+    "alan": [
+     "fog-cloud",
+     "stinking-cloud",
+     "cloudkill"
+    ]
+   },
+   "tepkime": "disperse",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "gustDisperse"
+    }
+   ],
+   "kapsam": "tum",
+   "motor": "surfaceMix.disperseEvents"
+  },
+  {
+   "id": "waterDecay",
+   "oncelik": 0,
+   "tetik": "turBasi",
+   "a": {
+    "su": true
+   },
+   "b": {
+    "yuzey": [
+     "oil",
+     "fire",
+     "poison"
+    ]
+   },
+   "tepkime": "decay",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "waterSurfaceDecay"
+    }
+   ],
+   "kapsam": "tum",
+   "motor": "waterDecay.waterDecayEvents"
+  },
+  {
+   "id": "oilMove",
+   "oncelik": 0,
+   "tetik": "hareket",
+   "a": {
+    "hareket": true
+   },
+   "b": {
+    "yuzey": [
+     "oil"
+    ]
+   },
+   "tepkime": "slip",
+   "gate": [
+    {
+     "tur": "anahtar",
+     "id": "mixOilSlip"
+    }
+   ],
+   "kapsam": "degen",
+   "motor": "yuzey verisi (data/yuzeyler.json oil.zone)"
+  },
+  {
+   "id": "greaseMove",
+   "oncelik": 0,
+   "tetik": "hareket",
+   "a": {
+    "hareket": true
+   },
+   "b": {
+    "alan": [
+     "grease"
+    ]
+   },
+   "tepkime": "slip",
+   "gate": [
+    {
+     "tur": "srd"
+    }
+   ],
+   "kapsam": "degen",
+   "motor": "büyü alanı (Grease)"
+  },
+  {
+   "id": "iceMove",
+   "oncelik": 0,
+   "tetik": "hareket",
+   "a": {
+    "hareket": true
+   },
+   "b": {
+    "yuzey": [
+     "ice"
+    ]
+   },
+   "tepkime": "slip",
+   "gate": [
+    {
+     "tur": "srd"
+    }
+   ],
+   "kapsam": "degen",
+   "motor": "yuzey verisi (data/yuzeyler.json ice.zone)"
+  },
+  {
+   "id": "fireKeg",
+   "oncelik": 0,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "fire"
+    ]
+   },
+   "b": {
+    "nesne": [
+     "powderKeg"
+    ]
+   },
+   "tepkime": "explode",
+   "gate": [
+    {
+     "tur": "ev",
+     "id": "barutPatlama"
+    }
+   ],
+   "kapsam": "degen",
+   "motor": "objects.objectAreaEvents"
+  },
+  {
+   "id": "acidWood",
+   "oncelik": 0,
+   "tetik": "element",
+   "a": {
+    "element": [
+     "acid"
+    ]
+   },
+   "b": {
+    "nesne": [
+     "table",
+     "chest",
+     "door",
+     "tent"
+    ]
+   },
+   "tepkime": "corrode",
+   "gate": [
+    {
+     "tur": "srd"
+    }
+   ],
+   "kapsam": "degen",
+   "motor": "objects.objectAreaEvents"
+  },
+  {
+   "id": "waterOil",
+   "oncelik": 0,
+   "tetik": "olusan",
+   "a": {
+    "yuzey": [
+     "water"
+    ]
+   },
+   "b": {
+    "yuzey": [
+     "oil"
+    ]
+   },
+   "tepkime": "replace",
+   "gate": [
+    {
+     "tur": "srd"
+    }
+   ],
+   "kapsam": "degen",
+   "motor": "katman kuralı",
+   "not": "Aynı zemin katmanı: yeni gelen eskinin yerine (sürüm 26; önceden ikisi birlikte duruyordu)."
+  }
+ ]
+}

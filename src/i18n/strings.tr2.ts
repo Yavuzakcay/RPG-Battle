@@ -166,7 +166,7 @@ export const TR_EXTRA = {
     compelled: (who: string, word: string) => `${who} zorlamayla hareket etti (${word}).`,
     summonVanished: (who: string, why: string) => `${who} kayboldu (${why}).`,
     surface: (what: string, label: string, hexes: number) => `${label}: ${what}${hexes ? ` (${hexes} altıgen)` : ''}.`,
-    surfaceReaction: { ignite: 'yağ tutuştu', webBurn: 'ağ yanıyor', melt: 'buz eridi', steam: 'su buharlaştı', freeze: 'su dondu', explode: 'zehir bulutu patladı', chain: 'yıldırım suya yayıldı', douse: 'alev söndü', fogBurn: 'sis buharlaştı', crack: 'buz çatladı', condense: 'buhar yoğuşup su oldu', splash: 'su taştı', dissolve: 'ağ çözüldü', wash: 'gres dağılıyor', dilute: 'zehir seyreldi' } as Record<string, string>,
+    surfaceReaction: { ignite: 'yağ tutuştu', webBurn: 'ağ yanıyor', melt: 'buz eridi', steam: 'su buharlaştı', freeze: 'su dondu', explode: 'zehir bulutu patladı', chain: 'yıldırım suya yayıldı', douse: 'alev söndü', fogBurn: 'sis buharlaştı', crack: 'buz çatladı', condense: 'buhar yoğuşup su oldu', splash: 'su taştı', dissolve: 'ağ çözüldü', wash: 'gres dağılıyor', dilute: 'zehir seyreldi', replace: 'yeni yüzey eskinin yerini aldı', chainLimit: 'zincir sınırı: tepkime durdu' } as Record<string, string>,
     objectPlaced: (kind: string) => `Game Master: ${OBJ_TR[kind] ?? kind} yerleştirildi.`,
     objectDamaged: (who: string, kind: string, roll: string, dmg: number, type: string, hp: number) => `${who} → ${OBJ_TR[kind] ?? kind}${roll ? ` (${roll})` : ''}: ${dmg} ${type} hasar, HP ${hp}.`,
     objectDestroyed: (label: string) => `${label}: yıkıldı.`,

@@ -616,7 +616,7 @@ export const en: Strings = {
     compelled: (who: string, word: string) => `${who} moved under compulsion (${word}).`,
     summonVanished: (who: string, why: string) => `${who} disappears (${why}).`,
     surface: (what: string, label: string, hexes: number) => `${label}: ${what}${hexes ? ` (${hexes} hexes)` : ''}.`,
-    surfaceReaction: { ignite: 'oil ignites', webBurn: 'web burns', melt: 'ice melts', steam: 'water turns to steam', freeze: 'water freezes', explode: 'poison cloud explodes', chain: 'lightning spreads through the water', douse: 'flames doused', fogBurn: 'the fog burns away', crack: 'the ice cracks', condense: 'steam condenses into water', splash: 'the water spills over', dissolve: 'the web dissolves', wash: 'the grease is washing away', dilute: 'the poison is diluted' } as Record<string, string>,
+    surfaceReaction: { ignite: 'oil ignites', webBurn: 'web burns', melt: 'ice melts', steam: 'water turns to steam', freeze: 'water freezes', explode: 'poison cloud explodes', chain: 'lightning spreads through the water', douse: 'flames doused', fogBurn: 'the fog burns away', crack: 'the ice cracks', condense: 'steam condenses into water', splash: 'the water spills over', dissolve: 'the web dissolves', wash: 'the grease is washing away', dilute: 'the poison is diluted', replace: 'the new surface replaced the old', chainLimit: 'chain limit: reaction stopped' } as Record<string, string>,
     objectPlaced: (kind: string) => `Game Master: ${OBJ_EN[kind] ?? kind} placed.`,
     objectDamaged: (who: string, kind: string, roll: string, dmg: number, type: string, hp: number) => `${who} → ${OBJ_EN[kind] ?? kind}${roll ? ` (${roll})` : ''}: ${dmg} ${type} damage, HP ${hp}.`,
     objectDestroyed: (label: string) => `${label}: destroyed.`,

@@ -2,6 +2,36 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K55: altıgen etki çözücüsü ve öncelik kuralları (kural sürümü 26)
+
+- **Tek giriş:** `resolveHexEffects` (`src/battle/hexResolver.ts`). Komut sonunda eski üç geçişin (`surfaceReactionEvents`, `greaseAfterEvents`, `surfaceMixEvents`) yerine çalışır. Nesne olaylarının ateşi (`elementReactionEvents`) de buradan geçer.
+  - Sürüm < 26 ya da Game Master anahtarı `hexResolver` kapalı ya da `yuzeyEtkilesimi === false`: eski geçişler aynen çalışır (eski kayıt/replay).
+  - Nesne hasarı (`objectAreaEvents`), Orman/Buzul/Dağ eklemeleri, tur başı rüzgâr/su azalması ve Gust of Wind kendi motorlarında kaldı. Tabloda `motor` alanıyla listeli; çözücü çalıştırmaz. Gerekçe: hepsi nesne ya da tur başı tetiği, aynı altıgen çakışması değil.
+- **Tablo:** `data/yuzey-etkilesimleri.json`, 32 satır (23 çalışan, 9 başka motorda).
+  - Eski `data/yuzey-etkilesim.json` açıklama tablosu sürüm < 26 kodu için kaldı (parametreleri `MIX_PARAMS`).
+  - Yeni ikili: genel sonuçla (kaldir/yuzey/sure/yoksa/konsantrasyon) yalnız JSON. Testte JSON'la eklenen satır kod değişmeden çalışıyor.
+  - Özel davranışlar adlı işleyicilerde: gres, patlama, zincir, tasma, agCoz, agYak, yayilma.
+- **Öncelik:** 1 engel (katı K53 engeli ve `solid` alan altıgenleri gelen etkiden düşer) → 2 yüzey × yüzey (oluşan) → 3 element × yüzey → 4 aura/durum kancası (yanan ağ tutsağı) → 5 hasar/save (patlama, suda yıldırım).
+  - Aynı öncelikte tablo sırası; eski koddaki sıra korundu: yağ → ağ → erime → buhar → gres → sis…
+  - Altıgenler indeks (satır × en + sütun) artan sırada. Patlama/zincir kurbanları da altıgen sırasıyla zar atar (`burstEvents(..., ordered)`, yalnız sürüm 26).
+- **Katman:** zemin, gaz, nesne (`data/buyu-etiketleri.json`). Yalnız yüzeyler (`surface`) katman kuralına girer; Grease/Web gibi büyü alanları kendi kuralıyla kalır.
+  - Tepkime satırı varsa önce o çalışır; sonra aynı katmanda kalan eski yüzey, yeninin altıgenlerinden çekilir (`replace` günlük satırı).
+  - **Davranış farkı (sürüm 26):** su üstüne tepkimeyle gelen yağ/alev suyu siler (önceden ikisi birlikte duruyordu); buhar ile zehir bulutu (ikisi de gaz) aynı altıgende birlikte durmaz.
+  - Game Master yerleştirmesi zaten her yüzeyin yerine geçiyordu (değişmedi).
+- **Zincir:** derinlik en çok 3 (komut dokunuşu 0, oluşan yüzeyin tepkimesi 1, onunki 2). Sınırda bekleyen tepkime `chainLimit` satırı olarak yazılır.
+  - **Davranış farkı:** yağ yayılması eskiden tek adımdı, şimdi 2 adım daha ilerler.
+  - Zincirde (derinlik ≥ 1) aynı satır aynı altıgende turda bir kez (`hexReacted`, `surface_reacted.pairs`).
+  - Doğrudan dokunuşlar (derinlik 0) her büyüde çalışır. Gerekçe: iki ayrı Lightning Bolt iki ayrı olay; "aynı ikili iki kez çalışmaz" kuralı döngüyü engellemek için zincire uygulandı.
+- **Çift hasar:** tepkimeden doğan alev hasarı aynı komutta aynı yaratığa bir kez (gres + yağ yayılması aynı altıgendeyse tek hasar). Patlama ve zincir farklı kaynak, ayrı hasar (SRD: farklı kaynaklar toplanır).
+- **Konsantrasyon:** konsantrasyonlu alandan doğan yüzey (Web → yanan ağ) o büyücünün konsantrasyonuna bağlanır (`pruneZones` ile biter). Diğer yüzeyler süresini doldurur.
+- **Dokunuş:** tek tanım (`incomingOf`): alan, alanlı saldırı, isabetli saldırı. Ateşli save ve harita ateşi "geniş" dokunuştur ve yalnız `dokunus: genis` satırına (gres) gider. Bu, Kuyruk 24c davranışıdır ve denetimde çelişki olarak işaretlendi; korunuyor, K59'da istenirse tek satırla değişir.
+- **Ateş + zehir bulutu:** ev kuralı `zehirPatlama` ve 18b anahtarı `mixPoisonInert` aynı satırın iki koşulu (patlama yalnız ikincisi kapalıyken). Bugünkü sonuç aynı (patlamaz).
+- **Yapay zekâ:** alan büyüsü seçerken denenen komutta ilk `surface_reacted`'tan sonra dostuna hasar gelirse büyüyü seçmez (`reactionHurtsSide`).
+  - Kuru çalıştırma `previewHexEffects`: tepkime kimlikleri, hasar alanlar, oluşan yüzeyler. K58 keşif defteri tepkime kimliğine (`surface_reacted.row`) bağlanacak.
+  - Önizleme arayüzünde tepkime sonucu gösterilmez (K58).
+- **Etiketler:** `data/buyu-etiketleri.json` (`scripts/k55-buyu-etiketleri.mjs`): 118 büyü element/tür etiketi, yüzey ve alan katmanları. Etiketsiz büyü etkileşimsizdir.
+- **Kural sürümü** 25 → 26; Game Master anahtarı `hexResolver` (global, varsayılan açık).
+
 ## 2026-11-05 — Kuyruk K54 G2: Hızır Yemini (kural sürümü 25)
 
 - Tam Zamanında: yeni kanca `registerTargeted` (hedef alınma, saldırı zarından önce; Redirect Attack ile aynı yol). 60 ft içindeki dost silah/canavar saldırısıyla hedef alınınca paladin (tepki + 1 Kanal Gücü) dostun yanına ışınlanır (K53 `withArrival`; yakın dövüşte saldırganın erişimindeki altıgen), saldırı ona yönelir; tek saldırılık tüm türlere direnç = "hasarın yarısı" (saldırı sonrası kalkar). Büyü saldırıları ve fırsat saldırıları kapsam dışı. Canavar saldırısında srdK19 kapalıyken yalnız bu kanca çalışır. Öneri (yapay zekâ): dostun canı ≤ paladinin canı.

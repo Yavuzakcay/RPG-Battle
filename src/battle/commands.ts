@@ -74,6 +74,7 @@ const TACTICAL: readonly string[] = ['push', 'sap', 'slow'];
 import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
 import { caveDiscoveryEvents, executeForestUse, forestAfterEvents, forestRoundEvents } from './forest';
 import { greaseAfterEvents } from './ignite';
+import { hexResolverOn, resolveCommandEffects } from './hexResolver';
 import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
 import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
@@ -169,15 +170,21 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     next = applyEvents(next, [woke]);
     events = [...events, woke];
   }
-  // Görev Y1: yüzey tepkimeleri (tutuşma, buhar, donma, erime, patlama, suda yıldırım, söndürme).
-  const surf = surfaceReactionEvents(next, events, rng);
-  if (surf.length) { next = applyEvents(next, surf); events = [...events, ...surf]; }
-  // Kuyruk 24c: ateşin değdiği gres tutuşur (Game Master mekaniği `greaseFlammable`, kural sürümü 5).
-  const grease = greaseAfterEvents(next, events, rng);
-  if (grease.length) { next = applyEvents(next, grease); events = [...events, ...grease]; }
-  // Kuyruk 18b: yüzey × yüzey etkileşimleri (kural sürümü 15; data/yuzey-etkilesim.json).
-  const mix = surfaceMixEvents(next, events, rng);
-  if (mix.length) { next = applyEvents(next, mix); events = [...events, ...mix]; }
+  if (hexResolverOn(next)) {
+    // Kuyruk K55 (sürüm 26): bütün yüzey tepkimeleri tek çözücüden (data/yuzey-etkilesimleri.json).
+    const hex = resolveCommandEffects(next, events, rng).events;
+    if (hex.length) { next = applyEvents(next, hex); events = [...events, ...hex]; }
+  } else {
+    // Görev Y1: yüzey tepkimeleri (tutuşma, buhar, donma, erime, patlama, suda yıldırım, söndürme).
+    const surf = surfaceReactionEvents(next, events, rng);
+    if (surf.length) { next = applyEvents(next, surf); events = [...events, ...surf]; }
+    // Kuyruk 24c: ateşin değdiği gres tutuşur (Game Master mekaniği `greaseFlammable`, kural sürümü 5).
+    const grease = greaseAfterEvents(next, events, rng);
+    if (grease.length) { next = applyEvents(next, grease); events = [...events, ...grease]; }
+    // Kuyruk 18b: yüzey × yüzey etkileşimleri (kural sürümü 15; data/yuzey-etkilesim.json).
+    const mix = surfaceMixEvents(next, events, rng);
+    if (mix.length) { next = applyEvents(next, mix); events = [...events, ...mix]; }
+  }
   // Görev S2: alanlı hasar alandaki nesnelere (fıçı, sandık, kapı…).
   const objs = objectAreaEvents(next, events, rng);
   if (objs.length) { next = applyEvents(next, objs); events = [...events, ...objs]; }
