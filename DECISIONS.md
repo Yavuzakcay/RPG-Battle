@@ -2,6 +2,108 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K51b: hizalanma tablo ve sınır ayarı (taslak v1.1)
+
+- **Kaynak:** `docs/hizalanma-sistemi-taslak.md` (v1.1) artık depoda. Başlangıç kırpma sınırı ±25 → **±50** (`data/hizalanma.json` `baslangicKirp`); eksen ±50, eşik ±17, histerezis 2 aynı. Kod yapısı, kural sürümü ve savaş kaydı değişmedi; arayüzde yalnız "en çok ±50" sayısı.
+- **Tablo:** taslakta bulunan her kalem taslaktaki değeri aldı (12 sınıf, 4 SRD geçmişi, 11 imza alt sınıf, Karadul, 10 ırk ve ırk gerekçeleri). Taslakta olmayan 8 özgün geçmiş ve 12 SRD alt sınıfı K51 değerinin ×1,6'sı (yarım yukarı yuvarlandı; hiçbiri ±30'u geçmiyor). İşaret değiştiren İmparator, İnfazcı ve Soldier'ın gerekçe metni yeni yönü anlatacak biçimde güncellendi.
+- **Hazır olaylar (`data/hizalanma-olaylari.json`) bu kuyrukta değiştirilmedi:** görev yalnız başlangıç tablolarını kapsıyor; taslaktaki olay listesi (Teslim olanı öldürdü, Yeminini bozdu, Masumu korudu…) ayrı karar.
+- **Uç buildler (test sabit beklenti):** Paladin + Acolyte + Hızır + Celestial = (+45, +48) Düzenli İyi; Bard + Criminal + Şair + Elf = (−36, +18) Kaotik İyi; Fighter + Soldier + İmparator + Goliath = (+36, −36) Düzenli Kötü; Rogue + Criminal + İnfazcı + Tiefling = (−45, −48) Kaotik Kötü.
+
+Değişen kalemler (önce → sonra, kaynak):
+
+| Tablo | Kalem | K51 | K51b | Kaynak |
+|---|---|---|---|---|
+| sinif | barbarian | -8/+0 | -10/+0 | taslak |
+| sinif | bard | -5/+3 | -12/+10 | taslak |
+| sinif | cleric | +6/+6 | +10/+10 | taslak |
+| sinif | druid | +0/+3 | +0/+5 | taslak |
+| sinif | fighter | +5/+0 | +8/+0 | taslak |
+| sinif | monk | +8/+2 | +15/+0 | taslak |
+| sinif | paladin | +8/+8 | +20/+15 | taslak |
+| sinif | ranger | -3/+3 | +0/+5 | taslak |
+| sinif | rogue | -8/-2 | -12/-10 | taslak |
+| sinif | sorcerer | -5/+0 | -10/+0 | taslak |
+| sinif | warlock | -2/-5 | -5/-5 | taslak |
+| sinif | wizard | +3/+0 | +5/+0 | taslak |
+| gecmis | acolyte | +6/+6 | +10/+5 | taslak |
+| gecmis | criminal | -8/-5 | -12/-9 | taslak |
+| gecmis | sage | +4/+2 | +5/+0 | taslak |
+| gecmis | soldier | +6/+0 | +10/-3 | taslak |
+| gecmis | buz-madencisi | +3/+2 | +5/+3 | ×1.6 |
+| gecmis | ciftci | +3/+4 | +5/+6 | ×1.6 |
+| gecmis | tuccar | +4/-2 | +6/-3 | ×1.6 |
+| gecmis | denizci | -4/+1 | -6/+2 | ×1.6 |
+| gecmis | gezgin-ozan | -6/+3 | -10/+5 | ×1.6 |
+| gecmis | sifaci-yardimcisi | +2/+8 | +3/+13 | ×1.6 |
+| gecmis | avci-izci | -2/-3 | -3/-5 | ×1.6 |
+| gecmis | soylu | +8/+0 | +13/+0 | ×1.6 |
+| altSinif | path-of-the-berserker | -6/-2 | -10/-3 | ×1.6 |
+| altSinif | college-of-lore | +2/+2 | +3/+3 | ×1.6 |
+| altSinif | life-domain | +4/+8 | +6/+13 | ×1.6 |
+| altSinif | circle-of-the-land | +0/+4 | +0/+6 | ×1.6 |
+| altSinif | champion | +3/+2 | +5/+3 | ×1.6 |
+| altSinif | warrior-of-the-open-hand | +6/+3 | +10/+5 | ×1.6 |
+| altSinif | oath-of-devotion | +8/+8 | +13/+13 | ×1.6 |
+| altSinif | hunter | -2/+3 | -3/+5 | ×1.6 |
+| altSinif | thief | -6/-4 | -10/-6 | ×1.6 |
+| altSinif | draconic-sorcery | +2/+0 | +3/+0 | ×1.6 |
+| altSinif | fiend-patron | -4/-8 | -6/-13 | ×1.6 |
+| altSinif | evoker | +2/+0 | +3/+0 | ×1.6 |
+| altSinif | karadul-cemberi | -6/-6 | -10/-15 | taslak |
+| altSinif | imza_imparator | +8/+0 | +12/-30 | taslak |
+| altSinif | imza_infazci | -6/+4 | -13/-26 | taslak |
+| altSinif | imza_ciftci | +4/+5 | +5/+10 | taslak |
+| altSinif | imza_dunganga | -3/-5 | +0/-10 | taslak |
+| altSinif | imza_astrolog | +0/+2 | +5/+0 | taslak |
+| altSinif | imza_birlik | +6/+6 | +10/+10 | taslak |
+| altSinif | imza_geride_kalan | -4/+0 | -10/+5 | taslak |
+| altSinif | imza_sair | -4/+4 | -8/+14 | taslak |
+| altSinif | imza_bilge | +6/+4 | +15/+5 | taslak |
+| altSinif | imza_hizir | +4/+8 | +10/+20 | taslak |
+| altSinif | imza_harita | +4/+0 | +10/+0 | taslak |
+| irk | celestial | +0/+3 | +5/+8 | taslak |
+| irk | dragonborn | +3/+0 | +5/-2 | taslak |
+| irk | dwarf | +5/+2 | +8/-2 | taslak |
+| irk | elf | -4/+2 | -4/+3 | taslak |
+| irk | gnome | -2/+3 | -3/+4 | taslak |
+| irk | goliath | +2/+0 | +6/-3 | taslak |
+| irk | halfling | +2/+4 | +3/+5 | taslak |
+| irk | human | +0/+0 | +0/+0 | taslak |
+| irk | orc | -4/+0 | +6/-2 | taslak |
+| irk | tiefling | -3/-2 | -8/-3 | taslak |
+
+Dağılım (12 sınıf × 12 geçmiş × 10 ırk; kırpma ±50):
+**3. seviye (alt sınıf dahil, sınıfın bütün alt sınıfları):** 2880 kombinasyon, en büyük |değer| 50
+
+| Etiket | Sayı | Oran |
+|---|---|---|
+| Gerçek Tarafsız | 1105 | %38.4 |
+| Düzenli Tarafsız | 439 | %15.2 |
+| Düzenli İyi | 417 | %14.5 |
+| Tarafsız İyi | 285 | %9.9 |
+| Kaotik Tarafsız | 218 | %7.6 |
+| Tarafsız Kötü | 151 | %5.2 |
+| Kaotik Kötü | 118 | %4.1 |
+| Düzenli Kötü | 88 | %3.1 |
+| Kaotik İyi | 59 | %2.0 |
+| Köşe kutular (iki eksen de uç) | 682 | %23.7 |
+
+**Alt sınıfsız (1–2. seviye): 1440 kombinasyon, en büyük |değer| 41
+
+| Etiket | Sayı | Oran |
+|---|---|---|
+| Gerçek Tarafsız | 950 | %66.0 |
+| Düzenli Tarafsız | 243 | %16.9 |
+| Kaotik Tarafsız | 82 | %5.7 |
+| Tarafsız İyi | 81 | %5.6 |
+| Düzenli İyi | 66 | %4.6 |
+| Kaotik Kötü | 7 | %0.5 |
+| Tarafsız Kötü | 6 | %0.4 |
+| Kaotik İyi | 5 | %0.3 |
+| Köşe kutular (iki eksen de uç) | 78 | %5.4 |
+
+3. seviyede Gerçek Tarafsız %38,4 (eşik %60'ın altında). Alt sınıf seçilmeden (1–2. seviye) %66; ayarlama yapılmadı (görev gereği), raporda belirtildi.
+
 ## 2026-11-05 — Kuyruk K51: hizalanma (ev kuralı `hizalanma`, varsayılan kapalı)
 
 - **Kaynak eksik:** görevde adı geçen `docs/hizalanma-sistemi-taslak.md` depoda ve hiçbir dalda yok. Görev metnindeki kurallar (eksen −50…+50, ±25 başlangıç kırpması, ±17 eşik, 2 puan histerezis, üç geçiş seçeneği, azalan getiri 3. kez yarı) aynen uygulandı; tablo değerleri benim varsayılanlarım (`data/hizalanma-baslangic.json`, her satırda gerekçe). Taslak gelince yalnızca JSON değişir.

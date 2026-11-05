@@ -2,7 +2,7 @@
  * Kuyruk K51: hizalanma (ev kuralı `hizalanma`, varsayılan kapalı; savaş hesabına girmez, kural sürümüne dokunmaz).
  * İki eksen −50…+50: Düzen (+ Düzenli / − Kaotik) ve İyilik (+ İyi / − Kötü). Değer = başlangıç + günlükteki geri
  * alınmamış kayıtların toplamı. Etiket 9 kutu (eşik ±17, 2 puan histerezis). Başlangıç sınıf, geçmiş, alt sınıf ve
- * (anahtar açıksa) ırk katkılarının toplamı, ±25'e kırpılır. Veriler `data/hizalanma*.json`. Saf.
+ * (anahtar açıksa) ırk katkılarının toplamı, ±50'ye kırpılır. Veriler `data/hizalanma*.json`. Saf.
  */
 import cfg from '../../data/hizalanma.json';
 import table from '../../data/hizalanma-baslangic.json';
@@ -73,7 +73,7 @@ export function startContributions(sheet: { classId: string; backgroundId?: stri
   if (irk) add('irk', sheet.raceId);
   return out;
 }
-/** Katkı toplamı ±25'e kırpılmış. */
+/** Katkı toplamı ±50'ye kırpılmış. */
 export function startValue(list: Contribution[]): { duzen: number; iyilik: number } {
   const n = cfg.baslangicKirp;
   return { duzen: clamp(list.reduce((s, c) => s + c.duzen, 0), n), iyilik: clamp(list.reduce((s, c) => s + c.iyilik, 0), n) };

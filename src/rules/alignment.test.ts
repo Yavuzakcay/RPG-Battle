@@ -25,12 +25,12 @@ const Z = '2026-11-05T10:00:00.000Z';
 afterEach(() => { try { localStorage.removeItem('rpg-battle-deneysel'); } catch { /* yok */ } });
 
 describe('başlangıç hesabı', () => {
-  it('katkılar toplanır, ±25 kırpılır; ırk satırı en sonda; tabloda olmayan kalem 0 (çökme yok)', () => {
+  it('katkılar toplanır, ±50 kırpılır; ırk satırı en sonda; tabloda olmayan kalem 0 (çökme yok)', () => {
     const list = startContributions(sheet({ classId: 'paladin', backgroundId: 'acolyte', subclassId: 'oath-of-devotion', raceId: 'dwarf' }));
     expect(list.map((x) => x.kaynak)).toEqual(['sinif', 'gecmis', 'altSinif', 'irk']);
-    const v = startValue(list);
-    expect(v.duzen).toBe(25); // 8+6+8+5 = 27 → 25
-    expect(v.iyilik).toBe(24);
+    expect(startValue(list)).toEqual({ duzen: 50, iyilik: 31 }); // 20+10+13+8 = 51 → 50; 15+5+13−2 = 31
+    const g = { gerekce: { tr: '', en: '' } };
+    expect(startValue([{ kaynak: 'sinif', id: 'a', duzen: 40, iyilik: -40, ...g }, { kaynak: 'irk', id: 'b', duzen: 30, iyilik: -30, ...g }])).toEqual({ duzen: 50, iyilik: -50 });
     const unknown = startContributions(sheet({ classId: 'yok-sinif', backgroundId: 'yok', subclassId: 'yok', raceId: 'yok' }));
     expect(unknown).toEqual([]);
     expect(startValue(unknown)).toEqual({ duzen: 0, iyilik: 0 });
@@ -38,6 +38,25 @@ describe('başlangıç hesabı', () => {
   it('ırk anahtarı kapalıyken ırk satırı yok', () => {
     expect(startContributions(sheet({ raceId: 'dwarf' }), false).some((x) => x.kaynak === 'irk')).toBe(false);
     expect(startContributions(sheet({ raceId: 'dwarf' }), true).some((x) => x.kaynak === 'irk')).toBe(true);
+  });
+});
+
+describe('uç buildler (taslak v1.1, 3. seviye)', () => {
+  const cases: Array<[string, string, string, string, number, number, string]> = [
+    ['paladin', 'acolyte', 'imza_hizir', 'celestial', 45, 48, 'Düzenli İyi'],
+    ['bard', 'criminal', 'imza_sair', 'elf', -36, 18, 'Kaotik İyi'],
+    ['fighter', 'soldier', 'imza_imparator', 'goliath', 36, -36, 'Düzenli Kötü'],
+    ['rogue', 'criminal', 'imza_infazci', 'tiefling', -45, -48, 'Kaotik Kötü'],
+  ];
+  for (const [classId, backgroundId, subclassId, raceId, d, g, label] of cases) {
+    it(`${classId} + ${backgroundId} + ${subclassId} + ${raceId} = (${d}, ${g}) ${label}`, () => {
+      const v = startValue(startContributions({ classId, backgroundId, subclassId, raceId }));
+      expect(v).toEqual({ duzen: d, iyilik: g });
+      expect(labelOf(newAlignment(v, 'otomatik'), 'tr')).toBe(label);
+    });
+  }
+  it('"Kabul etme" artık çoğu karakterde görünür (Paladin + Soldier + Human)', () => {
+    expect(rejectOptions(startValue(startContributions({ classId: 'paladin', backgroundId: 'soldier', raceId: 'human' })))).toContain('orta');
   });
 });
 
@@ -134,13 +153,13 @@ describe('kural kapalı / açık', () => {
 });
 
 describe('duman testi', () => {
-  it('12 sınıf × bütün geçmişler × bütün ırklar: çökme yok, ±25 içinde', () => {
+  it('12 sınıf × bütün geçmişler × bütün ırklar: çökme yok, ±50 içinde', () => {
     const bgs = (backgrounds as unknown as { backgrounds: Array<{ id: string }> }).backgrounds.map((b) => b.id);
     let n = 0;
     for (const c of classes) for (const b of bgs) for (const r of races) for (const irk of [true, false]) {
       const v = startValue(startContributions({ classId: c.id, backgroundId: b, raceId: r.id }, irk));
-      expect(Math.abs(v.duzen)).toBeLessThanOrEqual(25);
-      expect(Math.abs(v.iyilik)).toBeLessThanOrEqual(25);
+      expect(Math.abs(v.duzen)).toBeLessThanOrEqual(50);
+      expect(Math.abs(v.iyilik)).toBeLessThanOrEqual(50);
       n++;
     }
     expect(n).toBeGreaterThanOrEqual(12 * bgs.length * races.length);

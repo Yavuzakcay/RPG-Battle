@@ -922,7 +922,7 @@ export const en: Strings = {
     hizalanma: {
       title: 'Alignment', step: 'Alignment', law: 'Law', good: 'Good', start: 'Start', now: 'Now',
       cols: ['Lawful', 'Neutral', 'Chaotic'], rows: ['Good', 'Neutral', 'Evil'],
-      intro: 'Your class, background, subclass and culture set your starting alignment (at most ±25). The needle is placed automatically.',
+      intro: 'Your class, background, subclass and culture set your starting alignment (at most ±50). The needle is placed automatically.',
       sources: { sinif: 'Class', gecmis: 'Background', altSinif: 'Subclass', irk: 'Race/culture' } as Record<string, string>,
       total: 'Total (clamped)', accept: 'Accept', reject: 'Do not accept',
       options: { orta: 'Centre (0/0)', 'satir-orta': 'Row centre line (Law 0)', 'sutun-orta': 'Column centre line (Good 0)' } as Record<string, string>,

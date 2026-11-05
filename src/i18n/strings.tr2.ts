@@ -362,7 +362,7 @@ export const TR_EXTRA = {
     hizalanma: {
       title: 'Hizalanma', step: 'Hizalanma', law: 'Düzen', good: 'İyilik', start: 'Başlangıç', now: 'Şimdi',
       cols: ['Düzenli', 'Tarafsız', 'Kaotik'], rows: ['İyi', 'Tarafsız', 'Kötü'],
-      intro: 'Sınıfın, geçmişin, alt sınıfın ve kültürün başlangıç hizalanmanı belirler (en çok ±25). İbre otomatik yerleşti.',
+      intro: 'Sınıfın, geçmişin, alt sınıfın ve kültürün başlangıç hizalanmanı belirler (en çok ±50). İbre otomatik yerleşti.',
       sources: { sinif: 'Sınıf', gecmis: 'Geçmiş', altSinif: 'Alt sınıf', irk: 'Irk/kültür' } as Record<string, string>,
       total: 'Toplam (kırpılmış)', accept: 'Kabul et', reject: 'Kabul etme',
       options: { orta: 'Orta nokta (0/0)', 'satir-orta': 'Satırın orta çizgisi (Düzen 0)', 'sutun-orta': 'Sütunun orta çizgisi (İyilik 0)' } as Record<string, string>,

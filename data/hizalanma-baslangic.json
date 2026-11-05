@@ -1,8 +1,8 @@
 {
- "not": "K51: hizalanma başlangıç katkıları (Düzen + Düzenli / − Kaotik; İyilik + İyi / − Kötü). Kaynak taslak (docs/hizalanma-sistemi-taslak.md) depoda yok: değerler K51'de makul varsayılanla yazıldı (DECISIONS.md), taslak gelince buradan değiştirilir. Tabloda olmayan kalem 0.",
+ "not": "K51b: hizalanma başlangıç katkıları (Düzen + Düzenli / − Kaotik; İyilik + İyi / − Kötü; ±50 ölçeği). Kaynak docs/hizalanma-sistemi-taslak.md (v1.1): sınıf, SRD geçmişleri, imza alt sınıflar, Karadul ve ırklar taslaktan; 8 özgün geçmiş ve 12 SRD alt sınıfı K51 değerinin ≈×1.6'sı (DECISIONS.md). Tabloda olmayan kalem 0.",
  "sinif": {
   "barbarian": {
-   "duzen": -8,
+   "duzen": -10,
    "iyilik": 0,
    "gerekce": {
     "tr": "Öfke ve gelenek dışı yaşam",
@@ -10,16 +10,16 @@
    }
   },
   "bard": {
-   "duzen": -5,
-   "iyilik": 3,
+   "duzen": -12,
+   "iyilik": 10,
    "gerekce": {
     "tr": "Özgür ruh, insanları sever",
     "en": "Free spirit, loves people"
    }
   },
   "cleric": {
-   "duzen": 6,
-   "iyilik": 6,
+   "duzen": 10,
+   "iyilik": 10,
    "gerekce": {
     "tr": "Tanrısına ve tapınağa bağlı",
     "en": "Bound to a god and temple"
@@ -27,14 +27,14 @@
   },
   "druid": {
    "duzen": 0,
-   "iyilik": 3,
+   "iyilik": 5,
    "gerekce": {
     "tr": "Doğanın dengesini gözetir",
     "en": "Guards nature's balance"
    }
   },
   "fighter": {
-   "duzen": 5,
+   "duzen": 8,
    "iyilik": 0,
    "gerekce": {
     "tr": "Disiplin ve emir komuta",
@@ -42,39 +42,39 @@
    }
   },
   "monk": {
-   "duzen": 8,
-   "iyilik": 2,
+   "duzen": 15,
+   "iyilik": 0,
    "gerekce": {
     "tr": "Manastır disiplini",
     "en": "Monastic discipline"
    }
   },
   "paladin": {
-   "duzen": 8,
-   "iyilik": 8,
+   "duzen": 20,
+   "iyilik": 15,
    "gerekce": {
     "tr": "Yemine bağlılık",
     "en": "Bound by an oath"
    }
   },
   "ranger": {
-   "duzen": -3,
-   "iyilik": 3,
+   "duzen": 0,
+   "iyilik": 5,
    "gerekce": {
     "tr": "Sınırlarda yalnız koruyucu",
     "en": "Lone warden of the borders"
    }
   },
   "rogue": {
-   "duzen": -8,
-   "iyilik": -2,
+   "duzen": -12,
+   "iyilik": -10,
    "gerekce": {
     "tr": "Kuralları esnetir",
     "en": "Bends the rules"
    }
   },
   "sorcerer": {
-   "duzen": -5,
+   "duzen": -10,
    "iyilik": 0,
    "gerekce": {
     "tr": "Kanındaki büyü sınır tanımaz",
@@ -82,7 +82,7 @@
    }
   },
   "warlock": {
-   "duzen": -2,
+   "duzen": -5,
    "iyilik": -5,
    "gerekce": {
     "tr": "Karanlık bir sözleşme",
@@ -90,7 +90,7 @@
    }
   },
   "wizard": {
-   "duzen": 3,
+   "duzen": 5,
    "iyilik": 0,
    "gerekce": {
     "tr": "Düzenli çalışma ve kitaplar",
@@ -100,95 +100,95 @@
  },
  "gecmis": {
   "acolyte": {
-   "duzen": 6,
-   "iyilik": 6,
+   "duzen": 10,
+   "iyilik": 5,
    "gerekce": {
     "tr": "Tapınakta yetişti",
     "en": "Raised in a temple"
    }
   },
   "criminal": {
-   "duzen": -8,
-   "iyilik": -5,
+   "duzen": -12,
+   "iyilik": -9,
    "gerekce": {
     "tr": "Suç dünyası",
     "en": "The underworld"
    }
   },
   "sage": {
-   "duzen": 4,
-   "iyilik": 2,
+   "duzen": 5,
+   "iyilik": 0,
    "gerekce": {
     "tr": "Bilgiye adanmış",
     "en": "Devoted to knowledge"
    }
   },
   "soldier": {
-   "duzen": 6,
-   "iyilik": 0,
+   "duzen": 10,
+   "iyilik": -3,
    "gerekce": {
-    "tr": "Ordu disiplini",
-    "en": "Army discipline"
+    "tr": "Ordu disiplini; savaşın sertliği",
+    "en": "Army discipline; the harshness of war"
    }
   },
   "buz-madencisi": {
-   "duzen": 3,
-   "iyilik": 2,
+   "duzen": 5,
+   "iyilik": 3,
    "gerekce": {
     "tr": "Madenci: ekip ve emek",
     "en": "Miner: crew and labour"
    }
   },
   "ciftci": {
-   "duzen": 3,
-   "iyilik": 4,
+   "duzen": 5,
+   "iyilik": 6,
    "gerekce": {
     "tr": "Köylü: toprağa ve komşuya bağlı",
     "en": "Villager: bound to land and neighbours"
    }
   },
   "tuccar": {
-   "duzen": 4,
-   "iyilik": -2,
+   "duzen": 6,
+   "iyilik": -3,
    "gerekce": {
     "tr": "Tüccar: sözleşme ve kâr",
     "en": "Merchant: contracts and profit"
    }
   },
   "denizci": {
-   "duzen": -4,
-   "iyilik": 1,
+   "duzen": -6,
+   "iyilik": 2,
    "gerekce": {
     "tr": "Mürettebat: dalgalarla serbest",
     "en": "Crew: free on the waves"
    }
   },
   "gezgin-ozan": {
-   "duzen": -6,
-   "iyilik": 3,
+   "duzen": -10,
+   "iyilik": 5,
    "gerekce": {
     "tr": "Soytarı: kuralla alay eder",
     "en": "Jester: mocks the rules"
    }
   },
   "sifaci-yardimcisi": {
-   "duzen": 2,
-   "iyilik": 8,
+   "duzen": 3,
+   "iyilik": 13,
    "gerekce": {
     "tr": "Şifacı: yardım eder",
     "en": "Healer: helps others"
    }
   },
   "avci-izci": {
-   "duzen": -2,
-   "iyilik": -3,
+   "duzen": -3,
+   "iyilik": -5,
    "gerekce": {
     "tr": "Ödül Avcısı: para için av",
     "en": "Bounty Hunter: hunts for pay"
    }
   },
   "soylu": {
-   "duzen": 8,
+   "duzen": 13,
    "iyilik": 0,
    "gerekce": {
     "tr": "Soylu: hiyerarşi ve görev",
@@ -198,24 +198,24 @@
  },
  "altSinif": {
   "path-of-the-berserker": {
-   "duzen": -6,
-   "iyilik": -2,
+   "duzen": -10,
+   "iyilik": -3,
    "gerekce": {
     "tr": "Gözü dönmüş öfke",
     "en": "Frenzied rage"
    }
   },
   "college-of-lore": {
-   "duzen": 2,
-   "iyilik": 2,
+   "duzen": 3,
+   "iyilik": 3,
    "gerekce": {
     "tr": "Bilgi ve öğreti",
     "en": "Lore and learning"
    }
   },
   "life-domain": {
-   "duzen": 4,
-   "iyilik": 8,
+   "duzen": 6,
+   "iyilik": 13,
    "gerekce": {
     "tr": "Yaşamı korur",
     "en": "Protects life"
@@ -223,54 +223,54 @@
   },
   "circle-of-the-land": {
    "duzen": 0,
-   "iyilik": 4,
+   "iyilik": 6,
    "gerekce": {
     "tr": "Toprağın dengesi",
     "en": "Balance of the land"
    }
   },
   "champion": {
-   "duzen": 3,
-   "iyilik": 2,
+   "duzen": 5,
+   "iyilik": 3,
    "gerekce": {
     "tr": "Kahramanlık",
     "en": "Heroism"
    }
   },
   "warrior-of-the-open-hand": {
-   "duzen": 6,
-   "iyilik": 3,
+   "duzen": 10,
+   "iyilik": 5,
    "gerekce": {
     "tr": "Ölçülü dövüş",
     "en": "Measured fighting"
    }
   },
   "oath-of-devotion": {
-   "duzen": 8,
-   "iyilik": 8,
+   "duzen": 13,
+   "iyilik": 13,
    "gerekce": {
     "tr": "Adanmışlık yemini",
     "en": "Oath of devotion"
    }
   },
   "hunter": {
-   "duzen": -2,
-   "iyilik": 3,
+   "duzen": -3,
+   "iyilik": 5,
    "gerekce": {
     "tr": "Avcı koruyucu",
     "en": "Protective hunter"
    }
   },
   "thief": {
-   "duzen": -6,
-   "iyilik": -4,
+   "duzen": -10,
+   "iyilik": -6,
    "gerekce": {
     "tr": "Hırsızlık",
     "en": "Thievery"
    }
   },
   "draconic-sorcery": {
-   "duzen": 2,
+   "duzen": 3,
    "iyilik": 0,
    "gerekce": {
     "tr": "Ejderha kanı: gurur",
@@ -278,15 +278,15 @@
    }
   },
   "fiend-patron": {
-   "duzen": -4,
-   "iyilik": -8,
+   "duzen": -6,
+   "iyilik": -13,
    "gerekce": {
     "tr": "İblis koruyucu",
     "en": "Fiendish patron"
    }
   },
   "evoker": {
-   "duzen": 2,
+   "duzen": 3,
    "iyilik": 0,
    "gerekce": {
     "tr": "Disiplinli büyü",
@@ -294,95 +294,95 @@
    }
   },
   "karadul-cemberi": {
-   "duzen": -6,
-   "iyilik": -6,
+   "duzen": -10,
+   "iyilik": -15,
    "gerekce": {
     "tr": "Cazibe ve av",
     "en": "Charm and the hunt"
    }
   },
   "imza_imparator": {
-   "duzen": 8,
-   "iyilik": 0,
+   "duzen": 12,
+   "iyilik": -30,
    "gerekce": {
-    "tr": "Hükümdarlık",
-    "en": "Rulership"
+    "tr": "Hükümdarlık; gücü acımasızca kullanır",
+    "en": "Rulership; wields power ruthlessly"
    }
   },
   "imza_infazci": {
-   "duzen": -6,
-   "iyilik": 4,
+   "duzen": -13,
+   "iyilik": -26,
    "gerekce": {
-    "tr": "Kendi adaleti",
-    "en": "Their own justice"
+    "tr": "Kendi adaleti; acımasız infaz",
+    "en": "Their own justice; merciless execution"
    }
   },
   "imza_ciftci": {
-   "duzen": 4,
-   "iyilik": 5,
+   "duzen": 5,
+   "iyilik": 10,
    "gerekce": {
     "tr": "Tarla ve komşu",
     "en": "Field and neighbour"
    }
   },
   "imza_dunganga": {
-   "duzen": -3,
-   "iyilik": -5,
+   "duzen": 0,
+   "iyilik": -10,
    "gerekce": {
     "tr": "Korku ve uyku",
     "en": "Fear and sleep"
    }
   },
   "imza_astrolog": {
-   "duzen": 0,
-   "iyilik": 2,
+   "duzen": 5,
+   "iyilik": 0,
    "gerekce": {
     "tr": "Yazgıyı okur",
     "en": "Reads fate"
    }
   },
   "imza_birlik": {
-   "duzen": 6,
-   "iyilik": 6,
+   "duzen": 10,
+   "iyilik": 10,
    "gerekce": {
     "tr": "Yükü paylaşan manastır",
     "en": "A monastery that shares the burden"
    }
   },
   "imza_geride_kalan": {
-   "duzen": -4,
-   "iyilik": 0,
+   "duzen": -10,
+   "iyilik": 5,
    "gerekce": {
     "tr": "Yıpranmış hayatta kalan",
     "en": "Worn survivor"
    }
   },
   "imza_sair": {
-   "duzen": -4,
-   "iyilik": 4,
+   "duzen": -8,
+   "iyilik": 14,
    "gerekce": {
     "tr": "Söz ve umut",
     "en": "Word and hope"
    }
   },
   "imza_bilge": {
-   "duzen": 6,
-   "iyilik": 4,
+   "duzen": 15,
+   "iyilik": 5,
    "gerekce": {
     "tr": "Sabır ve öğüt",
     "en": "Patience and counsel"
    }
   },
   "imza_hizir": {
-   "duzen": 4,
-   "iyilik": 8,
+   "duzen": 10,
+   "iyilik": 20,
    "gerekce": {
     "tr": "İmdada yetişen",
     "en": "Comes to the rescue"
    }
   },
   "imza_harita": {
-   "duzen": 4,
+   "duzen": 10,
    "iyilik": 0,
    "gerekce": {
     "tr": "Plan ve düzen",
@@ -392,83 +392,83 @@
  },
  "irk": {
   "celestial": {
-   "duzen": 0,
-   "iyilik": 3,
+   "duzen": 5,
+   "iyilik": 8,
    "gerekce": {
-    "tr": "Göksel köken (düşmüş)",
-    "en": "Celestial origin (fallen)"
+    "tr": "Işığa bağlı yetişme",
+    "en": "Raised in the light"
    }
   },
   "dragonborn": {
-   "duzen": 3,
-   "iyilik": 0,
+   "duzen": 5,
+   "iyilik": -2,
    "gerekce": {
-    "tr": "Klan onuru",
-    "en": "Clan honour"
+    "tr": "Klan onuru ve gurur",
+    "en": "Clan honour and pride"
    }
   },
   "dwarf": {
-   "duzen": 5,
-   "iyilik": 2,
+   "duzen": 8,
+   "iyilik": -2,
    "gerekce": {
-    "tr": "Gelenek ve klan",
-    "en": "Tradition and clan"
+    "tr": "Gelenek, söz ve inat",
+    "en": "Tradition, oaths and stubbornness"
    }
   },
   "elf": {
    "duzen": -4,
-   "iyilik": 2,
+   "iyilik": 3,
    "gerekce": {
-    "tr": "Özgürlüğe düşkün",
-    "en": "Loves freedom"
+    "tr": "Kendi yolunu çizen uzun ömür",
+    "en": "A long life that walks its own path"
    }
   },
   "gnome": {
-   "duzen": -2,
-   "iyilik": 3,
+   "duzen": -3,
+   "iyilik": 4,
    "gerekce": {
-    "tr": "Meraklı ve neşeli",
-    "en": "Curious and cheerful"
+    "tr": "Merak ve oyunbazlık",
+    "en": "Curiosity and playfulness"
    }
   },
   "goliath": {
-   "duzen": 2,
-   "iyilik": 0,
+   "duzen": 6,
+   "iyilik": -3,
    "gerekce": {
-    "tr": "Adil yarış",
-    "en": "Fair contest"
+    "tr": "Acımasız ama adil rekabet",
+    "en": "Harsh but fair competition"
    }
   },
   "halfling": {
-   "duzen": 2,
-   "iyilik": 4,
+   "duzen": 3,
+   "iyilik": 5,
    "gerekce": {
-    "tr": "Topluluk ve konukseverlik",
-    "en": "Community and hospitality"
+    "tr": "Yuva ve topluluk",
+    "en": "Home and community"
    }
   },
   "human": {
    "duzen": 0,
    "iyilik": 0,
    "gerekce": {
-    "tr": "Kültür çeşitli",
-    "en": "Varied culture"
+    "tr": "Çeşitlilik",
+    "en": "Diversity"
    }
   },
   "orc": {
-   "duzen": -4,
-   "iyilik": 0,
+   "duzen": 6,
+   "iyilik": -2,
    "gerekce": {
-    "tr": "Kabile ve güç",
-    "en": "Tribe and strength"
+    "tr": "Klan bağı ve sert hayatta kalma",
+    "en": "Clan ties and harsh survival"
    }
   },
   "tiefling": {
-   "duzen": -3,
-   "iyilik": -2,
+   "duzen": -8,
+   "iyilik": -3,
    "gerekce": {
-    "tr": "Dışlanmışlık",
-    "en": "Outcast"
+    "tr": "Dışlanmışlık ve güvensizlik",
+    "en": "Exclusion and mistrust"
    }
   }
  }
