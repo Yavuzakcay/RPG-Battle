@@ -24,6 +24,12 @@ export function imzaHintCmds(state: BattleState, actor: Combatant, key: string, 
   const me = actor.pos;
   const cmd = (extra: Partial<Extract<Command, { type: 'use_feature' }>>): Command => ({ type: 'use_feature', actorId: actor.id, feature: key, ...extra });
   const near = (a: Offset, n: number) => foes.filter((f) => f.pos && distance(a, f.pos) <= n);
+  // Eylem harcayan kontrol/zemin ipuçları güçlü büyünün yerine geçmesin: 3.+ seviye slot dururken yalnız çok hedefte.
+  const bigSlots = actor.spellSlots.slice(2).some((n) => n > 0);
+  if (spec.tur === 'action' && bigSlots && spec.yz !== 'cagri' && spec.yz !== 'plan' && spec.yz !== 'nobet') {
+    const r = Math.floor(Number(spec.yaricapFt ?? spec.param?.yaricapFt ?? 30) / 5);
+    if (spec.hedef === 'enemy' || spec.yz === 'duvar' || near(me, r).length < 3) return [];
+  }
   switch (spec.yz) {
     case 'mevzi': {
       if (zonesOf(state, actor.id, 'imza:mevzi').length) return [];
