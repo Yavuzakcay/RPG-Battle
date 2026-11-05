@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54b G2: Dunganga (kural sürümü 27)
+
+- **Yedek kaynak** (`spec.yedek`, yalnız sürüm 27+): Ninni ücretsiz kullanımı bitince 1 Büyücülük Puanı, Sepet 3 Büyücülük Puanı (`sorceryPoints`). Önce ücretsiz kullanım harcanır.
+- **Tek sepet:** aynı anda en çok 1 Sepet (yenisi en eskisini bitirir; `param.tekAd`). Dunganga Çağrısı sürerken yeterlilik bonusu kadar ve "Sepet (Çağrı)" bonus eylemle (`param.gerekEtki`).
+- **Kâbus (14):** yeni pasif aura `nightmare-dread` (harita geneli, `requires: Frightened`): korkan düşman kendi turunun başında 1d10 + CHA zihin hasarı. Bağışıklık zaten vardı. Ninni'nin 14'te 2 kat hedefi K50'deki gibi ek puan istemeden kaldı (sayı/maliyet ayarı K59).
+- **Dunganga Çağrısı (18):** sürüm 27'de K53 aurası (`call-aura`; büyücüyle hareket eder, 30 ft, 10 tur): içindeki düşman kendi tur başında WIS kurtulması, başarısızsa 1 tur Uykulu + 2d10 zihin (aura etkisi yeni tür `effect`); başaran Cesaret ile 10 tur bağışık. Ömür Elinde: pasif `noHeal` + `deathSaveDis`. Yapıldığı anda kurtulma yok (belgedeki gibi tur başında). Sürüm 23–26'da eski tek seferlik eylem.
+- **Uykulu:** K50 etkisi (hız ½, saldırı dezavantajı, 1 tur); "bir sonraki turunun sonuna dek" tur sonuna kadar yaklaşık.
+- **Yapay zekâ:** Ninni (30 ft içinde ≥ 2 düşman), Sepet (en canlı, etkisiz bırakılmamış düşman), Çağrı (≥ 2 düşman) büyü slotu dursa da kullanılır (`yz: kontrol/cagri`). K50'deki "slot varken eylem harcamaz" kuralı bu üç eylem için kalktı.
+
 ## 2026-11-05 — Kuyruk K54b G1: Harita Öğretisi (kural sürümü 27)
 
 - **Kural sürümü** 26 → 27 (`data/imza.json` `surumK54b`). Eylem/pasif başına sürüm aralığı: `surumMin` (K54b eylemleri yalnız 27+), `surumMax` (eski tek kipli eylemler yalnız 23–26). Eski kayıt/replay kendi sürümünün eylemlerini görür (`specLive`).

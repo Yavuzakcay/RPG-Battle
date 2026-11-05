@@ -1253,7 +1253,8 @@
   "imzaSepet": {
    "name": "Sepet",
    "feature": [
-    "sorcerer/imza_dunganga:basket"
+    "sorcerer/imza_dunganga:basket",
+    "sorcerer/imza_dunganga:call"
    ],
    "uses": {
     "fixed": 1
@@ -1766,7 +1767,12 @@
     "icon": "💤"
    },
    "ad": "Ninni",
-   "not": "Ücretsiz kullanım bitince Büyücülük Puanı seçeneği yok."
+   "yedek": {
+    "id": "sorceryPoints",
+    "maliyet": 1
+   },
+   "yz": "kontrol",
+   "not": "Sürüm 27+: ücretsiz kullanım bitince 1 Büyücülük Puanı. 14. seviyede 2 kat hedef ek puan istemeden (K50 yaklaşımı)."
   },
   "imza:imza_dunganga/basket": {
    "sinif": "imza_dunganga",
@@ -1805,7 +1811,67 @@
     "icon": "🧺"
    },
    "ad": "Sepet",
-   "not": "3 Büyücülük Puanıyla ek kullanım yok (uzun dinlenmede bir kez)."
+   "yedek": {
+    "id": "sorceryPoints",
+    "maliyet": 3
+   },
+   "param": {
+    "tekAd": "Sepet",
+    "cagriEtki": "imza:imza_dunganga/call-aura"
+   },
+   "yz": "kontrol",
+   "not": "Sürüm 27+: ücretsiz kullanım bitince 3 Büyücülük Puanı; aynı anda tek sepet (Dunganga Çağrısı sürerken yeterlilik kadar)."
+  },
+  "imza:imza_dunganga/basket-swift": {
+   "sinif": "imza_dunganga",
+   "ozellik": "call",
+   "seviye": 18,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaSepet",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "enemy",
+   "menzilFt": 30,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ],
+    "dezVs": [
+     "Frightened"
+    ],
+    "dezEtki": [
+     "Uykulu"
+    ]
+   },
+   "cesaret": 10,
+   "etki": {
+    "name": "Sepet",
+    "sure": 2,
+    "sureEfsanevi": 1,
+    "grants": [
+     "Incapacitated"
+    ],
+    "speedZero": true,
+    "breakOnDamage": true,
+    "icon": "🧺"
+   },
+   "ad": "Sepet (Çağrı)",
+   "yedek": {
+    "id": "sorceryPoints",
+    "maliyet": 3
+   },
+   "param": {
+    "tekAd": "Sepet",
+    "cagriEtki": "imza:imza_dunganga/call-aura",
+    "gerekEtki": "imza:imza_dunganga/call-aura",
+    "gerekAd": "Dunganga Çağrısı"
+   },
+   "yz": "kontrol",
+   "not": "Dunganga Çağrısı sürerken Sepet bonus eylemle.",
+   "surumMin": 27
   },
   "imza:imza_dunganga/call": {
    "sinif": "imza_dunganga",
@@ -1842,7 +1908,77 @@
     "noHeal": true
    },
    "ad": "Dunganga Çağrısı",
-   "not": "Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler bir kez kurtulma atar (başarısızsa 10 tur Uykulu + can yenileyemez); hasar kurtulma başarısında yarı değil, yalnız başarısızsa."
+   "not": "Sürüm 23–26: alan hareket etmez; yapıldığı anda 30 ft içindekiler bir kez kurtulma atar (başarısızsa 10 tur Uykulu + can yenileyemez).",
+   "surumMax": 26
+  },
+  "imza:imza_dunganga/call-aura": {
+   "sinif": "imza_dunganga",
+   "ozellik": "call",
+   "seviye": 18,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaCagri",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "self",
+   "ad": "Dunganga Çağrısı",
+   "yz": "cagri",
+   "kendiEtki": {
+    "name": "Dunganga Çağrısı",
+    "sure": 10,
+    "icon": "🌑",
+    "auras": [
+     {
+      "id": "dunganga-cagri",
+      "name": "Dunganga Çağrısı",
+      "radius": 6,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "save": {
+       "ability": "wis",
+       "dcAb": [
+        "cha"
+       ]
+      },
+      "cesaret": 10,
+      "effect": {
+       "kind": "effect",
+       "rounds": 1,
+       "dice": "2d10",
+       "type": "psychic",
+       "effect": {
+        "name": "Uykulu",
+        "speedMult": 0.5,
+        "attackDis": {},
+        "icon": "💤"
+       }
+      }
+     },
+     {
+      "id": "omur-elinde",
+      "name": "Ömür Elinde",
+      "radius": 6,
+      "filter": "enemies",
+      "trigger": "passive",
+      "effect": {
+       "kind": "noHeal"
+      }
+     },
+     {
+      "id": "omur-elinde-olum",
+      "name": "Ömür Elinde",
+      "radius": 6,
+      "filter": "enemies",
+      "trigger": "passive",
+      "effect": {
+       "kind": "deathSaveDis"
+      }
+     }
+    ]
+   },
+   "not": "30 ft aura 10 tur seninle hareket eder; Cesaret: kurtulan düşman 10 tur bağışık.",
+   "surumMin": 27
   },
   "imza:imza_astrolog/luck": {
    "sinif": "imza_astrolog",
@@ -2634,7 +2770,33 @@
     ],
     "icon": "🌙"
    },
-   "not": "Korkan düşmana tur başı hasar yok (planlı)."
+   "not": "Sürüm 27+: korkan düşmana tur başı hasar (Kâbus: Korku)."
+  },
+  {
+   "sinif": "imza_dunganga",
+   "ozellik": "nightmare-dread",
+   "seviye": 14,
+   "etki": {
+    "name": "Kâbus: Korku",
+    "icon": "🌙",
+    "auras": [
+     {
+      "id": "kabus",
+      "name": "Kâbus",
+      "radius": 99,
+      "filter": "enemies",
+      "trigger": "turnStart",
+      "requires": "Frightened",
+      "effect": {
+       "kind": "damage",
+       "dice": "1d10+$cha",
+       "type": "psychic"
+      }
+     }
+    ]
+   },
+   "not": "Frightened düşman kendi turunun başında 1d10 + CHA zihin hasarı (harita genelinde).",
+   "surumMin": 27
   },
   {
    "sinif": "imza_geride_kalan",

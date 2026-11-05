@@ -116,19 +116,38 @@ sub(s, 'sorcerer', 'Dunganga', 'Dunganga', 'Ninniyle uyutan, sepete atan', 'Lull
     F('standing-firm', 3, 'Cesaret', 'Standing Firm', 'Etkiye direnen yaratık, o etkiye 10 tur bağışık olur.', 'A creature that resists an effect is immune to it for 10 rounds.'),
 ])
 UYKULU = {'name': 'Uykulu', 'sure': 1, 'speedMult': 0.5, 'attackDis': {}, 'icon': '💤'}
+SP = 'sorceryPoints'
 act(s, 'lullaby', seviye=3, tur='action', kaynak={'id': 'imzaNinni', **PB}, hedef='enemies', yaricapFt=30, enCok='$cha', enCokCarpan={'14': 2},
     save={'yetenek': 'wis', 'dc': ['cha'], 'dezVs': ['Frightened']}, cesaret=10, etki=UYKULU, ad='Ninni', ozellikAdi='lullaby-blood',
-    not_='Ücretsiz kullanım bitince Büyücülük Puanı seçeneği yok.')
+    yedek={'id': SP, 'maliyet': 1}, yz='kontrol',
+    not_='Sürüm 27+: ücretsiz kullanım bitince 1 Büyücülük Puanı. 14. seviyede 2 kat hedef ek puan istemeden (K50 yaklaşımı).')
 act(s, 'basket', seviye=6, tur='action', kaynak={'id': 'imzaSepet', 'sayi': 1, 'yenilenme': 'long'}, hedef='enemy', menzilFt=30,
     save={'yetenek': 'wis', 'dc': ['cha'], 'dezVs': ['Frightened'], 'dezEtki': ['Uykulu']}, cesaret=10,
     etki={'name': 'Sepet', 'sure': 2, 'sureEfsanevi': 1, 'grants': ['Incapacitated'], 'speedZero': True, 'breakOnDamage': True, 'icon': '🧺'}, ad='Sepet',
-    not_='3 Büyücülük Puanıyla ek kullanım yok (uzun dinlenmede bir kez).')
+    yedek={'id': SP, 'maliyet': 3}, param={'tekAd': 'Sepet', 'cagriEtki': 'imza:imza_dunganga/call-aura'}, yz='kontrol',
+    not_='Sürüm 27+: ücretsiz kullanım bitince 3 Büyücülük Puanı; aynı anda tek sepet (Dunganga Çağrısı sürerken yeterlilik kadar).')
+act(s, 'basket-swift', seviye=18, tur='bonus', kaynak={'id': 'imzaSepet', 'sayi': 1, 'yenilenme': 'long'}, hedef='enemy', menzilFt=30,
+    save={'yetenek': 'wis', 'dc': ['cha'], 'dezVs': ['Frightened'], 'dezEtki': ['Uykulu']}, cesaret=10,
+    etki={'name': 'Sepet', 'sure': 2, 'sureEfsanevi': 1, 'grants': ['Incapacitated'], 'speedZero': True, 'breakOnDamage': True, 'icon': '🧺'}, ad='Sepet (Çağrı)',
+    yedek={'id': SP, 'maliyet': 3}, param={'tekAd': 'Sepet', 'cagriEtki': 'imza:imza_dunganga/call-aura', 'gerekEtki': 'imza:imza_dunganga/call-aura', 'gerekAd': 'Dunganga Çağrısı'},
+    yz='kontrol', ozellikAdi='call', k54b=True, not_='Dunganga Çağrısı sürerken Sepet bonus eylemle.')
 act(s, 'call', seviye=18, tur='action', kaynak={'id': 'imzaCagri', 'sayi': 1, 'yenilenme': 'long'}, hedef='enemies', yaricapFt=30,
     save={'yetenek': 'wis', 'dc': ['cha']}, cesaret=10, hasar={'zar': {'18': '2d10'}, 'tur': 'psychic'}, hasarHep=True,
-    etki={**UYKULU, 'sure': 10, 'noHeal': True}, ad='Dunganga Çağrısı',
-    not_='Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler bir kez kurtulma atar (başarısızsa 10 tur Uykulu + can yenileyemez); hasar kurtulma başarısında yarı değil, yalnız başarısızsa.')
+    etki={**UYKULU, 'sure': 10, 'noHeal': True}, ad='Dunganga Çağrısı', eski=True,
+    not_='Sürüm 23–26: alan hareket etmez; yapıldığı anda 30 ft içindekiler bir kez kurtulma atar (başarısızsa 10 tur Uykulu + can yenileyemez).')
+# Sürüm 27+: seninle hareket eden aura (K53 auraCore): tur başı WIS (başarısızsa Uykulu + 2d10 zihin), Ömür Elinde (can yenileyemez, ölüm save dezavantajı).
+act(s, 'call-aura', seviye=18, tur='action', kaynak={'id': 'imzaCagri', 'sayi': 1, 'yenilenme': 'long'}, hedef='self', ad='Dunganga Çağrısı', ozellikAdi='call', yz='cagri', k54b=True,
+    kendiEtki={'name': 'Dunganga Çağrısı', 'sure': 10, 'icon': '🌑', 'auras': [
+        {'id': 'dunganga-cagri', 'name': 'Dunganga Çağrısı', 'radius': 6, 'filter': 'enemies', 'trigger': 'turnStart', 'save': {'ability': 'wis', 'dcAb': ['cha']}, 'cesaret': 10,
+         'effect': {'kind': 'effect', 'rounds': 1, 'dice': '2d10', 'type': 'psychic', 'effect': {'name': 'Uykulu', 'speedMult': 0.5, 'attackDis': {}, 'icon': '💤'}}},
+        {'id': 'omur-elinde', 'name': 'Ömür Elinde', 'radius': 6, 'filter': 'enemies', 'trigger': 'passive', 'effect': {'kind': 'noHeal'}},
+        {'id': 'omur-elinde-olum', 'name': 'Ömür Elinde', 'radius': 6, 'filter': 'enemies', 'trigger': 'passive', 'effect': {'kind': 'deathSaveDis'}}]},
+    not_='30 ft aura 10 tur seninle hareket eder; Cesaret: kurtulan düşman 10 tur bağışık.')
 pas(s, 'lullaby-blood', 3, {'alwaysPrepared': {'3': ['Sleep', 'Bane', 'Invisibility', 'Darkness', 'Fear', 'Hypnotic Pattern'], '7': ['Phantasmal Killer', 'Confusion'], '9': ['Dream', 'Modify Memory']}})
-pas(s, 'nightmare', 14, {'name': 'Kâbus', 'immune': ['Frightened', 'Charmed', 'Unconscious'], 'icon': '🌙'}, 'Korkan düşmana tur başı hasar yok (planlı).')
+pas(s, 'nightmare', 14, {'name': 'Kâbus', 'immune': ['Frightened', 'Charmed', 'Unconscious'], 'icon': '🌙'}, 'Sürüm 27+: korkan düşmana tur başı hasar (Kâbus: Korku).')
+pas(s, 'nightmare-dread', 14, {'name': 'Kâbus: Korku', 'icon': '🌙', 'auras': [
+    {'id': 'kabus', 'name': 'Kâbus', 'radius': 99, 'filter': 'enemies', 'trigger': 'turnStart', 'requires': 'Frightened', 'effect': {'kind': 'damage', 'dice': '1d10+$cha', 'type': 'psychic'}}]},
+    'Frightened düşman kendi turunun başında 1d10 + CHA zihin hasarı (harita genelinde).', k54b=True)
 
 # ---------------- Warlock: Astrolog ----------------
 s = 'imza_astrolog'
