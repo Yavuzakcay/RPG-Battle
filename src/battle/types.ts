@@ -565,6 +565,8 @@ export interface Combatant {
   auraSave?: number;
   /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
   imza?: string;
+  /** Y1 G2: yapay zekâ rolü (Game Master `set_ai_role`; yoksa veriden türetilir, `ai/evaluate.ts`). */
+  aiRole?: 'hasarci' | 'kontrolcu' | 'destek' | 'tank';
   /** Kuyruk K50: Taht Varlığı aurasından WIS kurtulma bonusu (reducer sonu `syncAuras`). */
   imzaWisSave?: number;
   /** Kuyruk K53 S5: pasif auralardan (syncAuras): durum bağışıklığı, can yenileyemez, ölüm save dezavantajı. */
@@ -1126,6 +1128,11 @@ export interface BattleState {
    */
   kuralSurumu?: number;
   /**
+   * Y1: yapay zekâ ayarı (karar olay değil, kural sürümü gerekmez). `zorluk` taraf başına (varsayılan Normal);
+   * `eski: true` Y1 öncesi kural zincirini çalıştırır (regresyon ölçümü).
+   */
+  yz?: { zorluk?: Partial<Record<'party' | 'enemies', 'kolay' | 'normal' | 'usta'>>; eski?: boolean };
+  /**
    * Görev Y1: yüzey etkileşimi (tepkimeler: tutuşma, buhar, donma, erime, patlama, suda yıldırım). Varsayılan açık;
    * yalnızca `false` kapatır (eski kayıt: açık).
    */
@@ -1365,6 +1372,8 @@ export type Command =
   | { type: 'adjust_hp'; targetId: string; hp: number }
   /** Görev S1: Game Master bitkinlik seviyesini ayarlar (0–6). */
   | { type: 'set_exhaustion'; targetId: string; level: number }
+  /** Y1 G2: Game Master bir yaratığa yapay zekâ rolü atar (`null`: veriden türet). */
+  | { type: 'set_ai_role'; targetId: string; role: 'hasarci' | 'kontrolcu' | 'destek' | 'tank' | null }
   /** Görev A1: Game Master birden çok yaratığı tek can havuzunda birleştirir (`hp`/`max` verilmezse üyelerin toplamı). */
   | { type: 'create_hp_pool'; memberIds: string[]; poolId?: string; hp?: number; max?: number; label?: string }
   /** Görev Y1: Game Master yüzey yerleştirir (yağ, su, buz, zehir bulutu…) ya da altıgenlerdeki yüzeyleri kaldırır (`kind` yok). */
@@ -1861,6 +1870,8 @@ export type BattleEvent =
   | { type: 'teleported'; actorId: string; from: Offset; to: Offset; label: string; /** Kuyruk 19: harcanan hareket (altıgen) ve Tree Stride işareti. */ cost?: number; stride?: boolean }
   /** Görev S1: bitkinlik seviyesi değişti (6'da ölür). */
   | { type: 'exhaustion_changed'; targetId: string; level: number; reason: string }
+  /** Y1 G2: yapay zekâ rolü atandı (Game Master). */
+  | { type: 'ai_role_set'; targetId: string; role: 'hasarci' | 'kontrolcu' | 'destek' | 'tank' | null }
   /** Kuyruk 19: canavar yeteneğinin şarjı (kullanıldı ya da tur başı d6). */
   | { type: 'ability_recharge'; actorId: string; abilityId: string; used?: boolean; d6?: number; recharged?: boolean }
   /** Kuyruk 19 (Hydra Multiple Heads): baş sayısı, son turundan beri ölen, ateş hasarı aldı mı, turun başındaki HP. */

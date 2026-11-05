@@ -177,10 +177,28 @@ export const setSurfaceReactions = (on: boolean) => { surfaceReactions = on; };
 let alarmMode: 'normal' | 'hemen' | 'yok' = 'normal';
 export const setAlarmMode = (m: 'normal' | 'hemen' | 'yok') => { alarmMode = m; };
 
+/**
+ * Y1: simülasyonda yapay zekâ ayarı. `setSimYz` ya da ortam değişkenleri (paralel süreçlere geçer): `YZ_ESKI=1` (Y1
+ * öncesi kural zinciri), `YZ_ZORLUK` (parti) ve `YZ_ZORLUK_DUSMAN` (düşman): kolay | normal | usta.
+ */
+let simYz: BattleState['yz'] | undefined;
+export const setSimYz = (y: BattleState['yz'] | undefined) => { simYz = y; };
+function yzOf(): BattleState['yz'] | undefined {
+  if (simYz) return simYz;
+  const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
+  const lv = (v: string | undefined) => (v === 'kolay' || v === 'normal' || v === 'usta' ? v : undefined);
+  const party = lv(env.YZ_ZORLUK);
+  const enemies = lv(env.YZ_ZORLUK_DUSMAN);
+  const eski = env.YZ_ESKI === '1';
+  if (!party && !enemies && !eski) return undefined;
+  return { ...(eski ? { eski: true } : {}), ...(party || enemies ? { zorluk: { ...(party ? { party } : {}), ...(enemies ? { enemies } : {}) } } : {}) };
+}
+
 export function setupBattle(s: Scenario, rng: Rng, level: number = DEFAULT_LEVEL): BattleState {
   const alarm = (st: BattleState): BattleState => (!st.groups?.length || alarmMode === 'normal' ? st
     : alarmMode === 'yok' ? { ...st, alarmEnabled: false } : { ...st, groups: st.groups.map((g) => ({ ...g, state: 'alarmed' as const })) });
-  const flag = (st: BattleState): BattleState => alarm(surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false });
+  const yz = yzOf();
+  const flag = (st: BattleState): BattleState => alarm({ ...(surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false }), ...(yz ? { yz } : {}) });
   if (!s.map) return flag(startBattle('sim', 'd-z-zemin', participants(s, level), rng).state);
   const session = createMapBattle(participants(s, level), { ...s.map, mirrored: false, ...(simHouseRules ? { houseRules: simHouseRules } : {}) }, rng);
   const gm = { playerId: 'gm', isGm: true };

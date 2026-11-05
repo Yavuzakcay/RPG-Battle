@@ -21,14 +21,15 @@ import type { BattleState, Combatant, Command } from './types';
 const zonesOf = (s: BattleState, owner: string, spellId: string) => (s.map?.zones ?? []).filter((z) => z.casterId === owner && z.spellId === spellId);
 
 /** Denenecek komutlar (sırayla; ilk geçerli olan seçilir). Boş liste: bu tur kullanma. */
-export function imzaHintCmds(state: BattleState, actor: Combatant, key: string, spec: ImzaSpec, foes: Combatant[], allies: Combatant[]): Command[] {
+export function imzaHintCmds(state: BattleState, actor: Combatant, key: string, spec: ImzaSpec, foes: Combatant[], allies: Combatant[], opts: { gate?: boolean } = {}): Command[] {
   if (!actor.pos) return [];
   const me = actor.pos;
   const cmd = (extra: Partial<Extract<Command, { type: 'use_feature' }>>): Command => ({ type: 'use_feature', actorId: actor.id, feature: key, ...extra });
   const near = (a: Offset, n: number) => foes.filter((f) => f.pos && distance(a, f.pos) <= n);
   // Eylem harcayan kontrol/zemin ipuçları güçlü büyünün yerine geçmesin: 3.+ seviye slot dururken yalnız çok hedefte.
   const bigSlots = actor.spellSlots.slice(2).some((n) => n > 0);
-  if (spec.tur === 'action' && bigSlots && spec.yz !== 'cagri' && spec.yz !== 'plan' && spec.yz !== 'nobet') {
+  // Y1: değerlendirici (`ai/evaluate.ts`) slotla imza eylemini puanla karşılaştırır; kapı yalnız eski kural zincirinde.
+  if (opts.gate !== false && spec.tur === 'action' && bigSlots && spec.yz !== 'cagri' && spec.yz !== 'plan' && spec.yz !== 'nobet') {
     const r = Math.floor(Number(spec.yaricapFt ?? spec.param?.yaricapFt ?? 30) / 5);
     if (spec.hedef === 'enemy' || spec.yz === 'duvar' || near(me, r).length < 3) return [];
   }

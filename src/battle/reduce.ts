@@ -1182,6 +1182,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, event.actorId, { heads: event.heads, headsLost: event.lost, headsFire: event.fire, headsTurnHp: event.turnHp });
     case 'burst_done':
       return withCombatant(state, event.actorId, { burstDone: true });
+    case 'ai_role_set': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      const { aiRole: _old, ...rest } = c;
+      void _old;
+      return { ...state, combatants: { ...state.combatants, [c.id]: event.role ? { ...rest, aiRole: event.role } : rest } };
+    }
     case 'exhaustion_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);

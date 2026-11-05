@@ -332,6 +332,14 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return finish(state, events);
   }
 
+  if (cmd.type === 'set_ai_role') {
+    if (!ctx.isGm) return fail('Yalnızca Game Master yapay zekâ rolü atayabilir.');
+    const target = state.combatants[cmd.targetId];
+    if (!target) return fail('Savaşçı bulunamadı.');
+    if (cmd.role !== null && !['hasarci', 'kontrolcu', 'destek', 'tank'].includes(cmd.role)) return fail('Bilinmeyen rol.');
+    return finish(state, [{ type: 'ai_role_set', targetId: target.id, role: cmd.role }]);
+  }
+
   if (cmd.type === 'set_exhaustion') {
     // Görev S1: bitkinlik (Exhaustion) kaynağı şimdilik Game Master (oyundaki büyü/özellikler ileride aynı olayla).
     if (!ctx.isGm) return fail('Yalnızca Game Master bitkinliği ayarlayabilir.');

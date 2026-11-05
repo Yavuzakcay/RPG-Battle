@@ -46,6 +46,8 @@ export interface TargetPreview {
   conditions: Record<string, number>;
   /** Eklenen süren etki adı → olasılık. */
   effects: Record<string, number>;
+  /** Etkisiz bırakan etki bayrakları → olasılık (banished, sealed, dominate, polymorph, charm, command, noAttack, taraf değişimi). */
+  flags: Record<string, number>;
   /** Zorla hareket / ışınlanma sonucu (başarılı senaryoda). */
   movedTo?: Offset;
   moveBy?: string;
@@ -66,6 +68,10 @@ export interface CommandPreview {
   triggers: string[];
   /** Orta senaryonun olayları (açıklama için). */
   events: BattleEvent[];
+  /** Komutu verenin harcadığı kaynaklar (orta senaryo): slot seviyeleri ve kaynak adı → adet. */
+  spent: { slots: number[]; resources: Record<string, number> };
+  /** Komutu verenin komuttan sonraki konumu (orta senaryo; yürüyüş, ışınlanma, itilme). */
+  actorPos?: Offset;
   /** Kaç kez çalıştırıldı (başarım ölçümü). */
   runs: number;
 }
@@ -143,6 +149,9 @@ function run(state: BattleState, cmd: Command, ctx: CommandContext, sc: Scenario
   }
 }
 
+/** Etkisiz bırakan etki alanları (değerlendirici `durumDegeri`'ne benzer değer verir). */
+export const DISABLE = ['banished', 'sealed', 'dominate', 'polymorph', 'charm', 'command', 'noAttack'] as const;
+
 const pool = (c: Combatant | undefined): number => (c ? Math.max(0, c.hp) + (c.tempHp ?? 0) : 0);
 
 type Att = Extract<BattleEvent, { type: 'attack_resolved' }>;
@@ -158,23 +167,31 @@ interface Outcome {
   dead: Record<string, boolean>;
   conds: Record<string, string[]>;
   effs: Record<string, string[]>;
+  flags: Record<string, string[]>;
   pushed: Record<string, { to: Offset; by: string }>;
   tele: Record<string, Offset>;
   triggers: string[];
 }
 
 function outcomeOf(before: BattleState, r: RunOut): Outcome {
-  const o: Outcome = { attacks: [], saves: {}, delta: {}, dead: {}, conds: {}, effs: {}, pushed: {}, tele: {}, triggers: [] };
+  const o: Outcome = { attacks: [], saves: {}, delta: {}, dead: {}, conds: {}, effs: {}, flags: {}, pushed: {}, tele: {}, triggers: [] };
   const after = r.state as BattleState;
   for (const id of Object.keys(before.combatants)) {
     const b = before.combatants[id] as Combatant;
     const a = after.combatants[id];
     o.delta[id] = pool(b) - pool(a);
-    o.dead[id] = b.hp > 0 && !!a && a.hp <= 0;
+    o.dead[id] = !!a && b.life !== 'dead' && (a.life === 'dead' || (b.hp > 0 && a.hp <= 0));
     const bc = new Set([...b.conditions, ...(b.effects ?? []).flatMap((e) => e.grants ?? [])]);
     o.conds[id] = a ? [...new Set([...a.conditions, ...(a.effects ?? []).flatMap((e) => e.grants ?? [])])].filter((x) => !bc.has(x)) : [];
     const be = new Set((b.effects ?? []).map((e) => e.id));
-    o.effs[id] = a ? (a.effects ?? []).filter((e) => !be.has(e.id)).map((e) => e.name ?? e.id) : [];
+    const fresh = a ? (a.effects ?? []).filter((e) => !be.has(e.id)) : [];
+    o.effs[id] = fresh.map((e) => e.name ?? e.id);
+    const fl = new Set<string>();
+    for (const e of fresh) for (const k of DISABLE) if ((e as unknown as Record<string, unknown>)[k]) fl.add(k);
+    if (a && a.side !== b.side) fl.add('dominate');
+    if (a && a.shape && !b.shape) fl.add('polymorph');
+    if (a && a.regenBlocked && !b.regenBlocked && b.hp <= 0) fl.add('regenBlocked');
+    o.flags[id] = [...fl];
   }
   for (const e of r.events) {
     if (e.type === 'attack_resolved') {
@@ -199,7 +216,7 @@ export function previewCommand(state: BattleState, cmd: Command, ctx?: CommandCo
   const actorId = (cmd as { actorId?: string }).actorId ?? '';
   const actor = state.combatants[actorId];
   const context = ctx ?? (actor ? ctxOf(actor) : { playerId: 'gm', isGm: true });
-  const empty: CommandPreview = { ok: false, targets: [], friendlyFire: 0, selfDamage: 0, opportunity: [], triggers: [], events: [], runs: 1 };
+  const empty: CommandPreview = { ok: false, targets: [], friendlyFire: 0, selfDamage: 0, opportunity: [], triggers: [], events: [], spent: { slots: [], resources: {} }, runs: 1 };
   const probe = run(state, cmd, context, 'probe', 10);
   if (!probe.ok) return { ...empty, error: probe.error };
   let runs = 1;
@@ -237,13 +254,14 @@ export function previewCommand(state: BattleState, cmd: Command, ctx?: CommandCo
 
   const outs = new Map<string, Outcome>();
   let midEvents: BattleEvent[] = probe.events;
+  let midState: BattleState | undefined = probe.state;
   const key = (s: Scenario) => `${s.attack}/${s.save}/${s.dice}`;
   for (const attack of aClasses) for (const save of sClasses) for (const dice of ['low', 'high'] as DieLevel[]) {
     const sc = { attack, save, dice };
     const r = run(state, cmd, context, sc, hitFace);
     runs++;
     if (r.ok) outs.set(key(sc), outcomeOf(state, r));
-    if (r.ok && attack === 'hit' && save === 'fail' && dice === 'low') midEvents = r.events;
+    if (r.ok && attack === 'hit' && save === 'fail' && dice === 'low') { midEvents = r.events; midState = r.state; }
   }
   const ranged = opts.range !== false;
   if (ranged) {
@@ -317,6 +335,7 @@ export function previewCommand(state: BattleState, cmd: Command, ctx?: CommandCo
     let killP = 0;
     const condP: Record<string, number> = {};
     const effP: Record<string, number> = {};
+    const flagP: Record<string, number> = {};
     let any = false;
     for (const { a, s, w } of weights) {
       for (const d of ['low', 'high'] as DieLevel[]) {
@@ -330,6 +349,7 @@ export function previewCommand(state: BattleState, cmd: Command, ctx?: CommandCo
         if (o.dead[id]) killP += w / 2;
         for (const x of o.conds[id] ?? []) condP[x] = (condP[x] ?? 0) + w / 2;
         for (const x of o.effs[id] ?? []) effP[x] = (effP[x] ?? 0) + w / 2;
+        for (const x of o.flags[id] ?? []) flagP[x] = (flagP[x] ?? 0) + w / 2;
         if (delta !== 0 || o.conds[id]?.length || o.effs[id]?.length || o.pushed[id] || o.tele[id]) any = true;
       }
     }
@@ -354,6 +374,7 @@ export function previewCommand(state: BattleState, cmd: Command, ctx?: CommandCo
       killP: Math.min(1, killP),
       conditions: condP,
       effects: effP,
+      flags: flagP,
     };
     if (aP) { t.hitP = aP.hit + aP.crit; t.critP = aP.crit; }
     if (sP !== undefined) t.saveP = sP;
@@ -365,7 +386,16 @@ export function previewCommand(state: BattleState, cmd: Command, ctx?: CommandCo
   }
   const friendlyFire = targets.filter((t) => t.ally).reduce((s, t) => s + t.damage.avg, 0);
   const selfDamage = targets.find((t) => t.self)?.damage.avg ?? 0;
-  return { ok: true, targets, friendlyFire, selfDamage, opportunity, triggers: [...triggers], events: midEvents, runs };
+  const spent: CommandPreview['spent'] = { slots: [], resources: {} };
+  const after = midState?.combatants[actorId];
+  if (actor && after) {
+    actor.spellSlots.forEach((n, i) => { for (let k = 0; k < n - (after.spellSlots[i] ?? 0); k++) spent.slots.push(i + 1); });
+    for (const [k, v] of Object.entries(actor.resources ?? {})) {
+      const d = (v ?? 0) - (after.resources?.[k] ?? 0);
+      if (d > 0) spent.resources[k] = d;
+    }
+  }
+  return { ok: true, targets, friendlyFire, selfDamage, opportunity, triggers: [...triggers], events: midEvents, spent, ...(after?.pos ? { actorPos: after.pos } : {}), runs };
 }
 
 /** Kısa yardımcı: komutun bir hedefe beklenen hasarı (yoksa 0). */

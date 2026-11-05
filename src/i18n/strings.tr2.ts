@@ -78,6 +78,7 @@ export const TR_EXTRA = {
     lifeRestored: (a: string, alive: boolean, what: string) => (alive ? `${a} dirildi (${what}): 1 HP.` : `${a} stabil (${what}).`),
     hpPoolCreated: (names: string, hp: number, max: number) => `Ortak can havuzu: ${names} (${hp}/${max} HP).`,
     hpPoolSynced: (names: string, hp: number) => `Ortak can havuzu: ${names} ${hp} HP.`,
+    aiRoleSet: (a: string, role: string | null) => (role ? `${a}: yapay zekâ rolü ${({ hasarci: 'hasarcı', kontrolcu: 'kontrolcü', destek: 'destek', tank: 'tank' } as Record<string, string>)[role] ?? role} (Game Master).` : `${a}: yapay zekâ rolü kendiliğinden (Game Master).`),
     exhaustion: (a: string, level: number) => (level >= 6 ? `${a}: bitkinlik 6 — öldü.` : level === 0 ? `${a}: bitkinlik geçti.` : `${a}: bitkinlik ${level} (d20 Testleri −${2 * level}, hız −${5 * level} ft).`),
     bonusAction: (a: string, bonus: boolean, what: string) => `${a}: ${bonus ? 'bonus eylem' : 'tepki'} (${what}).`,
     reaction: (a: string, name: string, src: string | null) => `${a}: tepki — ${name}${src ? ` (${src})` : ''}.`,

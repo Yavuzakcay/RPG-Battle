@@ -225,6 +225,8 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.mounted(n(event.actorId), n(event.mountId));
     case 'dismounted':
       return L.dismounted(n(event.actorId));
+    case 'ai_role_set':
+      return L.aiRoleSet(n(event.targetId), event.role);
     case 'exhaustion_changed':
       return L.exhaustion(n(event.targetId), event.level);
     case 'summon_steered':

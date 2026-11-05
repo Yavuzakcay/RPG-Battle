@@ -528,6 +528,7 @@ export const en: Strings = {
     lifeRestored: (a: string, alive: boolean, what: string) => (alive ? `${a} revived (${what}): 1 HP.` : `${a} stabilized (${what}).`),
     hpPoolCreated: (names: string, hp: number, max: number) => `Shared hit point pool: ${names} (${hp}/${max} HP).`,
     hpPoolSynced: (names: string, hp: number) => `Shared hit point pool: ${names} ${hp} HP.`,
+    aiRoleSet: (a: string, role: string | null) => (role ? `${a}: AI role ${({ hasarci: 'damage dealer', kontrolcu: 'controller', destek: 'support', tank: 'tank' } as Record<string, string>)[role] ?? role} (Game Master).` : `${a}: AI role automatic (Game Master).`),
     exhaustion: (a: string, level: number) => (level >= 6 ? `${a}: Exhaustion 6 — dies.` : level === 0 ? `${a}: no longer exhausted.` : `${a}: Exhaustion ${level} (d20 Tests −${2 * level}, Speed −${5 * level} ft).`),
     bonusAction: (a: string, bonus: boolean, what: string) => `${a}: ${bonus ? 'bonus action' : 'reaction'} (${what}).`,
     reaction: (a: string, name: string, src: string | null) => `${a}: reaction — ${name}${src ? ` (${src})` : ''}.`,
