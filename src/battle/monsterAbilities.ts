@@ -229,6 +229,9 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
     }
     case 'teleport': {
       if (a.nearTree && !treeNear(state, hexOf(actor))) return [];
+      // Kuyruk A2 (sürüm 30+): Tree Stride (SRD): 60 ft içindeki İKİNCİ bir ağacın 5 ft yakınındaki boş altıgene; düşmana en
+      // yakın olan. Eskiden efsanevi ışınlanmanın "varışta 2+ düşman" kuralı kullanılıyordu (tek düşmanda hiç çalışmıyordu).
+      if (a.nearTree && ruleVersion(state) >= 30) return treeStride(state, actor, a, foes);
       return legendaryTeleport(state, actor, { ...a, kind: 'teleport', ...(a.toward ? { burst: { radiusFt: 5, dice: '0', type: 'force', at: 'dest' } } : {}) } as LegendaryAction, foes, rng)
         .filter((e) => e.type === 'teleported');
     }
@@ -368,6 +371,26 @@ function pullToward(s: BattleState, src: Combatant, t: Combatant, hexes: number,
 
 const treeNear = (s: BattleState, h: Offset) => [h, ...ring(h, 1, { cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 })]
   .some((x) => /ağaç|tree|orman/i.test(terrainAt(s, x).name ?? ''));
+
+/** Kuyruk A2: Tree Stride varışı: başlangıçtaki ağaçlardan başka bir ağaca bitişik, boş, normal zemin; düşmana en yakın. */
+function treeStride(state: BattleState, actor: Combatant, a: MonsterAbility, foes: Combatant[]): BattleEvent[] {
+  if (!state.map || !actor.pos) return [];
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const isTree = (h: Offset) => /ağaç|tree|orman/i.test(terrainAt(state, h).name ?? '');
+  const from = hexOf(actor);
+  const startTrees = new Set([from, ...ring(from, 1, size)].filter(isTree).map((h) => `${h.col},${h.row}`));
+  const r = Math.floor((a.ft ?? 60) / 5);
+  const cand: Offset[] = [];
+  for (let row = 0; row < size.rows; row++) for (let col = 0; col < size.cols; col++) {
+    const h = { col, row };
+    if (distance(h, from) > r || distance(h, from) === 0 || occupantAt(state, h, actor.id) || terrainAt(state, h).movement !== 'normal') continue;
+    if (ring(h, 1, size).some((t) => isTree(t) && !startTrees.has(`${t.col},${t.row}`) && distance(t, from) <= r)) cand.push(h);
+  }
+  if (!cand.length) return [];
+  const score = (h: Offset) => (foes.length ? Math.min(...foes.map((f) => distance(hexOf(f), h))) : 0);
+  const to = cand.sort((x, y) => score(x) - score(y) || x.row - y.row || x.col - y.col)[0] as Offset;
+  return [{ type: 'teleported', actorId: actor.id, from, to, label: a.tr }];
+}
 
 /**
  * Yutma (SRD Swallow): yakaladığı (küçük ya da Large ve altı) hedef save; başarısızsa yutulur: Blinded + Restrained, hedef
