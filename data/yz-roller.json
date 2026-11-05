@@ -24,7 +24,7 @@
     "banished": 2.0, "sealed": 1.5, "dominate": 3.0, "polymorph": 1.5, "charm": 0.6, "command": 0.8, "noAttack": 0.8
   },
   "sabitler": {
-    "_aciklama": "oldurmeTaban: ölen yaratık başına tehdide eklenen değer; etkiDegeri: süren etkinin tehdit oranı; slotSeviye: slot seviyesi başına maliyet; kaynak: özellik kaynağı başına maliyet; konsantrasyonKirma: konsantre düşmana isabetin tehdit oranı; canlandirma: yerdeki dostu kaldırmanın tehdit oranı; riskOlcegi: altıgen riskinin puana bölüneni; kotuCan: kendini koruma eşiği (can oranı); eskiOncelik: eski kural zincirinin seçtiği adaya eşitlik bozucu; kuralOncelik: eski elle yazılmış kural üreticisinin (alan, zemin, kontrol, nefes, itme…) adayına eklenen değer (kural 'iyi hamle' dedi); itmeRiski: itilen düşmanın vardığı altıgen riskinin bir durum-turuna denk geldiği risk; sira: hedef öncelik sırasında (yakalanan, Vex, hükümlü, uzaklık) ilk hedefe eklenen değer, sonrakilere azalarak.",
+    "_aciklama": "oldurmeTaban: ölen yaratık başına tehdide eklenen değer; etkiDegeri: süren etkinin tehdit oranı; slotSeviye: slot seviyesi başına maliyet; kaynak: özellik kaynağı başına maliyet; konsantrasyonKirma: konsantre düşmana isabetin tehdit oranı; canlandirma: yerdeki dostu kaldırmanın tehdit oranı; riskOlcegi: altıgen riskinin puana bölüneni; kotuCan: kendini koruma eşiği (can oranı); eskiOncelik: eski kural zincirinin seçtiği adaya eşitlik bozucu; kuralOncelik: eski elle yazılmış kural üreticisinin (alan, zemin, kontrol, nefes, itme…) adayına eklenen değer (kural 'iyi hamle' dedi); itmeRiski: itilen düşmanın vardığı altıgen riskinin bir durum-turuna denk geldiği risk; sira: hedef öncelik sırasında (yakalanan, Vex, hükümlü, uzaklık) ilk hedefe eklenen değer, sonrakilere azalarak; korunmaEsik/korunmaTavan (Y2): yer değiştirirken maruziyet farkının ağırlığı can oranı korunmaEsik altına inince doğrusal artar, 0 canda korunmaTavan (üstünde 0).",
     "oldurmeTaban": 5,
     "etkiDegeri": 0.25,
     "slotSeviye": 2.0,
@@ -36,7 +36,9 @@
     "eskiOncelik": 0.5,
     "kuralOncelik": 1.5,
     "itmeRiski": 50,
-    "sira": 0.4
+    "sira": 0.4,
+    "korunmaEsik": 0.5,
+    "korunmaTavan": 2.0
   },
   "hedefOnceligi": {
     "_aciklama": "byPriority'nin güçlü anahtarları (eski hedef sırası): yakaladığı hedef (kaçmasın), hedef koşucusu (K16D), hükümlü (İnfazcı), Vex işaretli, sahibini koruyan çağrının sahibine bitişik düşman.",

@@ -127,8 +127,11 @@ export function scoreCommand(state: BattleState, actor: Combatant, cmd: Command,
   if (actor.pos && to && (to.col !== actor.pos.col || to.row !== actor.pos.row)) {
     add('arazi', -w.arazi * (helpers.risk(actor, to) - helpers.risk(actor, actor.pos)) / C.riskOlcegi);
     const ex = exposure(state, actor, actor.pos, helpers) - exposure(state, actor, to, helpers);
-    // Düşük canda bir turluk bitişik saldırılardan kaçmak yaklaşık o saldırıların değeri kadar.
-    add('korunma', w.kendi * ex * (low ? 1.5 : 0.2));
+    // Düşük canda bir turluk bitişik saldırılardan kaçmak yaklaşık o saldırıların değeri kadar. Y2: ağırlık can
+    // oranına bağlı (korunmaEsik üstünde 0, 0 canda korunmaTavan): sağlıklı yakın dövüşçünün yaklaşması cezalanmaz
+    // (Mağara/Kale: Trol hücumu ve yaklaşma eksi puanla seçilmiyor, savaş uzuyordu).
+    const ratio = Math.max(0, actor.hp) / Math.max(1, actor.maxHp);
+    add('korunma', w.kendi * ex * C.korunmaTavan * Math.max(0, (C.korunmaEsik - ratio) / C.korunmaEsik));
   }
   // Hedef öncelik sırası (yakalanan, Vex, hükümlü, koşucu, uzaklık): tek hedefli komutun hedefi önde ise küçük değer.
   const tid = (cmd as { targetId?: string }).targetId;

@@ -409,7 +409,9 @@ function summonEvents(state: BattleState, actor: Combatant, a: MonsterAbility): 
   const out: BattleEvent[] = [];
   const idx = state.order.indexOf(actor.id) + 1;
   for (let k = 0; k < Math.min(a.count ?? 1, spots.length); k++) {
-    const id = `${actor.id}-${a.id}-${state.round}-${k}`;
+    // Y2: aynı turda ikinci çağrı (Loathsome Limbs iki tur sonunda) aynı kimliği üretmesin (sıra kilitlenirdi).
+    let id = `${actor.id}-${a.id}-${state.round}-${k}`;
+    for (let n = 2; state.combatants[id] || state.order.includes(id); n++) id = `${actor.id}-${a.id}-${state.round}-${k}-${n}`;
     const base = combatantFromMonster(getMonster(a.monster), { id, name: `${getMonster(a.monster).name} (${actor.name})` });
     const kept = a.onlyAttacks ? base.attacks.filter((x) => a.onlyAttacks?.includes(x.name)) : base.attacks;
     const c: Combatant = { ...base, ...(a.onlyAttacks && kept.length ? { attacks: kept } : {}), side: actor.side, pos: spots[k] as Offset, initiative: actor.initiative,

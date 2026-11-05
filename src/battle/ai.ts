@@ -1406,7 +1406,10 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
   // hasar; örn. savaşçı arbalet yerine kılıç) önce oraya yürür. Güvenli ve en ucuz yerler.
   if (now && canAct && actor.side === 'party' && !actor.civilian && actor.movementUsed < speedHexes(actor)) {
-    const here = commandScore(state, actor, now);
+    // Y2: karşılaştırma iki uçta aynı ölçüyle (`bestNow`): değerlendiricinin buradaki seçimi ile eski kuralın oradaki
+    // seçimi farklı komutlar olunca iki altıgen arasında ileri-geri yürüyordu (Mağara beraberlikleri; YZ-DENETIM Y2).
+    const legacyHere = state.yz?.eski ? null : bestNow(state, actor);
+    const here = Math.max(commandScore(state, actor, now), legacyHere ? commandScore(state, actor, legacyHere) : 0);
     if (here > 0) {
       const better = reachable(state, actor)
         .filter((sp) => risk(state, actor, sp.to) < 50)
@@ -1426,7 +1429,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const aim = steadyAimFirst(state, actor, now);
   if (aim) return aim;
   // Haydut: buradan Sneak Attack tutmuyorsa, tutacağı (güvenli) bir yere yürür.
-  if (now && canAct && actor.sneakAttackDice > 0 && actor.sneakTurn !== `${state.round}:${state.turnIndex}` && sneakBonus(state, actor, now) === 0) {
+  // Y2: eski kural burada Sneak Attack buluyorsa yürümez (değerlendiricinin seçimi farklı olsa da; ileri-geri yürüme).
+  const sneakHere = (): boolean => { const l = state.yz?.eski ? null : bestNow(state, actor); return !!l && sneakBonus(state, actor, l) > 0; };
+  if (now && canAct && actor.sneakAttackDice > 0 && actor.sneakTurn !== `${state.round}:${state.turnIndex}` && sneakBonus(state, actor, now) === 0 && !sneakHere()) {
     const better = reachable(state, actor)
       .filter((s) => risk(state, actor, s.to) < 50)
       .sort((a, b) => a.cost - b.cost)
@@ -1442,7 +1447,12 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Kötü koşullu atışta önce daha iyi bir yere yürü (siper arkasından karşılıklı dezavantajlı
   // atışla savaşın kilitlenmemesi için); öyle bir yer yoksa yine de yap.
-  const poor = now !== null && canAct && poorOdds(state, actor, now);
+  // Y2: değerlendiricinin seçimi kötü koşullu (dezavantaj, yoğun siper) ama eski kural burada iyi koşullu bir eylem
+  // buluyorsa yer değiştirmez: seçim olasılığı zaten içeriyor; yalnız ikisi de kötüyse daha iyi yere yürür (yoksa
+  // değerlendirici ile eski kural farklı hedef seçince iki altıgen arasında ileri-geri yürüyordu; YZ-DENETIM Y2).
+  const poorNow = now !== null && canAct && poorOdds(state, actor, now);
+  const legacyNow = poorNow && !state.yz?.eski ? bestNow(state, actor) : null;
+  const poor = poorNow && !(legacyNow && !poorOdds(state, actor, legacyNow));
   if (now && !poor) return withBrutal(state, actor, withCunning(state, actor, now));
   if (!canAct) return now ?? end;
 
