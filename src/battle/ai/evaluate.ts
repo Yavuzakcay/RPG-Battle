@@ -64,13 +64,17 @@ function exposure(state: BattleState, actor: Combatant, h: Offset, helpers: AiHe
 }
 
 /** Tek komutun puanı ve bileşenleri. */
-export function scoreCommand(state: BattleState, actor: Combatant, cmd: Command, helpers: AiHelpers, role: AiRole, p?: CommandPreview): { score: number; parts: Record<string, number>; preview: CommandPreview } {
+export function scoreCommand(state: BattleState, actor: Combatant, cmd: Command, helpers: AiHelpers, role: AiRole, p?: CommandPreview, diff: AiDifficulty = 'normal'): { score: number; parts: Record<string, number>; preview: CommandPreview } {
   const preview = p ?? previewCommand(state, cmd, undefined, { range: false });
   const parts: Record<string, number> = {};
   const add = (k: string, v: number) => { if (v) parts[k] = (parts[k] ?? 0) + v; };
   if (!preview.ok) return { score: -Infinity, parts, preview };
   const w: Weights = data.roller[role];
   const low = actor.hp <= actor.maxHp * C.kotuCan;
+  // Y2 G3: Usta'nın ek terimleri (öldürmeyi garantile, odaklı ateş, tehdit sırası, slotu güçlü hedefe sakla).
+  const U = diff === 'usta' ? data.zorluk.usta : null;
+  const maxThreat = U ? helpers.foes.reduce((m, f) => Math.max(m, helpers.threat(f)), 1) : 1;
+  let mainThreat = 0;
   for (const t of preview.targets) {
     const c = state.combatants[t.id];
     if (!c) continue;
@@ -82,6 +86,15 @@ export function scoreCommand(state: BattleState, actor: Combatant, cmd: Command,
     if (!isAlly) {
       add('hasar', w.hasar * dmg);
       add('oldurme', w.oldurme * t.killP * (threat * 2 + C.oldurmeTaban));
+      if (U && dmg > 0) {
+        mainThreat = Math.max(mainThreat, threat);
+        // Kalan can beklenen hasarın altındaysa (ölüm olasılığı yüksek) o hedefe odak.
+        add('kesin', w.oldurme * Math.max(0, t.killP - U.kesinEsik) * (threat * 2 + C.oldurmeTaban) * U.kesin);
+        // Yaralı hedefe yığılma (aynı turda dostların vurduğu): eksik can oranı × hasar.
+        add('odak', w.hasar * dmg * (1 - Math.max(0, c.hp) / Math.max(1, c.maxHp)) * U.odak);
+        // Tehdit sırası: en tehlikeli düşmana vurmak (en tehlikeliye göre oran, ortanın üstü artı).
+        add('tehdit', w.hasar * dmg * (threat / maxThreat - 0.5) * U.tehdit);
+      }
       let ctl = 0;
       for (const [k, pk] of Object.entries(t.conditions)) if (!c.conditions.includes(k)) ctl += pk * condValue(k) * threat;
       add('kontrol', w.kontrol * ctl);
@@ -122,6 +135,8 @@ export function scoreCommand(state: BattleState, actor: Combatant, cmd: Command,
   const slotCost = preview.spent.slots.reduce((s, l) => s + l * C.slotSeviye, 0);
   const resCost = Object.values(preview.spent.resources).reduce((s, n) => s + n * C.kaynak, 0);
   add('kaynak', -w.kaynak * (slotCost + resCost));
+  // Usta: slot/kaynak düşük tehditli hedefe harcanmaz (güçlü hedefi bekle).
+  if (U && slotCost + resCost > 0 && mainThreat > 0) add('zamanlama', -w.kaynak * (slotCost + resCost) * U.zamanlama * Math.max(0, 1 - mainThreat / maxThreat));
   // Konum: kendi altıgeninin riski ve maruziyet (yalnız konum değişince).
   const to = preview.actorPos;
   if (actor.pos && to && (to.col !== actor.pos.col || to.row !== actor.pos.row)) {
@@ -144,12 +159,12 @@ export function scoreCommand(state: BattleState, actor: Combatant, cmd: Command,
 }
 
 /** Bütün adayları puanlar (yüksekten düşüğe; geçersizler düşer). */
-export function evaluateCandidates(state: BattleState, actor: Combatant, cands: Candidate[], helpers: AiHelpers, role: AiRole, legacy?: Command | null): Scored[] {
+export function evaluateCandidates(state: BattleState, actor: Combatant, cands: Candidate[], helpers: AiHelpers, role: AiRole, legacy?: Command | null, diff: AiDifficulty = 'normal'): Scored[] {
   const legacyKey = legacy ? JSON.stringify(legacy) : '';
   const out: Scored[] = [];
   aiStats.candidates += cands.length;
   for (const c of cands) {
-    const r = scoreCommand(state, actor, c.cmd, helpers, role);
+    const r = scoreCommand(state, actor, c.cmd, helpers, role, undefined, diff);
     if (!Number.isFinite(r.score)) continue;
     let score = r.score;
     if (legacyKey && JSON.stringify(c.cmd) === legacyKey) { score += C.eskiOncelik; r.parts.eski = C.eskiOncelik; }

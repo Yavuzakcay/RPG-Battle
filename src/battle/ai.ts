@@ -2166,7 +2166,7 @@ export function scoredCandidates(state: BattleState, actor: Combatant) {
   const h = aiHelpers(state, actor);
   const cands = candidatesFor(state, actor, h).slice(0, MAX_CANDIDATES);
   if (legacy && !cands.some((c) => JSON.stringify(c.cmd) === JSON.stringify(legacy))) cands.push({ cmd: legacy, desc: LEGACY });
-  return { legacy, helpers: h, scored: evaluateCandidates(state, actor, cands, h, roleOf(actor, spellKinds(actor)), legacy) };
+  return { legacy, helpers: h, scored: evaluateCandidates(state, actor, cands, h, roleOf(actor, spellKinds(actor)), legacy, difficultyOf(state, actor.side)) };
 }
 
 /** Usta: komut uygulandıktan sonra aynı yaratığın en iyi sonraki komutunun puanı (ileri bakış yok). */
@@ -2190,7 +2190,7 @@ export function bonusScored(state: BattleState, actor: Combatant) {
   const cmds = [...imzaActionCands(state, actor, h, 'bonus'), ...bonusPoolCands(state, actor, h)];
   if (!cmds.length) return { legacy, scored: [] };
   const desc: Candidate['desc'] = { id: 'g3:bonus', kind: 'support', note: 'bonus/serbest havuz', gen: () => [] };
-  return { legacy, scored: evaluateCandidates(state, actor, cmds.map((cmd) => ({ cmd, desc })), h, roleOf(actor, spellKinds(actor)), legacy) };
+  return { legacy, scored: evaluateCandidates(state, actor, cmds.map((cmd) => ({ cmd, desc })), h, roleOf(actor, spellKinds(actor)), legacy, difficultyOf(state, actor.side)) };
 }
 function bonusEvaluated(state: BattleState, actor: Combatant): Command | null {
   const { legacy, scored } = bonusScored(state, actor);

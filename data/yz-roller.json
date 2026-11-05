@@ -51,9 +51,9 @@
     "eski:yetenek": 2, "eski:alanSaldiri": 3, "eski:coklu": 1
   },
   "zorluk": {
-    "_aciklama": "kolay: en iyi aday enIyi olasılıkla, yoksa ilk aday sayısı içinden biri (deterministik karma); usta: ilk N adayda bir adım ileri bakış (aynı yaratığın sonraki en iyi komutu × ileriAgirlik).",
+    "_aciklama": "kolay: en iyi aday enIyi olasılıkla, yoksa ilk aday sayısı içinden biri (deterministik karma); usta: ilk N adayda bir adım ileri bakış (aynı yaratığın sonraki en iyi komutu × ileriAgirlik); Y2 G3 ek terimleri: kesin (öldürme olasılığı kesinEsik üstündeyse öldürme değerine ek oran), odak (yaralı hedefe hasar × eksik can oranı), tehdit (en tehlikeliye göre oran − 0,5, hasar çarpanı), zamanlama (slot/kaynak düşük tehditli hedefe harcanırsa ek maliyet oranı).",
     "kolay": { "enIyi": 0.6, "aday": 4 },
     "normal": {},
-    "usta": { "ileriBakis": 3, "ileriAgirlik": 0.5 }
+    "usta": { "ileriBakis": 3, "ileriAgirlik": 0.5, "kesin": 0.6, "kesinEsik": 0.4, "odak": 0.5, "tehdit": 0.3, "zamanlama": 0.5 }
   }
 }
