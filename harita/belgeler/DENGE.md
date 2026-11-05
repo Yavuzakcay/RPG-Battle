@@ -2,6 +2,17 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K52: hizalanma ↔ Moral bağı duman testi (2026-11-05)
+
+Standart parti, 3. seviye, 30 tohum, ev kuralı `moralSistemi` açık (Moral tam modu). "Kapalı": `hizalanma`/`hizalanmaMoral` kapalı; "Açık": ikisi de açık. Bağ savaş motoruna girmediği için sonuçlar birebir aynı olmalı; aynı (test `src/sim/k52moral.test.ts`).
+
+| Senaryo | Kapalı (galibiyet / tur / ölü) | Açık (galibiyet / tur / ölü) |
+|---|---|---|
+| col | %77 / 8.9 / 0.27 | %77 / 8.9 / 0.27 |
+| orman | %90 / 5.7 / 0.03 | %90 / 5.7 / 0.03 |
+| magara | %83 / 7.3 / 0.37 | %83 / 7.3 / 0.37 |
+| kale | %80 / 7.5 / 0.37 | %80 / 7.5 / 0.37 |
+
 ## Kuyruk K50: imza alt sınıflar (2026-11-05)
 
 `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`: k18-<sınıf> partisinde imza alt sınıf ↔ sınıfın SRD alt sınıfı, kural sürümü 23, ev kuralı açık. Ölçüt: SRD karşılığına göre −5 puandan fazla düşüş "aralık dışı". 2. ölçüm: yapay zekâ, büyü slotu dururken eylem harcayan imza özelliğini büyünün yerine kullanmıyor (`imzaAi`).
