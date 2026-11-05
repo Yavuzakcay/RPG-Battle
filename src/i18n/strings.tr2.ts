@@ -358,6 +358,26 @@ export const TR_EXTRA = {
     unavailable: (reason: string) => ` Şu an kullanılamaz: ${reason}`, unavailablePlain: ' Şu an kullanılamaz.',
   },
   view: {
+    /** Kuyruk K51: Hizalanma (ev kuralı; tembel parça). */
+    hizalanma: {
+      title: 'Hizalanma', step: 'Hizalanma', law: 'Düzen', good: 'İyilik', start: 'Başlangıç', now: 'Şimdi',
+      cols: ['Düzenli', 'Tarafsız', 'Kaotik'], rows: ['İyi', 'Tarafsız', 'Kötü'],
+      intro: 'Sınıfın, geçmişin, alt sınıfın ve kültürün başlangıç hizalanmanı belirler (en çok ±25). İbre otomatik yerleşti.',
+      sources: { sinif: 'Sınıf', gecmis: 'Geçmiş', altSinif: 'Alt sınıf', irk: 'Irk/kültür' } as Record<string, string>,
+      total: 'Toplam (kırpılmış)', accept: 'Kabul et', reject: 'Kabul etme',
+      options: { orta: 'Orta nokta (0/0)', 'satir-orta': 'Satırın orta çizgisi (Düzen 0)', 'sutun-orta': 'Sütunun orta çizgisi (İyilik 0)' } as Record<string, string>,
+      chosen: (k: string) => `Seçim: ${k}`,
+      kinds: { otomatik: 'otomatik', orta: 'orta nokta', 'satir-orta': 'satır orta çizgisi', 'sutun-orta': 'sütun orta çizgisi', gm: 'Game Master' } as Record<string, string>,
+      autoOnly: 'Game Master ayarı: başlangıç yalnız otomatik.',
+      locked: 'Başlangıç belirlendi; yalnız Game Master yeniden belirleyebilir.',
+      updated: (d: number, g: number) => `Alt sınıf değişti: başlangıç yeni toplama güncellenecek (${d}/${g}).`,
+      suggested: (d: number, g: number) => `Önerilen şu olurdu: ${d}/${g} (başlangıcın değişmez).`,
+      panel: 'Hizalanma', pick: 'Karakter', quick: 'Hazır olaylar', free: 'Serbest giriş', reason: 'Gerekçe', amount: 'Miktar', add: 'Ekle',
+      log: 'Günlük', undo: 'Geri al', redo: 'Geri getir', half: 'yarı etki', hide: 'Kartta gizli', redetermine: 'Yeniden belirle',
+      redetermineReason: 'Game Master yeniden belirledi', empty: 'Henüz kayıt yok.',
+      flag: 'Hizalanma (ev kuralı)', raceFlag: 'Irk/kültür katkısı', autoFlag: 'Başlangıç yalnız otomatik (kabul etmeme kapalı)',
+      note: 'Savaş hesabına girmez. Kapalıyken hiçbir yerde görünmez.',
+    },
     /** Kuyruk K48: Moral (ev kuralı; tembel parça). */
     moral: {
       label: (m: number, max: number) => `Moral ${m}/${max}`,

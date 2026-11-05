@@ -3,7 +3,7 @@
  * klasör seçiciyle içe aktarılır; liste, tek tek açma/kapama ve silme. Hata mesajları TR/EN, bozuk dosya uygulamayı
  * bozmaz. Kod çalıştırılmaz: yalnızca JSON veri.
  */
-import { imzaEnabledList, journeyEnabled, karadulEnabled, karadulWomenOnly, setImzaEnabled, setJourneyEnabled, setKaradulEnabled, setKaradulWomenOnly, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
+import { alignmentAutoOnly, alignmentEnabled, alignmentRace, setAlignmentAutoOnly, setAlignmentEnabled, setAlignmentRace, imzaEnabledList, journeyEnabled, karadulEnabled, karadulWomenOnly, setImzaEnabled, setJourneyEnabled, setKaradulEnabled, setKaradulWomenOnly, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
 import { HOUSE_RULES, HOUSE_RULE_IDS } from '../battle/houseRules';
 import { useState } from 'react';
 import { getLang, t } from '../i18n';
@@ -39,6 +39,7 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [karadul, setKaradul] = useState<boolean>(karadulEnabled);
   const [karadulWomen, setKaradulWomen] = useState<boolean>(karadulWomenOnly);
   const [imza, setImza] = useState<string[]>(imzaEnabledList);
+  const [align, setAlign] = useState({ on: alignmentEnabled(), race: alignmentRace(), auto: alignmentAutoOnly() });
   const MT = t().mapTint;
   const CV = t().cityView;
   const [tint, setTint] = useState<boolean>(storedMapTint);
@@ -72,6 +73,13 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
               <label key={id}><input type="checkbox" checked={imza.includes(id)} onChange={(e) => { setImzaEnabled(id, e.target.checked); setImza(imzaEnabledList()); }} /> {getLang() === 'en' ? HOUSE_RULES[id]?.en : HOUSE_RULES[id]?.tr}</label>
             ))}
             <p className="mute">{t().journey.imzaNote}</p>
+          </fieldset>
+          {/* Kuyruk K51: hizalanma ev kuralı (varsayılan kapalı) ve iki Game Master ayarı. */}
+          <fieldset className="align-flags"><legend>{t().view.hizalanma.flag}</legend>
+            <label><input type="checkbox" checked={align.on} onChange={(e) => { setAlignmentEnabled(e.target.checked); setAlign({ ...align, on: e.target.checked }); }} /> {t().view.hizalanma.flag}</label>
+            <label><input type="checkbox" checked={align.race} disabled={!align.on} onChange={(e) => { setAlignmentRace(e.target.checked); setAlign({ ...align, race: e.target.checked }); }} /> {t().view.hizalanma.raceFlag}</label>
+            <label><input type="checkbox" checked={align.auto} disabled={!align.on} onChange={(e) => { setAlignmentAutoOnly(e.target.checked); setAlign({ ...align, auto: e.target.checked }); }} /> {t().view.hizalanma.autoFlag}</label>
+            <p className="mute">{t().view.hizalanma.note}</p>
           </fieldset>
           <p className="mute">{t().journey.flagNote}</p>
         </section>

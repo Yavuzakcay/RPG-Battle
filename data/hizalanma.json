@@ -1,0 +1,40 @@
+{
+ "not": "K51: hizalanma parametreleri (eksen aralığı, başlangıç kırpması, etiket eşiği, histerezis, serbest giriş sınırı) ve 9 etiket.",
+ "eksen": 50,
+ "baslangicKirp": 25,
+ "esik": 17,
+ "histerezis": 2,
+ "serbestEnCok": 10,
+ "duzen": {
+  "pos": {
+   "tr": "Düzenli",
+   "en": "Lawful"
+  },
+  "neu": {
+   "tr": "Tarafsız",
+   "en": "Neutral"
+  },
+  "neg": {
+   "tr": "Kaotik",
+   "en": "Chaotic"
+  }
+ },
+ "iyilik": {
+  "pos": {
+   "tr": "İyi",
+   "en": "Good"
+  },
+  "neu": {
+   "tr": "Tarafsız",
+   "en": "Neutral"
+  },
+  "neg": {
+   "tr": "Kötü",
+   "en": "Evil"
+  }
+ },
+ "gercekTarafsiz": {
+  "tr": "Gerçek Tarafsız",
+  "en": "True Neutral"
+ }
+}

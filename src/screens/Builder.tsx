@@ -24,7 +24,9 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import karadulData from '../../data/karadul.json';
 import { UPPER_LEVEL_CAP } from '../app/limits';
-import { imzaEnabled, karadulEnabled, karadulWomenOnly } from '../app/features';
+import { alignmentAutoOnly, alignmentEnabled, alignmentRace, imzaEnabled, karadulEnabled, karadulWomenOnly } from '../app/features';
+import { AlignmentGrid } from '../ui/AlignmentGrid';
+import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startContributions, startValue, type Alignment, type StartKind } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
 import { findSubclass, houseSubclassVisible, subclassLabel, subclassMissing } from '../rules/subclasses';
@@ -90,7 +92,9 @@ export function wizardSteps(sheet: CharacterSheet): BuilderStep[] {
   const caster = getClass(sheet.classId).casting !== null || alternativeCantrips(sheet).options.length > 0
     || spellOptions(sheet.classId, sheet.level).length > 0;
   const all: BuilderStep[] = ['character', 'scores', 'skills', 'progress', 'equipment', 'spells', 'summary'];
-  return caster ? all : all.filter((x) => x !== 'spells');
+  const list = caster ? all : all.filter((x) => x !== 'spells');
+  // Kuyruk K51: hizalanma ev kuralı açıkken son adım.
+  return alignmentEnabled() ? [...list, 'alignment'] : list;
 }
 
 /**
@@ -141,6 +145,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const steps = wizardSteps(s);
   const [stepId, setStepId] = useState<BuilderStep>(props.step ?? 'character');
   const current = steps.includes(stepId) ? stepId : 'summary';
+  const isLast = steps.indexOf(current) === steps.length - 1;
   const index = steps.indexOf(current);
   const [visited, setVisited] = useState<Set<BuilderStep>>(() => new Set([props.step ?? 'character']));
   const [missingOpen, setMissingOpen] = useState(false);
@@ -198,6 +203,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             {current === 'progress' && <ProgressStep c={c} setC={setC} set={set} />}
             {current === 'equipment' && <EquipmentStep sheet={s} set={set} carryRule={carryRule} />}
             {current === 'spells' && <SpellsStep sheet={s} set={set} />}
+            {current === 'alignment' && <AlignmentStep c={c} setC={setC} initial={props.initial} />}
             </StepBoundary>
             {current === 'summary' && (
               <div className="wiz-summary-step">
@@ -211,9 +217,9 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             )}
             <div className="wiz-nav">
               <button className="ghost" disabled={index === 0} onClick={() => go(steps[index - 1] as BuilderStep)}>{W.back}</button>
-              {current !== 'summary'
+              {!isLast
                 ? <button className="cta" onClick={() => go(steps[index + 1] as BuilderStep)}>{W.next}</button>
-                : <button className="cta" disabled={problems.length > 0} onClick={() => props.onSave(savableCharacter(final))}>{W.save}</button>}
+                : <button className="cta" disabled={problems.length > 0} onClick={() => props.onSave(withAlignment(savableCharacter(final), props.initial))}>{W.save}</button>}
             </div>
           </section>
           <aside className="panel builder-summary wiz-side" aria-label={T.summary}>
@@ -233,6 +239,66 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
           {missingOpen && <div className="wiz-mobile-missing">{missingList}</div>}
         </footer>
       </main>
+    </div>
+  );
+}
+
+
+/**
+ * Kuyruk K51: kayıtta hizalanma (ev kuralı açıkken). Yeni karakter: seçilen başlangıç (seçilmediyse otomatik). Kayıtlı
+ * karakter: başlangıcı otomatik kabul etmişse yeni toplama güncellenir (alt sınıf değişince); orta nokta/çizgi
+ * seçtiyse değişmez. Kural kapalıyken alan olduğu gibi kalır.
+ */
+function withAlignment(ch: SavedCharacter, initial: SavedCharacter): SavedCharacter {
+  if (!alignmentEnabled()) return ch;
+  const computed = startValue(startContributions(ch.sheet, alignmentRace()));
+  if (initial.hizalanma) return { ...ch, hizalanma: onSubclassChange(initial.hizalanma, computed, 'oluşturucu', new Date().toISOString()).alignment };
+  return { ...ch, hizalanma: ch.hizalanma ?? newAlignment(computed, 'otomatik') };
+}
+
+/** Kuyruk K51: hizalanma son adımı (katkı dökümü, ızgara, Kabul et / Kabul etme ve üç geçiş seçeneği). */
+function AlignmentStep(props: { c: SavedCharacter; setC: (f: (x: SavedCharacter) => SavedCharacter) => void; initial: SavedCharacter }) {
+  const H = t().view.hizalanma;
+  const lang = getLang();
+  const list = startContributions(props.c.sheet, alignmentRace());
+  const computed = startValue(list);
+  const old = props.initial.hizalanma;
+  const [rejecting, setRejecting] = useState(false);
+  const chosen: StartKind = props.c.hizalanma?.baslangicTuru ?? 'otomatik';
+  const choose = (k: StartKind) => props.setC((x) => ({ ...x, hizalanma: newAlignment(computed, k) }));
+  const opts = alignmentAutoOnly() ? [] : rejectOptions(computed);
+  const sorted = [...list.filter((x) => x.kaynak !== 'irk'), ...list.filter((x) => x.kaynak === 'irk')];
+  const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
+  const shown: Alignment = old ? onSubclassChange(old, computed, '', '').alignment : props.c.hizalanma ?? newAlignment(computed, 'otomatik');
+  return (
+    <div className="align-step">
+      <p className="mute">{H.intro}</p>
+      <AlignmentGrid value={shown} start={old ? old.baslangic : applyStartKind(chosen, computed)} label={shown} bars />
+      <table className="align-contrib"><tbody>
+        {sorted.map((x) => (
+          <tr key={`${x.kaynak}:${x.id}`}><td>{H.sources[x.kaynak]}: {x.gerekce[lang]}</td><td className="num">{H.law} {sign(x.duzen)} · {H.good} {sign(x.iyilik)}</td></tr>
+        ))}
+        <tr><td><b>{H.total}</b></td><td className="num"><b>{H.law} {sign(computed.duzen)} · {H.good} {sign(computed.iyilik)}</b></td></tr>
+      </tbody></table>
+      {old ? (
+        <p className="mute">{H.locked} {old.baslangicTuru === 'otomatik'
+          ? (old.baslangic.duzen !== computed.duzen || old.baslangic.iyilik !== computed.iyilik ? H.updated(computed.duzen, computed.iyilik) : '')
+          : H.suggested(computed.duzen, computed.iyilik)}</p>
+      ) : (
+        <>
+          <div className="align-actions">
+            <button type="button" className={chosen === 'otomatik' ? 'on' : ''} onClick={() => { setRejecting(false); choose('otomatik'); }}>{H.accept}</button>
+            {opts.length > 0 && <button type="button" className={chosen !== 'otomatik' ? 'on' : ''} onClick={() => setRejecting(true)}>{H.reject}</button>}
+          </div>
+          {(rejecting || chosen !== 'otomatik') && opts.length > 0 && (
+            <div className="align-actions">
+              {opts.map((k) => <button key={k} type="button" className={chosen === k ? 'on' : ''} onClick={() => choose(k)}>{H.options[k]}</button>)}
+            </div>
+          )}
+          {alignmentAutoOnly() && <p className="mute">{H.autoOnly}</p>}
+          <p className="mute">{H.chosen(H.kinds[chosen] ?? chosen)}</p>
+        </>
+      )}
     </div>
   );
 }

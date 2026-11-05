@@ -22,6 +22,7 @@
     "imza_sair": {"default": false, "karakter": true, "tr": "İmza alt sınıf: Şair Koleji (Bard, ev kuralı; data/imza.json, kural sürümü 23)", "en": "Signature subclass: College of Poets (Bard, house rule; rules version 23)"},
     "imza_bilge": {"default": false, "karakter": true, "tr": "İmza alt sınıf: Yaşlı Bilge Disiplini (Monk, ev kuralı; data/imza.json, kural sürümü 23)", "en": "Signature subclass: Elder Sage Discipline (Monk, house rule; rules version 23)"},
     "imza_hizir": {"default": false, "karakter": true, "tr": "İmza alt sınıf: Hızır Yemini (Paladin, ev kuralı; data/imza.json, kural sürümü 23)", "en": "Signature subclass: Oath of Hızır (Paladin, house rule; rules version 23)"},
-    "imza_harita": {"default": false, "karakter": true, "tr": "İmza alt sınıf: Harita Öğretisi (Wizard, ev kuralı; data/imza.json, kural sürümü 23)", "en": "Signature subclass: Doctrine of the Map (Wizard, house rule; rules version 23)"}
+    "imza_harita": {"default": false, "karakter": true, "tr": "İmza alt sınıf: Harita Öğretisi (Wizard, ev kuralı; data/imza.json, kural sürümü 23)", "en": "Signature subclass: Doctrine of the Map (Wizard, house rule; rules version 23)"},
+    "hizalanma": {"default": false, "karakter": true, "tr": "Hizalanma (Düzen/İyilik eksenleri, Game Master paneli ve günlük; savaş hesabına girmez)", "en": "Alignment (Law/Good axes, Game Master panel and log; no combat effect)"}
   }
 }

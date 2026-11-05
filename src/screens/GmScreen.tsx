@@ -7,7 +7,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
 import type { DragonWakeMode } from '../battle/types';
 import { isWideMap, maps, pickerVisible, variantLabel } from '../map/maps';
-import { characterHouseRules, upperLevelsEnabled } from '../app/features';
+import { alignmentEnabled, characterHouseRules, upperLevelsEnabled } from '../app/features';
+import { AlignmentPanel } from '../ui/gm/AlignmentPanel';
 import REGIONS from '../../harita/_ortak/harita-bolgeleri.json';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
@@ -248,6 +249,10 @@ export function GmScreen(props: {
                 </label>
               ))}
             </details>
+          )}
+          {/* Kuyruk K51: hizalanma paneli (ev kuralı açıkken). */}
+          {props.onUpdateCharacters && alignmentEnabled() && props.characters.length > 0 && (
+            <AlignmentPanel characters={props.characters} onUpdate={(list) => props.onUpdateCharacters?.(list)} />
           )}
           {tired.length > 0 && props.onUpdateCharacters && (
             <div className="gm-row">

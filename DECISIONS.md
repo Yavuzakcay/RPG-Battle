@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K51: hizalanma (ev kuralı `hizalanma`, varsayılan kapalı)
+
+- **Kaynak eksik:** görevde adı geçen `docs/hizalanma-sistemi-taslak.md` depoda ve hiçbir dalda yok. Görev metnindeki kurallar (eksen −50…+50, ±25 başlangıç kırpması, ±17 eşik, 2 puan histerezis, üç geçiş seçeneği, azalan getiri 3. kez yarı) aynen uygulandı; tablo değerleri benim varsayılanlarım (`data/hizalanma-baslangic.json`, her satırda gerekçe). Taslak gelince yalnızca JSON değişir.
+- **Doldurulan tablo kalemleri:** 12 sınıf, 12 geçmiş (4 SRD + 8 özgün), 13 SRD/Karadul alt sınıfı, 11 imza alt sınıfı, 10 ırk; 14 hazır olay (`data/hizalanma-olaylari.json`). Tabloda olmayan kalem 0 (dış paket alt sınıfları).
+- **Savaşa girmez:** kural sürümüne dokunulmadı; savaş motoru alanı okumaz. Ev kuralı karakter kuralları listesinde (`characterHouseRules`), Ayarlar'da üç anahtar: kural (`hizalanma`), ırk katkısı (`hizalanmaIrk`, varsayılan açık), başlangıç yalnız otomatik (`hizalanmaYalnizOtomatik`).
+- **Kayıt:** karakterde isteğe bağlı `hizalanma` ve `surum`; karakter kayıt sürümü `CHARACTER_SAVE_VERSION = 2` (anahtar aynı). Alan yoksa 0/0 Gerçek Tarafsız, kural kapalıyken hiç gösterilmez; savaş kaydı sürümü (22) değişmedi.
+- **Oluşturucu:** hizalanma son adım (kural açıkken), kaydet düğmesi orada. Toplam ±25'e kırpılır; Gerçek Tarafsız çıkarsa "Kabul etme" yok; orta çizgide olan seçenek gizli. Düzenlemede: başlangıç "otomatik" ise alt sınıf/sınıf/geçmiş değişince yeni toplama güncellenir (günlüğe `altSinif`), orta seçenekliyse değişmez, "önerilen şu olurdu" gösterilir. Sonradan değiştirmek yalnızca Game Master'ın "Yeniden belirle"si (günlüğe yazılır).
+- **Değer modeli:** değer = başlangıç + geri alınmamış günlük kayıtları (geri al/geri getir yalnız toplamı yeniden hesaplar). Azalan getiri yalnız hazır düğmelerde, art arda aynı olay 3. kez ve sonrası: etki yarıya, yukarı yuvarlanır (|x| = 1 → 1). Oturum = günün tarihi (Serüven bağı yok; Serüven kilitli).
+- **Kart:** küçük ⚖ etiketi (tembel parça, ana parça ≈439 kB); dokununca ızgara. Game Master "Kartta gizli" ile gizler.
+
 ## 2026-11-05 — Kuyruk K50: imza alt sınıflar (ev kuralı; kural sürümü 23)
 
 - **Dal:** kullanıcı kararıyla `wip/k48` üstünde (main birleştirildi); görev belgesindeki `wip/k50` açılmadı.

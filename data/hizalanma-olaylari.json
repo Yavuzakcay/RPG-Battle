@@ -1,0 +1,135 @@
+{
+ "not": "K51: Game Master hazır eylem düğmeleri ve eksen puanları (Game Master burada değiştirir). Taslaktaki liste depoda yok: K51 varsayılanı (DECISIONS.md). Aynı olay art arda 3. kez yarı etki (`azalanGetiri`).",
+ "azalanGetiri": {
+  "tekrar": 3,
+  "carpan": 0.5
+ },
+ "olaylar": [
+  {
+   "id": "yardim",
+   "ad": {
+    "tr": "Masuma yardım etti",
+    "en": "Helped an innocent"
+   },
+   "duzen": 0,
+   "iyilik": 3
+  },
+  {
+   "id": "merhamet",
+   "ad": {
+    "tr": "Merhamet gösterdi",
+    "en": "Showed mercy"
+   },
+   "duzen": 0,
+   "iyilik": 2
+  },
+  {
+   "id": "fedakarlik",
+   "ad": {
+    "tr": "Kendini feda etti",
+    "en": "Sacrificed for others"
+   },
+   "duzen": 0,
+   "iyilik": 5
+  },
+  {
+   "id": "bencillik",
+   "ad": {
+    "tr": "Bencil davrandı",
+    "en": "Acted selfishly"
+   },
+   "duzen": 0,
+   "iyilik": -2
+  },
+  {
+   "id": "zulum",
+   "ad": {
+    "tr": "Zulmetti",
+    "en": "Was cruel"
+   },
+   "duzen": 0,
+   "iyilik": -4
+  },
+  {
+   "id": "masum-oldurdu",
+   "ad": {
+    "tr": "Masum öldürdü",
+    "en": "Killed an innocent"
+   },
+   "duzen": -2,
+   "iyilik": -8
+  },
+  {
+   "id": "soz-tuttu",
+   "ad": {
+    "tr": "Sözünü tuttu",
+    "en": "Kept their word"
+   },
+   "duzen": 3,
+   "iyilik": 0
+  },
+  {
+   "id": "soz-bozdu",
+   "ad": {
+    "tr": "Sözünü bozdu",
+    "en": "Broke their word"
+   },
+   "duzen": -3,
+   "iyilik": 0
+  },
+  {
+   "id": "yasaya-uydu",
+   "ad": {
+    "tr": "Yasaya uydu",
+    "en": "Obeyed the law"
+   },
+   "duzen": 2,
+   "iyilik": 0
+  },
+  {
+   "id": "yasa-cigner",
+   "ad": {
+    "tr": "Yasayı çiğnedi",
+    "en": "Broke the law"
+   },
+   "duzen": -3,
+   "iyilik": 0
+  },
+  {
+   "id": "isyan",
+   "ad": {
+    "tr": "Otoriteye başkaldırdı",
+    "en": "Defied authority"
+   },
+   "duzen": -4,
+   "iyilik": 0
+  },
+  {
+   "id": "hirsizlik",
+   "ad": {
+    "tr": "Çaldı",
+    "en": "Stole"
+   },
+   "duzen": -2,
+   "iyilik": -1
+  },
+  {
+   "id": "ihanet",
+   "ad": {
+    "tr": "Dostuna ihanet etti",
+    "en": "Betrayed an ally"
+   },
+   "duzen": -4,
+   "iyilik": -3
+  },
+  {
+   "id": "adalet",
+   "ad": {
+    "tr": "Adil yargıladı",
+    "en": "Judged fairly"
+   },
+   "duzen": 2,
+   "iyilik": 2
+  }
+ ]
+}

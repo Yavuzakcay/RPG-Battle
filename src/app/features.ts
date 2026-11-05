@@ -53,5 +53,21 @@ export function setImzaEnabled(rule: string, on: boolean): void {
 }
 /** Karakter ev kuralı varsayılanları (Game Master kurulumu ve yeni savaş): Karadul + açık imza kuralları. */
 export const characterHouseRules = (): Record<string, boolean> => ({
-  karadulCemberi: karadulEnabled(), ...Object.fromEntries(imzaEnabledList().map((r) => [r, true])),
+  karadulCemberi: karadulEnabled(), ...Object.fromEntries(imzaEnabledList().map((r) => [r, true])), ...(read().hizalanma === true ? { hizalanma: true } : {}),
 });
+
+/** Kuyruk K51: hizalanma ev kuralı (Game Master; varsayılan kapalı; kapalıyken hiçbir yerde görünmez). */
+export const alignmentEnabled = (): boolean => read().hizalanma === true;
+export function setAlignmentEnabled(on: boolean): void {
+  try { localStorage.setItem(KEY, JSON.stringify({ ...read(), hizalanma: on })); } catch { /* depolama yok */ }
+}
+/** Kuyruk K51: ırk katkısı başlangıç hesabında (`hizalanmaIrk`, varsayılan açık). */
+export const alignmentRace = (): boolean => (read() as Record<string, unknown>).hizalanmaIrk !== false;
+export function setAlignmentRace(on: boolean): void {
+  try { localStorage.setItem(KEY, JSON.stringify({ ...read(), hizalanmaIrk: on })); } catch { /* depolama yok */ }
+}
+/** Kuyruk K51: başlangıç yalnız otomatik (kabul etmeme kapalı; Game Master). */
+export const alignmentAutoOnly = (): boolean => (read() as Record<string, unknown>).hizalanmaYalnizOtomatik === true;
+export function setAlignmentAutoOnly(on: boolean): void {
+  try { localStorage.setItem(KEY, JSON.stringify({ ...read(), hizalanmaYalnizOtomatik: on })); } catch { /* depolama yok */ }
+}
