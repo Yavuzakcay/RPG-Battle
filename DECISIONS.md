@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Y2: Y1 regresyon düzeltmesi (yapay zekâ davranışı, başarım, Usta)
+
+- **Kapsam:** yeni mekanik yok, oyun sayıları (data/ hasar, HP, DC) değişmedi, kural sürümü aynı (YZ kararı olay değil). Değişen: yapay zekâ karar mantığı ve `data/yz-roller.json` ağırlıkları, iki motor hatası. Ayrıntı ve sayılar: `harita/belgeler/YZ-DENETIM.md` "Y2 bulguları", `harita/belgeler/DENGE.md` "Kuyruk Y2".
+- **Motor hataları (davranış düzeltmesi, kural sürümü artmadı):** (1) büyü saldırısı 0 HP'de yenilenmeyi bekleyen hedefe (Trol) atılır (`spells.ts`; önceden yalnız eylem harcanıyordu, Kuyruk 41b "ateş/asit yenilenmeyi keser" kuralı büyüyle hiç çalışmıyordu). (2) Çağrılan yaratığın kimliği (`monsterAbilities.ts` `summonEvents`) aynı turda çakışırsa sonek alır (Loathsome Limbs iki kez → sırada iki kez aynı kimlik → tur kilitleniyordu). Eski kayıtlar olaydan oynatıldığı için etkilenmez; kural sürümü ayrımı gerekmedi (önceki davranış hata).
+- **Hareket tutarlılığı:** hareket yeri taramaları eski `bestNow` ile yapılır (her altıgende kuru çalıştırma pahalı); karşılaştırmanın iki ucu artık aynı ölçüyle: kötü koşulda yer değiştirme yalnız değerlendiricinin seçimi de eski kuralın seçimi de kötü koşulluyken; "%25 daha iyi yer" ve Sneak Attack yerinde buradaki değer eski kuralla da ölçülür.
+- **Kendini koruma:** `korunma` can oranına bağlı (`korunmaEsik` 0,5 üstünde 0, 0 canda `korunmaTavan` 2); bütün zorluklarda aynı (Kolay'a ayrı hafifletme gerekmedi).
+- **Seçilmeyenler:** "N tur hasar yok → saldırganlık" sigortası ve "karanlıkta son bilinen konuma ilerleme": yapay zekâ durumsuz (geçmiş tur bilgisi durumda yok; modül belleği saf olmaz); nedenler giderilince hedefler tuttu. Açık madde.
+- **Başarım:** önbellekler `WeakMap<BattleState, …>` (durum değişmez → aynı girdi aynı sonuç; karar değişmez, test `y2.test.ts` "soğuk kopya ile aynı karar"); budama yerine zarsız senaryo ikizi (kesin eşdeğer). Bütçe bu makinede tutuyor; telefon (×4) tahmini tek kararda p95 ≈ 0,4 sn: arayüz düşman turlarını tek tek oynatır (`autoplayEnemyTurns(…, maxTurns)`, `MapBattle` zamanlayıcı; zar/tepki beklerken durur, zar iptali zinciri bitirir). Tek kararın içini bölmek (eşzamansız değerlendirici) açık madde.
+- **Usta:** ek terimler (kesin öldürme, odak, tehdit sırası, slot zamanlaması) tek denemeyle ölçüldü: Normal'e göre ortalama −2 puan (hedef +5). Usta **deneysel** kalır: `data/yz-roller.json` `zorluk.usta.deneysel` + TR/EN açıklama ("Normal'den belirgin güçlü değil"), `difficultyNote` (K58 zorluk arayüzü bu etiketi göstermeli; şu an zorluk arayüzü yok). Terimler kaldırılmadı (Usta'ya özgü; Normal/Kolay etkilenmiyor).
+- **Ölçüm araçları:** `npm run sim:yz-sure -- [savaş] [senaryo] --parti <kimlik> [--yavas K]` (karar süresi, aday/önizleme/kuru çalıştırma sayısı, karar imzası).
+
 ## 2026-11-05 — A1: hata paketi (A0 bulguları)
 
 - **Y1'de yapılmış, atlandı:** yapay zekânın sarf eşyası (iyileştirme iksiri) kullanması (A0 boşluk 6) Y1 G3'te (`behaviors.ts` `itemCands`); A1'de dokunulmadı.

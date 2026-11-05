@@ -106,3 +106,39 @@ Bonus/serbest havuz (`bonusPoolCands`): Zihin Gücü İt/Çek/Yana/Taşı/Nesne,
 | Tepkiler | öneriyle (`askReaction` `suggested`); değerlendirici tepki seçmez |
 | Hareket yeri seçimi | eski hızlı puan (`bestNow(there)`); her altıgen için kuru çalıştırma pahalı |
 | Usta ileri bakış | yalnız aynı yaratığın aynı turdaki sonraki komutu; rakibin yanıtı değil |
+
+## Y2 bulguları (2026-11-05)
+
+Yöntem: Mağara ve Kale, 25 tohum, eski (`YZ_ESKI=1`) ve yeni yapay zekâ aynı tohumlarla; her karar ve komut kaydedildi (geçici teşhis betiği): tur içinde aynı altıgene dönüş, eylem harcamadan tur bitirme, değerlendiricinin en iyi puanı, Trol'ün 0 HP'den kalkışı, beraberlikte ayakta kalanlar. 100 tohum sonuçları DENGE.md "Kuyruk Y2".
+
+### En büyük üç neden (sayılarla)
+
+| # | Neden | Ölçü (25 tohum) | Y1 | Eski | Y2 |
+|---|---|---|---:|---:|---:|
+| 1 | **Tur içi ileri-geri yürüme.** Değerlendiricinin seçtiği komut ile hareket yeri taramasının kullandığı eski `bestNow` farklı hedef seçince: (a) "kötü koşul" (dezavantaj/yoğun siper) yeri değiştirme, değerlendiricinin seçimi kötü ama eski kural yeni yerde iyi buluyor → yürü → orada değerlendirici yine başka (kötü) hedef seçiyor → geri; (b) partinin "%25 daha iyi saldırı yeri" karşılaştırması iki uçta farklı seçicilerle. Hareket boşa gidiyor, eylem çoğu kez yapılmadan tur bitiyor. | aynı tur aynı altıgene dönüş, Mağara | 280 | 17 | 1 |
+| | | aynı ölçü, Kale | 53 | 1 | 0 |
+| | | parti eylemsiz tur bitirme, Mağara | 161 | 124 | 55 |
+| 2 | **Yerdeki Trol'e büyü saldırısı boşa (motor hatası).** `spells.ts` büyü saldırı döngüsü `hp <= 0` hedefte duruyordu; 0 HP'de yenilenmeyi bekleyen Trol'e Fire Bolt hiç atılmıyordu (yalnız eylem harcanıyordu). Eski kural "yerdeki yenilenene ateş" (öncelik 9) her tur aynı boş komutu seçti; Trol her tur kalktı. Eski YZ de etkileniyordu. | yalnız Trol ayakta düşman zaferi | 6 | 1 | 3 |
+| | | 100 tohumda Mağara beraberliği (düzeltmeden önce / sonra) | 14% | 11% → 1% | 12% → 6% |
+| | | örnek: tohum 26 Trol'ün 0 HP'den kalkışı | – | – | 17 → 0 (6. turda zafer) |
+| 3 | **Kendini koruma puanının baskınlığı.** Yer değiştiren her aday için maruziyet farkı tam canda da ×0,2 ağırlıkla cezalanıyordu; sağlıklı yakın dövüşçünün yaklaşması ve hücumu (Trol Charge: −4,5 korunma, toplam −2) eksiye düşüyor, "olumlu aday yok" ile tur yürüyerek geçiyordu. | düşman "en iyi aday ≤ 0" ile eylemsiz bitirme | 20 | – | 0 |
+
+Ayrıca: **Trol uzvu kimlik çakışması** (motor hatası): Loathsome Limbs aynı turda iki kez koparsa iki uzuv aynı kimliği alıyor, sırada iki kez yer alıp tur ilerlemiyordu (2000 adım koruması → beraberlik); 25 tohumda 1 (tohum 3), eski ve yeni YZ'de aynı.
+
+Görüş/karanlık nedeniyle hedefsizlik ("aday yok") iki yapay zekâda da benzer (parti eylemsiz bitirmelerinin büyük kısmı karanlıkta görülen düşman yokken); "son bilinen konuma ilerleme" eklenmedi (hedefler tuttuğu için; açık madde). Turlar arası konum tekrarı (6 turda 2 altıgen) eski ve yenide aynı düzeyde (24–28 / 25 tohum): yeni bir sorun değil.
+
+### Düzeltmeler (genel kural, senaryo kuralı yok)
+
+- Kötü koşul yer değiştirmesi: değerlendiricinin seçimi kötü koşullu olsa da eski kural burada iyi koşullu bir eylem buluyorsa yürünmez (beklenen değer dezavantajı zaten içeriyor); ikisi de kötüyse eskisi gibi daha iyi yere yürür.
+- "Daha iyi saldırı yeri" ve Sneak Attack yeri: buradaki değer eski kuralın seçimiyle de ölçülür (iki uç aynı ölçüyle).
+- Kendini koruma (`korunma`): ağırlık can oranına bağlı, `korunmaEsik` (0,5) üstünde 0, 0 canda `korunmaTavan` (2,0); bütün zorluklarda aynı.
+- Motor: büyü saldırısı yenilenmeyi bekleyen hedefe atılır; çağrılan yaratık kimliği çakışırsa ek sonek.
+- "N tur hasar yok → saldırganlık" sigortası gerekmedi (yapay zekâ durumsuz; neden ortadan kalkınca beraberlik %6'ya indi).
+
+### Başarım (G2)
+
+Önbellekler (durum nesnesi başına, `WeakMap`; durum değişmez olduğundan karar değişmez): `tryCmd` (komut denemesi), `previewCommand` (kuru çalıştırma), `bestNow` (yaratık başına), varsayımsal konum durumu `at` (aynı altıgen aynı nesne: hareket yeri taramaları önbelleği paylaşır). Önizlemede zarsız senaryo ikizi: alt-orta çalıştırma hiç hasar zarı istemediyse üst-orta/en düşük/en yüksek çalıştırılmaz (sonuç aynı). Sayaçlar `aiStats` (yalnız ölçüm). Arayüz: "Düşmanı oynat" düşman turlarını tek tek, aralarında bir çerçeve bırakarak oynatır. Süre tablosu DENGE.md.
+
+### Usta (G3)
+
+Ek terimler (yalnız Usta, `data/yz-roller.json` `zorluk.usta`): öldürme garantisi (`kesin`: ölüm olasılığı 0,4'ün üstündeyse öldürme değerine +%60 × fazlalık), odaklı ateş (`odak`: hasar × eksik can oranı × 0,5), tehdit sırası (`tehdit`: hasar × (tehdit / en büyük tehdit − 0,5) × 0,3), slot zamanlaması (`zamanlama`: düşük tehditli hedefe slot/kaynak +%50 × (1 − oran) maliyet). Ölçüm: Normal'e göre ortalama −2 puan (Kale −7, Orman −6). Olası neden (doğrulanmadı): Usta odak/tehdit terimleri ağır yakın dövüşçüye yığılıyor, kalabalık düşmanda (Kale 17, Orman 14) zayıf ama çok sayıda düşmanı azaltmak daha değerli; ileri bakış rakibin yanıtını görmüyor. Tek deneme yapıldı (kapsam); Usta **deneysel** (`difficultyNote`).

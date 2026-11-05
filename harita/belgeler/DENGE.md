@@ -2,6 +2,51 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk Y2: Y1 regresyon düzeltmesi — yapay zekâ davranışı, süre, Usta (2026-11-05)
+
+Ayar yok (oyun sayıları değişmedi; yalnız YZ ağırlıkları `data/yz-roller.json` ve iki motor hatası). 100 tohum, aynı tohumlar. "Eski" = `YZ_ESKI=1` (Y1 öncesi zincir) **Y2 kodunda** (iki motor hatası düzeltilmiş: Trol uzvu kimliği, yerdeki Trol'e büyü saldırısı); "Y1" = `wip/a1` (`6062fce`) olduğu gibi; "Y2" = `wip/y2` (Normal). Kural sürümü değişmedi.
+
+**SRD partisi** (`npm run sim -- 100 <senaryo> --seviye 5`, standart parti; kazanma / berabere / ort. tur):
+
+| Senaryo | Eski | Y1 | Y2 | Y2 − eski | Y2 − Y1 |
+|---|---|---|---|---:|---:|
+| Düz — haritasız | 94% / 0% / 6.3 | 98% / 0% / 5.5 | 98% / 0% / 5.5 | +4 | 0 |
+| Çöl — Gündüz | 89% / 1% / 6.3 | 90% / 0% / 7.0 | 89% / 0% / 7.0 | 0 | −1 |
+| Orman | 65% / 0% / 5.5 | 73% / 0% / 5.9 | 73% / 0% / 6.0 | **+8** | 0 |
+| Mağara — karanlık | 94% / 1% / 6.1 | 59% / 14% / 9.4 | 89% / 6% / 7.3 | −5 | **+30** |
+| Dungeon — Koridor | 100% / 0% / 5.1 | 98% / 0% / 5.5 | 99% / 0% / 5.3 | −1 | +1 |
+| Kale — Gündüz | 64% / 0% / 6.9 | 62% / 0% / 6.7 | 69% / 0% / 6.6 | +5 | +7 |
+
+**İmza alt sınıflar** (`npm run sim:imza -- 100 --alt <id> --yalniz <id> --seviye 7 --senaryo <senaryo>`, 6 senaryo ortalaması):
+
+| Alt sınıf | Eski | Y1 | Y2 | Y2 − eski | Y1 − eski |
+|---|---:|---:|---:|---:|---:|
+| Dunganga | 68.0% | 73.2% | 75.5% | **+7.5** | +5.2 |
+| Harita Öğretisi | 60.2% | 59.8% | 61.3% | +1.1 | −0.4 |
+
+Senaryo ayrıntısı (eski / Y1 / Y2): Dunganga Çöl 56/73/67, Dungeon 99/100/100, Düz 99/100/100, Kale 58/57/61, Mağara 60/64/72, Orman 36/45/53; Harita Çöl 34/38/33, Dungeon 98/100/99, Düz 94/100/100, Kale 44/41/44, Mağara 58/43/55, Orman 33/37/37.
+
+**Zorluk** (parti `YZ_ZORLUK=usta`, düşman Normal; aynı 6 senaryo, 100 tohum): Usta − Normal = Düz −1, Çöl +1, Orman −6, Mağara 0, Dungeon +1, Kale −7; **ortalama −2,0** (Usta 84,2%, Normal 86,2%). Hedef (+5) tutmadı → Usta "deneysel" (DECISIONS.md).
+
+Notlar:
+- **Hedefler:** Mağara ve Kale eskinin ±8 puanı içinde (−5, +5); Mağara beraberliği %14 → %6 (eşik %6, aşılmadı). Orman kazancı korunuyor (+8; 100 tohumda Y1 de +8, 50 tohumdaki +14 gürültüydü). Dunganga ve Harita'nın eskiye göre kazancı Y1'den büyük (+7.5, +1.1; Y1'de +5.2, −0.4).
+- Mağara'da eski YZ de motor hatasından etkileniyordu: hata düzeltilmeden (Y2 ilk koşusu) eski 79% / berabere 11%, Y2 74% / 12%. Y1 sütunu düzeltilmemiş motorla (Trol'e Fire Bolt boşa gidiyor); Mağara satırlarında Y1 − eski farkının bir kısmı motor hatası.
+- İmza Mağara satırlarının "Y1" değeri de düzeltilmemiş motorla (Harita 43 → Y2 55).
+- Ayrıntılı nedenler: YZ-DENETIM.md "Y2 bulguları".
+
+**Süre** (`npm run sim:yz-sure -- 3 <senaryo> --parti buyucu`; 6 kişilik büyücü partisi, her `chooseCommand`; bu makine, tek süreç; "×4" telefon tahmini):
+
+| Senaryo | Sürüm | Karar | Ort. ms | p50 | p95 | En çok | ×4 ort. | ×4 p95 | Aday/karar | Kuru çalıştırma/karar | tryCmd/karar (önbellek dışı) | Karar imzası |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| Çöl — Gemi Enkazı (6 düşman) | önce (Y1) | 98 | 23.6 | 10.0 | 116.0 | 255.4 | 94.5 | 464.1 | – | – | – | 8e76e115 |
+| Çöl — Gemi Enkazı (6 düşman) | sonra (Y2) | 98 | 20.8 | 9.2 | 97.6 | 204.2 | 83.4 | 390.6 | 7.4 | 13.2 | 231.0 (225.6) | 8e76e115 |
+| Kale — Gündüz (17 düşman) | önce (Y1) | 303 | 26.7 | 10.3 | 119.5 | 211.5 | 106.9 | 477.9 | – | – | – | 4d84c004 |
+| Kale — Gündüz (17 düşman) | sonra (Y2) | 299 | 24.1 | 8.5 | 109.1 | 162.0 | 96.4 | 436.5 | 7.8 | 14.2 | 112.2 (100.8) | e5a3f396 |
+
+- **Bütçe** (ort. ≤ 60 ms, p95 ≤ 200 ms, bu makine): **tutuyor**, önce de tutuyordu; önbellekler ≈ %10 kısalttı. Gemi Enkazı'nda karar imzası aynı (aynı komut dizisi); Kale'de farklı çünkü G1 hareket düzeltmeleri kararı değiştiriyor (önbellek kararı değiştirmez: test `y2.test.ts`).
+- **Telefon (×4):** ortalama 83–96 ms, p95 390–440 ms: tek karar bütçeyi aşar. Arayüzde düşman turları artık tek tek oynatılıyor ve aralarında bir çerçeve bırakılıyor (eskiden bütün düşman turları tek eşzamanlı adımdı); tek kararın içi bölünmedi (açık madde).
+- Zamanın çoğu hareket yeri taramasında (`bestNow` her aday altıgende) ve motorun kendisinde; kuru çalıştırma (önizleme) karar başına ≈ 13–14 çalıştırma.
+
 ## Kuyruk Y1: ortak yapay zekâ değerlendiricisi — regresyon ve zorluk (2026-11-05)
 
 Ayarlama yok (K59). Aynı kod (`wip/y1`), aynı tohumlar (50); "eski" = `YZ_ESKI=1` (Y1 öncesi kural zinciri), "yeni" = değerlendirici (Normal). Kural sürümü değişmedi (28; yapay zekâ kararı olay değil).
