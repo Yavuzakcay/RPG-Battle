@@ -33,6 +33,23 @@ Standart parti, 3. seviye, 30 tohum, ev kuralı `moralSistemi` açık (Moral tam
 | magara | %83 / 7.3 / 0.37 | %83 / 7.3 / 0.37 |
 | kale | %80 / 7.5 / 0.37 | %80 / 7.5 / 0.37 |
 
+## Kuyruk K54b sonrası: Harita, Dunganga, Birlik, İnfazcı (2026-11-05)
+
+Aynı ölçüm (K50): `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`, kural sürümü 27, ev kuralı açık. SRD satırları yeniden ölçüldü, değişmedi. Sayı ayarı yapılmadı (K59). 7. seviyede K54b eklemelerinin bir kısmı yok: Çizili Duvar (10), Kuşbakışı Plan (14), Kâbus (14), Dunganga Çağrısı (18), Ortak Şifa (8), Yıkılmaz Birlik (17), Müdahale (9), Peşini Bırakmayan (13).
+
+| İmza | SRD | K50 (2. ölçüm) | K54b, YZ ipucu kısıtsız | K54b son | Sapma K50 → son | Durum |
+|---|---|---|---|---|---|---|
+| Harita Öğretisi (Wizard) | %57 | %32 | %9 | %28 | −25 → −29 | aralık dışı |
+| Dunganga (Sorcerer) | %73 | %56 | %27 | %40 | −17 → −33 | aralık dışı |
+| Birlik Manastırı (Cleric) | %23 | %16 | %16 | %16 | −7 → −7 | aralık dışı |
+| İnfazcı (Rogue) | %65 | %59 | — | %61 | −6 → −4 | aralıkta |
+
+- "YZ ipucu kısıtsız": ilk K54b yapay zekâsı Ninni/Sepet/Zor zemin/Çizili Duvar'ı büyü slotu dururken de kullanıyordu; güçlü alan büyüsünün yerine geçtiği için oran çöktü. Son ölçüm: 3.+ seviye slot dururken eylem harcayan kontrol/zemin ipuçları yalnız 30 ft (Zor zemin 20 ft) içinde ≥ 3 düşman varken; tek hedefli Sepet ve Çizili Duvar slotlar bitince. Bu bir yapay zekâ kuralıdır, sayı ayarı değildir.
+- **Dunganga** hâlâ K50'nin 2. ölçümünün altında (−16). Olası neden: Ninni/Sepet, Ejderha Büyücülüğü'nün hasar büyülerine göre YZ değerlendirmesinde zayıf (kontrolün değeri hasar gibi ölçülmüyor; Sepet hasarla bozulur ve dostlar sepetteki düşmana vurmaya devam ediyor). YZ'nin sepetteki düşmanı atlaması ve kontrolün değerini ölçmesi K59'a. 7. seviyede Kâbus ve Çağrı yok.
+- **Harita** K50'ye yakın (−4). Kalan fark: Evokasyon'un hazır hasar büyüleri; Harita'nın gücü 10/14. seviyede (Duvar, Kuşbakışı), bu ölçümde yok.
+- **Birlik** değişmedi: Omuz Ver yalnız başarıya çevirecekse çalışıyor (seyrek); Ortak Şifa 8'de. 
+- Önerilen ek ölçüm (K59): aynı dört alt sınıf 11 ve 15. seviyede.
+
 ## Kuyruk K50: imza alt sınıflar (2026-11-05)
 
 `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`: k18-<sınıf> partisinde imza alt sınıf ↔ sınıfın SRD alt sınıfı, kural sürümü 23, ev kuralı açık. Ölçüt: SRD karşılığına göre −5 puandan fazla düşüş "aralık dışı". 2. ölçüm: yapay zekâ, büyü slotu dururken eylem harcayan imza özelliğini büyünün yerine kullanmıyor (`imzaAi`).
