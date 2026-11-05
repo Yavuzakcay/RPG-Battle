@@ -2,6 +2,77 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54 Görev 0: imza alt sınıf denetimi (K50 sonu, K54 öncesi)
+
+Kaynak: `docs/imza-alt-siniflar/` belgeleri × `data/imza.json` (motor: `src/battle/imza.ts`, YZ: `imzaAi`). Durum: **tam** (belgedeki gibi), **kısmi** (yaklaşık; eksik kısım parantezde), **yok** (planlı, motorda yok), **pasif** (beceri/büyü listesi; savaş dışı). YZ: ✓ kullanır, ✗ kullanmaz, — gerekmez.
+
+| Alt sınıf | Özellik (sv) | Durum | YZ | Eksik |
+|---|---|---|---|---|
+| İmparator | Asil Terbiye (3) | pasif | — | |
+| İmparator | Buyruk (3) | kısmi | ✓ | yer değiştirme seçeneği yok |
+| İmparator | Taht Varlığı (7) | kısmi | — | yarıçap 10/20 ft; aura her olayda yenilenir (K53 aura altyapısında değil) |
+| İmparator | Hükümdar Sözü (7) | kısmi | ✓ | dezavantaj yalnız sana (5 ft'teki dostlar hariç) |
+| İmparator | Ferman (10) | yok | ✗ | Action Surge'e bağlı dosta ek eylem |
+| İmparator | Genişleyen Taht (10) | tam | — | (Taht yarıçapı 20 ft veride) |
+| İmparator | Yüce Taht (15) | tam | ✓ | |
+| İmparator | Ölümsüz Taht (15) | kısmi | — | dostlara avantaj yok |
+| İnfazcı | Hüküm (3) | kısmi | ✓ | d8 yerine zar başına +1; hükümlü düşünce ücretsiz yeni hedef yok |
+| İnfazcı | Maskeli Adalet (3) | pasif | — | |
+| İnfazcı | Son Uyarı (9) | tam | ✓ | |
+| İnfazcı | Müdahale (9) | yok | ✗ | hükümlü dosta isabet edince tepki: yarı hız + saldırı |
+| İnfazcı | Peşini Bırakmayan (13) | yok | ✗ | hükümlünün yeri hep bilinir; hareket edince takip |
+| İnfazcı | İnfaz (17) | tam | ✓ (kendiliğinden) | |
+| Çiftçi | hepsi (3/7/11) | tam | ✓ | (Spor Saç "en az bir Mantar" koşulu yok; ürün tek sayaç) |
+| Dunganga | Ninni (3) | kısmi | ✗ | YZ slot varken eylem kullanmıyor; ücretsiz bitince Büyücülük Puanı yok |
+| Dunganga | Sepet (6) | kısmi | ✗ | YZ kullanmıyor; Büyücülük Puanıyla ek kullanım yok |
+| Dunganga | Kâbus (14) | kısmi | — | bağışıklık var; korkan düşmana tur başı 1d10+CHA yok; Ninni 2 kat var |
+| Dunganga | Dunganga Çağrısı (18) | kısmi | ✗ | alan hareket etmez, tek sefer; tur başı kurtulma/hasar yok; ölüm kurtulma dezavantajı yok |
+| Dunganga | Cesaret (3) | tam | — | |
+| Astrolog | Genişletilmiş büyüler (3) | pasif | — | |
+| Astrolog | Yıldız Falı (3) | kısmi | ✓ | avantaj yerine +1d6 / dezavantaj yerine −1d6 |
+| Astrolog | Gök Rehberi (3) | yok | — | Serüven dinlenme Moral'i (Serüven kilitli; bu kuyrukta yok) |
+| Astrolog | Yazgı Değişir (6) | yok | ✗ | dosta isabeti iskaya çeviren tepki |
+| Astrolog | Kuyruklu Yıldız (10) | tam | ✓ | (açık hava şartı var) |
+| Astrolog | Yazgı Mührü (14) | kısmi | ✓ | tur ilk saldırısı kendiliğinden isabet ve dostlara +PB hasar yok (yerine avantaj) |
+| Birlik | Bağ Kurma (3) | tam | ✓ | |
+| Birlik | Omuz Ver (3) | yok | ✗ | başarısız kurtulmaya bağlı dosttan +WIS tepkisi |
+| Birlik | Teselli Nöbeti (3) | tam | ✓ | |
+| Birlik | Birlik Can Havuzu (6) | tam | ✓ | |
+| Birlik | Ortak Şifa (8) | yok | — | bağlı dosta şifada diğerlerine +WIS |
+| Birlik | Yıkılmaz Birlik (17) | yok | — | havuz 0'a düşecekken 2×seviye ile ayakta |
+| Geride Kalan | Yaralı Kalp (3) | kısmi | — | Moral tavanı (Moral altyapısında) |
+| Geride Kalan | Yıpranmışlığın Gücü (3) | kısmi | — | Yıpranma sayacı tutulmaz |
+| Geride Kalan | Öfkeyle Ayakta (3) | yok | — | öfkede Moral 0'da çökmeme |
+| Geride Kalan | Dostunun Yası (6) | yok | ✗ | dost düşünce tepki: öfke + 2×seviye geçici can |
+| Geride Kalan | Alışkın Acı (10) | kısmi | — | ölüm save avantajı var; düşük Moral cezası muafiyeti yok |
+| Geride Kalan | Küllerden Doğan (14) | kısmi | — | 1 HP var; öfkeye girme ve dostlara Moral/geçici can yok |
+| Şair | Mısra (3) | tam | ✓ | |
+| Şair | Kalemin Gücü (3) | pasif | — | |
+| Şair | Gece Şiiri (3) | yok | — | Serüven dinlenme Moral'i (Serüven kilitli) |
+| Şair | Nakarat (6) | yok | ✗ | ikinci hedef yarım etki |
+| Şair | Ölümsüz Dize (14) | yok | ✗ | 0 HP'ye düşen dost 1 HP + seviye kadar geçici can |
+| Şair | Usta Şair (14) | yok | ✗ | kısa dinlenmede bir Mısra zar harcamadan |
+| Yaşlı Bilge | Yaşlı Bilgelik (3) | pasif | — | |
+| Yaşlı Bilge | Zihin Gücü (3) | kısmi | ✓ | yalnız itme; çekme/yana/nesne yok; boyut sınırı yok |
+| Yaşlı Bilge | Sabır (3) | yok | ✗ | iskalayan yakın dövüşe silahsız karşılık |
+| Yaşlı Bilge | Sakin Söz (6) | tam | ✓ | |
+| Yaşlı Bilge | Zihin Gücü genişler (11) | yok | ✗ | 60 ft, serbest taşıma, nesne fırlatma 3d6 |
+| Yaşlı Bilge | Çevik Yaşlı (11) | kısmi | — | +10 ft var; fırsat saldırısı muafiyeti ve Yönlendir yok |
+| Yaşlı Bilge | Son Ders (17) | kısmi | ✗ | alan hareket etmez; tur başı Motivasyon ve fırsat saldırısı dezavantajı yok |
+| Hızır | Yemin büyüleri (3) | pasif | — | |
+| Hızır | Tam Zamanında (3) | yok | ✗ | dost hedef alınınca ışınlanıp saldırıyı üstlenme |
+| Hızır | Muhtaç Sezgisi (3) | yok | — | 0 HP / Çökmüş dostu haritada işaret |
+| Hızır | Dar Gün Aurası (7) | yok | — | yarı canın altındaki dosta ölüm save avantajı + tur başı CHA geçici can |
+| Hızır | Yetişen Mucize (15) | yok | ✗ | ölümcül hasarda ışınlanıp 1 HP'de tutma |
+| Hızır | Yetişen Yol (20) | kısmi | ✓ | direnç var; tur başı dosta ışınlanma ve hasar devralma yok |
+| Harita | Arazi Okuma (3) | kısmi | — | keşif yarıçapı Serüven'de (kilitli); savaş başı tehlike bilgisi yok |
+| Harita | Mevzi İşareti (3) | yok | ✗ | işaretli altıgende dostlar zor zemin/yüzey hasarı yok sayar, +1 save |
+| Harita | Zemin Yeniden Yaz (6) | kısmi | ✗ | zemin değişmez (düşman yarı hız); dost temizliği ve yüzey seçeneği yok |
+| Harita | Çizili Duvar (10) | yok | ✗ | K53 Çizili Duvar engeli oyuncu komutuyla |
+| Harita | Kuşbakışı Plan (14) | yok | ✗ | tur başı iki dostun yer değiştirmesi |
+
+**Ek bulgu (YZ):** `imzaAi` büyü slotu dururken eylem harcayan imza özelliğini hiç kullanmıyor (K50 Dunganga/Harita düzeltmesi); kontrol etkisi olanlar (Sepet, Ninni) bu yüzden büyücüde neredeyse hiç çıkmıyor. K54'te kontrol eylemleri için ayrı kural.
+
 ## 2026-11-05 — Kuyruk K53: ortak savaş sistemleri (kural sürümü 24)
 
 - **Sürüm ve anahtarlar:** kural sürümü 23 → 24 (`data/kural-surumu.json`, `data/hareket.json` `surum`). Eski kayıt/replay kendi sürümüyle açılır: bütün yeni davranışlar `ruleVersion ≥ 24` ile kapılı. GM anahtarları (global, varsayılan açık, `data/kural-kontrol.json`): `teleportArrival`, `objectMotion`, `tempBarriers`, `auraCore`. SRD'de olmayan çarpma hasarı ev kuralı `carpmaHasari` (varsayılan açık).
