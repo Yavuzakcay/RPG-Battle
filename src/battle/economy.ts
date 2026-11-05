@@ -257,6 +257,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'object_use':
       // Görev S2: kapı açıp kapamak ve nesne almak (Görev S3) eylemsiz; kilit açma, masa devirme, mangal dökme eylem (Utilize).
       if (cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take') return { ok: true, event: null };
+      // A1: nesne fırlatmak eylem (Utilize değil; Fast Hands kapsamaz).
+      if (cmd.action === 'throw') return spend(actor, 'action', 'Nesne fırlat');
       // Kuyruk 19 (featuresK19): Thief'in Fast Hands'i: Utilize bonus eylemle (eylem kullanılmışsa ya da her zaman tercih edilir).
       if (actor.traits?.includes('fast-hands') && globalRule(state, 'featuresK19') && !e.bonus) return spend(actor, 'bonus', 'Utilize (Fast Hands)');
       return spend(actor, 'action', 'Utilize');

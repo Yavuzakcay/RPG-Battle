@@ -85,6 +85,8 @@ export interface ActiveEffect {
   /** Kuyruk K54b (sürüm 27): zor zemin ve zemin (yüzey) hasarı yok sayılır (Kuşbakışı Plan; `groundWard.ts`). */
   groundWard?: boolean;
   until?: number;
+  /** A1: bu büyüye (SRD kimliği) karşı save'i başardı; büyü onu yeniden hedefleyemez (Eyebite `repeat.noRetarget`). */
+  resisted?: string;
   concentration?: string;
   dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: string; single?: boolean };
   reduce?: { die: string; types: string[]; spent?: boolean };
@@ -993,7 +995,9 @@ export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take
   /** Kuyruk 29 K28b: plakayı oku, kaya yığınını yuvarla, kazanı/mangalı söndür. */
   | 'read' | 'roll' | 'douse'
   /** Görev K26: balistayı yükle / ateşle (hedef `to`). */
-  | 'load' | 'fire';
+  | 'load' | 'fire'
+  /** A1: hafif/orta hareketli nesneyi hedef altıgene fırlat (`to`; K53 nesne hareketi). */
+  | 'throw';
 
 /**
  * Görev B2: altıgenlere bağlı süreli büyü alanı. Kuralı büyü verisinde (`mechanics.zone`); burada yalnızca nerede, kimin,

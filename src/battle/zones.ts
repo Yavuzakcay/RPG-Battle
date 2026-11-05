@@ -22,7 +22,7 @@ import { spells, type Spell, type ZoneSpec } from '../data';
 import surfaceData from '../../data/yuzeyler.json';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
-import { parseDice, rollDice, rollTag, type Rng } from '../rules/dice';
+import { formatDice, parseDice, rollDice, rollTag, type Rng } from '../rules/dice';
 import { line, sameHex, withinRange, type Offset } from '../rules/hex';
 import { autoFailsStrDexSave } from '../rules/conditions';
 import type { ModeSource } from '../rules/modes';
@@ -104,8 +104,7 @@ function zoneDamage(z: SpellZone, spec: ZoneSpec): string | null {
   const d = parseDice(spec.damage);
   const extra = spell ? upcastDiceCount(spell.mechanics, z.slotLevel - spell.level) : 0;
   // Görev Y1: sabit hasar (yanan yağ 5).
-  if (d.count + extra === 0) return String(d.bonus);
-  return `${d.count + extra}d${d.sides}${d.bonus ? `+${d.bonus}` : ''}`;
+  return formatDice(d.count + extra, d.sides, d.bonus);
 }
 
 /**

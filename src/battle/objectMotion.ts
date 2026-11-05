@@ -16,9 +16,9 @@ import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
 import { hitEffect } from './maprules';
 import { collisionDice, collisionOn, MOTION_VERSION, type ForcedMode, type ForcedOptions } from './motion';
-import { rollDice, rollTag, type Rng } from '../rules/dice';
+import { formatDice, parseDice, rollDice, rollTag, type Rng } from '../rules/dice';
 import { distance, neighbors, offsetToAxial, type Offset } from '../rules/hex';
-import type { BattleEvent, BattleState, MapObject } from './types';
+import type { BattleEvent, BattleState, Combatant, MapObject } from './types';
 
 export const OBJECT_MOTION = data;
 type Weight = keyof typeof data.agirlik;
@@ -119,6 +119,34 @@ export function throwObject(state: BattleState, from: Offset, objectId: string, 
   const moved = cur.map?.objects?.find((x) => x.id === objectId);
   if (moved) events.push(...damageObjectEvents(cur, moved, d.total, h.type, by, 'fırlatma', rng));
   return { events };
+}
+
+/**
+ * A1: oyuncunun "Nesne fırlat" komutu (`object_use` + `throw`, eylem). Bitişik hafif/orta hareketli nesne, fırlatanın
+ * yerinden ağırlığın `firlatmaFt` menziline; hasar `oyuncuFirlatma[ağırlık]` zarı + STR (tek zar, `throwObject` hem
+ * yaratığa hem nesneye aynı toplamı verir; çift hasar yok). Ağır nesne fırlatılmaz. Geçersizse neden.
+ */
+/** A1: bu yaratık bu nesneyi fırlatabilir mi (hedef altıgenden bağımsız); değilse neden. Arayüz menüsü de bunu kullanır. */
+export function throwProblem(state: BattleState, actor: Combatant, obj: MapObject | undefined): string | null {
+  if (!objectMotionOn(state)) return 'Nesne hareketi kapalı (Game Master anahtarı "Nesne hareketi").';
+  if (!obj || obj.carriedBy || !state.map?.objects?.some((o) => o.id === obj.id)) return 'Nesne yok.';
+  if (!actor.pos || distance(actor.pos, obj.at) > 1) return 'Nesneye bitişik olmalısın.';
+  const w = weightOf(obj);
+  if (!w) return 'Bu nesne fırlatılamaz.';
+  if (!(data.oyuncuFirlatma as Record<string, unknown>)[w]) return 'Bu nesne fırlatılamayacak kadar ağır.';
+  return null;
+}
+
+export function playerThrowObject(state: BattleState, actor: Combatant, objectId: string, to: Offset | undefined): { problem: string } | { hit: { dice: string; type: string }; range: number } {
+  const obj = objOf(state, objectId);
+  const why = throwProblem(state, actor, obj);
+  if (why || !obj) return { problem: why ?? 'Nesne yok.' };
+  const w = weightOf(obj) as Weight;
+  const dmg = (data.oyuncuFirlatma as Record<string, { zar: string; tur: string }>)[w] as { zar: string; tur: string };
+  if (!to) return { problem: 'Hedef altıgen seçmelisin.' };
+  if (same(to, obj.at)) return { problem: 'Nesne kendi yerine fırlatılamaz.' };
+  const d = parseDice(dmg.zar);
+  return { hit: { dice: formatDice(d.count, d.sides, d.bonus + actor.modifiers.str), type: dmg.tur }, range: data.agirlik[w].firlatmaFt };
 }
 
 /**

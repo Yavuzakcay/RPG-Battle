@@ -214,6 +214,7 @@
   "concentration": true,
   "mechanics": {
    "kind": "save",
+   "targetFt": 60,
    "save": "wis",
    "conditions": [
     "Unconscious"
@@ -225,7 +226,8 @@
    ],
    "repeat": {
     "cost": "action",
-    "target": "enemy"
+    "target": "enemy",
+    "noRetarget": true
    }
   },
   "school": "Necromancy",

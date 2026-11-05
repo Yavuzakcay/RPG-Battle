@@ -1,5 +1,5 @@
 {
- "not": "Kuyruk K53 S3: nesne hareketi (GM anahtarı objectMotion, kural sürümü 24). agirlik: hafif/orta/agir; itmeCarpani zorla hareket mesafesine çarpan (ağır 0 = itilemez), firlatmaFt en çok fırlatma mesafesi. Hasarı çağıran özellik verir (varsayılan 3d6 kuvvet). enkazZeminleri: zemin harfi → çağrılan enkazın adı (yoksa düz taş).",
+ "not": "Kuyruk K53 S3: nesne hareketi (GM anahtarı objectMotion, kural sürümü 24). agirlik: hafif/orta/agir; itmeCarpani zorla hareket mesafesine çarpan (ağır 0 = itilemez), firlatmaFt en çok fırlatma mesafesi. Hasarı çağıran özellik verir (varsayılan 3d6 kuvvet). enkazZeminleri: zemin harfi → çağrılan enkazın adı (yoksa düz taş). oyuncuFirlatma (A1): oyuncunun 'Nesne fırlat' komutu (object_use throw, eylem): ağırlığa göre tek hasar zarı + STR değiştiricisi (SRD doğaçlama silah 1d4 temel alındı), saldırı zarı yok (K53 throwObject gibi); ağır nesne fırlatılamaz.",
  "agirlik": {
   "hafif": {
    "itmeCarpani": 1,
@@ -74,6 +74,16 @@
   "s": {
    "tr": "duvar taşı",
    "en": "wall stone"
+  }
+ },
+ "oyuncuFirlatma": {
+  "hafif": {
+   "zar": "1d4",
+   "tur": "bludgeoning"
+  },
+  "orta": {
+   "zar": "1d8",
+   "tur": "bludgeoning"
   }
  }
 }

@@ -5,7 +5,7 @@
  */
 import { isAirborne } from './flight';
 import { withinFiveFt } from './common';
-import { frightenedNow, srdConditions } from './ruleVersion';
+import { frightenedNow, grappleAttackRule, srdConditions } from './ruleVersion';
 import { globalRule } from './ruleControl';
 import { distance } from '../rules/hex';
 import type { BattleState, Combatant } from './types';
@@ -53,10 +53,13 @@ export function knowsWhere(state: Pick<BattleState, 'map' | 'kuralSurumu'> & Par
  * (kural sürümü 2, `state` verilince): korku kaynağı görüş hattında değilse saldıranın Frightened'ı sayılmaz; Prone
  * hedefe saldırı saldıranın 5 ft içinde olup olmamasına göre (`proneWithin5`; saldırı türüne bakılmaz).
  */
-export function sightConditions(attacker: Combatant, target: Combatant, state?: BattleState, melee = true): { attackerConditions: string[]; targetConditions: string[]; proneWithin5?: boolean } {
+export function sightConditions(attacker: Combatant, target: Combatant, state?: BattleState, melee = true): { attackerConditions: string[]; targetConditions: string[]; proneWithin5?: boolean; grappledOther?: boolean } {
   let attackerConditions = revealed(attacker) || seesInvisible(target) || senseSees(state, target, attacker) ? drop(attacker.conditions) : attacker.conditions;
   const targetConditions = revealed(target) || seesInvisible(attacker) || senseSees(state, attacker, target) ? drop(target.conditions) : target.conditions;
   if (!state || !srdConditions(state)) return { attackerConditions, targetConditions };
   if (attackerConditions.includes('Frightened') && !frightenedNow(state, attacker)) attackerConditions = attackerConditions.filter((x) => x !== 'Frightened');
-  return { attackerConditions, targetConditions, ...(targetConditions.includes('Prone') ? { proneWithin5: withinFiveFt(state, attacker, target, melee) } : {}) };
+  // A1 (sürüm 29): yakalanan, yakalayanı dışındaki hedefe saldırıda dezavantajlı (yakalayan bilinmiyorsa uygulanmaz).
+  const grappledOther = grappleAttackRule(state) && attackerConditions.includes('Grappled') && !!attacker.grapple?.by && attacker.grapple.by !== target.id;
+  return { attackerConditions, targetConditions, ...(targetConditions.includes('Prone') ? { proneWithin5: withinFiveFt(state, attacker, target, melee) } : {}),
+    ...(grappledOther ? { grappledOther: true } : {}) };
 }

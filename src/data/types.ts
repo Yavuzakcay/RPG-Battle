@@ -241,7 +241,11 @@ export interface SpellMechanics {
    * Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind): konsantrasyon sürerken sonraki
    * turlarda slotsuz tekrar (`spell_followup`); maliyet eylem ya da bonus eylem, hedef aynı (`same`) ya da yeni (`any`).
    */
-  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any'; direction?: boolean; moveZoneFt?: number };
+  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' | 'enemy'; direction?: boolean; moveZoneFt?: number;
+    /** A1: bu büyüye karşı save'i başaran yaratık yeniden hedeflenemez (Eyebite). */
+    noRetarget?: boolean };
+  /** A1: menzili "Self" olup etkisi bir yaratığı hedefleyen büyü (Eyebite: 60 ft içinde görülen yaratık). */
+  targetFt?: number;
   /** Görev B1, smite: isabette save; başarısızsa süregelen etki (`ongoing`) ve süresince durumlar (Ensnaring Strike: Restrained). */
   smiteSave?: { ability: Ability; grants: string[]; largeAdvantage?: boolean };
   /**

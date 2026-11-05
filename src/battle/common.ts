@@ -1,7 +1,7 @@
 /** Komut işleyicilerinin ortak parçaları: yetki kontrolü, sıra, savaşın bitişi. */
 import { goalOutcome } from './goals';
 import type { Spell, SpellMechanics } from '../data';
-import { parseDice } from '../rules/dice';
+import { formatDice, parseDice } from '../rules/dice';
 import { distance as hexDistance } from '../rules/hex';
 import { isIncapacitated, speedZero } from '../rules/conditions';
 import { applyEvents } from './reduce';
@@ -157,7 +157,7 @@ export function atSlot(spell: Spell, slotLevel: number | null | undefined): Spel
   if (up.burstDice && s.mechanics.burst) {
     const b = parseDice(s.mechanics.burst.damage);
     const u = parseDice(up.burstDice);
-    s = { ...s, mechanics: { ...s.mechanics, burst: { ...s.mechanics.burst, damage: `${b.count + u.count * above}d${b.sides}` } } };
+    s = { ...s, mechanics: { ...s.mechanics, burst: { ...s.mechanics.burst, damage: formatDice(b.count + u.count * above, b.sides, b.bonus) } } };
   }
   const bonus = atLeast(up.bonusBySlot);
   if (bonus !== undefined && s.mechanics.selfBuff) {

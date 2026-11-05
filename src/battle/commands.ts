@@ -29,6 +29,7 @@ import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions'
 import { srdConditions } from './ruleVersion';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
+import { playerThrowObject, throwObject } from './objectMotion';
 import { checkActor, currentActorId, fail, finish, nextActor, winnerOf, type CommandResult } from './common';
 import {
   auraStepEvents, auraTurnEndEvents, executeActionSurge, executeFollowup, executeSecondWind, opportunityAttacks,
@@ -648,7 +649,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (cmd.targetHex && strideSpellOf(state, actor)) return executeStride(state, actor, cmd.targetHex);
     // Kuyruk 19: Faithful Hound taşıma (hedef altıgen).
     if (cmd.targetHex && movableZoneOf(state, actor)) return executeZoneShift(state, actor, cmd.targetHex);
-    if (spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat) return executeRepeat(state, actor, cmd.targetId, rng);
+    if (spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat) return executeRepeat(state, actor, cmd.targetId, rng, cmd.choice);
     return executeFollowup(state, actor, cmd.targetId, rng);
   }
 
@@ -760,6 +761,13 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'attack_object') return executeAttackObject(state, actor, cmd.objectId, cmd.option, rng);
   // Kuyruk 24: Orman nesneleri (heykelin gözü, çadır, ağaç, kemik yığını) önce; değilse genel nesne kuralları.
   // Görev K26: kola bağlı kapı, balista.
+  // A1: oyuncunun "Nesne fırlat" komutu (K53 nesne hareketi).
+  if (cmd.type === 'object_use' && cmd.action === 'throw') {
+    const p = playerThrowObject(state, actor, cmd.objectId, cmd.to);
+    if ('problem' in p) return fail(p.problem);
+    const r = throwObject(state, actor.pos as NonNullable<typeof actor.pos>, cmd.objectId, cmd.to as NonNullable<typeof cmd.to>, actor.id, rng, p.hit, p.range);
+    return 'problem' in r ? fail(r.problem) : finish(state, r.events);
+  }
   if (cmd.type === 'object_use') return executeHighlandsUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng) ?? executeWildsUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
   if (cmd.type === 'wild_shape') return executeWildShape(state, actor, cmd.form);
   if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode, cmd.uses);

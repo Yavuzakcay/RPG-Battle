@@ -108,6 +108,7 @@ import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
 import { objectAttack, objectCommand } from './ui/gm/objectActions';
+import { throwProblem } from './battle/objectMotion';
 import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
@@ -120,7 +121,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -394,7 +395,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk 19: Arcane Hand etkisi.
   // Kuyruk 19: genel hedef seçme kipi (Familiar saldırısı, Gaze of Two Minds): hedeften komut.
   const [pickCmd, setPickCmd] = useState<{ make: (id: string) => Command } | null>(null);
-  const [pickHexCmd, setPickHexCmd] = useState<{ make: (h: Offset) => Command } | null>(null);
+  const [pickHexCmd, setPickHexCmd] = useState<{ make: (h: Offset) => Command; hint?: string } | null>(null);
   const [handPick, setHandPick] = useState<'fist' | 'force' | 'grasp' | 'crush' | 'interpose'>('fist');
   // Kurulumda Find Familiar biçimi ve türü (Görev R3).
   const [famForm, setFamForm] = useState<string | null>(null);
@@ -880,6 +881,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const obj0 = objectAt(state, h);
     const secretObj = !!obj0 && concealed(state, obj0);
     const obj = obj0 && (!secretObj || showHidden) ? obj0 : null;
+    // A1: "Nesne fırlat": önce bitişik nesne, sonra hedef altıgen (motor geçerliliği vurgular).
+    if (obj && active && actor && mode === 'throwObj') {
+      const why0 = throwProblem(state, actor, obj);
+      if (why0) { toast(why0); return; }
+      setPickHexCmd({ make: (to) => ({ type: 'object_use', actorId, objectId: obj.id, action: 'throw', to }), hint: B.hint.throwTarget }); setMode('pickHex');
+      return;
+    }
     if (obj && active && actor && (mode === 'attack' || mode === 'object')) {
       const cmd = mode === 'attack' ? objectAttack(actor, obj) : objectCommand(state, actor, obj);
       // Game Master görünümünde gizli nesneye dokunmak önce onu açığa çıkarır (Game Master komutu).
@@ -989,6 +997,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
     if (mode === 'pick' && pickCmd && glowing.has(c.id)) run(pickCmd.make(c.id));
     if (mode === 'steer' && glowing.has(c.id) && c.pos) run({ type: 'summon_move', actorId, to: c.pos, ramId: c.id });
+    // A1: altıgen seçiminde (nesne fırlatma hedefi) vurgulu yaratık jetonuna dokunmak o altıgeni seçer.
+    if (mode === 'pickHex' && pickHexCmd && c.pos && summonKeys.has(hexKey(c.pos))) run(pickHexCmd.make(c.pos));
   };
   const press = (h: Offset) => ({
     onPointerDown: () => {
@@ -1136,6 +1146,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Görev S2: bitişik kapı, masa ya da mangal.
     ...((state.map?.objects ?? []).some((o) => actor.pos && distance(o.at, actor.pos) <= 1 && !concealed(state, o) && objectCommand(state, actor, o)) ? [{ key: 'object', label: N.object,
       act: () => { reset(); setMode('object'); setMenuOpen(false); } }] : []),
+    // A1: bitişik hafif/orta hareketli nesneyi fırlat (eylem; Game Master anahtarı "Nesne hareketi").
+    ...((state.map?.objects ?? []).some((o) => !concealed(state, o) && !throwProblem(state, actor, o)) ? [{ key: 'throwObject', label: N.throwObject,
+      reason: ((o) => (o ? why({ type: 'object_use', actorId, objectId: o.id, action: 'throw', to: o.at }) ?? undefined : undefined))((state.map?.objects ?? []).find((x) => !throwProblem(state, actor, x))),
+      act: () => { reset(); setMode('throwObj'); setMenuOpen(false); } }] : []),
     { key: 'search', label: N.search, reason: why({ type: 'search', actorId }) ?? undefined, act: () => run({ type: 'search', actorId }) },
     ...(actor.conditions.includes('Prone') ? [{ key: 'stand', label: N.stand, reason: standUpProblem(actor) ?? undefined,
       act: () => run({ type: 'stand_up', actorId }) }] : []),
@@ -1295,7 +1309,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     sphere: B.hint.sphereRoll,
     shift: B.hint.shift,
     pick: B.hint.pickTarget,
-    pickHex: B.hint.shift,
+    pickHex: pickHexCmd?.hint ?? B.hint.shift,
+    throwObj: B.hint.throwObject,
     shove: B.hint.shove,
     jump: B.hint.jump,
     steer: B.hint.steer,

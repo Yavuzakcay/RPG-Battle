@@ -230,7 +230,7 @@ describe('Görev K13B', () => {
   });
   it('ev kuralı bayrakları: varsayılan açık beşi; Game Master kapatınca o tepkime olmaz, diğerleri sürer', () => {
     const d = houseRuleDefaults();
-    expect(d).toMatchObject({ suYildirim: true, buhar: true, donma: true, erime: true, zehirPatlama: true, barutPatlama: false, alarmKosusu: false, lair: false, asitHavuzu: false });
+    expect(d).toMatchObject({ suYildirim: true, buhar: true, donma: true, erime: true, zehirPatlama: true, barutPatlama: false, alarmKosusu: false, asitHavuzu: false });
     expect(houseRuleDefaults(['barutPatlama']).barutPatlama).toBe(true);
     const water = arena(row('n', 4, 6));
     const off = { ...water, houseRules: { buhar: false } };

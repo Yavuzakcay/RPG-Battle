@@ -792,7 +792,7 @@ export const en: Strings = {
     },
     label: {
       move: 'Move', walk: 'Walk', dash: 'Dash', disengage: 'Disengage', back: '‹ Back', jump: 'Jump', attack: 'Attack', spell: 'Spell',
-      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', stand: 'Stand up', escapeGrapple: 'Try to escape',
+      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', throwObject: 'Throw object', stand: 'Stand up', escapeGrapple: 'Try to escape',
       escape: 'Climb out', escapeSpell: 'Break free', pull: 'Pull', surge: 'Action Surge', haste: 'Haste action', steer: 'Move summon', wind: 'Second Wind', mark: 'Mark', weapon: 'Weapon', repeat: 'Continue spell', moveHex: 'Move by spell', commandSummons: 'Command creatures', famStrike: 'Familiar strikes', superiorDefense: 'Superior Defense (3 Focus)', brutalPick: 'Brutal Strike', brutalName: { forceful: 'Forceful', hamstring: 'Hamstring', staggering: 'Staggering', sundering: 'Sundering' } as Record<string, string>, water: { whirlpool: 'Whirlpool', flood: 'Flood', part: 'Part Water' } as Record<string, string>, steed: { 'fell-glare': 'Fell Glare', 'fey-step': 'Fey Step', 'healing-touch': 'Healing Touch' } as Record<string, string>, iswap: 'Swap Initiative (Alert)', shift: (ft: number) => `Free shift (${ft} ft)`, famOrder: 'Order familiar to attack', gaze: 'Gaze of Two Minds', sphereRoll: 'Roll the sphere', sphereCarry: 'Pick up sphere', sphereDrop: 'Put down sphere', end: 'End turn',
       rage: 'Rage', rageExtend: 'Keep raging', reckless: 'Reckless', offhand: 'Off hand', offhandNick: 'Off hand (Nick)',
       featureName: { 'ev:karadul/gaze': 'Bewitching Gaze', 'ev:karadul/spider': 'Spider Shape', 'ev:celestial/healing-touch': 'Healing Touch', 'ev:celestial/awakening': 'Celestial Awakening', 'paladin:lay-on-hands': 'Lay On Hands', 'paladin/oath-of-devotion:sacred-weapon': 'Sacred Weapon',
@@ -810,6 +810,8 @@ export const en: Strings = {
     hint: {
       steer: 'Tap a highlighted hex for the summon (the sphere rams an adjacent enemy).',
       object: 'Object: tap an adjacent door, table or brazier (open/close/unlock, tip over, spill coals).',
+      throwObject: 'Throw object: tap an adjacent barrel, chest, rock or similar object, then a highlighted target hex or creature (action).',
+      throwTarget: 'Throw object: tap a highlighted target hex or creature (the creature takes damage once, the object lands next to it).',
       attack: 'Attack: tap a glowing target.', spells: 'Pick a spell.', spell: (s: string) => `${s}: tap a glowing target.`,
       aim: (s: string) => `${s}: tap the target hex.`, pull: 'Pull: tap the sunken ally.', help: 'Help: tap an adjacent enemy.', item: 'Potion: tap yourself or an ally within 5 ft (bonus action).', distract: 'Distract: tap a hex within 30 ft to make a noise (awake enemies within 15 ft take −5 to passive Perception for a round).',
       erupt: 'Eruption: tap the center hex.', followup: (s: string) => `${s}: tap a glowing target.`,

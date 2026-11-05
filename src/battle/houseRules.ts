@@ -6,7 +6,8 @@
 import data from '../../data/ev-kurallari.json';
 import type { BattleState } from './types';
 
-export interface HouseRuleDef { default: boolean; sefer?: boolean; karakter?: boolean; tr: string; en: string }
+/** `gizli`: motorda karşılığı olmayan (ertelenmiş) kural; Game Master panelinde görünmez (A1: `asitHavuzu`). */
+export interface HouseRuleDef { default: boolean; sefer?: boolean; karakter?: boolean; gizli?: boolean; tr: string; en: string }
 export const HOUSE_RULES = data.rules as Record<string, HouseRuleDef>;
 export type HouseRuleId = keyof typeof data.rules;
 export const HOUSE_RULE_IDS = Object.keys(HOUSE_RULES) as HouseRuleId[];

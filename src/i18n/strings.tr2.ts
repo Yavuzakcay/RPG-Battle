@@ -231,7 +231,7 @@ export const TR_EXTRA = {
     },
     label: {
       move: 'Hareket', walk: 'Yürü', dash: 'Koş', disengage: 'Geri Çekil', back: '‹ Geri', jump: 'Atla', attack: 'Saldır', spell: 'Büyü',
-      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
+      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', throwObject: 'Nesne fırlat', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
       escape: 'Çık', escapeSpell: 'Kurtul', pull: 'Çek', surge: 'Atılım', haste: 'Hızlı eylem', steer: 'Çağrıyı taşı', wind: 'İkinci Soluk', mark: 'İşaret', weapon: 'Silah', repeat: 'Büyüyü sürdür', moveHex: 'Büyüyle taşı', commandSummons: 'Yaratıklara emret', famStrike: 'Familiar saldırsın', superiorDefense: 'Superior Defense (3 Focus)', brutalPick: 'Brutal Strike', brutalName: { forceful: 'Forceful (it)', hamstring: 'Hamstring (yavaşlat)', staggering: 'Staggering (sarsıt)', sundering: 'Sundering (yar)' } as Record<string, string>, water: { whirlpool: 'Girdap', flood: 'Taşkın', part: 'Yarma' } as Record<string, string>, steed: { 'fell-glare': 'Fell Glare (korkut)', 'fey-step': 'Fey Step (ışınlan)', 'healing-touch': 'Healing Touch (iyileştir)' } as Record<string, string>, iswap: 'İnisiyatif değiş (Alert)', shift: (ft: number) => `Serbest kay (${ft} ft)`, famOrder: 'Familiar\'a saldırı emri', gaze: 'Gaze of Two Minds', sphereRoll: 'Küreyi yuvarla', sphereCarry: 'Küreyi kaldır', sphereDrop: 'Küreyi bırak', end: 'Turu bitir',
       rage: 'Öfke', rageExtend: 'Öfkeyi sürdür', reckless: 'Pervasız', offhand: 'Yan el', offhandNick: 'Yan el (Nick)',
       featureName: { 'ev:karadul/gaze': 'Büyüleyici Bakış', 'ev:karadul/spider': 'Örümcek Biçimi', 'ev:celestial/healing-touch': 'Şifa Eli', 'ev:celestial/awakening': 'Göksel Uyanış', 'paladin:lay-on-hands': 'Şifalı Eller', 'paladin/oath-of-devotion:sacred-weapon': 'Kutsal Silah',
@@ -249,6 +249,8 @@ export const TR_EXTRA = {
     hint: {
       steer: 'Çağrının gideceği vurgulu altıgene dokun (küre bitişik düşmana çarpar).',
       object: 'Nesne: bitişik kapı, masa ya da mangala dokunun (kapı aç/kapa/kilit, masayı devir, mangalı dök).',
+      throwObject: 'Nesne fırlat: önce bitişik fıçı, sandık, taş gibi bir nesneye, sonra vurgulu hedef altıgene ya da yaratığa dokunun (eylem).',
+      throwTarget: 'Nesne fırlat: vurgulu hedef altıgene ya da yaratığa dokunun (yaratık bir kez hasar alır, nesne yanına düşer).',
       attack: 'Saldır: parlayan bir hedefe dokunun.', spells: 'Bir büyü seçin.', spell: (s: string) => `${s}: parlayan bir hedefe dokunun.`,
       aim: (s: string) => `${s}: hedef altıgene dokunun.`, pull: 'Çek: batmış müttefike dokunun.', help: 'Yardım: bitişik bir düşmana dokunun.', item: 'İksir: kendine ya da 5 ft içindeki bir dosta dokunun (bonus eylem).', distract: 'Dikkat dağıt: 30 ft içinde ses çıkaracağın altıgene dokunun (15 ft içindeki uyanık düşmanlar bir tur pasif Algıda −5).',
       erupt: 'Patlama: merkez altıgene dokunun.', followup: (s: string) => `${s}: parlayan bir hedefe dokunun.`,

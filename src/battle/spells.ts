@@ -14,7 +14,7 @@ import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data
 import type { AreaShape } from '../rules/area';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
-import { parseDice, rollD20, rollDie, rollDice, rollTag, type Rng } from '../rules/dice';
+import { formatDice, parseDice, rollD20, rollDie, rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
@@ -79,15 +79,17 @@ const potentCantrip = (actor: Combatant, spell: Spell) => spell.level === 0 && !
 function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0, school?: string, name?: string): string {
   const spec = parseDice(m.damage ?? '');
   const count = (m.scalesWithLevel ? spec.count * tier : spec.count) + upcastDiceCount(m, upcast);
+  // A1: sabit yukarı slot eki (Heal: slot seviyesi başına +10).
+  const upFlat = m.upcast?.applied && m.upcast.dice && upcast > 0 && parseDice(m.upcast.dice).count === 0 ? parseDice(m.upcast.dice).bonus * upcast : 0;
   // Görev CLERIC: Potent Spellcasting (cantrip hasarına WIS; iyileştirme ve zaten değiştiricili cantrip'ler hariç).
-  const bonus = spec.bonus + (m.addCastingMod ? actor.spellMod : 0) + (m.scalesWithLevel && !m.addCastingMod && m.kind !== 'heal' ? cantripBonus(actor) : 0)
+  const bonus = spec.bonus + upFlat + (m.addCastingMod ? actor.spellMod : 0) + (m.scalesWithLevel && !m.addCastingMod && m.kind !== 'heal' ? cantripBonus(actor) : 0)
     // Görev WIZARD: Empowered Evocation (Evoker 10): Evocation büyüsünün hasarına INT (bir hasar zarına; burada toplama).
     + (school === 'Evocation' && m.kind !== 'heal' && !!actor.traits?.includes('empowered-evocation') ? Math.max(0, actor.spellMod) : 0)
     // Görev SORCERER: Elemental Affinity (Draconic): soyun hasar türündeki büyüye CHA.
     + (m.kind !== 'heal' ? affinityBonus(actor, m.damageType) : 0)
     // Görev WARLOCK: Agonizing Blast: seçilen cantrip'in hasar zarına (her ışına) büyü yeteneği.
     + (name && actor.cantripMods?.[name]?.ability && m.kind !== 'heal' ? actor.spellMod : 0);
-  return `${count}d${spec.sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
+  return formatDice(count, spec.sides, bonus);
 }
 
 
@@ -529,8 +531,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   let rangeSources: ModeSource[] = [];
   let cover: Cover = 0;
   if (target && target.id !== actor.id) {
-    if (spell.rangeFt === 0) return fail(`${spell.name} yalnızca büyücüyü etkiler.`);
-    const r = checkReach(state, actor, target, spellReach(spell, actor));
+    // A1: menzili "Self" olan ama bir yaratığı hedefleyen büyü (Eyebite) `targetFt` ile.
+    if (spell.rangeFt === 0 && !m.targetFt) return fail(`${spell.name} yalnızca büyücüyü etkiler.`);
+    const r = checkReach(state, actor, target, spellReach(m.targetFt ? { ...spell, rangeFt: m.targetFt } : spell, actor));
     if (!r.ok) return r;
     rangeSources = r.sources;
     cover = r.cover;
@@ -630,6 +633,10 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       ...(save.extra ? { bonusDice: save.extra } : {}),
     });
     events.push(...spellTimerEvents(state, spell.name, target.id, added, ability, actor.spellSaveDc ?? 0));
+    // A1: save'i başaran bu büyüyle yeniden hedeflenemez (Eyebite; işaret konsantrasyonla biter).
+    if (save.success && m.repeat?.noRetarget && spell.concentration) {
+      events.push({ type: 'effect_added', targetId: target.id, effect: { id: `${spell.srd}:resisted`, name: spell.name, sourceId: actor.id, concentration: spell.name, resisted: spell.srd } });
+    }
     // Kuyruk 19: tek hedefli büyüde de başarısızlığın süren etkisi (Phantasmal Killer; anahtarlı ise `failEffectGate`).
     const fe1 = m.failEffect && (!m.failEffectGate || globalRule(state, m.failEffectGate)) ? m.failEffect : undefined;
     // Yinelenen hasar yukarı slotla büyür (büyünün kendi hasar ifadesi).
@@ -822,7 +829,7 @@ function executeSaveMany(state: BattleState, actor: Combatant, cmd: CastCommand,
 function upcastDelayed(dice: string, m: SpellMechanics, upcast: number): string {
   const extra = upcastDiceCount(m, upcast);
   const d = parseDice(dice);
-  return extra > 0 ? `${d.count + extra}d${d.sides}${d.bonus ? (d.bonus > 0 ? `+${d.bonus}` : String(d.bonus)) : ''}` : dice;
+  return extra > 0 ? formatDice(d.count + extra, d.sides, d.bonus) : dice;
 }
 
 function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, spell: Spell, damage: number, rng: Rng, upcast = 0): BattleEvent[] {
@@ -1022,7 +1029,7 @@ export function executeZoneShift(state: BattleState, actor: Combatant, to: { col
   return typeof evs === 'string' ? fail(evs) : finish(state, [{ type: 'spell_cast', actorId: actor.id, targetId: null, label: `${m.spell.name} (taşındı)`, slotLevel: null, note: '' }, ...evs]);
 }
 
-export function executeRepeat(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
+export function executeRepeat(state: BattleState, actor: Combatant, targetId: string, rng: Rng, choice?: string): CommandResult {
   const conc = actor.concentration;
   const spell = spells.find((s) => s.name === conc?.spell);
   const r = spell?.mechanics.repeat;
@@ -1048,7 +1055,12 @@ export function executeRepeat(state: BattleState, actor: Combatant, targetId: st
     return fail(`${spell.name} yalnızca ilk hedefe (${state.combatants[conc.targetId ?? '']?.name ?? '?'}) tekrarlanır.`);
   }
   if (targetId === actor.id) return fail('Kendini hedefleyemezsin.');
-  return castSpell(state, actor, { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId, slotLevel: conc.slotLevel }, spell, rng, true);
+  // A1 (Eyebite): bu büyüye karşı save'i başaranı yeniden hedefleyemez; seçilen etki ilk büyüdeki (ya da verilen) seçim.
+  const tgt = state.combatants[targetId];
+  if (r.noRetarget && tgt?.effects?.some((e) => e.resisted === spell.srd && e.sourceId === actor.id)) return fail(`${spell.name}: ${tgt.name} bu büyüye karşı save'i başardı, yeniden hedeflenemez.`);
+  const cc = spell.mechanics.conditionChoices;
+  const picked = choice && cc?.includes(choice) ? choice : cc ? conc.conditions?.find((x) => cc.includes(x.condition))?.condition : undefined;
+  return castSpell(state, actor, { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId, slotLevel: conc.slotLevel, ...(picked ? { choice: picked } : {}) }, spell, rng, true);
 }
 
 /**
@@ -1127,7 +1139,7 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
     const count = parseDice(o.dice).count + Math.max(0, slotLevel - spell.level);
     events.push({ type: 'effect_added', targetId: target.id, effect: {
       id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + o.rounds - 1,
-      ongoing: { dice: `${count}d${parseDice(o.dice).sides}`, type: o.type, save: o.save, dc: actor.spellSaveDc ?? 10 },
+      ongoing: { dice: formatDice(count, parseDice(o.dice).sides, parseDice(o.dice).bonus), type: o.type, save: o.save, dc: actor.spellSaveDc ?? 10 },
       ...(spell.concentration ? { concentration: spell.name } : {}), ...(ss ? { grants: ss.grants } : {}),
     } });
   }
@@ -1517,7 +1529,7 @@ function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spe
       source: spell.name, by: actor.id, until: state.round + b.rounds - 1,
       ...(b.attackBonus ? { attackBonus: b.attackBonus } : {}), ...(b.damageBonus ? { damageBonus: b.damageBonus } : {}),
       ...(b.extraDamage ? { extraDamage: b.upcastDice && (slot.slotLevel ?? spell.level) > spell.level
-        ? `${parseDice(b.extraDamage).count + parseDice(b.upcastDice).count * ((slot.slotLevel ?? spell.level) - spell.level)}d${parseDice(b.extraDamage).sides}` : b.extraDamage, damageType: b.damageType ?? '' } : {}),
+        ? formatDice(parseDice(b.extraDamage).count + parseDice(b.upcastDice).count * ((slot.slotLevel ?? spell.level) - spell.level), parseDice(b.extraDamage).sides) : b.extraDamage, damageType: b.damageType ?? '' } : {}),
       ...(b.anyAttack ? { anyAttack: true } : {}), ...(b.withinFt ? { withinFt: b.withinFt } : {}), ...(b.extraTypes ? { extraTypes: b.extraTypes } : {}),
     } });
   }
