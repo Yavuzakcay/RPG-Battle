@@ -39,6 +39,48 @@ Notlar:
 - **Kolay ≤ Normal ≤ Usta:** Kolay < Normal her senaryoda (ortalama −22.6 puan). **Usta ≈ Normal** (−1.3 puan; satır farkları ±4, 50 tohumda standart hata ≈ ±7): Usta'nın bir adım ileri bakışı ölçülebilir kazanç getirmiyor; açık madde.
 - Süre: yeni yapay zekâ senaryo başına ≈ 1,5–2,3× daha yavaş (ör. Kale 140 sn → 310 sn, 4 paralel süreç).
 
+## Kuyruk K54c: K54 sonrası (tamamı) — 11 imza alt sınıf (2026-11-05)
+
+Aynı ölçüm (K50): `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`, 100 tohum, kural sürümü 28, ev kuralı açık, **Y1 öncesi yapay zekâ** (ölçüm `wip/k54c` üzerinde). Ölçüt K50'deki gibi: SRD karşılığına göre −5'ten büyük düşüş "aralık dışı". Sayı ayarı yapılmadı (K59). Y1 değerlendiricisiyle Dunganga ve Harita'nın 6 senaryolu ölçümü "Kuyruk Y1" bölümünde (sapma −11 ve −9).
+
+| İmza | SRD karşılığı | SRD | İmza | K50 sapması | Şimdiki sapma | Durum |
+|---|---|---:|---:|---:|---:|---|
+| Çiftçi (Ranger) | Avcı | %12 | %11 | -1 | -1 | aralıkta |
+| Geride Kalanın Yolu (Barbarian) | Çılgın Savaşçı | %11 | %10 | -3 | -1 | aralıkta |
+| Hızır Yemini (Paladin) | Bağlılık Yemini | %12 | %15 | +1 | +3 | aralıkta |
+| İmparator (Fighter) | Şampiyon | %61 | %56 | -5 | -5 | aralıkta |
+| Şair Koleji (Bard) | Bilgi Koleji | %27 | %21 | -4 | -6 | aralık dışı |
+| İnfazcı (Rogue) | Hırsız | %65 | %61 | -6 | -4 | aralıkta |
+| Yaşlı Bilge (Monk) | Açık El | %16 | %7 | -6 | -9 | aralık dışı |
+| Astrolog (Warlock) | İblis Hamisi | %25 | %18 | -8 | -7 | aralık dışı |
+| Birlik Manastırı (Cleric) | Yaşam | %23 | %16 | -7 | -7 | aralık dışı |
+| Dunganga (Sorcerer) | Ejderha Büyücülüğü | %73 | %40 | -17 | -33 | aralık dışı |
+| Harita Öğretisi (Wizard) | Evokasyon | %57 | %28 | -25 | -29 | aralık dışı |
+
+- Aralık dışı 6 satır: 4'ü −6 ile −9 arası (Şair −6, Astrolog −7, Birlik −7, Yaşlı Bilge −9); İnfazcı −6 → −4 ile aralığa girdi. Büyük farklar yine Dunganga (−33) ve Harita (−29): bu ölçüm K54b'deki yapay zekâ kuralıyla (slot dururken kontrol ipuçları kısıtlı) yapıldı; Y1 değerlendiricisi farkı yarıya indiriyor (yukarı bölüm).
+- Yaşlı Bilge K50'ye göre geriledi (−6 → −9): Zihin Gücü kipleri (K54) Y1 öncesi yapay zekâda tek kip (İt) olarak seçiliyordu; Y1'de kipler ayrı aday.
+- Astrolog (−8 → −7), Şair (−4 → −6), Hızır (+1 → +3), Geride Kalan (−3 → −1): K54c eklemeleri 7. seviyede çoğunlukla yok (Yazgı Mührü 14, Ölümsüz Dize/Usta Şair 14, Küllerden Doğan 14, Ferman 10, Alışkın Acı 10); fark gürültü düzeyinde.
+
+### K54c açık maddeler (K54 tablosundaki eksik, kısmi ya da YZ'nin kullanmadığı özellikler)
+
+| Alt sınıf | Özellik | Durum | Not |
+|---|---|---|---|
+| Şair Koleji | Gece Şiiri | yok | Serüven dinlenmesi; Serüven kilitli |
+| Şair Koleji | Usta Şair | kısmi | partiye uzun dinlenmede +1 Motivasyon yok (Serüven kilitli) |
+| Şair Koleji | Ölümsüz Dize | kısmi | savaş dışı Moral ölümü yönü yok (Serüven kilitli) |
+| Şair Koleji | Nakarat | kısmi | ikinci hedef otomatik (arayüzde seçim yok) |
+| İmparator | Ferman | kısmi | dost otomatik seçilir; ek eylem Haste yolu (Dodge/Help yok) |
+| İmparator | Buyruk: Yer değiştir | YZ kullanmıyor | |
+| Astrolog | Gök Rehberi | yok | Serüven dinlenme Moral'i; Serüven kilitli |
+| Astrolog | Yıldız Falı | kısmi | "beceri zarı" savaşta yok; yalnız ilk saldırı/kurtulma |
+| Astrolog | Yazgı Mührü | kısmi | büyü saldırılarında yok |
+| Geride Kalanın Yolu | Yaralı Kalp / Yıpranma | kısmi | savaşlar arası Yıpranma saklanmaz |
+| Yaşlı Bilge | Zihin Gücü: Nesne, Fırlat | Y1'de YZ adayı | Y1 öncesi YZ kullanmıyordu |
+| Hızır Yemini | Yetişen Yol: Adım | Y1'de YZ adayı | Y1 öncesi YZ kullanmıyordu |
+| Dunganga | Ninni/Sepet | YZ zayıf | kontrolün değeri; sepetteki düşmana dostlar vurmaya devam ediyor (K59) |
+| Harita Öğretisi, Dunganga | 10/14/18. seviye özellikleri | ölçülmedi | 7. seviye ölçümünde yok; 11/15. seviye ölçümü önerisi (K59) |
+| Birlik Manastırı | Omuz Ver | seyrek | yalnız başarıya çevirecekse; Ortak Şifa 8'de |
+
 ## Kuyruk K55: altıgen etki çözücüsü — hızlı regresyon (2026-11-05)
 
 Ayarlama yok (K59). `npm run sim -- 30 col kale magara orman --seviye 5 --parti buyucu`; sürüm 26 (çözücü) ile `KURAL_SURUMU=25` (eski geçişler) aynı tohumlar.
