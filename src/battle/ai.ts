@@ -130,6 +130,8 @@ function imzaAi(state: BattleState, actor: Combatant): Command | null {
     const spec = IMZA_SPECS[f.key];
     if (!spec) continue;
     if (spec.tur === 'bonus' ? actor.economy.bonus : actor.economy.action) continue;
+    // Büyücü slotu dururken eylem harcayan imza özelliği büyünün yerine geçmez (Ninni, Zemin Yeniden Yaz, Kuyruklu Yıldız…); havuz hariç.
+    if (spec.tur === 'action' && spec.ozel !== 'havuz' && actor.spellSlots.some((n) => n > 0)) continue;
     const marked = (id: string) => Object.values(state.combatants).some((c) => c.effects?.some((e) => e.id === `${id}:${actor.id}`));
     if ((spec.tek || spec.bag) && marked(f.key)) continue;
     let cands: Array<string | undefined> = [undefined];

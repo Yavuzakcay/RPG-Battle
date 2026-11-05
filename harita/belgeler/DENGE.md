@@ -2,6 +2,26 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K50: imza alt sınıflar (2026-11-05)
+
+`npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`: k18-<sınıf> partisinde imza alt sınıf ↔ sınıfın SRD alt sınıfı, kural sürümü 23, ev kuralı açık. Ölçüt: SRD karşılığına göre −5 puandan fazla düşüş "aralık dışı". 2. ölçüm: yapay zekâ, büyü slotu dururken eylem harcayan imza özelliğini büyünün yerine kullanmıyor (`imzaAi`).
+
+| İmza | SRD karşılığı | SRD | İmza (1. ölçüm) | İmza (2. ölçüm) | Durum |
+|---|---|---|---|---|---|
+| Çiftçi (Ranger) | Avcı | %12 | %11 | — | aralıkta |
+| Geride Kalanın Yolu (Barbarian) | Çılgın Savaşçı | %11 | %8 | — | aralıkta |
+| Hızır Yemini (Paladin) | Bağlılık Yemini | %12 | %13 | — | aralıkta |
+| İmparator (Fighter) | Şampiyon | %61 | %56 | — | aralıkta |
+| Şair Koleji (Bard) | Bilgi Koleji | %27 | %23 | — | aralıkta |
+| İnfazcı (Rogue) | Hırsız | %65 | %59 | — | aralık dışı (−6) |
+| Yaşlı Bilge (Monk) | Açık El | %16 | %10 | — | aralık dışı (−6) |
+| Astrolog (Warlock) | İblis Hamisi | %22 | %14 | %14 | aralık dışı (−8) |
+| Birlik Manastırı (Cleric) | Yaşam | %23 | %16 | %16 | aralık dışı (−7) |
+| Dunganga (Sorcerer) | Ejderha Büyücülüğü | %73 | %33 | %56 | aralık dışı (−17) |
+| Harita Öğretisi (Wizard) | Evokasyon | %57 | %12 | %32 | aralık dışı (−25) |
+
+Not: sınıf partilerinin mutlak oranı düşük (k18 partileri 7. seviyede bu senaryolarda zorlanıyor); karşılaştırma yalnızca alt sınıf farkıdır. Kalan farkın çoğu planlı (henüz çalışmayan) özelliklerden ve SRD karşılıklarının hazır hasar büyülerinden (Evokasyon Empowered Evocation, Draconic Elemental Affinity); denge değişikliği belge sahibinin kararına bırakıldı.
+
 ## Denge turu (2026-11-03)
 
 Standart parti (Bor Dwarf Fighter, Mira Elf Wizard, Tavi Human Cleric, Sela Halfling Rogue, Kael Elf Ranger), 30 tohum, kural sürümü 17 (Darkvision menzili yaratığın kendisinden). Hedef %60–80. Komutlar: `npm run sim:bolge`, `npm run sim:liste`, `npm run sim:zincir -- … --kisa-sinir N`.
