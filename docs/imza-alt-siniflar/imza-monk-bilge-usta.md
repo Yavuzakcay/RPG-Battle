@@ -11,19 +11,19 @@ Gücü kasından değil sabrından gelen yaşlı usta: rakibin hamlesini bekler,
 
 ## Özellikler (TR / EN; sayılar JSON parametresi)
 - **S3 · Yaşlı Bilgelik / Elder Wisdom:** İçgörü ve Tarih'ten birinde yeterlilik (ya da halihazırda varsa bir başka beceri).
-- **S3 · Zihin Gücü / Mind Might** (bonus eylem; 1 Odak Puanı; menzil 30 ft): Bir yaratığı ya da gözetimsiz bir nesneyi zihninle iter ya da çekersin: yaratık (Large ya da küçük) STR kurtulması atar (DC = 8 + yeterlilik + WIS), başarısızsa 10 ft itilir/çekilir; nesne 10 ft hareket eder ve 50 lb'ye kadar olabilir. Hex haritada itme/çarpma altyapısı kullanılır (çarpma hasarı: duvar/engel 1d6).
+- **S3 · Zihin Gücü / Mind Might** (bonus eylem; 1 Odak Puanı; menzil 30 ft): Bir yaratığı ya da gözetimsiz bir nesneyi zihninle iter ya da çekersin: yaratık (Large ya da küçük) STR kurtulması atar (DC = 8 + yeterlilik + WIS), başarısızsa 10 ft **itilir** (senden uzağa), **çekilir** (sana doğru) ya da yana kaydırılır (yönü sen seçersin); nesne aynı biçimde 10 ft hareket eder ve 50 lb'ye kadar olabilir. Hex haritada itme/çarpma altyapısı kullanılır (çarpma hasarı: duvar/engel 1d6).
 - **S3 · Sabır / Patience** (tepki; 1 Odak Puanı): Bir düşmanın yakın dövüş saldırısı sana iskalarsa, tepkiyle silahsız bir saldırı yaparsın (Odak Puanı harcamazsan yalnız yeterlilik bonusu kadar kullanım, uzun dinlenmede yenilenir).
 - **S6 · Sakin Söz / Calm Word** (bonus eylem; 1 Odak Puanı): 30 ft içinde bir dost, Frightened ve Charmed durumlarından kurtulur ve 1 Motivasyon kazanır (Motivasyon sistemi açıksa). Kendine de uygulayabilirsin.
-- **S11 · Zihin Gücü genişler / Greater Mind Might:** Zihin Gücü'nün menzili 60 ft olur, nesne sınırı 200 lb'ye çıkar. Ayrıca gözetimsiz bir nesneyi havalandırıp fırlatabilirsin (eylem; 2 Odak Puanı): 60 ft içindeki bir hedefe 3d6 ezme hasarı (DEX kurtulmasıyla yarım).
+- **S11 · Zihin Gücü genişler / Greater Mind Might:** Zihin Gücü'nün menzili 60 ft olur, nesne sınırı 200 lb'ye çıkar. Artık telekinezi gibi çalışır: hareket doğrultusu serbesttir; hedefi (yaratık ya da nesne) menzil içinde 20 ft'e kadar **boş herhangi bir hex'e** taşırsın (yaratık yine STR kurtulması atar; başarısızsa taşınır; havada ya da engelin içinden geçemez, çarpma kuralı geçerli). Ayrıca gözetimsiz bir nesneyi havalandırıp fırlatabilirsin (eylem; 2 Odak Puanı): 60 ft içindeki bir hedefe 3d6 ezme hasarı (DEX kurtulmasıyla yarım).
 - **S11 · Çevik Yaşlı / Nimble Elder:** Hızın 10 ft artar ve bir düşmanla 5 ft içindeyken hareket etmen fırsat saldırısı doğurmaz. **Yönlendir / Redirect** (tepki; 2 Odak Puanı): Bir düşman sana yakın dövüş saldırısı yaptığında, saldırı 5 ft içindeki başka bir yaratığa (düşman dahil) yönelir; yeni hedefe yeni isabet zarı atılır.
 - **S17 · Son Ders / Final Lesson** (eylem; uzun dinlenmede 1; 10 tur): 30 ft yarıçaplı bir dinginlik alanı; içindeki dostlar kurtulma zarlarına WIS modifiyesi kadar ek alır ve her turun başında 1 Motivasyon kazanır (sınır: tur başına 1, kişi başına). Alandaki düşmanların fırsat saldırıları dezavantajlıdır. Sen etkisiz olmadıkça sürer.
 
 ## Oyuncuya görünen metin (sade)
 - **Yaşlı Bilgelik (3):** İçgörü ya da Tarih'te ustasın.
-- **Zihin Gücü (3):** Zihninle bir düşmanı ya da bir nesneyi iter ya da çekersin.
+- **Zihin Gücü (3):** Zihninle bir düşmanı ya da bir nesneyi iter, çeker ya da yana kaydırırsın.
 - **Sabır (3):** Bir düşman sana vurmayı kaçırırsa karşılık verirsin.
 - **Sakin Söz (6):** Bir dostunun korkusunu ve büyüsünü dağıtır, cesaretini tazelersin.
-- **Zihin Gücü genişler (11):** Daha uzağa, daha ağır şeyleri iter; bir nesneyi fırlatıp hedefe çarpabilirsin.
+- **Zihin Gücü genişler (11):** Daha uzağa, daha ağır şeyleri istediğin yöne taşırsın (telekinezi gibi); bir nesneyi fırlatıp hedefe çarpabilirsin.
 - **Çevik Yaşlı (11):** Daha hızlısın, kaçarken vurulmazsın. Bir saldırıyı başka birine yönlendirebilirsin.
 - **Son Ders (17):** 10 tur boyunca dostların etrafında dinginlik yayılır: daha dirençli, daha cesur olurlar.
 
