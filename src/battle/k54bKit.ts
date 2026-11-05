@@ -18,11 +18,11 @@ export const high: Rng = () => 0.99;
 
 export interface KitOpts {
   cls: string; sub: string; level: number; kuralSurumu?: number; house?: boolean; scores?: Partial<Record<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha', number>>;
-  place?: Record<string, { col: number; row: number }>; extra?: Combatant[]; enemy?: Partial<Combatant>; ally?: Partial<Combatant>;
+  place?: Record<string, { col: number; row: number }>; /** Y1: sheet'e ek alanlar (silahlar…). */ sheet?: Partial<CharacterSheet>; extra?: Combatant[]; enemy?: Partial<Combatant>; ally?: Partial<Combatant>;
 }
 export function kitHero(o2: KitOpts, id = 'A'): Combatant {
   return combatantFromSheet({ ...blankCharacter('k54b').sheet, name: 'İmza', raceId: 'human', classId: o2.cls, subclassId: o2.sub, level: o2.level, gender: 'kadin',
-    baseScores: { str: 12, dex: 14, con: 14, int: 14, wis: 14, cha: 14, ...o2.scores } } as CharacterSheet, { id, ownerId: 'p1' });
+    baseScores: { str: 12, dex: 14, con: 14, int: 14, wis: 14, cha: 14, ...o2.scores }, ...o2.sheet } as CharacterSheet, { id, ownerId: 'p1' });
 }
 export function kitArena(opts: KitOpts) {
   const B = mk('B', { side: 'enemies', hp: 60, maxHp: 60, monsterId: 'bandit', saves: { str: -5, dex: -5, con: -5, int: -5, wis: -5, cha: -5 }, ...opts.enemy });
