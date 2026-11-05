@@ -211,7 +211,7 @@
       "tr": "Müdahale",
       "en": "Intervention"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Hükümlü dostuna vurursa hemen yetişir ve ona karşılık verirsin.",
       "en": "If the condemned hits an ally you rush in and strike back."
@@ -224,7 +224,7 @@
       "tr": "Peşini Bırakmayan",
       "en": "Relentless Pursuit"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Hükümlü kaçamaz; nerede olduğunu bilirsin ve peşinden gidersin.",
       "en": "The condemned cannot escape you."
@@ -1572,7 +1572,11 @@
     "icon": "⚖"
    },
    "ad": "Hüküm",
-   "not": "Sneak Attack d6 → d8: hükümlüye isabette Sneak Attack zarı başına +1 ek hasar (ortalama eşdeğer)."
+   "param": {
+    "bedavaDevir": true
+   },
+   "yz": "hukum",
+   "not": "Sneak Attack d6 → d8: hükümlüye isabette Sneak Attack zarı başına +1 ek hasar (ortalama eşdeğer). Sürüm 27+: hükümlü düşünce yeni hüküm kullanım harcamaz (turda bir)."
   },
   "imza:imza_infazci/final-warning": {
    "sinif": "imza_infazci",
@@ -2742,6 +2746,30 @@
     "icon": "👑"
    },
    "not": "Dostlara avantaj kısmı yok."
+  },
+  {
+   "sinif": "imza_infazci",
+   "ozellik": "intervention",
+   "seviye": 9,
+   "etki": {
+    "mudahale": {
+     "menzilFt": 30
+    }
+   },
+   "not": "Tepki: hükümlü 30 ft içindeki dosta isabet ettirince hızın yarısı kadar yanına (fırsat saldırısı yok) ve tek silah saldırısı.",
+   "surumMin": 27
+  },
+  {
+   "sinif": "imza_infazci",
+   "ozellik": "relentless-pursuit",
+   "seviye": 13,
+   "etki": {
+    "takip": {
+     "bilFt": 60
+    }
+   },
+   "not": "60 ft içindeki hükümlünün yeri bilinir (gizli/görünmez de hedef alınır); hükümlü yürüyüp uzaklaşınca tepkisiz hızın yarısı kadar peşinden (turda bir).",
+   "surumMin": 27
   },
   {
    "sinif": "imza_infazci",

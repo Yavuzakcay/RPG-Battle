@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54b G4: İnfazcı (kural sürümü 27)
+
+- Denetimin "yok" dediği iki özellik Müdahale ve Peşini Bırakmayan; Hüküm'ün "hükümlü düşünce ücretsiz yeni hedef" kısmı da eklendi. Son Uyarı ve İnfaz zaten tamdı. Hüküm'ün d6 → d8'i K50 yaklaşımıyla kaldı (zar başına +1; sayı ayarı K59).
+- **Hüküm devri:** yaşayan hükümlü yokken (önceki 0 cana düştü) Hüküm kullanım harcamaz; turda bir (`trait_turn imza:hukum-devir`). Bonus eylem yine gerekir (belgedeki gibi). 10 tur süre ve tek hedef K50'deki gibi.
+- **Müdahale:** saldırı sonrası kanca: hükümlü 30 ft içindeki bir dosta isabet ettirince tepki; Rogue hükümlünün yanındaki, hızının yarısı (düz uzaklık) içindeki boş altıgene geçer (ışınlanma olayı: fırsat saldırısı yok, K53 varış kancaları çalışır; yol bulma yok) ve tek silah saldırısı (`strikeApi`). Zaten yanındaysa yalnız saldırı. Tepki Uncanny Dodge ile ortak (tek tepki hakkı).
+- **Peşini Bırakmayan:** `knowsWhere` kancası (`registerKnowsWhere`): 60 ft içindeki hükümlü gizlenmiş/görünmez olsa da hedef alınır (görünmezliğin zar etkisi SRD'deki gibi kalır). Takip: hükümlünün `move` komutu Rogue'dan uzaklaştırırsa komut sonunda tepkisiz, hızın yarısı kadar ona doğru (turda bir; ışınlanma olayıyla, fırsat saldırısı yok). Disengage/ışınlanmayla kaçış da yer bilgisine girer; ışınlanma takibi yok (yalnız yürüyüş).
+- **Yapay zekâ:** yaşayan hükümlü yokken en düşük canlı düşmana Hüküm (`yz: hukum`; önceki kural ölü hükümlüde takılıyordu); hedef sırasında hükümlü öne geçer, yanında dost varsa (gizli saldırı fırsatı) en öne. Müdahale ve takip kendiliğinden (öneri: evet).
+
 ## 2026-11-05 — Kuyruk K54b G3: Birlik Manastırı (kural sürümü 27)
 
 - **Omuz Ver:** destek veren Bağlı dostun tepkisi; bonus onun WIS'i (en az 1). Burst of Ingenuity ile aynı ikinci şans yolu (`reroll: 'plus'`): yalnız başarısızlığı başarıya çevirecekse kullanılır, yoksa tepki harcanmaz. Hesap reducer sonu `syncAuras` → `shoulderBy` (30 ft, tepkisi hazır, Incapacitated değil). Yalnız kurtulma zarları (belgedeki "kurtulma"); saldırı/kontrol yok.

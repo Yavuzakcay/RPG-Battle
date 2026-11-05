@@ -74,14 +74,17 @@ sub(s, 'rogue', 'İnfazcı', 'Vigilante', 'Hüküm veren gizli avcı', 'A hidden
     F('verdict', 3, 'Hüküm', 'Verdict', 'Gördüğün birini "hükümlü" ilan et: 10 tur boyunca ona karşı gizli saldırın çok daha sert vurur.', 'Declare a foe "condemned": for 10 rounds your sneak attacks hit it much harder.'),
     F('masked-justice', 3, 'Maskeli Adalet', 'Masked Justice', 'Kılık değiştirmede ustasın; sezgide de ustasın.', 'You master disguise and gain Insight proficiency.'),
     F('final-warning', 9, 'Son Uyarı', 'Final Warning', 'Hükümlüye bir uyarı yap: direnemezse korkar ve sana vurmakta zorlanır.', 'Warn the condemned: if it fails to resist it is frightened and struggles to hit you.'),
-    F('intervention', 9, 'Müdahale', 'Intervention', 'Hükümlü dostuna vurursa hemen yetişir ve ona karşılık verirsin.', 'If the condemned hits an ally you rush in and strike back.', 'planli'),
-    F('relentless-pursuit', 13, 'Peşini Bırakmayan', 'Relentless Pursuit', 'Hükümlü kaçamaz; nerede olduğunu bilirsin ve peşinden gidersin.', 'The condemned cannot escape you.', 'planli'),
+    F('intervention', 9, 'Müdahale', 'Intervention', 'Hükümlü dostuna vurursa hemen yetişir ve ona karşılık verirsin.', 'If the condemned hits an ally you rush in and strike back.'),
+    F('relentless-pursuit', 13, 'Peşini Bırakmayan', 'Relentless Pursuit', 'Hükümlü kaçamaz; nerede olduğunu bilirsin ve peşinden gidersin.', 'The condemned cannot escape you.'),
     F('execution', 17, 'İnfaz', 'Execution', 'Hükümlüye bir kez, ölümcül bir vuruş yaparsın; zayıflamışsa bu vuruş onu öldürür.', 'Once, a deadly strike on the condemned; if weakened it dies.'),
 ], beceri=['insight'])
 act(s, 'verdict', seviye=3, tur='bonus', kaynak={'id': 'imzaHukum', **PB}, hedef='enemy', menzilFt=60, tek=True,
-    etki={'name': 'Hükümlü', 'sure': 10, 'icon': '⚖'}, ad='Hüküm', not_='Sneak Attack d6 → d8: hükümlüye isabette Sneak Attack zarı başına +1 ek hasar (ortalama eşdeğer).')
+    etki={'name': 'Hükümlü', 'sure': 10, 'icon': '⚖'}, ad='Hüküm', param={'bedavaDevir': True}, yz='hukum',
+    not_='Sneak Attack d6 → d8: hükümlüye isabette Sneak Attack zarı başına +1 ek hasar (ortalama eşdeğer). Sürüm 27+: hükümlü düşünce yeni hüküm kullanım harcamaz (turda bir).')
 act(s, 'final-warning', seviye=9, tur='action', kaynak={'id': 'imzaSonUyari', 'sayi': 1, 'yenilenme': 'short'}, hedef='enemy', menzilFt=30, yalnizIsaretli='verdict',
     save={'yetenek': 'wis', 'dc': ['dex']}, etki={'name': 'Son Uyarı', 'sure': 2, 'sureEfsanevi': 1, 'grants': ['Frightened'], 'attackDisVs': '$actor', 'icon': '⚖'}, ad='Son Uyarı')
+pas(s, 'intervention', 9, {'mudahale': {'menzilFt': 30}}, 'Tepki: hükümlü 30 ft içindeki dosta isabet ettirince hızın yarısı kadar yanına (fırsat saldırısı yok) ve tek silah saldırısı.', k54b=True)
+pas(s, 'relentless-pursuit', 13, {'takip': {'bilFt': 60}}, '60 ft içindeki hükümlünün yeri bilinir (gizli/görünmez de hedef alınır); hükümlü yürüyüp uzaklaşınca tepkisiz hızın yarısı kadar peşinden (turda bir).', k54b=True)
 pas(s, 'execution', 17, {'kaynak': {'id': 'imzaInfaz', 'sayi': 1, 'yenilenme': 'long'}}, 'Hükümlüye Sneak Attack isabetinde: zarlar en yüksek; canı Rogue seviyesi × 4 altındaysa ve efsanevi değilse CON kurtulması, başarısızsa ölür (kritik sayılmaz).')
 
 # ---------------- Ranger: Çiftçi ----------------
