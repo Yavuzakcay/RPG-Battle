@@ -20,6 +20,7 @@ import { adjustDamage } from '../rules/damage';
 import type { Ability } from '../rules/abilities';
 import { canSee } from './maprules';
 import { teleportEvent, teleportHexes, teleportProblem } from './teleport';
+import { withArrival } from './motion';
 import { inShadow } from './boons';
 import { fail, finish, isTargetable, type CommandResult, damageProfile } from './common';
 import { damageEffects } from './damage-effects';
@@ -208,7 +209,8 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
   }
   if (e.kind === 'blinkStep') {
     if (!cmd.to) return fail('Işınlanılacak altıgeni seç.');
-    events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource as string, remaining: 0 }, teleportEvent(actor, cmd.to, f.name));
+    events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource as string, remaining: 0 });
+    events.push(...withArrival(state, events, [teleportEvent(actor, cmd.to, f.name)], rng));
     return finish(state, events);
   }
   if (e.kind === 'selfEffect') {

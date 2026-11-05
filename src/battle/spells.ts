@@ -35,6 +35,7 @@ import { concentrationEvent, spendSlot } from './slots';
 import { executeSummon } from './summons';
 import { castBarrier } from './castBarrier';
 import { teleportEvent, teleportProblem } from './teleport';
+import { withArrival } from './motion';
 import { pickArea } from './areaAttack';
 import { auraSave, hitExtras, weaponAttackEvents, weaponHexNear } from './features';
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
@@ -1429,10 +1430,10 @@ function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand,
       }
       return finish(state, events);
     }
-    events.push(teleportEvent(actor, cmd.targetHex, spell.name), teleportEvent(ally, spot, spell.name));
+    events.push(...withArrival(state, events, [teleportEvent(actor, cmd.targetHex, spell.name), teleportEvent(ally, spot, spell.name)], rng));
     return finish(state, events);
   }
-  events.push(teleportEvent(actor, cmd.targetHex, spell.name));
+  events.push(...withArrival(state, events, [teleportEvent(actor, cmd.targetHex, spell.name)], rng));
   return finish(state, events);
 }
 

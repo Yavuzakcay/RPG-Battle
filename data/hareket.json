@@ -1,0 +1,17 @@
+{
+ "not": "Kuyruk K53: ortak hareket sistemleri (ışınlanma varışı, zorla hareket, çarpma, nesne hareketi, geçici engel, aura). Kural sürümü `surum`; SRD dışı değerler ev kuralı/GM anahtarı.",
+ "surum": 24,
+ "carpma": {
+  "zar": "d6",
+  "enCokZar": 3,
+  "tur": "force",
+  "metin": {
+   "tr": "engele çarptı",
+   "en": "slammed into an obstacle"
+  },
+  "metinCarpilan": {
+   "tr": "üstüne çarpıldı",
+   "en": "was slammed into"
+  }
+ }
+}

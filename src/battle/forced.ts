@@ -31,6 +31,7 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 import type { CreatureSize } from '../data/types';
 import { isAirborne } from './flight';
 import { globalRule } from './ruleControl';
+import { forcedMove } from './motion';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
 export const LEVEL_FEET = 10;
@@ -183,36 +184,8 @@ export function forcedMoveEvents(state: BattleState, targetId: string, out: Extr
  * uzak komşusuna (eşitse eksen sırasıyla ilki); engelde durur.
  */
 export function pushAwayEvents(state: BattleState, origin: Offset, targetId: string, feet: number, by: string, rng: Rng): BattleEvent[] {
-  const events: BattleEvent[] = [];
-  let current = state;
-  for (let step = 0; step < Math.floor(feet / 5); step++) {
-    const t = current.combatants[targetId];
-    if (!t?.pos || t.hp <= 0 || t.life === 'dead') break;
-    const here = t.pos;
-    const d0 = distance(origin, here);
-    // İtme doğrultusu: çıkış noktasından hedefe giden vektöre en uygun (küp koordinatında iç
-    // çarpımı en büyük) ve uzaklaşan komşu; düz doğrultuda eksenin devamı.
-    const a0 = offsetToAxial(origin);
-    const a1 = offsetToAxial(here);
-    const v = { q: a1.q - a0.q, r: a1.r - a0.r };
-    const dot = (h: Offset) => {
-      const a = offsetToAxial(h);
-      const dq = a.q - a1.q;
-      const dr = a.r - a1.r;
-      return dq * v.q + dr * v.r + (-dq - dr) * (-v.q - v.r);
-    };
-    const best = neighbors(here, sizeOf(current))
-      .filter((h) => distance(origin, h) > d0)
-      .sort((x, y) => dot(y) - dot(x))[0];
-    const out = best ? pushOutcome(current, t, here, best) : null;
-    const next = best && out?.ok ? { h: best, out } : null;
-    if (!next || !next.out.ok) break;
-    const evs = forcedMoveEvents(current, targetId, next.out, by, rng);
-    events.push(...evs);
-    current = applyEvents(current, evs);
-    if (next.out.kind !== 'move') break;
-  }
-  return events;
+  // Kuyruk K53: tek zorla hareket girişi (`motion.ts` `forcedMove`, itme kipi); sürüm 24+ çarpma kuralı orada.
+  return forcedMove(state, targetId, 'push', feet, by, rng, { origin });
 }
 
 /**

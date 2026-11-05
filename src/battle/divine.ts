@@ -26,6 +26,7 @@ import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { timedCondition } from './durations';
 import { teleportEvent, teleportHexes, teleportProblem } from './teleport';
+import { withArrival } from './motion';
 import { clericFeatureProblem, executeClericFeature } from './cleric';
 import { apexProblem, executeApex, isApex } from './apex';
 import { celestialProblem, executeCelestial } from './celestial';
@@ -150,7 +151,7 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (e.kind === 'teleport') {
     if (!cmd.to) return fail('Işınlanılacak altıgeni seç.');
     if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
-    events.push(teleportEvent(actor, cmd.to, f.name));
+    events.push(...withArrival(state, events, [teleportEvent(actor, cmd.to, f.name)], rng));
     return finish(state, events);
   }
   // Görev F: kendine geçici HP (Tireless) ya da sonraki turunun sonuna dek durum (Nature's Veil: Invisible).

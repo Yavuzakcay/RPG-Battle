@@ -9,6 +9,8 @@
  *   (bağlı alan), Hydra başları, zıplama; tur başı/sonu (`monsterTurnEvents`), ölüm patlaması (`deathBurstEvents`),
  *   hasar tepkileri (`damage-effects.ts`: emme, Freeze, Aversion to Fire).
  */
+import { forcedMove, MOTION_VERSION } from './motion';
+import { ruleVersion } from './ruleVersion';
 import data from '../../data/canavar-yetenekleri.json';
 import { getMonster } from '../data';
 import { distance, ring, type Offset } from '../rules/hex';
@@ -217,7 +219,7 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
         }
         return out.filter((e) => !(e.type === 'effect_added' && e.effect.id.startsWith(`leg:${me.id}:${a.id}`)));
       }
-      if (a.pushOnSave) for (const e of [...out]) if (e.type === 'save_resolved' && e.success && cur.combatants[e.targetId]) out.push(...pushOne(cur, me, cur.combatants[e.targetId] as Combatant, 1));
+      if (a.pushOnSave) for (const e of [...out]) if (e.type === 'save_resolved' && e.success && cur.combatants[e.targetId]) out.push(...pushOne(cur, me, cur.combatants[e.targetId] as Combatant, 1, rng));
       if (a.untilEscape || a.breakOnDamage) {
         return out.map((e) => (e.type === 'effect_added' && e.effect.id.startsWith(`leg:${me.id}:${a.id}`)
           ? { ...e, effect: { ...e.effect, ...(a.untilEscape ? { until: state.round + 600, ...(a.grappleDc ? { escapeCheck: { dc: a.grappleDc, skills: ['athletics', 'acrobatics'] } } : {}) } : {}), ...(a.breakOnDamage ? { breakOnDamage: true } : {}) } as ActiveEffect }
@@ -281,7 +283,7 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
       const t = Object.values(state.combatants).find((c) => c.side !== actor.side && c.hp > 0 && c.pos && c.conditions.includes(a.needsCondition ?? 'Restrained')
         && distance(hexOf(c), hexOf(actor)) * 5 <= (a.rangeFt ?? 30) && distance(hexOf(c), hexOf(actor)) > 1 && (!targetId || c.id === targetId));
       if (!t) return [];
-      return pullToward(state, actor, t, Math.floor((a.pullFt ?? 25) / 5));
+      return pullToward(state, actor, t, Math.floor((a.pullFt ?? 25) / 5), rng);
     }
     case 'drop': {
       // Swoop: yakaladığı yaratığı yarım uçuş hızı yüksekliğinden bırakır (SRD düşme hasarı 1d6/10 ft, Prone; yakalama biter).
@@ -338,7 +340,9 @@ function attackLike(state: BattleState, actor: Combatant, a: MonsterAbility, foe
     ...((a.conditions ?? []).includes('Prone') && !['H', 'G'].includes(t.size ?? 'M') ? [{ type: 'map_effect', rule: 'srdK19', targetId: t.id, text: `${a.tr}: Prone`, addCondition: 'Prone' } as BattleEvent] : [])];
 }
 
-function pushOne(s: BattleState, src: Combatant, t: Combatant, hexes: number): BattleEvent[] {
+function pushOne(s: BattleState, src: Combatant, t: Combatant, hexes: number, rng: Rng): BattleEvent[] {
+  // Kuyruk K53: sürüm 24+ tek zorla hareket girişi (varış kuralları, çarpma).
+  if (ruleVersion(s) >= MOTION_VERSION && src.pos) return forcedMove(s, t.id, 'push', hexes * 5, 'srdK19', rng, { origin: src.pos });
   let at = hexOf(t);
   const size = { cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 };
   for (let i = 0; i < hexes; i++) {
@@ -349,7 +353,8 @@ function pushOne(s: BattleState, src: Combatant, t: Combatant, hexes: number): B
   return at === hexOf(t) ? [] : [{ type: 'pushed', targetId: t.id, from: hexOf(t), to: at, by: 'srdK19' }];
 }
 
-function pullToward(s: BattleState, src: Combatant, t: Combatant, hexes: number): BattleEvent[] {
+function pullToward(s: BattleState, src: Combatant, t: Combatant, hexes: number, rng: Rng): BattleEvent[] {
+  if (ruleVersion(s) >= MOTION_VERSION && src.pos) return forcedMove(s, t.id, 'pull', hexes * 5, 'srdK19', rng, { origin: src.pos });
   let at = hexOf(t);
   const size = { cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 };
   for (let i = 0; i < hexes; i++) {
