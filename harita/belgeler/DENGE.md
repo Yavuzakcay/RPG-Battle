@@ -2643,3 +2643,16 @@ Dokuz SRD türü ortalamasının (%75,0) altında ama ±10 içinde; 9. seviye d�
 - 1. ayar: yapay zekâ örümcek biçiminden (tuzak turu değilse ve slot varken) çıkıp büyüye döner; Büyüleyici Bakış 3. seviyeden bonus eylem (`bakis.bonusSeviye` 6 → 3).
 - 2. ayar: her zaman hazır Karadul büyüleri (Toprak'ın çember büyülerinin karşılığı): Ray of Sickness, Web (3), Stinking Cloud (5), Blight (7), Cloudkill (9).
 - Açık: 7. seviyedeki büyük fark (6. seviyede gelen Giant Spider biçimi + Tatlı Tuzak döngüsü yakın dövüşe sokuyor olabilir). Ölçüm/ayar "Dungeondex öncesi tam test turu"na kaldı (hafif doğrulama modu: en çok birkaç deneme).
+
+## Kuyruk A2: canavar saldırı ekleri hızlı regresyon (30 tohum, seviye 5, standart parti; sayı ayarı yok)
+
+A2 bağlamalı canavar içeren 4 senaryo (Çöl: Mummy, Death Dog; Volkan: Fire Elemental, Magmin; Ork Kampı: Tough Boss, Worg; Mielikki Gölü: Merrow). Sürüm 30 (A2 ekleri açık) ile sürüm 29 (`KURAL_SURUMU=29`, eski davranış).
+
+| Senaryo | Kazanma 29 → 30 | Ort. ölen PC 29 → 30 | En az 1 ölüm 29 → 30 | Ort. tur 29 → 30 |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 97% → 97% | 0,07 → 0,10 | 7% → 10% | 7,2 → 7,3 |
+| Volkan | 97% → 97% | 0,27 → 0,27 | 17% → 17% | 6,3 → 6,3 |
+| Orman — Ork Kampı | 100% → 100% | 0,03 → 0,00 | 3% → 0% | 5,9 → 5,6 |
+| Orman — Mielikki Gölü | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 3,2 → 3,2 |
+
+Fark 30 tohumda gürültü içinde (en çok bir savaş); aralık dışı satır yok. Mummy laneti (HP kazanamaz) Çöl'de ölümleri hafif artırıyor görünüyor; 30 tohumda anlamlı değil.
