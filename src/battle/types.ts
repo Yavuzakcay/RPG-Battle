@@ -78,6 +78,10 @@ export interface ActiveEffect {
   sourceId: string;
   /** Kuyruk K53 S5: bu etkinin sahibine bağlı aura (`src/battle/auraCore.ts`). */
   aura?: import('./auraCore').AuraSpec;
+  /** Kuyruk K54: birden çok aura (Son Ders: save bonusu + tur başı Motivasyon). */
+  auras?: import('./auraCore').AuraSpec[];
+  /** Kuyruk K54 (sürüm 25): hareketi fırsat saldırısı doğurmaz (Çevik Yaşlı). */
+  noProvoke?: boolean;
   until?: number;
   concentration?: string;
   dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: string; single?: boolean };
@@ -553,6 +557,8 @@ export interface Combatant {
   auraImmune?: string[];
   auraNoHeal?: true;
   auraDeathDis?: true;
+  /** Kuyruk K54: aura ölüm save avantajı (Dar Gün Aurası). */
+  auraDeathAdv?: true;
   /** Kuyruk 18 H4: başka kattaki savaşçı (o katın harita kimliği) ve oradaki konumu. */
   offFloor?: string;
   floorPos?: Offset;

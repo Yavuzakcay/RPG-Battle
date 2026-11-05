@@ -96,11 +96,11 @@ export const throwRangeFt = (o: MapObject): number => { const w = weightOf(o); r
  * 3d6 kuvvet) bir kez atılır; yaratık hasarı alır, nesne de aynı hasarı (kırılabilir) ve yaratığın yanındaki boş altıgene
  * düşer. Hedef boşsa nesne oraya iner. Geçersizse neden.
  */
-export function throwObject(state: BattleState, from: Offset, objectId: string, to: Offset, by: string, rng: Rng, hit?: { dice: string; type: string }): { problem: string } | { events: BattleEvent[] } {
+export function throwObject(state: BattleState, from: Offset, objectId: string, to: Offset, by: string, rng: Rng, hit?: { dice: string; type: string }, rangeFt?: number): { problem: string } | { events: BattleEvent[] } {
   if (!objectMotionOn(state)) return { problem: 'Nesne hareketi kapalı.' };
   const obj = objOf(state, objectId);
   if (!obj) return { problem: 'Nesne yok.' };
-  const range = throwRangeFt(obj);
+  const range = rangeFt ?? throwRangeFt(obj);
   if (!range) return { problem: 'Bu nesne fırlatılamaz.' };
   if (distance(from, to) * 5 > range) return { problem: `En çok ${range} ft fırlatılabilir.` };
   const target = occupantAt(state, to);

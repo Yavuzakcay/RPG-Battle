@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54 G1: Yaşlı Bilge Disiplini (kural sürümü 25)
+
+- Kural sürümü 24 → 25 (`data/imza.json` `surumK54`, `data/kural-surumu.json`). K54'ün yeni eylemleri (`k54: true`) ve pasifleri sürüm 25 öncesi savaşta yüklenmez; `etki25` sürüm 25'te `etki` yerine geçer (Son Ders). Eski kayıt/replay K50 davranışıyla açılır.
+- Zihin Gücü: dört ayrı eylem (İt, Çek, Yana kaydır; 11'de Taşı = serbest kip 20 ft, seçilen altıgene doğru), hepsi K53 `forcedMove` üstünden (çarpma ev kuralı açıksa çarpma hasarı). Menzil 3'te 30 ft, 11'de 60 ft (`menzilSeviye`); boyut sınırı Large. Eski "İt" eylemi aynı kimlikle kaldı (sürüm 23–24 kayıtları için).
+- Nesne: altıgen hedefli ayrı eylem (`hedef: hex`); ağırlık sınırı 3'te hafif, 11'de hafif+orta (K53 ağırlık sınıfları; ağır asla). Monk'tan uzağa 10 ft, mesafe ağırlık çarpanıyla.
+- Fırlat (11, eylem, 2 Odak): hedef yaratık + nesne altıgeni; altıgende hareketli nesne yoksa `conjureDebris` zemin enkazı çağırır. Hedef DEX save, başarıda yarı; tek 3d6 (çarpma hasarı eklenmez). Menzil özellikten (60 ft), nesnenin fırlatma menzili aranmaz (`throwObject` `rangeFt`).
+- Sabır: yeni tepki tetiği `miss` (ıskalanan yakın dövüş). Saldırı sonrası kanca kaydı `registerAfterAttack` (döngüsel içe aktarma yok). Önce ücretsiz kullanım (`imzaSabir`, PB/uzun dinlenme), sonra 1 Odak; tepki silahsız vuruş.
+- Çevik Yaşlı: süren etkide `noProvoke` (sürüm 25+): erişimden çıkmak fırsat saldırısı doğurmaz. "Yönlendir" yok (karar bekliyor).
+- Son Ders: sürüm 25'te K53 aurası (dostlara pasif WIS kadar save bonusu + tur başı 1 Motivasyon; Moral kapalıyken Motivasyon sessizce yok). Aura etkileri `moral`, `deathSaveAdv`, `tempHp` auraCore'a eklendi; etkide birden çok aura `auras`.
+- Arayüz: altıgen hedefli imza eylemi (`imzaHex` 'hex') menüden altıgen seçimine; yaratık + altıgen (`'after'`) hedef tıklanınca altıgen seçimine geçer. Yapay zekâ yeni Zihin Gücü kiplerini kullanmaz (K50'deki İt'i kullanmaya devam eder).
+
 ## 2026-11-05 — Kuyruk K54 Görev 0: imza alt sınıf denetimi (K50 sonu, K54 öncesi)
 
 Kaynak: `docs/imza-alt-siniflar/` belgeleri × `data/imza.json` (motor: `src/battle/imza.ts`, YZ: `imzaAi`). Durum: **tam** (belgedeki gibi), **kısmi** (yaklaşık; eksik kısım parantezde), **yok** (planlı, motorda yok), **pasif** (beceri/büyü listesi; savaş dışı). YZ: ✓ kullanır, ✗ kullanmaz, — gerekmez.

@@ -1,6 +1,7 @@
 {
  "note": "K50: imza alt sınıflar (ev kuralı; kaynak docs/imza-alt-siniflar/). `python scripts/k50-imza-veri.py` üretir; elle düzenleme betikte. `altSiniflar` oluşturucu kaydı (SubclassDef; `evKurali` ev kuralı kimliği, Birlik Manastırı için null: her zaman açık), `eylemler` savaşta use_feature (src/battle/imza.ts), `pasifler` savaş başı etkileri. `$pb`, `$lvl`, `$wis` gibi belirteçler savaşçıdan.",
  "surum": 23,
+ "surumK54": 25,
  "kapaliOrtam": {
   "bolgeler": [
    "derinlikler",
@@ -877,8 +878,8 @@
      },
      "status": "calisir",
      "description": {
-      "tr": "Zihninle bir düşmanı itersin.",
-      "en": "You push a foe with your mind."
+      "tr": "Zihninle bir düşmanı ya da bir nesneyi iter, çeker ya da yana kaydırırsın.",
+      "en": "You push, pull or slide a foe or an object with your mind."
      }
     },
     {
@@ -888,7 +889,7 @@
       "tr": "Sabır",
       "en": "Patience"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Bir düşman sana vurmayı kaçırırsa karşılık verirsin.",
       "en": "When a foe misses you, you strike back."
@@ -914,10 +915,10 @@
       "tr": "Zihin Gücü genişler",
       "en": "Greater Mind Might"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
-      "tr": "Daha uzağa iter; bir nesneyi fırlatıp hedefe çarpabilirsin.",
-      "en": "Push farther; hurl an object at a target."
+      "tr": "Daha uzağa, istediğin yere taşırsın; bir nesneyi fırlatıp hedefe çarpabilirsin.",
+      "en": "Move foes farther and anywhere; hurl an object at a target."
      }
     },
     {
@@ -929,8 +930,8 @@
      },
      "status": "calisir",
      "description": {
-      "tr": "Daha hızlısın.",
-      "en": "You move faster."
+      "tr": "Daha hızlısın, kaçarken vurulmazsın.",
+      "en": "You move faster and slip away unharmed."
      }
     },
     {
@@ -1378,6 +1379,18 @@
    ],
    "uses": {
     "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaSabir": {
+   "name": "patience",
+   "feature": [
+    "monk/imza_bilge:patience"
+   ],
+   "uses": {
+    "proficiency": true
    },
    "recharge": {
     "long": "all"
@@ -2029,15 +2042,167 @@
    },
    "hedef": "enemy",
    "menzilFt": 30,
+   "menzilSeviye": {
+    "3": 30,
+    "11": 60
+   },
    "save": {
     "yetenek": "str",
     "dc": [
      "wis"
     ]
    },
+   "boyutEnCok": "L",
+   "ozel": "zihin",
+   "mesafe": 10,
+   "kip": "push",
    "itme": 10,
-   "ad": "Zihin Gücü",
-   "not": "Yalnız itme (çekme ve nesne yok); Large ve küçük sınırı yok."
+   "ad": "Zihin Gücü: İt"
+  },
+  "imza:imza_bilge/mind-pull": {
+   "sinif": "imza_bilge",
+   "ozellik": "mind-might",
+   "seviye": 3,
+   "tur": "bonus",
+   "kullan": {
+    "id": "focus",
+    "maliyet": 1
+   },
+   "hedef": "enemy",
+   "menzilFt": 30,
+   "menzilSeviye": {
+    "3": 30,
+    "11": 60
+   },
+   "save": {
+    "yetenek": "str",
+    "dc": [
+     "wis"
+    ]
+   },
+   "boyutEnCok": "L",
+   "ozel": "zihin",
+   "mesafe": 10,
+   "kip": "pull",
+   "ad": "Zihin Gücü: Çek",
+   "k54": true
+  },
+  "imza:imza_bilge/mind-slide": {
+   "sinif": "imza_bilge",
+   "ozellik": "mind-might",
+   "seviye": 3,
+   "tur": "bonus",
+   "kullan": {
+    "id": "focus",
+    "maliyet": 1
+   },
+   "hedef": "enemy",
+   "menzilFt": 30,
+   "menzilSeviye": {
+    "3": 30,
+    "11": 60
+   },
+   "save": {
+    "yetenek": "str",
+    "dc": [
+     "wis"
+    ]
+   },
+   "boyutEnCok": "L",
+   "ozel": "zihin",
+   "mesafe": 10,
+   "kip": "slide",
+   "ad": "Zihin Gücü: Yana kaydır",
+   "k54": true
+  },
+  "imza:imza_bilge/mind-object": {
+   "sinif": "imza_bilge",
+   "ozellik": "mind-might",
+   "seviye": 3,
+   "tur": "bonus",
+   "kullan": {
+    "id": "focus",
+    "maliyet": 1
+   },
+   "hedef": "hex",
+   "menzilFt": 30,
+   "menzilSeviye": {
+    "3": 30,
+    "11": 60
+   },
+   "ozel": "zihinNesne",
+   "mesafe": 10,
+   "agirlikSeviye": {
+    "3": [
+     "hafif"
+    ],
+    "11": [
+     "hafif",
+     "orta"
+    ]
+   },
+   "ad": "Zihin Gücü: Nesne",
+   "k54": true,
+   "not": "Nesne Monk'tan uzağa itilir (50 lb = hafif; 11. seviyede 200 lb = orta)."
+  },
+  "imza:imza_bilge/mind-move": {
+   "sinif": "imza_bilge",
+   "ozellik": "greater-mind-might",
+   "seviye": 11,
+   "tur": "bonus",
+   "kullan": {
+    "id": "focus",
+    "maliyet": 1
+   },
+   "hedef": "enemy",
+   "menzilFt": 30,
+   "menzilSeviye": {
+    "3": 30,
+    "11": 60
+   },
+   "save": {
+    "yetenek": "str",
+    "dc": [
+     "wis"
+    ]
+   },
+   "boyutEnCok": "L",
+   "ozel": "zihin",
+   "mesafe": 20,
+   "kip": "free",
+   "hedefVeHex": true,
+   "ad": "Zihin Gücü: Taşı",
+   "k54": true
+  },
+  "imza:imza_bilge/mind-hurl": {
+   "sinif": "imza_bilge",
+   "ozellik": "greater-mind-might",
+   "seviye": 11,
+   "tur": "action",
+   "kullan": {
+    "id": "focus",
+    "maliyet": 2
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "hedefVeHex": true,
+   "ozel": "firlat",
+   "save": {
+    "yetenek": "dex",
+    "dc": [
+     "wis"
+    ]
+   },
+   "yari": true,
+   "hasar": {
+    "zar": {
+     "11": "3d6"
+    },
+    "tur": "bludgeoning"
+   },
+   "ad": "Zihin Gücü: Fırlat",
+   "k54": true,
+   "not": "İkinci seçim nesnenin altıgeni; orada hareketli nesne yoksa zemin enkazı belirir (K53)."
   },
   "imza:imza_bilge/calm-word": {
    "sinif": "imza_bilge",
@@ -2083,7 +2248,36 @@
     "icon": "🍃"
    },
    "ad": "Son Ders",
-   "not": "Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler etkilenir; tur başı Motivasyon ve fırsat saldırısı dezavantajı yok."
+   "etki25": {
+    "name": "Son Ders",
+    "sure": 10,
+    "icon": "🍃",
+    "auras": [
+     {
+      "id": "son-ders-save",
+      "name": "Son Ders",
+      "radius": 6,
+      "filter": "allies",
+      "trigger": "passive",
+      "effect": {
+       "kind": "saveBonus",
+       "amount": "$wis"
+      }
+     },
+     {
+      "id": "son-ders-moral",
+      "name": "Son Ders",
+      "radius": 6,
+      "filter": "allies",
+      "trigger": "turnStart",
+      "effect": {
+       "kind": "moral",
+       "amount": 1
+      }
+     }
+    ]
+   },
+   "not": "Sürüm 25+: alan seninle hareket eder (aura); fırsat saldırısı dezavantajı yok."
   },
   "imza:imza_hizir/hastening-road": {
    "sinif": "imza_hizir",
@@ -2255,14 +2449,33 @@
   },
   {
    "sinif": "imza_bilge",
+   "ozellik": "patience",
+   "seviye": 3,
+   "etki": {
+    "sabir": {
+     "ucretsiz": "pb",
+     "odak": 1
+    },
+    "kaynak": {
+     "id": "imzaSabir",
+     "sayi": "pb",
+     "yenilenme": "long"
+    }
+   },
+   "not": "Tepki: yakın dövüşte sana iskalayan düşmana silahsız saldırı; önce ücretsiz kullanım, sonra 1 Odak.",
+   "k54": true
+  },
+  {
+   "sinif": "imza_bilge",
    "ozellik": "nimble-elder",
    "seviye": 11,
    "etki": {
     "name": "Çevik Yaşlı",
     "speedFt": 10,
+    "noProvoke": true,
     "icon": "🍃"
    },
-   "not": "Fırsat saldırısı muafiyeti ve Yönlendir yok."
+   "not": "Fırsat saldırısı muafiyeti sürüm 25+ (Disengage gibi); Yönlendir yok."
   }
  ]
 }

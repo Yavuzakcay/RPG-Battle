@@ -34,7 +34,12 @@ export type AuraEffect =
   | { kind: 'saveBonus'; amount: number }
   | { kind: 'conditionImmune'; conditions: string[] }
   | { kind: 'noHeal' }
-  | { kind: 'deathSaveDis' };
+  | { kind: 'deathSaveDis' }
+  /** Kuyruk K54: tur başı Motivasyon (Moral tam modu açıkken; en çoğu aşmaz). */
+  | { kind: 'moral'; amount: number }
+  /** Kuyruk K54: ölüm save avantajı ve tur başı geçici can (Dar Gün Aurası; `belowHalf`: yalnız yarı canın altındakilere). */
+  | { kind: 'deathSaveAdv'; belowHalf?: boolean }
+  | { kind: 'tempHp'; amount: number; belowHalf?: boolean };
 export interface AuraSpec {
   id: string;
   name: string;
@@ -63,7 +68,7 @@ function activeAuras(state: BattleState): Array<{ owner: Combatant; spec: AuraSp
   const out: Array<{ owner: Combatant; spec: AuraSpec }> = [];
   for (const c of Object.values(state.combatants)) {
     if (c.hp <= 0 || !c.pos || isIncapacitated(c.conditions)) continue;
-    for (const e of c.effects ?? []) if (e.aura) out.push({ owner: c, spec: e.aura });
+    for (const e of c.effects ?? []) for (const a of [...(e.aura ? [e.aura] : []), ...(e.auras ?? [])]) out.push({ owner: c, spec: a });
   }
   return out;
 }
@@ -97,15 +102,16 @@ export function strongest(list: Array<{ owner: Combatant; spec: AuraSpec }>): Ar
 }
 
 /** Pasif aura alanları (syncAuras): save bonusu, durum bağışıklığı, can yenileyemez, ölüm save dezavantajı. */
-export function passiveAuraOf(state: BattleState, v: Combatant): { saveBonus: number; immune: string[]; noHeal: boolean; deathDis: boolean } {
+export function passiveAuraOf(state: BattleState, v: Combatant): { saveBonus: number; immune: string[]; noHeal: boolean; deathDis: boolean; deathAdv: boolean } {
   const list = strongest(aurasOn(state, v).filter((x) => x.spec.trigger === 'passive'));
-  const out = { saveBonus: 0, immune: [] as string[], noHeal: false, deathDis: false };
+  const out = { saveBonus: 0, immune: [] as string[], noHeal: false, deathDis: false, deathAdv: false };
   for (const { spec } of list) {
     const e = spec.effect;
     if (e.kind === 'saveBonus') out.saveBonus = Math.max(out.saveBonus, e.amount);
     else if (e.kind === 'conditionImmune') out.immune = [...new Set([...out.immune, ...e.conditions])];
     else if (e.kind === 'noHeal') out.noHeal = true;
     else if (e.kind === 'deathSaveDis') out.deathDis = true;
+    else if (e.kind === 'deathSaveAdv' && (!e.belowHalf || v.hp < v.maxHp / 2)) out.deathAdv = true;
   }
   return out;
 }
@@ -140,6 +146,13 @@ export function auraTriggerEvents(state: BattleState, victimId: string, trigger:
       out.push(ev);
     }
     if (e.kind === 'condition' && failed && !v.conditions.includes(e.condition)) out.push({ type: 'map_effect', rule: 'auraCore', targetId: v.id, text: spec.name, addCondition: e.condition });
+    // Kuyruk K54: tur başı Motivasyon (yalnız Moral tam modunda: savaşçıda moralMax) ve geçici can (yarı canın altındakilere).
+    if (e.kind === 'moral' && v.moralMax !== undefined) {
+      const now = v.moral ?? v.moralMax;
+      const to = Math.min(v.moralMax, now + e.amount);
+      if (to !== now) out.push({ type: 'moral_changed', targetId: v.id, delta: to - now, moral: to, reason: 'toparlama', byId: owner.id });
+    }
+    if (e.kind === 'tempHp' && (!e.belowHalf || v.hp < v.maxHp / 2) && e.amount > (v.tempHp ?? 0)) out.push({ type: 'temp_hp', targetId: v.id, amount: e.amount, label: spec.name });
   }
   return out;
 }

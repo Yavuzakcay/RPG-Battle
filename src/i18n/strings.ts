@@ -644,6 +644,8 @@ const tr = {
       fall: (who: string, feet: number): string => `${who} ${feet} ft düşüyor.`,
       redirect: (): string => 'Hasar 0\'a indi: 1 Focus ile saldırıyı kime geri yönelteceksin?',
       turnStart: (src: string): string => `${src} turuna başlıyor.`,
+      miss: (src: string): string => `${src} sana vuramadı.`,
+      ally: (src: string, label: string): string => `${src}: ${label}`,
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number): string => `${n}. seviye slot`,
     /** Görev Z2: Cutting Words zarın uygulanacağı yer (zar atılmadan seçilir). */

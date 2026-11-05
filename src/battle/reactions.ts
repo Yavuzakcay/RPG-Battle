@@ -321,6 +321,11 @@ function ownHitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutc
   };
 }
 
+/** Kuyruk K54: saldırı sonrası tepki kancaları (imza alt sınıflar; `registerAfterAttack`). */
+export type AfterAttackHook = (state: BattleState, attackerId: string, targetId: string, info: { melee: boolean; damageType: string; dealt: number; hit: boolean }, rng: Rng) => BattleEvent[];
+const afterHooks: AfterAttackHook[] = [];
+export function registerAfterAttack(h: AfterAttackHook): void { if (!afterHooks.includes(h)) afterHooks.push(h); }
+
 /**
  * İsabet tepkisinin ve hasarın ardından: Deflect Attacks'in geri yöneltmesi, Riposte'un karşılık saldırısı, hasar
  * alanın tepkisi (Hellish Rebuke, Retaliation). `state` saldırı olayları uygulanmış durum.
@@ -330,6 +335,8 @@ export function afterAttackReactions(state: BattleState, attackerId: string, tar
   const events: BattleEvent[] = [];
   let current = state;
   const add = (evs: BattleEvent[]) => { events.push(...evs); current = applyEvents(current, evs); };
+  // Kuyruk K54: ıskalanan saldırıya tepkiler (Sabır…); kancalar kaydı döngüsel içe aktarmayı önler.
+  for (const h of afterHooks) add(h(current, attackerId, targetId, { ...info, hit: !!outcome?.hit }, rng));
   if (outcome?.redirect) add(redirectEvents(current, targetId, attackerId, info.melee, info.damageType, rng));
   // Kuyruk 19 (srdK19): Deflect Missile geri yöneltmesi ve Reflexive Antennae.
   if (outcome?.missileBack) add(missileBackEvents(current, targetId, attackerId, outcome.missileBack, rng));

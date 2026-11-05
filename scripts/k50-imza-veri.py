@@ -10,6 +10,8 @@ import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SURUM = 23
+# Kuyruk K54: eksik özellikler (kural sürümü 25; `k54: True` olan eylem/pasif yalnız 25+ savaşta).
+SURUM_K54 = 25
 
 def F(fid, level, tr, en, dtr, den, status='calisir'):
     return {'id': fid, 'level': level, 'name': {'tr': tr, 'en': en}, 'status': status, 'description': {'tr': dtr, 'en': den}}
@@ -29,8 +31,8 @@ def act(sid, fid, **spec):
         spec['not'] = spec.pop('not_')
     eylem[f'imza:{sid}/{fid}'] = {'sinif': sid, 'ozellik': spec.pop('ozellikAdi', fid), **spec}
 
-def pas(sid, fid, seviye, etki, not_=None):
-    pasif.append({'sinif': sid, 'ozellik': fid, 'seviye': seviye, 'etki': etki, **({'not': not_} if not_ else {})})
+def pas(sid, fid, seviye, etki, not_=None, k54=False):
+    pasif.append({'sinif': sid, 'ozellik': fid, 'seviye': seviye, 'etki': etki, **({'not': not_} if not_ else {}), **({'k54': True} if k54 else {})})
 
 PB = {'sayi': 'pb', 'yenilenme': 'short'}
 
@@ -195,20 +197,36 @@ act(s, 'satire', seviye=3, tur='bonus', kullan={'id': 'bardicInspiration', 'mali
 s = 'imza_bilge'
 sub(s, 'monk', 'Yaşlı Bilge Disiplini', 'Elder Sage Discipline', 'Gücü sabrından gelen yaşlı usta', 'An old master whose power is patience', [
     F('elder-wisdom', 3, 'Yaşlı Bilgelik', 'Elder Wisdom', "İçgörü'de ustasın.", 'You gain Insight proficiency.'),
-    F('mind-might', 3, 'Zihin Gücü', 'Mind Might', 'Zihninle bir düşmanı itersin.', 'You push a foe with your mind.'),
-    F('patience', 3, 'Sabır', 'Patience', 'Bir düşman sana vurmayı kaçırırsa karşılık verirsin.', 'When a foe misses you, you strike back.', 'planli'),
+    F('mind-might', 3, 'Zihin Gücü', 'Mind Might', 'Zihninle bir düşmanı ya da bir nesneyi iter, çeker ya da yana kaydırırsın.', 'You push, pull or slide a foe or an object with your mind.'),
+    F('patience', 3, 'Sabır', 'Patience', 'Bir düşman sana vurmayı kaçırırsa karşılık verirsin.', 'When a foe misses you, you strike back.'),
     F('calm-word', 6, 'Sakin Söz', 'Calm Word', 'Bir dostunun korkusunu ve büyüsünü dağıtır, cesaretini tazelersin.', 'Dispel an ally’s fear and charm and lift their heart.'),
-    F('greater-mind-might', 11, 'Zihin Gücü genişler', 'Greater Mind Might', 'Daha uzağa iter; bir nesneyi fırlatıp hedefe çarpabilirsin.', 'Push farther; hurl an object at a target.', 'planli'),
-    F('nimble-elder', 11, 'Çevik Yaşlı', 'Nimble Elder', 'Daha hızlısın.', 'You move faster.'),
+    F('greater-mind-might', 11, 'Zihin Gücü genişler', 'Greater Mind Might', 'Daha uzağa, istediğin yere taşırsın; bir nesneyi fırlatıp hedefe çarpabilirsin.', 'Move foes farther and anywhere; hurl an object at a target.'),
+    F('nimble-elder', 11, 'Çevik Yaşlı', 'Nimble Elder', 'Daha hızlısın, kaçarken vurulmazsın.', 'You move faster and slip away unharmed.'),
     F('final-lesson', 17, 'Son Ders', 'Final Lesson', '10 tur boyunca dostların etrafında dinginlik yayılır: daha dirençli olurlar.', 'For 10 rounds calm spreads around your allies: they resist better.'),
 ], beceri=['insight'])
-act(s, 'mind-might', seviye=3, tur='bonus', kullan={'id': 'focus', 'maliyet': 1}, hedef='enemy', menzilFt=30, save={'yetenek': 'str', 'dc': ['wis']}, itme=10, ad='Zihin Gücü',
-    not_='Yalnız itme (çekme ve nesne yok); Large ve küçük sınırı yok.')
+ZIHIN = dict(seviye=3, tur='bonus', kullan={'id': 'focus', 'maliyet': 1}, hedef='enemy', menzilFt=30, menzilSeviye={'3': 30, '11': 60}, save={'yetenek': 'str', 'dc': ['wis']},
+    boyutEnCok='L', ozel='zihin', mesafe=10, ozellikAdi='mind-might')
+# Sürüm 23–24 savaşında eski davranış: yalnız itme (`itme`); 25+ `ozel: zihin` (forcedMove kipleri, boyut sınırı).
+act(s, 'mind-might', **{**ZIHIN, 'kip': 'push'}, itme=10, ad='Zihin Gücü: İt')
+act(s, 'mind-pull', **{**ZIHIN, 'kip': 'pull'}, ad='Zihin Gücü: Çek', k54=True)
+act(s, 'mind-slide', **{**ZIHIN, 'kip': 'slide'}, ad='Zihin Gücü: Yana kaydır', k54=True)
+act(s, 'mind-object', seviye=3, tur='bonus', kullan={'id': 'focus', 'maliyet': 1}, hedef='hex', menzilFt=30, menzilSeviye={'3': 30, '11': 60}, ozel='zihinNesne', mesafe=10,
+    agirlikSeviye={'3': ['hafif'], '11': ['hafif', 'orta']}, ad='Zihin Gücü: Nesne', ozellikAdi='mind-might', k54=True,
+    not_='Nesne Monk\'tan uzağa itilir (50 lb = hafif; 11. seviyede 200 lb = orta).')
+act(s, 'mind-move', **{**ZIHIN, 'seviye': 11, 'kip': 'free', 'mesafe': 20, 'ozellikAdi': 'greater-mind-might'}, hedefVeHex=True, ad='Zihin Gücü: Taşı', k54=True)
+act(s, 'mind-hurl', seviye=11, tur='action', kullan={'id': 'focus', 'maliyet': 2}, hedef='enemy', menzilFt=60, hedefVeHex=True, ozel='firlat',
+    save={'yetenek': 'dex', 'dc': ['wis']}, yari=True, hasar={'zar': {'11': '3d6'}, 'tur': 'bludgeoning'}, ad='Zihin Gücü: Fırlat', ozellikAdi='greater-mind-might', k54=True,
+    not_='İkinci seçim nesnenin altıgeni; orada hareketli nesne yoksa zemin enkazı belirir (K53).')
+pas(s, 'patience', 3, {'sabir': {'ucretsiz': 'pb', 'odak': 1}, 'kaynak': {'id': 'imzaSabir', 'sayi': 'pb', 'yenilenme': 'long'}}, 'Tepki: yakın dövüşte sana iskalayan düşmana silahsız saldırı; önce ücretsiz kullanım, sonra 1 Odak.', k54=True)
 act(s, 'calm-word', seviye=6, tur='bonus', kullan={'id': 'focus', 'maliyet': 1}, hedef='allyOrSelf', menzilFt=30, temizle=['Frightened', 'Charmed'], moral=1, ad='Sakin Söz')
 act(s, 'final-lesson', seviye=17, tur='action', kaynak={'id': 'imzaSonDers', 'sayi': 1, 'yenilenme': 'long'}, hedef='allies', yaricapFt=30, kendisi=True,
     etki={'name': 'Son Ders', 'sure': 10, 'dice': {'die': '$wis', 'sign': 1, 'on': ['save']}, 'icon': '🍃'}, ad='Son Ders',
-    not_='Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler etkilenir; tur başı Motivasyon ve fırsat saldırısı dezavantajı yok.')
-pas(s, 'nimble-elder', 11, {'name': 'Çevik Yaşlı', 'speedFt': 10, 'icon': '🍃'}, 'Fırsat saldırısı muafiyeti ve Yönlendir yok.')
+    # Kuyruk K54 (sürüm 25): alan Monk'la hareket eden aura (K53 auraCore): dostlara WIS kadar save, tur başı +1 Motivasyon.
+    etki25={'name': 'Son Ders', 'sure': 10, 'icon': '🍃', 'auras': [
+        {'id': 'son-ders-save', 'name': 'Son Ders', 'radius': 6, 'filter': 'allies', 'trigger': 'passive', 'effect': {'kind': 'saveBonus', 'amount': '$wis'}},
+        {'id': 'son-ders-moral', 'name': 'Son Ders', 'radius': 6, 'filter': 'allies', 'trigger': 'turnStart', 'effect': {'kind': 'moral', 'amount': 1}}]},
+    not_='Sürüm 25+: alan seninle hareket eder (aura); fırsat saldırısı dezavantajı yok.')
+pas(s, 'nimble-elder', 11, {'name': 'Çevik Yaşlı', 'speedFt': 10, 'noProvoke': True, 'icon': '🍃'}, 'Fırsat saldırısı muafiyeti sürüm 25+ (Disengage gibi); Yönlendir yok.')
 
 # ---------------- Paladin: Hızır Yemini ----------------
 s = 'imza_hizir'
@@ -272,6 +290,7 @@ out = {
             '`altSiniflar` oluşturucu kaydı (SubclassDef; `evKurali` ev kuralı kimliği, Birlik Manastırı için null: her zaman açık), '
             '`eylemler` savaşta use_feature (src/battle/imza.ts), `pasifler` savaş başı etkileri. `$pb`, `$lvl`, `$wis` gibi belirteçler savaşçıdan.',
     'surum': SURUM,
+    'surumK54': SURUM_K54,
     'kapaliOrtam': {'bolgeler': ['derinlikler', 'yeralti', 'hapishane'], 'varyantSozcukleri': ['karanlik', 'los', 'ic'], 'haritalar': ['kale-taht-salonu', 'kasaba-lagim', 'magara', 'magara-genis', 'dungeon', 'orman-heykel-magarasi', 'yeralti-nehri']},
     'eskiKimlik': {'baris-alani': 'imza_birlik'},
     'altSiniflar': alt,

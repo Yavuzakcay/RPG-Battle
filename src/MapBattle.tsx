@@ -5,7 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
-import { imzaTargeted } from './battle/imza';
+import { imzaHex, imzaTargeted } from './battle/imza';
 import { changeFloorProblem, floorLinkOf } from './battle/floors';
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { overchannelProblem } from './battle/apex';
@@ -411,6 +411,17 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const cure = f?.effect.kind === 'healPool' && missing === 0 && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
     return { type: 'use_feature', actorId: me.id, feature: featureKey ?? '', targetId: c.id, amount: Math.min(pool, missing), ...(cure ? { cure: true } : {}) };
   };
+  // Kuyruk K54: yaratık + altıgen isteyen imza eylemi (Zihin Gücü: Fırlat): parlama denetimi kendi altıgeniyle,
+  // hedefe tıklanınca altıgen seçimine geçer.
+  const featureProbe = (me: Combatant, c: Combatant): Command => {
+    const cmd = featureCommand(me, c);
+    return featureKey && imzaHex(featureKey) === 'after' && me.pos && cmd.type === 'use_feature' ? { ...cmd, to: me.pos } : cmd;
+  };
+  const featureGo = (me: Combatant, c: Combatant) => {
+    const cmd = featureCommand(me, c);
+    if (featureKey && imzaHex(featureKey) === 'after' && cmd.type === 'use_feature') { setPickHexCmd({ make: (h) => ({ ...cmd, to: h }) }); setMode('pickHex'); return; }
+    run(cmd);
+  };
   const [aimHex, setAimHex] = useState<Offset | null>(null);
   // Alan eylemi (Görev R4): alan büyüsü, canavar nefesi/alan saldırısı ya da Dragonborn nefesi.
   const [areaAct, setAreaAct] = useState<AreaAct | null>(null);
@@ -689,7 +700,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'feature' && featureKey && actor) {
       // İyileştirme havuzu (Lay On Hands): motorun kabul ettiği dostlar (kendisi dahil).
       return new Set(Object.values(state.combatants)
-        .filter((c) => execute(state, featureCommand(actor, c), contextFor(state, actorId), () => 0.5).ok)
+        .filter((c) => execute(state, featureProbe(actor, c), contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
     if (mode === 'strike') {
@@ -955,7 +966,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'aim' && areaAct && c.pos) { setAimHex(c.pos); return; }
     if (mode === 'erupt' && c.pos) { run({ type: 'map_trigger', rule: 'eruption', at: c.pos }); return; }
     // Kendine: iyileştirme havuzu ve koruma büyüsü (Shield of Faith) kendine de yapılır.
-    if (c.id === actorId && mode === 'feature' && glowing.has(c.id) && actor) { run(featureCommand(actor, c)); return; }
+    if (c.id === actorId && mode === 'feature' && glowing.has(c.id) && actor) { featureGo(actor, c); return; }
     if (c.id === actorId && mode === 'spell' && spell && actor && (spell.mechanics.ward || spell.mechanics.kind === 'heal')) {
       run({ type: 'cast_spell', actorId, spellName: spell.name, targetId: actorId, ...slotFields(slotPick) }); return;
     }
@@ -966,7 +977,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return;
     }
     if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
-    if (mode === 'feature' && glowing.has(c.id) && actor) run(featureCommand(actor, c));
+    if (mode === 'feature' && glowing.has(c.id) && actor) featureGo(actor, c);
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
@@ -1207,8 +1218,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? (imzaTargeted(f.key) ? undefined : why({ type: 'use_feature', actorId, feature: f.key })) ?? undefined,
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
       : { key: f.key, label: N.featureName[f.key] ?? f.name,
-        reason: featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
-        act: () => (f.effect.kind === 'sanctuary'
+        reason: imzaHex(f.key) === 'hex' ? (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined)
+          : featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
+        act: () => (f.effect.kind === 'sanctuary' || imzaHex(f.key) === 'hex'
           // Kuyruk 19 (11–20): Nature's Sanctuary küpünün merkezi (varken taşıma) altıgenle seçilir.
           ? (reset(), setPickHexCmd({ make: (h) => ({ type: 'use_feature', actorId, feature: f.key, to: h }) }), setMode('pickHex'), setMenuOpen(false))
           : f.effect.kind === 'teleport' || f.effect.kind === 'landsAid' || f.effect.kind === 'blinkStep'

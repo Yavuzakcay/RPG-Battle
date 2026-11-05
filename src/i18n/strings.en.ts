@@ -1047,6 +1047,8 @@ export const en: Strings = {
       fall: (who: string, feet: number) => `${who} is falling ${feet} ft.`,
       redirect: () => 'Damage reduced to 0: spend 1 Focus to redirect the attack at whom?',
       turnStart: (src: string) => `${src} starts their turn.`,
+      miss: (src: string) => `${src} missed you.`,
+      ally: (src: string, label: string) => `${src}: ${label}`,
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number) => `level ${n} slot`,
     choice: { attack: 'subtract from the attack roll', damage: 'subtract from the damage' } as Record<string, string>,

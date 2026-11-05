@@ -56,6 +56,7 @@ import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } fr
 import { afterAttackMarks, hasTrait, saveDamage, colossusDice, cunningCost, cunningEvents, cunningProblem, elusiveFilter, markDie, superiorPreyEvents, traitSources, usedThisTurn } from './classTraits';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, monsterAttackReach, optionReach, spellReach } from './range';
+import { ruleVersion } from './ruleVersion';
 import { afterAttackReactions, askOpportunity, canReact, hitReactions, OPPORTUNITY, reactionUsed, registerStrikes, targetedReactions } from './reactions';
 import { applyEvents } from './reduce';
 import { damagePenalty } from './effects';
@@ -429,6 +430,8 @@ export function opportunityAttacks(
   if (mover0.traits?.includes('flyby') && isAirborne(mover0)) return [];
   // Kuyruk 19 (Deer, Rat Agile): erişimden çıkması fırsat saldırısı doğurmaz.
   if (mover0.traits?.includes('agile')) return [];
+  // Kuyruk K54 (Çevik İhtiyar vb.): süren etkide `noProvoke` (sürüm 25+).
+  if (mover0.effects?.some((e) => e.noProvoke) && ruleVersion(state) >= 25) return [];
   const events: BattleEvent[] = [];
   let current = state;
   for (const id of state.order) {

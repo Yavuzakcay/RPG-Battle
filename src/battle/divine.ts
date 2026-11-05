@@ -57,7 +57,7 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   if (isApex(f)) return apexProblem(state, actor, f, cmd);
   if (f.effect.kind === 'celestialHeal' || f.effect.kind === 'celestialAwakening') return celestialProblem(state, actor, f, cmd.targetId);
   if (f.effect.kind === 'karadulGaze' || f.effect.kind === 'karadulSpider') return karadulProblem(state, actor, f, cmd.targetId);
-  if (f.effect.kind === 'imza') return imzaProblem(state, actor, f, cmd.targetId);
+  if (f.effect.kind === 'imza') return imzaProblem(state, actor, f, cmd.targetId, cmd.to);
   const left = f.resource ? resourceLeft(actor, f.resource) : Infinity;
   // Görev SORCERER: Innate Sorcery kullanım bitince Sorcery Incarnate ile puanla da açılır (`innateSorceryEvents` denetler).
   if (left <= 0 && f.effect.kind !== 'innate' && f.effect.kind !== 'inspire') return `${f.name}: kullanım kalmadı.`;
@@ -116,7 +116,7 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (isApex(f)) return executeApex(state, actor, f, cmd, rng);
   if (e.kind === 'celestialHeal' || e.kind === 'celestialAwakening') return executeCelestial(state, actor, f, cmd.targetId, rng);
   if (e.kind === 'karadulGaze' || e.kind === 'karadulSpider') return executeKaradul(state, actor, f, cmd.targetId, rng);
-  if (e.kind === 'imza') return executeImza(state, actor, f, cmd.targetId, rng);
+  if (e.kind === 'imza') return executeImza(state, actor, f, cmd.targetId, rng, cmd.to);
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife' || e.kind === 'abjure') return executeClericFeature(state, actor, f, cmd, rng);
   if (e.kind === 'innate') return finish(state, innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds) as BattleEvent[]);
   if (e.kind === 'inspire') return finish(state, inspireEvents(state, actor, f, cmd.targetId as string));

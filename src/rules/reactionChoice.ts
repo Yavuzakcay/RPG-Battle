@@ -20,7 +20,9 @@ export interface ReactionOption {
 }
 
 /** Tetik türü: isabet, hedef alınma, erişimden çıkma, büyü yapılması, hasar, düşme, geri yöneltme, tur başı. */
-export type ReactionTrigger = 'hit' | 'targeted' | 'leave' | 'cast' | 'damaged' | 'fall' | 'redirect' | 'turnStart';
+export type ReactionTrigger = 'hit' | 'targeted' | 'leave' | 'cast' | 'damaged' | 'fall' | 'redirect' | 'turnStart'
+  /** Kuyruk K54 (imza): iskalanan saldırı, dosta isabet/hedef, dostun düşmesi. */
+  | 'miss' | 'ally';
 
 export interface ReactionRequest {
   /** Tepkiyi verecek yaratık. */
