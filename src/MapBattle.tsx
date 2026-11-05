@@ -76,7 +76,7 @@ import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './ba
 import { getMonster, monsters, spells } from './data';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
-import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
+import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { ReactionPrompt } from './ui/ReactionPrompt';
@@ -1606,15 +1606,22 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       <rect x={p.x - r} y={p.y + r + 12} width={2 * r} height={4} className="hpbg" />
                       <rect x={p.x - r} y={p.y + r + 12} width={2 * r * Math.max(0, (c.moral ?? 0) / Math.max(1, c.moralMax))} height={4} className="moral" />
                     </>)}
-                    {[...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])].length > 0 && (
-                      <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
-                        {([...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])] as StatusIcon[]).map((s, i) => (s.img
-                          // Görev E1: ikon görseli (bitkinlikte kum saati + seviye).
-                          ? <g key={s.key}><title>{s.title}</title><image href={`${BASE}${s.img}`} x={-i * 20 - 11} y={-17} width={22} height={22} className="status-img" />
-                            {s.count ? <text x={-i * 20 + 8} y={4} className="status-count">{s.count}</text> : null}</g>
-                          : <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>))}
-                      </g>
-                    )}
+                    {(() => {
+                      // Kuyruk A2: en çok 3 rozet (öncelik veriden), fazlası "+N".
+                      const all = [...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])] as StatusIcon[];
+                      if (all.length === 0) return null;
+                      const { shown, more } = limitBadges(all);
+                      return (
+                        <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
+                          {shown.map((s, i) => (s.img
+                            // Görev E1: ikon görseli (bitkinlikte kum saati + seviye).
+                            ? <g key={s.key}><title>{s.title}</title><image href={`${BASE}${s.img}`} x={-i * 20 - 11} y={-17} width={22} height={22} className="status-img" />
+                              {s.count ? <text x={-i * 20 + 8} y={4} className="status-count">{s.count}</text> : null}</g>
+                            : <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>))}
+                          {more > 0 && <text key="more" x={-shown.length * 20} y={0} className="status-more"><title>{all.map((x) => x.title).join(', ')}</title>{`+${more}`}</text>}
+                        </g>
+                      );
+                    })()}
                     {c.asleep && (
                       <g className="zzz" transform={`translate(${p.x + r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`}>
                         <rect x={-4} y={-22} width={58} height={28} rx={14} />

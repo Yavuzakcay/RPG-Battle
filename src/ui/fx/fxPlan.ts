@@ -184,7 +184,7 @@ function auraSprite(type: string | undefined, filter: string | undefined): FxSpr
 }
 
 export interface GroundAura { key: string; ownerId: string; radius: number; sprite: FxSprite }
-export interface GroundWall { key: string; hexes: Array<{ at: Offset; rotate: number }>; sprite: FxSprite; tint?: string }
+export interface GroundWall { key: string; hexes: Array<{ at: Offset; rotate: number }>; sprite: FxSprite; tint?: string; outline?: string }
 
 /** Kalıcı efektler: auralar (yaratığa bağlı) ve duvarlar (engel alanları). */
 export function groundFx(state: BattleState): { auras: GroundAura[]; walls: GroundWall[] } {
@@ -209,7 +209,8 @@ export function groundFx(state: BattleState): { auras: GroundAura[]; walls: Grou
     const name = (z.barrier && D[z.barrier.kind]) || D[z.spellId];
     const s = sp(name);
     if (!s || !name || !z.hexes.length) continue;
-    walls.push({ key: z.id, sprite: s, tint: (B.ton as Record<string, string>)[name], hexes: z.hexes.map((h) => ({ at: h, rotate: wallAngle(h, z.hexes) })) });
+    const outline = ((B as unknown as { kontur?: Record<string, string> }).kontur ?? {})[name];
+    walls.push({ key: z.id, sprite: s, tint: (B.ton as Record<string, string>)[name], ...(outline ? { outline } : {}), hexes: z.hexes.map((h) => ({ at: h, rotate: wallAngle(h, z.hexes) })) });
   }
   return { auras, walls };
 }

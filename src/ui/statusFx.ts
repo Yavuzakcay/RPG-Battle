@@ -132,3 +132,14 @@ export function filterStyle(filters: TokenFilter[]): { filter: string; opacity: 
   }
   return { filter: parts.join(' '), opacity, shrink, ...(tilt ? { tilt } : {}) };
 }
+
+/**
+ * Kuyruk A2: jeton rozetleri en çok `rozet.enCok` (3), fazlası "+N". Sıra veriden (`rozet.oncelik`: eylemi kesen durumlar
+ * önde); listede olmayan (süren etki rozetleri) arkada, kendi sıralarıyla.
+ */
+export function limitBadges<T extends { key: string }>(list: T[], max: number = baglama.rozet.enCok): { shown: T[]; more: number } {
+  const order = baglama.rozet.oncelik as string[];
+  const rank = (k: string) => { const i = order.indexOf(k); return i < 0 ? order.length : i; };
+  const sorted = list.map((x, i) => ({ x, i })).sort((a, b) => rank(a.x.key) - rank(b.x.key) || a.i - b.i).map((y) => y.x);
+  return { shown: sorted.slice(0, max), more: Math.max(0, sorted.length - max) };
+}

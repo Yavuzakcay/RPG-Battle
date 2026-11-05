@@ -13,3 +13,5 @@
 .fx-z.still { animation: none; }
 @keyframes fx-z-float { 0% { transform: translateY(0); opacity: 0.2; } 40% { opacity: 1; } 100% { transform: translateY(-14px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .fx-z { animation: none; opacity: 1; } }
+/* Kuyruk A2: en çok 3 rozet, fazlası "+N". */
+.token .status-icons .status-more { font-size: 13px; font-weight: 700; fill: #fff; text-anchor: middle; paint-order: stroke; stroke: rgba(0, 0, 0, 0.85); stroke-width: 3px; }

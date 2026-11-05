@@ -19,16 +19,18 @@ type Pt = { x: number; y: number };
 interface Geo { hexCenter: (o: Offset) => Pt; tokenCenter: (c: Combatant) => Pt; hexW: number; hexH: number }
 
 /** Tek şerit karesi: animasyonlu (`fx-play`, steps) ya da statik tek kare. */
-function Strip({ s, x, y, w, h, animated, delay = 0, loop, rotate, cx, cy, tint, className }: {
+function Strip({ s, x, y, w, h, animated, delay = 0, loop, rotate, cx, cy, tint, outline, className }: {
   s: FxSprite; x: number; y: number; w: number; h: number; animated: boolean; delay?: number; loop?: boolean; rotate?: number; cx?: number; cy?: number;
-  tint?: string; className?: string;
+  tint?: string; outline?: string; className?: string;
 }) {
   const frame = stillFrame(s);
   const img: CSSProperties = animated
     ? ({ '--shift': `${-s.w * s.frames}px`, animation: `fx-play ${s.ms}ms steps(${s.frames}) ${delay}ms ${loop ? 'infinite' : 'both'}` } as CSSProperties)
     : { transform: `translateX(${-s.w * frame}px)` };
   // Statik tek seferlik efekt gecikmesine dek gizli, sonra tek kare (hareket yok).
-  const box: CSSProperties | undefined = !animated && delay > 0 ? { animation: `fx-appear 1ms step-end ${delay}ms both` } : undefined;
+  const box0: CSSProperties | undefined = !animated && delay > 0 ? { animation: `fx-appear 1ms step-end ${delay}ms both` } : undefined;
+  // Kuyruk A2: konturlu şerit (Çizili Duvar): normal karışım + koyu gölge; açık ve koyu haritada okunur.
+  const box: CSSProperties | undefined = outline ? { ...box0, mixBlendMode: 'normal', filter: `drop-shadow(0 0 1px ${outline}) drop-shadow(0 0 2px ${outline}) drop-shadow(1px 1px 0 ${outline})` } : box0;
   return (
     <svg className={`fx-e1${className ? ` ${className}` : ''}`} x={x} y={y} width={w} height={h} viewBox={`0 0 ${s.w} ${s.h}`} overflow="hidden" preserveAspectRatio="none"
       style={box} data-fx={s.id} data-animated={animated ? '1' : '0'}
@@ -130,7 +132,7 @@ export function FxGround({ state, enabled, reduceMotion, geo, used, tokenUsed }:
           {w.hexes.map(({ at, rotate }) => {
             const p = geo.hexCenter(at);
             const pw = geo.hexW * 1.15; const ph = pw * w.sprite.h / w.sprite.w;
-            return <Strip key={`${at.col},${at.row}`} s={w.sprite} x={p.x - pw / 2} y={p.y - ph / 2} w={pw} h={ph} animated={anim.has(w.key)} loop rotate={rotate} cx={p.x} cy={p.y} tint={w.tint} />;
+            return <Strip key={`${at.col},${at.row}`} s={w.sprite} x={p.x - pw / 2} y={p.y - ph / 2} w={pw} h={ph} animated={anim.has(w.key)} loop rotate={rotate} cx={p.x} cy={p.y} tint={w.tint} outline={w.outline} />;
           })}
         </g>
       ))}

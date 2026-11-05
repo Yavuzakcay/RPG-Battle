@@ -127,7 +127,7 @@ describe('kalıcı efektler', () => {
     const g = groundFx(s);
     expect(g.auras.map((a) => [a.sprite.id, a.radius])).toEqual([['aura-buz', 2], ['aura-altin', 3]]);
     expect(g.walls).toHaveLength(1);
-    expect(g.walls[0]).toMatchObject({ sprite: { id: 'duvar-cizili' }, tint: '#8a6d4a' });
+    expect(g.walls[0]).toMatchObject({ sprite: { id: 'duvar-cizili' }, tint: '#f2e3c4', outline: '#1b140e' });
     expect(g.walls[0]!.hexes.map((h) => h.rotate)).toEqual([90, 90, 90]);
     // odd-q: tek sütunlar yarım altıgen aşağıda; (2,1)→(3,1) aşağı-sağ 30°, (1,1)→(2,1) yukarı-sağ 150°.
     expect(wallAngle({ col: 2, row: 1 }, [{ col: 2, row: 1 }, { col: 3, row: 1 }])).toBe(30);
@@ -158,5 +158,22 @@ describe('animasyon bütçesi ve ayarlar', () => {
   it('efekt katmanı tembel parça (savaş ekranı statik içe aktarmaz)', () => {
     expect(mapBattleSrc).toContain("lazy(() => import('./ui/fx/FxLayer')");
     expect(mapBattleSrc).not.toMatch(/^import .*ui\/fx\//m);
+  });
+});
+
+describe('Kuyruk A2: E1 artıkları', () => {
+  it('rozetler: en çok 3, öncelik veriden (eylemi kesen önde), fazlası +N', async () => {
+    const { limitBadges } = await import('../statusFx');
+    const list = ['prone', 'grappled', 'charmed', 'stunned', 'invisible', 'x-etki'].map((key) => ({ key }));
+    const r = limitBadges(list);
+    expect(r.shown.map((x) => x.key)).toEqual(['stunned', 'grappled', 'charmed']);
+    expect(r.more).toBe(3);
+    expect(limitBadges([{ key: 'a' }, { key: 'prone' }]).shown.map((x) => x.key)).toEqual(['prone', 'a']);
+    expect(limitBadges([{ key: 'prone' }]).more).toBe(0);
+    expect(mapBattleSrc).toContain('limitBadges(all)');
+  });
+  it('alan-yildirim 6 kare (son iki kare ateş közü; ham sayfa aynı, kare sınırı kesim tablosunda)', () => {
+    expect(recs['efekt-alan-yildirim']).toMatchObject({ kare: 6, sure: 480 });
+    expect((sheets['alan-patlamalari'] as unknown as { kareSiniri: Record<string, number> }).kareSiniri).toEqual({ 'alan-yildirim': 6 });
   });
 });

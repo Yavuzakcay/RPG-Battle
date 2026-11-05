@@ -30,7 +30,7 @@
     "efekt-alan-nekrotik": { "kare": 8, "sure": 640, "tur": "alan", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": false, "kaynak": "alan-patlamalari" },
     "efekt-alan-psisik": { "kare": 8, "sure": 640, "tur": "alan", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": false, "kaynak": "alan-patlamalari" },
     "efekt-alan-ses": { "kare": 6, "sure": 480, "tur": "alan", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": false, "kaynak": "alan-patlamalari" },
-    "efekt-alan-yildirim": { "kare": 8, "sure": 640, "tur": "alan", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": false, "kaynak": "alan-patlamalari" },
+    "efekt-alan-yildirim": { "kare": 6, "sure": 480, "tur": "alan", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": false, "kaynak": "alan-patlamalari" },
     "efekt-aura-altin": { "kare": 12, "sure": 1320, "tur": "aura", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": true, "kaynak": "aura-renkler" },
     "efekt-aura-buz": { "kare": 12, "sure": 1320, "tur": "aura", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": true, "kaynak": "aura-renkler" },
     "efekt-aura-kirmizi": { "kare": 12, "sure": 1320, "tur": "aura", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": true, "kaynak": "aura-renkler" },

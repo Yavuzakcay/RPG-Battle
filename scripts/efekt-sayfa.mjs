@@ -138,6 +138,9 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
     // Sondaki boş kareler (ızgarada var, içerik yok) atılır.
     let count = cells.length;
     while (count > 1 && cells[count - 1].peak < emptyThr) count--;
+    // Kuyruk A2: tabloda kare sınırı (ham sayfa değişmeden; alan-yildirim'in son iki karesi ateş közü).
+    const cap = spec.kareSiniri?.[spec.adlar[n]];
+    if (cap && cap < count) count = cap;
     const used = cells.slice(0, count);
     let fw; let fh; let frames;
     if (spec.kare === 'serit') {
@@ -216,12 +219,12 @@ export async function importEffects({ src = 'assets-ham/efekt', out = 'public/sp
     for (const [ad, r] of Object.entries(result)) {
       const name = `efekt-${ad}`;
       await writeStrip(path.join(out, `${name}.webp`), r);
-      if (r.dropped) notes.push(`${name}: ızgarada ${r.grid} kare, sondaki ${r.dropped} boş kare atıldı → ${r.frames.length}`);
+      if (r.dropped) notes.push(`${name}: ızgarada ${r.grid} kare, sondaki ${r.dropped} kare atıldı (boş ya da kare sınırı) → ${r.frames.length}`);
       records[name] = {
         kare: r.frames.length, sure: r.frames.length * spec.kareMs, tur: spec.turler?.[ad] ?? spec.tur, karisim: 'screen', yon: spec.yonler?.[ad] ?? null,
         en: r.fw, boy: r.fh, dongu: !!spec.dongu, kaynak: `${sheet}`, ...(spec.ortusme ? { ortusme: spec.ortusme } : {}),
       };
-      console.log(`  ${name}.webp ${r.frames.length} kare ${r.fw}×${r.fh}${r.dropped ? ` (sondaki ${r.dropped} boş kare atıldı)` : ''}`);
+      console.log(`  ${name}.webp ${r.frames.length} kare ${r.fw}×${r.fh}${r.dropped ? ` (sondaki ${r.dropped} kare atıldı: boş ya da kare sınırı)` : ''}`);
     }
   }
   // Elle biçimlenmiş dosya korunur: üretilen bölümler en sonda (varsa önce kesilir), kayıtlar tek satır.
