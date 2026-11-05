@@ -31,7 +31,7 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 import type { CreatureSize } from '../data/types';
 import { isAirborne } from './flight';
 import { globalRule } from './ruleControl';
-import { forcedMove } from './motion';
+import { collisionDice, collisionOn, forcedMove, MOTION } from './motion';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
 export const LEVEL_FEET = 10;
@@ -228,12 +228,15 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   if (sizeRank(target.size) > sizeRank(actor.size) + 1) return fail(`${target.name} itilemeyecek kadar büyük (en çok bir boyut büyük olabilir).`);
   const effect: 'push' | 'prone' = state.map ? wanted : 'prone';
   let out: PushOutcome | null = null;
+  // Kuyruk K53 (sürüm 24, ev kuralı carpmaHasari): itme engelde kalırsa hedef çarpar (1d6; engel yaratıksa o da 1d6).
+  let slam: Offset | null = null;
   if (state.map) {
     if (!actor.pos || !target.pos || gap(state, actor, target) !== 1) return fail('İtmek için hedef bitişik olmalı (5 ft).');
     if (effect === 'push') {
       const to = shoveHex(actor, target, state);
       out = to ? pushOutcome(state, target, target.pos, to) : { ok: false, reason: 'yön yok' };
-      if (!out.ok) return fail(`İtilemez (${out.reason}); yalnızca yere düşürülebilir.`);
+      if (!out.ok && to && collisionOn(state)) slam = to;
+      else if (!out.ok) return fail(`İtilemez (${out.reason}); yalnızca yere düşürülebilir.`);
     }
   }
   // Hedef yüksek olan save'i seçer.
@@ -245,5 +248,11 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
     total: save.total, success: save.success, effect, ...(out?.ok ? { to: out.to } : {}), ...(save.extra ? { bonusDice: save.extra } : {}),
   }];
   if (!save.success && effect === 'push' && out?.ok) events.push(...forcedMoveEvents(applyEvents(state, events), targetId, out, actor.id, rng));
+  if (!save.success && slam) {
+    const dice = collisionDice(1) as string;
+    events.push(hitEffect(target, 'carpmaHasari', MOTION.carpma.metin.tr, { damage: dice, damageType: MOTION.carpma.tur }, rng));
+    const blocker = occupantAt(state, slam);
+    if (blocker && blocker.id !== target.id && blocker.hp > 0) events.push(hitEffect(blocker, 'carpmaHasari', MOTION.carpma.metinCarpilan.tr, { damage: dice, damageType: MOTION.carpma.tur }, rng));
+  }
   return finish(state, events);
 }

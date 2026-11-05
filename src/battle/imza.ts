@@ -5,6 +5,7 @@
  * `surum` (23) ve alt sınıfın ev kuralı (`evKurali`; Birlik Manastırı'nda null: her zaman). Kural kapalıyken ya da eski
  * savaşta özellikler yok. Süreli etkiler mevcut `ActiveEffect` alanlarıyla (yeni durum eklemeden). Saf.
  */
+import { resistImmunityEvent, resistImmunityId } from './auraCore';
 import data from '../../data/imza.json';
 import { gap } from './body';
 import { damageProfile as profileOf, fail, finish, isTargetable, type CommandResult } from './common';
@@ -94,7 +95,8 @@ export function withImza(state: BattleState): BattleState {
 
 const effectId = (key: string, actor: Combatant) => `${key}:${actor.id}`;
 const isLegendary = (t: Combatant) => t.legendaryLeft !== undefined || resourceLeft(t, 'legendaryResistance') > 0;
-const cesaretId = (key: string, actor: Combatant) => `imza:cesaret:${key}:${actor.id}`;
+// Kuyruk K53 S5: Cesaret ortak sayacı (auraCore); kimlik biçimi aynı (`imza:cesaret:<özellik>:<sahip>`).
+const cesaretId = (key: string, actor: Combatant) => resistImmunityId('imza', key, actor.id);
 /** Açık gökyüzü: kapalı bölge/harita/varyant listesinde değil (data/imza.json `kapaliOrtam`). */
 export function openSky(state: BattleState): boolean {
   const k = data.kapaliOrtam;
@@ -233,7 +235,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
         d20: sv.d20?.rolls ?? [], natural: sv.d20?.kept ?? null, total: sv.total, success: sv.success,
         damageRolls: dmg.rolls, rawDamage: dmg.total, appliedDamage: adj.amount, damageType: spec.hasar?.tur ?? '', damageNote: adj.note,
         targetHpAfter: fx.hpAfter, conditionsAdded: [], effects: fx.effects, ...(sv.extra ? { bonusDice: sv.extra } : {}) });
-      if (sv.success && spec.cesaret) events.push({ type: 'effect_added', targetId: t.id, effect: { id: cesaretId(f.key, actor), name: 'Cesaret', sourceId: actor.id, until: state.round + spec.cesaret, icon: '🛡' } });
+      if (sv.success && spec.cesaret) events.push(resistImmunityEvent(state, t, 'imza', f.key, actor, spec.cesaret));
       if (sv.success && legendary && spec.efsaneviBasariSure && etki) {
         events.push({ type: 'effect_added', targetId: t.id, effect: makeEffect({ ...etki, sure: spec.efsaneviBasariSure }, markId, actor, state, false) });
       }

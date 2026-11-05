@@ -78,16 +78,28 @@ describe('Shove: kural ve save', () => {
 });
 
 describe('itme: engel ve zorunlu hareket', () => {
-  it('arkada duvar, yaratık, harita dışı ya da yüksek zemin varsa itilmez; Prone kalır', () => {
+  // Kuyruk K53: kural sürümü 24'te çarpma ev kuralı (carpmaHasari) engelde kalan itmeyi hasara çevirir; eski davranış sürüm 23'te.
+  const v23 = (s: BattleState): BattleState => ({ ...s, kuralSurumu: 23 });
+  it('arkada duvar, yaratık, harita dışı ya da yüksek zemin varsa itilmez; Prone kalır (sürüm 23)', () => {
     for (const [patch, extra] of [[[[behind(), 's']], {}], [[[behind(), 'h']], {}]] as Array<[Array<[Offset, string]>, object]>) {
-      const s = field('kale', [A(), B()], { A: o(5, 3), B: o(6, 3), ...extra }, board('.', patch));
+      const s = v23(field('kale', [A(), B()], { A: o(5, 3), B: o(6, 3), ...extra }, board('.', patch)));
       expect(err(s, shove())).toMatch(/İtilemez .*yalnızca yere düşürülebilir/);
       expect(err(s, shove('prone'))).toBe(null);
     }
-    const crowd = field('kale', [A(), B(), mk('C', { side: 'enemies' })], { A: o(5, 3), B: o(6, 3), C: behind() }, board('.'));
+    const crowd = v23(field('kale', [A(), B(), mk('C', { side: 'enemies' })], { A: o(5, 3), B: o(6, 3), C: behind() }, board('.')));
     expect(err(crowd, shove())).toContain('arkada C var');
-    const edge = field('kale', [A(), B()], { A: o(13, 3), B: o(14, 3) }, board('.'));
+    const edge = v23(field('kale', [A(), B()], { A: o(13, 3), B: o(14, 3) }, board('.')));
     expect(err(edge, shove())).toContain('harita dışı');
+  });
+  it('sürüm 24 (carpmaHasari): duvara itilen 1d6 kuvvet alır; arkadaki yaratık da 1d6; ev kuralı kapalıysa eski davranış', () => {
+    const wall = field('kale', [A(), B()], { A: o(5, 3), B: o(6, 3) }, board('.', [[behind(), 's']]));
+    const r = run(wall, shove());
+    expect(r.events.filter((e) => e.type === 'map_effect' && e.rule === 'carpmaHasari').map((e) => (e as { targetId: string }).targetId)).toEqual(['B']);
+    expect(r.state.combatants.B?.pos).toEqual(o(6, 3));
+    const crowd = field('kale', [A(), B(), mk('C', { side: 'enemies' })], { A: o(5, 3), B: o(6, 3), C: behind() }, board('.'));
+    expect(run(crowd, shove()).events.filter((e) => e.type === 'map_effect' && e.rule === 'carpmaHasari').map((e) => (e as { targetId: string }).targetId)).toEqual(['B', 'C']);
+    const off = { ...wall, houseRules: { carpmaHasari: false } } as BattleState;
+    expect(err(off, shove())).toMatch(/İtilemez/);
   });
   it('lava itilen ölür; uçan etkilenmez', () => {
     const s = field('volkan', [A(), B()], { A: o(5, 3), B: o(6, 3) }, board('.', [[behind(), '~']]));

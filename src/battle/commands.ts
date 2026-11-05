@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { auraTriggerEvents } from './auraCore';
 import { executeDismount, executeMount, riderCleanup } from './mounted';
 import { brutalOptions } from './brutal';
 import { executeShiftMove, featuresOn } from './shift';
@@ -96,7 +97,9 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
     // Survivor (Champion; Görev F): avantajlı, 18–20 doğal 20 sayılır.
     // Beacon of Hope (Görev B1): ölüm save'i avantajlı.
     const survivor = hasTrait(c, 'survivor');
-    const rolledSave = rollD20(survivor || c.effects?.some((e) => e.deathSaveAdv) ? 'advantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+    // Kuyruk K53 S5: aura ölüm save dezavantajı; avantajla birlikte normal.
+    const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv);
+    const rolledSave = rollD20(dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
     const natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
     let successes = c.deathSaves.successes;
     let failures = c.deathSaves.failures;
@@ -430,6 +433,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const zoneEnd = zoneTurnEvents(current, actor.id, 'end', rng);
     events.push(...zoneEnd);
     current = applyEvents(current, zoneEnd);
+    // Kuyruk K53 S5: veriden auraların tur sonu tetikleri.
+    const auraEnd = auraTriggerEvents(current, actor.id, 'turnEnd', rng);
+    events.push(...auraEnd);
+    current = applyEvents(current, auraEnd);
     // Kuyruk 19 (srdK19): canavarın tur sonu yetenekleri (Heat Aura, Mucus Cloud, akan su, Hydra başları).
     const monEnd = monsterTurnEvents(current, current.combatants[actor.id] as Combatant, 'end', rng);
     events.push(...monEnd);
@@ -536,6 +543,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const zoneStart = zoneTurnEvents(current, next.id, 'start', rng);
       events.push(...zoneStart);
       current = applyEvents(current, zoneStart);
+      const auraStart = auraTriggerEvents(current, next.id, 'turnStart', rng);
+      events.push(...auraStart);
+      current = applyEvents(current, auraStart);
       const fx = effectTurnStartEvents(current, next.id, rng);
       events.push(...fx.events);
       current = applyEvents(current, fx.events);

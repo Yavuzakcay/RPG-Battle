@@ -13,5 +13,9 @@
    "tr": "üstüne çarpıldı",
    "en": "was slammed into"
   }
+ },
+ "aura": {
+  "not": "Cesaret ortak kuralı: kurtulmayı başaran yaratık o aura etkisine N tur bağışık (imza alt sınıfları da aynı sayaç).",
+  "cesaretTur": 10
  }
 }

@@ -7,6 +7,7 @@
  *   alan hasarı. Konsantrasyon tam süre sürerse duvar kalıcı olur (`permanent`).
  * - Wall of Fire: hasar veren yüz (büyücünün seçtiği yan, 10 ft) `endHexes`.
  */
+import { barriersOn } from './barriers';
 import { resolveAttack } from '../rules/attack';
 import { rollTag, type Rng } from '../rules/dice';
 import { distance, hexKey, isInside, neighbors, sameHex, withinRange, type Offset } from '../rules/hex';
@@ -88,16 +89,17 @@ export function panelOf(state: BattleState, id: string): { zone: SpellZone; hex:
   if (!m) return null;
   const zone = state.map?.zones?.find((z) => z.id === m[1]);
   const hex = { col: Number(m[2]), row: Number(m[3]) };
-  return zone && specOf(zone)?.panels && zone.hexes.some((h) => sameHex(h, hex)) ? { zone, hex } : null;
+  return zone && (specOf(zone)?.panels || (zone.barrier?.hp && barriersOn(state))) && zone.hexes.some((h) => sameHex(h, hex)) ? { zone, hex } : null;
 }
 
 /** Panele hasar; 0'da altıgen duvardan düşer. */
 export function panelDamageEvents(state: BattleState, zone: SpellZone, hex: Offset, damage: number, damageType: string): BattleEvent[] {
-  if (!globalRule(state, 'spellsK19')) return [];
+  // Kuyruk K53 S4: geçici engelin HP'si veriden (`barrier.hp`); eski panel 90.
+  if (zone.barrier ? !barriersOn(state) || !zone.barrier.hp : !globalRule(state, 'spellsK19')) return [];
   const amount = ['poison', 'psychic'].includes(damageType) ? 0 : Math.max(0, damage);
   if (!amount) return [];
   const k = hexKey(hex);
-  const hp = PANEL_HP - (zone.panelDamage?.[k] ?? 0) - amount;
+  const hp = (zone.barrier?.hp ?? PANEL_HP) - (zone.panelDamage?.[k] ?? 0) - amount;
   const out: BattleEvent[] = [{ type: 'zone_panel_damaged', zoneId: zone.id, hex, amount }];
   if (hp <= 0) out.push({ type: 'zone_moved', zoneId: zone.id, hexes: zone.hexes.filter((h) => !sameHex(h, hex)) }, { type: 'map_note', text: `${zone.name}: bir panel yıkıldı.` });
   return out;
@@ -108,9 +110,9 @@ export function executeAttackPanel(state: BattleState, actor: Combatant, id: str
   if (!p || !actor.pos) return fail('Duvar paneli yok.');
   const d = distance(actor.pos, p.hex);
   if (option.ranged ? d * 5 > (option.range?.[1] ?? Infinity) : d * 5 > (option.reachFt ?? 5)) return fail('Panel erişim dışında.');
-  const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: PANEL_AC, mode: 'normal', damage: option.damage, autoCritical: false }, rollTag(rng, { by: actor.id }));
+  const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: p.zone.barrier?.ac ?? PANEL_AC, mode: 'normal', damage: option.damage, autoCritical: false }, rollTag(rng, { by: actor.id }));
   const dealt = r.hit ? r.damage?.total ?? 0 : 0;
-  return finish(state, [{ type: 'map_note', text: `${actor.name}: ${option.label} → ${p.zone.name} (d20 ${r.d20.kept}, ${r.total}/${PANEL_AC}) ${r.hit ? `${dealt} hasar` : 'ıska'}` },
+  return finish(state, [{ type: 'map_note', text: `${actor.name}: ${option.label} → ${p.zone.name} (d20 ${r.d20.kept}, ${r.total}/${p.zone.barrier?.ac ?? PANEL_AC}) ${r.hit ? `${dealt} hasar` : 'ıska'}` },
     { type: 'action_used', actorId: actor.id, kind: 'attack', what: option.label },
     ...panelDamageEvents(state, p.zone, p.hex, dealt, option.damageType ?? 'bludgeoning')]);
 }

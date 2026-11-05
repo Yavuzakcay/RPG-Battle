@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { auraCoreOn, auraEnterEvents } from './auraCore';
 import { isAirborne } from './flight';
 import { swimsByTrait } from './flight';
 import { knowsWhere } from './sight';
@@ -561,7 +562,10 @@ export function auraStepEvents(state: BattleState, moverId: string, from: Offset
       if (nowIn && !wasIn) makers.push((s) => auraSave(s, s.combatants[moverId] as Combatant, s.combatants[v.id] as Combatant, rng));
     }
   }
-  return chain(state, makers).events;
+  const legacy = chain(state, makers).events;
+  // Kuyruk K53 S5: veriden auraların giriş tetikleri (yürüme, itme, ışınlanma varışı aynı yoldan).
+  const core = auraCoreOn(state) ? auraEnterEvents(legacy.length ? applyEvents(state, legacy) : state, moverId, from, to, rng) : [];
+  return core.length ? [...legacy, ...core] : legacy;
 }
 
 /** Turunu yayılımın içinde bitiren yaratık save yapar. */

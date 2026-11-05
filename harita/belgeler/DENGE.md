@@ -2,6 +2,12 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K53: ortak savaş sistemleri (2026-11-05)
+
+Denge ölçümü yapılmadı (denge turuna). Duman: 12 sınıf × 3/7/11. seviye, kural sürümü 24, Kale haritası, 6 tur: çökme yok (`src/sim/k53smoke.test.ts`).
+
+Yapay zekâ: Misty Step ile kaçış (`teleportEscape`) ve lav/çukur/20+ ft düşüşe itme (`deadlyShove`) yeni girişlerden geçer (varış kancaları, `forcedMove`). Yapılmayanlar: (1) çarpma hasarı için itme: Shove engelde 1d6 verir ama YZ yalnız ölümcül itmeyi seçer, çünkü 1d6 bir silah saldırısının beklenen hasarının altında; (2) nesne fırlatma ve enkaz çağırma: bunları kullanan özellik (K50 C Monk Zihin Gücü, Wizard) henüz yok; (3) Cloud's Jaunt / Blink Steps ile kaçış (YZ yalnız teleport büyüsünü kullanıyor). Hepsi denge turunda ölçülüp eklenecek.
+
 ## Kuyruk K52: hizalanma ↔ Moral bağı duman testi (2026-11-05)
 
 Standart parti, 3. seviye, 30 tohum, ev kuralı `moralSistemi` açık (Moral tam modu). "Kapalı": `hizalanma`/`hizalanmaMoral` kapalı; "Açık": ikisi de açık. Bağ savaş motoruna girmediği için sonuçlar birebir aynı olmalı; aynı (test `src/sim/k52moral.test.ts`).

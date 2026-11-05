@@ -76,6 +76,8 @@ export interface ActiveEffect {
   id: string;
   name: string;
   sourceId: string;
+  /** Kuyruk K53 S5: bu etkinin sahibine bağlı aura (`src/battle/auraCore.ts`). */
+  aura?: import('./auraCore').AuraSpec;
   until?: number;
   concentration?: string;
   dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: string; single?: boolean };
@@ -547,6 +549,10 @@ export interface Combatant {
   imza?: string;
   /** Kuyruk K50: Taht Varlığı aurasından WIS kurtulma bonusu (reducer sonu `syncAuras`). */
   imzaWisSave?: number;
+  /** Kuyruk K53 S5: pasif auralardan (syncAuras): durum bağışıklığı, can yenileyemez, ölüm save dezavantajı. */
+  auraImmune?: string[];
+  auraNoHeal?: true;
+  auraDeathDis?: true;
   /** Kuyruk 18 H4: başka kattaki savaşçı (o katın harita kimliği) ve oradaki konumu. */
   offFloor?: string;
   floorPos?: Offset;
@@ -922,7 +928,9 @@ export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' 
   /** Kuyruk 36: anahtar ve doğaçlama silahlar (Hapishane Adası). */
   | 'key' | 'benchLeg' | 'chain' | 'bucket' | 'cudgel'
   /** Görev K26: balista, donmuş şelale. */
-  | 'ballista' | 'frozenFall';
+  | 'ballista' | 'frozenFall'
+  /** Kuyruk K53 S3: zeminden çağrılan taş/enkaz (`objectMotion.ts`). */
+  | 'rock';
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 'read' | 'out'
   /** Görev K26: balista yüklü / boş. */
   | 'loaded' | 'spent';
@@ -993,6 +1001,8 @@ export interface SpellZone {
   /** Kuyruk 19 (11–20): özellik alanı (Holy Nimbus, Nature's Sanctuary): kural alanın içinde, sabit hasar `damage`. */
   spec?: import('../data').ZoneSpec;
   damage?: string;
+  /** Kuyruk K53 S4: geçici engel (`src/battle/barriers.ts`, `data/engeller.json`). */
+  barrier?: import('./barriers').BarrierSpec;
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */

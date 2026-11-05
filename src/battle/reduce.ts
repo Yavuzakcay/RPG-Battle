@@ -849,7 +849,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       // Kuyruk 19 (Swarm, Mucus Cloud): HP kazanamaz.
-      if (c.effects?.some((e) => e.noHeal) && event.targetHpAfter > c.hp) return state;
+      if ((c.effects?.some((e) => e.noHeal) || c.auraNoHeal) && event.targetHpAfter > c.hp) return state;
       // 0 HP'deki karakter iyileşince ayağa kalkar.
       if (c.hp === 0 && event.targetHpAfter > 0 && (c.life === 'dying' || c.life === 'stable')) {
         return withCombatant(state, event.targetId, {

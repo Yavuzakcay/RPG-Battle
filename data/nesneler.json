@@ -58,6 +58,7 @@
       "srd": "SRD 5.2.1'de kuşatma silahı yok; değerler genel 5e balistası (AC 15, HP 50, +6, 120/480 ft, 3d10 delici; DECISIONS.md)",
       "terrain": { "movement": "blocked", "cover": 2, "blocksSight": false } },
     "frozenFall": { "tr": "Donmuş şelale", "en": "Frozen waterfall", "ac": 13, "hp": 25, "material": "ice", "size": "Large", "icon": "🧊", "aiRisk": 0, "vulnerable": ["fire"],
-      "terrain": { "movement": "blocked", "cover": 0, "blocksSight": true } }
+      "terrain": { "movement": "blocked", "cover": 0, "blocksSight": true } },
+    "rock": { "tr": "Taş", "en": "Stone", "ac": 17, "hp": 10, "material": "stone", "size": "Small", "icon": "🪨", "aiRisk": 0, "terrain": { "movement": "difficult", "cover": 2, "blocksSight": false } }
   }
 }

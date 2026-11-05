@@ -33,6 +33,8 @@ export function conditionAura(state: BattleState, targetId: string, condition: s
   if (ruleVersion(state) < 13) return false;
   const t = state.combatants[targetId];
   if (!t) return false;
+  // Kuyruk K53 S5: veriden pasif aura bağışıklığı (syncAuras → auraImmune).
+  if (t.auraImmune?.includes(condition)) return true;
   // Barbarian (Berserker) Mindless Rage: Rage sürerken Charmed ve Frightened olmaz.
   if (t.rage && t.traits?.includes('mindless-rage')) return true;
   // Paladin Aura of Courage (Frightened) ve Aura of Devotion (Charmed): 10 ft içindeki dostlar.

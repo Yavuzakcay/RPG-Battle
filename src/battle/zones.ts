@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { barriersOn, passesBarrier } from './barriers';
 import { fireSideHexes, wallOpenEvents } from './walls';
 import { AXIAL_DIRECTIONS, axialToOffset, distance, isInside, neighbors, offsetToAxial } from '../rules/hex';
 import { isLiquidTile } from './deepWater';
@@ -324,6 +325,11 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
   return (h) => {
     let cost = 1;
     for (const z of zones) {
+      // Kuyruk K53 S4: geçici engel (dost geçer gibi kişiye göre olanlar da burada).
+      if (z.barrier) {
+        if (barriersOn(state) && z.barrier.blocksMove && z.hexes.some((x) => x.col === h.col && x.row === h.row) && !passesBarrier(z, mover)) return null;
+        continue;
+      }
       const spec = zoneSpecOf(z);
       if (!spec || !inZone(state, z, h)) continue;
       if (spec.solid) return null;

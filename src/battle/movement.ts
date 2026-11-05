@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { solidBarrierAt } from './barriers';
 import { sizeRank } from './forced';
 import { interposeCost } from './arcaneHand';
 import { globalRule } from './ruleControl';
@@ -40,6 +41,9 @@ export function terrainAt(state: BattleState, o: Offset): TerrainType {
   // K17 G1: geçilmez büyü duvarı (Wall of Force, Wall of Stone) altıgeni engel yapar (hareket, siper, görüş/hat).
   const wall = state.map?.zones?.length ? solidWallAt(state, o) : null;
   if (wall) return { ...t, name: wall, movement: 'blocked', cover: 5, blocksSight: !transparentWallAt(state, o) };
+  // Kuyruk K53 S4: herkese kapalı geçici engel (Çizili Duvar).
+  const bar = state.map?.zones?.length ? solidBarrierAt(state, o) : null;
+  if (bar) return { ...t, name: bar.name, movement: 'blocked', cover: 5, blocksSight: bar.blocksSight };
   // Kuyruk 19: alanın kapladığı merkez (Guardian of Faith): geçilmez, görüşü kesmez.
   const held = state.map?.zones?.find((z) => z.center && z.center.col === o.col && z.center.row === o.row && spells.find((s) => s.id === z.spellId)?.mechanics.zone?.occupy);
   if (held) return { ...t, name: held.name, movement: 'blocked' };
