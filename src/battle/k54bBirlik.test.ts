@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { kitArena, o, mid } from './k54bKit';
-import { applyEvents } from './reduce';
+import { applyEvents, replay } from './reduce';
 import { saveDice } from './effectDice';
 import { resolveSave, secondChanceAll } from '../rules/attack';
 import { commandEndHookEvents } from './turnHooks';
@@ -54,6 +54,7 @@ describe('K54b Birlik Manastırı', () => {
     r.do(r.use('shared-vitality'));
     const pool = Object.values(r.state.hpPools ?? {})[0]!;
     expect(pool.guard?.hp).toBe(34);
+    expect(replay(r.events).hpPools?.[pool.id]?.guard).toEqual(pool.guard);
     const kill: BattleEvent = { type: 'map_effect', rule: 'test', targetId: 'C', text: 'ölümcül', hpAfter: 0, damage: { type: 'force', applied: 999 } } as BattleEvent;
     const s1 = applyEvents(r.state, [kill]);
     expect(s1.hpPools![pool.id]!.hp).toBe(34);

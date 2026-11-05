@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { kitArena, o, mid } from './k54bKit';
-import { applyEvents } from './reduce';
+import { applyEvents, replay } from './reduce';
 import { afterAttackReactions } from './reactions';
 import { knowsWhere } from './sight';
 import { distance } from '../rules/hex';
@@ -47,6 +47,7 @@ describe('K54b İnfazcı', () => {
     const ev = r.gm({ type: 'move', actorId: 'B', to: o(9, 3) });
     expect(ev.some((e) => e.type === 'teleported' && e.actorId === 'A')).toBe(true);
     expect(distance(r.c('A').pos!, r.c('B').pos!)).toBeLessThan(6);
+    expect(replay(r.events).combatants.A?.pos).toEqual(r.c('A').pos);
   });
   it('YZ: hükümlü yokken Hüküm verir', () => {
     const r = I(3, { place: { B: o(5, 3) } });

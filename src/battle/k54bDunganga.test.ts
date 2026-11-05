@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { kitArena, o, low, high, mid } from './k54bKit';
 import { auraTriggerEvents } from './auraCore';
-import { applyEvents } from './reduce';
+import { applyEvents, replay } from './reduce';
 import { chooseCommand } from './ai';
 import { mk } from './fixtures';
 import './imza';
@@ -40,6 +40,7 @@ describe('K54b Dunganga', () => {
     expect(r.c('A').resources.sorceryPoints).toBe(sp - 3);
     expect(r.c('E').conditions).toContain('Incapacitated');
     expect(r.c('B').effects?.some((e) => e.name === 'Sepet')).toBe(false);
+    expect(replay(r.events).combatants.E?.conditions).toEqual(r.c('E').conditions);
   });
   it('Kâbus (14): korkan düşman tur başında 1d10 + CHA zihin hasarı; korkmayan almaz', () => {
     const r = D(14, { place: { B: o(12, 7) } });
