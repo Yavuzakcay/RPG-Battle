@@ -229,14 +229,19 @@ s = 'imza_geride_kalan'
 sub(s, 'barbarian', 'Geride Kalanın Yolu', 'Path of the Survivor', 'Yıpranmışlığından güç alan', 'Draws power from being worn down', [
     F('wounded-heart', 3, 'Yaralı Kalp', 'Wounded Heart', 'Umudun hiçbir zaman tam dolmaz; en çok üçte birine kadar toparlanırsın.', 'Your heart never fills; it recovers to a third at most.'),
     F('strength-of-the-worn', 3, 'Yıpranmışlığın Gücü', 'Strength of the Worn', 'Ne kadar yıpranmışsan, öfkeyle o kadar sert vurursun.', 'The more worn you are, the harder you hit in rage.'),
-    F('standing-in-rage', 3, 'Öfkeyle Ayakta', 'Standing in Rage', 'Öfkedeyken umudun bitse bile yıkılmazsın; öfken bitince yıkılırsın.', 'While raging you do not break even at zero heart.', 'planli'),
-    F('mourning-wrath', 6, 'Dostunun Yası', 'Mourning Wrath', 'Bir dostun düşünce öfken taşar: hemen öfkelenir, dayanıklılık kazanırsın.', 'When an ally falls your rage overflows.', 'planli'),
+    F('standing-in-rage', 3, 'Öfkeyle Ayakta', 'Standing in Rage', 'Öfkedeyken umudun bitse bile yıkılmazsın; öfken bitince yıkılırsın.', 'While raging you do not break even at zero heart.'),
+    F('mourning-wrath', 6, 'Dostunun Yası', 'Mourning Wrath', 'Bir dostun düşünce öfken taşar: hemen öfkelenir, dayanıklılık kazanırsın.', 'When an ally falls your rage overflows.'),
     F('used-to-grief', 10, 'Alışkın Acı', 'Used to Grief', 'Yıpranmışlığın seni artık zayıflatmaz; ölümün eşiğinde daha dirençlisin.', 'Wear no longer weakens you; you resist death better.'),
     F('risen-from-ashes', 14, 'Küllerden Doğan', 'Risen from Ashes', 'Ölecekken bir kez ayağa kalkarsın.', 'Once, when you would drop, you rise.'),
 ])
 pas(s, 'strength-of-the-worn', 3, {'yipranma': {'tavanBolen': 3, 'carpan': 0.5}}, 'Öfkedeyken silah isabetine +min(PB, ⌊eksik puan / 2⌋); puan Moral (tam mod) ya da yoksa sabit üçte bir (Yıpranma sayacı tutulmaz).')
 pas(s, 'used-to-grief', 10, {'name': 'Alışkın Acı', 'deathSaveAdv': True, 'icon': '🔥'})
-pas(s, 'risen-from-ashes', 14, {'name': 'Küllerden Doğan', 'deathWard': True, 'icon': '🔥'}, 'Öfkeye kendiliğinden girme ve dostlara geçici can yok.')
+pas(s, 'risen-from-ashes', 14, {'name': 'Küllerden Doğan', 'deathWard': True, 'icon': '🔥'}, 'Sürüm 28+: tetiklenince öfkeye girer (kullanım harcamaz), 30 ft içindeki dostlar +1 Motivasyon (Moral açıkken) ya da seviye kadar geçici can.')
+pas(s, 'wounded-heart', 3, {'yaraliKalp': {'bolen': 3}}, 'Moral/Yıpranma tavanı normal üst sınırın üçte biri (en az 1); Moral kapalıyken savaşta Yıpranma havuzu (dost düşmesi, korku, ilk kez yarı can, kritik −1; zafer +1).', k54c=True)
+pas(s, 'standing-in-rage', 3, {'name': 'Öfkeyle Ayakta', 'rageHoldsMoral': True, 'icon': '🔥'}, 'Öfkedeyken 0 puanda çökmez; öfke bitince hâlâ 0 ise çöker.', k54c=True)
+pas(s, 'mourning-wrath', 6, {'yas': {'menzilFt': 30, 'kaynak': 'imzaYas'}, 'kaynak': {'id': 'imzaYas', 'sayi': 'pb', 'yenilenme': 'long'}},
+    'Tepki: 30 ft içindeki dost 0 HP ya da Çökmüş: öfke (kullanım harcamaz) + 2 × seviye geçici can, 1 puan kaybı.', k54c=True)
+pas(s, 'used-to-grief-2', 10, {'name': 'Alışkın Acı (ceza yok)', 'noMoralePenalty': True, 'icon': '🔥'}, 'Düşük puan cezaları işlemez.', k54c=True)
 
 # ---------------- Bard: Şair Koleji ----------------
 s = 'imza_sair'

@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54c G4: Geride Kalanın Yolu (kural sürümü 28)
+
+- **Yaralı Kalp:** savaş başında (`withImza` → `woundedHeartPatch`) `moralMax` normal üst sınırın üçte biri (en az 1), normal sınır `yipranmaNormal`. Moral tam modu açıkken Moral'in tavanı; **kapalıyken Yıpranma havuzu aynı alanlarla** (yalnız bu alt sınıfın savaşçısında `moral`/`moralMax`): mevcut Moral komut sonu kuralları (dost düştü, korku, çökme, zafer) bu savaşçıya işler; ek kayıplar (Moral kapalıyken): ilk kez yarı canın altı (savaşta bir), yenen her kritik vuruş −1. Savaşlar arası Yıpranma saklanmaz (her savaş tavanla başlar; dinlenme kuralları Serüven'de, kilitli).
+- **Yıpranmışlığın Gücü:** eksik puan `yipranmaNormal − puan` (önceden sabit üçte bir varsayımı).
+- **Öfkeyle Ayakta:** etki `rageHoldsMoral`; `moraleAfterEvents` öfkedeyken 0 puanda çökertmez, öfke bitince hâlâ 0 ise çökertir.
+- **Dostunun Yası (6):** komut sonu: 30 ft içindeki dost 0 HP'ye düştü ya da Çöktü → tepki: öfke (kullanım harcamaz; `rage_started`), 2 × seviye geçici can, 1 puan kaybı. Yeterlilik kadar, uzun dinlenmede.
+- **Alışkın Acı (10):** ek pasif `noMoralePenalty` (`moraleSaveDice`/`moraleCheckDice` ceza yok); ölüm kurtulma avantajı K50'deki gibi.
+- **Küllerden Doğan (14):** Death Ward düşüp ayakta kalınca: öfke (kullanım harcamaz), 30 ft içindeki dostlara +1 Motivasyon (Moral açık) ya da seviye kadar geçici can.
+- Ranger Çiftçi eksiksiz: dokunulmadı.
+
 ## 2026-11-05 — Kuyruk K54c G3: Astrolog (kural sürümü 28)
 
 - **Yıldız Falı:** sürüm 28 eylemleri `luck-2`/`ill-luck-2`: `firstRoll` avantaj/dezavantaj ilk saldırı ya da kurtulma zarına (belgedeki "beceri zarı" savaşta nadir, yok). Eski ±1d6 eylemleri 23–27.

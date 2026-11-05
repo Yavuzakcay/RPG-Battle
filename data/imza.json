@@ -699,7 +699,7 @@
       "tr": "Öfkeyle Ayakta",
       "en": "Standing in Rage"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Öfkedeyken umudun bitse bile yıkılmazsın; öfken bitince yıkılırsın.",
       "en": "While raging you do not break even at zero heart."
@@ -712,7 +712,7 @@
       "tr": "Dostunun Yası",
       "en": "Mourning Wrath"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Bir dostun düşünce öfken taşar: hemen öfkelenir, dayanıklılık kazanırsın.",
       "en": "When an ally falls your rage overflows."
@@ -1467,6 +1467,18 @@
    ],
    "uses": {
     "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaYas": {
+   "name": "mourning-wrath",
+   "feature": [
+    "barbarian/imza_geride_kalan:mourning-wrath"
+   ],
+   "uses": {
+    "proficiency": true
    },
    "recharge": {
     "long": "all"
@@ -3238,7 +3250,61 @@
     "deathWard": true,
     "icon": "🔥"
    },
-   "not": "Öfkeye kendiliğinden girme ve dostlara geçici can yok."
+   "not": "Sürüm 28+: tetiklenince öfkeye girer (kullanım harcamaz), 30 ft içindeki dostlar +1 Motivasyon (Moral açıkken) ya da seviye kadar geçici can."
+  },
+  {
+   "sinif": "imza_geride_kalan",
+   "ozellik": "wounded-heart",
+   "seviye": 3,
+   "etki": {
+    "yaraliKalp": {
+     "bolen": 3
+    }
+   },
+   "not": "Moral/Yıpranma tavanı normal üst sınırın üçte biri (en az 1); Moral kapalıyken savaşta Yıpranma havuzu (dost düşmesi, korku, ilk kez yarı can, kritik −1; zafer +1).",
+   "surumMin": 28
+  },
+  {
+   "sinif": "imza_geride_kalan",
+   "ozellik": "standing-in-rage",
+   "seviye": 3,
+   "etki": {
+    "name": "Öfkeyle Ayakta",
+    "rageHoldsMoral": true,
+    "icon": "🔥"
+   },
+   "not": "Öfkedeyken 0 puanda çökmez; öfke bitince hâlâ 0 ise çöker.",
+   "surumMin": 28
+  },
+  {
+   "sinif": "imza_geride_kalan",
+   "ozellik": "mourning-wrath",
+   "seviye": 6,
+   "etki": {
+    "yas": {
+     "menzilFt": 30,
+     "kaynak": "imzaYas"
+    },
+    "kaynak": {
+     "id": "imzaYas",
+     "sayi": "pb",
+     "yenilenme": "long"
+    }
+   },
+   "not": "Tepki: 30 ft içindeki dost 0 HP ya da Çökmüş: öfke (kullanım harcamaz) + 2 × seviye geçici can, 1 puan kaybı.",
+   "surumMin": 28
+  },
+  {
+   "sinif": "imza_geride_kalan",
+   "ozellik": "used-to-grief-2",
+   "seviye": 10,
+   "etki": {
+    "name": "Alışkın Acı (ceza yok)",
+    "noMoralePenalty": true,
+    "icon": "🔥"
+   },
+   "not": "Düşük puan cezaları işlemez.",
+   "surumMin": 28
   },
   {
    "sinif": "imza_sair",
