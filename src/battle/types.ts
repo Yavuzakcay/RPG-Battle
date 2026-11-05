@@ -82,6 +82,8 @@ export interface ActiveEffect {
   auras?: import('./auraCore').AuraSpec[];
   /** Kuyruk K54 (sürüm 25): hareketi fırsat saldırısı doğurmaz (Çevik Yaşlı). */
   noProvoke?: boolean;
+  /** Kuyruk K54b (sürüm 27): zor zemin ve zemin (yüzey) hasarı yok sayılır (Kuşbakışı Plan; `groundWard.ts`). */
+  groundWard?: boolean;
   until?: number;
   concentration?: string;
   dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: string; single?: boolean };
@@ -559,6 +561,10 @@ export interface Combatant {
   auraDeathDis?: true;
   /** Kuyruk K54: aura ölüm save avantajı (Dar Gün Aurası). */
   auraDeathAdv?: true;
+  /** Kuyruk K54b: Mevzi İşareti altıgeninde kurtulma bonusu (reducer sonu `syncAuras`). */
+  wardSave?: number;
+  /** Kuyruk K54b: Omuz Ver: başarısız kurtulmaya bonus verebilecek bağlı dost (reducer sonu `syncAuras`). */
+  shoulderBy?: { id: string; bonus: number };
   /** Kuyruk 18 H4: başka kattaki savaşçı (o katın harita kimliği) ve oradaki konumu. */
   offFloor?: string;
   floorPos?: Offset;
@@ -1009,6 +1015,8 @@ export interface SpellZone {
   damage?: string;
   /** Kuyruk K53 S4: geçici engel (`src/battle/barriers.ts`, `data/engeller.json`). */
   barrier?: import('./barriers').BarrierSpec;
+  /** Kuyruk K54b: Mevzi İşareti / Yol Aç: sahibin tarafındaki dostlar burada zor zemini ve zemin hasarını yok sayar (`saveBonus`: kurtulma). */
+  groundWard?: { saveBonus?: number };
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -1135,6 +1143,12 @@ export interface HpPool {
   hp: number;
   max: number;
   label?: string;
+  /**
+   * Kuyruk K54b: Yıkılmaz Birlik (Birlik Manastırı 17): havuz 0'a düşecekken bir kez `hp` ile ayakta kalır; sahibin
+   * kaynağı (`resource`) ve tepkisi harcanır, üyelerin Motivasyonu dolar (reducer `trackPools`). Kullanılınca `held`.
+   */
+  guard?: { ownerId: string; hp: number; resource: string };
+  held?: boolean;
 }
 
 /** Bir saldırı seçeneği (silah saldırısı veya büyü saldırısı). */
@@ -1852,7 +1866,7 @@ export type BattleEvent =
   /** Düşmanın ejderhayı uyandırma eğilimi zarı (d100 < yüzde tutar). */
   | { type: 'rouse_roll'; actorId: string; roll: number; pct: number; success: boolean; turn: string }
   /** Görev A1: can havuzu kuruldu (üyelerin HP'si ve azamisi havuzunki olur). */
-  | { type: 'hp_pool_created'; poolId: string; memberIds: string[]; hp: number; max: number; label?: string }
+  | { type: 'hp_pool_created'; poolId: string; memberIds: string[]; hp: number; max: number; label?: string; guard?: HpPool['guard'] }
   /** Görev A1: komut sonunda üyelerin HP'si havuzunkine eşitlenir (aynı komutta birden çok üyeye gelen hasar ayrı ayrı düşülür). */
   | { type: 'hp_pool_synced'; poolId: string; hp: number };
 

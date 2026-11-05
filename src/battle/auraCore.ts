@@ -39,7 +39,9 @@ export type AuraEffect =
   | { kind: 'moral'; amount: number }
   /** Kuyruk K54: ölüm save avantajı ve tur başı geçici can (Dar Gün Aurası; `belowHalf`: yalnız yarı canın altındakilere). */
   | { kind: 'deathSaveAdv'; belowHalf?: boolean }
-  | { kind: 'tempHp'; amount: number; belowHalf?: boolean };
+  | { kind: 'tempHp'; amount: number; belowHalf?: boolean }
+  /** Kuyruk K54b: başarısız kurtulmada süren etki (`rounds` tur) ve isteğe bağlı hasar (Dunganga Çağrısı: Uykulu + 2d10). */
+  | { kind: 'effect'; effect: { name: string; icon?: string } & Record<string, unknown>; rounds: number; dice?: string; type?: string };
 export interface AuraSpec {
   id: string;
   name: string;
@@ -50,6 +52,8 @@ export interface AuraSpec {
   save?: { ability: Ability; dc?: number };
   /** Kurtulmayı başaran bu auraya N tur bağışık (Cesaret); yoksa `aura.cesaretTur` (0 = yok). */
   cesaret?: number;
+  /** Kuyruk K54b: yalnız bu durumdaki yaratıklar (Kâbus: Frightened). */
+  requires?: string;
 }
 
 export const AURA = motion.aura;
@@ -79,16 +83,17 @@ const passes = (spec: AuraSpec, owner: Combatant, v: Combatant) =>
 export function aurasOn(state: BattleState, v: Combatant, at: Offset | null = v.pos): Array<{ owner: Combatant; spec: AuraSpec }> {
   if (!at || !auraCoreOn(state)) return [];
   const probe = at === v.pos ? v : { ...v, pos: at };
-  return activeAuras(state).filter(({ owner, spec }) => passes(spec, owner, v) && gap(state, owner, probe) <= spec.radius);
+  return activeAuras(state).filter(({ owner, spec }) => passes(spec, owner, v) && (!spec.requires || v.conditions.includes(spec.requires)) && gap(state, owner, probe) <= spec.radius);
 }
 
 /** Etki gücü (en güçlüsü seçimi için): hasarda ortalama zar, bonusta miktar, diğerlerinde 1. */
 function power(e: AuraEffect): number {
   if (e.kind === 'damage') { const m = /^(\d+)d(\d+)(?:\s*\+\s*(\d+))?$/.exec(e.dice.replace(/\s/g, '')); return m ? Number(m[1]) * (Number(m[2]) + 1) / 2 + Number(m[3] ?? 0) : 0; }
   if (e.kind === 'saveBonus') return e.amount;
+  if (e.kind === 'effect' && e.dice) return power({ kind: 'damage', dice: e.dice, type: e.type ?? '' });
   return 1;
 }
-const effKey = (e: AuraEffect) => (e.kind === 'damage' ? `damage:${e.type}` : e.kind === 'condition' ? `condition:${e.condition}` : e.kind);
+const effKey = (e: AuraEffect) => (e.kind === 'damage' ? `damage:${e.type}` : e.kind === 'condition' ? `condition:${e.condition}` : e.kind === 'effect' ? `effect:${e.effect.name}` : e.kind);
 
 /** Her etki türünden en güçlüsü (toplanmaz). */
 export function strongest(list: Array<{ owner: Combatant; spec: AuraSpec }>): Array<{ owner: Combatant; spec: AuraSpec }> {
@@ -133,7 +138,7 @@ export function auraTriggerEvents(state: BattleState, victimId: string, trigger:
       out.push({ type: 'map_note', text: `${v.name}: ${spec.name} ${spec.save.ability.toUpperCase()} save ${r.total}/${dc} — ${r.success ? 'başardı' : 'başaramadı'}` });
       failed = !r.success;
       const ces = spec.cesaret ?? AURA.cesaretTur;
-      if (r.success && ces > 0 && spec.effect.kind === 'condition') out.push(resistImmunityEvent(state, v, 'aura', spec.id, owner, ces));
+      if (r.success && ces > 0 && (spec.effect.kind === 'condition' || spec.effect.kind === 'effect')) out.push(resistImmunityEvent(state, v, 'aura', spec.id, owner, ces));
     }
     const e = spec.effect;
     if (e.kind === 'damage' && (failed || e.half)) {
@@ -144,6 +149,11 @@ export function auraTriggerEvents(state: BattleState, victimId: string, trigger:
         ev.damage = { ...ev.damage, applied: half };
       }
       out.push(ev);
+    }
+    if (e.kind === 'effect' && failed) {
+      if (e.dice) out.push(damageEffect(v, 'auraCore', spec.name, { dice: e.dice, type: e.type ?? '' }, rng));
+      const id = `aura:${spec.id}:${owner.id}`;
+      out.push({ type: 'effect_added', targetId: v.id, effect: { ...e.effect, id, name: e.effect.name, sourceId: owner.id, until: state.round + e.rounds } as import('./types').ActiveEffect });
     }
     if (e.kind === 'condition' && failed && !v.conditions.includes(e.condition)) out.push({ type: 'map_effect', rule: 'auraCore', targetId: v.id, text: spec.name, addCondition: e.condition });
     // Kuyruk K54: tur başı Motivasyon (yalnız Moral tam modunda: savaşçıda moralMax) ve geçici can (yarı canın altındakilere).

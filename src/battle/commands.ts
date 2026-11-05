@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { commandEndHookEvents, turnStartHookEvents } from './turnHooks';
 import { auraTriggerEvents } from './auraCore';
 import { executeDismount, executeMount, riderCleanup } from './mounted';
 import { brutalOptions } from './brutal';
@@ -241,6 +242,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (morale.length) { next = applyEvents(next, morale); events = [...events, ...morale]; }
   const reveal = revealEvent(state, next, cmd);
   if (reveal) { next = applyEvents(next, [reveal]); events = [...events, reveal]; }
+  // Kuyruk K54b: kayıtlı komut sonu kancaları (imza: Ortak Şifa, Peşini Bırakmayan).
+  const hookedEnd = commandEndHookEvents(state, next, events, cmd, rng, applyEvents);
+  if (hookedEnd.length) { next = applyEvents(next, hookedEnd); events = [...events, ...hookedEnd]; }
   // Görev A1: ortak can havuzu üyeleri komutun sonunda havuzun HP'sine eşitlenir.
   const pooled = poolSyncEvents(next);
   if (pooled.length) { next = applyEvents(next, pooled); events = [...events, ...pooled]; }
@@ -553,6 +557,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const auraStart = auraTriggerEvents(current, next.id, 'turnStart', rng);
       events.push(...auraStart);
       current = applyEvents(current, auraStart);
+      // Kuyruk K54b: kayıtlı tur başı kancaları (imza: Arazi Okuma).
+      const hooked = turnStartHookEvents(current, next.id, rng, applyEvents);
+      events.push(...hooked);
+      current = applyEvents(current, hooked);
       const fx = effectTurnStartEvents(current, next.id, rng);
       events.push(...fx.events);
       current = applyEvents(current, fx.events);

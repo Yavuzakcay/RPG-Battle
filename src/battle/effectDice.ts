@@ -41,6 +41,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   }
   // Kuyruk 19 (srdK19): Burst of Ingenuity (Sphinx of Wonder): kendisi ya da 30 ft'teki dostunun başarısız save/kontrolüne +2,
   // yalnızca başarıya çevirecekse; sfenksin tepkisi ve 2/Day havuzu harcanır (`burstBy`: reducer `syncAuras` yazar).
+  // Kuyruk K54b: Omuz Ver (Birlik Manastırı): Bağlı dostun başarısız kurtulmasına tepkiyle +WIS, yalnız başarıya çevirecekse.
+  if (on === 'save' && c.shoulderBy) k18.push({ label: 'Omuz Ver', die: `+${c.shoulderBy.bonus}`, sign: 1, reroll: 'plus', rerollBonus: c.shoulderBy.bonus, reaction: true, holderId: c.shoulderBy.id });
   if (on !== 'attack' && c.burstBy) k18.push({ label: 'Burst of Ingenuity', die: '+2', sign: 1, reroll: 'plus', rerollBonus: 2, reaction: true, holderId: c.burstBy.id, pool: c.burstBy.pool });
   // Kuyruk 19 (Epic Boon): Improve Fate: 60 ft'teki boon sahibi dostun başarısızına +2d4, düşmanın başarısına −2d4.
   if (c.fateBy) k18.push({ label: 'Improve Fate', die: '2d4', sign: 1, reroll: 'onFail', resource: 'improveFate', holderId: c.fateBy });
@@ -115,9 +117,12 @@ const auraDice = (c: Combatant | undefined): ExtraDie[] => (c?.auraSave ? [{ lab
 /** Kuyruk K50: Taht Varlığı (İmparator) WIS kurtulma bonusu (`syncAuras` yazar). */
 const throneDice = (c: Combatant | undefined, ability: Ability | undefined): ExtraDie[] => (c?.imzaWisSave && ability === 'wis' ? [{ label: 'Taht Varlığı', die: String(c.imzaWisSave), sign: 1 }] : []);
 
+/** Kuyruk K54b: Mevzi İşareti kurtulma bonusu (`syncAuras` yazar). */
+const wardDice = (c: Combatant | undefined): ExtraDie[] => (c?.wardSave ? [{ label: 'Mevzi İşareti', die: String(c.wardSave), sign: 1 }] : []);
+
 /** Kurtarma zarına (Bless, Bane; CILA: yetenek verilirse sabit eklentiler, Slow DEX −2). */
 export const saveDice = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
-  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...throneDice(c, ability), ...exhaustionDice(c), ...secondChances(c, 'save'), ...mightFloor(c, ability), ...moraleSaveDice(c, ability)];
+  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...throneDice(c, ability), ...wardDice(c), ...exhaustionDice(c), ...secondChances(c, 'save'), ...mightFloor(c, ability), ...moraleSaveDice(c, ability)];
 /** Kuyruk 19: Indomitable Might (Barbarian 18): STR save/kontrol toplamı STR skorundan küçükse skor sayılır. */
 const mightFloor = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
   c && ability === 'str' && c.traits?.includes('indomitable-might') ? [{ label: 'Indomitable Might', die: 'STR', sign: 1, reroll: 'floor', rerollBonus: c.strScore }] : [];

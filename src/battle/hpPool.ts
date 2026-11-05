@@ -24,6 +24,9 @@ export function trackPools(before: BattleState, after: BattleState, event: Battl
     const hp = Math.max(0, Math.min(pool.max, pool.hp + delta));
     next = { ...next, hpPools: { ...next.hpPools, [pool.id]: { ...pool, hp } } };
     if (hp > 0) continue;
+    // Kuyruk K54b: Yıkılmaz Birlik: sahibinin kaynağı ve tepkisi duruyorsa havuz bir kez ayakta kalır.
+    const held = holdPool(next, pool);
+    if (held) { next = held; continue; }
     // Havuz bitti: bütün üyeler düşer.
     const combatants = { ...next.combatants };
     for (const c of members(next, pool.id)) {
@@ -35,11 +38,28 @@ export function trackPools(before: BattleState, after: BattleState, event: Battl
   return next;
 }
 
+/** Yıkılmaz Birlik: koşullar tutuyorsa havuz `guard.hp` ile kalır (sahibin kaynağı −1, tepkisi harcanır, üyelerin Motivasyonu dolar). */
+function holdPool(state: BattleState, pool: HpPool): BattleState | null {
+  const g = pool.guard;
+  const o = g ? state.combatants[g.ownerId] : undefined;
+  if (!g || pool.held || !o || o.life === 'dead' || o.economy.reaction || (o.resources[g.resource] ?? 0) < 1
+    || o.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return null;
+  const hp = Math.min(pool.max, g.hp);
+  const combatants = { ...state.combatants };
+  for (const c of members(state, pool.id)) {
+    if (c.life === 'dead') continue;
+    combatants[c.id] = { ...c, hp, ...(c.moralMax !== undefined ? { moral: c.moralMax } : {}) } as Combatant;
+  }
+  const own = combatants[o.id] as Combatant;
+  combatants[o.id] = { ...own, resources: { ...own.resources, [g.resource]: (own.resources[g.resource] ?? 1) - 1 }, economy: { ...own.economy, reaction: true } };
+  return { ...state, combatants, hpPools: { ...state.hpPools, [pool.id]: { ...pool, hp, held: true } } };
+}
+
 /** Reducer: `hp_pool_created` ve `hp_pool_synced`. */
 export function applyPoolEvent(state: BattleState, event: Extract<BattleEvent, { type: 'hp_pool_created' | 'hp_pool_synced' }>): BattleState {
   const combatants = { ...state.combatants };
   if (event.type === 'hp_pool_created') {
-    const pool: HpPool = { id: event.poolId, hp: event.hp, max: event.max, ...(event.label ? { label: event.label } : {}) };
+    const pool: HpPool = { id: event.poolId, hp: event.hp, max: event.max, ...(event.label ? { label: event.label } : {}), ...(event.guard ? { guard: event.guard } : {}) };
     for (const id of event.memberIds) {
       const c = combatants[id];
       if (c) combatants[id] = { ...c, poolId: pool.id, hp: pool.hp, maxHp: pool.max };

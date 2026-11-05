@@ -74,6 +74,7 @@ import { teleportHexes } from './teleport';
 import { steerableSummon, steerHexes } from './summons';
 import { steedActions } from './steed';
 import { IMZA_SPECS } from './imza';
+import { imzaHintCmds } from './imzaAi';
 import { GAZE_KEY, SPIDER_KEY } from './karadul';
 
 const noRoll = () => 0.5;
@@ -131,6 +132,11 @@ function imzaAi(state: BattleState, actor: Combatant): Command | null {
     const spec = IMZA_SPECS[f.key];
     if (!spec) continue;
     if (spec.tur === 'bonus' ? actor.economy.bonus : actor.economy.action) continue;
+    // Kuyruk K54b: özel sezgiseller (slot dursa da; `spec.yz`).
+    if (spec.yz) {
+      for (const cmd of imzaHintCmds(state, actor, f.key, spec, foes, allies)) if (tryCmd(state, actor, cmd).ok) return cmd;
+      continue;
+    }
     // Büyücü slotu dururken eylem harcayan imza özelliği büyünün yerine geçmez (Ninni, Zemin Yeniden Yaz, Kuyruklu Yıldız…); havuz hariç.
     if (spec.tur === 'action' && spec.ozel !== 'havuz' && actor.spellSlots.some((n) => n > 0)) continue;
     const marked = (id: string) => Object.values(state.combatants).some((c) => c.effects?.some((e) => e.id === `${id}:${actor.id}`));
@@ -217,7 +223,10 @@ function byPriority(actor: Combatant, foes: Combatant[], state?: BattleState): C
   // Kuyruk 16 K16D: düşman, hedefi taşıyanı ya da çıkışa en yakın kahramanı (açık ulaş/al-çıkar hedefi varken) önce vurur.
   const runner = state && actor.side === 'enemies' && aiOn(state, 'aiCutRunner') ? objectiveRunner(state) : null;
   const key = (c: Combatant) => (runner?.id === c.id ? 0 : 1);
-  return [...foes].sort((a, b) => key(a) - key(b) || held(a) - held(b) || vexed(a) - vexed(b) || guard(a) - guard(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
+  // Kuyruk K54b (İnfazcı): hükümlü öne geçer (gizli saldırı fırsatı: yanında dost varsa daha da önde).
+  const verdict = (c: Combatant) => (actor.imza === 'imza_infazci' && c.effects?.some((e) => e.id === `imza:imza_infazci/verdict:${actor.id}`)
+    ? (state && c.pos && Object.values(state.combatants).some((x) => x.id !== actor.id && x.side === actor.side && x.hp > 0 && x.pos && distance(x.pos, c.pos as Offset) <= 1) ? 0 : 1) : 2);
+  return [...foes].sort((a, b) => key(a) - key(b) || held(a) - held(b) || verdict(a) - verdict(b) || vexed(a) - vexed(b) || guard(a) - guard(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
 }
 
 /** Düşmanın saldırı komutları, öncelik sırasıyla. */

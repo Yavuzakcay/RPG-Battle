@@ -2,6 +2,7 @@
  "note": "K50: imza alt sınıflar (ev kuralı; kaynak docs/imza-alt-siniflar/). `python scripts/k50-imza-veri.py` üretir; elle düzenleme betikte. `altSiniflar` oluşturucu kaydı (SubclassDef; `evKurali` ev kuralı kimliği, Birlik Manastırı için null: her zaman açık), `eylemler` savaşta use_feature (src/battle/imza.ts), `pasifler` savaş başı etkileri. `$pb`, `$lvl`, `$wis` gibi belirteçler savaşçıdan.",
  "surum": 23,
  "surumK54": 25,
+ "surumK54b": 27,
  "kapaliOrtam": {
   "bolgeler": [
    "derinlikler",
@@ -1096,8 +1097,8 @@
      },
      "status": "calisir",
      "description": {
-      "tr": "Doğa'da ustasın. Haritada daha uzağı keşfedersin.",
-      "en": "You gain Nature proficiency and scout farther."
+      "tr": "Doğa'da ustasın. Savaşın başında yakındaki tuzakları ve tehlikeli zeminleri bilirsin.",
+      "en": "You gain Nature proficiency and know nearby traps and hazards when battle starts."
      }
     },
     {
@@ -1107,10 +1108,10 @@
       "tr": "Mevzi İşareti",
       "en": "Mark the Ground"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Birkaç altıgeni işaretle: üzerindeki dostlar zemin engellerinden etkilenmez, daha dirençli olur.",
-      "en": "Mark a few hexes: allies there ignore ground hazards."
+      "en": "Mark a few hexes: allies there ignore ground hazards and resist better."
      }
     },
     {
@@ -1122,8 +1123,8 @@
      },
      "status": "calisir",
      "description": {
-      "tr": "Bir alanın zeminini değiştir: düşmanı yavaşlat.",
-      "en": "Rewrite an area’s ground: slow your foes."
+      "tr": "Bir alanın zeminini değiştir: düşmanı yavaşlat, dostlarının yolunu aç ya da buz döşe.",
+      "en": "Rewrite an area’s ground: slow foes, clear a path or lay ice."
      }
     },
     {
@@ -1133,7 +1134,7 @@
       "tr": "Çizili Duvar",
       "en": "Drawn Wall"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Yere duvar çiz: geçici bir engel yükselir.",
       "en": "Draw a wall: a temporary barrier rises."
@@ -1146,10 +1147,10 @@
       "tr": "Kuşbakışı Plan",
       "en": "Bird's-Eye Plan"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
-      "tr": "10 tur boyunca savaşı tepeden yönet.",
-      "en": "Command the battle from above for 10 rounds."
+      "tr": "10 tur boyunca savaşı tepeden yönet: dostlarını her tur yeniden yerleştirirsin.",
+      "en": "Command the battle from above for 10 rounds: reposition allies each round."
      }
     }
    ],
@@ -1367,6 +1368,42 @@
    "uses": {
     "abilityMod": "int",
     "min": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaMevzi": {
+   "name": "Mevzi İşareti",
+   "feature": [
+    "wizard/imza_harita:mark-the-ground"
+   ],
+   "uses": {
+    "proficiency": true
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaDuvar": {
+   "name": "Çizili Duvar",
+   "feature": [
+    "wizard/imza_harita:drawn-wall"
+   ],
+   "uses": {
+    "fixed": 2
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaPlan": {
+   "name": "Kuşbakışı Plan",
+   "feature": [
+    "wizard/imza_harita:birds-eye"
+   ],
+   "uses": {
+    "fixed": 1
    },
    "recharge": {
     "long": "all"
@@ -2359,7 +2396,168 @@
     "icon": "🗺"
    },
    "ad": "Zemin Yeniden Yaz",
-   "not": "Zemin değişmez: alandaki düşmanlar 10 tur yarı hızda (zor zemin karşılığı); dost temizliği ve yüzey seçeneği yok."
+   "not": "Sürüm 23–26: zemin değişmez, alandaki düşmanlar 10 tur yarı hızda.",
+   "surumMax": 26
+  },
+  "imza:imza_harita/rewrite-slow": {
+   "sinif": "imza_harita",
+   "ozellik": "rewrite-the-ground",
+   "seviye": 6,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaZemin",
+    "sayi": "int",
+    "yenilenme": "long"
+   },
+   "hedef": "hex",
+   "menzilFt": 60,
+   "ozel": "zemin",
+   "param": {
+    "kip": "zor",
+    "yaricapFt": 20,
+    "menzilFt": 60,
+    "sure": 10,
+    "maliyet": 2
+   },
+   "ad": "Zemin: Zor zemin",
+   "yz": "zeminDusman",
+   "not": "20 ft yarıçap 10 tur zor zemin (uçanlar hariç); Mevzi/Yol aç altındaki dostlar etkilenmez.",
+   "surumMin": 27
+  },
+  "imza:imza_harita/rewrite-clear": {
+   "sinif": "imza_harita",
+   "ozellik": "rewrite-the-ground",
+   "seviye": 6,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaZemin",
+    "sayi": "int",
+    "yenilenme": "long"
+   },
+   "hedef": "hex",
+   "menzilFt": 60,
+   "ozel": "zemin",
+   "param": {
+    "kip": "temizle",
+    "yaricapFt": 20,
+    "menzilFt": 60,
+    "sure": 10
+   },
+   "ad": "Zemin: Yol aç",
+   "not": "Alandaki zemin yüzeyleri kalkar; 10 tur dostlar orada zor zemini ve zemin hasarını yok sayar.",
+   "surumMin": 27
+  },
+  "imza:imza_harita/rewrite-ice": {
+   "sinif": "imza_harita",
+   "ozellik": "rewrite-the-ground",
+   "seviye": 6,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaZemin",
+    "sayi": "int",
+    "yenilenme": "long"
+   },
+   "hedef": "hex",
+   "menzilFt": 60,
+   "ozel": "zemin",
+   "param": {
+    "kip": "buz",
+    "yaricapFt": 20,
+    "menzilFt": 60,
+    "sure": 10
+   },
+   "ad": "Zemin: Buz",
+   "not": "Buz yüzeyi 10 tur (K55 çözücüsü: ateş eritir, su donar…). Çamur/taş ayrı kip değil (zor zemin kipi).",
+   "surumMin": 27
+  },
+  "imza:imza_harita/mark-the-ground": {
+   "sinif": "imza_harita",
+   "ozellik": "mark-the-ground",
+   "seviye": 3,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaMevzi",
+    "sayi": "pb",
+    "yenilenme": "long"
+   },
+   "hedef": "hex",
+   "menzilFt": 60,
+   "ozel": "isaret",
+   "param": {
+    "menzilFt": 60,
+    "enCokHex": 3,
+    "sure": 10,
+    "saveBonus": 1
+   },
+   "ad": "Mevzi İşareti",
+   "yz": "mevzi",
+   "not": "Seçilen altıgen + büyücüye göre iki yan altıgen; yeni işaret eskisinin yerine.",
+   "surumMin": 27
+  },
+  "imza:imza_harita/drawn-wall": {
+   "sinif": "imza_harita",
+   "ozellik": "drawn-wall",
+   "seviye": 10,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaDuvar",
+    "sayi": 2,
+    "yenilenme": "long"
+   },
+   "hedef": "hex",
+   "menzilFt": 60,
+   "ozel": "duvar",
+   "param": {
+    "menzilFt": 60,
+    "enCokHex": 3,
+    "sure": 10,
+    "engel": "cizili-duvar"
+   },
+   "ad": "Çizili Duvar",
+   "yz": "duvar",
+   "not": "K53 geçici engeli (data/engeller.json cizili-duvar): seçilen altıgen + iki yan altıgen, yaratık üstüne çizilmez.",
+   "surumMin": 27
+  },
+  "imza:imza_harita/birds-eye": {
+   "sinif": "imza_harita",
+   "ozellik": "birds-eye",
+   "seviye": 14,
+   "tur": "action",
+   "kaynak": {
+    "id": "imzaPlan",
+    "sayi": 1,
+    "yenilenme": "long"
+   },
+   "hedef": "allies",
+   "yaricapFt": 60,
+   "kendisi": true,
+   "etki": {
+    "name": "Kuşbakışı Plan",
+    "sure": 10,
+    "groundWard": true,
+    "icon": "🦅"
+   },
+   "ad": "Kuşbakışı Plan",
+   "yz": "plan",
+   "not": "60 ft içindeki dostlar 10 tur zor zemini ve zemin hasarını yok sayar; \"Kuşbakışı: Yerleştir\" açılır.",
+   "surumMin": 27
+  },
+  "imza:imza_harita/plan-move": {
+   "sinif": "imza_harita",
+   "ozellik": "birds-eye",
+   "seviye": 14,
+   "tur": "free",
+   "hedef": "allyOrSelf",
+   "menzilFt": 60,
+   "hedefVeHex": true,
+   "ozel": "plan",
+   "param": {
+    "menzilFt": 60,
+    "turdaEnCok": 2
+   },
+   "ad": "Kuşbakışı: Yerleştir",
+   "not": "Kuşbakışı Plan sürerken turda iki kez: dostu 60 ft içindeki boş altıgene ışınla ya da iki dostun yerini değiştir (fırsat saldırısı yok).",
+   "surumMin": 27
   }
  },
  "pasifler": [
@@ -2583,6 +2781,18 @@
    },
    "not": "Tepki: 120 ft içindeki dost saldırıyla 0 HP'ye düşünce yanına ışınlanıp 1 HP'de tutarsın (Motivasyon tam); hasarın yarısı sana (en çok seviye × 3). Yalnız saldırı hasarında.",
    "k54": true
+  },
+  {
+   "sinif": "imza_harita",
+   "ozellik": "read-the-land",
+   "seviye": 3,
+   "etki": {
+    "araziOkuma": {
+     "yaricapFt": 60
+    }
+   },
+   "not": "İlk turunun başında 60 ft içindeki tuzaklar bulunur, tehlikeli zeminler günlükte. Serüven keşif yarıçapı yok (Serüven kilitli).",
+   "surumMin": 27
   }
  ]
 }

@@ -12,6 +12,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SURUM = 23
 # Kuyruk K54: eksik özellikler (kural sürümü 25; `k54: True` olan eylem/pasif yalnız 25+ savaşta).
 SURUM_K54 = 25
+# Kuyruk K54b: ikinci tur eksikler (kural sürümü 27; `k54b=True` → `surumMin: 27`, `eski=True` → `surumMax: 26`).
+SURUM_K54B = 27
 
 def F(fid, level, tr, en, dtr, den, status='calisir'):
     return {'id': fid, 'level': level, 'name': {'tr': tr, 'en': en}, 'status': status, 'description': {'tr': dtr, 'en': den}}
@@ -29,10 +31,15 @@ def sub(sid, cls, tr, en, rtr, ren, feats, beceri=None, kural=True):
 def act(sid, fid, **spec):
     if 'not_' in spec:
         spec['not'] = spec.pop('not_')
+    if spec.pop('k54b', False):
+        spec['surumMin'] = SURUM_K54B
+    if spec.pop('eski', False):
+        spec['surumMax'] = SURUM_K54B - 1
     eylem[f'imza:{sid}/{fid}'] = {'sinif': sid, 'ozellik': spec.pop('ozellikAdi', fid), **spec}
 
-def pas(sid, fid, seviye, etki, not_=None, k54=False):
-    pasif.append({'sinif': sid, 'ozellik': fid, 'seviye': seviye, 'etki': etki, **({'not': not_} if not_ else {}), **({'k54': True} if k54 else {})})
+def pas(sid, fid, seviye, etki, not_=None, k54=False, k54b=False):
+    pasif.append({'sinif': sid, 'ozellik': fid, 'seviye': seviye, 'etki': etki, **({'not': not_} if not_ else {}), **({'k54': True} if k54 else {}),
+                  **({'surumMin': SURUM_K54B} if k54b else {})})
 
 PB = {'sayi': 'pb', 'yenilenme': 'short'}
 
@@ -259,15 +266,36 @@ pas(s, 'oath-spells', 3, {'alwaysPrepared': {'3': ['Cure Wounds', 'Sanctuary'], 
 # ---------------- Wizard: Harita Öğretisi ----------------
 s = 'imza_harita'
 sub(s, 'wizard', 'Harita Öğretisi', 'Doctrine of the Map', 'Araziyi yeniden yazan', 'Rewrites the battlefield', [
-    F('read-the-land', 3, 'Arazi Okuma', 'Read the Land', "Doğa'da ustasın. Haritada daha uzağı keşfedersin.", 'You gain Nature proficiency and scout farther.'),
-    F('mark-the-ground', 3, 'Mevzi İşareti', 'Mark the Ground', 'Birkaç altıgeni işaretle: üzerindeki dostlar zemin engellerinden etkilenmez, daha dirençli olur.', 'Mark a few hexes: allies there ignore ground hazards.', 'planli'),
-    F('rewrite-the-ground', 6, 'Zemin Yeniden Yaz', 'Rewrite the Ground', 'Bir alanın zeminini değiştir: düşmanı yavaşlat.', 'Rewrite an area’s ground: slow your foes.'),
-    F('drawn-wall', 10, 'Çizili Duvar', 'Drawn Wall', 'Yere duvar çiz: geçici bir engel yükselir.', 'Draw a wall: a temporary barrier rises.', 'planli'),
-    F('birds-eye', 14, 'Kuşbakışı Plan', "Bird's-Eye Plan", '10 tur boyunca savaşı tepeden yönet.', 'Command the battle from above for 10 rounds.', 'planli'),
+    F('read-the-land', 3, 'Arazi Okuma', 'Read the Land', "Doğa'da ustasın. Savaşın başında yakındaki tuzakları ve tehlikeli zeminleri bilirsin.", 'You gain Nature proficiency and know nearby traps and hazards when battle starts.'),
+    F('mark-the-ground', 3, 'Mevzi İşareti', 'Mark the Ground', 'Birkaç altıgeni işaretle: üzerindeki dostlar zemin engellerinden etkilenmez, daha dirençli olur.', 'Mark a few hexes: allies there ignore ground hazards and resist better.'),
+    F('rewrite-the-ground', 6, 'Zemin Yeniden Yaz', 'Rewrite the Ground', 'Bir alanın zeminini değiştir: düşmanı yavaşlat, dostlarının yolunu aç ya da buz döşe.', 'Rewrite an area’s ground: slow foes, clear a path or lay ice.'),
+    F('drawn-wall', 10, 'Çizili Duvar', 'Drawn Wall', 'Yere duvar çiz: geçici bir engel yükselir.', 'Draw a wall: a temporary barrier rises.'),
+    F('birds-eye', 14, 'Kuşbakışı Plan', "Bird's-Eye Plan", '10 tur boyunca savaşı tepeden yönet: dostlarını her tur yeniden yerleştirirsin.', 'Command the battle from above for 10 rounds: reposition allies each round.'),
 ], beceri=['nature'])
+# Sürüm 23–26: eski tek kip (alandaki düşmanlar yarı hız). Sürüm 27+: üç kip (alan; K55 yüzey çözücüsü).
 act(s, 'rewrite-the-ground', seviye=6, tur='action', kaynak={'id': 'imzaZemin', 'sayi': 'int', 'yenilenme': 'long'}, hedef='areaEnemies', menzilFt=60, yaricapFt=20,
-    etki={'name': 'Yeniden Yazılmış Zemin', 'sure': 10, 'speedMult': 0.5, 'icon': '🗺'}, ad='Zemin Yeniden Yaz',
-    not_='Zemin değişmez: alandaki düşmanlar 10 tur yarı hızda (zor zemin karşılığı); dost temizliği ve yüzey seçeneği yok.')
+    etki={'name': 'Yeniden Yazılmış Zemin', 'sure': 10, 'speedMult': 0.5, 'icon': '🗺'}, ad='Zemin Yeniden Yaz', eski=True,
+    not_='Sürüm 23–26: zemin değişmez, alandaki düşmanlar 10 tur yarı hızda.')
+ZEMIN = dict(seviye=6, tur='action', kaynak={'id': 'imzaZemin', 'sayi': 'int', 'yenilenme': 'long'}, hedef='hex', menzilFt=60, ozel='zemin', ozellikAdi='rewrite-the-ground', k54b=True)
+act(s, 'rewrite-slow', **ZEMIN, param={'kip': 'zor', 'yaricapFt': 20, 'menzilFt': 60, 'sure': 10, 'maliyet': 2}, ad='Zemin: Zor zemin', yz='zeminDusman',
+    not_='20 ft yarıçap 10 tur zor zemin (uçanlar hariç); Mevzi/Yol aç altındaki dostlar etkilenmez.')
+act(s, 'rewrite-clear', **ZEMIN, param={'kip': 'temizle', 'yaricapFt': 20, 'menzilFt': 60, 'sure': 10}, ad='Zemin: Yol aç',
+    not_='Alandaki zemin yüzeyleri kalkar; 10 tur dostlar orada zor zemini ve zemin hasarını yok sayar.')
+act(s, 'rewrite-ice', **ZEMIN, param={'kip': 'buz', 'yaricapFt': 20, 'menzilFt': 60, 'sure': 10}, ad='Zemin: Buz',
+    not_='Buz yüzeyi 10 tur (K55 çözücüsü: ateş eritir, su donar…). Çamur/taş ayrı kip değil (zor zemin kipi).')
+act(s, 'mark-the-ground', seviye=3, tur='bonus', kaynak={'id': 'imzaMevzi', 'sayi': 'pb', 'yenilenme': 'long'}, hedef='hex', menzilFt=60, ozel='isaret',
+    param={'menzilFt': 60, 'enCokHex': 3, 'sure': 10, 'saveBonus': 1}, ad='Mevzi İşareti', yz='mevzi', k54b=True,
+    not_='Seçilen altıgen + büyücüye göre iki yan altıgen; yeni işaret eskisinin yerine.')
+act(s, 'drawn-wall', seviye=10, tur='action', kaynak={'id': 'imzaDuvar', 'sayi': 2, 'yenilenme': 'long'}, hedef='hex', menzilFt=60, ozel='duvar',
+    param={'menzilFt': 60, 'enCokHex': 3, 'sure': 10, 'engel': 'cizili-duvar'}, ad='Çizili Duvar', yz='duvar', k54b=True,
+    not_='K53 geçici engeli (data/engeller.json cizili-duvar): seçilen altıgen + iki yan altıgen, yaratık üstüne çizilmez.')
+act(s, 'birds-eye', seviye=14, tur='action', kaynak={'id': 'imzaPlan', 'sayi': 1, 'yenilenme': 'long'}, hedef='allies', yaricapFt=60, kendisi=True,
+    etki={'name': 'Kuşbakışı Plan', 'sure': 10, 'groundWard': True, 'icon': '🦅'}, ad='Kuşbakışı Plan', yz='plan', k54b=True,
+    not_='60 ft içindeki dostlar 10 tur zor zemini ve zemin hasarını yok sayar; "Kuşbakışı: Yerleştir" açılır.')
+act(s, 'plan-move', seviye=14, tur='free', hedef='allyOrSelf', menzilFt=60, hedefVeHex=True, ozel='plan', param={'menzilFt': 60, 'turdaEnCok': 2},
+    ad='Kuşbakışı: Yerleştir', ozellikAdi='birds-eye', k54b=True,
+    not_='Kuşbakışı Plan sürerken turda iki kez: dostu 60 ft içindeki boş altıgene ışınla ya da iki dostun yerini değiştir (fırsat saldırısı yok).')
+pas(s, 'read-the-land', 3, {'araziOkuma': {'yaricapFt': 60}}, 'İlk turunun başında 60 ft içindeki tuzaklar bulunur, tehlikeli zeminler günlükte. Serüven keşif yarıçapı yok (Serüven kilitli).', k54b=True)
 
 # Her zaman hazır büyüler özelliğin `effect`'inde (sınıf kiti okur; Karadul gibi). Pasif listeden çıkar.
 for p_ in [x for x in pasif if 'alwaysPrepared' in x['etki']]:
@@ -303,6 +331,7 @@ out = {
             '`eylemler` savaşta use_feature (src/battle/imza.ts), `pasifler` savaş başı etkileri. `$pb`, `$lvl`, `$wis` gibi belirteçler savaşçıdan.',
     'surum': SURUM,
     'surumK54': SURUM_K54,
+    'surumK54b': SURUM_K54B,
     'kapaliOrtam': {'bolgeler': ['derinlikler', 'yeralti', 'hapishane'], 'varyantSozcukleri': ['karanlik', 'los', 'ic'], 'haritalar': ['kale-taht-salonu', 'kasaba-lagim', 'magara', 'magara-genis', 'dungeon', 'orman-heykel-magarasi', 'yeralti-nehri']},
     'eskiKimlik': {'baris-alani': 'imza_birlik'},
     'altSiniflar': alt,

@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54b G1: Harita Öğretisi (kural sürümü 27)
+
+- **Kural sürümü** 26 → 27 (`data/imza.json` `surumK54b`). Eylem/pasif başına sürüm aralığı: `surumMin` (K54b eylemleri yalnız 27+), `surumMax` (eski tek kipli eylemler yalnız 23–26). Eski kayıt/replay kendi sürümünün eylemlerini görür (`specLive`).
+- **Ortak:** zemin koruması `src/battle/groundWard.ts` (alan `SpellZone.groundWard`, etki `groundWard`): korunan dost o altıgende zor zemini yok sayar (`moveCostFn`), zemin yüzeyleri ve `ground` alanları etkilemez (`zones.affects`; gaz katmanı buhar/zehir bulutu hariç), Mevzi altıgeninde kurtulma bonusu (`syncAuras` → `wardSave`, `saveDice`). Tur başı kancası `src/battle/turnHooks.ts` (`registerTurnStart`). Yapay zekâ ipuçları `src/battle/imzaAi.ts` (`spec.yz`; slot dursa da denenir).
+- **Arazi Okuma:** ilk turunun başında 60 ft içindeki tuzaklar ve sarmaşık kapanları bulunmuş sayılır; tehlikeli zemin (lav, tehlikeli harf) ve yüzeyler günlüğe yazılır (bir kez). Serbest gezinti keşif yarıçapı çarpanı Serüven'de; Serüven kilitli olduğu için yok.
+- **Mevzi İşareti:** seçilen altıgen + büyücüye göre enine iki komşu (belgedeki "en çok 3 bitişik" için tek tıkla şekil). Yeni işaret eskisinin yerine. Kurtulma +1 (belgede "+1"; görevdeki "küçük direnç" bu).
+- **Zemin Yeniden Yaz:** üç ayrı eylem, ortak kaynak: Zor zemin (20 ft, 10 tur, uçanlar hariç herkes; Mevzi/Yol aç altındaki dostlar etkilenmez), Yol aç (zemin yüzeyleri kalkar + dostlara zemin koruması alanı), Buz (yüzey 10 tur; `zone_created` olarak K55 çözücüsünden geçer). Çamur/taş ayrı kip değil (Zor zemin kipi karşılığı).
+- **Çizili Duvar:** K53 `cizili-duvar` engeli; seçilen + iki yan altıgen; yaratık üstüne çizilmez; Game Master `tempBarriers` kapalıysa kullanılamaz. Veri AC 15, belge AC 12: sayı ayarı yapılmadı (K59).
+- **Kuşbakışı Plan:** 60 ft içindeki dostlara 10 tur zemin koruması; "Kuşbakışı: Yerleştir" serbest eylem, turda 2: dostu (ya da kendini) 60 ft içindeki boş altıgene ışınla (K53 `teleport`, varış kancaları), altıgende dost varsa yer takası. Belgedeki "her tur başında" yerine büyücünün turunda herhangi bir anda (Hızır Yol Adımı ile aynı karar). İsteksiz hedef (WIS) yok: yalnız dostlar.
+- **Yapay zekâ:** Mevzi (2 altıgen içinde düşmanı olan dostun altıgeni), Çizili Duvar (büyücüye 2–5 altıgen uzaktaki en yakın düşmanın bir adım önüne), Zor zemin (içinde ≥3 düşman, dostsuz alan), Kuşbakışı (≥3 dost). "Yerleştir"i ve Yol aç/Buz'u kullanmaz.
+
 ## 2026-11-05 — Kuyruk K55: altıgen etki çözücüsü ve öncelik kuralları (kural sürümü 26)
 
 - **Tek giriş:** `resolveHexEffects` (`src/battle/hexResolver.ts`). Komut sonunda eski üç geçişin (`surfaceReactionEvents`, `greaseAfterEvents`, `surfaceMixEvents`) yerine çalışır. Nesne olaylarının ateşi (`elementReactionEvents`) de buradan geçer.

@@ -9,7 +9,7 @@ import { isIncapacitated } from '../rules/conditions';
 import type { Ability } from '../rules/abilities';
 import type { BattleState, Combatant } from './types';
 
-interface Pasif { sinif: string; ozellik: string; seviye: number; etki: Record<string, unknown>; k54?: boolean }
+interface Pasif { sinif: string; ozellik: string; seviye: number; etki: Record<string, unknown>; k54?: boolean; surumMin?: number }
 interface AltSinif { id: string; evKurali: string | null }
 const SUBS = data.altSiniflar as unknown as AltSinif[];
 const PASIF = data.pasifler as unknown as Pasif[];

@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { groundWarded, groundZone } from './groundWard';
 import { barriersOn, passesBarrier } from './barriers';
 import { fireSideHexes, wallOpenEvents } from './walls';
 import { AXIAL_DIRECTIONS, axialToOffset, distance, isInside, neighbors, offsetToAxial } from '../rules/hex';
@@ -77,6 +78,8 @@ function affects(state: BattleState, z: SpellZone, spec: ZoneSpec, c: Combatant)
   if (isWebZone(z) && c.effects?.some((e) => e.webWalker)) return false;
   if (!isTargetable(c) || c.hp <= 0 || isIntangible(c) || c.id === z.anchorId) return false;
   if (spec.ground && isAirborne(c)) return false;
+  // Kuyruk K54b: zemin koruması (Mevzi İşareti, Yol aç, Kuşbakışı Plan): zemin yüzeyi ve zemin alanı etkilemez.
+  if (groundZone(z, spec.ground) && groundWarded(state, c)) return false;
   if (spec.targets === 'enemies' && c.side === z.side) return false;
   if (spec.notCaster && c.id === z.casterId) return false;
   if (spec.gate && !globalRule(state, spec.gate)) return false;

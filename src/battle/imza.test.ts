@@ -163,7 +163,8 @@ describe('imza: alt sınıf eylemleri', () => {
     const p = arena(hero('paladin', 'imza_hizir', 20));
     p.do(use('imza:imza_hizir/hastening-road'));
     expect(p.c('C').effects?.some((e) => e.name === 'Yetişen Yol' && e.resist?.includes('fire'))).toBe(true);
-    const w = arena(hero('wizard', 'imza_harita', 6));
+    // Kuyruk K54b: eski tek kipli Zemin Yeniden Yaz yalnız sürüm 23–26 savaşında (27+ üç kip, k54bHarita.test).
+    const w = arena(hero('wizard', 'imza_harita', 6), { kuralSurumu: 26 });
     w.do(use('imza:imza_harita/rewrite-the-ground', 'B'));
     expect(w.c('B').effects?.some((e) => e.speedMult === 0.5)).toBe(true);
   });

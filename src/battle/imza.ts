@@ -21,6 +21,8 @@ import { applyEvents } from './reduce';
 import { ruleVersion } from './ruleVersion';
 import { K54_VERSION, k54, mindMoveEvents } from './imza54';
 import { k54Problem, k54Special } from './imza54x';
+import { unbrokenGuard } from './imzaBirlik';
+import { freeVerdict } from './imzaInfazci';
 import type { Offset } from '../rules/hex';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
@@ -44,6 +46,20 @@ export interface ImzaSpec {
   /** Kuyruk K54 (sürüm 25+): yeni eylem; eski savaşta yok. `etki25` sürüm 25'te `etki` yerine (Son Ders aurası). */
   k54?: boolean; etki25?: Etki; menzilSeviye?: Record<string, number>; boyutEnCok?: string; kip?: string; mesafe?: number;
   agirlikSeviye?: Record<string, string[]>; hedefVeHex?: boolean; engel?: string; enCokHex?: number;
+  /** Kuyruk K54b: eylemin geçerli olduğu kural sürümü aralığı (eski kayıt kendi sürümünün eylemini görür). */
+  surumMin?: number; surumMax?: number;
+  /** Kuyruk K54b: özel eylem parametreleri (sayılar veride). */
+  param?: Record<string, unknown>;
+  /** Kuyruk K54b: yedek kaynak (ücretsiz kullanım bitince; Ninni → 1 Büyücülük Puanı). */
+  yedek?: { id: string; maliyet: number };
+  /** Kuyruk K54b: yapay zekâ ipucu (özel sezgisel). */
+  yz?: string;
+}
+/** Kuyruk K54b: eylem bu kural sürümünde var mı (`k54` → 25+, `surumMin`/`surumMax`). */
+export function specLive(spec: Pick<ImzaSpec, 'k54' | 'surumMin' | 'surumMax'> | undefined, v: number): boolean {
+  if (!spec) return true;
+  if (spec.k54 && v < K54_VERSION) return false;
+  return v >= (spec.surumMin ?? 0) && v <= (spec.surumMax ?? Infinity);
 }
 
 export const IMZA = data;
@@ -100,10 +116,12 @@ export function withImza(state: BattleState): BattleState {
     changed = true;
     if (!imzaOn(state, imzaOf(c))) { combatants[id] = { ...c, features: (c.features ?? []).filter((f) => !f.key.startsWith('imza:')) }; continue; }
     // Kuyruk K54: sürüm 25 öncesi savaşta yeni eylemler yok.
-    const old = ruleVersion(state) < K54_VERSION;
-    const feats = old ? (c.features ?? []).filter((f) => !IMZA_SPECS[f.key]?.k54) : c.features;
-    if (feats !== c.features) c = { ...c, ...(feats ? { features: feats } : {}) };
-    const adds: ActiveEffect[] = pasifler(c).filter((p) => typeof p.etki.name === 'string' && !(old && p.k54))
+    const v = ruleVersion(state);
+    const old = v < K54_VERSION;
+    const feats0 = c.features ?? [];
+    const feats = feats0.filter((f) => specLive(IMZA_SPECS[f.key], v));
+    if (feats.length !== feats0.length) c = { ...c, features: feats };
+    const adds: ActiveEffect[] = pasifler(c).filter((p) => typeof p.etki.name === 'string' && !(old && p.k54) && v >= (p.surumMin ?? 0))
       .map((p) => { const out: Record<string, unknown> = { ...p.etki, id: `imza:${p.sinif}/${p.ozellik}`, name: p.etki.name as string, sourceId: c.id }; resolveAuras(out, c); return out as unknown as ActiveEffect; });
     combatants[id] = adds.length ? { ...c, effects: [...(c.effects ?? []), ...adds] } : c;
   }
@@ -181,16 +199,33 @@ function targetsOf(state: BattleState, actor: Combatant, spec: ImzaSpec, key: st
   }
 }
 
+/**
+ * Harcanacak kaynak ve miktarı: önce eylemin kendi kaynağı; bitmişse (sürüm 27+) yedek kaynak (Ninni/Sepet → Büyücülük
+ * Puanı). Kaynaksız eylemde null; hiçbiri yetmiyorsa 'none'.
+ */
+function spendOf(state: BattleState, actor: Combatant, spec: ImzaSpec): { id: string; cost: number } | null | 'none' {
+  const res = spec.kaynak?.id ?? spec.kullan?.id;
+  if (!res) return null;
+  const cost = spec.kullan?.maliyet ?? spec.maliyet ?? 1;
+  if (resourceLeft(actor, res) >= cost) return { id: res, cost };
+  if (spec.yedek && ruleVersion(state) >= 27 && resourceLeft(actor, spec.yedek.id) >= spec.yedek.maliyet) return { id: spec.yedek.id, cost: spec.yedek.maliyet };
+  return 'none';
+}
+/** Kuyruk K54b: eylem başka bir imza etkisinin sürmesini ister (Çağrı sırasında bonus eylemle Sepet). */
+const needsEffect = (spec: ImzaSpec, actor: Combatant): boolean => {
+  const k = spec.param?.gerekEtki as string | undefined;
+  return !!k && !actor.effects?.some((e) => e.id === `${k}:${actor.id}`);
+};
+
 export function imzaProblem(state: BattleState, actor: Combatant, f: UsableFeature, targetId?: string, to?: Offset): string | null {
   const spec = IMZA_SPECS[f.key];
   if (!spec) return 'Bilinmeyen özellik.';
   if (!imzaOn(state, imzaOf(actor))) return `${f.name}: imza alt sınıf ev kuralı kapalı.`;
   if (isIncapacitated(actor.conditions)) return 'Incapacitated iken kullanılamaz.';
-  const res = spec.kaynak?.id ?? spec.kullan?.id;
-  const cost = spec.kullan?.maliyet ?? spec.maliyet ?? 1;
-  if (res && resourceLeft(actor, res) < cost) return `${f.name}: kullanım kalmadı.`;
+  if (spendOf(state, actor, spec) === 'none' && !(spec.param?.bedavaDevir && freeVerdict(state, actor))) return `${f.name}: kullanım kalmadı.`;
+  if (needsEffect(spec, actor)) return `${f.name}: yalnız ${String(spec.param?.gerekAd ?? 'gerekli etki')} sürerken.`;
   if (spec.acikHava && !openSky(state)) return `${f.name} yalnızca açık gökyüzü altında çalışır.`;
-  if (spec.k54 && !k54(state)) return `${f.name}: bu kural sürümünde yok.`;
+  if ((spec.k54 && !k54(state)) || !specLive(spec, ruleVersion(state))) return `${f.name}: bu kural sürümünde yok.`;
   const t = targetsOf(state, actor, spec, f.key, targetId);
   if (typeof t === 'string') return t;
   return k54Problem(state, actor, spec, t, to);
@@ -211,7 +246,8 @@ function makeEffect(e: Etki, id: string, actor: Combatant, state: BattleState, l
 function resolveAuras(out: Record<string, unknown>, actor: Combatant): void {
   if (Array.isArray(out.auras)) out.auras = (out.auras as Array<Record<string, unknown>>).map((a) => {
     const e = a.effect as Record<string, unknown>;
-    return { ...a, effect: { ...e, ...(typeof e.amount === 'string' ? { amount: Math.max(1, num(e.amount, actor)) } : {}) } };
+    return { ...a, effect: { ...e, ...(typeof e.amount === 'string' ? { amount: Math.max(1, num(e.amount, actor)) } : {}), ...(typeof e.dice === 'string' ? { dice: expr(e.dice, actor) } : {}) },
+      ...(a.save && (a.save as { dcAb?: Ability[] }).dcAb ? { save: { ability: (a.save as { ability: Ability }).ability, dc: imzaDc(actor, (a.save as { dcAb: Ability[] }).dcAb) } } : {}) };
   });
 }
 
@@ -222,14 +258,19 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
   const spec = IMZA_SPECS[f.key] as ImzaSpec;
   const targets = targetsOf(state, actor, spec, f.key, targetId) as Combatant[];
   const events: BattleEvent[] = [];
-  const res = spec.kaynak?.id ?? spec.kullan?.id;
-  if (res) events.push({ type: 'feature_used', actorId: actor.id, feature: res, remaining: resourceLeft(actor, res) - (spec.kullan?.maliyet ?? spec.maliyet ?? 1) });
+  // Kuyruk K54b: Hüküm devri (hükümlü düştü): kullanım harcanmaz, turda bir.
+  const devir = !!spec.param?.bedavaDevir && freeVerdict(state, actor);
+  const spend = devir ? null : spendOf(state, actor, spec);
+  if (devir) events.push({ type: 'trait_turn', actorId: actor.id, trait: 'imza:hukum-devir', key: String(state.round) });
+  if (spend && spend !== 'none') events.push({ type: 'feature_used', actorId: actor.id, feature: spend.id, remaining: resourceLeft(actor, spend.id) - spend.cost });
   const markId = effectId(f.key, actor);
   // Tek hedefli işaret (Hüküm): öncekinin yerine.
   if (spec.tek) for (const c of Object.values(state.combatants)) {
     const old = c.effects?.find((e) => e.id === markId);
     if (old) events.push({ type: 'effect_ended', targetId: c.id, effectId: old.id, name: old.name, reason: 'used' });
   }
+  // Kuyruk K54b (sürüm 27): aynı adlı etkiden aynı anda en çok N (Sepet: 1; Dunganga Çağrısı sürerken yeterlilik kadar).
+  if (spec.param?.tekAd && ruleVersion(state) >= 27) events.push(...capEvents(state, actor, spec));
   if (spec.bag) for (const c of bondedOf(state, actor)) events.push({ type: 'effect_ended', targetId: c.id, effectId: markId, name: spec.etki?.name ?? spec.ad, reason: 'used' });
   if (spec.ozel === 'buyruk') return finish(state, [...events, ...decreeEvents(state, actor, targets[0] as Combatant, rng)]);
   if (spec.ozel === 'havuz') {
@@ -237,7 +278,9 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
     if (ids.length < 2) return fail('Havuz için en az iki bağlı ve havuzsuz dost gerekir.');
     const max = ids.reduce((n, id) => n + (state.combatants[id]?.maxHp ?? 0), 0);
     const hp = Math.min(max, ids.reduce((n, id) => n + (state.combatants[id]?.hp ?? 0), 0));
-    return finish(state, [...events, { type: 'hp_pool_created', poolId: `imza-birlik-${actor.id}`, memberIds: ids, hp, max, label: spec.ad }]);
+    // Kuyruk K54b: Yıkılmaz Birlik (17) koruması havuzla birlikte kurulur.
+    const guard = unbrokenGuard(state, actor);
+    return finish(state, [...events, { type: 'hp_pool_created', poolId: `imza-birlik-${actor.id}`, memberIds: ids, hp, max, label: spec.ad, ...(guard ? { guard } : {}) }]);
   }
   const dc = spec.save ? imzaDc(actor, spec.save.dc) : 0;
   // Kuyruk K54: altıgen/özel eylemler (Zihin Gücü nesne ve fırlatma, Çizili Duvar, Mevzi İşareti, Kuşbakışı…).
@@ -304,6 +347,16 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
     if (e && (!isFoe || failed)) events.push({ type: 'effect_added', targetId: t.id, effect: makeEffect(e, markId, actor, state, legendary) });
   }
   return finish(state, events);
+}
+
+/** Aynı adlı etkilerin sınırı: sınırı aşacak kadar eskisi biter (en erken biteni önce). */
+function capEvents(state: BattleState, actor: Combatant, spec: ImzaSpec): BattleEvent[] {
+  const name = String(spec.param?.tekAd);
+  const call = spec.param?.cagriEtki as string | undefined;
+  const cap = call && actor.effects?.some((e) => e.id === `${call}:${actor.id}`) ? Math.max(1, actor.proficiency) : 1;
+  const held = Object.values(state.combatants).flatMap((c) => (c.effects ?? []).filter((e) => e.name === name && e.sourceId === actor.id).map((e) => ({ c, e })))
+    .sort((a, b) => (a.e.until ?? 0) - (b.e.until ?? 0));
+  return held.slice(0, Math.max(0, held.length - cap + 1)).map(({ c, e }) => ({ type: 'effect_ended', targetId: c.id, effectId: e.id, name: e.name, reason: 'used' }) as BattleEvent);
 }
 
 /** Buyruk: dost tepkisini harcamadan en yakın düşmana tek silah saldırısı (kayıtlı saldırı yolu). */

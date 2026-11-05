@@ -35,7 +35,13 @@ const drop = (conds: string[]) => conds.filter((x) => x !== 'Invisible');
  * Kuyruk 19 (featuresK19): gizlenmiş yaratığın yeri biliniyor mu (Divine Sense: Celestial/Fiend/Undead, 60 ft;
  * Incapacitated iken etkisiz). Biliniyorsa hedef alınabilir; görünmezliğin saldırı etkisi (dezavantaj) sürer.
  */
-export function knowsWhere(state: Pick<BattleState, 'map' | 'kuralSurumu'>, observer: Combatant, target: Combatant): boolean {
+/** Kuyruk K54b: ek "yerini bilir" kancaları (İnfazcı Peşini Bırakmayan; kayıtla, döngüsel içe aktarma olmadan). */
+type KnowsHook = (state: Pick<BattleState, 'map' | 'kuralSurumu' | 'houseRules'>, observer: Combatant, target: Combatant) => boolean;
+const KNOWS: KnowsHook[] = [];
+export const registerKnowsWhere = (h: KnowsHook): void => { if (!KNOWS.includes(h)) KNOWS.push(h); };
+
+export function knowsWhere(state: Pick<BattleState, 'map' | 'kuralSurumu'> & Partial<Pick<BattleState, 'houseRules'>>, observer: Combatant, target: Combatant): boolean {
+  if (KNOWS.some((h) => h(state, observer, target))) return true;
   if (!globalRule(state, 'featuresK19') || !target.creatureType) return false;
   if (observer.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
   return (observer.effects ?? []).some((e) => e.senseTypes && e.senseTypes.types.includes(target.creatureType as string)

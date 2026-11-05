@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { groundWardFn } from './groundWard';
 import { solidBarrierAt } from './barriers';
 import { sizeRank } from './forced';
 import { interposeCost } from './arcaneHand';
@@ -211,6 +212,8 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const tooDeep = deepWaterBlocks(state, actor);
   const walker = waterWalks(state, actor);
   const freeMove = !!actor.effects?.some((e) => e.freeMove || e.burrow);
+  // Kuyruk K54b: Mevzi İşareti / Yol aç / Kuşbakışı Plan: korunan altıgende zor zemin yok.
+  const ward = groundWardFn(state, actor);
   // Kuyruk 19 (SRD Ice Walk): buz ve kar zemini zorlu arazi değil.
   const iceWalk = !!actor.effects?.some((e) => e.iceWalker);
   // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
@@ -227,14 +230,15 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const t0 = terrainAt(state, h);
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
-    const t = (walker && isLiquidTile(t0)) || ((freeMove || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
+    const free = freeMove || (!!ward && ward(h));
+    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
     const terrain = wall ? through : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
     const enemy = enemyAt.get(hexKey(h));
     const zc0 = handsOut ? (((z) => (z === null ? null : Math.max(z, interposeCost(state, actor, h))))(zoneCost(h))) : zoneCost(h);
-    const zc = freeMove && zc0 !== null ? 1 : zc0;
+    const zc = free && zc0 !== null ? 1 : zc0;
     const ground0 = base === null || zc === null ? null : Math.max(base, zc);
     const ground = ground0 !== null && allyAt.has(hexKey(h)) ? Math.max(through, ground0) : ground0;
     // Kuyruk 19 (Halfling Nimbleness): en az bir boy büyük yaratığın altıgeninden geçer (zorlu arazi gibi).

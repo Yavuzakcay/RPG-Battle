@@ -6,6 +6,8 @@
  * `saveDice` (bütün save'lerin ortak eklentisi) sabit eklenti olarak okur. Game Master anahtarı `auraOfProtection`
  * (global, kural sürümü 14); kapalıyken yalnızca Paladin'in kendi bonusu.
  */
+import { groundWardSave } from './groundWard';
+import { anyBirlik, shoulderOf } from './imzaBirlik';
 import { auraCoreOn, passiveAuraOf } from './auraCore';
 import { imzaAuraBonus } from './imzaCore';
 import { isIncapacitated } from '../rules/conditions';
@@ -89,12 +91,18 @@ export function syncAuras(state: BattleState): BattleState {
   let next = state;
   // Kuyruk K50: Taht Varlığı (İmparator) aurası; imza savaşçısı yoksa hesap yok.
   const anyImza = Object.values(state.combatants).some((c) => c.imza);
+  const anyWard = !!state.map?.zones?.some((z) => z.groundWard?.saveBonus);
+  const anyUnion = anyBirlik(state);
   // Kuyruk K53 S5: veriden pasif auralar (save bonusu en güçlüsü, bağışıklık, can yenileyemez, ölüm save dezavantajı).
   const anyCore = auraCoreOn(state) && Object.values(state.combatants).some((c) => c.effects?.some((e) => e.aura?.trigger === 'passive' || e.auras?.some((a) => a.trigger === 'passive')));
   for (const c of Object.values(state.combatants)) {
     const core = anyCore ? passiveAuraOf(state, c) : null;
     const want = Math.max(on ? auraSaveOf(state, c) : 0, core?.saveBonus ?? 0);
     const throne = anyImza ? imzaAuraBonus(state, c, 'wis') : 0;
+    // Kuyruk K54b: Mevzi İşareti altıgeninde kurtulma bonusu.
+    const ward = anyWard ? groundWardSave(state, c) : 0;
+    // Kuyruk K54b: Omuz Ver (Birlik Manastırı).
+    const shoulder = anyUnion ? shoulderOf(state, c) : undefined;
     const by = charmOn ? countercharmOf(state, c) : undefined;
     const fix = inspireOn && !!c.traits?.length && (c.effects ?? []).some((e) => e.inspire);
     const chain = chainOn && (c.effects ?? []).some((e) => e.inspire);
@@ -104,12 +112,12 @@ export function syncAuras(state: BattleState): BattleState {
     const fateFoe = anyFate ? fateHolder(state, c, false) : undefined;
     const burst = anyBurst ? burstOf(state, c) : undefined;
     if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && !!c.inspireChain === chain && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
-      && c.fateBy === fateBy && c.fateFoe === fateFoe && (c.imzaWisSave ?? 0) === throne
+      && c.fateBy === fateBy && c.fateFoe === fateFoe && (c.imzaWisSave ?? 0) === throne && (c.wardSave ?? 0) === ward && JSON.stringify(c.shoulderBy) === JSON.stringify(shoulder)
       && (c.auraImmune ?? []).join() === (core?.immune ?? []).join() && !!c.auraNoHeal === !!core?.noHeal && !!c.auraDeathDis === !!core?.deathDis && !!c.auraDeathAdv === !!core?.deathAdv) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, ...rest } = next.combatants[c.id] as Combatant;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, ...rest } = next.combatants[c.id] as Combatant;
     next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
       ...(fix ? { inspireFix: true } : {}), ...(chain ? { inspireChain: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
-      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}), ...(throne > 0 ? { imzaWisSave: throne } : {}),
+      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}), ...(throne > 0 ? { imzaWisSave: throne } : {}), ...(ward > 0 ? { wardSave: ward } : {}), ...(shoulder ? { shoulderBy: shoulder } : {}),
       ...(core?.immune.length ? { auraImmune: core.immune } : {}), ...(core?.noHeal ? { auraNoHeal: true } : {}), ...(core?.deathDis ? { auraDeathDis: true } : {}), ...(core?.deathAdv ? { auraDeathAdv: true } : {}) } as Combatant } };
   }
   return next;
