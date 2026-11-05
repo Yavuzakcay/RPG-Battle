@@ -14,7 +14,11 @@ import { saveDice } from './effectDice';
 import { saveMode } from './durations';
 import { damageEffects } from './damage-effects';
 import { saveDamage } from './classTraits';
-import { strikeApi } from './reactions';
+import { canReact, reactionUsed, strikeApi } from './reactions';
+import { withArrival } from './motion';
+import { teleportEvent, teleportProblem } from './teleport';
+import { speedHexes } from './reduce';
+import { distance } from '../rules/hex';
 import { pushAwayEvents } from './forced';
 import { moraleOn } from './morale';
 import { applyEvents } from './reduce';
@@ -23,6 +27,7 @@ import { K54_VERSION, k54, mindMoveEvents } from './imza54';
 import { k54Problem, k54Special } from './imza54x';
 import { unbrokenGuard } from './imzaBirlik';
 import { freeVerdict } from './imzaInfazci';
+import { woundedHeartPatch } from './imzaK54c';
 import type { Offset } from '../rules/hex';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
@@ -41,7 +46,7 @@ export interface ImzaSpec {
   yalnizIsaretli?: string; save?: { yetenek: Ability; dc: Ability[]; dezVs?: string[]; dezEtki?: string[] }; yari?: boolean; cesaret?: number;
   hasar?: { zar: Record<string, string>; tur: string }; hasarHep?: boolean; iyilestir?: Record<string, string>; tempHp?: string; moral?: number;
   etki?: Etki; etkiSeviye?: Record<string, Etki>; kendiEtki?: Etki; temizle?: string[]; itme?: number; bag?: boolean;
-  ozel?: 'buyruk' | 'havuz' | 'zihin' | 'zihinNesne' | 'firlat' | 'duvar' | 'isaret' | 'zemin' | 'plan' | 'ferman' | 'yolAdimi';
+  ozel?: 'buyruk' | 'buyrukYer' | 'havuz' | 'zihin' | 'zihinNesne' | 'firlat' | 'duvar' | 'isaret' | 'zemin' | 'plan' | 'ferman' | 'yolAdimi';
   acikHava?: boolean; dostlarDahil?: boolean; efsaneviBasariSure?: number;
   /** Kuyruk K54 (sürüm 25+): yeni eylem; eski savaşta yok. `etki25` sürüm 25'te `etki` yerine (Son Ders aurası). */
   k54?: boolean; etki25?: Etki; menzilSeviye?: Record<string, number>; boyutEnCok?: string; kip?: string; mesafe?: number;
@@ -123,7 +128,10 @@ export function withImza(state: BattleState): BattleState {
     if (feats.length !== feats0.length) c = { ...c, features: feats };
     const adds: ActiveEffect[] = pasifler(c).filter((p) => typeof p.etki.name === 'string' && !(old && p.k54) && v >= (p.surumMin ?? 0))
       .map((p) => { const out: Record<string, unknown> = { ...p.etki, id: `imza:${p.sinif}/${p.ozellik}`, name: p.etki.name as string, sourceId: c.id }; resolveAuras(out, c); return out as unknown as ActiveEffect; });
-    combatants[id] = adds.length ? { ...c, effects: [...(c.effects ?? []), ...adds] } : c;
+    const withFx = adds.length ? { ...c, effects: [...(c.effects ?? []), ...adds] } : c;
+    // Kuyruk K54c: Yaralı Kalp tavanı (Moral kapalıyken Yıpranma havuzu aynı alanlarla).
+    const wh = woundedHeartPatch(state, withFx);
+    combatants[id] = wh ? { ...withFx, ...wh } : withFx;
   }
   return changed ? { ...state, combatants } : state;
 }
@@ -228,6 +236,13 @@ export function imzaProblem(state: BattleState, actor: Combatant, f: UsableFeatu
   if ((spec.k54 && !k54(state)) || !specLive(spec, ruleVersion(state))) return `${f.name}: bu kural sürümünde yok.`;
   const t = targetsOf(state, actor, spec, f.key, targetId);
   if (typeof t === 'string') return t;
+  // Kuyruk K54c (sürüm 28): Buyruk dostun tepkisini kullanır; yer değiştirme kipi.
+  const ally0 = t[0];
+  if ((spec.ozel === 'buyruk' || spec.ozel === 'buyrukYer') && ruleVersion(state) >= 28 && ally0) {
+    const nm = ally0.name;
+    if (!canReact(ally0)) return `${nm} tepkisini kullandı.`;
+  }
+  if (spec.ozel === 'buyrukYer') return decreeMoveProblem(state, t[0], to);
   return k54Problem(state, actor, spec, t, to);
 }
 
@@ -236,6 +251,9 @@ function makeEffect(e: Etki, id: string, actor: Combatant, state: BattleState, l
   const { sure, sureEfsanevi, ...rest } = e;
   const out: Record<string, unknown> = { ...rest, id, sourceId: actor.id, until: state.round + (legendary && sureEfsanevi ? sureEfsanevi : sure) };
   if (out.attackDisVs === '$actor') out.attackDisVs = actor.id;
+  // Kuyruk K54c: Hükümdar Sözü (`attackDisNear.id`) ve Yazgı Mührü (`fateSeal.pb`) belirteçleri.
+  if ((out.attackDisNear as { id?: string } | undefined)?.id === '$actor') out.attackDisNear = { ...(out.attackDisNear as object), id: actor.id };
+  if (typeof (out.fateSeal as { pb?: unknown } | undefined)?.pb === 'string') out.fateSeal = { pb: num((out.fateSeal as { pb: string }).pb, actor) };
   if (typeof out.hitDie === 'string') out.hitDie = expr(out.hitDie, actor);
   if (out.dice && typeof (out.dice as { die: string }).die === 'string') out.dice = { ...(out.dice as object), die: expr((out.dice as { die: string }).die, actor) };
   if (typeof out.tempHp === 'string') out.tempHp = num(out.tempHp, actor);
@@ -273,6 +291,11 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
   if (spec.param?.tekAd && ruleVersion(state) >= 27) events.push(...capEvents(state, actor, spec));
   if (spec.bag) for (const c of bondedOf(state, actor)) events.push({ type: 'effect_ended', targetId: c.id, effectId: markId, name: spec.etki?.name ?? spec.ad, reason: 'used' });
   if (spec.ozel === 'buyruk') return finish(state, [...events, ...decreeEvents(state, actor, targets[0] as Combatant, rng)]);
+  if (spec.ozel === 'buyrukYer' && to) {
+    const ally = targets[0] as Combatant;
+    const react = reactionUsed(ally, { id: 'imza-buyruk', name: 'Buyruk' }, 'ally', actor.id);
+    return finish(state, [...events, react, ...withArrival(applyEvents(state, [...events, react]), [], [teleportEvent(ally, to, 'Buyruk')], rng)]);
+  }
   if (spec.ozel === 'havuz') {
     const ids = targets.map((c) => c.id).filter((id) => !state.combatants[id]?.poolId);
     if (ids.length < 2) return fail('Havuz için en az iki bağlı ve havuzsuz dost gerekir.');
@@ -288,7 +311,8 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
   if (typeof special === 'string') return fail(special);
   if (special) return finish(state, [...events, ...special]);
   const etki = (k54(state) ? spec.etki25 : undefined) ?? byLevel(spec.etkiSeviye, actor.level) ?? spec.etki;
-  for (const t of targets) {
+  const applyTo = (t: Combatant, scale: number): void => {
+    const sc = (n: number) => (scale === 1 ? n : Math.floor(n * scale));
     const legendary = isLegendary(t);
     const isFoe = t.side !== actor.side;
     let failed = true;
@@ -301,7 +325,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
       failed = !sv.success;
       const dice = spec.hasar ? expr(byLevel(spec.hasar.zar, actor.level) ?? '0', actor) : '';
       const dmg = spec.hasar && (failed || spec.yari) ? rollDice(dice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
-      const amount = spec.hasar ? saveDamage(t, ab, sv.success, dmg.total, !!spec.yari) : 0;
+      const amount = spec.hasar ? saveDamage(t, ab, sv.success, sc(dmg.total), !!spec.yari) : 0;
       const adj = amount > 0 ? adjustDamage(amount, spec.hasar?.tur ?? '', profileOf(t)) : { amount: 0, note: null };
       const fx = damageEffects(t, adj.amount, spec.hasar?.tur ?? '', false, rng);
       applied = adj.amount;
@@ -316,7 +340,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
     } else if (spec.hasar && isFoe) {
       // Kurtulmasız hasar (Mantar).
       const d = rollDice(expr(byLevel(spec.hasar.zar, actor.level) ?? '0', actor), rollTag(rng, { kind: 'damage', by: actor.id }));
-      const adj = adjustDamage(d.total, spec.hasar.tur, profileOf(t));
+      const adj = adjustDamage(sc(d.total), spec.hasar.tur, profileOf(t));
       const fx = damageEffects(t, adj.amount, spec.hasar.tur, false, rng);
       applied = adj.amount;
       events.push({ type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spec.ad, ability: 'con', dc: 0, mode: 'normal', reasons: [],
@@ -326,11 +350,11 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
     void applied;
     if (spec.iyilestir) {
       const h = rollDice(expr(byLevel(spec.iyilestir, actor.level) ?? '0', actor), rollTag(rng, { kind: 'heal', by: actor.id }));
-      const amount = Math.max(0, Math.min(h.total, t.maxHp - t.hp));
+      const amount = Math.max(0, Math.min(sc(h.total), t.maxHp - t.hp));
       events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: spec.ad, amount, targetHpAfter: t.hp + amount });
     }
     if (spec.tempHp) {
-      const n = spec.tempHp.includes('d') ? rollDice(expr(spec.tempHp, actor), rollTag(rng, { kind: 'heal', by: actor.id })).total : num(spec.tempHp, actor);
+      const n = sc(spec.tempHp.includes('d') ? rollDice(expr(spec.tempHp, actor), rollTag(rng, { kind: 'heal', by: actor.id })).total : num(spec.tempHp, actor));
       if (n > 0) events.push({ type: 'temp_hp', targetId: t.id, amount: n, label: spec.ad });
     }
     if (spec.moral && moraleOn(state) && t.moralMax !== undefined) {
@@ -345,8 +369,22 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
     const self = t.id === actor.id && spec.kendiEtki;
     const e = self ? spec.kendiEtki : etki;
     if (e && (!isFoe || failed)) events.push({ type: 'effect_added', targetId: t.id, effect: makeEffect(e, markId, actor, state, legendary) });
-  }
+  };
+  for (const t of targets) applyTo(t, 1);
+  // Kuyruk K54c: Nakarat (Şair 6): ilk hedefin 30 ft içindeki ikinci hedefe (aynı taraftan, en yakın) yarım etki.
+  const second = refrainTarget(state, actor, spec, targets);
+  if (second) applyTo(second, 0.5);
   return finish(state, events);
+}
+
+/** Nakarat'ın ikinci hedefi: Şair 6+ (sürüm 28), tek hedefli Mısra; ilk hedefin `menzilFt` içindeki en yakın aynı taraftan yaratık. */
+function refrainTarget(state: BattleState, actor: Combatant, spec: ImzaSpec, targets: Combatant[]): Combatant | null {
+  const first = targets[0];
+  if (!spec.param?.nakarat || targets.length !== 1 || !first?.pos || ruleVersion(state) < 28) return null;
+  const p = imzaPasifler(actor).find((x) => x.ozellik === 'refrain')?.etki.nakarat as { menzilFt: number } | undefined;
+  if (!p) return null;
+  return Object.values(state.combatants).filter((c) => alive(c) && c.id !== first.id && c.id !== actor.id && c.side === first.side && c.pos
+    && gap(state, first, c) * 5 <= p.menzilFt).sort((a, b) => gap(state, first, a) - gap(state, first, b) || a.id.localeCompare(b.id))[0] ?? null;
 }
 
 /** Aynı adlı etkilerin sınırı: sınırı aşacak kadar eskisi biter (en erken biteni önce). */
@@ -359,14 +397,25 @@ function capEvents(state: BattleState, actor: Combatant, spec: ImzaSpec): Battle
   return held.slice(0, Math.max(0, held.length - cap + 1)).map(({ c, e }) => ({ type: 'effect_ended', targetId: c.id, effectId: e.id, name: e.name, reason: 'used' }) as BattleEvent);
 }
 
-/** Buyruk: dost tepkisini harcamadan en yakın düşmana tek silah saldırısı (kayıtlı saldırı yolu). */
+/** Buyruk: en yakın düşmana tek silah saldırısı (kayıtlı saldırı yolu); sürüm 28+ dostun tepkisi harcanır. */
 function decreeEvents(state: BattleState, actor: Combatant, ally: Combatant, rng: Rng): BattleEvent[] {
   const api = strikeApi();
   if (!api) return [];
   const foes = Object.values(state.combatants).filter((c) => c.side !== ally.side && alive(c) && api.can(state, ally.id, c.id))
     .sort((a, b) => a.hp - b.hp);
   const foe = foes[0];
-  return foe ? api.strike(state, ally.id, foe.id, rng) : [];
+  if (!foe) return [];
+  if (ruleVersion(state) < 28) return api.strike(state, ally.id, foe.id, rng);
+  const react = reactionUsed(ally, { id: 'imza-buyruk', name: 'Buyruk' }, 'ally', actor.id);
+  return [react, ...api.strike(applyEvents(state, [react]), ally.id, foe.id, rng)];
+}
+/** Buyruk (yer değiştirme): dost hızının yarısı kadar boş altıgene, fırsat saldırısı doğurmadan. */
+function decreeMoveProblem(state: BattleState, ally: Combatant | undefined, to: Offset | undefined): string | null {
+  if (!ally?.pos) return 'Bir dost seç.';
+  if (!to) return 'Varış altıgenini seç.';
+  const half = Math.floor(speedHexes(ally) / 2);
+  if (distance(ally.pos, to) > half) return `Dost en çok ${half * 5} ft yer değiştirir.`;
+  return teleportProblem(state, ally, to, { rangeFt: 1e6, sight: false });
 }
 
 /**
@@ -401,9 +450,10 @@ export function imzaHit(state: BattleState, actor: Combatant, target: Combatant,
   const worn = pasifler(actor).find((p) => p.ozellik === 'strength-of-the-worn');
   if (worn && actor.rage) {
     const y = worn.etki.yipranma as { tavanBolen: number; carpan: number };
-    const cap = actor.moralMax ?? (3 + mod(actor, 'wis') + actor.proficiency);
+    // Kuyruk K54c: Yaralı Kalp tavanı uygulanmışsa normal üst sınır `yipranmaNormal`.
+    const cap = actor.yipranmaNormal ?? actor.moralMax ?? (3 + mod(actor, 'wis') + actor.proficiency);
     const ceiling = Math.max(1, Math.floor(cap / y.tavanBolen));
-    const now = actor.moralMax !== undefined ? Math.min(actor.moral ?? ceiling, ceiling) : ceiling;
+    const now = actor.moralMax !== undefined ? Math.min(actor.moral ?? ceiling, actor.yipranmaNormal ? actor.moralMax : ceiling) : ceiling;
     const bonus = Math.min(actor.proficiency, Math.floor((cap - now) * y.carpan));
     if (bonus > 0) out.push({ label: 'Yıpranmışlığın Gücü', rolls: [], raw: bonus, applied: adjustDamage(bonus, extras[0]?.type ?? '', profileOf(target)).amount, type: extras[0]?.type ?? '', note: null });
   }

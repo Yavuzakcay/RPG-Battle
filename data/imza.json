@@ -3,6 +3,7 @@
  "surum": 23,
  "surumK54": 25,
  "surumK54b": 27,
+ "surumK54c": 28,
  "kapaliOrtam": {
   "bolgeler": [
    "derinlikler",
@@ -805,7 +806,7 @@
       "tr": "Nakarat",
       "en": "Refrain"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Dizen ikinci bir kişiye de ulaşır, ama etkisi daha zayıftır.",
       "en": "Your verse reaches a second target, more weakly."
@@ -818,7 +819,7 @@
       "tr": "Ölümsüz Dize",
       "en": "Undying Verse"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Bir dostun ölecekken dizenle ayakta kalır.",
       "en": "An ally about to fall stays up with your verse."
@@ -831,7 +832,7 @@
       "tr": "Usta Şair",
       "en": "Master Poet"
      },
-     "status": "planli",
+     "status": "calisir",
      "description": {
       "tr": "Bir mısra için artık ilham zarı harcamazsın (kısa dinlenmede bir kez).",
       "en": "Once per short rest a verse costs no inspiration."
@@ -1337,6 +1338,19 @@
     "long": "all"
    }
   },
+  "imzaUstaSair": {
+   "name": "Mısra: Övgü (Usta Şair)",
+   "feature": [
+    "bard/imza_sair:master-poet"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "short": "all",
+    "long": "all"
+   }
+  },
   "imzaSonDers": {
    "name": "Son Ders",
    "feature": [
@@ -1426,6 +1440,18 @@
    "name": "unbroken-union",
    "feature": [
     "cleric/imza_birlik:unbroken-union"
+   ],
+   "uses": {
+    "fixed": 1
+   },
+   "recharge": {
+    "long": "all"
+   }
+  },
+  "imzaOlumsuzDize": {
+   "name": "undying-verse",
+   "feature": [
+    "bard/imza_sair:undying-verse"
    ],
    "uses": {
     "fixed": 1
@@ -2199,7 +2225,12 @@
    "menzilFt": 60,
    "tempHp": "$bardic+$cha",
    "moral": 1,
-   "ad": "Mısra: Övgü"
+   "ad": "Mısra: Övgü",
+   "param": {
+    "nakarat": true
+   },
+   "yz": "ovgu",
+   "not": "Sürüm 28+ (6. seviye Nakarat): ilk hedefin 30 ft içindeki ikinci dosta yarım geçici can ve +1 Motivasyon."
   },
   "imza:imza_sair/satire": {
    "sinif": "imza_sair",
@@ -2232,7 +2263,72 @@
     },
     "icon": "📜"
    },
-   "ad": "Mısra: Hiciv"
+   "ad": "Mısra: Hiciv",
+   "param": {
+    "nakarat": true
+   },
+   "yz": "hiciv",
+   "not": "Sürüm 28+ (Nakarat): ilk hedefin 30 ft içindeki ikinci düşmana aynı kurtulma, yarım hasar."
+  },
+  "imza:imza_sair/praise-master": {
+   "sinif": "imza_sair",
+   "ozellik": "master-poet",
+   "seviye": 14,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaUstaSair",
+    "sayi": 1,
+    "yenilenme": "short"
+   },
+   "hedef": "ally",
+   "menzilFt": 60,
+   "tempHp": "1d12+$cha",
+   "moral": 1,
+   "ad": "Mısra: Övgü (Usta Şair)",
+   "param": {
+    "nakarat": true
+   },
+   "not": "Bardic Inspiration harcamaz; zar d12 (kısa dinlenmede 1).",
+   "surumMin": 28
+  },
+  "imza:imza_sair/satire-master": {
+   "sinif": "imza_sair",
+   "ozellik": "master-poet",
+   "seviye": 14,
+   "tur": "bonus",
+   "kaynak": {
+    "id": "imzaUstaSair",
+    "sayi": 1,
+    "yenilenme": "short"
+   },
+   "hedef": "enemy",
+   "menzilFt": 60,
+   "save": {
+    "yetenek": "wis",
+    "dc": [
+     "cha"
+    ]
+   },
+   "hasar": {
+    "zar": {
+     "14": "1d12+$cha"
+    },
+    "tur": "psychic"
+   },
+   "etki": {
+    "name": "Hiciv",
+    "sure": 1,
+    "attackDis": {
+     "single": true
+    },
+    "icon": "📜"
+   },
+   "ad": "Mısra: Hiciv (Usta Şair)",
+   "param": {
+    "nakarat": true
+   },
+   "not": "Bardic Inspiration harcamaz; zar d12 (kısa dinlenmede 1).",
+   "surumMin": 28
   },
   "imza:imza_bilge/mind-might": {
    "sinif": "imza_bilge",
@@ -2914,6 +3010,36 @@
     "icon": "🔥"
    },
    "not": "Öfkeye kendiliğinden girme ve dostlara geçici can yok."
+  },
+  {
+   "sinif": "imza_sair",
+   "ozellik": "refrain",
+   "seviye": 6,
+   "etki": {
+    "nakarat": {
+     "menzilFt": 30
+    }
+   },
+   "not": "Mısra ilk hedefin 30 ft içindeki ikinci hedefe (aynı taraftan, en yakın) yarım etkiyle ulaşır.",
+   "surumMin": 28
+  },
+  {
+   "sinif": "imza_sair",
+   "ozellik": "undying-verse",
+   "seviye": 14,
+   "etki": {
+    "olumsuz": {
+     "menzilFt": 60,
+     "kaynak": "imzaOlumsuzDize"
+    },
+    "kaynak": {
+     "id": "imzaOlumsuzDize",
+     "sayi": 1,
+     "yenilenme": "long"
+    }
+   },
+   "not": "Tepki: 60 ft içindeki dost 0 HP'ye düşünce 1 HP + Bard seviyesi kadar geçici can (her hasar kaynağı). Savaş dışı Moral yönü Serüven kilitliyken yok.",
+   "surumMin": 28
   },
   {
    "sinif": "imza_bilge",

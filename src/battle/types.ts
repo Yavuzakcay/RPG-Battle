@@ -219,6 +219,18 @@ export interface ActiveEffect {
   bondTo?: string;
   /** Görev CLERIC: Bestow Curse seçenekleri: koyana saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, koyanın isabetlerine ek zar. */
   attackDisVs?: string;
+  /** Kuyruk K54c (Hükümdar Sözü): bu kimliğe ve onun `ft` içindeki dostlarına saldırılar dezavantajlı. */
+  attackDisNear?: { id: string; ft: number };
+  /** Kuyruk K54c (Yıldız Falı, Ölümsüz Taht): ilk saldırı/kurtulma zarı avantajlı ya da dezavantajlı; atılınca biter. */
+  firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> };
+  /** Kuyruk K54c (Ferman): ek eylem bir kez (Haste ek eylem yolu; kullanılınca etki biter). */
+  extraActionOnce?: boolean;
+  /** Kuyruk K54c (Yazgı Mührü): mühürleyenin yeterliliği (dostların isabetine ek hasar) ve turun ilk saldırısı kendiliğinden isabet. */
+  fateSeal?: { pb: number };
+  /** Kuyruk K54c (Alışkın Acı): düşük Moral cezaları işlemez. */
+  noMoralePenalty?: boolean;
+  /** Kuyruk K54c (Öfkeyle Ayakta): öfkedeyken Moral 0'da çökme ertelenir. */
+  rageHoldsMoral?: boolean;
   turnSave?: { ability: 'wis'; dc: number };
   curseDamage?: { dice: string; type: string };
   /** Görev WIZARD: Blink (tur sonu d20) ve Ethereal (hedef alınamaz; sonraki turunun başında biter). */
@@ -565,6 +577,8 @@ export interface Combatant {
   wardSave?: number;
   /** Kuyruk K54b: Omuz Ver: başarısız kurtulmaya bonus verebilecek bağlı dost (reducer sonu `syncAuras`). */
   shoulderBy?: { id: string; bonus: number };
+  /** Kuyruk K54c (Geride Kalan): Moral/Yıpranmanın normal üst sınırı (Yaralı Kalp tavanı üçte bir; eksik puan bundan). */
+  yipranmaNormal?: number;
   /** Kuyruk 18 H4: başka kattaki savaşçı (o katın harita kimliği) ve oradaki konumu. */
   offFloor?: string;
   floorPos?: Offset;

@@ -125,7 +125,7 @@ export function dodgeActive(conds: string[]): boolean {
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
 export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean;
-  effects?: Array<{ saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean } }> };
+  effects?: Array<{ saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
 
 /**
  * Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı; Danger Sense gibi avantajlı save'ler (Incapacitated
@@ -145,9 +145,11 @@ export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: A
     || (!!s.effects?.some((e) => e.bloodiedAdv?.save) && s.hp !== undefined && s.hp <= (s.maxHp ?? 0) / 2)
     || !!s.authorityAdv;
   // Görev B1: süren etkinin save dezavantajı (Reduce, Ray of Enfeeblement: STR).
-  const dis = !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll);
+  const dis = !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage'));
+  // Kuyruk K54c: Yıldız Falı (Uğurlu): ilk kurtulma zarı avantajlı.
+  const adv2 = !!s.effects?.some((e) => e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'advantage');
   // Avantaj ve dezavantaj (tabanla birlikte) birbirini götürür (SRD).
-  const anyAdv = base === 'advantage' || adv, anyDis = base === 'disadvantage' || dis;
+  const anyAdv = base === 'advantage' || adv || adv2, anyDis = base === 'disadvantage' || dis;
   return anyAdv && anyDis ? 'normal' : anyAdv ? 'advantage' : anyDis ? 'disadvantage' : 'normal';
 }
 

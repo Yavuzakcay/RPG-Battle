@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-05 — Kuyruk K54c G1: Şair Koleji (kural sürümü 28)
+
+- **Kural sürümü** 27 → 28 (`data/imza.json` `surumK54c`; eylem/pasif `surumMin: 28`, eski kipler `surumMax: 27`). Eski kayıt/replay kendi sürümünün eylemleriyle açılır.
+- **Ortak altyapı (G2–G4 de kullanır):** dosta isabet tepkisi kaydı `registerAllyHit` (`reactions.ts`, Cutting Words'ten sonra); süren etkide `firstRoll` (ilk saldırı/kurtulma zarı avantaj/dezavantaj, atılınca biter: `consumeSingles`), `attackDisNear`, `extraActionOnce` (Haste ek eylem yolu, kullanılınca biter), `fateSeal`, `noMoralePenalty`, `rageHoldsMoral`; savaşçıda `yipranmaNormal`. Motor `src/battle/imzaK54c.ts` (komut sonu kancası).
+- **Nakarat (6):** `executeImza` hedef döngüsü `applyTo(hedef, ölçek)`; tek hedefli Mısra'da ilk hedefin 30 ft içindeki aynı taraftan en yakın yaratık ikinci hedef (seçim otomatik; arayüzde ayrı seçim yok). Övgü: yarım geçici can (ayrı atış, yarısı) + 1 Motivasyon. Hiciv: aynı kurtulma kuralı, yarım hasar, Hiciv etkisi.
+- **Ölümsüz Dize (14):** komut sonu kancası (her hasar kaynağı; saldırıyla sınırlı değil): 60 ft içindeki dost 0 HP'ye düşüp ölmediyse tepkiyle 1 HP + Bard seviyesi geçici can. Savaş dışı Moral ölümü yönü Serüven kilitliyken yok.
+- **Usta Şair (14):** iki ayrı eylem (Övgü/Hiciv, "Usta Şair"), kısa dinlenmede 1, ilham zarı harcamaz, zar d12; Nakarat bunlarda da çalışır. Uzun dinlenmede partiye +1 Motivasyon yok (Serüven kilitli).
+- **Gece Şiiri:** Serüven dinlenmesi; Serüven kilitli olduğu için yok (`planli` kaldı).
+- **Yapay zekâ:** Övgü yarı canın altındaki ya da Çökmüş dosta (geçici canı yokken), Hiciv en düşük canlı görülen düşmana (`yz: ovgu/hiciv`).
+
 ## 2026-11-05 — Kuyruk K54b G4: İnfazcı (kural sürümü 27)
 
 - Denetimin "yok" dediği iki özellik Müdahale ve Peşini Bırakmayan; Hüküm'ün "hükümlü düşünce ücretsiz yeni hedef" kısmı da eklendi. Son Uyarı ve İnfaz zaten tamdı. Hüküm'ün d6 → d8'i K50 yaklaşımıyla kaldı (zar başına +1; sayı ayarı K59).

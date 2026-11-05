@@ -96,7 +96,8 @@ describe('imza: alt sınıf eylemleri', () => {
     if (ev.extra?.some((x) => x.label === 'Sneak Attack')) expect(ev.extra?.some((x) => x.label === 'Hüküm')).toBe(true);
   });
   it('İmparator: Buyruk dostu saldırtır; Hükümdar Sözü başarısız düşmana sana karşı dezavantaj', () => {
-    const r = arena(hero('fighter', 'imza_imparator', 7), { ally: combatantFromSheet(sheet('fighter', 'champion', 3), { id: 'C', ownerId: 'p1' }) });
+    // Kuyruk K54c: eski Hükümdar Sözü (yalnız sana dezavantaj) sürüm 23–27 savaşında; 28+ `royal-word-2` (k54cImparator.test).
+    const r = arena(hero('fighter', 'imza_imparator', 7), { kuralSurumu: 27, ally: combatantFromSheet(sheet('fighter', 'champion', 3), { id: 'C', ownerId: 'p1' }) });
     const ev = r.do(use('imza:imza_imparator/decree', 'C'), () => 0.9);
     expect(ev.some((e) => e.type === 'attack_resolved' && e.actorId === 'C')).toBe(true);
     r.state = { ...r.state, combatants: { ...r.state.combatants, A: { ...r.c('A'), economy: { ...r.c('A').economy, bonus: false } } } };

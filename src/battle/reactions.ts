@@ -219,9 +219,21 @@ export function hitReactions(state: BattleState, ctx: HitContext, rng: Rng): Hit
   if (gd) return { ...own, events: [...own.events, ...gd.events], hit: gd.hit, ac: gd.ac, damage: gd.hit ? own.damage : 0, reacted: gd.reacted };
   // Görev BARD: hedefin tepkisinden sonra dost Bard'ın Cutting Words'ü.
   const cw = cuttingWords(own.events.length ? applyEvents(state, own.events) : state, { ...ctx, ac: own.ac, damage: own.damage }, rng);
-  if (!cw) return own;
-  return { ...own, events: [...own.events, ...cw.events], hit: cw.hit, damage: cw.damage, reacted: cw.reacted };
+  const after = cw ? { ...own, events: [...own.events, ...cw.events], hit: cw.hit, damage: cw.damage, reacted: cw.reacted } : own;
+  if (!after.hit || after.damage <= 0 || !allyHitHooks.length) return after;
+  // Kuyruk K54c: dosta isabet tepkileri (Astrolog Yazgı Değişir; kayıtla, döngüsel içe aktarma olmadan).
+  const cur = after.events.length ? applyEvents(state, after.events) : state;
+  for (const h of allyHitHooks) {
+    const r = h(cur, { ...ctx, ac: after.ac, damage: after.damage }, rng);
+    if (r) return { ...after, events: [...after.events, ...r.events], hit: false, damage: 0, reacted: { name: r.name } };
+  }
+  return after;
 }
+
+/** Kuyruk K54c: dosta isabet eden saldırıyı ıskaya çeviren tepki kancası (isabet ve hasar hesaplandıktan sonra). */
+export type AllyHitHook = (state: BattleState, ctx: HitContext, rng: Rng) => { events: BattleEvent[]; name: string } | null;
+const allyHitHooks: AllyHitHook[] = [];
+export function registerAllyHit(h: AllyHitHook): void { if (!allyHitHooks.includes(h)) allyHitHooks.push(h); }
 
 /**
  * Görev BARD: Cutting Words (College of Lore): 60 ft içinde, hedefin tarafından tepkisi olan ve Bardic Inspiration'ı

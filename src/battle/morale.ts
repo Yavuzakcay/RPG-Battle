@@ -81,7 +81,10 @@ export function moraleAfterEvents(before: BattleState, after: BattleState, event
     const next = Math.max(0, now - loss);
     if (next !== now) out.push({ type: 'moral_changed', targetId: c.id, delta: next - now, moral: next, reason: fallen.length && c.hp > 0 ? 'dost' : 'korku' });
     // Yalnızca savaş içinde 0'a düşen çöker (0 ile giren Bunalmış olur, çökmez).
-    if (next <= 0 && now > 0 && !collapsed(c)) out.push({ type: 'effect_added', targetId: c.id, effect: collapseEffect(c) });
+    // Kuyruk K54c (Geride Kalan, Öfkeyle Ayakta): öfkedeyken çökmez; öfke bitince hâlâ 0 ise çöker.
+    const held = !!c.rage && !!c.effects?.some((e) => e.rageHoldsMoral);
+    const rageEnded = !!before.combatants[c.id]?.rage && !c.rage && !!c.effects?.some((e) => e.rageHoldsMoral);
+    if (next <= 0 && (now > 0 || rageEnded) && !collapsed(c) && !held) out.push({ type: 'effect_added', targetId: c.id, effect: collapseEffect(c) });
     if (next >= 1 && collapsed(c)) out.push({ type: 'effect_ended', targetId: c.id, effectId: COLLAPSE_ID, name: 'Çökmüş', reason: 'used' });
   }
   void events;
@@ -136,7 +139,7 @@ export function executeRally(state: BattleState, cmd: { actorId: string; targetI
 
 /** Eşik cezası (sabit −1) WIS/CHA save'lerinde. */
 export function moraleSaveDice(c: Combatant | undefined, ability: Ability | undefined): ExtraDie[] {
-  if (!c || c.moralMax === undefined || !ability) return [];
+  if (!c || c.moralMax === undefined || !ability || c.effects?.some((e) => e.noMoralePenalty)) return [];
   const e = MORAL.etkiler;
   const out: ExtraDie[] = [];
   if (moralHalf(c.moral ?? 0, c.moralMax) && e.yariYetenekler.includes(ability)) out.push({ label: 'Moral', die: String(e.yariCeza), sign: -1 });
@@ -147,7 +150,7 @@ export function moraleSaveDice(c: Combatant | undefined, ability: Ability | unde
 
 /** Eşik cezası (sabit −1) WIS/CHA becerilerinin kontrollerinde. */
 export function moraleCheckDice(c: Combatant | undefined, skill: string | undefined): ExtraDie[] {
-  if (!c || c.moralMax === undefined || !skill || !isSkill(skill)) return [];
+  if (!c || c.moralMax === undefined || !skill || !isSkill(skill) || c.effects?.some((e) => e.noMoralePenalty)) return [];
   const e = MORAL.etkiler;
   return moralHalf(c.moral ?? 0, c.moralMax) && e.yariYetenekler.includes(SKILLS[skill].ability) ? [{ label: 'Moral', die: String(e.yariCeza), sign: -1 }] : [];
 }

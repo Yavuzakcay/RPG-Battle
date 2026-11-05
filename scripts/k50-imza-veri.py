@@ -14,6 +14,8 @@ SURUM = 23
 SURUM_K54 = 25
 # Kuyruk K54b: ikinci tur eksikler (kural sürümü 27; `k54b=True` → `surumMin: 27`, `eski=True` → `surumMax: 26`).
 SURUM_K54B = 27
+# Kuyruk K54c: ikinci yarı (kural sürümü 28; `k54c=True` → `surumMin: 28`, `eski28=True` → `surumMax: 27`).
+SURUM_K54C = 28
 
 def F(fid, level, tr, en, dtr, den, status='calisir'):
     return {'id': fid, 'level': level, 'name': {'tr': tr, 'en': en}, 'status': status, 'description': {'tr': dtr, 'en': den}}
@@ -35,11 +37,15 @@ def act(sid, fid, **spec):
         spec['surumMin'] = SURUM_K54B
     if spec.pop('eski', False):
         spec['surumMax'] = SURUM_K54B - 1
+    if spec.pop('k54c', False):
+        spec['surumMin'] = SURUM_K54C
+    if spec.pop('eski28', False):
+        spec['surumMax'] = SURUM_K54C - 1
     eylem[f'imza:{sid}/{fid}'] = {'sinif': sid, 'ozellik': spec.pop('ozellikAdi', fid), **spec}
 
-def pas(sid, fid, seviye, etki, not_=None, k54=False, k54b=False):
+def pas(sid, fid, seviye, etki, not_=None, k54=False, k54b=False, k54c=False):
     pasif.append({'sinif': sid, 'ozellik': fid, 'seviye': seviye, 'etki': etki, **({'not': not_} if not_ else {}), **({'k54': True} if k54 else {}),
-                  **({'surumMin': SURUM_K54B} if k54b else {})})
+                  **({'surumMin': SURUM_K54B} if k54b else {}), **({'surumMin': SURUM_K54C} if k54c else {})})
 
 PB = {'sayi': 'pb', 'yenilenme': 'short'}
 
@@ -218,13 +224,24 @@ sub(s, 'bard', 'Şair Koleji', 'College of Poets', 'Övgüyle kaldıran, hicivle
     F('verse', 3, 'Mısra', 'Verse', 'Bir dize söyle: dostuna dayanıklılık ve umut verir, düşmanı sözlerinle sarsar; direnemezse hasar görür ve bir sonraki saldırısını kötü yapar.', 'Speak a verse: an ally gains resilience and heart, or a foe is shaken, taking damage and fumbling its next attack.'),
     F('pens-power', 3, 'Kalemin Gücü', "Pen's Power", 'İki becerinde daha usta olursun.', 'You gain two more skill proficiencies.'),
     F('night-verse', 3, 'Gece Şiiri', 'Night Verse', 'Dinlenirken şiir okursun, dostlarının Motivasyonu daha çok yenilenir.', 'Your poetry at rest restores more heart.', 'planli'),
-    F('refrain', 6, 'Nakarat', 'Refrain', 'Dizen ikinci bir kişiye de ulaşır, ama etkisi daha zayıftır.', 'Your verse reaches a second target, more weakly.', 'planli'),
-    F('undying-verse', 14, 'Ölümsüz Dize', 'Undying Verse', 'Bir dostun ölecekken dizenle ayakta kalır.', 'An ally about to fall stays up with your verse.', 'planli'),
-    F('master-poet', 14, 'Usta Şair', 'Master Poet', 'Bir mısra için artık ilham zarı harcamazsın (kısa dinlenmede bir kez).', 'Once per short rest a verse costs no inspiration.', 'planli'),
+    F('refrain', 6, 'Nakarat', 'Refrain', 'Dizen ikinci bir kişiye de ulaşır, ama etkisi daha zayıftır.', 'Your verse reaches a second target, more weakly.'),
+    F('undying-verse', 14, 'Ölümsüz Dize', 'Undying Verse', 'Bir dostun ölecekken dizenle ayakta kalır.', 'An ally about to fall stays up with your verse.'),
+    F('master-poet', 14, 'Usta Şair', 'Master Poet', 'Bir mısra için artık ilham zarı harcamazsın (kısa dinlenmede bir kez).', 'Once per short rest a verse costs no inspiration.'),
 ], beceri=['performance', 'history'])
-act(s, 'praise', seviye=3, tur='bonus', kullan={'id': 'bardicInspiration', 'maliyet': 1}, hedef='ally', menzilFt=60, tempHp='$bardic+$cha', moral=1, ad='Mısra: Övgü', ozellikAdi='verse')
+act(s, 'praise', seviye=3, tur='bonus', kullan={'id': 'bardicInspiration', 'maliyet': 1}, hedef='ally', menzilFt=60, tempHp='$bardic+$cha', moral=1, ad='Mısra: Övgü', ozellikAdi='verse',
+    param={'nakarat': True}, yz='ovgu', not_='Sürüm 28+ (6. seviye Nakarat): ilk hedefin 30 ft içindeki ikinci dosta yarım geçici can ve +1 Motivasyon.')
 act(s, 'satire', seviye=3, tur='bonus', kullan={'id': 'bardicInspiration', 'maliyet': 1}, hedef='enemy', menzilFt=60, save={'yetenek': 'wis', 'dc': ['cha']},
-    hasar={'zar': {'3': '$bardic+$cha'}, 'tur': 'psychic'}, etki={'name': 'Hiciv', 'sure': 1, 'attackDis': {'single': True}, 'icon': '📜'}, ad='Mısra: Hiciv', ozellikAdi='verse')
+    hasar={'zar': {'3': '$bardic+$cha'}, 'tur': 'psychic'}, etki={'name': 'Hiciv', 'sure': 1, 'attackDis': {'single': True}, 'icon': '📜'}, ad='Mısra: Hiciv', ozellikAdi='verse',
+    param={'nakarat': True}, yz='hiciv', not_='Sürüm 28+ (Nakarat): ilk hedefin 30 ft içindeki ikinci düşmana aynı kurtulma, yarım hasar.')
+USTA = {'id': 'imzaUstaSair', 'sayi': 1, 'yenilenme': 'short'}
+act(s, 'praise-master', seviye=14, tur='bonus', kaynak=USTA, hedef='ally', menzilFt=60, tempHp='1d12+$cha', moral=1, ad='Mısra: Övgü (Usta Şair)', ozellikAdi='master-poet',
+    param={'nakarat': True}, k54c=True, not_='Bardic Inspiration harcamaz; zar d12 (kısa dinlenmede 1).')
+act(s, 'satire-master', seviye=14, tur='bonus', kaynak=USTA, hedef='enemy', menzilFt=60, save={'yetenek': 'wis', 'dc': ['cha']},
+    hasar={'zar': {'14': '1d12+$cha'}, 'tur': 'psychic'}, etki={'name': 'Hiciv', 'sure': 1, 'attackDis': {'single': True}, 'icon': '📜'}, ad='Mısra: Hiciv (Usta Şair)', ozellikAdi='master-poet',
+    param={'nakarat': True}, k54c=True, not_='Bardic Inspiration harcamaz; zar d12 (kısa dinlenmede 1).')
+pas(s, 'refrain', 6, {'nakarat': {'menzilFt': 30}}, 'Mısra ilk hedefin 30 ft içindeki ikinci hedefe (aynı taraftan, en yakın) yarım etkiyle ulaşır.', k54c=True)
+pas(s, 'undying-verse', 14, {'olumsuz': {'menzilFt': 60, 'kaynak': 'imzaOlumsuzDize'}, 'kaynak': {'id': 'imzaOlumsuzDize', 'sayi': 1, 'yenilenme': 'long'}},
+    'Tepki: 60 ft içindeki dost 0 HP\'ye düşünce 1 HP + Bard seviyesi kadar geçici can (her hasar kaynağı). Savaş dışı Moral yönü Serüven kilitliyken yok.', k54c=True)
 
 # ---------------- Monk: Yaşlı Bilge Disiplini ----------------
 s = 'imza_bilge'
@@ -358,6 +375,7 @@ out = {
     'surum': SURUM,
     'surumK54': SURUM_K54,
     'surumK54b': SURUM_K54B,
+    'surumK54c': SURUM_K54C,
     'kapaliOrtam': {'bolgeler': ['derinlikler', 'yeralti', 'hapishane'], 'varyantSozcukleri': ['karanlik', 'los', 'ic'], 'haritalar': ['kale-taht-salonu', 'kasaba-lagim', 'magara', 'magara-genis', 'dungeon', 'orman-heykel-magarasi', 'yeralti-nehri']},
     'eskiKimlik': {'baris-alani': 'imza_birlik'},
     'altSiniflar': alt,

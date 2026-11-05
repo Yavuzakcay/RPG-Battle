@@ -291,6 +291,15 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   for (const e of attacker.effects ?? []) if (e.attackDis && (!e.attackDis.melee || opts.melee)) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev CLERIC: Bestow Curse: lanetleyene saldırılar dezavantajlı.
   for (const e of attacker.effects ?? []) if (e.attackDisVs === target.id) out.push({ effect: 'disadvantage', reason: e.name });
+  // Kuyruk K54c: Hükümdar Sözü (sana ve 5 ft içindeki dostlarına), Yıldız Falı / Ölümsüz Taht (ilk saldırı zarı).
+  for (const e of attacker.effects ?? []) {
+    const n = e.attackDisNear;
+    if (n) {
+      const lord = state.combatants[n.id];
+      if (target.id === n.id || (lord && lord.side === target.side && lord.pos && target.pos && hexDistance(lord.pos, target.pos) * 5 <= n.ft)) out.push({ effect: 'disadvantage', reason: e.name });
+    }
+    if (e.firstRoll?.on.includes('attack')) out.push({ effect: e.firstRoll.mode, reason: e.name });
+  }
   for (const { spell, ward } of wardsOn(state, target)) {
     if (ward?.advantageAgainst) out.push({ effect: 'advantage', reason: spell });
     if (attacker.creatureType && ward?.disadvantageFromTypes?.includes(attacker.creatureType)) out.push({ effect: 'disadvantage', reason: spell });

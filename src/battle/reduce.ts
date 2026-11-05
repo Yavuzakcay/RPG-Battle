@@ -186,6 +186,13 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
   if ((event.type === 'save_resolved' || event.type === 'condition_save') && next.combatants[event.targetId]?.effects?.some((e) => e.saveDisAll)) {
     next = dropEffects(next, event.targetId, (e) => !!e.saveDisAll);
   }
+  // Kuyruk K54c: ilk zar etkisi (Yıldız Falı, Ölümsüz Taht) atılınca biter.
+  if (event.type === 'attack_resolved' && next.combatants[event.actorId]?.effects?.some((e) => e.firstRoll?.on.includes('attack'))) {
+    next = dropEffects(next, event.actorId, (e) => !!e.firstRoll?.on.includes('attack'));
+  }
+  if ((event.type === 'save_resolved' || event.type === 'condition_save') && next.combatants[event.targetId]?.effects?.some((e) => e.firstRoll?.on.includes('save'))) {
+    next = dropEffects(next, event.targetId, (e) => !!e.firstRoll?.on.includes('save'));
+  }
   if (event.type === 'attack_resolved' && next.combatants[event.targetId]?.effects?.some((e) => e.consumeOnAttacked && e.sourceId !== event.actorId)) {
     next = dropEffects(next, event.targetId, (e) => !!e.consumeOnAttacked && e.sourceId !== event.actorId);
   }
@@ -589,7 +596,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'haste_action': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
-      return withCombatant(state, c.id, { economy: { ...c.economy, action: false, attacksLeft: 0, hasted: true, hasteUsed: true } });
+      // Kuyruk K54c: Ferman'ın ek eylemi bir kez.
+      const once = (c.effects ?? []).some((e) => e.extraActionOnce);
+      return withCombatant(state, c.id, { economy: { ...c.economy, action: false, attacksLeft: 0, hasted: true, hasteUsed: true },
+        ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
     }
     case 'reaction_used': {
       // Tepki hakkı harcanır (Görev R1): kendi turunun başında yenilenir (turn_ended).

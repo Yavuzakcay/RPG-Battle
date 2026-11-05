@@ -35,6 +35,7 @@ import { turnKey } from './economy';
 import { celestialStrikeOf } from './celestial';
 import { gazeBreakEvents, karadulHit, karadulOn, kissReady, snareReady } from './karadul';
 import { imzaHit } from './imza';
+import { edictEvents, sealAutoHit, sealBonus } from './imzaK54c';
 import { brutalAfterEvents, brutalExtra, brutalOptions, brutalReady, type BrutalBlow } from './brutal';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
@@ -242,10 +243,12 @@ export function weaponAttackEvents(
   // Kuyruk 19 (Arrow-Catching Shield): menzilli saldırıya ek AC; Adamantine Armor: kritik yok (`srdK19`).
   const k19i = !!globalRule(state, 'srdK19');
   const targetAc = effectiveAc(state, target) + reach.cover + (option.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
+  const sealed = sealAutoHit(state, actor, target, turnKey(state));
   const rolled = resolveAttack(
     {
       attackBonus: option.attackBonus + itemAttackPlus(actor, option, k19i) - corrodedOf(actor, option), targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)) || kissReady(state, actor, target, option),
-      extra: attackDice(actor),
+      // Kuyruk K54c: Yazgı Mührü: mühürlüye turun ilk saldırısı kendiliğinden isabet (kritik değil).
+      extra: sealed ? [{ label: 'Yazgı Mührü', die: 'hit', sign: 1, reroll: 'success' }, ...attackDice(actor)] : attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
       // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
       ...(actor.critOn && !option.spell ? { critOn: actor.critOn } : {}),
@@ -281,6 +284,9 @@ export function weaponAttackEvents(
   // Kuyruk K50 (ev kuralı): Hüküm, İnfaz, Yıpranmışlığın Gücü (imza alt sınıf saldırı kancası).
   const sig = result.hit && !option.spell && actor.imza ? imzaHit(state, actor, target, bonus.extras, rawDamage, rng) : null;
   if (sig) bonus = { ...bonus, extras: [...bonus.extras, ...sig.extras] };
+  // Kuyruk K54c: Yazgı Mührü: mühürlüye isabet eden dost mühürleyenin yeterliliği kadar ek hasar.
+  const sealPlus = result.hit ? sealBonus(state, actor, target) : 0;
+  if (sealPlus > 0) bonus = { ...bonus, extras: [...bonus.extras, { label: 'Yazgı Mührü', rolls: [], raw: sealPlus, applied: adjustDamage(sealPlus, dmgType, tprof).amount, type: dmgType ?? '', note: null }] };
   // Kuyruk 19 (Irresistible Offense): Overwhelming Strike: doğal 20'de artırılan skor kadar ek hasar (saldırının türünde).
   if (result.hit && result.d20.kept === 20 && actor.k19Traits && actor.traits?.includes('overcome-defenses') && actor.boonScore) {
     const adj = adjustDamage(actor.boonScore, dmgType, tprof);
@@ -325,7 +331,7 @@ export function weaponAttackEvents(
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
     ...('sneakTurn' in bonus && bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
     ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),
-    ...(bonus.traitTurns || opts.traitTurns || (hit && result.savage) || brutal ? { traitTurns: { ...opts.traitTurns, ...bonus.traitTurns, ...(hit && result.savage ? { 'savage-attacker': turnKey(state) } : {}), ...(brutal ? { 'brutal-strike': turnKey(state) } : {}) } } : {}),
+    ...(bonus.traitTurns || opts.traitTurns || (hit && result.savage) || brutal || sealed ? { traitTurns: { ...opts.traitTurns, ...bonus.traitTurns, ...(sealed ? { 'imza:muhur': turnKey(state) } : {}), ...(hit && result.savage ? { 'savage-attacker': turnKey(state) } : {}), ...(brutal ? { 'brutal-strike': turnKey(state) } : {}) } } : {}),
     ...(brutal ? { brutal } : {}),
     ...(hit && result.savage ? { savage: result.savage } : {}),
     ...(steadyUsed ? { steadyAim: true } : {}),
@@ -588,6 +594,8 @@ export function executeActionSurge(state: BattleState, actor: Combatant): Comman
   if (actor.economy.surged) return fail('Action Surge bu tur kullanıldı.');
   if (!actor.economy.action || actor.economy.attacksLeft > 0) return fail('Önce eylemini kullanmalısın.');
   const events: BattleEvent[] = [{ type: 'feature_used', actorId: actor.id, feature: 'actionSurge', remaining: left - 1 }];
+  // Kuyruk K54c: İmparator Ferman: bir dosta da tek seferlik ek eylem.
+  events.push(...edictEvents(applyEvents(state, events), actor));
   return { ok: true, state: applyEvents(state, events), events };
 }
 
