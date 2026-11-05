@@ -666,7 +666,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   let seekUsed = false;
   for (let r = 0; r < raysLeft; r++) {
     const t = current.combatants[curId];
-    if (!t || t.hp <= 0) break;
+    // Y2: 0 HP'de yenilenmeyi bekleyen yaratık (Troll) hedef olabilir: ateş/asit yenilenmeyi keser (Kuyruk 41b kuralı;
+    // büyü saldırısı burada atılmadan bitiyordu, Mağara beraberlikleri).
+    if (!t || (t.hp <= 0 && !t.regenPending)) break;
     struck.add(t.id);
     const expr = damageExpr(m, actor, tier, upcast, spell.school, spell.name);
     let ev: BattleEvent;
