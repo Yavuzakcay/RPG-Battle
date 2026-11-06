@@ -8,6 +8,9 @@ const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg
 
 export const TR_EXTRA = {
   log: {
+    /** Kuyruk K58 G3: tur özeti. */
+    turnSummary: (name: string, hits: number, attacks: number, dmg: number, heal: number, saves: number): string => `Tur özeti · ${name}: ${attacks ? `${attacks} saldırı, ${hits} isabet` : 'saldırı yok'}${saves ? `, ${saves} kurtulma zorladı` : ''}, ${dmg} hasar${heal ? `, ${heal} iyileştirme` : ''}`,
+    summaryToggle: 'Tur özeti', expandHint: 'Ayrıntı için dokun',
     hex: (col: number, row: number) => `sütun ${col}, satır ${row}`,
     note: { immune: 'bağışık', vulnerable: 'zayıflık ×2', resistant: 'direnç ½', absorbed: 'emildi (iyileştirdi)' } as Record<string, string>,
     mode: { advantage: ' (avantaj)', disadvantage: ' (dezavantaj)', normal: '' } as Record<string, string>,

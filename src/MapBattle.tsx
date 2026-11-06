@@ -47,7 +47,8 @@ const loc = (m: string | null | undefined): string | null => (m ? reasonText(m, 
 /** Devre dışı düğmenin gerekçe satırı. */
 const Why = ({ msg }: { msg: string | null | undefined }) => <small className="why-line">⊘ {reasonOr(msg, getLang())}</small>;
 import { abilityTip, lineageAbilityList } from './ui/lineageText';
-import { describeEvents, hexText } from './ui/log';
+import { hexText } from './ui/log';
+import { logEntries } from './ui/logEntries';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
 import { execute } from './battle';
 import { exploreReady, exploreView } from './battle/commands';
@@ -556,7 +557,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   useEffect(() => () => { leaveBattleEnd(); if (endVideoTimer.current !== null) window.clearTimeout(endVideoTimer.current); }, []);
   // Günlük kutusu geçerli dilde: olaylardan yeniden yazılır (dil değişince eski satırlar da çevrilir).
   const lang = useLang();
-  const logLines = useMemo(() => (logOpen ? describeEvents(session.events, state) : []), [logOpen, session.events, state, lang]);
+  // Kuyruk K58 G3: açılabilir satırlar, tür renkleri, isteğe bağlı tur özeti (ayar yerelde).
+  const [logSummary, setLogSummary] = useState(() => { try { return localStorage.getItem('rpg-battle-tur-ozeti') === '1'; } catch { return false; } });
+  const [logOpenRows, setLogOpenRows] = useState<Set<string>>(() => new Set());
+  const logLines = useMemo(() => (logOpen ? logEntries(session.events, state, { summary: logSummary }) : []), [logOpen, session.events, state, lang, logSummary]);
   const variant = maps.find((m) => m.id === state.map?.id)?.variants.find((v) => v.id === state.map?.variantId);
   const [fxOn, setFxOn] = useEffectsSetting();
   // Kuyruk 15 K15C: yüzey sprite animasyonu (ayar + hareketi azalt; sekme gizliyken durur) ve tek seferlik patlamalar.
@@ -2385,7 +2389,19 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             </div>
             {logOpen && (
               <ol className="log-box">
-                {[...logLines].reverse().slice(0, 40).map((line, i) => <li key={`${logLines.length - i}`}>{line}</li>)}
+                <li className="log-tools"><label><input type="checkbox" checked={logSummary} onChange={(e) => {
+                  const v = e.target.checked; setLogSummary(v); try { localStorage.setItem('rpg-battle-tur-ozeti', v ? '1' : '0'); } catch { /* yok */ } }} /> {t().log.summaryToggle}</label></li>
+                {[...logLines].reverse().slice(0, 60).map((ln) => {
+                  const open = logOpenRows.has(ln.key);
+                  return (
+                    <li key={ln.key} className={`log-${ln.kind}${ln.detail.length ? ' expandable' : ''}${open ? ' open' : ''}`}
+                      title={ln.detail.length && !open ? t().log.expandHint : undefined}
+                      onClick={ln.detail.length ? () => setLogOpenRows((s) => { const n = new Set(s); if (n.has(ln.key)) n.delete(ln.key); else n.add(ln.key); return n; }) : undefined}>
+                      {ln.head}{ln.detail.length > 0 && !open && <span className="log-more"> ▸</span>}
+                      {open && <ul className="log-detail">{ln.detail.map((d, k) => <li key={k}>{d}</li>)}</ul>}
+                    </li>
+                  );
+                })}
               </ol>
             )}
             <button className="hud-btn" onClick={() => setLogOpen((o) => !o)}>{B.log(logOpen)}</button>

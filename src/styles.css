@@ -1184,3 +1184,12 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .sehir-kart { width: min(100%, 640px); }
 /* Kuyruk K58 G2: devre dışı düğmenin gerekçe satırı. */
 .why-line { display: block; flex-basis: 100%; color: #f0b0a0; font-size: 0.8em; }
+/* Kuyruk K58 G3: açılabilir günlük satırları ve tür renkleri. */
+.log-box li.expandable { cursor: pointer; }
+.log-box .log-more { opacity: 0.6; }
+.log-box .log-detail { list-style: disc; margin: 2px 0 4px 16px; padding: 0; font-size: 0.9em; opacity: 0.9; }
+.log-box li.log-reaction { color: #9fd0ff; border-left: 3px solid #4a9be0; padding-left: 4px; }
+.log-box li.log-surface { color: #ffcf8a; border-left: 3px solid #e09a3a; padding-left: 4px; }
+.log-box li.log-moral { color: #d8b0ff; border-left: 3px solid #9b5de0; padding-left: 4px; }
+.log-box li.log-summary { color: #c8f0c0; font-style: italic; border-top: 1px solid rgba(255, 255, 255, 0.15); }
+.log-box li.log-tools { font-size: 0.85em; opacity: 0.8; }

@@ -479,6 +479,8 @@ export const en: Strings = {
     str: 'Strength (STR)', dex: 'Dexterity (DEX)', con: 'Constitution (CON)', int: 'Intelligence (INT)', wis: 'Wisdom (WIS)', cha: 'Charisma (CHA)',
   } as Record<string, string>,
   log: {
+    turnSummary: (name: string, hits: number, attacks: number, dmg: number, heal: number, saves: number): string => `Turn summary · ${name}: ${attacks ? `${attacks} attack${attacks === 1 ? '' : 's'}, ${hits} hit${hits === 1 ? '' : 's'}` : 'no attacks'}${saves ? `, forced ${saves} save${saves === 1 ? '' : 's'}` : ''}, ${dmg} damage${heal ? `, ${heal} healing` : ''}`,
+    summaryToggle: 'Turn summary', expandHint: 'Tap for details',
     hex: (col: number, row: number) => `column ${col}, row ${row}`,
     note: { immune: 'immune', vulnerable: 'vulnerable ×2', resistant: 'resistant ½', absorbed: 'absorbed (heals)' } as Record<string, string>,
     mode: { advantage: ' (advantage)', disadvantage: ' (disadvantage)', normal: '' } as Record<string, string>,
