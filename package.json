@@ -53,7 +53,8 @@
     "check:ses": "node scripts/ses-kontrol.mjs",
     "logo": "vite-node scripts/logo.ts",
     "check:icerik": "vite-node scripts/icerik-kontrol.ts",
-    "paket-durum": "vite-node scripts/paket-durum.ts"
+    "paket-durum": "vite-node scripts/paket-durum.ts",
+    "efekt-tablosu": "node scripts/buyu-efekt-tablosu.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
