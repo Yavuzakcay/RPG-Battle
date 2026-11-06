@@ -156,6 +156,10 @@ export interface ActiveEffect {
   pkCritOn?: number;
   reachPlus?: number;
   pkMuhur?: number;
+  /** Kuyruk P9: her yaratığın turunda tepki yenilenir (`tepkiHakki`). */
+  pkReactive?: true;
+  /** Kuyruk P9: Flurry of Blows ek vuruşu (`flurryEk`). */
+  pkFlurry?: number;
   /** Kuyruk 19: Divine Sense: bu türlerdeki yaratıkların yeri `ft` içinde bilinir (gizlenmiş olsa da hedef alınır). */
   senseTypes?: { types: string[]; ft: number };
   /** Görev B5: karanlık görüş (ft; Darkvision), kontrollerde avantaj (Enhance Ability), dostlara Stealth +10 yarıçapı (altıgen). */

@@ -301,6 +301,8 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     effects.push(...opportunity);
     current = applyEvents(current, opportunity);
     if (down()) break;
+    // Kuyruk P9 (sürüm 38): fırsat saldırısı hızı 0'a düşürdüyse (ek paket `hizSifir`, yakalama) yürüyüş durur.
+    if (opportunity.length && ruleVersion(current) >= 38 && speedHexes(current.combatants[actor.id] as Combatant) === 0) break;
     spent += cost(step, prev) ?? 0;
     walked += 1;
     current = withPos(current, actor.id, step);

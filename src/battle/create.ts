@@ -26,7 +26,7 @@ import { withMorale } from './morale';
 import { karadulFeatures, withKaradul } from './karadul';
 import { imzaFeatures, imzaId, isImza, withImza } from './imza';
 import { itemBag, mergeBags, paketBag } from './paket/bag';
-import { withPaket } from './paket/core';
+import { paketInitAdv, withPaket } from './paket/core';
 import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
@@ -730,7 +730,9 @@ export function startBattle(
     // Kuyruk 39: Feral Instinct (Barbarian 7) aynı kanca.
     const adv = p.traits?.includes('remarkable-athlete') === true || p.traits?.includes('feral-instinct') === true || (rules >= 2 && p.conditions.includes('Invisible'))
       // Kuyruk 19 (Rod of Alertness, Sentinel Shield, Weapon of Warning): inisiyatif avantajı (`srdK19`).
-      || (p.traits?.includes('initiative-advantage') === true && !!globalRule({ map, kuralSurumu: rules } as unknown as BattleState, 'srdK19'));
+      || (p.traits?.includes('initiative-advantage') === true && !!globalRule({ map, kuralSurumu: rules } as unknown as BattleState, 'srdK19'))
+      // Kuyruk P9: ek paket `zarEtkisi.inisiyatifAvantaji` (sürüm 38+).
+      || (rules >= 38 && paketInitAdv(p));
     const dis = isIncapacitated(p.conditions);
     const d = adv !== dis ? rollD20(adv ? 'advantage' : 'disadvantage', tag).kept : rollDie(20, tag);
     // Bitkinlik (Görev S1): inisiyatif DEX kontrolü, −2 × seviye.

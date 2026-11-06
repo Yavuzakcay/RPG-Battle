@@ -6,14 +6,14 @@ Bu belge `src/content/ilkelSema.ts` tablosundan üretilir (`npx vite-node script
 
 Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilkeller": [{ "tur": "ekHasar", ... }, ...]`. Eski alanlar (`effect`: stat, trait, reaction, effect) aynen çalışır; ikisi birlikte de yazılabilir. Paket düzeyinde `yaratiklar` dizisi `cagir` ilkelinin çağırdığı yaratıkları tanımlar.
 
-İlkeller (37; P6: zarMuhru, engeldenGec eklendi):
+İlkeller (45; P6: zarMuhru, engeldenGec eklendi):
 
 | İlkel | Ne yapar | Tetikler | Mevcut sistem |
 |---|---|---|---|
 | `ekHasar` | Saldırı isabetinde ek hasar zarı. | `isabet` | Saldırı çözümü (`features.ts` `weaponAttackEvents`) → isabet kanca kaydı (`hitHooks.ts`); `ExtraDamage` (direnç/bağışıklık hedefe göre). |
 | `direnc` | Hasar direnci, bağışıklığı ya da zaafı (koşula bağlı olabilir). | `pasif` | Süren etki `resist` / `immune` / `vulnerable` (`damageProfile`); koşullu olanlar komut sonu eşitlemesiyle eklenir/kalkar. |
 | `aura` | Sahibiyle yürüyen aura (dost ya da düşmanlara etki). | `pasif`, `eylem`, `bonus` | K53 aura altyapısı (`auraCore.ts`; süren etkide `auras`, en güçlüsü uygulanır, turda bir). GM anahtarı `auraCore` kapalıysa sessiz etkisiz. |
-| `tepki` | Tepkiyle çalışan koruma ya da karşılık. | `tepki` | Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate; dostaIsabet etkileri ve iskalat/yonlendir/kritikIptal isabet tepki kancasında (`registerAllyHit`, hasar değiştirebilir); zorlaSonuc ikinci şans girişinde (`effectDice.ts` `secondChances`, `ExtraDie.reroll` success/forceFail). Karar `askReaction` (oyuncuya sorulur). |
+| `tepki` | Tepkiyle çalışan koruma ya da karşılık. | `tepki` | P9: firsatSaldirisi/kurtulmaAttirildi komut sonu kancası (fırsat saldırısı `attack_resolved.opportunity`, `save_resolved.actorId`), isaretliVurdu/komsuHedefVuruldu saldırı sonrası kancası (`registerAfterAttack`), dusmanBuyuAtiyor büyü kancası (`registerCastHook`, Counterspell ile aynı an); hizSifir süren etki `speedZero` + `untilOwnTurnEnd` (yürüyüş fırsat saldırısından sonra durur, sürüm 38), hareketEt ışınlanma girişiyle yarı hız (`teleportEvent`; yol bulmaz, kısmi). Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate; dostaIsabet etkileri ve iskalat/yonlendir/kritikIptal isabet tepki kancasında (`registerAllyHit`, hasar değiştirebilir); zorlaSonuc ikinci şans girişinde (`effectDice.ts` `secondChances`, `ExtraDie.reroll` success/forceFail). Karar `askReaction` (oyuncuya sorulur). |
 | `gecicCan` | Geçici can. | `eylem`, `bonus`, `serbest`, `savasBasi`, `turBasi`, `oldurunce`, `isabet`, `hasarAlinca` | `temp_hp` olayı (fazlası birikmez; yükseği kalır). |
 | `iyilestirme` | İyileştirme (ve isteğe bağlı durum kaldırma). | `eylem`, `bonus`, `serbest`, `turBasi`, `oldurunce`, `isabet` | `healed` / `condition_ended` olayları (en çok HP aşılmaz; ölüyü kaldırmaz). |
 | `hasar` | Doğrudan hasar (kurtulmalı ya da kurtulmasız). | `eylem`, `bonus`, `serbest`, `turBasi`, `oldurunce` | `save_resolved` olayı (imza eylemleriyle aynı yol: `resolveSave`, `saveDamage` Evasion, `adjustDamage`, `damageEffects`). |
@@ -47,6 +47,14 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 | `meydanOkuma` | Hedef senden başkasına saldırırken dezavantajlı. | `bonus`, `eylem`, `isabet` | Hedefte süren etki `tauntBy` (`divine.ts` `wardSources`). |
 | `saldirmadanSave` | Sana saldırmak isteyen önce kurtulma atar; başarısızsa başka hedef seçer ya da saldırı boşa gider. | `pasif`, `bonus`, `eylem` | Sanctuary yolu (süren etki `sanctuary`, olay `sanctuary_save`). |
 | `kaynakYenile` | Bir kaynaktan kullanım geri kazanılır. | `savasBasi`, `turBasi`, `oldurunce`, `isabet`, `bonus` | `feature_used` olayı (kalan artar); üst sınır savaşçıdaki `paket.kaynakBas`. |
+| `tepkiHakki` | Ek tepki hakkı: her yaratığın turunda bir tepki (tur başına bir değil). | `pasif` | Süren etki `pkReactive` (reducer `turn_ended`: `reactive` özelliğiyle aynı yenilenme). Sürüm 38+. |
+| `zarYenile` | Başarısız d20 testini yeniden attırır (kendin ya da menzildeki dost); ikiAtSec: iki zar atılır, iyisi seçilir. | `pasif` | İkinci şans girişi (`effectDice.ts` `secondChances`, `ExtraDie.reroll: d20` + `rerollMode: advantage`); menzil reducer türetimi (`syncAuras` → `pkSans`, tür `yenile`). Sürüm 38+. |
+| `buyuPaylas` | Kendine yaptığın büyünün süren etkisi menzildeki bir dosta da uygulanır (aynı süre ve konsantrasyon). | `pasif` | Komut sonu: `cast_spell` ile büyücüye eklenen etki (`effect_added`, kaynak büyücü) en zayıf dosta kopyalanır (`…:pk-paylas`). Sürüm 38+. |
+| `kontrolEt` | Düşmanı yönetir: kurtulmayı geçemezse süre boyunca senin tarafında savaşır. | `eylem`, `bonus`, `isabet`, `oldurunce` | Taraf değiştirme (`allegiance.ts`: süren etki `dominate`; Game Master anahtarı `allegianceSwap`). Sürüm 38+. |
+| `zamanDurdur` | Zamanı durdurur: art arda N tur oynarsın (Time Stop yolu; başkasını etkileyince biter). | `eylem`, `bonus` | `time_stop` olayı (`spells69.ts` Time Stop ile aynı: art arda tur, başkasına etki edince biter). Sürüm 38+. |
+| `flurryEk` | Flurry of Blows ek vuruş sayısı (vuruşlar farklı hedeflere dağıtılabilir; hedef her vuruşta seçilir). | `pasif` | Süren etki `pkFlurry` (`economy.ts` Flurry kalanı). Flurry vuruşuna bağlı etkiler `kosul: ["flurryVurusu"]` ile (ör. isabette `iyilestirme`). Sürüm 38+. |
+| `olumZari` | Ölüm kurtulmasında başarı atınca can kazanırsın (ayağa kalkarsın). | `pasif` | Komut sonu: `death_save` (başarı) → `healed` (0 HP'den kalkış). Sürüm 38+. |
+| `canArtisi` | Savaş başında en çok can artar (ve can). | `pasif` | Savaş kuruluşunda (`withPaket`) en çok can ve can artar (başlangıç olayı taşır; Aid yolu). Sürüm 38+. |
 
 ## Ortak kurallar
 
@@ -54,7 +62,7 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 - **Düğme:** aynı özellikte aynı düğme tetikli (`eylem`, `bonus`, `serbest`) ilkeller tek düğmede birleşir ve sırayla çalışır; düğme bir hedef (dost/düşman) ve/veya bir altıgen ister (ilkellerin ihtiyacına göre). Kaynağı düğmedeki ilk `kaynak` alanlı ilkel belirler; düğme başına bir kez harcanır. `eylem` eylem, `bonus` bonus eylem harcar, `serbest` harcamaz.
 - **Otomatik tetikler:** `isabet` (kendi saldırın isabet edince; ek hasar zarı hasardan önce, diğerleri sonra), `turBasi`/`turSonu` (kendi turun), `savasBasi` (savaş başlarken), `oldurunce` (komutunla bir düşman 0 HP'ye düşünce), `hasarAlinca` (hasar alınca), `sifirCan` (0 HP'ye düşecekken), `tepki` (tepki hakkı; oyuncuya sorulur). `pasif` sürekli (koşullu olanlar her komut sonunda eşitlenir).
 - **Formül:** sayı, zar ve belirteçler: `$pb (yeterlilik)`, `$pbYari (yarısı, en az 1)`, `$lvl (karakter seviyesi)`, `$lvl2 (iki katı)`, `$str…$cha (değiştirici, en az 0)`, `$buyu (büyü değiştiricisi)`. En çok bir zar terimi; yalnız `+` ve `-` (çarpma yok): `"1d8+$wis"`, `"$lvl+2"`. Seviye tablosu: `{ "3": "1d6", "11": "2d6" }` (karakter seviyesine göre en yüksek eşik).
-- **Koşul** (`kosul`, hepsi doğru olmalı): `ofke`, `yarimCanAlti`, `zirhsiz`, `avantajli`, `dostBitisik`, `konsantrasyon`, `buyuTurunda`, `seviyeliBuyuTurunda`, `hedefBuyuk`, `bicim:<id>` (bu özelliğin `bicim` ilkeli etkin), `isaretli:<id>` (hedef senin bu işaretinle işaretli).
+- **Koşul** (`kosul`, hepsi doğru olmalı): `ofke`, `yarimCanAlti`, `zirhsiz`, `avantajli`, `dostBitisik`, `konsantrasyon`, `buyuTurunda`, `seviyeliBuyuTurunda`, `hedefBuyuk`, `flurryVurusu`, `ilkTur`, `bicim:<id>` (bu özelliğin `bicim` ilkeli etkin), `isaretli:<id>` (hedef senin bu işaretinle işaretli).
 - **Kaynak:** `{ "id": "...", "maliyet": 1 }`; kimlik aynı alt sınıftaki bir `kaynak` ilkelinin `id`'si ya da sınıf kaynağı (`rage`, `focus`, `channelDivinity`, `bardicInspiration`, `sorceryPoints`, `wildShape`, `layOnHands`…). Kaynak bitince düğme kapanır, otomatik tetik çalışmaz.
 - **Süre:** tur sayısı ya da `"kalici"`. Kurtulma DC'si: `"buyu"`, sayı ya da yetenek listesi (8 + PB + en iyisi).
 - **Kısmi:** tabloda **Kısmi** işaretli alan kalmadı (P6). Yaklaşık kalan birleşimler: tepkide `hasarAldim` yalnız `karsiVurus` ile, `kritikIptal` hasarı yarıya indirir (kritik zarları ayrıca bilinmez). Böyle bir birleşim kullanan özellik `"kismi"` yazılmalı (`check:icerik` uyarır).
@@ -68,7 +76,7 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 | `tetik` | seçenek: `pasif`, `eylem`, `bonus`, `serbest`, `isabet`, `turBasi`, `turSonu`, `savasBasi`, `oldurunce`, `hasarAlinca`, `sifirCan`, `tepki`, `buyuYuvasi` | hayır | — | Ne zaman çalışır (ilkelin izin verdikleri; yazılmazsa ilki). |
 | `hedef` | seçenek: `kendi`, `dost`, `dostVeyaKendi`, `dostlar`, `dusman`, `dusmanlar`, `bitisikDusmanlar`, `alan`, `vurulan` | hayır | — | Kime (ilkelin izin verdikleri; yazılmazsa ilki). |
 | `kaynak` | kaynak başvurusu | hayır | — | Harcanan kaynak: `{ "id": "<kaynak ilkeli id ya da sınıf kaynağı (rage, focus, channelDivinity…)>", "maliyet": 1 }`. Düğmede yalnızca ilk kaynaklı ilkel harcar (düğme başına bir kez). |
-| `kosul` | koşul listesi | hayır | — | Hepsi doğruysa çalışır: ofke, yarimCanAlti, zirhsiz, avantajli (isabet), dostBitisik (hedefe bitişik dost), konsantrasyon, buyuTurunda (bu tur büyü yaptın), seviyeliBuyuTurunda (bu tur slotlu büyü), hedefBuyuk (hedef senden büyük), bicim:<id>, isaretli:<id> (hedef bu işaretle işaretli), harita:<bölge> (savaş haritasının bölgesi). |
+| `kosul` | koşul listesi | hayır | — | Hepsi doğruysa çalışır: ofke, yarimCanAlti, zirhsiz, avantajli (isabet), dostBitisik (hedefe bitişik dost), konsantrasyon, buyuTurunda (bu tur büyü yaptın), seviyeliBuyuTurunda (bu tur slotlu büyü), hedefBuyuk (hedef senden büyük), bicim:<id>, isaretli:<id> (hedef bu işaretle işaretli), harita:<bölge> (savaş haritasının bölgesi); P9: flurryVurusu (bu tur Flurry of Blows kullanıldı), ilkTur (savaşın 1. turu). |
 | `turdaBir` | true/false | hayır | `false` | Turda en çok bir kez (her savaşçının kendi turu sayılır). |
 | `ad` | metin | hayır | — | Düğme/günlük adı (yoksa özelliğin TR adı). |
 
@@ -143,12 +151,14 @@ Sahibiyle yürüyen aura (dost ya da düşmanlara etki).
 Tepkiyle çalışan koruma ya da karşılık.
 
 - Tetikler: `tepki` (varsayılan `tepki`).
-- Sistem ve kanca: Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate; dostaIsabet etkileri ve iskalat/yonlendir/kritikIptal isabet tepki kancasında (`registerAllyHit`, hasar değiştirebilir); zorlaSonuc ikinci şans girişinde (`effectDice.ts` `secondChances`, `ExtraDie.reroll` success/forceFail). Karar `askReaction` (oyuncuya sorulur).
+- Sistem ve kanca: P9: firsatSaldirisi/kurtulmaAttirildi komut sonu kancası (fırsat saldırısı `attack_resolved.opportunity`, `save_resolved.actorId`), isaretliVurdu/komsuHedefVuruldu saldırı sonrası kancası (`registerAfterAttack`), dusmanBuyuAtiyor büyü kancası (`registerCastHook`, Counterspell ile aynı an); hizSifir süren etki `speedZero` + `untilOwnTurnEnd` (yürüyüş fırsat saldırısından sonra durur, sürüm 38), hareketEt ışınlanma girişiyle yarı hız (`teleportEvent`; yol bulmaz, kısmi). Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate; dostaIsabet etkileri ve iskalat/yonlendir/kritikIptal isabet tepki kancasında (`registerAllyHit`, hasar değiştirebilir); zorlaSonuc ikinci şans girişinde (`effectDice.ts` `secondChances`, `ExtraDie.reroll` success/forceFail). Karar `askReaction` (oyuncuya sorulur).
 
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama |
 |---|---|---|---|---|
-| `olay` | seçenek: `banaIsabet`, `dostaIsabet`, `hasarAldim`, `zarTesti`, `dostaVuruldu` | hayır | `"banaIsabet"` | Tetikleyen olay: sana isabet, menzildeki dosta isabet, yakın dövüşte hasar aldın, menzildeki bir yaratığın d20 testi (yalnız zorlaSonuc), menzildeki dosta saldırı isabet edip hasar verdi (P7; saldırgana karşılık). |
-| `etki` | seçenek: `acBonusu`, `hasarAzalt`, `yariya`, `direnc`, `karsiVurus`, `iskalat`, `yonlendir`, `kritikIptal`, `zorlaSonuc`, `saldiriYap`, `yansit` | evet | — | Tepkinin etkisi: AC, hasar azaltma, yarıya, direnç (yarıya), karşı vuruş, ıskalatma, başka hedefe saptırma, kritiği normal vuruşa çevirme, d20 testini başarı/başarısızlık sayma; P7: saldiriYap (saldırgana silah saldırısı, erişimdeyse), yansit (alınan hasarın `oran` katı saldırgana; kurtulma verilirse yarıya). |
+| `olay` | seçenek: `banaIsabet`, `dostaIsabet`, `hasarAldim`, `zarTesti`, `dostaVuruldu`, `firsatSaldirisi`, `dusmanBuyuAtiyor`, `isaretliVurdu`, `komsuHedefVuruldu`, `kurtulmaAttirildi` | hayır | `"banaIsabet"` | Tetikleyen olay: sana isabet, menzildeki dosta isabet, yakın dövüşte hasar aldın, menzildeki bir yaratığın d20 testi (yalnız zorlaSonuc), menzildeki dosta saldırı isabet edip hasar verdi (P7; saldırgana karşılık); P9: firsatSaldirisi (senin fırsat saldırın isabet etti; tepki zaten harcandı, ek tepki harcanmaz), dusmanBuyuAtiyor (menzildeki düşman büyü yapmaya başlıyor; Counterspell anı), isaretliVurdu (senin `isaret`inle işaretli düşman sana ya da dostuna isabet etti), komsuHedefVuruldu (sana bitişik düşmana bir dostun isabet etti), kurtulmaAttirildi (senin etkinle bir düşman kurtulma attı; `sonuc` ile süzülür). |
+| `etki` | seçenek: `acBonusu`, `hasarAzalt`, `yariya`, `direnc`, `karsiVurus`, `iskalat`, `yonlendir`, `kritikIptal`, `zorlaSonuc`, `saldiriYap`, `yansit`, `hizSifir`, `hareketEt`, `buyuIptal`, `hasarEkle` | evet | — | Tepkinin etkisi: AC, hasar azaltma, yarıya, direnç (yarıya), karşı vuruş, ıskalatma, başka hedefe saptırma, kritiği normal vuruşa çevirme, d20 testini başarı/başarısızlık sayma; P7: saldiriYap (saldırgana silah saldırısı, erişimdeyse), yansit (alınan hasarın `oran` katı saldırgana; kurtulma verilirse yarıya); P9: hizSifir (olaydaki düşmanın hızı turunun sonuna dek 0; kurtulma verilirse başarısızlıkta), hareketEt (yarı hızın kadar fırsat saldırısı tetiklemeden uzaklaş; banaIsabet), buyuIptal (büyü boşa gider; kurtulma verilirse başarısızlıkta; eylem harcanır, yuva harcanmaz), hasarEkle (olaydaki düşmana `miktar` hasar, tür `hasarTuru`). |
+| `hasarTuru` | hasar türü | hayır | `"force"` | P9 hasarEkle: hasar türü. |
+| `iptal` | true/false | hayır | `false` | P9 dusmanBuyuAtiyor + saldiriYap: saldırı isabet ederse büyü boşa gider. |
 | `oran` | sayı | hayır | `1` | yansit: hasarın oranı (0,5 = yarısı; P7). |
 | `save` | nesne | hayır | — | Kurtulma: `{ "yetenek": "wis", "dc": "buyu" \| 14 \| ["wis","cha"], "yari": false }`. dc: "buyu" büyü DC'si (yoksa 8 + PB + en iyi INT/WIS/CHA), sayı sabit, liste 8 + PB + listedeki en iyi değiştirici. `yari`: başarıda yarım hasar. |
 | `miktar` | formül | hayır | — | acBonusu (sayı) ya da hasarAzalt zarı (`"1d10+$wis"`). |
@@ -268,6 +278,7 @@ Hedefi işaretler; işaretliye avantaj ve diğer ilkellerin `isaretli:<id>` koş
 | `tek` | true/false | hayır | `true` | Aynı anda tek işaret (yenisi eskisini kaldırır). |
 | `avantaj` | seçenek: `yok`, `isaretleyen`, `herkes` | hayır | `"yok"` | İşaretliye saldırı avantajı: yok, yalnız işaretleyen, herkes. |
 | `menzilFt` | tamsayı | hayır | `30` | Hedef menzili (ft). |
+| `aktar` | true/false | hayır | `false` | P9: işaretli 0 cana düşünce işaret `menzilFt` içindeki en yakın düşmana geçer (lanet aktarımı; kalan süreyle). |
 
 Örnek:
 
@@ -438,6 +449,7 @@ Zar ve savunma eklentileri: AC, kurtulma, avantaj/dezavantaj, bonus zar, inisiya
 | `zarYonu` | seçenek: `arti`, `eksi` | hayır | `"arti"` | Bonus zarın yönü. |
 | `zarIcin` | seçenek listesi: `saldiri`, `kurtulma`, `kontrol` | hayır | `["saldiri","kurtulma"]` | Bonus zar hangi d20 testlerine. |
 | `inisiyatifBonusu` | formül | hayır | — | İnisiyatif eklentisi (yalnız pasif). |
+| `inisiyatifAvantaji` | true/false | hayır | `false` | P9: inisiyatif avantajlı (yalnız koşulsuz pasif; savaş başında atılır). |
 | `d20AltSinir` | tamsayı | hayır | — | d20 alt sınırı: doğal zar bundan küçükse bu sayılır (başarıya çevirecekse uygulanır). |
 | `d20Icin` | seçenek listesi: `saldiri`, `kurtulma`, `kontrol` | hayır | `["saldiri","kurtulma","kontrol"]` | d20AltSinir hangi testlerde. |
 | `kritikAralik` | tamsayı | hayır | — | Saldırıda doğal zar bu değer ve üstüyse kritik (ör. 19). |
@@ -751,6 +763,7 @@ Sahibin çağırdığı her yaratık (büyü ya da paket) geçici can, AC ve isa
 | `acBonusu` | formül | hayır | — | AC eklentisi. |
 | `ekHasar` | formül | hayır | — | İsabette ek zar (silah ve canavar saldırısı). |
 | `buyuluVurus` | true/false | hayır | `false` | Saldırıları büyülü. |
+| `turBasiCan` | formül | hayır | — | P9: çağrılan her yaratık kendi tur başında bu kadar geçici can alır (yükseği kalır). |
 
 Örnek:
 
@@ -848,6 +861,152 @@ Bir kaynaktan kullanım geri kazanılır.
 
 ```json
 {"tur":"kaynakYenile","tetik":"savasBasi","yenile":{"id":"focus","maliyet":1}}
+```
+
+## `tepkiHakki`
+
+Ek tepki hakkı: her yaratığın turunda bir tepki (tur başına bir değil).
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: Süren etki `pkReactive` (reducer `turn_ended`: `reactive` özelliğiyle aynı yenilenme). Sürüm 38+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `herTur` | true/false | hayır | `true` | Her yaratığın turunda tepki yenilenir (Marilith Reactive yolu). |
+
+Örnek:
+
+```json
+{"tur":"tepkiHakki","herTur":true}
+```
+
+## `zarYenile`
+
+Başarısız d20 testini yeniden attırır (kendin ya da menzildeki dost); ikiAtSec: iki zar atılır, iyisi seçilir.
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: İkinci şans girişi (`effectDice.ts` `secondChances`, `ExtraDie.reroll: d20` + `rerollMode: advantage`); menzil reducer türetimi (`syncAuras` → `pkSans`, tür `yenile`). Sürüm 38+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `kim` | seçenek listesi: `kendi`, `dost` | hayır | `["kendi"]` | Kimin testinde (dost kendini kapsamaz). |
+| `testler` | seçenek listesi: `saldiri`, `kurtulma`, `kontrol` | hayır | `["saldiri","kurtulma","kontrol"]` | Hangi d20 testleri. |
+| `mod` | seçenek: `yenidenAt`, `ikiAtSec` | hayır | `"yenidenAt"` | yenidenAt: bir zar yeniden; ikiAtSec: iki zar, yüksek olan (avantajla yeniden atış). |
+| `tepkiyle` | true/false | hayır | `false` | Tepki harcar (verilmezse yalnız kaynak; kaynak da yoksa sınırsız: turdaBir ile sınırla). |
+| `menzilFt` | tamsayı | hayır | `30` | Hedef menzili (ft). |
+
+Örnek:
+
+```json
+{"tur":"zarYenile","kim":["kendi","dost"],"testler":["saldiri","kurtulma"],"mod":"ikiAtSec","kaynak":{"id":"kehanet","maliyet":1}}
+```
+
+## `buyuPaylas`
+
+Kendine yaptığın büyünün süren etkisi menzildeki bir dosta da uygulanır (aynı süre ve konsantrasyon).
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: Komut sonu: `cast_spell` ile büyücüye eklenen etki (`effect_added`, kaynak büyücü) en zayıf dosta kopyalanır (`…:pk-paylas`). Sürüm 38+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `menzilFt` | tamsayı | hayır | `30` | Hedef menzili (ft). |
+| `enCokSeviye` | tamsayı | hayır | `9` | Yalnız bu seviye ve altı büyüler. |
+
+Örnek:
+
+```json
+{"tur":"buyuPaylas","menzilFt":30,"enCokSeviye":3,"kaynak":{"id":"cagri","maliyet":1}}
+```
+
+## `kontrolEt`
+
+Düşmanı yönetir: kurtulmayı geçemezse süre boyunca senin tarafında savaşır.
+
+- Tetikler: `eylem`, `bonus`, `isabet`, `oldurunce` (varsayılan `eylem`).
+- Hedefler: `dusman`, `vurulan` (varsayılan `dusman`).
+- Sistem ve kanca: Taraf değiştirme (`allegiance.ts`: süren etki `dominate`; Game Master anahtarı `allegianceSwap`). Sürüm 38+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `save` | nesne | evet | — | Kurtulma: `{ "yetenek": "wis", "dc": "buyu" \| 14 \| ["wis","cha"], "yari": false }`. dc: "buyu" büyü DC'si (yoksa 8 + PB + en iyi INT/WIS/CHA), sayı sabit, liste 8 + PB + listedeki en iyi değiştirici. `yari`: başarıda yarım hasar. |
+| `sure` | süre | hayır | `10` | Süre: tur sayısı (1 tur = 6 sn) ya da "kalici" (savaş boyu). |
+| `menzilFt` | tamsayı | hayır | `30` | Hedef menzili (ft). |
+| `turler` | metin | hayır | — | Yalnız bu yaratık türleri (virgüllü: "undead,beast"). |
+| `tekrarKurtulma` | true/false | hayır | `false` | Her tur sonunda yeniden kurtulma (başarıda biter). |
+
+Örnek:
+
+```json
+{"tur":"kontrolEt","tetik":"eylem","hedef":"dusman","save":{"yetenek":"wis","dc":"buyu"},"sure":10,"turler":"undead","kaynak":{"id":"cagri","maliyet":1}}
+```
+
+## `zamanDurdur`
+
+Zamanı durdurur: art arda N tur oynarsın (Time Stop yolu; başkasını etkileyince biter).
+
+- Tetikler: `eylem`, `bonus` (varsayılan `eylem`).
+- Sistem ve kanca: `time_stop` olayı (`spells69.ts` Time Stop ile aynı: art arda tur, başkasına etki edince biter). Sürüm 38+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `sayi` | formül | evet | — | Ek tur sayısı (zar olabilir: "1d4+1"). |
+
+Örnek:
+
+```json
+{"tur":"zamanDurdur","tetik":"eylem","sayi":2,"kaynak":{"id":"kehanet","maliyet":1}}
+```
+
+## `flurryEk`
+
+Flurry of Blows ek vuruş sayısı (vuruşlar farklı hedeflere dağıtılabilir; hedef her vuruşta seçilir).
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: Süren etki `pkFlurry` (`economy.ts` Flurry kalanı). Flurry vuruşuna bağlı etkiler `kosul: ["flurryVurusu"]` ile (ör. isabette `iyilestirme`). Sürüm 38+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `ekVurus` | tamsayı | evet | — | Ek vuruş. |
+
+Örnek:
+
+```json
+{"tur":"flurryEk","ekVurus":2}
+```
+
+## `olumZari`
+
+Ölüm kurtulmasında başarı atınca can kazanırsın (ayağa kalkarsın).
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: Komut sonu: `death_save` (başarı) → `healed` (0 HP'den kalkış). Sürüm 38+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `iyilestir` | formül | evet | — | Kazanılan can. |
+
+Örnek:
+
+```json
+{"tur":"olumZari","iyilestir":"1d4+$con","kaynak":{"id":"son-nefes","maliyet":1}}
+```
+
+## `canArtisi`
+
+Savaş başında en çok can artar (ve can).
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: Savaş kuruluşunda (`withPaket`) en çok can ve can artar (başlangıç olayı taşır; Aid yolu). Sürüm 38+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `miktar` | formül | evet | — | Artış (formül; ör. "$lvl"). |
+
+Örnek:
+
+```json
+{"tur":"canArtisi","miktar":"$lvl"}
 ```
 
 ## Çağrı yaratığı (`yaratiklar`)

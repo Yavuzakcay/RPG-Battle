@@ -9,6 +9,9 @@
 - **Görsel, efekt, ses:** jeton, harita görseli, sprite, efekt bağlama, müzik/ortam; motor durumuna girmez.
 - **Metin ve çeviri**, belge, test, başarım/paket bütçesi.
 
+**İstisna (kullanıcı kararı):** Kuyruk P9 (ek paket ilkel genişletme 3, kural sürümü 38) kullanıcı tarafından açıkça
+verildi; donma yalnız o kuyruğun kapsamı için kaldırıldı (DECISIONS.md, 2026-11-06 P9).
+
 Yeni mekanik sayılan (yapılmaz): yeni komut ya da olay türü, yeni süren etki alanı, yeni harita kuralı türü, yeni ev kuralı,
 yeni ilkel, yeni Serüven sistemi. Eksik SRD parçaları `harita/belgeler/BUYU-SIGMAYAN.md`, `docs/SRD-DENETIM.md` ve CLAUDE.md
 "Bilinen eksikler" tablosunda kalır; donma kaldırılınca oradan seçilir. Donmayı yalnızca kullanıcı kaldırır.

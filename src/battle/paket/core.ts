@@ -10,6 +10,7 @@ import { auraCoreOn } from '../auraCore';
 import { getMap } from '../../map/maps';
 import { sizeRank } from '../forced';
 import { DUGME_TETIKLERI, ILKELLER, ORTAK_ALANLAR, type Tetik } from '../../content/ilkelSema';
+import { ruleVersion } from '../ruleVersion';
 import { rollDice, rollTag, type Rng } from '../../rules/dice';
 import type { ActiveEffect, BattleState, Combatant, ReactionSpec, UsableFeature } from '../types';
 import type { Ilkel, PaketBag, PaketOzellik } from './bag';
@@ -110,6 +111,9 @@ export function kosulOk(state: BattleState, actor: Combatant, p: Ilkel, target?:
     if (k.startsWith('harita:') && mapRegion(state) !== k.slice(7)) return false;
     // P7: hedef sahibinden büyük.
     if (k === 'hedefBuyuk' && !(target && sizeRank(target.size) > sizeRank(actor.size))) return false;
+    // P9: bu tur Flurry of Blows (kalan vuruş tanımlı), savaşın ilk turu.
+    if (k === 'flurryVurusu' && actor.economy.flurryLeft === undefined) return false;
+    if (k === 'ilkTur' && state.round !== 1) return false;
   }
   return true;
 }
@@ -192,9 +196,18 @@ export function passiveBody(p: Ilkel, c: Combatant, state?: BattleState): Partia
     case 'algi': return { ...(typeof p.karanlikGorusFt === 'number' ? { darkvision: p.karanlikGorusFt } : {}), ...(typeof p.gercekGorusFt === 'number' ? { pkTruesight: p.gercekGorusFt } : {}),
       ...(p.gorunmezGor ? { seeInvisible: true } : {}) };
     case 'saldirmadanSave': return { sanctuary: { dc: dcOf(p.save as Record<string, unknown>, c) } };
+    // P9 (sürüm 38+): ek tepki hakkı, Flurry ek vuruşu.
+    case 'tepkiHakki': return state && !p9On(state) ? null : val<boolean>(p, 'herTur') === false ? null : { pkReactive: true };
+    case 'flurryEk': return state && !p9On(state) ? null : { pkFlurry: flatNum(p.ekVurus, c) };
     default: return null;
   }
 }
+/** Kuyruk P9: yeni ilkellerin kural sürümü kapısı. */
+export const P9_VERSION = 38;
+export const p9On = (state: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(state) >= P9_VERSION;
+/** Kuyruk P9: koşulsuz pasif `zarEtkisi.inisiyatifAvantaji` (savaş başında, paket henüz eşitlenmeden). */
+export const paketInitAdv = (c: Combatant): boolean => !!c.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'zarEtkisi' && p.inisiyatifAvantaji === true && tetikOf(p) === 'pasif' && !p.kosul));
+
 /** zarEtkisi alanları → süren etki. */
 export function zarBody(p: Ilkel, c: Combatant): Partial<ActiveEffect> {
   const out: Record<string, unknown> = {};
@@ -271,12 +284,15 @@ export function withPaket(state: BattleState): BattleState {
     const effects: ActiveEffect[] = [];
     let init = 0;
     let attacks = c.attacksPerAction;
+    // P9 (sürüm 38+): en çok can artışı savaş kuruluşunda (Aid yolu; başlangıç olayı durumu taşır, replay aynı).
+    let hpPlus = 0;
     for (const f of c.paket.ozellikler) f.ilkeller.forEach((p, i) => {
       if (p.tur === 'tepki') { const r = reactionOf(p, c, f.key, i, (p.ad as string | undefined) ?? f.ad); if (r) reactions.push(r); }
       if (tetikOf(p) !== 'pasif' || p.kosul) return;
       // P6: ikinci saldırı (Saldırı eylemindeki saldırı sayısı en az bu).
       if (p.tur === 'ekSaldiri' && typeof p.saldiriSayisi === 'number') attacks = Math.max(attacks, p.saldiriSayisi);
       if (p.tur === 'zarEtkisi' && p.inisiyatifBonusu !== undefined) init += flatNum(p.inisiyatifBonusu, c);
+      if (p.tur === 'canArtisi' && p9On(state)) hpPlus += Math.max(0, flatNum(p.miktar, c));
       const body = passiveBody(p, c, state);
       if (body && Object.keys(body).length) effects.push({ ...body, id: effId(f.key, i), name: (p.ad as string | undefined) ?? f.ad, sourceId: c.id } as ActiveEffect);
     });
@@ -287,6 +303,7 @@ export function withPaket(state: BattleState): BattleState {
       ...(effects.length ? { effects: [...(c.effects ?? []), ...effects] } : {}),
       ...(init ? { initiativeBonus: c.initiativeBonus + init } : {}),
       ...(attacks !== c.attacksPerAction ? { attacksPerAction: attacks } : {}),
+      ...(hpPlus ? { maxHp: c.maxHp + hpPlus, hp: c.hp + hpPlus } : {}),
       // P7: savaş başındaki kaynaklar (`kaynakYenile` üst sınırı).
       paket: { ...c.paket, kaynakBas: Object.fromEntries(Object.values(c.paket.kaynaklar ?? {}).map((k) => [k, c.resources[k] ?? 0])) },
     };

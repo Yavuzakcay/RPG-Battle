@@ -514,7 +514,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       }
       // Kuyruk 19 (Marilith Reactive): her turda bir tepki.
       for (const c of Object.values(next.combatants)) {
-        if (c.traits?.includes('reactive') && c.economy.reaction) next = withCombatant(next, c.id, { economy: { ...c.economy, reaction: false } });
+        if ((c.traits?.includes('reactive') || c.effects?.some((e) => e.pkReactive)) && c.economy.reaction) next = withCombatant(next, c.id, { economy: { ...c.economy, reaction: false } });
       }
       // Turda bir hasar azaltma (Resistance; Görev R2): her tur geçişinde yeniden kullanılabilir.
       for (const c of Object.values(next.combatants)) {

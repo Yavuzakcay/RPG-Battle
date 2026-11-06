@@ -38,8 +38,9 @@ import { getMonster, type Monster, type MonsterAttack } from '../../data';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command, ExtraDamage, SummonInfo, UsableFeature } from '../types';
 import {
   alive, amount, canPay, costOf, dcOf, dugmeNeeds, dugmeOf, effId, flatNum, formId, formul, kosulOk, markId, passiveBody, resKey, tetikOf,
-  auraSpec, usedKey, usedThisTurn, val, within, zarBody, type Dugme, type Ilkel, type PaketOzellik,
+  auraSpec, p9On, usedKey, usedThisTurn, val, within, zarBody, type Dugme, type Ilkel, type PaketOzellik,
 } from './core';
+import './p9';
 
 export { paketHex, paketTargeted, withPaket } from './core';
 
@@ -295,6 +296,28 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       return api.strike(state, a.id, foe.id, rng);
     }
     case 'cagir': return summonEvents(state, c);
+    // P9 (sürüm 38+): düşmanı yönet (taraf değiştirme `dominate`; türe göre süzgeç, kurtulmalı).
+    case 'kontrolEt': {
+      if (!p9On(state)) return [];
+      const ts = targetsOf(state, c);
+      if (typeof ts === 'string') return ts;
+      const turler = typeof p.turler === 'string' ? p.turler.split(',').map((x) => x.trim().toLowerCase()).filter(Boolean) : [];
+      for (const t of ts) {
+        if (turler.length && !turler.includes((t.creatureType ?? '').toLowerCase())) { if (c.manual) return 'Bu yaratık türü yönetilemez.'; continue; }
+        const sv = saveEvent(state, c, t, null, '', false);
+        out.push(sv.ev);
+        if (sv.success) continue;
+        const save = p.save as Record<string, unknown>;
+        out.push(effect(t, { dominate: true, icon: '♛', ...(p.tekrarKurtulma ? { repeatSave: { ability: save.yetenek as Ability, dc: dcOf(save, a) } } : {}) }));
+      }
+      return out;
+    }
+    // P9 (sürüm 38+): zaman durdurma (Time Stop yolu).
+    case 'zamanDurdur': {
+      if (!p9On(state)) return [];
+      const n = Math.max(1, Math.min(6, amount(p.sayi, a, rng)));
+      return [{ type: 'time_stop', actorId: a.id, turns: n }];
+    }
     // P7: ortak can havuzu (sahip + yarıçaptaki dostlar, en çok `enCok`).
     case 'ortakCan': {
       const list = (targetsOf(state, { ...c, p: { ...p, hedef: 'dostlar' } }) as Combatant[]).filter((x) => !x.poolId && !x.summon).slice(0, Math.max(2, flatNum(val(p, 'enCok'), a)));

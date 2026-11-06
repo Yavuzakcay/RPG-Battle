@@ -36,3 +36,14 @@ export function commandEndHookEvents(before: BattleState, next: BattleState, eve
   }
   return out;
 }
+
+/**
+ * Kuyruk P9: fırsat saldırısının hemen ardından (yürüyüş adımı sürmeden) kancalar: ek paket tepkisi `firsatSaldirisi`
+ * (hızı 0 yaparsa `movement.ts` yürüyüşü keser). Kayıt yoksa olay yok.
+ */
+type OpportunityHook = (state: BattleState, attackerId: string, targetId: string, events: BattleEvent[], rng: Rng) => BattleEvent[];
+const OPP: OpportunityHook[] = [];
+export const registerAfterOpportunity = (h: OpportunityHook): void => { OPP.push(h); };
+export function afterOpportunityEvents(state: BattleState, attackerId: string, targetId: string, events: BattleEvent[], rng: Rng): BattleEvent[] {
+  return OPP.flatMap((h) => h(state, attackerId, targetId, events, rng));
+}

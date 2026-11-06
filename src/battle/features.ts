@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { afterOpportunityEvents } from './turnHooks';
 import { mechanicsAt } from './spellVersion';
 import { auraCoreOn, auraEnterEvents } from './auraCore';
 import { isAirborne } from './flight';
@@ -484,6 +485,10 @@ export function opportunityAttacks(
     if (!r.ok) continue;
     events.push(spent, ...r.events);
     current = applyEvents(ready, r.events);
+    // Kuyruk P9: fırsat saldırısı sonrası kancaları (ek paket `firsatSaldirisi`).
+    const follow = afterOpportunityEvents(current, o.id, moverId, r.events, rng);
+    events.push(...follow);
+    current = applyEvents(current, follow);
   }
   return events;
 }

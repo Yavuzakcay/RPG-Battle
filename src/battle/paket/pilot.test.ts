@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import pilot from '../../../tests/fixtures/paket-pilot.json';
 import p6 from '../../../tests/fixtures/paket-p6.json';
 import p7 from '../../../tests/fixtures/paket-p7.json';
+import p9 from '../../../tests/fixtures/paket-p9.json';
 import { validatePack } from '../../content/schema';
 import { applyPackSubclasses } from '../../content/paket';
 import { ILKEL_ADLARI } from '../../content/ilkelSema';
@@ -47,8 +48,8 @@ describe('pilot paketi', () => {
   it('doğrulanır: 1 uyarı (yedek jeton), her ilkel en az bir kez kullanılmış', () => {
     const r = load();
     expect(r.warnings.map((w) => w.code)).toEqual(['jetonYedek']);
-    // P6/P7: yeni ilkeller sonraki kurgusal fikstürlerde (tests/fixtures/paket-p6.json, paket-p7.json).
-    const used = new Set([...pilot.subclasses, ...p6.subclasses, ...p7.subclasses].flatMap((s) => s.features.flatMap((f) => ((f as { ilkeller?: Array<{ tur: string }> }).ilkeller ?? []).map((p) => p.tur))));
+    // P6/P7/P9: yeni ilkeller sonraki kurgusal fikstürlerde (tests/fixtures/paket-p6.json, paket-p7.json, paket-p9.json).
+    const used = new Set([...pilot.subclasses, ...p6.subclasses, ...p7.subclasses, ...p9.subclasses].flatMap((s) => s.features.flatMap((f) => ((f as { ilkeller?: Array<{ tur: string }> }).ilkeller ?? []).map((p) => p.tur))));
     expect([...used].sort()).toEqual([...ILKEL_ADLARI].sort());
   });
   it('kaynaklar sınıf kaynakları tablosunda; buyuVer.bedava büyüyü slotsuz yaptırır', () => {

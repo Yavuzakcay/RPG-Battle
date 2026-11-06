@@ -10,12 +10,15 @@ import { gap } from '../body';
 import { isIncapacitated } from '../../rules/conditions';
 import type { ExtraDie } from '../../rules/attack';
 import type { BattleState, Combatant } from '../types';
+import { ruleVersion } from '../ruleVersion';
 
 type On = 'attack' | 'save' | 'check';
 const ON: Record<string, On> = { saldiri: 'attack', kurtulma: 'save', kontrol: 'check' };
 export interface PkSans {
   holderId: string;
-  kind: 'muhur' | 'zorla';
+  kind: 'muhur' | 'zorla' | 'yenile';
+  /** P9 yenile: iki zar, iyisi. */
+  twice?: boolean;
   /** Testi atan, sahibin dostu (kendisi dahil) mi düşmanı mı. */
   foe: boolean;
   on: On[];
@@ -32,7 +35,7 @@ const ready = (c: Combatant) => c.hp > 0 && c.life !== 'dead' && !c.summon?.gone
 
 /** Bu savaşta mühür ya da zorla sonuç tutan biri var mı (eşitleme hesabı yoksa atlanır). */
 export const anyPaketSans = (state: BattleState): boolean =>
-  Object.values(state.combatants).some((c) => c.paket && (prims(c, 'zarMuhru').length > 0 || prims(c, 'tepki').some((x) => x.p.etki === 'zorlaSonuc')));
+  Object.values(state.combatants).some((c) => c.paket && (prims(c, 'zarMuhru').length > 0 || prims(c, 'tepki').some((x) => x.p.etki === 'zorlaSonuc') || prims(c, 'zarYenile').length > 0));
 
 /** `c`'nin d20 testlerine menzildeki mühür/zorla kaynakları. */
 export function paketSansOf(state: BattleState, c: Combatant): PkSans[] {
@@ -50,6 +53,19 @@ export function paketSansOf(state: BattleState, c: Combatant): PkSans[] {
       const k = p.kaynak as { id: string } | undefined;
       if (!values.length || (k && (h.resources[resKey(h, k.id)] ?? 0) <= 0)) continue;
       out.push({ holderId: h.id, kind: 'muhur', foe, on: ['attack', 'save', 'check'], label: (p.ad as string | undefined) ?? f.ad, values, ...(k ? { resource: resKey(h, k.id) } : {}) });
+    }
+    // P9 (sürüm 38+): başarısız d20 testini yeniden attırma (kendi ya da menzildeki dost; isteğe bağlı tepki/kaynak).
+    if (ruleVersion(state) >= 38) for (const { f, p } of prims(h, 'zarYenile')) {
+      if (foe) continue;
+      const kim = (p.kim as string[] | undefined) ?? ['kendi'];
+      if (!kim.includes(h.id === c.id ? 'kendi' : 'dost') || !near((p.menzilFt as number | undefined) ?? 30)) continue;
+      const tepki = p.tepkiyle === true;
+      if (tepki && (h.economy.reaction || h.reactionLocked)) continue;
+      const k = p.kaynak as { id: string } | undefined;
+      if (k && (h.resources[resKey(h, k.id)] ?? 0) <= 0) continue;
+      const on = ((p.testler as string[] | undefined) ?? ['saldiri', 'kurtulma', 'kontrol']).map((x) => ON[x] as On);
+      out.push({ holderId: h.id, kind: 'yenile', foe: false, on, label: (p.ad as string | undefined) ?? f.ad, ...(p.mod === 'ikiAtSec' ? { twice: true } : {}),
+        ...(tepki ? { reaction: true } : {}), ...(k ? { resource: resKey(h, k.id) } : {}) });
     }
     if (h.economy.reaction || h.reactionLocked) continue;
     for (const { f, p } of prims(h, 'tepki').filter((x) => x.p.etki === 'zorlaSonuc')) {
@@ -73,6 +89,11 @@ export function paketChances(c: Combatant, on: On): ExtraDie[] {
   }
   for (const s of c.pkSans ?? []) {
     if (!s.on.includes(on)) continue;
+    if (s.kind === 'yenile') {
+      out.push({ label: s.label, die: s.twice ? '2d20↑' : 'd20', sign: 1, reroll: 'd20', ...(s.twice ? { rerollMode: 'advantage' as const } : {}), holderId: s.holderId,
+        ...(s.reaction ? { reaction: true } : {}), ...(s.resource ? { resource: s.resource } : {}) });
+      continue;
+    }
     if (s.kind === 'muhur') {
       for (const v of s.values ?? []) {
         out.push({ label: s.label, die: `d20=${v.v}`, sign: 1, reroll: s.foe ? 'setSpoil' : 'set', rerollBonus: v.v, single: true, effectId: v.effectId, holderId: s.holderId, ...(s.resource ? { resource: s.resource } : {}) });

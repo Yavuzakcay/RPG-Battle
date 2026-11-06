@@ -289,7 +289,9 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (a.id === 'step-of-the-wind' && e.bonus && !e.fleetUsed && hasTrait(actor, 'fleet-step') && globalRule(state, 'featuresK19')) {
         return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Fleet Step', attacksLeft: e.attacksLeft, fleet: true } };
       }
-      return spend(actor, 'bonus', a.name, a.strikes ? { flurryLeft: a.strikes + extra } : {});
+      // Kuyruk P9: ek paket `flurryEk` (süren etki `pkFlurry`; yalnız sürüm 38+ savaşta eklenir).
+      const pk = (actor.effects ?? []).reduce((n, e) => n + (e.pkFlurry ?? 0), 0);
+      return spend(actor, 'bonus', a.name, a.strikes ? { flurryLeft: a.strikes + extra + pk } : {});
     }
     case 'stunning_strike': {
       // Eylemsiz; turda bir kez. Önce kuralın kendisi (daha anlamlı neden).

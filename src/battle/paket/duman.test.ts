@@ -5,6 +5,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import pilot from '../../../tests/fixtures/paket-pilot.json';
 import p6 from '../../../tests/fixtures/paket-p6.json';
+import p9 from '../../../tests/fixtures/paket-p9.json';
 import { validatePack } from '../../content/schema';
 import { applyPackSubclasses } from '../../content/paket';
 import { classData, classes } from '../../data';
@@ -29,6 +30,8 @@ afterEach(() => applyPackSubclasses([]));
 const PACK_SUB: Record<string, string> = { fighter: 'kehribar-nobetci', ranger: 'ruzgar-kartali', druid: 'kul-cagirani', cleric: 'safak-bekcisi' };
 /** P6 fikstürü. */
 const P6_SUB: Record<string, string> = { wizard: 'kehanet-okulu', fighter: 'demir-siper', cleric: 'kemik-cagirici' };
+/** Kuyruk P9 fikstürü (kural sürümü 38 ilkelleri). */
+const P9_SUB: Record<string, string> = { wizard: 'zaman-katibi', fighter: 'demir-nobet', monk: 'ruzgar-avucu' };
 
 function smoke(level: number, withPack: boolean, subs: Record<string, string> = PACK_SUB): number {
   let fights = 0;
@@ -54,6 +57,7 @@ describe('P0 duman: 12 sınıf × 3/7/11', () => {
   it.each([3, 7, 11])('seviye %i, paket yüklü: çökme yok', (level) => { load(); expect(smoke(level, true)).toBe(12); }, 180_000);
   it.each([3, 7, 11])('seviye %i, paket yok: çökme yok', (level) => { expect(smoke(level, false)).toBe(12); }, 180_000);
   it.each([3, 7, 11])('seviye %i, P6 fikstürü yüklü: çökme yok', (level) => { load(p6); expect(smoke(level, true, P6_SUB)).toBe(12); }, 180_000);
+  it.each([3, 11])('seviye %i, P9 fikstürü yüklü: çökme yok', (level) => { load(p9); expect(smoke(level, true, P9_SUB)).toBe(12); }, 180_000);
 });
 
 describe('P0 moralEtkisi', () => {

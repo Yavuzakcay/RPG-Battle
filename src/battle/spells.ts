@@ -454,7 +454,9 @@ function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand,
 
 function executeCastWith(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   // Subtle Spell: bileşensiz büyü görülmez; Counterspell tetiklenmez.
-  const watched = !cmd.metamagic?.includes('subtle') && Object.values(state.combatants).some((c) => c.side !== actor.side && c.reactions?.some((r) => r.kind === 'counterspell'));
+  const watched = !cmd.metamagic?.includes('subtle') && Object.values(state.combatants).some((c) => c.side !== actor.side && c.reactions?.some((r) => r.kind === 'counterspell'))
+    // Kuyruk P9: ek paket tepkisi `dusmanBuyuAtiyor` (büyü yapılırken kancası `registerCastHook`).
+    || (!cmd.metamagic?.includes('subtle') && Object.values(state.combatants).some((c) => c.side !== actor.side && c.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'tepki' && p.olay === 'dusmanBuyuAtiyor'))));
   if (!watched) return castSpell(state, actor, cmd, spell, rng);
   const dry = castSpell(state, actor, cmd, spell, () => 0.5);
   if (!dry.ok) return dry;

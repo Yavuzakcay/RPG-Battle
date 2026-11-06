@@ -676,8 +676,20 @@ export function counterspellCheck(state: BattleState, caster: Combatant, spellNa
     if (!save.success) return { countered: true, events };
     current = applyEvents(current, events.slice(-3));
   }
+  // Kuyruk P9: büyü yapılırken kayıtlı kancalar (ek paket tepkisi `dusmanBuyuAtiyor`); kancasız savaşta etkisiz.
+  for (const h of castHooks) {
+    const r = h(applyEvents(state, events), caster, spellName, spellLevel, rng);
+    if (!r) continue;
+    events.push(...r.events);
+    if (r.countered) return { countered: true, events };
+  }
   return { countered: false, events };
 }
+
+/** Kuyruk P9: büyü yapılırken (Counterspell anı) kancaları; `countered` büyüyü boşa çıkarır. */
+export type CastHook = (state: BattleState, caster: Combatant, spellName: string, spellLevel: number, rng: Rng) => { countered: boolean; events: BattleEvent[] } | null;
+const castHooks: CastHook[] = [];
+export function registerCastHook(h: CastHook): void { if (!castHooks.includes(h)) castHooks.push(h); }
 
 // ---------------------------------------------------------------- düşme (Slow Fall, Feather Fall)
 
