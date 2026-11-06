@@ -690,9 +690,16 @@ function multiPlanCommand(state: BattleState, actor: Combatant, foes: Combatant[
     steps.push(a.area ? { attack: n, targetHex: f.pos as Offset } : { attack: n, targetId: f.id });
     if (!spec.extraTwice) break;
   }
-  if (!steps.length) return null;
-  const first = steps.find((x) => x.targetId)?.targetId ?? foes[0]!.id;
-  return { type: 'multiattack', actorId: actor.id, targetId: first, plan: steps };
+  // K59 (duman bulgusu): erişim denetimi görüşü (kar, duvar) ve çok altıgen erişimini bilmiyordu; motorun reddedeceği
+  // plan seçilmez: geçersiz adımlar sırayla düşülür (geçerli bir plan kalmazsa null).
+  let plan = steps;
+  const cmdOf = (p: MultiStep[]): Command => ({ type: 'multiattack', actorId: actor.id, targetId: p.find((x) => x.targetId)?.targetId ?? foes[0]!.id, plan: p });
+  while (plan.length && !tryCmd(state, actor, cmdOf(plan)).ok) {
+    const keep: MultiStep[] = [];
+    for (const st of plan) if (tryCmd(state, actor, cmdOf([...keep, st])).ok) keep.push(st);
+    plan = keep.length < plan.length ? keep : [];
+  }
+  return plan.length ? cmdOf(plan) : null;
 }
 
 /**
