@@ -893,6 +893,7 @@ export const en: Strings = {
       save: (ab: string, dc: number, p: string): string => `${ab.toUpperCase()} save DC ${dc} · success ${p}`, kill: (p: string): string => `drop ${p}`,
       friendly: (name: string, n: number): string => `Ally: ${name} takes ${n} damage`, self: (n: number): string => `Self ${n} damage`,
       moved: (h: string): string => `→ ${h}`, teleport: (h: string): string => `teleports → ${h}`, oa: (name: string, h: string, n: number): string => `Opportunity attack: ${name}${h ? ` (${h})` : ''} ≈${n}`,
+      moveRisk: (n: number, dmg: number): string => `${n} opportunity attack${n === 1 ? '' : 's'} · total ≈${dmg} damage`, moveGo: 'Move anyway',
       mystery: '? Something might happen here', reactions: 'Reaction', conditions: 'Condition', none: 'No visible effect', error: (e: string): string => `Not possible: ${e}`,
     },
     s2: { altitude: (ft: number): string => `Altitude ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `Drop ${item}`, pick: (item: string): string => `Pick up ${item}` },

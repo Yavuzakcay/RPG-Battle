@@ -113,6 +113,7 @@ const FxGround = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.
 const EndVideo = lazy(() => import('./ui/EndVideo'));
 // Kuyruk K58: hamle önizleme kartı (tembel).
 const PreviewCard = lazy(() => import('./ui/preview/PreviewCard'));
+import { movePreview, type MovePreview } from './ui/preview/movePreview';
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
@@ -491,6 +492,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [showHiddenZones, setShowHiddenZones] = useState(false);
   const [confirmWake, setConfirmWake] = useState(false);
   const [jumpAim, setJumpAim] = useState<Offset | null>(null);
+  // Kuyruk K58 G1: fırsat saldırısı riski olan yürüyüş önce önizlenir (dokun-önizle, dokun-onayla).
+  const [moveAim, setMoveAim] = useState<{ to: Offset; pv: MovePreview } | null>(null);
   const [puffs, setPuffs] = useState<Array<{ id: number; at: Offset; kind: 'leaves' | 'dust' }>>([]);
   const seenEvents = useRef(session.events.length);
   // Durum/zemin hasarı animasyonu: yalnızca canlı gelen yeni olaylar (kayıt yüklenince toplu oynamaz).
@@ -741,6 +744,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Düşmansız Serüven koridorunda (yeraltı nehri) keşif kendiliğinden açık.
   const exploreOn = (exploring && state.status === 'finished' && !!state.explore) || (state.status === 'active' && exploreReady(state));
   const explorerId = exploreOn ? (explorer && state.combatants[explorer]?.hp ? explorer : Object.values(state.combatants).find((c) => c.side === 'party' && !c.civilian && c.hp > 0 && c.pos)?.id ?? null) : null;
+  useEffect(() => setMoveAim(null), [state.round, actorId]);
   const movable = useMemo(() => (exploreOn && explorerId ? movableHexes(exploreView(state, explorerId), explorerId)
     : active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode, exploreOn, explorerId]);
   const onExit = props.onExit;
@@ -905,7 +909,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     setToasts((t) => [...t, item].slice(-3));
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
-  const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setAimPts([]); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
+  const reset = () => { setJumpAim(null); setMoveAim(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setAimPts([]); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
   const run = (cmd0: Command) => {
     const mm = mmPick.filter((x) => x !== 'overchannel' && x !== 'store');
     const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0
@@ -1040,7 +1044,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'attack' && gm.gate && gm.gate.state === 'closed' && sameHex(gm.gate.at, h)) { setGateAim(true); return; }
     if (mode !== 'idle' && mode !== 'jump') return;
     const key = hexKey(h);
-    if (movable.has(key)) run({ type: 'move', actorId, to: h });
+    if (movable.has(key)) {
+      const cmd: Command = { type: 'move', actorId, to: h };
+      if (pvSet.on && !exploreOn && !(moveAim && sameHex(moveAim.to, h))) {
+        const pv = movePreview(state, cmd, contextFor(state, actorId), disc, pvSet);
+        if (pv.ok && pv.opportunity.length) { setMoveAim({ to: h, pv }); return; }
+      }
+      setMoveAim(null);
+      run(cmd);
+    }
     else if (climbKeys.has(key)) run({ type: 'climb', actorId, to: h });
     else if (jumps.some((j) => sameHex(j, h))) {
       if (jumpRisks.has(key)) setJumpAim(h);
@@ -1130,9 +1142,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const dark = marks.dark.has(k) ? ' dark' : '';
     return baseHexClass(h, k) + dark;
   };
+  const oaNotch = new Set((moveAim?.pv.opportunity ?? []).flatMap((o) => (o.at ? [hexKey(o.at)] : [])));
   const shoveTo = mode === 'shove' && actor && targetId && state.combatants[targetId] ? shoveHex(actor, state.combatants[targetId] as Combatant, state) : null;
   const baseHexClass = (h: Offset, k: string) => {
     if (areaKeys.has(k) || (shoveTo && sameHex(shoveTo, h))) return 'hx area';
+    if (oaNotch.has(k)) return 'hx oa-notch';
+    if (moveAim && sameHex(moveAim.to, h)) return 'hx move aimed';
     if (targeting && pickHexes.has(k)) return 'hx pick';
     if (freeFireKeys.has(k)) return 'hx aimable';
     if (aimKeys) return aimKeys.has(k) ? 'hx aimable' : 'hx dim';
@@ -2098,6 +2113,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 <div className="choice">
                   <div><span>{B.shove.push}</span><small>{out && to ? (out.ok ? `${hexText(to)}: ${out.note}` : B.shove.cantPush(out.reason)) : B.shove.noPos}</small></div>
                   <button disabled={!out?.ok || !!economyBlock(state, actor, cmd('push'))} onClick={() => run(cmd('push'))}>{B.shove.pushBtn}</button>
+                  {pvSet.on && out?.ok && <Suspense fallback={null}><PreviewCard state={state} cmd={cmd('push')} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet} /></Suspense>}
                 </div>
                 <div className="choice">
                   <div><span>{B.shove.prone}</span><small>{target.conditions.includes('Prone') ? B.shove.alreadyProne : 'Prone'}</small></div>
@@ -2109,6 +2125,23 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <button disabled={!execute(state, grab, contextFor(state, actorId), () => 0.5).ok} onClick={() => run(grab)}>{B.shove.grappleBtn}</button>
                   </div>
                 )}
+              </div>
+            );
+          })()}
+
+          {active && actor && moveAim && mode === 'idle' && (() => {
+            const P = B.preview;
+            const oa = moveAim.pv.opportunity;
+            const size = { w: 260, h: 60 + oa.length * 18 };
+            const at = bubbleAt(px(moveAim.to), size, box, tokenR + 8);
+            return (
+              <div className="bubble warn" style={{ left: at.x, top: at.y, width: size.w }}>
+                <strong>{P.moveRisk(oa.length, Math.round(oa.reduce((s, o) => s + o.damage, 0)))}</strong>
+                {oa.map((o, i) => <small key={i}>{P.oa(state.combatants[o.attackerId]?.name ?? o.attackerId, o.at ? hexText(o.at) : '', Math.round(o.damage))}</small>)}
+                <div className="choice">
+                  <button className="ghost" onClick={() => setMoveAim(null)}>{t().common.cancel}</button>
+                  <button onClick={() => { const to = moveAim.to; setMoveAim(null); run({ type: 'move', actorId, to }); }}>{P.moveGo}</button>
+                </div>
               </div>
             );
           })()}

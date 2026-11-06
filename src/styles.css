@@ -74,6 +74,9 @@ input[type='number'] { width: 90px; }
 .hx { fill: transparent; stroke: rgba(255, 255, 255, 0.45); stroke-width: 1.2; cursor: pointer; }
 .hx.move { fill: rgba(40, 230, 90, 0.42); stroke: rgba(20, 120, 40, 0.9); stroke-width: 2; }
 .hx.move.far { fill: rgba(40, 230, 90, 0.22); }
+.hx.move.aimed { fill: rgba(255, 200, 60, 0.5); stroke: #d9a000; }
+/* Kuyruk K58 G1: fırsat saldırısının terk edilen altıgeni (kırmızı çentik). */
+.hx.oa-notch { fill: rgba(220, 40, 40, 0.38); stroke: #e02020; stroke-width: 3; stroke-dasharray: 6 4; }
 .hx.jump { fill: rgba(70, 140, 255, 0.5); stroke: rgba(20, 60, 160, 0.9); stroke-width: 2; }
 .hx.jump.risky { fill: rgba(255, 150, 30, 0.5); stroke: #ff7a1a; stroke-width: 3; }
 .bubble.warn { border: 2px solid #ff7a1a; }

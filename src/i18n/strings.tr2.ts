@@ -311,6 +311,7 @@ export const TR_EXTRA = {
       save: (ab: string, dc: number, p: string): string => `${ab.toUpperCase()} kurtulma DC ${dc} · başarı ${p}`, kill: (p: string): string => `düşürme ${p}`,
       friendly: (name: string, n: number): string => `Dost: ${name} ${n} hasar alır`, self: (n: number): string => `Kendine ${n} hasar`,
       moved: (h: string): string => `→ ${h}`, teleport: (h: string): string => `ışınlanır → ${h}`, oa: (name: string, h: string, n: number): string => `Fırsat saldırısı: ${name}${h ? ` (${h})` : ''} ≈${n}`,
+      moveRisk: (n: number, dmg: number): string => `${n} fırsat saldırısı · toplam ≈${dmg} hasar`, moveGo: 'Yine de yürü',
       mystery: '? Burada bir şey olabilir', reactions: 'Tepkime', conditions: 'Durum', none: 'Etkisiz görünüyor', error: (e: string): string => `Yapılamaz: ${e}`,
     },
     s2: { altitude: (ft: number): string => `İrtifa ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `${item} bırak`, pick: (item: string): string => `${item} al` },
