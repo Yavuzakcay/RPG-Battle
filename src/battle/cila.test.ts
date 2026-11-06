@@ -73,7 +73,9 @@ const attackMode = (evs: BattleEvent[]) => { const e = evs.find((x) => x.type ==
 
 describe('CILA 1: Haste, Slow, Ray of Enfeeblement', () => {
   it('Haste: eylemden sonra ek eylem; yalnızca tek saldırı (büyü yok), turda bir', () => {
+    // Kuyruk A6: sürüm 35'te ek eylem asıl eylemden önce de alınır (a6spells.test.ts); eski davranış sürüm 34'te.
     const r = arena({ spellNames: ['Haste', 'Fire Bolt'], attacksPerAction: 2 });
+    r.state.kuralSurumu = 34;
     r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Haste', targetIds: ['A'] });
     expect(r.try({ type: 'haste_action', actorId: 'A' })).toBeNull();
     r.do({ type: 'haste_action', actorId: 'A' });

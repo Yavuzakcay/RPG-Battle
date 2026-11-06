@@ -79,6 +79,7 @@ import { pickArea } from './battle/areaAttack';
 import { climbTargets } from './battle/climb';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
+import { mechanicsAt, sigmayanNote } from './battle/spellVersion';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
 import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
@@ -345,7 +346,11 @@ const spellById = (id: string): Spell | undefined => spells.find((s) => s.id ===
 /** Kuyruk 19: altıgen hedefli sürdürmede motorun kabul ettiği altıgenler (Tree Stride, Faithful Hound). */
 function hexFollowKeys(state: BattleState, actorId: string): string[] {
   const a = state.combatants[actorId];
-  if (!a || !state.map || (!strideSpellOf(state, a) && !movableZoneOf(state, a))) return [];
+  // Kuyruk A6: noktaya tekrar (Call Lightning, `repeat.point`).
+  const pointSpell = a?.concentration ? spells.find((x) => x.name === a.concentration?.spell) : undefined;
+  const point = !!pointSpell && !!mechanicsAt(state, pointSpell).repeat?.point;
+  const held = !!a?.effects?.some((e) => e.held);
+  if (!a || !state.map || (!strideSpellOf(state, a) && !movableZoneOf(state, a) && !point && !held)) return [];
   return hexTryKeys(state, actorId, (h) => ({ type: 'spell_followup', actorId, targetId: actorId, targetHex: h }));
 }
 /** Motorun kabul ettiği altıgenler (zar atmadan deneme). */
@@ -758,7 +763,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'help') {
       // Yardım: bitişik düşmanlar (motorda denenerek).
       return new Set(Object.values(state.combatants)
-        .filter((c) => c.side !== actor?.side && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .filter((c) => c.id !== actorId && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
     if (mode === 'steer' && actor && !steerableSummon(state, actor)?.summon?.hand) return new Set(ramTargets(state, actor).map((c) => c.id));
@@ -1119,7 +1124,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       attack: attackTargets(state, actorId).length,
       shove: tryOn((id) => ({ type: 'shove', actorId, targetId: id, effect: 'prone' })),
       help: tryOn((id) => ({ type: 'help', actorId, targetId: id })),
-      followup: actor.concentration ? tryOn((id) => ({ type: 'spell_followup', actorId, targetId: id }), true) : 0,
+      followup: actor.concentration || actor.effects?.some((e) => e.held) ? tryOn((id) => ({ type: 'spell_followup', actorId, targetId: id }), true) : 0,
     };
   }, [state, actorId, menuShown]);
   const firstStart = session.events[0]?.type === 'battle_started' ? session.events[0].state.combatants[actorId] : undefined;
@@ -1311,6 +1316,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : actor.concentration.spell === 'Spiritual Weapon' ? N.weapon : N.repeat,
         reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
         act: () => { reset(); const sp = spellOf(actor.concentration?.spell ?? ''); if (sp?.mechanics.telekinesis && (state.kuralSurumu ?? 1) >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(true); setMode('tk'); } else setMode('followup'); setMenuOpen(false); } }] : []),
+    // Kuyruk A6: elde tutulan büyü (Produce Flame: Magic eylemiyle fırlat).
+    ...(actor.effects?.some((e) => e.held) && !(actor.concentration && spellOf(actor.concentration.spell)?.mechanics.repeat)
+      ? [{ key: 'followup', label: N.repeat, reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
+        act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
     { key: 'end', label: N.end, act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   const items: Item[] = moveMenu ? moveItems : mainItems;
@@ -1898,7 +1907,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small title={why ?? undefined}>{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
+                      <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
                     </button>
                   );
                 })}

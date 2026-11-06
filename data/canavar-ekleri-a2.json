@@ -785,6 +785,7 @@
    },
    "effect": {
     "name": "Mummy Rot",
+    "curse": true,
     "noHeal": true,
     "sure": "rounds:14400"
    },
@@ -798,6 +799,7 @@
    },
    "effect": {
     "name": "Mummy Rot",
+    "curse": true,
     "noHeal": true,
     "sure": "rounds:14400"
    },

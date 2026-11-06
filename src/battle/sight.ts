@@ -44,6 +44,8 @@ export const registerKnowsWhere = (h: KnowsHook): void => { if (!KNOWS.includes(
 
 export function knowsWhere(state: Pick<BattleState, 'map' | 'kuralSurumu'> & Partial<Pick<BattleState, 'houseRules'>>, observer: Combatant, target: Combatant): boolean {
   if (KNOWS.some((h) => h(state, observer, target))) return true;
+  // Kuyruk A6 (Mind Spike): büyücü hedefin yerini her zaman bilir (gizlenemez).
+  if ((target.effects ?? []).some((e) => e.pinpointBy === observer.id)) return true;
   if (!globalRule(state, 'featuresK19') || !target.creatureType) return false;
   if (observer.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
   return (observer.effects ?? []).some((e) => e.senseTypes && e.senseTypes.types.includes(target.creatureType as string)
@@ -57,7 +59,9 @@ export function knowsWhere(state: Pick<BattleState, 'map' | 'kuralSurumu'> & Par
  */
 export function sightConditions(attacker: Combatant, target: Combatant, state?: BattleState, melee = true): { attackerConditions: string[]; targetConditions: string[]; proneWithin5?: boolean; grappledOther?: boolean } {
   let attackerConditions = revealed(attacker) || seesInvisible(target) || senseSees(state, target, attacker) ? drop(attacker.conditions) : attacker.conditions;
-  const targetConditions = revealed(target) || seesInvisible(attacker) || senseSees(state, attacker, target) ? drop(target.conditions) : target.conditions;
+  // Kuyruk A6 (Mind Spike): yerini bilen büyücüye görünmezlik işlemez.
+  const pinned = (target.effects ?? []).some((e) => e.pinpointBy === attacker.id);
+  const targetConditions = revealed(target) || pinned || seesInvisible(attacker) || senseSees(state, attacker, target) ? drop(target.conditions) : target.conditions;
   if (!state || !srdConditions(state)) return { attackerConditions, targetConditions };
   if (attackerConditions.includes('Frightened') && !frightenedNow(state, attacker)) attackerConditions = attackerConditions.filter((x) => x !== 'Frightened');
   // A1 (sürüm 29): yakalanan, yakalayanı dışındaki hedefe saldırıda dezavantajlı (yakalayan bilinmiyorsa uygulanmaz).

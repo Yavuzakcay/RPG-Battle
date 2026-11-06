@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { mechanicsAt } from './spellVersion';
 import { auraCoreOn, auraEnterEvents } from './auraCore';
 import { isAirborne } from './flight';
 import { swimsByTrait } from './flight';
@@ -22,7 +23,7 @@ import { getEnvironment, spells, type Spell } from '../data';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, isAutoCritical, isIncapacitated } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
-import { rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
+import { parseDice, rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
 import { globalRule } from './ruleControl';
 import { attackEffectEvents, riderConditionEvents } from './grapple';
 import { riderExtras, riderOf, riderReplace } from './riders';
@@ -225,7 +226,7 @@ export function weaponAttackEvents(
   const marks = markSources(actor, target, option);
   sources.push(...marks.sources);
   // Hedefin korumaları (Shining Smite: avantaj; Protection from Evil and Good: belli türlere dezavantaj).
-  sources.push(...wardSources(state, actor, target, { melee: !option.ranged }));
+  sources.push(...wardSources(state, actor, target, { melee: !option.ranged, str: option.spell ? false : option.ability ? option.ability === 'str' : !option.ranged }));
   // Kuyruk 19 (SRD Heavy): STR (yakın) ya da DEX (menzilli) 13'ten azsa Heavy silahla dezavantaj.
   if (option.heavyDis && globalRule(state, 'srdK19')) sources.push({ effect: 'disadvantage', reason: 'Heavy' });
   // Görev F: Steady Aim, Precise Hunter, Escape the Horde; Elusive avantajı düşürür.
@@ -645,7 +646,9 @@ export function weaponHexNear(state: BattleState, target: Combatant, from: Offse
  */
 export function executeFollowup(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
   const conc = actor.concentration;
-  const spell = spellOf(conc?.spell);
+  // Kuyruk A6: sürüme göre mekanik (`a4`/`a6`; Conjure Fey ruhu sürüm 35+ güç gibi).
+  const spell0 = spellOf(conc?.spell);
+  const spell = spell0 ? { ...spell0, mechanics: mechanicsAt(state, spell0) } : undefined;
   if (!conc || !spell) return fail('Sürdürülecek bir konsantrasyon büyüsü yok.');
   const target = state.combatants[targetId];
   if (!target) return fail('Hedef bulunamadı.');
@@ -664,8 +667,10 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
 
   if (spell.mechanics.lingering !== 'weapon') return fail(`${spell.name} bonus eylemle sürdürülmez.`);
   if (conc.turn === turnKey(state)) return fail(`${spell.name} sonraki turlarda sürdürülür.`);
-  if (state.map && conc.pos && target.pos && distance(conc.pos, target.pos) > 5) {
-    return fail(`Hedef güce uzak: güç 20 ft uçup yanındakine saldırır (${distance(conc.pos, target.pos)} altıgen).`);
+  // Kuyruk A6: gücün/ruhun yer değiştirme menzili veride (`lingerMoveFt`; Spiritual Weapon 20 ft, Conjure Fey 30 ft).
+  const reachHex = (spell.mechanics.lingerMoveFt ?? 20) / 5 + 1;
+  if (state.map && conc.pos && target.pos && distance(conc.pos, target.pos) > reachHex) {
+    return fail(`Hedef güce uzak: güç ${spell.mechanics.lingerMoveFt ?? 20} ft gidip yanındakine saldırır (${distance(conc.pos, target.pos)} altıgen).`);
   }
   const m = spell.mechanics;
   const env = getEnvironment(state.environmentId);
@@ -678,8 +683,9 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
     }),
   ];
   const mode = combineModes(sources);
-  const count = 1 + upcastDiceCount(m, conc.slotLevel - spell.level);
-  const expr = `${count}d8${actor.spellMod >= 0 ? '+' : ''}${actor.spellMod}`;
+  const d0 = parseDice(m.damage ?? '1d8');
+  const count = d0.count + upcastDiceCount(m, conc.slotLevel - spell.level);
+  const expr = `${count}d${d0.sides}${actor.spellMod >= 0 ? '+' : ''}${actor.spellMod}`;
   const res = resolveAttack(
     { attackBonus: actor.spellAttack ?? 0, targetAc: target.ac, mode, damage: expr, autoCritical: isAutoCritical(target.conditions, true), extra: attackDice(actor) },
     rollTag(rng, { by: actor.id }),
@@ -709,6 +715,10 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
       ...(hr?.reacted ? { reacted: hr.reacted } : {}), ...(res.extra ? { bonusDice: res.extra } : {}),
     },
   ];
+  // Kuyruk A6 (Conjure Fey): isabette süren durum (Frightened, büyücünün sonraki turunun başına dek).
+  const ah = m.afterHit;
+  if (hit && ah?.grants?.length && fx.hpAfter > 0) events.push({ type: 'effect_added', targetId: target.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id,
+    grants: ah.grants, untilSourceTurn: true, until: state.round + 1 } });
   // Hasar alanın tepkisi: güç büyücünün değil, uzaktaki büyücü 60 ft içindeyse Hellish Rebuke ona gider.
   events.push(...afterAttackReactions(applyEvents(state, events), actor.id, target.id, hr, { melee: true, damageType: m.damageType ?? '', dealt: total }, rng));
   return finish(state, events);

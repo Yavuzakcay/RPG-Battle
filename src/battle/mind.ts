@@ -45,6 +45,15 @@ export function conditionAura(state: BattleState, targetId: string, condition: s
     && (p.id === t.id || (!!p.pos && !!t.pos && distance(p.pos, t.pos) <= ((p.level ?? 0) >= 18 ? 6 : 2))));
 }
 
+/**
+ * Kuyruk A6 (sürüm 35; Protection from Evil and Good): korunan, korunulan türden kaynağın zaten verdiği Charmed/Frightened
+ * etkisine karşı yeni save'lerde avantajlı.
+ */
+export function pfegRepeatAdv(state: BattleState, targetId: string, sourceId: string | undefined, conditions: string[]): boolean {
+  if (ruleVersion(state) < 35) return false;
+  return conditions.some((x) => (x === 'Charmed' || x === 'Frightened') && wardedFrom(state, targetId, sourceId, x));
+}
+
 export function wardedFrom(state: BattleState, targetId: string, sourceId: string | undefined, condition: string): boolean {
   if (condition !== 'Charmed' && condition !== 'Frightened') return false;
   if (conditionAura(state, targetId, condition)) return true;

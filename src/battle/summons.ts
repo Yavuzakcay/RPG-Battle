@@ -11,6 +11,7 @@ import { CHAIN_FORMS, chainOn } from './chainPact';
 import { HAND_EFFECTS, handEffectEvents, type HandEffect } from './arcaneHand';
 import { registerSummonRider } from './riders';
 import { globalRule } from './ruleControl';
+import { ruleVersion } from './ruleVersion';
 import { castBarrier } from './castBarrier';
 import summonData from '../../data/summons.json';
 import { getMonster, spells, type Monster, type MonsterAttack, type Spell } from '../data';
@@ -109,6 +110,10 @@ export interface SummonDef {
   ownerBonus?: { moveFt: number; ram?: boolean };
   /** Kuyruk 19: bonus eylemle emir (Animate Objects; emirsiz turda Kaçın). */
   commandBonus?: boolean;
+  /** Kuyruk A6 (sürüm 35; Animate Dead): bonus eylemle emir, emir yoksa Kaçın; emir menzili ft. */
+  commandBonusV35?: number;
+  /** Kuyruk A6 (sürüm 35; Conjure Animals): sahibiyle birlikte taşınır (yürüdüğü tur bonus eylemsiz) ve STR save avantajı. */
+  withOwnerV35?: boolean;
   /** Kuyruk 19: Arcane Hand: sahibinin bonus eylemiyle 60 ft taşınır ve etki seçer, yer kaplamaz. */
   handK19?: boolean;
   /** Kuyruk 19: boyut karışımı (Animate Objects: Large 2, Huge 3 sayılır; seçim `form` medium|large|huge). */
@@ -311,8 +316,10 @@ function sizeMixOf(budget: number, choice: string | undefined): Array<string | u
 
 /** Kuyruk 19: Animate Objects: bonus eylemle emir (bu tur çağrılanlar emirle oynar; emirsiz turda Kaçın). */
 export function executeCommandSummons(state: BattleState, actor: Combatant): CommandResult {
-  if (!globalRule(state, 'spellsK19')) return fail('Bu kural sürümünde yok.');
-  const mine = Object.values(state.combatants).filter((c) => c.summon?.by === actor.id && c.summon.commandBonus && !c.summon.gone && c.hp > 0);
+  if (!globalRule(state, 'spellsK19') && ruleVersion(state) < 35) return fail('Bu kural sürümünde yok.');
+  // Kuyruk A6 (Animate Dead): emir menzili (60 ft).
+  const near = (c: Combatant) => !c.summon?.commandFt || !c.pos || !actor.pos || distance(c.pos, actor.pos) * 5 <= c.summon.commandFt;
+  const mine = Object.values(state.combatants).filter((c) => c.summon?.by === actor.id && c.summon.commandBonus && !c.summon.gone && c.hp > 0 && near(c));
   if (!mine.length) return fail('Emir verilecek yaratık yok.');
   if (actor.economy.summonCommand) return fail('Bu tur zaten emir verdin.');
   return finish(state, [{ type: 'summons_commanded', actorId: actor.id }]);
@@ -342,6 +349,8 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     ...(def.intangible ? { intangible: true } : {}),
     ...(def.ownerBonus ? { ownerBonus: def.ownerBonus } : {}),
     ...(def.commandBonus && k19 ? { commandBonus: true } : {}),
+    ...(def.commandBonusV35 && ruleVersion(current) >= 35 ? { commandBonus: true, commandFt: def.commandBonusV35 } : {}),
+    ...(def.withOwnerV35 && ruleVersion(current) >= 35 ? { withOwner: true } : {}),
     ...(def.handK19 && k19 ? { hand: true, noSpace: true, ownerBonus: { moveFt: 60 } } : {}),
   };
   const combatant: Combatant = {

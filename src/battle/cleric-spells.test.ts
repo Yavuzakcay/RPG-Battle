@@ -46,7 +46,9 @@ function arena(spellNames: string[], b: Partial<Combatant> = {}) {
 
 describe('Sanctuary', () => {
   it('düşman saldırısından önce WIS save; başarısızsa saldırı boşa gider (hasar yok); başarılıysa saldırır', () => {
+    // Kuyruk A6: sürüm 35'te başarısız save'de saldırı harcanmaz (yeni hedef; a6spells.test.ts); eski davranış sürüm 34'te.
     const r = arena(['Sanctuary'], { saves: LOW });
+    r.state.kuralSurumu = 34;
     r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Sanctuary', targetIds: ['A'] });
     expect(r.c('A').effects?.[0]).toMatchObject({ sanctuary: { dc: 15 } });
     r.to('B');

@@ -77,7 +77,8 @@
       "count": {
         "base": 1,
         "perLevel": 2
-      }
+      },
+      "commandBonusV35": 60
     },
     "flaming-sphere": {
       "srd": "spells:flaming-sphere",
@@ -102,7 +103,8 @@
       "zoneRadius": 2,
       "ownerBonus": {
         "moveFt": 30
-      }
+      },
+      "withOwnerV35": true
     },
     "giant-insect": {
       "srd": "spells:giant-insect",

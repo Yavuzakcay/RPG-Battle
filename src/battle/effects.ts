@@ -15,7 +15,7 @@ import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { applyEvents } from './reduce';
-import { compelEvents } from './mind';
+import { compelEvents, pfegRepeatAdv } from './mind';
 import { canSee } from './maprules';
 import { lineOfFire } from './cover';
 import { strikeApi } from './reactions';
@@ -32,7 +32,8 @@ function ongoingEvents(c: Combatant, e: ActiveEffect, rng: Rng): BattleEvent[] {
   const fx = damageEffects(c, adj.amount, o.type, false, rng);
   const after = { ...c, hp: fx.hpAfter };
   let save: Extract<BattleEvent, { type: 'effect_tick' }>['save'];
-  if (fx.hpAfter > 0) {
+  // Kuyruk A6 (Ensnaring Strike, `noSave`): tur başı save yok, kurtulma eylemle Athletics (`escapeCheck`).
+  if (fx.hpAfter > 0 && !o.noSave) {
     const r = resolveSave({ extra: saveDice(after, o.save), modifier: after.saves[o.save], dc: o.dc, mode: saveMode('normal', after, o.save) }, rollTag(rng, { by: c.id }));
     save = { ability: o.save, dc: o.dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { extra: r.extra } : {}) };
   }
@@ -171,7 +172,9 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       continue;
     } else if (e.repeatSave) {
       const { ability, dc } = e.repeatSave;
-      const r = resolveSave({ extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode('normal', c, ability) }, rollTag(rng, { by: c.id }));
+      // Kuyruk A6: Protection from Evil and Good: korunulan türden kaynağın büyüsüne/korkusuna yeni save avantajlı.
+      const pfeg = pfegRepeatAdv(current, c.id, e.sourceId, [...(e.grants ?? []), ...(e.charm ? ['Charmed'] : [])]);
+      const r = resolveSave({ extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, ability) }, rollTag(rng, { by: c.id }));
       // Kuyruk 19: başarısız save'de yinelenen hasar (Phantasmal Killer).
       const fd = !r.success ? e.repeatSave.failDamage : undefined;
       const d = fd ? rollDice(fd.dice, rollTag(rng, { kind: 'damage', by: e.sourceId })) : null;
@@ -189,10 +192,12 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       } else if (r.success) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
     } else if (e.blink) {
       // Görev WIZARD: Blink: tur sonunda d20; 11+ ise sonraki turunun başına dek Ethereal (hedef alınamaz, etkilenmez).
-      const d = rollDie(20, rollTag(rng, { by: id, kind: 'check' }));
-      evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: `${e.name} (d20 ${d})`, damageRolls: [], appliedDamage: 0, damageType: '',
+      // Kuyruk A6 (sürüm 35, `blink: 'd6'`): SRD 5.2.1 zarı d6, 4–6 (olasılık aynı).
+      const six = e.blink === 'd6';
+      const d = rollDie(six ? 6 : 20, rollTag(rng, { by: id, kind: 'check' }));
+      evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: `${e.name} (${six ? 'd6' : 'd20'} ${d})`, damageRolls: [], appliedDamage: 0, damageType: '',
         targetHpAfter: c.hp, effects: [] });
-      if (d >= 11) evs.push({ type: 'effect_added', targetId: id, effect: { id: 'blink:ethereal', name: 'Blink: Ethereal', sourceId: id, ethereal: true, icon: '✧' } });
+      if (d >= (six ? 4 : 11)) evs.push({ type: 'effect_added', targetId: id, effect: { id: 'blink:ethereal', name: 'Blink: Ethereal', sourceId: id, ethereal: true, icon: '✧' } });
     }
     events.push(...evs);
     current = applyEvents(current, evs);

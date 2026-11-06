@@ -36,6 +36,7 @@ import { pickArea } from './areaAttack';
 import { turnKey } from './economy';
 import { bodyAt } from './body';
 import { applyEvents } from './reduce';
+import { pushAwayEvents } from './forced';
 import { concentrationEvent, spendSlot } from './slots';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
 
@@ -170,6 +171,9 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
     targetHpAfter: fx.hpAfter, effects: [...fx.effects, ...lose], conditionsAdded: plain, ...(save.extra ? { bonusDice: save.extra } : {}),
   });
   events.push(...budgetEvents(state, z, spec, adj.amount));
+  // Kuyruk A6 (Gust of Wind): başarısız save'de büyücüden uzağa itme.
+  const caster = state.combatants[z.casterId];
+  if (failed && spec.push && caster?.pos && fx.hpAfter > 0) events.push(...pushAwayEvents(applyEvents(state, events), caster.pos, victim.id, spec.push, z.casterId, rng));
   // Büyü sürdükçe (Entangle, Web: tur sonu kurtulma save'i) ya da bu turun sonuna dek (Stinking Cloud) süren durumlar.
   if (failed && spec.hold && spec.conditions?.length && fx.hpAfter > 0) {
     const spell = spellById(z.spellId);
@@ -350,6 +354,9 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
       if (spec.difficultFor === 'enemies' && mover.side === z.side) continue;
       if ((web && isWebZone(z)) || (ice && z.surface === 'ice')) continue;
       if (spec.difficult && !flying) cost = Math.max(cost, spec.difficult);
+      // Kuyruk A6 (Gust of Wind): hatta büyücüye (başlangıç yerinden) yaklaşan adım iki kat.
+      const src = spec.costToward ? state.combatants[z.casterId]?.pos : undefined;
+      if (src && mover.pos && mover.id !== z.casterId && distance(h, src) < distance(mover.pos, src)) cost = Math.max(cost, spec.costToward as number);
     }
     return cost;
   };

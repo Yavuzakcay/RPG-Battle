@@ -227,7 +227,7 @@ function withWeaponOverride(actor: Combatant, option: AttackOption): AttackOptio
   const w = e?.weaponOverride;
   if (!w) return option;
   const dmg = `${w.die}${w.mod === 0 ? '' : w.mod > 0 ? `+${w.mod}` : w.mod}`;
-  return { ...option, attackBonus: w.attack, damage: dmg, weaponDamage: w.die, abilityMod: w.mod, ...(w.force ? { altDamageType: 'force' } : {}) };
+  return { ...option, attackBonus: w.attack, damage: dmg, weaponDamage: w.die, abilityMod: w.mod, ...(w.force ? { altDamageType: 'force' } : {}), ...(w.type ? { damageType: w.type } : {}) };
 }
 
 /** Radiant (Sacred Weapon) ya da Force (Shillelagh) seçeneği: hedef silahın türüne dirençli ya da bağışıksa ve seçeneğe değilse o tür. */
@@ -283,7 +283,7 @@ export function effectiveAc(state: BattleState, target: Combatant): number {
 }
 
 /** Hedefe yapılan saldırıya koruma etkilerinden gelen avantaj/dezavantaj. */
-export function wardSources(state: BattleState, attacker: Combatant, target: Combatant, opts: { melee?: boolean } = {}): ModeSource[] {
+export function wardSources(state: BattleState, attacker: Combatant, target: Combatant, opts: { melee?: boolean; str?: boolean } = {}): ModeSource[] {
   const out: ModeSource[] = [];
   // Görev B1: süren etkiler. Hedefe saldırı dezavantajlı (Blur); saldıranın saldırısı dezavantajlı (Heat Metal,
   // Ray of Enfeeblement: başarısız save'de yalnızca STR tabanlı = yakın dövüş, başarılı save'de bir sonraki saldırı).
@@ -293,7 +293,8 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   for (const e of target.effects ?? []) if (e.attackedAdv || (e.attackedAdvBy && e.attackedAdvBy === attacker.id)) out.push({ effect: 'advantage', reason: e.name });
   // Kuyruk 19: Grappler feat'i (Attack Advantage): yakaladığı yaratığa saldırı avantajlı.
   if (attacker.traits?.includes('grappler') && target.grapple?.by === attacker.id && globalRule(state, 'featuresK19')) out.push({ effect: 'advantage', reason: 'Grappler' });
-  for (const e of attacker.effects ?? []) if (e.attackDis && (!e.attackDis.melee || opts.melee)) out.push({ effect: 'disadvantage', reason: e.name });
+  // Kuyruk A6 (sürüm 35, `str`): yalnızca STR tabanlı saldırı (Ray of Enfeeblement: Finesse'te DEX seçilmişse ve büyüde değil).
+  for (const e of attacker.effects ?? []) if (e.attackDis && (e.attackDis.str ? (opts.str ?? opts.melee) : (!e.attackDis.melee || opts.melee))) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev CLERIC: Bestow Curse: lanetleyene saldırılar dezavantajlı.
   for (const e of attacker.effects ?? []) if (e.attackDisVs === target.id) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev P7: meydan okuma: meydan okuyan dışındakine saldırı dezavantajlı.

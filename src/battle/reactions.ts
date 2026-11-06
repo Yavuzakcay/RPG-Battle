@@ -13,6 +13,7 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
+import { spells } from '../data';
 import { chainResist } from './chainPact';
 import { gap } from './body';
 import { damageProfile } from './common';
@@ -105,6 +106,8 @@ function usable(c: Combatant, spec: ReactionSpec, minSlot = 1): boolean {
   if (spec.recharge && c.reactionSpent?.includes(spec.id)) return false;
   if (spec.resource && (c.resources[spec.resource] ?? 0) <= 0) return false;
   if (spec.spell && !spec.pool && !resourceOf(c, spec) && slotLevels(c, spec, minSlot).length === 0) return false;
+  // Kuyruk A6 (sürüm 35): Silence içinde sözlü (V) bileşenli tepki büyüsü yapılamaz (Shield, Hellish Rebuke…).
+  if (spec.spell && c.silenced && !spells.find((x) => x.name === spec.spell || x.srd === spec.spell || x.id === spec.spell)?.noVerbal) return false;
   return true;
 }
 

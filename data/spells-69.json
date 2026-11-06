@@ -130,7 +130,31 @@
     "dice": "2d12",
     "applied": true
    },
-   "approx": "Fey ruhu ayrı yaratık değil: yapımda ve sonraki turlarda bonus eylemle bir düşmana büyü saldırısı (3d12 Psychic) ve WIS save ya da Frightened"
+   "approx": "Fey ruhu ayrı yaratık değil: yapımda ve sonraki turlarda bonus eylemle bir düşmana büyü saldırısı (3d12 Psychic) ve WIS save ya da Frightened",
+   "a6": {
+    "kind": "attack",
+    "damage": "3d12",
+    "damageType": "psychic",
+    "addCastingMod": true,
+    "lingering": "weapon",
+    "lingerMoveFt": 30,
+    "afterHit": {
+     "grants": [
+      "Frightened"
+     ],
+     "untilSourceTurn": true
+    },
+    "save": null,
+    "conditions": null,
+    "spellAttackInstead": null,
+    "repeat": null,
+    "upcast": {
+     "dice": "2d12",
+     "applied": true
+    },
+    "kapsamDisi": "Ruhun Fey görünüşü yalnızca görsel.",
+    "approx": null
+   }
   },
   "school": "Conjuration",
   "srdPage": 118
@@ -558,7 +582,29 @@
     "needsHearing": true,
     "icon": "🗣"
    },
-   "approx": "Öneri savaşta \"dur\" olarak"
+   "approx": "Öneri savaşta \"dur\" olarak",
+   "a6": {
+    "effect": {
+     "targets": 12,
+     "side": "enemy",
+     "rounds": 14400,
+     "command": [
+      "halt",
+      "flee"
+     ],
+     "charm": true,
+     "needsHearing": true,
+     "icon": "🗣",
+     "choices": [
+      "halt",
+      "flee"
+     ],
+     "commandPersist": true,
+     "breakOnDamage": "casterSide"
+    },
+    "sigmayan": "Serbest metinli öneri (en çok 25 sözcük) savaşta iki seçenekle: savaşı bırak (her tur durur) ya da uzaklaş; başka öneri Game Master'da.",
+    "approx": null
+   }
   },
   "school": "Enchantment",
   "srdPage": 148
@@ -1142,7 +1188,18 @@
     ],
     "icon": "🌀"
    },
-   "approx": "İstemsiz hedef: melee büyü saldırısı + CHA save; başka düzleme gider (savaş boyunca sürgün)"
+   "approx": "İstemsiz hedef: melee büyü saldırısı + CHA save; başka düzleme gider (savaş boyunca sürgün)",
+   "a6": {
+    "kind": "utility",
+    "offCombat": true,
+    "spellAttack": null,
+    "save": null,
+    "effect": null,
+    "gmNote": "Plane Shift: büyücü ve el ele tutuşan en çok sekiz istekli yaratık başka bir düzleme gider (savaştan ayrılır). Game Master savaşı buna göre bitirir.",
+    "gmNoteEn": "Plane Shift: the caster and up to eight willing creatures holding hands travel to another plane (they leave the battle). The Game Master ends the battle accordingly.",
+    "sigmayan": "Düzlem yolculuğu savaş modelinde yok: SRD 5.2.1'de istemsiz hedefe sürgün kolu yok, büyü yalnızca isteklileri götürür; oyunda yapılınca Game Master notu düşer.",
+    "approx": null
+   }
   },
   "school": "Conjuration",
   "srdPage": 153

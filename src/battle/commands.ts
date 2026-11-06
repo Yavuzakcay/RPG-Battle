@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { distance } from '../rules/hex';
 import { exhaustionGain } from './deathWard';
 import { commandEndHookEvents, turnStartHookEvents } from './turnHooks';
 import { auraTriggerEvents } from './auraCore';
@@ -59,7 +60,8 @@ import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
 import { casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
-import { bondEvents, sanctuaryCheck } from './wards';
+import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
+import { heldFollow, mechanicsAt } from './spellVersion';
 import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
 import { superiorInspirationEvents } from './bard';
@@ -159,6 +161,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   // Görev CLERIC: Sanctuary: korunanı hedef alan saldıran önce WIS save; başarısızsa saldırı/büyü boşa gider.
   const sanct = spent ? sanctuaryCheck(state, cmd, rng) : null;
+  if (sanct?.refused) return fail(sanct.refused);
+  // Kuyruk A6 (sürüm 35): başarısız Sanctuary save'inde eylem/saldırı harcanmaz (yeni hedef seçilir).
+  if (sanct?.blocked && sanct.events.some((e) => e.type === 'sanctuary_save' && e.retarget)) spent = null;
   const result = sanct?.blocked ? finish(state, sanct.events) : executeCommand(state, cmd, ctx, rng);
   if (!result.ok) return result;
   let { state: next, events } = result;
@@ -167,6 +172,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     next = applyEvents(next, [spent]);
     events = [...events, spent];
   }
+  // Kuyruk A6 (sürüm 35): Bestow Curse hasar seçeneği save'li büyü hasarında da.
+  const cursed = curseSpellEvents(next, events, rng);
+  if (cursed.length) { next = applyEvents(next, cursed); events = [...events, ...cursed]; }
   // Uyuyan ejderha: komut onu uyandırdı mı (hasar, yanına girme, gürültü).
   const woke = dragonWakeAfter(state, next, events, cmd);
   if (woke) {
@@ -582,7 +590,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       // Kuyruk 19: Animate Objects: sahibi bonus eylemle emretmediyse nesne yalnızca Kaçın yapar (turu geçer).
       const nx = current.combatants[next.id];
       const ownerOf = nx?.summon?.commandBonus ? current.combatants[nx.summon.by] : undefined;
-      if (nx && ownerOf && !ownerOf.economy.summonCommand && nx.hp > 0 && globalRule(current, 'spellsK19')) {
+      const outOfRange = !!nx?.summon?.commandFt && !!ownerOf?.pos && !!nx.pos && distance(ownerOf.pos, nx.pos) * 5 > nx.summon.commandFt;
+      if (nx && ownerOf && (!ownerOf.economy.summonCommand || outOfRange) && nx.hp > 0 && (globalRule(current, 'spellsK19') || !!nx.summon?.commandFt)) {
         const dodge = [timedCondition(current, nx.id, { condition: DODGE, owner: 'target', end: 'turnStart' }, nx.id, 'Kaçın (emir yok)')];
         events.push(...dodge);
         current = applyEvents(current, dodge);
@@ -652,7 +661,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (cmd.targetHex && strideSpellOf(state, actor)) return executeStride(state, actor, cmd.targetHex);
     // Kuyruk 19: Faithful Hound taşıma (hedef altıgen).
     if (cmd.targetHex && movableZoneOf(state, actor)) return executeZoneShift(state, actor, cmd.targetHex);
-    if (spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat) return executeRepeat(state, actor, cmd.targetId, rng, cmd.choice);
+    // Kuyruk A6: elde tutulan büyü (Produce Flame) ve sürüme göre tekrar alanları; noktaya tekrar (Call Lightning).
+    const fsp = spells.find((x) => x.name === (heldFollow(state, actor)?.spell ?? actor.concentration?.spell));
+    if (fsp && mechanicsAt(state, fsp).repeat) return executeRepeat(state, actor, cmd.targetId, rng, cmd.choice, cmd.targetHex);
     return executeFollowup(state, actor, cmd.targetId, rng);
   }
 
@@ -689,12 +700,14 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     // CILA (Haste): eylemini kullandıktan sonra turda bir ek eylem.
     if (!actor.effects?.some((e) => e.extraAction)) return fail('Haste etkisi yok.');
     if (actor.economy.hasteUsed) return fail('Haste\'in ek eylemi bu tur kullanıldı.');
+    // Kuyruk A6 (sürüm 35): ek eylem asıl eylemden önce de alınabilir (SRD "an additional action on each of its turns").
+    if (ruleVersion(state) >= 35 && !actor.economy.action && actor.economy.attacksLeft === 0) return finish(state, [{ type: 'haste_action', actorId: actor.id, first: true }]);
     if (!actor.economy.action || actor.economy.attacksLeft > 0) return fail('Önce eylemini kullanmalısın.');
     return finish(state, [{ type: 'haste_action', actorId: actor.id }]);
   }
   if (cmd.type === 'attack_gate') return executeAttackGate(state, actor, cmd.at, cmd.option, rng);
   if (cmd.type === 'dodge') return executeDodge(state, actor);
-  if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId);
+  if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId, rng);
   if (cmd.type === 'distract') return executeDistract(state, actor, cmd.at);
   if (cmd.type === 'use_item') return executeUseItem(state, actor, cmd.itemId, cmd.targetId, rng);
   if (cmd.type === 'moral_rally') return executeRally(state, cmd);

@@ -34,8 +34,9 @@ const roving = (c: Pick<Combatant, 'traits' | 'heavyArmor'> & { bonusStrike?: un
     || (!!c.traits?.includes('acrobatic-movement') && !!c.bonusStrike));
 export const climbs = (c: Pick<Combatant, 'effects' | 'traits'> & { heavyArmor?: boolean; bonusStrike?: unknown }, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean =>
   !!c.traits?.includes('climber') || !!c.effects?.some((e) => e.climb) || roving({ traits: c.traits, heavyArmor: !!c.heavyArmor, bonusStrike: c.bonusStrike }, state);
-export const swimsByTrait = (c: Pick<Combatant, 'traits'> & { heavyArmor?: boolean }, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean =>
-  roving({ traits: c.traits, heavyArmor: !!c.heavyArmor }, state);
+export const swimsByTrait = (c: Pick<Combatant, 'traits'> & { heavyArmor?: boolean; effects?: Combatant['effects'] }, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean =>
+  // Kuyruk A6 (Alter Self, Aquatic Adaptation): etkiden yüzme hızı.
+  !!c.effects?.some((e) => e.swim) || roving({ traits: c.traits, heavyArmor: !!c.heavyArmor }, state);
 
 /** Jump büyüsünün zıplama menzili (ft; etkilerden en büyüğü) ya da 0. */
 export const spellJumpFt = (c: Pick<Combatant, 'effects'>): number => Math.max(0, ...(c.effects ?? []).map((e) => e.jumpFt ?? 0));

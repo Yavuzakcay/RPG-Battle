@@ -12,7 +12,7 @@ import { applyFloorChange } from './floorState';
 import { globalRule } from './ruleControl';
 import { applyPoolEvent, trackPools } from './hpPool';
 import { isIncapacitated, speedZero } from '../rules/conditions';
-import { directionTo, isInside, neighbors, type Offset } from '../rules/hex';
+import { directionTo, distance, isInside, neighbors, type Offset } from '../rules/hex';
 import { terrainOf } from '../map/terrain';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
@@ -342,6 +342,13 @@ function dropOnDamage(before: BattleState, after: BattleState, event: BattleEven
     const was = before.combatants[c.id];
     if (!was || c.hp >= was.hp) continue;
     if (c.effects?.some(breaks)) next = dropEffects(next, c.id, breaks);
+    // Kuyruk A6 (sürüm 35): kayıtsızlık (Calm Emotions) kendisi ya da yanındaki (30 ft, görüş: harita yaklaşığı) dostu
+    // hasar alınca biter.
+    for (const o of Object.values(next.combatants)) {
+      if (!o.effects?.some((e) => e.indifferentTo)) continue;
+      const near = o.id === c.id || (o.side === c.side && !!o.pos && !!c.pos && distance(o.pos, c.pos) <= 6);
+      if (near) next = dropEffects(next, o.id, (e) => !!e.indifferentTo);
+    }
     // Görev WIZARD (Sleep): hasar alan uyanır (hasarla biten süreli durumlar).
     const cur = next.combatants[c.id] as Combatant;
     const woke = (cur.conditionTimers ?? []).filter((t) => t.wakeOnDamage);
@@ -351,6 +358,11 @@ function dropOnDamage(before: BattleState, after: BattleState, event: BattleEven
         conditions: cur.conditions.filter((x) => !woke.some((t) => t.condition === x)),
       });
     }
+  }
+  // Kuyruk A6 (sürüm 35): hasar veren (Invisibility "deals damage") etkisi biter.
+  const dealer = source ? next.combatants[source] : undefined;
+  if (dealer?.effects?.some((e) => e.breakOnDamageDealt) && Object.values(after.combatants).some((c) => c.hp < (before.combatants[c.id]?.hp ?? c.hp))) {
+    next = dropEffects(next, dealer.id, (e) => !!e.breakOnDamageDealt);
   }
   return next;
 }
@@ -587,11 +599,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.stunUsed) economy.stunUsed = true;
       if (event.pactOnly) economy.pactOnly = true;
       if (event.extraBonus) economy.bonusExtraUsed = (economy.bonusExtraUsed ?? 0) + 1;
+      if (event.packMoved) economy.packMoved = true;
       if (event.fleet) economy.fleetUsed = true;
       if (event.apotheosis) economy.apotheosisUsed = true;
       if (event.loadingFired) economy.loadingFired = true;
       // Yeni eylem (Attack): önceki eylemin Loading atışı sayılmaz.
       if (event.kind === 'action' && !event.loadingFired) economy.loadingFired = false;
+      // Kuyruk A6: önce alınan Haste eylemi kullanıldı: asıl eylem geri gelir (kısıtsız).
+      if (event.kind === 'action' && economy.hasteFirst) { economy.action = false; economy.attacksLeft = 0; economy.hasted = false; economy.hasteFirst = false; }
       return withCombatant(state, event.actorId, { economy });
     }
     case 'summon_steered': {
@@ -603,6 +618,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       // Kuyruk K54c: Ferman'ın ek eylemi bir kez.
       const once = (c.effects ?? []).some((e) => e.extraActionOnce);
+      // Kuyruk A6: önce alınan ek eylem (asıl eylem sonra geri gelir; `hasteFirst`).
+      if (event.first) return withCombatant(state, c.id, { economy: { ...c.economy, hasted: true, hasteUsed: true, hasteFirst: true },
+        ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
       return withCombatant(state, c.id, { economy: { ...c.economy, action: false, attacksLeft: 0, hasted: true, hasteUsed: true },
         ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
     }
@@ -650,7 +668,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       return withCombatant(state, c.id, { maxHp: c.maxHp + event.amount, hp: c.hp + event.amount });
     }
-    case 'sanctuary_save':
+    case 'sanctuary_save': {
+      // Kuyruk A6 (sürüm 35): başarısızsa saldıran bu turda o korunanı yeniden hedefleyemez (`retarget`: tur anahtarı).
+      const a = state.combatants[event.actorId];
+      if (!event.retarget || event.success || !a) return state;
+      const prev = a.sanctuaryLost?.turn === event.retarget ? a.sanctuaryLost.ids : [];
+      return withCombatant(state, a.id, { sanctuaryLost: { turn: event.retarget, ids: [...prev, event.targetId] } });
+    }
     case 'curse_save':
       return state;
     case 'bond_damage':

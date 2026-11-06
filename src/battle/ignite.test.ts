@@ -84,7 +84,8 @@ describe('Kuyruk 30 D3: serbest altıgen hedefleme', () => {
     const s = field();
     const far = { ...s, combatants: { ...s.combatants, A: { ...(s.combatants.A as Combatant), pos: o(0, 0) } } };
     expect(execute(far, { type: 'cast_spell', actorId: 'A', spellName: 'Ray of Frost', targetHex: o(14, 6) }, P1, high).ok).toBe(false);
-    const fb = execute({ ...far, combatants: { ...far.combatants, A: { ...(far.combatants.A as Combatant), spellNames: ['Produce Flame'] } } },
+    // Kuyruk A6: sürüm 35'te Produce Flame önce elde alev yaratır (fırlatma Magic eylemiyle); eski tek adım sürüm 34'te.
+    const fb = execute({ ...far, kuralSurumu: 34, combatants: { ...far.combatants, A: { ...(far.combatants.A as Combatant), spellNames: ['Produce Flame'] } } },
       { type: 'cast_spell', actorId: 'A', spellName: 'Produce Flame', targetHex: o(14, 6) }, P1, high);
     expect(fb.ok ? '' : fb.error).toMatch(/menzil/);
   });

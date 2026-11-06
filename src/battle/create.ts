@@ -283,6 +283,8 @@ function combatantFromSheetBase(
     hidden: null,
     stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
     heavyArmor: armor.find((a) => a.name === sheet.armorName)?.type === 'heavy',
+    // Kuyruk A6: zırh giyiyor (Mage Armor zırhlıya yapılamaz).
+    ...((armor.find((a) => a.name === sheet.armorName)?.type ?? 'none') !== 'none' ? { armored: true } : {}),
     // Devil's Sight (Görev WARLOCK): 120 ft (büyülü karanlık dahil; `maprules.canSee`).
     darkvision: inv.traits.includes('devils-sight') ? Math.max(120, raceDarkvision(sheet)) : raceDarkvision(sheet),
     civilian: false,

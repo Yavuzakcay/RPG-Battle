@@ -217,7 +217,7 @@ export interface SpellMechanics {
   /** Süren etki (Görev R2): hedeflere konan zar eklentisi, hasar azaltma, geçici HP, tur atlatma (`EffectSpec`). */
   effect?: EffectSpec;
   /** Smite'ın hedefte bıraktığı süregelen hasar (Searing Smite: her tur başı zar, ardından save; başarıda biter). */
-  ongoing?: { dice: string; type: string; save: Ability; rounds: number; icon?: string };
+  ongoing?: { dice: string; type: string; save: Ability; rounds: number; icon?: string; escape?: boolean };
   /** Tepki büyüsü (Görev R1): tetik ve etkisi; `castingTime: reaction` olanlar motorun tetiğiyle yapılır. */
   reaction?: ReactionMechanic;
   /** Oyunda çalışmıyorsa nedeni (oluşturucu ve savaş "çalışmıyor" gösterir). */
@@ -232,7 +232,7 @@ export interface SpellMechanics {
    * Görev B1: isabetten (attack) ya da hasardan (auto) sonra hedefte kalan etki: gecikmeli hasar (Acid Arrow; hedefin
    * sonraki turunun sonunda), ya da `save` başarısızsa saldırıları dezavantajlı (Heat Metal; büyücünün sonraki turuna dek).
    */
-  afterHit?: { save?: Ability; attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; delayed?: { dice: string; type: string };
+  afterHit?: { save?: Ability; attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; grants?: string[]; delayed?: { dice: string; type: string };
     /** Görev B4 (Starry Wisp): hedef görünmez olamaz ve ışık yayar (altıgen). */
     revealed?: boolean; light?: number; untilSourceTurnEnd?: boolean };
   /** Görev B1: verilen hasarın bu oranı kadar büyücü iyileşir (Vampiric Touch 0,5). */
@@ -241,7 +241,7 @@ export interface SpellMechanics {
    * Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind): konsantrasyon sürerken sonraki
    * turlarda slotsuz tekrar (`spell_followup`); maliyet eylem ya da bonus eylem, hedef aynı (`same`) ya da yeni (`any`).
    */
-  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' | 'enemy'; direction?: boolean; moveZoneFt?: number;
+  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' | 'enemy'; direction?: boolean; moveZoneFt?: number; point?: boolean;
     /** A1: bu büyüye karşı save'i başaran yaratık yeniden hedeflenemez (Eyebite). */
     noRetarget?: boolean };
   /** A1: menzili "Self" olup etkisi bir yaratığı hedefleyen büyü (Eyebite: 60 ft içinde görülen yaratık). */
@@ -264,6 +264,13 @@ export interface SpellMechanics {
   upgrade?: Partial<SpellMechanics>;
   /** Kuyruk A4: kural sürümü 32+ savaşta mekaniğin üstüne yazılan alanlar (kısmi büyülerin tamamlanmış hâli). */
   a4?: Partial<SpellMechanics>;
+  /** Kuyruk A6: kural sürümü 35+ savaşta (a4'ten sonra) mekaniğin üstüne yazılan alanlar (küçük kısmilerin kapatılması). */
+  a6?: Partial<SpellMechanics>;
+  /**
+   * Kuyruk A6: SRD'nin oyuna sığmayan parçası (Game Master'a not: kartta ve günlükte). Büyü "tamam (sığmayan parça notlu)"
+   * sayılır; satırı harita/belgeler/BUYU-SIGMAYAN.md'de.
+   */
+  sigmayan?: string;
   /** Kuyruk A4: işaret büyüsü hedefin seçilen yetenek kontrollerine dezavantaj verir (Hex). */
   markCheckDis?: boolean;
   /** Kuyruk A4: kısmi kalan ama eksik parçası savaş modelinin dışında olan (sosyal, nesne, düzlem, saatlik süre) kısım; denetimde "çalışır". */
@@ -276,6 +283,26 @@ export interface SpellMechanics {
   autoFailTypes?: string[];
   /** Görev B3: Calm Emotions: alandaki dost Humanoid'lere Charmed/Frightened bağışıklığı, düşmanlara (save) duraksama. */
   calm?: boolean;
+  /** Kuyruk A6: Calm Emotions'ta dostlar da save yapar; düşmanlar kayıtsızlaşır (`indifferentTo`). */
+  calmSaveAll?: boolean;
+  /** Kuyruk A6 (Produce Flame): `castOnly` büyü konsantrasyonsuz elde tutulur (bu kadar tur; yeniden yapınca eskisi biter). */
+  held?: number;
+  /** Kuyruk A6 (Call Lightning): fırtınalı haritada hasara eklenen zar (aynı zar boyu). */
+  stormBonus?: string;
+  /** Kuyruk A6 (Chromatic Orb): sıçrama hedefi komuttaki `targetIds` sırasıyla seçilir. */
+  leapPick?: boolean;
+  /** Kuyruk A6: tek hedefli save büyüsünde de başarısızlığın süren etkisi (`failEffect`; Mind Spike yer bilgisi). */
+  failEffectSingle?: boolean;
+  /** Kuyruk A6: süren güç/ruh (`lingering: weapon`) sonraki turlarda bu kadar ft yer değiştirip yanındakine saldırır (yoksa 20). */
+  lingerMoveFt?: number;
+  /** Kuyruk A6 (Sleep): uyumayan (Elf) ya da Exhaustion'a bağışık yaratık save'i kendiliğinden başarır. */
+  sleeplessPass?: boolean;
+  /** Kuyruk A6 (Gust of Wind): alan save'inden sonra alanın altıgenlerinde süren alan (konsantrasyon; yeniden esintide yerini alır). */
+  lingerZone?: ZoneSpec;
+  /** Kuyruk A6: lanet büyüsü (Hex, Bestow Curse); Remove Curse `curseAll` ile bütün lanetleri kaldırır. */
+  curse?: boolean;
+  curseAll?: boolean;
+  calmIndifferent?: boolean;
   /** Görev B2: kalıcı zemin etkisi ya da geçici engel (`ZoneSpec`); alan büyünün `area`'sından. */
   zone?: ZoneSpec;
   /**
@@ -409,6 +436,9 @@ export interface ZoneSpec {
   resist?: string[];
   /** Kuyruk 19: girdap (Control Water): tur başında alandaki sudakileri merkeze `pull` altıgen çeker; uzaklaşmak için Athletics. */
   vortex?: { pull: number };
+  /** Kuyruk A6 (Gust of Wind): başarısız save'de büyücüden bu kadar ft itme; büyücüye yaklaşan adım bu kat maliyet. */
+  push?: number;
+  costToward?: number;
 }
 
 /**
@@ -419,6 +449,15 @@ export interface ZoneSpec {
  * (`immune`), anında en çok HP artışı (`hpBonus`, slot başına `upcast.hp`), sonraki turunu kaybetme (`command`).
  */
 export interface EffectSpec {
+  /**
+   * Kuyruk A6: etkiye olduğu gibi yazılan alanlar (ActiveEffect); "$caster" büyücünün kimliği, "$side" tarafı, "$dc"
+   * büyü DC'si olur.
+   */
+  raw?: Record<string, unknown>;
+  /** Kuyruk A6: zırh giyen hedefe yapılamaz (Mage Armor). */
+  noArmor?: boolean;
+  /** Kuyruk A6 (Warding Bond): bağlı yaratıklardan birine başkası yeniden yapınca önceki bağ biter. */
+  bondRecast?: boolean;
   targets: number;
   /** `any` (Görev B1: Levitate, Enlarge/Reduce): dosta save'siz, düşmana save'li. */
   side: 'ally' | 'enemy' | 'any';
@@ -456,7 +495,7 @@ export interface EffectSpec {
   saveBonusAll?: number;
   attackDisVs?: boolean;
   turnSave?: 'wis';
-  curseDamage?: { dice: string; type: string };
+  curseDamage?: { dice: string; type: string; spells?: boolean };
   /** Görev WIZARD: Blink. */
   blink?: boolean;
   grants?: string[];
@@ -486,10 +525,12 @@ export interface EffectSpec {
   saveDis?: Ability[] | 'chosen';
   resist?: string[] | 'chosen';
   attackedDis?: boolean;
-  attackDis?: { melee?: boolean; single?: boolean };
+  attackDis?: { melee?: boolean; single?: boolean; str?: boolean };
   hitDie?: string;
   damagePenalty?: { die: string; weaponOnly?: boolean; min?: number };
-  weaponOverride?: { weapons: string[]; dice: string[]; force?: boolean };
+  weaponOverride?: { weapons: string[]; dice: string[]; force?: boolean; type?: string };
+  /** Kuyruk A6 (Alter Self, Aquatic Adaptation): yüzme hızı. */
+  swim?: boolean;
   repeatSave?: boolean;
   noReactions?: boolean;
   noAttack?: boolean;

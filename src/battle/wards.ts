@@ -9,11 +9,14 @@
  */
 import { spells } from '../data';
 import { resolveSave } from '../rules/attack';
-import { rollTag, type Rng } from '../rules/dice';
+import { adjustDamage } from '../rules/damage';
+import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { distance } from '../rules/hex';
 import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
+import { turnKey } from './economy';
+import { ruleVersion } from './ruleVersion';
 import type { BattleEvent, BattleState, Command, Combatant } from './types';
 
 const ATTACKS = new Set(['attack', 'offhand_attack', 'bonus_strike', 'monster_attack', 'multiattack', 'horde_breaker', 'haste_action']);
@@ -31,18 +34,24 @@ function targetsOf(state: BattleState, cmd: Command): string[] {
 }
 
 /** Sanctuary: korunan hedef varsa saldıranın save'i; başarısızsa `blocked` (komut çalışmaz, yalnızca bu olay). */
-export function sanctuaryCheck(state: BattleState, cmd: Command, rng: Rng): { events: BattleEvent[]; blocked: boolean } | null {
+export function sanctuaryCheck(state: BattleState, cmd: Command, rng: Rng): { events: BattleEvent[]; blocked: boolean; refused?: string } | null {
   if (!('actorId' in cmd)) return null;
   const attacker = state.combatants[cmd.actorId];
   if (!attacker) return null;
+  // Kuyruk A6 (sürüm 35): save'i kaçıran saldırı ya da büyü boşa gitmez, saldıran yeni bir hedef seçer (SRD "either
+  // choose a new target or lose the attack or spell"); aynı korunana bu tur yeniden yönelemez.
+  const v35 = ruleVersion(state) >= 35;
   for (const id of targetsOf(state, cmd)) {
     const t = state.combatants[id];
     const ward = t?.effects?.find((e) => e.sanctuary);
     if (!t || !ward?.sanctuary || t.side === attacker.side) continue;
+    if (v35 && attacker.sanctuaryLost?.turn === turnKey(state) && attacker.sanctuaryLost.ids.includes(t.id)) {
+      return { events: [], blocked: true, refused: `${t.name} Sanctuary ile korunuyor: bu tur başka bir hedef seç.` };
+    }
     const save = resolveSave({ extra: saveDice(attacker, 'wis'), modifier: attacker.saves.wis, dc: ward.sanctuary.dc, mode: saveMode('normal', attacker, 'wis') },
       rollTag(rng, { by: attacker.id, kind: 'save' }));
     const ev: BattleEvent = { type: 'sanctuary_save', actorId: attacker.id, targetId: t.id, label: ward.name, dc: ward.sanctuary.dc,
-      d20: save.d20?.rolls ?? [], total: save.total ?? 0, success: save.success };
+      d20: save.d20?.rolls ?? [], total: save.total ?? 0, success: save.success, ...(v35 ? { retarget: turnKey(state) } : {}) };
     return { events: [ev], blocked: !save.success };
   }
   return null;
@@ -69,4 +78,26 @@ export function bondEvents(before: BattleState, after: BattleState, rng: Rng): B
     }
   }
   return events;
+}
+
+/**
+ * Kuyruk A6 (sürüm 35; Bestow Curse hasar seçeneği `curseDamage.spells`): lanetleyenin save'li büyüsü lanetliye hasar
+ * verince ek zar (saldırı isabetleri `hitExtras` yolundan). Komut sonunda, hedef başına bir kez.
+ */
+export function curseSpellEvents(state: BattleState, events: BattleEvent[], rng: Rng): BattleEvent[] {
+  const out: BattleEvent[] = [];
+  const done = new Set<string>();
+  for (const ev of events) {
+    if (ev.type !== 'save_resolved' || ev.appliedDamage <= 0 || done.has(ev.targetId)) continue;
+    const t = state.combatants[ev.targetId];
+    const curse = t?.effects?.find((e) => e.curseDamage?.spells && e.sourceId === ev.actorId);
+    if (!t || !curse?.curseDamage || t.hp <= 0) continue;
+    done.add(t.id);
+    const d = rollDice(curse.curseDamage.dice, rollTag(rng, { kind: 'damage', by: ev.actorId }));
+    const adj = adjustDamage(d.total, curse.curseDamage.type, t);
+    const fx = damageEffects(t, adj.amount, curse.curseDamage.type, false, rng);
+    out.push({ type: 'extra_damage', actorId: ev.actorId, targetId: t.id, label: curse.name, rolls: d.rolls, raw: d.total, applied: adj.amount,
+      damageType: curse.curseDamage.type, damageNote: adj.note, targetHpAfter: fx.hpAfter, effects: fx.effects });
+  }
+  return out;
 }

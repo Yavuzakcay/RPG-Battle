@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { heldFollow, mechanicsAt } from './spellVersion';
 import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
 import { monsters, spells } from '../data';
@@ -889,7 +890,9 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
     if (ok(cmd)) return cmd;
   }
   const conc = actor.concentration;
-  const spell = spellOf(conc?.spell);
+  // Kuyruk A6: sürüme göre mekanik (`a4`/`a6`).
+  const spell0 = spellOf(conc?.spell);
+  const spell = spell0 ? { ...spell0, mechanics: mechanicsAt(state, spell0) } : spell0;
   // Görev B1: süreli tekrar (Heat Metal bonus eylemle; Call Lightning, Vampiric Touch eylemle): dost vurmayan ilk hedef.
   const rep = spell?.mechanics.repeat;
   // Kuyruk 19: Dispel Evil and Good: bitişik türden düşmana Dismissal.
@@ -916,7 +919,7 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
       if (score > 0 && (!best || score > best.score) && ok(cmd)) best = { cmd, score };
     }
     if (best) return best.cmd;
-  } else if (conc && spell && rep && (rep.cost === 'bonus' || canAct)) {
+  } else if ((conc && spell && rep && (rep.cost === 'bonus' || canAct)) || (canAct && heldFollow(state, actor))) {
     for (const f of foes) {
       const cmd: Command = { type: 'spell_followup', actorId: id, targetId: f.id };
       const r = tryCmd(state, actor, cmd);
@@ -1248,6 +1251,15 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     for (const c of Object.values(state.combatants)) {
       if (c.id === actorId || !c.effects?.some((e) => e.id === 'moral:cokmus')) continue;
       const cmd: Command = { type: 'moral_rally', actorId, targetId: c.id };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  // Kuyruk A6 (sürüm 35): eylemi duruyorsa bitişik, uyutulmuş/büyülenmiş dostu sarsarak uyandır (Sleep, Hypnotic Pattern).
+  if (!actor.economy.action) {
+    for (const c of Object.values(state.combatants)) {
+      if (c.id === actorId || c.side !== actor.side || c.summon || c.hp <= 0) continue;
+      if (!c.effects?.some((e) => e.shakeable || e.escapeCheck?.allyHelp) && !(c.conditionTimers ?? []).some((t) => t.wakeOnDamage && c.conditions.includes(t.condition))) continue;
+      const cmd: Command = { type: 'help', actorId, targetId: c.id };
       if (tryCmd(state, actor, cmd).ok) return cmd;
     }
   }
