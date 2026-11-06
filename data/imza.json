@@ -1901,6 +1901,7 @@
     "maliyet": 1
    },
    "yz": "kontrol",
+   "yzYaklas": true,
    "not": "Sürüm 27+: ücretsiz kullanım bitince 1 Büyücülük Puanı. 14. seviyede 2 kat hedef ek puan istemeden (K50 yaklaşımı)."
   },
   "imza:imza_dunganga/basket": {
@@ -1949,6 +1950,7 @@
     "cagriEtki": "imza:imza_dunganga/call-aura"
    },
    "yz": "kontrol",
+   "yzYaklas": true,
    "not": "Sürüm 27+: ücretsiz kullanım bitince 3 Büyücülük Puanı; aynı anda tek sepet (Dunganga Çağrısı sürerken yeterlilik kadar)."
   },
   "imza:imza_dunganga/basket-swift": {

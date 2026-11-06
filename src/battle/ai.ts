@@ -1556,6 +1556,12 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       if (go) return go;
     }
   }
+  // K59 (Dunganga, veride `yzYaklas`): yakın menzilli imza eylemi (Ninni 30 ft yarıçap, Sepet 30 ft) yalnız oradan
+  // yapılabildiği için büyücü uzakta kalınca hiç seçilmiyordu. Temas yokken, eylem duruyorken: güvenli, düşmana
+  // bitişik olmayan yerlerde değerlendiricinin en iyi imza adayı şimdiki en iyi hamleden iyiyse önce oraya yürür.
+  // Yalnız işaretli eylemi olan yaratık (diğer alt sınıflar ve canavarlar değişmez).
+  const near = nearImzaMove(state, actor, canAct, now);
+  if (near) return near;
   // K59 (Usta, iki taraf): temas yokken (bitişik düşman yok: fırsat saldırısı yok) yetişilebilen başka bir hedefin
   // değerlendirici puanı şimdikinin `yerDegistir` katıysa önce oraya yürür (odaklı saldırı: yaralı/öldürülebilir hedef).
   const ustaNow = !state.yz?.eski && difficultyOf(state, actor.side) === 'usta' ? USTA : null;
@@ -2311,6 +2317,31 @@ export function scoredCandidates(state: BattleState, actor: Combatant) {
   if (legacy && !cands.some((c) => JSON.stringify(c.cmd) === JSON.stringify(legacy))) cands.push({ cmd: legacy, desc: LEGACY });
   return { legacy, helpers: h, scored: evaluateCandidates(state, actor, cands, h, roleOf(actor, spellKinds(actor)), legacy, difficultyOf(state, actor.side)) };
 }
+
+/** K59: `yzYaklas` işaretli imza eylemi için yaklaşma (bkz. `decide`). */
+function nearImzaMove(state: BattleState, actor: Combatant, canAct: boolean, now: Command | null): Command | null {
+  if (!canAct || state.yz?.eski || actor.civilian || !actor.pos || !state.map || actor.movementUsed >= speedHexes(actor)) return null;
+  const keys = (actor.features ?? []).filter((f) => (IMZA_SPECS[f.key] as { yzYaklas?: boolean } | undefined)?.yzYaklas).map((f) => f.key);
+  if (!keys.length) return null;
+  const foes = foesOf(state, actor);
+  if (foes.some((f) => f.pos && gap(state, f, actor) <= 1)) return null;
+  const imzaBest = (s: BattleState, c: Combatant) => scoredCandidates(s, c).scored
+    .filter((x) => x.cmd.type === 'use_feature' && keys.includes((x.cmd as { feature: string }).feature))[0]?.score ?? 0;
+  const here = Math.max(now ? commandScore(state, actor, now) : 0, scoredCandidates(state, actor).scored[0]?.score ?? 0);
+  if (imzaBest(state, actor) >= here) return null;
+  let best: { sp: Spot; v: number } | null = null;
+  const spots = reachable(state, actor).filter((sp) => sp.kind === 'move' && risk(state, actor, sp.to) < 20
+    && !foes.some((f) => f.pos && distance(f.pos, sp.to) <= 1) && foes.some((f) => f.pos && distance(f.pos, sp.to) <= 6))
+    .sort((a, b) => a.cost - b.cost).slice(0, 12);
+  for (const sp of spots) {
+    const there = at(state, actor, sp.to);
+    const v = imzaBest(there, there.combatants[actor.id] as Combatant) - sp.cost * NEAR_COST;
+    if (v > here && (!best || v > best.v)) best = { sp, v };
+  }
+  return best ? guardMove(state, actor, firstMove(state, actor, [best.sp])) : null;
+}
+/** Yaklaşmada altıgen başına puan cezası. */
+const NEAR_COST = 0.5;
 
 /** K59: Usta'nın yer seçimi parametreleri (`data/yz-roller.json` `zorluk.usta`). */
 const USTA = aiRoles.zorluk.usta as { yerAday: number; yerMaliyet: number; yerDegistir: number };

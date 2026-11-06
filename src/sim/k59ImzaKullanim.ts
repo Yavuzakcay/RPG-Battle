@@ -4,7 +4,8 @@
  *   tepki: imza tepkileri (`reaction_used`, seçenek `imza-…`; Tam Zamanında, Dostunun Yası, Ölümsüz Dize…)
  *   pasif: savaş sırasında imza karakterine bağlı iz bırakan diğer olaylar (saldırı eki "Yıpranmışlığın Gücü", aura
  *          tetiği, imza süren etkisi, `trait_turn` `imza:`…; imza eylemi komutunun kendi olayları sayılmaz)
- * Savaş başındaki pasifler (alwaysPrepared, kaynak) sayılmaz.
+ * Savaş başındaki pasifler (kaynak) sayılmaz. Alt sınıfın hep hazır büyülerinin yapımı (`alwaysPrepared`) ayrı sütunda ve
+ * kullanıcı kararıyla (K59) imza toplamına dahil; hedef (≥ 1 / savaş) bu toplam üzerinden.
  *   npx vite-node src/sim/k59ImzaKullanim.ts -- 5 [--seviye 7] [--alt imza_hizir,imza_geride_kalan]
  */
 import { loadTrExtra } from '../i18n';
@@ -97,7 +98,7 @@ function measureUsage(subId: string, cls: string, evKurali: string | null | unde
 }
 
 {
-  console.log(`| Alt sınıf | İmza eylemi | İmza tepkisi | Pasif tetik | Alt sınıf büyüsü | Büyü | Saldırı | Eylem / savaş | Toplam etki / savaş | + alt sınıf büyüsü / savaş |`);
+  console.log(`| Alt sınıf | İmza eylemi | İmza tepkisi | Pasif tetik | Alt sınıf büyüsü | Büyü | Saldırı | Eylem / savaş | Eylem+tepki+pasif / savaş | İmza toplamı (+ hazır büyü) / savaş |`);
   console.log(`|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|`);
   for (const sub of classData.subclasses.filter((s) => s.ev && s.id.startsWith('imza_') && (!only || only.includes(s.id)))) {
     const u = measureUsage(sub.id, sub.class, sub.evKurali, level, runs);
