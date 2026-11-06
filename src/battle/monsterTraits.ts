@@ -29,6 +29,8 @@ export function monsterTraitParts(state: BattleState, c: Combatant): { effects: 
       if (sense) out.senses = { ...(out.senses ?? c.senses ?? {}), [sense[1]!.toLowerCase()]: Number(sense[2]) };
     } else if (s === 'Trait: Magic Resistance') fx.saveAdvAgainst = ['spell'];
     else if (s === 'Trait: Sunlight Sensitivity' && state.map && !hasDarkness(state)) fx.attackDis = {};
+    // Kuyruk A7: karanlık haritada güneş ışığına (Daylight) girince (sürüm 36+, `divine.ts` wardSources).
+    else if (s === 'Trait: Sunlight Sensitivity' && state.map) out.traits.push('sunlight-sensitive');
     else if (s === 'Trait: Illumination') fx.light = 6;
     else if (s === 'Trait: Flyby') out.traits.push('flyby');
     // SRD: Web Walker yalnızca ağların, Ice Walk yalnızca buz/karın hareket kısıtını kaldırır (Freedom of Movement değil).

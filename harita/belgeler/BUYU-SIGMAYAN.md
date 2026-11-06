@@ -1,6 +1,6 @@
 # Savaş modeline sığmayan büyü parçaları
 
-Kuyruk A6'dan beri: bir büyünün SRD 5.2.1 metnindeki savaşla ilgili bir parçası oyunun savaş modeline sığmıyorsa sığan kısım
+Kuyruk A6'dan beri (A7, A8 aynı kuralla; satırlar `a7`/`a8` bloklarının `sigmayan` alanıyla): bir büyünün SRD 5.2.1 metnindeki savaşla ilgili bir parçası oyunun savaş modeline sığmıyorsa sığan kısım
 uygulanır, sığmayan parça sessizce atlanmaz. Büyü verisinde `sigmayan` alanı (kural sürümü 35+ `a6` bloğu) yapınca günlüğe
 "Game Master notu — …" olarak düşer; savaş ekranındaki büyü kartında da not görünür. BUYU-KISMI.md bu büyüleri
 "tamam (sığmayan parça notlu)" sayar. Elle tutulur; yeni satır yalnızca büyünün `sigmayan` alanıyla birlikte eklenir.
@@ -19,3 +19,9 @@ uygulanır, sığmayan parça sessizce atlanmaz. Büyü verisinde `sigmayan` ala
 | mass-suggestion | Serbest metinli öneri (en çok 25 sözcük), 12 hedef | Aynı | Aynı iki seçenek, 12 hedefe; yalnızca büyücü tarafının hasarıyla biter | Aynı |
 | phantasmal-force | Yanılsamanın biçimi ve konumu (hasar yalnız alanında ya da 5 ft yakınında) | Yalnız hedefin gördüğü görünmez nesne/alan katmanı yok | Hasar her tur verilir (yanında sayılır); Study eylemiyle INT (Investigation) kurtulma çalışır | Hedefe özel görünür alan (`zone.visibleTo`) ve hasar koşulu |
 | spike-growth | Kamufle alan: görmeyen Search ile fark eder | Tek ekran paylaşımlı oyunda gizli katman yok (Bilinen eksikler: GM'e gizli tuzak görünümü) | Alan herkese görünür; yapay zekâ büyü alanlarından zaten kaçınmaz, yani düşman için gizlilik pratikte korunur | Gizli jeton katmanı gelince alanı `hiddenFrom` ile çiz; Search ile `seenBy`'a ekle |
+| command | Drop: hedef elinde tuttuğunu düşürür | Elden düşen silahın yerde nesne olması ve geri alınması (Interact) modeli yok | Hedef turunu kaybeder (Approach büyücüye varamazsa artık turuna devam eder) | Düşen silahı `map.objects`'e silah nesnesi olarak koy, alma eylemi `object_use` |
+| faerie-fire | Küpteki nesneler de işaretlenir (nesneye saldırı avantajlı) | Nesne saldırısı (`attack_object`) avantaj/dezavantaj kipini taşımıyor | Yaratıklar işaretlenir, saldırı avantajı yalnızca hedefi gören saldırana | Nesnede `outlined` bayrağı ve `attack_object`'e kip |
+| enlarge-reduce | Taşınmayan nesneyi büyütme/küçültme | Savaş nesneleri boyut taşımıyor | Yalnızca yaratık; Enlarge STR save/kontrol avantajı + 1d4, Reduce tersi | Nesne türüne boyut ve hasar/AC ölçeği |
+| flame-blade | Bıçağı bırakınca kaybolur, bonus eylemle yeniden çağrılır | Elde silah değiştirme (Interact) ve bırakma yok | Saldırı "Büyüyü sürdür" (Magic eylemi); kalkan ya da yan el silahı taşıyan yapamaz | El durumu (`hands`) savaşçıya taşınınca bırak/çağır komutu |
+| heat-metal | Metal nesne seçimi; tutan bırakabilir ya da dezavantaj alır | Eşyanın malzemesi ve elden bırakma modeli yok | Her hedef metal taşıyor sayılır; başarısız save'de saldırı ve kontrol dezavantajı | Eşya verisine `metal`, bırakma seçeneği tepki istemiyle |
+| magic-weapon | Tek bir büyüsüz silah | Savaşçının silahları tek tek büyü taşımıyor | Dokunulanın bütün silah saldırılarına +1 (yukarı slotla +2/+3) | Silah seçeneğine `enchantBy` alanı |

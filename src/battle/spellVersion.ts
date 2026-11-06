@@ -12,12 +12,16 @@ export function mechanicsAt(state: Pick<BattleState, 'kuralSurumu'>, spell: Spel
   let m = spell.mechanics;
   if (m.a4 && ruleVersion(state) >= 32) m = { ...m, ...m.a4, a4: undefined };
   if (m.a6 && ruleVersion(state) >= 35) m = { ...m, ...m.a6, a6: undefined };
+  if (m.a7 && ruleVersion(state) >= 36) m = { ...m, ...m.a7, a7: undefined };
+  if (m.a8 && ruleVersion(state) >= 37) m = { ...m, ...m.a8, a8: undefined };
   return m;
 }
 
 /** Kuyruk A6: sürüm 35+ savaşta büyünün sığmayan parçasının Game Master notu (yoksa null). */
 export function sigmayanNote(state: Pick<BattleState, 'kuralSurumu'>, spell: Spell): string | null {
-  return ruleVersion(state) >= 35 ? mechanicsAt(state, spell).sigmayan ?? null : null;
+  if (ruleVersion(state) < 35) return null;
+  const m = mechanicsAt(state, spell);
+  return m.sigmayan ?? (m.gmNoted ? m.gmNote ?? null : null);
 }
 
 /**

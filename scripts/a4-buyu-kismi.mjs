@@ -28,21 +28,22 @@ for (const s of all) {
   const m = s.mechanics ?? {};
   if (m.offCombat || s.offCombat) continue;
   combat += 1;
-  const merged = { ...m, ...(m.a4 ?? {}), ...(m.a6 ?? {}) };
-  const wasPartial = !!(m.approx || m.gmNote || m.kapsamDisi);
+  const merged = { ...m, ...(m.a4 ?? {}), ...(m.a6 ?? {}), ...(m.a7 ?? {}), ...(m.a8 ?? {}) };
+  const later = !!(m.a6 || m.a7 || m.a8);
+  const wasPartial = !!(m.approx || m.gmNote || m.kapsamDisi || later);
   // Sürüm 35'te savaş dışına alınan (Plane Shift) ya da sığmayan parçası notlu büyü kısmi sayılmaz.
-  const isPartial = !!(merged.approx || (merged.gmNote && !merged.kapsamDisi && !merged.offCombat && !merged.sigmayan));
+  const isPartial = !!(merged.approx || (merged.gmNote && !merged.kapsamDisi && !merged.offCombat && !merged.sigmayan && !merged.gmNoted));
   if (wasPartial) before += 1;
   if (isPartial) after += 1;
-  if (merged.kapsamDisi && !isPartial && !m.a6) kapsam += 1;
-  if (wasPartial) rows.push({ id: s.id, level: s.level, file: s.file, eksik: merged.approx || (merged.kapsamDisi || merged.sigmayan ? '' : merged.gmNote) || '', kapsam: merged.kapsamDisi ?? '', sigmayan: merged.sigmayan ?? '', a4: !!m.a4, a6: !!m.a6, partial: isPartial });
+  if (merged.kapsamDisi && !isPartial && !later) kapsam += 1;
+  if (wasPartial) rows.push({ id: s.id, level: s.level, file: s.file, eksik: merged.approx || (merged.kapsamDisi || merged.sigmayan || merged.gmNoted ? '' : merged.gmNote) || '', kapsam: merged.kapsamDisi ?? '', sigmayan: merged.sigmayan ?? '', gm: merged.gmNoted ? merged.gmNote ?? '' : '', a4: !!m.a4, a6: !!m.a6, a7: !!m.a7, a8: !!m.a8, partial: isPartial });
 }
 rows.sort((a, b) => Number(b.partial) - Number(a.partial) || a.level - b.level || a.id.localeCompare(b.id));
 const groups = new Map();
 for (const r of rows.filter((x) => x.partial)) { const g = groupOf(r.eksik); groups.set(g, [...(groups.get(g) ?? []), r.id]); }
 const cell = (t) => t.replace(/\|/g, '\\|');
 const lines = [
-  '# Kısmi büyüler (Kuyruk A4, A6)',
+  '# Kısmi büyüler (Kuyruk A4, A6, A7, A8)',
   '',
   '`node scripts/a4-buyu-kismi.mjs` üretir; elle düzenlenmez. Savaşta kullanılan (savaş dışı olmayan) büyülerden yaklaşıklığı (`approx`) ya da yalnızca Game Master notu kalanlar "kısmi"dir. `kapsamDisi`: eksik parça savaş modelinin dışında (sosyal, düzlem, nesne, saatlik süre); gerekçeler DECISIONS.md (Kuyruk A4, A6). Sayım kural sürümü 32+ (`a4`) ve 35+ (`a6`) mekaniğiyle; `sigmayan`: SRD metninin oyuna sığmayan parçası (kart ve günlükte Game Master notu, satırı harita/belgeler/BUYU-SIGMAYAN.md).',
   '',
@@ -56,6 +57,10 @@ const lines = [
   `| Tamamlanan (sürüm 32, \`a4\`) | ${rows.filter((r) => r.a4 && !r.a6 && !r.partial).length} |`,
   `| Tamamlanan (sürüm 35, \`a6\`; tam) | ${rows.filter((r) => r.a6 && !r.partial && !r.sigmayan).length} |`,
   `| Tamamlanan (sürüm 35, \`a6\`; sığmayan parça notlu) | ${rows.filter((r) => r.a6 && !r.partial && r.sigmayan).length} |`,
+  ...[['a7', 36], ['a8', 37]].flatMap(([k, v]) => [
+    `| Tamamlanan (sürüm ${v}, \`${k}\`; tam) | ${rows.filter((r) => r[k] && !r.partial && !r.sigmayan && !r.gm).length} |`,
+    `| Tamamlanan (sürüm ${v}, \`${k}\`; Game Master notlu) | ${rows.filter((r) => r[k] && !r.partial && r.gm).length} |`,
+    `| Tamamlanan (sürüm ${v}, \`${k}\`; sığmayan parça notlu) | ${rows.filter((r) => r[k] && !r.partial && r.sigmayan).length} |`]),
   `| Kapsam dışı olarak çalışır sayılan | ${kapsam} |`,
   '',
   '## Kalan kısmiler: altyapıya göre',
@@ -68,10 +73,11 @@ const lines = [
   '',
   '| Kimlik | Sv | Dosya | Durum | Eksik | Kapsam dışı | Sığmayan parça (BUYU-SIGMAYAN.md) |',
   '|---|---|---|---|---|---|---|',
-  ...rows.map((r) => `| ${r.id} | ${r.level} | ${r.file} | ${r.partial ? 'kısmi' : r.a6 ? (r.sigmayan ? 'tamam (A6, sığmayan parça notlu)' : 'tamam (A6)') : r.a4 ? 'tamam (A4)' : 'çalışır (kapsam dışı)'} | ${cell(r.eksik)} | ${cell(r.kapsam)} | ${cell(r.sigmayan)} |`),
+  ...rows.map((r) => `| ${r.id} | ${r.level} | ${r.file} | ${r.partial ? 'kısmi' : r.a8 || r.a7 || r.a6 ? `tamam (${r.a8 ? 'A8' : r.a7 ? 'A7' : 'A6'}${r.sigmayan ? ', sığmayan parça notlu' : r.gm ? ', Game Master notlu' : ''})` : r.a4 ? 'tamam (A4)' : 'çalışır (kapsam dışı)'} | ${cell(r.eksik)} | ${cell(r.kapsam)} | ${cell(r.sigmayan)} |`),
   '',
 ];
 writeFileSync('harita/belgeler/BUYU-KISMI.md', lines.join('\n'));
 const a6full = rows.filter((r) => r.a6 && !r.partial && !r.sigmayan).length;
 const a6note = rows.filter((r) => r.a6 && !r.partial && r.sigmayan).length;
-console.log(`savaşta ${combat}; kısmi önce ${before}, sonra ${after}; kapsam dışı ${kapsam}; A6 tam ${a6full}, A6 sığmayan notlu ${a6note}`);
+const stat = (k) => `${k.toUpperCase()} tam ${rows.filter((r) => r[k] && !r.partial && !r.sigmayan && !r.gm).length}, GM notlu ${rows.filter((r) => r[k] && !r.partial && r.gm).length}, sığmayan notlu ${rows.filter((r) => r[k] && !r.partial && r.sigmayan).length}`;
+console.log(`savaşta ${combat}; kısmi önce ${before}, sonra ${after}; kapsam dışı ${kapsam}; A6 tam ${a6full}, A6 sığmayan notlu ${a6note}; ${stat('a7')}; ${stat('a8')}`);

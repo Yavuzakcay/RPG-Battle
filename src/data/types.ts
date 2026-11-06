@@ -232,7 +232,7 @@ export interface SpellMechanics {
    * Görev B1: isabetten (attack) ya da hasardan (auto) sonra hedefte kalan etki: gecikmeli hasar (Acid Arrow; hedefin
    * sonraki turunun sonunda), ya da `save` başarısızsa saldırıları dezavantajlı (Heat Metal; büyücünün sonraki turuna dek).
    */
-  afterHit?: { save?: Ability; attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; grants?: string[]; delayed?: { dice: string; type: string };
+  afterHit?: { save?: Ability; attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; grants?: string[]; checkDis?: Ability[]; delayed?: { dice: string; type: string };
     /** Görev B4 (Starry Wisp): hedef görünmez olamaz ve ışık yayar (altıgen). */
     revealed?: boolean; light?: number; untilSourceTurnEnd?: boolean };
   /** Görev B1: verilen hasarın bu oranı kadar büyücü iyileşir (Vampiric Touch 0,5). */
@@ -266,6 +266,11 @@ export interface SpellMechanics {
   a4?: Partial<SpellMechanics>;
   /** Kuyruk A6: kural sürümü 35+ savaşta (a4'ten sonra) mekaniğin üstüne yazılan alanlar (küçük kısmilerin kapatılması). */
   a6?: Partial<SpellMechanics>;
+  /** Kuyruk A7 (sürüm 36) ve A8 (sürüm 37): aynı biçimde sonraki tamamlamalar. */
+  a7?: Partial<SpellMechanics>;
+  a8?: Partial<SpellMechanics>;
+  /** Kuyruk A7: savaşta uygulanan kısmın yanında savaş dışı parça Game Master notu (kartta ve günlükte; BUYU-KISMI "tamam (GM notlu)"). */
+  gmNoted?: boolean;
   /**
    * Kuyruk A6: SRD'nin oyuna sığmayan parçası (Game Master'a not: kartta ve günlükte). Büyü "tamam (sığmayan parça notlu)"
    * sayılır; satırı harita/belgeler/BUYU-SIGMAYAN.md'de.
@@ -297,6 +302,12 @@ export interface SpellMechanics {
   lingerMoveFt?: number;
   /** Kuyruk A6 (Sleep): uyumayan (Elf) ya da Exhaustion'a bağışık yaratık save'i kendiliğinden başarır. */
   sleeplessPass?: boolean;
+  /** Kuyruk A7: dokunulan dostun silahına güçlendirme (Magic Weapon); boş el gerekir (Flame Blade). */
+  touchBuff?: boolean;
+  freeHand?: boolean;
+  /** Kuyruk A7 (Light, Continual Flame): altıgendeki nesneye ışık (yarıçap altıgen); `objectLightKeep` yeniden yapınca eskisi sürer. */
+  objectLight?: number;
+  objectLightKeep?: boolean;
   /** Kuyruk A6 (Gust of Wind): alan save'inden sonra alanın altıgenlerinde süren alan (konsantrasyon; yeniden esintide yerini alır). */
   lingerZone?: ZoneSpec;
   /** Kuyruk A6: lanet büyüsü (Hex, Bestow Curse); Remove Curse `curseAll` ile bütün lanetleri kaldırır. */
@@ -439,6 +450,10 @@ export interface ZoneSpec {
   /** Kuyruk A6 (Gust of Wind): başarısız save'de büyücüden bu kadar ft itme; büyücüye yaklaşan adım bu kat maliyet. */
   push?: number;
   costToward?: number;
+  /** Kuyruk A7 (Darkness): oluşunca örtüştüğü, en çok bu seviyedeki büyülerin ışığını kaldırır. */
+  dispelLight?: number;
+  /** Kuyruk A7 (Daylight): güneş ışığı (Sunlight Sensitivity dezavantajı). */
+  sunlight?: boolean;
 }
 
 /**
@@ -458,6 +473,8 @@ export interface EffectSpec {
   noArmor?: boolean;
   /** Kuyruk A6 (Warding Bond): bağlı yaratıklardan birine başkası yeniden yapınca önceki bağ biter. */
   bondRecast?: boolean;
+  /** Kuyruk A7 (Dragon's Breath): dokunulan yaratığa bu boyda (ft) koni nefes verir. */
+  breathGrant?: number;
   targets: number;
   /** `any` (Görev B1: Levitate, Enlarge/Reduce): dosta save'siz, düşmana save'li. */
   side: 'ally' | 'enemy' | 'any';

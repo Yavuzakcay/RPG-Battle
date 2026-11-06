@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk A7: nesne, el ve ışık büyüleri (kural sürümü 36)
+
+- **Sonuç:** BUYU-KISMI.md'de kısmi 26 → 15 (kalanlar A8: yükseklik ve alan geometrisi). A7-1'in 11 büyüsü + A7-2'nin 2 büyüsü (Light, Continual Flame): 7 tam, 6 sığmayan parça notlu (command, faerie-fire, enlarge-reduce, flame-blade, heat-metal, magic-weapon; BUYU-SIGMAYAN.md 18 satır). A7-3: 6 büyü "tamam (Game Master notlu)" (charm-person, hideous-laughter, enhance-ability, see-invisibility, animal-shapes, wish): savaşta uygulanan kısım aynen, savaş dışı parça TR/EN `gmNote`/`gmNoteEn` (kartta "Game Master notu", yapınca günlükte). Bu altısı savaşta etki taşıdığı için `offCombat` işaretlenmedi (işaretlenseydi kartta "savaş dışı" görünüp etkileri gizlenirdi); yalnızca savaş dışı parçaları GM notunda.
+- **Kapı:** `a7` (sürüm 36) ve `a8` (37) blokları `a6` ile aynı yoldan sırayla (`castSpell`, `mechanicsAt`); alanın kuralı sürüm bloğuyla değiştiyse kural alanda saklanır (`zone.spec`; ışık ve davranış yükleme/replay'de aynı). Eski davranışı sınayan 3 test (b4 Light dosta, b5 ve k9b Dragon's Breath büyücüde) sürüm 35'e sabitlendi; yeni davranış `a7spells.test.ts`'te.
+- **Işık tek yerde:** nesne ışığı `map.objects[].light` (Light, Continual Flame; yapan ve büyü kimliğiyle) `litHexes`'e eklendi: taşınıyorsa taşıyanın altıgeninde, değilse nesnenin; el değiştirince ışık nesneyle gider. Light yeniden yapılınca önceki ışık (nesne ya da kendindeki) biter; Continual Flame sürer. Light/Continual Flame artık yalnızca kendine (taşıdığı nesne) ya da başkasının taşımadığı bitişik nesneye (SRD "not worn or carried by someone else").
+- **Darkness:** oluşunca örtüştüğü ≤2. seviye büyü ışıkları (etki, alan, nesne) kalkar (`dispelLight`). Yoğun örtüde (Darkness, Fog Cloud…) Blindsight/Truesight menzilindeki saldıran/hedef görülür (`zoneAttackSources`, sürüm 36).
+- **Daylight:** güneş ışığı alanında Sunlight Sensitivity'li saldıran dezavantajlı (karanlık haritada da; canavara `sunlight-sensitive` işareti).
+- **Dragon's Breath:** nefes dokunulan dostun (`effect.breath`, `breath.ts` `breathOf`), Magic eylemiyle 15 ft koni, seçilen tür, yukarı slot +1d6; mevcut "Nefes / alan" menüsü ve yapay zekâ nefes yolu kullanılır. Kendi Dragonborn nefesi kullanımı kalmışsa önce o.
+- **Command Approach:** büyücüye varamayan hedef turuna devam eder (SRD "ending its turn if it moves within 5 feet").
+- **Diğerleri:** Faerie Fire avantajı yalnızca hedefi gören saldırana; Enlarge/Reduce STR kontrolleri; Flame Blade boş el (kalkan/yan el silahı yoksa; savaşçıda `shieldHeld`); Heat Metal kontrol dezavantajı; Magic Weapon dokunulan dostun silahı, yeniden yapınca önceki biter; Dancing Lights bonus eylemle 60 ft taşınır (menzil içinde), ışık 10 ft; Dispel Magic altıgendeki nesne ışığını da kaldırır.
+- **Denge:** sayısal değer değişmedi.
+
 ## 2026-11-06 — Kuyruk A6: küçük kısmi büyülerin kapatılması (kural sürümü 35)
 
 - **Sonuç:** BUYU-KISMI.md'de kısmi 57 → 26 (kalan 26 A7/A8 kapsamı: nesne/el, alan geometrisi, yükseklik). 31 büyünün 19'u tam, 12'si "tamam (sığmayan parça notlu)"; sığmayan parçalar `harita/belgeler/BUYU-SIGMAYAN.md` (12 satır) ve yapınca günlüğe "Game Master notu — …" (veride `sigmayan`; savaş kartında "Game Master notu" etiketi, ayrıntı ipucunda).

@@ -22,6 +22,7 @@
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
 import { heldFollow, mechanicsAt } from './spellVersion';
+import { breathOf } from './breath';
 import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
 import { monsters, spells } from '../data';
@@ -437,8 +438,9 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
  * koni ya da çizgi (hangisi daha çok düşman kapsıyorsa).
  */
 function breathWeapon(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
-  const b = actor.breath;
-  if (!b || !state.map || (actor.resources[b.resource] ?? 0) <= 0) return null;
+  const bo = breathOf(actor);
+  const b = bo?.spec;
+  if (!b || !state.map || (!bo.spell && (actor.resources[b.resource] ?? 0) <= 0)) return null;
   const visible = new Set(foes.map((f) => f.id));
   let best: { cmd: Command; foes: number } | null = null;
   for (const s of b.shapes) {

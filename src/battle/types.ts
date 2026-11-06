@@ -186,6 +186,10 @@ export interface ActiveEffect {
   shakeable?: boolean;
   indifferentTo?: string;
   pinpointBy?: string;
+  /** Kuyruk A7 (Faerie Fire): saldırı avantajı yalnızca hedefi gören saldırana. */
+  attackedAdvSee?: boolean;
+  /** Kuyruk A7 (Dragon's Breath): büyüyle verilen nefes (Magic eylemiyle; `breath.ts`). */
+  breath?: BreathSpec;
   /** Görev S1: uçuş hızı (Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
   fly?: number;
   airborne?: boolean;
@@ -753,6 +757,8 @@ export interface Combatant {
   heavyArmor: boolean;
   /** Kuyruk A6: zırh giyiyor (karakterde zırh türü `none` değil; canavarda bilinmez). */
   armored?: boolean;
+  /** Kuyruk A7: kalkan taşıyor (karakterde; Flame Blade boş el denetimi). */
+  shieldHeld?: boolean;
   /** Harita kurallarının savaşçıya bıraktığı izler (Adım 8). */
   mapStatus: MapStatus;
   /** Harcanan eylemler (true: bu tur kullanıldı). */
@@ -1035,6 +1041,8 @@ export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject {
   id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string;
+  /** Kuyruk A7: nesneye yapılmış ışık büyüsü (yarıçap altıgen, büyü kimliği, yapan; Light, Continual Flame). */
+  light?: number; lightSpell?: string; lightBy?: string;
   /** Kuyruk 30 D1: keşif nesnesi (oyuncudan saklı, bulunana dek); bulma DC'si (pasif Algı), bulununca keşif bayrağı. */
   gizli?: boolean; found?: boolean; findDc?: number; flag?: string;
 }
@@ -1922,7 +1930,7 @@ export type BattleEvent =
   | { type: 'object_damaged'; objectId: string; actorId?: string; label: string; damage: number; damageType: string; hpAfter: number;
       roll?: { d20: number; total: number; ac: number; hit: boolean } }
   | { type: 'object_destroyed'; objectId: string; label: string }
-  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset;
+  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk A7: nesne ışığı (null kaldırır). */ light?: { r: number; spell: string; by: string } | null; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset;
       /** Kuyruk 36: doğaçlama silah alındı: taşıyanın silah seçeneklerine eklenir. */ arm?: AttackOption }
   | { type: 'goal_changed'; goalId: string; status: GoalStatus }
   | { type: 'groups_formed'; members: Record<string, string[]> }

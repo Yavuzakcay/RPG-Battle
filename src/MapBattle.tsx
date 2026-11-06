@@ -80,6 +80,7 @@ import { climbTargets } from './battle/climb';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
 import { mechanicsAt, sigmayanNote } from './battle/spellVersion';
+import { breathOf } from './battle/breath';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
 import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
@@ -1156,7 +1157,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       act: () => { reset(); setMode('offhand'); setMenuOpen(false); } }] : []),
     ...(actor.spellNames.length > 0 ? [{ key: 'spell', label: N.spell, reason: spellReason, act: () => { reset(); setMode('spells'); setMenuOpen(false); } }] : []),
     // Alan eylemleri (Görev R4): nefes, koni/çizgi saldırıları, Dragonborn Breath Weapon.
-    ...(state.map && (areaAttacksOf(actor).length > 0 || actor.breath) ? [{ key: 'area', label: t().area.menu,
+    ...(state.map && (areaAttacksOf(actor).length > 0 || breathOf(actor)) ? [{ key: 'area', label: t().area.menu,
       act: () => { reset(); setMode('areas'); setMenuOpen(false); } }] : []),
     { key: 'hide', label: N.hide, reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
     { key: 'shove', label: N.shove,
@@ -2136,8 +2137,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const list: Array<{ key: string; label: string; act: AreaAct; why: string | null }> = [
               ...areaAttacksOf(actor).map((x) => ({ key: `m${x.index}`, label: x.name, act: { kind: 'monster', index: x.index } as AreaAct,
                 why: !x.ready ? A.recharge : economyBlock(state, actor, { type: 'monster_attack', actorId, targetId: '', attackIndex: x.index }) })),
-              ...(actor.breath?.shapes ?? []).map((sh) => ({ key: `b${sh.shape}`, label: A.breathShape(sh.shape, sh.sizeFt), act: { kind: 'breath', shape: sh.shape } as AreaAct,
-                why: (actor.resources[actor.breath?.resource ?? ''] ?? 0) <= 0 ? A.noUses : economyBlock(state, actor, { type: 'breath_weapon', actorId, shape: sh.shape, targetHex: actor.pos as Offset }) })),
+              ...(breathOf(actor)?.spec.shapes ?? []).map((sh) => ({ key: `b${sh.shape}`, label: A.breathShape(sh.shape, sh.sizeFt), act: { kind: 'breath', shape: sh.shape } as AreaAct,
+                why: !breathOf(actor)?.spell && (actor.resources[actor.breath?.resource ?? ''] ?? 0) <= 0 ? A.noUses : economyBlock(state, actor, { type: 'breath_weapon', actorId, shape: sh.shape, targetHex: actor.pos as Offset }) })),
             ];
             const size = { w: 240, h: Math.min(box.h - 16, 12 + list.length * 48) };
             const at = bubbleAt(actorPx, size, box, tokenR + 8);

@@ -102,7 +102,9 @@ describe('saldırı ve alan', () => {
     r.replays();
   });
   it('Dragon\'s Breath: bonus eylemle hazır; eylemle 15 ft koni DEX save', () => {
+    // Kuyruk A7: sürüm 36'da nefesi dokunulan yaratık kullanır (a7spells.test.ts); eski davranış sürüm 35'te.
     const r = arena({ spellNames: ['Dragon\'s Breath'] });
+    r.state.kuralSurumu = 35;
     const cast = r.cast({ spellName: 'Dragon\'s Breath', targetHex: o(4, 3) });
     expect(cast.some((e) => e.type === 'save_resolved')).toBe(false);
     expect(r.c('A').concentration?.spell).toBe('Dragon\'s Breath');

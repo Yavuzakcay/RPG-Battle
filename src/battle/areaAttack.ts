@@ -7,6 +7,7 @@
  * - `areaSaveEvents`: hasar bir kez atılır (SRD: bütün hedefler için aynı zar), her hedef ayrı save yapar (elle zarda
  *   her hedef için ayrı istek), başarıda yarım hasar; hasar alanın tepkisi (Hellish Rebuke) her hedeften sonra.
  */
+import { breathOf } from './breath';
 import { a2AreaDamage } from './ridersA2';
 import { bodyOf } from './body';
 import { profileIn } from './zones';
@@ -242,17 +243,19 @@ export function bestAim(state: BattleState, actor: Combatant, spec: AreaTargetSp
  * kaynaktan (yetkinlik bonusu kadar, uzun dinlenmede dolar).
  */
 export function executeBreathWeapon(state: BattleState, actor: Combatant, shape: 'cone' | 'line', aim: Offset, rng: Rng): CommandResult {
-  const b = actor.breath;
+  // Kuyruk A7: büyüyle verilen nefes (Dragon's Breath; kaynak harcanmaz, Magic eylemi).
+  const bo = breathOf(actor);
+  const b = bo?.spec;
   if (!b) return fail('Bu karakterin nefes silahı yok.');
-  const left = actor.resources[b.resource] ?? 0;
+  const left = bo.spell ? 1 : actor.resources[b.resource] ?? 0;
   if (left <= 0) return fail('Breath Weapon kullanımı kalmadı (uzun dinlenmede dolar).');
   const s = b.shapes.find((x) => x.shape === shape);
   if (!s) return fail(`Bu şekil yok: ${shape}.`);
   const spec: AreaTargetSpec = { shape: s.shape, sizeFt: s.sizeFt, origin: 'self', targets: 'all', ...(s.widthFt ? { widthFt: s.widthFt } : {}) };
   const pick = pickArea(state, actor, spec, 0, aim);
   if ('ok' in pick) return pick;
-  const used: BattleEvent = { type: 'feature_used', actorId: actor.id, feature: b.resource, remaining: left - 1 };
-  const events = [used, ...areaSaveEvents(applyEvents(state, [used]), actor, pick, spec,
-    { label: 'Breath Weapon', ability: b.save, dc: b.dc, damageDice: b.dice, damageType: b.damageType, halfOnSave: true }, rng, aim)];
+  const used: BattleEvent[] = bo.spell ? [] : [{ type: 'feature_used', actorId: actor.id, feature: b.resource, remaining: left - 1 }];
+  const events = [...used, ...areaSaveEvents(applyEvents(state, used), actor, pick, spec,
+    { label: bo.spell ? "Dragon's Breath" : 'Breath Weapon', ability: b.save, dc: b.dc, damageDice: b.dice, damageType: b.damageType, halfOnSave: true }, rng, aim)];
   return finish(state, events);
 }

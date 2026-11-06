@@ -17,6 +17,8 @@ import { saveDice } from './effectDice';
 import { applyEvents } from './reduce';
 import { compelEvents, pfegRepeatAdv } from './mind';
 import { canSee } from './maprules';
+import { ruleVersion } from './ruleVersion';
+import { distance } from '../rules/hex';
 import { lineOfFire } from './cover';
 import { strikeApi } from './reactions';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
@@ -130,9 +132,16 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
       // Görev B3: Approach ve Flee önce zorlamayla yürütür (Fear: Dash ile kaçış); sonra tur biter. Süren zorlamada
       // (Suggestion, Fear, Calm Emotions) etki kalır.
       const moved = e.command === 'approach' || e.command === 'flee' ? compelEvents(current, id, e, e.command, rng) : [];
-      evs = [...moved, { type: 'turn_lost', actorId: id, label: e.name, command: e.command },
-        ...(e.commandPersist ? [] : [{ type: 'effect_ended' as const, targetId: id, effectId: e.id, name: e.name, reason: 'turn' as const }])];
-      skip = true;
+      // Kuyruk A7 (sürüm 36, Command Approach): yalnızca büyücünün 5 ft içine varınca tur biter; varamazsa (yolu kalmadı)
+      // turuna devam eder (SRD "ending its turn if it moves within 5 feet of you").
+      const after = applyEvents(current, moved);
+      const me = after.combatants[id];
+      const src = after.combatants[e.sourceId];
+      const free = e.command === 'approach' && !e.commandPersist && ruleVersion(state) >= 36 && !!me?.pos && !!src?.pos && distance(me.pos, src.pos) > 1;
+      evs = free ? [...moved, { type: 'effect_ended' as const, targetId: id, effectId: e.id, name: e.name, reason: 'turn' as const }]
+        : [...moved, { type: 'turn_lost', actorId: id, label: e.name, command: e.command },
+          ...(e.commandPersist ? [] : [{ type: 'effect_ended' as const, targetId: id, effectId: e.id, name: e.name, reason: 'turn' as const }])];
+      if (!free) skip = true;
     }
     events.push(...evs);
     current = applyEvents(current, evs);

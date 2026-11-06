@@ -59,7 +59,8 @@ describe('özel ölçeklenmeler', () => {
     expect(burstRolls(3)).toBe(4);
   });
   it('Dragon\'s Breath: nefes 3d6, slot başına +1d6 (tekrarda da)', () => {
-    const r = cast("Dragon's Breath", 3, { targetId: 'A' });
+    // Kuyruk A7: sürüm 35 yolu (36'da zar dokunulanın nefesinde: a7spells.test.ts).
+    const r = run({ ...arena(["Dragon's Breath"]), kuralSurumu: 35 }, { type: 'cast_spell', actorId: 'A', spellName: "Dragon's Breath", slotLevel: 3, targetId: 'A' }, high);
     const f = run(r.state, { type: 'spell_followup', actorId: 'A', targetId: 'B' });
     expect((f.events.find((e) => e.type === 'save_resolved') as { damageRolls: number[] }).damageRolls.length).toBe(4);
   });

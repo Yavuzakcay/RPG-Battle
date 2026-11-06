@@ -765,7 +765,14 @@
         "saveAdvantage": true,
         "icon": "💗"
       },
-      "kapsamDisi": "Dostluk tutumu ve sosyal avantaj (savaş dışı; Game Master)"
+      "kapsamDisi": "Dostluk tutumu ve sosyal avantaj (savaş dışı; Game Master)",
+      "a7": {
+        "gmNoted": true,
+        "gmNote": "Savaşta Charmed (büyüleyene saldıramaz, sosyal avantaj) uygulanır; dostluk tutumu ve büyü bitince hedefin büyülendiğini bilmesi savaş dışı: Game Master anlatır.",
+        "gmNoteEn": "Charmed applies in combat; the friendly attitude and the target knowing it was charmed afterwards are narrated by the Game Master.",
+        "kapsamDisi": null,
+        "approx": null
+      }
     },
     "school": "Enchantment",
     "srdPage": 115
@@ -809,7 +816,14 @@
         },
         "icon": "😂"
       },
-      "kapsamDisi": "Prone'dan kalkamama: Incapacitated zaten kalkmayı engeller (kural eşdeğeri)"
+      "kapsamDisi": "Prone'dan kalkamama: Incapacitated zaten kalkmayı engeller (kural eşdeğeri)",
+      "a7": {
+        "gmNoted": true,
+        "gmNote": "Savaşta Prone + Incapacitated, tur sonu ve hasarda yeniden save uygulanır; kahkahanın anlatımı Game Master'da.",
+        "gmNoteEn": "Prone + Incapacitated with end-of-turn and on-damage saves apply in combat; the Game Master narrates the laughter.",
+        "kapsamDisi": null,
+        "approx": null
+      }
     },
     "school": "Enchantment",
     "srdPage": 140
@@ -956,7 +970,11 @@
         "icon": "☝",
         "needsHearing": true
       },
-      "approx": "Drop: elde tutulan bırakılmaz (silah bırakma modeli yok), yalnızca turunu kaybeder; Approach ve Flee yürüyüşten sonra turu biter"
+      "approx": "Drop: elde tutulan bırakılmaz (silah bırakma modeli yok), yalnızca turunu kaybeder; Approach ve Flee yürüyüşten sonra turu biter",
+      "a7": {
+        "sigmayan": "Drop: elde tutulanın yere düşmesi ve geri alınması yok (eşya bırakma modeli yok); hedef yalnızca turunu kaybeder.",
+        "approx": null
+      }
     },
     "school": "Enchantment",
     "srdPage": 116
@@ -1204,7 +1222,21 @@
         "attackedAdv": true,
         "light": 2
       },
-      "approx": "Nesneler işaretlenmez; saldıranın hedefi görmesi ayrıca denetlenmez; ışık (10 ft) yalnızca karanlık/gece haritalarında"
+      "approx": "Nesneler işaretlenmez; saldıranın hedefi görmesi ayrıca denetlenmez; ışık (10 ft) yalnızca karanlık/gece haritalarında",
+      "a7": {
+        "failEffect": {
+          "rounds": 10,
+          "revealed": true,
+          "attackedAdv": true,
+          "light": 2,
+          "raw": {
+            "attackedAdvSee": true
+          }
+        },
+        "kapsamDisi": "Loş ışık (10 ft) yalnızca karanlık/gece haritasında anlamlı (ışık modeli aydınlık/karanlık).",
+        "sigmayan": "Küpteki nesneler işaretlenmez: nesneye saldırı avantajı yok (nesneler yalnızca AC/HP ile).",
+        "approx": null
+      }
     },
     "school": "Evocation",
     "srdPage": 129,
@@ -1617,7 +1649,19 @@
         "color": "#1d1430",
         "icon": "🌑"
       },
-      "approx": "Nesneye bağlı yürüyen karanlık yok; Blindsight/Truesight yok; Darkvision bu alanı göremez ve ışık aydınlatamaz (karanlık/gece haritasında), her haritada yoğun örtü"
+      "approx": "Nesneye bağlı yürüyen karanlık yok; Blindsight/Truesight yok; Darkvision bu alanı göremez ve ışık aydınlatamaz (karanlık/gece haritasında), her haritada yoğun örtü",
+      "a7": {
+        "zone": {
+          "rounds": 100,
+          "obscured": "heavy",
+          "dark": true,
+          "color": "#1d1430",
+          "icon": "🌑",
+          "dispelLight": 2
+        },
+        "kapsamDisi": "Taşınmayan nesneye yapılan karanlık nesnenin altıgeninde durur (noktaya yapmakla aynı); nesnenin üstünü örtmek savaş dışı.",
+        "approx": null
+      }
     },
     "school": "Evocation",
     "srdPage": 122,
@@ -1781,6 +1825,23 @@
       "repeat": {
         "cost": "bonus",
         "target": "same"
+      },
+      "a7": {
+        "afterHit": {
+          "save": "con",
+          "attackDis": {},
+          "untilSourceTurn": true,
+          "checkDis": [
+            "str",
+            "dex",
+            "con",
+            "int",
+            "wis",
+            "cha"
+          ]
+        },
+        "sigmayan": "Metal nesne seçimi ve bırakma yok: her hedef metal taşıyor sayılır, başarısız save'de nesneyi bırakamaz ve saldırı/kontrol dezavantajını alır.",
+        "approx": null
       }
     },
     "school": "Transmutation",
@@ -2616,7 +2677,11 @@
       "upcast": {
         "other": true
       },
-      "approx": "Yaratıktaki süren büyü etkileri, büyüyle çağrılmış yaratık, silahtaki büyü güçlendirmesi (Magic Weapon, Divine Favor) ve altıgen hedefte büyü alanları; slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye. Nesne büyüleri (eşya) yok"
+      "approx": "Yaratıktaki süren büyü etkileri, büyüyle çağrılmış yaratık, silahtaki büyü güçlendirmesi (Magic Weapon, Divine Favor) ve altıgen hedefte büyü alanları; slotun üstündeki büyüde yetenek kontrolü DC 10 + seviye. Nesne büyüleri (eşya) yok",
+      "a7": {
+        "kapsamDisi": "Sihirli eşyanın kendi büyüsü dağılmaz (SRD); nesnedeki süren büyü (Light, Continual Flame) altıgen hedefte kalkar.",
+        "approx": null
+      }
     },
     "school": "Abjuration",
     "srdPage": 124
@@ -3069,6 +3134,11 @@
           "6": 3
         },
         "applied": true
+      },
+      "a7": {
+        "touchBuff": true,
+        "sigmayan": "Tek silah seçimi yok: güçlendirme dokunulanın bütün silah saldırılarına; silahın zaten büyülü olup olmadığı denetlenmez.",
+        "approx": null
       }
     },
     "school": "Transmutation",
@@ -3455,7 +3525,50 @@
           }
         }
       },
-      "approx": "Boyut yalnızca jeton etiketi (mekanik tek altıgen); STR kontrolleri ve nesneler yok"
+      "approx": "Boyut yalnızca jeton etiketi (mekanik tek altıgen); STR kontrolleri ve nesneler yok",
+      "a7": {
+        "effect": {
+          "targets": 1,
+          "side": "any",
+          "rounds": 10,
+          "icon": "↕",
+          "variants": {
+            "Enlarge": {
+              "saveAdv": [
+                "str"
+              ],
+              "hitDie": "1d4",
+              "size": 1,
+              "icon": "⬆",
+              "raw": {
+                "checkAdv": [
+                  "str"
+                ]
+              }
+            },
+            "Reduce": {
+              "saveDis": [
+                "str"
+              ],
+              "damagePenalty": {
+                "die": "1d4",
+                "weaponOnly": true,
+                "min": 1
+              },
+              "size": -1,
+              "icon": "⬇",
+              "raw": {
+                "checkDis": [
+                  "str"
+                ]
+              }
+            }
+          }
+        },
+        "kapsamDisi": "Boyut, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı).",
+        "sigmayan": "Nesneye (taşınmayan) yapma yok: savaş nesneleri boyut taşımaz.",
+        "approx": null
+      }
     },
     "school": "Transmutation",
     "srdPage": 127
@@ -4010,7 +4123,20 @@
         "light": 4,
         "icon": "💡"
       },
-      "kapsamDisi": "Nesne yerine yaratık taşır; loş ışık ayrımı oyunun ışık modelinde yok (aydınlık/karanlık)"
+      "kapsamDisi": "Nesne yerine yaratık taşır; loş ışık ayrımı oyunun ışık modelinde yok (aydınlık/karanlık)",
+      "a7": {
+        "objectLight": 4,
+        "kapsamDisi": "Loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık); 1 saatlik süre savaştan uzun.",
+        "approx": null,
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "rounds": 600,
+          "light": 4,
+          "icon": "💡",
+          "self": true
+        }
+      }
     },
     "school": "Evocation",
     "srdPage": 144
@@ -4047,7 +4173,22 @@
         "cost": "bonus",
         "target": "any"
       },
-      "approx": "Dört ışık yerine tek ışık noktası (çevresiyle 10 ft); taşıma bonus eylemle bir yaratığın altıgenine; insan biçimi yok"
+      "approx": "Dört ışık yerine tek ışık noktası (çevresiyle 10 ft); taşıma bonus eylemle bir yaratığın altıgenine; insan biçimi yok",
+      "a7": {
+        "zone": {
+          "rounds": 10,
+          "light": 2,
+          "color": "#fff3b0",
+          "icon": "✨"
+        },
+        "repeat": {
+          "cost": "bonus",
+          "target": "any",
+          "moveZoneFt": 60
+        },
+        "kapsamDisi": "Dört ayrı ışık yerine birleşik insansı biçim (SRD seçeneği); loş ışık ayrımı ışık modelinde yok.",
+        "approx": null
+      }
     },
     "school": "Illusion",
     "srdPage": 121
@@ -4074,7 +4215,21 @@
         "light": 4,
         "icon": "🔥"
       },
-      "kapsamDisi": "Nesne yerine yaratık taşır, süre savaş boyunca (kalıcı ışık savaş içinde eşdeğer)"
+      "kapsamDisi": "Nesne yerine yaratık taşır, süre savaş boyunca (kalıcı ışık savaş içinde eşdeğer)",
+      "a7": {
+        "objectLight": 4,
+        "objectLightKeep": true,
+        "kapsamDisi": "Loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık).",
+        "approx": null,
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "rounds": 14400,
+          "light": 4,
+          "icon": "🔥",
+          "self": true
+        }
+      }
     },
     "school": "Evocation",
     "srdPage": 119
@@ -4111,7 +4266,21 @@
         "color": "#fff7d6",
         "icon": "☀"
       },
-      "approx": "Nesneye bağlı yürüyen ışık yok; ek 60 ft loş ışık yok; gün ışığına duyarlı yaratık kuralları yok"
+      "approx": "Nesneye bağlı yürüyen ışık yok; ek 60 ft loş ışık yok; gün ışığına duyarlı yaratık kuralları yok",
+      "a7": {
+        "zone": {
+          "rounds": 600,
+          "light": 0,
+          "dispels": [
+            "darkness"
+          ],
+          "color": "#fff7d6",
+          "icon": "☀",
+          "sunlight": true
+        },
+        "kapsamDisi": "Taşınmayan nesneye yapılan ışık nesnenin altıgeninde durur; ek 60 ft loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık).",
+        "approx": null
+      }
     },
     "school": "Evocation",
     "srdPage": 122
@@ -4178,7 +4347,12 @@
         "dice": "1d6",
         "applied": true
       },
-      "approx": "Kılıç el boşluğu denetlenmez; bırakıp yeniden çağırma yok; saldırı \"Büyüyü sürdür\" (eylem) ile"
+      "approx": "Kılıç el boşluğu denetlenmez; bırakıp yeniden çağırma yok; saldırı \"Büyüyü sürdür\" (eylem) ile",
+      "a7": {
+        "freeHand": true,
+        "sigmayan": "Bıçağı bırakıp bonus eylemle yeniden çağırma yok (elde silah değiştirme modeli yok); kalkan ya da yan el silahı taşıyan yapamaz.",
+        "approx": null
+      }
     },
     "school": "Evocation",
     "srdPage": 132
@@ -4206,7 +4380,14 @@
         "seeInvisible": true,
         "icon": "👓"
       },
-      "kapsamDisi": "Ethereal Plane görüşü: oyunda düzlem modeli yok; Ethereal hedef zaten etkilenemez (SRD)"
+      "kapsamDisi": "Ethereal Plane görüşü: oyunda düzlem modeli yok; Ethereal hedef zaten etkilenemez (SRD)",
+      "a7": {
+        "gmNoted": true,
+        "gmNote": "Görünmezi görme savaşta uygulanır; Ethereal düzlemi görmek savaş dışı (Ethereal yaratık zaten etkilenemez): Game Master.",
+        "gmNoteEn": "Seeing invisible creatures applies in combat; seeing into the Ethereal Plane is narrated by the Game Master.",
+        "kapsamDisi": null,
+        "approx": null
+      }
     },
     "school": "Divination",
     "srdPage": 160
@@ -5067,6 +5248,27 @@
       "upcast": {
         "dice": "1d6",
         "applied": true
+      },
+      "a7": {
+        "kind": "effect",
+        "castOnly": null,
+        "repeat": null,
+        "selfLight": null,
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "rounds": 10,
+          "choices": [
+            "fire",
+            "acid",
+            "cold",
+            "lightning",
+            "poison"
+          ],
+          "breathGrant": 15,
+          "icon": "🐉"
+        },
+        "approx": null
       }
     },
     "school": "Transmutation",
@@ -5110,7 +5312,14 @@
         "targets": 1,
         "applied": true
       },
-      "kapsamDisi": "Kontrol avantajı uygulanır; savaşta kontrol azdır (İt, Gizlen, kurtulma) — not, eksik değil"
+      "kapsamDisi": "Kontrol avantajı uygulanır; savaşta kontrol azdır (İt, Gizlen, kurtulma) — not, eksik değil",
+      "a7": {
+        "gmNoted": true,
+        "gmNote": "Seçilen yetenekte kontrol avantajı savaşta uygulanır (İt, kurtulma, Gizlen…); savaş dışı kontroller Game Master'da.",
+        "gmNoteEn": "Advantage on checks with the chosen ability applies in combat; out-of-combat checks are up to the Game Master.",
+        "kapsamDisi": null,
+        "approx": null
+      }
     },
     "school": "Transmutation",
     "srdPage": 127

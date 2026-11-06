@@ -1409,7 +1409,14 @@
     "polymorph": true,
     "icon": "🐻"
    },
-   "kapsamDisi": "Polymorph biçim olayıyla istekli dostlar (SRD ile aynı; not)"
+   "kapsamDisi": "Polymorph biçim olayıyla istekli dostlar (SRD ile aynı; not)",
+   "a7": {
+    "gmNoted": true,
+    "gmNote": "İstekli dostlar hayvan biçimine (Polymorph yolu) girer; biçim seçimi ve savaş dışı süre Game Master'da.",
+    "gmNoteEn": "Willing allies take beast forms (Polymorph path); form choice and out-of-combat duration are up to the Game Master.",
+    "kapsamDisi": null,
+    "approx": null
+   }
   },
   "school": "Transmutation",
   "srdPage": 108
@@ -2345,7 +2352,14 @@
    "kind": "utility",
    "wish": true,
    "gmNote": "8. seviye ya da altı bir büyüyü malzemesiz kopyalar (seçim); diğer dilekler savaş dışı (Game Master)",
-   "kapsamDisi": "Kopyalama savaşta; diğer dilekler savaş dışı (Game Master)"
+   "kapsamDisi": "Kopyalama savaşta; diğer dilekler savaş dışı (Game Master)",
+   "a7": {
+    "gmNoted": true,
+    "gmNote": "8. seviye ya da altı bir büyüyü kopyalama savaşta (seçim listesi); serbest dilekler Game Master'da.",
+    "gmNoteEn": "Duplicating a spell of 8th level or lower works in combat (choice list); any other wish is up to the Game Master.",
+    "kapsamDisi": null,
+    "approx": null
+   }
   },
   "school": "Conjuration",
   "srdPage": 175

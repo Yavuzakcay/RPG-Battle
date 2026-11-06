@@ -8,6 +8,7 @@
  * komut hiçbir şey harcamaz.
  */
 import { heldFollow, mechanicsAt } from './spellVersion';
+import { breathOf } from './breath';
 import { abilitiesOf } from './monsterAbilities';
 import { apexCost, isApex } from './apex';
 import { globalRule } from './ruleControl';
@@ -182,9 +183,12 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
   const e = actor.economy;
   switch (cmd.type) {
     case 'attack':
+    case 'breath_weapon':
+      // Kuyruk A7: büyüyle verilen nefes Magic eylemidir (saldırının yerine değil).
+      if (breathOf(actor)?.spell) return spend(actor, 'action', "Dragon's Breath");
+    // falls through
     case 'attack_gate':
     case 'attack_object':
-    case 'breath_weapon':
     case 'grapple':
     case 'shove': {
       // Light silahla saldırı (yan el silahından farklı): yan el ek saldırısını açar (Görev P1).
@@ -331,7 +335,9 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Kuyruk 19: Tree Stride eylem harcamaz (5 ft hareket).
       if (cmd.targetHex && strideSpellOf(state, actor)) return { ok: true, event: null };
       // Kuyruk 19: Faithful Hound taşıma Magic eylemi.
-      if (cmd.targetHex && movableZoneOf(state, actor)) return spend(actor, 'action', 'Faithful Hound');
+      const mz = cmd.targetHex ? movableZoneOf(state, actor) : null;
+      // Kuyruk A7: taşıma maliyeti büyünün tekrarından (Dancing Lights bonus eylem); eski kayıtta Faithful Hound eylem.
+      if (mz) return spend(actor, ruleVersion(state) >= 36 ? mz.spell.mechanics.repeat?.cost ?? 'action' : 'action', mz.spell.name);
       // Kuyruk A6: elde tutulan büyü (Produce Flame: Magic eylemi); tekrar alanları sürüme göre.
       const followed = heldFollow(state, actor)?.spell ?? actor.concentration?.spell;
       const fsp = spells.find((x) => x.name === followed);

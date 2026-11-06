@@ -1029,11 +1029,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'object_damaged':
       return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, hp: event.hpAfter } : o)) } } : state;
     case 'object_changed':
-      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found)) return state;
+      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found && event.light === undefined)) return state;
       return { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => {
         if (o.id !== event.objectId) return o;
         // Görev S3: taşıma (retrieve): `carriedBy` null bırakır, `at` düştüğü yer.
-        const { carriedBy: _c, ...rest } = o;
+        const { carriedBy: _c, ...rest0 } = o;
+        // Kuyruk A7: nesne ışığı (Light, Continual Flame); null kaldırır.
+        const { light: _l, lightSpell: _ls, lightBy: _lb, ...bare } = rest0;
+        const rest = event.light === undefined ? rest0 : event.light === null ? bare : { ...bare, light: event.light.r, lightSpell: event.light.spell, lightBy: event.light.by };
         const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
         return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}) };
       }) }, ...(((): Partial<BattleState> => {

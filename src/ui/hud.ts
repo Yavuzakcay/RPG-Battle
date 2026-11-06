@@ -1,4 +1,5 @@
 /** Harita üstü arayüzün (HUD) saf yardımcıları: yüzen menü ve balon yerleşimi, parlayan hedefler. */
+import { breathOf } from '../battle/breath';
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { summonDef } from '../battle/summons';
@@ -213,7 +214,7 @@ export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetS
     const a = actor.attacks[act.index];
     return a?.area ? { spec: a.area, rangeFt: a.area.rangeFt ?? 0, label: a.name } : null;
   }
-  const s = actor.breath?.shapes.find((x) => x.shape === act.shape);
+  const s = breathOf(actor)?.spec.shapes.find((x) => x.shape === act.shape);
   return s ? { spec: { shape: s.shape, sizeFt: s.sizeFt, origin: 'self', targets: 'all', ...(s.widthFt ? { widthFt: s.widthFt } : {}) }, rangeFt: 0, label: 'Breath Weapon' } : null;
 }
 

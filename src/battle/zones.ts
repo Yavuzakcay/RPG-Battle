@@ -37,6 +37,9 @@ import { turnKey } from './economy';
 import { bodyAt } from './body';
 import { applyEvents } from './reduce';
 import { pushAwayEvents } from './forced';
+import { ruleVersion } from './ruleVersion';
+import { mechanicsAt } from './spellVersion';
+import { senseSees } from './sight';
 import { concentrationEvent, spendSlot } from './slots';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
 
@@ -307,7 +310,9 @@ export function casterTurnZoneEvents(state: BattleState, casterId: string, rng: 
 export function movableZoneOf(state: BattleState, actor: Combatant): { zone: SpellZone; spell: Spell } | null {
   if (!globalRule(state, 'spellsK19')) return null;
   for (const z of state.map?.zones ?? []) {
-    const sp = spellById(z.spellId);
+    // Kuyruk A7: sürüm blokları (Dancing Lights bonus eylemle 60 ft).
+    const sp0 = spellById(z.spellId);
+    const sp = sp0 ? { ...sp0, mechanics: mechanicsAt(state, sp0) } : undefined;
     if (z.casterId === actor.id && sp?.mechanics.repeat?.moveZoneFt !== undefined) return { zone: z, spell: sp };
   }
   return null;
@@ -395,8 +400,10 @@ export function zoneAttackSources(state: BattleState, attacker: Combatant, targe
   // CILA: menzilli silah saldırısı rüzgâr duvarından geçerken otomatik ıskalar (SRD 5.2.1 Wind Wall).
   const wall = ranged && !spell ? windWallBetween(state, attacker.pos, target.pos) : undefined;
   const out: ModeSource[] = [];
-  const targetHidden = heavilyObscured(state, target.pos);
-  const attackerHidden = heavilyObscured(state, attacker.pos);
+  // Kuyruk A7 (sürüm 36): Blindsight/Truesight menzilindeki yoğun örtü (Darkness, Fog Cloud) görüşü kesmez.
+  const v36 = ruleVersion(state) >= 36;
+  const targetHidden = heavilyObscured(state, target.pos) && !(v36 && senseSees(state, attacker, target));
+  const attackerHidden = heavilyObscured(state, attacker.pos) && !(v36 && senseSees(state, target, attacker));
   if (targetHidden) out.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (yoğun örtü)' });
   if (attackerHidden) out.push({ effect: 'advantage', reason: 'Görülmeyen saldıran (yoğun örtü)' });
   // CILA: aradaki yoğun örtü (Fog Cloud, Stinking Cloud…) görüşü keser: iki taraf da birbirini görmez (avantaj ve
@@ -503,6 +510,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
     zone = {
       id: newZoneId(after, spell.id, actor.id), spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side,
       dc: actor.spellSaveDc ?? 10, slotLevel: slot.slotLevel ?? spell.level, hexes,
+      // Kuyruk A7 (sürüm 36): sürüm blokları alanın kuralını değiştirdiyse kural alanda saklanır (replay ve yükleme aynı).
+      ...(ruleVersion(state) >= 36 && spec !== spellById(spell.id)?.mechanics.zone ? { spec } : {}),
       // Kuyruk 19: kaplanan merkez (Guardian of Faith) ve taşınabilir merkez (Faithful Hound).
       ...((spec.occupy || spec.casterTurn) && aim && globalRule(state, 'spellsK19') ? { center: aim } : {}),
       // Kuyruk 19: Wall of Fire: hasar veren yüz (varsayılan büyücüden uzak yan).
@@ -515,6 +524,9 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
     events.push({ type: 'zone_created', zone });
     // Kuyruk 19: duvarın açıldığı altıgendeki yaratık yana itilir (Wall of Force/Stone); kapatılan DEX save.
     events.push(...wallOpenEvents(applyEvents(state, events), actor, zone, cmd.choice === 'near' || cmd.choice === 'far' ? cmd.choice : undefined, rng));
+    // Kuyruk A7 (Darkness, `dispelLight`): örtüştüğü, en çok bu seviyedeki büyülerin ışığı kalkar (yaratıktaki ışık etkisi,
+    // ışık alanı, nesne ışığı).
+    if (spec.dispelLight !== undefined) events.push(...dispelLightEvents(state, hexes, spec.dispelLight));
     // Görev B4: Daylight örtüştüğü Darkness alanlarını kaldırır (büyücünün konsantrasyonu sürer, alan yok olur).
     for (const other of state.map?.zones ?? []) {
       if (spec.dispels?.includes(other.spellId) && zoneHexes(state, other).some((h) => hexes.some((x) => sameHex(x, h)))) {
@@ -564,6 +576,25 @@ export function zoneDriftEvents(state: BattleState, casterId: string): BattleEve
     const moved = ax.map((a) => axialToOffset({ q: a.q + dir.q * steps, r: a.r + dir.r * steps }))
       .filter((h) => h.col >= 0 && h.row >= 0 && h.col < size.cols && h.row < size.rows);
     out.push(moved.length ? { type: 'zone_moved', zoneId: z.id, hexes: moved } : { type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'expired' });
+  }
+  return out;
+}
+
+/** Kuyruk A7: alanla örtüşen, en çok `maxLevel` seviyedeki büyülerin ışıkları (etki, alan, nesne) kalkar. */
+function dispelLightEvents(state: BattleState, hexes: Offset[], maxLevel: number): BattleEvent[] {
+  const inArea = (h: Offset) => hexes.some((x) => sameHex(x, h));
+  const low = (spellId: string) => { const sp = spellById(spellId); return !!sp && sp.level <= maxLevel; };
+  const out: BattleEvent[] = [];
+  for (const c of Object.values(state.combatants)) {
+    if (!c.pos || !inArea(c.pos)) continue;
+    for (const e of c.effects ?? []) if (e.light !== undefined && e.id.startsWith('spells:') && low(e.id.slice(7).split(':')[0] as string)) out.push({ type: 'effect_ended', targetId: c.id, effectId: e.id, name: e.name, reason: 'dispelled' });
+  }
+  for (const z of state.map?.zones ?? []) {
+    if ((z.spec ?? zoneSpecOf(z))?.light !== undefined && low(z.spellId) && zoneHexes(state, z).some(inArea)) out.push({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'dispelled' });
+  }
+  for (const o of state.map?.objects ?? []) {
+    const at = o.carriedBy ? state.combatants[o.carriedBy]?.pos : o.at;
+    if (o.light !== undefined && o.lightSpell && low(o.lightSpell) && at && inArea(at)) out.push({ type: 'object_changed', objectId: o.id, label: `${o.lightSpell}: ışık kalktı`, light: null });
   }
   return out;
 }
