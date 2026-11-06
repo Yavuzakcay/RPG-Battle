@@ -66,6 +66,9 @@ export function checkReach(
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }
   if (!state.map || !attacker.pos || !target.pos) return { ok: true, sources: [], cover: 0 };
+  // Görev P6: ek paket erişim eki (`boyut.erisimFt`; süren etki `reachPlus`) yakın dövüşe.
+  const plus = reach.kind === 'melee' ? (attacker.effects ?? []).reduce((n, e) => n + (e.reachPlus ?? 0), 0) : 0;
+  if (plus) reach = { kind: 'melee', reachFt: (reach as { reachFt: number }).reachFt + plus };
   // Görev A6: çok altıgenli gövdelerde en yakın iki altıgen arası.
   const d = gap(state, attacker, target);
   const ft = d * 5;

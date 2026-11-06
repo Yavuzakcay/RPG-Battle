@@ -8,7 +8,7 @@ import doc from '../../harita/belgeler/PAKET-ILKELLER.md?raw';
 import { formulOk, ilkelErrors, ilkelKismi, ILKELLER, yaratikErrors } from './ilkelSema';
 
 const ctx = () => ({
-  kaynaklar: new Set(['kalkan-sozu', 'sifa', 'cagri', 'dev-ofkesi', 'golge-adimi', 'son-nefes', 'ofke-hamlesi', 'gece-bicimi', 'sis-adimi', 'sis-perde']),
+  kaynaklar: new Set(['kehanet', 'kalkan-sozu', 'sifa', 'cagri', 'dev-ofkesi', 'golge-adimi', 'son-nefes', 'ofke-hamlesi', 'gece-bicimi', 'sis-adimi', 'sis-perde']),
   sinifKaynaklari: new Set(['rage', 'focus']),
   yaratiklar: new Set(['kul-kurdu']),
 });
@@ -17,8 +17,8 @@ describe('PAKET-ILKELLER.md', () => {
   it('şemadan üretilmiş ve güncel (npx vite-node scripts/paket-ilkeller-belge.ts)', () => {
     expect(doc).toBe(belgeMetni());
   });
-  it('25 ilkel; her örnek geçerli ve kısmi alan içermez', () => {
-    expect(Object.keys(ILKELLER)).toHaveLength(25);
+  it('27 ilkel (P6: +zarMuhru, +engeldenGec); her örnek geçerli ve kısmi alan içermez', () => {
+    expect(Object.keys(ILKELLER)).toHaveLength(27);
     for (const [k, s] of Object.entries(ILKELLER)) {
       expect(s.ornek.tur).toBe(k);
       expect(ilkelErrors([s.ornek], k, ctx())).toEqual([]);
@@ -56,8 +56,10 @@ describe('ilkel doğrulama', () => {
     expect(ilkelErrors([{ tur: 'bicim', id: 'kurt', tetik: 'bonus' }, { tur: 'direnc', turler: ['fire'], kosul: ['bicim:kurt'] }], 'p', ctx())).toEqual([]);
   });
   it('kısmi alanlar raporlanır', () => {
-    expect(ilkelKismi({ tur: 'boyut', erisimFt: 5 })).toEqual(['erisimFt']);
-    expect(ilkelKismi({ tur: 'tepki', olay: 'dostaIsabet', etki: 'hasarAzalt' })).toEqual(['etki']);
+    // P6: erişim ve dostaIsabet etkileri artık tam; kalan yaklaşık birleşim hasarAldim + karşı vuruş dışı.
+    expect(ilkelKismi({ tur: 'boyut', erisimFt: 5 })).toEqual([]);
+    expect(ilkelKismi({ tur: 'tepki', olay: 'dostaIsabet', etki: 'hasarAzalt' })).toEqual([]);
+    expect(ilkelKismi({ tur: 'tepki', olay: 'hasarAldim', etki: 'yariya' })).toEqual(['etki']);
   });
 });
 

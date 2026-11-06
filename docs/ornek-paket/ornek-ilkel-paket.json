@@ -1,0 +1,498 @@
+{
+ "format": "rpg-battle-icerik",
+ "version": 1,
+ "id": "p6-genisleme",
+ "name": {
+  "tr": "P6 genişleme (kurgusal)",
+  "en": "P6 extension (fictional)"
+ },
+ "author": "Test",
+ "yaratiklar": [
+  {
+   "id": "kemik-uyuyan",
+   "ad": {
+    "tr": "Kemik Uyuyan",
+    "en": "Bone Sleeper"
+   },
+   "boyut": "M",
+   "tur": "undead",
+   "ac": 13,
+   "hp": {
+    "3": 12,
+    "11": 30
+   },
+   "hiz": {
+    "yurume": 30
+   },
+   "yetenekler": {
+    "str": 12,
+    "dex": 12,
+    "con": 12,
+    "int": 4,
+    "wis": 8,
+    "cha": 4
+   },
+   "saldirilar": [
+    {
+     "ad": "Pençe",
+     "hasar": "1d6+$pb",
+     "hasarTuru": "slashing"
+    }
+   ],
+   "jeton": {
+    "gorsel": "iskelet",
+    "ton": 90
+   }
+  }
+ ],
+ "subclasses": [
+  {
+   "id": "kehanet-okulu",
+   "class": "wizard",
+   "name": {
+    "tr": "Kehanet Okulu",
+    "en": "School of Omens"
+   },
+   "role": {
+    "tr": "Kurgusal kâhin (test)",
+    "en": "Fictional seer (test)"
+   },
+   "features": [
+    {
+     "id": "kehanet-havuzu",
+     "level": 3,
+     "name": {
+      "tr": "Kehanet Havuzu",
+      "en": "Omen Pool"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "kehanet",
+       "sayi": 2,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "kaynak",
+       "id": "yazgi",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      }
+     ]
+    },
+    {
+     "id": "kehanet-zarlari",
+     "level": 3,
+     "name": {
+      "tr": "Kehanet Zarları",
+      "en": "Omen Dice"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "zarMuhru",
+       "sayi": 2,
+       "kim": [
+        "kendi",
+        "dost",
+        "dusman"
+       ],
+       "menzilFt": 60,
+       "kaynak": {
+        "id": "kehanet",
+        "maliyet": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "bukulmus-buyu",
+     "level": 3,
+     "name": {
+      "tr": "Bükülmüş Büyü",
+      "en": "Warped Spell"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "buyuDegisimi",
+       "yeniTur": "force",
+       "hasarTurleri": [
+        "fire"
+       ],
+       "menzilEkiFt": 30,
+       "kurtulmaDezavantaji": true
+      }
+     ]
+    },
+    {
+     "id": "sakin-zihin",
+     "level": 6,
+     "name": {
+      "tr": "Sakin Zihin",
+      "en": "Calm Mind"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "zarEtkisi",
+       "d20AltSinir": 10,
+       "d20Icin": [
+        "kurtulma"
+       ]
+      },
+      {
+       "tur": "zarEtkisi",
+       "kritikAralik": 19
+      }
+     ]
+    },
+    {
+     "id": "yazgi-sozu",
+     "level": 6,
+     "name": {
+      "tr": "Yazgı Sözü",
+      "en": "Word of Fate"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "zarTesti",
+       "etki": "zorlaSonuc",
+       "sonuc": "basari",
+       "kim": "dost",
+       "menzilFt": 30,
+       "kaynak": {
+        "id": "yazgi",
+        "maliyet": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "buyu-kilic",
+     "level": 10,
+     "name": {
+      "tr": "Büyü Kılıcı",
+      "en": "Spell Blade"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "ekSaldiri",
+       "tetik": "bonus",
+       "hedef": "dusman",
+       "kosul": [
+        "buyuTurunda"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "demir-siper",
+   "class": "fighter",
+   "name": {
+    "tr": "Demir Siper",
+    "en": "Iron Bulwark"
+   },
+   "role": {
+    "tr": "Kurgusal kalkan (test)",
+    "en": "Fictional shield (test)"
+   },
+   "features": [
+    {
+     "id": "uzun-kol",
+     "level": 3,
+     "name": {
+      "tr": "Uzun Kol",
+      "en": "Long Arm"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "boyut",
+       "tetik": "bonus",
+       "boyut": "L",
+       "erisimFt": 5,
+       "sure": 10
+      }
+     ]
+    },
+    {
+     "id": "ikiz-darbe",
+     "level": 3,
+     "name": {
+      "tr": "İkiz Darbe",
+      "en": "Twin Strike"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "ekSaldiri",
+       "tetik": "pasif",
+       "saldiriSayisi": 2
+      }
+     ]
+    },
+    {
+     "id": "siper-ol",
+     "level": 3,
+     "name": {
+      "tr": "Siper Ol",
+      "en": "Take Cover"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "dostaIsabet",
+       "etki": "hasarAzalt",
+       "miktar": "1d10+$con",
+       "menzilFt": 30
+      }
+     ]
+    },
+    {
+     "id": "col-derisi",
+     "level": 7,
+     "name": {
+      "tr": "Çöl Derisi",
+      "en": "Desert Hide"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "direnc",
+       "turler": [
+        "fire"
+       ],
+       "kosul": [
+        "harita:col"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "duvar-yuruyusu",
+     "level": 7,
+     "name": {
+      "tr": "Duvar Yürüyüşü",
+      "en": "Wall Walk"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "engeldenGec",
+       "tetik": "bonus",
+       "sure": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kemik-cagirici",
+   "class": "cleric",
+   "name": {
+    "tr": "Kemik Çağırıcı",
+    "en": "Bone Caller"
+   },
+   "role": {
+    "tr": "Kurgusal ölü çağırıcı (test)",
+    "en": "Fictional necromancer (test)"
+   },
+   "features": [
+    {
+     "id": "kemik-diriltme",
+     "level": 3,
+     "name": {
+      "tr": "Kemik Diriltme",
+      "en": "Bone Raising"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "cagir",
+       "tetik": "eylem",
+       "yaratik": "kemik-uyuyan",
+       "mod": "olenden",
+       "taraf": "hepsi",
+       "sayi": 2,
+       "sure": 10,
+       "konsantrasyon": true
+      }
+     ]
+    },
+    {
+     "id": "kara-toprak",
+     "level": 3,
+     "name": {
+      "tr": "Kara Toprak",
+      "en": "Black Soil"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "yuzeyOlustur",
+       "tetik": "eylem",
+       "yuzey": "alan",
+       "zaman": [
+        "turBasi"
+       ],
+       "hasar": "1d6",
+       "hasarTuru": "necrotic",
+       "save": {
+        "yetenek": "con",
+        "yari": true
+       },
+       "zorluArazi": true,
+       "hedefler": "dusmanlar",
+       "sure": 3,
+       "yaricapFt": 5,
+       "menzilFt": 30
+      },
+      {
+       "tur": "yuzeyOlustur",
+       "tetik": "bonus",
+       "yuzey": "ice",
+       "sure": 2,
+       "yaricapFt": 0,
+       "menzilFt": 30
+      }
+     ]
+    },
+    {
+     "id": "kemik-kalkan",
+     "level": 6,
+     "name": {
+      "tr": "Kemik Kalkan",
+      "en": "Bone Shield"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "banaIsabet",
+       "etki": "iskalat"
+      }
+     ]
+    },
+    {
+     "id": "kemik-ayna",
+     "level": 6,
+     "name": {
+      "tr": "Kemik Ayna",
+      "en": "Bone Mirror"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "banaIsabet",
+       "etki": "yonlendir",
+       "menzilFt": 10
+      }
+     ]
+    },
+    {
+     "id": "kirik-kemik",
+     "level": 10,
+     "name": {
+      "tr": "Kırık Kemik",
+      "en": "Broken Bone"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "dostaIsabet",
+       "etki": "kritikIptal",
+       "menzilFt": 30
+      },
+      {
+       "tur": "tepki",
+       "olay": "dostaIsabet",
+       "etki": "direnc",
+       "turler": [
+        "slashing"
+       ]
+      },
+      {
+       "tur": "tepki",
+       "olay": "dostaIsabet",
+       "etki": "yariya"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

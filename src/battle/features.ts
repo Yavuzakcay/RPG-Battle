@@ -81,13 +81,15 @@ export const spellOf = (name: string | undefined): Spell | undefined => spells.f
 
 /** Yaratığın en iyi yakın dövüş saldırısı (fırsat saldırısı için) ve erişimi (ft). */
 export function meleeOf(c: Combatant): { option?: AttackOption; attackIndex?: number; reachFt: number } | null {
+  // Görev P6: ek paket erişim eki (fırsat saldırısı da).
+  const plus = (c.effects ?? []).reduce((n, e) => n + (e.reachPlus ?? 0), 0);
   const weapon = c.weaponOptions.filter((o) => !o.ranged && !o.spell).sort((a, b) => avg(b.damage) - avg(a.damage))[0];
-  if (weapon) return { option: weapon, reachFt: weapon.reachFt ?? 5 };
+  if (weapon) return { option: weapon, reachFt: (weapon.reachFt ?? 5) + plus };
   const best = c.attacks
     .map((a, i) => ({ a, i }))
     .filter(({ a }) => !a.save && !a.ranged && a.damageDice && !a.recharge)
     .sort((x, y) => avg(y.a.damageDice) - avg(x.a.damageDice))[0];
-  return best ? { attackIndex: best.i, reachFt: best.a.reachFt ?? 5 } : null;
+  return best ? { attackIndex: best.i, reachFt: (best.a.reachFt ?? 5) + plus } : null;
 }
 
 /** Ayakta ve aksiyon yapabilen. */
@@ -252,7 +254,8 @@ export function weaponAttackEvents(
       extra: sealed ? [{ label: 'Yazgı Mührü', die: 'hit', sign: 1, reroll: 'success' }, ...attackDice(actor)] : attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
       // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
-      ...(actor.critOn && !option.spell ? { critOn: actor.critOn } : {}),
+      // Görev P6: ek paket kritik eşiği (`zarEtkisi.kritikAralik`; süren etki `pkCritOn`).
+      ...((c) => (c < 20 ? { critOn: c } : {}))(Math.min(actor.critOn && !option.spell ? actor.critOn : 20, ...(actor.effects ?? []).map((e) => e.pkCritOn ?? 20))),
       // F1: Savage Attacker: turda bir kez silah isabetinde (büyü saldırısı ve canavar biçimi değil).
       ...(savageReady(state, actor, option) ? { savage: true } : {}),
     },

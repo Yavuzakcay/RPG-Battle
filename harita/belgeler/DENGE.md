@@ -2669,3 +2669,16 @@ A2 ile aynı 4 senaryo, kural sürümü 30 (P0 sürüm değiştirmedi). Paket y�
 | Orman — Mielikki Gölü | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 3,2 → 3,2 |
 
 Sonuçlar A2 ile birebir aynı; aralık dışı satır yok.
+
+## Kuyruk P6: ilkel genişletme hızlı regresyon (30 tohum, seviye 5, standart parti; paket kapalı, sayı ayarı yok)
+
+Aynı 4 senaryo, kural sürümü 30 (değişmedi). Ortak kancalar (ikinci şans türleri, `pkSans` türetimi, isabet tepkisi hasar dönüşü, erişim eki, büyü dönüşümü) paketsiz savaşçıda hiçbir şey üretmez.
+
+| Senaryo | Kazanma P0 → P6 | Ort. ölen PC P0 → P6 | En az 1 ölüm P0 → P6 | Ort. tur P0 → P6 |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 97% → 97% | 0,10 → 0,10 | 10% → 10% | 7,3 → 7,3 |
+| Volkan | 97% → 97% | 0,27 → 0,27 | 17% → 17% | 6,3 → 6,3 |
+| Orman — Ork Kampı | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 5,6 → 5,6 |
+| Orman — Mielikki Gölü | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 3,2 → 3,2 |
+
+Birebir aynı; aralık dışı satır yok.

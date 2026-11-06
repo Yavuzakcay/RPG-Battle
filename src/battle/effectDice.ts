@@ -4,6 +4,7 @@
  */
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 import { moraleCheckDice, moraleSaveDice } from './morale';
+import { paketChances } from './paket/sans';
 import { extrasTotal, rollExtras, secondChanceAll, spoilChance, type ExtraDie, type RolledExtra } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { resourceLeft, type Combatant } from './types';
@@ -69,6 +70,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if ((c.traits?.includes('heroic-warrior') || c.traits?.includes('resourceful')) && resourceLeft(c, 'heroicInspiration') > 0) {
     k18.push({ label: 'Heroic Inspiration', die: 'd20', sign: 1, reroll: 'd20', resource: 'heroicInspiration', holderId: c.id });
   }
+  // Görev P6: ek paket girişleri (d20 alt sınırı, zar mührü, zorla sonuç; menzil `syncAuras` → `pkSans`).
+  k18.push(...paketChances(c, on));
   const traits = c.traits;
   // Not (Kuyruk 18): kural sürümü < 16'da işaretli savaşçıda `inspired` aşağıda düşüyor (eski davranış; replay için korunur).
   // Kuyruk 19: `inspireFix` (reducer `syncAuras`, Game Master anahtarı `bardicInspirationFix`) varken listede kalır.
@@ -152,7 +155,7 @@ export function finishCheck(
     const again = secondChanceAll(dice, { total, natural, bonus, need: dc, mode, kind: 'check' }, rollTag(rng, { by: c.id }));
     if (again) { total = again.total; extra.push(...again.entries); }
   } else if (dc !== null) {
-    const spoil = spoilChance(dice, { total, need: dc, kind: 'check' }, rollTag(rng, { by: c.id }));
+    const spoil = spoilChance(dice, { total, need: dc, kind: 'check', natural }, rollTag(rng, { by: c.id }));
     if (spoil) { total = spoil.total; extra.push(spoil.entry); }
   }
   return { natural, total, extra };

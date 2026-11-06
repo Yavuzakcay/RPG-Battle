@@ -200,18 +200,21 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
   }
   for (const x of dice ?? []) {
     // Kuyruk 18 H3: Countercharm sahibinin tepkisini harcar.
+    // Görev P6: ek paket girişleri (zar mührü, zorla sonuç) tepki + kaynak + tek kullanımlık etkiyi birlikte tüketir.
+    const pk = !!x.effectId?.startsWith('pk-');
     if (x.reaction && x.holderId) {
       const h = next.combatants[x.holderId];
       // Kuyruk 19: Burst of Ingenuity tepki havuzunu da azaltır.
       if (h) next = withCombatant(next, h.id, { economy: { ...h.economy, reaction: true }, ...(x.pool ? { reactionUses: { ...h.reactionUses, [x.pool.id]: x.pool.remaining } } : {}) });
-      continue;
+      if (!pk) continue;
     }
     // Görev F: ikinci şansın kaynağı (Indomitable, Stroke of Luck, Tactical Mind → Second Wind).
     if (x.resource && x.holderId) {
       const h = next.combatants[x.holderId];
       if (h) next = withCombatant(next, h.id, { resources: { ...h.resources, [x.resource]: Math.max(0, resourceLeft(h, x.resource) - 1) }, ...(x.resource === 'legendaryResistance' ? { lrLock: true } : {}) });
-      continue;
+      if (!pk) continue;
     }
+    if (pk && !x.single) continue;
     if (!x.single || !x.holderId) continue;
     const c = next.combatants[x.holderId];
     if (c?.effects) next = withCombatant(next, c.id, { effects: c.effects.filter((e) => e.id !== x.effectId) });

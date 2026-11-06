@@ -225,13 +225,18 @@ export function hitReactions(state: BattleState, ctx: HitContext, rng: Rng): Hit
   const cur = after.events.length ? applyEvents(state, after.events) : state;
   for (const h of allyHitHooks) {
     const r = h(cur, { ...ctx, ac: after.ac, damage: after.damage }, rng);
+    // Görev P6: kanca hasarı değiştirebilir (`damage`: azaltma, yarıya, kritik iptali); verilmezse ıska.
+    if (r && r.damage !== undefined && r.damage > 0) return { ...after, events: [...after.events, ...r.events], damage: r.damage, reacted: { name: r.name } };
     if (r) return { ...after, events: [...after.events, ...r.events], hit: false, damage: 0, reacted: { name: r.name } };
   }
   return after;
 }
 
-/** Kuyruk K54c: dosta isabet eden saldırıyı ıskaya çeviren tepki kancası (isabet ve hasar hesaplandıktan sonra). */
-export type AllyHitHook = (state: BattleState, ctx: HitContext, rng: Rng) => { events: BattleEvent[]; name: string } | null;
+/**
+ * Kuyruk K54c: dosta isabet eden saldırıyı ıskaya çeviren tepki kancası (isabet ve hasar hesaplandıktan sonra).
+ * Görev P6: `damage` verilirse isabet kalır, hasar o olur (0 ya da altı ıska).
+ */
+export type AllyHitHook = (state: BattleState, ctx: HitContext, rng: Rng) => { events: BattleEvent[]; name: string; damage?: number } | null;
 const allyHitHooks: AllyHitHook[] = [];
 export function registerAllyHit(h: AllyHitHook): void { if (!allyHitHooks.includes(h)) allyHitHooks.push(h); }
 

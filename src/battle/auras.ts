@@ -6,6 +6,7 @@
  * `saveDice` (bütün save'lerin ortak eklentisi) sabit eklenti olarak okur. Game Master anahtarı `auraOfProtection`
  * (global, kural sürümü 14); kapalıyken yalnızca Paladin'in kendi bonusu.
  */
+import { anyPaketSans, paketSansOf } from './paket/sans';
 import { groundWardSave } from './groundWard';
 import { anyBirlik, shoulderOf } from './imzaBirlik';
 import { auraCoreOn, passiveAuraOf } from './auraCore';
@@ -95,7 +96,10 @@ export function syncAuras(state: BattleState): BattleState {
   const anyUnion = anyBirlik(state);
   // Kuyruk K53 S5: veriden pasif auralar (save bonusu en güçlüsü, bağışıklık, can yenileyemez, ölüm save dezavantajı).
   const anyCore = auraCoreOn(state) && Object.values(state.combatants).some((c) => c.effects?.some((e) => e.aura?.trigger === 'passive' || e.auras?.some((a) => a.trigger === 'passive')));
+  // Görev P6: ek paket zar mührü / zorla sonuç menzili.
+  const anyPk = anyPaketSans(state);
   for (const c of Object.values(state.combatants)) {
+    const pkSans = anyPk ? paketSansOf(state, c) : [];
     const core = anyCore ? passiveAuraOf(state, c) : null;
     const want = Math.max(on ? auraSaveOf(state, c) : 0, core?.saveBonus ?? 0);
     const throne = anyImza ? imzaAuraBonus(state, c, 'wis') : 0;
@@ -113,11 +117,12 @@ export function syncAuras(state: BattleState): BattleState {
     const burst = anyBurst ? burstOf(state, c) : undefined;
     if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && !!c.inspireChain === chain && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
       && c.fateBy === fateBy && c.fateFoe === fateFoe && (c.imzaWisSave ?? 0) === throne && (c.wardSave ?? 0) === ward && JSON.stringify(c.shoulderBy) === JSON.stringify(shoulder)
-      && (c.auraImmune ?? []).join() === (core?.immune ?? []).join() && !!c.auraNoHeal === !!core?.noHeal && !!c.auraDeathDis === !!core?.deathDis && !!c.auraDeathAdv === !!core?.deathAdv) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, ...rest } = next.combatants[c.id] as Combatant;
+      && (c.auraImmune ?? []).join() === (core?.immune ?? []).join() && !!c.auraNoHeal === !!core?.noHeal && !!c.auraDeathDis === !!core?.deathDis && !!c.auraDeathAdv === !!core?.deathAdv
+      && JSON.stringify(c.pkSans ?? []) === JSON.stringify(pkSans)) continue;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, pkSans: _pk, ...rest } = next.combatants[c.id] as Combatant;
     next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
       ...(fix ? { inspireFix: true } : {}), ...(chain ? { inspireChain: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
-      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}), ...(throne > 0 ? { imzaWisSave: throne } : {}), ...(ward > 0 ? { wardSave: ward } : {}), ...(shoulder ? { shoulderBy: shoulder } : {}),
+      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}), ...(throne > 0 ? { imzaWisSave: throne } : {}), ...(ward > 0 ? { wardSave: ward } : {}), ...(shoulder ? { shoulderBy: shoulder } : {}), ...(pkSans.length ? { pkSans } : {}),
       ...(core?.immune.length ? { auraImmune: core.immune } : {}), ...(core?.noHeal ? { auraNoHeal: true } : {}), ...(core?.deathDis ? { auraDeathDis: true } : {}), ...(core?.deathAdv ? { auraDeathAdv: true } : {}) } as Combatant } };
   }
   return next;

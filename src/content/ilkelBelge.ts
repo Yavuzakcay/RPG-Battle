@@ -28,11 +28,8 @@ export const KALIBA_UYMAYAN: Array<{ kalip: string; neden: string; yol: string }
   { kalip: 'Taraf değiştirme / ele geçirme (Dominate, likantrop laneti)', neden: 'Savaş dengesi büyük; alt sınıf özelliklerinde nadir.', yol: '`allegianceSwap` (Kuyruk 18); ev kuralı anahtarıyla özel.' },
   { kalip: 'Yanılsama nesnesi (görüş keser, geçilir, incelemeyle bozulur)', neden: 'Büyülerde 6 kalem, alt sınıfta Aldatma tarzı birkaç özellik; motorda yanılsama nesnesi yok.', yol: 'K53 geçici engel `blocksSight` + bozulma eylemi (P1 adayı).' },
   { kalip: 'Biçim değişiminde jeton ve stat bloğu değişimi (gerçek Wild Shape)', neden: '`bicim` ilkeli yalnız süren etki; stat bloğu değişmez.', yol: 'Wild Shape `shape_changed` yolu (canavar kimliğiyle) ileride `bicim.canavar` alanı.' },
-  { kalip: 'Yeniden atma / yeniden attırma (Lucky, Portent tarzı)', neden: 'Tepki kararı d20 sonrası; tek yol `ExtraDie.reroll` sınıf özelliklerine bağlı.', yol: '`secondChance` yolu genelleştirilince `zarEtkisi.yenidenAt` alanı.' },
-  { kalip: 'Tepkide yönlendirme (saldırıyı başka hedefe çevirme)', neden: 'Yalnız canavar tepkisi `redirectAttack` var; oyuncu yolu yok.', yol: 'Tepki `yonlendir` etkisi (P1).' },
-  { kalip: 'Büyü kurtulmasına dezavantaj, büyü menzili, hasar türü değişimi', neden: '`buyuDegisimi` alanları kabul edilir ama motorda tek kanca yok.', yol: 'Büyü save ve hedefleme kancası (P1); şimdilik kısmi.' },
+  { kalip: 'Zarı yeniden attırma (rakibe yeni d20)', neden: 'P6 zar mührü ve zorla sonuç d20 testini değiştirir; "rakip yeniden atsın, kötüsünü alsın" ayrı bir karar anı ister.', yol: '`ExtraDie.reroll` `worse` yolu genelleştirilince.' },
   { kalip: 'Savaş dışı yetenekler (sosyal, keşif, zanaat, dil, ritüel)', neden: 'Savaş motoru dışı.', yol: '`hikaye` durumu.' },
-  { kalip: 'Erişim (reach) artışı', neden: 'Silah erişimi saldırı seçeneğinden; süren etki alanı yok.', yol: '`boyut.erisimFt` kısmi (P1).' },
   { kalip: 'Eşya üretme / sarf eşyası (iksir, ok, bomba yaratma)', neden: '`consumables` savaş başında karakterden.', yol: '`use_item` + süreli sarf eşyası ilkeli (P1 adayı).' },
 ];
 
@@ -42,7 +39,7 @@ export function belgeMetni(): string {
   L.push('Bu belge `src/content/ilkelSema.ts` tablosundan üretilir (`npx vite-node scripts/paket-ilkeller-belge.ts`); elle düzenleme. Şema, doğrulayıcı (`npm run check:icerik`) ve savaş yorumlayıcısı (`src/battle/paket/`) aynı tabloyu okur. Örnekler kurgusal ve SRD tarzıdır.', '');
   L.push('## Özet', '');
   L.push('Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilkeller": [{ "tur": "ekHasar", ... }, ...]`. Eski alanlar (`effect`: stat, trait, reaction, effect) aynen çalışır; ikisi birlikte de yazılabilir. Paket düzeyinde `yaratiklar` dizisi `cagir` ilkelinin çağırdığı yaratıkları tanımlar.', '');
-  L.push(`İlkeller (${Object.keys(ILKELLER).length}):`, '');
+  L.push(`İlkeller (${Object.keys(ILKELLER).length}; P6: zarMuhru, engeldenGec eklendi):`, '');
   L.push('| İlkel | Ne yapar | Tetikler | Mevcut sistem |', '|---|---|---|---|');
   for (const [k, s] of Object.entries(ILKELLER)) L.push(`| \`${k}\` | ${cell(s.not)} | ${s.tetikler.map((t) => `\`${t}\``).join(', ')} | ${cell(s.sistem)} |`);
   L.push('');
@@ -54,7 +51,7 @@ export function belgeMetni(): string {
   L.push('- **Koşul** (`kosul`, hepsi doğru olmalı): ' + KOSULLAR.map((k) => `\`${k}\``).join(', ') + ', `bicim:<id>` (bu özelliğin `bicim` ilkeli etkin), `isaretli:<id>` (hedef senin bu işaretinle işaretli).');
   L.push('- **Kaynak:** `{ "id": "...", "maliyet": 1 }`; kimlik aynı alt sınıftaki bir `kaynak` ilkelinin `id`\'si ya da sınıf kaynağı (`rage`, `focus`, `channelDivinity`, `bardicInspiration`, `sorceryPoints`, `wildShape`, `layOnHands`…). Kaynak bitince düğme kapanır, otomatik tetik çalışmaz.');
   L.push('- **Süre:** tur sayısı ya da `"kalici"`. Kurtulma DC\'si: `"buyu"`, sayı ya da yetenek listesi (8 + PB + en iyisi).');
-  L.push('- **Kısmi:** tabloda **Kısmi** işaretli alanlar doğrulanır ama motorda yaklaşık uygulanır; böyle bir alan kullanan özellik `"kismi"` durumuyla yazılmalı (`check:icerik` uyarır).', '');
+  L.push('- **Kısmi:** tabloda **Kısmi** işaretli alan kalmadı (P6). Yaklaşık kalan birleşimler: tepkide `hasarAldim` yalnız `karsiVurus` ile, `kritikIptal` hasarı yarıya indirir (kritik zarları ayrıca bilinmez). Böyle bir birleşim kullanan özellik `"kismi"` yazılmalı (`check:icerik` uyarır).', '');
   L.push('### Ortak alanlar (her ilkelde)', '');
   L.push(...table(ORTAK_ALANLAR), '');
   for (const [k, s] of Object.entries(ILKELLER)) {

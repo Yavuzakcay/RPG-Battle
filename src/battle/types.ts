@@ -151,6 +151,11 @@ export interface ActiveEffect {
   attackedAdv?: boolean;
   /** Görev P0: yalnız bu saldırganın bu yaratığa saldırısı avantajlı (ek paket `isaret`). */
   attackedAdvBy?: string;
+  /** Görev P6 (ek paket): d20 alt sınırı (`zarEtkisi.d20AltSinir`), kritik eşiği, yakın dövüş erişim eki (ft), saklı mühür zarı. */
+  pkD20Min?: { value: number; on: Array<'attack' | 'save' | 'check'> };
+  pkCritOn?: number;
+  reachPlus?: number;
+  pkMuhur?: number;
   /** Kuyruk 19: Divine Sense: bu türlerdeki yaratıkların yeri `ft` içinde bilinir (gizlenmiş olsa da hedef alınır). */
   senseTypes?: { types: string[]; ft: number };
   /** Görev B5: karanlık görüş (ft; Darkvision), kontrollerde avantaj (Enhance Ability), dostlara Stealth +10 yarıçapı (altıgen). */
@@ -832,6 +837,8 @@ export interface Combatant {
   features?: UsableFeature[];
   /** Görev P0: ek paket alt sınıfının ilkelleri ve yaratıkları (`src/battle/paket/`; oluşturulurken kopyalanır). */
   paket?: import('./paket/bag').PaketBag;
+  /** Görev P6: menzildeki ek paket zar mührü / zorla sonuç kaynakları (reducer türetimi `syncAuras`). */
+  pkSans?: import('./paket/sans').PkSans[];
   /**
    * Görev P-Monk (eski kayıtlarda yok; veriden): bonus eylemle Unarmed Strike (Martial Arts), Focus ile bonus eylemler
    * (Flurry of Blows, Patient Defense, Step of the Wind), Uncanny Metabolism, Deflect Attacks, Slow Fall, Stunning

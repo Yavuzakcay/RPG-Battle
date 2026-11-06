@@ -22,6 +22,7 @@ const taken = classData.subclasses.map((s) => s.id);
 const packs: string[] = [];
 const monsterIds = new Set(monsters.map((m) => m.id));
 let bad = 0;
+let yukselt = 0;
 let total = { calisir: 0, kismi: 0, planli: 0, hikaye: 0, calismiyor: 0 };
 for (const f of files) {
   const full = path.join(dir, f);
@@ -50,6 +51,15 @@ for (const f of files) {
   }
   for (const e of warn) console.log(`      uyarı ${readablePath(raw, e.path)}  ${e.code}`);
   for (const p of partialWarnings(r.pack)) console.log(`      ${p.status === 'calisir' ? 'uyarı' : 'bilgi'} ${p.path}  kismiAlan  ${p.fields.join(',')}`);
+  // Kuyruk P6 (`--yukselt`): "kismi" işaretli ama ilkellerinde kısmi alan/birleşim kalmamış özellikler (calisir'e yükseltilebilir).
+  if (process.argv.includes('--yukselt')) {
+    const partial = new Set(partialWarnings(r.pack).map((p) => p.path.split(' ')[0]));
+    for (const s of r.pack.subclasses) {
+      const ids = s.features.filter((f) => f.status === 'kismi' && (f.ilkeller?.length ?? 0) > 0 && !partial.has(`${s.id}/${f.id}`)).map((f) => f.id);
+      if (ids.length) { yukselt += ids.length; console.log(`      yükseltilebilir ${s.id}: ${ids.length} (${ids.join(', ')})`); }
+    }
+  }
 }
+if (process.argv.includes('--yukselt')) console.log(`\nkısmi → çalışır yükseltilebilir: ${yukselt} özellik.`);
 console.log(`\n${files.length} paket, ${bad} hatalı · çalışır ${total.calisir}, kısmi ${total.kismi}, çalışmıyor ${total.calismiyor}, planlı ${total.planli}, hikâye ${total.hikaye}.`);
 process.exit(bad ? 1 : 0);

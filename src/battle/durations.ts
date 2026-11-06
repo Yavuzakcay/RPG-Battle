@@ -131,7 +131,7 @@ export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; rag
  * Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı; Danger Sense gibi avantajlı save'ler (Incapacitated
  * değilken); Rage sürerken STR save'leri avantajlı. Eski çağrılar yalnızca durum listesi verebilir.
  */
-export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string }): RollMode {
+export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string; paket?: { ozellikler: Array<{ ilkeller: Array<Record<string, unknown>> }> } }): RollMode {
   const s: SaveSubject = Array.isArray(who) ? { conditions: who } : who;
   // Kuyruk 19 (11–20): Holy Nimbus: Fiend/Undead etkilerine save avantajı (kaynağı bilinen save'lerde).
   const vs = source?.creatureType?.toLowerCase();
@@ -145,7 +145,9 @@ export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: A
     || (!!s.effects?.some((e) => e.bloodiedAdv?.save) && s.hp !== undefined && s.hp <= (s.maxHp ?? 0) / 2)
     || !!s.authorityAdv;
   // Görev B1: süren etkinin save dezavantajı (Reduce, Ray of Enfeeblement: STR).
-  const dis = !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage'));
+  const dis = !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage'))
+    // Görev P6: ek paket `buyuDegisimi.kurtulmaDezavantaji` (kaynağın büyüleri ve alan etkileri; koşulsuz pasif).
+    || !!source?.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'buyuDegisimi' && p.kurtulmaDezavantaji === true && !p.kosul));
   // Kuyruk K54c: Yıldız Falı (Uğurlu): ilk kurtulma zarı avantajlı.
   const adv2 = !!s.effects?.some((e) => e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'advantage');
   // Avantaj ve dezavantaj (tabanla birlikte) birbirini götürür (SRD).

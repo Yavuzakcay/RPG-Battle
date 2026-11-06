@@ -19,6 +19,7 @@ import { moraleOn } from '../morale';
 import { applyEvents } from '../reduce';
 import { turnKey } from '../economy';
 import { surfaceEvent } from '../surfaces';
+import { hitEffect } from '../maprules';
 import { barrierEvents } from '../barriers';
 import { sizeRank } from '../forced';
 import { combatantFromMonster } from '../create';
@@ -205,7 +206,7 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       }
       return out;
     }
-    case 'boyut': case 'ucus': case 'hiz': case 'aura': {
+    case 'boyut': case 'ucus': case 'hiz': case 'aura': case 'engeldenGec': {
       const body = p.tur === 'aura' ? { auras: [auraSpec(p, a, c.i)] } : passiveBody(p, a);
       return body ? [effect(a, body as Partial<ActiveEffect>)] : [];
     }
@@ -239,7 +240,29 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
         const s = val<number | 'kalici' | undefined>(p, 'sure');
         return barrierEvents(state, a, kind.slice(6), hexes, typeof s === 'number' ? s : undefined);
       }
-      return [surfaceEvent(state, kind as Parameters<typeof surfaceEvent>[1], hexes, a.id, a.side)];
+      const s0 = val<number | 'kalici' | undefined>(p, 'sure');
+      const evs: BattleEvent[] = [];
+      if (kind !== 'alan') {
+        const ev = surfaceEvent(state, kind as Parameters<typeof surfaceEvent>[1], hexes, a.id, a.side);
+        // P6: verilen süre yüzeyin veri süresinin yerine (kalıcı: süresiz).
+        if (ev.type === 'zone_created' && s0 !== undefined) { const { until: _u, ...z } = ev.zone; evs.push({ ...ev, zone: s0 === 'kalici' ? z : { ...z, until: state.round + s0 - 1 } }); } else evs.push(ev);
+      }
+      // P6: zemin etkisi (satır içi kurallı alan: tur başı/sonu/giriş, kurtulma, hasar, durum, zorlu arazi).
+      const zaman = (p.zaman as string[] | undefined) ?? [];
+      if (zaman.length || p.zorluArazi || p.hasar !== undefined || p.durum !== undefined) {
+        const save = p.save as Record<string, unknown> | undefined;
+        const on = zaman.map((z) => (z === 'turBasi' ? 'start' : z === 'turSonu' ? 'end' : 'enter') as 'start' | 'end' | 'enter');
+        const spec = {
+          ...(on.length ? { on } : {}), ...(p.zorluArazi ? { difficult: 2 } : {}), ...(save ? { save: save.yetenek as Ability, ...(save.yari ? { half: true } : {}) } : {}),
+          ...(p.hasar !== undefined ? { damage: formul(p.hasar, a), damageType: p.hasarTuru as string } : {}), ...(p.durum ? { conditions: [p.durum as string] } : {}),
+          ...(val<string>(p, 'hedefler') === 'dusmanlar' ? { targets: 'enemies' as const } : {}), ground: true, icon: '◈',
+        };
+        let n = 1;
+        while ((state.map.zones ?? []).some((z) => z.id === `pk-zemin:${a.id}:${n}`)) n++;
+        evs.push({ type: 'zone_created', zone: { id: `pk-zemin:${a.id}:${n}`, spellId: `pk:${key}#${c.i}`, name, casterId: a.id, side: a.side, dc: save ? dcOf(save, a) : 0, slotLevel: 0, hexes,
+          ...(s0 === undefined ? { until: state.round + 9 } : s0 === 'kalici' ? {} : { until: state.round + s0 - 1 }), spec, ...(p.hasar !== undefined ? { damage: formul(p.hasar, a) } : {}) } });
+      }
+      return evs;
     }
     case 'ekSaldiri': {
       const api = strikeApi();
@@ -323,8 +346,22 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
   if (val<string>(p, 'tekrar') === 'degistir') {
     for (const o of Object.values(state.combatants)) if (o.summon && !o.summon.gone && o.summon.by === a.id && o.summon.spellId === spellId) out.push({ type: 'summon_vanished', actorId: o.id, ownerId: a.id, reason: 'replaced' });
   }
+  // P6: konsantrasyon (çağıran konsantre olur; bozulunca `summonCleanup` yaratığı kaldırır).
+  const conc = !!p.konsantrasyon;
+  if (conc) out.push({ type: 'concentration_started', actorId: a.id, spell: nameOf(c), slotLevel: 0, turn: turnKey(state) });
   let cur = applyEvents(state, out);
-  const count = Math.max(1, Math.min(8, flatNum(val(p, 'sayi'), a)));
+  // P6: ölenden mod: bu savaşta ölenlerin karesinde (ceset başına bir kez; taraf ve boyut süzgeci).
+  const olenden = val<string>(p, 'mod') === 'olenden';
+  const taraf = val<string>(p, 'taraf');
+  const lim = (p.boyutSiniri as string | undefined) ?? 'L';
+  const corpses = olenden ? Object.values(cur.combatants).filter((x) => x.pos && !x.summon && x.id !== a.id
+    && (x.life === 'dead' || (x.side !== a.side && x.hp <= 0)) && a.traitTurns?.[`pk-ceset:${x.id}`] !== 'kullanildi'
+    && (taraf === 'hepsi' || (taraf === 'dost') === (x.side === a.side)) && sizeRank(x.size) <= sizeRank(lim as Combatant['size'])
+    && !Object.values(cur.combatants).some((o) => o.id !== x.id && o.hp > 0 && !o.summon?.gone && o.pos && x.pos && o.pos.col === x.pos.col && o.pos.row === x.pos.row)
+    && (!a.pos || !x.pos || distance(a.pos, x.pos) * 5 <= ft(p, 'menzilFt', a)))
+    .sort((x, y) => (a.pos && x.pos && y.pos ? distance(a.pos, x.pos) - distance(a.pos, y.pos) : 0) || x.id.localeCompare(y.id)) : [];
+  if (olenden && !corpses.length) return 'Menzilde diriltilecek ölü yok.';
+  const count = Math.max(1, Math.min(8, flatNum(val(p, 'sayi'), a), olenden ? corpses.length : 8));
   const monsterId = paketMonsterId(a.paket?.altSinif ?? 'x', ref);
   const monster = creatureMonster(def, a, monsterId);
   registerRiders(def, monsterId);
@@ -333,7 +370,9 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
   const jeton = (def.jeton as Record<string, unknown> | undefined) ?? {};
   const eylemler = (def.eylemler as string[] | undefined) ?? ['saldiri', 'kacin', 'yardim'];
   for (let k = 0; k < count; k++) {
-    const at = state.map ? freeHexNear(cur, a, ft(p, 'menzilFt', a), k === 0 ? c.to : undefined) : null;
+    const corpse = olenden ? corpses[k] : undefined;
+    if (corpse) { const used: BattleEvent = { type: 'trait_turn', actorId: a.id, trait: `pk-ceset:${corpse.id}`, key: 'kullanildi' }; out.push(used); cur = applyEvents(cur, [used]); }
+    const at = corpse?.pos ?? (state.map ? freeHexNear(cur, a, ft(p, 'menzilFt', a), k === 0 ? c.to : undefined) : null);
     if (state.map && !at) break;
     let n = 1;
     while (cur.combatants[`${a.id}-cagri${n}`]) n++;
@@ -341,7 +380,7 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
     const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${a.name})`, height: a.height });
     const initiative = own ? rollDie(20, rollTag(c.rng, { kind: 'initiative', by: id, bonus: abilityModifier(monster.abilities.dex) })) + abilityModifier(monster.abilities.dex) : a.initiative;
     const summon: SummonInfo = {
-      by: a.id, spellId, spell: nameOf(c), turn: own ? 'own' : 'after-owner', level: a.level,
+      by: a.id, spellId, spell: nameOf(c), turn: own ? 'own' : 'after-owner', level: a.level, ...(conc ? { concentration: true } : {}),
       ...(sure === 'kalici' ? {} : { until: cur.round + sure - 1 }),
       ...(val<boolean>(p, 'sahipOlunceKaybolur') ? { endsOnOwnerDeath: true } : {}),
       ...(!eylemler.includes('saldiri') ? { noAttack: true } : {}),
@@ -502,7 +541,21 @@ registerCommandEnd((before, next, _events, cmd, rng) => {
   if (cmd.type === 'start_battle') {
     registerAllRiders(cur);
     for (const c of owners) push(autoEvents(cur, c.id, 'savasBasi', rng));
+    // P6: zar mührü: saklı d20'ler (her biri ayrı süren etki; kaynak verilirse kalan kullanım kadar).
+    for (const c0 of owners) for (const f of c0.paket?.ozellikler ?? []) for (const p of f.ilkeller.filter((x) => x.tur === 'zarMuhru')) {
+      const c = cur.combatants[c0.id] as Combatant;
+      const k = costOf(c, p);
+      const n = Math.max(0, Math.min(flatNum(p.sayi, c), k ? c.resources[k.id] ?? 0 : 20));
+      const evs: BattleEvent[] = [];
+      for (let j = 0; j < n; j++) {
+        const v = rollDie(20, rollTag(rng, { kind: 'check', by: c.id }));
+        evs.push({ type: 'effect_added', targetId: c.id, effect: { id: `pk-muhur:${c.id}:${j + 1}`, name: (p.ad as string | undefined) ?? f.ad, sourceId: c.id, pkMuhur: v, icon: '◉' } });
+      }
+      push(evs);
+    }
   }
+  // P6: bu tur büyü yapıldı (koşul `buyuTurunda`).
+  if (cmd.type === 'cast_spell' && next.combatants[cmd.actorId]?.paket) push([{ type: 'trait_turn', actorId: cmd.actorId, trait: 'pk-buyu', key: turnKey(next) }]);
   if (cmd.type === 'end_turn' && 'actorId' in cmd && next.combatants[cmd.actorId]?.paket) push(autoEvents(cur, cmd.actorId, 'turSonu', rng));
   // Öldürünce: komutu veren paket sahibinin rakiplerinden biri bu komutla 0 HP'ye düştü.
   const actorId = 'actorId' in cmd ? (cmd as { actorId: string }).actorId : undefined;
@@ -557,22 +610,44 @@ registerCommandEnd((before, next, _events, cmd, rng) => {
 });
 
 /** Dosta isabet tepkisi (`tepki`, olay dostaIsabet, etki acBonusu): AC eklentisi yetiyorsa ıskaya çevirir. */
+/**
+ * İsabet tepkileri (`tepki`): dostaIsabet (acBonusu, hasarAzalt, yariya, direnc, iskalat, yonlendir, kritikIptal) ve
+ * banaIsabet'in yeni etkileri (iskalat, yonlendir, kritikIptal; diğerleri `ReactionSpec` yolundan). Hasar değişirse
+ * `damage` döner (0 → ıska); karar `askReaction`.
+ */
+const HIT_ETKI = ['acBonusu', 'hasarAzalt', 'yariya', 'direnc', 'iskalat', 'yonlendir', 'kritikIptal'];
+const SELF_ETKI = ['iskalat', 'yonlendir', 'kritikIptal'];
 registerAllyHit((state, hit, rng) => {
   for (const g of Object.values(state.combatants)) {
-    if (!g.paket || g.id === hit.target.id || g.side !== hit.target.side || !canReact(g)) continue;
+    if (!g.paket || g.side !== hit.target.side || !canReact(g)) continue;
+    const self = g.id === hit.target.id;
     for (const feat of g.paket.ozellikler) for (const [i, p] of feat.ilkeller.entries()) {
-      if (p.tur !== 'tepki' || val<string>(p, 'olay') !== 'dostaIsabet' || p.etki !== 'acBonusu') continue;
-      if (!canPay(g, p) || !kosulOk(state, g, p, hit.attacker) || !within(state, g, hit.target, ft(p, 'menzilFt', g))) continue;
+      if (p.tur !== 'tepki' || !HIT_ETKI.includes(p.etki as string)) continue;
+      const olay = val<string>(p, 'olay');
+      if (self ? olay !== 'banaIsabet' || !SELF_ETKI.includes(p.etki as string) : olay !== 'dostaIsabet') continue;
+      if (!canPay(g, p) || !kosulOk(state, g, p, hit.attacker) || (!self && !within(state, g, hit.target, ft(p, 'menzilFt', g)))) continue;
       const s = val<string>(p, 'saldiri');
       if ((s === 'yakin' && !hit.melee) || (s === 'menzilli' && !hit.ranged)) continue;
-      const bonus = flatNum(p.miktar, g);
-      if (hit.critical || hit.total >= hit.ac + bonus) continue;
+      if (p.turler && !(p.turler as string[]).includes(hit.damageType)) continue;
+      const etki = p.etki as string;
+      if (etki === 'acBonusu' && (hit.critical || hit.total >= hit.ac + flatNum(p.miktar, g))) continue;
+      if (etki === 'kritikIptal' && !hit.critical) continue;
       const name = (p.ad as string | undefined) ?? feat.ad;
       const opt = { id: usedKey(feat.key, i), name };
-      const ans = askReactionSafe(rng, g, hit, opt);
-      if (!ans) continue;
+      if (!askReactionSafe(rng, g, hit, opt)) continue;
       const k = costOf(g, p);
-      return { name, events: [reactionUsed(g, { ...opt, ...(k ? { resource: k.id } : {}) }, 'ally', hit.attacker.id)] };
+      const events: BattleEvent[] = [reactionUsed(g, { ...opt, ...(k ? { resource: k.id } : {}) }, 'ally', hit.attacker.id)];
+      if (etki === 'acBonusu' || etki === 'iskalat') return { name, events };
+      if (etki === 'yonlendir') {
+        // Saldırı ıskalar; hasar asıl hedefin menzilindeki başka bir (tepki verenin düşmanı) yaratığa.
+        const r = ft(p, 'menzilFt', g);
+        const other = Object.values(state.combatants).filter((c) => alive(c) && c.id !== hit.target.id && c.side !== g.side && within(state, hit.target, c, r))
+          .sort((x, y) => (state.map && x.pos && y.pos && hit.target.pos ? gap(state, hit.target, x) - gap(state, hit.target, y) : 0) || x.id.localeCompare(y.id))[0];
+        if (other) events.push(hitEffect(other, 'paket', name, { damage: String(hit.damage), damageType: hit.damageType || 'force' }, rng));
+        return { name, events };
+      }
+      const dmg = etki === 'hasarAzalt' ? hit.damage - amount(p.miktar, g, rng) : etki === 'kritikIptal' ? Math.ceil(hit.damage / 2) : Math.floor(hit.damage / 2);
+      return { name, events, damage: Math.max(0, dmg) };
     }
   }
   return null;

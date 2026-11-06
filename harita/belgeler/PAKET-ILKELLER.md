@@ -6,14 +6,14 @@ Bu belge `src/content/ilkelSema.ts` tablosundan üretilir (`npx vite-node script
 
 Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilkeller": [{ "tur": "ekHasar", ... }, ...]`. Eski alanlar (`effect`: stat, trait, reaction, effect) aynen çalışır; ikisi birlikte de yazılabilir. Paket düzeyinde `yaratiklar` dizisi `cagir` ilkelinin çağırdığı yaratıkları tanımlar.
 
-İlkeller (25):
+İlkeller (27; P6: zarMuhru, engeldenGec eklendi):
 
 | İlkel | Ne yapar | Tetikler | Mevcut sistem |
 |---|---|---|---|
 | `ekHasar` | Saldırı isabetinde ek hasar zarı. | `isabet` | Saldırı çözümü (`features.ts` `weaponAttackEvents`) → isabet kanca kaydı (`hitHooks.ts`); `ExtraDamage` (direnç/bağışıklık hedefe göre). |
 | `direnc` | Hasar direnci, bağışıklığı ya da zaafı (koşula bağlı olabilir). | `pasif` | Süren etki `resist` / `immune` / `vulnerable` (`damageProfile`); koşullu olanlar komut sonu eşitlemesiyle eklenir/kalkar. |
 | `aura` | Sahibiyle yürüyen aura (dost ya da düşmanlara etki). | `pasif`, `eylem`, `bonus` | K53 aura altyapısı (`auraCore.ts`; süren etkide `auras`, en güçlüsü uygulanır, turda bir). GM anahtarı `auraCore` kapalıysa sessiz etkisiz. |
-| `tepki` | Tepkiyle çalışan koruma ya da karşılık. | `tepki` | Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate, dostaIsabet+acBonusu → `registerAllyHit`. Karar `askReaction` (oyuncuya sorulur). |
+| `tepki` | Tepkiyle çalışan koruma ya da karşılık. | `tepki` | Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate; dostaIsabet etkileri ve iskalat/yonlendir/kritikIptal isabet tepki kancasında (`registerAllyHit`, hasar değiştirebilir); zorlaSonuc ikinci şans girişinde (`effectDice.ts` `secondChances`, `ExtraDie.reroll` success/forceFail). Karar `askReaction` (oyuncuya sorulur). |
 | `gecicCan` | Geçici can. | `eylem`, `bonus`, `serbest`, `savasBasi`, `turBasi`, `oldurunce`, `isabet`, `hasarAlinca` | `temp_hp` olayı (fazlası birikmez; yükseği kalır). |
 | `iyilestirme` | İyileştirme (ve isteğe bağlı durum kaldırma). | `eylem`, `bonus`, `serbest`, `turBasi`, `oldurunce`, `isabet` | `healed` / `condition_ended` olayları (en çok HP aşılmaz; ölüyü kaldırmaz). |
 | `hasar` | Doğrudan hasar (kurtulmalı ya da kurtulmasız). | `eylem`, `bonus`, `serbest`, `turBasi`, `oldurunce` | `save_resolved` olayı (imza eylemleriyle aynı yol: `resolveSave`, `saveDamage` Evasion, `adjustDamage`, `damageEffects`). |
@@ -25,15 +25,17 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 | `isinlan` | Kendini görülen boş altıgene ışınlar. | `bonus`, `eylem`, `serbest` | K53 tek ışınlanma girişi (`teleport.ts` `teleportEvent`, `motion.ts` `withArrival`). |
 | `zorlaHareket` | İtme/çekme/yana kaydırma (isabette ya da eylemle). | `isabet`, `eylem`, `bonus` | K53 tek zorla hareket girişi (`motion.ts` `forcedMove`: çarpma, düşme, zemin tetikleri). |
 | `olumdenDon` | 0 HP'ye düşecekken ayakta kalır. | `sifirCan` | Death Ward yolu (`damage-effects.ts` `deathWard` etkisi; kullanılınca kaynak harcanır, gerekirse `healed`). |
-| `ekSaldiri` | Ek silah saldırısı: kendin (bonus/öldürünce) ya da bir dostun (tepkisiyle). | `bonus`, `oldurunce`, `eylem` | Kayıtlı saldırı yolu (`reactions.ts` `strikeApi`); dost: dostun tepkisi harcanır (`reactionUsed`), en zayıf düşmana. |
+| `ekSaldiri` | Ek silah saldırısı: kendin (bonus/öldürünce) ya da bir dostun (tepkisiyle); pasifte Saldırı eylemindeki saldırı sayısı. | `bonus`, `oldurunce`, `eylem`, `pasif` | Kayıtlı saldırı yolu (`reactions.ts` `strikeApi`); dost: dostun tepkisi harcanır (`reactionUsed`), en zayıf düşmana. |
 | `zarEtkisi` | Zar ve savunma eklentileri: AC, kurtulma, avantaj/dezavantaj, bonus zar, inisiyatif. | `pasif`, `bonus`, `eylem`, `isabet`, `savasBasi` | Süren etki alanları `ac`, `saveMod`, `saveAdv`, `attackAdv`, `checkAdv`, `attackDis`, `saveDis`, `dice` (`effectDice.ts`); inisiyatif `initiativeBonus`. |
 | `kaynak` | Kullanım havuzu tanımı (diğer ilkeller `kaynak.id` ile harcar). | `pasif` | Sınıf kaynakları (`data/class-features.json` `resources` biçimi; `classResources`, `rechargeResources`, savaş sonu karaktere yazılır). |
 | `bicim` | Süreli biçim (dönüşüm): geçici can, AC, hız, direnç, ek hasar, uçuş, avantaj. | `bonus`, `eylem` | Wild Shape/Karadul biçim yolu yerine tek süren etki (`tempHpNow`, `ac`, `speedFt`, `fly`, `resist`, `hitDie`, `attackAdv`); jeton değişmez. |
-| `yuzeyOlustur` | Altıgenlere yüzey (yağ, buz, alev…) ya da geçici engel koyar. | `eylem`, `bonus` | Yüzey olayı (`surfaces.ts` `surfaceEvent`; K55 çözücüsü komut sonunda tepkimeleri işler) ya da K53 geçici engel (`barriers.ts` `barrierEvents`). |
+| `yuzeyOlustur` | Altıgenlere yüzey (yağ, buz, alev…) ya da geçici engel koyar. | `eylem`, `bonus` | Yüzey olayı (`surfaces.ts` `surfaceEvent`; K55 çözücüsü komut sonunda tepkimeleri işler), K53 geçici engel (`barriers.ts` `barrierEvents`) ya da satır içi kurallı alan (`SpellZone.spec`: tur başı/sonu/giriş tetikleri, kurtulma, hasar, durum, zorlu arazi; `zones.ts`). |
 | `buyuVer` | Her an hazır büyüler; isteğe bağlı kaynakla slotsuz. | `pasif` | Sınıf kiti `alwaysPrepared` ve kaynak `freeSpellList` (Favored Enemy yolu). |
-| `buyuDegisimi` | Büyü hasarına eklenti (türe/okula göre). | `pasif` | Büyü hasar ifadesi (`spells.ts` `damageExpr`; Empowered Evocation / Elemental Affinity yolu). |
+| `buyuDegisimi` | Büyü hasarına eklenti (türe/okula göre). | `pasif` | Büyü hasar ifadesi (`spells.ts` `damageExpr`; Empowered Evocation / Elemental Affinity yolu), yapım öncesi büyü dönüşümü (menzil, tür; Eldritch Spear/Transmuted yolu), kurtulma kipi (`durations.ts` `saveMode`). |
 | `gorunmezlik` | Invisible durumu (saldırınca/büyü yapınca biter). | `bonus`, `eylem`, `oldurunce`, `hasarAlinca` | Süren etki `grants: ["Invisible"]` + `breakOnAct` (Invisibility yolu). |
 | `moralEtkisi` | Moral havuzuna ekleme/çıkarma (K48; Moral kapalıyken sessiz yok sayılır). | `bonus`, `eylem`, `turBasi`, `oldurunce`, `isabet` | `moral_changed` olayı (`morale.ts` `moraleOn`). |
+| `zarMuhru` | Savaş başında N adet d20 atılıp saklanır; bir d20 testinin doğal zarı saklı zarla değiştirilir (sonucu çevirecekse). | `pasif` | Savaş başında saklı zarlar sahibinde süren etki (`pkMuhur`, her zar ayrı etki); ikinci şans girişi (`effectDice.ts` `secondChances`, `ExtraDie.reroll` set/setSpoil); menzil reducer türetimi (`syncAuras` → `pkSans`). Harcanan zarın etkisi biter, kaynak düşer. |
+| `engeldenGec` | Duvar, engel ve yaratıkların içinden geçer; fırsat saldırısı tetiklemez. | `bonus`, `eylem`, `pasif` | Engelden geçme (`phase.ts`: süren etki `phase`) ve `noProvoke`. |
 | `hiz` | Hız artışı (pasif ya da süreli). | `pasif`, `bonus`, `eylem`, `savasBasi` | Süren etki `speedFt`. |
 
 ## Ortak kurallar
@@ -42,10 +44,10 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 - **Düğme:** aynı özellikte aynı düğme tetikli (`eylem`, `bonus`, `serbest`) ilkeller tek düğmede birleşir ve sırayla çalışır; düğme bir hedef (dost/düşman) ve/veya bir altıgen ister (ilkellerin ihtiyacına göre). Kaynağı düğmedeki ilk `kaynak` alanlı ilkel belirler; düğme başına bir kez harcanır. `eylem` eylem, `bonus` bonus eylem harcar, `serbest` harcamaz.
 - **Otomatik tetikler:** `isabet` (kendi saldırın isabet edince; ek hasar zarı hasardan önce, diğerleri sonra), `turBasi`/`turSonu` (kendi turun), `savasBasi` (savaş başlarken), `oldurunce` (komutunla bir düşman 0 HP'ye düşünce), `hasarAlinca` (hasar alınca), `sifirCan` (0 HP'ye düşecekken), `tepki` (tepki hakkı; oyuncuya sorulur). `pasif` sürekli (koşullu olanlar her komut sonunda eşitlenir).
 - **Formül:** sayı, zar ve belirteçler: `$pb (yeterlilik)`, `$pbYari (yarısı, en az 1)`, `$lvl (karakter seviyesi)`, `$lvl2 (iki katı)`, `$str…$cha (değiştirici, en az 0)`, `$buyu (büyü değiştiricisi)`. En çok bir zar terimi; yalnız `+` ve `-` (çarpma yok): `"1d8+$wis"`, `"$lvl+2"`. Seviye tablosu: `{ "3": "1d6", "11": "2d6" }` (karakter seviyesine göre en yüksek eşik).
-- **Koşul** (`kosul`, hepsi doğru olmalı): `ofke`, `yarimCanAlti`, `zirhsiz`, `avantajli`, `dostBitisik`, `konsantrasyon`, `bicim:<id>` (bu özelliğin `bicim` ilkeli etkin), `isaretli:<id>` (hedef senin bu işaretinle işaretli).
+- **Koşul** (`kosul`, hepsi doğru olmalı): `ofke`, `yarimCanAlti`, `zirhsiz`, `avantajli`, `dostBitisik`, `konsantrasyon`, `buyuTurunda`, `seviyeliBuyuTurunda`, `bicim:<id>` (bu özelliğin `bicim` ilkeli etkin), `isaretli:<id>` (hedef senin bu işaretinle işaretli).
 - **Kaynak:** `{ "id": "...", "maliyet": 1 }`; kimlik aynı alt sınıftaki bir `kaynak` ilkelinin `id`'si ya da sınıf kaynağı (`rage`, `focus`, `channelDivinity`, `bardicInspiration`, `sorceryPoints`, `wildShape`, `layOnHands`…). Kaynak bitince düğme kapanır, otomatik tetik çalışmaz.
 - **Süre:** tur sayısı ya da `"kalici"`. Kurtulma DC'si: `"buyu"`, sayı ya da yetenek listesi (8 + PB + en iyisi).
-- **Kısmi:** tabloda **Kısmi** işaretli alanlar doğrulanır ama motorda yaklaşık uygulanır; böyle bir alan kullanan özellik `"kismi"` durumuyla yazılmalı (`check:icerik` uyarır).
+- **Kısmi:** tabloda **Kısmi** işaretli alan kalmadı (P6). Yaklaşık kalan birleşimler: tepkide `hasarAldim` yalnız `karsiVurus` ile, `kritikIptal` hasarı yarıya indirir (kritik zarları ayrıca bilinmez). Böyle bir birleşim kullanan özellik `"kismi"` yazılmalı (`check:icerik` uyarır).
 
 ### Ortak alanlar (her ilkelde)
 
@@ -56,7 +58,7 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 | `tetik` | seçenek: `pasif`, `eylem`, `bonus`, `serbest`, `isabet`, `turBasi`, `turSonu`, `savasBasi`, `oldurunce`, `hasarAlinca`, `sifirCan`, `tepki` | hayır | — | Ne zaman çalışır (ilkelin izin verdikleri; yazılmazsa ilki). |
 | `hedef` | seçenek: `kendi`, `dost`, `dostVeyaKendi`, `dostlar`, `dusman`, `dusmanlar`, `bitisikDusmanlar`, `alan`, `vurulan` | hayır | — | Kime (ilkelin izin verdikleri; yazılmazsa ilki). |
 | `kaynak` | kaynak başvurusu | hayır | — | Harcanan kaynak: `{ "id": "<kaynak ilkeli id ya da sınıf kaynağı (rage, focus, channelDivinity…)>", "maliyet": 1 }`. Düğmede yalnızca ilk kaynaklı ilkel harcar (düğme başına bir kez). |
-| `kosul` | koşul listesi | hayır | — | Hepsi doğruysa çalışır: ofke, yarimCanAlti, zirhsiz, avantajli (isabet), dostBitisik (hedefe bitişik dost), konsantrasyon, bicim:<id>, isaretli:<id> (hedef bu işaretle işaretli). |
+| `kosul` | koşul listesi | hayır | — | Hepsi doğruysa çalışır: ofke, yarimCanAlti, zirhsiz, avantajli (isabet), dostBitisik (hedefe bitişik dost), konsantrasyon, buyuTurunda (bu tur büyü yaptın), seviyeliBuyuTurunda (bu tur slotlu büyü), bicim:<id>, isaretli:<id> (hedef bu işaretle işaretli), harita:<bölge> (savaş haritasının bölgesi). |
 | `turdaBir` | true/false | hayır | `false` | Turda en çok bir kez (her savaşçının kendi turu sayılır). |
 | `ad` | metin | hayır | — | Düğme/günlük adı (yoksa özelliğin TR adı). |
 
@@ -130,16 +132,19 @@ Sahibiyle yürüyen aura (dost ya da düşmanlara etki).
 Tepkiyle çalışan koruma ya da karşılık.
 
 - Tetikler: `tepki` (varsayılan `tepki`).
-- Sistem ve kanca: Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate, dostaIsabet+acBonusu → `registerAllyHit`. Karar `askReaction` (oyuncuya sorulur).
+- Sistem ve kanca: Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate; dostaIsabet etkileri ve iskalat/yonlendir/kritikIptal isabet tepki kancasında (`registerAllyHit`, hasar değiştirebilir); zorlaSonuc ikinci şans girişinde (`effectDice.ts` `secondChances`, `ExtraDie.reroll` success/forceFail). Karar `askReaction` (oyuncuya sorulur).
 
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama |
 |---|---|---|---|---|
-| `olay` | seçenek: `banaIsabet`, `dostaIsabet`, `hasarAldim` | hayır | `"banaIsabet"` | Tetikleyen olay: sana isabet, menzildeki dosta isabet, yakın dövüşte hasar aldın. |
-| `etki` | seçenek: `acBonusu`, `hasarAzalt`, `yariya`, `direnc`, `karsiVurus` | evet | — | Tepkinin etkisi. |
+| `olay` | seçenek: `banaIsabet`, `dostaIsabet`, `hasarAldim`, `zarTesti` | hayır | `"banaIsabet"` | Tetikleyen olay: sana isabet, menzildeki dosta isabet, yakın dövüşte hasar aldın, menzildeki bir yaratığın d20 testi (yalnız zorlaSonuc). |
+| `etki` | seçenek: `acBonusu`, `hasarAzalt`, `yariya`, `direnc`, `karsiVurus`, `iskalat`, `yonlendir`, `kritikIptal`, `zorlaSonuc` | evet | — | Tepkinin etkisi: AC, hasar azaltma, yarıya, direnç (yarıya), karşı vuruş, ıskalatma, başka hedefe saptırma, kritiği normal vuruşa çevirme, d20 testini başarı/başarısızlık sayma. |
 | `miktar` | formül | hayır | — | acBonusu (sayı) ya da hasarAzalt zarı (`"1d10+$wis"`). |
 | `saldiri` | seçenek: `hepsi`, `yakin`, `menzilli` | hayır | `"hepsi"` | Yalnız bu saldırılarda. |
-| `turler` | hasar türü listesi | hayır | — | hasarAzalt yalnız bu türlerde. |
-| `menzilFt` | tamsayı | hayır | `30` | dostaIsabet: dosta uzaklık (ft). |
+| `turler` | hasar türü listesi | hayır | — | hasarAzalt/direnc yalnız bu türlerde. |
+| `menzilFt` | tamsayı | hayır | `30` | dostaIsabet / zarTesti: yaratığa uzaklık; yonlendir: yeni hedefin asıl hedefe uzaklığı (ft). |
+| `sonuc` | seçenek: `basari`, `basarisiz` | hayır | `"basari"` | zorlaSonuc: test başarı (dost/kendi) ya da başarısızlık (düşman) sayılır. |
+| `kim` | seçenek: `dost`, `kendi`, `dusman` | hayır | `"dost"` | zorlaSonuc: kimin testi (dost kendini de kapsar). |
+| `testler` | seçenek listesi: `saldiri`, `kurtulma`, `kontrol` | hayır | `["saldiri","kurtulma","kontrol"]` | zorlaSonuc: hangi d20 testleri. |
 
 Örnek:
 
@@ -269,7 +274,10 @@ Paketin `yaratiklar` tanımından yaratık çağırır.
 | `yaratik` | yaratık kimliği | evet | — | Paket `yaratiklar` kimliği. |
 | `sayi` | formül | hayır | `1` | Kaç tane. |
 | `sure` | süre | hayır | `10` | Süre: tur sayısı (1 tur = 6 sn) ya da "kalici" (savaş boyu). |
-| `konsantrasyon` | true/false | hayır | `false` | Konsantrasyon (bozulunca kaybolur). **Kısmi:** konsantrasyon büyüsüz özellikte süre olarak işler. |
+| `konsantrasyon` | true/false | hayır | `false` | Konsantrasyon: çağıran konsantre olur (`concentration_started`; başka konsantrasyon ya da bozulma yaratığı kaldırır). |
+| `mod` | seçenek: `normal`, `olenden` | hayır | `"normal"` | olenden: bu savaşta ölen yaratıkların karesinde diriltir (ceset başına bir kez). |
+| `taraf` | seçenek: `hepsi`, `dusman`, `dost` | hayır | `"hepsi"` | olenden: hangi tarafın ölüleri. |
+| `boyutSiniri` | seçenek: `L`, `T`, `S`, `M`, `H`, `G` | hayır | `"L"` | olenden: bu boyut ve küçükleri (varsayılan L). |
 | `inisiyatif` | seçenek: `sahip`, `ayri` | hayır | `"sahip"` | sahip: sahibinin hemen ardından oynar; ayri: kendi inisiyatifi. |
 | `menzilFt` | tamsayı | hayır | `30` | Hedef menzili (ft). |
 | `tekrar` | seçenek: `degistir`, `ekle` | hayır | `"degistir"` | Yeniden çağırınca: öncekiler kaybolur (degistir) ya da eklenir. |
@@ -294,7 +302,7 @@ Büyüme (Large/Huge): ek hasar zarı, jeton ölçeği.
 | `boyut` | seçenek: `L`, `H` | hayır | `"L"` | Hedef boyut (jeton etiketi; tek altıgen). |
 | `sure` | süre | hayır | `10` | Süre: tur sayısı (1 tur = 6 sn) ya da "kalici" (savaş boyu). |
 | `ekHasar` | formül | hayır | — | Silah isabetinde ek zar (`"1d4"`). |
-| `erisimFt` | tamsayı | hayır | — | Ek erişim (ft). **Kısmi:** erişim artışı uygulanmaz. |
+| `erisimFt` | tamsayı | hayır | — | Yakın dövüş erişimine eklenen (ft; saldırı ve fırsat saldırısı). |
 
 Örnek:
 
@@ -379,15 +387,16 @@ Kendini görülen boş altıgene ışınlar.
 
 ## `ekSaldiri`
 
-Ek silah saldırısı: kendin (bonus/öldürünce) ya da bir dostun (tepkisiyle).
+Ek silah saldırısı: kendin (bonus/öldürünce) ya da bir dostun (tepkisiyle); pasifte Saldırı eylemindeki saldırı sayısı.
 
-- Tetikler: `bonus`, `oldurunce`, `eylem` (varsayılan `bonus`).
+- Tetikler: `bonus`, `oldurunce`, `eylem`, `pasif` (varsayılan `bonus`).
 - Hedefler: `dusman`, `dost` (varsayılan `dusman`).
 - Sistem ve kanca: Kayıtlı saldırı yolu (`reactions.ts` `strikeApi`); dost: dostun tepkisi harcanır (`reactionUsed`), en zayıf düşmana.
 
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama |
 |---|---|---|---|---|
 | `menzilFt` | tamsayı | hayır | `60` | Hedef menzili (ft). |
+| `saldiriSayisi` | tamsayı | hayır | — | Pasif: Saldırı eylemindeki saldırı sayısı (en az; ör. 2 = ikinci saldırı). |
 
 Örnek:
 
@@ -414,7 +423,9 @@ Zar ve savunma eklentileri: AC, kurtulma, avantaj/dezavantaj, bonus zar, inisiya
 | `zarYonu` | seçenek: `arti`, `eksi` | hayır | `"arti"` | Bonus zarın yönü. |
 | `zarIcin` | seçenek listesi: `saldiri`, `kurtulma`, `kontrol` | hayır | `["saldiri","kurtulma"]` | Bonus zar hangi d20 testlerine. |
 | `inisiyatifBonusu` | formül | hayır | — | İnisiyatif eklentisi (yalnız pasif). |
-| `d20AltSinir` | tamsayı | hayır | — | d20 alt sınırı. **Kısmi:** uygulanmaz. |
+| `d20AltSinir` | tamsayı | hayır | — | d20 alt sınırı: doğal zar bundan küçükse bu sayılır (başarıya çevirecekse uygulanır). |
+| `d20Icin` | seçenek listesi: `saldiri`, `kurtulma`, `kontrol` | hayır | `["saldiri","kurtulma","kontrol"]` | d20AltSinir hangi testlerde. |
+| `kritikAralik` | tamsayı | hayır | — | Saldırıda doğal zar bu değer ve üstüyse kritik (ör. 19). |
 | `sure` | süre | hayır | `10` | Süre: tur sayısı (1 tur = 6 sn) ya da "kalici" (savaş boyu). |
 | `menzilFt` | tamsayı | hayır | `30` | Hedef menzili (ft). |
 | `yaricapFt` | tamsayı | hayır | `10` | Alan/çoklu hedef yarıçapı (ft; `dostlar`, `dusmanlar`, `alan` hedefinde). |
@@ -475,14 +486,21 @@ Süreli biçim (dönüşüm): geçici can, AC, hız, direnç, ek hasar, uçuş, 
 Altıgenlere yüzey (yağ, buz, alev…) ya da geçici engel koyar.
 
 - Tetikler: `eylem`, `bonus` (varsayılan `eylem`).
-- Sistem ve kanca: Yüzey olayı (`surfaces.ts` `surfaceEvent`; K55 çözücüsü komut sonunda tepkimeleri işler) ya da K53 geçici engel (`barriers.ts` `barrierEvents`).
+- Sistem ve kanca: Yüzey olayı (`surfaces.ts` `surfaceEvent`; K55 çözücüsü komut sonunda tepkimeleri işler), K53 geçici engel (`barriers.ts` `barrierEvents`) ya da satır içi kurallı alan (`SpellZone.spec`: tur başı/sonu/giriş tetikleri, kurtulma, hasar, durum, zorlu arazi; `zones.ts`).
 
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama |
 |---|---|---|---|---|
-| `yuzey` | seçenek: `oil`, `water`, `ice`, `fire`, `burningWeb`, `steam`, `slick`, `poison`, `engel:cizili-duvar`, `engel:dost-kalkani`, `engel:enkaz-yigini` | evet | — | Yüzey türü (`data/yuzeyler.json`) ya da `engel:<tür>` (`data/engeller.json`). |
+| `yuzey` | seçenek: `oil`, `water`, `ice`, `fire`, `burningWeb`, `steam`, `slick`, `poison`, `engel:cizili-duvar`, `engel:dost-kalkani`, `engel:enkaz-yigini`, `alan` | evet | — | Yüzey türü (`data/yuzeyler.json`), `engel:<tür>` (`data/engeller.json`) ya da `alan` (yalnız zemin etkisi). |
 | `yaricapFt` | tamsayı | hayır | `5` | Yarıçap (ft; 0 tek altıgen). |
 | `menzilFt` | tamsayı | hayır | `30` | Hedef menzili (ft). |
-| `sure` | süre | hayır | — | Engel süresi (yoksa verideki). **Kısmi:** yüzeyde süre verideki. |
+| `sure` | süre | hayır | — | Süre (yoksa verideki). |
+| `zaman` | seçenek listesi: `turBasi`, `turSonu`, `girince` | hayır | — | Zemin etkisi ne zaman işler (yuzey "alan" ya da yüzeye ek). |
+| `hasar` | formül | hayır | — | Zemin hasarı. |
+| `hasarTuru` | hasar türü | hayır | — | Zemin hasarının türü. |
+| `save` | nesne | hayır | — | Kurtulma: `{ "yetenek": "wis", "dc": "buyu" \| 14 \| ["wis","cha"], "yari": false }`. dc: "buyu" büyü DC'si (yoksa 8 + PB + en iyi INT/WIS/CHA), sayı sabit, liste 8 + PB + listedeki en iyi değiştirici. `yari`: başarıda yarım hasar. |
+| `durum` | durum | hayır | — | Başarısız kurtulmada durum. |
+| `zorluArazi` | true/false | hayır | `false` | Zorlu arazi (hız düşürme: altıgen başına 2 hareket). |
+| `hedefler` | seçenek: `hepsi`, `dusmanlar` | hayır | `"hepsi"` | Kimleri etkiler. |
 
 Örnek:
 
@@ -513,16 +531,16 @@ Her an hazır büyüler; isteğe bağlı kaynakla slotsuz.
 Büyü hasarına eklenti (türe/okula göre).
 
 - Tetikler: `pasif` (varsayılan `pasif`).
-- Sistem ve kanca: Büyü hasar ifadesi (`spells.ts` `damageExpr`; Empowered Evocation / Elemental Affinity yolu).
+- Sistem ve kanca: Büyü hasar ifadesi (`spells.ts` `damageExpr`; Empowered Evocation / Elemental Affinity yolu), yapım öncesi büyü dönüşümü (menzil, tür; Eldritch Spear/Transmuted yolu), kurtulma kipi (`durations.ts` `saveMode`).
 
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama |
 |---|---|---|---|---|
 | `hasarEki` | formül | hayır | — | Büyü hasarına eklenti (bir kez). |
 | `hasarTurleri` | hasar türü listesi | hayır | — | Yalnız bu türlerde. |
 | `okul` | metin | hayır | — | Yalnız bu okul (Evocation…). |
-| `kurtulmaDezavantaji` | true/false | hayır | `false` | Hedefler kurtulmada dezavantajlı. **Kısmi:** uygulanmaz. |
-| `menzilEkiFt` | tamsayı | hayır | — | Menzil eki. **Kısmi:** uygulanmaz. |
-| `yeniTur` | hasar türü | hayır | — | Hasar türünü değiştir. **Kısmi:** uygulanmaz. |
+| `kurtulmaDezavantaji` | true/false | hayır | `false` | Büyülerine ve alan etkilerine karşı kurtulmalar dezavantajlı. |
+| `menzilEkiFt` | tamsayı | hayır | — | Menzilli (5 ft üstü) büyülerin menziline eklenen. |
+| `yeniTur` | hasar türü | hayır | — | Hasar türünü değiştir (`hasarTurleri` verilirse yalnız onlardan). |
 
 Örnek:
 
@@ -568,6 +586,44 @@ Moral havuzuna ekleme/çıkarma (K48; Moral kapalıyken sessiz yok sayılır).
 
 ```json
 {"tur":"moralEtkisi","tetik":"oldurunce","hedef":"dostlar","yaricapFt":30,"miktar":1}
+```
+
+## `zarMuhru`
+
+Savaş başında N adet d20 atılıp saklanır; bir d20 testinin doğal zarı saklı zarla değiştirilir (sonucu çevirecekse).
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: Savaş başında saklı zarlar sahibinde süren etki (`pkMuhur`, her zar ayrı etki); ikinci şans girişi (`effectDice.ts` `secondChances`, `ExtraDie.reroll` set/setSpoil); menzil reducer türetimi (`syncAuras` → `pkSans`). Harcanan zarın etkisi biter, kaynak düşer.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `sayi` | formül | evet | — | Saklanan zar sayısı (kaynak verilirse kalan kullanım kadar, en çok bu). |
+| `kim` | seçenek listesi: `kendi`, `dost`, `dusman` | hayır | `["kendi","dost","dusman"]` | Kimin testinde: kendi, dost (başarısızı başarıya), düşman (başarılıyı başarısıza). |
+| `menzilFt` | tamsayı | hayır | `60` | Hedef menzili (ft). |
+
+Örnek:
+
+```json
+{"tur":"zarMuhru","sayi":2,"kim":["kendi","dost","dusman"],"kaynak":{"id":"kehanet","maliyet":1}}
+```
+
+## `engeldenGec`
+
+Duvar, engel ve yaratıkların içinden geçer; fırsat saldırısı tetiklemez.
+
+- Tetikler: `bonus`, `eylem`, `pasif` (varsayılan `bonus`).
+- Sistem ve kanca: Engelden geçme (`phase.ts`: süren etki `phase`) ve `noProvoke`.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `sure` | süre | hayır | `1` | Süre: tur sayısı (1 tur = 6 sn) ya da "kalici" (savaş boyu). |
+| `firsatYok` | true/false | hayır | `true` | Fırsat saldırısı tetiklemez. |
+| `zorluArazi` | true/false | hayır | `true` | Engel içi zorlu arazi. |
+
+Örnek:
+
+```json
+{"tur":"engeldenGec","tetik":"bonus","sure":1,"kaynak":{"id":"golge-adimi","maliyet":1}}
 ```
 
 ## `hiz`
@@ -666,11 +722,8 @@ Yeni görsel dosyası gerekmez. `jeton.gorsel` mevcut bir canavar kimliği (`pub
 | Taraf değiştirme / ele geçirme (Dominate, likantrop laneti) | Savaş dengesi büyük; alt sınıf özelliklerinde nadir. | `allegianceSwap` (Kuyruk 18); ev kuralı anahtarıyla özel. |
 | Yanılsama nesnesi (görüş keser, geçilir, incelemeyle bozulur) | Büyülerde 6 kalem, alt sınıfta Aldatma tarzı birkaç özellik; motorda yanılsama nesnesi yok. | K53 geçici engel `blocksSight` + bozulma eylemi (P1 adayı). |
 | Biçim değişiminde jeton ve stat bloğu değişimi (gerçek Wild Shape) | `bicim` ilkeli yalnız süren etki; stat bloğu değişmez. | Wild Shape `shape_changed` yolu (canavar kimliğiyle) ileride `bicim.canavar` alanı. |
-| Yeniden atma / yeniden attırma (Lucky, Portent tarzı) | Tepki kararı d20 sonrası; tek yol `ExtraDie.reroll` sınıf özelliklerine bağlı. | `secondChance` yolu genelleştirilince `zarEtkisi.yenidenAt` alanı. |
-| Tepkide yönlendirme (saldırıyı başka hedefe çevirme) | Yalnız canavar tepkisi `redirectAttack` var; oyuncu yolu yok. | Tepki `yonlendir` etkisi (P1). |
-| Büyü kurtulmasına dezavantaj, büyü menzili, hasar türü değişimi | `buyuDegisimi` alanları kabul edilir ama motorda tek kanca yok. | Büyü save ve hedefleme kancası (P1); şimdilik kısmi. |
+| Zarı yeniden attırma (rakibe yeni d20) | P6 zar mührü ve zorla sonuç d20 testini değiştirir; "rakip yeniden atsın, kötüsünü alsın" ayrı bir karar anı ister. | `ExtraDie.reroll` `worse` yolu genelleştirilince. |
 | Savaş dışı yetenekler (sosyal, keşif, zanaat, dil, ritüel) | Savaş motoru dışı. | `hikaye` durumu. |
-| Erişim (reach) artışı | Silah erişimi saldırı seçeneğinden; süren etki alanı yok. | `boyut.erisimFt` kısmi (P1). |
 | Eşya üretme / sarf eşyası (iksir, ok, bomba yaratma) | `consumables` savaş başında karakterden. | `use_item` + süreli sarf eşyası ilkeli (P1 adayı). |
 
 ## Yazım kılavuzu

@@ -26,7 +26,7 @@ import { globalRule } from './ruleControl';
 import { after69, spells69Problem, wishProblem, wishSpell } from './spells69';
 import { freeCastingEvents } from './boons';
 import { overchannelAfter, overchannelProblem, overchannelRng } from './apex';
-import { paketSpellBonus } from './paket/core';
+import { paketSpellBonus, paketSpellTransform } from './paket/core';
 import { hexLabel, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
@@ -420,6 +420,8 @@ function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand,
   // Görev WARLOCK: Eldritch Spear (cantrip menzili).
   const reach = actor0.cantripMods?.[spell0.name]?.rangeFt;
   if (reach && spell0.level === 0) spell0 = { ...spell0, rangeFt: spell0.rangeFt + reach };
+  // Görev P6: ek paket büyü dönüşümü (menzil eki, hasar türü).
+  if (actor0.paket) spell0 = paketSpellTransform(actor0, spell0);
   // Görev SORCERER: Metamagic ve Innate Sorcery bu yapım için büyüyü ve büyücüyü dönüştürür; puan olayı başta.
   const mm = castWithMetamagic(state, actor0, spell0, cmd.metamagic, cmd.transmute);
   if ('ok' in mm) return mm;

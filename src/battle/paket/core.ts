@@ -7,6 +7,7 @@ import { gap } from '../body';
 import { isTargetable } from '../common';
 import { turnKey } from '../economy';
 import { auraCoreOn } from '../auraCore';
+import { getMap } from '../../map/maps';
 import { DUGME_TETIKLERI, ILKELLER, ORTAK_ALANLAR, type Tetik } from '../../content/ilkelSema';
 import { rollDice, rollTag, type Rng } from '../../rules/dice';
 import type { ActiveEffect, BattleState, Combatant, ReactionSpec, UsableFeature } from '../types';
@@ -85,6 +86,12 @@ export const markId = (actorId: string, id: string): string => `pk-isaret:${id}:
 export const formId = (actorId: string, id: string): string => `pk-bicim:${id}:${actorId}`;
 export const usedKey = (key: string, i: number): string => `pk:${key}#${i}`;
 
+/** P6: savaş haritasının bölgesi (`harita/<bolge>/`; koşul `harita:<bölge>`). */
+function mapRegion(state: BattleState): string | undefined {
+  if (!state.map) return undefined;
+  try { return getMap(state.map.id).bolge; } catch { return undefined; }
+}
+
 /** Koşullar (hepsi). `target`: isabet/hedef; `adv`: saldırı avantajlıydı. */
 export function kosulOk(state: BattleState, actor: Combatant, p: Ilkel, target?: Combatant, adv = false): boolean {
   for (const k of (p.kosul as string[] | undefined) ?? []) {
@@ -96,6 +103,10 @@ export function kosulOk(state: BattleState, actor: Combatant, p: Ilkel, target?:
     if (k === 'dostBitisik' && !(target && Object.values(state.combatants).some((o) => o.id !== actor.id && o.side === actor.side && alive(o) && o.pos && target.pos && gap(state, o, target) <= 1))) return false;
     if (k.startsWith('bicim:') && !actor.effects?.some((e) => e.id === formId(actor.id, k.slice(6)))) return false;
     if (k.startsWith('isaretli:') && !target?.effects?.some((e) => e.id === markId(actor.id, k.slice(9)))) return false;
+    // P6: bu tur büyü (her büyü: komut sonu işareti `pk-buyu`; slotlu: `economy.slotTurn`), harita bölgesi.
+    if (k === 'buyuTurunda' && actor.traitTurns?.['pk-buyu'] !== turnKey(state)) return false;
+    if (k === 'seviyeliBuyuTurunda' && actor.economy.slotTurn !== turnKey(state)) return false;
+    if (k.startsWith('harita:') && mapRegion(state) !== k.slice(7)) return false;
   }
   return true;
 }
@@ -167,7 +178,9 @@ export function passiveBody(p: Ilkel, c: Combatant, state?: BattleState): Partia
     case 'zarEtkisi': return zarBody(p, c);
     case 'ucus': return { fly: p.hizFt === undefined || p.hizFt === 'yurume' ? c.speed : flatNum(p.hizFt, c) };
     case 'hiz': return { speedFt: flatNum(p.artiFt, c) };
-    case 'boyut': return { size: 1, ...(p.ekHasar ? { hitDie: formul(p.ekHasar, c) } : {}) };
+    case 'boyut': return { size: 1, ...(p.ekHasar ? { hitDie: formul(p.ekHasar, c) } : {}), ...(typeof p.erisimFt === 'number' ? { reachPlus: p.erisimFt } : {}) };
+    // P6: engelden geçme (`phase.ts`; zorlu arazi) ve fırsat saldırısı yok.
+    case 'engeldenGec': return { phase: p.zorluArazi === false ? {} : { difficult: true }, ...(p.firsatYok === false ? {} : { noProvoke: true }) };
     case 'aura': return state && !auraCoreOn(state) ? null : { auras: [auraSpec(p, c, 0)] as unknown as ActiveEffect['auras'] };
     default: return null;
   }
@@ -185,6 +198,9 @@ export function zarBody(p: Ilkel, c: Combatant): Partial<ActiveEffect> {
   const dv = (p.dezavantaj as string[] | undefined) ?? [];
   if (dv.includes('saldiri')) out.attackDis = {};
   if (dv.includes('kurtulma')) out.saveDis = abs;
+  // P6: d20 alt sınırı ve kritik eşiği.
+  if (typeof p.d20AltSinir === 'number') out.pkD20Min = { value: p.d20AltSinir, on: (val<string[]>(p, 'd20Icin') ?? ['saldiri', 'kurtulma', 'kontrol']).map((x) => (x === 'saldiri' ? 'attack' : x === 'kurtulma' ? 'save' : 'check')) };
+  if (typeof p.kritikAralik === 'number') out.pkCritOn = p.kritikAralik;
   if (p.zar !== undefined) {
     const on = ((val<string[]>(p, 'zarIcin')) ?? ['saldiri', 'kurtulma']).map((x) => (x === 'saldiri' ? 'attack' : x === 'kurtulma' ? 'save' : 'check'));
     out.dice = { die: formul(p.zar, c), sign: val<string>(p, 'zarYonu') === 'eksi' ? -1 : 1, on };
@@ -242,9 +258,12 @@ export function withPaket(state: BattleState): BattleState {
     const reactions: ReactionSpec[] = [];
     const effects: ActiveEffect[] = [];
     let init = 0;
+    let attacks = c.attacksPerAction;
     for (const f of c.paket.ozellikler) f.ilkeller.forEach((p, i) => {
       if (p.tur === 'tepki') { const r = reactionOf(p, c, f.key, i, (p.ad as string | undefined) ?? f.ad); if (r) reactions.push(r); }
       if (tetikOf(p) !== 'pasif' || p.kosul) return;
+      // P6: ikinci saldırı (Saldırı eylemindeki saldırı sayısı en az bu).
+      if (p.tur === 'ekSaldiri' && typeof p.saldiriSayisi === 'number') attacks = Math.max(attacks, p.saldiriSayisi);
       if (p.tur === 'zarEtkisi' && p.inisiyatifBonusu !== undefined) init += flatNum(p.inisiyatifBonusu, c);
       const body = passiveBody(p, c, state);
       if (body && Object.keys(body).length) effects.push({ ...body, id: effId(f.key, i), name: (p.ad as string | undefined) ?? f.ad, sourceId: c.id } as ActiveEffect);
@@ -255,6 +274,7 @@ export function withPaket(state: BattleState): BattleState {
       ...(reactions.length ? { reactions: [...(c.reactions ?? []), ...reactions] } : {}),
       ...(effects.length ? { effects: [...(c.effects ?? []), ...effects] } : {}),
       ...(init ? { initiativeBonus: c.initiativeBonus + init } : {}),
+      ...(attacks !== c.attacksPerAction ? { attacksPerAction: attacks } : {}),
     };
   }
   return changed ? { ...state, combatants } : state;
@@ -270,4 +290,20 @@ export function paketSpellBonus(c: Combatant, damageType: string | undefined, sc
     n += flatNum(p.hasarEki, c);
   }
   return n;
+}
+
+/**
+ * Görev P6: büyü dönüşümü (`buyuDegisimi`; koşulsuz pasif): menzilli büyüye menzil eki, hasar türünü değiştirme
+ * (`hasarTurleri` verilirse yalnız onlardan; `okul` süzgeci). Yapımdan önce (`spells.ts`, Eldritch Spear yolu).
+ */
+export function paketSpellTransform<S extends { rangeFt: number; school?: string; mechanics: { damageType?: string } }>(c: Combatant, spell: S): S {
+  let out = spell;
+  for (const f of c.paket?.ozellikler ?? []) for (const p of f.ilkeller) {
+    if (p.tur !== 'buyuDegisimi' || p.kosul) continue;
+    if (p.okul && p.okul !== out.school) continue;
+    if (typeof p.menzilEkiFt === 'number' && out.rangeFt > 5) out = { ...out, rangeFt: out.rangeFt + p.menzilEkiFt };
+    const t = out.mechanics.damageType;
+    if (typeof p.yeniTur === 'string' && t && (!p.hasarTurleri || (p.hasarTurleri as string[]).includes(t))) out = { ...out, mechanics: { ...out.mechanics, damageType: p.yeniTur } };
+  }
+  return out;
 }
