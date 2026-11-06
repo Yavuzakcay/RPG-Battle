@@ -17,8 +17,8 @@ describe('PAKET-ILKELLER.md', () => {
   it('şemadan üretilmiş ve güncel (npx vite-node scripts/paket-ilkeller-belge.ts)', () => {
     expect(doc).toBe(belgeMetni());
   });
-  it('47 ilkel (P6: +zarMuhru, +engeldenGec; P7: +10; P9: +8; S2: +silahFirlat, +silahBagi); her örnek geçerli ve kısmi alan içermez', () => {
-    expect(Object.keys(ILKELLER)).toHaveLength(47);
+  it('53 ilkel (P6: +zarMuhru, +engeldenGec; P7: +10; P9: +8; S2: +silahFirlat, +silahBagi; P11: +yetkinlik, +ilham, +buyuSakla, +gucDeposu, +zarYarisi, +zarHavuzu); her örnek geçerli ve kısmi alan içermez', () => {
+    expect(Object.keys(ILKELLER)).toHaveLength(53);
     for (const [k, s] of Object.entries(ILKELLER)) {
       expect(s.ornek.tur).toBe(k);
       expect(ilkelErrors([s.ornek], k, ctx())).toEqual([]);

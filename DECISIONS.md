@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk P11: ek paket ilkel genişletme 5 (kural sürümü 42)
+
+- **Kapsam:** PAKET-SIGMAYAN.md "Hâlâ sığmayanlar" tablosunun 15 satırı (+ P10 tablosundaki dört "kalan" notu) yazılabilir hâle geldi; tablo boş. Yama yazılmadı; paket metni görülmedi (yalnız özellik adı, sınıf/alt sınıf, seviye). Kurgusal fikstür `tests/fixtures/paket-p11.json` (15 alt sınıf), testler `src/battle/paket/p11.test.ts` (19). Sürüm 41 ve öncesinde yeni alanların hiçbiri çalışmaz (test her biri için eski sürümü de sınar).
+- **Yeni ilkeller (6):** `yetkinlik` (alt sınıfın zırh/kalkan/harp silahı eğitimi; `packTraining` → `armorProficient`/`weaponProficient`, oluşturucu ve savaş; karakter verisi olduğundan kural sürümünden bağımsız), `ilham` (Bardic Inspiration: `iade` hedefte/kaynaga, `kaynaksiz` + `zarBoyu`, `hedefler` hasar/ac), `buyuSakla` (bekleyen büyü), `gucDeposu` (sayaçlı güç), `zarYarisi` (karşılıklı d20; elle zar dahil), `zarHavuzu` (paketin kendi zarları; Superiority Dice yolu, projede eşdeğeri yoktu: `kaynak` ilkeli sayar).
+- **Yeni alanlar:** `zarDegistir.kapsam: iyilestirme`, `buyuVer.yalnizKendine/konsantrasyonsuz/kopyaEnCokSeviye` (spec'teki `kopya { enCokSeviye }` şema nesne tipi olmadığından düz alan), `buyuDegisimi.ikiz/konsantrasyonsuz/enCokSeviye/cikisCagri/yetenekEki/menzilEnCokFt`, `tepki.calar`, `cagirGuclendir.komutSaldiri`, `koruma.itmeDirenci`, `direnc.hasarKaynagi` + `aura.hasarKaynagi` (`buyu`), koşul `zarYarisi`. Komut alanları `cast_spell.store/originId`, `spell_followup.choice: 'sakli'`; olay alanları `healed.rolls/changed`, `RolledExtra.refund`.
+- **Kararlar:**
+  - İlham iadesi: `kaynaga` Bard'ın kullanımını +1 yapar (yalnız kullanımla ödenmiş ilhamda; Font of Inspiration/kaynaksız ilhamda iade yok); `hedefte` zar dostta kalır. İlham hasara: isabette seçim (öneri: kullan); AC'ye: ilhamlı dostun tepkisi (Combat Inspiration yolu), ıskaya çevirmezse de harcanır.
+  - Saklı büyü: slot ve eylem saklarken harcanır; ateşleme slotu yeniden harcamaz (yapım geçici +1 slotla çalışır, `slot_spent.remaining` eski sayıyı yazar: durum değişmez, replay aynı). Ateşleme maliyeti ilkelde (varsayılan bonus).
+  - Konsantrasyonsuz: etkiler/alanlar büyünün süresi (`effect.rounds`/`zone.rounds`, yoksa 10 tur) kadar; çağırma büyüsünde uygulanmaz (çağrı kaybolma kuralı konsantrasyona bağlı).
+  - İkiz: Twinned Spell yolu (yalnız yukarı slotta ek hedef alan büyüler; kısıt Sorcerer'la aynı), maliyet paket kaynağı.
+  - Kopya / çalınan büyü: bilinmeyen büyü geçici `spellNames` + `atWill` ile slotsuz; ekonomi turda-bir-slot sınırına saymaz.
+  - Büyü direnci: sözde hasar türü `buyu` (`profileIn(state, t, spell)` büyü hasarında bütün türlere direnç); büyü saldırısı/kurtulması, alan büyüsü, büyü alanı (zone) ve Dragon's Breath'te. Silah ve canavar saldırısı etkilenmez.
+  - İtmeye direnç: bir yaratığın yol açtığı her zorla harekette (K53 `forcedMove`, `pushAwayEvents`) avantajlı STR kurtulması (DC: kaynağın büyü DC'si ya da 8 + PB + STR); başarıda hiç kımıldamaz. Harita kaynaklı itmeler (sel, rüzgâr) kapsam dışı.
+  - Yakın büyüye yetenek eki: menzili ≤ `menzilEnCokFt` (5) olan hasar büyüsüne (dokunuş, kendinden) bir kez.
+  - Zar havuzu: ikinci şans `onFail` (başarıya çevirirse harcanır; Tactical Mind yolu), hasar (isabet seçimi), AC (tepki). `savasBasiEnAz` savaş başında havuzu tamamlar.
+  - Komutla ek saldırı: `command_summons` turunda komutlu çağrıya `pkExtraAttack` (eylemi harcanmışken `monster_attack`).
+  - Zar yarışı: kazanınca hedefte `pk-yaris:<sen>` (+ `sneakFor`: avantaj/bitişik dost gerekmeden Sneak Attack, dezavantaj yoksa).
+- **Arayüz:** büyü seçiminde "Sakla" düğmesi (Metamagic sırası), "Saklı büyü: …" ateşleme düğmesi; kaynaksız ilham düğmesi havuz boşken de açık. Çağrıdan çıkış (`originId`) için arayüz yok (motor + test; yapay zekâ kullanmaz).
+- **Mekanik donması:** kullanıcı kuyruğu açıkça verdi; istisna yalnız bu kapsam için (docs/MEKANIK-DONMA.md).
+
 ## 2026-11-06 — Kuyruk S2: kalan 14 sığmayan büyü parçası (kural sürümü 41)
 
 - **Kapsam:** BUYU-SIGMAYAN.md'nin kalan 14 satırı kapatıldı, tablo boş (başlık + açıklama). Yeni blok `s2` (sürüm 41+, `s1`'den sonra; `mechanicsAt`, `castSpell` ve `scripts/a4-buyu-kismi.mjs` aynı sırayla). Sabitler `data/s2-kurallar.json` (irtifa, nesne boyut tablosu, Flaming Sphere sınırları, hafif örtü cezası, kuşatma listesi). Sürüm 40 ve öncesi kayıt/replay aynen (her yeni alan `ruleVersion >= 41` ile).

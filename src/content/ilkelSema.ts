@@ -500,7 +500,7 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     not: 'Büyüyü yapar ama saklarsın (slot ve eylem harcanır); sonra ateşlersin (bekleyen büyü).', tetikler: ['pasif'],
     alanlar: { ateslemeEylemi: E(['bonus', 'eylem', 'tepki', 'serbest'], 'Ateşleme maliyeti.'), enCokSeviye: N('En çok bu seviyedeki büyü.'), sure: { ...SURE, varsayilan: undefined } },
     sistem: '`cast_spell.store` → süren etki `storedSpell`; ateşleme `spell_followup` `choice: "sakli"` (`paket/p11cast.ts`; slot yeniden harcanmaz). Sürüm 42+.',
-    ornek: { tur: 'buyuSakla', ateslemeEylemi: 'bonus', enCokSeviye: 3, kaynak: { id: 'muhur', maliyet: 1 } },
+    ornek: { tur: 'buyuSakla', ateslemeEylemi: 'bonus', enCokSeviye: 3, kaynak: { id: 'kehanet', maliyet: 1 } },
   },
   gucDeposu: {
     not: 'Olay oldukça güç biriktirirsin; silah isabetinde biriken güç × zar ek hasar olarak boşalır.', tetikler: ['pasif'],
@@ -522,7 +522,7 @@ export const ILKELLER: Record<string, IlkelSpec> = {
       kullanim: { tip: 'enumListe', degerler: ['saldiri', 'kurtulma', 'kontrol', 'hasar', 'ac'], varsayilan: ['saldiri', 'hasar'], not: 'Nerede kullanılır.' },
       savasBasiEnAz: F('Savaş başında havuz en az bu kadar (yenilenir).') },
     sistem: 'Ortak `kaynak` alanı havuzu sayar (`kaynak` ilkeli). İkinci şans (`effectDice.ts`, `onFail`: başarıya çevirince harcanır), isabet kancası (seçim) ve dosta isabet kancası (tepki) `paket/p11hooks.ts`. Sürüm 42+.',
-    ornek: { tur: 'zarHavuzu', zar: { 3: '1d8', 10: '1d10' }, kullanim: ['saldiri', 'hasar', 'ac'], savasBasiEnAz: 1, kaynak: { id: 'taktik', maliyet: 1 } },
+    ornek: { tur: 'zarHavuzu', zar: { 3: '1d8', 10: '1d10' }, kullanim: ['saldiri', 'hasar', 'ac'], savasBasiEnAz: 1, kaynak: { id: 'kehanet', maliyet: 1 } },
   },
   silahFirlat: {
     not: 'Yakın dövüş silahın fırlatılabilir olur ve saldırıdan sonra eline döner (Thrown özelliği + dönüş).', tetikler: ['pasif'],
