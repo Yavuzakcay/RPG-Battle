@@ -28,6 +28,7 @@ import { registerHitHook, type HitAfter } from '../hitHooks';
 import { registerCommandEnd, registerTurnStart } from '../turnHooks';
 import { registerAction } from '../ai/actions';
 import { bondRecallEvents } from '../heldItems';
+import { p11On } from './p11';
 import { JETON_ARKETIP, JETON_YEDEK } from '../../content/ilkelSema';
 import { resolveSave } from '../../rules/attack';
 import { askReaction } from '../../rules/reactionChoice';
@@ -318,6 +319,22 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
     }
     case 'cagir': return summonEvents(state, c);
     // P9 (sürüm 38+): düşmanı yönet (taraf değiştirme `dominate`; türe göre süzgeç, kurtulmalı).
+    // P11 (sürüm 42+): zar yarışı (karşılıklı d20 + değiştirici; elle zar dahil, zar defteri). Kazanınca hedefte işaret
+    // (`pk-yaris:<sen>`, `kosul: zarYarisi`; avantajsız Sneak Attack `sneakFor`).
+    case 'zarYarisi': {
+      if (!p11On(state)) return [];
+      const ts = targetsOf(state, c);
+      if (typeof ts === 'string') return ts;
+      const t = ts[0];
+      if (!t) return 'Bir düşman seç.';
+      const modOf = (x: Combatant, key: string | undefined) => (key && (x.skills as Record<string, number>)[key] !== undefined ? (x.skills as Record<string, number>)[key] as number
+        : (x.modifiers as Record<string, number>)[key ?? 'wis'] ?? 0);
+      const mine = rollDie(20, rollTag(rng, { kind: 'check', by: a.id })) + modOf(a, val<string>(p, 'beceri') ?? val<string>(p, 'yetenek'));
+      const theirs = rollDie(20, rollTag(rng, { kind: 'check', by: t.id })) + modOf(t, val<string>(p, 'hedefBeceri') ?? val<string>(p, 'hedefYetenek'));
+      out.push({ type: 'map_note', text: `${name}: ${a.name} ${mine} – ${t.name} ${theirs}` });
+      if (mine > theirs) out.push({ type: 'effect_added', targetId: t.id, effect: { id: `pk-yaris:${a.id}`, name, sourceId: a.id, sneakFor: a.id, icon: '🔍', ...untilOf(state, p) } as ActiveEffect });
+      return out;
+    }
     case 'kontrolEt': {
       if (!p9On(state)) return [];
       const ts = targetsOf(state, c);

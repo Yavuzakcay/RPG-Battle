@@ -556,6 +556,235 @@
           ]
         }
       ]
+    },
+    {
+      "id": "suru-cobani",
+      "class": "ranger",
+      "name": {
+        "tr": "suru-cobani",
+        "en": "suru-cobani"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "komut",
+          "level": 3,
+          "name": {
+            "tr": "komut",
+            "en": "komut"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "cagirGuclendir",
+              "komutSaldiri": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "iz-surucu",
+      "class": "rogue",
+      "name": {
+        "tr": "iz-surucu",
+        "en": "iz-surucu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "yaris",
+          "level": 3,
+          "name": {
+            "tr": "yaris",
+            "en": "yaris"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "zarYarisi",
+              "tetik": "bonus",
+              "hedef": "dusman",
+              "beceri": "Insight",
+              "hedefBeceri": "Deception",
+              "menzilFt": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buyu-kalkani",
+      "class": "paladin",
+      "name": {
+        "tr": "buyu-kalkani",
+        "en": "buyu-kalkani"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "kalkan-aura",
+          "level": 3,
+          "name": {
+            "tr": "kalkan-aura",
+            "en": "kalkan-aura"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "aura",
+              "yaricapFt": 10,
+              "suzgec": "dostlar",
+              "etki": "direnc",
+              "hasarKaynagi": "buyu"
+            }
+          ]
+        },
+        {
+          "id": "kendi",
+          "level": 3,
+          "name": {
+            "tr": "kendi",
+            "en": "kendi"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "direnc",
+              "hasarKaynagi": "buyu"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tas-kani",
+      "class": "sorcerer",
+      "name": {
+        "tr": "tas-kani",
+        "en": "tas-kani"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "yogunluk",
+          "level": 1,
+          "name": {
+            "tr": "yogunluk",
+            "en": "yogunluk"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "koruma",
+              "itmeDirenci": true
+            },
+            {
+              "tur": "buyuDegisimi",
+              "yetenekEki": "con"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taktik-zar",
+      "class": "fighter",
+      "name": {
+        "tr": "taktik-zar",
+        "en": "taktik-zar"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "taktik-havuz",
+          "level": 3,
+          "name": {
+            "tr": "taktik-havuz",
+            "en": "taktik-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "taktik",
+              "sayi": 3,
+              "yenilenme": "kisa"
+            }
+          ]
+        },
+        {
+          "id": "taktik",
+          "level": 3,
+          "name": {
+            "tr": "taktik",
+            "en": "taktik"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "zarHavuzu",
+              "zar": {
+                "3": "1d8",
+                "10": "1d10"
+              },
+              "kullanim": [
+                "saldiri",
+                "hasar",
+                "ac"
+              ],
+              "savasBasiEnAz": 2,
+              "kaynak": {
+                "id": "taktik",
+                "maliyet": 1
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

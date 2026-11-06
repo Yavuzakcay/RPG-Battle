@@ -5,6 +5,7 @@
 import { exhaustionD20Penalty } from '../rules/exhaustion';
 import { moraleCheckDice, moraleSaveDice } from './morale';
 import { paketChances } from './paket/sans';
+import { poolChances } from './paket/p11';
 import { extrasTotal, rollExtras, secondChanceAll, spoilChance, type ExtraDie, type RolledExtra } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { resourceLeft, type Combatant } from './types';
@@ -74,6 +75,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   }
   // Görev P6: ek paket girişleri (d20 alt sınırı, zar mührü, zorla sonuç; menzil `syncAuras` → `pkSans`).
   k18.push(...paketChances(c, on));
+  // Kuyruk P11: paket zar havuzu (ikinci şans).
+  k18.push(...poolChances(c, on));
   const traits = c.traits;
   // Not (Kuyruk 18): kural sürümü < 16'da işaretli savaşçıda `inspired` aşağıda düşüyor (eski davranış; replay için korunur).
   // Kuyruk 19: `inspireFix` (reducer `syncAuras`, Game Master anahtarı `bardicInspirationFix`) varken listede kalır.

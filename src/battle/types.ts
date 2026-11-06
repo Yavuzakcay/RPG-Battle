@@ -101,6 +101,12 @@ export interface ActiveEffect {
   squeeze?: boolean;
   bladeGone?: boolean;
   /** Kuyruk P11 (paket `buyuSakla`): bekleyen büyü (yapıldı, ateşlenmedi). */
+  /** Kuyruk P11 (paket `koruma.itmeDirenci`): zorla harekete karşı avantajlı STR kurtulması. */
+  pkPushResist?: boolean;
+  /** Kuyruk P11 (paket `zarYarisi`): bu saldırgan avantajsız Sneak Attack yapar. */
+  sneakFor?: string;
+  /** Kuyruk P11 (paket `cagirGuclendir.komutSaldiri`): komut turunda ek saldırı hakkı. */
+  pkExtraAttack?: number;
   storedSpell?: { spellName: string; slotLevel: number | null; cost: 'action' | 'bonus' | 'reaction' | 'free' };
   /** Kuyruk P11 (paket `buyuIptal.calar`): çalınan büyü, slotsuz bir kez yapılır. */
   grantSpell?: { spellName: string };

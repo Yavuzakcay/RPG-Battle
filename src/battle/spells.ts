@@ -101,7 +101,7 @@ function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 
     // Görev SORCERER: Elemental Affinity (Draconic): soyun hasar türündeki büyüye CHA.
     + (m.kind !== 'heal' ? affinityBonus(actor, m.damageType) : 0)
     // Görev P0: ek paket buyuDegisimi (hasar eklentisi).
-    + (m.kind !== 'heal' && actor.paket ? paketSpellBonus(actor, m.damageType, school) : 0)
+    + (m.kind !== 'heal' && actor.paket ? paketSpellBonus(actor, m.damageType, school, name ? spells.find((s) => s.name === name)?.rangeFt : undefined, !!actor.paket.v42) : 0)
     // Görev WARLOCK: Agonizing Blast: seçilen cantrip'in hasar zarına (her ışına) büyü yeteneği.
     + (name && actor.cantripMods?.[name]?.ability && m.kind !== 'heal' ? actor.spellMod : 0);
   return formatDice(count, spec.sides, bonus);
@@ -245,9 +245,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const save = sleepless ? { d20: null, total: null, success: true } as ReturnType<typeof resolveSave>
       : resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
-    const adjusted = amount > 0 ? adjustDamage(amount, damageType, profileIn(state, t)) : { amount: 0, note: null };
+    const adjusted = amount > 0 ? adjustDamage(amount, damageType, profileIn(state, t, true)) : { amount: 0, note: null };
     const amount2 = second ? saveDamage(t, ability, save.success, second.total, !!m.halfOnSave) : 0;
-    const adjusted2 = second && amount2 > 0 ? adjustDamage(amount2, second.type, profileIn(state, t)) : { amount: 0, note: null };
+    const adjusted2 = second && amount2 > 0 ? adjustDamage(amount2, second.type, profileIn(state, t, true)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount + adjusted2.amount, damageType ?? '', false, rng);
     // Görev B3: başarısızlıkta süren etki varsa durumlar etkiyle gelir (Fear, Hypnotic Pattern).
     // Kuyruk 19: yeni eklenen başarısızlık etkisi anahtara bağlı (`failEffectGate`; Vitriolic Sphere'in gecikmeli asidi).
@@ -730,7 +730,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       rolls = d.rolls;
     }
     const amount = saveDamage(target, ability, save.success, raw, !!m.halfOnSave || potentCantrip(actor, spell));
-    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileIn(state, target)) : { amount: 0, note: null };
+    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileIn(state, target, true)) : { amount: 0, note: null };
     const fx = damageEffects(target, adjusted.amount, m.damageType ?? '', false, rng);
     const added = !save.success ? (m.conditions ?? []).filter((c) => !target.conditions.includes(c)) : [];
     events.push({
@@ -819,7 +819,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const rolls0 = res.damage?.rolls ?? [];
       const rolls1 = res.hit && actor.traits?.includes('mm-empowered') ? empowerRolls(actor, rolls0, sides, rng) : rolls0;
       const raw = (res.damage?.total ?? 0) - rolls0.reduce((n, x) => n + x, 0) + rolls1.reduce((n, x) => n + x, 0);
-      const adj = res.hit ? adjustDamage(raw, m.damageType, profileIn(state, t)) : { amount: 0, note: null };
+      const adj = res.hit ? adjustDamage(raw, m.damageType, profileIn(state, t, true)) : { amount: 0, note: null };
       // Hunter's Mark: işaretli hedefe büyü saldırısı isabetinde de ek hasar.
       let bonus = res.hit ? hitExtras(current, actor, t, { mode, critical: res.critical }, rng) : { extras: [] as ExtraDamage[] };
       // Görev SORCERER: patlayan zar (Sorcerous Burst): en yüksek yüzde ek zar, en çok büyü yeteneği değiştiricisi kadar.
@@ -827,7 +827,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         const boom = explodeRolls(rolls1, m.explode, Math.max(0, actor.spellMod), actor, rng);
         if (boom.length) {
           const sum = boom.reduce((n, x) => n + x, 0);
-          const a = adjustDamage(sum, m.damageType, profileIn(state, t));
+          const a = adjustDamage(sum, m.damageType, profileIn(state, t, true));
           bonus = { ...bonus, extras: [...bonus.extras, { label: `${spell.name} (patlama)`, rolls: boom, raw: sum, applied: a.amount, type: m.damageType ?? '', note: a.note }] };
         }
       }
@@ -842,7 +842,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       // Görev B1: ıskada yarı hasar (Acid Arrow).
       const miss = !hit && m.halfOnMiss ? (() => {
         const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
-        const a = adjustDamage(Math.floor(d.total / 2), m.damageType, profileIn(state, t));
+        const a = adjustDamage(Math.floor(d.total / 2), m.damageType, profileIn(state, t, true));
         return { rolls: d.rolls, raw: Math.floor(d.total / 2), amount: a.amount, note: a.note };
       })() : null;
       const total = hit ? hr?.damage ?? 0 : miss?.amount ?? 0;
@@ -861,7 +861,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       };
     } else {
       const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
-      const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profileIn(state, t));
+      const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profileIn(state, t, true));
       const fx = damageEffects(t, adj.amount, m.damageType ?? '', false, rng);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: `${spell.name} (otomatik isabet)`,
@@ -1807,7 +1807,7 @@ function executeTeleport(state: BattleState, actor: Combatant, cmd: CastCommand,
     if (!spot) {
       for (const who of [actor, ally]) {
         const d = rollDice('4d6', rollTag(rng, { kind: 'damage', by: actor.id }));
-        const adj = adjustDamage(d.total, 'force', damageProfile(who));
+        const adj = adjustDamage(d.total, 'force', profileIn(state, who, true));
         const fx = damageEffects(who, adj.amount, 'force', false, rng);
         events.push({ type: 'effect_tick', targetId: who.id, effectId: spell.srd, name: `${spell.name} (yer yok)`, damageRolls: d.rolls, appliedDamage: adj.amount, damageType: 'force', targetHpAfter: fx.hpAfter, effects: fx.effects });
       }

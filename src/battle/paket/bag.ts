@@ -26,6 +26,8 @@ export interface PaketBag {
   zirhsiz?: boolean;
   /** Görev P7: savaş başındaki kaynak değerleri (`kaynakYenile` üst sınırı; `withPaket` yazar). */
   kaynakBas?: Record<string, number>;
+  /** Kuyruk P11: savaş kural sürümü 42+ (durumsuz okuyan yollar için; `damageExpr`). */
+  v42?: boolean;
 }
 
 /** Karakterin paket verisi (ilkelli özelliği yoksa undefined). */

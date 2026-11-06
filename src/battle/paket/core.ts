@@ -114,6 +114,8 @@ export function kosulOk(state: BattleState, actor: Combatant, p: Ilkel, target?:
     // P9: bu tur Flurry of Blows (kalan vuruş tanımlı), savaşın ilk turu.
     if (k === 'flurryVurusu' && actor.economy.flurryLeft === undefined) return false;
     if (k === 'ilkTur' && state.round !== 1) return false;
+    // P11: zar yarışını kazandığın hedef (`zarYarisi`).
+    if (k === 'zarYarisi' && !target?.effects?.some((e) => e.id === `pk-yaris:${actor.id}`)) return false;
   }
   return true;
 }
@@ -179,7 +181,8 @@ export function passiveBody(p: Ilkel, c: Combatant, state?: BattleState): Partia
   switch (p.tur) {
     case 'direnc': {
       const tip = val<string>(p, 'tip');
-      const turler = p.turler as string[];
+      // P11 (sürüm 42+): büyü kaynaklı hasara direnç (sözde tür `buyu`, `zones.ts` `profileIn`).
+      const turler = [...((p.turler as string[] | undefined) ?? []), ...(p.hasarKaynagi === 'buyu' && (!state || ruleVersion(state) >= 42) ? ['buyu'] : [])];
       return tip === 'bagisiklik' ? { immuneDamage: turler } : tip === 'zaaf' ? { vulnerable: turler } : { resist: turler };
     }
     case 'zarEtkisi': return zarBody(p, c);
@@ -191,7 +194,7 @@ export function passiveBody(p: Ilkel, c: Combatant, state?: BattleState): Partia
     case 'aura': return state && !auraCoreOn(state) ? null : { auras: [auraSpec(p, c, 0)] as unknown as ActiveEffect['auras'] };
     // P7: büyülü vuruş, koruma, algı, saldırmadan kurtulma.
     case 'buyuluVurus': return { pkMagic: val<string[]>(p, 'kapsam') ?? ['kendi'] };
-    case 'koruma': return { ...(p.kritikBagisikligi ? { noCrit: true } : {}), ...(p.konsantrasyonAvantaji ? { concAdv: true } : {}),
+    case 'koruma': return { ...(p.kritikBagisikligi ? { noCrit: true } : {}), ...(p.itmeDirenci && (!state || ruleVersion(state) >= 42) ? { pkPushResist: true } : {}), ...(p.konsantrasyonAvantaji ? { concAdv: true } : {}),
       ...(Array.isArray(p.durumAvantaji) || p.buyulereAvantaj ? { saveAdvAgainst: [...((p.durumAvantaji as string[] | undefined) ?? []), ...(p.buyulereAvantaj ? ['spell'] : [])] } : {}) };
     case 'algi': return { ...(typeof p.karanlikGorusFt === 'number' ? { darkvision: p.karanlikGorusFt } : {}), ...(typeof p.gercekGorusFt === 'number' ? { pkTruesight: p.gercekGorusFt } : {}),
       ...(p.gorunmezGor ? { seeInvisible: true } : {}) };
@@ -247,7 +250,7 @@ export function auraSpec(p: Ilkel, c: Combatant, i: number): Record<string, unkn
             : etki === 'iyilestirmeYok' ? { kind: 'noHeal' }
               : etki === 'olumKurtulmaAvantaji' ? { kind: 'deathSaveAdv' }
                 : etki === 'olumKurtulmaDezavantaji' ? { kind: 'deathSaveDis' }
-                  : etki === 'direnc' ? { kind: 'resist', types: (p.turler as string[] | undefined) ?? [] }
+                  : etki === 'direnc' ? { kind: 'resist', types: [...((p.turler as string[] | undefined) ?? []), ...(p.hasarKaynagi === 'buyu' ? ['buyu'] : [])] }
                     : etki === 'kurtulmaDezavantaji' ? { kind: 'saveDis' } : { kind: 'moral', amount: n() };
   const save = p.save as Record<string, unknown> | undefined;
   return { id: `pk-aura:${c.id}:${i}`, name: (p.ad as string | undefined) ?? 'Aura', radius: Math.max(0, Math.floor(flatNum(p.yaricapFt, c) / 5)), filter, trigger, effect,
@@ -313,12 +316,18 @@ export function withPaket(state: BattleState): BattleState {
     // Kuyruk P11 (sürüm 42+): yalnız kendine bedava büyüler, paket Twinned.
     const selfOnly: string[] = [];
     let twin: Combatant['pkTwin'];
+    // P11: zar havuzu savaş başında en az N (`zarHavuzu.savasBasiEnAz`).
+    const poolMin: Record<string, number> = {};
     const bonded: string[] = [];
     for (const f of c.paket.ozellikler) f.ilkeller.forEach((p, i) => {
       if (ruleVersion(state) >= 42 && p.tur === 'buyuVer' && p.yalnizKendine === true && Array.isArray(p.buyular)) selfOnly.push(...p.buyular as string[]);
       if (ruleVersion(state) >= 42 && p.tur === 'buyuDegisimi' && p.ikiz === true && c.metamagic?.twinned === undefined) {
         const k = costOf(c, p);
         twin = { ...(k ? { resource: k.id } : {}), cost: k?.cost ?? 0 };
+      }
+      if (ruleVersion(state) >= 42 && p.tur === 'zarHavuzu' && p.savasBasiEnAz !== undefined) {
+        const k = costOf(c, p);
+        if (k) poolMin[k.id] = Math.max(poolMin[k.id] ?? c.resources[k.id] ?? 0, flatNum(p.savasBasiEnAz, c));
       }
       if (p.tur === 'silahBagi' && ruleVersion(state) >= 41) bonded.push(...weaponIdsFor(c, p.silah as string | undefined, false));
       if (p.tur === 'silahFirlat' && ruleVersion(state) >= 41) thrownAdd.push(...thrownOptions(c, p, thrownAdd));
@@ -343,17 +352,21 @@ export function withPaket(state: BattleState): BattleState {
       ...(bonded.length ? { bonded: [...new Set(bonded)] } : {}),
       ...(selfOnly.length ? { pkSelfOnly: [...new Set(selfOnly)] } : {}),
       ...(twin ? { pkTwin: twin, metamagic: { ...c.metamagic, twinned: 0 } } : {}),
+      ...(Object.keys(poolMin).length ? { resources: { ...c.resources, ...poolMin } } : {}),
       // P7: savaş başındaki kaynaklar (`kaynakYenile` üst sınırı).
-      paket: { ...c.paket, kaynakBas: Object.fromEntries(Object.values(c.paket.kaynaklar ?? {}).map((k) => [k, c.resources[k] ?? 0])) },
+      paket: { ...c.paket, ...(ruleVersion(state) >= 42 ? { v42: true } : {}), kaynakBas: Object.fromEntries(Object.values(c.paket.kaynaklar ?? {}).map((k) => [k, c.resources[k] ?? 0])) },
     };
   }
   return changed ? { ...state, combatants } : state;
 }
 
 /** Büyü hasarı eklentisi (`buyuDegisimi.hasarEki`; türe/okula göre; koşulsuz pasifler). `spells.ts` `damageExpr` okur. */
-export function paketSpellBonus(c: Combatant, damageType: string | undefined, school: string | undefined): number {
+export function paketSpellBonus(c: Combatant, damageType: string | undefined, school: string | undefined, rangeFt?: number, v42 = false): number {
   let n = 0;
   for (const f of c.paket?.ozellikler ?? []) for (const p of f.ilkeller) {
+    // P11 (sürüm 42+): yakın büyüye yetenek eki (`yetenekEki`, menzil en çok `menzilEnCokFt`, varsayılan 5 ft).
+    if (v42 && p.tur === 'buyuDegisimi' && typeof p.yetenekEki === 'string' && !p.kosul && rangeFt !== undefined
+      && rangeFt <= (typeof p.menzilEnCokFt === 'number' ? p.menzilEnCokFt : 5)) n += Math.max(0, (c.modifiers as Record<string, number>)[p.yetenekEki] ?? 0);
     if (p.tur !== 'buyuDegisimi' || p.hasarEki === undefined || p.kosul) continue;
     if (p.hasarTurleri && !(p.hasarTurleri as string[]).includes(damageType ?? '')) continue;
     if (p.okul && p.okul !== school) continue;

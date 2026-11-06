@@ -231,7 +231,14 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       }
       return spend(actor, u && 'action' in u && u.action === 'action' ? 'action' : 'bonus', it?.name ?? 'Eşya');
     }
-    case 'monster_attack':
+    case 'monster_attack': {
+      // Kuyruk P11 (paket `cagirGuclendir.komutSaldiri`): komut turunda eylem harcanmışsa ek saldırı.
+      const ex = actor.effects?.find((x) => x.pkExtraAttack);
+      if (e.action && ex?.pkExtraAttack && !actor.attacks[cmd.attackIndex]?.bonusAction) {
+        return { ok: true, event: ex.pkExtraAttack > 1 ? { type: 'effect_added', targetId: actor.id, effect: { ...ex, pkExtraAttack: ex.pkExtraAttack - 1 } }
+          : { type: 'effect_ended', targetId: actor.id, effectId: ex.id, name: ex.name, reason: 'used' } };
+      }
+    }
       if (actor.attacks[cmd.attackIndex]?.bonusAction) return spend(actor, 'bonus', actor.attacks[cmd.attackIndex]?.name ?? 'Bonus saldırı');
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'multiattack':

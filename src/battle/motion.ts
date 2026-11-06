@@ -19,7 +19,9 @@ import { globalRule } from './ruleControl';
 import { houseRule } from './houseRules';
 import { ruleVersion } from './ruleVersion';
 import { occupantAt } from './movement';
-import type { Rng } from '../rules/dice';
+import { rollTag, type Rng } from '../rules/dice';
+import { resolveSave } from '../rules/attack';
+import { saveDice } from './effectDice';
 import { distance, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import motionData from '../../data/hareket.json';
@@ -136,11 +138,24 @@ export function collisionDice(remaining: number): string | null {
   return n > 0 ? `${n}${MOTION.carpma.zar}` : null;
 }
 
+/** P11: itmeye direnç kurtulması (DC: kaynağın büyü DC'si ya da 8 + yeterlilik + STR). Başarıda olaylar (not), değilse null. */
+function pushResist(state: BattleState, targetId: string, by: string, rng: Rng): BattleEvent[] | null {
+  const t = state.combatants[targetId];
+  const src = state.combatants[by];
+  if (ruleVersion(state) < 42 || !t?.effects?.some((e) => e.pkPushResist) || !src || src.id === t.id) return null;
+  const dc = src.spellSaveDc ?? 8 + src.proficiency + Math.max(0, src.modifiers.str);
+  const r = resolveSave({ extra: saveDice(t, 'str'), modifier: t.saves.str, dc, mode: 'advantage' }, rollTag(rng, { by: t.id }));
+  return r.success ? [{ type: 'map_note', text: `${t.name}: zorla harekete direndi (STR ${r.total} / DC ${dc})` }] : null;
+}
+
 /**
  * Tek zorla hareket girişi. `feet` 5'in katı; her adım ayrı `pushed` + varış kuralları. Adım engelde kalırsa (duvar, nesne,
  * yaratık, harita kenarı) hareket biter ve çarpma kuralı açıksa hasar uygulanır. Lav/düşme gibi adımdan sonra durur.
  */
 export function forcedMove(state: BattleState, targetId: string, mode: ForcedMode, feet: number, by: string, rng: Rng, o: ForcedOptions = {}): BattleEvent[] {
+  // Kuyruk P11 (sürüm 42+, paket `koruma.itmeDirenci`): yaratığın yol açtığı zorla harekete avantajlı STR kurtulması (başarıda kımıldamaz).
+  const res = pushResist(state, targetId, by, rng);
+  if (res) return res;
   const events: BattleEvent[] = [];
   let current = state;
   const total = Math.floor(feet / 5);

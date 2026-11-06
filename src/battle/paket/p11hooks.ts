@@ -13,10 +13,10 @@ import { rollDice, rollTag } from '../../rules/dice';
 import { damageProfile } from '../common';
 import { registerHitHook } from '../hitHooks';
 import { canReact, reactionUsed, registerAllyHit } from '../reactions';
-import type { ActiveEffect, BattleEvent } from '../types';
+import type { ActiveEffect, BattleEvent, Combatant } from '../types';
 import { registerCommandEnd } from '../turnHooks';
-import { flatNum, formul, val } from './core';
-import { p11On, prims } from './p11';
+import { canPay, flatNum, formul, val } from './core';
+import { p11On, payEvents, prims } from './p11';
 
 const inspireFx = (c: { effects?: ActiveEffect[] } | undefined, use: 'damage' | 'ac') => c?.effects?.find((e) => e.inspire && e.inspireUses?.includes(use));
 const drop = (targetId: string, e: ActiveEffect): BattleEvent => ({ type: 'effect_ended', targetId, effectId: e.id, name: e.name, reason: 'used' });
@@ -91,4 +91,57 @@ registerHitHook((state, actor, target, ctx, rng) => {
   const type = val<string>(r.p, 'hasarTuru') ?? ctx.weaponType;
   const adj = adjustDamage(roll.total, type, damageProfile(target));
   return { extras: [{ label: fx.name, rolls: roll.rolls, raw: roll.total, applied: adj.amount, type, note: adj.note }], after: [() => [drop(actor.id, fx)]] };
+});
+
+// ------------------------------------------------------------------ çağrıya komutla ek saldırı
+
+/** `command_summons` (komut): sahibinin `cagirGuclendir.komutSaldiri` kadar, komut verilen çağrılara bu tur ek saldırı. */
+registerCommandEnd((_before, next, events) => {
+  if (!p11On(next)) return [];
+  const out: BattleEvent[] = [];
+  for (const ev of events) {
+    if (ev.type !== 'summons_commanded') continue;
+    const owner = next.combatants[ev.actorId];
+    const n = prims(owner, 'cagirGuclendir').reduce((m, x) => Math.max(m, x.p.komutSaldiri === undefined ? 0 : flatNum(x.p.komutSaldiri, owner as Combatant)), 0);
+    if (!owner || n <= 0) continue;
+    for (const s of Object.values(next.combatants)) {
+      if (s.summon?.by !== owner.id || !s.summon.commandBonus || s.summon.gone || s.hp <= 0) continue;
+      out.push({ type: 'effect_added', targetId: s.id, effect: { id: `pk-komut:${s.id}`, name: 'Komut: ek saldırı', sourceId: owner.id, pkExtraAttack: n, until: next.round, icon: '⚔' } });
+    }
+  }
+  return out;
+});
+
+// ------------------------------------------------------------------ zar havuzu: hasar ve AC
+
+const poolRefs = (c: Combatant | undefined, use: string) => (c?.paket?.v42 ? prims(c, 'zarHavuzu').filter((x) => (val<string[]>(x.p, 'kullanim') ?? []).includes(use) && canPay(c, x.p) && !x.p.kosul) : []);
+
+registerHitHook((state, actor, target, ctx, rng) => {
+  if (!p11On(state)) return null;
+  const r = poolRefs(actor, 'hasar')[0];
+  if (!r) return null;
+  const die = formul(r.p.zar, actor);
+  const name = (r.p.ad as string | undefined) ?? r.feat.ad;
+  if (askChoice(rng, { actorId: actor.id, sourceId: target.id, label: `${name}: zarı hasara ekle`, options: [{ id: 'use', label: `+${die}` }, { id: 'keep', label: 'Sakla' }],
+    suggested: target.hp > 0 ? 'use' : 'keep' }) !== 'use') return null;
+  const roll = rollDice(die, rollTag(rng, { kind: 'damage', by: actor.id }), ctx.critical);
+  const adj = adjustDamage(roll.total, ctx.weaponType, damageProfile(target));
+  return { extras: [{ label: name, rolls: roll.rolls, raw: roll.total, applied: adj.amount, type: ctx.weaponType, note: adj.note }], after: [() => payEvents(state, actor, r.feat, r.p, r.i)] };
+});
+
+registerAllyHit((state, ctx, rng) => {
+  if (!p11On(state) || ctx.critical) return null;
+  const t = ctx.target;
+  const r = poolRefs(t, 'ac')[0];
+  if (!r || !canReact(t)) return null;
+  const die = formul(r.p.zar, t);
+  const name = (r.p.ad as string | undefined) ?? r.feat.ad;
+  const opt = { id: `p11-havuz-ac`, name: `${name}: AC +${die}` };
+  const ans = askReaction(rng, { reactorId: t.id, trigger: 'hit', sourceId: ctx.attacker.id, info: { label: ctx.label, total: ctx.total, ac: ctx.ac, damage: ctx.damage },
+    options: [opt], suggested: ctx.total < ctx.ac + Number(/d(\d+)/.exec(die)?.[1] ?? 0) ? { option: opt.id } : null });
+  if (ans?.option !== opt.id) return null;
+  const v = rollDice(die, rollTag(rng, { kind: 'damage', by: t.id })).total;
+  const events: BattleEvent[] = [reactionUsed(t, opt, 'hit', ctx.attacker.id), ...payEvents(state, t, r.feat, r.p, r.i),
+    { type: 'map_note', text: `${t.name}: ${name} → AC +${v} (${ctx.ac + v})` }];
+  return ctx.total < ctx.ac + v ? { events, name } : { events, name, damage: ctx.damage };
 });

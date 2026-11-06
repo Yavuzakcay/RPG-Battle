@@ -9,7 +9,7 @@ import { rollDice, rollDie, rollTag, type Rng } from '../../rules/dice';
 import { ruleVersion } from '../ruleVersion';
 import { turnKey } from '../economy';
 import type { BattleEvent, BattleState, Combatant } from '../types';
-import { canPay, costOf, flatNum, kosulOk, usedKey, usedThisTurn, val, type Ilkel, type PaketOzellik } from './core';
+import { canPay, costOf, flatNum, formul, kosulOk, usedKey, usedThisTurn, val, type Ilkel, type PaketOzellik } from './core';
 
 export const P11_VERSION = 42;
 export const p11On = (state: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(state) >= P11_VERSION;
@@ -55,4 +55,16 @@ export function paketHealRoll(state: BattleState | undefined, actor: Combatant, 
     return { total: sum + d.bonus, rolls, changed: (r.p.ad as string | undefined) ?? r.feat.ad };
   }
   return { total: d.total, rolls: d.rolls };
+}
+
+/**
+ * Zar havuzu (`zarHavuzu`; kaynak ilkeliyle sayılan zarlar, Superiority Dice yolu): başarısız saldırı/kurtulma zarına
+ * havuz zarı (`effectDice.ts` ikinci şans, `onFail`: başarıya çevirirse harcanır). Hasar ve AC kullanımı `p11hooks.ts`.
+ */
+export function poolChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'): import('../../rules/attack').ExtraDie[] {
+  if (!c?.paket?.v42) return [];
+  const want = on === 'attack' ? 'saldiri' : on === 'save' ? 'kurtulma' : 'kontrol';
+  return prims(c, 'zarHavuzu').filter((x) => (val<string[]>(x.p, 'kullanim') ?? []).includes(want) && canPay(c, x.p) && !x.p.kosul)
+    .map((x) => ({ label: (x.p.ad as string | undefined) ?? x.feat.ad, die: formul(x.p.zar, c), sign: 1 as const, reroll: 'onFail' as const,
+      ...(costOf(c, x.p) ? { resource: costOf(c, x.p)?.id } : {}), holderId: c.id }));
 }

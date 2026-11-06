@@ -12,6 +12,8 @@ import { weaponProficient } from '../../rules/mastery';
 import { kitArena, o } from '../k54bKit';
 import { mk } from '../fixtures';
 import { replay } from '../reduce';
+import { forcedMove } from '../motion';
+import { poolChances } from './p11';
 import type { AttackOption, BattleEvent, Combatant } from '../types';
 import type { Rng } from '../../rules/dice';
 
@@ -35,6 +37,7 @@ const same = (r: Run) => {
   }
 };
 const fixed = (v: number): Rng => () => v;
+const seqRng = (vs: number[], rest = 0.5): Rng => { let i = 0; return () => (i < vs.length ? vs[i++] as number : rest); };
 const turnOf = (r: Run, id: string) => { while (r.state.order[r.state.turnIndex] !== id) { const cur = r.state.order[r.state.turnIndex] as string; const cmd = { type: 'end_turn' as const, actorId: cur }; if (r.c(cur).side === 'enemies') r.gm(cmd); else r.do(cmd); } };
 const inspireKey = (c: Combatant) => (c.features ?? []).find((f) => f.effect.kind === 'inspire') as NonNullable<Combatant['features']>[number];
 
@@ -235,6 +238,94 @@ describe('P11 G3: büyü yapımı', () => {
     const atk = ev.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
     expect(atk.extra?.some((x) => x.label === 'depo')).toBe(true);
     expect(r.c('A').effects?.some((e) => e.pkCharge)).toBe(false);
+    same(r);
+  });
+});
+
+describe('P11 G4–G7', () => {
+  it('komutSaldiri: komut verilen çağrı eylemden sonra bir ek saldırı yapar; 41\'de yapamaz', () => {
+    for (const v of [42, 41]) {
+      const bite = { name: 'Bite', bonus: 20, damageDice: '1d4', damageType: 'piercing', repeat: 1, ranged: false, reachFt: 5, text: '' };
+      const r = kitArena({ cls: 'ranger', sub: 'suru-cobani', level: 11, ...(v === 41 ? { kuralSurumu: 41 } : {}), place: { A: o(3, 3), B: o(6, 3), C: o(0, 0) },
+        extra: [mk('W', { ownerId: 'p1', hp: 20, maxHp: 20, attacks: [bite], summon: { by: 'A', spellId: 'pk', spell: 'pk', turn: 'after-owner', level: 1, commandBonus: true } })] });
+      patch(r, 'W', { pos: o(5, 3) });
+      patch(r, 'B', { hp: 200, maxHp: 200 });
+      rebase(r);
+      r.do({ type: 'command_summons', actorId: 'A' } as never);
+      turnOf(r, 'W');
+      r.do({ type: 'monster_attack', actorId: 'W', targetId: 'B', attackIndex: 0 } as never);
+      const second = r.try({ type: 'monster_attack', actorId: 'W', targetId: 'B', attackIndex: 0 } as never);
+      expect(second.ok).toBe(v === 42);
+    }
+  });
+  it('zarYarisi: kazanınca hedef işaretlenir ve avantajsız Sneak Attack; kaybedince işaret yok', () => {
+    const run = (rng: Rng) => {
+      const r = kitArena({ cls: 'rogue', sub: 'iz-surucu', level: 5, place: { A: o(3, 3), B: o(4, 3), C: o(0, 0) } });
+      patch(r, 'B', { hp: 200, maxHp: 200, ac: 5 });
+      rebase(r);
+      r.do({ type: 'use_feature', actorId: 'A', feature: 'pk:iz-surucu/yaris:bonus', targetId: 'B' }, rng);
+      return r;
+    };
+    const win = run(seqRng([0.95, 0.05]));
+    expect(win.c('B').effects?.find((e) => e.sneakFor === 'A')).toBeDefined();
+    const dagger = win.c('A').weaponOptions.find((w) => w.finesse) ?? { ...club, finesse: true };
+    const ev = win.do({ type: 'attack', actorId: 'A', targetId: 'B', option: { ...dagger, finesse: true } }, fixed(0.6));
+    const atk = ev.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
+    expect(atk.extra?.some((x) => x.label === 'Sneak Attack')).toBe(true);
+    same(win);
+    const lose = run(seqRng([0.05, 0.95]));
+    expect(lose.c('B').effects?.some((e) => e.sneakFor)).toBeFalsy();
+  });
+  it('direnc hasarKaynagi buyu: büyü hasarı yarıya, silah hasarı tam; aura dostu da korur', () => {
+    const r = kitArena({ cls: 'paladin', sub: 'buyu-kalkani', level: 7, place: { A: o(3, 3), B: o(6, 3), C: o(4, 3) },
+      enemy: { spellNames: ['Fire Bolt'], spellAttack: 30, spellSaveDc: 13, spellMod: 3, level: 5, weaponOptions: [{ ...club, attackBonus: 30, reachFt: 30 }] } });
+    rebase(r);
+    turnOf(r, 'B');
+    const hp = r.c('C').hp;
+    const ev = r.gm({ type: 'cast_spell', actorId: 'B', spellName: 'Fire Bolt', targetId: 'C' } as never, fixed(0.6));
+    const a = ev.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
+    expect(a.damageNote).toBe('resistant');
+    expect(r.c('C').hp).toBe(hp - (a.appliedDamage ?? 0));
+    // Silah hasarı direnilmez.
+    r.fresh('B');
+    const w = r.gm({ type: 'attack', actorId: 'B', targetId: 'C', option: { ...club, attackBonus: 30, reachFt: 30 } }, fixed(0.6)).find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
+    expect(w.damageNote).toBeNull();
+    // 41: direnç yok.
+    const old = kitArena({ cls: 'paladin', sub: 'buyu-kalkani', level: 7, kuralSurumu: 41, place: { A: o(3, 3), B: o(6, 3), C: o(4, 3) },
+      enemy: { spellNames: ['Fire Bolt'], spellAttack: 30, spellSaveDc: 13, spellMod: 3, level: 5 } });
+    turnOf(old, 'B');
+    const o41 = old.gm({ type: 'cast_spell', actorId: 'B', spellName: 'Fire Bolt', targetId: 'C' } as never, fixed(0.6)).find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
+    expect(o41.damageNote).toBeNull();
+  });
+  it('itmeDirenci: itmeye avantajlı STR kurtulması (başarıda kımıldamaz); yetenekEki: yakın büyüye CON', () => {
+    const r = kitArena({ cls: 'sorcerer', sub: 'tas-kani', level: 5, scores: { con: 18 }, place: { A: o(3, 3), B: o(4, 3), C: o(0, 0) } });
+    patch(r, 'B', { hp: 200, maxHp: 200 });
+    rebase(r);
+    const before = r.c('A').pos;
+    const evs = forcedMove(r.state, 'A', 'push', 10, 'B', fixed(0.99), { origin: o(4, 3) });
+    expect(evs.some((e) => e.type === 'pushed')).toBe(false);
+    const moved = forcedMove(r.state, 'A', 'push', 10, 'B', fixed(0.01), { origin: o(4, 3) });
+    expect(moved.some((e) => e.type === 'pushed')).toBe(true);
+    void before;
+    patch(r, 'A', { spellNames: ['Shocking Grasp'] });
+    rebase(r);
+    const ev = r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Shocking Grasp', targetId: 'B' } as never, fixed(0.95));
+    const sg = ev.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
+    expect(sg.rawDamage).toBe((sg.damageRolls ?? []).reduce((n, x) => n + x, 0) + 4);
+  });
+  it('zarHavuzu: savaş başı en az 2; başarısız saldırıya zar (tutarsa harcanır), hasara zar, seviye tablosu', () => {
+    const r = kitArena({ cls: 'fighter', sub: 'taktik-zar', level: 10, place: { A: o(3, 3), B: o(4, 3), C: o(0, 0) } });
+    const key = 'pk-taktik-zar-taktik';
+    expect(r.c('A').resources[key]).toBeGreaterThanOrEqual(2);
+    patch(r, 'A', { weaponOptions: [club], resources: { ...r.c('A').resources, [key]: 2 } });
+    patch(r, 'B', { hp: 200, maxHp: 200, ac: 12 });
+    rebase(r);
+    expect(poolChances(r.c('A'), 'attack')).toMatchObject([{ die: '1d10', reroll: 'onFail', resource: key }]);
+    expect(poolChances(r.c('A'), 'save')).toEqual([]);
+    const ev = r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: club }, fixed(0.6));
+    const atk = ev.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
+    expect(atk.extra?.find((x) => x.label === 'taktik')?.rolls.every((v) => v <= 10)).toBe(true);
+    expect(r.c('A').resources[key]).toBe(1);
     same(r);
   });
 });

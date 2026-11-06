@@ -30,7 +30,7 @@ export type Tetik = typeof TETIKLER[number];
 export const DUGME_TETIKLERI: readonly Tetik[] = ['eylem', 'bonus', 'serbest'];
 /** Koşul sözcükleri; `bicim:<id>` ve `isaretli:<id>` önekli. */
 export const KOSULLAR = ['ofke', 'yarimCanAlti', 'zirhsiz', 'avantajli', 'dostBitisik', 'konsantrasyon', /** P6. */ 'buyuTurunda', 'seviyeliBuyuTurunda', /** P7: hedef sahibinden büyük. */ 'hedefBuyuk',
-  /** P9: bu tur Flurry of Blows sürüyor; savaşın ilk turu. */ 'flurryVurusu', 'ilkTur'] as const;
+  /** P9: bu tur Flurry of Blows sürüyor; savaşın ilk turu. */ 'flurryVurusu', 'ilkTur', /** P11: zar yarışını kazandığın hedef. */ 'zarYarisi'] as const;
 /** P6: `harita:<bölge>` koşulunun bölgeleri (`harita/_ortak/harita-bolgeleri.json`). */
 export const HARITA_TEMALARI: readonly string[] = ((bolgeler as { bolgeler?: Array<{ id: string }> }).bolgeler ?? []).map((b) => b.id);
 export const HEDEFLER = ['kendi', 'dost', 'dostVeyaKendi', 'dostlar', 'dusman', 'dusmanlar', 'bitisikDusmanlar', 'alan', 'vurulan'] as const;
@@ -80,7 +80,7 @@ export const ORTAK_ALANLAR: Record<string, AlanSpec> = {
   tetik: { tip: 'enum', degerler: TETIKLER, not: 'Ne zaman çalışır (ilkelin izin verdikleri; yazılmazsa ilki).' },
   hedef: { tip: 'enum', degerler: HEDEFLER, not: 'Kime (ilkelin izin verdikleri; yazılmazsa ilki).' },
   kaynak: { tip: 'kaynakRef', not: 'Harcanan kaynak: `{ "id": "<kaynak ilkeli id ya da sınıf kaynağı (rage, focus, channelDivinity…)>", "maliyet": 1 }`. Düğmede yalnızca ilk kaynaklı ilkel harcar (düğme başına bir kez).' },
-  kosul: { tip: 'kosullar', not: 'Hepsi doğruysa çalışır: ofke, yarimCanAlti, zirhsiz, avantajli (isabet), dostBitisik (hedefe bitişik dost), konsantrasyon, buyuTurunda (bu tur büyü yaptın), seviyeliBuyuTurunda (bu tur slotlu büyü), hedefBuyuk (hedef senden büyük), bicim:<id>, isaretli:<id> (hedef bu işaretle işaretli), harita:<bölge> (savaş haritasının bölgesi); P9: flurryVurusu (bu tur Flurry of Blows kullanıldı), ilkTur (savaşın 1. turu).' },
+  kosul: { tip: 'kosullar', not: 'Hepsi doğruysa çalışır: ofke, yarimCanAlti, zirhsiz, avantajli (isabet), dostBitisik (hedefe bitişik dost), konsantrasyon, buyuTurunda (bu tur büyü yaptın), seviyeliBuyuTurunda (bu tur slotlu büyü), hedefBuyuk (hedef senden büyük), bicim:<id>, isaretli:<id> (hedef bu işaretle işaretli), harita:<bölge> (savaş haritasının bölgesi); P9: flurryVurusu (bu tur Flurry of Blows kullanıldı), ilkTur (savaşın 1. turu); P11: zarYarisi (hedefe karşı `zarYarisi` kazanıldı).' },
   turdaBir: B('Turda en çok bir kez (her savaşçının kendi turu sayılır).'),
   ad: { tip: 'metin', not: 'Düğme/günlük adı (yoksa özelliğin TR adı).' },
 };
@@ -100,8 +100,9 @@ export const ILKELLER: Record<string, IlkelSpec> = {
   direnc: {
     not: 'Hasar direnci, bağışıklığı ya da zaafı (koşula bağlı olabilir).', tetikler: ['pasif'],
     alanlar: {
-      turler: { tip: 'hasarTurleri', zorunlu: true, not: 'Hasar türleri.' },
+      turler: { tip: 'hasarTurleri', not: 'Hasar türleri (`hasarKaynagi: buyu` yoksa gerekli).' },
       tip: E(['direnc', 'bagisiklik', 'zaaf'], 'Direnç (yarı), bağışıklık (sıfır), zaaf (iki kat).'),
+      /** P11 */ hasarKaynagi: E(['hepsi', 'buyu'], 'P11: buyu = yalnız büyülerden gelen hasara (her türüne) direnç; sürüm 42+.'),
     },
     sistem: 'Süren etki `resist` / `immune` / `vulnerable` (`damageProfile`); koşullu olanlar komut sonu eşitlemesiyle eklenir/kalkar.',
     ornek: { tur: 'direnc', turler: ['cold', 'necrotic'], kosul: ['ofke'] },
@@ -114,6 +115,7 @@ export const ILKELLER: Record<string, IlkelSpec> = {
       zaman: E(['pasif', 'turBasi', 'turSonu', 'girince'], 'Etki ne zaman işler (pasif: aura içindeyken sürekli).'),
       etki: E(['kurtulmaBonusu', 'hasar', 'durum', 'durumBagisikligi', 'gecicCan', 'iyilestirmeYok', 'olumKurtulmaAvantaji', 'olumKurtulmaDezavantaji', 'moral', /** P7 */ 'direnc', 'kurtulmaDezavantaji'], 'Etki türü (P7: direnc = auradakilere `turler` direnci; kurtulmaDezavantaji = auradakilerin kurtulmaları dezavantajlı; ikisi de pasif).', { zorunlu: true, varsayilan: undefined }),
       turler: { tip: 'hasarTurleri', not: 'direnc etkisinin türleri (P7).' },
+      hasarKaynagi: E(['hepsi', 'buyu'], 'P11 direnc: buyu = auradakiler büyü hasarına (her türüne) dirençli; sürüm 42+.'),
       miktar: F('kurtulmaBonusu / gecicCan / moral miktarı (en az 1).'),
       zar: F('hasar etkisinin zarı.'),
       hasarTuru: { tip: 'hasarTuru', not: 'hasar etkisinin türü.' },
@@ -312,7 +314,9 @@ export const ILKELLER: Record<string, IlkelSpec> = {
       /** P11 */ ikiz: B('P11: Twinned Spell (yukarı slotta ek hedef alan büyü ikinci hedefe; kaynak verilirse onunla).'),
       konsantrasyonsuz: B('P11: konsantrasyonlu büyü konsantrasyonsuz yapılır (kaynakla; `okul`/`enCokSeviye` süzer).'),
       enCokSeviye: N('P11 konsantrasyonsuz: en çok bu seviyedeki büyüler.'),
-      cikisCagri: B('P11: büyü senin çağrının (paket `cagir`) altıgeninden çıkabilir (`cast_spell.originId`).') },
+      cikisCagri: B('P11: büyü senin çağrının (paket `cagir`) altıgeninden çıkabilir (`cast_spell.originId`).'),
+      yetenekEki: { tip: 'yetenek', not: 'P11: menzili en çok `menzilEnCokFt` (varsayılan 5) olan büyünün hasarına bu yetenek değiştiricisi.' },
+      menzilEnCokFt: N('P11 yetenekEki: en çok bu menzil (ft).', { varsayilan: 5 }) },
     sistem: 'Büyü hasar ifadesi (`spells.ts` `damageExpr`; Empowered Evocation / Elemental Affinity yolu), yapım öncesi büyü dönüşümü (menzil, tür; Eldritch Spear/Transmuted yolu), kurtulma kipi (`durations.ts` `saveMode`).',
     ornek: { tur: 'buyuDegisimi', hasarEki: '$buyu', hasarTurleri: ['fire', 'cold'] },
   },
@@ -369,7 +373,8 @@ export const ILKELLER: Record<string, IlkelSpec> = {
   koruma: {
     not: 'Pasif koruma: kritik vuruş bağışıklığı, konsantrasyon kurtulmasında avantaj, durumlara karşı kurtulma avantajı.', tetikler: ['pasif', 'bonus', 'eylem'],
     alanlar: { kritikBagisikligi: B('Kritik vuruş normal vuruş sayılır.'), konsantrasyonAvantaji: B('Konsantrasyon kurtulması avantajlı.'),
-      durumAvantaji: { tip: 'durumlar', not: 'Bu durumlara karşı kurtulmalar avantajlı.' }, buyulereAvantaj: B('Büyülere karşı kurtulmalar avantajlı.'), sure: SURE },
+      durumAvantaji: { tip: 'durumlar', not: 'Bu durumlara karşı kurtulmalar avantajlı.' }, buyulereAvantaj: B('Büyülere karşı kurtulmalar avantajlı.'), sure: SURE,
+      /** P11 */ itmeDirenci: B('P11: bir yaratığın zorla hareketine (itme/çekme/kaydırma) avantajlı STR kurtulması; başarıda kımıldamaz (`motion.ts` `forcedMove`); sürüm 42+.') },
     sistem: 'Süren etki `noCrit` (`rules/attack.ts`), `concAdv` (`damage-effects.ts` konsantrasyon), `saveAdvAgainst` (`effectDice.ts`).',
     ornek: { tur: 'koruma', kritikBagisikligi: true, konsantrasyonAvantaji: true },
   },
@@ -382,7 +387,8 @@ export const ILKELLER: Record<string, IlkelSpec> = {
   cagirGuclendir: {
     not: 'Sahibin çağırdığı her yaratık (büyü ya da paket) geçici can, AC ve isabette ek zar kazanır.', tetikler: ['pasif'],
     alanlar: { gecicCan: F('Çağrılınca geçici can.'), acBonusu: F('AC eklentisi.'), ekHasar: F('İsabette ek zar (silah ve canavar saldırısı).'), buyuluVurus: B('Saldırıları büyülü.'),
-      turBasiCan: F('P9: çağrılan her yaratık kendi tur başında bu kadar geçici can alır (yükseği kalır).') },
+      turBasiCan: F('P9: çağrılan her yaratık kendi tur başında bu kadar geçici can alır (yükseği kalır).'),
+      komutSaldiri: F('P11: komut verdiğin turda (`command_summons`) komutlu çağrı bu kadar ek saldırı yapar (eylemi harcanmışken); sürüm 42+.') },
     sistem: 'Komut sonu: bu komutta çağrılan (`summoned` olayı) ve sahibi bu ilkeli taşıyan yaratığa süren etki (`ac`, `hitDie`, `pkMagic`) ve `temp_hp`.',
     ornek: { tur: 'cagirGuclendir', gecicCan: '$lvl', acBonusu: 2, ekHasar: '1d6' },
   },
@@ -502,6 +508,21 @@ export const ILKELLER: Record<string, IlkelSpec> = {
       zar: F('Güç başına ek hasar.', { zorunlu: true }), enCok: N('Sayaç üst sınırı.'), hasarTuru: { tip: 'hasarTuru', not: 'Ek hasar türü (yoksa silahınki).' } },
     sistem: 'Komut sonu sayaç (`pkCharge` süren etki), isabet kancası boşaltır (seçim; `paket/p11hooks.ts`). Sürüm 42+.',
     ornek: { tur: 'gucDeposu', olay: 'buyuYuvasi', zar: '1d6', enCok: 4 },
+  },
+  zarYarisi: {
+    not: 'Hedefle karşılıklı zar yarışı (d20 + beceri/yetenek); kazanırsan hedef işaretlenir (`kosul: zarYarisi`, avantajsız Sneak Attack).', tetikler: ['bonus', 'eylem'], hedefler: ['dusman'],
+    alanlar: { beceri: { tip: 'metin', not: 'Senin becerin (Insight, Investigation…; yoksa `yetenek`).' }, yetenek: { tip: 'yetenek', varsayilan: 'int', not: 'Senin yeteneğin.' },
+      hedefBeceri: { tip: 'metin', not: 'Hedefin becerisi (Deception…).' }, hedefYetenek: { tip: 'yetenek', varsayilan: 'cha', not: 'Hedefin yeteneği.' }, menzilFt: MENZIL, sure: { ...SURE, varsayilan: 'kalici' } },
+    sistem: 'Düğme (`use_feature`): iki d20 zar defterinden (elle zar dahil); kazanınca hedefte süren etki `pk-yaris:<sen>` + `sneakFor` (`features.ts` `canSneak`). Sürüm 42+.',
+    ornek: { tur: 'zarYarisi', tetik: 'bonus', hedef: 'dusman', beceri: 'Insight', hedefBeceri: 'Deception', menzilFt: 30 },
+  },
+  zarHavuzu: {
+    not: 'Kaynakla sayılan kendi zarların: başarısız saldırıya/kurtulmaya ekle, silah isabetinde hasara ekle ya da vurulunca tepkiyle AC\'ye.', tetikler: ['pasif'],
+    alanlar: { zar: F('Havuz zarı (seviye tablosu olabilir: `{ "3": "1d8", "10": "1d10" }`).', { zorunlu: true }),
+      kullanim: { tip: 'enumListe', degerler: ['saldiri', 'kurtulma', 'kontrol', 'hasar', 'ac'], varsayilan: ['saldiri', 'hasar'], not: 'Nerede kullanılır.' },
+      savasBasiEnAz: F('Savaş başında havuz en az bu kadar (yenilenir).') },
+    sistem: 'Ortak `kaynak` alanı havuzu sayar (`kaynak` ilkeli). İkinci şans (`effectDice.ts`, `onFail`: başarıya çevirince harcanır), isabet kancası (seçim) ve dosta isabet kancası (tepki) `paket/p11hooks.ts`. Sürüm 42+.',
+    ornek: { tur: 'zarHavuzu', zar: { 3: '1d8', 10: '1d10' }, kullanim: ['saldiri', 'hasar', 'ac'], savasBasiEnAz: 1, kaynak: { id: 'taktik', maliyet: 1 } },
   },
   silahFirlat: {
     not: 'Yakın dövüş silahın fırlatılabilir olur ve saldırıdan sonra eline döner (Thrown özelliği + dönüş).', tetikler: ['pasif'],
@@ -641,9 +662,12 @@ export function ilkelErrors(list: unknown, path: string, ctx: { kaynaklar: Set<s
     if (raw.tur === 'aura') {
       const need: Record<string, string> = { kurtulmaBonusu: 'miktar', gecicCan: 'miktar', moral: 'miktar', hasar: 'zar', durum: 'durum', durumBagisikligi: 'durumlar', direnc: 'turler' };
       const f = need[raw.etki as string];
-      if (f && raw[f] === undefined) out.push({ path: `${p}.${f}`, kod: 'ilkelEksik', alan: f });
+      if (f && raw[f] === undefined && !(f === 'turler' && raw.hasarKaynagi === 'buyu')) out.push({ path: `${p}.${f}`, kod: 'ilkelEksik', alan: f });
       if (raw.etki === 'hasar' && raw.hasarTuru === undefined) out.push({ path: `${p}.hasarTuru`, kod: 'ilkelEksik', alan: 'hasarTuru' });
     }
+    // P11: direnc türsüz yalnız büyü kaynaklıysa; buyuVer büyüsüz yalnız kopyaysa.
+    if (raw.tur === 'direnc' && raw.turler === undefined && raw.hasarKaynagi !== 'buyu') out.push({ path: `${p}.turler`, kod: 'ilkelEksik', alan: 'turler' });
+    if (raw.tur === 'buyuVer' && raw.buyular === undefined && raw.kopyaEnCokSeviye === undefined) out.push({ path: `${p}.buyular`, kod: 'ilkelEksik', alan: 'buyular' });
     if (raw.tur === 'tepki' && (raw.etki === 'acBonusu' || raw.etki === 'hasarAzalt') && raw.miktar === undefined) out.push({ path: `${p}.miktar`, kod: 'ilkelEksik', alan: 'miktar' });
     if (raw.tur === 'kaynak' && raw.sayi !== undefined && !kaynakSayiOk(raw.sayi)) out.push({ path: `${p}.sayi`, kod: 'ilkelDeger', alan: 'sayi' });
     // P6: etki/tetik birlikteliği.
@@ -670,7 +694,7 @@ export function ilkelErrors(list: unknown, path: string, ctx: { kaynaklar: Set<s
     }
     // P10: hız başkasına yalnız düğme/otomatik tetikle (pasif kendine).
     if (raw.tur === 'hiz' && raw.hedef !== undefined && raw.hedef !== 'kendi' && (raw.tetik === undefined || raw.tetik === 'pasif')) bad('tetik');
-    if (raw.tur === 'koruma' && !raw.kritikBagisikligi && !raw.konsantrasyonAvantaji && !raw.durumAvantaji && !raw.buyulereAvantaj) out.push({ path: `${p}.kritikBagisikligi`, kod: 'ilkelEksik', alan: 'kritikBagisikligi' });
+    if (raw.tur === 'koruma' && !raw.kritikBagisikligi && !raw.konsantrasyonAvantaji && !raw.durumAvantaji && !raw.buyulereAvantaj && !raw.itmeDirenci) out.push({ path: `${p}.kritikBagisikligi`, kod: 'ilkelEksik', alan: 'kritikBagisikligi' });
     if (raw.tur === 'algi' && raw.karanlikGorusFt === undefined && raw.gercekGorusFt === undefined && !raw.gorunmezGor) out.push({ path: `${p}.karanlikGorusFt`, kod: 'ilkelEksik', alan: 'karanlikGorusFt' });
     if (raw.tur === 'ekSaldiri' && (raw.tetik === 'pasif') !== (raw.saldiriSayisi !== undefined)) bad(raw.tetik === 'pasif' ? 'saldiriSayisi' : 'tetik');
     if (raw.tur === 'yuzeyOlustur' && raw.yuzey === 'alan' && raw.hasar === undefined && !raw.zorluArazi && raw.durum === undefined && raw.iyilestir === undefined) out.push({ path: `${p}.hasar`, kod: 'ilkelEksik', alan: 'hasar' });

@@ -87,6 +87,8 @@ export interface AreaSave {
   damageDice?: string;
   damageType?: string;
   halfOnSave: boolean;
+  /** Kuyruk P11: büyü hasarı (`profileIn` büyü direnci). */
+  fromSpell?: boolean;
   /** Canavar saldırısı: süreli etki ve rider durumları (save başarısızsa; data/condition-effects.json, attack-riders.json). */
   monster?: { attackName: string };
 }
@@ -118,7 +120,7 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaP
     const amount = saveDamage(t, save.ability, r.success, damage.total, !!save.halfOnSave);
     // Kuyruk 19 (11–20): Superior Hunter's Defense alan hasarında da (SRD "hasar aldığında"): tepkiyle o türe direnç.
     const shd = amount > 0 ? hunterDefenseEvents(current, t, actor.id, save.damageType) : [];
-    const prof0 = profileIn(state, t);
+    const prof0 = profileIn(state, t, !!save.fromSpell);
     const prof = shd.length && save.damageType ? { ...prof0, resistances: [...prof0.resistances, save.damageType] } : prof0;
     const adj = amount > 0 ? adjustDamage(amount, save.damageType, prof) : { amount: 0, note: null };
     const fx = damageEffects(t, adj.amount, save.damageType ?? '', false, rng);
@@ -256,6 +258,6 @@ export function executeBreathWeapon(state: BattleState, actor: Combatant, shape:
   if ('ok' in pick) return pick;
   const used: BattleEvent[] = bo.spell ? [] : [{ type: 'feature_used', actorId: actor.id, feature: b.resource, remaining: left - 1 }];
   const events = [...used, ...areaSaveEvents(applyEvents(state, used), actor, pick, spec,
-    { label: bo.spell ? "Dragon's Breath" : 'Breath Weapon', ability: b.save, dc: b.dc, damageDice: b.dice, damageType: b.damageType, halfOnSave: true }, rng, aim)];
+    { label: bo.spell ? "Dragon's Breath" : 'Breath Weapon', ability: b.save, dc: b.dc, damageDice: b.dice, damageType: b.damageType, halfOnSave: true, ...(bo.spell ? { fromSpell: true } : {}) }, rng, aim)];
   return finish(state, events);
 }

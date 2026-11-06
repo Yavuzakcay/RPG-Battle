@@ -114,7 +114,9 @@ function allyNextTo(state: BattleState, actor: Combatant, target: Combatant): bo
 export function canSneak(state: BattleState, actor: Combatant, target: Combatant, weapon: AttackOption | undefined, mode: RollMode): boolean {
   return !!weapon && !weapon.spell && (!!weapon.finesse || weapon.ranged) && actor.sneakAttackDice > 0
     && actor.sneakTurn !== turnKey(state)
-    && (mode === 'advantage' || (mode !== 'disadvantage' && allyNextTo(state, actor, target)));
+    && (mode === 'advantage' || (mode !== 'disadvantage' && (allyNextTo(state, actor, target)
+      // Kuyruk P11 (paket `zarYarisi`): yarışı kazanılan hedefe avantajsız Sneak Attack.
+      || !!target.effects?.some((e) => e.sneakFor === actor.id))));
 }
 
 /**
