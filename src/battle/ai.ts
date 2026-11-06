@@ -1571,7 +1571,8 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (near) return near;
   // K59 (Usta, iki taraf): temas yokken (bitişik düşman yok: fırsat saldırısı yok) yetişilebilen başka bir hedefin
   // değerlendirici puanı şimdikinin `yerDegistir` katıysa önce oraya yürür (odaklı saldırı: yaralı/öldürülebilir hedef).
-  const ustaNow = !state.yz?.eski && difficultyOf(state, actor.side) === 'usta' ? USTA : null;
+  // Ölçüm (K59): düşman tarafında zayıflattı (parti %72,8 → %75,3), parti tarafında güçlendirdi (+5): veride taraf listesi.
+  const ustaNow = !state.yz?.eski && difficultyOf(state, actor.side) === 'usta' && USTA.yerDegistirTaraf.includes(actor.side) ? USTA : null;
   if (ustaNow && now && canAct && !actor.civilian && actor.pos && actor.movementUsed < speedHexes(actor)
     && !foesOf(state, actor).some((f) => f.pos && gap(state, f, actor) <= 1)) {
     const here = scoredCandidates(state, actor).scored[0]?.score ?? 0;
@@ -2351,7 +2352,7 @@ function nearImzaMove(state: BattleState, actor: Combatant, canAct: boolean, now
 const NEAR_COST = 0.5;
 
 /** K59: Usta'nın yer seçimi parametreleri (`data/yz-roller.json` `zorluk.usta`). */
-const USTA = aiRoles.zorluk.usta as { yerAday: number; yerMaliyet: number; yerDegistir: number };
+const USTA = aiRoles.zorluk.usta as { yerAday: number; yerMaliyet: number; yerDegistir: number; yerDegistirTaraf: string[] };
 /**
  * K59 (Usta): saldırı yeri adaylarını oradaki en iyi değerlendirici adayının puanına göre sıralar (eşitlikte ucuz olan);
  * yer maliyeti (yürüme + risk) `yerMaliyet` ile düşülür. Kuru çalıştırma; durum değişmez.
