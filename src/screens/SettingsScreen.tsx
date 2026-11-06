@@ -13,6 +13,8 @@ import { saveCarryRule, storedCarryRule } from '../ui/carrySetting';
 import { saveEndVideo, storedEndVideo } from '../ui/endVideoSetting';
 import { saveMapTint, storedMapTint } from '../ui/mapTintSetting';
 import { saveCityView, storedCityView } from '../ui/cityViewSetting';
+import { DiscoveryBook } from '../ui/preview/DiscoveryBook';
+import { loadSettings as loadPv, saveSettings as savePv, type PreviewSettings } from '../app/discovery';
 import { DICE_THEMES, diceThemeName, saveDiceTheme, storedDiceTheme } from '../ui/diceTheme';
 import { LIMITS, type ContentError } from '../content/schema';
 import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, removePack, saveDuplicatePolicy, setPackEnabled, type ImportResult, type PackRow } from '../content/store';
@@ -44,6 +46,10 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const CV = t().cityView;
   const [tint, setTint] = useState<boolean>(storedMapTint);
   const [city, setCity] = useState<boolean>(storedCityView);
+  // Kuyruk K58: önizleme ve keşif ayarları.
+  const [pv, setPv] = useState<PreviewSettings>(loadPv);
+  const setPvs = (p: Partial<PreviewSettings>) => { const n = { ...pv, ...p }; savePv(n); setPv(n); };
+  const PV = t().previewSetting;
   const [diceTheme, setDiceTheme] = useState<string>(storedDiceTheme);
   const DT = t().diceThemeSetting;
   const [journey, setJourney] = useState<boolean>(journeyEnabled);
@@ -116,6 +122,26 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
             ))}
           </div>
           <p className="mute">{DT.help}</p>
+        </section>
+        {/* Kuyruk K58: hamle önizlemesi, keşif modu ve Keşif Defteri. */}
+        <section className="panel" aria-labelledby="onizleme">
+          <h2 id="onizleme">{PV.title}</h2>
+          <div className="seg" role="radiogroup" aria-label={PV.title}>
+            {[true, false].map((on) => <button key={String(on)} role="radio" aria-checked={pv.on === on} className={pv.on === on ? 'on' : ''} onClick={() => setPvs({ on })}>{on ? PV.on : PV.off}</button>)}
+            {(['kisa', 'tam'] as const).map((d) => <button key={d} role="radio" aria-checked={pv.detail === d} className={pv.detail === d ? 'on' : ''} onClick={() => setPvs({ detail: d })}>{PV[d]}</button>)}
+          </div>
+          <p className="mute">{PV.help}</p>
+          <div className="seg" role="radiogroup" aria-label={PV.discovery}>
+            <small>{PV.discovery}</small>
+            {[true, false].map((on) => <button key={String(on)} role="radio" aria-checked={pv.discovery === on} className={pv.discovery === on ? 'on' : ''} onClick={() => setPvs({ discovery: on })}>{on ? PV.on : PV.off}</button>)}
+          </div>
+          <p className="mute">{PV.discoveryHelp}</p>
+          <div className="seg" role="radiogroup" aria-label={PV.hints}>
+            <small>{PV.hints}</small>
+            {[true, false].map((on) => <button key={String(on)} role="radio" aria-checked={pv.hints === on} className={pv.hints === on ? 'on' : ''} onClick={() => setPvs({ hints: on })}>{on ? PV.on : PV.off}</button>)}
+          </div>
+          <p className="mute">{PV.hintsHelp}</p>
+          <DiscoveryBook />
         </section>
         {/* Kuyruk 44: Game Master ayarı, yerleşimde şehir görünümü (kapalıysa eski hub). */}
         <section className="panel" aria-labelledby="sehir-gorunum">

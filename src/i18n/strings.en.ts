@@ -438,6 +438,12 @@ export const en: Strings = {
     title: 'Dice theme',
     help: 'Looks only (colour and texture); dice results, saves and replays are unaffected. Remembered on this device.',
   },
+  previewSetting: {
+    title: 'Move preview', on: 'On', off: 'Off', kisa: 'Short', tam: 'Full',
+    help: 'Game Master setting: after picking a target, a card with hit chance, damage range, save and friendly fire before you confirm. Off: old flow. Detail: Short (one line) / Full (sources and conditions).',
+    discovery: 'Discovery mode', discoveryHelp: 'When on, surface reactions are learned by experiencing them; an undiscovered reaction\'s outcome never appears in previews. The Game Master always sees everything.',
+    hints: 'Hint badges', hintsHelp: 'Only a "?" badge on a target where an undiscovered reaction might happen (no spoiler).',
+  },
   cityView: {
     title: 'City view (settlements)',
     on: 'On', off: 'Off',
@@ -880,6 +886,15 @@ export const en: Strings = {
     gate: 'Closed gate · AC 15', noWeapon: 'No weapon.',
     economy: { label: 'This turn\'s actions', action: (n: number) => `Action${n > 0 ? ` (${n} attack${n === 1 ? '' : 's'})` : ''}`, bonus: 'Bonus', reaction: 'Reaction', move: (a: number, b: number) => `Move ${a}/${b}` },
     p11: { store: 'Store', storeInfo: 'Do not release the spell yet: store it (slot and action spent; fire later).', fire: (name: string): string => `Stored spell: ${name}` },
+    discovery: { found: (n: string): string => `Discovery: ${n}!`, book: 'Discovery Log', count: (a: number, b: number): string => `${a} / ${b} discovered`, unknown: '???', profile: 'Player profile', exportBtn: 'Export', importBtn: 'Import', seen: (n: number): string => `×${n}`,
+      name: {"douse": "Dousing area + Fire → put out", "waterFire": "Water + Fire → steam", "waterGrease": "Water + Grease → disperses", "waterPoison": "Water + Poison cloud → thins", "waterWeb": "Water + Web → dissolves", "oilSpread": "Burning oil → spreads", "fireOil": "Fire + Oil → blaze", "fireWeb": "Fire + Web → burning web", "fireIce": "Fire + Ice → melts", "fireWater": "Fire + Water → steam", "fireGrease": "Fire + Grease → blaze", "fireFog": "Fire + Fog → evaporates", "coldWater": "Cold + Water → ice", "coldTile": "Cold + Shallow water → freezes", "coldSteam": "Cold + Steam → water", "lightningIce": "Lightning + Ice → cracks", "lightningOil": "Lightning + Oil → blaze", "lightningGrease": "Lightning + Grease → blaze", "forceWater": "Force + Water → overflows", "acidWeb": "Acid + Web → dissolves", "webFree": "Burning web → captive freed", "firePoison": "Fire + Poison cloud → explosion", "lightningWater": "Lightning + Water → spreads", "windClouds": "Wind + Cloud → drifts", "gustClouds": "Gust + Cloud → scatters", "waterDecay": "Water + Surface → fades", "oilMove": "Oil → slip", "greaseMove": "Grease → slip", "iceMove": "Ice → slip", "fireKeg": "Fire + Powder keg → explosion", "acidWood": "Acid + Wood → corrodes", "waterOil": "Water + Oil → displaces"} as Record<string, string> },
+    preview: {
+      hit: (p: string): string => `Hit ${p}`, crit: (p: string): string => `crit ${p}`, dmg: (r: string): string => `damage ${r}`, heal: (r: string): string => `healing ${r}`,
+      save: (ab: string, dc: number, p: string): string => `${ab.toUpperCase()} save DC ${dc} · success ${p}`, kill: (p: string): string => `drop ${p}`,
+      friendly: (name: string, n: number): string => `Ally: ${name} takes ${n} damage`, self: (n: number): string => `Self ${n} damage`,
+      moved: (h: string): string => `→ ${h}`, teleport: (h: string): string => `teleports → ${h}`, oa: (name: string, h: string, n: number): string => `Opportunity attack: ${name}${h ? ` (${h})` : ''} ≈${n}`,
+      mystery: '? Something might happen here', reactions: 'Reaction', conditions: 'Condition', none: 'No visible effect', error: (e: string): string => `Not possible: ${e}`,
+    },
     s2: { altitude: (ft: number): string => `Altitude ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `Drop ${item}`, pick: (item: string): string => `Pick up ${item}` },
     start: 'Start battle',
     explore: { go: 'Keep exploring', hint: 'Exploring: tap a token to pick, walk; reaching the entry hex returns to the Adventure.' },

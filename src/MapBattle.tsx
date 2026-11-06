@@ -32,6 +32,7 @@ import { CUNNING, cunningOptions, hasTrait, usedThisTurn } from './battle/classT
 import { offhandProblem } from './battle/offhand';
 import { featureProblem } from './battle/divine';
 import { ilhamOf } from './battle/bard';
+import { loadSettings as loadPreviewSettings, loadStore as loadDiscovery, record as recordDiscovery, saveStore as saveDiscovery } from './app/discovery';
 import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive, isTargetable } from './battle/common';
 import { hexLabel, occupantAt, speedHexes } from './battle/movement';
@@ -110,6 +111,8 @@ const EndFx = lazy(() => import('./ui/EndFx'));
 const FxShots = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.FxShots })));
 const FxGround = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.FxGround })));
 const EndVideo = lazy(() => import('./ui/EndVideo'));
+// Kuyruk K58: hamle önizleme kartı (tembel).
+const PreviewCard = lazy(() => import('./ui/preview/PreviewCard'));
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
@@ -406,6 +409,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [slotPick, setSlotPick] = useState<number | null>(null);
   // Görev SORCERER: bu yapımda seçilen Metamagic seçenekleri.
   const [mmPick, setMmPick] = useState<string[]>([]);
+  // Kuyruk K58: önizleme ayarları ve keşif defteri (yalnız arayüz durumu; kayıt/replay dışı).
+  const [pvSet] = useState(loadPreviewSettings);
+  const [disc, setDisc] = useState(loadDiscovery);
   const [tmPick, setTmPick] = useState<string>('cold');
   // CILA: duvar biçimi (Wind Wall): düz ya da yay.
   const [wallShape, setWallShape] = useState<'line' | 'arc' | 'ring'>('line');
@@ -504,7 +510,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const seenDamage = useRef(session.events.length);
   // Eylem sonucu (✔ isabet / ✖ ıska, kurtarma…): ~1 sn, yalnızca canlı olaylar.
   const [outcomes, setOutcomes] = useState<Array<OutcomeMark & { id: number; delay: number }>>([]);
-  const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean }>>([]);
+  const [toasts, setToasts] = useState<Array<{ id: number; text: string; error?: boolean; discovery?: boolean }>>([]);
   const pressTimer = useRef<number | null>(null);
   // Eylem düğmesi açıklaması: farede üzerine gelince, dokunmatikte uzun basınca (basış tıklama sayılmaz).
   const [tip, setTip] = useState<string | null>(null);
@@ -624,6 +630,22 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const timer = window.setTimeout(() => setToasts((t) => t.filter((x) => !items.includes(x))), TOAST_MS);
     return () => window.clearTimeout(timer);
   }, [session]);
+
+  // Kuyruk K58 G1b: keşif anı. Gerçekleşen yüzey tepkimesi deftere yazılır; ilk kez görülen belirgin bildirimle bir kez.
+  const seenDisc = useRef(session.events.length);
+  useEffect(() => {
+    const fresh = session.events.slice(seenDisc.current);
+    seenDisc.current = session.events.length;
+    const rows = fresh.flatMap((e) => (e.type === 'surface_reacted' && e.row ? [e.row] : []));
+    if (!rows.length) return;
+    const r = recordDiscovery(disc, rows);
+    setDisc(r.store); saveDiscovery(r.store);
+    if (!r.fresh.length) return;
+    const items = r.fresh.map((id) => ({ id: Math.random(), text: t().battle.discovery.found(t().battle.discovery.name[id] ?? id), discovery: true }));
+    setToasts((x) => [...x, ...items].slice(-3));
+    window.setTimeout(() => setToasts((x) => x.filter((y) => !items.includes(y as never))), TOAST_MS * 2);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.events.length]);
 
   // Ortaya çıkma (bulundu, saldırdı, büyü yaptı): kısa toz/yaprak efekti; "hareketi azalt"ta yok.
   useEffect(() => {
@@ -1966,6 +1988,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
                     <button disabled={!ch.command} onClick={() => ch.command && run(withCunning(withSlot(withChoice(ch.command), slotPick)))}>{mode === 'spell' ? B.cast : B.hit}</button>
+                    {pvSet.on && ch.command && <Suspense fallback={null}><PreviewCard state={state} cmd={withCunning(withSlot(withChoice(ch.command), slotPick))} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet} /></Suspense>}
                   </div>
                 ))}
                 {mode === 'spell' && spell && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? spell.mechanics.abilityChoices) && (
@@ -2162,6 +2185,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   <button type="button" className={excludeOn ? 'on' : ''} aria-pressed={excludeOn} onClick={() => setExcludeOn((v) => !v)}>{A.exclude(excluded.length)}</button>
                 )}
                 {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
+                {pvSet.on && ready && !areaInfo?.error && <Suspense fallback={null}><PreviewCard state={state} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet}
+                  cmd={areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' ? null : wallShape,
+                    areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
+                    areaExcludable(state, areaAct) ? excluded : undefined)} /></Suspense>}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
                   onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' ? null : wallShape,
                     areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
@@ -2309,7 +2336,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
 
           <div className={`hud-corner bl${logOpen ? ' open' : ''}`}>
             <div className="toasts" aria-live="polite">
-              {!logOpen && toasts.map((t) => <div key={t.id} className={`toast${t.error ? ' error' : ''}`}>{t.text}</div>)}
+              {!logOpen && toasts.map((t) => <div key={t.id} className={`toast${t.error ? ' error' : ''}${t.discovery ? ' discovery' : ''}`}>{t.text}</div>)}
             </div>
             {logOpen && (
               <ol className="log-box">

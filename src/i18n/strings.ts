@@ -451,6 +451,12 @@ const tr = {
     title: 'Zar teması',
     help: 'Yalnızca görünüm (renk ve doku); zar sonuçları, kayıt ve tekrar oynatma etkilenmez. Seçim bu cihazda hatırlanır.',
   },
+  previewSetting: {
+    title: 'Hamle önizlemesi', on: 'Açık', off: 'Kapalı', kisa: 'Kısa', tam: 'Tam',
+    help: 'Game Master ayarı: hedef seçilince onaydan önce isabet, hasar aralığı, kurtulma ve dost ateşi kartı. Kapalıyken eski akış. Ayrıntı: Kısa (tek satır) / Tam (kaynaklar ve durumlar).',
+    discovery: 'Keşif modu', discoveryHelp: 'Açıkken yüzey tepkimeleri ilk kez yaşanınca öğrenilir; keşfedilmemiş tepkimenin sonucu önizlemede görünmez. Game Master her şeyi görür.',
+    hints: 'İpucu rozetleri', hintsHelp: 'Keşfedilmemiş bir tepkime olabilecek hedefte yalnız "?" rozeti (sonucu söylemez).',
+  },
   cityView: {
     title: 'Şehir görünümü (yerleşim)',
     on: 'Açık', off: 'Kapalı',
