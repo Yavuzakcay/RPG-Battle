@@ -1,0 +1,30 @@
+{
+  "_not": "Kuyruk A5: eşya sınıflandırması. (a) savaş dışı: eşyada `offCombat` (gerekçe metni; görevdeki `savasDisi: true` bu alandır). (b) veriyle tanımlı: `passive`, `use`, `spells`/`charges`, `bonus`, `onHit`, `attack` ya da `effects`. (c) kalıba uymayan: aşağıdaki `karar` listesi (karar bekliyor; ilkel/kanca gerekir). Belge: harita/belgeler/ESYA-SINIFLANDIRMA.md (node scripts/a5-esya-siniflandirma.mjs).",
+  "karar": {
+    "berserker-axe": "lanet (uyum bozulmaz, kana susama WIS save) — eşya laneti ilkeli yok",
+    "defender": "silah bonusunu tur başında AC'ye aktarma seçimi — eşya seçim kancası yok",
+    "energy-bow": "enerji oku (ok yaratma, menzil seçimi) — eşya saldırı biçimi kancası yok",
+    "hat-of-many-spells": "rastgele büyü tablosu — eşya büyüsünde rastgele sonuç yok",
+    "nine-lives-stealer": "anında öldürme (HP ≤ 100, CON save, yük) — eşya isabet kancasında ölüm yok",
+    "quarterstaff-of-the-acrobat": "biçim değiştirme (sırık, yay) ve Acrobatics — eşya biçim kancası yok",
+    "rod-of-lordly-might": "altı düğmeli biçim değişimi (silah, merdiven, kilit) — eşya biçim kancası yok",
+    "scimitar-of-speed": "bonus eylemle bir saldırı — eşyadan bonus saldırı ilkeli yok",
+    "talisman-of-pure-good": "kötü uyumlu tutana hasar, uçurum açma yükü — hizalanma savaşa girmez",
+    "talisman-of-ultimate-evil": "iyi uyumlu tutana hasar, uçurum yükü — hizalanma savaşa girmez",
+    "vorpal-sword": "doğal 20'de kafa kesme — eşya isabet kancasında ölüm yok",
+    "staff-of-the-python": "asayı Giant Constrictor Snake'e çevirme — eşyadan çağırma yok (R3 çağırma büyü yolunda)",
+    "bag-of-tricks": "rastgele hayvan çağırma — eşyadan çağırma yok",
+    "figurine-of-wondrous-power": "heykelcikten yaratık — eşyadan çağırma yok (Game Master canavar ekler)",
+    "horn-of-valhalla": "berserker ruhları çağırma — eşyadan çağırma yok",
+    "rod-of-absorption": "büyüyü tepkiyle emme, yük biriktirme — eşya tepkisi yok (Counterspell yolu)",
+    "immovable-rod": "havada sabit nesne — K53 geçici engelini eşyaya bağlama yok",
+    "wand-of-enemy-detection": "60 ft içindeki düşmanları sezme — gizlenme bilgisini eşyaya bağlama yok",
+    "spell-scroll": "parşömen: içerdiği büyü envanter kaydında değil (eşya başına büyü seçimi gerekir) — Game Master"
+  },
+  "a5": {
+    "rod-of-resurrection": "Heal (1 yük; 6. seviye büyüler anahtarı `spells69` açıkken), 5 yük; Resurrection savaş dışı"
+  },
+  "kod": {
+    "poisoners-kit": "Rogue Cunning Strike: Poison seçeneğini açar (savaşçıda `poisoners-kit` işareti, src/battle/create.ts)"
+  }
+}
