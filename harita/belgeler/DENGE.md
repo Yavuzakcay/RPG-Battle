@@ -2,6 +2,51 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K58: savaş okunabilirliği ve yapay zekâ — regresyon ve zorluk (2026-11-06)
+
+Ayar yok (denge K59). Kural sürümü 42 (değişmedi).
+
+**Regresyon** (6 senaryo × 50 tohum, standart parti, 3. seviye, `npm run sim:tek -- 50 col kale magara orman dungeon taverna --seviye 3`; önce `wip/p11`, sonra `wip/k58`). Varsayılan yapay zekâ değişmediği için bütün satırlar aynı; 8 puandan büyük fark yok.
+
+| Senaryo | Kazanma önce / sonra | Ort. tur önce / sonra | Ort. düşmüş PC önce / sonra |
+|---|---|---|---|
+| Çöl — Gündüz | 94% / 94% | 10.2 / 10.2 | 0.58 / 0.58 |
+| Orman | 98% / 98% | 5.1 / 5.1 | 0.50 / 0.50 |
+| Mağara — karanlık | 88% / 88% | 7.3 / 7.3 | 0.82 / 0.82 |
+| Dungeon — Koridor (meşale) | 100% / 100% | 5.5 / 5.5 | 0.16 / 0.16 |
+| Kale — Gündüz | 80% / 80% | 9.7 / 9.7 | 0.88 / 0.88 |
+| Taverna — 4 masum ortada | 86% / 86% | 9.0 / 9.0 | 1.08 / 1.08 |
+
+Aralık dışı (%60–80 hedefi): Çöl, Orman, Mağara, Dungeon (üstünde); düzeltme K59.
+
+**Zorluk sıralaması** (`npx vite-node src/sim/k58Zorluk.ts -- 30 --seviye 1`; 1. seviye standart parti, 30 tohum; diğer taraf Normal). Parti yapay zekâsı: Kolay < Normal ≤ Usta. Düşman yapay zekâsı: Kolay düşmana karşı parti belirgin daha çok kazanıyor; Usta düşman Normal'den güçlü değil (Y2'deki "deneysel" notu geçerli).
+
+| Ayar | Kale | Orman | Çöl | Mağara | Ort. |
+|---|---|---|---|---|---|
+| Parti Kolay | 57% | 67% | 43% | 43% | 53% |
+| Normal | 67% | 80% | 60% | 67% | 68% |
+| Parti Usta | 67% | 77% | 73% | 70% | 72% |
+| Düşman Kolay | 73% | 90% | 87% | 80% | 83% |
+| Düşman Usta | 63% | 80% | 63% | 67% | 68% |
+
+**İmza alt sınıf eylemleri** (`npx vite-node src/sim/k58ImzaKullanim.ts -- 5`; 7. seviye `k18-<sınıf>` partisi, ev kuralı açık, Çöl/Kale/Mağara/Orman × 5 tohum = 20 savaş; imza karakterinin komutları).
+
+| Alt sınıf | İmza eylemi | Büyü | Saldırı | İmza / savaş |
+|---|---|---|---|---|
+| İmparator | 61 | 0 | 264 | 3.05 |
+| İnfazcı | 58 | 0 | 128 | 2.90 |
+| Çiftçi | 22 | 72 | 140 | 1.10 |
+| Dunganga | 11 | 155 | 0 | 0.55 |
+| Astrolog | 47 | 155 | 0 | 2.35 |
+| Birlik Manastırı | 44 | 152 | 7 | 2.20 |
+| Geride Kalanın Yolu | 0 | 0 | 270 | 0.00 |
+| Şair Koleji | 76 | 187 | 2 | 3.80 |
+| Yaşlı Bilge Disiplini | 64 | 0 | 182 | 3.20 |
+| Hızır Yemini | 0 | 199 | 47 | 0.00 |
+| Harita Öğretisi | 22 | 121 | 0 | 1.10 |
+
+Geride Kalanın Yolu ve Hızır Yemini `use_feature` imza eylemi hiç yapmıyor (Hızır'ın özellikleri çoğunlukla tepki/aura; tepkiler bu sayımda yok), Dunganga büyüyü tercih ediyor. Bulgu DECISIONS.md (K58); düzeltme K59.
+
 ## Kuyruk K56: arazi × büyü — hızlı regresyon (2026-11-06)
 
 Ayar yok. Büyücü partisi, 5. seviye, 30 tohum, `npm run sim -- 30 col kale magara orman --seviye 5 --parti buyucu`; kural sürümü 32 (`KURAL_SURUMU=32`) ile 33 (arazi × büyü açık) aynı tohumlarda.
