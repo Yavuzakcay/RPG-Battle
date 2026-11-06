@@ -121,7 +121,7 @@ const FxGround = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.
 const EndVideo = lazy(() => import('./ui/EndVideo'));
 // Kuyruk K58: hamle önizleme kartı (tembel).
 const PreviewCard = lazy(() => import('./ui/preview/PreviewCard'));
-import { movePreview, type MovePreview } from './ui/preview/movePreview';
+import { movePreview, moveTap, type MovePreview } from './ui/preview/movePreview';
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
@@ -1077,10 +1077,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const key = hexKey(h);
     if (movable.has(key)) {
       const cmd: Command = { type: 'move', actorId, to: h };
-      if (pvSet.on && !exploreOn && !(moveAim && sameHex(moveAim.to, h))) {
-        const pv = movePreview(state, cmd, contextFor(state, actorId), disc, pvSet);
-        if (pv.ok && pv.opportunity.length) { setMoveAim({ to: h, pv }); return; }
-      }
+      const tap = moveTap(moveAim, h, pvSet.on && !exploreOn, () => movePreview(state, cmd, contextFor(state, actorId), disc, pvSet));
+      if (tap.kind === 'aim') { setMoveAim({ to: h, pv: tap.pv }); return; }
       setMoveAim(null);
       run(cmd);
     }

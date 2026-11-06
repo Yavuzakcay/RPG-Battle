@@ -26,6 +26,8 @@ import type { BattleEvent, BattleState, Combatant, Command } from '../battle/typ
 import type { CharacterSheet } from '../rules/stats';
 
 declare const process: { argv: string[]; exit(n: number): void };
+type FsLike = { writeFileSync(path: string, data: string): void };
+const NODE_FS: string = 'node:fs';
 const args = process.argv.slice(2).filter((a) => a !== '--');
 const opt = (n: string) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
 const seeds = Number(args.find((a, i) => /^\d+$/.test(a) && !(args[i - 1] ?? '').startsWith('--')) ?? 20);
@@ -173,4 +175,4 @@ for (const f of fails) byKind[f.kind] = (byKind[f.kind] ?? 0) + 1;
 console.log(JSON.stringify({ seviye: levels, harita: maps.length, tohum: seeds, savas: battles, komut: commands, yerlesmeyen: setupSkips, sure_sn: Math.round((Date.now() - t0) / 1000), hata: byKind }));
 for (const f of fails.slice(0, 60)) console.log(`- [${f.kind}] sv${f.level} ${f.map} t${f.seed} ${f.group}: ${f.detail}`);
 const out = opt('--json');
-if (out) { const fs = await import('node:fs'); fs.writeFileSync(out, JSON.stringify({ levels, maps: maps.map((m) => m.id), seeds, battles, commands, fails }, null, 1)); }
+if (out) { const fs = (await import(/* @vite-ignore */ NODE_FS)) as FsLike; fs.writeFileSync(out, JSON.stringify({ levels, maps: maps.map((m) => m.id), seeds, battles, commands, fails }, null, 1)); }

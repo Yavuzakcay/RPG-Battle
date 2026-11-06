@@ -107,8 +107,8 @@ export function scoreCommand(state: BattleState, actor: Combatant, cmd: Command,
       let ctl = 0;
       for (const [k, pk] of Object.entries(t.conditions)) if (!c.conditions.includes(k)) ctl += pk * condValue(k) * threat;
       add('kontrol', w.kontrol * ctl);
-      const eff = Object.values(t.effects).reduce((s, x) => s + x, 0);
-      add('zayiflatma', w.kontrol * eff * C.etkiDegeri * threat);
+      // K59: etkinin içeriğine göre değer (`effectWeight`; tanınmayan etki eskisi gibi `etkiDegeri`).
+      add('zayiflatma', w.kontrol * t.effectValue * threat);
       let dis = 0;
       for (const [k, pk] of Object.entries(t.flags)) if (k !== 'regenBlocked') dis += pk * (FLAG[k] ?? 0) * threat;
       add('etkisiz', w.kontrol * dis);

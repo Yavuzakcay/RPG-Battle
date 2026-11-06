@@ -101,5 +101,16 @@ export function movePreview(state: BattleState, cmd: Command, ctx: CommandContex
   };
 }
 
+/**
+ * K59: yürüyüş dokunuşunun kararı (dokun-önizle / dokun-onayla; arayüz `MapBattle` bunu çağırır). Önizleme açık ve
+ * fırsat saldırısı varsa ilk dokunuş önizleme (çentik), aynı altıgene ikinci dokunuş yürür; başka altıgene dokunmak
+ * yeni önizleme; fırsat saldırısı yoksa ya da önizleme kapalı/keşif modunda doğrudan yürür.
+ */
+export function moveTap(aim: { to: Offset } | null, to: Offset, on: boolean, preview: () => MovePreview): { kind: 'aim'; pv: MovePreview } | { kind: 'run' } {
+  if (!on || (aim && aim.to.col === to.col && aim.to.row === to.row)) return { kind: 'run' };
+  const pv = preview();
+  return pv.ok && pv.opportunity.length ? { kind: 'aim', pv } : { kind: 'run' };
+}
+
 export const pct = (p: number | undefined): string => (p === undefined ? '–' : `%${Math.round(p * 100)}`);
 export const rangeText = (r: Range): string => (r.max <= 0 ? '0' : r.min === r.max ? String(r.max) : `${r.min}–${Math.round(r.avg)}–${r.max}`);

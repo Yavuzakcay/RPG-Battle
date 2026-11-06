@@ -20,9 +20,11 @@ const { applyPackSubclasses } = await import('../content/paket');
 const { ILKEL_ADLARI } = await import('../content/ilkelSema');
 const houseData = (await import('../../data/ev-kurallari.json')).default;
 import type { BattleEvent, Combatant, Command } from '../battle/types';
-import fs from 'node:fs';
 
 declare const process: { argv: string[] };
+const NODE_FS: string = 'node:fs';
+const fs = (await import(/* @vite-ignore */ NODE_FS)) as { writeFileSync(path: string, data: string): void };
+const FIXTURES = import.meta.glob('../../tests/fixtures/paket-*.json', { eager: true, import: 'default' }) as Record<string, unknown>;
 const args = process.argv.slice(2).filter((a) => a !== '--');
 const opt = (n: string) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
 const seeds = Number(args.find((a, i) => /^\d+$/.test(a) && !(args[i - 1] ?? '').startsWith('--')) ?? 3);
@@ -43,8 +45,8 @@ const byPrim = new Map<string, { mark: Mark; where: string }>();
 let crashes = 0, battles = 0;
 const crashList: string[] = [];
 
-for (const file of fs.readdirSync('tests/fixtures').filter((f) => /^paket-.*\.json$/.test(f)).sort()) {
-  const pack = JSON.parse(fs.readFileSync(`tests/fixtures/${file}`, 'utf8'));
+for (const [path, pack] of Object.entries(FIXTURES).sort(([a], [b]) => a.localeCompare(b))) {
+  const file = path.split('/').pop() as string;
   const v = validatePack(pack, { taken: classData.subclasses.map((s) => s.id), packs: [] });
   if (!v.ok) { console.log(`${file}: doğrulanamadı`); continue; }
   applyPackSubclasses(v.pack.subclasses);

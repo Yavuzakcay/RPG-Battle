@@ -23,6 +23,21 @@
     "_aciklama": "Etkisiz bırakan süren etkilerin tehdit oranı (konsantrasyonlu, birkaç tur süren; durumDegeri ile aynı ölçek).",
     "banished": 2.0, "sealed": 1.5, "dominate": 3.0, "polymorph": 1.5, "charm": 0.6, "command": 0.8, "noAttack": 0.8
   },
+  "etkiAlanDegeri": {
+    "_aciklama": "K59: düşmana konan süren etkinin değeri (tehdit oranı; durumDegeri ile aynı ölçek), etkinin alanlarından toplanır (en çok _enCok). Tanınan alan yoksa sabitler.etkiDegeri; yalnız durum veren etki 0 (durum ayrıca sayılır); hasarla biten etki yarı. attackDis: saldırılarında dezavantaj (Ninni, Ray of Enfeeblement yolu); slowed: Slow; saveDis/checkDis: kurtulma/kontrol dezavantajı; attackedAdv: ona saldırı avantajlı; speedZero/speedMult: hareket; noReactions: tepki yok; dice: zar eksi (Bane); damagePenalty: hasar eksi; noCast: büyü yok.",
+    "attackDis": 0.4,
+    "slowed": 0.4,
+    "saveDis": 0.2,
+    "checkDis": 0.05,
+    "attackedAdv": 0.25,
+    "speedZero": 0.2,
+    "speedMult": 0.1,
+    "noReactions": 0.1,
+    "dice": 0.25,
+    "damagePenalty": 0.25,
+    "noCast": 0.3,
+    "_enCok": 1.0
+  },
   "sabitler": {
     "_aciklama": "oldurmeTaban: ölen yaratık başına tehdide eklenen değer; etkiDegeri: süren etkinin tehdit oranı; slotSeviye: slot seviyesi başına maliyet; kaynak: özellik kaynağı başına maliyet; konsantrasyonKirma: konsantre düşmana isabetin tehdit oranı; canlandirma: yerdeki dostu kaldırmanın tehdit oranı; riskOlcegi: altıgen riskinin puana bölüneni; kotuCan: kendini koruma eşiği (can oranı); eskiOncelik: eski kural zincirinin seçtiği adaya eşitlik bozucu; kuralOncelik: eski elle yazılmış kural üreticisinin (alan, zemin, kontrol, nefes, itme…) adayına eklenen değer (kural 'iyi hamle' dedi); itmeRiski: itilen düşmanın vardığı altıgen riskinin bir durum-turuna denk geldiği risk; sira: hedef öncelik sırasında (yakalanan, Vex, hükümlü, uzaklık) ilk hedefe eklenen değer, sonrakilere azalarak; korunmaEsik/korunmaTavan (Y2): yer değiştirirken maruziyet farkının ağırlığı can oranı korunmaEsik altına inince doğrusal artar, 0 canda korunmaTavan (üstünde 0).",
     "oldurmeTaban": 5,
@@ -54,6 +69,6 @@
     "_aciklama": "kolay: en iyi aday enIyi olasılıkla, yoksa ilk aday sayısı içinden biri (deterministik karma); usta: ilk N adayda bir adım ileri bakış (aynı yaratığın sonraki en iyi komutu × ileriAgirlik); Y2 G3 ek terimleri: kesin (öldürme olasılığı kesinEsik üstündeyse öldürme değerine ek oran), odak (yaralı hedefe hasar × eksik can oranı), tehdit (en tehlikeliye göre oran − 0,5, hasar çarpanı), zamanlama (slot/kaynak düşük tehditli hedefe harcanırsa ek maliyet oranı).",
     "kolay": { "enIyi": 0.6, "aday": 4 },
     "normal": {},
-    "usta": { "deneysel": true, "aciklama": { "tr": "Deneysel: Normal'den belirgin güçlü değil (Y2 ölçümü, 100 tohum × 6 senaryo: Normal'e göre ortalama −2 puan).", "en": "Experimental: not clearly stronger than Normal (Y2 measurement, 100 seeds × 6 scenarios: −2 points on average vs Normal)." }, "ileriBakis": 3, "ileriAgirlik": 0.5, "kesin": 0.6, "kesinEsik": 0.4, "odak": 0.5, "tehdit": 0.3, "zamanlama": 0.5 }
+    "usta": { "deneysel": true, "aciklama": { "tr": "Deneysel: Normal'den belirgin güçlü değil (Y2 ölçümü, 100 tohum × 6 senaryo: Normal'e göre ortalama −2 puan).", "en": "Experimental: not clearly stronger than Normal (Y2 measurement, 100 seeds × 6 scenarios: −2 points on average vs Normal)." }, "ileriBakis": 3, "ileriAgirlik": 0.5, "kesin": 0.6, "kesinEsik": 0.4, "odak": 0.5, "tehdit": 0.3, "zamanlama": 0.5, "yerAday": 6, "yerMaliyet": 0.5, "yerDegistir": 1.5 }
   }
 }

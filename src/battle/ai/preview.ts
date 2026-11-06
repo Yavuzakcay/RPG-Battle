@@ -19,7 +19,8 @@
 import type { DiceRequest, RollMode } from '../../rules/dice';
 import type { Offset } from '../../rules/hex';
 import { execute } from '../commands';
-import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from '../types';
+import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command, CommandContext } from '../types';
+import roles from '../../../data/yz-roller.json';
 
 type AttackClass = 'miss' | 'hit' | 'crit';
 type SaveClass = 'success' | 'fail';
@@ -46,6 +47,11 @@ export interface TargetPreview {
   conditions: Record<string, number>;
   /** Eklenen süren etki adı → olasılık. */
   effects: Record<string, number>;
+  /**
+   * K59: eklenen süren etkilerin olasılıkla ağırlıklı değeri (tehdit oranı ölçeğinde; `data/yz-roller.json`
+   * `etkiAlanDegeri`: saldırı dezavantajı, yavaşlatma…; tanınmayan etki `sabitler.etkiDegeri`).
+   */
+  effectValue: number;
   /** Etkisiz bırakan etki bayrakları → olasılık (banished, sealed, dominate, polymorph, charm, command, noAttack, taraf değişimi). */
   flags: Record<string, number>;
   /** Zorla hareket / ışınlanma sonucu (başarılı senaryoda). */
@@ -114,7 +120,9 @@ const ctxOf = (c: Combatant): CommandContext =>
   c.side === 'enemies' || c.civilian ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
 
 /** Zorlanmış zar kancalı Rng. */
-function forcedRng(sc: Scenario | 'probe', hitFace: number, seen?: { varied: boolean }): () => number {
+/** Standart normalin %75 yüzdeliği (K59 zar senaryoları). */
+const QUARTILE_Z = 0.6745;
+function forcedRng(sc: Scenario | 'probe', hitFace: number, seen?: { varied: boolean }, quartiles = false): () => number {
   const rng = (() => 0.5) as (() => number) & { dice?: (r: DiceRequest) => number[] };
   const dieValue = (s: number): number => {
     const lvl = sc === 'probe' ? 'low' : sc.dice;
@@ -135,6 +143,18 @@ function forcedRng(sc: Scenario | 'probe', hitFace: number, seen?: { varied: boo
     if (req.sides === 20 && req.kind !== 'damage' && req.kind !== 'heal') return Array.from({ length: n }, () => 10);
     // Y2 G2: alt/üst orta yalnız çift yüzlü zarda ayrışır; en düşük/en yüksek her zarda (1 yüzlü hariç).
     if (seen && n > 0 && req.sides > 1) seen.varied = true;
+    const lvl = sc === 'probe' ? 'low' : sc.dice;
+    // K59: alt/üst senaryo zar toplamının %25/%75 yüzdeliği (normal yaklaşım; ortalama korunur). Eskiden her zar
+    // ortanın altı/üstüydü: çok zarda iki nokta ortalamaya yapışık, öldürme olasılığı (canı az hedef) %100'e kayıyordu.
+    if (quartiles && (lvl === 'low' || lvl === 'high') && req.sides > 1 && n > 0) {
+      const s = req.sides;
+      const mean = n * (s + 1) / 2;
+      const sd = Math.sqrt(n * (s * s - 1) / 12);
+      const sum = Math.max(n, Math.min(n * s, Math.round(mean + (lvl === 'low' ? -1 : 1) * QUARTILE_Z * sd)));
+      const base = Math.floor(sum / n);
+      const extra = sum - base * n;
+      return Array.from({ length: n }, (_, i) => base + (i < extra ? 1 : 0));
+    }
     return Array.from({ length: n }, () => dieValue(req.sides));
   };
   return rng;
@@ -144,7 +164,7 @@ interface RunOut { ok: boolean; error?: string; state?: BattleState; events: Bat
 
 function run(state: BattleState, cmd: Command, ctx: CommandContext, sc: Scenario | 'probe', hitFace: number, seen?: { varied: boolean }): RunOut {
   try {
-    const r = execute(state, cmd, ctx, forcedRng(sc, hitFace, seen));
+    const r = execute(state, cmd, ctx, forcedRng(sc, hitFace, seen, true));
     return r.ok ? { ok: true, state: r.state, events: r.events } : { ok: false, error: r.error, events: [] };
   } catch (e) {
     return { ok: false, error: String((e as Error)?.message ?? e), events: [] };
@@ -155,6 +175,21 @@ function run(state: BattleState, cmd: Command, ctx: CommandContext, sc: Scenario
 export const DISABLE = ['banished', 'sealed', 'dominate', 'polymorph', 'charm', 'command', 'noAttack'] as const;
 
 const pool = (c: Combatant | undefined): number => (c ? Math.max(0, c.hp) + (c.tempHp ?? 0) : 0);
+
+const FIELD_VALUE = (roles as unknown as { etkiAlanDegeri: Record<string, number> }).etkiAlanDegeri;
+const EFFECT_DEFAULT = roles.sabitler.etkiDegeri;
+/**
+ * K59: süren etkinin tehdit oranı ölçeğinde değeri: tanınan alanların toplamı (en çok `_enCok`); hiç tanınan alan
+ * yoksa varsayılan (`etkiDegeri`), yalnız durum veriyorsa 0 (durum ayrıca sayılır); hasarla biten etki yarı.
+ */
+export function effectWeight(e: ActiveEffect): number {
+  const rec = e as unknown as Record<string, unknown>;
+  let v = 0;
+  for (const [k, w] of Object.entries(FIELD_VALUE)) if (!k.startsWith('_') && rec[k] !== undefined && rec[k] !== false) v += w;
+  if (v === 0) return e.grants?.length || DISABLE.some((k) => rec[k]) ? 0 : EFFECT_DEFAULT;
+  v = Math.min(v, FIELD_VALUE._enCok ?? 1);
+  return e.breakOnDamage ? v * 0.5 : v;
+}
 
 type Att = Extract<BattleEvent, { type: 'attack_resolved' }>;
 type Sav = Extract<BattleEvent, { type: 'save_resolved' }>;
@@ -169,6 +204,8 @@ interface Outcome {
   dead: Record<string, boolean>;
   conds: Record<string, string[]>;
   effs: Record<string, string[]>;
+  /** K59: yeni etkilerin değeri (`effectWeight`). */
+  effv: Record<string, number>;
   flags: Record<string, string[]>;
   pushed: Record<string, { to: Offset; by: string }>;
   tele: Record<string, Offset>;
@@ -176,7 +213,7 @@ interface Outcome {
 }
 
 function outcomeOf(before: BattleState, r: RunOut): Outcome {
-  const o: Outcome = { attacks: [], saves: {}, delta: {}, dead: {}, conds: {}, effs: {}, flags: {}, pushed: {}, tele: {}, triggers: [] };
+  const o: Outcome = { attacks: [], saves: {}, delta: {}, dead: {}, conds: {}, effs: {}, effv: {}, flags: {}, pushed: {}, tele: {}, triggers: [] };
   const after = r.state as BattleState;
   for (const id of Object.keys(before.combatants)) {
     const b = before.combatants[id] as Combatant;
@@ -188,6 +225,7 @@ function outcomeOf(before: BattleState, r: RunOut): Outcome {
     const be = new Set((b.effects ?? []).map((e) => e.id));
     const fresh = a ? (a.effects ?? []).filter((e) => !be.has(e.id)) : [];
     o.effs[id] = fresh.map((e) => e.name ?? e.id);
+    o.effv[id] = fresh.reduce((v, e) => v + effectWeight(e), 0);
     const fl = new Set<string>();
     for (const e of fresh) for (const k of DISABLE) if ((e as unknown as Record<string, unknown>)[k]) fl.add(k);
     if (a && a.side !== b.side) fl.add('dominate');
@@ -370,6 +408,7 @@ function previewUncached(state: BattleState, cmd: Command, ctx: CommandContext |
     let killP = 0;
     const condP: Record<string, number> = {};
     const effP: Record<string, number> = {};
+    let effV = 0;
     const flagP: Record<string, number> = {};
     let any = false;
     for (const { a, s, w } of weights) {
@@ -384,6 +423,7 @@ function previewUncached(state: BattleState, cmd: Command, ctx: CommandContext |
         if (o.dead[id]) killP += w / 2;
         for (const x of o.conds[id] ?? []) condP[x] = (condP[x] ?? 0) + w / 2;
         for (const x of o.effs[id] ?? []) effP[x] = (effP[x] ?? 0) + w / 2;
+        effV += (w / 2) * (o.effv[id] ?? 0);
         for (const x of o.flags[id] ?? []) flagP[x] = (flagP[x] ?? 0) + w / 2;
         if (delta !== 0 || o.conds[id]?.length || o.effs[id]?.length || o.pushed[id] || o.tele[id]) any = true;
       }
@@ -409,6 +449,7 @@ function previewUncached(state: BattleState, cmd: Command, ctx: CommandContext |
       killP: Math.min(1, killP),
       conditions: condP,
       effects: effP,
+      effectValue: effV,
       flags: flagP,
     };
     if (aP) { t.hitP = aP.hit + aP.crit; t.critP = aP.crit; }

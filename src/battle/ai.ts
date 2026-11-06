@@ -84,6 +84,7 @@ import { imzaHintCmds } from './imzaAi';
 import { GAZE_KEY, SPIDER_KEY } from './karadul';
 import { candidatesFor, registerAction, type AiHelpers, type Candidate } from './ai/actions';
 import { difficultyOf, evaluateCandidates, pickByDifficulty, roleOf } from './ai/evaluate';
+import aiRoles from '../../data/yz-roller.json';
 import { bonusPoolCands } from './ai/behaviors';
 import { aiStats } from './ai/preview';
 
@@ -1600,16 +1601,20 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const scored = spots
     .map((s) => ({ ...s, score: s.cost + risk(state, actor, s.to) + (ranged && enemyNear(s.to) ? 3 : 0) - lift(s.to) }))
     .sort((a, b) => a.score - b.score);
-  const attackSpots: Spot[] = [];
+  // K59 (Usta): saldırı yeri adayları çoğaltılır ve oradaki en iyi değerlendirici puanına göre sıralanır (yakın olan değil,
+  // en değerli hedef: yaralı, öldürülebilir, tehlikeli); Normal/Kolay eskisi gibi en ucuz üç yer.
+  const usta = !state.yz?.eski && difficultyOf(state, actor.side) === 'usta' ? USTA : null;
+  let attackSpots: Spot[] = [];
   for (const s of scored) {
     const there = at(state, actor, s.to);
     const mover = { ...actor, pos: s.to };
     const cmd = bestNow(there, mover);
     if (cmd && (!poor || !poorOdds(there, mover, cmd))) {
       attackSpots.push(s);
-      if (attackSpots.length >= 3) break;
+      if (attackSpots.length >= (usta ? usta.yerAday : 3)) break;
     }
   }
+  if (usta && attackSpots.length > 1) attackSpots = ustaSpotOrder(state, actor, attackSpots, usta);
   const go = guardMove(state, actor, firstMove(state, actor, attackSpots));
   if (go) return go;
   if (now) return now;
@@ -2273,6 +2278,22 @@ export function scoredCandidates(state: BattleState, actor: Combatant) {
   const cands = candidatesFor(state, actor, h).slice(0, MAX_CANDIDATES);
   if (legacy && !cands.some((c) => JSON.stringify(c.cmd) === JSON.stringify(legacy))) cands.push({ cmd: legacy, desc: LEGACY });
   return { legacy, helpers: h, scored: evaluateCandidates(state, actor, cands, h, roleOf(actor, spellKinds(actor)), legacy, difficultyOf(state, actor.side)) };
+}
+
+/** K59: Usta'nın yer seçimi parametreleri (`data/yz-roller.json` `zorluk.usta`). */
+const USTA = aiRoles.zorluk.usta as { yerAday: number; yerMaliyet: number; yerDegistir: number };
+/**
+ * K59 (Usta): saldırı yeri adaylarını oradaki en iyi değerlendirici adayının puanına göre sıralar (eşitlikte ucuz olan);
+ * yer maliyeti (yürüme + risk) `yerMaliyet` ile düşülür. Kuru çalıştırma; durum değişmez.
+ */
+function ustaSpotOrder(state: BattleState, actor: Combatant, spots: Array<Spot & { score?: number }>, u: typeof USTA): Spot[] {
+  const ranked = spots.map((s, i) => {
+    const there = at(state, actor, s.to);
+    const mover = there.combatants[actor.id] as Combatant;
+    const best = scoredCandidates(there, mover).scored[0];
+    return { s, i, v: (best?.score ?? 0) - u.yerMaliyet * (s.score ?? s.cost) };
+  });
+  return ranked.sort((a, b) => b.v - a.v || a.i - b.i).map((r) => r.s);
 }
 
 /** Usta: komut uygulandıktan sonra aynı yaratığın en iyi sonraki komutunun puanı (ileri bakış yok). */
