@@ -990,6 +990,7 @@ export const en: Strings = {
     object: (name: string, hp: number, max: number, ac: number, st: string) => `object: ${name} (HP ${hp}/${max}, AC ${ac}${st ? `, ${st}` : ''})`,
     objectState: { open: 'open', closed: 'closed', locked: 'locked', tipped: 'tipped' } as Record<string, string>,
     surface: (list: string) => `surface: ${list}`, surfaceRounds: (n: number) => `${n} rd`, houseRule: 'house rule',
+    terrainTags: { kuru: 'dry', yanici: 'flammable', islak: 'wet', soguk: 'cold', sicak: 'hot', kayalik: 'rocky', kumlu: 'sandy', volkanik: 'volcanic', 'derin-su': 'deep water' } as Record<string, string>,
     noHideMapless: 'You cannot hide in a battle without a map.', alreadyHidden: (dc: number) => `Already hidden (DC ${dc}).`, stuck: 'Stuck in the bog.',
     noHideHere: (name: string) => `You cannot hide here (${name}); walk to a marked hex.`,
     status: { burning: 'Burning', poison: 'Poisoned', frozen: 'Frozen', grappled: 'Grappled', prone: 'Prone',

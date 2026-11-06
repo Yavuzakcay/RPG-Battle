@@ -5,6 +5,7 @@
  *   1. engel/duvar: katı engel altıgenleri (K53 geçici engel, Wall of Stone/Force) gelen etkiden düşer;
  *   2. yüzey × yüzey (bu adımda oluşan yüzey/alan → altındakiler);
  *   3. büyü × yüzey (element etiketi);
+ *   3b. arazi × büyü (Kuyruk K56, `terrainSpell.ts`: zemin etiketine göre yüzey; sürüm 33, anahtar `araziBuyuEtkisi`);
  *   4. aura ve durum kancaları (tutsak serbest);
  *   5. hasar ve kurtulma zarları (patlama, suda yıldırım).
  * Aynı öncelikte tablo sırası; altıgenler indeks (satır × en + sütun) artan sırada. Katman başına (zemin, gaz, nesne)
@@ -28,6 +29,7 @@ import { SURFACE_DATA, burstEvents, isWater, registerResolver, shrink, surfaceEv
 import { freeCaptives } from './surfaceMix';
 import { solidBarrierAt } from './barriers';
 import { isAirborne } from './flight';
+import { terrainSpellEvents } from './terrainSpell';
 import type { BattleEvent, BattleState, Side, SpellZone, SurfaceKind, SurfaceReaction } from './types';
 
 export const RESOLVER_VERSION = 26;
@@ -112,6 +114,13 @@ export function resolveHexEffects(state: BattleState, incoming: Incoming[], rng:
           push(evs); collect(evs, row.id);
         }
       }
+    }
+    // Kuyruk K56: arazi × büyü (büyü × yüzey adımından sonra, aura adımından önce): element dokunuşu zemin türüne göre
+    // yüzey bırakır; oluşan yüzey zincire girer.
+    if (depth === 0) for (const it of items) {
+      if (it.kind !== 'element') continue;
+      const evs = terrainSpellEvents(s, it.element, it.hexes, it.actorId, s.combatants[it.actorId]?.side ?? 'enemies', it.label);
+      push(evs); collect(evs, 'arazi');
     }
     // Katman kuralı: bu adımda oluşan (ya da komutla gelen) yüzey aynı katmandaki eskisinin yerine geçer.
     for (const it of items) if (it.kind === 'zone') push(replaceEvents(s, it.zoneId));

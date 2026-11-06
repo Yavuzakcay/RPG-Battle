@@ -421,6 +421,8 @@ export const TR_EXTRA = {
     objectState: { open: 'açık', closed: 'kapalı', locked: 'kilitli', tipped: 'devrik' } as Record<string, string>,
     /** Görev Y1: altıgendeki yüzeyler (ad, kalan tur; ev kuralı işaretli). */
     surface: (list: string) => `yüzey: ${list}`, surfaceRounds: (n: number) => `${n} tur`, houseRule: 'ev kuralı',
+    /** Kuyruk K56: arazi etiketleri (bilgi kartı). */
+    terrainTags: { kuru: 'kuru', yanici: 'yanıcı', islak: 'ıslak', soguk: 'soğuk', sicak: 'sıcak', kayalik: 'kayalık', kumlu: 'kumlu', volkanik: 'volkanik', 'derin-su': 'derin su' } as Record<string, string>,
     noHideMapless: 'Haritasız savaşta gizlenilmez.', alreadyHidden: (dc: number) => `Zaten gizli (DC ${dc}).`, stuck: 'Batağa saplandı.',
     noHideHere: (name: string) => `Burada gizlenilemez (${name}); işaretli bir altıgene yürü.`,
     status: { burning: 'Yanıyor', poison: 'Zehirli', frozen: 'Donmuş', grappled: 'Yakalandı (Grappled)', prone: 'Yerde (Prone)',

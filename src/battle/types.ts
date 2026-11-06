@@ -1070,7 +1070,8 @@ export type SurfaceKind = 'oil' | 'water' | 'ice' | 'fire' | 'burningWeb' | 'ste
 /** Görev Y1: yüzey tepkimesi (günlük için; durumu değiştirmez, değişiklik ardından gelen alan olaylarında). */
 export type SurfaceReaction = 'ignite' | 'webBurn' | 'melt' | 'steam' | 'freeze' | 'explode' | 'chain' | 'douse'
   /** Kuyruk 18b */ | 'fogBurn' | 'crack' | 'condense' | 'splash' | 'dissolve' | 'wash' | 'dilute'
-  /** Kuyruk K55: katmanda yerine geçme, zincir sınırı */ | 'replace' | 'chainLimit';
+  /** Kuyruk K55: katmanda yerine geçme, zincir sınırı */ | 'replace' | 'chainLimit'
+  /** Kuyruk K56: arazi × büyü (satır `row: arazi:<id>`) */ | 'terrain';
 
 /**
  * Bir durumun süresi. `ownerId` kimin turunda sayıldığı (etkiyi veren ya da hedefin kendisi):

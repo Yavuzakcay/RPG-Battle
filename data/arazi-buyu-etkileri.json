@@ -1,0 +1,54 @@
+{
+  "_not": "Kuyruk K56: arazi × büyü etkileri (kural sürümü 33, Game Master anahtarı araziBuyuEtkisi, varsayılan açık). K55 altıgen etki çözücüsünde büyü × yüzey adımından sonra, aura adımından önce çalışır. Büyünün element dokunuşu (ateş, soğuk) değdiği altıgenin zemin etiketine göre o altıgende yüzey bırakır; hasar zarlarına dokunmaz. Satırlar sırayla denenir, altıgen başına ilk eşleşen satır (`hepsi`: etiketlerin hepsi, `haric`: bu etiketlerden biri varsa eşleşmez). Aynı katmanda zaten yüzey olan altıgen atlanır (büyü × yüzey adımının sonucu önce gelir). `sure`: tur; `yayilma`: komşu altıgenlere kaç halka (yalnız aynı satıra uyan zeminlere). Oluşan yüzey çözücünün zincirine girer (yüzey × yüzey). Su zemini (ıslak) × ateş/soğuk K55 tablosunda (`fireWater`, `coldTile`); burada yinelenmez.",
+  "satirlar": [
+    {
+      "id": "ates-kuru-yanici",
+      "element": "fire",
+      "hepsi": [
+        "yanici",
+        "kuru"
+      ],
+      "yuzey": "fire",
+      "sure": 2,
+      "yayilma": 1,
+      "tr": "kuru otlar tutuştu",
+      "en": "dry brush catches fire"
+    },
+    {
+      "id": "ates-yanici",
+      "element": "fire",
+      "hepsi": [
+        "yanici"
+      ],
+      "yuzey": "fire",
+      "sure": 1,
+      "yayilma": 0,
+      "tr": "yanıcı zemin tutuştu",
+      "en": "flammable ground catches fire"
+    },
+    {
+      "id": "ates-soguk",
+      "element": "fire",
+      "hepsi": [
+        "soguk"
+      ],
+      "yuzey": "water",
+      "sure": 2,
+      "yayilma": 0,
+      "tr": "kar ve buz eridi",
+      "en": "snow and ice melt"
+    },
+    {
+      "id": "soguk-sicak",
+      "element": "cold",
+      "hepsi": [
+        "sicak"
+      ],
+      "yuzey": "steam",
+      "sure": 1,
+      "yayilma": 0,
+      "tr": "sıcak zemin buhar saldı",
+      "en": "hot ground hisses into steam"
+    }
+  ]
+}

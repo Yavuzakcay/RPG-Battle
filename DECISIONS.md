@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk K56: arazi × büyü (kural sürümü 33)
+
+- **Veri:** zemin türü → arazi etiketleri `data/zemin-etiketleri.json` (kuru, yanıcı, ıslak, soğuk, sıcak, kayalık, kumlu, volkanik, derin su; harf başına); arazi × büyü tablosu `data/arazi-buyu-etkileri.json` (4 satır: kuru+yanıcı → alev 2 tur, bir halka yayılır; yanıcı → alev 1 tur; soğuk zemin (kar, buz) × ateş → su 2 tur; sıcak zemin (lav, alev) × soğuk → buhar 1 tur). Hasar zarlarına dokunulmaz (test: aynı tohumda 32 ↔ 33 hasar aynı); yalnız yüzey, süre ve yayılma.
+- **Motor:** K55 altıgen etki çözücüsünde (`hexResolver.ts`) büyü × yüzey adımından sonra, aura adımından önce yeni adım (`src/battle/terrainSpell.ts` `terrainSpellEvents`); yalnız ilk derinlikte, element dokunuşu (ateş, soğuk; yıldırımın arazi satırı yok). Aynı katmanda zaten yüzey olan altıgen atlanır, böylece büyü × yüzey sonucu (yağ tutuşması, suda buhar) önce gelir. Oluşan yüzey çözücünün zincirine girer (yüzey × yüzey). Çözücüye bağlı olduğundan `hexResolver` kapalıyken arazi etkisi de yok.
+- **Su zemini yinelenmedi:** ıslak zemin × ateş (buhar) ve × soğuk (buz) K55 tablosunda zaten var (`fireWater`, `coldTile`); arazi tablosuna konmadı (çifte kaynak olmasın).
+- **Anahtar ve sürüm:** Game Master global anahtarı `araziBuyuEtkisi` (varsayılan açık, `surum: 33`); kural sürümü 33. Sürüm ≤ 32 savaş ve replay etkilenmez.
+- **Arayüz:** altıgen bilgi kartında yalnız zemin adı ve türü (etiketler, TR/EN; sürüm 33+ ve anahtar açıkken). Günlükte satır başına tek satır (`surface_reacted` `reaction: terrain`, `row: arazi:<id>`; metin tablodan).
+- **Yapay zekâ (basit sezgi):** alan büyüsü seçerken (`areaSpell`) arazi etkisi kendi tarafından birinin altıgeninde ya da bitişiğinde yüzey bırakacaksa o atış seçilmez (`terrainEndangersSide`); kuru çayırı bilerek tutuşturma gibi saldırgan kullanım yok.
+- **Testler:** `src/battle/k56terrain.test.ts` (etiket, ateş/soğuk satırları, yayılma, eski sürüm, anahtar kapalı, hasar aynı, replay, bilgi kartı, YZ), duman `src/battle/k56duman.test.ts` (12 sınıf × 3/7/11 × çöl, orman, buzul, bataklık, volkan). Regresyon DENGE.md (Kale'de tur 3,9 → 3,6).
+- **Açık kalan:** yıldırım × arazi (yalnız K55 su zinciri), asit/gök gürültüsü satırı yok; haritaya özel etiket (varyant) yok; yapay zekâ araziyi saldırgan kullanmıyor.
+
 ## 2026-11-06 — Kuyruk A5: eşya sınıflandırması
 
 - **Bulgu:** görevdeki "199 eşyada ne etki ne savaş dışı" sayısı yalnız `effects` alanına bakıyor; A0 envanterinin de yazdığı gibi bu eşyaların etkisi başka alanlarda (`passive`, `use`, `spells`/`charges`, `bonus`, `onHit`, `attack`). Bütün alanlara bakınca boşta kalan yalnız Poisoner's Kit'ti (Cunning Strike: Poison onu arar; `kod` olarak işlendi).

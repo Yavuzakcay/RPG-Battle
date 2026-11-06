@@ -7,7 +7,10 @@ import type { BattleEvent, BattleState, DamageEffect } from '../battle';
 import type { Offset } from '../rules/hex';
 import { skillLabel } from '../rules/skills';
 import { terrainOf } from '../map/terrain';
-import { t } from '../i18n';
+import { getLang, t } from '../i18n';
+import terrainTable from '../../data/arazi-buyu-etkileri.json';
+
+const TERRAIN_TEXT = terrainTable.satirlar as Array<{ id: string; tr: string; en: string }>;
 
 /** Kullanıcıya gösterilen 1 tabanlı konum (geçerli dilde). */
 export const hexText = (o: Offset): string => t().log.hex(o.col + 1, o.row + 1);
@@ -370,8 +373,11 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       const g = state.goals ? [...state.goals.list, ...leafGoals(state.goals.list)].find((x) => x.id === event.goalId) : undefined;
       return t().goals.log(event.status === 'done' ? '✓' : '✗', g ? goalText(g, state) : event.goalId);
     }
-    case 'surface_reacted':
-      return L.surface(L.surfaceReaction[event.reaction] ?? event.reaction, event.label, event.hexes.length);
+    case 'surface_reacted': {
+      // Kuyruk K56: arazi × büyü satırının metni tablodan (tek satır).
+      const row = event.reaction === 'terrain' ? TERRAIN_TEXT.find((r) => `arazi:${r.id}` === event.row) : undefined;
+      return L.surface(row ? (getLang() === 'en' ? row.en : row.tr) : L.surfaceReaction[event.reaction] ?? event.reaction, event.label, event.hexes.length);
+    }
     case 'summon_vanished':
       return L.summonVanished(n(event.actorId), L.summonWhy[event.reason] ?? event.reason);
     case 'concentration_moved':
