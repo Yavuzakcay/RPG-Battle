@@ -1605,11 +1605,18 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // en değerli hedef: yaralı, öldürülebilir, tehlikeli); Normal/Kolay eskisi gibi en ucuz üç yer.
   const usta = !state.yz?.eski && difficultyOf(state, actor.side) === 'usta' ? USTA : null;
   let attackSpots: Spot[] = [];
+  // Usta: hedef başına en ucuz yer (aynı hedefin yanındaki yerler tek aday), en çok `yerAday` hedef.
+  const targetsSeen = new Set<string>();
   for (const s of scored) {
     const there = at(state, actor, s.to);
     const mover = { ...actor, pos: s.to };
     const cmd = bestNow(there, mover);
     if (cmd && (!poor || !poorOdds(there, mover, cmd))) {
+      if (usta) {
+        const near = foes.filter((f) => f.pos && gapFrom(s.to, f) <= 1).map((f) => f.id).sort().join(',') || ((cmd as { targetId?: string }).targetId ?? '');
+        if (targetsSeen.has(near)) continue;
+        targetsSeen.add(near);
+      }
       attackSpots.push(s);
       if (attackSpots.length >= (usta ? usta.yerAday : 3)) break;
     }

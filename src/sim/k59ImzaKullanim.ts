@@ -41,13 +41,17 @@ function namesOf(sub: string): string[] {
   return [...n].filter((x) => x.length > 3);
 }
 
-interface Usage { action: number; reaction: number; passive: number; battles: number; cast: number; attack: number }
+interface Usage { action: number; reaction: number; passive: number; battles: number; cast: number; attack: number; subSpell: number }
 function measureUsage(subId: string, cls: string, evKurali: string | null | undefined, lv: number, seeds: number): Usage {
   setPartyKind(`k18-${cls}`);
   setSimHouseRules(evKurali ? { [evKurali]: true } : {});
   setPartySubclass({ classId: cls, subclassId: subId });
   const names = namesOf(subId);
-  const u: Usage = { action: 0, reaction: 0, passive: 0, battles: 0, cast: 0, attack: 0 };
+  const u: Usage = { action: 0, reaction: 0, passive: 0, battles: 0, cast: 0, attack: 0, subSpell: 0 };
+  // Alt sınıfın hep hazır büyüleri (özellik `alwaysPrepared`, seviyeye kadar).
+  const prepared = new Set<string>();
+  for (const f of (imzaData.altSiniflar.find((x) => x.id === subId)?.features ?? []) as Array<{ effect?: { alwaysPrepared?: Record<string, string[]> } }>)
+    for (const [l, list] of Object.entries(f.effect?.alwaysPrepared ?? {})) if (Number(l) <= lv) for (const n of list) prepared.add(n);
   for (const sc of scen) for (let seed = 1; seed <= seeds; seed++) {
     const rng = seeded(seed);
     let state = setupBattle(sc, rng, lv);
@@ -78,7 +82,7 @@ function measureUsage(subId: string, cls: string, evKurali: string | null | unde
         const mine = who.has(actorId);
         const imzaCmd = mine && cmd.type === 'use_feature' && String((cmd as { feature?: string }).feature ?? '').startsWith('imza:');
         if (imzaCmd) u.action++; else traced(r.events);
-        if (mine && cmd.type === 'cast_spell') u.cast++;
+        if (mine && cmd.type === 'cast_spell') { u.cast++; if (prepared.has(cmd.spellName)) u.subSpell++; }
         if (mine && cmd.type === 'attack') u.attack++;
         state = r.state;
         if (state.status !== 'active' || currentActorId(state) !== actorId) break;
@@ -93,11 +97,11 @@ function measureUsage(subId: string, cls: string, evKurali: string | null | unde
 }
 
 {
-  console.log(`| Alt sınıf | İmza eylemi | İmza tepkisi | Pasif tetik | Büyü | Saldırı | Eylem / savaş | Toplam etki / savaş |`);
-  console.log(`|---|---:|---:|---:|---:|---:|---:|---:|`);
+  console.log(`| Alt sınıf | İmza eylemi | İmza tepkisi | Pasif tetik | Alt sınıf büyüsü | Büyü | Saldırı | Eylem / savaş | Toplam etki / savaş | + alt sınıf büyüsü / savaş |`);
+  console.log(`|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|`);
   for (const sub of classData.subclasses.filter((s) => s.ev && s.id.startsWith('imza_') && (!only || only.includes(s.id)))) {
     const u = measureUsage(sub.id, sub.class, sub.evKurali, level, runs);
     const tot = u.action + u.reaction + u.passive;
-    console.log(`| ${sub.name.tr} | ${u.action} | ${u.reaction} | ${u.passive} | ${u.cast} | ${u.attack} | ${(u.action / u.battles).toFixed(2)} | ${(tot / u.battles).toFixed(2)} |`);
+    console.log(`| ${sub.name.tr} | ${u.action} | ${u.reaction} | ${u.passive} | ${u.subSpell} | ${u.cast} | ${u.attack} | ${(u.action / u.battles).toFixed(2)} | ${(tot / u.battles).toFixed(2)} | ${((tot + u.subSpell) / u.battles).toFixed(2)} |`);
   }
 }
