@@ -1,0 +1,843 @@
+{
+ "format": "rpg-battle-icerik",
+ "version": 1,
+ "id": "p0-pilot",
+ "name": {
+  "tr": "P0 pilot (kurgusal)",
+  "en": "P0 pilot (fictional)"
+ },
+ "author": "Test",
+ "yaratiklar": [
+  {
+   "id": "kul-kurdu",
+   "ad": {
+    "tr": "Kül Kurdu",
+    "en": "Ash Wolf"
+   },
+   "boyut": "M",
+   "tur": "beast",
+   "ac": "12+$pbYari",
+   "hp": {
+    "3": 15,
+    "11": 40
+   },
+   "hiz": {
+    "yurume": 40
+   },
+   "yetenekler": {
+    "str": 12,
+    "dex": 15,
+    "con": 12,
+    "int": 3,
+    "wis": 12,
+    "cha": 6
+   },
+   "saldirilar": [
+    {
+     "ad": "Isırık",
+     "tur": "yakin",
+     "bonus": "sahip",
+     "hasar": "1d6+$pb",
+     "hasarTuru": "piercing",
+     "ek": {
+      "prone": {
+       "maxSize": "M",
+       "save": {
+        "ability": "str",
+        "dc": 11
+       }
+      }
+     }
+    }
+   ],
+   "ozellikler": [
+    "surudeTaktik"
+   ],
+   "durumBagisikliklari": [
+    "Frightened"
+   ],
+   "jeton": {
+    "gorsel": "kurt",
+    "ton": 200,
+    "halka": "#7fb3ff"
+   }
+  },
+  {
+   "id": "kor-bocegi",
+   "ad": {
+    "tr": "Kor Böceği",
+    "en": "Ember Beetle"
+   },
+   "boyut": "S",
+   "ac": 11,
+   "hp": 6,
+   "yetenekler": {
+    "str": 6,
+    "dex": 12,
+    "con": 10,
+    "int": 1,
+    "wis": 8,
+    "cha": 3
+   },
+   "saldirilar": [
+    {
+     "ad": "Kıskaç",
+     "hasar": "1d4",
+     "hasarTuru": "fire"
+    }
+   ],
+   "eylemler": [
+    "kacin",
+    "yardim"
+   ]
+  }
+ ],
+ "subclasses": [
+  {
+   "id": "kehribar-nobetci",
+   "class": "fighter",
+   "name": {
+    "tr": "Kehribar Nöbetçisi",
+    "en": "Amber Sentinel"
+   },
+   "role": {
+    "tr": "Kurgusal koruyucu (test)",
+    "en": "Fictional guardian (test)"
+   },
+   "features": [
+    {
+     "id": "nobet-havuzu",
+     "level": 3,
+     "name": {
+      "tr": "Nöbet Havuzu",
+      "en": "Watch Pool"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "nobet",
+       "sayi": "$pb",
+       "yenilenme": "uzun"
+      }
+     ]
+    },
+    {
+     "id": "av-isareti",
+     "level": 3,
+     "name": {
+      "tr": "Av İşareti",
+      "en": "Quarry Mark"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "isaret",
+       "id": "av",
+       "tetik": "bonus",
+       "menzilFt": 60,
+       "sure": 10,
+       "avantaj": "isaretleyen"
+      }
+     ]
+    },
+    {
+     "id": "kalkan-sozu",
+     "level": 3,
+     "name": {
+      "tr": "Kalkan Sözü",
+      "en": "Shield Vow"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "dostaIsabet",
+       "etki": "acBonusu",
+       "miktar": 2,
+       "menzilFt": 30,
+       "kaynak": {
+        "id": "nobet",
+        "maliyet": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "tas-deri",
+     "level": 3,
+     "name": {
+      "tr": "Taş Deri",
+      "en": "Stone Skin"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "banaIsabet",
+       "etki": "hasarAzalt",
+       "miktar": "1d10+$con"
+      },
+      {
+       "tur": "direnc",
+       "turler": [
+        "necrotic"
+       ],
+       "kosul": [
+        "yarimCanAlti"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "tetik-gozu",
+     "level": 7,
+     "name": {
+      "tr": "Tetik Gözü",
+      "en": "Keen Eye"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "zarEtkisi",
+       "inisiyatifBonusu": 2
+      },
+      {
+       "tur": "zarEtkisi",
+       "kurtulmaBonusu": 1,
+       "kurtulmalar": [
+        "wis"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "dev-boyu",
+     "level": 7,
+     "name": {
+      "tr": "Dev Boyu",
+      "en": "Giant Stature"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "boyut",
+       "tetik": "bonus",
+       "boyut": "L",
+       "ekHasar": "1d4",
+       "sure": 10,
+       "kaynak": {
+        "id": "nobet",
+        "maliyet": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "omuz-omuza",
+     "level": 10,
+     "name": {
+      "tr": "Omuz Omuza",
+      "en": "Shoulder to Shoulder"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "ekSaldiri",
+       "tetik": "bonus",
+       "hedef": "dost",
+       "menzilFt": 30
+      }
+     ]
+    },
+    {
+     "id": "nobet-sozu",
+     "level": 3,
+     "name": {
+      "tr": "Nöbet Sözü",
+      "en": "Watch Oath"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "hikaye"
+    }
+   ]
+  },
+  {
+   "id": "ruzgar-kartali",
+   "class": "ranger",
+   "name": {
+    "tr": "Rüzgâr Kartalı",
+    "en": "Wind Eagle"
+   },
+   "role": {
+    "tr": "Kurgusal avcı (test)",
+    "en": "Fictional hunter (test)"
+   },
+   "features": [
+    {
+     "id": "kanat-havuzu",
+     "level": 3,
+     "name": {
+      "tr": "Kanat Havuzu",
+      "en": "Wing Pool"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "kanat",
+       "sayi": 2,
+       "yenilenme": "kisa"
+      }
+     ]
+    },
+    {
+     "id": "firtina-oku",
+     "level": 3,
+     "name": {
+      "tr": "Fırtına Oku",
+      "en": "Storm Shot"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": {
+        "3": "1d6",
+        "11": "2d6"
+       },
+       "hasarTuru": "thunder",
+       "turdaBir": true
+      },
+      {
+       "tur": "zorlaHareket",
+       "yon": "it",
+       "mesafeFt": 10,
+       "boyutSiniri": "L",
+       "turdaBir": true
+      }
+     ]
+    },
+    {
+     "id": "kanat-cirpisi",
+     "level": 3,
+     "name": {
+      "tr": "Kanat Çırpışı",
+      "en": "Wing Beat"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "ucus",
+       "tetik": "bonus",
+       "hizFt": 30,
+       "sure": 3,
+       "kaynak": {
+        "id": "kanat",
+        "maliyet": 1
+       }
+      },
+      {
+       "tur": "hiz",
+       "artiFt": 10
+      }
+     ]
+    },
+    {
+     "id": "ruzgar-perdesi",
+     "level": 7,
+     "name": {
+      "tr": "Rüzgâr Perdesi",
+      "en": "Wind Veil"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "banaIsabet",
+       "etki": "acBonusu",
+       "miktar": 3,
+       "saldiri": "menzilli"
+      },
+      {
+       "tur": "tepki",
+       "olay": "hasarAldim",
+       "etki": "karsiVurus"
+      }
+     ]
+    },
+    {
+     "id": "ruzgar-adimi",
+     "level": 7,
+     "name": {
+      "tr": "Rüzgâr Adımı",
+      "en": "Wind Step"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "isinlan",
+       "tetik": "bonus",
+       "mesafeFt": 30,
+       "kaynak": {
+        "id": "kanat",
+        "maliyet": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "yuva",
+     "level": 11,
+     "name": {
+      "tr": "Yuva",
+      "en": "Eyrie"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calismiyor"
+    }
+   ]
+  },
+  {
+   "id": "kul-cagirani",
+   "class": "druid",
+   "name": {
+    "tr": "Kül Çağıranı",
+    "en": "Ash Caller"
+   },
+   "role": {
+    "tr": "Kurgusal çağırıcı (test)",
+    "en": "Fictional summoner (test)"
+   },
+   "features": [
+    {
+     "id": "cagri-havuzu",
+     "level": 3,
+     "name": {
+      "tr": "Çağrı Havuzu",
+      "en": "Call Pool"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "cagri",
+       "sayi": "$pb",
+       "yenilenme": "uzun"
+      }
+     ]
+    },
+    {
+     "id": "kul-surusu",
+     "level": 3,
+     "name": {
+      "tr": "Kül Sürüsü",
+      "en": "Ash Pack"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "cagir",
+       "tetik": "eylem",
+       "yaratik": "kul-kurdu",
+       "sayi": 2,
+       "sure": 10,
+       "inisiyatif": "sahip",
+       "kaynak": {
+        "id": "cagri",
+        "maliyet": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "kor-cagrisi",
+     "level": 3,
+     "name": {
+      "tr": "Kor Çağrısı",
+      "en": "Ember Call"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "cagir",
+       "tetik": "bonus",
+       "yaratik": "kor-bocegi",
+       "sayi": 1,
+       "sure": 5,
+       "inisiyatif": "ayri",
+       "tekrar": "ekle"
+      }
+     ]
+    },
+    {
+     "id": "sicak-hale",
+     "level": 6,
+     "name": {
+      "tr": "Sıcak Hale",
+      "en": "Warm Halo"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "aura",
+       "yaricapFt": 10,
+       "suzgec": "dostlar",
+       "etki": "kurtulmaBonusu",
+       "miktar": 1
+      },
+      {
+       "tur": "aura",
+       "tetik": "bonus",
+       "yaricapFt": 10,
+       "suzgec": "dusmanlar",
+       "zaman": "turBasi",
+       "etki": "hasar",
+       "zar": "1d6",
+       "hasarTuru": "fire",
+       "sure": 3
+      }
+     ]
+    },
+    {
+     "id": "kul-ustasi",
+     "level": 6,
+     "name": {
+      "tr": "Kül Ustası",
+      "en": "Ash Master"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "yuzeyOlustur",
+       "tetik": "eylem",
+       "yuzey": "ice",
+       "yaricapFt": 5,
+       "menzilFt": 30
+      },
+      {
+       "tur": "buyuVer",
+       "buyular": [
+        "Misty Step"
+       ],
+       "bedava": {
+        "id": "cagri"
+       }
+      },
+      {
+       "tur": "buyuDegisimi",
+       "hasarEki": "$wis",
+       "hasarTurleri": [
+        "fire"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "kul-patlamasi",
+     "level": 10,
+     "name": {
+      "tr": "Kül Patlaması",
+      "en": "Ash Burst"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "hasar",
+       "tetik": "eylem",
+       "hedef": "alan",
+       "menzilFt": 60,
+       "yaricapFt": 10,
+       "zar": "2d6",
+       "hasarTuru": "fire",
+       "save": {
+        "yetenek": "dex",
+        "dc": "buyu",
+        "yari": true
+       }
+      }
+     ]
+    },
+    {
+     "id": "kul-korkusu",
+     "level": 10,
+     "name": {
+      "tr": "Kül Korkusu",
+      "en": "Ash Dread"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "durumUygula",
+       "tetik": "eylem",
+       "hedef": "dusman",
+       "durum": "Frightened",
+       "menzilFt": 60,
+       "sure": 2,
+       "tekrarKurtulma": true,
+       "cesaret": 10,
+       "save": {
+        "yetenek": "wis"
+       }
+      },
+      {
+       "tur": "gorunmezlik",
+       "tetik": "bonus",
+       "sure": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "safak-bekcisi",
+   "class": "cleric",
+   "name": {
+    "tr": "Şafak Bekçisi",
+    "en": "Dawn Warden"
+   },
+   "role": {
+    "tr": "Kurgusal şifacı (test)",
+    "en": "Fictional healer (test)"
+   },
+   "features": [
+    {
+     "id": "safak-havuzu",
+     "level": 3,
+     "name": {
+      "tr": "Şafak Havuzu",
+      "en": "Dawn Pool"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "safak",
+       "sayi": 3,
+       "yenilenme": "uzun"
+      },
+      {
+       "tur": "kaynak",
+       "id": "son",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      }
+     ]
+    },
+    {
+     "id": "safak-eli",
+     "level": 3,
+     "name": {
+      "tr": "Şafak Eli",
+      "en": "Dawn Hand"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "iyilestirme",
+       "tetik": "bonus",
+       "hedef": "dostVeyaKendi",
+       "miktar": "1d8+$wis",
+       "menzilFt": 30,
+       "kaynak": {
+        "id": "safak",
+        "maliyet": 1
+       },
+       "durumKaldir": [
+        "Poisoned"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "zafer-nefesi",
+     "level": 3,
+     "name": {
+      "tr": "Zafer Nefesi",
+      "en": "Victory Breath"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "gecicCan",
+       "tetik": "oldurunce",
+       "miktar": "$lvl"
+      },
+      {
+       "tur": "moralEtkisi",
+       "tetik": "oldurunce",
+       "hedef": "dostlar",
+       "yaricapFt": 30,
+       "miktar": 1
+      }
+     ]
+    },
+    {
+     "id": "son-isik",
+     "level": 6,
+     "name": {
+      "tr": "Son Işık",
+      "en": "Last Light"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "olumdenDon",
+       "hp": "yari",
+       "kaynak": {
+        "id": "son",
+        "maliyet": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "safak-bicimi",
+     "level": 10,
+     "name": {
+      "tr": "Şafak Biçimi",
+      "en": "Dawn Form"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "kismi",
+     "ilkeller": [
+      {
+       "tur": "bicim",
+       "id": "safak",
+       "tetik": "bonus",
+       "sure": 10,
+       "gecicCan": "$lvl",
+       "acBonusu": 1,
+       "direncler": [
+        "radiant"
+       ],
+       "ekHasar": "1d4",
+       "hasarTuru": "radiant",
+       "kaynak": {
+        "id": "safak",
+        "maliyet": 1
+       }
+      },
+      {
+       "tur": "direnc",
+       "turler": [
+        "necrotic"
+       ],
+       "kosul": [
+        "bicim:safak"
+       ]
+      },
+      {
+       "tur": "boyut",
+       "tetik": "bonus",
+       "boyut": "L",
+       "erisimFt": 5,
+       "sure": 10
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -26,6 +26,7 @@ import { globalRule } from './ruleControl';
 import { after69, spells69Problem, wishProblem, wishSpell } from './spells69';
 import { freeCastingEvents } from './boons';
 import { overchannelAfter, overchannelProblem, overchannelRng } from './apex';
+import { paketSpellBonus } from './paket/core';
 import { hexLabel, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
@@ -88,6 +89,8 @@ function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 
     + (school === 'Evocation' && m.kind !== 'heal' && !!actor.traits?.includes('empowered-evocation') ? Math.max(0, actor.spellMod) : 0)
     // Görev SORCERER: Elemental Affinity (Draconic): soyun hasar türündeki büyüye CHA.
     + (m.kind !== 'heal' ? affinityBonus(actor, m.damageType) : 0)
+    // Görev P0: ek paket buyuDegisimi (hasar eklentisi).
+    + (m.kind !== 'heal' && actor.paket ? paketSpellBonus(actor, m.damageType, school) : 0)
     // Görev WARLOCK: Agonizing Blast: seçilen cantrip'in hasar zarına (her ışına) büyü yeteneği.
     + (name && actor.cantripMods?.[name]?.ability && m.kind !== 'heal' ? actor.spellMod : 0);
   return formatDice(count, spec.sides, bonus);

@@ -149,6 +149,8 @@ export interface ActiveEffect {
   revealed?: boolean;
   seeInvisible?: boolean;
   attackedAdv?: boolean;
+  /** Görev P0: yalnız bu saldırganın bu yaratığa saldırısı avantajlı (ek paket `isaret`). */
+  attackedAdvBy?: string;
   /** Kuyruk 19: Divine Sense: bu türlerdeki yaratıkların yeri `ft` içinde bilinir (gizlenmiş olsa da hedef alınır). */
   senseTypes?: { types: string[]; ft: number };
   /** Görev B5: karanlık görüş (ft; Darkvision), kontrollerde avantaj (Enhance Ability), dostlara Stealth +10 yarıçapı (altıgen). */
@@ -554,6 +556,9 @@ export interface Avatar {
   tint?: TintSpec;
   /** Kuyruk 36: geçici kıyafet (mahkûm: Keşiş jetonu + turuncu hale; yalnızca görsel). */
   outfit?: 'mahkum';
+  /** Görev P0: renk tonu kaydırma (derece; CSS hue-rotate) ve halka rengi (çizim anında; ek görsel yok). */
+  hue?: number;
+  ring?: string;
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */
@@ -825,6 +830,8 @@ export interface Combatant {
   creatureType?: string;
   buffs?: Buff[];
   features?: UsableFeature[];
+  /** Görev P0: ek paket alt sınıfının ilkelleri ve yaratıkları (`src/battle/paket/`; oluşturulurken kopyalanır). */
+  paket?: import('./paket/bag').PaketBag;
   /**
    * Görev P-Monk (eski kayıtlarda yok; veriden): bonus eylemle Unarmed Strike (Martial Arts), Focus ile bonus eylemler
    * (Flurry of Blows, Patient Defense, Step of the Wind), Uncanny Metabolism, Deflect Attacks, Slow Fall, Stunning

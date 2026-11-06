@@ -1036,7 +1036,7 @@ export type FeatureEffect =
   /** Kuyruk K50 (ev kuralı): imza alt sınıf eylemleri (`src/battle/imza.ts`, `data/imza.json` `eylemler`). */
   | { kind: 'imza' }
   /** Görev P0: ek paket ilkel düğmesi (`src/battle/paket/`; veri savaşçının `paket` alanında). */
-  | { kind: 'paket' };
+  | { kind: 'paket'; target?: 'ally' | 'enemy' | 'any'; hex?: 'hex' | 'after' };
 
 export interface ResourceDef {
   name: string;

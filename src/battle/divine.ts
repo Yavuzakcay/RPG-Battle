@@ -32,6 +32,7 @@ import { apexProblem, executeApex, isApex } from './apex';
 import { celestialProblem, executeCelestial } from './celestial';
 import { executeKaradul, karadulProblem } from './karadul';
 import { executeImza, imzaProblem } from './imza';
+import { executePaket, paketProblem } from './paket';
 import { needHealMoral } from './imza54';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
 
@@ -59,6 +60,7 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   if (f.effect.kind === 'celestialHeal' || f.effect.kind === 'celestialAwakening') return celestialProblem(state, actor, f, cmd.targetId);
   if (f.effect.kind === 'karadulGaze' || f.effect.kind === 'karadulSpider') return karadulProblem(state, actor, f, cmd.targetId);
   if (f.effect.kind === 'imza') return imzaProblem(state, actor, f, cmd.targetId, cmd.to);
+  if (f.effect.kind === 'paket') return paketProblem(state, actor, f, cmd.targetId, cmd.to);
   const left = f.resource ? resourceLeft(actor, f.resource) : Infinity;
   // Görev SORCERER: Innate Sorcery kullanım bitince Sorcery Incarnate ile puanla da açılır (`innateSorceryEvents` denetler).
   if (left <= 0 && f.effect.kind !== 'innate' && f.effect.kind !== 'inspire') return `${f.name}: kullanım kalmadı.`;
@@ -118,6 +120,7 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (e.kind === 'celestialHeal' || e.kind === 'celestialAwakening') return executeCelestial(state, actor, f, cmd.targetId, rng);
   if (e.kind === 'karadulGaze' || e.kind === 'karadulSpider') return executeKaradul(state, actor, f, cmd.targetId, rng);
   if (e.kind === 'imza') return executeImza(state, actor, f, cmd.targetId, rng, cmd.to);
+  if (e.kind === 'paket') return executePaket(state, actor, f, cmd.targetId, rng, cmd.to);
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife' || e.kind === 'abjure') return executeClericFeature(state, actor, f, cmd, rng);
   if (e.kind === 'innate') return finish(state, innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds) as BattleEvent[]);
   if (e.kind === 'inspire') return finish(state, inspireEvents(state, actor, f, cmd.targetId as string));
@@ -285,7 +288,7 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   // Ray of Enfeeblement: başarısız save'de yalnızca STR tabanlı = yakın dövüş, başarılı save'de bir sonraki saldırı).
   for (const e of target.effects ?? []) if (e.attackedDis) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev B4: işaretli hedefe saldırı avantajlı (Faerie Fire).
-  for (const e of target.effects ?? []) if (e.attackedAdv) out.push({ effect: 'advantage', reason: e.name });
+  for (const e of target.effects ?? []) if (e.attackedAdv || (e.attackedAdvBy && e.attackedAdvBy === attacker.id)) out.push({ effect: 'advantage', reason: e.name });
   // Kuyruk 19: Grappler feat'i (Attack Advantage): yakaladığı yaratığa saldırı avantajlı.
   if (attacker.traits?.includes('grappler') && target.grapple?.by === attacker.id && globalRule(state, 'featuresK19')) out.push({ effect: 'advantage', reason: 'Grappler' });
   for (const e of attacker.effects ?? []) if (e.attackDis && (!e.attackDis.melee || opts.melee)) out.push({ effect: 'disadvantage', reason: e.name });

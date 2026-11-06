@@ -35,6 +35,7 @@ import { turnKey } from './economy';
 import { celestialStrikeOf } from './celestial';
 import { gazeBreakEvents, karadulHit, karadulOn, kissReady, snareReady } from './karadul';
 import { imzaHit } from './imza';
+import { hitHookResults } from './hitHooks';
 import { edictEvents, sealAutoHit, sealBonus } from './imzaK54c';
 import { brutalAfterEvents, brutalExtra, brutalOptions, brutalReady, type BrutalBlow } from './brutal';
 import { canSee, isUnderwater } from './maprules';
@@ -284,6 +285,10 @@ export function weaponAttackEvents(
   // Kuyruk K50 (ev kuralı): Hüküm, İnfaz, Yıpranmışlığın Gücü (imza alt sınıf saldırı kancası).
   const sig = result.hit && !option.spell && actor.imza ? imzaHit(state, actor, target, bonus.extras, rawDamage, rng) : null;
   if (sig) bonus = { ...bonus, extras: [...bonus.extras, ...sig.extras] };
+  // Görev P0: kayıtlı isabet kancaları (ek paket ilkelleri: ek hasar; zorla hareket, durum, işaret saldırıdan sonra).
+  const hooked = result.hit && actor.paket ? hitHookResults(state, actor, target, { spell: !!option.spell, melee: !option.ranged && !option.spell, ranged: !!option.ranged && !option.spell,
+    critical: result.critical, advantage: mode === 'advantage', weaponType: dmgType ?? '' }, rng) : null;
+  if (hooked) bonus = { ...bonus, extras: [...bonus.extras, ...hooked.extras] };
   // Kuyruk K54c: Yazgı Mührü: mühürlüye isabet eden dost mühürleyenin yeterliliği kadar ek hasar.
   const sealPlus = result.hit ? sealBonus(state, actor, target) : 0;
   if (sealPlus > 0) bonus = { ...bonus, extras: [...bonus.extras, { label: 'Yazgı Mührü', rolls: [], raw: sealPlus, applied: adjustDamage(sealPlus, dmgType, tprof).amount, type: dmgType ?? '', note: null }] };
@@ -352,6 +357,7 @@ export function weaponAttackEvents(
   // Kuyruk K48: Karadul vuruş sonrası (zehir, Stunned, Son Öpücük kullanımı) ve büyüleyenin tarafı saldırınca bakışın bitmesi.
   if (widow && hit) before.push(...widow.after);
   if (sig && hit) before.push(...sig.after);
+  if (hooked && hit) for (const f of hooked.after) before.push(...f(applyEvents(state, before)));
   if (karadulOn(state)) { const s0 = applyEvents(state, before); const t0 = s0.combatants[target.id]; if (t0) before.push(...gazeBreakEvents(s0, actor, t0)); }
   // K13: biçim saldırısının süreli etkisi ve rider durumları (Prone, yakalama, zehir…), canavar saldırısındaki gibi isabette.
   if (hit && option.beast) {

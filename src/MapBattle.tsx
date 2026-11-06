@@ -5,7 +5,12 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
-import { imzaHex, imzaTargeted } from './battle/imza';
+import { imzaHex as imzaHex0, imzaTargeted as imzaTargeted0 } from './battle/imza';
+import type { UsableFeature } from './battle/types';
+
+/** Görev P0: hedef/altıgen isteyen özellik (imza ya da ek paket düğmesi). */
+const featTargeted = (f: UsableFeature): boolean => imzaTargeted0(f.key) || (f.effect.kind === 'paket' && !!f.effect.target);
+const featHex = (f: UsableFeature | undefined): 'hex' | 'after' | null => (!f ? null : imzaHex0(f.key) ?? (f.effect.kind === 'paket' ? f.effect.hex ?? null : null));
 import { needSensed } from './battle/imza54';
 import { changeFloorProblem, floorLinkOf } from './battle/floors';
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
@@ -410,7 +415,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const featureCommand = (me: Combatant, c: Combatant): Command => {
     const f = (me.features ?? []).find((x) => x.key === featureKey);
     // Görev CLERIC: Divine Spark hedef seçer (dosta iyileştirme, düşmana hasar; tür motorda hedefe göre).
-    if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash' || f?.effect.kind === 'celestialHeal' || f?.effect.kind === 'karadulGaze' || (f && imzaTargeted(f.key))) return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
+    if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash' || f?.effect.kind === 'celestialHeal' || f?.effect.kind === 'karadulGaze' || (f && featTargeted(f))) return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
     const pool = f?.resource ? resourceLeft(me, f.resource) : 0;
     const missing = Math.max(0, c.maxHp - c.hp);
     const cure = f?.effect.kind === 'healPool' && missing === 0 && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
@@ -420,11 +425,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // hedefe tıklanınca altıgen seçimine geçer.
   const featureProbe = (me: Combatant, c: Combatant): Command => {
     const cmd = featureCommand(me, c);
-    return featureKey && imzaHex(featureKey) === 'after' && me.pos && cmd.type === 'use_feature' ? { ...cmd, to: me.pos } : cmd;
+    return featureKey && featHex((me.features ?? []).find((x) => x.key === featureKey)) === 'after' && me.pos && cmd.type === 'use_feature' ? { ...cmd, to: me.pos } : cmd;
   };
   const featureGo = (me: Combatant, c: Combatant) => {
     const cmd = featureCommand(me, c);
-    if (featureKey && imzaHex(featureKey) === 'after' && cmd.type === 'use_feature') { setPickHexCmd({ make: (h) => ({ ...cmd, to: h }) }); setMode('pickHex'); return; }
+    if (featureKey && featHex((me.features ?? []).find((x) => x.key === featureKey)) === 'after' && cmd.type === 'use_feature') { setPickHexCmd({ make: (h) => ({ ...cmd, to: h }) }); setMode('pickHex'); return; }
     run(cmd);
   };
   const [aimHex, setAimHex] = useState<Offset | null>(null);
@@ -1248,15 +1253,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Kuyruk 19 (11–20): Nature Magician: Wild Shape kullanımları → tek slot (kullanım başına 2 seviye).
     ...(actor.traits?.includes('nature-magician') && globalRule(state, 'featuresK19') ? [1, 2, 3, 4].map((n) => ({ key: `magician-${n}`, label: N.natureMagician(n, Math.min(9, 2 * n)),
       reason: why({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) })) : []),
-    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash' || f.effect.kind === 'celestialHeal' || f.effect.kind === 'karadulGaze' || imzaTargeted(f.key)
+    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash' || f.effect.kind === 'celestialHeal' || f.effect.kind === 'karadulGaze' || featTargeted(f)
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
         // Kuyruk K50: hedefli imza eylemi hedef seçilene dek yalnız kaynak denetlenir.
-        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? (imzaTargeted(f.key) ? undefined : why({ type: 'use_feature', actorId, feature: f.key })) ?? undefined,
+        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? (featTargeted(f) ? undefined : why({ type: 'use_feature', actorId, feature: f.key })) ?? undefined,
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
       : { key: f.key, label: N.featureName[f.key] ?? f.name,
-        reason: imzaHex(f.key) === 'hex' ? (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined)
+        reason: featHex(f) === 'hex' ? (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined)
           : featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
-        act: () => (f.effect.kind === 'sanctuary' || imzaHex(f.key) === 'hex'
+        act: () => (f.effect.kind === 'sanctuary' || featHex(f) === 'hex'
           // Kuyruk 19 (11–20): Nature's Sanctuary küpünün merkezi (varken taşıma) altıgenle seçilir.
           ? (reset(), setPickHexCmd({ make: (h) => ({ type: 'use_feature', actorId, feature: f.key, to: h }) }), setMode('pickHex'), setMenuOpen(false))
           : f.effect.kind === 'teleport' || f.effect.kind === 'landsAid' || f.effect.kind === 'blinkStep'
