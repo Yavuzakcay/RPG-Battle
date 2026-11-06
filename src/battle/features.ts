@@ -205,6 +205,12 @@ export function weaponAttackEvents(
       const r = weaponAttackEvents(other, other.combatants[actor.id] as Combatant, next, base, rng, opportunity, true, opts);
       return r.ok ? { ok: true, events: [...tr.events, ...r.events] } : r;
     }
+    // Kuyruk P10 (sürüm 39): yer değiştirmeyen hedef alınma tepkisinin olayları (ek paket `avantajSifirla`) saldırıdan önce uygulanır.
+    if (!other && tr.events.length && ruleVersion(state) >= 39) {
+      const s2 = applyEvents(state, tr.events);
+      const r = weaponAttackEvents(s2, s2.combatants[actor.id] as Combatant, s2.combatants[target.id] as Combatant, base, rng, opportunity, true, opts);
+      return r.ok ? { ok: true, events: [...tr.events, ...r.events] } : r;
+    }
   }
   const env = getEnvironment(state.environmentId);
   const allyAlive = Object.values(state.combatants).some((c) => c.id !== actor.id && c.side === actor.side && c.hp > 0);

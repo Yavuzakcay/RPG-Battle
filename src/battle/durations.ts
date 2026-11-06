@@ -136,7 +136,7 @@ export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; pac
  * Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı; Danger Sense gibi avantajlı save'ler (Incapacitated
  * değilken); Rage sürerken STR save'leri avantajlı. Eski çağrılar yalnızca durum listesi verebilir.
  */
-export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string; paket?: { ozellikler: Array<{ ilkeller: Array<Record<string, unknown>> }> } }): RollMode {
+export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string; paket?: { ozellikler: Array<{ ilkeller: Array<Record<string, unknown>> }> }; effects?: Array<{ pkSaveAdvFor?: string }> }): RollMode {
   const s: SaveSubject = Array.isArray(who) ? { conditions: who } : who;
   // Kuyruk 19 (11–20): Holy Nimbus: Fiend/Undead etkilerine save avantajı (kaynağı bilinen save'lerde).
   const vs = source?.creatureType?.toLowerCase();
@@ -150,7 +150,9 @@ export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: A
     || !!s.effects?.some((e) => e.saveAdv?.includes(ability))
     // Kuyruk 19 (SRD canavar yetenekleri): Bloodied Frenzy (Bloodied'da save avantajı), Aura of Authority.
     || (!!s.effects?.some((e) => e.bloodiedAdv?.save) && s.hp !== undefined && s.hp <= (s.maxHp ?? 0) / 2)
-    || !!s.authorityAdv;
+    || !!s.authorityAdv
+    // Kuyruk P10: ek paket `isaret.kurtulmaAvantaji` (kaynak işaretliyse, işaretleyenin kurtulması avantajlı).
+    || (!!(s as { id?: string }).id && !!source?.effects?.some((e) => e.pkSaveAdvFor === (s as { id?: string }).id));
   // Görev B1: süren etkinin save dezavantajı (Reduce, Ray of Enfeeblement: STR).
   const dis = !!s.auraSaveDis || !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage'))
     // Görev P6: ek paket `buyuDegisimi.kurtulmaDezavantaji` (kaynağın büyüleri ve alan etkileri; koşulsuz pasif).

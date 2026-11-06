@@ -47,3 +47,13 @@ export const registerAfterOpportunity = (h: OpportunityHook): void => { OPP.push
 export function afterOpportunityEvents(state: BattleState, attackerId: string, targetId: string, events: BattleEvent[], rng: Rng): BattleEvent[] {
   return OPP.flatMap((h) => h(state, attackerId, targetId, events, rng));
 }
+
+/**
+ * Kuyruk P10: yürüyüşte her adımdan sonra (yeni altıgende) kancalar: ek paket tepkisi `dusmanYaklasti` (hızı 0 yaparsa
+ * `movement.ts` yürüyüşü keser). Kayıt yoksa olay yok.
+ */
+type StepHook = (state: BattleState, moverId: string, from: { col: number; row: number }, rng: Rng) => BattleEvent[];
+const STEP: StepHook[] = [];
+export const registerAfterStep = (h: StepHook): void => { STEP.push(h); };
+export const afterStepEvents = (state: BattleState, moverId: string, from: { col: number; row: number }, rng: Rng): BattleEvent[] =>
+  STEP.flatMap((h) => h(state, moverId, from, rng));

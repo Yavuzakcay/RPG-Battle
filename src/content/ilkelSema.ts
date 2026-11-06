@@ -92,6 +92,7 @@ export const ILKELLER: Record<string, IlkelSpec> = {
       zar: F('Ek hasar (`"1d8"`, `"2d6+$wis"`, seviye tablosu `{ "3": "1d6", "11": "2d6" }`); kritikte zarlar iki kat.', { zorunlu: true }),
       hasarTuru: { tip: 'hasarTuru', varsayilan: 'silah', not: 'Hasar türü; "silah" saldırının türü.' },
       saldiri: E(['silah', 'yakin', 'menzilli', 'buyu', 'hepsi'], 'Hangi saldırılar: silah (yakın+menzilli silah), yakin, menzilli, buyu (büyü saldırısı), hepsi.'),
+      yanHedef: B('P10: ek hasar vurulan yerine ona bitişik başka bir düşmana (yoksa vurulana).'),
     },
     sistem: 'Saldırı çözümü (`features.ts` `weaponAttackEvents`) → isabet kanca kaydı (`hitHooks.ts`); `ExtraDamage` (direnç/bağışıklık hedefe göre).',
     ornek: { tur: 'ekHasar', zar: { 3: '1d6', 11: '2d6' }, hasarTuru: 'radiant', saldiri: 'silah', turdaBir: true },
@@ -129,10 +130,13 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     not: 'Tepkiyle çalışan koruma ya da karşılık.', tetikler: ['tepki'],
     alanlar: {
       olay: E(['banaIsabet', 'dostaIsabet', 'hasarAldim', 'zarTesti', /** P7 */ 'dostaVuruldu',
-        /** P9 */ 'firsatSaldirisi', 'dusmanBuyuAtiyor', 'isaretliVurdu', 'komsuHedefVuruldu', 'kurtulmaAttirildi'],
-      'Tetikleyen olay: sana isabet, menzildeki dosta isabet, yakın dövüşte hasar aldın, menzildeki bir yaratığın d20 testi (yalnız zorlaSonuc), menzildeki dosta saldırı isabet edip hasar verdi (P7; saldırgana karşılık); P9: firsatSaldirisi (senin fırsat saldırın isabet etti; tepki zaten harcandı, ek tepki harcanmaz), dusmanBuyuAtiyor (menzildeki düşman büyü yapmaya başlıyor; Counterspell anı), isaretliVurdu (senin `isaret`inle işaretli düşman sana ya da dostuna isabet etti), komsuHedefVuruldu (sana bitişik düşmana bir dostun isabet etti), kurtulmaAttirildi (senin etkinle bir düşman kurtulma attı; `sonuc` ile süzülür).'),
+        /** P9 */ 'firsatSaldirisi', 'dusmanBuyuAtiyor', 'isaretliVurdu', 'komsuHedefVuruldu', 'kurtulmaAttirildi',
+        /** P10 */ 'hedefAlindi', 'dusmanYaklasti', 'buyuBasardi'],
+      'Tetikleyen olay: sana isabet, menzildeki dosta isabet, yakın dövüşte hasar aldın, menzildeki bir yaratığın d20 testi (yalnız zorlaSonuc), menzildeki dosta saldırı isabet edip hasar verdi (P7; saldırgana karşılık); P9: firsatSaldirisi (senin fırsat saldırın isabet etti; tepki zaten harcandı, ek tepki harcanmaz), dusmanBuyuAtiyor (menzildeki düşman büyü yapmaya başlıyor; Counterspell anı), isaretliVurdu (senin `isaret`inle işaretli düşman sana ya da dostuna isabet etti), komsuHedefVuruldu (sana bitişik düşmana bir dostun isabet etti), kurtulmaAttirildi (senin etkinle bir düşman kurtulma attı; `sonuc` ile süzülür); P10: hedefAlindi (menzildeki dosta ya da sana saldırı zarı atılmak üzere), dusmanYaklasti (düşman yürüyüşte sana bitişik oldu), buyuBasardi (büyün isabet etti ya da hedef kurtulmayı geçemedi).'),
       etki: E(['acBonusu', 'hasarAzalt', 'yariya', 'direnc', 'karsiVurus', 'iskalat', 'yonlendir', 'kritikIptal', 'zorlaSonuc', /** P7 */ 'saldiriYap', 'yansit',
-        /** P9 */ 'hizSifir', 'hareketEt', 'buyuIptal', 'hasarEkle'], 'Tepkinin etkisi: AC, hasar azaltma, yarıya, direnç (yarıya), karşı vuruş, ıskalatma, başka hedefe saptırma, kritiği normal vuruşa çevirme, d20 testini başarı/başarısızlık sayma; P7: saldiriYap (saldırgana silah saldırısı, erişimdeyse), yansit (alınan hasarın `oran` katı saldırgana; kurtulma verilirse yarıya); P9: hizSifir (olaydaki düşmanın hızı turunun sonuna dek 0; kurtulma verilirse başarısızlıkta), hareketEt (yarı hızın kadar fırsat saldırısı tetiklemeden uzaklaş; banaIsabet), buyuIptal (büyü boşa gider; kurtulma verilirse başarısızlıkta; eylem harcanır, yuva harcanmaz), hasarEkle (olaydaki düşmana `miktar` hasar, tür `hasarTuru`).', { zorunlu: true, varsayilan: undefined }),
+        /** P9 */ 'hizSifir', 'hareketEt', 'buyuIptal', 'hasarEkle', /** P10 */ 'avantajSifirla'], 'Tepkinin etkisi: AC, hasar azaltma, yarıya, direnç (yarıya), karşı vuruş, ıskalatma, başka hedefe saptırma, kritiği normal vuruşa çevirme, d20 testini başarı/başarısızlık sayma; P7: saldiriYap (saldırgana silah saldırısı, erişimdeyse), yansit (alınan hasarın `oran` katı saldırgana; kurtulma verilirse yarıya); P9: hizSifir (olaydaki düşmanın hızı turunun sonuna dek 0; kurtulma verilirse başarısızlıkta), hareketEt (yarı hızın kadar fırsat saldırısı tetiklemeden uzaklaş; banaIsabet), buyuIptal (büyü boşa gider; kurtulma verilirse başarısızlıkta; eylem harcanır, yuva harcanmaz), hasarEkle (olaydaki düşmana `miktar` hasar, tür `hasarTuru`); P10: avantajSifirla (hedefAlindi: bu saldırıda avantaj ve dezavantaj sıfırlanır, zar normal).', { zorunlu: true, varsayilan: undefined }),
+      yon: E(['uzak', 'yakin'], 'P10 hareketEt: olaydaki yaratıktan uzaklaş ya da ona yaklaş (bitişiğe).'),
+      geriTepme: F('P10 buyuIptal: büyü boşa gidince büyücüye bu hasar (tür `hasarTuru`).'),
       hasarTuru: { tip: 'hasarTuru', varsayilan: 'force', not: 'P9 hasarEkle: hasar türü.' },
       iptal: B('P9 dusmanBuyuAtiyor + saldiriYap: saldırı isabet ederse büyü boşa gider.'),
       oran: { tip: 'sayi', varsayilan: 1, not: 'yansit: hasarın oranı (0,5 = yarısı; P7).' },
@@ -145,7 +149,7 @@ export const ILKELLER: Record<string, IlkelSpec> = {
       kim: E(['dost', 'kendi', 'dusman'], 'zorlaSonuc: kimin testi (dost kendini de kapsar).'),
       testler: { tip: 'enumListe', degerler: ['saldiri', 'kurtulma', 'kontrol'], varsayilan: ['saldiri', 'kurtulma', 'kontrol'], not: 'zorlaSonuc: hangi d20 testleri.' },
     },
-    sistem: 'P9: firsatSaldirisi/kurtulmaAttirildi komut sonu kancası (fırsat saldırısı `attack_resolved.opportunity`, `save_resolved.actorId`), isaretliVurdu/komsuHedefVuruldu saldırı sonrası kancası (`registerAfterAttack`), dusmanBuyuAtiyor büyü kancası (`registerCastHook`, Counterspell ile aynı an); hizSifir süren etki `speedZero` + `untilOwnTurnEnd` (yürüyüş fırsat saldırısından sonra durur, sürüm 38), hareketEt ışınlanma girişiyle yarı hız (`teleportEvent`; yol bulmaz, kısmi). Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate; dostaIsabet etkileri ve iskalat/yonlendir/kritikIptal isabet tepki kancasında (`registerAllyHit`, hasar değiştirebilir); zorlaSonuc ikinci şans girişinde (`effectDice.ts` `secondChances`, `ExtraDie.reroll` success/forceFail). Karar `askReaction` (oyuncuya sorulur).',
+    sistem: 'P10: hedefAlindi hedef alınma kancasında (`registerTargeted`, zardan önce; avantajSifirla = hedefe bu komutluk `attackedAdv` + `attackedDis`), dusmanYaklasti yürüyüş adımı kancasında (`registerAfterStep`), buyuBasardi komut sonunda. P9: firsatSaldirisi/kurtulmaAttirildi komut sonu kancası (fırsat saldırısı `attack_resolved.opportunity`, `save_resolved.actorId`), isaretliVurdu/komsuHedefVuruldu saldırı sonrası kancası (`registerAfterAttack`), dusmanBuyuAtiyor büyü kancası (`registerCastHook`, Counterspell ile aynı an); hizSifir süren etki `speedZero` + `untilOwnTurnEnd` (yürüyüş fırsat saldırısından sonra durur, sürüm 38), hareketEt ışınlanma girişiyle yarı hız (`teleportEvent`; yol bulmaz, kısmi). Tepki sistemi (`reactions.ts`): banaIsabet → `ReactionSpec` (parry/reduce/halve/resist), hasarAldim+karsiVurus → retaliate; dostaIsabet etkileri ve iskalat/yonlendir/kritikIptal isabet tepki kancasında (`registerAllyHit`, hasar değiştirebilir); zorlaSonuc ikinci şans girişinde (`effectDice.ts` `secondChances`, `ExtraDie.reroll` success/forceFail). Karar `askReaction` (oyuncuya sorulur).',
     ornek: { tur: 'tepki', olay: 'dostaIsabet', etki: 'acBonusu', miktar: 2, menzilFt: 30, kaynak: { id: 'kalkan-sozu', maliyet: 1 } },
     kismiTetik: [],
   },
@@ -185,7 +189,8 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     hedefler: ['dusman', 'vurulan'],
     alanlar: { sure: { ...SURE, varsayilan: 10 }, tek: B('Aynı anda tek işaret (yenisi eskisini kaldırır).', true),
       avantaj: E(['yok', 'isaretleyen', 'herkes'], 'İşaretliye saldırı avantajı: yok, yalnız işaretleyen, herkes.'), menzilFt: MENZIL,
-      aktar: B('P9: işaretli 0 cana düşünce işaret `menzilFt` içindeki en yakın düşmana geçer (lanet aktarımı; kalan süreyle).') },
+      aktar: B('P9: işaretli 0 cana düşünce işaret `menzilFt` içindeki en yakın düşmana geçer (lanet aktarımı; kalan süreyle).'),
+      kurtulmaAvantaji: B('P10: işaretlinin etkilerine karşı kurtulmaların avantajlı (kaynağı bilinen kurtulmalarda).', false, { kismi: 'Kaynağı taşımayan kurtulmalarda (bazı canavar yetenekleri, harita kuralları) uygulanmaz.' }) },
     sistem: 'Hedefte süren etki (`attackedAdvBy` işaretleyene, `attackedAdv` herkese; `wardSources`).',
     ornek: { tur: 'isaret', id: 'av', tetik: 'bonus', menzilFt: 60, sure: 10, avantaj: 'isaretleyen' },
   },
@@ -331,8 +336,9 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     ornek: { tur: 'engeldenGec', tetik: 'bonus', sure: 1, kaynak: { id: 'golge-adimi', maliyet: 1 } },
   },
   hiz: {
-    not: 'Hız artışı (pasif ya da süreli).', tetikler: ['pasif', 'bonus', 'eylem', 'savasBasi'],
-    alanlar: { artiFt: F('Hıza eklenen (ft).', { zorunlu: true }), sure: SURE },
+    not: 'Hız artışı (pasif ya da süreli); P10: dosta ya da düşmana (eksi değerle yavaşlatma).', tetikler: ['pasif', 'bonus', 'eylem', 'savasBasi'],
+    hedefler: ['kendi', 'dost', 'dusman'],
+    alanlar: { artiFt: F('Hıza eklenen (ft; eksi olabilir).', { zorunlu: true }), sure: SURE, menzilFt: MENZIL, save: SAVE },
     sistem: 'Süren etki `speedFt`.',
     ornek: { tur: 'hiz', artiFt: 10, kosul: ['zirhsiz'] },
   },
@@ -345,7 +351,7 @@ export const ILKELLER: Record<string, IlkelSpec> = {
   },
   zarDegistir: {
     not: 'İsabette hasar zarlarını değiştirir: en yükseğe çek, düşükleri yeniden at, ikiye katla ya da büyüt.', tetikler: ['isabet'],
-    alanlar: { mod: E(['maks', 'yenidenAt', 'carpan', 'zarBuyut'], 'maks: zarlar en yüksek; yenidenAt: `esik` ve altı bir kez yeniden; carpan: zarlar bir kez daha eklenir; zarBuyut: her zar bir boy büyük (d6→d8).', { zorunlu: true, varsayilan: undefined }),
+    alanlar: { mod: E(['maks', 'yenidenAt', 'carpan', 'zarBuyut', /** P10 */ 'ikiAtSec'], 'maks: zarlar en yüksek; yenidenAt: `esik` ve altı bir kez yeniden; carpan: zarlar bir kez daha eklenir; zarBuyut: her zar bir boy büyük (d6→d8); P10 ikiAtSec: bütün hasar zarları bir kez daha atılır, büyük toplam seçilir.', { zorunlu: true, varsayilan: undefined }),
       esik: N('yenidenAt: bu değer ve altındaki zarlar (varsayılan 2).', { varsayilan: 2 }),
       saldiri: E(['silah', 'yakin', 'menzilli', 'buyu', 'hepsi'], 'Hangi saldırılar.'), hasarTurleri: { tip: 'hasarTurleri', not: 'Yalnız bu hasar türlerinde.' } },
     sistem: 'İsabet kancası (`hitHooks.ts`; bağlam artık saldırının zarlarını taşır): fark ek hasar olarak (`ExtraDamage`, direnç hedefe göre). Kurtulmalı büyü hasarı kapsam dışı (kısmi).',
@@ -373,7 +379,8 @@ export const ILKELLER: Record<string, IlkelSpec> = {
   },
   ortakCan: {
     not: 'Dostları ortak can havuzuna bağlar (hasar havuzdan düşer).', tetikler: ['eylem', 'bonus'], hedefler: ['dostlar'],
-    alanlar: { yaricapFt: { ...YARICAP, varsayilan: 30 }, enCok: N('En çok üye (sahip dahil).', { varsayilan: 4 }) },
+    alanlar: { yaricapFt: { ...YARICAP, varsayilan: 30 }, enCok: N('En çok üye (sahip dahil).', { varsayilan: 4 }),
+      direncler: { tip: 'hasarTurleri', not: 'P10: havuz üyelerine bu türlere direnç (havuz sürdükçe; havuza düşen hasar yarıya).' } },
     sistem: 'Ortak can havuzu (`hpPool.ts`, `hp_pool_created`; A1).',
     ornek: { tur: 'ortakCan', tetik: 'eylem', yaricapFt: 30, enCok: 3, kaynak: { id: 'cagri', maliyet: 1 } },
   },
@@ -427,7 +434,8 @@ export const ILKELLER: Record<string, IlkelSpec> = {
   kontrolEt: {
     not: 'Düşmanı yönetir: kurtulmayı geçemezse süre boyunca senin tarafında savaşır.', tetikler: ['eylem', 'bonus', 'isabet', 'oldurunce'], hedefler: ['dusman', 'vurulan'],
     alanlar: { save: { ...SAVE, zorunlu: true }, sure: { ...SURE, varsayilan: 10 }, menzilFt: MENZIL, turler: { tip: 'metin', not: 'Yalnız bu yaratık türleri (virgüllü: "undead,beast").' },
-      tekrarKurtulma: B('Her tur sonunda yeniden kurtulma (başarıda biter).') },
+      tekrarKurtulma: B('Her tur sonunda yeniden kurtulma (başarıda biter).'),
+      kurtulmasiz: B('P10: hedef Incapacitated (ve onu içeren durumlar) ise kurtulma atılmaz.') },
     sistem: 'Taraf değiştirme (`allegiance.ts`: süren etki `dominate`; Game Master anahtarı `allegianceSwap`). Sürüm 38+.',
     ornek: { tur: 'kontrolEt', tetik: 'eylem', hedef: 'dusman', save: { yetenek: 'wis', dc: 'buyu' }, sure: 10, turler: 'undead', kaynak: { id: 'cagri', maliyet: 1 } },
   },
@@ -589,19 +597,24 @@ export function ilkelErrors(list: unknown, path: string, ctx: { kaynaklar: Set<s
     // P7: dostaVuruldu yalnız saldiriYap/yansit; yansit dostaVuruldu/banaIsabet/hasarAldim; saldiriYap dostaVuruldu/banaIsabet.
     if (raw.tur === 'tepki' && raw.olay === 'dostaVuruldu' && raw.etki !== 'saldiriYap' && raw.etki !== 'yansit') bad('etki');
     if (raw.tur === 'tepki' && raw.etki === 'yansit' && !['dostaVuruldu', 'banaIsabet', 'hasarAldim'].includes(raw.olay as string)) bad('olay');
-    if (raw.tur === 'tepki' && raw.etki === 'saldiriYap' && !['dostaVuruldu', 'banaIsabet', 'isaretliVurdu', 'komsuHedefVuruldu', 'dusmanBuyuAtiyor'].includes(raw.olay as string)) bad('olay');
+    if (raw.tur === 'tepki' && raw.etki === 'saldiriYap' && !['dostaVuruldu', 'banaIsabet', 'isaretliVurdu', 'komsuHedefVuruldu', 'dusmanBuyuAtiyor', 'kurtulmaAttirildi'].includes(raw.olay as string)) bad('olay');
     // P9: yeni olay/etki birliktelikleri.
     if (raw.tur === 'tepki') {
-      const P9: Record<string, string[]> = { firsatSaldirisi: ['hizSifir', 'hasarEkle'], isaretliVurdu: ['saldiriYap', 'hasarEkle', 'hizSifir'],
-        komsuHedefVuruldu: ['saldiriYap', 'hasarEkle'], dusmanBuyuAtiyor: ['buyuIptal', 'saldiriYap'], kurtulmaAttirildi: ['hasarEkle', 'hizSifir'] };
+      const P9: Record<string, string[]> = { firsatSaldirisi: ['hizSifir', 'hasarEkle', 'hareketEt'], isaretliVurdu: ['saldiriYap', 'hasarEkle', 'hizSifir'],
+        komsuHedefVuruldu: ['saldiriYap', 'hasarEkle'], dusmanBuyuAtiyor: ['buyuIptal', 'saldiriYap'], kurtulmaAttirildi: ['hasarEkle', 'hizSifir', 'saldiriYap'],
+        /** P10 */ hedefAlindi: ['avantajSifirla'], dusmanYaklasti: ['hareketEt', 'hizSifir'], buyuBasardi: ['hasarEkle'] };
       const allowed = P9[raw.olay as string];
-      const newEtki = ['hizSifir', 'buyuIptal', 'hasarEkle'].includes(raw.etki as string);
+      const newEtki = ['hizSifir', 'buyuIptal', 'hasarEkle', 'avantajSifirla'].includes(raw.etki as string);
       if (allowed && !allowed.includes(raw.etki as string)) bad('etki');
       else if (!allowed && newEtki) bad('olay');
-      if (raw.etki === 'hareketEt' && raw.olay !== 'banaIsabet') bad('olay');
+      if (raw.etki === 'hareketEt' && !['banaIsabet', 'dusmanYaklasti', 'firsatSaldirisi'].includes(raw.olay as string)) bad('olay');
+      if (raw.geriTepme !== undefined && raw.etki !== 'buyuIptal') bad('geriTepme');
+      if (raw.yon !== undefined && raw.etki !== 'hareketEt') bad('yon');
       if (raw.etki === 'hasarEkle' && raw.miktar === undefined) out.push({ path: `${p}.miktar`, kod: 'ilkelEksik', alan: 'miktar' });
       if (raw.iptal !== undefined && raw.olay !== 'dusmanBuyuAtiyor') bad('iptal');
     }
+    // P10: hız başkasına yalnız düğme/otomatik tetikle (pasif kendine).
+    if (raw.tur === 'hiz' && raw.hedef !== undefined && raw.hedef !== 'kendi' && (raw.tetik === undefined || raw.tetik === 'pasif')) bad('tetik');
     if (raw.tur === 'koruma' && !raw.kritikBagisikligi && !raw.konsantrasyonAvantaji && !raw.durumAvantaji && !raw.buyulereAvantaj) out.push({ path: `${p}.kritikBagisikligi`, kod: 'ilkelEksik', alan: 'kritikBagisikligi' });
     if (raw.tur === 'algi' && raw.karanlikGorusFt === undefined && raw.gercekGorusFt === undefined && !raw.gorunmezGor) out.push({ path: `${p}.karanlikGorusFt`, kod: 'ilkelEksik', alan: 'karanlikGorusFt' });
     if (raw.tur === 'ekSaldiri' && (raw.tetik === 'pasif') !== (raw.saldiriSayisi !== undefined)) bad(raw.tetik === 'pasif' ? 'saldiriSayisi' : 'tetik');

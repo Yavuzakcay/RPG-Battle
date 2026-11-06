@@ -25,7 +25,7 @@ import { distance, isInside, type Offset } from '../../rules/hex';
 import { spells } from '../../data';
 import type { Ability } from '../../rules/abilities';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from '../types';
-import { alive, amount, canPay, costOf, dcOf, flatNum, formul, kosulOk, markId, p9On, usedKey, usedThisTurn, val, within, type Ilkel, type PaketOzellik } from './core';
+import { alive, amount, canPay, costOf, dcOf, flatNum, formul, kosulOk, markId, p10On, p9On, usedKey, usedThisTurn, val, within, type Ilkel, type PaketOzellik } from './core';
 
 interface Ref { feat: PaketOzellik; p: Ilkel; i: number }
 const refs = (c: Combatant | undefined, pick: (p: Ilkel) => boolean): Ref[] =>
@@ -69,11 +69,39 @@ function onFoe(state: BattleState, g: Combatant, r: Ref, t: Combatant, rng: Rng)
     out.push({ type: 'effect_added', targetId: t.id, effect: { id: `pk-hiz0:${g.id}:${t.id}`, name, sourceId: g.id, speedZero: true, untilOwnTurnEnd: true, until: state.round + 1, icon: '⛓' } as ActiveEffect });
     return out;
   }
+  // P10 (sürüm 39+): fırsat saldırısından / düşman yaklaşınca hareket (uzak ya da yakın; ışınlanma girişi).
+  if (r.p.etki === 'hareketEt' && p10On(state)) {
+    const me = state.combatants[g.id] as Combatant;
+    const to = moveHex(state, me, t, val<string>(r.p, 'yon') === 'yakin' ? 'yakin' : 'uzak');
+    return to ? [teleportEvent(me, to, name)] : [];
+  }
   return [];
 }
 
 /** Yarı hızın kadar saldırgandan uzak, boş, görülen altıgen (ışınlanma girişi; yol bulmaz). */
-function retreatHex(state: BattleState, g: Combatant, from: Combatant): Offset | null {
+function retreatHex(state: BattleState, g: Combatant, from: Combatant): Offset | null { return moveHex(state, g, from, 'uzak'); }
+
+/** P10: yarı hız içinde `from`'dan en uzak (uzak) ya da ona bitişik en yakın (yakin) boş, görülen altıgen. */
+export function moveHex(state: BattleState, g: Combatant, from: Combatant, yon: 'uzak' | 'yakin'): Offset | null {
+  if (yon === 'yakin') return approachHex(state, g, from);
+  return fleeHex(state, g, from);
+}
+function approachHex(state: BattleState, g: Combatant, from: Combatant): Offset | null {
+  if (!state.map || !g.pos || !from.pos) return null;
+  const r = Math.floor(speedHexes(g) / 2);
+  if (r < 1 || distance(g.pos, from.pos) <= 1) return null;
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  let best: { h: Offset; d: number } | null = null;
+  for (let row = g.pos.row - r - 1; row <= g.pos.row + r + 1; row++) for (let col = g.pos.col - r - 1; col <= g.pos.col + r + 1; col++) {
+    const h = { col, row };
+    if (!isInside(h, size) || distance(g.pos, h) > r || teleportProblem(state, g, h, { rangeFt: r * 5, sight: true })) continue;
+    const d = distance(from.pos, h);
+    if (d < 1) continue;
+    if (!best || d < best.d || (d === best.d && distance(g.pos, h) < distance(g.pos, best.h))) best = { h, d };
+  }
+  return best && best.d < distance(from.pos, g.pos) ? best.h : null;
+}
+function fleeHex(state: BattleState, g: Combatant, from: Combatant): Offset | null {
   if (!state.map || !g.pos || !from.pos) return null;
   const r = Math.floor(speedHexes(g) / 2);
   if (r < 1) return null;
@@ -139,6 +167,8 @@ registerAfterOpportunity((state, attackerId, targetId, events, rng) => {
   const out: BattleEvent[] = [];
   let cur = state;
   for (const r of refs(g, tepkiOf('firsatSaldirisi'))) {
+    // P10: hareketEt yürüyüş bitince (komut sonunda; `p10.ts`).
+    if (r.p.etki === 'hareketEt') continue;
     if (!ready(cur, cur.combatants[g.id] as Combatant, r, t)) continue;
     const evs = [...costEvents(cur, cur.combatants[g.id] as Combatant, r), ...onFoe(cur, g, r, cur.combatants[t.id] as Combatant, rng)];
     out.push(...evs);
@@ -164,6 +194,8 @@ registerCastHook((state, caster, spellName, _level, rng) => {
       const events: BattleEvent[] = [reactionUsed(g, { ...opt, ...(k ? { resource: k.id } : {}) }, 'cast', caster.id), ...costEvents(state, g, { ...r, p: { ...r.p, kaynak: undefined } })];
       if (r.p.etki === 'buyuIptal') {
         if (r.p.save) { const sv = saveVs(g, nameOf(r), r.p, caster, rng); events.push(sv.ev); if (sv.success) return { countered: false, events }; }
+        // P10 (sürüm 39+): geri tepme hasarı büyücüye.
+        if (r.p.geriTepme !== undefined && p10On(state)) events.push(hitEffect(caster, 'paket', nameOf(r), { damage: formul(r.p.geriTepme, g), damageType: val<string>(r.p, 'hasarTuru') }, rng));
         return { countered: true, events };
       }
       const hits = (api as NonNullable<typeof api>).strike(applyEvents(state, events), g.id, caster.id, rng);
@@ -208,12 +240,16 @@ registerCommandEnd((before, next, events0, cmd, rng) => {
     if (!g?.paket || !alive(t) || t.side === g.side || !canReact(g)) continue;
     for (const r of refs(g, tepkiOf('kurtulmaAttirildi'))) {
       if ((val<string>(r.p, 'sonuc') === 'basari') !== e.success || !ready(cur, g, r, t)) continue;
+      if (r.p.etki === 'saldiriYap' && !(p10On(cur) && strikeApi()?.can(cur, g.id, t.id))) continue;
       const opt = { id: usedKey(r.feat.key, r.i), name: nameOf(r) };
       if (!ask(rng, g, t, nameOf(r), opt)) continue;
       const k = costOf(g, r.p);
       const react = reactionUsed(g, { ...opt, ...(k ? { resource: k.id } : {}) }, 'ally', t.id);
       push([react, ...costEvents(cur, g, { ...r, p: { ...r.p, kaynak: undefined } })]);
-      push(onFoe(cur, cur.combatants[g.id] as Combatant, r, cur.combatants[t.id] as Combatant, rng));
+      // P10 (sürüm 39+): kurtulma sonrası saldırı.
+      const api = strikeApi();
+      if (r.p.etki === 'saldiriYap') { if (p10On(cur) && api && api.can(cur, g.id, t.id)) push(api.strike(cur, g.id, t.id, rng)); }
+      else push(onFoe(cur, cur.combatants[g.id] as Combatant, r, cur.combatants[t.id] as Combatant, rng));
       break;
     }
   }

@@ -1,0 +1,373 @@
+{
+ "format": "rpg-battle-icerik",
+ "version": 1,
+ "id": "p10-genisleme",
+ "name": {
+  "tr": "P10 genişleme (kurgusal)",
+  "en": "P10 extension (fictional)"
+ },
+ "author": "Test",
+ "subclasses": [
+  {
+   "id": "denge-muhafizi",
+   "class": "fighter",
+   "name": {
+    "tr": "Denge Muhafızı",
+    "en": "Balance Warden"
+   },
+   "role": {
+    "tr": "Kurgusal muhafız (test)",
+    "en": "Fictional warden (test)"
+   },
+   "features": [
+    {
+     "id": "denge-havuz",
+     "level": 3,
+     "name": {
+      "tr": "Denge Havuz",
+      "en": "denge-havuz"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "denge",
+       "sayi": 3,
+       "yenilenme": "uzun"
+      }
+     ]
+    },
+    {
+     "id": "denge-sozu",
+     "level": 3,
+     "name": {
+      "tr": "Denge Sozu",
+      "en": "denge-sozu"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "hedefAlindi",
+       "etki": "avantajSifirla",
+       "menzilFt": 30
+      }
+     ]
+    },
+    {
+     "id": "siyrilan-adim",
+     "level": 3,
+     "name": {
+      "tr": "Siyrilan Adim",
+      "en": "siyrilan-adim"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "kismi",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "dusmanYaklasti",
+       "etki": "hareketEt",
+       "yon": "uzak"
+      }
+     ]
+    },
+    {
+     "id": "av-takibi",
+     "level": 3,
+     "name": {
+      "tr": "Av Takibi",
+      "en": "av-takibi"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "kismi",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "firsatSaldirisi",
+       "etki": "hareketEt",
+       "yon": "yakin"
+      }
+     ]
+    },
+    {
+     "id": "bastirma",
+     "level": 3,
+     "name": {
+      "tr": "Bastirma",
+      "en": "bastirma"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "durumUygula",
+       "tetik": "eylem",
+       "hedef": "dusman",
+       "durum": "Frightened",
+       "save": {
+        "yetenek": "wis",
+        "dc": 14
+       },
+       "sure": 1,
+       "menzilFt": 30
+      }
+     ]
+    },
+    {
+     "id": "karsi-darbe",
+     "level": 3,
+     "name": {
+      "tr": "Karsi Darbe",
+      "en": "karsi-darbe"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "kurtulmaAttirildi",
+       "etki": "saldiriYap",
+       "sonuc": "basari"
+      }
+     ]
+    },
+    {
+     "id": "yan-vurus",
+     "level": 3,
+     "name": {
+      "tr": "Yan Vurus",
+      "en": "yan-vurus"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d6",
+       "yanHedef": true,
+       "turdaBir": true
+      }
+     ]
+    },
+    {
+     "id": "ikili-zar",
+     "level": 3,
+     "name": {
+      "tr": "Ikili Zar",
+      "en": "ikili-zar"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "zarDegistir",
+       "mod": "ikiAtSec"
+      }
+     ]
+    },
+    {
+     "id": "av-isareti",
+     "level": 3,
+     "name": {
+      "tr": "Av Isareti",
+      "en": "av-isareti"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "kismi",
+     "ilkeller": [
+      {
+       "tur": "isaret",
+       "id": "av",
+       "tetik": "bonus",
+       "menzilFt": 60,
+       "kurtulmaAvantaji": true
+      }
+     ]
+    },
+    {
+     "id": "zincir",
+     "level": 3,
+     "name": {
+      "tr": "Zincir",
+      "en": "zincir"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kontrolEt",
+       "tetik": "eylem",
+       "hedef": "dusman",
+       "save": {
+        "yetenek": "wis",
+        "dc": 15
+       },
+       "kurtulmasiz": true,
+       "menzilFt": 60
+      }
+     ]
+    },
+    {
+     "id": "agirlik",
+     "level": 3,
+     "name": {
+      "tr": "Agirlik",
+      "en": "agirlik"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "hiz",
+       "tetik": "bonus",
+       "hedef": "dusman",
+       "artiFt": -10,
+       "menzilFt": 30,
+       "sure": 1
+      }
+     ]
+    },
+    {
+     "id": "birlik",
+     "level": 3,
+     "name": {
+      "tr": "Birlik",
+      "en": "birlik"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "ortakCan",
+       "tetik": "eylem",
+       "yaricapFt": 30,
+       "enCok": 2,
+       "direncler": [
+        "slashing"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "karsi-buyu",
+   "class": "wizard",
+   "name": {
+    "tr": "Karşı Büyü Okulu",
+    "en": "Counterspell School"
+   },
+   "role": {
+    "tr": "Kurgusal büyücü (test)",
+    "en": "Fictional wizard (test)"
+   },
+   "features": [
+    {
+     "id": "karsi-havuz",
+     "level": 3,
+     "name": {
+      "tr": "Karsi Havuz",
+      "en": "karsi-havuz"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "karsi",
+       "sayi": 2,
+       "yenilenme": "uzun"
+      }
+     ]
+    },
+    {
+     "id": "geri-tepen",
+     "level": 3,
+     "name": {
+      "tr": "Geri Tepen",
+      "en": "geri-tepen"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "dusmanBuyuAtiyor",
+       "etki": "buyuIptal",
+       "geriTepme": "2d6",
+       "hasarTuru": "force",
+       "menzilFt": 30
+      }
+     ]
+    },
+    {
+     "id": "basarili-buyu",
+     "level": 3,
+     "name": {
+      "tr": "Basarili Buyu",
+      "en": "basarili-buyu"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "buyuBasardi",
+       "etki": "hasarEkle",
+       "miktar": "1d6",
+       "hasarTuru": "force"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

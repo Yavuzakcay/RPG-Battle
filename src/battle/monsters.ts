@@ -61,6 +61,12 @@ export function monsterAttackEvents(
       const r = monsterAttackEvents(other, other.combatants[actor.id] as Combatant, next, index, rng, opportunity);
       return r.ok ? { ok: true, events: [...tr.events, ...r.events] } : r;
     }
+    // Kuyruk P10 (sürüm 39): yer değiştirmeyen hedef alınma tepkisinin olayları (ek paket `avantajSifirla`) saldırıdan önce uygulanır.
+    if (!other && tr.events.length && ruleVersion(state) >= 39) {
+      const s2 = applyEvents(state, tr.events);
+      const r = monsterAttackEvents(s2, s2.combatants[actor.id] as Combatant, s2.combatants[target.id] as Combatant, index, rng, opportunity);
+      return r.ok ? { ok: true, events: [...tr.events, ...r.events] } : r;
+    }
   }
 
   const env = getEnvironment(state.environmentId);

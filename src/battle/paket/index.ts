@@ -31,6 +31,7 @@ import { JETON_ARKETIP, JETON_YEDEK } from '../../content/ilkelSema';
 import { resolveSave } from '../../rules/attack';
 import { askReaction } from '../../rules/reactionChoice';
 import { adjustDamage } from '../../rules/damage';
+import { isIncapacitated } from '../../rules/conditions';
 import { abilityModifier, type Ability } from '../../rules/abilities';
 import { rollDice, rollDie, rollTag, type Rng } from '../../rules/dice';
 import { distance, isInside, type Offset } from '../../rules/hex';
@@ -38,9 +39,10 @@ import { getMonster, type Monster, type MonsterAttack } from '../../data';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command, ExtraDamage, SummonInfo, UsableFeature } from '../types';
 import {
   alive, amount, canPay, costOf, dcOf, dugmeNeeds, dugmeOf, effId, flatNum, formId, formul, kosulOk, markId, passiveBody, resKey, tetikOf,
-  auraSpec, p9On, usedKey, usedThisTurn, val, within, zarBody, type Dugme, type Ilkel, type PaketOzellik,
+  auraSpec, p10On, p9On, usedKey, usedThisTurn, val, within, zarBody, type Dugme, type Ilkel, type PaketOzellik,
 } from './core';
 import './p9';
+import './p10';
 
 export { paketHex, paketTargeted, withPaket } from './core';
 
@@ -188,7 +190,9 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
           const mid = markId(a.id, (p.id as string | undefined) ?? `${key}-${c.i}`);
           if (val<boolean>(p, 'tek')) for (const o of Object.values(state.combatants)) if (o.id !== t.id && o.effects?.some((e) => e.id === mid)) out.push({ type: 'effect_ended', targetId: o.id, effectId: mid, name, reason: 'used' });
           const av = val<string>(p, 'avantaj');
-          out.push(effect(t, { icon: '◎', ...(av === 'herkes' ? { attackedAdv: true } : av === 'isaretleyen' ? { attackedAdvBy: a.id } : {}) }, mid));
+          out.push(effect(t, { icon: '◎', ...(av === 'herkes' ? { attackedAdv: true } : av === 'isaretleyen' ? { attackedAdvBy: a.id } : {}),
+            // P10 (sürüm 39+): işaretlinin etkilerine karşı işaretleyenin kurtulmaları avantajlı.
+            ...(p.kurtulmaAvantaji === true && p10On(state) ? { pkSaveAdvFor: a.id } : {}) }, mid));
         }
         if (p.tur === 'zarEtkisi') out.push(effect(t, zarBody(p, a)));
         // P7: meydan okuma (kurtulmalıysa başarısızlıkta).
@@ -215,7 +219,22 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       }
       return out;
     }
-    case 'boyut': case 'ucus': case 'hiz': case 'aura': case 'engeldenGec': case 'koruma': case 'algi': case 'saldirmadanSave': {
+    // P10 (sürüm 39+): hız dosta ya da düşmana (eksi değerle yavaşlatma; düşmanda kurtulmalı).
+    case 'hiz': {
+      if ((val<string>(p, 'hedef') ?? 'kendi') !== 'kendi') {
+        if (!p10On(state)) return [];
+        const ts = targetsOf(state, c);
+        if (typeof ts === 'string') return ts;
+        for (const t of ts) {
+          if (p.save && t.side !== a.side) { const sv = saveEvent(state, c, t, null, '', false); out.push(sv.ev); if (sv.success) continue; }
+          out.push(effect(t, { speedFt: flatNum(p.artiFt, a), icon: flatNum(p.artiFt, a) < 0 ? '🐢' : '💨' }));
+        }
+        return out;
+      }
+      const body = passiveBody(p, a);
+      return body ? [effect(a, body as Partial<ActiveEffect>)] : [];
+    }
+    case 'boyut': case 'ucus': case 'aura': case 'engeldenGec': case 'koruma': case 'algi': case 'saldirmadanSave': {
       const body = p.tur === 'aura' ? { auras: [auraSpec(p, a, c.i)] } : passiveBody(p, a);
       return body ? [effect(a, body as Partial<ActiveEffect>)] : [];
     }
@@ -304,9 +323,13 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       const turler = typeof p.turler === 'string' ? p.turler.split(',').map((x) => x.trim().toLowerCase()).filter(Boolean) : [];
       for (const t of ts) {
         if (turler.length && !turler.includes((t.creatureType ?? '').toLowerCase())) { if (c.manual) return 'Bu yaratık türü yönetilemez.'; continue; }
-        const sv = saveEvent(state, c, t, null, '', false);
-        out.push(sv.ev);
-        if (sv.success) continue;
+        // P10 (sürüm 39+): Incapacitated hedefte kurtulma yok.
+        const helpless = p.kurtulmasiz === true && p10On(state) && isIncapacitated(t.conditions);
+        if (!helpless) {
+          const sv = saveEvent(state, c, t, null, '', false);
+          out.push(sv.ev);
+          if (sv.success) continue;
+        }
         const save = p.save as Record<string, unknown>;
         out.push(effect(t, { dominate: true, icon: '♛', ...(p.tekrarKurtulma ? { repeatSave: { ability: save.yetenek as Ability, dc: dcOf(save, a) } } : {}) }));
       }
@@ -325,7 +348,10 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       let n = Object.keys(state.hpPools ?? {}).length + 1;
       while (state.hpPools?.[`havuz-${n}`]) n++;
       const max = list.reduce((x, m) => x + m.maxHp, 0);
-      return [{ type: 'hp_pool_created', poolId: `havuz-${n}`, memberIds: list.map((x) => x.id), hp: Math.min(max, list.reduce((x, m) => x + m.hp, 0)), max, label: name }];
+      const pool: BattleEvent = { type: 'hp_pool_created', poolId: `havuz-${n}`, memberIds: list.map((x) => x.id), hp: Math.min(max, list.reduce((x, m) => x + m.hp, 0)), max, label: name };
+      // P10 (sürüm 39+): havuz üyelerine direnç (havuza düşen hasar yarıya).
+      const res = Array.isArray(p.direncler) && p10On(state) ? list.map((m) => effect(m, { resist: p.direncler as string[], icon: '🛡' }, `pk-havuz-direnc:havuz-${n}:${m.id}`)) : [];
+      return [pool, ...res];
     }
     // P7: büyü yuvası geri kazanma (sınır içindeki en yüksek seviye).
     case 'yuvaGeriKazan': {
@@ -580,8 +606,15 @@ registerHitHook((state, actor, target, ctx, rng) => {
     if (!okKind || !kosulOk(state, actor, p, target, ctx.advantage) || !canPay(actor, p) || (p.turdaBir && usedThisTurn(state, actor, feat.key, i))) return;
     const roll = rollDice(formul(p.zar, actor), rollTag(rng, { kind: 'damage', by: actor.id }), ctx.critical);
     const type = val<string>(p, 'hasarTuru') === 'silah' ? ctx.weaponType : val<string>(p, 'hasarTuru');
-    const adj = adjustDamage(roll.total, type, profileOf(target));
-    extras.push({ label: (p.ad as string | undefined) ?? feat.ad, rolls: roll.rolls, raw: roll.total, applied: adj.amount, type, note: adj.note });
+    // P10 (sürüm 39+): yan hedef: vurulana bitişik başka bir düşmana (yoksa vurulana).
+    const side = p.yanHedef === true && p10On(state) && target.pos ? Object.values(state.combatants)
+      .filter((o) => alive(o) && o.id !== target.id && o.side === target.side && !o.civilian && o.pos && gap(state, o, target) <= 1)
+      .sort((x, y) => x.hp - y.hp || x.id.localeCompare(y.id))[0] : undefined;
+    if (side) marks.push(hitEffect(side, 'paket', (p.ad as string | undefined) ?? feat.ad, { damage: String(roll.total), damageType: type || 'force' }, rng));
+    else {
+      const adj = adjustDamage(roll.total, type, profileOf(target));
+      extras.push({ label: (p.ad as string | undefined) ?? feat.ad, rolls: roll.rolls, raw: roll.total, applied: adj.amount, type, note: adj.note });
+    }
     const k = costOf(actor, p);
     if (k) marks.push({ type: 'feature_used', actorId: actor.id, feature: k.id, remaining: (actor.resources[k.id] ?? 0) - k.cost });
     if (p.turdaBir) marks.push({ type: 'trait_turn', actorId: actor.id, trait: usedKey(feat.key, i), key: turnKey(state) });
@@ -618,6 +651,11 @@ function diceChange(state: BattleState, actor: Combatant, target: Combatant, fea
   else if (mode === 'yenidenAt') {
     const esik = flatNum(val(p, 'esik'), actor);
     for (const r of rolls) if (r <= esik) { const v = rollDie(sides, tag); extraRolls.push(v); plus += v - r; }
+  } else if (mode === 'ikiAtSec' && p10On(state)) {
+    // P10: bütün hasar zarları bir kez daha; büyük toplam seçilir.
+    let sum = 0;
+    for (let k = 0; k < rolls.length; k++) { const v = rollDie(sides, tag); extraRolls.push(v); sum += v; }
+    plus = Math.max(0, sum - rolls.reduce((n, r) => n + r, 0));
   } else if (mode === 'zarBuyut') {
     const up = ({ 4: 6, 6: 8, 8: 10, 10: 12, 12: 12 } as Record<number, number>)[sides] ?? sides;
     for (const r of rolls) { const v = rollDie(up, tag); extraRolls.push(v); plus += v - r; }

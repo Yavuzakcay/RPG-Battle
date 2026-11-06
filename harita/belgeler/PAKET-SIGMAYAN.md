@@ -1,23 +1,53 @@
-# Ek paket: savaş modeline sığmayan özellikler (Kuyruk P9)
+# Ek paket: savaş modeline sığmayan özellikler (Kuyruk P9, P10)
 
-Kuyruk P9'un hedef listesindeki 51 özellikten (P7 sonrası 48 "çalışmıyor" + 3 "planlı") P9 ilkelleriyle de yazılamayanlar.
-**Paket metni görülmeden**, yalnızca özellik adı, sınıf/alt sınıf ve seviyeyle yazıldı; yama yazan taraf (paket metnini bilen)
-kesin sınıfı belirler. Ek paket metni bu belgeye girmez. Elle tutulur.
+P9'dan sonra "çalışmıyor" kalan özelliklerin P10 (kural sürümü 39) sonrası durumu. **Paket metni görülmeden**, yalnızca özellik
+adı, sınıf/alt sınıf ve seviyeyle yazıldı; yama yazan taraf (paket metnini bilen) kesin sınıfı belirler. Ek paket metni bu
+belgeye girmez. Elle tutulur.
+
+## P10 ile yazılabilir hâle gelenler (yamada denenecek)
+
+| Özellik | Sınıf / alt sınıf / sv | Karşılayan ilkel (P10) | Kalan yaklaşıklık |
+|---|---|---|---|
+| Dengeyi Geri Yükle | sorcerer / otonom-evren / 1 | `tepki` olay `hedefAlindi` + etki `avantajSifirla` | Yalnız saldırı zarı (kurtulma/kontrol zarında yok) |
+| Denge Arayışı | barbarian / kaos-yolu / 10 | `zarYenile` (P9) ya da `zarDegistir.mod: ikiAtSec` | Metne göre seçilmeli |
+| Kontrol Sağlama | barbarian / kaos-yolu / 14 | `zarYenile.mod: ikiAtSec` / `zarDegistir.mod: ikiAtSec` | Metne göre seçilmeli |
+| Gelişmiş Zarlar | fighter / ninja / 10 | `zarDegistir.mod: zarBuyut` (P7) | Yalnız isabet hasar zarı (paketin kendi zar havuzu yok) |
+| Üstün Taktik | fighter / ninja / 18 | `zarDegistir.mod: ikiAtSec` | Aynı |
+| Misillemeli Sapma | bard / harp / 14 | `tepki` `dusmanBuyuAtiyor` + `buyuIptal` + `geriTepme` | — |
+| Büyü Hırsızı | rogue / illuzyonist / 17 | `buyuIptal` (engelleme kısmı) | Engellenen büyüyü sonra kendin atma yok (aşağıda) |
+| Şekil Değiştirici | wizard / simya / 10 | `buyuVer` + `bedava` (Polymorph) | "Yalnız kendine" kısıtı denetlenmez |
+| Çevik Sıyrılma | rogue / kasif / 3 | `tepki` `dusmanYaklasti` + `hareketEt` (`yon: uzak`) | `hareketEt` yol bulmaz (ışınlanma girişi) |
+| Kaçınılmaz Avcı | paladin / intikam-yemini / 7 | `tepki` `firsatSaldirisi` + `hizSifir` ve ikinci ilkel `hareketEt` (`yon: yakin`) | Aynı |
+| Boyut Karşıtı Vuruş | paladin / muhafiz / 15 | `tepki` `buyuBasardi` + `hasarEkle` (ya da `dostaVuruldu` + `saldiriYap`, `kosul: hedefBuyuk`) | Metne göre seçilmeli |
+| Karşı Darbe | ranger / ibliskiran / 15 | `tepki` `kurtulmaAttirildi` + `saldiriYap` | — |
+| Doğaüstü Savunma | ranger / ibliskiran / 7 | `isaret.kurtulmaAvantaji` | Bonus yerine avantaj; kaynağı taşıyan kurtulmalarda |
+| Zihinsel İtaat | warlock / muhterem / 14 | `kontrolEt` + `kurtulmasiz` (+ `sure: kalici`) | — |
+| Ölümün Dostu | rogue / kamufle / 17 | `ekHasar.yanHedef` | Sınıfın Sneak Attack'ı değil, paketin ek zarı yan hedefe |
+| Barış Azizi | cleric / baris / 17 | `ortakCan.direncler` | Havuz yerine üyelere direnç (aynı sonuç: havuza düşen hasar yarıya) |
+| Gelişmiş Dev | fighter / pehlivan / 10 | `boyut.ekHasar` seviye tablosu (`{ "10": "1d8" }`) | — |
+| Yoğunluk Ayarı | wizard / uzay-bukme / 2 | `hiz` (`hedef: dost/dusman`, eksi `artiFt`) | Ağırlık/zıplama etkisi yok |
+| Flurry Şifası | monk / azizlik / 11 | `iyilestirme` (`tetik: isabet`, `kosul: [flurryVurusu]`) | Flurry kendisi Focus harcar ("Ki harcamadan" kısmı yok) |
+| Tektonik Yoğunluk | sorcerer / titan-kani / 1 | `canArtisi` + `koruma.durumAvantaji: [Prone]` | İtmeye direnç ve yakın büyüye CON eki yok (aşağıda) |
+| Koruyucu Ruhlar | druid / cagri / 10 | `cagirGuclendir.turBasiCan` | — |
+
+## Hâlâ sığmayanlar
 
 | Özellik | Sınıf / alt sınıf / sv | Neden sığmıyor | CC önerisi |
 |---|---|---|---|
-| Dengeyi Geri Yükle | sorcerer / otonom-evren / 1 | Saldırı zarı atıldıktan sonra avantaj/dezavantajı kaldırmak için atış kipini geri alan bir giriş yok (zar defteri tek atış) | `tepki` etkisi `avantajSifirla`: hedef alınma kancasında (`registerTargeted`, zardan önce) kip `normal`e zorlanır |
-| Denge Arayışı | barbarian / kaos-yolu / 10 | Aynı (avantaj/dezavantajı sıfırlama) | Aynı `avantajSifirla` |
-| Kutsanmış Şifa | sorcerer / ilahi-kan / 6 | İyileştirme zarları ayrı yoldan (`healed`); `zarDegistir` yalnız isabet hasarında | `zarDegistir.kapsam: iyilestirme` (büyü iyileştirme ifadesine kanca) |
-| İkiz Büyüleme | wizard / aldatma / 10 | Tek hedefli büyüyü ikinci hedefe uygulamak büyü yapımını iki kez koşturmayı ister (slot, konsantrasyon, tepkiler) | `buyuHedefEkle`: yapım öncesi hedef listesine ekleme (`cast_spell.targetIds`, Twinned Spell yolu) |
-| Büyü Mühürleme | wizard / zamanalti / 10 | Büyüyü saklayıp sonra patlatmak için "bekleyen büyü" durumu yok | `buyuDepola`: süren etki olarak saklı büyü + `spell_followup` ile ateşleme |
-| Güç Deposu | bard / harp / 6 | Aynı (depolama) | Aynı `buyuDepola` |
-| Okyanusun Kavrayışı | warlock / kraken / 10 | Ad tek başına mekaniği belirlemiyor; P7'de durum/yakalama ilkelleri vardı ve yine "çalışmıyor" kaldı | Paket metniyle yeniden değerlendir |
-| Vahşi Öfke | ranger / coban / 11 | Yoldaşa komutla çoklu saldırı: çağrının eylem sayısını sahibinin komutu artırmıyor | `cagirGuclendir.komutSaldiri` (komut edilen turda Multiattack +1) |
-| Element Rünü | barbarian / heybet / 6 | Silaha fırlatma ve geri dönme özelliği eklemek silah modelini (Thrown, geri dönüş) değiştirir | Eşya/silah düzeyinde `thrownReturn` alanı |
-| Büyü Silahı Bağı | fighter / hokkabaz / 3 | Silahı mühürleme ve ele ışınlama için eşya bırakma/çağırma modeli yok | Eşya modeli (el boşluğu) gelince |
-| Hücum Marşı ve Harp Eğitimi | bard / harp / 3 | Zırh/kalkan yetkinliği oluşturucu verisi; dostun İlham zarını hasara/AC'ye ekleme Bardic Inspiration yolunda yok | Oluşturucu yetkinlik alanı + ilham zarı hedef türü |
-| Ölümün Dostu | rogue / kamufle / 17 | Sinsi Saldırı'yı yan hedefe aktarmak Sneak Attack çözümünü ikinci hedefe bölmeyi ister | `ekHasar.hedef: yanHedef` (isabet sonrası ikinci hedef seçimi) |
-| Analitik Dövüş | rogue / dedektif / 3 | Karşılaştırmalı zar yarışıyla Sinsi Saldırı koşulu açma yok | `kosul: zarYarisi` (bonus eylemle karşılıklı kontrol) |
-| Barış Azizi | cleric / baris / 17 | Ortak can havuzu hasarı üye başına direnç uygulamıyor (havuz tek sayı) | `ortakCan.direncler` (havuza düşen hasar türüne göre yarıya) |
-| Büyü Direnci Aurası | paladin / antik / 7 | Hasarın kaynağı (büyü mü) hasar uygulama noktasında taşınmıyor | `direnc.kaynak: buyu` + büyü hasarı olaylarına kaynak işareti |
+| Kusursuz İlham | bard / hatip / 6 | Bardic Inspiration zarının harcanması sınıf kaynağı yolunda (`bardicInspiration`); başarısızlıkta geri verme kancası yok | İlham zarı sonucu olayına (`bonusDice`) kaynak iadesi kancası |
+| Usta Gösterisi | bard / akrobat / 14 | Kaynak yokken ücretsiz d6 ilham: ilham zarı türü ve kaynaksız kullanım sınıf yolunda | Aynı kanca + `zarBoyu` alanı |
+| Kutsanmış Şifa | sorcerer / ilahi-kan / 6 | İyileştirme olayı (`healed`) zarları taşımıyor; büyü iyileştirmesi `spells.ts` içinde | `healed.rolls` + `zarDegistir.kapsam: iyilestirme` |
+| İkiz Büyüleme | wizard / aldatma / 10 | Tek hedefli büyüyü ikinci hedefe uygulamak yapımı ikinci kez çalıştırır (eylem, yuva, Counterspell, konsantrasyon) | Büyü yapımına `targetIds` (Twinned Spell yolu) ve paket izni |
+| Büyü Mühürleme | wizard / zamanalti / 10 | "Bekleyen büyü" durumu (sakla, sonra ateşle) komut modelinde yok | Süren etki `storedSpell` + `spell_followup` ile ateşleme |
+| Güç Deposu | bard / harp / 6 | Aynı (depolanan güç sonra hasara) | Aynı + depo sayacı |
+| Kitabın Ruhu | wizard / hattat / 6 | Konsantrasyonsuz büyüde, konsantrasyona bağlı etkiler reducer'da düşer (`pruneEffects`) | Etkiye `concentration` yerine `until` yazan yapım seçeneği |
+| Okyanusun Kavrayışı | warlock / kraken / 10 | Ad tek başına mekaniği belirlemiyor | Paket metniyle yeniden değerlendirilmeli |
+| Sınırlı Dilek | warlock / cin / 14 | Wish benzeri büyü kopyalama yalnız `spells69` Wish'inde; paket tetiği yok | `buyuVer` + `kopya: { enCokSeviye }` |
+| Büyü Hırsızı (çalma kısmı) | rogue / illuzyonist / 17 | Savaş sırasında yeni büyü verme (hazır büyüler savaş kuruluşunda) | Süren etki `grantSpell` + slotsuz kullanım |
+| Vahşi Öfke | ranger / coban / 11 | Yönetilen/çağrılan yaratığa komutla ek saldırı: çağrının saldırı sayısı sahibin komutuyla değişmiyor | `cagirGuclendir.komutSaldiri` (komut turunda Multiattack +1) |
+| Analitik Dövüş | rogue / dedektif / 3 | Karşılaştırmalı zar yarışı (contest) ilkel düzeyinde yok | `kosul: zarYarisi` + yarışı atan bonus eylem |
+| Büyü Direnci Aurası | paladin / antik / 7 | Hasarın büyüden geldiği hasar uygulama noktasında taşınmıyor (`adjustDamage` profil yalnız tür) | Büyü hasarı olaylarına kaynak bayrağı + `direnc.kaynak: buyu` |
+| Element Rünü | barbarian / heybet / 6 | Silaha fırlatma ve ele dönme özelliği eklemek silah modelini değiştirir | Silahta `thrownReturn` (eşya düzeyi) |
+| Büyü Silahı Bağı | fighter / hokkabaz / 3 | Silahı ele ışınlama için eşya bırakma/çağırma (el boşluğu) modeli yok | Eşya modeli gelince |
+| Hücum Marşı ve Harp Eğitimi | bard / harp / 3 | Zırh/kalkan yetkinliği oluşturucu verisi; dostun ilham zarını hasara/AC'ye ekleme ilham yolunda yok | Oluşturucuda paket yetkinliği + ilham zarı hedef türü |
+| Tektonik Yoğunluk (kalan) | sorcerer / titan-kani / 1 | İtmeye karşı avantaj (zorla hareket kurtulmasız) ve yakın büyüye CON eki | `forcedMove` direnci + `buyuDegisimi.yetenekEki` |

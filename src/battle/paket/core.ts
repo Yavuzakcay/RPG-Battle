@@ -205,6 +205,8 @@ export function passiveBody(p: Ilkel, c: Combatant, state?: BattleState): Partia
 /** Kuyruk P9: yeni ilkellerin kural sürümü kapısı. */
 export const P9_VERSION = 38;
 export const p9On = (state: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(state) >= P9_VERSION;
+/** Kuyruk P10: ilkel genişletme 4 kapısı (kural sürümü 39). */
+export const p10On = (state: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(state) >= 39;
 /** Kuyruk P9: koşulsuz pasif `zarEtkisi.inisiyatifAvantaji` (savaş başında, paket henüz eşitlenmeden). */
 export const paketInitAdv = (c: Combatant): boolean => !!c.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'zarEtkisi' && p.inisiyatifAvantaji === true && tetikOf(p) === 'pasif' && !p.kosul));
 

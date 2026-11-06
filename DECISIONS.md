@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk P10: ek paket ilkel genişletme 4 (kural sürümü 39)
+
+- **Ortam:** `icerik/` yok; **yama yazılmadı**. Şema, motor, testler (`src/battle/paket/p10.test.ts`, 18), kurgusal fikstür `tests/fixtures/paket-p10.json` (2 alt sınıf, 15 özellik; `check:icerik` 0 hata, 3 kısmi uyarı), `PAKET-ILKELLER.md` (otomatik), `PAKET-SIGMAYAN.md` (yeniden yazıldı).
+- **Yeni (yeni ilkel yok, 45 kaldı):** tepki olayları `hedefAlindi`, `dusmanYaklasti`, `buyuBasardi` (3); etki `avantajSifirla` (1); alanlar `tepki.yon`, `tepki.geriTepme`, `zarDegistir.mod: ikiAtSec`, `isaret.kurtulmaAvantaji`, `kontrolEt.kurtulmasiz`, `ekHasar.yanHedef`, `ortakCan.direncler`, `hiz.hedef` (+ `menzilFt`, `save`) (8); birliktelikler `kurtulmaAttirildi + saldiriYap`, `firsatSaldirisi + hareketEt`, `dusmanYaklasti + hareketEt/hizSifir`. UI özeti: tepkide etki adı parantezde (`builder.paketEtki`, TR/EN).
+- **Birleştirmeler:** "2 zar at, seç" ve "zar büyüklüğü" `zarDegistir.mod` altında (`ikiAtSec`, P7 `zarBuyut`); `avantajSifirla` hedefe bu komutluk `attackedAdv` + `attackedDis` (SRD'de avantaj ve dezavantaj birbirini götürür; ayrı zar kipi alanı yerine); `isaret.kurtulmaBonusu` önerisi `kurtulmaAvantaji` oldu (kurtulma kipi kaynak alır, bonus zar yolu kaynak almıyor); "fırsat saldırısı isabetinden sonra hareket" ayrı olay yerine `firsatSaldirisi + hareketEt` (yürüyüş bitince komut sonunda; `yon: yakin`).
+- **Sürüm 39 genel davranışları:** (1) hedef alınma tepkisinin yer değiştirmeyen olayları artık saldırıdan önce uygulanır (eskiden yalnız saldırıyı başka dosta yönelten olaylar uygulanıyor, ötekiler düşüyordu; şu an yalnız ek paket `avantajSifirla` üretir). (2) yürüyüşte her adımdan sonra adım kancası (`registerAfterStep`); hızı 0 olan yürüyüş durur. Sürüm ≤ 38 aynen.
+- **Kısmi (kismi uyarısı):** `hareketEt` yol bulmaz; `isaret.kurtulmaAvantaji` kaynağı taşımayan kurtulmalarda yok; `avantajSifirla` yalnız saldırı zarlarında.
+- **Yapılmayanlar (gerekçe PAKET-SIGMAYAN.md'de özellik adıyla):** `buyuHedefEkle`, `buyuDepola`/`buyuMuhurle`, `buyuKonum`, `buyuCal`, `buyuVer` konsantrasyonsuz, `direnc.kaynak: buyu`, `kontrolEt.komutSaldirisi`, `zarYarisi`, `thrownReturn`, silah mühürleme, ilham zarının dosta hasar/AC eki, iyileştirme zarı yeniden atma, ilham iadesi. Ortak neden: büyü yapımının ikinci kez çalışması, hasar kaynağının taşınmaması, eşya/el modeli ve Bardic Inspiration'ın sınıf yolunda olması; her biri motor çekirdeğinde (paket dışı) değişiklik ister.
+- **Kapsam (paket metni görülmeden):** 36 özellikten 21'i yazılabilir, 15'i sığmayan. Grup 1: 1/0 · 2: 4/3 · 3: 3/6 · 4: 5/0 · 5: 1/1 · 6: 1/1 · 7: 1/1 · 8: 0/3 · 9: 2/0 · 10 (kontrol): 3 yazılabilir (Tektonik Yoğunluk'un bir parçası sığmayan).
+- **Denge:** sayısal ayar yok. Ana parça değişmedi (yorumlayıcı tembel savaş parçasında).
+
 ## 2026-11-06 — Kuyruk P9: ek paket ilkel genişletme 3 (kural sürümü 38)
 
 - **Mekanik donması istisnası:** K57'deki donmadan sonra kullanıcı bu kuyruğu açıkça verdi; donma P9 kapsamı için kaldırıldı (yalnız ek paket ilkelleri ve onların istediği motor kancaları). `docs/MEKANIK-DONMA.md`'ye not düşüldü.

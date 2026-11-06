@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { afterStepEvents } from './turnHooks';
 import { groundWardFn } from './groundWard';
 import { solidBarrierAt } from './barriers';
 import { sizeRank } from './forced';
@@ -321,8 +322,13 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     const formed = down() ? [] : monsterStepEvents(current, actor.id, step, rng);
     effects.push(...formed);
     current = applyEvents(current, formed);
+    // Kuyruk P10 (sürüm 39): adım sonrası kancaları (ek paket `dusmanYaklasti`); hızı 0 olursa yürüyüş durur.
+    const stepped = down() || ruleVersion(current) < 39 ? [] : afterStepEvents(current, actor.id, prev, rng);
+    effects.push(...stepped);
+    current = applyEvents(current, stepped);
     prev = step;
     if (entered.stop || down()) break;
+    if (stepped.length && speedHexes(current.combatants[actor.id] as Combatant) === 0) break;
   }
   // Görev A2: geçen yaratığın yürüyüşü yarıda kesilirse (fırsat saldırısı, tuzak) engel ya da dolu altıgende kalmaz:
   // geçtiği son boş ve geçilebilir altıgene (ya da başladığı yere) döner.
