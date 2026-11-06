@@ -9,6 +9,7 @@
  *   (ölüm kurtulması başarısında can), `cagirGuclendir.turBasiCan` (çağrıya tur başı
  *   geçici can). Saf; zar `rng` ile. Paketsiz savaşta olay üretmez.
  */
+import { ruleVersion } from '../ruleVersion';
 import { gap } from '../body';
 import { canReact, reactionUsed, registerAfterAttack, registerCastHook, strikeApi } from '../reactions';
 import { registerAfterOpportunity, registerCommandEnd, registerTurnStart } from '../turnHooks';
@@ -196,6 +197,8 @@ registerCastHook((state, caster, spellName, _level, rng) => {
         if (r.p.save) { const sv = saveVs(g, nameOf(r), r.p, caster, rng); events.push(sv.ev); if (sv.success) return { countered: false, events }; }
         // P10 (sürüm 39+): geri tepme hasarı büyücüye.
         if (r.p.geriTepme !== undefined && p10On(state)) events.push(hitEffect(caster, 'paket', nameOf(r), { damage: formul(r.p.geriTepme, g), damageType: val<string>(r.p, 'hasarTuru') }, rng));
+        // P11 (sürüm 42+): engellenen büyü çalınır (slotsuz bir kez; `paket/p11cast.ts`).
+        if (r.p.calar === true && ruleVersion(state) >= 42) events.push({ type: 'effect_added', targetId: g.id, effect: { id: `pk-calinti:${g.id}:${spellName}`, name: `${nameOf(r)}: ${spellName}`, sourceId: g.id, grantSpell: { spellName }, icon: '✋' } });
         return { countered: true, events };
       }
       const hits = (api as NonNullable<typeof api>).strike(applyEvents(state, events), g.id, caster.id, rng);

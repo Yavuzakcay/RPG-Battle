@@ -303,6 +303,7 @@ export const TR_EXTRA = {
     objective: (alive: number, total: number) => `Masumlar: ${alive}/${total} hayatta`, objectiveStrict: (n: number) => ` (en az ${n} kalmalı)`,
     gate: 'Kapalı kapı · AC 15', noWeapon: 'Silah yok.',
     economy: { label: 'Bu turun eylemleri', action: (n: number) => `Eylem${n > 0 ? ` (${n} saldırı)` : ''}`, bonus: 'Bonus', reaction: 'Tepki', move: (a: number, b: number) => `Hareket ${a}/${b}` },
+    p11: { store: 'Sakla', storeInfo: 'Büyüyü yapma, sakla (slot ve eylem harcanır; sonra ateşle).', fire: (name: string): string => `Saklı büyü: ${name}` },
     s2: { altitude: (ft: number): string => `İrtifa ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `${item} bırak`, pick: (item: string): string => `${item} al` },
     start: 'Savaşı başlat',
     explore: { go: 'Keşfe devam', hint: 'Keşif: jetona dokunup seç, yürü; giriş altıgenine varınca Serüven\'e dönülür.' },

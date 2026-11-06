@@ -48,7 +48,7 @@ import { MAX_EXHAUSTION, exhaustionD20Penalty } from '../rules/exhaustion';
 import { cunningProblem, hasTrait, hordeProblem } from './classTraits';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
 import { executeAttackGate, executeEscape, executeGate, executePull } from './mapcommands';
-import { dispelEvilSpellOf, executeCast, executeDispelEvil, executeRepeat, executeStride, executeZoneShift, strideSpellOf } from './spells';
+import { dispelEvilSpellOf, executeCast, executeDispelEvil, executeFireStored, executeRepeat, executeStride, executeZoneShift, strideSpellOf } from './spells';
 import { spells } from '../data';
 import { executeGrapple, executeShove, punchAndGrabReady } from './forced';
 import { dragonRoundEvents, dragonWakeAfter, executeRouse, executeWakeDragon } from './dragon';
@@ -710,6 +710,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'command_summons') return executeCommandSummons(state, actor);
   if (cmd.type === 'sphere_carry') return executeSphereCarry(state, actor, cmd.targetId, !!cmd.drop);
   if (cmd.type === 'spell_followup') {
+    // Kuyruk P11: saklı büyünün ateşlenmesi.
+    if (cmd.choice === 'sakli') return executeFireStored(state, actor, cmd, rng);
     // Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind).
     // Kuyruk 19: Telekinesis sonraki turlarda Magic eylemiyle.
     const tk = spells.find((x) => x.name === actor.concentration?.spell);

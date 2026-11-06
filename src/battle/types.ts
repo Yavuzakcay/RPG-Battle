@@ -100,6 +100,12 @@ export interface ActiveEffect {
   shareSpace?: boolean;
   squeeze?: boolean;
   bladeGone?: boolean;
+  /** Kuyruk P11 (paket `buyuSakla`): bekleyen büyü (yapıldı, ateşlenmedi). */
+  storedSpell?: { spellName: string; slotLevel: number | null; cost: 'action' | 'bonus' | 'reaction' | 'free' };
+  /** Kuyruk P11 (paket `buyuIptal.calar`): çalınan büyü, slotsuz bir kez yapılır. */
+  grantSpell?: { spellName: string };
+  /** Kuyruk P11 (paket `gucDeposu`): biriken güç sayısı. */
+  pkCharge?: number;
   illusionZone?: string;
   suppressed?: Array<{ condition: string; timer?: ConditionTimer; round?: number; by?: string }>;
   ongoing?: { dice: string; type: string; save: Ability; dc: number; noSave?: boolean };
@@ -746,6 +752,10 @@ export interface Combatant {
   dropped?: string[];
   /** Kuyruk S2 (paket `silahBagi`): bağlı silah kimlikleri (zorla düşmez, ele çağrılır). */
   bonded?: string[];
+  /** Kuyruk P11 (paket `buyuVer.yalnizKendine`): bedava (kaynakla) yapımda yalnız kendine. */
+  pkSelfOnly?: string[];
+  /** Kuyruk P11 (paket `buyuDegisimi.ikiz`): Twinned Spell yolu paket kaynağıyla. */
+  pkTwin?: { resource?: string; cost: number };
   /** Uçuş hızı (ft), yoksa 0. Uçan yaratık lav ve zorlu zeminden etkilenmez. */
   fly: number;
   /** STR skoru (uzun atlama menzili için). */
@@ -1483,6 +1493,10 @@ export type Command =
       targetIds?: string[];
       /** Kuyruk A8: birden çok merkezli alan (Meteor Swarm: dört nokta). Kuyruk S2: Wind Wall serbest duvar yolu. */
       targetHexes?: Offset[];
+      /** Kuyruk P11 (paket `buyuSakla`): büyüyü yapmadan sakla (slot ve eylem harcanır; sonra `spell_followup` `choice: 'sakli'`). */
+      store?: boolean;
+      /** Kuyruk P11 (paket `buyuDegisimi.cikisCagri`): büyü bu çağrının altıgeninden çıkar. */
+      originId?: string;
       /** Kuyruk S2 (sürüm 41): alandan dışarıda bırakılan altıgenler (Plant Growth). */
       excludeHexes?: Offset[];
       /** Kuyruk S2: Levitate ilk yükselme (ft; yoksa veriden). */

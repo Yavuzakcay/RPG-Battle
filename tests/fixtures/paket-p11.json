@@ -127,6 +127,435 @@
           ]
         }
       ]
+    },
+    {
+      "id": "ikiz-ayna",
+      "class": "wizard",
+      "name": {
+        "tr": "ikiz-ayna",
+        "en": "ikiz-ayna"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "ayna-havuz",
+          "level": 3,
+          "name": {
+            "tr": "ayna-havuz",
+            "en": "ayna-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "ayna",
+              "sayi": 2,
+              "yenilenme": "uzun"
+            }
+          ]
+        },
+        {
+          "id": "ikiz",
+          "level": 3,
+          "name": {
+            "tr": "ikiz",
+            "en": "ikiz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuDegisimi",
+              "ikiz": true,
+              "kaynak": {
+                "id": "ayna",
+                "maliyet": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "zaman-muhru",
+      "class": "wizard",
+      "name": {
+        "tr": "zaman-muhru",
+        "en": "zaman-muhru"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "muhur-havuz",
+          "level": 3,
+          "name": {
+            "tr": "muhur-havuz",
+            "en": "muhur-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "muhur",
+              "sayi": 2,
+              "yenilenme": "uzun"
+            }
+          ]
+        },
+        {
+          "id": "muhur",
+          "level": 3,
+          "name": {
+            "tr": "muhur",
+            "en": "muhur"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuSakla",
+              "ateslemeEylemi": "bonus",
+              "enCokSeviye": 3,
+              "kaynak": {
+                "id": "muhur",
+                "maliyet": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "murekkep-ruhu",
+      "class": "wizard",
+      "name": {
+        "tr": "murekkep-ruhu",
+        "en": "murekkep-ruhu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "murekkep-havuz",
+          "level": 3,
+          "name": {
+            "tr": "murekkep-havuz",
+            "en": "murekkep-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "murekkep",
+              "sayi": 2,
+              "yenilenme": "uzun"
+            }
+          ]
+        },
+        {
+          "id": "ruh",
+          "level": 3,
+          "name": {
+            "tr": "ruh",
+            "en": "ruh"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuDegisimi",
+              "konsantrasyonsuz": true,
+              "enCokSeviye": 3,
+              "kaynak": {
+                "id": "murekkep",
+                "maliyet": 1
+              }
+            },
+            {
+              "tur": "buyuDegisimi",
+              "cikisCagri": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dilek-cini",
+      "class": "warlock",
+      "name": {
+        "tr": "dilek-cini",
+        "en": "dilek-cini"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "dilek-havuz",
+          "level": 3,
+          "name": {
+            "tr": "dilek-havuz",
+            "en": "dilek-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "dilek",
+              "sayi": 1,
+              "yenilenme": "uzun"
+            }
+          ]
+        },
+        {
+          "id": "dilek",
+          "level": 3,
+          "name": {
+            "tr": "dilek",
+            "en": "dilek"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuVer",
+              "kopyaEnCokSeviye": 3,
+              "kaynak": {
+                "id": "dilek",
+                "maliyet": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "el-cabuk",
+      "class": "rogue",
+      "name": {
+        "tr": "el-cabuk",
+        "en": "el-cabuk"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "calma",
+          "level": 3,
+          "name": {
+            "tr": "calma",
+            "en": "calma"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "tepki",
+              "olay": "dusmanBuyuAtiyor",
+              "etki": "buyuIptal",
+              "calar": true,
+              "menzilFt": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bicim-ustasi",
+      "class": "wizard",
+      "name": {
+        "tr": "bicim-ustasi",
+        "en": "bicim-ustasi"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "bicim-havuz",
+          "level": 3,
+          "name": {
+            "tr": "bicim-havuz",
+            "en": "bicim-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "bicim",
+              "sayi": 1,
+              "yenilenme": "uzun"
+            }
+          ]
+        },
+        {
+          "id": "bicim",
+          "level": 3,
+          "name": {
+            "tr": "bicim",
+            "en": "bicim"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuVer",
+              "buyular": [
+                "Polymorph"
+              ],
+              "bedava": {
+                "id": "bicim"
+              },
+              "yalnizKendine": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "derin-kavrayis",
+      "class": "warlock",
+      "name": {
+        "tr": "derin-kavrayis",
+        "en": "derin-kavrayis"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "kavra-havuz",
+          "level": 3,
+          "name": {
+            "tr": "kavra-havuz",
+            "en": "kavra-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "kavra",
+              "sayi": 1,
+              "yenilenme": "uzun"
+            }
+          ]
+        },
+        {
+          "id": "kavra",
+          "level": 3,
+          "name": {
+            "tr": "kavra",
+            "en": "kavra"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuVer",
+              "buyular": [
+                "Hold Person"
+              ],
+              "bedava": {
+                "id": "kavra"
+              },
+              "konsantrasyonsuz": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ezgi-deposu",
+      "class": "bard",
+      "name": {
+        "tr": "ezgi-deposu",
+        "en": "ezgi-deposu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "depo",
+          "level": 3,
+          "name": {
+            "tr": "depo",
+            "en": "depo"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "gucDeposu",
+              "olay": "buyuYuvasi",
+              "zar": "1d6",
+              "enCok": 3
+            }
+          ]
+        }
+      ]
     }
   ]
 }

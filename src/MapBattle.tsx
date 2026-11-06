@@ -294,17 +294,25 @@ function MetamagicPicker(props: { actor: Combatant; spell: Spell; value: string[
   if (known.length === 0 && !oc) return null;
   const ocOn = props.value.includes('overchannel');
   const ocWhy = ocOn ? null : overchannelProblem(props.state, props.actor, props.spell, props.spell.level);
+  // Kuyruk P11: paket `buyuSakla`: büyüyü sakla (yapma; sonra ateşle).
+  const canStore = ruleVersion(props.state) >= 42 && !!props.actor.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'buyuSakla'));
+  const storeOn = props.value.includes('store');
+  const storeBtn = canStore ? <button aria-pressed={storeOn} className={storeOn ? 'on' : 'ghost'} title={B.p11.storeInfo}
+    onClick={() => props.onChange(storeOn ? props.value.filter((x) => x !== 'store') : [...props.value, 'store'])}>{B.p11.store}</button> : null;
+  if (known.length === 0 && !oc && canStore) return <div className="slot-picker metamagic" role="group" aria-label={B.p11.store}>{storeBtn}</div>;
   if (known.length === 0) {
     return (
       <div className="slot-picker metamagic" role="group" aria-label={B.overchannel}>
         <button aria-pressed={ocOn} className={ocOn ? 'on' : 'ghost'} disabled={!!ocWhy} title={ocWhy ?? B.overchannelInfo}
           onClick={() => props.onChange(ocOn ? props.value.filter((x) => x !== 'overchannel') : [...props.value, 'overchannel'])}>{B.overchannel}</button>
+        {storeBtn}
       </div>
     );
   }
   return (
     <div className="slot-picker metamagic" role="group" aria-label={B.metamagic(resourceLeft(props.actor, 'sorceryPoints'))}>
       <small>{B.metamagic(resourceLeft(props.actor, 'sorceryPoints'))}</small>
+      {storeBtn}
       {known.map(([id, cost]) => {
         const on = props.value.includes(id);
         const next = on ? props.value.filter((x) => x !== id) : [...props.value, id];
@@ -877,9 +885,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   };
   const reset = () => { setJumpAim(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setAimPts([]); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
   const run = (cmd0: Command) => {
-    const mm = mmPick.filter((x) => x !== 'overchannel');
+    const mm = mmPick.filter((x) => x !== 'overchannel' && x !== 'store');
     const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0
-      ? { ...cmd0, ...(mm.length ? { metamagic: mm } : {}), ...(mmPick.includes('overchannel') ? { overchannel: true } : {}), ...(mm.includes('transmuted') ? { transmute: tmPick } : {}) } : cmd0;
+      ? { ...cmd0, ...(mm.length ? { metamagic: mm } : {}), ...(mmPick.includes('overchannel') ? { overchannel: true } : {}), ...(mmPick.includes('store') ? { store: true } : {}), ...(mm.includes('transmuted') ? { transmute: tmPick } : {}) } : cmd0;
     dice.play((rng) => dispatch(session, cmd, rng)); reset();
   };
   // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
@@ -2245,6 +2253,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 </span>
               ))}
               {ruleVersion(state) >= 41 && heldWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: heldWeapons(actor)[0] as string })}>{B.s2.drop(heldWeapons(actor)[0] as string)}</button>}
+              {/* Kuyruk P11: saklı büyüyü ateşle (hedef: seçili hedef ya da kendisi). */}
+              {actor.effects?.find((e) => e.storedSpell) && <button className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>{B.p11.fire(actor.effects.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>}
               {ruleVersion(state) >= 41 && groundItemsNear(state, actor).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(o.item ?? '')}</button>)}
             </div>
           )}

@@ -310,8 +310,16 @@ export function withPaket(state: BattleState): BattleState {
     let hpPlus = 0;
     // Kuyruk S2 (sürüm 41+): silah modeli (fırlatıp dönen silah, bağlı silah).
     const thrownAdd: Combatant['weaponOptions'] = [];
+    // Kuyruk P11 (sürüm 42+): yalnız kendine bedava büyüler, paket Twinned.
+    const selfOnly: string[] = [];
+    let twin: Combatant['pkTwin'];
     const bonded: string[] = [];
     for (const f of c.paket.ozellikler) f.ilkeller.forEach((p, i) => {
+      if (ruleVersion(state) >= 42 && p.tur === 'buyuVer' && p.yalnizKendine === true && Array.isArray(p.buyular)) selfOnly.push(...p.buyular as string[]);
+      if (ruleVersion(state) >= 42 && p.tur === 'buyuDegisimi' && p.ikiz === true && c.metamagic?.twinned === undefined) {
+        const k = costOf(c, p);
+        twin = { ...(k ? { resource: k.id } : {}), cost: k?.cost ?? 0 };
+      }
       if (p.tur === 'silahBagi' && ruleVersion(state) >= 41) bonded.push(...weaponIdsFor(c, p.silah as string | undefined, false));
       if (p.tur === 'silahFirlat' && ruleVersion(state) >= 41) thrownAdd.push(...thrownOptions(c, p, thrownAdd));
       if (p.tur === 'tepki') { const r = reactionOf(p, c, f.key, i, (p.ad as string | undefined) ?? f.ad); if (r) reactions.push(r); }
@@ -333,6 +341,8 @@ export function withPaket(state: BattleState): BattleState {
       ...(hpPlus ? { maxHp: c.maxHp + hpPlus, hp: c.hp + hpPlus } : {}),
       ...(thrownAdd.length ? { weaponOptions: [...c.weaponOptions, ...thrownAdd] } : {}),
       ...(bonded.length ? { bonded: [...new Set(bonded)] } : {}),
+      ...(selfOnly.length ? { pkSelfOnly: [...new Set(selfOnly)] } : {}),
+      ...(twin ? { pkTwin: twin, metamagic: { ...c.metamagic, twinned: 0 } } : {}),
       // P7: savaş başındaki kaynaklar (`kaynakYenile` üst sınırı).
       paket: { ...c.paket, kaynakBas: Object.fromEntries(Object.values(c.paket.kaynaklar ?? {}).map((k) => [k, c.resources[k] ?? 0])) },
     };

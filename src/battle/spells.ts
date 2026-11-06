@@ -28,6 +28,7 @@ import { freeCastingEvents } from './boons';
 import { overchannelAfter, overchannelProblem, overchannelRng } from './apex';
 import { paketSpellBonus, paketSpellTransform } from './paket/core';
 import { paketHealRoll } from './paket/p11';
+import { fireStored, paketCast } from './paket/p11cast';
 import { hexLabel, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
@@ -394,7 +395,14 @@ function executeCastOver(state: BattleState, actor00: Combatant, cmd: CastComman
   return finish(state, [...r.events, ...overchannelAfter(r.state, me, slotLevel, rng)]);
 }
 
+/** Kuyruk P11: saklı büyüyü ateşle (`spell_followup` `choice: 'sakli'`). */
+export const executeFireStored = (state: BattleState, actor: Combatant, cmd: { targetId?: string; targetHex?: Offset }, rng: Rng): CommandResult =>
+  fireStored(state, actor, cmd, (s, a, c) => withLifeBond(s, c, executeCastAt(s, a, c, rng)));
+
 function executeCastPlain(state: BattleState, actor00: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+  // Kuyruk P11: paket yapım genişletmeleri (saklama, çalınan/kopya büyü, yalnız kendine, konsantrasyonsuz, çağrıdan çıkış).
+  const pk = paketCast(state, actor00, cmd, (s, a, c) => withLifeBond(s, c, executeCastAt(s, a, c, rng)));
+  if (pk) return pk;
   const r = withLifeBond(state, cmd, executeCastAt(state, actor00, cmd, rng));
   // Kuyruk 19: Gaze of Two Minds: kendi yerinden olmuyorsa bağlı dostun yerinden (60 ft içindeyse).
   const gp = !r.ok && actor00.pos ? gazePos(state, actor00) : null;

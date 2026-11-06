@@ -53,6 +53,8 @@ export function metamagicProblem(state: BattleState, actor: Combatant, ids: stri
   if (counted.length > metamagicLimit(state, actor)) return 'Bir büyüye tek Metamagic (Sorcery Incarnate etkinken iki).';
   const cost = ids.reduce((n, x) => n + (known[x] ?? 0), 0) - apotheosisDiscount(state, actor, ids);
   if (cost > resourceLeft(actor, POINTS)) return `Sorcery Point yetmiyor (${cost} gerekli).`;
+  // Kuyruk P11: paket Twinned (`buyuDegisimi.ikiz`) paket kaynağıyla.
+  if (ids.includes('twinned') && actor.pkTwin?.resource && resourceLeft(actor, actor.pkTwin.resource) < actor.pkTwin.cost) return 'İkiz büyü: kullanım kalmadı.';
   if (ids.includes('quickened') && spell.castingTime !== 'action') return 'Quickened Spell yalnızca eylemle yapılan büyüde.';
   if (ids.includes('extended') && !(spell.mechanics.effect?.rounds && spell.mechanics.effect.rounds >= 10)) return 'Extended Spell en az 1 dakika süren büyüde.';
   if (ids.includes('twinned') && !(spell.mechanics.upcast?.applied && spell.mechanics.upcast.targets)) return 'Twinned Spell yalnızca yukarı slotta ek hedef alan büyüde.';
@@ -81,6 +83,8 @@ export function castWithMetamagic(state: BattleState, actor: Combatant, spell: S
   const free = apotheosisDiscount(state, actor, list.filter((x) => x !== 'seeking'));
   const cost = list.filter((x) => x !== 'seeking').reduce((n, x) => n + (actor.metamagic?.[x] ?? 0), 0) - free;
   const events: BattleEvent[] = cost > 0 ? [{ type: 'feature_used', actorId: actor.id, feature: POINTS, remaining: resourceLeft(actor, POINTS) - cost }] : [];
+  const tw = actor.pkTwin;
+  if (list.includes('twinned') && tw?.resource && tw.cost > 0) events.push({ type: 'feature_used', actorId: actor.id, feature: tw.resource, remaining: resourceLeft(actor, tw.resource) - tw.cost });
   // Kuyruk 19 (11–20): Arcane Apotheosis bu tur kullanıldı.
   if (free > 0) events.push({ type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Arcane Apotheosis', attacksLeft: actor.economy.attacksLeft, apotheosis: true });
   let s = spell;

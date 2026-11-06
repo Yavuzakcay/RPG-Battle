@@ -334,6 +334,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, 'bonus', 'Çağrıyı taşı');
     }
     case 'spell_followup': {
+      // Kuyruk P11: saklı büyüyü ateşleme maliyeti ilkelde (`buyuSakla.ateslemeEylemi`).
+      if (cmd.choice === 'sakli') { const c = actor.effects?.find((x) => x.storedSpell)?.storedSpell?.cost; if (!c) return fail('Saklı büyü yok.'); return c === 'free' ? { ok: true, event: null } : spend(actor, c, 'Saklı büyü'); }
       // Görev B1: süreli tekrarın maliyeti büyü verisinde (Call Lightning, Vampiric Touch: eylem).
       if (dispelEvilSpellOf(state, actor)) return spend(actor, 'action', 'Dispel Evil and Good');
       // Kuyruk 19: Tree Stride eylem harcamaz (5 ft hareket).
@@ -365,7 +367,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
       // Kuyruk 43b: Divine Intervention ile slotsuz yapım (oyuncu isteği): Magic eylemi, slot yok.
       if (cmd.free && (spell.level === 0 || !freeCastResource(actor, spell.name, cmd.slotLevel, true))) return fail('Bu büyü slotsuz yapılamaz (kullanım hakkı yok ya da büyü listede değil).');
-      const usesSlot = spell.level > 0 && !cmd.free && !freeCast(actor, spell.name, cmd.slotLevel);
+      // Kuyruk P11: bilinmeyen büyü (paket çalınan/kopya) slotsuz yapılır.
+      const usesSlot = spell.level > 0 && !cmd.free && !freeCast(actor, spell.name, cmd.slotLevel) && actor.spellNames.includes(spell.name);
       const key = turnKey(state);
       // Görev SORCERER: Quickened Spell: eylemlik büyü bonus eylemle.
       // Kuyruk 19: canavarın bonus eylem büyüsü (Divine Aid, Misty Step; kaynak `mspell-b:`) slotsuz yapımda bonus eylemle.

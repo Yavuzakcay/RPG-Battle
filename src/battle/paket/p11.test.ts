@@ -10,6 +10,7 @@ import { classData, armor, weapons } from '../../data';
 import { armorProficient } from '../../rules/stats';
 import { weaponProficient } from '../../rules/mastery';
 import { kitArena, o } from '../k54bKit';
+import { mk } from '../fixtures';
 import { replay } from '../reduce';
 import type { AttackOption, BattleEvent, Combatant } from '../types';
 import type { Rng } from '../../rules/dice';
@@ -34,7 +35,7 @@ const same = (r: Run) => {
   }
 };
 const fixed = (v: number): Rng => () => v;
-const turnOf = (r: Run, id: string) => { while (r.state.order[r.state.turnIndex] !== id) r.do({ type: 'end_turn', actorId: r.state.order[r.state.turnIndex] as string }); };
+const turnOf = (r: Run, id: string) => { while (r.state.order[r.state.turnIndex] !== id) { const cur = r.state.order[r.state.turnIndex] as string; const cmd = { type: 'end_turn' as const, actorId: cur }; if (r.c(cur).side === 'enemies') r.gm(cmd); else r.do(cmd); } };
 const inspireKey = (c: Combatant) => (c.features ?? []).find((f) => f.effect.kind === 'inspire') as NonNullable<Combatant['features']>[number];
 
 function bard(feats: string[], kuralSurumu?: number): Run {
@@ -120,5 +121,120 @@ describe('P11 G2: iyileştirme zarı', () => {
       if (v === 42) { expect(h.rolls).toEqual([8, 8]); expect(h.changed).toBe('sifa'); } else expect(h.rolls).toBeUndefined();
       same(r);
     }
+  });
+});
+
+describe('P11 G3: büyü yapımı', () => {
+  const caster = (cls: string, sub: string, spellNames: string[], extra: Partial<Parameters<typeof kitArena>[0]> = {}, level = 7) => {
+    const r = kitArena({ cls, sub, level, place: { A: o(3, 3), B: o(6, 3), C: o(4, 3) }, ...extra });
+    patch(r, 'A', { spellNames: [...new Set([...r.c('A').spellNames, ...spellNames])], spellSlots: [4, 3, 3, 1, 0, 0, 0, 0, 0], spellSaveDc: 15, spellAttack: 7 });
+    patch(r, 'B', { hp: 200, maxHp: 200, creatureType: 'humanoid' });
+    rebase(r);
+    return r;
+  };
+  const pk = (r: Run, sub: string, k: string) => r.c('A').resources[`pk-${sub}-${k}`];
+
+  it('ikiz: Hold Person iki hedefe (paket kaynağıyla); 41\'de Twinned bilinmiyor', () => {
+    const r = caster('wizard', 'ikiz-ayna', ['Hold Person']);
+    expect(r.c('A').pkTwin).toMatchObject({ cost: 1 });
+    r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Hold Person', targetIds: ['B', 'C'], slotLevel: 2, metamagic: ['twinned'] } as never, fixed(0.01));
+    expect(pk(r, 'ikiz-ayna', 'ayna')).toBe(1);
+    same(r);
+    const old = caster('wizard', 'ikiz-ayna', ['Hold Person'], { kuralSurumu: 41 });
+    expect(old.try({ type: 'cast_spell', actorId: 'A', spellName: 'Hold Person', targetIds: ['B', 'C'], slotLevel: 2, metamagic: ['twinned'] } as never).ok).toBe(false);
+  });
+  it('buyuSakla: Magic Missile saklanır (slot harcanır, hasar yok), bonus eylemle ateşlenir (slot yeniden harcanmaz)', () => {
+    const r = caster('wizard', 'zaman-muhru', ['Magic Missile']);
+    r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Magic Missile', targetId: 'B', slotLevel: 1, store: true } as never);
+    expect(r.c('A').spellSlots[0]).toBe(3);
+    expect(r.c('B').hp).toBe(200);
+    expect(r.c('A').effects?.find((e) => e.storedSpell)?.storedSpell).toMatchObject({ spellName: 'Magic Missile', slotLevel: 1, cost: 'bonus' });
+    r.do({ type: 'spell_followup', actorId: 'A', targetId: 'B', choice: 'sakli' });
+    expect(r.c('B').hp).toBeLessThan(200);
+    expect(r.c('A').spellSlots[0]).toBe(3);
+    expect(r.c('A').effects?.some((e) => e.storedSpell)).toBe(false);
+    expect(r.c('A').economy.bonus).toBe(true);
+    same(r);
+    const old = caster('wizard', 'zaman-muhru', ['Magic Missile'], { kuralSurumu: 41 });
+    old.do({ type: 'cast_spell', actorId: 'A', spellName: 'Magic Missile', targetId: 'B', slotLevel: 1, store: true } as never);
+    expect(old.c('B').hp).toBeLessThan(200);
+  });
+  it('konsantrasyonsuz (kaynakla): Bless konsantrasyonsuz, etkiler süreli; 41\'de konsantrasyon', () => {
+    for (const v of [42, 41]) {
+      const r = caster('wizard', 'murekkep-ruhu', ['Bless'], v === 41 ? { kuralSurumu: 41 } : {});
+      r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Bless', targetIds: ['A', 'C'], slotLevel: 1 } as never);
+      const fx = r.c('C').effects?.find((e) => e.dice);
+      if (v === 42) { expect(r.c('A').concentration).toBeFalsy(); expect(fx?.concentration).toBeUndefined(); expect(fx?.until).toBeGreaterThan(1); expect(pk(r, 'murekkep-ruhu', 'murekkep')).toBe(1); }
+      else expect(r.c('A').concentration?.spell).toBe('Bless');
+      same(r);
+    }
+  });
+  it('buyuVer konsantrasyonsuz (bedava listesi): Hold Person bedava ve konsantrasyonsuz', () => {
+    const r = caster('warlock', 'derin-kavrayis', []);
+    r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Hold Person', targetId: 'B' } as never, fixed(0.01));
+    expect(r.c('A').concentration).toBeFalsy();
+    expect(pk(r, 'derin-kavrayis', 'kavra')).toBe(0);
+    expect(r.c('B').conditions).toContain('Paralyzed');
+    same(r);
+  });
+  it('kopya: bilinmeyen 3. seviyeye dek büyü slotsuz (kaynakla); 41\'de bilinmiyor', () => {
+    const r = caster('warlock', 'dilek-cini', []);
+    const slots = [...r.c('A').spellSlots];
+    r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Magic Missile', targetId: 'B' } as never);
+    expect(r.c('B').hp).toBeLessThan(200);
+    expect(r.c('A').spellSlots).toEqual(slots);
+    expect(pk(r, 'dilek-cini', 'dilek')).toBe(0);
+    expect(r.try({ type: 'cast_spell', actorId: 'A', spellName: 'Magic Missile', targetId: 'B' } as never).ok).toBe(false);
+    same(r);
+    const old = caster('warlock', 'dilek-cini', [], { kuralSurumu: 41 });
+    expect(old.try({ type: 'cast_spell', actorId: 'A', spellName: 'Magic Missile', targetId: 'B' } as never).ok).toBe(false);
+  });
+  it('yalnızKendine: Polymorph bedava yalnız kendine; başkasına slotla', () => {
+    const r = caster('wizard', 'bicim-ustasi', ['Polymorph']);
+    r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Polymorph', targetId: 'B' } as never, fixed(0.01));
+    expect(r.c('A').spellSlots[3]).toBe(0);
+    expect(pk(r, 'bicim-ustasi', 'bicim')).toBe(1);
+    const r2 = caster('wizard', 'bicim-ustasi', ['Polymorph']);
+    r2.do({ type: 'cast_spell', actorId: 'A', spellName: 'Polymorph', targetId: 'A' } as never, fixed(0.01));
+    expect(r2.c('A').spellSlots[3]).toBe(1);
+    expect(pk(r2, 'bicim-ustasi', 'bicim')).toBe(0);
+  });
+  it('buyuIptal calar: engellenen büyü çalınır, slotsuz bir kez yapılır', () => {
+    const r = kitArena({ cls: 'rogue', sub: 'el-cabuk', level: 17, place: { A: o(3, 3), B: o(6, 3), C: o(4, 3) },
+      enemy: { spellNames: ['Magic Missile'], spellSlots: [4, 0, 0, 0, 0, 0, 0, 0, 0], spellAttack: 5, spellSaveDc: 13, spellMod: 3 } });
+    patch(r, 'A', { spellAttack: 7, spellSaveDc: 15, spellMod: 3 });
+    rebase(r);
+    turnOf(r, 'B');
+    r.gm({ type: 'cast_spell', actorId: 'B', spellName: 'Magic Missile', targetId: 'C' } as never);
+    expect(r.c('A').effects?.find((e) => e.grantSpell)?.grantSpell?.spellName).toBe('Magic Missile');
+    turnOf(r, 'A');
+    const hp = r.c('B').hp;
+    r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Magic Missile', targetId: 'B' } as never);
+    expect(r.c('B').hp).toBeLessThan(hp);
+    expect(r.c('A').effects?.some((e) => e.grantSpell)).toBe(false);
+    same(r);
+  });
+  it('cikisCagri: büyü kendi çağrısının altıgeninden çıkar (menzil oradan); başkasının yaratığından olmaz', () => {
+    const r = caster('wizard', 'murekkep-ruhu', ['Shocking Grasp'], { place: { A: o(0, 0), B: o(6, 3), C: o(1, 0) },
+      extra: [mk('F', { ownerId: 'p1', hp: 5, maxHp: 5, summon: { by: 'A', spellId: 'pk', spell: 'pk', turn: 'after-owner', level: 1 } })] });
+    patch(r, 'F', { pos: o(5, 3) });
+    rebase(r);
+    expect(r.try({ type: 'cast_spell', actorId: 'A', spellName: 'Shocking Grasp', targetId: 'B' } as never).ok).toBe(false);
+    expect(r.try({ type: 'cast_spell', actorId: 'A', spellName: 'Shocking Grasp', targetId: 'B', originId: 'C' } as never).ok).toBe(false);
+    r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Shocking Grasp', targetId: 'B', originId: 'F' } as never, fixed(0.9));
+    expect(r.c('A').pos).toEqual(o(0, 0));
+    same(r);
+  });
+  it('gucDeposu: slotlu büyüyle güç birikir, silah isabetinde boşalır', () => {
+    const r = caster('bard', 'ezgi-deposu', ['Healing Word'], {}, 5);
+    patch(r, 'A', { weaponOptions: [{ ...club, attackBonus: 20 }] });
+    rebase(r);
+    r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Healing Word', targetId: 'C' } as never);
+    expect(r.c('A').effects?.find((e) => e.pkCharge)?.pkCharge).toBe(1);
+    const ev = r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: { ...club, attackBonus: 20, reachFt: 15 } }, fixed(0.5));
+    const atk = ev.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }>;
+    expect(atk.extra?.some((x) => x.label === 'depo')).toBe(true);
+    expect(r.c('A').effects?.some((e) => e.pkCharge)).toBe(false);
+    same(r);
   });
 });

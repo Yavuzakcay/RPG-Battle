@@ -14,7 +14,9 @@ import { damageProfile } from '../common';
 import { registerHitHook } from '../hitHooks';
 import { canReact, reactionUsed, registerAllyHit } from '../reactions';
 import type { ActiveEffect, BattleEvent } from '../types';
-import { p11On } from './p11';
+import { registerCommandEnd } from '../turnHooks';
+import { flatNum, formul, val } from './core';
+import { p11On, prims } from './p11';
 
 const inspireFx = (c: { effects?: ActiveEffect[] } | undefined, use: 'damage' | 'ac') => c?.effects?.find((e) => e.inspire && e.inspireUses?.includes(use));
 const drop = (targetId: string, e: ActiveEffect): BattleEvent => ({ type: 'effect_ended', targetId, effectId: e.id, name: e.name, reason: 'used' });
@@ -45,4 +47,48 @@ registerAllyHit((state, ctx, rng) => {
     { type: 'map_note', text: `${t.name}: ${e.name} → AC +${v} (${ctx.ac + v})` }];
   // Iska: hasar verilmez; isabet kalırsa hasar aynı.
   return ctx.total < ctx.ac + v ? { events, name: e.name } : { events, name: e.name, damage: ctx.damage };
+});
+
+// ------------------------------------------------------------------ güç deposu (sayaç)
+
+const DEPO = (id: string) => `pk-depo:${id}`;
+
+/** Komut sonu: `gucDeposu.olay` her gerçekleşmede sayaç +1 (en çok `enCok`). */
+registerCommandEnd((before, next, events) => {
+  if (!p11On(next)) return [];
+  const out: BattleEvent[] = [];
+  for (const c of Object.values(next.combatants)) {
+    for (const r of prims(c, 'gucDeposu')) {
+      const olay = val<string>(r.p, 'olay');
+      const n = olay === 'buyuYuvasi' ? events.filter((e) => e.type === 'slot_spent' && e.actorId === c.id).length
+        : olay === 'hasarAlinca' ? ((before.combatants[c.id]?.hp ?? 0) > c.hp ? 1 : 0)
+          : events.filter((e) => e.type === 'attack_resolved' && e.targetId === c.id && !e.hit).length;
+      if (!n) continue;
+      const have = c.effects?.find((e) => e.id === DEPO(c.id))?.pkCharge ?? 0;
+      const max = flatNum(val(r.p, 'enCok'), c) || 99;
+      const now = Math.min(max, have + n);
+      if (now === have) continue;
+      out.push({ type: 'effect_added', targetId: c.id, effect: { id: DEPO(c.id), name: (r.p.ad as string | undefined) ?? r.feat.ad, sourceId: c.id, pkCharge: now, icon: '🔋' } });
+      break;
+    }
+  }
+  return out;
+});
+
+/** İsabette depo boşaltılır: sayaç × zar ek hasar (seçim). */
+registerHitHook((state, actor, target, ctx, rng) => {
+  if (!p11On(state)) return null;
+  const fx = actor.effects?.find((e) => e.id === DEPO(actor.id));
+  const r = prims(actor, 'gucDeposu')[0];
+  if (!fx?.pkCharge || !r) return null;
+  const pick = askChoice(rng, { actorId: actor.id, sourceId: target.id, label: `${fx.name}: ${fx.pkCharge} güç`,
+    options: [{ id: 'use', label: `+${fx.pkCharge}×${formul(r.p.zar, actor)}` }, { id: 'keep', label: 'Sakla' }], suggested: target.hp > 0 ? 'use' : 'keep' });
+  if (pick !== 'use') return null;
+  const die = formul(r.p.zar, actor);
+  const m = /^(\d+)d(\d+)(.*)$/.exec(die);
+  const expr = m ? `${Number(m[1]) * fx.pkCharge}d${m[2]}${m[3]}` : String((Number(die) || 0) * fx.pkCharge);
+  const roll = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }), ctx.critical);
+  const type = val<string>(r.p, 'hasarTuru') ?? ctx.weaponType;
+  const adj = adjustDamage(roll.total, type, damageProfile(target));
+  return { extras: [{ label: fx.name, rolls: roll.rolls, raw: roll.total, applied: adj.amount, type, note: adj.note }], after: [() => [drop(actor.id, fx)]] };
 });

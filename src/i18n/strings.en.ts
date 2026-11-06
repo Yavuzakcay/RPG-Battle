@@ -879,6 +879,7 @@ export const en: Strings = {
     objective: (alive: number, total: number) => `Civilians: ${alive}/${total} alive`, objectiveStrict: (n: number) => ` (at least ${n} must survive)`,
     gate: 'Closed gate · AC 15', noWeapon: 'No weapon.',
     economy: { label: 'This turn\'s actions', action: (n: number) => `Action${n > 0 ? ` (${n} attack${n === 1 ? '' : 's'})` : ''}`, bonus: 'Bonus', reaction: 'Reaction', move: (a: number, b: number) => `Move ${a}/${b}` },
+    p11: { store: 'Store', storeInfo: 'Do not release the spell yet: store it (slot and action spent; fire later).', fire: (name: string): string => `Stored spell: ${name}` },
     s2: { altitude: (ft: number): string => `Altitude ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `Drop ${item}`, pick: (item: string): string => `Pick up ${item}` },
     start: 'Start battle',
     explore: { go: 'Keep exploring', hint: 'Exploring: tap a token to pick, walk; reaching the entry hex returns to the Adventure.' },
