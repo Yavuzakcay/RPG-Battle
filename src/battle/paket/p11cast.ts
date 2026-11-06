@@ -132,3 +132,9 @@ export function fireStored(state: BattleState, actor: Combatant, cmd: { targetId
 }
 
 export const storedCost = (actor: Combatant): 'action' | 'bonus' | 'reaction' | 'free' | null => actor.effects?.find((e) => e.storedSpell)?.storedSpell?.cost ?? null;
+
+/** Kuyruk K58 G8: büyünün çıkabileceği çağrılar (paket `buyuDegisimi.cikisCagri`; arayüz seçici ve yapay zekâ adayları). */
+export function summonOrigins(state: BattleState, actor: Combatant): Combatant[] {
+  if (!prims(actor, 'buyuDegisimi').some((x) => x.p.cikisCagri === true)) return [];
+  return Object.values(state.combatants).filter((c) => c.summon?.by === actor.id && !c.summon.gone && !!c.pos && c.hp > 0);
+}

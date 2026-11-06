@@ -68,6 +68,8 @@ async function shrinkImage(file: File): Promise<string> {
   return canvas.toDataURL('image/webp', 0.85);
 }
 
+/** Kuyruk K58 G5: yapay zekâ zorluğu. */
+type AiDiff = 'kolay' | 'normal' | 'usta';
 export function GmScreen(props: {
   characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void;
   /** Dinlenme (herkes uzun dinlensin): karakter listesini günceller. */
@@ -133,6 +135,7 @@ export function GmScreen(props: {
   const [diceMode, setDiceMode] = useState<DiceMode>('auto');
   // Kuyruk 43: çok altıgenli büyük yaratıklar (deneysel, varsayılan kapalı).
   const [multiHex, setMultiHex] = useState(false);
+  const [aiDiff, setAiDiff] = useState<{ party: AiDiff; enemies: AiDiff }>({ party: 'normal', enemies: 'normal' });
   // Görev K13B: ev kuralları (haritanın sefer bayrağıyla varsayılan; Game Master değiştirir).
   const [houseRules, setHouseRules] = useState<Record<HouseRuleId, boolean> | null>(null);
   // Kuyruk 24: harita mekaniği anahtarları ve parametreleri (harita ya da varyant değişince sıfırlanır).
@@ -492,6 +495,15 @@ export function GmScreen(props: {
             </select>
           </label>
           {diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
+          <fieldset className="ai-difficulty"><legend>{G.aiDifficulty.label}</legend>
+            {(['party', 'enemies'] as const).map((side) => (
+              <label key={side}>{G.aiDifficulty[side]}{' '}
+                <select aria-label={`${G.aiDifficulty.label}: ${G.aiDifficulty[side]}`} value={aiDiff[side]} onChange={(e: { target: { value: string } }) => setAiDiff((d) => ({ ...d, [side]: e.target.value as AiDiff }))}>
+                  {(['kolay', 'normal', 'usta'] as const).map((k) => <option key={k} value={k}>{G.aiDifficulty[k]}</option>)}
+                </select>
+              </label>
+            ))}
+          </fieldset>
           <label className="multihex-toggle" title={G.multiHex.note}>
             <input type="checkbox" checked={multiHex} onChange={(e: { target: { checked: boolean } }) => setMultiHex(e.target.checked)} /> {G.multiHex.label}
           </label>
@@ -506,7 +518,7 @@ export function GmScreen(props: {
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()), ...(multiHex ? { multiHex: true } : {}), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()), ...(multiHex ? { multiHex: true } : {}), ...(aiDiff.party !== 'normal' || aiDiff.enemies !== 'normal' ? { yz: { zorluk: { ...(aiDiff.party !== 'normal' ? { party: aiDiff.party } : {}), ...(aiDiff.enemies !== 'normal' ? { enemies: aiDiff.enemies } : {}) } } } : {}), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

@@ -50,6 +50,7 @@ import { abilityTip, lineageAbilityList } from './ui/lineageText';
 import { hexText } from './ui/log';
 import { logEntries } from './ui/logEntries';
 import { hazardHexes, HAZARD_KINDS } from './ui/hazardLayer';
+import { summonOrigins } from './battle/paket/p11cast';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
 import { execute } from './battle';
 import { exploreReady, exploreView } from './battle/commands';
@@ -187,7 +188,7 @@ function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
   ];
 }
 
-function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; notes?: string[]; onExhaustion?: (level: number) => void }) {
+function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; notes?: string[]; onExhaustion?: (level: number) => void; onAiRole?: (role: Combatant['aiRole'] | null) => void }) {
   const { c } = props;
   // Süren etkiler (Görev R2): tıklayınca açıklama açılır.
   const [openFx, setOpenFx] = useState<string | null>(null);
@@ -225,6 +226,14 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
       {c.load && <p className="carry-badge error">⚖ {t().carry.level[c.load]}</p>}
       {!c.civilian && <p>{D.reactions(!c.economy.reaction, ['Opportunity Attack', ...(c.reactions ?? []).map((r) => r.name)].join(', '))}</p>}
       {c.hidden && <p>{D.hidden(c.hidden.dc)}</p>}
+      {/* Kuyruk K58 G5: Game Master yapay zekâ rolünü atar (yoksa veriden türetilir). */}
+      {props.onAiRole && !c.civilian && c.life !== 'dead' && (
+        <label className="ai-role">{D.aiRole}{' '}
+          <select value={c.aiRole ?? 'auto'} onChange={(e) => props.onAiRole?.(e.target.value === 'auto' ? null : e.target.value as Combatant['aiRole'])}>
+            {['auto', 'hasarci', 'kontrolcu', 'destek', 'tank'].map((k) => <option key={k} value={k}>{D.aiRoles[k]}</option>)}
+          </select>
+        </label>
+      )}
       {/* Görev S1: bitkinlik (Exhaustion) seviyesi; Game Master ayarlar (tek ekran). */}
       {!c.civilian && c.life !== 'dead' && (
         <p className="exhaustion-row">{D.exhaustion(c.exhaustion ?? 0)}
@@ -502,6 +511,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [showHiddenZones, setShowHiddenZones] = useState(false);
   const [confirmWake, setConfirmWake] = useState(false);
   const [jumpAim, setJumpAim] = useState<Offset | null>(null);
+  // Kuyruk K58 G8: paket `buyuDegisimi.cikisCagri`: büyünün çıkış noktası (null = kendisi).
+  const [originId, setOriginId] = useState<string | null>(null);
   // Kuyruk K58 G1: fırsat saldırısı riski olan yürüyüş önce önizlenir (dokun-önizle, dokun-onayla).
   const [moveAim, setMoveAim] = useState<{ to: Offset; pv: MovePreview } | null>(null);
   const [puffs, setPuffs] = useState<Array<{ id: number; at: Offset; kind: 'leaves' | 'dust' }>>([]);
@@ -785,10 +796,17 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   }, [state, active, actorId, mode]);
   const islandJumps = islandTargets.map((t) => t.to);
   const jumps = mode === 'jump' ? islandJumps : allJumps.filter((h) => !fromPos || lavaOver(state, fromPos, h).length === 0);
+  // Çıkış noktası seçilmişse hedefler ve seçenekler çağrının altıgeninden (büyücü oradaymış gibi) hesaplanır.
+  const originChoices = useMemo(() => (actor ? summonOrigins(state, actor) : []), [state, actor]);
+  const viewState = useMemo(() => {
+    const s = originId ? state.combatants[originId] : undefined;
+    return s?.pos && actor ? { ...state, combatants: { ...state.combatants, [actorId]: { ...actor, pos: s.pos } } } : state;
+  }, [state, originId, actor, actorId]);
+  const withOrigin = (cmd: Command): Command => (originId && cmd.type === 'cast_spell' ? { ...cmd, originId } : cmd);
   const glowingRaw = useMemo(() => {
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
-    if (mode === 'spell' && spell) return new Set(spellTargets(state, actorId, spell.name));
+    if (mode === 'spell' && spell) return new Set(spellTargets(viewState, actorId, spell.name));
     if (mode === 'effect' && spell) return new Set(effectTargets(state, actorId, spell));
     if (mode === 'shove') {
       // İtilebilecek bitişik hedefler (motorda zarsız denenerek: yere düşürme her zaman denenebilir).
@@ -922,7 +940,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     setToasts((t) => [...t, item].slice(-3));
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
-  const reset = () => { setJumpAim(null); setMoveAim(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setAimPts([]); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
+  const reset = () => { setJumpAim(null); setMoveAim(null); setOriginId(null); setMode('idle'); setSpell(null); setAreaAct(null); setSlotPick(null); setMmPick([]); setTargetId(null); setAimHex(null); setAimPts([]); setGateAim(false); setMenuOpen(true); setMoveMenu(false); };
   const run = (cmd0: Command) => {
     const mm = mmPick.filter((x) => x !== 'overchannel' && x !== 'store');
     const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0
@@ -1410,7 +1428,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const radial = actorPx ? radialLayout(actorPx, items.length, box, tokenR + BUTTON / 2 + 10, BUTTON) : [];
 
   const target = targetId ? state.combatants[targetId] : undefined;
-  const choices = active && target ? attackChoices(state, actorId, target.id)
+  const choices = active && target ? attackChoices(mode === 'spell' ? viewState : state, actorId, target.id)
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
   const modeHint: Record<Mode, string> = {
     idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
@@ -1913,6 +1931,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {(modeHint[mode] || setup) && (
             <div className="hud-hint">
               {setup ? B.hint.setup : modeHint[mode]}
+              {mode === 'spell' && originChoices.length > 0 && (
+                <div className="slot-picker" role="radiogroup" aria-label={B.origin.label}>
+                  <small>{B.origin.label}</small>
+                  {[null, ...originChoices].map((c) => (
+                    <button key={c?.id ?? 'self'} role="radio" aria-checked={originId === (c?.id ?? null)} className={originId === (c?.id ?? null) ? 'on' : 'ghost'}
+                      onClick={() => { setOriginId(c?.id ?? null); setTargetId(null); }}>{c ? c.name : B.origin.self}</button>
+                  ))}
+                </div>
+              )}
               {mode === 'pickHex' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' && (
                 <div className="slot-picker" role="radiogroup" aria-label={N.choicePick}>
                   <small>{N.choicePick}</small>
@@ -2040,9 +2067,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {choices.map((ch) => (
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
-                    <button disabled={!ch.command} onClick={() => ch.command && run(withCunning(withSlot(withChoice(ch.command), slotPick)))}>{mode === 'spell' ? B.cast : B.hit}</button>
+                    <button disabled={!ch.command} onClick={() => ch.command && run(withOrigin(withCunning(withSlot(withChoice(ch.command), slotPick))))}>{mode === 'spell' ? B.cast : B.hit}</button>
                     {!ch.command && <Why msg={ch.detail || Y.noCommand} />}
-                    {pvSet.on && ch.command && <Suspense fallback={null}><PreviewCard state={state} cmd={withCunning(withSlot(withChoice(ch.command), slotPick))} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet} /></Suspense>}
+                    {pvSet.on && ch.command && <Suspense fallback={null}><PreviewCard state={state} cmd={withOrigin(withCunning(withSlot(withChoice(ch.command), slotPick)))} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet} /></Suspense>}
                   </div>
                 ))}
                 {mode === 'spell' && spell && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? spell.mechanics.abilityChoices) && (
@@ -2535,7 +2562,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {drawerId && state.combatants[drawerId] && (
             <Drawer c={state.combatants[drawerId] as Combatant} state={state} onClose={() => setDrawerId(null)}
               notes={state.combatants[drawerId]?.asleep ? wakeNotes(state) : undefined}
-              onExhaustion={state.status === 'active' ? (level) => setSession((s) => dispatch(s, { type: 'set_exhaustion', targetId: drawerId, level }, Math.random, GM_CONTEXT)) : undefined} />
+              onExhaustion={state.status === 'active' ? (level) => setSession((s) => dispatch(s, { type: 'set_exhaustion', targetId: drawerId, level }, Math.random, GM_CONTEXT)) : undefined}
+              onAiRole={state.status === 'active' ? (role) => setSession((s) => dispatch(s, { type: 'set_ai_role', targetId: drawerId, role: role ?? null }, Math.random, GM_CONTEXT)) : undefined} />
           )}
         </div>
       </div>

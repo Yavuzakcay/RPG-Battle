@@ -343,6 +343,8 @@ const tr = {
       note: 'Her mekanik açılıp kapanır, parametreleri düzenlenir; kapalıyken görsel, zemin ve nesneler aynı kalır, yalnızca kural etkisi durur. Seçimler savaş kaydına yazılır.',
       dirs: { N: 'Kuzey', NE: 'Kuzeydoğu', SE: 'Güneydoğu', S: 'Güney', SW: 'Güneybatı', NW: 'Kuzeybatı' } as Record<string, string>,
     },
+    /** Kuyruk K58 G5: yapay zekâ zorluğu (taraf başına; parti yapay zekâsı da). */
+    aiDifficulty: { label: 'Yapay zekâ zorluğu', party: 'Parti', enemies: 'Düşmanlar', kolay: 'Kolay', normal: 'Normal', usta: 'Usta (deneysel)' } as Record<string, string>,
     multiHex: { label: 'Büyük yaratıklar birden çok altıgen kaplar (deneysel)', note: 'Large 3, Huge 7, Gargantuan 19 altıgen (19 yalnızca orta/geniş haritada, klasik haritada 7). Varsayılan kapalı.' },
     houseRules: { title: (n: number) => `Ev kuralları (${n} açık)`, note: 'SRD 5.2.1 dışı kurallar; her biri ayrı açılıp kapanır. Serüven kuralları yalnızca serüven haritalarında açık gelir.', sefer: 'serüven' },
     title: 'Game Master: savaşı kur',

@@ -62,3 +62,17 @@ Kuyruk S2 (kural sürümü 41) iki silah satırını da kapattı (`silahFirlat`,
 ## Hâlâ sığmayanlar
 
 Yok. (P10 bölümündeki "kalan yaklaşıklık" sütunu, o satırların özellik adıyla kalan farkını yazar.)
+
+## Fırlatılan silahın elden çıkması (Kuyruk K58 G8)
+
+Genel SRD Thrown kuralında fırlatılan silah elden çıkar, hedefin yanına düşer; paketin `silahFirlat` ilkeli ise silahı geri döndürür
+(Element Rünü). Oyunda **genel** Thrown silahlar elden çıkmaz (basitleştirme; javelin, hançer, el baltası atan canavar ve
+karakterler cephane gibi sınırsız atar). S2 el modeli (`heldItems.ts`, `drop_item`/`pick_up`) bunu taşıyabilir, ancak:
+
+- Mekanik donması (Kuyruk K57, docs/MEKANIK-DONMA.md): yeni kural ve yeni komut akışı (otomatik düşürme, silah sayısı) eklenmez.
+- Etkisi dengede büyük: fırlatan her canavar (SRD'de onlarca javelin/hançer atan) ilk atıştan sonra yakın dövüşe ya da
+  yerden almaya döner; yapay zekâya "silahını al" davranışı ve karakterde silah adedi gerekir (K59 denge turuna bağlı).
+
+Bu yüzden `silahFirlat` dönüşü pakette olduğu gibi kalır (geri döner); genel kural donma kalkınca kural sürümü kapısıyla
+(eski kayıt aynı) ele alınmalı. Karar DECISIONS.md (Kuyruk K58).
+

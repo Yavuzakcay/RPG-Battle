@@ -334,6 +334,7 @@ export const en: Strings = {
       note: 'Each mechanic can be toggled and its parameters edited; when off, visuals, terrain and objects stay, only the rule effect stops. Choices are written to the battle record.',
       dirs: { N: 'North', NE: 'North-east', SE: 'South-east', S: 'South', SW: 'South-west', NW: 'North-west' } as Record<string, string>,
     },
+    aiDifficulty: { label: 'AI difficulty', party: 'Party', enemies: 'Enemies', kolay: 'Easy', normal: 'Normal', usta: 'Master (experimental)' } as Record<string, string>,
     multiHex: { label: 'Large creatures occupy several hexes (experimental)', note: 'Large 3, Huge 7, Gargantuan 19 hexes (19 only on medium/wide maps, 7 on classic maps). Off by default.' },
     houseRules: { title: (n: number) => `House rules (${n} on)`, note: 'Rules outside SRD 5.2.1; each can be toggled. Adventure rules default on only on adventure maps.', sefer: 'adventure' },
     title: 'Game Master: set up the battle',
@@ -794,6 +795,7 @@ export const en: Strings = {
       gm: 'The Game Master can wake it at any time with "Game Master: Wake the dragon".',
     },
     drawer: {
+      aiRole: 'AI role', aiRoles: { auto: 'Automatic', hasarci: 'Striker', kontrolcu: 'Controller', destek: 'Support', tank: 'Tank' } as Record<string, string>,
       untrainedArmor: 'Untrained armor', untrainedArmorTip: 'Lacks training with this armor: can\'t cast spells, Disadvantage on Strength and Dexterity D20 Tests.',
       details: (name: string) => `${name} details`,
       stats: (hp: number, max: number, ac: number, speed: number, fly: number) => `HP ${hp}/${max} · AC ${ac} · speed ${speed} ft${fly ? ` · fly ${fly} ft` : ''}`,
@@ -882,6 +884,7 @@ export const en: Strings = {
     p11: { store: 'Store', storeInfo: 'Do not release the spell yet: store it (slot and action spent; fire later).', fire: (name: string): string => `Stored spell: ${name}` },
     discovery: { found: (n: string): string => `Discovery: ${n}!`, book: 'Discovery Log', count: (a: number, b: number): string => `${a} / ${b} discovered`, unknown: '???', profile: 'Player profile', exportBtn: 'Export', importBtn: 'Import', seen: (n: number): string => `×${n}`,
       name: {"douse": "Dousing area + Fire → put out", "waterFire": "Water + Fire → steam", "waterGrease": "Water + Grease → disperses", "waterPoison": "Water + Poison cloud → thins", "waterWeb": "Water + Web → dissolves", "oilSpread": "Burning oil → spreads", "fireOil": "Fire + Oil → blaze", "fireWeb": "Fire + Web → burning web", "fireIce": "Fire + Ice → melts", "fireWater": "Fire + Water → steam", "fireGrease": "Fire + Grease → blaze", "fireFog": "Fire + Fog → evaporates", "coldWater": "Cold + Water → ice", "coldTile": "Cold + Shallow water → freezes", "coldSteam": "Cold + Steam → water", "lightningIce": "Lightning + Ice → cracks", "lightningOil": "Lightning + Oil → blaze", "lightningGrease": "Lightning + Grease → blaze", "forceWater": "Force + Water → overflows", "acidWeb": "Acid + Web → dissolves", "webFree": "Burning web → captive freed", "firePoison": "Fire + Poison cloud → explosion", "lightningWater": "Lightning + Water → spreads", "windClouds": "Wind + Cloud → drifts", "gustClouds": "Gust + Cloud → scatters", "waterDecay": "Water + Surface → fades", "oilMove": "Oil → slip", "greaseMove": "Grease → slip", "iceMove": "Ice → slip", "fireKeg": "Fire + Powder keg → explosion", "acidWood": "Acid + Wood → corrodes", "waterOil": "Water + Oil → displaces"} as Record<string, string> },
+    origin: { label: 'Point of origin', self: 'Yourself' },
     preview: {
       hit: (p: string): string => `Hit ${p}`, crit: (p: string): string => `crit ${p}`, dmg: (r: string): string => `damage ${r}`, heal: (r: string): string => `healing ${r}`,
       save: (ab: string, dc: number, p: string): string => `${ab.toUpperCase()} save DC ${dc} · success ${p}`, kill: (p: string): string => `drop ${p}`,

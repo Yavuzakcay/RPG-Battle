@@ -211,6 +211,7 @@ export const TR_EXTRA = {
       gm: 'Game Master her an "Game Master: Ejderhayı uyandır" ile uyandırabilir.',
     },
     drawer: {
+      aiRole: 'Yapay zekâ rolü', aiRoles: { auto: 'Kendiliğinden', hasarci: 'Hasarcı', kontrolcu: 'Kontrolcü', destek: 'Destek', tank: 'Tank' } as Record<string, string>,
       untrainedArmor: 'Eğitimsiz zırh', untrainedArmorTip: 'Bu zırh için eğitimi yok: büyü yapamaz, Güç ve Çeviklik D20 testlerinde dezavantajlı.',
       details: (name: string) => `${name} ayrıntıları`,
       stats: (hp: number, max: number, ac: number, speed: number, fly: number) => `HP ${hp}/${max} · AC ${ac} · hız ${speed} ft${fly ? ` · uçuş ${fly} ft` : ''}`,
@@ -299,6 +300,8 @@ export const TR_EXTRA = {
     p11: { store: 'Sakla', storeInfo: 'Büyüyü yapma, sakla (slot ve eylem harcanır; sonra ateşle).', fire: (name: string): string => `Saklı büyü: ${name}` },
     discovery: { found: (n: string): string => `Keşif: ${n}!`, book: 'Keşif Defteri', count: (a: number, b: number): string => `${a} / ${b} keşfedildi`, unknown: '???', profile: 'Oyuncu profili', exportBtn: 'Dışa aktar', importBtn: 'İçe aktar', seen: (n: number): string => `×${n}`,
       name: {"douse": "Söndüren alan + Alev → söner", "waterFire": "Su + Alev → buhar", "waterGrease": "Su + Gres → dağılır", "waterPoison": "Su + Zehir bulutu → seyrelir", "waterWeb": "Su + Ağ → çözülür", "oilSpread": "Yanan yağ → yayılır", "fireOil": "Alev + Yağ → yangın", "fireWeb": "Alev + Ağ → yanan ağ", "fireIce": "Alev + Buz → erir", "fireWater": "Alev + Su → buhar", "fireGrease": "Alev + Gres → yangın", "fireFog": "Alev + Sis → buharlaşır", "coldWater": "Soğuk + Su → buz", "coldTile": "Soğuk + Sığ su → donar", "coldSteam": "Soğuk + Buhar → su", "lightningIce": "Yıldırım + Buz → çatlar", "lightningOil": "Yıldırım + Yağ → yangın", "lightningGrease": "Yıldırım + Gres → yangın", "forceWater": "Kuvvet + Su → taşar", "acidWeb": "Asit + Ağ → erir", "webFree": "Yanan ağ → tutsak kurtulur", "firePoison": "Alev + Zehir bulutu → patlama", "lightningWater": "Yıldırım + Su → yayılır", "windClouds": "Rüzgâr + Bulut → sürüklenir", "gustClouds": "Esinti + Bulut → dağılır", "waterDecay": "Su + Yüzey → azalır", "oilMove": "Yağ → kayma", "greaseMove": "Gres → kayma", "iceMove": "Buz → kayma", "fireKeg": "Alev + Barut fıçısı → patlama", "acidWood": "Asit + Ahşap → aşınır", "waterOil": "Su + Yağ → yer değiştirir"} as Record<string, string> },
+    /** Kuyruk K58 G8: büyünün çıkış noktası (paket çağrısı). */
+    origin: { label: 'Çıkış noktası', self: 'Kendin' },
     preview: {
       hit: (p: string): string => `İsabet ${p}`, crit: (p: string): string => `kritik ${p}`, dmg: (r: string): string => `hasar ${r}`, heal: (r: string): string => `iyileşme ${r}`,
       save: (ab: string, dc: number, p: string): string => `${ab.toUpperCase()} kurtulma DC ${dc} · başarı ${p}`, kill: (p: string): string => `düşürme ${p}`,

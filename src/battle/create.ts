@@ -669,7 +669,7 @@ export function startBattle(
   environmentId: string,
   participants: Combatant[],
   rng: Rng,
-  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; yuzeyEtkilesimi?: boolean; kuralSurumu?: number; houseRules?: Record<string, boolean>; goals?: Goals | null; groupStates?: Record<string, { state?: GroupState; links?: string[] }>;
+  opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; /** Kuyruk K58 G5: yapay zekâ zorluğu (kayıtta). */ yz?: BattleState['yz']; yuzeyEtkilesimi?: boolean; kuralSurumu?: number; houseRules?: Record<string, boolean>; goals?: Goals | null; groupStates?: Record<string, { state?: GroupState; links?: string[] }>;
     /** Kuyruk 31: Serüven savaşı: bitince keşfe devam ve çıkış altıgenleri. */ explore?: { exits: Offset[] } } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
@@ -755,6 +755,7 @@ export function startBattle(
     combatants,
     ...(opts.diceMode && opts.diceMode !== 'auto' ? { diceMode: opts.diceMode } : {}),
     ...(opts.explore ? { explore: opts.explore } : {}),
+    ...(opts.yz ? { yz: opts.yz } : {}),
     ...(opts.multiHex && map ? { multiHex: true, ...(multiHexWide(map) ? {} : { multiHexMax: 'H' as const }) } : {}),
     // Görev Y1: yüzey etkileşimi varsayılan açık; yalnızca kapatılınca yazılır.
     ...(opts.yuzeyEtkilesimi === false ? { yuzeyEtkilesimi: false } : {}),

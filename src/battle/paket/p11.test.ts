@@ -14,6 +14,8 @@ import { mk } from '../fixtures';
 import { replay } from '../reduce';
 import { forcedMove } from '../motion';
 import { poolChances } from './p11';
+import { summonOrigins } from './p11cast';
+import { actionDescriptors } from '../ai/actions';
 import type { AttackOption, BattleEvent, Combatant } from '../types';
 import type { Rng } from '../../rules/dice';
 
@@ -227,6 +229,18 @@ describe('P11 G3: büyü yapımı', () => {
     r.do({ type: 'cast_spell', actorId: 'A', spellName: 'Shocking Grasp', targetId: 'B', originId: 'F' } as never, fixed(0.9));
     expect(r.c('A').pos).toEqual(o(0, 0));
     same(r);
+  });
+  it('K58 G8: çıkış noktası seçenekleri ve yapay zekâ adayı (originId)', () => {
+    const r = caster('wizard', 'murekkep-ruhu', ['Shocking Grasp'], { place: { A: o(0, 0), B: o(6, 3), C: o(1, 0) },
+      extra: [mk('F', { ownerId: 'p1', hp: 5, maxHp: 5, summon: { by: 'A', spellId: 'pk', spell: 'pk', turn: 'after-owner', level: 1 } })] });
+    patch(r, 'F', { pos: o(5, 3) });
+    expect(summonOrigins(r.state, r.c('A')).map((c) => c.id)).toEqual(['F']);
+    expect(summonOrigins(r.state, r.c('C'))).toEqual([]);
+    const d = actionDescriptors().find((x) => x.id === 'paket:cikis');
+    const cands = d?.gen(r.state, r.c('A'), { canAct: true, foes: [r.c('B')], allies: [] } as never) ?? [];
+    const c = cands.find((x) => x && x.type === 'cast_spell' && x.spellName === 'Shocking Grasp' && x.targetId === 'B');
+    expect(c && 'originId' in c ? c.originId : undefined).toBe('F');
+    expect(r.try(c as never).ok).toBe(true);
   });
   it('gucDeposu: slotlu büyüyle güç birikir, silah isabetinde boşalır', () => {
     const r = caster('bard', 'ezgi-deposu', ['Healing Word'], {}, 5);

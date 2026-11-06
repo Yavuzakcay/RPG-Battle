@@ -29,6 +29,8 @@ import { registerCommandEnd, registerTurnStart } from '../turnHooks';
 import { registerAction } from '../ai/actions';
 import { bondRecallEvents } from '../heldItems';
 import { p11On } from './p11';
+import { summonOrigins } from './p11cast';
+import { spellOf } from '../features';
 import { JETON_ARKETIP, JETON_YEDEK } from '../../content/ilkelSema';
 import { resolveSave } from '../../rules/attack';
 import { askReaction } from '../../rules/reactionChoice';
@@ -914,6 +916,22 @@ registerAction({
         for (const hx of hexes) out.push({ ...base, ...(t ? { targetId: t.id } : {}), to: hx } as Command);
       }
     }
+    return out;
+  },
+});
+
+/**
+ * Kuyruk K58 G8: paket `buyuDegisimi.cikisCagri`: hedefli saldırı/kurtulma büyüleri çağrının altıgeninden (`originId`)
+ * aday olur; puanı kuru çalıştırma verir (menzil ve görüş çağrıdan; çağrı düşmana yakınsa seçilir).
+ */
+registerAction({
+  id: 'paket:cikis', kind: 'damage', note: 'Ek paket: büyü çağrının altıgeninden (cikisCagri), hedefli saldırı/kurtulma büyüleri',
+  gen: (state, actor, h) => {
+    const origins = summonOrigins(state, actor);
+    if (!origins.length || !h.canAct) return [];
+    const sp = actor.spellNames.map((n) => spellOf(n)).filter((x): x is NonNullable<typeof x> => !!x && (x.mechanics.kind === 'attack' || x.mechanics.kind === 'save') && !x.area).slice(0, 4);
+    const out: Command[] = [];
+    for (const o of origins.slice(0, 2)) for (const x of sp) for (const t of h.foes.slice(0, 2)) out.push({ type: 'cast_spell', actorId: actor.id, spellName: x.name, targetId: t.id, originId: o.id });
     return out;
   },
 });

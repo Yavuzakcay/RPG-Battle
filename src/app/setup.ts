@@ -248,6 +248,8 @@ export function createMapBattle(
     explore?: { exits: Offset[] };
     /** Kuyruk 43 (deneysel, varsayılan kapalı): büyük yaratıklar birden çok altıgen kaplar (Görev A6). */
     multiHex?: boolean;
+    /** Kuyruk K58 G5: yapay zekâ zorluğu (taraf başına). */
+    yz?: BattleState['yz'];
   },
   rng: Rng,
 ): Session {
@@ -271,6 +273,7 @@ export function createMapBattle(
     ...(choice.groupStates ? { groupStates: choice.groupStates } : {}),
     ...(choice.explore ? { explore: choice.explore } : {}),
     ...(choice.multiHex ? { multiHex: true } : {}),
+    ...(choice.yz ? { yz: choice.yz } : {}),
   });
   // İnisiyatif zarları (kaydedici Rng ile kurulduysa): animasyon ve elle girilen zarların kaydı için.
   const rolled = isRecording(rng) ? rng.groups() : [];
