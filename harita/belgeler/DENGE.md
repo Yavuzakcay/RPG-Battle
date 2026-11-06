@@ -2656,3 +2656,16 @@ A2 bağlamalı canavar içeren 4 senaryo (Çöl: Mummy, Death Dog; Volkan: Fire 
 | Orman — Mielikki Gölü | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 3,2 → 3,2 |
 
 Fark 30 tohumda gürültü içinde (en çok bir savaş); aralık dışı satır yok. Mummy laneti (HP kazanamaz) Çöl'de ölümleri hafif artırıyor görünüyor; 30 tohumda anlamlı değil.
+
+## Görev P0: ek paket ilkelleri hızlı regresyon (30 tohum, seviye 5, standart parti; paket kapalı, sayı ayarı yok)
+
+A2 ile aynı 4 senaryo, kural sürümü 30 (P0 sürüm değiştirmedi). Paket yüklü değilken ortak kancalar (isabet kancası, `attackedAdvBy`, büyü hasarı eklentisi) hiçbir şey üretmez.
+
+| Senaryo | Kazanma A2 → P0 | Ort. ölen PC A2 → P0 | En az 1 ölüm A2 → P0 | Ort. tur A2 → P0 |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 97% → 97% | 0,10 → 0,10 | 10% → 10% | 7,3 → 7,3 |
+| Volkan | 97% → 97% | 0,27 → 0,27 | 17% → 17% | 6,3 → 6,3 |
+| Orman — Ork Kampı | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 5,6 → 5,6 |
+| Orman — Mielikki Gölü | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 3,2 → 3,2 |
+
+Sonuçlar A2 ile birebir aynı; aralık dışı satır yok.
