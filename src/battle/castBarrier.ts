@@ -4,7 +4,9 @@ import { silencedAt } from './zones';
 import type { BattleState, Combatant } from './types';
 
 /** Neden türü: `armor` eğitimsiz zırh (SRD 5.2.1 Armor Training: "can't cast spells"), `silence` Silence içinde sözlü büyü. */
-export function castBarrierKind(state: BattleState, actor: Combatant, spell: Spell): 'armor' | 'silence' | null {
+export function castBarrierKind(state: BattleState, actor: Combatant, spell: Spell): 'armor' | 'silence' | 'form' | null {
+  // Kuyruk A8 (Gaseous Form, `noCastForm`): biçim büyü yapmaya izin vermez.
+  if (actor.effects?.some((e) => e.noCastForm)) return 'form';
   if (actor.effects?.some((e) => e.noCast)) return 'armor';
   if (!spell.noVerbal && actor.pos && silencedAt(state, actor.pos)) return 'silence';
   return null;
@@ -13,6 +15,7 @@ export function castBarrierKind(state: BattleState, actor: Combatant, spell: Spe
 /** Motorun hata metni (yoksa null). */
 export function castBarrier(state: BattleState, actor: Combatant, spell: Spell): string | null {
   const kind = castBarrierKind(state, actor, spell);
+  if (kind === 'form') return `${actor.effects?.find((e) => e.noCastForm)?.name ?? 'Biçim'}: bu biçimde büyü yapılamaz.`;
   if (kind === 'armor') return `${actor.effects?.find((e) => e.noCast)?.name ?? 'Eğitimsiz zırh'}: büyü yapılamaz.`;
   if (kind === 'silence') return `${silencedAt(state, actor.pos!)?.name ?? 'Silence'}: sessizlikte sözlü (V) bileşenli büyü yapılamaz.`;
   return null;

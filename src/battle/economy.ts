@@ -7,6 +7,8 @@
  * Komut başarılı olursa `action_used` olayı komutun olaylarının ardına eklenir; başarısız
  * komut hiçbir şey harcamaz.
  */
+import { heldFollow, mechanicsAt } from './spellVersion';
+import { breathOf } from './breath';
 import { abilitiesOf } from './monsterAbilities';
 import { apexCost, isApex } from './apex';
 import { globalRule } from './ruleControl';
@@ -22,6 +24,7 @@ import { ruleVersion } from './ruleVersion';
 const hasTrait = (c: Pick<Combatant, 'traits'>, t: string): boolean => !!c.traits?.includes(t);
 
 const ACTION_NAMES: Partial<Record<Command['type'], string>> = {
+  moral_rally: 'Toparla',
   attack: 'Attack',
   monster_attack: 'saldırı',
   multiattack: 'Multiattack',
@@ -164,9 +167,12 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
   const e = actor.economy;
   const slowed = actor.effects?.some((x) => x.slowed) ?? false;
   if (cost.event.kind === 'action' && e.hasted) {
-    if (!HASTE_ACTIONS.includes(cmd.type)) return fail('Haste\'in ek eylemiyle yalnızca tek silah saldırısı, Dash, Disengage ya da Hide yapılır.');
+    // Kuyruk A6 (sürüm 35): Utilize (nesne kullanma) da.
+    if (!HASTE_ACTIONS.includes(cmd.type) && !(cmd.type === 'object_use' && ruleVersion(state) >= 35)) return fail('Haste\'in ek eylemiyle yalnızca tek silah saldırısı, Dash, Disengage ya da Hide yapılır.');
     if (cmd.type === 'attack') return { ok: true, event: { ...cost.event, attacksLeft: 0 } };
   }
+  // Kuyruk A8 (Stinking Cloud): eylem ve bonus eylem yok.
+  if ((cost.event.kind === 'action' || cost.event.kind === 'bonus') && actor.effects?.some((x) => x.noActBonus)) return fail('Zehirli bulutun etkisinde: bu tur eylem ve bonus eylem yapılamaz.');
   // Kuyruk 19: Confusion: bonus eylem yok.
   if (cost.event.kind === 'bonus' && actor.effects?.some((x) => x.noBonus)) return fail('Bu durumda bonus eylem yapılamaz (Confusion).');
   if (slowed && cost.event.kind === 'action' && e.bonus) return fail('Slow: bu tur bonus eylem kullanıldı, eylem yapılamaz.');
@@ -179,9 +185,12 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
   const e = actor.economy;
   switch (cmd.type) {
     case 'attack':
+    case 'breath_weapon':
+      // Kuyruk A7: büyüyle verilen nefes Magic eylemidir (saldırının yerine değil).
+      if (breathOf(actor)?.spell) return spend(actor, 'action', "Dragon's Breath");
+    // falls through
     case 'attack_gate':
     case 'attack_object':
-    case 'breath_weapon':
     case 'grapple':
     case 'shove': {
       // Light silahla saldırı (yan el silahından farklı): yan el ek saldırısını açar (Görev P1).
@@ -237,6 +246,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'help':
     case 'distract':
+    case 'moral_rally':
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'monster_ability': {
       // Kuyruk 19: SRD canavar yeteneği (eylem ya da bonus eylem; `monsterAbilities.ts`).
@@ -255,6 +265,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'object_use':
       // Görev S2: kapı açıp kapamak ve nesne almak (Görev S3) eylemsiz; kilit açma, masa devirme, mangal dökme eylem (Utilize).
       if (cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take') return { ok: true, event: null };
+      // A1: nesne fırlatmak eylem (Utilize değil; Fast Hands kapsamaz).
+      if (cmd.action === 'throw') return spend(actor, 'action', 'Nesne fırlat');
       // Kuyruk 19 (featuresK19): Thief'in Fast Hands'i: Utilize bonus eylemle (eylem kullanılmışsa ya da her zaman tercih edilir).
       if (actor.traits?.includes('fast-hands') && globalRule(state, 'featuresK19') && !e.bonus) return spend(actor, 'bonus', 'Utilize (Fast Hands)');
       return spend(actor, 'action', 'Utilize');
@@ -313,17 +325,26 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, 'bonus', cmd.kind === 'fell-glare' ? 'Fell Glare' : cmd.kind === 'fey-step' ? 'Fey Step' : 'Healing Touch');
     case 'command_summons':
       return spend(actor, 'bonus', 'Yaratıklara emir');
-    case 'summon_move':
+    case 'summon_move': {
+      // Kuyruk A6 (Conjure Animals): sahibi bu tur yürüdüyse sürüyü de taşır (bonus eylem değil; turda bir kez).
+      const pack = Object.values(state.combatants).find((c) => c.summon?.by === actor.id && c.summon.withOwner && !c.summon.gone);
+      if (pack && actor.movementUsed > 0 && !actor.economy.packMoved) return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Sürü sahibiyle', packMoved: true } };
       return spend(actor, 'bonus', 'Çağrıyı taşı');
+    }
     case 'spell_followup': {
       // Görev B1: süreli tekrarın maliyeti büyü verisinde (Call Lightning, Vampiric Touch: eylem).
       if (dispelEvilSpellOf(state, actor)) return spend(actor, 'action', 'Dispel Evil and Good');
       // Kuyruk 19: Tree Stride eylem harcamaz (5 ft hareket).
       if (cmd.targetHex && strideSpellOf(state, actor)) return { ok: true, event: null };
       // Kuyruk 19: Faithful Hound taşıma Magic eylemi.
-      if (cmd.targetHex && movableZoneOf(state, actor)) return spend(actor, 'action', 'Faithful Hound');
-      const cost = spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat?.cost ?? 'bonus';
-      return spend(actor, cost, actor.concentration?.spell ?? 'büyü');
+      const mz = cmd.targetHex ? movableZoneOf(state, actor) : null;
+      // Kuyruk A7: taşıma maliyeti büyünün tekrarından (Dancing Lights bonus eylem); eski kayıtta Faithful Hound eylem.
+      if (mz) return spend(actor, ruleVersion(state) >= 36 ? mz.spell.mechanics.repeat?.cost ?? 'action' : 'action', mz.spell.name);
+      // Kuyruk A6: elde tutulan büyü (Produce Flame: Magic eylemi); tekrar alanları sürüme göre.
+      const followed = heldFollow(state, actor)?.spell ?? actor.concentration?.spell;
+      const fsp = spells.find((x) => x.name === followed);
+      const cost = (fsp ? mechanicsAt(state, fsp).repeat?.cost : undefined) ?? 'bonus';
+      return spend(actor, cost, followed ?? 'büyü');
     }
     case 'cast_spell': {
       const spell = spells.find((s) => s.name === cmd.spellName);

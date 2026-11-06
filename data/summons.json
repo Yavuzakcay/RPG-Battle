@@ -77,7 +77,8 @@
       "count": {
         "base": 1,
         "perLevel": 2
-      }
+      },
+      "commandBonusV35": 60
     },
     "flaming-sphere": {
       "srd": "spells:flaming-sphere",
@@ -102,7 +103,8 @@
       "zoneRadius": 2,
       "ownerBonus": {
         "moveFt": 30
-      }
+      },
+      "withOwnerV35": true
     },
     "giant-insect": {
       "srd": "spells:giant-insect",
@@ -367,6 +369,8 @@
       "size": "L",
       "creatureType": "beast",
       "avatar": "monsters/giant-spider.webp",
+      "avatarByChoice": { "spider": "monsters/giant-spider.webp", "centipede": "monsters/giant-centipede.webp", "wasp": "monsters/giant-wasp.webp" },
+      "ringByChoice": { "spider": "#8a7fd0", "centipede": "#c9894a", "wasp": "#e3c74a" },
       "ac": {
         "base": 11,
         "perLevel": 1

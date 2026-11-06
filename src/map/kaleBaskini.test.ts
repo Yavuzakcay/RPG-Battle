@@ -21,7 +21,7 @@ describe('Kale Baskını', () => {
     expect(getMap('kale-avlu').seferKurallari).toEqual([]);
     expect(getMap('kale').seferKurallari).toEqual([]);
     const s = setupBattle(kb, seeded(1), 3);
-    expect([houseRule(s, 'barutPatlama'), houseRule(s, 'alarmKosusu'), houseRule(s, 'lair')]).toEqual([true, true, false]);
+    expect([houseRule(s, 'barutPatlama'), houseRule(s, 'alarmKosusu'), houseRule(s, 'asitHavuzu')]).toEqual([true, true, false]);
   });
   it('3. ve 5. seviyede gruplar, hedefler ve nesneler kurulur', () => {
     for (const level of [3, 5]) {

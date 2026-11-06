@@ -15,7 +15,11 @@ import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { applyEvents } from './reduce';
-import { compelEvents } from './mind';
+import { compelEvents, pfegRepeatAdv } from './mind';
+import { canSee } from './maprules';
+import { ruleVersion } from './ruleVersion';
+import { distance } from '../rules/hex';
+import { lineOfFire } from './cover';
 import { strikeApi } from './reactions';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 
@@ -30,7 +34,8 @@ function ongoingEvents(c: Combatant, e: ActiveEffect, rng: Rng): BattleEvent[] {
   const fx = damageEffects(c, adj.amount, o.type, false, rng);
   const after = { ...c, hp: fx.hpAfter };
   let save: Extract<BattleEvent, { type: 'effect_tick' }>['save'];
-  if (fx.hpAfter > 0) {
+  // Kuyruk A6 (Ensnaring Strike, `noSave`): tur başı save yok, kurtulma eylemle Athletics (`escapeCheck`).
+  if (fx.hpAfter > 0 && !o.noSave) {
     const r = resolveSave({ extra: saveDice(after, o.save), modifier: after.saves[o.save], dc: o.dc, mode: saveMode('normal', after, o.save) }, rollTag(rng, { by: c.id }));
     save = { ability: o.save, dc: o.dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { extra: r.extra } : {}) };
   }
@@ -127,9 +132,16 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
       // Görev B3: Approach ve Flee önce zorlamayla yürütür (Fear: Dash ile kaçış); sonra tur biter. Süren zorlamada
       // (Suggestion, Fear, Calm Emotions) etki kalır.
       const moved = e.command === 'approach' || e.command === 'flee' ? compelEvents(current, id, e, e.command, rng) : [];
-      evs = [...moved, { type: 'turn_lost', actorId: id, label: e.name, command: e.command },
-        ...(e.commandPersist ? [] : [{ type: 'effect_ended' as const, targetId: id, effectId: e.id, name: e.name, reason: 'turn' as const }])];
-      skip = true;
+      // Kuyruk A7 (sürüm 36, Command Approach): yalnızca büyücünün 5 ft içine varınca tur biter; varamazsa (yolu kalmadı)
+      // turuna devam eder (SRD "ending its turn if it moves within 5 feet of you").
+      const after = applyEvents(current, moved);
+      const me = after.combatants[id];
+      const src = after.combatants[e.sourceId];
+      const free = e.command === 'approach' && !e.commandPersist && ruleVersion(state) >= 36 && !!me?.pos && !!src?.pos && distance(me.pos, src.pos) > 1;
+      evs = free ? [...moved, { type: 'effect_ended' as const, targetId: id, effectId: e.id, name: e.name, reason: 'turn' as const }]
+        : [...moved, { type: 'turn_lost', actorId: id, label: e.name, command: e.command },
+          ...(e.commandPersist ? [] : [{ type: 'effect_ended' as const, targetId: id, effectId: e.id, name: e.name, reason: 'turn' as const }])];
+      if (!free) skip = true;
     }
     events.push(...evs);
     current = applyEvents(current, evs);
@@ -142,6 +154,11 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
  * kurtarma zarı (Slow, Ray of Enfeeblement; başarıda biter).
  */
 export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): BattleEvent[] {
+  // Kuyruk A4: kaynağın sonraki turunun sonunda biten etkiler (Color Spray, Starry Wisp).
+  const srcEnd: BattleEvent[] = Object.values(state.combatants).flatMap((x) => (x.effects ?? [])
+    .filter((e) => e.endAfterSourceTurn !== undefined && e.sourceId === id && state.round > e.endAfterSourceTurn)
+    .map((e): BattleEvent => ({ type: 'effect_ended', targetId: x.id, effectId: e.id, name: e.name, reason: 'expired' })));
+  if (srcEnd.length) return [...srcEnd, ...effectTurnEndEvents(applyEvents(state, srcEnd), id, rng)];
   const c0 = state.combatants[id];
   if (!c0?.effects?.length || c0.hp <= 0) return [];
   const events: BattleEvent[] = [];
@@ -159,9 +176,14 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: d.rolls, appliedDamage: adj.amount,
         damageType: e.delayed.type, targetHpAfter: fx.hpAfter, effects: fx.effects },
       { type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'turn' });
+    } else if (e.repeatSave && e.repeatSaveUnseen && sourceSeen(current, c, e.sourceId)) {
+      // Kuyruk A4 (Fear): kaynağı görürken tur sonu save'i yok.
+      continue;
     } else if (e.repeatSave) {
       const { ability, dc } = e.repeatSave;
-      const r = resolveSave({ extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode('normal', c, ability) }, rollTag(rng, { by: c.id }));
+      // Kuyruk A6: Protection from Evil and Good: korunulan türden kaynağın büyüsüne/korkusuna yeni save avantajlı.
+      const pfeg = pfegRepeatAdv(current, c.id, e.sourceId, [...(e.grants ?? []), ...(e.charm ? ['Charmed'] : [])]);
+      const r = resolveSave({ extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, ability) }, rollTag(rng, { by: c.id }));
       // Kuyruk 19: başarısız save'de yinelenen hasar (Phantasmal Killer).
       const fd = !r.success ? e.repeatSave.failDamage : undefined;
       const d = fd ? rollDice(fd.dice, rollTag(rng, { kind: 'damage', by: e.sourceId })) : null;
@@ -179,10 +201,12 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       } else if (r.success) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
     } else if (e.blink) {
       // Görev WIZARD: Blink: tur sonunda d20; 11+ ise sonraki turunun başına dek Ethereal (hedef alınamaz, etkilenmez).
-      const d = rollDie(20, rollTag(rng, { by: id, kind: 'check' }));
-      evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: `${e.name} (d20 ${d})`, damageRolls: [], appliedDamage: 0, damageType: '',
+      // Kuyruk A6 (sürüm 35, `blink: 'd6'`): SRD 5.2.1 zarı d6, 4–6 (olasılık aynı).
+      const six = e.blink === 'd6';
+      const d = rollDie(six ? 6 : 20, rollTag(rng, { by: id, kind: 'check' }));
+      evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: `${e.name} (${six ? 'd6' : 'd20'} ${d})`, damageRolls: [], appliedDamage: 0, damageType: '',
         targetHpAfter: c.hp, effects: [] });
-      if (d >= 11) evs.push({ type: 'effect_added', targetId: id, effect: { id: 'blink:ethereal', name: 'Blink: Ethereal', sourceId: id, ethereal: true, icon: '✧' } });
+      if (d >= (six ? 4 : 11)) evs.push({ type: 'effect_added', targetId: id, effect: { id: 'blink:ethereal', name: 'Blink: Ethereal', sourceId: id, ethereal: true, icon: '✧' } });
     }
     events.push(...evs);
     current = applyEvents(current, evs);
@@ -231,3 +255,8 @@ function confusionTurn(state: BattleState, id: string, e: ActiveEffect, rng: Rng
   return { events: [note(`rastgele hedefe saldırır: ${pick.name}`), ...api.strike(state, id, pick.id, rng), lost], skip: true };
 }
 
+/** Kuyruk A4: etkinin kaynağı hayatta ve görüş hattında mı (Fear'ın tekrar save koşulu). */
+function sourceSeen(state: BattleState, c: Combatant, sourceId: string): boolean {
+  const src = state.combatants[sourceId];
+  return !!src && src.hp > 0 && !src.summon?.gone && !!src.pos && !!c.pos && !!state.map && !lineOfFire(state, c, src).blocked && canSee(state, c, src) && !src.conditions.includes('Invisible');
+}

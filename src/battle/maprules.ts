@@ -534,6 +534,12 @@ export function litHexes(state: BattleState): Set<string> {
     if (c.pos && c.hp > 0 && r >= 0) sources.push({ at: c.pos, r });
   }
   for (const h of zoneLight(state)) sources.push(h);
+  // Kuyruk A7 (sürüm 36): nesneye bağlı ışık (Light, Continual Flame): taşıyanın yerinde ya da nesnenin altıgeninde.
+  for (const o of state.map.objects ?? []) {
+    if (o.light === undefined) continue;
+    const at = o.carriedBy ? state.combatants[o.carriedBy]?.pos : o.at;
+    if (at) sources.push({ at, r: o.light });
+  }
   for (const src of sources) for (const h of withinRange(src.at, src.r, size)) lit.add(`${h.col},${h.row}`);
   for (const key of magicDarkHexes(state)) lit.delete(key);
   return lit;
@@ -545,7 +551,8 @@ const zoneSpecOf = (spellId: string) => { const m = spells.find((s) => s.id === 
 function zoneLight(state: BattleState): Array<{ at: Offset; r: number }> {
   const out: Array<{ at: Offset; r: number }> = [];
   for (const z of state.map?.zones ?? []) {
-    const r = zoneSpecOf(z.spellId)?.light;
+    // Kuyruk A7: alanda saklanan sürümlü kural (`z.spec`) önce.
+    const r = (z.spec ?? zoneSpecOf(z.spellId))?.light;
     if (r === undefined) continue;
     const anchor = z.anchorId ? state.combatants[z.anchorId]?.pos : undefined;
     if (anchor) out.push({ at: anchor, r: (z.radius ?? 1) + r });

@@ -26,6 +26,8 @@ export interface AttackContext {
    * dezavantaj). Yoksa eski kural (yakın dövüş avantaj, menzilli dezavantaj).
    */
   proneWithin5?: boolean;
+  /** A1 (kural sürümü 29): saldıran Grappled ve hedef yakalayanı değil (SRD 5.2.1: dezavantaj). */
+  grappledOther?: boolean;
 }
 
 const ATTACKER_DISADVANTAGE = ['Blinded', 'Frightened', 'Poisoned', 'Prone', 'Restrained'];
@@ -64,6 +66,7 @@ export function attackSources(ctx: AttackContext): ModeSource[] {
   for (const c of ATTACKER_DISADVANTAGE) {
     if (ctx.attackerConditions.includes(c)) out.push({ effect: 'disadvantage', reason: `Saldıran ${c}` });
   }
+  if (ctx.grappledOther) out.push({ effect: 'disadvantage', reason: 'Saldıran yakalanmış (yakalayan dışına)' });
   if (ctx.attackerConditions.includes('Invisible')) {
     out.push({ effect: 'advantage', reason: 'Saldıran görünmez' });
   }

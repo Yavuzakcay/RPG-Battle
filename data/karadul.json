@@ -1,0 +1,36 @@
+{
+  "note": "Kuyruk K48 Adım C: Karadul Çemberi (Circle of the Black Widow), özgün Druid alt sınıfı, EV KURALI (SRD 5.2.1 dışı; ev kuralı `karadulCemberi`, varsayılan kapalı; kural sürümü `surum`). Seçim 3. seviye, özellikler 3/6/10/14. Wild Shape'in yerine Örümcek Biçimi (`replaces`). Alt sınıf özelliklerinin DC'si 8 + yeterlilik + insan biçimindeki CHA. Bütün sayılar burada; mekanik `src/battle/karadul.ts`. Metinler özgün.",
+  "surum": 21,
+  "subclass": {
+    "id": "karadul-cemberi",
+    "class": "druid",
+    "ev": true,
+    "replaces": ["druid:wild-shape"],
+    "ekBeceriler": ["persuasion", "deception"],
+    "name": { "tr": "Karadul Çemberi", "en": "Circle of the Black Widow" },
+    "role": { "tr": "Cazibe avcısı: büyüler, yaklaşır, örümceğe dönüşüp vurur", "en": "Charm hunter: beguiles, closes in, strikes in spider form" },
+    "features": [
+      { "id": "bewitching-gaze", "level": 3, "name": { "tr": "Büyüleyici Bakış", "en": "Bewitching Gaze" }, "status": "calisir",
+        "description": { "tr": "Bonus eylemle 30 ft içindeki bir insansı ya da canavar WIS save atar (DC 8 + yeterlilik + CHA). Başarısızsa 1 saat Charmed ve seni dost sayar; sen ya da dostların ona saldırır ya da zarar verirseniz büyü bozulur. Aynı anda en çok CHA değiştiricin kadar hedef. Yeterlilik bonusu kadar kullanım, uzun dinlenmede yenilenir. Ek yeterlilik: Persuasion, Deception.", "en": "As a Bonus Action, a Humanoid or Monstrosity within 30 feet makes a Wisdom save (DC 8 + proficiency + Charisma). On a failure it is Charmed for 1 hour and regards you as a friend; the charm ends if you or your allies attack or harm it. At most a number of targets equal to your Charisma modifier. Uses equal to your Proficiency Bonus, regained on a Long Rest. Bonus proficiencies: Persuasion, Deception." } },
+      { "id": "spider-shape", "level": 3, "name": { "tr": "Örümcek Biçimi", "en": "Spider Shape" }, "status": "calisir",
+        "description": { "tr": "Wild Shape'in yerine. Bonus eylemle örümcek biçimine girer ya da bırakırsın (3: Giant Wolf Spider, 6: Giant Spider, 10: Phase Spider). Biçimin canı (geçici HP) ve AC'si canavarınki; biçim canı bitince geri dönersin. Biçimde büyü yok. Skor takası: STR↔CHA, CON↔WIS. Yeterlilik bonusu kadar kullanım, kısa dinlenmede yenilenir.", "en": "Replaces Wild Shape. As a Bonus Action you take or leave spider form (3: Giant Wolf Spider, 6: Giant Spider, 10: Phase Spider). The form's hit points (temporary HP) and AC are the creature's; you revert when they run out. No spells in form. Score swap: STR↔CHA, CON↔WIS. Uses equal to your Proficiency Bonus, regained on a Short Rest." } },
+      { "id": "widow-venom", "level": 3, "name": { "tr": "Karadul Zehri", "en": "Widow's Venom" }, "status": "calisir",
+        "description": { "tr": "Örümcek biçimindeki vuruşlar ek 1d6 zehir hasarı (10: 2d6); hedef CON save (alt sınıf DC'si) atamazsa bir tur Poisoned. Karadul büyüleri her zaman hazır: Ray of Sickness, Web (3), Stinking Cloud (5), Blight (7), Cloudkill (9).", "en": "Spider form hits deal an extra 1d6 Poison damage (10: 2d6); the target must succeed on a Constitution save (subclass DC) or be Poisoned for one round. Widow spells are always prepared: Ray of Sickness, Web (3), Stinking Cloud (5), Blight (7), Cloudkill (9)." },
+        "effect": { "type": "passive", "status": "ok", "alwaysPrepared": { "3": ["Ray of Sickness", "Web"], "5": ["Stinking Cloud"], "7": ["Blight"], "9": ["Cloudkill"] }, "note": "K48 denge: Toprak Çemberi'nin çember büyülerinin karşılığı (zehir/ağ teması; SRD 5.2.1 büyüleri, her zaman hazır)." } },
+      { "id": "sweet-snare", "level": 6, "name": { "tr": "Tatlı Tuzak", "en": "Sweet Snare" }, "status": "calisir",
+        "description": { "tr": "Büyülediğin hedefe örümceğe dönüştüğün turdaki ilk saldırın sürpriz vuruştur: avantaj ve ek 2d8 zehir (10: 3d8, 14: 4d8); büyü vuruştan sonra biter. Turda bir kez.", "en": "Your first attack against a creature you charmed, on the turn you take spider form, is a surprise strike: Advantage and an extra 2d8 Poison (10: 3d8, 14: 4d8); the charm ends after the strike. Once per turn." } },
+      { "id": "web-sense", "level": 10, "name": { "tr": "Ağ Duyusu", "en": "Web Sense" }, "status": "calisir",
+        "description": { "tr": "Zehir hasarına ve Poisoned durumuna bağışıklık. 30 ft titreşim algısı (algılama sistemi gelene kadar yalnızca bağışıklık).", "en": "Immunity to Poison damage and the Poisoned condition. 30-foot tremorsense (until senses are modelled, only the immunity applies)." } },
+      { "id": "final-kiss", "level": 14, "name": { "tr": "Son Öpücük", "en": "Final Kiss" }, "status": "calisir",
+        "description": { "tr": "Uzun dinlenmede bir kez: sürpriz vuruş isabet ederse otomatik kritik; hedef CON save atamazsa hasar zarları en yüksek ve bir tur Stunned. Vuruştan sonra canı yarının altındaysa, efsanevi değilse ve CR'si seviyenin yarısını aşmıyorsa ölür. Efsanevi hedefte yalnızca hasar ve Stunned.", "en": "Once per Long Rest: if your surprise strike hits, it is a critical hit; on a failed Constitution save the damage dice are maximised and the target is Stunned for one round. If it is then below half its hit points, not legendary, and of CR no higher than half your level, it dies. Legendary targets take only the damage and Stunned." } }
+    ]
+  },
+  "skorTakasi": [["str", "cha"], ["con", "wis"]],
+  "bakis": { "menzilFt": 30, "turler": ["humanoid", "monstrosity"], "sureTur": 600, "bonusSeviye": 3, "enAzHedef": 1 },
+  "orumcek": { "bicimler": { "3": "giant-wolf-spider", "6": "giant-spider", "10": "phase-spider" }, "saatBolu": 2 },
+  "zehir": { "zar": { "3": "1d6", "10": "2d6" }, "save": "con", "tur": 1 },
+  "tuzak": { "zar": { "6": "2d8", "10": "3d8", "14": "4d8" } },
+  "ag": { "seviye": 10, "titresimFt": 30 },
+  "opucuk": { "seviye": 14, "stunTur": 1, "canEsigi": 0.5, "crOran": 0.5 },
+  "kaynaklar": { "bakis": "karadulGaze", "orumcek": "karadulSpider", "opucuk": "karadulKiss" }
+}

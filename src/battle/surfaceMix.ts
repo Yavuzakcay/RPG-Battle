@@ -49,7 +49,7 @@ function shrink(z: SpellZone, remove: Set<string>): BattleEvent {
 }
 
 /** Ağdaki tutsakları (Web'in Restrained etkisi) serbest bırakır; `burn`: yanan ağ alanının hasarı da gelir. */
-function freeCaptives(s: BattleState, web: SpellZone, hexes: Offset[], rng: Rng, burn?: SpellZone): BattleEvent[] {
+export function freeCaptives(s: BattleState, web: SpellZone, hexes: Offset[], rng: Rng, burn?: SpellZone): BattleEvent[] {
   const at = keys(hexes);
   const out: BattleEvent[] = [];
   let cur = s;

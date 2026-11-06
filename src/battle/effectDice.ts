@@ -3,7 +3,9 @@
  * zarına eklenecek ±zarlar. Saf; zarlar `rules/attack.ts` `rollExtras` ile atılır.
  */
 import { exhaustionD20Penalty } from '../rules/exhaustion';
-import { extrasTotal, rollExtras, secondChance, spoilChance, type ExtraDie, type RolledExtra } from '../rules/attack';
+import { moraleCheckDice, moraleSaveDice } from './morale';
+import { paketChances } from './paket/sans';
+import { extrasTotal, rollExtras, secondChanceAll, spoilChance, type ExtraDie, type RolledExtra } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { resourceLeft, type Combatant } from './types';
 import type { Ability } from '../rules/abilities';
@@ -24,7 +26,9 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (!c) return [];
   // Görev BARD: Bardic Inspiration (dosttaki süren etki): başarısız D20 Testine zar; atılınca etki biter.
   const inspired: ExtraDie[] = (c.effects ?? []).filter((e) => e.inspire)
-    .map((e) => ({ label: e.name, die: e.inspire as string, sign: 1, reroll: 'onFail', single: true, effectId: e.id, holderId: c.id }));
+    .map((e) => ({ label: e.name, die: e.inspire as string, sign: 1, reroll: 'onFail', single: true, effectId: e.id, holderId: c.id,
+      // Kuyruk K48 (sürüm 19, `bardicInspirationChain`): önceki ikinci şans tutmazsa ilham zarı yine atılır.
+      ...(c.inspireChain ? { chain: true } : {}) }));
   // Kuyruk 43: Legendary Resistance (SRD 5.2.1; günde N): başarısız save'i başarıya çevirir; boss'un turları arasında en
   // çok bir kez (`lrLock`, kendi turunun başında kalkar: aynı tur içinde art arda harcamaz).
   if (on === 'save' && resourceLeft(c, 'legendaryResistance') > 0 && !c.lrLock) {
@@ -38,6 +42,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   }
   // Kuyruk 19 (srdK19): Burst of Ingenuity (Sphinx of Wonder): kendisi ya da 30 ft'teki dostunun başarısız save/kontrolüne +2,
   // yalnızca başarıya çevirecekse; sfenksin tepkisi ve 2/Day havuzu harcanır (`burstBy`: reducer `syncAuras` yazar).
+  // Kuyruk K54b: Omuz Ver (Birlik Manastırı): Bağlı dostun başarısız kurtulmasına tepkiyle +WIS, yalnız başarıya çevirecekse.
+  if (on === 'save' && c.shoulderBy) k18.push({ label: 'Omuz Ver', die: `+${c.shoulderBy.bonus}`, sign: 1, reroll: 'plus', rerollBonus: c.shoulderBy.bonus, reaction: true, holderId: c.shoulderBy.id });
   if (on !== 'attack' && c.burstBy) k18.push({ label: 'Burst of Ingenuity', die: '+2', sign: 1, reroll: 'plus', rerollBonus: 2, reaction: true, holderId: c.burstBy.id, pool: c.burstBy.pool });
   // Kuyruk 19 (Epic Boon): Improve Fate: 60 ft'teki boon sahibi dostun başarısızına +2d4, düşmanın başarısına −2d4.
   if (c.fateBy) k18.push({ label: 'Improve Fate', die: '2d4', sign: 1, reroll: 'onFail', resource: 'improveFate', holderId: c.fateBy });
@@ -64,6 +70,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if ((c.traits?.includes('heroic-warrior') || c.traits?.includes('resourceful')) && resourceLeft(c, 'heroicInspiration') > 0) {
     k18.push({ label: 'Heroic Inspiration', die: 'd20', sign: 1, reroll: 'd20', resource: 'heroicInspiration', holderId: c.id });
   }
+  // Görev P6: ek paket girişleri (d20 alt sınırı, zar mührü, zorla sonuç; menzil `syncAuras` → `pkSans`).
+  k18.push(...paketChances(c, on));
   const traits = c.traits;
   // Not (Kuyruk 18): kural sürümü < 16'da işaretli savaşçıda `inspired` aşağıda düşüyor (eski davranış; replay için korunur).
   // Kuyruk 19: `inspireFix` (reducer `syncAuras`, Game Master anahtarı `bardicInspirationFix`) varken listede kalır.
@@ -87,7 +95,7 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   if (on === 'check' && traits.includes('tactical-mind') && resourceLeft(c, 'secondWind') > 0) {
     out.push({ label: 'Tactical Mind', die: '1d10', sign: 1, reroll: 'onFail', resource: 'secondWind', holderId: c.id });
   }
-  return [...out, ...(c.inspireFix ? inspired : []), ...k18];
+  return [...out, ...(c.inspireFix || c.inspireChain ? inspired : []), ...k18];
 }
 
 /** Görev S1: bitkinlik (Exhaustion) her d20 Testine −2 × seviye (sabit eklenti; zar atılmaz). */
@@ -109,15 +117,20 @@ function saveModDice(c: Combatant | undefined, ability: Ability | undefined): Ex
 
 /** Kuyruk 18 H3: dost Paladin'in Aura of Protection'ı (sabit eklenti; `syncAuras` yazar). */
 const auraDice = (c: Combatant | undefined): ExtraDie[] => (c?.auraSave ? [{ label: 'Aura of Protection', die: String(c.auraSave), sign: 1 }] : []);
+/** Kuyruk K50: Taht Varlığı (İmparator) WIS kurtulma bonusu (`syncAuras` yazar). */
+const throneDice = (c: Combatant | undefined, ability: Ability | undefined): ExtraDie[] => (c?.imzaWisSave && ability === 'wis' ? [{ label: 'Taht Varlığı', die: String(c.imzaWisSave), sign: 1 }] : []);
+
+/** Kuyruk K54b: Mevzi İşareti kurtulma bonusu (`syncAuras` yazar). */
+const wardDice = (c: Combatant | undefined): ExtraDie[] => (c?.wardSave ? [{ label: 'Mevzi İşareti', die: String(c.wardSave), sign: 1 }] : []);
 
 /** Kurtarma zarına (Bless, Bane; CILA: yetenek verilirse sabit eklentiler, Slow DEX −2). */
 export const saveDice = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
-  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...exhaustionDice(c), ...secondChances(c, 'save'), ...mightFloor(c, ability)];
+  [...diceOn(c, 'save'), ...saveModDice(c, ability), ...auraDice(c), ...throneDice(c, ability), ...wardDice(c), ...exhaustionDice(c), ...secondChances(c, 'save'), ...mightFloor(c, ability), ...moraleSaveDice(c, ability)];
 /** Kuyruk 19: Indomitable Might (Barbarian 18): STR save/kontrol toplamı STR skorundan küçükse skor sayılır. */
 const mightFloor = (c: Combatant | undefined, ability?: Ability): ExtraDie[] =>
   c && ability === 'str' && c.traits?.includes('indomitable-might') ? [{ label: 'Indomitable Might', die: 'STR', sign: 1, reroll: 'floor', rerollBonus: c.strScore }] : [];
 /** Yetenek kontrolüne (Guidance: seçilen beceri). */
-export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...exhaustionDice(c), ...secondChances(c, 'check'), ...(skill === 'athletics' ? mightFloor(c, 'str') : [])];
+export const checkDice = (c: Combatant | undefined, skill?: string): ExtraDie[] => [...diceOn(c, 'check', skill), ...exhaustionDice(c), ...secondChances(c, 'check'), ...(skill === 'athletics' ? mightFloor(c, 'str') : []), ...moraleCheckDice(c, skill)];
 
 /**
  * Görev F, Reliable Talent: yetkin olunan becerinin kontrolünde 9 ve altı d20 10 sayılır (`skills` yalnızca yetkin
@@ -139,10 +152,10 @@ export function finishCheck(
   const extra = rollExtras(dice, 'check', rollTag(rng, { by: c.id }));
   let total = natural + bonus + extrasTotal(extra);
   if (dc !== null && total < dc) {
-    const again = secondChance(dice, { total, natural, bonus, need: dc, mode, kind: 'check' }, rollTag(rng, { by: c.id }));
-    if (again) { total = again.total; extra.push(again.entry); }
+    const again = secondChanceAll(dice, { total, natural, bonus, need: dc, mode, kind: 'check' }, rollTag(rng, { by: c.id }));
+    if (again) { total = again.total; extra.push(...again.entries); }
   } else if (dc !== null) {
-    const spoil = spoilChance(dice, { total, need: dc, kind: 'check' }, rollTag(rng, { by: c.id }));
+    const spoil = spoilChance(dice, { total, need: dc, kind: 'check', natural }, rollTag(rng, { by: c.id }));
     if (spoil) { total = spoil.total; extra.push(spoil.entry); }
   }
   return { natural, total, extra };

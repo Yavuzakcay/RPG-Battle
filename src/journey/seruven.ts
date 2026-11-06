@@ -13,11 +13,14 @@ import type { CharacterSheet } from '../rules/stats';
 import { seferById, seferRoute } from './sefer';
 import { nextLevelXp } from './engine';
 import { combatantFromSheet } from '../battle/create';
+import { armor } from '../data';
 import { skillBonus, type Skill } from '../rules/skills';
 import type { JourneyMember, JourneyStop } from './types';
 import { gorevById, irkBaslangic, urunById, satisFiyati, yerlesimById, yerlesimHarita, YERLESIM } from '../yerlesim/yerlesim';
 import { levelCap } from '../app/limits';
 import { HAPIS, dragBack, nonlethal, sucById, wakeUp, type HapisDurum } from './hapishane';
+import { moralDeltas, moralStatuses, reviveCaster, revivedStatus, type MoralReason } from './moral';
+import { MORAL } from '../rules/moral';
 
 export interface SeruvenNode {
   id: string; x: number; y: number; requires: string[]; all?: boolean; optional?: boolean; boss?: boolean; zorluk?: number;
@@ -135,6 +138,8 @@ export type SeruvenCommand =
   | { type: 'hapse_at'; suc?: string }
   | { type: 'hapis_kapi'; to: string | null; statuses?: Record<string, CharacterStatus>; hapisBulgu?: HapisBulgu }
   | { type: 'tasma_cikar'; yol: 'altin' | 'hizmet' }
+  /** Kuyruk K48: Moral: ölü üyeyi dirilt (yerleşim tapınağı altınla ya da partide diriltme büyüsü). */
+  | { type: 'moral_dirilt'; memberId: string; yol: 'tapinak' | 'buyu' }
   /** K47: dünya haritasında yürü, hızlı seyahat (gemi/uçuş), yumuşak kilit kontrolü (`src/world/roam.ts`). */
   | RoamCommand;
 
@@ -147,11 +152,15 @@ export type SeruvenEvent =
   | { type: 'seruven_page'; page: string; resetNight: boolean; /** Kuyruk 34b: geri dönüşte varış (çıkış işareti). */ at?: string }
   | { type: 'seruven_night'; key: string; on: boolean }
   | { type: 'seruven_toggle'; key: string; on: boolean }
-  | { type: 'seruven_result'; key: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number; flags?: string[]; /** Kuyruk 32: bozgunda uzun dinlenildi. */ rested?: boolean;
+  | { type: 'seruven_result'; key: string; outcome: 'won' | 'lost'; statuses: Record<string, CharacterStatus>; xp: number; gold: number; potions: number; flags?: string[]; /** Kuyruk 32: bozgunda uzun dinlenildi. */ rested?: boolean; /** Kuyruk K48: savaşta düşen üyeler (Moral). */ downed?: string[];
       /** Kuyruk 35: savaş atlandı (test anahtarı); kayıtta "atlandı" işareti. */ skipped?: boolean }
   | { type: 'seruven_visited'; key: string; gold: number; potions: number; items: string[] }
   | { type: 'seruven_finished'; result: 'won' | 'lost' }
   | { type: 'seruven_rested'; key: string; statuses: Record<string, CharacterStatus> }
+  /** Kuyruk K48: Moral değişimi (nedenler, Moral ölümleri); yalnızca değişen üyelerin durumu. */
+  | { type: 'seruven_moral'; statuses: Record<string, CharacterStatus>; reasons: MoralReason[]; deaths: string[] }
+  /** Kuyruk K48: diriltme (tapınak ya da büyü): durumlar (dirilen + büyücünün slotu) ve harcanan altın. */
+  | { type: 'seruven_dirildi'; memberId: string; yol: 'tapinak' | 'buyu'; statuses: Record<string, CharacterStatus>; gold: number }
   | { type: 'seruven_leveled'; level: number }
   | { type: 'seruven_link_checked'; link: string; total: number; dc: number; success: boolean; by: string }
   | { type: 'seruven_link_crossed'; link: string; page: string; node: string; flags?: string[]; statuses?: Record<string, CharacterStatus> }
@@ -318,6 +327,8 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
         type: 'seruven_result', key, outcome: cmd.outcome, statuses, xp: cmd.xp,
         gold: cmd.outcome === 'won' ? stop?.reward?.gold ?? 0 : 0, potions: cmd.outcome === 'won' ? (stop?.potions ?? 0) + (stop?.reward?.potions ?? 0) : 0,
         ...(cmd.flags?.length ? { flags: cmd.flags } : {}), ...(rested ? { rested: true } : {}), ...(cmd.skipped ? { skipped: true } : {}),
+        // Kuyruk K48 (Moral): savaşta düşen üyeler (bozgun dinlenmesinden önceki durum).
+        ...(toggleOn(state, 'moralSistemi') ? ((d) => (d.length ? { downed: d } : {}))(state.party.filter((m) => { const st = cmd.statuses[m.id]; return !!st && (st.dead || st.hp <= 0) && !m.status.dead && m.status.hp > 0; }).map((m) => m.id)) : {}),
       }];
       const able = state.party.some((m) => { const st = statusOf(m, statuses); return !st.dead && st.hp > 0; });
       if (!able && !kural) evs.push({ type: 'seruven_finished', result: 'lost' });
@@ -325,15 +336,31 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       if (bulgu) evs.push(bulgu);
       return done(state, evs);
     }
+    case 'moral_dirilt': return moralRevive(state, cmd);
     case 'world_walk': case 'fast_travel': case 'world_check': {
-      const r = roamEvents(state, cmd, (k) => toggleOn(state, k), bestSkill);
+      const r = roamEvents(state, cmd, (k) => toggleOn(state, k), bestSkill, heavyArmorMember);
       return typeof r === 'string' ? fail(r) : done(state, r);
     }
     default: return yerlesimCommand(state, page, cmd);
   }
 }
 
-function done(state: SeruvenState | null, events: SeruvenEvent[]): SeruvenResult {
+function done(state: SeruvenState | null, events0: SeruvenEvent[]): SeruvenResult {
+  let events = events0;
+  // Kuyruk K48: Moral (anahtar `moralSistemi`): komutun olaylarından sonra kayıp/kazanç ve Moral ölümü.
+  if (state && toggleOn(state, 'moralSistemi') && !events.some((e) => e.type === 'seruven_moral')) {
+    const mid = applySeruvenEvents(state, events);
+    if (mid) {
+      const d = moralDeltas(state, mid, events, toggleOn(state, 'moralTam'));
+      const r = moralStatuses(mid, d);
+      if (Object.keys(r.statuses).length) {
+        events = [...events, { type: 'seruven_moral', statuses: r.statuses, reasons: d.reasons, deaths: r.deaths }];
+        // Moral ölümüyle savaşabilen kalmadıysa Serüven yenilgiyle biter.
+        const after = applySeruvenEvents(mid, events.slice(-1));
+        if (after && !after.result && !after.party.some((m) => !m.status.dead && m.status.hp > 0)) events = [...events, { type: 'seruven_finished', result: 'lost' }];
+      }
+    }
+  }
   const s = applySeruvenEvents(state, events);
   return s ? { ok: true, state: s, events } : fail('Durum yok.');
 }
@@ -366,6 +393,8 @@ function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | nul
     case 'seruven_visited': return { ...s, done: [...s.done, e.key], gold: s.gold + e.gold, potions: s.potions + e.potions, items: [...s.items, ...e.items] };
     case 'seruven_finished': return { ...s, result: e.result };
     case 'seruven_rested': return { ...s, done: [...s.done, e.key], rests: (s.rests ?? 0) + 1, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
+    case 'seruven_moral': return { ...s, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
+    case 'seruven_dirildi': return { ...s, gold: s.gold - e.gold, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_leveled': return { ...s, level: e.level, party: s.party.map((m) => (m.sheet.level < e.level ? { ...m, sheet: { ...m.sheet, level: e.level } } : m)) };
     case 'seruven_link_checked': return e.success ? { ...s, links: [...new Set([...(s.links ?? []), e.link])] } : { ...s, linkTry: { ...(s.linkTry ?? {}), [e.link]: s.rests ?? 0 } };
     case 'seruven_yerlesim': return {
@@ -431,7 +460,15 @@ export function linkCrossable(s: SeruvenState, l: SeruvenLink): boolean {
   return !back || !l.geriKilit || s.done.includes(l.geriKilit) || toggleOn(s, 'serbestGezinti');
 }
 
-/** Partinin bu becerilerdeki en iyi bonusu (karakter sayfasından türetilen savaşçı). */
+/** K49 D: ağır zırh giyen yaşayan üye (yüzme kuralı); yoksa null. */
+export function heavyArmorMember(s: SeruvenState): string | null {
+  for (const m of s.party) {
+    if (m.status.dead || m.status.hp <= 0) continue;
+    if (armor.find((a) => a.name === m.sheet.armorName)?.type === 'heavy') return m.name;
+  }
+  return null;
+}
+
 /** Partide becerilerden en yüksek bonusu olan üye (K47: dünya kontrolleri ve pasif Algı da kullanır). */
 export function bestSkill(s: SeruvenState, skills: readonly string[]): { bonus: number; name: string } {
   let best = { bonus: -99, name: '' };
@@ -647,6 +684,31 @@ function hapisCommand(state: SeruvenState, page: SeruvenPage, cmd: SeruvenComman
     default:
       return fail('Bilinmeyen komut.');
   }
+}
+
+/**
+ * Kuyruk K48: ölü üyeyi diriltme (Moral açıkken). Tapınak: yerleşimde tapınak ve `dirilme.tapinakUcreti` altın. Büyü:
+ * partide diriltme büyüsünü bilen, slotu olan canlı üye ve maddi bileşenin altını (SRD 5.2.1; slot harcanır). Dirilen
+ * 1 HP ve `dirilme.moral` Moral ile döner.
+ */
+function moralRevive(state: SeruvenState, cmd: { memberId: string; yol: 'tapinak' | 'buyu' }): SeruvenResult {
+  if (!toggleOn(state, 'moralSistemi')) return fail('Moral kapalı.');
+  const m = state.party.find((x) => x.id === cmd.memberId);
+  if (!m?.status.dead) return fail('Diriltilecek ölü üye yok.');
+  if (cmd.yol === 'tapinak') {
+    const y = state.yerlesim ? yerlesimById(state.yerlesim.id) : undefined;
+    if (!y?.hub.tapinak) return fail('Burada tapınak yok.');
+    const cost = MORAL.dirilme.tapinakUcreti;
+    if (state.gold < cost) return fail('Altın yetmiyor.');
+    return done(state, [{ type: 'seruven_dirildi', memberId: m.id, yol: 'tapinak', statuses: { [m.id]: revivedStatus(m.status) }, gold: cost }]);
+  }
+  const caster = reviveCaster(state.party);
+  if (!caster) return fail('Partide diriltme büyüsü (ve slotu) olan yok.');
+  if (state.gold < caster.gold) return fail('Altın yetmiyor (maddi bileşen).');
+  const slots = [...caster.member.status.slots];
+  slots[caster.level - 1] = Math.max(0, (slots[caster.level - 1] ?? 0) - 1);
+  return done(state, [{ type: 'seruven_dirildi', memberId: m.id, yol: 'buyu', gold: caster.gold,
+    statuses: { [m.id]: revivedStatus(m.status), [caster.member.id]: { ...caster.member.status, slots } } }]);
 }
 
 /** Kuyruk 36: düğüm haritasında kapı (0 tabanlı konum). */

@@ -1,0 +1,33 @@
+/* Kuyruk K51: hizalanma ızgarası, eksen çubukları, katkı dökümü, Game Master paneli, kart etiketi. */
+.align-wrap { display: grid; gap: 8px; justify-items: center; }
+.align-grid { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); width: min(300px, 100%); aspect-ratio: 1; border: 1px solid var(--line, #555); border-radius: 8px; overflow: hidden; }
+.align-wrap.small .align-grid { width: 96px; }
+.align-cell { border: 1px solid rgba(255, 255, 255, .08); display: grid; place-items: center; text-align: center; padding: 2px; }
+.align-cell small { font-size: 10px; opacity: .65; line-height: 1.1; }
+.align-cell.on { background: rgba(233, 196, 106, .18); }
+.align-needle, .align-start { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; pointer-events: none; }
+.align-needle { background: #e9c46a; box-shadow: 0 0 0 2px #1a1a1a, 0 0 8px rgba(233, 196, 106, .8); }
+.align-start { border: 2px dashed #9ac; background: transparent; }
+.align-wrap.small .align-needle, .align-wrap.small .align-start { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+.align-label { font-size: 14px; }
+.align-bars { display: grid; gap: 6px; width: min(300px, 100%); }
+.align-bars label { display: grid; gap: 2px; font-size: 12px; }
+.align-bar { position: relative; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #6a8, #555 50%, #a66); }
+.align-bar i { position: absolute; top: -3px; width: 4px; height: 12px; margin-left: -2px; background: #fff; border-radius: 2px; }
+.align-contrib { width: 100%; border-collapse: collapse; font-size: 13px; }
+.align-contrib td { padding: 4px 6px; border-bottom: 1px solid rgba(255, 255, 255, .08); }
+.align-contrib td.num { text-align: right; white-space: nowrap; }
+.align-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.align-actions button { min-height: 44px; }
+.align-actions button.on { outline: 2px solid #e9c46a; }
+.gm-align .align-quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.gm-align .align-quick button, .gm-align .align-free button, .gm-align .align-log button { min-height: 40px; }
+.gm-align .align-free { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.gm-align .align-log { max-height: 220px; overflow-y: auto; -webkit-overflow-scrolling: touch; list-style: none; padding: 0; margin: 0; }
+.gm-align .align-log li { display: flex; gap: 6px; align-items: center; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255, 255, 255, .06); font-size: 13px; }
+.gm-align .align-log li.undone { opacity: .45; text-decoration: line-through; }
+.align-chip { display: inline-flex; align-items: center; min-height: 32px; padding: 2px 8px; border-radius: 12px; border: 1px solid var(--line, #555); background: transparent; color: inherit; font-size: 12px; cursor: pointer; }
+.align-pop { padding: 8px; }
+.align-note { margin-left: 6px; font-size: 11px; opacity: .85; }
+.align-moral.bad { color: #d77; }
+.align-moral.good { color: #7c9; }

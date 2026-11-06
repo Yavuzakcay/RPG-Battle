@@ -1,5 +1,7 @@
 // Kuyruk 14 SP1: Gemini sprite'larını içe aktarır. Çalıştırma:
 //   npm run sprite-ice [klasör] [--golge-sil] [--tolerans N] [--boyut N] [--cikti klasör]
+//   npm run sprite-ice -- --efekt   (Görev E1: assets-ham/efekt/ siyah zeminli efekt sayfaları ve macenta durum ikonları;
+//                                    kesim data/efekt-kesim.json, çıktı public/sprites/efekt-*.webp + data/sprite-esleme.json `efektler`)
 // assets-ham/sprite/*.(png|jpg|jpeg) → public/sprites/<ad>.webp (kayıpsız) + data/sprite-mevcut.json (üretilen adlar).
 // Adımlar: köşe renginden zemin (toleranslı), dışarıdan doldurma + iç boşluklar (ağ delikleri), yeşil ya da magenta
 // (Kuyruk 16 K16A) hale temizliği,
@@ -120,7 +122,24 @@ export async function processSprite(file, { tol = TOL, shadow = SHADOW, size } =
   return { buffer: webp.data, width: webp.info.width, height: webp.info.height, warnings, bg };
 }
 
+function writeList() {
+  const all = fs.readdirSync(OUT).filter((f) => f.endsWith('.webp')).map((f) => f.replace(/\.webp$/, '')).sort();
+  fs.writeFileSync(LIST, `${JSON.stringify({ note: 'npm run sprite-ice üretir: public/sprites/ içindeki sprite adları (çizim yalnızca bunları kullanır).', sprites: all }, null, 2)}\n`);
+  return all;
+}
+
 async function main() {
+  if (flag('--efekt')) {
+    const { importEffects } = await import('./efekt-sayfa.mjs');
+    const r = await importEffects({ src: args.find((a) => !a.startsWith('--')) ?? 'assets-ham/efekt', out: OUT, processSprite });
+    if (!r) return;
+    for (const n of r.notes) console.log(`ℹ ${n}`);
+    if (r.missing.length) console.warn(`⚠ tabloda olup klasörde olmayan sayfa: ${r.missing.join(', ')}`);
+    if (r.unmatched.length) console.warn(`⚠ tabloda karşılığı olmayan dosya (işlenmedi): ${r.unmatched.join(', ')}`);
+    const all = writeList();
+    console.log(`${Object.keys(r.records).length} efekt şeridi, ${Object.keys(r.icons).length} ikon; liste ${LIST} (${all.length}).`);
+    return;
+  }
   if (!fs.existsSync(SRC)) { console.log(`${SRC} yok; işlenecek sprite yok.`); return; }
   const files = fs.readdirSync(SRC).filter((f) => /\.(png|jpe?g)$/i.test(f)).sort();
   fs.mkdirSync(OUT, { recursive: true });
@@ -135,8 +154,7 @@ async function main() {
       console.log(`${f} → ${OUT}/${name}.webp ${r.width}×${r.height}${r.warnings.length ? ` ⚠ ${r.warnings.join('; ')}` : ''}`);
     } catch (e) { console.warn(`${f}: ${e.message}`); }
   }
-  const all = fs.readdirSync(OUT).filter((f) => f.endsWith('.webp')).map((f) => f.replace(/\.webp$/, '')).sort();
-  fs.writeFileSync(LIST, `${JSON.stringify({ note: 'npm run sprite-ice üretir: public/sprites/ içindeki sprite adları (çizim yalnızca bunları kullanır).', sprites: all }, null, 2)}\n`);
+  const all = writeList();
   console.log(`${made.length} sprite işlendi; liste ${LIST} (${all.length}).`);
 }
 

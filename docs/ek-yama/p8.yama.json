@@ -1,0 +1,1308 @@
+{
+ "_not": "Görev P7 yaması (P8 dosya adı kullanıcının). `node scripts/ek-yama.mjs` icerik/*.json paketlerine uygular: sınıf + alt sınıf kimliği (eşit ya da içeren) + seviye + ad (TR) eşleşen özelliğin `durum`/`ilkeller` alanları yazılır. `$kaynak`: alt sınıfın ilk kaynak ilkelinin kimliği. Paket metni yok; yalnız kimlik, ad, sayı ve kısa motor notu.",
+ "surum": 1,
+ "girdiler": [
+  {
+   "sinif": "barbarian",
+   "altSinif": "ilkelligin",
+   "seviye": 6,
+   "ad": "Vahşi Doğa",
+   "durum": "calisir",
+   "ilkeller": [
+    {
+     "tur": "buyuluVurus",
+     "kapsam": [
+      "kendi"
+     ]
+    }
+   ]
+  },
+  {
+   "sinif": "druid",
+   "altSinif": "cagri",
+   "seviye": 6,
+   "ad": "Kudretli Sürü",
+   "durum": "calisir",
+   "ilkeller": [
+    {
+     "tur": "buyuluVurus",
+     "kapsam": [
+      "cagrilanlar"
+     ]
+    }
+   ]
+  },
+  {
+   "sinif": "druid",
+   "altSinif": "element",
+   "seviye": 6,
+   "ad": "İlkel Vuruş",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "buyuluVurus",
+     "kapsam": [
+      "kendi"
+     ]
+    }
+   ],
+   "not": "büyülü vuruş; özelliğin varsa başka parçası ayrıca tanımlanmalı"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "sahin-gozlu",
+   "seviye": 7,
+   "ad": "Sihirli Yay",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "buyuluVurus",
+     "kapsam": [
+      "kendi"
+     ]
+    }
+   ],
+   "not": "bütün saldırılar büyülü (yalnız ok ayrımı yok)"
+  },
+  {
+   "sinif": "ranger",
+   "altSinif": "coban",
+   "seviye": 7,
+   "ad": "İstisnai Komut",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "buyuluVurus",
+     "kapsam": [
+      "cagrilanlar"
+     ]
+    }
+   ],
+   "not": "yoldaşın saldırıları büyülü; komut kısmı yok"
+  },
+  {
+   "sinif": "cleric",
+   "altSinif": "firtina",
+   "seviye": 2,
+   "ad": "Yıkıcı Şimşek",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "zarDegistir",
+     "mod": "maks",
+     "saldiri": "hepsi",
+     "hasarTurleri": [
+      "lightning",
+      "thunder"
+     ],
+     "kaynak": {
+      "id": "channelDivinity",
+      "maliyet": 1
+     }
+    }
+   ],
+   "not": "yalnız saldırı zarlı hasarda; kurtulmalı büyü hasarı yok"
+  },
+  {
+   "sinif": "barbarian",
+   "altSinif": "kaos",
+   "seviye": 14,
+   "ad": "Kontrol Sağlama",
+   "durum": "calismiyor",
+   "not": "tablo/zar seçimi ilkeli yok"
+  },
+  {
+   "sinif": "barbarian",
+   "altSinif": "kaos",
+   "seviye": 10,
+   "ad": "Denge Arayışı",
+   "durum": "calismiyor",
+   "not": "tablo/zar seçimi ilkeli yok"
+  },
+  {
+   "sinif": "sorcerer",
+   "altSinif": "ilahi-kan",
+   "seviye": 6,
+   "ad": "Kutsanmış Şifa",
+   "durum": "calismiyor",
+   "not": "iyileştirme zarını değiştirme yok (zarDegistir yalnız saldırı hasarı)"
+  },
+  {
+   "sinif": "monk",
+   "altSinif": "keskinlik",
+   "seviye": 17,
+   "ad": "Kusursuz İsabet",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "zarDegistir",
+     "mod": "maks",
+     "saldiri": "silah",
+     "turdaBir": true
+    }
+   ],
+   "not": "silah isabetinde zarlar en yüksek, turda bir"
+  },
+  {
+   "sinif": "bard",
+   "altSinif": "akrobat",
+   "seviye": 14,
+   "ad": "Usta Gösterisi",
+   "durum": "calismiyor",
+   "not": "Bardic Inspiration zarını değiştirme yok"
+  },
+  {
+   "sinif": "bard",
+   "altSinif": "hatip",
+   "seviye": 6,
+   "ad": "Kusursuz İlham",
+   "durum": "calismiyor",
+   "not": "Bardic Inspiration zarını değiştirme yok"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "ninja",
+   "seviye": 10,
+   "ad": "Gelişmiş Zarlar",
+   "durum": "calismiyor",
+   "not": "üstünlük zarı büyütme yok (zarBuyut yalnız silah zarı)"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "ninja",
+   "seviye": 18,
+   "ad": "Üstün Taktik",
+   "durum": "calismiyor",
+   "not": "üstünlük zarı büyütme yok"
+  },
+  {
+   "sinif": "druid",
+   "altSinif": "feza",
+   "seviye": 10,
+   "ad": "Parıltılı Suret",
+   "durum": "calismiyor",
+   "not": "2d8 etkisinin bağlamı ilkelle tanımlanamadı"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "sahin-gozlu",
+   "seviye": 18,
+   "ad": "Zirve Efsun",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "zarDegistir",
+     "mod": "carpan",
+     "saldiri": "menzilli",
+     "turdaBir": true
+    }
+   ],
+   "not": "menzilli isabette zarlar ikiye katlanır, turda bir"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "siginak",
+   "seviye": 10,
+   "ad": "Gelişmiş Koruma",
+   "durum": "calismiyor",
+   "not": "koruma zarı ilkeli yok"
+  },
+  {
+   "sinif": "barbarian",
+   "altSinif": "element",
+   "seviye": 10,
+   "ad": "Element Kalkanı",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "aura",
+     "yaricapFt": 10,
+     "suzgec": "dostlar",
+     "etki": "direnc",
+     "turler": [
+      "fire",
+      "cold",
+      "lightning",
+      "thunder",
+      "acid"
+     ],
+     "kosul": [
+      "ofke"
+     ]
+    }
+   ],
+   "not": "türler pakette seçimli; burada beş element birden, öfkede"
+  },
+  {
+   "sinif": "paladin",
+   "altSinif": "antik",
+   "seviye": 7,
+   "ad": "Büyü Direnci Aurası",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "koruma",
+     "buyulereAvantaj": true
+    }
+   ],
+   "not": "yalnız sahibinin büyülere karşı kurtulma avantajı; auraya yayılmaz, büyü hasarı direnci yok"
+  },
+  {
+   "sinif": "cleric",
+   "altSinif": "aydin",
+   "seviye": 17,
+   "ad": "Işık Azizi",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "aura",
+     "yaricapFt": 10,
+     "suzgec": "dusmanlar",
+     "etki": "kurtulmaDezavantaji"
+    }
+   ],
+   "not": "auradaki düşmanların bütün kurtulmaları dezavantajlı"
+  },
+  {
+   "sinif": "druid",
+   "altSinif": "curuyus",
+   "seviye": 14,
+   "ad": "Mantar Beden",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "koruma",
+     "kritikBagisikligi": true
+    },
+    {
+     "tur": "aura",
+     "yaricapFt": 0,
+     "suzgec": "dostlar",
+     "etki": "durumBagisikligi",
+     "durumlar": [
+      "Blinded",
+      "Deafened",
+      "Frightened",
+      "Poisoned"
+     ]
+    }
+   ],
+   "not": "durum listesi pakete göre gözden geçirilmeli"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "tezahur",
+   "seviye": 10,
+   "ad": "Sarsılmaz Odak",
+   "durum": "calisir",
+   "ilkeller": [
+    {
+     "tur": "koruma",
+     "konsantrasyonAvantaji": true
+    }
+   ]
+  },
+  {
+   "sinif": "sorcerer",
+   "altSinif": "titan-kani",
+   "seviye": 1,
+   "ad": "Tektonik Yoğunluk",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "gecicCan",
+     "tetik": "savasBasi",
+     "miktar": "$lvl"
+    }
+   ],
+   "not": "azami can yerine savaş başında seviye kadar geçici can; itme avantajı ve yakın büyü vuruşuna CON yok"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "capkin",
+   "seviye": 10,
+   "ad": "Durdurucu Hat",
+   "durum": "calismiyor",
+   "not": "fırsat saldırısı olayı ilkeli yok"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "capkin",
+   "seviye": 18,
+   "ad": "Uyanık Muhafız",
+   "durum": "calismiyor",
+   "not": "tur başına çoklu tepki yok"
+  },
+  {
+   "sinif": "paladin",
+   "altSinif": "intikam",
+   "seviye": 7,
+   "ad": "Kaçınılmaz Avcı",
+   "durum": "calismiyor",
+   "not": "fırsat saldırısı sonrası hareket yok"
+  },
+  {
+   "sinif": "paladin",
+   "altSinif": "intikam",
+   "seviye": 15,
+   "ad": "Ruhsal Misilleme",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "tepki",
+     "olay": "dostaVuruldu",
+     "etki": "saldiriYap",
+     "menzilFt": 30
+    },
+    {
+     "tur": "tepki",
+     "olay": "banaIsabet",
+     "etki": "saldiriYap"
+    }
+   ],
+   "not": "saldırgana karşılık; yalnız yemin hedefi ayrımı yok"
+  },
+  {
+   "sinif": "ranger",
+   "altSinif": "ibliskiran",
+   "seviye": 11,
+   "ad": "Büyü Kesen Vuruş",
+   "durum": "calismiyor",
+   "not": "düşman büyü atarken tepki olayı yok"
+  },
+  {
+   "sinif": "ranger",
+   "altSinif": "ibliskiran",
+   "seviye": 15,
+   "ad": "Karşı Darbe",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "tepki",
+     "olay": "banaIsabet",
+     "etki": "saldiriYap"
+    }
+   ],
+   "not": "isabetten sonra saldırgana saldırı"
+  },
+  {
+   "sinif": "paladin",
+   "altSinif": "muhafiz",
+   "seviye": 15,
+   "ad": "Boyut Karşıtı Vuruş",
+   "durum": "calismiyor",
+   "not": "ışınlanma tepkisi yok"
+  },
+  {
+   "sinif": "paladin",
+   "altSinif": "fetih",
+   "seviye": 15,
+   "ad": "Yenilmez Azap",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "tepki",
+     "olay": "hasarAldim",
+     "etki": "yansit",
+     "oran": 0.5
+    }
+   ],
+   "not": "yakın dövüş hasarının yarısı saldırgana"
+  },
+  {
+   "sinif": "paladin",
+   "altSinif": "kefaret",
+   "seviye": 3,
+   "ad": "Barış Elçisi",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "tepki",
+     "olay": "dostaVuruldu",
+     "etki": "yansit",
+     "oran": 1,
+     "menzilFt": 30,
+     "save": {
+      "yetenek": "wis",
+      "dc": "buyu",
+      "yari": true
+     },
+     "kaynak": {
+      "id": "channelDivinity",
+      "maliyet": 1
+     }
+    }
+   ],
+   "not": "yansıtma kısmı; hasarı dosta değil saldırgana (asıl hasar dosta yine işler)"
+  },
+  {
+   "sinif": "monk",
+   "altSinif": "karanlik",
+   "seviye": 17,
+   "ad": "Gölge Misillemesi",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "tepki",
+     "olay": "dostaVuruldu",
+     "etki": "saldiriYap",
+     "menzilFt": 5
+    }
+   ],
+   "not": "5 ft içindeki dost vurulunca saldırgana saldırı"
+  },
+  {
+   "sinif": "rogue",
+   "altSinif": "kasif",
+   "seviye": 3,
+   "ad": "Çevik Sıyrılma",
+   "durum": "calismiyor",
+   "not": "fırsatsız tepki hareketi yok"
+  },
+  {
+   "sinif": "monk",
+   "altSinif": "astral",
+   "seviye": 11,
+   "ad": "Bedenin Uyanışı",
+   "durum": "calismiyor",
+   "not": "tanımlanacak tepki olayı yok"
+  },
+  {
+   "sinif": "ranger",
+   "altSinif": "ibliskiran",
+   "seviye": 7,
+   "ad": "Doğaüstü Savunma",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "zarEtkisi",
+     "tetik": "pasif",
+     "zar": "1d4",
+     "zarIcin": [
+      "kurtulma"
+     ]
+    }
+   ],
+   "not": "bütün kurtulmalara 1d4 (yalnız hedefin etkilerine ayrımı yok)"
+  },
+  {
+   "sinif": "warlock",
+   "altSinif": "cin",
+   "seviye": 14,
+   "ad": "Sınırlı Dilek",
+   "durum": "hikaye",
+   "not": "herhangi bir büyüyü seçme ilkeli yok; Game Master"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "hissi",
+   "seviye": 18,
+   "ad": "Zihinsel Taşıma",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "kaynak",
+     "id": "p7-tasima",
+     "sayi": 1,
+     "yenilenme": "uzun"
+    },
+    {
+     "tur": "buyuVer",
+     "buyular": [
+      "Telekinesis"
+     ],
+     "bedava": {
+      "id": "p7-tasima"
+     }
+    }
+   ],
+   "not": "Telekinesis uzun dinlenmede bir slotsuz"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "simya",
+   "seviye": 10,
+   "ad": "Dönüşüm",
+   "durum": "hikaye",
+   "not": "savaş dışı dönüşüm"
+  },
+  {
+   "sinif": "warlock",
+   "altSinif": "kraken",
+   "seviye": 10,
+   "ad": "Kara Dokunaçlar",
+   "durum": "calisir",
+   "ilkeller": [
+    {
+     "tur": "kaynak",
+     "id": "p7-dokunac",
+     "sayi": 1,
+     "yenilenme": "uzun"
+    },
+    {
+     "tur": "buyuVer",
+     "buyular": [
+      "Black Tentacles"
+     ],
+     "bedava": {
+      "id": "p7-dokunac"
+     }
+    }
+   ]
+  },
+  {
+   "sinif": "monk",
+   "altSinif": "karanlik",
+   "seviye": 3,
+   "ad": "Gölge Sanatları",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "buyuVer",
+     "buyular": [
+      "Darkness",
+      "Darkvision",
+      "Pass without Trace",
+      "Silence"
+     ],
+     "bedava": {
+      "id": "focus",
+      "maliyet": 2
+     }
+    }
+   ],
+   "not": "Focus ile slotsuz (2)"
+  },
+  {
+   "sinif": "rogue",
+   "altSinif": "illuzyonist",
+   "seviye": 17,
+   "ad": "Büyü Hırsızı",
+   "durum": "calismiyor",
+   "not": "büyü çalma ilkeli yok"
+  },
+  {
+   "sinif": "ranger",
+   "altSinif": "coban",
+   "seviye": 15,
+   "ad": "Büyü Paylaşımı",
+   "durum": "calismiyor",
+   "not": "büyüyü yoldaşa paylaştırma yok"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "aldatma",
+   "seviye": 10,
+   "ad": "İkiz Büyüleme",
+   "durum": "calismiyor",
+   "not": "büyüye hedef ekleme yok"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "zamanalti",
+   "seviye": 10,
+   "ad": "Büyü Mühürleme",
+   "durum": "calismiyor",
+   "not": "büyü depolama yok"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "harp",
+   "seviye": 6,
+   "ad": "Güç Deposu",
+   "durum": "calismiyor",
+   "not": "büyü depolama yok"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "harp",
+   "seviye": 14,
+   "ad": "Misillemeli Sapma",
+   "durum": "calismiyor",
+   "not": "büyü depolama/sapma yok"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "kehanet",
+   "seviye": 6,
+   "ad": "Uzman Kahin",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "yuvaGeriKazan",
+     "tetik": "buyuYuvasi",
+     "enCokSeviye": 5,
+     "turdaBir": true
+    }
+   ],
+   "not": "her slotlu büyüde (okul ayrımı yok) sınır içinde yuva, turda bir"
+  },
+  {
+   "sinif": "cleric",
+   "altSinif": "baris",
+   "seviye": 6,
+   "ad": "Birlik Can Havuzu",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "kaynak",
+     "id": "p7-birlik",
+     "sayi": 1,
+     "yenilenme": "uzun"
+    },
+    {
+     "tur": "ortakCan",
+     "tetik": "eylem",
+     "yaricapFt": 30,
+     "enCok": 4,
+     "kaynak": {
+      "id": "p7-birlik",
+      "maliyet": 1
+     }
+    }
+   ],
+   "not": "ortak havuz; yüzde direnç yok"
+  },
+  {
+   "sinif": "cleric",
+   "altSinif": "baris",
+   "seviye": 17,
+   "ad": "Barış Azizi",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "ortakCan",
+     "tetik": "bonus",
+     "yaricapFt": 60,
+     "enCok": 6,
+     "kaynak": {
+      "id": "channelDivinity",
+      "maliyet": 1
+     }
+    }
+   ],
+   "not": "geniş havuz; yüzde direnç yok"
+  },
+  {
+   "sinif": "druid",
+   "altSinif": "anka",
+   "seviye": 10,
+   "ad": "Közün Şifası",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "yuzeyOlustur",
+     "tetik": "oldurunce",
+     "yuzey": "alan",
+     "yaricapFt": 5,
+     "zaman": [
+      "turBasi"
+     ],
+     "iyilestir": "1d6",
+     "hedefler": "dostlar",
+     "sure": 2
+    }
+   ],
+   "not": "öldürünce dostları iyileştiren zemin"
+  },
+  {
+   "sinif": "sorcerer",
+   "altSinif": "alevbaz",
+   "seviye": 1,
+   "ad": "Termal İntikal",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "yuzeyOlustur",
+     "tetik": "buyuYuvasi",
+     "yuzey": "fire",
+     "yaricapFt": 0,
+     "sure": 1,
+     "turdaBir": true
+    }
+   ],
+   "not": "slotlu büyüde kendi altıgeninde kısa alev"
+  },
+  {
+   "sinif": "sorcerer",
+   "altSinif": "titan",
+   "seviye": 6,
+   "ad": "Sismik Adım",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "yuzeyOlustur",
+     "tetik": "bonus",
+     "yuzey": "alan",
+     "yaricapFt": 5,
+     "zorluArazi": true,
+     "hedefler": "dusmanlar",
+     "sure": 1,
+     "menzilFt": 0
+    }
+   ],
+   "not": "etrafında düşmanlara zorlu arazi"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "uzay-bukme",
+   "seviye": 14,
+   "ad": "Olay Ufku",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "yuzeyOlustur",
+     "tetik": "eylem",
+     "yuzey": "alan",
+     "yaricapFt": 10,
+     "zorluArazi": true,
+     "hasar": "2d10",
+     "hasarTuru": "force",
+     "save": {
+      "yetenek": "str",
+      "dc": "buyu",
+      "yari": true
+     },
+     "zaman": [
+      "turBasi"
+     ],
+     "hedefler": "dusmanlar",
+     "sure": 10,
+     "menzilFt": 60,
+     "kaynak": {
+      "id": "p7-ufuk",
+      "maliyet": 1
+     }
+    },
+    {
+     "tur": "kaynak",
+     "id": "p7-ufuk",
+     "sayi": 1,
+     "yenilenme": "uzun"
+    }
+   ],
+   "not": "çekme yok; zorlu arazi + tur başı hasar"
+  },
+  {
+   "sinif": "bard",
+   "altSinif": "agit",
+   "seviye": 6,
+   "ad": "Ruh Yankısı",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "yuzeyOlustur",
+     "tetik": "oldurunce",
+     "yuzey": "alan",
+     "yaricapFt": 5,
+     "zaman": [
+      "girince"
+     ],
+     "hasar": "1d6",
+     "hasarTuru": "psychic",
+     "hedefler": "dusmanlar",
+     "sure": 2
+    }
+   ],
+   "not": "öldürünce psişik zemin"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "ninja",
+   "seviye": 7,
+   "ad": "Savaş Öğrencisi",
+   "durum": "hikaye",
+   "not": "istatistik görme arayüz bilgisidir"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "taktisyen",
+   "seviye": 9,
+   "ad": "İç Yüz Gözlemi",
+   "durum": "hikaye",
+   "not": "istatistik görme arayüz bilgisidir"
+  },
+  {
+   "sinif": "sorcerer",
+   "altSinif": "ceren",
+   "seviye": 1,
+   "ad": "Telepatik Sezgi",
+   "durum": "hikaye",
+   "not": "telepati savaş dışı"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "kehanet",
+   "seviye": 10,
+   "ad": "Üçüncü Göz",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "algi",
+     "tetik": "bonus",
+     "karanlikGorusFt": 60,
+     "gorunmezGor": true,
+     "sure": "kalici"
+    }
+   ],
+   "not": "karanlık görüş ve görünmezi görme birlikte (seçim yok)"
+  },
+  {
+   "sinif": "paladin",
+   "altSinif": "muhafiz",
+   "seviye": 20,
+   "ad": "Hakiki Görüş",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "algi",
+     "gercekGorusFt": 60
+    }
+   ],
+   "not": "Truesight 60 ft"
+  },
+  {
+   "sinif": "cleric",
+   "altSinif": "yakamoz",
+   "seviye": 1,
+   "ad": "Gecenin Gözleri",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "algi",
+     "karanlikGorusFt": 300
+    },
+    {
+     "tur": "zarEtkisi",
+     "tetik": "pasif",
+     "inisiyatifBonusu": "$wis"
+    }
+   ],
+   "not": "inisiyatif avantajı yerine WIS eklentisi; ağır zırh yetkinliği savaş dışı"
+  },
+  {
+   "sinif": "rogue",
+   "altSinif": "dedektif",
+   "seviye": 13,
+   "ad": "İllüzyon Avcısı",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "algi",
+     "gorunmezGor": true,
+     "gercekGorusFt": 10
+    }
+   ],
+   "not": "yanılsama nesnesi yok; görünmezi görür"
+  },
+  {
+   "sinif": "bard",
+   "altSinif": "varolus",
+   "seviye": 14,
+   "ad": "Yaratılışın Şakırtısı",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "cagirGuclendir",
+     "gecicCan": "$lvl"
+    }
+   ],
+   "not": "çağrılara geçici can"
+  },
+  {
+   "sinif": "druid",
+   "altSinif": "cagri",
+   "seviye": 10,
+   "ad": "Koruyucu Ruhlar",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "cagirGuclendir",
+     "gecicCan": "$lvl"
+    }
+   ],
+   "not": "tur başı iyileştirme yerine çağrılınca geçici can"
+  },
+  {
+   "sinif": "druid",
+   "altSinif": "cagri",
+   "seviye": 14,
+   "ad": "Sadık Muhafızlar",
+   "durum": "planli",
+   "not": "sifirCan tetikli cagir hazır; paketteki yaratık kimliği yamada bilinmiyor (cagir.yaratik eklenmeli)"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "diriltme",
+   "seviye": 6,
+   "ad": "Ölümsüz Ordusu",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "cagirGuclendir",
+     "gecicCan": "$lvl",
+     "ekHasar": "$pb"
+    }
+   ],
+   "not": "HP artışı geçici can olarak; ek hasar PB (zar değil sabit)"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "diriltme",
+   "seviye": 14,
+   "ad": "Ölümsüz Efendisi",
+   "durum": "calismiyor",
+   "not": "zihin kontrolü (kontrolEt) ilkeli yok"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "tezahur",
+   "seviye": 14,
+   "ad": "Dayanıklı Hizmetkar",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "cagirGuclendir",
+     "gecicCan": "$lvl2",
+     "acBonusu": 1
+    }
+   ],
+   "not": "çağrılara geçici can ve AC"
+  },
+  {
+   "sinif": "ranger",
+   "altSinif": "avare",
+   "seviye": 11,
+   "ad": "Peri Müttefikleri",
+   "durum": "calismiyor",
+   "not": "yaratık tanımı gerekir"
+  },
+  {
+   "sinif": "warlock",
+   "altSinif": "muhterem",
+   "seviye": 14,
+   "ad": "Zihinsel İtaat",
+   "durum": "calismiyor",
+   "not": "zihin kontrolü (kontrolEt) ilkeli yok"
+  },
+  {
+   "sinif": "ranger",
+   "altSinif": "coban",
+   "seviye": 11,
+   "ad": "Vahşi Öfke",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "cagirGuclendir",
+     "ekHasar": "1d6"
+    }
+   ],
+   "not": "yoldaşın isabetine ek zar"
+  },
+  {
+   "sinif": "bard",
+   "altSinif": "agit",
+   "seviye": 10,
+   "ad": "Prangası Kopanlar",
+   "durum": "calismiyor",
+   "not": "tanımlanacak çağrı/kontrol ilkeli yok"
+  },
+  {
+   "sinif": "barbarian",
+   "altSinif": "heybet",
+   "seviye": 6,
+   "ad": "Element Rünü",
+   "durum": "calismiyor",
+   "not": "fırlatma ve geri dönüş ilkeli yok"
+  },
+  {
+   "sinif": "ranger",
+   "altSinif": "kovanci",
+   "seviye": 11,
+   "ad": "Güçlü Sürü",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "zorlaHareket",
+     "tetik": "isabet",
+     "hedef": "vurulan",
+     "yon": "it",
+     "mesafeFt": 5,
+     "sonrasi": "yereSer",
+     "boyutSiniri": "L",
+     "turdaBir": true
+    }
+   ],
+   "not": "itme→yere serme; kaydırma→AC yok"
+  },
+  {
+   "sinif": "bard",
+   "altSinif": "harp",
+   "seviye": 3,
+   "ad": "Hücum Marşı",
+   "durum": "calismiyor",
+   "not": "İlhamı AC/hasara çevirme yok; zırh yetkinliği savaş dışı"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "hokkabaz",
+   "seviye": 3,
+   "ad": "Büyü Silahı Bağı",
+   "durum": "hikaye",
+   "not": "silah bağı/ele ışınlama savaş dışı"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "uzay-bukme",
+   "seviye": 2,
+   "ad": "Yoğunluk Ayarı",
+   "durum": "calismiyor",
+   "not": "tanımlanacak ilkel yok"
+  },
+  {
+   "sinif": "bard",
+   "altSinif": "arzu",
+   "seviye": 10,
+   "ad": "Büyülü Cazibe Aurası",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "saldirmadanSave",
+     "save": {
+      "yetenek": "wis",
+      "dc": "buyu"
+     }
+    }
+   ],
+   "not": "yalnız sahibine saldıran kurtulma atar (aura yayılımı yok)"
+  },
+  {
+   "sinif": "bard",
+   "altSinif": "arzu",
+   "seviye": 14,
+   "ad": "Kırılmaz Haşmet",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "saldirmadanSave",
+     "tetik": "bonus",
+     "save": {
+      "yetenek": "cha",
+      "dc": "buyu"
+     },
+     "sure": 10,
+     "kaynak": {
+      "id": "p7-hasmet",
+      "maliyet": 1
+     }
+    },
+    {
+     "tur": "kaynak",
+     "id": "p7-hasmet",
+     "sayi": 1,
+     "yenilenme": "kisa"
+    }
+   ],
+   "not": "bir dakika saldırmadan kurtulma"
+  },
+  {
+   "sinif": "rogue",
+   "altSinif": "silahsor",
+   "seviye": 9,
+   "ad": "Zarif Tehdit",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "meydanOkuma",
+     "tetik": "isabet",
+     "hedef": "vurulan",
+     "sure": 1
+    }
+   ],
+   "not": "vurulan senden başkasına dezavantajlı"
+  },
+  {
+   "sinif": "rogue",
+   "altSinif": "dedektif",
+   "seviye": 3,
+   "ad": "Analitik Dövüş",
+   "durum": "calismiyor",
+   "not": "Sneak Attack şartı ilkeli yok"
+  },
+  {
+   "sinif": "rogue",
+   "altSinif": "kamufle",
+   "seviye": 17,
+   "ad": "Ölümün Dostu",
+   "durum": "calismiyor",
+   "not": "Sneak Attack şartı ilkeli yok"
+  },
+  {
+   "sinif": "rogue",
+   "altSinif": "kasif",
+   "seviye": 13,
+   "ad": "Pusu Öncüsü",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "zarEtkisi",
+     "tetik": "pasif",
+     "inisiyatifBonusu": "$pb"
+    }
+   ],
+   "not": "inisiyatif avantajı yerine PB eklentisi"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "samuray",
+   "seviye": 10,
+   "ad": "Yorulmaz Ruh",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "kaynakYenile",
+     "tetik": "savasBasi",
+     "yenile": {
+      "id": "$kaynak",
+      "maliyet": 1
+     }
+    }
+   ],
+   "not": "savaş başında alt sınıfın ilk kaynağından 1"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "sancaktar",
+   "seviye": 15,
+   "ad": "Sarsılmaz İrade",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "kaynakYenile",
+     "tetik": "savasBasi",
+     "yenile": {
+      "id": "$kaynak",
+      "maliyet": 1
+     }
+    }
+   ],
+   "not": "savaş başında alt sınıfın ilk kaynağından 1"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "sahin-gozlu",
+   "seviye": 15,
+   "ad": "Tükenmez Sadak",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "kaynakYenile",
+     "tetik": "savasBasi",
+     "yenile": {
+      "id": "$kaynak",
+      "maliyet": 1
+     }
+    }
+   ],
+   "not": "savaş başında alt sınıfın ilk kaynağından 1"
+  },
+  {
+   "sinif": "warlock",
+   "altSinif": "hortlak",
+   "seviye": 1,
+   "ad": "Ölümün Kendisi",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "buyuVer",
+     "buyular": [
+      "Spare the Dying"
+     ]
+    }
+   ],
+   "not": "Spare the Dying hazır; Ölümsüz vurmadan WIS kurtulması yok"
+  },
+  {
+   "sinif": "warlock",
+   "altSinif": "hortlak",
+   "seviye": 6,
+   "ad": "Yeniden Doğuş",
+   "durum": "calismiyor",
+   "not": "ölüm zarı başarısında can ilkeli yok"
+  },
+  {
+   "sinif": "warlock",
+   "altSinif": "kargisci",
+   "seviye": 14,
+   "ad": "Sonsuz Lanet",
+   "durum": "calismiyor",
+   "not": "işaret aktarma ilkeli yok"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "pehlivan",
+   "seviye": 10,
+   "ad": "Gelişmiş Dev",
+   "durum": "kismi",
+   "ilkeller": [
+    {
+     "tur": "ekHasar",
+     "zar": "1d8",
+     "kosul": [
+      "hedefBuyuk"
+     ],
+     "turdaBir": true
+    }
+   ],
+   "not": "büyük hedefe 1d8, turda bir"
+  },
+  {
+   "sinif": "warlock",
+   "altSinif": "paradoks",
+   "seviye": 14,
+   "ad": "Zaman Durgunluğu",
+   "durum": "calismiyor",
+   "not": "zamanDurdur ilkeli yok (Time Stop büyüsü ayrı)"
+  },
+  {
+   "sinif": "monk",
+   "altSinif": "ayyaslik",
+   "seviye": 17,
+   "ad": "Çılgın Kasırga",
+   "durum": "calismiyor",
+   "not": "Flurry varyantı ilkeli yok"
+  },
+  {
+   "sinif": "monk",
+   "altSinif": "azizlik",
+   "seviye": 11,
+   "ad": "Flurry Şifası",
+   "durum": "calismiyor",
+   "not": "Flurry varyantı ilkeli yok"
+  },
+  {
+   "sinif": "fighter",
+   "altSinif": "samuray",
+   "seviye": 10,
+   "ad": "Hızlı Hamle",
+   "durum": "calismiyor",
+   "not": "tanımlanacak ilkel yok"
+  },
+  {
+   "sinif": "sorcerer",
+   "altSinif": "otonom",
+   "seviye": 1,
+   "ad": "Dengeyi Geri Yükle",
+   "durum": "calismiyor",
+   "not": "avantaj/dezavantaj sıfırlama ilkeli yok"
+  },
+  {
+   "sinif": "wizard",
+   "altSinif": "hattat",
+   "seviye": 6,
+   "ad": "Kitabın Ruhu",
+   "durum": "calismiyor",
+   "not": "büyüyü başka altıgenden çıkarma yok"
+  }
+ ]
+}

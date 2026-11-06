@@ -22,11 +22,14 @@ import { classSpellList, type ClassSpell } from '../rules/spellList';
 import { carryLoad, type CarryLoad, type CarryRule } from '../rules/carry';
 import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
-import { levelCap } from '../app/limits';
-import { celestialEnabled, upperLevelsEnabled } from '../app/features';
+import karadulData from '../../data/karadul.json';
+import { UPPER_LEVEL_CAP } from '../app/limits';
+import { alignmentAutoOnly, alignmentEnabled, alignmentRace, imzaEnabled, karadulEnabled, karadulWomenOnly } from '../app/features';
+import { AlignmentGrid } from '../ui/AlignmentGrid';
+import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startContributions, startValue, type Alignment, type StartKind } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
-import { subclassLabel, subclassMissing } from '../rules/subclasses';
+import { findSubclass, houseSubclassVisible, packExperimental, subclassLabel, subclassMissing } from '../rules/subclasses';
 import {
   ASI_FEAT, advancementSlots, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
   originFeats, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
@@ -42,6 +45,7 @@ import { getLang, t } from '../i18n';
 import { StepBoundary } from '../ui/StepBoundary';
 import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
+import { ITEM_KINDS, ITEM_TIERS, itemKind, itemTier, type ItemKind, type ItemTier } from '../rules/itemCategory';
 
 /** Yetenek adları (geçerli dilde). */
 export const abilityName = (a: Ability): string => t().abilities[a] ?? a;
@@ -88,13 +92,21 @@ export function wizardSteps(sheet: CharacterSheet): BuilderStep[] {
   const caster = getClass(sheet.classId).casting !== null || alternativeCantrips(sheet).options.length > 0
     || spellOptions(sheet.classId, sheet.level).length > 0;
   const all: BuilderStep[] = ['character', 'scores', 'skills', 'progress', 'equipment', 'spells', 'summary'];
-  return caster ? all : all.filter((x) => x !== 'spells');
+  const list = caster ? all : all.filter((x) => x !== 'spells');
+  // Kuyruk K51: hizalanma ev kuralı açıkken son adım.
+  return alignmentEnabled() ? [...list, 'alignment'] : list;
 }
 
 /**
  * Kayıt açılırken (Görev K1): sınıfta bulunmayan alt sınıf boşa çevrilir (dolgu ya da başka sınıfın alt sınıfı);
  * döner: temizlenen kimlik (bir kerelik not için) ya da null.
  */
+/** Kuyruk K48: Karadul skor takası (insan → örümcek; iki sütun tek satırda): "STR 8→16 · CHA 16→8 …". */
+function karadulSwapText(sheet: CharacterSheet): string {
+  const sc = deriveStats(sheet).scores;
+  return (karadulData.skorTakasi as Array<[Ability, Ability]>).flatMap(([a, b]) => [`${a.toUpperCase()} ${sc[a]}→${sc[b]}`, `${b.toUpperCase()} ${sc[b]}→${sc[a]}`]).join(' · ');
+}
+
 export function clearInvalidSubclass(c: SavedCharacter): { character: SavedCharacter; cleared: string | null } {
   const id = c.sheet.subclassId;
   if (!id || !classDataLoaded() || subclassesOf(c.sheet.classId).some((x) => x.id === id)) return { character: c, cleared: null };
@@ -133,6 +145,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const steps = wizardSteps(s);
   const [stepId, setStepId] = useState<BuilderStep>(props.step ?? 'character');
   const current = steps.includes(stepId) ? stepId : 'summary';
+  const isLast = steps.indexOf(current) === steps.length - 1;
   const index = steps.indexOf(current);
   const [visited, setVisited] = useState<Set<BuilderStep>>(() => new Set([props.step ?? 'character']));
   const [missingOpen, setMissingOpen] = useState(false);
@@ -190,6 +203,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             {current === 'progress' && <ProgressStep c={c} setC={setC} set={set} />}
             {current === 'equipment' && <EquipmentStep sheet={s} set={set} carryRule={carryRule} />}
             {current === 'spells' && <SpellsStep sheet={s} set={set} />}
+            {current === 'alignment' && <AlignmentStep c={c} setC={setC} initial={props.initial} />}
             </StepBoundary>
             {current === 'summary' && (
               <div className="wiz-summary-step">
@@ -203,9 +217,9 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             )}
             <div className="wiz-nav">
               <button className="ghost" disabled={index === 0} onClick={() => go(steps[index - 1] as BuilderStep)}>{W.back}</button>
-              {current !== 'summary'
+              {!isLast
                 ? <button className="cta" onClick={() => go(steps[index + 1] as BuilderStep)}>{W.next}</button>
-                : <button className="cta" disabled={problems.length > 0} onClick={() => props.onSave(savableCharacter(final))}>{W.save}</button>}
+                : <button className="cta" disabled={problems.length > 0} onClick={() => props.onSave(withAlignment(savableCharacter(final), props.initial))}>{W.save}</button>}
             </div>
           </section>
           <aside className="panel builder-summary wiz-side" aria-label={T.summary}>
@@ -225,6 +239,66 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
           {missingOpen && <div className="wiz-mobile-missing">{missingList}</div>}
         </footer>
       </main>
+    </div>
+  );
+}
+
+
+/**
+ * Kuyruk K51: kayıtta hizalanma (ev kuralı açıkken). Yeni karakter: seçilen başlangıç (seçilmediyse otomatik). Kayıtlı
+ * karakter: başlangıcı otomatik kabul etmişse yeni toplama güncellenir (alt sınıf değişince); orta nokta/çizgi
+ * seçtiyse değişmez. Kural kapalıyken alan olduğu gibi kalır.
+ */
+function withAlignment(ch: SavedCharacter, initial: SavedCharacter): SavedCharacter {
+  if (!alignmentEnabled()) return ch;
+  const computed = startValue(startContributions(ch.sheet, alignmentRace()));
+  if (initial.hizalanma) return { ...ch, hizalanma: onSubclassChange(initial.hizalanma, computed, 'oluşturucu', new Date().toISOString()).alignment };
+  return { ...ch, hizalanma: ch.hizalanma ?? newAlignment(computed, 'otomatik') };
+}
+
+/** Kuyruk K51: hizalanma son adımı (katkı dökümü, ızgara, Kabul et / Kabul etme ve üç geçiş seçeneği). */
+function AlignmentStep(props: { c: SavedCharacter; setC: (f: (x: SavedCharacter) => SavedCharacter) => void; initial: SavedCharacter }) {
+  const H = t().view.hizalanma;
+  const lang = getLang();
+  const list = startContributions(props.c.sheet, alignmentRace());
+  const computed = startValue(list);
+  const old = props.initial.hizalanma;
+  const [rejecting, setRejecting] = useState(false);
+  const chosen: StartKind = props.c.hizalanma?.baslangicTuru ?? 'otomatik';
+  const choose = (k: StartKind) => props.setC((x) => ({ ...x, hizalanma: newAlignment(computed, k) }));
+  const opts = alignmentAutoOnly() ? [] : rejectOptions(computed);
+  const sorted = [...list.filter((x) => x.kaynak !== 'irk'), ...list.filter((x) => x.kaynak === 'irk')];
+  const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
+  const shown: Alignment = old ? onSubclassChange(old, computed, '', '').alignment : props.c.hizalanma ?? newAlignment(computed, 'otomatik');
+  return (
+    <div className="align-step">
+      <p className="mute">{H.intro}</p>
+      <AlignmentGrid value={shown} start={old ? old.baslangic : applyStartKind(chosen, computed)} label={shown} bars />
+      <table className="align-contrib"><tbody>
+        {sorted.map((x) => (
+          <tr key={`${x.kaynak}:${x.id}`}><td>{H.sources[x.kaynak]}: {x.gerekce[lang]}</td><td className="num">{H.law} {sign(x.duzen)} · {H.good} {sign(x.iyilik)}</td></tr>
+        ))}
+        <tr><td><b>{H.total}</b></td><td className="num"><b>{H.law} {sign(computed.duzen)} · {H.good} {sign(computed.iyilik)}</b></td></tr>
+      </tbody></table>
+      {old ? (
+        <p className="mute">{H.locked} {old.baslangicTuru === 'otomatik'
+          ? (old.baslangic.duzen !== computed.duzen || old.baslangic.iyilik !== computed.iyilik ? H.updated(computed.duzen, computed.iyilik) : '')
+          : H.suggested(computed.duzen, computed.iyilik)}</p>
+      ) : (
+        <>
+          <div className="align-actions">
+            <button type="button" className={chosen === 'otomatik' ? 'on' : ''} onClick={() => { setRejecting(false); choose('otomatik'); }}>{H.accept}</button>
+            {opts.length > 0 && <button type="button" className={chosen !== 'otomatik' ? 'on' : ''} onClick={() => setRejecting(true)}>{H.reject}</button>}
+          </div>
+          {(rejecting || chosen !== 'otomatik') && opts.length > 0 && (
+            <div className="align-actions">
+              {opts.map((k) => <button key={k} type="button" className={chosen === k ? 'on' : ''} onClick={() => choose(k)}>{H.options[k]}</button>)}
+            </div>
+          )}
+          {alignmentAutoOnly() && <p className="mute">{H.autoOnly}</p>}
+          <p className="mute">{H.chosen(H.kinds[chosen] ?? chosen)}</p>
+        </>
+      )}
     </div>
   );
 }
@@ -294,8 +368,8 @@ function IdentityStep({ c, setC, set }: StepProps) {
       <label>{T.name} <input value={s.name} maxLength={40} onChange={(e: { target: { value: string } }) => set({ name: e.target.value })} /></label>
       <label>{T.level}
         <select value={s.level} onChange={(e: { target: { value: string } }) => setLevel(Number(e.target.value))}>
-          {/* Kuyruk 38: seviye sınırı 5; "Üst seviye (6–20)" açıkken 20 (Kuyruk 19). Daha yüksek seviyeli eski karakter kendi seviyesini korur. */}
-          {Array.from({ length: Math.max(levelCap(upperLevelsEnabled()), s.level) }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+          {/* Kuyruk K49: oluşturucuda her zaman 1–20 (Serüven ilerlemesi ayrıca `ustSeviye` ile sınırlı). */}
+          {Array.from({ length: UPPER_LEVEL_CAP }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
         </select>
       </label>
       <span className="seg" role="radiogroup" aria-label={T.avatar}>
@@ -305,6 +379,10 @@ function IdentityStep({ c, setC, set }: StepProps) {
         ))}
       </span>
       {s.level >= experimentalFrom(s.classId, s.subclassId) && <p className="warn">{T.experimental(experimentalFrom(s.classId, s.subclassId))}</p>}
+      {/* Kuyruk K49: 11+ seviyede henüz olmayan özellikler küçük notla (seçim kısıtlanmaz). */}
+      {s.level >= 11 && missingFeatures(s.classId, s.level, s.subclassId).filter((f) => f.level >= 11).length > 0 && (
+        <p className="mute">{T.notYet(missingFeatures(s.classId, s.level, s.subclassId).filter((f) => f.level >= 11).map((f) => f.name).join(', '))}</p>
+      )}
     </div>
   );
 }
@@ -321,10 +399,10 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
       <p className="mute race-note">{W.raceBonusNote}</p>
       <div className="card-grid">
         {/* Kuyruk K20: ev kuralı türü (Celestial) yalnızca Ayarlar'da açıkken (seçili eski karakterde her zaman) görünür. */}
-        {races.filter((r) => !r.evKurali || celestialEnabled() || r.id === s.raceId).map((r) => (
+        {races.map((r) => (
           <button key={r.id} className={`pick-card${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
             onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id })}>
-            <b>{r.name}{r.evKurali ? <em className="mute"> ({W.houseRuleTag})</em> : null}</b><small>{W.speed(r.speed)}{r.darkvision ? ` · ${W.darkvision(r.darkvision)}` : ''}</small>
+            <b>{r.name}</b><small>{W.speed(r.speed)}{r.darkvision ? ` · ${W.darkvision(r.darkvision)}` : ''}</small>
           </button>
         ))}
       </div>
@@ -396,7 +474,7 @@ function BackgroundStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch:
         {backgrounds.map((b) => (
           <button key={b.id} role="radio" aria-checked={b.id === bg?.id} className={`pick-card background-card${b.id === bg?.id ? ' on' : ''}`}
             onClick={() => set({ backgroundId: b.id })}>
-            <b>{b.name[lang]}{lang === 'tr' && <small className="skill-en"> {b.name.en}</small>}<small className={`bg-tag${b.ozgun ? ' own' : ''}`}>{b.ozgun ? W.backgroundOriginal : 'SRD'}</small></b>
+            <b>{b.name[lang]}{lang === 'tr' && <small className="skill-en"> {b.name.en}</small>}{!b.ozgun && <small className="bg-tag">SRD</small>}</b>
             <small>{b.summary[lang]}</small>
             <small className="mute">{W.backgroundTool(b.tool[lang])}</small>
           </button>
@@ -426,7 +504,13 @@ function ClassStep({ c, setC, set }: StepProps) {
   const s = c.sheet;
   const cls = getClass(s.classId);
   const subLevel = subclassLevel(s.classId);
-  const subs = subclassesOf(s.classId);
+  // Kuyruk K48: ev kuralı alt sınıfları (Karadul) yalnızca Ayarlar anahtarıyla ve (kısıt açıkken) kadın karakterde; mevcut seçim kalır.
+  // Kuyruk K50: imza alt sınıflar kendi ev kuralı açıkken (Birlik Manastırı her zaman); Karadul kendi anahtarıyla.
+  const subs = subclassesOf(s.classId).filter((x) => (x.evKurali !== undefined
+    ? x.evKurali === null || x.id === s.subclassId || imzaEnabled(x.evKurali)
+    : houseSubclassVisible(x, s, karadulEnabled(), karadulWomenOnly())));
+  const chosen = subs.find((x) => x.id === s.subclassId);
+  const swap = chosen?.ev && chosen.replaces?.length ? karadulSwapText(s) : null;
   // Görev K17: eski sınıfın seçimleri taslakta saklanır, geri dönünce uyanları gelir (`switchClass`).
   const choose = (id: string) => setC((x) => switchClass(x, id, x.method === 'standard' ? { baseScores: suggestedScores(id) } : {}));
   return (
@@ -449,11 +533,16 @@ function ClassStep({ c, setC, set }: StepProps) {
         <label>{T.subclass}
           <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
             <option value="">{T.subclassNone}</option>
-            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang())}{x.pack ? ` (${T.subclassExternal})` : ''}</option>)}
+            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang(), x.class)}{x.ev ? ` (${T.subclassHouse})` : ''}{packExperimental(x) ? ` (${t().content.experimental})` : ''}</option>)}
+            {/* Kuyruk K49 B5: listeden kaldırılmış alt sınıfı seçili eski karakter açılır (seçimi görünür kalır). */}
+            {!!s.subclassId && !subs.some((x) => x.id === s.subclassId) && !subclassMissing(s.classId, s.subclassId) && (
+              <option value={s.subclassId}>{subclassLabel(findSubclass(s.classId, s.subclassId)?.name ?? { tr: s.subclassId, en: s.subclassId }, getLang(), s.classId)}</option>
+            )}
             {subclassMissing(s.classId, s.subclassId) && <option value={s.subclassId}>{T.subclassMissing(s.subclassId ?? '')}</option>}
           </select>
         </label>
       )}
+      {swap && <p className="warn">{T.karadulWarn} {T.karadulSwap(swap)}</p>}
       {subLevel !== null && subs.length > 0 && s.level < subLevel && <p className="mute">{T.subclass}: {T.subclassAt(subLevel)}</p>}
       <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={experimentalFrom(s.classId, s.subclassId)}
         choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })}
@@ -740,6 +829,8 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
   };
   const profBadge = (ok: boolean) => <span className={`prof-badge${ok ? ' ok' : ' no'}`}>{ok ? W.proficient : W.notProficient}</span>;
   const [itemQ, setItemQ] = useState('');
+  const [kindF, setKindF] = useState<ItemKind | null>(null);
+  const [tierF, setTierF] = useState<ItemTier | null>(null);
   const attuned = s.itemNames.filter((n) => items.find((i) => i.name === n)?.attunement).length;
   const shown = weapons.filter((w) => !onlyProficient || weaponProficient(s.classId, w, s.featureChoices) || (s.weapons ?? []).some((x) => x.name === w.name));
   const K = L.carry;
@@ -813,17 +904,38 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
       <p className="mute">{T.items}: <span className={attuned > MAX_ATTUNED ? 'error' : ''}>{W.attunedCount(attuned, MAX_ATTUNED)}</span></p>
       {/* Kuyruk 19: SRD'nin bütün eşyaları (≈400): ada göre süzme. */}
       <input className="item-filter" type="search" placeholder={W.itemFilter} value={itemQ} onChange={(e: { target: { value: string } }) => setItemQ(e.target.value)} />
-      <div className="chips equip-chips">
-        {items.filter((it) => !itemQ || s.itemNames.includes(it.name) || it.name.toLowerCase().includes(itemQ.toLowerCase())).map((it) => (
-          <label key={it.name} className={`chip equip${s.itemNames.includes(it.name) ? ' on' : ''}`} title={itemDetail(it)}>
-            {/* Görev K4: uyum (attunement) sınırı: dördüncü uyumlu eşya seçilemez. */}
-            <input type="checkbox" checked={s.itemNames.includes(it.name)}
-              disabled={!s.itemNames.includes(it.name) && it.attunement && attuned >= MAX_ATTUNED}
-              onChange={(e: { target: { checked: boolean } }) => set({ itemNames: toggle(s.itemNames, it.name, e.target.checked) })} />
-            <span><b>{it.name}</b><small>{itemSummary(it)}</small>{it.offCombat && <small className="mute" title={it.offCombat}>{W.offCombat.split(':')[0]}</small>}{lb(it.weight, it.weightApprox)}</span>
-          </label>
-        ))}
+      {/* Kuyruk K49 B6: türe ve etki seviyesine göre çip süzgeçleri, katlanır gruplar (seçili eşya her zaman görünür). */}
+      <div className="chips item-kind-filter" role="group" aria-label={T.items}>
+        <button type="button" className={`chip${!kindF ? ' on' : ''}`} aria-pressed={!kindF} onClick={() => setKindF(null)}>{W.itemAll}</button>
+        {ITEM_KINDS.map((k) => <button key={k} type="button" className={`chip${kindF === k ? ' on' : ''}`} aria-pressed={kindF === k} onClick={() => setKindF(kindF === k ? null : k)}>{W.itemKinds[k]}</button>)}
       </div>
+      <div className="chips item-tier-filter" role="group">
+        <button type="button" className={`chip${!tierF ? ' on' : ''}`} aria-pressed={!tierF} onClick={() => setTierF(null)}>{W.itemAll}</button>
+        {ITEM_TIERS.map((k) => <button key={k} type="button" className={`chip tier-${k}${tierF === k ? ' on' : ''}`} aria-pressed={tierF === k} onClick={() => setTierF(tierF === k ? null : k)}>{W.itemTiers[k]}</button>)}
+      </div>
+      {ITEM_KINDS.filter((k) => !kindF || kindF === k).map((k) => {
+        const all = items.filter((it) => itemKind(it) === k);
+        const list = all.filter((it) => s.itemNames.includes(it.name)
+          || ((!tierF || itemTier(it) === tierF) && (!itemQ || it.name.toLowerCase().includes(itemQ.toLowerCase()))));
+        if (!list.length) return null;
+        const filtered = !!(itemQ || tierF || kindF);
+        return (
+          <details key={k} className="item-group" open={filtered || list.some((it) => s.itemNames.includes(it.name))}>
+            <summary>{W.itemKinds[k]} <small className="mute">{W.itemGroupCount(list.length, all.length)}</small></summary>
+            <div className="chips equip-chips">
+              {list.map((it) => (
+                <label key={it.name} className={`chip equip tier-${itemTier(it)}${s.itemNames.includes(it.name) ? ' on' : ''}`} title={itemDetail(it)}>
+                  {/* Görev K4: uyum (attunement) sınırı: dördüncü uyumlu eşya seçilemez. */}
+                  <input type="checkbox" checked={s.itemNames.includes(it.name)}
+                    disabled={!s.itemNames.includes(it.name) && it.attunement && attuned >= MAX_ATTUNED}
+                    onChange={(e: { target: { checked: boolean } }) => set({ itemNames: toggle(s.itemNames, it.name, e.target.checked) })} />
+                  <span><b>{it.name}</b><small>{itemSummary(it)}</small>{it.offCombat && <small className="mute" title={it.offCombat}>{W.offCombat.split(':')[0]}</small>}{lb(it.weight, it.weightApprox)}</span>
+                </label>
+              ))}
+            </div>
+          </details>
+        );
+      })}
     </>
   );
 }

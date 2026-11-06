@@ -12,7 +12,7 @@ export function HouseRulesPanel(props: { value: Record<HouseRuleId, boolean>; on
     <details className="house-rules">
       <summary>{H.title(HOUSE_RULE_IDS.filter((id) => props.value[id]).length)}</summary>
       <p className="mute">{H.note}</p>
-      {HOUSE_RULE_IDS.map((id) => {
+      {HOUSE_RULE_IDS.filter((id) => !HOUSE_RULES[id]?.gizli).map((id) => {
         const def = HOUSE_RULES[id];
         return (
           <label key={id} className="house-rule">

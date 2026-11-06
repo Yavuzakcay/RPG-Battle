@@ -2,6 +2,656 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk A8: yükseklik ve alan geometrisi büyüleri (kural sürümü 37)
+
+- **Sonuç:** BUYU-KISMI.md'de kısmi 15 → 0. A8'in 15 büyüsü: 7 tam (jump, spider-climb, sleet-storm, entangle, fog-cloud, slow, stinking-cloud), 8 sığmayan parça notlu (flaming-sphere, levitate, moonbeam, fly, gaseous-form, plant-growth, wind-wall, meteor-swarm; BUYU-SIGMAYAN.md 26 satır).
+- **Yeni sistem yok:** var olan yollar genişletildi. Yükseklik yalnızca katmanlı haritada ve `heightMove` açıkken devrede; katmansız haritada her şey eski kuralla (Jump'ın yükseğe zıplaması `layerActive` + `heightMoveRule` ister).
+- **Jump:** komşu yüksek altıgene (seviye × `levelFt` ≤ 30 ft) Atletizmsiz zıplama, 10 ft harcar (`executeJump`).
+- **Moonbeam:** taşıma Magic eylemiyle en çok 60 ft (`repeat.moveFt`, merkez alanda saklanır); başarısız save biçim değiştireni (`polymorph` etkisi) gerçek biçimine döndürür (`zone.revertShape`).
+- **Slow:** hedefler 40 ft küpe sığmalı (`cubeFt`; hedefler arası uzaklık); yavaşlamış büyücünün somatik bileşenli büyüsü d4 = 1'de boşa gider, slot harcanır (bileşenler `data/srd/spells.json`'dan; SRD'nin "sonraki tura erteleme" kolu yerine aynı turda başarısızlık: erteleme modelde yok, olasılık SRD ile aynı %25).
+- **Stinking Cloud:** başarısızlıkta Poisoned + o tur eylem ve bonus eylem yok (`noActBonus`; tepki serbest), eskiden Incapacitated (tepkiyi de kesiyordu). b2'nin eski kuralı sınayan testi sürüm 36'ya sabitlendi.
+- **Gaseous Form:** biçimdeyken büyü yapılamaz (`noCastForm`, `castBarrier` türü `form`).
+- **Wind Wall:** duvarın değdiği gaz/buhar bulutları dağılır (`dispersesGas`, Gust of Wind'in `disperseEvents` yolu, `gustDisperse` anahtarı).
+- **Meteor Swarm:** motor dört merkez alır (`cast_spell.targetHexes`, `multiPoint`); altıgenler birleşir, her yaratık bir kez save yapar. Arayüz şimdilik tek nokta (sığmayan notu).
+- **Flaming Sphere:** küre 20 ft ışık saçar (alan `light: 4`, sürüm bloğu alanda `zone.spec`).
+- **Denge:** sayısal değer değişmedi.
+
+## 2026-11-06 — Kuyruk A7: nesne, el ve ışık büyüleri (kural sürümü 36)
+
+- **Sonuç:** BUYU-KISMI.md'de kısmi 26 → 15 (kalanlar A8: yükseklik ve alan geometrisi). A7-1'in 11 büyüsü + A7-2'nin 2 büyüsü (Light, Continual Flame): 7 tam, 6 sığmayan parça notlu (command, faerie-fire, enlarge-reduce, flame-blade, heat-metal, magic-weapon; BUYU-SIGMAYAN.md 18 satır). A7-3: 6 büyü "tamam (Game Master notlu)" (charm-person, hideous-laughter, enhance-ability, see-invisibility, animal-shapes, wish): savaşta uygulanan kısım aynen, savaş dışı parça TR/EN `gmNote`/`gmNoteEn` (kartta "Game Master notu", yapınca günlükte). Bu altısı savaşta etki taşıdığı için `offCombat` işaretlenmedi (işaretlenseydi kartta "savaş dışı" görünüp etkileri gizlenirdi); yalnızca savaş dışı parçaları GM notunda.
+- **Kapı:** `a7` (sürüm 36) ve `a8` (37) blokları `a6` ile aynı yoldan sırayla (`castSpell`, `mechanicsAt`); alanın kuralı sürüm bloğuyla değiştiyse kural alanda saklanır (`zone.spec`; ışık ve davranış yükleme/replay'de aynı). Eski davranışı sınayan 3 test (b4 Light dosta, b5 ve k9b Dragon's Breath büyücüde) sürüm 35'e sabitlendi; yeni davranış `a7spells.test.ts`'te.
+- **Işık tek yerde:** nesne ışığı `map.objects[].light` (Light, Continual Flame; yapan ve büyü kimliğiyle) `litHexes`'e eklendi: taşınıyorsa taşıyanın altıgeninde, değilse nesnenin; el değiştirince ışık nesneyle gider. Light yeniden yapılınca önceki ışık (nesne ya da kendindeki) biter; Continual Flame sürer. Light/Continual Flame artık yalnızca kendine (taşıdığı nesne) ya da başkasının taşımadığı bitişik nesneye (SRD "not worn or carried by someone else").
+- **Darkness:** oluşunca örtüştüğü ≤2. seviye büyü ışıkları (etki, alan, nesne) kalkar (`dispelLight`). Yoğun örtüde (Darkness, Fog Cloud…) Blindsight/Truesight menzilindeki saldıran/hedef görülür (`zoneAttackSources`, sürüm 36).
+- **Daylight:** güneş ışığı alanında Sunlight Sensitivity'li saldıran dezavantajlı (karanlık haritada da; canavara `sunlight-sensitive` işareti).
+- **Dragon's Breath:** nefes dokunulan dostun (`effect.breath`, `breath.ts` `breathOf`), Magic eylemiyle 15 ft koni, seçilen tür, yukarı slot +1d6; mevcut "Nefes / alan" menüsü ve yapay zekâ nefes yolu kullanılır. Kendi Dragonborn nefesi kullanımı kalmışsa önce o.
+- **Command Approach:** büyücüye varamayan hedef turuna devam eder (SRD "ending its turn if it moves within 5 feet").
+- **Diğerleri:** Faerie Fire avantajı yalnızca hedefi gören saldırana; Enlarge/Reduce STR kontrolleri; Flame Blade boş el (kalkan/yan el silahı yoksa; savaşçıda `shieldHeld`); Heat Metal kontrol dezavantajı; Magic Weapon dokunulan dostun silahı, yeniden yapınca önceki biter; Dancing Lights bonus eylemle 60 ft taşınır (menzil içinde), ışık 10 ft; Dispel Magic altıgendeki nesne ışığını da kaldırır.
+- **Denge:** sayısal değer değişmedi.
+
+## 2026-11-06 — Kuyruk A6: küçük kısmi büyülerin kapatılması (kural sürümü 35)
+
+- **Sonuç:** BUYU-KISMI.md'de kısmi 57 → 26 (kalan 26 A7/A8 kapsamı: nesne/el, alan geometrisi, yükseklik). 31 büyünün 19'u tam, 12'si "tamam (sığmayan parça notlu)"; sığmayan parçalar `harita/belgeler/BUYU-SIGMAYAN.md` (12 satır) ve yapınca günlüğe "Game Master notu — …" (veride `sigmayan`; savaş kartında "Game Master notu" etiketi, ayrıntı ipucunda).
+- **Kapı:** mekaniğin `a6` bloğu kural sürümü 35+ savaşta `a4`'ten sonra üstüne yazılır (`castSpell`; yapım dışı okumalar `spellVersion.ts` `mechanicsAt`). Kod yolları da `ruleVersion >= 35` ya da yalnız `a6` verisinin koyduğu alanlarla açılır; eski kayıt ve replay aynen. Eski davranışı sınayan 4 test (b3 Calm Emotions, cila Haste, cleric Sanctuary, ignite Produce Flame) sürüm 34'e sabitlendi; yeni davranış `a6spells.test.ts`'te.
+- **Yeni ortak alanlar (sistem değil, var olanların genişlemesi):** etkide `raw` (veride olduğu gibi yazılan etki alanları, `$caster/$side/$dc` yer tutucularıyla; büyü adıyla kod koşulu yazmamak için), `breakOnDamageDealt` (Invisibility), `shakeable` (Hypnotic Pattern), `indifferentTo` (Calm Emotions kayıtsızlığı: o tarafa saldıramaz, kendisi ya da 30 ft içindeki dostu hasar alınca biter), `pinpointBy` (Mind Spike: `knowsWhere` ve görünmezlik), `held` (Produce Flame: konsantrasyonsuz elde tutulan büyü, `spell_followup` ile Magic eylemi), `swim` (Alter Self), `curse` (Remove Curse `curseAll`: lanet büyüleri, Hex konsantrasyonu, Mummy Rot), `escapeCheck.skill/allyHelp`; savaşçıda `armored`, `silenced`/`packStrAdv` (`syncAuras`), `sanctuaryLost`; ZoneSpec `push`/`costToward` (Gust of Wind `lingerZone`).
+- **Yardım = sarsma/kurtarma:** SRD'nin "bir yaratık eylemle sarsar" (Sleep, Hypnotic Pattern) ve "erişimindeki yaratık eylemle Athletics" (Ensnaring Strike) için ayrı komut yerine Yardım eylemi bitişik dosta yönelince bu işi yapar (sürüm 35); arayüz ve yapay zekâ aynı yoldan.
+- **Haste:** ek eylem asıl eylemden önce de alınır (`haste_action.first`, `economy.hasteFirst`: sıradaki eylem kısıtlı, kullanılınca asıl eylem geri gelir); Utilize (`object_use`) eklendi.
+- **Sanctuary:** başarısız save'de eylem harcanmaz, saldıran bu tur o korunana yönelemez (yeni hedef). Hiç hedef seçmeyip başka eylem yaparsa SRD'nin "boşa gider"i uygulanmaz → sığmayan notu.
+- **Plane Shift:** SRD 5.2.1 metninde istemsiz hedefe sürgün kolu yok; sürüm 35'te savaş dışı (Game Master notu, düzlem yolculuğu modelde yok). Eski sürgün kolu sürüm ≤34 kayıtlarında aynen.
+- **Gust of Wind yaklaşma maliyeti:** hareket maliyeti adım yönünü bilmediğinden "büyücüye başlangıç yerinden daha yakın altıgen iki kat" yaklaşığı (sığmayan notunda).
+- **Conjure Fey:** ruh, Spiritual Weapon'ın güç yolu (`lingering: weapon`) ile; yer değiştirme menzili veride `lingerMoveFt` (30), zar `damage`'dan (3d12 + büyü değiştiricisi, slot başına +2d12), isabette Frightened `afterHit.grants`.
+- **Conjure Animals:** sahibi o tur yürüdüyse sürü taşıması bonus eylem istemez (turda bir, `packMoved`); sürünün 5 ft içinde STR save avantajı. **Animate Dead:** bonus eylemle emir (60 ft), emirsiz turda Kaçın (Animate Objects yolu, `commandBonusV35`).
+- **Diğerleri:** Mage Armor zırhlıya yapılmaz; Ray of Enfeeblement yalnız STR tabanlı saldırı (`attackDis.str`); Warding Bond başkası yeniden yapınca eski bağ biter; Bestow Curse hasar seçeneği save'li büyü hasarında da (`curseSpellEvents`); Blink d6 4–6; Call Lightning fırtınada +1d10 ve tekrar bir noktaya (`repeat.point`); Chromatic Orb sıçrama `targetIds` sırası; Silence içinde Deafened ve sözlü tepki büyüsü yok; Suggestion/Mass Suggestion yalnız büyücü tarafının hasarıyla biter; Phantasmal Force Study (INT Investigation, `escape`); Sleep'te Elf/Exhaustion bağışıklığı kendiliğinden başarır; PfEG var olan büyü/korkuya yeni save'de avantaj.
+- **Denge:** sayısal değer değişmedi (hasar ve DC SRD gibi).
+
+## 2026-11-06 — Görev P7: ilkel genişletme 2 (kural sürümü 34)
+
+- **Ortam:** gerçek içerik (`icerik/`) bu ortamda yok. Motor, şema, UI özeti ve testler kurgusal fikstürle (`tests/fixtures/paket-p7.json`); 96 özelliğin yaması **kullanıcının paketi görülmeden** ad + sınıf + alt sınıf + seviyeyle yazıldı: `docs/ek-yama/p8.yama.json` (yalnız kimlik/ad/sayı ve kısa motor notu; paket metni yok). Uygulayıcı `node scripts/ek-yama.mjs` (`icerik/yama/*.yama.json` varsa onu, yoksa bu dosyayı `icerik/*.json` paketlerine yazar; eşleşme: sınıf + alt sınıf kimliği eşit ya da içeren + TR ad + seviye; önceki dosya `icerik/yama/yedek/`; `--kuru`). `check:icerik` toplamı bu yüzden burada ölçülemedi; kullanıcı tarafında `node scripts/ek-yama.mjs` ardından `npm run check:icerik`.
+- **Yamanın dağılımı (96):** çalışır 4, kısmi 46, çalışmıyor 39, hikâye 6, planlı 1 (+ `$kaynak` çözülemezse planlı). Kısmi olanların her birinde yaklaşıklık notu. Tahmin edilmedi: ilkel olmayan ya da paketteki bağlamı bilinmeyen özellikler "çalışmıyor"/"hikâye" kaldı (Flurry varyantları, büyü çalma/depolama/paylaşma, zihin kontrolü, fırsat saldırısı/düşman büyüsü tepki olayları, zaman durdurma, Bardic Inspiration ve üstünlük zarı değiştirme, istatistik görme).
+- **Yeni ilkeller (10):** `buyuluVurus` (büyüsüz saldırıya direnç `buyusuzDirencler`/`nonmagicalResist` aşılır; `cagrilanlar` kapsamı), `zarDegistir` (isabette maks/yenidenAt/carpan/zarBuyut; fark ek hasar; kurtulmalı büyü hasarı kapsam dışı), `koruma` (kritik bağışıklığı `noCrit`, konsantrasyon avantajı `concAdv`, durum/büyülere karşı kurtulma avantajı), `algi` (karanlık görüş, gerçek görüş `pkTruesight`, görünmezi görme), `cagirGuclendir` (sahibin bu komutta çağırdığı her yaratığa geçici can, AC, isabet zarı, büyülü vuruş), `ortakCan` (A1 can havuzu), `yuvaGeriKazan` (`slot_created`; harcanan yuva bilinmediğinden sınırdaki en yüksek seviye), `meydanOkuma` (`tauntBy`: başkasına saldırı dezavantajlı), `saldirmadanSave` (Sanctuary yolu), `kaynakYenile` (üst sınır savaş başı değeri `paket.kaynakBas`).
+- **Genişletmeler:** aura etkisi `direnc` (auradaki dostlara tür direnci, `auraResist`) ve `kurtulmaDezavantaji` (`auraSaveDis`, `saveMode`); tepki etkileri `saldiriYap` ve `yansit` (+ olay `dostaVuruldu`; saldırı sonrası kancası `registerAfterAttack`, karar `askReaction`); tetik `buyuYuvasi` (slotlu büyü); `cagir` `sifirCan`/`oldurunce` tetikleri ve `rastgele` yaratık listesi; `yuzeyOlustur` `oldurunce`/`isabet`/`buyuYuvasi`/`turBasi` tetikleri (merkez vurulan ya da kendi altıgeni), `hedefler: dostlar`, `iyilestir` (zemin iyileştirmesi, `ZoneSpec.heal`); `zorlaHareket.sonrasi: yereSer`; koşul `hedefBuyuk`; yaratıkta `canavar` (SRD canavarından stat bloğu) ve `buyusuzDirencler`. Sıfır cana düşünce (`sifirCan`) ilkeller artık genel olarak tetiklenir (ölümden dönüş dışındakiler).
+- **Kural sürümü 34:** paket kancaları yalnız paketli savaşçıda iş görür; sürümü artıran tek genel değişiklik canavar saldırısında süren etkinin isabet zarı (`hitDie`: Enlarge ve çağrı güçlendirmesi; eskiden canavar yolunda yoktu). Sürüm ≤ 33 eski davranış.
+- **Eşya kancaları (A5 kararı):** eşyada `paket` (ilkeller + yaratıklar) savaşçının paketine eklenir (`paket/bag.ts` `itemBag`; anahtar `esya:<eşya>`, kimlikler eşyayla öneklenir; kaynaklar her savaş dolu — dinlenme takibi yok). Bag of Tricks (8 SRD hayvanından zarla, 3 kullanım), Figurine of Wondrous Power (Tunç Grifon), Horn of Valhalla (2d4 → ortalama 5 berserker), Staff of the Python (Giant Constrictor Snake, bonus), Scimitar of Speed (bonus eylemle ek saldırı; en uygun silahla). Kalan 14 (c) eşya `esya-siniflandirma.json` `gm` (Game Master, savaşta uygulanmaz, gerekçeli). Eşya sınıflaması: savaş dışı 145, veriyle tanımlı 240, Game Master 14.
+- **UI özeti:** özellik kartında ilkelli (paket) özelliğin ilkel türleri tek satır (`ui/ilkelOzet.ts`, TR/EN `builder.paketOzet`).
+- **Testler:** `src/battle/paket/p7.test.ts` (25: her yeni ilkel ≥ 2 test, fikstürle uçtan uca, replay), `src/content/p7yama.test.ts` (yama şemaya uyar). Fikstür `check:icerik`: 2 paket (P6 + P7), çalışır 37, 0 hata. Ana parça 449,91 kB.
+- **Açık kalan:** `firsatSaldirisi`/`dusmanBuyuAtiyor`/`kurtulmaAttirildi`/`turBasiDusman` tepki olayları, `hizSifir`/`hareketEt`/`buyuIptal` etkileri, büyü manipülasyonu (`buyuCal`, `buyuPaylas`, `buyuHedefEkle`, `buyuDepola`), `kontrolEt`, `zamanDurdur`, Flurry varyantları, `bilgiAc`/`niyetGor` (arayüz bilgisi), yüzde dirençli ortak can. Dengeye dokunulmadı.
+
+## 2026-11-06 — Kuyruk K56: arazi × büyü (kural sürümü 33)
+
+- **Veri:** zemin türü → arazi etiketleri `data/zemin-etiketleri.json` (kuru, yanıcı, ıslak, soğuk, sıcak, kayalık, kumlu, volkanik, derin su; harf başına); arazi × büyü tablosu `data/arazi-buyu-etkileri.json` (4 satır: kuru+yanıcı → alev 2 tur, bir halka yayılır; yanıcı → alev 1 tur; soğuk zemin (kar, buz) × ateş → su 2 tur; sıcak zemin (lav, alev) × soğuk → buhar 1 tur). Hasar zarlarına dokunulmaz (test: aynı tohumda 32 ↔ 33 hasar aynı); yalnız yüzey, süre ve yayılma.
+- **Motor:** K55 altıgen etki çözücüsünde (`hexResolver.ts`) büyü × yüzey adımından sonra, aura adımından önce yeni adım (`src/battle/terrainSpell.ts` `terrainSpellEvents`); yalnız ilk derinlikte, element dokunuşu (ateş, soğuk; yıldırımın arazi satırı yok). Aynı katmanda zaten yüzey olan altıgen atlanır, böylece büyü × yüzey sonucu (yağ tutuşması, suda buhar) önce gelir. Oluşan yüzey çözücünün zincirine girer (yüzey × yüzey). Çözücüye bağlı olduğundan `hexResolver` kapalıyken arazi etkisi de yok.
+- **Su zemini yinelenmedi:** ıslak zemin × ateş (buhar) ve × soğuk (buz) K55 tablosunda zaten var (`fireWater`, `coldTile`); arazi tablosuna konmadı (çifte kaynak olmasın).
+- **Anahtar ve sürüm:** Game Master global anahtarı `araziBuyuEtkisi` (varsayılan açık, `surum: 33`); kural sürümü 33. Sürüm ≤ 32 savaş ve replay etkilenmez.
+- **Arayüz:** altıgen bilgi kartında yalnız zemin adı ve türü (etiketler, TR/EN; sürüm 33+ ve anahtar açıkken). Günlükte satır başına tek satır (`surface_reacted` `reaction: terrain`, `row: arazi:<id>`; metin tablodan).
+- **Yapay zekâ (basit sezgi):** alan büyüsü seçerken (`areaSpell`) arazi etkisi kendi tarafından birinin altıgeninde ya da bitişiğinde yüzey bırakacaksa o atış seçilmez (`terrainEndangersSide`); kuru çayırı bilerek tutuşturma gibi saldırgan kullanım yok.
+- **Testler:** `src/battle/k56terrain.test.ts` (etiket, ateş/soğuk satırları, yayılma, eski sürüm, anahtar kapalı, hasar aynı, replay, bilgi kartı, YZ), duman `src/battle/k56duman.test.ts` (12 sınıf × 3/7/11 × çöl, orman, buzul, bataklık, volkan). Regresyon DENGE.md (Kale'de tur 3,9 → 3,6).
+- **Açık kalan:** yıldırım × arazi (yalnız K55 su zinciri), asit/gök gürültüsü satırı yok; haritaya özel etiket (varyant) yok; yapay zekâ araziyi saldırgan kullanmıyor.
+
+## 2026-11-06 — Kuyruk A5: eşya sınıflandırması
+
+- **Bulgu:** görevdeki "199 eşyada ne etki ne savaş dışı" sayısı yalnız `effects` alanına bakıyor; A0 envanterinin de yazdığı gibi bu eşyaların etkisi başka alanlarda (`passive`, `use`, `spells`/`charges`, `bonus`, `onHit`, `attack`). Bütün alanlara bakınca boşta kalan yalnız Poisoner's Kit'ti (Cunning Strike: Poison onu arar; `kod` olarak işlendi).
+- **Sınıflama (399 eşya: 23 temel + 376 SRD):** (a) savaş dışı 145, (b) veriyle tanımlı 235, (c) kalıba uymayan 19 (karar bekliyor). Belge `harita/belgeler/ESYA-SINIFLANDIRMA.md` ← `node scripts/a5-esya-siniflandirma.mjs`; karar listesi ve gerekçeler `data/esya-siniflandirma.json` (`karar`, `a5`, `kod`).
+- **`savasDisi: true` yerine `offCombat`:** eşyalarda savaş dışı işareti zaten gerekçe metniyle `offCombat` (arayüzde "savaş dışı" etiketi, Kuyruk 19). Aynı anlamda ikinci bir boolean açmak çift kaynak olurdu; (a) sınıfı bu alandır.
+- **Tanımlanan (b):** Rod of Resurrection: Heal (1 yük; 6.–9. seviye büyüler anahtarı `spells69` açıkken), 5 yük; Resurrection savaş dışı. Üretici `scripts/k19-esyalar.py`'ye de yazıldı. Savaşçı oluşturulurken kopyalandığı için replay etkilenmez; kural sürümü değişmedi.
+- **(c) karar bekliyor (19):** 11 özel silah/tılsım (Vorpal Sword kafa kesme, Nine Lives Stealer anında öldürme, Defender AC aktarımı, Scimitar of Speed bonus saldırı, Berserker Axe laneti, Energy Bow, Hat of Many Spells, Quarterstaff of the Acrobat, Rod of Lordly Might, iki Talisman), eşyadan çağırma (Staff of the Python, Bag of Tricks, Figurine of Wondrous Power, Horn of Valhalla), Rod of Absorption (eşya tepkisi), Immovable Rod (eşyaya bağlı geçici engel), Wand of Enemy Detection (gizlenmeyi eşyaya bağlama), Spell Scroll (eşya başına büyü seçimi). Her birinin gerektirdiği kanca belgede; ilkel önerisi: "eşya isabet kancası" (ölüm/kafa kesme), "eşyadan çağırma" (R3 çağırma yolunu eşya kaynağına açma), "eşya örneği verisi" (parşömen büyüsü).
+- **İksir içme, attunement:** zaten vardı (savaşta "Eşya" menüsü `use_item`, yapay zekâ yarı canın altında iyileştirme iksiri içer; uyum en çok 3 `MAX_ATTUNED`, fazlası savaşa girmez ve oluşturucu uyarır). Değişmedi.
+- **Arayüz kısa özet:** eşya kartında (`itemSummary`) artık bonus (+X silah/büyü/AC), isabet eki, yüklü büyüler + yük, kullanım türü ve kalıcı etki de yazılır (TR/EN); veriyle tanımlı eşyada "oyunda kendiliğinden uygulanmaz" notu çıkmaz (`itemHasMechanic`).
+- **Açık kalan:** 19 (c) eşyası; yapay zekâ iyileştirme dışındaki sarf eşyalarını (fırlatma, yağ) kullanmaz.
+
+## 2026-11-06 — Kuyruk A4: kısmi büyüler (kısmen yapıldı: 75 → 57)
+
+- **Ölçüt ve araç:** `node scripts/a4-buyu-kismi.mjs` → `harita/belgeler/BUYU-KISMI.md` (kimlik, seviye, eksik, kapsam dışı, altyapı grubu). Savaşta kullanılan (savaş dışı olmayan) 227 büyüden yaklaşıklığı (`approx`) ya da yalnız Game Master notu kalanlar kısmi. A0 envanterinin 74'ü arena yoklamasıyla sayılmıştı; veriden sayım 75 (Wish'in notu dahil).
+- **Sonuç:** 75 → 57. Görevin hedefi sıfırdı; kalan 57 büyünün eksiği tek tek büyü değil altyapı (aşağıda), bu yüzden kuyruk **kısmen yapıldı**.
+- **Tamamlanan (kural sürümü 32, mekaniğin `a4` hâli; sürüm ≤ 31 eski mekanik, replay aynı):** Blur ve Mirror Image (Blindsight/Truesight menzilindeki saldıran etkilenmez: `sensesPierce`), Protection from Poison (Poisoned'a save avantajı `saveAdvAgainst`), Hex (hedefin seçilen yetenek kontrolünde dezavantaj; seçim yoksa STR/DEX'ten güçlüsü), Bestow Curse yetenek seçeneği (kontrol dezavantajı da), Color Spray ve Starry Wisp (büyücünün sonraki turunun sonunda biter: `endAfterSourceTurn`), Fear (büyücüyü görürken tur sonu save'i yok: `repeatSaveUnseen`, görüş = görüş hattı + karanlık + görünmezlik), Expeditious Retreat (yapınca Dash, süresince bonus eylemle Dash; hız ×2 kalktı), Beacon of Hope (hedef sınırı 6 → 12: menzildeki istenen sayıda), Holy Aura (yakın dövüşle isabet ettiren Fiend/Undead CON save ya da Blinded: `blindRetort`). Bestow Curse ve Fear'da kalan küçük not ayrı (Bestow: save'li büyü hasarına ek 1d8 yok → kısmi kalır).
+- **Kapsam dışı (eksik parça savaş modelinin dışında; `kapsamDisi`, davranış değişmedi):** Charm Person (sosyal tutum), Hideous Laughter (Prone'dan kalkamama Incapacitated ile zaten sağlanıyor), Enhance Ability (kontrol avantajı uygulanıyor; not), See Invisibility (Ethereal düzlem modeli yok; Ethereal hedef zaten etkilenemez), Continual Flame ve Light (nesne yerine yaratık taşır; oyunun ışık modeli aydınlık/karanlık), Wish (kopyalama savaşta, diğer dilekler Game Master), Animal Shapes (not, eksik değil), Hex ve Fear'ın kalan notları (savaşta kontrol yalnız STR/DEX; silah bırakma modeli yok).
+- **Kalan 57 (altyapıya göre; liste BUYU-KISMI.md):** tekil 17, nesne/el modeli 10 (silah bırakma, nesneye yapma, dokunulan dost), alan geometrisi/taşıma 8 (serbest çizim, rüzgârla dağılma), yükseklik/irtifa 8 (uçuş katmanı yok), eylem ekonomisi 4 (ek eylem sırası, uyandırma eylemi), buyruk/öneri metni 4, yanılsama/algı 3, çağırma/sürü 3. Mage Armor'ın zırh denetimi savaşçıda zırh bilgisi olmadığı için yapılamadı.
+- **Regresyon:** 4 senaryo × 30 tohum, büyücü partisi, sürüm 31 ile 32 aynı (DENGE.md). Ana parça 448,61 kB.
+
+## 2026-11-06 — Kuyruk B1: altı SRD büyüsü (Death Ward, Guardian of Faith, Faithful Hound, Giant Insect, Animate Objects, Contagion)
+
+- **Bulgu:** altısı da Kuyruk 19'dan beri (`spellsK19`, kural sürümü 16) savaşta uygulanmıştı ve denetimlerde "tam/ÇALIŞIR" (`docs/BUYU-DENETIMI-4-5.md`, `harita/belgeler/ENVANTER-BUYULER.md`, `docs/SRD-DENETIM.md`). Görevdeki "çalışmayan" listesi bu kopyanın durumuyla uyuşmuyor; B1 eksikleri kapattı ve uçtan uca testleri ekledi (`src/battle/b1spells.test.ts`). Büyü verisinde ayrı `status` alanı yok; "çalışır" denetim aracında görünür.
+- **Death Ward (kural sürümü 31):** hasarsız ani ölüm artık her yoldan engellenir: Power Word Kill'in "100 HP ve altı ölür" kolu (eskiden dev hasar olarak işliyordu ve korumayı atlıyordu) ve Game Master'ın 6. Exhaustion ayarı (eskiden doğrudan). Koruma bir kez kullanılır ve biter (`exhaustionGain` yolu). Sürüm ≤ 30 eski davranış.
+- **Giant Insect jetonu:** biçime göre mevcut görsel (örümcek `giant-spider`, kırkayak `giant-centipede`, eşek arısı `giant-wasp`) ve biçim halkası (`summons.json` `avatarByChoice`/`ringByChoice`; yalnız görsel, `summoned` olayında taşınır). Yeni jeton ihtiyacı yok.
+- **Diğerleri değişmedi:** Guardian of Faith (girişte ve tur başında DEX, 60 hasar sınırı, merkez dolu), Faithful Hound (görünmez/dokunulamaz alan; büyücünün tur başında 5 ft içindeki tek düşmana ısırık, Magic eylemiyle 30 ft), Animate Objects (değiştirici kadar nesne, boyut karışımı, sahibin ardında, bonus eylemle emir), Contagion (Poisoned + seçilen yetenek dezavantajı, 3 başarı/3 başarısızlık sayacı).
+- **Astrolog:** genişletilmiş listede Guardian of Faith çalışır; Divination ve Scrying zaten `offCombat` (savaş dışı, `gmNote`) ve listede kalır.
+- **Açık kalan:** Faithful Hound'un havlama/parola ve 300 ft sınırı savaş dışı (hikâye); Animate Objects 0 HP'de nesneye dönüş savaş dışı; Contagion'un 7 günlük süresi savaş dışı.
+
+## 2026-11-06 — Kuyruk P6: ilkel genişletme
+
+- **Kapsam:** P0 şemasında "kısmi" kalan alanlar uygulandı (Aşama A) ve yeni ilkel/etkiler eklendi (Aşama B): 27 ilkel (+`zarMuhru`, +`engeldenGec`). Kısmi işaretli şema alanı kalmadı. Aşama A ile B aynı kancaları paylaştığı için tek commit'te (ortak giriş noktaları aşağıda). Gerçek içerik (`icerik/`) bu ortamda yok; testler yalnız kurgusal `tests/fixtures/paket-p6.json` (aynısı `docs/ornek-paket/ornek-ilkel-paket.json`).
+- **Kural sürümü değişmedi (30):** yeni ortak kancaların hepsi paketli savaşçıya bağlı alan/girdi olmadan hiçbir şey üretmez (`pkSans`, `pkD20Min`, `pkCritOn`, `reachPlus`, `pkMuhur`, `source.paket`, `AllyHitHook.damage`). Eski kayıtlarda bu alanlar yok. Reducer'daki tek kullanımlık zar tüketimi değişikliği yalnız `effectId` `pk-` önekli girişlerde. Hızlı regresyon (paket kapalı) P0 ile aynı.
+- **buyuDegisimi:** `yeniTur` ve `menzilEkiFt` yapımdan önce büyüyü dönüştürür (`paketSpellTransform`, Eldritch Spear satırının ardı; menzil eki yalnız 5 ft üstü menzilli büyüye). `kurtulmaDezavantaji` `saveMode`'da kaynağın (`source.paket`) koşulsuz pasifiyle; kaynağın verildiği her kurtulmada geçerli: büyüler (spells.ts) ve alan saldırıları (areaAttack.ts). Paket ilkellerinin kendi kurtulmalarında kaynak verilmez (etkilemez).
+- **d20AltSinir / kritikAralik:** alt sınır yeni ikinci şans türü `natFloor` (yalnız başarıya çevirecekse; sonucu değiştirmeyen yükseltme günlüğe yazılmaz: olasılık aynı). Kritik eşiği süren etki `pkCritOn`, saldırıdaki `critOn` ile en küçüğü (büyü saldırıları dahil).
+- **erisimFt:** süren etki `reachPlus` yakın dövüş erişimine (`checkReach`) ve fırsat saldırısı erişimine (`meleeOf`) eklenir.
+- **Tepki:** `AllyHitHook` artık hasar döndürebilir (`damage`; 0 ya da altı ıska). dostaIsabet: acBonusu, hasarAzalt (zar), yariya, direnc (= yarıya, `turler` süzgeci), iskalat, yonlendir, kritikIptal; banaIsabet'in yeni etkileri (iskalat, yonlendir, kritikIptal) aynı kancada (eskiler `ReactionSpec` yolunda). **kritikIptal yaklaşık:** kritik zarları olaya ayrı yazılmadığından hasar yarıya (yukarı yuvarla) iner; olaydaki `critical` bayrağı değişmez. **yonlendir:** saldırı ıskalar; aynı hasar, asıl hedefin `menzilFt` içindeki en yakın (tepki verenin düşmanı) başka yaratığa `map_effect` olarak (saldırgan dahil olabilir; yeni saldırı zarı yok).
+- **zarMuhru (Portent tarzı):** savaş başında (`start_battle` komut sonu) `sayi` kadar d20 atılır (kaynak verilirse kalan kullanım kadar), her biri sahipte ayrı süren etki (`pkMuhur`). Kimin testinde kullanılabildiği reducer türetimi (`syncAuras` → `Combatant.pkSans`; menzil `menzilFt`). Kullanım ikinci şans girişinde (`effectDice.ts` `secondChances` → yeni türler `set` / `setSpoil`): dostta/kendinde başarısızı başarıya, düşmanda başarılıyı başarısıza **çevirecekse** kendiliğinden (en küçük yeten / en büyük bozan değer). Zar etkisi biter, kaynak düşer. **Karar:** oyuncuya "Mührü kullan" sorulmuyor (ikinci şans girişleri karar kancası taşımıyor; sorulursa elle zar akışı bozulurdu); kullanım günlükte bonus zar olarak görünür. YZ ve oyuncu aynı kural.
+- **zorlaSonuc:** tepki etkisi, olay `zarTesti`; menzildeki dost (ya da kendi) başarısız d20 testini başarı (`success`), düşmanın başarılı testini başarısızlık (yeni `forceFail`) sayar; tepki ve kaynak harcanır. Kendiliğinden (sonucu değiştirecekse). `olay: zarTesti` ↔ `etki: zorlaSonuc` birlikte (doğrulayıcı).
+- **cagir:** `konsantrasyon` çağıranın konsantrasyonunu başlatır (`concentration_started`, büyü adı = özellik adı); bozulunca `summonCleanup` yaratığı kaldırır. `mod: olenden`: bu savaşta ölenlerin (parti: `life: dead`; düşman: 0 HP) karesinde, menzilde, `taraf` ve `boyutSiniri` süzgeciyle, ceset başına bir kez (`trait_turn` `pk-ceset:<id>`); "bu savaşta ölenler" listesi günlük yerine savaş durumundan (aynı bilgi, replay aynı).
+- **yuzeyOlustur:** `sure` yüzey verisinin süresinin yerine geçer; zemin etkisi (`yuzey: "alan"` ya da yüzeye ek) satır içi kurallı alan (`SpellZone.spec`: tur başı/sonu/giriş, kurtulma, hasar, durum, zorlu arazi = hız düşürme, `hedefler`); K55 çözücüsü ve alan motoru kendi yolundan, ikinci hesap yok.
+- **engeldenGec:** süren etki `phase` (zorlu arazi varsayılan) + `noProvoke` (fırsat saldırısı kuralı sürüm 25+).
+- **ekSaldiri:** koşullar `buyuTurunda` (her büyü: komut sonu `trait_turn` `pk-buyu`) ve `seviyeliBuyuTurunda` (`economy.slotTurn`). Pasif `saldiriSayisi` Saldırı eylemindeki saldırı sayısını en az bu yapar (savaş başında `attacksPerAction`).
+- **kosul `harita:<bölge>`:** savaş haritasının bölgesi (`harita/_ortak/harita-bolgeleri.json`; `getMap(id).bolge`); doğrulayıcı bilinmeyen bölgeyi reddeder.
+- **check:icerik:** varsayılan çıktı biçimi aynı (yalnız sayılar ve kaybolan kısmi alan bilgileri). Yeni isteğe bağlı `--yukselt`: "kismi" işaretli ama ilkellerinde kısmi alan/birleşim kalmamış özellikler (alt sınıf başına sayı ve kimlik).
+
+## 2026-11-06 — P0: ek paket etki ilkelleri ve çağrı yaratığı şeması
+
+- **Kapsam:** ek paket özellikleri kod yazmadan veriyle tanımlanır: özellikte `ilkeller` dizisi (25 ilkel), paket düzeyinde `yaratiklar`. Tek kaynak `src/content/ilkelSema.ts`; belge `harita/belgeler/PAKET-ILKELLER.md` aynı tablodan üretilir (`npx vite-node scripts/paket-ilkeller-belge.ts`, test eşitliği denetler). Eski `effect` alanları aynen çalışır. Gerçek içerik (`icerik/`) bu ortamda yok; yalnız kurgusal pilot paket (`tests/fixtures/paket-pilot.json`). Özellik metinleri depoya, rapora ya da bu dosyaya yazılmadı.
+- **İlkel seçimi (25):** kullanıcının görev metnindeki 24 aday + `hasar` (doğrudan hasar; alt sınıf düğmelerinin en sık kalıbı, imza eylemleriyle aynı yol). `hiz` ayrı ilkel (zarEtkisi'ne katılsaydı "pasif hız" için zar alanları gerekirdi). `turSonu` tetiği şemada var ama hiçbir ilkel izin vermiyor (ileride; aura `zaman: turSonu` ayrı). Kalıba uymayanlar belgenin "Kalıba uymayan" bölümünde (yapışma, taraf değiştirme, yanılsama nesnesi, gerçek stat bloğu değişimi, yeniden atma/attırma, saldırı yönlendirme, büyü save/menzil/tür değişimi, erişim, eşya üretme, savaş dışı).
+- **Durum etiketi:** yeni `kismi`. `calisir`/`kismi` yalnız ilkel ya da ok/partial `effect` ile geçerli (eski kural genişletildi). Şemada **Kısmi** işaretli alanlar doğrulanır ama yaklaşık (`boyut.erisimFt`, `zarEtkisi.d20AltSinir`, `buyuDegisimi.kurtulmaDezavantaji/menzilEkiFt/yeniTur`, `cagir.konsantrasyon` süre gibi, `yuzeyOlustur.sure` yüzeyde verideki, tepkide desteklenmeyen olay×etki birleşimleri); `check:icerik` bunları "kismiAlan" olarak listeler.
+- **Seçim listesi:** hiç çalışan (çalışır/kısmi) özelliği olmayan paket alt sınıfı listede görünmez (veri silinmez, seçili eski karakter açılır); tam çalışmayan (kısmi/çalışmıyor/planlı özelliği olan) "Deneysel: bazı özellikler savaşta etkisiz". Kuyruk 25 kopya politikası görünmeyen paket kopyasını saymaz (SRD sürümü görünür).
+- **Veri savaşçıda:** karakterden savaşçı oluşturulurken alt sınıfın kazanılmış ilkelleri ve başvurulan yaratıklar `Combatant.paket`'e kopyalanır; `battle_started` olayı ve `summoned` olayı (yaratığın tamamı) bunu taşır. Paket sonradan silinse de kayıt/replay ve süren savaş aynı çalışır.
+- **Kural sürümü değişmedi (30):** paket verisi yalnız yeni oluşturulan savaşçıda var; eski kayıtların savaşçılarında `paket` alanı yok, hiçbir kanca olay üretmez. Yeni ortak kancalar (`hitHooks.ts`, `attackedAdvBy`, `paketSpellBonus`) yalnız paketli savaşçıda çalışır. Hızlı regresyon (4 senaryo × 30 tohum, paket kapalı) A2 sürüm 30 sonuçlarıyla aynı.
+- **Kaynaklar:** `kaynak` ilkeli sınıf kaynakları tablosuna `pk-<alt sınıf>-<id>` anahtarıyla yazılır (`src/content/paket.ts`): en çok kullanım (sayı, `$pb`, yetenek değiştiricisi en az 1, seviye tablosu), yenilenme (uzun; kısa+uzun; tur), dinlenme ve savaş sonu yazımı mevcut yoldan. `buyuVer.bedava` yeni `ResourceDef.freeSpells` ile o büyüleri slotsuz yaptırır; `buyuVer` büyüleri `alwaysPrepared` (ilkelli özelliğin sentetik mekaniği, `packMechanic`).
+- **Düğme:** aynı özellikte aynı düğme tetikli (eylem/bonus/serbest) ilkeller tek düğme (`pk:<alt sınıf>/<özellik>:<tetik>`), sırayla; kaynağı ilk `kaynak` alanlı ilkel belirler, düğme başına bir kez. Hedef/altıgen ihtiyacı ilkellerden (`FeatureEffect.kind: 'paket'` `target`/`hex`; MapBattle imza akışını kullanır).
+- **Otomatik tetikler:** `isabet` (ek hasar zarı hasara, diğerleri saldırıdan sonra uygulanmış durumda), `turBasi` (tur başı kancası), `savasBasi` (start_battle komut sonu), `oldurunce` (komutu veren paket sahibinin rakibi o komutla 0 HP'ye düştüyse; komut başına bir kez), `hasarAlinca` (HP ya da geçici HP azaldı), `sifirCan` (Death Ward yolu: koruma etkisi komut sonunda kurulur, harcanınca kaynak düşer ve gerekirse `healed` ile yarı cana çıkar; kaynaksız ilkel savaşta bir kez). Koşullu pasifler (`kosul`) her komut sonunda eşitlenir (`effect_added`/`effect_ended` olayları; replay aynı).
+- **Tepki:** `banaIsabet` → mevcut `ReactionSpec` (acBonusu = parry, hasarAzalt = reduce, yariya = halve, direnc = resist), `hasarAldim + karsiVurus` → retaliate, `dostaIsabet + acBonusu` → `registerAllyHit` (karar `askReaction`; oyuncuya sorulur). Diğer birleşimler kısmi (etkisiz, çökmez).
+- **Çağırma:** R3 yolu (`summoned` olayı, `summonCleanup`: 0 HP, süre, sahip ölümü; `degistir` öncekileri kaldırır). Yaratık kimliği `pk-<alt sınıf>-<yaratık>` (saldırı ekleri `registerSummonRider` ile; tur başı ve savaş başında yeniden kaydedilir). Saldırı bonusu "sahip" = sahibinin büyü saldırı bonusu (Find Steed gibi); yeterlilik sahibinki. Konsantrasyon bayrağı süre olarak işler (paket özelliği konsantrasyon büyüsü başlatmaz; kısmi). Durum bağışıklığı 0 yarıçaplı K53 aurasıyla (auraCore kapalıysa yok).
+- **Jeton:** yeni görsel dosyası yok. `jeton.gorsel` canavar kimliği ya da arketip (`JETON_ARKETIP`, ör. kurt → dire-wolf); yoksa yedek `wolf` (uyarı, hata değil). `ton` → `Avatar.hue` (CSS `hue-rotate`), `halka` → `Avatar.ring` (jeton tabanında elips; rozette kenar rengi). Çizim anında.
+- **Yapay zekâ:** tek açıklayıcı `paket` (Y1 kaydı): her düğme için hedefli/altıgenli adaylar; puanı değerlendiricinin kuru çalıştırması verir (elle YZ kuralı yok). Otomatik tetikler ve tepkiler motorda kendiliğinden.
+- **Tembel:** yorumlayıcı `src/battle/paket/` savaş parçasında, şema `ilkelSema` ayrı tembel parçada; ana parça 446,77 kB (P0 öncesi 446,44; fark Builder etiketi ve metinler).
+- **Pilot seçimi (kurgusal):** Kehribar Nöbetçisi (fighter; tepki + işaret + direnç, ek saldırı, boyut, zar etkisi), Rüzgâr Kartalı (ranger; ek hasar + zorla hareket + uçuş + tepki, ışınlanma, hız), Kül Çağıranı (druid; iki yaratıkla çağırma + aura, yüzey, alan hasarı, durum, görünmezlik, büyü ver/değişimi), Şafak Bekçisi (cleric; iyileştirme + geçici can + ölümden dönüş, Moral, biçim). Yaratıklar: Kül Kurdu (arketip kurt, ton 200, halka), Kor Böceği (jetonsuz → yedek, saldırısız).
+
+## 2026-11-05 — A2 G2/G4/G5: koşullu yetenekler, Eyebite, YZ Nesne fırlat, E1 artıkları
+
+- **G2 koşullu canavar yetenekleri (23):** her biri için koşulu sağlayan senaryo testi (`src/battle/a2abilities.test.ts`): Swallow ×6 (yakaladığı hedef), Trample ×3 (Prone hedef), Rampage ×2 (Bloodied düşman), Reel ×2 (Restrained/Grappled), Bubble Dash ×2 ve Aquatic Charge (derin su), Tree Stride (ağaç), Animate Trees (60 ft'te ağaç), Shadow Stealth (karanlık + gizlenme yeri), Swoop (yakalanmış), Consume Life (0 HP), Create Specter (ölü insansı), Hellfire Spellcasting (iki Fireball). Koşul varken çalışır, yokken reddedilir: 22 olduğu gibi **ÇALIŞIR**. **Tree Stride hatalıydı:** efsanevi ışınlanmanın "varışta 2+ düşman" kuralını kullanıyordu (tek düşmanda hiç çalışmıyordu) ve varış ağaca bağlı değildi. Sürüm 30+: 60 ft içindeki ikinci bir ağacın bitişiğindeki boş altıgene, düşmana en yakın (`treeStride`); sürüm ≤ 29 eski yol. Shadow Stealth motorda doğru: gizlenme yalnızca haritanın gizlenme yerlerinde (`hide`), karanlıkta da; A0 arenasının düz zemininde gizlenme yeri yoktu.
+- **G4 Eyebite (SRD 5.2.1, sürüm 30):** büyü verisinde `choiceEffects` (seçilen duruma bağlı süren etki; durum etkinin `grants`'ı olur, etki düşünce durum kalkar). Asleep: `breakOnDamage` (hasarla biter; SRD'deki "biri eylemle uyandırır" yok). Panicked: Fear'in kaçış yolu (`command: flee`, `commandPersist`, `fleeDash`): her turunun başında büyücüden Dash ile uzaklaşır; "60 ft uzakta ve görmüyorsa biter" kısmı yok (kaçış sürer). Sürüm ≤ 29 eski davranış.
+- **G4 YZ Nesne fırlat:** açıklayıcı `a2:firlat` (`ai/behaviors.ts`): bitişikteki hafif/orta nesne (`throwProblem` geçen), fırlatma menzilindeki ilk üç düşmana; puanı değerlendiricinin kuru çalıştırması (beklenen hasar) verir; silah saldırısı genelde daha yüksek puanlıdır (düşük öncelik). Kolay zorlukta aday üretilmez. Karar olay değil; kural sürümü gerekmez.
+- **G5 rozetler:** jetonda en çok 3 rozet, fazlası "+N" (başlığında hepsinin adı). Öncelik (`data/efekt-baglama.json` `rozet.oncelik`): Çökmüş (Moral 0), Paralyzed, Stunned, Incapacitated (eylemi kesenler) → Restrained, Grappled (hareketi kesenler) → Frightened, Charmed (kontrol) → yanma, kanama, zehir, donma (hasar verenler) → Prone, bitkinlik, Invisible, Deafened, uçuş; süren etki rozetleri en sonda kendi sıralarıyla.
+- **G5 Çizili Duvar:** açık haritada soluk kalıyordu (koyu kahve ton + `screen` karışımı açık zeminde kayboluyor). Artık tebeşir beyazı (Harita Öğretisi'nin açık sıcak tonu `#f2e3c4`), normal karışım ve koyu kontur (`#1b140e` gölge) (`efekt-baglama.json` `ton`, `kontur`).
+- **G5 alan-yildirim:** 6 kare (son iki kare ateş közü). Ham sayfa değişmedi; kesim tablosunda `kareSiniri` ve şerit yeniden üretildi (kayıtta yalnızca sayıyı değiştirmek 8 karelik şeridi 6 kare genişliğe sıkıştırırdı).
+
+## 2026-11-05 — A2 G1: canavar saldırı eklerinin bağlanması (kural sürümü 30)
+
+- **Kapsam:** yeni mekanik yok; 85 yok/kısmen saldırı ekinin 68'i mevcut sistemlere veriyle bağlandı (`data/canavar-ekleri-a2.json`, `src/battle/ridersA2.ts`): 54 tam, 14 kısmi; 17 kaldı (yapışma sistemi 3, likantrop laneti 5, ele geçirme/zihin kontrolü 2, savaş dışı 5, nesne hedefi 2; `harita/belgeler/ENVANTER-CANAVARLAR.md` "A2'de kalan"). Sayı ayarı yok; SRD değerleri.
+- **Sürüm:** kural sürümü 30 (`ridersA2On`). Sürüm ≤ 29 (eski kayıt, replay) eklerin hiçbiri çalışmaz. `data/attack-riders.json` üretilen dosya (`riders-uret.cjs`); durum alanları değişmedi, bağlama ayrı dosyada (üretici yeniden çalışınca kaybolmasın diye).
+- **Tek çağrı yeri:** `riderConditionEvents` (isabet, tek hedefli save, alan save'i); 0 HP'de de çağrılır (`zeroHp`). Ek hasar `withA2Extras` (isabet yolu), hasarsız save saldırısının hasarı `a2AreaDamage` (tek hedef ve alan).
+- **Süreler:** "sonraki turunun sonuna dek" = `untilOwnTurnEnd` (hedef o anda sıradaysa bu turun sonunda biter: yaklaşık); "kaynağın sonraki turunun başına dek" = `untilSourceTurn`; "1 dakika/10 dakika/1 saat/24 saat" = 10/100/600/14400 tur; "yakalama sürdükçe" = yeni alan `whileGrappledBy` (reducer yakalama bitince etkiyi düşürür; verdiği durumlar `grants` ile birlikte kalkar). Mefitin "kendi sonraki turunun sonuna dek"i `until` tur + 1 (yaklaşık).
+- **Yaklaşımlar:** yakalamaya bağlı tur hasarı (Rug, Shambling Mound) kaynağın tur başında (`sourceTurnDamage`; SRD hedefin tur başında). Uyku nefesinde hasarla uyanma ilk aşamada da geçerli (`wakeOnDamage` aşamaya taşınır). Altın ejderhanın "STR tabanlı d20 Testi" saldırıda yakın dövüş sayılır. Yanma (Magmin, Fire Elemental) `ongoing` 1d4 ateş + DEX DC 10 ile söner (harita `Burning` durumu `lavJump` parametrelerine bağlı olduğu için kullanılmadı). Aşındırma: canavarın doğal zırhı sayılmaz; karakterde AC > 10 + DEX zırhlı sayılır (Unarmored Defense de zırhlı görünür). Yarı-Ejderha Draconic Origin türü seçilemiyor: varsayılan **ateş**. Kraken Swallow yalnızca krakenin yakaladığı hedefe.
+- **Test değişikliği:** `a1.test.ts` yeni savaşın sürümünü tam 29 bekliyordu; artık ≥ 29 (A2 sürümü 30 yaptı).
+
+## 2026-11-05 — A2 G0: ana paket sınırı 440 → 500 kB
+
+- **Ana paket sınırı 440 → 500 kB** (kullanıcı kararı; gerekçe: sıkıştırılmış ≈150 kB, telefona kurulan paket). Sınır eskiden yalnız belgelerde (CLAUDE.md, görev metinleri) yazılıydı, kodda denetlenmiyordu; artık `data/paket-siniri.json` `anaParcaKb` ve `npm run build`'in son adımı `scripts/paket-siniri.mjs` (aşarsa build başarısız).
+- Ölçü dosyanın **gerçek bayt boyutu** (1 kB = 1000 bayt). Vite'in yazdığı kB karakter sayısıdır; Türkçe metin UTF-8'de çok baytlı olduğu için ≈%1,3 küçük görünür (E1 sonunda Vite 439,59 kB, dosya 445,33 kB). Yeni kod yine tembel parçalara girer.
+
+## 2026-11-05 — E1: efektleri bağlama (yalnızca görsel)
+
+- **Kapsam:** oyun kuralı, sayılar ve kural sürümü değişmedi; yeni olay yok. Efekt kodu tembel parça `src/ui/fx/` (`FxLayer`), ana paket 439,59 kB (değişmedi).
+- **İçe aktarma:** `npm run sprite-ice -- --efekt` (kesim tablosu `data/efekt-kesim.json`): 12 yeni sayfa → 41 şerit `public/sprites/efekt-*.webp` + 15 durum ikonu `efekt-ikon-*`; kayıtlar `data/sprite-esleme.json` `efektler`/`efektIkonlari`. Siyah zeminde alfa parlaklıktan ((max − 12)/243), renk alfaya bölünür, `screen` karışımı; ikonlar macenta anahtarla (tolerans 40: soluk pembe hayalet ikonu korunur). Görev V'nin 13 şeridi yeniden alınmadı (ham dosyalar depodakilerle bayt bayt aynı).
+- **Izgara sapmaları:** `duvar-parcalar` sayfasında 3 satır var (beklenen 4; 4. satır zaten ayrı `duvar-cizili` ile değişecekti, sonuç aynı). Sondaki boş kareler atıldı: kritik-vurus, darbe-ezme, darbe-buyu, alan-ates, alan-kuvvet, koruma-kalkan, cagir-portal/ruh/dogal 7; alan-ses 6; itme-toz 6. `alan-yildirim`ın son iki karesi ateş közü (sayfada böyle; olduğu gibi bırakıldı).
+- **Bağlama kuralları veride** (`data/efekt-baglama.json`): saldırı isabeti hasar türüne göre darbe (kritikte kritik-vurus), `healed` (10+ büyük), `teleported` (çıkış + giriş), `area_used`/`spell_cast.area` (hasar türüne göre patlama; çizgi alanda ışın parçaları, %12 bindirme), `effect_added` dosta (AC → kalkan, olumlu zar/geçici can/save avantajı → kutsama, koruma/direnç → ruh), `summoned` (doğal/ruh/portal), `pushed` (itme-toz itilme yönüne döner), `map_effect` çarpma (yaratık → şok, nesne → enkaz), `moral_changed` (toparlama → yeni yol, zafer → huzur, dost/korku → vicdan). Ölüm olay değil: önceki durumda haritada olup şimdi ölü/kaybolmuş jeton → toz.
+- **Kalıcı:** K53 aura etkisi ve yaratığa bağlı alan (Spirit Guardians) → aura halkası (soğuk buz, ateş/nekrotik ya da düşmana yönelik kırmızı, yoksa altın); engel/duvar alanları → duvar parçaları (dikey eksene göre 0°/60°/120°), Çizili Duvar Harita Öğretisi tonunda (#8a6d4a).
+- **Bütçe ve ayar:** ekranda en çok 12 animasyon, jeton başına 2 (tek seferlik efekt oynayan jetonun durum döngüsü durur). Efekt ayarı kapalı ya da hareketi azalt açıkken her efekt tek sabit kare (durum döngüleri de artık gizlenmez, statik görünür).
+- **Jeton katmanları:** Poisoned zehir şeridiyle döngü; Blinded karartma, Invisible %40 saydam (opaklık 0,45 → 0,6), Prone yatık eğim (−70°), Unconscious yüzen Z, Deafened rozet, bitkinlik kum saati + seviye.
+- **Bağlanmayanlar:** `goz-nabiz` (olay yok), `engel-melodi` (Şair'in engel altıgeni yok), Paladin Aura of Protection halkası (olay/aura etkisi değil), Hizalanma Moral bağı (savaşa girmez).
+
+## 2026-11-05 — Y2: Y1 regresyon düzeltmesi (yapay zekâ davranışı, başarım, Usta)
+
+- **Kapsam:** yeni mekanik yok, oyun sayıları (data/ hasar, HP, DC) değişmedi, kural sürümü aynı (YZ kararı olay değil). Değişen: yapay zekâ karar mantığı ve `data/yz-roller.json` ağırlıkları, iki motor hatası. Ayrıntı ve sayılar: `harita/belgeler/YZ-DENETIM.md` "Y2 bulguları", `harita/belgeler/DENGE.md` "Kuyruk Y2".
+- **Motor hataları (davranış düzeltmesi, kural sürümü artmadı):** (1) büyü saldırısı 0 HP'de yenilenmeyi bekleyen hedefe (Trol) atılır (`spells.ts`; önceden yalnız eylem harcanıyordu, Kuyruk 41b "ateş/asit yenilenmeyi keser" kuralı büyüyle hiç çalışmıyordu). (2) Çağrılan yaratığın kimliği (`monsterAbilities.ts` `summonEvents`) aynı turda çakışırsa sonek alır (Loathsome Limbs iki kez → sırada iki kez aynı kimlik → tur kilitleniyordu). Eski kayıtlar olaydan oynatıldığı için etkilenmez; kural sürümü ayrımı gerekmedi (önceki davranış hata).
+- **Hareket tutarlılığı:** hareket yeri taramaları eski `bestNow` ile yapılır (her altıgende kuru çalıştırma pahalı); karşılaştırmanın iki ucu artık aynı ölçüyle: kötü koşulda yer değiştirme yalnız değerlendiricinin seçimi de eski kuralın seçimi de kötü koşulluyken; "%25 daha iyi yer" ve Sneak Attack yerinde buradaki değer eski kuralla da ölçülür.
+- **Kendini koruma:** `korunma` can oranına bağlı (`korunmaEsik` 0,5 üstünde 0, 0 canda `korunmaTavan` 2); bütün zorluklarda aynı (Kolay'a ayrı hafifletme gerekmedi).
+- **Seçilmeyenler:** "N tur hasar yok → saldırganlık" sigortası ve "karanlıkta son bilinen konuma ilerleme": yapay zekâ durumsuz (geçmiş tur bilgisi durumda yok; modül belleği saf olmaz); nedenler giderilince hedefler tuttu. Açık madde.
+- **Başarım:** önbellekler `WeakMap<BattleState, …>` (durum değişmez → aynı girdi aynı sonuç; karar değişmez, test `y2.test.ts` "soğuk kopya ile aynı karar"); budama yerine zarsız senaryo ikizi (kesin eşdeğer). Bütçe bu makinede tutuyor; telefon (×4) tahmini tek kararda p95 ≈ 0,4 sn: arayüz düşman turlarını tek tek oynatır (`autoplayEnemyTurns(…, maxTurns)`, `MapBattle` zamanlayıcı; zar/tepki beklerken durur, zar iptali zinciri bitirir). Tek kararın içini bölmek (eşzamansız değerlendirici) açık madde.
+- **Usta:** ek terimler (kesin öldürme, odak, tehdit sırası, slot zamanlaması) tek denemeyle ölçüldü: Normal'e göre ortalama −2 puan (hedef +5). Usta **deneysel** kalır: `data/yz-roller.json` `zorluk.usta.deneysel` + TR/EN açıklama ("Normal'den belirgin güçlü değil"), `difficultyNote` (K58 zorluk arayüzü bu etiketi göstermeli; şu an zorluk arayüzü yok). Terimler kaldırılmadı (Usta'ya özgü; Normal/Kolay etkilenmiyor).
+- **Ölçüm araçları:** `npm run sim:yz-sure -- [savaş] [senaryo] --parti <kimlik> [--yavas K]` (karar süresi, aday/önizleme/kuru çalıştırma sayısı, karar imzası).
+
+## 2026-11-05 — A1: hata paketi (A0 bulguları)
+
+- **Y1'de yapılmış, atlandı:** yapay zekânın sarf eşyası (iyileştirme iksiri) kullanması (A0 boşluk 6) Y1 G3'te (`behaviors.ts` `itemCands`); A1'de dokunulmadı.
+- **Heal çökmesi (Görev 1):** kök neden, zar ifadesini yeniden yazan her yerin `${sayı}d${yüz}` kalıbı: sabit "70" (`parseDice` → sayı 0, yüz 1, ek 70) "0d1+70" olup `parseDice` tarafından reddediliyordu. Tek yardımcı `formatDice` (`src/rules/dice.ts`; zar sayısı 0 ise yalnızca sabit) bütün yazım yerlerinde: büyü hasar/iyileştirme ifadesi (`damageExpr`), gecikmeli hasar, süregelen hasar (smite `ongoing`), selfBuff ek hasarı, alan hasarı (`zones.ts`), burst yukarı slotu (`common.ts`). Heal'in yukarı slotu sabit ("10": SRD slot başına +10) `upcastDiceCount`'ta 0 sayılıyordu; artık sabit yukarı slot eki ifadeye eklenir (yalnız Heal'de var). Veri taraması: sabit zar/hasar değeri yalnız Heal (70, 10), Guardian of Faith (20; alan yolu zaten sabiti ayrıca ele alıyordu), yanan yağ (5), canavar yetenek pasifleri ve eşya `onHit` (doğrudan `rollDice`, sabiti kabul ediyor). Ötekilerde davranış aynı (yeniden yazılan ifadelerin hiçbirinde ek yok). Kural sürümü gerekmez: eski kayıtta Heal hiç yapılamıyordu.
+- **Büyü yoklaması testi:** `src/battle/spellProbe.test.ts` (A0 betiğinin büyü bölümü; 339 büyü × 13 hedef biçimi, istisna yok; ≈2 sn).
+- **Eyebite (Görev 2):** SRD 5.2.1 "Range: Self" ama etki "60 ft içinde görülen bir yaratık". Veride `mechanics.targetFt: 60` (menzili Self olup yaratık hedefleyen büyü; menzil denetimi bununla, "yalnızca büyücüyü etkiler" engeli `targetFt` yoksa). Seçilen etki `conditionChoices` (Unconscious = Asleep, Frightened = Panicked, Poisoned = Sickened), durumlar konsantrasyona bağlı. Sonraki turlarda Magic eylemiyle (`spell_followup`, slot yok) başka yaratık; seçilen etki ilk büyüdekiyle aynı (komutta `choice` verilirse o). `repeat.noRetarget`: bu büyüye karşı save'i başaran yaratık yeniden hedeflenemez (hedefte konsantrasyona bağlı `resisted` işareti). **Eksik (KISMİ):** Asleep'in hasarla/sarsılarak uyanması ve Panicked'in her tur Dash ile kaçması yok (yalnız durumlar).
+- **Grappled (Görev 3, kural sürümü 29):** yakalanan yaratık, yakalayanı dışındaki hedeflere saldırıda dezavantajlı (SRD 5.2.1). Tek yer `sightConditions` (`grappledOther`) → `attackSources`; silah, canavar, büyü saldırısı ve Spiritual Weapon aynı yoldan. Yakalayanı bilinmeyen Grappled'da (yalnız durum) uygulanmaz. Sürüm 28 ve öncesi eski davranış.
+- **Ölü ev kuralı anahtarları (Görev 4):**
+  - `yuksekAvantaj` **kaldırıldı**: yüksek zemin avantajı K26 yükseklik katmanıyla (`heightCombat`, `attackSources` "Yüksek zemin avantajı") zaten çalışıyor.
+  - `lair` **kaldırıldı**: in olayı harita kuralı `lairEruption` (Kuyruk 33) ve onun Game Master anahtarıyla çalışıyor; ev kuralı hiç okunmuyordu. Testlerdeki `lair` denetimi `asitHavuzu` ile değiştirildi (aynı anlam: haritada açılmamış sefer kuralı kapalı).
+  - `asitHavuzu` **ertelendi, panelden gizlendi** (`gizli: true`; `HouseRulesPanel` göstermez): amaç K13B'de yalnız ad olarak geçiyor, kuralı (hasar, süre, etkileşim) tanımlı değil; motorda asit yüzeyi yok. Yeni yüzey yeni mekanik sayılır.
+- **Nesne fırlat (Görev 5):** oyuncu komutu `object_use` + `action: 'throw'` + `to` (eylem; Fast Hands kapsamaz). Bitişik hareketli nesne; ağırlık sınıfı `data/nesne-hareket.json` (hafif 30 ft, orta 15 ft, ağır fırlatılmaz), hasar `oyuncuFirlatma` (hafif 1d4, orta 1d8 ezici; SRD doğaçlama silah 1d4 temel) + STR, tek zar. Yol K53 `throwObject`: saldırı zarı yok (K53 nesne fırlatması gibi), hedefteki yaratık bir kez hasar alır, nesne aynı hasarı alır ve yanına düşer (çarpma kuralıyla çift hasar yok); boş altıgende nesne oraya iner. Game Master anahtarı `objectMotion` ve kural sürümü 24+ gerekir. Arayüz: menüde "Nesne fırlat" (yalnız fırlatılabilir bitişik nesne varken) → nesneye dokun → vurgulu hedef altıgene ya da yaratık jetonuna dokun. Enkaz çağırma ve engel yaratma oyuncu komutu yok (imza özelliklerinde). Yapay zekâ kullanmaz.
+- **CLAUDE.md "Bilinen eksikler":** ırk özellikleri (A0: 34/41 çalışır, eksik yok), yakalama, canavar saldırı ekleri sayıları, büyü sayıları, tepkiler (Cutting Words, Countercharm var) güncellendi.
+
+## 2026-11-05 — Y1 G2–G3: ortak eylem değerlendiricisi ve eksik davranışlar
+
+- **Kural sürümü yok:** yapay zekâ kararı olay değil (komut kaydedilir); replay aynı (test). Ayar `BattleState.yz` (`zorluk` taraf başına kolay|normal|usta, varsayılan Normal; `eski: true` Y1 öncesi zinciri çalıştırır: regresyon ölçümü). Simülasyonda `YZ_ZORLUK`, `YZ_ZORLUK_DUSMAN`, `YZ_ESKI=1` (ortam değişkeni, paralel süreçlere geçer). Arayüz yok (K58).
+- **Yer:** `src/battle/ai/` (tembel `ai` parçası, ana parça 439,49 kB): `preview.ts` (G1 kuru çalıştırma), `actions.ts` (açıklayıcı kaydı), `evaluate.ts` (puan, rol, zorluk), `behaviors.ts` (G3). Bağlantı `ai.ts` sonunda: karar noktası `bestNow`'un yeri (`evaluatedNow`) ve bonus/serbest havuz (`bonusEvaluated`, imza bonus özellikleri + G3). Hareket yeri seçimi (`bestNow(there)` döngüleri) eski hızlı puanla kaldı: her altıgen için kuru çalıştırma 24× pahalı.
+- **Puan terimleri** (`data/yz-roller.json`): beklenen hasar (hedefin canıyla sınırlı), öldürme olasılığı × (2 × tehdit + 5), durum × tehdit (`durumDegeri`), etkisiz bırakan etki bayrakları (`bayrakDegeri`: banished, sealed, dominate, polymorph, charm, command, noAttack), düşman etkisi × 0,25 × tehdit, düşman konsantrasyonuna isabet, itilen düşmanın vardığı altıgen riski, iyileştirme (eksik canla sınırlı, can azaldıkça 1–2×), yerdeki dostu kaldırma, korunan dost (küre), dost ateşi ve dost ölümü cezası, kendine hasar (düşük canda 2×), kaynak (slot seviyesi × 2, özellik kaynağı × 2,5), kendi altıgeninin riski, maruziyet farkı (düşük canda 1,5×), hedef sırası (`sira`) ve `hedefOnceligi` (yakalanan 6, koşucu 6, hükümlü 3, Vex 1, sahip koruma 2). Tehdit = canavarın Multiattack ortalaması / silah × saldırı / en iyi hasar büyüsü.
+- **Rol:** `hasarci/kontrolcu/destek/tank`, ağırlık çarpanları; kendiliğinden (2+ iyileştirme → destek, 2+ durum büyüsü → kontrolcü, AC 18+ yakın dövüşçü → tank). Game Master `set_ai_role` (olay `ai_role_set`, günlük metni TR/EN; `null` türetmeye döner). Arayüz düğmesi K58.
+- **Eski kurallar regresyonsuz:** elle yazılmış üreticiler açıklayıcı (`eski:itme`, `eski:iyilestir`, `eski:yenilenme`, `eski:alan`, `eski:soz`, `eski:zemin`, `eski:nefes`, `eski:kontrol`, `eski:imzaIpucu`, `eski:yetenek`, `eski:alanSaldiri`, `eski:coklu`; ayrıca kuralsız `eski:tek`, `eski:imza`, `eski:imzaIpucuKapisiz`, `eski:saldiri`). Kural üreticisinin adayına `kuralOnceligi` eklenir ve kaynak maliyetinin yarısı geri verilir (kural "değer" dedi; eski zincirde önce gelen daha yüksek: itme/yenilenme 9, kontrol 7, iyileştirme/söz 6, ipucu 5, alan/zemin/nefes 3). Eski zincirin kendi seçimi (`bestNow`) aday listesinde +0,5. Böylece eski davranış testleri (56 dosya, 563 test) değişmeden geçti; değerlendirici yalnız açık farkla öne geçer.
+- **K50/K54b sorunu:** eylem harcayan imza özellikleri artık büyülerle aynı puanla karşılaştırılıyor (eski `imzaAi` yalnız bonus/serbest türleri seçer). Slot kapısı (3.+ slot dururken tek hedefe ipucu yok) kural önceliğinin koşulu oldu: kapıdan geçen ipucu önceliği alır; geçmeyen ipucu yine aday ama yalnız kendi puanıyla (duvar/zemin gibi değeri önizlemede görünmeyenler eksi kalır, seçilmez). Ölçüm DENGE.md "Y1".
+- **Eşik:** olumlu puanlı aday yoksa karar `null` (hareket/sonraki adım), eski zincirin seçimi +0,5 ile genelde olumlu kalır. Bonus havuzunda olumlu aday yoksa eski kural (ilk geçerli imza bonus özelliği): kullanım düşmez.
+- **Zorluk:** Kolay en iyi adayı %60, kalanında ilk 4 içinden birini seçer (deterministik karma: tur, sıra, yaratık, can, hareket; simülasyon tekrarlanabilir). Usta ilk 3 adayda komutu uygulayıp aynı yaratığın sonraki en iyi komut puanını × 0,5 ekler (bir adım ileri bakış; yalnız aynı tur içi).
+- **G3 davranışları** (`behaviors.ts`): Zihin Gücü İt/Çek/Yana/Taşı (Taşı'da hedefin çevresinde en riskli, dostlardan uzak altıgenler), Nesne (taşınabilir nesneler), Fırlat (nesne ya da zemin enkazı); Yetişen Yol: Adım (yaralı/yerdeki dosta); Cloud's Jaunt ve Blink Steps kaçışı (yarı canın altında, bitişikte düşman; düşmandan en uzak 2 altıgen); İt (çarpma ve yere düşürme; her bitişik düşmana); canavar yetenekleri tek tek (ışınlanma, çekme, çağırma dahil; ethereal ve aç/kapa hariç); iyileştirme iksiri (yarı canın altında, kendine ya da bitişik dosta). Tehlikeli altıgenden (risk ≥ 20) çıkış hareketi (`leaveHazard`) ve menzilli saldırı yeri seçiminde yükseklik (`heightCombat` açıkken seviye başına 1 maliyet indirimi). Tepki devralmaları (Tam Zamanında, Mucize, Yol devralma) zaten öneriyle (`askReaction` `suggested`) çalışıyordu; dokunulmadı.
+- **Yapılamayan:** Buyruk: Yer değiştir (dostun tepkisini harcar, hedef altıgen seçimi dostun konumuna bağlı; değer önizlemede görünmez) ve Kuşbakışı Yerleştir/Zemin Yol aç/Buz (değeri harita geometrisine bağlı) aday üretmez; Ready yok; yapay zekâ Gizlen kullanmaz (eski). YZ-DENETIM.md "Y1 sonrası".
+
+## 2026-11-05 — Kuyruk K54c G4: Geride Kalanın Yolu (kural sürümü 28)
+
+- **Yaralı Kalp:** savaş başında (`withImza` → `woundedHeartPatch`) `moralMax` normal üst sınırın üçte biri (en az 1), normal sınır `yipranmaNormal`. Moral tam modu açıkken Moral'in tavanı; **kapalıyken Yıpranma havuzu aynı alanlarla** (yalnız bu alt sınıfın savaşçısında `moral`/`moralMax`): mevcut Moral komut sonu kuralları (dost düştü, korku, çökme, zafer) bu savaşçıya işler; ek kayıplar (Moral kapalıyken): ilk kez yarı canın altı (savaşta bir), yenen her kritik vuruş −1. Savaşlar arası Yıpranma saklanmaz (her savaş tavanla başlar; dinlenme kuralları Serüven'de, kilitli).
+- **Yıpranmışlığın Gücü:** eksik puan `yipranmaNormal − puan` (önceden sabit üçte bir varsayımı).
+- **Öfkeyle Ayakta:** etki `rageHoldsMoral`; `moraleAfterEvents` öfkedeyken 0 puanda çökertmez, öfke bitince hâlâ 0 ise çökertir.
+- **Dostunun Yası (6):** komut sonu: 30 ft içindeki dost 0 HP'ye düştü ya da Çöktü → tepki: öfke (kullanım harcamaz; `rage_started`), 2 × seviye geçici can, 1 puan kaybı. Yeterlilik kadar, uzun dinlenmede.
+- **Alışkın Acı (10):** ek pasif `noMoralePenalty` (`moraleSaveDice`/`moraleCheckDice` ceza yok); ölüm kurtulma avantajı K50'deki gibi.
+- **Küllerden Doğan (14):** Death Ward düşüp ayakta kalınca: öfke (kullanım harcamaz), 30 ft içindeki dostlara +1 Motivasyon (Moral açık) ya da seviye kadar geçici can.
+- Ranger Çiftçi eksiksiz: dokunulmadı.
+
+## 2026-11-05 — Kuyruk K54c G3: Astrolog (kural sürümü 28)
+
+- **Yıldız Falı:** sürüm 28 eylemleri `luck-2`/`ill-luck-2`: `firstRoll` avantaj/dezavantaj ilk saldırı ya da kurtulma zarına (belgedeki "beceri zarı" savaşta nadir, yok). Eski ±1d6 eylemleri 23–27.
+- **Yazgı Değişir (6):** `registerAllyHit` tepkisi: 60 ft içindeki dosta isabet (hasar hesaplandıktan sonra) ıskalanmış sayılır; bedel: astrologa sonraki turunun sonuna dek saldırı dezavantajı. Uzun dinlenmede 1. Öneri (YZ): hasar ≥ max(6, dostun canının üçte biri), dostu düşürecek ya da kritik.
+- **Kuyruklu Yıldız:** değişmedi (açık hava şartı K50'den beri var).
+- **Yazgı Mührü (14):** sürüm 28 eylemi `seal-of-fate-2`: etkide `fateSeal` (mühürleyenin PB'si). Her dostun mühürlüye o turdaki ilk silah saldırısı kendiliğinden isabet: saldırı zarına ikinci şans `reroll: 'success'` (Peerless Aim yolu; kritik değil; doğal 1 yine ıska); dostların isabetine +PB hasar (`sealBonus`). Kurtulmalarına −CHA aynı. Silah saldırıları; büyü saldırılarında yok.
+- **Gök Rehberi:** Serüven dinlenme Moral'i; Serüven kilitli olduğu için yok.
+- **Yapay zekâ:** Uğur en çok saldırılı Uğurlu olmayan dosta, Uğursuzluk en canlı Uğursuz olmayan düşmana (`yz: fal/falDusman`); Yazgı Değişir öneriyle kendiliğinden.
+
+## 2026-11-05 — Kuyruk K54c G2: İmparator (kural sürümü 28)
+
+- **Buyruk:** sürüm 28'de dostun tepkisi harcanır (belgedeki gibi; tepkisi yoksa kullanılamaz). Yeni kip "Buyruk: Yer değiştir": dost hızının yarısı kadar boş altıgene ışınlanma olayıyla geçer (fırsat saldırısı yok, K53 varış kancaları), aynı kaynak.
+- **Hükümdar Sözü:** sürüm 28 eylemi `royal-word-2`: etkide `attackDisNear` (imparatora ve onun 5 ft içindeki dostlarına saldırı dezavantajlı); eski `royal-word` 23–27.
+- **Ferman (10):** Action Surge'de (`executeActionSurge`) 60 ft içindeki bir dost (en çok saldırılı, sonra en yakın; seçim otomatik) tek seferlik ek eylem kazanır: Haste ek eylem yolu (`haste_action`: tek saldırı, Dash, Disengage, Hide; belgedeki Dodge/Help yok). Uzun dinlenmede 1. Ek eylem dostun sonraki turunun sonuna dek; kullanılınca biter.
+- **Genişleyen Taht / Taht Varlığı:** değişmedi (veri 10/20 ft, `syncAuras`). K53 aura altyapısına taşınmadı: davranış aynı, çıkış tetiği gerekmiyor (pasif bonus her olayda yeniden hesaplanıyor).
+- **Ölümsüz Taht (15):** Death Ward tetiklenince (komut sonu: etki düştü, ayakta) 30 ft içindeki dostlara `firstRoll` avantaj (ilk saldırı, 10 tur içinde).
+- **Yapay zekâ:** Ferman kendiliğinden (Action Surge YZ'si zaten kullanıyor; dost YZ'si `hasteNow` ile ek eylemi kullanır). Buyruk: Yer değiştir'i YZ kullanmaz.
+
+## 2026-11-05 — Kuyruk K54c G1: Şair Koleji (kural sürümü 28)
+
+- **Kural sürümü** 27 → 28 (`data/imza.json` `surumK54c`; eylem/pasif `surumMin: 28`, eski kipler `surumMax: 27`). Eski kayıt/replay kendi sürümünün eylemleriyle açılır.
+- **Ortak altyapı (G2–G4 de kullanır):** dosta isabet tepkisi kaydı `registerAllyHit` (`reactions.ts`, Cutting Words'ten sonra); süren etkide `firstRoll` (ilk saldırı/kurtulma zarı avantaj/dezavantaj, atılınca biter: `consumeSingles`), `attackDisNear`, `extraActionOnce` (Haste ek eylem yolu, kullanılınca biter), `fateSeal`, `noMoralePenalty`, `rageHoldsMoral`; savaşçıda `yipranmaNormal`. Motor `src/battle/imzaK54c.ts` (komut sonu kancası).
+- **Nakarat (6):** `executeImza` hedef döngüsü `applyTo(hedef, ölçek)`; tek hedefli Mısra'da ilk hedefin 30 ft içindeki aynı taraftan en yakın yaratık ikinci hedef (seçim otomatik; arayüzde ayrı seçim yok). Övgü: yarım geçici can (ayrı atış, yarısı) + 1 Motivasyon. Hiciv: aynı kurtulma kuralı, yarım hasar, Hiciv etkisi.
+- **Ölümsüz Dize (14):** komut sonu kancası (her hasar kaynağı; saldırıyla sınırlı değil): 60 ft içindeki dost 0 HP'ye düşüp ölmediyse tepkiyle 1 HP + Bard seviyesi geçici can. Savaş dışı Moral ölümü yönü Serüven kilitliyken yok.
+- **Usta Şair (14):** iki ayrı eylem (Övgü/Hiciv, "Usta Şair"), kısa dinlenmede 1, ilham zarı harcamaz, zar d12; Nakarat bunlarda da çalışır. Uzun dinlenmede partiye +1 Motivasyon yok (Serüven kilitli).
+- **Gece Şiiri:** Serüven dinlenmesi; Serüven kilitli olduğu için yok (`planli` kaldı).
+- **Yapay zekâ:** Övgü yarı canın altındaki ya da Çökmüş dosta (geçici canı yokken), Hiciv en düşük canlı görülen düşmana (`yz: ovgu/hiciv`).
+
+## 2026-11-05 — Kuyruk K54b G4: İnfazcı (kural sürümü 27)
+
+- Denetimin "yok" dediği iki özellik Müdahale ve Peşini Bırakmayan; Hüküm'ün "hükümlü düşünce ücretsiz yeni hedef" kısmı da eklendi. Son Uyarı ve İnfaz zaten tamdı. Hüküm'ün d6 → d8'i K50 yaklaşımıyla kaldı (zar başına +1; sayı ayarı K59).
+- **Hüküm devri:** yaşayan hükümlü yokken (önceki 0 cana düştü) Hüküm kullanım harcamaz; turda bir (`trait_turn imza:hukum-devir`). Bonus eylem yine gerekir (belgedeki gibi). 10 tur süre ve tek hedef K50'deki gibi.
+- **Müdahale:** saldırı sonrası kanca: hükümlü 30 ft içindeki bir dosta isabet ettirince tepki; Rogue hükümlünün yanındaki, hızının yarısı (düz uzaklık) içindeki boş altıgene geçer (ışınlanma olayı: fırsat saldırısı yok, K53 varış kancaları çalışır; yol bulma yok) ve tek silah saldırısı (`strikeApi`). Zaten yanındaysa yalnız saldırı. Tepki Uncanny Dodge ile ortak (tek tepki hakkı).
+- **Peşini Bırakmayan:** `knowsWhere` kancası (`registerKnowsWhere`): 60 ft içindeki hükümlü gizlenmiş/görünmez olsa da hedef alınır (görünmezliğin zar etkisi SRD'deki gibi kalır). Takip: hükümlünün `move` komutu Rogue'dan uzaklaştırırsa komut sonunda tepkisiz, hızın yarısı kadar ona doğru (turda bir; ışınlanma olayıyla, fırsat saldırısı yok). Disengage/ışınlanmayla kaçış da yer bilgisine girer; ışınlanma takibi yok (yalnız yürüyüş).
+- **Yapay zekâ:** yaşayan hükümlü yokken en düşük canlı düşmana Hüküm (`yz: hukum`; önceki kural ölü hükümlüde takılıyordu); hedef sırasında hükümlü öne geçer, yanında dost varsa (gizli saldırı fırsatı) en öne. Müdahale ve takip kendiliğinden (öneri: evet).
+
+## 2026-11-05 — Kuyruk K54b G3: Birlik Manastırı (kural sürümü 27)
+
+- **Omuz Ver:** destek veren Bağlı dostun tepkisi; bonus onun WIS'i (en az 1). Burst of Ingenuity ile aynı ikinci şans yolu (`reroll: 'plus'`): yalnız başarısızlığı başarıya çevirecekse kullanılır, yoksa tepki harcanmaz. Hesap reducer sonu `syncAuras` → `shoulderBy` (30 ft, tepkisi hazır, Incapacitated değil). Yalnız kurtulma zarları (belgedeki "kurtulma"); saldırı/kontrol yok.
+- **Ortak Şifa:** komut sonu kancası (`registerCommandEnd`): rahibin `cast_spell` komutunda bir Bağlı dost iyileşince diğer Bağlılar WIS (en az 1) can; turda bir (`trait_turn imza:ortak-sifa`). Havuzdaki üyelerin payı havuza eklenir (her üye için; belgedeki "havuz açıksa havuza eklenir").
+- **Yıkılmaz Birlik:** havuz kurulurken rahip 17+ ve kaynak duruyorsa `guard` (2 × seviye). Havuz 0'a düşecekken reducer (`trackPools` → `holdPool`) havuzu tutar, rahibin kaynağı −1 ve tepkisi harcanır, üyelerin Motivasyonu dolar (Moral tam modu yoksa Motivasyon alanı yok, sessizce atlanır). Tepki sorusu sorulmaz (her zaman kullanılır; ölümü önleyen tek seçenek). Bağ sayısının 6'ya çıkması yok (açık).
+- **Havuz kuralı** (havuz 0 → herkes ölür, uyarı) ve K52 vicdan kaybı değişmedi; Motivasyon kaybı paylaşımı (belgede "Tek bağ") bu kuyrukta yok (açık).
+- **Yapay zekâ:** Bağ Kurma (bağ yokken, 30 ft içinde en az bir dost), Teselli Nöbeti (en az 2 Bağlı ve biri yarı canın altında, geçici canı yok; slot dursa da). Omuz Ver ve Yıkılmaz Birlik kendiliğinden.
+
+## 2026-11-05 — Kuyruk K54b G2: Dunganga (kural sürümü 27)
+
+- **Yedek kaynak** (`spec.yedek`, yalnız sürüm 27+): Ninni ücretsiz kullanımı bitince 1 Büyücülük Puanı, Sepet 3 Büyücülük Puanı (`sorceryPoints`). Önce ücretsiz kullanım harcanır.
+- **Tek sepet:** aynı anda en çok 1 Sepet (yenisi en eskisini bitirir; `param.tekAd`). Dunganga Çağrısı sürerken yeterlilik bonusu kadar ve "Sepet (Çağrı)" bonus eylemle (`param.gerekEtki`).
+- **Kâbus (14):** yeni pasif aura `nightmare-dread` (harita geneli, `requires: Frightened`): korkan düşman kendi turunun başında 1d10 + CHA zihin hasarı. Bağışıklık zaten vardı. Ninni'nin 14'te 2 kat hedefi K50'deki gibi ek puan istemeden kaldı (sayı/maliyet ayarı K59).
+- **Dunganga Çağrısı (18):** sürüm 27'de K53 aurası (`call-aura`; büyücüyle hareket eder, 30 ft, 10 tur): içindeki düşman kendi tur başında WIS kurtulması, başarısızsa 1 tur Uykulu + 2d10 zihin (aura etkisi yeni tür `effect`); başaran Cesaret ile 10 tur bağışık. Ömür Elinde: pasif `noHeal` + `deathSaveDis`. Yapıldığı anda kurtulma yok (belgedeki gibi tur başında). Sürüm 23–26'da eski tek seferlik eylem.
+- **Uykulu:** K50 etkisi (hız ½, saldırı dezavantajı, 1 tur); "bir sonraki turunun sonuna dek" tur sonuna kadar yaklaşık.
+- **Yapay zekâ:** Ninni (30 ft içinde ≥ 2 düşman), Sepet (en canlı, etkisiz bırakılmamış düşman), Çağrı (≥ 2 düşman) büyü slotu dursa da kullanılır (`yz: kontrol/cagri`). K50'deki "slot varken eylem harcamaz" kuralı bu üç eylem için kalktı.
+
+## 2026-11-05 — Kuyruk K54b G1: Harita Öğretisi (kural sürümü 27)
+
+- **Kural sürümü** 26 → 27 (`data/imza.json` `surumK54b`). Eylem/pasif başına sürüm aralığı: `surumMin` (K54b eylemleri yalnız 27+), `surumMax` (eski tek kipli eylemler yalnız 23–26). Eski kayıt/replay kendi sürümünün eylemlerini görür (`specLive`).
+- **Ortak:** zemin koruması `src/battle/groundWard.ts` (alan `SpellZone.groundWard`, etki `groundWard`): korunan dost o altıgende zor zemini yok sayar (`moveCostFn`), zemin yüzeyleri ve `ground` alanları etkilemez (`zones.affects`; gaz katmanı buhar/zehir bulutu hariç), Mevzi altıgeninde kurtulma bonusu (`syncAuras` → `wardSave`, `saveDice`). Tur başı kancası `src/battle/turnHooks.ts` (`registerTurnStart`). Yapay zekâ ipuçları `src/battle/imzaAi.ts` (`spec.yz`; slot dursa da denenir).
+- **Arazi Okuma:** ilk turunun başında 60 ft içindeki tuzaklar ve sarmaşık kapanları bulunmuş sayılır; tehlikeli zemin (lav, tehlikeli harf) ve yüzeyler günlüğe yazılır (bir kez). Serbest gezinti keşif yarıçapı çarpanı Serüven'de; Serüven kilitli olduğu için yok.
+- **Mevzi İşareti:** seçilen altıgen + büyücüye göre enine iki komşu (belgedeki "en çok 3 bitişik" için tek tıkla şekil). Yeni işaret eskisinin yerine. Kurtulma +1 (belgede "+1"; görevdeki "küçük direnç" bu).
+- **Zemin Yeniden Yaz:** üç ayrı eylem, ortak kaynak: Zor zemin (20 ft, 10 tur, uçanlar hariç herkes; Mevzi/Yol aç altındaki dostlar etkilenmez), Yol aç (zemin yüzeyleri kalkar + dostlara zemin koruması alanı), Buz (yüzey 10 tur; `zone_created` olarak K55 çözücüsünden geçer). Çamur/taş ayrı kip değil (Zor zemin kipi karşılığı).
+- **Çizili Duvar:** K53 `cizili-duvar` engeli; seçilen + iki yan altıgen; yaratık üstüne çizilmez; Game Master `tempBarriers` kapalıysa kullanılamaz. Veri AC 15, belge AC 12: sayı ayarı yapılmadı (K59).
+- **Kuşbakışı Plan:** 60 ft içindeki dostlara 10 tur zemin koruması; "Kuşbakışı: Yerleştir" serbest eylem, turda 2: dostu (ya da kendini) 60 ft içindeki boş altıgene ışınla (K53 `teleport`, varış kancaları), altıgende dost varsa yer takası. Belgedeki "her tur başında" yerine büyücünün turunda herhangi bir anda (Hızır Yol Adımı ile aynı karar). İsteksiz hedef (WIS) yok: yalnız dostlar.
+- **Yapay zekâ:** Mevzi (2 altıgen içinde düşmanı olan dostun altıgeni), Çizili Duvar (büyücüye 2–5 altıgen uzaktaki en yakın düşmanın bir adım önüne), Zor zemin (içinde ≥3 düşman, dostsuz alan), Kuşbakışı (≥3 dost). "Yerleştir"i ve Yol aç/Buz'u kullanmaz.
+
+## 2026-11-05 — Kuyruk K55: altıgen etki çözücüsü ve öncelik kuralları (kural sürümü 26)
+
+- **Tek giriş:** `resolveHexEffects` (`src/battle/hexResolver.ts`). Komut sonunda eski üç geçişin (`surfaceReactionEvents`, `greaseAfterEvents`, `surfaceMixEvents`) yerine çalışır. Nesne olaylarının ateşi (`elementReactionEvents`) de buradan geçer.
+  - Sürüm < 26 ya da Game Master anahtarı `hexResolver` kapalı ya da `yuzeyEtkilesimi === false`: eski geçişler aynen çalışır (eski kayıt/replay).
+  - Nesne hasarı (`objectAreaEvents`), Orman/Buzul/Dağ eklemeleri, tur başı rüzgâr/su azalması ve Gust of Wind kendi motorlarında kaldı. Tabloda `motor` alanıyla listeli; çözücü çalıştırmaz. Gerekçe: hepsi nesne ya da tur başı tetiği, aynı altıgen çakışması değil.
+- **Tablo:** `data/yuzey-etkilesimleri.json`, 32 satır (23 çalışan, 9 başka motorda).
+  - Eski `data/yuzey-etkilesim.json` açıklama tablosu sürüm < 26 kodu için kaldı (parametreleri `MIX_PARAMS`).
+  - Yeni ikili: genel sonuçla (kaldir/yuzey/sure/yoksa/konsantrasyon) yalnız JSON. Testte JSON'la eklenen satır kod değişmeden çalışıyor.
+  - Özel davranışlar adlı işleyicilerde: gres, patlama, zincir, tasma, agCoz, agYak, yayilma.
+- **Öncelik:** 1 engel (katı K53 engeli ve `solid` alan altıgenleri gelen etkiden düşer) → 2 yüzey × yüzey (oluşan) → 3 element × yüzey → 4 aura/durum kancası (yanan ağ tutsağı) → 5 hasar/save (patlama, suda yıldırım).
+  - Aynı öncelikte tablo sırası; eski koddaki sıra korundu: yağ → ağ → erime → buhar → gres → sis…
+  - Altıgenler indeks (satır × en + sütun) artan sırada. Patlama/zincir kurbanları da altıgen sırasıyla zar atar (`burstEvents(..., ordered)`, yalnız sürüm 26).
+- **Katman:** zemin, gaz, nesne (`data/buyu-etiketleri.json`). Yalnız yüzeyler (`surface`) katman kuralına girer; Grease/Web gibi büyü alanları kendi kuralıyla kalır.
+  - Tepkime satırı varsa önce o çalışır; sonra aynı katmanda kalan eski yüzey, yeninin altıgenlerinden çekilir (`replace` günlük satırı).
+  - **Davranış farkı (sürüm 26):** su üstüne tepkimeyle gelen yağ/alev suyu siler (önceden ikisi birlikte duruyordu); buhar ile zehir bulutu (ikisi de gaz) aynı altıgende birlikte durmaz.
+  - Game Master yerleştirmesi zaten her yüzeyin yerine geçiyordu (değişmedi).
+- **Zincir:** derinlik en çok 3 (komut dokunuşu 0, oluşan yüzeyin tepkimesi 1, onunki 2). Sınırda bekleyen tepkime `chainLimit` satırı olarak yazılır.
+  - **Davranış farkı:** yağ yayılması eskiden tek adımdı, şimdi 2 adım daha ilerler.
+  - Zincirde (derinlik ≥ 1) aynı satır aynı altıgende turda bir kez (`hexReacted`, `surface_reacted.pairs`).
+  - Doğrudan dokunuşlar (derinlik 0) her büyüde çalışır. Gerekçe: iki ayrı Lightning Bolt iki ayrı olay; "aynı ikili iki kez çalışmaz" kuralı döngüyü engellemek için zincire uygulandı.
+- **Çift hasar:** tepkimeden doğan alev hasarı aynı komutta aynı yaratığa bir kez (gres + yağ yayılması aynı altıgendeyse tek hasar). Patlama ve zincir farklı kaynak, ayrı hasar (SRD: farklı kaynaklar toplanır).
+- **Konsantrasyon:** konsantrasyonlu alandan doğan yüzey (Web → yanan ağ) o büyücünün konsantrasyonuna bağlanır (`pruneZones` ile biter). Diğer yüzeyler süresini doldurur.
+- **Dokunuş:** tek tanım (`incomingOf`): alan, alanlı saldırı, isabetli saldırı. Ateşli save ve harita ateşi "geniş" dokunuştur ve yalnız `dokunus: genis` satırına (gres) gider. Bu, Kuyruk 24c davranışıdır ve denetimde çelişki olarak işaretlendi; korunuyor, K59'da istenirse tek satırla değişir.
+- **Ateş + zehir bulutu:** ev kuralı `zehirPatlama` ve 18b anahtarı `mixPoisonInert` aynı satırın iki koşulu (patlama yalnız ikincisi kapalıyken). Bugünkü sonuç aynı (patlamaz).
+- **Yapay zekâ:** alan büyüsü seçerken denenen komutta ilk `surface_reacted`'tan sonra dostuna hasar gelirse büyüyü seçmez (`reactionHurtsSide`).
+  - Kuru çalıştırma `previewHexEffects`: tepkime kimlikleri, hasar alanlar, oluşan yüzeyler. K58 keşif defteri tepkime kimliğine (`surface_reacted.row`) bağlanacak.
+  - Önizleme arayüzünde tepkime sonucu gösterilmez (K58).
+- **Etiketler:** `data/buyu-etiketleri.json` (`scripts/k55-buyu-etiketleri.mjs`): 118 büyü element/tür etiketi, yüzey ve alan katmanları. Etiketsiz büyü etkileşimsizdir.
+- **Kural sürümü** 25 → 26; Game Master anahtarı `hexResolver` (global, varsayılan açık).
+
+## 2026-11-05 — Kuyruk K54 G2: Hızır Yemini (kural sürümü 25)
+
+- Tam Zamanında: yeni kanca `registerTargeted` (hedef alınma, saldırı zarından önce; Redirect Attack ile aynı yol). 60 ft içindeki dost silah/canavar saldırısıyla hedef alınınca paladin (tepki + 1 Kanal Gücü) dostun yanına ışınlanır (K53 `withArrival`; yakın dövüşte saldırganın erişimindeki altıgen), saldırı ona yönelir; tek saldırılık tüm türlere direnç = "hasarın yarısı" (saldırı sonrası kalkar). Büyü saldırıları ve fırsat saldırıları kapsam dışı. Canavar saldırısında srdK19 kapalıyken yalnız bu kanca çalışır. Öneri (yapay zekâ): dostun canı ≤ paladinin canı.
+- Muhtaç Sezgisi: 120 ft içindeki 0 HP / Çökmüş dost jetonunda 🕯 işareti (`needSensed`; harita dışı görünürlük değiştirilmez: savaşta düşenler zaten görünür). Elle Şifa (Lay On Hands) zaten bonus eylem; Çökmüş dosta +1 Motivasyon (Moral tam modu).
+- Dar Gün Aurası: K53 aurası (10 ft; yarı canın altındaki dostlara pasif ölüm save avantajı + tur başı CHA (en az 1) geçici can). Pasif etkilerde de aura belirteçleri çözülür.
+- Yetişen Mucize: yalnız saldırı hasarında (saldırı sonrası kanca; büyü/alan/harita hasarı yok, sonradan K59'da genişletilebilir). Dost 0 HP'ye düşüp ölmediyse: ışınlanma, 1 HP, Motivasyon tam, hasarın yarısı (en çok seviye × 3) paladine kuvvet hasarı. Uzun dinlenmede 1 (`imzaMucize`).
+- Yetişen Yol: ayrı serbest eylem "Yetişen Yol: Adım" (turda bir, 60 ft içindeki dostun yanına; "tur başında" yerine turun herhangi bir anında, hareket harcamaz) ve turda bir hasar devralma (dost iyileşir, hasar paladine; paladinin direnci uygulanır). Öneri: paladin canı > 2 × hasar.
+
+## 2026-11-05 — Kuyruk K54 G1: Yaşlı Bilge Disiplini (kural sürümü 25)
+
+- Kural sürümü 24 → 25 (`data/imza.json` `surumK54`, `data/kural-surumu.json`). K54'ün yeni eylemleri (`k54: true`) ve pasifleri sürüm 25 öncesi savaşta yüklenmez; `etki25` sürüm 25'te `etki` yerine geçer (Son Ders). Eski kayıt/replay K50 davranışıyla açılır.
+- Zihin Gücü: dört ayrı eylem (İt, Çek, Yana kaydır; 11'de Taşı = serbest kip 20 ft, seçilen altıgene doğru), hepsi K53 `forcedMove` üstünden (çarpma ev kuralı açıksa çarpma hasarı). Menzil 3'te 30 ft, 11'de 60 ft (`menzilSeviye`); boyut sınırı Large. Eski "İt" eylemi aynı kimlikle kaldı (sürüm 23–24 kayıtları için).
+- Nesne: altıgen hedefli ayrı eylem (`hedef: hex`); ağırlık sınırı 3'te hafif, 11'de hafif+orta (K53 ağırlık sınıfları; ağır asla). Monk'tan uzağa 10 ft, mesafe ağırlık çarpanıyla.
+- Fırlat (11, eylem, 2 Odak): hedef yaratık + nesne altıgeni; altıgende hareketli nesne yoksa `conjureDebris` zemin enkazı çağırır. Hedef DEX save, başarıda yarı; tek 3d6 (çarpma hasarı eklenmez). Menzil özellikten (60 ft), nesnenin fırlatma menzili aranmaz (`throwObject` `rangeFt`).
+- Sabır: yeni tepki tetiği `miss` (ıskalanan yakın dövüş). Saldırı sonrası kanca kaydı `registerAfterAttack` (döngüsel içe aktarma yok). Önce ücretsiz kullanım (`imzaSabir`, PB/uzun dinlenme), sonra 1 Odak; tepki silahsız vuruş.
+- Çevik Yaşlı: süren etkide `noProvoke` (sürüm 25+): erişimden çıkmak fırsat saldırısı doğurmaz. "Yönlendir" yok (karar bekliyor).
+- Son Ders: sürüm 25'te K53 aurası (dostlara pasif WIS kadar save bonusu + tur başı 1 Motivasyon; Moral kapalıyken Motivasyon sessizce yok). Aura etkileri `moral`, `deathSaveAdv`, `tempHp` auraCore'a eklendi; etkide birden çok aura `auras`.
+- Arayüz: altıgen hedefli imza eylemi (`imzaHex` 'hex') menüden altıgen seçimine; yaratık + altıgen (`'after'`) hedef tıklanınca altıgen seçimine geçer. Yapay zekâ yeni Zihin Gücü kiplerini kullanmaz (K50'deki İt'i kullanmaya devam eder).
+
+## 2026-11-05 — Kuyruk K54 Görev 0: imza alt sınıf denetimi (K50 sonu, K54 öncesi)
+
+Kaynak: `docs/imza-alt-siniflar/` belgeleri × `data/imza.json` (motor: `src/battle/imza.ts`, YZ: `imzaAi`). Durum: **tam** (belgedeki gibi), **kısmi** (yaklaşık; eksik kısım parantezde), **yok** (planlı, motorda yok), **pasif** (beceri/büyü listesi; savaş dışı). YZ: ✓ kullanır, ✗ kullanmaz, — gerekmez.
+
+| Alt sınıf | Özellik (sv) | Durum | YZ | Eksik |
+|---|---|---|---|---|
+| İmparator | Asil Terbiye (3) | pasif | — | |
+| İmparator | Buyruk (3) | kısmi | ✓ | yer değiştirme seçeneği yok |
+| İmparator | Taht Varlığı (7) | kısmi | — | yarıçap 10/20 ft; aura her olayda yenilenir (K53 aura altyapısında değil) |
+| İmparator | Hükümdar Sözü (7) | kısmi | ✓ | dezavantaj yalnız sana (5 ft'teki dostlar hariç) |
+| İmparator | Ferman (10) | yok | ✗ | Action Surge'e bağlı dosta ek eylem |
+| İmparator | Genişleyen Taht (10) | tam | — | (Taht yarıçapı 20 ft veride) |
+| İmparator | Yüce Taht (15) | tam | ✓ | |
+| İmparator | Ölümsüz Taht (15) | kısmi | — | dostlara avantaj yok |
+| İnfazcı | Hüküm (3) | kısmi | ✓ | d8 yerine zar başına +1; hükümlü düşünce ücretsiz yeni hedef yok |
+| İnfazcı | Maskeli Adalet (3) | pasif | — | |
+| İnfazcı | Son Uyarı (9) | tam | ✓ | |
+| İnfazcı | Müdahale (9) | yok | ✗ | hükümlü dosta isabet edince tepki: yarı hız + saldırı |
+| İnfazcı | Peşini Bırakmayan (13) | yok | ✗ | hükümlünün yeri hep bilinir; hareket edince takip |
+| İnfazcı | İnfaz (17) | tam | ✓ (kendiliğinden) | |
+| Çiftçi | hepsi (3/7/11) | tam | ✓ | (Spor Saç "en az bir Mantar" koşulu yok; ürün tek sayaç) |
+| Dunganga | Ninni (3) | kısmi | ✗ | YZ slot varken eylem kullanmıyor; ücretsiz bitince Büyücülük Puanı yok |
+| Dunganga | Sepet (6) | kısmi | ✗ | YZ kullanmıyor; Büyücülük Puanıyla ek kullanım yok |
+| Dunganga | Kâbus (14) | kısmi | — | bağışıklık var; korkan düşmana tur başı 1d10+CHA yok; Ninni 2 kat var |
+| Dunganga | Dunganga Çağrısı (18) | kısmi | ✗ | alan hareket etmez, tek sefer; tur başı kurtulma/hasar yok; ölüm kurtulma dezavantajı yok |
+| Dunganga | Cesaret (3) | tam | — | |
+| Astrolog | Genişletilmiş büyüler (3) | pasif | — | |
+| Astrolog | Yıldız Falı (3) | kısmi | ✓ | avantaj yerine +1d6 / dezavantaj yerine −1d6 |
+| Astrolog | Gök Rehberi (3) | yok | — | Serüven dinlenme Moral'i (Serüven kilitli; bu kuyrukta yok) |
+| Astrolog | Yazgı Değişir (6) | yok | ✗ | dosta isabeti iskaya çeviren tepki |
+| Astrolog | Kuyruklu Yıldız (10) | tam | ✓ | (açık hava şartı var) |
+| Astrolog | Yazgı Mührü (14) | kısmi | ✓ | tur ilk saldırısı kendiliğinden isabet ve dostlara +PB hasar yok (yerine avantaj) |
+| Birlik | Bağ Kurma (3) | tam | ✓ | |
+| Birlik | Omuz Ver (3) | yok | ✗ | başarısız kurtulmaya bağlı dosttan +WIS tepkisi |
+| Birlik | Teselli Nöbeti (3) | tam | ✓ | |
+| Birlik | Birlik Can Havuzu (6) | tam | ✓ | |
+| Birlik | Ortak Şifa (8) | yok | — | bağlı dosta şifada diğerlerine +WIS |
+| Birlik | Yıkılmaz Birlik (17) | yok | — | havuz 0'a düşecekken 2×seviye ile ayakta |
+| Geride Kalan | Yaralı Kalp (3) | kısmi | — | Moral tavanı (Moral altyapısında) |
+| Geride Kalan | Yıpranmışlığın Gücü (3) | kısmi | — | Yıpranma sayacı tutulmaz |
+| Geride Kalan | Öfkeyle Ayakta (3) | yok | — | öfkede Moral 0'da çökmeme |
+| Geride Kalan | Dostunun Yası (6) | yok | ✗ | dost düşünce tepki: öfke + 2×seviye geçici can |
+| Geride Kalan | Alışkın Acı (10) | kısmi | — | ölüm save avantajı var; düşük Moral cezası muafiyeti yok |
+| Geride Kalan | Küllerden Doğan (14) | kısmi | — | 1 HP var; öfkeye girme ve dostlara Moral/geçici can yok |
+| Şair | Mısra (3) | tam | ✓ | |
+| Şair | Kalemin Gücü (3) | pasif | — | |
+| Şair | Gece Şiiri (3) | yok | — | Serüven dinlenme Moral'i (Serüven kilitli) |
+| Şair | Nakarat (6) | yok | ✗ | ikinci hedef yarım etki |
+| Şair | Ölümsüz Dize (14) | yok | ✗ | 0 HP'ye düşen dost 1 HP + seviye kadar geçici can |
+| Şair | Usta Şair (14) | yok | ✗ | kısa dinlenmede bir Mısra zar harcamadan |
+| Yaşlı Bilge | Yaşlı Bilgelik (3) | pasif | — | |
+| Yaşlı Bilge | Zihin Gücü (3) | kısmi | ✓ | yalnız itme; çekme/yana/nesne yok; boyut sınırı yok |
+| Yaşlı Bilge | Sabır (3) | yok | ✗ | iskalayan yakın dövüşe silahsız karşılık |
+| Yaşlı Bilge | Sakin Söz (6) | tam | ✓ | |
+| Yaşlı Bilge | Zihin Gücü genişler (11) | yok | ✗ | 60 ft, serbest taşıma, nesne fırlatma 3d6 |
+| Yaşlı Bilge | Çevik Yaşlı (11) | kısmi | — | +10 ft var; fırsat saldırısı muafiyeti ve Yönlendir yok |
+| Yaşlı Bilge | Son Ders (17) | kısmi | ✗ | alan hareket etmez; tur başı Motivasyon ve fırsat saldırısı dezavantajı yok |
+| Hızır | Yemin büyüleri (3) | pasif | — | |
+| Hızır | Tam Zamanında (3) | yok | ✗ | dost hedef alınınca ışınlanıp saldırıyı üstlenme |
+| Hızır | Muhtaç Sezgisi (3) | yok | — | 0 HP / Çökmüş dostu haritada işaret |
+| Hızır | Dar Gün Aurası (7) | yok | — | yarı canın altındaki dosta ölüm save avantajı + tur başı CHA geçici can |
+| Hızır | Yetişen Mucize (15) | yok | ✗ | ölümcül hasarda ışınlanıp 1 HP'de tutma |
+| Hızır | Yetişen Yol (20) | kısmi | ✓ | direnç var; tur başı dosta ışınlanma ve hasar devralma yok |
+| Harita | Arazi Okuma (3) | kısmi | — | keşif yarıçapı Serüven'de (kilitli); savaş başı tehlike bilgisi yok |
+| Harita | Mevzi İşareti (3) | yok | ✗ | işaretli altıgende dostlar zor zemin/yüzey hasarı yok sayar, +1 save |
+| Harita | Zemin Yeniden Yaz (6) | kısmi | ✗ | zemin değişmez (düşman yarı hız); dost temizliği ve yüzey seçeneği yok |
+| Harita | Çizili Duvar (10) | yok | ✗ | K53 Çizili Duvar engeli oyuncu komutuyla |
+| Harita | Kuşbakışı Plan (14) | yok | ✗ | tur başı iki dostun yer değiştirmesi |
+
+**Ek bulgu (YZ):** `imzaAi` büyü slotu dururken eylem harcayan imza özelliğini hiç kullanmıyor (K50 Dunganga/Harita düzeltmesi); kontrol etkisi olanlar (Sepet, Ninni) bu yüzden büyücüde neredeyse hiç çıkmıyor. K54'te kontrol eylemleri için ayrı kural.
+
+## 2026-11-05 — Kuyruk K53: ortak savaş sistemleri (kural sürümü 24)
+
+- **Sürüm ve anahtarlar:** kural sürümü 23 → 24 (`data/kural-surumu.json`, `data/hareket.json` `surum`). Eski kayıt/replay kendi sürümüyle açılır: bütün yeni davranışlar `ruleVersion ≥ 24` ile kapılı. GM anahtarları (global, varsayılan açık, `data/kural-kontrol.json`): `teleportArrival`, `objectMotion`, `tempBarriers`, `auraCore`. SRD'de olmayan çarpma hasarı ev kuralı `carpmaHasari` (varsayılan açık).
+- **S1 ışınlanma (`src/battle/motion.ts`):** tek giriş `teleport()` (doğrulama `teleportProblem`: menzil, görüş, boş/geçilebilir; fırsat saldırısı yok) ve `withArrival()`; geçerli hedef listesi `teleportTargets` (YZ/arayüz). Varışta altıgen kuralları (`enterHexEvents`: yüzey, tuzak, buz…), aura girişi (Spirit Guardians + yeni auralar) ve büyü alanı girişi çalışır. "Ayrılırken" kancası yok: mevcut alan/aura sisteminde çıkış tetiği bulunmuyor (Spirit Guardians, alanlar yalnız giriş/tur tetikli); çıkış tetiği gelince aynı yere eklenecek.
+- **Taşınan ışınlanmalar:** Misty Step, Dimension Door (yanında götürülen dost dahil), Tree Stride hariç büyü ışınlanmaları (`executeTeleport`), Goliath Cloud's Jaunt (`use_feature` teleport), Blink Steps (Epic Boon), Find Steed Fey Step. **Taşınmadı (açık):** efsanevi/canavar ışınlanmaları (boss `legendaryTeleport`, Arcane Prowl, Leap/Trampling Charge, `jumpFt`, Whirlwind of Sand, Pursuit) kendi hedef seçimleriyle ham `teleported` üretir; Tree Stride adımı yürüme maliyetli ayrı yol. Thunder Step oyunda yok.
+- **S2 zorla hareket:** tek giriş `forcedMove(durum, hedef, kip, ft, kaynak, rng, {origin|to|side})`; kipler itme, çekme (kaynağa bitişikte durur), yana kaydırma (kaynağa uzaklık sabit), serbest doğrultu (hedef altıgene). Her adım `pushOutcome` + `forcedMoveEvents` (lav, düşme, bataklık, merdiven, yüzey, aura, alan). `pushAwayEvents` artık `forcedMove('push')`; sürüm 23'te sonuç birebir eski (test). **Çarpma (`carpmaHasari`):** adım engelde kalırsa (duvar, nesne, Çizili Duvar, başka yaratık, harita kenarı) yarıda kalan her altıgen için 1d6 kuvvet, en çok 3d6 (`map_effect` kuralı `carpmaHasari`); çarpılan yaratık aynı sayıda zarı ayrı atar. Kurtulma zarı büyünün kendi kuralı. **Davranış değişen (sürüm 24):** Shove arkası engelliyse artık reddedilmez; başarısız save'de hedef 1d6 kuvvet alır (arkadaki yaratık da 1d6), yer değiştirmez; ev kuralı kapalıyken eski "yalnızca yere düşürülebilir".
+- **Taşınan itme/çekme:** Thunderwave, Gust of Wind, Repelling Blast, Push ustalığı, Martial/Brutal/Forceful itmeler, Arcane Hand, Telekinesis (yaratık), imza `itme` (hepsi `pushAwayEvents` üstünden); canavar `pushOnSave` ve çekme (`monsterAbilities`), efsanevi Cold Gale (`boss.pushAway`) sürüm 24'te `forcedMove`. **Taşınmadı (açık):** girdap çekmesi (`vortexPullEvents`), sürükleme (grapple), Wall of Stone açılış itmesi, Resilient Sphere, Telekinesis'in hedef altıgeni, yürüyen merdiven kayması: kendine özgü yer seçimleri ham `pushed` üretir.
+- **S3 nesne (`src/battle/objectMotion.ts`, `data/nesne-hareket.json`):** hareketli nesneler ağırlık sınıfıyla (hafif ×1, orta ×½, ağır itilmez) `forcedMoveObject` ile itilir/çekilir; yaratığa çarpınca yaratık çarpma kuralıyla hasar alır, nesne durur; lava düşen nesne yok olur. `throwObject`: menzil ağırlıktan (30/15/5 ft); hedefte yaratık varsa çağıranın zarı (varsayılan 3d6 kuvvet) bir kez, çarpma hasarı eklenmez; nesne yanına düşer ve aynı hasarı alır (mevcut `damageObjectEvents`: yağ fıçısı kırılır → yağ yüzeyi, barut patlar). `conjureDebris`: 1 altıgen içinde hareketli nesne yoksa yeni nesne türü `rock` (Taş) belirir; adı zemin harfinden (`enkazZeminleri`). Nesnelerin kurtulma zarı yok (K18 nesne kuralı aynı).
+- **S4 geçici engel (`src/battle/barriers.ts`, `data/engeller.json`):** engel bir alan (`SpellZone.barrier`): altıgenler, süre, hareketi/görüşü keser mi, altıgen başına HP/AC (Wall of Stone panel yolu genelleştirildi: `panelOf`, `panelDamageEvents`, `executeAttackPanel`), `passFor` none/allies/owner. Türler: Çizili Duvar (Wizard imzası için, 30 HP), Dost Kalkanı, Enkaz Yığını. Dolu altıgen atlanır; yol bulma `zoneMoveCost` ile görür; süre dolunca alan biter. Wall of Stone/Force ve Wind Wall aynı okuma yolunda (`barrierOf`) görünür; davranışları eski kod yolunda (taşıma yalnız okuma katmanında, regresyon riski yüzünden).
+- **S5 aura (`src/battle/auraCore.ts`):** aura sahibinin süren etkisinde `aura` (sahiple hareket eder): yarıçap, süzgeç, tetik (tur başı/sonu, giriş, pasif), etki (hasar, durum, save bonusu, durum bağışıklığı, can yenileyemez, ölüm save dezavantajı), kurtulma. Aynı etki türünden en güçlüsü (toplanmaz); aura başına yaratık başına turda bir (`trait_turn` `aura:<id>:<sahip>`). Pasifler `syncAuras` içinde: save bonusu Aura of Protection ile aynı "en güçlüsü" (`auraSave`), bağışıklık `conditionAura`, can yenileyemez reducer `healed`, ölüm save dezavantajı. Cesaret ortak sayacı (`resistImmunity*`, `cesaretTur` 10); imza Cesaret'i aynı sayacı kullanır (kimlik biçimi aynı). Aura of Protection ve Spirit Guardians kendi kodlarında kalır (giriş kancası ve en güçlüsü kuralı ortak); taşınmaları denge/regresyon turuna.
+- **YZ:** mevcut sezgiseller (Misty Step ile kaçış, lava/çukur/düşüşe itme) yeni girişlerden geçer. Çarpmalı itme ve nesne fırlatma YZ'de yok (DENGE.md).
+
+## 2026-11-05 — Kuyruk K52: Hizalanma ↔ Moral (Motivasyon) bağı (ev kuralı `hizalanmaMoral`)
+
+- **Anahtar:** `hizalanmaMoral` (`data/ev-kurallari.json`, varsayılan kapalı, `karakter: true`; Ayarlar'da "Hizalanma ↔ Moral bağı"). Yalnız `hizalanma` ve `moralSistemi` de açıkken çalışır (`alignmentMoralOn`); Game Master kurulumundaki etkin ev kuralları okunur. Savaş motoruna girmez, kural sürümü değişmedi (23); savaş kaydı aynı.
+- **Olay listesi (Görev 0):** taslağın 9 olayı adı ve puanıyla; K51 olaylarından eşleşenlerin kimliği korundu, adı ve değeri taslağa çevrildi: `merhamet` Merhamet gösterdi (İ +3), `soz-tuttu` Söz tuttu (D +3), `soz-bozdu` → Yeminini bozdu (D −5), `yasa-cigner` → Yasayı çiğnedi, haklı gerekçeyle (D −3), `yardim` → Masumu korudu (İ +4), `zulum` → Zorbalık/işkence (İ −5), `hirsizlik` → Rüşvet/hırsızlık (D −3, İ −2), `fedakarlik` Kendini feda etti (İ +5); yeni `teslim-oldurdu` Teslim olanı öldürdü (D −2, İ −5). Çakışmayan K51 olayları korundu: Bencil davrandı (İ −2), Masum öldürdü (D −2, İ −8), Yasaya uydu (D +2), Otoriteye başkaldırdı (D −4), Dostuna ihanet etti (D −4, İ −3), Adil yargıladı (D +2, İ +2). Her olay tek `hizalanmaEtki`; ayrı moral etkisi yok. 1–2. seviyede Gerçek Tarafsız %66 bilinçli.
+- **Kurallar (`src/rules/alignmentMoral.ts`, sayılar `data/hizalanma.json` `moral`):** vicdan çatışması eksen |değer| ≥ 17 ve olay ters yöne ≥ 3 → Moral −1, ≥ 5 → −2; olay başına en çok −2 (iki eksen toplamı), günde en çok −3 (gün = tarih); Moral'i 1'in altına indirmez (Moral zaten ≤ 1 ise kayıp yok). İç huzur aynı yön ≥ 3 → +1, uzun dinlenme başına bir kez (hak yalnız Moral gerçekten artınca harcanır; en çoktaysa harcanmaz). Yeni yol: olay bir eksenin etiket kovasını değiştirirse (histerezisli kova, iki yön) +2, eksen başına bir kez. Savrulma: Moral ≤ 1/3 iken olay puanı ×1,5 (yarım yukarı, azalan getiriden sonra); serbest girişe de uygulanır (önce ±10 kırpma). Hesap olaydan önceki ibre değerine göre.
+- **Sayaçlar hizalanma kaydında** (`vicdan`: gün/kayıp, `huzurAlindi`, `yeniYol`); iç huzur hakkı karakter listesindeki ve Game Master kurulumundaki uzun dinlenmede yenilenir (`alignmentLongRest`, ana parçada verisiz modül). Moral karakter durumunda (`status.moral`, K48 alanı).
+- **Geri alma Moral'e dokunmaz:** günlük kaydı geri alınınca yalnız ibre geri döner; Moral ayrı kaynak, Game Master gerekirse düzeltir (sayaçlar da geri alınmaz; suistimal yok).
+- **Moral günlüğü:** Serüven dışında ayrı Moral günlüğü yok; Moral değişimi hizalanma günlüğü kaydında (`moral: { delta, nedenler }`) "vicdan çatışması / iç huzur / yeni yol" satırıyla görünür. Paylaşım kancaları (Birlik Can Havuzu vb.) savaş içi; bu bağ yalnız olayı yapan karakterin Moral'ini değiştirir.
+- **Arayüz:** panelde Moral ve savrulma satırı, düğmede Moral önizlemesi (±n) ve ipucu, serbest girişte önizleme satırı, "Bu olayda Moral etkisi yok"; kartta son kayıt Moral değiştirdiyse "Vicdan: Moral −1". Şahit kuralı, Serüven otomatik işleme yok.
+
+## 2026-11-05 — Kuyruk K51b: hizalanma tablo ve sınır ayarı (taslak v1.1)
+
+- **Kaynak:** `docs/hizalanma-sistemi-taslak.md` (v1.1) artık depoda. Başlangıç kırpma sınırı ±25 → **±50** (`data/hizalanma.json` `baslangicKirp`); eksen ±50, eşik ±17, histerezis 2 aynı. Kod yapısı, kural sürümü ve savaş kaydı değişmedi; arayüzde yalnız "en çok ±50" sayısı.
+- **Tablo:** taslakta bulunan her kalem taslaktaki değeri aldı (12 sınıf, 4 SRD geçmişi, 11 imza alt sınıf, Karadul, 10 ırk ve ırk gerekçeleri). Taslakta olmayan 8 özgün geçmiş ve 12 SRD alt sınıfı K51 değerinin ×1,6'sı (yarım yukarı yuvarlandı; hiçbiri ±30'u geçmiyor). İşaret değiştiren İmparator, İnfazcı ve Soldier'ın gerekçe metni yeni yönü anlatacak biçimde güncellendi.
+- **Hazır olaylar (`data/hizalanma-olaylari.json`) bu kuyrukta değiştirilmedi:** görev yalnız başlangıç tablolarını kapsıyor; taslaktaki olay listesi (Teslim olanı öldürdü, Yeminini bozdu, Masumu korudu…) ayrı karar.
+- **Uç buildler (test sabit beklenti):** Paladin + Acolyte + Hızır + Celestial = (+45, +48) Düzenli İyi; Bard + Criminal + Şair + Elf = (−36, +18) Kaotik İyi; Fighter + Soldier + İmparator + Goliath = (+36, −36) Düzenli Kötü; Rogue + Criminal + İnfazcı + Tiefling = (−45, −48) Kaotik Kötü.
+
+Değişen kalemler (önce → sonra, kaynak):
+
+| Tablo | Kalem | K51 | K51b | Kaynak |
+|---|---|---|---|---|
+| sinif | barbarian | -8/+0 | -10/+0 | taslak |
+| sinif | bard | -5/+3 | -12/+10 | taslak |
+| sinif | cleric | +6/+6 | +10/+10 | taslak |
+| sinif | druid | +0/+3 | +0/+5 | taslak |
+| sinif | fighter | +5/+0 | +8/+0 | taslak |
+| sinif | monk | +8/+2 | +15/+0 | taslak |
+| sinif | paladin | +8/+8 | +20/+15 | taslak |
+| sinif | ranger | -3/+3 | +0/+5 | taslak |
+| sinif | rogue | -8/-2 | -12/-10 | taslak |
+| sinif | sorcerer | -5/+0 | -10/+0 | taslak |
+| sinif | warlock | -2/-5 | -5/-5 | taslak |
+| sinif | wizard | +3/+0 | +5/+0 | taslak |
+| gecmis | acolyte | +6/+6 | +10/+5 | taslak |
+| gecmis | criminal | -8/-5 | -12/-9 | taslak |
+| gecmis | sage | +4/+2 | +5/+0 | taslak |
+| gecmis | soldier | +6/+0 | +10/-3 | taslak |
+| gecmis | buz-madencisi | +3/+2 | +5/+3 | ×1.6 |
+| gecmis | ciftci | +3/+4 | +5/+6 | ×1.6 |
+| gecmis | tuccar | +4/-2 | +6/-3 | ×1.6 |
+| gecmis | denizci | -4/+1 | -6/+2 | ×1.6 |
+| gecmis | gezgin-ozan | -6/+3 | -10/+5 | ×1.6 |
+| gecmis | sifaci-yardimcisi | +2/+8 | +3/+13 | ×1.6 |
+| gecmis | avci-izci | -2/-3 | -3/-5 | ×1.6 |
+| gecmis | soylu | +8/+0 | +13/+0 | ×1.6 |
+| altSinif | path-of-the-berserker | -6/-2 | -10/-3 | ×1.6 |
+| altSinif | college-of-lore | +2/+2 | +3/+3 | ×1.6 |
+| altSinif | life-domain | +4/+8 | +6/+13 | ×1.6 |
+| altSinif | circle-of-the-land | +0/+4 | +0/+6 | ×1.6 |
+| altSinif | champion | +3/+2 | +5/+3 | ×1.6 |
+| altSinif | warrior-of-the-open-hand | +6/+3 | +10/+5 | ×1.6 |
+| altSinif | oath-of-devotion | +8/+8 | +13/+13 | ×1.6 |
+| altSinif | hunter | -2/+3 | -3/+5 | ×1.6 |
+| altSinif | thief | -6/-4 | -10/-6 | ×1.6 |
+| altSinif | draconic-sorcery | +2/+0 | +3/+0 | ×1.6 |
+| altSinif | fiend-patron | -4/-8 | -6/-13 | ×1.6 |
+| altSinif | evoker | +2/+0 | +3/+0 | ×1.6 |
+| altSinif | karadul-cemberi | -6/-6 | -10/-15 | taslak |
+| altSinif | imza_imparator | +8/+0 | +12/-30 | taslak |
+| altSinif | imza_infazci | -6/+4 | -13/-26 | taslak |
+| altSinif | imza_ciftci | +4/+5 | +5/+10 | taslak |
+| altSinif | imza_dunganga | -3/-5 | +0/-10 | taslak |
+| altSinif | imza_astrolog | +0/+2 | +5/+0 | taslak |
+| altSinif | imza_birlik | +6/+6 | +10/+10 | taslak |
+| altSinif | imza_geride_kalan | -4/+0 | -10/+5 | taslak |
+| altSinif | imza_sair | -4/+4 | -8/+14 | taslak |
+| altSinif | imza_bilge | +6/+4 | +15/+5 | taslak |
+| altSinif | imza_hizir | +4/+8 | +10/+20 | taslak |
+| altSinif | imza_harita | +4/+0 | +10/+0 | taslak |
+| irk | celestial | +0/+3 | +5/+8 | taslak |
+| irk | dragonborn | +3/+0 | +5/-2 | taslak |
+| irk | dwarf | +5/+2 | +8/-2 | taslak |
+| irk | elf | -4/+2 | -4/+3 | taslak |
+| irk | gnome | -2/+3 | -3/+4 | taslak |
+| irk | goliath | +2/+0 | +6/-3 | taslak |
+| irk | halfling | +2/+4 | +3/+5 | taslak |
+| irk | human | +0/+0 | +0/+0 | taslak |
+| irk | orc | -4/+0 | +6/-2 | taslak |
+| irk | tiefling | -3/-2 | -8/-3 | taslak |
+
+Dağılım (12 sınıf × 12 geçmiş × 10 ırk; kırpma ±50):
+**3. seviye (alt sınıf dahil, sınıfın bütün alt sınıfları):** 2880 kombinasyon, en büyük |değer| 50
+
+| Etiket | Sayı | Oran |
+|---|---|---|
+| Gerçek Tarafsız | 1105 | %38.4 |
+| Düzenli Tarafsız | 439 | %15.2 |
+| Düzenli İyi | 417 | %14.5 |
+| Tarafsız İyi | 285 | %9.9 |
+| Kaotik Tarafsız | 218 | %7.6 |
+| Tarafsız Kötü | 151 | %5.2 |
+| Kaotik Kötü | 118 | %4.1 |
+| Düzenli Kötü | 88 | %3.1 |
+| Kaotik İyi | 59 | %2.0 |
+| Köşe kutular (iki eksen de uç) | 682 | %23.7 |
+
+**Alt sınıfsız (1–2. seviye): 1440 kombinasyon, en büyük |değer| 41
+
+| Etiket | Sayı | Oran |
+|---|---|---|
+| Gerçek Tarafsız | 950 | %66.0 |
+| Düzenli Tarafsız | 243 | %16.9 |
+| Kaotik Tarafsız | 82 | %5.7 |
+| Tarafsız İyi | 81 | %5.6 |
+| Düzenli İyi | 66 | %4.6 |
+| Kaotik Kötü | 7 | %0.5 |
+| Tarafsız Kötü | 6 | %0.4 |
+| Kaotik İyi | 5 | %0.3 |
+| Köşe kutular (iki eksen de uç) | 78 | %5.4 |
+
+3. seviyede Gerçek Tarafsız %38,4 (eşik %60'ın altında). Alt sınıf seçilmeden (1–2. seviye) %66; ayarlama yapılmadı (görev gereği), raporda belirtildi.
+
+## 2026-11-05 — Kuyruk K51: hizalanma (ev kuralı `hizalanma`, varsayılan kapalı)
+
+- **Kaynak eksik:** görevde adı geçen `docs/hizalanma-sistemi-taslak.md` depoda ve hiçbir dalda yok. Görev metnindeki kurallar (eksen −50…+50, ±25 başlangıç kırpması, ±17 eşik, 2 puan histerezis, üç geçiş seçeneği, azalan getiri 3. kez yarı) aynen uygulandı; tablo değerleri benim varsayılanlarım (`data/hizalanma-baslangic.json`, her satırda gerekçe). Taslak gelince yalnızca JSON değişir.
+- **Doldurulan tablo kalemleri:** 12 sınıf, 12 geçmiş (4 SRD + 8 özgün), 13 SRD/Karadul alt sınıfı, 11 imza alt sınıfı, 10 ırk; 14 hazır olay (`data/hizalanma-olaylari.json`). Tabloda olmayan kalem 0 (dış paket alt sınıfları).
+- **Savaşa girmez:** kural sürümüne dokunulmadı; savaş motoru alanı okumaz. Ev kuralı karakter kuralları listesinde (`characterHouseRules`), Ayarlar'da üç anahtar: kural (`hizalanma`), ırk katkısı (`hizalanmaIrk`, varsayılan açık), başlangıç yalnız otomatik (`hizalanmaYalnizOtomatik`).
+- **Kayıt:** karakterde isteğe bağlı `hizalanma` ve `surum`; karakter kayıt sürümü `CHARACTER_SAVE_VERSION = 2` (anahtar aynı). Alan yoksa 0/0 Gerçek Tarafsız, kural kapalıyken hiç gösterilmez; savaş kaydı sürümü (22) değişmedi.
+- **Oluşturucu:** hizalanma son adım (kural açıkken), kaydet düğmesi orada. Toplam ±25'e kırpılır; Gerçek Tarafsız çıkarsa "Kabul etme" yok; orta çizgide olan seçenek gizli. Düzenlemede: başlangıç "otomatik" ise alt sınıf/sınıf/geçmiş değişince yeni toplama güncellenir (günlüğe `altSinif`), orta seçenekliyse değişmez, "önerilen şu olurdu" gösterilir. Sonradan değiştirmek yalnızca Game Master'ın "Yeniden belirle"si (günlüğe yazılır).
+- **Değer modeli:** değer = başlangıç + geri alınmamış günlük kayıtları (geri al/geri getir yalnız toplamı yeniden hesaplar). Azalan getiri yalnız hazır düğmelerde, art arda aynı olay 3. kez ve sonrası: etki yarıya, yukarı yuvarlanır (|x| = 1 → 1). Oturum = günün tarihi (Serüven bağı yok; Serüven kilitli).
+- **Kart:** küçük ⚖ etiketi (tembel parça, ana parça ≈439 kB); dokununca ızgara. Game Master "Kartta gizli" ile gizler.
+
+## 2026-11-05 — Kuyruk K50: imza alt sınıflar (ev kuralı; kural sürümü 23)
+
+- **Dal:** kullanıcı kararıyla `wip/k48` üstünde (main birleştirildi); görev belgesindeki `wip/k50` açılmadı.
+- **Tek motor, veri:** `data/imza.json` (`python scripts/k50-imza-veri.py` üretir; sayılar orada), motor `src/battle/imza.ts` + çekirdek `src/battle/imzaCore.ts` (kural açık mı, Taht aurası). Eylemler `use_feature` (`kind: 'imza'`): hedef seçimi, kurtulma (DC 8 + yeterlilik + belgedeki yetenek), hasar/yarı hasar, iyileştirme, geçici can, Motivasyon (yalnız `moralSistemi` açıkken), durum temizleme, itme, süreli etki (mevcut `ActiveEffect` alanları; yeni durum yok: "Uykulu" = yarı hız + saldırı dezavantajı, "Sepet" = Incapacitated + hız 0 + hasarla biter), **Cesaret** (kurtulmayı başaran 10 tur aynı özelliğe bağışık). Pasifler savaş başında (bağışıklık, Ölümsüz Taht/Küllerden Doğan = Death Ward, Alışkın Acı, Çevik Yaşlı); saldırı kancası `imzaHit` (Hüküm, İnfaz, Yıpranmışlığın Gücü); Taht Varlığı `syncAuras` → `imzaWisSave`.
+- **Ev kuralları:** `data/ev-kurallari.json` `imza_<ad>` (10 tane, `karakter: true`, varsayılan kapalı); Ayarlar'da "İmza alt sınıflar" listesi (`rpg-battle-deneysel.imza`), açık olan oluşturucuda görünür ve yeni savaşta kuralı açık gelir (`characterHouseRules`). Kural kapalıyken ya da sürüm < 23 savaşta imza özellikleri yok (eski kayıt/replay aynı).
+- **Birlik Manastırı ev kuralı değil** (belgesi öyle diyor; K50 genel metni "hepsi ev kuralı" dese de alt sınıfa özel belge esas alındı): her zaman görünür, savaşta sürüm 23+. Dış paketin "Barış Alanı" (`baris-alani`) listeden kalktı, eski kayıt `imza_birlik`'e yönlenir (`alt-sinif-gorunum.json` `eskiKimlik`, `findSubclass`). Havuz kuralı mevcut Ortak Can altyapısı: havuz 0 → bağlı herkes ölür; uyarı Birlik Can Havuzu kartında ve Ayarlar notunda (ayrı onay ekranı yok).
+- **Seçim 3. seviyede**; belgedeki 1./2. seviye özellikleri 3'te açılır. Seçenekli yeterlilikler varsayılanla (İkna, İçgörü, Doğa, Arcana; Şair: Performance + History).
+- **Her zaman hazır büyüler:** Dunganga soy büyüleri, Astrolog genişletilmiş listesi (Warlock'ta ayrı seçim listesi olmadığından her zaman hazır), Hızır yemin büyüleri (belgede liste yok: SRD iyileştirme/koruma büyüleri seçildi: Cure Wounds, Sanctuary, Aid, Warding Bond, Beacon of Hope, Revivify, Death Ward, Guardian of Faith, Mass Cure Wounds, Greater Restoration).
+- **Açık gökyüzü:** `kapaliOrtam` (bölge derinlikler/yeralti/hapishane, iç mekân haritaları, varyant adında karanlık/loş/iç) dışında her yer.
+- **Yapay zekâ:** basit kural (`imzaAi`): bonus eylemler bonus boşken; eylemler 2+ hedefte ya da durum verdiğinde; iyileştirme yalnız ≤ %60 cana.
+- **Durum (çalışan / planlı):**
+  - **İmparator** (Fighter, `imza_imparator`): çalışan Asil Terbiye, Buyruk, Taht Varlığı, Hükümdar Sözü, Genişleyen Taht, Yüce Taht, Ölümsüz Taht; planlı Ferman.
+  - **İnfazcı** (Rogue, `imza_infazci`): çalışan Hüküm, Maskeli Adalet, Son Uyarı, İnfaz; planlı Müdahale, Peşini Bırakmayan.
+  - **Çiftçi** (Ranger, `imza_ciftci`): çalışan Çiftlik Bilgisi, Erzak, Hasat, Mantar Tutkunu, Bereket; planlı yok.
+  - **Dunganga** (Sorcerer, `imza_dunganga`): çalışan Ninni Kanı, Sepet, Kâbus, Dunganga Çağrısı, Cesaret; planlı yok.
+  - **Astrolog** (Warlock, `imza_astrolog`): çalışan Genişletilmiş büyüler, Yıldız Falı, Kuyruklu Yıldız, Yazgı Mührü; planlı Gök Rehberi, Yazgı Değişir.
+  - **Birlik Manastırı** (Cleric, `imza_birlik`): çalışan Bağ Kurma, Teselli Nöbeti, Birlik Can Havuzu; planlı Omuz Ver, Ortak Şifa, Yıkılmaz Birlik.
+  - **Geride Kalanın Yolu** (Barbarian, `imza_geride_kalan`): çalışan Yaralı Kalp, Yıpranmışlığın Gücü, Alışkın Acı, Küllerden Doğan; planlı Öfkeyle Ayakta, Dostunun Yası.
+  - **Şair Koleji** (Bard, `imza_sair`): çalışan Mısra, Kalemin Gücü; planlı Gece Şiiri, Nakarat, Ölümsüz Dize, Usta Şair.
+  - **Yaşlı Bilge Disiplini** (Monk, `imza_bilge`): çalışan Yaşlı Bilgelik, Zihin Gücü, Sakin Söz, Çevik Yaşlı, Son Ders; planlı Sabır, Zihin Gücü genişler.
+  - **Hızır Yemini** (Paladin, `imza_hizir`): çalışan Yemin büyüleri, Yetişen Yol; planlı Tam Zamanında, Muhtaç Sezgisi, Dar Gün Aurası, Yetişen Mucize.
+  - **Harita Öğretisi** (Wizard, `imza_harita`): çalışan Arazi Okuma, Zemin Yeniden Yaz; planlı Mevzi İşareti, Çizili Duvar, Kuşbakışı Plan.
+- **Yaklaşık uygulananlar:**
+  - Buyruk: Dost tepkisini harcamadan en yakın düşmana tek silah saldırısı yapar (yer değiştirme seçeneği yok).
+  - Hükümdar Sözü: Dezavantaj yalnız sana karşı (yanındaki dostlar hariç).
+  - Hüküm: Sneak Attack d6 → d8: hükümlüye isabette Sneak Attack zarı başına +1 ek hasar (ortalama eşdeğer).
+  - Hasat: Spor Saç: "En az bir Mantar" koşulu yok (ürün türü ayrımı tutulmaz; tek sayaç).
+  - Ninni: Ücretsiz kullanım bitince Büyücülük Puanı seçeneği yok.
+  - Sepet: 3 Büyücülük Puanıyla ek kullanım yok (uzun dinlenmede bir kez).
+  - Dunganga Çağrısı: Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler bir kez kurtulma atar (başarısızsa 10 tur Uykulu + can yenileyemez); hasar kurtulma başarısında yarı değil, yalnız başarısızsa.
+  - Yıldız Falı: Uğur: Avantaj yerine ilk zara +1d6 (tek kullanım).
+  - Yıldız Falı: Uğursuzluk: Dezavantaj yerine ilk zardan −1d6 (tek kullanım).
+  - Kuyruklu Yıldız: Merkez seçilen düşmanın altıgeni; alandaki dostlar da kurtulma atar.
+  - Yazgı Mührü: Kendiliğinden isabet yerine ona yapılan saldırılar avantajlı; dostlara ek hasar yok.
+  - Bağ Kurma: Rahip kendisini de bağlar (3 dosta ek); yeni bağ eskisini bitirir.
+  - Zihin Gücü: Yalnız itme (çekme ve nesne yok); Large ve küçük sınırı yok.
+  - Son Ders: Alan seninle hareket etmez: yapıldığı anda 30 ft içindekiler etkilenir; tur başı Motivasyon ve fırsat saldırısı dezavantajı yok.
+  - Yetişen Yol: Işınlanma ve hasar devralma yok.
+  - Zemin Yeniden Yaz: Zemin değişmez: alandaki düşmanlar 10 tur yarı hızda (zor zemin karşılığı); dost temizliği ve yüzey seçeneği yok.
+  - crown-presence: Kurtulma bonusu WIS kurtulmalarına (korku ve büyülenme çoğunlukla WIS); auranın içi savaş başında ve her olayda yenilenir.
+  - undying-throne: Dostlara avantaj kısmı yok.
+  - execution: Hükümlüye Sneak Attack isabetinde: zarlar en yüksek; canı Rogue seviyesi × 4 altındaysa ve efsanevi değilse CON kurtulması, başarısızsa ölür (kritik sayılmaz).
+  - nightmare: Korkan düşmana tur başı hasar yok (planlı).
+  - strength-of-the-worn: Öfkedeyken silah isabetine +min(PB, ⌊eksik puan / 2⌋); puan Moral (tam mod) ya da yoksa sabit üçte bir (Yıpranma sayacı tutulmaz).
+  - risen-from-ashes: Öfkeye kendiliğinden girme ve dostlara geçici can yok.
+  - nimble-elder: Fırsat saldırısı muafiyeti ve Yönlendir yok.
+- **Aşama C (Monk Zihin Gücü fırlatma, Paladin ışınlanma/yeniden hedefleme, Wizard zemin/duvar/takas):** en küçük sürüm: Zihin Gücü itme (mevcut itme altyapısı), Zemin Yeniden Yaz = alandaki düşmanlara 10 tur yarı hız; ışınlanma tepkileri, çizili duvar, yer takası ve keşif yarıçapı **planlı** (kart "planlı" der, motor çalıştırmaz). Kullanıcı kararı bekler.
+
+## 2026-11-04 — Kuyruk K49 Adım D: bölgeler, yükleme ekranı, yüzme
+
+- **Bölgeler:** 8 kıta bölgesi (Karkedon, Cüce Eyeri, Ahmak Ormanı, Hutame Çölü, Cadı Kazanı, Gözcü Kıyısı, Tenhausser, Kum Buzulu) + 6 ada (Dragos, Orion Yamaçları, Akhalat, Akrepler, Negatif Alan Zaptı, Mânâ 42). Tohumlar `etiketler.json` `bolge`/`ada` etiketleri; kara + yüzme hücrelerinde çok kaynaklı Dijkstra (arazi maliyetiyle, sınırlar dağ/su hattına oturur). Izgara `data/harita/bolge-izgara.json` (`python scripts/k49-bolgeler.py`), parametreler `data/harita/bolge-yukleme.json`. `sayfa-dunya-esleme` kullanılmadı: etiket tohumları ve arazi maskesi yeterli, sayfa sınırları bölge adlarıyla zaten örtüşüyor.
+- **Yükleme ekranı:** yürüyüş yolu bölge değiştirince (`arrivalRegion`) bölge adı + koyu arka plan; yeni bölgenin z3–z4 karoları gerçekten önyüklenir (en çok 120). Süre önyükleme bitince, en az 0,6 en çok 1,2 sn; hareketi azaltmada 250 ms solma. Aynı bölge içinde ekran yok.
+- **Yüzme:** göl ve nehir (dar su) yüzülür; açık deniz, uçurum ve kayalık geçilmez. Su: geçilmez hücre + z2 renginde mavi/camgöbeği baskın; "dar": kapalı su kütlesi (kenara değmeyen, ≤ 900 hücre) ya da dört eksenin en az üçünde iki yanda da 3 hücre içinde kara. Maliyet 70 (orman 52, dağ 80). Yüzülen yolda bir Atletizm beyaz kontrolü (DC 10, partinin en iyisi; zar Serüven tohumundan, replay aynı); başarısızsa +2 saat. Ağır zırhlı üye varsa önce yüzmeden yol denenir, yoksa red (`agirZirh: "red"`). Olayda `swim` alanı (eski kayıtta yok).
+- **Anahtar** `bolgeYukleme` (Serüven anahtarı, varsayılan açık); kapalıyken K47 (yüzme yok, geçiş ekranı yok).
+- **Animasyon:** yüzme (yarı suya gömülü jeton, halka dalgalar; yürüyüşte dar su hücresinde kendiliğinden). Dünya haritası Katmanlar menüsünde "Animasyon önizleme": Uçuş, Gemi, Yüzme (parti bu hareketi yapmasa da; hareketi azaltmada da oynar çünkü elle istenir).
+- **Açık kalan:** Karkedon'daki buz yarıklarının bir kısmı renk ölçütüyle "dar su" sayıldı (buzlu suda yüzme gibi davranıyor); istenirse `uretim.maviFark` artırılır ya da yarıklar elle maskelenir.
+
+## 2026-11-04 — Kuyruk K49 Adım C: ana harita verisi ve temizlik
+
+- **C1 Hexonya:** kıta adı (`kita`) z2 karolarında piksel analiziyle (180×28 px pencere, renk sapması en düşük, kıta dışı, "Kuzey Buz Denizi" etiketinden uzak) haritanın üstündeki boş denize taşındı: **(4600, 220)** (eskiden 6300, 2250). Yeni etiket alanı `yalnizUzak: true`: yalnızca uzak yakınlaştırmada (seviye 1 görünümü) çizilir.
+- **C2 adlar:** "Cadı Bataklığı" → **Cadı Kazanı** (EN "Witch's Cauldron"; kimlik `bolge_bataklik` aynı; başka geçiş yoktu). "İklim Vadisi" `yer3_19` etiketi (5496, 4589) Cadı Kazanı yazısıyla çakışıyordu; kullanıcının tarifine göre orman–kar–çöl kavşağına (Oduncu kampı ile Hutame Çölü arası) taşındı: **(7150, 3800)**, `konum_kesin: false` (kullanıcı `etiketler.json`'dan düzeltebilir).
+- **C3 yollardaki yuvarlaklar:** köprü (5 px, `kopruler`) ve bölge geçit kapısı (4 px, `kenarlar` `kapi_a/kapi_b`) noktaları; yürüme ızgarasının açık bıraktığı koridorları gösteren geliştirici işareti. "Köprü/geçit" katmanı artık varsayılan kapalı; Katmanlar menüsünden açılır.
+- **C4 Hızlı seyahat düğmesi** ve paneli kaldırıldı. Mekanik aynı: gemi/uçuş merkez kartından (iskele, binek), `fast_travel` komutu ve `hizliSeyahat` anahtarı duruyor.
+- **C5 bölgeler arası yollar:** `python scripts/k49-bolge-yollari.py` (A* yürüme ızgarasında, komşu bölge çiftleri `komsuluk-grafi.json` kenarlarından, geçit kapılarından geçerek). Zayıf ölçütü: yol ağıyla bağlı değil, yol ağı/A* uzunluğu > 1,6 ya da en ucuz yürüyüşün yol hücresi oranı < %50. Tek zayıf çift Karkedon–Cüce Eyeri kuzey geçidi (%36 yol): `k49-buzul-dag-1` patikası eklendi, maliyet 3175 → 1406; yürüme ızgarası yeniden üretildi. Tablo `harita/belgeler/bolge-yollari.md`. Görüntüleyicide `patika` ince çizgi.
+- **C6 ana haritada olmayan haritalar:** `harita/belgeler/ana-haritada-olmayanlar.md` (`scripts/k49-yetim-haritalar.py`): 59 haritadan 47'si dünyada, 2'si yeraltı, 10'u başka yerde (sim/sefer/test/vitrin) kullanılıyor; **yetim yok**, kaldırılan harita yok.
+- **C7 deniz animasyonu yapılmadı** (kullanıcı kararı: yük ve kalite riski). Yazım düzeltmesi "Çeren Ürperten" → "Ceren Ürperten": 1 geçiş (`icerik-liste.txt`); paketin kendisi (`icerik/ek-sorcerer.json`) depo dışı, orada da düzeltilmeli.
+
+## 2026-11-04 — Kuyruk K49 Adım B: oluşturucu ve Game Master düzeltmeleri
+
+- **B1 seviye 1–20:** oluşturucuda seviye seçimi her zaman 1–20 (`UPPER_LEVEL_CAP`). 11+ seviyede verisi olmayan sınıf özelliği "henüz yok" notuyla listelenir (oyunu bozmaz).
+- **B2 Game Master "Seviye değiştir":** Game Master kurulumunda karakter başına seviye seçimi (`src/app/levelChange.ts`). Düşürme `confirm` ister. Durum (HP, slot, kaynak) yeni seviyeye göre yeniden hesaplanır, değişiklik karakterin `levelLog` alanına yazılır (eski kayıtta yok = boş). Yalnızca yerel Game Master ekranı; ağ yok.
+- **B3 geçmiş adları:** yalnızca görünen ad değişti (Madenci, Tüccar, Soytarı, Şifacı, Soylu, Mürettebat, Köylü, Ödül Avcısı); kimlikler aynı. "özgün" etiketi kalktı, SRD geçmişlerinde "SRD" etiketi kalır.
+- **B4 adlar:** "dış içerik" son eki kalktı. Parantezli takma adlı alt sınıf yalnızca takma adla gösterilir ("Psişik Hançerler (Kirpi)" → "Kirpi"); kural `displayName` (`src/rules/subclasses.ts`), tarama TR ve EN adlarda parantez arar.
+- **B5 sekiz alt sınıf:** Berserker, Lore, Life, Open Hand, Devotion, Draconic, Fiend, Evoker seçim listesinden kalktı (`data/alt-sinif-gorunum.json` `kaldirilan`; SRD kopyası ve aynı adlı paket kopyası birlikte). Depoda bu sekiz sınıfın tek alt sınıfı SRD'ninki olduğundan, sınıfın başka seçeneği yoksa liste olduğu gibi kalır (sınıf boş kalmaz); dış paket yüklüyken gizlenir. Veri ve motor değişmedi: eski kayıt açılır, seçili alt sınıf listede görünmeye devam eder.
+- **B6 eşya kategorileri:** tür (silah, zırh, kalkan, tüketilebilir, aksesuar ve takı, sihirli eşya, araç gereç) ve etki seviyesi (sıradan…efsanevi) SRD kaydından türetilir (`src/rules/itemCategory.ts`, `data/esya-kategori.json`; büyülü eşya türü/nadirliği `node scripts/esya-kategori.mjs` ile küçük tabloya, 225 kB'lık SRD dosyası oluşturucuya yüklenmez). Donanım "sıradan"; "Varies" nadirliği "olağandışı". Çip süzgeçleri + katlanır gruplar + mevcut arama; seçili eşya süzgeçte de görünür. Sayılar ve fiyatlar aynı.
+- **B7 Cleric:** "… Alanı" → "… Manastırı" görünen ad kuralı; Barış Alanı → Birlik Manastırı (EN Unity Domain). **Birlik özelliklerinin yeniden yazımı yapılmadı:** kaynak belge `docs/imza-alt-siniflar/imza-cleric-birlik-manastiri.md` depoda, origin/main'de ve hiçbir dalda yok; özellikler eski hâliyle duruyor.
+
+## 2026-11-04 — Kuyruk K49 Adım A: Celestial kalıcı ırk (kural sürümü 22)
+
+- **Neden görünmüyordu:** K20'de ev kuralı yapıldı; oluşturucuda kart Ayarlar'daki `rpg-battle-deneysel.celestial` kapalıyken gizliydi.
+- **Karar (kullanıcı):** Celestial kalıcı ırk. Oluşturucuda her zaman görünür ("ev kuralı" etiketi yok); Ayarlar anahtarı kaldırıldı (`celestialEnabled` artık okunmuyor, kayıt alanı zararsız kalır); `data/ev-kurallari.json`'dan `celestialIrki` çıktı (Game Master listesinde yok).
+- **Savaş:** kural sürümü 22'den beri özellikler her zaman açık (`CELESTIAL_PERMANENT`). Sürüm 18–21 savaşları/replay'leri eski kuralla: yalnızca başlangıç durumunda `houseRules.celestialIrki === true` ise (eski varsayılan kapalı); < 18 hiç yok. Böylece eski kayıtlar aynı sonucu verir.
+- Serüven'de bağımsız: ırka göre başlangıç (Batı Kıyısı) zaten vardı. "Aasimar" adı hiçbir yerde geçmiyor (test).
+
+## 2026-11-04 — Kuyruk K48 Adım C: Karadul Çemberi (ev kuralı; kural sürümü 21)
+
+- **Yer:** veri `data/karadul.json` (alt sınıf tanımı + bütün sayılar), mekanik `src/battle/karadul.ts`, saldırı kancaları `features.ts` (`snareReady`, `kissReady`, `karadulHit`, `gazeBreakEvents`), yapay zekâ `ai.ts` `karadulAi`, ölçüm `npm run sim:karadul` (`src/sim/karadulRun.ts`).
+- **Kayıt:** alt sınıf `classData.subclasses`'a sınıf verisiyle tembel eklenir (`ev: true`; SRD karşılığı yok, içerik testleri `ev`'i ayırır). Oluşturucuda yalnızca Ayarlar "Game Master: Karadul Çemberi" açıkken ve (varsayılan açık) "yalnız kadın" kısıtında `gender: 'kadin'` karakterde görünür (`houseSubclassVisible`; mevcut seçim hep görünür, eski kayıt bozulmaz). Karar: kâğıttaki mevcut `gender` alanı kullanılır (ayrı "hitap" alanı açılmadı; "Belirtmek istemiyorum" kısıt kapatılarak karşılanır).
+- **Kaldır/değiştir kancası:** `SubclassDef.replaces` (`gainedFeatures` o sınıf özelliklerini düşer; kaynakları da: Wild Shape kullanımı yok). Seçim satırında uyarı ve skor takası satırı (insan → örümcek).
+- **Ek beceriler:** `SubclassDef.ekBeceriler` (3. seviyeden; `deriveStats`): Persuasion, Deception.
+- **Savaş (ev kuralı `karadulCemberi` + sürüm 21; kapalıyken özellikler kaldırılır, Wild Shape yine yok):** `use_feature` ile `ev:karadul/gaze` (6. seviyeden bonus eylem) ve `ev:karadul/spider` (gir/bırak). DC her zaman insan biçimindeki CHA'dan (`shape.prev`).
+  - **Bakış:** humanoid/monstrosity (veri `turler`; "canavar" = Monstrosity kararı), 30 ft, WIS save, Charmed `charm` (büyüleyene saldıramaz), 600 tur. Kırılma: büyüleyenin tarafından hasar (`breakOnDamage: 'casterSide'`) ve ıskalasa da saldırı (`gazeBreakEvents`). En çok CHA (en az 1) hedef. Hedefin bizim dostlarımıza saldırması büyüyü bozmaz (SRD Charmed gibi).
+  - **Örümcek Biçimi:** SRD canavar verisinden (3 Giant Wolf Spider, 6 Giant Spider, 10 Phase Spider); AC/hız/boyut canavarın; biçim canı = canavarın HP'si (geçici HP), bitince ya da bırakınca biter (kalan geçici HP silinir). Skor takası `skorTakasi` (STR↔CHA, CON↔WIS) insan skorlarından; save'ler yetkinlikle kaydırılır. Isırık = yeterlilik + max(STR, DEX) (takastan sonra), zarı canavarın. Beceri tablosu biçimde değişmez (kısmi; not).
+  - **Zehir/Tuzak/Öpücük:** isabette ek zehir 1d6 (10: 2d6) + CON save ya da bir tur Poisoned; Tatlı Tuzak: bu tur dönüşüldüyse büyülü hedefe ilk ısırık avantajlı + 2d8/3d8/4d8, turda bir (`traitTurns`); Son Öpücük (14, uzun dinlenme): sürpriz vuruşta otomatik kritik, CON save başarısızsa zarlar en yüksek (`maxOf`) + bir tur Stunned; vuruştan sonra canı yarının altında, efsanevi değil (`legendaryLeft`/`legendaryResistance` yok) ve CR ≤ seviye/2 ise kalan canı kadar ek hasar (ölüm).
+  - **Ağ Duyusu (10):** savaş başında zehir hasarı ve Poisoned bağışıklığı; titreşim algısı algılama sistemi gelene kadar yok.
+- **Yapay zekâ:** biçimde değilken bakış; büyülü düşman varken dönüş; dönüşülen turda büyülü hedefe ısırık. Dostlar başka hedef varken büyülü düşmana dokunmaz (`foesOf`; tuzak bekliyor).
+- Test `src/battle/karadul.test.ts`.
+
+## 2026-11-04 — Kuyruk K48 Adım B: Moral (ev kuralı; kural sürümü 20)
+
+- **Yer:** veri `data/moral.json` (bütün sayılar), saf çekirdek `src/rules/moral.ts`, savaş `src/battle/morale.ts`, Serüven `src/journey/moral.ts`, karakter durumunda `CharacterStatus.moral` (yoksa dolu = eski kayıt) ve `moralOlum`. Dinlenmeler alanı taşır, değiştirmez (kazanç Serüven katmanında).
+- **İki anahtar, iki mod:** Serüven anahtarı `moralSistemi` (hafif: yalnızca Serüven kayıp/kazancı, savaşa etkisi yok) ve `moralTam` (tam). Tam modda Serüven savaşları ev kuralı `moralSistemi`yle kurulur (`moralHouse`); Game Master kurulumundaki ev kuralı listesinde de var (varsayılan kapalı). Savaş etkisi yalnızca ev kuralı + kural sürümü ≥ 20 (`moraleOn`); eski savaş/replay ve kapalı kural eski davranış (savaş başında `withMorale` kayıttan gelen Moral alanını siler).
+- **Havuz:** 3 + WIS + yeterlilik (en az 1; `havuz`).
+- **Savaşta 0 = Çökmüş:** süren etki `moral:cokmus`: `grants: Incapacitated` (eylem/bonus/tepki yok), `speedZero` (yerinde kalır), `attackedAdv`; HP'ye dokunmaz, savaştan çıkmaz ve tarafı ayakta tutar (HP de 0'a düşerse mevcut ölüm kuralları). Moral ≥ 1 olunca çökme komut sonunda biter.
+- **Savaş içi kayıp** (komut sonu `moraleAfterEvents`): dost karakter 0 HP'ye düşünce ayaktaki öbür karakterler −1, yeni korkan (Frightened alan) karakter −1 (`savasKayip`).
+- **Toparlama** (`moral_rally`, eylem, 30 ft): çökmüş dosta +1; `ekBonus.ozellikler` (Bardic Inspiration, Channel Divinity) olan +1 daha. Kodda sınıf adı yok (özellik kimlikleri veride). Yapay zekâ eylemi duruyorsa menzildeki çökmüş dostu toparlar.
+- **Bunalmış:** Moral 0 ile giren karakter ilk tur Incapacitated ve yarım hız (`until` = ilk tur). Karar: savaş başında 0 olan çökmez, yalnızca Bunalmış olur (çökme yalnızca savaş içinde 0'a düşünce); pratikte yalnızca Game Master savaşında görülür (Serüven'de 0 = ölüm).
+- **Eşikler:** Moral ≤ yarı: WIS/CHA save ve WIS/CHA becerili kontrollere −1 (`effectDice`). ≤ üçte bir: Frightened/Charmed'a karşı save'de dezavantaj; motor bunu "başarıda ikinci d20, küçüğü" olarak uygular (`ExtraDie.reroll: 'worse'`, yalnızca `against` bilinen save'lerde ve zar kipi normalken; avantajla birlikte iptal yaklaşık: uygulanmaz).
+- **Savaş sonu:** kazanılırsa (motorda, `battle_finished` ile aynı komutta) yaşayan her karaktere +1, çökmüş kalıp kazanana +2. Yenilgi/kaçış: ödül yok, 0'da kalan savaş dışı kuralla ölür (`dead` + `moralOlum`; `app/partyStatus.ts`). Ödül motorda olduğu için ana parça Moral verisini içe aktarmaz (index 434,18 kB).
+- **Serüven tablosu** (`seruven.kayip/kazanc`; hafif ve tam modda, savaş sonucu yalnızca hafif modda): yenilgi −2, dost düştü −1 (bozgun dinlenmesinden önceki durum `seruven_result.downed`), zafer +1, başarısız dünya kontrolü −1, başarılı kontrol +1, korku yeri (ilk varış; `korkuYerleri`) −1, hapse düşme −2, serbest gezintide gece yarısı geçişi (sığınaksız gece) −1, görev +1, kamp/dinlenme düğümü/bozgun dinlenmesi en çoğun yarısı, han hepsi. Önce kayıplar, sonra kazançlar: 0'a düşen önce ölür. Açlık/yorgunluk ve yemek/müzik sistemleri yok (tabloda değer var, bağlı değil). Sayılar denge turunda.
+- **Moral ölümü:** savaş dışında 0 → `dead` + `moralOlum`; anlatım nötr ("{ad} umudunu yitirdi, sönüp gitti."; TR/EN `metin.olum`). Kimse ayakta kalmazsa Serüven yenilgiyle biter.
+- **Diriltme** (`moral_dirilt`, Moral açıkken): tapınaklı yerleşimde `tapinakUcreti` (300) altın ya da partide SRD diriltme büyüsünü (Raise Dead, Resurrection, True Resurrection) bilen ve slotu olan üye + maddi bileşenin altını (slot harcanır). Dirilen 1 HP ve Moral 1 ile döner; kalıcı ceza yok. Revivify savaş dışı (1 dakika) olduğundan listede yok.
+- **Arayüz:** jetonda HP'nin altında mor Moral çubuğu, ayrıntı çekmecesinde `MoralBar`, çökmüş jetonda 💔 (Incapacitated simgesinin yerine), eylem menüsünde "Toparla", Serüven parti şeridinde Moral çubuğu, Moral ölümü metni ve diriltme düğmeleri. Metinler tembel parçada (`view.moral`).
+- Testler `src/battle/morale.test.ts`, `src/journey/moral.test.ts`.
+
+## 2026-11-04 — Kuyruk K48 Adım A: Bardic Inspiration zinciri (kural sürümü 19)
+
+- **Durum:** görevdeki "özellikli savaşçıda ilham zarı düşüyor" hatasının ilk yarısı Kuyruk 19'da düzeltilmişti (`bardicInspirationFix`, sürüm 16: işaretli savaşçıda zar ikinci şans listesine giriyor). Yeniden taramada (12 sınıf × 3 tür × 3 seviye) liste artık her yerde zarı içeriyor.
+- **Kalan neden:** `secondChance` (`src/rules/attack.ts`) listedeki *ilk* uygun ikinci şansı kullanır. İşaretli savaşçıda kendi ikinci şansları (Indomitable, Halfling Luck, Tactical Mind, Stroke of Luck, Heroic Inspiration…) ilham zarından önce gelir; o tutmazsa ilham zarı hiç atılmıyordu (zar fiilen düşüyordu, etki de harcanmadan kalıyordu). SRD 5.2.1: ilham zarı "başarısız D20 Testine" eklenir; yeniden atış başarısız kalırsa test hâlâ başarısızdır.
+- **Karar:** yeni sürüm **19** (Celestial 18'i aldı; plandaki "16" Kuyruk 19'un düzeltmesiydi). Global Game Master anahtarı `bardicInspirationChain` (varsayılan açık): reducer `syncAuras` ilhamlı savaşçıya `inspireChain` yazar, ilham girişi `chain: true` olur; `secondChanceAll` ilk ikinci şanstan sonra sonuç hâlâ başarısızsa seçilmemiş `chain` girişini dener (saldırı, save, kontrol). Sürüm < 19 ya da anahtar kapalıyken eski davranış (replay aynı). Moral (Adım B) sürüm 20'yi alır.
+- Test `src/battle/k48bard.test.ts`.
+
 ## 2026-11-03 — Kuyruk H3: dünya haritası karo dikişleri
 
 - **Değişiklik** (`src/world/tiles.ts` `tileDeviceRect`, `WorldMapViewer` `putTile`): karolar artık dünya dönüşümüyle (kesirli ölçek) değil, cihaz pikselinde çizilir: sol/üst ve sağ/alt kenarlar ayrı ayrı `Math.round` edilir (komşu iki karonun ortak kenarı aynı piksele düşer), genişlik/yükseklik bu farktan, ardından sağa ve aşağıya 1 px taşma. Eskiden z0 zemin `r.w × r.h`, üst zoom `+0,5` ile kesirli koordinatta çiziliyordu. z0 zemini de aynı yoldan.

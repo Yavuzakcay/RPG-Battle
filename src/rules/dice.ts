@@ -83,6 +83,15 @@ export function parseDice(expression: string): DiceSpec {
   return { count, sides, bonus };
 }
 
+/**
+ * A1: zar ifadesini yeniden yazar. Zar sayısı 0 ise yalnızca sabit ("70"; "0d1+70" yazılmaz, `parseDice` reddeder).
+ * Zar ifadesi üreten her yer bunu kullanır (Heal çökmesi: sabit iyileştirme "0d1+70" olup istisna fırlatıyordu).
+ */
+export function formatDice(count: number, sides: number, bonus = 0): string {
+  if (count <= 0) return String(bonus);
+  return `${count}d${sides}${bonus === 0 ? '' : bonus > 0 ? `+${bonus}` : String(bonus)}`;
+}
+
 /** Tek bir zar atar: 1 ile `sides` arasında bir tam sayı. */
 export function rollDie(sides: number, rng: Rng = Math.random): number {
   const hook = diceHookOf(rng);

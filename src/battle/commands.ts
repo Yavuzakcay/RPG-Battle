@@ -2,6 +2,10 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { distance } from '../rules/hex';
+import { exhaustionGain } from './deathWard';
+import { commandEndHookEvents, turnStartHookEvents } from './turnHooks';
+import { auraTriggerEvents } from './auraCore';
 import { executeDismount, executeMount, riderCleanup } from './mounted';
 import { brutalOptions } from './brutal';
 import { executeShiftMove, featuresOn } from './shift';
@@ -24,9 +28,10 @@ import { collapseFallEvents, executeClimb } from './climb';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { DODGE, dotEvents, executeDodge, executeHelp, timedCondition, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
-import { srdConditions } from './ruleVersion';
+import { ruleVersion, srdConditions } from './ruleVersion';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
+import { playerThrowObject, throwObject } from './objectMotion';
 import { checkActor, currentActorId, fail, finish, nextActor, winnerOf, type CommandResult } from './common';
 import {
   auraStepEvents, auraTurnEndEvents, executeActionSurge, executeFollowup, executeSecondWind, opportunityAttacks,
@@ -55,7 +60,8 @@ import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
 import { casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
-import { bondEvents, sanctuaryCheck } from './wards';
+import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
+import { heldFollow, mechanicsAt } from './spellVersion';
 import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
 import { superiorInspirationEvents } from './bard';
@@ -73,8 +79,10 @@ const TACTICAL: readonly string[] = ['push', 'sap', 'slow'];
 import { executeAttackObject, executeObjectUse, executePlaceObject, objectAreaEvents } from './objects';
 import { caveDiscoveryEvents, executeForestUse, forestAfterEvents, forestRoundEvents } from './forest';
 import { greaseAfterEvents } from './ignite';
+import { hexResolverOn, resolveCommandEffects } from './hexResolver';
 import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
+import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
@@ -95,7 +103,9 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
     // Survivor (Champion; Görev F): avantajlı, 18–20 doğal 20 sayılır.
     // Beacon of Hope (Görev B1): ölüm save'i avantajlı.
     const survivor = hasTrait(c, 'survivor');
-    const rolledSave = rollD20(survivor || c.effects?.some((e) => e.deathSaveAdv) ? 'advantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+    // Kuyruk K53 S5: aura ölüm save dezavantajı; avantajla birlikte normal.
+    const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv) || !!c.auraDeathAdv;
+    const rolledSave = rollD20(dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
     const natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
     let successes = c.deathSaves.successes;
     let failures = c.deathSaves.failures;
@@ -151,6 +161,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   // Görev CLERIC: Sanctuary: korunanı hedef alan saldıran önce WIS save; başarısızsa saldırı/büyü boşa gider.
   const sanct = spent ? sanctuaryCheck(state, cmd, rng) : null;
+  if (sanct?.refused) return fail(sanct.refused);
+  // Kuyruk A6 (sürüm 35): başarısız Sanctuary save'inde eylem/saldırı harcanmaz (yeni hedef seçilir).
+  if (sanct?.blocked && sanct.events.some((e) => e.type === 'sanctuary_save' && e.retarget)) spent = null;
   const result = sanct?.blocked ? finish(state, sanct.events) : executeCommand(state, cmd, ctx, rng);
   if (!result.ok) return result;
   let { state: next, events } = result;
@@ -159,21 +172,30 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     next = applyEvents(next, [spent]);
     events = [...events, spent];
   }
+  // Kuyruk A6 (sürüm 35): Bestow Curse hasar seçeneği save'li büyü hasarında da.
+  const cursed = curseSpellEvents(next, events, rng);
+  if (cursed.length) { next = applyEvents(next, cursed); events = [...events, ...cursed]; }
   // Uyuyan ejderha: komut onu uyandırdı mı (hasar, yanına girme, gürültü).
   const woke = dragonWakeAfter(state, next, events, cmd);
   if (woke) {
     next = applyEvents(next, [woke]);
     events = [...events, woke];
   }
-  // Görev Y1: yüzey tepkimeleri (tutuşma, buhar, donma, erime, patlama, suda yıldırım, söndürme).
-  const surf = surfaceReactionEvents(next, events, rng);
-  if (surf.length) { next = applyEvents(next, surf); events = [...events, ...surf]; }
-  // Kuyruk 24c: ateşin değdiği gres tutuşur (Game Master mekaniği `greaseFlammable`, kural sürümü 5).
-  const grease = greaseAfterEvents(next, events, rng);
-  if (grease.length) { next = applyEvents(next, grease); events = [...events, ...grease]; }
-  // Kuyruk 18b: yüzey × yüzey etkileşimleri (kural sürümü 15; data/yuzey-etkilesim.json).
-  const mix = surfaceMixEvents(next, events, rng);
-  if (mix.length) { next = applyEvents(next, mix); events = [...events, ...mix]; }
+  if (hexResolverOn(next)) {
+    // Kuyruk K55 (sürüm 26): bütün yüzey tepkimeleri tek çözücüden (data/yuzey-etkilesimleri.json).
+    const hex = resolveCommandEffects(next, events, rng).events;
+    if (hex.length) { next = applyEvents(next, hex); events = [...events, ...hex]; }
+  } else {
+    // Görev Y1: yüzey tepkimeleri (tutuşma, buhar, donma, erime, patlama, suda yıldırım, söndürme).
+    const surf = surfaceReactionEvents(next, events, rng);
+    if (surf.length) { next = applyEvents(next, surf); events = [...events, ...surf]; }
+    // Kuyruk 24c: ateşin değdiği gres tutuşur (Game Master mekaniği `greaseFlammable`, kural sürümü 5).
+    const grease = greaseAfterEvents(next, events, rng);
+    if (grease.length) { next = applyEvents(next, grease); events = [...events, ...grease]; }
+    // Kuyruk 18b: yüzey × yüzey etkileşimleri (kural sürümü 15; data/yuzey-etkilesim.json).
+    const mix = surfaceMixEvents(next, events, rng);
+    if (mix.length) { next = applyEvents(next, mix); events = [...events, ...mix]; }
+  }
   // Görev S2: alanlı hasar alandaki nesnelere (fıçı, sandık, kapı…).
   const objs = objectAreaEvents(next, events, rng);
   if (objs.length) { next = applyEvents(next, objs); events = [...events, ...objs]; }
@@ -225,8 +247,14 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev WARLOCK: Dark One's Blessing (düşman 0 HP'ye düşünce geçici HP).
   const blessed = blessingEvents(state, next, 'actorId' in cmd ? cmd.actorId : undefined);
   if (blessed.length) { next = applyEvents(next, blessed); events = [...events, ...blessed]; }
+  // Kuyruk K48: Moral tam modu (dost düştü, korku; 0'da çökme, ≥ 1'de çökmenin bitmesi).
+  const morale = moraleAfterEvents(state, next, events);
+  if (morale.length) { next = applyEvents(next, morale); events = [...events, ...morale]; }
   const reveal = revealEvent(state, next, cmd);
   if (reveal) { next = applyEvents(next, [reveal]); events = [...events, reveal]; }
+  // Kuyruk K54b: kayıtlı komut sonu kancaları (imza: Ortak Şifa, Peşini Bırakmayan).
+  const hookedEnd = commandEndHookEvents(state, next, events, cmd, rng, applyEvents);
+  if (hookedEnd.length) { next = applyEvents(next, hookedEnd); events = [...events, ...hookedEnd]; }
   // Görev A1: ortak can havuzu üyeleri komutun sonunda havuzun HP'sine eşitlenir.
   const pooled = poolSyncEvents(next);
   if (pooled.length) { next = applyEvents(next, pooled); events = [...events, ...pooled]; }
@@ -244,6 +272,11 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (goal.length) { next = applyEvents(next, goal); events = [...events, ...goal]; }
     const winner = next.status === 'active' ? winnerOf(next) : null;
     if (winner) { const done: BattleEvent = { type: 'battle_finished', winner }; next = applyEvents(next, [done]); events = [...events, done]; }
+  }
+  // Kuyruk K48: hedefle biten savaşta da Moral zafer ödülü (komut sonu kancası bitişten önce çalıştıysa).
+  if (state.status === 'active' && next.status === 'finished' && !events.some((e) => e.type === 'moral_changed' && e.reason === 'zafer')) {
+    const won = moraleAfterEvents(state, next, events);
+    if (won.length) { next = applyEvents(next, won); events = [...events, ...won]; }
   }
   return { ok: true, state: next, events };
 }
@@ -274,6 +307,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (formed) meta.push(formed);
     // Kuyruk 19: Gift of the Protectors: kitaptaki adlar.
     meta.push(...protectorsGiftEvents(begun.state));
+    // Kuyruk K48: Moral 0 ile giren Bunalmış (ilk tur).
+    meta.push(...moraleStartEvents(begun.state));
     const started = meta.length > 0 ? { ok: true as const, state: applyEvents(begun.state, meta), events: [...begun.events, ...meta] } : begun;
     // Sıra bir masumla (ya da uyuyan/habersiz grup üyesiyle, Görev S4) başlıyorsa turu hemen atlanır.
     const first = started.state.combatants[currentActorId(started.state)];
@@ -307,6 +342,14 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return finish(state, events);
   }
 
+  if (cmd.type === 'set_ai_role') {
+    if (!ctx.isGm) return fail('Yalnızca Game Master yapay zekâ rolü atayabilir.');
+    const target = state.combatants[cmd.targetId];
+    if (!target) return fail('Savaşçı bulunamadı.');
+    if (cmd.role !== null && !['hasarci', 'kontrolcu', 'destek', 'tank'].includes(cmd.role)) return fail('Bilinmeyen rol.');
+    return finish(state, [{ type: 'ai_role_set', targetId: target.id, role: cmd.role }]);
+  }
+
   if (cmd.type === 'set_exhaustion') {
     // Görev S1: bitkinlik (Exhaustion) kaynağı şimdilik Game Master (oyundaki büyü/özellikler ileride aynı olayla).
     if (!ctx.isGm) return fail('Yalnızca Game Master bitkinliği ayarlayabilir.');
@@ -314,6 +357,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!target) return fail('Savaşçı bulunamadı.');
     if (!Number.isInteger(cmd.level) || cmd.level < 0 || cmd.level > MAX_EXHAUSTION) return fail(`Bitkinlik 0–${MAX_EXHAUSTION} olmalı.`);
     if ((target.exhaustion ?? 0) === cmd.level) return fail('Bitkinlik zaten bu seviyede.');
+    // Kuyruk B1 (sürüm 31): 6. seviye (ölüm) Death Ward yolundan (koruma varsa artış yerine büyü biter).
+    if (cmd.level >= MAX_EXHAUSTION && ruleVersion(state) >= 31) return finish(state, exhaustionGain(state, target, cmd.level, 'Game Master'));
     return finish(state, [{ type: 'exhaustion_changed', targetId: target.id, level: cmd.level, reason: 'Game Master' }]);
   }
 
@@ -419,6 +464,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const zoneEnd = zoneTurnEvents(current, actor.id, 'end', rng);
     events.push(...zoneEnd);
     current = applyEvents(current, zoneEnd);
+    // Kuyruk K53 S5: veriden auraların tur sonu tetikleri.
+    const auraEnd = auraTriggerEvents(current, actor.id, 'turnEnd', rng);
+    events.push(...auraEnd);
+    current = applyEvents(current, auraEnd);
     // Kuyruk 19 (srdK19): canavarın tur sonu yetenekleri (Heat Aura, Mucus Cloud, akan su, Hydra başları).
     const monEnd = monsterTurnEvents(current, current.combatants[actor.id] as Combatant, 'end', rng);
     events.push(...monEnd);
@@ -525,6 +574,13 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const zoneStart = zoneTurnEvents(current, next.id, 'start', rng);
       events.push(...zoneStart);
       current = applyEvents(current, zoneStart);
+      const auraStart = auraTriggerEvents(current, next.id, 'turnStart', rng);
+      events.push(...auraStart);
+      current = applyEvents(current, auraStart);
+      // Kuyruk K54b: kayıtlı tur başı kancaları (imza: Arazi Okuma).
+      const hooked = turnStartHookEvents(current, next.id, rng, applyEvents);
+      events.push(...hooked);
+      current = applyEvents(current, hooked);
       const fx = effectTurnStartEvents(current, next.id, rng);
       events.push(...fx.events);
       current = applyEvents(current, fx.events);
@@ -534,7 +590,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       // Kuyruk 19: Animate Objects: sahibi bonus eylemle emretmediyse nesne yalnızca Kaçın yapar (turu geçer).
       const nx = current.combatants[next.id];
       const ownerOf = nx?.summon?.commandBonus ? current.combatants[nx.summon.by] : undefined;
-      if (nx && ownerOf && !ownerOf.economy.summonCommand && nx.hp > 0 && globalRule(current, 'spellsK19')) {
+      const outOfRange = !!nx?.summon?.commandFt && !!ownerOf?.pos && !!nx.pos && distance(ownerOf.pos, nx.pos) * 5 > nx.summon.commandFt;
+      if (nx && ownerOf && (!ownerOf.economy.summonCommand || outOfRange) && nx.hp > 0 && (globalRule(current, 'spellsK19') || !!nx.summon?.commandFt)) {
         const dodge = [timedCondition(current, nx.id, { condition: DODGE, owner: 'target', end: 'turnStart' }, nx.id, 'Kaçın (emir yok)')];
         events.push(...dodge);
         current = applyEvents(current, dodge);
@@ -604,7 +661,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (cmd.targetHex && strideSpellOf(state, actor)) return executeStride(state, actor, cmd.targetHex);
     // Kuyruk 19: Faithful Hound taşıma (hedef altıgen).
     if (cmd.targetHex && movableZoneOf(state, actor)) return executeZoneShift(state, actor, cmd.targetHex);
-    if (spells.find((x) => x.name === actor.concentration?.spell)?.mechanics.repeat) return executeRepeat(state, actor, cmd.targetId, rng);
+    // Kuyruk A6: elde tutulan büyü (Produce Flame) ve sürüme göre tekrar alanları; noktaya tekrar (Call Lightning).
+    const fsp = spells.find((x) => x.name === (heldFollow(state, actor)?.spell ?? actor.concentration?.spell));
+    if (fsp && mechanicsAt(state, fsp).repeat) return executeRepeat(state, actor, cmd.targetId, rng, cmd.choice, cmd.targetHex);
     return executeFollowup(state, actor, cmd.targetId, rng);
   }
 
@@ -641,14 +700,17 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     // CILA (Haste): eylemini kullandıktan sonra turda bir ek eylem.
     if (!actor.effects?.some((e) => e.extraAction)) return fail('Haste etkisi yok.');
     if (actor.economy.hasteUsed) return fail('Haste\'in ek eylemi bu tur kullanıldı.');
+    // Kuyruk A6 (sürüm 35): ek eylem asıl eylemden önce de alınabilir (SRD "an additional action on each of its turns").
+    if (ruleVersion(state) >= 35 && !actor.economy.action && actor.economy.attacksLeft === 0) return finish(state, [{ type: 'haste_action', actorId: actor.id, first: true }]);
     if (!actor.economy.action || actor.economy.attacksLeft > 0) return fail('Önce eylemini kullanmalısın.');
     return finish(state, [{ type: 'haste_action', actorId: actor.id }]);
   }
   if (cmd.type === 'attack_gate') return executeAttackGate(state, actor, cmd.at, cmd.option, rng);
   if (cmd.type === 'dodge') return executeDodge(state, actor);
-  if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId);
+  if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId, rng);
   if (cmd.type === 'distract') return executeDistract(state, actor, cmd.at);
   if (cmd.type === 'use_item') return executeUseItem(state, actor, cmd.itemId, cmd.targetId, rng);
+  if (cmd.type === 'moral_rally') return executeRally(state, cmd);
   if (cmd.type === 'dash') {
     const dashed: BattleEvent[] = [{ type: 'dashed', actorId: actor.id }];
     return { ok: true, state: applyEvents(state, dashed), events: dashed };
@@ -715,6 +777,13 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'attack_object') return executeAttackObject(state, actor, cmd.objectId, cmd.option, rng);
   // Kuyruk 24: Orman nesneleri (heykelin gözü, çadır, ağaç, kemik yığını) önce; değilse genel nesne kuralları.
   // Görev K26: kola bağlı kapı, balista.
+  // A1: oyuncunun "Nesne fırlat" komutu (K53 nesne hareketi).
+  if (cmd.type === 'object_use' && cmd.action === 'throw') {
+    const p = playerThrowObject(state, actor, cmd.objectId, cmd.to);
+    if ('problem' in p) return fail(p.problem);
+    const r = throwObject(state, actor.pos as NonNullable<typeof actor.pos>, cmd.objectId, cmd.to as NonNullable<typeof cmd.to>, actor.id, rng, p.hit, p.range);
+    return 'problem' in r ? fail(r.problem) : finish(state, r.events);
+  }
   if (cmd.type === 'object_use') return executeHighlandsUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng) ?? executeWildsUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeForestUse(state, actor, cmd.objectId, cmd.action, rng) ?? executeObjectUse(state, actor, cmd.objectId, cmd.action, cmd.to, rng);
   if (cmd.type === 'wild_shape') return executeWildShape(state, actor, cmd.form);
   if (cmd.type === 'wild_resurgence') return executeWildResurgence(state, actor, cmd.mode, cmd.uses);

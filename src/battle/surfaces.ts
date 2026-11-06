@@ -38,6 +38,8 @@ import { globalRule } from './ruleControl';
 import type { BattleEvent, BattleState, Side, SpellZone, SurfaceKind, SurfaceReaction } from './types';
 
 interface SurfaceDef { tr: string; en: string; rounds: number | null; dc: number; srd: string; aiRisk: number; zone: { icon?: string; color?: string } }
+/** Kuyruk K55: çözücünün ham verisi (su/donma zeminleri, zincir). */
+export const SURFACE_DATA = data;
 export const SURFACES = data.kinds as unknown as Record<SurfaceKind, SurfaceDef>;
 export const SURFACE_KINDS = Object.keys(SURFACES) as SurfaceKind[];
 const WATER_TILES = new Set(data.waterTiles);
@@ -90,7 +92,7 @@ export function surfaceEvent(s: BattleState, kind: SurfaceKind, hexes: Offset[],
 }
 
 /** Alanın bazı altıgenleri kalkar (kalan yoksa alan biter). */
-function shrink(z: SpellZone, remove: Set<string>): BattleEvent {
+export function shrink(z: SpellZone, remove: Set<string>): BattleEvent {
   const left = z.hexes.filter((h) => !remove.has(hexKey(h)));
   return left.length ? { type: 'zone_moved', zoneId: z.id, hexes: left } : { type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'reacted' };
 }
@@ -127,12 +129,18 @@ function hitsOf(next: BattleState, events: BattleEvent[]): Hit[] {
   return out;
 }
 
-/** Alandaki yerdeki yaratıkların save'i ve hasarı (patlama, suda yıldırım): hasar bir kez atılır. */
-function burstEvents(s: BattleState, hexes: Offset[], skip: Set<string>, dc: number, raw: number | null, dice: string, damageType: string,
-  actorId: string, label: string, rng: Rng): BattleEvent[] {
+/**
+ * Alandaki yerdeki yaratıkların save'i ve hasarı (patlama, suda yıldırım): hasar bir kez atılır. `ordered` (Kuyruk K55,
+ * sürüm 26): kurbanlar altıgen indeksi artan sırada (zar sırası haritaya bağlı, savaşçı listesine değil).
+ */
+export function burstEvents(s: BattleState, hexes: Offset[], skip: Set<string>, dc: number, raw: number | null, dice: string, damageType: string,
+  actorId: string, label: string, rng: Rng, ordered = false): BattleEvent[] {
   const inside = keys(hexes);
-  const victims = Object.values(s.combatants).filter((c) => c.pos && inside.has(hexKey(c.pos)) && !skip.has(c.id) && c.hp > 0
+  const cols = s.map?.tiles[0]?.length ?? 0;
+  const idx = (c: { pos?: Offset | null }) => (c.pos ? c.pos.row * cols + c.pos.col : 0);
+  const victims0 = Object.values(s.combatants).filter((c) => c.pos && inside.has(hexKey(c.pos)) && !skip.has(c.id) && c.hp > 0
     && isTargetable(c) && !isAirborne(c));
+  const victims = ordered ? [...victims0].sort((a, b) => idx(a) - idx(b) || a.id.localeCompare(b.id)) : victims0;
   if (!victims.length) return [];
   const roll = raw !== null ? { rolls: [] as number[], total: raw } : rollDice(dice, rollTag(rng, { kind: 'damage', by: actorId }));
   const out: BattleEvent[] = [];
@@ -257,8 +265,15 @@ export function surfaceReactionEvents(next: BattleState, events: BattleEvent[], 
 export function elementReactionEvents(state: BattleState, element: 'fire' | 'cold' | 'lightning', hexes: Offset[], actorId: string, label: string,
   rng: Rng, damage: number | null = null, dc = 10): BattleEvent[] {
   if (!surfacesReact(state)) return [];
+  // Kuyruk K55 (sürüm 26): nesne olaylarının ateşi de tek çözücüden.
+  if (resolverHook && resolverHook.on(state)) return resolverHook.run(state, element, hexes, actorId, label, rng, damage, dc);
   return reactTo(state, { element, hexes, actorId, dc, damage, hitIds: new Set(), label }, rng);
 }
+
+/** Kuyruk K55: çözücü kaydı (döngüsel içe aktarma yok; `hexResolver.ts` yüklenince kaydolur). */
+type ResolverHook = { on: (s: BattleState) => boolean; run: (s: BattleState, element: string, hexes: Offset[], actorId: string, label: string, rng: Rng, damage: number | null, dc: number) => BattleEvent[] };
+let resolverHook: ResolverHook | null = null;
+export const registerResolver = (h: ResolverHook): void => { resolverHook = h; };
 
 /** Görev S2: bir komutun alanlı hasarları (her hasar türü; nesneler için): altıgenler, ham hasar ya da zar, tür. */
 export function areaDamageOf(events: BattleEvent[]): Array<{ hexes: Offset[]; damageType: string; damage: number | null; dice?: string; actorId: string; label: string }> {

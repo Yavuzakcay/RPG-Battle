@@ -61,11 +61,16 @@ export function checkReach(
   // Görev B2: dokunulamaz çağrı (Flaming Sphere, ruh sürüsü) hedef alınmaz.
   if (isIntangible(target)) return fail(`${target.name} dokunulamaz: hedef alınamaz.`);
   // Görev B3: büyülenen (Charm Person, Animal Friendship, Suggestion) büyüleyene saldıramaz ve onu hedef alamaz.
+  // Kuyruk A6 (Calm Emotions): kayıtsız yaratık büyücünün tarafına saldırmaz.
+  if (attacker.effects?.some((e) => e.indifferentTo && e.indifferentTo === target.side)) return fail(`${attacker.name} kayıtsız (Calm Emotions): ${target.name} hedef alınamaz.`);
   if (attacker.effects?.some((e) => e.charm && e.sourceId === target.id) && !inProtectiveAura(state, attacker, 'aura-of-devotion')) return fail(`${attacker.name} büyülenmiş (Charmed): ${target.name} hedef alınamaz.`);
   if (target.hidden && target.side !== attacker.side && !knowsWhere(state, attacker, target)) {
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }
   if (!state.map || !attacker.pos || !target.pos) return { ok: true, sources: [], cover: 0 };
+  // Görev P6: ek paket erişim eki (`boyut.erisimFt`; süren etki `reachPlus`) yakın dövüşe.
+  const plus = reach.kind === 'melee' ? (attacker.effects ?? []).reduce((n, e) => n + (e.reachPlus ?? 0), 0) : 0;
+  if (plus) reach = { kind: 'melee', reachFt: (reach as { reachFt: number }).reachFt + plus };
   // Görev A6: çok altıgenli gövdelerde en yakın iki altıgen arası.
   const d = gap(state, attacker, target);
   const ft = d * 5;

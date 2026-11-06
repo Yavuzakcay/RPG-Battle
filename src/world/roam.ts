@@ -10,11 +10,14 @@ import { partyWorld } from './seruvenFog';
 import { prisonSurfaced } from './prison';
 import { ISLANDS, inPolygon, pxToMiles, type Pt } from './worldData';
 import { WALK_RULES, encounterIndex, findPath, hubById, regionAt, seaRoute } from './walk';
+import { REGION_TOGGLE, SWIM } from './regions';
 
 export const START_HOUR = 6;
 
 export type RoamEvent =
-  | { type: 'seruven_walked'; path: Pt[]; hours: number; to: Pt; hubs: string[]; encounter?: { region: string | null; at: Pt } }
+  | { type: 'seruven_walked'; path: Pt[]; hours: number; to: Pt; hubs: string[]; encounter?: { region: string | null; at: Pt };
+      /** K49 D: yürüyüşte yüzülen su (Atletizm beyaz kontrolü; başarısızsa `basarisizSaat` kayıp, süreye eklenmiş). */
+      swim?: { cells: number; total: number; dc: number; success: boolean; by: string } }
   | { type: 'seruven_traveled'; to: string; mode: 'gemi' | 'ucus'; path: Pt[]; hours: number; encounter?: { region: string } }
   | { type: 'seruven_world_check'; id: string; total: number; dc: number; success: boolean; by: string; durum: string; flag?: string };
 
@@ -45,6 +48,8 @@ export const hubsNear = (p: Pt, r = WALK_RULES.hubYaricap): string[] => WALK_RUL
 export const checkSignature = (s: SeruvenState): string => `${s.level}|${s.items.length}|${s.party.length}`;
 
 export type BestSkill = (state: SeruvenState, skills: readonly string[]) => { bonus: number; name: string };
+/** K49 D: ağır zırh giyen yaşayan üyenin adı (yoksa null; yüzme kuralı). */
+export type HeavyArmor = (state: SeruvenState) => string | null;
 
 /** Pasif Algı eşiği geçilen ve yakındaki gizli işaretler (kontrol kimlikleri). */
 export function passiveHints(s: SeruvenState, best: BestSkill): string[] {
@@ -59,22 +64,37 @@ const seedFor = (s: SeruvenState, salt: number) => seededRng((s.seed * 265443576
 const busy = (s: SeruvenState): string | null => (s.result ? 'Serüven bitti.' : s.yerlesim ? 'Önce yerleşimden çık.' : s.hapis ? 'Hapisteyken gezilemez.' : null);
 
 /** Komut → olaylar ya da hata metni. `toggle(key)` Serüven anahtarı açık mı. */
-export function roamEvents(s: SeruvenState, cmd: RoamCommand, toggle: (k: string) => boolean, best: BestSkill): RoamEvent[] | string {
+export function roamEvents(s: SeruvenState, cmd: RoamCommand, toggle: (k: string) => boolean, best: BestSkill, heavy: HeavyArmor = () => null): RoamEvent[] | string {
   const why = busy(s);
   if (why) return why;
   const here = partyPos(s);
   if (!here) return 'Parti konumu yok.';
   if (cmd.type === 'world_walk') {
     if (!toggle('dunyaGezinti')) return 'Dünya gezintisi kapalı (Serüven kuralı).';
-    const plan = findPath(here, cmd.to);
-    if (!plan) return 'Oraya yürünemez (deniz, büyük nehir ya da kayalık; adalara gemi, portal ya da uçuşla gidilir).';
+    const swimOn = toggle(REGION_TOGGLE);
+    const heavyWho = swimOn ? heavy(s) : null;
+    // Ağır zırhlı parti yüzmeden gidebiliyorsa (köprü, geçit) o yolu seçer.
+    const dry = swimOn && heavyWho && SWIM.agirZirh === 'red' ? findPath(here, cmd.to) : null;
+    const plan = dry ?? findPath(here, cmd.to, { swim: swimOn });
+    if (!plan) return swimOn ? 'Oraya yürünemez (açık deniz, uçurum ya da kayalık; adalara gemi, portal ya da uçuşla gidilir).'
+      : 'Oraya yürünemez (deniz, büyük nehir ya da kayalık; adalara gemi, portal ya da uçuşla gidilir).';
+    // K49 D: yüzme. Ağır zırhla red (parametre `agirZirh`), değilse Atletizm beyaz kontrolü (zar Serüven tohumundan).
+    let swim: NonNullable<Extract<RoamEvent, { type: 'seruven_walked' }>['swim']> | undefined;
+    if (plan.swim) {
+      const who = heavyWho;
+      if (who && SWIM.agirZirh === 'red') return `${who} ağır zırhla yüzemez (göl ya da nehir yolu kapalı; zırhı çıkar ya da köprü/geçit kullan).`;
+      const b = best(s, SWIM.beceri);
+      const total = 1 + Math.floor(seedFor(s, 4)() * 20) + b.bonus - (who ? 5 : 0);
+      swim = { cells: plan.swim, total, dc: SWIM.dc, success: total >= SWIM.dc, by: b.name };
+    }
     const hit = encounterIndex(plan, hourOfDay(s), seedFor(s, 1), toggle('karsilasmaYok') ? 0 : undefined);
     const cells = hit >= 0 ? plan.cells.slice(0, hit + 1) : plan.cells;
-    const cut = hit >= 0 ? findPath(here, [(cells[cells.length - 1]![0] + 0.5) * 32, (cells[cells.length - 1]![1] + 0.5) * 32]) ?? plan : plan;
+    const cut = hit >= 0 ? findPath(here, [(cells[cells.length - 1]![0] + 0.5) * 32, (cells[cells.length - 1]![1] + 0.5) * 32], { swim: swimOn && !dry }) ?? plan : plan;
     const to = cut.path[cut.path.length - 1] ?? here;
     const path = [here, ...cut.path];
     const hubs = [...new Set(path.flatMap((p) => hubsNear(p)))].filter((h) => !openHubs(s).includes(h));
-    return [{ type: 'seruven_walked', path, hours: Math.round(cut.hours * 10) / 10, to, hubs, ...(hit >= 0 ? { encounter: { region: regionAt(to), at: to } } : {}) }];
+    const lost = swim && !swim.success ? SWIM.basarisizSaat : 0;
+    return [{ type: 'seruven_walked', path, hours: Math.round((cut.hours + lost) * 10) / 10, to, hubs, ...(hit >= 0 ? { encounter: { region: regionAt(to), at: to } } : {}), ...(swim ? { swim } : {}) }];
   }
   if (cmd.type === 'fast_travel') {
     if (!toggle('hizliSeyahat')) return 'Hızlı seyahat kapalı (Serüven kuralı).';

@@ -2,6 +2,224 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K56: arazi × büyü — hızlı regresyon (2026-11-06)
+
+Ayar yok. Büyücü partisi, 5. seviye, 30 tohum, `npm run sim -- 30 col kale magara orman --seviye 5 --parti buyucu`; kural sürümü 32 (`KURAL_SURUMU=32`) ile 33 (arazi × büyü açık) aynı tohumlarda.
+
+| Senaryo | Kazanma 32 / 33 | Ort. tur 32 / 33 | Ort. düşmüş PC 32 / 33 |
+|---|---|---|---|
+| Çöl — Gündüz | 100% / 100% | 3.4 / 3.4 | 0.00 / 0.00 |
+| Kale — Gündüz | 100% / 100% | 3.9 / 3.6 | 0.07 / 0.03 |
+| Mağara — karanlık | 100% / 100% | 3.5 / 3.5 | 0.00 / 0.00 |
+| Orman | 100% / 100% | 3.4 / 3.4 | 0.03 / 0.03 |
+
+Kale'de ateş büyüleri ahşap eşyalarda (`x`) kısa alev bırakıyor; savaş biraz kısalıyor. Aralık dışı (%100, hedef %60–80): büyücü partisi bu listelere karşı önceki ölçümlerdeki gibi güçlü; düzeltme "Dungeondex öncesi tam test turu"na.
+
+## Kuyruk A4: kısmi büyülerin tamamlanması — hızlı regresyon (2026-11-06)
+
+Ayar yok. Büyücü partisi, 5. seviye, 30 tohum, `npm run sim -- 30 col kale magara orman --seviye 5 --parti buyucu`; kural sürümü 31 (`KURAL_SURUMU=31`) ile 32 aynı tohumlarda. Fark yok: değişen büyüleri (Blur, Mirror Image, Hex, Bestow Curse, Color Spray, Fear, Expeditious Retreat, Beacon of Hope, Protection from Poison, Starry Wisp, Holy Aura) bu karşılaşmalarda yapay zekâ ya hiç seçmiyor ya da sonucu değiştirmiyor (düşmanlarda Blindsight/Truesight yok).
+
+| Senaryo | Kazanma 31 | Kazanma 32 | Ort. tur 31 / 32 | Ort. düşmüş PC 31 / 32 |
+|---|---:|---:|---|---|
+| Çöl — Gündüz | 100% | 100% | 3.4 / 3.4 | 0.00 / 0.00 |
+| Kale — Gündüz | 100% | 100% | 3.9 / 3.9 | 0.07 / 0.07 |
+| Mağara — karanlık | 100% | 100% | 3.5 / 3.5 | 0.00 / 0.00 |
+| Orman | 100% | 100% | 3.4 / 3.4 | 0.03 / 0.03 |
+
+Aralık dışı (hedef %60–80'in üstü): dördü de %100 — büyücü partisi bu listelere karşı önceki ölçümlerdeki gibi güçlü; düzeltme "Dungeondex öncesi tam test turu"na.
+
+## Kuyruk Y2: Y1 regresyon düzeltmesi — yapay zekâ davranışı, süre, Usta (2026-11-05)
+
+Ayar yok (oyun sayıları değişmedi; yalnız YZ ağırlıkları `data/yz-roller.json` ve iki motor hatası). 100 tohum, aynı tohumlar. "Eski" = `YZ_ESKI=1` (Y1 öncesi zincir) **Y2 kodunda** (iki motor hatası düzeltilmiş: Trol uzvu kimliği, yerdeki Trol'e büyü saldırısı); "Y1" = `wip/a1` (`6062fce`) olduğu gibi; "Y2" = `wip/y2` (Normal). Kural sürümü değişmedi.
+
+**SRD partisi** (`npm run sim -- 100 <senaryo> --seviye 5`, standart parti; kazanma / berabere / ort. tur):
+
+| Senaryo | Eski | Y1 | Y2 | Y2 − eski | Y2 − Y1 |
+|---|---|---|---|---:|---:|
+| Düz — haritasız | 94% / 0% / 6.3 | 98% / 0% / 5.5 | 98% / 0% / 5.5 | +4 | 0 |
+| Çöl — Gündüz | 89% / 1% / 6.3 | 90% / 0% / 7.0 | 89% / 0% / 7.0 | 0 | −1 |
+| Orman | 65% / 0% / 5.5 | 73% / 0% / 5.9 | 73% / 0% / 6.0 | **+8** | 0 |
+| Mağara — karanlık | 94% / 1% / 6.1 | 59% / 14% / 9.4 | 89% / 6% / 7.3 | −5 | **+30** |
+| Dungeon — Koridor | 100% / 0% / 5.1 | 98% / 0% / 5.5 | 99% / 0% / 5.3 | −1 | +1 |
+| Kale — Gündüz | 64% / 0% / 6.9 | 62% / 0% / 6.7 | 69% / 0% / 6.6 | +5 | +7 |
+
+**İmza alt sınıflar** (`npm run sim:imza -- 100 --alt <id> --yalniz <id> --seviye 7 --senaryo <senaryo>`, 6 senaryo ortalaması):
+
+| Alt sınıf | Eski | Y1 | Y2 | Y2 − eski | Y1 − eski |
+|---|---:|---:|---:|---:|---:|
+| Dunganga | 68.0% | 73.2% | 75.5% | **+7.5** | +5.2 |
+| Harita Öğretisi | 60.2% | 59.8% | 61.3% | +1.1 | −0.4 |
+
+Senaryo ayrıntısı (eski / Y1 / Y2): Dunganga Çöl 56/73/67, Dungeon 99/100/100, Düz 99/100/100, Kale 58/57/61, Mağara 60/64/72, Orman 36/45/53; Harita Çöl 34/38/33, Dungeon 98/100/99, Düz 94/100/100, Kale 44/41/44, Mağara 58/43/55, Orman 33/37/37.
+
+**Zorluk** (parti `YZ_ZORLUK=usta`, düşman Normal; aynı 6 senaryo, 100 tohum): Usta − Normal = Düz −1, Çöl +1, Orman −6, Mağara 0, Dungeon +1, Kale −7; **ortalama −2,0** (Usta 84,2%, Normal 86,2%). Hedef (+5) tutmadı → Usta "deneysel" (DECISIONS.md).
+
+Notlar:
+- **Hedefler:** Mağara ve Kale eskinin ±8 puanı içinde (−5, +5); Mağara beraberliği %14 → %6 (eşik %6, aşılmadı). Orman kazancı korunuyor (+8; 100 tohumda Y1 de +8, 50 tohumdaki +14 gürültüydü). Dunganga ve Harita'nın eskiye göre kazancı Y1'den büyük (+7.5, +1.1; Y1'de +5.2, −0.4).
+- Mağara'da eski YZ de motor hatasından etkileniyordu: hata düzeltilmeden (Y2 ilk koşusu) eski 79% / berabere 11%, Y2 74% / 12%. Y1 sütunu düzeltilmemiş motorla (Trol'e Fire Bolt boşa gidiyor); Mağara satırlarında Y1 − eski farkının bir kısmı motor hatası.
+- İmza Mağara satırlarının "Y1" değeri de düzeltilmemiş motorla (Harita 43 → Y2 55).
+- Ayrıntılı nedenler: YZ-DENETIM.md "Y2 bulguları".
+
+**Süre** (`npm run sim:yz-sure -- 3 <senaryo> --parti buyucu`; 6 kişilik büyücü partisi, her `chooseCommand`; bu makine, tek süreç; "×4" telefon tahmini):
+
+| Senaryo | Sürüm | Karar | Ort. ms | p50 | p95 | En çok | ×4 ort. | ×4 p95 | Aday/karar | Kuru çalıştırma/karar | tryCmd/karar (önbellek dışı) | Karar imzası |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| Çöl — Gemi Enkazı (6 düşman) | önce (Y1) | 98 | 23.6 | 10.0 | 116.0 | 255.4 | 94.5 | 464.1 | – | – | – | 8e76e115 |
+| Çöl — Gemi Enkazı (6 düşman) | sonra (Y2) | 98 | 20.8 | 9.2 | 97.6 | 204.2 | 83.4 | 390.6 | 7.4 | 13.2 | 231.0 (225.6) | 8e76e115 |
+| Kale — Gündüz (17 düşman) | önce (Y1) | 303 | 26.7 | 10.3 | 119.5 | 211.5 | 106.9 | 477.9 | – | – | – | 4d84c004 |
+| Kale — Gündüz (17 düşman) | sonra (Y2) | 299 | 24.1 | 8.5 | 109.1 | 162.0 | 96.4 | 436.5 | 7.8 | 14.2 | 112.2 (100.8) | e5a3f396 |
+
+- **Bütçe** (ort. ≤ 60 ms, p95 ≤ 200 ms, bu makine): **tutuyor**, önce de tutuyordu; önbellekler ≈ %10 kısalttı. Gemi Enkazı'nda karar imzası aynı (aynı komut dizisi); Kale'de farklı çünkü G1 hareket düzeltmeleri kararı değiştiriyor (önbellek kararı değiştirmez: test `y2.test.ts`).
+- **Telefon (×4):** ortalama 83–96 ms, p95 390–440 ms: tek karar bütçeyi aşar. Arayüzde düşman turları artık tek tek oynatılıyor ve aralarında bir çerçeve bırakılıyor (eskiden bütün düşman turları tek eşzamanlı adımdı); tek kararın içi bölünmedi (açık madde).
+- Zamanın çoğu hareket yeri taramasında (`bestNow` her aday altıgende) ve motorun kendisinde; kuru çalıştırma (önizleme) karar başına ≈ 13–14 çalıştırma.
+
+## Kuyruk Y1: ortak yapay zekâ değerlendiricisi — regresyon ve zorluk (2026-11-05)
+
+Ayarlama yok (K59). Aynı kod (`wip/y1`), aynı tohumlar (50); "eski" = `YZ_ESKI=1` (Y1 öncesi kural zinciri), "yeni" = değerlendirici (Normal). Kural sürümü değişmedi (28; yapay zekâ kararı olay değil).
+
+**SRD partisi** (`npm run sim -- 50 duz col orman magara kale dungeon --seviye 5`, standart parti):
+
+| Senaryo | Eski kazanma | Yeni kazanma | Fark | Berabere (eski / yeni) | Ort. tur (eski / yeni) | Ort. düşmüş PC (eski / yeni) |
+|---|---:|---:|---:|---:|---:|---:|
+| Düz — haritasız | 94% | 98% | +4 | 0% / 0% | 6.5 / 5.5 | 0.44 / 0.16 |
+| Çöl — Gündüz | 90% | 94% | +4 | 0% / 0% | 6.7 / 7.5 | 0.50 / 0.56 |
+| Orman | 48% | 62% | **+14** | 0% / 0% | 5.8 / 6.1 | 2.62 / 2.12 |
+| Mağara — karanlık | 74% | 56% | **−18** | 4% / 14% | 7.0 / 9.5 | 1.30 / 1.66 |
+| Dungeon — Koridor (meşale) | 100% | 100% | 0 | 0% / 0% | 5.3 / 5.6 | 0.10 / 0.18 |
+| Kale — Gündüz | 68% | 58% | **−10** | 0% / 0% | 6.9 / 6.5 | 1.78 / 2.24 |
+
+**İmza alt sınıflar** (`npm run sim:imza -- 50 --alt <id> --seviye 7 --senaryo col,orman,magara,kale,duz,dungeon`; 6 senaryo ortalaması):
+
+| Alt sınıf | Eski | Yeni | Fark | SRD karşılığı (eski / yeni) | Sapma (eski → yeni) |
+|---|---:|---:|---:|---:|---:|
+| Dunganga | 64% | 76% | **+12** | Ejderha Büyücülüğü 85% / 87% | −21 → −11 |
+| Harita Öğretisi | 57% | 62% | +5 | Evokasyon Ustası 72% / 71% | −15 → −9 |
+
+**Zorluk** (parti tarafı `YZ_ZORLUK`, düşman Normal; `npm run sim -- 50 col orman kale --seviye 5`):
+
+| Senaryo | Kolay | Normal | Usta |
+|---|---:|---:|---:|
+| Çöl — Gündüz | 80% | 94% | 90% |
+| Orman | 46% | 62% | 64% |
+| Kale — Gündüz | 20% | 58% | 56% |
+| Ortalama | 48.7% | 71.3% | 70.0% |
+
+Notlar:
+- **8 puandan büyük farklar** (rapor, ayar yok): Orman +14, Mağara −18, Kale −10 (SRD); Dunganga +12 (imza). Mağara'da beraberlik %4 → %14 ve ortalama tur 7.0 → 9.5: yeni yapay zekâ karanlıkta daha temkinli (tehlike/korunma puanı), 20 tur sınırına daha sık takılıyor. Kale'de düşmüş PC artıyor (1.78 → 2.24). İki tarafı da aynı yapay zekâ oynadığı için fark parti ya da düşman lehine tek yönlü değil; nedeni K59'da ayrıştırılmalı.
+- İmza alt sınıfların SRD karşılığına sapması küçüldü (Dunganga −21 → −11, Harita −15 → −9): değerlendirici imza eylemlerini (kapılı ipuçları yerine) puanla seçiyor; K50/K54b sorununun hedeflenen sonucu.
+- **Kolay ≤ Normal ≤ Usta:** Kolay < Normal her senaryoda (ortalama −22.6 puan). **Usta ≈ Normal** (−1.3 puan; satır farkları ±4, 50 tohumda standart hata ≈ ±7): Usta'nın bir adım ileri bakışı ölçülebilir kazanç getirmiyor; açık madde.
+- Süre: yeni yapay zekâ senaryo başına ≈ 1,5–2,3× daha yavaş (ör. Kale 140 sn → 310 sn, 4 paralel süreç).
+
+## Kuyruk K54c: K54 sonrası (tamamı) — 11 imza alt sınıf (2026-11-05)
+
+Aynı ölçüm (K50): `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`, 100 tohum, kural sürümü 28, ev kuralı açık, **Y1 öncesi yapay zekâ** (ölçüm `wip/k54c` üzerinde). Ölçüt K50'deki gibi: SRD karşılığına göre −5'ten büyük düşüş "aralık dışı". Sayı ayarı yapılmadı (K59). Y1 değerlendiricisiyle Dunganga ve Harita'nın 6 senaryolu ölçümü "Kuyruk Y1" bölümünde (sapma −11 ve −9).
+
+| İmza | SRD karşılığı | SRD | İmza | K50 sapması | Şimdiki sapma | Durum |
+|---|---|---:|---:|---:|---:|---|
+| Çiftçi (Ranger) | Avcı | %12 | %11 | -1 | -1 | aralıkta |
+| Geride Kalanın Yolu (Barbarian) | Çılgın Savaşçı | %11 | %10 | -3 | -1 | aralıkta |
+| Hızır Yemini (Paladin) | Bağlılık Yemini | %12 | %15 | +1 | +3 | aralıkta |
+| İmparator (Fighter) | Şampiyon | %61 | %56 | -5 | -5 | aralıkta |
+| Şair Koleji (Bard) | Bilgi Koleji | %27 | %21 | -4 | -6 | aralık dışı |
+| İnfazcı (Rogue) | Hırsız | %65 | %61 | -6 | -4 | aralıkta |
+| Yaşlı Bilge (Monk) | Açık El | %16 | %7 | -6 | -9 | aralık dışı |
+| Astrolog (Warlock) | İblis Hamisi | %25 | %18 | -8 | -7 | aralık dışı |
+| Birlik Manastırı (Cleric) | Yaşam | %23 | %16 | -7 | -7 | aralık dışı |
+| Dunganga (Sorcerer) | Ejderha Büyücülüğü | %73 | %40 | -17 | -33 | aralık dışı |
+| Harita Öğretisi (Wizard) | Evokasyon | %57 | %28 | -25 | -29 | aralık dışı |
+
+- Aralık dışı 6 satır: 4'ü −6 ile −9 arası (Şair −6, Astrolog −7, Birlik −7, Yaşlı Bilge −9); İnfazcı −6 → −4 ile aralığa girdi. Büyük farklar yine Dunganga (−33) ve Harita (−29): bu ölçüm K54b'deki yapay zekâ kuralıyla (slot dururken kontrol ipuçları kısıtlı) yapıldı; Y1 değerlendiricisi farkı yarıya indiriyor (yukarı bölüm).
+- Yaşlı Bilge K50'ye göre geriledi (−6 → −9): Zihin Gücü kipleri (K54) Y1 öncesi yapay zekâda tek kip (İt) olarak seçiliyordu; Y1'de kipler ayrı aday.
+- Astrolog (−8 → −7), Şair (−4 → −6), Hızır (+1 → +3), Geride Kalan (−3 → −1): K54c eklemeleri 7. seviyede çoğunlukla yok (Yazgı Mührü 14, Ölümsüz Dize/Usta Şair 14, Küllerden Doğan 14, Ferman 10, Alışkın Acı 10); fark gürültü düzeyinde.
+
+### K54c açık maddeler (K54 tablosundaki eksik, kısmi ya da YZ'nin kullanmadığı özellikler)
+
+| Alt sınıf | Özellik | Durum | Not |
+|---|---|---|---|
+| Şair Koleji | Gece Şiiri | yok | Serüven dinlenmesi; Serüven kilitli |
+| Şair Koleji | Usta Şair | kısmi | partiye uzun dinlenmede +1 Motivasyon yok (Serüven kilitli) |
+| Şair Koleji | Ölümsüz Dize | kısmi | savaş dışı Moral ölümü yönü yok (Serüven kilitli) |
+| Şair Koleji | Nakarat | kısmi | ikinci hedef otomatik (arayüzde seçim yok) |
+| İmparator | Ferman | kısmi | dost otomatik seçilir; ek eylem Haste yolu (Dodge/Help yok) |
+| İmparator | Buyruk: Yer değiştir | YZ kullanmıyor | |
+| Astrolog | Gök Rehberi | yok | Serüven dinlenme Moral'i; Serüven kilitli |
+| Astrolog | Yıldız Falı | kısmi | "beceri zarı" savaşta yok; yalnız ilk saldırı/kurtulma |
+| Astrolog | Yazgı Mührü | kısmi | büyü saldırılarında yok |
+| Geride Kalanın Yolu | Yaralı Kalp / Yıpranma | kısmi | savaşlar arası Yıpranma saklanmaz |
+| Yaşlı Bilge | Zihin Gücü: Nesne, Fırlat | Y1'de YZ adayı | Y1 öncesi YZ kullanmıyordu |
+| Hızır Yemini | Yetişen Yol: Adım | Y1'de YZ adayı | Y1 öncesi YZ kullanmıyordu |
+| Dunganga | Ninni/Sepet | YZ zayıf | kontrolün değeri; sepetteki düşmana dostlar vurmaya devam ediyor (K59) |
+| Harita Öğretisi, Dunganga | 10/14/18. seviye özellikleri | ölçülmedi | 7. seviye ölçümünde yok; 11/15. seviye ölçümü önerisi (K59) |
+| Birlik Manastırı | Omuz Ver | seyrek | yalnız başarıya çevirecekse; Ortak Şifa 8'de |
+
+## Kuyruk K55: altıgen etki çözücüsü — hızlı regresyon (2026-11-05)
+
+Ayarlama yok (K59). `npm run sim -- 30 col kale magara orman --seviye 5 --parti buyucu`; sürüm 26 (çözücü) ile `KURAL_SURUMU=25` (eski geçişler) aynı tohumlar.
+
+| Senaryo | Sürüm 25 kazanma | Sürüm 26 kazanma | Ort. tur (25 / 26) | Ort. düşmüş PC (25 / 26) |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 100% | 100% | 3.4 / 3.4 | 0.00 / 0.00 |
+| Kale — Gündüz | 100% | 100% | 3.5 / 3.5 | 0.03 / 0.03 |
+| Mağara — karanlık | 77% (17% berabere) | 77% (17% berabere) | 4.0 / 4.0 | 0.67 / 0.67 |
+| Orman | 100% | 100% | 3.7 / 3.7 | 0.17 / 0.17 |
+
+Fark yok: bu senaryolarda yüzey tepkimesi seyrek. Duman testi (12 sınıf × 3/7/11, yüzeyli Ortamlar Diyarı, `src/sim/k55smoke.test.ts`) çökmesiz.
+Aralık dışı satır: Mağara 77% (beraberlik %17; K55 öncesiyle aynı, çözücüden bağımsız).
+
+## Kuyruk K53: ortak savaş sistemleri (2026-11-05)
+
+Denge ölçümü yapılmadı (denge turuna). Duman: 12 sınıf × 3/7/11. seviye, kural sürümü 24, Kale haritası, 6 tur: çökme yok (`src/sim/k53smoke.test.ts`).
+
+Yapay zekâ: Misty Step ile kaçış (`teleportEscape`) ve lav/çukur/20+ ft düşüşe itme (`deadlyShove`) yeni girişlerden geçer (varış kancaları, `forcedMove`). Yapılmayanlar: (1) çarpma hasarı için itme: Shove engelde 1d6 verir ama YZ yalnız ölümcül itmeyi seçer, çünkü 1d6 bir silah saldırısının beklenen hasarının altında; (2) nesne fırlatma ve enkaz çağırma: bunları kullanan özellik (K50 C Monk Zihin Gücü, Wizard) henüz yok; (3) Cloud's Jaunt / Blink Steps ile kaçış (YZ yalnız teleport büyüsünü kullanıyor). Hepsi denge turunda ölçülüp eklenecek.
+
+## Kuyruk K52: hizalanma ↔ Moral bağı duman testi (2026-11-05)
+
+Standart parti, 3. seviye, 30 tohum, ev kuralı `moralSistemi` açık (Moral tam modu). "Kapalı": `hizalanma`/`hizalanmaMoral` kapalı; "Açık": ikisi de açık. Bağ savaş motoruna girmediği için sonuçlar birebir aynı olmalı; aynı (test `src/sim/k52moral.test.ts`).
+
+| Senaryo | Kapalı (galibiyet / tur / ölü) | Açık (galibiyet / tur / ölü) |
+|---|---|---|
+| col | %77 / 8.9 / 0.27 | %77 / 8.9 / 0.27 |
+| orman | %90 / 5.7 / 0.03 | %90 / 5.7 / 0.03 |
+| magara | %83 / 7.3 / 0.37 | %83 / 7.3 / 0.37 |
+| kale | %80 / 7.5 / 0.37 | %80 / 7.5 / 0.37 |
+
+## Kuyruk K54b sonrası: Harita, Dunganga, Birlik, İnfazcı (2026-11-05)
+
+Aynı ölçüm (K50): `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`, kural sürümü 27, ev kuralı açık. SRD satırları yeniden ölçüldü, değişmedi. Sayı ayarı yapılmadı (K59). 7. seviyede K54b eklemelerinin bir kısmı yok: Çizili Duvar (10), Kuşbakışı Plan (14), Kâbus (14), Dunganga Çağrısı (18), Ortak Şifa (8), Yıkılmaz Birlik (17), Müdahale (9), Peşini Bırakmayan (13).
+
+| İmza | SRD | K50 (2. ölçüm) | K54b, YZ ipucu kısıtsız | K54b son | Sapma K50 → son | Durum |
+|---|---|---|---|---|---|---|
+| Harita Öğretisi (Wizard) | %57 | %32 | %9 | %28 | −25 → −29 | aralık dışı |
+| Dunganga (Sorcerer) | %73 | %56 | %27 | %40 | −17 → −33 | aralık dışı |
+| Birlik Manastırı (Cleric) | %23 | %16 | %16 | %16 | −7 → −7 | aralık dışı |
+| İnfazcı (Rogue) | %65 | %59 | — | %61 | −6 → −4 | aralıkta |
+
+- "YZ ipucu kısıtsız": ilk K54b yapay zekâsı Ninni/Sepet/Zor zemin/Çizili Duvar'ı büyü slotu dururken de kullanıyordu; güçlü alan büyüsünün yerine geçtiği için oran çöktü. Son ölçüm: 3.+ seviye slot dururken eylem harcayan kontrol/zemin ipuçları yalnız 30 ft (Zor zemin 20 ft) içinde ≥ 3 düşman varken; tek hedefli Sepet ve Çizili Duvar slotlar bitince. Bu bir yapay zekâ kuralıdır, sayı ayarı değildir.
+- **Dunganga** hâlâ K50'nin 2. ölçümünün altında (−16). Olası neden: Ninni/Sepet, Ejderha Büyücülüğü'nün hasar büyülerine göre YZ değerlendirmesinde zayıf (kontrolün değeri hasar gibi ölçülmüyor; Sepet hasarla bozulur ve dostlar sepetteki düşmana vurmaya devam ediyor). YZ'nin sepetteki düşmanı atlaması ve kontrolün değerini ölçmesi K59'a. 7. seviyede Kâbus ve Çağrı yok.
+- **Harita** K50'ye yakın (−4). Kalan fark: Evokasyon'un hazır hasar büyüleri; Harita'nın gücü 10/14. seviyede (Duvar, Kuşbakışı), bu ölçümde yok.
+- **Birlik** değişmedi: Omuz Ver yalnız başarıya çevirecekse çalışıyor (seyrek); Ortak Şifa 8'de. 
+- Önerilen ek ölçüm (K59): aynı dört alt sınıf 11 ve 15. seviyede.
+
+## Kuyruk K50: imza alt sınıflar (2026-11-05)
+
+`npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`: k18-<sınıf> partisinde imza alt sınıf ↔ sınıfın SRD alt sınıfı, kural sürümü 23, ev kuralı açık. Ölçüt: SRD karşılığına göre −5 puandan fazla düşüş "aralık dışı". 2. ölçüm: yapay zekâ, büyü slotu dururken eylem harcayan imza özelliğini büyünün yerine kullanmıyor (`imzaAi`).
+
+| İmza | SRD karşılığı | SRD | İmza (1. ölçüm) | İmza (2. ölçüm) | Durum |
+|---|---|---|---|---|---|
+| Çiftçi (Ranger) | Avcı | %12 | %11 | — | aralıkta |
+| Geride Kalanın Yolu (Barbarian) | Çılgın Savaşçı | %11 | %8 | — | aralıkta |
+| Hızır Yemini (Paladin) | Bağlılık Yemini | %12 | %13 | — | aralıkta |
+| İmparator (Fighter) | Şampiyon | %61 | %56 | — | aralıkta |
+| Şair Koleji (Bard) | Bilgi Koleji | %27 | %23 | — | aralıkta |
+| İnfazcı (Rogue) | Hırsız | %65 | %59 | — | aralık dışı (−6) |
+| Yaşlı Bilge (Monk) | Açık El | %16 | %10 | — | aralık dışı (−6) |
+| Astrolog (Warlock) | İblis Hamisi | %22 | %14 | %14 | aralık dışı (−8) |
+| Birlik Manastırı (Cleric) | Yaşam | %23 | %16 | %16 | aralık dışı (−7) |
+| Dunganga (Sorcerer) | Ejderha Büyücülüğü | %73 | %33 | %56 | aralık dışı (−17) |
+| Harita Öğretisi (Wizard) | Evokasyon | %57 | %12 | %32 | aralık dışı (−25) |
+
+Not: sınıf partilerinin mutlak oranı düşük (k18 partileri 7. seviyede bu senaryolarda zorlanıyor); karşılaştırma yalnızca alt sınıf farkıdır. Kalan farkın çoğu planlı (henüz çalışmayan) özelliklerden ve SRD karşılıklarının hazır hasar büyülerinden (Evokasyon Empowered Evocation, Draconic Elemental Affinity); denge değişikliği belge sahibinin kararına bırakıldı.
+
 ## Denge turu (2026-11-03)
 
 Standart parti (Bor Dwarf Fighter, Mira Elf Wizard, Tavi Human Cleric, Sela Halfling Rogue, Kael Elf Ranger), 30 tohum, kural sürümü 17 (Darkvision menzili yaratığın kendisinden). Hedef %60–80. Komutlar: `npm run sim:bolge`, `npm run sim:liste`, `npm run sim:zincir -- … --kisa-sinir N`.
@@ -2436,3 +2654,57 @@ Dokuz SRD türünün ortalaması %75.0; Celestial %72,5 (fark −2,5 puan): ±5 
 | elf (sonra) | 68% | 83% | 64% | 54% | 67,3% |
 
 Dokuz SRD türü ortalamasının (%75,0) altında ama ±10 içinde; 9. seviye düşüklüğü Elf'e özgü değil (Celestial %55, insan %60). Orc (%84,8), Tiefling (%83,5), Dragonborn (%82,5) yüksek: SRD tür özellikleri (Relentless Endurance, soydan Fire Bolt, nefes silahı); değer değiştirilmedi.
+
+## 2026-11-04 — Kuyruk K48 C: Karadul Çemberi ↔ Toprak Çemberi (k18-druid partisi, 100 tohum, Çöl/Kale/Mağara/Orman)
+
+`npm run sim:karadul -- 100 --seviye N --alt <alt sınıf>`. Hedef: fark ±5 puan. SRD'de Druid'in tek alt sınıfı Toprak Çemberi (Moon/Sea/Stars SRD 5.2.1'de yok); karşılaştırma ona göre.
+
+| Seviye | Toprak | Karadul (ilk) | Karadul (1. ayar) | Karadul (2. ayar, son) | Fark | Durum |
+|---|---|---|---|---|---|---|
+| 3 | %88 | %79 | %86 | %86 | −2 | aralıkta |
+| 7 | %41 | %18 | — | %19 | −22 | **aralık dışı** |
+| 11 | %47 | %31 | %32 | %40 | −7 | **aralık dışı** |
+| 15 | %22 | %14 | %15 | %19 | −3 | aralıkta |
+
+- 1. ayar: yapay zekâ örümcek biçiminden (tuzak turu değilse ve slot varken) çıkıp büyüye döner; Büyüleyici Bakış 3. seviyeden bonus eylem (`bakis.bonusSeviye` 6 → 3).
+- 2. ayar: her zaman hazır Karadul büyüleri (Toprak'ın çember büyülerinin karşılığı): Ray of Sickness, Web (3), Stinking Cloud (5), Blight (7), Cloudkill (9).
+- Açık: 7. seviyedeki büyük fark (6. seviyede gelen Giant Spider biçimi + Tatlı Tuzak döngüsü yakın dövüşe sokuyor olabilir). Ölçüm/ayar "Dungeondex öncesi tam test turu"na kaldı (hafif doğrulama modu: en çok birkaç deneme).
+
+## Kuyruk A2: canavar saldırı ekleri hızlı regresyon (30 tohum, seviye 5, standart parti; sayı ayarı yok)
+
+A2 bağlamalı canavar içeren 4 senaryo (Çöl: Mummy, Death Dog; Volkan: Fire Elemental, Magmin; Ork Kampı: Tough Boss, Worg; Mielikki Gölü: Merrow). Sürüm 30 (A2 ekleri açık) ile sürüm 29 (`KURAL_SURUMU=29`, eski davranış).
+
+| Senaryo | Kazanma 29 → 30 | Ort. ölen PC 29 → 30 | En az 1 ölüm 29 → 30 | Ort. tur 29 → 30 |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 97% → 97% | 0,07 → 0,10 | 7% → 10% | 7,2 → 7,3 |
+| Volkan | 97% → 97% | 0,27 → 0,27 | 17% → 17% | 6,3 → 6,3 |
+| Orman — Ork Kampı | 100% → 100% | 0,03 → 0,00 | 3% → 0% | 5,9 → 5,6 |
+| Orman — Mielikki Gölü | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 3,2 → 3,2 |
+
+Fark 30 tohumda gürültü içinde (en çok bir savaş); aralık dışı satır yok. Mummy laneti (HP kazanamaz) Çöl'de ölümleri hafif artırıyor görünüyor; 30 tohumda anlamlı değil.
+
+## Görev P0: ek paket ilkelleri hızlı regresyon (30 tohum, seviye 5, standart parti; paket kapalı, sayı ayarı yok)
+
+A2 ile aynı 4 senaryo, kural sürümü 30 (P0 sürüm değiştirmedi). Paket yüklü değilken ortak kancalar (isabet kancası, `attackedAdvBy`, büyü hasarı eklentisi) hiçbir şey üretmez.
+
+| Senaryo | Kazanma A2 → P0 | Ort. ölen PC A2 → P0 | En az 1 ölüm A2 → P0 | Ort. tur A2 → P0 |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 97% → 97% | 0,10 → 0,10 | 10% → 10% | 7,3 → 7,3 |
+| Volkan | 97% → 97% | 0,27 → 0,27 | 17% → 17% | 6,3 → 6,3 |
+| Orman — Ork Kampı | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 5,6 → 5,6 |
+| Orman — Mielikki Gölü | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 3,2 → 3,2 |
+
+Sonuçlar A2 ile birebir aynı; aralık dışı satır yok.
+
+## Kuyruk P6: ilkel genişletme hızlı regresyon (30 tohum, seviye 5, standart parti; paket kapalı, sayı ayarı yok)
+
+Aynı 4 senaryo, kural sürümü 30 (değişmedi). Ortak kancalar (ikinci şans türleri, `pkSans` türetimi, isabet tepkisi hasar dönüşü, erişim eki, büyü dönüşümü) paketsiz savaşçıda hiçbir şey üretmez.
+
+| Senaryo | Kazanma P0 → P6 | Ort. ölen PC P0 → P6 | En az 1 ölüm P0 → P6 | Ort. tur P0 → P6 |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 97% → 97% | 0,10 → 0,10 | 10% → 10% | 7,3 → 7,3 |
+| Volkan | 97% → 97% | 0,27 → 0,27 | 17% → 17% | 6,3 → 6,3 |
+| Orman — Ork Kampı | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 5,6 → 5,6 |
+| Orman — Mielikki Gölü | 100% → 100% | 0,00 → 0,00 | 0% → 0% | 3,2 → 3,2 |
+
+Birebir aynı; aralık dışı satır yok.

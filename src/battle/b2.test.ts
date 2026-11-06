@@ -214,6 +214,9 @@ describe('kalıcı zemin etkileri', () => {
   });
   it('Stinking Cloud: tur başında CON save ya da o turun sonuna dek Poisoned ve eylemsiz', () => {
     const r = arena({ spellNames: ['Stinking Cloud'] });
+    // Kuyruk A8 (sürüm 37) Incapacitated yerine "eylem ve bonus eylem yok" verir; bu test eski kuralı sınar.
+    r.state = { ...r.state, kuralSurumu: 36 };
+    r.events = [{ type: 'battle_started', state: r.state }];
     r.cast({ spellName: 'Stinking Cloud', targetHex: o(8, 3) });
     r.end();
     expect(r.c('B').conditions).toEqual(expect.arrayContaining(['Poisoned', 'Incapacitated']));

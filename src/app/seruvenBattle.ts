@@ -21,6 +21,10 @@ import { kapiAt, varis, yerlesimById, yerlesimHarita } from '../yerlesim/yerlesi
 import { createMapBattle } from './setup';
 import type { Session } from '../ui/session';
 
+/** Kuyruk K48: Moral tam modu (Serüven anahtarları `moralSistemi` + `moralTam`) savaşta ev kuralı `moralSistemi`. */
+export const moralHouse = (s: SeruvenState): { houseRules?: Record<string, boolean> } =>
+  (toggleOn(s, 'moralSistemi') && toggleOn(s, 'moralTam') ? { houseRules: { moralSistemi: true } } : {});
+
 export function seruvenNode(s: SeruvenState, nodeId: string): SeruvenNode | undefined {
   return pageById(s.page)?.nodes.find((n) => n.id === nodeId);
 }
@@ -62,7 +66,7 @@ export function seruvenBattleSession(s: SeruvenState, nodeId: string, rng: Rng):
   const map = getMap(p.scenario.map.mapId, { variantId: night ? 'gece' : p.scenario.map.variantId });
   const exits = partyStart ?? map.startZones.players;
   return createMapBattle(p.participants, {
-    ...p.scenario.map, ...(night ? { variantId: 'gece' } : {}), mirrored: false, ...(goals ? { goals } : {}),
+    ...p.scenario.map, ...(night ? { variantId: 'gece' } : {}), mirrored: false, ...(goals ? { goals } : {}), ...moralHouse(s),
     ...(partyStart ? { partyStart } : {}),
     ...(toggleOn(s, 'kesfeDevam') ? { explore: { exits } } : {}),
   }, rng);
@@ -109,7 +113,7 @@ export function linkSession(s: SeruvenState, linkId: string, rng: Rng): Session 
   if (!p?.scenario.map) return null;
   const party = p.participants.filter((c) => c.side === 'party');
   const ambush = toggleOn(s, 'koridorPususu');
-  return createMapBattle(ambush ? p.participants : party, { ...p.scenario.map, mirrored: false, partyStart: start, explore: { exits } }, rng);
+  return createMapBattle(ambush ? p.participants : party, { ...p.scenario.map, mirrored: false, partyStart: start, explore: { exits }, ...moralHouse(s) }, rng);
 }
 
 /** Biten koridordan Serüven komutu: bir parti üyesi çıkış altıgenine vardıysa geçiş, yoksa null (Serüven'de kalınır). */
@@ -145,7 +149,7 @@ export function yerlesimSession(s: SeruvenState, rng: Rng): Session | null {
   // (yoksa çıkışta hemen geri dönülürdü).
   const onDoor = (o: { col: number; row: number }) => doors.some((d) => d.col === o.col && d.row === o.row);
   const partyStart = [...start, ...map.startZones.players.filter((o) => !onDoor(o) && !start.some((x) => x.col === o.col && x.row === o.row))];
-  return createMapBattle(party, { mapId: h.mapId, variantId: h.variantId, mirrored: false, partyStart, explore: { exits } }, rng);
+  return createMapBattle(party, { mapId: h.mapId, variantId: h.variantId, mirrored: false, partyStart, explore: { exits }, ...moralHouse(s) }, rng);
 }
 
 /** Yerleşim haritasından dönüş: kapıya varıldıysa hedef haritaya (null = hub), varılmadıysa hub'a; durumlar korunur. */
@@ -191,7 +195,7 @@ export function sucSession(s: SeruvenState, rng: Rng): Session | null {
   if (!s.suc || !suc) return null;
   const j = scenarioJourney(s, s.suc.asama === 'on' ? suc.scenario : HAPIS.baskin);
   const p = stopParticipants(j);
-  return p?.scenario.map ? createMapBattle(p.participants, { ...p.scenario.map, mirrored: false }, rng) : null;
+  return p?.scenario.map ? createMapBattle(p.participants, { ...p.scenario.map, mirrored: false, ...moralHouse(s) }, rng) : null;
 }
 /** Büyük suç savaşından komut. */
 export function sucResultCommand(s: SeruvenState, final: BattleState): SeruvenCommand | null {
@@ -274,7 +278,7 @@ export function hapisSession(s: SeruvenState, nodeId: string, rng: Rng): Session
   const start = arrive ?? map.startZones.players;
   const onDoor = (o: { col: number; row: number }) => doors.some((d) => d.col === o.col && d.row === o.row);
   const partyStart = [...start, ...map.startZones.players.filter((o) => !onDoor(o) && !start.some((x) => x.col === o.col && x.row === o.row))];
-  let ss = createMapBattle(list, { ...p.scenario.map, mirrored: false, partyStart, ...(toggleOn(s, 'kesfeDevam') && doors.length ? { explore: { exits: doors } } : {}) }, rng);
+  let ss = createMapBattle(list, { ...p.scenario.map, mirrored: false, partyStart, ...(toggleOn(s, 'kesfeDevam') && doors.length ? { explore: { exits: doors } } : {}), ...moralHouse(s) }, rng);
   // Hücre bloğu geçilmeden mahkûm hedef hücrede; hücre arkadaşı kendi hücresinde.
   const place = (id: string, at: [number, number]) => { const next = dispatch(ss, { type: 'place', actorId: id, at: { col: at[0] - 1, row: at[1] - 1 } }, rng, GM_CONTEXT); if (!next.error) ss = next; };
   if (!freed && node.id === HAPIS.baslangic) place(M.id, M.hucre);

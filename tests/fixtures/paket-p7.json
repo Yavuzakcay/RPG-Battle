@@ -1,0 +1,575 @@
+{
+ "format": "rpg-battle-icerik",
+ "version": 1,
+ "id": "p7-genisleme",
+ "name": {
+  "tr": "P7 genişleme (kurgusal)",
+  "en": "P7 extension (fictional)"
+ },
+ "author": "Test",
+ "yaratiklar": [
+  {
+   "id": "tas-kurt",
+   "ad": {
+    "tr": "Taş Kurt",
+    "en": "Stone Wolf"
+   },
+   "boyut": "M",
+   "tur": "construct",
+   "ac": 13,
+   "hp": 20,
+   "hiz": {
+    "yurume": 30
+   },
+   "yetenekler": {
+    "str": 14,
+    "dex": 12,
+    "con": 14,
+    "int": 3,
+    "wis": 10,
+    "cha": 3
+   },
+   "saldirilar": [
+    {
+     "ad": "Isırık",
+     "hasar": "1d6+2",
+     "hasarTuru": "piercing"
+    }
+   ],
+   "buyusuzDirencler": [
+    "piercing",
+    "slashing",
+    "bludgeoning"
+   ],
+   "jeton": {
+    "gorsel": "kurt"
+   }
+  },
+  {
+   "id": "ayi",
+   "ad": {
+    "tr": "Ayı",
+    "en": "Bear"
+   },
+   "canavar": "brown-bear",
+   "jeton": {
+    "gorsel": "kurt"
+   }
+  }
+ ],
+ "subclasses": [
+  {
+   "id": "tunc-kalkan",
+   "class": "fighter",
+   "name": {
+    "tr": "Tunç Kalkan",
+    "en": "Bronze Shield"
+   },
+   "role": {
+    "tr": "Kurgusal muhafız (test)",
+    "en": "Fictional guard (test)"
+   },
+   "features": [
+    {
+     "id": "tunc-havuz",
+     "level": 3,
+     "name": {
+      "tr": "Tunc Havuz",
+      "en": "tunc-havuz"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "tunc",
+       "sayi": 2,
+       "yenilenme": "uzun"
+      }
+     ]
+    },
+    {
+     "id": "buyulu-yumruk",
+     "level": 3,
+     "name": {
+      "tr": "Buyulu Yumruk",
+      "en": "buyulu-yumruk"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "buyuluVurus",
+       "kapsam": [
+        "kendi",
+        "cagrilanlar"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "firtina-vurus",
+     "level": 3,
+     "name": {
+      "tr": "Firtina Vurus",
+      "en": "firtina-vurus"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "zarDegistir",
+       "mod": "maks",
+       "hasarTurleri": [
+        "slashing"
+       ],
+       "turdaBir": true
+      }
+     ]
+    },
+    {
+     "id": "tunc-beden",
+     "level": 3,
+     "name": {
+      "tr": "Tunc Beden",
+      "en": "tunc-beden"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "koruma",
+       "kritikBagisikligi": true,
+       "konsantrasyonAvantaji": true
+      }
+     ]
+    },
+    {
+     "id": "tunc-goz",
+     "level": 3,
+     "name": {
+      "tr": "Tunc Goz",
+      "en": "tunc-goz"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "algi",
+       "karanlikGorusFt": 120,
+       "gercekGorusFt": 30
+      }
+     ]
+    },
+    {
+     "id": "meydan",
+     "level": 3,
+     "name": {
+      "tr": "Meydan",
+      "en": "meydan"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "meydanOkuma",
+       "tetik": "isabet",
+       "hedef": "vurulan",
+       "sure": 1
+      }
+     ]
+    },
+    {
+     "id": "muhafiz-hatti",
+     "level": 3,
+     "name": {
+      "tr": "Muhafiz Hatti",
+      "en": "muhafiz-hatti"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "dostaVuruldu",
+       "etki": "saldiriYap",
+       "menzilFt": 5
+      }
+     ]
+    },
+    {
+     "id": "diken",
+     "level": 3,
+     "name": {
+      "tr": "Diken",
+      "en": "diken"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "tepki",
+       "olay": "banaIsabet",
+       "etki": "yansit",
+       "oran": 0.5
+      }
+     ]
+    },
+    {
+     "id": "tazelen",
+     "level": 3,
+     "name": {
+      "tr": "Tazelen",
+      "en": "tazelen"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynakYenile",
+       "tetik": "oldurunce",
+       "yenile": {
+        "id": "tunc",
+        "maliyet": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "devirme",
+     "level": 3,
+     "name": {
+      "tr": "Devirme",
+      "en": "devirme"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "zorlaHareket",
+       "tetik": "isabet",
+       "hedef": "vurulan",
+       "yon": "it",
+       "mesafeFt": 5,
+       "sonrasi": "yereSer",
+       "turdaBir": true
+      }
+     ]
+    },
+    {
+     "id": "dev-avcisi",
+     "level": 3,
+     "name": {
+      "tr": "Dev Avcisi",
+      "en": "dev-avcisi"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "ekHasar",
+       "zar": "1d8",
+       "kosul": [
+        "hedefBuyuk"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "birlik-yolu",
+   "class": "cleric",
+   "name": {
+    "tr": "Birlik Yolu",
+    "en": "Path of Union"
+   },
+   "role": {
+    "tr": "Kurgusal şifacı (test)",
+    "en": "Fictional healer (test)"
+   },
+   "features": [
+    {
+     "id": "birlik-havuz",
+     "level": 3,
+     "name": {
+      "tr": "Birlik Havuz",
+      "en": "birlik-havuz"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "kaynak",
+       "id": "birlik",
+       "sayi": 1,
+       "yenilenme": "uzun"
+      }
+     ]
+    },
+    {
+     "id": "ortak-yurek",
+     "level": 3,
+     "name": {
+      "tr": "Ortak Yurek",
+      "en": "ortak-yurek"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "ortakCan",
+       "tetik": "eylem",
+       "yaricapFt": 30,
+       "enCok": 3,
+       "kaynak": {
+        "id": "birlik",
+        "maliyet": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "kalkan-aurasi",
+     "level": 3,
+     "name": {
+      "tr": "Kalkan Aurasi",
+      "en": "kalkan-aurasi"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "aura",
+       "yaricapFt": 10,
+       "suzgec": "dostlar",
+       "etki": "direnc",
+       "turler": [
+        "fire"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "isik-aurasi",
+     "level": 3,
+     "name": {
+      "tr": "Isik Aurasi",
+      "en": "isik-aurasi"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "aura",
+       "yaricapFt": 10,
+       "suzgec": "dusmanlar",
+       "etki": "kurtulmaDezavantaji"
+      }
+     ]
+    },
+    {
+     "id": "dokunulmaz",
+     "level": 3,
+     "name": {
+      "tr": "Dokunulmaz",
+      "en": "dokunulmaz"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "saldirmadanSave",
+       "save": {
+        "yetenek": "wis",
+        "dc": 15
+       }
+      }
+     ]
+    },
+    {
+     "id": "koz-sifasi",
+     "level": 3,
+     "name": {
+      "tr": "Koz Sifasi",
+      "en": "koz-sifasi"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "yuzeyOlustur",
+       "tetik": "oldurunce",
+       "yuzey": "alan",
+       "yaricapFt": 5,
+       "zaman": [
+        "turBasi"
+       ],
+       "iyilestir": "1d4",
+       "hedefler": "dostlar",
+       "sure": 2
+      }
+     ]
+    },
+    {
+     "id": "yuva-geri",
+     "level": 3,
+     "name": {
+      "tr": "Yuva Geri",
+      "en": "yuva-geri"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "yuvaGeriKazan",
+       "tetik": "bonus",
+       "enCokSeviye": 2,
+       "kaynak": {
+        "id": "birlik",
+        "maliyet": 1
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "suru-cemberi",
+   "class": "druid",
+   "name": {
+    "tr": "Sürü Çemberi",
+    "en": "Circle of the Pack"
+   },
+   "role": {
+    "tr": "Kurgusal çağırıcı (test)",
+    "en": "Fictional summoner (test)"
+   },
+   "features": [
+    {
+     "id": "suru",
+     "level": 3,
+     "name": {
+      "tr": "Suru",
+      "en": "suru"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "cagir",
+       "tetik": "bonus",
+       "yaratik": "tas-kurt",
+       "sure": 10,
+       "tekrar": "degistir"
+      }
+     ]
+    },
+    {
+     "id": "son-koruyucu",
+     "level": 3,
+     "name": {
+      "tr": "Son Koruyucu",
+      "en": "son-koruyucu"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "cagir",
+       "tetik": "sifirCan",
+       "yaratik": "ayi",
+       "rastgele": [
+        "ayi",
+        "tas-kurt"
+       ],
+       "sure": 10,
+       "tekrar": "ekle"
+      }
+     ]
+    },
+    {
+     "id": "suru-gucu",
+     "level": 3,
+     "name": {
+      "tr": "Suru Gucu",
+      "en": "suru-gucu"
+     },
+     "description": {
+      "tr": "Kurgusal test özelliği.",
+      "en": "Fictional test feature."
+     },
+     "status": "calisir",
+     "ilkeller": [
+      {
+       "tur": "cagirGuclendir",
+       "gecicCan": 5,
+       "acBonusu": 2,
+       "ekHasar": "1d4"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

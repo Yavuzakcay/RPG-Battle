@@ -1,0 +1,29 @@
+{
+  "_not": "Kuyruk K56: zemin türü (harita harfi, src/map/terrain.ts) → arazi etiketleri. Arazi × büyü tablosu (data/arazi-buyu-etkileri.json) bu etiketlere bakar. Etiketler: kuru, yanici, islak, soguk, sicak, kayalik, kumlu, volkanik, derin-su. Harfi listede olmayan zeminin etiketi yok (etkileşim yok).",
+  "etiketler": ["kuru", "yanici", "islak", "soguk", "sicak", "kayalik", "kumlu", "volkanik", "derin-su"],
+  "zemin": {
+    ".": ["kuru"],
+    "d": ["kumlu", "kuru"],
+    "r": ["kayalik"],
+    "c": ["kayalik"],
+    "k": ["kayalik"],
+    "t": ["kayalik"],
+    "H": ["kayalik", "volkanik"],
+    "~": ["volkanik", "sicak"],
+    "f": ["sicak"],
+    "s": ["kayalik"],
+    "z": ["kayalik"],
+    "i": ["soguk"],
+    "q": ["soguk"],
+    "a": ["yanici"],
+    "g": ["yanici", "kuru"],
+    "v": ["kayalik"],
+    "n": ["islak"],
+    "b": ["islak"],
+    "w": ["islak", "derin-su"],
+    "R": ["islak", "derin-su"],
+    "C": ["kayalik"],
+    "m": ["kayalik"],
+    "x": ["yanici"]
+  }
+}

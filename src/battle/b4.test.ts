@@ -84,7 +84,9 @@ const attackMode = (evs: BattleEvent[]) => { const e = evs.find((x) => x.type ==
 
 describe('ışık ve karanlık (karanlık haritası)', () => {
   it('Light: dokunulan dost 4 altıgen aydınlık yayar; süre 600 tur', () => {
+    // Kuyruk A7: sürüm 36'da Light yalnızca kendine/nesneye (a7spells.test.ts); dosta yapma eski davranışı sürüm 35'te.
     const r = arena({ spellNames: ['Light'] }, {}, {}, o(13, 0), 'magara');
+    r.state.kuralSurumu = 35;
     const spot = darkSpot(r.state);
     const near = o(spot.col, spot.row + 1);
     r.state = { ...r.state, combatants: { ...r.state.combatants, A: { ...r.c('A'), pos: spot }, C: { ...r.c('C'), pos: near } } };

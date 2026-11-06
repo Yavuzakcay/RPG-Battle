@@ -2,6 +2,11 @@
  "note": "Kuyruk 31: Serüven (kıta) sayfaları ve düğümleri. Koordinatlar sayfa resmine oransal (0–1; x soldan, y üstten). Sayfa sırası doğudan batıya (`next`); Derinlikler'den Lav Salonu üstünden Volkan Adası'na portal (`portal`). Düğüm `scenario` (data/sim-senaryolar.json; haritası ve seviyeye göre düşmanları) ya da `sefer` (`<sefer>:<düğüm>`, data/seferler.json düğümü: hedef, giriş, düşmanlar, ödül, anlatım aynen). `requires`: önceki düğümlerden biri (all: hepsi) tamamlanınca açılır; boşsa sayfa girişinden açık. `optional`: çıkış için gerekmez. `gece`: gece senaryosu (yoksa haritanın `gece` varyantı). Ad: haritanın görünen adı (mapInfo) ya da sefer düğümünün adı. `susler`: tıklanmayan süs simgeleri. Koordinat ince ayarı: Serüven ekranında düğüm modu (#dugum) ya da `npm run seruven-dugum -- <sayfa> <düğüm> <x> <y>`. Kuyruk 32: `baglantilar` sayfalar arası savaşsız geçit (yeraltı nehri: Vaha ↔ Mielikki Gölü; a ucundaki düğüm tamamlanınca beceri sınavıyla açılır; geçiş koridor haritasında keşif yürüyüşüyle); `bayrak` düğümü keşif bayrağıyla görünür; dinlenme düğümü sefer dinlenme düğümüne bağlı. Kuyruk 33: Batı Kıyısı sayfası Çöl ile Derinlikler arasında; yerleşim düğümleri (`yerlesim`, K34) savaşsız ve geçilebilir.",
  "baslangic": "buzul",
  "anahtarlar": {
+  "bolgeYukleme": {
+   "default": true,
+   "tr": "Bölge geçişinde yükleme ekranı ve bölge içinde yüzme (göl/nehir; Atletizm, ağır zırhla yüzülmez)",
+   "en": "Region loading screen and swimming within regions (lakes/rivers; Athletics, no swimming in heavy armor)"
+  },
   "kesfeDevam": {
    "default": true,
    "tr": "Savaştan sonra keşfe devam (çıkış altıgenine yürü)",
@@ -107,6 +112,16 @@
    "default": false,
    "tr": "Dünya gezintisinde karşılaşma yok (Game Master; karşılaşma çarpanı 0)",
    "en": "No encounters while roaming the world map (Game Master; encounter multiplier 0)"
+  },
+  "moralSistemi": {
+   "default": false,
+   "tr": "Moral (hafif): karakter başına ikinci can havuzu; Serüven'de kayıp/kazanç, 0'da Moral ölümü (data/moral.json)",
+   "en": "Morale (light): a second per-character pool; Adventure losses/gains, death at 0 (data/moral.json)"
+  },
+  "moralTam": {
+   "default": false,
+   "tr": "Moral (tam): savaşa etkili (0'da Çökmüş, eşiklerde ceza, toparlama, zafer ödülü); Moral açıkken",
+   "en": "Morale (full): affects combat (Broken at 0, threshold penalties, rally, victory reward); needs Morale on"
   }
  },
  "yurumeMs": 700,

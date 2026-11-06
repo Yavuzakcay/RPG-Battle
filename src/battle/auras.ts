@@ -6,9 +6,16 @@
  * `saveDice` (bütün save'lerin ortak eklentisi) sabit eklenti olarak okur. Game Master anahtarı `auraOfProtection`
  * (global, kural sürümü 14); kapalıyken yalnızca Paladin'in kendi bonusu.
  */
+import { anyPaketSans, paketSansOf } from './paket/sans';
+import { groundWardSave } from './groundWard';
+import { anyBirlik, shoulderOf } from './imzaBirlik';
+import { auraCoreOn, passiveAuraOf } from './auraCore';
+import { imzaAuraBonus } from './imzaCore';
 import { isIncapacitated } from '../rules/conditions';
 import { gap } from './body';
 import { globalRule } from './ruleControl';
+import { ruleVersion } from './ruleVersion';
+import { silencedAt, zoneSpecOf } from './zones';
 import { fateHolder, shadowyFormResist } from './boons';
 import type { BattleState, Combatant } from './types';
 
@@ -77,27 +84,54 @@ export function syncAuras(state: BattleState): BattleState {
   const charmOn = !!globalRule(state, 'countercharm');
   // Kuyruk 19 (karar 1): özellik işaretli savaşçıda Bardic Inspiration zarı ikinci şans listesinden düşmesin (kural sürümü 16).
   const inspireOn = !!globalRule(state, 'bardicInspirationFix');
+  // Kuyruk K48 (sürüm 19): ilk ikinci şans tutmazsa ilham zarı da denenir (zincir).
+  const chainOn = !!globalRule(state, 'bardicInspirationChain');
   // Kuyruk 19 (11–20): devlet bilmeyen zar yollarında (ikinci şans) `featuresK19` anahtarı savaşçıda işaret olarak.
   const k19On = !!globalRule(state, 'featuresK19');
   const anyLife = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.auraLife) || c.traits?.includes('night-spirit')) || !!state.map?.zones?.some((z) => z.spec?.resist?.length);
   const anyFate = k19On && Object.values(state.combatants).some((c) => c.traits?.includes('improve-fate'));
   const anyBurst = !!globalRule(state, 'srdK19') && Object.values(state.combatants).some((c) => c.reactions?.some((r) => r.kind === 'burst'));
   let next = state;
+  // Kuyruk K50: Taht Varlığı (İmparator) aurası; imza savaşçısı yoksa hesap yok.
+  const anyImza = Object.values(state.combatants).some((c) => c.imza);
+  const anyWard = !!state.map?.zones?.some((z) => z.groundWard?.saveBonus);
+  const anyUnion = anyBirlik(state);
+  // Kuyruk K53 S5: veriden pasif auralar (save bonusu en güçlüsü, bağışıklık, can yenileyemez, ölüm save dezavantajı).
+  const anyCore = auraCoreOn(state) && Object.values(state.combatants).some((c) => c.effects?.some((e) => e.aura?.trigger === 'passive' || e.auras?.some((a) => a.trigger === 'passive')));
+  // Görev P6: ek paket zar mührü / zorla sonuç menzili.
+  const anyPk = anyPaketSans(state);
+  // Kuyruk A6 (sürüm 35): Silence içindeki yaratık Deafened sayılır, sözlü tepki büyüsü yapamaz (`silenced`).
+  const anyPack = Object.values(state.combatants).some((p) => p.summon?.withOwner && !p.summon.gone);
+  const anySilence = ruleVersion(state) >= 35 && !!state.map?.zones?.some((z) => zoneSpecOf(z)?.silence);
   for (const c of Object.values(state.combatants)) {
-    const want = on ? auraSaveOf(state, c) : 0;
+    const pkSans = anyPk ? paketSansOf(state, c) : [];
+    const hush = anySilence && !!c.pos && !!silencedAt(state, c.pos);
+    const pack = anyPack && Object.values(state.combatants).some((p) => p.summon?.withOwner && p.summon.by === c.id && !p.summon.gone && p.hp > 0 && gap(state, p, c) <= 1);
+    const core = anyCore ? passiveAuraOf(state, c) : null;
+    const want = Math.max(on ? auraSaveOf(state, c) : 0, core?.saveBonus ?? 0);
+    const throne = anyImza ? imzaAuraBonus(state, c, 'wis') : 0;
+    // Kuyruk K54b: Mevzi İşareti altıgeninde kurtulma bonusu.
+    const ward = anyWard ? groundWardSave(state, c) : 0;
+    // Kuyruk K54b: Omuz Ver (Birlik Manastırı).
+    const shoulder = anyUnion ? shoulderOf(state, c) : undefined;
     const by = charmOn ? countercharmOf(state, c) : undefined;
     const fix = inspireOn && !!c.traits?.length && (c.effects ?? []).some((e) => e.inspire);
-    const life = anyLife ? auraResistOf(state, c) : [];
+    const chain = chainOn && (c.effects ?? []).some((e) => e.inspire);
+    const life = [...new Set([...(anyLife ? auraResistOf(state, c) : []), ...(core?.resist ?? [])])];
+    const sdis = !!core?.saveDis;
     const k19 = k19On && !!c.traits?.some((x) => K19_SYNC.includes(x));
     const fateBy = anyFate ? fateHolder(state, c, true) : undefined;
     const fateFoe = anyFate ? fateHolder(state, c, false) : undefined;
     const burst = anyBurst ? burstOf(state, c) : undefined;
-    if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
-      && c.fateBy === fateBy && c.fateFoe === fateFoe) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, ...rest } = next.combatants[c.id] as Combatant;
+    if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && !!c.inspireChain === chain && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
+      && c.fateBy === fateBy && c.fateFoe === fateFoe && (c.imzaWisSave ?? 0) === throne && (c.wardSave ?? 0) === ward && JSON.stringify(c.shoulderBy) === JSON.stringify(shoulder)
+      && (c.auraImmune ?? []).join() === (core?.immune ?? []).join() && !!c.auraNoHeal === !!core?.noHeal && !!c.auraDeathDis === !!core?.deathDis && !!c.auraDeathAdv === !!core?.deathAdv
+      && JSON.stringify(c.pkSans ?? []) === JSON.stringify(pkSans) && !!c.auraSaveDis === sdis && !!c.silenced === hush && !!c.packStrAdv === pack) continue;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, pkSans: _pk, auraSaveDis: _sd, silenced: _hu, packStrAdv: _pa, ...rest } = next.combatants[c.id] as Combatant;
     next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
-      ...(fix ? { inspireFix: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
-      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}) } as Combatant } };
+      ...(fix ? { inspireFix: true } : {}), ...(chain ? { inspireChain: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
+      ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}), ...(throne > 0 ? { imzaWisSave: throne } : {}), ...(ward > 0 ? { wardSave: ward } : {}), ...(shoulder ? { shoulderBy: shoulder } : {}), ...(pkSans.length ? { pkSans } : {}),
+      ...(core?.immune.length ? { auraImmune: core.immune } : {}), ...(sdis ? { auraSaveDis: true } : {}), ...(hush ? { silenced: true } : {}), ...(pack ? { packStrAdv: true } : {}), ...(core?.noHeal ? { auraNoHeal: true } : {}), ...(core?.deathDis ? { auraDeathDis: true } : {}), ...(core?.deathAdv ? { auraDeathAdv: true } : {}) } as Combatant } };
   }
   return next;
 }

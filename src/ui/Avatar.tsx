@@ -118,10 +118,10 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
   const shown = useTinted(src, avatar.tint);
   return (
     <span className={`avatar${src && !loaded ? ' skeleton' : ''}`} title={title}
-      style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? 'transparent', fontSize: size * 0.4 }}>
+      style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? avatar.ring ?? 'transparent', fontSize: size * 0.4 }}>
       {src ? (
         <img key={src} src={shown ?? assetSrc(src)} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
-          className={loaded ? undefined : 'pending'}
+          className={loaded ? undefined : 'pending'} style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}
           onLoad={() => { cache.set(src, true); setState({ key, i, loaded: true }); }}
           onError={() => { cache.set(src, false); setState({ key, i: i + 1, loaded: false }); }} />
       ) : avatar.label}
@@ -147,7 +147,9 @@ export function AvatarCircle(props: {
   return (
     src ? (
       <g className={`fig${avatar.outfit ? ` outfit-${avatar.outfit}` : ''}`}>
-        <g className="breathe">
+        {/* Görev P0: ek paket yaratığının halkası ve renk tonu (çizim anında; ek görsel dosyası yok). */}
+        {avatar.ring && <ellipse cx={cx} cy={cy + r * 0.78} rx={r * 0.92} ry={r * 0.3} fill="none" stroke={avatar.ring} strokeWidth={Math.max(1.5, r * 0.09)} opacity={0.9} />}
+        <g className="breathe" style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}>
           <image href={shown ?? assetSrc(src)} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
             preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
         </g>

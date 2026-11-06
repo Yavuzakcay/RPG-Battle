@@ -1,0 +1,62 @@
+{
+  "note": "Kuyruk K49 B4/B5/B7: alt sınıfların seçimde görünümü (veri değişmez; kimlikler ve kayıtlı karakterler aynı). kaldirilan: listeden çıkan alt sınıflar (kimlik ya da EN ad; SRD ve dış paket kopyası birlikte); sınıfın başka seçeneği yoksa son alt sınıf kalır. adKurallari: TR görünen ad dönüşümleri (Cleric '... Alanı' → '... Manastırı'); istisnalar sonra uygulanır. Parantezli takma ad ('Psişik Hançerler (Kirpi)') yalnızca takma adla görünür.",
+  "kaldirilan": [
+    {
+      "id": "path-of-the-berserker",
+      "en": "Path of the Berserker"
+    },
+    {
+      "id": "college-of-lore",
+      "en": "College of Lore"
+    },
+    {
+      "id": "life-domain",
+      "en": "Life Domain"
+    },
+    {
+      "id": "warrior-of-the-open-hand",
+      "en": "Warrior of the Open Hand"
+    },
+    {
+      "id": "oath-of-devotion",
+      "en": "Oath of Devotion"
+    },
+    {
+      "id": "draconic-sorcery",
+      "en": "Draconic Sorcery"
+    },
+    {
+      "id": "fiend-patron",
+      "en": "Fiend Patron"
+    },
+    {
+      "id": "evoker",
+      "en": "Evoker"
+    },
+    {
+      "id": "baris-alani",
+      "en": ""
+    }
+  ],
+  "adKurallari": [
+    {
+      "sinif": "cleric",
+      "sonEk": "Alanı",
+      "yeni": "Manastırı"
+    }
+  ],
+  "istisnalar": {
+    "Barış Alanı": {
+      "tr": "Birlik Manastırı",
+      "en": "Unity Domain"
+    },
+    "Barış Manastırı": {
+      "tr": "Birlik Manastırı",
+      "en": "Unity Domain"
+    }
+  },
+  "eskiKimlik": {
+    "baris-alani": "imza_birlik"
+  },
+  "not_eskiKimlik": "K50: Barış Alanı (dış paket) yerine Birlik Manastırı (imza alt sınıfı, data/imza.json); eski kayıt yeni kimlikle açılır."
+}

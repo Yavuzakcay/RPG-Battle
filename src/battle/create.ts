@@ -22,6 +22,11 @@ import { boonResources } from './boons';
 import { itemParts } from './itemEffects';
 import { speciesParts } from './species';
 import { celestialFeatures, withCelestial } from './celestial';
+import { withMorale } from './morale';
+import { karadulFeatures, withKaradul } from './karadul';
+import { imzaFeatures, imzaId, isImza, withImza } from './imza';
+import { itemBag, mergeBags, paketBag } from './paket/bag';
+import { withPaket } from './paket/core';
 import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
@@ -154,7 +159,10 @@ export function combatantFromSheet(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
 ): Combatant {
-  const c = combatantFromSheetBase(sheet, opts);
+  const c0 = combatantFromSheetBase(sheet, opts);
+  // Görev P7: eşya kancaları (eşyanın paket ilkelleri savaşçının paketine).
+  const ib = itemBag(activeItemNames(sheet));
+  const c = ib ? { ...c0, paket: mergeBags(c0.paket, ib.bag), resources: { ...c0.resources, ...ib.resources } } : c0;
   const p = itemParts(activeItemNames(sheet), opts.id);
   if (!p.effects.length && !p.hits.length && !p.weaponBonus && !p.spellBonus && !p.addSpells.length && !p.traits.length && !p.fallReduction && !p.noStealthDis && !p.rangedReduce) return c;
   const newSpells = p.addSpells.filter((n) => !c.spellNames.includes(n));
@@ -275,6 +283,9 @@ function combatantFromSheetBase(
     hidden: null,
     stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
     heavyArmor: armor.find((a) => a.name === sheet.armorName)?.type === 'heavy',
+    // Kuyruk A6: zırh giyiyor (Mage Armor zırhlıya yapılamaz).
+    ...((armor.find((a) => a.name === sheet.armorName)?.type ?? 'none') !== 'none' ? { armored: true } : {}),
+    ...(sheet.shield ? { shieldHeld: true } : {}),
     // Devil's Sight (Görev WARLOCK): 120 ft (büyülü karanlık dahil; `maprules.canSee`).
     darkvision: inv.traits.includes('devils-sight') ? Math.max(120, raceDarkvision(sheet)) : raceDarkvision(sheet),
     civilian: false,
@@ -376,7 +387,11 @@ function combatantFromSheetBase(
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
-    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...imzaFeatures(sheet), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    // Kuyruk K50: imza alt sınıfı (pasifler ve saldırı kancası; kural kapalıysa `withImza` etkisiz bırakır).
+    ...(isImza(sheet.subclassId) && sheet.level >= 3 ? { imza: imzaId(sheet.subclassId) as string } : {}),
+    // Görev P0: ek paket ilkelleri ve yaratıkları (veri savaşçıda; düğmeler/pasifler `withPaket`).
+    ...((): Partial<Combatant> => { const bag = paketBag(sheet); return bag ? { paket: bag } : {}; })(),
     // Kuyruk 19 (Irresistible Offense): artırılan skor (Overwhelming Strike).
     ...((): Partial<Combatant> => {
       const adv = (sheet.advancements ?? []).find((a) => a.featId === 'boon-of-irresistible-offense');
@@ -749,7 +764,8 @@ export function startBattle(
     ...(groups ? { groups } : {}),
   };
   // Kuyruk 24: Orman mekaniklerinin savaş başı kısmı (alarm grupları, kütük siperi, nehir; kural sürümü 3 ve Game Master anahtarı).
-  const final = withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state));
+  // Kuyruk K48: Moral tam modu (ev kuralı + sürüm 20): karakterlere havuz; kapalıysa kayıtlı Moral alanı silinir.
+  const final = withPaket(withImza(withKaradul(withMorale(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state))))));
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

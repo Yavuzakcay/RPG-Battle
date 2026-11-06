@@ -12,7 +12,7 @@ import { applyFloorChange } from './floorState';
 import { globalRule } from './ruleControl';
 import { applyPoolEvent, trackPools } from './hpPool';
 import { isIncapacitated, speedZero } from '../rules/conditions';
-import { directionTo, isInside, neighbors, type Offset } from '../rules/hex';
+import { directionTo, distance, isInside, neighbors, type Offset } from '../rules/hex';
 import { terrainOf } from '../map/terrain';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
@@ -156,6 +156,8 @@ function pruneEffects(state: BattleState): BattleState {
     const kept = gone ? [] : c.effects.filter((e) => {
       if (e.until !== undefined && e.until < state.round) { if (e.banishForever) exile.push(c.id); return false; }
       if (e.dropAtZero && c.hp <= 0) return false;
+      // Kuyruk A2: yakalamaya bağlı etki yakalama bitince biter.
+      if (e.whileGrappledBy && c.grapple?.by !== e.whileGrappledBy) return false;
       // Kuyruk 19: Incapacitated olunca biten etki (Superior Defense).
       if (e.breakOnIncapacitated && c.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x))) return false;
       if (e.concentration && state.combatants[e.sourceId]?.concentration?.spell !== e.concentration) return false;
@@ -186,23 +188,33 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
   if ((event.type === 'save_resolved' || event.type === 'condition_save') && next.combatants[event.targetId]?.effects?.some((e) => e.saveDisAll)) {
     next = dropEffects(next, event.targetId, (e) => !!e.saveDisAll);
   }
+  // Kuyruk K54c: ilk zar etkisi (Yıldız Falı, Ölümsüz Taht) atılınca biter.
+  if (event.type === 'attack_resolved' && next.combatants[event.actorId]?.effects?.some((e) => e.firstRoll?.on.includes('attack'))) {
+    next = dropEffects(next, event.actorId, (e) => !!e.firstRoll?.on.includes('attack'));
+  }
+  if ((event.type === 'save_resolved' || event.type === 'condition_save') && next.combatants[event.targetId]?.effects?.some((e) => e.firstRoll?.on.includes('save'))) {
+    next = dropEffects(next, event.targetId, (e) => !!e.firstRoll?.on.includes('save'));
+  }
   if (event.type === 'attack_resolved' && next.combatants[event.targetId]?.effects?.some((e) => e.consumeOnAttacked && e.sourceId !== event.actorId)) {
     next = dropEffects(next, event.targetId, (e) => !!e.consumeOnAttacked && e.sourceId !== event.actorId);
   }
   for (const x of dice ?? []) {
     // Kuyruk 18 H3: Countercharm sahibinin tepkisini harcar.
+    // Görev P6: ek paket girişleri (zar mührü, zorla sonuç) tepki + kaynak + tek kullanımlık etkiyi birlikte tüketir.
+    const pk = !!x.effectId?.startsWith('pk-');
     if (x.reaction && x.holderId) {
       const h = next.combatants[x.holderId];
       // Kuyruk 19: Burst of Ingenuity tepki havuzunu da azaltır.
       if (h) next = withCombatant(next, h.id, { economy: { ...h.economy, reaction: true }, ...(x.pool ? { reactionUses: { ...h.reactionUses, [x.pool.id]: x.pool.remaining } } : {}) });
-      continue;
+      if (!pk) continue;
     }
     // Görev F: ikinci şansın kaynağı (Indomitable, Stroke of Luck, Tactical Mind → Second Wind).
     if (x.resource && x.holderId) {
       const h = next.combatants[x.holderId];
       if (h) next = withCombatant(next, h.id, { resources: { ...h.resources, [x.resource]: Math.max(0, resourceLeft(h, x.resource) - 1) }, ...(x.resource === 'legendaryResistance' ? { lrLock: true } : {}) });
-      continue;
+      if (!pk) continue;
     }
+    if (pk && !x.single) continue;
     if (!x.single || !x.holderId) continue;
     const c = next.combatants[x.holderId];
     if (c?.effects) next = withCombatant(next, c.id, { effects: c.effects.filter((e) => e.id !== x.effectId) });
@@ -330,6 +342,13 @@ function dropOnDamage(before: BattleState, after: BattleState, event: BattleEven
     const was = before.combatants[c.id];
     if (!was || c.hp >= was.hp) continue;
     if (c.effects?.some(breaks)) next = dropEffects(next, c.id, breaks);
+    // Kuyruk A6 (sürüm 35): kayıtsızlık (Calm Emotions) kendisi ya da yanındaki (30 ft, görüş: harita yaklaşığı) dostu
+    // hasar alınca biter.
+    for (const o of Object.values(next.combatants)) {
+      if (!o.effects?.some((e) => e.indifferentTo)) continue;
+      const near = o.id === c.id || (o.side === c.side && !!o.pos && !!c.pos && distance(o.pos, c.pos) <= 6);
+      if (near) next = dropEffects(next, o.id, (e) => !!e.indifferentTo);
+    }
     // Görev WIZARD (Sleep): hasar alan uyanır (hasarla biten süreli durumlar).
     const cur = next.combatants[c.id] as Combatant;
     const woke = (cur.conditionTimers ?? []).filter((t) => t.wakeOnDamage);
@@ -339,6 +358,11 @@ function dropOnDamage(before: BattleState, after: BattleState, event: BattleEven
         conditions: cur.conditions.filter((x) => !woke.some((t) => t.condition === x)),
       });
     }
+  }
+  // Kuyruk A6 (sürüm 35): hasar veren (Invisibility "deals damage") etkisi biter.
+  const dealer = source ? next.combatants[source] : undefined;
+  if (dealer?.effects?.some((e) => e.breakOnDamageDealt) && Object.values(after.combatants).some((c) => c.hp < (before.combatants[c.id]?.hp ?? c.hp))) {
+    next = dropEffects(next, dealer.id, (e) => !!e.breakOnDamageDealt);
   }
   return next;
 }
@@ -519,6 +543,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'dice_rolled':
     case 'distracted':
       return state;
+    case 'moral_changed': return withCombatant(state, event.targetId, { moral: event.moral });
     case 'item_used': {
       const c = state.combatants[event.actorId];
       if (!c) return state;
@@ -574,11 +599,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.stunUsed) economy.stunUsed = true;
       if (event.pactOnly) economy.pactOnly = true;
       if (event.extraBonus) economy.bonusExtraUsed = (economy.bonusExtraUsed ?? 0) + 1;
+      if (event.packMoved) economy.packMoved = true;
       if (event.fleet) economy.fleetUsed = true;
       if (event.apotheosis) economy.apotheosisUsed = true;
       if (event.loadingFired) economy.loadingFired = true;
       // Yeni eylem (Attack): önceki eylemin Loading atışı sayılmaz.
       if (event.kind === 'action' && !event.loadingFired) economy.loadingFired = false;
+      // Kuyruk A6: önce alınan Haste eylemi kullanıldı: asıl eylem geri gelir (kısıtsız).
+      if (event.kind === 'action' && economy.hasteFirst) { economy.action = false; economy.attacksLeft = 0; economy.hasted = false; economy.hasteFirst = false; }
       return withCombatant(state, event.actorId, { economy });
     }
     case 'summon_steered': {
@@ -588,7 +616,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'haste_action': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
-      return withCombatant(state, c.id, { economy: { ...c.economy, action: false, attacksLeft: 0, hasted: true, hasteUsed: true } });
+      // Kuyruk K54c: Ferman'ın ek eylemi bir kez.
+      const once = (c.effects ?? []).some((e) => e.extraActionOnce);
+      // Kuyruk A6: önce alınan ek eylem (asıl eylem sonra geri gelir; `hasteFirst`).
+      if (event.first) return withCombatant(state, c.id, { economy: { ...c.economy, hasted: true, hasteUsed: true, hasteFirst: true },
+        ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
+      return withCombatant(state, c.id, { economy: { ...c.economy, action: false, attacksLeft: 0, hasted: true, hasteUsed: true },
+        ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
     }
     case 'reaction_used': {
       // Tepki hakkı harcanır (Görev R1): kendi turunun başında yenilenir (turn_ended).
@@ -634,7 +668,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       return withCombatant(state, c.id, { maxHp: c.maxHp + event.amount, hp: c.hp + event.amount });
     }
-    case 'sanctuary_save':
+    case 'sanctuary_save': {
+      // Kuyruk A6 (sürüm 35): başarısızsa saldıran bu turda o korunanı yeniden hedefleyemez (`retarget`: tur anahtarı).
+      const a = state.combatants[event.actorId];
+      if (!event.retarget || event.success || !a) return state;
+      const prev = a.sanctuaryLost?.turn === event.retarget ? a.sanctuaryLost.ids : [];
+      return withCombatant(state, a.id, { sanctuaryLost: { turn: event.retarget, ids: [...prev, event.targetId] } });
+    }
     case 'curse_save':
       return state;
     case 'bond_damage':
@@ -759,7 +799,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         // Kuyruk 18 H2: Polymorph canavar saldırılarını da değiştirir.
         ...(event.stats?.attacks ? { attacks: c.attacks, multiattack: c.multiattack } : {}) };
       if (!event.stats) {
-        const { shape: _s, ...rest } = c;
+        // Kuyruk K48: Örümcek Biçimi bitince biçim canı (geçici HP) da gider.
+        const { shape: _s, ...rest0 } = c;
+        const rest = c.shape?.spider ? { ...rest0, tempHp: 0 } : rest0;
         return withCombatant({ ...state, combatants: { ...state.combatants, [c.id]: rest as Combatant } }, c.id, base);
       }
       const s = event.stats;
@@ -846,7 +888,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       // Kuyruk 19 (Swarm, Mucus Cloud): HP kazanamaz.
-      if (c.effects?.some((e) => e.noHeal) && event.targetHpAfter > c.hp) return state;
+      if ((c.effects?.some((e) => e.noHeal) || c.auraNoHeal) && event.targetHpAfter > c.hp) return state;
       // 0 HP'deki karakter iyileşince ayağa kalkar.
       if (c.hp === 0 && event.targetHpAfter > 0 && (c.life === 'dying' || c.life === 'stable')) {
         return withCombatant(state, event.targetId, {
@@ -971,8 +1013,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, event.actorId, { resources, economy });
     }
     case 'area_used':
-    case 'surface_reacted':
       return state;
+    case 'surface_reacted': {
+      // Kuyruk K55: zincirle çalışan ikililer turda bir kez (çözücü okur).
+      if (!event.pairs?.length) return state;
+      const turn = `${state.round}:${state.turnIndex}`;
+      const prev = state.hexReacted?.turn === turn ? state.hexReacted.keys : [];
+      return { ...state, hexReacted: { turn, keys: [...prev, ...event.pairs] } };
+    }
     case 'object_placed':
       return state.map ? { ...state, map: { ...state.map, objects: [...(state.map.objects ?? []).filter((o) => o.id !== event.object.id), event.object] } } : state;
     case 'object_removed':
@@ -981,11 +1029,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'object_damaged':
       return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, hp: event.hpAfter } : o)) } } : state;
     case 'object_changed':
-      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found)) return state;
+      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found && event.light === undefined)) return state;
       return { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => {
         if (o.id !== event.objectId) return o;
         // Görev S3: taşıma (retrieve): `carriedBy` null bırakır, `at` düştüğü yer.
-        const { carriedBy: _c, ...rest } = o;
+        const { carriedBy: _c, ...rest0 } = o;
+        // Kuyruk A7: nesne ışığı (Light, Continual Flame); null kaldırır.
+        const { light: _l, lightSpell: _ls, lightBy: _lb, ...bare } = rest0;
+        const rest = event.light === undefined ? rest0 : event.light === null ? bare : { ...bare, light: event.light.r, lightSpell: event.light.spell, lightBy: event.light.by };
         const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
         return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}) };
       }) }, ...(((): Partial<BattleState> => {
@@ -1163,6 +1214,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, event.actorId, { heads: event.heads, headsLost: event.lost, headsFire: event.fire, headsTurnHp: event.turnHp });
     case 'burst_done':
       return withCombatant(state, event.actorId, { burstDone: true });
+    case 'ai_role_set': {
+      const c = state.combatants[event.targetId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      const { aiRole: _old, ...rest } = c;
+      void _old;
+      return { ...state, combatants: { ...state.combatants, [c.id]: event.role ? { ...rest, aiRole: event.role } : rest } };
+    }
     case 'exhaustion_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);

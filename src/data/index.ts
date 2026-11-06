@@ -62,8 +62,8 @@ export function loadClassData(): Promise<void> {
   classLoading ??= Promise.all([
     import('../../data/srd/progression.json'), import('../../data/class-features.json'), import('../../data/srd/feats.json'),
     import('../../data/srd/weapons.json'), import('../../data/subclasses.json'), import('../../data/spells-45.json'),
-    import('../../data/items-srd.json'), import('../../data/spells-69.json'),
-  ]).then(([p, m, f, w, sc, s45, isrd, s69]) => {
+    import('../../data/items-srd.json'), import('../../data/spells-69.json'), import('../../data/karadul.json'), import('../../data/imza.json'),
+  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza]) => {
     if (classDataLoaded()) return;
     // Kuyruk 19 (görev 7): SRD'nin geri kalan eşyaları (ana parça sınırı; oluşturucu ve savaştan önce yüklenir).
     const moreItems = (isrd.default as unknown as Item[]).filter((x) => !items.some((y) => y.id === x.id));
@@ -72,8 +72,12 @@ export function loadClassData(): Promise<void> {
     // Kuyruk 19 (görev 3): 6.–9. seviye büyüler (`data/spells-69.json`, scripts/k19-buyu-69.py).
     const more = [...(s45.default as unknown as Spell[]), ...(s69.default as unknown as Spell[])].filter((s) => !spells.some((x) => x.id === s.id));
     spells.push(...more);
-    classData.subclasses = (sc.default as unknown as { subclasses: SubclassDef[] }).subclasses;
-    classData.mechanics = m.default as unknown as ClassMechanics;
+    // Kuyruk K48: ev kuralı alt sınıfı Karadul Çemberi (data/karadul.json) SRD alt sınıflarının ardından.
+    // Kuyruk K50: imza alt sınıflar (data/imza.json; ev kuralı) ve kaynakları (dinlenme yenilemesi sınıf kaynaklarıyla aynı yoldan).
+    const im = imza.default as unknown as { altSiniflar: SubclassDef[]; kaynaklar: ClassMechanics['resources'] };
+    classData.subclasses = [...(sc.default as unknown as { subclasses: SubclassDef[] }).subclasses, (kd.default as unknown as { subclass: SubclassDef }).subclass, ...im.altSiniflar];
+    const mech = m.default as unknown as ClassMechanics;
+    classData.mechanics = { ...mech, resources: { ...mech.resources, ...im.kaynaklar } };
     classData.feats = (f.default as unknown as { feats: SrdFeat[] }).feats;
     const sw = w.default as unknown as { weapons: SrdWeapon[]; masteries: SrdMastery[] };
     classData.srdWeapons = sw.weapons;

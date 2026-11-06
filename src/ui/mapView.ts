@@ -13,6 +13,7 @@ import { execute, type BattleState, type Combatant, type Command } from '../batt
 import { isTargetable } from '../battle/common';
 import { heightOf } from '../battle/cover';
 import { terrainAt } from '../battle/movement';
+import { terrainSpellOn, terrainTags } from '../battle/terrainSpell';
 import { checkReach, monsterAttackReach, optionReach, spellReach, type Reach } from '../battle/range';
 import { hideInfo } from './stealthView';
 import { getMap } from '../map/maps';
@@ -204,7 +205,9 @@ export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): s
   const tt = { ...terrainAt(state, o), name: shownTerrainName(state, o) };
   // Kuyruk 26: yükseklik katmanlı haritada seviye ve ft; rampa.
   const lvl = state.map?.heights ? V.heightLevel(heightAt(state, o), heightAt(state, o) * levelFeet(state)) : V.height(tt.height);
-  const parts = [`${hexText(o)} · "${tt.char}" ${tt.name}`, lvl, V.move[tt.movement] ?? tt.movement];
+  // Kuyruk K56: arazi × büyü açıkken zemin türü (etiketler) adın yanında.
+  const tags = terrainSpellOn(state) ? terrainTags(state, o).map((x) => V.terrainTags[x] ?? x) : [];
+  const parts = [`${hexText(o)} · "${tt.char}" ${tt.name}${tags.length ? ` (${tags.join(', ')})` : ''}`, lvl, V.move[tt.movement] ?? tt.movement];
   if (state.map?.heights && isRamp(state, o)) parts.push(V.ramp);
   if (tt.cover) parts.push(V.coverPlain(tt.cover));
   if (tt.blocksSight) parts.push(V.blocksSight);

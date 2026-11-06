@@ -5,6 +5,8 @@
 import type { SavedCharacter } from '../rules/builder';
 
 const KEY = 'rpg-battle-characters';
+/** Kuyruk K51: karakter kayıt sürümü (2: hizalanma alanı). Eski kayıtta alan yok = 1; açılış aynı (alan yoksa 0/0). */
+export const CHARACTER_SAVE_VERSION = 2;
 let memory: SavedCharacter[] | null = null;
 
 export function loadCharacters(): SavedCharacter[] {
@@ -23,7 +25,7 @@ export function loadCharacters(): SavedCharacter[] {
 export function saveCharacters(list: SavedCharacter[]): void {
   memory = list;
   try {
-    localStorage.setItem(KEY, JSON.stringify(list));
+    localStorage.setItem(KEY, JSON.stringify(list.map((c) => ({ ...c, surum: CHARACTER_SAVE_VERSION }))));
   } catch {
     // Yalnızca bu oturumda.
   }

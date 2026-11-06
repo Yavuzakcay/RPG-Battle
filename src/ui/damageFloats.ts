@@ -6,6 +6,7 @@
  */
 import type { BattleEvent, Combatant } from '../battle/types';
 import spriteData from '../../data/efekt-sprites.json';
+import spriteMap from '../../data/sprite-esleme.json';
 import { t } from '../i18n';
 
 export type FloatKind = 'fire' | 'poison' | 'cold' | 'acid' | 'hit';
@@ -46,9 +47,26 @@ export const FLOAT_MS = 950;
 /** Eylem sonucu işaretinin süresi (ms). */
 export const OUTCOME_MS = 1050;
 
+/**
+ * Görev E1: durum ikonu görselleri (`npm run sprite-ice -- --efekt` → data/sprite-esleme.json `efektIkonlari`, 128 px).
+ * Rozet anahtarı → ikon sayfasındaki durum; ikonu olmayan rozet emoji kalır.
+ */
+const ICONS = (spriteMap as unknown as { efektIkonlari?: Record<string, string> }).efektIkonlari ?? {};
+const ICON_OF: Record<string, string> = { poison: 'poisoned', exhaustion: 'exhaustion', grappled: 'grappled', restrained: 'restrained', charmed: 'charmed',
+  frightened: 'frightened', prone: 'prone', invisible: 'invisible', paralyzed: 'paralyzed', stunned: 'stunned', incapacitated: 'incapacitated', deafened: 'deafened' };
+export interface StatusIcon { key: string; icon: string; title: string; img?: string; count?: number }
+
 /** Süren durumların jetondaki kalıcı simgeleri (yanıyor, zehirli, donmuş, yakalandı, yerde). */
-export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<Pick<Combatant, 'exhaustion' | 'effects'>>): Array<{ key: string; icon: string; title: string }> {
-  const out: Array<{ key: string; icon: string; title: string }> = [];
+export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<Pick<Combatant, 'exhaustion' | 'effects'>>): StatusIcon[] {
+  const out = statusBadges(c);
+  return out.map((s) => {
+    const name = ICONS[ICON_OF[s.key] ?? ''];
+    return name ? { ...s, img: `sprites/${name}.webp`, ...(s.key === 'exhaustion' ? { count: c.exhaustion ?? 0 } : {}) } : s;
+  });
+}
+
+function statusBadges(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<Pick<Combatant, 'exhaustion' | 'effects'>>): StatusIcon[] {
+  const out: StatusIcon[] = [];
   const S = t().view.status;
   if (c.conditions.includes('Burning')) out.push({ key: 'burning', icon: '🔥', title: S.burning });
   if (c.conditions.includes('Poisoned') || c.mapStatus.lingeringPoison) out.push({ key: 'poison', icon: '☠', title: S.poison });
@@ -63,8 +81,13 @@ export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Par
   if ((c.exhaustion ?? 0) > 0) out.push({ key: 'exhaustion', icon: `😩${c.exhaustion}`, title: S.exhaustion(c.exhaustion ?? 0) });
   if (c.effects?.some((e) => e.fly || e.airborne)) out.push({ key: 'flying', icon: '🪽', title: S.flying });
   if (c.conditions.includes('Invisible')) out.push({ key: 'invisible', icon: '👁', title: S.invisible });
+  // Görev E1: Deafened rozetle (yalnızca görsel).
+  if (c.conditions.includes('Deafened')) out.push({ key: 'deafened', icon: '🔇', title: S.deafened });
+  // Kuyruk K48: Moral 0'da Çökmüş (belirgin simge; Incapacitated simgesinin yerine).
+  const broken = c.effects?.some((e) => e.id === 'moral:cokmus');
+  if (broken) out.push({ key: 'broken', icon: '💔', title: S.broken });
   // Etkisiz bırakan durumlar (Görev H): Paralyzed ve Stunned Incapacitated'ı içerir, yalnızca biri gösterilir.
-  if (c.conditions.includes('Paralyzed')) out.push({ key: 'paralyzed', icon: '⛓', title: S.paralyzed });
+  if (broken) { /* Çökmüş: Incapacitated simgesi yinelenmez */ } else if (c.conditions.includes('Paralyzed')) out.push({ key: 'paralyzed', icon: '⛓', title: S.paralyzed });
   else if (c.conditions.includes('Stunned')) out.push({ key: 'stunned', icon: '💫', title: S.stunned });
   else if (c.conditions.includes('Incapacitated')) out.push({ key: 'incapacitated', icon: '⊘', title: S.incapacitated });
   return out;

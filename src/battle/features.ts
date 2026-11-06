@@ -9,6 +9,8 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { mechanicsAt } from './spellVersion';
+import { auraCoreOn, auraEnterEvents } from './auraCore';
 import { isAirborne } from './flight';
 import { swimsByTrait } from './flight';
 import { knowsWhere } from './sight';
@@ -21,7 +23,7 @@ import { getEnvironment, spells, type Spell } from '../data';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { attackSources, isAutoCritical, isIncapacitated } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
-import { rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
+import { parseDice, rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
 import { globalRule } from './ruleControl';
 import { attackEffectEvents, riderConditionEvents } from './grapple';
 import { riderExtras, riderOf, riderReplace } from './riders';
@@ -32,6 +34,11 @@ import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
 import { celestialStrikeOf } from './celestial';
+import { gazeBreakEvents, karadulHit, karadulOn, kissReady, snareReady } from './karadul';
+import { imzaHit } from './imza';
+import { hitHookResults } from './hitHooks';
+import { nonmagicalProfile } from './magicStrike';
+import { edictEvents, sealAutoHit, sealBonus } from './imzaK54c';
 import { brutalAfterEvents, brutalExtra, brutalOptions, brutalReady, type BrutalBlow } from './brutal';
 import { canSee, isUnderwater } from './maprules';
 import { distance as hexDistance } from '../rules/hex';
@@ -53,6 +60,7 @@ import { bestDamageType, buffExtraDice, effectiveAc, wardSources, withBuffs } fr
 import { afterAttackMarks, hasTrait, saveDamage, colossusDice, cunningCost, cunningEvents, cunningProblem, elusiveFilter, markDie, superiorPreyEvents, traitSources, usedThisTurn } from './classTraits';
 import { monsterAttackEvents } from './monsters';
 import { checkReach, monsterAttackReach, optionReach, spellReach } from './range';
+import { ruleVersion } from './ruleVersion';
 import { afterAttackReactions, askOpportunity, canReact, hitReactions, OPPORTUNITY, reactionUsed, registerStrikes, targetedReactions } from './reactions';
 import { applyEvents } from './reduce';
 import { damagePenalty } from './effects';
@@ -75,13 +83,15 @@ export const spellOf = (name: string | undefined): Spell | undefined => spells.f
 
 /** Yaratığın en iyi yakın dövüş saldırısı (fırsat saldırısı için) ve erişimi (ft). */
 export function meleeOf(c: Combatant): { option?: AttackOption; attackIndex?: number; reachFt: number } | null {
+  // Görev P6: ek paket erişim eki (fırsat saldırısı da).
+  const plus = (c.effects ?? []).reduce((n, e) => n + (e.reachPlus ?? 0), 0);
   const weapon = c.weaponOptions.filter((o) => !o.ranged && !o.spell).sort((a, b) => avg(b.damage) - avg(a.damage))[0];
-  if (weapon) return { option: weapon, reachFt: weapon.reachFt ?? 5 };
+  if (weapon) return { option: weapon, reachFt: (weapon.reachFt ?? 5) + plus };
   const best = c.attacks
     .map((a, i) => ({ a, i }))
     .filter(({ a }) => !a.save && !a.ranged && a.damageDice && !a.recharge)
     .sort((x, y) => avg(y.a.damageDice) - avg(x.a.damageDice))[0];
-  return best ? { attackIndex: best.i, reachFt: best.a.reachFt ?? 5 } : null;
+  return best ? { attackIndex: best.i, reachFt: (best.a.reachFt ?? 5) + plus } : null;
 }
 
 /** Ayakta ve aksiyon yapabilen. */
@@ -216,7 +226,7 @@ export function weaponAttackEvents(
   const marks = markSources(actor, target, option);
   sources.push(...marks.sources);
   // Hedefin korumaları (Shining Smite: avantaj; Protection from Evil and Good: belli türlere dezavantaj).
-  sources.push(...wardSources(state, actor, target, { melee: !option.ranged }));
+  sources.push(...wardSources(state, actor, target, { melee: !option.ranged, str: option.spell ? false : option.ability ? option.ability === 'str' : !option.ranged }));
   // Kuyruk 19 (SRD Heavy): STR (yakın) ya da DEX (menzilli) 13'ten azsa Heavy silahla dezavantaj.
   if (option.heavyDis && globalRule(state, 'srdK19')) sources.push({ effect: 'disadvantage', reason: 'Heavy' });
   // Görev F: Steady Aim, Precise Hunter, Escape the Horde; Elusive avantajı düşürür.
@@ -228,6 +238,8 @@ export function weaponAttackEvents(
   // Kuyruk 18 H3: Brutal Strike: Reckless sürerken bir STR saldırısında avantajdan vazgeçilir (dezavantajlı olmamalı).
   const brutal = opts.brutal && !opportunity && brutalReady(state, actor, option) && !sources.some((x) => x.effect === 'disadvantage') ? opts.brutal : undefined;
   if (brutal) { const keep = sources.filter((x) => x.effect !== 'advantage'); sources.length = 0; sources.push(...keep); }
+  // Kuyruk K48 (ev kuralı): Karadul Tatlı Tuzak: dönüşülen turun ilk ısırığı büyülü hedefe avantajlı.
+  if (snareReady(state, actor, target, option)) sources.push({ effect: 'advantage', reason: 'Tatlı Tuzak' });
   const mode = combineModes(sources);
   // K13: Wild Shape biçiminin saldırısında canavarın ek etkileri (data/attack-riders.json): hasar değişimi, ek hasar, durumlar.
   const beast = option.beast ? riderOf(option.beast.monster, option.beast.attack) : undefined;
@@ -236,13 +248,16 @@ export function weaponAttackEvents(
   // Kuyruk 19 (Arrow-Catching Shield): menzilli saldırıya ek AC; Adamantine Armor: kritik yok (`srdK19`).
   const k19i = !!globalRule(state, 'srdK19');
   const targetAc = effectiveAc(state, target) + reach.cover + (option.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
+  const sealed = sealAutoHit(state, actor, target, turnKey(state));
   const rolled = resolveAttack(
     {
-      attackBonus: option.attackBonus + itemAttackPlus(actor, option, k19i) - corrodedOf(actor, option), targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)),
-      extra: attackDice(actor),
+      attackBonus: option.attackBonus + itemAttackPlus(actor, option, k19i) - corrodedOf(actor, option), targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)) || kissReady(state, actor, target, option),
+      // Kuyruk K54c: Yazgı Mührü: mühürlüye turun ilk saldırısı kendiliğinden isabet (kritik değil).
+      extra: sealed ? [{ label: 'Yazgı Mührü', die: 'hit', sign: 1, reroll: 'success' }, ...attackDice(actor)] : attackDice(actor),
       ...(option.minDie ? { minDie: option.minDie } : {}),
       // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
-      ...(actor.critOn && !option.spell ? { critOn: actor.critOn } : {}),
+      // Görev P6: ek paket kritik eşiği (`zarEtkisi.kritikAralik`; süren etki `pkCritOn`).
+      ...((c) => (c < 20 ? { critOn: c } : {}))(Math.min(actor.critOn && !option.spell ? actor.critOn : 20, ...(actor.effects ?? []).map((e) => e.pkCritOn ?? 20))),
       // F1: Savage Attacker: turda bir kez silah isabetinde (büyü saldırısı ve canavar biçimi değil).
       ...(savageReady(state, actor, option) ? { savage: true } : {}),
     },
@@ -257,7 +272,9 @@ export function weaponAttackEvents(
   const overcome = !!actor.k19Traits && !!actor.traits?.includes('overcome-defenses') && ['bludgeoning', 'piercing', 'slashing'].includes(dmgType ?? '');
   const tprof0 = overcome ? { ...profileOf(target), resistances: profileOf(target).resistances.filter((x) => x !== dmgType) } : profileOf(target);
   // Kuyruk 19 (SRD Underwater Combat): tamamen su altındaki yaratık Fire hasarına dirençli.
-  const tprof = k19i && isUnderwater(state, target) && !tprof0.resistances.includes('fire') ? { ...tprof0, resistances: [...tprof0.resistances, 'fire'] } : tprof0;
+  const tprof1 = k19i && isUnderwater(state, target) && !tprof0.resistances.includes('fire') ? { ...tprof0, resistances: [...tprof0.resistances, 'fire'] } : tprof0;
+  // Görev P7: büyüsüz saldırıya direnç (büyülü vuruş aşar).
+  const tprof = nonmagicalProfile(actor, target, dmgType, tprof1, !!option.spell);
   const adjusted = result.hit ? adjustDamage(rawDamage, dmgType, tprof) : { amount: 0, note: null };
   let bonus: ReturnType<typeof hitExtras> = result.hit
     ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option, ...(opts.cunning ? { cunning: opts.cunning } : {}) }, rng)
@@ -269,6 +286,19 @@ export function weaponAttackEvents(
   // Görev CLERIC: Divine Strike (Blessed Strikes): turda bir silah isabetine +1d8 (2d8) Necrotic/Radiant.
   const divine = result.hit && rawDamage > 0 ? divineStrikeHit(state, actor, target, option, result.critical, rng) : null;
   if (divine) bonus = { ...bonus, extras: [...bonus.extras, divine.extra], traitTurns: { ...bonus.traitTurns, ...divine.traitTurns } };
+  // Kuyruk K48 (ev kuralı): Karadul Zehri, Tatlı Tuzak, Son Öpücük (örümcek ısırığı isabetinde).
+  const widow = result.hit ? karadulHit(state, actor, target, option, { critical: result.critical, weaponRaw: rawDamage }, rng) : null;
+  if (widow) bonus = { ...bonus, extras: [...bonus.extras, ...widow.extras], traitTurns: { ...bonus.traitTurns, ...widow.traitTurns } };
+  // Kuyruk K50 (ev kuralı): Hüküm, İnfaz, Yıpranmışlığın Gücü (imza alt sınıf saldırı kancası).
+  const sig = result.hit && !option.spell && actor.imza ? imzaHit(state, actor, target, bonus.extras, rawDamage, rng) : null;
+  if (sig) bonus = { ...bonus, extras: [...bonus.extras, ...sig.extras] };
+  // Görev P0: kayıtlı isabet kancaları (ek paket ilkelleri: ek hasar; zorla hareket, durum, işaret saldırıdan sonra).
+  const hooked = result.hit && actor.paket ? hitHookResults(state, actor, target, { spell: !!option.spell, melee: !option.ranged && !option.spell, ranged: !!option.ranged && !option.spell,
+    critical: result.critical, advantage: mode === 'advantage', weaponType: dmgType ?? '', rolls: result.damage?.rolls ?? [], dice: swap?.dice ?? option.damage }, rng) : null;
+  if (hooked) bonus = { ...bonus, extras: [...bonus.extras, ...hooked.extras] };
+  // Kuyruk K54c: Yazgı Mührü: mühürlüye isabet eden dost mühürleyenin yeterliliği kadar ek hasar.
+  const sealPlus = result.hit ? sealBonus(state, actor, target) : 0;
+  if (sealPlus > 0) bonus = { ...bonus, extras: [...bonus.extras, { label: 'Yazgı Mührü', rolls: [], raw: sealPlus, applied: adjustDamage(sealPlus, dmgType, tprof).amount, type: dmgType ?? '', note: null }] };
   // Kuyruk 19 (Irresistible Offense): Overwhelming Strike: doğal 20'de artırılan skor kadar ek hasar (saldırının türünde).
   if (result.hit && result.d20.kept === 20 && actor.k19Traits && actor.traits?.includes('overcome-defenses') && actor.boonScore) {
     const adj = adjustDamage(actor.boonScore, dmgType, tprof);
@@ -313,7 +343,7 @@ export function weaponAttackEvents(
     ...(bonus.extras.length > 0 ? { extra: bonus.extras } : {}),
     ...('sneakTurn' in bonus && bonus.sneakTurn ? { sneakTurn: bonus.sneakTurn } : {}),
     ...('frenzyTurn' in bonus && bonus.frenzyTurn ? { frenzyTurn: bonus.frenzyTurn } : {}),
-    ...(bonus.traitTurns || opts.traitTurns || (hit && result.savage) || brutal ? { traitTurns: { ...opts.traitTurns, ...bonus.traitTurns, ...(hit && result.savage ? { 'savage-attacker': turnKey(state) } : {}), ...(brutal ? { 'brutal-strike': turnKey(state) } : {}) } } : {}),
+    ...(bonus.traitTurns || opts.traitTurns || (hit && result.savage) || brutal || sealed ? { traitTurns: { ...opts.traitTurns, ...bonus.traitTurns, ...(sealed ? { 'imza:muhur': turnKey(state) } : {}), ...(hit && result.savage ? { 'savage-attacker': turnKey(state) } : {}), ...(brutal ? { 'brutal-strike': turnKey(state) } : {}) } } : {}),
     ...(brutal ? { brutal } : {}),
     ...(hit && result.savage ? { savage: result.savage } : {}),
     ...(steadyUsed ? { steadyAim: true } : {}),
@@ -331,6 +361,11 @@ export function weaponAttackEvents(
   const before = [...marks.used, ...(hr?.events ?? []), ...(giant && hit ? giant.before : []), attackEvent,
     ...(coat && hit ? [{ type: 'effect_ended' as const, targetId: actor.id, effectId: coat.id, name: coat.name, reason: 'used' as const }] : [])];
   if (giant && hit) before.push(...giant.after(applyEvents(state, before)));
+  // Kuyruk K48: Karadul vuruş sonrası (zehir, Stunned, Son Öpücük kullanımı) ve büyüleyenin tarafı saldırınca bakışın bitmesi.
+  if (widow && hit) before.push(...widow.after);
+  if (sig && hit) before.push(...sig.after);
+  if (hooked && hit) for (const f of hooked.after) before.push(...f(applyEvents(state, before)));
+  if (karadulOn(state)) { const s0 = applyEvents(state, before); const t0 = s0.combatants[target.id]; if (t0) before.push(...gazeBreakEvents(s0, actor, t0)); }
   // K13: biçim saldırısının süreli etkisi ve rider durumları (Prone, yakalama, zehir…), canavar saldırısındaki gibi isabette.
   if (hit && option.beast) {
     const s0 = applyEvents(state, before);
@@ -414,6 +449,8 @@ export function opportunityAttacks(
   if (mover0.traits?.includes('flyby') && isAirborne(mover0)) return [];
   // Kuyruk 19 (Deer, Rat Agile): erişimden çıkması fırsat saldırısı doğurmaz.
   if (mover0.traits?.includes('agile')) return [];
+  // Kuyruk K54 (Çevik İhtiyar vb.): süren etkide `noProvoke` (sürüm 25+).
+  if (mover0.effects?.some((e) => e.noProvoke) && ruleVersion(state) >= 25) return [];
   const events: BattleEvent[] = [];
   let current = state;
   for (const id of state.order) {
@@ -547,7 +584,10 @@ export function auraStepEvents(state: BattleState, moverId: string, from: Offset
       if (nowIn && !wasIn) makers.push((s) => auraSave(s, s.combatants[moverId] as Combatant, s.combatants[v.id] as Combatant, rng));
     }
   }
-  return chain(state, makers).events;
+  const legacy = chain(state, makers).events;
+  // Kuyruk K53 S5: veriden auraların giriş tetikleri (yürüme, itme, ışınlanma varışı aynı yoldan).
+  const core = auraCoreOn(state) ? auraEnterEvents(legacy.length ? applyEvents(state, legacy) : state, moverId, from, to, rng) : [];
+  return core.length ? [...legacy, ...core] : legacy;
 }
 
 /** Turunu yayılımın içinde bitiren yaratık save yapar. */
@@ -567,6 +607,8 @@ export function executeActionSurge(state: BattleState, actor: Combatant): Comman
   if (actor.economy.surged) return fail('Action Surge bu tur kullanıldı.');
   if (!actor.economy.action || actor.economy.attacksLeft > 0) return fail('Önce eylemini kullanmalısın.');
   const events: BattleEvent[] = [{ type: 'feature_used', actorId: actor.id, feature: 'actionSurge', remaining: left - 1 }];
+  // Kuyruk K54c: İmparator Ferman: bir dosta da tek seferlik ek eylem.
+  events.push(...edictEvents(applyEvents(state, events), actor));
   return { ok: true, state: applyEvents(state, events), events };
 }
 
@@ -604,7 +646,9 @@ export function weaponHexNear(state: BattleState, target: Combatant, from: Offse
  */
 export function executeFollowup(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
   const conc = actor.concentration;
-  const spell = spellOf(conc?.spell);
+  // Kuyruk A6: sürüme göre mekanik (`a4`/`a6`; Conjure Fey ruhu sürüm 35+ güç gibi).
+  const spell0 = spellOf(conc?.spell);
+  const spell = spell0 ? { ...spell0, mechanics: mechanicsAt(state, spell0) } : undefined;
   if (!conc || !spell) return fail('Sürdürülecek bir konsantrasyon büyüsü yok.');
   const target = state.combatants[targetId];
   if (!target) return fail('Hedef bulunamadı.');
@@ -623,8 +667,10 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
 
   if (spell.mechanics.lingering !== 'weapon') return fail(`${spell.name} bonus eylemle sürdürülmez.`);
   if (conc.turn === turnKey(state)) return fail(`${spell.name} sonraki turlarda sürdürülür.`);
-  if (state.map && conc.pos && target.pos && distance(conc.pos, target.pos) > 5) {
-    return fail(`Hedef güce uzak: güç 20 ft uçup yanındakine saldırır (${distance(conc.pos, target.pos)} altıgen).`);
+  // Kuyruk A6: gücün/ruhun yer değiştirme menzili veride (`lingerMoveFt`; Spiritual Weapon 20 ft, Conjure Fey 30 ft).
+  const reachHex = (spell.mechanics.lingerMoveFt ?? 20) / 5 + 1;
+  if (state.map && conc.pos && target.pos && distance(conc.pos, target.pos) > reachHex) {
+    return fail(`Hedef güce uzak: güç ${spell.mechanics.lingerMoveFt ?? 20} ft gidip yanındakine saldırır (${distance(conc.pos, target.pos)} altıgen).`);
   }
   const m = spell.mechanics;
   const env = getEnvironment(state.environmentId);
@@ -637,8 +683,9 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
     }),
   ];
   const mode = combineModes(sources);
-  const count = 1 + upcastDiceCount(m, conc.slotLevel - spell.level);
-  const expr = `${count}d8${actor.spellMod >= 0 ? '+' : ''}${actor.spellMod}`;
+  const d0 = parseDice(m.damage ?? '1d8');
+  const count = d0.count + upcastDiceCount(m, conc.slotLevel - spell.level);
+  const expr = `${count}d${d0.sides}${actor.spellMod >= 0 ? '+' : ''}${actor.spellMod}`;
   const res = resolveAttack(
     { attackBonus: actor.spellAttack ?? 0, targetAc: target.ac, mode, damage: expr, autoCritical: isAutoCritical(target.conditions, true), extra: attackDice(actor) },
     rollTag(rng, { by: actor.id }),
@@ -668,6 +715,10 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
       ...(hr?.reacted ? { reacted: hr.reacted } : {}), ...(res.extra ? { bonusDice: res.extra } : {}),
     },
   ];
+  // Kuyruk A6 (Conjure Fey): isabette süren durum (Frightened, büyücünün sonraki turunun başına dek).
+  const ah = m.afterHit;
+  if (hit && ah?.grants?.length && fx.hpAfter > 0) events.push({ type: 'effect_added', targetId: target.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id,
+    grants: ah.grants, untilSourceTurn: true, until: state.round + 1 } });
   // Hasar alanın tepkisi: güç büyücünün değil, uzaktaki büyücü 60 ft içindeyse Hellish Rebuke ona gider.
   events.push(...afterAttackReactions(applyEvents(state, events), actor.id, target.id, hr, { melee: true, damageType: m.damageType ?? '', dealt: total }, rng));
   return finish(state, events);

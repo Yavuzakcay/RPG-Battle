@@ -27,6 +27,9 @@ const yerFilter = (s: SeruvenState): string | undefined => {
 import { stopParticipants } from '../app/journeyBattle';
 import { statusBlock } from '../app/partyStatus';
 import { fullStatus } from '../rules/characterRest';
+import { MORAL, moralDeathText } from '../rules/moral';
+import { memberMoral, memberMoralMax, reviveCaster } from '../journey/moral';
+import { MoralBar } from '../ui/MoralBar';
 import { MAX_PARTY } from '../app/limits';
 import type { SavedCharacter } from '../rules/builder';
 import type { BattleState } from '../battle';
@@ -42,6 +45,8 @@ import { daysToSurface, prisonSurfaced } from '../world/prison';
 import { nodeWorld, pageRegion, raceRegion, type Pt } from '../world/worldData';
 import { dayOf, hourOfDay, nodeTapAction, openHubs, partyPos, passiveHints } from '../world/roam';
 import { WALK_RULES, findPath, hubsNearSea } from '../world/walk';
+import { REGION_TOGGLE, SWIM, arrivalRegion, type WorldRegion } from '../world/regions';
+import { RegionLoading } from '../ui/world/RegionLoading';
 const toolOn = () => { try { return location.hash.includes('dugum') || localStorage.getItem('rpg-battle-dugum') === '1'; } catch { return false; } };
 
 /** Düğümün görünen adı: sefer düğümünün adı ya da haritanın görünen adı. */
@@ -134,7 +139,7 @@ export function SeruvenScreen(props: {
     if (ss) props.onBattle(ss, `yer:${map}`, yerFilter(next.state));
   };
   const onSuc = () => { const ss = sucSession(state, Math.random); if (ss) props.onBattle(ss, `suc:${state.suc?.asama ?? ''}`); };
-  return <PageView state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap} onSuc={onSuc}
+  return <PageView lastEvent={events[events.length - 1]} state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap} onSuc={onSuc}
     onBattle={(node) => {
       const s = node.startsWith('link:') ? linkSession(state, node.slice(5), Math.random) : seruvenBattleSession(state, node, Math.random);
       if (s) props.onBattle(s, state.hapis && !node.startsWith('link:') ? `hapis:${node}` : node);
@@ -173,7 +178,7 @@ const pct = (p: Point) => ({ left: `${p.x * 100}%`, top: `${p.y * 100}%` });
 /** Sayfa kenarındaki giriş/çıkış okları içeride görünsün. */
 const edge = (p: Point) => pct({ x: Math.min(0.97, Math.max(0.03, p.x)), y: Math.min(0.94, Math.max(0.06, p.y)) });
 
-export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; error: string | null; onBack: () => void; onReset: () => void; onBattle: (node: string) => void; onMap?: (map: string) => void; onSuc?: () => void }) {
+export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) => boolean; error: string | null; /** K49 D: son olay (yürüyüş yolu, yüzme). */ lastEvent?: SeruvenEvent; onBack: () => void; onReset: () => void; onBattle: (node: string) => void; onMap?: (map: string) => void; onSuc?: () => void }) {
   const { state, run } = props;
   const S = t().seruven;
   const en = getLang() === 'en';
@@ -199,9 +204,17 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
     const before = prevPos.current;
     prevPos.current = now;
     if (!world || !before || !now || (before[0] === now[0] && before[1] === now[1])) return;
-    const plan = findPath(before, now);
-    setWalkAnim((w) => (w && w.mode !== 'yurume' ? { ...w, path: [before, ...(w.path.slice(1))] } : { path: plan ? [before, ...plan.path] : [before, now], mode: 'yurume' }));
+    // K49 D: yürüyüşün kendi yolu (olaydan; yüzme dahil), bölge geçişinde yükleme ekranı.
+    const last = props.lastEvent;
+    const walked = last?.type === 'seruven_walked' ? last : null;
+    const plan = walked ? null : findPath(before, now, { swim: toggleOn(state, REGION_TOGGLE) });
+    const path = walked ? walked.path : plan ? [before, ...plan.path] : [before, now];
+    setWalkAnim((w) => (w && w.mode !== 'yurume' ? { ...w, path: [before, ...(w.path.slice(1))] } : { path, mode: 'yurume' }));
+    if (toggleOn(state, REGION_TOGGLE)) { const r = arrivalRegion(path); if (r) setRegionLoad(r); }
+    setSwimNote(walked?.swim ? S.world.swimLog(walked.swim.by, walked.swim.total, walked.swim.dc, walked.swim.success, SWIM.basarisizSaat) : null);
   }, [state.konum, state.page, state.at, world]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [regionLoad, setRegionLoad] = useState<WorldRegion | null>(null);
+  const [swimNote, setSwimNote] = useState<string | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   useEffect(() => { setImgOk(true); setCard(null); }, [page.id]);
   const at: Point = state.at === 'giris' ? page.entry : state.at === 'cikis' && page.exit ? page.exit : state.at === 'portal' && page.portal ? page.portal
@@ -253,6 +266,8 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
       </header>
       {world && (
         <Suspense fallback={null}>
+          {regionLoad && <RegionLoading region={regionLoad} onDone={() => setRegionLoad(null)} />}
+          {swimNote && <p className="world-swim-note" role="status">{swimNote}</p>}
           <WorldMapViewer
             fog={toggleOn(state, 'haritaSisi') ? seruvenFog(state) : null}
             flags={state.flags} hiddenFlag={SERUVEN.baglantilar?.find((l) => l.bayrak)?.bayrak}
@@ -384,8 +399,16 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
         )}
         {state.party.map((m) => {
           const max = fullStatus(m.sheet).hp;
+          // Kuyruk K48: Moral (anahtar açıksa): çubuk, Moral ölümü anlatımı, diriltme (tapınak ya da büyü).
+          const moralOn = toggleOn(state, 'moralSistemi');
+          const caster = moralOn && m.status.dead ? reviveCaster(state.party) : null;
+          const temple = moralOn && m.status.dead && !!(state.yerlesim && yerlesimById(state.yerlesim.id)?.hub.tapinak);
           return <span key={m.id} className={`journey-member${m.status.dead ? ' dead' : m.status.hp <= 0 ? ' down' : ''}${prisonerLook(state) ? ' mahkum' : ''}`}>
             <strong>{m.name}</strong> {m.status.dead ? S.dead : m.status.hp <= 0 ? S.down : `${m.status.hp}/${max}`}
+            {moralOn && !m.status.dead && <> <MoralBar moral={memberMoral(m)} max={memberMoralMax(m)} /></>}
+            {m.status.moralOlum && <> <span className="moral-dead">{moralDeathText(m.name, getLang())}</span></>}
+            {temple && <> <button type="button" className="ghost" disabled={state.gold < MORAL.dirilme.tapinakUcreti} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'tapinak' })}>{t().view.moral.reviveTemple(MORAL.dirilme.tapinakUcreti)}</button></>}
+            {caster && <> <button type="button" className="ghost" disabled={state.gold < caster.gold} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'buyu' })}>{t().view.moral.reviveSpell(caster.spell, caster.gold)}</button></>}
           </span>;
         })}
         {state.tasma && <span className="journey-member" title={S.collarHelp}>⛓ {S.collarOn}</span>}

@@ -3,7 +3,8 @@
  * karakterler). Game Master (GmScreen.tsx) ve durum (StatusScreen.tsx) ayrı, tembel yüklenen parçalar. Tek cihaz: rol seçimi yalnızca hangi ekranın
  * açılacağını belirler; online sürüm sonra.
  */
-import { useEffect, useState } from 'react';
+import { alignmentLongRest } from '../rules/alignmentRest';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { classes, races, weapons } from '../data';
 import { lineageLine } from '../ui/lineageText';
 import { carriedWeight, carryLoad, type LoadLevel } from '../rules/carry';
@@ -16,6 +17,9 @@ import { subclassMissing } from '../rules/subclasses';
 import { resourceDef } from '../rules/classFeatures';
 import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
 import { newId } from '../app/storage';
+import { alignmentEnabled } from '../app/features';
+// Kuyruk K51: hizalanma etiketi tembel (ana parça sınırı).
+const AlignmentBadge = lazy(() => import('../ui/AlignmentBadge'));
 import { MAX_PARTY } from '../app/limits';
 import { AvatarBadge } from '../ui/Avatar';
 import { useTheme } from '../ui/theme';
@@ -188,6 +192,7 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
         {(sheet.weaponMasteries ?? []).length > 0 && <small>{t().player.cardMastery(masteryList(sheet))}</small>}
         {problems.length > 0 && <small className="error">{t().common.problems(problems.length)}</small>}
         {subclassMissing(sheet.classId, sheet.subclassId) && <small className="error">{t().content.missing(sheet.subclassId ?? '')}</small>}
+        {alignmentEnabled() && <Suspense fallback={null}><AlignmentBadge value={props.c.hizalanma} /></Suspense>}
         {props.rest}
       </div>
       <div className="card-actions">{props.children}</div>
@@ -247,7 +252,7 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
           <button onClick={() => {
             setNote(R.longDone);
             if (masteryRight(sheet)) setDrills(sheet.weaponMasteries ?? []);
-            props.onUpdate({ ...props.c, status: longRestStatus(sheet, props.c.status) });
+            props.onUpdate(alignmentLongRest({ ...props.c, status: longRestStatus(sheet, props.c.status) }));
           }}>{R.long}</button>
         </div>
       )}

@@ -1,0 +1,4 @@
+{
+  "not": "Ana parça (dist/assets/index-*.js) üst sınırı, kB (1000 bayt; dosyanın gerçek bayt boyutu: Vite çıktısındaki kB karakter sayısıdır, Türkçe metin yüzünden ≈%1,3 küçük görünür). Kuyruk A2: 440 → 500 kB (sıkıştırılmış ≈150 kB; telefona kurulan paket). Yeni kod yine tembel parçalara girer. Denetim: npm run build sonunda scripts/paket-siniri.mjs.",
+  "anaParcaKb": 500
+}

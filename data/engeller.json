@@ -1,0 +1,8 @@
+{
+ "not": "Kuyruk K53 S4: geçici engel türleri (veriden; çağıran özellik `kind` ile seçer). blocksMove: hareketi keser; blocksSight: görüş hattını keser; hp/ac: her altıgen ayrı (0'da altıgen düşer, yoksa yıkılmaz); passFor: none | allies (sahibinin tarafı geçer) | owner (yalnız sahibi); rounds: süre (tur). SRD dışı değerler (Çizili Duvar) ev içeriği.",
+ "kinds": {
+  "cizili-duvar": { "tr": "Çizili Duvar", "en": "Drawn Wall", "blocksMove": true, "blocksSight": true, "hp": 30, "ac": 15, "passFor": "none", "rounds": 10 },
+  "dost-kalkani": { "tr": "Dost Kalkanı", "en": "Ally Ward", "blocksMove": true, "blocksSight": false, "passFor": "allies", "rounds": 10 },
+  "enkaz-yigini": { "tr": "Enkaz Yığını", "en": "Rubble Heap", "blocksMove": true, "blocksSight": true, "hp": 20, "ac": 12, "passFor": "none", "rounds": 100 }
+ }
+}

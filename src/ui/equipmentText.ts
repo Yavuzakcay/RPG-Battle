@@ -64,11 +64,25 @@ export function itemSummary(it: Item): string {
   if (it.effects.saveBonus) fx.push(e.itemEffect.saveBonus(it.effects.saveBonus));
   if (it.effects.unarmoredAcBonus) fx.push(e.itemEffect.unarmored(it.effects.unarmoredAcBonus));
   for (const [a, v] of Object.entries(it.effects.setAbility ?? {})) if (v !== undefined) fx.push(e.itemEffect.setAbility(abilityShort(a), v));
+  // Kuyruk A5: diğer savaş alanlarının kısa özeti (bonus, isabet eki, yüklü büyüler, kullanım, kalıcı etki).
+  const b = it.bonus;
+  if (b?.weapon) fx.push(e.itemEffect.weapon(b.weapon));
+  if (b?.armor || b?.shield) fx.push(e.itemEffect.acBonus((b.armor ?? 0) + (b.shield ?? 0)));
+  if (b?.spell) fx.push(e.itemEffect.spell(b.spell));
+  if (it.onHit && it.onHit.dice !== '0') fx.push(e.itemEffect.onHit(it.onHit.dice, it.onHit.type));
+  if (it.spells?.length) fx.push(e.itemEffect.spells(it.spells.map((x) => x.name).join(', '), it.charges));
+  if (it.use) fx.push(e.itemEffect.use[it.use.kind] ?? '');
+  if (it.passive && Object.keys(it.passive).length) fx.push(e.itemEffect.passive);
   return [...(fx.length ? fx : [it.text]), it.attunement ? e.attunement : ''].filter(Boolean).join(' · ');
+}
+
+/** Kuyruk A5: eşyanın savaşta veriyle tanımlı bir etkisi var mı (yoksa "Game Master işler"). */
+export function itemHasMechanic(it: Item): boolean {
+  return Object.keys(it.effects).length > 0 || !!(it.use || it.spells?.length || it.bonus || it.onHit || it.attack || it.paket || (it.passive && Object.keys(it.passive).length));
 }
 
 export function itemDetail(it: Item): string {
   const e = t().equip;
-  const auto = Object.keys(it.effects).length > 0;
+  const auto = itemHasMechanic(it);
   return `${it.name}: ${itemSummary(it)}${auto ? '' : ` (${e.noMechanic})`}.`;
 }

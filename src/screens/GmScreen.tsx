@@ -7,12 +7,16 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { classes, monsters, type Monster } from '../data';
 import type { DragonWakeMode } from '../battle/types';
 import { isWideMap, maps, pickerVisible, variantLabel } from '../map/maps';
-import { celestialEnabled, upperLevelsEnabled } from '../app/features';
+import { alignmentEnabled, characterHouseRules, upperLevelsEnabled } from '../app/features';
+import { AlignmentPanel } from '../ui/gm/AlignmentPanel';
+import { alignmentMoralOn } from '../rules/alignmentMoral';
+import { alignmentLongRest } from '../rules/alignmentRest';
 import REGIONS from '../../harita/_ortak/harita-bolgeleri.json';
 import { TIERS, crNumber, fitsMap, monsterEnv, tierOf, winterPick } from '../data/monsterEnv';
 import { optionalRules } from '../battle/maprules';
 import { characterProblems, type SavedCharacter } from '../rules/builder';
 import { currentStatus, fullStatus, isRested, longRestStatus } from '../rules/characterRest';
+import { MAX_LEVEL, changeLevel } from '../app/levelChange';
 import { statusBlock } from '../app/partyStatus';
 import { regenWarning } from '../battle/encounterWarn';
 import { createMapBattle, customMonster, customMonsterCr, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput, civilianHexProblem, civilianRule, dragonSetup, maxCivilians, type CivilianPlacement } from '../app/setup';
@@ -231,11 +235,32 @@ export function GmScreen(props: {
               <span key={c.id} className="chip off">{c.sheet.name} · {G.blocked[statusBlock(c) ?? ''] ?? ''}</span>
             ))}
           </div>
+          {/* Kuyruk K49: Game Master seviye değiştirir (yükseltme: ortalama HP, yeni özellik ve slotlar; düşürme onaylı). */}
+          {props.onUpdateCharacters && ready.length > 0 && (
+            <details className="gm-levels">
+              <summary>{G.levelChange}</summary>
+              {ready.map((c) => (
+                <label key={c.id} className="gm-row">{c.sheet.name}
+                  <select value={c.sheet.level} onChange={(e: { target: { value: string } }) => {
+                    const to = Number(e.target.value);
+                    if (to < c.sheet.level && !window.confirm(G.levelDownConfirm(c.sheet.name, c.sheet.level, to))) return;
+                    props.onUpdateCharacters?.(props.characters.map((x) => (x.id === c.id ? changeLevel(x, to, new Date().toISOString()) : x)));
+                  }}>
+                    {Array.from({ length: MAX_LEVEL }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+                  </select>
+                </label>
+              ))}
+            </details>
+          )}
+          {/* Kuyruk K51: hizalanma paneli (ev kuralı açıkken). */}
+          {props.onUpdateCharacters && alignmentEnabled() && props.characters.length > 0 && (
+            <AlignmentPanel characters={props.characters} onUpdate={(list) => props.onUpdateCharacters?.(list)} moralBond={alignmentMoralOn(houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()))} />
+          )}
           {tired.length > 0 && props.onUpdateCharacters && (
             <div className="gm-row">
               <small className="mute">{G.restNote}</small>
               <button className="ghost" onClick={() => props.onUpdateCharacters?.(props.characters.map((c) =>
-                (tired.includes(c) ? { ...c, status: longRestStatus(c.sheet, c.status) } : c)))}>{G.restAll}</button>
+                (tired.includes(c) ? alignmentLongRest({ ...c, status: longRestStatus(c.sheet, c.status) }) : c)))}>{G.restAll}</button>
             </div>
           )}
         </section>
@@ -472,7 +497,7 @@ export function GmScreen(props: {
           </label>
           <MapRulesPanel key={`${map.id}/${variant.id}`} mapId={map.id} variantId={variant.id} toggles={ruleToggles} params={ruleParams}
             onChange={(tg, ps) => { setRuleToggles(tg); setRuleParams(ps); }} />
-          <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer, celestialEnabled())} onChange={setHouseRules} />
+          <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules())} onChange={setHouseRules} />
           <GroupsPanel groups={map?.groups ?? []} value={groupStates} onChange={setGroupStates} />
           <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
           <button className="cta" disabled={problems.length > 0}
@@ -481,7 +506,7 @@ export function GmScreen(props: {
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, celestialEnabled()), ...(multiHex ? { multiHex: true } : {}), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()), ...(multiHex ? { multiHex: true } : {}), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

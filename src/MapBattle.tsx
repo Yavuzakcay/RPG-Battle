@@ -5,6 +5,13 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
+import { imzaHex as imzaHex0, imzaTargeted as imzaTargeted0 } from './battle/imza';
+import type { UsableFeature } from './battle/types';
+
+/** Görev P0: hedef/altıgen isteyen özellik (imza ya da ek paket düğmesi). */
+const featTargeted = (f: UsableFeature): boolean => imzaTargeted0(f.key) || (f.effect.kind === 'paket' && !!f.effect.target);
+const featHex = (f: UsableFeature | undefined): 'hex' | 'after' | null => (!f ? null : imzaHex0(f.key) ?? (f.effect.kind === 'paket' ? f.effect.hex ?? null : null));
+import { needSensed } from './battle/imza54';
 import { changeFloorProblem, floorLinkOf } from './battle/floors';
 import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { overchannelProblem } from './battle/apex';
@@ -56,7 +63,7 @@ import { movableZoneOf } from './battle/zones';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionTip } from './ui/actionHints';
-import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark } from './ui/damageFloats';
+import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -72,9 +79,11 @@ import { pickArea } from './battle/areaAttack';
 import { climbTargets } from './battle/climb';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
+import { mechanicsAt, sigmayanNote } from './battle/spellVersion';
+import { breathOf } from './battle/breath';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
-import { LOOP_SCALE, ROTATE_MS, beamFor, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
+import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { ReactionPrompt } from './ui/ReactionPrompt';
@@ -96,6 +105,9 @@ const DiceTray = lazy(() => import('./ui/DiceTray'));
 const EffectsLayer = lazy(() => import('./ui/EffectsLayer'));
 // Savaş sonu efekti (Görev U): yalnızca savaş bu ekranda bitince yüklenir.
 const EndFx = lazy(() => import('./ui/EndFx'));
+// Görev E1: efekt katmanları (tek seferlik vuruş/alan/ışın…, aura ve duvar) ayrı parça.
+const FxShots = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.FxShots })));
+const FxGround = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.FxGround })));
 const EndVideo = lazy(() => import('./ui/EndVideo'));
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
@@ -106,9 +118,11 @@ import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
 import { objectAttack, objectCommand } from './ui/gm/objectActions';
+import { throwProblem } from './battle/objectMotion';
 import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
+import { MoralBar } from './ui/MoralBar';
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -117,7 +131,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -171,6 +185,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
         <div>
           <strong>{displayName(c)}</strong>
           <small>{c.civilian ? `${c.name} · ` : ''}{D.stats(c.hp, c.maxHp, c.ac, c.speed, c.fly)}</small>
+          {c.moralMax !== undefined && <MoralBar moral={c.moral ?? 0} max={c.moralMax} />}
           {c.effects?.some((e) => e.noCast) && <span className="armor-badge" title={D.untrainedArmorTip}>⚠ {D.untrainedArmor}</span>}
         </div>
         <button className="hud-btn" aria-label={t().common.close} onClick={props.onClose}>✕</button>
@@ -332,7 +347,11 @@ const spellById = (id: string): Spell | undefined => spells.find((s) => s.id ===
 /** Kuyruk 19: altıgen hedefli sürdürmede motorun kabul ettiği altıgenler (Tree Stride, Faithful Hound). */
 function hexFollowKeys(state: BattleState, actorId: string): string[] {
   const a = state.combatants[actorId];
-  if (!a || !state.map || (!strideSpellOf(state, a) && !movableZoneOf(state, a))) return [];
+  // Kuyruk A6: noktaya tekrar (Call Lightning, `repeat.point`).
+  const pointSpell = a?.concentration ? spells.find((x) => x.name === a.concentration?.spell) : undefined;
+  const point = !!pointSpell && !!mechanicsAt(state, pointSpell).repeat?.point;
+  const held = !!a?.effects?.some((e) => e.held);
+  if (!a || !state.map || (!strideSpellOf(state, a) && !movableZoneOf(state, a) && !point && !held)) return [];
   return hexTryKeys(state, actorId, (h) => ({ type: 'spell_followup', actorId, targetId: actorId, targetHex: h }));
 }
 /** Motorun kabul ettiği altıgenler (zar atmadan deneme). */
@@ -390,7 +409,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk 19: Arcane Hand etkisi.
   // Kuyruk 19: genel hedef seçme kipi (Familiar saldırısı, Gaze of Two Minds): hedeften komut.
   const [pickCmd, setPickCmd] = useState<{ make: (id: string) => Command } | null>(null);
-  const [pickHexCmd, setPickHexCmd] = useState<{ make: (h: Offset) => Command } | null>(null);
+  const [pickHexCmd, setPickHexCmd] = useState<{ make: (h: Offset) => Command; hint?: string } | null>(null);
   const [handPick, setHandPick] = useState<'fist' | 'force' | 'grasp' | 'crush' | 'interpose'>('fist');
   // Kurulumda Find Familiar biçimi ve türü (Görev R3).
   const [famForm, setFamForm] = useState<string | null>(null);
@@ -402,11 +421,22 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const featureCommand = (me: Combatant, c: Combatant): Command => {
     const f = (me.features ?? []).find((x) => x.key === featureKey);
     // Görev CLERIC: Divine Spark hedef seçer (dosta iyileştirme, düşmana hasar; tür motorda hedefe göre).
-    if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash' || f?.effect.kind === 'celestialHeal') return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
+    if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash' || f?.effect.kind === 'celestialHeal' || f?.effect.kind === 'karadulGaze' || (f && featTargeted(f))) return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
     const pool = f?.resource ? resourceLeft(me, f.resource) : 0;
     const missing = Math.max(0, c.maxHp - c.hp);
     const cure = f?.effect.kind === 'healPool' && missing === 0 && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
     return { type: 'use_feature', actorId: me.id, feature: featureKey ?? '', targetId: c.id, amount: Math.min(pool, missing), ...(cure ? { cure: true } : {}) };
+  };
+  // Kuyruk K54: yaratık + altıgen isteyen imza eylemi (Zihin Gücü: Fırlat): parlama denetimi kendi altıgeniyle,
+  // hedefe tıklanınca altıgen seçimine geçer.
+  const featureProbe = (me: Combatant, c: Combatant): Command => {
+    const cmd = featureCommand(me, c);
+    return featureKey && featHex((me.features ?? []).find((x) => x.key === featureKey)) === 'after' && me.pos && cmd.type === 'use_feature' ? { ...cmd, to: me.pos } : cmd;
+  };
+  const featureGo = (me: Combatant, c: Combatant) => {
+    const cmd = featureCommand(me, c);
+    if (featureKey && featHex((me.features ?? []).find((x) => x.key === featureKey)) === 'after' && cmd.type === 'use_feature') { setPickHexCmd({ make: (h) => ({ ...cmd, to: h }) }); setMode('pickHex'); return; }
+    run(cmd);
   };
   const [aimHex, setAimHex] = useState<Offset | null>(null);
   // Alan eylemi (Görev R4): alan büyüsü, canavar nefesi/alan saldırısı ya da Dragonborn nefesi.
@@ -507,6 +537,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Görev V2: birden çok durumlu jetonda döngü efekti ROTATE_MS'de bir sıradakine geçer; yalnızca gerekince sayar.
   const rotating = fxOn && !reduceMotion && Object.values(state.combatants).some((c) => c.pos && loopEffectsFor(c).length > 1);
   const [fxNow, setFxNow] = useState(0);
+  // Görev E1: oynayan tek seferlik efektler (hedef jetonların durum döngüsü durur; ekran bütçesi paylaşılır).
+  const [fxShotInfo, setFxShotInfo] = useState<{ targets: Set<string>; count: number; loopBudget: number }>(() => ({ targets: new Set(), count: 0, loopBudget: MAX_ANIMATED }));
+  const fxGeo = useMemo(() => ({ hexCenter, tokenCenter: (c: Combatant) => tokenCenter(state, c), hexW: HEX_W, hexH: HEX_H }), [state]);
   useEffect(() => {
     if (!rotating) return;
     const timer = window.setInterval(() => setFxNow((n) => n + ROTATE_MS), ROTATE_MS);
@@ -538,6 +571,21 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     : null);
   const setup = state.status === 'setup';
   const active = state.status === 'active';
+  // Y2 G2: "Düşmanı oynat" düşman turlarını tek tek oynatır, aralarında bir çerçeve bırakır (yapay zekâ kararları arayüzü
+  // uzun süre bloklamasın). Zar ya da tepki beklerken durur; zar istemi iptal edilince zincir de biter.
+  const [enemyRun, setEnemyRun] = useState(0);
+  useEffect(() => {
+    if (!enemyRun || dice.pending || dice.reaction) return;
+    if (!active || actor?.side !== 'enemies') { setEnemyRun(0); return; }
+    const timer = window.setTimeout(() => dice.play((rng) => {
+      const next = autoplayEnemyTurns(session, rng, 1);
+      // Tur ilerlemediyse (hata) zincir durur.
+      if (next.state === session.state) setEnemyRun(0);
+      return next;
+    }), 0);
+    return () => window.clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enemyRun, session, dice.pending, dice.reaction]);
 
   // Yeni günlük satırları ve hatalar kısa süre toast olarak görünür.
   useEffect(() => {
@@ -686,7 +734,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'feature' && featureKey && actor) {
       // İyileştirme havuzu (Lay On Hands): motorun kabul ettiği dostlar (kendisi dahil).
       return new Set(Object.values(state.combatants)
-        .filter((c) => execute(state, featureCommand(actor, c), contextFor(state, actorId), () => 0.5).ok)
+        .filter((c) => execute(state, featureProbe(actor, c), contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
     if (mode === 'strike') {
@@ -716,7 +764,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'help') {
       // Yardım: bitişik düşmanlar (motorda denenerek).
       return new Set(Object.values(state.combatants)
-        .filter((c) => c.side !== actor?.side && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .filter((c) => c.id !== actorId && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
     if (mode === 'steer' && actor && !steerableSummon(state, actor)?.summon?.hand) return new Set(ramTargets(state, actor).map((c) => c.id));
@@ -865,6 +913,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const obj0 = objectAt(state, h);
     const secretObj = !!obj0 && concealed(state, obj0);
     const obj = obj0 && (!secretObj || showHidden) ? obj0 : null;
+    // A1: "Nesne fırlat": önce bitişik nesne, sonra hedef altıgen (motor geçerliliği vurgular).
+    if (obj && active && actor && mode === 'throwObj') {
+      const why0 = throwProblem(state, actor, obj);
+      if (why0) { toast(why0); return; }
+      setPickHexCmd({ make: (to) => ({ type: 'object_use', actorId, objectId: obj.id, action: 'throw', to }), hint: B.hint.throwTarget }); setMode('pickHex');
+      return;
+    }
     if (obj && active && actor && (mode === 'attack' || mode === 'object')) {
       const cmd = mode === 'attack' ? objectAttack(actor, obj) : objectCommand(state, actor, obj);
       // Game Master görünümünde gizli nesneye dokunmak önce onu açığa çıkarır (Game Master komutu).
@@ -952,7 +1007,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'aim' && areaAct && c.pos) { setAimHex(c.pos); return; }
     if (mode === 'erupt' && c.pos) { run({ type: 'map_trigger', rule: 'eruption', at: c.pos }); return; }
     // Kendine: iyileştirme havuzu ve koruma büyüsü (Shield of Faith) kendine de yapılır.
-    if (c.id === actorId && mode === 'feature' && glowing.has(c.id) && actor) { run(featureCommand(actor, c)); return; }
+    if (c.id === actorId && mode === 'feature' && glowing.has(c.id) && actor) { featureGo(actor, c); return; }
     if (c.id === actorId && mode === 'spell' && spell && actor && (spell.mechanics.ward || spell.mechanics.kind === 'heal')) {
       run({ type: 'cast_spell', actorId, spellName: spell.name, targetId: actorId, ...slotFields(slotPick) }); return;
     }
@@ -963,7 +1018,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return;
     }
     if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
-    if (mode === 'feature' && glowing.has(c.id) && actor) run(featureCommand(actor, c));
+    if (mode === 'feature' && glowing.has(c.id) && actor) featureGo(actor, c);
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
@@ -974,6 +1029,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
     if (mode === 'pick' && pickCmd && glowing.has(c.id)) run(pickCmd.make(c.id));
     if (mode === 'steer' && glowing.has(c.id) && c.pos) run({ type: 'summon_move', actorId, to: c.pos, ramId: c.id });
+    // A1: altıgen seçiminde (nesne fırlatma hedefi) vurgulu yaratık jetonuna dokunmak o altıgeni seçer.
+    if (mode === 'pickHex' && pickHexCmd && c.pos && summonKeys.has(hexKey(c.pos))) run(pickHexCmd.make(c.pos));
   };
   const press = (h: Offset) => ({
     onPointerDown: () => {
@@ -1068,7 +1125,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       attack: attackTargets(state, actorId).length,
       shove: tryOn((id) => ({ type: 'shove', actorId, targetId: id, effect: 'prone' })),
       help: tryOn((id) => ({ type: 'help', actorId, targetId: id })),
-      followup: actor.concentration ? tryOn((id) => ({ type: 'spell_followup', actorId, targetId: id }), true) : 0,
+      followup: actor.concentration || actor.effects?.some((e) => e.held) ? tryOn((id) => ({ type: 'spell_followup', actorId, targetId: id }), true) : 0,
     };
   }, [state, actorId, menuShown]);
   const firstStart = session.events[0]?.type === 'battle_started' ? session.events[0].state.combatants[actorId] : undefined;
@@ -1100,7 +1157,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       act: () => { reset(); setMode('offhand'); setMenuOpen(false); } }] : []),
     ...(actor.spellNames.length > 0 ? [{ key: 'spell', label: N.spell, reason: spellReason, act: () => { reset(); setMode('spells'); setMenuOpen(false); } }] : []),
     // Alan eylemleri (Görev R4): nefes, koni/çizgi saldırıları, Dragonborn Breath Weapon.
-    ...(state.map && (areaAttacksOf(actor).length > 0 || actor.breath) ? [{ key: 'area', label: t().area.menu,
+    ...(state.map && (areaAttacksOf(actor).length > 0 || breathOf(actor)) ? [{ key: 'area', label: t().area.menu,
       act: () => { reset(); setMode('areas'); setMenuOpen(false); } }] : []),
     { key: 'hide', label: N.hide, reason: hideReason ?? undefined, act: () => run(bonusCmd('hide')) },
     { key: 'shove', label: N.shove,
@@ -1121,6 +1178,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Görev S2: bitişik kapı, masa ya da mangal.
     ...((state.map?.objects ?? []).some((o) => actor.pos && distance(o.at, actor.pos) <= 1 && !concealed(state, o) && objectCommand(state, actor, o)) ? [{ key: 'object', label: N.object,
       act: () => { reset(); setMode('object'); setMenuOpen(false); } }] : []),
+    // A1: bitişik hafif/orta hareketli nesneyi fırlat (eylem; Game Master anahtarı "Nesne hareketi").
+    ...((state.map?.objects ?? []).some((o) => !concealed(state, o) && !throwProblem(state, actor, o)) ? [{ key: 'throwObject', label: N.throwObject,
+      reason: ((o) => (o ? why({ type: 'object_use', actorId, objectId: o.id, action: 'throw', to: o.at }) ?? undefined : undefined))((state.map?.objects ?? []).find((x) => !throwProblem(state, actor, x))),
+      act: () => { reset(); setMode('throwObj'); setMenuOpen(false); } }] : []),
     { key: 'search', label: N.search, reason: why({ type: 'search', actorId }) ?? undefined, act: () => run({ type: 'search', actorId }) },
     ...(actor.conditions.includes('Prone') ? [{ key: 'stand', label: N.stand, reason: standUpProblem(actor) ?? undefined,
       act: () => run({ type: 'stand_up', actorId }) }] : []),
@@ -1198,13 +1259,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Kuyruk 19 (11–20): Nature Magician: Wild Shape kullanımları → tek slot (kullanım başına 2 seviye).
     ...(actor.traits?.includes('nature-magician') && globalRule(state, 'featuresK19') ? [1, 2, 3, 4].map((n) => ({ key: `magician-${n}`, label: N.natureMagician(n, Math.min(9, 2 * n)),
       reason: why({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'magician', uses: n }) })) : []),
-    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash' || f.effect.kind === 'celestialHeal'
+    ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash' || f.effect.kind === 'celestialHeal' || f.effect.kind === 'karadulGaze' || featTargeted(f)
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
-        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
+        // Kuyruk K50: hedefli imza eylemi hedef seçilene dek yalnız kaynak denetlenir.
+        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? (featTargeted(f) ? undefined : why({ type: 'use_feature', actorId, feature: f.key })) ?? undefined,
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
       : { key: f.key, label: N.featureName[f.key] ?? f.name,
-        reason: featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
-        act: () => (f.effect.kind === 'sanctuary'
+        reason: featHex(f) === 'hex' ? (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined)
+          : featureProblem(state, actor, { feature: f.key }) ?? why({ type: 'use_feature', actorId, feature: f.key }) ?? undefined,
+        act: () => (f.effect.kind === 'sanctuary' || featHex(f) === 'hex'
           // Kuyruk 19 (11–20): Nature's Sanctuary küpünün merkezi (varken taşıma) altıgenle seçilir.
           ? (reset(), setPickHexCmd({ make: (h) => ({ type: 'use_feature', actorId, feature: f.key, to: h }) }), setMode('pickHex'), setMenuOpen(false))
           : f.effect.kind === 'teleport' || f.effect.kind === 'landsAid' || f.effect.kind === 'blinkStep'
@@ -1220,6 +1283,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...(globalRule(state, 'srdK19') && !actor.riding && Object.values(state.combatants).some((m) => !mountProblem(state, actor, m.id))
       ? [{ key: 'mount', label: N.mount, act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'mount', actorId, mountId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
     ...(actor.riding ? [{ key: 'dismount', label: N.dismount, act: () => { reset(); setPickHexCmd({ make: (h) => ({ type: 'dismount', actorId, to: h }) }); setMode('pickHex'); setMenuOpen(false); } }] : []),
+    // Kuyruk K48: Moral tam modu: çökmüş dostu toparla (eylem; motorda denenerek).
+    ...(actor.moralMax !== undefined && Object.values(state.combatants).some((c) => c.moralMax !== undefined && c.effects?.some((e) => e.id === 'moral:cokmus') && c.id !== actorId)
+      ? [{ key: 'rally', label: t().view.moral.rally, reason: why({ type: 'moral_rally', actorId, targetId: Object.values(state.combatants).find((c) => c.id !== actorId && c.effects?.some((e) => e.id === 'moral:cokmus'))?.id ?? '' }) ?? undefined,
+        act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'moral_rally', actorId, targetId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
     // Kuyruk 19: Alert'in Initiative Swap'ı (1. tur, sırasını oynamamış dostla).
     ...(actor.traits?.includes('alert') && state.round === 1 && globalRule(state, 'featuresK19') && !actor.traitTurns?.['initiative-swap']
       ? [{ key: 'iswap', label: N.iswap, act: () => { reset(); setPickCmd({ make: (id) => ({ type: 'initiative_swap', actorId, allyId: id }) }); setMode('pick'); setMenuOpen(false); } }] : []),
@@ -1250,6 +1317,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : actor.concentration.spell === 'Spiritual Weapon' ? N.weapon : N.repeat,
         reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
         act: () => { reset(); const sp = spellOf(actor.concentration?.spell ?? ''); if (sp?.mechanics.telekinesis && (state.kuralSurumu ?? 1) >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(true); setMode('tk'); } else setMode('followup'); setMenuOpen(false); } }] : []),
+    // Kuyruk A6: elde tutulan büyü (Produce Flame: Magic eylemiyle fırlat).
+    ...(actor.effects?.some((e) => e.held) && !(actor.concentration && spellOf(actor.concentration.spell)?.mechanics.repeat)
+      ? [{ key: 'followup', label: N.repeat, reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
+        act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
     { key: 'end', label: N.end, act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   const items: Item[] = moveMenu ? moveItems : mainItems;
@@ -1274,7 +1345,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     sphere: B.hint.sphereRoll,
     shift: B.hint.shift,
     pick: B.hint.pickTarget,
-    pickHex: B.hint.shift,
+    pickHex: pickHexCmd?.hint ?? B.hint.shift,
+    throwObj: B.hint.throwObject,
     shove: B.hint.shove,
     jump: B.hint.jump,
     steer: B.hint.steer,
@@ -1430,7 +1502,20 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const r = TOKEN_R;
             // Sürekli durum efektleri (Görev V, V2): jeton başına tek efekt (çoklu durumda sırayla), ekranda en çok sekiz
             // animasyon; efekt ayarı kapalıysa yok; tek seferlik hasar efekti oynarken o jetonun döngüsü duraklar.
-            const loops = placeLoops(ordered.map((x) => x.c), { enabled: fxOn, reduceMotion, now: fxNow, paused: new Set(floats.map((f) => f.targetId)) });
+            // Görev E1: efekt ayarı kapalıyken de durum gösterilir, yalnızca animasyonsuz (tek sabit kare). Tek seferlik efekt
+            // oynayan jetonun döngüsü durur; ekran bütçesi (12) tek seferliklerle paylaşılır.
+            const loops = placeLoops(ordered.map((x) => x.c), { enabled: true, reduceMotion: reduceMotion || !fxOn, now: fxNow,
+              budget: Math.max(0, Math.min(MAX_ANIMATED, fxShotInfo.loopBudget - floats.length)),
+              paused: new Set([...floats.map((f) => f.targetId), ...fxShotInfo.targets]) });
+            const loopAnimated = [...loops.entries()].filter(([, l]) => l.animated);
+            const tokenUsed = new Map<string, number>([...fxShotInfo.targets].map((id) => [id, 1]));
+            for (const [id] of loopAnimated) tokenUsed.set(id, (tokenUsed.get(id) ?? 0) + 1);
+            const ground = (
+              <Suspense key="fx-ground" fallback={null}>
+                <FxGround state={state} enabled={fxOn} reduceMotion={reduceMotion} geo={fxGeo} tokenUsed={tokenUsed}
+                  used={fxShotInfo.count + loopAnimated.length + floats.length} />
+              </Suspense>
+            );
             // Oyun akışı işaretleri (Görev V2): altıgen tabanından yukarı ışık hüzmesi, bütün jetonların arkasında ayrı katman.
             const beamOf = (c: Combatant): BeamKind | null => beamFor({
               turn: c.id === actorId && active, selected: c.id === selected && setup, target: c.id === targetId,
@@ -1469,6 +1554,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               </g>
             );
             return [
+              ground,
               beams,
               ...ordered.map(({ c, view, scale }) => {
                 const p = tokenCenter(state, c);
@@ -1487,13 +1573,17 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   <g key={c.id} className={cls}>
                     {filters.includes('prone') && <ellipse cx={p.x} cy={p.y + r * 0.62} rx={r * 0.95} ry={r * 0.32} className="prone-shadow" aria-hidden="true" />}
                     <g className="token-filter" style={look.filter || look.opacity < 1 ? { filter: look.filter || undefined, opacity: look.opacity } : undefined}
-                      transform={look.shrink < 1 ? `translate(${p.x} ${p.y}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
+                      transform={look.shrink < 1 || look.tilt ? `translate(${p.x} ${p.y}) rotate(${look.tilt ?? 0}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
                       <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
                         flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
                       {/* Takım halkası yalnızca resimsiz (baş harfli) jetonda: resimli jetonda `.fig ~ .ring` gizler (Görev V2). */}
                       <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     </g>
                     {c.unaware && <text x={p.x + r * 0.7} y={top + 6} className="unaware-mark" aria-hidden="true">?</text>}
+                    {/* Görev E1: baygın jetonun üstünde yüzen Z (uyuyanın Zzz rozeti ayrı); animasyon ayarı/hareketi azalt kapatır. */}
+                    {filters.includes('unconscious') && !c.asleep && (
+                      <text x={p.x + r * 0.55} y={top + 4} className={`fx-z${fxOn && !reduceMotion ? '' : ' still'}`} aria-hidden="true">Z</text>
+                    )}
                     {(() => {
                       // Tek döngü efekti (Görev V2); halka jetonun üstünde ortalı (ortası boş). Sıradakine geçişte kısa belirme.
                       const fx = loops.get(c.id);
@@ -1526,11 +1616,27 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
                     <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
-                    {[...statusIcons(c), ...effectIcons(state, c)].length > 0 && (
-                      <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
-                        {[...statusIcons(c), ...effectIcons(state, c)].map((s, i) => <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>)}
-                      </g>
-                    )}
+                    {/* Kuyruk K48: Moral çubuğu (tam mod; HP'nin altında, ayrı renk). */}
+                    {c.moralMax !== undefined && (<>
+                      <rect x={p.x - r} y={p.y + r + 12} width={2 * r} height={4} className="hpbg" />
+                      <rect x={p.x - r} y={p.y + r + 12} width={2 * r * Math.max(0, (c.moral ?? 0) / Math.max(1, c.moralMax))} height={4} className="moral" />
+                    </>)}
+                    {(() => {
+                      // Kuyruk A2: en çok 3 rozet (öncelik veriden), fazlası "+N".
+                      const all = [...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])] as StatusIcon[];
+                      if (all.length === 0) return null;
+                      const { shown, more } = limitBadges(all);
+                      return (
+                        <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
+                          {shown.map((s, i) => (s.img
+                            // Görev E1: ikon görseli (bitkinlikte kum saati + seviye).
+                            ? <g key={s.key}><title>{s.title}</title><image href={`${BASE}${s.img}`} x={-i * 20 - 11} y={-17} width={22} height={22} className="status-img" />
+                              {s.count ? <text x={-i * 20 + 8} y={4} className="status-count">{s.count}</text> : null}</g>
+                            : <text key={s.key} x={-i * 20} y={0}><title>{s.title}</title>{s.icon}</text>))}
+                          {more > 0 && <text key="more" x={-shown.length * 20} y={0} className="status-more"><title>{all.map((x) => x.title).join(', ')}</title>{`+${more}`}</text>}
+                        </g>
+                      );
+                    })()}
                     {c.asleep && (
                       <g className="zzz" transform={`translate(${p.x + r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`}>
                         <rect x={-4} y={-22} width={58} height={28} rx={14} />
@@ -1584,6 +1690,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               </g>
             );
           })}
+          <Suspense fallback={null}>
+            <FxShots state={state} events={session.events} enabled={fxOn} reduceMotion={reduceMotion} geo={fxGeo} onActive={setFxShotInfo}
+              lead={(fresh) => diceLead(liveDiceRolls(fresh, 0).length, timings)} />
+          </Suspense>
           {outcomes.map((m) => {
             const c = state.combatants[m.targetId];
             if (!c?.pos) return null;
@@ -1798,7 +1908,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small title={why ?? undefined}>{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
+                      <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
                     </button>
                   );
                 })}
@@ -2027,8 +2137,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const list: Array<{ key: string; label: string; act: AreaAct; why: string | null }> = [
               ...areaAttacksOf(actor).map((x) => ({ key: `m${x.index}`, label: x.name, act: { kind: 'monster', index: x.index } as AreaAct,
                 why: !x.ready ? A.recharge : economyBlock(state, actor, { type: 'monster_attack', actorId, targetId: '', attackIndex: x.index }) })),
-              ...(actor.breath?.shapes ?? []).map((sh) => ({ key: `b${sh.shape}`, label: A.breathShape(sh.shape, sh.sizeFt), act: { kind: 'breath', shape: sh.shape } as AreaAct,
-                why: (actor.resources[actor.breath?.resource ?? ''] ?? 0) <= 0 ? A.noUses : economyBlock(state, actor, { type: 'breath_weapon', actorId, shape: sh.shape, targetHex: actor.pos as Offset }) })),
+              ...(breathOf(actor)?.spec.shapes ?? []).map((sh) => ({ key: `b${sh.shape}`, label: A.breathShape(sh.shape, sh.sizeFt), act: { kind: 'breath', shape: sh.shape } as AreaAct,
+                why: !breathOf(actor)?.spell && (actor.resources[actor.breath?.resource ?? ''] ?? 0) <= 0 ? A.noUses : economyBlock(state, actor, { type: 'breath_weapon', actorId, shape: sh.shape, targetHex: actor.pos as Offset }) })),
             ];
             const size = { w: 240, h: Math.min(box.h - 16, 12 + list.length * 48) };
             const at = bubbleAt(actorPx, size, box, tokenR + 8);
@@ -2132,7 +2242,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             );
           })()}
           {active && actor?.side === 'enemies' && (
-            <button className="hud-btn enemy-play" onClick={() => dice.play((rng) => autoplayEnemyTurns(session, rng))}>{B.enemyPlay}</button>
+            <button className="hud-btn enemy-play" onClick={() => setEnemyRun((n) => n + 1)}>{B.enemyPlay}</button>
           )}
           {active && actor?.side === 'party' && actor.summon && (
             <button className="hud-btn enemy-play" onClick={() => { dice.play((rng) => autoplaySummonTurn(session, rng)); reset(); }}>{t().summons.autoplay}</button>
@@ -2244,7 +2354,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}
               whoName={dice.pending.request.by ? state.combatants[dice.pending.request.by]?.name ?? null : null}
-              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={dice.cancel} />
+              onEnter={dice.enter} onAuto={dice.autoRoll} onCancel={() => { setEnemyRun(0); dice.cancel(); }} />
           )}
 
           {drawerId && state.combatants[drawerId] && (

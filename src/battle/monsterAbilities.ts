@@ -9,6 +9,8 @@
  *   (bağlı alan), Hydra başları, zıplama; tur başı/sonu (`monsterTurnEvents`), ölüm patlaması (`deathBurstEvents`),
  *   hasar tepkileri (`damage-effects.ts`: emme, Freeze, Aversion to Fire).
  */
+import { forcedMove, MOTION_VERSION } from './motion';
+import { ruleVersion } from './ruleVersion';
 import data from '../../data/canavar-yetenekleri.json';
 import { getMonster } from '../data';
 import { distance, ring, type Offset } from '../rules/hex';
@@ -217,7 +219,7 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
         }
         return out.filter((e) => !(e.type === 'effect_added' && e.effect.id.startsWith(`leg:${me.id}:${a.id}`)));
       }
-      if (a.pushOnSave) for (const e of [...out]) if (e.type === 'save_resolved' && e.success && cur.combatants[e.targetId]) out.push(...pushOne(cur, me, cur.combatants[e.targetId] as Combatant, 1));
+      if (a.pushOnSave) for (const e of [...out]) if (e.type === 'save_resolved' && e.success && cur.combatants[e.targetId]) out.push(...pushOne(cur, me, cur.combatants[e.targetId] as Combatant, 1, rng));
       if (a.untilEscape || a.breakOnDamage) {
         return out.map((e) => (e.type === 'effect_added' && e.effect.id.startsWith(`leg:${me.id}:${a.id}`)
           ? { ...e, effect: { ...e.effect, ...(a.untilEscape ? { until: state.round + 600, ...(a.grappleDc ? { escapeCheck: { dc: a.grappleDc, skills: ['athletics', 'acrobatics'] } } : {}) } : {}), ...(a.breakOnDamage ? { breakOnDamage: true } : {}) } as ActiveEffect }
@@ -227,6 +229,9 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
     }
     case 'teleport': {
       if (a.nearTree && !treeNear(state, hexOf(actor))) return [];
+      // Kuyruk A2 (sürüm 30+): Tree Stride (SRD): 60 ft içindeki İKİNCİ bir ağacın 5 ft yakınındaki boş altıgene; düşmana en
+      // yakın olan. Eskiden efsanevi ışınlanmanın "varışta 2+ düşman" kuralı kullanılıyordu (tek düşmanda hiç çalışmıyordu).
+      if (a.nearTree && ruleVersion(state) >= 30) return treeStride(state, actor, a, foes);
       return legendaryTeleport(state, actor, { ...a, kind: 'teleport', ...(a.toward ? { burst: { radiusFt: 5, dice: '0', type: 'force', at: 'dest' } } : {}) } as LegendaryAction, foes, rng)
         .filter((e) => e.type === 'teleported');
     }
@@ -281,7 +286,7 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
       const t = Object.values(state.combatants).find((c) => c.side !== actor.side && c.hp > 0 && c.pos && c.conditions.includes(a.needsCondition ?? 'Restrained')
         && distance(hexOf(c), hexOf(actor)) * 5 <= (a.rangeFt ?? 30) && distance(hexOf(c), hexOf(actor)) > 1 && (!targetId || c.id === targetId));
       if (!t) return [];
-      return pullToward(state, actor, t, Math.floor((a.pullFt ?? 25) / 5));
+      return pullToward(state, actor, t, Math.floor((a.pullFt ?? 25) / 5), rng);
     }
     case 'drop': {
       // Swoop: yakaladığı yaratığı yarım uçuş hızı yüksekliğinden bırakır (SRD düşme hasarı 1d6/10 ft, Prone; yakalama biter).
@@ -338,7 +343,9 @@ function attackLike(state: BattleState, actor: Combatant, a: MonsterAbility, foe
     ...((a.conditions ?? []).includes('Prone') && !['H', 'G'].includes(t.size ?? 'M') ? [{ type: 'map_effect', rule: 'srdK19', targetId: t.id, text: `${a.tr}: Prone`, addCondition: 'Prone' } as BattleEvent] : [])];
 }
 
-function pushOne(s: BattleState, src: Combatant, t: Combatant, hexes: number): BattleEvent[] {
+function pushOne(s: BattleState, src: Combatant, t: Combatant, hexes: number, rng: Rng): BattleEvent[] {
+  // Kuyruk K53: sürüm 24+ tek zorla hareket girişi (varış kuralları, çarpma).
+  if (ruleVersion(s) >= MOTION_VERSION && src.pos) return forcedMove(s, t.id, 'push', hexes * 5, 'srdK19', rng, { origin: src.pos });
   let at = hexOf(t);
   const size = { cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 };
   for (let i = 0; i < hexes; i++) {
@@ -349,7 +356,8 @@ function pushOne(s: BattleState, src: Combatant, t: Combatant, hexes: number): B
   return at === hexOf(t) ? [] : [{ type: 'pushed', targetId: t.id, from: hexOf(t), to: at, by: 'srdK19' }];
 }
 
-function pullToward(s: BattleState, src: Combatant, t: Combatant, hexes: number): BattleEvent[] {
+function pullToward(s: BattleState, src: Combatant, t: Combatant, hexes: number, rng: Rng): BattleEvent[] {
+  if (ruleVersion(s) >= MOTION_VERSION && src.pos) return forcedMove(s, t.id, 'pull', hexes * 5, 'srdK19', rng, { origin: src.pos });
   let at = hexOf(t);
   const size = { cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 };
   for (let i = 0; i < hexes; i++) {
@@ -363,6 +371,26 @@ function pullToward(s: BattleState, src: Combatant, t: Combatant, hexes: number)
 
 const treeNear = (s: BattleState, h: Offset) => [h, ...ring(h, 1, { cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 })]
   .some((x) => /ağaç|tree|orman/i.test(terrainAt(s, x).name ?? ''));
+
+/** Kuyruk A2: Tree Stride varışı: başlangıçtaki ağaçlardan başka bir ağaca bitişik, boş, normal zemin; düşmana en yakın. */
+function treeStride(state: BattleState, actor: Combatant, a: MonsterAbility, foes: Combatant[]): BattleEvent[] {
+  if (!state.map || !actor.pos) return [];
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const isTree = (h: Offset) => /ağaç|tree|orman/i.test(terrainAt(state, h).name ?? '');
+  const from = hexOf(actor);
+  const startTrees = new Set([from, ...ring(from, 1, size)].filter(isTree).map((h) => `${h.col},${h.row}`));
+  const r = Math.floor((a.ft ?? 60) / 5);
+  const cand: Offset[] = [];
+  for (let row = 0; row < size.rows; row++) for (let col = 0; col < size.cols; col++) {
+    const h = { col, row };
+    if (distance(h, from) > r || distance(h, from) === 0 || occupantAt(state, h, actor.id) || terrainAt(state, h).movement !== 'normal') continue;
+    if (ring(h, 1, size).some((t) => isTree(t) && !startTrees.has(`${t.col},${t.row}`) && distance(t, from) <= r)) cand.push(h);
+  }
+  if (!cand.length) return [];
+  const score = (h: Offset) => (foes.length ? Math.min(...foes.map((f) => distance(hexOf(f), h))) : 0);
+  const to = cand.sort((x, y) => score(x) - score(y) || x.row - y.row || x.col - y.col)[0] as Offset;
+  return [{ type: 'teleported', actorId: actor.id, from, to, label: a.tr }];
+}
 
 /**
  * Yutma (SRD Swallow): yakaladığı (küçük ya da Large ve altı) hedef save; başarısızsa yutulur: Blinded + Restrained, hedef
@@ -404,7 +432,9 @@ function summonEvents(state: BattleState, actor: Combatant, a: MonsterAbility): 
   const out: BattleEvent[] = [];
   const idx = state.order.indexOf(actor.id) + 1;
   for (let k = 0; k < Math.min(a.count ?? 1, spots.length); k++) {
-    const id = `${actor.id}-${a.id}-${state.round}-${k}`;
+    // Y2: aynı turda ikinci çağrı (Loathsome Limbs iki tur sonunda) aynı kimliği üretmesin (sıra kilitlenirdi).
+    let id = `${actor.id}-${a.id}-${state.round}-${k}`;
+    for (let n = 2; state.combatants[id] || state.order.includes(id); n++) id = `${actor.id}-${a.id}-${state.round}-${k}-${n}`;
     const base = combatantFromMonster(getMonster(a.monster), { id, name: `${getMonster(a.monster).name} (${actor.name})` });
     const kept = a.onlyAttacks ? base.attacks.filter((x) => a.onlyAttacks?.includes(x.name)) : base.attacks;
     const c: Combatant = { ...base, ...(a.onlyAttacks && kept.length ? { attacks: kept } : {}), side: actor.side, pos: spots[k] as Offset, initiative: actor.initiative,

@@ -20,15 +20,24 @@ import { abilityModifier } from '../rules/abilities';
 import { adjustDamage, applyHealing } from '../rules/damage';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { distance, type Offset } from '../rules/hex';
+import { canSee } from './maprules';
+import { ruleVersion } from './ruleVersion';
+import { zoneSpecOf, zonesAt } from './zones';
 import type { ModeSource } from '../rules/modes';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { timedCondition } from './durations';
 import { teleportEvent, teleportHexes, teleportProblem } from './teleport';
+import { withArrival } from './motion';
 import { clericFeatureProblem, executeClericFeature } from './cleric';
 import { apexProblem, executeApex, isApex } from './apex';
 import { celestialProblem, executeCelestial } from './celestial';
+import { executeKaradul, karadulProblem } from './karadul';
+import { executeImza, imzaProblem } from './imza';
+import { executePaket, paketProblem } from './paket';
+import { needHealMoral } from './imza54';
+import { senseSees } from './sight';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
 
 type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string };
@@ -53,6 +62,9 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   // Kuyruk 19 (11–20): alt sınıf özellikleri (kaynak denetimi kendi içinde: Rage/Sorcery Point yedeği).
   if (isApex(f)) return apexProblem(state, actor, f, cmd);
   if (f.effect.kind === 'celestialHeal' || f.effect.kind === 'celestialAwakening') return celestialProblem(state, actor, f, cmd.targetId);
+  if (f.effect.kind === 'karadulGaze' || f.effect.kind === 'karadulSpider') return karadulProblem(state, actor, f, cmd.targetId);
+  if (f.effect.kind === 'imza') return imzaProblem(state, actor, f, cmd.targetId, cmd.to);
+  if (f.effect.kind === 'paket') return paketProblem(state, actor, f, cmd.targetId, cmd.to);
   const left = f.resource ? resourceLeft(actor, f.resource) : Infinity;
   // Görev SORCERER: Innate Sorcery kullanım bitince Sorcery Incarnate ile puanla da açılır (`innateSorceryEvents` denetler).
   if (left <= 0 && f.effect.kind !== 'innate' && f.effect.kind !== 'inspire') return `${f.name}: kullanım kalmadı.`;
@@ -110,6 +122,9 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   const e = f.effect;
   if (isApex(f)) return executeApex(state, actor, f, cmd, rng);
   if (e.kind === 'celestialHeal' || e.kind === 'celestialAwakening') return executeCelestial(state, actor, f, cmd.targetId, rng);
+  if (e.kind === 'karadulGaze' || e.kind === 'karadulSpider') return executeKaradul(state, actor, f, cmd.targetId, rng);
+  if (e.kind === 'imza') return executeImza(state, actor, f, cmd.targetId, rng, cmd.to);
+  if (e.kind === 'paket') return executePaket(state, actor, f, cmd.targetId, rng, cmd.to);
   if (e.kind === 'divineSpark' || e.kind === 'turnUndead' || e.kind === 'preserveLife' || e.kind === 'abjure') return executeClericFeature(state, actor, f, cmd, rng);
   if (e.kind === 'innate') return finish(state, innateSorceryEvents(state, actor, f.key, f.name, f.resource, e.rounds) as BattleEvent[]);
   if (e.kind === 'inspire') return finish(state, inspireEvents(state, actor, f, cmd.targetId as string));
@@ -138,13 +153,15 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
     if (amount > 0) {
       const hpAfter = applyHealing(target.hp, target.maxHp, amount);
       events.push({ type: 'healed', actorId: actor.id, targetId: target.id, label: f.name, amount: hpAfter - target.hp, targetHpAfter: hpAfter });
+      // Kuyruk K54: Muhtaç Sezgisi: Çökmüş dost Elle Şifa'yla 1 Motivasyon kazanır.
+      events.push(...needHealMoral(state, actor, target));
     }
     return finish(state, events);
   }
   if (e.kind === 'teleport') {
     if (!cmd.to) return fail('Işınlanılacak altıgeni seç.');
     if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
-    events.push(teleportEvent(actor, cmd.to, f.name));
+    events.push(...withArrival(state, events, [teleportEvent(actor, cmd.to, f.name)], rng));
     return finish(state, events);
   }
   // Görev F: kendine geçici HP (Tireless) ya da sonraki turunun sonuna dek durum (Nature's Veil: Invisible).
@@ -213,7 +230,7 @@ function withWeaponOverride(actor: Combatant, option: AttackOption): AttackOptio
   const w = e?.weaponOverride;
   if (!w) return option;
   const dmg = `${w.die}${w.mod === 0 ? '' : w.mod > 0 ? `+${w.mod}` : w.mod}`;
-  return { ...option, attackBonus: w.attack, damage: dmg, weaponDamage: w.die, abilityMod: w.mod, ...(w.force ? { altDamageType: 'force' } : {}) };
+  return { ...option, attackBonus: w.attack, damage: dmg, weaponDamage: w.die, abilityMod: w.mod, ...(w.force ? { altDamageType: 'force' } : {}), ...(w.type ? { damageType: w.type } : {}) };
 }
 
 /** Radiant (Sacred Weapon) ya da Force (Shillelagh) seçeneği: hedef silahın türüne dirençli ya da bağışıksa ve seçeneğe değilse o tür. */
@@ -269,18 +286,35 @@ export function effectiveAc(state: BattleState, target: Combatant): number {
 }
 
 /** Hedefe yapılan saldırıya koruma etkilerinden gelen avantaj/dezavantaj. */
-export function wardSources(state: BattleState, attacker: Combatant, target: Combatant, opts: { melee?: boolean } = {}): ModeSource[] {
+export function wardSources(state: BattleState, attacker: Combatant, target: Combatant, opts: { melee?: boolean; str?: boolean } = {}): ModeSource[] {
   const out: ModeSource[] = [];
   // Görev B1: süren etkiler. Hedefe saldırı dezavantajlı (Blur); saldıranın saldırısı dezavantajlı (Heat Metal,
   // Ray of Enfeeblement: başarısız save'de yalnızca STR tabanlı = yakın dövüş, başarılı save'de bir sonraki saldırı).
-  for (const e of target.effects ?? []) if (e.attackedDis) out.push({ effect: 'disadvantage', reason: e.name });
+  // Kuyruk A4: Blur'u Blindsight/Truesight menzilindeki saldıran yok sayar.
+  for (const e of target.effects ?? []) if (e.attackedDis && !(e.sensesPierce && senseSees(state, attacker, target))) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev B4: işaretli hedefe saldırı avantajlı (Faerie Fire).
-  for (const e of target.effects ?? []) if (e.attackedAdv) out.push({ effect: 'advantage', reason: e.name });
+  // Kuyruk A7 (Faerie Fire, `attackedAdvSee`): yalnızca hedefi gören saldırana (Blinded değil, karanlıkta görüyor).
+  const sees = () => !attacker.conditions.includes('Blinded') && canSee(state, attacker, target);
+  for (const e of target.effects ?? []) if ((e.attackedAdv && (!e.attackedAdvSee || sees())) || (e.attackedAdvBy && e.attackedAdvBy === attacker.id)) out.push({ effect: 'advantage', reason: e.name });
   // Kuyruk 19: Grappler feat'i (Attack Advantage): yakaladığı yaratığa saldırı avantajlı.
   if (attacker.traits?.includes('grappler') && target.grapple?.by === attacker.id && globalRule(state, 'featuresK19')) out.push({ effect: 'advantage', reason: 'Grappler' });
-  for (const e of attacker.effects ?? []) if (e.attackDis && (!e.attackDis.melee || opts.melee)) out.push({ effect: 'disadvantage', reason: e.name });
+  // Kuyruk A6 (sürüm 35, `str`): yalnızca STR tabanlı saldırı (Ray of Enfeeblement: Finesse'te DEX seçilmişse ve büyüde değil).
+  for (const e of attacker.effects ?? []) if (e.attackDis && (e.attackDis.str ? (opts.str ?? opts.melee) : (!e.attackDis.melee || opts.melee))) out.push({ effect: 'disadvantage', reason: e.name });
+  // Kuyruk A7 (sürüm 36): güneş ışığına duyarlı yaratık güneş ışığı alanında (Daylight) saldırıda dezavantajlı.
+  if (attacker.traits?.includes('sunlight-sensitive') && ruleVersion(state) >= 36 && zonesAt(state, attacker.pos).some((z) => (z.spec ?? zoneSpecOf(z))?.sunlight)) out.push({ effect: 'disadvantage', reason: 'Sunlight Sensitivity' });
   // Görev CLERIC: Bestow Curse: lanetleyene saldırılar dezavantajlı.
   for (const e of attacker.effects ?? []) if (e.attackDisVs === target.id) out.push({ effect: 'disadvantage', reason: e.name });
+  // Görev P7: meydan okuma: meydan okuyan dışındakine saldırı dezavantajlı.
+  for (const e of attacker.effects ?? []) if (e.tauntBy && e.tauntBy !== target.id && state.combatants[e.tauntBy]?.hp) out.push({ effect: 'disadvantage', reason: e.name });
+  // Kuyruk K54c: Hükümdar Sözü (sana ve 5 ft içindeki dostlarına), Yıldız Falı / Ölümsüz Taht (ilk saldırı zarı).
+  for (const e of attacker.effects ?? []) {
+    const n = e.attackDisNear;
+    if (n) {
+      const lord = state.combatants[n.id];
+      if (target.id === n.id || (lord && lord.side === target.side && lord.pos && target.pos && hexDistance(lord.pos, target.pos) * 5 <= n.ft)) out.push({ effect: 'disadvantage', reason: e.name });
+    }
+    if (e.firstRoll?.on.includes('attack')) out.push({ effect: e.firstRoll.mode, reason: e.name });
+  }
   for (const { spell, ward } of wardsOn(state, target)) {
     if (ward?.advantageAgainst) out.push({ effect: 'advantage', reason: spell });
     if (attacker.creatureType && ward?.disadvantageFromTypes?.includes(attacker.creatureType)) out.push({ effect: 'disadvantage', reason: spell });

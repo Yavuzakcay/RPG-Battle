@@ -1,0 +1,245 @@
+// Görev E1: siyah zeminli efekt sayfalarını kareye böler ve yatay şerit olarak yazar (sprite-ice `--efekt` kipi).
+// Kesim tablosu data/efekt-kesim.json; çıktı public/sprites/efekt-<ad>.webp + data/sprite-esleme.json `efektler`.
+// Saf yardımcılar (`cuts`, `gutterRuns`, `lumAlpha`) testten çağrılır.
+import fs from 'node:fs';
+import path from 'node:path';
+import sharp from 'sharp';
+
+const BLACK = 12;
+/** Parlaklıktan alfa (0..1): (max(R,G,B) − 12) / (255 − 12). */
+export const lumAlpha = (r, g, b) => Math.min(1, Math.max(0, (Math.max(r, g, b) - BLACK) / (255 - BLACK)));
+
+/** 'karanlik' kesim: n parçaya, beklenen sınırın ±%22 penceresinde profilin (3 px kayan toplam) en düşük yeri. */
+export function cuts(profile, n, from = 0, to = profile.length) {
+  const len = to - from;
+  const step = len / n;
+  const out = [from];
+  for (let k = 1; k < n; k++) {
+    const nominal = from + k * step;
+    const win = Math.round(step * 0.22);
+    let best = Math.round(nominal); let bestV = Infinity;
+    for (let x = Math.round(nominal) - win; x <= Math.round(nominal) + win; x++) {
+      if (x < from + 1 || x > to - 2) continue;
+      const v = profile[x - 1] + profile[x] + profile[x + 1] + Math.abs(x - nominal) * 0.01;
+      if (v < bestV) { bestV = v; best = x; }
+    }
+    out.push(best);
+  }
+  out.push(to);
+  return out.slice(0, -1).map((a, i) => [a, out[i + 1]]);
+}
+
+/** 'oluk' kesim: boydan boya en düşük parlaklığı `thr`'nin üstünde olan çizgiler oluk; aralardaki (≥ 20 px) koşular hücre. */
+export function gutterRuns(minProfile, thr = 15, flat = null) {
+  const out = [];
+  let start = -1;
+  // Oluk gri çizgidir: en düşük parlaklık eşiğin üstünde ve çizginin çoğu tek ton (`flat`: ortancaya ±15 içindeki pay ≥ %60;
+  // içerik bandı değil; duvar bandını kesen ızgara çizgisi de oluk sayılır).
+  // Oluk incedir (≤ 16 px; dış çerçeve kenarda olduğundan sınırsız): daha kalın tek tonlu koşu içerik bandıdır (duvar).
+  const n = minProfile.length;
+  const g = Array.from({ length: n }, (_, i) => minProfile[i] > thr && (!flat || flat[i] >= 0.6));
+  for (let i = 0; i < n;) {
+    if (!g[i]) { i++; continue; }
+    let j = i; while (j < n && g[j]) j++;
+    if (j - i > 16 && i > 0 && j < n) for (let k = i; k < j; k++) g[k] = false;
+    i = j;
+  }
+  for (let i = 0; i <= n; i++) {
+    const cell = i < n && !g[i];
+    if (cell && start < 0) start = i;
+    if (!cell && start >= 0) { if (i - start >= 20) out.push([start, i]); start = -1; }
+  }
+  return out;
+}
+
+/** Çizgi histogramlarından (256 kutu) ortancaya ±15 içindeki pay. */
+function flatness(hists, n) {
+  return hists.map((hist) => {
+    let acc = 0; let med = 0;
+    for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc * 2 >= n) { med = v; break; } }
+    let near = 0;
+    for (let v = Math.max(0, med - 15); v <= Math.min(255, med + 15); v++) near += hist[v];
+    // Parlak tek tonlu içerik (duvar bandı) oluk değil: oluk koyu gridir (ortanca ≤ 110).
+    return med <= 110 ? near / n : 0;
+  });
+}
+
+async function rawOf(file) {
+  const { data, info } = await sharp(file).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { width: w, height: h } = info;
+  const lum = new Float32Array(w * h);
+  for (let k = 0; k < w * h; k++) lum[k] = Math.max(data[k * 3], data[k * 3 + 1], data[k * 3 + 2]);
+  return { data, w, h, lum };
+}
+
+/** Hücre ızgarası: satır bantları ve her bantta sütun aralıkları. */
+function grid(img, spec) {
+  const { w, h, lum } = img;
+  if (spec.kesim === 'esit') {
+    // Düzenli ızgara: eşit bölme, her hücre çizgi kalınlığı kadar (`kenar`) içeriden.
+    const k = spec.kenar ?? 0;
+    const part = (len, n) => Array.from({ length: n }, (_, i) => [Math.round(i * len / n) + k, Math.round((i + 1) * len / n) - k]);
+    const cols = part(w, spec.sutun);
+    return part(h, spec.satir).map((y) => ({ y, cols }));
+  }
+  if (spec.kesim === 'oluk') {
+    const colMin = new Float32Array(w).fill(255); const rowMin = new Float32Array(h).fill(255);
+    const colH = Array.from({ length: w }, () => new Uint32Array(256)); const rowH = Array.from({ length: h }, () => new Uint32Array(256));
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const v = lum[y * w + x];
+      if (v < colMin[x]) colMin[x] = v; if (v < rowMin[y]) rowMin[y] = v; colH[x][v]++; rowH[y][v]++;
+    }
+    // Oluk kenarındaki yumuşatılmış gri pikseller kalmasın: hücreler `kenar` px içeriden.
+    const k = spec.kenar ?? 0;
+    const inset = (runs) => runs.map(([a, b]) => [a + k, b - k]);
+    const rows = inset(gutterRuns(rowMin, 15, flatness(rowH, w))); const cols = inset(gutterRuns(colMin, 15, flatness(colH, h)));
+    return rows.map((r) => ({ y: r, cols }));
+  }
+  const rowMax = new Float32Array(h);
+  for (let y = 0; y < h; y++) { let m = 0; for (let x = 0; x < w; x++) m = Math.max(m, lum[y * w + x]); rowMax[y] = m; }
+  return cuts(rowMax, spec.satir, 0, h).map(([y0, y1]) => {
+    const colMax = new Float32Array(w);
+    for (let x = 0; x < w; x++) { let m = 0; for (let y = y0; y < y1; y++) m = Math.max(m, lum[y * w + x]); colMax[x] = m; }
+    return { y: [y0, y1], cols: cuts(colMax, spec.sutun, 0, w) };
+  });
+}
+
+/** Hücreyi RGBA'ya (parlaklık alfası, renk alfaya bölünmüş) çevirir. */
+function cellRgba(img, x0, y0, x1, y1) {
+  const cw = x1 - x0; const ch = y1 - y0;
+  const out = Buffer.alloc(cw * ch * 4);
+  let peak = 0;
+  for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) {
+    const s = ((y0 + y) * img.w + (x0 + x)) * 3; const d = (y * cw + x) * 4;
+    const [r, g, b] = [img.data[s], img.data[s + 1], img.data[s + 2]];
+    const a = lumAlpha(r, g, b);
+    if (a > peak) peak = a;
+    out[d] = a > 0 ? Math.min(255, Math.round(r / a)) : 0;
+    out[d + 1] = a > 0 ? Math.min(255, Math.round(g / a)) : 0;
+    out[d + 2] = a > 0 ? Math.min(255, Math.round(b / a)) : 0;
+    out[d + 3] = Math.round(a * 255);
+  }
+  return { buf: out, w: cw, h: ch, peak };
+}
+
+/** Bir sayfayı keser: { ad → { frames: Buffer[], fw, fh } } + ızgara raporu. */
+export async function sliceSheet(file, spec, emptyThr = 0.04) {
+  const img = await rawOf(file);
+  const g = grid(img, spec);
+  const report = { file: path.basename(file), size: `${img.w}×${img.h}`, rows: g.length, cols: g.map((r) => r.cols.length) };
+  if (g.length !== spec.satir || g.some((r) => r.cols.length !== spec.sutun)) {
+    throw new Error(`${report.file}: ızgara ${g.length} satır × [${report.cols.join(',')}] sütun; beklenen ${spec.satir}×${spec.sutun}`);
+  }
+  const per = spec.blokSatir ?? 1;
+  if (spec.adlar.length * per !== spec.satir) throw new Error(`${report.file}: ${spec.adlar.length} ad × ${per} satır ≠ ${spec.satir}`);
+  const result = {};
+  for (let n = 0; n < spec.adlar.length; n++) {
+    const cells = g.slice(n * per, n * per + per).flatMap((r) => r.cols.map((c) => cellRgba(img, c[0], r.y[0], c[1], r.y[1])));
+    // Sondaki boş kareler (ızgarada var, içerik yok) atılır.
+    let count = cells.length;
+    while (count > 1 && cells[count - 1].peak < emptyThr) count--;
+    // Kuyruk A2: tabloda kare sınırı (ham sayfa değişmeden; alan-yildirim'in son iki karesi ateş közü).
+    const cap = spec.kareSiniri?.[spec.adlar[n]];
+    if (cap && cap < count) count = cap;
+    const used = cells.slice(0, count);
+    let fw; let fh; let frames;
+    if (spec.kare === 'serit') {
+      // En-boy korunur; bütün karelerin içerik bandına (dikey) kırpılır, aynı pencere (titreme yok).
+      let top = Infinity; let bot = -1;
+      for (const c of used) for (let y = 0; y < c.h; y++) for (let x = 0; x < c.w; x++) if (c.buf[(y * c.w + x) * 4 + 3] > 8) { top = Math.min(top, y); bot = Math.max(bot, y); }
+      top = Math.max(0, top - 4); bot = Math.min(Math.min(...used.map((c) => c.h)) - 1, bot + 4);
+      const cw = Math.min(...used.map((c) => c.w));
+      fw = spec.boyut; fh = Math.max(8, Math.round(spec.boyut * (bot - top + 1) / cw));
+      frames = await Promise.all(used.map((c) => sharp(c.buf, { raw: { width: c.w, height: c.h, channels: 4 } })
+        .extract({ left: Math.floor((c.w - cw) / 2), top, width: cw, height: bot - top + 1 }).resize(fw, fh, { fit: 'fill' }).raw().toBuffer()));
+    } else {
+      // Kare: hücreler en büyük kenarlı kare tuvale, hücre ortası tuval ortasına; sonra hedef boya.
+      const S = Math.max(...used.map((c) => Math.max(c.w, c.h)));
+      fw = fh = spec.boyut;
+      frames = await Promise.all(used.map(async (c) => {
+        const canvas = Buffer.alloc(S * S * 4);
+        const ox = Math.floor((S - c.w) / 2); const oy = Math.floor((S - c.h) / 2);
+        for (let y = 0; y < c.h; y++) c.buf.copy(canvas, ((oy + y) * S + ox) * 4, y * c.w * 4, (y + 1) * c.w * 4);
+        return sharp(canvas, { raw: { width: S, height: S, channels: 4 } }).resize(fw, fh, { kernel: 'lanczos3' }).raw().toBuffer();
+      }));
+    }
+    result[spec.adlar[n]] = { frames, fw, fh, dropped: cells.length - count, grid: cells.length };
+  }
+  return { result, report };
+}
+
+/** Kareleri yatay şeride birleştirip webp yazar. */
+export async function writeStrip(outFile, { frames, fw, fh }) {
+  const strip = Buffer.alloc(fw * frames.length * fh * 4);
+  frames.forEach((f, i) => { for (let y = 0; y < fh; y++) f.copy(strip, (y * fw * frames.length + i * fw) * 4, y * fw * 4, (y + 1) * fw * 4); });
+  await sharp(strip, { raw: { width: fw * frames.length, height: fh, channels: 4 } }).webp({ quality: 86, alphaQuality: 90, effort: 5 }).toFile(outFile);
+}
+
+/** Macenta zeminli ikon sayfası: eşit ızgara, her hücre sprite-ice anahtarıyla temizlenip 128 px kareye ortalanır. */
+export async function sliceIcons(file, spec, outDir, processSprite) {
+  const meta = await sharp(file).metadata();
+  const cw = meta.width / spec.sutun; const ch = meta.height / spec.satir;
+  const out = [];
+  for (let i = 0; i < spec.adlar.length; i++) {
+    const r = Math.floor(i / spec.sutun); const c = i % spec.sutun;
+    const left = Math.round(c * cw); const top = Math.round(r * ch);
+    const cell = await sharp(file).extract({ left, top, width: Math.round((c + 1) * cw) - left, height: Math.round((r + 1) * ch) - top }).png().toBuffer();
+    const p = await processSprite(cell, { size: spec.boyut - 8, tol: spec.tolerans ?? 70 });
+    const name = `efekt-ikon-${spec.adlar[i]}`;
+    await sharp({ create: { width: spec.boyut, height: spec.boyut, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+      .composite([{ input: p.buffer, gravity: 'centre' }]).webp({ lossless: true }).toFile(path.join(outDir, `${name}.webp`));
+    out.push({ id: spec.adlar[i], name, w: p.width, h: p.height, warnings: p.warnings });
+  }
+  return out;
+}
+
+/** `--efekt` kipi: kesim tablosundaki her sayfa (ad eşleşmesi uzantıdan bağımsız). */
+/** `processSprite`: sprite-ice'ın macenta anahtarlı temizleyicisi (döngüsel içe aktarma olmasın diye parametre). */
+export async function importEffects({ src = 'assets-ham/efekt', out = 'public/sprites', table = 'data/efekt-kesim.json', esleme = 'data/sprite-esleme.json', processSprite } = {}) {
+  const T = JSON.parse(fs.readFileSync(table, 'utf8'));
+  if (!fs.existsSync(src)) { console.log(`${src} yok; işlenecek efekt sayfası yok.`); return null; }
+  const files = fs.readdirSync(src).filter((f) => /\.(png|jpe?g|webp)$/i.test(f));
+  const byName = new Map(files.map((f) => [f.replace(/\.(png|jpe?g|webp)$/i, '').toLowerCase(), f]));
+  fs.mkdirSync(out, { recursive: true });
+  const records = {}; const icons = {}; const missing = []; const notes = [];
+  for (const [sheet, spec] of Object.entries(T.sayfalar)) {
+    const f = byName.get(sheet);
+    if (!f) { missing.push(sheet); continue; }
+    byName.delete(sheet);
+    const file = path.join(src, f);
+    if (spec.ikon) {
+      for (const ic of await sliceIcons(file, spec, out, processSprite)) {
+        icons[ic.id] = ic.name;
+        console.log(`${f} → ${ic.name}.webp (${ic.w}×${ic.h} içerik)${ic.warnings.length ? ` ⚠ ${ic.warnings.join('; ')}` : ''}`);
+      }
+      continue;
+    }
+    const { result, report } = await sliceSheet(file, spec, T.bosEsik);
+    console.log(`${f} ${report.size}: ${report.rows} satır × ${report.cols[0]} sütun`);
+    for (const [ad, r] of Object.entries(result)) {
+      const name = `efekt-${ad}`;
+      await writeStrip(path.join(out, `${name}.webp`), r);
+      if (r.dropped) notes.push(`${name}: ızgarada ${r.grid} kare, sondaki ${r.dropped} kare atıldı (boş ya da kare sınırı) → ${r.frames.length}`);
+      records[name] = {
+        kare: r.frames.length, sure: r.frames.length * spec.kareMs, tur: spec.turler?.[ad] ?? spec.tur, karisim: 'screen', yon: spec.yonler?.[ad] ?? null,
+        en: r.fw, boy: r.fh, dongu: !!spec.dongu, kaynak: `${sheet}`, ...(spec.ortusme ? { ortusme: spec.ortusme } : {}),
+      };
+      console.log(`  ${name}.webp ${r.frames.length} kare ${r.fw}×${r.fh}${r.dropped ? ` (sondaki ${r.dropped} kare atıldı: boş ya da kare sınırı)` : ''}`);
+    }
+  }
+  // Elle biçimlenmiş dosya korunur: üretilen bölümler en sonda (varsa önce kesilir), kayıtlar tek satır.
+  const text = fs.readFileSync(esleme, 'utf8');
+  const cut = text.indexOf(',\n  "efektNotu"');
+  const head = (cut >= 0 ? text.slice(0, cut) : text.slice(0, text.lastIndexOf('}'))).replace(/\s+$/, '');
+  const one = (v) => JSON.stringify(v).replace(/^\{/, '{ ').replace(/\}$/, ' }').replace(/":/g, '": ').replace(/,"/g, ', "');
+  const block = (o) => `{\n${Object.entries(o).map(([k, v]) => `    ${JSON.stringify(k)}: ${typeof v === 'object' ? one(v) : JSON.stringify(v)}`).join(',\n')}\n  }`;
+  const E = {};
+  E.efektNotu = 'Görev E1 (npm run sprite-ice -- --efekt üretir; elle düzenlenmez): efekt-<ad> → kare sayısı, toplam süre (ms), tür, karışım (screen: siyah zeminli sayfa, parlaklıktan alfa), yön (şeridin baktığı yön; null yönsüz), kare boyu (en×boy px), döngü, kaynak sayfa; ışında ortusme parçaların üst üste binme oranı. efektIkonlari: durum (SRD adı küçük harf) → ikon sprite adı (128 px, macenta anahtarla).';
+  E.efektler = Object.fromEntries(Object.entries(records).sort(([a], [b]) => a.localeCompare(b)));
+  E.efektIkonlari = icons;
+  fs.writeFileSync(esleme, `${head},\n  "efektNotu": ${JSON.stringify(E.efektNotu)},\n  "efektler": ${block(E.efektler)},\n  "efektIkonlari": ${block(E.efektIkonlari)}\n}\n`);
+  JSON.parse(fs.readFileSync(esleme, 'utf8'));
+  for (const m of T.mevcut ?? []) byName.delete(m);
+  const unmatched = [...byName.values()];
+  return { records, icons, missing, unmatched, notes };
+}

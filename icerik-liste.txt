@@ -16,7 +16,7 @@ ek-cleric.json | cleric | baris-alani | Barış Alanı
 ek-paladin.json | paladin | biat-yemini | Biat Yemini
 ek-druid.json | druid | cagri-cemberi | Çağrı Çemberi
 ek-fighter.json | fighter | capkin-kavalye | Çapkın Kavalye
-ek-sorcerer.json | sorcerer | ceren-urperten | Çeren Ürperten
+ek-sorcerer.json | sorcerer | ceren-urperten | Ceren Ürperten
 ek-fighter.json | fighter | cift-dikis | Çift Dikiş
 ek-warlock.json | warlock | cin | Cin
 ek-ranger.json | ranger | coban | Çoban

@@ -102,7 +102,9 @@ describe('saldırı ve alan', () => {
     r.replays();
   });
   it('Dragon\'s Breath: bonus eylemle hazır; eylemle 15 ft koni DEX save', () => {
+    // Kuyruk A7: sürüm 36'da nefesi dokunulan yaratık kullanır (a7spells.test.ts); eski davranış sürüm 35'te.
     const r = arena({ spellNames: ['Dragon\'s Breath'] });
+    r.state.kuralSurumu = 35;
     const cast = r.cast({ spellName: 'Dragon\'s Breath', targetHex: o(4, 3) });
     expect(cast.some((e) => e.type === 'save_resolved')).toBe(false);
     expect(r.c('A').concentration?.spell).toBe('Dragon\'s Breath');
@@ -113,10 +115,10 @@ describe('saldırı ve alan', () => {
 });
 
 describe('süren etkiler', () => {
-  it('Expeditious Retreat: hız iki katı, konsantrasyon', () => {
+  it('Expeditious Retreat: bonus eylemle Dash, konsantrasyon (Kuyruk A4, sürüm 32; eskisi hız ×2, a4spells.test.ts)', () => {
     const r = arena({ spellNames: ['Expeditious Retreat'] });
     r.cast({ spellName: 'Expeditious Retreat' });
-    expect(r.fx('A', 'spells:expeditious-retreat')).toMatchObject({ speedMult: 2, concentration: 'Expeditious Retreat' });
+    expect(r.fx('A', 'spells:expeditious-retreat')).toMatchObject({ bonusGrant: ['dash'], concentration: 'Expeditious Retreat' });
   });
   it('Alter Self: silahsız vuruş 1d6 + büyü yeteneği, büyü saldırısıyla', () => {
     const unarmed: AttackOption = { label: 'Unarmed Strike', attackBonus: 2, damage: '1+0', damageType: 'bludgeoning', ranged: false, spell: false,

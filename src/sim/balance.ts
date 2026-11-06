@@ -9,6 +9,7 @@ import { chooseCommand } from '../battle/ai';
 import { getMonster, races } from '../data';
 import { seededRng, type Rng } from '../rules/dice';
 import type { CharacterSheet } from '../rules/stats';
+import type { Ability } from '../rules/abilities';
 import { alternativeCantrips, spellOptions } from '../rules/builder';
 import { classKit } from '../rules/classFeatures';
 import { createMapBattle } from '../app/setup';
@@ -147,8 +148,18 @@ export const setPartyRace = (raceId: string | null, lineageId?: string) => { par
 let simHouseRules: Record<string, boolean> | null = null;
 export const setSimHouseRules = (r: Record<string, boolean> | null) => { simHouseRules = r; };
 
+/** Kuyruk K48: alt sınıf karşılaştırması (Karadul ↔ Toprak): bu sınıftaki üyelerin alt sınıfı ve isteğe bağlı skor değişimi. */
+let partySubclass: { classId: string; subclassId: string; swap?: [Ability, Ability] } | null = null;
+export const setPartySubclass = (v: typeof partySubclass) => { partySubclass = v; };
+function withSubclass(sheet: CharacterSheet): CharacterSheet {
+  if (!partySubclass || sheet.classId !== partySubclass.classId) return sheet;
+  const [a, b] = partySubclass.swap ?? [];
+  const base = a && b && sheet.baseScores ? { ...sheet.baseScores, [a]: sheet.baseScores[b], [b]: sheet.baseScores[a] } : sheet.baseScores;
+  return { ...sheet, subclassId: partySubclass.subclassId, ...(base ? { baseScores: base } : {}) };
+}
+
 function participants(s: Scenario, level: number = DEFAULT_LEVEL): Combatant[] {
-  const party = partyAt(level).map((sheet) => (partyRace === null ? sheet : { ...sheet, raceId: partyRace, lineageId: partyLineage ?? races.find((r) => r.id === partyRace)?.defaultLineage }))
+  const party = partyAt(level).map(withSubclass).map((sheet) => (partyRace === null ? sheet : { ...sheet, raceId: partyRace, lineageId: partyLineage ?? races.find((r) => r.id === partyRace)?.defaultLineage }))
     .map((sheet, i) => combatantFromSheet(sheet, { id: `pc${i + 1}`, ownerId: `p${i + 1}` }))
     .map((c) => (partyDarkvision === null ? c : { ...c, darkvision: partyDarkvision }));
   const foes: Combatant[] = [];
@@ -166,10 +177,28 @@ export const setSurfaceReactions = (on: boolean) => { surfaceReactions = on; };
 let alarmMode: 'normal' | 'hemen' | 'yok' = 'normal';
 export const setAlarmMode = (m: 'normal' | 'hemen' | 'yok') => { alarmMode = m; };
 
+/**
+ * Y1: simülasyonda yapay zekâ ayarı. `setSimYz` ya da ortam değişkenleri (paralel süreçlere geçer): `YZ_ESKI=1` (Y1
+ * öncesi kural zinciri), `YZ_ZORLUK` (parti) ve `YZ_ZORLUK_DUSMAN` (düşman): kolay | normal | usta.
+ */
+let simYz: BattleState['yz'] | undefined;
+export const setSimYz = (y: BattleState['yz'] | undefined) => { simYz = y; };
+function yzOf(): BattleState['yz'] | undefined {
+  if (simYz) return simYz;
+  const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
+  const lv = (v: string | undefined) => (v === 'kolay' || v === 'normal' || v === 'usta' ? v : undefined);
+  const party = lv(env.YZ_ZORLUK);
+  const enemies = lv(env.YZ_ZORLUK_DUSMAN);
+  const eski = env.YZ_ESKI === '1';
+  if (!party && !enemies && !eski) return undefined;
+  return { ...(eski ? { eski: true } : {}), ...(party || enemies ? { zorluk: { ...(party ? { party } : {}), ...(enemies ? { enemies } : {}) } } : {}) };
+}
+
 export function setupBattle(s: Scenario, rng: Rng, level: number = DEFAULT_LEVEL): BattleState {
   const alarm = (st: BattleState): BattleState => (!st.groups?.length || alarmMode === 'normal' ? st
     : alarmMode === 'yok' ? { ...st, alarmEnabled: false } : { ...st, groups: st.groups.map((g) => ({ ...g, state: 'alarmed' as const })) });
-  const flag = (st: BattleState): BattleState => alarm(surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false });
+  const yz = yzOf();
+  const flag = (st: BattleState): BattleState => alarm({ ...(surfaceReactions ? st : { ...st, yuzeyEtkilesimi: false }), ...(yz ? { yz } : {}) });
   if (!s.map) return flag(startBattle('sim', 'd-z-zemin', participants(s, level), rng).state);
   const session = createMapBattle(participants(s, level), { ...s.map, mirrored: false, ...(simHouseRules ? { houseRules: simHouseRules } : {}) }, rng);
   const gm = { playerId: 'gm', isGm: true };

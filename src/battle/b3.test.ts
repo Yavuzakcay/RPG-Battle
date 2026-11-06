@@ -203,7 +203,9 @@ describe('durum etkileri', () => {
     r.replays();
   });
   it('Calm Emotions: dostun Frightened\'ı kalkar ve bağışık olur; düşman CHA save ya da kayıtsız (turunu kaybeder)', () => {
+    // Kuyruk A6: sürüm 35'te dostlar da save yapar ve düşman kayıtsızlaşır (a6spells.test.ts); eski davranış sürüm 34'te.
     const r = arena({ spellNames: ['Calm Emotions'] }, {}, { conditions: ['Frightened'] });
+    r.state.kuralSurumu = 34;
     r.cast({ spellName: 'Calm Emotions', targetHex: o(3, 3) });
     expect(r.c('C').conditions).not.toContain('Frightened');
     expect(r.fx('C', 'spells:calm-emotions')?.immune).toEqual(['Charmed', 'Frightened']);

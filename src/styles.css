@@ -186,6 +186,12 @@ input[type='number'] { width: 90px; }
 .token .initials { font-weight: 700; fill: #fff; text-anchor: middle; pointer-events: none; }
 .token .hpbg { fill: rgba(0, 0, 0, 0.6); }
 .token .hp { fill: #7ee07e; }
+/* Kuyruk K48: Moral çubuğu (HP'den ayrı renk). */
+.token .moral { fill: #b48cff; }
+.moral-bar { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85em; }
+.moral-bar .track { width: 80px; height: 6px; border-radius: 3px; background: rgba(0, 0, 0, 0.35); overflow: hidden; }
+.moral-bar .fill { display: block; height: 100%; background: #b48cff; }
+.moral-dead { color: var(--muted, #999); font-style: italic; }
 .token.enemies .hp { fill: #ff8b8b; }
 .info { font-size: 14px; color: var(--mute); margin: 6px 0; min-height: 1.4em; }
 
@@ -469,6 +475,14 @@ li.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8p
 .chip.equip { align-items: flex-start; }
 .chip.equip > span { display: flex; flex-direction: column; gap: 1px; }
 .chip.equip small { font-size: 11px; color: var(--mute); }
+/* Kuyruk K49 B6: eşya grupları ve etki seviyesi renkleri (kenar şeridi). */
+.item-kind-filter, .item-tier-filter { margin: 4px 0; }
+.item-group { margin: 6px 0; border: 1px solid var(--line, #444); border-radius: 8px; padding: 4px 8px; }
+.item-group > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+.chip.equip.tier-olagandisi { border-left: 3px solid #4caf50; }
+.chip.equip.tier-nadir { border-left: 3px solid #3d8bfd; }
+.chip.equip.tier-cokNadir { border-left: 3px solid #a259ff; }
+.chip.equip.tier-efsanevi { border-left: 3px solid #f0a020; }
 .equip-detail { font-size: 0.92em; }
 .equip-selected ul { margin: 4px 0 0; padding-left: 18px; font-size: 0.92em; }
 .bg-bonus b { min-width: 2.2em; text-align: center; }

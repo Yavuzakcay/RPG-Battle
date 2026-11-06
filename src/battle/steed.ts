@@ -16,6 +16,7 @@ import { saveMode, timedCondition } from './durations';
 import { canSee } from './maprules';
 import { featuresOn } from './shift';
 import { teleportEvent, teleportProblem } from './teleport';
+import { withArrival } from './motion';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 export type SteedAction = 'fell-glare' | 'fey-step' | 'healing-touch';
@@ -35,7 +36,7 @@ export function executeSteedAction(state: BattleState, steed: Combatant, kind: S
     if (!to) return fail('Işınlanılacak altıgeni seç.');
     const why = teleportProblem(state, steed, to, { rangeFt: 60, sight: false });
     if (why) return fail(why);
-    return finish(state, [mark, teleportEvent(steed, to, 'Fey Step')]);
+    return finish(state, [mark, ...withArrival(state, [mark], [teleportEvent(steed, to, 'Fey Step')], rng)]);
   }
   const t = targetId ? state.combatants[targetId] : undefined;
   if (!t || t.hp <= 0 && kind === 'fell-glare') return fail('Hedef bulunamadı.');

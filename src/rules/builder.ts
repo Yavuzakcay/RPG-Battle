@@ -4,6 +4,7 @@
  * SRD 5.2.1 "Character Creation": standart dizi 15, 14, 13, 12, 10, 8; point buy 27 puan,
  * skorlar 8–15, maliyet tablosu aşağıda. Ability bonusları geçmişten (+2/+1 veya +1/+1/+1).
  */
+import type { Alignment } from './alignment';
 import { invocationKit, invocationProblems, invocationSlots, parseInvocation } from './invocations';
 import { armor, classes, getClass, items, races, spells, weapons } from '../data';
 import { ABILITIES, type Ability } from './abilities';
@@ -40,6 +41,12 @@ export interface SavedCharacter {
   sheet: CharacterSheet;
   /** Savaşlar arası durum (kalan HP, HP zarı, kaynak, slot); yoksa dinlenmiş (Görev N). */
   status?: CharacterStatus;
+  /** Kuyruk K49: Game Master seviye değişiklikleri (olay günlüğü; yalnızca eklenir). Yoksa değişiklik yapılmamış. */
+  levelLog?: Array<{ from: number; to: number; at: string; by: 'gm' }>;
+  /** Kuyruk K51: hizalanma (ev kuralı `hizalanma`); yoksa 0/0 (eski kayıt). */
+  hizalanma?: Alignment;
+  /** Kuyruk K51: karakter kayıt sürümü (yoksa 1; 2 = hizalanma alanı tanınır). */
+  surum?: number;
   /**
    * Görev K17: oluşturucu taslağı; sınıf değişince eski sınıfın seçimleri burada sınıf kimliğiyle saklanır (eski sınıfa
    * dönünce uyanları geri gelir). Kayıtlı karaktere yazılmaz (`savableCharacter`).
@@ -301,7 +308,7 @@ export function savableCharacter(c: SavedCharacter): SavedCharacter {
 /** Formdaki bütün sorunlar (boşsa karakter kaydedilebilir ve savaşa girebilir). */
 /** Görev K1: sihirbazın adımları (oluşturucu ekranı; sorunlar adıma bağlanır). */
 /** Görev K3: kimlik, tür (soy) ve sınıf tek ilk adımda (`character`). */
-export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equipment' | 'spells' | 'summary';
+export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equipment' | 'spells' | 'summary' | 'alignment';
 export interface CharacterIssue { step: BuilderStep; text: string }
 
 /** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */

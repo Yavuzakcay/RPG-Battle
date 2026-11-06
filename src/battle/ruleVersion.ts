@@ -12,6 +12,8 @@ export const CURRENT_RULES: number = data.surum;
 export const ruleVersion = (s: Pick<BattleState, 'kuralSurumu'>): number => s.kuralSurumu ?? 1;
 /** Sürüm 2 (SRD 5.2.1 durum düzeltmeleri) geçerli mi. */
 export const srdConditions = (s: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(s) >= 2;
+/** A1 (sürüm 29): Grappled yaratık, yakalayanı dışındaki hedeflere saldırıda dezavantajlı (SRD 5.2.1 Grappled). */
+export const grappleAttackRule = (s: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(s) >= 29;
 
 /**
  * Korku kaynakları: Frightened'ı veren yaratıklar (süreli durum sayacının `sourceId`'si, durumu veren süren etki,

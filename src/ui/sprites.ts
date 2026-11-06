@@ -137,6 +137,8 @@ export function burstSprite(have: ReadonlySet<string> = HAVE): (SpriteDraw & { m
 
 /** Eşlemedeki bütün sprite adları (test ve rapor). */
 export function mappedSpriteNames(): string[] {
-  return [...new Set([...Object.values(ZONES), ...Object.values(OBJECTS), ...Object.values(EFFECTS)]
-    .flatMap((e) => e.sprites.map((v) => (typeof v === 'string' ? v : v.name))))].sort();
+  // Görev E1: efekt şeritleri (`efektler`) ve durum ikonları (`efektIkonlari`) da eşlemede (`npm run sprite-ice -- --efekt`).
+  const E = esleme as unknown as { efektler?: Record<string, unknown>; efektIkonlari?: Record<string, string> };
+  return [...new Set([...[...Object.values(ZONES), ...Object.values(OBJECTS), ...Object.values(EFFECTS)]
+    .flatMap((e) => e.sprites.map((v) => (typeof v === 'string' ? v : v.name))), ...Object.keys(E.efektler ?? {}), ...Object.values(E.efektIkonlari ?? {})])].sort();
 }

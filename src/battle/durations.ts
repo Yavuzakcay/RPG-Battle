@@ -14,6 +14,9 @@ import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
 import { distance } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
+import { ruleVersion } from './ruleVersion';
+import { pfegRepeatAdv } from './mind';
+import { allyEscapeEvents } from './mapcommands';
 import type { BattleEvent, BattleState, Combatant, ConditionTimer, StageSpec } from './types';
 
 /** Görev A3: ikinci aşamanın tanımı (eski biçim: yalnızca durum adı → kalan süre, save'siz). */
@@ -95,7 +98,9 @@ export function timerEvents(state: BattleState, ownerId: string, end: ConditionT
     for (const t of c.conditionTimers ?? []) {
       if (t.ownerId !== ownerId || t.end !== end) continue;
       if (t.save && c.hp > 0) {
-        const r = resolveSave({ extra: saveDice(c, t.save.ability), modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode('normal', c, t.save.ability),
+        // Kuyruk A6: Protection from Evil and Good (kaynak korunulan türdense Charmed/Frightened save'i avantajlı).
+        const pfeg = pfegRepeatAdv(state, c.id, t.sourceId, [t.condition]);
+        const r = resolveSave({ extra: saveDice(c, t.save.ability), modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, t.save.ability),
           autoFail: (t.save.ability === 'str' || t.save.ability === 'dex') && autoFailsStrDexSave(c.conditions) }, rollTag(rng, { by: c.id }));
         out.push({ type: 'condition_save', targetId: c.id, condition: t.condition, ability: t.save.ability, dc: t.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
@@ -124,14 +129,14 @@ export function dodgeActive(conds: string[]): boolean {
 }
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
-export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean;
-  effects?: Array<{ saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean } }> };
+export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean;
+  effects?: Array<{ saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
 
 /**
  * Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı; Danger Sense gibi avantajlı save'ler (Incapacitated
  * değilken); Rage sürerken STR save'leri avantajlı. Eski çağrılar yalnızca durum listesi verebilir.
  */
-export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string }): RollMode {
+export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string; paket?: { ozellikler: Array<{ ilkeller: Array<Record<string, unknown>> }> } }): RollMode {
   const s: SaveSubject = Array.isArray(who) ? { conditions: who } : who;
   // Kuyruk 19 (11–20): Holy Nimbus: Fiend/Undead etkilerine save avantajı (kaynağı bilinen save'lerde).
   const vs = source?.creatureType?.toLowerCase();
@@ -139,15 +144,21 @@ export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: A
     || (ability === 'dex' && dodgeActive(s.conditions))
     || (!!s.saveAdvantage?.includes(ability) && !isIncapacitated(s.conditions))
     || (ability === 'str' && !!s.rage && s.rageStrAdvantage === true)
+    // Kuyruk A6 (Conjure Animals; `syncAuras`): sürünün 5 ft içinde STR save avantajı.
+    || (ability === 'str' && !!s.packStrAdv)
     // Görev B1: süren etkilerin save avantajı (Haste DEX, Beacon of Hope WIS, Gaseous Form, Enlarge STR).
     || !!s.effects?.some((e) => e.saveAdv?.includes(ability))
     // Kuyruk 19 (SRD canavar yetenekleri): Bloodied Frenzy (Bloodied'da save avantajı), Aura of Authority.
     || (!!s.effects?.some((e) => e.bloodiedAdv?.save) && s.hp !== undefined && s.hp <= (s.maxHp ?? 0) / 2)
     || !!s.authorityAdv;
   // Görev B1: süren etkinin save dezavantajı (Reduce, Ray of Enfeeblement: STR).
-  const dis = !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll);
+  const dis = !!s.auraSaveDis || !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage'))
+    // Görev P6: ek paket `buyuDegisimi.kurtulmaDezavantaji` (kaynağın büyüleri ve alan etkileri; koşulsuz pasif).
+    || !!source?.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'buyuDegisimi' && p.kurtulmaDezavantaji === true && !p.kosul));
+  // Kuyruk K54c: Yıldız Falı (Uğurlu): ilk kurtulma zarı avantajlı.
+  const adv2 = !!s.effects?.some((e) => e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'advantage');
   // Avantaj ve dezavantaj (tabanla birlikte) birbirini götürür (SRD).
-  const anyAdv = base === 'advantage' || adv, anyDis = base === 'disadvantage' || dis;
+  const anyAdv = base === 'advantage' || adv || adv2, anyDis = base === 'disadvantage' || dis;
   return anyAdv && anyDis ? 'normal' : anyAdv ? 'advantage' : anyDis ? 'disadvantage' : 'normal';
 }
 
@@ -158,9 +169,25 @@ export function executeDodge(state: BattleState, actor: Combatant): CommandResul
 }
 
 /** Yardım: eylem; bitişik düşmana karşı tarafının ilk saldırısı avantajlı, sonraki turunun başına dek. */
-export function executeHelp(state: BattleState, actor: Combatant, targetId: string): CommandResult {
+export function executeHelp(state: BattleState, actor: Combatant, targetId: string, rng?: Rng): CommandResult {
   const target = state.combatants[targetId];
   if (!target || !isTargetable(target)) return fail('Hedef bulunamadı.');
+  // Kuyruk A6 (sürüm 35): bitişik dosta yardım = sarsarak uyandırma (Sleep, Hypnotic Pattern: "someone … takes an action
+  // to shake it"); hasarla biten uyku sayaçları ve `shakeable` etkiler biter.
+  if (target.side === actor.side && target.id !== actor.id && ruleVersion(state) >= 35) {
+    if (state.map && (!actor.pos || !target.pos || distance(actor.pos, target.pos) > 1)) return fail('Sarsmak için dost bitişik olmalı.');
+    const timers = (target.conditionTimers ?? []).filter((t) => t.wakeOnDamage && target.conditions.includes(t.condition));
+    const effs = (target.effects ?? []).filter((e) => e.shakeable);
+    // Ensnaring Strike: dostu sarmaşıktan kurtarma (Athletics).
+    const freed = !timers.length && !effs.length && rng ? allyEscapeEvents(state, actor, target, rng) : null;
+    if (freed) return finish(state, freed);
+    if (!timers.length && !effs.length) return fail(`${target.name} sarsılarak uyandırılacak ya da kurtarılacak bir etki altında değil.`);
+    return finish(state, [
+      { type: 'map_note', text: `${actor.name}, ${target.name} adlı dostunu sarsarak kendine getirdi.` },
+      ...timers.map((t): BattleEvent => ({ type: 'condition_changed', targetId: target.id, condition: t.condition, present: false, reason: 'sarsıldı' })),
+      ...effs.map((e): BattleEvent => ({ type: 'effect_ended', targetId: target.id, effectId: e.id, name: e.name, reason: 'expired' })),
+    ]);
+  }
   if (target.side === actor.side) return fail('Yardım için bitişik bir düşman seç.');
   // Haritasız savaşta mesafe yok (yakın dövüş menzilinde sayılır).
   if (state.map && (!actor.pos || !target.pos || distance(actor.pos, target.pos) > 1)) return fail('Hedef düşman bitişik olmalı.');

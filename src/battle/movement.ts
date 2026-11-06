@@ -1,9 +1,11 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { groundWardFn } from './groundWard';
+import { solidBarrierAt } from './barriers';
 import { sizeRank } from './forced';
 import { interposeCost } from './arcaneHand';
 import { globalRule } from './ruleControl';
 import { spells } from '../data';
-import { fearBlocksStep, srdConditions } from './ruleVersion';
+import { fearBlocksStep, ruleVersion, srdConditions } from './ruleVersion';
 import { phaseOf } from './phase';
 import { objectAt, withObject } from './objectData';
 import { bodyAt, covers, isMultiHex } from './body';
@@ -26,7 +28,7 @@ import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, isAirborne, spellJumpFt } from './flight';
-import { heightStepFn } from './heights';
+import { heightDelta, heightMoveRule, heightStepFn, levelFeet } from './heights';
 import { usedThisTurn } from './classTraits';
 import { turnKey } from './economy';
 import { conveyorBlocks, conveyorFlow, conveyorSlideEvents, isUphillStep } from './conveyor';
@@ -40,6 +42,9 @@ export function terrainAt(state: BattleState, o: Offset): TerrainType {
   // K17 G1: geçilmez büyü duvarı (Wall of Force, Wall of Stone) altıgeni engel yapar (hareket, siper, görüş/hat).
   const wall = state.map?.zones?.length ? solidWallAt(state, o) : null;
   if (wall) return { ...t, name: wall, movement: 'blocked', cover: 5, blocksSight: !transparentWallAt(state, o) };
+  // Kuyruk K53 S4: herkese kapalı geçici engel (Çizili Duvar).
+  const bar = state.map?.zones?.length ? solidBarrierAt(state, o) : null;
+  if (bar) return { ...t, name: bar.name, movement: 'blocked', cover: 5, blocksSight: bar.blocksSight };
   // Kuyruk 19: alanın kapladığı merkez (Guardian of Faith): geçilmez, görüşü kesmez.
   const held = state.map?.zones?.find((z) => z.center && z.center.col === o.col && z.center.row === o.row && spells.find((s) => s.id === z.spellId)?.mechanics.zone?.occupy);
   if (held) return { ...t, name: held.name, movement: 'blocked' };
@@ -207,6 +212,8 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const tooDeep = deepWaterBlocks(state, actor);
   const walker = waterWalks(state, actor);
   const freeMove = !!actor.effects?.some((e) => e.freeMove || e.burrow);
+  // Kuyruk K54b: Mevzi İşareti / Yol aç / Kuşbakışı Plan: korunan altıgende zor zemin yok.
+  const ward = groundWardFn(state, actor);
   // Kuyruk 19 (SRD Ice Walk): buz ve kar zemini zorlu arazi değil.
   const iceWalk = !!actor.effects?.some((e) => e.iceWalker);
   // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
@@ -223,14 +230,15 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const t0 = terrainAt(state, h);
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
-    const t = (walker && isLiquidTile(t0)) || ((freeMove || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
+    const free = freeMove || (!!ward && ward(h));
+    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
     const terrain = wall ? through : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
     const enemy = enemyAt.get(hexKey(h));
     const zc0 = handsOut ? (((z) => (z === null ? null : Math.max(z, interposeCost(state, actor, h))))(zoneCost(h))) : zoneCost(h);
-    const zc = freeMove && zc0 !== null ? 1 : zc0;
+    const zc = free && zc0 !== null ? 1 : zc0;
     const ground0 = base === null || zc === null ? null : Math.max(base, zc);
     const ground = ground0 !== null && allyAt.has(hexKey(h)) ? Math.max(through, ground0) : ground0;
     // Kuyruk 19 (Halfling Nimbleness): en az bir boy büyük yaratığın altıgeninden geçer (zorlu arazi gibi).
@@ -387,9 +395,21 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const step = AXIAL_DIRECTIONS[dir] as { q: number; r: number };
   const start = offsetToAxial(from);
   const gap = distance(from, to) - 1;
-  if (gap === 0) return fail('Komşu altıgene atlanmaz, yürüyerek geçilir.');
   // Görev K9c: Jump büyüsü (turda bir) 30 ft zıplatır, 10 ft (2 altıgen) harcatır, aradaki tek engel altıgeninin üstünden geçer.
   const spellFt = usedThisTurn(state, actor, SPELL_JUMP) ? 0 : spellJumpFt(actor);
+  // Kuyruk A8 (sürüm 37): SRD Jump "up to 30 feet" dikey de geçerli: yükseklik katmanı ve `heightMove` açıkken
+  // komşu yüksek altıgene (seviye × levelFt ≤ 30 ft) Atletizmsiz, 10 ft harcatarak zıplanır. Katmansız haritada eski kural.
+  const up = gap === 0 && ruleVersion(state) >= 37 && spellFt > 0 && heightMoveRule(state) ? Math.max(0, heightDelta(state, from, to)) * levelFeet(state) : 0;
+  if (up > 0 && up <= spellFt && !isAirborne(actor)) {
+    const landing0 = terrainAt(state, to);
+    if (landing0.movement === 'blocked' || landing0.movement === 'deadly') return fail(`${hexLabel(to)} üzerine inilemez (${landing0.name}).`);
+    const other0 = occupantAt(state, to, actor.id);
+    if (other0) return fail(`${hexLabel(to)} dolu (${other0.name}).`);
+    if (SPELL_JUMP_COST > speedHexes(actor) - actor.movementUsed) return fail('Hareket yetmiyor.');
+    const jumped: BattleEvent = { type: 'jumped', actorId: actor.id, from, to, gap, cost: SPELL_JUMP_COST, running: false, traitTurns: { [SPELL_JUMP]: turnKey(state) } };
+    return finish(state, [jumped, ...landingSlide(state, actor, jumped)]);
+  }
+  if (gap === 0) return fail('Komşu altıgene atlanmaz, yürüyerek geçilir.');
   let blocked = 0;
   // Kuyruk 21 D2b: çalışan yürüyen merdivenin üstünden yokuş yukarı atlanmaz (yukarı ilerleme yalnızca kolla).
   const flow = isAirborne(actor) ? null : conveyorFlow(state);

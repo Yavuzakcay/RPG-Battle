@@ -1,0 +1,89 @@
+{
+ "not": "Kuyruk K53 S3: nesne hareketi (GM anahtarı objectMotion, kural sürümü 24). agirlik: hafif/orta/agir; itmeCarpani zorla hareket mesafesine çarpan (ağır 0 = itilemez), firlatmaFt en çok fırlatma mesafesi. Hasarı çağıran özellik verir (varsayılan 3d6 kuvvet). enkazZeminleri: zemin harfi → çağrılan enkazın adı (yoksa düz taş). oyuncuFirlatma (A1): oyuncunun 'Nesne fırlat' komutu (object_use throw, eylem): ağırlığa göre tek hasar zarı + STR değiştiricisi (SRD doğaçlama silah 1d4 temel alındı), saldırı zarı yok (K53 throwObject gibi); ağır nesne fırlatılamaz.",
+ "agirlik": {
+  "hafif": {
+   "itmeCarpani": 1,
+   "firlatmaFt": 30
+  },
+  "orta": {
+   "itmeCarpani": 0.5,
+   "firlatmaFt": 15
+  },
+  "agir": {
+   "itmeCarpani": 0,
+   "firlatmaFt": 5
+  }
+ },
+ "hareketli": {
+  "oilBarrel": "orta",
+  "powderKeg": "hafif",
+  "chest": "hafif",
+  "table": "orta",
+  "brazier": "orta",
+  "bonePile": "hafif",
+  "cauldron": "agir",
+  "key": "hafif",
+  "benchLeg": "hafif",
+  "chain": "hafif",
+  "bucket": "hafif",
+  "cudgel": "hafif",
+  "rock": "hafif",
+  "boulderPile": "agir"
+ },
+ "firlatmaHasari": {
+  "zar": "3d6",
+  "tur": "force"
+ },
+ "enkaz": {
+  "tur": "rock",
+  "yaricap": 1
+ },
+ "enkazZeminleri": {
+  "r": {
+   "tr": "kaya parçası",
+   "en": "rock chunk"
+  },
+  "t": {
+   "tr": "taş",
+   "en": "stone"
+  },
+  "k": {
+   "tr": "sütun parçası",
+   "en": "column fragment"
+  },
+  "v": {
+   "tr": "sarkıt parçası",
+   "en": "stalactite shard"
+  },
+  "d": {
+   "tr": "sıkışmış kum",
+   "en": "packed sand"
+  },
+  "a": {
+   "tr": "kök",
+   "en": "root"
+  },
+  "H": {
+   "tr": "bazalt parçası",
+   "en": "basalt chunk"
+  },
+  "#": {
+   "tr": "kaya",
+   "en": "boulder"
+  },
+  "s": {
+   "tr": "duvar taşı",
+   "en": "wall stone"
+  }
+ },
+ "oyuncuFirlatma": {
+  "hafif": {
+   "zar": "1d4",
+   "tur": "bludgeoning"
+  },
+  "orta": {
+   "zar": "1d8",
+   "tur": "bludgeoning"
+  }
+ }
+}

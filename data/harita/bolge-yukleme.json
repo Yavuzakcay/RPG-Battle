@@ -1,0 +1,29 @@
+{
+  "not": "K49 D: bölge geçişinde yükleme ekranı ve bölge içi yüzme. Serüven anahtarı `bolgeYukleme` (varsayılan açık; kapalıyken K47 davranışı: yüzme yok, geçiş ekranı yok). Bölge ızgarası data/harita/bolge-izgara.json (scripts/k49-bolgeler.py).",
+  "sureMs": {
+    "en": 600,
+    "cok": 1200
+  },
+  "azaltMs": 250,
+  "onYuklemeZoom": [
+    3,
+    4
+  ],
+  "onYuklemeEnFazla": 120,
+  "yuzme": {
+    "maliyet": 70,
+    "dc": 10,
+    "beceri": [
+      "athletics"
+    ],
+    "basarisizSaat": 2,
+    "agirZirh": "red"
+  },
+  "uretim": {
+    "maviFark": 15,
+    "golEnFazla": 900,
+    "darYaricap": 3,
+    "yuzmeMaliyet": 70,
+    "darEksen": 3
+  }
+}

@@ -15,7 +15,12 @@ export interface ExtraDie {
   /** Kuyruk 43: `success`: başarısız save başarıya döner (Legendary Resistance). */
   /** Kuyruk 19: `floor`: toplam `rerollBonus`'tan küçükse o sayılır (Indomitable Might: STR skoru); diğer ikinci şanslardan önce. */
   /** Kuyruk 19: `onSuccess`: başarılı zardan `die` düşülür, sonucu bozarsa harcanır (Improve Fate, düşmana). */
-  reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor' | 'onSuccess' | 'plus';
+  /** Kuyruk K48: `worse` (Moral ≤ üçte bir): `against` durumlarına karşı başarılı save'de d20 yeniden, küçüğü (dezavantaj). */
+  reroll?: 'd20' | 'twenty' | 'onFail' | 'success' | 'floor' | 'onSuccess' | 'plus' | 'worse'
+    /** Görev P6 (ek paket): `set` doğal zar `rerollBonus` sayılır (zar mührü; başarıya çevirecekse), `natFloor` doğal zar en az
+     * `rerollBonus` (d20 alt sınırı; başarıya çevirecekse), `setSpoil` başarılı zarın doğalı `rerollBonus` olur (düşmana mühür;
+     * bozacaksa), `forceFail` başarılı test başarısız sayılır (zorla sonuç). */
+    | 'set' | 'natFloor' | 'setSpoil' | 'forceFail';
   /** Kuyruk 19 (`plus`): sahibinin tepki havuzu ve kalan (kullanılınca bir azalır). */
   pool?: { id: string; remaining: number };
   /** Kuyruk 19 (Halfling Luck): yalnızca doğal 1'de. */
@@ -28,6 +33,11 @@ export interface ExtraDie {
   rerollMode?: RollMode;
   /** Kuyruk 18 H3: kullanılınca sahibinin tepkisi harcanır (Countercharm). */
   reaction?: boolean;
+  /**
+   * Kuyruk K48 (kural sürümü 19): ilk ikinci şans (Indomitable, Luck, Tactical Mind…) sonucu yine başarısızsa bu giriş
+   * ayrıca denenir (Bardic Inspiration: "when the creature fails a D20 Test").
+   */
+  chain?: boolean;
 }
 /** Atılmış eklenti zarı: işaretli değer (−1d4 ise negatif). `resource`: kullanılan kaynak (Görev F). */
 export interface RolledExtra { label: string; die: string; value: number; effectId?: string; holderId?: string; single?: boolean; resource?: string; /** Kuyruk 18 H3: sahibinin tepkisi harcandı. */ reaction?: boolean;
@@ -54,8 +64,20 @@ export function secondChance(
   if (floor && (floor.rerollBonus ?? 0) >= fail.need) {
     return { total: floor.rerollBonus as number, natural: fail.natural, entry: { label: floor.label, die: 'STR', value: (floor.rerollBonus as number) - fail.total } };
   }
+  // Görev P6: doğal zarı değiştiren girişler (d20 alt sınırı, zar mührü) yalnız başarıya çevirecekse; önce alt sınır (bedava).
+  for (const kind of ['natFloor', 'set'] as const) {
+    for (const e of (extra ?? []).filter((y) => y.reroll === kind)) {
+      const nat = e.rerollBonus ?? 0;
+      if (kind === 'natFloor' && nat <= fail.natural) continue;
+      const total = fail.total - fail.natural + nat;
+      const okNow = fail.kind === 'attack' ? nat === 20 || (nat !== 1 && total >= fail.need) : total >= fail.need;
+      if (!okNow) continue;
+      return { total, natural: nat, entry: { label: e.label, die: kind === 'set' ? `d20=${nat}` : `≥${nat}`, value: total - fail.total,
+        ...(e.holderId ? { holderId: e.holderId } : {}), ...(e.single && e.effectId ? { single: true, effectId: e.effectId } : {}), ...(e.resource ? { resource: e.resource } : {}), ...(e.reaction ? { reaction: true } : {}) } };
+    }
+  }
   // Kuyruk 19 (`plus`, Burst of Ingenuity): sabit ek yalnızca başarıya çevirecekse seçilir.
-  const x = (extra ?? []).find((e) => e.reroll && e.reroll !== 'floor' && e.reroll !== 'onSuccess' && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c)))
+  const x = (extra ?? []).find((e) => e.reroll && !['floor', 'onSuccess', 'worse', 'set', 'natFloor', 'setSpoil', 'forceFail'].includes(e.reroll) && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c)))
     && (e.reroll !== 'plus' || fail.total + (e.rerollBonus ?? 0) >= fail.need));
   if (!x) return null;
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
@@ -65,7 +87,8 @@ export function secondChance(
     return { total: fail.total + v, natural: fail.natural, entry: { ...base, die: x.die, value: v, ...(x.reaction ? { reaction: true } : {}), ...(x.pool ? { pool: x.pool } : {}) } };
   }
   if (x.reroll === 'success') {
-    return { total: fail.need, natural: fail.natural, entry: { ...base, die: x.die, value: fail.need - fail.total, ...(x.resource ? { resource: x.resource } : {}) } };
+    return { total: fail.need, natural: fail.natural, entry: { ...base, die: x.die, value: fail.need - fail.total, ...(x.resource ? { resource: x.resource } : {}), ...(x.reaction ? { reaction: true } : {}),
+      ...(x.effectId && !x.single ? { effectId: x.effectId } : {}) } };
   }
   if (x.reroll === 'onFail') {
     const v = rollDice(x.die, rollTag(rng, { kind: fail.kind })).total;
@@ -75,6 +98,25 @@ export function secondChance(
   const natural = x.reroll === 'twenty' ? 20 : rollD20(x.rerollMode ?? fail.mode, rollTag(rng, { kind: fail.kind, bonus: fail.bonus })).kept;
   const total = fail.total - fail.natural + natural + (x.rerollBonus ?? 0);
   return { total, natural, entry: { ...base, die: x.reroll === 'twenty' ? '20' : 'd20', value: total - fail.total, ...(x.resource ? { resource: x.resource } : {}), ...(x.reaction ? { reaction: true } : {}) } };
+}
+/**
+ * Kuyruk K48: ikinci şans zinciri. Önce `secondChance`; sonuç yine başarısızsa ve seçilmeyen `chain` girişi (Bardic
+ * Inspiration) varsa o da atılır. Girişler sırayla döner (olaydaki `bonusDice`). `chain` yoksa eski davranış (tek giriş).
+ */
+export function secondChanceAll(
+  extra: ExtraDie[] | undefined, fail: Parameters<typeof secondChance>[1], rng: Rng,
+): { total: number; natural: number; entries: RolledExtra[] } | null {
+  const first = secondChance(extra, fail, rng);
+  if (!first) return null;
+  const entries = [first.entry];
+  let { total, natural } = first;
+  const ok = () => (fail.kind === 'attack' ? natural === 20 || (natural !== 1 && total >= fail.need) : total >= fail.need);
+  if (!ok()) {
+    const rest = (extra ?? []).filter((e) => e.chain && !(e.effectId && e.effectId === first.entry.effectId));
+    const again = rest.length ? secondChance(rest, { ...fail, total, natural }, rng) : null;
+    if (again) { total = again.total; natural = again.natural; entries.push(again.entry); }
+  }
+  return { total, natural, entries };
 }
 export const extrasTotal = (xs: RolledExtra[] | undefined): number => (xs ?? []).reduce((n, x) => n + x.value, 0);
 
@@ -137,10 +179,10 @@ export function resolveAttack(input: AttackInput, rng: Rng = Math.random): Attac
   let hit = crit(natural) || (!fumble && total >= input.targetAc);
   // Görev F: ıskada ikinci şans (Stroke of Luck: zar 20 sayılır).
   if (!hit) {
-    const again = secondChance(input.extra, { total, natural, bonus: input.attackBonus, need: input.targetAc, mode: input.mode, kind: 'attack' }, rng);
-    if (again) { natural = again.natural; total = again.total; extra.push(again.entry); hit = crit(natural) || (natural !== 1 && total >= input.targetAc); }
+    const again = secondChanceAll(input.extra, { total, natural, bonus: input.attackBonus, need: input.targetAc, mode: input.mode, kind: 'attack' }, rng);
+    if (again) { natural = again.natural; total = again.total; extra.push(...again.entries); hit = crit(natural) || (natural !== 1 && total >= input.targetAc); }
   } else if (!crit(natural)) {
-    const spoil = spoilChance(input.extra, { total, need: input.targetAc, kind: 'attack' }, rng);
+    const spoil = spoilChance(input.extra, { total, need: input.targetAc, kind: 'attack', natural }, rng);
     if (spoil) { total = spoil.total; extra.push(spoil.entry); hit = false; }
   }
   const critical = !input.noCrit && (crit(natural) || (hit && !!input.autoCritical));
@@ -179,7 +221,15 @@ export interface SaveResult {
  * Kuyruk 19 (Improve Fate): başarılı zarın ardından ceza zarı (`reroll: 'onSuccess'`); sonucu başarısızlığa çevirirse
  * kullanılır (kaynak harcanır), çevirmezse atılmaz.
  */
-export function spoilChance(extra: ExtraDie[] | undefined, ok: { total: number; need: number; kind: RollKind }, rng: Rng): { total: number; entry: RolledExtra } | null {
+export function spoilChance(extra: ExtraDie[] | undefined, ok: { total: number; need: number; kind: RollKind; natural?: number }, rng: Rng): { total: number; entry: RolledExtra } | null {
+  // Görev P6: düşmana zar mührü (doğal zar saklı değer) ve zorla sonuç (başarısız say); yalnız sonucu bozacaksa.
+  for (const e of (extra ?? []).filter((y) => y.reroll === 'setSpoil' || y.reroll === 'forceFail')) {
+    const meta = { label: e.label, ...(e.holderId ? { holderId: e.holderId } : {}), ...(e.effectId ? { effectId: e.effectId } : {}), ...(e.single ? { single: true } : {}), ...(e.resource ? { resource: e.resource } : {}), ...(e.reaction ? { reaction: true } : {}) };
+    if (e.reroll === 'forceFail') return { total: ok.need - 1, entry: { ...meta, die: 'x', value: ok.need - 1 - ok.total } };
+    if (ok.natural === undefined) continue;
+    const total = ok.total - ok.natural + (e.rerollBonus ?? 0);
+    if (total < ok.need) return { total, entry: { ...meta, die: `d20=${e.rerollBonus ?? 0}`, value: total - ok.total } };
+  }
   const x = (extra ?? []).find((e) => e.reroll === 'onSuccess');
   if (!x) return null;
   const parsed = /^(\d+)d(\d+)$/.exec(x.die);
@@ -198,10 +248,16 @@ export function resolveSave(input: SaveInput, rng: Rng = Math.random): SaveResul
   let total = d20.kept + input.modifier + extrasTotal(extra);
   // Görev F: başarısız save'de ikinci şans (Indomitable, Stroke of Luck).
   if (total < input.dc) {
-    const again = secondChance(input.extra, { total, natural: d20.kept, bonus: input.modifier, need: input.dc, mode: input.mode, kind: 'save', ...(input.against ? { against: input.against } : {}) }, rng);
-    if (again) { total = again.total; extra.push(again.entry); }
+    const again = secondChanceAll(input.extra, { total, natural: d20.kept, bonus: input.modifier, need: input.dc, mode: input.mode, kind: 'save', ...(input.against ? { against: input.against } : {}) }, rng);
+    if (again) { total = again.total; extra.push(...again.entries); }
   } else {
-    const spoil = spoilChance(input.extra, { total, need: input.dc, kind: 'save' }, rng);
+    // Kuyruk K48 (Moral): belli durumlara karşı dezavantaj = başarıda ikinci d20, küçüğü sayılır.
+    const worse = input.mode !== 'normal' ? undefined : (input.extra ?? []).find((e) => e.reroll === 'worse' && e.against?.some((c) => input.against?.includes(c)));
+    if (worse) {
+      const again = rollD20('normal', rollTag(rng, { kind: 'save', bonus: input.modifier })).kept;
+      if (again < d20.kept) { const v = again - d20.kept; total += v; extra.push({ label: worse.label, die: 'd20', value: v }); }
+    }
+    const spoil = total >= input.dc ? spoilChance(input.extra, { total, need: input.dc, kind: 'save', natural: d20.kept }, rng) : null;
     if (spoil) { total = spoil.total; extra.push(spoil.entry); }
   }
   return { d20, total, success: total >= input.dc, ...(extra.length ? { extra } : {}) };

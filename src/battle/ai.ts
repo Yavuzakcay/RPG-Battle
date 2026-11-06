@@ -21,6 +21,8 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { heldFollow, mechanicsAt } from './spellVersion';
+import { breathOf } from './breath';
 import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
 import { monsters, spells } from '../data';
@@ -58,6 +60,8 @@ import { hideCheck } from './stealth';
 import { OBJECTS, OBJECT_DATA } from './objectData';
 import { houseRule } from './houseRules';
 import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
+import { reactionHurtsSide } from './hexResolver';
+import { terrainEndangersSide } from './terrainSpell';
 import aiData from '../../data/yapay-zeka.json';
 
 /** Kuyruk 41b: yenilenen hedefe ateş/asit (yenilenmeyi keser) seçeneğinin puan çarpanı. */
@@ -72,11 +76,115 @@ import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
 import { steerableSummon, steerHexes } from './summons';
 import { steedActions } from './steed';
+import { IMZA_SPECS } from './imza';
+import { imzaHintCmds } from './imzaAi';
+import { GAZE_KEY, SPIDER_KEY } from './karadul';
+import { candidatesFor, registerAction, type AiHelpers, type Candidate } from './ai/actions';
+import { difficultyOf, evaluateCandidates, pickByDifficulty, roleOf } from './ai/evaluate';
+import { bonusPoolCands } from './ai/behaviors';
+import { aiStats } from './ai/preview';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
   c.side === 'enemies' || c.civilian ? { playerId: 'gm', isGm: true } : { playerId: c.ownerId, isGm: false };
-const tryCmd = (state: BattleState, actor: Combatant, cmd: Command) => execute(state, cmd, ctxOf(actor), noRoll);
+/**
+ * Y2 G2: aynı durumda aynı komutun deneme sonucu önbellekte (durum değişmez nesne; `noRoll` deterministik): karar
+ * içinde ve ardışık kararlarda (metamagic, Usta ileri bakışı, hareket yeri taraması) tekrar eden `execute` çağrıları.
+ */
+const tryCache = new WeakMap<BattleState, Map<string, ReturnType<typeof execute>>>();
+const tryCmd = (state: BattleState, actor: Combatant, cmd: Command) => {
+  let m = tryCache.get(state);
+  if (!m) { m = new Map(); tryCache.set(state, m); }
+  const k = `${actor.side}|${actor.civilian ? 1 : 0}|${actor.ownerId}|${JSON.stringify(cmd)}`;
+  const hit = m.get(k);
+  aiStats.tries++;
+  if (hit) return hit;
+  aiStats.tryMisses++;
+  const r = execute(state, cmd, ctxOf(actor), noRoll);
+  m.set(k, r);
+  return r;
+};
+
+/**
+ * Kuyruk K48 (ev kuralı, basit kural): Karadul. Biçimde değilken menzildeki en güçlü uygun düşmana Büyüleyici Bakış;
+ * büyülü düşman varsa (ya da slot kalmadıysa) Örümcek Biçimi; dönüşülen turda büyülü hedef erişimdeyse sürpriz vuruş.
+ */
+function karadulAi(state: BattleState, actor: Combatant): Command | null {
+  const gaze = actor.features?.find((f) => f.key === GAZE_KEY);
+  const spider = actor.features?.find((f) => f.key === SPIDER_KEY);
+  if (!gaze && !spider) return null;
+  const foes = foesOf(state, actor).sort((a, b) => b.hp - a.hp);
+  const charmed = foes.filter((f) => f.effects?.some((e) => e.id === `karadul:gaze:${actor.id}`));
+  const bonusFree = !actor.economy.bonus;
+  if (spider && actor.shape?.spider && actor.traitTurns?.['karadul-transform'] === turnKey(state)) {
+    const bite = actor.weaponOptions[0];
+    for (const t of charmed) {
+      const cmd: Command | null = bite ? { type: 'attack', actorId: actor.id, targetId: t.id, option: bite } : null;
+      if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  if (!actor.shape && gaze && (gaze.type === 'bonus' ? bonusFree : !actor.economy.action) && !charmed.length) {
+    for (const t of foes) {
+      const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: gaze.key, targetId: t.id };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  // Biçimde kalmanın tek nedeni tuzak ısırığı ya da slotsuzluk: tuzak turu değilse ve slot duruyorsa biçimi bırak (büyüye dön).
+  const slotsLeft = actor.spellSlots.some((n) => n > 0);
+  if (spider && actor.shape?.spider && actor.traitTurns?.['karadul-transform'] !== turnKey(state) && slotsLeft && !actor.economy.action) {
+    const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: spider.key };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  if (!actor.shape && spider && bonusFree && (charmed.length || !slotsLeft)) {
+    const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: spider.key };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
+}
+/**
+ * Kuyruk K50: imza alt sınıf eylemleri (basit kural). Bonus eylemliler bonus boşken; eylemliler yalnızca çok hedefli
+ * (2+) ya da kontrol (durum veren) olduğunda. İyileştirme yalnız yaralıya (≤ %60), işaret/bağ zaten varsa tekrarlanmaz.
+ */
+function imzaAi(state: BattleState, actor: Combatant): Command | null {
+  const feats = (actor.features ?? []).filter((f) => f.key.startsWith('imza:'));
+  if (!feats.length) return null;
+  const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && c.hp > 0 && c.life !== 'dead' && !c.summon?.gone);
+  const foes = foesOf(state, actor).sort((a, b) => a.hp - b.hp);
+  const wounded = [...allies].filter((c) => c.hp <= c.maxHp * 0.6).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+  for (const f of feats) {
+    const spec = IMZA_SPECS[f.key];
+    if (!spec) continue;
+    if (spec.tur === 'bonus' ? actor.economy.bonus : actor.economy.action) continue;
+    // Y1: eylem harcayan imza özellikleri değerlendiricide (büyüyle aynı puanla; `eski:imza` açıklayıcısı).
+    if (spec.tur === 'action' && !state.yz?.eski) continue;
+    // Kuyruk K54b: özel sezgiseller (slot dursa da; `spec.yz`).
+    if (spec.yz) {
+      for (const cmd of imzaHintCmds(state, actor, f.key, spec, foes, allies)) if (tryCmd(state, actor, cmd).ok) return cmd;
+      continue;
+    }
+    // Büyücü slotu dururken eylem harcayan imza özelliği büyünün yerine geçmez (Ninni, Zemin Yeniden Yaz, Kuyruklu Yıldız…); havuz hariç.
+    if (spec.tur === 'action' && spec.ozel !== 'havuz' && actor.spellSlots.some((n) => n > 0)) continue;
+    const marked = (id: string) => Object.values(state.combatants).some((c) => c.effects?.some((e) => e.id === `${id}:${actor.id}`));
+    if ((spec.tek || spec.bag) && marked(f.key)) continue;
+    let cands: Array<string | undefined> = [undefined];
+    if (spec.hedef === 'enemy' || spec.hedef === 'areaEnemies') cands = foes.map((c) => c.id);
+    else if (spec.iyilestir) cands = spec.hedef === 'allies' ? (wounded.length >= 2 ? [undefined] : []) : wounded.map((c) => c.id);
+    else if (spec.hedef === 'ally' || spec.hedef === 'allyOrSelf') cands = spec.temizle ? allies.filter((c) => c.conditions.some((x) => spec.temizle?.includes(x))).map((c) => c.id)
+      : allies.filter((c) => c.id !== actor.id).sort((a, b) => b.hp - a.hp).map((c) => c.id);
+    for (const targetId of cands.slice(0, 6)) {
+      const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: f.key, ...(targetId ? { targetId } : {}) };
+      const r = tryCmd(state, actor, cmd);
+      if (!r.ok) continue;
+      if (spec.tur === 'action') {
+        const hits = new Set(r.events.filter((e) => e.type === 'save_resolved' || e.type === 'effect_added' || e.type === 'healed').map((e) => ('targetId' in e ? e.targetId : '')));
+        const control = !!spec.etki && Array.isArray(spec.etki.grants);
+        if (hits.size < 2 && !control && spec.ozel !== 'havuz') continue;
+      }
+      return cmd;
+    }
+  }
+  return null;
+}
 /** CILA: komut yapılabilir ve boşa gitmez (rüzgâr duvarından geçen menzilli saldırı otomatik ıskalar). */
 const worthIt = (state: BattleState, actor: Combatant, cmd: Command): boolean => {
   const r = tryCmd(state, actor, cmd);
@@ -95,11 +203,14 @@ function avg(dice: string | undefined): number {
 /** Saldırılabilir karşı taraf: ayakta, gizlenmemiş, görülen. */
 function foesOf(state: BattleState, actor: Combatant): Combatant[] {
   const other = actor.side === 'enemies' ? 'party' : 'enemies';
-  return Object.values(state.combatants).filter(
+  const all = Object.values(state.combatants).filter(
     (c) => c.side === other && c.hp > 0 && isTargetable(c) && !c.hidden && !c.asleep && canSee(state, actor, c) && !(c.summon?.intangible && !c.summon.gone)
       // Görev S4: açık bir sızma hedefi (ulaş, yok et, al) varken parti habersiz düşmana dokunmaz.
       && !(c.unaware && sneaking(state)),
   );
+  // Kuyruk K48 (Karadul, basit kural): dostun büyülediği düşmana (Tatlı Tuzak bekliyor) başka hedef varken dokunulmaz.
+  const spared = all.filter((c) => !c.effects?.some((e) => e.id.startsWith('karadul:gaze:') && e.sourceId !== actor.id && state.combatants[e.sourceId]?.side === actor.side));
+  return spared.length ? spared : all;
 }
 
 /**
@@ -137,7 +248,10 @@ function byPriority(actor: Combatant, foes: Combatant[], state?: BattleState): C
   // Kuyruk 16 K16D: düşman, hedefi taşıyanı ya da çıkışa en yakın kahramanı (açık ulaş/al-çıkar hedefi varken) önce vurur.
   const runner = state && actor.side === 'enemies' && aiOn(state, 'aiCutRunner') ? objectiveRunner(state) : null;
   const key = (c: Combatant) => (runner?.id === c.id ? 0 : 1);
-  return [...foes].sort((a, b) => key(a) - key(b) || held(a) - held(b) || vexed(a) - vexed(b) || guard(a) - guard(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
+  // Kuyruk K54b (İnfazcı): hükümlü öne geçer (gizli saldırı fırsatı: yanında dost varsa daha da önde).
+  const verdict = (c: Combatant) => (actor.imza === 'imza_infazci' && c.effects?.some((e) => e.id === `imza:imza_infazci/verdict:${actor.id}`)
+    ? (state && c.pos && Object.values(state.combatants).some((x) => x.id !== actor.id && x.side === actor.side && x.hp > 0 && x.pos && distance(x.pos, c.pos as Offset) <= 1) ? 0 : 1) : 2);
+  return [...foes].sort((a, b) => key(a) - key(b) || held(a) - held(b) || verdict(a) - verdict(b) || vexed(a) - vexed(b) || guard(a) - guard(b) || d(a) - d(b) || a.hp / a.maxHp - b.hp / b.maxHp);
 }
 
 /** Düşmanın saldırı komutları, öncelik sırasıyla. */
@@ -237,7 +351,10 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const best = bestAim(state, actor, s.area, s.rangeFt, (c) => visible.has(c.id));
       if (!best?.aim || best.allies > 0 || best.foes < 2) continue;
       const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: best.aim };
-      if (tryCmd(state, actor, cmd).ok) return cmd;
+      const r0 = tryCmd(state, actor, cmd);
+      // Kuyruk K55: tepkime zinciri (tutuşan gres, patlama, suda yıldırım) dostu yakacaksa seçme.
+      // Kuyruk K56: arazi etkisi (tutuşan ot, donan su) dostun altında ya da yanında yüzey bırakacaksa seçme.
+      if (r0.ok && !reactionHurtsSide(state, r0.events, actor.side) && !terrainEndangersSide(state, r0.events, actor.side)) return cmd;
       continue;
     }
     for (const f of state.map ? foes : foes.slice(0, 1)) {
@@ -252,7 +369,7 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const steams = r.events.some((e) => e.type === 'surface_reacted' && e.reaction === 'steam');
       // Kuyruk 19: büyü yapan canavar da kullanır (taraflar büyücüye göre).
       const foeSide = actor.side === 'enemies' ? 'party' : 'enemies';
-      if (sides.filter((x) => x === foeSide).length >= (steams ? 3 : 2) && !sides.includes(actor.side)) return cmd;
+      if (sides.filter((x) => x === foeSide).length >= (steams ? 3 : 2) && !sides.includes(actor.side) && !reactionHurtsSide(state, r.events, actor.side) && !terrainEndangersSide(state, r.events, actor.side)) return cmd;
     }
   }
   return null;
@@ -321,8 +438,9 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
  * koni ya da çizgi (hangisi daha çok düşman kapsıyorsa).
  */
 function breathWeapon(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
-  const b = actor.breath;
-  if (!b || !state.map || (actor.resources[b.resource] ?? 0) <= 0) return null;
+  const bo = breathOf(actor);
+  const b = bo?.spec;
+  if (!b || !state.map || (!bo.spell && (actor.resources[b.resource] ?? 0) <= 0)) return null;
   const visible = new Set(foes.map((f) => f.id));
   let best: { cmd: Command; foes: number } | null = null;
   for (const s of b.shapes) {
@@ -389,8 +507,25 @@ function commandScore(state: BattleState, actor: Combatant, cmd: Command): numbe
   return (same?.score ?? 0) + sneakBonus(state, actor, cmd);
 }
 
-/** Şu an yapılabilen en iyi eylem. */
+/**
+ * Şu an yapılabilen en iyi eylem (eski kural zinciri). Y2 G2: (durum, yaratık) başına önbellekte; yaratık durumdaki
+ * kaydın kendisi ya da `at` ile kopyası (aynı ekonomi, can, konum) olmalı.
+ */
+const bestCache = new WeakMap<BattleState, Map<string, Command | null>>();
 function bestNow(state: BattleState, actor: Combatant): Command | null {
+  const cur = state.combatants[actor.id];
+  const same = !!cur && (cur === actor || (cur.economy === actor.economy && cur.hp === actor.hp && cur.movementUsed === actor.movementUsed
+    && cur.pos?.col === actor.pos?.col && cur.pos?.row === actor.pos?.row));
+  if (!same) return bestNowUncached(state, actor);
+  let m = bestCache.get(state);
+  if (!m) { m = new Map(); bestCache.set(state, m); }
+  if (m.has(actor.id)) return m.get(actor.id) ?? null;
+  const r = bestNowUncached(state, actor);
+  m.set(actor.id, r);
+  return r;
+}
+
+function bestNowUncached(state: BattleState, actor: Combatant): Command | null {
   const foes = byPriority(actor, foesOf(state, actor), state);
   const shove = deadlyShove(state, actor, foes);
   if (shove) return shove;
@@ -685,8 +820,25 @@ function firstMove(state: BattleState, actor: Combatant, order: Spot[]): Command
   return null;
 }
 
-const at = (state: BattleState, actor: Combatant, to: Offset): BattleState =>
-  ({ ...state, combatants: { ...state.combatants, [actor.id]: { ...actor, pos: to } } });
+/**
+ * Varsayımsal konum durumu. Y2 G2: aynı (durum, yaratık, altıgen) için aynı nesne döner; böylece hareket yeri
+ * taramaları (daha iyi yer, Sneak Attack yeri, kötü koşul, tehlikeden çıkış) aynı karar içinde `tryCmd`/`bestNow`
+ * önbelleklerini paylaşır.
+ */
+const atCache = new WeakMap<BattleState, Map<string, BattleState>>();
+const at = (state: BattleState, actor: Combatant, to: Offset): BattleState => {
+  let m = atCache.get(state);
+  if (!m) { m = new Map(); atCache.set(state, m); }
+  const k = `${actor.id}|${to.col},${to.row}`;
+  const cur = state.combatants[actor.id];
+  // Önbellek yalnız durumdaki yaratığın kendisinden türetilen konumlar için (geçici ekonomi değişikliği yok).
+  const plain = cur === actor;
+  const hit = plain ? m.get(k) : undefined;
+  if (hit) return hit;
+  const out: BattleState = { ...state, combatants: { ...state.combatants, [actor.id]: { ...actor, pos: to } } };
+  if (plain) m.set(k, out);
+  return out;
+};
 
 /**
  * Bonus eylemle yapılacak sınıf özelliği veya büyü sürdürme: Second Wind (HP yarı veya altı),
@@ -740,7 +892,9 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
     if (ok(cmd)) return cmd;
   }
   const conc = actor.concentration;
-  const spell = spellOf(conc?.spell);
+  // Kuyruk A6: sürüme göre mekanik (`a4`/`a6`).
+  const spell0 = spellOf(conc?.spell);
+  const spell = spell0 ? { ...spell0, mechanics: mechanicsAt(state, spell0) } : spell0;
   // Görev B1: süreli tekrar (Heat Metal bonus eylemle; Call Lightning, Vampiric Touch eylemle): dost vurmayan ilk hedef.
   const rep = spell?.mechanics.repeat;
   // Kuyruk 19: Dispel Evil and Good: bitişik türden düşmana Dismissal.
@@ -767,7 +921,7 @@ function bonusFeature(state: BattleState, actor: Combatant, canAct: boolean): Co
       if (score > 0 && (!best || score > best.score) && ok(cmd)) best = { cmd, score };
     }
     if (best) return best.cmd;
-  } else if (conc && spell && rep && (rep.cost === 'bonus' || canAct)) {
+  } else if ((conc && spell && rep && (rep.cost === 'bonus' || canAct)) || (canAct && heldFollow(state, actor))) {
     for (const f of foes) {
       const cmd: Command = { type: 'spell_followup', actorId: id, targetId: f.id };
       const r = tryCmd(state, actor, cmd);
@@ -1088,6 +1242,29 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const canAct = !actor.economy.action || actor.economy.attacksLeft > 0;
   const feature = bonusFeature(state, actor, canAct);
   if (feature) return feature;
+  // Kuyruk K48 (Karadul, basit kural): bakış → dönüşüm → büyülü hedefe sürpriz vuruş.
+  const widow = karadulAi(state, actor);
+  if (widow) return widow;
+  // Kuyruk K50: imza alt sınıf eylemleri (basit kural). Y1: bonus/serbest imza özellikleri ve G3 havuzu puanlanır.
+  const sig = state.yz?.eski ? imzaAi(state, actor) : bonusEvaluated(state, actor);
+  if (sig) return sig;
+  // Kuyruk K48 (Moral tam modu, basit kural): eylemi duruyorsa menzildeki çökmüş dostu toparla.
+  if (!actor.economy.action && actor.moralMax !== undefined) {
+    for (const c of Object.values(state.combatants)) {
+      if (c.id === actorId || !c.effects?.some((e) => e.id === 'moral:cokmus')) continue;
+      const cmd: Command = { type: 'moral_rally', actorId, targetId: c.id };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
+  // Kuyruk A6 (sürüm 35): eylemi duruyorsa bitişik, uyutulmuş/büyülenmiş dostu sarsarak uyandır (Sleep, Hypnotic Pattern).
+  if (!actor.economy.action) {
+    for (const c of Object.values(state.combatants)) {
+      if (c.id === actorId || c.side !== actor.side || c.summon || c.hp <= 0) continue;
+      if (!c.effects?.some((e) => e.shakeable || e.escapeCheck?.allyHelp) && !(c.conditionTimers ?? []).some((t) => t.wakeOnDamage && c.conditions.includes(t.condition))) continue;
+      const cmd: Command = { type: 'help', actorId, targetId: c.id };
+      if (tryCmd(state, actor, cmd).ok) return cmd;
+    }
+  }
   const surged = canAct ? null : surge(state, actor);
   if (surged) return surged;
   const hasted = canAct ? null : hasteNow(state, actor);
@@ -1186,7 +1363,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     if (cmd) return cmd;
   }
   // Görev WIZARD (basit kural): felç eden save büyüsü (Hold Person) güçlü düşmanlara; yukarı slotta ek hedef.
-  if (canAct) {
+  if (canAct && state.yz?.eski) {
     const cmd = holdChoice(state, actor) ?? blindChoice(state, actor) ?? sphereGuard(state, actor) ?? banishChoice(state, actor) ?? wallChoice(state, actor)
       // Denge turu (K20 ölçümü): üç+ düşmana hasar veren alan büyüsü (Fireball) varken kontrol alanı (Faerie Fire) beklemeli.
       ?? (areaSpell(state, actor, foesOf(state, actor)) ? null : controlArea(state, actor));
@@ -1243,7 +1420,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       if (!target) return end;
       return monsterCommands(actor, target.id, false).find((cmd) => tryCmd(state, actor, cmd).ok) ?? end;
     }
-    return bestNow(state, actor) ?? end;
+    return evaluatedNow(state, actor) ?? end;
   }
 
   if (stuckInBog(state, actor)) return canAct && tryCmd(state, actor, { type: 'escape', actorId }).ok ? { type: 'escape', actorId } : end;
@@ -1288,11 +1465,18 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Görev S1: kıstırılmış menzilli büyücü ışınlanır (Misty Step).
   const blink = teleportEscape(state, actor);
   if (blink) return blink;
-  const now = bestNow(state, actor);
+  // Y1 G2 (arazi farkındalığı): tehlikeli altıgende (alev, zehir bulutu, lav kıyısı…) duruyorsa önce daha güvenli bir
+  // yere yürür (orada da eylem yapabiliyorsa o yer önce; yoksa en güvenlisi).
+  const leave = state.yz?.eski ? null : leaveHazard(state, actor);
+  if (leave) return leave;
+  const now = evaluatedNow(state, actor);
   // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
   // hasar; örn. savaşçı arbalet yerine kılıç) önce oraya yürür. Güvenli ve en ucuz yerler.
   if (now && canAct && actor.side === 'party' && !actor.civilian && actor.movementUsed < speedHexes(actor)) {
-    const here = commandScore(state, actor, now);
+    // Y2: karşılaştırma iki uçta aynı ölçüyle (`bestNow`): değerlendiricinin buradaki seçimi ile eski kuralın oradaki
+    // seçimi farklı komutlar olunca iki altıgen arasında ileri-geri yürüyordu (Mağara beraberlikleri; YZ-DENETIM Y2).
+    const legacyHere = state.yz?.eski ? null : bestNow(state, actor);
+    const here = Math.max(commandScore(state, actor, now), legacyHere ? commandScore(state, actor, legacyHere) : 0);
     if (here > 0) {
       const better = reachable(state, actor)
         .filter((sp) => risk(state, actor, sp.to) < 50)
@@ -1312,7 +1496,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const aim = steadyAimFirst(state, actor, now);
   if (aim) return aim;
   // Haydut: buradan Sneak Attack tutmuyorsa, tutacağı (güvenli) bir yere yürür.
-  if (now && canAct && actor.sneakAttackDice > 0 && actor.sneakTurn !== `${state.round}:${state.turnIndex}` && sneakBonus(state, actor, now) === 0) {
+  // Y2: eski kural burada Sneak Attack buluyorsa yürümez (değerlendiricinin seçimi farklı olsa da; ileri-geri yürüme).
+  const sneakHere = (): boolean => { const l = state.yz?.eski ? null : bestNow(state, actor); return !!l && sneakBonus(state, actor, l) > 0; };
+  if (now && canAct && actor.sneakAttackDice > 0 && actor.sneakTurn !== `${state.round}:${state.turnIndex}` && sneakBonus(state, actor, now) === 0 && !sneakHere()) {
     const better = reachable(state, actor)
       .filter((s) => risk(state, actor, s.to) < 50)
       .sort((a, b) => a.cost - b.cost)
@@ -1328,7 +1514,12 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Kötü koşullu atışta önce daha iyi bir yere yürü (siper arkasından karşılıklı dezavantajlı
   // atışla savaşın kilitlenmemesi için); öyle bir yer yoksa yine de yap.
-  const poor = now !== null && canAct && poorOdds(state, actor, now);
+  // Y2: değerlendiricinin seçimi kötü koşullu (dezavantaj, yoğun siper) ama eski kural burada iyi koşullu bir eylem
+  // buluyorsa yer değiştirmez: seçim olasılığı zaten içeriyor; yalnız ikisi de kötüyse daha iyi yere yürür (yoksa
+  // değerlendirici ile eski kural farklı hedef seçince iki altıgen arasında ileri-geri yürüyordu; YZ-DENETIM Y2).
+  const poorNow = now !== null && canAct && poorOdds(state, actor, now);
+  const legacyNow = poorNow && !state.yz?.eski ? bestNow(state, actor) : null;
+  const poor = poorNow && !(legacyNow && !poorOdds(state, actor, legacyNow));
   if (now && !poor) return withBrutal(state, actor, withCunning(state, actor, now));
   if (!canAct) return now ?? end;
 
@@ -1341,8 +1532,10 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const enemyNear = (h: Offset) => foes.some((f) => f.pos && gapFrom(h, f) === 1);
 
   // Eylem yapabileceği en ucuz ve en güvenli altıgen (menzilli parti üyesi bitişikten kaçınır).
+  // Y1 G2: menzilli yaratık yükseklik kuralı açıkken yüksek zemini tercih eder (seviye başına 1 maliyet indirimi).
+  const lift = (h: Offset) => (!state.yz?.eski && heightCombatRule(state) && (ranged || actor.weaponOptions.some((o) => o.ranged) || actor.attacks.some((a) => a.ranged)) ? heightAt(state, h) : 0);
   const scored = spots
-    .map((s) => ({ ...s, score: s.cost + risk(state, actor, s.to) + (ranged && enemyNear(s.to) ? 3 : 0) }))
+    .map((s) => ({ ...s, score: s.cost + risk(state, actor, s.to) + (ranged && enemyNear(s.to) ? 3 : 0) - lift(s.to) }))
     .sort((a, b) => a.score - b.score);
   const attackSpots: Spot[] = [];
   for (const s of scored) {
@@ -1865,4 +2058,182 @@ function holdChoice(state: BattleState, actor: Combatant): Command | null {
     break;
   }
   return null;
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------
+// Y1 G2: ortak değerlendirici bağlantısı. Eski kural zincirinin üreticileri açıklayıcı olarak kaydedilir; karar
+// noktasında (`bestNow`'un yeri) bütün adaylar kuru çalıştırmayla puanlanır. `state.yz.eski` eski zinciri çalıştırır.
+
+const threatCache = new WeakMap<BattleState, Map<string, number>>();
+/** Yaratığın bir turluk tehdidi (beklenen hasar; canavar saldırıları, silah × saldırı sayısı, en iyi hasar büyüsü). */
+function threatOf(state: BattleState, c: Combatant): number {
+  let m = threatCache.get(state);
+  if (!m) { m = new Map(); threatCache.set(state, m); }
+  const hit = m.get(c.id);
+  if (hit !== undefined) return hit;
+  const mon = c.attacks.length ? monsterAttackScore(c) : 0;
+  const weapon = c.weaponOptions.reduce((x, o) => Math.max(x, avg(o.damage)), 0) * Math.max(1, c.attacksPerAction);
+  const spell = castable(c).reduce((x, s) => Math.max(x, s.mechanics.damage ? avg(s.mechanics.damage) * (s.area ? 2 : 1) : 0), 0);
+  const v = Math.max(1, mon, weapon, spell);
+  m.set(c.id, v);
+  return v;
+}
+
+function aiHelpers(state: BattleState, actor: Combatant): AiHelpers {
+  const canAct = !actor.economy.action || actor.economy.attacksLeft > 0;
+  return {
+    foes: byPriority(actor, foesOf(state, actor), state),
+    allies: Object.values(state.combatants).filter((c) => c.side === actor.side && c.hp > 0 && c.life !== 'dead' && !c.civilian && !c.summon?.gone),
+    ok: (cmd) => tryCmd(state, actor, cmd).ok,
+    threat: (c) => threatOf(state, c),
+    risk: (c, h) => risk(state, c, h),
+    priorityKeys: (c) => {
+      const keys: string[] = [];
+      if (c.grapple?.by === actor.id) keys.push('yakalanan');
+      if (actor.side === 'enemies' && aiOn(state, 'aiCutRunner') && objectiveRunner(state)?.id === c.id) keys.push('kosucu');
+      if (actor.imza === 'imza_infazci' && c.effects?.some((e) => e.id === `imza:imza_infazci/verdict:${actor.id}`)) keys.push('hukumlu');
+      if (actor.marks?.some((m) => m.kind === 'vex' && m.targetId === c.id)) keys.push('vex');
+      const owner = actor.summon ? state.combatants[actor.summon.by] : undefined;
+      if (owner?.pos && c.pos && gap(state, owner, c) <= 1) keys.push('sahipKoruma');
+      return keys;
+    },
+    canAct,
+  };
+}
+
+const partyBranch = (a: Combatant) => a.side === 'party' && !a.summon;
+const monsterBranch = (a: Combatant) => !partyBranch(a);
+
+/** Eylem (ya da bonus/serbest) harcayan imza özelliklerinin adayları (ipucu sezgiselleri kapısız, yoksa hedef listesi). */
+function imzaActionCands(state: BattleState, actor: Combatant, h: AiHelpers, tur: 'action' | 'bonus' = 'action', hints: boolean | 'only' | 'gated' = true): Command[] {
+  if (tur === 'action' ? actor.economy.action : false) return [];
+  const out: Command[] = [];
+  const foes = [...h.foes].sort((a, b) => a.hp - b.hp);
+  const wounded = h.allies.filter((c) => c.hp <= c.maxHp * 0.6).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+  for (const f of (actor.features ?? []).filter((x) => x.key.startsWith('imza:'))) {
+    const spec = IMZA_SPECS[f.key];
+    if (!spec) continue;
+    if (tur === 'action' ? spec.tur !== 'action' : (spec.tur === 'action' || (spec.tur === 'bonus' && actor.economy.bonus)
+      || (spec.tur !== 'bonus' && actor.economy.action))) continue;
+    if (spec.yz) { if (hints) out.push(...imzaHintCmds(state, actor, f.key, spec, foes, h.allies, { gate: hints === 'gated' }).slice(0, 3)); continue; }
+    if (hints === 'only' || hints === 'gated') continue;
+    const marked = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.id === `${f.key}:${actor.id}`));
+    if ((spec.tek || spec.bag) && marked) continue;
+    let cands: Array<string | undefined> = [undefined];
+    if (spec.hedef === 'enemy' || spec.hedef === 'areaEnemies') cands = foes.map((c) => c.id);
+    else if (spec.iyilestir) cands = spec.hedef === 'allies' ? (wounded.length >= 1 ? [undefined] : []) : wounded.map((c) => c.id);
+    else if (spec.hedef === 'ally' || spec.hedef === 'allyOrSelf') cands = spec.temizle ? h.allies.filter((c) => c.conditions.some((x) => spec.temizle?.includes(x))).map((c) => c.id)
+      : h.allies.filter((c) => c.id !== actor.id).sort((a, b) => b.hp - a.hp).map((c) => c.id);
+    for (const targetId of cands.slice(0, 3)) out.push({ type: 'use_feature', actorId: actor.id, feature: f.key, ...(targetId ? { targetId } : {}) });
+  }
+  return out;
+}
+
+registerAction({ id: 'eski:itme', rule: true, kind: 'damage', note: 'ölümcül itme (lav, uçurum, batak, 20+ ft)', gen: (s, a, h) => [deadlyShove(s, a, h.foes)] });
+registerAction({ id: 'eski:iyilestir', rule: true, kind: 'heal', note: 'ölmekte olan / çok yaralı dosta iyileştirme büyüsü', gen: (s, a) => (partyBranch(a) ? [healAlly(s, a)] : []) });
+registerAction({ id: 'eski:yenilenme', rule: true, kind: 'damage', note: 'yerdeki yenilenen düşmana ateş/asit', gen: (s, a) => (partyBranch(a) ? [finishRegen(s, a)] : []) });
+registerAction({ id: 'eski:alan', rule: true, kind: 'damage', note: 'alan hasar büyüsü (2+ düşman, dost yok)', gen: (s, a, h) => (partyBranch(a) || (a.monsterId && a.spellNames.length && !a.summon) ? [areaSpell(s, a, h.foes)] : []) });
+registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word Kill/Stun, Mass Heal', gen: (s, a, h) => (partyBranch(a) ? [powerWordCommand(s, a, h.foes)] : []) });
+registerAction({ id: 'eski:zemin', rule: true, kind: 'control', note: 'kalıcı zemin büyüsü (Entangle, Web, Spike Growth…)', gen: (s, a, h) => (partyBranch(a) || (a.spellNames.length && !a.summon) ? [zoneSpell(s, a, h.foes)] : []) });
+registerAction({ id: 'eski:nefes', rule: true, kind: 'damage', note: 'Dragonborn nefesi', gen: (s, a, h) => (partyBranch(a) ? [breathWeapon(s, a, h.foes)] : []) });
+registerAction({
+  id: 'eski:tek', kind: 'damage', note: 'tek hedefli silah/büyü (öncelikli 4 düşman × en iyi 3 seçenek)',
+  gen: (s, a, h) => {
+    if (!partyBranch(a) && !(a.monsterId && a.spellNames.length && !a.summon)) return [];
+    const out: Command[] = [];
+    for (const t of h.foes.slice(0, 4)) {
+      const opts = partyOptions(a, t, s).filter((o) => partyBranch(a) || o.cmd.type === 'cast_spell');
+      out.push(...opts.slice(0, 3).map((o) => o.cmd));
+    }
+    return out;
+  },
+});
+registerAction({
+  id: 'eski:kontrol', rule: true, kind: 'control', note: 'Hold Person, Blindness, Resilient Sphere, Banishment/Dominate/Polymorph, Wall, kontrol alanı',
+  gen: (s, a, h) => (h.canAct ? [holdChoice(s, a), blindChoice(s, a), sphereGuard(s, a), banishChoice(s, a), wallChoice(s, a), controlArea(s, a)] : []),
+});
+registerAction({ id: 'eski:imzaIpucu', rule: true, kind: 'control', note: 'imza ipucu sezgiselleri (K54b/K54c `yz`, slot kapısıyla: kural önceliği)', gen: (s, a, h) => imzaActionCands(s, a, h, 'action', 'gated') });
+registerAction({ id: 'eski:imzaIpucuKapisiz', kind: 'control', note: 'imza ipucu sezgiselleri (kapısız: yalnız puanıyla)', gen: (s, a, h) => imzaActionCands(s, a, h, 'action', 'only') });
+registerAction({ id: 'eski:imza', kind: 'control', note: 'eylem harcayan imza alt sınıf özellikleri (ipucusuz)', gen: (s, a, h) => imzaActionCands(s, a, h, 'action', false) });
+registerAction({ id: 'eski:yetenek', rule: true, kind: 'damage', note: 'SRD canavar yetenekleri', gen: (s, a) => (monsterBranch(a) ? [abilityCommand(s, a)] : []) });
+registerAction({ id: 'eski:alanSaldiri', rule: true, kind: 'damage', note: 'canavar alanlı saldırısı / nefes', gen: (s, a) => (monsterBranch(a) ? [areaAttack(s, a)] : []) });
+registerAction({ id: 'eski:coklu', rule: true, kind: 'damage', note: 'SRD Multiattack planı', gen: (s, a, h) => (monsterBranch(a) ? [multiPlanCommand(s, a, h.foes)] : []) });
+registerAction({
+  id: 'eski:saldiri', kind: 'damage', note: 'canavar saldırıları (öncelikli 3 düşman)',
+  gen: (s, a, h) => (monsterBranch(a) ? h.foes.slice(0, 3).flatMap((t) => monsterCommands(a, t.id, !!s.map)) : []),
+});
+
+/** Rol türetmesi için büyü sayıları (iyileştirme, durum veren). */
+function spellKinds(actor: Combatant): { heal: number; control: number } {
+  const cs = castable(actor);
+  return {
+    heal: cs.filter((x) => x.mechanics.kind === 'heal').length,
+    control: cs.filter((x) => !!x.mechanics.failEffect || (x.mechanics.conditions ?? []).length > 0 || !!x.mechanics.zone).length,
+  };
+}
+
+const MAX_CANDIDATES = 24;
+const LEGACY: Candidate['desc'] = { id: 'eski:zincir', kind: 'utility', note: 'Y1 öncesi kural zincirinin seçimi', gen: () => [] };
+
+/** Adayların puanlı listesi (testler ve K58 açıklaması için de). */
+export function scoredCandidates(state: BattleState, actor: Combatant) {
+  const legacy = bestNow(state, actor);
+  const h = aiHelpers(state, actor);
+  const cands = candidatesFor(state, actor, h).slice(0, MAX_CANDIDATES);
+  if (legacy && !cands.some((c) => JSON.stringify(c.cmd) === JSON.stringify(legacy))) cands.push({ cmd: legacy, desc: LEGACY });
+  return { legacy, helpers: h, scored: evaluateCandidates(state, actor, cands, h, roleOf(actor, spellKinds(actor)), legacy, difficultyOf(state, actor.side)) };
+}
+
+/** Usta: komut uygulandıktan sonra aynı yaratığın en iyi sonraki komutunun puanı (ileri bakış yok). */
+function followScore(state: BattleState, actor: Combatant, cmd: Command): number {
+  const r = tryCmd(state, actor, cmd);
+  if (!r.ok || r.state.status !== 'active') return 0;
+  const next = r.state.combatants[actor.id];
+  if (!next || next.hp <= 0 || currentActorId(r.state) !== actor.id) return 0;
+  const { scored } = scoredCandidates(r.state, next);
+  return scored[0]?.score ?? 0;
+}
+
+/**
+ * Y1 G3: bonus/serbest eylem seçimi (imza bonus özellikleri, Zihin Gücü kipleri, Yetişen Yol Adımı, Cloud's Jaunt /
+ * Blink Steps kaçışı, iyileştirme iksiri). Olumlu puanlı en iyi aday; yoksa eski kural (ilk geçerli imza bonus özelliği).
+ */
+export function bonusScored(state: BattleState, actor: Combatant) {
+  const legacy = imzaAi(state, actor);
+  if (actor.civilian) return { legacy, scored: [] };
+  const h = aiHelpers(state, actor);
+  const cmds = [...imzaActionCands(state, actor, h, 'bonus'), ...bonusPoolCands(state, actor, h)];
+  if (!cmds.length) return { legacy, scored: [] };
+  const desc: Candidate['desc'] = { id: 'g3:bonus', kind: 'support', note: 'bonus/serbest havuz', gen: () => [] };
+  return { legacy, scored: evaluateCandidates(state, actor, cmds.map((cmd) => ({ cmd, desc })), h, roleOf(actor, spellKinds(actor)), legacy, difficultyOf(state, actor.side)) };
+}
+function bonusEvaluated(state: BattleState, actor: Combatant): Command | null {
+  const { legacy, scored } = bonusScored(state, actor);
+  const best = scored[0];
+  return best && best.score > 0 ? best.cmd : legacy;
+}
+
+/** Y1 G2: şu an yapılacak eylem (değerlendirici). Eski zincirde `bestNow`. Olumlu puanlı aday yoksa null. */
+function evaluatedNow(state: BattleState, actor: Combatant): Command | null {
+  if (state.yz?.eski) return bestNow(state, actor);
+  const { legacy, scored } = scoredCandidates(state, actor);
+  const diff = difficultyOf(state, actor.side);
+  const pick = pickByDifficulty(state, actor, scored, diff, diff === 'usta' ? (cmd) => followScore(state, actor, cmd) : undefined);
+  if (!pick) return legacy;
+  return pick.score > 0 ? pick.cmd : null;
+}
+
+/** Y1 G2: tehlikeli altıgenden çıkış (risk ≥ 20): eylem yapılabilen daha güvenli yer önce, yoksa en güvenli yer. */
+function leaveHazard(state: BattleState, actor: Combatant): Command | null {
+  if (!state.map || !actor.pos || actor.civilian || actor.movementUsed >= speedHexes(actor)) return null;
+  const here = risk(state, actor, actor.pos);
+  if (here < 20) return null;
+  const safer = reachable(state, actor).filter((sp) => sp.kind === 'move' && risk(state, actor, sp.to) < here / 2)
+    .map((sp) => ({ ...sp, r: risk(state, actor, sp.to) }))
+    .sort((a, b) => a.r - b.r || a.cost - b.cost).slice(0, 12);
+  if (!safer.length) return null;
+  const canAct = !actor.economy.action || actor.economy.attacksLeft > 0;
+  const acting = canAct ? safer.filter((sp) => bestNow(at(state, actor, sp.to), { ...actor, pos: sp.to }) !== null) : [];
+  return firstMove(state, actor, [...acting, ...safer]);
 }

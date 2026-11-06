@@ -21,7 +21,6 @@ import type { Ability } from '../rules/abilities';
 import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
-import { houseRule } from './houseRules';
 import { canSee } from './maprules';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption as Option } from '../rules/celestialData';
 import { resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type UsableFeature } from './types';
@@ -31,10 +30,14 @@ export const AWAKEN_KEY = 'ev:celestial/awakening';
 const GLIDE_ID = 'ev:celestial/glide';
 /** Kural sürümü: Celestial mekaniği bu sürümden (eski savaş/replay eski davranış). */
 export const CELESTIAL_VERSION = 18;
+/** Kuyruk K49: bu sürümden beri Celestial kalıcı ırk (ev kuralı değil). */
+export const CELESTIAL_PERMANENT = 22;
 
 /** Kural bu savaşta açık mı (ev kuralı + kural sürümü). */
 export const celestialOn = (state: Pick<BattleState, 'houseRules' | 'map' | 'kuralSurumu'>): boolean =>
-  (state.kuralSurumu ?? 1) >= CELESTIAL_VERSION && houseRule(state, 'celestialIrki');
+  (state.kuralSurumu ?? 1) >= CELESTIAL_PERMANENT
+  // Kuyruk K49: sürüm 22'den beri kalıcı ırk (her zaman açık); 18–21 kayıtlarında eski ev kuralı (`celestialIrki`, varsayılan kapalı).
+  || ((state.kuralSurumu ?? 1) >= CELESTIAL_VERSION && state.houseRules?.celestialIrki === true);
 
 const num = (expr: string | undefined, pb: number): number => (expr === 'pb' ? pb : Number(expr ?? 0));
 const optionOf = (key: string | undefined): Option => CELESTIAL.awakening.secenekler[key ?? ''] ?? (CELESTIAL.awakening.secenekler[CELESTIAL.awakening.default] as Option);

@@ -4,6 +4,8 @@
  * (Volkan `lairEruption`): tur başında (inisiyatif 20) lav püskürmesi. Uçan boss yapay zekâsı `ai.ts`'te
  * (`bossFlightMove`). Hepsi Game Master anahtarı; eski savaşlar (sürüm < 11) birebir aynı.
  */
+import { forcedMove, MOTION_VERSION } from './motion';
+import { ruleVersion } from './ruleVersion';
 import data from '../../data/efsanevi.json';
 import { distance, sameHex, type Offset } from '../rules/hex';
 import { rollD20, rollDice, rollTag, type Rng } from '../rules/dice';
@@ -446,7 +448,9 @@ export function legendaryTeleport(s: BattleState, b: Combatant, a: LegendaryActi
 }
 
 /** Düz itme (Cold Gale): kaynaktan uzağa `hexes` altıgen, engelde durur. */
-export function pushAway(s: BattleState, src: Combatant, t: Combatant, hexes: number, _rng: Rng): BattleEvent[] {
+export function pushAway(s: BattleState, src: Combatant, t: Combatant, hexes: number, rng: Rng): BattleEvent[] {
+  // Kuyruk K53: sürüm 24+ tek zorla hareket girişi (varış kuralları, çarpma).
+  if (ruleVersion(s) >= MOTION_VERSION && src.pos) return forcedMove(s, t.id, 'push', hexes * 5, 'legendary', rng, { origin: src.pos });
   let at = hexOf(t);
   const size = sizeOfMap(s);
   for (let i = 0; i < hexes; i++) {

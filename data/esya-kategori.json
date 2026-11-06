@@ -1,0 +1,1114 @@
+{
+  "note": "Kuyruk K49 B6: oluşturucuda eşya kategorileri (görünüm). Tür ve etki seviyesi SRD kaydından türetilir (src/rules/itemCategory.ts).",
+  "turler": [
+    "silah",
+    "zirh",
+    "kalkan",
+    "tuketilebilir",
+    "aksesuar",
+    "sihirli",
+    "arac"
+  ],
+  "seviyeler": [
+    "siradan",
+    "olagandisi",
+    "nadir",
+    "cokNadir",
+    "efsanevi"
+  ],
+  "nadirlik": {
+    "Common": "siradan",
+    "Uncommon": "olagandisi",
+    "Rare": "nadir",
+    "Very Rare": "cokNadir",
+    "Legendary": "efsanevi",
+    "Artifact": "efsanevi",
+    "Varies": "olagandisi"
+  },
+  "aksesuarSozcukleri": [
+    "Amulet",
+    "Necklace",
+    "Periapt",
+    "Medallion",
+    "Brooch",
+    "Circlet",
+    "Headband",
+    "Cloak",
+    "Boots",
+    "Bracers",
+    "Belt",
+    "Gloves",
+    "Gauntlets",
+    "Helm",
+    "Ioun",
+    "Robe",
+    "Slippers",
+    "Goggles",
+    "Eyes",
+    "Cape",
+    "Mantle",
+    "Scarab",
+    "Talisman",
+    "Stone of"
+  ],
+  "tuketilebilirSozcukleri": [
+    "Potion",
+    "Oil",
+    "Acid",
+    "Alchemist's Fire",
+    "Holy Water",
+    "Antitoxin",
+    "Healer's Kit",
+    "Rations",
+    "Torch",
+    "Ammunition",
+    "Ball Bearings",
+    "Caltrops",
+    "Poison"
+  ],
+  "turEsleme": {
+    "Weapon": "silah",
+    "Armor": "zirh",
+    "Shield": "kalkan",
+    "Potion": "tuketilebilir",
+    "Scroll": "tuketilebilir",
+    "Ring": "aksesuar",
+    "Wand": "sihirli",
+    "Staff": "sihirli",
+    "Rod": "sihirli"
+  },
+  "srd": {
+    "adamantine-armor": [
+      "Armor",
+      "Uncommon"
+    ],
+    "ammunition-1-2-or-3": [
+      "Weapon",
+      "Varies"
+    ],
+    "ammunition-of-slaying": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "amulet-of-health": [
+      "Wondrous",
+      "Rare"
+    ],
+    "amulet-of-proof-against-detection-and-location": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "amulet-of-the-planes": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "animated-shield": [
+      "Shield",
+      "Very Rare"
+    ],
+    "apparatus-of-the-crab": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "armor-1-2-or-3": [
+      "Armor",
+      "Varies"
+    ],
+    "armor-of-invulnerability": [
+      "Armor",
+      "Legendary"
+    ],
+    "armor-of-resistance": [
+      "Armor",
+      "Rare"
+    ],
+    "armor-of-vulnerability": [
+      "Armor",
+      "Rare"
+    ],
+    "arrow-catching-shield": [
+      "Shield",
+      "Rare"
+    ],
+    "bag-of-beans": [
+      "Wondrous",
+      "Rare"
+    ],
+    "bag-of-devouring": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "bag-of-holding": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "bag-of-tricks": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "bead-of-force": [
+      "Wondrous",
+      "Rare"
+    ],
+    "bead-of-nourishment": [
+      "Wondrous",
+      "Common"
+    ],
+    "belt-of-dwarvenkind": [
+      "Wondrous",
+      "Rare"
+    ],
+    "belt-of-giant-strength": [
+      "Wondrous",
+      "Varies"
+    ],
+    "berserker-axe": [
+      "Weapon",
+      "Rare"
+    ],
+    "boots-of-elvenkind": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "boots-of-levitation": [
+      "Wondrous",
+      "Rare"
+    ],
+    "boots-of-speed": [
+      "Wondrous",
+      "Rare"
+    ],
+    "boots-of-striding-and-springing": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "boots-of-the-winterlands": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "bowl-of-commanding-water-elementals": [
+      "Wondrous",
+      "Rare"
+    ],
+    "bracers-of-archery": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "bracers-of-defense": [
+      "Wondrous",
+      "Rare"
+    ],
+    "brazier-of-commanding-fire-elementals": [
+      "Wondrous",
+      "Rare"
+    ],
+    "brooch-of-shielding": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "broom-of-flying": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "candle-of-invocation": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "cape-of-the-mountebank": [
+      "Wondrous",
+      "Rare"
+    ],
+    "carpet-of-flying": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "censer-of-controlling-air-elementals": [
+      "Wondrous",
+      "Rare"
+    ],
+    "chime-of-opening": [
+      "Wondrous",
+      "Rare"
+    ],
+    "circlet-of-blasting": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "cloak-of-arachnida": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "cloak-of-displacement": [
+      "Wondrous",
+      "Rare"
+    ],
+    "cloak-of-elvenkind": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "cloak-of-invisibility": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "cloak-of-protection": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "cloak-of-the-bat": [
+      "Wondrous",
+      "Rare"
+    ],
+    "cloak-of-the-manta-ray": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "crystal-ball": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "crystal-ball-of-mind-reading": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "crystal-ball-of-telepathy": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "crystal-ball-of-true-seeing": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "cube-of-force": [
+      "Wondrous",
+      "Rare"
+    ],
+    "cubic-gate": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "dagger-of-venom": [
+      "Weapon",
+      "Rare"
+    ],
+    "dancing-sword": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "decanter-of-endless-water": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "deck-of-illusions": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "defender": [
+      "Weapon",
+      "Legendary"
+    ],
+    "demon-armor": [
+      "Armor",
+      "Very Rare"
+    ],
+    "dimensional-shackles": [
+      "Wondrous",
+      "Rare"
+    ],
+    "dragon-orb": [
+      "Wondrous",
+      "Artifact"
+    ],
+    "dragon-scale-mail": [
+      "Armor",
+      "Very Rare"
+    ],
+    "dragon-slayer": [
+      "Weapon",
+      "Rare"
+    ],
+    "dust-of-disappearance": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "dust-of-dryness": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "dust-of-sneezing-and-choking": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "dwarven-plate": [
+      "Armor",
+      "Very Rare"
+    ],
+    "dwarven-thrower": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "efficient-quiver": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "efreeti-bottle": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "elemental-gem": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "elixir-of-health": [
+      "Potion",
+      "Rare"
+    ],
+    "elven-chain": [
+      "Armor",
+      "Rare"
+    ],
+    "energy-bow": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "eversmoking-bottle": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "eyes-of-charming": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "eyes-of-minute-seeing": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "eyes-of-the-eagle": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "feather-token": [
+      "Wondrous",
+      "Varies"
+    ],
+    "figurine-of-wondrous-power": [
+      "Wondrous",
+      "Varies"
+    ],
+    "flame-tongue": [
+      "Weapon",
+      "Rare"
+    ],
+    "folding-boat": [
+      "Wondrous",
+      "Rare"
+    ],
+    "frost-brand": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "gauntlets-of-ogre-power": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "gem-of-brightness": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "gem-of-seeing": [
+      "Wondrous",
+      "Rare"
+    ],
+    "giant-slayer": [
+      "Weapon",
+      "Rare"
+    ],
+    "glamoured-studded-leather": [
+      "Armor",
+      "Rare"
+    ],
+    "gloves-of-missile-snaring": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "gloves-of-swimming-and-climbing": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "gloves-of-thievery": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "goggles-of-night": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "hammer-of-thunderbolts": [
+      "Weapon",
+      "Legendary"
+    ],
+    "handy-haversack": [
+      "Wondrous",
+      "Rare"
+    ],
+    "hat-of-disguise": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "hat-of-many-spells": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "headband-of-intellect": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "helm-of-brilliance": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "helm-of-comprehending-languages": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "helm-of-telepathy": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "helm-of-teleportation": [
+      "Wondrous",
+      "Rare"
+    ],
+    "holy-avenger": [
+      "Weapon",
+      "Legendary"
+    ],
+    "horn-of-blasting": [
+      "Wondrous",
+      "Rare"
+    ],
+    "horn-of-valhalla": [
+      "Wondrous",
+      "Varies"
+    ],
+    "horseshoes-of-a-zephyr": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "horseshoes-of-speed": [
+      "Wondrous",
+      "Rare"
+    ],
+    "immovable-rod": [
+      "Rod",
+      "Uncommon"
+    ],
+    "instant-fortress": [
+      "Wondrous",
+      "Rare"
+    ],
+    "ioun-stone": [
+      "Wondrous",
+      "Varies"
+    ],
+    "iron-bands": [
+      "Wondrous",
+      "Rare"
+    ],
+    "iron-flask": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "javelin-of-lightning": [
+      "Weapon",
+      "Uncommon"
+    ],
+    "lantern-of-revealing": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "luck-blade": [
+      "Weapon",
+      "Legendary"
+    ],
+    "mace-of-disruption": [
+      "Weapon",
+      "Rare"
+    ],
+    "mace-of-smiting": [
+      "Weapon",
+      "Rare"
+    ],
+    "mace-of-terror": [
+      "Weapon",
+      "Rare"
+    ],
+    "mantle-of-spell-resistance": [
+      "Wondrous",
+      "Rare"
+    ],
+    "manual-of-bodily-health": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "manual-of-gainful-exercise": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "manual-of-golems": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "manual-of-quickness-of-action": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "marvelous-pigments": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "medallion-of-thoughts": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "mirror-of-life-trapping": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "mithral-armor": [
+      "Armor",
+      "Uncommon"
+    ],
+    "mysterious-deck": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "necklace-of-adaptation": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "necklace-of-fireballs": [
+      "Wondrous",
+      "Rare"
+    ],
+    "necklace-of-prayer-beads": [
+      "Wondrous",
+      "Rare"
+    ],
+    "nine-lives-stealer": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "oathbow": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "oil-of-etherealness": [
+      "Potion",
+      "Rare"
+    ],
+    "oil-of-sharpness": [
+      "Potion",
+      "Very Rare"
+    ],
+    "oil-of-slipperiness": [
+      "Potion",
+      "Uncommon"
+    ],
+    "pearl-of-power": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "periapt-of-health": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "periapt-of-proof-against-poison": [
+      "Wondrous",
+      "Rare"
+    ],
+    "periapt-of-wound-closure": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "philter-of-love": [
+      "Potion",
+      "Uncommon"
+    ],
+    "pipes-of-haunting": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "pipes-of-the-sewers": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "plate-armor-of-etherealness": [
+      "Armor",
+      "Legendary"
+    ],
+    "portable-hole": [
+      "Wondrous",
+      "Rare"
+    ],
+    "potion-of-animal-friendship": [
+      "Potion",
+      "Uncommon"
+    ],
+    "potion-of-clairvoyance": [
+      "Potion",
+      "Rare"
+    ],
+    "potion-of-climbing": [
+      "Potion",
+      "Common"
+    ],
+    "potion-of-diminution": [
+      "Potion",
+      "Rare"
+    ],
+    "potion-of-flying": [
+      "Potion",
+      "Very Rare"
+    ],
+    "potion-of-gaseous-form": [
+      "Potion",
+      "Rare"
+    ],
+    "potion-of-giant-strength": [
+      "Potion",
+      "Varies"
+    ],
+    "potion-of-growth": [
+      "Potion",
+      "Uncommon"
+    ],
+    "potions-of-healing": [
+      "Potion",
+      "Varies"
+    ],
+    "potion-of-heroism": [
+      "Potion",
+      "Rare"
+    ],
+    "potion-of-invisibility": [
+      "Potion",
+      "Rare"
+    ],
+    "potion-of-invulnerability": [
+      "Potion",
+      "Rare"
+    ],
+    "potion-of-longevity": [
+      "Potion",
+      "Very Rare"
+    ],
+    "potion-of-mind-reading": [
+      "Potion",
+      "Rare"
+    ],
+    "potion-of-poison": [
+      "Potion",
+      "Uncommon"
+    ],
+    "potion-of-resistance": [
+      "Potion",
+      "Uncommon"
+    ],
+    "potion-of-speed": [
+      "Potion",
+      "Very Rare"
+    ],
+    "potion-of-vitality": [
+      "Potion",
+      "Very Rare"
+    ],
+    "potion-of-water-breathing": [
+      "Potion",
+      "Uncommon"
+    ],
+    "quarterstaff-of-the-acrobat": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "ring-of-animal-influence": [
+      "Ring",
+      "Rare"
+    ],
+    "ring-of-djinni-summoning": [
+      "Ring",
+      "Legendary"
+    ],
+    "ring-of-elemental-command": [
+      "Ring",
+      "Legendary"
+    ],
+    "ring-of-evasion": [
+      "Ring",
+      "Rare"
+    ],
+    "ring-of-feather-falling": [
+      "Ring",
+      "Rare"
+    ],
+    "ring-of-free-action": [
+      "Ring",
+      "Rare"
+    ],
+    "ring-of-invisibility": [
+      "Ring",
+      "Legendary"
+    ],
+    "ring-of-jumping": [
+      "Ring",
+      "Uncommon"
+    ],
+    "ring-of-mind-shielding": [
+      "Ring",
+      "Uncommon"
+    ],
+    "ring-of-protection": [
+      "Ring",
+      "Rare"
+    ],
+    "ring-of-regeneration": [
+      "Ring",
+      "Very Rare"
+    ],
+    "ring-of-resistance": [
+      "Ring",
+      "Rare"
+    ],
+    "ring-of-shooting-stars": [
+      "Ring",
+      "Very Rare"
+    ],
+    "ring-of-spell-storing": [
+      "Ring",
+      "Rare"
+    ],
+    "ring-of-spell-turning": [
+      "Ring",
+      "Legendary"
+    ],
+    "ring-of-swimming": [
+      "Ring",
+      "Uncommon"
+    ],
+    "ring-of-telekinesis": [
+      "Ring",
+      "Very Rare"
+    ],
+    "ring-of-the-ram": [
+      "Ring",
+      "Rare"
+    ],
+    "ring-of-three-wishes": [
+      "Ring",
+      "Legendary"
+    ],
+    "ring-of-warmth": [
+      "Ring",
+      "Uncommon"
+    ],
+    "ring-of-water-walking": [
+      "Ring",
+      "Uncommon"
+    ],
+    "ring-of-x-ray-vision": [
+      "Ring",
+      "Rare"
+    ],
+    "robe-of-eyes": [
+      "Wondrous",
+      "Rare"
+    ],
+    "robe-of-scintillating-colors": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "robe-of-stars": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "robe-of-the-archmagi": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "robe-of-useful-items": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "rod-of-absorption": [
+      "Rod",
+      "Very Rare"
+    ],
+    "rod-of-alertness": [
+      "Rod",
+      "Very Rare"
+    ],
+    "rod-of-lordly-might": [
+      "Rod",
+      "Legendary"
+    ],
+    "rod-of-resurrection": [
+      "Rod",
+      "Legendary"
+    ],
+    "rod-of-rulership": [
+      "Rod",
+      "Rare"
+    ],
+    "rod-of-security": [
+      "Rod",
+      "Very Rare"
+    ],
+    "rope-of-climbing": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "rope-of-entanglement": [
+      "Wondrous",
+      "Rare"
+    ],
+    "scarab-of-protection": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "scimitar-of-speed": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "sending-stones": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "sentinel-shield": [
+      "Shield",
+      "Uncommon"
+    ],
+    "shield-1-2-or-3": [
+      "Shield",
+      "Varies"
+    ],
+    "shield-of-missile-attraction": [
+      "Shield",
+      "Rare"
+    ],
+    "shield-of-the-cavalier": [
+      "Shield",
+      "Very Rare"
+    ],
+    "slippers-of-spider-climbing": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "sovereign-glue": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "spellguard-shield": [
+      "Shield",
+      "Very Rare"
+    ],
+    "spell-scroll": [
+      "Scroll",
+      "Varies"
+    ],
+    "sphere-of-annihilation": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "staff-of-charming": [
+      "Staff",
+      "Rare"
+    ],
+    "staff-of-fire": [
+      "Staff",
+      "Very Rare"
+    ],
+    "staff-of-frost": [
+      "Staff",
+      "Very Rare"
+    ],
+    "staff-of-healing": [
+      "Staff",
+      "Rare"
+    ],
+    "staff-of-power": [
+      "Staff",
+      "Very Rare"
+    ],
+    "staff-of-striking": [
+      "Staff",
+      "Very Rare"
+    ],
+    "staff-of-swarming-insects": [
+      "Staff",
+      "Rare"
+    ],
+    "staff-of-the-magi": [
+      "Staff",
+      "Legendary"
+    ],
+    "staff-of-the-python": [
+      "Staff",
+      "Uncommon"
+    ],
+    "staff-of-the-woodlands": [
+      "Staff",
+      "Rare"
+    ],
+    "staff-of-thunder-and-lightning": [
+      "Staff",
+      "Very Rare"
+    ],
+    "staff-of-withering": [
+      "Staff",
+      "Rare"
+    ],
+    "stone-of-controlling-earth-elementals": [
+      "Wondrous",
+      "Rare"
+    ],
+    "stone-of-good-luck": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "sun-blade": [
+      "Weapon",
+      "Rare"
+    ],
+    "sword-of-life-stealing": [
+      "Weapon",
+      "Rare"
+    ],
+    "sword-of-sharpness": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "sword-of-wounding": [
+      "Weapon",
+      "Rare"
+    ],
+    "talisman-of-pure-good": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "talisman-of-the-sphere": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "talisman-of-ultimate-evil": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "thunderous-greatclub": [
+      "Weapon",
+      "Very Rare"
+    ],
+    "tome-of-clear-thought": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "tome-of-leadership-and-influence": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "tome-of-understanding": [
+      "Wondrous",
+      "Very Rare"
+    ],
+    "trident-of-fish-command": [
+      "Weapon",
+      "Uncommon"
+    ],
+    "universal-solvent": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "vicious-weapon": [
+      "Weapon",
+      "Rare"
+    ],
+    "vorpal-sword": [
+      "Weapon",
+      "Legendary"
+    ],
+    "wand-of-binding": [
+      "Wand",
+      "Rare"
+    ],
+    "wand-of-enemy-detection": [
+      "Wand",
+      "Rare"
+    ],
+    "wand-of-fear": [
+      "Wand",
+      "Rare"
+    ],
+    "wand-of-fireballs": [
+      "Wand",
+      "Rare"
+    ],
+    "wand-of-lightning-bolts": [
+      "Wand",
+      "Rare"
+    ],
+    "wand-of-magic-detection": [
+      "Wand",
+      "Uncommon"
+    ],
+    "wand-of-magic-missiles": [
+      "Wand",
+      "Uncommon"
+    ],
+    "wand-of-paralysis": [
+      "Wand",
+      "Rare"
+    ],
+    "wand-of-polymorph": [
+      "Wand",
+      "Very Rare"
+    ],
+    "wand-of-secrets": [
+      "Wand",
+      "Uncommon"
+    ],
+    "wand-of-the-war-mage-1-2-or-3": [
+      "Wand",
+      "Varies"
+    ],
+    "wand-of-web": [
+      "Wand",
+      "Uncommon"
+    ],
+    "wand-of-wonder": [
+      "Wand",
+      "Rare"
+    ],
+    "weapon-1-2-or-3": [
+      "Weapon",
+      "Varies"
+    ],
+    "weapon-of-warning": [
+      "Weapon",
+      "Uncommon"
+    ],
+    "well-of-many-worlds": [
+      "Wondrous",
+      "Legendary"
+    ],
+    "wind-fan": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "winged-boots": [
+      "Wondrous",
+      "Uncommon"
+    ],
+    "wings-of-flying": [
+      "Wondrous",
+      "Rare"
+    ]
+  }
+}

@@ -76,13 +76,23 @@ export interface ActiveEffect {
   id: string;
   name: string;
   sourceId: string;
+  /** Kuyruk K53 S5: bu etkinin sahibine bağlı aura (`src/battle/auraCore.ts`). */
+  aura?: import('./auraCore').AuraSpec;
+  /** Kuyruk K54: birden çok aura (Son Ders: save bonusu + tur başı Motivasyon). */
+  auras?: import('./auraCore').AuraSpec[];
+  /** Kuyruk K54 (sürüm 25): hareketi fırsat saldırısı doğurmaz (Çevik Yaşlı). */
+  noProvoke?: boolean;
+  /** Kuyruk K54b (sürüm 27): zor zemin ve zemin (yüzey) hasarı yok sayılır (Kuşbakışı Plan; `groundWard.ts`). */
+  groundWard?: boolean;
   until?: number;
+  /** A1: bu büyüye (SRD kimliği) karşı save'i başardı; büyü onu yeniden hedefleyemez (Eyebite `repeat.noRetarget`). */
+  resisted?: string;
   concentration?: string;
   dice?: { die: string; sign: 1 | -1; on: Array<'attack' | 'save' | 'check'>; skill?: string; single?: boolean };
   reduce?: { die: string; types: string[]; spent?: boolean };
   tempHp?: number;
   immune?: string[];
-  ongoing?: { dice: string; type: string; save: Ability; dc: number };
+  ongoing?: { dice: string; type: string; save: Ability; dc: number; noSave?: boolean };
   command?: CommandWord;
   /** Görev B3: her tur süren zorlama (Suggestion, Fear: kaçış, Calm Emotions: duraksama); `fleeDash` kaçarken Dash. */
   commandPersist?: boolean;
@@ -139,6 +149,13 @@ export interface ActiveEffect {
   revealed?: boolean;
   seeInvisible?: boolean;
   attackedAdv?: boolean;
+  /** Görev P0: yalnız bu saldırganın bu yaratığa saldırısı avantajlı (ek paket `isaret`). */
+  attackedAdvBy?: string;
+  /** Görev P6 (ek paket): d20 alt sınırı (`zarEtkisi.d20AltSinir`), kritik eşiği, yakın dövüş erişim eki (ft), saklı mühür zarı. */
+  pkD20Min?: { value: number; on: Array<'attack' | 'save' | 'check'> };
+  pkCritOn?: number;
+  reachPlus?: number;
+  pkMuhur?: number;
   /** Kuyruk 19: Divine Sense: bu türlerdeki yaratıkların yeri `ft` içinde bilinir (gizlenmiş olsa da hedef alınır). */
   senseTypes?: { types: string[]; ft: number };
   /** Görev B5: karanlık görüş (ft; Darkvision), kontrollerde avantaj (Enhance Ability), dostlara Stealth +10 yarıçapı (altıgen). */
@@ -152,7 +169,31 @@ export interface ActiveEffect {
   /** CILA: save'e sabit eklenti (Slow DEX −2). */
   saveMod?: Partial<Record<Ability, number>>;
   /** CILA (Entangle, Web): eylemle STR (Athletics) kontrolüyle kurtulma (DC büyününki); başarıda etki biter. */
-  escapeCheck?: { dc: number };
+  escapeCheck?: { dc: number; skill?: 'athletics' | 'investigation'; allyHelp?: boolean };
+  /**
+   * Kuyruk A6 (sürüm 35): etkiyi taşıyan hasar verince biter (Invisibility); komşu bir yaratık eylemle sarsarak
+   * bitirir (`shakeable`: Sleep, Hypnotic Pattern); bu taraftaki yaratıklara saldıramaz, kendisi ya da görüşündeki
+   * dostu hasar alınca biter (`indifferentTo`: Calm Emotions); bu yaratık hedefin yerini hep bilir ve görünmezliği ona
+   * işlemez (`pinpointBy`: Mind Spike).
+   */
+  breakOnDamageDealt?: boolean;
+  /** Kuyruk A6 (Produce Flame): elde tutulan büyü (konsantrasyonsuz; `spell_followup` ile kullanılır). */
+  held?: { spell: string; slotLevel: number | null };
+  /** Kuyruk A6 (Alter Self): yüzme hızı (derin su, su altı saldırısı). */
+  swim?: boolean;
+  /** Kuyruk A6: lanet (Remove Curse kaldırır; Mummy Rot). */
+  curse?: boolean;
+  shakeable?: boolean;
+  indifferentTo?: string;
+  pinpointBy?: string;
+  /** Kuyruk A7 (Faerie Fire): saldırı avantajı yalnızca hedefi gören saldırana. */
+  attackedAdvSee?: boolean;
+  /** Kuyruk A7 (Dragon's Breath): büyüyle verilen nefes (Magic eylemiyle; `breath.ts`). */
+  breath?: BreathSpec;
+  /** Kuyruk A8 (Stinking Cloud): bu turda eylem ve bonus eylem yok (tepki serbest). */
+  noActBonus?: boolean;
+  /** Kuyruk A8 (Gaseous Form): bu biçimde büyü yapılamaz. */
+  noCastForm?: boolean;
   /** Görev S1: uçuş hızı (Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
   fly?: number;
   airborne?: boolean;
@@ -203,18 +244,38 @@ export interface ActiveEffect {
   /** Görev B1: bu yaratığa saldırılar dezavantajlı (Blur). */
   attackedDis?: boolean;
   /** Görev B1: bu yaratığın saldırıları dezavantajlı (`melee`: yalnızca yakın dövüş; `single`: ilk saldırıdan sonra biter). */
-  attackDis?: { melee?: boolean; single?: boolean };
+  attackDis?: { melee?: boolean; single?: boolean; str?: boolean };
   /** Görev K9d: büyü yapılamaz (eğitimsiz zırh; SRD 5.2.1 Armor Training). */
   noCast?: boolean;
   /** Görev CLERIC: Sanctuary (hedef alan düşman WIS save; başarısızsa saldırı/büyü boşa), Warding Bond (alınan hasar `bondTo`'ya da). */
   sanctuary?: { dc: number };
+  /** Görev P7: ek paket büyülü vuruş (`kendi`: sahibinin saldırıları, `cagrilanlar`: çağırdıkları); büyüsüz direnç aşılır. */
+  pkMagic?: string[];
+  /** Görev P7: konsantrasyon kurtulması avantajlı. */
+  concAdv?: boolean;
+  /** Görev P7: gerçek görüş (ft; `sight.ts` `senseSees`). */
+  pkTruesight?: number;
+  /** Görev P7: meydan okuma: bu yaratık `tauntBy` dışındakilere saldırırken dezavantajlı. */
+  tauntBy?: string;
   bondTo?: string;
   /** Görev CLERIC: Bestow Curse seçenekleri: koyana saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, koyanın isabetlerine ek zar. */
   attackDisVs?: string;
+  /** Kuyruk K54c (Hükümdar Sözü): bu kimliğe ve onun `ft` içindeki dostlarına saldırılar dezavantajlı. */
+  attackDisNear?: { id: string; ft: number };
+  /** Kuyruk K54c (Yıldız Falı, Ölümsüz Taht): ilk saldırı/kurtulma zarı avantajlı ya da dezavantajlı; atılınca biter. */
+  firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> };
+  /** Kuyruk K54c (Ferman): ek eylem bir kez (Haste ek eylem yolu; kullanılınca etki biter). */
+  extraActionOnce?: boolean;
+  /** Kuyruk K54c (Yazgı Mührü): mühürleyenin yeterliliği (dostların isabetine ek hasar) ve turun ilk saldırısı kendiliğinden isabet. */
+  fateSeal?: { pb: number };
+  /** Kuyruk K54c (Alışkın Acı): düşük Moral cezaları işlemez. */
+  noMoralePenalty?: boolean;
+  /** Kuyruk K54c (Öfkeyle Ayakta): öfkedeyken Moral 0'da çökme ertelenir. */
+  rageHoldsMoral?: boolean;
   turnSave?: { ability: 'wis'; dc: number };
-  curseDamage?: { dice: string; type: string };
+  curseDamage?: { dice: string; type: string; spells?: boolean };
   /** Görev WIZARD: Blink (tur sonu d20) ve Ethereal (hedef alınamaz; sonraki turunun başında biter). */
-  blink?: boolean;
+  blink?: boolean | 'd6';
   ethereal?: boolean;
   /** Kuyruk 18 H1: taraf değiştirme (Dominate Person/Beast): etkiyi verenin tarafına geçer (`allegiance.ts`). */
   dominate?: boolean;
@@ -244,6 +305,14 @@ export interface ActiveEffect {
   concDis?: boolean;
   /** Kuyruk 19: büyücünün o turdan sonraki turunun sonunda biter (Telekinesis; değer: uygulandığı tur). */
   untilSourceTurnEnd?: number;
+  /** Kuyruk A4: kaynağın (`sourceId`) sonraki turunun sonunda biter (değer: uygulandığı tur; Color Spray, Starry Wisp). */
+  endAfterSourceTurn?: number;
+  /** Kuyruk A4: tur sonu tekrar save'i yalnızca kaynağı göremezken (Fear). */
+  repeatSaveUnseen?: boolean;
+  /** Kuyruk A4: Blindsight/Truesight menzilindeki saldıran için etkisiz (Blur, Mirror Image). */
+  sensesPierce?: boolean;
+  /** Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren bu türdeki yaratık CON save ya da Blinded. */
+  blindRetort?: { types: string[]; dc: number };
   /** Kuyruk 19: tur başında save (Conjure Elemental tutsağı): başarısızsa hasar, başarılıysa biter. */
   startSave?: { ability: Ability; dc: number; dice: string; type: string };
   /** Kuyruk 19: Gift of the Protectors (kaynak warlock) ve Gaze of Two Minds (bağlı dost). */
@@ -267,7 +336,7 @@ export interface ActiveEffect {
   inspire?: string;
   damagePenalty?: { die: string; weaponOnly?: boolean; min?: number };
   /** Görev B1: silahta büyü yeteneği ve zar (Shillelagh: Club, Quarterstaff; d8 / seviyeyle büyür; Force seçeneği). */
-  weaponOverride?: { weapons: string[]; die: string; force?: boolean; attack: number; mod: number };
+  weaponOverride?: { weapons: string[]; die: string; force?: boolean; attack: number; mod: number; type?: string };
   /** Görev B1: her tur sonu kurtarma zarı; başarıda biter (Slow, Ray of Enfeeblement). */
   repeatSave?: { ability: Ability; dc: number; failDamage?: { dice: string; type: string }; tally?: { need: number; s: number; f: number } };
   /** Kuyruk 19: Contagion: verdiği durumu kaldıran etki önce bu save'i ister (başarısızsa durum kalır). */
@@ -303,6 +372,8 @@ export interface ActiveEffect {
   icon?: string;
   /** Görev B1: koyanın (`sourceId`) sonraki turunun başında biter (Heat Metal dezavantajı, Ray of Enfeeblement başarısı). */
   untilSourceTurn?: boolean;
+  /** Kuyruk A2: bu yaratığın yakalaması sürdükçe (Roper, Rug of Smothering, Vortex…); yakalama bitince etki düşer. */
+  whileGrappledBy?: string;
 }
 
 /** Savaşçının tepkisi (Görev R1): kimlik (SRD), ad, mekanik; tepki büyüsünde büyünün adı. */
@@ -372,6 +443,10 @@ export interface Economy {
   /** CILA (Haste): bu tur Haste'in ek eylemi alındı (`hasteUsed`); `hasted` o eylem sürerken (yalnızca tek saldırı, Dash, Disengage, Hide). */
   hasted?: boolean;
   hasteUsed?: boolean;
+  /** Kuyruk A6: Haste ek eylemi asıl eylemden önce alındı (o kullanılınca asıl eylem geri gelir). */
+  hasteFirst?: boolean;
+  /** Kuyruk A6: Conjure Animals sürüsü bu tur sahibiyle taşındı. */
+  packMoved?: boolean;
   /** Kuyruk 19: bu tur çağrılanlara bonus eylemle emir verildi (Animate Objects). */
   summonCommand?: boolean;
   /** K13: kalan saldırılar Thirsting Blade'den; yalnızca pact silahıyla. */
@@ -472,6 +547,10 @@ export interface SummonInfo {
   noSpace?: boolean;
   /** Kuyruk 19: sahibi bonus eylemle emretmezse turunda yalnızca Kaçın (Animate Objects). */
   commandBonus?: boolean;
+  /** Kuyruk A6: emrin menzili (ft; Animate Dead 60): dışındaysa emir işlemez. */
+  commandFt?: number;
+  /** Kuyruk A6 (Conjure Animals): sahibi bu tur yürüdüyse taşımak bonus eylem istemez; sahibine STR save avantajı. */
+  withOwner?: boolean;
   gone?: boolean;
 }
 
@@ -530,6 +609,9 @@ export interface Avatar {
   tint?: TintSpec;
   /** Kuyruk 36: geçici kıyafet (mahkûm: Keşiş jetonu + turuncu hale; yalnızca görsel). */
   outfit?: 'mahkum';
+  /** Görev P0: renk tonu kaydırma (derece; CSS hue-rotate) ve halka rengi (çizim anında; ek görsel yok). */
+  hue?: number;
+  ring?: string;
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */
@@ -543,6 +625,24 @@ export interface Combatant {
   allegiance?: { side: Side; ownerId: string | null };
   /** Kuyruk 18 H3: yakındaki dost Paladin'in Aura of Protection save bonusu (reducer `syncAuras` yazar). */
   auraSave?: number;
+  /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
+  imza?: string;
+  /** Y1 G2: yapay zekâ rolü (Game Master `set_ai_role`; yoksa veriden türetilir, `ai/evaluate.ts`). */
+  aiRole?: 'hasarci' | 'kontrolcu' | 'destek' | 'tank';
+  /** Kuyruk K50: Taht Varlığı aurasından WIS kurtulma bonusu (reducer sonu `syncAuras`). */
+  imzaWisSave?: number;
+  /** Kuyruk K53 S5: pasif auralardan (syncAuras): durum bağışıklığı, can yenileyemez, ölüm save dezavantajı. */
+  auraImmune?: string[];
+  auraNoHeal?: true;
+  auraDeathDis?: true;
+  /** Kuyruk K54: aura ölüm save avantajı (Dar Gün Aurası). */
+  auraDeathAdv?: true;
+  /** Kuyruk K54b: Mevzi İşareti altıgeninde kurtulma bonusu (reducer sonu `syncAuras`). */
+  wardSave?: number;
+  /** Kuyruk K54b: Omuz Ver: başarısız kurtulmaya bonus verebilecek bağlı dost (reducer sonu `syncAuras`). */
+  shoulderBy?: { id: string; bonus: number };
+  /** Kuyruk K54c (Geride Kalan): Moral/Yıpranmanın normal üst sınırı (Yaralı Kalp tavanı üçte bir; eksik puan bundan). */
+  yipranmaNormal?: number;
   /** Kuyruk 18 H4: başka kattaki savaşçı (o katın harita kimliği) ve oradaki konumu. */
   offFloor?: string;
   floorPos?: Offset;
@@ -564,6 +664,16 @@ export interface Combatant {
   senses?: { blindsight?: number; truesight?: number; tremorsense?: number };
   /** Kuyruk 19: içinde bulunduğu auranın verdiği dirençler (Aura of Life; reducer `syncAuras`). */
   auraResist?: string[];
+  /** Görev P7: aura içinde kurtulmalar dezavantajlı (`syncAuras`). */
+  auraSaveDis?: boolean;
+  /** Kuyruk A6 (sürüm 35; `syncAuras`): Silence alanının içinde (Deafened sayılır, sözlü tepki büyüsü yok). */
+  silenced?: boolean;
+  /** Kuyruk A6 (sürüm 35; Conjure Animals, `syncAuras`): kendi ruh sürüsünün 5 ft içinde (STR save avantajı). */
+  packStrAdv?: boolean;
+  /** Kuyruk A6 (sürüm 35): bu turda (`turn`) Sanctuary save'ini kaçırdığı korunanlar: onlara yeniden yönelemez, başka hedef seçer. */
+  sanctuaryLost?: { turn: string; ids: string[] };
+  /** Görev P7: büyüsüz saldırılara direnç (paket yaratığı `buyusuzDirencler`). */
+  nonmagicalResist?: string[];
   /** Kuyruk 19 (11–20): `featuresK19` açık ve savaşçının zar yolu özelliği var (Peerless Skill); `syncAuras` yazar. */
   k19Traits?: boolean;
   /** Kuyruk 19 (Epic Boon): Improve Fate sahibi (60 ft; dost için ve düşman için), `syncAuras` yazar. */
@@ -583,6 +693,11 @@ export interface Combatant {
   boonScore?: number;
   /** Kuyruk 19: Bardic Inspiration zarı özellik işaretli savaşçıda da ikinci şans listesinde (reducer `syncAuras`, kural sürümü 16). */
   inspireFix?: true;
+  /** Kuyruk K48 (sürüm 19, `bardicInspirationChain`): ilham zarı önceki ikinci şans tutmazsa da atılır (reducer `syncAuras`). */
+  inspireChain?: true;
+  /** Kuyruk K48: Moral tam modu (savaş başında `withMorale`; yoksa sistem kapalı): kalan ve en çok. */
+  moral?: number;
+  moralMax?: number;
   ownerId: string | null;
   ac: number;
   hp: number;
@@ -644,6 +759,10 @@ export interface Combatant {
   legendaryUsed?: string[];
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
   heavyArmor: boolean;
+  /** Kuyruk A6: zırh giyiyor (karakterde zırh türü `none` değil; canavarda bilinmez). */
+  armored?: boolean;
+  /** Kuyruk A7: kalkan taşıyor (karakterde; Flame Blade boş el denetimi). */
+  shieldHeld?: boolean;
   /** Harita kurallarının savaşçıya bıraktığı izler (Adım 8). */
   mapStatus: MapStatus;
   /** Harcanan eylemler (true: bu tur kullanıldı). */
@@ -778,6 +897,10 @@ export interface Combatant {
   creatureType?: string;
   buffs?: Buff[];
   features?: UsableFeature[];
+  /** Görev P0: ek paket alt sınıfının ilkelleri ve yaratıkları (`src/battle/paket/`; oluşturulurken kopyalanır). */
+  paket?: import('./paket/bag').PaketBag;
+  /** Görev P6: menzildeki ek paket zar mührü / zorla sonuç kaynakları (reducer türetimi `syncAuras`). */
+  pkSans?: import('./paket/sans').PkSans[];
   /**
    * Görev P-Monk (eski kayıtlarda yok; veriden): bonus eylemle Unarmed Strike (Martial Arts), Focus ile bonus eylemler
    * (Flurry of Blows, Patient Defense, Step of the Wind), Uncanny Metabolism, Deflect Attacks, Slow Fall, Stunning
@@ -913,13 +1036,17 @@ export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' 
   /** Kuyruk 36: anahtar ve doğaçlama silahlar (Hapishane Adası). */
   | 'key' | 'benchLeg' | 'chain' | 'bucket' | 'cudgel'
   /** Görev K26: balista, donmuş şelale. */
-  | 'ballista' | 'frozenFall';
+  | 'ballista' | 'frozenFall'
+  /** Kuyruk K53 S3: zeminden çağrılan taş/enkaz (`objectMotion.ts`). */
+  | 'rock';
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 'read' | 'out'
   /** Görev K26: balista yüklü / boş. */
   | 'loaded' | 'spent';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject {
   id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string;
+  /** Kuyruk A7: nesneye yapılmış ışık büyüsü (yarıçap altıgen, büyü kimliği, yapan; Light, Continual Flame). */
+  light?: number; lightSpell?: string; lightBy?: string;
   /** Kuyruk 30 D1: keşif nesnesi (oyuncudan saklı, bulunana dek); bulma DC'si (pasif Algı), bulununca keşif bayrağı. */
   gizli?: boolean; found?: boolean; findDc?: number; flag?: string;
 }
@@ -948,7 +1075,9 @@ export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take
   /** Kuyruk 29 K28b: plakayı oku, kaya yığınını yuvarla, kazanı/mangalı söndür. */
   | 'read' | 'roll' | 'douse'
   /** Görev K26: balistayı yükle / ateşle (hedef `to`). */
-  | 'load' | 'fire';
+  | 'load' | 'fire'
+  /** A1: hafif/orta hareketli nesneyi hedef altıgene fırlat (`to`; K53 nesne hareketi). */
+  | 'throw';
 
 /**
  * Görev B2: altıgenlere bağlı süreli büyü alanı. Kuralı büyü verisinde (`mechanics.zone`); burada yalnızca nerede, kimin,
@@ -984,6 +1113,10 @@ export interface SpellZone {
   /** Kuyruk 19 (11–20): özellik alanı (Holy Nimbus, Nature's Sanctuary): kural alanın içinde, sabit hasar `damage`. */
   spec?: import('../data').ZoneSpec;
   damage?: string;
+  /** Kuyruk K53 S4: geçici engel (`src/battle/barriers.ts`, `data/engeller.json`). */
+  barrier?: import('./barriers').BarrierSpec;
+  /** Kuyruk K54b: Mevzi İşareti / Yol Aç: sahibin tarafındaki dostlar burada zor zemini ve zemin hasarını yok sayar (`saveBonus`: kurtulma). */
+  groundWard?: { saveBonus?: number };
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -992,7 +1125,9 @@ export type SurfaceKind = 'oil' | 'water' | 'ice' | 'fire' | 'burningWeb' | 'ste
   | 'warning';
 /** Görev Y1: yüzey tepkimesi (günlük için; durumu değiştirmez, değişiklik ardından gelen alan olaylarında). */
 export type SurfaceReaction = 'ignite' | 'webBurn' | 'melt' | 'steam' | 'freeze' | 'explode' | 'chain' | 'douse'
-  /** Kuyruk 18b */ | 'fogBurn' | 'crack' | 'condense' | 'splash' | 'dissolve' | 'wash' | 'dilute';
+  /** Kuyruk 18b */ | 'fogBurn' | 'crack' | 'condense' | 'splash' | 'dissolve' | 'wash' | 'dilute'
+  /** Kuyruk K55: katmanda yerine geçme, zincir sınırı */ | 'replace' | 'chainLimit'
+  /** Kuyruk K56: arazi × büyü (satır `row: arazi:<id>`) */ | 'terrain';
 
 /**
  * Bir durumun süresi. `ownerId` kimin turunda sayıldığı (etkiyi veren ya da hedefin kendisi):
@@ -1078,10 +1213,17 @@ export interface BattleState {
    */
   kuralSurumu?: number;
   /**
+   * Y1: yapay zekâ ayarı (karar olay değil, kural sürümü gerekmez). `zorluk` taraf başına (varsayılan Normal);
+   * `eski: true` Y1 öncesi kural zincirini çalıştırır (regresyon ölçümü).
+   */
+  yz?: { zorluk?: Partial<Record<'party' | 'enemies', 'kolay' | 'normal' | 'usta'>>; eski?: boolean };
+  /**
    * Görev Y1: yüzey etkileşimi (tepkimeler: tutuşma, buhar, donma, erime, patlama, suda yıldırım). Varsayılan açık;
    * yalnızca `false` kapatır (eski kayıt: açık).
    */
   yuzeyEtkilesimi?: boolean;
+  /** Kuyruk K55: bu turda zincirle çalışan tepkime ikilileri (`<satır>@<altıgen>`; aynı ikili turda bir kez). */
+  hexReacted?: { turn: string; keys: string[] };
   /** Görev K13B: Game Master'ın kurulumda açıp kapattığı ev kuralları (`data/ev-kurallari.json`); verilmeyen varsayılan. */
   houseRules?: Record<string, boolean>;
   /** Kuyruk 24b: savaşta kazanılan sonuç bayrakları (ör. `heykel-magarasi-kesfedildi`; sefer ekranı okuyacak). */
@@ -1107,6 +1249,12 @@ export interface HpPool {
   hp: number;
   max: number;
   label?: string;
+  /**
+   * Kuyruk K54b: Yıkılmaz Birlik (Birlik Manastırı 17): havuz 0'a düşecekken bir kez `hp` ile ayakta kalır; sahibin
+   * kaynağı (`resource`) ve tepkisi harcanır, üyelerin Motivasyonu dolar (reducer `trackPools`). Kullanılınca `held`.
+   */
+  guard?: { ownerId: string; hp: number; resource: string };
+  held?: boolean;
 }
 
 /** Bir saldırı seçeneği (silah saldırısı veya büyü saldırısı). */
@@ -1188,6 +1336,8 @@ export interface ShapeStats {
   avatar: Combatant['avatar'];
   /** Kuyruk 18 H2: Polymorph (büyüyle dönüşüm): canavar saldırıları ve Multiattack biçiminkiyle değişir; geçici HP bitince biter. */
   polymorph?: boolean;
+  /** Kuyruk K48: Karadul Örümcek Biçimi (biçim canı = geçici HP; bitince ya da bırakınca biter). */
+  spider?: boolean;
   attacks?: CombatantAttack[];
   multiattack?: boolean;
 }
@@ -1280,6 +1430,8 @@ export type Command =
       type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number;
       /** Çok hedefli etki büyüsü (Bless, Bane, Heroism; Görev R2): hedefler (yoksa `targetId`). */
       targetIds?: string[];
+      /** Kuyruk A8: birden çok merkezli alan (Meteor Swarm: dört nokta). */
+      targetHexes?: Offset[];
       /** Görev SORCERER: bu yapımda kullanılan Metamagic seçenekleri. */
       metamagic?: string[];
       /**
@@ -1307,6 +1459,8 @@ export type Command =
   | { type: 'adjust_hp'; targetId: string; hp: number }
   /** Görev S1: Game Master bitkinlik seviyesini ayarlar (0–6). */
   | { type: 'set_exhaustion'; targetId: string; level: number }
+  /** Y1 G2: Game Master bir yaratığa yapay zekâ rolü atar (`null`: veriden türet). */
+  | { type: 'set_ai_role'; targetId: string; role: 'hasarci' | 'kontrolcu' | 'destek' | 'tank' | null }
   /** Görev A1: Game Master birden çok yaratığı tek can havuzunda birleştirir (`hp`/`max` verilmezse üyelerin toplamı). */
   | { type: 'create_hp_pool'; memberIds: string[]; poolId?: string; hp?: number; max?: number; label?: string }
   /** Görev Y1: Game Master yüzey yerleştirir (yağ, su, buz, zehir bulutu…) ya da altıgenlerdeki yüzeyleri kaldırır (`kind` yok). */
@@ -1350,6 +1504,8 @@ export type Command =
   | { type: 'distract'; actorId: string; at: Offset }
   /** Kuyruk 43: sarf eşyası (iksir) kullan: kendine ya da erişimdeki dosta. */
   | { type: 'use_item'; actorId: string; itemId: string; targetId: string }
+  /** Kuyruk K48: Moral tam modu: çökmüş dosta toparlama (eylem). */
+  | { type: 'moral_rally'; actorId: string; targetId: string }
   /** Fighter: Action Surge (eylemini kullandıktan sonra bir eylem daha). */
   | { type: 'action_surge'; actorId: string }
   /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
@@ -1398,8 +1554,11 @@ export type Command =
 /** Olaylar: olmuş ve sonuçlanmış gerçekler. Durum yalnızca olaylardan türetilir. */
 export type BattleEvent =
   | { type: 'battle_started'; state: BattleState }
-  /** CILA: Haste'in ek eylemi alındı (eylem yeniden boş; yalnızca tek saldırı, Dash, Disengage, Hide). */
-  | { type: 'haste_action'; actorId: string }
+  /**
+   * CILA: Haste'in ek eylemi alındı (eylem yeniden boş; yalnızca tek saldırı, Dash, Disengage, Hide). Kuyruk A6 (sürüm 35,
+   * `first`): asıl eylemden önce de: sıradaki eylem Haste'inkidir, kullanılınca asıl eylem geri gelir.
+   */
+  | { type: 'haste_action'; actorId: string; first?: boolean }
   /** CILA: sahibi çağrısını bonus eylemle taşıyor (çağrının bu turdaki hareketi sıfırlanır). */
   | { type: 'summon_steered'; summonId: string }
   | {
@@ -1483,6 +1642,8 @@ export type BattleEvent =
   | { type: 'distracted'; actorId: string; at: Offset; targetIds: string[] }
   /** Kuyruk 43: sarf eşyası kullanıldı (adet azalır; iyileşme ayrı `healed`). */
   | { type: 'item_used'; actorId: string; itemId: string; name: string; targetId: string; left: number }
+  /** Kuyruk K48: Moral değişti (dost düştü, korku, toparlama); `moral` yeni değer. */
+  | { type: 'moral_changed'; targetId: string; delta: number; moral: number; reason: 'dost' | 'korku' | 'toparlama' | 'zafer'; byId?: string }
   /** Süren etki bitti (save, süre, kullanım, komutun turu). */
   | { type: 'effect_ended'; targetId: string; effectId: string; name: string; reason: 'save' | 'used' | 'expired' | 'turn' | 'dispelled' }
   /** Geçici HP (Heroism): yığılmaz, yüksek olan kalır. */
@@ -1504,7 +1665,7 @@ export type BattleEvent =
   | { type: 'shape_changed'; actorId: string; stats: ShapeStats | null; reason?: string }
   /** Turda bir kez kullanılan özellik işaretlendi (Wild Resurgence). */
   | { type: 'trait_turn'; actorId: string; trait: string; key: string }
-  | { type: 'sanctuary_save'; actorId: string; targetId: string; label: string; dc: number; d20: number[]; total: number; success: boolean }
+  | { type: 'sanctuary_save'; actorId: string; targetId: string; label: string; dc: number; d20: number[]; total: number; success: boolean; retarget?: string }
   /** Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar kadar büyücüye. */
   | { type: 'bond_damage'; targetId: string; fromId: string; label: string; amount: number; targetHpAfter: number; effects: DamageEffect[] }
   /** Görev CLERIC: Bestow Curse tur başı save'i; başarısızsa eylem yok. */
@@ -1564,6 +1725,8 @@ export type BattleEvent =
       attacksLeft?: number; slotTurn?: string;
       /** Görev A5: ek bonus eylem harcandı (bonus eylem zaten kullanılmıştı). */
       extraBonus?: boolean;
+      /** Kuyruk A6 (Conjure Animals): sürü sahibiyle taşındı (turda bir). */
+      packMoved?: boolean;
       /** Light silahla saldırı (yan el ek saldırısını açar) ve yan el ek saldırısı yapıldı (kayıt sürümü 10). */
       light?: boolean; offhand?: boolean;
       /** Flurry of Blows'tan kalan vuruş ve Stunning Strike denendi (Görev P-Monk). */
@@ -1681,7 +1844,7 @@ export type BattleEvent =
   /** Yakalama bitti (kaçtı, yakalayan düştü/etkisiz, uzaklaştı). */
   | { type: 'grapple_ended'; targetId: string; reason: string }
   /** Kaçış denemesi: Athletics ya da Acrobatics (yüksek olan) vs kaçış DC'si. */
-  | { type: 'grapple_escape'; actorId: string; skill: 'athletics' | 'acrobatics'; d20: number[]; total: number; dc: number; success: boolean; bonusDice?: RolledExtra[] }
+  | { type: 'grapple_escape'; actorId: string; skill: 'athletics' | 'acrobatics' | 'investigation'; d20: number[]; total: number; dc: number; success: boolean; bonusDice?: RolledExtra[] }
   /** İtme: hedefin save'i ve sonucu; başarısızsa `effect` uygulanır (`to`: itileceği altıgen). */
   | {
       type: 'shove_resolved'; actorId: string; targetId: string; ability: 'str' | 'dex'; dc: number;
@@ -1765,14 +1928,15 @@ export type BattleEvent =
       /** Görev Y1: alan büyüsünün altıgenleri, hasar türü, zorluk sınıfı, zarı ve etkilenenler (yüzey tepkimeleri). */
       area?: { hexes: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[] } }
   /** Görev Y1: yüzey tepkimesi (yalnızca günlük; alan değişiklikleri `zone_*` olaylarında). */
-  | { type: 'surface_reacted'; reaction: SurfaceReaction; hexes: Offset[]; sourceId?: string; label: string }
+  /** Kuyruk K55: `row` tablo satırı (data/yuzey-etkilesimleri.json; keşif defteri), `pairs` zincirde çalışan ikililer (turda bir). */
+  | { type: 'surface_reacted'; reaction: SurfaceReaction; hexes: Offset[]; sourceId?: string; label: string; row?: string; pairs?: string[] }
   /** Görev S2: nesne olayları (yerleşti, kaldırıldı, hasar aldı, yıkıldı, durumu değişti). */
   | { type: 'object_placed'; object: MapObject }
   | { type: 'object_removed'; objectId: string }
   | { type: 'object_damaged'; objectId: string; actorId?: string; label: string; damage: number; damageType: string; hpAfter: number;
       roll?: { d20: number; total: number; ac: number; hit: boolean } }
   | { type: 'object_destroyed'; objectId: string; label: string }
-  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset;
+  | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk A7: nesne ışığı (null kaldırır). */ light?: { r: number; spell: string; by: string } | null; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset;
       /** Kuyruk 36: doğaçlama silah alındı: taşıyanın silah seçeneklerine eklenir. */ arm?: AttackOption }
   | { type: 'goal_changed'; goalId: string; status: GoalStatus }
   | { type: 'groups_formed'; members: Record<string, string[]> }
@@ -1798,6 +1962,8 @@ export type BattleEvent =
   | { type: 'teleported'; actorId: string; from: Offset; to: Offset; label: string; /** Kuyruk 19: harcanan hareket (altıgen) ve Tree Stride işareti. */ cost?: number; stride?: boolean }
   /** Görev S1: bitkinlik seviyesi değişti (6'da ölür). */
   | { type: 'exhaustion_changed'; targetId: string; level: number; reason: string }
+  /** Y1 G2: yapay zekâ rolü atandı (Game Master). */
+  | { type: 'ai_role_set'; targetId: string; role: 'hasarci' | 'kontrolcu' | 'destek' | 'tank' | null }
   /** Kuyruk 19: canavar yeteneğinin şarjı (kullanıldı ya da tur başı d6). */
   | { type: 'ability_recharge'; actorId: string; abilityId: string; used?: boolean; d6?: number; recharged?: boolean }
   /** Kuyruk 19 (Hydra Multiple Heads): baş sayısı, son turundan beri ölen, ateş hasarı aldı mı, turun başındaki HP. */
@@ -1817,7 +1983,7 @@ export type BattleEvent =
   /** Düşmanın ejderhayı uyandırma eğilimi zarı (d100 < yüzde tutar). */
   | { type: 'rouse_roll'; actorId: string; roll: number; pct: number; success: boolean; turn: string }
   /** Görev A1: can havuzu kuruldu (üyelerin HP'si ve azamisi havuzunki olur). */
-  | { type: 'hp_pool_created'; poolId: string; memberIds: string[]; hp: number; max: number; label?: string }
+  | { type: 'hp_pool_created'; poolId: string; memberIds: string[]; hp: number; max: number; label?: string; guard?: HpPool['guard'] }
   /** Görev A1: komut sonunda üyelerin HP'si havuzunkine eşitlenir (aynı komutta birden çok üyeye gelen hasar ayrı ayrı düşülür). */
   | { type: 'hp_pool_synced'; poolId: string; hp: number };
 

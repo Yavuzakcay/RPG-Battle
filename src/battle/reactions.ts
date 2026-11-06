@@ -13,6 +13,7 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
+import { spells } from '../data';
 import { chainResist } from './chainPact';
 import { gap } from './body';
 import { damageProfile } from './common';
@@ -105,6 +106,8 @@ function usable(c: Combatant, spec: ReactionSpec, minSlot = 1): boolean {
   if (spec.recharge && c.reactionSpent?.includes(spec.id)) return false;
   if (spec.resource && (c.resources[spec.resource] ?? 0) <= 0) return false;
   if (spec.spell && !spec.pool && !resourceOf(c, spec) && slotLevels(c, spec, minSlot).length === 0) return false;
+  // Kuyruk A6 (sürüm 35): Silence içinde sözlü (V) bileşenli tepki büyüsü yapılamaz (Shield, Hellish Rebuke…).
+  if (spec.spell && c.silenced && !spells.find((x) => x.name === spec.spell || x.srd === spec.spell || x.id === spec.spell)?.noVerbal) return false;
   return true;
 }
 
@@ -219,9 +222,26 @@ export function hitReactions(state: BattleState, ctx: HitContext, rng: Rng): Hit
   if (gd) return { ...own, events: [...own.events, ...gd.events], hit: gd.hit, ac: gd.ac, damage: gd.hit ? own.damage : 0, reacted: gd.reacted };
   // Görev BARD: hedefin tepkisinden sonra dost Bard'ın Cutting Words'ü.
   const cw = cuttingWords(own.events.length ? applyEvents(state, own.events) : state, { ...ctx, ac: own.ac, damage: own.damage }, rng);
-  if (!cw) return own;
-  return { ...own, events: [...own.events, ...cw.events], hit: cw.hit, damage: cw.damage, reacted: cw.reacted };
+  const after = cw ? { ...own, events: [...own.events, ...cw.events], hit: cw.hit, damage: cw.damage, reacted: cw.reacted } : own;
+  if (!after.hit || after.damage <= 0 || !allyHitHooks.length) return after;
+  // Kuyruk K54c: dosta isabet tepkileri (Astrolog Yazgı Değişir; kayıtla, döngüsel içe aktarma olmadan).
+  const cur = after.events.length ? applyEvents(state, after.events) : state;
+  for (const h of allyHitHooks) {
+    const r = h(cur, { ...ctx, ac: after.ac, damage: after.damage }, rng);
+    // Görev P6: kanca hasarı değiştirebilir (`damage`: azaltma, yarıya, kritik iptali); verilmezse ıska.
+    if (r && r.damage !== undefined && r.damage > 0) return { ...after, events: [...after.events, ...r.events], damage: r.damage, reacted: { name: r.name } };
+    if (r) return { ...after, events: [...after.events, ...r.events], hit: false, damage: 0, reacted: { name: r.name } };
+  }
+  return after;
 }
+
+/**
+ * Kuyruk K54c: dosta isabet eden saldırıyı ıskaya çeviren tepki kancası (isabet ve hasar hesaplandıktan sonra).
+ * Görev P6: `damage` verilirse isabet kalır, hasar o olur (0 ya da altı ıska).
+ */
+export type AllyHitHook = (state: BattleState, ctx: HitContext, rng: Rng) => { events: BattleEvent[]; name: string; damage?: number } | null;
+const allyHitHooks: AllyHitHook[] = [];
+export function registerAllyHit(h: AllyHitHook): void { if (!allyHitHooks.includes(h)) allyHitHooks.push(h); }
 
 /**
  * Görev BARD: Cutting Words (College of Lore): 60 ft içinde, hedefin tarafından tepkisi olan ve Bardic Inspiration'ı
@@ -268,7 +288,7 @@ function ownHitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutc
   const t = ctx.target;
   const none: HitOutcome = { events: [], hit: true, ac: ctx.ac, damage: ctx.damage };
   // Görev B3: Mirror Image (tepki değil): isabet bir kopyaya gelebilir.
-  const mirror = mirrorImageHit(t, ctx.attacker, rng);
+  const mirror = mirrorImageHit(t, ctx.attacker, rng, state);
   if (mirror.blocked) return { events: mirror.events, hit: false, ac: ctx.ac, damage: 0, reacted: { name: 'Mirror Image' } };
   if (!canReact(t) || t.side === ctx.attacker.side) return none;
   const { specs, suggested } = hitOptions(state, ctx);
@@ -321,6 +341,21 @@ function ownHitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutc
   };
 }
 
+/** Kuyruk K54: hedef alınma kancaları (saldırı zarından önce; başka bir dost saldırıyı üstlenir). */
+export type TargetedHook = (state: BattleState, attacker: Combatant, target: Combatant, rng: Rng) => { events: BattleEvent[]; targetId: string } | null;
+const targetHooks: TargetedHook[] = [];
+export function registerTargeted(h: TargetedHook): void { if (!targetHooks.includes(h)) targetHooks.push(h); }
+/** Yalnız kayıtlı kancalar (srdK19 kapalıyken canavar saldırısı için). */
+export function targetedHookReactions(state: BattleState, attacker: Combatant, target: Combatant, rng: Rng): { events: BattleEvent[]; targetId: string } {
+  if (target.side !== attacker.side) for (const h of targetHooks) { const r = h(state, attacker, target, rng); if (r) return r; }
+  return { events: [], targetId: target.id };
+}
+
+/** Kuyruk K54: saldırı sonrası tepki kancaları (imza alt sınıflar; `registerAfterAttack`). */
+export type AfterAttackHook = (state: BattleState, attackerId: string, targetId: string, info: { melee: boolean; damageType: string; dealt: number; hit: boolean }, rng: Rng) => BattleEvent[];
+const afterHooks: AfterAttackHook[] = [];
+export function registerAfterAttack(h: AfterAttackHook): void { if (!afterHooks.includes(h)) afterHooks.push(h); }
+
 /**
  * İsabet tepkisinin ve hasarın ardından: Deflect Attacks'in geri yöneltmesi, Riposte'un karşılık saldırısı, hasar
  * alanın tepkisi (Hellish Rebuke, Retaliation). `state` saldırı olayları uygulanmış durum.
@@ -330,6 +365,8 @@ export function afterAttackReactions(state: BattleState, attackerId: string, tar
   const events: BattleEvent[] = [];
   let current = state;
   const add = (evs: BattleEvent[]) => { events.push(...evs); current = applyEvents(current, evs); };
+  // Kuyruk K54: ıskalanan saldırıya tepkiler (Sabır…); kancalar kaydı döngüsel içe aktarmayı önler.
+  for (const h of afterHooks) add(h(current, attackerId, targetId, { ...info, hit: !!outcome?.hit }, rng));
   if (outcome?.redirect) add(redirectEvents(current, targetId, attackerId, info.melee, info.damageType, rng));
   // Kuyruk 19 (srdK19): Deflect Missile geri yöneltmesi ve Reflexive Antennae.
   if (outcome?.missileBack) add(missileBackEvents(current, targetId, attackerId, outcome.missileBack, rng));
@@ -338,7 +375,25 @@ export function afterAttackReactions(state: BattleState, attackerId: string, tar
   if (info.dealt > 0) add(damagedReactions(current, targetId, attackerId, rng));
   // Kuyruk 19: Fire Shield: 5 ft içinden yakın dövüşle vurana 2d8 (sıcak kalkan Fire, soğuk kalkan Cold). Anahtar `spellsK19`.
   if (info.melee && info.dealt > 0) add(retortEvents(current, targetId, attackerId, rng));
+  // Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren Fiend/Undead CON save ya da sonraki turunun sonuna dek Blinded.
+  if (outcome?.hit && info.melee) add(blindRetortEvents(current, targetId, attackerId, rng));
   return events;
+}
+
+function blindRetortEvents(state: BattleState, holderId: string, attackerId: string, rng: Rng): BattleEvent[] {
+  const h = state.combatants[holderId];
+  const a = state.combatants[attackerId];
+  const e = h?.effects?.find((x) => x.blindRetort);
+  if (!h || !a || !e?.blindRetort || a.hp <= 0 || !e.blindRetort.types.includes((a.creatureType ?? '').toLowerCase())) return [];
+  const { dc } = e.blindRetort;
+  const save = resolveSave({ extra: saveDice(a, 'con'), modifier: a.saves.con, dc, mode: saveMode('normal', a, 'con'), against: ['Blinded', 'spell'] }, rollTag(rng, { by: a.id }));
+  const ev: BattleEvent[] = [{ type: 'save_resolved', actorId: e.sourceId, targetId: a.id, label: e.name, ability: 'con', dc, mode: 'normal', reasons: [],
+    d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
+    damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: a.hp, effects: [], conditionsAdded: [],
+    ...(save.extra ? { bonusDice: save.extra } : {}) }];
+  if (!save.success) ev.push({ type: 'effect_added', targetId: a.id, effect: { id: `${e.id}:blind`, name: e.name, sourceId: a.id, grants: ['Blinded'], untilOwnTurnEnd: false,
+    endAfterSourceTurn: state.round, until: state.round + 2 } });
+  return ev;
 }
 
 function retortEvents(state: BattleState, holderId: string, attackerId: string, rng: Rng): BattleEvent[] {
@@ -491,6 +546,8 @@ function saveDamage(actor: Combatant, target: Combatant, label: string, ability:
 export function targetedReactions(state: BattleState, attacker: Combatant, target: Combatant, rng: Rng, spell?: { srd: string; name: string }):
   { events: BattleEvent[]; targetId: string; blocked?: boolean } {
   const none = { events: [], targetId: target.id };
+  // Kuyruk K54: dostun yerine saldırıyı üstlenen tepkiler (Tam Zamanında); kayıtlı kancalar.
+  if (!spell && target.side !== attacker.side) for (const h of targetHooks) { const r = h(state, attacker, target, rng); if (r) return r; }
   if (!canReact(target) || target.side === attacker.side) return none;
   if (spell) {
     const shield = specsOf(target, ['shield']).find((s) => usable(target, s) && s.blocks?.includes(spell.srd));

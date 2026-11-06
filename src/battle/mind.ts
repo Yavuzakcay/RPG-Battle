@@ -12,6 +12,7 @@ import { AXIAL_DIRECTIONS, costsFrom, distance, offsetToAxial, type Offset } fro
 import { rollDie, rollTag, type Rng } from '../rules/dice';
 import { executeMove, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { applyEvents } from './reduce';
+import { senseSees } from './sight';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 import { ruleVersion } from './ruleVersion';
 import { isIncapacitated } from '../rules/conditions';
@@ -33,6 +34,8 @@ export function conditionAura(state: BattleState, targetId: string, condition: s
   if (ruleVersion(state) < 13) return false;
   const t = state.combatants[targetId];
   if (!t) return false;
+  // Kuyruk K53 S5: veriden pasif aura bağışıklığı (syncAuras → auraImmune).
+  if (t.auraImmune?.includes(condition)) return true;
   // Barbarian (Berserker) Mindless Rage: Rage sürerken Charmed ve Frightened olmaz.
   if (t.rage && t.traits?.includes('mindless-rage')) return true;
   // Paladin Aura of Courage (Frightened) ve Aura of Devotion (Charmed): 10 ft içindeki dostlar.
@@ -40,6 +43,15 @@ export function conditionAura(state: BattleState, targetId: string, condition: s
   return Object.values(state.combatants).some((p) => p.hp > 0 && p.side === t.side && p.traits?.includes(trait) && !isIncapacitated(p.conditions)
     // Kuyruk 19: Aura Expansion (Paladin 18): 30 ft.
     && (p.id === t.id || (!!p.pos && !!t.pos && distance(p.pos, t.pos) <= ((p.level ?? 0) >= 18 ? 6 : 2))));
+}
+
+/**
+ * Kuyruk A6 (sürüm 35; Protection from Evil and Good): korunan, korunulan türden kaynağın zaten verdiği Charmed/Frightened
+ * etkisine karşı yeni save'lerde avantajlı.
+ */
+export function pfegRepeatAdv(state: BattleState, targetId: string, sourceId: string | undefined, conditions: string[]): boolean {
+  if (ruleVersion(state) < 35) return false;
+  return conditions.some((x) => (x === 'Charmed' || x === 'Frightened') && wardedFrom(state, targetId, sourceId, x));
 }
 
 export function wardedFrom(state: BattleState, targetId: string, sourceId: string | undefined, condition: string): boolean {
@@ -101,9 +113,11 @@ export function compelEvents(state: BattleState, id: string, e: ActiveEffect, mo
  * Mirror Image: hedefte kopya varsa ve saldıran Blinded değilse her kopya için d6; biri 3+ ise kopya vurulur (isabet
  * boşa gider, kopya yok olur). Döner: kopya vuruldu mu ve olaylar (kopya sayısı azalır; sıfırda etki biter).
  */
-export function mirrorImageHit(target: Combatant, attacker: Combatant, rng: Rng): { blocked: boolean; events: BattleEvent[] } {
+export function mirrorImageHit(target: Combatant, attacker: Combatant, rng: Rng, state?: BattleState): { blocked: boolean; events: BattleEvent[] } {
   const e = target.effects?.find((x) => (x.images ?? 0) > 0);
   if (!e || attacker.conditions.includes('Blinded')) return { blocked: false, events: [] };
+  // Kuyruk A4: Blindsight/Truesight menzilindeki saldıran kopyalara aldanmaz.
+  if (e.sensesPierce && state && senseSees(state, attacker, target)) return { blocked: false, events: [] };
   const n = e.images ?? 0;
   let blocked = false;
   for (let i = 0; i < n; i++) if (rollDie(6, rollTag(rng, { by: target.id, kind: 'save' })) >= 3) blocked = true;

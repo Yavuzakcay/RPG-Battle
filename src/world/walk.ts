@@ -5,6 +5,7 @@
  */
 import izgara from '../../data/harita/yurume-izgara.json';
 import kurallar from '../../data/harita/gezinti-kurallari.json';
+import { SWIM, swimAt } from './regions';
 import { CAMERAS, ISLANDS, SEA_ROUTES, inPolygon, pxToMiles, type Pt } from './worldData';
 import type { Rng } from '../rules/dice';
 
@@ -36,9 +37,9 @@ export const costAt = (p: Pt): number => { const [x, y] = cellOf(p); return grid
 export const walkable = (p: Pt): boolean => costAt(p) > 0;
 
 /** En yakın yürünebilir hücre (`yakalamaHucre` içinde; yoksa null). */
-export function snap(p: Pt): [number, number] | null {
+export const snap = (p: Pt): [number, number] | null => snapIn(grid(), p);
+function snapIn(g: Uint8Array, p: Pt): [number, number] | null {
   const [cx, cy] = cellOf(p);
-  const g = grid();
   for (let r = 0; r <= WALK_RULES.yakalamaHucre; r++) {
     let best: [number, number] | null = null, bd = Infinity;
     for (let y = cy - r; y <= cy + r; y++) for (let x = cx - r; x <= cx + r; x++) {
@@ -51,13 +52,26 @@ export function snap(p: Pt): [number, number] | null {
   return null;
 }
 
-export interface WalkPlan { path: Pt[]; cells: Array<[number, number]>; miles: number; hours: number }
+export interface WalkPlan { path: Pt[]; cells: Array<[number, number]>; miles: number; hours: number; /** K49 D: yüzülen hücre sayısı. */ swim?: number }
 
-/** A* (8 yön, maliyet × uzunluk); erişilemezse null. Yol düzleştirilmiş noktalar (dünya pikseli). */
-export function findPath(from: Pt, to: Pt): WalkPlan | null {
-  const a = snap(from), b = snap(to);
-  if (!a || !b) return null;
+/** K49 D: yüzmeli maliyet ızgarası (dar su hücreleri `yuzme.maliyet`; önbellekli). */
+let swimCosts: Uint8Array | null = null;
+function swimGrid(): Uint8Array {
+  if (swimCosts) return swimCosts;
   const g = grid();
+  swimCosts = g.slice();
+  for (let i = 0; i < swimCosts.length; i++) if (!swimCosts[i] && swimAt(i)) swimCosts[i] = SWIM.maliyet;
+  return swimCosts;
+}
+
+/**
+ * A* (8 yön, maliyet × uzunluk); erişilemezse null. Yol düzleştirilmiş noktalar (dünya pikseli).
+ * K49 D: `swim` açıkken (Serüven anahtarı `bolgeYukleme`) göl ve nehir hücreleri yüzülür (pahalı); kapalıyken K47.
+ */
+export function findPath(from: Pt, to: Pt, opts: { swim?: boolean } = {}): WalkPlan | null {
+  const g = opts.swim ? swimGrid() : grid();
+  const a = opts.swim ? snapIn(g, from) : snap(from), b = opts.swim ? snapIn(g, to) : snap(to);
+  if (!a || !b) return null;
   const N = GW * GH, start = a[1] * GW + a[0], goal = b[1] * GW + b[0];
   const gs = new Float64Array(N).fill(Infinity), came = new Int32Array(N).fill(-1);
   const closed = new Uint8Array(N);
@@ -91,8 +105,10 @@ export function findPath(from: Pt, to: Pt): WalkPlan | null {
   for (let n = goal; n !== -1; n = came[n]!) { cells.push([n % GW, Math.floor(n / GW)]); if (n === start) break; }
   cells.reverse();
   // Süre: hücre uzunluğu (mil) × maliyet/20 ÷ yaya hızı.
-  let miles = 0, hours = 0;
+  let miles = 0, hours = 0, swim = 0;
+  const base = grid();
   for (let i = 1; i < cells.length; i++) {
+    if (!base[cells[i]![1] * GW + cells[i]![0]]) swim++;
     const [x0, y0] = cells[i - 1]!, [x1, y1] = cells[i]!;
     const mi = pxToMiles(Math.hypot(x1 - x0, y1 - y0) * CELL);
     const c = ((g[y0 * GW + x0] as number) + (g[y1 * GW + x1] as number)) / 2;
@@ -100,7 +116,7 @@ export function findPath(from: Pt, to: Pt): WalkPlan | null {
   }
   // Düzleştirme: her 4 hücrede bir nokta + uç.
   const path = cells.filter((_, i) => i % 4 === 0 || i === cells.length - 1).map(([x, y]) => center(x, y));
-  return { path, cells, miles, hours };
+  return { path, cells, miles, hours, ...(swim ? { swim } : {}) };
 }
 
 /** Saat gece mi (`geceSaat` [başlangıç, bitiş]). */
@@ -113,7 +129,7 @@ export function encounterIndex(plan: WalkPlan, startHour: number, rng: Rng, mult
   let hour = startHour;
   for (let i = 1; i < plan.cells.length; i++) {
     const [x, y] = plan.cells[i]!;
-    const c = g[y * GW + x] as number;
+    const c = (g[y * GW + x] as number) || SWIM.maliyet;
     hour += (pxToMiles(CELL) * (c / 20)) / WALK_RULES.yayaMilSaat;
     const p = (c <= WALK_RULES.yolMaliyet ? k.yol : k.yabani) * (isNightHour(hour) ? k.geceCarpan : 1) * multiplier;
     if (rng() < p) return i;
