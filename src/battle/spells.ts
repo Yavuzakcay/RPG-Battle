@@ -44,6 +44,7 @@ import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
 import { heldFollow, mechanicsAt } from './spellVersion';
+import srdSpells from '../../data/srd/spells.json';
 import { executeZoneCast, movableZoneOf, shiftZoneEvents, silencedAt, zoneHexes } from './zones';
 import { executeFireHex, fireHexSpell } from './ignite';
 import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
@@ -149,8 +150,17 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
   const aim = cmd.targetHex ?? named?.pos ?? null;
   // Alanın altıgenleri, nokta denetimi ve etkilenenler ortak seçicide (Görev R4: büyü, nefes, koni, çizgi aynı yol).
-  const pick = pickArea(state, actor, area, spell.rangeFt, aim, 'büyü');
-  if ('ok' in pick) return pick;
+  const pick0 = pickArea(state, actor, area, spell.rangeFt, m.multiPoint && cmd.targetHexes?.length ? cmd.targetHexes[0] ?? aim : aim, 'büyü');
+  if ('ok' in pick0) return pick0;
+  // Kuyruk A8 (Meteor Swarm, `multiPoint`): birden çok merkez; altıgenler birleşir, her yaratık bir kez etkilenir.
+  let pick = pick0;
+  for (const at of m.multiPoint ? (cmd.targetHexes ?? []).slice(1, m.multiPoint) : []) {
+    const p2 = pickArea(state, actor, area, spell.rangeFt, at, 'büyü');
+    if ('ok' in p2) return p2;
+    const seen = new Set(pick.reached.map((x) => x.c.id));
+    const keys = new Set(pick.hexes.map((h) => `${h.col},${h.row}`));
+    pick = { ...pick, hexes: [...pick.hexes, ...p2.hexes.filter((h) => !keys.has(`${h.col},${h.row}`))], reached: [...pick.reached, ...p2.reached.filter((x) => !seen.has(x.c.id))] };
+  }
   // Görev WIZARD: Sculpt Spells (Evoker): Evocation alan büyüsünde 1 + büyü seviyesi kadar dost (büyücü dahil) etkilenmez.
   const sculpt = (spell.school === 'Evocation' && !!actor.traits?.includes('sculpt-spells') ? 1 + spell.level : 0)
     // Görev SORCERER: Careful Spell: CHA değiştiricisi kadar (en az 1) yaratık save'i otomatik geçer ve yarı hasar almaz.
@@ -495,6 +505,15 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const note = merged.mechanics.sigmayan ?? (merged.mechanics.gmNoted && !merged.mechanics.offCombat ? merged.mechanics.gmNote : undefined);
     if (done && note && !repeat) extra.push({ type: 'map_note', text: `Game Master notu — ${spell.name}: ${note}` });
     return extra.length ? finish(state, [...r.events, ...extra]) : r;
+  }
+  // Kuyruk A8 (sürüm 37, Slow): yavaşlatılmış büyücünün somatik (S) bileşenli büyüsü %25 (d4 = 1) başarısız; slot harcanır.
+  if (!repeat && ruleVersion(state) >= 37 && actor.effects?.some((e) => e.slowed) && somaticOf(spell)) {
+    const d = rollDie(4, rollTag(rng, { by: actor.id, kind: 'check' }));
+    if (d === 1) {
+      const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
+      if (!slot.ok) return slot;
+      return finish(state, [...slot.events, { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: 'Slow: el hareketleri yetişmedi, büyü başarısız (d4 = 1)' }]);
+    }
   }
   // Kuyruk A6 (Call Lightning, `stormBonus`): fırtınalı haritada (açık hava) büyü fırtınayı yönetir, hasar +zar.
   if (spell.mechanics.stormBonus && spell.mechanics.damage && ruleOf(state, 'storm')) {
@@ -946,6 +965,10 @@ function lingerZoneEvents(state: BattleState, actor: Combatant, spell: Spell, ev
   return out;
 }
 
+/** Kuyruk A8: büyünün SRD bileşenlerinde somatik (S) var mı (data/srd/spells.json). */
+const SOMATIC = new Map((srdSpells.spells as Array<{ id: string; components?: string }>).map((x) => [x.id, /(^|,\s*)S(,|$|\s)/.test(x.components ?? '')]));
+const somaticOf = (spell: Spell): boolean => SOMATIC.get(spell.srd.replace('spells:', '')) ?? false;
+
 /** Kuyruk A7: büyücünün bu büyüyle önceki nesne ışığı biter (Light: "ends if you cast it again"). */
 function objectLightEnd(state: BattleState, actor: Combatant, spell: Spell, except?: string): BattleEvent[] {
   return (state.map?.objects ?? []).filter((o) => o.lightSpell === spell.id && o.lightBy === actor.id && o.id !== except)
@@ -1368,6 +1391,10 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     }
     targets.push(t);
   }
+  // Kuyruk A8 (Slow, `cubeFt`): hedefler bir küpe sığmalı (aralarındaki uzaklık küpün kenarını aşmaz).
+  if (m.cubeFt && state.map && targets.some((a) => targets.some((b) => !!a.pos && !!b.pos && distance(a.pos, b.pos) * 5 > (m.cubeFt as number)))) {
+    return fail(`${spell.name}: hedefler ${m.cubeFt} ft'lik bir küpün içinde olmalı.`);
+  }
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const slotLevel = slot.slotLevel ?? spell.level;
@@ -1438,7 +1465,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(wo ? { weaponOverride: { weapons: wo.weapons, die: wo.dice[Math.min(wo.dice.length, tierOf(actor)) - 1] as string, ...(wo.force ? { force: true } : {}), ...(wo.type ? { type: wo.type } : {}),
       attack: actor.spellAttack ?? 0, mod: actor.spellMod } } : {}),
     ...(spec.repeatSave && m.save ? { repeatSave: { ability: m.save, dc } } : {}),
-    ...(spec.noReactions ? { noReactions: true } : {}), ...(spec.noAttack ? { noAttack: true } : {}),
+    ...(spec.noReactions ? { noReactions: true } : {}), ...(spec.noAttack ? { noAttack: true } : {}), ...(spec.noCastForm ? { noCastForm: true } : {}),
     ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
     ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}), ...(spec.deathWard ? { deathWard: true } : {}),
     // K17 G1: Banishment (Ethereal gibi hedef alınamaz), Resilient Sphere (hasar bağışıklığı).

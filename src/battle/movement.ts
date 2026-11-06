@@ -5,7 +5,7 @@ import { sizeRank } from './forced';
 import { interposeCost } from './arcaneHand';
 import { globalRule } from './ruleControl';
 import { spells } from '../data';
-import { fearBlocksStep, srdConditions } from './ruleVersion';
+import { fearBlocksStep, ruleVersion, srdConditions } from './ruleVersion';
 import { phaseOf } from './phase';
 import { objectAt, withObject } from './objectData';
 import { bodyAt, covers, isMultiHex } from './body';
@@ -28,7 +28,7 @@ import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, isAirborne, spellJumpFt } from './flight';
-import { heightStepFn } from './heights';
+import { heightDelta, heightMoveRule, heightStepFn, levelFeet } from './heights';
 import { usedThisTurn } from './classTraits';
 import { turnKey } from './economy';
 import { conveyorBlocks, conveyorFlow, conveyorSlideEvents, isUphillStep } from './conveyor';
@@ -395,9 +395,21 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const step = AXIAL_DIRECTIONS[dir] as { q: number; r: number };
   const start = offsetToAxial(from);
   const gap = distance(from, to) - 1;
-  if (gap === 0) return fail('Komşu altıgene atlanmaz, yürüyerek geçilir.');
   // Görev K9c: Jump büyüsü (turda bir) 30 ft zıplatır, 10 ft (2 altıgen) harcatır, aradaki tek engel altıgeninin üstünden geçer.
   const spellFt = usedThisTurn(state, actor, SPELL_JUMP) ? 0 : spellJumpFt(actor);
+  // Kuyruk A8 (sürüm 37): SRD Jump "up to 30 feet" dikey de geçerli: yükseklik katmanı ve `heightMove` açıkken
+  // komşu yüksek altıgene (seviye × levelFt ≤ 30 ft) Atletizmsiz, 10 ft harcatarak zıplanır. Katmansız haritada eski kural.
+  const up = gap === 0 && ruleVersion(state) >= 37 && spellFt > 0 && heightMoveRule(state) ? Math.max(0, heightDelta(state, from, to)) * levelFeet(state) : 0;
+  if (up > 0 && up <= spellFt && !isAirborne(actor)) {
+    const landing0 = terrainAt(state, to);
+    if (landing0.movement === 'blocked' || landing0.movement === 'deadly') return fail(`${hexLabel(to)} üzerine inilemez (${landing0.name}).`);
+    const other0 = occupantAt(state, to, actor.id);
+    if (other0) return fail(`${hexLabel(to)} dolu (${other0.name}).`);
+    if (SPELL_JUMP_COST > speedHexes(actor) - actor.movementUsed) return fail('Hareket yetmiyor.');
+    const jumped: BattleEvent = { type: 'jumped', actorId: actor.id, from, to, gap, cost: SPELL_JUMP_COST, running: false, traitTurns: { [SPELL_JUMP]: turnKey(state) } };
+    return finish(state, [jumped, ...landingSlide(state, actor, jumped)]);
+  }
+  if (gap === 0) return fail('Komşu altıgene atlanmaz, yürüyerek geçilir.');
   let blocked = 0;
   // Kuyruk 21 D2b: çalışan yürüyen merdivenin üstünden yokuş yukarı atlanmaz (yukarı ilerleme yalnızca kolla).
   const flow = isAirborne(actor) ? null : conveyorFlow(state);

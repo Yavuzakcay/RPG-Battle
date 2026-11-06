@@ -37,6 +37,7 @@ import { turnKey } from './economy';
 import { bodyAt } from './body';
 import { applyEvents } from './reduce';
 import { pushAwayEvents } from './forced';
+import { disperseEvents } from './surfaceMix';
 import { ruleVersion } from './ruleVersion';
 import { mechanicsAt } from './spellVersion';
 import { senseSees } from './sight';
@@ -174,6 +175,8 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
     targetHpAfter: fx.hpAfter, effects: [...fx.effects, ...lose], conditionsAdded: plain, ...(save.extra ? { bonusDice: save.extra } : {}),
   });
   events.push(...budgetEvents(state, z, spec, adj.amount));
+  // Kuyruk A8 (Moonbeam, `revertShape`): başarısız save'de biçim değiştiren (Polymorph, Wild Shape) gerçek biçimine döner.
+  if (failed && spec.revertShape) for (const e of victim.effects ?? []) if (e.polymorph) events.push({ type: 'effect_ended', targetId: victim.id, effectId: e.id, name: e.name, reason: 'dispelled' });
   // Kuyruk A6 (Gust of Wind): başarısız save'de büyücüden uzağa itme.
   const caster = state.combatants[z.casterId];
   if (failed && spec.push && caster?.pos && fx.hpAfter > 0) events.push(...pushAwayEvents(applyEvents(state, events), caster.pos, victim.id, spec.push, z.casterId, rng));
@@ -185,6 +188,8 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
       ...(spec.hold === 'turn' ? { until: state.round + 1, untilOwnTurnEnd: true } : {}),
       ...(spec.hold === 'spell' && spell?.concentration ? { concentration: spell.name } : {}),
       ...(spec.hold === 'spell' && z.until !== undefined ? { until: z.until } : {}),
+      // Kuyruk A8 (Stinking Cloud): eylem ve bonus eylem yasak (tepki serbest).
+      ...(spec.noActBonus ? { noActBonus: true } : {}),
       // CILA: kurtulma eylemle STR (Athletics) kontrolü (`escape` komutu); tur sonu save'i yok.
       ...(spec.escape && !(spec.captive && globalRule(state, 'spellsK19')) ? { escapeCheck: { dc: z.dc } } : {}),
       // Kuyruk 19: tutsağın tur başı save'i (başarısızsa 4d8, başarılıysa kurtulur).
@@ -480,6 +485,10 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
   const aim = cmd.targetHex ?? named?.pos ?? null;
   const existing = repeat ? (state.map?.zones ?? []).find((z) => z.spellId === spell0.id && z.casterId === actor.id) : undefined;
   if (repeat && !existing) return fail(`${spell0.name}: taşınacak alan yok.`);
+  // Kuyruk A8 (Moonbeam, `repeat.moveFt`): taşıma mesafesi sınırlı (merkezden en çok bu kadar ft).
+  const moveFt = spell0.mechanics.repeat?.moveFt;
+  const from = existing ? existing.center ?? existing.hexes[Math.floor(existing.hexes.length / 2)] : undefined;
+  if (existing && moveFt && aim && from && distance(from, aim) * 5 > moveFt) return fail(`${spell0.name} en çok ${moveFt} ft taşınır.`);
   const slot = repeat ? { ok: true as const, slotLevel: actor.concentration?.slotLevel ?? spell0.level, events: [] as BattleEvent[] }
     : spendSlot(actor, spell0.level, cmd.slotLevel, spell0.name, cmd.free);
   if (!slot.ok) return slot;
@@ -503,8 +512,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
     note: `${hexes.length} altıgen` });
   let zone: SpellZone;
   if (existing) {
-    zone = { ...existing, hexes };
-    events.push({ type: 'zone_moved', zoneId: existing.id, hexes });
+    zone = { ...existing, hexes, ...(moveFt && aim ? { center: aim } : {}) };
+    events.push({ type: 'zone_moved', zoneId: existing.id, hexes, ...(moveFt && aim ? { center: aim } : {}) });
   } else {
     const after = applyEvents(state, events);
     zone = {
@@ -514,6 +523,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
       ...(ruleVersion(state) >= 36 && spec !== spellById(spell.id)?.mechanics.zone ? { spec } : {}),
       // Kuyruk 19: kaplanan merkez (Guardian of Faith) ve taşınabilir merkez (Faithful Hound).
       ...((spec.occupy || spec.casterTurn) && aim && globalRule(state, 'spellsK19') ? { center: aim } : {}),
+      // Kuyruk A8 (Moonbeam, `repeat.moveFt`): taşıma mesafesi merkezden ölçülür.
+      ...(moveFt && aim && !(spec.occupy || spec.casterTurn) ? { center: aim } : {}),
       // Kuyruk 19: Wall of Fire: hasar veren yüz (varsayılan büyücüden uzak yan).
       ...(spec.sideDamage && globalRule(state, 'spellsK19') ? { endHexes: fireSideHexes(state, actor, hexes, cmd.choice === 'near' ? 'near' : 'far') } : {}),
       // Görev K13B: yüzey olan alan (Stinking Cloud → zehir bulutu): kural ve tepkimeler yüzey yolundan.
@@ -527,6 +538,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
     // Kuyruk A7 (Darkness, `dispelLight`): örtüştüğü, en çok bu seviyedeki büyülerin ışığı kalkar (yaratıktaki ışık etkisi,
     // ışık alanı, nesne ışığı).
     if (spec.dispelLight !== undefined) events.push(...dispelLightEvents(state, hexes, spec.dispelLight));
+    // Kuyruk A8 (Wind Wall, `dispersesGas`): duvarın değdiği gaz/buhar bulutları dağılır ("keeps fog, smoke, and other gases at bay").
+    if (spec.dispersesGas) events.push(...disperseEvents(applyEvents(state, events), hexes));
     // Görev B4: Daylight örtüştüğü Darkness alanlarını kaldırır (büyücünün konsantrasyonu sürer, alan yok olur).
     for (const other of state.map?.zones ?? []) {
       if (spec.dispels?.includes(other.spellId) && zoneHexes(state, other).some((h) => hexes.some((x) => sameHex(x, h)))) {
@@ -548,6 +561,8 @@ export function anchoredZoneEvent(state: BattleState, actor: Combatant, spell: S
   return { type: 'zone_created', zone: {
     id: newZoneId(state, spell.id, actor.id), spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side,
     dc: actor.spellSaveDc ?? 10, slotLevel, hexes: [], anchorId, radius, ...(damageType ? { damageType } : {}),
+    // Kuyruk A8: sürüm blokları kuralı değiştirdiyse alanda saklanır (Flaming Sphere ışığı).
+    ...(ruleVersion(state) >= 36 && spec !== spellById(spell.id)?.mechanics.zone ? { spec } : {}),
     ...(spell.concentration ? { concentration: spell.name } : {}),
     ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
   } };

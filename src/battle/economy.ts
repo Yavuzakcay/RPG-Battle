@@ -171,6 +171,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
     if (!HASTE_ACTIONS.includes(cmd.type) && !(cmd.type === 'object_use' && ruleVersion(state) >= 35)) return fail('Haste\'in ek eylemiyle yalnızca tek silah saldırısı, Dash, Disengage ya da Hide yapılır.');
     if (cmd.type === 'attack') return { ok: true, event: { ...cost.event, attacksLeft: 0 } };
   }
+  // Kuyruk A8 (Stinking Cloud): eylem ve bonus eylem yok.
+  if ((cost.event.kind === 'action' || cost.event.kind === 'bonus') && actor.effects?.some((x) => x.noActBonus)) return fail('Zehirli bulutun etkisinde: bu tur eylem ve bonus eylem yapılamaz.');
   // Kuyruk 19: Confusion: bonus eylem yok.
   if (cost.event.kind === 'bonus' && actor.effects?.some((x) => x.noBonus)) return fail('Bu durumda bonus eylem yapılamaz (Confusion).');
   if (slowed && cost.event.kind === 'action' && e.bonus) return fail('Slow: bu tur bonus eylem kullanıldı, eylem yapılamaz.');

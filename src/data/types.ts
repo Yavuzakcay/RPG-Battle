@@ -241,7 +241,7 @@ export interface SpellMechanics {
    * Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind): konsantrasyon sürerken sonraki
    * turlarda slotsuz tekrar (`spell_followup`); maliyet eylem ya da bonus eylem, hedef aynı (`same`) ya da yeni (`any`).
    */
-  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' | 'enemy'; direction?: boolean; moveZoneFt?: number; point?: boolean;
+  repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' | 'enemy'; direction?: boolean; moveZoneFt?: number; point?: boolean; moveFt?: number;
     /** A1: bu büyüye karşı save'i başaran yaratık yeniden hedeflenemez (Eyebite). */
     noRetarget?: boolean };
   /** A1: menzili "Self" olup etkisi bir yaratığı hedefleyen büyü (Eyebite: 60 ft içinde görülen yaratık). */
@@ -308,6 +308,10 @@ export interface SpellMechanics {
   /** Kuyruk A7 (Light, Continual Flame): altıgendeki nesneye ışık (yarıçap altıgen); `objectLightKeep` yeniden yapınca eskisi sürer. */
   objectLight?: number;
   objectLightKeep?: boolean;
+  /** Kuyruk A8 (Meteor Swarm): en çok bu kadar merkez (komutta `targetHexes`; her yaratık bir kez). */
+  multiPoint?: number;
+  /** Kuyruk A8 (Slow): hedefler bu boyda (ft) bir küpe sığmalı. Slow'lanan somatik büyüde başarısızlık (`slowed`). */
+  cubeFt?: number;
   /** Kuyruk A6 (Gust of Wind): alan save'inden sonra alanın altıgenlerinde süren alan (konsantrasyon; yeniden esintide yerini alır). */
   lingerZone?: ZoneSpec;
   /** Kuyruk A6: lanet büyüsü (Hex, Bestow Curse); Remove Curse `curseAll` ile bütün lanetleri kaldırır. */
@@ -454,6 +458,10 @@ export interface ZoneSpec {
   dispelLight?: number;
   /** Kuyruk A7 (Daylight): güneş ışığı (Sunlight Sensitivity dezavantajı). */
   sunlight?: boolean;
+  /** Kuyruk A8 (Stinking Cloud): tutulan etki eylem ve bonus eylemi yasaklar. Wind Wall: oluşunca gaz bulutlarını dağıtır. Moonbeam: başarısız save'de biçim değiştiren gerçek biçimine döner. */
+  noActBonus?: boolean;
+  dispersesGas?: boolean;
+  revertShape?: boolean;
 }
 
 /**
@@ -551,6 +559,8 @@ export interface EffectSpec {
   repeatSave?: boolean;
   noReactions?: boolean;
   noAttack?: boolean;
+  /** Kuyruk A8 (Gaseous Form): bu biçimde büyü yapılamaz. */
+  noCastForm?: boolean;
   deathSaveAdv?: boolean;
   maxHeal?: boolean;
   size?: 1 | -1;

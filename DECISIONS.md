@@ -2,6 +2,20 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk A8: yükseklik ve alan geometrisi büyüleri (kural sürümü 37)
+
+- **Sonuç:** BUYU-KISMI.md'de kısmi 15 → 0. A8'in 15 büyüsü: 7 tam (jump, spider-climb, sleet-storm, entangle, fog-cloud, slow, stinking-cloud), 8 sığmayan parça notlu (flaming-sphere, levitate, moonbeam, fly, gaseous-form, plant-growth, wind-wall, meteor-swarm; BUYU-SIGMAYAN.md 26 satır).
+- **Yeni sistem yok:** var olan yollar genişletildi. Yükseklik yalnızca katmanlı haritada ve `heightMove` açıkken devrede; katmansız haritada her şey eski kuralla (Jump'ın yükseğe zıplaması `layerActive` + `heightMoveRule` ister).
+- **Jump:** komşu yüksek altıgene (seviye × `levelFt` ≤ 30 ft) Atletizmsiz zıplama, 10 ft harcar (`executeJump`).
+- **Moonbeam:** taşıma Magic eylemiyle en çok 60 ft (`repeat.moveFt`, merkez alanda saklanır); başarısız save biçim değiştireni (`polymorph` etkisi) gerçek biçimine döndürür (`zone.revertShape`).
+- **Slow:** hedefler 40 ft küpe sığmalı (`cubeFt`; hedefler arası uzaklık); yavaşlamış büyücünün somatik bileşenli büyüsü d4 = 1'de boşa gider, slot harcanır (bileşenler `data/srd/spells.json`'dan; SRD'nin "sonraki tura erteleme" kolu yerine aynı turda başarısızlık: erteleme modelde yok, olasılık SRD ile aynı %25).
+- **Stinking Cloud:** başarısızlıkta Poisoned + o tur eylem ve bonus eylem yok (`noActBonus`; tepki serbest), eskiden Incapacitated (tepkiyi de kesiyordu). b2'nin eski kuralı sınayan testi sürüm 36'ya sabitlendi.
+- **Gaseous Form:** biçimdeyken büyü yapılamaz (`noCastForm`, `castBarrier` türü `form`).
+- **Wind Wall:** duvarın değdiği gaz/buhar bulutları dağılır (`dispersesGas`, Gust of Wind'in `disperseEvents` yolu, `gustDisperse` anahtarı).
+- **Meteor Swarm:** motor dört merkez alır (`cast_spell.targetHexes`, `multiPoint`); altıgenler birleşir, her yaratık bir kez save yapar. Arayüz şimdilik tek nokta (sığmayan notu).
+- **Flaming Sphere:** küre 20 ft ışık saçar (alan `light: 4`, sürüm bloğu alanda `zone.spec`).
+- **Denge:** sayısal değer değişmedi.
+
 ## 2026-11-06 — Kuyruk A7: nesne, el ve ışık büyüleri (kural sürümü 36)
 
 - **Sonuç:** BUYU-KISMI.md'de kısmi 26 → 15 (kalanlar A8: yükseklik ve alan geometrisi). A7-1'in 11 büyüsü + A7-2'nin 2 büyüsü (Light, Continual Flame): 7 tam, 6 sığmayan parça notlu (command, faerie-fire, enlarge-reduce, flame-blade, heat-metal, magic-weapon; BUYU-SIGMAYAN.md 18 satır). A7-3: 6 büyü "tamam (Game Master notlu)" (charm-person, hideous-laughter, enhance-ability, see-invisibility, animal-shapes, wish): savaşta uygulanan kısım aynen, savaş dışı parça TR/EN `gmNote`/`gmNoteEn` (kartta "Game Master notu", yapınca günlükte). Bu altısı savaşta etki taşıdığı için `offCombat` işaretlenmedi (işaretlenseydi kartta "savaş dışı" görünüp etkileri gizlenirdi); yalnızca savaş dışı parçaları GM notunda.

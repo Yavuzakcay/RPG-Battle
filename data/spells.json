@@ -1195,6 +1195,10 @@
         "notCaster": true,
         "color": "#5f8f3a",
         "icon": "🌿"
+      },
+      "a8": {
+        "kapsamDisi": "Bitkilerin büyü bitince çekilmesi görseldir; karede zemin zorlu arazi.",
+        "approx": null
       }
     },
     "school": "Conjuration",
@@ -1738,6 +1742,24 @@
         "half": true,
         "color": "#ff8a3a",
         "icon": "🔥"
+      },
+      "a8": {
+        "zone": {
+          "rounds": 10,
+          "on": [
+            "end"
+          ],
+          "save": "dex",
+          "damage": "2d6",
+          "damageType": "fire",
+          "half": true,
+          "color": "#ff8a3a",
+          "icon": "🔥",
+          "light": 4
+        },
+        "sigmayan": "Küre 5 ft'ten yüksek engelleri ve 10 ft genişliğinden geniş çukurları aşamaz, yaratığın altıgenine itilince durur; yanıcı nesneleri tutuşturur.",
+        "kapsamDisi": "Taşıma bonus eylemle (yuvarlama) ve çarpma hasarı Kuyruk 19 yoluyla; ışık 20 ft (4 altıgen).",
+        "approx": null
       }
     },
     "school": "Conjuration",
@@ -1790,6 +1812,33 @@
       "repeat": {
         "cost": "action",
         "target": "any"
+      },
+      "a8": {
+        "zone": {
+          "rounds": 10,
+          "on": [
+            "cast",
+            "enter",
+            "end"
+          ],
+          "once": true,
+          "save": "con",
+          "damage": "2d10",
+          "damageType": "radiant",
+          "half": true,
+          "color": "#c9d6ff",
+          "icon": "🌙",
+          "revertShape": true
+        },
+        "repeat": {
+          "cost": "action",
+          "target": "any",
+          "point": true,
+          "moveFt": 60
+        },
+        "sigmayan": "Silindir 40 ft yüksekliğinde (uçanlar da etkilenir; oyunda katman yok) ve taşıma yalnızca boş/dolu altıgen merkezine; yaratığa taşınınca o tur save'i SRD'deki gibi bir kez.",
+        "kapsamDisi": null,
+        "approx": null
       }
     },
     "school": "Evocation",
@@ -2220,7 +2269,26 @@
           "dex": -2
         }
       },
-      "approx": "40 ft küp yerine seçilen hedefler; büyü yapmadaki gecikme (d20) yok"
+      "approx": "40 ft küp yerine seçilen hedefler; büyü yapmadaki gecikme (d20) yok",
+      "a8": {
+        "effect": {
+          "targets": 6,
+          "side": "enemy",
+          "rounds": 10,
+          "ac": -2,
+          "speedMult": 0.5,
+          "icon": "🐌",
+          "noReactions": true,
+          "repeatSave": true,
+          "slowed": true,
+          "saveMod": {
+            "dex": -2
+          }
+        },
+        "cubeFt": 40,
+        "kapsamDisi": null,
+        "approx": null
+      }
     },
     "school": "Transmutation",
     "srdPage": 163
@@ -2252,6 +2320,11 @@
       "upcast": {
         "targets": 1,
         "applied": true
+      },
+      "a8": {
+        "sigmayan": "Büyü bitince havadaki hedef düşer (yükseklik modeli yok: uçan her zaman zemin seviyesinde sayılır).",
+        "kapsamDisi": null,
+        "approx": null
       }
     },
     "school": "Transmutation",
@@ -2418,6 +2491,26 @@
         "hold": "turn",
         "color": "#b8c24a",
         "icon": "🤢"
+      },
+      "a8": {
+        "zone": {
+          "surface": "poison",
+          "rounds": 10,
+          "obscured": "heavy",
+          "on": [
+            "start"
+          ],
+          "save": "con",
+          "conditions": [
+            "Poisoned"
+          ],
+          "hold": "turn",
+          "color": "#b8c24a",
+          "icon": "🤢",
+          "noActBonus": true
+        },
+        "kapsamDisi": "Kürenin dönmesi; rüzgârla dağılma yüzey sistemiyle.",
+        "approx": null
       }
     },
     "school": "Conjuration",
@@ -3223,7 +3316,12 @@
         "speedZero": true,
         "icon": "🎈"
       },
-      "approx": "Yükseklik modeli yok: havadaki yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c) ama yürüyemez; 20 ft yükselme ve duvardan itinerek hareket yok; nesneye yapılmaz"
+      "approx": "Yükseklik modeli yok: havadaki yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c) ama yürüyemez; 20 ft yükselme ve duvardan itinerek hareket yok; nesneye yapılmaz",
+      "a8": {
+        "sigmayan": "Yükselme yüksekliği (20 ft'e dek, hareketle 20 ft yukarı/aşağı), duvara tutunarak itme ve 500 lb'ye dek nesneyi kaldırma.",
+        "kapsamDisi": "Havada süzülen yürüyemez; zemin etkilerinden kurtulur.",
+        "approx": null
+      }
     },
     "school": "Transmutation",
     "srdPage": 144
@@ -3616,6 +3714,35 @@
       "upcast": {
         "targets": 1,
         "applied": true
+      },
+      "a8": {
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "rounds": 600,
+          "fly": 10,
+          "speedZero": true,
+          "resist": [
+            "bludgeoning",
+            "piercing",
+            "slashing"
+          ],
+          "immune": [
+            "Prone"
+          ],
+          "saveAdv": [
+            "str",
+            "dex",
+            "con"
+          ],
+          "noAttack": true,
+          "icon": "☁",
+          "dropAtZero": true,
+          "noCastForm": true
+        },
+        "sigmayan": "Başka yaratığın alanından geçip durabilme ve küçük deliklerden geçme (yaratık alanında durmak kuralı yok).",
+        "kapsamDisi": null,
+        "approx": null
       }
     },
     "school": "Transmutation",
@@ -3704,6 +3831,10 @@
       "upcast": {
         "radiusFt": 20,
         "applied": true
+      },
+      "a8": {
+        "kapsamDisi": "Kürenin yüksekliği ve köşeleri dönmesi (ızgarada küre, görüş katmansız); rüzgârla dağılma Kuyruk 18b rüzgârıyla.",
+        "approx": null
       }
     },
     "school": "Conjuration",
@@ -3813,7 +3944,12 @@
         "color": "#3f7a2a",
         "icon": "🌱"
       },
-      "approx": "Alandan bölge çıkarma yok; Enrichment (8 saat) savaşta yok"
+      "approx": "Alandan bölge çıkarma yok; Enrichment (8 saat) savaşta yok",
+      "a8": {
+        "sigmayan": "Alanın içindeki bölgeleri büyünün dışında bırakma (yalnızca tam daire) ve 8 saatlik Enrichment (savaş dışı).",
+        "kapsamDisi": null,
+        "approx": null
+      }
     },
     "school": "Transmutation",
     "srdPage": 153
@@ -3859,7 +3995,11 @@
         "color": "#a8c6d8",
         "icon": "🌨"
       },
-      "approx": "Silindir küre sayılır (yükseklik yok); alevlerin sönmesi yok"
+      "approx": "Silindir küre sayılır (yükseklik yok); alevlerin sönmesi yok",
+      "a8": {
+        "kapsamDisi": "Silindir yüksekliği (20 ft) ve açık alevlerin sönmesi `douses` ile; konsantrasyon save'i alana giren/başlayanda.",
+        "approx": null
+      }
     },
     "school": "Conjuration",
     "srdPage": 163
@@ -3902,7 +4042,26 @@
         "color": "#cfe8f0",
         "icon": "💨"
       },
-      "approx": "Duvar düz ya da büyücünün çevresinde yay (serbest çizim yok); dev kayaları ayrımı yok; sis dağıtma yok"
+      "approx": "Duvar düz ya da büyücünün çevresinde yay (serbest çizim yok); dev kayaları ayrımı yok; sis dağıtma yok",
+      "a8": {
+        "zone": {
+          "rounds": 10,
+          "windWall": true,
+          "on": [
+            "cast"
+          ],
+          "save": "str",
+          "damage": "4d8",
+          "damageType": "bludgeoning",
+          "half": true,
+          "color": "#cfe8f0",
+          "icon": "💨",
+          "dispersesGas": true
+        },
+        "sigmayan": "Duvarın serbest biçimi (oyunda düz ya da büyücünün çevresinde yay) ve dev boyutlu kaya/kuşatma mermilerinin duvardan geçmesi.",
+        "kapsamDisi": null,
+        "approx": null
+      }
     },
     "school": "Evocation",
     "srdPage": 174
@@ -5742,6 +5901,10 @@
       "upcast": {
         "targets": 1,
         "applied": true
+      },
+      "a8": {
+        "kapsamDisi": "Zıplamanın havadaki yayı ve yükseklik katmansız haritada dikey zıplama (katmansız haritada yükseklik yok).",
+        "approx": null
       }
     },
     "school": "Transmutation",
@@ -5774,6 +5937,10 @@
       "upcast": {
         "targets": 1,
         "applied": true
+      },
+      "a8": {
+        "kapsamDisi": "Duvar ve tavanda yürüme yükseklik katmanında tırmanma maliyetini kaldırır (`climb`); tavan modeli yok, eller serbest kuralı savaş dışı.",
+        "approx": null
       }
     },
     "school": "Transmutation",

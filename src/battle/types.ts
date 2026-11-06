@@ -190,6 +190,10 @@ export interface ActiveEffect {
   attackedAdvSee?: boolean;
   /** Kuyruk A7 (Dragon's Breath): büyüyle verilen nefes (Magic eylemiyle; `breath.ts`). */
   breath?: BreathSpec;
+  /** Kuyruk A8 (Stinking Cloud): bu turda eylem ve bonus eylem yok (tepki serbest). */
+  noActBonus?: boolean;
+  /** Kuyruk A8 (Gaseous Form): bu biçimde büyü yapılamaz. */
+  noCastForm?: boolean;
   /** Görev S1: uçuş hızı (Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
   fly?: number;
   airborne?: boolean;
@@ -1426,6 +1430,8 @@ export type Command =
       type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number;
       /** Çok hedefli etki büyüsü (Bless, Bane, Heroism; Görev R2): hedefler (yoksa `targetId`). */
       targetIds?: string[];
+      /** Kuyruk A8: birden çok merkezli alan (Meteor Swarm: dört nokta). */
+      targetHexes?: Offset[];
       /** Görev SORCERER: bu yapımda kullanılan Metamagic seçenekleri. */
       metamagic?: string[];
       /**
