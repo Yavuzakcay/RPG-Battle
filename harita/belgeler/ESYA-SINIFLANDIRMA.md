@@ -10,13 +10,13 @@
 
 | Sınıf | Sayı |
 |---|---|
-| (a) savaş dışı | 146 |
-| (b) veriyle tanımlı | 234 |
+| (a) savaş dışı | 145 |
+| (b) veriyle tanımlı | 235 |
 | (c) kalıba uymayan (karar bekliyor) | 19 |
 | sınıflanmamış (alan yok, karar yok) | 0 |
 | **Toplam** | 399 |
 
-Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MAX_ATTUNED`, `src/rules/stats.ts`). Sarf eşyası (`use`): 58 (savaşta "Eşya" menüsü, `use_item`; yapay zekâ yarı canın altında iyileştirme iksiri içer). Yüklü büyülü: 40.
+Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MAX_ATTUNED`, `src/rules/stats.ts`). Sarf eşyası (`use`): 58 (savaşta "Eşya" menüsü, `use_item`; yapay zekâ yarı canın altında iyileştirme iksiri içer). Yüklü büyülü: 41.
 
 ## (c) Kalıba uymayanlar
 
@@ -242,6 +242,7 @@ Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MA
 | robe-of-stars | Robe of Stars | effects, spells |
 | robe-of-the-archmagi | Robe of the Archmagi | effects, passive, bonus |
 | rod-of-alertness | Rod of Alertness | passive |
+| rod-of-resurrection | Rod of Resurrection | spells |
 | rope-of-entanglement | Rope of Entanglement | use |
 | scarab-of-protection | Scarab of Protection | passive |
 | sentinel-shield | Sentinel Shield | passive |
@@ -420,7 +421,6 @@ Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MA
 | ring-of-three-wishes | Ring of Three Wishes | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | ring-of-x-ray-vision | Ring of X-ray Vision | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | robe-of-useful-items | Robe of Useful Items | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
-| rod-of-resurrection | Rod of Resurrection | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | rod-of-rulership | Rod of Rulership | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | rod-of-security | Rod of Security | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | rope-of-climbing | Rope of Climbing | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |

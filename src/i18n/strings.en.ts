@@ -317,7 +317,11 @@ export const en: Strings = {
     weaponDetail: (name: string, cat: string, dmg: string, type: string, kind: string) => `${name}: ${cat} weapon, ${dmg} ${type}, ${kind}.`,
     attunement: 'requires attunement',
     itemEffect: { acBonus: (n: number) => `AC +${n}`, saveBonus: (n: number) => `all saving throws +${n}`, unarmored: (n: number) => `AC +${n} without armor and shield`,
-      setAbility: (a: string, n: number) => `${a} score at least ${n}` },
+      setAbility: (a: string, n: number) => `${a} score at least ${n}` ,
+      weapon: (n: number) => `weapon attack and damage +${n}`, spell: (n: number) => `spell attack and DC +${n}`,
+      onHit: (d: string, ty: string) => `+${d} ${ty} on hit`, spells: (list: string, n?: number) => `spells: ${list}${n ? ` (${n} charges)` : ''}`,
+      use: { heal: 'drink: healing', effect: 'drink/apply: timed effect', throw: 'throw: area/target', coat: 'coat weapon: extra damage' } as Record<string, string>,
+      passive: 'lasting effect while carried' },
     noMechanic: 'not applied automatically (the Game Master handles it)',
   },
   gm: {

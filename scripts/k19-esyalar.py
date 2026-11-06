@@ -213,6 +213,8 @@ m('staff-of-power', bonus={'weapon': 2, 'spell': 2}, effects={'acBonus': 2, 'sav
 m('staff-of-striking', bonus={'weapon': 3}, onHit={'dice': '1d6', 'type': 'force', 'melee': True, 'label': 'Staff of Striking'}, attune=True)
 m('staff-of-swarming-insects', spells=[{'name': 'Giant Insect'}, {'name': 'Insect Plague'}], charges=10, attune=True)
 m('staff-of-the-magi', bonus={'weapon': 2, 'spell': 2}, passive={'saveAdvAgainst': ['spell']}, spells=[{'name': 'Fireball'}, {'name': 'Lightning Bolt'}, {'name': 'Ice Storm'}, {'name': 'Wall of Fire'}, {'name': 'Dispel Magic'}, {'name': 'Flaming Sphere'}, {'name': 'Web'}, {'name': 'Knock'}], charges=50, attune=True)
+# Kuyruk A5: Rod of Resurrection: Heal (1 yük; spells69 açıkken), 5 yük; Resurrection savaş dışı.
+m('rod-of-resurrection', spells=[{'name': 'Heal'}], charges=5, attune=True, note='5 yük; Heal (1 yük). Resurrection savaş dışı', offCombat=None)
 m('staff-of-the-python', note='yılana dönüşen asa: çağırma (Giant Constrictor Snake) — Game Master', attune=True)
 m('staff-of-the-woodlands', bonus={'weapon': 2, 'spell': 2}, spells=[{'name': 'Barkskin'}, {'name': 'Speak with Animals'}, {'name': 'Pass without Trace'}, {'name': 'Speak with Plants'}, {'name': 'Animal Friendship'}], charges=10, attune=True)
 m('staff-of-thunder-and-lightning', bonus={'weapon': 2}, spells=[{'name': 'Lightning Bolt'}, {'name': 'Thunderwave'}], charges=5, dc=17, attune=True)

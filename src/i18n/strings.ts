@@ -326,7 +326,11 @@ const tr = {
     weaponDetail: (name: string, cat: string, dmg: string, type: string, kind: string) => `${name}: ${cat} silah, ${dmg} ${type}, ${kind}.`,
     attunement: 'uyum (attunement) gerekir',
     itemEffect: { acBonus: (n: number) => `AC +${n}`, saveBonus: (n: number) => `bütün kurtarma zarları +${n}`, unarmored: (n: number) => `zırhsız ve kalkansızken AC +${n}`,
-      setAbility: (a: string, n: number) => `${a} skoru en az ${n}` },
+      setAbility: (a: string, n: number) => `${a} skoru en az ${n}`,
+      weapon: (n: number) => `silah saldırı ve hasarı +${n}`, spell: (n: number) => `büyü saldırısı ve DC +${n}`,
+      onHit: (d: string, ty: string) => `isabette +${d} ${ty}`, spells: (list: string, n?: number) => `büyüler: ${list}${n ? ` (${n} yük)` : ''}`,
+      use: { heal: 'iç: iyileştirme', effect: 'iç/sür: süreli etki', throw: 'fırlat: alan/hedef', coat: 'silaha sür: ek hasar' } as Record<string, string>,
+      passive: 'taşıyınca kalıcı etki' },
     noMechanic: 'oyunda kendiliğinden uygulanmaz (GM işler)',
   },
   gm: {

@@ -2,6 +2,17 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk A5: eşya sınıflandırması
+
+- **Bulgu:** görevdeki "199 eşyada ne etki ne savaş dışı" sayısı yalnız `effects` alanına bakıyor; A0 envanterinin de yazdığı gibi bu eşyaların etkisi başka alanlarda (`passive`, `use`, `spells`/`charges`, `bonus`, `onHit`, `attack`). Bütün alanlara bakınca boşta kalan yalnız Poisoner's Kit'ti (Cunning Strike: Poison onu arar; `kod` olarak işlendi).
+- **Sınıflama (399 eşya: 23 temel + 376 SRD):** (a) savaş dışı 145, (b) veriyle tanımlı 235, (c) kalıba uymayan 19 (karar bekliyor). Belge `harita/belgeler/ESYA-SINIFLANDIRMA.md` ← `node scripts/a5-esya-siniflandirma.mjs`; karar listesi ve gerekçeler `data/esya-siniflandirma.json` (`karar`, `a5`, `kod`).
+- **`savasDisi: true` yerine `offCombat`:** eşyalarda savaş dışı işareti zaten gerekçe metniyle `offCombat` (arayüzde "savaş dışı" etiketi, Kuyruk 19). Aynı anlamda ikinci bir boolean açmak çift kaynak olurdu; (a) sınıfı bu alandır.
+- **Tanımlanan (b):** Rod of Resurrection: Heal (1 yük; 6.–9. seviye büyüler anahtarı `spells69` açıkken), 5 yük; Resurrection savaş dışı. Üretici `scripts/k19-esyalar.py`'ye de yazıldı. Savaşçı oluşturulurken kopyalandığı için replay etkilenmez; kural sürümü değişmedi.
+- **(c) karar bekliyor (19):** 11 özel silah/tılsım (Vorpal Sword kafa kesme, Nine Lives Stealer anında öldürme, Defender AC aktarımı, Scimitar of Speed bonus saldırı, Berserker Axe laneti, Energy Bow, Hat of Many Spells, Quarterstaff of the Acrobat, Rod of Lordly Might, iki Talisman), eşyadan çağırma (Staff of the Python, Bag of Tricks, Figurine of Wondrous Power, Horn of Valhalla), Rod of Absorption (eşya tepkisi), Immovable Rod (eşyaya bağlı geçici engel), Wand of Enemy Detection (gizlenmeyi eşyaya bağlama), Spell Scroll (eşya başına büyü seçimi). Her birinin gerektirdiği kanca belgede; ilkel önerisi: "eşya isabet kancası" (ölüm/kafa kesme), "eşyadan çağırma" (R3 çağırma yolunu eşya kaynağına açma), "eşya örneği verisi" (parşömen büyüsü).
+- **İksir içme, attunement:** zaten vardı (savaşta "Eşya" menüsü `use_item`, yapay zekâ yarı canın altında iyileştirme iksiri içer; uyum en çok 3 `MAX_ATTUNED`, fazlası savaşa girmez ve oluşturucu uyarır). Değişmedi.
+- **Arayüz kısa özet:** eşya kartında (`itemSummary`) artık bonus (+X silah/büyü/AC), isabet eki, yüklü büyüler + yük, kullanım türü ve kalıcı etki de yazılır (TR/EN); veriyle tanımlı eşyada "oyunda kendiliğinden uygulanmaz" notu çıkmaz (`itemHasMechanic`).
+- **Açık kalan:** 19 (c) eşyası; yapay zekâ iyileştirme dışındaki sarf eşyalarını (fırlatma, yağ) kullanmaz.
+
 ## 2026-11-06 — Kuyruk A4: kısmi büyüler (kısmen yapıldı: 75 → 57)
 
 - **Ölçüt ve araç:** `node scripts/a4-buyu-kismi.mjs` → `harita/belgeler/BUYU-KISMI.md` (kimlik, seviye, eksik, kapsam dışı, altyapı grubu). Savaşta kullanılan (savaş dışı olmayan) 227 büyüden yaklaşıklığı (`approx`) ya da yalnız Game Master notu kalanlar kısmi. A0 envanterinin 74'ü arena yoklamasıyla sayılmıştı; veriden sayım 75 (Wish'in notu dahil).
