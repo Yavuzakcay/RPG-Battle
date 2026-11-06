@@ -11,6 +11,7 @@
  * - `spellGlobe` / `antimagic` (Globe of Invulnerability, Antimagic Field: içerideki yaratıklar dışarıdan gelen büyüden
  *   etkilenmez; Antimagic içinde büyü yapılamaz).
  */
+import { ruleVersion } from './ruleVersion';
 import { distance, type Offset } from '../rules/hex';
 import { rollDice, rollDie, rollTag, type Rng } from '../rules/dice';
 import { spells, getMonster, type Spell } from '../data';
@@ -125,6 +126,9 @@ function powerWordEvents(state: BattleState, actor: Combatant, t: Combatant, kin
     return ev;
   }
   if (kind === 'kill') {
+    // Kuyruk B1 (sürüm 31): Death Ward hasarsız ani ölümü bir kez boşa çıkarır ve biter.
+    const ward = t.hp <= 100 && ruleVersion(state) >= 31 ? (t.effects ?? []).find((e) => e.deathWard) : undefined;
+    if (ward) return [{ type: 'map_note', text: `${t.name}: Death Ward ${spell.name} etkisini boşa çıkardı, büyü bitti.` }, { type: 'effect_ended', targetId: t.id, effectId: ward.id, name: ward.name ?? 'Death Ward', reason: 'used' }];
     if (t.hp <= 100) return [damageEffect(t, 'spells69', `${spell.name}: ölür`, { dice: String(t.hp + t.maxHp), type: 'psychic' }, rng)];
     return [damageEffect(t, 'spells69', spell.name, { dice: '12d12', type: 'psychic' }, rng)];
   }

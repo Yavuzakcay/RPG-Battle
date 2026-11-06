@@ -66,6 +66,9 @@ interface CreatureDef {
   size: Monster['size'];
   creatureType?: string;
   avatar: string;
+  /** Kuyruk B1: seçime göre jeton (Giant Insect: örümcek/kırkayak/eşek arısı) ve halka rengi (yalnız görsel). */
+  avatarByChoice?: Record<string, string>;
+  ringByChoice?: Record<string, string>;
   ac: Scaled;
   hp: Scaled;
   speed: number;
@@ -150,7 +153,7 @@ function creatureMonster(id: string, def0: CreatureDef, owner: Combatant, level:
   });
   return {
     // Kuyruk 18 H2: `hpOwnerMax` (Arcane Hand): HP büyücünün en çok HP'si.
-    id, name: def.name, size: def.size, avatar: def.avatar, ac: scaled(def.ac, level), hp: def.hpOwnerMax ? owner.maxHp : scaled(def.hp, level), speed: def.speed,
+    id, name: def.name, size: def.size, avatar: def.avatarByChoice?.[choice ?? ''] ?? def.avatar, ac: scaled(def.ac, level), hp: def.hpOwnerMax ? owner.maxHp : scaled(def.hp, level), speed: def.speed,
     ...(def.fly && level >= (def.fly.minLevel ?? 0) && (!def.fly.onlyChoice || (k19 && def.fly.onlyChoice.includes(choice ?? ''))) ? { fly: def.fly.ft } : {}),
     ...(def.darkvision ? { darkvision: def.darkvision } : {}),
     abilities: def.abilities, cr: '0', attacks, traits: '', multiattack: def.multiattack ?? false,
@@ -344,7 +347,7 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
   const combatant: Combatant = {
     ...base,
     side: actor.side, ownerId: actor.ownerId, initiative, pos: current.map && at ? at : null,
-    avatar: { ...base.avatar, bg: actor.avatar.bg },
+    avatar: { ...base.avatar, bg: actor.avatar.bg, ...(creature?.ringByChoice?.[choice ?? ''] ? { ring: creature.ringByChoice[choice ?? ''] } : {}) },
     ...(typeOf ? { creatureType: typeOf } : {}),
     ...(k19 && creature?.traits?.length ? { traits: [...(base.traits ?? []), ...creature.traits] } : {}),
     // Familiar saldıramaz (SRD); başka eylemleri yapar (Kaçın, Yardım, Atıl…).

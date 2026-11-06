@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk B1: altı SRD büyüsü (Death Ward, Guardian of Faith, Faithful Hound, Giant Insect, Animate Objects, Contagion)
+
+- **Bulgu:** altısı da Kuyruk 19'dan beri (`spellsK19`, kural sürümü 16) savaşta uygulanmıştı ve denetimlerde "tam/ÇALIŞIR" (`docs/BUYU-DENETIMI-4-5.md`, `harita/belgeler/ENVANTER-BUYULER.md`, `docs/SRD-DENETIM.md`). Görevdeki "çalışmayan" listesi bu kopyanın durumuyla uyuşmuyor; B1 eksikleri kapattı ve uçtan uca testleri ekledi (`src/battle/b1spells.test.ts`). Büyü verisinde ayrı `status` alanı yok; "çalışır" denetim aracında görünür.
+- **Death Ward (kural sürümü 31):** hasarsız ani ölüm artık her yoldan engellenir: Power Word Kill'in "100 HP ve altı ölür" kolu (eskiden dev hasar olarak işliyordu ve korumayı atlıyordu) ve Game Master'ın 6. Exhaustion ayarı (eskiden doğrudan). Koruma bir kez kullanılır ve biter (`exhaustionGain` yolu). Sürüm ≤ 30 eski davranış.
+- **Giant Insect jetonu:** biçime göre mevcut görsel (örümcek `giant-spider`, kırkayak `giant-centipede`, eşek arısı `giant-wasp`) ve biçim halkası (`summons.json` `avatarByChoice`/`ringByChoice`; yalnız görsel, `summoned` olayında taşınır). Yeni jeton ihtiyacı yok.
+- **Diğerleri değişmedi:** Guardian of Faith (girişte ve tur başında DEX, 60 hasar sınırı, merkez dolu), Faithful Hound (görünmez/dokunulamaz alan; büyücünün tur başında 5 ft içindeki tek düşmana ısırık, Magic eylemiyle 30 ft), Animate Objects (değiştirici kadar nesne, boyut karışımı, sahibin ardında, bonus eylemle emir), Contagion (Poisoned + seçilen yetenek dezavantajı, 3 başarı/3 başarısızlık sayacı).
+- **Astrolog:** genişletilmiş listede Guardian of Faith çalışır; Divination ve Scrying zaten `offCombat` (savaş dışı, `gmNote`) ve listede kalır.
+- **Açık kalan:** Faithful Hound'un havlama/parola ve 300 ft sınırı savaş dışı (hikâye); Animate Objects 0 HP'de nesneye dönüş savaş dışı; Contagion'un 7 günlük süresi savaş dışı.
+
 ## 2026-11-06 — Kuyruk P6: ilkel genişletme
 
 - **Kapsam:** P0 şemasında "kısmi" kalan alanlar uygulandı (Aşama A) ve yeni ilkel/etkiler eklendi (Aşama B): 27 ilkel (+`zarMuhru`, +`engeldenGec`). Kısmi işaretli şema alanı kalmadı. Aşama A ile B aynı kancaları paylaştığı için tek commit'te (ortak giriş noktaları aşağıda). Gerçek içerik (`icerik/`) bu ortamda yok; testler yalnız kurgusal `tests/fixtures/paket-p6.json` (aynısı `docs/ornek-paket/ornek-ilkel-paket.json`).

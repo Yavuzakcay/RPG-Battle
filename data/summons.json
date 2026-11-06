@@ -367,6 +367,8 @@
       "size": "L",
       "creatureType": "beast",
       "avatar": "monsters/giant-spider.webp",
+      "avatarByChoice": { "spider": "monsters/giant-spider.webp", "centipede": "monsters/giant-centipede.webp", "wasp": "monsters/giant-wasp.webp" },
+      "ringByChoice": { "spider": "#8a7fd0", "centipede": "#c9894a", "wasp": "#e3c74a" },
       "ac": {
         "base": 11,
         "perLevel": 1
