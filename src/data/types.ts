@@ -375,7 +375,9 @@ export interface ZoneSpec {
   hold?: 'spell' | 'turn';
   escape?: Ability;
   dropConcentration?: boolean;
-  targets?: 'all' | 'enemies';
+  targets?: 'all' | 'enemies' | 'allies';
+  /** Görev P7: tetikte hasar yerine iyileştirme (ek paket `yuzeyOlustur.iyilestir`). */
+  heal?: string;
   /** Büyücünün kendisi etkilenmez (Entangle). */
   notCaster?: boolean;
   color?: string;
@@ -686,6 +688,8 @@ export interface Item {
   attack?: number;
   /** Kuyruk 19: savaşta etkisi yok (gerekçe; envanterde "savaş dışı" etiketi). */
   offCombat?: string;
+  /** Görev P7: eşya kancası: ek paket ilkelleri ve yaratıkları (`cagir`, `ekSaldiri`…; `paket/bag.ts` `itemBag`). */
+  paket?: { ilkeller: Array<Record<string, unknown> & { tur: string }>; yaratiklar?: Array<Record<string, unknown>> };
 }
 
 /** Kuyruk 19: savaşta kullanılan eşya türleri. */

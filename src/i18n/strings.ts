@@ -209,6 +209,8 @@ const tr = {
     asiBadge: (n: number) => `+${n}`,
     asiSlotNote: (left: number) => `Puanı skor satırlarındaki +/− ile dağıt (bu yuvada kalan ${left}).`,
     increaseTo: (n: number) => `+${n}:`, chooseAbility: 'Yetenek seç',
+    /** Görev P7: ek paket ilkellerinin kısa özeti (özellik kartı). */
+    paketOzet: { ekHasar: 'isabette ek zar', direnc: 'direnç', aura: 'aura', tepki: 'tepki', gecicCan: 'geçici can', iyilestirme: 'iyileştirme', hasar: 'hasar', durumUygula: 'durum uygular', isaret: 'işaret', cagir: 'yaratık çağırır', boyut: 'büyüme', ucus: 'uçuş', isinlan: 'ışınlanma', zorlaHareket: 'itme/çekme', olumdenDon: 'ölümden döner', ekSaldiri: 'ek saldırı', zarEtkisi: 'zar/savunma eklentisi', kaynak: 'kullanım havuzu', bicim: 'biçim', yuzeyOlustur: 'yüzey/zemin', buyuVer: 'hazır büyüler', buyuDegisimi: 'büyü güçlendirme', gorunmezlik: 'görünmezlik', moralEtkisi: 'moral', zarMuhru: 'saklı zar', engeldenGec: 'engelden geçer', hiz: 'hız', buyuluVurus: 'büyülü vuruş', zarDegistir: 'hasar zarlarını değiştirir', koruma: 'koruma', algi: 'algı', cagirGuclendir: 'çağrıları güçlendirir', ortakCan: 'ortak can havuzu', yuvaGeriKazan: 'büyü yuvası geri kazanır', meydanOkuma: 'meydan okuma', saldirmadanSave: 'saldırmadan önce kurtulma', kaynakYenile: 'kullanım geri kazanır' } as Record<string, string>,
     featStatus: { ok: 'uygulanıyor', partial: 'kısmen', none: 'savaşta etkisi yok', missing: 'oyunda henüz yok' } as Record<string, string>,
     expertise: (n: number, chosen: number) => `Uzmanlık (Expertise): ${n} beceri seç (${chosen} seçildi); yetkinlik bonusu iki kat.`,
     masteryTitle: (n: number, max: number) => `Silah ustalığı (Weapon Mastery): ${n} / ${max}`,

@@ -78,7 +78,7 @@ export function itemSummary(it: Item): string {
 
 /** Kuyruk A5: eşyanın savaşta veriyle tanımlı bir etkisi var mı (yoksa "Game Master işler"). */
 export function itemHasMechanic(it: Item): boolean {
-  return Object.keys(it.effects).length > 0 || !!(it.use || it.spells?.length || it.bonus || it.onHit || it.attack || (it.passive && Object.keys(it.passive).length));
+  return Object.keys(it.effects).length > 0 || !!(it.use || it.spells?.length || it.bonus || it.onHit || it.attack || it.paket || (it.passive && Object.keys(it.passive).length));
 }
 
 export function itemDetail(it: Item): string {

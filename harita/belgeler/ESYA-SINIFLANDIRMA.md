@@ -4,49 +4,49 @@
 
 - **(a) savaş dışı:** eşyada `offCombat` (gerekçe metni; görevdeki `savasDisi: true` bu alan, ikinci bir alan açılmadı).
 - **(b) veriyle tanımlı:** savaşta etkisi mevcut şemayla veride (`kod`: bir sınıf özelliği eşyayı arar): `effects` (AC, save, yetenek), `passive` (süren etki alanları), `use` (iksir, fırlatma, sürme), `spells`/`charges` (yüklü büyü), `bonus` (+X), `onHit` (isabette ek zar), `attack`.
-- **(c) kalıba uymayan — karar bekliyor:** mevcut ilkellerle tanımlanamayan; her birinde gereken kanca yazılı.
+- **(c) Game Master'a bırakılan:** mevcut ilkellerle tanımlanamayan; P7 kararıyla savaşta uygulanmaz (gerekçe ve gereken kanca yazılı).
 
 ## Özet
 
 | Sınıf | Sayı |
 |---|---|
 | (a) savaş dışı | 145 |
-| (b) veriyle tanımlı | 235 |
-| (c) kalıba uymayan (karar bekliyor) | 19 |
+| (b) veriyle tanımlı | 240 |
+| (c) Game Master'a bırakılan (savaşta uygulanmaz) | 14 |
 | sınıflanmamış (alan yok, karar yok) | 0 |
 | **Toplam** | 399 |
 
 Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MAX_ATTUNED`, `src/rules/stats.ts`). Sarf eşyası (`use`): 58 (savaşta "Eşya" menüsü, `use_item`; yapay zekâ yarı canın altında iyileştirme iksiri içer). Yüklü büyülü: 41.
 
-## (c) Kalıba uymayanlar
+## (c) Game Master'a bırakılanlar (P7)
 
 | Kimlik | Ad | Veride olan | Gereken |
 |---|---|---|---|
-| bag-of-tricks | Bag of Tricks | — | rastgele hayvan çağırma — eşyadan çağırma yok |
-| berserker-axe | Berserker Axe | bonus | lanet (uyum bozulmaz, kana susama WIS save) — eşya laneti ilkeli yok |
-| defender | Defender | bonus | silah bonusunu tur başında AC'ye aktarma seçimi — eşya seçim kancası yok |
-| energy-bow | Energy Bow | bonus | enerji oku (ok yaratma, menzil seçimi) — eşya saldırı biçimi kancası yok |
-| figurine-of-wondrous-power | Figurine of Wondrous Power | — | heykelcikten yaratık — eşyadan çağırma yok (Game Master canavar ekler) |
-| hat-of-many-spells | Hat of Many Spells | bonus | rastgele büyü tablosu — eşya büyüsünde rastgele sonuç yok |
-| horn-of-valhalla | Horn of Valhalla | — | berserker ruhları çağırma — eşyadan çağırma yok |
-| immovable-rod | Immovable Rod | — | havada sabit nesne — K53 geçici engelini eşyaya bağlama yok |
-| nine-lives-stealer | Nine Lives Stealer | bonus | anında öldürme (HP ≤ 100, CON save, yük) — eşya isabet kancasında ölüm yok |
-| quarterstaff-of-the-acrobat | Quarterstaff of the Acrobat | bonus | biçim değiştirme (sırık, yay) ve Acrobatics — eşya biçim kancası yok |
-| rod-of-absorption | Rod of Absorption | — | büyüyü tepkiyle emme, yük biriktirme — eşya tepkisi yok (Counterspell yolu) |
-| rod-of-lordly-might | Rod of Lordly Might | bonus | altı düğmeli biçim değişimi (silah, merdiven, kilit) — eşya biçim kancası yok |
-| scimitar-of-speed | Scimitar of Speed | bonus | bonus eylemle bir saldırı — eşyadan bonus saldırı ilkeli yok |
-| spell-scroll | Spell Scroll | — | parşömen: içerdiği büyü envanter kaydında değil (eşya başına büyü seçimi gerekir) — Game Master |
-| staff-of-the-python | Staff of the Python | — | asayı Giant Constrictor Snake'e çevirme — eşyadan çağırma yok (R3 çağırma büyü yolunda) |
-| talisman-of-pure-good | Talisman of Pure Good | bonus | kötü uyumlu tutana hasar, uçurum açma yükü — hizalanma savaşa girmez |
-| talisman-of-ultimate-evil | Talisman of Ultimate Evil | bonus | iyi uyumlu tutana hasar, uçurum yükü — hizalanma savaşa girmez |
-| vorpal-sword | Vorpal Sword | bonus | doğal 20'de kafa kesme — eşya isabet kancasında ölüm yok |
-| wand-of-enemy-detection | Wand of Enemy Detection | — | 60 ft içindeki düşmanları sezme — gizlenme bilgisini eşyaya bağlama yok |
+| berserker-axe | Berserker Axe | bonus | Game Master — savaşta uygulanmaz: lanet (uyum bozulmaz, kana susama WIS save) — eşya laneti ilkeli yok |
+| defender | Defender | bonus | Game Master — savaşta uygulanmaz: silah bonusunu tur başında AC'ye aktarma seçimi — eşya seçim kancası yok |
+| energy-bow | Energy Bow | bonus | Game Master — savaşta uygulanmaz: enerji oku (ok yaratma, menzil seçimi) — eşya saldırı biçimi kancası yok |
+| hat-of-many-spells | Hat of Many Spells | bonus | Game Master — savaşta uygulanmaz: rastgele büyü tablosu — eşya büyüsünde rastgele sonuç yok |
+| immovable-rod | Immovable Rod | — | Game Master — savaşta uygulanmaz: havada sabit nesne — K53 geçici engelini eşyaya bağlama yok |
+| nine-lives-stealer | Nine Lives Stealer | bonus | Game Master — savaşta uygulanmaz: anında öldürme (HP ≤ 100, CON save, yük) — eşya isabet kancasında ölüm yok |
+| quarterstaff-of-the-acrobat | Quarterstaff of the Acrobat | bonus | Game Master — savaşta uygulanmaz: biçim değiştirme (sırık, yay) ve Acrobatics — eşya biçim kancası yok |
+| rod-of-absorption | Rod of Absorption | — | Game Master — savaşta uygulanmaz: büyüyü tepkiyle emme, yük biriktirme — eşya tepkisi yok (Counterspell yolu) |
+| rod-of-lordly-might | Rod of Lordly Might | bonus | Game Master — savaşta uygulanmaz: altı düğmeli biçim değişimi (silah, merdiven, kilit) — eşya biçim kancası yok |
+| spell-scroll | Spell Scroll | — | Game Master — savaşta uygulanmaz: parşömen: içerdiği büyü envanter kaydında değil (eşya başına büyü seçimi gerekir) — Game Master |
+| talisman-of-pure-good | Talisman of Pure Good | bonus | Game Master — savaşta uygulanmaz: kötü uyumlu tutana hasar, uçurum açma yükü — hizalanma savaşa girmez |
+| talisman-of-ultimate-evil | Talisman of Ultimate Evil | bonus | Game Master — savaşta uygulanmaz: iyi uyumlu tutana hasar, uçurum yükü — hizalanma savaşa girmez |
+| vorpal-sword | Vorpal Sword | bonus | Game Master — savaşta uygulanmaz: doğal 20'de kafa kesme — eşya isabet kancasında ölüm yok |
+| wand-of-enemy-detection | Wand of Enemy Detection | — | Game Master — savaşta uygulanmaz: 60 ft içindeki düşmanları sezme — gizlenme bilgisini eşyaya bağlama yok |
 
 ## A5'te tanımlananlar
 
 | Kimlik | Tanım |
 |---|---|
 | rod-of-resurrection | Heal (1 yük; 6. seviye büyüler anahtarı `spells69` açıkken), 5 yük; Resurrection savaş dışı |
+| bag-of-tricks | P7: eşyadan çağırma (`paket.cagir`, 8 hayvandan zarla; 3 kullanım, her savaş dolu) |
+| figurine-of-wondrous-power | P7: eşyadan çağırma (Tunç Grifon; diğer heykelcikler aynı kalıpla) |
+| horn-of-valhalla | P7: eşyadan çağırma (2d4 berserker, gümüş boru; ortalama 5) |
+| staff-of-the-python | P7: eşyadan çağırma (Giant Constrictor Snake, bonus eylem) |
+| scimitar-of-speed | P7: eşyadan bonus saldırı (`paket.ekSaldiri`; en uygun silahla) |
 
 ## (b) Veriyle tanımlı
 
@@ -108,6 +108,7 @@ Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MA
 | armor-2 | Armor, +2 | effects |
 | armor-3 | Armor, +3 | effects |
 | arrow-catching-shield | Arrow-Catching Shield | passive |
+| bag-of-tricks | Bag of Tricks | paket |
 | bead-of-force | Bead of Force | spells |
 | belt-of-cloud-giant-strength | Belt of Cloud Giant Strength | effects |
 | belt-of-dwarvenkind | Belt of Dwarvenkind | passive |
@@ -146,6 +147,7 @@ Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MA
 | eyes-of-charming | Eyes of Charming | spells |
 | eyes-of-the-eagle | Eyes of the Eagle | passive |
 | feather-token | Feather Token | spells |
+| figurine-of-wondrous-power | Figurine of Wondrous Power | paket |
 | flame-tongue | Flame Tongue | passive, onHit |
 | frost-brand | Frost Brand | passive, onHit |
 | gem-of-brightness | Gem of Brightness | spells |
@@ -158,6 +160,7 @@ Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MA
 | helm-of-teleportation | Helm of Teleportation | spells |
 | holy-avenger | Holy Avenger | passive, bonus, onHit |
 | horn-of-blasting | Horn of Blasting | use |
+| horn-of-valhalla | Horn of Valhalla | paket |
 | horseshoes-of-speed | Horseshoes of Speed | passive |
 | horseshoes-of-a-zephyr | Horseshoes of a Zephyr | passive |
 | ioun-stone | Ioun Stone | effects |
@@ -245,6 +248,7 @@ Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MA
 | rod-of-resurrection | Rod of Resurrection | spells |
 | rope-of-entanglement | Rope of Entanglement | use |
 | scarab-of-protection | Scarab of Protection | passive |
+| scimitar-of-speed | Scimitar of Speed | bonus, paket |
 | sentinel-shield | Sentinel Shield | passive |
 | shield-of-missile-attraction | Shield of Missile Attraction | passive |
 | shield-of-the-cavalier | Shield of the Cavalier | effects |
@@ -262,6 +266,7 @@ Uyum (attunement) gerektiren: 175 (en çok 3 eşya; fazlası savaşa girmez: `MA
 | staff-of-thunder-and-lightning | Staff of Thunder and Lightning | spells, bonus |
 | staff-of-withering | Staff of Withering | onHit |
 | staff-of-the-magi | Staff of the Magi | passive, spells, bonus |
+| staff-of-the-python | Staff of the Python | paket |
 | staff-of-the-woodlands | Staff of the Woodlands | spells, bonus |
 | sun-blade | Sun Blade | passive, bonus, onHit |
 | sword-of-life-stealing | Sword of Life Stealing | onHit |

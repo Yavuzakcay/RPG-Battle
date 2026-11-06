@@ -201,6 +201,8 @@ export const en: Strings = {
     asiBadge: (n: number) => `+${n}`,
     asiSlotNote: (left: number) => `Spend the points with the +/− on the score rows (${left} left in this slot).`,
     increaseTo: (n: number) => `+${n}:`, chooseAbility: 'Choose ability',
+    /** Görev P7: ek paket ilkellerinin kısa özeti (özellik kartı). */
+    paketOzet: { ekHasar: 'extra damage on hit', direnc: 'resistance', aura: 'aura', tepki: 'reaction', gecicCan: 'temporary HP', iyilestirme: 'healing', hasar: 'damage', durumUygula: 'applies a condition', isaret: 'mark', cagir: 'summons a creature', boyut: 'growth', ucus: 'flight', isinlan: 'teleport', zorlaHareket: 'push/pull', olumdenDon: 'cheats death', ekSaldiri: 'extra attack', zarEtkisi: 'dice/defence bonus', kaynak: 'use pool', bicim: 'form', yuzeyOlustur: 'surface/ground', buyuVer: 'prepared spells', buyuDegisimi: 'spell empowerment', gorunmezlik: 'invisibility', moralEtkisi: 'morale', zarMuhru: 'stored die', engeldenGec: 'passes through walls', hiz: 'speed', buyuluVurus: 'magical strikes', zarDegistir: 'changes damage dice', koruma: 'protection', algi: 'senses', cagirGuclendir: 'empowers summons', ortakCan: 'shared HP pool', yuvaGeriKazan: 'regains a spell slot', meydanOkuma: 'challenge', saldirmadanSave: 'save before attacking', kaynakYenile: 'regains uses' } as Record<string, string>,
     featStatus: { ok: 'in play', partial: 'partly', none: 'no combat effect', missing: 'not in the game yet' } as Record<string, string>,
     expertise: (n: number, chosen: number) => `Expertise: choose ${n} skills (${chosen} chosen); proficiency bonus doubled.`,
     masteryTitle: (n: number, max: number) => `Weapon Mastery: ${n} / ${max}`,

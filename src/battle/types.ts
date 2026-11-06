@@ -225,6 +225,14 @@ export interface ActiveEffect {
   noCast?: boolean;
   /** Görev CLERIC: Sanctuary (hedef alan düşman WIS save; başarısızsa saldırı/büyü boşa), Warding Bond (alınan hasar `bondTo`'ya da). */
   sanctuary?: { dc: number };
+  /** Görev P7: ek paket büyülü vuruş (`kendi`: sahibinin saldırıları, `cagrilanlar`: çağırdıkları); büyüsüz direnç aşılır. */
+  pkMagic?: string[];
+  /** Görev P7: konsantrasyon kurtulması avantajlı. */
+  concAdv?: boolean;
+  /** Görev P7: gerçek görüş (ft; `sight.ts` `senseSees`). */
+  pkTruesight?: number;
+  /** Görev P7: meydan okuma: bu yaratık `tauntBy` dışındakilere saldırırken dezavantajlı. */
+  tauntBy?: string;
   bondTo?: string;
   /** Görev CLERIC: Bestow Curse seçenekleri: koyana saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, koyanın isabetlerine ek zar. */
   attackDisVs?: string;
@@ -624,6 +632,10 @@ export interface Combatant {
   senses?: { blindsight?: number; truesight?: number; tremorsense?: number };
   /** Kuyruk 19: içinde bulunduğu auranın verdiği dirençler (Aura of Life; reducer `syncAuras`). */
   auraResist?: string[];
+  /** Görev P7: aura içinde kurtulmalar dezavantajlı (`syncAuras`). */
+  auraSaveDis?: boolean;
+  /** Görev P7: büyüsüz saldırılara direnç (paket yaratığı `buyusuzDirencler`). */
+  nonmagicalResist?: string[];
   /** Kuyruk 19 (11–20): `featuresK19` açık ve savaşçının zar yolu özelliği var (Peerless Skill); `syncAuras` yazar. */
   k19Traits?: boolean;
   /** Kuyruk 19 (Epic Boon): Improve Fate sahibi (60 ft; dost için ve düşman için), `syncAuras` yazar. */

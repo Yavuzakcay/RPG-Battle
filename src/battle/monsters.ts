@@ -1,5 +1,7 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
 import { globalRule } from './ruleControl';
+import { nonmagicalProfile } from './magicStrike';
+import { ruleVersion } from './ruleVersion';
 import { profileIn } from './zones';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
@@ -173,9 +175,16 @@ export function monsterAttackEvents(
     // Görev B1: saldıranın hasar cezası (Ray of Enfeeblement; Reduce yalnızca silahta: canavar saldırısı silah sayılır).
     const penalty = hit && raw > 0 ? damagePenalty(actor, raw, true, rng) : null;
     if (penalty) raw = penalty.total;
-    const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, profileIn(state, target)) : { amount: 0, note: null };
+    const adj = hit && raw > 0 ? adjustDamage(raw, dmgType, nonmagicalProfile(actor, target, dmgType, profileIn(state, target))) : { amount: 0, note: null };
     // İsabette ek hasarlar (her zaman olanlar ve koşulu tutanlar); kritikte zarlar ikiye katlanır.
     let extras = hit ? riderExtras(spec, { mode, critical, actor, target }, rollTag(rng, { kind: 'damage', by: actor.id })) : [];
+    // Görev P7 (sürüm 34): süren etkinin isabet zarı (`hitDie`: Enlarge, paket çağrı güçlendirmesi) canavar saldırısında da.
+    if (hit && ruleVersion(state) >= 34) for (const e of (actor.effects ?? []).filter((x) => x.hitDie)) {
+      const d = rollDice(e.hitDie as string, rollTag(rng, { kind: 'damage', by: actor.id }), critical);
+      const t = e.hitType ?? dmgType ?? '';
+      const a = adjustDamage(d.total, t, nonmagicalProfile(actor, target, t, profileIn(state, target)));
+      extras = [...extras, { label: e.name, rolls: d.rolls, raw: d.total, applied: a.amount, type: t, note: a.note }];
+    }
     // Hedefin isabet tepkisi (Görev R1): Shield ıskalatabilir; Uncanny Dodge, Deflect Attacks hasarı azaltır.
     hr = hit ? hitReactions(state, {
       attacker: actor, target, label: atk.name, total, ac: targetAc, critical, melee: !atk.ranged, ranged: atk.ranged,

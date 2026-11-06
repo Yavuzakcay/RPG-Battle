@@ -25,7 +25,7 @@ import { celestialFeatures, withCelestial } from './celestial';
 import { withMorale } from './morale';
 import { karadulFeatures, withKaradul } from './karadul';
 import { imzaFeatures, imzaId, isImza, withImza } from './imza';
-import { paketBag } from './paket/bag';
+import { itemBag, mergeBags, paketBag } from './paket/bag';
 import { withPaket } from './paket/core';
 import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
@@ -159,7 +159,10 @@ export function combatantFromSheet(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
 ): Combatant {
-  const c = combatantFromSheetBase(sheet, opts);
+  const c0 = combatantFromSheetBase(sheet, opts);
+  // Görev P7: eşya kancaları (eşyanın paket ilkelleri savaşçının paketine).
+  const ib = itemBag(activeItemNames(sheet));
+  const c = ib ? { ...c0, paket: mergeBags(c0.paket, ib.bag), resources: { ...c0.resources, ...ib.resources } } : c0;
   const p = itemParts(activeItemNames(sheet), opts.id);
   if (!p.effects.length && !p.hits.length && !p.weaponBonus && !p.spellBonus && !p.addSpells.length && !p.traits.length && !p.fallReduction && !p.noStealthDis && !p.rangedReduce) return c;
   const newSpells = p.addSpells.filter((n) => !c.spellNames.includes(n));

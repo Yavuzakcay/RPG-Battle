@@ -2,6 +2,7 @@
  * Görev K18: sihirbazdaki kısa açıklamalar (`data/aciklamalar.json`): sınıf özelliği özeti, Weapon Mastery ve silah
  * özellikleri. Yalnızca oluşturucu (Builder, tembel parça) içe aktarır; ana parçaya girmez.
  */
+import { ilkelOzet } from './ilkelOzet';
 import data from '../../data/aciklamalar.json';
 import { findSubclass } from '../rules/subclasses';
 import type { Weapon } from '../data/types';
@@ -17,8 +18,11 @@ const firstSentence = (t: string) => (t.match(/^.+?[.!?](\s|$)/)?.[0] ?? t).trim
 /** Sınıf ya da alt sınıf özelliğinin tek cümlelik özeti (yoksa boş). */
 export function featureSummary(f: { key: string; id: string; from: 'class' | 'subclass' }, classId: string, subclassId: string | undefined, lang: Lang): string {
   if (f.from === 'subclass') {
-    const d = findSubclass(classId, subclassId)?.features.find((x) => x.id === f.id)?.description;
-    return d ? firstSentence(d[lang] ?? d.tr ?? '') : '';
+    const feat = findSubclass(classId, subclassId)?.features.find((x) => x.id === f.id);
+    const d = feat?.description;
+    // Görev P7: ilkelli (ek paket) özellikte ilkel özeti.
+    const oz = ilkelOzet(feat?.ilkeller as Array<{ tur: string }> | undefined);
+    return [d ? firstSentence(d[lang] ?? d.tr ?? '') : '', oz ? `[${oz}]` : ''].filter(Boolean).join(' ');
   }
   return FEATURES[lang]?.[f.key] || FEATURES.tr[f.key] || '';
 }

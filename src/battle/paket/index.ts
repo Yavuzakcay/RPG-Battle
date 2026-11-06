@@ -11,7 +11,7 @@ import { saveDice } from '../effectDice';
 import { saveMode } from '../durations';
 import { damageEffects } from '../damage-effects';
 import { saveDamage } from '../classTraits';
-import { canReact, reactionUsed, registerAllyHit, strikeApi } from '../reactions';
+import { canReact, reactionUsed, registerAfterAttack, registerAllyHit, strikeApi } from '../reactions';
 import { forcedMove, withArrival, type ForcedMode } from '../motion';
 import { teleportEvent, teleportProblem } from '../teleport';
 import { resistImmunityEvent, resistImmunityId } from '../auraCore';
@@ -34,10 +34,10 @@ import { adjustDamage } from '../../rules/damage';
 import { abilityModifier, type Ability } from '../../rules/abilities';
 import { rollDice, rollDie, rollTag, type Rng } from '../../rules/dice';
 import { distance, isInside, type Offset } from '../../rules/hex';
-import type { Monster, MonsterAttack } from '../../data';
+import { getMonster, type Monster, type MonsterAttack } from '../../data';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command, ExtraDamage, SummonInfo, UsableFeature } from '../types';
 import {
-  alive, amount, canPay, costOf, dcOf, dugmeNeeds, dugmeOf, effId, flatNum, formId, formul, kosulOk, markId, passiveBody, tetikOf,
+  alive, amount, canPay, costOf, dcOf, dugmeNeeds, dugmeOf, effId, flatNum, formId, formul, kosulOk, markId, passiveBody, resKey, tetikOf,
   auraSpec, usedKey, usedThisTurn, val, within, zarBody, type Dugme, type Ilkel, type PaketOzellik,
 } from './core';
 
@@ -161,7 +161,7 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
     ({ type: 'effect_added', targetId: t.id, effect: { ...body, id: eid, name, sourceId: a.id, ...untilOf(state, p) } as ActiveEffect });
   const out: BattleEvent[] = [];
   switch (p.tur) {
-    case 'gecicCan': case 'iyilestirme': case 'hasar': case 'durumUygula': case 'isaret': case 'zarEtkisi': case 'gorunmezlik': case 'moralEtkisi': case 'zorlaHareket': {
+    case 'gecicCan': case 'iyilestirme': case 'hasar': case 'durumUygula': case 'isaret': case 'zarEtkisi': case 'gorunmezlik': case 'moralEtkisi': case 'zorlaHareket': case 'meydanOkuma': {
       const ts = targetsOf(state, c);
       if (typeof ts === 'string') return ts;
       for (const t of ts) {
@@ -190,6 +190,11 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
           out.push(effect(t, { icon: '◎', ...(av === 'herkes' ? { attackedAdv: true } : av === 'isaretleyen' ? { attackedAdvBy: a.id } : {}) }, mid));
         }
         if (p.tur === 'zarEtkisi') out.push(effect(t, zarBody(p, a)));
+        // P7: meydan okuma (kurtulmalıysa başarısızlıkta).
+        if (p.tur === 'meydanOkuma') {
+          if (p.save) { const sv = saveEvent(state, c, t, null, '', false); out.push(sv.ev); if (sv.success) continue; }
+          out.push(effect(t, { tauntBy: a.id, icon: '⚔' }));
+        }
         if (p.tur === 'gorunmezlik') out.push(effect(t, { grants: ['Invisible'], ...(val<boolean>(p, 'saldirincaBiter') ? { breakOnAct: true } : {}) }));
         if (p.tur === 'moralEtkisi' && moraleOn(state) && t.moralMax !== undefined) {
           const now = t.moral ?? t.moralMax;
@@ -202,11 +207,14 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
           if (p.save) { const sv = saveEvent(state, c, t, null, '', false); out.push(sv.ev); if (sv.success) continue; }
           const mode: ForcedMode = ({ it: 'push', cek: 'pull', yana: 'slide' } as Record<string, ForcedMode>)[val<string>(p, 'yon')] ?? 'push';
           out.push(...forcedMove(applyEvents(state, out), t.id, mode, ft(p, 'mesafeFt', a), a.id, rng, { origin: a.pos }));
+          // P7: itmeden sonra yere serme.
+          const moved = applyEvents(state, out).combatants[t.id];
+          if (val<string>(p, 'sonrasi') === 'yereSer' && moved && moved.hp > 0 && !moved.conditions.includes('Prone')) out.push({ type: 'condition_changed', targetId: t.id, condition: 'Prone', present: true, reason: name, sourceId: a.id });
         }
       }
       return out;
     }
-    case 'boyut': case 'ucus': case 'hiz': case 'aura': case 'engeldenGec': {
+    case 'boyut': case 'ucus': case 'hiz': case 'aura': case 'engeldenGec': case 'koruma': case 'algi': case 'saldirmadanSave': {
       const body = p.tur === 'aura' ? { auras: [auraSpec(p, a, c.i)] } : passiveBody(p, a);
       return body ? [effect(a, body as Partial<ActiveEffect>)] : [];
     }
@@ -231,7 +239,8 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       return withArrival(state, [], [teleportEvent(a, to, name)], rng);
     }
     case 'yuzeyOlustur': {
-      const center = c.to ?? c.hit?.pos;
+      // P7: otomatik tetikte merkez: vurulan/öldürülen, yoksa sahibinin altıgeni.
+      const center = c.to ?? c.hit?.pos ?? (c.manual ? undefined : a.pos ?? undefined);
       if (!state.map || !center) return 'Yüzeyin yerini seç.';
       if (a.pos && distance(a.pos, center) * 5 > ft(p, 'menzilFt', a)) return `${ft(p, 'menzilFt', a)} ft içinde olmalı.`;
       const hexes = hexesAround(state, center, Math.floor(ft(p, 'yaricapFt', a) / 5));
@@ -249,13 +258,14 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       }
       // P6: zemin etkisi (satır içi kurallı alan: tur başı/sonu/giriş, kurtulma, hasar, durum, zorlu arazi).
       const zaman = (p.zaman as string[] | undefined) ?? [];
-      if (zaman.length || p.zorluArazi || p.hasar !== undefined || p.durum !== undefined) {
+      if (zaman.length || p.zorluArazi || p.hasar !== undefined || p.durum !== undefined || p.iyilestir !== undefined) {
         const save = p.save as Record<string, unknown> | undefined;
         const on = zaman.map((z) => (z === 'turBasi' ? 'start' : z === 'turSonu' ? 'end' : 'enter') as 'start' | 'end' | 'enter');
         const spec = {
           ...(on.length ? { on } : {}), ...(p.zorluArazi ? { difficult: 2 } : {}), ...(save ? { save: save.yetenek as Ability, ...(save.yari ? { half: true } : {}) } : {}),
           ...(p.hasar !== undefined ? { damage: formul(p.hasar, a), damageType: p.hasarTuru as string } : {}), ...(p.durum ? { conditions: [p.durum as string] } : {}),
-          ...(val<string>(p, 'hedefler') === 'dusmanlar' ? { targets: 'enemies' as const } : {}), ground: true, icon: '◈',
+          ...(val<string>(p, 'hedefler') === 'dusmanlar' ? { targets: 'enemies' as const } : val<string>(p, 'hedefler') === 'dostlar' ? { targets: 'allies' as const } : {}),
+          ...(p.iyilestir !== undefined ? { heal: formul(p.iyilestir, a) } : {}), ground: true, icon: '◈',
         };
         let n = 1;
         while ((state.map.zones ?? []).some((z) => z.id === `pk-zemin:${a.id}:${n}`)) n++;
@@ -285,6 +295,30 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       return api.strike(state, a.id, foe.id, rng);
     }
     case 'cagir': return summonEvents(state, c);
+    // P7: ortak can havuzu (sahip + yarıçaptaki dostlar, en çok `enCok`).
+    case 'ortakCan': {
+      const list = (targetsOf(state, { ...c, p: { ...p, hedef: 'dostlar' } }) as Combatant[]).filter((x) => !x.poolId && !x.summon).slice(0, Math.max(2, flatNum(val(p, 'enCok'), a)));
+      if (list.length < 2) return 'Havuza katılacak dost yok.';
+      let n = Object.keys(state.hpPools ?? {}).length + 1;
+      while (state.hpPools?.[`havuz-${n}`]) n++;
+      const max = list.reduce((x, m) => x + m.maxHp, 0);
+      return [{ type: 'hp_pool_created', poolId: `havuz-${n}`, memberIds: list.map((x) => x.id), hp: Math.min(max, list.reduce((x, m) => x + m.hp, 0)), max, label: name }];
+    }
+    // P7: büyü yuvası geri kazanma (sınır içindeki en yüksek seviye).
+    case 'yuvaGeriKazan': {
+      const cap = Math.min(flatNum(val(p, 'enCokSeviye'), a), a.spellSlots.length);
+      if (cap < 1) return 'Büyü yuvası yok.';
+      return [{ type: 'slot_created', actorId: a.id, level: cap }];
+    }
+    // P7: kaynak geri kazanma (üst sınır: verilen ya da savaş başındaki değer).
+    case 'kaynakYenile': {
+      const r = p.yenile as { id: string; maliyet?: number };
+      const id = resKey(a, r.id);
+      const cap = p.enCok !== undefined ? flatNum(p.enCok, a) : a.paket?.kaynakBas?.[id] ?? (a.resources[id] ?? 0);
+      const now = a.resources[id] ?? 0;
+      const to = Math.min(cap, now + (r.maliyet ?? 1));
+      return to > now ? [{ type: 'feature_used', actorId: a.id, feature: id, remaining: to }] : [];
+    }
     default: return [];
   }
 }
@@ -293,6 +327,11 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
 
 /** Paket yaratığı → canavar şablonu (sahibinin seviyesi ve yeterliliğiyle). */
 function creatureMonster(def: Record<string, unknown>, owner: Combatant, monsterId: string): Monster {
+  // P7: SRD canavarından stat bloğu (eşyadan çağırma: Staff of the Python, Figurine…).
+  if (typeof def.canavar === 'string') {
+    const m = getMonster(def.canavar);
+    return { ...m, id: monsterId, name: def.ad ? (def.ad as { tr: string }).tr : m.name };
+  }
   const n = (v: unknown) => flatNum(v, owner);
   const caster = owner.spellAttack ?? owner.proficiency + Math.max(owner.modifiers.int, owner.modifiers.wis, owner.modifiers.cha);
   const list = (def.saldirilar as Array<Record<string, unknown>> | undefined) ?? [];
@@ -338,7 +377,9 @@ export const paketMonsterId = (sub: string, id: string) => `pk-${sub}-${id}`;
 function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
   const a = c.actor;
   const p = c.p;
-  const ref = p.yaratik as string;
+  // P7: rastgele yaratık (Bag of Tricks): listeden zarla.
+  const pool = Array.isArray(p.rastgele) ? p.rastgele as string[] : null;
+  const ref = pool?.length ? pool[rollDie(pool.length, rollTag(c.rng, { by: a.id })) - 1] as string : p.yaratik as string;
   const def = a.paket?.yaratiklar?.[ref];
   if (!def) return 'Yaratık tanımı yok.';
   const spellId = `pk:${c.feat.key}#${c.i}`;
@@ -390,7 +431,8 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
     const combatant: Combatant = {
       ...base, side: a.side, ownerId: a.ownerId, initiative, pos: cur.map && at ? at : null, proficiency: a.proficiency,
       avatar: { ...base.avatar, bg: a.avatar.bg, ...(jeton.ton !== undefined ? { hue: jeton.ton as number } : {}), ...(jeton.halka ? { ring: jeton.halka as string } : {}) },
-      creatureType: (def.tur as string | undefined) ?? 'beast',
+      creatureType: (def.tur as string | undefined) ?? (typeof def.canavar === 'string' ? base.creatureType : undefined) ?? 'beast',
+      ...(Array.isArray(def.buyusuzDirencler) ? { nonmagicalResist: def.buyusuzDirencler as string[] } : {}),
       ...((def.ozellikler as string[] | undefined)?.includes('tirmanici') ? { traits: [...(base.traits ?? []), 'climber'] } : {}),
       ...(!eylemler.includes('saldiri') ? { attacks: [], multiattack: false } : {}),
       ...(immune?.length ? { effects: [{ id: `pk-bagisik:${id}`, name: 'Bağışıklık', sourceId: id, auras: [{ id: `pk-bagisik:${id}`, name: 'Bağışıklık', radius: 0, filter: 'allies', trigger: 'passive', effect: { kind: 'conditionImmune', conditions: immune } }] } as ActiveEffect] } : {}),
@@ -508,6 +550,7 @@ registerHitHook((state, actor, target, ctx, rng) => {
   for (const feat of actor.paket.ozellikler) feat.ilkeller.forEach((p, i) => {
     if (tetikOf(p) !== 'isabet') return;
     any = true;
+    if (p.tur === 'zarDegistir') { const x = diceChange(state, actor, target, feat, p, i, ctx, rng); if (x) { extras.push(x.extra); marks.push(...x.marks); } return; }
     if (p.tur !== 'ekHasar') return;
     const s = val<string>(p, 'saldiri');
     const okKind = s === 'hepsi' || (s === 'buyu' ? ctx.spell : !ctx.spell && (s === 'silah' || (s === 'yakin' && ctx.melee) || (s === 'menzilli' && ctx.ranged)));
@@ -521,8 +564,86 @@ registerHitHook((state, actor, target, ctx, rng) => {
     if (p.turdaBir) marks.push({ type: 'trait_turn', actorId: actor.id, trait: usedKey(feat.key, i), key: turnKey(state) });
   });
   if (!extras.length && !any) return null;
-  const after: HitAfter[] = [() => marks, (s) => autoEvents(s, actor.id, 'isabet', rng, s.combatants[target.id], (p) => p.tur !== 'ekHasar')];
+  const after: HitAfter[] = [() => marks, (s) => autoEvents(s, actor.id, 'isabet', rng, s.combatants[target.id], (p) => p.tur !== 'ekHasar' && p.tur !== 'zarDegistir')];
   return { extras, after };
+});
+
+/** P7: saldırı türü süzgeci (ekHasar ile aynı). */
+function attackKindOk(p: Ilkel, ctx: { spell: boolean; melee: boolean; ranged: boolean }): boolean {
+  const s = val<string>(p, 'saldiri');
+  return s === 'hepsi' || (s === 'buyu' ? ctx.spell : !ctx.spell && (s === 'silah' || (s === 'yakin' && ctx.melee) || (s === 'menzilli' && ctx.ranged)));
+}
+
+/**
+ * P7 `zarDegistir`: saldırının atılan hasar zarlarına göre fark ek hasar olarak: maks (zarlar en yüksek), yenidenAt
+ * (eşik ve altı bir kez yeniden), carpan (zarlar bir kez daha), zarBuyut (her zar bir boy büyük). Zar ifadesi yoksa etkisiz.
+ */
+function diceChange(state: BattleState, actor: Combatant, target: Combatant, feat: PaketOzellik, p: Ilkel, i: number,
+  ctx: { spell: boolean; melee: boolean; ranged: boolean; critical: boolean; advantage: boolean; weaponType: string; rolls?: number[]; dice?: string }, rng: Rng): { extra: ExtraDamage; marks: BattleEvent[] } | null {
+  if (!attackKindOk(p, ctx) || !kosulOk(state, actor, p, target, ctx.advantage) || !canPay(actor, p) || (p.turdaBir && usedThisTurn(state, actor, feat.key, i))) return null;
+  const types = p.hasarTurleri as string[] | undefined;
+  if (types && !types.includes(ctx.weaponType)) return null;
+  const sides = Number(/d(\d+)/.exec(ctx.dice ?? '')?.[1] ?? 0);
+  const rolls = ctx.rolls ?? [];
+  if (!sides || !rolls.length) return null;
+  const mode = p.mod as string;
+  const tag = rollTag(rng, { kind: 'damage', by: actor.id });
+  let plus = 0;
+  const extraRolls: number[] = [];
+  if (mode === 'maks') plus = rolls.reduce((n, r) => n + (sides - r), 0);
+  else if (mode === 'carpan') { plus = rolls.reduce((n, r) => n + r, 0); extraRolls.push(...rolls); }
+  else if (mode === 'yenidenAt') {
+    const esik = flatNum(val(p, 'esik'), actor);
+    for (const r of rolls) if (r <= esik) { const v = rollDie(sides, tag); extraRolls.push(v); plus += v - r; }
+  } else if (mode === 'zarBuyut') {
+    const up = ({ 4: 6, 6: 8, 8: 10, 10: 12, 12: 12 } as Record<number, number>)[sides] ?? sides;
+    for (const r of rolls) { const v = rollDie(up, tag); extraRolls.push(v); plus += v - r; }
+  }
+  if (plus <= 0) return null;
+  const adj = adjustDamage(plus, ctx.weaponType, profileOf(target));
+  const k = costOf(actor, p);
+  const marks: BattleEvent[] = [...(k ? [{ type: 'feature_used' as const, actorId: actor.id, feature: k.id, remaining: (actor.resources[k.id] ?? 0) - k.cost }] : []),
+    ...(p.turdaBir ? [{ type: 'trait_turn' as const, actorId: actor.id, trait: usedKey(feat.key, i), key: turnKey(state) }] : [])];
+  return { extra: { label: (p.ad as string | undefined) ?? feat.ad, rolls: extraRolls, raw: plus, applied: adj.amount, type: ctx.weaponType, note: adj.note }, marks };
+}
+
+/**
+ * P7 tepki genişletmesi (saldırı sonrası kancası): dostaVuruldu (menzildeki dosta isabet + hasar) → saldiriYap / yansit;
+ * banaIsabet / hasarAldim → yansit (alınan hasarın `oran` katı saldırgana; kurtulma verilirse başarıda yarısı), banaIsabet
+ * → saldiriYap. Tepki ve kaynak harcanır; karar `askReaction`.
+ */
+registerAfterAttack((state, attackerId, targetId, info, rng) => {
+  const attacker = state.combatants[attackerId];
+  const target = state.combatants[targetId];
+  if (!attacker || !target || !info.hit || attacker.side === target.side) return [];
+  for (const g of Object.values(state.combatants)) {
+    if (!g.paket || g.side !== target.side || !canReact(g) || g.hp <= 0) continue;
+    const self = g.id === target.id;
+    for (const feat of g.paket.ozellikler) for (const [i, p] of feat.ilkeller.entries()) {
+      if (p.tur !== 'tepki' || (p.etki !== 'saldiriYap' && p.etki !== 'yansit')) continue;
+      const olay = val<string>(p, 'olay');
+      const okOlay = self ? (olay === 'banaIsabet' || (olay === 'hasarAldim' && info.melee)) : olay === 'dostaVuruldu';
+      if (!okOlay || (info.dealt <= 0 && p.etki === 'yansit') || (olay === 'dostaVuruldu' && info.dealt <= 0)) continue;
+      if (!canPay(g, p) || !kosulOk(state, g, p, attacker) || (!self && !within(state, g, target, ft(p, 'menzilFt', g)))) continue;
+      const s = val<string>(p, 'saldiri');
+      if ((s === 'yakin' && !info.melee) || (s === 'menzilli' && info.melee)) continue;
+      const name = (p.ad as string | undefined) ?? feat.ad;
+      const api = strikeApi();
+      if (p.etki === 'saldiriYap' && !(api && api.can(state, g.id, attacker.id))) continue;
+      const opt = { id: usedKey(feat.key, i), name };
+      if (!askReactionSafe(rng, g, { attacker, label: name, total: 0, ac: 0, damage: info.dealt }, opt)) continue;
+      const k = costOf(g, p);
+      const react = reactionUsed(g, { ...opt, ...(k ? { resource: k.id } : {}) }, 'ally', attacker.id);
+      if (p.etki === 'saldiriYap') return [react, ...(api as NonNullable<typeof api>).strike(applyEvents(state, [react]), g.id, attacker.id, rng)];
+      // Yansıt: hasarın oranı (kurtulmalıysa başarıda yarısı).
+      let dmg = Math.max(1, Math.floor(info.dealt * Number(val(p, 'oran') ?? 1)));
+      const out: BattleEvent[] = [react];
+      if (p.save) { const sv = saveEvent(applyEvents(state, [react]), { actor: g, feat, p, i, rng, manual: false }, attacker, null, '', false); out.push(sv.ev); if (sv.success) dmg = Math.floor(dmg / 2); }
+      if (dmg > 0) out.push(hitEffect(attacker, 'paket', name, { damage: String(dmg), damageType: info.damageType || 'force' }, rng));
+      return out;
+    }
+  }
+  return [];
 });
 
 /** Tur başı: yaratık ekleri (yükleme sonrası) ve `turBasi` ilkelleri. */
@@ -532,7 +653,7 @@ registerTurnStart((state, id, rng) => {
 });
 
 /** Komut sonu: savaş başı, öldürünce, hasar alınca, koşullu pasiflerin eşitlenmesi, ölümden dönüş. */
-registerCommandEnd((before, next, _events, cmd, rng) => {
+registerCommandEnd((before, next, events0, cmd, rng) => {
   const owners = Object.values(next.combatants).filter((c) => c.paket);
   if (!owners.length) return [];
   const out: BattleEvent[] = [];
@@ -569,6 +690,34 @@ registerCommandEnd((before, next, _events, cmd, rng) => {
     const b = before.combatants[c.id];
     const n = cur.combatants[c.id];
     if (b && n && n.hp > 0 && (n.hp < b.hp || (n.tempHp ?? 0) < (b.tempHp ?? 0))) push(autoEvents(cur, c.id, 'hasarAlinca', rng));
+  }
+  // P7: slotlu büyü yapınca (`buyuYuvasi`; merkez kendi altıgeni).
+  if (cmd.type === 'cast_spell' && events0.some((e) => e.type === 'slot_spent' && e.actorId === cmd.actorId) && cur.combatants[cmd.actorId]?.paket) push(autoEvents(cur, cmd.actorId, 'buyuYuvasi', rng));
+  // P7: sıfır cana düşünce (ölümden dönüş dışındaki ilkeller; ör. koruyucu çağırma).
+  for (const c of owners) {
+    const b = before.combatants[c.id];
+    const n = cur.combatants[c.id];
+    if (b && n && b.hp > 0 && n.hp <= 0) push(autoEvents(cur, c.id, 'sifirCan', rng, undefined, (p) => p.tur !== 'olumdenDon'));
+  }
+  // P7: çağrı güçlendirme: bu komutta çağrılan ve sahibi `cagirGuclendir` taşıyan yaratıklar.
+  for (const ev of [...events0, ...out]) {
+    if (ev.type !== 'summoned') continue;
+    const owner = cur.combatants[ev.ownerId];
+    const made = cur.combatants[ev.combatant.id];
+    if (!owner?.paket || !made || made.effects?.some((e) => e.id.startsWith('pk-guc:'))) continue;
+    for (const f of owner.paket.ozellikler) for (const p of f.ilkeller.filter((x) => x.tur === 'cagirGuclendir')) {
+      const body: Record<string, unknown> = { id: `pk-guc:${made.id}`, name: (p.ad as string | undefined) ?? f.ad, sourceId: owner.id, icon: '✦' };
+      if (p.acBonusu !== undefined) body.ac = flatNum(p.acBonusu, owner);
+      if (p.ekHasar !== undefined) body.hitDie = formul(p.ekHasar, owner);
+      if (p.buyuluVurus || owner.effects?.some((e) => e.pkMagic?.includes('cagrilanlar'))) body.pkMagic = ['kendi'];
+      const evs: BattleEvent[] = [{ type: 'effect_added', targetId: made.id, effect: body as unknown as ActiveEffect }];
+      const th = p.gecicCan !== undefined ? amount(p.gecicCan, owner, rng) : 0;
+      if (th > 0) evs.push({ type: 'temp_hp', targetId: made.id, amount: th, label: body.name as string });
+      push(evs);
+    }
+    // Büyülü vuruş (`cagrilanlar`) güçlendirmesiz sahipte de.
+    const m2 = cur.combatants[made.id];
+    if (m2 && !m2.effects?.some((e) => e.pkMagic) && owner.effects?.some((e) => e.pkMagic?.includes('cagrilanlar'))) push([{ type: 'effect_added', targetId: made.id, effect: { id: `pk-guc:${made.id}`, name: 'Büyülü vuruş', sourceId: owner.id, pkMagic: ['kendi'] } }]);
   }
   // Koşullu pasifler ve ölümden dönüş.
   for (const c0 of owners) {

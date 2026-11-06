@@ -81,6 +81,7 @@ function affects(state: BattleState, z: SpellZone, spec: ZoneSpec, c: Combatant)
   // Kuyruk K54b: zemin koruması (Mevzi İşareti, Yol aç, Kuşbakışı Plan): zemin yüzeyi ve zemin alanı etkilemez.
   if (groundZone(z, spec.ground) && groundWarded(state, c)) return false;
   if (spec.targets === 'enemies' && c.side === z.side) return false;
+  if (spec.targets === 'allies' && c.side !== z.side) return false;
   if (spec.notCaster && c.id === z.casterId) return false;
   if (spec.gate && !globalRule(state, spec.gate)) return false;
   return true;
@@ -130,6 +131,14 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   const captiveId = `${z.spellId}:${z.id}`;
   if (spec.captive && globalRule(state, 'spellsK19') && Object.values(state.combatants).some((c) => c.hp > 0 && (c.effects ?? []).some((e) => e.id === captiveId))) return [];
   const events: BattleEvent[] = spec.once ? [{ type: 'zone_triggered', zoneId: z.id, targetId: victim.id, turn }] : [];
+  // Görev P7: iyileştiren zemin (ek paket): hasar yerine can.
+  if (spec.heal) {
+    if (victim.life === 'dead') return events;
+    const h = rollDice(spec.heal, rollTag(rng, { kind: 'heal', by: z.casterId }));
+    const n = Math.max(0, Math.min(h.total, victim.maxHp - victim.hp));
+    if (n > 0) events.push({ type: 'healed', actorId: z.casterId, targetId: victim.id, label: z.name, amount: n, targetHpAfter: victim.hp + n });
+    return events;
+  }
   const expr = zoneDamage(z, spec);
   const dtype = z.damageType ?? spec.damageType;
   if (!spec.save) {

@@ -8,6 +8,7 @@ import { isTargetable } from '../common';
 import { turnKey } from '../economy';
 import { auraCoreOn } from '../auraCore';
 import { getMap } from '../../map/maps';
+import { sizeRank } from '../forced';
 import { DUGME_TETIKLERI, ILKELLER, ORTAK_ALANLAR, type Tetik } from '../../content/ilkelSema';
 import { rollDice, rollTag, type Rng } from '../../rules/dice';
 import type { ActiveEffect, BattleState, Combatant, ReactionSpec, UsableFeature } from '../types';
@@ -107,6 +108,8 @@ export function kosulOk(state: BattleState, actor: Combatant, p: Ilkel, target?:
     if (k === 'buyuTurunda' && actor.traitTurns?.['pk-buyu'] !== turnKey(state)) return false;
     if (k === 'seviyeliBuyuTurunda' && actor.economy.slotTurn !== turnKey(state)) return false;
     if (k.startsWith('harita:') && mapRegion(state) !== k.slice(7)) return false;
+    // P7: hedef sahibinden büyük.
+    if (k === 'hedefBuyuk' && !(target && sizeRank(target.size) > sizeRank(actor.size))) return false;
   }
   return true;
 }
@@ -182,6 +185,13 @@ export function passiveBody(p: Ilkel, c: Combatant, state?: BattleState): Partia
     // P6: engelden geçme (`phase.ts`; zorlu arazi) ve fırsat saldırısı yok.
     case 'engeldenGec': return { phase: p.zorluArazi === false ? {} : { difficult: true }, ...(p.firsatYok === false ? {} : { noProvoke: true }) };
     case 'aura': return state && !auraCoreOn(state) ? null : { auras: [auraSpec(p, c, 0)] as unknown as ActiveEffect['auras'] };
+    // P7: büyülü vuruş, koruma, algı, saldırmadan kurtulma.
+    case 'buyuluVurus': return { pkMagic: val<string[]>(p, 'kapsam') ?? ['kendi'] };
+    case 'koruma': return { ...(p.kritikBagisikligi ? { noCrit: true } : {}), ...(p.konsantrasyonAvantaji ? { concAdv: true } : {}),
+      ...(Array.isArray(p.durumAvantaji) || p.buyulereAvantaj ? { saveAdvAgainst: [...((p.durumAvantaji as string[] | undefined) ?? []), ...(p.buyulereAvantaj ? ['spell'] : [])] } : {}) };
+    case 'algi': return { ...(typeof p.karanlikGorusFt === 'number' ? { darkvision: p.karanlikGorusFt } : {}), ...(typeof p.gercekGorusFt === 'number' ? { pkTruesight: p.gercekGorusFt } : {}),
+      ...(p.gorunmezGor ? { seeInvisible: true } : {}) };
+    case 'saldirmadanSave': return { sanctuary: { dc: dcOf(p.save as Record<string, unknown>, c) } };
     default: return null;
   }
 }
@@ -221,7 +231,9 @@ export function auraSpec(p: Ilkel, c: Combatant, i: number): Record<string, unkn
           : etki === 'gecicCan' ? { kind: 'tempHp', amount: n() }
             : etki === 'iyilestirmeYok' ? { kind: 'noHeal' }
               : etki === 'olumKurtulmaAvantaji' ? { kind: 'deathSaveAdv' }
-                : etki === 'olumKurtulmaDezavantaji' ? { kind: 'deathSaveDis' } : { kind: 'moral', amount: n() };
+                : etki === 'olumKurtulmaDezavantaji' ? { kind: 'deathSaveDis' }
+                  : etki === 'direnc' ? { kind: 'resist', types: (p.turler as string[] | undefined) ?? [] }
+                    : etki === 'kurtulmaDezavantaji' ? { kind: 'saveDis' } : { kind: 'moral', amount: n() };
   const save = p.save as Record<string, unknown> | undefined;
   return { id: `pk-aura:${c.id}:${i}`, name: (p.ad as string | undefined) ?? 'Aura', radius: Math.max(0, Math.floor(flatNum(p.yaricapFt, c) / 5)), filter, trigger, effect,
     ...(save ? { save: { ability: save.yetenek, dc: dcOf(save, c) } } : {}), ...(p.cesaret !== undefined ? { cesaret: p.cesaret } : {}) };
@@ -275,6 +287,8 @@ export function withPaket(state: BattleState): BattleState {
       ...(effects.length ? { effects: [...(c.effects ?? []), ...effects] } : {}),
       ...(init ? { initiativeBonus: c.initiativeBonus + init } : {}),
       ...(attacks !== c.attacksPerAction ? { attacksPerAction: attacks } : {}),
+      // P7: savaş başındaki kaynaklar (`kaynakYenile` üst sınırı).
+      paket: { ...c.paket, kaynakBas: Object.fromEntries(Object.values(c.paket.kaynaklar ?? {}).map((k) => [k, c.resources[k] ?? 0])) },
     };
   }
   return changed ? { ...state, combatants } : state;

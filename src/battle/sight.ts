@@ -25,8 +25,10 @@ export function senseSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | unde
   const boon = observer.traits?.includes('boon-truesight') && globalRule(state, 'featuresK19') ? 60 : 0;
   // Kuyruk 19 (Dwarf Stonecunning): süreli Tremorsense (yerdeki yaratıklar).
   const tremor = !isAirborne(target) ? Math.max(0, ...(observer.effects ?? []).map((e) => e.tremorsense ?? 0)) : 0;
-  if (!feral && !boon && !tremor && (!observer.senses || !globalRule(state, 'specialSenses'))) return false;
-  const ft = Math.max(observer.senses?.blindsight ?? 0, observer.senses?.truesight ?? 0, feral, boon, tremor);
+  // Görev P7: ek paket gerçek görüşü (`algi.gercekGorusFt`).
+  const pk = Math.max(0, ...(observer.effects ?? []).map((e) => e.pkTruesight ?? 0));
+  if (!feral && !boon && !tremor && !pk && (!observer.senses || !globalRule(state, 'specialSenses'))) return false;
+  const ft = Math.max(observer.senses?.blindsight ?? 0, observer.senses?.truesight ?? 0, feral, boon, tremor, pk);
   return ft > 0 && distance(observer.pos, target.pos) * 5 <= ft;
 }
 const drop = (conds: string[]) => conds.filter((x) => x !== 'Invisible');

@@ -296,6 +296,8 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   for (const e of attacker.effects ?? []) if (e.attackDis && (!e.attackDis.melee || opts.melee)) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev CLERIC: Bestow Curse: lanetleyene saldırılar dezavantajlı.
   for (const e of attacker.effects ?? []) if (e.attackDisVs === target.id) out.push({ effect: 'disadvantage', reason: e.name });
+  // Görev P7: meydan okuma: meydan okuyan dışındakine saldırı dezavantajlı.
+  for (const e of attacker.effects ?? []) if (e.tauntBy && e.tauntBy !== target.id && state.combatants[e.tauntBy]?.hp) out.push({ effect: 'disadvantage', reason: e.name });
   // Kuyruk K54c: Hükümdar Sözü (sana ve 5 ft içindeki dostlarına), Yıldız Falı / Ölümsüz Taht (ilk saldırı zarı).
   for (const e of attacker.effects ?? []) {
     const n = e.attackDisNear;

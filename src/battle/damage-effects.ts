@@ -64,7 +64,7 @@ export function damageEffects(
     const used = 10 - Math.min(10, target.resources.relentlessRage ?? 10);
     const dc = 10 + 5 * used;
     // Kuyruk 19: Cloud of Insects (efsanevi eylem): konsantrasyon save'ine dezavantaj.
-    const roll = rollD20(target.effects?.some((e) => e.concDis) ? 'disadvantage' : 'normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
+    const roll = rollD20(concMode(target), rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
     const extra = rollExtras(saveDice(target, 'con'), 'save', rollTag(rng, { by: target.id }));
     const total = roll.kept + target.saves.con + extrasTotal(extra);
     const hp = 2 * target.level;
@@ -91,7 +91,7 @@ export function damageEffects(
   if (target.concentration && taken > 0 && hpAfter > 0 && !relentless) {
     const dc = Math.min(30, Math.max(10, Math.floor(taken / 2)));
     // Kuyruk 19: Cloud of Insects (efsanevi eylem): konsantrasyon save'ine dezavantaj.
-    const roll = rollD20(target.effects?.some((e) => e.concDis) ? 'disadvantage' : 'normal', rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
+    const roll = rollD20(concMode(target), rollTag(rng, { kind: 'save', by: target.id, bonus: target.saves.con }));
     // Konsantrasyon CON save'i de save: zar eklentileri (Bless) eklenir.
     const extra = rollExtras(saveDice(target, 'con'), 'save', rollTag(rng, { by: target.id }));
     const total = roll.kept + target.saves.con + extrasTotal(extra);
@@ -124,4 +124,11 @@ export function damageEffects(
     }
   }
   return { hpAfter, effects };
+}
+
+/** Konsantrasyon kurtulmasının kipi: Cloud of Insects dezavantajı, Görev P7 paket koruması avantajı (ikisi birden: normal). */
+function concMode(t: Combatant): 'advantage' | 'disadvantage' | 'normal' {
+  const dis = !!t.effects?.some((e) => e.concDis);
+  const adv = !!t.effects?.some((e) => e.concAdv);
+  return dis === adv ? 'normal' : dis ? 'disadvantage' : 'advantage';
 }

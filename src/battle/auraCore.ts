@@ -33,6 +33,9 @@ export type AuraEffect =
   | { kind: 'condition'; condition: string }
   | { kind: 'saveBonus'; amount: number }
   | { kind: 'conditionImmune'; conditions: string[] }
+  /** Görev P7: pasif direnç ve kurtulma dezavantajı. */
+  | { kind: 'resist'; types: string[] }
+  | { kind: 'saveDis' }
   | { kind: 'noHeal' }
   | { kind: 'deathSaveDis' }
   /** Kuyruk K54: tur başı Motivasyon (Moral tam modu açıkken; en çoğu aşmaz). */
@@ -107,14 +110,16 @@ export function strongest(list: Array<{ owner: Combatant; spec: AuraSpec }>): Ar
 }
 
 /** Pasif aura alanları (syncAuras): save bonusu, durum bağışıklığı, can yenileyemez, ölüm save dezavantajı. */
-export function passiveAuraOf(state: BattleState, v: Combatant): { saveBonus: number; immune: string[]; noHeal: boolean; deathDis: boolean; deathAdv: boolean } {
+export function passiveAuraOf(state: BattleState, v: Combatant): { saveBonus: number; immune: string[]; noHeal: boolean; deathDis: boolean; deathAdv: boolean; resist: string[]; saveDis: boolean } {
   const list = strongest(aurasOn(state, v).filter((x) => x.spec.trigger === 'passive'));
-  const out = { saveBonus: 0, immune: [] as string[], noHeal: false, deathDis: false, deathAdv: false };
+  const out = { saveBonus: 0, immune: [] as string[], noHeal: false, deathDis: false, deathAdv: false, resist: [] as string[], saveDis: false };
   for (const { spec } of list) {
     const e = spec.effect;
     if (e.kind === 'saveBonus') out.saveBonus = Math.max(out.saveBonus, e.amount);
     else if (e.kind === 'conditionImmune') out.immune = [...new Set([...out.immune, ...e.conditions])];
     else if (e.kind === 'noHeal') out.noHeal = true;
+    else if (e.kind === 'resist') out.resist = [...new Set([...out.resist, ...e.types])];
+    else if (e.kind === 'saveDis') out.saveDis = true;
     else if (e.kind === 'deathSaveDis') out.deathDis = true;
     else if (e.kind === 'deathSaveAdv' && (!e.belowHalf || v.hp < v.maxHp / 2)) out.deathAdv = true;
   }

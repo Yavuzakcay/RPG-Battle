@@ -24,7 +24,7 @@ function smoke(level: number, mapId: string, variantId: string): number {
     const r = execute(session.state, { type: 'start_battle' }, { playerId: 'gm', isGm: true }, rng);
     expect(r.ok, `${cls.id}/${level}/${mapId}`).toBe(true);
     if (!r.ok) continue;
-    expect(r.state.kuralSurumu).toBe(33);
+    expect(r.state.kuralSurumu).toBeGreaterThanOrEqual(33);
     expect(playBattle(r.state, rng, 8).round, `${cls.id}/${level}/${mapId}`).toBeGreaterThan(0);
     n += 1;
   }

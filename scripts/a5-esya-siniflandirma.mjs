@@ -14,12 +14,12 @@ const cls = JSON.parse(readFileSync('data/esya-siniflandirma.json', 'utf8'));
 export function mechanicFields(it) {
   const f = [];
   if (Object.keys(it.effects ?? {}).length) f.push('effects');
-  for (const k of ['passive', 'use', 'spells', 'bonus', 'onHit', 'attack']) if (it[k]) f.push(k);
+  for (const k of ['passive', 'use', 'spells', 'bonus', 'onHit', 'attack', 'paket']) if (it[k]) f.push(k);
   if (cls.kod?.[it.id]) f.push('kod');
   return f;
 }
 export function classify(it) {
-  if (cls.karar[it.id]) return 'c';
+  if (cls.gm[it.id]) return 'c';
   if (it.offCombat) return 'a';
   return mechanicFields(it).length || cls.kod?.[it.id] ? 'b' : 'c?';
 }
@@ -34,7 +34,7 @@ const lines = [
   '',
   '- **(a) savaş dışı:** eşyada `offCombat` (gerekçe metni; görevdeki `savasDisi: true` bu alan, ikinci bir alan açılmadı).',
   '- **(b) veriyle tanımlı:** savaşta etkisi mevcut şemayla veride (`kod`: bir sınıf özelliği eşyayı arar): `effects` (AC, save, yetenek), `passive` (süren etki alanları), `use` (iksir, fırlatma, sürme), `spells`/`charges` (yüklü büyü), `bonus` (+X), `onHit` (isabette ek zar), `attack`.',
-  '- **(c) kalıba uymayan — karar bekliyor:** mevcut ilkellerle tanımlanamayan; her birinde gereken kanca yazılı.',
+  "- **(c) Game Master'a bırakılan:** mevcut ilkellerle tanımlanamayan; P7 kararıyla savaşta uygulanmaz (gerekçe ve gereken kanca yazılı).",
   '',
   '## Özet',
   '',
@@ -42,17 +42,17 @@ const lines = [
   '|---|---|',
   `| (a) savaş dışı | ${count('a')} |`,
   `| (b) veriyle tanımlı | ${count('b')} |`,
-  `| (c) kalıba uymayan (karar bekliyor) | ${count('c')} |`,
+  `| (c) Game Master'a bırakılan (savaşta uygulanmaz) | ${count('c')} |`,
   `| sınıflanmamış (alan yok, karar yok) | ${count('c?')} |`,
   `| **Toplam** | ${rows.length} |`,
   '',
   `Uyum (attunement) gerektiren: ${items.filter((i) => i.attunement).length} (en çok 3 eşya; fazlası savaşa girmez: \`MAX_ATTUNED\`, \`src/rules/stats.ts\`). Sarf eşyası (\`use\`): ${items.filter((i) => i.use).length} (savaşta "Eşya" menüsü, \`use_item\`; yapay zekâ yarı canın altında iyileştirme iksiri içer). Yüklü büyülü: ${items.filter((i) => i.spells).length}.`,
   '',
-  '## (c) Kalıba uymayanlar',
+  "## (c) Game Master'a bırakılanlar (P7)",
   '',
   '| Kimlik | Ad | Veride olan | Gereken |',
   '|---|---|---|---|',
-  ...rows.filter((r) => r.k === 'c').map((r) => `| ${r.it.id} | ${cell(r.it.name)} | ${r.f.join(', ') || '—'} | ${cell(cls.karar[r.it.id])} |`),
+  ...rows.filter((r) => r.k === 'c').map((r) => `| ${r.it.id} | ${cell(r.it.name)} | ${r.f.join(', ') || '—'} | ${cell(cls.gm[r.it.id])} |`),
   '',
   '## A5\'te tanımlananlar',
   '',

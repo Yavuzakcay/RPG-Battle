@@ -36,6 +36,7 @@ import { celestialStrikeOf } from './celestial';
 import { gazeBreakEvents, karadulHit, karadulOn, kissReady, snareReady } from './karadul';
 import { imzaHit } from './imza';
 import { hitHookResults } from './hitHooks';
+import { nonmagicalProfile } from './magicStrike';
 import { edictEvents, sealAutoHit, sealBonus } from './imzaK54c';
 import { brutalAfterEvents, brutalExtra, brutalOptions, brutalReady, type BrutalBlow } from './brutal';
 import { canSee, isUnderwater } from './maprules';
@@ -270,7 +271,9 @@ export function weaponAttackEvents(
   const overcome = !!actor.k19Traits && !!actor.traits?.includes('overcome-defenses') && ['bludgeoning', 'piercing', 'slashing'].includes(dmgType ?? '');
   const tprof0 = overcome ? { ...profileOf(target), resistances: profileOf(target).resistances.filter((x) => x !== dmgType) } : profileOf(target);
   // Kuyruk 19 (SRD Underwater Combat): tamamen su altındaki yaratık Fire hasarına dirençli.
-  const tprof = k19i && isUnderwater(state, target) && !tprof0.resistances.includes('fire') ? { ...tprof0, resistances: [...tprof0.resistances, 'fire'] } : tprof0;
+  const tprof1 = k19i && isUnderwater(state, target) && !tprof0.resistances.includes('fire') ? { ...tprof0, resistances: [...tprof0.resistances, 'fire'] } : tprof0;
+  // Görev P7: büyüsüz saldırıya direnç (büyülü vuruş aşar).
+  const tprof = nonmagicalProfile(actor, target, dmgType, tprof1, !!option.spell);
   const adjusted = result.hit ? adjustDamage(rawDamage, dmgType, tprof) : { amount: 0, note: null };
   let bonus: ReturnType<typeof hitExtras> = result.hit
     ? hitExtras(state, actor, target, { mode, critical: result.critical, weapon: option, ...(opts.cunning ? { cunning: opts.cunning } : {}) }, rng)
@@ -290,7 +293,7 @@ export function weaponAttackEvents(
   if (sig) bonus = { ...bonus, extras: [...bonus.extras, ...sig.extras] };
   // Görev P0: kayıtlı isabet kancaları (ek paket ilkelleri: ek hasar; zorla hareket, durum, işaret saldırıdan sonra).
   const hooked = result.hit && actor.paket ? hitHookResults(state, actor, target, { spell: !!option.spell, melee: !option.ranged && !option.spell, ranged: !!option.ranged && !option.spell,
-    critical: result.critical, advantage: mode === 'advantage', weaponType: dmgType ?? '' }, rng) : null;
+    critical: result.critical, advantage: mode === 'advantage', weaponType: dmgType ?? '', rolls: result.damage?.rolls ?? [], dice: swap?.dice ?? option.damage }, rng) : null;
   if (hooked) bonus = { ...bonus, extras: [...bonus.extras, ...hooked.extras] };
   // Kuyruk K54c: Yazgı Mührü: mühürlüye isabet eden dost mühürleyenin yeterliliği kadar ek hasar.
   const sealPlus = result.hit ? sealBonus(state, actor, target) : 0;

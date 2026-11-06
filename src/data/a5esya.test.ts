@@ -12,7 +12,7 @@ import type { Item } from './types';
 
 // test-setup tembel SRD eşyalarını items.json dizisine ekler: kimliğe göre tekilleştir.
 const all = [...new Map(([...itemsBase, ...itemsSrd] as unknown as Item[]).map((it) => [it.id, it])).values()];
-const karar = cls.karar as Record<string, string>;
+const karar = cls.gm as Record<string, string>;
 const kod = cls.kod as Record<string, string>;
 const classOf = (it: Item) => (karar[it.id] ? 'c' : it.offCombat ? 'a' : itemHasMechanic(it) || kod[it.id] ? 'b' : null);
 

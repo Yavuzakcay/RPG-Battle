@@ -13,6 +13,9 @@ export interface HitContext {
   critical: boolean;
   advantage: boolean;
   weaponType: string;
+  /** Görev P7: saldırının hasar zarları (atılan değerler) ve zar ifadesi (`zarDegistir`). */
+  rolls?: number[];
+  dice?: string;
 }
 /** `after`: saldırı olayı uygulanmış durumda üretilir (hedef düşmüş olabilir). */
 export type HitAfter = (state: BattleState) => BattleEvent[];
