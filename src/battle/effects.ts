@@ -16,6 +16,8 @@ import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { applyEvents } from './reduce';
 import { compelEvents } from './mind';
+import { canSee } from './maprules';
+import { lineOfFire } from './cover';
 import { strikeApi } from './reactions';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 
@@ -142,6 +144,11 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
  * kurtarma zarı (Slow, Ray of Enfeeblement; başarıda biter).
  */
 export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): BattleEvent[] {
+  // Kuyruk A4: kaynağın sonraki turunun sonunda biten etkiler (Color Spray, Starry Wisp).
+  const srcEnd: BattleEvent[] = Object.values(state.combatants).flatMap((x) => (x.effects ?? [])
+    .filter((e) => e.endAfterSourceTurn !== undefined && e.sourceId === id && state.round > e.endAfterSourceTurn)
+    .map((e): BattleEvent => ({ type: 'effect_ended', targetId: x.id, effectId: e.id, name: e.name, reason: 'expired' })));
+  if (srcEnd.length) return [...srcEnd, ...effectTurnEndEvents(applyEvents(state, srcEnd), id, rng)];
   const c0 = state.combatants[id];
   if (!c0?.effects?.length || c0.hp <= 0) return [];
   const events: BattleEvent[] = [];
@@ -159,6 +166,9 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       evs.push({ type: 'effect_tick', targetId: id, effectId: e.id, name: e.name, damageRolls: d.rolls, appliedDamage: adj.amount,
         damageType: e.delayed.type, targetHpAfter: fx.hpAfter, effects: fx.effects },
       { type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'turn' });
+    } else if (e.repeatSave && e.repeatSaveUnseen && sourceSeen(current, c, e.sourceId)) {
+      // Kuyruk A4 (Fear): kaynağı görürken tur sonu save'i yok.
+      continue;
     } else if (e.repeatSave) {
       const { ability, dc } = e.repeatSave;
       const r = resolveSave({ extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode('normal', c, ability) }, rollTag(rng, { by: c.id }));
@@ -231,3 +241,8 @@ function confusionTurn(state: BattleState, id: string, e: ActiveEffect, rng: Rng
   return { events: [note(`rastgele hedefe saldırır: ${pick.name}`), ...api.strike(state, id, pick.id, rng), lost], skip: true };
 }
 
+/** Kuyruk A4: etkinin kaynağı hayatta ve görüş hattında mı (Fear'ın tekrar save koşulu). */
+function sourceSeen(state: BattleState, c: Combatant, sourceId: string): boolean {
+  const src = state.combatants[sourceId];
+  return !!src && src.hp > 0 && !src.summon?.gone && !!src.pos && !!c.pos && !!state.map && !lineOfFire(state, c, src).blocked && canSee(state, c, src) && !src.conditions.includes('Invisible');
+}

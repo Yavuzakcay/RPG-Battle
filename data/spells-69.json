@@ -1352,7 +1352,7 @@
     "polymorph": true,
     "icon": "🐻"
    },
-   "approx": "Polymorph biçim olayıyla, istekli dostlar"
+   "kapsamDisi": "Polymorph biçim olayıyla istekli dostlar (SRD ile aynı; not)"
   },
   "school": "Transmutation",
   "srdPage": 108
@@ -1620,7 +1620,29 @@
     "attackedDis": true,
     "icon": "😇"
    },
-   "approx": "Fiend/Undead vurana CON save ya da Blinded yansıması yok"
+   "approx": "Fiend/Undead vurana CON save ya da Blinded yansıması yok",
+   "a4": {
+    "effect": {
+     "targets": 8,
+     "side": "ally",
+     "rounds": 10,
+     "saveAdv": [
+      "str",
+      "dex",
+      "con",
+      "int",
+      "wis",
+      "cha"
+     ],
+     "attackedDis": true,
+     "icon": "😇",
+     "blindRetort": [
+      "fiend",
+      "undead"
+     ]
+    },
+    "approx": ""
+   }
   },
   "school": "Abjuration",
   "srdPage": 141
@@ -2265,7 +2287,8 @@
   "mechanics": {
    "kind": "utility",
    "wish": true,
-   "gmNote": "8. seviye ya da altı bir büyüyü malzemesiz kopyalar (seçim); diğer dilekler savaş dışı (Game Master)"
+   "gmNote": "8. seviye ya da altı bir büyüyü malzemesiz kopyalar (seçim); diğer dilekler savaş dışı (Game Master)",
+   "kapsamDisi": "Kopyalama savaşta; diğer dilekler savaş dışı (Game Master)"
   },
   "school": "Conjuration",
   "srdPage": 175

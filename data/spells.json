@@ -719,7 +719,6 @@
         "targets": 1,
         "applied": true
       },
-      "approx": "dostluk tutumu ve sosyal avantaj yok",
       "effect": {
         "targets": 1,
         "side": "enemy",
@@ -734,7 +733,8 @@
         ],
         "saveAdvantage": true,
         "icon": "💗"
-      }
+      },
+      "kapsamDisi": "Dostluk tutumu ve sosyal avantaj (savaş dışı; Game Master)"
     },
     "school": "Enchantment",
     "srdPage": 115
@@ -764,7 +764,6 @@
         "targets": 1,
         "applied": true
       },
-      "approx": "Prone kendi başına kaldırılamaz kuralı ayrıca denetlenmez (Incapacitated kalkmayı zaten engeller)",
       "effect": {
         "targets": 1,
         "side": "enemy",
@@ -778,7 +777,8 @@
           "advantage": true
         },
         "icon": "😂"
-      }
+      },
+      "kapsamDisi": "Prone'dan kalkamama: Incapacitated zaten kalkmayı engeller (kural eşdeğeri)"
     },
     "school": "Enchantment",
     "srdPage": 140
@@ -1226,7 +1226,12 @@
       },
       "damage": "1d6",
       "damageType": "necrotic",
-      "approx": "Seçilen yeteneğin kontrollerinde dezavantaj yok (savaşta kontrol azdır)"
+      "approx": "Seçilen yeteneğin kontrollerinde dezavantaj yok (savaşta kontrol azdır)",
+      "a4": {
+        "markCheckDis": true,
+        "approx": "",
+        "kapsamDisi": "Seçilen yetenek: savaşta kontrol yalnızca STR/DEX (İt, yakalama, kurtulma); seçim yoksa hedefin güçlü olanı"
+      }
     },
     "school": "Enchantment",
     "srdPage": 140
@@ -1364,7 +1369,19 @@
         "images": 3,
         "icon": "👥"
       },
-      "approx": "Blindsight/Truesight ayrımı yok (yalnızca Blinded saldıran etkilenmez)"
+      "approx": "Blindsight/Truesight ayrımı yok (yalnızca Blinded saldıran etkilenmez)",
+      "a4": {
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "self": true,
+          "rounds": 10,
+          "images": 3,
+          "icon": "👥",
+          "sensesPierce": true
+        },
+        "approx": ""
+      }
     },
     "school": "Illusion",
     "srdPage": 150
@@ -1392,7 +1409,19 @@
         "attackedDis": true,
         "icon": "🌫"
       },
-      "approx": "Blindsight/Truesight ile görenler için istisna yok"
+      "approx": "Blindsight/Truesight ile görenler için istisna yok",
+      "a4": {
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "self": true,
+          "rounds": 10,
+          "attackedDis": true,
+          "icon": "🌫",
+          "sensesPierce": true
+        },
+        "approx": ""
+      }
     },
     "school": "Illusion",
     "srdPage": 114
@@ -2142,6 +2171,23 @@
         "commandPersist": true,
         "fleeDash": true,
         "repeatSave": true
+      },
+      "a4": {
+        "failEffect": {
+          "rounds": 10,
+          "grants": [
+            "Frightened"
+          ],
+          "command": [
+            "flee"
+          ],
+          "commandPersist": true,
+          "fleeDash": true,
+          "repeatSave": true,
+          "repeatSaveUnseen": true
+        },
+        "approx": "",
+        "kapsamDisi": "Elindekini düşürme: silah bırakma modeli yok (tur zaten kaçışla geçer)"
       }
     },
     "school": "Illusion",
@@ -2362,7 +2408,49 @@
           }
         }
       },
-      "approx": "Dört seçenek: yetenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok), lanetleyene saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, lanetleyenin saldırı isabetlerine +1d8 Necrotic (save'li büyülerde yok)"
+      "approx": "Dört seçenek: yetenek (seçilen yetenekte save dezavantajı; kontrol dezavantajı yok), lanetleyene saldırılar dezavantajlı, tur başı WIS save ya da eylem yok, lanetleyenin saldırı isabetlerine +1d8 Necrotic (save'li büyülerde yok)",
+      "a4": {
+        "effect": {
+          "targets": 1,
+          "side": "enemy",
+          "rounds": 10,
+          "choices": [
+            "str",
+            "dex",
+            "con",
+            "int",
+            "wis",
+            "cha",
+            "attack",
+            "turn",
+            "damage"
+          ],
+          "saveDis": "chosen",
+          "icon": "🕯",
+          "variants": {
+            "attack": {
+              "saveDis": [],
+              "attackDisVs": true,
+              "icon": "🕯"
+            },
+            "turn": {
+              "saveDis": [],
+              "turnSave": "wis",
+              "icon": "🕯"
+            },
+            "damage": {
+              "saveDis": [],
+              "curseDamage": {
+                "dice": "1d8",
+                "type": "necrotic"
+              },
+              "icon": "🕯"
+            }
+          },
+          "checkDis": "chosen"
+        },
+        "approx": "Hasar seçeneği yalnızca saldırı isabetlerinde (save'li büyülerin hasarına ek 1d8 yok)"
+      }
     },
     "school": "Necromancy",
     "srdPage": 112
@@ -2557,7 +2645,22 @@
         "maxHeal": true,
         "icon": "🕯"
       },
-      "approx": "Hedef sayısı 6 (SRD: menzildeki istenen sayıda yaratık); en yüksek iyileştirme yalnızca büyü iyileştirmesinde"
+      "approx": "Hedef sayısı 6 (SRD: menzildeki istenen sayıda yaratık); en yüksek iyileştirme yalnızca büyü iyileştirmesinde",
+      "a4": {
+        "effect": {
+          "targets": 12,
+          "side": "ally",
+          "rounds": 10,
+          "saveAdv": [
+            "wis"
+          ],
+          "deathSaveAdv": true,
+          "maxHeal": true,
+          "icon": "🕯"
+        },
+        "approx": "",
+        "kapsamDisi": "En yüksek iyileştirme: savaşta iyileştirme yalnızca büyü, iksir ve özellik zarıyla; hepsi büyü yolundan geçmez (iksir zarı)"
+      }
     },
     "school": "Abjuration",
     "srdPage": 112
@@ -3623,7 +3726,7 @@
         "light": 4,
         "icon": "💡"
       },
-      "approx": "Nesne yerine bir yaratık (büyücü ya da dost) taşır; yalnızca parlak ışık (20 ft = 4 altıgen), loş ışık ayrı değil; ışık yalnızca karanlık/gece haritalarında etkili"
+      "kapsamDisi": "Nesne yerine yaratık taşır; loş ışık ayrımı oyunun ışık modelinde yok (aydınlık/karanlık)"
     },
     "school": "Evocation",
     "srdPage": 144
@@ -3687,7 +3790,7 @@
         "light": 4,
         "icon": "🔥"
       },
-      "approx": "Nesne yerine bir yaratık taşır; yalnızca parlak ışık (20 ft); süre savaş boyunca"
+      "kapsamDisi": "Nesne yerine yaratık taşır, süre savaş boyunca (kalıcı ışık savaş içinde eşdeğer)"
     },
     "school": "Evocation",
     "srdPage": 119
@@ -3750,7 +3853,15 @@
         "revealed": true,
         "light": 2
       },
-      "approx": "Işık ve görünmezlik engeli sonraki turun sonuna dek (büyücünün sonraki turunun sonu yerine)"
+      "approx": "Işık ve görünmezlik engeli sonraki turun sonuna dek (büyücünün sonraki turunun sonu yerine)",
+      "a4": {
+        "afterHit": {
+          "revealed": true,
+          "light": 2,
+          "untilSourceTurnEnd": true
+        },
+        "approx": ""
+      }
     },
     "school": "Evocation",
     "srdPage": 165
@@ -3811,7 +3922,7 @@
         "seeInvisible": true,
         "icon": "👓"
       },
-      "approx": "Ethereal Plane görüşü yok"
+      "kapsamDisi": "Ethereal Plane görüşü: oyunda düzlem modeli yok; Ethereal hedef zaten etkilenemez (SRD)"
     },
     "school": "Divination",
     "srdPage": 160
@@ -4399,7 +4510,17 @@
           "Blinded"
         ]
       },
-      "approx": "Kör kalma etkinin süresiyle (iki tur sınırı; büyücünün sonraki turunun sonu yerine)"
+      "approx": "Kör kalma etkinin süresiyle (iki tur sınırı; büyücünün sonraki turunun sonu yerine)",
+      "a4": {
+        "failEffect": {
+          "rounds": 2,
+          "grants": [
+            "Blinded"
+          ],
+          "untilSourceTurnEnd": true
+        },
+        "approx": ""
+      }
     },
     "school": "Illusion",
     "srdPage": 116
@@ -4428,7 +4549,21 @@
         "speedMult": 2,
         "icon": "💨"
       },
-      "approx": "Her turun bonus eylemle Dash'i yerine hız iki katı (bonus eylem harcanmaz)"
+      "approx": "Her turun bonus eylemle Dash'i yerine hız iki katı (bonus eylem harcanmaz)",
+      "a4": {
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "self": true,
+          "rounds": 100,
+          "icon": "💨",
+          "bonusGrant": [
+            "dash"
+          ],
+          "dashOnCast": true
+        },
+        "approx": ""
+      }
     },
     "school": "Transmutation",
     "srdPage": 129
@@ -4609,7 +4744,7 @@
         "targets": 1,
         "applied": true
       },
-      "approx": "Kontroller savaşta az (İt, Gizlen, kurtulma)"
+      "kapsamDisi": "Kontrol avantajı uygulanır; savaşta kontrol azdır (İt, Gizlen, kurtulma) — not, eksik değil"
     },
     "school": "Transmutation",
     "srdPage": 127
@@ -4669,7 +4804,25 @@
         ],
         "icon": "🧪"
       },
-      "approx": "Poisoned'a karşı save avantajı yok"
+      "approx": "Poisoned'a karşı save avantajı yok",
+      "a4": {
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "rounds": 600,
+          "resist": [
+            "poison"
+          ],
+          "cureOnCast": [
+            "Poisoned"
+          ],
+          "icon": "🧪",
+          "saveAdvAgainst": [
+            "Poisoned"
+          ]
+        },
+        "approx": ""
+      }
     },
     "school": "Abjuration",
     "srdPage": 157

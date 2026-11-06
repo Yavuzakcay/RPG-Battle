@@ -285,7 +285,7 @@ function ownHitReactions(state: BattleState, ctx: HitContext, rng: Rng): HitOutc
   const t = ctx.target;
   const none: HitOutcome = { events: [], hit: true, ac: ctx.ac, damage: ctx.damage };
   // Görev B3: Mirror Image (tepki değil): isabet bir kopyaya gelebilir.
-  const mirror = mirrorImageHit(t, ctx.attacker, rng);
+  const mirror = mirrorImageHit(t, ctx.attacker, rng, state);
   if (mirror.blocked) return { events: mirror.events, hit: false, ac: ctx.ac, damage: 0, reacted: { name: 'Mirror Image' } };
   if (!canReact(t) || t.side === ctx.attacker.side) return none;
   const { specs, suggested } = hitOptions(state, ctx);
@@ -372,7 +372,25 @@ export function afterAttackReactions(state: BattleState, attackerId: string, tar
   if (info.dealt > 0) add(damagedReactions(current, targetId, attackerId, rng));
   // Kuyruk 19: Fire Shield: 5 ft içinden yakın dövüşle vurana 2d8 (sıcak kalkan Fire, soğuk kalkan Cold). Anahtar `spellsK19`.
   if (info.melee && info.dealt > 0) add(retortEvents(current, targetId, attackerId, rng));
+  // Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren Fiend/Undead CON save ya da sonraki turunun sonuna dek Blinded.
+  if (outcome?.hit && info.melee) add(blindRetortEvents(current, targetId, attackerId, rng));
   return events;
+}
+
+function blindRetortEvents(state: BattleState, holderId: string, attackerId: string, rng: Rng): BattleEvent[] {
+  const h = state.combatants[holderId];
+  const a = state.combatants[attackerId];
+  const e = h?.effects?.find((x) => x.blindRetort);
+  if (!h || !a || !e?.blindRetort || a.hp <= 0 || !e.blindRetort.types.includes((a.creatureType ?? '').toLowerCase())) return [];
+  const { dc } = e.blindRetort;
+  const save = resolveSave({ extra: saveDice(a, 'con'), modifier: a.saves.con, dc, mode: saveMode('normal', a, 'con'), against: ['Blinded', 'spell'] }, rollTag(rng, { by: a.id }));
+  const ev: BattleEvent[] = [{ type: 'save_resolved', actorId: e.sourceId, targetId: a.id, label: e.name, ability: 'con', dc, mode: 'normal', reasons: [],
+    d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
+    damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: a.hp, effects: [], conditionsAdded: [],
+    ...(save.extra ? { bonusDice: save.extra } : {}) }];
+  if (!save.success) ev.push({ type: 'effect_added', targetId: a.id, effect: { id: `${e.id}:blind`, name: e.name, sourceId: a.id, grants: ['Blinded'], untilOwnTurnEnd: false,
+    endAfterSourceTurn: state.round, until: state.round + 2 } });
+  return ev;
 }
 
 function retortEvents(state: BattleState, holderId: string, attackerId: string, rng: Rng): BattleEvent[] {

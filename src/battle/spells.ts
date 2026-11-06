@@ -7,7 +7,7 @@ import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
 import { newZoneId, profileIn } from './zones';
 import { sightConditions } from './sight';
-import type { Ability } from '../rules/abilities';
+import { ABILITIES, type Ability } from '../rules/abilities';
 import { attackDice, saveDice } from './effectDice';
 import { saveMode, spellTimerEvents } from './durations';
 import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
@@ -126,6 +126,8 @@ function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe:
     ...(fe.delayed ? { delayed: fe.delayed } : {}), ...(fe.attackDis ? { attackDis: fe.attackDis } : {}), ...(fe.checkDis ? { checkDis: fe.checkDis } : {}),
     ...(fe.compel ? { compel: {} } : {}), ...(fe.confused ? { confused: true } : {}), ...(fe.noBonus ? { noBonus: true } : {}),
     ...(fe.noReactions ? { noReactions: true } : {}),
+    // Kuyruk A4: tekrar save yalnızca kaynağı göremezken (Fear); büyücünün sonraki turunun sonunda biter (Color Spray).
+    ...(fe.repeatSaveUnseen ? { repeatSaveUnseen: true } : {}), ...(fe.untilSourceTurnEnd ? { endAfterSourceTurn: state.round } : {}),
   } };
 }
 
@@ -471,6 +473,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
   const spell = spell0.mechanics.upgrade && globalRule(state, 'spellsK19')
     ? { ...spell0, mechanics: { ...spell0.mechanics, ...spell0.mechanics.upgrade, upgrade: undefined } } : spell0;
+  // Kuyruk A4 (kural sürümü 32): kısmi büyülerin tamamlanmış hâli (`a4`); eski sürümde eski mekanik.
+  if (spell.mechanics.a4 && ruleVersion(state) >= 32) return castSpell(state, actor, cmd, { ...spell, mechanics: { ...spell.mechanics, ...spell.mechanics.a4, a4: undefined } }, rng, repeat);
   // Görev B4: seçilebilen hasar türü (Sorcerous Burst).
   // CILA: seçilebilen durum (Blindness/Deafness: Blinded ya da Deafened).
   const cc = spell.mechanics.conditionChoices;
@@ -572,6 +576,14 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel,
       note: `${target.name} işaretlendi: her isabette +${m.damage ?? '1d6'} ${m.damageType ?? 'force'}.`,
     });
+    // Kuyruk A4 (sürüm 32): Hex: seçilen yeteneğin kontrollerinde dezavantaj (seçim yoksa STR: İt, yakalama, kurtulma).
+    if (m.markCheckDis) {
+      for (const c of Object.values(state.combatants)) for (const e of c.effects ?? []) if (e.id === `${spell.srd}:check` && e.sourceId === actor.id) events.push({ type: 'effect_ended', targetId: c.id, effectId: e.id, name: e.name, reason: 'expired' });
+      // Seçim yoksa hedefin savaşta kullandığı kontrol (STR ya da DEX: İt, yakalama, kurtulma) hangisi güçlüyse o.
+      const ab = ABILITIES.includes(cmd.choice as Ability) ? cmd.choice as Ability : (target.saves.dex > target.saves.str ? 'dex' : 'str');
+      events.push({ type: 'effect_added', targetId: target.id, effect: { id: `${spell.srd}:check`, name: `${spell.name} (${ab.toUpperCase()})`, sourceId: actor.id,
+        until: state.round + 6000, concentration: spell.name, checkDis: [ab] } });
+    }
     // Kuyruk 19 (featuresK19): Hunter's Lore: işaretli yaratığın bağışıklık, direnç ve zaafları bilinir (günlükte).
     if (actor.traits?.includes('hunters-lore') && globalRule(state, 'featuresK19')) {
       const list = (k: string, xs: string[]) => (xs.length ? `${k}: ${xs.join(', ')}` : '');
@@ -865,7 +877,9 @@ function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, 
         ...(a.attackDis ? { attackDis: a.attackDis } : {}), ...(a.untilSourceTurn ? { untilSourceTurn: true } : {}),
         // CILA: gecikmeli hasar da yukarı slotla artar (Acid Arrow: slot başına +1d4).
         ...(a.delayed ? { delayed: { ...a.delayed, dice: upcastDelayed(a.delayed.dice, m, upcast) } } : {}), ...(spell.concentration ? { concentration: spell.name } : {}),
-        ...(a.revealed ? { revealed: true } : {}), ...(a.light !== undefined ? { light: a.light } : {}) } });
+        ...(a.revealed ? { revealed: true } : {}), ...(a.light !== undefined ? { light: a.light } : {}),
+        // Kuyruk A4 (Starry Wisp): büyücünün sonraki turunun sonuna dek.
+        ...(a.untilSourceTurnEnd ? { endAfterSourceTurn: state.round, until: state.round + 2 } : {}) } });
     }
   }
   const self = state.combatants[actor.id];
@@ -1292,7 +1306,14 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.stealthAura ? { stealthAura: spec.stealthAura } : {}),
     // CILA: Haste ek eylemi, Slow kısıtı ve DEX −2, kontrol dezavantajı (Ray of Enfeeblement).
     ...(spec.extraAction ? { extraAction: true } : {}), ...(spec.slowed ? { slowed: true } : {}),
-    ...(spec.checkDis ? { checkDis: spec.checkDis } : {}), ...(spec.saveMod ? { saveMod: spec.saveMod } : {}),
+    ...(spec.checkDis === 'chosen' ? (ABILITIES.includes(choice as Ability) ? { checkDis: [choice as Ability] } : {}) : spec.checkDis ? { checkDis: spec.checkDis } : {}), ...(spec.saveMod ? { saveMod: spec.saveMod } : {}),
+    // Kuyruk A4: duruma karşı save avantajı (Protection from Poison), Blindsight/Truesight'ın deldiği etki (Blur, Mirror Image),
+    // büyücünün sonraki turunun sonunda biten etki.
+    ...(spec.saveAdvAgainst ? { saveAdvAgainst: spec.saveAdvAgainst } : {}), ...(spec.sensesPierce ? { sensesPierce: true } : {}),
+    ...(spec.untilSourceTurnEnd ? { endAfterSourceTurn: state.round } : {}),
+    // Kuyruk A4 (Expeditious Retreat): süresince bonus eylemle Dash.
+    ...(spec.bonusGrant ? { bonusGrant: spec.bonusGrant } : {}),
+    ...(spec.blindRetort ? { blindRetort: { types: spec.blindRetort, dc } } : {}),
   };
   let current = applyEvents(state, events);
   for (const t0 of targets) {
@@ -1348,6 +1369,8 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     events.push(...added);
     current = applyEvents(current, added);
   }
+  // Kuyruk A4 (Expeditious Retreat): yapıldığı bonus eylemin parçası olarak Dash.
+  if (spec.dashOnCast) events.push({ type: 'dashed', actorId: actor.id });
   return finish(state, events);
 }
 

@@ -113,10 +113,10 @@ describe('saldırı ve alan', () => {
 });
 
 describe('süren etkiler', () => {
-  it('Expeditious Retreat: hız iki katı, konsantrasyon', () => {
+  it('Expeditious Retreat: bonus eylemle Dash, konsantrasyon (Kuyruk A4, sürüm 32; eskisi hız ×2, a4spells.test.ts)', () => {
     const r = arena({ spellNames: ['Expeditious Retreat'] });
     r.cast({ spellName: 'Expeditious Retreat' });
-    expect(r.fx('A', 'spells:expeditious-retreat')).toMatchObject({ speedMult: 2, concentration: 'Expeditious Retreat' });
+    expect(r.fx('A', 'spells:expeditious-retreat')).toMatchObject({ bonusGrant: ['dash'], concentration: 'Expeditious Retreat' });
   });
   it('Alter Self: silahsız vuruş 1d6 + büyü yeteneği, büyü saldırısıyla', () => {
     const unarmed: AttackOption = { label: 'Unarmed Strike', attackBonus: 2, damage: '1+0', damageType: 'bludgeoning', ranged: false, spell: false,

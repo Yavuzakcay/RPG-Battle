@@ -273,6 +273,14 @@ export interface ActiveEffect {
   concDis?: boolean;
   /** Kuyruk 19: büyücünün o turdan sonraki turunun sonunda biter (Telekinesis; değer: uygulandığı tur). */
   untilSourceTurnEnd?: number;
+  /** Kuyruk A4: kaynağın (`sourceId`) sonraki turunun sonunda biter (değer: uygulandığı tur; Color Spray, Starry Wisp). */
+  endAfterSourceTurn?: number;
+  /** Kuyruk A4: tur sonu tekrar save'i yalnızca kaynağı göremezken (Fear). */
+  repeatSaveUnseen?: boolean;
+  /** Kuyruk A4: Blindsight/Truesight menzilindeki saldıran için etkisiz (Blur, Mirror Image). */
+  sensesPierce?: boolean;
+  /** Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren bu türdeki yaratık CON save ya da Blinded. */
+  blindRetort?: { types: string[]; dc: number };
   /** Kuyruk 19: tur başında save (Conjure Elemental tutsağı): başarısızsa hasar, başarılıysa biter. */
   startSave?: { ability: Ability; dc: number; dice: string; type: string };
   /** Kuyruk 19: Gift of the Protectors (kaynak warlock) ve Gaze of Two Minds (bağlı dost). */

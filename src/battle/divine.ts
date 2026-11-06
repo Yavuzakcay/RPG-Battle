@@ -34,6 +34,7 @@ import { executeKaradul, karadulProblem } from './karadul';
 import { executeImza, imzaProblem } from './imza';
 import { executePaket, paketProblem } from './paket';
 import { needHealMoral } from './imza54';
+import { senseSees } from './sight';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Buff, type Combatant, type UsableFeature } from './types';
 
 type UseFeature = { feature: string; targetId?: string; amount?: number; cure?: boolean; to?: Offset; choice?: string };
@@ -286,7 +287,8 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   const out: ModeSource[] = [];
   // Görev B1: süren etkiler. Hedefe saldırı dezavantajlı (Blur); saldıranın saldırısı dezavantajlı (Heat Metal,
   // Ray of Enfeeblement: başarısız save'de yalnızca STR tabanlı = yakın dövüş, başarılı save'de bir sonraki saldırı).
-  for (const e of target.effects ?? []) if (e.attackedDis) out.push({ effect: 'disadvantage', reason: e.name });
+  // Kuyruk A4: Blur'u Blindsight/Truesight menzilindeki saldıran yok sayar.
+  for (const e of target.effects ?? []) if (e.attackedDis && !(e.sensesPierce && senseSees(state, attacker, target))) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev B4: işaretli hedefe saldırı avantajlı (Faerie Fire).
   for (const e of target.effects ?? []) if (e.attackedAdv || (e.attackedAdvBy && e.attackedAdvBy === attacker.id)) out.push({ effect: 'advantage', reason: e.name });
   // Kuyruk 19: Grappler feat'i (Attack Advantage): yakaladığı yaratığa saldırı avantajlı.

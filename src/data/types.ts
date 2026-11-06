@@ -234,7 +234,7 @@ export interface SpellMechanics {
    */
   afterHit?: { save?: Ability; attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; delayed?: { dice: string; type: string };
     /** Görev B4 (Starry Wisp): hedef görünmez olamaz ve ışık yayar (altıgen). */
-    revealed?: boolean; light?: number };
+    revealed?: boolean; light?: number; untilSourceTurnEnd?: boolean };
   /** Görev B1: verilen hasarın bu oranı kadar büyücü iyileşir (Vampiric Touch 0,5). */
   drain?: number;
   /**
@@ -257,11 +257,17 @@ export interface SpellMechanics {
   failEffect?: Partial<EffectSpec> & { grants?: string[]; delayed?: { dice: string; type: string }; repeatFailDamage?: { dice: string; type: string }; compel?: boolean;
     /** Kuyruk 19: Contagion: tur sonu save'i N başarıda biter, N başarısızlıkta kalıcı (sayaç); seçilen yetenekte save dezavantajı; durumu kaldıran etkiye CON save. */
     repeatTally?: number; saveDisChoice?: boolean; stubborn?: boolean; confused?: boolean; noBonus?: boolean;
-    attackDis?: Record<string, never>; checkDis?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'> };
+    attackDis?: Record<string, never>; checkDis?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'>; repeatSaveUnseen?: boolean; untilSourceTurnEnd?: boolean };
   /**
    * Kuyruk 19: anahtar `spellsK19` açıkken mekaniğin üstüne yazılan alanlar (tam SRD hâli; eski sürümde eski mekanik).
    */
   upgrade?: Partial<SpellMechanics>;
+  /** Kuyruk A4: kural sürümü 32+ savaşta mekaniğin üstüne yazılan alanlar (kısmi büyülerin tamamlanmış hâli). */
+  a4?: Partial<SpellMechanics>;
+  /** Kuyruk A4: işaret büyüsü hedefin seçilen yetenek kontrollerine dezavantaj verir (Hex). */
+  markCheckDis?: boolean;
+  /** Kuyruk A4: kısmi kalan ama eksik parçası savaş modelinin dışında olan (sosyal, nesne, düzlem, saatlik süre) kısım; denetimde "çalışır". */
+  kapsamDisi?: string;
   /** Kuyruk 19: büyü süresince büyücünün bonus eylemle yapabildikleri (Conjure Woodland Beings: Disengage). */
   bonusGrant?: Array<'hide' | 'dash' | 'disengage'>;
   /** Kuyruk 19: `failEffect` yalnızca bu global anahtar açıkken (yeni eklenen etki; eski sürümde yok). */
@@ -534,7 +540,18 @@ export interface EffectSpec {
   /** CILA: Haste ek eylemi, Slow eylem kısıtı, kontrol dezavantajı (yetenekler). */
   extraAction?: boolean;
   slowed?: boolean;
-  checkDis?: Ability[];
+  checkDis?: Ability[] | 'chosen';
+  /** Kuyruk A4: duruma karşı save avantajı (Protection from Poison: Poisoned). */
+  saveAdvAgainst?: string[];
+  /** Kuyruk A4: Blindsight/Truesight menzilindeki saldıran etkilenmez (Blur, Mirror Image). */
+  sensesPierce?: boolean;
+  /** Kuyruk A4: büyücünün sonraki turunun sonunda biter. */
+  untilSourceTurnEnd?: boolean;
+  /** Kuyruk A4: süresince bonus eylemle yapılabilenler ve yapılınca Dash (Expeditious Retreat). */
+  bonusGrant?: Array<'hide' | 'dash' | 'disengage'>;
+  dashOnCast?: boolean;
+  /** Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren bu türler CON save ya da Blinded. */
+  blindRetort?: string[];
   /** CILA: sözlü buyruk: hedef Deafened ise işlemez (Command, Suggestion). */
   needsHearing?: boolean;
   /** CILA: save'e sabit eklenti (yetenek → değer; Slow DEX −2). */

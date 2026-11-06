@@ -2,6 +2,19 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk A4: kısmi büyülerin tamamlanması — hızlı regresyon (2026-11-06)
+
+Ayar yok. Büyücü partisi, 5. seviye, 30 tohum, `npm run sim -- 30 col kale magara orman --seviye 5 --parti buyucu`; kural sürümü 31 (`KURAL_SURUMU=31`) ile 32 aynı tohumlarda. Fark yok: değişen büyüleri (Blur, Mirror Image, Hex, Bestow Curse, Color Spray, Fear, Expeditious Retreat, Beacon of Hope, Protection from Poison, Starry Wisp, Holy Aura) bu karşılaşmalarda yapay zekâ ya hiç seçmiyor ya da sonucu değiştirmiyor (düşmanlarda Blindsight/Truesight yok).
+
+| Senaryo | Kazanma 31 | Kazanma 32 | Ort. tur 31 / 32 | Ort. düşmüş PC 31 / 32 |
+|---|---:|---:|---|---|
+| Çöl — Gündüz | 100% | 100% | 3.4 / 3.4 | 0.00 / 0.00 |
+| Kale — Gündüz | 100% | 100% | 3.9 / 3.9 | 0.07 / 0.07 |
+| Mağara — karanlık | 100% | 100% | 3.5 / 3.5 | 0.00 / 0.00 |
+| Orman | 100% | 100% | 3.4 / 3.4 | 0.03 / 0.03 |
+
+Aralık dışı (hedef %60–80'in üstü): dördü de %100 — büyücü partisi bu listelere karşı önceki ölçümlerdeki gibi güçlü; düzeltme "Dungeondex öncesi tam test turu"na.
+
 ## Kuyruk Y2: Y1 regresyon düzeltmesi — yapay zekâ davranışı, süre, Usta (2026-11-05)
 
 Ayar yok (oyun sayıları değişmedi; yalnız YZ ağırlıkları `data/yz-roller.json` ve iki motor hatası). 100 tohum, aynı tohumlar. "Eski" = `YZ_ESKI=1` (Y1 öncesi zincir) **Y2 kodunda** (iki motor hatası düzeltilmiş: Trol uzvu kimliği, yerdeki Trol'e büyü saldırısı); "Y1" = `wip/a1` (`6062fce`) olduğu gibi; "Y2" = `wip/y2` (Normal). Kural sürümü değişmedi.
