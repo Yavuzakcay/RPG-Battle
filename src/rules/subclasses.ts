@@ -40,10 +40,17 @@ export function houseSubclassVisible(sub: SubclassDef, sheet: { subclassId?: str
   return !sub.ev || sub.id === sheet.subclassId || (enabled && (!womenOnly || sheet.gender === 'kadin'));
 }
 
+/**
+ * Görev P0: ek paket alt sınıfının hiç çalışan (çalışır/kısmi) özelliği yoksa seçim listesinde görünmez (veri silinmez;
+ * çalışır oldukça görünür; seçili eski karakter `findSubclass` ile bulunur). Tam çalışmayan alt sınıf "Deneysel".
+ */
+export const packSelectable = (s: SubclassDef): boolean => !s.pack || s.features.some((f) => f.status === 'calisir' || f.status === 'kismi');
+export const packExperimental = (s: SubclassDef): boolean => !!s.pack && s.features.some((f) => f.status !== 'calisir' && f.status !== 'hikaye');
+
 /** Seçimde görünen alt sınıflar (kopyalarda politikaya göre tek sürüm). */
 export function visibleSubclasses(classId: string, p: DuplicatePolicy = policy): SubclassDef[] {
   const srd = classData.subclasses.filter((s) => s.class === classId);
-  const ext = external.filter((s) => s.class === classId);
+  const ext = external.filter((s) => s.class === classId && packSelectable(s));
   if (p === 'ikisi') return withoutRemoved([...srd, ...ext]);
   if (p === 'srd') return withoutRemoved([...srd, ...ext.filter((e) => !srd.some((x) => sameAs(e, x)))]);
   return withoutRemoved([...srd.filter((x) => !ext.some((e) => sameAs(e, x))), ...ext]);

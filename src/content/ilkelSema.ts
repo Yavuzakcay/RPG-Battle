@@ -347,6 +347,15 @@ export function formulOk(v: unknown): boolean {
   return (s.match(/d/g) ?? []).length <= 1;
 }
 
+/** Kaynak kullanım sayısı: tamsayı, "$pb", "$str"…"$cha" ya da seviye → tamsayı tablosu. */
+export function kaynakSayiOk(v: unknown): boolean {
+  if (Number.isInteger(v)) return (v as number) >= 1 && (v as number) <= 50;
+  if (typeof v === 'string') return v === '$pb' || ABILITY_IDS.some((a) => v === `$${a}`);
+  return isObj(v) && Object.keys(v).length > 0 && Object.entries(v).every(([l, x]) => /^\d+$/.test(l) && Number(l) <= 20 && Number.isInteger(x) && (x as number) >= 0 && (x as number) <= 50);
+}
+/** Paket kaynağının sınıf kaynakları tablosundaki anahtarı (alt sınıf kimliğiyle; çakışmaz). */
+export const paketKaynakId = (subId: string, id: string): string => `pk-${subId}-${id}`;
+
 interface Ctx { kaynaklar: Set<string>; sinifKaynaklari: Set<string>; yaratiklar: Set<string>; ilkelIdleri: Set<string> }
 
 function alanHatasi(spec: AlanSpec, v: unknown, ctx: Ctx): boolean {
@@ -410,6 +419,7 @@ export function ilkelErrors(list: unknown, path: string, ctx: { kaynaklar: Set<s
       if (raw.etki === 'hasar' && raw.hasarTuru === undefined) out.push({ path: `${p}.hasarTuru`, kod: 'ilkelEksik', alan: 'hasarTuru' });
     }
     if (raw.tur === 'tepki' && (raw.etki === 'acBonusu' || raw.etki === 'hasarAzalt') && raw.miktar === undefined) out.push({ path: `${p}.miktar`, kod: 'ilkelEksik', alan: 'miktar' });
+    if (raw.tur === 'kaynak' && raw.sayi !== undefined && !kaynakSayiOk(raw.sayi)) out.push({ path: `${p}.sayi`, kod: 'ilkelDeger', alan: 'sayi' });
     if (raw.tur === 'durumUygula' && raw.durum === 'Invisible') out.push({ path: `${p}.durum`, kod: 'ilkelDeger', alan: 'durum' });
   });
   return out;

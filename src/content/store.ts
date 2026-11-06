@@ -5,7 +5,8 @@
  * (`showDirectoryPicker`, Chromium) okunur; tarayıcı belirli bir klasörü kendiliğinden okuyamaz. Kod çalıştırılmaz.
  */
 import { classData } from '../data';
-import { setDuplicatePolicy, setExternalSubclasses, type DuplicatePolicy } from '../rules/subclasses';
+import { setDuplicatePolicy, type DuplicatePolicy } from '../rules/subclasses';
+import { applyPackSubclasses } from './paket';
 import { LIMITS, parsePack, summarize, validatePack, type ContentError, type ContentPack, type PackSummary } from './schema';
 
 export const CONTENT_KEY = 'rpg-battle-icerik';
@@ -54,7 +55,7 @@ export function evaluate(list: StoredPack[]): PackRow[] {
 export function applyStoredContent(s: Store = store()): PackRow[] {
   try { setDuplicatePolicy((s?.getItem(DUPLICATE_KEY) ?? 'paket') as DuplicatePolicy); } catch { /* depolama yok */ }
   const rows = evaluate(readStore(s));
-  setExternalSubclasses(rows.filter((r) => r.enabled && r.errors.length === 0).flatMap((r) => r.pack.subclasses));
+  applyPackSubclasses(rows.filter((r) => r.enabled && r.errors.length === 0).flatMap((r) => r.pack.subclasses));
   return rows;
 }
 

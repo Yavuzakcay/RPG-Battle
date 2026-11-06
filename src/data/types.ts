@@ -806,9 +806,12 @@ export interface ClassProgression {
 
 /** TR/EN metin (Görev E1). */
 export interface LocalText { tr: string; en: string }
-/** Alt sınıf özelliğinin oyundaki durumu: çalışır, planlanan sistemi bekliyor, savaş dışı (anlatı), çalışmıyor. */
-export type SubclassStatus = 'calisir' | 'planli' | 'hikaye' | 'calismiyor';
-export const SUBCLASS_STATUSES: SubclassStatus[] = ['calisir', 'planli', 'hikaye', 'calismiyor'];
+/**
+ * Alt sınıf özelliğinin oyundaki durumu: çalışır, kısmen çalışır (Görev P0), planlanan sistemi bekliyor, savaş dışı
+ * (anlatı), çalışmıyor.
+ */
+export type SubclassStatus = 'calisir' | 'kismi' | 'planli' | 'hikaye' | 'calismiyor';
+export const SUBCLASS_STATUSES: SubclassStatus[] = ['calisir', 'kismi', 'planli', 'hikaye', 'calismiyor'];
 /** Jenerik alt sınıf şemasında bir özellik (data/subclasses.json ve dış içerik paketleri). */
 export interface SubclassFeatureDef {
   id: string;
@@ -818,6 +821,8 @@ export interface SubclassFeatureDef {
   status: SubclassStatus;
   /** Mekanik: data/class-features.json özelliğiyle aynı biçim; yoksa özellik çalışmaz. */
   effect?: FeatureMechanic;
+  /** Görev P0: ek paket etki ilkelleri (`src/content/ilkelSema.ts`; yorumlayıcı `src/battle/paket/`). */
+  ilkeller?: Array<Record<string, unknown>>;
 }
 /** Jenerik alt sınıf (Görev E1). `srd` yalnızca SRD alt sınıflarında; `pack` dış içerik paketinin kimliği. */
 export interface SubclassDef {
@@ -836,6 +841,8 @@ export interface SubclassDef {
   ekBeceriler?: string[];
   /** Kuyruk K50: imza alt sınıfın ev kuralı kimliği (`imza_<ad>`); null her zaman açık (Birlik Manastırı). */
   evKurali?: string | null;
+  /** Görev P0: paketin çağrı yaratıkları (yükleyici paket düzeyindeki `yaratiklar`ı her alt sınıfa kopyalar). */
+  yaratiklar?: Array<Record<string, unknown>>;
 }
 
 export type FeatureType = 'passive' | 'resource' | 'action' | 'bonus' | 'reaction' | 'free';
@@ -1027,7 +1034,9 @@ export type FeatureEffect =
   | { kind: 'karadulGaze' }
   | { kind: 'karadulSpider' }
   /** Kuyruk K50 (ev kuralı): imza alt sınıf eylemleri (`src/battle/imza.ts`, `data/imza.json` `eylemler`). */
-  | { kind: 'imza' };
+  | { kind: 'imza' }
+  /** Görev P0: ek paket ilkel düğmesi (`src/battle/paket/`; veri savaşçının `paket` alanında). */
+  | { kind: 'paket' };
 
 export interface ResourceDef {
   name: string;
@@ -1038,6 +1047,8 @@ export interface ResourceDef {
   recharge: { short?: 'all' | number; long?: 'all' | number; turn?: 'all' | number; shortFrom?: number };
   /** Kaynak kaldıkça bu büyü slotsuz yapılır (Favored Enemy → Hunter's Mark). */
   freeSpell?: string;
+  /** Görev P0: ek paket kaynağı birden çok büyüyü slotsuz yaptırır (`buyuVer.bedava`). */
+  freeSpells?: string[];
   /**
    * Kuyruk 41b: kaynak bilinen (hazırlanan) büyülerden bu listeye uyanları slotsuz yaptırır (Divine Intervention: Cleric,
    * 5. seviyeye dek, tepki değil). `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa harcanır.

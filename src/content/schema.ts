@@ -5,11 +5,12 @@
  * (`npm run check:icerik`).
  */
 import { classData, classes, spells, SUBCLASS_STATUSES, type FeatureMechanic, type LocalText, type SubclassDef, type SubclassFeatureDef } from '../data';
+import { ilkelErrors, ilkelKismi, yaratikErrors, type IlkelHata } from './ilkelSema';
 
 export const PACK_FORMAT = 'rpg-battle-icerik';
 export const PACK_VERSION = 1;
 /** Sınırlar: dosya boyutu, paket sayısı, paket başına alt sınıf, alt sınıf başına özellik, metin uzunlukları. */
-export const LIMITS = { fileBytes: 256 * 1024, packs: 20, subclasses: 24, features: 30, name: 60, text: 4000 } as const;
+export const LIMITS = { fileBytes: 256 * 1024, packs: 20, subclasses: 24, features: 30, name: 60, text: 4000, /** Görev P0. */ creatures: 40 } as const;
 const ID = /^[a-z0-9][a-z0-9-]{1,47}$/;
 
 export interface ContentPack {
@@ -19,13 +20,17 @@ export interface ContentPack {
   name: LocalText;
   author?: string;
   subclasses: SubclassDef[];
+  /** Görev P0: çağrı yaratıkları (`cagir` ilkeli; şema `src/content/ilkelSema.ts` `YARATIK_ALANLARI`). */
+  yaratiklar?: Array<Record<string, unknown>>;
 }
 
 /** Doğrulama hatası: kod (metni `strings.ts` `content.errors`), konum ve değişkenler. */
 export interface ContentError { code: ContentErrorCode; path: string; detail?: string }
 export type ContentErrorCode = 'json' | 'size' | 'format' | 'version' | 'field' | 'text' | 'idPattern' | 'packTaken' | 'idTaken'
   | 'duplicate' | 'unknownClass' | 'level' | 'status' | 'unknownEffect' | 'effectValue' | 'effectStatus' | 'subclassCount'
-  | 'featureCount' | 'packLimit';
+  | 'featureCount' | 'packLimit'
+  /** Görev P0: ilkel ve yaratık hataları (`detail` alan adı). */
+  | IlkelHata['kod'] | 'jetonYedek';
 
 /** Paketin özeti (ayarlar ekranı ve `check:icerik`): alt sınıf başına durum sayıları. */
 export interface PackSummary {
@@ -151,9 +156,24 @@ function textErrors(x: unknown, path: string, max: number): ContentError[] {
  * Paketi doğrular. `taken`: kullanımdaki alt sınıf kimlikleri (SRD + diğer paketler), `packs`: yüklü paket kimlikleri
  * (aynı kimlikli paket yeniden yüklenirken `replacing` verilir ve çakışma sayılmaz).
  */
-export function validatePack(raw: unknown, ctx: { taken: string[]; packs: string[]; replacing?: string }): { ok: true; pack: ContentPack } | { ok: false; errors: ContentError[] } {
+export function validatePack(raw: unknown, ctx: { taken: string[]; packs: string[]; replacing?: string; monsterIds?: Set<string> }): { ok: true; pack: ContentPack; warnings: ContentError[] } | { ok: false; errors: ContentError[]; warnings?: ContentError[] } {
   const errors: ContentError[] = [];
+  const warnings: ContentError[] = [];
+  const toErr = (h: IlkelHata): ContentError => ({ code: h.kod, path: h.path, detail: h.alan });
   if (!isObj(raw)) return { ok: false, errors: [{ code: 'format', path: '$' }] };
+  // Görev P0: paket düzeyinde çağrı yaratıkları (kimlikler benzersiz).
+  const creatureIds = new Set<string>();
+  if (raw.yaratiklar !== undefined) {
+    if (!Array.isArray(raw.yaratiklar) || raw.yaratiklar.length > LIMITS.creatures) errors.push({ code: 'field', path: '$.yaratiklar', detail: 'yaratiklar' });
+    else raw.yaratiklar.forEach((y: unknown, i: number) => {
+      const r = yaratikErrors(y, `$.yaratiklar[${i}]`, ctx.monsterIds);
+      errors.push(...r.hatalar.map(toErr));
+      warnings.push(...r.uyarilar.map((h) => ({ code: 'jetonYedek' as const, path: h.path, detail: h.alan })));
+      const id = isObj(y) ? y.id : undefined;
+      if (typeof id === 'string') { if (creatureIds.has(id)) errors.push({ code: 'duplicate', path: `$.yaratiklar[${i}].id`, detail: id }); creatureIds.add(id); }
+    });
+  }
+  const classResources = new Set(Object.keys(classData.mechanics.resources));
   if (raw.format !== PACK_FORMAT) errors.push({ code: 'format', path: '$.format', detail: PACK_FORMAT });
   if (raw.version !== PACK_VERSION) errors.push({ code: 'version', path: '$.version', detail: String(PACK_VERSION) });
   if (typeof raw.id !== 'string' || !ID.test(raw.id)) errors.push({ code: 'idPattern', path: '$.id', detail: String(raw.id) });
@@ -177,6 +197,9 @@ export function validatePack(raw: unknown, ctx: { taken: string[]; packs: string
     if (!Array.isArray(s.features) || s.features.length === 0) { errors.push({ code: 'field', path: `${p}.features`, detail: 'features' }); return; }
     if (s.features.length > LIMITS.features) errors.push({ code: 'featureCount', path: `${p}.features`, detail: String(LIMITS.features) });
     const fids = new Set<string>();
+    // Görev P0: alt sınıfın `kaynak` ilkelleri (diğer ilkellerin `kaynak.id`'si bunlara ya da sınıf kaynaklarına başvurur).
+    const ownResources = new Set((s.features as unknown[]).flatMap((f) => (isObj(f) && Array.isArray(f.ilkeller) ? f.ilkeller : []))
+      .filter((x): x is Record<string, unknown> => isObj(x) && x.tur === 'kaynak' && typeof x.id === 'string').map((x) => x.id as string));
     s.features.slice(0, LIMITS.features).forEach((f: unknown, j: number) => {
       const fp = `${p}.features[${j}]`;
       if (!isObj(f)) { errors.push({ code: 'field', path: fp, detail: 'feature' }); return; }
@@ -187,18 +210,21 @@ export function validatePack(raw: unknown, ctx: { taken: string[]; packs: string
       errors.push(...textErrors(f.name, `${fp}.name`, LIMITS.name), ...textErrors(f.description, `${fp}.description`, LIMITS.text));
       if (!SUBCLASS_STATUSES.includes(f.status as SubclassFeatureDef['status'])) errors.push({ code: 'status', path: `${fp}.status`, detail: String(f.status) });
       if (f.effect !== undefined) errors.push(...effectErrors(f.effect, `${fp}.effect`));
-      // "Çalışır" yalnızca motorun uyguladığı etkiyle (ok/partial); etkisiz ya da `none` etki çalışmaz.
-      const works = isObj(f.effect) && (f.effect.status === 'ok' || f.effect.status === 'partial');
-      if ((f.status === 'calisir') !== works) errors.push({ code: 'effectStatus', path: `${fp}.status`, detail: String(f.status) });
+      const prims = f.ilkeller !== undefined ? ilkelErrors(f.ilkeller, `${fp}.ilkeller`, { kaynaklar: ownResources, sinifKaynaklari: classResources, yaratiklar: creatureIds }) : [];
+      errors.push(...prims.map(toErr));
+      // "Çalışır"/"kısmi" yalnızca motorun uyguladığı etkiyle (ok/partial) ya da ilkellerle (Görev P0); etkisiz ya da `none` etki çalışmaz.
+      const works = (isObj(f.effect) && (f.effect.status === 'ok' || f.effect.status === 'partial')) || (Array.isArray(f.ilkeller) && f.ilkeller.length > 0);
+      if ((f.status === 'calisir' || f.status === 'kismi') !== works) errors.push({ code: 'effectStatus', path: `${fp}.status`, detail: String(f.status) });
     });
   });
-  if (errors.length > 0) return { ok: false, errors };
+  if (errors.length > 0) return { ok: false, errors, warnings };
   const r = raw as unknown as ContentPack;
-  return { ok: true, pack: { ...r, subclasses: r.subclasses.map((s) => ({ ...s, pack: r.id })) } };
+  // Görev P0: çağrı yaratıkları alt sınıfa kopyalanır (savaşçı oluşturulurken alt sınıftan okunur; paket silinse de kayıt bozulmaz).
+  return { ok: true, warnings, pack: { ...r, subclasses: r.subclasses.map((s) => ({ ...s, pack: r.id, ...(r.yaratiklar?.length ? { yaratiklar: r.yaratiklar } : {}) })) } };
 }
 
 /** JSON metni → doğrulanmış paket (boyut sınırı, bozuk JSON uygulamayı bozmaz). */
-export function parsePack(text: string, bytes: number, ctx: { taken: string[]; packs: string[]; replacing?: string }): ReturnType<typeof validatePack> {
+export function parsePack(text: string, bytes: number, ctx: { taken: string[]; packs: string[]; replacing?: string; monsterIds?: Set<string> }): ReturnType<typeof validatePack> {
   if (bytes > LIMITS.fileBytes) return { ok: false, errors: [{ code: 'size', path: '$', detail: String(LIMITS.fileBytes / 1024) }] };
   let raw: unknown;
   try { raw = JSON.parse(text); } catch (e) { return { ok: false, errors: [{ code: 'json', path: '$', detail: e instanceof Error ? e.message : String(e) }] }; }
@@ -208,11 +234,39 @@ export function parsePack(text: string, bytes: number, ctx: { taken: string[]; p
 /** Paket özeti: alt sınıf başına durum sayıları ve "çalışmıyor" toplamı. */
 export function summarize(pack: Pick<ContentPack, 'id' | 'subclasses'>): PackSummary {
   const subclasses = pack.subclasses.map((s) => {
-    const counts = { calisir: 0, planli: 0, hikaye: 0, calismiyor: 0 };
+    const counts = { calisir: 0, kismi: 0, planli: 0, hikaye: 0, calismiyor: 0 };
     for (const f of s.features) counts[f.status] += 1;
     return { id: s.id, class: s.class, features: s.features.length, counts };
   });
   return { id: pack.id, subclasses, notWorking: subclasses.reduce((n, s) => n + s.counts.calismiyor, 0) };
+}
+
+/**
+ * Görev P0: hata yolunu kimliklere çevirir (`$.subclasses[0].features[2].ilkeller[1].zar` → `alt-sinif/ozellik ilkeller[1].zar`);
+ * check:icerik çıktısı metin içermez, yalnız kimlik ve alan adı.
+ */
+export function readablePath(raw: unknown, path: string): string {
+  const m = /^\$\.subclasses\[(\d+)\](?:\.features\[(\d+)\])?\.?(.*)$/.exec(path);
+  if (!m || !isObj(raw) || !Array.isArray(raw.subclasses)) {
+    const y = /^\$\.yaratiklar\[(\d+)\]\.?(.*)$/.exec(path);
+    const yid = y && isObj(raw) && Array.isArray(raw.yaratiklar) ? (raw.yaratiklar[Number(y[1])] as { id?: unknown } | undefined)?.id : undefined;
+    return y ? `yaratik:${typeof yid === 'string' ? yid : y[1]}${y[2] ? ` ${y[2]}` : ''}` : path;
+  }
+  const sub = raw.subclasses[Number(m[1])] as { id?: unknown; features?: Array<{ id?: unknown }> } | undefined;
+  const sid = typeof sub?.id === 'string' ? sub.id : `#${m[1]}`;
+  if (m[2] === undefined) return `${sid}${m[3] ? ` ${m[3]}` : ''}`;
+  const fid = sub?.features?.[Number(m[2])]?.id;
+  return `${sid}/${typeof fid === 'string' ? fid : `#${m[2]}`}${m[3] ? ` ${m[3]}` : ''}`;
+}
+
+/** Görev P0: özelliklerin kısmi ilkel alanları (`ilkelKismi`; "calisir" işaretliyse uyarı). */
+export function partialWarnings(pack: Pick<ContentPack, 'subclasses'>): Array<{ path: string; fields: string[]; status: string }> {
+  const out: Array<{ path: string; fields: string[]; status: string }> = [];
+  for (const s of pack.subclasses) for (const f of s.features) for (const [i, p] of (f.ilkeller ?? []).entries()) {
+    const fields = ilkelKismi(p);
+    if (fields.length) out.push({ path: `${s.id}/${f.id} ilkeller[${i}]`, fields, status: f.status });
+  }
+  return out;
 }
 
 /** Mekanik tipi dışa (testler). */

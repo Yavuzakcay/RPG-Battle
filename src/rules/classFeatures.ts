@@ -5,7 +5,7 @@
  * (kullanım sayısı + yenilenme), eylem, bonus eylem, tepki ve eylemsiz (Action Surge).
  * Saf fonksiyonlar; veri `loadClassData()` ile yüklenmiş olmalı.
  */
-import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type FocusAction, type ReactionMechanic, type ResourceDef } from '../data';
+import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type FocusAction, type ReactionMechanic, type ResourceDef, type SubclassFeatureDef } from '../data';
 import type { Ability } from './abilities';
 import { findSubclass, subclassDefs, subclassMechanic, visibleSubclasses } from './subclasses';
 
@@ -58,12 +58,25 @@ export function gainedFeatures(classId: string, level: number, subclassId?: stri
       const at = Math.max(f.level, p.subclassLevel);
       if (at > level) continue;
       const key = `${classId}/${sub.id}:${f.id}`;
-      out.push({ key, id: f.id, name: f.name.en, level: at, from: 'subclass', mechanic: f.effect });
+      out.push({ key, id: f.id, name: f.name.en, level: at, from: 'subclass', mechanic: packMechanic(f, at) });
     }
     // Kuyruk K48: alt sınıfın yerini aldığı sınıf özellikleri (Karadul: Wild Shape) ve onların kaynakları düşer.
     if (sub.replaces?.length) return out.filter((f) => !sub.replaces?.includes(f.key)).sort((a, b) => a.level - b.level);
   }
   return out.sort((a, b) => a.level - b.level);
+}
+
+/**
+ * Görev P0: ek paket ilkelli özelliğin mekaniği: `effect` aynen; ilkeller varsa durum (çalışır → ok, kısmi → partial) ve
+ * `buyuVer` ilkelinin büyüleri her an hazır (`alwaysPrepared`, özelliğin etkin seviyesinden). Etkiler savaşta
+ * `src/battle/paket/` yorumlayıcısında; burada yalnız sınıf kiti ve tamlık uyarısı.
+ */
+function packMechanic(f: SubclassFeatureDef, at: number): FeatureMechanic | undefined {
+  const prims = f.ilkeller ?? [];
+  if (!prims.length) return f.effect;
+  const names = prims.filter((p) => p.tur === 'buyuVer').flatMap((p) => (Array.isArray(p.buyular) ? p.buyular as string[] : []));
+  const base: FeatureMechanic = f.effect ?? { type: 'passive', status: f.status === 'calisir' ? 'ok' : 'partial' };
+  return names.length ? { ...base, alwaysPrepared: { ...base.alwaysPrepared, [String(at)]: [...(base.alwaysPrepared?.[String(at)] ?? []), ...names] } } : base;
 }
 
 /** SRD tablosundaki değer (o seviyenin satırı). */
@@ -357,7 +370,7 @@ export function freeSpellResource(spellName: string, have?: Record<string, numbe
   if (mine && (!have || (have[mine] ?? 0) > 0)) return mine;
   // Görev K3: aynı büyüyü birden çok kaynak verebilir (Darkness: Drow ve Infernal); `have` verilirse kullanımı kalanı.
   return Object.entries(classData.mechanics.resources)
-    .find(([id, d]) => d.freeSpell === spellName && (!have || (have[id] ?? 0) > 0))?.[0];
+    .find(([id, d]) => (d.freeSpell === spellName || d.freeSpells?.includes(spellName)) && (!have || (have[id] ?? 0) > 0))?.[0];
 }
 
 // ------------------------------------------------------------------ tamlık (oluşturucu uyarısı)

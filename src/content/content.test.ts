@@ -106,8 +106,8 @@ describe('paket şeması', () => {
     expect(summarize(r.pack)).toEqual({
       id: 'ornek-kurgusal', notWorking: 2,
       subclasses: [
-        { id: 'kehribar-muhafizi', class: 'fighter', features: 4, counts: { calisir: 1, planli: 1, hikaye: 1, calismiyor: 1 } },
-        { id: 'sis-yolcusu', class: 'rogue', features: 2, counts: { calisir: 1, planli: 0, hikaye: 0, calismiyor: 1 } },
+        { id: 'kehribar-muhafizi', class: 'fighter', features: 4, counts: { calisir: 1, kismi: 0, planli: 1, hikaye: 1, calismiyor: 1 } },
+        { id: 'sis-yolcusu', class: 'rogue', features: 2, counts: { calisir: 1, kismi: 0, planli: 0, hikaye: 0, calismiyor: 1 } },
       ],
     });
   });
@@ -257,7 +257,8 @@ describe('npm run check:icerik', () => {
     const node = (globalThis as unknown as { process: { execPath: string } }).process.execPath;
     const out = execFileSync(node, ['node_modules/vite-node/vite-node.mjs', 'scripts/icerik-kontrol.ts', 'src/content/fixtures'], { encoding: 'utf8' });
     expect(out).toContain('tamam ornek-paket.json');
-    expect(out).toContain('fighter/kehribar-muhafizi: 4 özellik · çalışır 1, planlı 1, hikâye 1, çalışmıyor 1');
+    // Görev P0: kısmi sütunu ve "deneysel" işareti eklendi.
+    expect(out).toContain('fighter/kehribar-muhafizi: 4 özellik · çalışır 1, kısmi 0, çalışmıyor 1, planlı 1, hikâye 1 · deneysel');
     expect(out).toContain('1 paket, 0 hatalı');
   }, 60000);
 });

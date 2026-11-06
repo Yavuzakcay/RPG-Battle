@@ -29,7 +29,7 @@ import { AlignmentGrid } from '../ui/AlignmentGrid';
 import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startContributions, startValue, type Alignment, type StartKind } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
-import { findSubclass, houseSubclassVisible, subclassLabel, subclassMissing } from '../rules/subclasses';
+import { findSubclass, houseSubclassVisible, packExperimental, subclassLabel, subclassMissing } from '../rules/subclasses';
 import {
   ASI_FEAT, advancementSlots, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
   originFeats, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
@@ -533,7 +533,7 @@ function ClassStep({ c, setC, set }: StepProps) {
         <label>{T.subclass}
           <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
             <option value="">{T.subclassNone}</option>
-            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang(), x.class)}{x.ev ? ` (${T.subclassHouse})` : ''}</option>)}
+            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang(), x.class)}{x.ev ? ` (${T.subclassHouse})` : ''}{packExperimental(x) ? ` (${t().content.experimental})` : ''}</option>)}
             {/* Kuyruk K49 B5: listeden kaldırılmış alt sınıfı seçili eski karakter açılır (seçimi görünür kalır). */}
             {!!s.subclassId && !subs.some((x) => x.id === s.subclassId) && !subclassMissing(s.classId, s.subclassId) && (
               <option value={s.subclassId}>{subclassLabel(findSubclass(s.classId, s.subclassId)?.name ?? { tr: s.subclassId, en: s.subclassId }, getLang(), s.classId)}</option>

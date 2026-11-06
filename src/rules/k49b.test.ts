@@ -6,7 +6,9 @@ import { blankCharacter } from './builder';
 import { changeLevel } from '../app/levelChange';
 import type { SubclassDef } from '../data';
 
-const ext = (id: string, cls: string, tr: string, en: string): SubclassDef => ({ id, class: cls, pack: 'test', name: { tr, en }, role: { tr: '', en: '' }, features: [] });
+// Görev P0: hiç çalışan özelliği olmayan paket alt sınıfı seçim listesinde görünmez; fikstürde bir çalışan özellik var.
+const ext = (id: string, cls: string, tr: string, en: string): SubclassDef => ({ id, class: cls, pack: 'test', name: { tr, en }, role: { tr: '', en: '' },
+  features: [{ id: 'adim', level: 3, name: { tr: 'Adım', en: 'Step' }, description: { tr: '', en: '' }, status: 'calisir', ilkeller: [{ tur: 'hiz', artiFt: 5 }] }] });
 afterEach(() => setExternalSubclasses([]));
 
 describe('alt sınıf görünümü', () => {
