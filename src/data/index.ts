@@ -2,7 +2,6 @@ import racesJson from '../../data/races.json';
 import classesJson from '../../data/classes.json';
 import armorJson from '../../data/armor.json';
 import weaponsJson from '../../data/weapons.json';
-import spellsJson from '../../data/spells.json';
 import itemsJson from '../../data/items.json';
 import environmentsJson from '../../data/environments.json';
 import spellSlotsJson from '../../data/spell-slots.json';
@@ -17,8 +16,12 @@ export const races = racesJson as Race[];
 export const classes = classesJson as CharacterClass[];
 export const armor = armorJson as Armor[];
 export const weapons = weaponsJson as Weapon[];
-/** Kuyruk 40: kopya dizi; 4.–5. seviye büyüler `loadClassData()` ile eklenir (JSON modülü değişmez). */
-export const spells = [...(spellsJson as Spell[])];
+/**
+ * Büyüler: Kuyruk K57'den beri 0–3. seviye de (`data/spells.json`, ~120 kB) `loadClassData()` ile gelir (ana parça
+ * bütçesi); 4.–5. (Kuyruk 40) ve 6.–9. seviye (Kuyruk 19) ardından. Dizi aynı nesnedir, yüklenince içi dolar. Giriş ekranı
+ * büyü okumaz; karakter, Game Master ve savaş ekranları sınıf verisini bekler (`App.tsx` `useClassData`).
+ */
+export const spells: Spell[] = [];
 export const items = itemsJson as Item[];
 export const environments = environmentsJson as Environment[];
 /**
@@ -63,13 +66,16 @@ export function loadClassData(): Promise<void> {
     import('../../data/srd/progression.json'), import('../../data/class-features.json'), import('../../data/srd/feats.json'),
     import('../../data/srd/weapons.json'), import('../../data/subclasses.json'), import('../../data/spells-45.json'),
     import('../../data/items-srd.json'), import('../../data/spells-69.json'), import('../../data/karadul.json'), import('../../data/imza.json'),
-  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza]) => {
+    import('../../data/spells.json'),
+  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03]) => {
     if (classDataLoaded()) return;
     // Kuyruk 19 (görev 7): SRD'nin geri kalan eşyaları (ana parça sınırı; oluşturucu ve savaştan önce yüklenir).
     const moreItems = (isrd.default as unknown as Item[]).filter((x) => !items.some((y) => y.id === x.id));
     items.push(...moreItems);
     // Kuyruk 40: 4.–5. seviye büyüler (yalnızca 7+ seviye karakterler; ana parça sınırı) sınıf verisiyle gelir.
     // Kuyruk 19 (görev 3): 6.–9. seviye büyüler (`data/spells-69.json`, scripts/k19-buyu-69.py).
+    // Kuyruk K57: 0–3. seviye büyüler önce (sıra eskisi gibi: 0–3, 4–5, 6–9).
+    if (spells.length === 0) spells.push(...(s03.default as unknown as Spell[]));
     const more = [...(s45.default as unknown as Spell[]), ...(s69.default as unknown as Spell[])].filter((s) => !spells.some((x) => x.id === s.id));
     spells.push(...more);
     // Kuyruk K48: ev kuralı alt sınıfı Karadul Çemberi (data/karadul.json) SRD alt sınıflarının ardından.

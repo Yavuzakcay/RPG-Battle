@@ -35,7 +35,8 @@ function SplashFailed(p: { kind: SplashKind; onDone: () => void }) {
 }
 const Splash = lazy((): Promise<{ default: React.ComponentType<{ kind: SplashKind; onDone: () => void }> }> => import('./ui/Splash').catch(() => ({ default: SplashFailed })));
 // Karakter oluşturma sihirbazı (Görev K1) ayrı parça.
-const Builder = lazy(() => import('./screens/Builder').then((m) => ({ default: m.Builder })));
+const importBuilder = () => import('./screens/Builder');
+const Builder = lazy(() => importBuilder().then((m) => ({ default: m.Builder })));
 // Ayarlar (dış içerik; Görev E1) ayrı parça.
 const SettingsScreen = lazy(() => import('./screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
 // Kuyruk 14 Y1: yolculuk (deneme; bayrak arkasında) ayrı parça.
@@ -141,6 +142,11 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   useEffect(() => {
     preloadImages(characters.flatMap((c) => badgeChain(sheetAvatar(c.sheet), 44).slice(0, 1)));
   }, [characters]);
+  // Kuyruk K57 (önyükleme ipucu): Oyuncu ekranına girilince karakter sihirbazı parçası boşta indirilir; "Yeni karakter" ya
+  // da "Düzenle" ilk dokunuşta beklemez (büyü verisi sınıf verisiyle açılışta gelir).
+  useEffect(() => {
+    if (screen.name === 'player' && classInfo.ready) void importBuilder().catch(() => { /* Sihirbaza girilince yeniden denenir. */ });
+  }, [screen.name, classInfo.ready]);
   const store = (list: SavedCharacter[]) => { setCharacters(list); saveCharacters(list); };
   const home = () => setScreen({ name: 'home' });
   const [resumeError, setResumeError] = useState<string | null>(null);

@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk K57 (Görev 3–4): paket bütçesi ve mekanik donması
+
+- **Ana parça 462,95 → 370,37 kB; sınır 500 → 420 kB** (`data/paket-siniri.json`). Tek değişiklik: `data/spells.json` (0–3. seviye büyüler, 120,7 kB işlenmiş) ana parçadan `loadClassData()`'ya taşındı; `spells` dizisi yüklenene dek boş (4–5 ve 6–9 zaten böyleydi, sıra aynı: 0–3, 4–5, 6–9). Giriş ekranı büyü okumuyor; diğer ekranlar sınıf verisini zaten bekliyordu. Döküm ve süre tablosu `docs/BUNDLE.md`.
+- **Görevin andığı ağır parçalar zaten tembeldi:** imza motoru (savaş motoru parçası) ve verisi (`imza-*.js`), hizalanma (`AlignmentGrid`, Game Master parçası), etki çözücüsü ve arazi tabloları (`session-*.js`), Moral (savaş motoru, Serüven parçası). Ana parçada K51–K56'dan yalnız `alignmentRest.ts` (210 bayt).
+- **Önyükleme:** Oyuncu ekranına girilince karakter sihirbazı parçası boşta indirilir (`App.tsx` `importBuilder`): 4G + 4× işlemcide "Yeni karakter" 1,45 → 0,18 sn (listede 1,5 sn bekleyince). Sınıf verisini `main.tsx`'te ilk çizimden önce başlatmak denendi; 4G'de açılışı ≈170 ms geciktirdi (bant paylaşımı), geri alındı. Bedel: açılışın hemen ardından Oyuncu'ya dokunulursa liste 4G'de ≈70 ms geç açılır (büyü parçası sınıf verisiyle iner; gerçek soğuk açılışta açılış ekranı örter).
+- **Ölçüm betiği** `scripts/k57-olcum.ts` (Playwright, üretim derlemesi, iki profil, medyan); `npm run olcum` (Görev I) ağır görsel ölçümü olduğu için ayrı tutuldu.
+- **Mekanik donması:** `docs/MEKANIK-DONMA.md`. Bundan sonra yeni mekanik yok; yalnız hata düzeltme, denge ayarı, görsel/efekt/ses, metin. Ev kurallarının varsayılanları tek tabloda listelendi (savaş ev kuralları, Ayarlar deneysel bayrakları, Serüven Moral anahtarları, yürüyen merdiven); **hiçbir varsayılan değiştirilmedi**, karar kullanıcının.
+
 ## 2026-11-06 — Kuyruk K57 (Görev 1–2): küçük SRD maddeleri ve arayüz denetimi
 
 - **Yeni mekanik yok, kural sürümü 37 aynı.** Önce durum denetlendi; zaten yapılmış olanlar dokunulmadı: Flurry of Blows 3. vuruş (Heightened Focus, K17 G2, sürüm 13), Push yalnız son yakın dövüş saldırısında (`lastAttackOfAction`), Blindness/Deafness seçim düğmesi ve yapay zekâ sezgiseli (`blindChoice`: görüşe dayanmayan hedefe Deafened, `aiBlindness`), Water Walk (`waterWalks` + derin su `canEnterVeryDeep`; 600 tur = 1 saat), Powerful Build (Grappled bitirmede avantaj, `powerfulBuild`; taşıma ×2 de `carry.ts`'te zaten vardı, dokunulmadı). Görev 2'nin 24–30 ve Durum maddeleri Kuyruk 19 0g'de yapılmış (`k19g.test.ts`, `m1.test.tsx` yeşil).
