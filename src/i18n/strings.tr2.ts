@@ -2,6 +2,7 @@
  * Kuyruk 34a M0: Türkçe savaş ekranı metinleri (günlük, savaş, ipuçları, görünüm) ana parçadan ayrı, tembel parça.
  * `src/i18n/index.ts` `loadTrExtra` ilk çizimden önce yükleyip `STRINGS_TR`'ye ekler (davranış aynı).
  */
+import { whyTable } from '../ui/reasons';
 /** Görev S2: nesne adları (günlük). */
 const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg: 'barut fıçısı', chest: 'sandık', table: 'masa', door: 'kapı', brazier: 'mangal' };
 
@@ -224,18 +225,7 @@ export const TR_EXTRA = {
       spells: (list: string) => `Büyüler: ${list}`, concentration: (s: string) => `Konsantrasyon: ${s}`,
       features: (list: string) => `Özellikler: ${list}`, lineage: 'Soy', slots: (list: string) => `Slotlar: ${list}`, slot: (lvl: number, n: number) => `${lvl}. sev. ${n}`,
     },
-    why: {
-      notYourTurn: 'Sıra sende değil.', speedZero: 'Hızın 0 (Grappled, Restrained, Paralyzed…).', moveDone: 'Bu tur hareketin bitti.',
-      noFreeHex: 'Gidilebilecek boş altıgen yok.', noSpell: 'Şu an yapılabilecek büyü yok (eylem ya da büyü slotu kalmadı).',
-      attackUsed: 'Bu tur eylemini ya da saldırı hakkını kullandın.', noAttackTarget: 'Menzilde saldırılabilecek hedef yok.',
-      cantMove: 'Yürüyemez, koşamaz, geri çekilemez (hareket ve eylem bitti).', jumpWalked: 'Ada atlaması hareketin yerine geçer: bu tur yürüdün.',
-      noIsland: 'Atlanabilecek ada yok.', noShoveTarget: 'Bitişikte itilebilecek hedef yok.', noAdjEnemy: 'Bitişikte düşman yok.',
-      surgeUsed: 'Bu savaşta kullanıldı.', surgeTurn: 'Bu tur zaten kullandın.', surgeFirst: 'Önce eylemini kullan (Atılım ikinci bir eylem verir).', hasteUsed: 'Haste\'in ek eylemi bu tur kullanıldı.', steerBonus: 'Bonus eylemin bu tur kullanıldı.',
-      windNone: 'Bu savaşta hakkın kalmadı.', hpFull: 'HP zaten dolu.', noTarget: 'Uygun hedef yok.',
-      rageRefreshed: 'Rage bu tur zaten sürüyor (saldırı ya da save yaptırma uzattı).',
-      noSlot: 'Dönüştürülecek slot yok.',
-      poolEmpty: 'Havuz boş (uzun dinlenmede dolar).',
-    },
+    why: whyTable('tr'),
     label: {
       move: 'Hareket', walk: 'Yürü', dash: 'Koş', disengage: 'Geri Çekil', back: '‹ Geri', jump: 'Atla', attack: 'Saldır', spell: 'Büyü',
       hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', throwObject: 'Nesne fırlat', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',

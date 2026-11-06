@@ -41,6 +41,11 @@ import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
 import { getLang, t, useLang } from './i18n';
+import { reasonOr, reasonText } from './ui/reasons';
+/** Motor gerekçesi seçili dile (null kalır). */
+const loc = (m: string | null | undefined): string | null => (m ? reasonText(m, getLang()) : null);
+/** Devre dışı düğmenin gerekçe satırı. */
+const Why = ({ msg }: { msg: string | null | undefined }) => <small className="why-line">⊘ {reasonOr(msg, getLang())}</small>;
 import { abilityTip, lineageAbilityList } from './ui/lineageText';
 import { describeEvents, hexText } from './ui/log';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
@@ -1173,7 +1178,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const B = t().battle;
   const Y = B.why;
   const N = B.label;
-  const why = (cmd: Command) => (actor ? economyBlock(state, actor, cmd) : Y.notYourTurn);
+  // Kuyruk K58 G2: motorun gerekçesi seçili dile (data/neden-metinleri.json).
+  const why = (cmd: Command) => (actor ? loc(economyBlock(state, actor, cmd)) : Y.notYourTurn);
   const blocked = (cmd: Command) => why(cmd) !== null;
   const bonusCmd = (type: 'hide' | 'dash' | 'disengage'): Command => ({ type, actorId, bonus: actor ? preferBonus(actor, type) : false });
   const canAttack = actor ? !actor.economy.action || actor.economy.attacksLeft > 0 : false;
@@ -1980,7 +1986,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? B.spellNote.unavailable : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
+                      <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? loc(why) : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
                     </button>
                   );
                 })}
@@ -2003,6 +2009,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
                     <button disabled={!ch.command} onClick={() => ch.command && run(withCunning(withSlot(withChoice(ch.command), slotPick)))}>{mode === 'spell' ? B.cast : B.hit}</button>
+                    {!ch.command && <Why msg={ch.detail || Y.noCommand} />}
                     {pvSet.on && ch.command && <Suspense fallback={null}><PreviewCard state={state} cmd={withCunning(withSlot(withChoice(ch.command), slotPick))} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet} /></Suspense>}
                   </div>
                 ))}
@@ -2069,6 +2076,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />
                 <button className="cta" disabled={picked.length === 0} onClick={() => run({ type: 'cast_spell', actorId, spellName: spell.name, targetIds: picked,
                   ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) })}>{E.cast}</button>
+                {picked.length === 0 && <Why msg={Y.pickTarget} />}
               </div>
             );
           })()}
@@ -2113,16 +2121,20 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 <div className="choice">
                   <div><span>{B.shove.push}</span><small>{out && to ? (out.ok ? `${hexText(to)}: ${out.note}` : B.shove.cantPush(out.reason)) : B.shove.noPos}</small></div>
                   <button disabled={!out?.ok || !!economyBlock(state, actor, cmd('push'))} onClick={() => run(cmd('push'))}>{B.shove.pushBtn}</button>
+                  {out?.ok && economyBlock(state, actor, cmd('push')) && <Why msg={economyBlock(state, actor, cmd('push'))} />}
                   {pvSet.on && out?.ok && <Suspense fallback={null}><PreviewCard state={state} cmd={cmd('push')} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet} /></Suspense>}
                 </div>
                 <div className="choice">
                   <div><span>{B.shove.prone}</span><small>{target.conditions.includes('Prone') ? B.shove.alreadyProne : 'Prone'}</small></div>
                   <button disabled={!!economyBlock(state, actor, cmd('prone'))} onClick={() => run(cmd('prone'))}>{B.shove.proneBtn}</button>
+                  {economyBlock(state, actor, cmd('prone')) && <Why msg={economyBlock(state, actor, cmd('prone'))} />}
                 </div>
                 {canGrab && (
                   <div className="choice">
                     <div><span>{B.shove.grapple}</span><small>{target.grapple?.by === actor.id ? B.shove.alreadyHeld : B.shove.grappleNote(dc)}</small></div>
-                    <button disabled={!execute(state, grab, contextFor(state, actorId), () => 0.5).ok} onClick={() => run(grab)}>{B.shove.grappleBtn}</button>
+                    {(() => { const r = execute(state, grab, contextFor(state, actorId), () => 0.5); return (<>
+                      <button disabled={!r.ok} onClick={() => run(grab)}>{B.shove.grappleBtn}</button>
+                      {!r.ok && <Why msg={r.error} />}</>); })()}
                   </div>
                 )}
               </div>
@@ -2247,7 +2259,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
                 {list.map((x) => (
                   <button key={x.key} disabled={x.why !== null} onClick={() => { setAreaAct(x.act); setAimHex(null); setAimPts([]); setMode('aim'); }}>
-                    <span>{x.label}</span><small>{x.why ?? ''}</small>
+                    <span>{x.label}</span><small>{loc(x.why) ?? ''}</small>
                   </button>
                 ))}
               </div>

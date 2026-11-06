@@ -2,6 +2,7 @@
  * İngilizce ekran metinleri (F1: ana parçadan ayrı, tembel yüklenir; `src/i18n/index.ts` `loadLang`). Biçim `tr` ile aynı
  * olmak zorunda (`Strings` tipi).
  */
+import { whyTable } from '../ui/reasons';
 import type { Strings } from './strings';
 
 const OBJ_EN: Record<string, string> = { oilBarrel: 'oil barrel', powderKeg: 'powder keg', chest: 'chest', table: 'table', door: 'door', brazier: 'brazier' };
@@ -808,16 +809,7 @@ export const en: Strings = {
       spells: (list: string) => `Spells: ${list}`, concentration: (s: string) => `Concentration: ${s}`,
       features: (list: string) => `Features: ${list}`, lineage: 'Lineage', slots: (list: string) => `Slots: ${list}`, slot: (lvl: number, n: number) => `level ${lvl}: ${n}`,
     },
-    why: {
-      notYourTurn: 'Not your turn.', speedZero: 'Your Speed is 0 (Grappled, Restrained, Paralyzed…).', moveDone: 'No movement left this turn.',
-      noFreeHex: 'No free hex to move to.', noSpell: 'No spell can be cast now (no action or spell slot left).', noSlot: 'No spell slot to convert.', poolEmpty: 'Pool is empty (refills on a Long Rest).',
-      attackUsed: 'You used your action or attacks this turn.', noAttackTarget: 'No target in range.',
-      cantMove: 'Cannot walk, dash or disengage (movement and action used).', jumpWalked: 'An island jump replaces your movement: you already moved this turn.',
-      noIsland: 'No island to jump to.', noShoveTarget: 'No adjacent target to shove.', noAdjEnemy: 'No adjacent enemy.',
-      surgeUsed: 'Already used this battle.', surgeTurn: 'Already used this turn.', surgeFirst: 'Use your action first (Action Surge grants a second one).', hasteUsed: 'Haste extra action already used this turn.', steerBonus: 'Bonus action already used this turn.',
-      windNone: 'No uses left this battle.', hpFull: 'HP is already full.', noTarget: 'No valid target.',
-      rageRefreshed: 'Rage is already extended this turn (an attack or a forced save did it).',
-    },
+    why: whyTable('en'),
     label: {
       move: 'Move', walk: 'Walk', dash: 'Dash', disengage: 'Disengage', back: '‹ Back', jump: 'Jump', attack: 'Attack', spell: 'Spell',
       hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', throwObject: 'Throw object', stand: 'Stand up', escapeGrapple: 'Try to escape',

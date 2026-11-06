@@ -1182,3 +1182,5 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
   padding: 2px 6px; border-radius: 4px; background: rgba(0, 0, 0, 0.75); color: #fff; pointer-events: none; opacity: 0; transition: opacity 0.15s; }
 .sehir-dugum:hover .sehir-ad, .sehir-dugum:focus-visible .sehir-ad, .sehir-dugum:active .sehir-ad, .sehir-dugum.secili .sehir-ad { opacity: 1; }
 .sehir-kart { width: min(100%, 640px); }
+/* Kuyruk K58 G2: devre dışı düğmenin gerekçe satırı. */
+.why-line { display: block; flex-basis: 100%; color: #f0b0a0; font-size: 0.8em; }
