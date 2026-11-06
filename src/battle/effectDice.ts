@@ -28,7 +28,9 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
   const inspired: ExtraDie[] = (c.effects ?? []).filter((e) => e.inspire)
     .map((e) => ({ label: e.name, die: e.inspire as string, sign: 1, reroll: 'onFail', single: true, effectId: e.id, holderId: c.id,
       // Kuyruk K48 (sürüm 19, `bardicInspirationChain`): önceki ikinci şans tutmazsa ilham zarı yine atılır.
-      ...(c.inspireChain ? { chain: true } : {}) }));
+      ...(c.inspireChain ? { chain: true } : {}),
+      // Kuyruk P11 (paket ilham iadesi).
+      ...(e.inspireKeep ? { keepOnFail: e.inspireKeep, refundTo: e.sourceId, ...(e.inspireRes ? { refundRes: e.inspireRes } : {}) } : {}) }));
   // Kuyruk 43: Legendary Resistance (SRD 5.2.1; günde N): başarısız save'i başarıya çevirir; boss'un turları arasında en
   // çok bir kez (`lrLock`, kendi turunun başında kalkar: aynı tur içinde art arda harcamaz).
   if (on === 'save' && resourceLeft(c, 'legendaryResistance') > 0 && !c.lrLock) {

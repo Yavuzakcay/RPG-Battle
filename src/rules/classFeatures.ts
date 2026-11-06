@@ -182,6 +182,27 @@ export interface ClassKit {
  * Görev CLERIC: seçenekli özelliklerden gelen eğitim (Divine Order: Protector → Heavy armor ve Martial silahlar;
  * Thaumaturge → ek cantrip). Seçilen ya da varsayılan seçenek; sınıfın bütün seçenekli özellikleri taranır.
  */
+/**
+ * Kuyruk P11 (ek paket `yetkinlik` ilkeli): alt sınıfın verdiği zırh/kalkan ve silah eğitimi (oluşturucu ve savaş;
+ * özelliğin etkin seviyesinden). Paketsiz alt sınıfta boş.
+ */
+export function packTraining(classId: string, who?: { subclassId?: string; level?: number }): { armor: string[]; martialWeapons: boolean } {
+  const out = { armor: [] as string[], martialWeapons: false };
+  const sub = who?.subclassId ? findSubclass(classId, who.subclassId) : undefined;
+  if (!sub) return out;
+  const p = getProgression(classId);
+  for (const f of sub.features) {
+    if (Math.max(f.level, p.subclassLevel ?? 3) > (who?.level ?? 1)) continue;
+    for (const q of f.ilkeller ?? []) {
+      if (q.tur !== 'yetkinlik') continue;
+      const z = Array.isArray(q.zirhlar) ? q.zirhlar as string[] : [];
+      out.armor.push(...z.map((x) => ({ hafif: 'light', orta: 'medium', agir: 'heavy', kalkan: 'shield' } as Record<string, string>)[x] ?? x));
+      out.martialWeapons ||= Array.isArray(q.silahlar) && (q.silahlar as string[]).includes('harp');
+    }
+  }
+  return out;
+}
+
 export function optionTraining(classId: string, choices: Record<string, string> = {}): { armor: string[]; martialWeapons: boolean; cantrips: number } {
   const out = { armor: [] as string[], martialWeapons: false, cantrips: 0 };
   for (const [key, m] of Object.entries(classData.mechanics.features)) {

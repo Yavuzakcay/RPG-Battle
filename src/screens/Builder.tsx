@@ -819,11 +819,11 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
   const [pending, setPending] = useState<{ armorName?: string; shield?: true } | null>(null);
   const wearArmor = (name: string) => {
     const a = armor.find((x) => x.name === name);
-    if (name !== s.armorName && !armorProficient(s.classId, a?.type, s.featureChoices)) setPending({ armorName: name });
+    if (name !== s.armorName && !armorProficient(s.classId, a?.type, s.featureChoices, s)) setPending({ armorName: name });
     else { setPending(null); set({ armorName: name }); }
   };
   const toggleShield = () => {
-    if (!s.shield && !armorProficient(s.classId, 'shield', s.featureChoices)) { setPending({ shield: true }); return; }
+    if (!s.shield && !armorProficient(s.classId, 'shield', s.featureChoices, s)) { setPending({ shield: true }); return; }
     setPending(null);
     set({ shield: !s.shield, ...(!s.shield ? { offHand: undefined } : {}) });
   };
@@ -832,7 +832,7 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
   const [kindF, setKindF] = useState<ItemKind | null>(null);
   const [tierF, setTierF] = useState<ItemTier | null>(null);
   const attuned = s.itemNames.filter((n) => items.find((i) => i.name === n)?.attunement).length;
-  const shown = weapons.filter((w) => !onlyProficient || weaponProficient(s.classId, w, s.featureChoices) || (s.weapons ?? []).some((x) => x.name === w.name));
+  const shown = weapons.filter((w) => !onlyProficient || weaponProficient(s.classId, w, s.featureChoices, s) || (s.weapons ?? []).some((x) => x.name === w.name));
   const K = L.carry;
   const load = carryLoad(s, carryRule);
   const lb = (w: number | undefined, approx = false) => <small className="weight">{K.weight(w ?? 0, approx)}</small>;
@@ -845,13 +845,13 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
             onClick={() => { const first = armor.find((a) => (a.type ?? 'none') === k); if (first) wearArmor(first.name); }}>{W.armorKinds[k]}</button>
         ))}
         <button aria-pressed={s.shield} className={s.shield ? 'on' : ''} title={L.equip.shieldDetail}
-          onClick={toggleShield}>{W.shieldBtn} {profBadge(armorProficient(s.classId, 'shield', s.featureChoices))}</button>
+          onClick={toggleShield}>{W.shieldBtn} {profBadge(armorProficient(s.classId, 'shield', s.featureChoices, s))}</button>
       </div>
       {kind !== 'none' && (
         <div className="card-grid">
           {armor.filter((a) => (a.type ?? 'none') === kind).map((a) => (
             <button key={a.name} className={`pick-card${a.name === s.armorName ? ' on' : ''}`} aria-pressed={a.name === s.armorName} title={armorDetail(a)}
-              onClick={() => wearArmor(a.name)}><b>{a.name}</b><small>{armorSummary(a)}</small>{lb(a.weight)}{profBadge(armorProficient(s.classId, a.type, s.featureChoices))}</button>
+              onClick={() => wearArmor(a.name)}><b>{a.name}</b><small>{armorSummary(a)}</small>{lb(a.weight)}{profBadge(armorProficient(s.classId, a.type, s.featureChoices, s))}</button>
           ))}
         </div>
       )}
@@ -867,8 +867,8 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
       )}
       {chosenArmor && <p className="mute equip-detail">{armorDetail(chosenArmor)}{s.shield ? ` ${L.equip.shieldDetail}` : ''}</p>}
       {/* Görev K9d: eğitimsiz zırh ve kalkan uyarısı (SRD 5.2.1 Armor Training). */}
-      {!armorProficient(s.classId, chosenArmor?.type, s.featureChoices) && <p className="warn armor-warn">{W.armorUntrained}</p>}
-      {s.shield && !armorProficient(s.classId, 'shield', s.featureChoices) && <p className="warn armor-warn">{W.shieldUntrained}</p>}
+      {!armorProficient(s.classId, chosenArmor?.type, s.featureChoices, s) && <p className="warn armor-warn">{W.armorUntrained}</p>}
+      {s.shield && !armorProficient(s.classId, 'shield', s.featureChoices, s) && <p className="warn armor-warn">{W.shieldUntrained}</p>}
       <p className="counters"><span>{W.weaponCount((s.weapons ?? []).length, chosenM.length, right?.count ?? 0)}</span></p>
       {right && <p className="mute">{T.masteryHelp(right.melee, right.swap === 'all' ? null : right.swap)}</p>}
       <label className="toggle prof-filter"><input type="checkbox" checked={onlyProficient}
@@ -885,7 +885,7 @@ function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; se
                 weapons: !on ? [...(s.weapons ?? []), { name: w.name }] : (s.weapons ?? []).filter((x) => x.name !== w.name),
                 // Yan el silahı çıkarılınca ya da iki elli silah eklenince yan el boşalır.
                 ...(s.offHand && ((on && w.name === s.offHand) || (!on && w.twoHanded && !w.ranged)) ? { offHand: undefined } : {}),
-              })}><b>{w.name}</b><small>{weaponSummary(w)}</small>{lb(w.weight)}{profBadge(weaponProficient(s.classId, w, s.featureChoices))}</button>
+              })}><b>{w.name}</b><small>{weaponSummary(w)}</small>{lb(w.weight)}{profBadge(weaponProficient(s.classId, w, s.featureChoices, s))}</button>
               {/* Görev K18: özellik ve ustalık adına dokununca açıklama; ustalığı seçmek ayrı yıldız düğmesi. */}
               <span className="term-row">
                 {weaponPropertyKeys(w).map((k) => <TermTip key={k} name={W.propName[k] ?? k} text={propertyDescription(k, getLang())} />)}

@@ -31,6 +31,7 @@ import { rageProblem, recklessProblem } from './battle/rage';
 import { CUNNING, cunningOptions, hasTrait, usedThisTurn } from './battle/classTraits';
 import { offhandProblem } from './battle/offhand';
 import { featureProblem } from './battle/divine';
+import { ilhamOf } from './battle/bard';
 import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive, isTargetable } from './battle/common';
 import { hexLabel, occupantAt, speedHexes } from './battle/movement';
@@ -1280,7 +1281,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...(actor.features ?? []).filter((f) => f.effect.kind !== 'wildShape').map((f) => (f.effect.kind === 'healPool' || f.effect.kind === 'divineSpark' || f.effect.kind === 'inspire' || f.effect.kind === 'leash' || f.effect.kind === 'celestialHeal' || f.effect.kind === 'karadulGaze' || featTargeted(f)
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
         // Kuyruk K50: hedefli imza eylemi hedef seçilene dek yalnız kaynak denetlenir.
-        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined) ?? (featTargeted(f) ? undefined : why({ type: 'use_feature', actorId, feature: f.key })) ?? undefined,
+        // Kuyruk P11: paket `ilham.kaynaksiz` kaynak bitince de ilham verir.
+        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 && !(f.effect.kind === 'inspire' && ilhamOf(state, actor)?.kaynaksiz) ? Y.poolEmpty : undefined) ?? (featTargeted(f) ? undefined : why({ type: 'use_feature', actorId, feature: f.key })) ?? undefined,
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
       : { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: featHex(f) === 'hex' ? (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined)

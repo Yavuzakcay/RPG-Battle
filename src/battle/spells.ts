@@ -27,6 +27,7 @@ import { after69, spells69Problem, wishProblem, wishSpell } from './spells69';
 import { freeCastingEvents } from './boons';
 import { overchannelAfter, overchannelProblem, overchannelRng } from './apex';
 import { paketSpellBonus, paketSpellTransform } from './paket/core';
+import { paketHealRoll } from './paket/p11';
 import { hexLabel, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
@@ -489,8 +490,13 @@ function diceMax(expr: string): number {
 }
 
 /** İyileştirme zarı: hedefte Beacon of Hope varsa zar atılmaz, en yüksek değer (Görev B1). */
-function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng): number {
+function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng, state?: BattleState, info?: { events: BattleEvent[]; rolls?: number[]; changed?: string }): number {
   if (target.effects?.some((e) => e.maxHeal)) return diceMax(expr);
+  // Kuyruk P11: paket iyileştirme zarı (`zarDegistir.kapsam: iyilestirme`; Supreme Healing'den önce değil: en yüksek değer zaten en iyisi).
+  if (info && !/supreme-healing/.test((actor.traits ?? []).join(' '))) {
+    const r = paketHealRoll(state, actor, expr, rng, info.events);
+    if (r) { info.rolls = r.rolls; if (r.changed) info.changed = r.changed; return r.total; }
+  }
   // Görev CLERIC: Supreme Healing (en yüksek değer) `healDice`'ta.
   return healDice(actor, expr, rng);
 }
@@ -686,10 +692,11 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.kind === 'heal') {
     // Görev CLERIC: Disciple of Life (+2 + slot seviyesi), Blessed Healer (başkasını iyileştirince büyücüye).
     const slotLevel = spell.level > 0 ? spell.level + upcast : null;
-    const hpAfter = applyHealing(target.hp, target.maxHp, healAmount(damageExpr(m, actor, tier, upcast, spell.school, spell.name), actor, target, rng) + healBonus(actor, slotLevel));
-    events.push({
+    const hi: { events: BattleEvent[]; rolls?: number[]; changed?: string } = { events: [] };
+    const hpAfter = applyHealing(target.hp, target.maxHp, healAmount(damageExpr(m, actor, tier, upcast, spell.school, spell.name), actor, target, rng, state, hi) + healBonus(actor, slotLevel));
+    events.push(...hi.events, {
       type: 'healed', actorId: actor.id, targetId: target.id, label: spell.name,
-      amount: hpAfter - target.hp, targetHpAfter: hpAfter,
+      amount: hpAfter - target.hp, targetHpAfter: hpAfter, ...(hi.rolls ? { rolls: hi.rolls } : {}), ...(hi.changed ? { changed: hi.changed } : {}),
     });
     events.push(...healSelfAfter(actor, slotLevel, target.id !== actor.id, spell.name));
     return finish(state, events);
@@ -1098,8 +1105,10 @@ function executeHealMany(state: BattleState, actor: Combatant, cmd: CastCommand,
     note: targets.map((x) => x.name).join(', ') }];
   const expr = damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name);
   for (const t of targets) {
-    const hpAfter = applyHealing(t.hp, t.maxHp, healAmount(expr, actor, t, rng) + healBonus(actor, slot.slotLevel));
-    events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: spell.name, amount: hpAfter - t.hp, targetHpAfter: hpAfter });
+    const hi: { events: BattleEvent[]; rolls?: number[]; changed?: string } = { events: [] };
+    const hpAfter = applyHealing(t.hp, t.maxHp, healAmount(expr, actor, t, rng, applyEvents(state, events.filter((e) => e.type === 'feature_used' || e.type === 'trait_turn')), hi) + healBonus(actor, slot.slotLevel));
+    events.push(...hi.events, { type: 'healed', actorId: actor.id, targetId: t.id, label: spell.name, amount: hpAfter - t.hp, targetHpAfter: hpAfter,
+      ...(hi.rolls ? { rolls: hi.rolls } : {}), ...(hi.changed ? { changed: hi.changed } : {}) });
   }
   // Blessed Healer: başkası iyileştiyse büyücü (kendisi hedefse onun iyileşmesinden sonra).
   const self = applyEvents(state, events).combatants[actor.id] as Combatant;

@@ -1,0 +1,132 @@
+{
+  "format": "rpg-battle-icerik",
+  "version": 1,
+  "id": "p11-genisleme",
+  "name": {
+    "tr": "P11 genişleme (kurgusal)",
+    "en": "P11 extension (fictional)"
+  },
+  "author": "Test",
+  "subclasses": [
+    {
+      "id": "nagme-okulu",
+      "class": "bard",
+      "name": {
+        "tr": "nagme-okulu",
+        "en": "nagme-okulu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "iade",
+          "level": 3,
+          "name": {
+            "tr": "iade",
+            "en": "iade"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "ilham",
+              "iade": "kaynaga"
+            }
+          ]
+        },
+        {
+          "id": "bedava",
+          "level": 3,
+          "name": {
+            "tr": "bedava",
+            "en": "bedava"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "ilham",
+              "kaynaksiz": true,
+              "zarBoyu": "d6"
+            }
+          ]
+        },
+        {
+          "id": "mars",
+          "level": 3,
+          "name": {
+            "tr": "mars",
+            "en": "mars"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "ilham",
+              "hedefler": [
+                "hasar",
+                "ac"
+              ]
+            },
+            {
+              "tur": "yetkinlik",
+              "zirhlar": [
+                "orta",
+                "kalkan"
+              ],
+              "silahlar": [
+                "harp"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sifa-damari",
+      "class": "sorcerer",
+      "name": {
+        "tr": "sifa-damari",
+        "en": "sifa-damari"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "sifa",
+          "level": 1,
+          "name": {
+            "tr": "sifa",
+            "en": "sifa"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "zarDegistir",
+              "tetik": "pasif",
+              "kapsam": "iyilestirme",
+              "mod": "maks"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

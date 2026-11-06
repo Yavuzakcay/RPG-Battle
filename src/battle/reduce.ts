@@ -238,6 +238,11 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
     next = dropEffects(next, event.targetId, (e) => !!e.consumeOnAttacked && e.sourceId !== event.actorId);
   }
   for (const x of dice ?? []) {
+    // Kuyruk P11: başarısız ilham zarı Bard'a döner.
+    if (x.refund) {
+      const h = next.combatants[x.refund.holderId];
+      if (h) next = withCombatant(next, h.id, { resources: { ...h.resources, [x.refund.resource]: resourceLeft(h, x.refund.resource) + 1 } });
+    }
     // Kuyruk 18 H3: Countercharm sahibinin tepkisini harcar.
     // Görev P6: ek paket girişleri (zar mührü, zorla sonuç) tepki + kaynak + tek kullanımlık etkiyi birlikte tüketir.
     const pk = !!x.effectId?.startsWith('pk-');

@@ -33,6 +33,10 @@ export interface ExtraDie {
   rerollMode?: RollMode;
   /** Kuyruk 18 H3: kullanılınca sahibinin tepkisi harcanır (Countercharm). */
   reaction?: boolean;
+  /** Kuyruk P11 (paket ilham iadesi): zar başarıyı getirmezse etki kalır (`target`) ya da kaynak `refundTo`'ya döner (`source`). */
+  keepOnFail?: 'target' | 'source';
+  refundTo?: string;
+  refundRes?: string;
   /**
    * Kuyruk K48 (kural sürümü 19): ilk ikinci şans (Indomitable, Luck, Tactical Mind…) sonucu yine başarısızsa bu giriş
    * ayrıca denenir (Bardic Inspiration: "when the creature fails a D20 Test").
@@ -41,7 +45,8 @@ export interface ExtraDie {
 }
 /** Atılmış eklenti zarı: işaretli değer (−1d4 ise negatif). `resource`: kullanılan kaynak (Görev F). */
 export interface RolledExtra { label: string; die: string; value: number; effectId?: string; holderId?: string; single?: boolean; resource?: string; /** Kuyruk 18 H3: sahibinin tepkisi harcandı. */ reaction?: boolean;
-  /** Kuyruk 19: sahibinin tepki havuzu (Burst of Ingenuity 2/Day): kalan. */ pool?: { id: string; remaining: number } }
+  /** Kuyruk 19: sahibinin tepki havuzu (Burst of Ingenuity 2/Day): kalan. */ pool?: { id: string; remaining: number };
+  /** Kuyruk P11: başarısız ilham zarı Bard'a iade (kaynak +1). */ refund?: { holderId: string; resource: string } }
 
 /** Eklenti zarlarını atar (d20'nin ardından, aynı türde zar isteğiyle). */
 export function rollExtras(extra: ExtraDie[] | undefined, kind: RollKind, rng: Rng): RolledExtra[] {
@@ -93,7 +98,11 @@ export function secondChance(
   if (x.reroll === 'onFail') {
     const v = rollDice(x.die, rollTag(rng, { kind: fail.kind })).total;
     const total = fail.total + v;
-    return { total, natural: fail.natural, entry: { ...base, die: x.die, value: v, ...(total >= fail.need && x.resource ? { resource: x.resource } : {}) } };
+    // Kuyruk P11: ilham zarı başarıyı getirmediyse etki kalır ya da Bard'a döner.
+    const failed = fail.kind === 'attack' ? fail.natural !== 20 && total < fail.need : total < fail.need;
+    const kept = failed && x.keepOnFail === 'target' ? (({ single: _s, effectId: _e, ...r }) => r)(base as typeof base & { single?: boolean; effectId?: string }) : base;
+    const refund = failed && x.keepOnFail === 'source' && x.refundTo && x.refundRes ? { refund: { holderId: x.refundTo, resource: x.refundRes } } : {};
+    return { total, natural: fail.natural, entry: { ...kept, die: x.die, value: v, ...(total >= fail.need && x.resource ? { resource: x.resource } : {}), ...refund } };
   }
   const natural = x.reroll === 'twenty' ? 20 : rollD20(x.rerollMode ?? fail.mode, rollTag(rng, { kind: fail.kind, bonus: fail.bonus })).kept;
   const total = fail.total - fail.natural + natural + (x.rerollBonus ?? 0);

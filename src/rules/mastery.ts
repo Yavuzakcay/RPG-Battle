@@ -5,14 +5,15 @@
  * Saf fonksiyonlar; veri `loadClassData()` ile yüklenmiş olmalı.
  */
 import { classData, getClass, weapons, type MasteryId, type MasteryMechanic, type SrdMastery, type Weapon } from '../data';
-import { classKit, optionTraining } from './classFeatures';
+import { classKit, optionTraining, packTraining } from './classFeatures';
 import type { CharacterSheet } from './stats';
 
 /** Sınıf bu silahta yetkin mi (Simple hep; Martial sınıfa ya da Finesse/Light özelliğine göre). */
-export function weaponProficient(classId: string, weapon: Weapon, choices?: Record<string, string>): boolean {
+export function weaponProficient(classId: string, weapon: Weapon, choices?: Record<string, string>, who?: { subclassId?: string; level?: number }): boolean {
   const cls = getClass(classId);
   return weapon.category === 'simple' || cls.weaponProficiency === 'martial'
-    || cls.martialWeaponProperties.some((p) => weapon[p]) || optionTraining(classId, choices).martialWeapons;
+    || cls.martialWeaponProperties.some((p) => weapon[p]) || optionTraining(classId, choices).martialWeapons
+    || (!!who && packTraining(classId, who).martialWeapons);
 }
 
 /** Silahın SRD ustalığı (silah kimliği `data/weapons.json` = `data/srd/weapons.json`). */
@@ -37,7 +38,7 @@ export const masteryRight = (sheet: CharacterSheet) => classKit(sheet.classId, s
 export function masteryOptions(sheet: CharacterSheet): Weapon[] {
   const right = masteryRight(sheet);
   if (!right) return [];
-  return weapons.filter((w) => weaponProficient(sheet.classId, w, sheet.featureChoices) && (!right.melee || !w.ranged) && !!weaponMasteryId(w.id));
+  return weapons.filter((w) => weaponProficient(sheet.classId, w, sheet.featureChoices, sheet) && (!right.melee || !w.ranged) && !!weaponMasteryId(w.id));
 }
 
 /** Seçim sorunları: hak yok, fazla seçim, uygun olmayan silah. Boşsa geçerli. */

@@ -44,6 +44,7 @@ import {
 } from './core';
 import './p9';
 import './p10';
+import './p11hooks';
 
 export { paketHex, paketTargeted, withPaket } from './core';
 

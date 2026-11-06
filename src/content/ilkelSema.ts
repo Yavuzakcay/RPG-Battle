@@ -350,10 +350,11 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     ornek: { tur: 'buyuluVurus', kapsam: ['kendi', 'cagrilanlar'] },
   },
   zarDegistir: {
-    not: 'İsabette hasar zarlarını değiştirir: en yükseğe çek, düşükleri yeniden at, ikiye katla ya da büyüt.', tetikler: ['isabet'],
+    not: 'İsabette hasar zarlarını değiştirir: en yükseğe çek, düşükleri yeniden at, ikiye katla ya da büyüt. P11: `kapsam: iyilestirme` (tetik pasif) büyü iyileştirmesinin zarlarına.', tetikler: ['isabet', 'pasif'],
     alanlar: { mod: E(['maks', 'yenidenAt', 'carpan', 'zarBuyut', /** P10 */ 'ikiAtSec'], 'maks: zarlar en yüksek; yenidenAt: `esik` ve altı bir kez yeniden; carpan: zarlar bir kez daha eklenir; zarBuyut: her zar bir boy büyük (d6→d8); P10 ikiAtSec: bütün hasar zarları bir kez daha atılır, büyük toplam seçilir.', { zorunlu: true, varsayilan: undefined }),
       esik: N('yenidenAt: bu değer ve altındaki zarlar (varsayılan 2).', { varsayilan: 2 }),
-      saldiri: E(['silah', 'yakin', 'menzilli', 'buyu', 'hepsi'], 'Hangi saldırılar.'), hasarTurleri: { tip: 'hasarTurleri', not: 'Yalnız bu hasar türlerinde.' } },
+      saldiri: E(['silah', 'yakin', 'menzilli', 'buyu', 'hepsi'], 'Hangi saldırılar.'), hasarTurleri: { tip: 'hasarTurleri', not: 'Yalnız bu hasar türlerinde.' },
+      /** P11 */ kapsam: E(['saldiri', 'iyilestirme'], 'P11: saldiri (isabet hasarı) ya da iyilestirme (büyü iyileştirmesi; tetik pasif, `healed.rolls`). Sürüm 42+.') },
     sistem: 'İsabet kancası (`hitHooks.ts`; bağlam artık saldırının zarlarını taşır): fark ek hasar olarak (`ExtraDamage`, direnç hedefe göre). Kurtulmalı büyü hasarı kapsam dışı (kısmi).',
     ornek: { tur: 'zarDegistir', mod: 'maks', hasarTurleri: ['lightning', 'thunder'], kaynak: { id: 'focus', maliyet: 1 } },
   },
@@ -462,6 +463,24 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     alanlar: { miktar: F('Artış (formül; ör. "$lvl").', { zorunlu: true }) },
     sistem: 'Savaş kuruluşunda (`withPaket`) en çok can ve can artar (başlangıç olayı taşır; Aid yolu). Sürüm 38+.',
     ornek: { tur: 'canArtisi', miktar: '$lvl' },
+  },
+  yetkinlik: {
+    not: 'Alt sınıfın verdiği zırh/kalkan ve silah eğitimi (oluşturucu ve savaş: AC, yetkin saldırı, eğitimsiz zırh cezası yok).', tetikler: ['pasif'],
+    alanlar: { zirhlar: { tip: 'enumListe', degerler: ['hafif', 'orta', 'agir', 'kalkan'], not: 'Zırh eğitimi.' },
+      silahlar: { tip: 'enumListe', degerler: ['basit', 'harp'], not: 'Silah yetkinliği (harp: bütün harp silahları).' } },
+    sistem: '`rules/classFeatures.ts` `packTraining` → `armorProficient` / `weaponProficient` (karakter sayfasının alt sınıf ve seviyesiyle). Oluşturucu ve savaş kuruluşu; kural sürümünden bağımsız (karakter verisi).',
+    ornek: { tur: 'yetkinlik', zirhlar: ['orta', 'kalkan'], silahlar: ['harp'] },
+  },
+  ilham: {
+    not: 'Bardic Inspiration yolunu değiştirir: başarısız kalan zar kalır ya da Bard\'a döner, kaynak bitince küçük zarla bedava ilham, ilham zarı silah hasarına ya da isabet alınca AC\'ye.', tetikler: ['pasif'],
+    alanlar: {
+      iade: E(['yok', 'hedefte', 'kaynaga'], 'Zar başarıyı getirmezse: yok (harcanır), hedefte (dostta kalır), kaynaga (Bard kullanımı geri gelir).'),
+      kaynaksiz: B('Kullanım (ve Font of Inspiration) bitince ilham yine verilir (zar `zarBoyu`).'),
+      zarBoyu: E(['d6', 'd4', 'd8', 'd10', 'd12'], 'Kaynaksız ilhamın zarı.'),
+      hedefler: { tip: 'enumListe', degerler: ['hasar', 'ac'], not: 'İlhamlı dost zarı silah hasarına ekleyebilir (seçim) ya da vurulunca tepkisiyle AC\'ye (ıskaya dönebilir).' },
+    },
+    sistem: '`bard.ts` `ilhamOf` (ödeme ve etki alanları `inspireKeep`/`inspireRes`/`inspireUses`), `rules/attack.ts` ikinci şans `keepOnFail` → reducer iadesi (`refund`), `paket/p11hooks.ts` isabet kancası (hasar) ve dosta isabet kancası (AC). Sürüm 42+.',
+    ornek: { tur: 'ilham', iade: 'kaynaga', hedefler: ['hasar', 'ac'] },
   },
   silahFirlat: {
     not: 'Yakın dövüş silahın fırlatılabilir olur ve saldırıdan sonra eline döner (Thrown özelliği + dönüş).', tetikler: ['pasif'],

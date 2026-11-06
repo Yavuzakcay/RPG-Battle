@@ -300,7 +300,7 @@ export function weaponAttackEvents(
   const sig = result.hit && !option.spell && actor.imza ? imzaHit(state, actor, target, bonus.extras, rawDamage, rng) : null;
   if (sig) bonus = { ...bonus, extras: [...bonus.extras, ...sig.extras] };
   // Görev P0: kayıtlı isabet kancaları (ek paket ilkelleri: ek hasar; zorla hareket, durum, işaret saldırıdan sonra).
-  const hooked = result.hit && actor.paket ? hitHookResults(state, actor, target, { spell: !!option.spell, melee: !option.ranged && !option.spell, ranged: !!option.ranged && !option.spell,
+  const hooked = result.hit && (actor.paket || actor.effects?.some((e) => e.inspireUses?.length)) ? hitHookResults(state, actor, target, { spell: !!option.spell, melee: !option.ranged && !option.spell, ranged: !!option.ranged && !option.spell,
     critical: result.critical, advantage: mode === 'advantage', weaponType: dmgType ?? '', rolls: result.damage?.rolls ?? [], dice: swap?.dice ?? option.damage }, rng) : null;
   if (hooked) bonus = { ...bonus, extras: [...bonus.extras, ...hooked.extras] };
   // Kuyruk K54c: Yazgı Mührü: mühürlüye isabet eden dost mühürleyenin yeterliliği kadar ek hasar.

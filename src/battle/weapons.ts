@@ -27,7 +27,7 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     : weapon.ranged
       ? d.modifiers.dex
       : d.modifiers.str;
-  const proficient = pact || weaponProficient(sheet.classId, weapon, sheet.featureChoices);
+  const proficient = pact || weaponProficient(sheet.classId, weapon, sheet.featureChoices, sheet);
   const feats = featEffects(sheetFeats(sheet));
   const ranged = weapon.ranged || use === 'thrown';
   // Archery (Fighting Style): menzilli silahla saldırıya +2 (fırlatılan yakın dövüş silahı değil).

@@ -350,6 +350,12 @@ export interface ActiveEffect {
   hitType?: string;
   /** Görev BARD: Bardic Inspiration zarı (başarısız D20 Testinde atılır, atılınca etki biter). */
   inspire?: string;
+  /** Kuyruk P11 (paket `ilham.iade`): zar başarıyı getirmezse kalır (`target`) ya da Bard'a döner (`source`). */
+  inspireKeep?: 'target' | 'source';
+  /** Kuyruk P11: iade edilecek Bard kaynağı. */
+  inspireRes?: string;
+  /** Kuyruk P11 (paket `ilham.hedefler`): ilham zarı silah hasarına ve/veya isabet alınca AC'ye eklenebilir. */
+  inspireUses?: Array<'damage' | 'ac'>;
   damagePenalty?: { die: string; weaponOnly?: boolean; min?: number };
   /** Görev B1: silahta büyü yeteneği ve zar (Shillelagh: Club, Quarterstaff; d8 / seviyeyle büyür; Force seçeneği). */
   weaponOverride?: { weapons: string[]; die: string; force?: boolean; attack: number; mod: number; type?: string };
@@ -1870,7 +1876,7 @@ export type BattleEvent =
       /** Save zarının eklenti zarları (Bless, Bane; Görev R2; `total` dahil). */
       bonusDice?: RolledExtra[];
     }
-  | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number }
+  | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number; /** Kuyruk P11: iyileştirme zarları (ve paket değişikliği). */ rolls?: number[]; changed?: string }
   /** Kuyruk 19: savaşta HP zarı harcandı (Lifedrinker). */
   | { type: 'hit_die_spent'; actorId: string; left: number }
   /** Kuyruk 19: Animate Objects emri (bonus eylem; ekonomi `summonCommand`). */
