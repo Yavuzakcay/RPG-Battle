@@ -978,6 +978,9 @@
       "a7": {
         "sigmayan": "Drop: elde tutulanın yere düşmesi ve geri alınması yok (eşya bırakma modeli yok); hedef yalnızca turunu kaybeder.",
         "approx": null
+      },
+      "s2": {
+        "sigmayan": null
       }
     },
     "school": "Enchantment",
@@ -1602,6 +1605,9 @@
         "kapsamDisi": "Tutunma yeri: savaş haritasında ağ zemine serili sayılır (SRD: yere serilen ağ çökmez); yanma K55 çözücüsünde (yanan ağ).",
         "sigmayan": "Hafif örtü (görmeye dayalı Algı dezavantajı) uygulanmaz: oyunda Algı yalnız gizleneni bulmada kullanılır ve hafif örtü gizlenmeye izin vermez.",
         "approx": null
+      },
+      "s2": {
+        "sigmayan": null
       }
     },
     "school": "Conjuration",
@@ -1768,6 +1774,10 @@
         "sigmayan": "Küre 5 ft'ten yüksek engelleri ve 10 ft genişliğinden geniş çukurları aşamaz, yaratığın altıgenine itilince durur; yanıcı nesneleri tutuşturur.",
         "kapsamDisi": "Taşıma bonus eylemle (yuvarlama) ve çarpma hasarı Kuyruk 19 yoluyla; ışık 20 ft (4 altıgen).",
         "approx": null
+      },
+      "s2": {
+        "sphereTerrain": true,
+        "sigmayan": null
       }
     },
     "school": "Conjuration",
@@ -1847,6 +1857,26 @@
         "sigmayan": "Silindir 40 ft yüksekliğinde (uçanlar da etkilenir; oyunda katman yok) ve taşıma yalnızca boş/dolu altıgen merkezine; yaratığa taşınınca o tur save'i SRD'deki gibi bir kez.",
         "kapsamDisi": null,
         "approx": null
+      },
+      "s2": {
+        "zone": {
+          "rounds": 10,
+          "on": [
+            "cast",
+            "enter",
+            "end"
+          ],
+          "once": true,
+          "save": "con",
+          "damage": "2d10",
+          "damageType": "radiant",
+          "half": true,
+          "color": "#c9d6ff",
+          "icon": "🌙",
+          "revertShape": true,
+          "heightFt": 40
+        },
+        "sigmayan": null
       }
     },
     "school": "Evocation",
@@ -1899,6 +1929,10 @@
         },
         "sigmayan": "Metal nesne seçimi ve bırakma yok: her hedef metal taşıyor sayılır, başarısız save'de nesneyi bırakamaz ve saldırı/kontrol dezavantajını alır.",
         "approx": null
+      },
+      "s2": {
+        "metalDrop": true,
+        "sigmayan": null
       }
     },
     "school": "Transmutation",
@@ -2086,6 +2120,22 @@
       "a6": {
         "sigmayan": "Kamufle alan: tek ekran paylaşımlı oyunda alan herkese görünür (gizli katman yok); yapay zekâ zaten büyü alanlarından kaçınmaz.",
         "approx": null
+      },
+      "s2": {
+        "zone": {
+          "rounds": 100,
+          "difficult": 2,
+          "ground": true,
+          "on": [
+            "move"
+          ],
+          "damage": "2d4",
+          "damageType": "piercing",
+          "color": "#8a6a3a",
+          "icon": "🌵",
+          "camouflaged": true
+        },
+        "sigmayan": null
       }
     },
     "school": "Transmutation",
@@ -2333,6 +2383,9 @@
         "sigmayan": "Büyü bitince havadaki hedef düşer (yükseklik modeli yok: uçan her zaman zemin seviyesinde sayılır).",
         "kapsamDisi": null,
         "approx": null
+      },
+      "s2": {
+        "sigmayan": null
       }
     },
     "school": "Transmutation",
@@ -3336,6 +3389,19 @@
         "sigmayan": "Yükselme yüksekliği (20 ft'e dek, hareketle 20 ft yukarı/aşağı), duvara tutunarak itme ve 500 lb'ye dek nesneyi kaldırma.",
         "kapsamDisi": "Havada süzülen yürüyemez; zemin etkilerinden kurtulur.",
         "approx": null
+      },
+      "s2": {
+        "effect": {
+          "targets": 1,
+          "side": "any",
+          "rounds": 100,
+          "airborne": true,
+          "icon": "🎈",
+          "levitate": true
+        },
+        "levitateObject": true,
+        "sigmayan": null,
+        "kapsamDisi": null
       }
     },
     "school": "Transmutation",
@@ -3681,6 +3747,10 @@
         "kapsamDisi": "Boyut, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı).",
         "sigmayan": "Nesneye (taşınmayan) yapma yok: savaş nesneleri boyut taşımaz.",
         "approx": null
+      },
+      "s2": {
+        "resizeObjects": true,
+        "sigmayan": null
       }
     },
     "school": "Transmutation",
@@ -3758,6 +3828,35 @@
         "sigmayan": "Başka yaratığın alanından geçip durabilme ve küçük deliklerden geçme (yaratık alanında durmak kuralı yok).",
         "kapsamDisi": null,
         "approx": null
+      },
+      "s2": {
+        "effect": {
+          "targets": 1,
+          "side": "ally",
+          "rounds": 600,
+          "fly": 10,
+          "speedZero": true,
+          "resist": [
+            "bludgeoning",
+            "piercing",
+            "slashing"
+          ],
+          "immune": [
+            "Prone"
+          ],
+          "saveAdv": [
+            "str",
+            "dex",
+            "con"
+          ],
+          "noAttack": true,
+          "icon": "☁",
+          "dropAtZero": true,
+          "noCastForm": true,
+          "shareSpace": true,
+          "squeeze": true
+        },
+        "sigmayan": null
       }
     },
     "school": "Transmutation",
@@ -3978,6 +4077,11 @@
         "sigmayan": "Alanın içindeki bölgeleri büyünün dışında bırakma (yalnızca tam daire) ve 8 saatlik Enrichment (savaş dışı).",
         "kapsamDisi": null,
         "approx": null
+      },
+      "s2": {
+        "excludable": true,
+        "sigmayan": null,
+        "kapsamDisi": "Enrichment (8 saatlik döküm, bir yıl verim) savaş dışı."
       }
     },
     "school": "Transmutation",
@@ -4090,6 +4194,33 @@
         "sigmayan": "Duvarın serbest biçimi (oyunda düz ya da büyücünün çevresinde yay) ve dev boyutlu kaya/kuşatma mermilerinin duvardan geçmesi.",
         "kapsamDisi": null,
         "approx": null
+      },
+      "s2": {
+        "zone": {
+          "rounds": 10,
+          "windWall": true,
+          "on": [
+            "cast"
+          ],
+          "save": "str",
+          "damage": "4d8",
+          "damageType": "bludgeoning",
+          "half": true,
+          "color": "#cfe8f0",
+          "icon": "💨",
+          "dispersesGas": true,
+          "siegePass": [
+            "rock",
+            "boulder",
+            "ballista",
+            "catapult",
+            "kaya",
+            "balista",
+            "mancınık"
+          ]
+        },
+        "wallPath": 10,
+        "sigmayan": null
       }
     },
     "school": "Evocation",
@@ -4218,6 +4349,10 @@
         },
         "sigmayan": "Yanılsamanın biçimi ve konumu yok: hedefin yanılsamanın 5 ft içinde olduğu varsayılır, hasar her turda verilir.",
         "approx": null
+      },
+      "s2": {
+        "illusionAt": true,
+        "sigmayan": null
       }
     },
     "school": "Illusion",
@@ -4580,6 +4715,10 @@
         "freeHand": true,
         "sigmayan": "Bıçağı bırakıp bonus eylemle yeniden çağırma yok (elde silah değiştirme modeli yok); kalkan ya da yan el silahı taşıyan yapamaz.",
         "approx": null
+      },
+      "s2": {
+        "bladeRecall": true,
+        "sigmayan": null
       }
     },
     "school": "Evocation",

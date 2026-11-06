@@ -31,7 +31,7 @@ const claw = { name: 'Claw', bonus: 4, damageDice: '1d8+2', damageType: 'slashin
 const SLOTS = [4, 3, 3, 3, 0, 0, 0, 0, 0];
 
 /** Düz harita (isteğe bağlı: 4. sütunda satır 2–4 duvar, satır 3'te 5–9 taşlık); A büyücü (3,3), B düşman, C dost (2,3). */
-function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, opts: { wall?: boolean; rough?: boolean; bPos?: Offset } = {}): { state: BattleState; events: BattleEvent[] } {
+function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, opts: { wall?: boolean; rough?: boolean; bPos?: Offset; v?: number } = {}): { state: BattleState; events: BattleEvent[] } {
   const parts = [
     mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, spellAttack: 5, spellSaveDc: 13, spellMod: 3, proficiency: 3, spellSlots: SLOTS, ...a }),
     mk('B', { side: 'enemies', hp: 40, maxHp: 40, attacks: [claw], ...b }),
@@ -43,7 +43,7 @@ function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, opts: { w
   const pos: Record<string, Offset> = { A: o(3, 3), B: opts.bPos ?? o(6, 3), C: o(2, 3) };
   const combatants = { ...started.state.combatants };
   for (const [id, p] of Object.entries(pos)) combatants[id] = { ...(combatants[id] as Combatant), pos: p };
-  const state: BattleState = { ...started.state, status: 'active', turnIndex: started.state.order.indexOf('A'), combatants,
+  const state: BattleState = { ...started.state, ...(opts.v ? { kuralSurumu: opts.v } : {}), status: 'active', turnIndex: started.state.order.indexOf('A'), combatants,
     map: { ...(started.state.map as NonNullable<BattleState['map']>), tiles } };
   return { state, events: [{ type: 'battle_started', state }] };
 }
@@ -113,7 +113,7 @@ describe('uçuş (Fly, Levitate)', () => {
     expect(A(ended).hp).toBe(a.hp);
   });
   it('Levitate: düşman CON save; başarısızsa havada ve yürüyemez', () => {
-    const { state } = arena({ spellNames: ['Levitate'] });
+    const { state } = arena({ spellNames: ['Levitate'] }, {}, { v: 40 }); // S2 öncesi: hız 0 (S2'de tutunarak yarım hız, s2spells.test)
     const r = ok(cast(state, { spellName: 'Levitate', targetIds: ['B'] }, pad([20, 2])));
     expect(isAirborne(B(r.state))).toBe(true);
     expect(speedHexes(B(r.state))).toBe(0);

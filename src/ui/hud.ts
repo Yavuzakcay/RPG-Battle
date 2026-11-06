@@ -6,6 +6,7 @@ import { summonDef } from '../battle/summons';
 import { axialToOffset, distance, offsetToAxial, type Offset } from '../rules/hex';
 import { pickArea, type AreaPick, type AreaTargetSpec } from '../battle/areaAttack';
 import { mechanicsAt } from '../battle/spellVersion';
+import { ruleVersion } from '../battle/ruleVersion';
 import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
 import { teleportHexes } from '../battle/teleport';
@@ -211,8 +212,15 @@ export type AreaAct = { kind: 'spell'; spell: Spell } | { kind: 'monster'; index
 
 /** Kuyruk K57: alan büyüsünün savaşın kural sürümündeki nokta sayısı (Meteor Swarm 4; çoğu büyüde 1). */
 export function areaPointCount(state: BattleState, act: AreaAct | null): number {
-  return act?.kind === 'spell' ? Math.max(1, mechanicsAt(state, act.spell).multiPoint ?? 1) : 1;
+  if (act?.kind !== 'spell') return 1;
+  const m = mechanicsAt(state, act.spell);
+  // Kuyruk S2 (sürüm 41, Wind Wall `wallPath`): serbest duvar yolu, altıgen altıgen.
+  return Math.max(1, m.multiPoint ?? (ruleVersion(state) >= 41 ? m.wallPath ?? 1 : 1));
 }
+
+/** Kuyruk S2: alandan altıgen çıkarılabilir mi (Plant Growth). */
+export const areaExcludable = (state: BattleState, act: AreaAct | null): boolean =>
+  act?.kind === 'spell' && ruleVersion(state) >= 41 && !!mechanicsAt(state, act.spell).excludable;
 
 export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetSpec; rangeFt: number; label: string } | null {
   if (act.kind === 'spell') return act.spell.area ? { spec: act.spell.area, rangeFt: act.spell.rangeFt, label: act.spell.name } : null;
@@ -224,7 +232,9 @@ export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetS
   return s ? { spec: { shape: s.shape, sizeFt: s.sizeFt, origin: 'self', targets: 'all', ...(s.widthFt ? { widthFt: s.widthFt } : {}) }, rangeFt: 0, label: 'Breath Weapon' } : null;
 }
 
-export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | 'ring' | null, choice?: string | null, points?: Offset[]): Command {
+export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | 'ring' | null, choice?: string | null, points?: Offset[], exclude?: Offset[]): Command {
+  // Kuyruk S2 (Plant Growth): dışarıda bırakılan altıgenler.
+  if (act.kind === 'spell' && exclude?.length && !points?.length) return { ...areaActCommand(actorId, act, aim, slotLevel, wallShape, choice), excludeHexes: exclude } as Command;
   // Kuyruk K57 (Meteor Swarm): çok noktalı alanda ilk nokta `targetHex`, hepsi `targetHexes`.
   if (act.kind === 'spell' && points?.length) return { type: 'cast_spell', actorId, spellName: act.spell.name, targetHex: points[0] as Offset, ...(points.length > 1 ? { targetHexes: points } : {}), ...(slotLevel ? { slotLevel } : {}) };
   if (act.kind === 'spell') return { type: 'cast_spell', actorId, spellName: act.spell.name, ...(aim ? { targetHex: aim } : {}), ...(slotLevel ? { slotLevel } : {}), ...(choice ? { choice } : {}),
@@ -238,6 +248,12 @@ export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAc
   { hexes: Offset[]; friends: Combatant[]; foes: Combatant[]; error: string | null } {
   const s = areaActSpec(actor, act);
   if (!s) return { hexes: [], friends: [], foes: [], error: null };
+  // Kuyruk S2 (Wind Wall serbest yol): önizleme yolun kendisi.
+  if (act.kind === 'spell' && points?.length && ruleVersion(state) >= 41 && mechanicsAt(state, act.spell).wallPath) {
+    const on = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && points.some((p) => p.col === c.pos?.col && p.row === c.pos?.row));
+    const friend = (c: Combatant) => c.side === actor.side || c.civilian;
+    return { hexes: points, friends: on.filter(friend), foes: on.filter((c) => !friend(c)), error: null };
+  }
   const spec = wallShape && s.spec.shape === 'wall' ? { ...s.spec, bend: wallShape } : s.spec;
   const pick0 = pickArea(state, actor, spec, s.rangeFt, points?.length ? points[0] ?? aim : aim);
   if ('ok' in pick0) return { hexes: [], friends: [], foes: [], error: pick0.error };

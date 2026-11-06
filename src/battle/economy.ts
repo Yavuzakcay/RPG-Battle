@@ -345,7 +345,9 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Kuyruk A6: elde tutulan büyü (Produce Flame: Magic eylemi); tekrar alanları sürüme göre.
       const followed = heldFollow(state, actor)?.spell ?? actor.concentration?.spell;
       const fsp = spells.find((x) => x.name === followed);
-      const cost = (fsp ? mechanicsAt(state, fsp).repeat?.cost : undefined) ?? 'bonus';
+      // Kuyruk S2 (Flame Blade): bırakılan bıçağı çağırmak bonus eylem.
+      const recall = !!fsp && !!mechanicsAt(state, fsp).bladeRecall && !!actor.effects?.some((e) => e.id === fsp.srd && e.bladeGone);
+      const cost = recall ? 'bonus' : (fsp ? mechanicsAt(state, fsp).repeat?.cost : undefined) ?? 'bonus';
       return spend(actor, cost, followed ?? 'büyü');
     }
     case 'cast_spell': {

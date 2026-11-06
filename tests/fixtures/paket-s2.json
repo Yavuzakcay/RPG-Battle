@@ -1,0 +1,65 @@
+{
+  "format": "rpg-battle-icerik",
+  "version": 1,
+  "id": "s2-silah",
+  "name": {
+    "tr": "S2 silah modeli (kurgusal)",
+    "en": "S2 weapon model (fictional)"
+  },
+  "author": "Test",
+  "subclasses": [
+    {
+      "id": "bag-muhafizi",
+      "class": "fighter",
+      "name": {
+        "tr": "Bağ Muhafızı",
+        "en": "Bond Warden"
+      },
+      "role": {
+        "tr": "Kurgusal muhafız (test)",
+        "en": "Fictional warden (test)"
+      },
+      "features": [
+        {
+          "id": "donen-kilic",
+          "level": 3,
+          "name": {
+            "tr": "donen-kilic",
+            "en": "donen-kilic"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "silahFirlat",
+              "normalFt": 20,
+              "uzunFt": 60
+            }
+          ]
+        },
+        {
+          "id": "kilic-bagi",
+          "level": 3,
+          "name": {
+            "tr": "kilic-bagi",
+            "en": "kilic-bagi"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "silahBagi",
+              "tetik": "bonus"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

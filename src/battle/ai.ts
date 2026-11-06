@@ -41,6 +41,8 @@ import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
 import { heightAt, heightCombatRule } from './heights';
 import { ruleVersion } from './ruleVersion';
+import { zoneKnownBy } from './hiddenZones';
+import { zoneSpecOf } from './zones';
 import { climbTargets } from './climb';
 import { rageProblem, recklessProblem } from './rage';
 import { activeBuffs } from './divine';
@@ -430,7 +432,7 @@ function controlArea(state: BattleState, actor: Combatant): Command | null {
   for (const spell of list) {
     for (const f of foesOf(state, actor)) {
       if (!f.pos) continue;
-      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex: f.pos };
+      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex: f.pos, ...spareAllies(state, actor, spell) };
       const r = tryCmd(state, actor, cmd);
       if (!r.ok) continue;
       const ids = r.events.filter((e) => e.type === 'save_resolved').map((e) => (e.type === 'save_resolved' ? e.targetId : ''));
@@ -450,6 +452,13 @@ function controlArea(state: BattleState, actor: Combatant): Command | null {
  * en az iki düşman, hiç dost yoksa (büyücü `notCaster` ya da yalnızca düşmanlara işleyen alanda sayılmaz); düşmanların
  * altıgenlerine nişan, en çok düşman kapsayan. Görüş/örtü alanları (Fog Cloud, Darkness, Silence) ve duvar yapılmaz.
  */
+/** Kuyruk S2 (sürüm 41, Plant Growth `excludable`): dostların altıgenleri alanın dışında bırakılır. */
+function spareAllies(state: BattleState, actor: Combatant, spell: (typeof spells)[number]): { excludeHexes?: Offset[] } {
+  if (ruleVersion(state) < 41 || !mechanicsAt(state, spell).excludable) return {};
+  const hexes = Object.values(state.combatants).filter((c) => c.side === actor.side && c.hp > 0 && c.pos).map((c) => c.pos as Offset);
+  return hexes.length ? { excludeHexes: hexes } : {};
+}
+
 function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
   if (!state.map) return null;
   const usable = castable(actor).filter((x) => x.area && x.mechanics.zone && x.mechanics.kind !== 'summon' && !x.mechanics.zone.windWall
@@ -459,7 +468,7 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
     const z = s.mechanics.zone;
     for (const f of foes) {
       if (!f.pos) continue;
-      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos };
+      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos, ...spareAllies(state, actor, s) };
       const r = tryCmd(state, actor, cmd);
       const made = r.ok ? r.events.find((e) => e.type === 'zone_created') : undefined;
       if (made?.type !== 'zone_created') continue;
@@ -748,6 +757,12 @@ function risk(state: BattleState, actor: Combatant, h: Offset): number {
   r += surfaceRisk(state, h, isAirborne(actor));
   // Görev S2: patlayacak barut fıçısının yanı (ev kuralı açıksa).
   r += objectRisk(state, h);
+  // Kuyruk S2 (sürüm 41): bilinen düşman hasar alanı (Spike Growth); gizli ve fark edilmemişse bilinmez, kaçınılmaz.
+  if (ruleVersion(state) >= 41) for (const z of state.map?.zones ?? []) {
+    if (z.side === actor.side || !zoneKnownBy(z, actor) || !z.hexes.some((x) => x.col === h.col && x.row === h.row)) continue;
+    const sp = zoneSpecOf(z);
+    if (sp?.damage && (sp.on ?? []).some((t) => t === 'move' || t === 'enter') && !(sp.ground && isAirborne(actor))) r += 20;
+  }
   if (isAirborne(actor)) return r;
   if (isRiskyHex(state, h)) r += 50;
   if (state.map?.lavaWarning?.hexes.some((w) => w.col === h.col && w.row === h.row)) r += 100;

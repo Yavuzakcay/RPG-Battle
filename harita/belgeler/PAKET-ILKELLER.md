@@ -6,7 +6,7 @@ Bu belge `src/content/ilkelSema.ts` tablosundan üretilir (`npx vite-node script
 
 Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilkeller": [{ "tur": "ekHasar", ... }, ...]`. Eski alanlar (`effect`: stat, trait, reaction, effect) aynen çalışır; ikisi birlikte de yazılabilir. Paket düzeyinde `yaratiklar` dizisi `cagir` ilkelinin çağırdığı yaratıkları tanımlar.
 
-İlkeller (45; P6: zarMuhru, engeldenGec eklendi):
+İlkeller (47; P6: zarMuhru, engeldenGec eklendi):
 
 | İlkel | Ne yapar | Tetikler | Mevcut sistem |
 |---|---|---|---|
@@ -55,6 +55,8 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 | `flurryEk` | Flurry of Blows ek vuruş sayısı (vuruşlar farklı hedeflere dağıtılabilir; hedef her vuruşta seçilir). | `pasif` | Süren etki `pkFlurry` (`economy.ts` Flurry kalanı). Flurry vuruşuna bağlı etkiler `kosul: ["flurryVurusu"]` ile (ör. isabette `iyilestirme`). Sürüm 38+. |
 | `olumZari` | Ölüm kurtulmasında başarı atınca can kazanırsın (ayağa kalkarsın). | `pasif` | Komut sonu: `death_save` (başarı) → `healed` (0 HP'den kalkış). Sürüm 38+. |
 | `canArtisi` | Savaş başında en çok can artar (ve can). | `pasif` | Savaş kuruluşunda (`withPaket`) en çok can ve can artar (başlangıç olayı taşır; Aid yolu). Sürüm 38+. |
+| `silahFirlat` | Yakın dövüş silahın fırlatılabilir olur ve saldırıdan sonra eline döner (Thrown özelliği + dönüş). | `pasif` | Savaş kuruluşunda (`withPaket`) Thrown özelliği olmayan her yakın dövüş silahına fırlatma seçeneği (`returns`; SRD Thrown: STR, tek el). Fırlatılan silah elden çıkmaz (döner). Sürüm 41+ (Kuyruk S2 el modeli). |
+| `silahBagi` | Silahla bağ: zorla elinden alınamaz (Incapacitated değilken) ve yere düşmüşse düğmeyle eline çağrılır (aynı savaş alanında, uzaklık yok). | `bonus`, `eylem`, `serbest` | Savaşçıda `bonded` (savaş kuruluşu); zorlamayla bırakma (`dropEvents` `forced`, ör. Command "Drop") bağlı silahı düşürmez. Düğme: yerdeki bağlı silah `item_picked` (`bond`, nesne etkileşimi harcamaz). Sürüm 41+ (Kuyruk S2 el modeli). |
 
 ## Ortak kurallar
 
@@ -1016,6 +1018,42 @@ Savaş başında en çok can artar (ve can).
 
 ```json
 {"tur":"canArtisi","miktar":"$lvl"}
+```
+
+## `silahFirlat`
+
+Yakın dövüş silahın fırlatılabilir olur ve saldırıdan sonra eline döner (Thrown özelliği + dönüş).
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: Savaş kuruluşunda (`withPaket`) Thrown özelliği olmayan her yakın dövüş silahına fırlatma seçeneği (`returns`; SRD Thrown: STR, tek el). Fırlatılan silah elden çıkmaz (döner). Sürüm 41+ (Kuyruk S2 el modeli).
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `normalFt` | tamsayı | hayır | `20` | Normal menzil (ft). |
+| `uzunFt` | tamsayı | hayır | `60` | Uzun menzil (ft). |
+| `silah` | metin | hayır | — | Yalnız bu silah kimliği (yoksa eldeki bütün yakın dövüş silahları). |
+
+Örnek:
+
+```json
+{"tur":"silahFirlat","normalFt":20,"uzunFt":60}
+```
+
+## `silahBagi`
+
+Silahla bağ: zorla elinden alınamaz (Incapacitated değilken) ve yere düşmüşse düğmeyle eline çağrılır (aynı savaş alanında, uzaklık yok).
+
+- Tetikler: `bonus`, `eylem`, `serbest` (varsayılan `bonus`).
+- Sistem ve kanca: Savaşçıda `bonded` (savaş kuruluşu); zorlamayla bırakma (`dropEvents` `forced`, ör. Command "Drop") bağlı silahı düşürmez. Düğme: yerdeki bağlı silah `item_picked` (`bond`, nesne etkileşimi harcamaz). Sürüm 41+ (Kuyruk S2 el modeli).
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `silah` | metin | hayır | — | Yalnız bu silah kimliği (yoksa eldeki bütün silahlar). |
+
+Örnek:
+
+```json
+{"tur":"silahBagi","tetik":"bonus"}
 ```
 
 ## Çağrı yaratığı (`yaratiklar`)

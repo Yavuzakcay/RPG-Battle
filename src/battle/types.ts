@@ -95,6 +95,12 @@ export interface ActiveEffect {
   /** Kuyruk S1 (Calm Emotions): bastırılan durumlar; etki bitince reducer geri yazar (`timer`: süreli olanın sayacı, bastırıldığı turdan bu yana geçen tur düşülür; `by`: veren etki sürüyorsa). */
   /** Kuyruk S1 (Suggestion "bırak"): silahını bıraktı (silahla saldıramaz). */
   disarmed?: boolean;
+  /** Kuyruk S2 (sürüm 41): Levitate (hedef havada; dikey hareketi yapan yönetir), Gaseous Form yaratık altıgeninde durma ve kapı aralığından geçme, Flame Blade bırakıldı, Phantasmal Force yanılsama alanı. */
+  levitate?: boolean;
+  shareSpace?: boolean;
+  squeeze?: boolean;
+  bladeGone?: boolean;
+  illusionZone?: string;
   suppressed?: Array<{ condition: string; timer?: ConditionTimer; round?: number; by?: string }>;
   ongoing?: { dice: string; type: string; save: Ability; dc: number; noSave?: boolean };
   command?: CommandWord;
@@ -424,6 +430,8 @@ export interface UsableFeature {
 
 export interface Economy {
   action: boolean;
+  /** Kuyruk S2: bu turun serbest nesne etkileşimi (yerden alma) kullanıldı. */
+  interacted?: boolean;
   bonus: boolean;
   reaction: boolean;
   /** Attack eylemiyle kalan saldırı sayısı (Extra Attack). */
@@ -723,6 +731,15 @@ export interface Combatant {
   pos: Offset | null;
   /** Bu turda harcanan hareket (altıgen). Turu gelince sıfırlanır. */
   movementUsed: number;
+  /** Kuyruk S2 (sürüm 41): zeminin (yükseklik katmanı) üstündeki irtifa (ft; yoksa 0). `vertTurn`: Levitate'in bu turdaki dikey hareketi. */
+  altitudeFt?: number;
+  vertTurn?: { turn: string; ft: number };
+  /** Kuyruk S2: irtifa Levitate'ten (bitince süzülerek iner, hasarsız). */
+  altitudeGentle?: boolean;
+  /** Kuyruk S2: elden bırakılan silah/eşya kimlikleri (elde tutulanlar = saldırı seçenekleri eksi bunlar; `hands.ts`). */
+  dropped?: string[];
+  /** Kuyruk S2 (paket `silahBagi`): bağlı silah kimlikleri (zorla düşmez, ele çağrılır). */
+  bonded?: string[];
   /** Uçuş hızı (ft), yoksa 0. Uçan yaratık lav ve zorlu zeminden etkilenmez. */
   fly: number;
   /** STR skoru (uzun atlama menzili için). */
@@ -773,6 +790,8 @@ export interface Combatant {
   heavyArmor: boolean;
   /** Kuyruk A6: zırh giyiyor (karakterde zırh türü `none` değil; canavarda bilinmez). */
   armored?: boolean;
+  /** Kuyruk S2: metal zırh giyiyor (Heat Metal). */
+  metalArmor?: boolean;
   /** Kuyruk A7: kalkan taşıyor (karakterde; Flame Blade boş el denetimi). */
   shieldHeld?: boolean;
   /** Harita kurallarının savaşçıya bıraktığı izler (Adım 8). */
@@ -1050,7 +1069,9 @@ export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' 
   /** Görev K26: balista, donmuş şelale. */
   | 'ballista' | 'frozenFall'
   /** Kuyruk K53 S3: zeminden çağrılan taş/enkaz (`objectMotion.ts`). */
-  | 'rock';
+  | 'rock'
+  /** Kuyruk S2: elden düşen eşya (`heldItems.ts`). */
+  | 'droppedItem';
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 'read' | 'out'
   /** Görev K26: balista yüklü / boş. */
   | 'loaded' | 'spent';
@@ -1063,6 +1084,10 @@ export interface MapObject {
   gizli?: boolean; found?: boolean; findDc?: number; flag?: string;
   /** Kuyruk S1 (Faerie Fire): bu tura dek parlıyor (nesneye saldırı avantajlı). */
   outlined?: number;
+  /** Kuyruk S2: irtifa (Levitate; yapan `levitatedBy`), yerdeki eşya (`item`, geri alınınca dönen `options`), boyut büyüsü (`resized`, yapan `resizedBy`, asıl HP `baseHp`). */
+  altitudeFt?: number; levitatedBy?: string;
+  item?: string; options?: AttackOption[];
+  resized?: 'Enlarge' | 'Reduce'; resizedBy?: string; baseHp?: number;
 }
 /** Görev S4: grup durumu ve grup (alan altıgenleri; üyeler savaş başında alanda duran düşmanlar). */
 export type GroupState = 'asleep' | 'calm' | 'alarmed';
@@ -1100,6 +1125,10 @@ export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take
  */
 export interface SpellZone {
   id: string;
+  /** Kuyruk S2 (sürüm 41): bu taraftan gizli alan (Spike Growth); `seenBy` fark edenler. `visibleTo`: yalnız bunlara görünür (Phantasmal Force). */
+  hiddenFrom?: Side;
+  seenBy?: string[];
+  visibleTo?: string[];
   spellId: string;
   name: string;
   casterId: string;
@@ -1284,6 +1313,8 @@ export interface AttackOption {
   reachFt?: number;
   /** Menzilli saldırının normal ve uzun menzili (ft). */
   range?: [number, number];
+  /** Kuyruk S2 (paket `silahFirlat`): fırlatılan silah saldırıdan sonra ele döner (elden çıkmaz). */
+  returns?: boolean;
   /** Ortam kurallarında anahtar kelime aramak için küçük harfli tarif. */
   tag: string;
   /** Saldırı zarındaki yetenek (Rage hasarı ve Reckless Attack: STR). */
@@ -1444,8 +1475,12 @@ export type Command =
       type: 'cast_spell'; actorId: string; spellName: string; targetId?: string; targetHex?: Offset; slotLevel?: number;
       /** Çok hedefli etki büyüsü (Bless, Bane, Heroism; Görev R2): hedefler (yoksa `targetId`). */
       targetIds?: string[];
-      /** Kuyruk A8: birden çok merkezli alan (Meteor Swarm: dört nokta). */
+      /** Kuyruk A8: birden çok merkezli alan (Meteor Swarm: dört nokta). Kuyruk S2: Wind Wall serbest duvar yolu. */
       targetHexes?: Offset[];
+      /** Kuyruk S2 (sürüm 41): alandan dışarıda bırakılan altıgenler (Plant Growth). */
+      excludeHexes?: Offset[];
+      /** Kuyruk S2: Levitate ilk yükselme (ft; yoksa veriden). */
+      altitudeFt?: number;
       /** Görev SORCERER: bu yapımda kullanılan Metamagic seçenekleri. */
       metamagic?: string[];
       /**
@@ -1564,6 +1599,11 @@ export type Command =
   | { type: 'gaze'; actorId: string; targetId: string }
   | { type: 'sphere_carry'; actorId: string; targetId: string; drop?: boolean }
   | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string }
+  /** Kuyruk S2 (sürüm 41): dikey hareket (uçan kendi hareketiyle; Levitate'i yapan hedefini ya da nesneyi turda 20 ft'e dek). */
+  | { type: 'vertical_move'; actorId: string; targetId?: string; objectId?: string; toFt: number }
+  /** Kuyruk S2: elindekini bırakma (serbest) ve yerden alma (nesne etkileşimi). */
+  | { type: 'drop_item'; actorId: string; item: string }
+  | { type: 'pick_up'; actorId: string; objectId: string }
   /** Kuyruk S1 (sürüm 40): seçilen dostlarla haritadan ayrılma (Plane Shift); büyü yapımının (`cast_spell`) kısa yolu. */
   | { type: 'retreat'; actorId: string; spellName: string; targetIds: string[]; slotLevel?: number };
 
@@ -1954,6 +1994,7 @@ export type BattleEvent =
   | { type: 'object_destroyed'; objectId: string; label: string }
   | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk A7: nesne ışığı (null kaldırır). */ light?: { r: number; spell: string; by: string } | null; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset;
       /** Kuyruk S1 (Faerie Fire): parlama süresi (tur). */ outlined?: number;
+      /** Kuyruk S2: irtifa / Levitate / boyut büyüsü (null kaldırır). */ altitudeFt?: number; levitatedBy?: string | null; resized?: 'Enlarge' | 'Reduce' | null; resizedBy?: string; hp?: number;
       /** Kuyruk 36: doğaçlama silah alındı: taşıyanın silah seçeneklerine eklenir. */ arm?: AttackOption }
   | { type: 'goal_changed'; goalId: string; status: GoalStatus }
   | { type: 'groups_formed'; members: Record<string, string[]> }
@@ -1976,6 +2017,13 @@ export type BattleEvent =
   /** Görev S1: büyüyle stabil etme ya da diriltme (Spare the Dying, Revivify). */
   | { type: 'life_restored'; targetId: string; hpAfter: number; life: 'alive' | 'stable'; label: string }
   /** Görev S1: ışınlanma (fırsat saldırısı tetiklemez; sıra ve konsantrasyon korunur). */
+  /** Kuyruk S2: irtifa (ft) değişti (yaratık ya da nesne); `cost` harcanan hareket (altıgen), `turn`/`moved` Levitate turluk sınırı. */
+  | { type: 'altitude_changed'; targetId?: string; objectId?: string; altitudeFt: number; label: string; cost?: number; turn?: string; moved?: number; byId?: string; /** Levitate: bitince süzülerek iner. */ gentle?: boolean }
+  /** Kuyruk S2: elden düşen eşya (yerde nesne olur; `options` geri alınınca dönen saldırı seçenekleri; nesnesizse kaybolur). */
+  | { type: 'item_dropped'; actorId: string; item: string; label: string; objectId?: string; at?: Offset; options?: AttackOption[] }
+  | { type: 'item_picked'; actorId: string; objectId: string; label: string; bond?: boolean }
+  /** Kuyruk S2: gizli alan fark edildi (Spike Growth). */
+  | { type: 'zone_spotted'; zoneId: string; by: string[] }
   /** Kuyruk S1: haritadan ayrılanlar (Plane Shift; `offFloor: 'duzlem'`, konum yok, sırada atlanır, tarafı ayakta tutmaz). */
   | { type: 'retreated'; actorId: string; ids: string[]; label: string }
   | { type: 'teleported'; actorId: string; from: Offset; to: Offset; label: string; /** Kuyruk 19: harcanan hareket (altıgen) ve Tree Stride işareti. */ cost?: number; stride?: boolean }

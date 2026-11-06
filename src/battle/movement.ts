@@ -15,7 +15,7 @@ import { getMap } from '../map/maps';
 import { enterCost, terrainOf, type TerrainType } from '../map/terrain';
 import { isIncapacitated, speedZero } from '../rules/conditions';
 import {
-  AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, findPath, hexKey, isInside, offsetToAxial, sameHex,
+  AXIAL_DIRECTIONS, axialToOffset, directionTo, distance, findPath, hexKey, isInside, neighbors, offsetToAxial, sameHex,
   type Offset,
 } from '../rules/hex';
 import { canControl, fail, finish, isIntangible, isTargetable, type CommandResult, type Failure } from './common';
@@ -28,8 +28,10 @@ import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './featur
 import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
-import { climbs, isAirborne, spellJumpFt } from './flight';
-import { heightDelta, heightMoveRule, heightStepFn, levelFeet } from './heights';
+import { climbs, flySpeed, isAirborne, spellJumpFt } from './flight';
+import { heightAt, heightDelta, heightMoveRule, heightStepFn, levelFeet } from './heights';
+import { mechanicsAt } from './spellVersion';
+import s2rules from '../../data/s2-kurallar.json';
 import { usedThisTurn } from './classTraits';
 import { turnKey } from './economy';
 import { conveyorBlocks, conveyorFlow, conveyorSlideEvents, isUphillStep } from './conveyor';
@@ -221,7 +223,21 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const hstep = heightStepFn(state, flying || climber);
   // Kuyruk 19: Control Water girdabındaki yaratık (Athletics ile kaçmadıysa) merkezden uzaklaşamaz.
   const vortex = vortexBlocks(state, actor);
+  // Kuyruk S2 (sürüm 41): Gaseous Form yaratık altıgeninden geçer ve kapı aralığından süzülür; Levitate'li yaratık
+  // yalnız bitişik duvara/engele tutunarak (tırmanır gibi, iki kat) yer değiştirir.
+  const s2 = ruleVersion(state) >= 41;
+  const gas = s2 && !!actor.effects?.some((e) => e.shareSpace);
+  const squeeze = s2 && !!actor.effects?.some((e) => e.squeeze);
+  const grip = s2 && !!actor.effects?.some((e) => e.levitate) && flySpeed(actor) <= 0;
+  const size0 = sizeOf(state);
+  const wallNear = (h: Offset) => neighbors(h, size0).some((n) => terrainAt(state, n).movement === 'blocked');
+  const doorAt = (h: Offset) => (state.map?.objects ?? []).some((o) => (o.kind === 'door' || o.kind === 'gate') && o.state !== 'open' && sameHex(o.at, h));
+  const sphere = s2 ? sphereLimit(state, actor) : null;
   return (h: Offset, prev: Offset): number | null => {
+    if (grip && !wallNear(prev)) return null;
+    const sph = sphere ? sphere(h, prev) : 'ok';
+    if (sph === 'block') return null;
+    if (sph === 'jump') return 1;
     if (leashBlocks(leash, h, prev)) return null;
     if (vortex && vortex(h, prev)) return null;
     const lift = hstep ? hstep(h, prev) : 0;
@@ -233,7 +249,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
     const free = freeMove || (!!ward && ward(h));
     const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
-    const wall = !!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null;
+    const wall = (!!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null) || (squeeze && doorAt(h));
     const terrain = wall ? through : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
@@ -245,11 +261,34 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     // Kuyruk 19 (Halfling Nimbleness): en az bir boy büyük yaratığın altıgeninden geçer (zorlu arazi gibi).
     const nimble = !!enemy && ((!!actor.traits?.includes('halfling-nimbleness') && sizeRank(enemy.size) > sizeRank(actor.size))
       // Kuyruk 19 (Swarm, Air/Water/Fire Form): yaratık altıgenlerinden geçer; sürünün altıgeninden de herkes geçer.
-      || !!actor.effects?.some((e) => e.passCreatures) || !!enemy.effects?.some((e) => e.passCreatures && e.noHeal));
+      || !!actor.effects?.some((e) => e.passCreatures) || !!enemy.effects?.some((e) => e.passCreatures && e.noHeal) || gas);
     const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
     // Kuyruk 19 (stormRules): fırtınada uçmak iki kat hareket.
     const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1) * (stormFly ? 2 : 1);
-    return cost === null ? null : cost * slow;
+    return cost === null ? null : cost * slow * (grip ? 2 : 1);
+  };
+}
+
+/**
+ * Kuyruk S2 (sürüm 41, Flaming Sphere `sphereTerrain`): küre 5 ft'ten yüksek basamağa çıkamaz ve 10 ft'ten geniş çukuru
+ * (ölümcül/uçurum zemini, düz çizgide art arda altıgen) aşamaz; daha dar çukurun üstünden atlar ('jump'). Küre değilse null.
+ */
+function sphereLimit(state: BattleState, actor: Combatant): ((h: Offset, prev: Offset) => 'ok' | 'jump' | 'block') | null {
+  const sp = actor.summon ? spells.find((x) => x.id === actor.summon?.spellId) : undefined;
+  if (!sp || !mechanicsAt(state, sp).sphereTerrain) return null;
+  const lim = s2rules.flamingSphere;
+  const size = sizeOf(state);
+  const pit = (h: Offset) => isInside(h, size) && (terrainAt(state, h).movement === 'deadly' || !!terrainAt(state, h).flyersPass);
+  const lvl = levelFeet(state);
+  return (h, prev) => {
+    if ((heightAt(state, h) - heightAt(state, prev)) * lvl > lim.maxClimbFt) return 'block';
+    if (!pit(h)) return 'ok';
+    const a = offsetToAxial(prev); const b = offsetToAxial(h);
+    const d = { q: b.q - a.q, r: b.r - a.r };
+    let run = 1;
+    for (let k = 1, x = prev; k < 6 && pit(x); k++) { run++; const ax = offsetToAxial(x); x = axialToOffset({ q: ax.q - d.q, r: ax.r - d.r }); }
+    for (let k = 1, x = axialToOffset({ q: b.q + d.q, r: b.r + d.r }); k < 6 && pit(x); k++) { run++; const ax = offsetToAxial(x); x = axialToOffset({ q: ax.q + d.q, r: ax.r + d.r }); }
+    return run * 5 <= lim.maxGapFt ? 'jump' : 'block';
   };
 }
 
@@ -264,9 +303,12 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     if (!isInside(h, size)) return fail('Harita dışına çıkılamaz.');
     const target = terrainAt(state, h);
     if (target.movement === 'deadly' && !flying) return fail(`${hexLabel(h)} lav: gönüllü olarak girilemez.`);
-    if (target.movement === 'blocked') return fail(`${hexLabel(h)} geçilmez (${target.name}).`);
+    // Kuyruk S2 (sürüm 41, Gaseous Form): kapı aralığında ve başka yaratığın altıgeninde durabilir.
+    const s2gas = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.shareSpace);
+    const doorGap = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.squeeze) && (state.map?.objects ?? []).some((o) => (o.kind === 'door' || o.kind === 'gate') && o.state !== 'open' && sameHex(o.at, h));
+    if (target.movement === 'blocked' && !doorGap) return fail(`${hexLabel(h)} geçilmez (${target.name}).`);
     const other = occupantAt(state, h, actor.id);
-    if (other) return fail(`${hexLabel(h)} dolu (${other.name}).`);
+    if (other && !s2gas) return fail(`${hexLabel(h)} dolu (${other.name}).`);
   }
 
   const cost = moveCostFn(state, actor);

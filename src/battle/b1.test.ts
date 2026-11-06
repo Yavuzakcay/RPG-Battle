@@ -33,7 +33,7 @@ const sword: AttackOption = { label: 'Longsword', attackBonus: 4, damage: '1d8+2
   tag: 'longsword', weaponId: 'longsword', weaponDamage: '1d8', abilityMod: 2 };
 
 /** Düz harita; sıra A (büyücü, 3,3), B (düşman, 4,3), C (dost, 2,3). */
-function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, c: Partial<Combatant> = {}, bPos = o(4, 3)) {
+function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, c: Partial<Combatant> = {}, bPos = o(4, 3), kuralSurumu?: number) {
   const parts = [
     mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, spellAttack: 5, spellSaveDc: 13, spellMod: 3, proficiency: 3, spellSlots: SLOTS, weaponOptions: [staff, sword], ...a }),
     mk('B', { side: 'enemies', hp: 60, maxHp: 60, attacks: [claw], ...b }),
@@ -44,7 +44,7 @@ function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, c: Partia
   const combatants = { ...started.state.combatants };
   for (const [id, p] of Object.entries(pos)) combatants[id] = { ...(combatants[id] as Combatant), pos: p };
   const tiles = Array.from({ length: 7 }, () => '.'.repeat(15));
-  const state: BattleState = { ...started.state, status: 'active', order: ['A', 'B', 'C'], turnIndex: 0, combatants,
+  const state: BattleState = { ...started.state, ...(kuralSurumu ? { kuralSurumu } : {}), status: 'active', order: ['A', 'B', 'C'], turnIndex: 0, combatants,
     map: { ...(started.state.map as NonNullable<BattleState['map']>), tiles } };
   return new Run(state);
 }
@@ -205,7 +205,7 @@ describe('süreli tekrar', () => {
     expect(fx(miss.c('B'), 'spells:acid-arrow')).toBeUndefined();
   });
   it('Heat Metal: CON save başarısızsa saldırıları dezavantajlı (büyücünün sonraki turuna dek); sonraki turlarda bonus eylemle aynı hedefe, slotsuz', () => {
-    const r = arena({ spellNames: ['Heat Metal'] }, { saves: { str: 0, dex: 0, con: -10, int: 0, wis: 0, cha: 0 } }, {}, o(8, 3));
+    const r = arena({ spellNames: ['Heat Metal'] }, { saves: { str: 0, dex: 0, con: -10, int: 0, wis: 0, cha: 0 } }, {}, o(8, 3), 40); // S2 öncesi kural (metal/bırakma s2spells.test)
     r.cast({ spellName: 'Heat Metal', targetId: 'B' });
     expect(r.c('B').hp).toBe(50);
     expect(fx(r.c('B'), 'spells:heat-metal')).toMatchObject({ attackDis: {}, untilSourceTurn: true });
@@ -307,7 +307,7 @@ describe('boyut, uçuş, itme ve Ensnaring Strike', () => {
     r.replays();
   });
   it('Levitate dosta save\'siz; Gaseous Form: uçuş 10, B/P/S direnci, Prone bağışıklığı, saldırı ve büyü yok', () => {
-    const r = arena({ spellNames: ['Levitate', 'Gaseous Form'] });
+    const r = arena({ spellNames: ['Levitate', 'Gaseous Form'] }, {}, {}, o(4, 3), 40); // S2 öncesi (irtifa s2spells.test)
     const lev = r.cast({ spellName: 'Levitate', targetId: 'C' });
     expect(lev.some((e) => e.type === 'save_resolved')).toBe(false);
     expect(fx(r.c('C'), 'spells:levitate')?.airborne).toBe(true);

@@ -271,6 +271,26 @@ export function reactionOf(p: Ilkel, c: Combatant, key: string, i: number, name:
   return null;
 }
 
+/** Kuyruk S2: eldeki silah kimlikleri (yakın dövüş süzgeci isteğe bağlı; silahsız ve büyü saldırısı hariç). */
+function weaponIdsFor(c: Combatant, only: string | undefined, meleeOnly: boolean): string[] {
+  const ids = c.weaponOptions.filter((o) => o.weaponId && o.weaponId !== 'unarmed-strike' && o.weaponId !== 'improvised' && !o.spell && (!meleeOnly || !o.ranged))
+    .map((o) => o.weaponId as string);
+  return [...new Set(ids)].filter((id) => !only || id === only);
+}
+
+/** Kuyruk S2 `silahFirlat`: Thrown seçeneği olmayan yakın dövüş silahına fırlatma seçeneği (SRD Thrown; ele döner). */
+function thrownOptions(c: Combatant, p: Ilkel, already: Combatant['weaponOptions']): Combatant['weaponOptions'] {
+  const normal = typeof p.normalFt === 'number' ? p.normalFt : 20;
+  const long = typeof p.uzunFt === 'number' ? p.uzunFt : 60;
+  return weaponIdsFor(c, p.silah as string | undefined, true).flatMap((id) => {
+    if ([...c.weaponOptions, ...already].some((o) => o.weaponId === id && o.ranged)) return [];
+    const base = c.weaponOptions.find((o) => o.weaponId === id && !o.ranged && !o.offhand);
+    if (!base) return [];
+    const { reachFt: _r, twoHands: _t, minDie: _m, martialArts: _ma, ...rest } = base;
+    return [{ ...rest, label: `${base.label} (fırlatma, döner)`, ranged: true, range: [normal, long] as [number, number], returns: true }];
+  });
+}
+
 /**
  * Savaş başı (oluşturucu): paket düğmeleri, tepkiler, pasif inisiyatif eklentisi ve koşulsuz pasif etkiler. Koşullu
  * pasifler ve ölümden dönüş komut sonunda eşitlenir (`index.ts`). Paketsiz savaşta durum aynen döner.
@@ -288,7 +308,12 @@ export function withPaket(state: BattleState): BattleState {
     let attacks = c.attacksPerAction;
     // P9 (sürüm 38+): en çok can artışı savaş kuruluşunda (Aid yolu; başlangıç olayı durumu taşır, replay aynı).
     let hpPlus = 0;
+    // Kuyruk S2 (sürüm 41+): silah modeli (fırlatıp dönen silah, bağlı silah).
+    const thrownAdd: Combatant['weaponOptions'] = [];
+    const bonded: string[] = [];
     for (const f of c.paket.ozellikler) f.ilkeller.forEach((p, i) => {
+      if (p.tur === 'silahBagi' && ruleVersion(state) >= 41) bonded.push(...weaponIdsFor(c, p.silah as string | undefined, false));
+      if (p.tur === 'silahFirlat' && ruleVersion(state) >= 41) thrownAdd.push(...thrownOptions(c, p, thrownAdd));
       if (p.tur === 'tepki') { const r = reactionOf(p, c, f.key, i, (p.ad as string | undefined) ?? f.ad); if (r) reactions.push(r); }
       if (tetikOf(p) !== 'pasif' || p.kosul) return;
       // P6: ikinci saldırı (Saldırı eylemindeki saldırı sayısı en az bu).
@@ -306,6 +331,8 @@ export function withPaket(state: BattleState): BattleState {
       ...(init ? { initiativeBonus: c.initiativeBonus + init } : {}),
       ...(attacks !== c.attacksPerAction ? { attacksPerAction: attacks } : {}),
       ...(hpPlus ? { maxHp: c.maxHp + hpPlus, hp: c.hp + hpPlus } : {}),
+      ...(thrownAdd.length ? { weaponOptions: [...c.weaponOptions, ...thrownAdd] } : {}),
+      ...(bonded.length ? { bonded: [...new Set(bonded)] } : {}),
       // P7: savaş başındaki kaynaklar (`kaynakYenile` üst sınırı).
       paket: { ...c.paket, kaynakBas: Object.fromEntries(Object.values(c.paket.kaynaklar ?? {}).map((k) => [k, c.resources[k] ?? 0])) },
     };

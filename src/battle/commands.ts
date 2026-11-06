@@ -64,6 +64,10 @@ import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
 import { askChoice } from '../rules/choice';
 // Kuyruk S1: büyücüye bağlı alanlar (komut sonu kancası).
 import './anchorZones';
+import { executeVerticalMove } from './altitude';
+import './hiddenZones';
+import { executeDropItem, executePickUp } from './heldItems';
+import { executeDropBlade } from './s2spells';
 import { spendSlot } from './slots';
 import { heldFollow, mechanicsAt } from './spellVersion';
 import { executeFontOfMagic } from './sorcerer';
@@ -848,6 +852,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'gaze') return executeGaze(state, actor, cmd.targetId);
   if (cmd.type === 'monster_ability') return executeMonsterAbility(state, actor, cmd.abilityId, cmd.targetId, cmd.targetHex, rng, cmd.option);
   if (cmd.type === 'retreat') return fail('Bilinmeyen komut.');
+  // Kuyruk S2 (sürüm 41): dikey hareket, eşya bırakma ve yerden alma.
+  if (cmd.type === 'vertical_move') return executeVerticalMove(state, actor, cmd);
+  if (cmd.type === 'drop_item') return cmd.item === 'flame-blade' ? executeDropBlade(state, actor) : executeDropItem(state, actor, cmd.item);
+  if (cmd.type === 'pick_up') return executePickUp(state, actor, cmd.objectId);
 
   // Silah saldırısı
   const target = state.combatants[cmd.targetId];

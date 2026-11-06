@@ -10,10 +10,13 @@
  * Gece (`night` kuralı): ışıksız altıgende karanlık görüşü olmayan gözcünün pasif Algısı düşer, Stealth avantajlı.
  */
 import { sizeRank } from './forced';
-import { checkBase } from './ruleVersion';
+import { checkBase, ruleVersion } from './ruleVersion';
+import { searchZoneEvents } from './hiddenZones';
 import { extrasTotal, rollExtras } from '../rules/attack';
 import { finishCheck } from './effectDice';
 import stealthJson from '../../data/stealth.json';
+import s2rules from '../../data/s2-kurallar.json';
+import { lightlyObscured } from './zones';
 import { getMap, type HideCover } from '../map/maps';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
 import type { Offset } from '../rules/hex';
@@ -76,7 +79,9 @@ export function passivePerception(state: BattleState, watcher: Combatant, at: Of
   const dark = night && darkvisionOf(watcher) === 0 && isUnlit(state, at, lit) ? night.penalty : 0;
   // Kuyruk 41b: Dikkat dağıt etkisi (en büyüğü).
   const distracted = Math.max(0, ...(watcher.effects ?? []).map((e) => e.perceptionPenalty ?? 0));
-  return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark - distracted;
+  // Kuyruk S2 (sürüm 41, Web): hedef hafif örtülü alanda: görmeye dayalı Algı dezavantajlı (pasif −5).
+  const light = ruleVersion(state) >= 41 && lightlyObscured(state, at) ? s2rules.hafifOrtu.passivePenalty : 0;
+  return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark - distracted - light;
 }
 
 export interface HideCheck {
@@ -180,10 +185,15 @@ export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): C
   const pmode = checkMode(actor, 'perception', checkBase(state, actor));
   const roll = rollD20(pmode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
   const { total, extra } = finishCheck(actor, 'perception', roll.kept, skillBonus(actor, 'perception'), null, pmode, rng);
+  // Kuyruk S2 (sürüm 41, Web): hafif örtülü alandaki gizlenen için Arama dezavantajlı (ikinci zarın düşüğü).
+  const lowTotal = ruleVersion(state) >= 41 && Object.values(state.combatants).some((c) => c.hidden && c.pos && lightlyObscured(state, c.pos))
+    ? Math.min(total, rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id })).kept + (total - roll.kept)) : total;
   const found = Object.values(state.combatants)
-    .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= total && !lineOfFire(state, actor, c).blocked)
+    .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= (c.pos && lowTotal !== total && lightlyObscured(state, c.pos) ? lowTotal : total) && !lineOfFire(state, actor, c).blocked)
     .map((c) => c.id);
   const events: BattleEvent[] = [{ type: 'searched', actorId: actor.id, natural: roll.kept, total, found, ...(extra.length ? { bonusDice: extra } : {}) }];
+  // Kuyruk S2 (sürüm 41): gizli alanlar (Spike Growth) da aranır.
+  if (ruleVersion(state) >= 41) events.push(...searchZoneEvents(state, actor, total));
   // Tuzaklar (Adım 8): 6 altıgen içindeki, bulunmamış ve tetiklenmemiş tuzak Perception DC'sine karşı.
   const trap = ruleOf(state, 'trap');
   const known = new Set([...(state.map.trapsFound ?? []), ...(state.map.trapsSprung ?? [])]);

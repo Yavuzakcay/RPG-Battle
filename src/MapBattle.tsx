@@ -54,7 +54,7 @@ import {
   placeHexes, terrainInfo, HEX_W,
 } from './ui/mapView';
 import {
-  areaActCommand, areaActPreview, areaActSpec, areaPointCount, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
+  areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaPointCount, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
   featureTeleportHexes, slotChoices, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
@@ -114,6 +114,10 @@ import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
 import { castBarrierKind } from './battle/castBarrier';
 import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
+import { zoneShownTo } from './battle/hiddenZones';
+import { ruleVersion } from './battle/ruleVersion';
+import { heldWeapons, groundItemsNear } from './battle/heldItems';
+import { flySpeed } from './battle/flight';
 import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
@@ -441,7 +445,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [aimHex, setAimHex] = useState<Offset | null>(null);
   // Kuyruk K57 (Meteor Swarm): çok noktalı alanın seçilen merkezleri.
   const [aimPts, setAimPts] = useState<Offset[]>([]);
+  // Kuyruk S2 (Plant Growth): "altıgen çıkar" kipi ve dışarıda bırakılanlar.
+  const [excludeOn, setExcludeOn] = useState(false);
+  const [excluded, setExcluded] = useState<Offset[]>([]);
   const aimPoint = (h: Offset) => {
+    if (excludeOn) { setExcluded((xs) => (xs.some((x) => sameHex(x, h)) ? xs.filter((x) => !sameHex(x, h)) : [...xs, h])); return; }
     const max = areaPointCount(state, areaAct);
     if (max > 1) setAimPts((ps) => (ps.some((p) => sameHex(p, h)) ? ps.filter((p) => !sameHex(p, h)) : ps.length < max ? [...ps, h] : ps));
     setAimHex(h);
@@ -464,6 +472,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [artError, setArtError] = useState<string | null>(null);
   const [showHidden, setShowHidden] = useState(false);
   const [showZones, setShowZones] = useState(false);
+  // Kuyruk S2: Game Master anahtarı "Gizli alanlar" (oyuncu ekranı yalnız partinin bildiği alanları çizer; kayıt dışı).
+  const [showHiddenZones, setShowHiddenZones] = useState(false);
   const [confirmWake, setConfirmWake] = useState(false);
   const [jumpAim, setJumpAim] = useState<Offset | null>(null);
   const [puffs, setPuffs] = useState<Array<{ id: number; at: Offset; kind: 'leaves' | 'dust' }>>([]);
@@ -1457,7 +1467,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 })}
               </>
             );
-          })(state.map?.zones ?? [])}
+          })((state.map?.zones ?? []).filter((z) => zoneShownTo(state, z, 'party', showHiddenZones)))}
           {/* Görev S4: grup alanları (kurulumda hepsi; savaşta yalnızca uyuyan/habersiz olanlar). */}
           {(state.groups ?? []).filter((g) => setup || g.state !== 'alarmed').map((g) => {
             const first = g.hexes[0];
@@ -1631,7 +1641,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     </>)}
                     {(() => {
                       // Kuyruk A2: en çok 3 rozet (öncelik veriden), fazlası "+N".
-                      const all = [...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : [])] as StatusIcon[];
+                      const all = [...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : []),
+                        // Kuyruk S2: irtifa rozeti.
+                        ...((c.altitudeFt ?? 0) > 0 ? [{ key: 'alt', icon: `↑${c.altitudeFt}`, title: B.s2.altitude(c.altitudeFt ?? 0) }] : [])] as StatusIcon[];
                       if (all.length === 0) return null;
                       const { shown, more } = limitBadges(all);
                       return (
@@ -1794,6 +1806,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   setOptionsOpen(false);
                 }}>{B.load}</button>
                 {active && <button onClick={() => { setShowZones((v) => !v); setOptionsOpen(false); }}>{t().view.zones(showZones)}</button>}
+                {ruleVersion(state) >= 41 && <button onClick={() => { setShowHiddenZones((v) => !v); setOptionsOpen(false); }}>{t().view.hiddenZones(showHiddenZones)}</button>}
                 <ThemeButton className="" />
                 <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>
                 <button onClick={cycleDiceTheme}>{t().dice.themeLabel(diceThemeName(diceTheme, lang))}</button>
@@ -2135,10 +2148,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     {sp.spec.ring && <button type="button" className={wallShape === 'ring' ? 'on' : ''} aria-pressed={wallShape === 'ring'} onClick={() => setWallShape('ring')}>{A.wallRing}</button>}
                   </div>
                 )}
+                {areaExcludable(state, areaAct) && aimHex && (
+                  <button type="button" className={excludeOn ? 'on' : ''} aria-pressed={excludeOn} onClick={() => setExcludeOn((v) => !v)}>{A.exclude(excluded.length)}</button>
+                )}
                 {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
                   onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' ? null : wallShape,
-                    areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined))}>
+                    areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
+                    areaExcludable(state, areaAct) ? excluded : undefined))}>
                   {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}
                 </button>
               </div>
@@ -2211,6 +2228,22 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               <span className={actor.economy.bonus ? 'spent' : ''}>{B.economy.bonus}</span>
               <span className={actor.economy.reaction ? 'spent' : ''}>{B.economy.reaction}</span>
               <span>{B.economy.move(Math.max(0, speedHexes(actor) - actor.movementUsed), speedHexes(actor))}</span>
+              {/* Kuyruk S2 (sürüm 41): irtifa, dikey hareket (uçan), elindekini bırak, yerden al. */}
+              {ruleVersion(state) >= 41 && (actor.altitudeFt ?? 0) > 0 && <span>{B.s2.altitude(actor.altitudeFt ?? 0)}</span>}
+              {ruleVersion(state) >= 41 && flySpeed(actor) > 0 && (
+                <>
+                  <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) + 5 })}>{B.s2.up}</button>
+                  {(actor.altitudeFt ?? 0) > 0 && <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) - 5 })}>{B.s2.down}</button>}
+                </>
+              )}
+              {ruleVersion(state) >= 41 && Object.values(state.combatants).filter((c) => c.effects?.some((e) => e.levitate && e.sourceId === actorId)).map((c) => (
+                <span key={`lev${c.id}`}>
+                  <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, targetId: c.id, toFt: (c.altitudeFt ?? 0) + 5 })}>{`${c.name} ${B.s2.up}`}</button>
+                  {(c.altitudeFt ?? 0) > 0 && <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, targetId: c.id, toFt: (c.altitudeFt ?? 0) - 5 })}>{`${c.name} ${B.s2.down}`}</button>}
+                </span>
+              ))}
+              {ruleVersion(state) >= 41 && heldWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: heldWeapons(actor)[0] as string })}>{B.s2.drop(heldWeapons(actor)[0] as string)}</button>}
+              {ruleVersion(state) >= 41 && groundItemsNear(state, actor).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(o.item ?? '')}</button>)}
             </div>
           )}
           {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>{B.start}</button>}

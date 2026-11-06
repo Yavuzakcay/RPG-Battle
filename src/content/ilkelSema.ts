@@ -463,6 +463,21 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     sistem: 'Savaş kuruluşunda (`withPaket`) en çok can ve can artar (başlangıç olayı taşır; Aid yolu). Sürüm 38+.',
     ornek: { tur: 'canArtisi', miktar: '$lvl' },
   },
+  silahFirlat: {
+    not: 'Yakın dövüş silahın fırlatılabilir olur ve saldırıdan sonra eline döner (Thrown özelliği + dönüş).', tetikler: ['pasif'],
+    alanlar: {
+      normalFt: N('Normal menzil (ft).', { varsayilan: 20 }), uzunFt: N('Uzun menzil (ft).', { varsayilan: 60 }),
+      silah: { tip: 'metin', not: 'Yalnız bu silah kimliği (yoksa eldeki bütün yakın dövüş silahları).' },
+    },
+    sistem: 'Savaş kuruluşunda (`withPaket`) Thrown özelliği olmayan her yakın dövüş silahına fırlatma seçeneği (`returns`; SRD Thrown: STR, tek el). Fırlatılan silah elden çıkmaz (döner). Sürüm 41+ (Kuyruk S2 el modeli).',
+    ornek: { tur: 'silahFirlat', normalFt: 20, uzunFt: 60 },
+  },
+  silahBagi: {
+    not: 'Silahla bağ: zorla elinden alınamaz (Incapacitated değilken) ve yere düşmüşse düğmeyle eline çağrılır (aynı savaş alanında, uzaklık yok).', tetikler: ['bonus', 'eylem', 'serbest'],
+    alanlar: { silah: { tip: 'metin', not: 'Yalnız bu silah kimliği (yoksa eldeki bütün silahlar).' } },
+    sistem: 'Savaşçıda `bonded` (savaş kuruluşu); zorlamayla bırakma (`dropEvents` `forced`, ör. Command "Drop") bağlı silahı düşürmez. Düğme: yerdeki bağlı silah `item_picked` (`bond`, nesne etkileşimi harcamaz). Sürüm 41+ (Kuyruk S2 el modeli).',
+    ornek: { tur: 'silahBagi', tetik: 'bonus' },
+  },
 };
 export const ILKEL_ADLARI = Object.keys(ILKELLER);
 

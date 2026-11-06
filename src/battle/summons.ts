@@ -7,6 +7,9 @@
  * oyuncusu yönetir (düşman tarafında Game Master). Kaybolma `summonCleanup` ile her komuttan sonra olay olarak yazılır:
  * 0 HP, konsantrasyonun bitmesi, sahibin ölümü (at), süre; aynı büyü yeniden yapılınca önceki yaratık gider.
  */
+import { mechanicsAt } from './spellVersion';
+import { OBJECTS } from './objectData';
+import { surfaceEvent } from './surfaces';
 import { CHAIN_FORMS, chainOn } from './chainPact';
 import { HAND_EFFECTS, handEffectEvents, type HandEffect } from './arcaneHand';
 import { registerSummonRider } from './riders';
@@ -472,6 +475,17 @@ export function ramTargets(state: BattleState, owner: Combatant): Combatant[] {
  * CILA: sahibi bonus eylemle çağrısını taşır (SRD 5.2.1 Flaming Sphere: 30 ft, bir yaratığa çarptırınca o yaratık save
  * yapar; Conjure Animals: 30 ft). Yürüyüş motorla (alan tetikleri `anchorMove` yürüyüşte); çarpma bitişik hedefe.
  */
+function sphereIgniteEvents(state: BattleState, owner: Combatant, s: Combatant, evs: BattleEvent[]): BattleEvent[] {
+  const sp = spells.find((x) => x.id === s.summon?.spellId);
+  if (!sp || !mechanicsAt(state, sp).sphereTerrain || !state.map) return [];
+  const path = evs.flatMap((e) => (e.type === 'moved' && e.actorId === s.id ? e.path : []));
+  const end = path[path.length - 1];
+  const touched = (h: Offset) => path.some((p) => sameHex(p, h)) || (!!end && distance(end, h) <= 1);
+  const burning = new Set((state.map.zones ?? []).filter((z) => z.surface === 'fire').flatMap((z) => z.hexes.map((h) => `${h.col},${h.row}`)));
+  const hexes = (state.map.objects ?? []).filter((o) => !o.carriedBy && OBJECTS[o.kind]?.flammable && touched(o.at) && !burning.has(`${o.at.col},${o.at.row}`)).map((o) => o.at);
+  return hexes.length ? [surfaceEvent(state, 'fire', hexes, owner.id, owner.side)] : [];
+}
+
 export function executeSummonMove(state: BattleState, owner: Combatant, to: Offset, ramId: string | undefined, rng: Rng, hand?: HandEffect): CommandResult {
   const s = steerableSummon(state, owner);
   if (!s?.summon?.ownerBonus) return fail('Bonus eylemle taşınacak bir çağrı yok.');
@@ -491,6 +505,10 @@ export function executeSummonMove(state: BattleState, owner: Combatant, to: Offs
     if (!moved.ok) return moved;
     events.push(...moved.events);
     current = moved.state;
+    // Kuyruk S2 (sürüm 41, Flaming Sphere `sphereTerrain`): yuvarlandığı yoldaki ve durduğu yerin bitişiğindeki yanıcı
+    // (taşınmayan) nesneler tutuşur (altıgenleri alev yüzeyi).
+    const lit = sphereIgniteEvents(current, owner, s, moved.events);
+    events.push(...lit); current = applyEvents(current, lit);
   }
   // Kuyruk 19: Arcane Hand etkisi (taşımadan sonra).
   if (s.summon.hand) {

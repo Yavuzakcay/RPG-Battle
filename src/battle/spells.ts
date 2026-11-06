@@ -39,6 +39,9 @@ import { castBarrier } from './castBarrier';
 import { teleportEvent, teleportProblem } from './teleport';
 import { askChoice } from '../rules/choice';
 import { gap } from './body';
+import { areaReachesAltitude, levitateRiseEvents } from './altitude';
+import { executeLevitateObject, executeResizeObject, illusionEvents, recallBlade } from './s2spells';
+import { dropEvents, heldMetal, touchesMetal, wearsMetal } from './heldItems';
 import { OBJECTS } from './objectData';
 import { surfaceEvent } from './surfaces';
 import { withArrival } from './motion';
@@ -170,7 +173,8 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     // Görev SORCERER: Careful Spell: CHA değiştiricisi kadar (en az 1) yaratık save'i otomatik geçer ve yarı hasar almaz.
     + (actor.traits?.includes('mm-careful') ? Math.max(1, actor.modifiers.cha) : 0);
   const spared = new Set(pick.reached.filter((x) => x.c.side === actor.side).slice(0, sculpt).map((x) => x.c.id));
-  const reached = pick.reached.filter((x) => !spared.has(x.c.id)).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
+  // Kuyruk S2 (sürüm 41): alanın ulaşmadığı irtifadaki yaratık etkilenmez.
+  const reached = pick.reached.filter((x) => !spared.has(x.c.id) && (!spell.area || areaReachesAltitude(state, spell.area, x.c))).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
   if (named && !reached.some((x) => x.c.id === named.id)) {
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
   }
@@ -492,7 +496,7 @@ function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng)
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
@@ -511,7 +515,10 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     if (!r.ok) return r;
     // Son blokta bir kez: kalıcı alan ve sığmayan parça ya da savaş dışı parçanın Game Master notu (`gmNoted`).
     const done = !LATER.some(([k, v]) => merged.mechanics[k] && ruleVersion(state) >= v);
-    const extra: BattleEvent[] = done ? [...lingerZoneEvents(r.state, actor, merged, r.events), ...areaObjectEvents(r.state, actor, merged, r.events)] : [];
+    const extra: BattleEvent[] = done ? [...lingerZoneEvents(r.state, actor, merged, r.events), ...areaObjectEvents(r.state, actor, merged, r.events),
+      // Kuyruk S2: Levitate yükselmesi, Phantasmal Force yanılsama alanı.
+      ...(merged.mechanics.effect?.levitate ? levitateRiseEvents(r.state, r.events, cmd.altitudeFt) : []),
+      ...(merged.mechanics.illusionAt ? illusionEvents(r.state, actor, merged, cmd, r.events) : [])] : [];
     const note = merged.mechanics.sigmayan ?? (merged.mechanics.gmNoted && !merged.mechanics.offCombat ? merged.mechanics.gmNote : undefined);
     if (done && note && !repeat) extra.push({ type: 'map_note', text: `Game Master notu — ${spell.name}: ${note}` });
     return extra.length ? finish(state, [...r.events, ...extra]) : r;
@@ -546,6 +553,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (barrier) return fail(barrier);
   // Kuyruk S1 (sürüm 40, Plane Shift `retreat`): büyücü ve el ele (zincirle bitişik) istekli dostlar haritadan ayrılır.
   if (m.retreat) return executeRetreat(state, actor, cmd, spell);
+  // Kuyruk S2 (sürüm 41): taşınmayan nesneye Enlarge/Reduce ve Levitate (altıgen hedef, yaratık yok).
+  if (m.resizeObjects && cmd.targetHex && !cmd.targetId && !cmd.targetIds?.length && !repeat) return executeResizeObject(state, actor, cmd, spell);
+  if (m.levitateObject && cmd.targetHex && !cmd.targetId && !cmd.targetIds?.length && !repeat) return executeLevitateObject(state, actor, cmd, spell);
   // Kuyruk 40: yeni sistem gerektiren / karar bekleyen büyü ("çalışmıyor"): slot harcanmaz.
   if (m.unsupported) return fail(`${spell.name} savaşta çalışmıyor: ${m.unsupported}`);
   // Görev B2: kalıcı zemin etkisi ve geçici engel (çağırmayla yürüyen alanlar `executeSummon`'da).
@@ -614,6 +624,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     cover = r.cover;
   }
 
+  // Kuyruk S2 (Heat Metal): yalnız metal silah tutan ya da metal zırh giyen hedef (silahı bırakınca tekrar da tutmaz).
+  if (m.metalDrop && target && !touchesMetal(target)) return fail(`${target.name} metal bir nesne tutmuyor ya da giymiyor.`);
   const slot = repeat ? repeatSlot(actor, spell) : spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const slotLevel = slot.slotLevel;
@@ -951,6 +963,14 @@ function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, 
         ...(save.extra ? { bonusDice: save.extra } : {}) });
       applies = !save.success;
     }
+    // Kuyruk S2 (sürüm 41, Heat Metal `metalDrop`): başarısız save'de tutan metal silahını bırakabilir (hedefe seçim
+    // istemi; öneri: zırh da metal değilse bırak). Bırakırsa dezavantaj yok; giydiği metal zırh bırakılamaz.
+    if (applies && m.metalDrop && heldMetal(t).length) {
+      const item = heldMetal(t)[0] as string;
+      const pick = askChoice(rng, { actorId: t.id, sourceId: actor.id, label: `${spell.name}: kızgın metal`,
+        options: [{ id: 'drop', label: `${item} bırak` }, { id: 'keep', label: 'tut (dezavantaj)' }], suggested: wearsMetal(t) ? 'keep' : 'drop' });
+      if (pick !== 'keep') { events.push(...dropEvents(state, t, item, `${spell.name}: kızgın metali bıraktı`)); applies = wearsMetal(t); }
+    }
     if (applies) {
       events.push({ type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 1,
         ...(a.attackDis ? { attackDis: a.attackDis } : {}), ...(a.untilSourceTurn ? { untilSourceTurn: true } : {}), ...(a.grants ? { grants: a.grants } : {}),
@@ -1269,6 +1289,8 @@ export function executeRepeat(state: BattleState, actor: Combatant, targetId: st
     if (!evs.length) return fail(`${spell.name}: büyülenmiş hedef yok.`);
     return finish(state, evs);
   }
+  // Kuyruk S2 (sürüm 41, Flame Blade): bırakılan bıçak bonus eylemle yeniden çağrılır.
+  if (mechanicsAt(state, spell).bladeRecall) { const back = recallBlade(state, actor, spell); if (back) return back; }
   if (conc.turn === turnKey(state) && !mechanicsAt(state, spell).castOnly) return fail(`${spell.name} sonraki turlarda tekrarlanır.`);
   if (r.target === 'same' && targetId !== conc.targetId) {
     return fail(`${spell.name} yalnızca ilk hedefe (${state.combatants[conc.targetId ?? '']?.name ?? '?'}) tekrarlanır.`);
@@ -1579,7 +1601,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(wo ? { weaponOverride: { weapons: wo.weapons, die: wo.dice[Math.min(wo.dice.length, tierOf(actor)) - 1] as string, ...(wo.force ? { force: true } : {}), ...(wo.type ? { type: wo.type } : {}),
       attack: actor.spellAttack ?? 0, mod: actor.spellMod } } : {}),
     ...(spec.repeatSave && m.save ? { repeatSave: { ability: m.save, dc } } : {}),
-    ...(spec.disarmed ? { disarmed: true } : {}), ...(spec.noReactions ? { noReactions: true } : {}), ...(spec.noAttack ? { noAttack: true } : {}), ...(spec.noCastForm ? { noCastForm: true } : {}),
+    ...(spec.disarmed ? { disarmed: true } : {}), ...(spec.levitate ? { levitate: true } : {}), ...(spec.shareSpace ? { shareSpace: true } : {}), ...(spec.squeeze ? { squeeze: true } : {}), ...(spec.noReactions ? { noReactions: true } : {}), ...(spec.noAttack ? { noAttack: true } : {}), ...(spec.noCastForm ? { noCastForm: true } : {}),
     ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
     ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}), ...(spec.deathWard ? { deathWard: true } : {}),
     // K17 G1: Banishment (Ethereal gibi hedef alınamaz), Resilient Sphere (hasar bağışıklığı).

@@ -9,6 +9,7 @@ import { rangeBonusFt } from './heights';
 import { stormRangeBonusFt } from './desert';
 import { againstStrongWind } from './forest';
 import { gap } from './body';
+import { reachFt } from './altitude';
 import { isIncapacitated } from '../rules/conditions';
 import { distance, line } from '../rules/hex';
 import { solidWallAt } from './movement';
@@ -25,7 +26,7 @@ export type Reach =
   /** Yakın dövüş (ft): 5 = 1 altıgen, uzun erişim 10 = 2 altıgen. */
   | { kind: 'melee'; reachFt: number }
   /** Saldırı zarlı menzilli saldırı: normal menzil ötesi dezavantaj, uzun menzil ötesi yok. */
-  | { kind: 'ranged'; normalFt: number; longFt: number; spell?: boolean }
+  | { kind: 'ranged'; normalFt: number; longFt: number; spell?: boolean; /** Kuyruk S2: saldırının adı (Wind Wall kuşatma mermisi). */ label?: string }
   /** Saldırı zarı olmayan etki (save'li büyü, nefes, iyileştirme): yalnızca menzil sınırı. */
   | { kind: 'effect'; rangeFt: number };
 
@@ -35,7 +36,7 @@ export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
   const pos = c.pos;
   return Object.values(state.combatants).some(
     (o) => o.side !== c.side && o.pos !== null && isTargetable(o) && o.hp > 0 && !isIncapacitated(o.conditions) && !isIntangible(o)
-      && gap(state, { ...c, pos }, o) === 1,
+      && gap(state, { ...c, pos }, o) === 1 && reachFt(state, c, o, 5) <= 5,
   );
 }
 
@@ -75,7 +76,8 @@ export function checkReach(
   if (plus) reach = { kind: 'melee', reachFt: (reach as { reachFt: number }).reachFt + plus };
   // Görev A6: çok altıgenli gövdelerde en yakın iki altıgen arası.
   const d = gap(state, attacker, target);
-  const ft = d * 5;
+  // Kuyruk S2 (sürüm 41): irtifa farkı (yatay uzaklıkla büyüğü).
+  const ft = reachFt(state, attacker, target, d * 5);
   const sources: ModeSource[] = [];
   // Gizlenmiş saldıran görünmez sayılır: saldırı zarında avantaj (ardından ortaya çıkar).
   if (attacker.hidden) sources.push({ effect: 'advantage', reason: 'Gizlenmiş saldıran' });
@@ -103,22 +105,22 @@ export function checkReach(
   const map = mapAttackSources(state, attacker, target, reach.kind === 'ranged');
   if ('ok' in map) return map;
   // Görev B2: büyü alanları: yoğun örtü (Fog Cloud…), rüzgâr duvarı (menzilli silah saldırısı geçemez).
-  const zone = reach.kind === 'effect' ? { sources: [] } : zoneAttackSources(state, attacker, target, reach.kind === 'ranged', reach.kind === 'ranged' && !!reach.spell);
+  const zone = reach.kind === 'effect' ? { sources: [] } : zoneAttackSources(state, attacker, target, reach.kind === 'ranged', reach.kind === 'ranged' && !!reach.spell, reach.kind === 'ranged' ? reach.label : undefined);
   return { ok: true, sources: [...sources, ...map.sources, ...zone.sources], cover: Math.max(lof.cover, map.cover) as Cover,
     ...(zone.autoMiss ? { autoMiss: zone.autoMiss } : {}) };
 }
 
 /** Karakter saldırı seçeneğinin erişimi. Menzil bilgisi olmayan menzilli seçenek sınırsız sayılır. */
-export function optionReach(o: { ranged: boolean; reachFt?: number; range?: [number, number] }): Reach {
+export function optionReach(o: { ranged: boolean; reachFt?: number; range?: [number, number]; label?: string }): Reach {
   if (!o.ranged) return { kind: 'melee', reachFt: o.reachFt ?? 5 };
   const [normalFt, longFt] = o.range ?? [Infinity, Infinity];
-  return { kind: 'ranged', normalFt, longFt };
+  return { kind: 'ranged', normalFt, longFt, ...(o.label ? { label: o.label } : {}) };
 }
 
 /** Canavar saldırısının erişimi: save'li etki, menzilli saldırı veya yakın dövüş. */
-export function monsterAttackReach(a: { save?: unknown; ranged: boolean; reachFt?: number; range?: [number, number] }): Reach {
+export function monsterAttackReach(a: { save?: unknown; ranged: boolean; reachFt?: number; range?: [number, number]; name?: string }): Reach {
   if (a.save) return { kind: 'effect', rangeFt: a.range?.[1] ?? Infinity };
-  if (a.ranged) return { kind: 'ranged', normalFt: a.range?.[0] ?? Infinity, longFt: a.range?.[1] ?? Infinity };
+  if (a.ranged) return { kind: 'ranged', normalFt: a.range?.[0] ?? Infinity, longFt: a.range?.[1] ?? Infinity, ...(a.name ? { label: a.name } : {}) };
   return { kind: 'melee', reachFt: a.reachFt ?? 5 };
 }
 

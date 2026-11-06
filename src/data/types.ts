@@ -271,6 +271,8 @@ export interface SpellMechanics {
   a8?: Partial<SpellMechanics>;
   /** Kuyruk S1 (sürüm 40): sığmayan parçaların kapatılması (aynı biçimde, a8'den sonra). */
   s1?: Partial<SpellMechanics>;
+  /** Kuyruk S2 (sürüm 41): kalan sığmayan parçalar. */
+  s2?: Partial<SpellMechanics>;
   /** Kuyruk A7: savaşta uygulanan kısmın yanında savaş dışı parça Game Master notu (kartta ve günlükte; BUYU-KISMI "tamam (GM notlu)"). */
   gmNoted?: boolean;
   /**
@@ -308,6 +310,21 @@ export interface SpellMechanics {
   retreat?: { max: number; linkFt: number };
   /** Kuyruk S1 (sürüm 40, Magic Weapon): güçlendirme tek silaha (`cast_spell.choice` silah kimliği). */
   enchantOne?: boolean;
+  /** Kuyruk S2 (sürüm 41): Heat Metal yalnız metal tutan/giyen hedefe; başarısız save'de bırakma seçeneği. */
+  metalDrop?: boolean;
+  /** Kuyruk S2: Flame Blade bırakılır, bonus eylemle yeniden çağrılır. */
+  bladeRecall?: boolean;
+  /** Kuyruk S2: büyü taşınmayan bir nesneye de yapılır (Enlarge/Reduce boyut, Levitate irtifa). */
+  resizeObjects?: boolean;
+  levitateObject?: boolean;
+  /** Kuyruk S2: Phantasmal Force yanılsaması seçilen altıgende (hasar yalnız 5 ft içindeyken). */
+  illusionAt?: boolean;
+  /** Kuyruk S2: alandan altıgen çıkarılabilir (Plant Growth `cast_spell.excludeHexes`). */
+  excludable?: boolean;
+  /** Kuyruk S2: serbest duvar yolu (Wind Wall `cast_spell.targetHexes`, en çok N altıgen). */
+  wallPath?: number;
+  /** Kuyruk S2: Flaming Sphere engel/çukur ve yanıcı nesne tutuşturma. */
+  sphereTerrain?: boolean;
   /** Kuyruk S1 (sürüm 40): alandaki nesneler parlar (Faerie Fire) / ateşli alanda yanıcı nesneler tutuşur (Meteor Swarm). */
   outlineObjects?: boolean;
   ignitesObjects?: boolean;
@@ -469,6 +486,12 @@ export interface ZoneSpec {
   /** Kuyruk A6 (Gust of Wind): başarısız save'de büyücüden bu kadar ft itme; büyücüye yaklaşan adım bu kat maliyet. */
   push?: number;
   costToward?: number;
+  /** Kuyruk S2 (sürüm 41): silindir yüksekliği (ft; Moonbeam 40); irtifası bunun üstündeki yaratık etkilenmez. */
+  heightFt?: number;
+  /** Kuyruk S2: kamufle alan (Spike Growth): büyücünün karşı tarafından gizli. */
+  camouflaged?: boolean;
+  /** Kuyruk S2: kuşatma mermisi geçer (Wind Wall; saldırı adında bu sözcükler). */
+  siegePass?: string[];
   /** Kuyruk S1 (sürüm 40, Gust of Wind `anchorSelf`): çizgi büyücüye bağlı; büyücü yer değiştirince komut sonunda onunla kayar. */
   followCaster?: boolean;
   /** Kuyruk A7 (Darkness): oluşunca örtüştüğü, en çok bu seviyedeki büyülerin ışığını kaldırır. */
@@ -577,6 +600,10 @@ export interface EffectSpec {
   noReactions?: boolean;
   /** Kuyruk S1 (Suggestion "bırak"): silahını bırakır (silahla saldıramaz). */
   disarmed?: boolean;
+  /** Kuyruk S2: Levitate (irtifa), Gaseous Form yaratık altıgeninde durma ve dar aralıktan (kapı) geçme. */
+  levitate?: boolean;
+  shareSpace?: boolean;
+  squeeze?: boolean;
   noAttack?: boolean;
   /** Kuyruk A8 (Gaseous Form): bu biçimde büyü yapılamaz. */
   noCastForm?: boolean;

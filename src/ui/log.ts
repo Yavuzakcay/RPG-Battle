@@ -384,6 +384,14 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return event.targetId ? L.markMoved(n(event.actorId), n(event.targetId)) : '';
     case 'explore_step':
       return '';
+    case 'altitude_changed':
+      return event.objectId ? L.altitudeObject(event.label, event.altitudeFt) : L.altitude(n(event.targetId ?? ''), event.altitudeFt, event.label);
+    case 'item_dropped':
+      return L.itemDropped(n(event.actorId), event.item, event.label);
+    case 'item_picked':
+      return L.itemPicked(n(event.actorId));
+    case 'zone_spotted':
+      return L.zoneSpotted(event.by.map(n).join(', '));
     case 'retreated':
       return L.retreated(event.ids.map(n).join(', '), event.label);
     case 'battle_finished':

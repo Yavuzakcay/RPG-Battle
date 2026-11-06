@@ -40,6 +40,7 @@ import { pushAwayEvents } from './forced';
 import { disperseEvents } from './surfaceMix';
 import { ruleVersion } from './ruleVersion';
 import { mechanicsAt } from './spellVersion';
+import { altitudeInZone } from './altitude';
 import { senseSees } from './sight';
 import { concentrationEvent, spendSlot } from './slots';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
@@ -68,7 +69,9 @@ const inZone = (state: BattleState, z: SpellZone, at: Offset | null, anchorAt?: 
 
 /** Kuyruk 43: yaratığın `at` çapasındaki gövdesinin herhangi bir altıgeni alanda mı (tek altıgenlide `inZone`). */
 const bodyInZone = (state: BattleState, z: SpellZone, c: Combatant, at: Offset | null, anchorAt?: Offset | null): boolean =>
-  !!at && bodyAt(state, c, at).some((h) => inZone(state, z, h, anchorAt));
+  !!at && bodyAt(state, c, at).some((h) => inZone(state, z, h, anchorAt))
+  // Kuyruk S2 (sürüm 41): irtifası alanın tepesinin üstündeki yaratık alanda değil (silindir `heightFt`, yer alanı 0).
+  && altitudeInZone(state, z, zoneSpecOf(z), c);
 
 /** Kuyruk 19: ağ alanı (Web büyüsü; yanan ağ yüzeyi değil). */
 export const isWebZone = (z: SpellZone): boolean => !z.surface && z.spellId === 'web';
@@ -375,6 +378,10 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset, 
   };
 }
 
+/** Kuyruk S2: altıgen hafif örtülü mü (Web). */
+export const lightlyObscured = (state: BattleState, at: Offset | null): boolean =>
+  zonesAt(state, at).some((z) => zoneSpecOf(z)?.obscured === 'light');
+
 /** Altıgen yoğun örtülü mü (Fog Cloud, Sleet Storm, Stinking Cloud). */
 export const heavilyObscured = (state: BattleState, at: Offset | null): boolean =>
   zonesAt(state, at).some((z) => zoneSpecOf(z)?.obscured === 'heavy');
@@ -403,10 +410,13 @@ export function windWallBetween(state: BattleState, from: Offset, to: Offset): S
  * Saldırıya alanların etkisi (`checkReach`): yoğun örtüdeki hedef görülmez (dezavantaj), yoğun örtüdeki saldıran
  * görülmez (avantaj); menzilli silah saldırısı rüzgâr duvarından geçemez.
  */
-export function zoneAttackSources(state: BattleState, attacker: Combatant, target: Combatant, ranged: boolean, spell: boolean): { sources: ModeSource[]; autoMiss?: string } {
+export function zoneAttackSources(state: BattleState, attacker: Combatant, target: Combatant, ranged: boolean, spell: boolean, label?: string): { sources: ModeSource[]; autoMiss?: string } {
   if (!state.map?.zones?.length || !attacker.pos || !target.pos) return { sources: [] };
   // CILA: menzilli silah saldırısı rüzgâr duvarından geçerken otomatik ıskalar (SRD 5.2.1 Wind Wall).
-  const wall = ranged && !spell ? windWallBetween(state, attacker.pos, target.pos) : undefined;
+  const wall0 = ranged && !spell ? windWallBetween(state, attacker.pos, target.pos) : undefined;
+  // Kuyruk S2 (sürüm 41): dev kaya ve kuşatma mermisi (saldırı adında `siegePass` sözcüğü) duvardan geçer.
+  const siege = !!wall0 && ruleVersion(state) >= 41 && !!label && (zoneSpecOf(wall0)?.siegePass ?? []).some((w) => label.toLowerCase().includes(w));
+  const wall = siege ? undefined : wall0;
   const out: ModeSource[] = [];
   // Kuyruk A7 (sürüm 36): Blindsight/Truesight menzilindeki yoğun örtü (Darkness, Fog Cloud) görüşü kesmez.
   const v36 = ruleVersion(state) >= 36;
@@ -459,14 +469,38 @@ function repelled(state: BattleState, z: SpellZone, c: Combatant): boolean {
 }
 
 /** Alan büyüsü yapılırken ya da taşınırken altıgenler (büyünün alanı; duvar şekli `rules/area.ts`). */
-function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offset | null, wallShape?: 'arc' | 'ring'): Offset[] | CommandResult {
+function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offset | null, wallShape?: 'arc' | 'ring', cmd?: CastCommand): Offset[] | CommandResult {
   if (!state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
   if (!spell.area) return fail(`${spell.name}: alan tanımı yok.`);
+  // Kuyruk S2 (sürüm 41, Wind Wall `wallPath`): serbest duvar: birbirine bitişik altıgen yolu (en çok N), ilki menzilde.
+  const wp = ruleVersion(state) >= 41 ? spell.mechanics.wallPath : undefined;
+  if (wp && cmd?.targetHexes?.length) return wallPathHexes(state, actor, spell, cmd.targetHexes, wp);
+  // Kuyruk S2 (sürüm 41, Plant Growth `excludable`): seçilen altıgenler alanın dışında kalır.
+  if (ruleVersion(state) >= 41 && spell.mechanics.excludable && cmd?.excludeHexes?.length) {
+    const r = castHexes(state, actor, spell, aim, wallShape);
+    if (!Array.isArray(r)) return r;
+    const out = r.filter((h) => !cmd.excludeHexes?.some((x) => sameHex(x, h)));
+    return out.length ? out : fail(`${spell.name}: bütün alan dışarıda bırakılamaz.`);
+  }
   // CILA: duvar yay biçiminde de kurulabilir (Wind Wall).
   const area = wallShape && spell.area.shape === 'wall' ? { ...spell.area, bend: wallShape } : spell.area;
   const pick = pickArea(state, actor, area, spell.rangeFt, aim, 'büyü');
   if ('ok' in pick) return pick;
   return pick.hexes;
+}
+
+/** Kuyruk S2: Wind Wall serbest yol: bitişik altıgenler, tekrarsız, ilki büyü menzilinde, hepsi harita içinde. */
+function wallPathHexes(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number): Offset[] | CommandResult {
+  if (path.length > max) return fail(`${spell.name}: duvar en çok ${max} altıgen (${max * 5} ft).`);
+  const size = sizeOf(state);
+  for (let i = 0; i < path.length; i++) {
+    const h = path[i] as Offset;
+    if (size && !isInside(h, size)) return fail('Duvar harita dışına taşamaz.');
+    if (path.slice(0, i).some((x) => sameHex(x, h))) return fail('Duvar yolu aynı altıgenden iki kez geçemez.');
+    if (i > 0 && distance(path[i - 1] as Offset, h) !== 1) return fail('Duvar yolunun altıgenleri birbirine bitişik olmalı.');
+  }
+  if (!actor.pos || distance(actor.pos, path[0] as Offset) * 5 > spell.rangeFt) return fail(`${spell.name}: duvarın başı menzil dışında (${spell.rangeFt} ft).`);
+  return path;
 }
 
 /** Yeni alanın kimliği: büyü + büyücü + sıra (konsantrasyonsuz büyüler birden çok kez yapılabilir). */
@@ -504,7 +538,7 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
     evs.push(anchoredZoneEvent(applyEvents(state, evs), actor, spell, actor.id, spec.anchorSelf, slot.slotLevel ?? spell.level));
     return finish(state, evs);
   }
-  const hexes = castHexes(state, actor, spell, aim, cmd.wallShape);
+  const hexes = castHexes(state, actor, spell, aim, cmd.wallShape, cmd);
   if (!Array.isArray(hexes)) return hexes;
   // Kuyruk 19: Guardian of Faith boş bir altıgende belirir.
   if (spec.occupy && !existing && aim && globalRule(state, 'spellsK19') && Object.values(state.combatants).some((c) => c.hp > 0 && c.pos && bodyAt(state, c, c.pos).some((b) => sameHex(b, aim)))) {
@@ -532,6 +566,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
       ...(spec.sideDamage && globalRule(state, 'spellsK19') ? { endHexes: fireSideHexes(state, actor, hexes, cmd.choice === 'near' ? 'near' : 'far') } : {}),
       // Görev K13B: yüzey olan alan (Stinking Cloud → zehir bulutu): kural ve tepkimeler yüzey yolundan.
       ...(spec.surface ? { surface: spec.surface } : {}),
+      // Kuyruk S2 (sürüm 41, Spike Growth `camouflaged`): büyücünün karşı tarafından gizli (fark eden `seenBy`).
+      ...(spec.camouflaged && ruleVersion(state) >= 41 ? { hiddenFrom: actor.side === 'party' ? 'enemies' as const : 'party' as const, seenBy: [] } : {}),
       ...(spell.concentration ? { concentration: spell.name } : {}),
       ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
     };
@@ -552,7 +588,9 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
   }
   if (spec.on?.includes('cast')) {
     const current = applyEvents(state, events);
-    const inside = Object.values(current.combatants).filter((c) => c.pos && bodyAt(current, c, c.pos).some((b) => hexes.some((h) => sameHex(h, b))));
+    const inside = Object.values(current.combatants).filter((c) => c.pos && bodyAt(current, c, c.pos).some((b) => hexes.some((h) => sameHex(h, b)))
+      // Kuyruk S2 (sürüm 41): alanın tepesinin üstündeki uçan etkilenmez.
+      && altitudeInZone(current, zone, zoneSpecOf(zone), c));
     events.push(...chain(current, inside.map((c) => (s: BattleState) => { const live = liveZone(s, zone.id); return live ? triggerEvents(s, live, c.id, rng) : []; })));
   }
   return finish(state, events);

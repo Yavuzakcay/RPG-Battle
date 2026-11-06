@@ -23,12 +23,12 @@ function board(fill: string, patch: Array<[Offset, string]> = []): string[] {
   return rows.map((r) => r.join(''));
 }
 const SPELLS = ['Spider Climb', 'Fly', 'Levitate', 'Gaseous Form', 'Jump'];
-function field(mapId: string, tiles: string[]): BattleState {
+function field(mapId: string, tiles: string[], kuralSurumu?: number): BattleState {
   const a = mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, strScore: 10, spellNames: SPELLS, spellSlots: [4, 3, 3, 0, 0, 0, 0, 0, 0], spellSaveDc: 13, spellMod: 3 });
   const b = mk('B', { side: 'enemies', hp: 30, maxHp: 30 });
   const { state } = startBattle('k9c', 'd-z-zemin', [a, b], scripted([20, 20], [20, 19]), { map: { id: mapId } });
   const combatants = { ...state.combatants, A: { ...(state.combatants.A as Combatant), pos: o(3, 3) }, B: { ...(state.combatants.B as Combatant), pos: o(12, 3) } };
-  return { ...state, status: 'active', order: ['A', 'B'], turnIndex: 0, combatants, map: { ...(state.map as NonNullable<BattleState['map']>), tiles } };
+  return { ...state, ...(kuralSurumu ? { kuralSurumu } : {}), status: 'active', order: ['A', 'B'], turnIndex: 0, combatants, map: { ...(state.map as NonNullable<BattleState['map']>), tiles } };
 }
 function run(s: BattleState, cmd: Command): { state: BattleState; events: BattleEvent[] } {
   const r = execute(s, cmd, P1, scripted([1, 1], [1, 1]));
@@ -42,7 +42,7 @@ describe('yükseklik farkı (dag, tırmanma kuralı)', () => {
   const hill = board('.', [[o(4, 3), 'h']]);
   const climbCost = (s: BattleState) => moveCostFn(s, s.combatants.A as Combatant)(o(4, 3), o(3, 3));
   it('büyüsüz bir seviye çıkmak 2; Spider Climb, Fly, Levitate, Gaseous Form ile 1', () => {
-    const s = field('dag', hill);
+    const s = field('dag', hill, 40); // S2 öncesi Levitate (S2: tutunma, s2spells.test)
     expect(climbCost(s)).toBe(2);
     expect(run(s, { type: 'move', actorId: 'A', to: o(4, 3) }).events[0]).toMatchObject({ cost: 2 });
     for (const name of ['Spider Climb', 'Fly', 'Levitate', 'Gaseous Form']) expect(climbCost(selfCast(s, name)), name).toBe(1);
@@ -59,7 +59,7 @@ describe('yükseklik farkı (dag, tırmanma kuralı)', () => {
     expect(c(selfCast(rough, 'Fly'))).toBe(1);
   });
   it('Levitate yürütmez (diğer SRD sınırı kalır)', () => {
-    const s = selfCast(field('dag', hill), 'Levitate');
+    const s = selfCast(field('dag', hill, 40), 'Levitate');
     expect(errorOf(execute(s, { type: 'move', actorId: 'A', to: o(4, 3) }, P1, scripted()))).toMatch(/hız|Hareket/);
   });
 });

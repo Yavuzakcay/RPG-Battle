@@ -39,7 +39,8 @@
     "baseAc": 13,
     "type": "medium",
     "weight": 20,
-    "srd": "armor:chain-shirt"
+    "srd": "armor:chain-shirt",
+    "metal": true
   },
   {
     "name": "Scale Mail",
@@ -47,14 +48,16 @@
     "type": "medium",
     "stealthDisadvantage": true,
     "weight": 45,
-    "srd": "armor:scale-mail"
+    "srd": "armor:scale-mail",
+    "metal": true
   },
   {
     "name": "Breastplate",
     "baseAc": 14,
     "type": "medium",
     "weight": 20,
-    "srd": "armor:breastplate"
+    "srd": "armor:breastplate",
+    "metal": true
   },
   {
     "name": "Half Plate Armor",
@@ -62,7 +65,8 @@
     "type": "medium",
     "stealthDisadvantage": true,
     "weight": 40,
-    "srd": "armor:half-plate-armor"
+    "srd": "armor:half-plate-armor",
+    "metal": true
   },
   {
     "name": "Ring Mail",
@@ -70,7 +74,8 @@
     "type": "heavy",
     "stealthDisadvantage": true,
     "weight": 40,
-    "srd": "armor:ring-mail"
+    "srd": "armor:ring-mail",
+    "metal": true
   },
   {
     "name": "Chain Mail",
@@ -79,7 +84,8 @@
     "stealthDisadvantage": true,
     "strength": 13,
     "weight": 55,
-    "srd": "armor:chain-mail"
+    "srd": "armor:chain-mail",
+    "metal": true
   },
   {
     "name": "Splint Armor",
@@ -88,7 +94,8 @@
     "stealthDisadvantage": true,
     "strength": 15,
     "weight": 60,
-    "srd": "armor:splint-armor"
+    "srd": "armor:splint-armor",
+    "metal": true
   },
   {
     "name": "Plate Armor",
@@ -97,6 +104,7 @@
     "stealthDisadvantage": true,
     "strength": 15,
     "weight": 65,
-    "srd": "armor:plate-armor"
+    "srd": "armor:plate-armor",
+    "metal": true
   }
 ]

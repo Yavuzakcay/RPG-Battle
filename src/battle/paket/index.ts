@@ -27,6 +27,7 @@ import { registerSummonRider } from '../riders';
 import { registerHitHook, type HitAfter } from '../hitHooks';
 import { registerCommandEnd, registerTurnStart } from '../turnHooks';
 import { registerAction } from '../ai/actions';
+import { bondRecallEvents } from '../heldItems';
 import { JETON_ARKETIP, JETON_YEDEK } from '../../content/ilkelSema';
 import { resolveSave } from '../../rules/attack';
 import { askReaction } from '../../rules/reactionChoice';
@@ -335,6 +336,8 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       }
       return out;
     }
+    // Kuyruk S2 (sürüm 41+): bağlı silahı ele çağır.
+    case 'silahBagi': return bondRecallEvents(state, a, name);
     // P9 (sürüm 38+): zaman durdurma (Time Stop yolu).
     case 'zamanDurdur': {
       if (!p9On(state)) return [];

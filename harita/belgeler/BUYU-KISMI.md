@@ -1,4 +1,4 @@
-# Kısmi büyüler (Kuyruk A4, A6, A7, A8, S1)
+# Kısmi büyüler (Kuyruk A4, A6, A7, A8, S1, S2)
 
 `node scripts/a4-buyu-kismi.mjs` üretir; elle düzenlenmez. Savaşta kullanılan (savaş dışı olmayan) büyülerden yaklaşıklığı (`approx`) ya da yalnızca Game Master notu kalanlar "kısmi"dir. `kapsamDisi`: eksik parça savaş modelinin dışında (sosyal, düzlem, nesne, saatlik süre); gerekçeler DECISIONS.md (Kuyruk A4, A6). Sayım kural sürümü 32+ (`a4`) ve 35+ (`a6`) mekaniğiyle; `sigmayan`: SRD metninin oyuna sığmayan parçası (kart ve günlükte Game Master notu, satırı harita/belgeler/BUYU-SIGMAYAN.md).
 
@@ -10,17 +10,20 @@
 | A4 öncesi kısmi | 75 |
 | A4 sonrası kısmi | 0 |
 | Tamamlanan (sürüm 32, `a4`) | 10 |
-| Tamamlanan (sürüm 35, `a6`; tam) | 28 |
-| Tamamlanan (sürüm 35, `a6`; sığmayan parça notlu) | 3 |
-| Tamamlanan (sürüm 36, `a7`; tam) | 9 |
+| Tamamlanan (sürüm 35, `a6`; tam) | 31 |
+| Tamamlanan (sürüm 35, `a6`; sığmayan parça notlu) | 0 |
+| Tamamlanan (sürüm 36, `a7`; tam) | 13 |
 | Tamamlanan (sürüm 36, `a7`; Game Master notlu) | 6 |
-| Tamamlanan (sürüm 36, `a7`; sığmayan parça notlu) | 4 |
-| Tamamlanan (sürüm 37, `a8`; tam) | 8 |
+| Tamamlanan (sürüm 36, `a7`; sığmayan parça notlu) | 0 |
+| Tamamlanan (sürüm 37, `a8`; tam) | 15 |
 | Tamamlanan (sürüm 37, `a8`; Game Master notlu) | 0 |
-| Tamamlanan (sürüm 37, `a8`; sığmayan parça notlu) | 7 |
+| Tamamlanan (sürüm 37, `a8`; sığmayan parça notlu) | 0 |
 | Tamamlanan (sürüm 40, `s1`; tam) | 12 |
 | Tamamlanan (sürüm 40, `s1`; Game Master notlu) | 0 |
 | Tamamlanan (sürüm 40, `s1`; sığmayan parça notlu) | 0 |
+| Tamamlanan (sürüm 41, `s2`; tam) | 14 |
+| Tamamlanan (sürüm 41, `s2`; Game Master notlu) | 0 |
+| Tamamlanan (sürüm 41, `s2`; sığmayan parça notlu) | 0 |
 | Kapsam dışı olarak çalışır sayılan (tamamlama bloğu olmadan) | 0 |
 | A4 tamamlananlardan kapsam dışı notlu (yukarıdaki A4 sayısının içinde) | 3 (hex, fear, beacon-of-hope) |
 
@@ -40,7 +43,7 @@
 | charm-person | 1 | spells.json | tamam (A7, Game Master notlu) |  |  |  |
 | chromatic-orb | 1 | spells.json | tamam (S1) |  |  |  |
 | color-spray | 1 | spells.json | tamam (A4) |  |  |  |
-| command | 1 | spells.json | tamam (A7, sığmayan parça notlu) |  |  | Drop: elde tutulanın yere düşmesi ve geri alınması yok (eşya bırakma modeli yok); hedef yalnızca turunu kaybeder. |
+| command | 1 | spells.json | tamam (S2) |  |  |  |
 | ensnaring-strike | 1 | spells.json | tamam (A6) |  |  |  |
 | entangle | 1 | spells.json | tamam (A8) |  | Bitkilerin büyü bitince çekilmesi görseldir; karede zemin zorlu arazi. |  |
 | expeditious-retreat | 1 | spells.json | tamam (A4) |  |  |  |
@@ -61,27 +64,27 @@
 | darkness | 2 | spells.json | tamam (A7) |  | Taşınmayan nesneye yapılan karanlık nesnenin altıgeninde durur (noktaya yapmakla aynı); nesnenin üstünü örtmek savaş dışı. |  |
 | dragons-breath | 2 | spells.json | tamam (A7) |  |  |  |
 | enhance-ability | 2 | spells.json | tamam (A7, Game Master notlu) |  |  |  |
-| enlarge-reduce | 2 | spells.json | tamam (A7, sığmayan parça notlu) |  | Boyut, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı). | Nesneye (taşınmayan) yapma yok: savaş nesneleri boyut taşımaz. |
-| flame-blade | 2 | spells.json | tamam (A7, sığmayan parça notlu) |  |  | Bıçağı bırakıp bonus eylemle yeniden çağırma yok (elde silah değiştirme modeli yok); kalkan ya da yan el silahı taşıyan yapamaz. |
-| flaming-sphere | 2 | spells.json | tamam (A8, sığmayan parça notlu) |  | Taşıma bonus eylemle (yuvarlama) ve çarpma hasarı Kuyruk 19 yoluyla; ışık 20 ft (4 altıgen). | Küre 5 ft'ten yüksek engelleri ve 10 ft genişliğinden geniş çukurları aşamaz, yaratığın altıgenine itilince durur; yanıcı nesneleri tutuşturur. |
+| enlarge-reduce | 2 | spells.json | tamam (S2) |  | Boyut, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı). |  |
+| flame-blade | 2 | spells.json | tamam (S2) |  |  |  |
+| flaming-sphere | 2 | spells.json | tamam (S2) |  | Taşıma bonus eylemle (yuvarlama) ve çarpma hasarı Kuyruk 19 yoluyla; ışık 20 ft (4 altıgen). |  |
 | gust-of-wind | 2 | spells.json | tamam (S1) |  |  |  |
-| heat-metal | 2 | spells.json | tamam (A7, sığmayan parça notlu) |  |  | Metal nesne seçimi ve bırakma yok: her hedef metal taşıyor sayılır, başarısız save'de nesneyi bırakamaz ve saldırı/kontrol dezavantajını alır. |
+| heat-metal | 2 | spells.json | tamam (S2) |  |  |  |
 | invisibility | 2 | spells.json | tamam (A6) |  |  |  |
-| levitate | 2 | spells.json | tamam (A8, sığmayan parça notlu) |  | Havada süzülen yürüyemez; zemin etkilerinden kurtulur. | Yükselme yüksekliği (20 ft'e dek, hareketle 20 ft yukarı/aşağı), duvara tutunarak itme ve 500 lb'ye dek nesneyi kaldırma. |
+| levitate | 2 | spells.json | tamam (S2) |  |  |  |
 | magic-weapon | 2 | spells.json | tamam (S1) |  |  |  |
 | mind-spike | 2 | spells.json | tamam (A6) |  |  |  |
 | mirror-image | 2 | spells.json | tamam (A4) |  |  |  |
-| moonbeam | 2 | spells.json | tamam (A8, sığmayan parça notlu) |  |  | Silindir 40 ft yüksekliğinde (uçanlar da etkilenir; oyunda katman yok) ve taşıma yalnızca boş/dolu altıgen merkezine; yaratığa taşınınca o tur save'i SRD'deki gibi bir kez. |
-| phantasmal-force | 2 | spells.json | tamam (A6, sığmayan parça notlu) |  |  | Yanılsamanın biçimi ve konumu yok: hedefin yanılsamanın 5 ft içinde olduğu varsayılır, hasar her turda verilir. |
+| moonbeam | 2 | spells.json | tamam (S2) |  |  |  |
+| phantasmal-force | 2 | spells.json | tamam (S2) |  |  |  |
 | protection-from-poison | 2 | spells.json | tamam (A4) |  |  |  |
 | ray-of-enfeeblement | 2 | spells.json | tamam (A6) |  |  |  |
 | see-invisibility | 2 | spells.json | tamam (A7, Game Master notlu) |  |  |  |
 | silence | 2 | spells.json | tamam (A6) |  |  |  |
 | spider-climb | 2 | spells.json | tamam (A8) |  | Duvar ve tavanda yürüme yükseklik katmanında tırmanma maliyetini kaldırır (`climb`); tavan modeli yok, eller serbest kuralı savaş dışı. |  |
-| spike-growth | 2 | spells.json | tamam (A6, sığmayan parça notlu) |  |  | Kamufle alan: tek ekran paylaşımlı oyunda alan herkese görünür (gizli katman yok); yapay zekâ zaten büyü alanlarından kaçınmaz. |
+| spike-growth | 2 | spells.json | tamam (S2) |  |  |  |
 | suggestion | 2 | spells.json | tamam (S1) |  |  |  |
 | warding-bond | 2 | spells.json | tamam (A6) |  |  |  |
-| web | 2 | spells.json | tamam (A6, sığmayan parça notlu) |  | Tutunma yeri: savaş haritasında ağ zemine serili sayılır (SRD: yere serilen ağ çökmez); yanma K55 çözücüsünde (yanan ağ). | Hafif örtü (görmeye dayalı Algı dezavantajı) uygulanmaz: oyunda Algı yalnız gizleneni bulmada kullanılır ve hafif örtü gizlenmeye izin vermez. |
+| web | 2 | spells.json | tamam (S2) |  | Tutunma yeri: savaş haritasında ağ zemine serili sayılır (SRD: yere serilen ağ çökmez); yanma K55 çözücüsünde (yanan ağ). |  |
 | animate-dead | 3 | spells.json | tamam (A6) |  | Döküm süresi 1 dakika: yalnızca kurulumda; 24 saatlik kontrol yenileme savaş dışı. |  |
 | beacon-of-hope | 3 | spells.json | tamam (A4) |  | En yüksek iyileştirme: savaşta iyileştirme yalnızca büyü, iksir ve özellik zarıyla; hepsi büyü yolundan geçmez (iksir zarı) |  |
 | bestow-curse | 3 | spells.json | tamam (A6) |  |  |  |
@@ -91,16 +94,16 @@
 | daylight | 3 | spells.json | tamam (A7) |  | Taşınmayan nesneye yapılan ışık nesnenin altıgeninde durur; ek 60 ft loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık). |  |
 | dispel-magic | 3 | spells.json | tamam (A7) |  | Sihirli eşyanın kendi büyüsü dağılmaz (SRD); nesnedeki süren büyü (Light, Continual Flame) altıgen hedefte kalkar. |  |
 | fear | 3 | spells.json | tamam (A4) |  | Elindekini düşürme: silah bırakma modeli yok (tur zaten kaçışla geçer) |  |
-| fly | 3 | spells.json | tamam (A8, sığmayan parça notlu) |  |  | Büyü bitince havadaki hedef düşer (yükseklik modeli yok: uçan her zaman zemin seviyesinde sayılır). |
-| gaseous-form | 3 | spells.json | tamam (A8, sığmayan parça notlu) |  |  | Başka yaratığın alanından geçip durabilme ve küçük deliklerden geçme (yaratık alanında durmak kuralı yok). |
+| fly | 3 | spells.json | tamam (S2) |  |  |  |
+| gaseous-form | 3 | spells.json | tamam (S2) |  |  |  |
 | haste | 3 | spells.json | tamam (A6) |  |  |  |
 | hypnotic-pattern | 3 | spells.json | tamam (A6) |  |  |  |
-| plant-growth | 3 | spells.json | tamam (A8, sığmayan parça notlu) |  |  | Alanın içindeki bölgeleri büyünün dışında bırakma (yalnızca tam daire) ve 8 saatlik Enrichment (savaş dışı). |
+| plant-growth | 3 | spells.json | tamam (S2) |  | Enrichment (8 saatlik döküm, bir yıl verim) savaş dışı. |  |
 | remove-curse | 3 | spells.json | tamam (A6) |  | Lanetli sihirli eşyada bağlılığı koparma savaş dışı. |  |
 | sleet-storm | 3 | spells.json | tamam (A8) |  | Silindir yüksekliği (20 ft) ve açık alevlerin sönmesi `douses` ile; konsantrasyon save'i alana giren/başlayanda. |  |
 | slow | 3 | spells.json | tamam (A8) |  |  |  |
 | stinking-cloud | 3 | spells.json | tamam (A8) |  | Kürenin dönmesi; rüzgârla dağılma yüzey sistemiyle. |  |
-| wind-wall | 3 | spells.json | tamam (A8, sığmayan parça notlu) |  |  | Duvarın serbest biçimi (oyunda düz ya da büyücünün çevresinde yay) ve dev boyutlu kaya/kuşatma mermilerinin duvardan geçmesi. |
+| wind-wall | 3 | spells.json | tamam (S2) |  |  |  |
 | conjure-fey | 6 | spells-69.json | tamam (A6) |  | Ruhun Fey görünüşü yalnızca görsel. |  |
 | mass-suggestion | 6 | spells-69.json | tamam (S1) |  |  |  |
 | plane-shift | 7 | spells-69.json | tamam (S1) |  |  |  |

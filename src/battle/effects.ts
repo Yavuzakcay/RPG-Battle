@@ -23,6 +23,7 @@ import { lineOfFire } from './cover';
 import { strikeApi } from './reactions';
 import { teleportEvent, teleportHexes } from './teleport';
 import { hexLabel } from './movement';
+import { dropEvents, heldWeapons } from './heldItems';
 import { askChoice } from '../rules/choice';
 import { hexKey, type Offset } from '../rules/hex';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
@@ -76,6 +77,11 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
     for (const e of (x.effects ?? []).filter((f) => f.sourceTurnDamage && f.sourceId === id)) {
       const t = current.combatants[x.id] as Combatant;
       if (t.hp <= 0) continue;
+      // Kuyruk S2 (sürüm 41, Phantasmal Force): hasar yalnız hedef yanılsamanın içinde ya da 5 ft yakınındayken.
+      if (e.illusionZone && ruleVersion(current) >= 41) {
+        const z = current.map?.zones?.find((q) => q.id === e.illusionZone);
+        if (!z || !t.pos || !z.hexes.some((h) => distance(h, t.pos as Offset) <= 1)) continue;
+      }
       const st = e.sourceTurnDamage as NonNullable<typeof e.sourceTurnDamage>;
       const d = rollDice(st.dice, rollTag(rng, { kind: 'damage', by: id }));
       const adj = adjustDamage(d.total, st.type, profileOf(t));
@@ -142,7 +148,10 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
     if (e.command) {
       // Görev B3: Approach ve Flee önce zorlamayla yürütür (Fear: Dash ile kaçış); sonra tur biter. Süren zorlamada
       // (Suggestion, Fear, Calm Emotions) etki kalır.
-      const moved = e.command === 'approach' || e.command === 'flee' ? compelEvents(current, id, e, e.command, rng) : [];
+      const moved0 = e.command === 'approach' || e.command === 'flee' ? compelEvents(current, id, e, e.command, rng) : [];
+      // Kuyruk S2 (sürüm 41, Command "Drop"): elindeki silahı yere bırakır (altıgende nesne olur), sonra turu biter.
+      const held = e.command === 'drop' && ruleVersion(current) >= 41 ? heldWeapons(current.combatants[id] as Combatant)[0] : undefined;
+      const moved = held ? [...moved0, ...dropEvents(current, current.combatants[id] as Combatant, held, `${e.name}: bıraktı`, true)] : moved0;
       // Kuyruk A7 (sürüm 36, Command Approach): yalnızca büyücünün 5 ft içine varınca tur biter; varamazsa (yolu kalmadı)
       // turuna devam eder (SRD "ending its turn if it moves within 5 feet of you").
       const after = applyEvents(current, moved);

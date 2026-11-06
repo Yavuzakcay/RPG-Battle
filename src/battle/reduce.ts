@@ -1068,7 +1068,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'object_damaged':
       return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, hp: event.hpAfter } : o)) } } : state;
     case 'object_changed':
-      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found && event.light === undefined && event.outlined === undefined)) return state;
+      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found && event.light === undefined && event.outlined === undefined
+        && event.altitudeFt === undefined && event.levitatedBy === undefined && event.resized === undefined && event.hp === undefined)) return state;
       return { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => {
         if (o.id !== event.objectId) return o;
         // Görev S3: taşıma (retrieve): `carriedBy` null bırakır, `at` düştüğü yer.
@@ -1077,7 +1078,13 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         const { light: _l, lightSpell: _ls, lightBy: _lb, ...bare } = rest0;
         const rest = event.light === undefined ? rest0 : event.light === null ? bare : { ...bare, light: event.light.r, lightSpell: event.light.spell, lightBy: event.light.by };
         const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
-        return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}), ...(event.outlined !== undefined ? { outlined: event.outlined } : {}) };
+        const base = { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}), ...(event.outlined !== undefined ? { outlined: event.outlined } : {}),
+          ...(event.altitudeFt !== undefined ? { altitudeFt: event.altitudeFt } : {}), ...(event.hp !== undefined ? { hp: event.hp } : {}) };
+        // Kuyruk S2: Levitate ve boyut büyüsü (null kaldırır).
+        const { levitatedBy: _lv, ...noLev } = base;
+        const lev = event.levitatedBy === undefined ? base : event.levitatedBy === null ? noLev : { ...base, levitatedBy: event.levitatedBy };
+        const { resized: _rz, resizedBy: _rb, baseHp: _bh, ...noSize } = lev;
+        return event.resized === undefined ? lev : event.resized === null ? noSize : { ...lev, resized: event.resized, resizedBy: event.resizedBy, baseHp: lev.baseHp ?? o.hp };
       }) }, ...(((): Partial<BattleState> => {
         // Kuyruk 36: doğaçlama silah taşıyanın silah seçeneklerine eklenir.
         const who = event.arm && event.carriedBy ? state.combatants[event.carriedBy] : undefined;
@@ -1266,6 +1273,34 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // SRD 5.2.1: 6. seviyede ölür.
       if (event.level >= 6) return withCombatant(state, c.id, { exhaustion: event.level, hp: 0, life: 'dead', concentration: null });
       return withCombatant(state, c.id, { exhaustion: event.level });
+    }
+    case 'item_dropped': {
+      const c = state.combatants[event.actorId];
+      if (!c) return state;
+      const next = withCombatant(state, c.id, { dropped: [...new Set([...(c.dropped ?? []), event.item])], weaponOptions: c.weaponOptions.filter((o) => o.weaponId !== event.item) });
+      if (!event.objectId || !event.at || !next.map) return next;
+      return { ...next, map: { ...next.map, objects: [...(next.map.objects ?? []), { id: event.objectId, kind: 'droppedItem', at: event.at, hp: 5, item: event.item, options: event.options ?? [] }] } };
+    }
+    case 'item_picked': {
+      const c = state.combatants[event.actorId];
+      const o = state.map?.objects?.find((x) => x.id === event.objectId);
+      if (!c || !o || !state.map) return state;
+      const next = withCombatant(state, c.id, { dropped: (c.dropped ?? []).filter((x) => x !== o.item), weaponOptions: [...c.weaponOptions, ...(o.options ?? [])],
+        economy: event.bond ? c.economy : { ...c.economy, interacted: true } });
+      return { ...next, map: { ...(next.map as NonNullable<BattleState['map']>), objects: (next.map?.objects ?? []).filter((x) => x.id !== o.id) } };
+    }
+    case 'zone_spotted':
+      return state.map ? { ...state, map: { ...state.map, zones: (state.map.zones ?? []).map((z) => (z.id === event.zoneId ? { ...z, seenBy: [...new Set([...(z.seenBy ?? []), ...event.by])] } : z)) } } : state;
+    case 'altitude_changed': {
+      if (event.objectId) {
+        return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId
+          ? (event.altitudeFt > 0 ? { ...o, altitudeFt: event.altitudeFt } : (({ altitudeFt: _a, ...rest }) => rest)(o)) : o)) } } : state;
+      }
+      const c = event.targetId ? state.combatants[event.targetId] : undefined;
+      if (!c) return state;
+      const prev = c.vertTurn && c.vertTurn.turn === event.turn ? c.vertTurn.ft : 0;
+      return withCombatant(state, c.id, { altitudeFt: event.altitudeFt, altitudeGentle: event.altitudeFt > 0 ? (event.gentle ?? c.altitudeGentle ?? false) : false, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
+        ...(event.turn ? { vertTurn: { turn: event.turn, ft: prev + (event.moved ?? 0) } } : {}) });
     }
     case 'retreated': {
       let next = state;
