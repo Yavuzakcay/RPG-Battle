@@ -269,6 +269,8 @@ export interface SpellMechanics {
   /** Kuyruk A7 (sürüm 36) ve A8 (sürüm 37): aynı biçimde sonraki tamamlamalar. */
   a7?: Partial<SpellMechanics>;
   a8?: Partial<SpellMechanics>;
+  /** Kuyruk S1 (sürüm 40): sığmayan parçaların kapatılması (aynı biçimde, a8'den sonra). */
+  s1?: Partial<SpellMechanics>;
   /** Kuyruk A7: savaşta uygulanan kısmın yanında savaş dışı parça Game Master notu (kartta ve günlükte; BUYU-KISMI "tamam (GM notlu)"). */
   gmNoted?: boolean;
   /**
@@ -296,6 +298,19 @@ export interface SpellMechanics {
   stormBonus?: string;
   /** Kuyruk A6 (Chromatic Orb): sıçrama hedefi komuttaki `targetIds` sırasıyla seçilir. */
   leapPick?: boolean;
+  /** Kuyruk S1 (sürüm 40): sıçrama hedefi seçim istemiyle (komut sırası vermediyse). */
+  leapAsk?: boolean;
+  /** Kuyruk S1 (sürüm 40, Alter Self): sonraki turlarda `spell_followup` ile seçenek değiştirme. */
+  swapChoice?: boolean;
+  /** Kuyruk S1 (sürüm 40, Calm Emotions): dostlardaki Charmed/Frightened bastırılır (büyü bitince geri gelir). */
+  calmSuppress?: boolean;
+  /** Kuyruk S1 (sürüm 40, Plane Shift): büyücü ve en çok `max` istekli dost haritadan ayrılır (el ele: `linkFt`). */
+  retreat?: { max: number; linkFt: number };
+  /** Kuyruk S1 (sürüm 40, Magic Weapon): güçlendirme tek silaha (`cast_spell.choice` silah kimliği). */
+  enchantOne?: boolean;
+  /** Kuyruk S1 (sürüm 40): alandaki nesneler parlar (Faerie Fire) / ateşli alanda yanıcı nesneler tutuşur (Meteor Swarm). */
+  outlineObjects?: boolean;
+  ignitesObjects?: boolean;
   /** Kuyruk A6: tek hedefli save büyüsünde de başarısızlığın süren etkisi (`failEffect`; Mind Spike yer bilgisi). */
   failEffectSingle?: boolean;
   /** Kuyruk A6: süren güç/ruh (`lingering: weapon`) sonraki turlarda bu kadar ft yer değiştirip yanındakine saldırır (yoksa 20). */
@@ -454,6 +469,8 @@ export interface ZoneSpec {
   /** Kuyruk A6 (Gust of Wind): başarısız save'de büyücüden bu kadar ft itme; büyücüye yaklaşan adım bu kat maliyet. */
   push?: number;
   costToward?: number;
+  /** Kuyruk S1 (sürüm 40, Gust of Wind `anchorSelf`): çizgi büyücüye bağlı; büyücü yer değiştirince komut sonunda onunla kayar. */
+  followCaster?: boolean;
   /** Kuyruk A7 (Darkness): oluşunca örtüştüğü, en çok bu seviyedeki büyülerin ışığını kaldırır. */
   dispelLight?: number;
   /** Kuyruk A7 (Daylight): güneş ışığı (Sunlight Sensitivity dezavantajı). */
@@ -558,6 +575,8 @@ export interface EffectSpec {
   swim?: boolean;
   repeatSave?: boolean;
   noReactions?: boolean;
+  /** Kuyruk S1 (Suggestion "bırak"): silahını bırakır (silahla saldıramaz). */
+  disarmed?: boolean;
   noAttack?: boolean;
   /** Kuyruk A8 (Gaseous Form): bu biçimde büyü yapılamaz. */
   noCastForm?: boolean;

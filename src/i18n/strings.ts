@@ -609,7 +609,7 @@ const tr = {
     pick: (spell: string, n: number, max: number): string => `${spell}: hedef seç (${n}/${max})`,
     cast: 'Büyü yap',
     choice: 'Seçim',
-    choiceName: { grovel: 'Grovel (yere kapan)', halt: 'Halt (dur)' } as Record<string, string>,
+    choiceName: { grovel: 'Grovel (yere kapan)', halt: 'Halt (dur / bekle)', approach: 'Approach (gel / getir)', flee: 'Flee (git / uzaklaş)', drop: 'Drop (silahını bırak)' } as Record<string, string>,
     hint: (spell: string, max: number): string => `${spell}: en çok ${max} hedef seç, sonra "Büyü yap".`,
   },
   area: {
@@ -666,6 +666,10 @@ const tr = {
     slot: (n: number): string => `${n}. seviye slot`,
     /** Görev Z2: Cutting Words zarın uygulanacağı yer (zar atılmadan seçilir). */
     choice: { attack: 'saldırı zarından düş', damage: 'hasardan düş' } as Record<string, string>,
+    /** Kuyruk S1: büyünün seçim istemi. */
+    choiceTitle: (who: string): string => `Seçim: ${who}`,
+    choiceLine: (label: string): string => `${label}: birini seç.`,
+    noChoice: 'Seçme',
     suggested: 'önerilen',
     no: 'Kullanma',
     policy: {

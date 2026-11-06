@@ -180,6 +180,8 @@ export const TR_EXTRA = {
     shapeName: { cone: 'koni', line: 'çizgi', sphere: 'küre', cube: 'küp', emanation: 'yayılım', cylinder: 'silindir', wall: 'duvar' } as Record<string, string>,
     summonWhy: { hp: '0 HP', concentration: 'konsantrasyon bitti', owner: 'sahibi öldü', replaced: 'yenisi çağrıldı', duration: 'süre doldu', dispelled: 'Dispel Magic' } as Record<string, string>,
     markMoved: (a: string, b: string) => `${a}: işaret ${b} üstüne taşındı.`,
+    retreated: (who: string, what: string): string => `${who} haritadan ayrıldı (${what}).`,
+    finishedRetreat: (party: boolean): string => (party ? 'Savaş bitti: düşmanlar haritadan ayrıldı.' : 'Savaş bitti: parti haritadan ayrıldı.'),
     finished: (party: boolean): string => (party ? 'Savaş bitti: parti kazandı.' : 'Savaş bitti: düşmanlar kazandı.'),
     gmWoke: (a: string) => `Game Master ejderhayı uyandırdı: ${a} uyandı.`,
     woke: (a: string, reason: string, by: string) => `${a} uyandı (${reason}${by ? `: ${by}` : ''}).`,

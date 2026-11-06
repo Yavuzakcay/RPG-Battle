@@ -127,12 +127,16 @@ export function checkActor(
   return { ok: true, actor };
 }
 
+/** Kuyruk S1: kaybeden tarafın ayakta kalanları haritadan ayrıldı mı (Plane Shift). */
+export const retreatedLoser = (state: BattleState, winner: 'party' | 'enemies'): boolean =>
+  Object.values(state.combatants).some((c) => c.offFloor === 'duzlem' && (c.allegiance?.side ?? c.side) !== winner && c.hp > 0);
+
 /** Olayları uygular, savaş bittiyse "battle_finished" olayını da ekler. */
 export function finish(state: BattleState, events: BattleEvent[]): CommandResult {
   let next = applyEvents(state, events);
   const winner = winnerOf(next);
   if (winner) {
-    const done: BattleEvent = { type: 'battle_finished', winner };
+    const done: BattleEvent = { type: 'battle_finished', winner, ...(retreatedLoser(next, winner) ? { retreat: true } : {}) };
     events.push(done);
     next = applyEvents(next, [done]);
   }

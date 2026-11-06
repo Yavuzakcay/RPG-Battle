@@ -339,7 +339,7 @@ export function shiftZoneEvents(state: BattleState, z: SpellZone, to: Offset, ma
  * Alanların yürüme maliyeti: zorlu arazi (2; Plant Growth 4; uçan yaratık zorlu araziden etkilenmez) ve rüzgâr duvarı
  * (Small ve küçük uçan yaratık, Gaseous Form'daki yaratık geçemez: null). Altıgende alan yoksa 1.
  */
-export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) => number | null {
+export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset, prev?: Offset) => number | null {
   const zones = state.map?.zones ?? [];
   if (!zones.length) return () => 1;
   const flying = isAirborne(mover);
@@ -347,7 +347,9 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
   const gaseous = !!mover.effects?.some((e) => e.noAttack);
   const web = !!mover.effects?.some((e) => e.webWalker);
   const ice = !!mover.effects?.some((e) => e.iceWalker);
-  return (h) => {
+  // Kuyruk S1 (sürüm 40): Gust of Wind'de büyücüye yaklaşma adım adım (önceki altıgene göre).
+  const stepwise = ruleVersion(state) >= 40;
+  return (h, prev) => {
     let cost = 1;
     for (const z of zones) {
       // Kuyruk K53 S4: geçici engel (dost geçer gibi kişiye göre olanlar da burada).
@@ -366,7 +368,8 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset) 
       if (spec.difficult && !flying) cost = Math.max(cost, spec.difficult);
       // Kuyruk A6 (Gust of Wind): hatta büyücüye (başlangıç yerinden) yaklaşan adım iki kat.
       const src = spec.costToward ? state.combatants[z.casterId]?.pos : undefined;
-      if (src && mover.pos && mover.id !== z.casterId && distance(h, src) < distance(mover.pos, src)) cost = Math.max(cost, spec.costToward as number);
+      const from = stepwise && prev ? prev : mover.pos;
+      if (src && from && mover.id !== z.casterId && distance(h, src) < distance(from, src)) cost = Math.max(cost, spec.costToward as number);
     }
     return cost;
   };

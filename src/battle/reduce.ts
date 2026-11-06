@@ -17,7 +17,7 @@ import { terrainOf } from '../map/terrain';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
 import { wardedFrom } from './mind';
-import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type DamageEffect } from './types';
+import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type ConditionTimer, type DamageEffect } from './types';
 import { effectSpeedZero, flySpeed } from './flight';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
 
@@ -140,11 +140,50 @@ const immuneTo = (c: Combatant, condition: string, state?: BattleState) => (c.ef
  * taşıyan öldüyse ya da düşman 0 HP'ye indiyse.
  */
 /** Görev S1: biten etkilerin verdiği durumlar düşer (başka süren etki aynı durumu vermiyorsa). */
-function dropGranted(conditions: string[], before: ActiveEffect[], after: ActiveEffect[]): string[] {
+function dropGranted(conditions0: string[], before: ActiveEffect[], after: ActiveEffect[], timers?: ConditionTimer[], round = 0): string[] {
+  const conditions = restoreSuppressed(conditions0, before, after, timers, round);
   const lost = before.filter((e) => !after.includes(e)).flatMap((e) => e.grants ?? []);
   if (lost.length === 0) return conditions;
   const still = new Set(after.flatMap((e) => e.grants ?? []));
   return conditions.filter((x) => !lost.includes(x) || still.has(x));
+}
+
+/**
+ * Kuyruk S1 (Calm Emotions, `suppressed`): biten bastırma etkisinin altındaki durumlar geri yazılır: süresiz olan her
+ * zaman, süreli olan sayacı hâlâ duruyorsa (bastırma süresi sayaçtan düşer), bir etkiden gelen o etki sürüyorsa.
+ */
+function restoreSuppressed(conditions: string[], before: ActiveEffect[], after: ActiveEffect[], _timers?: ConditionTimer[], round = 0): string[] {
+  const out = [...conditions];
+  for (const s of suppressedBack(before, after, round)) if (!out.includes(s.condition)) out.push(s.condition);
+  return out;
+}
+
+/** Kuyruk S1: biten bastırma etkilerinden geri gelecek durumlar (süreli olanın kalan sayacıyla). */
+function suppressedBack(before: ActiveEffect[], after: ActiveEffect[], round: number): Array<{ condition: string; timer?: ConditionTimer }> {
+  const ended = before.filter((e) => e.suppressed?.length && !after.some((x) => x.id === e.id));
+  const out: Array<{ condition: string; timer?: ConditionTimer }> = [];
+  for (const e of ended) for (const s of e.suppressed ?? []) {
+    if (s.by && !after.some((x) => x.id === s.by)) continue;
+    if (s.timer) {
+      const left = s.timer.count - Math.max(0, round - (s.round ?? round));
+      if (left <= 0) continue;
+      out.push({ condition: s.condition, timer: { ...s.timer, count: left } });
+    } else out.push({ condition: s.condition });
+  }
+  return out;
+}
+
+/** Kuyruk S1: withCombatant yaması (bastırılan süreli durum geri gelirse sayaç da). */
+function suppressTimers(c: Combatant, before: ActiveEffect[], after: ActiveEffect[], round: number): { conditionTimers?: ConditionTimer[] } {
+  const t = timersBack(c.conditionTimers, before, after, round);
+  return t === c.conditionTimers ? {} : { conditionTimers: t };
+}
+
+/** Kuyruk S1: geri gelen süreli durumların sayaçları. */
+function timersBack(timers: ConditionTimer[] | undefined, before: ActiveEffect[], after: ActiveEffect[], round: number): ConditionTimer[] | undefined {
+  const back = suppressedBack(before, after, round).flatMap((x) => (x.timer ? [x.timer] : []));
+  if (!back.length) return timers;
+  return [...(timers ?? []).filter((t) => !back.some((b) => b.condition === t.condition)), ...back];
 }
 
 function pruneEffects(state: BattleState): BattleState {
@@ -164,7 +203,7 @@ function pruneEffects(state: BattleState): BattleState {
       return true;
     });
     if (kept.length !== c.effects.length) {
-      next = withCombatant(next, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
+      next = withCombatant(next, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept, c.conditionTimers, state.round), ...suppressTimers(c, c.effects, kept, state.round) });
       if (!gone) next = lethargyAfter(next, c, c.effects.filter((e) => !kept.includes(e)));
     }
   }
@@ -312,7 +351,7 @@ function dropEffects(state: BattleState, id: string, drop: (e: ActiveEffect) => 
   const c = state.combatants[id];
   if (!c?.effects?.some(drop)) return state;
   const kept = c.effects.filter((e) => !drop(e));
-  return withCombatant(state, id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
+  return withCombatant(state, id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept, c.conditionTimers, state.round), ...suppressTimers(c, c.effects, kept, state.round) });
 }
 
 /**
@@ -404,7 +443,7 @@ function breakOnAct(state: BattleState, event: BattleEvent): BattleState {
   if (anyId && state.combatants[anyId]?.effects?.some((e) => e.breakOnAnyAct)) {
     const c0 = state.combatants[anyId] as Combatant;
     const kept0 = (c0.effects ?? []).filter((e) => !e.breakOnAnyAct);
-    state = withCombatant(state, c0.id, { effects: kept0, conditions: dropGranted(c0.conditions, c0.effects ?? [], kept0) });
+    state = withCombatant(state, c0.id, { effects: kept0, conditions: dropGranted(c0.conditions, c0.effects ?? [], kept0, c0.conditionTimers, state.round), ...suppressTimers(c0, c0.effects ?? [], kept0, state.round) });
   }
   const id = event.type === 'attack_resolved' || event.type === 'spell_cast' ? event.actorId : null;
   const c = id ? state.combatants[id] : undefined;
@@ -412,7 +451,7 @@ function breakOnAct(state: BattleState, event: BattleEvent): BattleState {
   const single = (e: ActiveEffect) => event.type === 'attack_resolved' && !!e.attackDis?.single;
   if (!c?.effects?.some((e) => e.breakOnAct || single(e))) return state;
   const kept = c.effects.filter((e) => !e.breakOnAct && !single(e));
-  return withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept) });
+  return withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects, kept, c.conditionTimers, state.round), ...suppressTimers(c, c.effects, kept, state.round) });
 }
 
 /** Rage'i bitirir: Rage'in eklediği dirençler kalkar. */
@@ -654,7 +693,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const kept = (c.effects ?? []).filter((e) => e.id !== event.effectId);
-      let next = withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects ?? [], kept) });
+      let next = withCombatant(state, c.id, { effects: kept, conditions: dropGranted(c.conditions, c.effects ?? [], kept, c.conditionTimers, state.round), ...suppressTimers(c, c.effects ?? [], kept, state.round) });
       if ((c.effects ?? []).some((e) => e.id === event.effectId && e.banished)) next = unstack(next, c.id);
       return lethargyAfter(next, c, (c.effects ?? []).filter((e) => !kept.includes(e)));
     }
@@ -1029,7 +1068,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'object_damaged':
       return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, hp: event.hpAfter } : o)) } } : state;
     case 'object_changed':
-      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found && event.light === undefined)) return state;
+      if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found && event.light === undefined && event.outlined === undefined)) return state;
       return { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => {
         if (o.id !== event.objectId) return o;
         // Görev S3: taşıma (retrieve): `carriedBy` null bırakır, `at` düştüğü yer.
@@ -1038,7 +1077,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         const { light: _l, lightSpell: _ls, lightBy: _lb, ...bare } = rest0;
         const rest = event.light === undefined ? rest0 : event.light === null ? bare : { ...bare, light: event.light.r, lightSpell: event.light.spell, lightBy: event.light.by };
         const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
-        return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}) };
+        return { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}), ...(event.outlined !== undefined ? { outlined: event.outlined } : {}) };
       }) }, ...(((): Partial<BattleState> => {
         // Kuyruk 36: doğaçlama silah taşıyanın silah seçeneklerine eklenir.
         const who = event.arm && event.carriedBy ? state.combatants[event.carriedBy] : undefined;
@@ -1227,6 +1266,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // SRD 5.2.1: 6. seviyede ölür.
       if (event.level >= 6) return withCombatant(state, c.id, { exhaustion: event.level, hp: 0, life: 'dead', concentration: null });
       return withCombatant(state, c.id, { exhaustion: event.level });
+    }
+    case 'retreated': {
+      let next = state;
+      for (const id of event.ids) {
+        const c = next.combatants[id];
+        if (c) next = withCombatant(next, id, { pos: null, offFloor: 'duzlem', floorPos: c.pos ?? undefined });
+      }
+      return next;
     }
     case 'battle_finished':
       return { ...state, status: 'finished', winner: event.winner };

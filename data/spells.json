@@ -696,6 +696,10 @@
         "leapPick": true,
         "sigmayan": "Sıçrama hedefini arayüz sormaz: komut targetIds sırasıyla seçer; oyuncu arayüzü ve yapay zekâ en yakın düşmanı alır.",
         "approx": null
+      },
+      "s1": {
+        "leapAsk": true,
+        "sigmayan": null
       }
     },
     "school": "Evocation",
@@ -1240,6 +1244,10 @@
         "kapsamDisi": "Loş ışık (10 ft) yalnızca karanlık/gece haritasında anlamlı (ışık modeli aydınlık/karanlık).",
         "sigmayan": "Küpteki nesneler işaretlenmez: nesneye saldırı avantajı yok (nesneler yalnızca AC/HP ile).",
         "approx": null
+      },
+      "s1": {
+        "outlineObjects": true,
+        "sigmayan": null
       }
     },
     "school": "Evocation",
@@ -2584,6 +2592,9 @@
         },
         "sigmayan": "Dönüş yeri seçimi (10 ft içinde) yok: yaratık aynı altıgene döner (Ethereal'deyken altıgeni boş tutulur).",
         "approx": null
+      },
+      "s1": {
+        "sigmayan": null
       }
     },
     "school": "Transmutation",
@@ -3232,6 +3243,10 @@
         "touchBuff": true,
         "sigmayan": "Tek silah seçimi yok: güçlendirme dokunulanın bütün silah saldırılarına; silahın zaten büyülü olup olmadığı denetlenmez.",
         "approx": null
+      },
+      "s1": {
+        "enchantOne": true,
+        "sigmayan": null
       }
     },
     "school": "Transmutation",
@@ -3793,6 +3808,20 @@
         },
         "sigmayan": "Rüzgâr çizgisi büyücü yürüyünce onunla gitmez (bonus eylemle yeni yöne yeniden çizilir); büyücüye yaklaşma maliyeti adım adım değil, başlangıç yerine göre.",
         "approx": null
+      },
+      "s1": {
+        "lingerZone": {
+          "on": [
+            "end"
+          ],
+          "save": "str",
+          "push": 15,
+          "costToward": 2,
+          "color": "#cfe8f0",
+          "icon": "🌬",
+          "followCaster": true
+        },
+        "sigmayan": null
       }
     },
     "school": "Evocation",
@@ -4133,6 +4162,10 @@
         "calmIndifferent": true,
         "sigmayan": "Var olan Charmed/Frightened bastırılmaz, kalkar: durum sayaçları bastırmayı tutmuyor, büyü bitince geri gelmez.",
         "approx": null
+      },
+      "s1": {
+        "calmSuppress": true,
+        "sigmayan": null
       }
     },
     "school": "Enchantment",
@@ -4254,6 +4287,42 @@
         },
         "sigmayan": "Serbest metinli öneri (en çok 25 sözcük) savaşta iki seçenekle: savaşı bırak (her tur durur) ya da uzaklaş; başka öneri Game Master'da.",
         "approx": null
+      },
+      "s1": {
+        "effect": {
+          "targets": 1,
+          "side": "enemy",
+          "rounds": 4800,
+          "grants": [
+            "Charmed"
+          ],
+          "charm": true,
+          "breakOnDamage": "casterSide",
+          "command": [
+            "halt",
+            "flee",
+            "approach",
+            "drop"
+          ],
+          "choices": [
+            "halt",
+            "flee",
+            "approach",
+            "drop"
+          ],
+          "commandPersist": true,
+          "icon": "💬",
+          "needsHearing": true,
+          "variants": {
+            "drop": {
+              "command": null,
+              "commandPersist": null,
+              "disarmed": true,
+              "icon": "🗡"
+            }
+          }
+        },
+        "sigmayan": null
       }
     },
     "school": "Enchantment",
@@ -5334,6 +5403,14 @@
         "kapsamDisi": "Change Appearance savaş dışı (Game Master).",
         "sigmayan": "Seçeneği Magic eylemiyle değiştirme yok: başka seçenek için büyü yeniden yapılır.",
         "approx": null
+      },
+      "s1": {
+        "swapChoice": true,
+        "repeat": {
+          "cost": "action",
+          "target": "self"
+        },
+        "sigmayan": null
       }
     },
     "school": "Transmutation",
@@ -5798,6 +5875,10 @@
       "a6": {
         "sigmayan": "Save'i kaçıran saldıranın eylemi harcanmaz ve yeni hedef seçer; hiç hedef seçmeyip başka bir eylem yaparsa SRD'deki 'saldırı/büyü boşa gider' uygulanmaz.",
         "approx": null
+      },
+      "s1": {
+        "retargetOnly": true,
+        "sigmayan": null
       }
     },
     "school": "Abjuration",

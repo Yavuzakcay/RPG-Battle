@@ -1405,6 +1405,11 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     const cmd = clericChoice(state, actor, canAct);
     if (cmd) return cmd;
   }
+  // Kuyruk S1: Plane Shift ile geri çekilme (son çare).
+  if (canAct) {
+    const cmd = retreatChoice(state, actor);
+    if (cmd) return cmd;
+  }
   // Görev WIZARD (basit kural): felç eden save büyüsü (Hold Person) güçlü düşmanlara; yukarı slotta ek hedef.
   if (canAct && state.yz?.eski) {
     const cmd = holdChoice(state, actor) ?? blindChoice(state, actor) ?? sphereGuard(state, actor) ?? banishChoice(state, actor) ?? wallChoice(state, actor)
@@ -1976,6 +1981,33 @@ function clericChoice(state: BattleState, actor: Combatant, canAct: boolean): Co
     if (cmd && threatened && tryCmd(state, actor, cmd).ok) return cmd;
   }
   return null;
+}
+
+/**
+ * Kuyruk S1 (sürüm 40, Plane Shift `retreat`): son çare: tarafın ayakta kalanlarının canı toplamın %20'sinin altında,
+ * karşı tarafınki %50'nin üstündeyken büyücü bitişik (zincirle) dostlarıyla haritadan ayrılır.
+ */
+function retreatChoice(state: BattleState, actor: Combatant): Command | null {
+  if (ruleVersion(state) < 40) return null;
+  const sp = castable(actor).find((x) => mechanicsAt(state, x).retreat);
+  if (!sp) return null;
+  const side = (c: Combatant) => c.allegiance?.side ?? c.side;
+  const members = (s: string) => Object.values(state.combatants).filter((c) => side(c) === s && !c.summon && !c.civilian && !c.offFloor);
+  const frac = (cs: Combatant[]) => cs.reduce((n, c) => n + Math.max(0, c.hp), 0) / Math.max(1, cs.reduce((n, c) => n + c.maxHp, 0));
+  const mine = members(side(actor));
+  const theirs = Object.values(state.combatants).filter((c) => side(c) !== side(actor) && !c.summon && !c.civilian && !c.offFloor);
+  if (frac(mine) >= 0.2 || frac(theirs) <= 0.5) return null;
+  const max = mechanicsAt(state, sp).retreat?.max ?? 8;
+  const chain = [actor.id];
+  for (let grew = true; grew && chain.length <= max;) {
+    grew = false;
+    for (const c of mine) {
+      if (chain.includes(c.id) || c.hp <= 0 || chain.length > max) continue;
+      if (chain.some((id) => gap(state, c, state.combatants[id] as Combatant) <= 1)) { chain.push(c.id); grew = true; }
+    }
+  }
+  const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: sp.name, targetIds: chain };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
 }
 
 /**

@@ -1,5 +1,5 @@
 /**
- * Kuyruk A6: büyünün savaşın kural sürümündeki mekaniği (A4 `a4` sürüm 32+, A6 `a6` sürüm 35+ alanları üstüne yazılır).
+ * Kuyruk A6: büyünün savaşın kural sürümündeki mekaniği (A4 `a4` sürüm 32+, A6 `a6` sürüm 35+, … Kuyruk S1 `s1` sürüm 40+ alanları üstüne yazılır).
  * Büyü yapımı (`castSpell`) kendi yolundan birleştirir; bu yardımcı yapım dışındaki okumalar içindir (tekrar maliyeti,
  * yapay zekâ, kart notu). Saf.
  */
@@ -14,6 +14,7 @@ export function mechanicsAt(state: Pick<BattleState, 'kuralSurumu'>, spell: Spel
   if (m.a6 && ruleVersion(state) >= 35) m = { ...m, ...m.a6, a6: undefined };
   if (m.a7 && ruleVersion(state) >= 36) m = { ...m, ...m.a7, a7: undefined };
   if (m.a8 && ruleVersion(state) >= 37) m = { ...m, ...m.a8, a8: undefined };
+  if (m.s1 && ruleVersion(state) >= 40) m = { ...m, ...m.s1, s1: undefined };
   return m;
 }
 

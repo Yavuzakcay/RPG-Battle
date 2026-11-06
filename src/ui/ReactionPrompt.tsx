@@ -18,8 +18,9 @@ export function reactionAskText(req: ReactionRequest, state: BattleState): { tit
     : req.trigger === 'targeted' ? T.targeted?.(n(req.sourceId), i.label ?? '')
       : req.trigger === 'cast' ? T.cast?.(n(req.sourceId), i.spell ?? '', i.level ?? 0)
         : req.trigger === 'fall' ? T.fall?.(n(req.sourceId), i.feet ?? 0)
-          : T[req.trigger]?.(n(req.sourceId));
-  return { title: R.title(n(req.reactorId)), line: line ?? '' };
+          : req.trigger === 'choice' ? R.choiceLine(i.label ?? '')
+            : T[req.trigger]?.(n(req.sourceId));
+  return { title: req.trigger === 'choice' ? R.choiceTitle(n(req.reactorId)) : R.title(n(req.reactorId)), line: line ?? '' };
 }
 
 /** Düğmeler: seçimsiz seçenek bir düğme, seçimli seçenekte her seçim bir düğme (slot seviyesi ya da hedef adı). */
@@ -55,7 +56,7 @@ export function ReactionPrompt(props: { request: ReactionRequest; state: BattleS
               {b.label}{b.suggested ? ` (${R.suggested})` : ''}
             </button>
           ))}
-          <button type="button" className="ghost" onClick={() => props.onAnswer(null)}>{R.no}</button>
+          <button type="button" className="ghost" onClick={() => props.onAnswer(null)}>{props.request.trigger === 'choice' ? R.noChoice : R.no}</button>
         </div>
       </div>
     </div>

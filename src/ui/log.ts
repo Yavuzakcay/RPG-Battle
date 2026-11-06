@@ -384,8 +384,10 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return event.targetId ? L.markMoved(n(event.actorId), n(event.targetId)) : '';
     case 'explore_step':
       return '';
+    case 'retreated':
+      return L.retreated(event.ids.map(n).join(', '), event.label);
     case 'battle_finished':
-      return L.finished(event.winner === 'party');
+      return event.retreat ? L.finishedRetreat(event.winner === 'party') : L.finished(event.winner === 'party');
     case 'dragon_woke':
       return event.byId === 'gm' ? L.gmWoke(n(event.actorId))
         : L.woke(n(event.actorId), event.reason, event.byId && event.reason !== 'hasar aldı' && !event.reason.startsWith('Algı') ? n(event.byId) : '');

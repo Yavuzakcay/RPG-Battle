@@ -92,6 +92,10 @@ export interface ActiveEffect {
   reduce?: { die: string; types: string[]; spent?: boolean };
   tempHp?: number;
   immune?: string[];
+  /** Kuyruk S1 (Calm Emotions): bastırılan durumlar; etki bitince reducer geri yazar (`timer`: süreli olanın sayacı, bastırıldığı turdan bu yana geçen tur düşülür; `by`: veren etki sürüyorsa). */
+  /** Kuyruk S1 (Suggestion "bırak"): silahını bıraktı (silahla saldıramaz). */
+  disarmed?: boolean;
+  suppressed?: Array<{ condition: string; timer?: ConditionTimer; round?: number; by?: string }>;
   ongoing?: { dice: string; type: string; save: Ability; dc: number; noSave?: boolean };
   command?: CommandWord;
   /** Görev B3: her tur süren zorlama (Suggestion, Fear: kaçış, Calm Emotions: duraksama); `fleeDash` kaçarken Dash. */
@@ -398,6 +402,8 @@ export interface Buff {
   damageType?: string;
   /** Yalnızca yakın dövüş silah saldırıları (Sacred Weapon). */
   meleeOnly?: boolean;
+  /** Kuyruk S1 (Magic Weapon): yalnızca bu silah (silah kimliği). */
+  enchantBy?: string;
   /** Hasar Radiant olabilir: hedef silahın türüne dirençliyse Radiant seçilir. */
   radiant?: boolean;
   /** Kuyruk 19 (Conjure Minor Elementals): ek zar her saldırıda (büyü dahil), yalnızca bu menzildeki hedefe, seçilebilen türler. */
@@ -1055,6 +1061,8 @@ export interface MapObject {
   light?: number; lightSpell?: string; lightBy?: string;
   /** Kuyruk 30 D1: keşif nesnesi (oyuncudan saklı, bulunana dek); bulma DC'si (pasif Algı), bulununca keşif bayrağı. */
   gizli?: boolean; found?: boolean; findDc?: number; flag?: string;
+  /** Kuyruk S1 (Faerie Fire): bu tura dek parlıyor (nesneye saldırı avantajlı). */
+  outlined?: number;
 }
 /** Görev S4: grup durumu ve grup (alan altıgenleri; üyeler savaş başında alanda duran düşmanlar). */
 export type GroupState = 'asleep' | 'calm' | 'alarmed';
@@ -1555,7 +1563,9 @@ export type Command =
   | { type: 'familiar_order'; actorId: string }
   | { type: 'gaze'; actorId: string; targetId: string }
   | { type: 'sphere_carry'; actorId: string; targetId: string; drop?: boolean }
-  | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string };
+  | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string }
+  /** Kuyruk S1 (sürüm 40): seçilen dostlarla haritadan ayrılma (Plane Shift); büyü yapımının (`cast_spell`) kısa yolu. */
+  | { type: 'retreat'; actorId: string; spellName: string; targetIds: string[]; slotLevel?: number };
 
 /** Olaylar: olmuş ve sonuçlanmış gerçekler. Durum yalnızca olaylardan türetilir. */
 export type BattleEvent =
@@ -1943,6 +1953,7 @@ export type BattleEvent =
       roll?: { d20: number; total: number; ac: number; hit: boolean } }
   | { type: 'object_destroyed'; objectId: string; label: string }
   | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk A7: nesne ışığı (null kaldırır). */ light?: { r: number; spell: string; by: string } | null; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset;
+      /** Kuyruk S1 (Faerie Fire): parlama süresi (tur). */ outlined?: number;
       /** Kuyruk 36: doğaçlama silah alındı: taşıyanın silah seçeneklerine eklenir. */ arm?: AttackOption }
   | { type: 'goal_changed'; goalId: string; status: GoalStatus }
   | { type: 'groups_formed'; members: Record<string, string[]> }
@@ -1965,6 +1976,8 @@ export type BattleEvent =
   /** Görev S1: büyüyle stabil etme ya da diriltme (Spare the Dying, Revivify). */
   | { type: 'life_restored'; targetId: string; hpAfter: number; life: 'alive' | 'stable'; label: string }
   /** Görev S1: ışınlanma (fırsat saldırısı tetiklemez; sıra ve konsantrasyon korunur). */
+  /** Kuyruk S1: haritadan ayrılanlar (Plane Shift; `offFloor: 'duzlem'`, konum yok, sırada atlanır, tarafı ayakta tutmaz). */
+  | { type: 'retreated'; actorId: string; ids: string[]; label: string }
   | { type: 'teleported'; actorId: string; from: Offset; to: Offset; label: string; /** Kuyruk 19: harcanan hareket (altıgen) ve Tree Stride işareti. */ cost?: number; stride?: boolean }
   /** Görev S1: bitkinlik seviyesi değişti (6'da ölür). */
   | { type: 'exhaustion_changed'; targetId: string; level: number; reason: string }
@@ -1979,7 +1992,7 @@ export type BattleEvent =
   /** Kuyruk 19 (Time Stop): büyücü art arda `turns` tur oynar; başka yaratığı etkilerse biter. */
   | { type: 'time_stop'; actorId: string; turns: number }
   | { type: 'time_stop_ended'; actorId: string }
-  | { type: 'battle_finished'; winner: Side }
+  | { type: 'battle_finished'; winner: Side; /** Kuyruk S1: kaybeden taraf haritadan ayrıldı (Plane Shift). */ retreat?: boolean }
   /** Kuyruk 31: keşif adımı öncesi hareket sayacı sıfırlanır. */
   | { type: 'explore_step'; actorId: string }
   /** Uyuyan ejderha uyandı; `reason` günlük metni (hasar, yanına girdi, gürültü, Algı, GM). */

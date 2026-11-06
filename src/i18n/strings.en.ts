@@ -645,6 +645,8 @@ export const en: Strings = {
     shapeName: { cone: 'cone', line: 'line', sphere: 'sphere', cube: 'cube', emanation: 'emanation', cylinder: 'cylinder', wall: 'wall' } as Record<string, string>,
     summonWhy: { hp: '0 HP', concentration: 'concentration ended', owner: 'summoner died', replaced: 'replaced by a new one', duration: 'duration ended', dispelled: 'Dispel Magic' } as Record<string, string>,
     markMoved: (a: string, b: string) => `${a}: mark moved to ${b}.`,
+    retreated: (who: string, what: string): string => `${who} left the battlefield (${what}).`,
+    finishedRetreat: (party: boolean): string => (party ? 'Battle over: the enemies left the battlefield.' : 'Battle over: the party left the battlefield.'),
     finished: (party: boolean) => (party ? 'Battle over: the party won.' : 'Battle over: the enemies won.'),
     gmWoke: (a: string) => `The Game Master woke the dragon: ${a} is awake.`,
     woke: (a: string, reason: string, by: string) => `${a} woke up (${reason}${by ? `: ${by}` : ''}).`,
@@ -1016,7 +1018,7 @@ export const en: Strings = {
     pick: (spell: string, n: number, max: number) => `${spell}: pick targets (${n}/${max})`,
     cast: 'Cast',
     choice: 'Choice',
-    choiceName: { grovel: 'Grovel', halt: 'Halt' } as Record<string, string>,
+    choiceName: { grovel: 'Grovel', halt: 'Halt (wait)', approach: 'Approach (come / fetch)', flee: 'Flee (go away)', drop: 'Drop (drop your weapon)' } as Record<string, string>,
     hint: (spell: string, max: number) => `${spell}: pick up to ${max} targets, then "Cast".`,
   },
   area: {
@@ -1072,6 +1074,10 @@ export const en: Strings = {
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number) => `level ${n} slot`,
     choice: { attack: 'subtract from the attack roll', damage: 'subtract from the damage' } as Record<string, string>,
+    /** Kuyruk S1: spell choice prompt. */
+    choiceTitle: (who: string): string => `Choice: ${who}`,
+    choiceLine: (label: string): string => `${label}: pick one.`,
+    noChoice: 'Skip',
     suggested: 'suggested',
     no: 'Don\'t use',
     policy: {

@@ -166,7 +166,9 @@ export function executeAttackObject(state: BattleState, actor: Combatant, object
   const wall = sightBlockedBetween(state, actor.pos, obj.at);
   if (wall) return fail(`Nesne görünmüyor: araya ${wall} giriyor.`);
   const def = OBJECTS[obj.kind];
-  const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: def.ac, mode: 'normal', damage: option.damage, autoCritical: false }, rollTag(rng, { by: actor.id }));
+  // Kuyruk S1 (Faerie Fire): parlayan nesneye saldırı avantajlı.
+  const lit = obj.outlined !== undefined && obj.outlined >= state.round;
+  const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: def.ac, mode: lit ? 'advantage' : 'normal', damage: option.damage, autoCritical: false }, rollTag(rng, { by: actor.id }));
   // Kuyruk 19 (srdK19 Siege Monster): nesnelere ve yapılara çift hasar.
   const dealt = (r.hit ? r.damage?.total ?? 0 : 0) * (actor.traits?.includes('siege-monster') ? 2 : 1);
   const roll = { d20: r.d20.kept, total: r.total, ac: def.ac, hit: r.hit };

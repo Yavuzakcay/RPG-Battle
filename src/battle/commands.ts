@@ -32,7 +32,7 @@ import { ruleVersion, srdConditions } from './ruleVersion';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
 import { playerThrowObject, throwObject } from './objectMotion';
-import { checkActor, currentActorId, fail, finish, nextActor, winnerOf, type CommandResult } from './common';
+import { checkActor, currentActorId, fail, finish, isTargetable, nextActor, retreatedLoser, winnerOf, type CommandResult } from './common';
 import {
   auraStepEvents, auraTurnEndEvents, executeActionSurge, executeFollowup, executeSecondWind, opportunityAttacks,
   weaponAttackEvents,
@@ -61,6 +61,10 @@ import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
 import { casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
+import { askChoice } from '../rules/choice';
+// Kuyruk S1: büyücüye bağlı alanlar (komut sonu kancası).
+import './anchorZones';
+import { spendSlot } from './slots';
 import { heldFollow, mechanicsAt } from './spellVersion';
 import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
@@ -150,6 +154,8 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
 
 /** Komutu çözer; komutu veren gizlenmişse ve komut onu ortaya çıkarıyorsa bunu da ekler. */
 export function execute(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
+  // Kuyruk S1: haritadan ayrılma, büyünün yapımıyla aynı yol (eylem, slot, hedef denetimi).
+  if (cmd.type === 'retreat') return execute(state, { type: 'cast_spell', actorId: cmd.actorId, spellName: cmd.spellName, targetIds: cmd.targetIds, ...(cmd.slotLevel ? { slotLevel: cmd.slotLevel } : {}) }, ctx, rng);
   // Eylem ekonomisi: komut çalışmadan önce harcanabilir mi bakılır, başarılıysa harcanır
   // (olay, komutun olaylarının ardına eklenir; ikisi farklı alanları değiştirir).
   let spent: BattleEvent | null = null;
@@ -162,9 +168,13 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev CLERIC: Sanctuary: korunanı hedef alan saldıran önce WIS save; başarısızsa saldırı/büyü boşa gider.
   const sanct = spent ? sanctuaryCheck(state, cmd, rng) : null;
   if (sanct?.refused) return fail(sanct.refused);
+  // Kuyruk S1 (sürüm 40, `retargetOnly`): save'i kaçıran hemen yeni bir hedef seçer (seçim istemi) ya da saldırı/büyü
+  // boşa gider (eylem ve slot harcanır).
+  const retargeted = sanct?.blocked && ruleVersion(state) >= 40 ? sanctuaryRetarget(state, cmd, ctx, rng, sanct.events) : null;
+  if (retargeted && !retargeted.ok) return retargeted;
   // Kuyruk A6 (sürüm 35): başarısız Sanctuary save'inde eylem/saldırı harcanmaz (yeni hedef seçilir).
-  if (sanct?.blocked && sanct.events.some((e) => e.type === 'sanctuary_save' && e.retarget)) spent = null;
-  const result = sanct?.blocked ? finish(state, sanct.events) : executeCommand(state, cmd, ctx, rng);
+  if (!retargeted && sanct?.blocked && sanct.events.some((e) => e.type === 'sanctuary_save' && e.retarget)) spent = null;
+  const result = retargeted ?? (sanct?.blocked ? finish(state, sanct.events) : executeCommand(state, cmd, ctx, rng));
   if (!result.ok) return result;
   let { state: next, events } = result;
   if (sanct && !sanct.blocked) { next = applyEvents(state, [...sanct.events, ...events]); events = [...sanct.events, ...events]; }
@@ -271,7 +281,10 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     const goal = goalEvents(next);
     if (goal.length) { next = applyEvents(next, goal); events = [...events, ...goal]; }
     const winner = next.status === 'active' ? winnerOf(next) : null;
-    if (winner) { const done: BattleEvent = { type: 'battle_finished', winner }; next = applyEvents(next, [done]); events = [...events, done]; }
+    if (winner) {
+      // Kuyruk S1: kaybeden tarafın ayakta kalanları haritadan ayrıldıysa (Plane Shift) geri çekilme.
+      const done: BattleEvent = { type: 'battle_finished', winner, ...(retreatedLoser(next, winner) ? { retreat: true } : {}) }; next = applyEvents(next, [done]); events = [...events, done];
+    }
   }
   // Kuyruk K48: hedefle biten savaşta da Moral zafer ödülü (komut sonu kancası bitişten önce çalıştıysa).
   if (state.status === 'active' && next.status === 'finished' && !events.some((e) => e.type === 'moral_changed' && e.reason === 'zafer')) {
@@ -279,6 +292,45 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (won.length) { next = applyEvents(next, won); events = [...events, ...won]; }
   }
   return { ok: true, state: next, events };
+}
+
+/**
+ * Kuyruk S1 (sürüm 40, Sanctuary `retargetOnly`): save'i kaçıran saldıran ya da büyücü hemen yeni bir hedef seçer
+ * (aynı komut başka hedefle çalışabiliyorsa; korunan hedefler hariç) ya da saldırı/büyü boşa gider: eylem harcanır,
+ * büyüde slot da (SRD "either choose a new target or lose the attack or spell"). Seçim istemi; öneri en yakın aday.
+ */
+function sanctuaryRetarget(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng, saveEvents: BattleEvent[]): CommandResult {
+  const attacker = 'actorId' in cmd ? state.combatants[cmd.actorId] : undefined;
+  const warded = saveEvents.find((e) => e.type === 'sanctuary_save');
+  if (!attacker || !warded || warded.type !== 'sanctuary_save') return finish(state, saveEvents);
+  const swap = (id: string): Command | null => {
+    if ('targetId' in cmd && typeof cmd.targetId === 'string' && cmd.targetId === warded.targetId) return { ...cmd, targetId: id } as Command;
+    if (cmd.type === 'cast_spell' && cmd.targetIds?.includes(warded.targetId)) return { ...cmd, targetIds: cmd.targetIds.map((x) => (x === warded.targetId ? id : x)) };
+    return null;
+  };
+  const probe = applyEvents(state, saveEvents);
+  const quiet: Rng = () => 0.5;
+  const cands = Object.values(state.combatants)
+    .filter((c) => c.id !== attacker.id && c.id !== warded.targetId && !c.effects?.some((e) => e.sanctuary) && isTargetable(c) && c.hp > 0)
+    .filter((c) => { const nc = swap(c.id); return !!nc && executeCommand(probe, nc, ctx, quiet).ok; })
+    .sort((a, b) => (a.pos && b.pos && attacker.pos ? distance(a.pos, attacker.pos) - distance(b.pos, attacker.pos) : 0));
+  const foe = cands.find((c) => (c.allegiance?.side ?? c.side) !== (attacker.allegiance?.side ?? attacker.side));
+  const pick = askChoice(rng, { actorId: attacker.id, sourceId: warded.targetId, label: `${warded.label}: yeni hedef`,
+    options: cands.map((c) => ({ id: c.id, label: c.name })), suggested: foe?.id ?? null });
+  const nc = pick ? swap(pick) : null;
+  if (nc) {
+    const r = executeCommand(probe, nc, ctx, rng);
+    if (r.ok) return { ok: true, state: r.state, events: [...saveEvents, ...r.events] };
+  }
+  // Boşa gitti: büyüde slot harcanır.
+  const lost: BattleEvent[] = [];
+  if (cmd.type === 'cast_spell') {
+    const sp = spells.find((x) => x.name === cmd.spellName);
+    const slot = sp ? spendSlot(attacker, sp.level, cmd.slotLevel, sp.name, cmd.free) : null;
+    if (slot?.ok) lost.push(...slot.events);
+    lost.push({ type: 'spell_cast', actorId: attacker.id, targetId: null, label: cmd.spellName, slotLevel: slot?.ok ? slot.slotLevel : null, note: `${warded.label}: büyü boşa gitti` });
+  } else lost.push({ type: 'map_note', text: `${attacker.name}: ${warded.label} — saldırı boşa gitti.` });
+  return finish(state, [...saveEvents, ...lost]);
 }
 
 function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, rng: Rng): CommandResult {
@@ -423,6 +475,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (actor.summon?.noAttack && actor.attacks.length && (cmd.type === 'monster_attack' || cmd.type === 'multiattack') && !familiarOrdered(actor)) return fail('Familiar saldıramaz (emir yok).');
   const gas = actor.effects?.find((e) => e.noAttack);
   if (gas && NO_ATTACK_COMMANDS.includes(cmd.type)) return fail(`${gas.name} sürerken saldırı ve büyü yapılamaz.`);
+  // Kuyruk S1 (Suggestion "bırak"): silahını bırakan silahla saldıramaz (silahsız vuruş serbest; canavar saldırıları da durur).
+  const dropped = actor.effects?.find((e) => e.disarmed);
+  if (dropped && (((cmd.type === 'attack' || cmd.type === 'offhand_attack') && !('option' in cmd && cmd.option?.weaponId === 'unarmed-strike')) || cmd.type === 'monster_attack' || cmd.type === 'multiattack')) return fail(`${dropped.name}: silahını bıraktı, silahla saldıramaz.`);
   const events: BattleEvent[] = [];
 
   if (cmd.type === 'end_turn') {
@@ -792,6 +847,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'familiar_order') return executeFamiliarOrder(state, actor);
   if (cmd.type === 'gaze') return executeGaze(state, actor, cmd.targetId);
   if (cmd.type === 'monster_ability') return executeMonsterAbility(state, actor, cmd.abilityId, cmd.targetId, cmd.targetHex, rng, cmd.option);
+  if (cmd.type === 'retreat') return fail('Bilinmeyen komut.');
 
   // Silah saldırısı
   const target = state.combatants[cmd.targetId];

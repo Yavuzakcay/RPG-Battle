@@ -10,7 +10,7 @@
 - **Metin ve çeviri**, belge, test, başarım/paket bütçesi.
 
 **İstisna (kullanıcı kararı):** Kuyruk P9 (ek paket ilkel genişletme 3, kural sürümü 38) kullanıcı tarafından açıkça
-verildi; donma yalnız o kuyruğun kapsamı için kaldırıldı (DECISIONS.md, 2026-11-06 P9). Kuyruk P10 (ilkel genişletme 4, kural sürümü 39) aynı istisnayla.
+verildi; donma yalnız o kuyruğun kapsamı için kaldırıldı (DECISIONS.md, 2026-11-06 P9). Kuyruk P10 (ilkel genişletme 4, kural sürümü 39) ve Kuyruk S1 (sığmayan büyü parçaları, kural sürümü 40) aynı istisnayla.
 
 Yeni mekanik sayılan (yapılmaz): yeni komut ya da olay türü, yeni süren etki alanı, yeni harita kuralı türü, yeni ev kuralı,
 yeni ilkel, yeni Serüven sistemi. Eksik SRD parçaları `harita/belgeler/BUYU-SIGMAYAN.md`, `docs/SRD-DENETIM.md` ve CLAUDE.md

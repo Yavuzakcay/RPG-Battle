@@ -22,7 +22,9 @@ export interface ReactionOption {
 /** Tetik türü: isabet, hedef alınma, erişimden çıkma, büyü yapılması, hasar, düşme, geri yöneltme, tur başı. */
 export type ReactionTrigger = 'hit' | 'targeted' | 'leave' | 'cast' | 'damaged' | 'fall' | 'redirect' | 'turnStart'
   /** Kuyruk K54 (imza): iskalanan saldırı, dosta isabet/hedef, dostun düşmesi. */
-  | 'miss' | 'ally';
+  | 'miss' | 'ally'
+  /** Kuyruk S1: tepki değil, büyünün seçim istemi (`rules/choice.ts`). */
+  | 'choice';
 
 export interface ReactionRequest {
   /** Tepkiyi verecek yaratık. */
@@ -78,6 +80,8 @@ export const ENEMY_POLICIES: readonly ReactionPolicy[] = ['ai', 'always', 'never
 /** Politikaya göre karar; `ask` için `'ask'` döner (arayüz oyuncuya sorar). */
 export function decideBy(policy: ReactionPolicy, req: ReactionRequest): ReactionAnswer | 'ask' {
   if (policy === 'ask') return 'ask';
+  // Kuyruk S1: seçim istemi tepki değildir: "Asla" / "Her zaman" ayarında öneri.
+  if (req.trigger === 'choice') return req.suggested;
   if (policy === 'never') return null;
   if (policy === 'always') return alwaysAnswer(req);
   return req.suggested;

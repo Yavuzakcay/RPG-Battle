@@ -37,6 +37,10 @@ import { concentrationEvent, spendSlot } from './slots';
 import { executeSummon } from './summons';
 import { castBarrier } from './castBarrier';
 import { teleportEvent, teleportProblem } from './teleport';
+import { askChoice } from '../rules/choice';
+import { gap } from './body';
+import { OBJECTS } from './objectData';
+import { surfaceEvent } from './surfaces';
 import { withArrival } from './motion';
 import { pickArea } from './areaAttack';
 import { auraSave, hitExtras, weaponAttackEvents, weaponHexNear } from './features';
@@ -51,7 +55,7 @@ import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
 import { affinityBonus, castWithMetamagic, empowerRolls, innateFor, POINTS } from './sorcerer';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
 import { resourceLeft } from './types';
-import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage } from './types';
+import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage, MapObject } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -487,6 +491,9 @@ function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng)
   return healDice(actor, expr, rng);
 }
 
+/** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40]] as const;
+
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
   const spell = spell0.mechanics.upgrade && globalRule(state, 'spellsK19')
@@ -496,14 +503,15 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   // Kuyruk A6 (kural sürümü 35): küçük kısmi büyülerin tamamlanmış hâli (`a6`).
   // SRD'nin oyuna sığmayan parçası yapınca günlüğe Game Master notu olarak (`sigmayan`; harita/belgeler/BUYU-SIGMAYAN.md).
   // Kuyruk A7/A8 (sürüm 36/37): aynı biçimde sonraki tamamlamalar (`a7`, `a8`), sırayla.
-  const later = (['a6', 'a7', 'a8'] as const).find((k, i) => spell.mechanics[k] && ruleVersion(state) >= 35 + i);
+  // Kuyruk S1 (sürüm 40): sığmayan parçaların kapatılması (`s1`).
+  const later = LATER.find(([k, v]) => spell.mechanics[k] && ruleVersion(state) >= v)?.[0];
   if (later) {
     const merged = { ...spell, mechanics: { ...spell.mechanics, ...spell.mechanics[later], [later]: undefined } };
     const r = castSpell(state, actor, cmd, merged, rng, repeat);
     if (!r.ok) return r;
     // Son blokta bir kez: kalıcı alan ve sığmayan parça ya da savaş dışı parçanın Game Master notu (`gmNoted`).
-    const done = !(['a6', 'a7', 'a8'] as const).some((k, i) => merged.mechanics[k] && ruleVersion(state) >= 35 + i);
-    const extra: BattleEvent[] = done ? [...lingerZoneEvents(r.state, actor, merged, r.events)] : [];
+    const done = !LATER.some(([k, v]) => merged.mechanics[k] && ruleVersion(state) >= v);
+    const extra: BattleEvent[] = done ? [...lingerZoneEvents(r.state, actor, merged, r.events), ...areaObjectEvents(r.state, actor, merged, r.events)] : [];
     const note = merged.mechanics.sigmayan ?? (merged.mechanics.gmNoted && !merged.mechanics.offCombat ? merged.mechanics.gmNote : undefined);
     if (done && note && !repeat) extra.push({ type: 'map_note', text: `Game Master notu — ${spell.name}: ${note}` });
     return extra.length ? finish(state, [...r.events, ...extra]) : r;
@@ -536,6 +544,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   const m = spell.mechanics;
   const barrier = castBarrier(state, actor, spell);
   if (barrier) return fail(barrier);
+  // Kuyruk S1 (sürüm 40, Plane Shift `retreat`): büyücü ve el ele (zincirle bitişik) istekli dostlar haritadan ayrılır.
+  if (m.retreat) return executeRetreat(state, actor, cmd, spell);
   // Kuyruk 40: yeni sistem gerektiren / karar bekleyen büyü ("çalışmıyor"): slot harcanmaz.
   if (m.unsupported) return fail(`${spell.name} savaşta çalışmıyor: ${m.unsupported}`);
   // Görev B2: kalıcı zemin etkisi ve geçici engel (çağırmayla yürüyen alanlar `executeSummon`'da).
@@ -549,7 +559,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   if (m.weaponStrike) return executeTrueStrike(state, actor, cmd, spell, rng);
   if (m.kind === 'heal' && m.healTargets && cmd.targetIds) return executeHealMany(state, actor, cmd, spell, rng);
   if (m.kind === 'smite') return executeSmite(state, actor, cmd, spell, rng);
-  if (m.kind === 'buff') return executeBuff(state, actor, cmd, spell);
+  if (m.kind === 'buff') return executeBuff(state, actor, cmd, spell, rng);
   // Kuyruk A7 (Light, Continual Flame; `objectLight`): haritadaki bir nesneye (taşınmayan ya da büyücünün taşıdığı).
   if (m.objectLight !== undefined && cmd.targetHex && !cmd.targetId && state.map) return executeObjectLight(state, actor, cmd, spell);
   if (m.kind === 'effect' && m.objectLight !== undefined && !m.objectLightKeep) {
@@ -863,9 +873,19 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       // seçim yoksa en yakın düşman.
       const near = (c: Combatant) => !struck.has(c.id) && isTargetable(c) && c.hp > 0 && (!state.map || (!!c.pos && !!from?.pos && distance(c.pos, from.pos) * 5 <= 30));
       const picked = m.leapPick ? (cmd.targetIds ?? []).map((id) => current.combatants[id]).find((c): c is Combatant => !!c && c.id !== actor.id && near(c)) : undefined;
-      const next = picked ?? Object.values(current.combatants)
+      const byDist = (a: Combatant, b: Combatant) => (from?.pos && a.pos && b.pos ? distance(a.pos, from.pos) - distance(b.pos, from.pos) : 0);
+      const nearest = Object.values(current.combatants)
         .filter((c) => c.side !== actor.side && !struck.has(c.id) && isTargetable(c) && c.hp > 0 && (!state.map || (!!c.pos && !!from?.pos && distance(c.pos, from.pos) * 5 <= 30)))
-        .sort((a, b) => (from?.pos && a.pos && b.pos ? distance(a.pos, from.pos) - distance(b.pos, from.pos) : 0))[0];
+        .sort(byDist)[0];
+      // Kuyruk S1 (sürüm 40, `leapAsk`): komut sırası vermediyse sıçrama hedefi büyücüye sorulur (seçim istemi; 30 ft
+      // içinde, dost da olabilir; öneri en yakın düşman; "Seçme" sıçramaz).
+      let next: Combatant | undefined = picked ?? nearest;
+      if (!picked && m.leapAsk) {
+        const cands = Object.values(current.combatants).filter((c) => c.id !== actor.id && near(c)).sort(byDist);
+        const id = askChoice(rng, { actorId: actor.id, sourceId: t.id, label: `${spell.name}: sıçrama hedefi`,
+          options: cands.map((c) => ({ id: c.id, label: c.name })), suggested: nearest?.id ?? null });
+        next = id ? current.combatants[id] : undefined;
+      }
       if (next) { curId = next.id; leapsLeft--; raysLeft++; }
     }
   }
@@ -952,6 +972,30 @@ function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, 
 }
 
 /**
+ * Kuyruk S1 (sürüm 40): alandaki taşınmayan nesneler. Faerie Fire (`outlineObjects`): nesne `outlined` olur (süre
+ * boyunca ona saldırı avantajlı). Meteor Swarm (`ignitesObjects`): ateşli alandaki yanıcı nesnelerin altıgeni alev
+ * yüzeyi olur (nesne verisinde `flammable`).
+ */
+function areaObjectEvents(state: BattleState, actor: Combatant, spell: Spell, events: BattleEvent[]): BattleEvent[] {
+  const m = spell.mechanics;
+  if ((!m.outlineObjects && !m.ignitesObjects) || !state.map?.objects?.length) return [];
+  const areas = events.flatMap((e) => (e.type === 'spell_cast' && e.actorId === actor.id && e.area ? [e.area] : []));
+  const inArea = (o: MapObject, fireOnly: boolean) => !o.carriedBy && areas.some((a) => (!fireOnly || a.damageType === 'fire') && a.hexes.some((h) => h.col === o.at.col && h.row === o.at.row));
+  const out: BattleEvent[] = [];
+  if (m.outlineObjects) {
+    const rounds = m.failEffect?.rounds ?? 10;
+    for (const o of state.map.objects) if (inArea(o, false)) out.push({ type: 'object_changed', objectId: o.id, label: `${spell.name}: ${OBJECTS[o.kind]?.tr ?? o.kind} parlıyor`, outlined: state.round + rounds - 1 });
+  }
+  if (m.ignitesObjects) {
+    const burning = new Set((state.map.zones ?? []).filter((z) => z.surface === 'fire').flatMap((z) => z.hexes.map(hexKey)));
+    const hexes = state.map.objects.filter((o) => inArea(o, true) && OBJECTS[o.kind]?.flammable && !burning.has(hexKey(o.at))).map((o) => o.at);
+    const uniq = [...new Map(hexes.map((h) => [hexKey(h), h])).values()];
+    if (uniq.length) out.push(surfaceEvent(state, 'fire', uniq, actor.id, actor.side));
+  }
+  return out;
+}
+
+/**
  * Kuyruk A6 (Gust of Wind, `lingerZone`): alan büyüsünün altıgenlerinde süren alan (konsantrasyon); aynı büyücünün
  * aynı büyüden önceki alanı biter (yeni yön).
  */
@@ -963,7 +1007,9 @@ function lingerZoneEvents(state: BattleState, actor: Combatant, spell: Spell, ev
     .map((z): BattleEvent => ({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'expired' }));
   const caster = state.combatants[actor.id];
   out.push({ type: 'zone_created', zone: { id: newZoneId(state, spell.id, actor.id), spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side,
-    dc: actor.spellSaveDc ?? 10, slotLevel: caster?.concentration?.slotLevel ?? spell.level, hexes: area.hexes, ...(spell.concentration ? { concentration: spell.name } : {}), spec } });
+    dc: actor.spellSaveDc ?? 10, slotLevel: caster?.concentration?.slotLevel ?? spell.level, hexes: area.hexes, ...(spell.concentration ? { concentration: spell.name } : {}), spec,
+    // Kuyruk S1: büyücüye bağlı çizgi (komut sonunda büyücüyle kayar; `anchorZones.ts`).
+    ...(spec.followCaster && caster?.pos ? { center: caster.pos } : {}) } });
   return out;
 }
 
@@ -1231,6 +1277,9 @@ export function executeRepeat(state: BattleState, actor: Combatant, targetId: st
   if (targetHex && ((r.point && spell.area) || mechanicsAt(state, spell).held)) {
     return castSpell(state, actor, { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetHex, slotLevel: conc.slotLevel }, spell, rng, true);
   }
+  // Kuyruk S1 (sürüm 40, Alter Self `swapChoice`): sonraki turlarda Magic eylemiyle başka seçenek (seçim istemi; öneri
+  // sıradaki seçenek). Etkinin süresi ve konsantrasyonu aynı; yalnızca seçeneğin alanları değişir.
+  if (mechanicsAt(state, spell).swapChoice) return swapChoiceEvents(state, actor, spell, rng, choice);
   if (targetId === actor.id) return fail('Kendini hedefleyemezsin.');
   // A1 (Eyebite): bu büyüye karşı save'i başaranı yeniden hedefleyemez; seçilen etki ilk büyüdeki (ya da verilen) seçim.
   const tgt = state.combatants[targetId];
@@ -1238,6 +1287,62 @@ export function executeRepeat(state: BattleState, actor: Combatant, targetId: st
   const cc = spell.mechanics.conditionChoices;
   const picked = choice && cc?.includes(choice) ? choice : cc ? conc.conditions?.find((x) => cc.includes(x.condition))?.condition : undefined;
   return castSpell(state, actor, { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId, slotLevel: conc.slotLevel, ...(picked ? { choice: picked } : {}) }, spell, rng, true);
+}
+
+/**
+ * Kuyruk S1: Plane Shift: büyücü ve en çok `max` istekli dost (büyücüye ya da seçilen başka birine bitişik: el ele zincir)
+ * haritadan ayrılır (`retreated`). Taraf boşalırsa savaş biter (`battle_finished.retreat`).
+ */
+function executeRetreat(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
+  const spec = spell.mechanics.retreat as NonNullable<SpellMechanics['retreat']>;
+  const side = (c: Combatant) => c.allegiance?.side ?? c.side;
+  const ids = [...new Set([actor.id, ...(cmd.targetIds ?? (cmd.targetId ? [cmd.targetId] : []))])];
+  if (ids.length - 1 > spec.max) return fail(`${spell.name}: en çok ${spec.max} dost.`);
+  for (const id of ids) {
+    const c = state.combatants[id];
+    if (!c || c.hp <= 0 || c.offFloor) return fail('Hedef ayakta değil.');
+    if (side(c) !== side(actor)) return fail(`${spell.name} yalnızca istekli dostları götürür.`);
+  }
+  if (state.map) {
+    const linked = new Set([actor.id]);
+    for (let grew = true; grew;) {
+      grew = false;
+      for (const id of ids) {
+        if (linked.has(id)) continue;
+        const c = state.combatants[id] as Combatant;
+        if ([...linked].some((l) => gap(state, c, state.combatants[l] as Combatant) <= Math.max(1, Math.floor(spec.linkFt / 5)))) { linked.add(id); grew = true; }
+      }
+    }
+    const loose = ids.find((id) => !linked.has(id));
+    if (loose) return fail(`${state.combatants[loose]?.name ?? loose} el ele değil (büyücüye ya da zincire ${spec.linkFt} ft).`);
+  }
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
+  if (!slot.ok) return slot;
+  return finish(state, [...slot.events,
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: ids.map((id) => state.combatants[id]?.name ?? id).join(', ') },
+    { type: 'retreated', actorId: actor.id, ids, label: spell.name }]);
+}
+
+/** Kuyruk S1: Alter Self seçenek değiştirme (`spell_followup`, Magic eylemi). */
+function swapChoiceEvents(state: BattleState, actor: Combatant, spell: Spell, rng: Rng, choice?: string): CommandResult {
+  const base = mechanicsAt(state, spell).effect;
+  const cur = actor.effects?.find((e) => e.id === spell.srd && e.sourceId === actor.id);
+  if (!base?.variants || !cur) return fail(`${spell.name} üstünde değil.`);
+  const keys = (base.choices ?? Object.keys(base.variants)).filter((k) => base.variants?.[k]);
+  const now = keys.find((k) => cur.name === `${spell.name} (${k})`);
+  const others = keys.filter((k) => k !== now);
+  const pick = choice && others.includes(choice) ? choice
+    : askChoice(rng, { actorId: actor.id, label: `${spell.name}: yeni seçenek`, options: others.map((k) => ({ id: k, label: k })),
+      suggested: others[(Math.max(0, keys.indexOf(now ?? '')) % Math.max(1, others.length))] ?? null });
+  if (!pick || !others.includes(pick)) return fail(`${spell.name}: seçenek seçilmedi.`);
+  const v = base.variants[pick] ?? {};
+  const wo = v.weaponOverride;
+  const { weaponOverride: _w, swim: _s, ...rest } = cur;
+  const effect: ActiveEffect = { ...rest, name: `${spell.name} (${pick})`, ...(v.icon ? { icon: v.icon } : {}), ...(v.swim ? { swim: true } : {}),
+    ...(wo ? { weaponOverride: { weapons: wo.weapons, die: wo.dice[Math.min(wo.dice.length, tierOf(actor)) - 1] as string, ...(wo.force ? { force: true } : {}), ...(wo.type ? { type: wo.type } : {}),
+      attack: actor.spellAttack ?? 0, mod: actor.spellMod } } : {}) };
+  return finish(state, [{ type: 'spell_cast', actorId: actor.id, targetId: actor.id, label: `${spell.name} (seçenek: ${pick})`, slotLevel: null, note: '' },
+    { type: 'effect_added', targetId: actor.id, effect }]);
 }
 
 /**
@@ -1275,8 +1380,13 @@ function executeCalm(state: BattleState, actor: Combatant, cmd: CastCommand, spe
     }
     if (t.side === actor.side && !allyFails) { events.push(...evs); current = applyEvents(current, evs); continue; }
     if (t.side === actor.side) {
+      // Kuyruk S1 (sürüm 40, `calmSuppress`): var olan Charmed/Frightened kalkmaz, bastırılır: büyü bitince geri gelir
+      // (süreli olanın sayacı bu sırada da işler; etkiden gelen o etki sürüyorsa).
+      const sup = spell.mechanics.calmSuppress ? ['Charmed', 'Frightened'].filter((cond) => t.conditions.includes(cond)).map((cond) => ({ condition: cond,
+        ...(((tm) => (tm ? { timer: tm, round: state.round } : {}))((t.conditionTimers ?? []).find((x) => x.condition === cond))),
+        ...((): { by?: string } => { const e = t.effects?.find((x) => x.grants?.includes(cond) || (cond === 'Charmed' && x.charm)); return e ? { by: e.id } : {}; })() })) : [];
       for (const cond of ['Charmed', 'Frightened']) if (t.conditions.includes(cond)) evs.push({ type: 'condition_changed', targetId: t.id, condition: cond, present: false, reason: spell.name });
-      evs.push({ type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 9, concentration: spell.name, immune: ['Charmed', 'Frightened'] } });
+      evs.push({ type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 9, concentration: spell.name, immune: ['Charmed', 'Frightened'], ...(sup.length ? { suppressed: sup } : {}) } });
     } else {
       const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode('normal', t, ability) }, rollTag(rng, { by: t.id }));
       evs.push({ type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: 'normal', reasons: [],
@@ -1351,6 +1461,8 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
 /** Etki büyüsünün hedef sayısı (yukarı slot başına `upcast.targets`). */
 export function effectTargetCount(spell: Spell, slotLevel: number): number {
   const e = spell.mechanics.effect;
+  // Kuyruk S1: Plane Shift: büyücü ve en çok `max` dost.
+  if (spell.mechanics.retreat) return spell.mechanics.retreat.max + 1;
   // Görev B1: çok hedefli iyileştirme (Mass Healing Word) aynı seçim kipinde.
   if (!e) return spell.mechanics.healTargets ?? 1;
   return e.targets + (spell.mechanics.upcast?.targets ?? 0) * Math.max(0, slotLevel - spell.level);
@@ -1467,7 +1579,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(wo ? { weaponOverride: { weapons: wo.weapons, die: wo.dice[Math.min(wo.dice.length, tierOf(actor)) - 1] as string, ...(wo.force ? { force: true } : {}), ...(wo.type ? { type: wo.type } : {}),
       attack: actor.spellAttack ?? 0, mod: actor.spellMod } } : {}),
     ...(spec.repeatSave && m.save ? { repeatSave: { ability: m.save, dc } } : {}),
-    ...(spec.noReactions ? { noReactions: true } : {}), ...(spec.noAttack ? { noAttack: true } : {}), ...(spec.noCastForm ? { noCastForm: true } : {}),
+    ...(spec.disarmed ? { disarmed: true } : {}), ...(spec.noReactions ? { noReactions: true } : {}), ...(spec.noAttack ? { noAttack: true } : {}), ...(spec.noCastForm ? { noCastForm: true } : {}),
     ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
     ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}), ...(spec.deathWard ? { deathWard: true } : {}),
     // K17 G1: Banishment (Ethereal gibi hedef alınamaz), Resilient Sphere (hasar bağışıklığı).
@@ -1723,7 +1835,7 @@ export function executeStride(state: BattleState, actor: Combatant, to: Offset):
  * Güçlendirme büyüsü (Görev P-Paladin): `selfBuff` büyücünün silah saldırılarına süren etki (Divine Favor, Magic
  * Weapon); `ward` konsantrasyon hedefinde koruma (Shield of Faith, Protection from Evil and Good).
  */
-function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell): CommandResult {
+function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng?: Rng): CommandResult {
   // Görev K9b: yukarı slot bonus eşikleri (Magic Weapon +2 / +3) slot harcanınca uygulanır.
   const slot0 = spendSlot(actor, spell0.level, cmd.slotLevel, spell0.name, cmd.free);
   const spell = slot0.ok ? atSlot(spell0, slot0.slotLevel) : spell0;
@@ -1749,8 +1861,18 @@ function executeBuff(state: BattleState, actor: Combatant, cmd: CastCommand, spe
     // Kuyruk A7: dokunulan silah; yeniden yapınca önceki silahtaki biter.
     const to = m.touchBuff ? target : actor;
     if (m.touchBuff) for (const c of Object.values(state.combatants)) if (c.id !== to.id && (c.buffs ?? []).some((x) => x.source === spell.name && x.by === actor.id)) events.push({ type: 'buff_removed', targetId: c.id, source: spell.name });
+    // Kuyruk S1 (sürüm 40, `enchantOne`): tek silah (komutun seçimi ya da seçim istemi; öneri ilk silah); başka bir
+    // Magic Weapon'ın büyülediği silah yeniden büyülenmez.
+    let enchantBy: string | undefined;
+    if (m.enchantOne) {
+      const taken = new Set((to.buffs ?? []).filter((x) => x.enchantBy && x.by !== actor.id).map((x) => x.enchantBy));
+      const ws = [...new Map(to.weaponOptions.filter((o) => o.weaponId && o.weaponId !== 'unarmed-strike' && !o.spell && !taken.has(o.weaponId)).map((o) => [o.weaponId as string, o])).values()];
+      // Silah kimliği olmayan savaşçıda (canavar, eski kayıt) güçlendirme bütün silah saldırılarına (eski davranış).
+      enchantBy = !ws.length ? undefined : cmd.choice && ws.some((o) => o.weaponId === cmd.choice) ? cmd.choice
+        : !rng ? ws[0]?.weaponId : askChoice(rng, { actorId: actor.id, label: `${spell.name}: silah`, options: ws.map((o) => ({ id: o.weaponId as string, label: o.label })), suggested: ws[0]?.weaponId ?? null }) ?? ws[0]?.weaponId;
+    }
     events.push({ type: 'buff_added', targetId: to.id, buff: {
-      source: spell.name, by: actor.id, until: state.round + b.rounds - 1,
+      source: spell.name, by: actor.id, until: state.round + b.rounds - 1, ...(enchantBy ? { enchantBy } : {}),
       ...(b.attackBonus ? { attackBonus: b.attackBonus } : {}), ...(b.damageBonus ? { damageBonus: b.damageBonus } : {}),
       ...(b.extraDamage ? { extraDamage: b.upcastDice && (slot.slotLevel ?? spell.level) > spell.level
         ? formatDice(parseDice(b.extraDamage).count + parseDice(b.upcastDice).count * ((slot.slotLevel ?? spell.level) - spell.level), parseDice(b.extraDamage).sides) : b.extraDamage, damageType: b.damageType ?? '' } : {}),

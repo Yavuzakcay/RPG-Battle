@@ -206,7 +206,8 @@ export const activeBuffs = (state: BattleState, c: Combatant): Buff[] => (c.buff
 export function withBuffs(state: BattleState, actor: Combatant, option0: AttackOption): AttackOption {
   if (option0.spell) return option0;
   const option = withWeaponOverride(actor, option0);
-  const buffs = activeBuffs(state, actor).filter((b) => !b.meleeOnly || !option.ranged);
+  // Kuyruk S1 (Magic Weapon `enchantBy`): yalnızca büyülenen silah.
+  const buffs = activeBuffs(state, actor).filter((b) => (!b.meleeOnly || !option.ranged) && (!b.enchantBy || option.weaponId === b.enchantBy));
   if (buffs.length === 0) return option;
   const attack = buffs.reduce((n, b) => n + (b.attackBonus ?? 0), 0);
   const damage = buffs.reduce((n, b) => n + (b.damageBonus ?? 0), 0);

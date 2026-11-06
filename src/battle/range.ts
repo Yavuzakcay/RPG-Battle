@@ -63,7 +63,9 @@ export function checkReach(
   // Görev B3: büyülenen (Charm Person, Animal Friendship, Suggestion) büyüleyene saldıramaz ve onu hedef alamaz.
   // Kuyruk A6 (Calm Emotions): kayıtsız yaratık büyücünün tarafına saldırmaz.
   if (attacker.effects?.some((e) => e.indifferentTo && e.indifferentTo === target.side)) return fail(`${attacker.name} kayıtsız (Calm Emotions): ${target.name} hedef alınamaz.`);
-  if (attacker.effects?.some((e) => e.charm && e.sourceId === target.id) && !inProtectiveAura(state, attacker, 'aura-of-devotion')) return fail(`${attacker.name} büyülenmiş (Charmed): ${target.name} hedef alınamaz.`);
+  if (attacker.effects?.some((e) => e.charm && e.sourceId === target.id) && !inProtectiveAura(state, attacker, 'aura-of-devotion')
+    // Kuyruk S1: Calm Emotions altında bastırılmış büyülenme.
+    && !attacker.effects.some((e) => e.suppressed?.some((x) => x.condition === 'Charmed'))) return fail(`${attacker.name} büyülenmiş (Charmed): ${target.name} hedef alınamaz.`);
   if (target.hidden && target.side !== attacker.side && !knowsWhere(state, attacker, target)) {
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }

@@ -21,6 +21,10 @@ import { ruleVersion } from './ruleVersion';
 import { distance } from '../rules/hex';
 import { lineOfFire } from './cover';
 import { strikeApi } from './reactions';
+import { teleportEvent, teleportHexes } from './teleport';
+import { hexLabel } from './movement';
+import { askChoice } from '../rules/choice';
+import { hexKey, type Offset } from '../rules/hex';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 
 const profileOf = (c: Combatant) => damageProfile(c);
@@ -88,6 +92,13 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
       const back: BattleEvent = { type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'turn' };
       events.push(back);
       current = applyEvents(current, [back]);
+      // Kuyruk S1 (sürüm 40): Blink dönüşü: 10 ft içinde boş bir altıgen seçilir (seçim istemi; öneri düşmanlardan en uzak,
+      // eşitlikte yerinde kalmak). "Seçme" aynı altıgen.
+      if (e.id === 'blink:ethereal' && ruleVersion(current) >= 40) {
+        const back2 = blinkReturnEvents(current, id, rng);
+        events.push(...back2);
+        current = applyEvents(current, back2);
+      }
     }
   }
   const c0 = current.combatants[id];
@@ -147,6 +158,22 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
     current = applyEvents(current, evs);
   }
   return { events, skip };
+}
+
+/** Kuyruk S1: Blink'ten dönüş altıgeni (10 ft içinde boş, geçilebilir). */
+export function blinkReturnEvents(state: BattleState, id: string, rng: Rng): BattleEvent[] {
+  const c = state.combatants[id];
+  if (!c?.pos || !state.map) return [];
+  const hexes = teleportHexes(state, c, { rangeFt: 10, sight: false });
+  if (!hexes.length) return [];
+  const foes = Object.values(state.combatants).filter((x) => x.side !== c.side && x.hp > 0 && x.pos);
+  const safety = (h: Offset) => (foes.length ? Math.min(...foes.map((f) => distance(f.pos as Offset, h))) : 0);
+  const here = safety(c.pos);
+  const best = [...hexes].sort((a, b) => safety(b) - safety(a))[0];
+  const suggested = best && safety(best) > here ? hexKey(best) : null;
+  const pick = askChoice(rng, { actorId: id, label: 'Blink: dönüş altıgeni', options: hexes.map((h) => ({ id: hexKey(h), label: hexLabel(h) })), suggested });
+  const to = pick ? hexes.find((h) => hexKey(h) === pick) : undefined;
+  return to ? [teleportEvent(c, to, 'Blink')] : [];
 }
 
 /**

@@ -1905,7 +1905,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       if (kind === 'area' && sp.mechanics.telekinesis && state.kuralSurumu !== undefined && state.kuralSurumu >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(false); setMode('tk'); }
                       else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setChoicePick(sp.mechanics.conditionChoices?.[0] ?? sp.mechanics.damageChoices?.[0] ?? sp.mechanics.restoreChoices?.[0] ?? sp.mechanics.abilityChoices?.[0] ?? null); setMode('spell'); }
-                      else if (kind === 'effect') { setSpell(sp); setPicked([]); setChoicePick(sp.mechanics.effect?.choices?.[0] ?? null); setMode('effect'); }
+                      else if (kind === 'effect') {
+                        // Kuyruk S1: seçenekler ve hedef sayısı savaşın kural sürümündeki mekanikten (Suggestion kalıpları, Plane Shift).
+                        const msp = { ...sp, mechanics: mechanicsAt(state, sp) };
+                        setSpell(msp); setPicked(msp.mechanics.retreat ? [actorId] : []); setChoicePick(msp.mechanics.effect?.choices?.[0] ?? null); setMode('effect');
+                      }
                       else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }
                       else if (kind === 'teleport') { setSpell(sp); setMode('teleport'); }
                       // Kuyruk 19: harita dönüştüren büyüler (Passwall, Stone Shape, Control Water): altıgen seçimi.
