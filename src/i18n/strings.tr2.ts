@@ -426,6 +426,10 @@ export const TR_EXTRA = {
     hiddenStealth: (n: number): string => `Gizli (Stealth: ${n})`,
     hiddenZones: (on: boolean): string => (on ? 'Gizli alanları gizle (Game Master)' : 'Gizli alanları göster (Game Master)'),
     zones: (on: boolean): string => (on ? 'Saklanma bölgelerini gizle' : 'Saklanma bölgelerini göster'),
+    /** Kuyruk K58 G4: tehlike katmanı. */
+    hazard: (on: boolean): string => (on ? 'Tehlike katmanını gizle' : 'Tehlike katmanını göster'),
+    hazardKind: { surface: 'Yüzey/alan', aura: 'Aura', barrier: 'Engel', fireSpread: 'Alev yayılabilir', move: 'Hareket menzili', oa: 'Fırsat saldırısı bölgesi', threat: 'Seçili düşmanın tehdidi (yaklaşık)' } as Record<string, string>,
+    concentrating: (spell: string): string => `Konsantrasyon: ${spell}`, more: (n: number): string => `+${n}`,
     bog: 'derin batak: saplanırsın', deepWater: 'ağır zırhla batılır',
     ice: 'kaygan: DEX kurtarma zarı', stairs: 'basamak (tırmanma yok)', conveyor: (on: boolean): string => (on ? 'yürüyen merdiven: aşağı akar; yukarı adım atan bir altıgen geri kayar (uçan ve ışınlanan muaf; kol durdurur)' : 'yürüyen merdiven durdu (kol çekili): sıradan basamak'), leverState: (pulled: boolean): string => (pulled ? 'çekili' : 'çekilmemiş'), loot: (note: string) => `hazine: ${note}`, lootDefault: 'Game Master hikâyede işler',
     trap: 'TUZAK', lavaRising: 'lav yükseliyor!', dark: 'karanlık',

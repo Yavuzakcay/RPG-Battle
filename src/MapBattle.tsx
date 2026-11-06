@@ -49,6 +49,7 @@ const Why = ({ msg }: { msg: string | null | undefined }) => <small className="w
 import { abilityTip, lineageAbilityList } from './ui/lineageText';
 import { hexText } from './ui/log';
 import { logEntries } from './ui/logEntries';
+import { hazardHexes, HAZARD_KINDS } from './ui/hazardLayer';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
 import { execute } from './battle';
 import { exploreReady, exploreView } from './battle/commands';
@@ -494,6 +495,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [artError, setArtError] = useState<string | null>(null);
   const [showHidden, setShowHidden] = useState(false);
   const [showZones, setShowZones] = useState(false);
+  const [stripAll, setStripAll] = useState(false);
+  // Kuyruk K58 G4: tehlike katmanı (yerel ayar).
+  const [hazardOn, setHazardOn] = useState(() => { try { return localStorage.getItem('rpg-battle-tehlike') === '1'; } catch { return false; } });
   // Kuyruk S2: Game Master anahtarı "Gizli alanlar" (oyuncu ekranı yalnız partinin bildiği alanları çizer; kayıt dışı).
   const [showHiddenZones, setShowHiddenZones] = useState(false);
   const [confirmWake, setConfirmWake] = useState(false);
@@ -1151,6 +1155,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const dark = marks.dark.has(k) ? ' dark' : '';
     return baseHexClass(h, k) + dark;
   };
+  const hazardThreat = (() => { const id = drawerId ?? targetId; const c = id ? state.combatants[id] : undefined; return c && actor && c.side !== actor.side ? c.id : null; })();
+  const hazard = useMemo(() => (hazardOn && state.status === 'active' ? hazardHexes(state, { actorId: active ? actorId : undefined, movable: movable.keys(), threatId: hazardThreat }) : null),
+    [hazardOn, state, active, actorId, movable, hazardThreat]);
   const oaNotch = new Set((moveAim?.pv.opportunity ?? []).flatMap((o) => (o.at ? [hexKey(o.at)] : [])));
   const shoveTo = mode === 'shove' && actor && targetId && state.combatants[targetId] ? shoveHex(actor, state.combatants[targetId] as Combatant, state) : null;
   const baseHexClass = (h: Offset, k: string) => {
@@ -1460,6 +1467,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             <polygon key={hexKey(h)} points={hexPoints(h)} className={`${hexClass(h)}${infoHex && sameHex(infoHex, h) ? ' info' : ''}`} data-hex={hexKey(h)}
               onClick={() => onHex(h)} {...press(h)} />
           ))}
+          {/* Kuyruk K58 G4: tehlike katmanı (tıklamayı engellemez). */}
+          {hazard && [...hazard.entries()].map(([k, kinds]) => {
+            const [c, r] = k.split(',').map(Number);
+            return <polygon key={`hz${k}`} points={hexPoints({ col: c as number, row: r as number }, 0.9)} className={`hz ${kinds.map((x) => `hz-${x}`).join(' ')}`} />;
+          })}
           {/* Kuyruk 26: yükseklik katmanı (Game Master anahtarı): seviyeye göre ton, rampa okları; tıklamayı engellemez. */}
           {heightTint && (cam.big ? cam.visibleHexes : allHexes()).map((h) => {
             const lv = heightTint[h.row]?.[h.col] ?? 0;
@@ -1698,7 +1710,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     </>)}
                     {(() => {
                       // Kuyruk A2: en çok 3 rozet (öncelik veriden), fazlası "+N".
-                      const all = [...statusIcons(c), ...effectIcons(state, c), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : []),
+                      const all = [...statusIcons(c), ...effectIcons(state, c), ...(c.concentration ? [{ key: 'conc', icon: '◎', title: t().view.concentrating(c.concentration.spell) }] : []), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : []),
                         // Kuyruk S2: irtifa rozeti.
                         ...((c.altitudeFt ?? 0) > 0 ? [{ key: 'alt', icon: `↑${c.altitudeFt}`, title: B.s2.altitude(c.altitudeFt ?? 0) }] : [])] as StatusIcon[];
                       if (all.length === 0) return null;
@@ -1805,7 +1817,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {mode === 'gmObject' && <ObjectTool pick={objectPick} onPick={setObjectPick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
           {mode === 'gmSurface' && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
           <div className="turn-strip" role="list" aria-label={B.order}>
-            {state.order.map((id) => {
+            {(() => {
+              // Kuyruk K58 G4: sıra şimdiki yaratıktan başlar; şimdiki + sonraki 5 (açılınca hepsi), durum simgeleri, konsantrasyon.
+              const n = state.order.length;
+              const rot = [...state.order.slice(state.turnIndex), ...state.order.slice(0, state.turnIndex)]
+                .filter((id) => { const c = state.combatants[id]; return !!c && !c.summon?.gone; });
+              return { shown: stripAll ? rot : rot.slice(0, 6), hidden: stripAll ? 0 : Math.max(0, rot.length - 6), n };
+            })().shown.map((id) => {
               const c = state.combatants[id];
               // Kaybolan çağrılmış yaratık (Görev R3) şeritte görünmez.
               if (!c || c.summon?.gone) return null;
@@ -1815,14 +1833,23 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 return <span key={id} role="listitem" className="strip-item unknown" aria-label="Bilinmeyen">?</span>;
               }
               return (
-                <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}`}
-                  onClick={() => setDrawerId(id)} aria-label={B.drawer.details(c.name)}>
+                <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}${c.concentration ? ' conc' : ''}`}
+                  onClick={() => setDrawerId(id)} aria-label={B.drawer.details(c.name)} title={c.concentration ? t().view.concentrating(c.concentration.spell) : c.name}>
                   <AvatarBadge avatar={c.avatar} size={30} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} title={c.name} />
+                  {c.concentration && <span className="strip-conc" aria-label={t().view.concentrating(c.concentration.spell)}>◎</span>}
+                  {statusIcons(c).length > 0 && <span className="strip-status">{statusIcons(c).slice(0, 2).map((s) => <i key={s.key} title={s.title}>{s.icon}</i>)}</span>}
                 </button>
               );
             })}
+            {(() => { const h = state.order.filter((id) => { const c = state.combatants[id]; return !!c && !c.summon?.gone; }).length - 6;
+              return h > 0 || stripAll ? <button className="strip-more" onClick={() => setStripAll((v) => !v)}>{stripAll ? '‹' : t().view.more(h)}</button> : null; })()}
           </div>
 
+          {hazard && (
+            <ul className="hazard-legend" aria-label={t().view.hazard(true)}>
+              {HAZARD_KINDS.map((k) => <li key={k} className={`hz-key hz-${k}`}><i />{t().view.hazardKind[k]}</li>)}
+            </ul>
+          )}
           <div className={`hud-corner tl${optionsOpen ? ' open' : ''}`}>
             <button className="hud-btn" aria-label={B.options} onClick={() => setOptionsOpen((o) => !o)}>≡</button>
             {optionsOpen && (
@@ -1863,6 +1890,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   setOptionsOpen(false);
                 }}>{B.load}</button>
                 {active && <button onClick={() => { setShowZones((v) => !v); setOptionsOpen(false); }}>{t().view.zones(showZones)}</button>}
+                {active && <button onClick={() => { setHazardOn((v) => { try { localStorage.setItem('rpg-battle-tehlike', v ? '0' : '1'); } catch { /* yok */ } return !v; }); setOptionsOpen(false); }}>{t().view.hazard(hazardOn)}</button>}
                 {ruleVersion(state) >= 41 && <button onClick={() => { setShowHiddenZones((v) => !v); setOptionsOpen(false); }}>{t().view.hiddenZones(showHiddenZones)}</button>}
                 <ThemeButton className="" />
                 <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>

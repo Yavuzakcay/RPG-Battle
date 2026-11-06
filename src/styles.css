@@ -1193,3 +1193,25 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .log-box li.log-moral { color: #d8b0ff; border-left: 3px solid #9b5de0; padding-left: 4px; }
 .log-box li.log-summary { color: #c8f0c0; font-style: italic; border-top: 1px solid rgba(255, 255, 255, 0.15); }
 .log-box li.log-tools { font-size: 0.85em; opacity: 0.8; }
+/* Kuyruk K58 G4: tehlike katmanı, lejant, tur şeridi. */
+.hz { pointer-events: none; fill: transparent; stroke-width: 2; }
+.hz.hz-move { fill: rgba(60, 200, 90, 0.16); }
+.hz.hz-surface { fill: rgba(240, 160, 40, 0.22); }
+.hz.hz-aura { fill: rgba(170, 110, 255, 0.2); }
+.hz.hz-barrier { fill: rgba(140, 140, 160, 0.35); stroke: #aab; }
+.hz.hz-threat { stroke: rgba(255, 120, 60, 0.75); stroke-dasharray: 3 3; }
+.hz.hz-oa { fill: rgba(230, 40, 40, 0.22); stroke: rgba(230, 40, 40, 0.8); }
+.hz.hz-fireSpread { fill: rgba(255, 70, 0, 0.45); stroke: #ff5a00; stroke-width: 3; }
+.hazard-legend { position: absolute; left: 8px; top: 52px; margin: 0; padding: 6px 8px; list-style: none; font-size: 0.75em;
+  background: rgba(15, 20, 26, 0.8); border-radius: 8px; pointer-events: none; }
+.hazard-legend li { display: flex; align-items: center; gap: 6px; }
+.hazard-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; border: 1px solid #fff4; }
+.hz-key.hz-move i { background: rgba(60, 200, 90, 0.6); } .hz-key.hz-surface i { background: rgba(240, 160, 40, 0.7); }
+.hz-key.hz-aura i { background: rgba(170, 110, 255, 0.7); } .hz-key.hz-barrier i { background: rgba(140, 140, 160, 0.8); }
+.hz-key.hz-threat i { border: 2px dashed rgba(255, 120, 60, 0.9); } .hz-key.hz-oa i { background: rgba(230, 40, 40, 0.7); }
+.hz-key.hz-fireSpread i { background: #ff5a00; }
+.strip-item { position: relative; }
+.strip-item .strip-conc { position: absolute; right: -2px; top: -4px; font-size: 12px; color: #7fd7ff; text-shadow: 0 0 3px #000; }
+.strip-item .strip-status { position: absolute; left: -2px; bottom: -4px; font-size: 10px; font-style: normal; }
+.strip-item .strip-status i { font-style: normal; }
+.strip-more { background: rgba(255, 255, 255, 0.12); border: none; color: #fff; border-radius: 12px; padding: 0 8px; min-width: 28px; }
