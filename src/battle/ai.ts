@@ -1556,6 +1556,31 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       if (go) return go;
     }
   }
+  // K59 (Usta, iki taraf): temas yokken (bitişik düşman yok: fırsat saldırısı yok) yetişilebilen başka bir hedefin
+  // değerlendirici puanı şimdikinin `yerDegistir` katıysa önce oraya yürür (odaklı saldırı: yaralı/öldürülebilir hedef).
+  const ustaNow = !state.yz?.eski && difficultyOf(state, actor.side) === 'usta' ? USTA : null;
+  if (ustaNow && now && canAct && !actor.civilian && actor.pos && actor.movementUsed < speedHexes(actor)
+    && !foesOf(state, actor).some((f) => f.pos && gap(state, f, actor) <= 1)) {
+    const here = scoredCandidates(state, actor).scored[0]?.score ?? 0;
+    if (here > 0) {
+      const seen = new Set<string>();
+      const spots: Spot[] = [];
+      for (const sp of reachable(state, actor).filter((x) => risk(state, actor, x.to) < 50).sort((a, b) => a.cost - b.cost).slice(0, 30)) {
+        const tgt = foesOf(state, actor).filter((f) => f.pos && distance(sp.to, f.pos) <= 1).map((f) => f.id).sort().join(',');
+        if (!tgt || seen.has(tgt)) continue;
+        seen.add(tgt);
+        spots.push(sp);
+        if (spots.length >= ustaNow.yerAday) break;
+      }
+      const best = spots.length ? ustaSpotOrder(state, actor, spots, ustaNow)[0] : undefined;
+      if (best) {
+        const there = at(state, actor, best.to);
+        const v = scoredCandidates(there, there.combatants[actor.id] as Combatant).scored[0]?.score ?? 0;
+        const go = v >= here * ustaNow.yerDegistir ? guardMove(state, actor, firstMove(state, actor, [best])) : null;
+        if (go) return go;
+      }
+    }
+  }
   // Steady Aim (Görev F): hareket etmeden, bu saldırı avantajsızsa (Sneak Attack tutmuyorsa) önce bonus eylemle nişan al.
   const aim = steadyAimFirst(state, actor, now);
   if (aim) return aim;
