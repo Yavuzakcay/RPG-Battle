@@ -124,6 +124,54 @@ for y in range(Hh):
         if (grid[y][x] or swim[y][x]) and not reg[y][x]:
             reg[y][x] = 1 + min(range(len(seeds)), key=lambda i: (seeds[i][0] - x) ** 2 + (seeds[i][1] - y) ** 2)
 
+# Kuyruk K57: buz bölgelerinde (Karkedon) buz yarıkları, buzul duvarları ve kar gölgeli uçurumlar da mavi baskın görünür ve
+# "dar su" sayılıyordu. Bu bölgelerde yüzme yalnızca canlı turkuaz suda (HSV doygunluk ≥ doygunluk, parlaklık ≥ parlaklik,
+# ton ≤ tonEnFazla) ve en az `enAzHucre` hücrelik bitişik kümede kalır; ayıklanan hücre ne kara ne su (geçilmez, bölgesiz).
+import colorsys
+buz = par.get('buzSu')
+if buz:
+    ids = [e['id'] for e in labels]
+    rx = {ids.index(i) + 1 for i in buz['bolgeler'] if i in ids}
+
+    def avg(x, y):
+        r = gg = b = n = 0
+        for yy in range(int(y * k), min(img.height, int((y + 1) * k))):
+            for xx in range(int(x * k), min(img.width, int((x + 1) * k))):
+                p = px[xx, yy]
+                r += p[0]; gg += p[1]; b += p[2]; n += 1
+        return colorsys.rgb_to_hsv(r / n / 255, gg / n / 255, b / n / 255)
+
+    def vivid(x, y):
+        hh, ss, vv = avg(x, y)
+        return ss >= buz['doygunluk'] and vv >= buz['parlaklik'] and hh <= buz['tonEnFazla']
+
+    cand = {(x, y) for y in range(Hh) for x in range(W) if swim[y][x] and reg[y][x] in rx and vivid(x, y)}
+    keep, seen = set(), set()
+    for c0 in cand:
+        if c0 in seen:
+            continue
+        st, comp = [c0], []
+        seen.add(c0)
+        while st:
+            a = st.pop()
+            comp.append(a)
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    nb = (a[0] + dx, a[1] + dy)
+                    if nb in cand and nb not in seen:
+                        seen.add(nb)
+                        st.append(nb)
+        if len(comp) >= buz['enAzHucre']:
+            keep |= set(comp)
+    dropped = 0
+    for y in range(Hh):
+        for x in range(W):
+            if swim[y][x] and reg[y][x] in rx and (x, y) not in keep:
+                swim[y][x] = 0
+                reg[y][x] = 0
+                dropped += 1
+    print('buz bölgelerinde ayıklanan yüzme hücresi', dropped, 'kalan', len(keep))
+
 
 def rle(row):
     out = []

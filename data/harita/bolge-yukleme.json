@@ -24,6 +24,16 @@
     "golEnFazla": 900,
     "darYaricap": 3,
     "yuzmeMaliyet": 70,
-    "darEksen": 3
+    "darEksen": 3,
+    "buzSu": {
+      "not": "Kuyruk K57: buz bölgelerinde yalnızca canlı turkuaz su yüzülür (buz yarığı, buzul duvarı, karlı uçurum yüzülemez; geçilmez).",
+      "bolgeler": [
+        "bolge_buzul"
+      ],
+      "doygunluk": 0.55,
+      "parlaklik": 0.62,
+      "tonEnFazla": 0.535,
+      "enAzHucre": 12
+    }
   }
 }

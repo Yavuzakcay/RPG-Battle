@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-06 — Kuyruk K57 (Görev 1–2): küçük SRD maddeleri ve arayüz denetimi
+
+- **Yeni mekanik yok, kural sürümü 37 aynı.** Önce durum denetlendi; zaten yapılmış olanlar dokunulmadı: Flurry of Blows 3. vuruş (Heightened Focus, K17 G2, sürüm 13), Push yalnız son yakın dövüş saldırısında (`lastAttackOfAction`), Blindness/Deafness seçim düğmesi ve yapay zekâ sezgiseli (`blindChoice`: görüşe dayanmayan hedefe Deafened, `aiBlindness`), Water Walk (`waterWalks` + derin su `canEnterVeryDeep`; 600 tur = 1 saat), Powerful Build (Grappled bitirmede avantaj, `powerfulBuild`; taşıma ×2 de `carry.ts`'te zaten vardı, dokunulmadı). Görev 2'nin 24–30 ve Durum maddeleri Kuyruk 19 0g'de yapılmış (`k19g.test.ts`, `m1.test.tsx` yeşil).
+- **Blindness/Deafness düğme adları:** TR "Kör (Blinded)" / "Sağır (Deafened)" (SRD terimi parantezde; `builder.featureOption`), EN Blinded/Deafened. Önceden ham kimlik görünüyordu.
+- **Meteor Swarm (A8 artığı):** arayüzde çok noktalı nişan (`areaPointCount` sürüm 37'de mekaniğin `multiPoint`'i): altıgene dokunmak merkez ekler, yeniden dokunmak kaldırır (en çok 4); önizleme motorla aynı birleşim (alanlar birleşir, her yaratık bir kez; `areaActPreview` `points`), komut `targetHex` = ilk nokta + `targetHexes`. Yapay zekâ `multiPointAim`: adaylar düşman altıgenleri, dost/masum kapsayan aday elenir, her adımda kapsanmamış en çok düşmanı ekleyen nokta (açgözlü, en çok 4; toplam ≥ 2 düşman). `sigmayan` notundan arayüz kısmı çıktı; kalan sığmayan parça yanıcı nesnelerin tutuşması.
+- **BUYU-KISMI.md "kapsam dışı 3":** sayaç `a4` bloğundan kapsam dışı notu gelen 3 büyüyü (hex, fear, beacon-of-hope) de sayıyordu; bunlar zaten "Tamamlanan (sürüm 32, a4)" içinde (çift sayım). Sayaç artık yalnız tamamlama bloğu olmadan kapsam dışı sayılanları sayar (0); 3 büyü ayrı bilgi satırında.
+- **Karkedon buz yarıkları:** K49 yüzme maskesi "mavi baskın + dar" ölçütüyle buz bölgesinde 1106 hücreyi yüzülebilir sayıyordu (buz yarıkları, buzul duvarları, karlı uçurum gölgeleri, kar altı orman). `bolge-yukleme.json` `uretim.buzSu`: buz bölgelerinde (`bolge_buzul`) yüzme yalnız canlı turkuaz suda (HSV doygunluk ≥ 0,55, parlaklık ≥ 0,62, ton ≤ 0,535) ve ≥ 12 hücrelik bitişik kümede; ayıklanan 1040 hücre geçilmez (bölgesiz). Kalan 66 hücre şelale altındaki göl. Diğer bölgeler bit bit aynı.
+- **İklim Vadisi etiketi:** koordinat değişmedi (7150, 3800; `konum_kesin: false`); kayda kullanıcının düzeltmesi için not düşüldü.
+
 ## 2026-11-06 — Kuyruk A8: yükseklik ve alan geometrisi büyüleri (kural sürümü 37)
 
 - **Sonuç:** BUYU-KISMI.md'de kısmi 15 → 0. A8'in 15 büyüsü: 7 tam (jump, spider-climb, sleet-storm, entangle, fog-cloud, slow, stinking-cloud), 8 sığmayan parça notlu (flaming-sphere, levitate, moonbeam, fly, gaseous-form, plant-growth, wind-wall, meteor-swarm; BUYU-SIGMAYAN.md 26 satır).

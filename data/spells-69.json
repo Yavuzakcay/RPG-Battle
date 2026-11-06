@@ -2082,7 +2082,7 @@
    "approx": "Dört 40 ft küre yerine bir küre (büyü tek hedef altıgeni alır); yapay zekâ en kalabalık noktayı seçer",
    "a8": {
     "multiPoint": 4,
-    "sigmayan": "Oyuncu arayüzü tek nokta seçer (dört nokta motorda `targetHexes` ile; yapay zekâ en kalabalık noktayı seçer); yanıcı nesneler tutuşur.",
+    "sigmayan": "Alandaki yanıcı, taşınmayan nesnelerin tutuşması yok (nesne tutuşma modeli yalnızca yanıcı zemin ve fıçılar).",
     "kapsamDisi": null,
     "approx": null
    }

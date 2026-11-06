@@ -226,3 +226,36 @@ describe('A8-2 alan', () => {
     expect(r.events.some((e) => e.type === 'save_resolved' && e.targetId === 'F1')).toBe(false);
   });
 });
+
+describe('K57 Meteor Swarm arayüz ve yapay zekâ', () => {
+  it('yapay zekâ iki uzak düşman grubunu ayrı noktalarla kapsar, dostu kapsamaz', async () => {
+    const { multiPointAim } = await import('./ai');
+    // 40 ft küre 8 altıgen yarıçap: 48×17 düz harita, üç ayrı düşman kümesi, aralarında dost.
+    const p = { A: { col: 0, row: 8 }, F0: { col: 20, row: 2 }, F1: { col: 40, row: 2 }, F2: { col: 40, row: 15 }, B: { col: 26, row: 15 } };
+    const s0 = field([wiz(['Meteor Swarm']), foe('F0'), foe('F1'), foe('F2'), ally('B')], p, 37);
+    const s = { ...s0, map: { ...(s0.map as NonNullable<BattleState['map']>), tiles: Array.from({ length: 17 }, () => '.'.repeat(48)) } };
+    const sp = spell('Meteor Swarm');
+    const foes = ['F0', 'F1', 'F2'].map((id) => s.combatants[id] as Combatant);
+    const pts = multiPointAim(s, s.combatants.A as Combatant, sp.area!, sp.rangeFt, foes, 4);
+    expect(pts).not.toBeNull();
+    const r = run(s, cast('Meteor Swarm', { targetHex: pts![0], targetHexes: pts! }));
+    const hit = new Set(r.events.flatMap((e) => (e.type === 'save_resolved' ? [e.targetId] : [])));
+    expect([...hit].sort()).toEqual(['F0', 'F1', 'F2']);
+    expect(pts!.length).toBe(3);
+  });
+  it('arayüz önizlemesi noktaları birleştirir, komut targetHexes taşır', async () => {
+    const { areaActPreview, areaActCommand, areaPointCount } = await import('../ui/hud');
+    const p = { A: { col: 0, row: 0 }, F0: { col: 3, row: 3 }, F1: { col: 12, row: 3 } };
+    const s = field([wiz(['Meteor Swarm']), foe('F0'), foe('F1')], p, 37);
+    const act = { kind: 'spell' as const, spell: spell('Meteor Swarm') };
+    expect(areaPointCount(s, act)).toBe(4);
+    expect(areaPointCount({ ...s, kuralSurumu: 36 }, act)).toBe(1);
+    const pts = [{ col: 3, row: 3 }, { col: 12, row: 3 }];
+    const one = areaActPreview(s, s.combatants.A as Combatant, act, pts[0]!);
+    const two = areaActPreview(s, s.combatants.A as Combatant, act, pts[0]!, null, pts);
+    expect(one.foes.map((c) => c.id)).toEqual(['F0']);
+    expect(two.foes.map((c) => c.id).sort()).toEqual(['F0', 'F1']);
+    expect(two.hexes.length).toBeGreaterThan(one.hexes.length);
+    expect(areaActCommand('A', act, null, null, null, null, pts)).toMatchObject({ targetHex: pts[0], targetHexes: pts });
+  });
+});

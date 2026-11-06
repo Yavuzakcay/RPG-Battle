@@ -24,6 +24,7 @@ const groupOf = (txt) => (GROUPS.find(([, re]) => re.test(txt)) ?? ['tekil (büy
 
 const rows = [];
 let before = 0; let after = 0; let kapsam = 0; let combat = 0;
+const a4Kapsam = [];
 for (const s of all) {
   const m = s.mechanics ?? {};
   if (m.offCombat || s.offCombat) continue;
@@ -35,7 +36,10 @@ for (const s of all) {
   const isPartial = !!(merged.approx || (merged.gmNote && !merged.kapsamDisi && !merged.offCombat && !merged.sigmayan && !merged.gmNoted));
   if (wasPartial) before += 1;
   if (isPartial) after += 1;
-  if (merged.kapsamDisi && !isPartial && !later) kapsam += 1;
+  // Kuyruk K57: yalnız tamamlama bloğu (a4/a6/a7/a8) olmadan, temel veride kapsam dışı notuyla çalışır sayılan. Eskiden
+  // `a4` bloğundan gelen kapsam dışı notlu 3 büyü (hex, fear, beacon-of-hope) burada da sayılıyordu (A4 tamamlananlarla çift sayım).
+  if (merged.kapsamDisi && !isPartial && !later && !m.a4) kapsam += 1;
+  if (merged.kapsamDisi && !isPartial && !later && m.a4) a4Kapsam.push(s.id);
   if (wasPartial) rows.push({ id: s.id, level: s.level, file: s.file, eksik: merged.approx || (merged.kapsamDisi || merged.sigmayan || merged.gmNoted ? '' : merged.gmNote) || '', kapsam: merged.kapsamDisi ?? '', sigmayan: merged.sigmayan ?? '', gm: merged.gmNoted ? merged.gmNote ?? '' : '', a4: !!m.a4, a6: !!m.a6, a7: !!m.a7, a8: !!m.a8, partial: isPartial });
 }
 rows.sort((a, b) => Number(b.partial) - Number(a.partial) || a.level - b.level || a.id.localeCompare(b.id));
@@ -61,7 +65,8 @@ const lines = [
     `| Tamamlanan (sürüm ${v}, \`${k}\`; tam) | ${rows.filter((r) => r[k] && !r.partial && !r.sigmayan && !r.gm).length} |`,
     `| Tamamlanan (sürüm ${v}, \`${k}\`; Game Master notlu) | ${rows.filter((r) => r[k] && !r.partial && r.gm).length} |`,
     `| Tamamlanan (sürüm ${v}, \`${k}\`; sığmayan parça notlu) | ${rows.filter((r) => r[k] && !r.partial && r.sigmayan).length} |`]),
-  `| Kapsam dışı olarak çalışır sayılan | ${kapsam} |`,
+  `| Kapsam dışı olarak çalışır sayılan (tamamlama bloğu olmadan) | ${kapsam} |`,
+  `| A4 tamamlananlardan kapsam dışı notlu (yukarıdaki A4 sayısının içinde) | ${a4Kapsam.length}${a4Kapsam.length ? ` (${a4Kapsam.join(', ')})` : ''} |`,
   '',
   '## Kalan kısmiler: altyapıya göre',
   '',

@@ -18,7 +18,8 @@
 | Tamamlanan (sürüm 37, `a8`; tam) | 7 |
 | Tamamlanan (sürüm 37, `a8`; Game Master notlu) | 0 |
 | Tamamlanan (sürüm 37, `a8`; sığmayan parça notlu) | 8 |
-| Kapsam dışı olarak çalışır sayılan | 3 |
+| Kapsam dışı olarak çalışır sayılan (tamamlama bloğu olmadan) | 0 |
+| A4 tamamlananlardan kapsam dışı notlu (yukarıdaki A4 sayısının içinde) | 3 (hex, fear, beacon-of-hope) |
 
 ## Kalan kısmiler: altyapıya göre
 
@@ -102,5 +103,5 @@
 | plane-shift | 7 | spells-69.json | tamam (A6, sığmayan parça notlu) |  |  | Düzlem yolculuğu savaş modelinde yok: SRD 5.2.1'de istemsiz hedefe sürgün kolu yok, büyü yalnızca isteklileri götürür; oyunda yapılınca Game Master notu düşer. |
 | animal-shapes | 8 | spells-69.json | tamam (A7, Game Master notlu) |  |  |  |
 | holy-aura | 8 | spells-69.json | tamam (A4) |  |  |  |
-| meteor-swarm | 9 | spells-69.json | tamam (A8, sığmayan parça notlu) |  |  | Oyuncu arayüzü tek nokta seçer (dört nokta motorda `targetHexes` ile; yapay zekâ en kalabalık noktayı seçer); yanıcı nesneler tutuşur. |
+| meteor-swarm | 9 | spells-69.json | tamam (A8, sığmayan parça notlu) |  |  | Alandaki yanıcı, taşınmayan nesnelerin tutuşması yok (nesne tutuşma modeli yalnızca yanıcı zemin ve fıçılar). |
 | wish | 9 | spells-69.json | tamam (A7, Game Master notlu) |  |  |  |

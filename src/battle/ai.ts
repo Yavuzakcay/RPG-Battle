@@ -47,7 +47,7 @@ import { activeBuffs } from './divine';
 import { offhandProblem } from './offhand';
 import { islandJumpProblem, moveCostFn, occupantAt, speedHexes, terrainAt } from './movement';
 import { bonusOptionsOf, freeCast } from './economy';
-import { bestAim } from './areaAttack';
+import { bestAim, pickArea } from './areaAttack';
 import { multiSpecOf, multiTotal } from './monsters';
 import { abilitiesOf, abilityReady } from './monsterAbilities';
 import { checkReach as reachOk, monsterAttackReach as atkReach } from './range';
@@ -62,6 +62,7 @@ import { houseRule } from './houseRules';
 import { STEAM_PENALTY, isWater, surfaceRisk, surfacesReact } from './surfaces';
 import { reactionHurtsSide } from './hexResolver';
 import { terrainEndangersSide } from './terrainSpell';
+import type { Spell } from '../data/types';
 import aiData from '../../data/yapay-zeka.json';
 
 /** Kuyruk 41b: yenilenen hedefe ateş/asit (yenilenmeyi keser) seçeneğinin puan çarpanı. */
@@ -357,6 +358,17 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       if (r0.ok && !reactionHurtsSide(state, r0.events, actor.side) && !terrainEndangersSide(state, r0.events, actor.side)) return cmd;
       continue;
     }
+    // Kuyruk K57 (Meteor Swarm, `multiPoint`): en çok düşmanı kapsayan, dost vurmayan en çok N nokta (açgözlü).
+    const multi = state.map ? mechanicsAt(state, s).multiPoint ?? 0 : 0;
+    if (multi > 1 && s.area) {
+      const pts = multiPointAim(state, actor, s.area, s.rangeFt, foes, multi);
+      if (pts) {
+        const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: pts[0] as Offset, targetHexes: pts };
+        const r = tryCmd(state, actor, cmd);
+        if (r.ok && !reactionHurtsSide(state, r.events, actor.side) && !terrainEndangersSide(state, r.events, actor.side)) return cmd;
+      }
+      continue;
+    }
     for (const f of state.map ? foes : foes.slice(0, 1)) {
       const cmd: Command = state.map
         ? { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos as Offset }
@@ -373,6 +385,37 @@ function areaSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
     }
   }
   return null;
+}
+
+/**
+ * Kuyruk K57: çok noktalı alan (Meteor Swarm) için noktalar. Adaylar düşmanların altıgenleri; her adımda henüz kapsanmamış
+ * en çok düşmanı ekleyen, hiç dost/masum kapsamayan nokta seçilir (SRD: alanlar birleşir, her yaratık bir kez). Toplam en az
+ * iki düşman yoksa null.
+ */
+export function multiPointAim(state: BattleState, actor: Combatant, area: NonNullable<Spell['area']>, rangeFt: number, foes: Combatant[], max: number): Offset[] | null {
+  const foeIds = new Set(foes.map((f) => f.id));
+  const cands = foes.flatMap((f) => {
+    if (!f.pos) return [];
+    const p = pickArea(state, actor, area, rangeFt, f.pos, 'büyü');
+    if ('ok' in p) return [];
+    if (p.reached.some((x) => x.c.side === actor.side || x.c.civilian)) return [];
+    return [{ at: f.pos, ids: p.reached.filter((x) => foeIds.has(x.c.id) && x.c.hp > 0).map((x) => x.c.id) }];
+  });
+  const covered = new Set<string>();
+  const pts: Offset[] = [];
+  while (pts.length < max) {
+    let best: (typeof cands)[number] | null = null;
+    let gain = 0;
+    for (const c of cands) {
+      if (pts.some((p) => p.col === c.at.col && p.row === c.at.row)) continue;
+      const g = c.ids.filter((id) => !covered.has(id)).length;
+      if (g > gain) { gain = g; best = c; }
+    }
+    if (!best) break;
+    pts.push(best.at);
+    for (const id of best.ids) covered.add(id);
+  }
+  return covered.size >= 2 ? pts : null;
 }
 
 /**

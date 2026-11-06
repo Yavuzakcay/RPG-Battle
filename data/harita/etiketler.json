@@ -537,7 +537,7 @@
    "seviye": 3,
    "tip": "yer",
    "konum_kesin": false,
-   "not": "K49 C2: orman-kar-çöl kavşağı (Oduncu kampı ile Hutame Çölü arası); eskiden 5496,4589 (Cadı Kazanı ile çakışıyordu)"
+   "not": "K49 C2: orman-kar-çöl kavşağı (Oduncu kampı ile Hutame Çölü arası); eskiden 5496,4589 (Cadı Kazanı ile çakışıyordu). K57: 7150,3800 hâlâ tahmin (konum_kesin false); kullanıcı görsel kontrolden sonra x/y'yi burada düzeltir ve konum_kesin true yapar"
   },
   {
    "id": "yer3_20",

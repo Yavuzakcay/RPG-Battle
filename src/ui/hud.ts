@@ -4,7 +4,8 @@ import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { summonDef } from '../battle/summons';
 import { axialToOffset, distance, offsetToAxial, type Offset } from '../rules/hex';
-import { pickArea, type AreaTargetSpec } from '../battle/areaAttack';
+import { pickArea, type AreaPick, type AreaTargetSpec } from '../battle/areaAttack';
+import { mechanicsAt } from '../battle/spellVersion';
 import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
 import { teleportHexes } from '../battle/teleport';
@@ -208,6 +209,11 @@ export function summonHexes(state: BattleState, actorId: string, spell: Spell, c
  */
 export type AreaAct = { kind: 'spell'; spell: Spell } | { kind: 'monster'; index: number } | { kind: 'breath'; shape: 'cone' | 'line' };
 
+/** Kuyruk K57: alan büyüsünün savaşın kural sürümündeki nokta sayısı (Meteor Swarm 4; çoğu büyüde 1). */
+export function areaPointCount(state: BattleState, act: AreaAct | null): number {
+  return act?.kind === 'spell' ? Math.max(1, mechanicsAt(state, act.spell).multiPoint ?? 1) : 1;
+}
+
 export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetSpec; rangeFt: number; label: string } | null {
   if (act.kind === 'spell') return act.spell.area ? { spec: act.spell.area, rangeFt: act.spell.rangeFt, label: act.spell.name } : null;
   if (act.kind === 'monster') {
@@ -218,7 +224,9 @@ export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetS
   return s ? { spec: { shape: s.shape, sizeFt: s.sizeFt, origin: 'self', targets: 'all', ...(s.widthFt ? { widthFt: s.widthFt } : {}) }, rangeFt: 0, label: 'Breath Weapon' } : null;
 }
 
-export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | 'ring' | null, choice?: string | null): Command {
+export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | 'ring' | null, choice?: string | null, points?: Offset[]): Command {
+  // Kuyruk K57 (Meteor Swarm): çok noktalı alanda ilk nokta `targetHex`, hepsi `targetHexes`.
+  if (act.kind === 'spell' && points?.length) return { type: 'cast_spell', actorId, spellName: act.spell.name, targetHex: points[0] as Offset, ...(points.length > 1 ? { targetHexes: points } : {}), ...(slotLevel ? { slotLevel } : {}) };
   if (act.kind === 'spell') return { type: 'cast_spell', actorId, spellName: act.spell.name, ...(aim ? { targetHex: aim } : {}), ...(slotLevel ? { slotLevel } : {}), ...(choice ? { choice } : {}),
     ...(wallShape && act.spell.area?.shape === 'wall' ? { wallShape } : {}) };
   if (act.kind === 'monster') return { type: 'monster_attack', actorId, targetId: '', attackIndex: act.index, ...(aim ? { targetHex: aim } : {}) };
@@ -226,13 +234,22 @@ export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null
 }
 
 /** Önizleme: kaplanan altıgenler, etkilenecek dostlar ve düşmanlar (motorla aynı), yapılamıyorsa nedeni. */
-export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAct, aim: Offset | null, wallShape?: 'arc' | 'ring' | null):
+export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAct, aim: Offset | null, wallShape?: 'arc' | 'ring' | null, points?: Offset[]):
   { hexes: Offset[]; friends: Combatant[]; foes: Combatant[]; error: string | null } {
   const s = areaActSpec(actor, act);
   if (!s) return { hexes: [], friends: [], foes: [], error: null };
   const spec = wallShape && s.spec.shape === 'wall' ? { ...s.spec, bend: wallShape } : s.spec;
-  const pick = pickArea(state, actor, spec, s.rangeFt, aim);
-  if ('ok' in pick) return { hexes: [], friends: [], foes: [], error: pick.error };
+  const pick0 = pickArea(state, actor, spec, s.rangeFt, points?.length ? points[0] ?? aim : aim);
+  if ('ok' in pick0) return { hexes: [], friends: [], foes: [], error: pick0.error };
+  let pick: AreaPick = pick0;
+  // Kuyruk K57 (Meteor Swarm): noktaların alanları birleşir, her yaratık bir kez (motorun `executeAreaCast`'ı gibi).
+  for (const at of (points ?? []).slice(1)) {
+    const p2 = pickArea(state, actor, spec, s.rangeFt, at);
+    if ('ok' in p2) return { hexes: [], friends: [], foes: [], error: p2.error };
+    const seen = new Set(pick.reached.map((x) => x.c.id));
+    const keys = new Set(pick.hexes.map((h) => `${h.col},${h.row}`));
+    pick = { ...pick, hexes: [...pick.hexes, ...p2.hexes.filter((h) => !keys.has(`${h.col},${h.row}`))], reached: [...pick.reached, ...p2.reached.filter((x) => !seen.has(x.c.id))] };
+  }
   const friend = (c: Combatant) => c.side === actor.side || c.civilian;
   return { hexes: pick.hexes, friends: pick.reached.filter((x) => friend(x.c)).map((x) => x.c), foes: pick.reached.filter((x) => !friend(x.c)).map((x) => x.c), error: null };
 }
