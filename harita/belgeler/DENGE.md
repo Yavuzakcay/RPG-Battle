@@ -2,6 +2,41 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K59: tam açık duman testi, YZ düzeltmeleri ve denge turu (2026-11-07)
+
+Kural sürümü 42 (değişmedi). Ölçümler YZ düzeltmelerinden (önizleme zar yüzdelikleri, etki içeriğine göre değer, Multiattack planı denetimi, Dunganga yaklaşması) sonra.
+
+### Senaryo düşman listeleri (3. seviye, standart parti, 100 tohum)
+
+`npm run sim -- 100 col orman magara dungeon --seviye 3`. Yalnız `data/sim-senaryolar.json` `enemies.3` değişti (canavar verisi değil).
+
+| Senaryo | Önce (K59 YZ) | 1. ayar | 2. ayar | Son | Son liste |
+|---|---:|---:|---:|---:|---|
+| Çöl — Gündüz | 92% | 58% | **75%** | 75% | death-dog 3, gnoll-warrior 4, giant-hyena 2, scout 1 (+1 death-dog) |
+| Orman | 96% | 60% | **71%** | 71% | owlbear 2, dire-wolf 3, giant-spider 1, wolf 2 (+1 owlbear, −1 wolf) |
+| Mağara — karanlık | 91% | 84%¹ | **73%** | 73% | ghoul 1, giant-spider 2, ettercap 1, bugbear-warrior 2, ogre 2 (darkmantle ve bir ghoul yerine 2 ogre) |
+| Dungeon — Koridor | 100% | 93% | 59% | **70%** | wight 1, ghoul 2, ghast 4, skeleton 3 (+1 wight, +1 ghast) |
+
+¹ İlk deneme (10 düşman) haritanın düşman bölgesine sığmadı; sayı 8'de tutuldu.
+
+### Zorluk (1. seviye standart parti, 100 tohum × Kale/Orman/Çöl/Mağara = 400 savaş; `npx vite-node src/sim/k59Zorluk.ts -- 100 --ayar … --seviye 1`)
+
+| Ayar | Kale | Orman | Çöl | Mağara | Toplam | Fark (Normal'e göre, parti kazanma) |
+|---|---:|---:|---:|---:|---:|---:|
+| Normal | 70 | 82 | 65 | 74 | 72.8% | — |
+| Parti Usta (K58 kodu + K59 yer seçimi) | 68 | 80 | 78 | 74 | 75.0% | +2.2 |
+| Parti Usta (son: + temasız yer değiştirme) | 79 | 82 | 72 | 79 | **78.0%** | **+5.2** ✓ |
+| Düşman Usta (son) | 70 | 73 | 71 | 66 | **70.0%** | **−2.8** (hedef −3) |
+| Düşman Usta + temasız yer değiştirme | 76 | 73 | 71 | 81 | 75.3% | +2.5 (zayıflattı; kaldırıldı) |
+| Düşman Usta, odak/kesin ×2 | 73 | 75 | 71 | 66 | 71.3% | −1.5 |
+| Düşman Usta, 8 yer adayı + düşük yer maliyeti | 71 | 73 | 69 | 69 | 70.5% | −2.3 |
+
+K58 ölçümü (30 tohum, 1. seviye): Normal %68, Düşman Usta %68. Parti tarafında hedef (Usta ≥ Normal + 3) tutuyor; düşman tarafında −2,8 puanla eşiğin hemen altında (400 savaşta standart hata ≈ 3 puan). "Deneysel" etiketi kalır, açıklaması ölçüme göre güncellendi.
+
+### İmza alt sınıf kullanımı (7. seviye, k18 partisi, Çöl/Kale/Mağara/Orman × 5 tohum = 20 savaş; `npx vite-node src/sim/k59ImzaKullanim.ts -- 5`)
+
+Sayım: eylem (`use_feature imza:`), tepki (`reaction_used imza-…`), pasif tetik (savaş sırasında imza karakterine bağlı imza izli olay, komut başına tekil), hazır imza büyüsü (alt sınıf `alwaysPrepared`; kullanıcı kararıyla toplamda). "Önce" = K58 YZ'si, K58 sayımı yalnız eylemi sayıyordu.
+
 ## Kuyruk K58: savaş okunabilirliği ve yapay zekâ — regresyon ve zorluk (2026-11-06)
 
 Ayar yok (denge K59). Kural sürümü 42 (değişmedi).
