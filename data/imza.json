@@ -1645,7 +1645,7 @@
    },
    "kendiEtki": {
     "name": "Yüce Taht",
-    "sure": 2,
+    "sure": 1,
     "resist": [
      "acid",
      "bludgeoning",
