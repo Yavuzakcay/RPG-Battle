@@ -37,6 +37,22 @@ K58 ölçümü (30 tohum, 1. seviye): Normal %68, Düşman Usta %68. Parti taraf
 
 Sayım: eylem (`use_feature imza:`), tepki (`reaction_used imza-…`), pasif tetik (savaş sırasında imza karakterine bağlı imza izli olay, komut başına tekil), hazır imza büyüsü (alt sınıf `alwaysPrepared`; kullanıcı kararıyla toplamda). "Önce" = K58 YZ'si, K58 sayımı yalnız eylemi sayıyordu.
 
+| Alt sınıf | K58 sayımı (eylem/savaş) | Önce: eylem / tepki / pasif / hazır büyü | Önce toplam / savaş | Sonra: eylem / tepki / pasif / hazır büyü | Sonra toplam / savaş | ≥ 1 |
+|---|---:|---|---:|---|---:|---|
+| İmparator | 3.05 | 61 / 0 / 57 / 0 | 5.90 | 54 / 0 / 42 / 0 | 4.80 | ✓ |
+| İnfazcı | 2.90 | 58 / 0 / 28 / 0 | 4.30 | 56 / 0 / 27 / 0 | 4.15 | ✓ |
+| Çiftçi | 1.10 | 22 / 0 / 0 / – | 1.10 | 20 / 0 / 0 / 0 | 1.00 | ✓ |
+| Dunganga | 0.55 | 14 / 0 / 0 / 11 | 1.25 | 14 / 0 / 0 / 10 | 1.20 | ✓ (hazır büyüyle) |
+| Astrolog | 2.35 | 47 / 19 / 18 / – | 4.20 | 42 / 18 / 16 / 1 | 3.85 | ✓ |
+| Birlik Manastırı | 2.20 | 44 / 0 / 2 / – | 2.30 | 45 / 0 / 2 / 0 | 2.35 | ✓ |
+| Geride Kalanın Yolu | 0.00 | 0 / 29 / 193 / – | 11.10 | 0 / 31 / 199 / 0 | 11.50 | ✓ |
+| Şair Koleji | 3.80 | 76 / 0 / 0 / – | 3.80 | 77 / 0 / 0 / 0 | 3.85 | ✓ |
+| Yaşlı Bilge Disiplini | 3.20 | 64 / 18 / 0 / – | 4.10 | 66 / 18 / 0 / 0 | 4.20 | ✓ |
+| Hızır Yemini | 0.00 | 0 / 40 / 64 / – | 5.20 | 0 / 39 / 54 / 50 | 7.15 | ✓ |
+| Harita Öğretisi | 1.10 | 22 / 0 / 20 / – | 2.10 | 20 / 0 / 20 / 0 | 2.00 | ✓ |
+
+"Önce" satırlarında hazır büyü sütunu yalnız Dunganga için ölçüldü (sütun sonradan eklendi; "–"). Dunganga'ya yakın menzilli imza eylemi için yaklaşma (veride `yzYaklas`) eklendi; ölçülebilir fark yok (eylem 14 → 14). Hedef (≥ 1 imza etkisi / savaş) 11 alt sınıfın hepsinde tutuyor; Dunganga yalnız hazır imza büyüleri sayılınca (kullanıcı kararı).
+
 ## Kuyruk K58: savaş okunabilirliği ve yapay zekâ — regresyon ve zorluk (2026-11-06)
 
 Ayar yok (denge K59). Kural sürümü 42 (değişmedi).
