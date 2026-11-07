@@ -1632,7 +1632,7 @@
    "kendisi": true,
    "etki": {
     "name": "Yüce Taht",
-    "sure": 2,
+    "sure": 10,
     "dice": {
      "die": "$pbHalf",
      "sign": 1,
@@ -1645,7 +1645,7 @@
    },
    "kendiEtki": {
     "name": "Yüce Taht",
-    "sure": 10,
+    "sure": 2,
     "resist": [
      "acid",
      "bludgeoning",
