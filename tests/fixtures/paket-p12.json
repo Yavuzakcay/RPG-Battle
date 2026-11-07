@@ -1,0 +1,542 @@
+{
+  "format": "rpg-battle-icerik",
+  "version": 1,
+  "id": "p12-genisleme",
+  "name": {
+    "tr": "P12 genişleme (kurgusal)",
+    "en": "P12 extension (fictional)"
+  },
+  "author": "Test",
+  "subclasses": [
+    {
+      "id": "kivilcim-okulu",
+      "class": "wizard",
+      "name": {
+        "tr": "kivilcim-okulu",
+        "en": "kivilcim-okulu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "kivilcim-havuz",
+          "level": 3,
+          "name": {
+            "tr": "kivilcim-havuz",
+            "en": "kivilcim-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "kivilcim",
+              "sayi": "$int",
+              "yenilenme": "depo"
+            }
+          ]
+        },
+        {
+          "id": "kivilcim",
+          "level": 3,
+          "name": {
+            "tr": "kivilcim",
+            "en": "kivilcim"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "gucDeposu",
+              "olay": "karsiBuyu",
+              "depo": {
+                "id": "kivilcim"
+              },
+              "harca": "buyuHasari",
+              "harcaHasar": "$lvlYari",
+              "buyuListesi": "Wiz"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yanki-okulu",
+      "class": "wizard",
+      "name": {
+        "tr": "yanki-okulu",
+        "en": "yanki-okulu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "yanki-havuz",
+          "level": 3,
+          "name": {
+            "tr": "yanki-havuz",
+            "en": "yanki-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "yanki",
+              "sayi": 3,
+              "yenilenme": "depo"
+            }
+          ]
+        },
+        {
+          "id": "yanki",
+          "level": 3,
+          "name": {
+            "tr": "yanki",
+            "en": "yanki"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "gucDeposu",
+              "olay": "buyuYuvasi",
+              "depo": {
+                "id": "yanki"
+              },
+              "zar": "1d6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sans-cini",
+      "class": "warlock",
+      "name": {
+        "tr": "sans-cini",
+        "en": "sans-cini"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "sans-havuz",
+          "level": 3,
+          "name": {
+            "tr": "sans-havuz",
+            "en": "sans-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "sans",
+              "sayi": 1,
+              "yenilenme": "uzun"
+            }
+          ]
+        },
+        {
+          "id": "sans",
+          "level": 3,
+          "name": {
+            "tr": "sans",
+            "en": "sans"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuVer",
+              "rastgeleListe": {
+                "sayi": 8
+              },
+              "kaynak": {
+                "id": "sans",
+                "maliyet": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "girdap-yolu",
+      "class": "barbarian",
+      "name": {
+        "tr": "girdap-yolu",
+        "en": "girdap-yolu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "girdap",
+          "level": 3,
+          "name": {
+            "tr": "girdap",
+            "en": "girdap"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "vertigo",
+              "zar": 8,
+              "tablo": [
+                {
+                  "etki": "patlama",
+                  "zar": "1d12",
+                  "hasarTuru": "force",
+                  "yaricapFt": 10,
+                  "save": {
+                    "yetenek": "con",
+                    "dc": [
+                      "con"
+                    ]
+                  },
+                  "tekrar": true
+                },
+                {
+                  "etki": "isinlan",
+                  "mesafeFt": 30,
+                  "hemen": true
+                },
+                {
+                  "etki": "isik",
+                  "yaricapFt": 10,
+                  "save": {
+                    "yetenek": "con",
+                    "dc": [
+                      "con"
+                    ]
+                  },
+                  "sure": 1
+                },
+                {
+                  "etki": "acBonusu",
+                  "miktar": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "denge",
+          "level": 10,
+          "name": {
+            "tr": "denge",
+            "en": "denge"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "vertigoKontrol",
+              "mod": "hasardaYenile"
+            }
+          ]
+        },
+        {
+          "id": "kontrol",
+          "level": 14,
+          "name": {
+            "tr": "kontrol",
+            "en": "kontrol"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "vertigoKontrol",
+              "mod": "ikiAtSec"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "golge-taktik",
+      "class": "fighter",
+      "name": {
+        "tr": "golge-taktik",
+        "en": "golge-taktik"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "golge-havuz",
+          "level": 3,
+          "name": {
+            "tr": "golge-havuz",
+            "en": "golge-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "golge",
+              "sayi": 4,
+              "yenilenme": "kisa"
+            }
+          ]
+        },
+        {
+          "id": "golge",
+          "level": 3,
+          "name": {
+            "tr": "golge",
+            "en": "golge"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "zarHavuzu",
+              "zar": {
+                "3": "1d8",
+                "10": "1d10",
+                "15": "1d12"
+              },
+              "kullanim": [
+                "saldiri",
+                "hasar",
+                "ac"
+              ],
+              "patlar": true,
+              "havuz": {
+                "3": 4,
+                "7": 5,
+                "15": 6
+              },
+              "kaynak": {
+                "id": "golge",
+                "maliyet": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buyu-ikizi",
+      "class": "wizard",
+      "name": {
+        "tr": "buyu-ikizi",
+        "en": "buyu-ikizi"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "ikiz-okul",
+          "level": 3,
+          "name": {
+            "tr": "ikiz-okul",
+            "en": "ikiz-okul"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuDegisimi",
+              "ikizOkul": "Enchantment"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kitap-ruhu",
+      "class": "wizard",
+      "name": {
+        "tr": "kitap-ruhu",
+        "en": "kitap-ruhu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "kitap",
+          "level": 3,
+          "name": {
+            "tr": "kitap",
+            "en": "kitap"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuDegisimi",
+              "kitapCikis": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "muhur-okulu",
+      "class": "wizard",
+      "name": {
+        "tr": "muhur-okulu",
+        "en": "muhur-okulu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "muhur-havuz",
+          "level": 3,
+          "name": {
+            "tr": "muhur-havuz",
+            "en": "muhur-havuz"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "kaynak",
+              "id": "muhur",
+              "sayi": 2,
+              "yenilenme": "uzun"
+            }
+          ]
+        },
+        {
+          "id": "muhur",
+          "level": 3,
+          "name": {
+            "tr": "muhur",
+            "en": "muhur"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "buyuSakla",
+              "ateslemeEylemi": "serbest",
+              "enCokSeviye": 3,
+              "dostTetikler": true,
+              "kaynak": {
+                "id": "muhur",
+                "maliyet": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "masal-yolu",
+      "class": "rogue",
+      "name": {
+        "tr": "masal-yolu",
+        "en": "masal-yolu"
+      },
+      "role": {
+        "tr": "Kurgusal (test)",
+        "en": "Fictional (test)"
+      },
+      "features": [
+        {
+          "id": "calisan",
+          "level": 3,
+          "name": {
+            "tr": "calisan",
+            "en": "calisan"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "calisir",
+          "ilkeller": [
+            {
+              "tur": "zarEtkisi",
+              "tetik": "pasif",
+              "inisiyatifBonusu": 1
+            }
+          ]
+        },
+        {
+          "id": "anlati",
+          "level": 3,
+          "name": {
+            "tr": "anlati",
+            "en": "anlati"
+          },
+          "description": {
+            "tr": "Kurgusal test özelliği.",
+            "en": "Fictional test feature."
+          },
+          "status": "hikaye"
+        }
+      ]
+    }
+  ]
+}

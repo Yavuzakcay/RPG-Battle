@@ -1,5 +1,5 @@
 /** Saldırı ve save çözümleme. Zarlar dışarıdan verilen rastgele üreticiyle atılır. */
-import { rollD20, rollDice, rollTag, type D20Result, type DiceResult, type Rng, type RollKind, type RollMode } from './dice';
+import { rollD20, rollDice, rollExploding, rollTag, type D20Result, type DiceResult, type Rng, type RollKind, type RollMode } from './dice';
 
 /**
  * Zar eklentisi (Görev R2; Bless +1d4, Bane −1d4): d20'nin ardından atılır, toplama eklenir (doğal 20/1 değişmez).
@@ -42,6 +42,8 @@ export interface ExtraDie {
    * ayrıca denenir (Bardic Inspiration: "when the creature fails a D20 Test").
    */
   chain?: boolean;
+  /** Kuyruk P12 (paket `zarHavuzu.patlar`): `onFail` zarı patlar (en yüksek yüz bir zar daha; zincir en çok 10). */
+  explode?: boolean;
 }
 /** Atılmış eklenti zarı: işaretli değer (−1d4 ise negatif). `resource`: kullanılan kaynak (Görev F). */
 export interface RolledExtra { label: string; die: string; value: number; effectId?: string; holderId?: string; single?: boolean; resource?: string; /** Kuyruk 18 H3: sahibinin tepkisi harcandı. */ reaction?: boolean;
@@ -96,7 +98,7 @@ export function secondChance(
       ...(x.effectId && !x.single ? { effectId: x.effectId } : {}) } };
   }
   if (x.reroll === 'onFail') {
-    const v = rollDice(x.die, rollTag(rng, { kind: fail.kind })).total;
+    const v = (x.explode ? rollExploding : rollDice)(x.die, rollTag(rng, { kind: fail.kind })).total;
     const total = fail.total + v;
     // Kuyruk P11: ilham zarı başarıyı getirmediyse etki kalır ya da Bard'a döner.
     const failed = fail.kind === 'attack' ? fail.natural !== 20 && total < fail.need : total < fail.need;

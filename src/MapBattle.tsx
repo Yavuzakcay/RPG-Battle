@@ -50,7 +50,8 @@ import { abilityTip, lineageAbilityList } from './ui/lineageText';
 import { hexText } from './ui/log';
 import { logEntries } from './ui/logEntries';
 import { hazardHexes, HAZARD_KINDS } from './ui/hazardLayer';
-import { summonOrigins } from './battle/paket/p11cast';
+import { castOrigins } from './battle/paket/p11cast';
+import { BOOK } from './battle/paket/p12core';
 import { CIVILIAN_LOOKS, displayName } from './battle/civilianLooks';
 import { execute } from './battle';
 import { exploreReady, exploreView } from './battle/commands';
@@ -800,11 +801,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const islandJumps = islandTargets.map((t) => t.to);
   const jumps = mode === 'jump' ? islandJumps : allJumps.filter((h) => !fromPos || lavaOver(state, fromPos, h).length === 0);
   // Çıkış noktası seçilmişse hedefler ve seçenekler çağrının altıgeninden (büyücü oradaymış gibi) hesaplanır.
-  const originChoices = useMemo(() => (actor ? summonOrigins(state, actor) : []), [state, actor]);
+  // Kuyruk P12: çağrılar ve büyü kitabı (`castOrigins`).
+  const originChoices = useMemo(() => (actor ? castOrigins(state, actor) : []), [state, actor]);
   const viewState = useMemo(() => {
-    const s = originId ? state.combatants[originId] : undefined;
+    const s = originId ? originChoices.find((o) => o.id === originId) : undefined;
     return s?.pos && actor ? { ...state, combatants: { ...state.combatants, [actorId]: { ...actor, pos: s.pos } } } : state;
-  }, [state, originId, actor, actorId]);
+  }, [state, originId, actor, actorId, originChoices]);
   const withOrigin = (cmd: Command): Command => (originId && cmd.type === 'cast_spell' ? { ...cmd, originId } : cmd);
   const glowingRaw = useMemo(() => {
     if (!active) return new Set<string>();
@@ -1937,7 +1939,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   <small>{B.origin.label}</small>
                   {[null, ...originChoices].map((c) => (
                     <button key={c?.id ?? 'self'} role="radio" aria-checked={originId === (c?.id ?? null)} className={originId === (c?.id ?? null) ? 'on' : 'ghost'}
-                      onClick={() => { setOriginId(c?.id ?? null); setTargetId(null); }}>{c ? c.name : B.origin.self}</button>
+                      onClick={() => { setOriginId(c?.id ?? null); setTargetId(null); }}>{c ? (c.id === BOOK(actorId) ? B.p12.book : c.name) : B.origin.self}</button>
                   ))}
                 </div>
               )}
@@ -2393,6 +2395,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               {ruleVersion(state) >= 41 && heldWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: heldWeapons(actor)[0] as string })}>{B.s2.drop(heldWeapons(actor)[0] as string)}</button>}
               {/* Kuyruk P11: saklı büyüyü ateşle (hedef: seçili hedef ya da kendisi). */}
               {actor.effects?.find((e) => e.storedSpell) && <button className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>{B.p11.fire(actor.effects.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>}
+              {/* Kuyruk P12: büyü kitabını bırak / al; dostun mühürlü büyüsünü tetikle (dostun ekonomisi harcanmaz). */}
+              {(state.map?.objects ?? []).filter((o) => o.kind === 'spellbook' && o.hp > 0 && (o.carriedBy === actorId || (!o.carriedBy && !!actor.pos && distance(o.at, actor.pos) <= 1))).map((o) => (
+                <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'object_use', actorId, objectId: o.id, action: o.carriedBy === actorId ? 'put' : 'take' })}>{o.carriedBy === actorId ? B.p12.bookPut : B.p12.bookTake}</button>
+              ))}
+              {Object.values(state.combatants).filter((c) => c.id !== actorId && c.side === actor.side && c.hp > 0 && c.effects?.some((e) => e.storedSpell?.allies)).map((c) => (
+                <button key={`seal${c.id}`} className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, sourceId: c.id, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>
+                  {B.p12.allyFire(c.name, c.effects?.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>
+              ))}
               {ruleVersion(state) >= 41 && groundItemsNear(state, actor).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(o.item ?? '')}</button>)}
             </div>
           )}

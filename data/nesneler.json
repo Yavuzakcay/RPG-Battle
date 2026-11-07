@@ -60,6 +60,7 @@
     "frozenFall": { "tr": "Donmuş şelale", "en": "Frozen waterfall", "ac": 13, "hp": 25, "material": "ice", "size": "Large", "icon": "🧊", "aiRisk": 0, "vulnerable": ["fire"],
       "terrain": { "movement": "blocked", "cover": 0, "blocksSight": true } },
     "rock": { "tr": "Taş", "en": "Stone", "ac": 17, "hp": 10, "material": "stone", "size": "Small", "icon": "🪨", "aiRisk": 0, "terrain": { "movement": "difficult", "cover": 2, "blocksSight": false } },
-    "droppedItem": { "tr": "Yerdeki eşya", "en": "Dropped item", "ac": 15, "hp": 5, "material": "iron", "size": "Tiny", "carryable": true, "icon": "🗡", "aiRisk": 0, "terrain": { "movement": "normal", "cover": 0, "blocksSight": false } }
+    "droppedItem": { "tr": "Yerdeki eşya", "en": "Dropped item", "ac": 15, "hp": 5, "material": "iron", "size": "Tiny", "carryable": true, "icon": "🗡", "aiRisk": 0, "terrain": { "movement": "normal", "cover": 0, "blocksSight": false } },
+    "spellbook": { "tr": "Büyü kitabı", "en": "Spellbook", "ac": 11, "hp": 2, "material": "paper", "size": "Tiny", "carryable": true, "icon": "📖", "aiRisk": 0, "terrain": { "movement": "normal", "cover": 0, "blocksSight": false } }
   }
 }

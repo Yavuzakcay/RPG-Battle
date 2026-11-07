@@ -29,7 +29,7 @@ import { registerCommandEnd, registerTurnStart } from '../turnHooks';
 import { registerAction } from '../ai/actions';
 import { bondRecallEvents } from '../heldItems';
 import { p11On } from './p11';
-import { summonOrigins } from './p11cast';
+import { castOrigins } from './p11cast';
 import { spellOf } from '../features';
 import { JETON_ARKETIP, JETON_YEDEK } from '../../content/ilkelSema';
 import { resolveSave } from '../../rules/attack';
@@ -48,6 +48,7 @@ import {
 import './p9';
 import './p10';
 import './p11hooks';
+import { isP12Feature, p12Execute, p12Problem } from './p12';
 
 export { paketHex, paketTargeted, withPaket } from './core';
 
@@ -541,6 +542,8 @@ function registerAllRiders(state: BattleState): void {
 function pickDugme(actor: Combatant, f: UsableFeature): Dugme | undefined { return dugmeOf(actor, f.key); }
 
 export function paketProblem(state: BattleState, actor: Combatant, f: UsableFeature, targetId?: string, to?: Offset): string | null {
+  // Kuyruk P12 (sürüm 43+): rastgele büyü listesi ve vertigo düğmeleri.
+  if (isP12Feature(f.key)) return p12Problem(state, actor, f, targetId, to);
   const d = pickDugme(actor, f);
   if (!d) return 'Bilinmeyen özellik.';
   if (actor.hp <= 0) return 'Ayakta değil.';
@@ -566,6 +569,7 @@ export function paketProblem(state: BattleState, actor: Combatant, f: UsableFeat
 }
 
 export function executePaket(state: BattleState, actor: Combatant, f: UsableFeature, targetId: string | undefined, rng: Rng | undefined, to?: Offset): CommandResult {
+  if (isP12Feature(f.key)) return p12Execute(state, actor, f, rng, to);
   const why = paketProblem(state, actor, f, targetId, to);
   if (why) return fail(why);
   if (!rng) return fail('Zar gerekli.');
@@ -927,7 +931,8 @@ registerAction({
 registerAction({
   id: 'paket:cikis', kind: 'damage', note: 'Ek paket: büyü çağrının altıgeninden (cikisCagri), hedefli saldırı/kurtulma büyüleri',
   gen: (state, actor, h) => {
-    const origins = summonOrigins(state, actor);
+    // Kuyruk P12: büyü kitabı da çıkış adayı (`castOrigins`).
+    const origins = castOrigins(state, actor);
     if (!origins.length || !h.canAct) return [];
     const sp = actor.spellNames.map((n) => spellOf(n)).filter((x): x is NonNullable<typeof x> => !!x && (x.mechanics.kind === 'attack' || x.mechanics.kind === 'save') && !x.area).slice(0, 4);
     const out: Command[] = [];

@@ -17,6 +17,8 @@ import type { ActiveEffect, BattleEvent, Combatant } from '../types';
 import { registerCommandEnd } from '../turnHooks';
 import { canPay, flatNum, formul, val } from './core';
 import { p11On, payEvents, prims } from './p11';
+import { p12On } from './p12surum';
+import { rollExploding } from '../../rules/dice';
 
 const inspireFx = (c: { effects?: ActiveEffect[] } | undefined, use: 'damage' | 'ac') => c?.effects?.find((e) => e.inspire && e.inspireUses?.includes(use));
 const drop = (targetId: string, e: ActiveEffect): BattleEvent => ({ type: 'effect_ended', targetId, effectId: e.id, name: e.name, reason: 'used' });
@@ -59,6 +61,8 @@ registerCommandEnd((before, next, events) => {
   const out: BattleEvent[] = [];
   for (const c of Object.values(next.combatants)) {
     for (const r of prims(c, 'gucDeposu')) {
+      // Kuyruk P12 (sürüm 43+): kaynaklı sayaç (`depo`) `p12.ts`'te.
+      if (r.p.depo && p12On(next)) continue;
       const olay = val<string>(r.p, 'olay');
       const n = olay === 'buyuYuvasi' ? events.filter((e) => e.type === 'slot_spent' && e.actorId === c.id).length
         : olay === 'hasarAlinca' ? ((before.combatants[c.id]?.hp ?? 0) > c.hp ? 1 : 0)
@@ -79,7 +83,7 @@ registerCommandEnd((before, next, events) => {
 registerHitHook((state, actor, target, ctx, rng) => {
   if (!p11On(state)) return null;
   const fx = actor.effects?.find((e) => e.id === DEPO(actor.id));
-  const r = prims(actor, 'gucDeposu')[0];
+  const r = prims(actor, 'gucDeposu').filter((x) => !(x.p.depo && p12On(state)))[0];
   if (!fx?.pkCharge || !r) return null;
   const pick = askChoice(rng, { actorId: actor.id, sourceId: target.id, label: `${fx.name}: ${fx.pkCharge} güç`,
     options: [{ id: 'use', label: `+${fx.pkCharge}×${formul(r.p.zar, actor)}` }, { id: 'keep', label: 'Sakla' }], suggested: target.hp > 0 ? 'use' : 'keep' });
@@ -124,7 +128,8 @@ registerHitHook((state, actor, target, ctx, rng) => {
   const name = (r.p.ad as string | undefined) ?? r.feat.ad;
   if (askChoice(rng, { actorId: actor.id, sourceId: target.id, label: `${name}: zarı hasara ekle`, options: [{ id: 'use', label: `+${die}` }, { id: 'keep', label: 'Sakla' }],
     suggested: target.hp > 0 ? 'use' : 'keep' }) !== 'use') return null;
-  const roll = rollDice(die, rollTag(rng, { kind: 'damage', by: actor.id }), ctx.critical);
+  // Kuyruk P12 (sürüm 43+): patlayan havuz zarı (`patlar`).
+  const roll = (r.p.patlar === true && p12On(state) ? rollExploding : rollDice)(die, rollTag(rng, { kind: 'damage', by: actor.id }), ctx.critical);
   const adj = adjustDamage(roll.total, ctx.weaponType, damageProfile(target));
   return { extras: [{ label: name, rolls: roll.rolls, raw: roll.total, applied: adj.amount, type: ctx.weaponType, note: adj.note }], after: [() => payEvents(state, actor, r.feat, r.p, r.i)] };
 });
@@ -140,7 +145,7 @@ registerAllyHit((state, ctx, rng) => {
   const ans = askReaction(rng, { reactorId: t.id, trigger: 'hit', sourceId: ctx.attacker.id, info: { label: ctx.label, total: ctx.total, ac: ctx.ac, damage: ctx.damage },
     options: [opt], suggested: ctx.total < ctx.ac + Number(/d(\d+)/.exec(die)?.[1] ?? 0) ? { option: opt.id } : null });
   if (ans?.option !== opt.id) return null;
-  const v = rollDice(die, rollTag(rng, { kind: 'damage', by: t.id })).total;
+  const v = (r.p.patlar === true && p12On(state) ? rollExploding : rollDice)(die, rollTag(rng, { kind: 'damage', by: t.id })).total;
   const events: BattleEvent[] = [reactionUsed(t, opt, 'hit', ctx.attacker.id), ...payEvents(state, t, r.feat, r.p, r.i),
     { type: 'map_note', text: `${t.name}: ${name} → AC +${v} (${ctx.ac + v})` }];
   return ctx.total < ctx.ac + v ? { events, name } : { events, name, damage: ctx.damage };

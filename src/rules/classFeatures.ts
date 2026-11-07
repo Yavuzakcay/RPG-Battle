@@ -73,7 +73,8 @@ export function gainedFeatures(classId: string, level: number, subclassId?: stri
  */
 function packMechanic(f: SubclassFeatureDef, at: number): FeatureMechanic | undefined {
   const prims = f.ilkeller ?? [];
-  if (!prims.length) return f.effect;
+  // Kuyruk P12: ilkelsiz hikâye özelliği "Hikâye" etiketiyle (savaş dışı; eksik sayılmaz).
+  if (!prims.length) return f.effect ?? (f.status === 'hikaye' ? { type: 'passive', status: 'none', story: true } : undefined);
   const names = prims.filter((p) => p.tur === 'buyuVer').flatMap((p) => (Array.isArray(p.buyular) ? p.buyular as string[] : []));
   const base: FeatureMechanic = f.effect ?? { type: 'passive', status: f.status === 'calisir' ? 'ok' : 'partial' };
   return names.length ? { ...base, alwaysPrepared: { ...base.alwaysPrepared, [String(at)]: [...(base.alwaysPrepared?.[String(at)] ?? []), ...names] } } : base;
@@ -375,11 +376,23 @@ export function rechargeResources(
   const out = { ...current };
   for (const [id, cap] of Object.entries(max)) {
     const d = resourceDef(id);
+    const now = out[id] ?? 0;
+    // Kuyruk P12: sayaç kaynağı (`depot`): uzun dinlenme başlangıç değerine; kısa dinlenme yalnız 0'daysa (tur başı yok).
+    if (d?.depot !== undefined) { if (kind !== 'turn') out[id] = kind === 'long' || now === 0 ? Math.min(cap, d.depot) : now; continue; }
     const rule = d?.recharge[kind];
     if (rule === undefined) continue;
     if (kind === 'short' && d?.recharge.shortFrom !== undefined && level < d.recharge.shortFrom) continue;
-    const now = out[id] ?? 0;
     out[id] = rule === 'all' ? cap : Math.min(cap, now + rule);
+  }
+  return out;
+}
+
+/** Kuyruk P12: sayaç kaynakları (`depot`) başlangıç değerinde (yeni karakter / savaş kaydı olmayan savaşçı). Üst sınır aynı. */
+export function depotStart(resources: Record<string, number>): Record<string, number> {
+  let out = resources;
+  for (const [id, cap] of Object.entries(resources)) {
+    const d = resourceDef(id);
+    if (d?.depot !== undefined && cap !== Math.min(cap, d.depot)) out = { ...out, [id]: Math.min(cap, d.depot) };
   }
   return out;
 }

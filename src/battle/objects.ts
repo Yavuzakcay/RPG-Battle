@@ -36,6 +36,7 @@ import { houseRule } from './houseRules';
 import { OBJECTS, OBJECT_DATA, objectAt } from './objectData';
 import { areaDamageOf, elementReactionEvents, surfaceEvent } from './surfaces';
 import { terrainOf } from '../map/terrain';
+import { p12On } from './paket/p12surum';
 import type { AttackOption, BattleEvent, BattleState, Combatant, Command, MapObject, ObjectAction, ObjectKind, ObjectState } from './types';
 
 const sizeOf = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 });
@@ -186,6 +187,12 @@ function improvisedOption(actor: Combatant, label: string, w: { damage: string; 
 export function executeObjectUse(state: BattleState, actor: Combatant, objectId: string, action: ObjectAction, to: Offset | undefined, rng: Rng): CommandResult {
   const obj = live(state, objectId);
   if (!obj) return fail('Nesne yok.');
+  // Kuyruk P12 (sürüm 43+): taşınan büyü kitabını kendi altıgenine bırak (serbest nesne etkileşimi).
+  if (action === 'put') {
+    if (obj.kind !== 'spellbook' || !p12On(state)) return fail('Bu nesne bırakılmaz.');
+    if (obj.carriedBy !== actor.id || !actor.pos) return fail('Nesneyi taşımıyorsun.');
+    return finish(state, [{ type: 'object_changed', objectId: obj.id, carriedBy: null, at: actor.pos, label: `${actor.name}: ${OBJECTS[obj.kind].tr} bırakıldı` }]);
+  }
   if (!actor.pos || distance(actor.pos, obj.at) > 1) return fail('Nesneye bitişik olmalısın.');
   const def = OBJECTS[obj.kind];
   const name = `${actor.name}: ${def.tr}`;

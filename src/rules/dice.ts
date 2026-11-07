@@ -125,6 +125,25 @@ export function rollDice(
   return { rolls, bonus: s.bonus, total };
 }
 
+/**
+ * Kuyruk P12 (paket `zarHavuzu.patlar`): patlayan zar. En yüksek yüz gelen her zar için bir zar daha atılır ve eklenir;
+ * ek zar da en yüksekse zincir sürer (en çok `max` ek zar). Her ek zar ayrı atılır (zar defteri / elle zar; replay aynı).
+ */
+export function rollExploding(spec: DiceSpec | string, rng: Rng = Math.random, critical = false, max = 10): DiceResult {
+  const s = typeof spec === 'string' ? parseDice(spec) : spec;
+  const first = rollDice(s, rng, critical);
+  const rolls = [...first.rolls];
+  let pending = s.sides > 1 ? rolls.filter((r) => r === s.sides).length : 0;
+  let extra = 0;
+  while (pending > 0 && extra < max) {
+    const r = rollDice({ count: 1, sides: s.sides, bonus: 0 }, rng).rolls[0] ?? 0;
+    rolls.push(r);
+    extra++;
+    pending += r === s.sides ? 0 : -1;
+  }
+  return { rolls, bonus: s.bonus, total: rolls.reduce((n, r) => n + r, 0) + s.bonus };
+}
+
 export interface D20Result {
   rolls: number[]; // 1 zar (normal) veya 2 zar (avantaj/dezavantaj)
   kept: number; // sayılan zar

@@ -86,6 +86,9 @@ function spellDamageRoll(expr: string, actor: Combatant, rng: Rng): { rolls: num
   return { rolls, total: d.total - d.rolls.reduce((n, x) => n + x, 0) + rolls.reduce((n, x) => n + x, 0) };
 }
 
+/** Kuyruk P12 (paket `buyuDegisimi.ikizOkul`; savaşçıda `pkTwinSchool`, sürüm 43+): bu okulun alansız, menzilli büyüsü bir hedef fazla. */
+const schoolTwin = (actor: Combatant, spell: Spell): boolean => !!actor.pkTwinSchool && spell.school === actor.pkTwinSchool && !spell.area && spell.rangeFt > 0;
+
 /** Görev WIZARD: Potent Cantrip (Evoker): save'li cantrip'te başarıda da yarı hasar. */
 const potentCantrip = (actor: Combatant, spell: Spell) => spell.level === 0 && !!actor.traits?.includes('potent-cantrip');
 
@@ -623,7 +626,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
 
   // Görev WIZARD: yukarı slotta ek hedefli tek hedef save büyüleri (Hold Person, Blindness/Deafness): yuva bir kez,
   // her hedef ayrı save. Hedefler birbirine 30 ft içinde (SRD) denetlenmez; her biri menzilde olmalı.
-  if (m.kind === 'save' && !repeat && !spell.area && cmd.targetIds && cmd.targetIds.length > 1 && m.upcast?.applied && m.upcast.targets) {
+  // Kuyruk P12 (paket `buyuDegisimi.ikizOkul`, sürüm 43+): okulun tek hedefli büyüsü ikinci hedefe (aynı yol).
+  if (m.kind === 'save' && !repeat && !spell.area && cmd.targetIds && cmd.targetIds.length > 1 && ((m.upcast?.applied && m.upcast.targets) || schoolTwin(actor, spell))) {
     return executeSaveMany(state, actor, cmd, spell, rng);
   }
   // Kuyruk 24c: yanıcı haneye ateşli büyü (gres, yağ, ağ, yanıcı nesne; Game Master mekaniği `greaseFlammable`).
@@ -956,7 +960,7 @@ function executeSaveMany(state: BattleState, actor: Combatant, cmd: CastCommand,
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const level = slot.slotLevel ?? spell.level;
-  const most = 1 + (level - spell.level + (actor.traits?.includes('mm-twinned') ? 1 : 0)) * (spell.mechanics.upcast?.targets ?? 0);
+  const most = 1 + (level - spell.level + (actor.traits?.includes('mm-twinned') ? 1 : 0)) * (spell.mechanics.upcast?.targets ?? 0) + (schoolTwin(actor, spell) ? 1 : 0);
   if (ids.length > most) return fail(`${spell.name} ${level}. slotta en çok ${most} hedef.`);
   const events: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel)];
   let current = applyEvents(state, events);
@@ -1573,7 +1577,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
   const slotLevel = slot.slotLevel ?? spell.level;
   // Görev SORCERER: Twinned Spell: hedef sayısında etkin seviye +1.
   const twin = actor.traits?.includes('mm-twinned') ? 1 : 0;
-  if (targets.length > effectTargetCount(spell, slotLevel + twin)) return fail(`${spell.name} en çok ${effectTargetCount(spell, slotLevel + twin)} hedef.`);
+  // Kuyruk P12: okul ikiz büyüsü tek hedefli etkiye bir hedef ekler.
+  const most = effectTargetCount(spell, slotLevel + twin) + (schoolTwin(actor, spell) && spec.targets === 1 ? 1 : 0);
+  if (targets.length > most) return fail(`${spell.name} en çok ${most} hedef.`);
   // Görev K9b: yukarı slot süre ve konsantrasyon eşikleri (Bestow Curse).
   const atLevel = atSlot(spell, slotLevel);
   const rounds = atLevel.mechanics.effect?.rounds ?? spec.rounds;

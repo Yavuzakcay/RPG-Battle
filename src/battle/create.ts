@@ -39,7 +39,7 @@ import { monsterAvatar, sheetAvatar } from './avatar';
 import { monsterAttackArea } from '../rules/areaParse';
 import { hasBonusUnarmed, offHandAttackOption, unarmedStrikeOption, weaponAttackOptions } from './weapons';
 import { activeMasteries, weaponMasteryId } from '../rules/mastery';
-import { classKit, classResources, gainedFeatures, resourceDef } from '../rules/classFeatures';
+import { classKit, classResources, depotStart, gainedFeatures, resourceDef } from '../rules/classFeatures';
 import { environmentFor, getMap, resolveMapChoice } from '../map/maps';
 import { FRESH_ECONOMY, FRESH_MAP_STATUS, NO_RESOURCES, type ReactionSpec, type AttackOption, type UsableFeature, type Avatar, type BattleEvent, type BattleState, type ActiveEffect, type Combatant, type DragonWakeMode, type Goals, type GroupState, type MapState, type SleepGroup, type SpellZone, type SurfaceKind } from './types';
 import { civilianLook, defaultCivilianLook } from './civilianLooks';
@@ -373,7 +373,8 @@ function combatantFromSheetBase(
       return off ? { offHandOption: off, ...(off.weaponId && weaponMasteryId(off.weaponId) === 'nick' && activeMasteries(sheet).has(off.weaponId) ? { nickOffhand: true } : {}) } : {};
     })(),
     concentration: null,
-    resources: { ...resources, ...boonResources(featEffects(sheetFeats(sheet)).traits) },
+    // Kuyruk P12: sayaç kaynağı (`depot`) durumsuz savaşçıda başlangıç değerinde (üst sınır `resourceCaps`).
+    resources: depotStart({ ...resources, ...boonResources(featEffects(sheetFeats(sheet)).traits) }),
     // Kuyruk 19 (SRD Ammunition): taşınan cephaneli silahların türü başına 20 (sadak/kese).
     ...((): Partial<Combatant> => {
       const types = [...new Set((sheet.weapons ?? []).map((w) => weapons.find((x) => x.name === w.name)?.ammo).filter((x): x is string => !!x))];

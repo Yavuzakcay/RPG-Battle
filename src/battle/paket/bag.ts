@@ -28,16 +28,28 @@ export interface PaketBag {
   kaynakBas?: Record<string, number>;
   /** Kuyruk P11: savaş kural sürümü 42+ (durumsuz okuyan yollar için; `damageExpr`). */
   v42?: boolean;
+  /** Kuyruk P12: savaş kural sürümü 43+ (durumsuz okuyan yollar: havuz zarı patlaması). */
+  v43?: boolean;
+}
+
+/** Kuyruk P12: rastgele listenin seçimleri (boşlar ve yinelenenler düşer). */
+export const wishPickKey = (featureKey: string, n: number): string => `${featureKey}/dilek${n}`;
+export function wishPicks(choices: Record<string, string> | undefined, featureKey: string, count: number): string[] {
+  const out: string[] = [];
+  for (let n = 1; n <= count; n++) { const v = choices?.[wishPickKey(featureKey, n)]; if (v && !out.includes(v)) out.push(v); }
+  return out;
 }
 
 /** Karakterin paket verisi (ilkelli özelliği yoksa undefined). */
-export function paketBag(sheet: Pick<CharacterSheet, 'classId' | 'subclassId' | 'level' | 'armorName'>): PaketBag | undefined {
+export function paketBag(sheet: Pick<CharacterSheet, 'classId' | 'subclassId' | 'level' | 'armorName'> & Partial<Pick<CharacterSheet, 'featureChoices'>>): PaketBag | undefined {
   const sub = findSubclass(sheet.classId, sheet.subclassId);
   if (!sub?.pack) return undefined;
   const at = getProgression(sheet.classId).subclassLevel ?? 3;
   if (sheet.level < at) return undefined;
   const ozellikler = sub.features.filter((f) => Math.max(f.level, at) <= sheet.level && f.ilkeller?.length)
-    .map((f) => ({ key: `${sub.id}/${f.id}`, ad: f.name.tr || f.name.en, ilkeller: (f.ilkeller ?? []).filter((p) => !!ILKELLER[p.tur as string]) as Ilkel[] }))
+    .map((f) => ({ key: `${sub.id}/${f.id}`, ad: f.name.tr || f.name.en, ilkeller: (f.ilkeller ?? []).filter((p) => !!ILKELLER[p.tur as string])
+      // Kuyruk P12: rastgele büyü listesi: oluşturucuda seçilen büyüler (`featureChoices["<özellik>/dilek<n>"]`) ilkele gömülür.
+      .map((p) => (p.tur === 'buyuVer' && p.rastgeleListe ? { ...p, secilenler: wishPicks(sheet.featureChoices, `${sheet.classId}/${sub.id}:${f.id}`, (p.rastgeleListe as { sayi?: number }).sayi ?? 8) } : p)) as Ilkel[] }))
     .filter((f) => f.ilkeller.length > 0);
   if (!ozellikler.length) return undefined;
   const kaynaklar: Record<string, string> = {};

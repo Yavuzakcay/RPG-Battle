@@ -66,5 +66,7 @@ export function poolChances(c: Combatant | undefined, on: 'attack' | 'save' | 'c
   const want = on === 'attack' ? 'saldiri' : on === 'save' ? 'kurtulma' : 'kontrol';
   return prims(c, 'zarHavuzu').filter((x) => (val<string[]>(x.p, 'kullanim') ?? []).includes(want) && canPay(c, x.p) && !x.p.kosul)
     .map((x) => ({ label: (x.p.ad as string | undefined) ?? x.feat.ad, die: formul(x.p.zar, c), sign: 1 as const, reroll: 'onFail' as const,
-      ...(costOf(c, x.p) ? { resource: costOf(c, x.p)?.id } : {}), holderId: c.id }));
+      ...(costOf(c, x.p) ? { resource: costOf(c, x.p)?.id } : {}), holderId: c.id,
+      // Kuyruk P12: patlayan havuz zarı (sürüm 43+; savaşçıda `paket.v43`).
+      ...(x.p.patlar === true && c.paket?.v43 ? { explode: true } : {}) }));
 }

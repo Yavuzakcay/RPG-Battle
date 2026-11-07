@@ -6,7 +6,7 @@ Bu belge `src/content/ilkelSema.ts` tablosundan üretilir (`npx vite-node script
 
 Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilkeller": [{ "tur": "ekHasar", ... }, ...]`. Eski alanlar (`effect`: stat, trait, reaction, effect) aynen çalışır; ikisi birlikte de yazılabilir. Paket düzeyinde `yaratiklar` dizisi `cagir` ilkelinin çağırdığı yaratıkları tanımlar.
 
-İlkeller (53; P6: zarMuhru, engeldenGec eklendi):
+İlkeller (55; P6: zarMuhru, engeldenGec eklendi):
 
 | İlkel | Ne yapar | Tetikler | Mevcut sistem |
 |---|---|---|---|
@@ -30,7 +30,7 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 | `kaynak` | Kullanım havuzu tanımı (diğer ilkeller `kaynak.id` ile harcar). | `pasif` | Sınıf kaynakları (`data/class-features.json` `resources` biçimi; `classResources`, `rechargeResources`, savaş sonu karaktere yazılır). |
 | `bicim` | Süreli biçim (dönüşüm): geçici can, AC, hız, direnç, ek hasar, uçuş, avantaj. | `bonus`, `eylem` | Wild Shape/Karadul biçim yolu yerine tek süren etki (`tempHpNow`, `ac`, `speedFt`, `fly`, `resist`, `hitDie`, `attackAdv`); jeton değişmez. |
 | `yuzeyOlustur` | Altıgenlere yüzey (yağ, buz, alev…) ya da geçici engel koyar. | `eylem`, `bonus`, `oldurunce`, `isabet`, `buyuYuvasi`, `turBasi` | Yüzey olayı (`surfaces.ts` `surfaceEvent`; K55 çözücüsü komut sonunda tepkimeleri işler), K53 geçici engel (`barriers.ts` `barrierEvents`) ya da satır içi kurallı alan (`SpellZone.spec`: tur başı/sonu/giriş tetikleri, kurtulma, hasar, durum, zorlu arazi; `zones.ts`). |
-| `buyuVer` | Her an hazır büyüler; isteğe bağlı kaynakla slotsuz. | `pasif` | Sınıf kiti `alwaysPrepared` ve kaynak `freeSpellList` (Favored Enemy yolu). P11 (sürüm 42+): `paket/p11cast.ts` (yalnız kendine, konsantrasyonsuz, kopya). |
+| `buyuVer` | Her an hazır büyüler; isteğe bağlı kaynakla slotsuz. | `pasif` | Sınıf kiti `alwaysPrepared` ve kaynak `freeSpellList` (Favored Enemy yolu). P11 (sürüm 42+): `paket/p11cast.ts` (yalnız kendine, konsantrasyonsuz, kopya). P12 (sürüm 45+): `paket/p12.ts` rastgele liste (düğme `pk12:dilek:<özellik>`, seçimler `featureChoices["<özellik>/dilek<n>"]`, süren etki `grantSpell`). |
 | `buyuDegisimi` | Büyü hasarına eklenti (türe/okula göre). | `pasif` | Büyü hasar ifadesi (`spells.ts` `damageExpr`; Empowered Evocation / Elemental Affinity yolu), yapım öncesi büyü dönüşümü (menzil, tür; Eldritch Spear/Transmuted yolu), kurtulma kipi (`durations.ts` `saveMode`). |
 | `gorunmezlik` | Invisible durumu (saldırınca/büyü yapınca biter). | `bonus`, `eylem`, `oldurunce`, `hasarAlinca` | Süren etki `grants: ["Invisible"]` + `breakOnAct` (Invisibility yolu). |
 | `moralEtkisi` | Moral havuzuna ekleme/çıkarma (K48; Moral kapalıyken sessiz yok sayılır). | `bonus`, `eylem`, `turBasi`, `oldurunce`, `isabet` | `moral_changed` olayı (`morale.ts` `moraleOn`). |
@@ -57,10 +57,12 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 | `canArtisi` | Savaş başında en çok can artar (ve can). | `pasif` | Savaş kuruluşunda (`withPaket`) en çok can ve can artar (başlangıç olayı taşır; Aid yolu). Sürüm 38+. |
 | `yetkinlik` | Alt sınıfın verdiği zırh/kalkan ve silah eğitimi (oluşturucu ve savaş: AC, yetkin saldırı, eğitimsiz zırh cezası yok). | `pasif` | `rules/classFeatures.ts` `packTraining` → `armorProficient` / `weaponProficient` (karakter sayfasının alt sınıf ve seviyesiyle). Oluşturucu ve savaş kuruluşu; kural sürümünden bağımsız (karakter verisi). |
 | `ilham` | Bardic Inspiration yolunu değiştirir: başarısız kalan zar kalır ya da Bard'a döner, kaynak bitince küçük zarla bedava ilham, ilham zarı silah hasarına ya da isabet alınca AC'ye. | `pasif` | `bard.ts` `ilhamOf` (ödeme ve etki alanları `inspireKeep`/`inspireRes`/`inspireUses`), `rules/attack.ts` ikinci şans `keepOnFail` → reducer iadesi (`refund`), `paket/p11hooks.ts` isabet kancası (hasar) ve dosta isabet kancası (AC). Sürüm 42+. |
-| `buyuSakla` | Büyüyü yapar ama saklarsın (slot ve eylem harcanır); sonra ateşlersin (bekleyen büyü). | `pasif` | `cast_spell.store` → süren etki `storedSpell`; ateşleme `spell_followup` `choice: "sakli"` (`paket/p11cast.ts`; slot yeniden harcanmaz). Sürüm 42+. |
-| `gucDeposu` | Olay oldukça güç biriktirirsin; silah isabetinde biriken güç × zar ek hasar olarak boşalır. | `pasif` | Komut sonu sayaç (`pkCharge` süren etki), isabet kancası boşaltır (seçim; `paket/p11hooks.ts`). Sürüm 42+. |
+| `buyuSakla` | Büyüyü yapar ama saklarsın (slot ve eylem harcanır); sonra ateşlersin (bekleyen büyü). | `pasif` | `cast_spell.store` → süren etki `storedSpell`; ateşleme `spell_followup` `choice: "sakli"` (`paket/p11cast.ts`; slot yeniden harcanmaz). Sürüm 42+; dost tetiği sürüm 45+. |
+| `gucDeposu` | Olay oldukça güç biriktirirsin; silah isabetinde biriken güç × zar ek hasar olarak boşalır. | `pasif` | Komut sonu sayaç (`pkCharge` süren etki; P12 `depo` kaynağı), isabet kancası boşaltır (seçim; `paket/p11hooks.ts`); P12 büyü hasarı ve karşı büyü `paket/p12.ts` (komut sonu). Sürüm 42+; P12 alanları 45+. |
 | `zarYarisi` | Hedefle karşılıklı zar yarışı (d20 + beceri/yetenek); kazanırsan hedef işaretlenir (`kosul: zarYarisi`, avantajsız Sneak Attack). | `bonus`, `eylem` | Düğme (`use_feature`): iki d20 zar defterinden (elle zar dahil); kazanınca hedefte süren etki `pk-yaris:<sen>` + `sneakFor` (`features.ts` `canSneak`). Sürüm 42+. |
 | `zarHavuzu` | Kaynakla sayılan kendi zarların: başarısız saldırıya/kurtulmaya ekle, silah isabetinde hasara ekle ya da vurulunca tepkiyle AC'ye. | `pasif` | Ortak `kaynak` alanı havuzu sayar (`kaynak` ilkeli). İkinci şans (`effectDice.ts`, `onFail`: başarıya çevirince harcanır), isabet kancası (seçim) ve dosta isabet kancası (tepki) `paket/p11hooks.ts`. Sürüm 42+. |
+| `vertigo` | P12: öfkeye girince vertigo zarı (dN) atılır; tablodaki satırın etkisi öfke sürdükçe geçerli (patlama, ışınlanma, kör edici ışık, AC). Tablo sırası zar yüzüne eşit dağılır (4 satır d8: 1–2, 3–4, 5–6, 7–8) ya da satırda `yuzler`. | `pasif` | Komut sonu (`paket/p12.ts`): öfke başlayınca zar (zar defteri), süren etki `pkVertigo` (öfke bitince biter); düğmeler `pk12:vertigo:<özellik>:isinlan\|hemen\|tekrar` (`use_feature`). Sürüm 45+. |
+| `vertigoKontrol` | P12: vertigo zarını yönet (aynı alt sınıfın `vertigo` ilkeline uygulanır). hasardaYenile: öfkedeyken hasar alınca tepkiyle zar yeniden atılır (yeni satır eskisinin yerine). ikiAtSec: vertigo zarı iki kez atılır, satırı sen seçersin. | `pasif` | `paket/p12.ts`: hasar sonrası tepki istemi (`askReaction`, tetik `damaged`), iki zar için seçim istemi (`askChoice`). Sürüm 45+. |
 | `silahFirlat` | Yakın dövüş silahın fırlatılabilir olur ve saldırıdan sonra eline döner (Thrown özelliği + dönüş). | `pasif` | Savaş kuruluşunda (`withPaket`) Thrown özelliği olmayan her yakın dövüş silahına fırlatma seçeneği (`returns`; SRD Thrown: STR, tek el). Fırlatılan silah elden çıkmaz (döner). Sürüm 41+ (Kuyruk S2 el modeli). |
 | `silahBagi` | Silahla bağ: zorla elinden alınamaz (Incapacitated değilken) ve yere düşmüşse düğmeyle eline çağrılır (aynı savaş alanında, uzaklık yok). | `bonus`, `eylem`, `serbest` | Savaşçıda `bonded` (savaş kuruluşu); zorlamayla bırakma (`dropEvents` `forced`, ör. Command "Drop") bağlı silahı düşürmez. Düğme: yerdeki bağlı silah `item_picked` (`bond`, nesne etkileşimi harcamaz). Sürüm 41+ (Kuyruk S2 el modeli). |
 
@@ -489,7 +491,7 @@ Kullanım havuzu tanımı (diğer ilkeller `kaynak.id` ile harcar).
 |---|---|---|---|---|
 | `id` | kimlik | evet | — | Kaynak kimliği (alt sınıf içinde). |
 | `sayi` | formül | evet | — | Kullanım: sayı, "$pb", "$str"…"$cha" (en az 1) ya da seviye tablosu `{ "3": 2, "11": 3 }`. |
-| `yenilenme` | seçenek: `uzun`, `kisa`, `tur` | hayır | `"uzun"` | Yenilenme: uzun dinlenme, kısa (ve uzun) dinlenme, her tur başı. |
+| `yenilenme` | seçenek: `uzun`, `kisa`, `tur`, `depo` | hayır | `"uzun"` | Yenilenme: uzun dinlenme, kısa (ve uzun) dinlenme, her tur başı; P12 `depo`: sayaç (güç deposu): yeni karakter ve uzun dinlenme 1, kısa dinlenme yalnız 0'daysa 1; `sayi` üst sınır. |
 
 Örnek:
 
@@ -556,7 +558,7 @@ Altıgenlere yüzey (yağ, buz, alev…) ya da geçici engel koyar.
 Her an hazır büyüler; isteğe bağlı kaynakla slotsuz.
 
 - Tetikler: `pasif` (varsayılan `pasif`).
-- Sistem ve kanca: Sınıf kiti `alwaysPrepared` ve kaynak `freeSpellList` (Favored Enemy yolu). P11 (sürüm 42+): `paket/p11cast.ts` (yalnız kendine, konsantrasyonsuz, kopya).
+- Sistem ve kanca: Sınıf kiti `alwaysPrepared` ve kaynak `freeSpellList` (Favored Enemy yolu). P11 (sürüm 42+): `paket/p11cast.ts` (yalnız kendine, konsantrasyonsuz, kopya). P12 (sürüm 45+): `paket/p12.ts` rastgele liste (düğme `pk12:dilek:<özellik>`, seçimler `featureChoices["<özellik>/dilek<n>"]`, süren etki `grantSpell`).
 
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama |
 |---|---|---|---|---|
@@ -565,6 +567,7 @@ Her an hazır büyüler; isteğe bağlı kaynakla slotsuz.
 | `yalnizKendine` | true/false | hayır | `false` | P11: bedava (kaynakla) yapım yalnız kendine; başkasına slotla. |
 | `konsantrasyonsuz` | true/false | hayır | `false` | P11: listedeki büyüler konsantrasyonsuz (süreleri kadar). |
 | `kopyaEnCokSeviye` | tamsayı | hayır | — | P11: bu seviyeye dek (1+) herhangi bir büyü, bilmeden, slotsuz (kaynakla; Wish benzeri kopya). |
+| `rastgeleListe` | { "sayi": N } | hayır | — | P12: `{ "sayi": 8 }`: oyuncu oluşturucuda bildiği/hazırladığı N büyüyü seçer; düğmeyle (eylem, kaynakla) dN zarı listeden birini seçer, büyü slotsuz bir kez yapılır (hedefi oyuncu seçer). Geçerli hedefi olmayan büyü yeniden atılır; hiçbiri geçerli değilse kullanım harcanmaz. |
 
 Örnek:
 
@@ -593,6 +596,8 @@ Büyü hasarına eklenti (türe/okula göre).
 | `cikisCagri` | true/false | hayır | `false` | P11: büyü senin çağrının (paket `cagir`) altıgeninden çıkabilir (`cast_spell.originId`). |
 | `yetenekEki` | yetenek | hayır | — | P11: menzili en çok `menzilEnCokFt` (varsayılan 5) olan büyünün hasarına bu yetenek değiştiricisi. |
 | `menzilEnCokFt` | tamsayı | hayır | `5` | P11 yetenekEki: en çok bu menzil (ft). |
+| `ikizOkul` | metin | hayır | — | P12: bu okulun (Enchantment…) tek hedefli büyüsü menzildeki ikinci bir hedefe de (kaynaksız; eylem, slot, Counterspell ve konsantrasyon bir kez). `ikiz`ten ayrı. |
+| `kitapCikis` | true/false | hayır | `false` | P12: büyü kitabı savaş başında senin altıgeninde taşınan nesne (`spellbook`); büyü kitabın altıgeninden çıkabilir (`cast_spell.originId` = kitap; menzil ve görüş oradan). Bırak (`object_use put`) / al (`take`). |
 
 Örnek:
 
@@ -1084,13 +1089,14 @@ Bardic Inspiration yolunu değiştirir: başarısız kalan zar kalır ya da Bard
 Büyüyü yapar ama saklarsın (slot ve eylem harcanır); sonra ateşlersin (bekleyen büyü).
 
 - Tetikler: `pasif` (varsayılan `pasif`).
-- Sistem ve kanca: `cast_spell.store` → süren etki `storedSpell`; ateşleme `spell_followup` `choice: "sakli"` (`paket/p11cast.ts`; slot yeniden harcanmaz). Sürüm 42+.
+- Sistem ve kanca: `cast_spell.store` → süren etki `storedSpell`; ateşleme `spell_followup` `choice: "sakli"` (`paket/p11cast.ts`; slot yeniden harcanmaz). Sürüm 42+; dost tetiği sürüm 45+.
 
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama |
 |---|---|---|---|---|
 | `ateslemeEylemi` | seçenek: `bonus`, `eylem`, `tepki`, `serbest` | hayır | `"bonus"` | Ateşleme maliyeti. |
 | `enCokSeviye` | tamsayı | hayır | — | En çok bu seviyedeki büyü. |
 | `sure` | süre | hayır | — | Süre: tur sayısı (1 tur = 6 sn) ya da "kalici" (savaş boyu). |
+| `dostTetikler` | true/false | hayır | `false` | P12: saklı büyüyü bir dost da tetikleyebilir (`spell_followup` `choice: "sakli"`, `sourceId`: saklayan); dostun eylem ekonomisi harcanmaz, büyüyü saklayan yapar (menzil ve görüş saklayandan). |
 
 Örnek:
 
@@ -1103,14 +1109,18 @@ Büyüyü yapar ama saklarsın (slot ve eylem harcanır); sonra ateşlersin (bek
 Olay oldukça güç biriktirirsin; silah isabetinde biriken güç × zar ek hasar olarak boşalır.
 
 - Tetikler: `pasif` (varsayılan `pasif`).
-- Sistem ve kanca: Komut sonu sayaç (`pkCharge` süren etki), isabet kancası boşaltır (seçim; `paket/p11hooks.ts`). Sürüm 42+.
+- Sistem ve kanca: Komut sonu sayaç (`pkCharge` süren etki; P12 `depo` kaynağı), isabet kancası boşaltır (seçim; `paket/p11hooks.ts`); P12 büyü hasarı ve karşı büyü `paket/p12.ts` (komut sonu). Sürüm 42+; P12 alanları 45+.
 
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama |
 |---|---|---|---|---|
-| `olay` | seçenek: `buyuYuvasi`, `hasarAlinca`, `iskalandi` | hayır | `"buyuYuvasi"` | Sayaç ne zaman artar: slotlu büyü yaptın, hasar aldın, sana saldırı ıskaladı. |
-| `zar` | formül | evet | — | Güç başına ek hasar. |
-| `enCok` | tamsayı | hayır | — | Sayaç üst sınırı. |
-| `hasarTuru` | hasar türü | hayır | — | Ek hasar türü (yoksa silahınki). |
+| `olay` | seçenek: `buyuYuvasi`, `hasarAlinca`, `iskalandi`, `karsiBuyu` | hayır | `"buyuYuvasi"` | Sayaç ne zaman artar: slotlu büyü yaptın, hasar aldın, sana saldırı ıskaladı; P12 `karsiBuyu`: düşman büyüsünü Counterspell ile durdurdun ya da Dispel Magic ile kırdın (komut başına +1). |
+| `zar` | formül | hayır | — | Güç başına ek hasar (`harca: isabet`te gerekli). |
+| `enCok` | tamsayı | hayır | — | Sayaç üst sınırı (P12 `depo` verilirse kaynağın üst sınırı geçerli). |
+| `hasarTuru` | hasar türü | hayır | — | Ek hasar türü (yoksa silahınki; `buyuHasari`nda varsayılan force). |
+| `depo` | kaynak başvurusu | hayır | — | P12: sayaç bir kaynakta (`kaynak` ilkeli, `yenilenme: "depo"`, `sayi` üst sınır ör. "$int"): savaşlar arası taşınır, dinlenmeyle döner. |
+| `harca` | seçenek: `isabet`, `buyuHasari` | hayır | `"isabet"` | Nasıl boşalır: isabet = silah isabetinde sayaç × zar (P11); P12 buyuHasari = büyün bir yaratığa/nesneye hasar verince turda bir kez 1 güç harcayıp `harcaHasar` ek hasar (çok hedefli/çok oklu büyüde tek hedefe bir kez; seçim). |
+| `harcaHasar` | formül | hayır | — | P12 buyuHasari: ek hasar (ör. "$lvlYari": seviyenin yarısı). |
+| `buyuListesi` | metin | hayır | — | P12 buyuHasari: yalnız bu sınıf listesinin büyüleri (Wiz, Sor…; `data/spells*.json` `classes`). |
 
 Örnek:
 
@@ -1153,11 +1163,49 @@ Kaynakla sayılan kendi zarların: başarısız saldırıya/kurtulmaya ekle, sil
 | `zar` | formül | evet | — | Havuz zarı (seviye tablosu olabilir: `{ "3": "1d8", "10": "1d10" }`). |
 | `kullanim` | seçenek listesi: `saldiri`, `kurtulma`, `kontrol`, `hasar`, `ac` | hayır | `["saldiri","hasar"]` | Nerede kullanılır. |
 | `savasBasiEnAz` | formül | hayır | — | Savaş başında havuz en az bu kadar (yenilenir). |
+| `patlar` | true/false | hayır | `false` | P12: havuz zarı patlar: en yüksek yüz gelirse bir zar daha atılır ve eklenir (zincir en çok 10; her ek zar zar defterinde). |
+| `havuz` | formül | hayır | — | P12: havuz büyüklüğü seviye tablosu (`{ "3": 4, "7": 5, "15": 6 }`); `kaynak` ilkelinin `sayi`sının yerine geçer. |
 
 Örnek:
 
 ```json
 {"tur":"zarHavuzu","zar":{"3":"1d8","10":"1d10"},"kullanim":["saldiri","hasar","ac"],"savasBasiEnAz":1,"kaynak":{"id":"kehanet","maliyet":1}}
+```
+
+## `vertigo`
+
+P12: öfkeye girince vertigo zarı (dN) atılır; tablodaki satırın etkisi öfke sürdükçe geçerli (patlama, ışınlanma, kör edici ışık, AC). Tablo sırası zar yüzüne eşit dağılır (4 satır d8: 1–2, 3–4, 5–6, 7–8) ya da satırda `yuzler`.
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: Komut sonu (`paket/p12.ts`): öfke başlayınca zar (zar defteri), süren etki `pkVertigo` (öfke bitince biter); düğmeler `pk12:vertigo:<özellik>:isinlan|hemen|tekrar` (`use_feature`). Sürüm 45+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `zar` | tamsayı | hayır | `8` | Zar yüzü (d8 → 8). |
+| `tablo` | vertigo satır listesi | evet | — | Satırlar (1–20): `{ "etki": "patlama" \| "isinlan" \| "isik" \| "acBonusu", "ad"?, "yuzler"?: [1,2], "zar"?: "1d12", "hasarTuru"?, "yaricapFt"?: 10, "save"?, "durum"?: "Blinded", "sure"?: 1, "miktar"?: 1, "mesafeFt"?: 30, "tekrar"?: true, "hemen"?: true, "suzgec"?: "dusmanlar" \| "hepsi" }`. patlama: alandakilere hasar (save varsa kurtulma, `yari`); isik: alandakilere kurtulma ya da `durum` (varsayılan Blinded) `sure` tur; acBonusu: öfke boyunca AC +miktar; isinlan: `mesafeFt` ışınlanma düğmesi (bonus eylem, öfke boyunca her tur; `hemen`: ilki bedava). `tekrar`: patlama/ışığı öfke boyunca bonus eylemle yinele. |
+
+Örnek:
+
+```json
+{"tur":"vertigo","zar":8,"tablo":[{"etki":"patlama","zar":"1d12","hasarTuru":"force","yaricapFt":10,"save":{"yetenek":"con","dc":["con"]}},{"etki":"isinlan","mesafeFt":30,"hemen":true},{"etki":"isik","yaricapFt":10,"save":{"yetenek":"con","dc":["con"]},"sure":1},{"etki":"acBonusu","miktar":1}]}
+```
+
+## `vertigoKontrol`
+
+P12: vertigo zarını yönet (aynı alt sınıfın `vertigo` ilkeline uygulanır). hasardaYenile: öfkedeyken hasar alınca tepkiyle zar yeniden atılır (yeni satır eskisinin yerine). ikiAtSec: vertigo zarı iki kez atılır, satırı sen seçersin.
+
+- Tetikler: `pasif` (varsayılan `pasif`).
+- Sistem ve kanca: `paket/p12.ts`: hasar sonrası tepki istemi (`askReaction`, tetik `damaged`), iki zar için seçim istemi (`askChoice`). Sürüm 45+.
+
+| Alan | Tip | Zorunlu | Varsayılan | Açıklama |
+|---|---|---|---|---|
+| `mod` | seçenek: `hasardaYenile`, `ikiAtSec` | evet | — | Kip. |
+| `tepkiyle` | true/false | hayır | `true` | hasardaYenile: tepki harcar. |
+
+Örnek:
+
+```json
+{"tur":"vertigoKontrol","mod":"hasardaYenile"}
 ```
 
 ## `silahFirlat`
