@@ -1312,10 +1312,6 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const widow = karadulAi(state, actor);
   if (widow) return widow;
   // Kuyruk K50: imza alt sınıf eylemleri (basit kural). Y1: bonus/serbest imza özellikleri ve G3 havuzu puanlanır.
-  // K59 (Şair Koleji, denge turu): imza bonus eylemi Bardic Inspiration'ı harcıyor ve aşağıdaki ilham kuralından önce
-  // geliyordu: imza bard dostlara hiç ilham vermiyordu. Dostlarda bu bardın ilhamı yokken önce bir ilham.
-  const firstInspire = actor.imza && !state.yz?.eski ? inspireFirst(state, actor) : null;
-  if (firstInspire) return firstInspire;
   const sig = state.yz?.eski ? imzaAi(state, actor) : bonusEvaluated(state, actor);
   if (sig) return sig;
   // Kuyruk K48 (Moral tam modu, basit kural): eylemi duruyorsa menzildeki çökmüş dostu toparla.
@@ -2328,22 +2324,6 @@ export function scoredCandidates(state: BattleState, actor: Combatant) {
   const cands = candidatesFor(state, actor, h).slice(0, MAX_CANDIDATES);
   if (legacy && !cands.some((c) => JSON.stringify(c.cmd) === JSON.stringify(legacy))) cands.push({ cmd: legacy, desc: LEGACY });
   return { legacy, helpers: h, scored: evaluateCandidates(state, actor, cands, h, roleOf(actor, spellKinds(actor)), legacy, difficultyOf(state, actor.side)) };
-}
-
-/** K59: imza bardı, dostlarda kendi ilhamı yokken (ve yarı canın altında dost yokken) önce bir Bardic Inspiration (en çok saldıran dosta). */
-function inspireFirst(state: BattleState, actor: Combatant): Command | null {
-  if (actor.economy.bonus || !foesOf(state, actor).length) return null;
-  const insp = (actor.features ?? []).find((f) => f.effect.kind === 'inspire');
-  if (!insp || (insp.resource && resourceLeft(actor, insp.resource) <= 0)) return null;
-  const allies = Object.values(state.combatants).filter((c) => c.side === actor.side && c.id !== actor.id && !c.civilian && c.hp > 0 && !c.summon);
-  if (allies.some((c) => c.effects?.some((e) => e.inspire && e.sourceId === actor.id))) return null;
-  // Yaralı dost (yarı canın altı) varken Övgü önce gelir.
-  if (allies.some((c) => c.hp <= c.maxHp * 0.5)) return null;
-  for (const a of allies.filter((c) => !c.effects?.some((e) => e.inspire)).sort((x, y) => y.attacksPerAction - x.attacksPerAction || y.level - x.level)) {
-    const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: insp.key, targetId: a.id };
-    if (tryCmd(state, actor, cmd).ok) return cmd;
-  }
-  return null;
 }
 
 /** K59: `yzYaklas` işaretli imza eylemi için yaklaşma (bkz. `decide`). */
