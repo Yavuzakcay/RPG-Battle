@@ -35,9 +35,11 @@ for (const level of levels) for (const cls of classes) {
 }
 const done = new Set<string>();
 const key = (u: Unit) => `${u.level}|${u.cls}|${u.sub}|${u.scenario}|${runs}`;
-// Çıktının klasöründeki bütün *.jsonl dosyaları (başka işçilerin sonuçları da) yapılmış sayılır.
 const dir = out.includes('/') ? out.slice(0, out.lastIndexOf('/')) : '.';
-for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.jsonl'))) for (const line of fs.readFileSync(`${dir}/${f}`, 'utf8').split('\n').filter(Boolean)) {
+// K60: yalnız `--kap` kipinde klasörün bütün *.jsonl dosyaları (işçilerin ortak sonucu); yoksa yalnız kendi çıktısı
+// (aynı klasördeki başka denemenin sonuçları yapılmış sayılmasın).
+const doneFiles = args.includes('--kap') ? fs.readdirSync(dir).filter((x) => x.endsWith('.jsonl')).map((f) => `${dir}/${f}`) : fs.existsSync(out) ? [out] : [];
+for (const f of doneFiles.map((x) => x.slice(dir.length + 1))) for (const line of fs.readFileSync(`${dir}/${f}`, 'utf8').split('\n').filter(Boolean)) {
   try { const r = JSON.parse(line) as Unit & { runs: number }; done.add(`${r.level}|${r.cls}|${r.sub}|${r.scenario}|${r.runs}`); } catch { /* yarım satır */ }
 }
 const mine = units.filter((_, i) => i % parts === part).filter((u) => !done.has(key(u)));

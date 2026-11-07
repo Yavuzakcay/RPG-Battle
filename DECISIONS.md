@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-07 — Kuyruk K60: alt sınıf denge ince ayarı, yalnız sayılar (kural sürümü 42, değişmedi)
+
+- **Kapsam:** mekanik donması gereği yalnız `data/imza.json`'daki mevcut sayılar; kod, YZ ve canavar verisi değişmedi. Bir seferde tek sayı, alt sınıf başına en çok 3 deneme, yalnız etkilenen seviyeler ölçüldü (× 3 senaryo × 100 tohum). Ölçüm tablosu DENGE.md (K60).
+- **Kalan değişiklikler (eski → yeni):**
+  - İmparator, Yüce Taht (15) `kendiEtki.sure` (imparatorun kendi direnci + geçici canı): 10 → 1 tur. 15: +27 → +9, 20: +17 → +5. Dostlara verdiği etkinin süresi (`etki.sure`) 10'da kaldı (2 tur denendi, etkisiz: +26).
+  - Hızır, Tam Zamanında (3) `pasifler.just-in-time.tamZamaninda.menzilFt`: 30 → 15 ft (K59'da 60 → 30). 3: +10 → +7, 11: +6 → +5 (ikisi de gürültü sınırında; 20'de etkisiz).
+  - Hızır, Yetişen Yol (20) `etki.sure`: 10 → 1 tur (3 tur ara deneme: +10). 20: +17 → +6.
+  - Yaşlı Bilge, Zihin Gücü: Fırlat (11) `kullan.maliyet`: 2 → 3 odak. 11: −21 → −12; 15: −20 → −18, 20: −12 → −11 (gürültü içinde).
+- **Denenip geri alınanlar:** Fırlat hasarı 3d6 → 6d6 (etkisiz); Zihin Gücü İt/Çek/Kaydır bedeli 1 → 2 (< 4 puan); Harita Mevzi İşareti kurtulma +1 → +3 (etkisiz; 3. sv bozulmadı) ve Kuşbakışı "Yerleştir" turda 2 → 4 (etkisiz); İmparator Yüce Taht dost etkisi 10 → 2 tur (etkisiz). Ölümsüz Taht'ın 30 ft yarıçapı kodda sabit (`imzaK54c.ts`), veri alanı okunmuyor: değiştirilip ölçülmeden geri alındı.
+- **Yakınsamayanlar (DENGE.md gerekçeli):** Yaşlı Bilge 11/15/20 (−12/−18/−11) ve Harita 11/15 (−19/−22). İkisinde de kalan fark yapay zekânın eylem seçimine bağlı (Bilge'de Zihin Gücü kiplerinin değeri; Harita'da 10+ imza eylemlerinin hiç seçilmemesi) ve SRD karşılıklarının yapısal üstünlüğüne (Açık El 15+, Evokasyon hasar ekleri). Bu kuyrukta YZ değişmediği için durduruldu; öneri: YZ'de duvar/zemin ve Zihin Gücü kiplerinin "önlenen hasar" değeri (ayrı kuyruk). İmparator 15 (+9) bandın 1 puan dışında, gürültü içinde.
+- **Dokunulmayanlar (kullanıcı kararıyla kabul):** Dunganga, Birlik Manastırı, Şair Koleji, Geride Kalanın Yolu, Karadul Çemberi, İnfazcı — K59 farkları DENGE.md'de; gerekçeleri K59 "kabul edilen sapmalar" tablosunda.
+- **Ölçüm aracı düzeltmesi:** `src/sim/k59Denge.ts` aynı klasördeki bütün `*.jsonl` sonuçlarını yapılmış sayıyordu (K59 iş kapma kipi için); K60'ta ayrı denemeler aynı klasörde olduğundan bazı ölçümler atlanmıştı (fark edildi, ayrı klasörlerde yeniden ölçüldü). Artık yalnız `--kap` kipinde klasör, yoksa yalnız kendi çıktı dosyası.
+
 ## 2026-11-07 — Kuyruk K59: tam açık duman testi, YZ düzeltmeleri ve denge turu (kural sürümü 42, değişmedi)
 
 - **Kural sürümü:** artmadı (yeni mekanik yok). Değişenler yapay zekâ kararı (olay değil; replay aynı), veri (`data/yz-roller.json`, `data/sim-senaryolar.json`, `data/imza.json`) ve duman testinde bulunan üç motor hatası (aşağıda).
