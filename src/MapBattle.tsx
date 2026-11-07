@@ -5,7 +5,8 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
-import { possessedEffect } from './battle/possessionCore';
+import { activePossession, possessedEffect } from './battle/possessionCore';
+import { setupWardOf } from './battle/possession';
 import { imzaHex as imzaHex0, imzaTargeted as imzaTargeted0 } from './battle/imza';
 import type { UsableFeature } from './battle/types';
 
@@ -1328,7 +1329,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...(floorLinkOf(state) && actor.side === 'party' && !actor.summon ? [{ key: 'floor', label: N.floor, reason: changeFloorProblem(state, actor) ?? why({ type: 'change_floor', actorId }) ?? undefined,
       act: () => run({ type: 'change_floor', actorId }) }] : []),
     // Kuyruk K64a: ele geçiren bedeni bırakır (bonus eylem; aktör beden ya da bedendeki ele geçiren).
-    ...(possessedEffect(actor) || actor.possessing ? [{ key: 'unpossess', label: B.k64.leave, reason: why({ type: 'possession_leave', actorId }) ?? undefined,
+    ...(activePossession(actor) || actor.possessing ? [{ key: 'unpossess', label: B.k64.leave, reason: why({ type: 'possession_leave', actorId }) ?? undefined,
       act: () => run({ type: 'possession_leave', actorId }) }] : []),
     // Görev F: Steady Aim (Rogue) ve Horde Breaker (Hunter).
     ...(hasTrait(actor, 'steady-aim') ? [{ key: 'steady', label: N.steady, reason: why({ type: 'steady_aim', actorId }) ?? undefined,
@@ -1441,7 +1442,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk K64a: ele geçirilmiş beden yalnızca ele geçirenin temel eylemlerini, bedendeki ele geçiren yalnızca bırakmayı görür.
   const POSS_KEYS = ['move', 'jump', 'attack', 'area', 'hide', 'shove', 'dodge', 'help', 'search', 'stand', 'escape_grapple', 'escape', 'object', 'throwObject', 'pull', 'unpossess', 'end'];
   const items: Item[] = moveMenu ? moveItems : actor?.possessing ? mainItems.filter((i) => i.key === 'unpossess' || i.key === 'end')
-    : actor && possessedEffect(actor) ? mainItems.filter((i) => POSS_KEYS.includes(i.key)) : mainItems;
+    : actor && activePossession(actor) ? mainItems.filter((i) => POSS_KEYS.includes(i.key)) : mainItems;
   const actorPx = actor?.pos ? px(actor.pos) : null;
   const radial = actorPx ? radialLayout(actorPx, items.length, box, tokenR + BUTTON / 2 + 10, BUTTON) : [];
 
@@ -1753,7 +1754,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                         ...(ruleVersion(state) >= 47 && truesightRange(state, c) > 0 ? [{ key: 'ts', icon: `👁${truesightRange(state, c)}`, title: B.k63.truesight(truesightRange(state, c)) }] : []),
                         ...(actor && c.shape && seesTrueForm(state, actor, c) ? [{ key: 'tf', icon: '🎭', title: B.k63.trueForm(c.name) }] : []),
                         // Kuyruk K64a: ele geçirilmiş beden rozeti.
-                        ...(possessedEffect(c) ? [{ key: 'poss', icon: '👻', title: B.k64.possessed(state.combatants[possessedEffect(c)?.sourceId ?? '']?.name ?? '?') }] : [])] as StatusIcon[];
+                        ...(possessedEffect(c) ? [{ key: 'poss', icon: '👻', title: (possessedEffect(c)?.dormant ? B.k64.dormant : B.k64.possessed)(state.combatants[possessedEffect(c)?.sourceId ?? '']?.name ?? '?') }] : [])] as StatusIcon[];
                       if (all.length === 0) return null;
                       const { shown, more } = limitBadges(all);
                       return (
@@ -2590,6 +2591,28 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     </div>
                   );
                 })}
+              </div>
+            );
+          })()}
+
+          {setup && selected && (() => {
+            // Kuyruk K64b (sürüm 48): koruma alanı (Magic Circle 1 dakika, Hallow 24 saat): yalnızca kurulumda, büyücünün altıgeninde.
+            const c = state.combatants[selected];
+            const wards = c && !c.summon && c.pos ? c.spellNames.filter((n) => setupWardOf(state, n) && !(state.map?.zones ?? []).some((z) => z.ward && z.casterId === c.id && z.name === n)) : [];
+            if (!c || wards.length === 0) return null;
+            const W = t().battle.k64;
+            return (
+              <div className="civ-picker familiar-picker" role="group" aria-label={W.wardTitle(c.name)}>
+                {wards.map((n) => (
+                  <div key={n} className="setup-summon">
+                    <strong>{W.wardTitle(c.name)}: {n}</strong>
+                    <small>{W.wardNote(setupWardOf(state, n)?.kind === 'hallow')}</small>
+                    <button className="cta" onClick={() => dice.play((rng) => dispatch(session, { type: 'cast_spell', actorId: c.id, spellName: n }, rng))}>{W.wardCast(n)}</button>
+                    {setupWardOf(state, n)?.kind === 'circle' && (
+                      <button className="hud-btn" onClick={() => dice.play((rng) => dispatch(session, { type: 'cast_spell', actorId: c.id, spellName: n, choice: 'ters' }, rng))}>{W.wardReverse}</button>
+                    )}
+                  </div>
+                ))}
               </div>
             );
           })()}

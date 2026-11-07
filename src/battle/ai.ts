@@ -21,7 +21,8 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
-import { controlConditions, possessSpecOf, possessionProblem } from './possession';
+import { aiLeaveWanted, controlConditions, possessSpecOf, possessionProblem } from './possession';
+import { possessorAt, possessorDisabled } from './possessionCore';
 import { hiddenFromTruesight } from './sight';
 import { heldFollow, mechanicsAt } from './spellVersion';
 import { breathOf } from './breath';
@@ -1240,7 +1241,9 @@ export function chooseCommand(state: BattleState): Command {
   if (actor.unaware) return patrolCommand(state, actor) ?? end;
   // Incapacitated (Stunned, Paralyzed…): eylem yok; yapay zekâ yürümeyi de denemez, turunu bitirir (Görev H).
   // Kuyruk K64a: ele geçirilmiş bedeni ele geçiren yönetir (ev sahibinin Incapacitated'ı sayılmaz); bedendeki ele geçiren bekler.
-  if (isIncapacitated(controlConditions(actor)) || actor.possessing) return end;
+  if (isIncapacitated(controlConditions(actor)) || actor.possessing || possessorDisabled(state, actor, isIncapacitated)) return end;
+  // Kuyruk K64b: ele geçiren bedeni bırakır (can azaldı ya da beden düşmanların arasında tek başına; `aiLeaveWanted`).
+  if (aiLeaveWanted(state, actor)) { const leave: Command = { type: 'possession_leave', actorId }; if (tryCmd(state, actor, leave).ok) return leave; }
   const conf = state.map?.dragon;
   const dragon = sleepingDragon(state);
   if (dragon && conf && actor.side === 'enemies' && !actor.civilian) {
@@ -2094,7 +2097,9 @@ function clericChoice(state: BattleState, actor: Combatant, canAct: boolean): Co
     }
     const turn = feats.find((f) => f.effect.kind === 'turnUndead');
     if (turn) {
-      const undead = foesOf(state, actor).filter((c) => (c.creatureType ?? '').toLowerCase() === 'undead' && near(c, 30) && !c.conditions.includes('Incapacitated'));
+      // Kuyruk K64b: bedendeki Undead ele geçiren de (bedenin altıgeninden; Turn Undead onu hedef alabilir).
+      const inBody = Object.values(state.combatants).flatMap((c) => { const at = c.side !== actor.side ? possessorAt(state, c) : null; return at ? [{ ...c, pos: at }] : []; });
+      const undead = [...foesOf(state, actor), ...inBody].filter((c) => (c.creatureType ?? '').toLowerCase() === 'undead' && near(c, 30) && !c.conditions.includes('Incapacitated'));
       const cmd: Command = { type: 'use_feature', actorId, feature: turn.key };
       if (undead.length > 0 && undead.reduce((n, c) => n + c.hp, 0) >= 15 && tryCmd(state, actor, cmd).ok) return cmd;
     }

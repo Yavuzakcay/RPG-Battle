@@ -7,6 +7,7 @@
  *   Charmed ve Frightened almaz (reducer).
  * - Mirror Image (`mirrorImageHit`): isabette her kopya için d6, biri 3+ ise kopya vurulur ve yok olur.
  */
+import { wardProtects } from './possessionCore';
 import { spells } from '../data';
 import { AXIAL_DIRECTIONS, costsFrom, distance, offsetToAxial, type Offset } from '../rules/hex';
 import { rollDie, rollTag, type Rng } from '../rules/dice';
@@ -59,6 +60,9 @@ export function pfegRepeatAdv(state: BattleState, targetId: string, sourceId: st
 export function wardedFrom(state: BattleState, targetId: string, sourceId: string | undefined, condition: string): boolean {
   if (condition !== 'Charmed' && condition !== 'Frightened') return false;
   if (conditionAura(state, targetId, condition)) return true;
+  // Kuyruk K64b: Magic Circle / Hallow koruma alanı (seçilen türlerden yeni Charmed/Frightened tutmaz).
+  const tgt = state.combatants[targetId];
+  if (tgt && sourceId && wardProtects(state, tgt, state.combatants[sourceId])) return true;
   const type = sourceId ? state.combatants[sourceId]?.creatureType : undefined;
   if (!type || !pfegTypes().includes(type)) return false;
   return Object.values(state.combatants).some((c) => c.concentration?.spell === 'Protection from Evil and Good' && c.concentration.targetId === targetId);

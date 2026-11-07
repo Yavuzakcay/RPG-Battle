@@ -36,7 +36,8 @@ describe('rider verisi', () => {
     // Görev A3: Cockatrice Petrifying Bite iki aşamalı süreli etki oldu (yok 61 → 60, süreli etki 16 → 17).
     // Kuyruk 19: HP maksimumu ve yetenek puanı azaltmaları (drainMax, abilityDrain; monsterDrain) uygulandı: uygulandı 217 → 223, kısmen 31 → 29, yok 60 → 56.
     const count = (st: string) => withRider.filter((k) => all[k]?.status === st).length;
-    expect([count('uygulandı'), count('kısmen'), count('süreli etki'), count('yok')]).toEqual([223, 29, 17, 56]);
+    // Kuyruk K64b: Ghost Possession data/ele-gecirme.json ile (riders-uret.cjs okur): uygulandı 223 → 224, yok 56 → 55.
+    expect([count('uygulandı'), count('kısmen'), count('süreli etki'), count('yok')]).toEqual([224, 29, 17, 55]);
   });
 });
 

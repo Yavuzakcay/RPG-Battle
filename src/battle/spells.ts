@@ -1,6 +1,7 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
 import { homeSide } from './allegiance';
 import { possessedEffect, possessionEndEvents, possessionOn } from './possession';
+import { possessorAt } from './possessionCore';
 import { truesightSees } from './sight';
 import { gazePos } from './chainPact';
 import { lifeBondEvents } from './steed';
@@ -1865,7 +1866,13 @@ export function dispelEvilSpellOf(state: BattleState, actor: Combatant): Spell |
 }
 export function executeDispelEvil(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
   const sp = dispelEvilSpellOf(state, actor);
-  const t = state.combatants[targetId];
+  const picked = state.combatants[targetId];
+  // Kuyruk K64b (sürüm 48, "specifically target Undead"): Dismissal bedendeki ele geçirene ulaşır (konumu bedenin
+  // altıgeni); ele geçiren seçilir ya da asıl tarafı büyücünün tarafı olmayan bir beden seçilirse ondaki ele geçirene.
+  const viaBody = picked && sp && possessionOn(state) ? (picked.possessing ? picked
+    : ((e) => (e && homeSide(picked) !== homeSide(actor) ? state.combatants[e.sourceId] : undefined))(possessedEffect(picked))) : undefined;
+  const bodyAt = viaBody ? possessorAt(state, viaBody) : null;
+  const t = viaBody && bodyAt ? { ...viaBody, pos: bodyAt } : picked;
   if (!sp || !t || !t.pos || !actor.pos || t.hp <= 0) return fail('Hedef yok.');
   if (distance(t.pos, actor.pos) > 1) return fail(`${sp.name}: hedef 5 ft içinde olmalı.`);
   const types = sp.mechanics.ward?.disadvantageFromTypes ?? [];
@@ -1890,7 +1897,9 @@ export function executeDispelEvil(state: BattleState, actor: Combatant, targetId
   const r = resolveSave({ extra: saveDice(t, 'cha'), modifier: t.saves.cha, dc: actor.spellSaveDc ?? 10, mode: saveMode('normal', t, 'cha') }, rollTag(rng, { by: t.id }));
   return finish(state, [{ type: 'spell_cast', actorId: actor.id, targetId: t.id, label: `${sp.name}: Dismissal`, slotLevel: null, note: t.name },
     { type: 'map_note', text: `${t.name}: CHA save ${r.total}/${actor.spellSaveDc ?? 10} — ${r.success ? 'direndi' : 'kendi düzlemine gönderildi'}` },
-    ...(r.success ? [] : [{ type: 'exiled', targetId: t.id, label: sp.name } as BattleEvent]), end]);
+    ...(r.success ? [] : [{ type: 'exiled', targetId: t.id, label: sp.name } as BattleEvent]),
+    // Kuyruk K64b: sürgün edilen ele geçirenin bedeni serbest kalır (ele geçiren belirmez).
+    ...(!r.success && viaBody && bodyAt ? possessionEndEvents(applyEvents(state, [{ type: 'exiled', targetId: t.id, label: sp.name }]), state.combatants[viaBody.possessing ?? ''] as Combatant, 'dispel', sp.name) : []), end]);
 }
 
 /** Kuyruk 19: Tree Stride sürerken her tur bir kez ağaçtan ağaca (5 ft hareket). */

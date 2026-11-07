@@ -5,6 +5,9 @@ const path = require('path');
 const root = path.join(__dirname, '..');
 const monsters = JSON.parse(fs.readFileSync(path.join(root, 'data/monsters.json'), 'utf8'));
 const manual = JSON.parse(fs.readFileSync(path.join(root, 'data/condition-effects.json'), 'utf8')).attacks;
+// Kuyruk K64a/K64b: ele geçirme saldırıları motorda `data/ele-gecirme.json` + src/battle/possession.ts ile (kural sürümü 48).
+const possess = JSON.parse(fs.readFileSync(path.join(root, 'data/ele-gecirme.json'), 'utf8'));
+const POSSESS = new Set(Object.entries(possess).filter(([k, v]) => !k.startsWith('_') && v && v.attack).map(([k, v]) => `${k}:${v.attack}`));
 
 const TYPES = ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'lightning', 'necrotic', 'piercing', 'poison', 'psychic', 'radiant', 'slashing', 'thunder'];
 const CONDS = ['Blinded', 'Charmed', 'Deafened', 'Frightened', 'Incapacitated', 'Paralyzed', 'Poisoned', 'Restrained', 'Stunned', 'Unconscious'];
@@ -120,20 +123,22 @@ for (const x of monsters) for (const a of x.attacks) {
     e.abilityDrain = { ability: ad[1].toLowerCase().slice(0, 3), dice: ad[2], ...(/dies if this reduces that score to 0/i.test(r) ? { deathAtZero: true } : {}) };
     handled.push('drain');
   }
+  // Kuyruk K64a: ele geçirme (Incapacitated, kontrol) data/ele-gecirme.json'dan.
+  if (POSSESS.has(key)) { e.possession = 'data/ele-gecirme.json'; handled.push('possession'); }
   // Uygulanmayan kısımlar.
   const s = r.toLowerCase();
   const missing = [];
   if (/pull|pushed|push /.test(s)) missing.push('itme/çekme uygulanmıyor');
   if (/swallow|engulf/.test(s)) missing.push('yutma/içine alma uygulanmıyor');
   if (/curse|lycanthrop|hit point maximum|infernal wound/.test(s.replace(/hit point maximum decreases by an amount equal to the (?:[a-z]+ )?damage taken/, '')) && !manual[key]?.dot && !/otyugh/.test(key)) missing.push('lanet/kalıcı etki uygulanmıyor');
-  if (/attaches|attached|possess/.test(s)) missing.push('yapışma/ele geçirme uygulanmıyor');
+  if (/attaches|attached|possess/.test(s) && !handled.includes('possession')) missing.push('yapışma/ele geçirme uygulanmıyor');
   if (/second failure|first failure/.test(s) && !manual[key]?.escalate) missing.push('ikinci aşama (second failure) uygulanmıyor');
   if (/speed (decreases|is halved)|can’t take reactions|bonus action on/.test(s)) missing.push('hız/eylem kısıtı uygulanmıyor');
   if (/hit points or fewer|dies\b/.test(s.replace(/the target dies if this reduces that score to 0/, ''))) missing.push('HP eşiğiyle öldürme uygulanmıyor');
   if (/start of each of its turns|at the start of each/.test(s) && !manual[key]?.dot) missing.push('sürekli hasar (her tur) uygulanmıyor');
   if (/reduced to 0 hit points|becomes stable/.test(s)) missing.push('0 HP\'de tetiklenen etki uygulanmıyor');
   const anyCond = CONDS.some((c) => new RegExp(`\\b${c}\\b`).test(r));
-  if (anyCond && !handled.includes('condition') && !(e.grapple?.restrained && !CONDS.filter((c) => c !== 'Restrained').some((c) => new RegExp(`\\b${c}\\b`).test(r)))) missing.push('durum etkisi uygulanmıyor (süresi ayrıştırılamadı)');
+  if (anyCond && !handled.includes('condition') && !handled.includes('possession') && !(e.grapple?.restrained && !CONDS.filter((c) => c !== 'Restrained').some((c) => new RegExp(`\\b${c}\\b`).test(r)))) missing.push('durum etkisi uygulanmıyor (süresi ayrıştırılamadı)');
   const hasDice = /\d+d\d+/.test(r) && !/escape dc/i.test(r);
   if (hasDice && !handled.includes('damage') && !handled.includes('charge') && !handled.includes('drain') && !manual[key]?.dot && !missing.length) missing.push('özel hasar metni uygulanmıyor');
   if (handled.length === 0 && missing.length === 0) missing.push('özel metin etkisi uygulanmıyor');

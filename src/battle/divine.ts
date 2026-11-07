@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { circleAttackDis } from './possessionCore';
 import { healRoll } from './healMax';
 import { distance as hexDistance } from '../rules/hex';
 import { globalRule } from './ruleControl';
@@ -304,6 +305,8 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   for (const e of attacker.effects ?? []) if (e.attackDis && (e.attackDis.str ? (opts.str ?? opts.melee) : (!e.attackDis.melee || opts.melee))) out.push({ effect: 'disadvantage', reason: e.name });
   // Kuyruk A7 (sürüm 36): güneş ışığına duyarlı yaratık güneş ışığı alanında (Daylight) saldırıda dezavantajlı.
   if (attacker.traits?.includes('sunlight-sensitive') && ruleVersion(state) >= 36 && zonesAt(state, attacker.pos).some((z) => (z.spec ?? zoneSpecOf(z))?.sunlight)) out.push({ effect: 'disadvantage', reason: 'Sunlight Sensitivity' });
+  // Kuyruk K64b: Magic Circle: seçilen türün silindirdeki hedefe (ters yönde dışarıdakine) saldırısı dezavantajlı.
+  { const z = circleAttackDis(state, attacker, target); if (z) out.push({ effect: 'disadvantage', reason: z.name }); }
   // Görev CLERIC: Bestow Curse: lanetleyene saldırılar dezavantajlı.
   for (const e of attacker.effects ?? []) if (e.attackDisVs === target.id) out.push({ effect: 'disadvantage', reason: e.name });
   // Görev P7: meydan okuma: meydan okuyan dışındakine saldırı dezavantajlı.

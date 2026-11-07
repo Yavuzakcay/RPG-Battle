@@ -9,7 +9,7 @@
  * Sıra (inisiyatif) değişmez: yaratık kendi turunda yeni tarafıyla davranır (SRD 5.2.1).
  */
 import { globalRule } from './ruleControl';
-import { possessedEffect } from './possessionCore';
+import { activePossession } from './possessionCore';
 import type { BattleState, Combatant, Side } from './types';
 
 /** Yaratığın asıl tarafı (yönetiliyorsa yönetilmeden önceki). */
@@ -21,7 +21,7 @@ export function syncAllegiance(state: BattleState): BattleState {
   // Kuyruk K64a (sürüm 48): ele geçirme Dominate'ten baskın ve kendi anahtarıyla (`possession`) çalışır.
   const possOn = !!globalRule(state, 'possession');
   for (const c of Object.values(state.combatants)) {
-    const poss = possOn && c.hp > 0 && c.life !== 'dead' ? possessedEffect(c) : undefined;
+    const poss = possOn && c.hp > 0 && c.life !== 'dead' ? activePossession(c) : undefined;
     const dom = poss ?? (c.hp > 0 && c.life !== 'dead' ? c.effects?.find((e) => e.dominate) : undefined);
     const src = dom ? state.combatants[dom.sourceId] : undefined;
     const want = (poss || on) && dom && src && src.hp > 0 && homeSide(src) !== homeSide(c) ? src : undefined;

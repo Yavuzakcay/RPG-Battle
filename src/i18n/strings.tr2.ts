@@ -315,7 +315,12 @@ export const TR_EXTRA = {
       moveRisk: (n: number, dmg: number): string => `${n} fırsat saldırısı · toplam ≈${dmg} hasar`, moveGo: 'Yine de yürü',
       mystery: '? Burada bir şey olabilir', reactions: 'Tepkime', conditions: 'Durum', none: 'Etkisiz görünüyor', error: (e: string): string => `Yapılamaz: ${e}`,
     },
-    k64: { possessed: (by: string): string => `Ele geçirilmiş: beden ${by} yönetiminde`, leave: 'Bedeni bırak', gmEnd: 'Ele geçirmeyi bitir' },
+    k64: { possessed: (by: string): string => `Ele geçirilmiş: beden ${by} yönetiminde`, leave: 'Bedeni bırak', gmEnd: 'Ele geçirmeyi bitir',
+      dormant: (by: string): string => `Ele geçirme bastırılmış (Hallow): ${by} bedeni yönetemiyor`,
+      wardTitle: (who: string): string => `${who}: koruma alanı`,
+      wardNote: (hallow: boolean): string => (hallow ? 'Hallow (24 saat): 30 ft; seçilen türler alandakini ele geçiremez, Charmed/Frightened edemez; var olan bastırılır. Ek etki Game Master\'da.'
+        : 'Magic Circle (1 dakika): 10 ft silindir; seçilen türler içerdekini ele geçiremez, Charmed/Frightened edemez, ona saldırıları dezavantajlı.'),
+      wardCast: (spell: string): string => `${spell} kur`, wardReverse: 'Ters yön (dışarıdakileri korur)' },
     k63: { truesight: (ft: number): string => `Gerçek görüş ${ft} ft (görünmezi, yanılsamayı, gerçek biçimi görür)`, trueForm: (name: string): string => `Gerçek biçim: ${name}` },
     s2: { altitude: (ft: number): string => `İrtifa ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `${item} bırak`, pick: (item: string): string => `${item} al` },
     start: 'Savaşı başlat',

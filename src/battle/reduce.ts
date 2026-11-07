@@ -1341,7 +1341,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const g = next.combatants[event.possessorId];
       if (g?.possessing) {
         const { offFloor: _o, floorPos, possessing: _p, ...rest } = g;
-        next = { ...next, combatants: { ...next.combatants, [g.id]: { ...rest, pos: event.to ?? floorPos ?? null } as Combatant } };
+        // Kuyruk K64b: sürgün edilen (Dismissal) ele geçiren haritaya dönmez.
+        next = { ...next, combatants: { ...next.combatants, [g.id]: { ...rest, pos: g.exiled ? null : event.to ?? floorPos ?? null } as Combatant } };
       }
       return next;
     }

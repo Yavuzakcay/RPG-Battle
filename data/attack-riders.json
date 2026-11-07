@@ -1066,9 +1066,8 @@
    "status": "uygulandı"
   },
   "ghost:Possession": {
-   "unsupported": "yapışma/ele geçirme uygulanmıyor; durum etkisi uygulanmıyor (süresi ayrıştırılamadı)",
-   "text": "The target is possessed by the ghost; the ghost disappears, and the target has the Incapacitated condition and loses control of its body. The ghost now controls the body, but the target retains awaren",
-   "status": "yok"
+   "possession": "data/ele-gecirme.json",
+   "status": "uygulandı"
   },
   "incubus:Restless Touch": {
    "unsupported": "lanet/kalıcı etki uygulanmıyor; HP eşiğiyle öldürme uygulanmıyor",

@@ -6,7 +6,7 @@ import { distance as hexDistance } from '../rules/hex';
 import { isIncapacitated, speedZero } from '../rules/conditions';
 import { applyEvents } from './reduce';
 import { globalRule } from './ruleControl';
-import { controlConditions, isPossessedBody, POSSESS_FLOOR } from './possessionCore';
+import { controlConditions, isPossessedBody, POSSESS_FLOOR, possessorDisabled } from './possessionCore';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 
 export interface Failure {
@@ -123,6 +123,8 @@ export function checkActor(
   if (actor.hp <= 0 && needsAction) return fail('Bu savaşçı ayakta değil.');
   if (needsAction && moveOnly && speedZero(actor.conditions)) return fail(`Hareket edemiyor: hızı 0 (${actor.conditions.join(', ')}).`);
   // Kuyruk K64a: ele geçirilmiş bedeni ele geçiren yönetir (ev sahibinin Incapacitated'ı eylemi engellemez).
+  // Kuyruk K64b: bedeni yöneten ele geçiren Incapacitated ise (Turn Undead) beden ne eylem ne hareket yapar.
+  if (needsAction && possessorDisabled(state, actor, isIncapacitated)) return fail(`Aksiyon yapamaz: ${actor.name} bedenini yöneten etkisiz.`);
   if (needsAction && isIncapacitated(controlConditions(actor)) && !moveOnly) {
     return fail(`Aksiyon yapamaz: ${actor.conditions.join(', ')}`);
   }

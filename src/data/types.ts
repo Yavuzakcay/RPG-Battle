@@ -287,6 +287,8 @@ export interface SpellMechanics {
   k64?: Partial<SpellMechanics>;
   /** Kuyruk K64a: ele geçirme kolunun açıklaması (bilgi; motor `src/battle/possession.ts`). */
   possession?: string;
+  /** Kuyruk K64b: kurulumda kurulan koruma alanı (Magic Circle, Hallow; `src/battle/possession.ts` `executeSetupWard`). */
+  setupWard?: { kind: 'circle' | 'hallow'; radiusFt: number; maxRadiusFt?: number; rangeFt: number; rounds?: number; types: string[]; reverse?: boolean; note?: string };
   /** Kuyruk K63 (sürüm 47): görsel yanılsama büyüsü; Truesight'lı hedef onun save'ini otomatik geçer (Phantasmal Force/Killer, Weird). */
   illusion?: boolean;
   /** Kuyruk K61 (sürüm 44): SRD uyumu 1 (Blade Barrier Force, Conjure Fey +1d12, Irresistible Dance, Flesh to Stone, Earthquake). */

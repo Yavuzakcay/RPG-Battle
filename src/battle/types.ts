@@ -314,6 +314,8 @@ export interface ActiveEffect {
   dominate?: boolean;
   /** Kuyruk K64a (sürüm 48): ele geçirilmiş beden (Ghost Possession); kaynak = ele geçiren; Dominate'ten baskın (`possession.ts`). */
   possessed?: boolean;
+  /** Kuyruk K64b: Hallow alanında bastırılmış ele geçirme (taraf, Incapacitated ve beden değerleri yok; alandan çıkınca döner). */
+  dormant?: boolean;
   /** Kuyruk K61 (sürüm 44): Dominate'e özgü tepki bağı (`reduce.ts`); Charm Person'da yok. */
   reactionLink?: boolean;
   /** Kuyruk 18 H2: Polymorph etkisi (biçimi konsantrasyona bağlar; `polymorph.ts`). */
@@ -1193,6 +1195,8 @@ export interface SpellZone {
   panelDamage?: Record<string, number>;
   /** Kuyruk K62 (sürüm 46): Forcecage türü (kafes ya da katı kutu); alandakiler tutsak (`forcecage.ts`). */
   cage?: 'bars' | 'box';
+  /** Kuyruk K64b (sürüm 48): Magic Circle / Hallow koruma alanı: seçilen türler (`types`), ters yön (`reverse`, yalnız Magic Circle). */
+  ward?: { kind: 'circle' | 'hallow'; types: string[]; reverse?: boolean };
   /** Kuyruk K62 (sürüm 46): Delayed Blast Fireball boncuğu (`bead.ts`): patlama turu ve fırlatma menzili; biriken zar `dealt`. */
   bead?: { until: number; throwFt: number };
   endHexes?: Offset[];

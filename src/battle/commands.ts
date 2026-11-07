@@ -76,7 +76,7 @@ import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
 import { superiorInspirationEvents } from './bard';
 import { evergreenEvents, executeWildResurgence, executeWildShape, shapeCleanup } from './druid';
-import { executePossessionLeave, possessionCleanup, possessionCommandProblem } from './possession';
+import { executePossessionLeave, executeSetupWard, hallowSyncEvents, possessionCleanup, possessionCommandProblem, setupWardOf } from './possession';
 import { poolCreateEvents, poolSyncEvents } from './hpPool';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
@@ -264,6 +264,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk K64a (sürüm 48): biten ele geçirmeler (beden 0 HP, ele geçiren yok); biçim de burada döner.
   const unpossessed = possessionCleanup(next);
   if (unpossessed.length) { next = applyEvents(next, unpossessed); events = [...events, ...unpossessed]; }
+  // Kuyruk K64b: Hallow alanında ele geçirme ve bu türlerden gelen Charmed/Frightened bastırılır (alandan çıkınca sürer).
+  const hallowed = hallowSyncEvents(next);
+  if (hallowed.length) { next = applyEvents(next, hallowed); events = [...events, ...hallowed]; }
   // Görev DRUID: Wild Shape 0 HP'de ya da Incapacitated olunca biter.
   const unshaped = shapeCleanup(next);
   if (unshaped.length) { next = applyEvents(next, unshaped); events = [...events, ...unshaped]; }
@@ -382,6 +385,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return skip.ok ? { ok: true, state: skip.state, events: [...started.events, ...skip.events] } : started;
   }
   // Ritüel çağırma (Find Familiar; Görev R3): savaştan önce, kurulumda.
+  // Kuyruk K64b (sürüm 48): koruma alanı (Magic Circle, Hallow) da kurulumda.
+  if (cmd.type === 'cast_spell' && state.status === 'setup' && setupWardOf(state, cmd.spellName)) return executeSetupWard(state, cmd, ctx);
   if (cmd.type === 'cast_spell' && state.status === 'setup') return executeSetupSummon(state, cmd, ctx, rng);
   if (state.status === 'setup') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
 

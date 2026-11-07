@@ -25,7 +25,7 @@
 | Tamamlanan (sürüm 41, `s2`; Game Master notlu) | 0 |
 | Tamamlanan (sürüm 41, `s2`; sığmayan parça notlu) | 0 |
 | Kapsam dışı olarak çalışır sayılan (tamamlama bloğu olmadan) | 0 |
-| A4 tamamlananlardan kapsam dışı notlu (yukarıdaki A4 sayısının içinde) | 3 (hex, fear, beacon-of-hope) |
+| A4 tamamlananlardan kapsam dışı notlu (yukarıdaki A4 sayısının içinde) | 1 (hex) |
 
 ## Kalan kısmiler: altyapıya göre
 
@@ -53,7 +53,7 @@
 | hideous-laughter | 1 | spells.json | tamam (A7, Game Master notlu) |  |  |  |
 | jump | 1 | spells.json | tamam (A8) |  | Zıplamanın havadaki yayı ve yükseklik katmansız haritada dikey zıplama (katmansız haritada yükseklik yok). |  |
 | mage-armor | 1 | spells.json | tamam (A6) |  | Zırh giyince bitme: savaşta zırh giyilmez. |  |
-| protection-from-evil-and-good | 1 | spells.json | tamam (A6) |  | Ele geçirme (possession) oyunda hiçbir canavarda yok. |  |
+| protection-from-evil-and-good | 1 | spells.json | tamam (K64a) |  |  |  |
 | sanctuary | 1 | spells.json | tamam (S1) |  |  |  |
 | sleep | 1 | spells.json | tamam (A6) |  |  |  |
 | alter-self | 2 | spells.json | tamam (S1) |  | Change Appearance savaş dışı (Game Master). |  |
@@ -85,14 +85,14 @@
 | warding-bond | 2 | spells.json | tamam (A6) |  |  |  |
 | web | 2 | spells.json | tamam (S2) |  | Tutunma yeri: savaş haritasında ağ zemine serili sayılır (SRD: yere serilen ağ çökmez); yanma K55 çözücüsünde (yanan ağ). |  |
 | animate-dead | 3 | spells.json | tamam (A6) |  | Döküm süresi 1 dakika: yalnızca kurulumda; 24 saatlik kontrol yenileme savaş dışı. |  |
-| beacon-of-hope | 3 | spells.json | tamam (A4) |  | En yüksek iyileştirme: savaşta iyileştirme yalnızca büyü, iksir ve özellik zarıyla; hepsi büyü yolundan geçmez (iksir zarı) |  |
+| beacon-of-hope | 3 | spells.json | tamam (A4) |  |  |  |
 | bestow-curse | 3 | spells.json | tamam (A6) |  |  |  |
 | blink | 3 | spells.json | tamam (S1) |  |  |  |
 | call-lightning | 3 | spells.json | tamam (A6) |  | Bulut büyücünün üstünde sayılır; nokta büyü menzilinde seçilir (silindir yüksekliği savaş modelinde yok). |  |
 | conjure-animals | 3 | spells.json | tamam (A6) |  | Large sürü, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı). |  |
 | daylight | 3 | spells.json | tamam (A7) |  | Taşınmayan nesneye yapılan ışık nesnenin altıgeninde durur; ek 60 ft loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık). |  |
 | dispel-magic | 3 | spells.json | tamam (A7) |  | Sihirli eşyanın kendi büyüsü dağılmaz (SRD); nesnedeki süren büyü (Light, Continual Flame) altıgen hedefte kalkar. |  |
-| fear | 3 | spells.json | tamam (A4) |  | Elindekini düşürme: silah bırakma modeli yok (tur zaten kaçışla geçer) |  |
+| fear | 3 | spells.json | tamam (A4) |  |  |  |
 | fly | 3 | spells.json | tamam (S2) |  |  |  |
 | gaseous-form | 3 | spells.json | tamam (S2) |  |  |  |
 | haste | 3 | spells.json | tamam (A6) |  |  |  |

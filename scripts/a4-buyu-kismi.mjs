@@ -29,7 +29,9 @@ for (const s of all) {
   const m = s.mechanics ?? {};
   if (m.offCombat || s.offCombat) continue;
   combat += 1;
-  const merged = { ...m, ...(m.a4 ?? {}), ...(m.a6 ?? {}), ...(m.a7 ?? {}), ...(m.a8 ?? {}), ...(m.s1 ?? {}), ...(m.s2 ?? {}) };
+  const merged = { ...m, ...(m.a4 ?? {}), ...(m.a6 ?? {}), ...(m.a7 ?? {}), ...(m.a8 ?? {}), ...(m.s1 ?? {}), ...(m.s2 ?? {}), ...(m.g6 ?? {}), ...(m.k61 ?? {}), ...(m.k62 ?? {}), ...(m.k63 ?? {}), ...(m.k64 ?? {}) };
+  // Kuyruk K64b: sonraki sürümlü bloklar da (K64a'nın `k64` bloğu PfEG kapsam dışı notunu kaldırır).
+  const k64 = !!m.k64;
   const later = !!(m.a6 || m.a7 || m.a8 || m.s1 || m.s2);
   const wasPartial = !!(m.approx || m.gmNote || m.kapsamDisi || later);
   // Sürüm 35'te savaş dışına alınan (Plane Shift) ya da sığmayan parçası notlu büyü kısmi sayılmaz.
@@ -40,7 +42,7 @@ for (const s of all) {
   // `a4` bloğundan gelen kapsam dışı notlu 3 büyü (hex, fear, beacon-of-hope) burada da sayılıyordu (A4 tamamlananlarla çift sayım).
   if (merged.kapsamDisi && !isPartial && !later && !m.a4) kapsam += 1;
   if (merged.kapsamDisi && !isPartial && !later && m.a4) a4Kapsam.push(s.id);
-  if (wasPartial) rows.push({ id: s.id, level: s.level, file: s.file, eksik: merged.approx || (merged.kapsamDisi || merged.sigmayan || merged.gmNoted ? '' : merged.gmNote) || '', kapsam: merged.kapsamDisi ?? '', sigmayan: merged.sigmayan ?? '', gm: merged.gmNoted ? merged.gmNote ?? '' : '', a4: !!m.a4, a6: !!m.a6, a7: !!m.a7, a8: !!m.a8, s1: !!m.s1, s2: !!m.s2, partial: isPartial });
+  if (wasPartial) rows.push({ id: s.id, level: s.level, file: s.file, eksik: merged.approx || (merged.kapsamDisi || merged.sigmayan || merged.gmNoted ? '' : merged.gmNote) || '', kapsam: merged.kapsamDisi ?? '', sigmayan: merged.sigmayan ?? '', gm: merged.gmNoted ? merged.gmNote ?? '' : '', a4: !!m.a4, a6: !!m.a6, a7: !!m.a7, a8: !!m.a8, s1: !!m.s1, s2: !!m.s2, k64, partial: isPartial });
 }
 rows.sort((a, b) => Number(b.partial) - Number(a.partial) || a.level - b.level || a.id.localeCompare(b.id));
 const groups = new Map();
@@ -78,7 +80,7 @@ const lines = [
   '',
   '| Kimlik | Sv | Dosya | Durum | Eksik | Kapsam dışı | Sığmayan parça (BUYU-SIGMAYAN.md) |',
   '|---|---|---|---|---|---|---|',
-  ...rows.map((r) => `| ${r.id} | ${r.level} | ${r.file} | ${r.partial ? 'kısmi' : r.s2 || r.s1 || r.a8 || r.a7 || r.a6 ? `tamam (${r.s2 ? 'S2' : r.s1 ? 'S1' : r.a8 ? 'A8' : r.a7 ? 'A7' : 'A6'}${r.sigmayan ? ', sığmayan parça notlu' : r.gm ? ', Game Master notlu' : ''})` : r.a4 ? 'tamam (A4)' : 'çalışır (kapsam dışı)'} | ${cell(r.eksik)} | ${cell(r.kapsam)} | ${cell(r.sigmayan)} |`),
+  ...rows.map((r) => `| ${r.id} | ${r.level} | ${r.file} | ${r.partial ? 'kısmi' : r.k64 || r.s2 || r.s1 || r.a8 || r.a7 || r.a6 ? `tamam (${r.k64 ? 'K64a' : r.s2 ? 'S2' : r.s1 ? 'S1' : r.a8 ? 'A8' : r.a7 ? 'A7' : 'A6'}${r.sigmayan ? ', sığmayan parça notlu' : r.gm ? ', Game Master notlu' : ''})` : r.a4 ? 'tamam (A4)' : 'çalışır (kapsam dışı)'} | ${cell(r.eksik)} | ${cell(r.kapsam)} | ${cell(r.sigmayan)} |`),
   '',
 ];
 writeFileSync('harita/belgeler/BUYU-KISMI.md', lines.join('\n'));

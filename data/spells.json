@@ -6511,6 +6511,10 @@
       "gmNoteEn": "Setup (1 minute): a 10-foot cylinder; chosen creature types cannot enter and have disadvantage on attacks against those inside. The Game Master applies it.",
       "upcast": {
         "other": true
+      },
+      "k64": {
+        "setupWard": { "kind": "circle", "radiusFt": 10, "rangeFt": 10, "rounds": 600, "types": ["celestial", "elemental", "fey", "fiend", "undead"],
+          "note": "İçeri isteyerek girememe ve ışınlanmayla girerken CHA save Game Master'da." }
       }
     },
     "school": "Abjuration",

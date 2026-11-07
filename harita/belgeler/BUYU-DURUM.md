@@ -238,7 +238,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | haste | 3 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | hypnotic-pattern | 3 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | lightning-bolt | 3 | spells.json | çalışır |  |  |  |
-| magic-circle | 3 | spells.json | savaş dışı |  |  |  |
+| magic-circle | 3 | spells.json | savaş dışı | k64 (sürüm 48) |  |  |
 | major-image | 3 | spells.json | savaş dışı |  |  |  |
 | mass-healing-word | 3 | spells.json | çalışır |  |  |  |
 | meld-into-stone | 3 | spells.json | savaş dışı |  |  |  |
@@ -313,7 +313,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | flame-strike | 5 | spells-45.json | çalışır |  |  |  |
 | geas | 5 | spells-45.json | savaş dışı |  |  |  |
 | greater-restoration | 5 | spells-45.json | çalışır |  |  |  |
-| hallow | 5 | spells-45.json | savaş dışı |  |  |  |
+| hallow | 5 | spells-45.json | savaş dışı | k64 (sürüm 48) |  |  |
 | hold-monster | 5 | spells-45.json | çalışır |  |  |  |
 | insect-plague | 5 | spells-45.json | çalışır |  |  |  |
 | legend-lore | 5 | spells-45.json | savaş dışı |  |  |  |

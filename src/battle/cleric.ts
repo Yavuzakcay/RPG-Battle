@@ -1,4 +1,5 @@
 import { globalRule } from './ruleControl';
+import { possessorAt } from './possessionCore';
 import { ruleVersion } from './ruleVersion';
 import { healRoll } from './healMax';
 import { canSee } from './maprules';
@@ -52,6 +53,20 @@ function bestType(target: Combatant, types: string[], amount = 10): string {
 
 const isUndead = (c: Combatant) => (c.creatureType ?? '').toLowerCase() === 'undead';
 
+/**
+ * Turn Undead adayları. Kuyruk K64b (sürüm 48, `possession`): bedendeki Undead ele geçiren de; konumu bedenin altıgeni
+ * (SRD Ghost: "can't be targeted ... except ones that specifically target Undead").
+ */
+function undeadInRange(state: BattleState, actor: Combatant, ft: number): Combatant[] {
+  return Object.values(state.combatants).flatMap((c) => {
+    if (c.side === actor.side || !isUndead(c)) return [];
+    if (isTargetable(c)) return within(state, actor, c, ft) ? [c] : [];
+    const at = globalRule(state, 'possession') ? possessorAt(state, c) : null;
+    const proxy = at ? { ...c, pos: at } : null;
+    return proxy && within(state, actor, proxy, ft) ? [proxy] : [];
+  });
+}
+
 /** Kullanım sorunu (null: kullanılabilir). */
 export function clericFeatureProblem(state: BattleState, actor: Combatant, f: UsableFeature, cmd: ClericUse): string | null {
   const e = f.effect;
@@ -65,7 +80,7 @@ export function clericFeatureProblem(state: BattleState, actor: Combatant, f: Us
     return null;
   }
   if (e.kind === 'turnUndead') {
-    return Object.values(state.combatants).some((c) => c.side !== actor.side && isUndead(c) && isTargetable(c) && within(state, actor, c, e.rangeFt))
+    return undeadInRange(state, actor, e.rangeFt).length
       ? null : `${e.rangeFt} ft içinde Undead yok.`;
   }
   if (e.kind === 'abjure') {
@@ -118,7 +133,7 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
   }
 
   if (e.kind === 'turnUndead') {
-    const targets = Object.values(state.combatants).filter((c) => c.side !== actor.side && isUndead(c) && isTargetable(c) && within(state, actor, c, e.rangeFt));
+    const targets = undeadInRange(state, actor, e.rangeFt);
     const sear = has(actor, 'sear-undead') ? `${Math.max(1, wis)}d8` : null;
     const searRoll = sear ? rollDice(sear, rollTag(rng, { kind: 'damage', by: actor.id })) : null;
     for (const t of targets) {

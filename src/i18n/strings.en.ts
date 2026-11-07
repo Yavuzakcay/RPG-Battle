@@ -898,7 +898,12 @@ export const en: Strings = {
       moveRisk: (n: number, dmg: number): string => `${n} opportunity attack${n === 1 ? '' : 's'} · total ≈${dmg} damage`, moveGo: 'Move anyway',
       mystery: '? Something might happen here', reactions: 'Reaction', conditions: 'Condition', none: 'No visible effect', error: (e: string): string => `Not possible: ${e}`,
     },
-    k64: { possessed: (by: string): string => `Possessed: ${by} controls the body`, leave: 'Leave the body', gmEnd: 'End possession' },
+    k64: { possessed: (by: string): string => `Possessed: ${by} controls the body`, leave: 'Leave the body', gmEnd: 'End possession',
+      dormant: (by: string): string => `Possession suppressed (Hallow): ${by} cannot control the body`,
+      wardTitle: (who: string): string => `${who}: warding area`,
+      wardNote: (hallow: boolean): string => (hallow ? 'Hallow (24 hours): 30 ft; the chosen types can\'t possess, charm or frighten creatures inside; existing effects are suppressed. Extra effect is up to the Game Master.'
+        : 'Magic Circle (1 minute): 10-ft cylinder; the chosen types can\'t possess, charm or frighten creatures inside and have Disadvantage attacking them.'),
+      wardCast: (spell: string): string => `Set up ${spell}`, wardReverse: 'Reverse (protects those outside)' },
     k63: { truesight: (ft: number): string => `Truesight ${ft} ft (sees invisible, illusions, true form)`, trueForm: (name: string): string => `True form: ${name}` },
     s2: { altitude: (ft: number): string => `Altitude ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `Drop ${item}`, pick: (item: string): string => `Pick up ${item}` },
     start: 'Start battle',

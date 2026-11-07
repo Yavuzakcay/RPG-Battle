@@ -15,17 +15,25 @@
  */
 import data from '../../data/ele-gecirme.json';
 import { monsters } from '../data';
-import { distance, ring, type Offset } from '../rules/hex';
+import { distance, neighbors, ring, withinRange, hexKey, type Offset } from '../rules/hex';
+import { isIncapacitated } from '../rules/conditions';
+import { bodyOf, gap } from './body';
+import { canControl } from './common';
+import { spendSlot } from './slots';
+import { spells } from '../data';
+import { mechanicsAt } from './spellVersion';
 import { fail, finish, type CommandResult } from './common';
 import { shapeStats } from './druid';
 import { pfegTypesOf } from './mind';
 import { occupantAt, placeProblem } from './movement';
-import { POSSESS_FLOOR, possessedEffect } from './possessionCore';
+import { activePossession, hallowAt, POSSESS_FLOOR, possessedEffect, wardProtects } from './possessionCore';
 import { globalRule } from './ruleControl';
 import { sightConditions } from './sight';
-import type { BattleEvent, BattleState, Combatant, CommandContext, ShapeStats } from './types';
+import type { BattleEvent, BattleState, Combatant, Command, CommandContext, ShapeStats } from './types';
 
-export { POSSESS_FLOOR, possessedEffect, controlConditions, isPossessedBody } from './possessionCore';
+type CastCommand = Extract<Command, { type: 'cast_spell' }>;
+
+export { activePossession, POSSESS_FLOOR, possessedEffect, controlConditions, isPossessedBody } from './possessionCore';
 
 export interface PossessSpec {
   attack: string;
@@ -35,8 +43,12 @@ export interface PossessSpec {
   appearFt: number;
   physical: Array<'str' | 'dex' | 'con'>;
   untilRounds: number;
+  /** Kuyruk K64b: bedende kullanılamayan saldırılar (Possession; Horrific Visage "görebilen" ister, ele geçiren kaybolmuştur). */
+  bodyExclude?: string[];
 }
 const SPECS = data as unknown as Record<string, PossessSpec>;
+/** Kuyruk K64b: yapay zekânın bedeni bırakma ölçütü (`data/ele-gecirme.json` `_yz`). */
+const AI = (data as unknown as { _yz: { birakCanOrani: number; yalnizBitisikDusman: number } })._yz;
 
 /** Kuyruk K64a: ele geçirme açık mı (sürüm 48+ ve Game Master anahtarı). */
 export const possessionOn = (state: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean => !!globalRule(state, 'possession');
@@ -61,12 +73,16 @@ export function possessionProblem(state: BattleState, actor: Combatant, target: 
   if (actor.possessing || possessedEffect(actor)) return `${actor.name} zaten bir bedende.`;
   if (target.id === actor.id || !actor.pos || !target.pos || target.hp <= 0 || target.offFloor) return 'Hedef ayakta değil.';
   if (!spec.types.includes(target.creatureType ?? 'humanoid') || target.shape) return `${target.name}: yalnızca ${spec.types.join('/')} ele geçirilebilir.`;
-  if (distance(actor.pos, target.pos) * 5 > spec.reachFt) return `${target.name}: ${spec.reachFt} ft içinde olmalı.`;
+  // Kuyruk K64b: çok altıgenli gövdede uzaklık gövdeler arası (`gap`; bayrak kapalıyken `distance` ile aynı).
+  if (gap(state, actor, target) * 5 > spec.reachFt) return `${target.name}: ${spec.reachFt} ft içinde olmalı.`;
   const sc = sightConditions(actor, target, state);
   if (sc.targetConditions.includes('Invisible') || sc.attackerConditions.includes('Blinded')) return `${actor.name} ${target.name} hedefini görmüyor.`;
   if (target.possessionImmune?.includes(actor.id)) return `${target.name} bu ele geçirmeye bağışık (savaş sonuna dek).`;
   if (possessedEffect(target)) return `${target.name} zaten ele geçirilmiş.`;
   if (possessionWarded(state, target.id, actor.id)) return `${target.name} Protection from Evil and Good ile korunuyor: ele geçirilemez.`;
+  // Kuyruk K64b: Magic Circle / Hallow koruma alanı.
+  const ward = wardProtects(state, target, actor);
+  if (ward) return `${target.name} ${ward.name} alanıyla korunuyor: ele geçirilemez.`;
   return null;
 }
 
@@ -79,7 +95,7 @@ export function possessionStats(ghost: Combatant, host: Combatant, spec: Possess
     form: ghost.monsterId ?? ghost.id, name: ghost.name, ac: host.ac, speed: host.speed, fly: host.fly, size: host.size,
     modifiers: { ...ghost.modifiers, ...phys }, saves: { ...ghost.saves, ...phys },
     weaponOptions: base?.weaponOptions ?? [], attacksPerAction: base?.attacksPerAction ?? 1, avatar: host.avatar,
-    attacks: ghost.attacks.filter((a) => a.name !== spec.attack && !a.recharge), multiattack: !!ghost.multiattack, possession: true,
+    attacks: ghost.attacks.filter((a) => a.name !== spec.attack && !(spec.bodyExclude ?? []).includes(a.name) && !a.recharge), multiattack: !!ghost.multiattack, possession: true,
   };
 }
 
@@ -91,12 +107,21 @@ export function possessionStartEvents(state: BattleState, actor: Combatant, targ
   ];
 }
 
-/** Ele geçirenin belireceği boş altıgen: ev sahibinin 5 ft içinde; yoksa en yakın boş altıgen (deterministik sıra). */
-export function appearSpot(state: BattleState, center: Offset): Offset | null {
+/**
+ * Ele geçirenin belireceği boş altıgen: ev sahibinin 5 ft içinde; yoksa en yakın boş altıgen (deterministik sıra).
+ * Kuyruk K64b (`multiHex`): ev sahibinin gövdesine bitişik altıgenler; ele geçirenin gövdesi (çok altıgenliyse) sığmalı.
+ */
+export function appearSpot(state: BattleState, center: Offset, host?: Combatant, who?: Combatant): Offset | null {
   const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
+  const fits = (h: Offset) => (who ? bodyOf(state, { size: who.size, pos: h }) : [h]).every((x) => !placeProblem(state, x) && !occupantAt(state, x, who?.id));
+  const order = (a: Offset, b: Offset) => a.row - b.row || a.col - b.col;
+  const body = host?.pos ? bodyOf(state, { size: host.size, pos: host.pos }) : [center];
+  const taken = new Set(body.map(hexKey));
+  const near = [...new Map(body.flatMap((b) => neighbors(b, size)).filter((h) => !taken.has(hexKey(h))).map((h) => [hexKey(h), h])).values()].sort(order);
+  const first = near.find(fits);
+  if (first) return first;
   for (let r = 1; r <= Math.max(size.cols, size.rows); r++) {
-    const spot = ring(center, r, size).filter((h) => !placeProblem(state, h) && !occupantAt(state, h))
-      .sort((a, b) => a.row - b.row || a.col - b.col)[0];
+    const spot = ring(center, r, size).filter((h) => !taken.has(hexKey(h)) && fits(h)).sort(order)[0];
     if (spot) return spot;
   }
   return null;
@@ -109,7 +134,8 @@ export function possessionEndEvents(state: BattleState, host: Combatant, reason:
   if (!ghostId) return [];
   const g = state.combatants[ghostId];
   const center = host.pos ?? g?.floorPos ?? null;
-  const to = center ? appearSpot(state, center) : null;
+  // Kuyruk K64b: sürgün edilen (Dismissal) ele geçiren belirmez.
+  const to = center && !g?.exiled ? appearSpot(state, center, host, g) : null;
   return [
     ...(host.shape?.possession ? [{ type: 'shape_changed', actorId: host.id, stats: null, reason: label } as BattleEvent] : []),
     { type: 'possession_ended', possessorId: ghostId, hostId: host.id, reason, to, label },
@@ -132,7 +158,7 @@ export function possessionCleanup(state: BattleState): BattleEvent[] {
     const h = state.combatants[g.possessing];
     if (h && possessedEffect(h)?.sourceId === g.id) continue;
     const center = h?.pos ?? g.floorPos ?? null;
-    out.push({ type: 'possession_ended', possessorId: g.id, hostId: g.possessing, reason: 'gone', to: center ? appearSpot(state, center) : null, label: g.name });
+    out.push({ type: 'possession_ended', possessorId: g.id, hostId: g.possessing, reason: 'gone', to: center && !g.exiled ? appearSpot(state, center, h, g) : null, label: g.name });
   }
   return out;
 }
@@ -145,7 +171,7 @@ export const BODY_COMMANDS: readonly string[] = ['end_turn', 'possession_leave',
 /** Komut bedende ya da ele geçirende yapılabilir mi (hata metni ya da null). */
 export function possessionCommandProblem(actor: Combatant, type: string): string | null {
   if (actor.possessing) return type === 'end_turn' || type === 'possession_leave' ? null : `${actor.name} bir bedende: yalnızca bedeni bırakabilir.`;
-  if (possessedEffect(actor) && !BODY_COMMANDS.includes(type)) return `${actor.name} ele geçirilmiş: beden yalnızca ele geçirenin eylemlerini yapar.`;
+  if (activePossession(actor) && !BODY_COMMANDS.includes(type)) return `${actor.name} ele geçirilmiş: beden yalnızca ele geçirenin eylemlerini yapar.`;
   return null;
 }
 
@@ -157,5 +183,118 @@ export function executePossessionLeave(state: BattleState, actorId: string, gm: 
   const host = actor.possessing ? state.combatants[actor.possessing] : actor;
   const eff = host ? possessedEffect(host) : undefined;
   if (!host || !eff) return fail(`${actor.name} ele geçirilmiş değil.`);
+  if (!gm && eff.dormant) return fail(`${host.name}: ele geçirme Hallow alanında bastırılmış; beden şu an ele geçirenin değil.`);
   return finish(state, possessionEndEvents(state, host, gm ? 'gm' : 'leave', eff.name));
 }
+
+/**
+ * Kuyruk K64b: Hallow (Hallowed Ward) bastırması, her komutun sonunda. SRD: alandaki yaratık seçilen türlerce "isn't
+ * possessed, Charmed, or Frightened by them while in the area". Ele geçirme bitmez, bastırılır (`dormant`: taraf, durum ve
+ * beden değerleri ev sahibine döner); alandan çıkınca sürer. Bu türlerden gelen Charmed/Frightened da bastırılır (Calm
+ * Emotions'ın `suppressed` yolu: alandan çıkınca, kaynağı sürüyorsa geri gelir). Yeni durum `wardedFrom` ile hiç tutmaz.
+ */
+export function hallowSyncEvents(state: BattleState): BattleEvent[] {
+  const hallows = (state.map?.zones ?? []).some((z) => z.ward?.kind === 'hallow');
+  const out: BattleEvent[] = [];
+  for (const h of Object.values(state.combatants)) {
+    const e = possessedEffect(h);
+    if (e && h.hp > 0) {
+      const g = state.combatants[e.sourceId];
+      const inside = hallows && !!hallowAt(state, h, g?.creatureType);
+      if (inside && !e.dormant) {
+        const { grants: _g, ...rest } = e;
+        out.push(...(h.shape?.possession ? [{ type: 'shape_changed', actorId: h.id, stats: null, reason: 'Hallow' } as BattleEvent] : []),
+          { type: 'effect_ended', targetId: h.id, effectId: e.id, name: e.name, reason: 'dispelled' },
+          { type: 'effect_added', targetId: h.id, effect: { ...rest, dormant: true } },
+          { type: 'map_note', text: `${h.name}: Hallow alanında ele geçirme bastırıldı (alandan çıkınca sürer).` });
+      } else if (!inside && e.dormant && g) {
+        const spec = possessSpecOf(state, g);
+        const { dormant: _d, ...rest } = e;
+        out.push({ type: 'effect_ended', targetId: h.id, effectId: e.id, name: e.name, reason: 'dispelled' },
+          { type: 'effect_added', targetId: h.id, effect: { ...rest, ...(h.conditions.includes('Incapacitated') ? {} : { grants: ['Incapacitated'] }) } },
+          ...(spec && !h.shape ? [{ type: 'shape_changed', actorId: h.id, stats: possessionStats(g, h, spec) } as BattleEvent] : []),
+          { type: 'map_note', text: `${h.name}: Hallow alanından çıktı; ele geçirme yeniden sürüyor.` });
+      }
+    }
+    const supId = `hallow:${h.id}`;
+    const sup = h.effects?.find((x) => x.id === supId);
+    if (!sup && hallows && h.hp > 0) {
+      const list: NonNullable<import('./types').ActiveEffect['suppressed']> = [];
+      let caster = '';
+      for (const cond of ['Charmed', 'Frightened']) {
+        if (!h.conditions.includes(cond)) continue;
+        const fx = h.effects?.find((x) => x.grants?.includes(cond) || (cond === 'Charmed' && x.charm));
+        const tm = (h.conditionTimers ?? []).find((x) => x.condition === cond);
+        const src = state.combatants[fx?.sourceId ?? tm?.sourceId ?? ''];
+        const z = hallowAt(state, h, src?.creatureType);
+        if (!z) continue;
+        caster = z.casterId;
+        list.push({ condition: cond, ...(tm ? { timer: tm, round: state.round } : {}), ...(fx ? { by: fx.id } : {}) });
+      }
+      if (list.length) {
+        for (const s of list) out.push({ type: 'condition_changed', targetId: h.id, condition: s.condition, present: false, reason: 'Hallow' });
+        out.push({ type: 'effect_added', targetId: h.id, effect: { id: supId, name: 'Hallow', sourceId: caster, until: state.round + 6000, suppressed: list } });
+      }
+    } else if (sup && !(state.map?.zones ?? []).some((z) => z.ward?.kind === 'hallow' && !!h.pos && z.hexes.some((x) => x.col === h.pos?.col && x.row === h.pos?.row))) {
+      out.push({ type: 'effect_ended', targetId: h.id, effectId: supId, name: 'Hallow', reason: 'expired' });
+    }
+  }
+  return out;
+}
+
+/**
+ * Kuyruk K64b (yapay zekâ, basit kural): beden bırakılır mı? Bonus eylem boşsa ve (1) bedenin canı en çok
+ * `birakCanOrani` × en yüksek can ise, ya da (2) ele geçirenin tarafında beden dışında ayakta kimse yokken bedene en az
+ * `yalnizBitisikDusman` düşman bitişikse (beden düşmanların arasında tek başına kalmış).
+ */
+export function aiLeaveWanted(state: BattleState, body: Combatant): boolean {
+  const e = activePossession(body);
+  if (!e || body.economy.bonus || !possessionOn(state)) return false;
+  if (body.hp <= Math.max(1, Math.floor(body.maxHp * AI.birakCanOrani))) return true;
+  const mates = Object.values(state.combatants).filter((c) => c.side === body.side && c.id !== body.id && c.id !== e.sourceId && c.hp > 0 && !c.offFloor && !c.civilian && !c.summon);
+  const adj = Object.values(state.combatants).filter((c) => c.side !== body.side && c.hp > 0 && !!c.pos && !c.civilian && gap(state, body, c) <= 1);
+  return mates.length === 0 && adj.length >= AI.yalnizBitisikDusman;
+}
+
+/** Kuyruk K64b: kurulumda koruma alanı büyüsü (Magic Circle, Hallow): mekaniğin `setupWard`'ı. */
+export interface SetupWard { kind: 'circle' | 'hallow'; radiusFt: number; maxRadiusFt?: number; rangeFt: number; rounds?: number; types: string[]; reverse?: boolean; note?: string }
+export const setupWardOf = (state: Pick<BattleState, 'kuralSurumu'>, name: string): SetupWard | undefined => {
+  const sp = spells.find((s) => s.name === name);
+  return sp ? (mechanicsAt(state, sp).setupWard as SetupWard | undefined) : undefined;
+};
+
+/**
+ * Kuyruk K64b (sürüm 48): koruma alanını kurulumda (savaştan önce) kurar. Magic Circle 1 dakika, Hallow 24 saat sürer:
+ * savaşta yapılamaz. Merkez `targetHex` (yoksa büyücünün altıgeni, menzil içinde), yarıçap veride (Hallow `choice` "r=NN"
+ * ile 5–60 ft), türler `choice` "tur=undead,fiend" (yoksa hepsi), Magic Circle ters yön `choice` "ters". Slot harcanır.
+ */
+export function executeSetupWard(state: BattleState, cmd: CastCommand, ctx: CommandContext): CommandResult {
+  const actor = state.combatants[cmd.actorId];
+  if (!actor) return fail('Savaşçı bulunamadı.');
+  if (!canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
+  const spell = spells.find((s) => s.name === cmd.spellName);
+  const w = setupWardOf(state, cmd.spellName);
+  if (!spell || !w || !actor.spellNames.includes(spell.name)) return fail('Bu büyüyü bilmiyor.');
+  if (!actor.pos) return fail(`${actor.name} henüz yerleşmedi.`);
+  const center = cmd.targetHex ?? actor.pos;
+  if (distance(center, actor.pos) * 5 > w.rangeFt) return fail(`${spell.name}: merkez ${w.rangeFt} ft içinde olmalı.`);
+  const opts = (cmd.choice ?? '').split(';').map((x) => x.trim()).filter(Boolean);
+  const kv = (k: string) => opts.find((o) => o.startsWith(`${k}=`))?.slice(k.length + 1);
+  const picked = (kv('tur') ?? '').split(',').map((x) => x.trim().toLowerCase()).filter((x) => w.types.includes(x));
+  const radiusFt = w.maxRadiusFt && kv('r') ? Math.max(5, Math.min(w.maxRadiusFt, Math.round(Number(kv('r')) / 5) * 5 || w.radiusFt)) : w.radiusFt;
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
+  if (!slot.ok) return slot;
+  const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
+  const ward = { kind: w.kind, types: picked.length ? picked : w.types, ...(w.kind === 'circle' && opts.includes('ters') ? { reverse: true } : {}) };
+  return finish(state, [...slot.events,
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: `${radiusFt} ft; türler: ${ward.types.join(', ')}${ward.reverse ? '; ters yön' : ''}${w.note ? `. ${w.note}` : ''}` },
+    { type: 'zone_created', zone: { id: `ward:${spell.id}:${actor.id}`, spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side, dc: 0,
+      slotLevel: slot.slotLevel ?? spell.level, hexes: withinRange(center, Math.round(radiusFt / 5), size), center, ...(w.rounds ? { until: state.round + w.rounds } : {}), ward } }]);
+}
+
+/** Kuyruk K64b: bedeni yöneten ele geçiren Incapacitated mı (Turn Undead)? */
+export const possessorIncapacitated = (state: BattleState, body: Combatant): boolean => {
+  const e = activePossession(body);
+  const g = e ? state.combatants[e.sourceId] : undefined;
+  return !!g && isIncapacitated(g.conditions);
+};

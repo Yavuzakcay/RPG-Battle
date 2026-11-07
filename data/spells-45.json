@@ -2043,7 +2043,11 @@
     "mechanics": {
       "kind": "utility",
       "offCombat": true,
-      "gmNote": "Kutsal alan (24 saat)"
+      "gmNote": "Kutsal alan (24 saat)",
+      "k64": {
+        "setupWard": { "kind": "hallow", "radiusFt": 30, "maxRadiusFt": 60, "rangeFt": 5, "types": ["aberration", "celestial", "elemental", "fey", "fiend", "undead"],
+          "note": "Seçilen türlerin içeri isteyerek girememesi ve ek etki (Courage, Darkness, Daylight…) Game Master'da." }
+      }
     },
     "school": "Abjuration",
     "srdPage": 138
