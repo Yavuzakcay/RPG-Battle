@@ -2788,7 +2788,7 @@
    "kendisi": true,
    "etki": {
     "name": "Yetişen Yol",
-    "sure": 3,
+    "sure": 1,
     "resist": [
      "acid",
      "bludgeoning",
@@ -2998,7 +2998,7 @@
    "ozel": "plan",
    "param": {
     "menzilFt": 60,
-    "turdaEnCok": 4
+    "turdaEnCok": 2
    },
    "ad": "Kuşbakışı: Yerleştir",
    "not": "Kuşbakışı Plan sürerken turda iki kez: dostu 60 ft içindeki boş altıgene ışınla ya da iki dostun yerini değiştir (fırsat saldırısı yok).",
