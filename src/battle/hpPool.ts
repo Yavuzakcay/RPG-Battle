@@ -81,7 +81,11 @@ export function applyPoolEvent(state: BattleState, event: Extract<BattleEvent, {
   if (!pool) return state;
   for (const c of members(state, pool.id)) {
     if (c.life === 'dead' || c.summon?.gone) continue;
-    combatants[c.id] = { ...c, hp: event.hp };
+    // K60 (duman bulgusu): komut içinde kendi canı 0'a düşen üye havuz ayaktayken "ölmekte" kalıyor, eşitlemede canı
+    // havuza çekiliyor ama durum kalkmıyordu (sonraki vuruşlar ölüm kurtulmasını düşürüp canı varken öldürüyordu):
+    // 0 HP'deki iyileşmeyle aynı ayağa kalkma.
+    const up = event.hp > 0 && (c.life === 'dying' || c.life === 'stable');
+    combatants[c.id] = { ...c, hp: event.hp, ...(up ? { life: 'alive' as const, deathSaves: { successes: 0, failures: 0 }, conditions: c.conditions.filter((x) => x !== 'Unconscious') } : {}) };
   }
   return { ...state, combatants, hpPools: { ...state.hpPools, [pool.id]: { ...pool, hp: event.hp } } };
 }

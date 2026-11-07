@@ -352,6 +352,9 @@ export function executeMultiattack(state: BattleState, actor: Combatant, targetI
       const r = current.map && atk.area
         ? monsterAreaEvents(current, current.combatants[actor.id] as Combatant, i, t.pos, null, rng)
         : monsterAttackEvents(current, current.combatants[actor.id] as Combatant, t, i, rng);
+      // K60 (duman bulgusu, plan yolundaki K59 düzeltmesinin eşi): önceki saldırının sonucu hedefi erişim dışına
+      // çıkardıysa kalan saldırılar atlanır; bütün komut reddedilmez.
+      if (!r.ok && events.length > 0) break;
       if (!r.ok) return r;
       events.push(...r.events);
       current = applyEvents(current, r.events);

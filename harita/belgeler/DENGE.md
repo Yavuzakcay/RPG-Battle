@@ -2,6 +2,33 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K60: alt sınıf ince ayarı, yalnız sayılar (2026-11-07)
+
+Kural sürümü 42 (değişmedi). Yöntem: alt sınıf başına bir seferde tek sayı; yalnız etkilenen seviyeler × Çöl/Orman/Mağara × 100 tohum (`npx vite-node src/sim/k59Denge.ts -- 100 --seviye … --sinif … --alt ozel`); SRD karşılığı K59 ölçümü (değişmedi). İki ölçümün farkında gürültü ≈ ±4: < 4 puanlık değişim iyileşme sayılmadı. Hedef ±8.
+
+| Alt sınıf | Sv | K59 fark | Deneme 1 | Deneme 2 | Deneme 3 | Son fark | Durum |
+|---|---:|---:|---|---|---|---:|---|
+| İmparator | 15 | +27 | Yüce Taht dost etkisi 10 → 2 tur: +26 (etkisiz, geri) | Yüce Taht kendi direnci/geçici canı 10 → 2 tur: +11 | kendi süresi 2 → 1 tur: +9 | **+9** | sınırda (±8 dışı 1 puan) |
+| İmparator | 20 | +17 | — | (2. deneme) +7 | (3. deneme) **+5** | **+5** | ✓ |
+| İmparator | 11 | −9 | dokunulmadı (15+ özellikleri) | | | −9 | değişmedi |
+| Hızır | 3 | +10 | Tam Zamanında 30 → 15 ft: +7 | | | **+7** | ✓ (değişim < 4: gürültü sınırında) |
+| Hızır | 11 | +6 | (aynı) +5 | | | **+5** | ✓ |
+| Hızır | 20 | +17 | (aynı) Çöl %94 → %93 (etkisiz) | Yetişen Yol süresi 10 → 3 tur: +10 | 3 → 1 tur: **+6** | **+6** | ✓ |
+| Yaşlı Bilge | 11 | −21 | Fırlat 3d6 → 6d6: −19 (etkisiz, geri) | Zihin Gücü İt/Çek/Kaydır bedeli 1 → 2 odak: −17 (< 4, geri) | Fırlat bedeli 2 → 3 odak: **−12** | **−12** | yakınsamadı (3 deneme) |
+| Yaşlı Bilge | 15 | −20 | (6d6) −18 | (bedel 2) −18 | (Fırlat 3) −18 | **−18** | yakınsamadı |
+| Yaşlı Bilge | 20 | −12 | — | (bedel 2) −14 | (Fırlat 3) −11 | **−11** | yakınsamadı |
+| Harita Öğretisi | 11 | −19 | Mevzi kurtulma +1 → +3: −18 (etkisiz, geri; 3. sv +1 → +3 bozulmadı) | — | — | **−19** | yakınsamadı |
+| Harita Öğretisi | 15 | −22 | (Mevzi +3) −20 (etkisiz) | Kuşbakışı Yerleştir turda 2 → 4: −22 (etkisiz, geri) | — | **−22** | yakınsamadı |
+
+Son değerler (senaryo Çöl / Orman / Mağara): İmparator 15: 55/84/28 = %56 (Şampiyon %47); 20: 75/64/10 = %50 (%45). Hızır 3: 52/17/43 = %37 (Bağlılık %30); 11: 67/65/0 = %44 (%39); 20: 75/0/9 = %28 (%22). Yaşlı Bilge 11: 80/68/0 = %49 (Açık El %61); 15: 37/73/1 = %37 (%55); 20: 69/0/23 = %31 (%42). Harita 11: K59 değeri %64 (Evokasyon %83); 15: %32 (%54).
+
+Gerekçeler:
+- **Yaşlı Bilge:** kullanım dökümü (11–15. sv, 16 savaş): savaş başına ~7 imza eylemi; eylem en çok "Zihin Gücü: Fırlat"a (eylem + 2 odak) gidiyor, Flurry az. Fırlat'ın bedelini artırmak 11'de eylemi saldırıya bıraktırdı (+9); 15/20'de Açık El'in 15+ gücü (Quivering Palm vb.) karşısında sayısal kol yetmiyor. Kalan fark YZ seçimine bağlı (Zihin Gücü kiplerinin değeri); bu kuyrukta YZ değişmedi.
+- **Harita Öğretisi:** döküm: neredeyse yalnız büyü; 10+ imza eylemleri (Çizili Duvar 0 kullanım, Kuşbakışı seyrek) YZ'de seçilmiyor, bu yüzden onların sayıları sonucu oynatmıyor. 3. denemeye geçilmedi: kalan kolların hiçbiri kullanılan bir eylemde değil. Fark yapısal (Evokasyon'un hasar ekleri) + YZ.
+- **Ölümsüz Taht** (İmparator 15) yarıçapı ve süresi kodda sabit (veri okunmuyor): sayısal kol olarak kullanılamadı.
+
+Birleştirme öncesi duman (son verilerle, tam açık): 3 ve 7. sv 1.290, 11. sv 730, 15. sv 720, 20. sv 730 savaş; 14 geçersiz Multiattack + 1 havuz tutarsızlığı bulundu, ikisi düzeltildi (DECISIONS.md K60); düzeltme sonrası hatalı haritalarda 350 savaş 0 hata. Çökme/NaN/döngü/replay farkı 0.
+
 ## Kuyruk K59: tam açık duman testi, YZ düzeltmeleri ve denge turu (2026-11-07)
 
 Kural sürümü 42 (değişmedi). Duman testi sonuçları DECISIONS.md (K59). Ölçümler YZ düzeltmelerinden (önizleme zar yüzdelikleri, etki içeriğine göre değer, Multiattack planı denetimi, Dunganga yaklaşması) sonra.

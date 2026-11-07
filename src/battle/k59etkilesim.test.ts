@@ -126,6 +126,23 @@ describe('K59 duman bulgusu: bitmiş can havuzu', () => {
   });
 });
 
+describe('K60 duman bulgusu: havuz eşitlemesi', () => {
+  it('havuz ayaktayken kendi canı 0\'a düşen üye eşitlemede ayağa kalkar (ölmekte kalmaz, canı varken ölmez)', () => {
+    const a = { ...mk('P1', { ownerId: 'p1', hp: 20, maxHp: 20 }), pos: o(2, 2) } as Combatant;
+    const b = { ...mk('P2', { ownerId: 'p1', hp: 20, maxHp: 20 }), pos: o(3, 2) } as Combatant;
+    const s0 = startBattle('t', 'd-z-zemin', [a, b, mk('E', { side: 'enemies', hp: 30, maxHp: 30 })], () => 0.5, { map: { id: 'col' } }).state;
+    let s = applyEvents({ ...s0, status: 'active' }, [{ type: 'hp_pool_created', poolId: 'h1', memberIds: ['P1', 'P2'], hp: 40, max: 40, label: 'test' } as BattleEvent]);
+    s = applyEvents(s, [{ ...hit('P1', 40), hpAfter: 0 } as BattleEvent]);
+    s = applyEvents(s, [{ type: 'hp_pool_synced', poolId: 'h1', hp: s.hpPools!.h1!.hp } as BattleEvent]);
+    const p1 = s.combatants.P1!;
+    if (s.hpPools!.h1!.hp > 0) {
+      expect(p1.life).toBe('alive');
+      expect(p1.hp).toBe(s.hpPools!.h1!.hp);
+      expect(p1.conditions).not.toContain('Unconscious');
+    }
+  });
+});
+
 describe('K59 G2.2: Karadul Örümcek Biçimi × aura', () => {
   const sheet: CharacterSheet = { ...blankCharacter('kd').sheet, name: 'Lilith', raceId: 'human', classId: 'druid', subclassId: KARADUL_ID, gender: 'kadin', level: 6,
     baseScores: { str: 8, dex: 14, con: 8, int: 10, wis: 15, cha: 16 }, armorName: 'Leather Armor', weapons: [{ name: 'Quarterstaff' }] } as CharacterSheet;

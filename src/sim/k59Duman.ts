@@ -140,7 +140,7 @@ for (const level of levels) for (const mt of maps) for (let seed = firstSeed; se
         const x = execute(state, cmd, contextFor(state, (cmd as { actorId?: string }).actorId ?? actorId), rng);
         commands++;
         if (!x.ok) {
-          if (cmd.type !== 'end_turn') fail('gecersiz-komut', `${cmd.type} ${(cmd as { actorId?: string }).actorId}: ${x.error}`);
+          if (cmd.type !== 'end_turn') fail('gecersiz-komut', `${cmd.type} ${(cmd as { actorId?: string }).actorId}: ${x.error}${args.includes('--ayrinti') ? ` | DBG_KOMUT ${JSON.stringify(cmd)}` : ''}`);
           else { fail('gecersiz-komut', `end_turn: ${x.error}`); broken = true; }
           break;
         }
@@ -158,6 +158,17 @@ for (const level of levels) for (const mt of maps) for (let seed = firstSeed; se
       const bad = badNumber(state);
       if (bad) { fail('nan', bad); break; }
       const inc = inconsistency(state);
+      if (inc && args.includes('--ayrinti')) {
+        const { applyEvents } = await import('../battle/reduce');
+        const who = inc.split(' ')[0] as string;
+        let st = (events[0] as { state: BattleState }).state;
+        for (let i = 1; i < events.length; i++) {
+          const prev = st.combatants[who];
+          st = applyEvents(st, [events[i] as BattleEvent]);
+          const c = st.combatants[who];
+          if (prev && c && (prev.life !== c.life || (prev.life === 'dead' && prev.hp !== c.hp))) console.log('DEĞİŞİM', i, prev.life, prev.hp, '→', c.life, c.hp, JSON.stringify(events[i]).slice(0, 300));
+        }
+      }
       if (inc) { fail('tutarsiz', `${inc} | son olaylar: ${events.slice(-6).map((e) => JSON.stringify(e).slice(0, 220)).join(' || ')}`); break; }
     }
     const a = JSON.stringify(replay(events));

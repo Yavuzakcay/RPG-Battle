@@ -1645,7 +1645,7 @@
    },
    "kendiEtki": {
     "name": "Yüce Taht",
-    "sure": 10,
+    "sure": 1,
     "resist": [
      "acid",
      "bludgeoning",
@@ -2675,7 +2675,7 @@
    "tur": "action",
    "kullan": {
     "id": "focus",
-    "maliyet": 2
+    "maliyet": 3
    },
    "hedef": "enemy",
    "menzilFt": 60,
@@ -2788,7 +2788,7 @@
    "kendisi": true,
    "etki": {
     "name": "Yetişen Yol",
-    "sure": 10,
+    "sure": 1,
     "resist": [
      "acid",
      "bludgeoning",
@@ -3374,12 +3374,12 @@
    "seviye": 3,
    "etki": {
     "tamZamaninda": {
-     "menzilFt": 30,
+     "menzilFt": 15,
      "kaynak": "channelDivinity",
      "hasarPayi": 0.5
     }
    },
-   "not": "Tepki (Kanal Gücü): 30 ft içindeki dost saldırı zarından önce hedef alınınca yanına ışınlanır, saldırı sana yönelir; isabette hasarın yarısını alırsın.",
+   "not": "Tepki (Kanal Gücü): 15 ft içindeki dost saldırı zarından önce hedef alınınca yanına ışınlanır, saldırı sana yönelir; isabette hasarın yarısını alırsın.",
    "k54": true
   },
   {
