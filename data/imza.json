@@ -2690,7 +2690,7 @@
    "yari": true,
    "hasar": {
     "zar": {
-     "11": "3d6"
+     "11": "6d6"
     },
     "tur": "bludgeoning"
    },
@@ -2932,7 +2932,7 @@
     "menzilFt": 60,
     "enCokHex": 3,
     "sure": 10,
-    "saveBonus": 1
+    "saveBonus": 3
    },
    "ad": "Mevzi İşareti",
    "yz": "mevzi",
