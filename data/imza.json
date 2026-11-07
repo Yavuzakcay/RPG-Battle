@@ -1632,7 +1632,7 @@
    "kendisi": true,
    "etki": {
     "name": "Yüce Taht",
-    "sure": 10,
+    "sure": 2,
     "dice": {
      "die": "$pbHalf",
      "sign": 1,
@@ -3374,12 +3374,12 @@
    "seviye": 3,
    "etki": {
     "tamZamaninda": {
-     "menzilFt": 30,
+     "menzilFt": 15,
      "kaynak": "channelDivinity",
      "hasarPayi": 0.5
     }
    },
-   "not": "Tepki (Kanal Gücü): 30 ft içindeki dost saldırı zarından önce hedef alınınca yanına ışınlanır, saldırı sana yönelir; isabette hasarın yarısını alırsın.",
+   "not": "Tepki (Kanal Gücü): 15 ft içindeki dost saldırı zarından önce hedef alınınca yanına ışınlanır, saldırı sana yönelir; isabette hasarın yarısını alırsın.",
    "k54": true
   },
   {
