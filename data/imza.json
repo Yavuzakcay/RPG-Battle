@@ -2932,7 +2932,7 @@
     "menzilFt": 60,
     "enCokHex": 3,
     "sure": 10,
-    "saveBonus": 3
+    "saveBonus": 1
    },
    "ad": "Mevzi İşareti",
    "yz": "mevzi",
@@ -2998,7 +2998,7 @@
    "ozel": "plan",
    "param": {
     "menzilFt": 60,
-    "turdaEnCok": 2
+    "turdaEnCok": 4
    },
    "ad": "Kuşbakışı: Yerleştir",
    "not": "Kuşbakışı Plan sürerken turda iki kez: dostu 60 ft içindeki boş altıgene ışınla ya da iki dostun yerini değiştir (fırsat saldırısı yok).",
