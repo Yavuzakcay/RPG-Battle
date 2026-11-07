@@ -214,12 +214,14 @@ export function summonHexes(state: BattleState, actorId: string, spell: Spell, c
 export type AreaAct = { kind: 'spell'; spell: Spell } | { kind: 'monster'; index: number } | { kind: 'breath'; shape: 'cone' | 'line' };
 
 /** Kuyruk K57: alan büyüsünün savaşın kural sürümündeki nokta sayısı (Meteor Swarm 4; çoğu büyüde 1). */
-export function areaPointCount(state: BattleState, act: AreaAct | null, choice?: string | null): number {
+export function areaPointCount(state: BattleState, act: AreaAct | null, choice?: string | null, wallShape?: string | null): number {
   if (act?.kind !== 'spell') return 1;
   const m = mechanicsAt(state, act.spell);
   // Kuyruk K65a (sürüm 49, Fire Storm `freeShape`): serbest şekil, altıgen altıgen (en çok `maxHexes`; K65b Forcecage seçime göre).
   if (m.freeShape) return freeShapeFor(m.freeShape, choice).maxHexes;
-  // Kuyruk S2 (sürüm 41, Wind Wall `wallPath`): serbest duvar yolu, altıgen altıgen.
+  // Kuyruk S2 (sürüm 41, Wind Wall `wallPath`): serbest duvar yolu, altıgen altıgen. K65c: panelli duvarlarda (`pathRules`)
+  // yol yalnızca "Yol" seçilince (düz, yay, kubbe/küre K62 gibi).
+  if (m.pathRules && wallShape !== 'path') return 1;
   return Math.max(1, m.multiPoint ?? (ruleVersion(state) >= 41 ? m.wallPath ?? 1 : 1));
 }
 
@@ -230,8 +232,14 @@ export const areaFreeShape = (state: BattleState, act: AreaAct | null, choice?: 
 };
 
 /** Kuyruk K65b: Wind Wall serbest yolu (sürüm 41+; en çok N altıgen) ya da undefined. */
-export const areaWallPath = (state: BattleState, act: AreaAct | null): number | undefined =>
-  act?.kind === 'spell' && ruleVersion(state) >= 41 ? mechanicsAt(state, act.spell).wallPath : undefined;
+export const areaWallPath = (state: BattleState, act: AreaAct | null, wallShape?: string | null): number | undefined => {
+  if (act?.kind !== 'spell' || ruleVersion(state) < 41) return undefined;
+  const m = mechanicsAt(state, act.spell);
+  return m.pathRules && wallShape !== 'path' ? undefined : m.wallPath;
+};
+
+/** Kuyruk K65c: panelli duvarın serbest yol kuralları (sürüm 49; yoksa undefined). */
+export const areaPathRules = (state: BattleState, act: AreaAct | null) => (act?.kind === 'spell' ? mechanicsAt(state, act.spell).pathRules : undefined);
 
 /** Kuyruk S2: alandan altıgen çıkarılabilir mi (Plant Growth). */
 export const areaExcludable = (state: BattleState, act: AreaAct | null): boolean =>
@@ -278,7 +286,7 @@ export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAc
   // Kuyruk S2 (Wind Wall serbest yol): önizleme yolun kendisi.
   if (act.kind === 'spell' && points?.length && ruleVersion(state) >= 41 && mechanicsAt(state, act.spell).wallPath) {
     // Kuyruk K65b: yolun sorunu motorla aynı denetimden (`pathProblem`).
-    const why = pathProblem(state, actor, act.spell, points, mechanicsAt(state, act.spell).wallPath as number);
+    const why = pathProblem(state, actor, act.spell, points, mechanicsAt(state, act.spell).wallPath as number, mechanicsAt(state, act.spell).pathRules);
     if (why) return { hexes: points, friends: [], foes: [], error: why };
     const on = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && points.some((p) => p.col === c.pos?.col && p.row === c.pos?.row));
     const friend = (c: Combatant) => c.side === actor.side || c.civilian;

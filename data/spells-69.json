@@ -941,8 +941,9 @@
       "upDice": "2d6"
      }
     }
-   }
-  },
+   },
+   "k65": { "wallPath": 20, "pathRules": { "rangeAll": true, "sightFirst": true } }
+ },
   "school": "Evocation",
   "srdPage": 172,
   "area": {

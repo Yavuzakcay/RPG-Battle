@@ -21,7 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
-import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf } from './freeShape';
+import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf, wallAim } from './freeShape';
 import { aiLeaveWanted, controlConditions, possessSpecOf, possessionProblem } from './possession';
 import { possessorAt, possessorDisabled } from './possessionCore';
 import { hiddenFromTruesight } from './sight';
@@ -490,6 +490,27 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
     }
   }
   return best?.cmd ?? null;
+}
+
+/**
+ * Kuyruk K65c (sürüm 49, basit kural): panelli duvar (Wall of Stone/Ice/Force) serbest yolla: büyücüyle en yakın düşman
+ * arasına, düşmanlara bakan halka yayı (`wallAim`; dost ve yaratık altıgenine girmez). En az iki düşman 6 altıgen içinde,
+ * en yakını en az 3 altıgen uzakta ve büyücüye bitişik düşman yokken. Değer önceliği `kuralOnceligi['k65:duvar']`.
+ */
+function wallCommand(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map || !actor.pos || ruleVersion(state) < 49) return null;
+  const me = actor.pos;
+  const close = foes.filter((f) => f.pos && f.hp > 0 && distance(me, f.pos) <= 6);
+  if (close.length < 2 || close.some((f) => distance(me, f.pos as Offset) < 3)) return null;
+  for (const s of castable(actor)) {
+    const m = mechanicsAt(state, s);
+    if (!m.pathRules || !m.wallPath) continue;
+    const path = wallAim(state, actor, s, m.wallPath, m.pathRules, foes);
+    if (!path || path.length < 4) continue;
+    const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: path[0] as Offset, targetHexes: path, choice: 'far' };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
 }
 
 /**
@@ -2381,6 +2402,7 @@ registerAction({ id: 'eski:iyilestir', rule: true, kind: 'heal', note: 'ölmekte
 registerAction({ id: 'eski:yenilenme', rule: true, kind: 'damage', note: 'yerdeki yenilenen düşmana ateş/asit', gen: (s, a) => (partyBranch(a) ? [finishRegen(s, a)] : []) });
 registerAction({ id: 'eski:alan', rule: true, kind: 'damage', note: 'alan hasar büyüsü (2+ düşman, dost yok)', gen: (s, a, h) => (partyBranch(a) || (a.monsterId && a.spellNames.length && !a.summon) ? [areaSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word Kill/Stun, Mass Heal', gen: (s, a, h) => (partyBranch(a) ? [powerWordCommand(s, a, h.foes)] : []) });
+registerAction({ id: 'k65:duvar', rule: true, kind: 'control', note: 'panelli duvar: büyücüyle düşman grubu arasına serbest yol', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [wallCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k65:firtina', rule: true, kind: 'damage', note: 'Fire Storm: serbest şekil, en kalabalık gruptan dostsuz bitişik yollarla', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [freeShapeCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k64:ele-gecir', rule: true, kind: 'control', note: 'Ghost Possession: 5 ft içindeki geçerli Humanoid hedefi ele geçir', gen: (s, a, h) => (a.monsterId && !a.summon ? [possessCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:boncuk', rule: true, kind: 'control', note: 'Delayed Blast Fireball: boncuğu düşmanların üstüne koy', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [beadSpell(s, a, h.foes)] : []) });

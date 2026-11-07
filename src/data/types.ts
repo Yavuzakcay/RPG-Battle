@@ -288,6 +288,8 @@ export interface SpellMechanics {
   /** Kuyruk K65a (kural sürümü 49): serbest şekil alan (Fire Storm). */
   k65?: Partial<SpellMechanics>;
   /** Kuyruk K65a: serbest şekil (`src/battle/freeShape.ts`): en çok altıgen, menzil her altıgende, görüş ilk altıgende. */
+  /** Kuyruk K65c: serbest duvar yolunun ek kuralları (her altıgen menzilde, ilk altıgen görüşte; Wind Wall'da yok). */
+  pathRules?: { rangeAll?: boolean; sightFirst?: boolean };
   freeShape?: { maxHexes: number; rangeAll?: boolean; sightFirst?: boolean; maxByChoice?: Record<string, number>; defaultChoice?: string };
   /** Kuyruk K64a: ele geçirme kolunun açıklaması (bilgi; motor `src/battle/possession.ts`). */
   possession?: string;

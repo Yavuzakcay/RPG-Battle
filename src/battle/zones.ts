@@ -520,7 +520,7 @@ function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offs
   if (!spell.area) return fail(`${spell.name}: alan tanımı yok.`);
   // Kuyruk S2 (sürüm 41, Wind Wall `wallPath`): serbest duvar: birbirine bitişik altıgen yolu (en çok N), ilki menzilde.
   const wp = ruleVersion(state) >= 41 ? spell.mechanics.wallPath : undefined;
-  if (wp && cmd?.targetHexes?.length) return wallPathHexes(state, actor, spell, cmd.targetHexes, wp);
+  if (wp && cmd?.targetHexes?.length) return wallPathHexes(state, actor, spell, cmd.targetHexes, wp, spell.mechanics.pathRules);
   // Kuyruk S2 (sürüm 41, Plant Growth `excludable`): seçilen altıgenler alanın dışında kalır.
   if (ruleVersion(state) >= 41 && spell.mechanics.excludable && cmd?.excludeHexes?.length) {
     const r = castHexes(state, actor, spell, aim, wallShape);
@@ -536,9 +536,9 @@ function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offs
 }
 
 /** Kuyruk S2: Wind Wall serbest yol: bitişik altıgenler, tekrarsız, ilki büyü menzilinde, hepsi harita içinde. */
-function wallPathHexes(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number): Offset[] | CommandResult {
-  // Kuyruk K65b: denetim seçiciyle ortak (`freeShape.ts` `pathProblem`; iletiler ve sıra aynı).
-  const why = pathProblem(state, actor, spell, path, max);
+function wallPathHexes(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number, rules?: { rangeAll?: boolean; sightFirst?: boolean }): Offset[] | CommandResult {
+  // Kuyruk K65b: denetim seçiciyle ortak (`freeShape.ts` `pathProblem`; iletiler ve sıra aynı). K65c: panelli duvarlarda ek kurallar.
+  const why = pathProblem(state, actor, spell, path, max, rules);
   return why ? fail(why) : path;
 }
 

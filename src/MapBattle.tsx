@@ -68,7 +68,7 @@ import {
   placeHexes, terrainInfo, HEX_W,
 } from './ui/mapView';
 import {
-  areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaFreeShape, areaPointCount, areaWallPath, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
+  areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaFreeShape, areaPathRules, areaPointCount, areaWallPath, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
   featureTeleportHexes, slotChoices, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
@@ -445,7 +445,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [disc, setDisc] = useState(loadDiscovery);
   const [tmPick, setTmPick] = useState<string>('cold');
   // CILA: duvar biçimi (Wind Wall): düz ya da yay.
-  const [wallShape, setWallShape] = useState<'line' | 'arc' | 'ring'>('line');
+  const [wallShape, setWallShape] = useState<'line' | 'arc' | 'ring' | 'path'>('line');
   // Kuyruk 19: duvarın yanı (itme yönü, Wall of Fire'ın hasar yüzü).
   const [wallSide, setWallSide] = useState<'near' | 'far'>('far');
   // Etki büyüsü (Görev R2): seçilen hedefler ve seçim (beceri, hasar türü, komut).
@@ -508,18 +508,18 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return;
     }
     // Kuyruk K65b (Wind Wall yolu): yol yalnızca son altıgene bitişik uzar, yalnızca sondan kısalır (motorla aynı denetim).
-    const wp = areaWallPath(state, areaAct);
+    const wp = areaWallPath(state, areaAct, wallShape);
     if (wp && me && areaAct?.kind === 'spell') {
       const last = aimPts[aimPts.length - 1];
       if (aimPts.some((p) => sameHex(p, h))) {
         if (!last || !sameHex(last, h)) { toast(B.k65.pathTail); return; }
         setAimPts(aimPts.slice(0, -1)); setAimHex(h); return;
       }
-      const why = pathAddProblem(state, me, areaAct.spell, aimPts, wp, h);
+      const why = pathAddProblem(state, me, areaAct.spell, aimPts, wp, h, areaPathRules(state, areaAct));
       if (why) { toast(why); return; }
       setAimPts([...aimPts, h]); setAimHex(h); return;
     }
-    const max = areaPointCount(state, areaAct, choicePick);
+    const max = areaPointCount(state, areaAct, choicePick, wallShape);
     if (max > 1) setAimPts((ps) => (ps.some((p) => sameHex(p, h)) ? ps.filter((p) => !sameHex(p, h)) : ps.length < max ? [...ps, h] : ps));
     setAimHex(h);
   };
@@ -943,10 +943,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return out;
     }
     // Kuyruk K65b (Wind Wall yolu): eklenebilir altıgenler (son altıgene bitişik; ilki menzilde).
-    const wp = areaWallPath(state, areaAct);
+    const wp = areaWallPath(state, areaAct, wallShape);
     if (wp && areaAct.kind === 'spell') {
       const out = new Set<string>();
-      state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!aimPts.some((p) => sameHex(p, h)) && !pathAddProblem(state, me, areaAct.spell, aimPts, wp, h)) out.add(hexKey(h)); }));
+      state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!aimPts.some((p) => sameHex(p, h)) && !pathAddProblem(state, me, areaAct.spell, aimPts, wp, h, areaPathRules(state, areaAct))) out.add(hexKey(h)); }));
       return out;
     }
     if (!freeHexRule(state)) return null;
@@ -960,8 +960,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   useEffect(() => { if (targetId && !glowing.has(targetId)) setTargetId(null); }, [glowing, targetId]);
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
   const areaInfo = useMemo(() => (mode === 'aim' && areaAct && actor
-    ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : areaPointCount(state, areaAct, choicePick) > 1 ? aimPts[0] ?? null : aimHex, wallShape === 'line' ? null : wallShape,
-      areaPointCount(state, areaAct, choicePick) > 1 ? aimPts : undefined, choicePick) : null),
+    ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : areaPointCount(state, areaAct, choicePick, wallShape) > 1 ? aimPts[0] ?? null : aimHex, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
+      areaPointCount(state, areaAct, choicePick, wallShape) > 1 ? aimPts : undefined, choicePick) : null),
   [state, actor, areaAct, aimHex, aimPts, mode, wallShape, choicePick]);
   const area = areaInfo?.hexes ?? [];
   const areaFriends = new Set((areaInfo?.friends ?? []).map((c) => c.id));
@@ -2102,6 +2102,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       // Kuyruk 19: Telekinesis iki adımda (hedef, sonra varış altıgeni ya da havaya kaldır).
                       if (kind === 'area' && sp.mechanics.telekinesis && state.kuralSurumu !== undefined && state.kuralSurumu >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(false); setMode('tk'); }
                       else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setMode('aim'); }
+                      // Kuyruk K65c (sürüm 49): panelli duvarlar ortak alan seçicisinde (düz, yay, halka, serbest panel yolu).
+                      else if (kind === 'target' && sp.area && mechanicsAt(state, sp).pathRules) { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setWallShape('path'); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setChoicePick(sp.mechanics.conditionChoices?.[0] ?? sp.mechanics.damageChoices?.[0] ?? sp.mechanics.restoreChoices?.[0] ?? sp.mechanics.abilityChoices?.[0] ?? null); setMode('spell'); }
                       // Kuyruk K62 (sürüm 46): Forcecage: hedef altıgen + kutu/kafes seçimi (alan hazır ayarlı).
                       // Kuyruk K65b (sürüm 49): Forcecage serbest şekil: ortak alan seçici (kutu/kafes düğmesi, sayaç).
@@ -2338,7 +2340,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const at = { x: cx > box.w / 2 ? 8 : Math.max(8, box.w - size.w - 8), y: Math.max(8, Math.min(box.h - size.h - 8, cy - size.h / 2)) };
             const foes = areaInfo?.foes ?? [];
             const friends = areaInfo?.friends ?? [];
-            const multi = areaPointCount(state, areaAct, choicePick);
+            const multi = areaPointCount(state, areaAct, choicePick, wallShape);
             const freeShape = areaFreeShape(state, areaAct, choicePick);
             const ready = multi > 1 ? aimPts.length > 0 : !needAim || !!aimHex;
             return (
@@ -2360,7 +2362,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <button type="button" disabled={!aimPts.length} onClick={() => { setAimPts([]); setAimHex(null); }}>{B.k65.clear}</button>
                   </div>
                 )}
-                {multi > 1 && !freeShape && <small>{A.pickPoints(aimPts.length, multi)}</small>}
+                {multi > 1 && !freeShape && <small>{areaPathRules(state, areaAct) ? `${B.k65.panels(aimPts.length, multi)} · ${B.k65.pathHint}` : A.pickPoints(aimPts.length, multi)}</small>}
                 {!ready && multi <= 1 && <small>{selfShape ? A.pickDir : A.pickPoint}</small>}
                 {ready && areaInfo?.error && <small className="warn-text">{areaInfo.error}</small>}
                 {ready && !areaInfo?.error && (
@@ -2385,6 +2387,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     {areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) && (state.kuralSurumu ?? 1) >= 16 && (<>
                       <button type="button" className={wallSide === 'near' ? 'on' : ''} aria-pressed={wallSide === 'near'} onClick={() => setWallSide('near')}>{A.wallNear}</button>
                       <button type="button" className={wallSide === 'far' ? 'on' : ''} aria-pressed={wallSide === 'far'} onClick={() => setWallSide('far')}>{A.wallFar}</button></>)}
+                    {/* Kuyruk K65c (sürüm 49): panelli duvarda serbest panel yolu. */}
+                    {areaPathRules(state, areaAct) && <button type="button" className={wallShape === 'path' ? 'on' : ''} aria-pressed={wallShape === 'path'} onClick={() => { setWallShape('path'); setAimPts([]); setAimHex(null); }}>{B.k65.wallPath}</button>}
                     {sp.spec.ring && <button type="button" className={wallShape === 'ring' ? 'on' : ''} aria-pressed={wallShape === 'ring'} onClick={() => setWallShape('ring')}>{A.wallRing}</button>}
                   </div>
                 )}
@@ -2394,11 +2398,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
                 {/* Kuyruk K65b: Forcecage'de önizleme kartı yok (hasar/durum yok, "etkisiz" yanıltır); içeride kalacaklar yukarıdaki listede. */}
                 {pvSet.on && ready && !areaInfo?.error && !(areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage) && <Suspense fallback={null}><PreviewCard state={state} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet}
-                  cmd={areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' ? null : wallShape,
+                  cmd={areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
                     areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
                     areaExcludable(state, areaAct) ? excluded : undefined)} /></Suspense>}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
-                  onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' ? null : wallShape,
+                  onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
                     areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
                     areaExcludable(state, areaAct) ? excluded : undefined))}>
                   {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}

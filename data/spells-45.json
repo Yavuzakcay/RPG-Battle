@@ -1239,7 +1239,8 @@
         "color": "#b9a7ff",
         "icon": "▦"
       },
-      "k19": "K17: düz ya da yay duvar. Kuyruk 19: kubbe/küre (10 ft yarıçap halka), görünmez (görüşü kesmez, hiçbir şey geçemez: saldırı ve alan tam siperde), açıldığı altıgendeki yaratık büyücünün seçtiği yana itilir (anahtar spellsK19). Engelden geçen (Incorporeal) de geçemez (Ethereal'i keser). Disintegrate (6. seviye) duvarı yok eder: Görev 3 ile."
+      "k19": "K17: düz ya da yay duvar. Kuyruk 19: kubbe/küre (10 ft yarıçap halka), görünmez (görüşü kesmez, hiçbir şey geçemez: saldırı ve alan tam siperde), açıldığı altıgendeki yaratık büyücünün seçtiği yana itilir (anahtar spellsK19). Engelden geçen (Incorporeal) de geçemez (Ethereal'i keser). Disintegrate (6. seviye) duvarı yok eder: Görev 3 ile.",
+      "k65": { "wallPath": 20, "pathRules": { "rangeAll": true, "sightFirst": true } }
     },
     "school": "Evocation",
     "srdPage": 172,
@@ -1275,7 +1276,8 @@
         "color": "#9a8f80",
         "icon": "🧱"
       },
-      "k19": "K17: düz ya da yay duvar. Kuyruk 19: halka biçimi, açıldığı altıgendeki yaratık seçilen yana itilir, her yandan kapatılan DEX save ile tepkisiyle dışarı çıkar; altıgen başına panel AC 15, 90 HP (Poison/Psychic bağışık), 0'da yıkılır (saldırı ve alan hasarı); konsantrasyon tam süre (10 dk) sürerse kalıcı (anahtar spellsK19). Köprü/rampa ve mazgal biçimi: oyunda dikey katman yok, düz zemin duvarı (savaş dışı)."
+      "k19": "K17: düz ya da yay duvar. Kuyruk 19: halka biçimi, açıldığı altıgendeki yaratık seçilen yana itilir, her yandan kapatılan DEX save ile tepkisiyle dışarı çıkar; altıgen başına panel AC 15, 90 HP (Poison/Psychic bağışık), 0'da yıkılır (saldırı ve alan hasarı); konsantrasyon tam süre (10 dk) sürerse kalıcı (anahtar spellsK19). Köprü/rampa ve mazgal biçimi: oyunda dikey katman yok, düz zemin duvarı (savaş dışı).",
+      "k65": { "wallPath": 20, "pathRules": { "rangeAll": true, "sightFirst": true } }
     },
     "school": "Evocation",
     "srdPage": 173,

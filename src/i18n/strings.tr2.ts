@@ -316,7 +316,7 @@ export const TR_EXTRA = {
       mystery: '? Burada bir şey olabilir', reactions: 'Tepkime', conditions: 'Durum', none: 'Etkisiz görünüyor', error: (e: string): string => `Yapılamaz: ${e}`,
     },
     k65: { head: (spell: string): string => `${spell}: alanı boya`, count: (n: number, max: number): string => `${n}/${max} altıgen`,
-      hint: 'Dokun: ekle/çıkar; her altıgen seçili alana bitişik olmalı', undo: 'Geri al', clear: 'Temizle', pathTail: 'Duvar yolu yalnızca sondan kısalır: son altıgene dokun.', cageKind: (name: string, max: number): string => `${name} (en çok ${max})`, note: (n: number): string => `serbest alan, en çok ${n} altıgen` },
+      hint: 'Dokun: ekle/çıkar; her altıgen seçili alana bitişik olmalı', undo: 'Geri al', clear: 'Temizle', pathTail: 'Duvar yolu yalnızca sondan kısalır: son altıgene dokun.', wallPath: 'Yol', pathHint: 'Dokun: yol son altıgene bitişik uzar; son altıgene dokununca kısalır', panels: (hexes: number, max: number): string => `${Math.ceil(hexes / 2)}/${Math.round(max / 2)} panel · ${hexes}/${max} altıgen`, cageKind: (name: string, max: number): string => `${name} (en çok ${max})`, note: (n: number): string => `serbest alan, en çok ${n} altıgen` },
     k64: { possessed: (by: string): string => `Ele geçirilmiş: beden ${by} yönetiminde`, leave: 'Bedeni bırak', gmEnd: 'Ele geçirmeyi bitir',
       dormant: (by: string): string => `Ele geçirme bastırılmış (Hallow): ${by} bedeni yönetemiyor`,
       wardTitle: (who: string): string => `${who}: koruma alanı`,

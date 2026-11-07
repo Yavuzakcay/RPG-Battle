@@ -2,6 +2,25 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K65c: Panelli duvarlar serbest panel yolu (kural sürümü 49'da kalır)
+
+- **Sürüm:** K65a/b ile aynı özellik; 49 henüz yayınlanmadı (dal `wip/k65`), sürüm **49'da kalır**. Depoda `kuralSurumu: 49` taşıyan kayıt dosyası arandı, yok. Yeni yol yalnızca `k65` bloğu (sürüm 49) ile; 48 ve altında K62/K19 duvarı (düz, yay, halka) aynen, `targetHexes` yok sayılır. `SAVE_VERSION` 22. Denge, büyü `text` ve canavar verisi değişmedi.
+- **Veri:** Wall of Stone, Wall of Ice, Wall of Force'ta `k65: { wallPath: 20, pathRules: { rangeAll: true, sightFirst: true } }`.
+- **Panel birimi (kullanıcı kararı):** `walls.ts` panel/bölüm tanımı aynen (panel canı altıgen başına, kimlik `wall:<alan>:<sütun>,<satır>`). K65 kararıyla tutarlı türetme: 10 ft küp = 4 altıgen (2×2), yani 10 ft kenar = 2 altıgen; bir panel yol boyunca 2 altıgen, 10 panel = **20 altıgen**. Bu, var olan 100 ft düz duvarın 20 altıgeniyle aynı. Sayaç "3/10 panel · 6/20 altıgen".
+- **Doğrulama tek yerde** (`freeShape.ts` `pathProblem` + `PathRules`): ≤ 20, harita içi, tekrarsız, her altıgen bir öncekine bitişik, her altıgen menzilde (`rangeAll`), ilk altıgen görüşte (`sightFirst`; kullanıcı kararı). Motor (`zones.ts` `wallPathHexes`), önizleme (`hud.ts` `areaActPreview`) ve yapay zekâ aynı fonksiyonu kullanır; iletiler aynı. Seçicide yol yalnızca uca bitişik uzar, yalnızca sondan kısalır (`pathAddProblem`; Wind Wall şablonu). Wind Wall S2 kuralında kalır (yalnızca ilk altıgen menzil sınavı).
+- **Panel davranışı değişmedi:** Wall of Stone AC 15 / 90 HP, Wall of Ice AC 12 / 30 HP, Cold/Poison/Psychic bağışık, Fire iki kat, kırılınca donuk hava perdesi (K62); Wall of Force hasara bağışık, paneli yok. `attack_object` panel kimlikleri yol altıgeninden; bir panel kırılınca yalnızca o altıgen düşer. Yaratık üstüne gelen duvar var olan itmeyle (K19).
+- **SRD'den / plandan ayrılan yerler:**
+  - SRD "Each panel must be contiguous with another panel" der: dallanan yüzey mümkün. Biz Wind Wall şablonundaki gibi **doğrusal zincir** kullanıyoruz (uçtan uzar); dallanma yok.
+  - Wall of Stone'un 10×20 ft (3 inç) panel seçeneği modellenmedi (bütçe 20 altıgen sabit).
+  - Wall of Ice/Force kubbe/küre ve düz/yay biçimleri yerinde; yol isteğe bağlı (sürüm 49'da arayüzde varsayılan "Yol"). Düz duvar sürüm 49'da da yapılır.
+  - Panel canı SRD'deki "10 ft bölüm" yerine altıgen başına (K62'den gelen yaklaşım, kullanıcı kararıyla korundu).
+  - Yatay/eğik yüzey, Ethereal engeli modellenmez (2B harita).
+- **Yapay zekâ (`k65:duvar`, `kuralOnceligi` 12):** `wallAim`. Koşul: 6 altıgen içinde en az 2 düşman, hiçbiri 3 altıgenden yakın değil, büyücüye bitişik düşman yok. Büyücü çevresinde r = max(2, en yakın düşman uzaklığı / 2) halkası; düşmana en yakın halka altıgeninden iki yöne uzanır, dolu/engelli altıgen atlanmaz (yol orada biter); dost, masum, düşman ve nesne altıgeni hiç seçilmez (kullanıcı kararı). En az 4 altıgen; ilk altıgen görüşte değilse yol ters çevrilir; sonuç `pathProblem` sınavından geçer. K18 H2 bölme kuralı (düz duvar) yerinde, ikisi yarışır.
+  - Karar süresi (15×7, Wall of Stone, `chooseCommand`): sürüm 48'de 0,9 ms, 49'da 0,8 ms.
+- **Arayüz:** panelli duvarlar büyü listesinden ortak alan seçicisine (`aim`) girer (önceden hedef altıgen seçimiydi); biçim düğmeleri Düz/Yay/Yakın yan/Uzak yan/**Yol**. Yolda sayaç panel ve altıgen, ipucu, eklenebilir altıgen vurgusu, Geri al/Temizle; önizleme bitişik olmayan yolda motorun iletisini gösterir. TR/EN.
+- **Açık kalanlar:** Disintegrate'in Wall of Force'u yok etmesi (SRD) uygulanmadı; yapay zekânın Wall of Ice panellerini hedef alması (yolu açmak için panele saldırı) yok; yolda dallanma; Wall of Stone 10×20 seçeneği.
+- **Test:** `src/battle/k65c.test.ts` (6): veri ve sürüm 48; Wall of Stone yolu (panel kimlikleri, bir panel kırılınca); Wall of Ice panel değerleri ve Cold bağışıklığı, Wall of Force panelsiz; kenar durumlar (21 altıgen, bitişik olmayan, tekrar, duvar arkasında ilk altıgen, duvar ardına uzanma, menzil her altıgende, uca bitişiklik); sürüm 49'da düz duvar, 48'de `targetHexes` yok sayılır; seçici sayacı ve önizleme iletisi; YZ (yaratıksız bitişik yol, komut geçerli). K62–K65b, Wall of Stone panel ve Resilient Sphere (`sealed`) testleri aynen.
+
 ## 2026-11-08 — Kuyruk K65b: Forcecage serbest boyut + Wind Wall yol denetimi (kural sürümü 49'da kalır)
 
 - **Sürüm:** K65a ile aynı özellik; 49 henüz hiçbir yerde yayınlanmadı (dal `wip/k65`). Sürüm **49'da kalır**. Depoda `kuralSurumu: 49` taşıyan kayıt dosyası arandı, yok. Forcecage'in yeni yolu yalnızca `k65` bloğu (sürüm 49) ile; 48 ve altında K62 ön ayarı (kutu = hedef + 3 komşu, kafes yarıçap 2) aynen, `targetHexes` yok sayılır. `SAVE_VERSION` 22. Denge, büyü `text` ve canavar verisi değişmedi.
@@ -24,7 +43,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Sürüm 49'da Forcecage ortak alan seçicisinde (`aim`): "Forcecage: alanı boya", sayaç "3/4" (kutu) ya da "12/19" (kafes), kutu/kafes düğmeleri sınırlarıyla, Geri al/Temizle, sınır dolunca neden. 48'de K62'nin hedef altıgen seçimi.
   - Önizleme kartı Forcecage'de gösterilmez: önizleme hedefi yalnızca hasar/durum/etki/itme ile sayar, tutsaklık bayrağı karta girmez, kart "Etkisiz görünüyor" diyordu. İçeride kalacaklar balondaki dost/düşman listesinde. Kartın önizleme motoru yapay zekâ puanlamasıyla ortak olduğu için değiştirilmedi.
   - Wind Wall: "Duvar yolu yalnızca sondan kısalır" uyarısı. TR/EN.
-- **K65c'ye açık madde:** panelli duvarlar (Wall of Stone/Ice/Force serbest panel yolu; panel HP'si altıgen anahtarlı, `walls.ts`). K66 earthquake kuyruğuyla karıştırılmaz.
+- **K65c'ye açık madde (K65c'de yapıldı, yukarıdaki kayda bakın):** panelli duvarlar (Wall of Stone/Ice/Force serbest panel yolu; panel HP'si altıgen anahtarlı, `walls.ts`). K66 earthquake kuyruğuyla karıştırılmaz.
 - **Test:** `src/battle/k65b.test.ts` (8): veri ve sürüm 48; kutu 3 altıgen (tutsak, görüş keser); kafes 5 altıgen (görüş kesmez); kutuda 5. altıgen ve kafeste 20. altıgen reddi; iki parça, duvar arkasında ilk altıgen; sürüm 48'de K62 ön ayarı; önizleme ve sayaç; YZ (en güçlü + bitişik düşman, dost bitişikken kapsamaz); Wind Wall yol denetimi (seçici, motor, önizleme aynı ileti). K62, K63, K64a/b, K65a, Resilient Sphere (`sealed`) testleri aynen.
 
 ## 2026-11-08 — Kuyruk K65a: Serbest şekil alan seçici + Fire Storm (kural sürümü 49)

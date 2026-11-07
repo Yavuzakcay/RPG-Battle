@@ -7,7 +7,7 @@
  * Saf.
  */
 import type { Spell } from '../data/types';
-import { distance, isInside, neighbors, sameHex, hexKey, type Offset } from '../rules/hex';
+import { distance, isInside, neighbors, ring, sameHex, hexKey, type Offset } from '../rules/hex';
 import type { AreaPick } from './areaAttack';
 import { bodyOf } from './body';
 import { fail, isIntangible, isTargetable, type Failure } from './common';
@@ -178,7 +178,13 @@ export function freeShapeAim(state: BattleState, actor: Combatant, spell: Spell,
  * Kuyruk K65b (Wind Wall `wallPath`, sürüm 41'den beri motorda): duvar yolu sırası. Bitişik altıgenler, tekrarsız, harita
  * içi, ilki menzilde. Motor (`zones.ts` `wallPathHexes`) ve seçici aynı denetimi kullanır.
  */
-export function pathProblem(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number): string | null {
+export interface PathRules {
+  /** Kuyruk K65c (panelli duvarlar): her altıgen menzilde (Wind Wall'da yalnızca ilki). */
+  rangeAll?: boolean;
+  /** Kuyruk K65c: ilk altıgen büyücünün görüşünde. */
+  sightFirst?: boolean;
+}
+export function pathProblem(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number, rules?: PathRules): string | null {
   if (path.length > max) return `${spell.name}: duvar en çok ${max} altıgen (${max * 5} ft).`;
   const size = sizeOf(state);
   for (let i = 0; i < path.length; i++) {
@@ -188,15 +194,57 @@ export function pathProblem(state: BattleState, actor: Combatant, spell: Spell, 
     if (i > 0 && distance(path[i - 1] as Offset, h) !== 1) return 'Duvar yolunun altıgenleri birbirine bitişik olmalı.';
   }
   if (!actor.pos || (path[0] && distance(actor.pos, path[0]) * 5 > spell.rangeFt)) return `${spell.name}: duvarın başı menzil dışında (${spell.rangeFt} ft).`;
+  // Kuyruk K65c (sürüm 49, panelli duvarlar): her altıgen menzilde, ilk altıgen görüşte (K65a/b serbest şekille aynı kural).
+  if (rules) {
+    const fs: FreeShape = { maxHexes: max, rangeAll: rules.rangeAll, sightFirst: rules.sightFirst };
+    for (let i = 0; i < path.length; i++) {
+      const why = freeHexProblem(state, actor, spell, fs, path[i] as Offset, i === 0);
+      if (why) return why;
+    }
+  }
   return null;
 }
 
 /** Seçici: yol sonuna eklenecek altıgenin sorunu (yolun son altıgenine bitişik; ilki menzilde) ya da null. */
-export function pathAddProblem(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number, h: Offset): string | null {
+export function pathAddProblem(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number, h: Offset, rules?: PathRules): string | null {
   if (path.length >= max) return `${spell.name}: sınır doldu (${max}).`;
   const last = path[path.length - 1];
   if (last && distance(last, h) !== 1) return 'Duvar yolu yalnızca son altıgene bitişik uzar.';
-  return pathProblem(state, actor, spell, [...path, h], max);
+  return pathProblem(state, actor, spell, [...path, h], max, rules);
+}
+
+/**
+ * Kuyruk K65c (yapay zekâ, panelli duvar): düşmanlarla büyücü arasına, büyücüden r altıgen uzaktaki halkanın düşmanlara
+ * bakan yayı (halka sırası bitişik). r = en yakın düşmana uzaklığın yarısı (en az 2). Dost, büyücü, masum ya da herhangi
+ * bir yaratık altıgeni yolda olmaz; yol `pathProblem`'den geçer. Yay en çok `max` altıgen, düşmana en yakın altıgenden
+ * iki yana genişler.
+ */
+export function wallAim(state: BattleState, actor: Combatant, spell: Spell, max: number, rules: PathRules | undefined, foes: Combatant[]): Offset[] | null {
+  if (!state.map || !actor.pos) return null;
+  const me = actor.pos;
+  const near = foes.filter((f) => f.pos && f.hp > 0).sort((a, b) => distance(me, a.pos as Offset) - distance(me, b.pos as Offset))[0];
+  if (!near?.pos) return null;
+  const r = Math.max(2, Math.floor(distance(me, near.pos) / 2));
+  const size = sizeOf(state);
+  const taken = new Set(Object.values(state.combatants).filter((c) => c.pos && c.hp > 0).flatMap((c) => bodyOf(state, c).map(hexKey)));
+  const loop = ring(me, r);
+  if (!loop.length) return null;
+  const start = loop.reduce((b, h, i) => (distance(h, near.pos as Offset) < distance(loop[b] as Offset, near.pos as Offset) ? i : b), 0);
+  const ok = (h: Offset) => isInside(h, size) && !taken.has(hexKey(h)) && !terrainAt(state, h).outOfBounds && terrainAt(state, h).movement !== 'blocked';
+  if (!ok(loop[start] as Offset)) return null;
+  const path: Offset[] = [loop[start] as Offset];
+  let a = start, b = start;
+  while (path.length < max) {
+    const nb = (b + 1) % loop.length, na = (a - 1 + loop.length) % loop.length;
+    const grewB = nb !== a && ok(loop[nb] as Offset) && path.length < max;
+    if (grewB) { path.push(loop[nb] as Offset); b = nb; }
+    const grewA = na !== b && path.length < max && ok(loop[na] as Offset);
+    if (grewA) { path.unshift(loop[na] as Offset); a = na; }
+    if (!grewA && !grewB) break;
+  }
+  // Yol sırası: ilk altıgen görüşte olmalı; değilse ters çevrilir.
+  const ordered = rules?.sightFirst && freeHexProblem(state, actor, spell, { maxHexes: max, sightFirst: true }, path[0] as Offset, true) ? [...path].reverse() : path;
+  return pathProblem(state, actor, spell, ordered, max, rules) ? null : ordered;
 }
 
 /**

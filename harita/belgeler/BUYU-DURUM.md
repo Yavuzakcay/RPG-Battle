@@ -331,8 +331,8 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | telepathic-bond | 5 | spells-45.json | savaş dışı |  |  |  |
 | teleportation-circle | 5 | spells-45.json | savaş dışı |  |  |  |
 | tree-stride | 5 | spells-45.json | çalışır |  |  |  |
-| wall-of-force | 5 | spells-45.json | çalışır |  |  |  |
-| wall-of-stone | 5 | spells-45.json | çalışır |  |  |  |
+| wall-of-force | 5 | spells-45.json | çalışır | k65 (sürüm 49) |  |  |
+| wall-of-stone | 5 | spells-45.json | çalışır | k65 (sürüm 49) |  |  |
 | blade-barrier | 6 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
 | chain-lightning | 6 | spells-69.json | çalışır |  |  | hayır |
 | circle-of-death | 6 | spells-69.json | çalışır |  |  | hayır |
@@ -360,7 +360,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | sunbeam | 6 | spells-69.json | çalışır |  |  | hayır |
 | transport-via-plants | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | true-seeing | 6 | spells-69.json | çalışır | k63 (sürüm 47) |  | hayır |
-| wall-of-ice | 6 | spells-69.json | çalışır | k62 (sürüm 46) |  | hayır |
+| wall-of-ice | 6 | spells-69.json | çalışır | k65 (sürüm 49) |  | hayır |
 | wall-of-thorns | 6 | spells-69.json | çalışır |  |  | hayır |
 | wind-walk | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | word-of-recall | 6 | spells-69.json | savaş dışı |  |  | hayır |
