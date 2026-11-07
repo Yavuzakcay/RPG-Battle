@@ -12,7 +12,7 @@ await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
 const { SCENARIOS, measure, setPartyKind, setPartySubclass, setSimHouseRules } = await import('./balance');
 
 declare const process: { argv: string[] };
-type FsLike = { appendFileSync(p: string, d: string): void; existsSync(p: string): boolean; readFileSync(p: string, e: string): string };
+type FsLike = { appendFileSync(p: string, d: string): void; existsSync(p: string): boolean; readFileSync(p: string, e: string): string; readdirSync(p: string): string[]; mkdirSync(p: string, o?: { recursive?: boolean }): void };
 const NODE_FS: string = 'node:fs';
 const fs = (await import(/* @vite-ignore */ NODE_FS)) as FsLike;
 const args = process.argv.slice(2).filter((a) => a !== '--');
@@ -35,12 +35,20 @@ for (const level of levels) for (const cls of classes) {
 }
 const done = new Set<string>();
 const key = (u: Unit) => `${u.level}|${u.cls}|${u.sub}|${u.scenario}|${runs}`;
-if (fs.existsSync(out)) for (const line of fs.readFileSync(out, 'utf8').split('\n').filter(Boolean)) {
+// Çıktının klasöründeki bütün *.jsonl dosyaları (başka işçilerin sonuçları da) yapılmış sayılır.
+const dir = out.includes('/') ? out.slice(0, out.lastIndexOf('/')) : '.';
+for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.jsonl'))) for (const line of fs.readFileSync(`${dir}/${f}`, 'utf8').split('\n').filter(Boolean)) {
   try { const r = JSON.parse(line) as Unit & { runs: number }; done.add(`${r.level}|${r.cls}|${r.sub}|${r.scenario}|${r.runs}`); } catch { /* yarım satır */ }
 }
 const mine = units.filter((_, i) => i % parts === part).filter((u) => !done.has(key(u)));
 console.log(`birim ${units.length}, bu parça ${mine.length} (yapılmış ${done.size})`);
+/** `--kap`: birimler klasördeki kilit dizinleriyle kapılır (her sayıda işçi; aynı birim iki kez ölçülmez). */
+const grab = args.includes('--kap');
 for (const u of mine) {
+  if (grab) {
+    const lock = `${dir}/kilit/${key(u).replace(/[|]/g, '_')}`;
+    try { fs.mkdirSync(`${dir}/kilit`, { recursive: true }); fs.mkdirSync(lock); } catch { continue; }
+  }
   const sc = SCENARIOS.find((s) => s.id === u.scenario);
   if (!sc) throw new Error(`senaryo yok: ${u.scenario}`);
   setPartyKind(`k18-${u.cls}`);
