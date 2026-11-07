@@ -1563,11 +1563,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   const spec = zoneSpecOf(z);
                   const first = hexes[0];
                   return (
-                    <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}${z.surface ? ` surface ${z.surface}` : ''}`} style={{ ['--zone' as string]: spec?.color ?? '#9ab' }} aria-hidden="true">
+                    <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}${z.surface ? ` surface ${z.surface}` : ''}`} style={{ ['--zone' as string]: spec?.color ?? (z.ward ? '#e3c86a' : '#9ab') }} aria-hidden="true">
                       <title>{z.name}</title>
                       {hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />)}
                       {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon
                         ? <text key={`i${hexKey(h)}`} x={hexCenter(h).x} y={hexCenter(h).y - HEX_H * 0.22} className="zone-icon">{spec.icon}</text> : null)}
+                      {/* Kuyruk K64b: koruma alanı (Magic Circle ◎, Hallow ✚) merkezinde simge. */}
+                      {z.ward && z.center && <text x={hexCenter(z.center).x} y={hexCenter(z.center).y - HEX_H * 0.22} className="zone-icon">{z.ward.kind === 'hallow' ? '✚' : '◎'}</text>}
                     </g>
                   );
                 })}
