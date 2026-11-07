@@ -82,7 +82,8 @@ function measureUsage(subId: string, cls: string, evKurali: string | null | unde
         if (!r.ok) break;
         const mine = who.has(actorId);
         const imzaCmd = mine && cmd.type === 'use_feature' && String((cmd as { feature?: string }).feature ?? '').startsWith('imza:');
-        if (imzaCmd) u.action++; else traced(r.events);
+        if (imzaCmd) { u.action++; if (DEBUG) console.log('EYLEM', (cmd as { feature?: string }).feature); } else traced(r.events);
+        if (DEBUG && mine && cmd.type !== 'move' && cmd.type !== 'use_feature') console.log('KOMUT', cmd.type);
         if (mine && cmd.type === 'cast_spell') { u.cast++; if (prepared.has(cmd.spellName)) u.subSpell++; }
         if (mine && cmd.type === 'attack') u.attack++;
         state = r.state;
