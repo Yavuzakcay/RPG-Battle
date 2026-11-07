@@ -13,7 +13,7 @@ Toplam 339 = savaşta kullanılan 227 + savaş dışı 112.
 | 6–9 | 51 | 0 | 0 | 33 | 84 |
 | **Toplam** | 227 | 0 | 0 | 112 | 339 |
 
-Çalışır olanlardan: Game Master notlu 6, kapsam dışı notlu 29, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 84 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
+Çalışır olanlardan: Game Master notlu 6, kapsam dışı notlu 29, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
 
 ## Game Master notlu (savaş etkisi tam, kalan parça Game Master'da)
 
@@ -336,87 +336,87 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | tree-stride | 5 | spells-45.json | çalışır |  |  |  |
 | wall-of-force | 5 | spells-45.json | çalışır |  |  |  |
 | wall-of-stone | 5 | spells-45.json | çalışır |  |  |  |
-| blade-barrier | 6 | spells-69.json | çalışır |  |  | evet |
-| chain-lightning | 6 | spells-69.json | çalışır |  |  | evet |
-| circle-of-death | 6 | spells-69.json | çalışır |  |  | evet |
-| conjure-fey | 6 | spells-69.json | çalışır | a6 (sürüm 35) |  | evet |
-| contingency | 6 | spells-69.json | savaş dışı |  |  | evet |
-| create-undead | 6 | spells-69.json | savaş dışı |  |  | evet |
-| disintegrate | 6 | spells-69.json | çalışır |  |  | evet |
-| eyebite | 6 | spells-69.json | çalışır |  |  | evet |
-| find-the-path | 6 | spells-69.json | savaş dışı |  |  | evet |
-| flesh-to-stone | 6 | spells-69.json | çalışır |  |  | evet |
-| forbiddance | 6 | spells-69.json | savaş dışı |  |  | evet |
-| freezing-sphere | 6 | spells-69.json | çalışır |  |  | evet |
-| globe-of-invulnerability | 6 | spells-69.json | çalışır |  |  | evet |
-| guards-and-wards | 6 | spells-69.json | savaş dışı |  |  | evet |
-| harm | 6 | spells-69.json | çalışır |  |  | evet |
-| heal | 6 | spells-69.json | çalışır |  |  | evet |
-| heroes-feast | 6 | spells-69.json | savaş dışı |  |  | evet |
-| instant-summons | 6 | spells-69.json | savaş dışı |  |  | evet |
-| irresistible-dance | 6 | spells-69.json | çalışır |  |  | evet |
-| magic-jar | 6 | spells-69.json | savaş dışı |  |  | evet |
-| mass-suggestion | 6 | spells-69.json | çalışır | s1 (sürüm 40) |  | evet |
-| move-earth | 6 | spells-69.json | savaş dışı |  |  | evet |
-| planar-ally | 6 | spells-69.json | savaş dışı |  |  | evet |
-| programmed-illusion | 6 | spells-69.json | savaş dışı |  |  | evet |
-| sunbeam | 6 | spells-69.json | çalışır |  |  | evet |
-| transport-via-plants | 6 | spells-69.json | savaş dışı |  |  | evet |
-| true-seeing | 6 | spells-69.json | çalışır |  |  | evet |
-| wall-of-ice | 6 | spells-69.json | çalışır |  |  | evet |
-| wall-of-thorns | 6 | spells-69.json | çalışır |  |  | evet |
-| wind-walk | 6 | spells-69.json | savaş dışı |  |  | evet |
-| word-of-recall | 6 | spells-69.json | savaş dışı |  |  | evet |
-| arcane-sword | 7 | spells-69.json | çalışır |  |  | evet |
-| conjure-celestial | 7 | spells-69.json | çalışır |  |  | evet |
-| delayed-blast-fireball | 7 | spells-69.json | çalışır |  |  | evet |
-| divine-word | 7 | spells-69.json | çalışır |  |  | evet |
-| etherealness | 7 | spells-69.json | çalışır |  |  | evet |
-| finger-of-death | 7 | spells-69.json | çalışır |  |  | evet |
-| fire-storm | 7 | spells-69.json | çalışır |  |  | evet |
-| forcecage | 7 | spells-69.json | çalışır |  |  | evet |
-| magnificent-mansion | 7 | spells-69.json | savaş dışı |  |  | evet |
-| mirage-arcane | 7 | spells-69.json | savaş dışı |  |  | evet |
-| plane-shift | 7 | spells-69.json | çalışır | s1 (sürüm 40) |  | evet |
-| prismatic-spray | 7 | spells-69.json | çalışır |  |  | evet |
-| project-image | 7 | spells-69.json | savaş dışı |  |  | evet |
-| regenerate | 7 | spells-69.json | savaş dışı |  |  | evet |
-| resurrection | 7 | spells-69.json | savaş dışı |  |  | evet |
-| reverse-gravity | 7 | spells-69.json | çalışır |  |  | evet |
-| sequester | 7 | spells-69.json | savaş dışı |  |  | evet |
-| simulacrum | 7 | spells-69.json | savaş dışı |  |  | evet |
-| symbol | 7 | spells-69.json | savaş dışı |  |  | evet |
-| teleport | 7 | spells-69.json | savaş dışı |  |  | evet |
-| animal-shapes | 8 | spells-69.json | çalışır | a7 (sürüm 36) |  | evet |
-| antimagic-field | 8 | spells-69.json | çalışır |  |  | evet |
-| antipathy-sympathy | 8 | spells-69.json | savaş dışı |  |  | evet |
-| befuddlement | 8 | spells-69.json | çalışır |  |  | evet |
-| clone | 8 | spells-69.json | savaş dışı |  |  | evet |
-| control-weather | 8 | spells-69.json | savaş dışı |  |  | evet |
-| demiplane | 8 | spells-69.json | savaş dışı |  |  | evet |
-| dominate-monster | 8 | spells-69.json | çalışır |  |  | evet |
-| earthquake | 8 | spells-69.json | çalışır |  |  | evet |
-| glibness | 8 | spells-69.json | çalışır |  |  | evet |
-| holy-aura | 8 | spells-69.json | çalışır | a4 (sürüm 32) |  | evet |
-| incendiary-cloud | 8 | spells-69.json | çalışır |  |  | evet |
-| maze | 8 | spells-69.json | çalışır |  |  | evet |
-| mind-blank | 8 | spells-69.json | çalışır |  |  | evet |
-| power-word-stun | 8 | spells-69.json | çalışır |  |  | evet |
-| sunburst | 8 | spells-69.json | çalışır |  |  | evet |
-| tsunami | 8 | spells-69.json | savaş dışı |  |  | evet |
-| astral-projection | 9 | spells-69.json | savaş dışı |  |  | evet |
-| foresight | 9 | spells-69.json | savaş dışı |  |  | evet |
-| gate | 9 | spells-69.json | savaş dışı |  |  | evet |
-| imprisonment | 9 | spells-69.json | savaş dışı |  |  | evet |
-| mass-heal | 9 | spells-69.json | çalışır |  |  | evet |
-| meteor-swarm | 9 | spells-69.json | çalışır | s1 (sürüm 40) |  | evet |
-| power-word-heal | 9 | spells-69.json | çalışır |  |  | evet |
-| power-word-kill | 9 | spells-69.json | çalışır |  |  | evet |
-| prismatic-wall | 9 | spells-69.json | çalışır |  |  | evet |
-| shapechange | 9 | spells-69.json | çalışır |  |  | evet |
-| storm-of-vengeance | 9 | spells-69.json | çalışır |  |  | evet |
-| time-stop | 9 | spells-69.json | çalışır |  |  | evet |
-| true-polymorph | 9 | spells-69.json | çalışır |  |  | evet |
-| true-resurrection | 9 | spells-69.json | savaş dışı |  |  | evet |
-| weird | 9 | spells-69.json | çalışır |  |  | evet |
-| wish | 9 | spells-69.json | çalışır | a7 (sürüm 36) |  | evet |
+| blade-barrier | 6 | spells-69.json | çalışır |  |  | hayır |
+| chain-lightning | 6 | spells-69.json | çalışır |  |  | hayır |
+| circle-of-death | 6 | spells-69.json | çalışır |  |  | hayır |
+| conjure-fey | 6 | spells-69.json | çalışır | a6 (sürüm 35) |  | hayır |
+| contingency | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| create-undead | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| disintegrate | 6 | spells-69.json | çalışır |  |  | hayır |
+| eyebite | 6 | spells-69.json | çalışır |  |  | hayır |
+| find-the-path | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| flesh-to-stone | 6 | spells-69.json | çalışır |  |  | hayır |
+| forbiddance | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| freezing-sphere | 6 | spells-69.json | çalışır |  |  | hayır |
+| globe-of-invulnerability | 6 | spells-69.json | çalışır |  |  | hayır |
+| guards-and-wards | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| harm | 6 | spells-69.json | çalışır |  |  | hayır |
+| heal | 6 | spells-69.json | çalışır |  |  | hayır |
+| heroes-feast | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| instant-summons | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| irresistible-dance | 6 | spells-69.json | çalışır |  |  | hayır |
+| magic-jar | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| mass-suggestion | 6 | spells-69.json | çalışır | s1 (sürüm 40) |  | hayır |
+| move-earth | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| planar-ally | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| programmed-illusion | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| sunbeam | 6 | spells-69.json | çalışır |  |  | hayır |
+| transport-via-plants | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| true-seeing | 6 | spells-69.json | çalışır |  |  | hayır |
+| wall-of-ice | 6 | spells-69.json | çalışır |  |  | hayır |
+| wall-of-thorns | 6 | spells-69.json | çalışır |  |  | hayır |
+| wind-walk | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| word-of-recall | 6 | spells-69.json | savaş dışı |  |  | hayır |
+| arcane-sword | 7 | spells-69.json | çalışır |  |  | hayır |
+| conjure-celestial | 7 | spells-69.json | çalışır |  |  | hayır |
+| delayed-blast-fireball | 7 | spells-69.json | çalışır |  |  | hayır |
+| divine-word | 7 | spells-69.json | çalışır |  |  | hayır |
+| etherealness | 7 | spells-69.json | çalışır |  |  | hayır |
+| finger-of-death | 7 | spells-69.json | çalışır |  |  | hayır |
+| fire-storm | 7 | spells-69.json | çalışır |  |  | hayır |
+| forcecage | 7 | spells-69.json | çalışır |  |  | hayır |
+| magnificent-mansion | 7 | spells-69.json | savaş dışı |  |  | hayır |
+| mirage-arcane | 7 | spells-69.json | savaş dışı |  |  | hayır |
+| plane-shift | 7 | spells-69.json | çalışır | s1 (sürüm 40) |  | hayır |
+| prismatic-spray | 7 | spells-69.json | çalışır |  |  | hayır |
+| project-image | 7 | spells-69.json | savaş dışı |  |  | hayır |
+| regenerate | 7 | spells-69.json | savaş dışı |  |  | hayır |
+| resurrection | 7 | spells-69.json | savaş dışı |  |  | hayır |
+| reverse-gravity | 7 | spells-69.json | çalışır |  |  | hayır |
+| sequester | 7 | spells-69.json | savaş dışı |  |  | hayır |
+| simulacrum | 7 | spells-69.json | savaş dışı |  |  | hayır |
+| symbol | 7 | spells-69.json | savaş dışı |  |  | hayır |
+| teleport | 7 | spells-69.json | savaş dışı |  |  | hayır |
+| animal-shapes | 8 | spells-69.json | çalışır | a7 (sürüm 36) |  | hayır |
+| antimagic-field | 8 | spells-69.json | çalışır |  |  | hayır |
+| antipathy-sympathy | 8 | spells-69.json | savaş dışı |  |  | hayır |
+| befuddlement | 8 | spells-69.json | çalışır |  |  | hayır |
+| clone | 8 | spells-69.json | savaş dışı |  |  | hayır |
+| control-weather | 8 | spells-69.json | savaş dışı |  |  | hayır |
+| demiplane | 8 | spells-69.json | savaş dışı |  |  | hayır |
+| dominate-monster | 8 | spells-69.json | çalışır |  |  | hayır |
+| earthquake | 8 | spells-69.json | çalışır |  |  | hayır |
+| glibness | 8 | spells-69.json | çalışır |  |  | hayır |
+| holy-aura | 8 | spells-69.json | çalışır | a4 (sürüm 32) |  | hayır |
+| incendiary-cloud | 8 | spells-69.json | çalışır |  |  | hayır |
+| maze | 8 | spells-69.json | çalışır |  |  | hayır |
+| mind-blank | 8 | spells-69.json | çalışır |  |  | hayır |
+| power-word-stun | 8 | spells-69.json | çalışır |  |  | hayır |
+| sunburst | 8 | spells-69.json | çalışır |  |  | hayır |
+| tsunami | 8 | spells-69.json | savaş dışı |  |  | hayır |
+| astral-projection | 9 | spells-69.json | savaş dışı |  |  | hayır |
+| foresight | 9 | spells-69.json | savaş dışı |  |  | hayır |
+| gate | 9 | spells-69.json | savaş dışı |  |  | hayır |
+| imprisonment | 9 | spells-69.json | savaş dışı |  |  | hayır |
+| mass-heal | 9 | spells-69.json | çalışır |  |  | hayır |
+| meteor-swarm | 9 | spells-69.json | çalışır | s1 (sürüm 40) |  | hayır |
+| power-word-heal | 9 | spells-69.json | çalışır |  |  | hayır |
+| power-word-kill | 9 | spells-69.json | çalışır |  |  | hayır |
+| prismatic-wall | 9 | spells-69.json | çalışır |  |  | hayır |
+| shapechange | 9 | spells-69.json | çalışır |  |  | hayır |
+| storm-of-vengeance | 9 | spells-69.json | çalışır |  |  | hayır |
+| time-stop | 9 | spells-69.json | çalışır |  |  | hayır |
+| true-polymorph | 9 | spells-69.json | çalışır |  |  | hayır |
+| true-resurrection | 9 | spells-69.json | savaş dışı |  |  | hayır |
+| weird | 9 | spells-69.json | çalışır |  |  | hayır |
+| wish | 9 | spells-69.json | çalışır | a7 (sürüm 36) |  | hayır |

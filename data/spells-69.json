@@ -9,6 +9,7 @@
    "Clr"
   ],
   "rangeFt": 90,
+  "text": "dönen bıçak duvarı (100 ft uzun ya da 60 ft çaplı halka, 20 ft yüksek, 5 ft kalın): içinde, girince ya da tur sonunda DEX save 6d10 kuvvet (yarı), turda bir; üç çeyrek siper, zorlu arazi",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -53,6 +54,7 @@
    "Wiz"
   ],
   "rangeFt": 150,
+  "text": "150 ft, ilk hedef ve ondan 30 ft içinde 3 hedef daha: DEX save 10d8 yıldırım (yarı); her üst slot +1 hedef",
   "mechanics": {
    "kind": "save",
    "save": "dex",
@@ -81,6 +83,7 @@
    "Wiz"
   ],
   "rangeFt": 150,
+  "text": "150 ft içinde 60 ft yarıçaplı küre: CON save 8d8 nekrotik (yarı); +2d8/slot",
   "mechanics": {
    "kind": "save",
    "save": "con",
@@ -112,6 +115,7 @@
    "Drd"
   ],
   "rangeFt": 60,
+  "text": "60 ft içinde Medium fey ruhu; yanındaki yaratığa yakın büyü saldırısı 3d12 + büyü değiştiricisi psişik, isabette senin sonraki turunun başına dek Frightened; sonraki turlarda bonus eylemle 30 ft ışınlanıp yeniden saldırır (konsantrasyon); +1d12/slot",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -169,6 +173,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "savaş dışı: 5. seviye ya da altı, kendini hedefleyen bir büyüyü tetikleyiciye bağlar (10 gün)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -189,6 +194,7 @@
    "Wiz"
   ],
   "rangeFt": 10,
+  "text": "savaş dışı: yalnızca gece, 3 ceset Ghoul olur; bonus eylemle buyurulur (yukarı slotla daha çok ya da Ghast/Wight)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -208,6 +214,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "60 ft ışın: DEX save, başarısızsa 10d6 + 40 kuvvet; 0 HP'ye düşen toza döner; +3d6/slot",
   "mechanics": {
    "kind": "save",
    "save": "dex",
@@ -235,6 +242,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "60 ft içindeki bir yaratık WIS save, başarısızsa seçilen etki: Asleep (Unconscious, hasarla uyanır), Panicked (Frightened, Dash ile kaçar), Sickened (Poisoned); her tur Magic eylemiyle yeni hedef (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -287,6 +295,7 @@
    "Drd"
   ],
   "rangeFt": 0,
+  "text": "savaş dışı: adı verilen bilinen yere en kısa yolu sezer (konsantrasyon, 1 gün)",
   "concentration": true,
   "mechanics": {
    "kind": "utility",
@@ -308,6 +317,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "60 ft, CON save: başarısızsa Restrained, başarılıysa sonraki turuna dek hız 0; tur sonlarında CON save, 3 başarı biter, 3 başarısızlık Petrified (konsantrasyon)",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -333,6 +343,7 @@
    "Clr"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: 40.000 ft² alana ışınlanma ve düzlem yolculuğu yasağı; seçilen türlere girişte 5d10 hasar (1 gün)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -352,6 +363,7 @@
    "Wiz"
   ],
   "rangeFt": 300,
+  "text": "300 ft içinde 60 ft yarıçaplı küre: CON save 10d6 soğuk (yarı); suyu 30 ft kare dondurur; +1d6/slot",
   "mechanics": {
    "kind": "save",
    "save": "con",
@@ -384,6 +396,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "10 ft yayılım: dışarıdan yapılan 5. seviye ya da altı büyüler içeriyi etkilemez (konsantrasyon, 1 dakika); her üst slot +1 seviye",
   "concentration": true,
   "mechanics": {
    "kind": "effect",
@@ -415,6 +428,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: 2.500 ft² alanı sis, kilitli kapılar, ağlar ve benzeri korumalarla örer (24 saat)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -433,6 +447,7 @@
    "Clr"
   ],
   "rangeFt": 60,
+  "text": "60 ft, CON save: başarısızsa 14d6 nekrotik ve en yüksek HP aynı miktar düşer (en az 1); başarılıysa yarı hasar",
   "mechanics": {
    "kind": "save",
    "save": "con",
@@ -456,6 +471,7 @@
    "Drd"
   ],
   "rangeFt": 60,
+  "text": "60 ft, bir yaratık 70 HP iyileşir; Blinded, Deafened ve Poisoned kalkar; +10/slot",
   "mechanics": {
    "kind": "heal",
    "damage": "70",
@@ -484,6 +500,7 @@
    "Drd"
   ],
   "rangeFt": 0,
+  "text": "savaş dışı: 12 kişilik ziyafet, 24 saat zehir direnci, Frightened ve Poisoned bağışıklığı, en yüksek HP +2d10",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -502,6 +519,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: işaretli eşyayı safiri kırınca eline çağırır",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -521,6 +539,7 @@
    "Wiz"
   ],
   "rangeFt": 30,
+  "text": "30 ft, WIS save: başarısızsa Charmed, yerinde dans eder; DEX save ve saldırılarında dezavantaj, ona saldırılar avantajlı; eylemle yeniden save (konsantrasyon, 1 dakika); başarılıysa bir tur dans",
   "concentration": true,
   "mechanics": {
    "kind": "effect",
@@ -550,6 +569,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "savaş dışı: ruhunu kaba aktarır, 100 ft içindeki Humanoid'i ele geçirmeyi dener (CHA save)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -570,6 +590,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "60 ft içinde 12 yaratık WIS save, başarısızsa Charmed ve öneriyi uygular (24 saat; hasar alınca biter); yukarı slotla 10/30/366 gün",
   "mechanics": {
    "kind": "effect",
    "save": "wis",
@@ -654,6 +675,7 @@
    "Wiz"
   ],
   "rangeFt": 120,
+  "text": "savaş dışı: 40 ft kenarlı toprağı yeniden şekillendirir (konsantrasyon, 2 saat)",
   "concentration": true,
   "mechanics": {
    "kind": "utility",
@@ -673,6 +695,7 @@
    "Clr"
   ],
   "rangeFt": 60,
+  "text": "savaş dışı: bir varlıktan Celestial, Elemental ya da Fiend yardımcı ister (karşılığında hizmet)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -692,6 +715,7 @@
    "Wiz"
   ],
   "rangeFt": 120,
+  "text": "savaş dışı: tetikleyiciyle oynayan 30 ft küp yanılsama",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -713,6 +737,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "kendinden 5 ft geniş, 60 ft çizgi: CON save 6d8 ışık ve senin sonraki turunun başına dek Blinded (başarılıysa yarı hasar); konsantrasyon boyunca Magic eylemiyle yeni çizgi; güneş ışığı yayar",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -748,6 +773,7 @@
    "Drd"
   ],
   "rangeFt": 10,
+  "text": "savaş dışı: Large bitkiden aynı düzlemdeki başka bir bitkiye geçit (1 dakika)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -770,6 +796,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "dokunulan istekli yaratık 120 ft Truesight kazanır (1 saat)",
   "mechanics": {
    "kind": "effect",
    "effect": {
@@ -794,6 +821,7 @@
    "Wiz"
   ],
   "rangeFt": 120,
+  "text": "120 ft, buz duvarı (kubbe, küre ya da on 10 ft panel; 1 ft kalın): içinde çıkan DEX save 10d6 soğuk (yarı); bölüm AC 12, 30 HP; kırılan yerden geçen CON save 5d6 soğuk (yarı) (konsantrasyon); +2d6 / +1d6 slot başına",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -832,6 +860,7 @@
    "Drd"
   ],
   "rangeFt": 120,
+  "text": "120 ft, diken duvarı (60 ft uzun ya da 20 ft çaplı halka): oluşunca DEX save 7d8 delme (yarı); görüşü keser, içinden geçmek 4 kat hareket ve DEX save 7d8 kesme (yarı) (konsantrasyon); +1d8/slot",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -879,6 +908,7 @@
    "Drd"
   ],
   "rangeFt": 30,
+  "text": "savaş dışı: sen ve 10 dost bulut biçimine geçer, 300 ft uçuş (8 saat)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -897,6 +927,7 @@
    "Clr"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: sen ve 5 dost önceden belirlenen sığınağa ışınlanır",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -916,6 +947,7 @@
    "Wiz"
   ],
   "rangeFt": 90,
+  "text": "90 ft, hayalet kılıç: yakın büyü saldırısı 4d12 + büyü değiştiricisi kuvvet; sonraki turlarda bonus eylemle 30 ft taşınıp yeniden saldırır (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "attack",
@@ -940,6 +972,7 @@
    "Clr"
   ],
   "rangeFt": 90,
+  "text": "90 ft içinde 10 ft yarıçaplı, 40 ft yüksek ışık sütunu: içindeki her yaratığa ya iyileştirme 4d12 + büyü değiştiricisi ya da DEX save 6d12 ışık (yarı); sütun 30 ft taşınır (konsantrasyon); +1d12/slot",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -990,6 +1023,7 @@
    "Wiz"
   ],
   "rangeFt": 150,
+  "text": "150 ft, büyü bitince 20 ft yarıçaplı küre patlar: DEX save, 12d6 ateş (yarı), her tur sonu +1d6 birikir (konsantrasyon, 1 dakika); +1d6/slot",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -1022,6 +1056,7 @@
    "Clr"
   ],
   "rangeFt": 30,
+  "text": "bonus eylem, 30 ft içinde seçilen yaratıklar CHA save: başarısızsa HP'ye göre (≤ 50) Deafened, Blinded, Stunned ya da ölüm; Celestial, Elemental, Fey ve Fiend kendi düzlemine sürülür",
   "mechanics": {
    "kind": "utility",
    "save": "cha",
@@ -1061,6 +1096,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "Eterik Sınır'a geçer: yalnızca eterik olanlarla etkileşir, dikey hareket iki kat (8 saate dek); her üst slot +3 istekli yaratık",
   "mechanics": {
    "kind": "effect",
    "effect": {
@@ -1087,6 +1123,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "60 ft, CON save 7d8 + 30 nekrotik (yarı); öldürülen Humanoid sonraki turunda emrindeki Zombie olur",
   "mechanics": {
    "kind": "save",
    "save": "con",
@@ -1110,6 +1147,7 @@
    "Sor"
   ],
   "rangeFt": 150,
+  "text": "150 ft içinde on adede dek bitişik 10 ft küp: DEX save 7d10 ateş (yarı); taşınmayan yanıcı nesneler tutuşur",
   "mechanics": {
    "kind": "save",
    "save": "dex",
@@ -1139,6 +1177,7 @@
    "Wiz"
   ],
   "rangeFt": 100,
+  "text": "100 ft, görünmez kuvvet kafesi (20 ft kafes ya da 10 ft kutu): tamamen içindeki hapsolur, büyüsüz yolla çıkamaz; ışınlanmak için CHA save (konsantrasyon, 1 saat)",
   "concentration": true,
   "mechanics": {
    "kind": "effect",
@@ -1165,6 +1204,7 @@
    "Wiz"
   ],
   "rangeFt": 300,
+  "text": "savaş dışı: boyutlar arası konak kapısı (24 saat)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1185,6 +1225,7 @@
    "Wiz"
   ],
   "rangeFt": 120,
+  "text": "savaş dışı: 1 mil kare araziyi başka bir arazi gibi gösterir (10 gün)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1207,6 +1248,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "dokunulan, sen ve el ele 8 istekli yaratık başka bir düzleme geçer",
   "mechanics": {
    "kind": "effect",
    "spellAttack": true,
@@ -1259,6 +1301,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "kendinden 60 ft koni: her yaratık DEX save, yaratık başına 1d8 ışın: 1–5 ateş, asit, yıldırım, zehir, soğuk 12d6 (yarı); 6 Restrained, 3 başarısız CON save → Petrified; 7 Blinded, WIS save başarısızsa başka düzlem; 8 iki ışın",
   "mechanics": {
    "kind": "utility",
    "save": "dex",
@@ -1279,6 +1322,7 @@
    "Wiz"
   ],
   "rangeFt": 2640000,
+  "text": "savaş dışı: 500 mil içinde görülmüş yere kendi yanılsamanı yansıtır (konsantrasyon, 1 gün)",
   "concentration": true,
   "mechanics": {
    "kind": "utility",
@@ -1300,6 +1344,7 @@
    "Drd"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: dokunulan 4d8 + 15 HP iyileşir, 1 saat her tur başı 1 HP; kopan uzuvlar 2 dakikada yeniden çıkar",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1324,6 +1369,7 @@
    "Clr"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: 1 saatlik döküm, en çok 100 yıl önce ölen yaratık tam HP ile dirilir; D20 Testlerine −4 (her uzun dinlenmede 1 azalır)",
   "mechanics": {
    "kind": "revive",
    "revive": "raise",
@@ -1345,6 +1391,7 @@
    "Wiz"
   ],
   "rangeFt": 100,
+  "text": "100 ft içinde 50 ft yarıçaplı, 100 ft yüksek silindirde yerçekimi tersine döner: tutunmayan yukarı düşer (tutunmak için DEX save); bitince aşağı düşer (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "utility",
@@ -1366,6 +1413,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: dokunulan nesne ya da istekli yaratık gizlenir, Invisible; yaratık Unconscious ve askıda kalır",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1384,6 +1432,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: Beast ya da Humanoid'in yarı HP'li buz kopyası (Construct), dost davranır",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1405,6 +1454,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: tetikleyicili zararlı rün (Death, Discord, Fear, Pain, Sleep, Stunning); 60 ft yarıçaplı kürede etkiler",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1425,6 +1475,7 @@
    "Wiz"
   ],
   "rangeFt": 10,
+  "text": "savaş dışı: sen ve 8 istekli yaratık aynı düzlemde bilinen bir yere ışınlanır (1d100 isabet tablosu)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1443,6 +1494,7 @@
    "Drd"
   ],
   "rangeFt": 30,
+  "text": "30 ft içinde istekli yaratıklar Large ya da daha küçük, CR 4 ya da altı Beast'e dönüşür; ilk biçimin HP'si kadar geçici HP (24 saat)",
   "mechanics": {
    "kind": "effect",
    "effect": {
@@ -1475,6 +1527,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "10 ft yayılımda büyü yapılamaz, Magic eylemi ve büyülü etkiler çalışmaz, ışınlanma yok (konsantrasyon, 1 saat)",
   "concentration": true,
   "mechanics": {
    "kind": "effect",
@@ -1502,6 +1555,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "savaş dışı: seçilen yaratık türünü bir hedeften uzaklaştırır (Frightened) ya da ona çeker (Charmed); WIS save (10 gün)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1523,6 +1577,7 @@
    "Wiz"
   ],
   "rangeFt": 150,
+  "text": "150 ft, INT save: başarısızsa 10d12 psişik, büyü yapamaz ve Magic eylemi alamaz (30 günde bir yeniden save); başarılıysa yarı hasar",
   "mechanics": {
    "kind": "save",
    "save": "int",
@@ -1548,6 +1603,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: 120 günde büyüyen yedek beden; ölünce ruh ona geçer",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1568,6 +1624,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "savaş dışı: 5 mil içinde havayı değiştirir (konsantrasyon, 8 saat)",
   "concentration": true,
   "mechanics": {
    "kind": "utility",
@@ -1589,6 +1646,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "savaş dışı: 30 ft küp boş odaya açılan gölge kapısı (1 saat)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1610,6 +1668,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "60 ft, WIS save (savaşılıyorsa avantajlı), başarısızsa Charmed ve senin buyruğunla davranır; hasar alınca yeniden save (konsantrasyon, 1 saat)",
   "concentration": true,
   "mechanics": {
    "kind": "effect",
@@ -1642,6 +1701,7 @@
    "Sor"
   ],
   "rangeFt": 500,
+  "text": "500 ft içinde 100 ft yarıçaplı sarsıntı: zorlu arazi; dökümde ve tur sonlarında yerdeki yaratıklar DEX save, başarısızsa Prone ve konsantrasyon kırılır; yarıklar, yapılara 50 ezme (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -1685,6 +1745,7 @@
    "Wlk"
   ],
   "rangeFt": 0,
+  "text": "CHA kontrollerinde zarın yerine 15 alınabilir; doğruluk sınayan büyüler hep doğru gösterir (1 saat)",
   "mechanics": {
    "kind": "effect",
    "effect": {
@@ -1709,6 +1770,7 @@
    "Clr"
   ],
   "rangeFt": 0,
+  "text": "30 ft yayılım: seçilen yaratıklar bütün save'lerde avantajlı, onlara saldırılar dezavantajlı; onları yakın dövüşte vuran Fiend ya da Undead CON save, başarısızsa Blinded (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "effect",
@@ -1766,6 +1828,7 @@
    "Wiz"
   ],
   "rangeFt": 150,
+  "text": "150 ft içinde 20 ft yarıçaplı köz bulutu (yoğun örtü): oluşunca, girince ve tur sonunda DEX save 10d8 ateş (yarı), turda bir; her tur 10 ft uzaklaşır (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -1810,6 +1873,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "60 ft, hedef labirent yarı düzlemine sürülür; Study eylemiyle DC 20 INT (Investigation) kontrolü kaçar (konsantrasyon, 10 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "effect",
@@ -1844,6 +1908,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "dokunulan istekli yaratık psişik hasara ve Charmed'e bağışık; düşünce okuma ve uzaktan gözlem yok (24 saat)",
   "mechanics": {
    "kind": "effect",
    "effect": {
@@ -1875,6 +1940,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "60 ft, HP ≤ 150 ise Stunned (tur sonlarında CON save biter), değilse sonraki turuna dek hız 0",
   "mechanics": {
    "kind": "utility",
    "powerWord": "stun",
@@ -1896,6 +1962,7 @@
    "Wiz"
   ],
   "rangeFt": 150,
+  "text": "150 ft içinde 60 ft yarıçaplı küre: CON save 12d6 ışık ve 1 dakika Blinded (başarılıysa yarı hasar); Blinded tur sonlarında CON save",
   "mechanics": {
    "kind": "save",
    "save": "con",
@@ -1926,6 +1993,7 @@
    "Drd"
   ],
   "rangeFt": 5280,
+  "text": "savaş dışı: 300 ft uzun, 300 ft yüksek su duvarı; STR save 6d10 ezme (yarı), her tur 50 ft ilerler (konsantrasyon, 6 tur)",
   "concentration": true,
   "mechanics": {
    "kind": "utility",
@@ -1962,6 +2030,7 @@
    "Wiz"
   ],
   "rangeFt": 10,
+  "text": "savaş dışı: sen ve 8 istekli yaratık Astral Düzlem'e yansır; bedenler askıda kalır",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -1983,6 +2052,7 @@
    "Wiz"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: dokunulan istekli yaratık D20 Testlerinde avantajlı, ona saldırılar dezavantajlı (8 saat)",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -2031,6 +2101,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "savaş dışı: başka bir düzleme 5–20 ft çaplı geçit; adı söylenen yaratığı çağırabilir (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "utility",
@@ -2051,6 +2122,7 @@
    "Wiz"
   ],
   "rangeFt": 30,
+  "text": "savaş dışı: 30 ft, WIS save, başarısızsa seçilen hapis (gömülme, zincir, kapalı yarı düzlem, mücevher, uyku); bitiş tetikleyicisi belirlenir",
   "mechanics": {
    "kind": "utility",
    "offCombat": true,
@@ -2083,6 +2155,7 @@
    "Clr"
   ],
   "rangeFt": 60,
+  "text": "60 ft içinde istediğin yaratıklara toplam 700 HP iyileştirme; Blinded, Deafened ve Poisoned kalkar",
   "mechanics": {
    "kind": "utility",
    "massHeal": 700,
@@ -2106,6 +2179,7 @@
    "Wiz"
   ],
   "rangeFt": 5280,
+  "text": "1 mil içinde dört noktada 40 ft yarıçaplı küre: DEX save 20d6 ateş + 20d6 ezme (yarı); birden çok kürede olan bir kez etkilenir",
   "mechanics": {
    "kind": "save",
    "save": "dex",
@@ -2155,6 +2229,7 @@
    "Clr"
   ],
   "rangeFt": 60,
+  "text": "60 ft, bir yaratık bütün HP'sini kazanır; Charmed, Frightened, Paralyzed, Poisoned ve Stunned kalkar; Prone ise tepkisiyle kalkabilir",
   "mechanics": {
    "kind": "utility",
    "powerWord": "heal",
@@ -2176,6 +2251,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "60 ft, HP ≤ 100 ise ölür, değilse 12d12 psişik",
   "mechanics": {
    "kind": "utility",
    "powerWord": "kill",
@@ -2195,6 +2271,7 @@
    "Wiz"
   ],
   "rangeFt": 60,
+  "text": "60 ft, yedi katmanlı ışık duvarı (90 ft uzun, 30 ft yüksek ya da 30 ft çaplı küre): 20 ft içine gelen CON save ya da 1 dakika Blinded; geçen her katman için DEX save (renk etkileri) (10 dakika)",
   "mechanics": {
    "kind": "zone",
    "zone": {
@@ -2230,6 +2307,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "CR'si seviyeni aşmayan bir yaratığa dönüşür (Construct ve Undead olamaz); ilk biçimin HP'si kadar geçici HP, Magic eylemiyle biçim değişir (konsantrasyon, 1 saat)",
   "concentration": true,
   "mechanics": {
    "kind": "effect",
@@ -2256,6 +2334,7 @@
    "Drd"
   ],
   "rangeFt": 5280,
+  "text": "1 mil içinde 300 ft yarıçaplı fırtına bulutu: oluşunca CON save 2d6 gök gürültüsü ve Deafened; sonraki turlarda 4d6 asit yağmur, 6 hedefe DEX save 10d6 yıldırım (yarı), 2d6 ezme dolu, 1d6 soğuk; zorlu arazi, yoğun örtü (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -2296,6 +2375,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "zaman durur: art arda 1d4 + 1 tur oynarsın; bir eylemin başkasını etkilerse ya da 1.000 ft uzaklaşırsan biter",
   "mechanics": {
    "kind": "utility",
    "timeStop": "1d4+1"
@@ -2315,6 +2395,7 @@
    "Wiz"
   ],
   "rangeFt": 30,
+  "text": "30 ft, bir yaratık ya da nesneyi başka bir yaratık ya da nesneye dönüştürür; istemeyen WIS save; konsantrasyon tam sürerse kalıcı (1 saat)",
   "concentration": true,
   "mechanics": {
    "kind": "effect",
@@ -2341,6 +2422,7 @@
    "Drd"
   ],
   "rangeFt": 5,
+  "text": "savaş dışı: en çok 200 yıl önce ölen yaratık tam HP ile dirilir; beden yoksa yenisi verilir",
   "mechanics": {
    "kind": "revive",
    "revive": "raise",
@@ -2361,6 +2443,7 @@
    "Wiz"
   ],
   "rangeFt": 120,
+  "text": "120 ft içinde 30 ft yarıçaplı kürede seçilen yaratıklar WIS save: başarısızsa 10d10 psişik ve Frightened, tur sonlarında yeniden save (başarısızsa 5d10 psişik); başarılıysa yarı hasar (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
    "kind": "save",
@@ -2401,6 +2484,7 @@
    "Wiz"
   ],
   "rangeFt": 0,
+  "text": "8. seviye ya da altı herhangi bir büyüyü gereksinimsiz yapar ya da seçilen bir etkiyi yaratır (aşırı istekler Game Master kararı)",
   "mechanics": {
    "kind": "utility",
    "wish": true,
