@@ -27,7 +27,7 @@ describe('BUYU-DURUM', () => {
   it('Game Master notlu ve kapsam dışı notluların kararı yazılı', () => {
     const N = (notes as { notlar: Record<string, { uyar: string; neden: string }> }).notlar;
     const need = rows.filter((r) => r.gm !== undefined || r.kapsam).map((r) => r.id);
-    expect(need.length).toBe(31); // Kuyruk G6: Fear ve Beacon kapsam dışından çıktı; Animal Shapes/Enhance Ability savaş dışı
+    expect(need.length).toBe(30); // Kuyruk G6: Fear ve Beacon kapsam dışından çıktı; Animal Shapes/Enhance Ability savaş dışı; K64a: PfEG (ele geçirme uygulandı)
     for (const id of need) { expect(N[id], id).toBeDefined(); expect(['evet', 'kismen', 'hayir']).toContain(N[id]?.uyar); }
   });
   it('belge güncel', () => {
