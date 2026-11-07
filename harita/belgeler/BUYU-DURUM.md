@@ -19,7 +19,7 @@ Toplam 339 = savaşta kullanılan 225 + savaş dışı 114.
 
 | Kimlik | Sv | Not | Oyuna uyar mı? Neden |
 |---|---|---|---|
-| charm-person | 1 | Savaşta hedef büyücünün tarafına geçer (Dominate ile aynı taraf değiştirme); büyücü ya da müttefikleri ona zarar verirse ya da süre bitince eski tarafına döner. Dostluk tutumu ve büyü bitince büyülendiğini bilmesi savaş dışı: Game Master anlatır. | evet: Savaşta hedef büyücünün tarafına geçer (Dominate ile aynı taraf değiştirme; zarar görünce ya da süre bitince döner); tutum ve büyü sonrası farkındalık sosyal sahne, Game Master'ın işi. |
+| charm-person | 1 | Savaşta hedef büyücünün tarafına geçer (Dominate ile aynı taraf değiştirme); büyücü ya da müttefikleri ona zarar verirse ya da süre bitince eski tarafına döner. Dostluk tutumu ve büyü bitince büyülendiğini bilmesi savaş dışı: Game Master anlatır. | evet: Savaşta hedef büyücünün tarafına geçer (Dominate'in taraf değiştirmesi, tepki bağı olmadan: K61; zarar görünce ya da süre bitince döner); tutum ve büyü sonrası farkındalık sosyal sahne, Game Master'ın işi. |
 | hideous-laughter | 1 | Savaşta Prone + Incapacitated, tur sonu ve hasarda yeniden save uygulanır; kahkahanın anlatımı Game Master'da. | evet: Mekanik tam; yalnız anlatım Game Master'da. |
 | see-invisibility | 2 | Görünmezi görme savaşta uygulanır; Ethereal düzlemi görmek savaş dışı (Ethereal yaratık zaten etkilenemez): Game Master. | evet: Ethereal yaratık savaşta zaten etkileşemez; görünmezi görme tam. |
 | wish | 9 | 8. seviye ya da altı bir büyüyü kopyalama savaşta (seçim listesi); serbest dilekler Game Master'da. | evet: Savaşta düşmanın yaptığı büyüyü kopyalama (arayüzde seçici; SRD'ye göre ≤ 8. seviye); serbest dilek tanım gereği Game Master kararı. |
@@ -334,16 +334,16 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | tree-stride | 5 | spells-45.json | çalışır |  |  |  |
 | wall-of-force | 5 | spells-45.json | çalışır |  |  |  |
 | wall-of-stone | 5 | spells-45.json | çalışır |  |  |  |
-| blade-barrier | 6 | spells-69.json | çalışır |  |  | hayır |
+| blade-barrier | 6 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
 | chain-lightning | 6 | spells-69.json | çalışır |  |  | hayır |
 | circle-of-death | 6 | spells-69.json | çalışır |  |  | hayır |
-| conjure-fey | 6 | spells-69.json | çalışır | a6 (sürüm 35) |  | hayır |
+| conjure-fey | 6 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
 | contingency | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | create-undead | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | disintegrate | 6 | spells-69.json | çalışır |  |  | hayır |
 | eyebite | 6 | spells-69.json | çalışır |  |  | hayır |
 | find-the-path | 6 | spells-69.json | savaş dışı |  |  | hayır |
-| flesh-to-stone | 6 | spells-69.json | çalışır |  |  | hayır |
+| flesh-to-stone | 6 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
 | forbiddance | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | freezing-sphere | 6 | spells-69.json | çalışır |  |  | hayır |
 | globe-of-invulnerability | 6 | spells-69.json | çalışır |  |  | hayır |
@@ -352,7 +352,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | heal | 6 | spells-69.json | çalışır |  |  | hayır |
 | heroes-feast | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | instant-summons | 6 | spells-69.json | savaş dışı |  |  | hayır |
-| irresistible-dance | 6 | spells-69.json | çalışır |  |  | hayır |
+| irresistible-dance | 6 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
 | magic-jar | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | mass-suggestion | 6 | spells-69.json | çalışır | s1 (sürüm 40) |  | hayır |
 | move-earth | 6 | spells-69.json | savaş dışı |  |  | hayır |
@@ -393,7 +393,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | control-weather | 8 | spells-69.json | savaş dışı |  |  | hayır |
 | demiplane | 8 | spells-69.json | savaş dışı |  |  | hayır |
 | dominate-monster | 8 | spells-69.json | çalışır |  |  | hayır |
-| earthquake | 8 | spells-69.json | çalışır |  |  | hayır |
+| earthquake | 8 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
 | glibness | 8 | spells-69.json | çalışır |  |  | hayır |
 | holy-aura | 8 | spells-69.json | çalışır | a4 (sürüm 32) |  | hayır |
 | incendiary-cloud | 8 | spells-69.json | çalışır |  |  | hayır |

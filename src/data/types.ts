@@ -259,7 +259,9 @@ export interface SpellMechanics {
     repeatTally?: number; saveDisChoice?: boolean; stubborn?: boolean; confused?: boolean; noBonus?: boolean;
     attackDis?: Record<string, never>; checkDis?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'>; repeatSaveUnseen?: boolean; untilSourceTurnEnd?: boolean;
     /** Kuyruk G6 (sürüm 43): başarısız save'de yaratık elindeki silahları düşürür (Fear; el modeli `dropEvents`). */
-    dropHeld?: boolean };
+    dropHeld?: boolean;
+    /** Kuyruk K61 (sürüm 44): üç başarısızlıkta etkinin verdiği durum bu olur (Flesh to Stone: Restrained → Petrified). */
+    tallyFailGrants?: string[] };
   /**
    * Kuyruk 19: anahtar `spellsK19` açıkken mekaniğin üstüne yazılan alanlar (tam SRD hâli; eski sürümde eski mekanik).
    */
@@ -277,6 +279,10 @@ export interface SpellMechanics {
   s2?: Partial<SpellMechanics>;
   /** Kuyruk G6 (sürüm 43): Game Master notlu büyülerin savaş kolları (Charm Person taraf değiştirme, Fear eşya düşürme). */
   g6?: Partial<SpellMechanics>;
+  /** Kuyruk K61 (sürüm 44): SRD uyumu 1 (Blade Barrier Force, Conjure Fey +1d12, Irresistible Dance, Flesh to Stone, Earthquake). */
+  k61?: Partial<SpellMechanics>;
+  /** Kuyruk K61: tek hedefli save büyüsünde başarılı save'in hafif etkisi (Flesh to Stone: hız 0, büyücünün sonraki turunun başına dek). */
+  successEffect?: { speedZero?: boolean; icon?: string };
   /** Kuyruk G6: savaş büyü listesinde ve yapay zekâda yok (kartta savaş dışı + Game Master notu; Animal Shapes, Enhance Ability). */
   battleHidden?: boolean;
   /** Kuyruk A7: savaşta uygulanan kısmın yanında savaş dışı parça Game Master notu (kartta ve günlükte; BUYU-KISMI "tamam (GM notlu)"). */
@@ -437,6 +443,8 @@ export interface ZoneSpec {
   occupy?: boolean;
   /** Kuyruk 19: büyücünün turunun başında alandaki tek düşmana (Faithful Hound); giriş/tur başı tetiği yok. */
   casterTurn?: boolean;
+  /** Kuyruk K61 (sürüm 44): büyücünün her tur sonunda alandaki herkes tetiklenir (Earthquake). */
+  casterEnd?: boolean;
   rounds?: number;
   difficult?: number;
   ground?: boolean;
@@ -625,6 +633,8 @@ export interface EffectSpec {
   sealed?: boolean;
   /** Kuyruk 18 H1: taraf değiştirme (Dominate). */
   dominate?: boolean;
+  /** Kuyruk K61 (sürüm 44): Dominate'e özgü tepki bağı (yönetilen yaratığın tepkisi büyücününkini harcar); Charm Person'da yok. */
+  reactionLink?: boolean;
   /** Kuyruk 18 H2: Polymorph (Beast biçimi, geçici HP). */
   polymorph?: boolean;
   /**
@@ -683,7 +693,9 @@ export interface EffectSpec {
   /** Görev B1: seçenekli biçimler (Enlarge/Reduce): seçim anahtarı; seçilmezse dosta ilki, düşmana ikincisi. */
   variants?: Record<string, Partial<Omit<EffectSpec, 'variants'>>>;
   /** Görev B1: düşman save'i başarırsa konan hafif etki (Ray of Enfeeblement: sonraki saldırı dezavantajlı). */
-  onSave?: { attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; icon?: string };
+  onSave?: { attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; icon?: string;
+    /** Kuyruk K61: başarılı save'de de hız 0, hedefin sonraki turunun sonuna dek (Irresistible Dance). */
+    speedZero?: boolean; untilOwnTurnEnd?: boolean };
 }
 
 /**

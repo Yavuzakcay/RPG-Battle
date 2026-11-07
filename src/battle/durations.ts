@@ -47,6 +47,8 @@ export interface Spec {
   escalate?: string | StageSpec;
   /** Hasar alınca durum ve sayaç biter (Sleep). */
   wakeOnDamage?: boolean;
+  /** Kuyruk K61: bu kural sürümünden itibaren geçerli (eski savaşta süreli durum yok). */
+  surum?: number;
 }
 const EFFECTS = effectsJson as unknown as { attacks: Record<string, Spec>; spells: Record<string, Spec> };
 
@@ -206,6 +208,7 @@ export function spellTimerEvents(
 ): BattleEvent[] {
   const spec = spellEffect(spellName);
   if (!spec || added.length === 0) return [];
+  if (spec.surum && (state.kuralSurumu ?? 1) < spec.surum) return [];
   const save = { ability: spec.ability ?? ability, dc };
   return added.map((condition) => ({
     type: 'condition_changed', targetId, condition, present: true, reason: spellName,

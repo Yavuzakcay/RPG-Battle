@@ -1,7 +1,7 @@
 {
   "_aciklama": "Kuyruk K58 G7: BUYU-DURUM.md'nin 'oyuna uyar mı' sütunu. Game Master notlu (gmNoted) ve kapsam dışı notlu (kapsamDisi) büyüler için karar ve gerekçe (düzeltme değil). uyar: evet (eksik parça savaşta anlamsız), kismen (savaşta görünür küçük fark), hayir (oyuncu fark eder; ileride ele alınmalı).",
   "notlar": {
-    "charm-person": { "uyar": "evet", "neden": "Savaşta hedef büyücünün tarafına geçer (Dominate ile aynı taraf değiştirme; zarar görünce ya da süre bitince döner); tutum ve büyü sonrası farkındalık sosyal sahne, Game Master'ın işi." },
+    "charm-person": { "uyar": "evet", "neden": "Savaşta hedef büyücünün tarafına geçer (Dominate'in taraf değiştirmesi, tepki bağı olmadan: K61; zarar görünce ya da süre bitince döner); tutum ve büyü sonrası farkındalık sosyal sahne, Game Master'ın işi." },
     "hideous-laughter": { "uyar": "evet", "neden": "Mekanik tam; yalnız anlatım Game Master'da." },
     "see-invisibility": { "uyar": "evet", "neden": "Ethereal yaratık savaşta zaten etkileşemez; görünmezi görme tam." },
     "enhance-ability": { "uyar": "evet", "neden": "Kullanıcı kararı (2026-11-07): savaş dışı; yalnız Game Master notu, savaş mekaniği ve savaş seçicisi yok." },

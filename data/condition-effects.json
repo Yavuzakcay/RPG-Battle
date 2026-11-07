@@ -25,6 +25,7 @@
   },
   "spells": {
     "Hold Person": { "saveEnds": true, "maxRounds": 10},
+    "Sunburst": { "saveEnds": true, "ability": "con", "maxRounds": 10, "surum": 44, "approx": "SRD 5.2.1: Blinded 1 dakika; her tur sonu CON save, başarıda biter (Kuyruk K61, kural sürümü 44)" },
     "Hold Monster": { "saveEnds": true, "maxRounds": 10},
     "Contagion": { "saveEnds": true, "ability": "con", "maxRounds": 10, "approx": "SRD: üç başarı/başarısızlık; burada tur sonu CON save ile biter" },
     "Black Tentacles": { "saveEnds": true, "ability": "str", "maxRounds": 10, "approx": "SRD: eylemle STR (Athletics) kontrolü; burada her tur sonu STR save" },

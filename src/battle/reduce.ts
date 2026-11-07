@@ -91,10 +91,12 @@ function unstack(state: BattleState, id: string): BattleState {
 /**
  * Kuyruk 19: Dominate: büyücünün tepkisi harcanmışsa yönetilen yaratık tepki veremez (`reactionLocked`, türetilmiş).
  */
+/** Kuyruk K61 (sürüm 44): tepki bağı yalnız Dominate'te (`reactionLink`); sürüm 43 ve öncesinde her taraf değiştirme bağlar. */
+const linksReaction = (state: BattleState, e: { reactionLink?: boolean }) => !!e.reactionLink || (state.kuralSurumu ?? 1) < 44;
 function syncDominatedReactions(state: BattleState): BattleState {
   let next = state;
   for (const c of Object.values(state.combatants)) {
-    const dom = c.hp > 0 ? (c.effects ?? []).find((e) => e.dominate) : undefined;
+    const dom = c.hp > 0 ? (c.effects ?? []).find((e) => e.dominate && linksReaction(state, e)) : undefined;
     const lock = !!dom && globalRule(state, 'spellsK19') && !!state.combatants[dom.sourceId]?.economy.reaction;
     if (!!c.reactionLocked !== lock) next = withCombatant(next, c.id, { reactionLocked: lock || undefined });
   }
@@ -680,7 +682,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         ...(event.recharge ? { reactionSpent: [...(c.reactionSpent ?? []).filter((x) => x !== event.reaction), event.reaction] } : {}),
       });
       // Kuyruk 19: Dominate: yönetilen yaratığın tepkisi büyücünün tepkisini de harcar (SRD 5.2.1).
-      const dom = (c.effects ?? []).find((e) => e.dominate);
+      const dom = (c.effects ?? []).find((e) => e.dominate && linksReaction(state, e));
       const owner = dom && globalRule(state, 'spellsK19') ? next.combatants[dom.sourceId] : undefined;
       return owner ? withCombatant(next, owner.id, { economy: { ...owner.economy, reaction: true } }) : next;
     }

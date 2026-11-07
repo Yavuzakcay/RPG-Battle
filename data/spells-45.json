@@ -1060,7 +1060,8 @@
           "beast"
         ],
         "saveAdvantage": true,
-        "icon": "👑"
+        "icon": "👑",
+        "reactionLink": true
       },
       "k19": "Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde; emirler = oyuncunun onu oynatması, eylem gerekmez); hasar aldıkça WIS save, başarıda biter; savaşta save avantajlı. Kuyruk 19: yaratığın tepkisi büyücünün tepkisini de harcar, büyücünün tepkisi yoksa tepki veremez (anahtar spellsK19)."
     },
@@ -1097,7 +1098,8 @@
           "humanoid"
         ],
         "saveAdvantage": true,
-        "icon": "👑"
+        "icon": "👑",
+        "reactionLink": true
       },
       "k19": "Kuyruk 18 H1: yönetilen yaratık büyücünün tarafına ve oyuncusuna geçer (kendi inisiyatifinde; emirler = oyuncunun onu oynatması, eylem gerekmez); hasar aldıkça WIS save, başarıda biter; savaşta save avantajlı. Kuyruk 19: yaratığın tepkisi büyücünün tepkisini de harcar, büyücünün tepkisi yoksa tepki veremez (anahtar spellsK19)."
     },

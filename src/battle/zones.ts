@@ -315,6 +315,29 @@ export function casterTurnZoneEvents(state: BattleState, casterId: string, rng: 
   return out;
 }
 
+/**
+ * Kuyruk K61 (sürüm 44): büyücünün tur sonunda alanındaki herkes tetiklenir (`casterEnd`; Earthquake: "at the end of
+ * each of your turns"). Dökümdeki tetik `on: ['cast']`.
+ */
+export function casterEndZoneEvents(state: BattleState, casterId: string, rng: Rng): BattleEvent[] {
+  if (!state.map?.zones?.length || (state.kuralSurumu ?? 1) < 44) return [];
+  const out: BattleEvent[] = [];
+  let s = state;
+  for (const z0 of state.map.zones) {
+    const spec = zoneSpecOf(z0);
+    if (z0.casterId !== casterId || !spec?.casterEnd) continue;
+    const inside = Object.values(s.combatants).filter((c) => c.pos && c.hp > 0 && bodyInZone(s, z0, c, c.pos) && altitudeInZone(s, z0, spec, c));
+    for (const c of inside) {
+      const live = liveZone(s, z0.id);
+      if (!live) break;
+      const evs = triggerEvents(s, live, c.id, rng);
+      out.push(...evs);
+      s = applyEvents(s, evs);
+    }
+  }
+  return out;
+}
+
 /** Kuyruk 19: büyücünün taşınabilir alanı (Faithful Hound; konsantrasyonsuz) varsa. */
 export function movableZoneOf(state: BattleState, actor: Combatant): { zone: SpellZone; spell: Spell } | null {
   if (!globalRule(state, 'spellsK19')) return null;

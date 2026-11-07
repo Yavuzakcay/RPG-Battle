@@ -59,7 +59,7 @@ import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
-import { casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
+import { casterEndZoneEvents, casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
 import { askChoice } from '../rules/choice';
 // Kuyruk S1: büyücüye bağlı alanlar (komut sonu kancası).
@@ -523,6 +523,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const zoneEnd = zoneTurnEvents(current, actor.id, 'end', rng);
     events.push(...zoneEnd);
     current = applyEvents(current, zoneEnd);
+    // Kuyruk K61 (sürüm 44): büyücünün alanı her tur sonunda alandakileri tetikler (Earthquake).
+    const casterEnd = casterEndZoneEvents(current, actor.id, rng);
+    events.push(...casterEnd);
+    current = applyEvents(current, casterEnd);
     // Kuyruk K53 S5: veriden auraların tur sonu tetikleri.
     const auraEnd = auraTriggerEvents(current, actor.id, 'turnEnd', rng);
     events.push(...auraEnd);

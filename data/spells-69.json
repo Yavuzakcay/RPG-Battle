@@ -31,6 +31,24 @@
     "half": true,
     "color": "#c9c9d6",
     "icon": "⚔"
+   },
+   "k61": {
+    "damageType": "force",
+    "zone": {
+     "rounds": 100,
+     "difficult": 2,
+     "on": [
+      "enter",
+      "start"
+     ],
+     "once": true,
+     "save": "dex",
+     "damage": "6d10",
+     "damageType": "force",
+     "half": true,
+     "color": "#c9c9d6",
+     "icon": "⚔"
+    }
    }
   },
   "school": "Evocation",
@@ -157,6 +175,13 @@
      "applied": true
     },
     "kapsamDisi": "Ruhun Fey görünüşü yalnızca görsel.",
+    "approx": null
+   },
+   "k61": {
+    "upcast": {
+     "dice": "1d12",
+     "applied": true
+    },
     "approx": null
    }
   },
@@ -328,6 +353,26 @@
    "escalate": {
     "condition": "Petrified",
     "fails": 3
+   },
+   "k61": {
+    "conditions": [],
+    "escalate": null,
+    "failEffectSingle": true,
+    "failEffect": {
+     "rounds": 10,
+     "grants": [
+      "Restrained"
+     ],
+     "repeatSave": true,
+     "repeatTally": 3,
+     "tallyFailGrants": [
+      "Petrified"
+     ]
+    },
+    "successEffect": {
+     "speedZero": true,
+     "icon": "🪨"
+    }
    }
   },
   "school": "Transmutation",
@@ -554,6 +599,24 @@
     "attackedAdv": true,
     "repeatSave": true,
     "icon": "💃"
+   },
+   "k61": {
+    "effect": {
+     "targets": 1,
+     "side": "enemy",
+     "rounds": 10,
+     "speedZero": true,
+     "attackDis": {},
+     "saveDisAll": true,
+     "attackedAdv": true,
+     "repeatSave": true,
+     "icon": "💃",
+     "onSave": {
+      "speedZero": true,
+      "untilOwnTurnEnd": true,
+      "icon": "💃"
+     }
+    }
    }
   },
   "school": "Enchantment",
@@ -1687,7 +1750,8 @@
     ],
     "damageSave": {},
     "saveAdvantage": true,
-    "icon": "👑"
+    "icon": "👑",
+    "reactionLink": true
    }
   },
   "school": "Enchantment",
@@ -1726,6 +1790,23 @@
     "breakConcentration": true,
     "color": "#8a6b3d",
     "icon": "🌋"
+   },
+   "k61": {
+    "zone": {
+     "rounds": 10,
+     "difficult": 2,
+     "on": [
+      "cast"
+     ],
+     "save": "dex",
+     "conditions": [
+      "Prone"
+     ],
+     "breakConcentration": true,
+     "color": "#8a6b3d",
+     "icon": "🌋",
+     "casterEnd": true
+    }
    }
   },
   "school": "Transmutation",

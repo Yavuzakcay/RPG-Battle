@@ -52,4 +52,4 @@ Işık modeli bugün aydınlık/karanlık (`litHexes`). Tetikleyici: loş ışı
 - `enhance-ability` (2): kullanıcı kararı ile savaş dışı; kapalı.
 - `see-invisibility` (2): kamuflaj/gizlenmeyi açığa çıkarma SRD'de yok; ev kuralı olarak ele alınacak (kullanıcı kararı bekliyor, motorda şimdi yalnızca `Invisible` durumunu etkiler).
 - `beacon-of-hope` (3): en yüksek iyileştirme kalan tek yol: Uncanny Metabolism (Monk; `metabolismEvents` savaş durumunu almıyor, kural sürümü kapısı için imza değişikliği gerekir) ve paket iyileştirme zarları (`paket/p11.ts`, kendi zar değiştirme yolu). İkisi küçük; tetikleyici: bir sonraki iyileştirme dokunuşu.
-- `charm-person` (1): taraf değiştirme `dominate` ilkeliyle bağlandı; ilkelin yan etkisi: dönen yaratığın tepkisi büyücünün tepkisini harcar (Dominate'e özgü kural, Charm Person SRD'sinde yok). Ayrımı için etkide `dominate`in tepki bağını kapatan bir bayrak gerekir (yeni alan).
+- `charm-person` (1): K61'de kapandı (sürüm 44: tepki bağı yalnız Dominate'te, `reactionLink`).

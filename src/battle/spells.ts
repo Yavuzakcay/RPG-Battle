@@ -130,7 +130,7 @@ function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe:
     ...(fe.command ? { command: fe.command[0] as CommandWord } : {}), ...(fe.commandPersist ? { commandPersist: true } : {}),
     ...(fe.fleeDash ? { fleeDash: true } : {}),
     // Kuyruk 19: tur sonu save'i başarısızsa yinelenen hasar (Phantasmal Killer).
-    ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0, ...(fe.repeatFailDamage ? { failDamage: fe.repeatFailDamage } : {}), ...(fe.repeatTally ? { tally: { need: fe.repeatTally, s: 0, f: 0 } } : {}) } } : {}),
+    ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0, ...(fe.repeatFailDamage ? { failDamage: fe.repeatFailDamage } : {}), ...(fe.repeatTally ? { tally: { need: fe.repeatTally, s: 0, f: 0, ...(fe.tallyFailGrants ? { failGrants: fe.tallyFailGrants } : {}) } } : {}) } } : {}),
     // Görev B4: Faerie Fire (görünmez olamaz, saldırılar avantajlı, ışık).
     ...(fe.revealed ? { revealed: true } : {}), ...(fe.attackedAdv ? { attackedAdv: true } : {}), ...(fe.light !== undefined ? { light: fe.light } : {}),
     // Kuyruk 19: gecikmeli hasar (Vitriolic Sphere), saldırı ve yetenek kontrolünde dezavantaj (Phantasmal Killer).
@@ -525,7 +525,7 @@ function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, 
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
@@ -761,6 +761,11 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     // A1: save'i başaran bu büyüyle yeniden hedeflenemez (Eyebite; işaret konsantrasyonla biter).
     if (save.success && m.repeat?.noRetarget && spell.concentration) {
       events.push({ type: 'effect_added', targetId: target.id, effect: { id: `${spell.srd}:resisted`, name: spell.name, sourceId: actor.id, concentration: spell.name, resisted: spell.srd } });
+    }
+    // Kuyruk K61 (sürüm 44): başarılı save'in hafif etkisi (Flesh to Stone: hız 0, büyücünün sonraki turunun başına dek).
+    if (save.success && m.successEffect) {
+      events.push({ type: 'effect_added', targetId: target.id, effect: { id: `${spell.srd}:ok`, name: spell.name, sourceId: actor.id, until: state.round + 1, untilSourceTurn: true,
+        ...(m.successEffect.speedZero ? { speedZero: true } : {}), ...(m.successEffect.icon ? { icon: m.successEffect.icon } : {}) } });
     }
     // Kuyruk 19: tek hedefli büyüde de başarısızlığın süren etkisi (Phantasmal Killer; anahtarlı ise `failEffectGate`).
     const fe1 = m.failEffect && (!m.failEffectGate || globalRule(state, m.failEffectGate)) ? m.failEffect : undefined;
@@ -1637,7 +1642,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.deathSaveAdv ? { deathSaveAdv: true } : {}), ...(spec.maxHeal ? { maxHeal: true } : {}),
     ...(spec.size ? { size: spec.size } : {}), ...(spec.lethargy ? { lethargy: true } : {}), ...(spec.dropAtZero ? { dropAtZero: true } : {}), ...(spec.deathWard ? { deathWard: true } : {}),
     // K17 G1: Banishment (Ethereal gibi hedef alınamaz), Resilient Sphere (hasar bağışıklığı).
-    ...(spec.banished ? { banished: true, ethereal: true } : {}), ...(spec.dominate ? { dominate: true } : {}), ...(spec.polymorph ? { polymorph: true } : {}), ...(spec.sealed ? { sealed: true } : {}),
+    ...(spec.banished ? { banished: true, ethereal: true } : {}), ...(spec.dominate ? { dominate: true, ...(spec.reactionLink ? { reactionLink: true } : {}) } : {}), ...(spec.polymorph ? { polymorph: true } : {}), ...(spec.sealed ? { sealed: true } : {}),
     // Görev B3: büyüleme, hasarla bitme, hasarla yeniden save, süren zorlama, kaçış, koyanın turunda hasar, kopyalar.
     ...(spec.charm ? { charm: true } : {}), ...(spec.breakOnDamage ? { breakOnDamage: spec.breakOnDamage } : {}), ...(spec.breakOnSpell ? { breakOnSpell: true } : {}),
     ...(spec.damageSave && m.save ? { damageSave: { ability: m.save, dc, ...(spec.damageSave.advantage ? { advantage: true } : {}) } } : {}),
@@ -1689,6 +1694,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
       if (save.success && spec.onSave) {
         const light: BattleEvent = { type: 'effect_added', targetId: t.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + 1,
           ...(spec.onSave.attackDis ? { attackDis: spec.onSave.attackDis } : {}), ...(spec.onSave.untilSourceTurn ? { untilSourceTurn: true } : {}),
+          ...(spec.onSave.speedZero ? { speedZero: true } : {}), ...(spec.onSave.untilOwnTurnEnd ? { untilOwnTurnEnd: true } : {}),
           ...(spec.onSave.icon ? { icon: spec.onSave.icon } : {}) } };
         events.push(light);
         current = applyEvents(current, [light]);

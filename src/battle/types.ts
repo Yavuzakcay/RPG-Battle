@@ -307,6 +307,8 @@ export interface ActiveEffect {
   ethereal?: boolean;
   /** Kuyruk 18 H1: taraf değiştirme (Dominate Person/Beast): etkiyi verenin tarafına geçer (`allegiance.ts`). */
   dominate?: boolean;
+  /** Kuyruk K61 (sürüm 44): Dominate'e özgü tepki bağı (`reduce.ts`); Charm Person'da yok. */
+  reactionLink?: boolean;
   /** Kuyruk 18 H2: Polymorph etkisi (biçimi konsantrasyona bağlar; `polymorph.ts`). */
   polymorph?: boolean;
   /** K17 G1: Banishment: savaştan geçici çıkış (Ethereal gibi hedef alınamaz; tur başında dönmez, konsantrasyonla biter). */
@@ -372,7 +374,7 @@ export interface ActiveEffect {
   /** Görev B1: silahta büyü yeteneği ve zar (Shillelagh: Club, Quarterstaff; d8 / seviyeyle büyür; Force seçeneği). */
   weaponOverride?: { weapons: string[]; die: string; force?: boolean; attack: number; mod: number; type?: string };
   /** Görev B1: her tur sonu kurtarma zarı; başarıda biter (Slow, Ray of Enfeeblement). */
-  repeatSave?: { ability: Ability; dc: number; failDamage?: { dice: string; type: string }; tally?: { need: number; s: number; f: number } };
+  repeatSave?: { ability: Ability; dc: number; failDamage?: { dice: string; type: string }; tally?: { need: number; s: number; f: number; failGrants?: string[] } };
   /** Kuyruk 19: Contagion: verdiği durumu kaldıran etki önce bu save'i ister (başarısızsa durum kalır). */
   stubborn?: { ability: Ability; dc: number };
   /** Görev B1: hedefin sonraki turunun sonunda bir kez hasar (Acid Arrow), sonra biter. */

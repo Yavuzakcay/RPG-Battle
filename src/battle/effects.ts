@@ -232,7 +232,7 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
         // Kuyruk 19: Contagion: üç başarıda biter, üç başarısızlıkta kalıcı (save'ler durur).
         const next = { ...tally, s: tally.s + (r.success ? 1 : 0), f: tally.f + (r.success ? 0 : 1) };
         if (next.s >= next.need) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
-        else if (next.f >= next.need) { const { repeatSave: _r, ...rest } = e; evs.push({ type: 'effect_added', targetId: id, effect: { ...rest, until: undefined } }); }
+        else if (next.f >= next.need) { const { repeatSave: _r, ...rest } = e; { if (tally.failGrants) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' }); evs.push({ type: 'effect_added', targetId: id, effect: { ...rest, until: undefined, ...(tally.failGrants ? { grants: tally.failGrants } : {}) } }); } }
         else evs.push({ type: 'effect_added', targetId: id, effect: { ...e, repeatSave: { ...e.repeatSave, tally: next } } });
       } else if (r.success) evs.push({ type: 'effect_ended', targetId: id, effectId: e.id, name: e.name, reason: 'save' });
     } else if (e.blink) {
