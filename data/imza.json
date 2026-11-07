@@ -2788,7 +2788,7 @@
    "kendisi": true,
    "etki": {
     "name": "Yetişen Yol",
-    "sure": 10,
+    "sure": 3,
     "resist": [
      "acid",
      "bludgeoning",
