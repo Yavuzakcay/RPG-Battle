@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-07 — Kuyruk B2: büyü betimlemeleri (339 büyü; yalnız veri ve gösterim, kural sürümü 42 değişmedi)
+
+- **Veri:** `data/buyu-betimleme.json`, 339 giriş, `{ "<SRD kimliği>": { "tr": "…" } }` (ileride `en`); metinler verilenle birebir (betikle sınandı: fark 0), yalnız yapıya sarmalandı. Dosya başında `_aciklama` (doğrulayıcı `_` önekli anahtarları atlar). Büyü dosyalarına (`data/spells*.json`), `text`, `mechanics`, `area` alanlarına dokunulmadı: ortam kuralı `text`'i anahtar sözcükle okuyor, betimleme oraya karışmıyor. `src/battle`, `src/rules` ve büyü verisinde fark yok (`git diff` boş); replay ve eski kayıtlar etkilenmez.
+- **Yükleme:** `loadClassData()` içinde tembel (`import('../../data/buyu-betimleme.json')`, ayrı 36,1 kB / gzip 14,7 kB parça, 0–9. seviye büyülerle aynı yoldan); `spellDescriptions` yüklenene dek boş. Ana parça 373,30 → 373,54 kB (erişim işlevleri).
+- **Erişim (iki işlev, çünkü iki istek çelişiyordu):** `betimlemeOf(tablo, id, lang)` istenen dil, yoksa `tr` (veri erişimi, istendiği gibi); `descriptionShown` yalnız o dilin kendi metni. Arayüz yalnız ikincisini kullanır (`spellDescriptionShown`): EN modunda `en` girişi yokken betimleme gizli, Türkçeye düşmez; `en` eklendiği gün kendiliğinden görünür (test).
+- **Doğrulama:** `src/data/betimleme.ts` `validateDescriptions` (hata: eksik/fazla kimlik, yapı, bilinmeyen dil anahtarı, boş, 135 karakter üstü; uyarı: rakam). Test `src/data/betimleme.test.ts` (339/339, eksik-fazla yok, ≤135, doğrulayıcı hata yakalıyor), `npm run check:icerik` paket klasörü olmasa da bu doğrulamayı koşar ve hatada çıkış kodu 1 verir (`scripts/icerik-kontrol.ts`). Rakam uyarısı: 0. En uzun metin tam 135 (time-stop).
+- **Gösterim:** büyünün `text`'inin arayüzde gösterildiği tek yer savaşçı kartındaki süren etki satırı (açılır; `effectRows` → `MapBattle` `Drawer`). Betimleme `.fx-desc` (italik, soluk, tek paragraf) olarak mekanik `.fx-text`'in üstünde; betimleme yoksa hiçbir öğe çizilmez. Karakter sihirbazı, büyü menüsü ve savaş günlüğü büyü `text`'ini göstermiyor (yalnız ad); oralara betimleme eklenmedi, görev "mekanik metnin gösterildiği her yer" demişti. Testler `src/ui/spellDescription.test.ts`: var olan büyüde görünür, betimlemesi olmayanda (veri silinmiş büyü, bilinmeyen kimlik) yok, EN modunda gizli.
+- **Not:** isteğe bağlı genişleme: büyü menüsüne ya da sihirbaz büyü satırına ⓘ ile betimleme eklemek yeni arayüz kararı; ayrı görev.
+
 ## 2026-11-07 — Kuyruk M1: 6.–9. seviye 84 büyünün açıklama metni (yalnız metin; kural sürümü 42, değişmedi)
 
 - **Kapsam:** `data/spells-69.json`'daki 84 büyünün (6. 31, 7. 20, 8. 17, 9. 16) boş `text` alanı dolduruldu. Başka dosyada boş metin yoktu (0.–5. seviyede 0). Fark yalnız 84 `"text"` satırı: `text` alanı çıkarılınca dosya önceki hâliyle JSON düzeyinde birebir aynı (betikle sınandı); kod, şema, motor ve mekanik verisi değişmedi.

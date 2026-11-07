@@ -218,6 +218,8 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
               <button type="button" onClick={() => setOpenFx((k) => (k === r.key ? null : r.key))} aria-expanded={openFx === r.key}>
                 <span aria-hidden="true">{r.icon}</span> {r.name}{r.detail ? <small> · {r.detail}</small> : null}
               </button>
+              {/* Kuyruk B2: betimleme mekanik metnin üstünde (yoksa hiçbir şey çizilmez). */}
+              {openFx === r.key && r.desc && <p className="fx-desc">{r.desc}</p>}
               {openFx === r.key && r.text && <p className="fx-text">{r.text}</p>}
             </li>
           ))}</ul>

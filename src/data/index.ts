@@ -6,6 +6,7 @@ import itemsJson from '../../data/items.json';
 import environmentsJson from '../../data/environments.json';
 import spellSlotsJson from '../../data/spell-slots.json';
 import conditionsJson from '../../data/conditions.json';
+import { betimlemeOf, descriptionShown, type Lang, type SpellDescriptions } from './betimleme';
 import type {
   Armor, CharacterClass, ClassMechanics, ClassProgression, ConditionList, Environment, Item, Monster, Race, Spell, SpellSlotTables, SrdFeat, SrdMastery, SrdWeapon, SubclassDef, Weapon,
 } from './types';
@@ -59,6 +60,12 @@ export const classData: {
 } = {
   progression: [], mechanics: { resources: {}, features: {}, feats: {}, masteries: {} }, feats: [], srdWeapons: [], masteries: [], subclasses: [],
 };
+/** Kuyruk B2: büyü kimliği → dil → betimleme (`loadClassData` doldurur; yüklenene dek boş). */
+export const spellDescriptions: SpellDescriptions = {};
+/** Betimleme verisi erişimi (istenen dil, yoksa tr). Arayüz için `spellDescriptionShown`. */
+export const spellDescriptionOf = (id: string, lang: Lang): string | undefined => betimlemeOf(spellDescriptions, id, lang);
+/** Arayüz erişimi: yalnız o dilin kendi metni; EN modunda `en` yoksa gizli. */
+export const spellDescriptionShown = (id: string, lang: Lang): string | undefined => descriptionShown(spellDescriptions, id, lang);
 let classLoading: Promise<void> | null = null;
 export const classDataLoaded = () => classData.progression.length > 0;
 export function loadClassData(): Promise<void> {
@@ -66,9 +73,12 @@ export function loadClassData(): Promise<void> {
     import('../../data/srd/progression.json'), import('../../data/class-features.json'), import('../../data/srd/feats.json'),
     import('../../data/srd/weapons.json'), import('../../data/subclasses.json'), import('../../data/spells-45.json'),
     import('../../data/items-srd.json'), import('../../data/spells-69.json'), import('../../data/karadul.json'), import('../../data/imza.json'),
-    import('../../data/spells.json'),
-  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03]) => {
+    import('../../data/spells.json'), import('../../data/buyu-betimleme.json'),
+  ]).then(([p, m, f, w, sc, s45, isrd, s69, kd, imza, s03, bet]) => {
     if (classDataLoaded()) return;
+    // Kuyruk B2: büyü betimlemeleri (yalnız görünüm; ana parçaya girmez, sınıf verisiyle tembel gelir).
+    const { _aciklama: _a, ...descriptions } = bet.default as unknown as SpellDescriptions & { _aciklama?: unknown };
+    Object.assign(spellDescriptions, descriptions);
     // Kuyruk 19 (görev 7): SRD'nin geri kalan eşyaları (ana parça sınırı; oluşturucu ve savaştan önce yüklenir).
     const moreItems = (isrd.default as unknown as Item[]).filter((x) => !items.some((y) => y.id === x.id));
     items.push(...moreItems);
