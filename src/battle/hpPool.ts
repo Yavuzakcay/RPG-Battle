@@ -18,6 +18,17 @@ export function trackPools(before: BattleState, after: BattleState, event: Battl
   if (!after.hpPools || event.type === 'hp_pool_created' || event.type === 'hp_pool_synced') return after;
   let next = after;
   for (const pool of Object.values(after.hpPools)) {
+    // K59 (duman bulgusu): bitmiş havuz (0) aynı komutun sonraki olayıyla (komut başındaki candan hesaplanan
+    // `targetHpAfter`) canlanmaz; ölü üyelerin canı 0'da kalır.
+    if (pool.hp <= 0) {
+      const revived = members(next, pool.id).filter((c) => c.life === 'dead' && c.hp > 0);
+      if (revived.length) {
+        const combatants = { ...next.combatants };
+        for (const c of revived) combatants[c.id] = { ...c, hp: 0 } as Combatant;
+        next = { ...next, combatants };
+      }
+      continue;
+    }
     let delta = 0;
     for (const c of members(after, pool.id)) delta += c.hp - (before.combatants[c.id]?.hp ?? c.hp);
     if (!delta) continue;

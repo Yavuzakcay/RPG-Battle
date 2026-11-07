@@ -112,6 +112,20 @@ describe('K59 G2.1: Moral Çökmüş × Birlik can havuzu × Ortak Can', () => {
   });
 });
 
+describe('K59 duman bulgusu: bitmiş can havuzu', () => {
+  it('havuz 0 olunca aynı komutun sonraki olayı (komut başındaki candan targetHpAfter) ölü üyeyi ve havuzu canlandırmaz', () => {
+    const a = { ...mk('P1', { ownerId: 'p1', hp: 20, maxHp: 20 }), pos: o(2, 2) } as Combatant;
+    const b = { ...mk('P2', { ownerId: 'p1', hp: 20, maxHp: 20 }), pos: o(3, 2) } as Combatant;
+    const s0 = startBattle('t', 'd-z-zemin', [a, b, mk('E', { side: 'enemies', hp: 30, maxHp: 30 })], () => 0.5, { map: { id: 'col' } }).state;
+    let s = applyEvents({ ...s0, status: 'active' }, [{ type: 'hp_pool_created', poolId: 'h1', memberIds: ['P1', 'P2'], hp: 10, max: 40, label: 'test' } as BattleEvent]);
+    s = applyEvents(s, [{ ...hit('P1', 99), hpAfter: 0 } as BattleEvent]);
+    expect(s.combatants.P2!.life).toBe('dead');
+    s = applyEvents(s, [{ ...hit('P2', 3), hpAfter: 7 } as BattleEvent]);
+    expect(s.combatants.P2!.hp).toBe(0);
+    expect(s.hpPools!.h1!.hp).toBe(0);
+  });
+});
+
 describe('K59 G2.2: Karadul Örümcek Biçimi × aura', () => {
   const sheet: CharacterSheet = { ...blankCharacter('kd').sheet, name: 'Lilith', raceId: 'human', classId: 'druid', subclassId: KARADUL_ID, gender: 'kadin', level: 6,
     baseScores: { str: 8, dex: 14, con: 8, int: 10, wis: 15, cha: 16 }, armorName: 'Leather Armor', weapons: [{ name: 'Quarterstaff' }] } as CharacterSheet;

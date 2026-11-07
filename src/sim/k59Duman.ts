@@ -158,7 +158,7 @@ for (const level of levels) for (const mt of maps) for (let seed = firstSeed; se
       const bad = badNumber(state);
       if (bad) { fail('nan', bad); break; }
       const inc = inconsistency(state);
-      if (inc) { fail('tutarsiz', inc); break; }
+      if (inc) { fail('tutarsiz', `${inc} | son olaylar: ${events.slice(-6).map((e) => JSON.stringify(e).slice(0, 220)).join(' || ')}`); break; }
     }
     const a = JSON.stringify(replay(events));
     const b = JSON.stringify(replay(events));
