@@ -23,6 +23,16 @@ export interface FreeShape {
   rangeAll?: boolean;
   /** İlk (çıkış) altıgen büyücünün görüşünde olmalı. */
   sightFirst?: boolean;
+  /** Kuyruk K65b (Forcecage): seçime göre sınır (`box` 4, `cage` 19) ve varsayılan seçim. */
+  maxByChoice?: Record<string, number>;
+  defaultChoice?: string;
+}
+
+/** Kuyruk K65b: seçime göre etkin serbest şekil (Forcecage kutu/kafes sınırı); seçimsiz büyüde aynen. */
+export function freeShapeFor(fs: FreeShape, choice?: string | null): FreeShape {
+  const key = choice ?? fs.defaultChoice;
+  const max = key ? fs.maxByChoice?.[key] : undefined;
+  return max !== undefined ? { ...fs, maxHexes: max } : fs;
 }
 
 /** Büyünün bu savaşın kural sürümündeki serbest şekli (yalnızca `k65` bloğu, sürüm 49+). */
@@ -162,4 +172,56 @@ export function freeShapeAim(state: BattleState, actor: Combatant, spell: Spell,
   }
   const covered = coveredIds();
   return { hexes: shape, covered: targets.filter((t) => covered.has(t.f.id)).map((t) => t.f) };
+}
+
+/**
+ * Kuyruk K65b (Wind Wall `wallPath`, sürüm 41'den beri motorda): duvar yolu sırası. Bitişik altıgenler, tekrarsız, harita
+ * içi, ilki menzilde. Motor (`zones.ts` `wallPathHexes`) ve seçici aynı denetimi kullanır.
+ */
+export function pathProblem(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number): string | null {
+  if (path.length > max) return `${spell.name}: duvar en çok ${max} altıgen (${max * 5} ft).`;
+  const size = sizeOf(state);
+  for (let i = 0; i < path.length; i++) {
+    const h = path[i] as Offset;
+    if (!isInside(h, size)) return 'Duvar harita dışına taşamaz.';
+    if (path.slice(0, i).some((x) => sameHex(x, h))) return 'Duvar yolu aynı altıgenden iki kez geçemez.';
+    if (i > 0 && distance(path[i - 1] as Offset, h) !== 1) return 'Duvar yolunun altıgenleri birbirine bitişik olmalı.';
+  }
+  if (!actor.pos || (path[0] && distance(actor.pos, path[0]) * 5 > spell.rangeFt)) return `${spell.name}: duvarın başı menzil dışında (${spell.rangeFt} ft).`;
+  return null;
+}
+
+/** Seçici: yol sonuna eklenecek altıgenin sorunu (yolun son altıgenine bitişik; ilki menzilde) ya da null. */
+export function pathAddProblem(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number, h: Offset): string | null {
+  if (path.length >= max) return `${spell.name}: sınır doldu (${max}).`;
+  const last = path[path.length - 1];
+  if (last && distance(last, h) !== 1) return 'Duvar yolu yalnızca son altıgene bitişik uzar.';
+  return pathProblem(state, actor, spell, [...path, h], max);
+}
+
+/**
+ * Kuyruk K65b (yapay zekâ, Forcecage): tehlikeli düşmanın bütün gövdesini kapsayan bitişik küme; sınır izin verdikçe ona
+ * bitişik öteki düşmanlar da (gövdeleri tam). Dost, büyücü ya da masum altıgeni içeren küme kurulmaz; ilk altıgen menzil
+ * ve görüş sınavından geçen gövde altıgeni. Kısmen içeride kalan yaratık itileceği için gövde tam alınır.
+ */
+export function cageAim(state: BattleState, actor: Combatant, spell: Spell, fs: FreeShape, target: Combatant, foes: Combatant[]): Offset[] | null {
+  if (!state.map || !actor.pos || !target.pos) return null;
+  const blocked = new Set(Object.values(state.combatants)
+    .filter((c) => c.pos && c.hp > 0 && (c.side === actor.side || c.civilian || c.id === actor.id))
+    .flatMap((c) => bodyOf(state, c).map(hexKey)));
+  const body = (c: Combatant) => bodyOf(state, c);
+  const first = body(target);
+  if (first.length > fs.maxHexes || first.some((h) => blocked.has(hexKey(h)))) return null;
+  const start = first.find((h) => !freeHexProblem(state, actor, spell, fs, h, true));
+  if (!start) return null;
+  let shape = [start, ...first.filter((h) => !sameHex(h, start))];
+  const others = foes.filter((f) => f.id !== target.id && f.pos && f.hp > 0)
+    .sort((a, b) => distance(a.pos as Offset, target.pos as Offset) - distance(b.pos as Offset, target.pos as Offset) || a.id.localeCompare(b.id));
+  for (const f of others) {
+    const add = body(f).filter((h) => !shape.some((x) => sameHex(x, h)));
+    const next = [...shape, ...add];
+    if (next.length > fs.maxHexes || add.some((h) => blocked.has(hexKey(h)))) continue;
+    if (!freeShapeProblem(state, actor, spell, fs, next)) shape = next;
+  }
+  return freeShapeProblem(state, actor, spell, fs, shape) ? null : shape;
 }

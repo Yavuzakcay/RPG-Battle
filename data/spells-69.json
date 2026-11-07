@@ -1319,6 +1319,9 @@
      "color": "#9fd0ff",
      "icon": "▣"
     }
+   },
+   "k65": {
+    "freeShape": { "maxHexes": 19, "rangeAll": true, "sightFirst": true, "maxByChoice": { "box": 4, "cage": 19 }, "defaultChoice": "box" }
    }
   },
   "school": "Evocation",

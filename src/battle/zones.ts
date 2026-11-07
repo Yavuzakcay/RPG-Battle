@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { freeShapeFor, freeShapeProblem, pathProblem } from './freeShape';
 import { cageOpenEvents, cageStepBlocked, castCageHexes } from './forcecage';
 import { healRoll } from './healMax';
 import { groundWarded, groundZone } from './groundWard';
@@ -503,6 +504,14 @@ function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offs
   if (!state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
   // Kuyruk K62 (sürüm 46, Forcecage): hazır ayarlı kafes ya da kutu; hedef altıgen menzilde olmalı.
   const cg = spell.mechanics.zone?.cage;
+  // Kuyruk K65b (sürüm 49, `freeShape`): Forcecage serbest şekil: seçilen bitişik altıgenler (kutu en çok 4, kafes 19;
+  // menzil her altıgende, görüş ilkinde). Hapis, itme, CHA save ve görüş kesme K62'deki gibi alanın altıgenlerinden.
+  const fs = cg ? spell.mechanics.freeShape : undefined;
+  if (cg && fs) {
+    const hexes = cmd?.targetHexes?.length ? cmd.targetHexes : aim ? [aim] : [];
+    const why = freeShapeProblem(state, actor, spell, freeShapeFor(fs, cmd?.choice ?? null), hexes);
+    return why ? fail(why) : hexes;
+  }
   if (cg) {
     if (!aim) return fail(`${spell.name}: hedef altıgen seç.`);
     if (distance(actor.pos, aim) * 5 > spell.rangeFt) return fail(`${spell.name}: hedef menzil dışında (${spell.rangeFt} ft).`);
@@ -528,16 +537,9 @@ function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offs
 
 /** Kuyruk S2: Wind Wall serbest yol: bitişik altıgenler, tekrarsız, ilki büyü menzilinde, hepsi harita içinde. */
 function wallPathHexes(state: BattleState, actor: Combatant, spell: Spell, path: Offset[], max: number): Offset[] | CommandResult {
-  if (path.length > max) return fail(`${spell.name}: duvar en çok ${max} altıgen (${max * 5} ft).`);
-  const size = sizeOf(state);
-  for (let i = 0; i < path.length; i++) {
-    const h = path[i] as Offset;
-    if (size && !isInside(h, size)) return fail('Duvar harita dışına taşamaz.');
-    if (path.slice(0, i).some((x) => sameHex(x, h))) return fail('Duvar yolu aynı altıgenden iki kez geçemez.');
-    if (i > 0 && distance(path[i - 1] as Offset, h) !== 1) return fail('Duvar yolunun altıgenleri birbirine bitişik olmalı.');
-  }
-  if (!actor.pos || distance(actor.pos, path[0] as Offset) * 5 > spell.rangeFt) return fail(`${spell.name}: duvarın başı menzil dışında (${spell.rangeFt} ft).`);
-  return path;
+  // Kuyruk K65b: denetim seçiciyle ortak (`freeShape.ts` `pathProblem`; iletiler ve sıra aynı).
+  const why = pathProblem(state, actor, spell, path, max);
+  return why ? fail(why) : path;
 }
 
 /** Yeni alanın kimliği: büyü + büyücü + sıra (konsantrasyonsuz büyüler birden çok kez yapılabilir). */

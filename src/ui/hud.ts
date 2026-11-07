@@ -1,5 +1,5 @@
 /** Harita üstü arayüzün (HUD) saf yardımcıları: yüzen menü ve balon yerleşimi, parlayan hedefler. */
-import { freeShapeArea, freeShapeOf } from '../battle/freeShape';
+import { freeShapeArea, freeShapeFor, freeShapeOf, pathProblem } from '../battle/freeShape';
 import { breathOf } from '../battle/breath';
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
@@ -214,23 +214,34 @@ export function summonHexes(state: BattleState, actorId: string, spell: Spell, c
 export type AreaAct = { kind: 'spell'; spell: Spell } | { kind: 'monster'; index: number } | { kind: 'breath'; shape: 'cone' | 'line' };
 
 /** Kuyruk K57: alan büyüsünün savaşın kural sürümündeki nokta sayısı (Meteor Swarm 4; çoğu büyüde 1). */
-export function areaPointCount(state: BattleState, act: AreaAct | null): number {
+export function areaPointCount(state: BattleState, act: AreaAct | null, choice?: string | null): number {
   if (act?.kind !== 'spell') return 1;
   const m = mechanicsAt(state, act.spell);
-  // Kuyruk K65a (sürüm 49, Fire Storm `freeShape`): serbest şekil, altıgen altıgen (en çok `maxHexes`).
-  if (m.freeShape) return m.freeShape.maxHexes;
+  // Kuyruk K65a (sürüm 49, Fire Storm `freeShape`): serbest şekil, altıgen altıgen (en çok `maxHexes`; K65b Forcecage seçime göre).
+  if (m.freeShape) return freeShapeFor(m.freeShape, choice).maxHexes;
   // Kuyruk S2 (sürüm 41, Wind Wall `wallPath`): serbest duvar yolu, altıgen altıgen.
   return Math.max(1, m.multiPoint ?? (ruleVersion(state) >= 41 ? m.wallPath ?? 1 : 1));
 }
 
 /** Kuyruk K65a: alan büyüsünün serbest şekli (sürüm 49; yoksa undefined). */
-export const areaFreeShape = (state: BattleState, act: AreaAct | null) => (act?.kind === 'spell' ? freeShapeOf(state, act.spell) : undefined);
+export const areaFreeShape = (state: BattleState, act: AreaAct | null, choice?: string | null) => {
+  const fs = act?.kind === 'spell' ? freeShapeOf(state, act.spell) : undefined;
+  return fs ? freeShapeFor(fs, choice) : undefined;
+};
+
+/** Kuyruk K65b: Wind Wall serbest yolu (sürüm 41+; en çok N altıgen) ya da undefined. */
+export const areaWallPath = (state: BattleState, act: AreaAct | null): number | undefined =>
+  act?.kind === 'spell' && ruleVersion(state) >= 41 ? mechanicsAt(state, act.spell).wallPath : undefined;
 
 /** Kuyruk S2: alandan altıgen çıkarılabilir mi (Plant Growth). */
 export const areaExcludable = (state: BattleState, act: AreaAct | null): boolean =>
   act?.kind === 'spell' && ruleVersion(state) >= 41 && !!mechanicsAt(state, act.spell).excludable;
 
 export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetSpec; rangeFt: number; label: string } | null {
+  // Kuyruk K65b (Forcecage serbest şekil): alan tanımı yok; seçici için 10 ft küp yer tutucusu (şekli seçim belirler).
+  if (act.kind === 'spell' && !act.spell.area && (act.spell.mechanics.zone?.cage || act.spell.mechanics.k62?.zone?.cage)) {
+    return { spec: { shape: 'cube', sizeFt: 10, origin: 'point', targets: 'all' }, rangeFt: act.spell.rangeFt, label: act.spell.name };
+  }
   if (act.kind === 'spell') return act.spell.area ? { spec: act.spell.area, rangeFt: act.spell.rangeFt, label: act.spell.name } : null;
   if (act.kind === 'monster') {
     const a = actor.attacks[act.index];
@@ -244,7 +255,7 @@ export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null
   // Kuyruk S2 (Plant Growth): dışarıda bırakılan altıgenler.
   if (act.kind === 'spell' && exclude?.length && !points?.length) return { ...areaActCommand(actorId, act, aim, slotLevel, wallShape, choice), excludeHexes: exclude } as Command;
   // Kuyruk K57 (Meteor Swarm): çok noktalı alanda ilk nokta `targetHex`, hepsi `targetHexes`.
-  if (act.kind === 'spell' && points?.length) return { type: 'cast_spell', actorId, spellName: act.spell.name, targetHex: points[0] as Offset, ...(points.length > 1 ? { targetHexes: points } : {}), ...(slotLevel ? { slotLevel } : {}) };
+  if (act.kind === 'spell' && points?.length) return { type: 'cast_spell', actorId, spellName: act.spell.name, targetHex: points[0] as Offset, ...(points.length > 1 ? { targetHexes: points } : {}), ...(slotLevel ? { slotLevel } : {}), ...(choice ? { choice } : {}) };
   if (act.kind === 'spell') return { type: 'cast_spell', actorId, spellName: act.spell.name, ...(aim ? { targetHex: aim } : {}), ...(slotLevel ? { slotLevel } : {}), ...(choice ? { choice } : {}),
     ...(wallShape && act.spell.area?.shape === 'wall' ? { wallShape } : {}) };
   if (act.kind === 'monster') return { type: 'monster_attack', actorId, targetId: '', attackIndex: act.index, ...(aim ? { targetHex: aim } : {}) };
@@ -252,12 +263,12 @@ export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null
 }
 
 /** Önizleme: kaplanan altıgenler, etkilenecek dostlar ve düşmanlar (motorla aynı), yapılamıyorsa nedeni. */
-export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAct, aim: Offset | null, wallShape?: 'arc' | 'ring' | null, points?: Offset[]):
+export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAct, aim: Offset | null, wallShape?: 'arc' | 'ring' | null, points?: Offset[], choice?: string | null):
   { hexes: Offset[]; friends: Combatant[]; foes: Combatant[]; error: string | null } {
   const s = areaActSpec(actor, act);
   if (!s) return { hexes: [], friends: [], foes: [], error: null };
   // Kuyruk K65a (serbest şekil): önizleme motorun `freeShapeArea`'sıyla aynı (sınır, menzil, görüş, tek parça).
-  const fs = areaFreeShape(state, act);
+  const fs = areaFreeShape(state, act, choice);
   if (fs && act.kind === 'spell') {
     const pick = freeShapeArea(state, actor, act.spell, fs, points?.length ? points : aim ? [aim] : []);
     if ('ok' in pick) return { hexes: points ?? [], friends: [], foes: [], error: pick.error };
@@ -266,6 +277,9 @@ export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAc
   }
   // Kuyruk S2 (Wind Wall serbest yol): önizleme yolun kendisi.
   if (act.kind === 'spell' && points?.length && ruleVersion(state) >= 41 && mechanicsAt(state, act.spell).wallPath) {
+    // Kuyruk K65b: yolun sorunu motorla aynı denetimden (`pathProblem`).
+    const why = pathProblem(state, actor, act.spell, points, mechanicsAt(state, act.spell).wallPath as number);
+    if (why) return { hexes: points, friends: [], foes: [], error: why };
     const on = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && points.some((p) => p.col === c.pos?.col && p.row === c.pos?.row));
     const friend = (c: Combatant) => c.side === actor.side || c.civilian;
     return { hexes: points, friends: on.filter(friend), foes: on.filter((c) => !friend(c)), error: null };

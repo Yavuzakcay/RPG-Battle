@@ -899,7 +899,7 @@ export const en: Strings = {
       mystery: '? Something might happen here', reactions: 'Reaction', conditions: 'Condition', none: 'No visible effect', error: (e: string): string => `Not possible: ${e}`,
     },
     k65: { head: (spell: string): string => `${spell}: paint the area`, count: (n: number, max: number): string => `${n}/${max} hexes`,
-      hint: 'Tap to add/remove; each hex must touch the selected area', undo: 'Undo', clear: 'Clear', note: (n: number): string => `free area, up to ${n} hexes` },
+      hint: 'Tap to add/remove; each hex must touch the selected area', undo: 'Undo', clear: 'Clear', pathTail: 'The wall path only shortens from its end: tap the last hex.', cageKind: (name: string, max: number): string => `${name} (up to ${max})`, note: (n: number): string => `free area, up to ${n} hexes` },
     k64: { possessed: (by: string): string => `Possessed: ${by} controls the body`, leave: 'Leave the body', gmEnd: 'End possession',
       dormant: (by: string): string => `Possession suppressed (Hallow): ${by} cannot control the body`,
       wardTitle: (who: string): string => `${who}: warding area`,

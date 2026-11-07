@@ -2,6 +2,31 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K65b: Forcecage serbest boyut + Wind Wall yol denetimi (kural sürümü 49'da kalır)
+
+- **Sürüm:** K65a ile aynı özellik; 49 henüz hiçbir yerde yayınlanmadı (dal `wip/k65`). Sürüm **49'da kalır**. Depoda `kuralSurumu: 49` taşıyan kayıt dosyası arandı, yok. Forcecage'in yeni yolu yalnızca `k65` bloğu (sürüm 49) ile; 48 ve altında K62 ön ayarı (kutu = hedef + 3 komşu, kafes yarıçap 2) aynen, `targetHexes` yok sayılır. `SAVE_VERSION` 22. Denge, büyü `text` ve canavar verisi değişmedi.
+- **Forcecage (kullanıcı kararları):** büyü verisinde `k65.freeShape: { maxHexes: 19, maxByChoice: { box: 4, cage: 19 }, defaultChoice: 'box', rangeAll, sightFirst }`.
+  - Doğrulama K65a'nın tek doğrulayıcısından (`freeShapeProblem`; seçime göre sınır `freeShapeFor`): bitişik, tekrarsız, her altıgen 100 ft menzilde, ilk altıgen görüşte.
+  - Yalnızca alanın altıgenleri değişti (`zones.ts` `castHexes`). Hapis, sınırdan geçememe, itme, CHA save'li ışınlanma, Dispel Magic bağışıklığı, kutunun görüşü/hedeflemeyi kesmesi ve kafesin geçirmesi K62 kodundan aynen.
+  - SRD "Cube-shaped prison ... up to 20 feet on a side" der. Küp biçimi yerine serbest bitişik şekil kullanıcı kararıdır (SRD'den ayrılan yer): sınır küpün altıgen karşılığı (kutu 4, kafes 19), biçim serbest.
+- **Wind Wall:** motor S2'den beri yolu doğruluyordu (`wallPathHexes`). Denetim `freeShape.ts` `pathProblem`'e taşındı; motor ve seçici aynı fonksiyonu kullanır (iletiler aynı).
+  - Seçicide yol yalnızca son altıgene bitişik uzar (`pathAddProblem`), yalnızca sondan kısalır.
+  - Eklenebilir altıgenler vurgulu; önizleme bitişik olmayan yolda motorun iletisini gösterir.
+  - Yeni mekanik yok.
+- **Meteor Swarm:** SRD "Each sphere is centered on a point you choose within range"; noktalar arasında bitişiklik ya da sıra şartı yok. K57'den beri seçici dört noktayı tekrarsız alıyor, her nokta menzil ve görüş için motorun `pickArea`'sıyla önizleniyor. Eksik bulunmadı, değişiklik yok.
+- **Yapay zekâ (Forcecage, K62 `k62:kafes` kuralının sürüm 49 kolu):** `cageAim`.
+  - 20+ HP düşmanlar candan büyüğe sıralanır. Kutu (≤ 4), sığmazsa kafes (≤ 19).
+  - Kapsanan: hedefin bütün gövdesi (kısmen içerideki itilir) ve sınır izin verdikçe bitişik öteki düşmanların bütün gövdeleri.
+  - Dost, büyücü ya da masum altıgeni içeren küme kurulmaz; ilk altıgen menzil ve görüş sınavından geçen gövde altıgeni.
+  - Fire Storm kuralı (`k65:firtina`) Forcecage'i atlar.
+  - Karar süresi (15×7, 8 düşman, `chooseCommand` ortalaması): sürüm 48'de 0,8 ms, 49'da 0,7 ms.
+- **Arayüz:**
+  - Sürüm 49'da Forcecage ortak alan seçicisinde (`aim`): "Forcecage: alanı boya", sayaç "3/4" (kutu) ya da "12/19" (kafes), kutu/kafes düğmeleri sınırlarıyla, Geri al/Temizle, sınır dolunca neden. 48'de K62'nin hedef altıgen seçimi.
+  - Önizleme kartı Forcecage'de gösterilmez: önizleme hedefi yalnızca hasar/durum/etki/itme ile sayar, tutsaklık bayrağı karta girmez, kart "Etkisiz görünüyor" diyordu. İçeride kalacaklar balondaki dost/düşman listesinde. Kartın önizleme motoru yapay zekâ puanlamasıyla ortak olduğu için değiştirilmedi.
+  - Wind Wall: "Duvar yolu yalnızca sondan kısalır" uyarısı. TR/EN.
+- **K65c'ye açık madde:** panelli duvarlar (Wall of Stone/Ice/Force serbest panel yolu; panel HP'si altıgen anahtarlı, `walls.ts`). K66 earthquake kuyruğuyla karıştırılmaz.
+- **Test:** `src/battle/k65b.test.ts` (8): veri ve sürüm 48; kutu 3 altıgen (tutsak, görüş keser); kafes 5 altıgen (görüş kesmez); kutuda 5. altıgen ve kafeste 20. altıgen reddi; iki parça, duvar arkasında ilk altıgen; sürüm 48'de K62 ön ayarı; önizleme ve sayaç; YZ (en güçlü + bitişik düşman, dost bitişikken kapsamaz); Wind Wall yol denetimi (seçici, motor, önizleme aynı ileti). K62, K63, K64a/b, K65a, Resilient Sphere (`sealed`) testleri aynen.
+
 ## 2026-11-08 — Kuyruk K65a: Serbest şekil alan seçici + Fire Storm (kural sürümü 49)
 
 - **Sürüm:** `wip/k65` (plan 9fe6e18) üzerinde; 48 → 49, kapı `>= 49`. Büyü verisinde `k65` bloğu (`mechanicsAt`, `castSpell` `LATER`, `buyu-durum.mjs` BLOCKS). Sürüm ≤ 48'de Fire Storm tek 25 ft küre aynen; `targetHexes` yok sayılır. `SAVE_VERSION` 22 (yeni komut/olay yok). Denge, büyü `text` ve canavar verisi değişmedi.
@@ -24,7 +49,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Koşul: en az iki düşman ya da kapsananların canı 40+.
   - Karar süresi (15×7, 8 düşman): `freeShapeAim` 0,81 ms; `chooseCommand` sürüm 48'de 0,7 ms, 49'da 1,8 ms.
 - **Denge:** alan ≈91 → en çok 40 altıgen; `DENGE.md`'ye not, ayar yok.
-- **K65b'ye açık maddeler:** Forcecage serbest boyut (kutu ≤ 4 altıgen, kafes ≤ 19; kullanıcı kararı 4); Wind Wall yolu ve Meteor Swarm noktaları için seçicide bitişiklik/sıra vurgusu.
+- **K65b'ye açık maddeler (K65b'de yapıldı, yukarıdaki kayda bakın):** Forcecage serbest boyut (kutu ≤ 4 altıgen, kafes ≤ 19; kullanıcı kararı 4); Wind Wall yolu ve Meteor Swarm noktaları için seçicide bitişiklik/sıra vurgusu.
 - **K65c'ye açık madde:** panelli duvarlar (Wall of Stone/Ice/Force serbest panel yolu; panel HP'si altıgen anahtarlı). K66 earthquake kuyruğuyla karıştırılmaz.
 - **Test:** `src/battle/k65.test.ts` (7): veri ve sürüm 48, 40 altıgenlik alanda bir kez save ve hasar, alan dışı komşu etkilenmez, kenar durumlar (41 altıgen, iki parça, tekrar, duvar arkasında ilk altıgen, duvar ardına uzanma, menzil), sürüm 48'de küre, seçici yardımcıları (bitişiklik, sınır, bölme), önizleme, YZ (iki grubu dostsuz birleştirir, küçük bütçede kalabalık grup, komut geçerli). Veriye bağlı test değişikliği: `ruleVersion.test.ts` ve `g6.test.ts` güncel sürüm 48 → 49.
 

@@ -21,7 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
-import { freeShapeAim, freeShapeOf } from './freeShape';
+import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf } from './freeShape';
 import { aiLeaveWanted, controlConditions, possessSpecOf, possessionProblem } from './possession';
 import { possessorAt, possessorDisabled } from './possessionCore';
 import { hiddenFromTruesight } from './sight';
@@ -501,7 +501,8 @@ function freeShapeCommand(state: BattleState, actor: Combatant, foes: Combatant[
   if (!state.map || !actor.pos || ruleVersion(state) < 49) return null;
   for (const s of castable(actor)) {
     const fs = freeShapeOf(state, s);
-    if (!fs) continue;
+    // Kuyruk K65b: Forcecage'in serbest şekli kendi kuralında (`cageSpell`).
+    if (!fs || mechanicsAt(state, s).zone?.cage) continue;
     const aim = freeShapeAim(state, actor, s, fs, foes);
     if (!aim || (aim.covered.length < 2 && aim.covered.reduce((n, c) => n + c.hp, 0) < 40)) continue;
     const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: aim.hexes[0] as Offset, targetHexes: aim.hexes };
@@ -533,6 +534,21 @@ function cageSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
   let best: { cmd: Command; hp: number } | null = null;
   for (const s of castable(actor)) {
     if (!mechanicsAt(state, s).zone?.cage) continue;
+    // Kuyruk K65b (sürüm 49, serbest şekil): kutu (≤ 4 altıgen), sığmazsa kafes (≤ 19): en güçlü düşmanın bütün gövdesi,
+    // sınır izin verdikçe bitişik öteki düşmanlar; dost içeren küme kurulmaz (`cageAim`).
+    const fs = freeShapeOf(state, s);
+    if (fs) {
+      const strong = foes.filter((f) => f.pos && f.hp >= 20).sort((a, b) => b.hp - a.hp || a.id.localeCompare(b.id));
+      for (const f of strong) {
+        for (const choice of ['box', 'cage']) {
+          const hexes = cageAim(state, actor, s, freeShapeFor(fs, choice), f, foes);
+          if (!hexes) continue;
+          const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: hexes[0] as Offset, targetHexes: hexes, choice };
+          if (tryCmd(state, actor, cmd).ok) return cmd;
+        }
+      }
+      continue;
+    }
     for (const f of foes) {
       if (!f.pos || f.hp < 20 || (best && best.hp >= f.hp)) continue;
       const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos, choice: 'box' };

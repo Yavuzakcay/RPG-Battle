@@ -7,7 +7,7 @@
  */
 import { activePossession, possessedEffect } from './battle/possessionCore';
 import { setupWardOf } from './battle/possession';
-import { freeAddProblem, freeRemoveProblem, freeShapeOf } from './battle/freeShape';
+import { freeAddProblem, freeRemoveProblem, freeShapeOf, pathAddProblem } from './battle/freeShape';
 import { imzaHex as imzaHex0, imzaTargeted as imzaTargeted0 } from './battle/imza';
 import type { UsableFeature } from './battle/types';
 
@@ -68,7 +68,7 @@ import {
   placeHexes, terrainInfo, HEX_W,
 } from './ui/mapView';
 import {
-  areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaFreeShape, areaPointCount, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
+  areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaFreeShape, areaPointCount, areaWallPath, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
   featureTeleportHexes, slotChoices, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
@@ -497,7 +497,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const aimPoint = (h: Offset) => {
     if (excludeOn) { setExcluded((xs) => (xs.some((x) => sameHex(x, h)) ? xs.filter((x) => !sameHex(x, h)) : [...xs, h])); return; }
     // Kuyruk K65a (serbest şekil): dokun-ekle / dokun-çıkar; ekleme bitişik olmalı, çıkarma alanı bölmemeli (nedeni yazılır).
-    const fs = areaFreeShape(state, areaAct);
+    const fs = areaFreeShape(state, areaAct, choicePick);
     const me = state.combatants[actorId];
     if (fs && me && areaAct?.kind === 'spell') {
       const has = aimPts.some((p) => sameHex(p, h));
@@ -507,7 +507,19 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       setAimHex(h);
       return;
     }
-    const max = areaPointCount(state, areaAct);
+    // Kuyruk K65b (Wind Wall yolu): yol yalnızca son altıgene bitişik uzar, yalnızca sondan kısalır (motorla aynı denetim).
+    const wp = areaWallPath(state, areaAct);
+    if (wp && me && areaAct?.kind === 'spell') {
+      const last = aimPts[aimPts.length - 1];
+      if (aimPts.some((p) => sameHex(p, h))) {
+        if (!last || !sameHex(last, h)) { toast(B.k65.pathTail); return; }
+        setAimPts(aimPts.slice(0, -1)); setAimHex(h); return;
+      }
+      const why = pathAddProblem(state, me, areaAct.spell, aimPts, wp, h);
+      if (why) { toast(why); return; }
+      setAimPts([...aimPts, h]); setAimHex(h); return;
+    }
+    const max = areaPointCount(state, areaAct, choicePick);
     if (max > 1) setAimPts((ps) => (ps.some((p) => sameHex(p, h)) ? ps.filter((p) => !sameHex(p, h)) : ps.length < max ? [...ps, h] : ps));
     setAimHex(h);
   };
@@ -924,10 +936,17 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const me = state.combatants[actorId];
     if (!active || mode !== 'aim' || !areaAct || !me || !state.map) return null;
     // Kuyruk K65a (serbest şekil): eklenebilir altıgenler vurgulu (bitişik, menzilde; ilkinde görüş), ötekiler soluk.
-    const fs = areaFreeShape(state, areaAct);
+    const fs = areaFreeShape(state, areaAct, choicePick);
     if (fs && areaAct.kind === 'spell') {
       const out = new Set<string>();
       state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!aimPts.some((p) => sameHex(p, h)) && !freeAddProblem(state, me, areaAct.spell, fs, aimPts, h)) out.add(hexKey(h)); }));
+      return out;
+    }
+    // Kuyruk K65b (Wind Wall yolu): eklenebilir altıgenler (son altıgene bitişik; ilki menzilde).
+    const wp = areaWallPath(state, areaAct);
+    if (wp && areaAct.kind === 'spell') {
+      const out = new Set<string>();
+      state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!aimPts.some((p) => sameHex(p, h)) && !pathAddProblem(state, me, areaAct.spell, aimPts, wp, h)) out.add(hexKey(h)); }));
       return out;
     }
     if (!freeHexRule(state)) return null;
@@ -936,14 +955,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const out = new Set<string>();
     state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!('ok' in pickArea(state, me, s.spec, s.rangeFt, h))) out.add(hexKey(h)); }));
     return out;
-  }, [state, active, actorId, mode, areaAct, aimPts]);
+  }, [state, active, actorId, mode, areaAct, aimPts, choicePick]);
   // Seçili hedef öldü ya da kaldırıldıysa (Görev U) işareti kalmasın.
   useEffect(() => { if (targetId && !glowing.has(targetId)) setTargetId(null); }, [glowing, targetId]);
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
   const areaInfo = useMemo(() => (mode === 'aim' && areaAct && actor
-    ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : areaPointCount(state, areaAct) > 1 ? aimPts[0] ?? null : aimHex, wallShape === 'line' ? null : wallShape,
-      areaPointCount(state, areaAct) > 1 ? aimPts : undefined) : null),
-  [state, actor, areaAct, aimHex, aimPts, mode, wallShape]);
+    ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : areaPointCount(state, areaAct, choicePick) > 1 ? aimPts[0] ?? null : aimHex, wallShape === 'line' ? null : wallShape,
+      areaPointCount(state, areaAct, choicePick) > 1 ? aimPts : undefined, choicePick) : null),
+  [state, actor, areaAct, aimHex, aimPts, mode, wallShape, choicePick]);
   const area = areaInfo?.hexes ?? [];
   const areaFriends = new Set((areaInfo?.friends ?? []).map((c) => c.id));
   const areaFoes = new Set((areaInfo?.foes ?? []).map((c) => c.id));
@@ -1471,7 +1490,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
   const modeHint: Record<Mode, string> = {
     idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
-    spell: B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
+    spell: B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
     pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
@@ -2085,6 +2104,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setChoicePick(sp.mechanics.conditionChoices?.[0] ?? sp.mechanics.damageChoices?.[0] ?? sp.mechanics.restoreChoices?.[0] ?? sp.mechanics.abilityChoices?.[0] ?? null); setMode('spell'); }
                       // Kuyruk K62 (sürüm 46): Forcecage: hedef altıgen + kutu/kafes seçimi (alan hazır ayarlı).
+                      // Kuyruk K65b (sürüm 49): Forcecage serbest şekil: ortak alan seçici (kutu/kafes düğmesi, sayaç).
+                      else if (mechanicsAt(state, sp).zone?.cage && freeShapeOf(state, sp)) { setSpell(sp); setChoicePick('box'); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setMode('aim'); }
                       else if (mechanicsAt(state, sp).zone?.cage) {
                         setSpell(sp); setChoicePick('box');
                         setPickHexCmd({ make: (h) => ({ type: 'cast_spell', actorId, spellName: sp.name, targetHex: h, ...slotFields(slotPick) }) }); setMode('pickHex');
@@ -2309,7 +2330,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const selfShape = sp.spec.origin === 'self' && sp.spec.shape !== 'emanation';
             const needAim = sp.spec.shape !== 'emanation';
             const picker = areaAct.kind === 'spell' && slotChoices(actor, areaAct.spell).length > 1 ? 64 : 0;
-            const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker + (areaFreeShape(state, areaAct) ? 56 : 0)) };
+            const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker + (areaFreeShape(state, areaAct, choicePick) ? (areaAct.kind === 'spell' && mechanicsAt(state, areaAct.spell).zone?.cage ? 100 : 56) : 0)) };
             // Balon alanın ve jetonun üstünü kapatmasın: alanın ağırlık merkezinin karşı kenarına yaslanır.
             const pts = [actorPx, ...area.map(px)];
             const cx = pts.reduce((n, q) => n + q.x, 0) / pts.length;
@@ -2317,13 +2338,21 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const at = { x: cx > box.w / 2 ? 8 : Math.max(8, box.w - size.w - 8), y: Math.max(8, Math.min(box.h - size.h - 8, cy - size.h / 2)) };
             const foes = areaInfo?.foes ?? [];
             const friends = areaInfo?.friends ?? [];
-            const multi = areaPointCount(state, areaAct);
-            const freeShape = areaFreeShape(state, areaAct);
+            const multi = areaPointCount(state, areaAct, choicePick);
+            const freeShape = areaFreeShape(state, areaAct, choicePick);
             const ready = multi > 1 ? aimPts.length > 0 : !needAim || !!aimHex;
             return (
               <div className="bubble area-bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }} role="dialog" aria-label={sp.label}>
                 <strong>{freeShape ? B.k65.head(sp.label) : A.head(sp.label, sp.spec.sizeFt, t().log.shapeName[sp.spec.shape] ?? sp.spec.shape)}</strong>
                 {freeShape && <small>{B.k65.count(aimPts.length, multi)} · {B.k65.hint}</small>}
+                {/* Kuyruk K65b (Forcecage): kutu (en çok 4) / kafes (en çok 19). */}
+                {freeShape && areaAct.kind === 'spell' && mechanicsAt(state, areaAct.spell).zone?.cage && (
+                  <div className="wall-shape" role="radiogroup" aria-label={N.choicePick}>
+                    {(['box', 'cage'] as const).map((x) => (
+                      <button key={x} type="button" role="radio" aria-checked={x === (choicePick ?? 'box')} className={x === (choicePick ?? 'box') ? 'on' : ''} onClick={() => setChoicePick(x)}>{B.k65.cageKind(N.water[x] ?? x, areaPointCount(state, areaAct, x))}</button>
+                    ))}
+                  </div>
+                )}
                 {freeShape && (
                   <div className="wall-shape" role="group" aria-label={B.k65.head(sp.label)}>
                     <button type="button" disabled={!aimPts.length || !!(actor && areaAct.kind === 'spell' && freeRemoveProblem(state, actor, areaAct.spell, freeShape, aimPts, aimPts[aimPts.length - 1] as Offset))}
@@ -2363,13 +2392,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   <button type="button" className={excludeOn ? 'on' : ''} aria-pressed={excludeOn} onClick={() => setExcludeOn((v) => !v)}>{A.exclude(excluded.length)}</button>
                 )}
                 {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
-                {pvSet.on && ready && !areaInfo?.error && <Suspense fallback={null}><PreviewCard state={state} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet}
+                {/* Kuyruk K65b: Forcecage'de önizleme kartı yok (hasar/durum yok, "etkisiz" yanıltır); içeride kalacaklar yukarıdaki listede. */}
+                {pvSet.on && ready && !areaInfo?.error && !(areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage) && <Suspense fallback={null}><PreviewCard state={state} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet}
                   cmd={areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' ? null : wallShape,
-                    areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
+                    areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
                     areaExcludable(state, areaAct) ? excluded : undefined)} /></Suspense>}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
                   onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' ? null : wallShape,
-                    areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
+                    areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
                     areaExcludable(state, areaAct) ? excluded : undefined))}>
                   {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}
                 </button>
