@@ -1,8 +1,10 @@
 // K59: denge ızgarası (src/sim/k59Denge.ts JSON satırları) → DENGE.md tablosu. node scripts/k59-denge-tablo.mjs <klasör>
 import fs from 'node:fs';
 const dir = process.argv[2];
-const rows = [];
-for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.jsonl'))) for (const l of fs.readFileSync(`${dir}/${f}`, 'utf8').split('\n').filter(Boolean)) rows.push(JSON.parse(l));
+// Aynı birim iki işçide ölçüldüyse (deterministik, aynı sonuç) bir kez sayılır.
+const seen = new Map();
+for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.jsonl'))) for (const l of fs.readFileSync(`${dir}/${f}`, 'utf8').split('\n').filter(Boolean)) { const r = JSON.parse(l); seen.set(`${r.level}|${r.cls}|${r.sub}|${r.scenario}|${r.runs}`, r); }
+const rows = [...seen.values()];
 const sub = JSON.parse(fs.readFileSync('data/subclasses.json', 'utf8'));
 const subs = (sub.subclasses ?? sub);
 const imza = JSON.parse(fs.readFileSync('data/imza.json', 'utf8')).altSiniflar;
