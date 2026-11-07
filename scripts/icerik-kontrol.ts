@@ -7,15 +7,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { STRINGS_TR } from '../src/i18n/strings';
-import { classData, loadClassData, loadMonsters, monsters } from '../src/data';
+import { classData, loadClassData, loadMonsters, monsters, spells } from '../src/data';
+import { validateDescriptions } from '../src/data/betimleme';
 import { parsePack, partialWarnings, readablePath, summarize } from '../src/content/schema';
 
 await Promise.all([loadClassData(), loadMonsters()]);
+// Kuyruk B2: büyü betimlemeleri (data/buyu-betimleme.json) paket klasöründen bağımsız her koşuda doğrulanır; hata çıkış kodunu 1 yapar.
+const betimleme = validateDescriptions(JSON.parse(fs.readFileSync('data/buyu-betimleme.json', 'utf8')), spells.map((x) => x.id));
+console.log(`${betimleme.errors.length ? 'HATA ' : 'tamam'} büyü betimlemeleri: ${spells.length} büyü, ${betimleme.errors.length} hata, ${betimleme.warnings.length} uyarı`);
+for (const e of betimleme.errors) console.log(`      ${e}`);
+for (const w of betimleme.warnings) console.log(`      uyarı ${w}`);
+if (betimleme.errors.length) process.exitCode = 1;
 const dir = path.resolve(process.argv.slice(2).find((a) => !a.startsWith('-')) ?? 'icerik');
 const T = STRINGS_TR.content;
 if (!fs.existsSync(dir)) {
   console.log(`Klasör yok: ${dir} (içerik paketlerini buraya koy; depoya girmez).`);
-  process.exit(0);
+  process.exit(process.exitCode ?? 0);
 }
 const files = fs.readdirSync(dir).filter((f) => f.toLowerCase().endsWith('.json')).sort();
 const taken = classData.subclasses.map((s) => s.id);
@@ -62,4 +69,4 @@ for (const f of files) {
 }
 if (process.argv.includes('--yukselt')) console.log(`\nkısmi → çalışır yükseltilebilir: ${yukselt} özellik.`);
 console.log(`\n${files.length} paket, ${bad} hatalı · çalışır ${total.calisir}, kısmi ${total.kismi}, çalışmıyor ${total.calismiyor}, planlı ${total.planli}, hikâye ${total.hikaye}.`);
-process.exit(bad ? 1 : 0);
+process.exit(bad || process.exitCode ? 1 : 0);

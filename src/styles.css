@@ -584,6 +584,8 @@ li.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8p
 .fx-list li.harmful button { color: #ff9a9a; }
 .fx-list li.helpful button { color: #9be29b; }
 .fx-list .fx-text { margin: 0 0 4px 22px; font-size: 0.85em; opacity: 0.85; }
+/* Kuyruk B2: büyü betimlemesi: mekanik metnin üstünde, italik ve soluk; dar ekranda satır kırılır. */
+.fx-list .fx-desc { margin: 0 0 2px 22px; font-size: 0.85em; font-style: italic; opacity: 0.6; overflow-wrap: anywhere; }
 .fx-choice select { max-width: 150px; }
 
 /* Alan önizlemesi (Görev R4; V2'den beri işaret hüzme): yön okları dokunmaya uygun (44 px). */
