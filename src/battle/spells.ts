@@ -190,7 +190,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     note: `Alan: ${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
     // Görev Y1: alanın altıgenleri ve hasar türü (yüzey tepkimeleri: tutuşma, buhar, donma, suda yıldırım).
     area: { hexes: pick.hexes, ...(m.damageType ? { damageType: m.damageType } : {}), dc: actor.spellSaveDc ?? 10,
-      ...(m.damage ? { dice: m.damage } : {}), targetIds: reached.map((x) => x.c.id) },
+      ...(m.damage ? { dice: m.damage } : {}), targetIds: reached.map((x) => x.c.id),
+      // Kuyruk E2: yalnız görsel (reducer okumaz; replay aynı): şekil ve nişan (çizgi ışın, koni doku olarak çizilir).
+      shape: area.shape, ...(aim ? { aim } : {}) },
   });
   // Kuyruk 19: Gust of Wind çizgisindeki gaz/buhar bulutlarını dağıtır (anahtar `gustDisperse`).
   if (m.disperses) events.push(...disperseEvents(applyEvents(state, events), pick.hexes));

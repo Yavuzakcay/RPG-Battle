@@ -10,6 +10,7 @@
  *   Efekt ayarı kapalı ya da "hareketi azalt" açıkken hepsi statik tek kare.
  */
 import esleme from '../../../data/sprite-esleme.json';
+import e2 from '../../../data/efekt-e2.json';
 import baglama from '../../../data/efekt-baglama.json';
 import type { Offset } from '../../rules/hex';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from '../../battle/types';
@@ -19,14 +20,29 @@ export interface FxSprite {
   id: string; file: string; frames: number; ms: number; kind: string; loop: boolean; w: number; h: number;
   dir: 'sag' | null; blend: string; overlap: number;
 }
-interface Rec { kare: number; sure: number; tur: string; karisim: string; yon: string | null; en: number; boy: number; dongu: boolean; ortusme?: number }
+interface Rec { kare: number; sure: number; tur: string; karisim: string; yon: string | null; en: number; boy: number; dongu: boolean; ortusme?: number; yol?: string }
 
-const RECS = (esleme as unknown as { efektler?: Record<string, Rec> }).efektler ?? {};
+// Kuyruk E2: E2 sayfaları ayrı kayıtta (data/efekt-e2.json, public/efekt/; yalnızca bu tembel parça okur).
+const RECS = { ...((esleme as unknown as { efektler?: Record<string, Rec> }).efektler ?? {}), ...((e2 as unknown as { efektler?: Record<string, Rec> }).efektler ?? {}) };
 export const FX: Record<string, FxSprite> = Object.fromEntries(Object.entries(RECS).map(([name, r]) => {
   const id = name.replace(/^efekt-/, '');
-  return [id, { id, file: `sprites/${name}.webp`, frames: r.kare, ms: r.sure, kind: r.tur, loop: r.dongu, w: r.en, h: r.boy,
+  return [id, { id, file: r.yol ? `${r.yol}.webp` : `sprites/${name}.webp`, frames: r.kare, ms: r.sure, kind: r.tur, loop: r.dongu, w: r.en, h: r.boy,
     dir: r.yon === 'sag' ? 'sag' : null, blend: r.karisim, overlap: r.ortusme ?? 0 }];
 }));
+/** Kuyruk E2: ikon sayfaları (işaret simgeleri, sayı okları): önek → ad → public/ yolu (uzantısız). */
+export const SIMGE: Record<string, Record<string, string>> = (e2 as unknown as { simgeler?: Record<string, Record<string, string>> }).simgeler ?? {};
+/** Simge tek kareli sprite olarak (işaret: hedefin üstünde kısa süre). */
+export function simgeSprite(onek: string, ad: string | undefined): FxSprite | null {
+  const yol = ad ? SIMGE[onek]?.[ad] : undefined;
+  return yol ? { id: `${onek}-${ad}`, file: `${yol}.webp`, frames: 1, ms: 1100, kind: 'isaret', loop: false, w: 128, h: 128, dir: null, blend: 'normal', overlap: 0 } : null;
+}
+
+/**
+ * Kuyruk E2: olay etiketinden büyü kimliği (SRD kimliği adın küçük harfli, tireli biçimi; 339 büyünün hepsinde aynı).
+ * Ekler ("(tekrar)", ": patlama") atılır.
+ */
+export const spellSlug = (label: string | undefined): string =>
+  (label ?? '').split(/ \(|: /)[0]!.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 /** Durum ikonları (SRD durum adı küçük harf → sprite yolu). */
 export const STATUS_ICON_FILES: Record<string, string> = Object.fromEntries(
   Object.entries((esleme as unknown as { efektIkonlari?: Record<string, string> }).efektIkonlari ?? {}).map(([k, v]) => [k, `sprites/${v}.webp`]));
@@ -43,7 +59,23 @@ export interface FxShot {
   scale: number;
   /** Derece; yönlü sprite (itme) hedefin itilme yönüne. */
   rotate?: number;
+  /** Kuyruk E2: `from`→`to` arasında uçan tek sprite (mermi); yoksa ışın parçaları. */
+  travel?: boolean;
+  /** Kuyruk E2: koni dokusu (`from` çıkış, `to` nişan; `scale` boy altıgen). */
+  cone?: boolean;
+  /** Kuyruk E2: bağ çizgisi (`from`→`to`, sprite yok sayılır). */
+  link?: boolean;
+  /** Kuyruk E2: renk çarpanı (beyaz sprite) ve CSS hue-rotate derecesi. */
+  ton?: string;
+  hue?: number;
+  /** Kuyruk E2: jeton merkezinden dikey kayma (altıgen eni katı; simge jetonun üstünde). */
+  dy?: number;
 }
+
+/** Kuyruk E2: büyü bağlaması (data/efekt-baglama.json `buyu`). */
+export interface SpellFx { yol: 'mermi' | 'isin' | 'hedef' | 'kendi' | 'alan' | 'gokten' | 'koni' | 'isaret'; sprite?: string; simge?: string; ton?: string; hue?: number;
+  olcek?: number; ek?: string; zincir?: boolean; hedefBasina?: boolean; bag?: boolean }
+export const SPELL_FX = (baglama as unknown as { buyu?: Record<string, SpellFx> }).buyu ?? {};
 
 const sp = (id: string | undefined): FxSprite | null => (id && FX[id]) || null;
 const scaleOf = (kind: string): number => (B.olcek as Record<string, number>)[kind] ?? 2;
@@ -74,6 +106,9 @@ export function protectionSprite(e: Partial<ActiveEffect> & Record<string, unkno
 export function summonSprite(c: Pick<Combatant, 'summon'>): FxSprite | null {
   const id = c.summon?.spellId ?? '';
   const C = B.cagir;
+  // Kuyruk E2: büyüye özel portal (renk `summonTint`).
+  const R = (B as unknown as { cagirRenk?: Record<string, { sprite: string }> }).cagirRenk?.[id];
+  if (R && sp(R.sprite)) return sp(R.sprite);
   if (c.summon?.intangible || C.ruhBuyuler.includes(id)) return sp(C.ruh);
   if (C.dogalBuyuler.includes(id)) return sp(C.dogal);
   return sp(C.varsayilan);
@@ -104,6 +139,12 @@ export function fxShots(events: BattleEvent[], before: BattleState, stagger = 12
     if (areas.has(key)) return;
     areas.add(key);
     const from = posOf(actorId);
+    // Kuyruk E2: koni alan dokusu (hasar türünden; çıkış büyücü, yön nişan ya da alanın merkezi).
+    if (shape === 'cone' && from) {
+      const k = coneOf(type);
+      const s = sp(k?.sprite);
+      if (s) { push(s, { from, to: aim ?? centroid(hexes), cone: true, scale: coneLen(from, hexes), ...(k?.hue ? { hue: k.hue } : {}) }); return; }
+    }
     if (shape === 'line' && from) {
       // Çizgi alan: ışın parçaları, çıkıştan en uzak altıgene.
       const far = hexes.reduce((b, h) => (Math.hypot(h.col - from.col, h.row - from.row) > Math.hypot(b.col - from.col, b.row - from.row) ? h : b), hexes[0]!);
@@ -111,12 +152,20 @@ export function fxShots(events: BattleEvent[], before: BattleState, stagger = 12
       return;
     }
     const at = aim ?? centroid(hexes);
-    push(sp((B.alan as Record<string, string>)[type]), { at, scale: 2 * radiusOf(hexes.length) + 1.2 });
+    push(sp(alanOf(type)), { at, scale: 2 * radiusOf(hexes.length) + 1.2 });
   };
+  // Kuyruk E2: bu olaylardaki bağlı büyüler (kimlik → büyücü, alan, hedefler); bağlı büyünün alanı genel patlamayla yinelenmez.
+  const spells = collectSpells(events);
+  const once = new Set<string>();
+  const pushOnce = (key: string, s: FxSprite | null, x: Parameters<typeof push>[1]) => { if (!s || once.has(key)) return; once.add(key); push(s, x); };
   for (const e of events) {
     switch (e.type) {
       case 'attack_resolved':
-        if (e.hit) push(sp(e.critical ? B.darbe.kritik : (B.darbe as Record<string, string>)[e.damageType] ?? B.darbe.varsayilan), { targetId: e.targetId });
+        if (e.hit) {
+          const named = (B.darbe as Record<string, string>)[e.damageType];
+          const ton = !e.critical && !named ? (B as unknown as { darbeTon?: Record<string, string> }).darbeTon?.[e.damageType] : undefined;
+          push(sp(e.critical ? B.darbe.kritik : named ?? B.darbe.varsayilan), { targetId: e.targetId, ...(ton ? { ton } : {}) });
+        }
         break;
       case 'healed':
         if (e.amount > 0) push(sp(e.amount >= B.iyilestirBuyuk ? 'iyilestir-buyuk' : 'iyilestir-kucuk'), { targetId: e.targetId });
@@ -129,15 +178,26 @@ export function fxShots(events: BattleEvent[], before: BattleState, stagger = 12
         area(e.actorId, e.hexes, e.damageType, e.shape, e.aim);
         break;
       case 'spell_cast':
-        if (e.area) area(e.actorId, e.area.hexes, e.area.damageType);
+        if (e.area && !areaBound(spells.get(spellSlug(e.label)))) area(e.actorId, e.area.hexes, e.area.damageType, e.area.shape, e.area.aim);
+        break;
+      case 'temp_hp':
+        if (e.amount > 0) pushOnce(`${(B as unknown as { tempHp?: string }).tempHp}:${e.targetId}`, sp((B as unknown as { tempHp?: string }).tempHp), { targetId: e.targetId });
+        break;
+      case 'life_restored':
+        pushOnce(`${(B as unknown as { dirilme?: string }).dirilme}:${e.targetId}`, sp((B as unknown as { dirilme?: string }).dirilme), { targetId: e.targetId });
         break;
       case 'effect_added':
         if (e.effect.sourceId === e.targetId || before.combatants[e.effect.sourceId]?.side === before.combatants[e.targetId]?.side) {
-          push(protectionSprite(e.effect as unknown as Record<string, unknown>), { targetId: e.targetId });
+          const s = protectionSprite(e.effect as unknown as Record<string, unknown>);
+          // Kuyruk E2: aynı jetonda aynı koruma bir kez (bağlı büyü, geçici HP olayı).
+          pushOnce(`${s?.id}:${e.targetId}`, s, { targetId: e.targetId });
         }
         break;
       case 'summoned':
-        if (e.combatant.pos) push(summonSprite(e.combatant), { at: e.combatant.pos });
+        if (e.combatant.pos) {
+          const ton = summonTint(e.combatant);
+          push(summonSprite(e.combatant), { at: e.combatant.pos, ...(ton ? { ton } : {}) });
+        }
         break;
       case 'pushed':
         push(sp(B.itme), { at: e.from, rotate: angleDeg(e.from, e.to) });
@@ -155,7 +215,134 @@ export function fxShots(events: BattleEvent[], before: BattleState, stagger = 12
         break;
     }
   }
+  // Kuyruk E2: bağlı büyülerin efektleri (olay sırasıyla).
+  for (const [id, u] of spells) spellShots(id, u, before, push, pushOnce);
   return out;
+}
+
+/** Kuyruk E2: koni dokusu (hasar türü → satır; yoksa varsayılan). */
+function coneOf(type: string | undefined): { sprite: string; hue?: number } | undefined {
+  const K = (B as unknown as { koni?: Record<string, { sprite: string; hue?: number }> }).koni ?? {};
+  return (type && K[type]) || K.varsayilan;
+}
+/** Alan patlaması: alan tablosu + Kuyruk E2 ek türleri (soğuk, asit, zehir, ezme). */
+export function alanOf(type: string | undefined): string | undefined {
+  if (!type) return undefined;
+  return (B.alan as Record<string, string>)[type] ?? (B as unknown as { alanEk?: Record<string, string> }).alanEk?.[type];
+}
+/** Koni boyu (altıgen): çıkıştan en uzak alan altıgenine. */
+const coneLen = (from: Offset, hexes: Offset[]): number => Math.max(1, ...hexes.map((h) => Math.hypot(center(h).x - center(from).x, center(h).y - center(from).y)));
+
+/** Bağlı büyünün kendi alan görseli var (genel patlama yinelenmesin). */
+const areaBound = (u: SpellUse | undefined): boolean => !!u && ['alan', 'gokten', 'koni', 'isin'].includes(u.fx.yol);
+
+interface SpellUse { fx: SpellFx; actorId?: string; area?: { hexes: Offset[]; shape?: string; aim?: Offset }; targets: string[]; hits: string[] }
+
+/** Olay → büyü kimliği (etiket, tepki adı, etki adı, buff kaynağı) ve yapan/hedef. */
+function spellRef(e: BattleEvent): { id: string; actorId?: string; targetId?: string | null; hit?: boolean } | null {
+  switch (e.type) {
+    case 'spell_cast': return { id: spellSlug(e.label), actorId: e.actorId, targetId: e.targetId };
+    case 'reaction_used': return { id: spellSlug(e.name), actorId: e.actorId };
+    case 'attack_resolved': return { id: spellSlug(e.label), actorId: e.actorId, targetId: e.targetId, hit: true };
+    case 'save_resolved': return { id: spellSlug(e.label), actorId: e.actorId, targetId: e.targetId, hit: true };
+    case 'healed': return { id: spellSlug(e.label), actorId: e.actorId, targetId: e.targetId };
+    case 'temp_hp': return { id: spellSlug(e.label), targetId: e.targetId };
+    case 'hp_boosted': return { id: spellSlug(e.label), targetId: e.targetId };
+    case 'life_restored': return { id: spellSlug(e.label), targetId: e.targetId };
+    case 'effect_added': return { id: spellSlug(e.effect.name), actorId: e.effect.sourceId, targetId: e.targetId };
+    case 'buff_added': return { id: spellSlug(e.buff.source), actorId: e.buff.by, targetId: e.targetId };
+    case 'time_stop': return { id: 'time-stop', actorId: e.actorId };
+    default: return null;
+  }
+}
+
+/** Olaylardaki bağlı büyüler (ilk geçiş sırasıyla). */
+export function collectSpells(events: BattleEvent[]): Map<string, SpellUse> {
+  const out = new Map<string, SpellUse>();
+  for (const e of events) {
+    const r = spellRef(e);
+    const fx = r && SPELL_FX[r.id];
+    if (!r || !fx) continue;
+    let u = out.get(r.id);
+    if (!u) { u = { fx, targets: [], hits: [] }; out.set(r.id, u); }
+    if (r.actorId && !u.actorId) u.actorId = r.actorId;
+    if (e.type === 'spell_cast' && e.area?.hexes.length && !u.area) u.area = { hexes: e.area.hexes, shape: e.area.shape, aim: e.area.aim };
+    if (r.targetId && !u.targets.includes(r.targetId)) u.targets.push(r.targetId);
+    // Mermi/ışın: saldırı başına bir (Magic Missile, Scorching Ray); en çok 6.
+    if (r.hit && r.targetId && u.hits.length < 6) u.hits.push(r.targetId);
+  }
+  return out;
+}
+
+type Push = (s: FxSprite | null, x: Omit<FxShot, 'sprite' | 'delay' | 'scale'> & { scale?: number; delay?: number }) => void;
+
+/** Tek bağlı büyünün efektleri. */
+function spellShots(id: string, u: SpellUse, before: BattleState, push: Push, pushOnce: (k: string, s: FxSprite | null, x: Parameters<Push>[1]) => void): void {
+  const f = u.fx;
+  const tint = { ...(f.ton ? { ton: f.ton } : {}), ...(f.hue ? { hue: f.hue } : {}) };
+  const s = f.yol === 'isaret' ? simgeSprite('isaret', f.simge) : sp(f.sprite);
+  if (!s) return;
+  const pos = (cid: string | undefined): Offset | null => (cid ? before.combatants[cid]?.pos ?? null : null);
+  const from = pos(u.actorId);
+  const targets = u.targets.filter((t) => t !== u.actorId || f.yol === 'hedef' || f.yol === 'isaret');
+  const onTargets = (list: string[]) => {
+    const scale = f.olcek ? { scale: f.olcek } : {};
+    for (const t of list) pushOnce(`${s.id}:${t}`, s, { targetId: t, ...scale, ...tint });
+  };
+  switch (f.yol) {
+    case 'mermi':
+    case 'isin': {
+      if (!from) break;
+      const hits = u.hits.length ? u.hits : targets;
+      const line = f.yol === 'isin' && u.area?.shape === 'line' && u.area.hexes.length;
+      if (line) {
+        const far = u.area!.hexes.reduce((b, h) => (Math.hypot(h.col - from.col, h.row - from.row) > Math.hypot(b.col - from.col, b.row - from.row) ? h : b), u.area!.hexes[0]!);
+        push(s, { from, to: far, scale: 1, ...tint });
+        break;
+      }
+      let prev = from;
+      for (const t of hits) {
+        const to = pos(t);
+        if (!to) continue;
+        push(s, { from: f.zincir ? prev : from, to, scale: 1, ...(f.yol === 'mermi' ? { travel: true } : {}), ...tint });
+        if (f.zincir) prev = to;
+        if (f.ek) pushOnce(`${id}:ek:${t}`, sp(f.ek), { targetId: t, scale: 1.6, delay: 200 });
+      }
+      break;
+    }
+    case 'koni': {
+      if (!from || !u.area) break;
+      push(s, { from, to: u.area.aim ?? centroid(u.area.hexes), cone: true, scale: coneLen(from, u.area.hexes), ...tint });
+      break;
+    }
+    case 'alan':
+    case 'gokten': {
+      if (u.area && !f.hedefBasina) { push(s, { at: u.area.aim ?? centroid(u.area.hexes), scale: f.olcek ?? 2 * radiusOf(u.area.hexes.length) + 1.2, ...tint }); break; }
+      const list = targets.length ? targets : u.actorId ? [u.actorId] : [];
+      for (const t of list) pushOnce(`${s.id}:${t}`, s, { targetId: t, scale: f.olcek ?? (f.yol === 'gokten' ? 2 : 1.8), ...tint });
+      break;
+    }
+    case 'hedef':
+      onTargets(targets.length ? targets : u.actorId ? [u.actorId] : []);
+      break;
+    case 'kendi':
+      onTargets(u.actorId ? [u.actorId] : []);
+      break;
+    case 'isaret':
+      for (const t of targets) {
+        pushOnce(`${id}:${t}`, s, { targetId: t, scale: 0.9, dy: -0.55 });
+        const to = pos(t);
+        if (f.bag && from && to && t !== u.actorId) push(s, { from, to, link: true, scale: 1, ton: f.ton ?? '#e8d8ff' });
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+/** Kuyruk E2: çağrının portal tonu (veride büyü kimliğiyle; paket çağrısında yok). */
+export function summonTint(c: Pick<Combatant, 'summon'>): string | undefined {
+  return (B as unknown as { cagirRenk?: Record<string, { ton?: string }> }).cagirRenk?.[c.summon?.spellId ?? '']?.ton;
 }
 
 /** Haritada çizilen (ayakta ya da ölmekte) jeton: savaş ekranının jeton süzgeciyle aynı. */
@@ -184,13 +371,25 @@ function auraSprite(type: string | undefined, filter: string | undefined): FxSpr
 }
 
 export interface GroundAura { key: string; ownerId: string; radius: number; sprite: FxSprite }
+/** Kuyruk E2: kalıcı alan zemin dokusu (alanın merkezinde, alan kadar). */
+export interface GroundPatch { key: string; at: Offset; radius: number; sprite: FxSprite; ton?: string }
 export interface GroundWall { key: string; hexes: Array<{ at: Offset; rotate: number }>; sprite: FxSprite; tint?: string; outline?: string }
 
 /** Kalıcı efektler: auralar (yaratığa bağlı) ve duvarlar (engel alanları). */
-export function groundFx(state: BattleState): { auras: GroundAura[]; walls: GroundWall[] } {
-  const auras: GroundAura[] = []; const walls: GroundWall[] = [];
+export function groundFx(state: BattleState): { auras: GroundAura[]; walls: GroundWall[]; patches: GroundPatch[] } {
+  const auras: GroundAura[] = []; const walls: GroundWall[] = []; const patches: GroundPatch[] = [];
+  const AB = (B as unknown as { auraBuyu?: Record<string, { sprite: string; ft: number }> }).auraBuyu ?? {};
   for (const c of Object.values(state.combatants)) {
     if (!c.pos || c.hp <= 0 || c.summon?.gone) continue;
+    // Kuyruk E2: konsantrasyon yayılımı (Spirit Guardians) ve kendi üstündeki aura büyüleri (Fire Shield).
+    const own = new Set<string>();
+    if (c.concentration) own.add(spellSlug(c.concentration.spell));
+    for (const e of c.effects ?? []) if (e.sourceId === c.id) own.add(spellSlug(e.name));
+    for (const id of own) {
+      const a = AB[id];
+      const s = a && sp(a.sprite);
+      if (s) auras.push({ key: `${c.id}:buyu:${id}`, ownerId: c.id, radius: Math.max(1, Math.round(a.ft / 5)), sprite: s });
+    }
     for (const e of c.effects ?? []) {
       for (const a of [...(e.aura ? [e.aura] : []), ...(e.auras ?? [])]) {
         const type = a.effect.kind === 'damage' ? a.effect.type : undefined;
@@ -200,7 +399,10 @@ export function groundFx(state: BattleState): { auras: GroundAura[]; walls: Grou
     }
   }
   const zones: SpellZone[] = state.map?.zones ?? [];
+  const Z = (B as unknown as { zemin?: Record<string, string> }).zemin ?? {};
   for (const z of zones) {
+    const zs = !z.surface && z.hexes.length ? sp(Z[z.spellId]) : null;
+    if (zs) patches.push({ key: `zp:${z.id}`, at: centroid(z.hexes), radius: radiusOf(z.hexes.length), sprite: zs });
     if (z.anchorId && z.radius !== undefined && state.combatants[z.anchorId]?.pos && !z.surface) {
       const s = auraSprite(z.spec?.damageType, undefined);
       if (s) auras.push({ key: `z:${z.id}`, ownerId: z.anchorId, radius: z.radius, sprite: s });
@@ -212,7 +414,7 @@ export function groundFx(state: BattleState): { auras: GroundAura[]; walls: Grou
     const outline = ((B as unknown as { kontur?: Record<string, string> }).kontur ?? {})[name];
     walls.push({ key: z.id, sprite: s, tint: (B.ton as Record<string, string>)[name], ...(outline ? { outline } : {}), hexes: z.hexes.map((h) => ({ at: h, rotate: wallAngle(h, z.hexes) })) });
   }
-  return { auras, walls };
+  return { auras, walls, patches };
 }
 
 /** Duvar parçasının açısı: duvarın komşu altıgenine doğru (üç eksenden biri: dikey eksene göre 0°/60°/120°). */

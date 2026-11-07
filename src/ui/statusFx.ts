@@ -91,14 +91,22 @@ export function beamFor(flags: Partial<Record<BeamKind, boolean>>): BeamKind | n
   return BEAM_PRIORITY.find((k) => flags[k]) ?? null;
 }
 
-export type TokenFilter = 'petrified' | 'invisible' | 'unconscious' | 'prone' | 'exhaustion' | 'spirit' | 'blinded';
+export type TokenFilter = 'petrified' | 'invisible' | 'unconscious' | 'prone' | 'exhaustion' | 'spirit' | 'blinded' | 'outlined';
 
 /**
  * Jeton filtreleri (durum adları data/conditions.json'dan; yeni durum yok). Baygınlık: Unconscious ya da 0 HP'de
  * ölmekte/stabil karakter. Bitkinlik: `exhaustion` seviyesi (Görev S1; eski "Exhaustion" adlı durum da).
  * Çağrılmış yaratık (R3; ileride klon/ruh): hayalet filtresi.
  */
-export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon' | 'exhaustion'>): TokenFilter[] {
+/** Kuyruk E2: kontur rengi (Faerie Fire): etkinin büyüsü → renk (data/efekt-baglama.json `konturBuyu`). */
+const KONTUR = (baglama as unknown as { konturBuyu?: Record<string, string> }).konturBuyu ?? {};
+const slugOf = (label: string): string => label.split(/ \(|: /)[0]!.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+export function outlineColor(c: Partial<Pick<Combatant, 'effects'>>): string | null {
+  for (const e of c.effects ?? []) { const k = KONTUR[slugOf(e.name)]; if (k) return k; }
+  return null;
+}
+
+export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon' | 'exhaustion'> & Partial<Pick<Combatant, 'effects'>>): TokenFilter[] {
   const out: TokenFilter[] = [];
   const has = (n: string) => c.conditions.includes(n);
   if (has('Petrified')) out.push('petrified');
@@ -109,11 +117,12 @@ export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon'
   if (has('Prone')) out.push('prone');
   if ((c.exhaustion ?? 0) > 0 || c.conditions.some((n) => n.startsWith('Exhaustion'))) out.push('exhaustion');
   if (c.summon) out.push('spirit');
+  if (outlineColor(c)) out.push('outlined');
   return out;
 }
 
 /** Filtrelerin birleşik görünümü: CSS filtresi, saydamlık ve küçültme (birden çok filtre üst üste binebilir). */
-export function filterStyle(filters: TokenFilter[]): { filter: string; opacity: number; shrink: number; tilt?: number } {
+export function filterStyle(filters: TokenFilter[], outline: string | null = null): { filter: string; opacity: number; shrink: number; tilt?: number } {
   const parts: string[] = [];
   const J = baglama.jeton;
   let opacity = 1;
@@ -129,6 +138,8 @@ export function filterStyle(filters: TokenFilter[]): { filter: string; opacity: 
     if (f === 'prone') { shrink = 0.82; tilt = J.yatikDerece; }
     if (f === 'exhaustion') parts.push('saturate(0.45)', 'brightness(0.92)');
     if (f === 'spirit') { parts.push('grayscale(0.5)', 'sepia(0.4)', 'hue-rotate(170deg)', 'brightness(1.15)'); opacity = Math.min(opacity, 0.7); }
+    // Kuyruk E2: renkli kontur (Faerie Fire; jetonun silüetine ince parıltı).
+    if (f === 'outlined') { const col = outline ?? Object.values(KONTUR)[0] ?? '#c58cff'; parts.push(`drop-shadow(0 0 2px ${col})`, `drop-shadow(0 0 3px ${col})`); }
   }
   return { filter: parts.join(' '), opacity, shrink, ...(tilt ? { tilt } : {}) };
 }

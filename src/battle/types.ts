@@ -2008,7 +2008,9 @@ export type BattleEvent =
   | { type: 'concentration_moved'; actorId: string; targetId?: string; pos?: Offset }
   | { type: 'spell_cast'; actorId: string; targetId: string | null; label: string; slotLevel: number | null; note: string;
       /** Görev Y1: alan büyüsünün altıgenleri, hasar türü, zorluk sınıfı, zarı ve etkilenenler (yüzey tepkimeleri). */
-      area?: { hexes: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[] } }
+      area?: { hexes: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[];
+        /** Kuyruk E2: yalnız görsel (efekt katmanı; reducer ve kurallar okumaz): alan şekli ve nişan altıgeni. */
+        shape?: string; aim?: Offset } }
   /** Görev Y1: yüzey tepkimesi (yalnızca günlük; alan değişiklikleri `zone_*` olaylarında). */
   /** Kuyruk K55: `row` tablo satırı (data/yuzey-etkilesimleri.json; keşif defteri), `pairs` zincirde çalışan ikililer (turda bir). */
   | { type: 'surface_reacted'; reaction: SurfaceReaction; hexes: Offset[]; sourceId?: string; label: string; row?: string; pairs?: string[] }

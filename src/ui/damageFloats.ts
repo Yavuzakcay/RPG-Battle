@@ -7,6 +7,7 @@
 import type { BattleEvent, Combatant } from '../battle/types';
 import spriteData from '../../data/efekt-sprites.json';
 import spriteMap from '../../data/sprite-esleme.json';
+import baglama from '../../data/efekt-baglama.json';
 import { t } from '../i18n';
 
 export type FloatKind = 'fire' | 'poison' | 'cold' | 'acid' | 'hit';
@@ -63,6 +64,16 @@ export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Par
     const name = ICONS[ICON_OF[s.key] ?? ''];
     return name ? { ...s, img: `sprites/${name}.webp`, ...(s.key === 'exhaustion' ? { count: c.exhaustion ?? 0 } : {}) } : s;
   });
+}
+
+/** Kuyruk E2: süren büyü etkisinin (etki adı ya da buff kaynağı) sayı oku simgesi (data/efekt-baglama.json `rozetBuyu` → data/efekt-e2.json `simgeler.ok`). */
+const ROZET_BUYU = (baglama as unknown as { rozetBuyu?: Record<string, string> }).rozetBuyu ?? {};
+/** Simge yolu ad kuralından (efekt-kesim `sayi-oklari`: klasör efekt, önek ok); dosyanın varlığını fxPlan.e2.test denetler. */
+const okSimge = (ad: string): string => `efekt/efekt-ok-${ad}`;
+const slugOf = (label: string): string => label.split(/ \(|: /)[0]!.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+export function spellBadgeImg(name: string): string | undefined {
+  const ad = ROZET_BUYU[slugOf(name)];
+  return ad ? `${okSimge(ad)}.webp` : undefined;
 }
 
 function statusBadges(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<Pick<Combatant, 'exhaustion' | 'effects'>>): StatusIcon[] {

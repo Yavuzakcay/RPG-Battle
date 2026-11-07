@@ -13,9 +13,9 @@ Kaynaklar: çekirdek 4 = listede görünen SRD alt sınıfları (Circle of the L
 | Kaynak | Alt sınıf | Özellik | Hazır | Genel | Eksik | Gerekmez | Planlı/hikâye |
 |---|---|---|---|---|---|---|---|
 | SRD çekirdek | 4 | 21 | 2 | 1 | 2 | 16 | 0 |
-| imza | 11 | 66 | 6 | 7 | 19 | 32 | 2 |
+| imza | 11 | 66 | 7 | 7 | 18 | 32 | 2 |
 | imza (Karadul) | 1 | 6 | 2 | 3 | 1 | 0 | 0 |
-| kurgusal fikstür | 31 | 128 | 14 | 23 | 54 | 36 | 1 |
+| kurgusal fikstür | 31 | 128 | 15 | 23 | 53 | 36 | 1 |
 
 ### Aile özeti (aynı aile tek satır)
 
@@ -28,13 +28,13 @@ Kaynaklar: çekirdek 4 = listede görünen SRD alt sınıfları (Circle of the L
 | Tek hedef büyü darbesi (save’li, saldırısız) (`tek-hedef`) | 8 | 6 | kod | imza_ciftci/provisions, imza_ciftci/harvest, imza_sair/verse, imza_sair/master-poet, imza_bilge/greater-mind-might, karadul-cemberi/final-kiss, birlik-yolu/dokunulmaz, kul-cagirani/kul-patlamasi |
 | Silah parıltısı (smite, büyülü silah) (`silah`) | 7 | 6 | E2 + kod | karadul-cemberi/widow-venom, denge-muhafizi/yan-vurus, tunc-kalkan/buyulu-yumruk, tunc-kalkan/dev-avcisi, demir-nobet/pusu-oncusu, ruzgar-kartali/firtina-oku, bag-muhafizi/kilic-bagi |
 | Paket çağrısının renkli portalı (`cagir-renk`) | 6 | 4 | kod | kemik-cagirici/kemik-diriltme, suru-cemberi/suru, suru-cemberi/son-koruyucu, zaman-katibi/ruh-cagrisi, kul-cagirani/kul-surusu, kul-cagirani/kor-cagrisi |
-| Geçici HP kazanımı (`gecici-can`) | 5 | 4 | kod | imza_birlik/vigil, imza_sair/verse, imza_sair/master-poet, demir-nobet/sert-beden, safak-bekcisi/zafer-nefesi |
 | Dönüşüm flaşı ve büyüme halkası (`donusum`) | 4 | 4 | E2 | karadul-cemberi/spider-shape, demir-siper/uzun-kol, kehribar-nobetci/dev-boyu, safak-bekcisi/safak-bicimi |
 | Hasarsız alan büyüsüne alan patlaması (`alan-turu`) | 3 | 3 | kod | circle-of-the-land/lands-aid, imza_dunganga/call, imza_astrolog/comet |
 | Diriltme / durum temizleme (`diriltme`) | 3 | 3 | kod | imza_imparator/undying-throne, imza_geride_kalan/risen-from-ashes, safak-bekcisi/son-isik |
 | Zemin kutuları (kalıcı büyü alanı dokusu) (`zemin-kutu`) | 2 | 2 | E2 + Gemini | circle-of-the-land/natures-sanctuary, imza_harita/rewrite-the-ground |
 | Görme büyüsü göz parıltısı (`goz`) | 2 | 2 | kod | karadul-cemberi/web-sense, tunc-kalkan/tunc-goz |
 | Jeton parıltısı / ana hatları (CSS) (`parilti-css`) | 1 | 1 | kod | demir-siper/duvar-yuruyusu |
+| Geçici HP kazanımı (`gecici-can`) | 1 | 1 | kod | demir-nobet/sert-beden |
 | Zaman küresi (`zaman`) | 1 | 1 | E2 | zaman-katibi/zaman-cizgisi |
 | Kanat / havalanma (`kanat`) | 1 | 1 | E2 | ruzgar-kartali/kanat-cirpisi |
 | Ruhani silah / güç eli çağrısı (`cagir-ruhani-silah`) | 1 | 1 | E2 | bag-muhafizi/donen-kilic |
@@ -49,7 +49,7 @@ Ek paket ilkelleri (`src/content/ilkelSema.ts`) ve imza/SRD verisinden türetile
 | direnc | gerekmez | — | — |
 | aura | genel | aura-altin (varsayılan; yalnız etkide aura alanı varsa) | `aura-bagla` |
 | tepki | eksik | — | `tepki-koruma` |
-| gecicCan | eksik | — | `gecici-can` |
+| gecicCan | hazır | koruma-kutsama (temp_hp; Kuyruk E2) | — |
 | iyilestirme | hazır | iyilestir-kucuk/buyuk | — |
 | hasar | genel | hasar şeridi (ateş/soğuk/asit/zehir) | `tek-hedef` |
 | hasarAlan | eksik | — | `alan-turu` |
@@ -168,7 +168,7 @@ Ek paket ilkelleri (`src/content/ilkelSema.ts`) ve imza/SRD verisinden türetile
 | warlock | imza_astrolog | seal-of-fate | Yazgı Mührü | 14 | isaret | eksik | — | `isaret-bag` |
 | cleric | imza_birlik | forge-bond | Bağ Kurma | 3 | ortakCan, koruma | eksik | `koruma-* (etki alanı eşleşirse)` | `isaret-bag`, `ikon-ok` |
 | cleric | imza_birlik | lend-shoulder | Omuz Ver | 3 | pasif | gerekmez | — | — |
-| cleric | imza_birlik | vigil | Teselli Nöbeti | 3 | gecicCan, moralEtkisi | eksik | `moral-yeniyol` | `gecici-can` |
+| cleric | imza_birlik | vigil | Teselli Nöbeti | 3 | gecicCan, moralEtkisi | hazır | `koruma-kutsama (temp_hp; Kuyruk E2)`, `moral-yeniyol` | — |
 | cleric | imza_birlik | shared-vitality | Birlik Can Havuzu | 6 | ortakCan | eksik | — | `isaret-bag` |
 | cleric | imza_birlik | common-cure | Ortak Şifa | 8 | pasif | gerekmez | — | — |
 | cleric | imza_birlik | unbroken-union | Yıkılmaz Birlik | 17 | pasif | gerekmez | — | — |
@@ -178,12 +178,12 @@ Ek paket ilkelleri (`src/content/ilkelSema.ts`) ve imza/SRD verisinden türetile
 | barbarian | imza_geride_kalan | mourning-wrath | Dostunun Yası | 6 | pasif | gerekmez | — | — |
 | barbarian | imza_geride_kalan | used-to-grief | Alışkın Acı | 10 | pasif | gerekmez | — | — |
 | barbarian | imza_geride_kalan | risen-from-ashes | Küllerden Doğan | 14 | olumdenDon | eksik | — | `diriltme` |
-| bard | imza_sair | verse | Mısra | 3 | gecicCan, moralEtkisi, hasar, isaret | eksik | `moral-yeniyol`, `hasar şeridi (ateş/soğuk/asit/zehir)` | `gecici-can`, `tek-hedef`, `isaret-bag` |
+| bard | imza_sair | verse | Mısra | 3 | gecicCan, moralEtkisi, hasar, isaret | eksik | `koruma-kutsama (temp_hp; Kuyruk E2)`, `moral-yeniyol`, `hasar şeridi (ateş/soğuk/asit/zehir)` | `tek-hedef`, `isaret-bag` |
 | bard | imza_sair | pens-power | Kalemin Gücü | 3 | pasif | gerekmez | — | — |
 | bard | imza_sair | night-verse | Gece Şiiri | 3 | — | planlı/hikâye | — | — |
 | bard | imza_sair | refrain | Nakarat | 6 | pasif | gerekmez | — | — |
 | bard | imza_sair | undying-verse | Ölümsüz Dize | 14 | pasif | gerekmez | — | — |
-| bard | imza_sair | master-poet | Usta Şair | 14 | gecicCan, moralEtkisi, hasar, isaret | eksik | `moral-yeniyol`, `hasar şeridi (ateş/soğuk/asit/zehir)` | `gecici-can`, `tek-hedef`, `isaret-bag` |
+| bard | imza_sair | master-poet | Usta Şair | 14 | gecicCan, moralEtkisi, hasar, isaret | eksik | `koruma-kutsama (temp_hp; Kuyruk E2)`, `moral-yeniyol`, `hasar şeridi (ateş/soğuk/asit/zehir)` | `tek-hedef`, `isaret-bag` |
 | monk | imza_bilge | elder-wisdom | Yaşlı Bilgelik | 3 | pasif | gerekmez | — | — |
 | monk | imza_bilge | mind-might | Zihin Gücü | 3 | zorlaHareket | hazır | `itme-toz` | — |
 | monk | imza_bilge | patience | Sabır | 3 | pasif | gerekmez | — | — |
@@ -341,7 +341,7 @@ Ek paket ilkelleri (`src/content/ilkelSema.ts`) ve imza/SRD verisinden türetile
 | druid | kul-cagirani | kul-korkusu | Kül Korkusu | 10 | durumUygula, gorunmezlik | hazır | `durum döngüsü/CSS (durumun türüne göre)`, `css:invisible` | — |
 | cleric | safak-bekcisi | safak-havuzu | Şafak Havuzu | 3 | kaynak | gerekmez | — | — |
 | cleric | safak-bekcisi | safak-eli | Şafak Eli | 3 | iyilestirme | hazır | `iyilestir-kucuk/buyuk` | — |
-| cleric | safak-bekcisi | zafer-nefesi | Zafer Nefesi | 3 | gecicCan, moralEtkisi | eksik | `moral-yeniyol` | `gecici-can` |
+| cleric | safak-bekcisi | zafer-nefesi | Zafer Nefesi | 3 | gecicCan, moralEtkisi | hazır | `koruma-kutsama (temp_hp; Kuyruk E2)`, `moral-yeniyol` | — |
 | cleric | safak-bekcisi | son-isik | Son Işık | 6 | olumdenDon | eksik | — | `diriltme` |
 | cleric | safak-bekcisi | safak-bicimi | Şafak Biçimi | 10 | bicim, direnc, boyut | eksik | `jeton biçime döner (geçiş yok)` | `donusum` |
 | fighter | bag-muhafizi | donen-kilic | donen-kilic | 3 | silahFirlat | eksik | — | `cagir-ruhani-silah` |

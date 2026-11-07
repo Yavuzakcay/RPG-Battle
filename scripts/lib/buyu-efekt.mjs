@@ -185,8 +185,10 @@ const SHAPE_TUR = { cone: 'koni', line: 'ışın', sphere: 'küre/alan', cube: '
  * zones (sprite-esleme `zones`), ikonlar (sprite-esleme `efektIkonlari`), have (Set: depoda var olan sprite yolları,
  * `sprites/efekt-x.webp`, `efektler/x.webp`, `sprites/yuzey-x.webp`).
  */
-export function makeCtx({ B, sprites, efektler, zones, ikonlar, have }) {
-  const fx = (name) => (efektler[`efekt-${name}`] && have.has(`sprites/efekt-${name}.webp`) ? name : null);
+export function makeCtx({ B, sprites, efektler, zones, ikonlar, have, simgeler = {}, dogrulama = null }) {
+  // Kuyruk E2: E2 kayıtları `yol` taşır (public/efekt/); dosya yolu kayıttan.
+  const fx = (name) => { const r = efektler[`efekt-${name}`]; return r && have.has(r.yol ? `${r.yol}.webp` : `sprites/efekt-${name}.webp`) ? name : null; };
+  const simge = (onek, ad) => { const y = simgeler[onek]?.[ad]; return y && have.has(`${y}.webp`) ? `${onek}-${ad}` : null; };
   const floatOf = (dt) => {
     const e = Object.entries(sprites).find(([, v]) => (v.kind ?? 'damage') === 'damage' && (v.damageTypes ?? []).includes(dt));
     return e && have.has(e[1].file) ? e[0] : null;
@@ -200,7 +202,48 @@ export function makeCtx({ B, sprites, efektler, zones, ikonlar, have }) {
     const names = (z.sprites ?? []).map((s) => (typeof s === 'string' ? s : s.name));
     return names.filter((n) => have.has(`sprites/${n}.webp`)).length ? names[0].replace(/-\d+$/, '') : null;
   };
-  return { B, fx, floatOf, loops, zoneSprites, ikonlar };
+  return { B, fx, simge, floatOf, loops, zoneSprites, ikonlar, dogrulama };
+}
+
+/** Kuyruk E2: büyünün koni nefesi (döküm görselsiz; nefes `area_used` şekilli: koni dokusu hasar türünden). */
+const NEFES = ['dragons-breath'];
+
+/**
+ * Kuyruk E2 bağlamaları (src/ui/fx/fxPlan.ts ile aynı kurallar; her biri src/ui/fx/fxPlan.e2.test.ts'te olaydan efekte sınanır):
+ * `buyu[id]` (yol + sprite/simge; koni yolu yalnız koni alanlı büyüde), `zemin[id]` (kalıcı alan), `auraBuyu[id]`, `cagirRenk[id]`
+ * (çağırma), şekilli alan (koni → `koni[tür]`, çizgi → `isin[tür]`), ek patlama türleri (`alanEk`), dokunuş darbesi tonu (`darbeTon`).
+ * `rozet`: `rozetBuyu` sayı oku simgesi (yalnız rozet: genel).
+ */
+export function e2Visual(ctx, s, m) {
+  const { B } = ctx;
+  const id = s.id;
+  const keys = [];
+  const f = B.buyu?.[id];
+  if (f) {
+    const ok = f.yol === 'isaret' ? ctx.simge('isaret', f.simge) : ctx.fx(f.sprite);
+    if (ok && (f.yol !== 'koni' || s.area?.shape === 'cone')) keys.push(`${f.yol}:${ok}${f.ek && ctx.fx(f.ek) ? `+${f.ek}` : ''}`);
+  }
+  const z = B.zemin?.[id];
+  if (z && m.zone && ctx.fx(z)) keys.push(`zemin:${z}`);
+  const a = B.auraBuyu?.[id];
+  if (a && ctx.fx(a.sprite)) keys.push(`aura:${a.sprite}`);
+  const c = B.cagirRenk?.[id];
+  if (c && m.kind === 'summon' && ctx.fx(c.sprite)) keys.push(`cagir:${c.sprite}+ton`);
+  const dt = m.damageType;
+  const shape = s.area?.shape;
+  if (!keys.length && s.area && (m.kind === 'save' || m.kind === 'sleep') && !m.zone && dt) {
+    const k = B.koni?.[dt]?.sprite;
+    if (shape === 'cone' && k && ctx.fx(k)) keys.push(`koni:${k}`);
+    else if (shape === 'line' && B.isin[dt] && ctx.fx(B.isin[dt])) keys.push(`isin:${B.isin[dt]}`);
+    else if (shape !== 'cone' && shape !== 'line' && !B.alan[dt] && B.alanEk?.[dt] && ctx.fx(B.alanEk[dt])) keys.push(`alan:${B.alanEk[dt]}`);
+  }
+  if (!keys.length && NEFES.includes(id) && ctx.fx(B.koni?.varsayilan?.sprite)) keys.push('koni:koni-<nefes türü>');
+  if (!keys.length && (m.kind === 'attack' || m.kind === 'auto') && (s.rangeFt ?? 0) <= 5 && dt && !B.darbe[dt] && B.darbeTon?.[dt] && ctx.fx(B.darbe.varsayilan)) keys.push(`darbe-buyu+ton(${dt})`);
+  const r = B.rozetBuyu?.[id];
+  // Yalnız gerçek motordan doğrulananlar (data/efekt-e2-dogrulama.json; `npx vite-node scripts/e2-dogrula.ts`).
+  const D = ctx.dogrulama;
+  const unverified = !!D && keys.length > 0 && !D.efekt?.[id];
+  return { keys: unverified ? [] : keys, rozet: r && ctx.simge('ok', r) && (!D || D.rozet?.[id]) ? `rozet:ok-${r}` : null, unverified };
 }
 
 /** Koruma satırı (fxPlan `protectionSprite` ile aynı sıra). */
@@ -338,8 +381,14 @@ export function spellVisual(ctx, s, m, durum) {
   // OZEL ailesi: büyünün asıl görseli (mermi, aura, sütun…) yok demektir; ana görsel hazır sayılsa bile genel.
   if (o.aile) { aile = o.aile; if (primary === 'hazır' && !o.durum) primary = 'genel'; }
   if (o.aile === null) aile = null;
+  // Kuyruk E2: bağlı büyü ailesinin görseli artık var (hazır); yalnız rozet alan genel kalır, ikon-ok ailesi karşılanmış sayılır.
+  const x = e2Visual(ctx, s, m);
+  let note = notes.join('; ');
+  if (x.keys.length) { keys.push(...x.keys.map((k) => ({ k, q: 'hazır' }))); primary = 'hazır'; note = `E2: ${x.keys.join(', ')}`; }
+  if (x.unverified) note = `${note ? `${note}; ` : ''}E2 bağlaması doğrulanmadı`;
+  if (x.rozet) { keys.push({ k: x.rozet, q: 'genel' }); if (primary !== 'hazır') { primary = 'genel'; if (aile === 'ikon-ok') aile = null; note = note.replace(/koruma satırı eşleşmiyor|düşmana süren etki görsel üretmez/, `E2 rozet: ${x.rozet.slice(6)}`); } }
   const d = primary ?? 'eksik';
-  return { tur, anahtarlar: [...new Set(keys.map((x) => x.k).filter(Boolean))], durum: d, aile: d === 'hazır' ? null : aile, not: notes.join('; ') };
+  return { tur, anahtarlar: [...new Set(keys.map((x) => x.k).filter(Boolean))], durum: d, aile: d === 'hazır' ? null : aile, not: note, e2: x.keys.length > 0 };
 }
 
 // ───────────────────────────── B) Alt sınıf özellikleri ─────────────────────────────
@@ -361,7 +410,7 @@ export const ILKEL_GORSEL = {
   direnc: { durum: 'gerekmez', aile: null, anahtar: '' },
   aura: { durum: 'genel', aile: 'aura-bagla', anahtar: 'aura-altin (varsayılan; yalnız etkide aura alanı varsa)' },
   tepki: { durum: 'eksik', aile: 'tepki-koruma', anahtar: '' },
-  gecicCan: { durum: 'eksik', aile: 'gecici-can', anahtar: '' },
+  gecicCan: { durum: 'hazır', aile: null, anahtar: 'koruma-kutsama (temp_hp; Kuyruk E2)' },
   iyilestirme: { durum: 'hazır', aile: null, anahtar: 'iyilestir-kucuk/buyuk' },
   hasar: { durum: 'genel', aile: 'tek-hedef', anahtar: 'hasar şeridi (ateş/soğuk/asit/zehir)' },
   hasarAlan: { durum: 'eksik', aile: 'alan-turu', anahtar: '' },

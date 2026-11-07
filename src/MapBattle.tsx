@@ -93,7 +93,7 @@ import { mechanicsAt, sigmayanNote } from './battle/spellVersion';
 import { breathOf } from './battle/breath';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
-import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
+import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, outlineColor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { ReactionPrompt } from './ui/ReactionPrompt';
@@ -1665,7 +1665,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 const p = tokenCenter(state, c);
                 // Jeton filtreleri (Görev V): taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış.
                 const filters = tokenFilters(c);
-                const look = filterStyle(filters);
+                const look = filterStyle(filters, outlineColor(c));
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', c.unaware ? 'unaware' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',

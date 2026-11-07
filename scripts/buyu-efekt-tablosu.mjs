@@ -21,8 +21,10 @@ const ls = (d) => (fs.existsSync(path.join(root, d)) ? fs.readdirSync(path.join(
 const B = read('data/efekt-baglama.json');
 const E = read('data/sprite-esleme.json');
 const SPR = read('data/efekt-sprites.json').effects;
-const have = new Set([...ls('public/sprites').map((f) => `sprites/${f}`), ...ls('public/efektler').map((f) => `efektler/${f}`)]);
-const ctx = makeCtx({ B, sprites: SPR, efektler: E.efektler, zones: E.zones, ikonlar: E.efektIkonlari, have });
+const E2 = fs.existsSync(path.join(root, 'data/efekt-e2.json')) ? read('data/efekt-e2.json') : { efektler: {}, simgeler: {} };
+const have = new Set([...ls('public/sprites').map((f) => `sprites/${f}`), ...ls('public/efektler').map((f) => `efektler/${f}`), ...ls('public/efekt').map((f) => `efekt/${f}`)]);
+const DOGRU = fs.existsSync(path.join(root, 'data/efekt-e2-dogrulama.json')) ? read('data/efekt-e2-dogrulama.json') : { efekt: {}, rozet: {} };
+const ctx = makeCtx({ B, sprites: SPR, efektler: { ...E.efektler, ...E2.efektler }, zones: E.zones, ikonlar: E.efektIkonlari, have, simgeler: E2.simgeler, dogrulama: DOGRU });
 const srd = read('data/srd/spells.json').spells;
 const game = ['data/spells.json', 'data/spells-45.json', 'data/spells-69.json'].flatMap((f) => read(f).map((s) => ({ ...s, file: f.replace('data/', '') })));
 const byRef = new Map(game.map((g) => [g.srd, g]));
@@ -53,15 +55,16 @@ function spellDoc(rows) {
   out.push('# Büyü × efekt tablosu (Kuyruk E3)', '',
     '`npm run efekt-tablosu` üretir (`scripts/buyu-efekt-tablosu.mjs`, kurallar `scripts/lib/buyu-efekt.mjs`); elle düzenlenmez. Salt okuma denetimi: oyun kodu, veri ve görseller değişmedi. Büyü durumu (savaşta / savaş dışı) `harita/belgeler/BUYU-DURUM.md` ile aynı ölçüt (`scripts/lib/buyu-durum.mjs`).', '',
     '## Yöntem', '',
-    '**Hazır** = büyünün asıl görsel ailesi (alan patlaması, iyileştirme, ışınlanma, duvar, zemin, durum döngüsü, koruma, çağırma) için efekt anahtarı kayıt defterinde var (`data/sprite-esleme.json` `efektler`/`zones`, `data/efekt-sprites.json`) **ve** dosyası depoda (`public/sprites/`, `public/efektler/`) **ve** bağlama kodu bu büyü için o anahtarı gerçekten seçiyor (`src/ui/fx/fxPlan.ts`, `src/ui/damageFloats.ts`, `src/ui/statusFx.ts`, `src/ui/sprites.ts`; olay yolu `src/battle/spells.ts`). **Genel** = yalnız varsayılan/yedek görsel (`darbe-buyu`, `cagir-portal`, `aura-altin`, renkli altıgen yer tutucusu `.spell-zone`, koni/çizginin patlama olarak çizilmesi, yalnız hasar türü şeridi ya da durum ikonu, rozet). **Eksik** = günlük ve sayı dışında görsel yok. Hasar sayıları her büyüde çıkar, sayılmaz.', '',
+    '**Hazır** = büyünün asıl görsel ailesi (alan patlaması, iyileştirme, ışınlanma, duvar, zemin, durum döngüsü, koruma, çağırma) için efekt anahtarı kayıt defterinde var (`data/sprite-esleme.json` `efektler`/`zones`, `data/efekt-sprites.json`, Kuyruk E2: `data/efekt-e2.json`) **ve** dosyası depoda (`public/sprites/`, `public/efektler/`, `public/efekt/`) **ve** bağlama kodu bu büyü için o anahtarı gerçekten seçiyor (`src/ui/fx/fxPlan.ts`, `src/ui/damageFloats.ts`, `src/ui/statusFx.ts`, `src/ui/sprites.ts`; olay yolu `src/battle/spells.ts`). **Genel** = yalnız varsayılan/yedek görsel (`darbe-buyu`, `cagir-portal`, `aura-altin`, renkli altıgen yer tutucusu `.spell-zone`, koni/çizginin patlama olarak çizilmesi, yalnız hasar türü şeridi ya da durum ikonu, rozet). **Eksik** = günlük ve sayı dışında görsel yok. Hasar sayıları her büyüde çıkar, sayılmaz.', '',
     'Koddan çıkan bağlama kuralları:', '',
-    '- Büyü saldırısı ve otomatik isabet (`attack_resolved`): `efekt-baglama.json` `darbe[hasar türü]`, yoksa varsayılan `darbe-buyu`; kritikte `kritik-vurus`. Hedefte hasar türü şeridi yalnız ateş (`burn`), soğuk (`freeze`), asit (`acid`), zehir (`poison`). **Mermi/ışın çizilmez.**',
-    '- Alan büyüsü (`executeAreaCast` → `spell_cast.area`): alan[hasar türü] (ateş, yıldırım, ışık, nekrotik, psişik, kuvvet, gök gürültüsü). `spell_cast.area` **şekil taşımaz**: koni ve çizgi de merkezde patlama olarak çizilir (çizgiyi ışın yapan dal yalnız şekilli `area_used`’da: canavar nefesi, Dragonborn). Soğuk, asit, zehir, ezme/delme alanlarında patlama yok.',
+    '- Büyü saldırısı ve otomatik isabet (`attack_resolved`): `efekt-baglama.json` `darbe[hasar türü]`, yoksa varsayılan `darbe-buyu` (Kuyruk E2: hasar türüne göre `darbeTon` rengiyle); kritikte `kritik-vurus`. Hedefte hasar türü şeridi yalnız ateş (`burn`), soğuk (`freeze`), asit (`acid`), zehir (`poison`).',
+    '- Alan büyüsü (`executeAreaCast` → `spell_cast.area`): alan[hasar türü] (ateş, yıldırım, ışık, nekrotik, psişik, kuvvet, gök gürültüsü; Kuyruk E2 `alanEk`: soğuk, asit, zehir, ezme). Kuyruk E2: `spell_cast.area` yalnız görsel `shape`/`aim` taşır: koni `koni[tür]` dokusu, çizgi `isin[tür]` ışını olarak çizilir.',
+    '- Kuyruk E2 büyü bağlaması (`efekt-baglama.json` `buyu`): olay etiketinden büyü kimliği → mermi (uçan), ışın, hedef, kendi, alan, gökten düşen, koni, işaret simgesi + bağ çizgisi; `zemin` (kalıcı alan dokusu), `auraBuyu` (konsantrasyon/kendi aurası), `cagirRenk` (portal tonu), `rozetBuyu` (sayı oku rozeti, genel), `konturBuyu` (Faerie Fire jeton konturu); `temp_hp` → `koruma-kutsama`, `life_restored` → `iyilestir-buyuk`. Her E2 bağlaması gerçek motordan doğrulanır (`npx vite-node scripts/e2-dogrula.ts` → `data/efekt-e2-dogrulama.json`); tablo yalnız doğrulananları hazır sayar.',
     '- Kalıcı alan (`m.zone` → `executeZoneCast`, alan patlaması yok): `sprite-esleme.json` `zones["spells:<id>"]` (Fog Cloud, Web, Grease, Stinking Cloud) ya da `efekt-baglama.json` `duvar` (Wall of Fire/Force/Ice, Wind Wall); kalanı renkli altıgen yer tutucusu. Yaratığa bağlı alan → aura (renk hasar türünden, yoksa `aura-altin`).',
     '- `healed` → `iyilestir-kucuk/buyuk`; `teleported` → `isinlan-cikis/giris`; `summoned` → `cagir-ruh`/`cagir-dogal` (veri listesi, dokunulamaz çağrı ruh), yoksa varsayılan `cagir-portal`; `pushed` → `itme-toz`.',
     '- Süren etki (`effect_added`) yalnız dost/kendine: `koruma` tablosu (ac/acMin → kalkan; wardedFrom/resist/immune → ruh; +zar/tempHp/saveAdv → kutsama). Düşmana etki ve `buff_added` (Shield of Faith, Divine Favor, Magic Weapon) görsel üretmez.',
     '- Durum: döngü şeridi (Paralyzed, Stunned, Incapacitated, Frightened, Charmed, Restrained, Grappled; Poisoned `jetonDongu`), CSS jeton filtresi (Petrified, Blinded, Invisible, Unconscious, Prone, Exhaustion), yoksa yalnız ikon (Deafened).',
-    '- Spirit Guardians yayılımı konsantrasyonda tutulur (`concentration.aura`); `groundFx` yalnız etki `aura`/`auras` ve yaratığa bağlı alanları okur: yayılım çizilmez.', '',
+    '- Spirit Guardians yayılımı konsantrasyonda tutulur; Kuyruk E2: `groundFx` konsantrasyonu `auraBuyu`’da olan büyücünün çevresine aura çizer.', '',
     `Kısmi ya da sığmayan notlu büyü: ${rows.filter((r) => r.durum === 'kısmi' || r.sigmayan).length} (K58 sonrası 0; ayrı efekt ihtiyacı yok).`, '');
 
   // 1. Özet
@@ -118,7 +121,8 @@ function spellDoc(rows) {
     'isaret-simgeleri.jpg': '4×4 ikon (macenta): nişan, lanet, terazi, rün, pentagram, kum saati, meydan okuma, çapraz kılıç, pençe, yıldız, kırık yıldız, haç, d20, kristal, rünlü kalkan, zincir',
     'sayi-oklari.jpg': '4×4 ikon (macenta): avantaj/dezavantaj d20, AC±, hız±, hasar±, direnç, kutsal kalkan, geçici HP, yenilenme, zar±, kanat, yıldırımlı ok',
   };
-  out.push('| Sayfa | Satırlar | Karşıladığı aileler |', '|---|---|---|');
+  if (!hamSayfalar.length) out.push('Kuyruk E2: 12 sayfanın hepsi içe aktarıldı (`data/efekt-kesim.json` `klasor: efekt` → `public/efekt/`, kayıt `data/efekt-e2.json`).', '');
+  else out.push('| Sayfa | Satırlar | Karşıladığı aileler |', '|---|---|---|');
   for (const f of hamSayfalar) {
     const used = Object.entries(AILELER).filter(([, a]) => (a.e2 ?? '').startsWith(f.replace(/\.jpg$/, ''))).map(([k]) => `\`${k}\``);
     out.push(`| ${f} | ${E2[f] ?? '(incelenmedi)'} | ${used.join(', ') || '—'} |`);
@@ -137,7 +141,8 @@ function spellDoc(rows) {
   }
   out.push('', `Toplam ${Object.keys(gemini).length} Gemini sayfası, ${gCells} hücre.`, '');
 
-  // 5. Kod
+  // 5. Kod (Kuyruk E2: hazır olan büyü listeden düşer)
+  const open = (id) => rows.some((r) => r.id === id && r.durum !== 'hazır' && r.durum !== 'savaş dışı');
   const kod = [
     ['Çizgi alanı ışın olarak', '`spell_cast.area`’ya `shape` (ve `aim`) ekle; fxPlan `area()` çizgide zaten `isin-*` seçer (Lightning Bolt, Sunbeam, Gust of Wind). Motor olayına yalnız görsel alan (replay etkilenmez).', fams['cizgi-sekil']],
     ['Tek hedef ışınları', 'Ray/Eldritch Blast/Disintegrate/Chain Lightning: `attack_resolved` ve tek hedefli `save_resolved` büyüsünde büyücüden hedefe `isin-*` (nekrotik/zehir/kuvvet için `isin-isik` + hue-rotate).', fams['isin-tek']],
@@ -147,10 +152,10 @@ function spellDoc(rows) {
     ['Aura bağlama', '`concentration.aura` (Spirit Guardians) ve kendine süren etkideki aura (Aura of Life, Holy Aura, Fire Shield, Pass without Trace, Conjure Woodland Beings, Conjure Minor Elementals) groundFx’e; renk hasar türünden.', fams['aura-bagla']],
     ['Diriltme ve durum temizleme', '`life_restored` → `iyilestir-buyuk`; durum kaldıran `condition_changed present:false` (Lesser/Greater Restoration) → `iyilestir-kucuk`.', fams['diriltme']],
     ['Tepki korumaları', 'Shield işareti (`marks` shield) → `koruma-kalkan`; Feather Fall → `koruma-ruh`.', fams['tepki-koruma']],
-    ['`buff_added` ve geçici HP', '`buff_added` (ward ac → kalkan, Protection from Evil and Good → ruh) ve `temp_hp`/`tempHpNow` → `koruma-kutsama`.', [...(fams['gecici-can'] ?? []), 'shield-of-faith', 'protection-from-evil-and-good']],
+    ['`buff_added` ve geçici HP', '`buff_added` (ward ac → kalkan, Protection from Evil and Good → ruh) ve `temp_hp`/`tempHpNow` → `koruma-kutsama`.', [...(fams['gecici-can'] ?? []), ...['shield-of-faith', 'protection-from-evil-and-good'].filter(open)]],
     ['Görme göz parıltısı', 'See Invisibility, True Seeing, Darkvision: `goz-nabiz` jetonda tek seferlik.', fams['goz']],
     ['Jeton parıltısı (CSS)', 'Faerie Fire `outlined` → renkli drop-shadow kontur.', fams['parilti-css']],
-    ['Çağırma renk portalı', 'Varsayılan `cagir-portal` yerine çağrının türüne (ejderha, element, nesne, el) hue; dokunulamaz Flaming Sphere için ruh yerine ateş tonu.', [...(fams['cagir-renk'] ?? []), 'flaming-sphere']],
+    ['Çağırma renk portalı', 'Varsayılan `cagir-portal` yerine çağrının türüne (ejderha, element, nesne, el) hue; dokunulamaz Flaming Sphere için ruh yerine ateş tonu.', [...(fams['cagir-renk'] ?? []), ...['flaming-sphere'].filter(open)]],
     ['İkon/ok rozetleri', 'Süren etki alanı → `sayi-oklari` ikonu (E2 içe aktarıldıktan sonra): rozet önceliği `efekt-baglama.json` `rozet`.', fams['ikon-ok']],
     ['E2 sayfalarının içe aktarılması', `\`data/efekt-kesim.json\`’a ${hamSayfalar.length} sayfa kaydı (satır/sütun, kesim, tür, boyut) + \`npm run sprite-ice -- --efekt\`; ardından ailelere bağlama (mermi, koni, gökten düşen, patlama-ek, zemin kutuları, duman/kafes, dönüşüm/kanat, iptal, zaman, silah, işaret/ikon).`, hamSayfalar],
   ].filter(([, , ids]) => ids && ids.length);
