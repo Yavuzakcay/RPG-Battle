@@ -13,7 +13,7 @@ Toplam 339 = savaşta kullanılan 225 + savaş dışı 114.
 | 6–9 | 50 | 0 | 0 | 34 | 84 |
 | **Toplam** | 225 | 0 | 0 | 114 | 339 |
 
-Çalışır olanlardan: Game Master notlu 4, kapsam dışı notlu 27, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
+Çalışır olanlardan: Game Master notlu 4, kapsam dışı notlu 26, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
 
 ## Game Master notlu (savaş etkisi tam, kalan parça Game Master'da)
 
@@ -38,7 +38,6 @@ Bu parçaların tetikleyiciye göre gruplu kaydı ve ne zaman ele alınacakları
 | hex | 1 | Seçilen yetenek: savaşta kontrol yalnızca STR/DEX (İt, yakalama, kurtulma); seçim yoksa hedefin güçlü olanı | evet: Savaşta yapılan kontroller STR/DEX; diğer yetenek seçimi savaşta karşılıksız. |
 | jump | 1 | Zıplamanın havadaki yayı ve yükseklik katmansız haritada dikey zıplama (katmansız haritada yükseklik yok). | evet: Katmansız haritada dikey yükseklik yok; yatay uzunluk tam. |
 | mage-armor | 1 | Zırh giyince bitme: savaşta zırh giyilmez. | evet: Savaşta zırh giyilmez; bitme koşulu hiç tetiklenmez. |
-| protection-from-evil-and-good | 1 | Ele geçirme (possession) oyunda hiçbir canavarda yok. | evet: Ele geçirme yapan canavar oyunda yok. |
 | alter-self | 2 | Change Appearance savaş dışı (Game Master). | evet: Change Appearance sosyal; savaş seçenekleri (Aquatic, Natural Weapons) tam. |
 | blindness-deafness | 2 | Deafened'in duymaya bağlı yetenek kontrolleri savaşta yok; sözlü buyruklar (Command, Suggestion) duyulmaz. | evet: Deafened'in savaşta karşılığı (sözlü buyruğu duymama) uygulanır; duymaya bağlı kontroller savaşta yok. |
 | continual-flame | 2 | Loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık). | evet: Loş ışık ayrımı yok; aydınlatma tam. |
@@ -151,7 +150,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | longstrider | 1 | spells.json | çalışır |  |  |  |
 | mage-armor | 1 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | magic-missile | 1 | spells.json | çalışır |  |  |  |
-| protection-from-evil-and-good | 1 | spells.json | çalışır | a6 (sürüm 35) |  |  |
+| protection-from-evil-and-good | 1 | spells.json | çalışır | k64 (sürüm 48) |  |  |
 | purify-food-and-drink | 1 | spells.json | savaş dışı |  |  |  |
 | ray-of-sickness | 1 | spells.json | çalışır |  |  |  |
 | sanctuary | 1 | spells.json | çalışır | s1 (sürüm 40) |  |  |
@@ -308,7 +307,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | contact-other-plane | 5 | spells-45.json | savaş dışı |  |  |  |
 | contagion | 5 | spells-45.json | çalışır |  |  |  |
 | creation | 5 | spells-45.json | savaş dışı |  |  |  |
-| dispel-evil-and-good | 5 | spells-45.json | çalışır |  |  |  |
+| dispel-evil-and-good | 5 | spells-45.json | çalışır | k64 (sürüm 48) |  |  |
 | dominate-person | 5 | spells-45.json | çalışır |  |  |  |
 | dream | 5 | spells-45.json | savaş dışı |  |  |  |
 | flame-strike | 5 | spells-45.json | çalışır |  |  |  |

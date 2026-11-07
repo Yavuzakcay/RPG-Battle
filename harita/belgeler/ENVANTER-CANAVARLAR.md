@@ -100,7 +100,7 @@ Hiç bağlanmayanlar (yeni sistem gerektirir ya da savaş dışı):
 | darkmantle:Crush | yapışma (attach) sistemi yok: hedefe yapışıp birlikte hareket, avantajla örtme | orta |
 | wererat:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme (yeni sistem) | büyük |
 | werewolf:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
-| ghost:Possession | ele geçirme: bedenin kontrolü (yeni sistem; allegianceSwap yalnızca büyüyle) | büyük |
+| ghost:Possession | **Kuyruk K64a (sürüm 48) uygulandı**: `src/battle/possession.ts`, `data/ele-gecirme.json` (Game Master anahtarı `possession`) | tamam |
 | incubus:Restless Touch | savaş dışı (kısa dinlenme yararı yok) | savaş dışı |
 | wereboar:Gore | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |
 | weretiger:Bite | lanet: 0 HP'de likantropa dönüşüp taraf değiştirme | büyük |

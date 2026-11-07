@@ -312,6 +312,8 @@ export interface ActiveEffect {
   ethereal?: boolean;
   /** Kuyruk 18 H1: taraf değiştirme (Dominate Person/Beast): etkiyi verenin tarafına geçer (`allegiance.ts`). */
   dominate?: boolean;
+  /** Kuyruk K64a (sürüm 48): ele geçirilmiş beden (Ghost Possession); kaynak = ele geçiren; Dominate'ten baskın (`possession.ts`). */
+  possessed?: boolean;
   /** Kuyruk K61 (sürüm 44): Dominate'e özgü tepki bağı (`reduce.ts`); Charm Person'da yok. */
   reactionLink?: boolean;
   /** Kuyruk 18 H2: Polymorph etkisi (biçimi konsantrasyona bağlar; `polymorph.ts`). */
@@ -691,6 +693,10 @@ export interface Combatant {
   /** Kuyruk 18 H4: başka kattaki savaşçı (o katın harita kimliği) ve oradaki konumu. */
   offFloor?: string;
   floorPos?: Offset;
+  /** Kuyruk K64a (sürüm 48): ele geçirdiği bedenin kimliği (bu savaşçı `offFloor: 'beden'`; hedef alınmaz, sırada atlanır). */
+  possessing?: string;
+  /** Kuyruk K64a: bu savaşçıyı bir daha ele geçiremeyecek olanlar (savaş sonuna dek; SRD 24 saat). */
+  possessionImmune?: string[];
   /** Kuyruk 18 H3: Countercharm verebilecek (30 ft, tepkisi hazır) Bard'ın kimliği (reducer `syncAuras` yazar). */
   countercharmBy?: string;
   /** Kuyruk 19: savaşta harcanabilen HP zarları (Lifedrinker); savaş sonu karaktere yazılır. */
@@ -1422,6 +1428,8 @@ export interface ShapeStats {
   polymorph?: boolean;
   /** Kuyruk K48: Karadul Örümcek Biçimi (biçim canı = geçici HP; bitince ya da bırakınca biter). */
   spider?: boolean;
+  /** Kuyruk K64a: ele geçirilmiş bedenin değerleri (bitişi `possession.ts`; `shapeCleanup` dokunmaz). */
+  possession?: boolean;
   attacks?: CombatantAttack[];
   multiattack?: boolean;
 }
@@ -1447,6 +1455,8 @@ export type Command =
   | { type: 'attack'; actorId: string; targetId: string; option: AttackOption; cunning?: CunningOption[]; /** Kuyruk 18 H3: Brutal Strike (Kuyruk 19: Staggering, Sundering; 17'de ikinci etki). */ brutal?: 'forceful' | 'hamstring' | 'staggering' | 'sundering'; brutal2?: 'forceful' | 'hamstring' | 'staggering' | 'sundering'; /** Kuyruk 18 H3: Tactical Master (push, sap, slow). */ mastery?: string; /** Kuyruk 19: Punch and Grab. */ grab?: boolean }
   /** Görev F: Steady Aim (bonus eylem; bu tur hareket etmemiş olmalı). */
   | { type: 'steady_aim'; actorId: string }
+  /** Kuyruk K64a: ele geçiren bedeni bırakır (bonus eylem; aktör beden ya da ele geçiren). Game Master `gm: true` ile eylemsiz bitirir. */
+  | { type: 'possession_leave'; actorId: string; gm?: boolean }
   /** Görev F: Horde Breaker (Hunter's Prey): bu tur saldırılan yaratığın 5 ft yakınındaki başka bir yaratığa aynı silahla ek saldırı. */
   | { type: 'horde_breaker'; actorId: string; targetId: string; option: AttackOption }
   /** Yalnızca haritasız savaş: soyut yükseklik değiştirme (çıkarken tırmanma kontrolü). */
@@ -2070,6 +2080,12 @@ export type BattleEvent =
   | { type: 'zone_spotted'; zoneId: string; by: string[] }
   /** Kuyruk S1: haritadan ayrılanlar (Plane Shift; `offFloor: 'duzlem'`, konum yok, sırada atlanır, tarafı ayakta tutmaz). */
   | { type: 'retreated'; actorId: string; ids: string[]; label: string }
+  /** Kuyruk K64a (sürüm 48): ele geçirme başladı (bedene etki, ele geçiren `offFloor: 'beden'`). */
+  | { type: 'possessed'; possessorId: string; hostId: string; label: string; incap: boolean; until: number }
+  /** Kuyruk K64a: ele geçirme bitti; ele geçiren `to` altıgeninde belirir, ev sahibi ona savaş sonuna dek bağışık. */
+  | { type: 'possession_ended'; possessorId: string; hostId: string; reason: 'hp0' | 'leave' | 'dispel' | 'gone' | 'gm'; to: Offset | null; label: string }
+  /** Kuyruk K64a: ele geçirme save'i başarılı (bağışıklık). */
+  | { type: 'possession_resisted'; possessorId: string; hostId: string; label: string }
   | { type: 'teleported'; actorId: string; from: Offset; to: Offset; label: string; /** Kuyruk 19: harcanan hareket (altıgen) ve Tree Stride işareti. */ cost?: number; stride?: boolean }
   /** Görev S1: bitkinlik seviyesi değişti (6'da ölür). */
   | { type: 'exhaustion_changed'; targetId: string; level: number; reason: string }

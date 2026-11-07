@@ -1,4 +1,6 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { homeSide } from './allegiance';
+import { possessedEffect, possessionEndEvents, possessionOn } from './possession';
 import { truesightSees } from './sight';
 import { gazePos } from './chainPact';
 import { lifeBondEvents } from './steed';
@@ -531,7 +533,7 @@ function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, 
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
@@ -1868,6 +1870,13 @@ export function executeDispelEvil(state: BattleState, actor: Combatant, targetId
   if (distance(t.pos, actor.pos) > 1) return fail(`${sp.name}: hedef 5 ft içinde olmalı.`);
   const types = sp.mechanics.ward?.disadvantageFromTypes ?? [];
   const end: BattleEvent = { type: 'concentration_ended', actorId: actor.id, label: sp.name };
+  // Kuyruk K64a (sürüm 48): Break Enchantment ele geçirmeyi de bitirir ("The target is no longer possessed"); ele
+  // geçirilmiş dost bedeni ele geçirenin tarafında olduğu için asıl tarafa bakılır.
+  const poss = possessionOn(state) ? possessedEffect(t) : undefined;
+  if (poss && homeSide(t) === homeSide(actor) && types.includes(state.combatants[poss.sourceId]?.creatureType ?? '')) {
+    return finish(state, [{ type: 'spell_cast', actorId: actor.id, targetId: t.id, label: `${sp.name}: Break Enchantment`, slotLevel: null, note: t.name },
+      ...possessionEndEvents(state, t, 'dispel', poss.name), end]);
+  }
   if (t.side === actor.side) {
     const evil = (id: string) => types.includes(state.combatants[id]?.creatureType ?? '');
     const effs = (t.effects ?? []).filter((e) => evil(e.sourceId) && (e.grants ?? []).some((g) => g === 'Charmed' || g === 'Frightened' || e.charm));

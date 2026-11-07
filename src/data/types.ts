@@ -283,6 +283,10 @@ export interface SpellMechanics {
   k62?: Partial<SpellMechanics>;
   /** Kuyruk K63 (sürüm 47): Truesight (True Seeing) ve görsel yanılsama bayrağı. */
   k63?: Partial<SpellMechanics>;
+  /** Kuyruk K64a (kural sürümü 48): ele geçirme (Protection from Evil and Good engeli, Dispel Evil and Good Break Enchantment). */
+  k64?: Partial<SpellMechanics>;
+  /** Kuyruk K64a: ele geçirme kolunun açıklaması (bilgi; motor `src/battle/possession.ts`). */
+  possession?: string;
   /** Kuyruk K63 (sürüm 47): görsel yanılsama büyüsü; Truesight'lı hedef onun save'ini otomatik geçer (Phantasmal Force/Killer, Weird). */
   illusion?: boolean;
   /** Kuyruk K61 (sürüm 44): SRD uyumu 1 (Blade Barrier Force, Conjure Fey +1d12, Irresistible Dance, Flesh to Stone, Earthquake). */

@@ -22,7 +22,7 @@
     "beacon-of-hope": { "uyar": "evet", "neden": "En yüksek iyileştirme büyü, iksir ve özellik zarlarında (src/battle/healMax.ts)." },
     "call-lightning": { "uyar": "evet", "neden": "Silindir yüksekliği modelde yok; bulut büyücünün üstünde sayılır, hedef nokta menzilde." },
     "conjure-animals": { "uyar": "evet", "neden": "Çok altıgen bayrağı kapalıyken her yaratık tek altıgen (oyunun genel kuralı)." },
-    "protection-from-evil-and-good": { "uyar": "evet", "neden": "Ele geçirme yapan canavar oyunda yok." },
+    "protection-from-evil-and-good": { "uyar": "evet", "neden": "K64a: ele geçirme engeli tam (Ghost Possession); zaten ele geçirilmişe SRD yalnızca yeni save avantajı verir, Ghost Possession yeni save tanımlamaz." },
     "animate-dead": { "uyar": "evet", "neden": "1 dakikalık döküm kurulumda; 24 saatlik yenileme savaş dışı." },
     "enlarge-reduce": { "uyar": "evet", "neden": "Boyut etkileri (hasar zarı, STR avantajı) tam; altıgen sayısı çok altıgen bayrağına bağlı." },
     "fog-cloud": { "uyar": "evet", "neden": "Küre ızgarada; rüzgârla dağılma rüzgâr kuralıyla." },

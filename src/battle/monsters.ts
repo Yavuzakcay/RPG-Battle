@@ -30,6 +30,7 @@ import type { BattleEvent, BattleState, Combatant, MultiStep } from './types';
 import multiData from '../../data/multiattack.json';
 import { a2AreaDamage, withA2Extras } from './ridersA2';
 import { castWithoutAction } from './castHook';
+import { possessSpecOf, possessionProblem, possessionStartEvents } from './possession';
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, corrodeEvents, hitReactions, targetedHookReactions, targetedReactions, type HitOutcome } from './reactions';
 
@@ -48,6 +49,10 @@ export function monsterAttackEvents(
   if (atk.recharge && actor.rechargeUsed.includes(index)) return fail(`${atk.name} henüz şarj olmadı.`);
   const inReach = checkReach(state, actor, target, monsterAttackReach(atk));
   if (!inReach.ok) return { ok: false, error: `${atk.name}: ${inReach.error}` };
+  // Kuyruk K64a (sürüm 48): ele geçirme engelleri save'den önce (Humanoid, 5 ft, görme, bağışıklık, PfEG, zaten ele geçirilmiş).
+  const poss = possessSpecOf(state, actor, atk.name);
+  const possWhy = poss ? possessionProblem(state, actor, target, poss) : null;
+  if (possWhy) return fail(`${atk.name}: ${possWhy}`);
   // Kuyruk 19 (srdK19): Rust Monster Antennae: metal silah aşınması (DEX save; `reactions.ts` `corrodeEvents`).
   if (globalRule(state, 'srdK19') && actor.monsterId === 'rust-monster' && atk.name === 'Antennae') {
     return { ok: true, events: corrodeEvents(actor, target, atk.save?.dc ?? 11, rng) };
@@ -112,6 +117,10 @@ export function monsterAttackEvents(
     if (!save.success) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, riderOf(actor.monsterId, atk.name), atk.name, rng));
     // Kuyruk 19: kalıcı azalmalar (Life Drain save başarısızsa).
     if (!save.success) events.push(...drainEvents(state, actor, target, riderOf(actor.monsterId, atk.name), adj.amount, atk.damageType ?? '', [], atk.name, rng));
+    // Kuyruk K64a: ele geçirme (başarısızsa başlar, başarılıysa bağışıklık; SRD 24 saat = savaş sonuna dek).
+    if (poss && fx.hpAfter > 0) events.push(...(save.success
+      ? [{ type: 'possession_resisted', possessorId: actor.id, hostId: target.id, label: atk.name } as BattleEvent]
+      : possessionStartEvents(state, actor, target, poss, `${actor.name}: ${atk.name}`)));
   } else {
     const allyAlive = Object.values(state.combatants).some(
       (c) => c.id !== actor.id && c.side === actor.side && c.hp > 0,

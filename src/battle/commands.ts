@@ -76,6 +76,7 @@ import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
 import { superiorInspirationEvents } from './bard';
 import { evergreenEvents, executeWildResurgence, executeWildShape, shapeCleanup } from './druid';
+import { executePossessionLeave, possessionCleanup, possessionCommandProblem } from './possession';
 import { poolCreateEvents, poolSyncEvents } from './hpPool';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
@@ -260,6 +261,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar büyücüye (her hasar yolunda, komutun sonunda).
   const bonded = bondEvents(state, next, rng);
   if (bonded.length) { next = applyEvents(next, bonded); events = [...events, ...bonded]; }
+  // Kuyruk K64a (sürüm 48): biten ele geçirmeler (beden 0 HP, ele geçiren yok); biçim de burada döner.
+  const unpossessed = possessionCleanup(next);
+  if (unpossessed.length) { next = applyEvents(next, unpossessed); events = [...events, ...unpossessed]; }
   // Görev DRUID: Wild Shape 0 HP'de ya da Incapacitated olunca biter.
   const unshaped = shapeCleanup(next);
   if (unshaped.length) { next = applyEvents(next, unshaped); events = [...events, ...unshaped]; }
@@ -465,12 +469,18 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'wake_dragon') return executeWakeDragon(state, ctx);
   if (cmd.type === 'alarm_group') return executeAlarmGroup(state, cmd.groupId, ctx, rng);
 
+  // Kuyruk K64a: Game Master ele geçirmeyi her an bitirir (eylemsiz).
+  if (cmd.type === 'possession_leave' && cmd.gm) return executePossessionLeave(state, cmd.actorId, true, ctx);
   // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke) başkasının turunda da yapılır.
   const outOfTurn = (cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName)) || cmd.type === 'initiative_swap';
   const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn' && cmd.type !== 'rouse_dragon', outOfTurn,
     MOVE_ONLY_COMMANDS.includes(cmd.type));
   if (!checked.ok) return checked;
   const actor = checked.actor;
+  // Kuyruk K64a: ele geçirilmiş beden yalnızca ele geçirenin eylemlerini yapar; bedendeki ele geçiren yalnızca bırakır.
+  const possBlock = possessionCommandProblem(actor, cmd.type);
+  if (possBlock) return fail(possBlock);
+  if (cmd.type === 'possession_leave') return executePossessionLeave(state, actor.id, false, ctx);
   if (actor.asleep && cmd.type !== 'end_turn') return fail(`${actor.name} uyuyor: turunu atlar.`);
   // Kuyruk 16 K16D: devriyedeki habersiz üye yalnızca yürür.
   if (actor.unaware && cmd.type !== 'end_turn' && !(cmd.type === 'move' && patrolOf(state, actor))) return fail(`${actor.name} habersiz: alarm verilene dek turunu atlar.`);
@@ -684,7 +694,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
 
   if (cmd.type === 'monster_attack') return executeMonsterAttack(state, actor, cmd.targetId, cmd.attackIndex, rng, cmd.targetHex);
-  if (cmd.type === 'multiattack') return executeMultiattack(state, actor, cmd.targetId, rng, cmd.plan);
+  // Kuyruk K64a: bedenin Multiattack'ı ele geçirenin saldırılarıyla (ev sahibinin SRD planı geçmez).
+  if (cmd.type === 'multiattack') return executeMultiattack(state, actor, cmd.targetId, rng, actor.shape?.possession ? undefined : cmd.plan);
 
   if (cmd.type === 'stabilize') {
     const target = state.combatants[cmd.targetId];

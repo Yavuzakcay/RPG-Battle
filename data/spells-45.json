@@ -900,7 +900,10 @@
         ]
       },
       "endFunctions": true,
-      "k19": "Kuyruk 19: büyü sürerken Magic eylemiyle (büyü biter) Break Enchantment: 5 ft içindeki dosttan bu türlerin verdiği Charmed/Frightened kalkar; Dismissal: 5 ft içindeki bu türden yaratık CHA save, başarısızsa kendi düzlemine gönderilir, savaştan çıkar (anahtar spellsK19). Ele geçirme (possession) oyunda yok."
+      "k19": "Kuyruk 19: büyü sürerken Magic eylemiyle (büyü biter) Break Enchantment: 5 ft içindeki dosttan bu türlerin verdiği Charmed/Frightened kalkar; Dismissal: 5 ft içindeki bu türden yaratık CHA save, başarısızsa kendi düzlemine gönderilir, savaştan çıkar (anahtar spellsK19). Ele geçirme (possession) oyunda yok.",
+      "k64": {
+        "possession": "Kuyruk K64a: Break Enchantment bu türlerin ele geçirmesini de bitirir (ele geçirilmiş dost bedeni; Game Master anahtarı possession)."
+      }
     },
     "school": "Abjuration",
     "srdPage": 124

@@ -5,6 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
+import { possessedEffect } from './battle/possessionCore';
 import { imzaHex as imzaHex0, imzaTargeted as imzaTargeted0 } from './battle/imza';
 import type { UsableFeature } from './battle/types';
 
@@ -191,7 +192,7 @@ function wakeNotes(state: Parameters<typeof wakeRule>[0]): string[] {
   ];
 }
 
-function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; notes?: string[]; onExhaustion?: (level: number) => void; onAiRole?: (role: Combatant['aiRole'] | null) => void }) {
+function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; notes?: string[]; onExhaustion?: (level: number) => void; onAiRole?: (role: Combatant['aiRole'] | null) => void; onEndPossession?: () => void }) {
   const { c } = props;
   // Süren etkiler (Görev R2): tıklayınca açıklama açılır.
   const [openFx, setOpenFx] = useState<string | null>(null);
@@ -238,6 +239,12 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
             {['auto', 'hasarci', 'kontrolcu', 'destek', 'tank'].map((k) => <option key={k} value={k}>{D.aiRoles[k]}</option>)}
           </select>
         </label>
+      )}
+      {/* Kuyruk K64a: ele geçirilmiş beden; Game Master ele geçirmeyi bitirir. */}
+      {possessedEffect(c) && (
+        <p className="possessed-row">{t().battle.k64.possessed(props.state.combatants[possessedEffect(c)?.sourceId ?? '']?.name ?? '?')}
+          {props.onEndPossession && <>{' '}<button type="button" className="hud-btn small" onClick={() => props.onEndPossession?.()}>{t().battle.k64.gmEnd}</button></>}
+        </p>
       )}
       {/* Görev S1: bitkinlik (Exhaustion) seviyesi; Game Master ayarlar (tek ekran). */}
       {!c.civilian && c.life !== 'dead' && (
@@ -1320,6 +1327,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Kuyruk 18 H4: kat merdiveni (merdivendeki parti üyesi; bütün parti öbür kata).
     ...(floorLinkOf(state) && actor.side === 'party' && !actor.summon ? [{ key: 'floor', label: N.floor, reason: changeFloorProblem(state, actor) ?? why({ type: 'change_floor', actorId }) ?? undefined,
       act: () => run({ type: 'change_floor', actorId }) }] : []),
+    // Kuyruk K64a: ele geçiren bedeni bırakır (bonus eylem; aktör beden ya da bedendeki ele geçiren).
+    ...(possessedEffect(actor) || actor.possessing ? [{ key: 'unpossess', label: B.k64.leave, reason: why({ type: 'possession_leave', actorId }) ?? undefined,
+      act: () => run({ type: 'possession_leave', actorId }) }] : []),
     // Görev F: Steady Aim (Rogue) ve Horde Breaker (Hunter).
     ...(hasTrait(actor, 'steady-aim') ? [{ key: 'steady', label: N.steady, reason: why({ type: 'steady_aim', actorId }) ?? undefined,
       act: () => run({ type: 'steady_aim', actorId }) }] : []),
@@ -1738,7 +1748,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                         ...((c.altitudeFt ?? 0) > 0 ? [{ key: 'alt', icon: `↑${c.altitudeFt}`, title: B.s2.altitude(c.altitudeFt ?? 0) }] : []),
                         // Kuyruk K63 (sürüm 47): Truesight rozeti (menzil) ve Truesight'lı oyuncunun gördüğü asıl biçim.
                         ...(ruleVersion(state) >= 47 && truesightRange(state, c) > 0 ? [{ key: 'ts', icon: `👁${truesightRange(state, c)}`, title: B.k63.truesight(truesightRange(state, c)) }] : []),
-                        ...(actor && c.shape && seesTrueForm(state, actor, c) ? [{ key: 'tf', icon: '🎭', title: B.k63.trueForm(c.name) }] : [])] as StatusIcon[];
+                        ...(actor && c.shape && seesTrueForm(state, actor, c) ? [{ key: 'tf', icon: '🎭', title: B.k63.trueForm(c.name) }] : []),
+                        // Kuyruk K64a: ele geçirilmiş beden rozeti.
+                        ...(possessedEffect(c) ? [{ key: 'poss', icon: '👻', title: B.k64.possessed(state.combatants[possessedEffect(c)?.sourceId ?? '']?.name ?? '?') }] : [])] as StatusIcon[];
                       if (all.length === 0) return null;
                       const { shown, more } = limitBadges(all);
                       return (
@@ -2598,7 +2610,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             <Drawer c={state.combatants[drawerId] as Combatant} state={state} onClose={() => setDrawerId(null)}
               notes={state.combatants[drawerId]?.asleep ? wakeNotes(state) : undefined}
               onExhaustion={state.status === 'active' ? (level) => setSession((s) => dispatch(s, { type: 'set_exhaustion', targetId: drawerId, level }, Math.random, GM_CONTEXT)) : undefined}
-              onAiRole={state.status === 'active' ? (role) => setSession((s) => dispatch(s, { type: 'set_ai_role', targetId: drawerId, role: role ?? null }, Math.random, GM_CONTEXT)) : undefined} />
+              onAiRole={state.status === 'active' ? (role) => setSession((s) => dispatch(s, { type: 'set_ai_role', targetId: drawerId, role: role ?? null }, Math.random, GM_CONTEXT)) : undefined}
+              onEndPossession={state.status === 'active' && possessedEffect(state.combatants[drawerId]) ? () => setSession((s) => dispatch(s, { type: 'possession_leave', actorId: drawerId, gm: true }, Math.random, GM_CONTEXT)) : undefined} />
           )}
         </div>
       </div>

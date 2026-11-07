@@ -18,6 +18,8 @@ import { ruleVersion } from './ruleVersion';
 import { isIncapacitated } from '../rules/conditions';
 
 /** Protection from Evil and Good'un koruduğu türler (büyü verisinden; ward `disadvantageFromTypes`). */
+/** Kuyruk K64a: Protection from Evil and Good'un koruduğu türler (ele geçirme engeli `possession.ts`). */
+export const pfegTypesOf = (): string[] => pfegTypes();
 function pfegTypes(): string[] {
   return spells.find((s) => s.id === 'protection-from-evil-and-good')?.mechanics.ward?.disadvantageFromTypes ?? [];
 }

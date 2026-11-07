@@ -3257,6 +3257,10 @@
       "a6": {
         "kapsamDisi": "Ele geçirme (possession) oyunda hiçbir canavarda yok.",
         "approx": null
+      },
+      "k64": {
+        "kapsamDisi": null,
+        "possession": "Kuyruk K64a: korunan, korunan türlerce ele geçirilemez (Ghost Possession save'den önce reddedilir). Zaten ele geçirilmişse SRD'nin yeni save'ine avantaj verir; Ghost Possession yeni save tanımlamadığı için ele geçirme sürer, Dispel Evil and Good Break Enchantment bitirir."
       }
     },
     "school": "Abjuration",

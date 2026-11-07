@@ -95,7 +95,7 @@ export function executeWildShape(state: BattleState, actor: Combatant, form: str
 
 /** Biçim biter: 0 HP ya da Incapacitated (her komutun sonunda). */
 export function shapeCleanup(state: BattleState): BattleEvent[] {
-  return Object.values(state.combatants).filter((c) => c.shape && (c.hp <= 0 || (!c.shape.polymorph && isIncapacitated(c.conditions)) || polymorphOver(c) || spiderOver(c)))
+  return Object.values(state.combatants).filter((c) => c.shape && !c.shape.possession && (c.hp <= 0 || (!c.shape.polymorph && isIncapacitated(c.conditions)) || polymorphOver(c) || spiderOver(c)))
     .map((c) => ({ type: 'shape_changed', actorId: c.id, stats: null, reason: c.hp <= 0 ? '0 HP' : polymorphOver(c) ? 'Polymorph bitti' : spiderOver(c) ? 'biçim canı bitti' : 'Incapacitated' }) as BattleEvent);
 }
 

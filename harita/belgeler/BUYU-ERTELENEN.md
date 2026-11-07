@@ -40,7 +40,7 @@ Işık modeli bugün aydınlık/karanlık (`litHexes`). Tetikleyici: loş ışı
 
 - `hex` (1): seçilen yeteneğin STR/DEX dışı kontrolü (savaşta karşılığı yok).
 - `blindness-deafness` (2): Deafened'in duymaya bağlı yetenek kontrolleri.
-- `protection-from-evil-and-good` (1): ele geçirme (possession) yapan canavar oyunda yok; canavar eklenirse.
+- `protection-from-evil-and-good` (1): **çözüldü (Kuyruk K64a, sürüm 48)**: Ghost Possession uygulandı; korunan ele geçirilemez (`src/battle/possession.ts`).
 - `web` (2): tutunma yeri (haritada zemine serili sayılır).
 - `flaming-sphere` (2): ışık yarıçapı altıgene yuvarlanır.
 - `entangle` (1), `conjure-fey` (6): yalnız görsel (bitkilerin çekilmesi, ruhun görünüşü).

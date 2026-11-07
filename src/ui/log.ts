@@ -394,6 +394,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.zoneSpotted(event.by.map(n).join(', '));
     case 'retreated':
       return L.retreated(event.ids.map(n).join(', '), event.label);
+    case 'possessed':
+      return L.possessed(n(event.hostId), n(event.possessorId));
+    case 'possession_ended':
+      return L.possessionEnded(n(event.hostId), n(event.possessorId), event.reason);
+    case 'possession_resisted':
+      return L.possessionResisted(n(event.hostId), n(event.possessorId));
     case 'battle_finished':
       return event.retreat ? L.finishedRetreat(event.winner === 'party') : L.finished(event.winner === 'party');
     case 'dragon_woke':

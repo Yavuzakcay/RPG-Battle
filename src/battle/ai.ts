@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { controlConditions, possessSpecOf, possessionProblem } from './possession';
 import { hiddenFromTruesight } from './sight';
 import { heldFollow, mechanicsAt } from './spellVersion';
 import { breathOf } from './breath';
@@ -487,6 +488,20 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
     }
   }
   return best?.cmd ?? null;
+}
+
+/**
+ * Kuyruk K64a (sürüm 48, basit kural): ele geçirme (Ghost Possession): şarjlıysa 5 ft içindeki geçerli hedefe
+ * (Humanoid, görülen, bağışık değil, PfEG'siz) kullanır; en çok canı olan önce. Değer önceliği
+ * `data/yz-roller.json` `kuralOnceligi['k64:ele-gecir']`. Geçersiz hedefe hiç denemez (eylem boşa gitmez).
+ */
+function possessCommand(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  const spec = possessSpecOf(state, actor);
+  if (!spec || actor.possessing) return null;
+  const i = actor.attacks.findIndex((a) => a.name === spec.attack);
+  if (i < 0 || actor.rechargeUsed.includes(i)) return null;
+  const t = foes.filter((f) => !possessionProblem(state, actor, f, spec)).sort((a, b) => b.hp - a.hp || a.id.localeCompare(b.id))[0];
+  return t ? { type: 'monster_attack', actorId: actor.id, targetId: t.id, attackIndex: i } : null;
 }
 
 /**
@@ -1224,7 +1239,8 @@ export function chooseCommand(state: BattleState): Command {
   // Kuyruk 16 K16D: devriyedeki habersiz üye rotadaki sıradaki noktaya yürür (durakta bekler); diğer habersizler bekler.
   if (actor.unaware) return patrolCommand(state, actor) ?? end;
   // Incapacitated (Stunned, Paralyzed…): eylem yok; yapay zekâ yürümeyi de denemez, turunu bitirir (Görev H).
-  if (isIncapacitated(actor.conditions)) return end;
+  // Kuyruk K64a: ele geçirilmiş bedeni ele geçiren yönetir (ev sahibinin Incapacitated'ı sayılmaz); bedendeki ele geçiren bekler.
+  if (isIncapacitated(controlConditions(actor)) || actor.possessing) return end;
   const conf = state.map?.dragon;
   const dragon = sleepingDragon(state);
   if (dragon && conf && actor.side === 'enemies' && !actor.civilian) {
@@ -2325,6 +2341,7 @@ registerAction({ id: 'eski:iyilestir', rule: true, kind: 'heal', note: 'ölmekte
 registerAction({ id: 'eski:yenilenme', rule: true, kind: 'damage', note: 'yerdeki yenilenen düşmana ateş/asit', gen: (s, a) => (partyBranch(a) ? [finishRegen(s, a)] : []) });
 registerAction({ id: 'eski:alan', rule: true, kind: 'damage', note: 'alan hasar büyüsü (2+ düşman, dost yok)', gen: (s, a, h) => (partyBranch(a) || (a.monsterId && a.spellNames.length && !a.summon) ? [areaSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word Kill/Stun, Mass Heal', gen: (s, a, h) => (partyBranch(a) ? [powerWordCommand(s, a, h.foes)] : []) });
+registerAction({ id: 'k64:ele-gecir', rule: true, kind: 'control', note: 'Ghost Possession: 5 ft içindeki geçerli Humanoid hedefi ele geçir', gen: (s, a, h) => (a.monsterId && !a.summon ? [possessCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:boncuk', rule: true, kind: 'control', note: 'Delayed Blast Fireball: boncuğu düşmanların üstüne koy', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [beadSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:kafes', rule: true, kind: 'control', note: 'Forcecage: güçlü düşmanı kutuya kapat', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [cageSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:zemin', rule: true, kind: 'control', note: 'kalıcı zemin büyüsü (Entangle, Web, Spike Growth…)', gen: (s, a, h) => (partyBranch(a) || (a.spellNames.length && !a.summon) ? [zoneSpell(s, a, h.foes)] : []) });

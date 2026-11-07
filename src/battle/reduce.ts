@@ -7,6 +7,7 @@ import { syncRiders } from './mounted';
 import { syncAuthority } from './authority';
 import { spells } from '../data';
 import { homeSide, syncAllegiance } from './allegiance';
+import { POSSESS_FLOOR } from './possessionCore';
 import { syncAuras } from './auras';
 import { applyFloorChange } from './floorState';
 import { globalRule } from './ruleControl';
@@ -1316,6 +1317,37 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         if (c) next = withCombatant(next, id, { pos: null, offFloor: 'duzlem', floorPos: c.pos ?? undefined });
       }
       return next;
+    }
+    case 'possessed': {
+      // Kuyruk K64a (sürüm 48): bedene etki (Incapacitated: ev sahibi kontrolü kaybeder), ele geçiren haritadan çekilir.
+      const h = state.combatants[event.hostId];
+      const g = state.combatants[event.possessorId];
+      if (!h || !g) return state;
+      const effect: ActiveEffect = { id: `possess:${g.id}`, name: event.label, sourceId: g.id, possessed: true, until: event.until,
+        ...(event.incap ? { grants: ['Incapacitated'] } : {}) };
+      const next = applyRaw(state, { type: 'effect_added', targetId: h.id, effect });
+      return withCombatant(next, g.id, { pos: null, offFloor: POSSESS_FLOOR, floorPos: g.pos ?? undefined, possessing: h.id });
+    }
+    case 'possession_ended': {
+      let next = state;
+      const h = next.combatants[event.hostId];
+      if (h) {
+        if ((h.effects ?? []).some((e) => e.id === `possess:${event.possessorId}`)) {
+          next = applyRaw(next, { type: 'effect_ended', targetId: h.id, effectId: `possess:${event.possessorId}`, name: event.label, reason: 'dispelled' });
+        }
+        const h2 = next.combatants[h.id] as Combatant;
+        next = withCombatant(next, h.id, { possessionImmune: [...new Set([...(h2.possessionImmune ?? []), event.possessorId])] });
+      }
+      const g = next.combatants[event.possessorId];
+      if (g?.possessing) {
+        const { offFloor: _o, floorPos, possessing: _p, ...rest } = g;
+        next = { ...next, combatants: { ...next.combatants, [g.id]: { ...rest, pos: event.to ?? floorPos ?? null } as Combatant } };
+      }
+      return next;
+    }
+    case 'possession_resisted': {
+      const h = state.combatants[event.hostId];
+      return h ? withCombatant(state, h.id, { possessionImmune: [...new Set([...(h.possessionImmune ?? []), event.possessorId])] }) : state;
     }
     case 'battle_finished':
       return { ...state, status: 'finished', winner: event.winner };

@@ -62,7 +62,7 @@
   "kuralOnceligi": {
     "_aciklama": "Eski elle yazılmış kural üreticilerinin adaylarına eklenen değer (kural koşullarını kendisi denetler: 'iyi hamle'). Eski zincirde önce gelenler daha yüksek; değerlendirici açık farkla daha iyi bir hamle bulursa yine o seçilir. Yoksa sabitler.kuralOncelik.",
     "eski:itme": 9, "eski:yenilenme": 9, "eski:iyilestir": 6, "eski:soz": 6, "eski:kontrol": 7,
-    "eski:alan": 3, "eski:zemin": 3, "k62:kafes": 24, "k62:boncuk": 24, "eski:nefes": 3, "eski:imzaIpucu": 5,
+    "eski:alan": 3, "eski:zemin": 3, "k62:kafes": 24, "k64:ele-gecir": 24, "k62:boncuk": 24, "eski:nefes": 3, "eski:imzaIpucu": 5,
     "eski:yetenek": 2, "eski:alanSaldiri": 3, "eski:coklu": 1
   },
   "zorluk": {

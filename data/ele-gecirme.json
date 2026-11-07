@@ -1,0 +1,12 @@
+{
+  "_not": "Kuyruk K64a (kural sürümü 48): canavar saldırısıyla ele geçirme (SRD 5.2.1 Ghost Possession). Anahtar: canavar kimliği. Kurallar src/battle/possession.ts; Game Master anahtarı possession.",
+  "ghost": {
+    "attack": "Possession",
+    "types": ["humanoid"],
+    "reachFt": 5,
+    "leave": "bonus",
+    "appearFt": 5,
+    "physical": ["str", "dex", "con"],
+    "untilRounds": 6000
+  }
+}

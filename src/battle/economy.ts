@@ -283,6 +283,9 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       return spend(actor, 'bonus', 'Second Wind');
     case 'steady_aim':
       return spend(actor, 'bonus', 'Steady Aim');
+    // Kuyruk K64a: ele geçiren bedeni bonus eylemle bırakır (Game Master zorlaması eylemsiz).
+    case 'possession_leave':
+      return cmd.gm ? { ok: true, event: null } : spend(actor, 'bonus', 'Bedeni bırak');
     case 'bonus_strike':
       // Flurry of Blows'un kalan vuruşu bedava; değilse Martial Arts'ın bonus vuruşu (bonus eylem).
       if ((e.flurryLeft ?? 0) > 0) {
