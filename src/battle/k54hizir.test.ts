@@ -56,7 +56,8 @@ const attack = (r: ReturnType<typeof arena>, rng: Rng = () => 0.99) => {
 };
 describe('K54 Hızır Yemini', () => {
   it('Tam Zamanında: dost hedef alınınca paladin yanına ışınlanır, saldırı ona yönelir; Kanal Gücü harcanır', () => {
-    const r = arena(3, { ogre: true, B: o(6, 3), C: o(7, 3) });
+    // K60: menzil 30 → 15 ft (data/imza.json): dost paladinden 15 ft (3 altıgen) uzakta.
+    const r = arena(3, { ogre: true, B: o(7, 3), C: o(6, 3) });
     const cd = r.c('A').resources.channelDivinity ?? 0;
     expect(cd).toBeGreaterThan(0);
     const ev = attack(r);
