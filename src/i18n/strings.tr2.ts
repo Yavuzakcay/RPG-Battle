@@ -371,6 +371,7 @@ export const TR_EXTRA = {
     'step-of-the-wind': 'Rüzgâr Adımı (Step of the Wind): 1 Focus, bonus eylemle Disengage + Dash. (Focus\'suz bonus Dash: Hareket menüsü.)',
     stunning: 'Sersemletici Vuruş (Stunning Strike): bu tur Monk silahıyla ya da silahsız vurduğun hedefe, 1 Focus, turda bir kez. CON save; başarısızsa senin sonraki turunun başına dek Stunned, başarılıysa ona sonraki saldırı avantajlı.',
     floor: 'Merdivenden geç: merdiven altıgenindeyken bütün parti öbür kata geçer; bu katta kalanlar bekler. Hareketin biter.',
+    unpossess: 'Bedeni bırak: ele geçiren bedenden çıkar (bonus eylem) ve 5 ft içinde boş bir altıgende belirir; beden asıl tarafına döner, bu savaş boyunca o ele geçirene bağışık. Ghost Possession.',
     steady: 'Nişan Al (Steady Aim): bonus eylem, bu tur hareket etmediysen. Bu tur sonraki saldırın avantajlı; hızın tur sonuna dek 0. Rogue.',
     horde: 'Sürü Kırıcı (Horde Breaker): turda bir kez, bu tur saldırdığın yaratığın 5 ft yakınındaki başka bir yaratığa aynı silahla ek saldırı. Hunter.',
     'ranger:tireless': 'Yorulmaz (Tireless): Magic eylemi, 1d8 + WIS geçici HP. WIS kadar kullanım, uzun dinlenmede dolar.',

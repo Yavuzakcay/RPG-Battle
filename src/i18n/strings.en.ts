@@ -954,6 +954,7 @@ export const en: Strings = {
     'step-of-the-wind': 'Step of the Wind: 1 Focus Point, Disengage + Dash as a Bonus Action. (Free Bonus Action Dash: Move menu.)',
     stunning: 'Stunning Strike: against the target you hit this turn with a Monk weapon or Unarmed Strike, 1 Focus Point, once per turn. Con save; on a failure Stunned until the start of your next turn, on a success the next attack against it has Advantage.',
     floor: 'Take the stairs: while on a stairs hex, the whole party moves to the other floor; those left behind wait. Your movement ends.',
+    unpossess: 'Leave the body: the possessor leaves the body (Bonus Action) and appears in an unoccupied space within 5 ft; the body returns to its side and is immune to that possessor for this battle. Ghost Possession.',
     steady: 'Steady Aim: Bonus Action, if you have not moved this turn. Your next attack this turn has Advantage; your Speed is 0 until the end of the turn. Rogue.',
     horde: 'Horde Breaker: once per turn, one extra attack with the same weapon against another creature within 5 feet of a creature you attacked this turn. Hunter.',
     'ranger:tireless': 'Tireless: Magic action, 1d8 + WIS Temporary Hit Points. WIS uses, regained on a Long Rest.',
