@@ -140,7 +140,7 @@ for (const level of levels) for (const mt of maps) for (let seed = firstSeed; se
         const x = execute(state, cmd, contextFor(state, (cmd as { actorId?: string }).actorId ?? actorId), rng);
         commands++;
         if (!x.ok) {
-          if (cmd.type !== 'end_turn') fail('gecersiz-komut', `${cmd.type} ${(cmd as { actorId?: string }).actorId}: ${x.error}`);
+          if (cmd.type !== 'end_turn') fail('gecersiz-komut', `${cmd.type} ${(cmd as { actorId?: string }).actorId}: ${x.error}${args.includes('--ayrinti') ? ` | DBG_KOMUT ${JSON.stringify(cmd)}` : ''}`);
           else { fail('gecersiz-komut', `end_turn: ${x.error}`); broken = true; }
           break;
         }
