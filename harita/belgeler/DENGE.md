@@ -27,6 +27,8 @@ Gerekçeler:
 - **Harita Öğretisi:** döküm: neredeyse yalnız büyü; 10+ imza eylemleri (Çizili Duvar 0 kullanım, Kuşbakışı seyrek) YZ'de seçilmiyor, bu yüzden onların sayıları sonucu oynatmıyor. 3. denemeye geçilmedi: kalan kolların hiçbiri kullanılan bir eylemde değil. Fark yapısal (Evokasyon'un hasar ekleri) + YZ.
 - **Ölümsüz Taht** (İmparator 15) yarıçapı ve süresi kodda sabit (veri okunmuyor): sayısal kol olarak kullanılamadı.
 
+Birleştirme öncesi duman (son verilerle, tam açık): 3 ve 7. sv 1.290, 11. sv 730, 15. sv 720, 20. sv 730 savaş; 14 geçersiz Multiattack + 1 havuz tutarsızlığı bulundu, ikisi düzeltildi (DECISIONS.md K60); düzeltme sonrası hatalı haritalarda 350 savaş 0 hata. Çökme/NaN/döngü/replay farkı 0.
+
 ## Kuyruk K59: tam açık duman testi, YZ düzeltmeleri ve denge turu (2026-11-07)
 
 Kural sürümü 42 (değişmedi). Duman testi sonuçları DECISIONS.md (K59). Ölçümler YZ düzeltmelerinden (önizleme zar yüzdelikleri, etki içeriğine göre değer, Multiattack planı denetimi, Dunganga yaklaşması) sonra.
