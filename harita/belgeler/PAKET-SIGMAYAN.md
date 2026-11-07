@@ -1,6 +1,6 @@
-# Ek paket: savaş modeline sığmayan özellikler (Kuyruk P9, P10, P11)
+# Ek paket: savaş modeline sığmayan özellikler (Kuyruk P9, P10, P11, P12)
 
-P9'dan sonra "çalışmıyor" kalan özelliklerin P10 (kural sürümü 39) ve P11 (kural sürümü 42) sonrası durumu. **Paket metni görülmeden**, yalnızca özellik
+P9'dan sonra "çalışmıyor" kalan özelliklerin P10 (kural sürümü 39), P11 (kural sürümü 42) ve P12 (kural sürümü 43) sonrası durumu. **Paket metni görülmeden**, yalnızca özellik
 adı, sınıf/alt sınıf ve seviyeyle yazıldı; yama yazan taraf (paket metnini bilen) kesin sınıfı belirler. Ek paket metni bu
 belgeye girmez. Elle tutulur.
 
@@ -59,9 +59,27 @@ Kuyruk S2 (kural sürümü 41) iki silah satırını da kapattı (`silahFirlat`,
 | Element Rünü | barbarian / heybet / 6 | `silahFirlat` (S2) | Fırlatılan silah elden çıkmaz (genel Thrown basitleştirmesi) |
 | Büyü Silahı Bağı | fighter / hokkabaz / 3 | `silahBagi` (S2) | — |
 
+## P12 ile tamamlananlar (kural sürümü 43; P11'de kısmi kalan 8 özellik, yamada denenecek)
+
+P11 satırlarından sekizi P12'de kullanıcı kararlarıyla çalışır hâle geldi; yama bu alanlarla yazılır (alan adları ve örnekler
+`PAKET-ILKELLER.md`). Ayrıntı ve kararlar DECISIONS.md "Kuyruk P12".
+
+| Özellik | Sınıf / alt sınıf / sv | İlkel / alan (P12) | Not |
+|---|---|---|---|
+| Güç Deposu | wizard / harp-ogretisi / 6 | `kaynak` (`yenilenme: depo`, `sayi: "$int"`) + `gucDeposu` (`depo`, `olay: karsiBuyu`, `harca: buyuHasari`, `harcaHasar: "$lvlYari"`, `buyuListesi: "Wiz"`) | Başlangıç ve uzun dinlenme 1, kısa dinlenme 0'daysa 1; turda bir; tek hedefe |
+| Sınırlı Dilek | warlock / cin / 14 | `buyuVer.rastgeleListe: { "sayi": 8 }` + `kaynak` (uzun dinlenme 1) | Liste oluşturucuda (`featureChoices`); liste yoksa düğme gerekçeyle kapalı |
+| Vertigo (doğrulama) | barbarian / kaos-yolu / 3 | yeni `vertigo` (`zar: 8`, `tablo`: patlama / isinlan / isik / acBonusu) | P11'e dek karşılığı yoktu (rastgele tablo ilkeli yoktu); P12'de yazıldı |
+| Denge Arayışı | barbarian / kaos-yolu / 10 | yeni `vertigoKontrol` `mod: hasardaYenile` | Öfkedeyken hasar alınca tepkiyle vertigo zarı yeniden |
+| Kontrol Sağlama | barbarian / kaos-yolu / 14 | `vertigoKontrol` `mod: ikiAtSec` | İki zar, satır seçimi |
+| Üstün Taktik | fighter / ninja / 18 | `zarHavuzu.patlar: true` + `havuz: { "3": 4, "7": 5, "15": 6 }` | Zar `zar` seviye tablosu (d8 / d10 / d12) |
+| İkiz Büyüleme | wizard / aldatma-ogretisi / 10 | `buyuDegisimi.ikizOkul: "Enchantment"` | Kaynaksız; `ikiz` (Twinned) ayrı kalır |
+| Kitabın Ruhu | wizard / hattat-ogretisi / 6 | `buyuDegisimi.kitapCikis: true` | Kitap nesne (`spellbook`); bırak/al; büyü kitabın altıgeninden |
+| Büyü Mühürleme | wizard / zamanalti-ogretisi / 10 | `buyuSakla` + `ateslemeEylemi: serbest`, `enCokSeviye: 3`, `dostTetikler: true` | Dost tetikler (`spell_followup.sourceId`), ekonomisi harcanmaz |
+
 ## Hâlâ sığmayanlar
 
-Yok. (P10 bölümündeki "kalan yaklaşıklık" sütunu, o satırların özellik adıyla kalan farkını yazar.)
+Yok. (P10 bölümündeki "kalan yaklaşıklık" sütunu, o satırların özellik adıyla kalan farkını yazar; P12 modelleme kararları
+DECISIONS.md'de.)
 
 ## Fırlatılan silahın elden çıkması (Kuyruk K58 G8)
 

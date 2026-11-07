@@ -30,6 +30,7 @@ import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startCon
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
 import { findSubclass, houseSubclassVisible, packExperimental, subclassLabel, subclassMissing } from '../rules/subclasses';
+import { wishPickKey } from '../battle/paket/bag';
 import {
   ASI_FEAT, advancementSlots, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
   originFeats, sheetFeats, type Advancement, type AdvancementSlot, type Scores,
@@ -1566,6 +1567,14 @@ function FormPicker(props: { classId: string; level: number; subclassId?: string
   );
 }
 
+/** Kuyruk P12: özelliğin rastgele büyü listesi büyüklüğü (`buyuVer.rastgeleListe.sayi`; yoksa 0). Anahtar `<sınıf>/<alt sınıf>:<özellik>`. */
+function wishCountOf(classId: string, subclassId: string | undefined, key: string): number {
+  const sub = findSubclass(classId, subclassId);
+  const f = sub?.features.find((x) => `${classId}/${sub.id}:${x.id}` === key);
+  const p = (f?.ilkeller ?? []).find((x) => x.tur === 'buyuVer' && x.rastgeleListe) as { rastgeleListe?: { sayi?: number } } | undefined;
+  return p ? p.rastgeleListe?.sayi ?? 8 : 0;
+}
+
 function FeaturesPanel(props: {
   classId: string; level: number; subclassId?: string; experimentalFrom: number;
   /** Seçenekli özellikler (Hunter's Prey, Defensive Tactics; Görev F). */
@@ -1588,8 +1597,8 @@ function FeaturesPanel(props: {
       {props.level >= props.experimentalFrom && <p className="warn">{T.experimental(props.experimentalFrom)}</p>}
       <ul className="feature-list">
         {features.map((f) => (
-          <li key={f.key} className={`feature ${f.mechanic?.status ?? 'missing'}`}
-            title={f.mechanic?.note ?? ''}><span className="feature-head">{f.level}. {f.name} <InfoTip text={`${T.featStatus[f.mechanic?.status ?? 'missing'] ?? ''}${f.mechanic?.note ? ` — ${f.mechanic.note}` : ''}`} /></span>
+          <li key={f.key} className={`feature ${f.mechanic?.status ?? 'missing'}${f.mechanic?.story ? ' story' : ''}`}
+            title={f.mechanic?.note ?? ''}><span className="feature-head">{f.level}. {f.name} {f.mechanic?.story && <span className="feature-tag">{T.storyTag}</span>} <InfoTip text={`${T.featStatus[f.mechanic?.story ? 'story' : f.mechanic?.status ?? 'missing'] ?? ''}${f.mechanic?.note ? ` — ${f.mechanic.note}` : ''}`} /></span>
             {/* Görev K18: dokunmadan okunan tek cümlelik özet. */}
             {featureSummary(f, props.classId, props.subclassId, getLang()) && <small className="feature-sum">{featureSummary(f, props.classId, props.subclassId, getLang())}</small>}
             {f.mechanic?.options && (
@@ -1598,6 +1607,20 @@ function FeaturesPanel(props: {
                 {f.mechanic.options.map((o) => <option key={o.id} value={o.id}>{T.featureOption[o.id] ?? o.id}</option>)}
               </select>
             )}
+            {/* Kuyruk P12: ek paket rastgele büyü listesi (`buyuVer.rastgeleListe`): bildiği/hazırladığı N büyü. */}
+            {(() => {
+              const n = wishCountOf(props.classId, props.subclassId, f.key);
+              if (!n) return null;
+              const picked = Array.from({ length: n }, (_, i) => props.choices[wishPickKey(f.key, i + 1)] ?? '').filter(Boolean).length;
+              return <div className="wish-pick"><small>{T.wishPick(n, picked)}</small>
+                {Array.from({ length: n }, (_, i) => {
+                  const key = wishPickKey(f.key, i + 1);
+                  return <select key={key} aria-label={`${f.name} ${T.wishSlot(i + 1)}`} value={props.choices[key] ?? ''} onChange={(e: { target: { value: string } }) => props.onChoose(key, e.target.value)}>
+                    <option value="">{T.wishSlot(i + 1)}: {T.wishEmpty}</option>
+                    {props.known.map((x) => <option key={x} value={x}>{x}</option>)}
+                  </select>;
+                })}</div>;
+            })()}
             {/* Kuyruk 19: Spell Mastery / Signature Spells (bilinen Wizard büyüleri), Mystic Arcanum (bütün Warlock listesi, seviye eşiğiyle). */}
             {f.mechanic?.spellPicks?.filter((p) => props.level >= (p.minClassLevel ?? 1)).map((p) => {
               const list = (p.all ? spells.map((x) => x.name) : props.known).filter((n) => { const sp = spells.find((x) => x.name === n); return sp?.level === p.level && sp.classes.includes(p.cls ?? 'Wiz'); });

@@ -11,6 +11,8 @@ import { getMap } from '../../map/maps';
 import { sizeRank } from '../forced';
 import { DUGME_TETIKLERI, ILKELLER, ORTAK_ALANLAR, type Tetik } from '../../content/ilkelSema';
 import { ruleVersion } from '../ruleVersion';
+import { BOOK, hasBook, p12Features, twinSchoolOf } from './p12core';
+import { p12On } from './p12surum';
 import { rollDice, rollTag, type Rng } from '../../rules/dice';
 import type { ActiveEffect, BattleState, Combatant, ReactionSpec, UsableFeature } from '../types';
 import type { Ilkel, PaketBag, PaketOzellik } from './bag';
@@ -39,11 +41,13 @@ export function formul(v: unknown, c: Combatant): string {
   const x = byLevel(v, c.level);
   if (typeof x === 'number') return String(x);
   if (typeof x !== 'string') return '0';
-  const s = x.replace(/\s+/g, '').replace(/\$(pbYari|pb|lvl2|lvl|str|dex|con|int|wis|cha|buyu)/g, (_, k: string) => {
+  const s = x.replace(/\s+/g, '').replace(/\$(pbYari|pb|lvlYari|lvl2|lvl|str|dex|con|int|wis|cha|buyu)/g, (_, k: string) => {
     switch (k) {
       case 'pb': return String(c.proficiency);
       case 'pbYari': return String(Math.max(1, Math.floor(c.proficiency / 2)));
       case 'lvl': return String(c.level);
+      // P12: seviyenin yarısı (aşağı, en az 1).
+      case 'lvlYari': return String(Math.max(1, Math.floor(c.level / 2)));
       case 'lvl2': return String(2 * c.level);
       case 'buyu': return String(Math.max(0, castMod(c)));
       default: return String(Math.max(0, mod(c, k)));
@@ -304,7 +308,8 @@ export function withPaket(state: BattleState): BattleState {
   for (const [id, c] of Object.entries(state.combatants)) {
     if (!c.paket) { combatants[id] = c; continue; }
     changed = true;
-    const feats = paketFeatures(c);
+    // Kuyruk P12 (sürüm 43+): rastgele büyü listesi ve vertigo düğmeleri.
+    const feats = [...paketFeatures(c), ...(p12On(state) ? p12Features(c) : [])];
     const reactions: ReactionSpec[] = [];
     const effects: ActiveEffect[] = [];
     let init = 0;
@@ -352,12 +357,18 @@ export function withPaket(state: BattleState): BattleState {
       ...(bonded.length ? { bonded: [...new Set(bonded)] } : {}),
       ...(selfOnly.length ? { pkSelfOnly: [...new Set(selfOnly)] } : {}),
       ...(twin ? { pkTwin: twin, metamagic: { ...c.metamagic, twinned: 0 } } : {}),
+      ...(p12On(state) && twinSchoolOf(c) ? { pkTwinSchool: twinSchoolOf(c) } : {}),
       ...(Object.keys(poolMin).length ? { resources: { ...c.resources, ...poolMin } } : {}),
       // P7: savaş başındaki kaynaklar (`kaynakYenile` üst sınırı).
-      paket: { ...c.paket, ...(ruleVersion(state) >= 42 ? { v42: true } : {}), kaynakBas: Object.fromEntries(Object.values(c.paket.kaynaklar ?? {}).map((k) => [k, c.resources[k] ?? 0])) },
+      paket: { ...c.paket, ...(ruleVersion(state) >= 42 ? { v42: true } : {}), ...(p12On(state) ? { v43: true } : {}), kaynakBas: Object.fromEntries(Object.values(c.paket.kaynaklar ?? {}).map((k) => [k, c.resources[k] ?? 0])) },
     };
   }
-  return changed ? { ...state, combatants } : state;
+  if (!changed) return state;
+  // Kuyruk P12 (sürüm 43+): büyü kitabı (`buyuDegisimi.kitapCikis`): sahibinin taşıdığı nesne (bırakılıp alınabilir).
+  const books = p12On(state) && state.map ? Object.values(combatants).filter((c) => c.paket && hasBook(c) && !(state.map?.objects ?? []).some((o) => o.id === BOOK(c.id))) : [];
+  const map = books.length && state.map ? { ...state.map, objects: [...(state.map.objects ?? []),
+    ...books.map((c) => ({ id: BOOK(c.id), kind: 'spellbook' as const, at: c.pos ?? { col: 0, row: 0 }, hp: 2, carriedBy: c.id }))] } : state.map;
+  return { ...state, combatants, ...(map !== state.map ? { map } : {}) };
 }
 
 /** Büyü hasarı eklentisi (`buyuDegisimi.hasarEki`; türe/okula göre; koşulsuz pasifler). `spells.ts` `damageExpr` okur. */

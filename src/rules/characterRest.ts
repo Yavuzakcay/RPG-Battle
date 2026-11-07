@@ -10,7 +10,7 @@ import { lineageOf } from './lineage';
 import { featResources } from './backgrounds';
 import { getClass } from '../data';
 import type { Rng } from './dice';
-import { classResources, rechargeResources } from './classFeatures';
+import { classResources, depotStart, rechargeResources } from './classFeatures';
 import { longRest, shortRest, type RestState } from './rest';
 import { MAX_EXHAUSTION, exhaustionAfterLongRest } from './exhaustion';
 import { deriveStats, type CharacterSheet } from './stats';
@@ -54,7 +54,8 @@ export function fullStatus(sheet: CharacterSheet): CharacterStatus {
   const d = deriveStats(sheet);
   // F1: feat kaynakları (Magic Initiate) da uzun dinlenmede dolar.
   const resources = { ...classResources(sheet.classId, sheet.level, d.modifiers, sheet.raceId, lineageOf(sheet)?.id, sheet.subclassId), ...featResources(sheet) };
-  return { hp: d.maxHp, hitDiceSpent: 0, resources, slots: [...d.spellSlots], slotMax: [...d.spellSlots], resourceMax: { ...resources }, hpMax: d.maxHp };
+  // Kuyruk P12: sayaç kaynağı (paket `yenilenme: depo`) dinlenmiş durumda başlangıç değerinde; en çok değer üst sınır.
+  return { hp: d.maxHp, hitDiceSpent: 0, resources: depotStart(resources), slots: [...d.spellSlots], slotMax: [...d.spellSlots], resourceMax: { ...resources }, hpMax: d.maxHp };
 }
 
 /** Kayıtlı durum ya da (yoksa) tam durum; seviye/sınıf değiştiyse en çok değerlere kırpılır. */
@@ -62,11 +63,12 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
   const full = fullStatus(sheet);
   if (!status) return full;
   const resources: Record<string, number> = {};
-  for (const [id, max] of Object.entries(full.resources)) {
+  for (const [id, max] of Object.entries(full.resourceMax ?? full.resources)) {
     const left = status.resources[id];
     // K10: en çok biliniyorsa yalnızca harcanan düşer; yeni kazanılan kaynak dolu gelir.
     const spent = left === undefined ? 0 : status.resourceMax ? Math.max(0, (status.resourceMax[id] ?? left) - left) : null;
-    resources[id] = spent === null ? Math.min(max, Math.max(0, left ?? max)) : Math.max(0, max - spent);
+    // Kuyruk P12: yeni kazanılan sayaç kaynağı (`depot`) başlangıç değeriyle gelir (`full.resources`; diğerlerinde en çok değer).
+    resources[id] = left === undefined ? (full.resources[id] ?? max) : spent === null ? Math.min(max, Math.max(0, left)) : Math.max(0, max - spent);
   }
   // K10: HP de aynı kalıpla (seviye atlayınca alınan hasar kadar eksik; 0 HP'de kalan 0 kalır).
   const hp = status.hpMax !== undefined && status.hp > 0
@@ -80,7 +82,7 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
       ? Math.max(0, n - Math.max(0, (status.slotMax[i] ?? 0) - (status.slots[i] ?? 0)))
       : Math.min(n, Math.max(0, status.slots[i] ?? n)))),
     slotMax: full.slots,
-    resourceMax: { ...full.resources },
+    resourceMax: { ...(full.resourceMax ?? full.resources) },
     hpMax: full.hp,
     ...(status.dead ? { dead: true } : {}),
     ...((status.exhaustion ?? 0) > 0 ? { exhaustion: Math.min(MAX_EXHAUSTION, status.exhaustion ?? 0) } : {}),
@@ -115,7 +117,7 @@ export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus |
   // Görev DRUID: Natural Recovery (Circle of the Land) aynı kural, kendi kaynağıyla.
   const natural = arcaneRecovery(sheet, s.resources, recovery.slots, 'naturalRecovery');
   const r = { ...r0, state: { ...r0.state, spellSlots: natural.slots } };
-  const max = fullStatus(sheet).resources;
+  const max = fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources;
   return {
     status: {
       hp: r.state.hp, hitDiceSpent: sheet.level - r.state.hitDiceLeft, slots: r.state.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.state.hp,
@@ -184,7 +186,7 @@ export function longRestStatus(sheet: CharacterSheet, status: CharacterStatus | 
   const r = longRest(restState(sheet, s));
   return {
     hp: r.hp, hitDiceSpent: sheet.level - r.hitDiceLeft, slots: r.spellSlots, slotMax: s.slotMax ?? [], resourceMax: s.resourceMax ?? {}, hpMax: s.hpMax ?? r.hp,
-    resources: rechargeResources(s.resources, fullStatus(sheet).resources, 'long', sheet.level),
+    resources: rechargeResources(s.resources, fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources, 'long', sheet.level),
     // Bitkinlik (SRD 5.2.1): uzun dinlenme 1 seviye azaltır.
     ...(exhaustionAfterLongRest(s.exhaustion) > 0 ? { exhaustion: exhaustionAfterLongRest(s.exhaustion) } : {}),
     ...moralPart(s),
@@ -213,7 +215,7 @@ export function repairSlots<T extends { sheet: CharacterSheet; status?: Characte
     if (!status.resourceMax) {
       const res = full.resources;
       changed ||= Object.entries(res).some(([id, n]) => (status.resources[id] ?? n) < n);
-      status = { ...status, resources: { ...res }, resourceMax: { ...res } };
+      status = { ...status, resources: { ...res }, resourceMax: { ...(full.resourceMax ?? res) } };
     }
     // HP en çoğu: kayıttaki HP olduğu gibi kalır (hasar bilinmiyor), en çok bugünkü tablo.
     if (status.hpMax === undefined) status = { ...status, hpMax: full.hp, hp: Math.min(full.hp, status.hp) };

@@ -19,6 +19,8 @@ import { spendSlot } from '../slots';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command } from '../types';
 import { canPay, flatNum, val } from './core';
 import { p11On, payEvents, prims } from './p11';
+import { p12On } from './p12surum';
+import { BOOK, bookHex, hasBook } from './p12core';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 type Run = (state: BattleState, actor: Combatant, cmd: CastCommand) => CommandResult;
@@ -39,8 +41,9 @@ export function paketCast(state: BattleState, actor: Combatant, cmd: CastCommand
   if (cmd.store) return storeSpell(state, actor, cmd, spell);
   let a = actor;
   const pre: BattleEvent[] = [];
-  // 2) Bilinmeyen büyü: çalınan büyü ya da kopya (slotsuz).
-  if (!a.spellNames.includes(spell.name)) {
+  // 2) Bilinmeyen büyü: çalınan büyü ya da kopya (slotsuz). Kuyruk P12 (sürüm 43+): rastgele listeden verilen (`grantSpell`)
+  // bilinen büyü de slotsuz.
+  if (!a.spellNames.includes(spell.name) || (grant && p12On(state))) {
     if (grant) {
       pre.push({ type: 'effect_ended', targetId: a.id, effectId: grant.id, name: grant.name, reason: 'used' });
     } else {
@@ -60,8 +63,12 @@ export function paketCast(state: BattleState, actor: Combatant, cmd: CastCommand
     const free = freeCastResource(a, spell.name, undefined);
     if (free && ts.some((x) => x !== a.id)) a = { ...a, resources: { ...a.resources, [free]: 0 } };
   }
-  // 4) Çağrıdan çıkış.
-  if (cmd.originId) {
+  // 4) Çağrıdan çıkış. Kuyruk P12 (sürüm 43+): büyü kitabının altıgeninden (`buyuDegisimi.kitapCikis`).
+  if (cmd.originId && cmd.originId === BOOK(a.id) && p12On(state)) {
+    const at = hasBook(a) ? bookHex(state, a) : null;
+    if (!at) return fail('Büyü kitabı yok.');
+    a = { ...a, pos: at };
+  } else if (cmd.originId) {
     const s = state.combatants[cmd.originId];
     const ok = prims(a, 'buyuDegisimi').some((x) => x.p.cikisCagri === true);
     if (!ok || !s || s.summon?.by !== a.id || s.summon.gone || !s.pos) return fail('Büyü bu yaratıktan çıkamaz.');
@@ -112,7 +119,7 @@ function storeSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spel
   const sure = k.p.sure === undefined ? undefined : flatNum(k.p.sure, actor);
   return finish(state, [...slot.events, ...payEvents(state, actor, k.feat, k.p, k.i),
     { type: 'effect_added', targetId: actor.id, effect: { id: STORED(actor.id), name: `${(k.p.ad as string | undefined) ?? k.feat.ad}: ${spell.name}`, sourceId: actor.id,
-      storedSpell: { spellName: spell.name, slotLevel: slot.slotLevel, cost }, icon: '⏳', ...(sure ? { until: state.round + sure - 1 } : {}) } },
+      storedSpell: { spellName: spell.name, slotLevel: slot.slotLevel, cost, ...(k.p.dostTetikler === true && p12On(state) ? { allies: true } : {}) }, icon: '⏳', ...(sure ? { until: state.round + sure - 1 } : {}) } },
     { type: 'map_note', text: `${actor.name}: ${spell.name} saklandı` }]);
 }
 
@@ -132,6 +139,26 @@ export function fireStored(state: BattleState, actor: Combatant, cmd: { targetId
 }
 
 export const storedCost = (actor: Combatant): 'action' | 'bonus' | 'reaction' | 'free' | null => actor.effects?.find((e) => e.storedSpell)?.storedSpell?.cost ?? null;
+
+/**
+ * Kuyruk P12: büyünün çıkabileceği noktalar (arayüz seçici ve yapay zekâ adayları): paket çağrıları (`cikisCagri`) ve
+ * büyü kitabı (`kitapCikis`, sürüm 43+; kitap büyücünün elindeyse aday değil).
+ */
+export function castOrigins(state: BattleState, actor: Combatant): Array<{ id: string; name: string; pos: { col: number; row: number } }> {
+  const out = summonOrigins(state, actor).map((c) => ({ id: c.id, name: c.name, pos: c.pos as { col: number; row: number } }));
+  const book = p12On(state) && hasBook(actor) ? state.map?.objects?.find((o) => o.id === BOOK(actor.id)) : undefined;
+  const at = book ? bookHex(state, actor) : null;
+  if (book && at && book.carriedBy !== actor.id) out.push({ id: book.id, name: 'Büyü kitabı', pos: at });
+  return out;
+}
+
+/** Kuyruk P12: dost tetiğiyle saklı büyü (`buyuSakla.dostTetikler`): saklayan aynı tarafta, ayakta ve etkide `allies`. */
+export function allyStoredOwner(state: BattleState, actor: Combatant, sourceId: string | undefined): Combatant | null | 'yok' {
+  if (!sourceId || sourceId === actor.id) return null;
+  const o = state.combatants[sourceId];
+  if (!p12On(state) || !o || o.side !== actor.side || o.hp <= 0 || !o.effects?.some((e) => e.storedSpell?.allies)) return 'yok';
+  return o;
+}
 
 /** Kuyruk K58 G8: büyünün çıkabileceği çağrılar (paket `buyuDegisimi.cikisCagri`; arayüz seçici ve yapay zekâ adayları). */
 export function summonOrigins(state: BattleState, actor: Combatant): Combatant[] {

@@ -19,6 +19,9 @@ const usesOf = (sayi: unknown): ResourceDef['uses'] => {
 };
 const rechargeOf = (y: unknown): ResourceDef['recharge'] =>
   (y === 'tur' ? { turn: 'all', short: 'all', long: 'all' } : y === 'kisa' ? { short: 'all', long: 'all' } : { long: 'all' });
+/** Kuyruk P12: `zarHavuzu.havuz` (seviye → havuz büyüklüğü) bu kaynağı sayan havuzun kademeleri; kaynağın `sayi`sının yerine. */
+const poolTiers = (all: Array<{ p: Record<string, unknown> }>, id: string): Record<string, number> | undefined =>
+  all.map((x) => x.p).find((q) => q.tur === 'zarHavuzu' && (q.kaynak as { id?: string } | undefined)?.id === id && q.havuz && typeof q.havuz === 'object')?.havuz as Record<string, number> | undefined;
 
 /** Paket kaynaklarını tabloya yazar (öncekiler silinir). */
 export function registerPackResources(list: SubclassDef[]): void {
@@ -34,7 +37,9 @@ export function registerPackResources(list: SubclassDef[]): void {
         .flatMap((x) => (Array.isArray(x.p.buyular) ? x.p.buyular as string[] : []));
       table[key] = {
         name: typeof p.ad === 'string' ? p.ad : f.name.tr, feature: `${sub.class}/${sub.id}:${f.id}`,
-        uses: usesOf(p.sayi), recharge: rechargeOf(p.yenilenme), ...(free.length ? { freeSpells: free } : {}),
+        uses: usesOf(poolTiers(all, p.id) ?? p.sayi), recharge: rechargeOf(p.yenilenme), ...(free.length ? { freeSpells: free } : {}),
+        // Kuyruk P12: sayaç kaynağı (güç deposu): başlangıç ve uzun dinlenme 1, kısa dinlenme 0'daysa 1.
+        ...(p.yenilenme === 'depo' ? { depot: 1 } : {}),
       };
       registered.push(key);
     }

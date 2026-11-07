@@ -987,6 +987,8 @@ export type FeatureStatus = 'ok' | 'partial' | 'none' | 'missing';
 export interface FeatureMechanic {
   type: FeatureType;
   status: FeatureStatus;
+  /** Kuyruk P12: ek paket hikâye özelliği (savaş dışı; yalnız gösterim etiketi "Hikâye"). */
+  story?: boolean;
   /** Pasif sayının türü. */
   stat?: 'attacksPerAction' | 'sneakAttackDice' | 'speed' | 'unarmoredDefense' | 'expertise' | 'spellcasting' | 'featSlot' | 'weaponMastery'
     | 'saveAdvantage' | /** Kuyruk 19: yetenek artışı (Primal Champion, Body and Mind; `abilities`, `value`, `max`). */ 'scoreBonus' | 'classSkills' | 'frenzy' | 'martialArts' | 'critOn' | 'saveProficiency' | 'metamagic' | 'invocations' | 'jackOfAllTrades'
@@ -1180,6 +1182,11 @@ export interface ResourceDef {
   uses: { column?: string; byLevel?: Record<string, number>; perLevel?: number; abilityMod?: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'; min?: number; fixed?: number; proficiency?: boolean };
   /** Yenilenme: kısa/uzun dinlenme ya da tur başı; "all" hepsi, sayı o kadar. `shortFrom`: kısa dinlenme bu seviyeden. */
   recharge: { short?: 'all' | number; long?: 'all' | number; turn?: 'all' | number; shortFrom?: number };
+  /**
+   * Kuyruk P12 (paket `kaynak.yenilenme: depo`): sayaç kaynağı. Yeni karakter ve uzun dinlenme bu değere döner (en çok
+   * üst sınır); kısa dinlenme yalnız sayaç 0'sa bu değere getirir. Üst sınır `uses`.
+   */
+  depot?: number;
   /** Kaynak kaldıkça bu büyü slotsuz yapılır (Favored Enemy → Hunter's Mark). */
   freeSpell?: string;
   /** Görev P0: ek paket kaynağı birden çok büyüyü slotsuz yaptırır (`buyuVer.bedava`). */

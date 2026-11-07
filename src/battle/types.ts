@@ -107,11 +107,14 @@ export interface ActiveEffect {
   sneakFor?: string;
   /** Kuyruk P11 (paket `cagirGuclendir.komutSaldiri`): komut turunda ek saldırı hakkı. */
   pkExtraAttack?: number;
-  storedSpell?: { spellName: string; slotLevel: number | null; cost: 'action' | 'bonus' | 'reaction' | 'free' };
+  /** Kuyruk P12 (sürüm 43): `allies` dost da tetikleyebilir (`spell_followup.sourceId`; dostun eylem ekonomisi harcanmaz). */
+  storedSpell?: { spellName: string; slotLevel: number | null; cost: 'action' | 'bonus' | 'reaction' | 'free'; allies?: boolean };
   /** Kuyruk P11 (paket `buyuIptal.calar`): çalınan büyü, slotsuz bir kez yapılır. */
   grantSpell?: { spellName: string };
   /** Kuyruk P11 (paket `gucDeposu`): biriken güç sayısı. */
   pkCharge?: number;
+  /** Kuyruk P12 (paket `vertigo`): etkin vertigo sonucu (özellik anahtarı, ilkel sırası, zar yüzü; `free` ilk ışınlanma bedava). */
+  pkVertigo?: { key: string; i: number; face: number; free?: boolean };
   illusionZone?: string;
   suppressed?: Array<{ condition: string; timer?: ConditionTimer; round?: number; by?: string }>;
   ongoing?: { dice: string; type: string; save: Ability; dc: number; noSave?: boolean };
@@ -762,6 +765,8 @@ export interface Combatant {
   pkSelfOnly?: string[];
   /** Kuyruk P11 (paket `buyuDegisimi.ikiz`): Twinned Spell yolu paket kaynağıyla. */
   pkTwin?: { resource?: string; cost: number };
+  /** Kuyruk P12 (paket `buyuDegisimi.ikizOkul`, sürüm 43): bu okulun tek hedefli büyüsü iki hedefe (kaynaksız). */
+  pkTwinSchool?: string;
   /** Uçuş hızı (ft), yoksa 0. Uçan yaratık lav ve zorlu zeminden etkilenmez. */
   fly: number;
   /** STR skoru (uzun atlama menzili için). */
@@ -1088,6 +1093,8 @@ export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' 
   | 'plaque' | 'boulderPile' | 'cauldron' | 'iceSeal' | 'crackedWall'
   /** Kuyruk 36: anahtar ve doğaçlama silahlar (Hapishane Adası). */
   | 'key' | 'benchLeg' | 'chain' | 'bucket' | 'cudgel'
+  /** Kuyruk P12: ek paket büyü kitabı (`buyuDegisimi.kitapCikis`; büyü kitabın altıgeninden çıkabilir). */
+  | 'spellbook'
   /** Görev K26: balista, donmuş şelale. */
   | 'ballista' | 'frozenFall'
   /** Kuyruk K53 S3: zeminden çağrılan taş/enkaz (`objectMotion.ts`). */
@@ -1131,6 +1138,8 @@ export type GoalStatus = 'open' | 'done' | 'failed';
 export interface Goals { mode: 'all' | 'any'; list: Goal[]; fail?: GoalFail[]; /** Kilitlenen sonuçlar (`goal_changed`). */ status?: Record<string, GoalStatus> }
 /** Görev S2: nesne kullanımı (kapı aç/kapa/kilit aç, masayı devir, mangalı bitişik altıgene dök). */
 export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take' | 'pull'
+  /** Kuyruk P12 (sürüm 43): taşınan büyü kitabını kendi altıgenine bırak. */
+  | 'put'
   /** Kuyruk 24: heykelin gözünü çöz, çadırı meşaleyle tutuştur, ağacı devir, kemik yığınını dağıt. */
   | 'solve' | 'ignite' | 'fell' | 'scatter'
   /** Kuyruk 29 K28b: plakayı oku, kaya yığınını yuvarla, kazanı/mangalı söndür. */
@@ -1624,7 +1633,8 @@ export type Command =
   | { type: 'familiar_order'; actorId: string }
   | { type: 'gaze'; actorId: string; targetId: string }
   | { type: 'sphere_carry'; actorId: string; targetId: string; drop?: boolean }
-  | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string }
+  | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string;
+      /** Kuyruk P12 (sürüm 43): mühürlü büyüyü (`choice: 'sakli'`) tetikleyen dostun yanında saklayanın kimliği. */ sourceId?: string }
   /** Kuyruk S2 (sürüm 41): dikey hareket (uçan kendi hareketiyle; Levitate'i yapan hedefini ya da nesneyi turda 20 ft'e dek). */
   | { type: 'vertical_move'; actorId: string; targetId?: string; objectId?: string; toFt: number }
   /** Kuyruk S2: elindekini bırakma (serbest) ve yerden alma (nesne etkileşimi). */

@@ -156,7 +156,9 @@ const tr = {
       acid: 'Acid (asit)', cold: 'Cold (soğuk)', fire: 'Fire (ateş)', lightning: 'Lightning (yıldırım)', poison: 'Poison (zehir)', thunder: 'Thunder (gök gürültüsü)',
       magician: 'Magician (ek Druid cantrip\'i)', warden: 'Warden (Martial silah ve Medium zırh)', 'primal-strike': 'Primal Strike (turda bir isabete +1d8 element)',
       arid: 'Arid (kurak: Fire)', polar: 'Polar (kutup: Cold)', temperate: 'Temperate (ılıman: Lightning)', tropical: 'Tropical (tropik: Poison)' } as Record<string, string>,
-    spellPickAuto: (l: number) => `${l}. seviye: hazırlanan ilk büyü`, metamagicPick: (n: number, k: number) => `Metamagic: ${n} seçenek seç (${k}/${n})`,
+    spellPickAuto: (l: number) => `${l}. seviye: hazırlanan ilk büyü`,
+    /** Kuyruk P12: ek paket rastgele büyü listesi ve hikâye özelliği etiketi. */
+    wishPick: (n: number, k: number) => `Rastgele liste: ${n} bildiğin/hazırladığın büyüyü seç (${k}/${n})`, wishSlot: (i: number) => `${i}. büyü`, wishEmpty: 'seçilmedi', storyTag: 'Hikâye', metamagicPick: (n: number, k: number) => `Metamagic: ${n} seçenek seç (${k}/${n})`,
     invocationPick: (n: number, k: number) => `Eldritch Invocations: ${n} seç (${k}/${n})`,
     formPick: (n: number, k: number) => `Wild Shape biçimleri: en çok ${n} (${k}/${n}; boşsa savaşta en güçlüleri)`,
     formTitle: 'Bilinen Wild Shape biçimleri', formCount: (n: number, k: number) => `(${k}/${n} seçildi)`,
@@ -212,7 +214,7 @@ const tr = {
     /** Görev P7: ek paket ilkellerinin kısa özeti (özellik kartı). */
     paketOzet: { ekHasar: 'isabette ek zar', direnc: 'direnç', aura: 'aura', tepki: 'tepki', gecicCan: 'geçici can', iyilestirme: 'iyileştirme', hasar: 'hasar', durumUygula: 'durum uygular', isaret: 'işaret', cagir: 'yaratık çağırır', boyut: 'büyüme', ucus: 'uçuş', isinlan: 'ışınlanma', zorlaHareket: 'itme/çekme', olumdenDon: 'ölümden döner', ekSaldiri: 'ek saldırı', zarEtkisi: 'zar/savunma eklentisi', kaynak: 'kullanım havuzu', bicim: 'biçim', yuzeyOlustur: 'yüzey/zemin', buyuVer: 'hazır büyüler', buyuDegisimi: 'büyü güçlendirme', gorunmezlik: 'görünmezlik', moralEtkisi: 'moral', zarMuhru: 'saklı zar', engeldenGec: 'engelden geçer', hiz: 'hız', buyuluVurus: 'büyülü vuruş', zarDegistir: 'hasar zarlarını değiştirir', koruma: 'koruma', algi: 'algı', cagirGuclendir: 'çağrıları güçlendirir', ortakCan: 'ortak can havuzu', yuvaGeriKazan: 'büyü yuvası geri kazanır', meydanOkuma: 'meydan okuma', saldirmadanSave: 'saldırmadan önce kurtulma', kaynakYenile: 'kullanım geri kazanır', tepkiHakki: 'her turda tepki', zarYenile: 'zarı yeniden attırır', buyuPaylas: 'büyüyü dostla paylaşır', kontrolEt: 'yaratık yönetir', zamanDurdur: 'zamanı durdurur', flurryEk: 'ek Flurry vuruşu', olumZari: 'ölüm kurtulmasında can', canArtisi: 'en çok can artışı', silahFirlat: 'silah fırlatılır ve döner', silahBagi: 'silah bağı', yetkinlik: 'zırh/silah eğitimi', ilham: 'ilham zarı değişikliği', buyuSakla: 'büyü saklama', gucDeposu: 'güç deposu', zarYarisi: 'zar yarışı', zarHavuzu: 'zar havuzu' } as Record<string, string>,
     paketEtki: { avantajSifirla: 'avantaj sıfırlama', hareketEt: 'hareket', hizSifir: 'hızı sıfırlar', buyuIptal: 'büyü iptali', hasarEkle: 'ek hasar', saldiriYap: 'karşı saldırı', yansit: 'yansıtma' } as Record<string, string>,
-    featStatus: { ok: 'uygulanıyor', partial: 'kısmen', none: 'savaşta etkisi yok', missing: 'oyunda henüz yok' } as Record<string, string>,
+    featStatus: { ok: 'uygulanıyor', partial: 'kısmen', none: 'savaşta etkisi yok', missing: 'oyunda henüz yok', story: 'hikâye: savaş dışı (anlatım)' } as Record<string, string>,
     expertise: (n: number, chosen: number) => `Uzmanlık (Expertise): ${n} beceri seç (${chosen} seçildi); yetkinlik bonusu iki kat.`,
     masteryTitle: (n: number, max: number) => `Silah ustalığı (Weapon Mastery): ${n} / ${max}`,
     masteryHelp: (melee: boolean, swap: number | null) =>

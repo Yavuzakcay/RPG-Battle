@@ -67,6 +67,7 @@ import './anchorZones';
 import { executeVerticalMove } from './altitude';
 import './hiddenZones';
 import { executeDropItem, executePickUp } from './heldItems';
+import { allyStoredOwner } from './paket/p11cast';
 import { executeDropBlade } from './s2spells';
 import { spendSlot } from './slots';
 import { heldFollow, mechanicsAt } from './spellVersion';
@@ -711,7 +712,12 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'sphere_carry') return executeSphereCarry(state, actor, cmd.targetId, !!cmd.drop);
   if (cmd.type === 'spell_followup') {
     // Kuyruk P11: saklı büyünün ateşlenmesi.
-    if (cmd.choice === 'sakli') return executeFireStored(state, actor, cmd, rng);
+    if (cmd.choice === 'sakli') {
+      // Kuyruk P12 (sürüm 43+): dost tetiği (`sourceId` saklayan): büyüyü saklayan yapar, dostun ekonomisi harcanmaz.
+      const owner = allyStoredOwner(state, actor, cmd.sourceId);
+      if (owner === 'yok') return fail('Bu saklı büyüyü tetikleyemezsin.');
+      return executeFireStored(state, owner ?? actor, cmd, rng);
+    }
     // Görev B1: süreli tekrar (Heat Metal, Call Lightning, Vampiric Touch, Gust of Wind).
     // Kuyruk 19: Telekinesis sonraki turlarda Magic eylemiyle.
     const tk = spells.find((x) => x.name === actor.concentration?.spell);

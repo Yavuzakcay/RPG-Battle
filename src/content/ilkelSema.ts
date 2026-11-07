@@ -11,7 +11,7 @@ export const DAMAGE_TYPES = ['acid', 'bludgeoning', 'cold', 'fire', 'force', 'li
 export const CONDITIONS = ['Blinded', 'Charmed', 'Deafened', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'] as const;
 export const ABILITY_IDS = ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const;
 /** Formül belirteçleri: yeterlilik, yarısı (en az 1), karakter seviyesi, iki katı, yetenek değiştiricileri (en az 0), büyü değiştiricisi. */
-export const FORMUL_TOKENS = ['$pbYari', '$pb', '$lvl2', '$lvl', '$str', '$dex', '$con', '$int', '$wis', '$cha', '$buyu'] as const;
+export const FORMUL_TOKENS = ['$pbYari', '$pb', /** P12: seviyenin yarısı (aşağı, en az 1). */ '$lvlYari', '$lvl2', '$lvl', '$str', '$dex', '$con', '$int', '$wis', '$cha', '$buyu'] as const;
 export const SURFACE_KINDS = ['oil', 'water', 'ice', 'fire', 'burningWeb', 'steam', 'slick', 'poison'] as const;
 export const BARRIER_KINDS = ['cizili-duvar', 'dost-kalkani', 'enkaz-yigini'] as const;
 export const SIZES = ['T', 'S', 'M', 'L', 'H', 'G'] as const;
@@ -37,7 +37,9 @@ export const HEDEFLER = ['kendi', 'dost', 'dostVeyaKendi', 'dostlar', 'dusman', 
 export type Hedef = typeof HEDEFLER[number];
 
 export type AlanTip = 'tamsayi' | 'sayi' | 'bool' | 'metin' | 'enum' | 'formul' | 'hasarTuru' | 'hasarTurleri' | 'durum' | 'durumlar'
-  | 'yetenek' | 'yetenekler' | 'kaynakRef' | 'save' | 'yaratikRef' | 'buyular' | 'kosullar' | 'sure' | 'kimlik' | 'enumListe' | 'yaratikRefler';
+  | 'yetenek' | 'yetenekler' | 'kaynakRef' | 'save' | 'yaratikRef' | 'buyular' | 'kosullar' | 'sure' | 'kimlik' | 'enumListe' | 'yaratikRefler'
+  /** P12: `{ "sayi": 8 }` (oyuncunun seçtiği büyü listesi), vertigo tablosu (satır listesi). */
+  | 'rastgeleListe' | 'vertigoTablo';
 export interface AlanSpec {
   tip: AlanTip;
   zorunlu?: boolean;
@@ -274,7 +276,7 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     not: 'Kullanım havuzu tanımı (diğer ilkeller `kaynak.id` ile harcar).', tetikler: ['pasif'],
     alanlar: { id: { tip: 'kimlik', zorunlu: true, not: 'Kaynak kimliği (alt sınıf içinde).' },
       sayi: { tip: 'formul', zorunlu: true, not: 'Kullanım: sayı, "$pb", "$str"…"$cha" (en az 1) ya da seviye tablosu `{ "3": 2, "11": 3 }`.' },
-      yenilenme: E(['uzun', 'kisa', 'tur'], 'Yenilenme: uzun dinlenme, kısa (ve uzun) dinlenme, her tur başı.') },
+      yenilenme: E(['uzun', 'kisa', 'tur', /** P12 */ 'depo'], 'Yenilenme: uzun dinlenme, kısa (ve uzun) dinlenme, her tur başı; P12 `depo`: sayaç (güç deposu): yeni karakter ve uzun dinlenme 1, kısa dinlenme yalnız 0\'daysa 1; `sayi` üst sınır.') },
     sistem: 'Sınıf kaynakları (`data/class-features.json` `resources` biçimi; `classResources`, `rechargeResources`, savaş sonu karaktere yazılır).',
     ornek: { tur: 'kaynak', id: 'cagri', sayi: '$pb', yenilenme: 'uzun' },
   },
@@ -301,8 +303,9 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     alanlar: { buyular: { tip: 'buyular', not: 'Büyü adları (SRD adı, `data/spells*.json`; `kopyaEnCokSeviye` yoksa gerekli).' }, bedava: { tip: 'kaynakRef', not: 'Bu kaynak kaldıkça slotsuz (`{ "id": "<kaynak>" }`).' },
       /** P11 */ yalnizKendine: B('P11: bedava (kaynakla) yapım yalnız kendine; başkasına slotla.'),
       konsantrasyonsuz: B('P11: listedeki büyüler konsantrasyonsuz (süreleri kadar).'),
-      kopyaEnCokSeviye: N('P11: bu seviyeye dek (1+) herhangi bir büyü, bilmeden, slotsuz (kaynakla; Wish benzeri kopya).') },
-    sistem: 'Sınıf kiti `alwaysPrepared` ve kaynak `freeSpellList` (Favored Enemy yolu). P11 (sürüm 42+): `paket/p11cast.ts` (yalnız kendine, konsantrasyonsuz, kopya).',
+      kopyaEnCokSeviye: N('P11: bu seviyeye dek (1+) herhangi bir büyü, bilmeden, slotsuz (kaynakla; Wish benzeri kopya).'),
+      /** P12 */ rastgeleListe: { tip: 'rastgeleListe', not: 'P12: `{ "sayi": 8 }`: oyuncu oluşturucuda bildiği/hazırladığı N büyüyü seçer; düğmeyle (eylem, kaynakla) dN zarı listeden birini seçer, büyü slotsuz bir kez yapılır (hedefi oyuncu seçer). Geçerli hedefi olmayan büyü yeniden atılır; hiçbiri geçerli değilse kullanım harcanmaz.' } },
+    sistem: 'Sınıf kiti `alwaysPrepared` ve kaynak `freeSpellList` (Favored Enemy yolu). P11 (sürüm 42+): `paket/p11cast.ts` (yalnız kendine, konsantrasyonsuz, kopya). P12 (sürüm 43+): `paket/p12.ts` rastgele liste (düğme `pk12:dilek:<özellik>`, seçimler `featureChoices["<özellik>/dilek<n>"]`, süren etki `grantSpell`).',
     ornek: { tur: 'buyuVer', buyular: ['Misty Step', 'Shield'], bedava: { id: 'sis-adimi' } },
   },
   buyuDegisimi: {
@@ -316,7 +319,9 @@ export const ILKELLER: Record<string, IlkelSpec> = {
       enCokSeviye: N('P11 konsantrasyonsuz: en çok bu seviyedeki büyüler.'),
       cikisCagri: B('P11: büyü senin çağrının (paket `cagir`) altıgeninden çıkabilir (`cast_spell.originId`).'),
       yetenekEki: { tip: 'yetenek', not: 'P11: menzili en çok `menzilEnCokFt` (varsayılan 5) olan büyünün hasarına bu yetenek değiştiricisi.' },
-      menzilEnCokFt: N('P11 yetenekEki: en çok bu menzil (ft).', { varsayilan: 5 }) },
+      menzilEnCokFt: N('P11 yetenekEki: en çok bu menzil (ft).', { varsayilan: 5 }),
+      /** P12 */ ikizOkul: { tip: 'metin', not: 'P12: bu okulun (Enchantment…) tek hedefli büyüsü menzildeki ikinci bir hedefe de (kaynaksız; eylem, slot, Counterspell ve konsantrasyon bir kez). `ikiz`ten ayrı.' },
+      kitapCikis: B('P12: büyü kitabı savaş başında senin altıgeninde taşınan nesne (`spellbook`); büyü kitabın altıgeninden çıkabilir (`cast_spell.originId` = kitap; menzil ve görüş oradan). Bırak (`object_use put`) / al (`take`).') },
     sistem: 'Büyü hasar ifadesi (`spells.ts` `damageExpr`; Empowered Evocation / Elemental Affinity yolu), yapım öncesi büyü dönüşümü (menzil, tür; Eldritch Spear/Transmuted yolu), kurtulma kipi (`durations.ts` `saveMode`).',
     ornek: { tur: 'buyuDegisimi', hasarEki: '$buyu', hasarTurleri: ['fire', 'cold'] },
   },
@@ -498,15 +503,19 @@ export const ILKELLER: Record<string, IlkelSpec> = {
   },
   buyuSakla: {
     not: 'Büyüyü yapar ama saklarsın (slot ve eylem harcanır); sonra ateşlersin (bekleyen büyü).', tetikler: ['pasif'],
-    alanlar: { ateslemeEylemi: E(['bonus', 'eylem', 'tepki', 'serbest'], 'Ateşleme maliyeti.'), enCokSeviye: N('En çok bu seviyedeki büyü.'), sure: { ...SURE, varsayilan: undefined } },
-    sistem: '`cast_spell.store` → süren etki `storedSpell`; ateşleme `spell_followup` `choice: "sakli"` (`paket/p11cast.ts`; slot yeniden harcanmaz). Sürüm 42+.',
+    alanlar: { ateslemeEylemi: E(['bonus', 'eylem', 'tepki', 'serbest'], 'Ateşleme maliyeti.'), enCokSeviye: N('En çok bu seviyedeki büyü.'), sure: { ...SURE, varsayilan: undefined },
+      /** P12 */ dostTetikler: B('P12: saklı büyüyü bir dost da tetikleyebilir (`spell_followup` `choice: "sakli"`, `sourceId`: saklayan); dostun eylem ekonomisi harcanmaz, büyüyü saklayan yapar (menzil ve görüş saklayandan).') },
+    sistem: '`cast_spell.store` → süren etki `storedSpell`; ateşleme `spell_followup` `choice: "sakli"` (`paket/p11cast.ts`; slot yeniden harcanmaz). Sürüm 42+; dost tetiği sürüm 43+.',
     ornek: { tur: 'buyuSakla', ateslemeEylemi: 'bonus', enCokSeviye: 3, kaynak: { id: 'kehanet', maliyet: 1 } },
   },
   gucDeposu: {
     not: 'Olay oldukça güç biriktirirsin; silah isabetinde biriken güç × zar ek hasar olarak boşalır.', tetikler: ['pasif'],
-    alanlar: { olay: E(['buyuYuvasi', 'hasarAlinca', 'iskalandi'], 'Sayaç ne zaman artar: slotlu büyü yaptın, hasar aldın, sana saldırı ıskaladı.'),
-      zar: F('Güç başına ek hasar.', { zorunlu: true }), enCok: N('Sayaç üst sınırı.'), hasarTuru: { tip: 'hasarTuru', not: 'Ek hasar türü (yoksa silahınki).' } },
-    sistem: 'Komut sonu sayaç (`pkCharge` süren etki), isabet kancası boşaltır (seçim; `paket/p11hooks.ts`). Sürüm 42+.',
+    alanlar: { olay: E(['buyuYuvasi', 'hasarAlinca', 'iskalandi', /** P12 */ 'karsiBuyu'], 'Sayaç ne zaman artar: slotlu büyü yaptın, hasar aldın, sana saldırı ıskaladı; P12 `karsiBuyu`: düşman büyüsünü Counterspell ile durdurdun ya da Dispel Magic ile kırdın (komut başına +1).'),
+      zar: F('Güç başına ek hasar (`harca: isabet`te gerekli).'), enCok: N('Sayaç üst sınırı (P12 `depo` verilirse kaynağın üst sınırı geçerli).'), hasarTuru: { tip: 'hasarTuru', not: 'Ek hasar türü (yoksa silahınki; `buyuHasari`nda varsayılan force).' },
+      /** P12 */ depo: { tip: 'kaynakRef', not: 'P12: sayaç bir kaynakta (`kaynak` ilkeli, `yenilenme: "depo"`, `sayi` üst sınır ör. "$int"): savaşlar arası taşınır, dinlenmeyle döner.' },
+      harca: E(['isabet', 'buyuHasari'], 'Nasıl boşalır: isabet = silah isabetinde sayaç × zar (P11); P12 buyuHasari = büyün bir yaratığa/nesneye hasar verince turda bir kez 1 güç harcayıp `harcaHasar` ek hasar (çok hedefli/çok oklu büyüde tek hedefe bir kez; seçim).'),
+      harcaHasar: F('P12 buyuHasari: ek hasar (ör. "$lvlYari": seviyenin yarısı).'), buyuListesi: { tip: 'metin', not: 'P12 buyuHasari: yalnız bu sınıf listesinin büyüleri (Wiz, Sor…; `data/spells*.json` `classes`).' } },
+    sistem: 'Komut sonu sayaç (`pkCharge` süren etki; P12 `depo` kaynağı), isabet kancası boşaltır (seçim; `paket/p11hooks.ts`); P12 büyü hasarı ve karşı büyü `paket/p12.ts` (komut sonu). Sürüm 42+; P12 alanları 43+.',
     ornek: { tur: 'gucDeposu', olay: 'buyuYuvasi', zar: '1d6', enCok: 4 },
   },
   zarYarisi: {
@@ -520,9 +529,23 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     not: 'Kaynakla sayılan kendi zarların: başarısız saldırıya/kurtulmaya ekle, silah isabetinde hasara ekle ya da vurulunca tepkiyle AC\'ye.', tetikler: ['pasif'],
     alanlar: { zar: F('Havuz zarı (seviye tablosu olabilir: `{ "3": "1d8", "10": "1d10" }`).', { zorunlu: true }),
       kullanim: { tip: 'enumListe', degerler: ['saldiri', 'kurtulma', 'kontrol', 'hasar', 'ac'], varsayilan: ['saldiri', 'hasar'], not: 'Nerede kullanılır.' },
-      savasBasiEnAz: F('Savaş başında havuz en az bu kadar (yenilenir).') },
+      savasBasiEnAz: F('Savaş başında havuz en az bu kadar (yenilenir).'),
+      /** P12 */ patlar: B('P12: havuz zarı patlar: en yüksek yüz gelirse bir zar daha atılır ve eklenir (zincir en çok 10; her ek zar zar defterinde).'),
+      havuz: F('P12: havuz büyüklüğü seviye tablosu (`{ "3": 4, "7": 5, "15": 6 }`); `kaynak` ilkelinin `sayi`sının yerine geçer.') },
     sistem: 'Ortak `kaynak` alanı havuzu sayar (`kaynak` ilkeli). İkinci şans (`effectDice.ts`, `onFail`: başarıya çevirince harcanır), isabet kancası (seçim) ve dosta isabet kancası (tepki) `paket/p11hooks.ts`. Sürüm 42+.',
     ornek: { tur: 'zarHavuzu', zar: { 3: '1d8', 10: '1d10' }, kullanim: ['saldiri', 'hasar', 'ac'], savasBasiEnAz: 1, kaynak: { id: 'kehanet', maliyet: 1 } },
+  },
+  vertigo: {
+    not: 'P12: öfkeye girince vertigo zarı (dN) atılır; tablodaki satırın etkisi öfke sürdükçe geçerli (patlama, ışınlanma, kör edici ışık, AC). Tablo sırası zar yüzüne eşit dağılır (4 satır d8: 1–2, 3–4, 5–6, 7–8) ya da satırda `yuzler`.', tetikler: ['pasif'],
+    alanlar: { zar: N('Zar yüzü (d8 → 8).', { varsayilan: 8 }), tablo: { tip: 'vertigoTablo', zorunlu: true, not: 'Satırlar (1–20): `{ "etki": "patlama" | "isinlan" | "isik" | "acBonusu", "ad"?, "yuzler"?: [1,2], "zar"?: "1d12", "hasarTuru"?, "yaricapFt"?: 10, "save"?, "durum"?: "Blinded", "sure"?: 1, "miktar"?: 1, "mesafeFt"?: 30, "tekrar"?: true, "hemen"?: true, "suzgec"?: "dusmanlar" | "hepsi" }`. patlama: alandakilere hasar (save varsa kurtulma, `yari`); isik: alandakilere kurtulma ya da `durum` (varsayılan Blinded) `sure` tur; acBonusu: öfke boyunca AC +miktar; isinlan: `mesafeFt` ışınlanma düğmesi (bonus eylem, öfke boyunca her tur; `hemen`: ilki bedava). `tekrar`: patlama/ışığı öfke boyunca bonus eylemle yinele.' } },
+    sistem: 'Komut sonu (`paket/p12.ts`): öfke başlayınca zar (zar defteri), süren etki `pkVertigo` (öfke bitince biter); düğmeler `pk12:vertigo:<özellik>:isinlan|hemen|tekrar` (`use_feature`). Sürüm 43+.',
+    ornek: { tur: 'vertigo', zar: 8, tablo: [{ etki: 'patlama', zar: '1d12', hasarTuru: 'force', yaricapFt: 10, save: { yetenek: 'con', dc: ['con'] } }, { etki: 'isinlan', mesafeFt: 30, hemen: true }, { etki: 'isik', yaricapFt: 10, save: { yetenek: 'con', dc: ['con'] }, sure: 1 }, { etki: 'acBonusu', miktar: 1 }] },
+  },
+  vertigoKontrol: {
+    not: 'P12: vertigo zarını yönet (aynı alt sınıfın `vertigo` ilkeline uygulanır). hasardaYenile: öfkedeyken hasar alınca tepkiyle zar yeniden atılır (yeni satır eskisinin yerine). ikiAtSec: vertigo zarı iki kez atılır, satırı sen seçersin.', tetikler: ['pasif'],
+    alanlar: { mod: E(['hasardaYenile', 'ikiAtSec'], 'Kip.', { zorunlu: true, varsayilan: undefined }), tepkiyle: B('hasardaYenile: tepki harcar.', true) },
+    sistem: '`paket/p12.ts`: hasar sonrası tepki istemi (`askReaction`, tetik `damaged`), iki zar için seçim istemi (`askChoice`). Sürüm 43+.',
+    ornek: { tur: 'vertigoKontrol', mod: 'hasardaYenile' },
   },
   silahFirlat: {
     not: 'Yakın dövüş silahın fırlatılabilir olur ve saldırıdan sonra eline döner (Thrown özelliği + dönüş).', tetikler: ['pasif'],
@@ -604,6 +627,20 @@ export const paketKaynakId = (subId: string, id: string): string => `pk-${subId}
 
 interface Ctx { kaynaklar: Set<string>; sinifKaynaklari: Set<string>; yaratiklar: Set<string>; ilkelIdleri: Set<string> }
 
+/** P12: vertigo tablo satırının alan denetimi. */
+export const VERTIGO_ETKILERI = ['patlama', 'isinlan', 'isik', 'acBonusu'] as const;
+const VERTIGO_ALANLARI: Record<string, AlanSpec> = {
+  etki: { tip: 'enum', degerler: VERTIGO_ETKILERI, zorunlu: true, not: '' }, ad: { tip: 'metin', not: '' }, zar: { tip: 'formul', not: '' }, hasarTuru: { tip: 'hasarTuru', not: '' },
+  yaricapFt: { tip: 'tamsayi', not: '' }, save: { tip: 'save', not: '' }, durum: { tip: 'durum', not: '' }, sure: { tip: 'sure', not: '' }, miktar: { tip: 'formul', not: '' },
+  mesafeFt: { tip: 'tamsayi', not: '' }, tekrar: { tip: 'bool', not: '' }, hemen: { tip: 'bool', not: '' }, suzgec: { tip: 'enum', degerler: ['dusmanlar', 'hepsi'], not: '' },
+};
+function vertigoSatirHatasi(x: unknown, ctx: Ctx): boolean {
+  if (!isObj(x) || typeof x.etki !== 'string' || !(VERTIGO_ETKILERI as readonly string[]).includes(x.etki)) return true;
+  if (x.yuzler !== undefined && (!Array.isArray(x.yuzler) || x.yuzler.length === 0 || x.yuzler.some((n) => !Number.isInteger(n) || (n as number) < 1 || (n as number) > 20))) return true;
+  if (x.etki === 'patlama' && (x.zar === undefined || x.hasarTuru === undefined)) return true;
+  return Object.entries(x).some(([k, v]) => k !== 'yuzler' && (!VERTIGO_ALANLARI[k] || alanHatasi(VERTIGO_ALANLARI[k] as AlanSpec, v, ctx)));
+}
+
 function alanHatasi(spec: AlanSpec, v: unknown, ctx: Ctx): boolean {
   switch (spec.tip) {
     case 'tamsayi': return !Number.isInteger(v) || (v as number) < 0 || (v as number) > 1000;
@@ -628,6 +665,8 @@ function alanHatasi(spec: AlanSpec, v: unknown, ctx: Ctx): boolean {
       || (/^bicim:[a-z0-9-]+$/.test(x) && ctx.ilkelIdleri.has(x.slice(6))) || /^isaretli:[a-z0-9-]+$/.test(x) || (x.startsWith('harita:') && HARITA_TEMALARI.includes(x.slice(7)))));
     case 'kaynakRef': return !isObj(v) || typeof v.id !== 'string' || !(ctx.kaynaklar.has(v.id) || ctx.sinifKaynaklari.has(v.id))
       || (v.maliyet !== undefined && (!Number.isInteger(v.maliyet) || (v.maliyet as number) < 0)) || Object.keys(v).some((k) => k !== 'id' && k !== 'maliyet');
+    case 'rastgeleListe': return !isObj(v) || !Number.isInteger(v.sayi) || (v.sayi as number) < 2 || (v.sayi as number) > 20 || Object.keys(v).some((k) => k !== 'sayi');
+    case 'vertigoTablo': return !Array.isArray(v) || v.length === 0 || v.length > 20 || v.some((x) => vertigoSatirHatasi(x, ctx));
     case 'save': return !isObj(v) || !(ABILITY_IDS as readonly string[]).includes(v.yetenek as string)
       || !(v.dc === undefined || v.dc === 'buyu' || (Number.isInteger(v.dc) && (v.dc as number) >= 1 && (v.dc as number) <= 30)
         || (Array.isArray(v.dc) && v.dc.length > 0 && v.dc.every((a) => (ABILITY_IDS as readonly string[]).includes(a as string))))
@@ -667,7 +706,12 @@ export function ilkelErrors(list: unknown, path: string, ctx: { kaynaklar: Set<s
     }
     // P11: direnc türsüz yalnız büyü kaynaklıysa; buyuVer büyüsüz yalnız kopyaysa.
     if (raw.tur === 'direnc' && raw.turler === undefined && raw.hasarKaynagi !== 'buyu') out.push({ path: `${p}.turler`, kod: 'ilkelEksik', alan: 'turler' });
-    if (raw.tur === 'buyuVer' && raw.buyular === undefined && raw.kopyaEnCokSeviye === undefined) out.push({ path: `${p}.buyular`, kod: 'ilkelEksik', alan: 'buyular' });
+    if (raw.tur === 'buyuVer' && raw.buyular === undefined && raw.kopyaEnCokSeviye === undefined && raw.rastgeleListe === undefined) out.push({ path: `${p}.buyular`, kod: 'ilkelEksik', alan: 'buyular' });
+    // P12: güç deposu: isabette boşalan zar ister, büyü hasarında harcaHasar.
+    if (raw.tur === 'gucDeposu' && raw.harca !== 'buyuHasari' && raw.zar === undefined) out.push({ path: `${p}.zar`, kod: 'ilkelEksik', alan: 'zar' });
+    if (raw.tur === 'gucDeposu' && raw.harca === 'buyuHasari' && raw.harcaHasar === undefined) out.push({ path: `${p}.harcaHasar`, kod: 'ilkelEksik', alan: 'harcaHasar' });
+    // P12: vertigo tablosunun yüzleri zarı aşmaz.
+    if (raw.tur === 'vertigo' && Array.isArray(raw.tablo) && raw.tablo.some((x) => isObj(x) && Array.isArray(x.yuzler) && x.yuzler.some((n) => (n as number) > (Number.isInteger(raw.zar) ? raw.zar as number : 8)))) out.push({ path: `${p}.tablo`, kod: 'ilkelDeger', alan: 'tablo' });
     if (raw.tur === 'tepki' && (raw.etki === 'acBonusu' || raw.etki === 'hasarAzalt') && raw.miktar === undefined) out.push({ path: `${p}.miktar`, kod: 'ilkelEksik', alan: 'miktar' });
     if (raw.tur === 'kaynak' && raw.sayi !== undefined && !kaynakSayiOk(raw.sayi)) out.push({ path: `${p}.sayi`, kod: 'ilkelDeger', alan: 'sayi' });
     // P6: etki/tetik birlikteliği.

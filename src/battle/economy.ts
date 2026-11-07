@@ -272,6 +272,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'object_use':
       // Görev S2: kapı açıp kapamak ve nesne almak (Görev S3) eylemsiz; kilit açma, masa devirme, mangal dökme eylem (Utilize).
       if (cmd.action === 'open' || cmd.action === 'close' || cmd.action === 'take') return { ok: true, event: null };
+      // Kuyruk P12: büyü kitabını bırakmak serbest (nesne etkileşimi; almak `take` gibi).
+      if (cmd.action === 'put') return { ok: true, event: null };
       // A1: nesne fırlatmak eylem (Utilize değil; Fast Hands kapsamaz).
       if (cmd.action === 'throw') return spend(actor, 'action', 'Nesne fırlat');
       // Kuyruk 19 (featuresK19): Thief'in Fast Hands'i: Utilize bonus eylemle (eylem kullanılmışsa ya da her zaman tercih edilir).
@@ -342,6 +344,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     }
     case 'spell_followup': {
       // Kuyruk P11: saklı büyüyü ateşleme maliyeti ilkelde (`buyuSakla.ateslemeEylemi`).
+      // Kuyruk P12: dostun tetiklediği mühürlü büyü dostun ekonomisini harcamaz (geçerlilik komutta).
+      if (cmd.choice === 'sakli' && cmd.sourceId && cmd.sourceId !== actor.id) return { ok: true, event: null };
       if (cmd.choice === 'sakli') { const c = actor.effects?.find((x) => x.storedSpell)?.storedSpell?.cost; if (!c) return fail('Saklı büyü yok.'); return c === 'free' ? { ok: true, event: null } : spend(actor, c, 'Saklı büyü'); }
       // Görev B1: süreli tekrarın maliyeti büyü verisinde (Call Lightning, Vampiric Touch: eylem).
       if (dispelEvilSpellOf(state, actor)) return spend(actor, 'action', 'Dispel Evil and Good');
