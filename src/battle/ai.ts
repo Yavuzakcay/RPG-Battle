@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { freeShapeAim, freeShapeOf } from './freeShape';
 import { aiLeaveWanted, controlConditions, possessSpecOf, possessionProblem } from './possession';
 import { possessorAt, possessorDisabled } from './possessionCore';
 import { hiddenFromTruesight } from './sight';
@@ -489,6 +490,24 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
     }
   }
   return best?.cmd ?? null;
+}
+
+/**
+ * Kuyruk K65a (sürüm 49, basit kural): serbest şekilli alan büyüsü (Fire Storm): `freeShapeAim` (en kalabalık düşman
+ * grubundan dostsuz en kısa yollarla büyür). En az iki düşman ya da kapsanan düşmanların canı 40+ ise. Değer önceliği
+ * `data/yz-roller.json` `kuralOnceligi['k65:firtina']` (7. seviye slot maliyetini aşar; K62 ile aynı).
+ */
+function freeShapeCommand(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map || !actor.pos || ruleVersion(state) < 49) return null;
+  for (const s of castable(actor)) {
+    const fs = freeShapeOf(state, s);
+    if (!fs) continue;
+    const aim = freeShapeAim(state, actor, s, fs, foes);
+    if (!aim || (aim.covered.length < 2 && aim.covered.reduce((n, c) => n + c.hp, 0) < 40)) continue;
+    const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: aim.hexes[0] as Offset, targetHexes: aim.hexes };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
 }
 
 /**
@@ -2346,6 +2365,7 @@ registerAction({ id: 'eski:iyilestir', rule: true, kind: 'heal', note: 'ölmekte
 registerAction({ id: 'eski:yenilenme', rule: true, kind: 'damage', note: 'yerdeki yenilenen düşmana ateş/asit', gen: (s, a) => (partyBranch(a) ? [finishRegen(s, a)] : []) });
 registerAction({ id: 'eski:alan', rule: true, kind: 'damage', note: 'alan hasar büyüsü (2+ düşman, dost yok)', gen: (s, a, h) => (partyBranch(a) || (a.monsterId && a.spellNames.length && !a.summon) ? [areaSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word Kill/Stun, Mass Heal', gen: (s, a, h) => (partyBranch(a) ? [powerWordCommand(s, a, h.foes)] : []) });
+registerAction({ id: 'k65:firtina', rule: true, kind: 'damage', note: 'Fire Storm: serbest şekil, en kalabalık gruptan dostsuz bitişik yollarla', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [freeShapeCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k64:ele-gecir', rule: true, kind: 'control', note: 'Ghost Possession: 5 ft içindeki geçerli Humanoid hedefi ele geçir', gen: (s, a, h) => (a.monsterId && !a.summon ? [possessCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:boncuk', rule: true, kind: 'control', note: 'Delayed Blast Fireball: boncuğu düşmanların üstüne koy', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [beadSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:kafes', rule: true, kind: 'control', note: 'Forcecage: güçlü düşmanı kutuya kapat', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [cageSpell(s, a, h.foes)] : []) });

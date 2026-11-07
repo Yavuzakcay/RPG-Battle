@@ -7,6 +7,7 @@
  */
 import { activePossession, possessedEffect } from './battle/possessionCore';
 import { setupWardOf } from './battle/possession';
+import { freeAddProblem, freeRemoveProblem, freeShapeOf } from './battle/freeShape';
 import { imzaHex as imzaHex0, imzaTargeted as imzaTargeted0 } from './battle/imza';
 import type { UsableFeature } from './battle/types';
 
@@ -67,7 +68,7 @@ import {
   placeHexes, terrainInfo, HEX_W,
 } from './ui/mapView';
 import {
-  areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaPointCount, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
+  areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaFreeShape, areaPointCount, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
   featureTeleportHexes, slotChoices, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
@@ -495,6 +496,17 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [excluded, setExcluded] = useState<Offset[]>([]);
   const aimPoint = (h: Offset) => {
     if (excludeOn) { setExcluded((xs) => (xs.some((x) => sameHex(x, h)) ? xs.filter((x) => !sameHex(x, h)) : [...xs, h])); return; }
+    // Kuyruk K65a (serbest şekil): dokun-ekle / dokun-çıkar; ekleme bitişik olmalı, çıkarma alanı bölmemeli (nedeni yazılır).
+    const fs = areaFreeShape(state, areaAct);
+    const me = state.combatants[actorId];
+    if (fs && me && areaAct?.kind === 'spell') {
+      const has = aimPts.some((p) => sameHex(p, h));
+      const why = has ? freeRemoveProblem(state, me, areaAct.spell, fs, aimPts, h) : freeAddProblem(state, me, areaAct.spell, fs, aimPts, h);
+      if (why) { toast(why); return; }
+      setAimPts(has ? aimPts.filter((p) => !sameHex(p, h)) : [...aimPts, h]);
+      setAimHex(h);
+      return;
+    }
     const max = areaPointCount(state, areaAct);
     if (max > 1) setAimPts((ps) => (ps.some((p) => sameHex(p, h)) ? ps.filter((p) => !sameHex(p, h)) : ps.length < max ? [...ps, h] : ps));
     setAimHex(h);
@@ -910,13 +922,21 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk 30 D3: alan nişanında geçerli noktalar (menzil, görüş) vurgulu; geçersizler soluk.
   const aimKeys = useMemo(() => {
     const me = state.combatants[actorId];
-    if (!active || mode !== 'aim' || !areaAct || !me || !state.map || !freeHexRule(state)) return null;
+    if (!active || mode !== 'aim' || !areaAct || !me || !state.map) return null;
+    // Kuyruk K65a (serbest şekil): eklenebilir altıgenler vurgulu (bitişik, menzilde; ilkinde görüş), ötekiler soluk.
+    const fs = areaFreeShape(state, areaAct);
+    if (fs && areaAct.kind === 'spell') {
+      const out = new Set<string>();
+      state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!aimPts.some((p) => sameHex(p, h)) && !freeAddProblem(state, me, areaAct.spell, fs, aimPts, h)) out.add(hexKey(h)); }));
+      return out;
+    }
+    if (!freeHexRule(state)) return null;
     const s = areaActSpec(me, areaAct);
     if (!s || s.spec.shape === 'emanation') return null;
     const out = new Set<string>();
     state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!('ok' in pickArea(state, me, s.spec, s.rangeFt, h))) out.add(hexKey(h)); }));
     return out;
-  }, [state, active, actorId, mode, areaAct]);
+  }, [state, active, actorId, mode, areaAct, aimPts]);
   // Seçili hedef öldü ya da kaldırıldıysa (Görev U) işareti kalmasın.
   useEffect(() => { if (targetId && !glowing.has(targetId)) setTargetId(null); }, [glowing, targetId]);
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
@@ -1451,7 +1471,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
   const modeHint: Record<Mode, string> = {
     idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
-    spell: B.hint.spell(spell?.name ?? ''), aim: B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
+    spell: B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
     pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
@@ -2090,7 +2110,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? loc(why) : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? B.spellNote.area(sp.area?.sizeFt ?? 0) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
+                      <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? loc(why) : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? (freeShapeOf(state, sp) ? B.k65.note(freeShapeOf(state, sp)?.maxHexes ?? 0) : B.spellNote.area(sp.area?.sizeFt ?? 0)) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
                     </button>
                   );
                 })}
@@ -2289,7 +2309,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const selfShape = sp.spec.origin === 'self' && sp.spec.shape !== 'emanation';
             const needAim = sp.spec.shape !== 'emanation';
             const picker = areaAct.kind === 'spell' && slotChoices(actor, areaAct.spell).length > 1 ? 64 : 0;
-            const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker) };
+            const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker + (areaFreeShape(state, areaAct) ? 56 : 0)) };
             // Balon alanın ve jetonun üstünü kapatmasın: alanın ağırlık merkezinin karşı kenarına yaslanır.
             const pts = [actorPx, ...area.map(px)];
             const cx = pts.reduce((n, q) => n + q.x, 0) / pts.length;
@@ -2298,11 +2318,20 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const foes = areaInfo?.foes ?? [];
             const friends = areaInfo?.friends ?? [];
             const multi = areaPointCount(state, areaAct);
+            const freeShape = areaFreeShape(state, areaAct);
             const ready = multi > 1 ? aimPts.length > 0 : !needAim || !!aimHex;
             return (
               <div className="bubble area-bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }} role="dialog" aria-label={sp.label}>
-                <strong>{A.head(sp.label, sp.spec.sizeFt, t().log.shapeName[sp.spec.shape] ?? sp.spec.shape)}</strong>
-                {multi > 1 && <small>{A.pickPoints(aimPts.length, multi)}</small>}
+                <strong>{freeShape ? B.k65.head(sp.label) : A.head(sp.label, sp.spec.sizeFt, t().log.shapeName[sp.spec.shape] ?? sp.spec.shape)}</strong>
+                {freeShape && <small>{B.k65.count(aimPts.length, multi)} · {B.k65.hint}</small>}
+                {freeShape && (
+                  <div className="wall-shape" role="group" aria-label={B.k65.head(sp.label)}>
+                    <button type="button" disabled={!aimPts.length || !!(actor && areaAct.kind === 'spell' && freeRemoveProblem(state, actor, areaAct.spell, freeShape, aimPts, aimPts[aimPts.length - 1] as Offset))}
+                      onClick={() => setAimPts((ps) => ps.slice(0, -1))}>{B.k65.undo}</button>
+                    <button type="button" disabled={!aimPts.length} onClick={() => { setAimPts([]); setAimHex(null); }}>{B.k65.clear}</button>
+                  </div>
+                )}
+                {multi > 1 && !freeShape && <small>{A.pickPoints(aimPts.length, multi)}</small>}
                 {!ready && multi <= 1 && <small>{selfShape ? A.pickDir : A.pickPoint}</small>}
                 {ready && areaInfo?.error && <small className="warn-text">{areaInfo.error}</small>}
                 {ready && !areaInfo?.error && (

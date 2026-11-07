@@ -2,6 +2,32 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K65a: Serbest şekil alan seçici + Fire Storm (kural sürümü 49)
+
+- **Sürüm:** `wip/k65` (plan 9fe6e18) üzerinde; 48 → 49, kapı `>= 49`. Büyü verisinde `k65` bloğu (`mechanicsAt`, `castSpell` `LATER`, `buyu-durum.mjs` BLOCKS). Sürüm ≤ 48'de Fire Storm tek 25 ft küre aynen; `targetHexes` yok sayılır. `SAVE_VERSION` 22 (yeni komut/olay yok). Denge, büyü `text` ve canavar verisi değişmedi.
+- **Fire Storm (SRD izlendi):**
+  - **Kurallar:** "up to ten 10-foot Cubes, which you arrange as you like. Each Cube must be contiguous with at least one other Cube" → `k65.freeShape: { maxHexes: 40, rangeAll: true, sightFirst: true }`. Kullanıcı kararlarıyla: küp başına 4 altıgen (en çok 40), her altıgen 150 ft menzilde, görüş yalnızca ilk (çıkış) altıgende.
+  - **Hasar yolu:** hasar, save, yüzey tepkimesi ve yanıcı nesne yolu aynı (`executeAreaCast` → `spell_cast.area.hexes`); yalnızca altıgen listesi `freeShapeArea`'dan gelir. Etkilenen: gövdesinin bir altıgeni alanda olan (`bodyOf`; çok altıgenli gövde dahil) her yaratık bir kez; dost da (SRD "each creature in the area").
+  - **Siper:** her yaratık kendi küpünün içinde olduğu için çıkıştan siper hesaplanmaz (0, tam siper engellemez). Bu, plandaki "siper" sorusunun cevabıdır.
+- **Tek doğrulayıcı (`src/battle/freeShape.ts`):** boş değil, ≤ sınır, tekrarsız, harita içi, menzil, ilk altıgen görüşü (duvar ya da görüş kesen zemin olamaz), tek parça (BFS). Motor, önizleme (`ui/hud.ts` `areaActPreview`) ve yapay zekâ aynı fonksiyonu kullanır. Tek altıgen `targetHex` ile gelirse tek altıgenlik alan sayılır.
+- **Seçici (arayüz):**
+  - Ortak alan nişanı (`aim` kipi, K57'nin çok nokta yapısı `aimPts`) genişletildi; yeni bileşen yok.
+  - Dokun-ekle/dokun-çıkar (kullanıcı kararı 3); sürükleyerek boyama yok.
+  - Ekleme bitişik olmalı (`freeAddProblem`). Çıkarma alanı bölmemeli; ilk altıgen çıkarılırsa yeni ilk altıgen menzil/görüş sınavından geçmeli (`freeRemoveProblem`). Geçersiz dokunuşta neden toast'la.
+  - Eklenebilir altıgenler vurgulu, ötekiler soluk.
+  - Balonda "Fire Storm: alanı boya", "7/40 altıgen", ipucu, "Geri al", "Temizle"; dost/düşman sayısı ve önizleme kartı mevcut alan önizlemesiyle aynı. Büyü listesinde "serbest alan, en çok 40 altıgen". TR/EN.
+- **Plandan sapma:** plan "Wind Wall ve Meteor Swarm'ın arayüzde girişi yok" diyordu; yanlış. K57'den beri `aim` kipinde çok noktalı seçim (`areaPointCount`: Meteor Swarm 4 nokta, Wind Wall `wallPath` yolu) var. K65b bu iki büyüde yalnızca bitişiklik ve yol sırası denetimini ve vurguyu seçiciye taşır.
+- **Yapay zekâ (`k65:firtina`, `kuralOnceligi` 24, K62 ile aynı gerekçe: 7. seviye slot maliyeti):** `freeShapeAim`.
+  - Tohum: 2 altıgen çevresinde en çok düşmanı olan, menzilde ve görüşte düşman altıgeni.
+  - Her adımda seçili kümeden çok kaynaklı BFS ile kapsanmamış en yakın düşmana dostsuz en kısa yol; yol bütçeye sığmazsa durur.
+  - Dost, büyücü ve masum altıgenleri hiç seçilmez (kullanıcı kararı 6).
+  - Koşul: en az iki düşman ya da kapsananların canı 40+.
+  - Karar süresi (15×7, 8 düşman): `freeShapeAim` 0,81 ms; `chooseCommand` sürüm 48'de 0,7 ms, 49'da 1,8 ms.
+- **Denge:** alan ≈91 → en çok 40 altıgen; `DENGE.md`'ye not, ayar yok.
+- **K65b'ye açık maddeler:** Forcecage serbest boyut (kutu ≤ 4 altıgen, kafes ≤ 19; kullanıcı kararı 4); Wind Wall yolu ve Meteor Swarm noktaları için seçicide bitişiklik/sıra vurgusu.
+- **K65c'ye açık madde:** panelli duvarlar (Wall of Stone/Ice/Force serbest panel yolu; panel HP'si altıgen anahtarlı). K66 earthquake kuyruğuyla karıştırılmaz.
+- **Test:** `src/battle/k65.test.ts` (7): veri ve sürüm 48, 40 altıgenlik alanda bir kez save ve hasar, alan dışı komşu etkilenmez, kenar durumlar (41 altıgen, iki parça, tekrar, duvar arkasında ilk altıgen, duvar ardına uzanma, menzil), sürüm 48'de küre, seçici yardımcıları (bitişiklik, sınır, bölme), önizleme, YZ (iki grubu dostsuz birleştirir, küçük bütçede kalabalık grup, komut geçerli). Veriye bağlı test değişikliği: `ruleVersion.test.ts` ve `g6.test.ts` güncel sürüm 48 → 49.
+
 ## 2026-11-08 — Kuyruk K64b: Ele geçirme tamamlayıcıları (kural sürümü 48'de kalır)
 
 - **Sürüm:** K64a ile aynı özellik; 48 henüz hiçbir yerde yayınlanmadı (dal `wip/k64`), bu yüzden sürüm **48'de kalır**. Depoda `kuralSurumu: 48` taşıyan kayıt dosyası arandı, yok. Her yeni yol `possession` anahtarı (sürüm 48) ya da yalnızca 48'de var olan veri (koruma alanı, ele geçirilmiş beden) ile çalışır; 47 ve altında, anahtar kapalıyken eski davranış. `SAVE_VERSION` 22.

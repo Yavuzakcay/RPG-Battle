@@ -285,6 +285,10 @@ export interface SpellMechanics {
   k63?: Partial<SpellMechanics>;
   /** Kuyruk K64a (kural sürümü 48): ele geçirme (Protection from Evil and Good engeli, Dispel Evil and Good Break Enchantment). */
   k64?: Partial<SpellMechanics>;
+  /** Kuyruk K65a (kural sürümü 49): serbest şekil alan (Fire Storm). */
+  k65?: Partial<SpellMechanics>;
+  /** Kuyruk K65a: serbest şekil (`src/battle/freeShape.ts`): en çok altıgen, menzil her altıgende, görüş ilk altıgende. */
+  freeShape?: { maxHexes: number; rangeAll?: boolean; sightFirst?: boolean };
   /** Kuyruk K64a: ele geçirme kolunun açıklaması (bilgi; motor `src/battle/possession.ts`). */
   possession?: string;
   /** Kuyruk K64b: kurulumda kurulan koruma alanı (Magic Circle, Hallow; `src/battle/possession.ts` `executeSetupWard`). */

@@ -370,7 +370,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | divine-word | 7 | spells-69.json | çalışır |  |  | hayır |
 | etherealness | 7 | spells-69.json | çalışır |  |  | hayır |
 | finger-of-death | 7 | spells-69.json | çalışır |  |  | hayır |
-| fire-storm | 7 | spells-69.json | çalışır |  |  | hayır |
+| fire-storm | 7 | spells-69.json | çalışır | k65 (sürüm 49) |  | hayır |
 | forcecage | 7 | spells-69.json | çalışır | k62 (sürüm 46) |  | hayır |
 | magnificent-mansion | 7 | spells-69.json | savaş dışı |  |  | hayır |
 | mirage-arcane | 7 | spells-69.json | savaş dışı |  |  | hayır |

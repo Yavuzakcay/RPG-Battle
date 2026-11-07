@@ -898,6 +898,8 @@ export const en: Strings = {
       moveRisk: (n: number, dmg: number): string => `${n} opportunity attack${n === 1 ? '' : 's'} · total ≈${dmg} damage`, moveGo: 'Move anyway',
       mystery: '? Something might happen here', reactions: 'Reaction', conditions: 'Condition', none: 'No visible effect', error: (e: string): string => `Not possible: ${e}`,
     },
+    k65: { head: (spell: string): string => `${spell}: paint the area`, count: (n: number, max: number): string => `${n}/${max} hexes`,
+      hint: 'Tap to add/remove; each hex must touch the selected area', undo: 'Undo', clear: 'Clear', note: (n: number): string => `free area, up to ${n} hexes` },
     k64: { possessed: (by: string): string => `Possessed: ${by} controls the body`, leave: 'Leave the body', gmEnd: 'End possession',
       dormant: (by: string): string => `Possession suppressed (Hallow): ${by} cannot control the body`,
       wardTitle: (who: string): string => `${who}: warding area`,

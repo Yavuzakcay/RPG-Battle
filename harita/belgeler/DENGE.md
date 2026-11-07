@@ -2,6 +2,10 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K65a: Fire Storm serbest şekil (2026-11-08; ölçüm yok, yalnız not)
+
+Kural sürümü 49. Fire Storm'un alanı SRD'ye uydu: tek 25 ft küre (yarıçap 5 altıgen, ≈91 altıgen) yerine en çok 40 altıgenlik serbest bitişik alan (10 küp × 4). Kapsanan alan yaklaşık yarıya iner; büyü dağınık gruplarda zayıflar, dostları dışarıda bırakarak şekillendirilebildiği için kalabalık ve karışık savaşta güçlenir. Denge ayarı yapılmadı (SRD uyumu); 13+ seviye büyücü partilerinin ölçümü "Dungeondex öncesi tam test turu"na kalır.
+
 ## Kuyruk K60: alt sınıf ince ayarı, yalnız sayılar (2026-11-07)
 
 Kural sürümü 42 (değişmedi). Yöntem: alt sınıf başına bir seferde tek sayı; yalnız etkilenen seviyeler × Çöl/Orman/Mağara × 100 tohum (`npx vite-node src/sim/k59Denge.ts -- 100 --seviye … --sinif … --alt ozel`); SRD karşılığı K59 ölçümü (değişmedi). İki ölçümün farkında gürültü ≈ ±4: < 4 puanlık değişim iyileşme sayılmadı. Hedef ±8.

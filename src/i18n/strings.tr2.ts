@@ -315,6 +315,8 @@ export const TR_EXTRA = {
       moveRisk: (n: number, dmg: number): string => `${n} fırsat saldırısı · toplam ≈${dmg} hasar`, moveGo: 'Yine de yürü',
       mystery: '? Burada bir şey olabilir', reactions: 'Tepkime', conditions: 'Durum', none: 'Etkisiz görünüyor', error: (e: string): string => `Yapılamaz: ${e}`,
     },
+    k65: { head: (spell: string): string => `${spell}: alanı boya`, count: (n: number, max: number): string => `${n}/${max} altıgen`,
+      hint: 'Dokun: ekle/çıkar; her altıgen seçili alana bitişik olmalı', undo: 'Geri al', clear: 'Temizle', note: (n: number): string => `serbest alan, en çok ${n} altıgen` },
     k64: { possessed: (by: string): string => `Ele geçirilmiş: beden ${by} yönetiminde`, leave: 'Bedeni bırak', gmEnd: 'Ele geçirmeyi bitir',
       dormant: (by: string): string => `Ele geçirme bastırılmış (Hallow): ${by} bedeni yönetemiyor`,
       wardTitle: (who: string): string => `${who}: koruma alanı`,

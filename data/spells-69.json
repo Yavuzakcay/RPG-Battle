@@ -1269,7 +1269,10 @@
    "save": "dex",
    "damage": "7d10",
    "damageType": "fire",
-   "halfOnSave": true
+   "halfOnSave": true,
+   "k65": {
+    "freeShape": { "maxHexes": 40, "rangeAll": true, "sightFirst": true }
+   }
   },
   "school": "Evocation",
   "srdPage": 132,

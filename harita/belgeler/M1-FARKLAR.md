@@ -4,7 +4,6 @@ Kuyruk M1'de `data/spells-69.json` `text` alanı SRD 5.2.1 metninden yazıldı. 
 
 | Kimlik | Metin (SRD) | Motor |
 |---|---|---|
-| fire-storm | on adede dek bitişik 10 ft küp | tek 25 ft küre |
 | earthquake | yarıklar (1d6 yarık, 1d10 × 10 ft derin, 10 ft geniş, düşme save'i), yapılara 50 bludgeoning | yarık ve yapı hasarı yok (K66; save zamanlaması K61'de düzeldi: dökümde ve büyücünün tur sonlarında) |
 
-2 satır (Kuyruk K61: blade-barrier, conjure-fey, sunburst, irresistible-dance, flesh-to-stone; K62: wall-of-ice, forcecage, delayed-blast-fireball; K63: true-seeing kapandı; kalan: fire-storm K65, earthquake yarık/yapı K66).
+1 satır (Kuyruk K61: blade-barrier, conjure-fey, sunburst, irresistible-dance, flesh-to-stone; K62: wall-of-ice, forcecage, delayed-blast-fireball; K63: true-seeing; K65a: fire-storm (sürüm 49, serbest şekil en çok 40 altıgen) kapandı; kalan: earthquake yarık/yapı K66).

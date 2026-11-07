@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { freeShapeArea } from './freeShape';
 import { homeSide } from './allegiance';
 import { possessedEffect, possessionEndEvents, possessionOn } from './possession';
 import { possessorAt } from './possessionCore';
@@ -166,11 +167,15 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
   const aim = cmd.targetHex ?? named?.pos ?? null;
   // Alanın altıgenleri, nokta denetimi ve etkilenenler ortak seçicide (Görev R4: büyü, nefes, koni, çizgi aynı yol).
-  const pick0 = pickArea(state, actor, area, spell.rangeFt, m.multiPoint && cmd.targetHexes?.length ? cmd.targetHexes[0] ?? aim : aim, 'büyü');
+  // Kuyruk K65a (sürüm 49, `freeShape`): serbest şekil (Fire Storm): seçilen bitişik altıgenler (`targetHexes`; tek altıgen
+  // seçildiyse `targetHex`); doğrulama ve etkilenenler `freeShape.ts`'te.
+  const fs = m.freeShape;
+  const pick0 = fs ? freeShapeArea(state, actor, spell, fs, cmd.targetHexes?.length ? cmd.targetHexes : aim ? [aim] : [])
+    : pickArea(state, actor, area, spell.rangeFt, m.multiPoint && cmd.targetHexes?.length ? cmd.targetHexes[0] ?? aim : aim, 'büyü');
   if ('ok' in pick0) return pick0;
   // Kuyruk A8 (Meteor Swarm, `multiPoint`): birden çok merkez; altıgenler birleşir, her yaratık bir kez etkilenir.
   let pick = pick0;
-  for (const at of m.multiPoint ? (cmd.targetHexes ?? []).slice(1, m.multiPoint) : []) {
+  for (const at of m.multiPoint && !fs ? (cmd.targetHexes ?? []).slice(1, m.multiPoint) : []) {
     const p2 = pickArea(state, actor, area, spell.rangeFt, at, 'büyü');
     if ('ok' in p2) return p2;
     const seen = new Set(pick.reached.map((x) => x.c.id));
@@ -194,7 +199,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}` : '';
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
-    note: `Alan: ${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
+    note: `Alan: ${fs ? `${pick.hexes.length} altıgen (serbest şekil)` : `${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}`}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
     // Görev Y1: alanın altıgenleri ve hasar türü (yüzey tepkimeleri: tutuşma, buhar, donma, suda yıldırım).
     area: { hexes: pick.hexes, ...(m.damageType ? { damageType: m.damageType } : {}), dc: actor.spellSaveDc ?? 10,
       ...(m.damage ? { dice: m.damage } : {}), targetIds: reached.map((x) => x.c.id) },
@@ -534,7 +539,7 @@ function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, 
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
