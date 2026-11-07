@@ -1438,7 +1438,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
     { key: 'end', label: N.end, act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
-  const items: Item[] = moveMenu ? moveItems : mainItems;
+  // Kuyruk K64a: ele geçirilmiş beden yalnızca ele geçirenin temel eylemlerini, bedendeki ele geçiren yalnızca bırakmayı görür.
+  const POSS_KEYS = ['move', 'jump', 'attack', 'area', 'hide', 'shove', 'dodge', 'help', 'search', 'stand', 'escape_grapple', 'escape', 'object', 'throwObject', 'pull', 'unpossess', 'end'];
+  const items: Item[] = moveMenu ? moveItems : actor?.possessing ? mainItems.filter((i) => i.key === 'unpossess' || i.key === 'end')
+    : actor && possessedEffect(actor) ? mainItems.filter((i) => POSS_KEYS.includes(i.key)) : mainItems;
   const actorPx = actor?.pos ? px(actor.pos) : null;
   const radial = actorPx ? radialLayout(actorPx, items.length, box, tokenR + BUTTON / 2 + 10, BUTTON) : [];
 
@@ -2422,7 +2425,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   {(c.altitudeFt ?? 0) > 0 && <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, targetId: c.id, toFt: (c.altitudeFt ?? 0) - 5 })}>{`${c.name} ${B.s2.down}`}</button>}
                 </span>
               ))}
-              {ruleVersion(state) >= 41 && heldWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: heldWeapons(actor)[0] as string })}>{B.s2.drop(heldWeapons(actor)[0] as string)}</button>}
+              {ruleVersion(state) >= 41 && !actor.shape?.possession && heldWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: heldWeapons(actor)[0] as string })}>{B.s2.drop(heldWeapons(actor)[0] as string)}</button>}
               {/* Kuyruk P11: saklı büyüyü ateşle (hedef: seçili hedef ya da kendisi). */}
               {actor.effects?.find((e) => e.storedSpell) && <button className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>{B.p11.fire(actor.effects.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>}
               {/* Kuyruk P12: büyü kitabını bırak / al; dostun mühürlü büyüsünü tetikle (dostun ekonomisi harcanmaz). */}
