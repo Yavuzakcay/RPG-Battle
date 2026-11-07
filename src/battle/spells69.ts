@@ -216,5 +216,21 @@ export function wishSpell(choice: string | undefined): Spell | null {
   const s = choice ? spells.find((x) => x.name === choice) : undefined;
   return s && s.level <= 8 && s.name !== 'Wish' ? s : null;
 }
+/**
+ * Kuyruk G6: Wish seçicisi: bu savaşta karşı taraftan görülen (`spell_cast` olayı) 8. seviye ve altı, 1 eylemlik büyüler.
+ * Motor SRD'ye uygun olarak her ≤ 8. seviye büyüyü kabul eder (`wishSpell`); liste yalnızca arayüzün önerisidir.
+ */
+export function wishCandidates(state: BattleState, events: BattleEvent[], actorId: string): string[] {
+  const me = state.combatants[actorId];
+  const seen = new Set<string>();
+  for (const e of events) {
+    if (e.type !== 'spell_cast') continue;
+    const by = state.combatants[e.actorId];
+    if (!me || !by || by.side === me.side) continue;
+    const s = spells.find((x) => x.name === e.label);
+    if (s && s.level >= 1 && wishSpell(s.name) && s.castingTime === 'action') seen.add(s.name);
+  }
+  return [...seen].sort();
+}
 export const wishProblem = (choice: string | undefined): string | null => (wishSpell(choice) ? null : 'Wish: kopyalanacak 8. seviye ya da altı bir büyü seçmelisin.');
 export { fail };

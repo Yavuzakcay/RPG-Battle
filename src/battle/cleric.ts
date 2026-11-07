@@ -1,4 +1,6 @@
 import { globalRule } from './ruleControl';
+import { ruleVersion } from './ruleVersion';
+import { healRoll } from './healMax';
 import { canSee } from './maprules';
 /**
  * Cleric özellikleri (Görev CLERIC; SRD 5.2.1, veriden: `data/class-features.json`, `data/subclasses.json`).
@@ -106,7 +108,7 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
     const count = diceAt(actor.level, e.dice);
     const choice = cmd.choice ?? (t.side === actor.side ? 'heal' : bestType(t, e.types));
     if (choice === 'heal') {
-      const amount = healDice(actor, `${count}d8`, rng) + wis;
+      const amount = (t.effects?.some((x) => x.maxHeal) && ruleVersion(state) >= 43 ? healRoll(state, t, `${count}d8`, rng, actor.id) : healDice(actor, `${count}d8`, rng)) + wis;
       const hpAfter = applyHealing(t.hp, t.maxHp, Math.max(0, amount));
       events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: f.name, amount: hpAfter - t.hp, targetHpAfter: hpAfter });
       return finish(state, events);

@@ -1,10 +1,10 @@
 /**
  * Kuyruk K58 G7: büyü durumu sınıflandırması (339 SRD büyüsü, 0–9). BUYU-KISMI ile aynı ölçüt: tamamlama blokları
- * (a4, a6, a7, a8, s1, s2) temel mekaniğin üstüne yazılır; kısmi = yaklaşıklık (`approx`) ya da yalnız Game Master notu
+ * (a4, a6, a7, a8, s1, s2, g6) temel mekaniğin üstüne yazılır; kısmi = yaklaşıklık (`approx`) ya da yalnız Game Master notu
  * (kapsam dışı, savaş dışı, sığmayan ya da Game Master notlu değilse). Saf (betik ve test ortak).
  */
-export const BLOCKS = ['a4', 'a6', 'a7', 'a8', 's1', 's2'];
-const BLOCK_VER = { a4: 32, a6: 35, a7: 36, a8: 37, s1: 40, s2: 41 };
+export const BLOCKS = ['a4', 'a6', 'a7', 'a8', 's1', 's2', 'g6'];
+const BLOCK_VER = { a4: 32, a6: 35, a7: 36, a8: 37, s1: 40, s2: 41, g6: 43 };
 
 export const mergedOf = (s) => {
   const m = s.mechanics ?? {};

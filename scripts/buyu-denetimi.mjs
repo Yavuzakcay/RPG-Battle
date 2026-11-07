@@ -61,6 +61,8 @@ const lines = [
   '',
   '## Kapsam dışı notlu (eksik parça savaş modelinin dışında)',
   '',
+  'Bu parçaların tetikleyiciye göre gruplu kaydı ve ne zaman ele alınacakları: harita/belgeler/BUYU-ERTELENEN.md (Kuyruk G6).',
+  '',
   '| Kimlik | Sv | Kapsam dışı | Oyuna uyar mı? Neden |',
   '|---|---|---|---|',
   ...kdRows.map((r) => `| ${r.id} | ${r.level} | ${cell(r.kapsam)} | ${cell(verdict(r.id))} |`),

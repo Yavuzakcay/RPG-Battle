@@ -6,6 +6,7 @@
  *   boş altıgene ışınlanma), Healing Touch (Celestial: 5 ft içindeki yaratık 2d8 + büyü seviyesi HP).
  * Binek olarak kullanma (mounted combat) SRD denetiminde ayrı ele alınır.
  */
+import { healRoll } from './healMax';
 import { distance, type Offset } from '../rules/hex';
 import { resolveSave } from '../rules/attack';
 import { applyHealing } from '../rules/damage';
@@ -43,7 +44,7 @@ export function executeSteedAction(state: BattleState, steed: Combatant, kind: S
   if (kind === 'healing-touch') {
     if (steed.pos && t.pos && distance(steed.pos, t.pos) > 1) return fail('Healing Touch: 5 ft içinde olmalı.');
     if (t.life === 'dead') return fail('Ölü iyileşmez.');
-    const roll = rollDice(`2d8+${steed.summon?.level ?? 2}`, rollTag(rng, { kind: 'heal', by: steed.id }));
+    const roll = { total: healRoll(state, t, `2d8+${steed.summon?.level ?? 2}`, rng, steed.id) };
     const after = applyHealing(t.hp, t.maxHp, roll.total);
     return finish(state, [mark, { type: 'healed', actorId: steed.id, targetId: t.id, label: 'Healing Touch', amount: after - t.hp, targetHpAfter: after }]);
   }

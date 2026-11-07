@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { healRoll } from './healMax';
 import { afterOpportunityEvents } from './turnHooks';
 import { mechanicsAt } from './spellVersion';
 import { auraCoreOn, auraEnterEvents } from './auraCore';
@@ -629,7 +630,7 @@ export function executeActionSurge(state: BattleState, actor: Combatant): Comman
 export function executeSecondWind(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   const left = resourceLeft(actor, 'secondWind');
   if (left <= 0) return fail('Second Wind kalmadı.');
-  const roll = rollDice(`1d10+${actor.level}`, rollTag(rng, { kind: 'heal', by: actor.id }));
+  const roll = { total: healRoll(state, actor, `1d10+${actor.level}`, rng, actor.id) };
   const hpAfter = applyHealing(actor.hp, actor.maxHp, roll.total);
   const events: BattleEvent[] = [
     { type: 'feature_used', actorId: actor.id, feature: 'secondWind', remaining: left - 1 },

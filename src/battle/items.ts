@@ -8,6 +8,7 @@
  * - `coat` (Kuyruk 19): Basic Poison: sonraki isabetlere ek hasar (1 dakika ya da hasar verene dek).
  * Kuyruk 19 eklentileri `srdK19` Game Master anahtarına bağlı.
  */
+import { healRoll } from './healMax';
 import { items } from '../data';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
@@ -55,7 +56,7 @@ export function executeUseItem(state: BattleState, actor: Combatant, itemId: str
   const t = state.combatants[targetId] as Combatant;
   const events: BattleEvent[] = [{ type: 'item_used', actorId: actor.id, itemId, name: it.name, targetId, left: (actor.consumables?.[itemId] ?? 1) - 1 }];
   if (u.kind === 'heal') {
-    const roll = rollDice(u.dice, rollTag(rng, { by: actor.id, kind: 'heal' }));
+    const roll = { total: healRoll(state, t, u.dice, rng, actor.id) };
     const amount = Math.max(0, Math.min(roll.total, t.maxHp - t.hp));
     events.push({ type: 'healed', actorId: actor.id, targetId, label: it.name, amount, targetHpAfter: t.hp + amount });
     return finish(state, events);

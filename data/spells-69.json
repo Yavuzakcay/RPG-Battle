@@ -1494,7 +1494,7 @@
    "Drd"
   ],
   "rangeFt": 30,
-  "text": "30 ft içinde istekli yaratıklar Large ya da daha küçük, CR 4 ya da altı Beast'e dönüşür; ilk biçimin HP'si kadar geçici HP (24 saat)",
+  "text": "savaş dışı: 30 ft içinde istekli yaratıklar Large ya da daha küçük, CR 4 ya da altı Beast'e dönüşür; ilk biçimin HP'si kadar geçici HP (24 saat)",
   "mechanics": {
    "kind": "effect",
    "effect": {
@@ -1504,7 +1504,11 @@
     "polymorph": true,
     "icon": "🐻"
    },
-   "kapsamDisi": "Polymorph biçim olayıyla istekli dostlar (SRD ile aynı; not)",
+   "offCombat": true,
+   "battleHidden": true,
+   "gmNote": "Bütün ekibi hayvan biçimine çevirmek Druid'in değerini azaltır: savaş dışı, Game Master uygular (savaşta seçicide yok).",
+   "gmNoteEn": "Turning the whole party into beasts would diminish the Druid: out of combat, applied by the Game Master (not in the combat spell list).",
+   "kapsamDisi": "Polymorph biçim olayıyla istekli dostlar (kullanıcı kararı: savaş dışı)",
    "a7": {
     "gmNoted": true,
     "gmNote": "İstekli dostlar hayvan biçimine (Polymorph yolu) girer; biçim seçimi ve savaş dışı süre Game Master'da.",

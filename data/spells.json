@@ -776,6 +776,26 @@
         "gmNoteEn": "Charmed applies in combat; the friendly attitude and the target knowing it was charmed afterwards are narrated by the Game Master.",
         "kapsamDisi": null,
         "approx": null
+      },
+      "g6": {
+        "effect": {
+          "targets": 1,
+          "side": "enemy",
+          "rounds": 600,
+          "grants": [
+            "Charmed"
+          ],
+          "charm": true,
+          "breakOnDamage": "casterSide",
+          "onlyTypes": [
+            "humanoid"
+          ],
+          "saveAdvantage": true,
+          "icon": "💗",
+          "dominate": true
+        },
+        "gmNote": "Savaşta hedef büyücünün tarafına geçer (Dominate ile aynı taraf değiştirme); büyücü ya da müttefikleri ona zarar verirse ya da süre bitince eski tarafına döner. Dostluk tutumu ve büyü bitince büyülendiğini bilmesi savaş dışı: Game Master anlatır.",
+        "gmNoteEn": "In combat the target joins the caster's side (same allegiance swap as Dominate); it returns to its old side when the caster or allies harm it or the spell ends. The friendly attitude and the target knowing it was charmed afterwards are narrated by the Game Master."
       }
     },
     "school": "Enchantment",
@@ -2447,6 +2467,24 @@
         },
         "approx": "",
         "kapsamDisi": "Elindekini düşürme: silah bırakma modeli yok (tur zaten kaçışla geçer)"
+      },
+      "g6": {
+        "failEffect": {
+          "rounds": 10,
+          "grants": [
+            "Frightened"
+          ],
+          "command": [
+            "flee"
+          ],
+          "commandPersist": true,
+          "fleeDash": true,
+          "repeatSave": true,
+          "repeatSaveUnseen": true,
+          "dropHeld": true
+        },
+        "approx": "",
+        "kapsamDisi": null
       }
     },
     "school": "Illusion",
@@ -3025,6 +3063,10 @@
         },
         "approx": "",
         "kapsamDisi": "En yüksek iyileştirme: savaşta iyileştirme yalnızca büyü, iksir ve özellik zarıyla; hepsi büyü yolundan geçmez (iksir zarı)"
+      },
+      "g6": {
+        "kapsamDisi": null,
+        "approx": ""
       }
     },
     "school": "Abjuration",
@@ -5665,7 +5707,7 @@
     ],
     "rangeFt": 5,
     "concentration": true,
-    "text": "dokunulan yaratık seçilen yetenekte kontrollere avantaj",
+    "text": "savaş dışı: dokunulan yaratık seçilen yetenekte kontrollere avantaj",
     "mechanics": {
       "kind": "effect",
       "effect": {
@@ -5687,14 +5729,18 @@
         "targets": 1,
         "applied": true
       },
-      "kapsamDisi": "Kontrol avantajı uygulanır; savaşta kontrol azdır (İt, Gizlen, kurtulma) — not, eksik değil",
+      "kapsamDisi": null,
       "a7": {
         "gmNoted": true,
         "gmNote": "Seçilen yetenekte kontrol avantajı savaşta uygulanır (İt, kurtulma, Gizlen…); savaş dışı kontroller Game Master'da.",
         "gmNoteEn": "Advantage on checks with the chosen ability applies in combat; out-of-combat checks are up to the Game Master.",
         "kapsamDisi": null,
         "approx": null
-      }
+      },
+      "offCombat": true,
+      "battleHidden": true,
+      "gmNote": "Seçilen yetenekte kontrol avantajı: savaş dışı, Game Master uygular (savaşta seçicide yok).",
+      "gmNoteEn": "Advantage on checks with the chosen ability: out of combat, applied by the Game Master (not in the combat spell list)."
     },
     "school": "Transmutation",
     "srdPage": 127

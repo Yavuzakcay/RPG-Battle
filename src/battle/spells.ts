@@ -43,7 +43,7 @@ import { askChoice } from '../rules/choice';
 import { gap } from './body';
 import { areaReachesAltitude, levitateRiseEvents } from './altitude';
 import { executeLevitateObject, executeResizeObject, illusionEvents, recallBlade } from './s2spells';
-import { dropEvents, heldMetal, touchesMetal, wearsMetal } from './heldItems';
+import { dropEvents, handsOn, heldMetal, heldWeapons, touchesMetal, wearsMetal } from './heldItems';
 import { OBJECTS } from './objectData';
 import { surfaceEvent } from './surfaces';
 import { withArrival } from './motion';
@@ -272,6 +272,8 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
       const add = failEffectEvent(state, actor, spell, fe, ability, t.id);
       events.push(add);
       current = applyEvents(current, [add]);
+      // Kuyruk G6 (sürüm 43): Fear: korkan yaratık elindekini düşürür (el modeli).
+      if (fe.dropHeld) current = pushDrops(current, events, t.id, spell.name);
     }
     // Hasar alanın tepkisi (Hellish Rebuke; Görev R1).
     if (adjusted.amount + adjusted2.amount > 0) {
@@ -509,8 +511,21 @@ function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng,
   return healDice(actor, expr, rng);
 }
 
+/** Kuyruk G6: yaratığın elindeki bütün silahları düşürür (olaylar sırayla uygulanır: yerdeki nesne kimlikleri çakışmaz). */
+function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, spellName: string): BattleState {
+  let st = state;
+  const t = st.combatants[targetId];
+  if (!t || !handsOn(st)) return st;
+  for (const id of heldWeapons(t)) {
+    const evs = dropEvents(st, st.combatants[targetId] as Combatant, id, `${spellName}: korkuyla bıraktı`, true);
+    events.push(...evs);
+    st = applyEvents(st, evs);
+  }
+  return st;
+}
+
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.

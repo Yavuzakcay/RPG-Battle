@@ -84,6 +84,9 @@ describe('veri: B3 büyüleri', () => {
 describe('büyüleme (Charmed)', () => {
   it('Charm Person: Humanoid WIS save (savaşta avantajlı) ya da Charmed; büyüleyene saldıramaz; hasar alınca biter', () => {
     const r = arena({ spellNames: ['Charm Person'] });
+    // Kuyruk G6: sürüm 43'te Charm Person taraf değiştirir (g6.test.ts); bu test sürüm 42'nin yalnız-Charmed davranışını sınar.
+    r.state = { ...r.state, kuralSurumu: 42 };
+    r.events[0] = { type: 'battle_started', state: r.state };
     const evs = r.cast({ spellName: 'Charm Person', targetId: 'B' });
     expect(evs.find((e) => e.type === 'save_resolved')).toMatchObject({ mode: 'advantage', success: false });
     expect(r.c('B').conditions).toContain('Charmed');

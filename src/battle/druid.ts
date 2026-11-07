@@ -9,6 +9,7 @@
  * - Land's Aid (`landsAid` etkisi): 60 ft içinde 10 ft küre, seçilen yaratıklar CON save, Necrotic; bir dost iyileşir.
  * Saf.
  */
+import { healRoll } from './healMax';
 import { globalRule } from './ruleControl';
 import { spiderOver } from './karadul';
 import { getMonster, type Monster } from '../data';
@@ -171,7 +172,7 @@ export function executeLandsAid(state: BattleState, actor: Combatant, f: UsableF
   }
   const ally = living.filter((c) => c.side === actor.side && c.hp < c.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
   if (ally) {
-    const heal = rollDice(`${n}d6`, rollTag(rng, { kind: 'heal', by: actor.id })).total;
+    const heal = healRoll(state, ally, `${n}d6`, rng, actor.id);
     const after = applyHealing(ally.hp, ally.maxHp, heal);
     events.push({ type: 'healed', actorId: actor.id, targetId: ally.id, label: f.name, amount: after - ally.hp, targetHpAfter: after });
   }

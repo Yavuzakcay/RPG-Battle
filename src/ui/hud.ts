@@ -117,6 +117,8 @@ export function spellMenu(actor: Combatant): Array<{ spell: Spell; kind: 'target
     .filter((s) => s.castingTime !== 'reaction')
     // Ritüel (Find Familiar) savaşta yapılmaz: kurulumda (Görev R3).
     .filter((s) => s.castingTime !== 'ritual')
+    // Kuyruk G6: savaş dışı ilan edilen büyüler savaş listesinde yok (kartta savaş dışı + Game Master notu).
+    .filter((s) => !s.mechanics.battleHidden)
     .map((spell) => ({
       spell,
       kind: isAreaSpell(spell) ? 'area' as const

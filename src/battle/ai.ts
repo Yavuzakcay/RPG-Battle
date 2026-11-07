@@ -291,6 +291,8 @@ function castable(actor: Combatant) {
     .filter((s) => s.mechanics.kind !== 'summon' && s.castingTime !== 'ritual')
     // Kuyruk 40: "çalışmıyor" büyüler savaşta yapılamaz.
     .filter((s) => !s.mechanics.unsupported)
+    // Kuyruk G6: savaş dışı ilan edilen büyüler (Animal Shapes, Enhance Ability) yapay zekâda yok.
+    .filter((s) => !s.mechanics.battleHidden)
     .filter((s) => s.level === 0 || actor.spellSlots.slice(s.level - 1).some((n) => n > 0)
       || freeCast(actor, s.name));
 }

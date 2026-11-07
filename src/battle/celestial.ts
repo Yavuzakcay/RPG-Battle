@@ -12,6 +12,7 @@
  * Saf.
  */
 export { AWAKENING_OPTIONS, CELESTIAL } from '../rules/celestialData';
+import { healRoll } from './healMax';
 import { gap } from './body';
 import { damageProfile, fail, finish, isTargetable, type CommandResult } from './common';
 import { resolveSave } from '../rules/attack';
@@ -99,7 +100,7 @@ export function executeCelestial(state: BattleState, actor: Combatant, f: Usable
   const events: BattleEvent[] = [{ type: 'feature_used', actorId: actor.id, feature: f.resource as string, remaining: resourceLeft(actor, f.resource as string) - 1 }];
   if (f.effect.kind === 'celestialHeal') {
     const t = state.combatants[targetId ?? actor.id] as Combatant;
-    const d = rollDice(`${num(CELESTIAL.healingTouch.count, pb)}${CELESTIAL.healingTouch.die}`, rollTag(rng, { kind: 'heal', by: actor.id }));
+    const d = { total: healRoll(state, t, `${num(CELESTIAL.healingTouch.count, pb)}${CELESTIAL.healingTouch.die}`, rng, actor.id) };
     events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: f.name, amount: d.total, targetHpAfter: applyHealing(t.hp, t.maxHp, d.total) });
     return finish(state, events);
   }

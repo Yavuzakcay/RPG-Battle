@@ -5,6 +5,7 @@
  * `surum` (23) ve alt sınıfın ev kuralı (`evKurali`; Birlik Manastırı'nda null: her zaman). Kural kapalıyken ya da eski
  * savaşta özellikler yok. Süreli etkiler mevcut `ActiveEffect` alanlarıyla (yeni durum eklemeden). Saf.
  */
+import { healRoll } from './healMax';
 import { resistImmunityEvent, resistImmunityId } from './auraCore';
 import data from '../../data/imza.json';
 import { gap } from './body';
@@ -349,7 +350,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
     }
     void applied;
     if (spec.iyilestir) {
-      const h = rollDice(expr(byLevel(spec.iyilestir, actor.level) ?? '0', actor), rollTag(rng, { kind: 'heal', by: actor.id }));
+      const h = { total: healRoll(state, t, expr(byLevel(spec.iyilestir, actor.level) ?? '0', actor), rng, actor.id) };
       const amount = Math.max(0, Math.min(sc(h.total), t.maxHp - t.hp));
       events.push({ type: 'healed', actorId: actor.id, targetId: t.id, label: spec.ad, amount, targetHpAfter: t.hp + amount });
     }

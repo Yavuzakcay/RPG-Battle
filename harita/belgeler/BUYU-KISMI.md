@@ -6,14 +6,14 @@
 
 | | Sayı |
 |---|---|
-| Savaşta kullanılan büyü | 227 |
-| A4 öncesi kısmi | 75 |
+| Savaşta kullanılan büyü | 225 |
+| A4 öncesi kısmi | 73 |
 | A4 sonrası kısmi | 0 |
 | Tamamlanan (sürüm 32, `a4`) | 10 |
 | Tamamlanan (sürüm 35, `a6`; tam) | 31 |
 | Tamamlanan (sürüm 35, `a6`; sığmayan parça notlu) | 0 |
 | Tamamlanan (sürüm 36, `a7`; tam) | 13 |
-| Tamamlanan (sürüm 36, `a7`; Game Master notlu) | 6 |
+| Tamamlanan (sürüm 36, `a7`; Game Master notlu) | 4 |
 | Tamamlanan (sürüm 36, `a7`; sığmayan parça notlu) | 0 |
 | Tamamlanan (sürüm 37, `a8`; tam) | 15 |
 | Tamamlanan (sürüm 37, `a8`; Game Master notlu) | 0 |
@@ -63,7 +63,6 @@
 | continual-flame | 2 | spells.json | tamam (A7) |  | Loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık). |  |
 | darkness | 2 | spells.json | tamam (A7) |  | Taşınmayan nesneye yapılan karanlık nesnenin altıgeninde durur (noktaya yapmakla aynı); nesnenin üstünü örtmek savaş dışı. |  |
 | dragons-breath | 2 | spells.json | tamam (A7) |  |  |  |
-| enhance-ability | 2 | spells.json | tamam (A7, Game Master notlu) |  |  |  |
 | enlarge-reduce | 2 | spells.json | tamam (S2) |  | Boyut, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı). |  |
 | flame-blade | 2 | spells.json | tamam (S2) |  |  |  |
 | flaming-sphere | 2 | spells.json | tamam (S2) |  | Taşıma bonus eylemle (yuvarlama) ve çarpma hasarı Kuyruk 19 yoluyla; ışık 20 ft (4 altıgen). |  |
@@ -107,7 +106,6 @@
 | conjure-fey | 6 | spells-69.json | tamam (A6) |  | Ruhun Fey görünüşü yalnızca görsel. |  |
 | mass-suggestion | 6 | spells-69.json | tamam (S1) |  |  |  |
 | plane-shift | 7 | spells-69.json | tamam (S1) |  |  |  |
-| animal-shapes | 8 | spells-69.json | tamam (A7, Game Master notlu) |  |  |  |
 | holy-aura | 8 | spells-69.json | tamam (A4) |  |  |  |
 | meteor-swarm | 9 | spells-69.json | tamam (S1) |  |  |  |
 | wish | 9 | spells-69.json | tamam (A7, Game Master notlu) |  |  |  |

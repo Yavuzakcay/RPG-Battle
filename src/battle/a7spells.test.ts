@@ -146,7 +146,8 @@ describe('A7 Game Master notlu', () => {
       const a7 = spells.find((x) => x.id === id)?.mechanics.a7;
       expect(a7?.gmNoted && a7.gmNote && a7.gmNoteEn).toBeTruthy();
     }
-    const r = run(field([wiz(['Enhance Ability']), ally('C'), foe('F0')], pos, 36), cast('Enhance Ability', { targetIds: ['C'], choice: 'str' }));
-    expect(r.events.some((e) => e.type === 'map_note' && e.text.startsWith('Game Master notu — Enhance Ability'))).toBe(true);
+    // Kuyruk G6: Enhance Ability savaş dışı ilan edildi (`offCombat`/`battleHidden`; notu kartta); günlük notu için See Invisibility.
+    const r = run(field([wiz(['See Invisibility']), ally('C'), foe('F0')], pos, 36), cast('See Invisibility'));
+    expect(r.events.some((e) => e.type === 'map_note' && e.text.startsWith('Game Master notu — See Invisibility'))).toBe(true);
   });
 });

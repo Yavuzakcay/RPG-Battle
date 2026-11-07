@@ -4,29 +4,29 @@
 
 ## Özet
 
-Toplam 339 = savaşta kullanılan 227 + savaş dışı 112.
+Toplam 339 = savaşta kullanılan 225 + savaş dışı 114.
 
 | Seviye | çalışır | kısmi | yok | savaş dışı | Toplam |
 |---|---|---|---|---|---|
-| 0–3 | 131 | 0 | 0 | 52 | 183 |
+| 0–3 | 130 | 0 | 0 | 53 | 183 |
 | 4–5 | 45 | 0 | 0 | 27 | 72 |
-| 6–9 | 51 | 0 | 0 | 33 | 84 |
-| **Toplam** | 227 | 0 | 0 | 112 | 339 |
+| 6–9 | 50 | 0 | 0 | 34 | 84 |
+| **Toplam** | 225 | 0 | 0 | 114 | 339 |
 
-Çalışır olanlardan: Game Master notlu 6, kapsam dışı notlu 29, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
+Çalışır olanlardan: Game Master notlu 4, kapsam dışı notlu 27, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
 
 ## Game Master notlu (savaş etkisi tam, kalan parça Game Master'da)
 
 | Kimlik | Sv | Not | Oyuna uyar mı? Neden |
 |---|---|---|---|
-| charm-person | 1 | Savaşta Charmed (büyüleyene saldıramaz, sosyal avantaj) uygulanır; dostluk tutumu ve büyü bitince hedefin büyülendiğini bilmesi savaş dışı: Game Master anlatır. | evet: Savaş etkisi (Charmed) tam; tutum ve büyü sonrası farkındalık sosyal sahne, Game Master'ın işi. |
+| charm-person | 1 | Savaşta hedef büyücünün tarafına geçer (Dominate ile aynı taraf değiştirme); büyücü ya da müttefikleri ona zarar verirse ya da süre bitince eski tarafına döner. Dostluk tutumu ve büyü bitince büyülendiğini bilmesi savaş dışı: Game Master anlatır. | evet: Savaşta hedef büyücünün tarafına geçer (Dominate ile aynı taraf değiştirme; zarar görünce ya da süre bitince döner); tutum ve büyü sonrası farkındalık sosyal sahne, Game Master'ın işi. |
 | hideous-laughter | 1 | Savaşta Prone + Incapacitated, tur sonu ve hasarda yeniden save uygulanır; kahkahanın anlatımı Game Master'da. | evet: Mekanik tam; yalnız anlatım Game Master'da. |
-| enhance-ability | 2 | Seçilen yetenekte kontrol avantajı savaşta uygulanır (İt, kurtulma, Gizlen…); savaş dışı kontroller Game Master'da. | evet: Savaşta kullanılan kontroller (İt, kurtulma, Gizlen) avantajlı; diğerleri savaş dışı. |
 | see-invisibility | 2 | Görünmezi görme savaşta uygulanır; Ethereal düzlemi görmek savaş dışı (Ethereal yaratık zaten etkilenemez): Game Master. | evet: Ethereal yaratık savaşta zaten etkileşemez; görünmezi görme tam. |
-| animal-shapes | 8 | İstekli dostlar hayvan biçimine (Polymorph yolu) girer; biçim seçimi ve savaş dışı süre Game Master'da. | kısmen: Biçime girme Polymorph yoluyla çalışır; çoklu biçim seçimi ve saatlik süre Game Master'a kalır. |
-| wish | 9 | 8. seviye ya da altı bir büyüyü kopyalama savaşta (seçim listesi); serbest dilekler Game Master'da. | kısmen: Büyü kopyalama savaşta; serbest dilek tanım gereği Game Master kararı, kodlanamaz. |
+| wish | 9 | 8. seviye ya da altı bir büyüyü kopyalama savaşta (seçim listesi); serbest dilekler Game Master'da. | evet: Savaşta düşmanın yaptığı büyüyü kopyalama (arayüzde seçici; SRD'ye göre ≤ 8. seviye); serbest dilek tanım gereği Game Master kararı. |
 
 ## Kapsam dışı notlu (eksik parça savaş modelinin dışında)
+
+Bu parçaların tetikleyiciye göre gruplu kaydı ve ne zaman ele alınacakları: harita/belgeler/BUYU-ERTELENEN.md (Kuyruk G6).
 
 | Kimlik | Sv | Kapsam dışı | Oyuna uyar mı? Neden |
 |---|---|---|---|
@@ -48,12 +48,10 @@ Toplam 339 = savaşta kullanılan 227 + savaş dışı 112.
 | spider-climb | 2 | Duvar ve tavanda yürüme yükseklik katmanında tırmanma maliyetini kaldırır (`climb`); tavan modeli yok, eller serbest kuralı savaş dışı. | evet: Tırmanma maliyeti kalkar; tavan modeli yok, eller serbest kuralı savaş dışı. |
 | web | 2 | Tutunma yeri: savaş haritasında ağ zemine serili sayılır (SRD: yere serilen ağ çökmez); yanma K55 çözücüsünde (yanan ağ). | evet: Tutunma yeri haritada ağ zemine serili sayılır; yanma çözücüde. |
 | animate-dead | 3 | Döküm süresi 1 dakika: yalnızca kurulumda; 24 saatlik kontrol yenileme savaş dışı. | evet: 1 dakikalık döküm kurulumda; 24 saatlik yenileme savaş dışı. |
-| beacon-of-hope | 3 | En yüksek iyileştirme: savaşta iyileştirme yalnızca büyü, iksir ve özellik zarıyla; hepsi büyü yolundan geçmez (iksir zarı) | kısmen: İyileştirme maks. yalnız büyü yolunda; iksir ve bazı özellik zarları atılır (küçük fark). |
 | call-lightning | 3 | Bulut büyücünün üstünde sayılır; nokta büyü menzilinde seçilir (silindir yüksekliği savaş modelinde yok). | evet: Silindir yüksekliği modelde yok; bulut büyücünün üstünde sayılır, hedef nokta menzilde. |
 | conjure-animals | 3 | Large sürü, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı). | evet: Çok altıgen bayrağı kapalıyken her yaratık tek altıgen (oyunun genel kuralı). |
 | daylight | 3 | Taşınmayan nesneye yapılan ışık nesnenin altıgeninde durur; ek 60 ft loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık). | kısmen: Ek 60 ft loş ışık yok: karanlık haritada aydınlattığı alan SRD'den dar. |
 | dispel-magic | 3 | Sihirli eşyanın kendi büyüsü dağılmaz (SRD); nesnedeki süren büyü (Light, Continual Flame) altıgen hedefte kalkar. | evet: SRD'ye uygun: eşyanın kendi büyüsü dağılmaz. |
-| fear | 3 | Elindekini düşürme: silah bırakma modeli yok (tur zaten kaçışla geçer) | kısmen: Elindekini düşürme yok; korkan yaratık kaçarak turunu geçirdiği için fark küçük (S2 el modeli ileride bağlanabilir). |
 | plant-growth | 3 | Enrichment (8 saatlik döküm, bir yıl verim) savaş dışı. | evet: Enrichment 8 saatlik döküm, savaş dışı; Overgrowth tam. |
 | remove-curse | 3 | Lanetli sihirli eşyada bağlılığı koparma savaş dışı. | evet: Lanetli eşyadan kopma savaş dışı; savaşta lanet kalkar. |
 | sleet-storm | 3 | Silindir yüksekliği (20 ft) ve açık alevlerin sönmesi `douses` ile; konsantrasyon save'i alana giren/başlayanda. | evet: Silindir yüksekliği modelde yok; alev söndürme ve konsantrasyon save'i tam. |
@@ -113,7 +111,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | bane | 1 | spells.json | çalışır |  |  |  |
 | bless | 1 | spells.json | çalışır |  |  |  |
 | burning-hands | 1 | spells.json | çalışır |  |  |  |
-| charm-person | 1 | spells.json | çalışır | a7 (sürüm 36) |  |  |
+| charm-person | 1 | spells.json | çalışır | g6 (sürüm 43) |  |  |
 | chromatic-orb | 1 | spells.json | çalışır | s1 (sürüm 40) |  |  |
 | color-spray | 1 | spells.json | çalışır | a4 (sürüm 32) |  |  |
 | command | 1 | spells.json | çalışır | s2 (sürüm 41) |  |  |
@@ -181,7 +179,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | darkvision | 2 | spells.json | çalışır |  |  |  |
 | detect-thoughts | 2 | spells.json | savaş dışı |  |  |  |
 | dragons-breath | 2 | spells.json | çalışır | a7 (sürüm 36) |  |  |
-| enhance-ability | 2 | spells.json | çalışır | a7 (sürüm 36) |  |  |
+| enhance-ability | 2 | spells.json | savaş dışı | a7 (sürüm 36) |  |  |
 | enlarge-reduce | 2 | spells.json | çalışır | s2 (sürüm 41) |  |  |
 | enthrall | 2 | spells.json | savaş dışı |  |  |  |
 | find-steed | 2 | spells.json | çalışır |  |  |  |
@@ -223,7 +221,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | web | 2 | spells.json | çalışır | s2 (sürüm 41) |  |  |
 | zone-of-truth | 2 | spells.json | savaş dışı |  |  |  |
 | animate-dead | 3 | spells.json | çalışır | a6 (sürüm 35) |  |  |
-| beacon-of-hope | 3 | spells.json | çalışır | a4 (sürüm 32) |  |  |
+| beacon-of-hope | 3 | spells.json | çalışır | g6 (sürüm 43) |  |  |
 | bestow-curse | 3 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | blink | 3 | spells.json | çalışır | s1 (sürüm 40) |  |  |
 | call-lightning | 3 | spells.json | çalışır | a6 (sürüm 35) |  |  |
@@ -233,7 +231,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | create-food-and-water | 3 | spells.json | savaş dışı |  |  |  |
 | daylight | 3 | spells.json | çalışır | a7 (sürüm 36) |  |  |
 | dispel-magic | 3 | spells.json | çalışır | a7 (sürüm 36) |  |  |
-| fear | 3 | spells.json | çalışır | a4 (sürüm 32) |  |  |
+| fear | 3 | spells.json | çalışır | g6 (sürüm 43) |  |  |
 | fireball | 3 | spells.json | çalışır |  |  |  |
 | fly | 3 | spells.json | çalışır | s2 (sürüm 41) |  |  |
 | gaseous-form | 3 | spells.json | çalışır | s2 (sürüm 41) |  |  |
@@ -387,7 +385,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | simulacrum | 7 | spells-69.json | savaş dışı |  |  | hayır |
 | symbol | 7 | spells-69.json | savaş dışı |  |  | hayır |
 | teleport | 7 | spells-69.json | savaş dışı |  |  | hayır |
-| animal-shapes | 8 | spells-69.json | çalışır | a7 (sürüm 36) |  | hayır |
+| animal-shapes | 8 | spells-69.json | savaş dışı | a7 (sürüm 36) |  | hayır |
 | antimagic-field | 8 | spells-69.json | çalışır |  |  | hayır |
 | antipathy-sympathy | 8 | spells-69.json | savaş dışı |  |  | hayır |
 | befuddlement | 8 | spells-69.json | çalışır |  |  | hayır |

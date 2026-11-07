@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { healRoll } from './healMax';
 import { distance as hexDistance } from '../rules/hex';
 import { globalRule } from './ruleControl';
 import { leashEvents, leashProblem } from './leash';
@@ -171,7 +172,7 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
     if (actor.hp >= actor.maxHp) return fail('Zaten tam sağlıklı.');
     if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
     const die = e.dice === 'martial' ? actor.metabolism?.die ?? '1d6' : e.dice;
-    const amount = Math.max(1, rollDice(die, rollTag(rng, { by: actor.id, kind: 'heal' })).total + Math.max(e.min, actor.modifiers[e.ability]));
+    const amount = Math.max(1, healRoll(state, actor, die, rng, actor.id) + Math.max(e.min, actor.modifiers[e.ability]));
     const hpAfter = Math.min(actor.maxHp, actor.hp + amount);
     events.push({ type: 'healed', actorId: actor.id, targetId: actor.id, label: f.name, amount: hpAfter - actor.hp, targetHpAfter: hpAfter });
     return finish(state, events);

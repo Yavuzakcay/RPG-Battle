@@ -257,7 +257,9 @@ export interface SpellMechanics {
   failEffect?: Partial<EffectSpec> & { grants?: string[]; delayed?: { dice: string; type: string }; repeatFailDamage?: { dice: string; type: string }; compel?: boolean;
     /** Kuyruk 19: Contagion: tur sonu save'i N başarıda biter, N başarısızlıkta kalıcı (sayaç); seçilen yetenekte save dezavantajı; durumu kaldıran etkiye CON save. */
     repeatTally?: number; saveDisChoice?: boolean; stubborn?: boolean; confused?: boolean; noBonus?: boolean;
-    attackDis?: Record<string, never>; checkDis?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'>; repeatSaveUnseen?: boolean; untilSourceTurnEnd?: boolean };
+    attackDis?: Record<string, never>; checkDis?: Array<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'>; repeatSaveUnseen?: boolean; untilSourceTurnEnd?: boolean;
+    /** Kuyruk G6 (sürüm 43): başarısız save'de yaratık elindeki silahları düşürür (Fear; el modeli `dropEvents`). */
+    dropHeld?: boolean };
   /**
    * Kuyruk 19: anahtar `spellsK19` açıkken mekaniğin üstüne yazılan alanlar (tam SRD hâli; eski sürümde eski mekanik).
    */
@@ -273,6 +275,10 @@ export interface SpellMechanics {
   s1?: Partial<SpellMechanics>;
   /** Kuyruk S2 (sürüm 41): kalan sığmayan parçalar. */
   s2?: Partial<SpellMechanics>;
+  /** Kuyruk G6 (sürüm 43): Game Master notlu büyülerin savaş kolları (Charm Person taraf değiştirme, Fear eşya düşürme). */
+  g6?: Partial<SpellMechanics>;
+  /** Kuyruk G6: savaş büyü listesinde ve yapay zekâda yok (kartta savaş dışı + Game Master notu; Animal Shapes, Enhance Ability). */
+  battleHidden?: boolean;
   /** Kuyruk A7: savaşta uygulanan kısmın yanında savaş dışı parça Game Master notu (kartta ve günlükte; BUYU-KISMI "tamam (GM notlu)"). */
   gmNoted?: boolean;
   /**

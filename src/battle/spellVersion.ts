@@ -16,6 +16,7 @@ export function mechanicsAt(state: Pick<BattleState, 'kuralSurumu'>, spell: Spel
   if (m.a8 && ruleVersion(state) >= 37) m = { ...m, ...m.a8, a8: undefined };
   if (m.s1 && ruleVersion(state) >= 40) m = { ...m, ...m.s1, s1: undefined };
   if (m.s2 && ruleVersion(state) >= 41) m = { ...m, ...m.s2, s2: undefined };
+  if (m.g6 && ruleVersion(state) >= 43) m = { ...m, ...m.g6, g6: undefined };
   return m;
 }
 

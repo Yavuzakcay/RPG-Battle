@@ -17,17 +17,17 @@ const rows = durumRows((srdFile as { spells: Array<{ id: string; name: string; l
   [...s03, ...s45, ...s69] as unknown as Array<Record<string, unknown>>) as Row[];
 
 describe('BUYU-DURUM', () => {
-  it('339 = savaşta 227 + savaş dışı 112; kısmi ve yok sıfır ya da listede', () => {
+  it('339 = savaşta 225 + savaş dışı 114; kısmi ve yok sıfır ya da listede', () => {
     expect(rows.length).toBe(339);
-    expect(rows.filter((r) => r.durum === 'savaş dışı').length).toBe(112);
-    expect(rows.filter((r) => r.durum !== 'savaş dışı').length).toBe(227);
+    expect(rows.filter((r) => r.durum === 'savaş dışı').length).toBe(114); // Kuyruk G6: Animal Shapes ve Enhance Ability savaş dışı (kullanıcı kararı)
+    expect(rows.filter((r) => r.durum !== 'savaş dışı').length).toBe(225);
     const open = rows.filter((r) => (r.durum === 'kısmi' || r.durum === 'yok') && !ALLOWED.includes(r.id)).map((r) => r.id);
     expect(open).toEqual([]);
   });
   it('Game Master notlu ve kapsam dışı notluların kararı yazılı', () => {
     const N = (notes as { notlar: Record<string, { uyar: string; neden: string }> }).notlar;
     const need = rows.filter((r) => r.gm !== undefined || r.kapsam).map((r) => r.id);
-    expect(need.length).toBe(35);
+    expect(need.length).toBe(31); // Kuyruk G6: Fear ve Beacon kapsam dışından çıktı; Animal Shapes/Enhance Ability savaş dışı
     for (const id of need) { expect(N[id], id).toBeDefined(); expect(['evet', 'kismen', 'hayir']).toContain(N[id]?.uyar); }
   });
   it('belge güncel', () => {

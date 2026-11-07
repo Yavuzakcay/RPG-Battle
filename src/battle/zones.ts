@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { healRoll } from './healMax';
 import { groundWarded, groundZone } from './groundWard';
 import { barriersOn, passesBarrier } from './barriers';
 import { fireSideHexes, wallOpenEvents } from './walls';
@@ -142,7 +143,7 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   // Görev P7: iyileştiren zemin (ek paket): hasar yerine can.
   if (spec.heal) {
     if (victim.life === 'dead') return events;
-    const h = rollDice(spec.heal, rollTag(rng, { kind: 'heal', by: z.casterId }));
+    const h = { total: healRoll(state, victim, spec.heal, rng, z.casterId) };
     const n = Math.max(0, Math.min(h.total, victim.maxHp - victim.hp));
     if (n > 0) events.push({ type: 'healed', actorId: z.casterId, targetId: victim.id, label: z.name, amount: n, targetHpAfter: victim.hp + n });
     return events;

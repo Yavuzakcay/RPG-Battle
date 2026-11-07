@@ -69,6 +69,7 @@ import {
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { effectTargetCount, strideSpellOf } from './battle/spells';
+import { wishCandidates } from './battle/spells69';
 import { movableZoneOf } from './battle/zones';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
@@ -2039,6 +2040,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else if (sp.mechanics.upgrade?.terraform && globalRule(state, 'spellsK19')) {
                         setSpell(sp); setChoicePick(sp.mechanics.upgrade.terraform.mode === 'controlWater' ? 'whirlpool' : null);
                         setPickHexCmd({ make: (h) => ({ type: 'cast_spell', actorId, spellName: sp.name, targetHex: h }) }); setMode('pickHex');
+                      }
+                      // Kuyruk G6: Wish: bu savaşta karşı tarafın yaptığı büyülerden kopyalanacak olan seçilir, sonra hedef.
+                      else if ((sp.mechanics as { wish?: boolean }).wish && globalRule(state, 'spells69')) {
+                        const list = wishCandidates(state, session.events, actorId);
+                        setSpell({ ...sp, mechanics: { ...sp.mechanics, effect: { targets: 1, side: 'any', choices: list } } } as typeof sp);
+                        setPicked([]); setChoicePick(list[0] ?? null); setMode('effect');
                       }
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
