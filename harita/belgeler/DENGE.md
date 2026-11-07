@@ -53,6 +53,108 @@ Sayım: eylem (`use_feature imza:`), tepki (`reaction_used imza-…`), pasif tet
 
 "Önce" satırlarında hazır büyü sütunu yalnız Dunganga için ölçüldü (sütun sonradan eklendi; "–"). Dunganga'ya yakın menzilli imza eylemi için yaklaşma (veride `yzYaklas`) eklendi; ölçülebilir fark yok (eylem 14 → 14). Hedef (≥ 1 imza etkisi / savaş) 11 alt sınıfın hepsinde tutuyor; Dunganga yalnız hazır imza büyüleri sayılınca (kullanıcı kararı).
 
+### Alt sınıf denge ızgarası (KISMİ: 3/7/11 tamam, 15/20 sürüyor; 2026-11-07)
+
+`npx vite-node src/sim/k59Denge.ts -- 100 --kap` (k18-<sınıf> partisi: sınıf + Bor/Tavi/Sela; SRD alt sınıfı ↔ imza alt sınıfı ya da Karadul, ev kuralı açık; Çöl/Orman/Mağara × 100 tohum; tablo `node scripts/k59-denge-tablo.mjs <klasör>`). Ölçüt: SRD karşılığına göre ±5 puan. Hızır satırları (3., 7. sv) Tam Zamanında 60 ft ölçümü; 30 ft ayarından sonra 3. sv %39 (+5), 7. sv %8 (−0) — aşağıda "Ayarlar".
+Not: 7. seviyede 4 kişilik k18 partilerinin çoğu Orman/Mağara'da %0 kazanıyor (taban etkisi): o sınıflarda fark yalnız Çöl'den okunur.
+
+| Sınıf | Alt sınıf | SRD karşılığı | Sv | Senaryolar (Çöl/Orman/Mağara) | Kazanma | SRD | Fark | Durum |
+|---|---|---|---:|---|---:|---:|---:|---|
+| barbarian | Çılgın Savaşçı Yolu | — | 3 | 31 / 31 / 49 | 37% | 37% | — | SRD (taban) |
+| barbarian | Geride Kalanın Yolu | Çılgın Savaşçı Yolu | 3 | 34 / 20 / 48 | 34% | 37% | -3 | aralıkta |
+| barbarian | Çılgın Savaşçı Yolu | — | 7 | 11 / 0 / 0 | 4% | 4% | — | SRD (taban) |
+| barbarian | Geride Kalanın Yolu | Çılgın Savaşçı Yolu | 7 | 11 / 0 / 0 | 4% | 4% | 0 | aralıkta |
+| barbarian | Çılgın Savaşçı Yolu | — | 11 | 92 / 76 / 0 | 56% | 56% | — | SRD (taban) |
+| barbarian | Geride Kalanın Yolu | Çılgın Savaşçı Yolu | 11 | 91 / 73 / 0 | 55% | 56% | -1 | aralıkta |
+| barbarian | Geride Kalanın Yolu | Çılgın Savaşçı Yolu | 15 | 63 / 86 / 12 | 54% | 45% | +8 | güçlü (aralık dışı) |
+| barbarian | Çılgın Savaşçı Yolu | — | 15 | 60 / 74 / 2 | 45% | 45% | — | SRD (taban) |
+| bard | Bilgi Koleji | — | 3 | 52 / 60 / 67 | 60% | 60% | — | SRD (taban) |
+| bard | Şair Koleji | Bilgi Koleji | 3 | 48 / 46 / 51 | 48% | 60% | -11 | zayıf (aralık dışı) |
+| bard | Bilgi Koleji | — | 7 | 35 / 0 / 0 | 12% | 12% | — | SRD (taban) |
+| bard | Şair Koleji | Bilgi Koleji | 7 | 36 / 0 / 0 | 12% | 12% | +0 | aralıkta |
+| bard | Şair Koleji | Bilgi Koleji | 11 | 64 / 79 / 0 | 48% | 47% | +0 | aralıkta |
+| bard | Bilgi Koleji | — | 11 | 62 / 80 / 0 | 47% | 47% | — | SRD (taban) |
+| bard | Bilgi Koleji | — | 15 | 21 / 71 / 9 | 34% | 34% | — | SRD (taban) |
+| bard | Şair Koleji | Bilgi Koleji | 15 | – / 70 / – | 70% | 34% | +36 | eksik senaryo |
+| cleric | Yaşam Etki Alanı | — | 3 | 57 / 68 / 79 | 68% | 68% | — | SRD (taban) |
+| cleric | Birlik Manastırı | Yaşam Etki Alanı | 3 | 62 / 73 / 79 | 71% | 68% | +3 | aralıkta |
+| cleric | Yaşam Etki Alanı | — | 7 | 23 / 27 / 71 | 40% | 40% | — | SRD (taban) |
+| cleric | Birlik Manastırı | Yaşam Etki Alanı | 7 | 4 / 17 / 64 | 28% | 40% | -12 | zayıf (aralık dışı) |
+| cleric | Birlik Manastırı | Yaşam Etki Alanı | 11 | 6 / 15 / 27 | 16% | 31% | -15 | zayıf (aralık dışı) |
+| cleric | Yaşam Etki Alanı | — | 11 | 11 / 28 / 55 | 31% | 31% | — | SRD (taban) |
+| druid | Toprak Çemberi | — | 3 | 48 / 34 / 68 | 50% | 50% | — | SRD (taban) |
+| druid | Karadul Çemberi | Toprak Çemberi | 3 | 53 / 41 / 63 | 52% | 50% | +2 | aralıkta |
+| druid | Toprak Çemberi | — | 7 | 42 / 30 / 53 | 42% | 42% | — | SRD (taban) |
+| druid | Karadul Çemberi | Toprak Çemberi | 7 | 44 / 30 / 42 | 39% | 42% | -3 | aralıkta |
+| druid | Karadul Çemberi | Toprak Çemberi | 11 | 64 / 77 / 39 | 60% | 63% | -3 | aralıkta |
+| druid | Toprak Çemberi | — | 11 | 72 / 71 / 46 | 63% | 63% | — | SRD (taban) |
+| fighter | Şampiyon | — | 3 | 25 / 12 / 22 | 20% | 20% | — | SRD (taban) |
+| fighter | İmparator | Şampiyon | 3 | 18 / 14 / 24 | 19% | 20% | -1 | aralıkta |
+| fighter | Şampiyon | — | 7 | 57 / 48 / 85 | 63% | 63% | — | SRD (taban) |
+| fighter | İmparator | Şampiyon | 7 | 50 / 47 / 94 | 64% | 63% | +0 | aralıkta |
+| fighter | İmparator | Şampiyon | 11 | 73 / 68 / 83 | 75% | 84% | -9 | zayıf (aralık dışı) |
+| fighter | Şampiyon | — | 11 | 89 / 81 / 81 | 84% | 84% | — | SRD (taban) |
+| monk | Açık El Savaşçısı | — | 3 | 37 / 15 / 52 | 35% | 35% | — | SRD (taban) |
+| monk | Yaşlı Bilge Disiplini | Açık El Savaşçısı | 3 | 22 / 14 / 52 | 29% | 35% | -5 | zayıf (aralık dışı) |
+| monk | Açık El Savaşçısı | — | 7 | 37 / 0 / 0 | 12% | 12% | — | SRD (taban) |
+| monk | Yaşlı Bilge Disiplini | Açık El Savaşçısı | 7 | 22 / 0 / 0 | 7% | 12% | -5 | zayıf (aralık dışı) |
+| monk | Yaşlı Bilge Disiplini | Açık El Savaşçısı | 11 | 59 / 62 / 0 | 40% | 61% | -21 | zayıf (aralık dışı) |
+| monk | Açık El Savaşçısı | — | 11 | 93 / 91 / 0 | 61% | 61% | — | SRD (taban) |
+| paladin | Bağlılık Yemini | — | 3 | 39 / 10 / 40 | 30% | 30% | — | SRD (taban) |
+| paladin | Hızır Yemini | Bağlılık Yemini | 3 | 51 / 18 / 50 | 40% | 30% | +10 | güçlü (aralık dışı) |
+| paladin | Bağlılık Yemini | — | 7 | 18 / 0 / 6 | 8% | 8% | — | SRD (taban) |
+| paladin | Hızır Yemini | Bağlılık Yemini | 7 | 16 / 1 / 5 | 7% | 8% | -1 | aralıkta |
+| paladin | Bağlılık Yemini | — | 11 | 60 / 58 / 0 | 39% | 39% | — | SRD (taban) |
+| paladin | Hızır Yemini | Bağlılık Yemini | 11 | 67 / 65 / 3 | 45% | 39% | +6 | güçlü (aralık dışı) |
+| ranger | Avcı | — | 3 | 27 / 17 / 33 | 26% | 26% | — | SRD (taban) |
+| ranger | Çiftçi | Avcı | 3 | 21 / 19 / 35 | 25% | 26% | -1 | aralıkta |
+| ranger | Çiftçi | Avcı | 7 | 23 / 0 / 0 | 8% | 6% | +1 | aralıkta |
+| ranger | Avcı | — | 7 | 19 / 0 / 0 | 6% | 6% | — | SRD (taban) |
+| ranger | Avcı | — | 11 | 71 / 67 / 0 | 46% | 46% | — | SRD (taban) |
+| ranger | Çiftçi | Avcı | 11 | 67 / 68 / 0 | 45% | 46% | -1 | aralıkta |
+| rogue | Hırsız | — | 3 | 22 / 12 / 33 | 22% | 22% | — | SRD (taban) |
+| rogue | İnfazcı | Hırsız | 3 | 11 / 23 / 27 | 20% | 22% | -2 | aralıkta |
+| rogue | Hırsız | — | 7 | 65 / 41 / 92 | 66% | 66% | — | SRD (taban) |
+| rogue | İnfazcı | Hırsız | 7 | 64 / 41 / 87 | 64% | 66% | -2 | aralıkta |
+| rogue | Hırsız | — | 11 | 86 / 79 / 89 | 85% | 85% | — | SRD (taban) |
+| rogue | İnfazcı | Hırsız | 11 | 89 / 81 / 83 | 84% | 85% | -0 | aralıkta |
+| sorcerer | Ejderha Büyücülüğü | — | 3 | 37 / 18 / 41 | 32% | 32% | — | SRD (taban) |
+| sorcerer | Dunganga | Ejderha Büyücülüğü | 3 | 24 / 19 / 29 | 24% | 32% | -8 | zayıf (aralık dışı) |
+| sorcerer | Ejderha Büyücülüğü | — | 7 | 83 / 74 / 94 | 84% | 84% | — | SRD (taban) |
+| sorcerer | Dunganga | Ejderha Büyücülüğü | 7 | 66 / 55 / 81 | 67% | 84% | -16 | zayıf (aralık dışı) |
+| sorcerer | Ejderha Büyücülüğü | — | 11 | 79 / 97 / 87 | 88% | 88% | — | SRD (taban) |
+| sorcerer | Dunganga | Ejderha Büyücülüğü | 11 | 73 / 80 / 70 | 74% | 88% | -13 | zayıf (aralık dışı) |
+| warlock | İblis Hamisi | — | 3 | 52 / 16 / 43 | 37% | 37% | — | SRD (taban) |
+| warlock | Astrolog | İblis Hamisi | 3 | 48 / 15 / 35 | 33% | 37% | -4 | aralıkta |
+| warlock | İblis Hamisi | — | 7 | 42 / 9 / 21 | 24% | 24% | — | SRD (taban) |
+| warlock | Astrolog | İblis Hamisi | 7 | 34 / 9 / 16 | 20% | 24% | -4 | aralıkta |
+| warlock | İblis Hamisi | — | 11 | 88 / 65 / 54 | 69% | 69% | — | SRD (taban) |
+| warlock | Astrolog | İblis Hamisi | 11 | 78 / 73 / 50 | 67% | 69% | -2 | aralıkta |
+| wizard | Evokasyon Ustası | — | 3 | 16 / 13 / 23 | 17% | 17% | — | SRD (taban) |
+| wizard | Harita Öğretisi | Evokasyon Ustası | 3 | 15 / 17 / 24 | 19% | 17% | +1 | aralıkta |
+| wizard | Harita Öğretisi | Evokasyon Ustası | 7 | 38 / 37 / 54 | 43% | 62% | -19 | zayıf (aralık dışı) |
+| wizard | Evokasyon Ustası | — | 7 | 51 / 45 / 89 | 62% | 62% | — | SRD (taban) |
+| wizard | Evokasyon Ustası | — | 11 | 86 / 80 / 82 | 83% | 83% | — | SRD (taban) |
+| wizard | Harita Öğretisi | Evokasyon Ustası | 11 | 67 / 69 / 56 | 64% | 83% | -19 | zayıf (aralık dışı) |
+
+Aralık dışı: 15
+- Geride Kalanın Yolu (barbarian) sv15: +8
+- Şair Koleji (bard) sv3: -11
+- Birlik Manastırı (cleric) sv7: -12
+- Birlik Manastırı (cleric) sv11: -15
+- İmparator (fighter) sv11: -9
+- Yaşlı Bilge Disiplini (monk) sv3: -5
+- Yaşlı Bilge Disiplini (monk) sv7: -5
+- Yaşlı Bilge Disiplini (monk) sv11: -21
+- Hızır Yemini (paladin) sv3: +10
+- Hızır Yemini (paladin) sv11: +6
+- Dunganga (sorcerer) sv3: -8
+- Dunganga (sorcerer) sv7: -16
+- Dunganga (sorcerer) sv11: -13
+- Harita Öğretisi (wizard) sv7: -19
+- Harita Öğretisi (wizard) sv11: -19
+
+
 ## Kuyruk K58: savaş okunabilirliği ve yapay zekâ — regresyon ve zorluk (2026-11-06)
 
 Ayar yok (denge K59). Kural sürümü 42 (değişmedi).
