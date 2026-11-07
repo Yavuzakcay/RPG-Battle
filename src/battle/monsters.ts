@@ -322,6 +322,10 @@ function executeMultiPlan(state: BattleState, actor: Combatant, targetId: string
     const t = current.combatants[tId];
     if (!atk.area && (!t || !isTargetable(t) || (t.hp <= 0 && !t.regenPending))) continue;
     const r = current.map && atk.area ? monsterAreaEvents(current, me, i, st.targetHex ?? t?.pos ?? null, st.targetHex ? null : tId, rng) : monsterAttackEvents(current, me, t as Combatant, i, rng);
+    // K59 (duman bulgusu): önceki adımın sonucu (tepkiyle ışınlanma, itme) hedefi erişim/görüş dışına çıkardıysa bu adım
+    // atlanır (ölü hedefteki gibi); eskiden bütün komut reddediliyor, canavar eylemini kaybediyordu. Reddedilen komut olay
+    // üretmediği için kayıtlı savaşların baştan oynatılması değişmez.
+    if (!r.ok && events.length > 0) continue;
     if (!r.ok) return r;
     events.push(...r.events); current = applyEvents(current, r.events);
   }
