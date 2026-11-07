@@ -215,6 +215,8 @@ export interface SaveInput {
   mode: RollMode;
   /** Otomatik başarısız (Paralyzed hedefin STR/DEX save'i gibi). */
   autoFail?: boolean;
+  /** Kuyruk K63: save otomatik başarılı (Truesight'ın görsel yanılsamaya karşı save'i). */
+  autoSuccess?: boolean;
   /** Save zarına eklenti zarları (Bless, Bane). */
   extra?: ExtraDie[];
   /** Kuyruk 18 H3: save'in karşı koyduğu durumlar (Countercharm yalnızca Charmed/Frightened'a). */
@@ -254,6 +256,7 @@ export function spoilChance(extra: ExtraDie[] | undefined, ok: { total: number; 
 /** Save çözümleme: toplam DC'ye eşit veya büyükse başarılı. */
 export function resolveSave(input: SaveInput, rng: Rng = Math.random): SaveResult {
   if (input.autoFail) return { d20: null, total: null, success: false };
+  if (input.autoSuccess) return { d20: null, total: null, success: true };
   const d20 = rollD20(input.mode, rollTag(rng, { kind: 'save', bonus: input.modifier }));
   const extra = rollExtras(input.extra, 'save', rng);
   let total = d20.kept + input.modifier + extrasTotal(extra);

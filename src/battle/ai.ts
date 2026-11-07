@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { hiddenFromTruesight } from './sight';
 import { heldFollow, mechanicsAt } from './spellVersion';
 import { breathOf } from './breath';
 import { isIncapacitated } from '../rules/conditions';
@@ -208,7 +209,7 @@ function avg(dice: string | undefined): number {
 function foesOf(state: BattleState, actor: Combatant): Combatant[] {
   const other = actor.side === 'enemies' ? 'party' : 'enemies';
   const all = Object.values(state.combatants).filter(
-    (c) => c.side === other && c.hp > 0 && isTargetable(c) && !c.hidden && !c.asleep && canSee(state, actor, c) && !(c.summon?.intangible && !c.summon.gone)
+    (c) => c.side === other && c.hp > 0 && isTargetable(c) && !hiddenFromTruesight(state, actor, c) && !c.asleep && canSee(state, actor, c) && !(c.summon?.intangible && !c.summon.gone)
       // Görev S4: açık bir sızma hedefi (ulaş, yok et, al) varken parti habersiz düşmana dokunmaz.
       && !(c.unaware && sneaking(state)),
   );
@@ -224,7 +225,7 @@ function foesOf(state: BattleState, actor: Combatant): Combatant[] {
 function finishRegen(state: BattleState, actor: Combatant): Command | null {
   const other = actor.side === 'enemies' ? 'party' : 'enemies';
   const down = Object.values(state.combatants).filter((c) => c.side === other && c.hp <= 0 && c.regenPending && !c.regenBlocked
-    && c.life !== 'dead' && isTargetable(c) && !c.hidden && canSee(state, actor, c));
+    && c.life !== 'dead' && isTargetable(c) && !hiddenFromTruesight(state, actor, c) && canSee(state, actor, c));
   for (const t of down) {
     for (const o of partyOptions(actor, t, state)) {
       const type = o.cmd.type === 'attack' ? o.cmd.option.damageType

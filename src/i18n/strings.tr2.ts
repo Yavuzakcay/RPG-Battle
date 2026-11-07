@@ -312,6 +312,7 @@ export const TR_EXTRA = {
       moveRisk: (n: number, dmg: number): string => `${n} fırsat saldırısı · toplam ≈${dmg} hasar`, moveGo: 'Yine de yürü',
       mystery: '? Burada bir şey olabilir', reactions: 'Tepkime', conditions: 'Durum', none: 'Etkisiz görünüyor', error: (e: string): string => `Yapılamaz: ${e}`,
     },
+    k63: { truesight: (ft: number): string => `Gerçek görüş ${ft} ft (görünmezi, yanılsamayı, gerçek biçimi görür)`, trueForm: (name: string): string => `Gerçek biçim: ${name}` },
     s2: { altitude: (ft: number): string => `İrtifa ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `${item} bırak`, pick: (item: string): string => `${item} al` },
     start: 'Savaşı başlat',
     explore: { go: 'Keşfe devam', hint: 'Keşif: jetona dokunup seç, yürü; giriş altıgenine varınca Serüven\'e dönülür.' },

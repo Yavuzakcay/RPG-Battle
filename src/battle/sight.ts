@@ -17,18 +17,51 @@ const seesInvisible = (c: Combatant) => c.effects?.some((e) => e.seeInvisible) ?
  * Kuyruk 19: özel duyular (SRD 5.2.1): Blindsight ve Truesight menzili içinde görme gerektiren her şey (görünmez yaratık,
  * karanlık, büyülü karanlık) görülür. Anahtar `specialSenses` (sürüm 16). Tremorsense yeri belirler ama "görmez".
  */
+/**
+ * Kuyruk K63: yaratığın Truesight menzili (ft; 0 = yok). Kaynaklar: canavar/özellik duyusu `senses.truesight` (Witch
+ * Sight 30; Game Master anahtarı `specialSenses`), Boon of Truesight 60 (`featuresK19`), süren etkide `truesight`
+ * (True Seeing 120) ve ek paket `algi.gercekGorusFt` (`pkTruesight`).
+ */
+export function truesightRange(state: Pick<BattleState, 'map' | 'kuralSurumu'>, observer: Combatant): number {
+  const boon = observer.traits?.includes('boon-truesight') && globalRule(state, 'featuresK19') ? 60 : 0;
+  const eff = Math.max(0, ...(observer.effects ?? []).map((e) => Math.max(e.pkTruesight ?? 0, e.truesight ?? 0)));
+  const own = observer.senses?.truesight && globalRule(state, 'specialSenses') ? observer.senses.truesight : 0;
+  return Math.max(boon, eff, own);
+}
+
+/** Truesight ile ilgili yeni kurallar (yanılsama, gizlenme, gerçek biçim) kural sürümü 47 ve sonrasında. */
+export const TRUESIGHT_VERSION = 47;
+
+/**
+ * Kuyruk K63: tek sorgu: `observer`, `target`'ı Truesight menzilinde mi görüyor (SRD 5.2.1 Truesight: normal ve büyülü
+ * karanlıkta görür, Invisible yaratık ve nesneleri görür, görsel yanılsamayı otomatik fark eder ve onlara karşı save'leri
+ * geçer, şekil değiştirenin ya da büyüyle dönüşenin asıl biçimini algılar, Ethereal Plane'i görür). Sürüm 47+ ve haritalı
+ * savaşta; menzil iki altıgen arası (çok altıgenli gövdede en yakın çift değil, çapa; `senseSees` ile aynı ölçü).
+ */
+export function truesightSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean {
+  if (!state || (state.kuralSurumu ?? 1) < TRUESIGHT_VERSION || !observer.pos || !target.pos) return false;
+  const ft = truesightRange(state, observer);
+  return ft > 0 && distance(observer.pos, target.pos) * 5 <= ft;
+}
+
+/** Gizlenmiş (Hide) yaratık Truesight sahibinden saklanamaz (Hide Invisible verir; sürüm 47+). */
+export const hiddenFromTruesight = (state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean =>
+  !!target.hidden && !truesightSees(state, observer, target);
+
+/** Asıl biçimini algılar mı: dönüşmüş (Polymorph, Wild Shape) hedefin gerçek biçimi Truesight ile görülür (sürüm 47+). */
+export const seesTrueForm = (state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean =>
+  !!target.shape && truesightSees(state, observer, target);
+
 export function senseSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean {
   if (!state || !observer.pos || !target.pos) return false;
   // Kuyruk 19 (featuresK19): Ranger'ın Feral Senses'i Blindsight 30 ft (görünmez yaratığa saldırı dezavantajı da kalkar).
   const feral = observer.traits?.includes('feral-senses') && globalRule(state, 'featuresK19') ? 30 : 0;
-  // Kuyruk 19 (Epic Boon): Boon of Truesight: 60 ft Truesight.
-  const boon = observer.traits?.includes('boon-truesight') && globalRule(state, 'featuresK19') ? 60 : 0;
+  // Kuyruk K63: gerçek görüş menzili tek yerde (`truesightRange`; Boon, Witch Sight, canavar duyusu, True Seeing, paket `algi`).
+  const ts = truesightRange(state, observer);
   // Kuyruk 19 (Dwarf Stonecunning): süreli Tremorsense (yerdeki yaratıklar).
   const tremor = !isAirborne(target) ? Math.max(0, ...(observer.effects ?? []).map((e) => e.tremorsense ?? 0)) : 0;
-  // Görev P7: ek paket gerçek görüşü (`algi.gercekGorusFt`).
-  const pk = Math.max(0, ...(observer.effects ?? []).map((e) => e.pkTruesight ?? 0));
-  if (!feral && !boon && !tremor && !pk && (!observer.senses || !globalRule(state, 'specialSenses'))) return false;
-  const ft = Math.max(observer.senses?.blindsight ?? 0, observer.senses?.truesight ?? 0, feral, boon, tremor, pk);
+  const blind = observer.senses && globalRule(state, 'specialSenses') ? observer.senses.blindsight ?? 0 : 0;
+  const ft = Math.max(blind, ts, feral, tremor);
   return ft > 0 && distance(observer.pos, target.pos) * 5 <= ft;
 }
 const drop = (conds: string[]) => conds.filter((x) => x !== 'Invisible');
@@ -43,6 +76,8 @@ const KNOWS: KnowsHook[] = [];
 export const registerKnowsWhere = (h: KnowsHook): void => { if (!KNOWS.includes(h)) KNOWS.push(h); };
 
 export function knowsWhere(state: Pick<BattleState, 'map' | 'kuralSurumu'> & Partial<Pick<BattleState, 'houseRules'>>, observer: Combatant, target: Combatant): boolean {
+  // Kuyruk K63 (sürüm 47): Truesight menzilindeki gizlenmiş yaratık (Hide Invisible verir) saklanamaz.
+  if (truesightSees(state, observer, target)) return true;
   if (KNOWS.some((h) => h(state, observer, target))) return true;
   // Kuyruk A6 (Mind Spike): büyücü hedefin yerini her zaman bilir (gizlenemez).
   if ((target.effects ?? []).some((e) => e.pinpointBy === observer.id)) return true;

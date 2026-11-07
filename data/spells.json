@@ -4395,6 +4395,9 @@
       "s2": {
         "illusionAt": true,
         "sigmayan": null
+      },
+      "k63": {
+        "illusion": true
       }
     },
     "school": "Illusion",

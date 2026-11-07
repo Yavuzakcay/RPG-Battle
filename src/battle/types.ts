@@ -286,6 +286,8 @@ export interface ActiveEffect {
   concAdv?: boolean;
   /** Görev P7: gerçek görüş (ft; `sight.ts` `senseSees`). */
   pkTruesight?: number;
+  /** Kuyruk K63 (sürüm 47): Truesight menzili (ft; True Seeing 120); `sight.ts` `truesightRange`. */
+  truesight?: number;
   /** Görev P7: meydan okuma: bu yaratık `tauntBy` dışındakilere saldırırken dezavantajlı. */
   tauntBy?: string;
   bondTo?: string;

@@ -281,6 +281,10 @@ export interface SpellMechanics {
   g6?: Partial<SpellMechanics>;
   /** Kuyruk K62 (sürüm 46): SRD uyumu 2 (Wall of Ice panelleri ve perdesi, Forcecage, Delayed Blast Fireball). */
   k62?: Partial<SpellMechanics>;
+  /** Kuyruk K63 (sürüm 47): Truesight (True Seeing) ve görsel yanılsama bayrağı. */
+  k63?: Partial<SpellMechanics>;
+  /** Kuyruk K63 (sürüm 47): görsel yanılsama büyüsü; Truesight'lı hedef onun save'ini otomatik geçer (Phantasmal Force/Killer, Weird). */
+  illusion?: boolean;
   /** Kuyruk K61 (sürüm 44): SRD uyumu 1 (Blade Barrier Force, Conjure Fey +1d12, Irresistible Dance, Flesh to Stone, Earthquake). */
   k61?: Partial<SpellMechanics>;
   /** Kuyruk K61: tek hedefli save büyüsünde başarılı save'in hafif etkisi (Flesh to Stone: hız 0, büyücünün sonraki turunun başına dek). */
@@ -674,6 +678,8 @@ export interface EffectSpec {
   light?: number;
   revealed?: boolean;
   seeInvisible?: boolean;
+  /** Kuyruk K63 (sürüm 47): süren etki Truesight verir (ft; True Seeing 120). */
+  truesight?: number;
   attackedAdv?: boolean;
   /**
    * Görev B5: karanlık görüş (ft; Darkvision), seçilen yetenekte kontrollere avantaj (Enhance Ability), taşıyanın bu

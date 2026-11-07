@@ -869,6 +869,15 @@
     "seeInvisible": true,
     "darkvision": 120,
     "icon": "👁"
+   },
+   "k63": {
+    "effect": {
+     "targets": 1,
+     "side": "ally",
+     "rounds": 600,
+     "truesight": 120,
+     "icon": "👁"
+    }
    }
   },
   "school": "Divination",
@@ -2602,6 +2611,9 @@
      "dice": "5d10",
      "type": "psychic"
     }
+   },
+   "k63": {
+    "illusion": true
    }
   },
   "school": "Illusion",

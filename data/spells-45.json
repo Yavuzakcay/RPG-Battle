@@ -258,7 +258,10 @@
         }
       },
       "failEffectGate": "spellsK19",
-      "k19": "Kuyruk 19: başarısızlıkta süre boyunca saldırı ve yetenek kontrollerinde dezavantaj; her tur sonu WIS save: başarısızsa hasar yinelenir, başarılıysa biter (anahtar spellsK19). Eski sürümde yalnızca ilk hasar."
+      "k19": "Kuyruk 19: başarısızlıkta süre boyunca saldırı ve yetenek kontrollerinde dezavantaj; her tur sonu WIS save: başarısızsa hasar yinelenir, başarılıysa biter (anahtar spellsK19). Eski sürümde yalnızca ilk hasar.",
+      "k63": {
+        "illusion": true
+      }
     },
     "school": "Illusion",
     "srdPage": 152

@@ -166,5 +166,5 @@ describe('G6 Beacon of Hope: iksir ve özellik iyileştirmesi (sürüm 43)', () 
 });
 
 describe('G6 kural sürümü', () => {
-  it('güncel sürüm 46 (K62; G6 = 43, K61 = 44, P12 = 45)', () => { expect(CURRENT_RULES).toBe(46); });
+  it('güncel sürüm 47 (K63; G6 = 43, K61 = 44, P12 = 45, K62 = 46)', () => { expect(CURRENT_RULES).toBe(47); });
 });

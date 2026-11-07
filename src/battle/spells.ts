@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { truesightSees } from './sight';
 import { gazePos } from './chainPact';
 import { lifeBondEvents } from './steed';
 import { executeTerraform } from './terraform';
@@ -245,7 +246,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const height = actor.traits?.includes('mm-heightened') && t.id === reached.find((x) => x.c.side !== actor.side)?.c.id;
     // Kuyruk A6 (Sleep, `sleeplessPass`): uyumayan yaratık (Elf Trance) ya da Exhaustion'a bağışık olan save'i kendiliğinden başarır.
     const sleepless = !!m.sleeplessPass && (t.raceId === 'elf' || (t.effects ?? []).some((e) => e.immune?.includes('Exhaustion')));
-    const save = sleepless ? { d20: null, total: null, success: true } as ReturnType<typeof resolveSave>
+    // Kuyruk K63 (sürüm 47, `illusion`): Truesight'lı hedef görsel yanılsamaya karşı save'i otomatik geçer.
+    const sleepOrSee = sleepless || !!m.illusion && truesightSees(state, t, actor);
+    const save = sleepOrSee ? { d20: null, total: null, success: true } as ReturnType<typeof resolveSave>
       : resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
     const adjusted = amount > 0 ? adjustDamage(amount, damageType, profileIn(state, t, true)) : { amount: 0, note: null };
@@ -528,7 +531,7 @@ function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, 
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
@@ -739,7 +742,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const typeFail = !!m.autoFailTypes?.length && globalRule(state, 'spellsK19') && m.autoFailTypes.includes((target.creatureType ?? '').toLowerCase());
     const autoFail = typeFail || ((ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions));
     const dexCover = ability === 'dex' ? cover : 0;
-    const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
+    const save = resolveSave({ ...(m.illusion && truesightSees(state, target, actor) ? { autoSuccess: true } : {}), extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
       mode: saveMode(mode, target, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];
@@ -1656,7 +1659,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.sourceTurnDamage ? { sourceTurnDamage: spec.sourceTurnDamage } : {}), ...(spec.images ? { images: spec.images } : {}),
     // Görev B4: ışık, görünmezlik.
     ...(spec.light !== undefined ? { light: spec.light } : {}), ...(spec.revealed ? { revealed: true } : {}),
-    ...(spec.seeInvisible ? { seeInvisible: true } : {}), ...(spec.attackedAdv ? { attackedAdv: true } : {}),
+    ...(spec.seeInvisible ? { seeInvisible: true } : {}), ...(spec.truesight ? { truesight: spec.truesight } : {}), ...(spec.attackedAdv ? { attackedAdv: true } : {}),
     // Görev B5: karanlık görüş, kontrol avantajı, Stealth aurası.
     ...(spec.darkvision ? { darkvision: spec.darkvision } : {}), ...(spec.checkAdv === 'chosen' && choice ? { checkAdv: [choice as Ability] } : {}),
     ...(spec.stealthAura ? { stealthAura: spec.stealthAura } : {}),
@@ -1686,7 +1689,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (hostile && ability) {
       const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(t.conditions);
       const base0 = spec.saveAdvantage ? 'advantage' : 'normal';
-      const save = resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability, actor), autoFail, against: [...(spec.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
+      const save = resolveSave({ ...(m.illusion && truesightSees(state, t, actor) ? { autoSuccess: true } : {}), extra: saveDice(t, ability), modifier: t.saves[ability], dc, mode: saveMode(base0, t, ability, actor), autoFail, against: [...(spec.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
       const ev: BattleEvent = {
         type: 'save_resolved', actorId: actor.id, targetId: t.id, label: spell.name, ability, dc, mode: base0, reasons: [],
         d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,

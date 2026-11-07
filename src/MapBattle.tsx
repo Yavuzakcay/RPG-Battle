@@ -91,6 +91,7 @@ import { pickArea } from './battle/areaAttack';
 import { climbTargets } from './battle/climb';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
+import { seesTrueForm, truesightRange } from './battle/sight';
 import { mechanicsAt, sigmayanNote } from './battle/spellVersion';
 import { breathOf } from './battle/breath';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
@@ -1734,7 +1735,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       // Kuyruk A2: en çok 3 rozet (öncelik veriden), fazlası "+N".
                       const all = [...statusIcons(c), ...effectIcons(state, c), ...(c.concentration ? [{ key: 'conc', icon: '◎', title: t().view.concentrating(c.concentration.spell) }] : []), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : []),
                         // Kuyruk S2: irtifa rozeti.
-                        ...((c.altitudeFt ?? 0) > 0 ? [{ key: 'alt', icon: `↑${c.altitudeFt}`, title: B.s2.altitude(c.altitudeFt ?? 0) }] : [])] as StatusIcon[];
+                        ...((c.altitudeFt ?? 0) > 0 ? [{ key: 'alt', icon: `↑${c.altitudeFt}`, title: B.s2.altitude(c.altitudeFt ?? 0) }] : []),
+                        // Kuyruk K63 (sürüm 47): Truesight rozeti (menzil) ve Truesight'lı oyuncunun gördüğü asıl biçim.
+                        ...(ruleVersion(state) >= 47 && truesightRange(state, c) > 0 ? [{ key: 'ts', icon: `👁${truesightRange(state, c)}`, title: B.k63.truesight(truesightRange(state, c)) }] : []),
+                        ...(actor && c.shape && seesTrueForm(state, actor, c) ? [{ key: 'tf', icon: '🎭', title: B.k63.trueForm(c.name) }] : [])] as StatusIcon[];
                       if (all.length === 0) return null;
                       const { shown, more } = limitBadges(all);
                       return (

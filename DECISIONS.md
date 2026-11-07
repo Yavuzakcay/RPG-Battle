@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K63: Truesight (kural sürümü 47)
+
+- **Sürüm:** `wip/k63`, `wip/k62` (ce7a6f6) ucundan; sürüm 46 → 47, kapı `>= 47`, büyü verisinde `k63` bloğu; G6/K61/P12/K62 kapılarına dokunulmadı. Denge, büyü `text` ve canavar verisi değişmedi; yeni görsel/ses yok (👁 ve 🎭 rozet simgeleri).
+- **Kapsam (SRD 5.2.1 Truesight):** normal ve büyülü karanlıkta görür, Invisible yaratık/nesneyi görür, görsel yanılsamayı otomatik fark eder ve onlara karşı save'leri geçer, şekil değiştirenin ya da büyüyle dönüşenin asıl biçimini algılar, Ethereal Plane'i görür. Motorda karşılıkları: karanlık/görünmezlik `senseSees` (Blindsight/Tremorsense ile ortak, değişmedi); **yanılsama** = `mechanics.illusion` bayrağı (yalnız Phantasmal Force, Phantasmal Killer, Weird; sürüm 47 verisinde) olan büyünün hedefi Truesight menzilinde ise save otomatik başarılı (`SaveInput.autoSuccess`; Mirror Image zaten `sensesPierce` ile Blindsight/Truesight'ı geçiyordu); **gizlenme** = Hide Invisible verdiği için Truesight menzilindeki gizlenmiş yaratık saklanamaz (`knowsWhere`, yapay zekâ `foesOf` `hiddenFromTruesight`); **asıl biçim** = `seesTrueForm` (jeton rozeti 🎭, mekanik bağ yok: dönüşmüş yaratığın kimliği zaten hedeflemede ayırt edilir); **Ethereal**: görmek hedeflemeyi/etkilemeyi açmaz (Ethereal yaratık zaten etkilenemez, SRD), bu yüzden değişiklik yok. Fear gibi korku büyüleri yanılsama sayılmadı (görsel bir görüntü değil duygusal etki).
+- **Tek sorgu:** `truesightRange(state, c)` (canavar/özellik `senses.truesight` (`specialSenses`), Boon of Truesight 60, süren etkide `truesight`, paket `pkTruesight`) ve `truesightSees(state, gözlemci, hedef)` (sürüm 47+, menzil altıgen çapası); `senseSees` artık Truesight menzilini `truesightRange`'den okur (davranış aynı).
+- **true-seeing:** sürüm 47'de `truesight: 120` (1 saat = 600 tur, istekli dokunulan dost, konsantrasyon yok); eski sürüm yaklaşıklığı (`seeInvisible` sınırsız menzil + 120 ft karanlık görüş) 46 ve altında aynen. Arayüz: hedefte 👁120 rozeti (TR/EN).
+- **Algılama kalemleri:** Boyut Muhafızı (`algi: karanlikGorusFt 300…`) ve İllüzyon Avcısı (`algi: gorunmezGor, gercekGorusFt 10`) paket verisi `docs/ek-yama/p8.yama.json`'da; `icerik/` ortamda yok, iki özellik de zaten `algi` ilkeli üzerinden `pkTruesight`'a bağlıydı ve artık `truesightRange` üzerinden yeni kuralları (yanılsama, gizlenme, gerçek biçim) alır; kurgusal `tests/fixtures/paket-p7.json` `algi` fikstürüyle test edildi. Canavar verisine dokunulmadı (yalnız okuyan kod).
+- **Test:** `src/battle/k63.test.ts` (9 yeni): 47/46 davranışı, menzil, yanılsama, Hide, gerçek biçim, YZ, paket/Boon/canavar menzili, replay (`run`). Veriye bağlı değişiklik: `ruleVersion.test.ts`, `g6.test.ts` güncel sürüm 46 → 47.
+- **Belgeler:** `M1-FARKLAR.md` 3 → 2 satır (kalan fire-storm K65, earthquake yarık/yapı K66); BUYU-DURUM/KISMI yeniden üretildi.
+
 ## 2026-11-08 — Kuyruk K62: SRD uyumu 2 — Wall of Ice, Forcecage, Delayed Blast Fireball (kural sürümü 46)
 
 - **Kapsam ve sürüm:** `wip/k62`, `wip/bp` (59182b0, sürüm 45) ucundan. Büyü verisinde yeni `k62` bloğu (`mechanicsAt` ve `castSpell` `LATER`'ında sürüm 46+); G6 (43), K61 (44), P12 (45) kapılarına dokunulmadı. Büyü `text` alanları, denge ve canavar verisi değişmedi. Yeni görsel/ses yok (mevcut kayıtlı simgeler).

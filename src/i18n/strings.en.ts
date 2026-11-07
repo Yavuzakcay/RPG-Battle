@@ -895,6 +895,7 @@ export const en: Strings = {
       moveRisk: (n: number, dmg: number): string => `${n} opportunity attack${n === 1 ? '' : 's'} · total ≈${dmg} damage`, moveGo: 'Move anyway',
       mystery: '? Something might happen here', reactions: 'Reaction', conditions: 'Condition', none: 'No visible effect', error: (e: string): string => `Not possible: ${e}`,
     },
+    k63: { truesight: (ft: number): string => `Truesight ${ft} ft (sees invisible, illusions, true form)`, trueForm: (name: string): string => `True form: ${name}` },
     s2: { altitude: (ft: number): string => `Altitude ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `Drop ${item}`, pick: (item: string): string => `Pick up ${item}` },
     start: 'Start battle',
     explore: { go: 'Keep exploring', hint: 'Exploring: tap a token to pick, walk; reaching the entry hex returns to the Adventure.' },

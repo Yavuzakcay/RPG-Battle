@@ -203,7 +203,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | misty-step | 2 | spells.json | çalışır |  |  |  |
 | moonbeam | 2 | spells.json | çalışır | s2 (sürüm 41) |  |  |
 | pass-without-trace | 2 | spells.json | çalışır |  |  |  |
-| phantasmal-force | 2 | spells.json | çalışır | s2 (sürüm 41) |  |  |
+| phantasmal-force | 2 | spells.json | çalışır | k63 (sürüm 47) |  |  |
 | prayer-of-healing | 2 | spells.json | savaş dışı |  |  |  |
 | protection-from-poison | 2 | spells.json | çalışır | a4 (sürüm 32) |  |  |
 | ray-of-enfeeblement | 2 | spells.json | çalışır | a6 (sürüm 35) |  |  |
@@ -287,7 +287,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | hallucinatory-terrain | 4 | spells-45.json | savaş dışı |  |  |  |
 | ice-storm | 4 | spells-45.json | çalışır |  |  |  |
 | locate-creature | 4 | spells-45.json | savaş dışı |  |  |  |
-| phantasmal-killer | 4 | spells-45.json | çalışır |  |  |  |
+| phantasmal-killer | 4 | spells-45.json | çalışır | k63 (sürüm 47) |  |  |
 | polymorph | 4 | spells-45.json | çalışır |  |  |  |
 | private-sanctum | 4 | spells-45.json | savaş dışı |  |  |  |
 | resilient-sphere | 4 | spells-45.json | çalışır |  |  |  |
@@ -360,7 +360,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | programmed-illusion | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | sunbeam | 6 | spells-69.json | çalışır |  |  | hayır |
 | transport-via-plants | 6 | spells-69.json | savaş dışı |  |  | hayır |
-| true-seeing | 6 | spells-69.json | çalışır |  |  | hayır |
+| true-seeing | 6 | spells-69.json | çalışır | k63 (sürüm 47) |  | hayır |
 | wall-of-ice | 6 | spells-69.json | çalışır | k62 (sürüm 46) |  | hayır |
 | wall-of-thorns | 6 | spells-69.json | çalışır |  |  | hayır |
 | wind-walk | 6 | spells-69.json | savaş dışı |  |  | hayır |
@@ -416,5 +416,5 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | time-stop | 9 | spells-69.json | çalışır |  |  | hayır |
 | true-polymorph | 9 | spells-69.json | çalışır |  |  | hayır |
 | true-resurrection | 9 | spells-69.json | savaş dışı |  |  | hayır |
-| weird | 9 | spells-69.json | çalışır |  |  | hayır |
+| weird | 9 | spells-69.json | çalışır | k63 (sürüm 47) |  | hayır |
 | wish | 9 | spells-69.json | çalışır | a7 (sürüm 36) |  | hayır |
