@@ -1,1974 +1,1974 @@
 {
-  "_aciklama": "Denge simülasyonu senaryoları (Görev B1). `enemies.<seviye>`: o parti seviyesindeki düşman listesi (canavar kimliği → sayı). 1. ve 3. seviye listeleri haritanın ortam listesindeki canavarlardan (data/monster-ortamlari.json), XP bütçesiyle; 5. seviye listeleri önceki görevlerden. Yeni seviye (8, 11…) yeni anahtar olarak eklenir. Uyuyan ejderha varyanttan gelir (`map.dragon`), listede yok. Kuyruk 41: `col`, `kale`, `magara`, `orman` için 7. ve 9. seviye (Üst seviye; 4 kişilik Aşama 2 partileri, SRD High bütçesine yakın) listeleri; Kolay listeleri `data/sim-a2.json`.",
-  "scenarios": [
-    {
-      "id": "duz",
-      "name": "Düz — haritasız",
-      "enemies": {
-        "1": {
-          "gnoll-warrior": 2,
-          "worg": 1,
-          "wolf": 2,
-          "hyena": 1
-        },
-        "3": {
-          "ogre": 1,
-          "gnoll-warrior": 4,
-          "worg": 1,
-          "wolf": 2
-        },
-        "5": {
-          "ogre": 2,
-          "bandit-captain": 1,
-          "gnoll-warrior": 4,
-          "wolf": 2,
-          "worg": 2,
-          "boar": 2
-        }
-      }
-    },
-    {
-      "id": "col",
-      "name": "Çöl — Gündüz",
-      "map": {
-        "mapId": "col",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "gnoll-warrior": 3,
-          "giant-wolf-spider": 2,
-          "scout": 1,
-          "jackal": 1
-        },
-        "3": {
-          "death-dog": 3,
-          "gnoll-warrior": 5,
-          "giant-hyena": 2,
-          "scout": 1
-        },
-        "5": {
-          "giant-scorpion": 2,
-          "mummy": 2,
-          "manticore": 2,
-          "gnoll-warrior": 4,
-          "giant-hyena": 1,
-          "scout": 2,
-          "death-dog": 1
-        },
-        "7": {
-          "chimera": 1,
-          "manticore": 3,
-          "giant-scorpion": 2,
-          "mummy": 2,
-          "gnoll-warrior": 4
-        },
-        "9": {
-          "wyvern": 2,
-          "chimera": 1,
-          "giant-scorpion": 2,
-          "mummy": 2,
-          "gnoll-warrior": 4
-        },
-        "11": {
-          "adult-blue-dragon": 1,
-          "mummy": 2
-        },
-        "15": {
-          "adult-blue-dragon": 1,
-          "young-blue-dragon": 2
-        },
-        "20": {
-          "ancient-blue-dragon": 1,
-          "mummy": 3
-        }
-      }
-    },
-    {
-      "id": "volkan",
-      "name": "Volkan",
-      "map": {
-        "mapId": "volkan",
-        "variantId": "normal"
-      },
-      "enemies": {
-        "1": {
-          "magmin": 2,
-          "magma-mephit": 2,
-          "kobold-warrior": 2,
-          "steam-mephit": 1
-        },
-        "3": {
-          "hell-hound": 1,
-          "magmin": 2,
-          "magma-mephit": 3,
-          "steam-mephit": 1
-        },
-        "5": {
-          "hell-hound": 2,
-          "fire-elemental": 1,
-          "magmin": 2,
-          "imp": 3,
-          "magma-mephit": 2
-        }
-      }
-    },
-    {
-      "id": "volkan-ejder",
-      "name": "Volkan — uyuyan Young Red Dragon",
-      "map": {
-        "mapId": "volkan",
-        "variantId": "uyuyan-ejderha",
-        "dragon": "young-red-dragon"
-      },
-      "enemies": {
-        "1": {
-          "magma-mephit": 2,
-          "kobold-warrior": 3
-        },
-        "3": {
-          "hell-hound": 1,
-          "magmin": 2,
-          "imp": 2,
-          "kobold-warrior": 2
-        },
-        "5": {
-          "wyvern": 1,
-          "magmin": 2
-        }
-      }
-    },
-    {
-      "id": "volkan-ejder-adult",
-      "name": "Volkan — uyuyan Adult Red Dragon",
-      "map": {
-        "mapId": "volkan",
-        "variantId": "uyuyan-ejderha",
-        "dragon": "adult-red-dragon"
-      },
-      "enemies": {
-        "1": {
-          "magmin": 3,
-          "magma-mephit": 2,
-          "kobold-warrior": 3
-        },
-        "3": {
-          "hell-hound": 2,
-          "magmin": 2,
-          "kobold-warrior": 1
-        },
-        "5": {
-          "wyvern": 1
-        }
-      }
-    },
-    {
-      "id": "volkan-ejder-ancient",
-      "name": "Volkan — uyuyan Ancient Red Dragon",
-      "map": {
-        "mapId": "volkan",
-        "variantId": "uyuyan-ejderha",
-        "dragon": "ancient-red-dragon"
-      },
-      "enemies": {
-        "1": {
-          "magmin": 3,
-          "magma-mephit": 2,
-          "kobold-warrior": 3
-        },
-        "3": {
-          "hell-hound": 2,
-          "magmin": 2,
-          "kobold-warrior": 1
-        },
-        "5": {
-          "wyvern": 1
-        }
-      }
-    },
-    {
-      "id": "volkan-ejder-wyrmling",
-      "name": "Volkan — uyuyan Red Dragon Wyrmling",
-      "map": {
-        "mapId": "volkan",
-        "variantId": "uyuyan-ejderha",
-        "dragon": "red-dragon-wyrmling"
-      },
-      "enemies": {
-        "1": {
-          "magmin": 2,
-          "magma-mephit": 2,
-          "kobold-warrior": 2,
-          "giant-fire-beetle": 1
-        },
-        "3": {
-          "hell-hound": 2,
-          "magmin": 2,
-          "kobold-warrior": 2
-        },
-        "5": {
-          "wyvern": 1,
-          "hell-hound": 1,
-          "magmin": 2
-        }
-      }
-    },
-    {
-      "id": "volkan-ejder-sans",
-      "name": "Volkan — uyuyan Young Red, dragonWake: chance (varsayılan %2)",
-      "map": {
-        "mapId": "volkan",
-        "variantId": "uyuyan-ejderha",
-        "dragon": "young-red-dragon",
-        "dragonWake": "chance"
-      },
-      "enemies": {
-        "1": {
-          "kobold-warrior": 2,
-          "magma-mephit": 2
-        },
-        "3": {
-          "hell-hound": 1,
-          "imp": 1,
-          "magmin": 1
-        },
-        "5": {
-          "wyvern": 1
-        }
-      }
-    },
-    {
-      "id": "orman",
-      "name": "Orman",
-      "map": {
-        "mapId": "orman",
-        "variantId": "orman"
-      },
-      "enemies": {
-        "1": {
-          "wolf": 4,
-          "goblin-warrior": 4,
-          "giant-spider": 1
-        },
-        "3": {
-          "owlbear": 2,
-          "dire-wolf": 3,
-          "giant-spider": 1,
-          "wolf": 3
-        },
-        "5": {
-          "owlbear": 2,
-          "werewolf": 2,
-          "giant-spider": 3,
-          "dire-wolf": 3,
-          "ettercap": 2,
-          "wolf": 2
-        },
-        "7": {
-          "troll": 1,
-          "owlbear": 3,
-          "werewolf": 2,
-          "dire-wolf": 3,
-          "giant-spider": 3
-        },
-        "9": {
-          "troll": 2,
-          "owlbear": 3,
-          "werebear": 1,
-          "werewolf": 2,
-          "dire-wolf": 3,
-          "giant-spider": 2
-        },
-        "11": {
-          "treant": 1,
-          "young-green-dragon": 1,
-          "green-hag": 3
-        },
-        "15": {
-          "adult-green-dragon": 1,
-          "treant": 1
-        },
-        "20": {
-          "ancient-green-dragon": 1,
-          "troll": 1
-        }
-      }
-    },
-    {
-      "id": "orman-gece",
-      "name": "Orman — Gece",
-      "map": {
-        "mapId": "orman",
-        "variantId": "gece"
-      },
-      "enemies": {
-        "1": {
-          "wolf": 4,
-          "goblin-warrior": 4,
-          "giant-spider": 1
-        },
-        "3": {
-          "owlbear": 1,
-          "dire-wolf": 3,
-          "giant-spider": 1,
-          "wolf": 3
-        },
-        "5": {
-          "owlbear": 2,
-          "werewolf": 2,
-          "giant-spider": 3,
-          "dire-wolf": 3,
-          "ettercap": 2,
-          "wolf": 2
-        }
-      }
-    },
-    {
-      "id": "magara",
-      "name": "Mağara — karanlık",
-      "map": {
-        "mapId": "magara",
-        "variantId": "magara"
-      },
-      "enemies": {
-        "1": {
-          "goblin-warrior": 4,
-          "grimlock": 2,
-          "darkmantle": 2
-        },
-        "3": {
-          "ghoul": 3,
-          "giant-spider": 2,
-          "ettercap": 1,
-          "bugbear-warrior": 3,
-          "darkmantle": 1
-        },
-        "5": {
-          "troll": 1,
-          "giant-spider": 2,
-          "ghoul": 1,
-          "darkmantle": 1,
-          "ettercap": 1,
-          "ogre": 1,
-          "grimlock": 1
-        },
-        "7": {
-          "troll": 1,
-          "ettin": 1,
-          "ogre": 2,
-          "ettercap": 2,
-          "basilisk": 1,
-          "minotaur-skeleton": 1
-        },
-        "9": {
-          "drider": 1,
-          "troll": 2,
-          "ettin": 1,
-          "ogre": 2,
-          "ettercap": 2
-        },
-        "11": {
-          "behir": 1,
-          "aboleth": 1,
-          "troll": 1,
-          "ettin": 1
-        },
-        "15": {
-          "purple-worm": 1,
-          "behir": 2,
-          "aboleth": 1,
-          "stone-golem": 1
-        },
-        "20": {
-          "lich": 1,
-          "mummy-lord": 1
-        }
-      }
-    },
-    {
-      "id": "dungeon",
-      "name": "Dungeon — Koridor (meşale)",
-      "map": {
-        "mapId": "dungeon",
-        "variantId": "mesale"
-      },
-      "enemies": {
-        "1": {
-          "skeleton": 4,
-          "zombie": 2,
-          "giant-rat": 3
-        },
-        "3": {
-          "wight": 1,
-          "ghoul": 2,
-          "ghast": 3,
-          "skeleton": 3
-        },
-        "5": {
-          "wight": 3,
-          "bugbear-stalker": 1,
-          "mummy": 2,
-          "ghast": 3,
-          "ghoul": 1,
-          "bugbear-warrior": 2,
-          "minotaur-of-baphomet": 1
-        }
-      }
-    },
-    {
-      "id": "dungeon-merdiven",
-      "name": "Dungeon — Merdiven",
-      "map": {
-        "mapId": "dungeon",
-        "variantId": "merdiven"
-      },
-      "enemies": {
-        "1": {
-          "skeleton": 3,
-          "giant-rat": 2,
-          "goblin-warrior": 1
-        },
-        "3": {
-          "ghoul": 2,
-          "ghast": 2,
-          "bugbear-warrior": 1,
-          "skeleton": 3
-        },
-        "5": {
-          "ghoul": 1,
-          "ghast": 4,
-          "wight": 3,
-          "skeleton": 2,
-          "bugbear-stalker": 2
-        }
-      }
-    },
-    {
-      "id": "derin-merdiven",
-      "name": "Dungeon — Yürüyen merdiven",
-      "map": {
-        "mapId": "dungeon",
-        "variantId": "merdiven-yuruyen"
-      },
-      "enemies": {
-        "1": {
-          "skeleton": 3,
-          "giant-rat": 2
-        },
-        "3": {
-          "ghoul": 2,
-          "skeleton": 3
-        },
-        "5": {
-          "ghast": 3,
-          "skeleton": 4,
-          "wight": 1
-        },
-        "7": {
-          "ghast": 3,
-          "wight": 2,
-          "skeleton": 2
-        }
-      }
-    },
-    {
-      "id": "dungeon-hazine",
-      "name": "Dungeon — Hazine odası",
-      "map": {
-        "mapId": "dungeon",
-        "variantId": "hazine"
-      },
-      "enemies": {
-        "1": {
-          "skeleton": 4,
-          "zombie": 3,
-          "ghoul": 1
-        },
-        "3": {
-          "ghoul": 3,
-          "ghast": 3,
-          "skeleton": 2
-        },
-        "5": {
-          "wight": 3,
-          "bugbear-stalker": 1,
-          "mummy": 3,
-          "ghast": 2,
-          "bugbear-warrior": 2,
-          "minotaur-of-baphomet": 1
-        }
-      }
-    },
-    {
-      "id": "kale",
-      "name": "Kale — Gündüz",
-      "map": {
-        "mapId": "kale",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "goblin-warrior": 4,
-          "guard": 2
-        },
-        "3": {
-          "hobgoblin-warrior": 3,
-          "goblin-warrior": 3,
-          "bugbear-warrior": 1
-        },
-        "5": {
-          "hobgoblin-warrior": 4,
-          "goblin-warrior": 4,
-          "hobgoblin-captain": 1,
-          "bugbear-stalker": 1,
-          "berserker": 3,
-          "warrior-veteran": 2,
-          "bugbear-warrior": 2
-        },
-        "7": {
-          "gladiator": 1,
-          "knight": 2,
-          "warrior-veteran": 2,
-          "hobgoblin-captain": 1,
-          "berserker": 3,
-          "priest": 1,
-          "bugbear-stalker": 1
-        },
-        "9": {
-          "gladiator": 2,
-          "knight": 2,
-          "warrior-veteran": 2,
-          "mage": 2,
-          "berserker": 3
-        },
-        "11": {
-          "cloud-giant": 1,
-          "stone-giant": 2,
-          "knight": 4
-        },
-        "15": {
-          "storm-giant": 1,
-          "cloud-giant": 1,
-          "stone-giant": 1,
-          "knight": 4
-        },
-        "20": {
-          "pit-fiend": 1,
-          "balor": 1
-        }
-      }
-    },
-    {
-      "id": "kale-gece",
-      "name": "Kale — Gece",
-      "map": {
-        "mapId": "kale",
-        "variantId": "gece"
-      },
-      "enemies": {
-        "1": {
-          "goblin-warrior": 4,
-          "guard": 2
-        },
-        "3": {
-          "hobgoblin-warrior": 3,
-          "goblin-warrior": 3,
-          "bugbear-warrior": 1
-        },
-        "5": {
-          "hobgoblin-warrior": 3,
-          "goblin-warrior": 5,
-          "hobgoblin-captain": 1,
-          "bugbear-stalker": 1,
-          "berserker": 3,
-          "warrior-veteran": 2,
-          "bugbear-warrior": 2
-        }
-      }
-    },
-    {
-      "id": "taverna",
-      "name": "Taverna — 4 masum ortada",
-      "map": {
-        "mapId": "taverna",
-        "variantId": "ic-mekan",
-        "options": [
-          "objective"
-        ],
-        "civilians": 4,
-        "civilianPlacement": "middle"
-      },
-      "enemies": {
-        "1": {
-          "bandit": 4,
-          "tough": 2,
-          "cultist": 2,
-          "giant-rat": 1
-        },
-        "3": {
-          "tough": 3,
-          "bandit-captain": 2,
-          "spy": 1,
-          "bandit": 2
-        },
-        "5": {
-          "tough-boss": 4,
-          "knight": 5
-        }
-      }
-    },
-    {
-      "id": "taverna-arka",
-      "name": "Taverna — 4 masum düşmandan uzakta, varsayılan",
-      "map": {
-        "mapId": "taverna",
-        "variantId": "ic-mekan",
-        "options": [
-          "objective"
-        ],
-        "civilians": 4
-      },
-      "enemies": {
-        "1": {
-          "bandit": 4,
-          "tough": 2
-        },
-        "3": {
-          "tough": 2,
-          "bandit-captain": 2,
-          "spy": 1,
-          "bandit": 3
-        },
-        "5": {
-          "tough-boss": 3,
-          "knight": 4,
-          "bandit-captain": 2
-        }
-      }
-    },
-    {
-      "id": "taverna-8",
-      "name": "Taverna — 8 masum düşmandan uzakta",
-      "map": {
-        "mapId": "taverna",
-        "variantId": "ic-mekan",
-        "options": [
-          "objective"
-        ],
-        "civilians": 8
-      },
-      "enemies": {
-        "1": {
-          "bandit": 5,
-          "tough": 2
-        },
-        "3": {
-          "tough": 2,
-          "bandit-captain": 2,
-          "spy": 1,
-          "bandit": 4
-        },
-        "5": {
-          "tough-boss": 2,
-          "knight": 4,
-          "bandit-captain": 3
-        }
-      }
-    },
-    {
-      "id": "orman-yolu-pusu",
-      "name": "Orman yolu — eşkıya pususu",
-      "map": {
-        "mapId": "orman-yolu",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "bandit": 3,
-          "scout": 1,
-          "wolf": 2
-        },
-        "3": {
-          "bandit-captain": 1,
-          "bandit": 4,
-          "scout": 2,
-          "wolf": 2
-        },
-        "5": {
-          "bandit-captain": 2,
-          "bandit": 6,
-          "scout": 4,
-          "dire-wolf": 2
-        }
-      }
-    },
-    {
-      "id": "orman-yolu-avcilar",
-      "name": "Orman yolu — avcılar",
-      "map": {
-        "mapId": "orman-yolu",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "wolf": 4,
-          "goblin-warrior": 2
-        },
-        "3": {
-          "dire-wolf": 2,
-          "wolf": 4,
-          "goblin-boss": 1
-        },
-        "5": {
-          "owlbear": 2,
-          "dire-wolf": 2,
-          "goblin-boss": 1
-        }
-      }
-    },
-    {
-      "id": "orman-heykel",
-      "name": "Orman — Mielikki Gölü (su ve pusu)",
-      "map": {
-        "mapId": "orman-heykel-golu",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "giant-frog": 3,
-          "sahuagin-warrior": 2
-        },
-        "3": {
-          "crocodile": 2,
-          "sahuagin-warrior": 3,
-          "merrow": 1
-        },
-        "5": {
-          "merrow": 2,
-          "crocodile": 3,
-          "sahuagin-warrior": 4,
-          "giant-constrictor-snake": 1
-        }
-      }
-    },
-    {
-      "id": "orman-oduncu",
-      "name": "Orman — Oduncu Kampı (köprü boğazı)",
-      "map": {
-        "mapId": "orman-oduncu-kampi",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "bandit": 4,
-          "scout": 1
-        },
-        "3": {
-          "bandit-captain": 1,
-          "bandit": 4,
-          "scout": 2
-        },
-        "5": {
-          "bandit-captain": 2,
-          "bandit": 5,
-          "scout": 3,
-          "berserker": 1
-        }
-      }
-    },
-    {
-      "id": "orman-ork",
-      "name": "Orman — Ork Kampı (ork akını)",
-      "map": {
-        "mapId": "orman-ork-kampi",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "tough": 3,
-          "worg": 1
-        },
-        "3": {
-          "berserker": 2,
-          "tough": 2,
-          "worg": 2
-        },
-        "5": {
-          "tough-boss": 1,
-          "berserker": 3,
-          "tough": 3,
-          "worg": 2
-        }
-      }
-    },
-    {
-      "id": "orman-kemik",
-      "name": "Orman — Kemik Açıklığı (ölümsüz ve orman canavarı)",
-      "map": {
-        "mapId": "orman-kemik-acikligi",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "skeleton": 3,
-          "wolf": 2
-        },
-        "3": {
-          "skeleton": 4,
-          "ghoul": 2,
-          "dire-wolf": 1
-        },
-        "5": {
-          "wight": 1,
-          "ghoul": 3,
-          "skeleton": 4,
-          "owlbear": 1
-        }
-      }
-    },
-    {
-      "id": "orman-magara",
-      "name": "Orman — Heykel Mağarası (karanlık mağara)",
-      "map": {
-        "mapId": "orman-heykel-magarasi",
-        "variantId": "karanlik"
-      },
-      "enemies": {
-        "1": {
-          "swarm-of-bats": 2,
-          "giant-centipede": 2,
-          "darkmantle": 1
-        },
-        "3": {
-          "darkmantle": 2,
-          "grick": 1,
-          "giant-spider": 1,
-          "swarm-of-bats": 2
-        },
-        "5": {
-          "grick": 2,
-          "ochre-jelly": 1,
-          "giant-spider": 2,
-          "darkmantle": 2
-        }
-      }
-    },
-    {
-      "id": "kale-avlu-savunma",
-      "name": "Kale ve avlu — muhafızlar",
-      "map": {
-        "mapId": "kale-avlu",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 8,
-          "priest-acolyte": 2
-        },
-        "3": {
-          "knight": 1,
-          "guard": 6,
-          "priest-acolyte": 1
-        },
-        "5": {
-          "knight": 2,
-          "guard": 8,
-          "priest": 1,
-          "spy": 1
-        }
-      }
-    },
-    {
-      "id": "kale-avlu-garnizon",
-      "name": "Kale ve avlu — hobgoblin garnizonu",
-      "map": {
-        "mapId": "kale-avlu",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "hobgoblin-warrior": 3
-        },
-        "3": {
-          "hobgoblin-captain": 1,
-          "hobgoblin-warrior": 3
-        },
-        "5": {
-          "hobgoblin-captain": 1,
-          "hobgoblin-warrior": 8,
-          "bugbear-warrior": 2
-        }
-      }
-    },
-    {
-      "id": "magara-genis-derinlik",
-      "name": "Mağara (orta) — derinlik yaratıkları",
-      "map": {
-        "mapId": "magara-genis",
-        "variantId": "magara"
-      },
-      "enemies": {
-        "1": {
-          "darkmantle": 2,
-          "swarm-of-bats": 2
-        },
-        "3": {
-          "grick": 1,
-          "darkmantle": 2,
-          "giant-spider": 1
-        },
-        "5": {
-          "grick": 2,
-          "darkmantle": 4,
-          "giant-spider": 2,
-          "swarm-of-bats": 2
-        }
-      }
-    },
-    {
-      "id": "magara-genis-gulyabani",
-      "name": "Mağara (orta) — gulyabaniler",
-      "map": {
-        "mapId": "magara-genis",
-        "variantId": "magara"
-      },
-      "enemies": {
-        "1": {
-          "ghoul": 1,
-          "cultist": 2
-        },
-        "3": {
-          "ghoul": 3,
-          "cultist": 4
-        },
-        "5": {
-          "ghoul": 7,
-          "cultist": 4,
-          "swarm-of-bats": 2
-        }
-      }
-    },
-    {
-      "id": "kale-baskini",
-      "name": "Kale Baskını — hobgoblin kalesi",
-      "map": {
-        "mapId": "kale-baskini",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 4,
-          "hobgoblin-warrior": 2,
-          "spy": 1
-        },
-        "3": {
-          "hobgoblin-warrior": 4,
-          "guard": 2,
-          "bugbear-warrior": 2,
-          "spy": 1,
-          "hobgoblin-captain": 1
-        },
-        "5": {
-          "hobgoblin-warrior": 4,
-          "bugbear-warrior": 2,
-          "warrior-veteran": 2,
-          "hobgoblin-captain": 2
-        }
-      }
-    },
-    {
-      "id": "kale-baskini-muhafiz",
-      "name": "Kale Baskını — insan muhafızlar",
-      "map": {
-        "mapId": "kale-baskini",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 6,
-          "spy": 1,
-          "priest-acolyte": 1
-        },
-        "3": {
-          "guard": 6,
-          "spy": 2,
-          "priest-acolyte": 1,
-          "guard-captain": 1
-        },
-        "5": {
-          "guard": 6,
-          "warrior-veteran": 2,
-          "priest": 1,
-          "guard-captain": 1
-        }
-      }
-    },
-    {
-      "id": "sefer-salon",
-      "name": "Volkan Seferi — Portal Salonu",
-      "map": {
-        "mapId": "isinlanma-salonu",
-        "variantId": "varsayilan"
-      },
-      "enemies": {
-        "1": {
-          "cultist": 4,
-          "skeleton": 2,
-          "magma-mephit": 1
-        },
-        "3": {
-          "cultist": 4,
-          "skeleton": 2,
-          "cultist-fanatic": 2
-        },
-        "5": {
-          "cultist": 4,
-          "skeleton": 3,
-          "cultist-fanatic": 2
-        }
-      }
-    },
-    {
-      "id": "sefer-tapinak",
-      "name": "Volkan Seferi — Lav Tapınağı",
-      "map": {
-        "mapId": "lav-tapinagi",
-        "variantId": "varsayilan"
-      },
-      "enemies": {
-        "1": {
-          "scout": 2,
-          "cultist": 3,
-          "magma-mephit": 1
-        },
-        "3": {
-          "scout": 2,
-          "cultist": 3,
-          "magma-mephit": 1
-        },
-        "5": {
-          "scout": 4,
-          "cultist-fanatic": 1,
-          "magma-mephit": 2,
-          "hell-hound": 1
-        }
-      }
-    },
-    {
-      "id": "sefer-kopru",
-      "name": "Volkan Seferi — Kanyon Köprüsü",
-      "map": {
-        "mapId": "kanyon-koprusu",
-        "variantId": "varsayilan"
-      },
-      "enemies": {
-        "1": {
-          "skeleton": 4,
-          "magma-mephit": 2
-        },
-        "3": {
-          "skeleton": 2,
-          "magmin": 1,
-          "scout": 2
-        },
-        "5": {
-          "skeleton": 4,
-          "minotaur-skeleton": 1,
-          "magmin": 1,
-          "scout": 2
-        }
-      }
-    },
-    {
-      "id": "sefer-demirhane",
-      "name": "Volkan Seferi — Volkanik Demirhane",
-      "map": {
-        "mapId": "volkanik-demirhane",
-        "variantId": "varsayilan"
-      },
-      "enemies": {
-        "1": {
-          "scout": 2,
-          "cultist": 3,
-          "magma-mephit": 2
-        },
-        "3": {
-          "scout": 3,
-          "cultist": 1,
-          "magma-mephit": 1
-        },
-        "5": {
-          "scout": 4,
-          "cultist-fanatic": 2,
-          "magmin": 1,
-          "priest": 1
-        }
-      }
-    },
-    {
-      "id": "derin-karakol",
-      "name": "Derinlikler — Maden Ocağı",
-      "map": {
-        "mapId": "derinlikler-magara-karakol",
-        "variantId": "varsayilan"
-      },
-      "enemies": {
-        "1": {
-          "bandit": 4,
-          "skeleton": 2
-        },
-        "3": {
-          "bandit": 4,
-          "skeleton": 2,
-          "ghoul": 1
-        },
-        "5": {
-          "bandit": 6,
-          "bandit-captain": 2,
-          "skeleton": 4,
-          "ghoul": 2
-        },
-        "7": {
-          "bandit": 4,
-          "bandit-captain": 2,
-          "skeleton": 4,
-          "ghoul": 3
-        }
-      }
-    },
-    {
-      "id": "derin-mezar",
-      "name": "Derinlikler — Mezar Labirenti",
-      "map": {
-        "mapId": "derinlikler-mezar-labirenti",
-        "variantId": "varsayilan"
-      },
-      "enemies": {
-        "1": {
-          "skeleton": 3,
-          "zombie": 2
-        },
-        "3": {
-          "skeleton": 3,
-          "zombie": 2,
-          "ghoul": 1
-        },
-        "5": {
-          "skeleton": 4,
-          "zombie": 4,
-          "ghast": 2,
-          "wight": 1
-        },
-        "7": {
-          "skeleton": 4,
-          "zombie": 4,
-          "ghast": 2,
-          "wight": 1
-        }
-      }
-    },
-    {
-      "id": "derin-mantar",
-      "name": "Derinlikler — Mantar Mağarası",
-      "map": {
-        "mapId": "derinlikler-mantar-magarasi",
-        "variantId": "varsayilan"
-      },
-      "enemies": {
-        "1": {
-          "violet-fungus": 2,
-          "shrieker-fungus": 1,
-          "swarm-of-insects": 1
-        },
-        "3": {
-          "giant-spider": 1,
-          "violet-fungus": 2,
-          "shrieker-fungus": 1,
-          "swarm-of-insects": 1
-        },
-        "5": {
-          "ettercap": 2,
-          "giant-spider": 3,
-          "violet-fungus": 2,
-          "shrieker-fungus": 1
-        },
-        "7": {
-          "ettercap": 2,
-          "giant-spider": 3,
-          "violet-fungus": 2,
-          "shrieker-fungus": 1
-        }
-      }
-    },
-    {
-      "id": "derin-lav",
-      "name": "Derinlikler — Lav Salonu",
-      "map": {
-        "mapId": "derinlikler-lav-salonu",
-        "variantId": "varsayilan"
-      },
-      "enemies": {
-        "1": {
-          "magmin": 1,
-          "magma-mephit": 2
-        },
-        "3": {
-          "magmin": 2,
-          "magma-mephit": 2
-        },
-        "5": {
-          "magmin": 3,
-          "azer-sentinel": 2,
-          "fire-elemental": 1,
-          "hell-hound": 1
-        },
-        "7": {
-          "magmin": 2,
-          "azer-sentinel": 1,
-          "fire-elemental": 1
-        }
-      }
-    },
-    {
-      "id": "k29-buzul-acik",
-      "name": "Buzul — Açık Buzul",
-      "map": {
-        "mapId": "buzul-acik",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "wolf": 3
-        },
-        "3": {
-          "winter-wolf": 2,
-          "polar-bear": 1,
-          "wolf": 1
-        },
-        "5": {
-          "winter-wolf": 2,
-          "polar-bear": 1,
-          "wolf": 2
-        }
-      }
-    },
-    {
-      "id": "k29-buzul-kamp",
-      "name": "Buzul — Karlı Kamp",
-      "map": {
-        "mapId": "buzul-kamp",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "bandit": 3
-        },
-        "3": {
-          "bandit-captain": 1,
-          "scout": 3,
-          "bandit": 3
-        },
-        "5": {
-          "bandit-captain": 2,
-          "scout": 3,
-          "bandit": 3,
-          "winter-wolf": 2,
-          "ettin": 1
-        }
-      }
-    },
-    {
-      "id": "k29-dag-kopru",
-      "name": "Dağ — Uçurum Köprüsü",
-      "map": {
-        "mapId": "dag-kopru",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "goblin-warrior": 4
-        },
-        "3": {
-          "ogre": 2,
-          "hobgoblin-warrior": 4
-        },
-        "5": {
-          "ogre": 2,
-          "hobgoblin-warrior": 3
-        }
-      }
-    },
-    {
-      "id": "k29-dag-nobetci",
-      "name": "Dağ — Sessiz Nöbetçi",
-      "map": {
-        "mapId": "dag-nobetci",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "skeleton": 3
-        },
-        "3": {
-          "ghoul": 4,
-          "skeleton": 4
-        },
-        "5": {
-          "ghoul": 3,
-          "ghast": 2,
-          "wight": 2,
-          "gargoyle": 2,
-          "wraith": 1
-        }
-      }
-    },
-    {
-      "id": "k29-batak-kamp",
-      "name": "Bataklık — Cadının Kampı",
-      "map": {
-        "mapId": "batak-kamp",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "giant-frog": 3
-        },
-        "3": {
-          "green-hag": 1,
-          "giant-frog": 2
-        },
-        "5": {
-          "green-hag": 1,
-          "giant-toad": 2,
-          "giant-frog": 2
-        }
-      }
-    },
-    {
-      "id": "k29-batak-cukur",
-      "name": "Bataklık — Batık Çukur",
-      "map": {
-        "mapId": "batak-cukur",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "giant-frog": 2,
-          "zombie": 1
-        },
-        "3": {
-          "crocodile": 2,
-          "zombie": 2
-        },
-        "5": {
-          "crocodile": 3,
-          "ghoul": 2,
-          "zombie": 2
-        }
-      }
-    },
-    {
-      "id": "k29-col-kanyon-nehri",
-      "name": "Çöl — Kanyon Nehri",
-      "map": {
-        "mapId": "col-kanyon-nehri",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "jackal": 3,
-          "giant-lizard": 1
-        },
-        "3": {
-          "gnoll-warrior": 4,
-          "giant-hyena": 1
-        },
-        "5": {
-          "gnoll-warrior": 4,
-          "giant-hyena": 2,
-          "manticore": 1
-        }
-      }
-    },
-    {
-      "id": "k29-col-gemi-enkazi",
-      "name": "Çöl — Gemi Enkazı",
-      "map": {
-        "mapId": "col-gemi-enkazi",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "giant-lizard": 2,
-          "scorpion": 2
-        },
-        "3": {
-          "giant-scorpion": 1,
-          "giant-venomous-snake": 3
-        },
-        "5": {
-          "giant-scorpion": 2,
-          "death-dog": 2,
-          "giant-venomous-snake": 2
-        }
-      }
-    },
-    {
-      "id": "k29-col-vaha",
-      "name": "Çöl — Vaha",
-      "map": {
-        "mapId": "col-vaha",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "hyena": 3,
-          "jackal": 2
-        },
-        "3": {
-          "gnoll-warrior": 3,
-          "giant-hyena": 1
-        },
-        "5": {
-          "gnoll-warrior": 4,
-          "lion": 2,
-          "giant-hyena": 1
-        }
-      }
-    },
-    {
-      "id": "k29-col-sutun-harabesi",
-      "name": "Çöl — Sütun Harabesi",
-      "map": {
-        "mapId": "col-sutun-harabesi",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "dust-mephit": 2,
-          "jackal": 2
-        },
-        "3": {
-          "dust-mephit": 3,
-          "gnoll-warrior": 2
-        },
-        "5": {
-          "minotaur-skeleton": 2,
-          "dust-mephit": 3,
-          "gnoll-warrior": 2
-        }
-      }
-    },
-    {
-      "id": "k29-buzul-kayalik",
-      "name": "Buzul — Buzul Kayalıkları",
-      "map": {
-        "mapId": "buzul-kayalik",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "wolf": 3
-        },
-        "3": {
-          "winter-wolf": 2,
-          "ice-mephit": 3
-        },
-        "5": {
-          "winter-wolf": 2,
-          "ice-mephit": 3
-        }
-      }
-    },
-    {
-      "id": "k29-buzul-tapinak",
-      "name": "Buzul — Buz Tapınağı",
-      "map": {
-        "mapId": "buzul-tapinak",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "ice-mephit": 2,
-          "skeleton": 1
-        },
-        "3": {
-          "ice-mephit": 3,
-          "ghoul": 2,
-          "winter-wolf": 1
-        },
-        "5": {
-          "ice-mephit": 3,
-          "ghoul": 2,
-          "winter-wolf": 1
-        }
-      }
-    },
-    {
-      "id": "k29-dag-karakol",
-      "name": "Dağ — Geçit Karakolu",
-      "map": {
-        "mapId": "dag-karakol",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "bandit": 3,
-          "scout": 1
-        },
-        "3": {
-          "bandit-captain": 2,
-          "scout": 3,
-          "bandit": 4
-        },
-        "5": {
-          "bandit-captain": 2,
-          "scout": 3,
-          "bandit": 4,
-          "hill-giant": 1,
-          "manticore": 1
-        }
-      }
-    },
-    {
-      "id": "k29-dag-kayalik",
-      "name": "Dağ — Yüksek Kayalıklar",
-      "map": {
-        "mapId": "dag-kayalik",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "goblin-warrior": 4
-        },
-        "3": {
-          "griffon": 2,
-          "harpy": 3
-        },
-        "5": {
-          "griffon": 3,
-          "harpy": 4,
-          "wyvern": 1
-        }
-      }
-    },
-    {
-      "id": "k29-batak-kale",
-      "name": "Bataklık — Batık Kale",
-      "map": {
-        "mapId": "batak-kale",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "skeleton": 3
-        },
-        "3": {
-          "skeleton": 3,
-          "ghoul": 1
-        },
-        "5": {
-          "ghoul": 3,
-          "skeleton": 3
-        }
-      }
-    },
-    {
-      "id": "k29-batak-adalar",
-      "name": "Bataklık — Kütük Adaları",
-      "map": {
-        "mapId": "batak-adalar",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "giant-frog": 2,
-          "giant-lizard": 1
-        },
-        "3": {
-          "crocodile": 1,
-          "giant-frog": 2
-        },
-        "5": {
-          "crocodile": 2,
-          "giant-toad": 2
-        }
-      }
-    },
-    {
-      "id": "k32-yeralti-nehri",
-      "name": "Serüven — Yeraltı Nehri (pusu)",
-      "map": {
-        "mapId": "yeralti-nehri",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "giant-frog": 1
-        },
-        "3": {
-          "giant-frog": 1,
-          "crocodile": 1
-        },
-        "5": {
-          "crocodile": 2
-        }
-      }
-    },
-    {
-      "id": "k34-kale-onu",
-      "name": "Yerleşim — Kale Önü",
-      "map": {
-        "mapId": "kale-onu",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2,
-          "bandit": 2
-        },
-        "3": {
-          "guard": 2,
-          "tough": 2,
-          "scout": 1
-        },
-        "5": {
-          "knight": 1,
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
-    },
-    {
-      "id": "k34-kale-ic-avlu",
-      "name": "Yerleşim — Kale Avlusu",
-      "map": {
-        "mapId": "kale-ic-avlu",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2,
-          "bandit": 2
-        },
-        "3": {
-          "guard": 2,
-          "tough": 2,
-          "scout": 1
-        },
-        "5": {
-          "knight": 1,
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
-    },
-    {
-      "id": "k34-kale-taht-salonu",
-      "name": "Yerleşim — Taht Salonu",
-      "map": {
-        "mapId": "kale-taht-salonu",
-        "variantId": "ic-mekan"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2,
-          "bandit": 2
-        },
-        "3": {
-          "guard": 2,
-          "tough": 2,
-          "scout": 1
-        },
-        "5": {
-          "knight": 1,
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
-    },
-    {
-      "id": "k34-kasaba-han",
-      "name": "Yerleşim — Kasaba Hanı",
-      "map": {
-        "mapId": "kasaba-han",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2,
-          "bandit": 2
-        },
-        "3": {
-          "guard": 2,
-          "tough": 2,
-          "scout": 1
-        },
-        "5": {
-          "knight": 1,
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
-    },
-    {
-      "id": "k34-beyaz-sehir-dis-kapi",
-      "name": "Yerleşim — Beyaz Şehir Kapısı",
-      "map": {
-        "mapId": "beyaz-sehir-dis-kapi",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2,
-          "bandit": 2
-        },
-        "3": {
-          "guard": 2,
-          "tough": 2,
-          "scout": 1
-        },
-        "5": {
-          "knight": 1,
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
-    },
-    {
-      "id": "k34-beyaz-sehir-saray-avlusu",
-      "name": "Yerleşim — Saray Avlusu",
-      "map": {
-        "mapId": "beyaz-sehir-saray-avlusu",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2,
-          "bandit": 2
-        },
-        "3": {
-          "guard": 2,
-          "tough": 2,
-          "scout": 1
-        },
-        "5": {
-          "knight": 1,
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
-    },
-    {
-      "id": "k35-kasaba-demirci-tapinak",
-      "name": "Yerleşim — Demirci ve Tapınak",
-      "map": {
-        "mapId": "kasaba-demirci-tapinak",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2,
-          "bandit": 2
-        },
-        "3": {
-          "guard": 2,
-          "tough": 2,
-          "scout": 1
-        },
-        "5": {
-          "knight": 1,
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
-    },
-    {
-      "id": "k35-kasaba-lagim",
-      "name": "Yerleşim — Kasaba Lağımı",
-      "map": {
-        "mapId": "kasaba-lagim",
-        "variantId": "karanlik"
-      },
-      "enemies": {
-        "1": {
-          "giant-rat": 4
-        },
-        "3": {
-          "giant-rat": 3,
-          "swarm-of-rats": 2
-        },
-        "5": {
-          "otyugh": 1,
-          "swarm-of-rats": 2
-        }
-      }
-    },
-    {
-      "id": "k36-suc-soylu",
-      "name": "Büyük suç — soylu cinayeti",
-      "map": {
-        "mapId": "beyaz-sehir-saray-avlusu",
-        "variantId": "gece"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2
-        },
-        "3": {
-          "guard": 3,
-          "warrior-veteran": 1
-        },
-        "5": {
-          "guard": 3,
-          "warrior-veteran": 2
-        }
-      }
-    },
-    {
-      "id": "k36-suc-soygun",
-      "name": "Büyük suç — saray soygunu",
-      "map": {
-        "mapId": "beyaz-sehir-saray-avlusu",
-        "variantId": "gunduz"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2
-        },
-        "3": {
-          "guard": 3,
-          "warrior-veteran": 1
-        },
-        "5": {
-          "guard": 3,
-          "warrior-veteran": 2
-        }
-      }
-    },
-    {
-      "id": "k36-suc-muhur",
-      "name": "Büyük suç — hazine mührü",
-      "map": {
-        "mapId": "sehir-meydani",
-        "variantId": "gece"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2
-        },
-        "3": {
-          "guard": 3,
-          "warrior-veteran": 1
-        },
-        "5": {
-          "guard": 3,
-          "warrior-veteran": 2
-        }
-      }
-    },
-    {
-      "id": "k36-baskin",
-      "name": "Büyük suç — muhafız baskını",
-      "map": {
-        "mapId": "sehir-meydani",
-        "variantId": "gun"
-      },
-      "enemies": {
-        "1": {
-          "guard": 3
-        },
-        "3": {
-          "guard": 4,
-          "warrior-veteran": 1
-        },
-        "5": {
-          "guard": 4,
-          "warrior-veteran": 2
-        }
-      }
-    },
-    {
-      "id": "k36-hucre",
-      "name": "Hapishane — hücre bloğu",
-      "map": {
-        "mapId": "hapishane-hucre-platformu",
-        "variantId": "los"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2
-        },
-        "3": {
-          "guard": 3
-        },
-        "5": {
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
-    },
-    {
-      "id": "k36-dis-halka",
-      "name": "Hapishane — dış halka",
-      "map": {
-        "mapId": "hapishane-dis-halka",
-        "variantId": "los"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2
-        },
-        "3": {
-          "guard": 3
-        },
-        "5": {
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
-    },
-    {
-      "id": "k36-mudur",
-      "name": "Hapishane — müdür kulesi",
-      "map": {
-        "mapId": "hapishane-mudur-kulesi",
-        "variantId": "los"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2
-        },
-        "3": {
-          "knight": 1,
-          "guard": 1
-        },
-        "5": {
-          "knight": 1,
-          "guard": 2
-        }
-      }
-    },
-    {
-      "id": "k36-iskele",
-      "name": "Hapishane — iskele",
-      "map": {
-        "mapId": "hapishane-iskele",
-        "variantId": "los"
-      },
-      "enemies": {
-        "1": {
-          "guard": 2
-        },
-        "3": {
-          "guard": 1,
-          "bandit": 1
-        },
-        "5": {
-          "guard": 3,
-          "warrior-veteran": 1
-        }
-      }
+ "_aciklama": "Denge simülasyonu senaryoları (Görev B1). `enemies.<seviye>`: o parti seviyesindeki düşman listesi (canavar kimliği → sayı). 1. ve 3. seviye listeleri haritanın ortam listesindeki canavarlardan (data/monster-ortamlari.json), XP bütçesiyle; 5. seviye listeleri önceki görevlerden. Yeni seviye (8, 11…) yeni anahtar olarak eklenir. Uyuyan ejderha varyanttan gelir (`map.dragon`), listede yok. Kuyruk 41: `col`, `kale`, `magara`, `orman` için 7. ve 9. seviye (Üst seviye; 4 kişilik Aşama 2 partileri, SRD High bütçesine yakın) listeleri; Kolay listeleri `data/sim-a2.json`.",
+ "scenarios": [
+  {
+   "id": "duz",
+   "name": "Düz — haritasız",
+   "enemies": {
+    "1": {
+     "gnoll-warrior": 2,
+     "worg": 1,
+     "wolf": 2,
+     "hyena": 1
+    },
+    "3": {
+     "ogre": 1,
+     "gnoll-warrior": 4,
+     "worg": 1,
+     "wolf": 2
+    },
+    "5": {
+     "ogre": 2,
+     "bandit-captain": 1,
+     "gnoll-warrior": 4,
+     "wolf": 2,
+     "worg": 2,
+     "boar": 2
     }
-  ]
+   }
+  },
+  {
+   "id": "col",
+   "name": "Çöl — Gündüz",
+   "map": {
+    "mapId": "col",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "gnoll-warrior": 3,
+     "giant-wolf-spider": 2,
+     "scout": 1,
+     "jackal": 1
+    },
+    "3": {
+     "death-dog": 3,
+     "gnoll-warrior": 5,
+     "giant-hyena": 2,
+     "scout": 1
+    },
+    "5": {
+     "giant-scorpion": 2,
+     "mummy": 2,
+     "manticore": 2,
+     "gnoll-warrior": 4,
+     "giant-hyena": 1,
+     "scout": 2,
+     "death-dog": 1
+    },
+    "7": {
+     "chimera": 1,
+     "manticore": 3,
+     "giant-scorpion": 2,
+     "mummy": 2,
+     "gnoll-warrior": 4
+    },
+    "9": {
+     "wyvern": 2,
+     "chimera": 1,
+     "giant-scorpion": 2,
+     "mummy": 2,
+     "gnoll-warrior": 4
+    },
+    "11": {
+     "adult-blue-dragon": 1,
+     "mummy": 2
+    },
+    "15": {
+     "adult-blue-dragon": 1,
+     "young-blue-dragon": 2
+    },
+    "20": {
+     "ancient-blue-dragon": 1,
+     "mummy": 3
+    }
+   }
+  },
+  {
+   "id": "volkan",
+   "name": "Volkan",
+   "map": {
+    "mapId": "volkan",
+    "variantId": "normal"
+   },
+   "enemies": {
+    "1": {
+     "magmin": 2,
+     "magma-mephit": 2,
+     "kobold-warrior": 2,
+     "steam-mephit": 1
+    },
+    "3": {
+     "hell-hound": 1,
+     "magmin": 2,
+     "magma-mephit": 3,
+     "steam-mephit": 1
+    },
+    "5": {
+     "hell-hound": 2,
+     "fire-elemental": 1,
+     "magmin": 2,
+     "imp": 3,
+     "magma-mephit": 2
+    }
+   }
+  },
+  {
+   "id": "volkan-ejder",
+   "name": "Volkan — uyuyan Young Red Dragon",
+   "map": {
+    "mapId": "volkan",
+    "variantId": "uyuyan-ejderha",
+    "dragon": "young-red-dragon"
+   },
+   "enemies": {
+    "1": {
+     "magma-mephit": 2,
+     "kobold-warrior": 3
+    },
+    "3": {
+     "hell-hound": 1,
+     "magmin": 2,
+     "imp": 2,
+     "kobold-warrior": 2
+    },
+    "5": {
+     "wyvern": 1,
+     "magmin": 2
+    }
+   }
+  },
+  {
+   "id": "volkan-ejder-adult",
+   "name": "Volkan — uyuyan Adult Red Dragon",
+   "map": {
+    "mapId": "volkan",
+    "variantId": "uyuyan-ejderha",
+    "dragon": "adult-red-dragon"
+   },
+   "enemies": {
+    "1": {
+     "magmin": 3,
+     "magma-mephit": 2,
+     "kobold-warrior": 3
+    },
+    "3": {
+     "hell-hound": 2,
+     "magmin": 2,
+     "kobold-warrior": 1
+    },
+    "5": {
+     "wyvern": 1
+    }
+   }
+  },
+  {
+   "id": "volkan-ejder-ancient",
+   "name": "Volkan — uyuyan Ancient Red Dragon",
+   "map": {
+    "mapId": "volkan",
+    "variantId": "uyuyan-ejderha",
+    "dragon": "ancient-red-dragon"
+   },
+   "enemies": {
+    "1": {
+     "magmin": 3,
+     "magma-mephit": 2,
+     "kobold-warrior": 3
+    },
+    "3": {
+     "hell-hound": 2,
+     "magmin": 2,
+     "kobold-warrior": 1
+    },
+    "5": {
+     "wyvern": 1
+    }
+   }
+  },
+  {
+   "id": "volkan-ejder-wyrmling",
+   "name": "Volkan — uyuyan Red Dragon Wyrmling",
+   "map": {
+    "mapId": "volkan",
+    "variantId": "uyuyan-ejderha",
+    "dragon": "red-dragon-wyrmling"
+   },
+   "enemies": {
+    "1": {
+     "magmin": 2,
+     "magma-mephit": 2,
+     "kobold-warrior": 2,
+     "giant-fire-beetle": 1
+    },
+    "3": {
+     "hell-hound": 2,
+     "magmin": 2,
+     "kobold-warrior": 2
+    },
+    "5": {
+     "wyvern": 1,
+     "hell-hound": 1,
+     "magmin": 2
+    }
+   }
+  },
+  {
+   "id": "volkan-ejder-sans",
+   "name": "Volkan — uyuyan Young Red, dragonWake: chance (varsayılan %2)",
+   "map": {
+    "mapId": "volkan",
+    "variantId": "uyuyan-ejderha",
+    "dragon": "young-red-dragon",
+    "dragonWake": "chance"
+   },
+   "enemies": {
+    "1": {
+     "kobold-warrior": 2,
+     "magma-mephit": 2
+    },
+    "3": {
+     "hell-hound": 1,
+     "imp": 1,
+     "magmin": 1
+    },
+    "5": {
+     "wyvern": 1
+    }
+   }
+  },
+  {
+   "id": "orman",
+   "name": "Orman",
+   "map": {
+    "mapId": "orman",
+    "variantId": "orman"
+   },
+   "enemies": {
+    "1": {
+     "wolf": 4,
+     "goblin-warrior": 4,
+     "giant-spider": 1
+    },
+    "3": {
+     "owlbear": 2,
+     "dire-wolf": 3,
+     "giant-spider": 1,
+     "wolf": 3
+    },
+    "5": {
+     "owlbear": 2,
+     "werewolf": 2,
+     "giant-spider": 3,
+     "dire-wolf": 3,
+     "ettercap": 2,
+     "wolf": 2
+    },
+    "7": {
+     "troll": 1,
+     "owlbear": 3,
+     "werewolf": 2,
+     "dire-wolf": 3,
+     "giant-spider": 3
+    },
+    "9": {
+     "troll": 2,
+     "owlbear": 3,
+     "werebear": 1,
+     "werewolf": 2,
+     "dire-wolf": 3,
+     "giant-spider": 2
+    },
+    "11": {
+     "treant": 1,
+     "young-green-dragon": 1,
+     "green-hag": 3
+    },
+    "15": {
+     "adult-green-dragon": 1,
+     "treant": 1
+    },
+    "20": {
+     "ancient-green-dragon": 1,
+     "troll": 1
+    }
+   }
+  },
+  {
+   "id": "orman-gece",
+   "name": "Orman — Gece",
+   "map": {
+    "mapId": "orman",
+    "variantId": "gece"
+   },
+   "enemies": {
+    "1": {
+     "wolf": 4,
+     "goblin-warrior": 4,
+     "giant-spider": 1
+    },
+    "3": {
+     "owlbear": 1,
+     "dire-wolf": 3,
+     "giant-spider": 1,
+     "wolf": 3
+    },
+    "5": {
+     "owlbear": 2,
+     "werewolf": 2,
+     "giant-spider": 3,
+     "dire-wolf": 3,
+     "ettercap": 2,
+     "wolf": 2
+    }
+   }
+  },
+  {
+   "id": "magara",
+   "name": "Mağara — karanlık",
+   "map": {
+    "mapId": "magara",
+    "variantId": "magara"
+   },
+   "enemies": {
+    "1": {
+     "goblin-warrior": 4,
+     "grimlock": 2,
+     "darkmantle": 2
+    },
+    "3": {
+     "ghoul": 2,
+     "giant-spider": 2,
+     "ettercap": 1,
+     "bugbear-warrior": 2,
+     "ogre": 1
+    },
+    "5": {
+     "troll": 1,
+     "giant-spider": 2,
+     "ghoul": 1,
+     "darkmantle": 1,
+     "ettercap": 1,
+     "ogre": 1,
+     "grimlock": 1
+    },
+    "7": {
+     "troll": 1,
+     "ettin": 1,
+     "ogre": 2,
+     "ettercap": 2,
+     "basilisk": 1,
+     "minotaur-skeleton": 1
+    },
+    "9": {
+     "drider": 1,
+     "troll": 2,
+     "ettin": 1,
+     "ogre": 2,
+     "ettercap": 2
+    },
+    "11": {
+     "behir": 1,
+     "aboleth": 1,
+     "troll": 1,
+     "ettin": 1
+    },
+    "15": {
+     "purple-worm": 1,
+     "behir": 2,
+     "aboleth": 1,
+     "stone-golem": 1
+    },
+    "20": {
+     "lich": 1,
+     "mummy-lord": 1
+    }
+   }
+  },
+  {
+   "id": "dungeon",
+   "name": "Dungeon — Koridor (meşale)",
+   "map": {
+    "mapId": "dungeon",
+    "variantId": "mesale"
+   },
+   "enemies": {
+    "1": {
+     "skeleton": 4,
+     "zombie": 2,
+     "giant-rat": 3
+    },
+    "3": {
+     "wight": 1,
+     "ghoul": 2,
+     "ghast": 3,
+     "skeleton": 3
+    },
+    "5": {
+     "wight": 3,
+     "bugbear-stalker": 1,
+     "mummy": 2,
+     "ghast": 3,
+     "ghoul": 1,
+     "bugbear-warrior": 2,
+     "minotaur-of-baphomet": 1
+    }
+   }
+  },
+  {
+   "id": "dungeon-merdiven",
+   "name": "Dungeon — Merdiven",
+   "map": {
+    "mapId": "dungeon",
+    "variantId": "merdiven"
+   },
+   "enemies": {
+    "1": {
+     "skeleton": 3,
+     "giant-rat": 2,
+     "goblin-warrior": 1
+    },
+    "3": {
+     "ghoul": 2,
+     "ghast": 2,
+     "bugbear-warrior": 1,
+     "skeleton": 3
+    },
+    "5": {
+     "ghoul": 1,
+     "ghast": 4,
+     "wight": 3,
+     "skeleton": 2,
+     "bugbear-stalker": 2
+    }
+   }
+  },
+  {
+   "id": "derin-merdiven",
+   "name": "Dungeon — Yürüyen merdiven",
+   "map": {
+    "mapId": "dungeon",
+    "variantId": "merdiven-yuruyen"
+   },
+   "enemies": {
+    "1": {
+     "skeleton": 3,
+     "giant-rat": 2
+    },
+    "3": {
+     "ghoul": 2,
+     "skeleton": 3
+    },
+    "5": {
+     "ghast": 3,
+     "skeleton": 4,
+     "wight": 1
+    },
+    "7": {
+     "ghast": 3,
+     "wight": 2,
+     "skeleton": 2
+    }
+   }
+  },
+  {
+   "id": "dungeon-hazine",
+   "name": "Dungeon — Hazine odası",
+   "map": {
+    "mapId": "dungeon",
+    "variantId": "hazine"
+   },
+   "enemies": {
+    "1": {
+     "skeleton": 4,
+     "zombie": 3,
+     "ghoul": 1
+    },
+    "3": {
+     "ghoul": 3,
+     "ghast": 3,
+     "skeleton": 2
+    },
+    "5": {
+     "wight": 3,
+     "bugbear-stalker": 1,
+     "mummy": 3,
+     "ghast": 2,
+     "bugbear-warrior": 2,
+     "minotaur-of-baphomet": 1
+    }
+   }
+  },
+  {
+   "id": "kale",
+   "name": "Kale — Gündüz",
+   "map": {
+    "mapId": "kale",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "goblin-warrior": 4,
+     "guard": 2
+    },
+    "3": {
+     "hobgoblin-warrior": 3,
+     "goblin-warrior": 3,
+     "bugbear-warrior": 1
+    },
+    "5": {
+     "hobgoblin-warrior": 4,
+     "goblin-warrior": 4,
+     "hobgoblin-captain": 1,
+     "bugbear-stalker": 1,
+     "berserker": 3,
+     "warrior-veteran": 2,
+     "bugbear-warrior": 2
+    },
+    "7": {
+     "gladiator": 1,
+     "knight": 2,
+     "warrior-veteran": 2,
+     "hobgoblin-captain": 1,
+     "berserker": 3,
+     "priest": 1,
+     "bugbear-stalker": 1
+    },
+    "9": {
+     "gladiator": 2,
+     "knight": 2,
+     "warrior-veteran": 2,
+     "mage": 2,
+     "berserker": 3
+    },
+    "11": {
+     "cloud-giant": 1,
+     "stone-giant": 2,
+     "knight": 4
+    },
+    "15": {
+     "storm-giant": 1,
+     "cloud-giant": 1,
+     "stone-giant": 1,
+     "knight": 4
+    },
+    "20": {
+     "pit-fiend": 1,
+     "balor": 1
+    }
+   }
+  },
+  {
+   "id": "kale-gece",
+   "name": "Kale — Gece",
+   "map": {
+    "mapId": "kale",
+    "variantId": "gece"
+   },
+   "enemies": {
+    "1": {
+     "goblin-warrior": 4,
+     "guard": 2
+    },
+    "3": {
+     "hobgoblin-warrior": 3,
+     "goblin-warrior": 3,
+     "bugbear-warrior": 1
+    },
+    "5": {
+     "hobgoblin-warrior": 3,
+     "goblin-warrior": 5,
+     "hobgoblin-captain": 1,
+     "bugbear-stalker": 1,
+     "berserker": 3,
+     "warrior-veteran": 2,
+     "bugbear-warrior": 2
+    }
+   }
+  },
+  {
+   "id": "taverna",
+   "name": "Taverna — 4 masum ortada",
+   "map": {
+    "mapId": "taverna",
+    "variantId": "ic-mekan",
+    "options": [
+     "objective"
+    ],
+    "civilians": 4,
+    "civilianPlacement": "middle"
+   },
+   "enemies": {
+    "1": {
+     "bandit": 4,
+     "tough": 2,
+     "cultist": 2,
+     "giant-rat": 1
+    },
+    "3": {
+     "tough": 3,
+     "bandit-captain": 2,
+     "spy": 1,
+     "bandit": 2
+    },
+    "5": {
+     "tough-boss": 4,
+     "knight": 5
+    }
+   }
+  },
+  {
+   "id": "taverna-arka",
+   "name": "Taverna — 4 masum düşmandan uzakta, varsayılan",
+   "map": {
+    "mapId": "taverna",
+    "variantId": "ic-mekan",
+    "options": [
+     "objective"
+    ],
+    "civilians": 4
+   },
+   "enemies": {
+    "1": {
+     "bandit": 4,
+     "tough": 2
+    },
+    "3": {
+     "tough": 2,
+     "bandit-captain": 2,
+     "spy": 1,
+     "bandit": 3
+    },
+    "5": {
+     "tough-boss": 3,
+     "knight": 4,
+     "bandit-captain": 2
+    }
+   }
+  },
+  {
+   "id": "taverna-8",
+   "name": "Taverna — 8 masum düşmandan uzakta",
+   "map": {
+    "mapId": "taverna",
+    "variantId": "ic-mekan",
+    "options": [
+     "objective"
+    ],
+    "civilians": 8
+   },
+   "enemies": {
+    "1": {
+     "bandit": 5,
+     "tough": 2
+    },
+    "3": {
+     "tough": 2,
+     "bandit-captain": 2,
+     "spy": 1,
+     "bandit": 4
+    },
+    "5": {
+     "tough-boss": 2,
+     "knight": 4,
+     "bandit-captain": 3
+    }
+   }
+  },
+  {
+   "id": "orman-yolu-pusu",
+   "name": "Orman yolu — eşkıya pususu",
+   "map": {
+    "mapId": "orman-yolu",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "bandit": 3,
+     "scout": 1,
+     "wolf": 2
+    },
+    "3": {
+     "bandit-captain": 1,
+     "bandit": 4,
+     "scout": 2,
+     "wolf": 2
+    },
+    "5": {
+     "bandit-captain": 2,
+     "bandit": 6,
+     "scout": 4,
+     "dire-wolf": 2
+    }
+   }
+  },
+  {
+   "id": "orman-yolu-avcilar",
+   "name": "Orman yolu — avcılar",
+   "map": {
+    "mapId": "orman-yolu",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "wolf": 4,
+     "goblin-warrior": 2
+    },
+    "3": {
+     "dire-wolf": 2,
+     "wolf": 4,
+     "goblin-boss": 1
+    },
+    "5": {
+     "owlbear": 2,
+     "dire-wolf": 2,
+     "goblin-boss": 1
+    }
+   }
+  },
+  {
+   "id": "orman-heykel",
+   "name": "Orman — Mielikki Gölü (su ve pusu)",
+   "map": {
+    "mapId": "orman-heykel-golu",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "giant-frog": 3,
+     "sahuagin-warrior": 2
+    },
+    "3": {
+     "crocodile": 2,
+     "sahuagin-warrior": 3,
+     "merrow": 1
+    },
+    "5": {
+     "merrow": 2,
+     "crocodile": 3,
+     "sahuagin-warrior": 4,
+     "giant-constrictor-snake": 1
+    }
+   }
+  },
+  {
+   "id": "orman-oduncu",
+   "name": "Orman — Oduncu Kampı (köprü boğazı)",
+   "map": {
+    "mapId": "orman-oduncu-kampi",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "bandit": 4,
+     "scout": 1
+    },
+    "3": {
+     "bandit-captain": 1,
+     "bandit": 4,
+     "scout": 2
+    },
+    "5": {
+     "bandit-captain": 2,
+     "bandit": 5,
+     "scout": 3,
+     "berserker": 1
+    }
+   }
+  },
+  {
+   "id": "orman-ork",
+   "name": "Orman — Ork Kampı (ork akını)",
+   "map": {
+    "mapId": "orman-ork-kampi",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "tough": 3,
+     "worg": 1
+    },
+    "3": {
+     "berserker": 2,
+     "tough": 2,
+     "worg": 2
+    },
+    "5": {
+     "tough-boss": 1,
+     "berserker": 3,
+     "tough": 3,
+     "worg": 2
+    }
+   }
+  },
+  {
+   "id": "orman-kemik",
+   "name": "Orman — Kemik Açıklığı (ölümsüz ve orman canavarı)",
+   "map": {
+    "mapId": "orman-kemik-acikligi",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "skeleton": 3,
+     "wolf": 2
+    },
+    "3": {
+     "skeleton": 4,
+     "ghoul": 2,
+     "dire-wolf": 1
+    },
+    "5": {
+     "wight": 1,
+     "ghoul": 3,
+     "skeleton": 4,
+     "owlbear": 1
+    }
+   }
+  },
+  {
+   "id": "orman-magara",
+   "name": "Orman — Heykel Mağarası (karanlık mağara)",
+   "map": {
+    "mapId": "orman-heykel-magarasi",
+    "variantId": "karanlik"
+   },
+   "enemies": {
+    "1": {
+     "swarm-of-bats": 2,
+     "giant-centipede": 2,
+     "darkmantle": 1
+    },
+    "3": {
+     "darkmantle": 2,
+     "grick": 1,
+     "giant-spider": 1,
+     "swarm-of-bats": 2
+    },
+    "5": {
+     "grick": 2,
+     "ochre-jelly": 1,
+     "giant-spider": 2,
+     "darkmantle": 2
+    }
+   }
+  },
+  {
+   "id": "kale-avlu-savunma",
+   "name": "Kale ve avlu — muhafızlar",
+   "map": {
+    "mapId": "kale-avlu",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 8,
+     "priest-acolyte": 2
+    },
+    "3": {
+     "knight": 1,
+     "guard": 6,
+     "priest-acolyte": 1
+    },
+    "5": {
+     "knight": 2,
+     "guard": 8,
+     "priest": 1,
+     "spy": 1
+    }
+   }
+  },
+  {
+   "id": "kale-avlu-garnizon",
+   "name": "Kale ve avlu — hobgoblin garnizonu",
+   "map": {
+    "mapId": "kale-avlu",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "hobgoblin-warrior": 3
+    },
+    "3": {
+     "hobgoblin-captain": 1,
+     "hobgoblin-warrior": 3
+    },
+    "5": {
+     "hobgoblin-captain": 1,
+     "hobgoblin-warrior": 8,
+     "bugbear-warrior": 2
+    }
+   }
+  },
+  {
+   "id": "magara-genis-derinlik",
+   "name": "Mağara (orta) — derinlik yaratıkları",
+   "map": {
+    "mapId": "magara-genis",
+    "variantId": "magara"
+   },
+   "enemies": {
+    "1": {
+     "darkmantle": 2,
+     "swarm-of-bats": 2
+    },
+    "3": {
+     "grick": 1,
+     "darkmantle": 2,
+     "giant-spider": 1
+    },
+    "5": {
+     "grick": 2,
+     "darkmantle": 4,
+     "giant-spider": 2,
+     "swarm-of-bats": 2
+    }
+   }
+  },
+  {
+   "id": "magara-genis-gulyabani",
+   "name": "Mağara (orta) — gulyabaniler",
+   "map": {
+    "mapId": "magara-genis",
+    "variantId": "magara"
+   },
+   "enemies": {
+    "1": {
+     "ghoul": 1,
+     "cultist": 2
+    },
+    "3": {
+     "ghoul": 3,
+     "cultist": 4
+    },
+    "5": {
+     "ghoul": 7,
+     "cultist": 4,
+     "swarm-of-bats": 2
+    }
+   }
+  },
+  {
+   "id": "kale-baskini",
+   "name": "Kale Baskını — hobgoblin kalesi",
+   "map": {
+    "mapId": "kale-baskini",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 4,
+     "hobgoblin-warrior": 2,
+     "spy": 1
+    },
+    "3": {
+     "hobgoblin-warrior": 4,
+     "guard": 2,
+     "bugbear-warrior": 2,
+     "spy": 1,
+     "hobgoblin-captain": 1
+    },
+    "5": {
+     "hobgoblin-warrior": 4,
+     "bugbear-warrior": 2,
+     "warrior-veteran": 2,
+     "hobgoblin-captain": 2
+    }
+   }
+  },
+  {
+   "id": "kale-baskini-muhafiz",
+   "name": "Kale Baskını — insan muhafızlar",
+   "map": {
+    "mapId": "kale-baskini",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 6,
+     "spy": 1,
+     "priest-acolyte": 1
+    },
+    "3": {
+     "guard": 6,
+     "spy": 2,
+     "priest-acolyte": 1,
+     "guard-captain": 1
+    },
+    "5": {
+     "guard": 6,
+     "warrior-veteran": 2,
+     "priest": 1,
+     "guard-captain": 1
+    }
+   }
+  },
+  {
+   "id": "sefer-salon",
+   "name": "Volkan Seferi — Portal Salonu",
+   "map": {
+    "mapId": "isinlanma-salonu",
+    "variantId": "varsayilan"
+   },
+   "enemies": {
+    "1": {
+     "cultist": 4,
+     "skeleton": 2,
+     "magma-mephit": 1
+    },
+    "3": {
+     "cultist": 4,
+     "skeleton": 2,
+     "cultist-fanatic": 2
+    },
+    "5": {
+     "cultist": 4,
+     "skeleton": 3,
+     "cultist-fanatic": 2
+    }
+   }
+  },
+  {
+   "id": "sefer-tapinak",
+   "name": "Volkan Seferi — Lav Tapınağı",
+   "map": {
+    "mapId": "lav-tapinagi",
+    "variantId": "varsayilan"
+   },
+   "enemies": {
+    "1": {
+     "scout": 2,
+     "cultist": 3,
+     "magma-mephit": 1
+    },
+    "3": {
+     "scout": 2,
+     "cultist": 3,
+     "magma-mephit": 1
+    },
+    "5": {
+     "scout": 4,
+     "cultist-fanatic": 1,
+     "magma-mephit": 2,
+     "hell-hound": 1
+    }
+   }
+  },
+  {
+   "id": "sefer-kopru",
+   "name": "Volkan Seferi — Kanyon Köprüsü",
+   "map": {
+    "mapId": "kanyon-koprusu",
+    "variantId": "varsayilan"
+   },
+   "enemies": {
+    "1": {
+     "skeleton": 4,
+     "magma-mephit": 2
+    },
+    "3": {
+     "skeleton": 2,
+     "magmin": 1,
+     "scout": 2
+    },
+    "5": {
+     "skeleton": 4,
+     "minotaur-skeleton": 1,
+     "magmin": 1,
+     "scout": 2
+    }
+   }
+  },
+  {
+   "id": "sefer-demirhane",
+   "name": "Volkan Seferi — Volkanik Demirhane",
+   "map": {
+    "mapId": "volkanik-demirhane",
+    "variantId": "varsayilan"
+   },
+   "enemies": {
+    "1": {
+     "scout": 2,
+     "cultist": 3,
+     "magma-mephit": 2
+    },
+    "3": {
+     "scout": 3,
+     "cultist": 1,
+     "magma-mephit": 1
+    },
+    "5": {
+     "scout": 4,
+     "cultist-fanatic": 2,
+     "magmin": 1,
+     "priest": 1
+    }
+   }
+  },
+  {
+   "id": "derin-karakol",
+   "name": "Derinlikler — Maden Ocağı",
+   "map": {
+    "mapId": "derinlikler-magara-karakol",
+    "variantId": "varsayilan"
+   },
+   "enemies": {
+    "1": {
+     "bandit": 4,
+     "skeleton": 2
+    },
+    "3": {
+     "bandit": 4,
+     "skeleton": 2,
+     "ghoul": 1
+    },
+    "5": {
+     "bandit": 6,
+     "bandit-captain": 2,
+     "skeleton": 4,
+     "ghoul": 2
+    },
+    "7": {
+     "bandit": 4,
+     "bandit-captain": 2,
+     "skeleton": 4,
+     "ghoul": 3
+    }
+   }
+  },
+  {
+   "id": "derin-mezar",
+   "name": "Derinlikler — Mezar Labirenti",
+   "map": {
+    "mapId": "derinlikler-mezar-labirenti",
+    "variantId": "varsayilan"
+   },
+   "enemies": {
+    "1": {
+     "skeleton": 3,
+     "zombie": 2
+    },
+    "3": {
+     "skeleton": 3,
+     "zombie": 2,
+     "ghoul": 1
+    },
+    "5": {
+     "skeleton": 4,
+     "zombie": 4,
+     "ghast": 2,
+     "wight": 1
+    },
+    "7": {
+     "skeleton": 4,
+     "zombie": 4,
+     "ghast": 2,
+     "wight": 1
+    }
+   }
+  },
+  {
+   "id": "derin-mantar",
+   "name": "Derinlikler — Mantar Mağarası",
+   "map": {
+    "mapId": "derinlikler-mantar-magarasi",
+    "variantId": "varsayilan"
+   },
+   "enemies": {
+    "1": {
+     "violet-fungus": 2,
+     "shrieker-fungus": 1,
+     "swarm-of-insects": 1
+    },
+    "3": {
+     "giant-spider": 1,
+     "violet-fungus": 2,
+     "shrieker-fungus": 1,
+     "swarm-of-insects": 1
+    },
+    "5": {
+     "ettercap": 2,
+     "giant-spider": 3,
+     "violet-fungus": 2,
+     "shrieker-fungus": 1
+    },
+    "7": {
+     "ettercap": 2,
+     "giant-spider": 3,
+     "violet-fungus": 2,
+     "shrieker-fungus": 1
+    }
+   }
+  },
+  {
+   "id": "derin-lav",
+   "name": "Derinlikler — Lav Salonu",
+   "map": {
+    "mapId": "derinlikler-lav-salonu",
+    "variantId": "varsayilan"
+   },
+   "enemies": {
+    "1": {
+     "magmin": 1,
+     "magma-mephit": 2
+    },
+    "3": {
+     "magmin": 2,
+     "magma-mephit": 2
+    },
+    "5": {
+     "magmin": 3,
+     "azer-sentinel": 2,
+     "fire-elemental": 1,
+     "hell-hound": 1
+    },
+    "7": {
+     "magmin": 2,
+     "azer-sentinel": 1,
+     "fire-elemental": 1
+    }
+   }
+  },
+  {
+   "id": "k29-buzul-acik",
+   "name": "Buzul — Açık Buzul",
+   "map": {
+    "mapId": "buzul-acik",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "wolf": 3
+    },
+    "3": {
+     "winter-wolf": 2,
+     "polar-bear": 1,
+     "wolf": 1
+    },
+    "5": {
+     "winter-wolf": 2,
+     "polar-bear": 1,
+     "wolf": 2
+    }
+   }
+  },
+  {
+   "id": "k29-buzul-kamp",
+   "name": "Buzul — Karlı Kamp",
+   "map": {
+    "mapId": "buzul-kamp",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "bandit": 3
+    },
+    "3": {
+     "bandit-captain": 1,
+     "scout": 3,
+     "bandit": 3
+    },
+    "5": {
+     "bandit-captain": 2,
+     "scout": 3,
+     "bandit": 3,
+     "winter-wolf": 2,
+     "ettin": 1
+    }
+   }
+  },
+  {
+   "id": "k29-dag-kopru",
+   "name": "Dağ — Uçurum Köprüsü",
+   "map": {
+    "mapId": "dag-kopru",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "goblin-warrior": 4
+    },
+    "3": {
+     "ogre": 2,
+     "hobgoblin-warrior": 4
+    },
+    "5": {
+     "ogre": 2,
+     "hobgoblin-warrior": 3
+    }
+   }
+  },
+  {
+   "id": "k29-dag-nobetci",
+   "name": "Dağ — Sessiz Nöbetçi",
+   "map": {
+    "mapId": "dag-nobetci",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "skeleton": 3
+    },
+    "3": {
+     "ghoul": 4,
+     "skeleton": 4
+    },
+    "5": {
+     "ghoul": 3,
+     "ghast": 2,
+     "wight": 2,
+     "gargoyle": 2,
+     "wraith": 1
+    }
+   }
+  },
+  {
+   "id": "k29-batak-kamp",
+   "name": "Bataklık — Cadının Kampı",
+   "map": {
+    "mapId": "batak-kamp",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "giant-frog": 3
+    },
+    "3": {
+     "green-hag": 1,
+     "giant-frog": 2
+    },
+    "5": {
+     "green-hag": 1,
+     "giant-toad": 2,
+     "giant-frog": 2
+    }
+   }
+  },
+  {
+   "id": "k29-batak-cukur",
+   "name": "Bataklık — Batık Çukur",
+   "map": {
+    "mapId": "batak-cukur",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "giant-frog": 2,
+     "zombie": 1
+    },
+    "3": {
+     "crocodile": 2,
+     "zombie": 2
+    },
+    "5": {
+     "crocodile": 3,
+     "ghoul": 2,
+     "zombie": 2
+    }
+   }
+  },
+  {
+   "id": "k29-col-kanyon-nehri",
+   "name": "Çöl — Kanyon Nehri",
+   "map": {
+    "mapId": "col-kanyon-nehri",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "jackal": 3,
+     "giant-lizard": 1
+    },
+    "3": {
+     "gnoll-warrior": 4,
+     "giant-hyena": 1
+    },
+    "5": {
+     "gnoll-warrior": 4,
+     "giant-hyena": 2,
+     "manticore": 1
+    }
+   }
+  },
+  {
+   "id": "k29-col-gemi-enkazi",
+   "name": "Çöl — Gemi Enkazı",
+   "map": {
+    "mapId": "col-gemi-enkazi",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "giant-lizard": 2,
+     "scorpion": 2
+    },
+    "3": {
+     "giant-scorpion": 1,
+     "giant-venomous-snake": 3
+    },
+    "5": {
+     "giant-scorpion": 2,
+     "death-dog": 2,
+     "giant-venomous-snake": 2
+    }
+   }
+  },
+  {
+   "id": "k29-col-vaha",
+   "name": "Çöl — Vaha",
+   "map": {
+    "mapId": "col-vaha",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "hyena": 3,
+     "jackal": 2
+    },
+    "3": {
+     "gnoll-warrior": 3,
+     "giant-hyena": 1
+    },
+    "5": {
+     "gnoll-warrior": 4,
+     "lion": 2,
+     "giant-hyena": 1
+    }
+   }
+  },
+  {
+   "id": "k29-col-sutun-harabesi",
+   "name": "Çöl — Sütun Harabesi",
+   "map": {
+    "mapId": "col-sutun-harabesi",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "dust-mephit": 2,
+     "jackal": 2
+    },
+    "3": {
+     "dust-mephit": 3,
+     "gnoll-warrior": 2
+    },
+    "5": {
+     "minotaur-skeleton": 2,
+     "dust-mephit": 3,
+     "gnoll-warrior": 2
+    }
+   }
+  },
+  {
+   "id": "k29-buzul-kayalik",
+   "name": "Buzul — Buzul Kayalıkları",
+   "map": {
+    "mapId": "buzul-kayalik",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "wolf": 3
+    },
+    "3": {
+     "winter-wolf": 2,
+     "ice-mephit": 3
+    },
+    "5": {
+     "winter-wolf": 2,
+     "ice-mephit": 3
+    }
+   }
+  },
+  {
+   "id": "k29-buzul-tapinak",
+   "name": "Buzul — Buz Tapınağı",
+   "map": {
+    "mapId": "buzul-tapinak",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "ice-mephit": 2,
+     "skeleton": 1
+    },
+    "3": {
+     "ice-mephit": 3,
+     "ghoul": 2,
+     "winter-wolf": 1
+    },
+    "5": {
+     "ice-mephit": 3,
+     "ghoul": 2,
+     "winter-wolf": 1
+    }
+   }
+  },
+  {
+   "id": "k29-dag-karakol",
+   "name": "Dağ — Geçit Karakolu",
+   "map": {
+    "mapId": "dag-karakol",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "bandit": 3,
+     "scout": 1
+    },
+    "3": {
+     "bandit-captain": 2,
+     "scout": 3,
+     "bandit": 4
+    },
+    "5": {
+     "bandit-captain": 2,
+     "scout": 3,
+     "bandit": 4,
+     "hill-giant": 1,
+     "manticore": 1
+    }
+   }
+  },
+  {
+   "id": "k29-dag-kayalik",
+   "name": "Dağ — Yüksek Kayalıklar",
+   "map": {
+    "mapId": "dag-kayalik",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "goblin-warrior": 4
+    },
+    "3": {
+     "griffon": 2,
+     "harpy": 3
+    },
+    "5": {
+     "griffon": 3,
+     "harpy": 4,
+     "wyvern": 1
+    }
+   }
+  },
+  {
+   "id": "k29-batak-kale",
+   "name": "Bataklık — Batık Kale",
+   "map": {
+    "mapId": "batak-kale",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "skeleton": 3
+    },
+    "3": {
+     "skeleton": 3,
+     "ghoul": 1
+    },
+    "5": {
+     "ghoul": 3,
+     "skeleton": 3
+    }
+   }
+  },
+  {
+   "id": "k29-batak-adalar",
+   "name": "Bataklık — Kütük Adaları",
+   "map": {
+    "mapId": "batak-adalar",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "giant-frog": 2,
+     "giant-lizard": 1
+    },
+    "3": {
+     "crocodile": 1,
+     "giant-frog": 2
+    },
+    "5": {
+     "crocodile": 2,
+     "giant-toad": 2
+    }
+   }
+  },
+  {
+   "id": "k32-yeralti-nehri",
+   "name": "Serüven — Yeraltı Nehri (pusu)",
+   "map": {
+    "mapId": "yeralti-nehri",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "giant-frog": 1
+    },
+    "3": {
+     "giant-frog": 1,
+     "crocodile": 1
+    },
+    "5": {
+     "crocodile": 2
+    }
+   }
+  },
+  {
+   "id": "k34-kale-onu",
+   "name": "Yerleşim — Kale Önü",
+   "map": {
+    "mapId": "kale-onu",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2,
+     "bandit": 2
+    },
+    "3": {
+     "guard": 2,
+     "tough": 2,
+     "scout": 1
+    },
+    "5": {
+     "knight": 1,
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  },
+  {
+   "id": "k34-kale-ic-avlu",
+   "name": "Yerleşim — Kale Avlusu",
+   "map": {
+    "mapId": "kale-ic-avlu",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2,
+     "bandit": 2
+    },
+    "3": {
+     "guard": 2,
+     "tough": 2,
+     "scout": 1
+    },
+    "5": {
+     "knight": 1,
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  },
+  {
+   "id": "k34-kale-taht-salonu",
+   "name": "Yerleşim — Taht Salonu",
+   "map": {
+    "mapId": "kale-taht-salonu",
+    "variantId": "ic-mekan"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2,
+     "bandit": 2
+    },
+    "3": {
+     "guard": 2,
+     "tough": 2,
+     "scout": 1
+    },
+    "5": {
+     "knight": 1,
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  },
+  {
+   "id": "k34-kasaba-han",
+   "name": "Yerleşim — Kasaba Hanı",
+   "map": {
+    "mapId": "kasaba-han",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2,
+     "bandit": 2
+    },
+    "3": {
+     "guard": 2,
+     "tough": 2,
+     "scout": 1
+    },
+    "5": {
+     "knight": 1,
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  },
+  {
+   "id": "k34-beyaz-sehir-dis-kapi",
+   "name": "Yerleşim — Beyaz Şehir Kapısı",
+   "map": {
+    "mapId": "beyaz-sehir-dis-kapi",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2,
+     "bandit": 2
+    },
+    "3": {
+     "guard": 2,
+     "tough": 2,
+     "scout": 1
+    },
+    "5": {
+     "knight": 1,
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  },
+  {
+   "id": "k34-beyaz-sehir-saray-avlusu",
+   "name": "Yerleşim — Saray Avlusu",
+   "map": {
+    "mapId": "beyaz-sehir-saray-avlusu",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2,
+     "bandit": 2
+    },
+    "3": {
+     "guard": 2,
+     "tough": 2,
+     "scout": 1
+    },
+    "5": {
+     "knight": 1,
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  },
+  {
+   "id": "k35-kasaba-demirci-tapinak",
+   "name": "Yerleşim — Demirci ve Tapınak",
+   "map": {
+    "mapId": "kasaba-demirci-tapinak",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2,
+     "bandit": 2
+    },
+    "3": {
+     "guard": 2,
+     "tough": 2,
+     "scout": 1
+    },
+    "5": {
+     "knight": 1,
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  },
+  {
+   "id": "k35-kasaba-lagim",
+   "name": "Yerleşim — Kasaba Lağımı",
+   "map": {
+    "mapId": "kasaba-lagim",
+    "variantId": "karanlik"
+   },
+   "enemies": {
+    "1": {
+     "giant-rat": 4
+    },
+    "3": {
+     "giant-rat": 3,
+     "swarm-of-rats": 2
+    },
+    "5": {
+     "otyugh": 1,
+     "swarm-of-rats": 2
+    }
+   }
+  },
+  {
+   "id": "k36-suc-soylu",
+   "name": "Büyük suç — soylu cinayeti",
+   "map": {
+    "mapId": "beyaz-sehir-saray-avlusu",
+    "variantId": "gece"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2
+    },
+    "3": {
+     "guard": 3,
+     "warrior-veteran": 1
+    },
+    "5": {
+     "guard": 3,
+     "warrior-veteran": 2
+    }
+   }
+  },
+  {
+   "id": "k36-suc-soygun",
+   "name": "Büyük suç — saray soygunu",
+   "map": {
+    "mapId": "beyaz-sehir-saray-avlusu",
+    "variantId": "gunduz"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2
+    },
+    "3": {
+     "guard": 3,
+     "warrior-veteran": 1
+    },
+    "5": {
+     "guard": 3,
+     "warrior-veteran": 2
+    }
+   }
+  },
+  {
+   "id": "k36-suc-muhur",
+   "name": "Büyük suç — hazine mührü",
+   "map": {
+    "mapId": "sehir-meydani",
+    "variantId": "gece"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2
+    },
+    "3": {
+     "guard": 3,
+     "warrior-veteran": 1
+    },
+    "5": {
+     "guard": 3,
+     "warrior-veteran": 2
+    }
+   }
+  },
+  {
+   "id": "k36-baskin",
+   "name": "Büyük suç — muhafız baskını",
+   "map": {
+    "mapId": "sehir-meydani",
+    "variantId": "gun"
+   },
+   "enemies": {
+    "1": {
+     "guard": 3
+    },
+    "3": {
+     "guard": 4,
+     "warrior-veteran": 1
+    },
+    "5": {
+     "guard": 4,
+     "warrior-veteran": 2
+    }
+   }
+  },
+  {
+   "id": "k36-hucre",
+   "name": "Hapishane — hücre bloğu",
+   "map": {
+    "mapId": "hapishane-hucre-platformu",
+    "variantId": "los"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2
+    },
+    "3": {
+     "guard": 3
+    },
+    "5": {
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  },
+  {
+   "id": "k36-dis-halka",
+   "name": "Hapishane — dış halka",
+   "map": {
+    "mapId": "hapishane-dis-halka",
+    "variantId": "los"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2
+    },
+    "3": {
+     "guard": 3
+    },
+    "5": {
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  },
+  {
+   "id": "k36-mudur",
+   "name": "Hapishane — müdür kulesi",
+   "map": {
+    "mapId": "hapishane-mudur-kulesi",
+    "variantId": "los"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2
+    },
+    "3": {
+     "knight": 1,
+     "guard": 1
+    },
+    "5": {
+     "knight": 1,
+     "guard": 2
+    }
+   }
+  },
+  {
+   "id": "k36-iskele",
+   "name": "Hapishane — iskele",
+   "map": {
+    "mapId": "hapishane-iskele",
+    "variantId": "los"
+   },
+   "enemies": {
+    "1": {
+     "guard": 2
+    },
+    "3": {
+     "guard": 1,
+     "bandit": 1
+    },
+    "5": {
+     "guard": 3,
+     "warrior-veteran": 1
+    }
+   }
+  }
+ ]
 }

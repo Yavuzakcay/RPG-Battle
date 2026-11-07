@@ -135,11 +135,11 @@ describe('Y2 G3: Usta', () => {
     expect(n?.parts.kesin).toBeUndefined();
   });
 
-  it('Usta deneysel etiketli ve açıklaması dürüst (Normal\'den belirgin güçlü değil)', () => {
+  it('Usta deneysel etiketli ve açıklaması dürüst (K59 ölçümü: parti tarafında güçlü, düşman tarafında az)', () => {
     const n = difficultyNote('usta');
     expect(n?.experimental).toBe(true);
-    expect(n?.text).toMatch(/Normal'den belirgin güçlü değil/);
-    expect(difficultyNote('usta', 'en')?.text).toMatch(/not clearly stronger/);
+    expect(n?.text).toMatch(/parti tarafında Normal'den güçlü/);
+    expect(difficultyNote('usta', 'en')?.text).toMatch(/stronger than Normal on the party side/);
     expect(difficultyNote('normal')).toBeNull();
   });
 });
