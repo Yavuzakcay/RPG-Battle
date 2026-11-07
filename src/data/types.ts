@@ -279,6 +279,8 @@ export interface SpellMechanics {
   s2?: Partial<SpellMechanics>;
   /** Kuyruk G6 (sürüm 43): Game Master notlu büyülerin savaş kolları (Charm Person taraf değiştirme, Fear eşya düşürme). */
   g6?: Partial<SpellMechanics>;
+  /** Kuyruk K62 (sürüm 46): SRD uyumu 2 (Wall of Ice panelleri ve perdesi, Forcecage, Delayed Blast Fireball). */
+  k62?: Partial<SpellMechanics>;
   /** Kuyruk K61 (sürüm 44): SRD uyumu 1 (Blade Barrier Force, Conjure Fey +1d12, Irresistible Dance, Flesh to Stone, Earthquake). */
   k61?: Partial<SpellMechanics>;
   /** Kuyruk K61: tek hedefli save büyüsünde başarılı save'in hafif etkisi (Flesh to Stone: hız 0, büyücünün sonraki turunun başına dek). */
@@ -430,6 +432,16 @@ export interface SpellMechanics {
 export interface ZoneSpec {
   /** Kuyruk 19: Wall of Stone: altıgen başına kırılabilir panel (walls.ts); `permanent` konsantrasyon tam sürerse kalıcı. */
   panels?: boolean;
+  /** Kuyruk K62 (sürüm 46): panel değerleri (Wall of Ice: AC 12, 30 HP; yoksa Wall of Stone 15/90), bağışık ve zayıf türler (zayıf = hasar iki kat). */
+  panelHp?: number; panelAc?: number; panelImmune?: string[]; panelVuln?: string[];
+  /** Kuyruk K62 (sürüm 46): yıkılan panelin yerinde kalan donuk hava perdesi (CON save, perdeden turda ilk geçişte; yukarı slot başına `upDice`). */
+  /** Kuyruk K62 (sürüm 46): duvar yaratığın altıgeninden geçince yaratık itilir ve bu save'i atar (Wall of Ice 10d6 Cold, yukarı slot başına `upDice`). */
+  cutDamage?: { dice: string; type: string; save: Ability; upDice: string };
+  /** Kuyruk K62 (sürüm 46): Forcecage; alan hazır ayarlı kafes (yarıçap `barsRadius` altıgen) ya da kutu (2×2) olur, tutsakları çıkarmaz (`forcecage.ts`). */
+  cage?: { barsRadius: number };
+  /** Kuyruk K62 (sürüm 46): Delayed Blast Fireball; boncuk alanı (`bead.ts`): süre (tur) ve fırlatma menzili (ft); konsantrasyon bağı alanda değil, patlama kancasında. */
+  bead?: { rounds: number; throwFt: number };
+  frigidAir?: { dice: string; type: string; save: Ability; upDice: string };
   permanent?: boolean;
   /** Kuyruk 19: Wall of Force: görünmez (görüşü kesmez, geçilmez). */
   transparent?: boolean;

@@ -528,7 +528,7 @@ function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, 
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
@@ -1266,7 +1266,7 @@ function executeDispel(state: BattleState, actor: Combatant, cmd: CastCommand, s
 function executeDispelZone(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const at = cmd.targetHex as NonNullable<CastCommand['targetHex']>;
   if (actor.pos && distance(actor.pos, at) * 5 > spell.rangeFt) return fail(`${spell.name} menzili ${spell.rangeFt} ft.`);
-  const zones = (state.map?.zones ?? []).filter((z) => zoneHexes(state, z).some((h) => h.col === at.col && h.row === at.row));
+  const zones = (state.map?.zones ?? []).filter((z) => !z.cage && zoneHexes(state, z).some((h) => h.col === at.col && h.row === at.row));
   // Kuyruk A7 (sürüm 36): altıgendeki nesnede süren büyü (Light, Continual Flame ışığı) da kalkar.
   const lit = ruleVersion(state) >= 36 ? (state.map?.objects ?? []).filter((o) => !o.carriedBy && o.lightSpell && o.at.col === at.col && o.at.row === at.row) : [];
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);

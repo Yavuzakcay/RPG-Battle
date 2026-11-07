@@ -3,6 +3,7 @@
  * menzili, büyü menzili. Haritasız savaşta (veya konumu olmayan savaşçıda) hiçbir şey
  * denetlenmez, eski davranış aynen sürer. Mesafe altıgen cinsinden (1 altıgen = 5 ft).
  */
+import { cageBoxBlock } from './forcecage';
 import { inProtectiveAura } from './ruleVersion';
 import { knowsWhere } from './sight';
 import { rangeBonusFt } from './heights';
@@ -101,6 +102,9 @@ export function checkReach(
     const wall = path.map((h) => solidWallAt(state, h)).find((w) => !!w);
     if (wall) return fail(`Hedefe ulaşılamıyor: arada ${wall} var.`);
   }
+  // Kuyruk K62 (sürüm 46): Forcecage kutusu görüşü ve içeri/dışarı hedeflemeyi keser (kafeste geçer).
+  const boxed = cageBoxBlock(state, attacker.pos, target.pos);
+  if (boxed) return fail(`Hedefe ulaşılamıyor: arada ${boxed} var.`);
   // Harita kuralları: kum fırtınası, fırtına, karanlık, mazgal (Adım 8).
   const map = mapAttackSources(state, attacker, target, reach.kind === 'ranged');
   if ('ok' in map) return map;

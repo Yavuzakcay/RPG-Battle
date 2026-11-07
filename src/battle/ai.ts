@@ -489,6 +489,52 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
 }
 
 /**
+ * Kuyruk K62 (sürüm 46, basit kural): Forcecage: en çok canı olan (20+ HP) görünen düşmanı, dost kapsamadan, kutuya kapatır.
+ * Değer önceliği `data/yz-roller.json` `kuralOnceligi['k62:kafes']` (7. seviye slot maliyetini aşar).
+ */
+function cageSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map || ruleVersion(state) < 46) return null;
+  let best: { cmd: Command; hp: number } | null = null;
+  for (const s of castable(actor)) {
+    if (!mechanicsAt(state, s).zone?.cage) continue;
+    for (const f of foes) {
+      if (!f.pos || f.hp < 20 || (best && best.hp >= f.hp)) continue;
+      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos, choice: 'box' };
+      const r = tryCmd(state, actor, cmd);
+      const made = r.ok ? r.events.find((e) => e.type === 'zone_created') : undefined;
+      if (made?.type !== 'zone_created') continue;
+      const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && made.zone.hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row));
+      if (inside.every((c) => c.side !== actor.side && !c.civilian) && inside.some((c) => c.id === f.id)) best = { cmd, hp: f.hp };
+    }
+  }
+  return best?.cmd ?? null;
+}
+
+/**
+ * Kuyruk K62 (sürüm 46, basit kural): Delayed Blast Fireball: boncuğu en çok düşmanı kapsayan (en az 2 ya da 30+ HP bir),
+ * dost kapsamayan noktaya koyar; konsantrasyon sürdükçe başka konsantrasyon büyüsü yapılmaz, böylece patlamaya kadar tutulur.
+ * Değer önceliği `data/yz-roller.json` `kuralOnceligi['k62:boncuk']`.
+ */
+function beadSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map || ruleVersion(state) < 46 || actor.concentration) return null;
+  let best: { cmd: Command; n: number } | null = null;
+  for (const s of castable(actor)) {
+    if (!mechanicsAt(state, s).zone?.bead) continue;
+    for (const f of foes) {
+      if (!f.pos) continue;
+      const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: f.pos };
+      const r = tryCmd(state, actor, cmd);
+      const made = r.ok ? r.events.find((e) => e.type === 'zone_created') : undefined;
+      if (made?.type !== 'zone_created') continue;
+      const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && made.zone.hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row));
+      if (inside.some((c) => c.side === actor.side || c.civilian)) continue;
+      if ((inside.length >= 2 || f.hp >= 30) && (!best || inside.length > best.n)) best = { cmd, n: inside.length };
+    }
+  }
+  return best?.cmd ?? null;
+}
+
+/**
  * Dragonborn Breath Weapon (Görev R4; basit kural): kullanımı varsa, en az iki görünen düşmanı kapsayan ve dost vurmayan
  * koni ya da çizgi (hangisi daha çok düşman kapsıyorsa).
  */
@@ -2278,6 +2324,8 @@ registerAction({ id: 'eski:iyilestir', rule: true, kind: 'heal', note: 'ölmekte
 registerAction({ id: 'eski:yenilenme', rule: true, kind: 'damage', note: 'yerdeki yenilenen düşmana ateş/asit', gen: (s, a) => (partyBranch(a) ? [finishRegen(s, a)] : []) });
 registerAction({ id: 'eski:alan', rule: true, kind: 'damage', note: 'alan hasar büyüsü (2+ düşman, dost yok)', gen: (s, a, h) => (partyBranch(a) || (a.monsterId && a.spellNames.length && !a.summon) ? [areaSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word Kill/Stun, Mass Heal', gen: (s, a, h) => (partyBranch(a) ? [powerWordCommand(s, a, h.foes)] : []) });
+registerAction({ id: 'k62:boncuk', rule: true, kind: 'control', note: 'Delayed Blast Fireball: boncuğu düşmanların üstüne koy', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [beadSpell(s, a, h.foes)] : []) });
+registerAction({ id: 'k62:kafes', rule: true, kind: 'control', note: 'Forcecage: güçlü düşmanı kutuya kapat', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [cageSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:zemin', rule: true, kind: 'control', note: 'kalıcı zemin büyüsü (Entangle, Web, Spike Growth…)', gen: (s, a, h) => (partyBranch(a) || (a.spellNames.length && !a.summon) ? [zoneSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:nefes', rule: true, kind: 'damage', note: 'Dragonborn nefesi', gen: (s, a, h) => (partyBranch(a) ? [breathWeapon(s, a, h.foes)] : []) });
 registerAction({

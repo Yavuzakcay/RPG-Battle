@@ -1183,6 +1183,10 @@ export interface SpellZone {
   dealt?: number;
   /** Kuyruk 19: Wall of Stone panel hasarı (altıgen anahtarı → hasar) ve Wall of Fire hasar yüzü. */
   panelDamage?: Record<string, number>;
+  /** Kuyruk K62 (sürüm 46): Forcecage türü (kafes ya da katı kutu); alandakiler tutsak (`forcecage.ts`). */
+  cage?: 'bars' | 'box';
+  /** Kuyruk K62 (sürüm 46): Delayed Blast Fireball boncuğu (`bead.ts`): patlama turu ve fırlatma menzili; biriken zar `dealt`. */
+  bead?: { until: number; throwFt: number };
   endHexes?: Offset[];
   /** Kuyruk 19: alan bitince altıgenler bu zemine döner (Control Water). */
   restore?: Array<{ at: Offset; ch: string }>;

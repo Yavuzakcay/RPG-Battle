@@ -228,6 +228,8 @@ function outcomeOf(before: BattleState, r: RunOut): Outcome {
     o.effv[id] = fresh.reduce((v, e) => v + effectWeight(e), 0);
     const fl = new Set<string>();
     for (const e of fresh) for (const k of DISABLE) if ((e as unknown as Record<string, unknown>)[k]) fl.add(k);
+    // Kuyruk K62 (sürüm 46): yeni Forcecage alanında tutsak kalan yaratık yalıtılmış sayılır (Resilient Sphere ile aynı değer).
+    if (a?.pos && (after.map?.zones ?? []).some((z) => z.cage && !(before.map?.zones ?? []).some((x) => x.id === z.id) && z.hexes.some((h) => h.col === a.pos?.col && h.row === a.pos?.row))) fl.add('sealed');
     if (a && a.side !== b.side) fl.add('dominate');
     if (a && a.shape && !b.shape) fl.add('polymorph');
     if (a && a.regenBlocked && !b.regenBlocked && b.hp <= 0) fl.add('regenBlocked');

@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { beadAfterEvents, beadTurnEndEvents, executeBeadTouch } from './bead';
 import { distance } from '../rules/hex';
 import { exhaustionGain } from './deathWard';
 import { commandEndHookEvents, turnStartHookEvents } from './turnHooks';
@@ -196,6 +197,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     next = applyEvents(next, [woke]);
     events = [...events, woke];
   }
+  // Kuyruk K62 (sürüm 46): Delayed Blast Fireball boncuğu: büyü bitti / süre doldu → patlar (yüzey ve nesne işlemleri öncesi).
+  const bead = beadAfterEvents(next, rng);
+  if (bead.length) { next = applyEvents(next, bead); events = [...events, ...bead]; }
   if (hexResolverOn(next)) {
     // Kuyruk K55 (sürüm 26): bütün yüzey tepkimeleri tek çözücüden (data/yuzey-etkilesimleri.json).
     const hex = resolveCommandEffects(next, events, rng).events;
@@ -528,6 +532,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const casterEnd = casterEndZoneEvents(current, actor.id, rng);
     events.push(...casterEnd);
     current = applyEvents(current, casterEnd);
+    // Kuyruk K62 (sürüm 46): Delayed Blast Fireball boncuğu +1d6.
+    const beadGrow = beadTurnEndEvents(current, actor.id);
+    events.push(...beadGrow);
+    current = applyEvents(current, beadGrow);
     // Kuyruk K53 S5: veriden auraların tur sonu tetikleri.
     const auraEnd = auraTriggerEvents(current, actor.id, 'turnEnd', rng);
     events.push(...auraEnd);
@@ -715,6 +723,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'command_summons') return executeCommandSummons(state, actor);
   if (cmd.type === 'sphere_carry') return executeSphereCarry(state, actor, cmd.targetId, !!cmd.drop);
   if (cmd.type === 'spell_followup') {
+    // Kuyruk K62 (sürüm 46): parlayan boncuğa dokunma / fırlatma.
+    if (cmd.choice === 'bead') return executeBeadTouch(state, actor, cmd.targetId, cmd.targetHex, rng);
     // Kuyruk P11: saklı büyünün ateşlenmesi.
     if (cmd.choice === 'sakli') {
       // Kuyruk P12 (sürüm 43+): dost tetiği (`sourceId` saklayan): büyüyü saklayan yapar, dostun ekonomisi harcanmaz.

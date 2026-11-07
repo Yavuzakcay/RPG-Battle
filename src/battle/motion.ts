@@ -18,6 +18,7 @@ import { teleportEvent, teleportHexes, teleportProblem, type TeleportSpec } from
 import { globalRule } from './ruleControl';
 import { houseRule } from './houseRules';
 import { ruleVersion } from './ruleVersion';
+import { cageStepBlocked, cageTeleport } from './forcecage';
 import { occupantAt } from './movement';
 import { rollTag, type Rng } from '../rules/dice';
 import { resolveSave } from '../rules/attack';
@@ -76,6 +77,13 @@ export function withArrival(state: BattleState, prior: BattleEvent[], tele: Batt
 export function teleport(state: BattleState, actor: Combatant, to: Offset, opts: TeleportOptions, label: string, rng: Rng, prior: BattleEvent[] = []): { problem: string } | { events: BattleEvent[] } {
   const why = teleportProblem(state, actor, to, opts);
   if (why) return { problem: why };
+  // Kuyruk K62 (sürüm 46, Forcecage): tutsak çıkmak için önce CHA save atar; başarısızlıkta ışınlanma boşa gider.
+  const cg = cageTeleport(state, actor, to, rng);
+  if (cg && !cg.ok) return { events: cg.events };
+  if (cg) {
+    const tele = withArrival(state, [...prior, ...cg.events], [teleportEvent(actor, to, label)], rng);
+    return { events: [...cg.events, ...tele] };
+  }
   return { events: withArrival(state, prior, [teleportEvent(actor, to, label)], rng) };
 }
 
@@ -165,7 +173,7 @@ export function forcedMove(state: BattleState, targetId: string, mode: ForcedMod
     const here = t.pos;
     const nx = nextHex(current, here, mode, o);
     if (nx === null) break;
-    const out = nx === 'edge' ? null : pushOutcome(current, t, here, nx);
+    const out = nx === 'edge' || cageStepBlocked(current, here, nx) ? null : pushOutcome(current, t, here, nx);
     if (!out || !out.ok) {
       if (!o.noCollision && collisionOn(current)) {
         const dice = collisionDice(total - step);

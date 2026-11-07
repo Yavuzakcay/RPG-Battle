@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { cageOpenEvents, cageStepBlocked, castCageHexes } from './forcecage';
 import { healRoll } from './healMax';
 import { groundWarded, groundZone } from './groundWard';
 import { barriersOn, passesBarrier } from './barriers';
@@ -378,6 +379,8 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset, 
   const stepwise = ruleVersion(state) >= 40;
   return (h, prev) => {
     let cost = 1;
+    // Kuyruk K62 (sürüm 46): Forcecage sınırı hiçbir yürüyüşle geçilmez (içeri ya da dışarı).
+    if (cageStepBlocked(state, prev ?? mover.pos ?? h, h)) return null;
     for (const z of zones) {
       // Kuyruk K53 S4: geçici engel (dost geçer gibi kişiye göre olanlar da burada).
       if (z.barrier) {
@@ -498,6 +501,13 @@ function repelled(state: BattleState, z: SpellZone, c: Combatant): boolean {
 /** Alan büyüsü yapılırken ya da taşınırken altıgenler (büyünün alanı; duvar şekli `rules/area.ts`). */
 function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offset | null, wallShape?: 'arc' | 'ring', cmd?: CastCommand): Offset[] | CommandResult {
   if (!state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
+  // Kuyruk K62 (sürüm 46, Forcecage): hazır ayarlı kafes ya da kutu; hedef altıgen menzilde olmalı.
+  const cg = spell.mechanics.zone?.cage;
+  if (cg) {
+    if (!aim) return fail(`${spell.name}: hedef altıgen seç.`);
+    if (distance(actor.pos, aim) * 5 > spell.rangeFt) return fail(`${spell.name}: hedef menzil dışında (${spell.rangeFt} ft).`);
+    return castCageHexes(state, aim, cmd?.choice === 'cage' ? 'bars' : 'box', cg.barsRadius);
+  }
   if (!spell.area) return fail(`${spell.name}: alan tanımı yok.`);
   // Kuyruk S2 (sürüm 41, Wind Wall `wallPath`): serbest duvar: birbirine bitişik altıgen yolu (en çok N), ilki menzilde.
   const wp = ruleVersion(state) >= 41 ? spell.mechanics.wallPath : undefined;
@@ -595,10 +605,15 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
       ...(spec.surface ? { surface: spec.surface } : {}),
       // Kuyruk S2 (sürüm 41, Spike Growth `camouflaged`): büyücünün karşı tarafından gizli (fark eden `seenBy`).
       ...(spec.camouflaged && ruleVersion(state) >= 41 ? { hiddenFrom: actor.side === 'party' ? 'enemies' as const : 'party' as const, seenBy: [] } : {}),
-      ...(spell.concentration ? { concentration: spell.name } : {}),
+      ...(spec.cage ? { cage: cmd.choice === 'cage' ? 'bars' as const : 'box' as const } : {}),
+      // Kuyruk K62: boncuk konsantrasyona alanda değil, patlama kancasında bağlıdır (patlamadan önce kalkmasın).
+      ...(spec.bead && aim ? { center: aim, bead: { until: state.round + spec.bead.rounds - 1, throwFt: spec.bead.throwFt } } : {}),
+      ...(spell.concentration && !spec.bead ? { concentration: spell.name } : {}),
       ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
     };
     events.push({ type: 'zone_created', zone });
+    // Kuyruk K62: kafes açılırken kısmen içeride ya da sığmayan yaratık dışarı itilir.
+    if (zone.cage) events.push(...cageOpenEvents(applyEvents(state, events), zone));
     // Kuyruk 19: duvarın açıldığı altıgendeki yaratık yana itilir (Wall of Force/Stone); kapatılan DEX save.
     events.push(...wallOpenEvents(applyEvents(state, events), actor, zone, cmd.choice === 'near' || cmd.choice === 'far' ? cmd.choice : undefined, rng));
     // Kuyruk A7 (Darkness, `dispelLight`): örtüştüğü, en çok bu seviyedeki büyülerin ışığı kalkar (yaratıktaki ışık etkisi,

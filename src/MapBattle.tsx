@@ -993,7 +993,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Görev S2: nesneye saldırı (saldırı kipinde nesne altıgeni) ve nesne kullanımı.
     // Kuyruk 30 D1: bulunmamış gizli nesne yalnızca Game Master görünümünde (gizlileri göster) seçilir ve Game Master olarak çalışır.
     // Kuyruk 19: saldırı kipinde Wall of Stone paneline saldırı.
-    const panelZone = mode === 'attack' && active && actor ? (state.map?.zones ?? []).find((z) => spellById(z.spellId)?.mechanics.zone?.panels && z.hexes.some((x) => sameHex(x, h))) : undefined;
+    const panelZone = mode === 'attack' && active && actor ? (state.map?.zones ?? []).find((z) => (z.spec ?? spellById(z.spellId)?.mechanics.zone)?.panels && z.hexes.some((x) => sameHex(x, h))) : undefined;
     if (panelZone && actor) {
       const cmd = objectAttack(actor, { id: `wall:${panelZone.id}:${h.col},${h.row}`, kind: 'crackedWall', at: h, hp: 90 });
       if (cmd) run(cmd);
@@ -1042,7 +1042,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       const cmd = pickHexCmd.make(h);
       // Kuyruk 19: Control Water biçimi; Stone Shape kapıda mühür.
       const mode2 = cmd.type === 'cast_spell' ? spell?.mechanics.upgrade?.terraform?.mode : undefined;
-      const choice = mode2 === 'controlWater' ? choicePick ?? 'whirlpool' : mode2 === 'stoneShape' && state.map?.tiles[h.row]?.[h.col] === 'O' ? 'seal' : null;
+      const choice = mode2 === 'controlWater' ? choicePick ?? 'whirlpool' : mode2 === 'stoneShape' && state.map?.tiles[h.row]?.[h.col] === 'O' ? 'seal'
+        : cmd.type === 'cast_spell' && spell && mechanicsAt(state, spell).zone?.cage ? choicePick ?? 'box' : null;
       run(choice && cmd.type === 'cast_spell' ? { ...cmd, choice } : cmd);
       return;
     }
@@ -1152,7 +1153,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       : active && mode === 'steer' && state.combatants[actorId] ? [...steerHexes(state, state.combatants[actorId] as Combatant),
         ...((s) => (s?.summon?.hand && s.pos ? [s.pos] : []))(steerableSummon(state, state.combatants[actorId] as Combatant))].map(hexKey)
       : active && mode === 'followHex' ? hexFollowKeys(state, actorId)
-      : active && mode === 'pickHex' && pickHexCmd ? hexTryKeys(state, actorId, (h) => ((c) => (c.type === 'cast_spell' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' ? { ...c, choice: choicePick ?? 'whirlpool' } : c))(pickHexCmd.make(h)))
+      : active && mode === 'pickHex' && pickHexCmd ? hexTryKeys(state, actorId, (h) => ((c) => (c.type === 'cast_spell' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' ? { ...c, choice: choicePick ?? 'whirlpool' } : c.type === 'cast_spell' && spell && mechanicsAt(state, spell).zone?.cage ? { ...c, choice: choicePick ?? 'box' } : c))(pickHexCmd.make(h)))
       : active && mode === 'shift' && state.combatants[actorId] ? shiftHexes(state, state.combatants[actorId] as Combatant).filter((h) => !occupantAt(state, h, actorId)).map(hexKey)
       : active && mode === 'sphere' ? hexTryKeys(state, actorId, (h) => ({ type: 'sphere_roll', actorId, to: h })) : []),
     [state, active, mode, spell, actorId, choicePick, featureKey, pickHexCmd]);
@@ -1951,6 +1952,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   ))}
                 </div>
               )}
+              {mode === 'pickHex' && spell && mechanicsAt(state, spell).zone?.cage && (
+                <div className="slot-picker" role="radiogroup" aria-label={N.choicePick}>
+                  <small>{N.choicePick}</small>
+                  {(['box', 'cage'] as const).map((x) => (
+                    <button key={x} role="radio" aria-checked={x === choicePick} className={x === choicePick ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>{N.water[x]}</button>
+                  ))}
+                </div>
+              )}
               {mode === 'steer' && actor && steerableSummon(state, actor)?.summon?.hand && (
                 <label className="fx-choice">{' '}
                   <select value={handPick} onChange={(e: { target: { value: string } }) => setHandPick(e.target.value as typeof handPick)}>
@@ -2033,6 +2042,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       if (kind === 'area' && sp.mechanics.telekinesis && state.kuralSurumu !== undefined && state.kuralSurumu >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(false); setMode('tk'); }
                       else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setChoicePick(sp.mechanics.conditionChoices?.[0] ?? sp.mechanics.damageChoices?.[0] ?? sp.mechanics.restoreChoices?.[0] ?? sp.mechanics.abilityChoices?.[0] ?? null); setMode('spell'); }
+                      // Kuyruk K62 (sürüm 46): Forcecage: hedef altıgen + kutu/kafes seçimi (alan hazır ayarlı).
+                      else if (mechanicsAt(state, sp).zone?.cage) {
+                        setSpell(sp); setChoicePick('box');
+                        setPickHexCmd({ make: (h) => ({ type: 'cast_spell', actorId, spellName: sp.name, targetHex: h, ...slotFields(slotPick) }) }); setMode('pickHex');
+                      }
                       else if (kind === 'effect') {
                         // Kuyruk S1: seçenekler ve hedef sayısı savaşın kural sürümündeki mekanikten (Suggestion kalıpları, Plane Shift).
                         const msp = { ...sp, mechanics: mechanicsAt(state, sp) };

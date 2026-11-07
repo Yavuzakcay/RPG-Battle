@@ -361,18 +361,18 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | sunbeam | 6 | spells-69.json | çalışır |  |  | hayır |
 | transport-via-plants | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | true-seeing | 6 | spells-69.json | çalışır |  |  | hayır |
-| wall-of-ice | 6 | spells-69.json | çalışır |  |  | hayır |
+| wall-of-ice | 6 | spells-69.json | çalışır | k62 (sürüm 46) |  | hayır |
 | wall-of-thorns | 6 | spells-69.json | çalışır |  |  | hayır |
 | wind-walk | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | word-of-recall | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | arcane-sword | 7 | spells-69.json | çalışır |  |  | hayır |
 | conjure-celestial | 7 | spells-69.json | çalışır |  |  | hayır |
-| delayed-blast-fireball | 7 | spells-69.json | çalışır |  |  | hayır |
+| delayed-blast-fireball | 7 | spells-69.json | çalışır | k62 (sürüm 46) |  | hayır |
 | divine-word | 7 | spells-69.json | çalışır |  |  | hayır |
 | etherealness | 7 | spells-69.json | çalışır |  |  | hayır |
 | finger-of-death | 7 | spells-69.json | çalışır |  |  | hayır |
 | fire-storm | 7 | spells-69.json | çalışır |  |  | hayır |
-| forcecage | 7 | spells-69.json | çalışır |  |  | hayır |
+| forcecage | 7 | spells-69.json | çalışır | k62 (sürüm 46) |  | hayır |
 | magnificent-mansion | 7 | spells-69.json | savaş dışı |  |  | hayır |
 | mirage-arcane | 7 | spells-69.json | savaş dışı |  |  | hayır |
 | plane-shift | 7 | spells-69.json | çalışır | s1 (sürüm 40) |  | hayır |

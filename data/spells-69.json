@@ -901,6 +901,37 @@
     "solid": true,
     "color": "#bfe6ff",
     "icon": "🧊"
+   },
+   "k62": {
+    "zone": {
+     "rounds": 100,
+     "solid": true,
+     "color": "#bfe6ff",
+     "icon": "🧊",
+     "panels": true,
+     "panelHp": 30,
+     "panelAc": 12,
+     "panelImmune": [
+      "cold",
+      "poison",
+      "psychic"
+     ],
+     "panelVuln": [
+      "fire"
+     ],
+     "frigidAir": {
+      "dice": "5d6",
+      "type": "cold",
+      "save": "con",
+      "upDice": "1d6"
+     },
+     "cutDamage": {
+      "dice": "10d6",
+      "type": "cold",
+      "save": "dex",
+      "upDice": "2d6"
+     }
+    }
    }
   },
   "school": "Evocation",
@@ -1097,6 +1128,19 @@
    "upcast": {
     "dice": "1d6",
     "applied": true
+   },
+   "k62": {
+    "kind": "zone",
+    "damage": null,
+    "halfOnSave": null,
+    "zone": {
+     "bead": {
+      "rounds": 10,
+      "throwFt": 40
+     },
+     "color": "#ffb347",
+     "icon": "✹"
+    }
    }
   },
   "school": "Evocation",
@@ -1251,6 +1295,18 @@
     "sealed": true,
     "speedZero": true,
     "icon": "▣"
+   },
+   "k62": {
+    "kind": "zone",
+    "effect": null,
+    "zone": {
+     "rounds": 600,
+     "cage": {
+      "barsRadius": 2
+     },
+     "color": "#9fd0ff",
+     "icon": "▣"
+    }
    }
   },
   "school": "Evocation",

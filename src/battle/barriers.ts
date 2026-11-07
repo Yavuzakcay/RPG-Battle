@@ -35,8 +35,8 @@ const same = (a: Offset, b: Offset) => a.col === b.col && a.row === b.row;
 /** Alanın engel okuması: yeni engel (`barrier`), eski katı duvar (Wall of Stone/Force) ya da Wind Wall; değilse null. */
 export function barrierOf(state: BattleState, z: SpellZone): BarrierSpec | null {
   if (z.barrier) return barriersOn(state) ? z.barrier : null;
-  const zs = spells.find((s) => s.id === z.spellId)?.mechanics.zone;
-  if (zs?.solid) return { kind: 'solid', name: z.name, blocksMove: true, blocksSight: !(zs.transparent && globalRule(state, 'spellsK19')), ...(zs.panels ? { hp: 90, ac: 15 } : {}), passFor: 'none' };
+  const zs = z.spec ?? spells.find((s) => s.id === z.spellId)?.mechanics.zone;
+  if (zs?.solid) return { kind: 'solid', name: z.name, blocksMove: true, blocksSight: !(zs.transparent && globalRule(state, 'spellsK19')), ...(zs.panels ? { hp: zs.panelHp ?? 90, ac: zs.panelAc ?? 15 } : {}), passFor: 'none' };
   if (zs?.windWall) return { kind: 'windWall', name: z.name, blocksMove: false, blocksSight: false, windWall: true, passFor: 'none' };
   return null;
 }

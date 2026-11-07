@@ -9,7 +9,7 @@
  */
 import { barriersOn } from './barriers';
 import { resolveAttack } from '../rules/attack';
-import { rollTag, type Rng } from '../rules/dice';
+import { formatDice, parseDice, rollTag, type Rng } from '../rules/dice';
 import { distance, hexKey, isInside, neighbors, sameHex, withinRange, type Offset } from '../rules/hex';
 import { resolveSave } from '../rules/attack';
 import { fail, finish, type CommandResult } from './common';
@@ -17,14 +17,20 @@ import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { applyEvents } from './reduce';
 import { canReact } from './reactions';
+import { saveEffect } from './maprules';
 import { globalRule } from './ruleControl';
 import type { AttackOption, BattleEvent, BattleState, Combatant, SpellZone } from './types';
-import { spells } from '../data';
+import { spells, type ZoneSpec } from '../data';
 
 export const PANEL_AC = 15;
 export const PANEL_HP = 90;
 const sizeOf = (s: BattleState) => ({ cols: s.map?.tiles[0]?.length ?? 0, rows: s.map?.tiles.length ?? 0 });
-const specOf = (z: SpellZone) => spells.find((s) => s.id === z.spellId)?.mechanics.zone;
+const specOf = (z: SpellZone) => z.spec ?? spells.find((s) => s.id === z.spellId)?.mechanics.zone;
+/** Panel değerleri: engel > büyü kuralı (Wall of Ice) > Wall of Stone varsayılanı. */
+export function panelStats(z: SpellZone): { hp: number; ac: number; immune: string[]; vuln: string[] } {
+  const s = specOf(z);
+  return { hp: z.barrier?.hp ?? s?.panelHp ?? PANEL_HP, ac: z.barrier?.ac ?? s?.panelAc ?? PANEL_AC, immune: s?.panelImmune ?? ['poison', 'psychic'], vuln: s?.panelVuln ?? [] };
+}
 
 /** Duvar açılırken içinde kalanlar yana itilir; Wall of Stone ile kapatılan DEX save ile dışarı çıkar. */
 export function wallOpenEvents(state: BattleState, actor: Combatant, zone: SpellZone, side: string | undefined, rng: Rng): BattleEvent[] {
@@ -45,6 +51,17 @@ export function wallOpenEvents(state: BattleState, actor: Combatant, zone: Spell
     const ev: BattleEvent = { type: 'pushed', targetId: c.id, from: c.pos, to: pick, by: actor.id };
     out.push(ev);
     s = applyEvents(s, [ev]);
+    // Kuyruk K62 (sürüm 46, Wall of Ice): duvarın içinden geçtiği yaratık itilir ve DEX save (başarısızlıkta tam, başarıda yarı Cold).
+    const cut = specOf(zone)?.cutDamage;
+    if (cut) {
+      const spell = spells.find((x) => x.id === zone.spellId);
+      const up = Math.max(0, zone.slotLevel - (spell?.level ?? zone.slotLevel));
+      const base = parseDice(cut.dice);
+      const per = parseDice(cut.upDice);
+      const hit = saveEffect(s.combatants[c.id] as Combatant, 'wallCut', zone.name, cut.save, zone.dc, rng, { hit: { dice: formatDice(base.count + per.count * up, base.sides, base.bonus), type: cut.type, halfOnSave: true } });
+      out.push(hit);
+      s = applyEvents(s, [hit]);
+    }
   }
   // Wall of Stone: kapatılan yaratık (dışarıya yol yok) DEX save; başarıda tepkisiyle hızı kadar dışarı.
   if (specOf(zone)?.panels) {
@@ -96,13 +113,33 @@ export function panelOf(state: BattleState, id: string): { zone: SpellZone; hex:
 export function panelDamageEvents(state: BattleState, zone: SpellZone, hex: Offset, damage: number, damageType: string): BattleEvent[] {
   // Kuyruk K53 S4: geçici engelin HP'si veriden (`barrier.hp`); eski panel 90.
   if (zone.barrier ? !barriersOn(state) || !zone.barrier.hp : !globalRule(state, 'spellsK19')) return [];
-  const amount = ['poison', 'psychic'].includes(damageType) ? 0 : Math.max(0, damage);
+  const st = panelStats(zone);
+  // Kuyruk K62 (Wall of Ice): bağışık tür 0, zayıf tür iki kat (yalnız alanda saklanan kuralda; Wall of Stone eskisi gibi).
+  const amount = st.immune.includes(damageType) ? 0 : Math.max(0, damage) * (st.vuln.includes(damageType) ? 2 : 1);
   if (!amount) return [];
   const k = hexKey(hex);
-  const hp = (zone.barrier?.hp ?? PANEL_HP) - (zone.panelDamage?.[k] ?? 0) - amount;
+  const hp = st.hp - (zone.panelDamage?.[k] ?? 0) - amount;
   const out: BattleEvent[] = [{ type: 'zone_panel_damaged', zoneId: zone.id, hex, amount }];
-  if (hp <= 0) out.push({ type: 'zone_moved', zoneId: zone.id, hexes: zone.hexes.filter((h) => !sameHex(h, hex)) }, { type: 'map_note', text: `${zone.name}: bir panel yıkıldı.` });
+  if (hp <= 0) {
+    out.push({ type: 'zone_moved', zoneId: zone.id, hexes: zone.hexes.filter((h) => !sameHex(h, hex)) }, { type: 'map_note', text: `${zone.name}: bir panel yıkıldı.` });
+    const fa = specOf(zone)?.frigidAir;
+    if (fa) out.push(frigidAirEvent(zone, hex, fa));
+  }
   return out;
+}
+
+/** Kuyruk K62 (sürüm 46): yıkılan Wall of Ice panelinin yerinde donuk hava perdesi; büyünün kalan süresi boyunca (konsantrasyon kopunca kalkar). */
+function frigidAirEvent(zone: SpellZone, hex: Offset, fa: NonNullable<ZoneSpec['frigidAir']>): BattleEvent {
+  const spell = spells.find((s) => s.id === zone.spellId);
+  const up = Math.max(0, zone.slotLevel - (spell?.level ?? zone.slotLevel));
+  const base = parseDice(fa.dice);
+  const per = parseDice(fa.upDice);
+  const spec: ZoneSpec = { rounds: zone.until !== undefined ? undefined : 100, on: ['enter'], once: true, save: fa.save, damage: fa.dice, damageType: fa.type, half: true, color: '#d6f0ff', icon: '❄' };
+  return { type: 'zone_created', zone: {
+    id: `${zone.id}:perde:${hex.col},${hex.row}`, spellId: zone.spellId, name: 'Donuk hava', casterId: zone.casterId, side: zone.side, dc: zone.dc, slotLevel: zone.slotLevel,
+    hexes: [hex], spec, damage: formatDice(base.count + per.count * up, base.sides, base.bonus),
+    ...(zone.concentration ? { concentration: zone.concentration } : {}), ...(zone.until !== undefined ? { until: zone.until } : {}),
+  } };
 }
 
 export function executeAttackPanel(state: BattleState, actor: Combatant, id: string, option: AttackOption, rng: Rng): CommandResult {
@@ -110,9 +147,9 @@ export function executeAttackPanel(state: BattleState, actor: Combatant, id: str
   if (!p || !actor.pos) return fail('Duvar paneli yok.');
   const d = distance(actor.pos, p.hex);
   if (option.ranged ? d * 5 > (option.range?.[1] ?? Infinity) : d * 5 > (option.reachFt ?? 5)) return fail('Panel erişim dışında.');
-  const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: p.zone.barrier?.ac ?? PANEL_AC, mode: 'normal', damage: option.damage, autoCritical: false }, rollTag(rng, { by: actor.id }));
+  const r = resolveAttack({ attackBonus: option.attackBonus, targetAc: panelStats(p.zone).ac, mode: 'normal', damage: option.damage, autoCritical: false }, rollTag(rng, { by: actor.id }));
   const dealt = r.hit ? r.damage?.total ?? 0 : 0;
-  return finish(state, [{ type: 'map_note', text: `${actor.name}: ${option.label} → ${p.zone.name} (d20 ${r.d20.kept}, ${r.total}/${p.zone.barrier?.ac ?? PANEL_AC}) ${r.hit ? `${dealt} hasar` : 'ıska'}` },
+  return finish(state, [{ type: 'map_note', text: `${actor.name}: ${option.label} → ${p.zone.name} (d20 ${r.d20.kept}, ${r.total}/${panelStats(p.zone).ac}) ${r.hit ? `${dealt} hasar` : 'ıska'}` },
     { type: 'action_used', actorId: actor.id, kind: 'attack', what: option.label },
     ...panelDamageEvents(state, p.zone, p.hex, dealt, option.damageType ?? 'bludgeoning')]);
 }
