@@ -26,6 +26,7 @@ import { anyTurnEndEvents, reactionTurnEndEvents, executeMonsterAbility, monster
 import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
 import { collapseFallEvents, executeClimb } from './climb';
+import { executeFissureClimb, executeFissurePlace, fissureClimbApplies, fissureOpenEvents } from './fissure';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { DODGE, dotEvents, executeDodge, executeHelp, timedCondition, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
@@ -547,6 +548,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const casterEnd = casterEndZoneEvents(current, actor.id, rng);
     events.push(...casterEnd);
     current = applyEvents(current, casterEnd);
+    // Kuyruk K66a (sürüm 50): Earthquake'in bu turda yerleştirilen yarıkları açılır (sıradakinin turu başında açık).
+    const opened = fissureOpenEvents(current, actor.id, rng);
+    events.push(...opened);
+    current = applyEvents(current, opened);
     // Kuyruk K62 (sürüm 46): Delayed Blast Fireball boncuğu +1d6.
     const beadGrow = beadTurnEndEvents(current, actor.id);
     events.push(...beadGrow);
@@ -739,6 +744,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'command_summons') return executeCommandSummons(state, actor);
   if (cmd.type === 'sphere_carry') return executeSphereCarry(state, actor, cmd.targetId, !!cmd.drop);
   if (cmd.type === 'spell_followup') {
+    // Kuyruk K66a (sürüm 50): Earthquake yarığının yerleştirilmesi.
+    if (cmd.choice?.startsWith('fissure:')) return executeFissurePlace(state, actor, cmd);
     // Kuyruk K62 (sürüm 46): parlayan boncuğa dokunma / fırlatma.
     if (cmd.choice === 'bead') return executeBeadTouch(state, actor, cmd.targetId, cmd.targetHex, rng);
     // Kuyruk P11: saklı büyünün ateşlenmesi.
@@ -891,6 +898,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'monster_ability') return executeMonsterAbility(state, actor, cmd.abilityId, cmd.targetId, cmd.targetHex, rng, cmd.option);
   if (cmd.type === 'retreat') return fail('Bilinmeyen komut.');
   // Kuyruk S2 (sürüm 41): dikey hareket, eşya bırakma ve yerden alma.
+  // Kuyruk K66a (sürüm 50): yarıktaki uçmayan yaratık tırmanır (çift maliyet; 0 ft'te bitişik zemine çıkış).
+  if (cmd.type === 'vertical_move' && !cmd.objectId && (!cmd.targetId || cmd.targetId === actor.id) && fissureClimbApplies(state, actor)) return executeFissureClimb(state, actor, cmd);
   if (cmd.type === 'vertical_move') return executeVerticalMove(state, actor, cmd);
   if (cmd.type === 'drop_item') return cmd.item === 'flame-blade' ? executeDropBlade(state, actor) : executeDropItem(state, actor, cmd.item);
   if (cmd.type === 'pick_up') return executePickUp(state, actor, cmd.objectId);

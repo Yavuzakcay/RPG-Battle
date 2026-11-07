@@ -18,6 +18,7 @@ import { teleportEvent, teleportHexes, teleportProblem, type TeleportSpec } from
 import { globalRule } from './ruleControl';
 import { houseRule } from './houseRules';
 import { ruleVersion } from './ruleVersion';
+import { isAirborne } from './flight';
 import { cageStepBlocked, cageTeleport } from './forcecage';
 import { occupantAt } from './movement';
 import { rollTag, type Rng } from '../rules/dice';
@@ -162,6 +163,9 @@ function pushResist(state: BattleState, targetId: string, by: string, rng: Rng):
  */
 export function forcedMove(state: BattleState, targetId: string, mode: ForcedMode, feet: number, by: string, rng: Rng, o: ForcedOptions = {}): BattleEvent[] {
   // Kuyruk P11 (sürüm 42+, paket `koruma.itmeDirenci`): yaratığın yol açtığı zorla harekete avantajlı STR kurtulması (başarıda kımıldamaz).
+  // Kuyruk K66a (sürüm 50): yarığın içindeki (eksi irtifa) uçmayan yaratık yatay itilmez.
+  const held = state.combatants[targetId];
+  if (held && (held.altitudeFt ?? 0) < 0 && !isAirborne(held) && ruleVersion(state) >= 50) return [];
   const res = pushResist(state, targetId, by, rng);
   if (res) return res;
   const events: BattleEvent[] = [];

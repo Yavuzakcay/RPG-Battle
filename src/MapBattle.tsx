@@ -8,6 +8,7 @@
 import { activePossession, possessedEffect } from './battle/possessionCore';
 import { setupWardOf } from './battle/possession';
 import { freeAddProblem, freeRemoveProblem, freeShapeOf, pathAddProblem } from './battle/freeShape';
+import { fissureBudget, fissureProblem, inFissure } from './battle/fissure';
 import { imzaHex as imzaHex0, imzaTargeted as imzaTargeted0 } from './battle/imza';
 import type { UsableFeature } from './battle/types';
 
@@ -935,6 +936,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const aimKeys = useMemo(() => {
     const me = state.combatants[actorId];
     if (!active || mode !== 'aim' || !areaAct || !me || !state.map) return null;
+    // Kuyruk K66a: yarık seçicisi: seçili yönde geçerli başlangıç altıgenleri vurgulu (motorun `fissureProblem`'i).
+    if (areaAct.kind === 'fissure') {
+      const dir = Number((choicePick ?? 'fissure:4').slice(8));
+      const out = new Set<string>();
+      state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!fissureProblem(state, me, h, dir)) out.add(hexKey(h)); }));
+      return out;
+    }
     // Kuyruk K65a (serbest şekil): eklenebilir altıgenler vurgulu (bitişik, menzilde; ilkinde görüş), ötekiler soluk.
     const fs = areaFreeShape(state, areaAct, choicePick);
     if (fs && areaAct.kind === 'spell') {
@@ -1476,6 +1484,16 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...(actor.effects?.some((e) => e.held) && !(actor.concentration && spellOf(actor.concentration.spell)?.mechanics.repeat)
       ? [{ key: 'followup', label: N.repeat, reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
         act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
+    // Kuyruk K66a (sürüm 50): Earthquake yarıklarını yerleştir (döküm turunda, ortak alan seçicisiyle).
+    ...((fb) => (fb?.open && fb.placed < fb.count
+      ? [{ key: 'fissure', label: B.k66.menu(fb.placed, fb.count), act: () => { reset(); setAreaAct({ kind: 'fissure', zoneId: fb.quake.id }); setChoicePick('fissure:4'); setMode('aim'); setMenuOpen(false); } }] : []))(fissureBudget(state, actor)),
+    // Kuyruk K66a: yarıktan tırmanma (çift maliyet); hareket yetiyorsa çıkış altıgeni seçilir, yetmiyorsa yetebildiği kadar.
+    ...(inFissure(state, actor) ? [{ key: 'fissureClimb', label: B.k66.climb(-(actor.altitudeFt ?? 0)), act: () => {
+      const alt = actor.altitudeFt ?? 0;
+      const left = speedHexes(actor) - actor.movementUsed;
+      if (left >= (-alt / 5) * 2 + 1) { reset(); setPickHexCmd({ make: (h) => ({ type: 'vertical_move', actorId, toFt: 0, to: h }), hint: B.k66.climbHint }); setMode('pickHex'); setMenuOpen(false); return; }
+      run({ type: 'vertical_move', actorId, toFt: Math.min(-5, alt + Math.floor(left / 2) * 5) });
+    } }] : []),
     { key: 'end', label: N.end, act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   // Kuyruk K64a: ele geçirilmiş beden yalnızca ele geçirenin temel eylemlerini, bedendeki ele geçiren yalnızca bırakmayı görür.
@@ -1602,7 +1620,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   const spec = zoneSpecOf(z);
                   const first = hexes[0];
                   return (
-                    <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}${z.surface ? ` surface ${z.surface}` : ''}`} style={{ ['--zone' as string]: spec?.color ?? (z.ward ? '#e3c86a' : '#9ab') }} aria-hidden="true">
+                    <g key={`z${z.id}`} className={`spell-zone${spec?.windWall ? ' wall' : ''}${z.surface ? ` surface ${z.surface}` : ''}`} style={{ ['--zone' as string]: spec?.color ?? (z.fissure ? (z.fissure.pending ? '#d08a3c' : '#2a1a10') : z.ward ? '#e3c86a' : '#9ab') }} aria-hidden="true">
                       <title>{z.name}</title>
                       {hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />)}
                       {(z.surface ? hexes : first ? [first] : []).map((h) => spec?.icon
@@ -1791,6 +1809,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       const all = [...statusIcons(c), ...effectIcons(state, c), ...(c.concentration ? [{ key: 'conc', icon: '◎', title: t().view.concentrating(c.concentration.spell) }] : []), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : []),
                         // Kuyruk S2: irtifa rozeti.
                         ...((c.altitudeFt ?? 0) > 0 ? [{ key: 'alt', icon: `↑${c.altitudeFt}`, title: B.s2.altitude(c.altitudeFt ?? 0) }] : []),
+                        // Kuyruk K66a: yarıkta (eksi irtifa).
+                        ...((c.altitudeFt ?? 0) < 0 ? [{ key: 'alt', icon: `↓${-(c.altitudeFt ?? 0)}`, title: B.k66.inFissure(-(c.altitudeFt ?? 0)) }] : []),
                         // Kuyruk K63 (sürüm 47): Truesight rozeti (menzil) ve Truesight'lı oyuncunun gördüğü asıl biçim.
                         ...(ruleVersion(state) >= 47 && truesightRange(state, c) > 0 ? [{ key: 'ts', icon: `👁${truesightRange(state, c)}`, title: B.k63.truesight(truesightRange(state, c)) }] : []),
                         ...(actor && c.shape && seesTrueForm(state, actor, c) ? [{ key: 'tf', icon: '🎭', title: B.k63.trueForm(c.name) }] : []),
@@ -2343,6 +2363,33 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const multi = areaPointCount(state, areaAct, choicePick, wallShape);
             const freeShape = areaFreeShape(state, areaAct, choicePick);
             const ready = multi > 1 ? aimPts.length > 0 : !needAim || !!aimHex;
+            // Kuyruk K66a: yarık yerleştirme balonu (ortak alan seçicisi: dokun, yön, önizleme motorla aynı).
+            if (areaAct.kind === 'fissure') {
+              const K = B.k66;
+              const fb = fissureBudget(state, actor);
+              const pick = choicePick ?? 'fissure:4';
+              return (
+                <div className="bubble area-bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h + 60 }} role="dialog" aria-label={K.head}>
+                  <strong>{K.head}</strong>
+                  <small>{K.count(fb?.placed ?? 0, fb?.count ?? 0)} · {K.hint}</small>
+                  <div className="wall-shape" role="radiogroup" aria-label={K.head} style={{ flexWrap: 'wrap' }}>
+                    {K.dir.map((label: string, d: number) => (
+                      <button key={d} type="button" role="radio" aria-label={K.dirName[d]} title={K.dirName[d]} aria-checked={pick === `fissure:${d}`} className={pick === `fissure:${d}` ? 'on' : ''} onClick={() => setChoicePick(`fissure:${d}`)}>{label}</button>
+                    ))}
+                  </div>
+                  {!aimHex && <small>{A.pickPoint}</small>}
+                  {aimHex && areaInfo?.error && <small className="warn-text">{areaInfo.error}</small>}
+                  {aimHex && !areaInfo?.error && (
+                    <small>
+                      <span className="area-count foe">{A.foes(foes.length)}</span>{' · '}
+                      <span className={`area-count friend${friends.length ? ' bad' : ''}`}>{A.friends(friends.length)}</span>
+                      {foes.length + friends.length > 0 && <><br />{[...foes, ...friends].map((c) => c.name).join(', ')}</>}
+                    </small>
+                  )}
+                  <button className="cta" disabled={!aimHex || !!areaInfo?.error} onClick={() => run(areaActCommand(actorId, areaAct, aimHex, null, null, pick))}>{K.go}</button>
+                </div>
+              );
+            }
             return (
               <div className="bubble area-bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }} role="dialog" aria-label={sp.label}>
                 <strong>{freeShape ? B.k65.head(sp.label) : A.head(sp.label, sp.spec.sizeFt, t().log.shapeName[sp.spec.shape] ?? sp.spec.shape)}</strong>

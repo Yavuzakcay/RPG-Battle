@@ -86,6 +86,8 @@ export function collapseFallEvents(next: BattleState, events: BattleEvent[], rng
   const out: BattleEvent[] = [];
   let s = next;
   for (const e of sunk) {
+    // Kuyruk K66a: Earthquake yarığı kendi düşmesini yapar (çift düşme yok).
+    if ((next.map?.zones ?? []).some((z) => z.fissure && z.hexes.some((h) => sameHex(h, e.at)))) continue;
     for (const c of Object.values(s.combatants)) {
       if (!c.pos || c.hp <= 0 || handled.has(c.id) || isAirborne(c) || !sameHex(c.pos, e.at)) continue;
       const feet = Math.max(30, (heightAt(s, e.at) - HEIGHT_RANGE.min) * levelFeet(s));

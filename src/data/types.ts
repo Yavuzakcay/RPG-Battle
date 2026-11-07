@@ -287,6 +287,8 @@ export interface SpellMechanics {
   k64?: Partial<SpellMechanics>;
   /** Kuyruk K65a (kural sürümü 49): serbest şekil alan (Fire Storm). */
   k65?: Partial<SpellMechanics>;
+  /** Kuyruk K66a (kural sürümü 50): Earthquake yarıkları (alanda `fissures`). */
+  k66?: Partial<SpellMechanics>;
   /** Kuyruk K65a: serbest şekil (`src/battle/freeShape.ts`): en çok altıgen, menzil her altıgende, görüş ilk altıgende. */
   /** Kuyruk K65c: serbest duvar yolunun ek kuralları (her altıgen menzilde, ilk altıgen görüşte; Wind Wall'da yok). */
   pathRules?: { rangeAll?: boolean; sightFirst?: boolean };
@@ -473,6 +475,11 @@ export interface ZoneSpec {
   casterTurn?: boolean;
   /** Kuyruk K61 (sürüm 44): büyücünün her tur sonunda alandaki herkes tetiklenir (Earthquake). */
   casterEnd?: boolean;
+  /**
+   * Kuyruk K66a (sürüm 50): Earthquake yarıkları (`src/battle/fissure.ts`): sayı zarı, derinlik zarı × adım ft, genişlik
+   * (altıgen), altından yarık geçemeyen yapı nesneleri.
+   */
+  fissures?: { count: string; depthDie: string; depthStepFt: number; widthHexes: number; structureKinds: string[] };
   rounds?: number;
   difficult?: number;
   ground?: boolean;

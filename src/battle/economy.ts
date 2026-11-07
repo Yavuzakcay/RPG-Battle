@@ -350,6 +350,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Kuyruk P12: dostun tetiklediği mühürlü büyü dostun ekonomisini harcamaz (geçerlilik komutta).
       // Kuyruk K62 (sürüm 46): boncuğa dokunmak eylem harcamaz (boncuk dokunanın kararı değil, yan etki).
       if (cmd.choice === 'bead') return { ok: true, event: null };
+      // Kuyruk K66a (sürüm 50): yarık yerleştirmek eylem harcamaz (büyünün parçası).
+      if (cmd.choice?.startsWith('fissure:')) return { ok: true, event: null };
       if (cmd.choice === 'sakli' && cmd.sourceId && cmd.sourceId !== actor.id) return { ok: true, event: null };
       if (cmd.choice === 'sakli') { const c = actor.effects?.find((x) => x.storedSpell)?.storedSpell?.cost; if (!c) return fail('Saklı büyü yok.'); return c === 'free' ? { ok: true, event: null } : spend(actor, c, 'Saklı büyü'); }
       // Görev B1: süreli tekrarın maliyeti büyü verisinde (Call Lightning, Vampiric Touch: eylem).

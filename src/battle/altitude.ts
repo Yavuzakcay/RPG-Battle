@@ -116,7 +116,8 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
   let s = next;
   for (const c0 of Object.values(next.combatants)) {
     const c = s.combatants[c0.id] as Combatant;
-    if (!altitudeOf(c) || staysUp(c)) continue;
+    // Kuyruk K66a: eksi irtifa (yarığın içi) düşüş değil.
+    if (altitudeOf(c) <= 0 || staysUp(c)) continue;
     const feet = altitudeOf(c);
     // Levitate bitti (önceki durumda vardı): süzülerek iner.
     if (c.altitudeGentle || levitateOn(before.combatants[c.id])) {

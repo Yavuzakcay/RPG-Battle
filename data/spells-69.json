@@ -1879,7 +1879,9 @@
      "icon": "🌋",
      "casterEnd": true
     }
-   }
+   },
+   "k66": { "zone": { "rounds": 10, "difficult": 2, "on": ["cast"], "save": "dex", "conditions": ["Prone"], "breakConcentration": true, "color": "#8a6b3d", "icon": "🌋", "casterEnd": true,
+     "fissures": { "count": "1d6", "depthDie": "1d10", "depthStepFt": 10, "widthHexes": 2, "structureKinds": ["door", "gate", "tent", "crackedWall"] } } }
   },
   "school": "Transmutation",
   "srdPage": 127,

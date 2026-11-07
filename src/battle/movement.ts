@@ -143,6 +143,8 @@ export function checkMover(state: BattleState, actor: Combatant, to: Offset): Of
   }
   if (!isInside(to, sizeOf(state))) return fail('Harita dışına çıkılamaz.');
   if (stuckInBog(state, actor)) return fail('Batağa saplandı: çıkmak için Athletics (Çık) ya da bir müttefik çekmeli.');
+  // Kuyruk K66a (sürüm 50): yarıktaki (eksi irtifa) uçmayan yaratık önce tırmanır (`vertical_move`).
+  if ((actor.altitudeFt ?? 0) < 0 && !isAirborne(actor) && ruleVersion(state) >= 50) return fail('Yarıktasın: önce tırman.');
   return actor.pos;
 }
 

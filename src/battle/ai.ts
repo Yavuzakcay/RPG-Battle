@@ -22,6 +22,7 @@
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
 import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf, wallAim } from './freeShape';
+import { fissureAim, fissureBudget, fissureClimbCommand } from './fissure';
 import { aiLeaveWanted, controlConditions, possessSpecOf, possessionProblem } from './possession';
 import { possessorAt, possessorDisabled } from './possessionCore';
 import { hiddenFromTruesight } from './sight';
@@ -490,6 +491,26 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
     }
   }
   return best?.cmd ?? null;
+}
+
+/**
+ * Kuyruk K66a (sürüm 50, basit kural): Earthquake'in yapıldığı turda yarık yerleştirme (`fissureAim`: dost ve masum içermeyen,
+ * en çok düşmanı kesen; dostların düşmana yürüme yolunu kesen hat seçilmez). Değer önceliği `kuralOnceligi['k66:yarik']`.
+ */
+function fissureCommand(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  const aim = fissureAim(state, actor, foes);
+  const b = aim ? fissureBudget(state, actor) : null;
+  if (!aim || !b) return null;
+  const cmd: Command = { type: 'spell_followup', actorId: actor.id, targetId: b.quake.id, targetHex: aim.at, choice: `fissure:${aim.dir}` };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
+/** Kuyruk K66a: yarıktaki yaratık tırmanır (hareket yetiyorsa düşmana en yakın kenara çıkar). `kuralOnceligi['k66:tirman']`. */
+function fissureClimbCmd(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  const c = fissureClimbCommand(state, actor, foes);
+  if (!c) return null;
+  const cmd: Command = { type: 'vertical_move', actorId: actor.id, toFt: c.toFt, ...(c.to ? { to: c.to } : {}) };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
 }
 
 /**
@@ -2402,6 +2423,8 @@ registerAction({ id: 'eski:iyilestir', rule: true, kind: 'heal', note: 'ölmekte
 registerAction({ id: 'eski:yenilenme', rule: true, kind: 'damage', note: 'yerdeki yenilenen düşmana ateş/asit', gen: (s, a) => (partyBranch(a) ? [finishRegen(s, a)] : []) });
 registerAction({ id: 'eski:alan', rule: true, kind: 'damage', note: 'alan hasar büyüsü (2+ düşman, dost yok)', gen: (s, a, h) => (partyBranch(a) || (a.monsterId && a.spellNames.length && !a.summon) ? [areaSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word Kill/Stun, Mass Heal', gen: (s, a, h) => (partyBranch(a) ? [powerWordCommand(s, a, h.foes)] : []) });
+registerAction({ id: 'k66:yarik', rule: true, kind: 'control', note: 'Earthquake yarığı: dostsuz, düşman kesen, yol kesmeyen hat', gen: (s, a, h) => [fissureCommand(s, a, h.foes)] });
+registerAction({ id: 'k66:tirman', rule: true, kind: 'move', note: 'yarıktan tırmanma', gen: (s, a, h) => [fissureClimbCmd(s, a, h.foes)] });
 registerAction({ id: 'k65:duvar', rule: true, kind: 'control', note: 'panelli duvar: büyücüyle düşman grubu arasına serbest yol', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [wallCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k65:firtina', rule: true, kind: 'damage', note: 'Fire Storm: serbest şekil, en kalabalık gruptan dostsuz bitişik yollarla', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [freeShapeCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k64:ele-gecir', rule: true, kind: 'control', note: 'Ghost Possession: 5 ft içindeki geçerli Humanoid hedefi ele geçir', gen: (s, a, h) => (a.monsterId && !a.summon ? [possessCommand(s, a, h.foes)] : []) });

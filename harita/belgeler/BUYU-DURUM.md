@@ -392,7 +392,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | control-weather | 8 | spells-69.json | savaş dışı |  |  | hayır |
 | demiplane | 8 | spells-69.json | savaş dışı |  |  | hayır |
 | dominate-monster | 8 | spells-69.json | çalışır |  |  | hayır |
-| earthquake | 8 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
+| earthquake | 8 | spells-69.json | çalışır | k66 (sürüm 50) |  | hayır |
 | glibness | 8 | spells-69.json | çalışır |  |  | hayır |
 | holy-aura | 8 | spells-69.json | çalışır | a4 (sürüm 32) |  | hayır |
 | incendiary-cloud | 8 | spells-69.json | çalışır |  |  | hayır |

@@ -583,9 +583,11 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
   if (spec.occupy && !existing && aim && globalRule(state, 'spellsK19') && Object.values(state.combatants).some((c) => c.hp > 0 && c.pos && bodyAt(state, c, c.pos).some((b) => sameHex(b, aim)))) {
     return fail(`${spell.name} boş bir altıgende belirmeli.`);
   }
+  // Kuyruk K66a (sürüm 50): Earthquake yarık sayısı (1d6) dökümde atılır; büyücü aynı turda yerleştirir (`fissure.ts`).
+  const fissureCount = spec.fissures && !existing && ruleVersion(state) >= 50 ? rollDice(spec.fissures.count, rollTag(rng, { by: actor.id })).total : 0;
   const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel))];
   events.push({ type: 'spell_cast', actorId: actor.id, targetId: null, label: repeat ? `${spell.name} (taşındı)` : spell.name, slotLevel: repeat ? null : slot.slotLevel,
-    note: `${hexes.length} altıgen` });
+    note: `${hexes.length} altıgen${fissureCount ? ` · yarık ${spec.fissures?.count} = ${fissureCount}` : ''}` });
   let zone: SpellZone;
   if (existing) {
     zone = { ...existing, hexes, ...(moveFt && aim ? { center: aim } : {}) };
@@ -612,6 +614,7 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
       ...(spec.bead && aim ? { center: aim, bead: { until: state.round + spec.bead.rounds - 1, throwFt: spec.bead.throwFt } } : {}),
       ...(spell.concentration && !spec.bead ? { concentration: spell.name } : {}),
       ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
+      ...(fissureCount ? { fissures: { count: fissureCount, turn: turnKey(state) } } : {}),
     };
     events.push({ type: 'zone_created', zone });
     // Kuyruk K62: kafes açılırken kısmen içeride ya da sığmayan yaratık dışarı itilir.

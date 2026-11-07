@@ -1207,6 +1207,10 @@ export interface SpellZone {
   damage?: string;
   /** Kuyruk K53 S4: geçici engel (`src/battle/barriers.ts`, `data/engeller.json`). */
   barrier?: import('./barriers').BarrierSpec;
+  /** Kuyruk K66a (sürüm 50): Earthquake alanında yarık hakkı (dökümde 1d6) ve yerleştirme turu (`turnKey`). */
+  fissures?: { count: number; turn: string };
+  /** Kuyruk K66a (sürüm 50): yarık: açık (`depthFt`, kalıcı) ya da yerleştirilmiş, büyücünün tur sonunda açılacak (`pending`). */
+  fissure?: { depthFt?: number; pending?: { at: Offset; dir: number; parentId: string } };
   /** Kuyruk K54b: Mevzi İşareti / Yol Aç: sahibin tarafındaki dostlar burada zor zemini ve zemin hasarını yok sayar (`saveBonus`: kurtulma). */
   groundWard?: { saveBonus?: number };
 }
@@ -1658,7 +1662,7 @@ export type Command =
   | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string;
       /** Kuyruk P12 (sürüm 43): mühürlü büyüyü (`choice: 'sakli'`) tetikleyen dostun yanında saklayanın kimliği. */ sourceId?: string }
   /** Kuyruk S2 (sürüm 41): dikey hareket (uçan kendi hareketiyle; Levitate'i yapan hedefini ya da nesneyi turda 20 ft'e dek). */
-  | { type: 'vertical_move'; actorId: string; targetId?: string; objectId?: string; toFt: number }
+  | { type: 'vertical_move'; actorId: string; targetId?: string; objectId?: string; toFt: number; /** Kuyruk K66a: yarıktan 0 ft'te çıkış altıgeni. */ to?: Offset }
   /** Kuyruk S2: elindekini bırakma (serbest) ve yerden alma (nesne etkileşimi). */
   | { type: 'drop_item'; actorId: string; item: string }
   | { type: 'pick_up'; actorId: string; objectId: string }
