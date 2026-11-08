@@ -768,7 +768,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         conditions,
         ...(event.mapStatus ? { mapStatus: { ...c.mapStatus, ...event.mapStatus } } : {}),
         ...(event.moveTo ? { pos: event.moveTo, run: null } : {}),
-        ...(event.stopMovement ? { movementUsed: Math.max(c.movementUsed, speedHexes(c)) } : {}),
+        ...(event.stopMovement ? { movementUsed: Math.max(c.movementUsed, speedHexes(c)) } : event.burnMove ? { movementUsed: c.movementUsed + event.burnMove } : {}),
       });
     }
     case 'tile_changed': {

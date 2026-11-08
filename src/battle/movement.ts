@@ -32,6 +32,7 @@ import { climbs, flySpeed, isAirborne, spellJumpFt } from './flight';
 import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
 import { dikeyOn, hasHexCeilings } from './vertical';
 import { obstacleTopFt } from './cover';
+import { climbOn, holdSurface, surfaceAt } from './climbing';
 import { heightAt, heightDelta, heightMoveRule, heightStepFn, layerActive, levelFeet } from './heights';
 import { mechanicsAt } from './spellVersion';
 import s2rules from '../../data/s2-kurallar.json';
@@ -273,10 +274,33 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const overFt = v56 && flying && !aloft && flySpeed(actor) > 0 && altFt > 0 ? altFt : -1;
   const roofCheck = v56 && altFt > 0 && hasHexCeilings(state);
   const boy = bodyHeightFt(actor);
+  // Kuyruk K71b (sürüm 57+, K68 karar 9 geri): duvardaki tırmanıcı irtifası engelin tepesine yetiyorsa engelin üstünden öte
+  // yana geçer (tepede duramaz: `executeMove`); tırmanma hızı olmayan (Çeviklik tırmanıcısı) yalnız tırmanılabilir yüzeyde
+  // (`climbing.ts` `surfaceAt`) ve tepesi irtifasına yeten yüzeye bitişik altıgende yürür, her adım yüzeyin çarpanı kadar.
+  const v57 = aloft && climbOn(state);
+  const dexAloft = v57 && !climber;
+  const holdAt = new Map<string, number | null>();
+  const holdCarpan = (h: Offset): number | null => {
+    const k = hexKey(h);
+    if (!holdAt.has(k)) holdAt.set(k, holdSurface(state, actor, h, altFt)?.carpan ?? null);
+    return holdAt.get(k) ?? null;
+  };
+  const crossCarpan = (h: Offset, t: TerrainType): number | null => {
+    if (t.movement !== 'blocked' || t.outOfBounds || t.flyersPass) return null;
+    if (dexAloft) { const s = surfaceAt(state, h, t); return s && altFt >= s.topFt ? s.carpan : null; }
+    return altFt >= obstacleTopFt(state, h, t) ? 1 : null;
+  };
   return (h: Offset, prev: Offset): number | null => {
     if (grip && !gripCeil && !wallNear(prev)) return null;
     // Kuyruk K69 (sürüm 53, çok altıgen): duvar denetimi gövdenin bütününde (`moveCostBase`).
-    if (aloft && !onCeiling && !bodyWall && !wallHex(state, h)) return null;
+    let climbStep = 1;
+    let climbOver = false;
+    if (v57 && !onCeiling && !bodyWall) {
+      const cross = crossCarpan(h, terrainAt(state, h));
+      if (cross !== null) { climbOver = true; climbStep = cross; }
+      else if (dexAloft) { const k = holdCarpan(h); if (k === null) return null; climbStep = k; }
+      else if (!wallHex(state, h)) return null;
+    } else if (aloft && !onCeiling && !bodyWall && !wallHex(state, h)) return null;
     const sph = sphere ? sphere(h, prev) : 'ok';
     if (sph === 'block') return null;
     if (sph === 'jump') return 1;
@@ -294,7 +318,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const free = freeMove || (!!ward && ward(h));
     const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = (!!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null) || (squeeze && doorAt(h));
-    const terrain = wall ? through : overTop ? 1 : enterCost(t, flying);
+    const terrain = wall ? through : overTop || climbOver ? 1 : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
     const enemy = enemyAt.get(hexKey(h));
@@ -309,7 +333,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
     // Kuyruk 19 (stormRules): fırtınada uçmak iki kat hareket.
     const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1) * (stormFly ? 2 : 1);
-    return cost === null ? null : cost * slow * (grip ? 2 : 1);
+    return cost === null ? null : cost * slow * (grip ? 2 : 1) * climbStep;
   };
 }
 
@@ -418,7 +442,8 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   }
   // Görev A2: geçen yaratığın yürüyüşü yarıda kesilirse (fırsat saldırısı, tuzak) engel ya da dolu altıgende kalmaz:
   // geçtiği son boş ve geçilebilir altıgene (ya da başladığı yere) döner.
-  if (phaseOf(actor) && walked > 0 && walked < path.path.length) {
+  // Kuyruk K71b (sürüm 57+): engelin üstünden geçen uçan ya da tırmanan da (K71a'da açık kalan durum).
+  if ((phaseOf(actor) || (climbOn(state) && isAirborne(actor))) && walked > 0 && walked < path.path.length) {
     const okEnd = (h: Offset) => terrainAt(state, h).movement !== 'blocked' && !occupantAt(current, h, actor.id);
     while (walked > 0 && !okEnd(path.path[walked - 1] as Offset)) walked--;
     spent = path.path.slice(0, walked).reduce((n, h, i) => n + (cost(h, i ? path.path[i - 1] as Offset : from) ?? 0), 0);

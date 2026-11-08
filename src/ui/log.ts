@@ -266,6 +266,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       if (event.mapStatus?.sink !== undefined) parts.push(L.sink(event.mapStatus.sink));
       if (event.moveTo) parts.push(`→ ${hexText(event.moveTo)}`);
       if (event.stopMovement) parts.push(L.stop);
+      if (event.burnMove) parts.push(L.burn(event.burnMove));
       return `${parts.join('. ')}.`;
     }
     case 'tile_changed':

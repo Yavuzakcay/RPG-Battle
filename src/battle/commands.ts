@@ -909,7 +909,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk S2 (sürüm 41): dikey hareket, eşya bırakma ve yerden alma.
   // Kuyruk K66a (sürüm 50): yarıktaki uçmayan yaratık tırmanır (çift maliyet; 0 ft'te bitişik zemine çıkış).
   if (cmd.type === 'vertical_move' && !cmd.objectId && (!cmd.targetId || cmd.targetId === actor.id) && fissureClimbApplies(state, actor)) return executeFissureClimb(state, actor, cmd);
-  if (cmd.type === 'vertical_move') return executeVerticalMove(state, actor, cmd);
+  if (cmd.type === 'vertical_move') return executeVerticalMove(state, actor, cmd, rng);
   if (cmd.type === 'drop_item') return cmd.item === 'flame-blade' ? executeDropBlade(state, actor) : executeDropItem(state, actor, cmd.item);
   if (cmd.type === 'pick_up') return executePickUp(state, actor, cmd.objectId);
 

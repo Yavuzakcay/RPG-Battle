@@ -123,7 +123,7 @@
  "variants": [
   {
    "id": "gunduz",
-   "dikey": {"harfFt": {"s": 30, "O": 30}},
+   "dikey": {"harfFt": {"s": 30, "O": 30}, "yuzey": {"s": "kaba"}},
    "name": "Gündüz",
    "nameEn": "Day",
    "image": "maps/yerlesim/kale-avlu.webp",
@@ -132,7 +132,7 @@
   },
   {
    "id": "gece",
-   "dikey": {"harfFt": {"s": 30, "O": 30}},
+   "dikey": {"harfFt": {"s": 30, "O": 30}, "yuzey": {"s": "kaba"}},
    "name": "Gece",
    "nameEn": "Night",
    "image": "maps/yerlesim/kale-avlu-gece.webp",

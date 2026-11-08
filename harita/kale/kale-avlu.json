@@ -49,7 +49,7 @@
   "variants": [
     {
       "id": "gunduz",
-      "dikey": {"harfFt": {"s": 30, "O": 30}, "tavanBolge": [{"dikdortgen": [22, 4, 24, 6], "ft": 15}, {"dikdortgen": [22, 10, 24, 12], "ft": 15}]},
+      "dikey": {"harfFt": {"s": 30, "O": 30}, "tavanBolge": [{"dikdortgen": [22, 4, 24, 6], "ft": 15}, {"dikdortgen": [22, 10, 24, 12], "ft": 15}], "yuzey": {"s": "kaba"}},
       "name": "Gündüz",
       "nameEn": "Day",
       "image": "maps/kale/kale-avlu.webp",

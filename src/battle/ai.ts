@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { wallClimbCommand } from './ai/climbAi';
 import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf, wallAim } from './freeShape';
 import { fissureAim, fissureBudget, fissureClimbCommand } from './fissure';
 import { quakeForecast } from './quake';
@@ -2037,6 +2038,10 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const fly = flyToReach(state, actor, attackSpots.length > 0);
   if (fly) return fly;
 
+  // Kuyruk K71b (sürüm 57+, K15): Çeviklik tırmanıcısı duvarsız yol yoksa ya da tırmanma yolunun iki katıysa duvara tırmanır;
+  // duvardayken tırmanmayı sürdürür, öte yana geçer ya da iner (yeni taktik yok: yalnız yol bulma).
+  const climbWall = wallClimbCommand(state, actor, foes, tryCmd);
+  if (climbWall) return climbWall;
   // Yaklaş: en yakın hedefe mesafeyi en çok kısaltan güvenli altıgen.
   const nearest = (h: Offset) => Math.min(...foes.map((t) => gapFrom(h, t)));
   const here = nearest(actor.pos);

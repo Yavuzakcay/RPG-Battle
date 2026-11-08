@@ -4,6 +4,7 @@
  * yürüme ve atlama komutları zar atmadığı için motor üzerinde denenerek bulunur, saldırı
  * önizlemesi motorun menzil/siper/görüş denetimini kullanır.
  */
+import { climbOn, surfaceAt } from '../battle/climbing';
 import { heightAt, isRamp, levelFeet } from '../battle/heights';
 import { OBJECTS, objectAt } from '../battle/objectData';
 import { concealed, shownTerrainName } from '../battle/hiddenObjects';
@@ -217,6 +218,8 @@ export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): s
   if (tt.cover) parts.push(V.coverPlain(tt.cover));
   // Kuyruk K68c (sürüm 52): yüksekliği bilinen engel (duvar, kapı, panel) görüşü tepesine dek keser.
   if (tt.blocksSight) parts.push(((top) => (Number.isFinite(top) ? V.blocksSightTo(top) : V.blocksSight))(ruleVersion(state) >= 52 ? obstacleTopFt(state, o) : Infinity));
+  // Kuyruk K71b (sürüm 57+): geçilmez engelde tırmanma bilgisi (yüzey DC'si ve çarpanı ya da tırmanılmaz).
+  if (climbOn(state) && tt.movement === 'blocked' && !tt.outOfBounds && !tt.flyersPass) parts.push(((s) => (s ? V.climbable(s.topFt, s.dc, s.carpan) : V.unclimbable))(surfaceAt(state, o)));
   // Gizlenme (Görev K): saklanılabilir mi, neden; sırası gelen savaşçıya göre (bitişik düşman, gece, gözcü).
   if (state.map) parts.push(hideInfo(state, actor, o));
   if (tt.hazard) parts.push(`${tt.hazard.damage} ${tt.hazard.damageType}`);

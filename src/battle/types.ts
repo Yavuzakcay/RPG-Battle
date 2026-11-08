@@ -1893,6 +1893,8 @@ export type BattleEvent =
       stopMovement?: boolean;
       /** Zar eklentileri ve ikinci şans (Görev F; Indomitable, Tactical Mind). */
       bonusDice?: RolledExtra[];
+      /** Kuyruk K71b (sürüm 57+): yanan hareket (altıgen; tutmayan tırmanma kontrolü). */
+      burnMove?: number;
     }
   /** Harita altıgeni değişti (lav yükselmesi). */
   | { type: 'tile_changed'; at: Offset; to: string }

@@ -29,6 +29,7 @@ import { maps } from '../map/maps';
 import { terrainAt } from './movement';
 import { dikeyOn, tavanEzme } from './vertical';
 import { obstacleTopFt } from './cover';
+import { climbOn, dexClimbMove, dexClimberHolds } from './climbing';
 
 export const ALT = rules.irtifa;
 export const altitudeOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(s) >= 41;
@@ -173,7 +174,7 @@ export function fissureDepthAt(state: Pick<BattleState, 'map'>, at: Offset): num
 }
 
 /** Dikey hareket. */
-export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: { targetId?: string; objectId?: string; toFt: number }): CommandResult {
+export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: { targetId?: string; objectId?: string; toFt: number }, rng?: Rng): CommandResult {
   if (!altitudeOn(state)) return fail('Dikey hareket bu kural sürümünde yok.');
   const to = cmd.toFt;
   if (!Number.isFinite(to) || to < 0 || to % ALT.stepFt !== 0 || to > ALT.maxFt) return fail(`İrtifa 0–${ALT.maxFt} ft, ${ALT.stepFt} ft adımla.`);
@@ -205,6 +206,8 @@ export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: {
   // Kuyruk K68b (sürüm 52): tırmanma hızı olan (Spider Climb, `climber`, Roving…) duvara bitişikken tırmanır/iner
   // (tırmanma hızıyla ek maliyetsiz: 5 ft = 1 altıgen); üst sınır tavan − boy ya da açık alanda duvar boyu.
   if (!fliesOrHovers(actor) && ruleVersion(state) >= 52 && climbs(actor, state)) return climbMove(state, actor, from, to);
+  // Kuyruk K71b (sürüm 57+, K68 karar 9 geri): uçmayan herkes duvara tırmanır (Çeviklik kontrolü, çarpanlı maliyet).
+  if (!fliesOrHovers(actor) && climbOn(state)) return rng ? dexClimbMove(state, actor, from, to, rng) : fail('Tırmanma zarı gerekli.');
   if (flySpeed(actor) <= 0) return fail('Uçuş hızın yok.');
   const cost = d / 5;
   if (actor.movementUsed + cost > speedHexes(actor)) return fail(`Yeterli hareket yok (${d} ft dikey = ${cost} altıgen).`);
@@ -249,7 +252,8 @@ export function levitateRiseEvents(state: BattleState, events: BattleEvent[], wa
  */
 function staysUp(state: BattleState, c: Combatant): boolean {
   if (levitateOn(c)) return true;
-  if (climbingAloft(c)) return climberHolds(state, c);
+  // Kuyruk K71b (sürüm 57+): tırmanma hızı olmayan duvardaki tırmanıcı, bitişik tırmanılabilir yüzey (tepesi irtifası kadar) varken tutunur.
+  if (climbingAloft(c)) return climberHolds(state, c) || (climbOn(state) && !climbs(c, state) && dexClimberHolds(state, c));
   if (!isAirborne(c)) return false;
   if (flySpeed(c) <= 0) return !!c.effects?.some((e) => e.airborne);
   return !c.conditions.includes('Prone') && !isIncapacitated(c.conditions) && !speedZero(c.conditions);

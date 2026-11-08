@@ -13,5 +13,74 @@
     "x": 5,
     "d": 5,
     "g": 5
+  },
+  "tirmanma": {
+    "not": "Kuyruk K71b (kural sürümü 57+; kullanıcı kararı): herkes için duvara tırmanma. Tırmanışa başlarken bir kez Çeviklik kontrolü (d20 + DEX değiştiricisi; beceri yetkinliği yok, Akrobasi değil) yüzeyin DC'sine karşı; tutarsa tırmanır, hareket maliyeti sınıfın çarpanı (5 ft dikey ya da duvarda bir altıgen = çarpan altıgen); tutmazsa düşme yok, yerinde kalır, o tırmanış adımının (5 ft) hareketi yanar. Tırmanma hızı olan (Spider Climb, `climber`, Roving) zarsız, çarpan 1 (K68b). Yüzey sırası: büyü duvarı (`buyu`) > geçici engel (`engel`) > nesne (`nesne`) > varyant `dikey.yuzey` harf ezmesi > `harf`. Listede olmayan ya da `tirmanilmaz`daki yüzey tırmanılmaz; tepesi bilinmeyen (sonsuz) engel de tırmanılmaz (tırmanma hızı olan K68b gibi tırmanır). `katmanUcurum`: yükseklik katmanında 2+ seviye uçurumun (`climb` komutu, K4) yüzeyi. ⚠ DC ve çarpanlar tasarım (SRD Climbing: her ft 1 ek ft, zar yok).",
+    "siniflar": {
+      "kaba": {
+        "dc": 10,
+        "carpan": 2,
+        "tr": "kaba yüzey",
+        "en": "rough surface"
+      },
+      "normal": {
+        "dc": 12,
+        "carpan": 2,
+        "tr": "duvar",
+        "en": "wall"
+      },
+      "puruzsuz": {
+        "dc": 15,
+        "carpan": 3,
+        "tr": "pürüzsüz yüzey",
+        "en": "smooth surface"
+      }
+    },
+    "harf": {
+      "a": "kaba",
+      "v": "kaba",
+      "s": "normal",
+      "O": "normal",
+      "c": "puruzsuz",
+      "m": "puruzsuz"
+    },
+    "nesne": {
+      "door": "normal",
+      "gate": "kaba",
+      "crackedWall": "kaba",
+      "boulderPile": "kaba"
+    },
+    "buyu": {
+      "wall-of-stone": "kaba"
+    },
+    "engel": {
+      "enkaz-yigini": "kaba"
+    },
+    "katmanUcurum": "kaba",
+    "tirmanilmaz": {
+      "harf": [
+        "e"
+      ],
+      "nesne": [
+        "frozenFall",
+        "tent",
+        "statueEye",
+        "brazier",
+        "cauldron",
+        "plaque",
+        "ballista",
+        "tree"
+      ],
+      "buyu": [
+        "wall-of-force",
+        "wall-of-ice",
+        "prismatic-wall",
+        "forcecage"
+      ],
+      "engel": [
+        "cizili-duvar",
+        "dost-kalkani"
+      ]
+    }
   }
 }

@@ -83,8 +83,9 @@ describe('K26: hareket', () => {
     const path = r.ok ? (r.events.find((e) => e.type === 'moved') as Extract<BattleEvent, { type: 'moved' }>).path : [];
     expect(path.some((h) => h.col === 6 && h.row === 3)).toBe(true);
   });
-  it('tırmanma: Atletizm geçer (çıkar) ya da geçmez (hareket biter, yer aynı)', () => {
-    const { st } = scene(o(6, 2));
+  // Kuyruk K71b: Atletizm DC 12 ve hareket sonu sürüm 56'ya kadar; 57+'da tek tırmanma kuralı (`k71b.test.ts`).
+  it('tırmanma: Atletizm geçer (çıkar) ya da geçmez (hareket biter, yer aynı) — sürüm 56', () => {
+    const { st } = scene(o(6, 2), o(13, 6), { v: 56 });
     expect(climbTargets(st, A(st)).some((h) => h.col === 7 && h.row === 2)).toBe(true);
     const ok = run(st, { type: 'climb', actorId: 'A', to: o(7, 2) }, high);
     expect(ok.ok && A(ok.state).pos).toEqual(o(7, 2));

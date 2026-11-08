@@ -18,6 +18,10 @@ import { climbs, isAirborne } from './flight';
 import { climbDc, heightAt, heightDelta, heightFallRule, heightMoveRule, isCliff, layerActive, levelCost, levelFeet } from './heights';
 import { HEIGHT_RANGE } from '../map/maps';
 import type { BattleEvent, BattleState, Combatant } from './types';
+import { CLIMB_CLASSES, climbCheckEvent, climbOn } from './climbing';
+import dikeyData from '../../data/dikey.json';
+
+const CLIFF = dikeyData.tirmanma.katmanUcurum;
 
 /** Tırmanılabilir/atlanabilir komşular (arayüz): uçurum kenarı, girilebilir ve boş. */
 export function climbTargets(state: BattleState, actor: Combatant): Offset[] {
@@ -45,14 +49,26 @@ export function executeClimb(state: BattleState, actor: Combatant, to: Offset, r
   const other = occupantAt(state, to, actor.id);
   if (other) return fail(`Dolu (${other.name}).`);
   const up = heightDelta(state, from, to);
-  const cost = up > 0 ? 1 + levelCost(state) * up : 1;
+  // Kuyruk K71b (sürüm 57+, K4): uçurum tırmanışı duvar tırmanışıyla tek kural: Çeviklik kontrolü (yüzey `katmanUcurum`
+  // sınıfının DC'si), seviye başına ek maliyet sınıfın çarpanıyla katlanır; tutmazsa düşme ve hareket sonu yok, yerinde kalır,
+  // o adımın hareketi yanar. 56 ve altında Atletizm DC 12 ve hareket sonu (aynen).
+  const k71 = climbOn(state);
+  const cls = k71 ? CLIMB_CLASSES[CLIFF] : undefined;
+  const cost = up > 0 ? 1 + levelCost(state) * up * (cls?.carpan ?? 1) : 1;
   const remaining = speedHexes(actor) - actor.movementUsed;
   if (cost > remaining) return fail(`Hareket yetmiyor: ${cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
   const events: BattleEvent[] = [];
   let s = state;
   const push = (evs: BattleEvent[]) => { events.push(...evs); s = applyEvents(s, evs); };
   const me = () => s.combatants[actor.id] as Combatant;
-  if (up > 0) {
+  if (up > 0 && cls) {
+    const check = climbCheckEvent(state, actor, cls.dc, `${actor.name} ${up * levelFeet(state)} ft tırmanıyor (${cls.tr}, DC ${cls.dc})`, rng);
+    if (!check.roll?.success) {
+      push([{ ...check, text: `${check.text}: tutunamadı (yerinde kaldı, ${cost} altıgen hareket yandı)`, burnMove: cost }]);
+      return finish(state, events);
+    }
+    push([check]);
+  } else if (up > 0) {
     const dc = climbDc(state);
     const check = checkEffect(actor, 'heightClimb', `${up * levelFeet(state)} ft tırmanıyor`, 'athletics', dc, rng, state);
     if (!check.roll?.success) {

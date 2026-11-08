@@ -115,7 +115,7 @@ export const TR_EXTRA = {
     mounted: (a: string, m: string) => `${a} ${m} üstüne bindi.`, dismounted: (a: string) => `${a} binekten indi.`, relentlessEndurance: 'Relentless Endurance: 1 HP ile ayakta kaldı', relentlessRage: (n: number, t: number, dc: number, ok: boolean, hp: number) => `Relentless Rage: CON ${n} → ${t} / DC ${dc}${ok ? `, ayakta (${hp} HP)` : ', başarısız'}.`,
     shiftGranted: (a: string, ft: number) => `${a} ${ft} ft fırsat saldırısı almadan kayabilir.`,
     mapRoll: (label: string, d20: string, mode: string, total: number, dc: number, ok: boolean) => `${label} zar ${d20}${mode}, toplam ${total} / DC ${dc}: ${ok ? 'başarılı' : 'başarısız'}`,
-    became: (c: string) => `${c} oldu`, wore: (c: string) => `${c} geçti`, sink: (n: number) => `batma sayacı ${n}`, stop: 'hareketi bitti',
+    became: (c: string) => `${c} oldu`, wore: (c: string) => `${c} geçti`, sink: (n: number) => `batma sayacı ${n}`, stop: 'hareketi bitti', burn: (n: number) => `${n} altıgen hareket yandı`,
     toLava: (at: string) => `${at} lava döndü.`, tile: (at: string, name: string) => `${at}: ${name}.`,
     lavaWarning: (n: number) => `Uyarı: lav yükseliyor! ${n} kıyı altıgeni bir sonraki tur başında lav olacak.`,
     abilityRecharge: (who: string, what: string, d6: number, ok: boolean) => `${who}: ${what} şarj d6 ${d6} → ${ok ? 'hazır' : 'hazır değil'}.`,
@@ -343,6 +343,9 @@ export const TR_EXTRA = {
       climbing: (ft: number, ceiling: boolean): string => (ceiling ? `Tavanda (${ft} ft)` : `Duvarda (${ft} ft)`),
       highJump: (ft: number): string => `Yerinde zıpla (dikey erişim +${ft} ft)`, jumped: (ft: number): string => `Zıpladı: dikey erişim +${ft} ft`,
       cloud: (base: number): string => `Call Lightning bulutu (taban ${base} ft, 60 ft yarıçap)` },
+    // Kuyruk K71b: herkes için tırmanma (Çeviklik kontrolü, çarpanlı maliyet).
+    k71: { climbStart: (dc: number, k: number): string => `▲ Tırman 5 ft (Çeviklik DC ${dc}, ×${k})`, climbUp: (k: number): string => `▲ Tırman 5 ft (×${k})`, climbDown: (k: number): string => `▼ İn 5 ft (×${k})`,
+      confirm: (dc: number, k: number, top: number): string => `Tırmanmaya başla: Çeviklik kontrolü DC ${dc} (yetkinlik yok). Tutmazsa düşmezsin ama ${k} altıgen hareket yanar. Duvar tepesi ${top} ft; tepede durulmaz, üstünden öte yana geçilir.` },
     start: 'Savaşı başlat',
     explore: { go: 'Keşfe devam', hint: 'Keşif: jetona dokunup seç, yürü; giriş altıgenine varınca Serüven\'e dönülür.' },
     summary: { party: 'Parti kazandı!', enemies: 'Düşmanlar kazandı.', rounds: (n: number) => `${n}. turda bitti`,
@@ -456,6 +459,7 @@ export const TR_EXTRA = {
     height: (h: number) => `yükseklik ${h}`, coverPlain: (c: number) => `${c === 5 ? '3/4' : 'yarım'} siper`, blocksSight: 'görüşü keser',
     // Kuyruk K68c: görüş hattında irtifa.
     blocksSightTo: (ft: number) => `görüşü ${ft} ft'e dek keser`,
+    climbable: (ft: number, dc: number, k: number) => `${ft} ft, tırmanılır (Çeviklik DC ${dc}, ×${k})`, unclimbable: 'tırmanılmaz',
     // Kuyruk K69: çok altıgenli hedef.
     bodyHexes: (size: string, n: number) => `${({ L: 'Large', H: 'Huge', G: 'Gargantuan' } as Record<string, string>)[size] ?? size}: ${n} altıgen`, seenOver: (name: string) => `${name} üstünden görünür`,
     hideSpot: (b: number) => `gizlenme yeri${b ? ` +${b}` : ''}`,

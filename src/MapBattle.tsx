@@ -42,6 +42,7 @@ import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive, isTargetable } from './battle/common';
 import { hexLabel, highJumpProblem, highJumpReachFt, occupantAt, speedHexes } from './battle/movement';
 import { altitudeCapFt, atCeiling, ceilingFt, climbingAloft, wallHex } from './battle/altitude';
+import { climbStartInfo, dexClimber, holdSurface } from './battle/climbing';
 import { cloudBaseFt, cloudCastProblem, cloudPointProblem, cloudRing } from './battle/cloud';
 import { speedZero as hasSpeedZero } from './rules/conditions';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
@@ -432,6 +433,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [diceAnim, cycleDiceAnim] = useDiceAnimSetting();
   const [diceTheme, cycleDiceTheme] = useDiceThemeSetting();
   const [diceQueue, setDiceQueue] = useState<TrayItem[]>([]);
+  // Kuyruk K71b: tırmanmaya başlama onayı (ilk dokunuş açıklar, ikincisi başlatır); anahtar aktör + harcanan hareket.
+  const [climbArmed, setClimbArmed] = useState<string | null>(null);
   const seenDice = useRef(diceSeenAtStart(props.initial.events, props.restored === true));
   // Otomatik kayıt: her tur (round) sonunda ve savaş bitince (tek kayıt yuvası, olay günlüğü).
   useEffect(() => {
@@ -2660,6 +2663,28 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   {(actor.altitudeFt ?? 0) > 0 && ((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? undefined} onClick={() => run(cmd)}>{B.k68.climbDown}</button>)({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) - 5 })}
                 </>
               )}
+              {/* Kuyruk K71b (sürüm 57+): tırmanma hızı olmayan (Çeviklik tırmanıcısı): duvar dibinde onaylı başlangıç (Çeviklik
+                  kontrolü), duvarda tırman/in (çarpanlı). */}
+              {(() => {
+                const st = climbStartInfo(state, actor);
+                const aloftDex = dexClimber(state, actor) && climbingAloft(actor);
+                if (!st && !aloftDex) return null;
+                const k = st ? st.carpan : holdSurface(state, actor)?.carpan ?? 2;
+                const up: Command = { type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) + 5 };
+                const down: Command = { type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) - 5 };
+                const armKey = `${actorId}:${actor.movementUsed}`;
+                const armed = !!st && climbArmed === armKey;
+                return (
+                  <>
+                    <button className="hud-btn small" disabled={!!tryWhy(up)} title={loc(tryWhy(up)) ?? (st ? B.k71.confirm(st.dc, st.carpan, st.topFt) : undefined)}
+                      onClick={() => { if (st && !armed) { setClimbArmed(armKey); return; } setClimbArmed(null); run(up); }}>
+                      {armed && st ? `${B.k71.climbStart(st.dc, st.carpan)} ✓` : st ? B.k71.climbStart(st.dc, st.carpan) : B.k71.climbUp(k)}
+                    </button>
+                    {armed && st && <span>{B.k71.confirm(st.dc, st.carpan, st.topFt)}</span>}
+                    {aloftDex && ((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? undefined} onClick={() => run(cmd)}>{B.k71.climbDown(k)}</button>)(down)}
+                  </>
+                );
+              })()}
               {/* Kuyruk K68b (sürüm 52): Jump: yerinde yüksek zıplama (bu tur yakın dövüşte dikey erişim). */}
               {ruleVersion(state) >= 52 && !highJumpProblem(state, actor) && <button className="hud-btn small" onClick={() => run({ type: 'jump', actorId, to: actor.pos as Offset })}>{B.k68.highJump(Math.min(spellJumpFt(actor), altitudeCapFt(state, actor)))}</button>}
               {highJumpReachFt(state, actor) > 0 && <span>{B.k68.jumped(highJumpReachFt(state, actor))}</span>}

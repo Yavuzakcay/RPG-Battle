@@ -47,23 +47,26 @@ TAVAN = {
 # (`.`) içeren kapalı alanlar avludur (kale-avlu/kale-baskini 162 altıgenlik avlu, kale-ic-avlu 93 altıgenlik iç avlu):
 # tavansız kalır (⚠ K71b kararı: avluya tavan konmaz). Önerideki diğer iç tavan değerleri (saray odaları 20, hapishane/
 # kasaba odaları 12, şehir 15, buzul tapınağı 20) bölgesi bulunamadığı için işlenmedi: elle bölge gerekir.
-def _duvar(ft, oda=None):
+def _duvar(ft, oda=None, sur=False):
     d = {'harfFt': {'s': ft, 'O': ft}}
     if oda:
         d['tavanBolge'] = [{'dikdortgen': list(r), 'ft': oda[0]} for r in oda[1]]
+    if sur:
+        # Kuyruk K71b (sürüm 57+): sur kaba taş (tırmanma DC 10; kullanıcı kararı "kaba: ağaç, kaba taş, sur").
+        d['yuzey'] = {'s': 'kaba'}
     return d
 
 
 _KALE_ODALAR = (15, [(22, 4, 24, 6), (22, 10, 24, 12)])
 ONAYLI: dict = {
-    'kale': _duvar(30),
-    'kale-baskini': _duvar(30, _KALE_ODALAR),
-    'kale-avlu': _duvar(30, _KALE_ODALAR),
-    'kale-ic-avlu': _duvar(30),
-    'kale-onu': _duvar(30),
-    'beyaz-sehir-dis-kapi': _duvar(30),
-    'batak-kale': _duvar(25),
-    'beyaz-sehir-saray-avlusu': _duvar(30),
+    'kale': _duvar(30, sur=True),
+    'kale-baskini': _duvar(30, _KALE_ODALAR, sur=True),
+    'kale-avlu': _duvar(30, _KALE_ODALAR, sur=True),
+    'kale-ic-avlu': _duvar(30, sur=True),
+    'kale-onu': _duvar(30, sur=True),
+    'beyaz-sehir-dis-kapi': _duvar(30, sur=True),
+    'batak-kale': _duvar(25, sur=True),
+    'beyaz-sehir-saray-avlusu': _duvar(30, sur=True),
     'hapishane-dis-halka': _duvar(20),
     'hapishane-iskele': _duvar(20),
     'kasaba-han': _duvar(15),

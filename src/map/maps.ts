@@ -4,6 +4,7 @@
  * eklemektir; kod değişmez.
  */
 import regionData from '../../harita/_ortak/harita-bolgeleri.json';
+import dikeyData from '../../data/dikey.json';
 import { environments } from '../data';
 import { neighbors, type GridSize, type Offset } from '../rules/hex';
 import { TERRAIN, isSafeStart, terrainOf, type TerrainType } from './terrain';
@@ -64,8 +65,11 @@ export interface MapDikey {
   engel?: Record<string, number | null>;
   tavan?: Record<string, number>;
   tavanBolge?: Array<{ dikdortgen: [number, number, number, number]; ft: number }>;
+  /** Kuyruk K71b (sürüm 57+): harfin tırmanma yüzeyi ezmesi (`data/dikey.json` `tirmanma.siniflar` sınıfı ya da `tirmanilmaz`). */
+  yuzey?: Record<string, string>;
 }
 
+const CLIMB_CLASSES = dikeyData.tirmanma.siniflar as Record<string, unknown>;
 const FT_OK = (n: unknown): boolean => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n <= 120 && n % 5 === 0;
 const KEY_OK = (k: string): boolean => /^\d+,\d+$/.test(k);
 /** Kuyruk K71a: `dikey` şeması (ft 0–120, 5'in katı; anahtar "sütun,satır"; tavan 0 = açık gök ya da ≥ 5). */
@@ -78,6 +82,7 @@ export function dikeyErrors(d: MapDikey, where: string): string[] {
     const r = b.dikdortgen;
     if (!Array.isArray(r) || r.length !== 4 || r.some((x) => !Number.isInteger(x) || x < 0) || r[0] > r[2] || r[1] > r[3] || !FT_OK(b.ft) || b.ft < 5) out.push(`${where}: tavanBolge ${JSON.stringify(r)} geçersiz`);
   }
+  for (const [k, v] of Object.entries(d.yuzey ?? {})) if (k.length !== 1 || !(v === 'tirmanilmaz' || v in CLIMB_CLASSES)) out.push(`${where}: yuzey "${k}" geçersiz`);
   return out;
 }
 
