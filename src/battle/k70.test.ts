@@ -6,6 +6,10 @@ import { describe, expect, it } from 'vitest';
 import { spells } from '../data';
 import { execute } from './index';
 import { destroyForceProblem } from './spells';
+import { combatantFromSheet } from './create';
+import { metabolismEvents } from './martial';
+import { BEACON_K70_VERSION, beaconMax, diceMaxOf } from './healMax';
+import { paketHealRoll } from './paket/p11';
 import { GM, mk, P1 } from './fixtures';
 import { caster, field, run } from './k19spells.test';
 import type { BattleEvent, BattleState, Combatant, Command } from './types';
@@ -125,5 +129,52 @@ describe('K70 madde 2: Disintegrate Wall of Force\'u yok eder (Forcecage değil)
     const r = zap(s, PATH[2] as { col: number; row: number });
     expect(r.ok ? null : r.error).toMatch(/Hedef seçmelisin/);
     expect(s.map?.zones?.some((z) => z.spellId === 'wall-of-force')).toBe(true);
+  });
+});
+
+describe('K70 madde 3: Beacon of Hope tek yardımcı (Uncanny Metabolism, paket iyileştirme zarı)', () => {
+  const beacon = { id: 'spells:beacon-of-hope', name: 'Beacon of Hope', sourceId: 'X', maxHeal: true } as NonNullable<Combatant['effects']>[number];
+  const monk = () => combatantFromSheet({ name: 'Lin', raceId: 'human', classId: 'monk', level: 2, armorName: 'Zırhsız', shield: false, itemNames: [],
+    baseScores: { str: 10, dex: 15, con: 13, int: 8, wis: 14, cha: 12 }, backgroundBonuses: { dex: 2, wis: 1 }, weapons: [{ name: 'Quarterstaff' }] }, { id: 'a', ownerId: 'p' });
+  it('tek yardımcı: diceMaxOf / beaconMax sürüm kapısı (54 altında null, etki yoksa null, sabit sayı aynen)', () => {
+    expect(diceMaxOf('2d8+3')).toBe(19);
+    expect(beaconMax({ kuralSurumu: 54 }, { effects: [beacon] }, '1d6', BEACON_K70_VERSION)).toBe(6);
+    expect(beaconMax({ kuralSurumu: 53 }, { effects: [beacon] }, '1d6', BEACON_K70_VERSION)).toBeNull();
+    expect(beaconMax({ kuralSurumu: 54 }, { effects: [] }, '1d6', BEACON_K70_VERSION)).toBeNull();
+    expect(beaconMax({ kuralSurumu: 54 }, { effects: [beacon] }, '5', BEACON_K70_VERSION)).toBe(5);
+  });
+  it('Uncanny Metabolism: sürüm 54\'te Beacon altında Martial Arts zarı en yüksek; 53\'te zar atılır; Beacon yoksa zar', () => {
+    const m0 = monk();
+    const hurt = { ...m0, hp: 1, maxHp: 40, resources: { ...m0.resources, focus: 0 }, effects: [beacon] };
+    const die = m0.metabolism?.die as string;
+    const heal = (st: { kuralSurumu: number } | undefined, c: Combatant) => (metabolismEvents(c, () => 0.01, st).find((e) => e.type === 'healed') as Extract<BattleEvent, { type: 'healed' }>).amount;
+    expect(heal({ kuralSurumu: 54 }, hurt)).toBe(diceMaxOf(die) + m0.level);
+    expect(heal({ kuralSurumu: 53 }, hurt)).toBe(1 + m0.level);
+    expect(heal(undefined, hurt)).toBe(1 + m0.level);
+    expect(heal({ kuralSurumu: 54 }, { ...hurt, effects: [] })).toBe(1 + m0.level);
+  });
+  it('Uncanny Metabolism savaş başında (start_battle) savaş durumunun sürümünü alır', () => {
+    const m0 = monk();
+    const go = (k: number) => {
+      const s0 = field([{ ...m0, id: 'A', ownerId: 'p1', hp: 1, maxHp: 40, resources: { ...m0.resources, focus: 0 }, effects: [beacon] }, mk('B', { side: 'enemies' })], { A: { col: 2, row: 3 }, B: { col: 9, row: 3 } }, k);
+      const s = { ...s0, status: 'setup' } as BattleState;
+      const r = execute(s, { type: 'start_battle' } as Command, GM, () => 0.01);
+      if (!r.ok) throw new Error(r.error);
+      return (r.events.find((e) => e.type === 'healed' && e.label === 'Uncanny Metabolism') as Extract<BattleEvent, { type: 'healed' }> | undefined)?.amount;
+    };
+    expect(go(54)).toBe(diceMaxOf(m0.metabolism?.die as string) + m0.level);
+    expect(go(53)).toBeLessThan(diceMaxOf(m0.metabolism?.die as string) + m0.level);
+  });
+  it('paket iyileştirme zarı (p11): sürüm 54\'te Beacon altında en yüksek, değiştirme ilkeli harcanmaz; 53\'te paket yolu', () => {
+    const actor = mk('P', { paket: { ozellikler: [{ key: 'x/sifa', ad: 'sifa', ilkeller: [{ tur: 'zarDegistir', kapsam: 'iyilestirme', mod: 'maks' }] }] } as never });
+    const target = mk('T', { effects: [beacon] });
+    const st = (k: number) => ({ kuralSurumu: k, round: 1, turnIndex: 0, order: ['P'], combatants: { P: actor, T: target } }) as unknown as BattleState;
+    const out54: BattleEvent[] = [];
+    expect(paketHealRoll(st(54), actor, '2d8', () => 0.01, out54, target)).toEqual({ total: 16, rolls: [8, 8] });
+    expect(out54).toEqual([]);
+    const r53 = paketHealRoll(st(53), actor, '2d8', () => 0.01, [], target);
+    expect(r53?.changed).toBe('sifa');
+    // Beacon yoksa sürüm 54'te de paket yolu.
+    expect(paketHealRoll(st(54), actor, '2d8', () => 0.01, [], mk('T'))?.changed).toBe('sifa');
   });
 });

@@ -9,7 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
-import { healRoll } from './healMax';
+import { BEACON_K70_VERSION, beaconMax, healRoll } from './healMax';
 import { afterOpportunityEvents } from './turnHooks';
 import { mechanicsAt } from './spellVersion';
 import { auraCoreOn, auraEnterEvents } from './auraCore';
@@ -407,7 +407,8 @@ export function weaponAttackEvents(
     if (hit && bonus.extras.some((x) => x.label === 'Lifedrinker') && globalRule(state, 'lifedrinkerFull') && (a1.hitDice?.left ?? 0) > 0) {
       const hd = a1.hitDice as NonNullable<Combatant['hitDice']>;
       if (a1.maxHp - a1.hp >= Math.floor(hd.die / 2) + 1 + a1.modifiers.con) {
-        const roll = rollDice(`1d${hd.die}`, rollTag(rng, { kind: 'heal', by: actor.id })).total;
+        // Kuyruk K70 (sürüm 54): Beacon of Hope altında en yüksek değer (tek kural `healMax.ts`).
+        const roll = beaconMax(state, a1, `1d${hd.die}`, BEACON_K70_VERSION) ?? rollDice(`1d${hd.die}`, rollTag(rng, { kind: 'heal', by: actor.id })).total;
         const amount = Math.max(0, roll + a1.modifiers.con);
         extra.push({ type: 'hit_die_spent', actorId: actor.id, left: hd.left - 1 },
           { type: 'healed', actorId: actor.id, targetId: actor.id, label: 'Lifedrinker (HP zarı)', amount, targetHpAfter: Math.min(a1.maxHp, a1.hp + amount) });

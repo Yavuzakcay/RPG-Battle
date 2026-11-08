@@ -35,6 +35,7 @@ import { freeCastingEvents } from './boons';
 import { overchannelAfter, overchannelProblem, overchannelRng } from './apex';
 import { paketSpellBonus, paketSpellTransform } from './paket/core';
 import { paketHealRoll } from './paket/p11';
+import { beaconMax } from './healMax';
 import { fireStored, paketCast } from './paket/p11cast';
 import { hexLabel, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
@@ -520,18 +521,14 @@ function executeCastWith(state: BattleState, actor: Combatant, cmd: CastCommand,
 const repeatSlot = (actor: Combatant, spell: Spell) =>
   ({ ok: true as const, slotLevel: spell.level === 0 ? null : actor.concentration?.slotLevel ?? spell.level, events: [] as BattleEvent[] });
 
-/** Görev B1: zar ifadesinin en yüksek değeri (Beacon of Hope: iyileştirme en yüksek). */
-function diceMax(expr: string): number {
-  const d = parseDice(expr);
-  return d.count * d.sides + d.bonus;
-}
-
 /** İyileştirme zarı: hedefte Beacon of Hope varsa zar atılmaz, en yüksek değer (Görev B1). */
 function healAmount(expr: string, actor: Combatant, target: Combatant, rng: Rng, state?: BattleState, info?: { events: BattleEvent[]; rolls?: number[]; changed?: string }): number {
-  if (target.effects?.some((e) => e.maxHeal)) return diceMax(expr);
+  // Görev B1: Beacon of Hope (her sürümde; tek yardımcı `healMax.ts`).
+  const beacon = beaconMax(state, target, expr, 0);
+  if (beacon !== null) return beacon;
   // Kuyruk P11: paket iyileştirme zarı (`zarDegistir.kapsam: iyilestirme`; Supreme Healing'den önce değil: en yüksek değer zaten en iyisi).
   if (info && !/supreme-healing/.test((actor.traits ?? []).join(' '))) {
-    const r = paketHealRoll(state, actor, expr, rng, info.events);
+    const r = paketHealRoll(state, actor, expr, rng, info.events, target);
     if (r) { info.rolls = r.rolls; if (r.changed) info.changed = r.changed; return r.total; }
   }
   // Görev CLERIC: Supreme Healing (en yüksek değer) `healDice`'ta.

@@ -25,6 +25,7 @@ import { stunningProblem } from './stunning';
 export { stunningProblem } from './stunning';
 import { applyEvents } from './reduce';
 import { resourceLeft, type BattleEvent, type BattleState, type Combatant } from './types';
+import { BEACON_K70_VERSION, beaconMax } from './healMax';
 
 type Technique = 'addle' | 'push' | 'topple';
 
@@ -149,12 +150,13 @@ export function executeStunningStrike(state: BattleState, actor: Combatant, targ
 }
 
 /** Uncanny Metabolism (inisiyatif atılınca): kaynak eksikse ya da yaralıysa doldurur ve iyileştirir. */
-export function metabolismEvents(c: Combatant, rng: Rng): BattleEvent[] {
+export function metabolismEvents(c: Combatant, rng: Rng, state?: Pick<BattleState, 'kuralSurumu'>): BattleEvent[] {
   const m = c.metabolism;
   if (!m || resourceLeft(c, m.resource) <= 0 || c.hp <= 0) return [];
   const max = m.max;
   if (resourceLeft(c, m.refill) >= max && c.hp >= c.maxHp) return [];
-  const roll = rollDice(m.die, rollTag(rng, { kind: 'heal', by: c.id }));
+  // Kuyruk K70 (sürüm 54): Beacon of Hope altında en yüksek değer (tek kural `healMax.ts`; savaş durumu yalnız sürüm için).
+  const roll = { total: beaconMax(state, c, m.die, BEACON_K70_VERSION) ?? rollDice(m.die, rollTag(rng, { kind: 'heal', by: c.id })).total };
   const hpAfter = applyHealing(c.hp, c.maxHp, roll.total + c.level);
   return [
     { type: 'feature_used', actorId: c.id, feature: m.resource, remaining: resourceLeft(c, m.resource) - 1 },

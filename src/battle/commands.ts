@@ -375,7 +375,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     // Görev BARD: Superior Inspiration (inisiyatifte Bardic Inspiration en az 2).
     const meta = Object.values(begun.state.combatants).flatMap((c) => ((m) => [...m, ...superiorInspirationEvents(c), ...evergreenEvents(c),
       // Kuyruk 19: Persistent Rage, Perfect Focus (savaş başı).
-      ...capstoneStartEvents(c, m.length > 0)])(metabolismEvents(c, rng)));
+      ...capstoneStartEvents(c, m.length > 0)])(metabolismEvents(c, rng, begun.state)));
     // Görev S4: grup alanındaki düşmanlar grubun üyesi olur (uyuyan/habersiz).
     const formed = formGroupsEvent(begun.state);
     if (formed) meta.push(formed);

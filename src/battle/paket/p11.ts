@@ -7,6 +7,7 @@
  */
 import { rollDice, rollDie, rollTag, type Rng } from '../../rules/dice';
 import { ruleVersion } from '../ruleVersion';
+import { BEACON_K70_VERSION, beaconMax } from '../healMax';
 import { turnKey } from '../economy';
 import type { BattleEvent, BattleState, Combatant } from '../types';
 import { canPay, costOf, flatNum, formul, kosulOk, usedKey, usedThisTurn, val, type Ilkel, type PaketOzellik } from './core';
@@ -40,8 +41,11 @@ function changeRolls(mode: string, sides: number, rolls: number[], esik: number,
  * Büyü iyileştirmesinin zarı (sürüm 42+, paket `zarDegistir.kapsam: iyilestirme`; yoksa null: çağıran eski yolu kullanır).
  * `out` kaynak/tur olaylarını toplar.
  */
-export function paketHealRoll(state: BattleState | undefined, actor: Combatant, expr: string, rng: Rng, out: BattleEvent[]): { total: number; rolls: number[]; changed?: string } | null {
+export function paketHealRoll(state: BattleState | undefined, actor: Combatant, expr: string, rng: Rng, out: BattleEvent[], target?: Combatant): { total: number; rolls: number[]; changed?: string } | null {
   if (!state || !p11On(state)) return null;
+  // Kuyruk K70 (sürüm 54): Beacon of Hope bu yolda da (tek kural `healMax.ts`): zar atılmaz, değişiklik ilkeli harcanmaz.
+  const beacon = beaconMax(state, target, expr, BEACON_K70_VERSION);
+  if (beacon !== null) { const sides = Number(/d(\d+)/.exec(expr)?.[1] ?? 0); const n = Number(/(\d+)d/.exec(expr)?.[1] ?? 0); return { total: beacon, rolls: Array.from({ length: n }, () => sides) }; }
   const refs = prims(actor, 'zarDegistir').filter((x) => val<string>(x.p, 'kapsam') === 'iyilestirme');
   if (!refs.length) return null;
   const d = rollDice(expr, rollTag(rng, { kind: 'heal', by: actor.id }));

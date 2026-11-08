@@ -8,6 +8,7 @@
 import { gap } from '../body';
 import { damageProfile as profileOf, fail, finish, type CommandResult } from '../common';
 import { saveDice } from '../effectDice';
+import { BEACON_K70_VERSION, beaconMax } from '../healMax';
 import { saveMode } from '../durations';
 import { damageEffects } from '../damage-effects';
 import { saveDamage } from '../classTraits';
@@ -177,7 +178,8 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
         if (p.tur === 'gecicCan') { const n = amount(p.miktar, a, rng); if (n > 0) out.push({ type: 'temp_hp', targetId: t.id, amount: n, label: name }); }
         if (p.tur === 'iyilestirme') {
           if (t.life === 'dead') continue;
-          const n = Math.max(0, Math.min(amount(p.miktar, a, rng), t.maxHp - t.hp));
+          // Kuyruk K70 (sürüm 54): Beacon of Hope altındaki hedefe en yüksek değer (tek kural `healMax.ts`).
+          const n = Math.max(0, Math.min(beaconMax(state, t, formul(p.miktar, a), BEACON_K70_VERSION) ?? amount(p.miktar, a, rng), t.maxHp - t.hp));
           out.push({ type: 'healed', actorId: a.id, targetId: t.id, label: name, amount: n, targetHpAfter: t.hp + n });
           for (const d of (p.durumKaldir as string[] | undefined) ?? []) if (t.conditions.includes(d)) out.push({ type: 'condition_ended', targetId: t.id, condition: d, reason: name });
         }
