@@ -27,6 +27,7 @@ import { dropEvents, heldWeapons } from './heldItems';
 import { askChoice } from '../rules/choice';
 import { hexKey, type Offset } from '../rules/hex';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
+import { autoSucceedsType } from './spellVersion';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 
@@ -219,7 +220,8 @@ export function effectTurnEndEvents(state: BattleState, id: string, rng: Rng): B
       const { ability, dc } = e.repeatSave;
       // Kuyruk A6: Protection from Evil and Good: korunulan türden kaynağın büyüsüne/korkusuna yeni save avantajlı.
       const pfeg = pfegRepeatAdv(current, c.id, e.sourceId, [...(e.grants ?? []), ...(e.charm ? ['Charmed'] : [])]);
-      const r = resolveSave({ extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, ability) }, rollTag(rng, { by: c.id }));
+      // Kuyruk K70 (sürüm 54): türü otomatik başaran (Flesh to Stone: Construct) tur sonu save'ini de geçer.
+      const r = resolveSave({ ...(autoSucceedsType(e.repeatSave.autoTypes, c) ? { autoSuccess: true } : {}), extra: saveDice(c, ability), modifier: c.saves[ability], dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, ability) }, rollTag(rng, { by: c.id }));
       // Kuyruk 19: başarısız save'de yinelenen hasar (Phantasmal Killer).
       const fd = !r.success ? e.repeatSave.failDamage : undefined;
       const d = fd ? rollDice(fd.dice, rollTag(rng, { kind: 'damage', by: e.sourceId })) : null;

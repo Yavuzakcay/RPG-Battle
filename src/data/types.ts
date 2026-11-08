@@ -299,6 +299,8 @@ export interface SpellMechanics {
   k67?: Partial<SpellMechanics>;
   /** Kuyruk K68a (sürüm 52): dikey geometri (Sleet Storm 40 ft silindir, Fog/Stinking Cloud tepe = yarıçap). */
   k68?: Partial<SpellMechanics>;
+  /** Kuyruk K70 (sürüm 54): küçük SRD farkları (Flesh to Stone Construct, Disintegrate duvarı). */
+  k70?: Partial<SpellMechanics>;
   /** Kuyruk K65a: serbest şekil (`src/battle/freeShape.ts`): en çok altıgen, menzil her altıgende, görüş ilk altıgende. */
   /** Kuyruk K65c: serbest duvar yolunun ek kuralları (her altıgen menzilde, ilk altıgen görüşte; Wind Wall'da yok). */
   pathRules?: { rangeAll?: boolean; sightFirst?: boolean };
@@ -332,6 +334,8 @@ export interface SpellMechanics {
   failEffectGate?: string;
   /** Kuyruk 19: save'i otomatik kaçıran yaratık türleri (Blight: plant). */
   autoFailTypes?: string[];
+  /** Kuyruk K70 (sürüm 54): save'i otomatik başaran yaratık türleri, ilk save ve tur sonu save'leri (Flesh to Stone: construct). */
+  autoSuccessTypes?: string[];
   /** Görev B3: Calm Emotions: alandaki dost Humanoid'lere Charmed/Frightened bağışıklığı, düşmanlara (save) duraksama. */
   calm?: boolean;
   /** Kuyruk A6: Calm Emotions'ta dostlar da save yapar; düşmanlar kayıtsızlaşır (`indifferentTo`). */

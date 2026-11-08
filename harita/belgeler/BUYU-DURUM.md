@@ -339,7 +339,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | disintegrate | 6 | spells-69.json | çalışır |  |  | hayır |
 | eyebite | 6 | spells-69.json | çalışır |  |  | hayır |
 | find-the-path | 6 | spells-69.json | savaş dışı |  |  | hayır |
-| flesh-to-stone | 6 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
+| flesh-to-stone | 6 | spells-69.json | çalışır | k70 (sürüm 54) |  | hayır |
 | forbiddance | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | freezing-sphere | 6 | spells-69.json | çalışır |  |  | hayır |
 | globe-of-invulnerability | 6 | spells-69.json | çalışır |  |  | hayır |

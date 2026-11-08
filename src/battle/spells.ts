@@ -60,7 +60,7 @@ import { auraSave, hitExtras, weaponAttackEvents, weaponHexNear } from './featur
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
-import { heldFollow, mechanicsAt } from './spellVersion';
+import { autoSucceedsType, heldFollow, mechanicsAt } from './spellVersion';
 import srdSpells from '../../data/srd/spells.json';
 import { executeZoneCast, movableZoneOf, shiftZoneEvents, silencedAt, zoneHexes } from './zones';
 import { executeFireHex, fireHexSpell } from './ignite';
@@ -141,7 +141,7 @@ function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe:
     ...(fe.command ? { command: fe.command[0] as CommandWord } : {}), ...(fe.commandPersist ? { commandPersist: true } : {}),
     ...(fe.fleeDash ? { fleeDash: true } : {}),
     // Kuyruk 19: tur sonu save'i başarısızsa yinelenen hasar (Phantasmal Killer).
-    ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0, ...(fe.repeatFailDamage ? { failDamage: fe.repeatFailDamage } : {}), ...(fe.repeatTally ? { tally: { need: fe.repeatTally, s: 0, f: 0, ...(fe.tallyFailGrants ? { failGrants: fe.tallyFailGrants } : {}) } } : {}) } } : {}),
+    ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0, ...(mechanicsAt(state, spell).autoSuccessTypes?.length ? { autoTypes: mechanicsAt(state, spell).autoSuccessTypes } : {}), ...(fe.repeatFailDamage ? { failDamage: fe.repeatFailDamage } : {}), ...(fe.repeatTally ? { tally: { need: fe.repeatTally, s: 0, f: 0, ...(fe.tallyFailGrants ? { failGrants: fe.tallyFailGrants } : {}) } } : {}) } } : {}),
     // Görev B4: Faerie Fire (görünmez olamaz, saldırılar avantajlı, ışık).
     ...(fe.revealed ? { revealed: true } : {}), ...(fe.attackedAdv ? { attackedAdv: true } : {}), ...(fe.light !== undefined ? { light: fe.light } : {}), ...(fe.lightDim ? { lightDim: fe.lightDim } : {}),
     // Kuyruk 19: gecikmeli hasar (Vitriolic Sphere), saldırı ve yetenek kontrolünde dezavantaj (Phantasmal Killer).
@@ -552,7 +552,7 @@ function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, 
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
@@ -765,7 +765,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const typeFail = !!m.autoFailTypes?.length && globalRule(state, 'spellsK19') && m.autoFailTypes.includes((target.creatureType ?? '').toLowerCase());
     const autoFail = typeFail || ((ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions));
     const dexCover = ability === 'dex' ? cover : 0;
-    const save = resolveSave({ ...(m.illusion && truesightSees(state, target, actor) ? { autoSuccess: true } : {}), extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
+    // Kuyruk K70 (sürüm 54): türü save'i otomatik başaran (Flesh to Stone: Construct).
+    const typeOk = autoSucceedsType(m.autoSuccessTypes, target);
+    const save = resolveSave({ ...((m.illusion && truesightSees(state, target, actor)) || typeOk ? { autoSuccess: true } : {}), extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
       mode: saveMode(mode, target, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];

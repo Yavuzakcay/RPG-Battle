@@ -25,6 +25,7 @@ export function mechanicsAt(state: Pick<BattleState, 'kuralSurumu'>, spell: Spel
   if (m.k66 && ruleVersion(state) >= 50) m = { ...m, ...m.k66, k66: undefined };
   if (m.k67 && ruleVersion(state) >= 51) m = { ...m, ...m.k67, k67: undefined };
   if (m.k68 && ruleVersion(state) >= 52) m = { ...m, ...m.k68, k68: undefined };
+  if (m.k70 && ruleVersion(state) >= 54) m = { ...m, ...m.k70, k70: undefined };
   return m;
 }
 
@@ -45,4 +46,9 @@ export function heldFollow(state: Pick<BattleState, 'kuralSurumu'>, actor: Comba
   const conc = spells.find((s) => s.name === actor.concentration?.spell);
   if (conc && mechanicsAt(state, conc).repeat) return undefined;
   return { spell: h.spell, slotLevel: h.slotLevel ?? undefined, turn: '' } as NonNullable<Combatant['concentration']>;
+}
+
+/** Kuyruk K70 (sürüm 54; liste yalnız `k70` bloğundan gelir): yaratık türü save'i otomatik başaranlardan mı (Flesh to Stone: Construct). */
+export function autoSucceedsType(types: readonly string[] | undefined, c: Pick<Combatant, 'creatureType'>): boolean {
+  return !!types?.length && types.includes((c.creatureType ?? '').toLowerCase());
 }

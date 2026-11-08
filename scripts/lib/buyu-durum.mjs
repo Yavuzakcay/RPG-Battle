@@ -3,8 +3,8 @@
  * (a4, a6, a7, a8, s1, s2, g6) temel mekaniğin üstüne yazılır; kısmi = yaklaşıklık (`approx`) ya da yalnız Game Master notu
  * (kapsam dışı, savaş dışı, sığmayan ya da Game Master notlu değilse). Saf (betik ve test ortak).
  */
-export const BLOCKS = ['a4', 'a6', 'a7', 'a8', 's1', 's2', 'g6', 'k61', 'k62', 'k63', 'k64', 'k65', 'k66', 'k67', 'k68'];
-const BLOCK_VER = { a4: 32, a6: 35, a7: 36, a8: 37, s1: 40, s2: 41, g6: 43, k61: 44, k62: 46, k63: 47, k64: 48, k65: 49, k66: 50, k67: 51, k68: 52 };
+export const BLOCKS = ['a4', 'a6', 'a7', 'a8', 's1', 's2', 'g6', 'k61', 'k62', 'k63', 'k64', 'k65', 'k66', 'k67', 'k68', 'k70'];
+const BLOCK_VER = { a4: 32, a6: 35, a7: 36, a8: 37, s1: 40, s2: 41, g6: 43, k61: 44, k62: 46, k63: 47, k64: 48, k65: 49, k66: 50, k67: 51, k68: 52, k70: 54 };
 
 export const mergedOf = (s) => {
   const m = s.mechanics ?? {};

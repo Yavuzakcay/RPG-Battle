@@ -373,6 +373,11 @@
      "speedZero": true,
      "icon": "🪨"
     }
+   },
+   "k70": {
+    "autoSuccessTypes": [
+     "construct"
+    ]
    }
   },
   "school": "Transmutation",
