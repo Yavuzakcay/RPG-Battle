@@ -9,6 +9,7 @@ import { spells } from '../data';
 import { mk, P1 } from './fixtures';
 import { execute, replay, startBattle } from './index';
 import { lightLevelAt, litHexes, perceivedLevel } from './maprules';
+import { distance } from '../rules/hex';
 import { passivePerception } from './stealth';
 import { mechanicsAt } from './spellVersion';
 import { danceAddProblem, danceProblem } from './danceLights';
@@ -181,29 +182,38 @@ describe('K67b harita ışıkları', () => {
     }
     return { brighter, dim };
   };
-  it('meşale (Kale gece): sürüm 51 20 ft parlak + 20 ft loş; sürüm 50 eski 10 ft, loş yok', () => {
+  // Kuyruk K67c (kullanıcı kararı): meşale ve mangal 10 ft parlak + 5 ft loş (2 + 1 altıgen; SRD 20 + 20 ft'ten sapma).
+  it('meşale (Kale gece): sürüm 51 10 ft parlak + 5 ft loş; parlak alan sürüm 50 ile aynı, yalnız loş halka eklenir', () => {
     const s51 = onMap('kale', 'gece', 51);
     const s50 = onMap('kale', 'gece', 50);
     const d = diff(s51, s50);
-    expect(d.brighter).toBeGreaterThan(0);
+    expect(d.brighter).toBe(0);
     expect(d.dim).toBeGreaterThan(0);
-    // Meşale (10, 1): sürüm 50'de 2 altıgen, 51'de 4 altıgen parlak.
-    expect(litHexes(s50).has('10,3')).toBe(true);
-    expect(lightLevelAt(s51, { col: 10, row: 5 })).toBe('bright');
+    // Loş halka yalnız parlak alanın bir altıgen dışı: her loş altıgenin bir komşusu parlak; karanlık altıgen kalır.
+    const levels = [...Array(7).keys()].flatMap((row) => [...Array(15).keys()].map((col) => ({ col, row, lv: lightLevelAt(s51, { col, row }) })));
+    expect(levels.some((x) => x.lv === 'dark')).toBe(true);
+    for (const x of levels.filter((y) => y.lv === 'dim')) expect(levels.some((y) => y.lv === 'bright' && distance(y, x) === 1)).toBe(true);
     expect([...litHexes(s50)].every((k) => lightLevelAt(s51, { col: Number(k.split(',')[0]), row: Number(k.split(',')[1]) }) === 'bright')).toBe(true);
   });
-  it('mangal (Buzul Tapınağı gece): sürüm 51 meşale değeri (4 + 4), 50 eski 2 altıgen', () => {
+  it('mangal (Buzul Tapınağı gece): sürüm 51 meşale değeri (2 + 1), parlak alan 50 ile aynı', () => {
     const s51 = onMap('buzul-tapinak', 'gece', 51);
     const s50 = onMap('buzul-tapinak', 'gece', 50);
     const d = diff(s51, s50);
-    expect(d.brighter).toBeGreaterThan(0);
+    expect(d.brighter).toBe(0);
     expect(d.dim).toBeGreaterThan(0);
   });
-  it('Mağara (sürüm 51): meşaleler 20 + 20 ft, yürünebilir altıgenlerin tamamı en az loş (sürüm 50: %40–60)', () => {
+  it('Mağara (sürüm 51): loş halkayla ışıklı pay sürüm 50\'nin %40–60\'ından büyük, karanlık altıgen kalır', () => {
     const s51 = onMap('magara', 'magara', 51);
-    let open = 0; let litN = 0;
-    s51.map?.tiles.forEach((row, r) => [...row].forEach((_, col) => { open++; if (litHexes(s51).has(`${col},${r}`)) litN++; }));
-    expect(litN / open).toBeGreaterThan(0.6);
+    const s50 = onMap('magara', 'magara', 50);
+    let open = 0; let lit51 = 0; let lit50 = 0; let dark51 = 0;
+    s51.map?.tiles.forEach((row, r) => [...row].forEach((_, col) => {
+      open++;
+      if (litHexes(s51).has(`${col},${r}`)) lit51++;
+      if (litHexes(s50).has(`${col},${r}`)) lit50++;
+      if (lightLevelAt(s51, { col, row: r }) === 'dark') dark51++;
+    }));
+    expect(lit51).toBeGreaterThan(lit50);
+    expect(dark51).toBeGreaterThan(0);
   });
   it('mangal söndürülünce (sürüm 51) parlak alan küçülür', () => {
     const s0 = startBattle('m', 'm', [mk('A', { ownerId: 'p1' }), mk('E', { side: 'enemies' })], () => 0.5, { kuralSurumu: 51, map: { id: 'buzul-tapinak', variantId: 'gece' } } as never).state;

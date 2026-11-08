@@ -27,7 +27,8 @@ describe('BUYU-DURUM', () => {
   it('Game Master notlu ve kapsam dışı notluların kararı yazılı', () => {
     const N = (notes as { notlar: Record<string, { uyar: string; neden: string }> }).notlar;
     const need = rows.filter((r) => r.gm !== undefined || r.kapsam).map((r) => r.id);
-    expect(need.length).toBe(28); // Kuyruk K67b: Dancing Lights'ın kapsam dışı notu kalktı (dört ışık + birleşik biçim); K67a: Faerie Fire'ın kapsam dışı notu kalktı (loş ışık uygulandı); Kuyruk G6: Fear ve Beacon kapsam dışından çıktı; Animal Shapes/Enhance Ability savaş dışı; K64a: PfEG (ele geçirme uygulandı)
+    // Kuyruk K67c: sayı veriye bağlı (sürüme bağlanamaz): K67b'de Dancing Lights'ın kapsam dışı notu kalktı (dört ışık + birleşik biçim): 29 → 28.
+    expect(need.length).toBe(28); // Kuyruk K67a: Faerie Fire'ın kapsam dışı notu kalktı (loş ışık uygulandı); Kuyruk G6: Fear ve Beacon kapsam dışından çıktı; Animal Shapes/Enhance Ability savaş dışı; K64a: PfEG (ele geçirme uygulandı)
     for (const id of need) { expect(N[id], id).toBeDefined(); expect(['evet', 'kismen', 'hayir']).toContain(N[id]?.uyar); }
   });
   it('belge güncel', () => {

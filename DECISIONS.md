@@ -2,6 +2,104 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K67c: Harita meşale ışığı kararı (kural sürümü 51, aynı sürüm)
+
+- **Karar (kullanıcı):** bütün haritalarda meşale ve mangal ışığı sürüm 51'de **10 ft parlak (2 altıgen) + 5 ft loş (1 altıgen)**, toplam 3 altıgen. Şehir Meydanı fenerleri (Hooded Lantern 30 + 30 ft) ve büyü ışıkları (Light, Continual Flame, Daylight, Dancing Lights…) değişmedi. Yeni sürüm, olay türü ve kod yok; `SAVE_VERSION` 22; sürüm 50 ve altı birebir.
+- **⚠ SRD'den sapma:** SRD Torch "Bright Light in a 20-foot radius and Dim Light for an additional 20 feet" (4 + 4 altıgen). Haritalar küçük (15×7, 21×11); SRD değeri karanlık haritaları neredeyse tamamen aydınlatıyordu (ölçüm aşağıda). SRD'de mangal yok: meşale değeri.
+- **SRD'ye dönüş yolu:** `scripts/k67b-isik.py` içinde `TORCH = TORCH_K67C` satırını `TORCH = TORCH_SRD` yapıp `python scripts/k67b-isik.py` çalıştırmak (tek değer). Betik idempotent; harita üreticilerinden sonra çalıştırılır.
+- **Etkilenen 21 harita** (değer 4 + 4 → 2 + 1): batak-kamp, buzul-tapinak (mangal), dag-karakol, dag-nobetci, hapishane-dis-halka, hapishane-hucre-platformu, hapishane-iskele, hapishane-mudur-kulesi, kale, orman-heykel-golu, orman-kemik-acikligi, orman-oduncu-kampi, orman-ork-kampi, magara (yeralti-magara), beyaz-sehir-dis-kapi, beyaz-sehir-saray-avlusu, kale-ic-avlu, kale-onu, kasaba-demirci-tapinak, kasaba-han, kasaba-lagim. Not: sürüm 50'de 1 altıgen olan orman-kemik-acikligi 51'de 2 parlak, 3 altıgen olan kasaba-lagim 51'de 2 parlak + 1 loş (ışıklı alan aynı).
+- **Ölçüm 1: ışıksız (karanlık) altıgen yüzdesi** (yürünebilir altıgenler; karanlık ya da gece kuralı açık varyantlar, isteğe bağlı karanlık kuralı açılarak; sürüm 50: `litHexes` dışı, 51: `lightLevelAt` karanlık). Mağara 15×7: %46 → SRD %0 → K67c %22. Mantar Mağarası 31×17: meşalesi yok (kristal zemin), üç durumda %46.
+
+| Harita | Varyant | Boyut | Meşale/mangal | Sürüm 50 | 51 SRD (20 + 20 ft) | 51 K67c (10 + 5 ft) |
+|---|---|---|---|---|---|---|
+| batak-adalar | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| batak-cukur | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| batak-kale | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| batak-kamp | gece | 21×11 | evet | %84 | %44 | %75
+ |
+| beyaz-sehir-dis-kapi | gece | 21×11 | evet | %71 | %0 | %43
+ |
+| beyaz-sehir-saray-avlusu | gece | 21×11 | evet | %62 | %0 | %40
+ |
+| buzul-acik | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| buzul-kamp | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| buzul-kayalik | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| buzul-tapinak | gece | 21×11 | evet | %62 | %0 | %41
+ |
+| col-gemi-enkazi | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| col-kanyon-nehri | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| col-sutun-harabesi | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| col-vaha | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| dag-karakol | gece | 21×11 | evet | %84 | %11 | %70
+ |
+| dag-kayalik | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| dag-kopru | gece | 21×11 | hayır | %100 | %100 | %100
+ |
+| dag-nobetci | gece | 21×11 | evet | %93 | %56 | %87
+ |
+| derinlikler-magara-karakol | varsayilan | 31×17 | hayır | %100 | %100 | %100
+ |
+| **derinlikler-mantar-magarasi** | varsayilan | 31×17 | hayır | %46 | %46 | %46
+ |
+| derinlikler-mezar-labirenti | varsayilan | 31×17 | hayır | %100 | %100 | %100
+ |
+| dungeon | mesale | 15×7 | hayır | %100 | %100 | %100
+ |
+| hapishane-dis-halka | los | 21×11 | evet | %33 | %0 | %18
+ |
+| hapishane-hucre-platformu | los | 21×11 | evet | %30 | %0 | %14
+ |
+| hapishane-iskele | los | 21×11 | evet | %74 | %12 | %62
+ |
+| hapishane-mudur-kulesi | los | 21×11 | evet | %65 | %0 | %43
+ |
+| kale | gece | 15×7 | evet | %42 | %0 | %30
+ |
+| kale-ic-avlu | gece | 21×11 | evet | %63 | %0 | %37
+ |
+| kale-onu | gece | 21×11 | evet | %84 | %15 | %68
+ |
+| kasaba-demirci-tapinak | gece | 21×11 | evet | %75 | %0 | %55
+ |
+| kasaba-han | gece | 21×11 | evet | %61 | %2 | %36
+ |
+| kasaba-lagim | karanlik | 21×11 | evet | %79 | %20 | %79
+ |
+| **magara** | magara | 15×7 | evet | %46 | %0 | %22
+ |
+| orman | gece | 15×7 | hayır | %85 | %85 | %85
+ |
+| orman-heykel-golu | gece | 31×17 | evet | %91 | %39 | %83
+ |
+| orman-heykel-magarasi | karanlik | 21×11 | hayır | %21 | %21 | %21
+ |
+| orman-kemik-acikligi | gece | 21×11 | evet | %97 | %53 | %84
+ |
+| orman-oduncu-kampi | gece | 31×17 | evet | %85 | %9 | %68
+ |
+| orman-ork-kampi | gece | 21×11 | evet | %57 | %0 | %38
+ |
+| sehir-meydani | gece | 15×7 | evet | %0 | %0 | %0
+ |
+
+- **Ölçüm 2: gizlenme** (Hide yapılabilen altıgen: yer kuralı ışıktan bağımsız, sayı üç durumda aynı; ışık seviyesine göre dağılım; gece haritasında ışıksız altıgende Gizlen avantajlı):
+  - Mağara 15×7 (karanlık kuralı; gece avantajı yok): 31 gizlenme yeri. Sürüm 50: 15 aydınlık / 16 ışıksız. SRD: 29 parlak / 2 loş / 0 karanlık. K67c: 15 parlak / 8 loş (gözcü Algısı −5) / 8 karanlık.
+  - Kale gece 15×7: 62 gizlenme yeri. Sürüm 50: 31 aydınlık / 31 ışıksız (31'inde avantaj). SRD: 45 parlak / 17 loş / 0 karanlık (avantaj 0). K67c: 31 parlak / 7 loş / 24 karanlık (avantaj 24).
+  - Mantar Mağarası 31×17: 9 gizlenme yeri, üç durumda 9'u da karanlık (meşale yok).
+- **Testler:** K67b'de sürüm 50'ye sabitlenen ve değiştirilen beş test özgün hâline döndürüldü ve çalıştırıldı. `b5.test.ts` (Darkvision Mağara'da) ve `wilds.test.ts` (Buzul mangalı) özgün hâlleriyle geçti. Hâlâ bozulanlar yalnız sürüm 50'ye sabitlendi, nedeni testin üstünde: `maprules.test.ts` Mağara %40–60 (51'de loş halkayla %78 ışıklı), `b4.test.ts` Dancing Lights (51'de dört loş ışık; Mağara'da çevresi 2 altıgen ışıksız yer kalmaz) ve Starry Wisp (51'de 10 ft loş). `buyuDurum.test.ts` sayı veriye bağlı, sürüme bağlanamaz: 29 → 28 (Dancing Lights'ın kapsam dışı notu K67b'de kalktı). `k67b.test.ts` harita ışığı karşılıkları yeni değere göre: parlak alan 50 ile aynı, yalnız loş halka; Mağara'da karanlık altıgen kalır.
+- **Süre (K67b sahnesi, Mantar Mağarası 31×17):** sürüm 51 ışıksız / iki ışık 2,1 / 1,7 ms (K67b 1,7 / 1,8); ışık büyücüsü kural açık / kapalı 3,93 / 3,85 ms. Mantar Mağarası'nda meşale yok; fark gürültü.
+
 ## 2026-11-08 — Kuyruk K67b: Loş ışık ikinci parça (kural sürümü 51, aynı sürüm)
 
 - **Sürüm:** `wip/k67` üzerinde (K67a abd127c). Yeni sürüm yok: yeni yollar sürüm 51 kapısında; 50 ve altı birebir. Yeni olay türü yok (Dancing Lights `zone_created` / `zone_moved` / `zone_ended`), `SAVE_VERSION` 22. Komuta isteğe bağlı alan: `spell_followup.targetHexes` (ışıkları ayrı taşıma). Görev 0 tabanı: 330 dosya, 3748 test yeşil.

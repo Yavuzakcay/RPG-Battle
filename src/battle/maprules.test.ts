@@ -268,8 +268,9 @@ describe('su, buz ve tuzak', () => {
 });
 
 describe('karanlık', () => {
+  // Kuyruk K67c: sürüm 50'ye sabit: sürüm 51'de meşalenin 5 ft loş halkası da görülebilir ışık (`litHexes` parlak + loş),
+  // Mağara'nın %78'i ışıklı olur (k67b.test.ts sürüm 51 karşılığı).
   it('mağara: meşale yarıçapı 2, kristaller loş (1); yürünebilir altıgenlerin %40–60\'ı aydınlık', () => {
-    // Kuyruk K67b: harita tasarımı sürüm 50'de (meşale 2 altıgen). Sürüm 51'de SRD meşalesi 20 + 20 ft: k67b.test.ts.
     const { state } = startBattle('m', 'd-z-zemin', [A(), B()], scripted([20, 10], [20, 9]), { map: { id: 'magara' }, kuralSurumu: 50 });
     const lit = litHexes(state);
     let open = 0;

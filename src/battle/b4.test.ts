@@ -113,9 +113,9 @@ describe('ışık ve karanlık (karanlık haritası)', () => {
     expect(litHexes(r.state).has(key(o(9, 3)))).toBe(true);
     r.replays();
   });
+  // Kuyruk K67c: sürüm 50'ye sabit: sürüm 51'de Dancing Lights dört ayrı loş ışık (tek nokta + 2 altıgen aydınlık değil) ve
+  // Mağara meşalelerinin loş halkası çevresi 2 altıgen ışıksız yer bırakmaz (k67b.test.ts).
   it('Dancing Lights: ışık noktası çevresiyle aydınlık; konsantrasyonla biter', () => {
-    // Kuyruk K67b: sürüm 50 (tek nokta, 2 altıgen aydınlık). Sürüm 51'de dört ışık / birleşik biçim ve haritanın meşaleleri
-    // 20 + 20 ft (Mağara'da ışıksız yer kalmaz): k67b.test.ts.
     const r = arena({ spellNames: ['Dancing Lights', 'Darkness'] }, {}, {}, o(13, 0), 'magara', 50);
     const spot = darkSpot(r.state, [o(3, 3), o(2, 3)]);
     r.cast({ spellName: 'Dancing Lights', targetHex: spot });
@@ -145,14 +145,13 @@ describe('görünmezlik', () => {
     r.round();
     expect(attackMode(r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: bow }))).toBe('normal');
   });
+  // Kuyruk K67c: sürüm 50'ye sabit: sürüm 51'de ışık SRD'deki 10 ft loş (`lightDim: 2`, parlak yok; k67b.test.ts).
   it('Starry Wisp: isabette radiant; hedef işaretli (görünmez olamaz, ışık)', () => {
-    const r = arena({ spellNames: ['Starry Wisp'] }, {}, {}, o(6, 3));
+    const r = arena({ spellNames: ['Starry Wisp'] }, {}, {}, o(6, 3), 'col', 50);
     const evs = r.cast({ spellName: 'Starry Wisp', targetId: 'B' }, high);
     const hit = evs.find((e) => e.type === 'attack_resolved');
     expect(hit?.type === 'attack_resolved' && hit.hit && hit.damageType === 'radiant').toBe(true);
-    // Kuyruk K67b (güncel sürüm 51): SRD'deki 10 ft loş ışık (`lightDim: 2`, parlak yok); sürüm 50'de 2 altıgen aydınlık.
-    expect(r.fx('B', 'spells:starry-wisp')).toMatchObject({ revealed: true, lightDim: 2 });
-    expect(r.fx('B', 'spells:starry-wisp')?.light).toBeUndefined();
+    expect(r.fx('B', 'spells:starry-wisp')).toMatchObject({ revealed: true, light: 2 });
     r.replays();
   });
 });

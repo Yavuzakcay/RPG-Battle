@@ -109,8 +109,7 @@ describe('Buzul', () => {
     replays(amb, r2);
   });
   it('mangal ışığı: söndürülen mangalın çevresi karanlığa döner; çatlak duvar yıkılınca geçit açılır', () => {
-    // Kuyruk K67b: sürüm 50 (mangal 2 altıgen; komşu mangalların 51'deki 20 + 20 ft ışığı 8,5'e de ulaşır: k67b.test.ts).
-    const s0 = battle('buzul-tapinak', { A: o(8, 4), B: o(2, 9) }, { variant: 'gece', v: 50 });
+    const s0 = battle('buzul-tapinak', { A: o(8, 4), B: o(2, 9) }, { variant: 'gece' });
     expect(litHexes(s0).has('8,5')).toBe(true);
     const r = run(s0, { type: 'object_use', actorId: 'A', objectId: 'mangal4', action: 'douse' });
     expect(litHexes(r.state).has('8,5')).toBe(false);

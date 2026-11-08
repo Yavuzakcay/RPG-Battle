@@ -1,8 +1,10 @@
-"""Kuyruk K67b: harita ışıklarının SRD 5.2.1 değerleri (yalnız kural sürümü 51+ okunur; 50 ve öncesi `lightRadiusHexes`).
+"""Kuyruk K67b/K67c: harita ışıklarının parlak ve loş yarıçapı (yalnız kural sürümü 51+ okunur; 50 ve öncesi
+`lightRadiusHexes`).
 
 Karanlık/gece kuralında ışık listesi olan her harita kuralına `brightRadiusHexes` ve `dimRadiusHexes`, mangal kuralına
-(`brazierLight`) `brightRadius` ve `dimRadius` yazar. Değerler SRD Torch ("Bright Light in a 20-foot radius and Dim Light
-for an additional 20 feet": 4 + 4 altıgen); fener haritası (sehir-meydani) Hooded Lantern 30 + 30 ft (6 + 6). SRD'de mangal
+(`brazierLight`) `brightRadius` ve `dimRadius` yazar. Meşale ve mangal: `TORCH` (K67c kullanıcı kararı: 10 ft parlak +
+5 ft loş = 2 + 1 altıgen; SRD Torch'tan bilinçli sapma). SRD değerine dönmek için `TORCH = TORCH_SRD` (tek değer) ve
+betiği yeniden çalıştır. Fener haritası (sehir-meydani) SRD Hooded Lantern 30 + 30 ft (6 + 6), değişmez. SRD'de mangal
 yok: meşale değeri. Harita üreticilerinden (k27b, k28b, k34a, k35, col, orman, derinlikler…) SONRA çalıştırılır;
 idempotent (var olan alanları günceller). Metin biçimi korunur (yalnız satır eklenir/değişir).
 
@@ -13,7 +15,11 @@ import json
 import re
 import sys
 
-TORCH = (4, 4)
+# SRD Torch: "Bright Light in a 20-foot radius and Dim Light for an additional 20 feet" (4 + 4 altıgen).
+TORCH_SRD = (4, 4)
+# Kuyruk K67c (kullanıcı kararı): meşale ve mangal 10 ft parlak + 5 ft loş (2 + 1 altıgen; toplam 3). ⚠ SRD'den sapma.
+TORCH_K67C = (2, 1)
+TORCH = TORCH_K67C
 LANTERN = (6, 6)
 # Işık listesi fener olan haritalar (harita notu: "fenerlerin 4 altıgeni").
 LANTERN_MAPS = {'sehir-meydani'}

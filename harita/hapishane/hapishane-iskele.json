@@ -116,8 +116,8 @@
      "id": "darkness",
      "unlitSightHexes": 4,
      "darkvisionHexes": 12,
-     "brightRadiusHexes": 4,
-     "dimRadiusHexes": 4,
+     "brightRadiusHexes": 2,
+     "dimRadiusHexes": 1,
      "lightRadiusHexes": 2,
      "lights": [
       [
