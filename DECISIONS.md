@@ -2,6 +2,29 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K71-PLAN: yükseklik modeli planı (yalnız plan; kod, veri, test değişmedi)
+
+- **Belge:** `harita/belgeler/K71-PLAN.md`. Taban `wip/y1` 84969e8 (kural sürümü 55): tam test 340 dosya / 3981 test; ana parça 374 742 bayt; YZ ≈ 1,65 ms.
+- **Kapsam:**
+  - 3B engel ve uçanın duvar aşması (K68 karar 10 geri);
+  - herkes için tırmanma (K68 karar 9 geri);
+  - yükseklik katmanı ile irtifa birleşmesi;
+  - altıgen başına tavan;
+  - çok katlı bina için yalnız veri modeli notu.
+- **Öneri özeti:**
+  - tek dikey eksen (mutlak = zemin + göreli irtifa; `altitudeFt` ve olay biçimi değişmez);
+  - engel tepesi harf tablosu + seyrek ezme (`data/dikey.json`, varyant `dikey`);
+  - altıgen tavanı seyrek ezme/bölge;
+  - SRD Climbing ×2, zarsız;
+  - Long Jump alçak engel dörtte bir;
+  - yüksek zemin ev kuralı mutlak farkla;
+  - görüş K68c çekirdeğinde zemin + engel tepesi, hızlı yol genişler.
+- **İş bölümü:** K71a (veri modeli, görüş, uçanın geçişi, altıgen tavanı), K71b (herkes tırmanma, duvar aşma, Long Jump engeli), K71c (katman + irtifa birleşmesi); sürüm 56 önerisi (karar K13).
+- **Kararlar:** 16 madde (K1–K16), kullanıcı seçecek. ⚠ SRD sapmaları planda işaretli.
+- **Kaynak notu:** görevde anılan `not-ileri-fikirler.md` depoda ve hiçbir dalda yok. Açık dünya bağı mevcut belgelerden (K45–K49 görevleri, yolculuk/yerleşim tasarımı, SEFER-TASARIMI "Harita 2.0").
+  - **Şart sayılanlar:** 3B engel/uçuş ve altıgen tavanı.
+  - **Ertelenebilir:** katman birleşmesi, herkes tırmanma, çok katlı bina.
+
 ## 2026-11-08 — Kuyruk Y1: YZ kuyruğu + K70 artıkları (kural sürümü 55)
 
 - **Sürüm:** `wip/y1` (60536ea üstüne). Kural sürümü 54 → 55; yeni davranış yalnız 55+ (büyü verisinde `y1` bloğu; YZ üreticileri `ruleVersion >= 55`). 54 ve altı değişmez (her madde 54 testiyle sabit; `src/sim/y1Regresyon.test.ts` 4 senaryo × 30 tohum 54 = 55 birebir). `SAVE_VERSION` 22 (yalnız `effect_ended.reason: 'destroyed'` değeri eklendi). Denge ayarı yok; yeni dikey ya da büyük yaratık taktiği yok (K73).
