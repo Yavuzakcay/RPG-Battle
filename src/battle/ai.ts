@@ -43,7 +43,7 @@ import { jumpTargets, lavaOver } from './jumprisk';
 import { sleepingDragon, turnKey, wakeRule, wakesDragon } from './dragon';
 import { currentActorId, isTargetable } from './common';
 import { canSee, hasDarkness, isRiskyHex, perceivedLevel, ruleOf, stuckInBog } from './maprules';
-import { DANCE_LINK_HEXES } from './danceLights';
+import { DANCE_LINK_HEXES, isCombined } from './danceLights';
 import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
 import { heightAt, heightCombatRule } from './heights';
@@ -576,6 +576,47 @@ function lightCommand(state: BattleState, actor: Combatant, allies: Combatant[])
       const r = tryCmd(state, actor, cmd);
       if (r.ok && blindPairs(r.state, ids, actor.side) < before) return cmd;
     }
+  }
+  return null;
+}
+
+/**
+ * Kuyruk Y1 (sürüm 55, kural `y1:isik-tasi`): Dancing Lights yerleştirildikten sonra taşıma. Büyücünün Dancing Lights
+ * alanı varken görmeyen dost–düşman çifti kaldıysa ışıklar (`spell_followup` + `targetHexes`, bonus eylem) yeniden
+ * düşmanların üstüne: `lightCommand`'ın yerleşim kuralı; birleşik biçimde tek altıgen. Komut görmeyen çiftleri azaltmalı.
+ * Değer `kuralOnceligi['y1:isik-tasi']`.
+ */
+function lightMoveCommand(state: BattleState, actor: Combatant, allies: Combatant[]): Command | null {
+  if (!state.map || !actor.pos || ruleVersion(state) < 55 || !hasDarkness(state) || actor.economy.bonus) return null;
+  const z = (state.map.zones ?? []).find((x) => x.casterId === actor.id && x.spellId === 'dancing-lights');
+  const s = z ? spellOf(z.name.replace(/ \(birleşik\)$/, '')) ?? spells.find((x) => x.id === 'dancing-lights') : undefined;
+  if (!z || !s) return null;
+  const ids = allies.map((a) => a.id);
+  const before = blindPairs(state, ids, actor.side);
+  if (!before) return null;
+  const me = actor.pos;
+  const m = mechanicsAt(state, s);
+  const inRange = Object.values(state.combatants).filter((c) => c.side !== actor.side && !c.civilian && c.pos && c.hp > 0 && !c.offFloor)
+    .sort((a, b) => distance(me, a.pos as Offset) - distance(me, b.pos as Offset))
+    .filter((f) => distance(me, f.pos as Offset) * 5 <= s.rangeFt).map((f) => f.pos as Offset);
+  const first = inRange[0];
+  if (!first) return null;
+  // Ayrı ayrı: ışık sayısı aynı kalır (motor bunu ister); bağlı düşmanlar, eksik kalırsa ilk düşmanın çevresi.
+  const count = z.hexes.length;
+  const pts: Offset[] = [first];
+  const key = (q: Offset) => `${q.col},${q.row}`;
+  if (!isCombined(z)) {
+    for (const p of inRange.slice(1)) if (pts.length < Math.min(count, m.lightPoints ?? 4) && pts.some((q) => distance(q, p) <= DANCE_LINK_HEXES) && !pts.some((q) => key(q) === key(p))) pts.push(p);
+    for (const p of neighbors(first, { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length })) if (pts.length < count && !pts.some((q) => key(q) === key(p))) pts.push(p);
+  }
+  const tries: Command[] = [
+    ...(!isCombined(z) && pts.length === count ? [{ type: 'spell_followup', actorId: actor.id, targetId: actor.id, targetHex: first, targetHexes: pts } as Command] : []),
+    // Hepsi birlikte ötelenir: ilk ışık ilk düşmanın üstüne.
+    { type: 'spell_followup', actorId: actor.id, targetId: actor.id, targetHex: first } as Command,
+  ];
+  for (const cmd of tries) {
+    const r = tryCmd(state, actor, cmd);
+    if (r.ok && blindPairs(r.state, ids, actor.side) < before) return cmd;
   }
   return null;
 }
@@ -2584,6 +2625,7 @@ registerAction({ id: 'eski:iyilestir', rule: true, kind: 'heal', note: 'ölmekte
 registerAction({ id: 'eski:yenilenme', rule: true, kind: 'damage', note: 'yerdeki yenilenen düşmana ateş/asit', gen: (s, a) => (partyBranch(a) ? [finishRegen(s, a)] : []) });
 registerAction({ id: 'eski:alan', rule: true, kind: 'damage', note: 'alan hasar büyüsü (2+ düşman, dost yok)', gen: (s, a, h) => (partyBranch(a) || (a.monsterId && a.spellNames.length && !a.summon) ? [areaSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word Kill/Stun, Mass Heal', gen: (s, a, h) => (partyBranch(a) ? [powerWordCommand(s, a, h.foes)] : []) });
+registerAction({ id: 'y1:isik-tasi', rule: true, kind: 'support', note: 'Dancing Lights ışıklarını görmeyen dostun düşmanlarının üstüne taşı (bonus eylem, sürüm 55)', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [lightMoveCommand(s, a, h.allies)] : []) });
 registerAction({ id: 'k67:isik', rule: true, kind: 'support', note: 'karanlıkta görmeyen dost varken ışık büyüsü (bir kez)', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [lightCommand(s, a, h.allies)] : []) });
 registerAction({ id: 'y1:duvar', rule: true, kind: 'move', note: 'yolu kesen düşman duvarı: panele saldırı ya da Wall of Force\'a Disintegrate (sürüm 55)', gen: (s, a, h) => wallBreakCands(s, a, h) });
 registerAction({ id: 'k66:yarik', rule: true, kind: 'control', note: 'Earthquake yarığı: dostsuz, düşman kesen, yol kesmeyen hat', gen: (s, a, h) => [fissureCommand(s, a, h.foes)] });

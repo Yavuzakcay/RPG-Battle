@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { spells } from '../data';
-import { execute } from './index';
+import { execute, startBattle } from './index';
 import { GM, mk, sword } from './fixtures';
 import { chooseCommand } from './ai';
 import { caster, field, run } from './k19spells.test';
@@ -102,5 +102,42 @@ describe('Y1 G2a: yolu kesen düşman duvarı (panel saldırısı, Wall of Force
     expect(cmd).toMatchObject({ type: 'cast_spell', spellName: 'Disintegrate' });
     expect((cmd as { targetId?: string }).targetId).toBeUndefined();
     expect(chooseCommand(walled(54, 'Wall of Force', sorc, { col: 2, row: 3 }))).not.toMatchObject({ type: 'cast_spell', spellName: 'Disintegrate' });
+  });
+});
+
+describe('Y1 G2b: Dancing Lights taşıma', () => {
+  const H = (col: number, row = 3) => ({ col, row });
+  function dark(parts: Combatant[], pos: Record<string, { col: number; row: number }>, ver: number): BattleState {
+    const s = startBattle('y1', 'y1', parts, () => 0.5, { kuralSurumu: ver, map: { id: 'dungeon', variantId: 'mesale' } } as never).state;
+    const combatants = { ...s.combatants };
+    for (const [id, p] of Object.entries(pos)) combatants[id] = { ...(combatants[id] as Combatant), pos: p };
+    return { ...s, status: 'active', order: parts.map((c) => c.id), turnIndex: 0, combatants,
+      map: { ...(s.map as NonNullable<BattleState['map']>), options: ['darkness'], tiles: Array.from({ length: 7 }, () => '.'.repeat(15)) } };
+  }
+  const caster = () => mk('A', { ownerId: 'p1', spellNames: ['Dancing Lights'], spellSlots: ALL, spellSaveDc: 13, spellAttack: 5, spellMod: 3, casterTag: 'wizard', hp: 60, maxHp: 60 });
+  /** A ışıkları E ve F'nin üstüne koyar; sonra düşmanlar karanlığa kaçar, A'nın yeni turu. */
+  const scene = (ver: number) => {
+    const s0 = dark([caster(), mk('E', { side: 'enemies' }), mk('F', { side: 'enemies' })], { A: H(1), E: H(9), F: H(11) }, ver);
+    const r = run(s0, cast('A', 'Dancing Lights', { targetHex: H(9), targetHexes: [H(9), H(11)] }));
+    const cs = { ...r.state.combatants };
+    cs.E = { ...(cs.E as Combatant), pos: H(9, 0) };
+    cs.F = { ...(cs.F as Combatant), pos: H(10, 6) };
+    cs.A = { ...(cs.A as Combatant), economy: (s0.combatants.A as Combatant).economy };
+    return { ...r.state, combatants: cs } as BattleState;
+  };
+  it('sürüm 55: düşmanlar ışıktan çıkınca ışıkları bonus eylemle onların üstüne taşır', () => {
+    const s = scene(55);
+    const cmd = chooseCommand(s);
+    expect(cmd).toMatchObject({ type: 'spell_followup', actorId: 'A' });
+    const r = run(s, cmd);
+    const z = r.state.map?.zones?.find((x) => x.spellId === 'dancing-lights');
+    expect(z?.hexes).toEqual(expect.arrayContaining([H(9, 0)]));
+  });
+  it('olumsuz: düşmanlar hâlâ ışıktaysa taşımaz; sürüm 54\'te kural yok', () => {
+    const s0 = dark([caster(), mk('E', { side: 'enemies' }), mk('F', { side: 'enemies' })], { A: H(1), E: H(9), F: H(11) }, 55);
+    const r = run(s0, cast('A', 'Dancing Lights', { targetHex: H(9), targetHexes: [H(9), H(11)] }));
+    const still = { ...r.state, combatants: { ...r.state.combatants, A: { ...(r.state.combatants.A as Combatant), economy: (s0.combatants.A as Combatant).economy } } };
+    expect(chooseCommand(still).type).not.toBe('spell_followup');
+    expect(chooseCommand(scene(54)).type).not.toBe('spell_followup');
   });
 });
