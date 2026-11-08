@@ -69,13 +69,25 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   // Kuyruk 43: çok altıgenli gövde (bayrak açık): itildiği yerde gövdenin her altıgeni harita içinde, boş ve geçilebilir
   // olmalı (çarpma gövdeye); zemin sonucu (lav, düşme) çapanın altıgeninden.
   if (isMultiHex(state, target)) {
+    // Kuyruk K69 (sürüm 53): gövdenin herhangi bir altıgeni açık yarığa denk gelirse gövde yarığa düşer (tek düşme, derinlik
+    // kadar; çapa en yakın yarık altıgenine: K66 madde 14 yaklaşımı); herhangi bir altıgeni lavsa lav (uçan hariç).
+    const k69 = ruleVersion(state) >= 53;
+    let pit: Offset | null = null;
+    let lava = false;
     for (const h of bodyAt(state, target, to)) {
       if (!isInside(h, sizeOf(state))) return { ok: false, reason: 'harita dışı' };
       const o = occupantAt(state, h, target.id);
       if (o) return { ok: false, reason: `arkada ${o.name} var` };
       const th = terrainAt(state, h);
+      if (k69 && th.char === 'u' && !flies(target) && fissureDepthAt(state, h) > 0) { if (!pit || distance(h, to) < distance(pit, to)) pit = h; continue; }
       if (th.movement === 'blocked') return { ok: false, reason: `arkada ${th.name.toLowerCase()}` };
+      if (k69 && th.movement === 'deadly' && !flies(target)) lava = true;
     }
+    if (pit) {
+      const depth = fissureDepthAt(state, pit);
+      return { ok: true, to: pit, kind: 'fall', fallFeet: depth, fissureFt: depth, note: `Gövde yarığa düşer: ${depth} ft (${Math.min(20, depth / 10)}d6)` };
+    }
+    if (lava) return { ok: true, to, kind: 'lava', fallFeet: 0, note: 'Gövde lava girdi! Düşerse ölür' };
   }
   const t = terrainAt(state, to);
   const here = terrainAt(state, from);

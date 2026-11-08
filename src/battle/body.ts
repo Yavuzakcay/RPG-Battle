@@ -82,3 +82,17 @@ export function reachToHex(state: MHV, c: Pick<Combatant, 'size' | 'pos'>, h: Of
   if (!c.pos) return Infinity;
   return isMultiHex53(state, c) ? footprintDistance(bodyAt(state, c, c.pos), [h]) : distance(c.pos, h);
 }
+
+/** Yaratık bu altıgenlerden birine değiyor mu (`touches`'ın altıgen listesi biçimi). */
+export const touchesHexes = (state: MHV, c: Pick<Combatant, 'size' | 'pos'>, hexes: readonly Offset[]): boolean =>
+  touches(state, c, new Set(hexes.map((h) => `${h.col},${h.row}`)));
+
+/**
+ * Aura uzaklığı (altıgen): K69'da (sürüm 53, çok altıgen) auranın merkezi sahibinin çapa altıgeni (Huge/Gargantuan'da orta,
+ * Large'da sol üst), kapsama hedefin ayak izi (yürüyen alanlarla aynı ölçü); değilse eski `gap` (gövdeler arası).
+ */
+export function auraGap(state: MHV, owner: Pick<Combatant, 'size' | 'pos'>, c: Pick<Combatant, 'size' | 'pos'>): number {
+  if (!owner.pos || !c.pos) return Infinity;
+  if (!isMultiHex53(state, owner) && !isMultiHex53(state, c)) return gap(state, owner, c);
+  return footprintDistance([owner.pos], footprintOf(state, c));
+}

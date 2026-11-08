@@ -16,6 +16,7 @@
  * konsantrasyona bağlanır. Eski savaş (sürüm < 26) ya da anahtar kapalı: eski geçişler (`surfaces.ts`, `ignite.ts`,
  * `surfaceMix.ts`) aynen. Saf; `rng` enjekte; `dryRun` önizleme (yapay zekâ, K58 keşif defteri) aynı çözücüyü çalıştırır.
  */
+import { touches } from './body';
 import table from '../../data/yuzey-etkilesimleri.json';
 import tags from '../../data/buyu-etiketleri.json';
 import { hexKey, neighbors, type Offset } from '../rules/hex';
@@ -174,7 +175,7 @@ function applyRow(s0: BattleState, row: InteractionRow, it: Extract<Incoming, { 
   const hurtOnce = (zone: SpellZone, hexes: Offset[]) => {
     const at = keys(hexes);
     const ix = idxOf(s);
-    for (const c of Object.values(s.combatants).filter((x) => x.pos && at.has(hexKey(x.pos))).sort((a, b) => ix(a.pos as Offset) - ix(b.pos as Offset))) {
+    for (const c of Object.values(s.combatants).filter((x) => x.pos && touches(s, x, at)).sort((a, b) => ix(a.pos as Offset) - ix(b.pos as Offset))) {
       if (c.hp <= 0 || isAirborne(c) || ctx.burned.has(c.id)) continue;
       const live = zonesOf(s).find((x) => x.id === zone.id);
       if (!live) break;

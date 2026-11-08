@@ -12,7 +12,7 @@ import { anyBirlik, shoulderOf } from './imzaBirlik';
 import { auraCoreOn, passiveAuraOf } from './auraCore';
 import { imzaAuraBonus } from './imzaCore';
 import { isIncapacitated } from '../rules/conditions';
-import { gap } from './body';
+import { auraGap, gap } from './body';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
 import { silencedAt, zoneSpecOf } from './zones';
@@ -31,7 +31,7 @@ export function auraSaveOf(state: BattleState, c: Combatant): number {
   let best = 0;
   for (const p of Object.values(state.combatants)) {
     if (p.id === c.id || p.side !== c.side || p.hp <= 0 || !p.pos || !p.traits?.includes(TRAIT) || isIncapacitated(p.conditions)) continue;
-    if (gap(state, p, c) > radiusOf(p)) continue;
+    if (auraGap(state, p, c) > radiusOf(p)) continue;
     best = Math.max(best, bonusOf(p));
   }
   const own = c.traits?.includes(TRAIT) ? bonusOf(c) : 0;
@@ -54,7 +54,7 @@ export function auraResistOf(state: BattleState, c: Combatant): string[] {
   const out = new Set<string>();
   for (const p of Object.values(state.combatants)) {
     if (p.side !== c.side || p.hp <= 0 || !p.pos) continue;
-    for (const e of p.effects ?? []) if (e.auraLife && gap(state, p, c) * 5 <= e.auraLife.radiusFt) for (const r of e.auraLife.resist) out.add(r);
+    for (const e of p.effects ?? []) if (e.auraLife && auraGap(state, p, c) * 5 <= e.auraLife.radiusFt) for (const r of e.auraLife.resist) out.add(r);
   }
   // Kuyruk 19 (Epic Boon): Night Spirit / Shadowy Form: loş ışıkta ya da karanlıkta Psychic ve Radiant dışı direnç.
   for (const r of shadowyFormResist(state, c)) out.add(r);

@@ -11,7 +11,7 @@
 import { interposeCover } from './arcaneHand';
 import type { Cover, TerrainType } from '../map/terrain';
 import { distance, line, sameHex, type Offset } from '../rules/hex';
-import { bodyOf, covers, isMultiHex } from './body';
+import { bodyOf, covers, isMultiHex, isMultiHex53 } from './body';
 import { isTargetable } from './common';
 import { solidWallAt, terrainAt } from './movement';
 import { combatHeightAt, heightSightBlock, ledgeCover } from './heights';
@@ -203,6 +203,20 @@ export function coverFrom(state: BattleState, origin: Offset, target: Combatant,
   if (!state.map || !target.pos) return { blocked: false, cover: 0 };
   if (sameHex(origin, target.pos)) return { blocked: false, cover: 0 }; // patlama hedefin altıgeninde
   const ends = endsOf(state, from, target);
+  // Kuyruk K69 (sürüm 53, çok altıgen): büyük hedefe hat gövdesinin en uygun altıgenine (çıkışa en yakın 7 altıgen; SRD:
+  // hedefin herhangi bir yerine görülen hat yeter). Çıkış gövdenin içindeyse siper yok.
+  if (isMultiHex53(state, target)) {
+    const body = bodyOf(state, target);
+    if (body.some((h) => sameHex(h, origin))) return { blocked: false, cover: 0 };
+    let best: LineOfFire | null = null;
+    for (const h of [...body].sort((x, y) => distance(x, origin) - distance(y, origin)).slice(0, 7)) {
+      const r = coverBetween(state, origin, h, target, ignore, ends);
+      best = best ? better(best, r) : r;
+      if (!best.blocked && best.cover === 0) break;
+    }
+    const b0 = best ?? { blocked: false, cover: 0 as Cover };
+    return withGranted(state, target, !b0.blocked && b0.cover < 2 && interposeCover(state, origin, target) ? { ...b0, cover: 2 } : b0);
+  }
   const a = evaluate(state, line(origin, target.pos, 1), ignore, target, target.pos, ends);
   const b = evaluate(state, line(origin, target.pos, -1), ignore, target, target.pos, ends);
   const best = better(a, b);

@@ -23,7 +23,8 @@ import { rollDie, rollTag, type Rng } from '../rules/dice';
 import { distance, isInside, neighbors, sameHex, type Offset } from '../rules/hex';
 import { canControl, fail, finish, type CommandResult } from './common';
 import { combatantFromMonster } from './create';
-import { occupantAt, placeProblem } from './movement';
+import { bodyFitProblem, occupantAt, placeProblem } from './movement';
+import { reachToHex } from './body';
 import { applyEvents } from './reduce';
 import { concentrationEvent, spendSlot } from './slots';
 import { anchoredZoneEvent, triggerEvents } from './zones';
@@ -179,21 +180,35 @@ export function summonsOf(state: BattleState, ownerId: string, spellId?: string)
 /** Çağrılmış ve kaybolmamış yaratık mı. */
 export const isSummoned = (c: Combatant): boolean => !!c.summon && !c.summon.gone;
 
-/** Çağırma yeri sorunu: harita içi, geçilebilir boş altıgen ve sahibine menzil içinde. */
-export function summonHexProblem(state: BattleState, owner: Combatant, def: SummonDef, at: Offset): string | null {
+/**
+ * Çağırma yeri sorunu: harita içi, geçilebilir boş altıgen ve sahibine menzil içinde. Kuyruk K69 (sürüm 53, çok altıgen):
+ * menzil sahibinin gövdesinden, çağrılanın boyutu (`size`) verilirse gövdesi sığmalı.
+ */
+export function summonHexProblem(state: BattleState, owner: Combatant, def: SummonDef, at: Offset, size?: Monster['size']): string | null {
   if (!state.map || !owner.pos) return null;
   const why = placeProblem(state, at);
   if (why) return why;
-  if (distance(owner.pos, at) * 5 > def.rangeFt) return `Çağırma yeri menzil dışında (en çok ${def.rangeFt} ft).`;
+  if (reachToHex(state, owner, at) * 5 > def.rangeFt) return `Çağırma yeri menzil dışında (en çok ${def.rangeFt} ft).`;
   const other = occupantAt(state, at);
   if (other) return `Çağırma yeri dolu (${other.name}).`;
+  if (size) {
+    const fit = bodyFitProblem(state, { id: '__cagri', name: summonCreature(def.creature ?? '')?.name ?? 'Çağrı', size } as Pick<Combatant, 'id' | 'name' | 'size'>, at);
+    if (fit) return fit;
+  }
   return null;
 }
 
+/** Kuyruk K69: çağrılanın boyutu (biçim ya da çağırma verisi; Animate Objects boyut karışımı). */
+export function summonSizeOf(state: BattleState, def: SummonDef, form?: string, sizeKey?: string): Monster['size'] | undefined {
+  if (form) return getMonster(form)?.size;
+  const cr = summonCreature(def.creature ?? '');
+  return (sizeKey && globalRule(state, 'spellsK19') ? cr?.sizes?.[sizeKey]?.size : undefined) ?? cr?.size;
+}
+
 /** Sahibine en yakın uygun boş altıgen (yapay zekâ ve kurulum; önce düşmana yakın olanlar, sonra sabit sıra). */
-export function summonHexNear(state: BattleState, owner: Combatant, def: SummonDef): Offset | null {
+export function summonHexNear(state: BattleState, owner: Combatant, def: SummonDef, size?: Monster['size']): Offset | null {
   if (!state.map || !owner.pos) return null;
-  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const grid = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
   const foes = Object.values(state.combatants).filter((c) => c.side !== owner.side && c.pos && c.hp > 0 && !c.civilian);
   const near = (h: Offset) => (foes.length ? Math.min(...foes.map((f) => distance(h, f.pos as Offset))) : 0);
   // Sahibinden halka halka (menzil kadar) aranır.
@@ -202,13 +217,13 @@ export function summonHexNear(state: BattleState, owner: Combatant, def: SummonD
   const out: Offset[] = [];
   for (let r = 1; r * 5 <= def.rangeFt && r < 20; r++) {
     const next: Offset[] = [];
-    for (const h of ring) for (const n of neighbors(h, size)) {
+    for (const h of ring) for (const n of neighbors(h, grid)) {
       const k = `${n.col},${n.row}`;
       if (seen.has(k) || sameHex(n, owner.pos)) continue;
       seen.add(k);
       next.push(n);
     }
-    const ok = next.filter((h) => isInside(h, size) && summonHexProblem(state, owner, def, h) === null);
+    const ok = next.filter((h) => isInside(h, grid) && summonHexProblem(state, owner, def, h, size) === null);
     if (ok.length) {
       out.push(...ok.sort((a, b) => near(a) - near(b) || a.row - b.row || a.col - b.col));
       break;
@@ -258,10 +273,14 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   const form = def.forms ? cmd.form ?? def.forms[0] : undefined;
   const chain = spell.id === 'find-familiar' && chainOn(state) && !!actor.traits?.includes('pact-of-the-chain');
   if (def.forms && form && !def.forms.includes(form) && !(chain && CHAIN_FORMS.includes(form))) return fail(`Geçersiz familiar biçimi: ${form}.`);
-  const at = cmd.targetHex ?? summonHexNear(state, actor, def);
+  // Kuyruk K69 (sürüm 53, çok altıgen): ilk yaratığın gövdesi çağırma yerine sığmalı; sığan en yakın yer aranır.
+  // Boyut karışımında (Animate Objects) büyükler önce dizilir: ilk yaratık seçilen büyük boyut.
+  const key0 = def.sizeMix && globalRule(state, 'spellsK19') ? (choice === 'huge' ? 'H' : choice === 'large' ? 'L' : undefined) : undefined;
+  const size0 = state.multiHex && ruleVersion(state) >= 53 ? summonSizeOf(state, def, form, key0) : undefined;
+  const at = cmd.targetHex ?? summonHexNear(state, actor, def, size0);
   if (state.map) {
-    if (!at) return fail('Çağırma için boş yer yok.');
-    const why = summonHexProblem(state, actor, def, at);
+    if (!at) return fail('Çağırma için boş yer yok (gövde hiçbir yere sığmıyor).');
+    const why = summonHexProblem(state, actor, def, at, size0);
     if (why) return fail(why);
   }
 
@@ -289,7 +308,7 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   const sizes: Array<string | undefined> = def.sizeMix && globalRule(state, 'spellsK19') ? sizeMixOf(count, choice) : Array.from({ length: count }, () => undefined);
   let cur = current;
   for (let k = 0; k < sizes.length; k++) {
-    const place = k === 0 ? at : summonHexNear(cur, actor, def);
+    const place = k === 0 ? at : summonHexNear(cur, actor, def, state.multiHex && ruleVersion(state) >= 53 ? summonSizeOf(cur, def, form, sizes[k]) : undefined);
     if (state.map && !place) break;
     const ev = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng, sizes[k], companionFree);
     events.push(ev);

@@ -7,7 +7,7 @@
 import { heightAt, isRamp, levelFeet } from '../battle/heights';
 import { OBJECTS, objectAt } from '../battle/objectData';
 import { concealed, shownTerrainName } from '../battle/hiddenObjects';
-import { bodyOf } from '../battle/body';
+import { bodyOf, isMultiHex } from '../battle/body';
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { isTargetable } from '../battle/common';
@@ -141,6 +141,8 @@ function previewText(state: BattleState, actor: Combatant, target: Combatant, re
     parts.push(V.distance(d));
   }
   if (r.cover) parts.push(V.cover(r.cover));
+  // Kuyruk K69: çok altıgenli hedefin gövdesi.
+  if (isMultiHex(state, target)) parts.push(V.bodyHexes(target.size, bodyOf(state, target).length));
   // Kuyruk K68c: görüş hattı engelin üstünden (irtifa).
   if (r.over) parts.push(V.seenOver(r.over));
   const ha = heightOf(state, actor);

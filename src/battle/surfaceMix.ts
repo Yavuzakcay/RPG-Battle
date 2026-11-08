@@ -4,6 +4,7 @@
  * sürümü 15, varsayılan açık): eski kayıt ve replay eski kurallarla aynı kalır. Komut sonunda (`execute`, eski
  * tepkimelerden sonra) o komutun olaylarından; rüzgâr sürüklemesi tur başında. Tepkime derinliği 1. Saf.
  */
+import { touches } from './body';
 import table from '../../data/yuzey-etkilesim.json';
 import { hexKey, neighbors, type Offset } from '../rules/hex';
 import { type Rng } from '../rules/dice';
@@ -54,7 +55,7 @@ export function freeCaptives(s: BattleState, web: SpellZone, hexes: Offset[], rn
   const out: BattleEvent[] = [];
   let cur = s;
   for (const c of Object.values(s.combatants)) {
-    if (!c.pos || !at.has(hexKey(c.pos))) continue;
+    if (!c.pos || !touches(s, c, at)) continue;
     const held = (c.effects ?? []).find((e) => e.id === `${web.spellId}:${web.id}`);
     if (held) {
       const ev: BattleEvent = { type: 'effect_ended', targetId: c.id, effectId: held.id, name: held.name, reason: 'dispelled' };
@@ -153,7 +154,7 @@ export function surfaceMixEvents(next: BattleState, events: BattleEvent[], rng: 
       const live = s.map?.zones?.find((x) => x.id === made.id);
       const fromOil = events.some((x) => x.type === 'surface_reacted' && x.reaction === 'ignite' && x.hexes.some((h) => area.has(hexKey(h))));
       if (live && fromOil) for (const c of Object.values(s.combatants)) {
-        if (!c.pos || c.hp <= 0 || isAirborne(c) || !area.has(hexKey(c.pos))) continue;
+        if (!c.pos || c.hp <= 0 || isAirborne(c) || !touches(s, c, area)) continue;
         push(triggerEvents(s, live, c.id, rng));
       }
     }

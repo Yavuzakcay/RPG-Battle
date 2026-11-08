@@ -11,7 +11,7 @@
  * GM tetiklemeli kurallar (patlama, lav yükselmesi, dalga) `map_trigger` komutuyla çalışır.
  * İsteğe bağlı edilgen kurallar (karanlık, masumları koru) kurulumda `MapState.options` ile açılır.
  */
-import { bodyOf, gap } from './body';
+import { bodyOf, gap, isMultiHex53 } from './body';
 import { discoverOnEnter, discoverOnTurnStart } from './hiddenObjects';
 import { desertEnterEvents, floodTrigger, stormAgainstWind, stormName } from './desert';
 import { avalancheTrigger, brazierLights, snowMoveCost, weatherAttack, wildsEnterEvents, wildsTurnEndEvents, wildsTurnStartEvents } from './wilds';
@@ -29,7 +29,7 @@ import { terrainOf, type TerrainType } from '../map/terrain';
 import type { Ability } from '../rules/abilities';
 import { autoFailsStrDexSave } from '../rules/conditions';
 import { adjustDamage, halfDamage } from '../rules/damage';
-import { rollD20, rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
+import { parseDice, rollD20, rollDice, rollTag, type RollMode, type Rng } from '../rules/dice';
 import { distance, neighbors, sameHex, withinRange, type Offset } from '../rules/hex';
 import type { ModeSource } from '../rules/modes';
 import { checkMode, skillBonus, SKILLS, type Skill } from '../rules/skills';
@@ -374,12 +374,20 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
   return events;
 }
 
+/** Kuyruk K69: tehlikeli altıgenlerden ortalama hasarı en yüksek olanı (eşitlikte ilk). */
+function worstHazard<T extends { hazard?: { damage: string } }>(list: T[]): T | undefined {
+  const avg = (d: string) => { const p = parseDice(d); return p.count * (p.sides + 1) / 2 + p.bonus; };
+  return list.reduce<T | undefined>((best, t) => (!best || avg(t.hazard?.damage ?? '0') > avg(best.hazard?.damage ?? '0') ? t : best), undefined);
+}
+
 /** Sırası biten savaşçının tur sonu harita olayları. */
 export function turnEndMapEvents(state: BattleState, c: Combatant, rng: Rng): BattleEvent[] {
   if (!state.map || !c.pos || !alive(c)) return [];
   const events: BattleEvent[] = [];
   // Kuyruk 43: çok altıgenli gövdede gövdenin herhangi bir altıgenindeki tehlike (lav, alev) sayılır (bir kez).
-  const here = bodyOf(state, c).map((h) => tileAt(state, h)).find((t) => t.hazard) ?? tileAt(state, c.pos);
+  // Kuyruk K69 (sürüm 53): birden çok tehlikede en kötüsü (ortalama hasarı en yüksek), yine bir kez.
+  const hazards = bodyOf(state, c).map((h) => tileAt(state, h)).filter((t) => t.hazard);
+  const here = (isMultiHex53(state, c) ? worstHazard(hazards) : hazards[0]) ?? tileAt(state, c.pos);
   if (here.hazard && !flying(c)) {
     events.push(damageEffect(c, 'fire', `${here.name} içinde turu bitirdi`, { dice: here.hazard.damage, type: here.hazard.damageType }, rng));
   }

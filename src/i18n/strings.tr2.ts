@@ -455,7 +455,9 @@ export const TR_EXTRA = {
     climbHint: (dc: number) => `tırman: Atletizm DC ${dc}`, dropHint: (ft: number) => `aşağı atla: ${ft} ft düşer`,
     height: (h: number) => `yükseklik ${h}`, coverPlain: (c: number) => `${c === 5 ? '3/4' : 'yarım'} siper`, blocksSight: 'görüşü keser',
     // Kuyruk K68c: görüş hattında irtifa.
-    blocksSightTo: (ft: number) => `görüşü ${ft} ft'e dek keser`, seenOver: (name: string) => `${name} üstünden görünür`,
+    blocksSightTo: (ft: number) => `görüşü ${ft} ft'e dek keser`,
+    // Kuyruk K69: çok altıgenli hedef.
+    bodyHexes: (size: string, n: number) => `${({ L: 'Large', H: 'Huge', G: 'Gargantuan' } as Record<string, string>)[size] ?? size}: ${n} altıgen`, seenOver: (name: string) => `${name} üstünden görünür`,
     hideSpot: (b: number) => `gizlenme yeri${b ? ` +${b}` : ''}`,
     hideYes: (what: string, b: number): string => `Saklanılabilir: evet (${what}${b ? ` +${b}` : ''})`,
     hideNo: (why: string): string => `Saklanılabilir: hayır (${why})`,

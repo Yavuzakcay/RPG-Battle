@@ -81,7 +81,7 @@ import { resourceLeft, type BattleState, type Combatant, type Command, type Comm
 import { climbs, isAirborne } from './flight';
 import { climbCapFt, wallHex } from './altitude';
 import { legendaryOf } from './boss';
-import { bodyAt, bodyOf, gap } from './body';
+import { bodyAt, bodyOf, gap, touchesHexes } from './body';
 import { footprintDistance } from '../rules/footprint';
 import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
@@ -497,7 +497,7 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const made = r.ok ? r.events.find((e) => e.type === 'zone_created') : undefined;
       if (made?.type !== 'zone_created') continue;
       const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && !c.summon?.intangible
-        && made.zone.hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row));
+        && touchesHexes(state, c, made.zone.hexes));
       const foesIn = inside.filter((c) => c.side !== actor.side && !c.civilian);
       // Kuyruk K66b (sürüm 50, Earthquake): çökecek yapıların vuracağı dost varsa seçilmez; vuracağı düşmanlar sayılır.
       const collapse = quakeCollapseValue(state, actor, s, made.zone.hexes);
@@ -702,7 +702,7 @@ function cageSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const r = tryCmd(state, actor, cmd);
       const made = r.ok ? r.events.find((e) => e.type === 'zone_created') : undefined;
       if (made?.type !== 'zone_created') continue;
-      const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && made.zone.hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row));
+      const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && touchesHexes(state, c, made.zone.hexes));
       if (inside.every((c) => c.side !== actor.side && !c.civilian) && inside.some((c) => c.id === f.id)) best = { cmd, hp: f.hp };
     }
   }
@@ -725,7 +725,7 @@ function beadSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const r = tryCmd(state, actor, cmd);
       const made = r.ok ? r.events.find((e) => e.type === 'zone_created') : undefined;
       if (made?.type !== 'zone_created') continue;
-      const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && made.zone.hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row));
+      const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && touchesHexes(state, c, made.zone.hexes));
       if (inside.some((c) => c.side === actor.side || c.civilian)) continue;
       if ((inside.length >= 2 || f.hp >= 30) && (!best || inside.length > best.n)) best = { cmd, n: inside.length };
     }
@@ -2397,7 +2397,7 @@ function wallChoice(state: BattleState, actor: Combatant): Command | null {
       const made = r.ok ? r.events.find((e) => e.type === 'zone_created') : undefined;
       if (made?.type !== 'zone_created') continue;
       const hexes = made.zone.hexes;
-      if (Object.values(state.combatants).some((c) => c.hp > 0 && c.pos && hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row))) continue;
+      if (Object.values(state.combatants).some((c) => c.hp > 0 && c.pos && touchesHexes(state, c, hexes))) continue;
       const a = hexCenter(step);
       const dir = { x: a.x - me.x, y: a.y - me.y };
       const side = (c: Combatant) => { const p = hexCenter(c.pos as Offset); return (p.x - a.x) * dir.x + (p.y - a.y) * dir.y > 0; };

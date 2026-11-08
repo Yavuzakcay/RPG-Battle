@@ -159,6 +159,11 @@ input[type='number'] { width: 90px; }
 .spell-zone polygon { fill: var(--zone); fill-opacity: 0.22; stroke: var(--zone); stroke-opacity: 0.7; stroke-width: 2; }
 .spell-zone.wall polygon { fill-opacity: 0.4; stroke-width: 4; stroke-dasharray: 8 5; }
 .spell-zone .zone-icon { font-size: 22px; text-anchor: middle; dominant-baseline: middle; }
+/* Kuyruk K69: çok altıgenli gövdenin taban izi ve yürüme nişanında varış ayak izi. */
+.body-base polygon { fill: rgba(255, 255, 255, 0.06); stroke: rgba(255, 255, 255, 0.35); stroke-width: 1.5; }
+.body-base.enemies polygon { stroke: rgba(240, 120, 110, 0.5); }
+.body-base.party polygon { stroke: rgba(120, 190, 240, 0.5); }
+.body-base.aim polygon { fill: rgba(255, 230, 140, 0.12); stroke: rgba(255, 230, 140, 0.85); stroke-dasharray: 4 3; }
 /* Kuyruk K68b: Call Lightning bulutunun sınırı (yalnız çizgi). */
 .cloud-ring { pointer-events: none; }
 .cloud-ring polygon { fill: none; stroke: #9fb4d8; stroke-opacity: 0.75; stroke-width: 2; stroke-dasharray: 5 4; }

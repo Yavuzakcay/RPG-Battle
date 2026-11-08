@@ -7,7 +7,8 @@
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { sightBlockedBetween } from './cover';
 import { canSee } from './maprules';
-import { hexLabel, occupantAt, placeProblem } from './movement';
+import { bodyFitProblem, hexLabel, occupantAt, placeProblem } from './movement';
+import { reachToHex } from './body';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 /** Kuyruk 18 H2: `trees` (Tree Stride): başlangıç ve varış altıgeninin yanında ağaç (zemin `a` ya da ağaç nesnesi). */
@@ -20,10 +21,13 @@ export function teleportProblem(state: BattleState, actor: Combatant, to: Offset
   const why = placeProblem(state, to);
   if (why) return why;
   if (to.col === actor.pos.col && to.row === actor.pos.row) return 'Zaten oradasın.';
-  const d = distance(actor.pos, to);
+  // Kuyruk K69 (sürüm 53, çok altıgen): menzil gövdenin en yakın altıgeninden, varışta gövde sığmalı.
+  const d = reachToHex(state, actor, to);
   if (d * 5 > spec.rangeFt) return `${hexLabel(to)} menzil dışında (en çok ${spec.rangeFt} ft).`;
   const other = occupantAt(state, to, actor.id);
   if (other) return `${hexLabel(to)} dolu (${other.name}).`;
+  const fit = bodyFitProblem(state, actor, to);
+  if (fit) return fit;
   if (spec.trees && (!byTree(state, actor.pos) || !byTree(state, to))) return 'Tree Stride: başlangıç ve varış yerinin yanında ağaç olmalı.';
   if (spec.sight) {
     const wall = sightBlockedBetween(state, actor.pos, to, { from: actor });

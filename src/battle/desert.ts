@@ -13,6 +13,7 @@
  *   kaçış DC). Bir tur önce "yer titriyor" notu. Kumda kimse yoksa ilk uygun turu bekler.
  * Saf; zarlar rng'den.
  */
+import { touchesHexes } from './body';
 import { distance, neighbors, sameHex, type Offset } from '../rules/hex';
 import type { Rng } from '../rules/dice';
 import { getMonster } from '../data';
@@ -103,7 +104,7 @@ function floodEvents(state: BattleState, r: Record<string, unknown>, rng: Rng): 
   const wet = [...water, ...fresh];
   const flow = windDir(s) && !r.dir ? (windDir(s) as string) : str(r.dir, 'SE');
   for (const c0 of standing(s)) {
-    if (isAirborne(c0) || !wet.some((h) => sameHex(h, c0.pos as Offset))) continue;
+    if (isAirborne(c0) || !touchesHexes(s, c0, wet)) continue;
     const ev = saveEffect(c0, 'flashFlood', 'sel sürüklüyor', 'str', num(r.dc, 12), rng, { hit: { dice: str(r.damage, '1d6'), type: 'bludgeoning' } });
     out.push(ev); s = applyEvents(s, [ev]);
     const c = s.combatants[c0.id] as Combatant;

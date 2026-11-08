@@ -15,7 +15,7 @@ import motion from '../../data/hareket.json';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
 import { MOTION_VERSION } from './motion';
-import { gap } from './body';
+import { auraGap } from './body';
 import { damageEffect } from './maprules';
 import { saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -86,7 +86,7 @@ const passes = (spec: AuraSpec, owner: Combatant, v: Combatant) =>
 export function aurasOn(state: BattleState, v: Combatant, at: Offset | null = v.pos): Array<{ owner: Combatant; spec: AuraSpec }> {
   if (!at || !auraCoreOn(state)) return [];
   const probe = at === v.pos ? v : { ...v, pos: at };
-  return activeAuras(state).filter(({ owner, spec }) => passes(spec, owner, v) && (!spec.requires || v.conditions.includes(spec.requires)) && gap(state, owner, probe) <= spec.radius);
+  return activeAuras(state).filter(({ owner, spec }) => passes(spec, owner, v) && (!spec.requires || v.conditions.includes(spec.requires)) && auraGap(state, owner, probe) <= spec.radius);
 }
 
 /** Etki gücü (en güçlüsü seçimi için): hasarda ortalama zar, bonusta miktar, diğerlerinde 1. */

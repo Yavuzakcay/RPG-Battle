@@ -19,6 +19,7 @@
  * Zarlar rng'den (`rollTag`; elle zar modunda istenir), sonuç olaylarda: replay aynı durumu verir. Bayrak:
  * `state.yuzeyEtkilesimi === false` tepkimeleri kapatır (yüzeylerin kendi tetikleri çalışır). Saf.
  */
+import { touches } from './body';
 import data from '../../data/yuzeyler.json';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
@@ -138,7 +139,7 @@ export function burstEvents(s: BattleState, hexes: Offset[], skip: Set<string>, 
   const inside = keys(hexes);
   const cols = s.map?.tiles[0]?.length ?? 0;
   const idx = (c: { pos?: Offset | null }) => (c.pos ? c.pos.row * cols + c.pos.col : 0);
-  const victims0 = Object.values(s.combatants).filter((c) => c.pos && inside.has(hexKey(c.pos)) && !skip.has(c.id) && c.hp > 0
+  const victims0 = Object.values(s.combatants).filter((c) => c.pos && touches(s, c, inside) && !skip.has(c.id) && c.hp > 0
     && isTargetable(c) && !isAirborne(c));
   const victims = ordered ? [...victims0].sort((a, b) => idx(a) - idx(b) || a.id.localeCompare(b.id)) : victims0;
   if (!victims.length) return [];

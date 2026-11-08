@@ -21,6 +21,7 @@ import { ruleVersion } from './ruleVersion';
 import { isAirborne } from './flight';
 import { cageStepBlocked, cageTeleport } from './forcecage';
 import { occupantAt } from './movement';
+import { bodyAt, isMultiHex53 } from './body';
 import { rollTag, type Rng } from '../rules/dice';
 import { resolveSave } from '../rules/attack';
 import { saveDice } from './effectDice';
@@ -184,7 +185,9 @@ export function forcedMove(state: BattleState, targetId: string, mode: ForcedMod
         if (dice) {
           const hit = { damage: dice, damageType: MOTION.carpma.tur };
           const evs: BattleEvent[] = [hitEffect(t, 'carpmaHasari', MOTION.carpma.metin.tr, hit, rng)];
-          const blocker = nx !== 'edge' ? occupantAt(current, nx) : null;
+          // Kuyruk K69 (sürüm 53, çok altıgen): çarpılan gövdenin ön kenarındaki ilk yaratık (çapa altıgeni değil yalnız).
+          const blocker = nx === 'edge' ? null : isMultiHex53(current, t)
+            ? bodyAt(current, t, nx).map((h) => occupantAt(current, h, t.id)).find((x) => !!x) ?? null : occupantAt(current, nx);
           if (blocker && blocker.id !== t.id && blocker.hp > 0) evs.push(hitEffect(blocker, 'carpmaHasari', MOTION.carpma.metinCarpilan.tr, hit, rng));
           events.push(...evs);
           current = applyEvents(current, evs);

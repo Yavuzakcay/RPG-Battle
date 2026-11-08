@@ -18,6 +18,7 @@
  *    ışıltı hasarı önler.
  * Sarmaşık kapanı (`vineTrap`) ve kütük siperi (`logCover`) maprules / forestStart'ta. Saf; zarlar rng'den.
  */
+import { footprintOf, touchesHexes } from './body';
 import { AXIAL_DIRECTIONS, addAxial, axialToOffset, distance, hexKey, offsetToAxial, sameHex, type Offset } from '../rules/hex';
 import type { Rng } from '../rules/dice';
 import type { Skill } from '../rules/skills';
@@ -166,7 +167,7 @@ function tentRoundEvents(state: BattleState, rng: Rng): BattleEvent[] {
   // Hasar: yanan çadır altıgenine bitişik ya da içinde (uçmayan, ayakta).
   const hot = burning.flatMap((o) => tents[o.id] ?? []);
   for (const c of standing(s)) {
-    if (isAirborne(c) || !c.pos || !hot.some((h) => distance(h, c.pos as Offset) <= 1)) continue;
+    if (isAirborne(c) || !c.pos || !footprintOf(s, c).some((b) => hot.some((h) => distance(h, b) <= 1))) continue;
     const ev = damageEffect(c, 'tentFire', 'yanan çadırın alevi', { dice: str(r.damage, '1d6'), type: 'fire' }, rng);
     out.push(ev); s = applyEvents(s, [ev]);
   }
@@ -221,7 +222,7 @@ function treeFallEvents(state: BattleState, tree: MapObject, actorId: string, rn
   const out: BattleEvent[] = [];
   let s = state;
   for (const c of standing(s)) {
-    if (isAirborne(c) || !line.some((h) => sameHex(h, c.pos as Offset))) continue;
+    if (isAirborne(c) || !touchesHexes(s, c, line)) continue;
     const ev = saveEffect(c, 'treeFell', 'devrilen ağacın altında', 'dex', num(r.saveDc, 13), rng,
       { hit: { dice: str(r.damage, '2d6'), type: 'bludgeoning', halfOnSave: true } });
     out.push(ev); s = applyEvents(s, [ev]);
@@ -250,7 +251,7 @@ function bridgeBreakEvents(state: BattleState, bridge: MapObject, rng: Rng): Bat
   const out: BattleEvent[] = hexes.map((at): BattleEvent => ({ type: 'tile_changed', at, to }));
   let s = applyEvents(state, out);
   for (const c of standing(s)) {
-    if (isAirborne(c) || !hexes.some((h) => sameHex(h, c.pos as Offset))) continue;
+    if (isAirborne(c) || !touchesHexes(s, c, hexes)) continue;
     const ev = saveEffect(c, 'bridgeBreak', 'köprü çöktü', fall.save, fall.dc, rng, {});
     if (ev.type === 'map_effect' && !ev.roll?.success) Object.assign(ev, damageEffect(c, 'bridgeBreak', 'köprüyle birlikte düştü', { dice: fall.damage, type: fall.damageType }, rng), { roll: ev.roll });
     const land = nearestSolid(s, c.pos as Offset, c.id);

@@ -29,7 +29,7 @@ import { resourceLeft, type AttackOption, type BattleState, type Combatant, type
 import { resourceDef, resourceUsable } from './rules/classFeatures';
 import { maps } from './map/maps';
 import { economyBlock, freeCastResource, preferBonus } from './battle/economy';
-import { bodyOf } from './battle/body';
+import { bodyAt, bodyOf, isMultiHex } from './battle/body';
 import { dimLightOn, optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
 import { rageProblem, recklessProblem } from './battle/rage';
@@ -1752,6 +1752,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             });
             const beams = (
               <g key="beams" className="beams" aria-hidden="true">
+                {/* Kuyruk K69: çok altıgenli gövdelerin taban izi; yürüme nişanında varış ayak izi. */}
+                {Object.values(state.combatants).filter((c) => c.pos && c.hp > 0 && !c.summon?.gone && isMultiHex(state, c)).map((c) => (
+                  <g key={`body${c.id}`} className={`body-base ${c.side}`}>{bodyOf(state, c).map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.94)} />)}</g>
+                ))}
+                {moveAim && actor && isMultiHex(state, actor) && (
+                  <g key="bodyAim" className="body-base aim">{bodyAt(state, actor, moveAim.to).map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.94)} />)}</g>
+                )}
                 {/* Görev S3: hedef altıgenleri (ulaş/çıkış, yok edilecek/alınacak/korunacak nesne). */}
                 {goalHexes(state).map((h) => {
                   const p = hexCenter(h);

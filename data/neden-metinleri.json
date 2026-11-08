@@ -94,6 +94,8 @@
     { "kalip": "^Yerinde zıplamak için Jump etkisi gerekir\\.$", "en": "Jumping in place needs the Jump spell." },
     { "kalip": "^Jump bu tur kullanıldı\\.$", "en": "Jump already used this turn." },
     { "kalip": "^Tavan çok alçak\\.$", "en": "The ceiling is too low." },
+    { "kalip": "^(.+): gövde (.+) çapasına sığmıyor \\((.+)\\)\\.?$", "en": "$1: the body does not fit at $2 ($3)." },
+    { "kalip": "^Çağırma için boş yer yok \\(gövde hiçbir yere sığmıyor\\)\\.$", "en": "No room to summon (the body fits nowhere)." },
     { "kalip": "menzil", "bayrak": "i", "en": "Out of range." },
     { "kalip": "görüş", "bayrak": "i", "en": "No line of sight." }
   ]

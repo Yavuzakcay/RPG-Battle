@@ -17,6 +17,7 @@
  *   verir; sönen mangal karanlık bırakır).
  * Saf; zarlar rng'den.
  */
+import { footprintOf, touchesHexes } from './body';
 import { AXIAL_DIRECTIONS, addAxial, axialToOffset, directionTo, distance, neighbors, offsetToAxial, sameHex, type Offset } from '../rules/hex';
 import type { Rng } from '../rules/dice';
 import { getMonster } from '../data';
@@ -131,7 +132,7 @@ export function wildsTurnStartEvents(state: BattleState, c: Combatant, rng: Rng)
   if (!c.pos) return [];
   const out: BattleEvent[] = [];
   const gust = ruleOf(state, 'bridgeGust');
-  if (gust && tileCh(state, c.pos) === 'p' && !isAirborne(c)) {
+  if (gust && footprintOf(state, c).some((h) => tileCh(state, h) === 'p') && !isAirborne(c)) {
     const ev = saveEffect(c, 'bridgeGust', 'köprüde sert rüzgâr', 'dex', num(gust.dc, 10), rng);
     out.push(ev);
     const to = ev.type === 'map_effect' && !ev.roll?.success ? downwind(state, c.pos, windDir(state) ?? str(gust.dir, 'S')) : null;
@@ -158,7 +159,7 @@ export function wildsTurnStartEvents(state: BattleState, c: Combatant, rng: Rng)
 
 export function wildsTurnEndEvents(state: BattleState, c: Combatant, rng: Rng): BattleEvent[] {
   const leech = ruleOf(state, 'leeches');
-  if (!leech || !c.pos || isAirborne(c) || tileCh(state, c.pos) !== str(leech.terrain, 'n')) return [];
+  if (!leech || !c.pos || isAirborne(c) || !footprintOf(state, c).some((h) => tileCh(state, h) === str(leech.terrain, 'n'))) return [];
   return [saveEffect(c, 'leeches', 'sülükler yapıştı', 'con', num(leech.dc, 10), rng,
     { hit: { dice: str(leech.damage, '1d4'), type: str(leech.damageType, 'piercing') } })];
 }
@@ -196,7 +197,7 @@ export function wildsRoundEvents(state: BattleState, rng: Rng): BattleEvent[] {
     const hexes = hexList(s, ava.hexes);
     const evs: BattleEvent[] = [{ type: 'map_note', text: 'Çığ geldi!', avalancheRound: 0 }];
     for (const c of standing(s)) {
-      if (isAirborne(c) || !hexes.some((h) => sameHex(h, c.pos as Offset))) continue;
+      if (isAirborne(c) || !touchesHexes(s, c, hexes)) continue;
       const ev = saveEffect(c, 'avalanche', 'çığın altında', 'dex', num(ava.dc, 12), rng,
         { hit: { dice: str(ava.damage, '2d6'), type: 'bludgeoning' }, onFailCondition: 'Prone' });
       evs.push(ev);
@@ -266,7 +267,7 @@ export function executeWildsUse(state: BattleState, actor: Combatant, objectId: 
     const events: BattleEvent[] = [{ type: 'object_removed', objectId: obj.id },
       { type: 'map_note', text: `${actor.name} kaya yığınını yuvarladı!` }];
     for (const c of standing(state)) {
-      if (c.id === actor.id || isAirborne(c) || !line.some((h) => sameHex(h, c.pos as Offset))) continue;
+      if (c.id === actor.id || isAirborne(c) || !touchesHexes(state, c, line)) continue;
       events.push(saveEffect(c, 'rockRoll', 'yuvarlanan kayalar', 'dex', num(r.dc, 13), rng,
         { hit: { dice: str(r.damage, '3d6'), type: 'bludgeoning', halfOnSave: true } }));
     }

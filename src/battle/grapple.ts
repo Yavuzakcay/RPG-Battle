@@ -17,7 +17,9 @@ import type { Ability } from '../rules/abilities';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave, isIncapacitated, speedZero } from '../rules/conditions';
 import { rollD20, rollTag, type Rng, type RollMode } from '../rules/dice';
-import { directionTo, distance } from '../rules/hex';
+import { directionTo, distance, isInside, withinRange, type Offset } from '../rules/hex';
+import { bodyOf, gap, isMultiHex53 } from './body';
+import { bodyFitProblem, occupantAt, placeProblem } from './movement';
 import { checkMode, skillBonus } from '../rules/skills';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { attackEffect, makeTimer, saveMode, timedCondition } from './durations';
@@ -87,7 +89,8 @@ export function grappleCleanup(state: BattleState): BattleEvent[] {
     const reason = !g || !isTargetable(g) ? 'yakalayan düştü'
       : g.asleep ? 'yakalayan uyuyor' : isIncapacitated(g.conditions) ? 'yakalayan etkisiz'
         : !isTargetable(c) ? 'yakalanan düştü'
-          : state.map && g.pos && c.pos && distance(g.pos, c.pos) > 1 ? 'aralarında mesafe açıldı' : null;
+          // Kuyruk K69 (sürüm 53, çok altıgen): bitişiklik gövdeler arası (çapalar arası değil).
+          : state.map && g.pos && c.pos && (isMultiHex53(state, g) || isMultiHex53(state, c) ? gap(state, g, c) : distance(g.pos, c.pos)) > 1 ? 'aralarında mesafe açıldı' : null;
     if (reason) out.push({ type: 'grapple_ended', targetId: c.id, reason });
   }
   return out;
@@ -102,12 +105,37 @@ export function dragEvents(before: BattleState, after: BattleState, events: Batt
     for (const c of held) {
       const from = before.combatants[e.actorId]?.pos;
       const to = e.path.length >= 2 ? e.path[e.path.length - 2] : from;
+      // Kuyruk K69 (sürüm 53, çok altıgen): sürüklenen gövde, yakalayanın yeni gövdesine bitişik ve sığan en yakın yere.
+      const g = after.combatants[e.actorId];
+      if (g && (isMultiHex53(after, g) || isMultiHex53(after, c))) {
+        const spot = dragSpot(after, g, c, to ?? null);
+        if (spot && c.pos) out.push({ type: 'pushed', targetId: c.id, from: c.pos, to: spot, by: e.actorId });
+        else out.push({ type: 'grapple_ended', targetId: c.id, reason: 'sürüklenemedi' });
+        continue;
+      }
       const busy = (h: { col: number; row: number }) => Object.values(after.combatants).some((x) => x.id !== c.id && x.pos && x.pos.col === h.col && x.pos.row === h.row);
       if (to && c.pos && !busy(to)) out.push({ type: 'pushed', targetId: c.id, from: c.pos, to, by: e.actorId });
       else out.push({ type: 'grapple_ended', targetId: c.id, reason: 'sürüklenemedi' });
     }
   }
   return out;
+}
+
+/**
+ * Kuyruk K69: sürükleme yeri: tercihen yakalayanın bıraktığı çapa (`prefer`), değilse yakalayanın gövdesine bitişik
+ * (gövdeler arası 1) ve sürüklenenin gövdesinin sığdığı, `prefer`'e en yakın altıgen (sabit sıra); yoksa null.
+ */
+function dragSpot(state: BattleState, g: Combatant, c: Combatant, prefer: Offset | null): Offset | null {
+  if (!g.pos || !state.map) return null;
+  const ok = (h: Offset) => isInside(h, { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 })
+    && !placeProblem(state, h) && !occupantAt(state, h, c.id) && !bodyFitProblem(state, c, h)
+    && gap(state, g, { ...c, pos: h }) === 1;
+  if (prefer && ok(prefer)) return prefer;
+  const near = bodyOf(state, g).flatMap((b) => withinRange(b, 4, { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 }));
+  const seen = new Set<string>();
+  const cands = near.filter((h) => { const k = `${h.col},${h.row}`; if (seen.has(k)) return false; seen.add(k); return true; })
+    .sort((a, b) => (prefer ? distance(a, prefer) - distance(b, prefer) : 0) || a.row - b.row || a.col - b.col);
+  return cands.find(ok) ?? null;
 }
 
 /** Hücum tutuyor mu: turdaki son düz koşu en az `feet` ve hedef o yönde bitişik. */

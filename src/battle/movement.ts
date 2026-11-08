@@ -9,7 +9,7 @@ import { spells } from '../data';
 import { fearBlocksStep, ruleVersion, srdConditions } from './ruleVersion';
 import { phaseOf } from './phase';
 import { objectAt, withObject } from './objectData';
-import { bodyAt, covers, isMultiHex } from './body';
+import { bodyAt, covers, isMultiHex, isMultiHex53 } from './body';
 import { leashBlocks, leashOf } from './leash';
 import { getMap } from '../map/maps';
 import { enterCost, terrainOf, type TerrainType } from '../map/terrain';
@@ -95,6 +95,22 @@ export function placeProblem(state: BattleState, at: Offset): string | null {
 }
 
 /**
+ * Kuyruk K69 (sürüm 53, çok altıgen açıkken): yaratığın gövdesi `at` çapasına sığıyor mu (her gövde altıgeni harita içinde,
+ * engel/lav/derin su değil, başka yaratık yok). Sorun metni ya da null; tek altıgenli yaratık ve bayrak kapalıyken her zaman
+ * null (çağıran kendi tek altıgen denetimini yapar). Çağırma, ışınlanma, atlama ve sürükleme varışı bu tek denetimden geçer.
+ */
+export function bodyFitProblem(state: BattleState, c: Pick<Combatant, 'id' | 'name' | 'size'>, at: Offset, ignore: readonly string[] = []): string | null {
+  if (!isMultiHex53(state, c)) return null;
+  for (const h of bodyAt(state, c, at)) {
+    const why = placeProblem(state, h);
+    if (why) return `${c.name}: gövde ${hexLabel(at)} çapasına sığmıyor (${why})`;
+    const other = occupantAt(state, h, c.id);
+    if (other && !ignore.includes(other.id)) return `${c.name}: gövde ${hexLabel(at)} çapasına sığmıyor (${hexLabel(h)} dolu: ${other.name}).`;
+  }
+  return null;
+}
+
+/**
  * Kurulumda yerleştirme. GM herkesi (karakterler dahil) haritanın herhangi bir geçerli altıgenine
  * koyar; oyuncu yalnızca kendi karakterini kendi başlangıç bölgesine. Varsayılan yerleşim
  * (`createMapBattle`) oyuncu bağlamıyla bölgelere yapılır, değişmedi.
@@ -169,8 +185,11 @@ function moveCostBase(state: BattleState, actor: Combatant): (h: Offset, prev: O
   if (!isMultiHex(state, actor)) return single;
   // Görev A6: çok altıgenli yaratıkta çapanın adımı gövdenin bütün altıgenlerinin adımıdır; maliyet en kötüsü
   // (zemin, engel, zorlu zemin, düşman). Gövdenin kendi altıgenleri boş sayılır.
+  // Kuyruk K69 (sürüm 53): duvarda tırmanan büyük gövde: varışta gövdenin herhangi bir altıgeni duvar dibinde olmalı.
+  const wallBody = climbingAloft(actor) && isMultiHex53(state, actor) && !atCeiling(state, actor);
   return (h: Offset, prev: Offset): number | null => {
     const to = bodyAt(state, actor, h), from = bodyAt(state, actor, prev);
+    if (wallBody && !to.some((x) => wallHex(state, x))) return null;
     let worst = 0;
     for (let i = 0; i < to.length; i++) {
       const c = single(to[i] as Offset, from[i] as Offset);
@@ -186,6 +205,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   // ve yer alanları yok); duvarda yalnız duvar altıgenlerine, tavanda her yere yürür. Tırmanıcı olmayana tek bayrak.
   const aloft = climbingAloft(actor);
   const onCeiling = aloft && atCeiling(state, actor);
+  const bodyWall = aloft && isMultiHex53(state, actor);
   const flying = isAirborne(actor);
   const stormFly = flying && !aloft && stormNow(state);
   // Second-Story Work (Thief) ve Spider Climb (Görev K9c): tırmanma ek maliyeti yok.
@@ -244,7 +264,8 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const gripCeil = grip && atCeiling(state, actor);
   return (h: Offset, prev: Offset): number | null => {
     if (grip && !gripCeil && !wallNear(prev)) return null;
-    if (aloft && !onCeiling && !wallHex(state, h)) return null;
+    // Kuyruk K69 (sürüm 53, çok altıgen): duvar denetimi gövdenin bütününde (`moveCostBase`).
+    if (aloft && !onCeiling && !bodyWall && !wallHex(state, h)) return null;
     const sph = sphere ? sphere(h, prev) : 'ok';
     if (sph === 'block') return null;
     if (sph === 'jump') return 1;
@@ -521,6 +542,9 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   if (landing.movement === 'blocked') return fail(`${hexLabel(to)} üzerine inilemez (${landing.name}).`);
   const other = occupantAt(state, to, actor.id);
   if (other) return fail(`${hexLabel(to)} dolu (${other.name}).`);
+  // Kuyruk K69 (sürüm 53, çok altıgen): inişte gövde sığmalı.
+  const fit = bodyFitProblem(state, actor, to);
+  if (fit) return fail(fit);
 
   const running = actor.run !== null && actor.run.dir === dir && actor.run.hexes >= 2;
   // Kuyruk 19: Step of the Wind bu tur atlama mesafesini iki katına çıkarır.

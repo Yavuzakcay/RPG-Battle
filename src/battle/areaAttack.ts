@@ -9,7 +9,7 @@
  */
 import { breathOf } from './breath';
 import { a2AreaDamage } from './ridersA2';
-import { bodyOf } from './body';
+import { bodyOf, reachToHex } from './body';
 import { profileIn } from './zones';
 import { saveDamage } from './classTraits';
 import type { AreaSpec } from '../rules/area';
@@ -60,7 +60,8 @@ export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetS
     if (spec.origin === 'self' && sameHex(aim, actor.pos)) return fail('Yön için başka bir altıgen seçmelisin.');
   }
   if (spec.origin === 'point' && aim) {
-    const d = distance(actor.pos, aim);
+    // Kuyruk K69 (sürüm 53, çok altıgen): menzil gövdenin en yakın altıgeninden.
+    const d = reachToHex(state, actor, aim);
     if (d * 5 > rangeFt) return fail(`Nokta menzil dışında: ${d} altıgen (${d * 5} ft), menzil ${rangeFt} ft.`);
     const t = terrainAt(state, aim);
     if (t.blocksSight || t.outOfBounds) return fail(`${hexLabel(aim)} noktasına ${what} yapılamaz (${t.name}).`);

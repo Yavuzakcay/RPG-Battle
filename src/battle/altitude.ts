@@ -24,6 +24,7 @@ import { ruleVersion } from './ruleVersion';
 import { registerCommandEnd } from './turnHooks';
 import type { BattleEvent, BattleState, Combatant, SpellZone } from './types';
 import { neighbors, type Offset } from '../rules/hex';
+import { bodyAt, isMultiHex53 } from './body';
 import { maps } from '../map/maps';
 import { terrainAt } from './movement';
 
@@ -109,6 +110,13 @@ export function wallHex(state: BattleState, h: Offset): boolean {
   return neighbors(h, size).some((n) => { const t = terrainAt(state, n); return t.movement === 'blocked' && !t.flyersPass; });
 }
 
+/** Kuyruk K69 (sürüm 53, çok altıgen): yaratık (ya da `at` çapasındaki gövdesi) duvar dibinde mi: gövdenin herhangi bir altıgeni. */
+export function nearWall(state: BattleState, c: Combatant, at: Offset | null = c.pos): boolean {
+  if (!at) return false;
+  if (!isMultiHex53(state, c)) return wallHex(state, at);
+  return bodyAt(state, c, at).some((h) => wallHex(state, h));
+}
+
 /** Tırmanma hızıyla duvarda/tavanda duran yaratık (`climbing` işareti yalnız sürüm 52'de; uçmayan, süzülmeyen). */
 export const climbingAloft = (c: Combatant): boolean => !!c.climbing && altitudeOf(c) > 0 && !fliesOrHovers(c);
 
@@ -116,7 +124,7 @@ export const climbingAloft = (c: Combatant): boolean => !!c.climbing && altitude
 const climberHolds = (state: BattleState, c: Combatant): boolean => {
   if (!climbs(c, state) || !c.pos) return false;
   if (c.conditions.includes('Prone') || isIncapacitated(c.conditions) || speedZero(c.conditions) || effectSpeedZero(c)) return false;
-  return atCeiling(state, c) || wallHex(state, c.pos);
+  return atCeiling(state, c) || nearWall(state, c);
 };
 
 /** Tırmanılabilecek en yüksek irtifa (ft): tavanlı haritada üst sınır, açık alanda duvar boyu `irtifa.wallFt`. */
@@ -176,8 +184,8 @@ function climbMove(state: BattleState, actor: Combatant, from: number, to: numbe
     if (actor.conditions.includes('Prone') || isIncapacitated(actor.conditions) || speedZero(actor.conditions) || effectSpeedZero(actor)) return fail('Tırmanamaz: hızı 0, Prone ya da Incapacitated.');
     if (to > 0) return fail('Tırmanmak için duvara (engel ya da harita kenarı) bitişik ol.');
   }
-  if (from <= 0 && !wallHex(state, actor.pos)) return fail('Tırmanmak için duvara (engel ya da harita kenarı) bitişik ol.');
-  if (from > 0 && !wallHex(state, actor.pos)) return fail('İnmek için duvara bitişik ol (tavanın ortasından inilmez).');
+  if (from <= 0 && !nearWall(state, actor)) return fail('Tırmanmak için duvara (engel ya da harita kenarı) bitişik ol.');
+  if (from > 0 && !nearWall(state, actor)) return fail('İnmek için duvara bitişik ol (tavanın ortasından inilmez).');
   const cap = climbCapFt(state, actor);
   if (to > cap) return fail(ceilingFt(state) === null ? `Duvar boyu ${cap} ft: daha yükseğe tırmanılmaz.` : `Tavan ${ceilingFt(state)} ft: en çok ${cap} ft tırmanılır.`);
   const d = Math.abs(to - from);

@@ -9,6 +9,7 @@
  * - Yanan gres buhar üretmez: buhar yalnızca ateşin değdiği su altıgeninde (mevcut kural).
  * Saf; zarlar rng'den.
  */
+import { touches } from './body';
 import { distance, hexKey, type Offset } from '../rules/hex';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import type { Spell } from '../data';
@@ -66,7 +67,7 @@ export function greaseIgniteEvents(state: BattleState, hexes: Offset[], actorId:
     if (fire.type !== 'zone_created') continue;
     const keys = new Set(area.map(hexKey));
     for (const c of Object.values(s.combatants)) {
-      if (!c.pos || c.hp <= 0 || isAirborne(c) || !keys.has(hexKey(c.pos))) continue;
+      if (!c.pos || c.hp <= 0 || isAirborne(c) || !touches(s, c, keys)) continue;
       const zone = s.map?.zones?.find((x) => x.id === fire.zone.id);
       if (!zone) break;
       const hurt = triggerEvents(s, zone, c.id, rng);
