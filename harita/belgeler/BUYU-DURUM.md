@@ -336,7 +336,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | conjure-fey | 6 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
 | contingency | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | create-undead | 6 | spells-69.json | savaş dışı |  |  | hayır |
-| disintegrate | 6 | spells-69.json | çalışır |  |  | hayır |
+| disintegrate | 6 | spells-69.json | çalışır | k70 (sürüm 54) |  | hayır |
 | eyebite | 6 | spells-69.json | çalışır |  |  | hayır |
 | find-the-path | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | flesh-to-stone | 6 | spells-69.json | çalışır | k70 (sürüm 54) |  | hayır |

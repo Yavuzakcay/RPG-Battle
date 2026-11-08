@@ -2049,7 +2049,7 @@ export type BattleEvent =
   /** Kuyruk 19: alanın verdiği hasar bütçeye yazılır (Guardian of Faith). */
   | { type: 'zone_dealt'; zoneId: string; amount: number }
   | { type: 'zone_panel_damaged'; zoneId: string; hex: Offset; amount: number }
-  | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' | 'reacted' }
+  | { type: 'zone_ended'; zoneId: string; name: string; reason: 'expired' | 'concentration' | 'replaced' | 'dispelled' | 'reacted' | 'destroyed' }
   | { type: 'concentration_started'; actorId: string; spell: string; slotLevel: number; turn: string; targetId?: string; pos?: Offset }
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */
   | { type: 'concentration_moved'; actorId: string; targetId?: string; pos?: Offset }

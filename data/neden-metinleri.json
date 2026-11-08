@@ -95,6 +95,8 @@
     { "kalip": "^Jump bu tur kullanıldı\\.$", "en": "Jump already used this turn." },
     { "kalip": "^Tavan çok alçak\\.$", "en": "The ceiling is too low." },
     { "kalip": "^(.+): gövde (.+) çapasına sığmıyor \\((.+)\\)\\.?$", "en": "$1: the body does not fit at $2 ($3)." },
+    { "kalip": "^(.+): bu altıgende yok edilecek kuvvet duvarı yok\\.$", "en": "$1: there is no wall of force to destroy on this hex." },
+    { "kalip": "^(.+): hedef altıgen görünmüyor\\.$", "en": "$1: the target hex is not in sight." },
     { "kalip": "^Çağırma için boş yer yok \\(gövde hiçbir yere sığmıyor\\)\\.$", "en": "No room to summon (the body fits nowhere)." },
     { "kalip": "menzil", "bayrak": "i", "en": "Out of range." },
     { "kalip": "görüş", "bayrak": "i", "en": "No line of sight." }

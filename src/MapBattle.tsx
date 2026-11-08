@@ -76,7 +76,7 @@ import {
   featureTeleportHexes, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
-import { effectTargetCount, strideSpellOf } from './battle/spells';
+import { destroyForceProblem, effectTargetCount, strideSpellOf } from './battle/spells';
 import { wishCandidates } from './battle/spells69';
 import { movableZoneOf } from './battle/zones';
 import { DANCE_COMBINED, danceAddProblem, danceMax } from './battle/danceLights';
@@ -935,6 +935,16 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     for (const o of state.map.objects ?? []) if (!o.carriedBy && !concealed(state, o) && OBJECTS[o.kind]?.flammable) cands.set(hexKey(o.at), o.at);
     return new Set([...cands].filter(([, h]) => execute(state, { type: 'cast_spell', actorId, spellName: spell.name, targetHex: h }, contextFor(state, actorId), () => 0.5).ok).map(([k]) => k));
   }, [state, active, actorId, mode, spell]);
+  // Kuyruk K70 (sürüm 54): Disintegrate ile yok edilebilecek kuvvet duvarı altıgenleri (Wall of Force; menzil ve görüş).
+  const forceKeys = useMemo(() => {
+    const me = state.combatants[actorId];
+    if (!active || mode !== 'spell' || !spell || !state.map || !me) return new Set<string>();
+    const kinds = mechanicsAt(state, spell).destroysForce;
+    if (!kinds?.length) return new Set<string>();
+    const out = new Set<string>();
+    for (const z of state.map.zones ?? []) if (kinds.includes(z.spellId) && !z.cage) for (const h of zoneHexes(state, z)) if (!destroyForceProblem(state, me, spell, h, kinds)) out.add(hexKey(h));
+    return out;
+  }, [state, active, actorId, mode, spell]);
   // Kuyruk 30 D3: serbest altıgen hedefleme açıkken ateşli tek hedefli büyü menzil ve görüşteki her altıgene (boş zeminde söner).
   const freeFireKeys = useMemo(() => {
     const me = state.combatants[actorId];
@@ -1071,6 +1081,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return;
     }
     // Kuyruk 24c: ateşli büyüyle yanıcı haneyi tutuştur (isabet zarı yok).
+    // Kuyruk K70: Disintegrate ile kuvvet duvarını yok et.
+    if (mode === 'spell' && spell && forceKeys.has(hexKey(h))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...slotFields(slotPick) }); return; }
     if (mode === 'spell' && spell && (fireKeys.has(hexKey(h)) || (freeFireKeys.has(hexKey(h)) && !Object.values(state.combatants).some((c) => c.pos && c.hp > 0 && sameHex(c.pos, h))))) { run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...slotFields(slotPick) }); return; }
     // Görev S2: nesneye saldırı (saldırı kipinde nesne altıgeni) ve nesne kullanımı.
     // Kuyruk 30 D1: bulunmamış gizli nesne yalnızca Game Master görünümünde (gizlileri göster) seçilir ve Game Master olarak çalışır.
@@ -1253,7 +1265,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
   const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature', 'strike', 'effect', 'horde'].includes(mode);
-  const pickHexes = new Set(targeting ? [...[...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }), ...fireKeys] : []);
+  const pickHexes = new Set(targeting ? [...[...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }), ...fireKeys, ...forceKeys] : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
     // Kuyruk K67a (sürüm 51): karanlık ve loş ayrı, daha belirgin sınıflar; sürüm 50'de eski karartma.

@@ -26,7 +26,7 @@ import { formatDice, parseDice, rollD20, rollDie, rollDice, rollTag, type Rng } 
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
-import { heightOf } from './cover';
+import { heightOf, sightBlockedBetween } from './cover';
 import { AXIAL_DIRECTIONS, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { hasDarkness, inShadowAt, litHexes, ruleOf } from './maprules';
 import { globalRule } from './ruleControl';
@@ -659,6 +659,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   // Kuyruk 24c: yanıcı haneye ateşli büyü (gres, yağ, ağ, yanıcı nesne; Game Master mekaniği `greaseFlammable`).
   // Kuyruk A6: elde tutulan alev (Produce Flame) yanıcı altıgene de fırlatılır ("a creature or an object").
   if (!cmd.targetId && cmd.targetHex && state.map && (!repeat || m.held) && fireHexSpell(spell)) return executeFireHex(state, actor, cmd, spell, rng);
+  // Kuyruk K70 (sürüm 54): Disintegrate kuvvet yapısını (Wall of Force) hedef altıgeninden yok eder.
+  if (!cmd.targetId && cmd.targetHex && state.map && !repeat && m.destroysForce?.length) return executeDestroyForce(state, actor, cmd, spell, m.destroysForce);
   let target: Combatant | undefined;
   if (m.kind !== 'utility') {
     if (!cmd.targetId) return fail('Hedef seçmelisin.');
@@ -1325,6 +1327,38 @@ function executeDispelZone(state: BattleState, actor: Combatant, cmd: CastComman
       if (!pass) continue;
     }
     events.push({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'dispelled' });
+  }
+  return finish(state, events);
+}
+
+/**
+ * Kuyruk K70 (sürüm 54): Disintegrate "a creation of magical force, such as the wall created by Wall of Force" hedefler;
+ * Wall of Force: "A Disintegrate spell destroys the wall instantly" (SRD 5.2.1 s. 124, 172). Hedef altıgeni duvarın
+ * (panel yolu, düz/yay, kubbe/küre) herhangi bir altıgeni; menzil ve görüş (duvar saydam). Bütün duvar kalkar (alan biter),
+ * sahibinin o büyüdeki konsantrasyonu düşer. Forcecage SRD metninde açıkça anılmaz: listede yok (⚠, DECISIONS.md K70).
+ */
+export function destroyForceProblem(state: BattleState, actor: Combatant, spell: Spell, at: Offset, kinds: readonly string[]): string | null {
+  if (actor.pos && distance(actor.pos, at) * 5 > spell.rangeFt) return `${spell.name} menzili ${spell.rangeFt} ft.`;
+  if (actor.pos && sightBlockedBetween(state, actor.pos, at, { from: actor })) return `${spell.name}: hedef altıgen görünmüyor.`;
+  const z = forceZonesAt(state, at, kinds);
+  return z.length ? null : `${spell.name}: bu altıgende yok edilecek kuvvet duvarı yok.`;
+}
+const forceZonesAt = (state: BattleState, at: Offset, kinds: readonly string[]) =>
+  (state.map?.zones ?? []).filter((z) => kinds.includes(z.spellId) && !z.cage && zoneHexes(state, z).some((h) => h.col === at.col && h.row === at.row));
+
+function executeDestroyForce(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, kinds: readonly string[]): CommandResult {
+  const at = cmd.targetHex as Offset;
+  const problem = destroyForceProblem(state, actor, spell, at, kinds);
+  if (problem) return fail(problem);
+  const zones = forceZonesAt(state, at, kinds);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
+  if (!slot.ok) return slot;
+  const events: BattleEvent[] = [...slot.events,
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: `${zones.map((z) => z.name).join(', ')} yok edildi` }];
+  for (const z of zones) {
+    events.push({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'destroyed' });
+    const owner = state.combatants[z.casterId];
+    if (z.concentration && owner?.concentration?.spell === z.concentration) events.push({ type: 'concentration_ended', actorId: owner.id, label: `${z.concentration} (${spell.name})` });
   }
   return finish(state, events);
 }

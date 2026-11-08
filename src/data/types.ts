@@ -336,6 +336,8 @@ export interface SpellMechanics {
   autoFailTypes?: string[];
   /** Kuyruk K70 (sürüm 54): save'i otomatik başaran yaratık türleri, ilk save ve tur sonu save'leri (Flesh to Stone: construct). */
   autoSuccessTypes?: string[];
+  /** Kuyruk K70 (sürüm 54): büyü hedef altıgenindeki bu büyülerin kuvvet yapısını anında yok eder (Disintegrate: Wall of Force). */
+  destroysForce?: string[];
   /** Görev B3: Calm Emotions: alandaki dost Humanoid'lere Charmed/Frightened bağışıklığı, düşmanlara (save) duraksama. */
   calm?: boolean;
   /** Kuyruk A6: Calm Emotions'ta dostlar da save yapar; düşmanlar kayıtsızlaşır (`indifferentTo`). */

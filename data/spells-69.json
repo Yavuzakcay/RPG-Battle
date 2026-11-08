@@ -245,6 +245,11 @@
    "save": "dex",
    "damage": "10d6+40",
    "damageType": "force",
+   "k70": {
+    "destroysForce": [
+     "wall-of-force"
+    ]
+   },
    "dustAtZero": true,
    "upcast": {
     "dice": "3d6",
