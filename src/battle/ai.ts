@@ -95,7 +95,7 @@ import { candidatesFor, registerAction, type AiHelpers, type Candidate } from '.
 import { difficultyOf, evaluateCandidates, pickByDifficulty, roleOf } from './ai/evaluate';
 import aiRoles from '../../data/yz-roller.json';
 import { bonusPoolCands } from './ai/behaviors';
-import { aiStats } from './ai/preview';
+import { aiStats, previewCommand } from './ai/preview';
 
 const noRoll = () => 0.5;
 const ctxOf = (c: Combatant): CommandContext =>
@@ -1564,6 +1564,9 @@ export function chooseCommand(state: BattleState): Command {
  *   yapılan bir büyüyse bonus eylemle yapılır (slot kuralı motorda: turda tek slotlu büyü).
  * Her ek komut denetimden geçmezse karar olduğu gibi kalır.
  */
+/** Kuyruk Y1: Heightened Spell eşikleri (puan başına beklenen hasar; başarısızlık olasılığı artışı). */
+const HEIGHT_DMG = 3;
+const HEIGHT_FAIL = 0.15;
 function withMetamagic(state: BattleState, actor: Combatant, cmd: Command, end: Command): Command {
   const mm = actor.metamagic;
   if (!mm) return cmd;
@@ -1586,6 +1589,23 @@ function withMetamagic(state: BattleState, actor: Combatant, cmd: Command, end: 
         const { targetId: _drop, ...rest } = cmd;
         const twin: Command = { ...rest, targetIds: [t.id, o.id], metamagic: ['twinned'] };
         if (tryCmd(state, actor, twin).ok) return twin;
+      }
+    }
+  }
+  // Kuyruk Y1 (sürüm 55): Heightened Spell yalnız kuru çalıştırma kazanç gösterirse (önizleme hedefin kurtulma
+  // dezavantajını analitik puanlar): düşmanlara beklenen hasar en az bedel × `HEIGHT_DMG`, ya da başarısızlık
+  // olasılığı toplamı en az `HEIGHT_FAIL` artmalı. Bedel ve puan `actor.metamagic`.
+  if (ruleVersion(state) >= 55 && cmd.type === 'cast_spell' && !cmd.metamagic?.length && mm.heightened !== undefined && points >= mm.heightened) {
+    const spell = spellOf(cmd.spellName);
+    if (spell && spell.level >= 1 && mechanicsAt(state, spell).save) {
+      const hi: Command = { ...cmd, metamagic: ['heightened'] };
+      const a = previewCommand(state, cmd);
+      const b = previewCommand(state, hi);
+      if (a.ok && b.ok) {
+        const foeT = (p: typeof a) => p.targets.filter((t) => !t.ally && !t.self);
+        const dmg = (p: typeof a) => foeT(p).reduce((n, t) => n + t.damage.avg, 0);
+        const fail = (p: typeof a) => foeT(p).reduce((n, t) => n + (t.saveP !== undefined ? 1 - t.saveP : 0), 0);
+        if (dmg(b) - dmg(a) >= mm.heightened * HEIGHT_DMG || fail(b) - fail(a) >= HEIGHT_FAIL) return hi;
       }
     }
   }

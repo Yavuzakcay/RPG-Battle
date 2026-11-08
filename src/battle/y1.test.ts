@@ -161,3 +161,22 @@ describe('Y1 G2c: Charm Person (sürümlü mekanik: G6 dominate)', () => {
     expect(chooseCommand(old)).not.toMatchObject({ type: 'cast_spell', spellName: 'Charm Person' });
   });
 });
+
+describe('Y1 G2d: Heightened Spell (önizleme kazancıyla)', () => {
+  const P = { A: { col: 2, row: 3 }, F0: { col: 6, row: 2 }, F1: { col: 6, row: 4 } };
+  const sorc = (p: Partial<Combatant> = {}) => mk('A', { ownerId: 'p1', hp: 40, maxHp: 40, spellNames: ['Hold Person'], spellSlots: [4, 3, 2, 0, 0, 0, 0, 0, 0], spellSaveDc: 15, spellAttack: 7, spellMod: 4, level: 5,
+    casterTag: 'sorcerer', resources: { sorceryPoints: 5 }, resourceCap: { sorceryPoints: 5 }, metamagic: { heightened: 2 }, weaponOptions: [], ...p });
+  const foe = (id: string, wis: number) => mk(id, { side: 'enemies', hp: 45, maxHp: 45, creatureType: 'humanoid', weaponOptions: [sword], saves: { str: 0, dex: 0, con: 0, int: 0, wis, cha: 0 } });
+  // Tek düşman: tek hedefli yapım (motor çok hedefli yapımda Heightened'ı uygulamaz; SRD: bir hedef).
+  const pick = (k: number, wis: number) => chooseCommand(field([sorc(), foe('F0', wis)], { A: P.A, F0: P.F0 }, k));
+  it('sürüm 55: kurtulması orta olasılıklı hedefe Heightened ekler', () => {
+    const cmd = pick(55, 3);
+    expect(cmd).toMatchObject({ type: 'cast_spell', spellName: 'Hold Person', metamagic: ['heightened'] });
+  });
+  it('olumsuz: hedef zaten neredeyse kesin başarısızsa eklemez; sürüm 54\'te eklemez', () => {
+    const low = pick(55, -10);
+    expect((low as { metamagic?: string[] }).metamagic ?? []).not.toContain('heightened');
+    const old = pick(54, 3);
+    expect((old as { metamagic?: string[] }).metamagic ?? []).not.toContain('heightened');
+  });
+});
