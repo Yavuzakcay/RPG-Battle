@@ -141,3 +141,23 @@ describe('Y1 G2b: Dancing Lights taşıma', () => {
     expect(chooseCommand(scene(54)).type).not.toBe('spell_followup');
   });
 });
+
+describe('Y1 G2c: Charm Person (sürümlü mekanik: G6 dominate)', () => {
+  const P = { A: { col: 2, row: 3 }, F0: { col: 6, row: 2 }, F1: { col: 6, row: 4 } };
+  const foe = (id: string, type = 'humanoid') => mk(id, { side: 'enemies', hp: 45, maxHp: 45, creatureType: type, weaponOptions: [sword] });
+  const charmer = (p: Partial<Combatant> = {}) => wiz(['Charm Person'], { hp: 60, maxHp: 60, weaponOptions: [], ...p });
+  it('sürüm 55: iki Humanoid düşmanın güçlüsüne Charm Person (taraf değiştirme ilkeli)', () => {
+    const s = field([charmer(), foe('F0'), foe('F1')], P, 55);
+    expect(chooseCommand(s)).toMatchObject({ type: 'cast_spell', spellName: 'Charm Person' });
+  });
+  it('konsantrasyon sürerken de (Charm Person konsantrasyonsuz) seçer', () => {
+    const s = field([charmer({ concentration: { spell: 'Bless', slotLevel: 1, turn: '1:0' } }), foe('F0'), foe('F1')], P, 55);
+    expect(chooseCommand(s)).toMatchObject({ type: 'cast_spell', spellName: 'Charm Person' });
+  });
+  it('olumsuz: Humanoid olmayan düşmana yapmaz; sürüm 54\'te Charm Person seçilmez', () => {
+    const beasts = field([charmer(), foe('F0', 'beast'), foe('F1', 'beast')], P, 55);
+    expect(chooseCommand(beasts)).not.toMatchObject({ type: 'cast_spell', spellName: 'Charm Person' });
+    const old = field([charmer(), foe('F0'), foe('F1')], P, 54);
+    expect(chooseCommand(old)).not.toMatchObject({ type: 'cast_spell', spellName: 'Charm Person' });
+  });
+});

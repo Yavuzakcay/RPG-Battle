@@ -2432,15 +2432,20 @@ function retreatChoice(state: BattleState, actor: Combatant): Command | null {
 function banishChoice(state: BattleState, actor: Combatant): Command | null {
   // Kuyruk 18 H2: aynı kuralla Dominate Person/Beast (yönetilen düşman bizim için savaşır), Polymorph (düşman zayıf
   // Beast olur) ve Resilient Sphere (güçlü düşman kürede yalıtılır). Öncelik: Dominate > Polymorph > Banishment > küre.
-  if (actor.concentration || castable(actor).some((s) => s.concentration && !!s.mechanics.lingering)) return null;
+  // Kuyruk Y1 (sürüm 55): sürümlü mekanik okunur (`mechanicsAt`: Charm Person'ın G6 `dominate`'i); konsantrasyonsuz büyü
+  // (Charm Person) konsantrasyon sürerken de seçilebilir. 54 ve altında ham mekanik ve eski konsantrasyon kuralı.
+  const v55 = ruleVersion(state) >= 55;
+  const mech = (s: Spell) => (v55 ? mechanicsAt(state, s) : s.mechanics);
+  const busy = !!actor.concentration || castable(actor).some((s) => s.concentration && !!s.mechanics.lingering);
+  if (busy && !v55) return null;
   const foes = foesOf(state, actor).filter((c) => c.hp > 0);
   if (foes.length < 2) return null;
-  const rank = (s: (typeof spells)[number]) => { const e = s.mechanics.effect; return e?.dominate ? 0 : e?.polymorph ? 1 : e?.banished ? 2 : 3; };
-  const spells = castable(actor).filter((s) => s.mechanics.kind === 'effect'
-    && (!!s.mechanics.effect?.banished || !!s.mechanics.effect?.dominate || !!s.mechanics.effect?.polymorph || !!s.mechanics.effect?.sealed))
+  const rank = (s: Spell) => { const e = mech(s).effect; return e?.dominate ? 0 : e?.polymorph ? 1 : e?.banished ? 2 : 3; };
+  const list = castable(actor).filter((s) => mech(s).kind === 'effect' && !(busy && s.concentration)
+    && (!!mech(s).effect?.banished || !!mech(s).effect?.dominate || !!mech(s).effect?.polymorph || !!mech(s).effect?.sealed))
     .sort((a, b) => rank(a) - rank(b));
-  for (const spell of spells) {
-    const types = spell.mechanics.effect?.onlyTypes;
+  for (const spell of list) {
+    const types = mech(spell).effect?.onlyTypes;
     const target = foes.filter((c) => c.hp >= 30 && !c.shape && !c.effects?.some((e) => e.banished || e.dominate || e.polymorph || e.sealed)
       && (!types || types.includes(c.creatureType ?? 'humanoid')))
       .sort((a, b) => b.hp - a.hp)[0];
