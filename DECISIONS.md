@@ -46,7 +46,14 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - katman + irtifa (K71c);
   - duvar tepesinde durma (K5).
   K71-PLAN tablosunda K71a satırındaki "yaratık üstünden uçma (K6)" kullanıcı kararıyla çıkarıldı.
-- **Ölçüm:** bkz. NİHAİ RAPOR satırları aşağıda (YZ süresi, ana parça).
+- **Ölçüm:**
+  - YZ karar süresi (5 tekrar × 100 karar, medyan, ms; v55 → v56):
+    - Mantar sahnesi 1,78 → 1,83 (≤ 1,90 kapısı içinde);
+    - katmanlı taban sahnesi (Dağ Karakolu, 21×11, bir düşman 30 ft uçuyor) 1,86 → 1,73;
+    - uçan düşmanın kararı 1,70 → 1,58.
+    Ölçüm gürültüsü ±%15.
+  - Ana parça 374 742 bayt (değişmedi; yeni kod `maps`/`manualDice` tembel parçalarında).
+  - check:harita 96/0, check:ses 15/0.
 
 ## 2026-11-08 — Kuyruk K71-PLAN: yükseklik modeli planı (yalnız plan; kod, veri, test değişmedi)
 
