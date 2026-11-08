@@ -16,6 +16,7 @@ import { ABILITIES, type Ability } from '../rules/abilities';
 import { attackDice, saveDice } from './effectDice';
 import { saveMode, spellTimerEvents } from './durations';
 import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
+import { danceMax, danceMoveHexes } from './danceLights';
 import { ruleVersion } from './ruleVersion';
 import type { AreaShape } from '../rules/area';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
@@ -1196,6 +1197,10 @@ function executeTrueStrike(state: BattleState, actor: Combatant, cmd: CastComman
  * Görev B4 (Flame Blade): yapmak saldırı içermez: slot, konsantrasyon ve büyücüde ışık (`selfLight`). Saldırı
  * `spell_followup` ile (`repeat`), aynı turda da.
  */
+/** Büyücüdeki ışık (`selfLight`; Kuyruk K67b, sürüm 51: ek loş `selfLightDim`, veri sürüm bloğundan). */
+export const selfLightOf = (m: SpellMechanics): { light?: number; lightDim?: number } =>
+  ({ ...(m.selfLight !== undefined ? { light: m.selfLight } : {}), ...(m.selfLightDim ? { lightDim: m.selfLightDim } : {}) });
+
 function executeCastOnly(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
   // Kuyruk A7 (Flame Blade, `freeHand`): boş el gerekir (yan el silahı ya da kalkan taşıyan yapamaz).
   if (spell.mechanics.freeHand && (actor.offHandOption || actor.shieldHeld)) return fail(`${spell.name} için boş bir el gerekir (yan el silahı ya da kalkan var).`);
@@ -1209,10 +1214,10 @@ function executeCastOnly(state: BattleState, actor: Combatant, cmd: CastCommand,
     const old = actor.effects?.find((e) => e.id === spell.srd);
     if (old) events.unshift({ type: 'effect_ended', targetId: actor.id, effectId: old.id, name: old.name, reason: 'expired' });
     events.push({ type: 'effect_added', targetId: actor.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id, until: state.round + m.held - 1,
-      held: { spell: spell.name, slotLevel: slot.slotLevel }, ...(m.selfLight !== undefined ? { light: m.selfLight } : {}) } });
+      held: { spell: spell.name, slotLevel: slot.slotLevel }, ...selfLightOf(m) } });
   } else if (m.selfLight !== undefined || spell.concentration) {
     events.push({ type: 'effect_added', targetId: actor.id, effect: { id: spell.srd, name: spell.name, sourceId: actor.id,
-      ...(spell.concentration ? { concentration: spell.name } : {}), ...(m.selfLight !== undefined ? { light: m.selfLight } : {}) } });
+      ...(spell.concentration ? { concentration: spell.name } : {}), ...selfLightOf(m) } });
   }
   return finish(state, events);
 }
@@ -1312,9 +1317,16 @@ function executeDispelZone(state: BattleState, actor: Combatant, cmd: CastComman
 }
 
 /** Kuyruk 19: alanı taşıma (Faithful Hound: Magic eylemiyle 30 ft). */
-export function executeZoneShift(state: BattleState, actor: Combatant, to: { col: number; row: number }): CommandResult {
+export function executeZoneShift(state: BattleState, actor: Combatant, to: { col: number; row: number }, points?: Offset[]): CommandResult {
   const m = movableZoneOf(state, actor);
   if (!m) return fail('Taşınacak alan yok.');
+  // Kuyruk K67b (sürüm 51, Dancing Lights): ışıklar ayrı ayrı (`points`) ya da birlikte ötelenir; denetim `danceLights.ts`.
+  if (danceMax(state, m.spell)) {
+    const next = danceMoveHexes(state, actor, m.spell, m.zone, to, points);
+    if (typeof next === 'string') return fail(next);
+    return finish(state, [{ type: 'spell_cast', actorId: actor.id, targetId: null, label: `${m.spell.name} (taşındı)`, slotLevel: null, note: `${next.length} ışık` },
+      { type: 'zone_moved', zoneId: m.zone.id, hexes: next, center: next[0] }]);
+  }
   const ft = m.spell.mechanics.repeat?.moveZoneFt || speedHexes(actor) * 10;
   // Kuyruk A7 (Dancing Lights): ışık büyünün menzili dışına taşınamaz (çıkarsa söner).
   if (ruleVersion(state) >= 36 && m.spell.rangeFt > 5 && actor.pos && distance(actor.pos, to) * 5 > m.spell.rangeFt) return fail(`${m.spell.name} menzili ${m.spell.rangeFt} ft.`);

@@ -269,6 +269,8 @@
         {
           "id": "night",
           "lights": [[10, 1], [14, 1], [9, 2], [8, 3], [8, 4], [10, 4], [9, 6], [12, 3], [13, 5]],
+          "brightRadiusHexes": 4,
+          "dimRadiusHexes": 4,
           "lightRadiusHexes": 2,
           "passivePerceptionPenalty": 5,
           "hideAdvantage": true,

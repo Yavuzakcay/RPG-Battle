@@ -32,7 +32,7 @@ export function executeDropBlade(state: BattleState, actor: Combatant): CommandR
   const b = bladeOf(actor);
   if (!b || !mechanicsAt(state, b.sp).bladeRecall) return fail('Elinde alev bıçağı yok.');
   if (b.e.bladeGone) return fail('Bıçak zaten bırakıldı.');
-  const { light: _l, ...rest } = b.e;
+  const { light: _l, lightDim: _d, ...rest } = b.e;
   return finish(state, [{ type: 'effect_added', targetId: actor.id, effect: { ...rest, bladeGone: true } },
     { type: 'map_note', text: `${actor.name}: ${b.sp.name} bıçağını bıraktı (kayboldu; bonus eylemle yeniden çağrılır).` }]);
 }
@@ -44,7 +44,7 @@ export function recallBlade(state: BattleState, actor: Combatant, spell: Spell):
   if (actor.offHandOption || actor.shieldHeld) return fail(`${spell.name} için boş bir el gerekir (yan el silahı ya da kalkan var).`);
   const m = mechanicsAt(state, spell);
   const { bladeGone: _g, ...rest } = e;
-  return finish(state, [{ type: 'effect_added', targetId: actor.id, effect: { ...rest, ...(m.selfLight !== undefined ? { light: m.selfLight } : {}) } },
+  return finish(state, [{ type: 'effect_added', targetId: actor.id, effect: { ...rest, ...(m.selfLight !== undefined ? { light: m.selfLight } : {}), ...(m.selfLightDim ? { lightDim: m.selfLightDim } : {}) } },
     { type: 'spell_cast', actorId: actor.id, targetId: actor.id, label: `${spell.name} (yeniden çağrıldı)`, slotLevel: null, note: '' }]);
 }
 

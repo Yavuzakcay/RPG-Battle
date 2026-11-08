@@ -67,6 +67,7 @@ import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
 import { askChoice } from '../rules/choice';
 // Kuyruk S1: büyücüye bağlı alanlar (komut sonu kancası).
 import './anchorZones';
+import { danceCleanupEvents } from './danceLights';
 import { executeVerticalMove } from './altitude';
 import './hiddenZones';
 import { executeDropItem, executePickUp } from './heldItems';
@@ -260,6 +261,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   const vanished = summonCleanup(next);
   if (vanished.length) { next = applyEvents(next, vanished); events = [...events, ...vanished]; }
+  // Kuyruk K67b (sürüm 51): büyücünün menzilinden çıkan Dancing Lights ışığı söner.
+  const dimmed = danceCleanupEvents(next);
+  if (dimmed.length) { next = applyEvents(next, dimmed); events = [...events, ...dimmed]; }
   // Görev CLERIC: Warding Bond: bağlı hedefin aldığı hasar büyücüye (her hasar yolunda, komutun sonunda).
   const bonded = bondEvents(state, next, rng);
   if (bonded.length) { next = applyEvents(next, bonded); events = [...events, ...bonded]; }
@@ -769,7 +773,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     // Kuyruk 19: Tree Stride (her tur bir kez ağaçtan ağaca).
     if (cmd.targetHex && strideSpellOf(state, actor)) return executeStride(state, actor, cmd.targetHex);
     // Kuyruk 19: Faithful Hound taşıma (hedef altıgen).
-    if (cmd.targetHex && movableZoneOf(state, actor)) return executeZoneShift(state, actor, cmd.targetHex);
+    if (cmd.targetHex && movableZoneOf(state, actor)) return executeZoneShift(state, actor, cmd.targetHex, cmd.targetHexes);
     // Kuyruk A6: elde tutulan büyü (Produce Flame) ve sürüme göre tekrar alanları; noktaya tekrar (Call Lightning).
     const fsp = spells.find((x) => x.name === (heldFollow(state, actor)?.spell ?? actor.concentration?.spell));
     if (fsp && mechanicsAt(state, fsp).repeat) return executeRepeat(state, actor, cmd.targetId, rng, cmd.choice, cmd.targetHex);

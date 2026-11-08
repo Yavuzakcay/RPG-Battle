@@ -77,6 +77,7 @@ import { effectIcons, effectRows } from './ui/effectsView';
 import { effectTargetCount, strideSpellOf } from './battle/spells';
 import { wishCandidates } from './battle/spells69';
 import { movableZoneOf } from './battle/zones';
+import { DANCE_COMBINED, danceAddProblem, danceMax } from './battle/danceLights';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionTip } from './ui/actionHints';
@@ -518,6 +519,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         setAimPts(aimPts.slice(0, -1)); setAimHex(h); return;
       }
       const why = pathAddProblem(state, me, areaAct.spell, aimPts, wp, h, areaPathRules(state, areaAct));
+      if (why) { toast(why); return; }
+      setAimPts([...aimPts, h]); setAimHex(h); return;
+    }
+    // Kuyruk K67b (Dancing Lights): dokun-ekle / dokun-çıkar; eklenen ışık menzilde ve seçilmiş bir ışığın 20 ft içinde (motorla aynı ileti).
+    if (areaAct?.kind === 'spell' && me && danceMax(state, areaAct.spell) && choicePick !== DANCE_COMBINED) {
+      if (aimPts.some((p) => sameHex(p, h))) { setAimPts(aimPts.filter((p) => !sameHex(p, h))); setAimHex(h); return; }
+      const why = danceAddProblem(state, me, areaAct.spell, aimPts, h);
       if (why) { toast(why); return; }
       setAimPts([...aimPts, h]); setAimHex(h); return;
     }
@@ -1477,6 +1485,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Kuyruk 19: altıgen hedefli sürdürme (Tree Stride ağaçtan ağaca, Faithful Hound taşıma).
     ...(hexFollowKeys(state, actorId).length
       ? [{ key: 'followHex', label: N.moveHex, act: () => { reset(); setMode('followHex'); setMenuOpen(false); } }] : []),
+    // Kuyruk K67b (sürüm 51): Dancing Lights'ın birden çok ışığı ayrı ayrı taşınır (ortak alan seçicisi).
+    ...((mz) => (mz && danceMax(state, mz.spell) && mz.zone.hexes.length > 1
+      ? [{ key: 'danceMove', label: B.k67.moveApart, reason: why({ type: 'spell_followup', actorId, targetId: actorId, targetHex: mz.zone.hexes[0] as Offset }) ?? undefined,
+        act: () => { reset(); setAreaAct({ kind: 'danceMove', zoneId: mz.zone.id, count: mz.zone.hexes.length }); setMode('aim'); setMenuOpen(false); } }] : []))(movableZoneOf(state, actor)),
     // Kuyruk 19: süreli tekrarı olan bütün konsantrasyon büyüleri (Heat Metal, Call Lightning, Compulsion…) oyuncu menüsünde.
     ...(actor.concentration && (['Spiritual Weapon', "Hunter's Mark"].includes(actor.concentration.spell) || (!!spellOf(actor.concentration.spell)?.mechanics.repeat && spellOf(actor.concentration.spell)?.mechanics.repeat?.moveZoneFt === undefined) || !!spellOf(actor.concentration.spell)?.mechanics.endFunctions)
       ? [{ key: 'followup', label: actor.concentration.spell === "Hunter's Mark" ? N.mark : actor.concentration.spell === 'Spiritual Weapon' ? N.weapon : N.repeat,
@@ -2128,6 +2140,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setMode('aim'); }
                       // Kuyruk K65c (sürüm 49): panelli duvarlar ortak alan seçicisinde (düz, yay, halka, serbest panel yolu).
                       else if (kind === 'target' && sp.area && mechanicsAt(state, sp).pathRules) { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setWallShape('path'); setMode('aim'); }
+                      // Kuyruk K67b (sürüm 51): Dancing Lights ortak alan seçicisinde (dört ışık / birleşik biçim).
+                      else if (danceMax(state, sp)) { setSpell(sp); setChoicePick(null); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setMode('aim'); }
                       else if (kind === 'target') { setSpell(sp); setChoicePick(sp.mechanics.conditionChoices?.[0] ?? sp.mechanics.damageChoices?.[0] ?? sp.mechanics.restoreChoices?.[0] ?? sp.mechanics.abilityChoices?.[0] ?? null); setMode('spell'); }
                       // Kuyruk K62 (sürüm 46): Forcecage: hedef altıgen + kutu/kafes seçimi (alan hazır ayarlı).
                       // Kuyruk K65b (sürüm 49): Forcecage serbest şekil: ortak alan seçici (kutu/kafes düğmesi, sayaç).
@@ -2356,7 +2370,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const selfShape = sp.spec.origin === 'self' && sp.spec.shape !== 'emanation';
             const needAim = sp.spec.shape !== 'emanation';
             const picker = areaAct.kind === 'spell' && slotChoices(actor, areaAct.spell).length > 1 ? 64 : 0;
-            const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker + (areaFreeShape(state, areaAct, choicePick) ? (areaAct.kind === 'spell' && mechanicsAt(state, areaAct.spell).zone?.cage ? 100 : 56) : 0)) };
+            const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker + (areaFreeShape(state, areaAct, choicePick) ? (areaAct.kind === 'spell' && mechanicsAt(state, areaAct.spell).zone?.cage ? 100 : 56) : 0)
+              + (areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? 130 : 0)) };
             // Balon alanın ve jetonun üstünü kapatmasın: alanın ağırlık merkezinin karşı kenarına yaslanır.
             const pts = [actorPx, ...area.map(px)];
             const cx = pts.reduce((n, q) => n + q.x, 0) / pts.length;
@@ -2367,6 +2382,30 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const multi = areaPointCount(state, areaAct, choicePick, wallShape);
             const freeShape = areaFreeShape(state, areaAct, choicePick);
             const ready = multi > 1 ? aimPts.length > 0 : !needAim || !!aimHex;
+            // Kuyruk K67b: Dancing Lights ışıklarını ayrı taşıma balonu (motorun `danceMoveHexes`'i; bonus eylem).
+            if (areaAct.kind === 'danceMove') {
+              const K = B.k67;
+              const done = aimPts.length >= areaAct.count || (areaAct.count === 1 && !!aimHex);
+              const pts = areaAct.count > 1 ? aimPts : aimHex ? [aimHex] : [];
+              return (
+                <div className="bubble area-bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h + 40 }} role="dialog" aria-label={K.moveHead}>
+                  <strong>{K.moveHead}</strong>
+                  <small>{K.danceCount(pts.length, areaAct.count)} · {K.moveHint(areaAct.count)}</small>
+                  <div className="wall-shape" role="group" aria-label={K.moveHead}>
+                    <button type="button" disabled={!aimPts.length} onClick={() => setAimPts((ps) => ps.slice(0, -1))}>{B.k65.undo}</button>
+                    <button type="button" disabled={!aimPts.length && !aimHex} onClick={() => { setAimPts([]); setAimHex(null); }}>{B.k65.clear}</button>
+                  </div>
+                  {done && areaInfo?.error && <small className="warn-text">{areaInfo.error}</small>}
+                  {done && !areaInfo?.error && (
+                    <small>
+                      <span className="area-count foe">{A.foes(foes.length)}</span>{' · '}
+                      <span className="area-count friend">{A.friends(friends.length)}</span>
+                    </small>
+                  )}
+                  <button className="cta" disabled={!done || !!areaInfo?.error} onClick={() => run(areaActCommand(actorId, areaAct, aimHex, null, null, null, areaAct.count > 1 ? aimPts : undefined))}>{K.moveGo}</button>
+                </div>
+              );
+            }
             // Kuyruk K66a: yarık yerleştirme balonu (ortak alan seçicisi: dokun, yön, önizleme motorla aynı).
             if (areaAct.kind === 'fissure') {
               const K = B.k66;
@@ -2406,6 +2445,16 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     ))}
                   </div>
                 )}
+                {/* Kuyruk K67b (sürüm 51, Dancing Lights): dört ayrı ışık ya da birleşik biçim. */}
+                {areaAct.kind === 'spell' && danceMax(state, areaAct.spell) > 0 && (<>
+                  <small>{B.k67.danceCount(choicePick === DANCE_COMBINED ? (aimHex ? 1 : 0) : aimPts.length, multi)} · {B.k67.danceHint}</small>
+                  <div className="wall-shape" role="radiogroup" aria-label={B.k67.danceForm}>
+                    {([null, DANCE_COMBINED] as const).map((x) => (
+                      <button key={x ?? 'four'} type="button" role="radio" aria-checked={(choicePick === DANCE_COMBINED) === (x === DANCE_COMBINED)} className={(choicePick === DANCE_COMBINED) === (x === DANCE_COMBINED) ? 'on' : ''}
+                        onClick={() => { setChoicePick(x); setAimPts([]); setAimHex(null); }}>{x ? B.k67.danceOne : B.k67.danceFour}</button>
+                    ))}
+                  </div>
+                </>)}
                 {freeShape && (
                   <div className="wall-shape" role="group" aria-label={B.k65.head(sp.label)}>
                     <button type="button" disabled={!aimPts.length || !!(actor && areaAct.kind === 'spell' && freeRemoveProblem(state, actor, areaAct.spell, freeShape, aimPts, aimPts[aimPts.length - 1] as Offset))}
@@ -2413,7 +2462,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <button type="button" disabled={!aimPts.length} onClick={() => { setAimPts([]); setAimHex(null); }}>{B.k65.clear}</button>
                   </div>
                 )}
-                {multi > 1 && !freeShape && <small>{areaPathRules(state, areaAct) ? `${B.k65.panels(aimPts.length, multi)} · ${B.k65.pathHint}` : A.pickPoints(aimPts.length, multi)}</small>}
+                {multi > 1 && !freeShape && !(areaAct.kind === 'spell' && danceMax(state, areaAct.spell)) && <small>{areaPathRules(state, areaAct) ? `${B.k65.panels(aimPts.length, multi)} · ${B.k65.pathHint}` : A.pickPoints(aimPts.length, multi)}</small>}
                 {!ready && multi <= 1 && <small>{selfShape ? A.pickDir : A.pickPoint}</small>}
                 {ready && areaInfo?.error && <small className="warn-text">{areaInfo.error}</small>}
                 {ready && !areaInfo?.error && (
@@ -2464,11 +2513,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {/* Kuyruk K65b: Forcecage'de önizleme kartı yok (hasar/durum yok, "etkisiz" yanıltır); içeride kalacaklar yukarıdaki listede. */}
                 {pvSet.on && ready && !areaInfo?.error && !(areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage) && <Suspense fallback={null}><PreviewCard state={state} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet}
                   cmd={areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
-                    areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
+                    areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? (choicePick === DANCE_COMBINED ? DANCE_COMBINED : null) : areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
                     areaExcludable(state, areaAct) ? excluded : undefined)} /></Suspense>}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
                   onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
-                    areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
+                    areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? (choicePick === DANCE_COMBINED ? DANCE_COMBINED : null) : areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
                     areaExcludable(state, areaAct) ? excluded : undefined))}>
                   {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}
                 </button>

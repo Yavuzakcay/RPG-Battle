@@ -169,6 +169,8 @@
         },
         {
           "id": "brazierLight",
+          "brightRadius": 4,
+          "dimRadius": 4,
           "surum": 8,
           "radius": 2,
           "note": "Mangallar ışık verir; söndürülen mangal (bitişikken eylem) karanlık bırakır."
@@ -236,6 +238,8 @@
         },
         {
           "id": "brazierLight",
+          "brightRadius": 4,
+          "dimRadius": 4,
           "surum": 8,
           "radius": 2
         },

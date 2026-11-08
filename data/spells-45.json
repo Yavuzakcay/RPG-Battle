@@ -771,8 +771,9 @@
         "icon": "🔥",
         "retortDice": "2d8"
       },
-      "k19": "Kuyruk 19: 5 ft içinden yakın dövüş saldırısıyla vurana 2d8 (sıcak kalkan Cold direnci + Fire, soğuk kalkan Fire direnci + Cold; anahtar spellsK19). Hasarsız isabet (0 hasar) tetiklemez."
-    },
+      "k19": "Kuyruk 19: 5 ft içinden yakın dövüş saldırısıyla vurana 2d8 (sıcak kalkan Cold direnci + Fire, soğuk kalkan Fire direnci + Cold; anahtar spellsK19). Hasarsız isabet (0 hasar) tetiklemez.",
+   "k67": {"effect": {"targets": 1, "side": "ally", "self": true, "rounds": 100, "resist": "chosen", "choices": ["cold", "fire"], "light": 2, "icon": "🔥", "retortDice": "2d8", "lightDim": 2}}
+  },
     "school": "Evocation",
     "srdPage": 132
   },

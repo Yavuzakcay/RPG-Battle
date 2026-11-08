@@ -45,6 +45,7 @@ import { ruleVersion } from './ruleVersion';
 import { mechanicsAt } from './spellVersion';
 import { altitudeInZone } from './altitude';
 import { senseSees } from './sight';
+import { DANCE_COMBINED, danceMax, danceProblem } from './danceLights';
 import { concentrationEvent, spendSlot } from './slots';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
 
@@ -517,6 +518,13 @@ function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offs
     if (distance(actor.pos, aim) * 5 > spell.rangeFt) return fail(`${spell.name}: hedef menzil dışında (${spell.rangeFt} ft).`);
     return castCageHexes(state, aim, cmd?.choice === 'cage' ? 'bars' : 'box', cg.barsRadius);
   }
+  // Kuyruk K67b (sürüm 51, Dancing Lights): ayrı ışık noktaları (en çok 4, `targetHexes`) ya da birleşik biçim (tek nokta).
+  if (danceMax(state, spell)) {
+    const combined = cmd?.choice === DANCE_COMBINED;
+    const pts = !combined && cmd?.targetHexes?.length ? cmd.targetHexes : aim ? [aim] : [];
+    const why = danceProblem(state, actor, spell, pts, combined);
+    return why ? fail(why) : pts;
+  }
   if (!spell.area) return fail(`${spell.name}: alan tanımı yok.`);
   // Kuyruk S2 (sürüm 41, Wind Wall `wallPath`): serbest duvar: birbirine bitişik altıgen yolu (en çok N), ilki menzilde.
   const wp = ruleVersion(state) >= 41 ? spell.mechanics.wallPath : undefined;
@@ -615,6 +623,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
       ...(spell.concentration && !spec.bead ? { concentration: spell.name } : {}),
       ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
       ...(fissureCount ? { fissures: { count: fissureCount, turn: turnKey(state) } } : {}),
+      // Kuyruk K67b: Dancing Lights ışık noktaları (taşıma ilk ışıktan ölçülür); birleşik biçim adında.
+      ...(danceMax(state, spell) ? { center: hexes[0], ...(cmd.choice === DANCE_COMBINED ? { name: `${spell.name} (birleşik)` } : {}) } : {}),
     };
     events.push({ type: 'zone_created', zone });
     // Kuyruk K62: kafes açılırken kısmen içeride ya da sığmayan yaratık dışarı itilir.
@@ -690,10 +700,11 @@ function dispelLightEvents(state: BattleState, hexes: Offset[], maxLevel: number
   const out: BattleEvent[] = [];
   for (const c of Object.values(state.combatants)) {
     if (!c.pos || !inArea(c.pos)) continue;
-    for (const e of c.effects ?? []) if (e.light !== undefined && e.id.startsWith('spells:') && low(e.id.slice(7).split(':')[0] as string)) out.push({ type: 'effect_ended', targetId: c.id, effectId: e.id, name: e.name, reason: 'dispelled' });
+    // Kuyruk K67b: loş ışık da ışıktır (SRD: "Bright Light or Dim Light created by a spell"; `lightDim` yalnız sürüm 51+).
+    for (const e of c.effects ?? []) if ((e.light !== undefined || !!e.lightDim) && e.id.startsWith('spells:') && low(e.id.slice(7).split(':')[0] as string)) out.push({ type: 'effect_ended', targetId: c.id, effectId: e.id, name: e.name, reason: 'dispelled' });
   }
   for (const z of state.map?.zones ?? []) {
-    if ((z.spec ?? zoneSpecOf(z))?.light !== undefined && low(z.spellId) && zoneHexes(state, z).some(inArea)) out.push({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'dispelled' });
+    if (((z.spec ?? zoneSpecOf(z))?.light !== undefined || (z.spec ?? zoneSpecOf(z))?.lightDim !== undefined) && low(z.spellId) && zoneHexes(state, z).some(inArea)) out.push({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'dispelled' });
   }
   for (const o of state.map?.objects ?? []) {
     const at = o.carriedBy ? state.combatants[o.carriedBy]?.pos : o.at;

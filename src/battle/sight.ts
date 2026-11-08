@@ -52,6 +52,16 @@ export const hiddenFromTruesight = (state: Pick<BattleState, 'map' | 'kuralSurum
 export const seesTrueForm = (state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean =>
   !!target.shape && truesightSees(state, observer, target);
 
+/**
+ * Kuyruk K67b: görmeye dayalı Algı cezasını kaldıran duyuların menzili (ft): Blindsight ("without relying on physical
+ * sight", Darkness içinde de; Feral Senses 30 ft) ve Truesight ("sees in normal and magical Darkness"). Tremorsense görmez.
+ */
+export function sightSenseFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, observer: Combatant): number {
+  const feral = observer.traits?.includes('feral-senses') && globalRule(state, 'featuresK19') ? 30 : 0;
+  const blind = observer.senses && globalRule(state, 'specialSenses') ? observer.senses.blindsight ?? 0 : 0;
+  return Math.max(feral, blind, truesightRange(state, observer));
+}
+
 export function senseSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean {
   if (!state || !observer.pos || !target.pos) return false;
   // Kuyruk 19 (featuresK19): Ranger'ın Feral Senses'i Blindsight 30 ft (görünmez yaratığa saldırı dezavantajı da kalkar).

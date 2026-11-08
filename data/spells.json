@@ -204,8 +204,9 @@
           "target": "any"
         },
         "approx": null
-      }
-    },
+      },
+   "k67": {"selfLight": 4, "selfLightDim": 4}
+  },
     "school": "Conjuration",
     "srdPage": 156
   },
@@ -1799,8 +1800,9 @@
       "s2": {
         "sphereTerrain": true,
         "sigmayan": null
-      }
-    },
+      },
+   "k67": {"zone": {"rounds": 10, "on": ["end"], "save": "dex", "damage": "2d6", "damageType": "fire", "half": true, "color": "#ff8a3a", "icon": "🔥", "light": 4, "lightDim": 4}}
+  },
     "school": "Conjuration",
     "srdPage": 132
   },
@@ -1898,8 +1900,9 @@
           "heightFt": 40
         },
         "sigmayan": null
-      }
-    },
+      },
+   "k67": {"zone": {"rounds": 10, "on": ["cast", "enter", "end"], "once": true, "save": "con", "damage": "2d10", "damageType": "radiant", "half": true, "color": "#c9d6ff", "icon": "🌙", "revertShape": true, "heightFt": 40, "lightDim": 0}}
+  },
     "school": "Evocation",
     "srdPage": 150
   },
@@ -2103,8 +2106,9 @@
       "upcast": {
         "dice": "1d6",
         "applied": true
-      }
-    },
+      },
+   "k67": {"wardLight": 1}
+  },
     "school": "Transmutation",
     "srdPage": 162
   },
@@ -4602,8 +4606,9 @@
         },
         "kapsamDisi": "Dört ayrı ışık yerine birleşik insansı biçim (SRD seçeneği); loş ışık ayrımı ışık modelinde yok.",
         "approx": null
-      }
-    },
+      },
+   "k67": {"zone": {"rounds": 10, "lightDim": 2, "color": "#fff3b0", "icon": "✨"}, "lightPoints": 4, "repeat": {"cost": "bonus", "target": "any", "moveZoneFt": 60}, "kapsamDisi": null}
+  },
     "school": "Illusion",
     "srdPage": 121
   },
@@ -4730,8 +4735,9 @@
           "untilSourceTurnEnd": true
         },
         "approx": ""
-      }
-    },
+      },
+   "k67": {"afterHit": {"revealed": true, "lightDim": 2, "untilSourceTurnEnd": true}}
+  },
     "school": "Evocation",
     "srdPage": 165
   },
@@ -4772,8 +4778,9 @@
       "s2": {
         "bladeRecall": true,
         "sigmayan": null
-      }
-    },
+      },
+   "k67": {"selfLight": 2, "selfLightDim": 2}
+  },
     "school": "Evocation",
     "srdPage": 132
   },

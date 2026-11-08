@@ -30,13 +30,13 @@ const bow: AttackOption = { label: 'Longbow', attackBonus: 5, damage: '1d8+3', d
 const LOW = { str: -10, dex: -10, con: -10, int: -10, wis: -10, cha: -10 };
 
 /** Düz zemin (harita kuralları `mapId`'den); sıra A (büyücü, 3,3), B (düşman), C (dost, 2,3). */
-function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, c: Partial<Combatant> = {}, bPos = o(4, 3), mapId = 'col') {
+function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, c: Partial<Combatant> = {}, bPos = o(4, 3), mapId = 'col', ver?: number) {
   const parts = [
     mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, spellAttack: 5, spellSaveDc: 13, spellMod: 3, proficiency: 3, spellSlots: SLOTS, weaponOptions: [sword, bow], ...a }),
     mk('B', { side: 'enemies', hp: 60, maxHp: 60, attacks: [claw], saves: LOW, ...b }),
     mk('C', { ownerId: 'p2', hp: 20, maxHp: 20, weaponOptions: [sword], ...c }),
   ];
-  const started = startBattle('b5', 'd-z-zemin', parts, () => 0.5, { map: { id: mapId } });
+  const started = startBattle('b5', 'd-z-zemin', parts, () => 0.5, { map: { id: mapId }, ...(ver ? { kuralSurumu: ver } : {}) });
   const pos: Record<string, Offset> = { A: o(3, 3), B: bPos, C: o(2, 3) };
   const combatants = { ...started.state.combatants };
   for (const [id, p] of Object.entries(pos)) combatants[id] = { ...(combatants[id] as Combatant), pos: p };
@@ -131,7 +131,8 @@ describe('süren etkiler', () => {
     r.replays();
   });
   it('Darkvision: karanlık haritada uzaktaki ışıksız hedef görülür', () => {
-    const r = arena({ spellNames: ['Darkvision'], darkvision: 0 }, {}, {}, o(13, 0), 'magara');
+    // Kuyruk K67b: sürüm 50 (Mağara'nın meşaleleri 2 altıgen). Sürüm 51'de SRD meşalesi Mağara'yı loşla doldurur: k67b.test.ts.
+    const r = arena({ spellNames: ['Darkvision'], darkvision: 0 }, {}, {}, o(13, 0), 'magara', 50);
     const lit = litHexes(r.state);
     const spot = [...Array(15).keys()].flatMap((col) => [...Array(7).keys()].map((row) => o(col, row)))
       .find((h) => !lit.has(`${h.col},${h.row}`) && Math.abs(h.col - 3) >= 6) as Offset;

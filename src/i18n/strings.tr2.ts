@@ -325,7 +325,11 @@ export const TR_EXTRA = {
       wardCast: (spell: string): string => `${spell} kur`, wardReverse: 'Ters yön (dışarıdakileri korur)' },
     k63: { truesight: (ft: number): string => `Gerçek görüş ${ft} ft (görünmezi, yanılsamayı, gerçek biçimi görür)`, trueForm: (name: string): string => `Gerçek biçim: ${name}` },
     // Kuyruk K67a: büyünün ışığı (sürüm 51).
-    k67: { light: (bright: number, dim: number): string => (bright ? `ışık ${bright} ft parlak + ${dim} ft loş` : `ışık ${dim} ft loş`) },
+    k67: { light: (bright: number, dim: number): string => (bright && dim ? `ışık ${bright} ft parlak + ${dim} ft loş` : bright ? `ışık ${bright} ft parlak` : `ışık ${dim} ft loş`),
+      // Kuyruk K67b: Dancing Lights seçicisi ve taşıma.
+      danceForm: 'Biçim', danceFour: 'Dört ışık', danceOne: 'Birleşik biçim', danceHint: 'Her ışık başka bir ışığın 20 ft içinde; her biri 10 ft loş.',
+      danceCount: (n: number, max: number): string => `${n}/${max} ışık`, moveApart: 'Işıkları ayrı taşı', moveHead: 'Dancing Lights: ışıkları taşı',
+      moveHint: (n: number): string => `${n} ışığın her biri için sırayla yeni yer seç (en çok 60 ft; bonus eylem).`, moveGo: 'Taşı (bonus eylem)' },
     // Kuyruk K66a: Earthquake yarıkları.
     k66: { menu: (n: number, max: number): string => `Yarık yerleştir (${n}/${max})`, head: 'Earthquake: yarık', count: (n: number, max: number): string => `${n}/${max} yarık`,
       hint: 'Altıgene dokun, yönü seç; yarık tur sonunda açılır', dir: ['╲↑', '╲↓', '╱↑', '╱↓', '│→', '│←'], dirName: ['eğik (╲), üst yan', 'eğik (╲), alt yan', 'eğik (╱), üst yan', 'eğik (╱), alt yan', 'dikey, sağ yan', 'dikey, sol yan'], go: 'Yarığı yerleştir',

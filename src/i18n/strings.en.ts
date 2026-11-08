@@ -907,7 +907,11 @@ export const en: Strings = {
         : 'Magic Circle (1 minute): 10-ft cylinder; the chosen types can\'t possess, charm or frighten creatures inside and have Disadvantage attacking them.'),
       wardCast: (spell: string): string => `Set up ${spell}`, wardReverse: 'Reverse (protects those outside)' },
     k63: { truesight: (ft: number): string => `Truesight ${ft} ft (sees invisible, illusions, true form)`, trueForm: (name: string): string => `True form: ${name}` },
-    k67: { light: (bright: number, dim: number): string => (bright ? `light ${bright} ft bright + ${dim} ft dim` : `light ${dim} ft dim`) },
+    k67: { light: (bright: number, dim: number): string => (bright && dim ? `light ${bright} ft bright + ${dim} ft dim` : bright ? `light ${bright} ft bright` : `light ${dim} ft dim`),
+      // Kuyruk K67b: Dancing Lights picker and moving.
+      danceForm: 'Form', danceFour: 'Four lights', danceOne: 'Combined form', danceHint: 'Each light within 20 ft of another light; each sheds 10 ft of dim light.',
+      danceCount: (n: number, max: number): string => `${n}/${max} lights`, moveApart: 'Move lights separately', moveHead: 'Dancing Lights: move the lights',
+      moveHint: (n: number): string => `Pick a new space for each of the ${n} lights in order (up to 60 ft; Bonus Action).`, moveGo: 'Move (Bonus Action)' },
     k66: { menu: (n: number, max: number): string => `Place fissure (${n}/${max})`, head: 'Earthquake: fissure', count: (n: number, max: number): string => `${n}/${max} fissures`,
       hint: 'Tap a hex, pick a direction; the fissure opens at the end of the turn', dir: ['╲↑', '╲↓', '╱↑', '╱↓', '│→', '│←'], dirName: ['diagonal (╲), upper side', 'diagonal (╲), lower side', 'diagonal (╱), upper side', 'diagonal (╱), lower side', 'vertical, right side', 'vertical, left side'], go: 'Place fissure',
       climb: (ft: number): string => `Climb (${ft} ft down a fissure)`, climbHint: 'Tap the adjacent hex to climb out to', inFissure: (ft: number): string => `In a fissure (${ft} ft)`,

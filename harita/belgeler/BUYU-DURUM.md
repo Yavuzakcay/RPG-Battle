@@ -13,7 +13,7 @@ Toplam 339 = savaşta kullanılan 225 + savaş dışı 114.
 | 6–9 | 50 | 0 | 0 | 34 | 84 |
 | **Toplam** | 225 | 0 | 0 | 114 | 339 |
 
-Çalışır olanlardan: Game Master notlu 4, kapsam dışı notlu 25, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
+Çalışır olanlardan: Game Master notlu 4, kapsam dışı notlu 24, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
 
 ## Game Master notlu (savaş etkisi tam, kalan parça Game Master'da)
 
@@ -30,7 +30,6 @@ Bu parçaların tetikleyiciye göre gruplu kaydı ve ne zaman ele alınacakları
 
 | Kimlik | Sv | Kapsam dışı | Oyuna uyar mı? Neden |
 |---|---|---|---|
-| dancing-lights | 0 | Dört ayrı ışık yerine birleşik insansı biçim (SRD seçeneği); loş ışık ayrımı ışık modelinde yok. | evet: SRD'nin birleşik biçim seçeneği; loş ışık ayrımı yok. |
 | light | 0 | 1 saatlik süre savaştan uzun; nesne yerine yaratık da taşır (SRD: nesne). | evet: Işık modeli aydınlık/karanlık; loş ışık ayrımı savaşta küçük fark. |
 | entangle | 1 | Bitkilerin büyü bitince çekilmesi görseldir; karede zemin zorlu arazi. | evet: Bitkilerin çekilmesi yalnız görsel; zorlu arazi ve Restrained tam. |
 | fog-cloud | 1 | Kürenin yüksekliği ve köşeleri dönmesi (ızgarada küre, görüş katmansız); rüzgârla dağılma Kuyruk 18b rüzgârıyla. | evet: Küre ızgarada; rüzgârla dağılma rüzgâr kuralıyla. |
@@ -79,7 +78,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 |---|---|---|---|---|---|---|
 | acid-splash | 0 | spells.json | çalışır |  |  |  |
 | chill-touch | 0 | spells.json | çalışır |  |  |  |
-| dancing-lights | 0 | spells.json | çalışır | a7 (sürüm 36) |  |  |
+| dancing-lights | 0 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | druidcraft | 0 | spells.json | savaş dışı |  |  |  |
 | eldritch-blast | 0 | spells.json | çalışır |  |  |  |
 | elementalism | 0 | spells.json | savaş dışı |  |  |  |
@@ -92,7 +91,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | minor-illusion | 0 | spells.json | savaş dışı |  |  |  |
 | poison-spray | 0 | spells.json | çalışır |  |  |  |
 | prestidigitation | 0 | spells.json | savaş dışı |  |  |  |
-| produce-flame | 0 | spells.json | çalışır | a6 (sürüm 35) |  |  |
+| produce-flame | 0 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | ray-of-frost | 0 | spells.json | çalışır |  |  |  |
 | resistance | 0 | spells.json | çalışır |  |  |  |
 | sacred-flame | 0 | spells.json | çalışır |  |  |  |
@@ -100,7 +99,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | shocking-grasp | 0 | spells.json | çalışır |  |  |  |
 | sorcerous-burst | 0 | spells.json | çalışır |  |  |  |
 | spare-the-dying | 0 | spells.json | çalışır |  |  |  |
-| starry-wisp | 0 | spells.json | çalışır | a4 (sürüm 32) |  |  |
+| starry-wisp | 0 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | thaumaturgy | 0 | spells.json | savaş dışı |  |  |  |
 | true-strike | 0 | spells.json | çalışır |  |  |  |
 | vicious-mockery | 0 | spells.json | çalışır |  |  |  |
@@ -182,8 +181,8 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | enthrall | 2 | spells.json | savaş dışı |  |  |  |
 | find-steed | 2 | spells.json | çalışır |  |  |  |
 | find-traps | 2 | spells.json | savaş dışı |  |  |  |
-| flame-blade | 2 | spells.json | çalışır | s2 (sürüm 41) |  |  |
-| flaming-sphere | 2 | spells.json | çalışır | s2 (sürüm 41) |  |  |
+| flame-blade | 2 | spells.json | çalışır | k67 (sürüm 51) |  |  |
+| flaming-sphere | 2 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | gentle-repose | 2 | spells.json | savaş dışı |  |  |  |
 | gust-of-wind | 2 | spells.json | çalışır | s1 (sürüm 40) |  |  |
 | heat-metal | 2 | spells.json | çalışır | s2 (sürüm 41) |  |  |
@@ -199,7 +198,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | mind-spike | 2 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | mirror-image | 2 | spells.json | çalışır | a4 (sürüm 32) |  |  |
 | misty-step | 2 | spells.json | çalışır |  |  |  |
-| moonbeam | 2 | spells.json | çalışır | s2 (sürüm 41) |  |  |
+| moonbeam | 2 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | pass-without-trace | 2 | spells.json | çalışır |  |  |  |
 | phantasmal-force | 2 | spells.json | çalışır | k63 (sürüm 47) |  |  |
 | prayer-of-healing | 2 | spells.json | savaş dışı |  |  |  |
@@ -209,7 +208,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | scorching-ray | 2 | spells.json | çalışır |  |  |  |
 | see-invisibility | 2 | spells.json | çalışır | a7 (sürüm 36) |  |  |
 | shatter | 2 | spells.json | çalışır |  |  |  |
-| shining-smite | 2 | spells.json | çalışır |  |  |  |
+| shining-smite | 2 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | silence | 2 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | spider-climb | 2 | spells.json | çalışır | a8 (sürüm 37) |  |  |
 | spike-growth | 2 | spells.json | çalışır | s2 (sürüm 41) |  |  |
@@ -277,7 +276,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | dominate-beast | 4 | spells-45.json | çalışır |  |  |  |
 | fabricate | 4 | spells-45.json | savaş dışı |  |  |  |
 | faithful-hound | 4 | spells-45.json | çalışır |  |  |  |
-| fire-shield | 4 | spells-45.json | çalışır |  |  |  |
+| fire-shield | 4 | spells-45.json | çalışır | k67 (sürüm 51) |  |  |
 | freedom-of-movement | 4 | spells-45.json | çalışır |  |  |  |
 | giant-insect | 4 | spells-45.json | çalışır |  |  |  |
 | greater-invisibility | 4 | spells-45.json | çalışır |  |  |  |
@@ -364,7 +363,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | wind-walk | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | word-of-recall | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | arcane-sword | 7 | spells-69.json | çalışır |  |  | hayır |
-| conjure-celestial | 7 | spells-69.json | çalışır |  |  | hayır |
+| conjure-celestial | 7 | spells-69.json | çalışır | k67 (sürüm 51) |  | hayır |
 | delayed-blast-fireball | 7 | spells-69.json | çalışır | k62 (sürüm 46) |  | hayır |
 | divine-word | 7 | spells-69.json | çalışır |  |  | hayır |
 | etherealness | 7 | spells-69.json | çalışır |  |  | hayır |

@@ -1,11 +1,12 @@
 /** Harita üstü arayüzün (HUD) saf yardımcıları: yüzen menü ve balon yerleşimi, parlayan hedefler. */
 import { freeShapeArea, freeShapeFor, freeShapeOf, pathProblem } from '../battle/freeShape';
 import { fissureHexes, fissureProblem } from '../battle/fissure';
+import { DANCE_COMBINED, danceMax, danceMoveHexes, danceProblem } from '../battle/danceLights';
 import { breathOf } from '../battle/breath';
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { summonDef } from '../battle/summons';
-import { axialToOffset, distance, offsetToAxial, type Offset } from '../rules/hex';
+import { axialToOffset, distance, isInside, offsetToAxial, withinRange, type Offset } from '../rules/hex';
 import { pickArea, type AreaPick, type AreaTargetSpec } from '../battle/areaAttack';
 import { mechanicsAt } from '../battle/spellVersion';
 import { ruleVersion } from '../battle/ruleVersion';
@@ -214,12 +215,17 @@ export function summonHexes(state: BattleState, actorId: string, spell: Spell, c
  */
 export type AreaAct = { kind: 'spell'; spell: Spell } | { kind: 'monster'; index: number } | { kind: 'breath'; shape: 'cone' | 'line' }
   /** Kuyruk K66a: Earthquake yarığı yerleştirme (`zoneId` Earthquake alanı; yön `choice` `fissure:<0–5>`). */
-  | { kind: 'fissure'; zoneId: string };
+  | { kind: 'fissure'; zoneId: string }
+  /** Kuyruk K67b: Dancing Lights ışıklarını ayrı ayrı taşıma (`count` ışık sayısı; bonus eylem). */
+  | { kind: 'danceMove'; zoneId: string; count: number };
 
 /** Kuyruk K57: alan büyüsünün savaşın kural sürümündeki nokta sayısı (Meteor Swarm 4; çoğu büyüde 1). */
 export function areaPointCount(state: BattleState, act: AreaAct | null, choice?: string | null, wallShape?: string | null): number {
+  if (act?.kind === 'danceMove') return act.count;
   if (act?.kind !== 'spell') return 1;
   const m = mechanicsAt(state, act.spell);
+  // Kuyruk K67b (sürüm 51, Dancing Lights): en çok 4 ayrı ışık; birleşik biçim tek nokta.
+  if (danceMax(state, act.spell)) return choice === DANCE_COMBINED ? 1 : danceMax(state, act.spell);
   // Kuyruk K65a (sürüm 49, Fire Storm `freeShape`): serbest şekil, altıgen altıgen (en çok `maxHexes`; K65b Forcecage seçime göre).
   if (m.freeShape) return freeShapeFor(m.freeShape, choice).maxHexes;
   // Kuyruk S2 (sürüm 41, Wind Wall `wallPath`): serbest duvar yolu, altıgen altıgen. K65c: panelli duvarlarda (`pathRules`)
@@ -232,6 +238,12 @@ export function areaPointCount(state: BattleState, act: AreaAct | null, choice?:
 export function spellLightFt(state: BattleState, spell: Spell): { bright: number; dim: number } | null {
   if (ruleVersion(state) < 51) return null;
   const m = mechanicsAt(state, spell);
+  // Kuyruk K67b: büyücüdeki ışık (Flame Blade, Produce Flame), isabetteki (Starry Wisp), hedefin ışığı (Shining Smite),
+  // yalnız loş silindir (Moonbeam: alanın kendisi).
+  if (m.selfLightDim) return { bright: (m.selfLight ?? 0) * 5, dim: m.selfLightDim * 5 };
+  if (m.afterHit?.lightDim) return { bright: 0, dim: m.afterHit.lightDim * 5 };
+  if (m.wardLight !== undefined) return { bright: m.wardLight * 5, dim: 0 };
+  if (m.zone && m.zone.light === undefined && m.zone.lightDim === 0) return { bright: 0, dim: spell.area?.sizeFt ?? 5 };
   const src = [m.effect, m.failEffect, m.zone].find((x) => x && (x as { lightDim?: number }).lightDim) as { light?: number; lightDim?: number } | undefined;
   if (!src?.lightDim) return null;
   const bright = src === m.zone && src.light === 0 ? spell.area?.sizeFt ?? 0 : Math.max(0, src.light ?? 0) * 5;
@@ -261,6 +273,8 @@ export const areaExcludable = (state: BattleState, act: AreaAct | null): boolean
 export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetSpec; rangeFt: number; label: string } | null {
   // Kuyruk K66a: yarık seçicisi (alanı hat belirler; yer tutucu 10 ft çizgi).
   if (act.kind === 'fissure') return { spec: { shape: 'line', sizeFt: 10, origin: 'point', targets: 'all' }, rangeFt: 500, label: 'Earthquake' };
+  // Kuyruk K67b: ışık taşıma seçicisi (nokta; menzil büyünün).
+  if (act.kind === 'danceMove') return { spec: { shape: 'sphere', sizeFt: 5, origin: 'point', targets: 'all' }, rangeFt: spells.find((x) => x.id === 'dancing-lights')?.rangeFt ?? 120, label: 'Dancing Lights' };
   // Kuyruk K65b (Forcecage serbest şekil): alan tanımı yok; seçici için 10 ft küp yer tutucusu (şekli seçim belirler).
   if (act.kind === 'spell' && !act.spell.area && (act.spell.mechanics.zone?.cage || act.spell.mechanics.k62?.zone?.cage)) {
     return { spec: { shape: 'cube', sizeFt: 10, origin: 'point', targets: 'all' }, rangeFt: act.spell.rangeFt, label: act.spell.name };
@@ -277,6 +291,8 @@ export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetS
 export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | 'ring' | null, choice?: string | null, points?: Offset[], exclude?: Offset[]): Command {
   // Kuyruk K66a: yarık yerleştirme (`spell_followup`, eylem harcamaz).
   if (act.kind === 'fissure') return { type: 'spell_followup', actorId, targetId: act.zoneId, ...(aim ? { targetHex: aim } : {}), choice: choice ?? 'fissure:0' };
+  // Kuyruk K67b: ışıkları taşı (ilk ışık `targetHex`; birden çoksa hepsi sırayla `targetHexes`).
+  if (act.kind === 'danceMove') { const to = points?.[0] ?? aim; return { type: 'spell_followup', actorId, targetId: actorId, ...(to ? { targetHex: to } : {}), ...(points && points.length > 1 ? { targetHexes: points } : {}) }; }
   // Kuyruk S2 (Plant Growth): dışarıda bırakılan altıgenler.
   if (act.kind === 'spell' && exclude?.length && !points?.length) return { ...areaActCommand(actorId, act, aim, slotLevel, wallShape, choice), excludeHexes: exclude } as Command;
   // Kuyruk K57 (Meteor Swarm): çok noktalı alanda ilk nokta `targetHex`, hepsi `targetHexes`.
@@ -301,6 +317,32 @@ export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAc
     const on = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row));
     const friend = (c: Combatant) => c.side === actor.side || c.civilian;
     return { hexes, friends: on.filter(friend), foes: on.filter((c) => !friend(c)), error: null };
+  }
+  // Kuyruk K67b (sürüm 51, Dancing Lights): ışık noktaları motorla aynı denetimden (`danceProblem`); gösterilen altıgenler
+  // ışıkların loş halkası (aydınlanacak yaratıklar dost/düşman sayılarında).
+  if (act.kind === 'danceMove' || (act.kind === 'spell' && danceMax(state, act.spell))) {
+    const sp = act.kind === 'spell' ? act.spell : spells.find((x) => x.id === 'dancing-lights');
+    if (!sp) return { hexes: [], friends: [], foes: [], error: null };
+    const combined = act.kind === 'spell' && choice === DANCE_COMBINED;
+    const pts = !combined && points?.length ? points : aim ? [aim] : [];
+    if (!pts.length) return { hexes: [], friends: [], foes: [], error: null };
+    let lights: Offset[] = pts;
+    let why: string | null;
+    if (act.kind === 'danceMove') {
+      const z = state.map?.zones?.find((x) => x.id === act.zoneId);
+      if (pts.length < act.count || !z) return { hexes: pts, friends: [], foes: [], error: null };
+      const r = danceMoveHexes(state, actor, { ...sp, mechanics: mechanicsAt(state, sp) }, z, pts[0], act.count > 1 ? pts : undefined);
+      why = typeof r === 'string' ? r : null;
+      if (typeof r !== 'string') lights = r;
+    } else why = danceProblem(state, actor, sp, pts, combined);
+    const reach = mechanicsAt(state, sp).zone?.lightDim ?? 2;
+    const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
+    const keys = new Map<string, Offset>();
+    for (const p of lights) for (const h of withinRange(p, reach, size)) if (isInside(h, size)) keys.set(`${h.col},${h.row}`, h);
+    const hexes = [...keys.values()];
+    const on = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && keys.has(`${c.pos.col},${c.pos.row}`));
+    const friend = (c: Combatant) => c.side === actor.side || c.civilian;
+    return { hexes, friends: on.filter(friend), foes: on.filter((c) => !friend(c)), error: why };
   }
   // Kuyruk K65a (serbest şekil): önizleme motorun `freeShapeArea`'sıyla aynı (sınır, menzil, görüş, tek parça).
   const fs = areaFreeShape(state, act, choice);

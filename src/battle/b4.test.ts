@@ -28,13 +28,13 @@ const bow: AttackOption = { label: 'Longbow', attackBonus: 5, damage: '1d8+3', d
 const LOW = { str: -10, dex: -10, con: -10, int: -10, wis: -10, cha: -10 };
 
 /** Düz zemin (harita kuralları `mapId`'den); sıra A (büyücü, 3,3), B (düşman), C (dost, 2,3). */
-function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, c: Partial<Combatant> = {}, bPos = o(4, 3), mapId = 'col') {
+function arena(a: Partial<Combatant> = {}, b: Partial<Combatant> = {}, c: Partial<Combatant> = {}, bPos = o(4, 3), mapId = 'col', ver?: number) {
   const parts = [
     mk('A', { ownerId: 'p1', hp: 30, maxHp: 30, spellAttack: 5, spellSaveDc: 13, spellMod: 3, proficiency: 3, spellSlots: SLOTS, weaponOptions: [sword, bow], ...a }),
     mk('B', { side: 'enemies', hp: 60, maxHp: 60, attacks: [claw], saves: LOW, ...b }),
     mk('C', { ownerId: 'p2', hp: 20, maxHp: 20, weaponOptions: [sword], ...c }),
   ];
-  const started = startBattle('b4', 'd-z-zemin', parts, () => 0.5, { map: { id: mapId } });
+  const started = startBattle('b4', 'd-z-zemin', parts, () => 0.5, { map: { id: mapId }, ...(ver ? { kuralSurumu: ver } : {}) });
   const pos: Record<string, Offset> = { A: o(3, 3), B: bPos, C: o(2, 3) };
   const combatants = { ...started.state.combatants };
   for (const [id, p] of Object.entries(pos)) combatants[id] = { ...(combatants[id] as Combatant), pos: p };
@@ -114,7 +114,9 @@ describe('ışık ve karanlık (karanlık haritası)', () => {
     r.replays();
   });
   it('Dancing Lights: ışık noktası çevresiyle aydınlık; konsantrasyonla biter', () => {
-    const r = arena({ spellNames: ['Dancing Lights', 'Darkness'] }, {}, {}, o(13, 0), 'magara');
+    // Kuyruk K67b: sürüm 50 (tek nokta, 2 altıgen aydınlık). Sürüm 51'de dört ışık / birleşik biçim ve haritanın meşaleleri
+    // 20 + 20 ft (Mağara'da ışıksız yer kalmaz): k67b.test.ts.
+    const r = arena({ spellNames: ['Dancing Lights', 'Darkness'] }, {}, {}, o(13, 0), 'magara', 50);
     const spot = darkSpot(r.state, [o(3, 3), o(2, 3)]);
     r.cast({ spellName: 'Dancing Lights', targetHex: spot });
     expect(litHexes(r.state).has(key(spot))).toBe(true);
@@ -148,7 +150,9 @@ describe('görünmezlik', () => {
     const evs = r.cast({ spellName: 'Starry Wisp', targetId: 'B' }, high);
     const hit = evs.find((e) => e.type === 'attack_resolved');
     expect(hit?.type === 'attack_resolved' && hit.hit && hit.damageType === 'radiant').toBe(true);
-    expect(r.fx('B', 'spells:starry-wisp')).toMatchObject({ revealed: true, light: 2 });
+    // Kuyruk K67b (güncel sürüm 51): SRD'deki 10 ft loş ışık (`lightDim: 2`, parlak yok); sürüm 50'de 2 altıgen aydınlık.
+    expect(r.fx('B', 'spells:starry-wisp')).toMatchObject({ revealed: true, lightDim: 2 });
+    expect(r.fx('B', 'spells:starry-wisp')?.light).toBeUndefined();
     r.replays();
   });
 });

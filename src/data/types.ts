@@ -401,6 +401,12 @@ export interface SpellMechanics {
    */
   castOnly?: boolean;
   selfLight?: number;
+  /** Kuyruk K67b (sürüm 51): büyücüdeki ışığın ek loş halkası (Flame Blade, Produce Flame; altıgen). */
+  selfLightDim?: number;
+  /** Kuyruk K67b (sürüm 51, Dancing Lights): en çok N ayrı ışık noktası (`cast_spell.targetHexes`; `choice: 'birlesik'` tek biçim). */
+  lightPoints?: number;
+  /** Kuyruk K67b (sürüm 51, Shining Smite): konsantrasyon hedefinin saçtığı parlak ışık (altıgen). */
+  wardLight?: number;
   /** Görev B4 (Sorcerous Burst): seçilebilen hasar türleri (komutta `choice`; yoksa `damageType`). */
   damageChoices?: string[];
   /** Görev SORCERER: patlayan zar (Sorcerous Burst): bu yüz gelince ek zar, en çok büyü yeteneği değiştiricisi kadar. */

@@ -18,7 +18,7 @@ import { avalancheTrigger, brazierLights, snowMoveCost, weatherAttack, wildsEnte
 import { checkBase, ruleVersion } from './ruleVersion';
 import { globalRule, ruleEnabled, withParams } from './ruleControl';
 import { isLiquidTile, waterWalks } from './deepWater';
-import { senseSees } from './sight';
+import { senseSees, sightSenseFt } from './sight';
 import { extrasTotal, rollExtras, type ExtraDie } from '../rules/attack';
 import { finishCheck, saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -544,12 +544,15 @@ const DARK_CACHE = new WeakMap<BattleState, Set<string>>();
 function lightSources(state: BattleState, rule: MapRuleData): Array<{ at: Offset; r: number; dim: number }> {
   const dark = ruleOf(state, 'darkness');
   const r0 = rule.lightRadiusHexes ?? ruleOf(state, 'night')?.lightRadiusHexes;
-  const radius = typeof r0 === 'number' ? r0 : 0;
+  // Kuyruk K67b (sürüm 51): harita ışıklarının SRD değerleri veride (meşale 20 ft parlak + 20 ft loş: `brightRadiusHexes`).
+  const radius = dimLightOn(state) && typeof rule.brightRadiusHexes === 'number' ? rule.brightRadiusHexes : typeof r0 === 'number' ? r0 : 0;
   // Kuyruk K67a: harita ışıklarının ek loş halkası veride (`dimRadiusHexes`, `tileDimRadiusHexes`; yoksa 0).
   const dimR = dimLightOn(state) && typeof rule.dimRadiusHexes === 'number' ? rule.dimRadiusHexes : 0;
   const sources = ((rule.lights as unknown[] | undefined) ?? []).map((xy) => ({ at: ruleHex(state, xy), r: radius, dim: dimR }));
   // Kuyruk 29 K28b: sönmemiş mangallar (`brazierLight`).
-  sources.push(...brazierLights(state).map((b) => ({ ...b, dim: 0 })));
+  // K67b (sürüm 51): mangalın parlak/loş yarıçapı kuralda (`brightRadius`, `dimRadius`; SRD'de mangal yok, meşale değeri).
+  const br = dimLightOn(state) ? ruleOf(state, 'brazierLight') : undefined;
+  sources.push(...brazierLights(state).map((b) => ({ ...b, ...(typeof br?.brightRadius === 'number' ? { r: br.brightRadius } : {}), dim: typeof br?.dimRadius === 'number' ? br.dimRadius : 0 })));
   const tileDim = dimLightOn(state) && typeof dark?.tileDimRadiusHexes === 'number' ? dark.tileDimRadiusHexes : 0;
   state.map?.tiles.forEach((row, r) => [...row].forEach((ch, col) => {
     // Işık veren zeminin yarıçapı kuralda ezilebilir (mağara: loş kristaller, `tileLightRadiusHexes`).
@@ -563,6 +566,15 @@ function lightSources(state: BattleState, rule: MapRuleData): Array<{ at: Offset
     const r = Math.max(-1, ...(c.effects ?? []).map((e) => e.light ?? -1));
     const outer = dimLightOn(state) ? Math.max(-1, ...(c.effects ?? []).map((e) => (e.lightDim ? Math.max(e.light ?? -1, 0) + e.lightDim : e.light ?? -1))) : r;
     if (r >= 0 || outer >= 0) sources.push({ at: c.pos, r, dim: Math.max(0, outer - Math.max(r, 0)) });
+  }
+  // Kuyruk K67b (sürüm 51, Shining Smite `wardLight`): konsantrasyon hedefi parlak ışık saçar.
+  if (dimLightOn(state)) for (const c of Object.values(state.combatants)) {
+    const conc = c.concentration;
+    if (!conc?.targetId) continue;
+    const sp = spells.find((x) => x.name === conc.spell);
+    const wl = sp ? mechanicsAt(state, sp).wardLight : undefined;
+    const t = state.combatants[conc.targetId];
+    if (wl !== undefined && t?.pos && t.hp > 0) sources.push({ at: t.pos, r: wl, dim: 0 });
   }
   // Kuyruk A7 (sürüm 36): nesneye bağlı ışık (Light, Continual Flame): taşıyanın yerinde ya da nesnenin altıgeninde;
   // K67a: ek loş büyünün sürüm verisinden (`objectLightDim`).
@@ -612,8 +624,9 @@ export function lightLevels(state: BattleState): Map<string, 'bright' | 'dim'> {
       if (src.r >= 0) for (const h of withinRange(src.at, src.r, size)) put(`${h.col},${h.row}`, 'bright');
     }
     for (const z of zoneLight(state)) {
-      if (z.dim > 0) for (const k of dilate(state, z.hexes, z.r + z.dim)) put(k, 'dim');
-      for (const k of dilate(state, z.hexes, z.r)) put(k, 'bright');
+      // K67b: parlaksız alan (`r` −1: Moonbeam silindiri, Dancing Lights) yalnızca loş.
+      if (z.dim > 0 || z.r < 0) for (const k of dilate(state, z.hexes, Math.max(z.r, 0) + z.dim)) put(k, 'dim');
+      if (z.r >= 0) for (const k of dilate(state, z.hexes, z.r)) put(k, 'bright');
     }
     for (const key of magicDarkHexes(state)) out.delete(key);
   }
@@ -638,6 +651,9 @@ export function perceivedLevel(state: BattleState, observer: Combatant, at: Offs
   if (lv === 'bright' || !observer.pos) return lv;
   const d = distance(observer.pos, at);
   if (observer.traits?.includes('devils-sight') && d * 5 <= 120) return 'bright';
+  // Kuyruk K67b: Blindsight (fiziksel görmeye dayanmaz) ve Truesight (normal ve büyülü karanlığı deler) menzilinde ceza yok.
+  const sense = sightSenseFt(state, observer);
+  if (sense > 0 && d * 5 <= sense) return 'bright';
   if (magicDarkHexes(state).has(`${at.col},${at.row}`)) return 'dark';
   const dv = darkvisionOf(observer);
   const dark = darkRule(state);
@@ -660,11 +676,13 @@ function zoneLight(state: BattleState): Array<{ hexes: Offset[]; r: number; dim:
   for (const z of state.map?.zones ?? []) {
     // Kuyruk A7: alanda saklanan sürümlü kural (`z.spec`) önce.
     const spec = z.spec ?? zoneSpecOf(z.spellId);
-    const r = spec?.light;
+    // Kuyruk K67b (sürüm 51): parlaksız loş alan (`light` yok, `lightDim` var: Moonbeam 0 = yalnız silindir, Dancing Lights 2).
+    const dimOnly = dimLightOn(state) && spec?.light === undefined && spec?.lightDim !== undefined;
+    const r = dimOnly ? -1 : spec?.light;
     if (r === undefined) continue;
     const dim = dimLightOn(state) ? spec?.lightDim ?? 0 : 0;
     const anchor = z.anchorId ? state.combatants[z.anchorId]?.pos : undefined;
-    if (anchor) out.push({ hexes: [anchor], r: (z.radius ?? 1) + r, dim });
+    if (anchor) out.push(dimOnly ? { hexes: [anchor], r: -1, dim: (z.radius ?? 1) + dim } : { hexes: [anchor], r: (z.radius ?? 1) + r, dim });
     else out.push({ hexes: z.hexes, r, dim });
   }
   return out;

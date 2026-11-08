@@ -1662,6 +1662,7 @@ export type Command =
   | { type: 'gaze'; actorId: string; targetId: string }
   | { type: 'sphere_carry'; actorId: string; targetId: string; drop?: boolean }
   | { type: 'spell_followup'; actorId: string; targetId: string; targetHex?: Offset; /** Kuyruk 19: Telekinesis `lift`. */ choice?: string;
+      /** Kuyruk K67b (sürüm 51, Dancing Lights): ışıkların yeni yerleri (sırayla; yoksa `targetHex` hepsini öteler). */ targetHexes?: Offset[];
       /** Kuyruk P12 (sürüm 43): mühürlü büyüyü (`choice: 'sakli'`) tetikleyen dostun yanında saklayanın kimliği. */ sourceId?: string }
   /** Kuyruk S2 (sürüm 41): dikey hareket (uçan kendi hareketiyle; Levitate'i yapan hedefini ya da nesneyi turda 20 ft'e dek). */
   | { type: 'vertical_move'; actorId: string; targetId?: string; objectId?: string; toFt: number; /** Kuyruk K66a: yarıktan 0 ft'te çıkış altıgeni. */ to?: Offset }

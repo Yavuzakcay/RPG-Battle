@@ -42,7 +42,8 @@ import { cunningOptions, hasTrait } from './classTraits';
 import { jumpTargets, lavaOver } from './jumprisk';
 import { sleepingDragon, turnKey, wakeRule, wakesDragon } from './dragon';
 import { currentActorId, isTargetable } from './common';
-import { canSee, isRiskyHex, ruleOf, stuckInBog } from './maprules';
+import { canSee, hasDarkness, isRiskyHex, perceivedLevel, ruleOf, stuckInBog } from './maprules';
+import { DANCE_LINK_HEXES } from './danceLights';
 import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
 import { heightAt, heightCombatRule } from './heights';
@@ -508,6 +509,73 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
     }
   }
   return best?.cmd ?? null;
+}
+
+/** Kuyruk K67b: ışık kuralı verisi (`data/yz-roller.json` `isikBuyuleri`). */
+const LIGHT_AI = aiRoles.isikBuyuleri as { sira: string[]; uzaklik: number };
+
+/** Görmeyen dost–düşman çiftleri (ağırlıklı): `uzaklik` içinde dostun gördüğü seviye karanlıksa 2 (görmez), loşsa 1 (Algı −5). */
+function blindPairs(state: BattleState, allyIds: string[], side: Combatant['side']): number {
+  const foes = Object.values(state.combatants).filter((c) => c.side !== side && !c.civilian && c.pos && c.hp > 0 && !c.offFloor);
+  let n = 0;
+  for (const id of allyIds) {
+    const a = state.combatants[id];
+    if (!a?.pos || a.hp <= 0) continue;
+    for (const f of foes) {
+      if (distance(a.pos, f.pos as Offset) > LIGHT_AI.uzaklik) continue;
+      const lv = perceivedLevel(state, a, f.pos as Offset);
+      n += lv === 'dark' ? 2 : lv === 'dim' ? 1 : 0;
+    }
+  }
+  return n;
+}
+
+/** Büyücünün süren bir ışığı var mı (etki, alan, nesne). */
+function ownsLight(state: BattleState, actor: Combatant): boolean {
+  const ids = new Set(LIGHT_AI.sira);
+  if (Object.values(state.combatants).some((c) => c.effects?.some((e) => e.sourceId === actor.id && (e.light !== undefined || !!e.lightDim) && e.id.startsWith('spells:') && ids.has(e.id.slice(7))))) return true;
+  if ((state.map?.zones ?? []).some((z) => z.casterId === actor.id && ids.has(z.spellId))) return true;
+  return (state.map?.objects ?? []).some((o) => o.lightBy === actor.id && !!o.lightSpell && ids.has(o.lightSpell));
+}
+
+/**
+ * Kuyruk K67b (sürüm 51, basit kural `k67:isik`): karanlıkta görmeyen dost (gördüğü düşmanın altıgeni loş ya da karanlık)
+ * varken ışık büyüsü bir kez (büyücünün süren ışığı yokken). Büyüler ve sıra `isikBuyuleri`: alan ışıkları (Daylight,
+ * Dancing Lights) görmeyenin düşmanlarının üstüne, Light/Continual Flame büyücüye. Komut kuru çalıştırmada görmeyen
+ * çiftleri azaltmalı. Darkness'ın taktik kullanımı yok. Değer `kuralOnceligi['k67:isik']`.
+ */
+function lightCommand(state: BattleState, actor: Combatant, allies: Combatant[]): Command | null {
+  if (!state.map || !actor.pos || ruleVersion(state) < 51 || !hasDarkness(state)) return null;
+  const known = castable(actor).filter((s) => LIGHT_AI.sira.includes(s.id));
+  if (!known.length || ownsLight(state, actor)) return null;
+  const ids = allies.map((a) => a.id);
+  const before = blindPairs(state, ids, actor.side);
+  if (!before) return null;
+  const me = actor.pos;
+  const foes = Object.values(state.combatants).filter((c) => c.side !== actor.side && !c.civilian && c.pos && c.hp > 0 && !c.offFloor)
+    .sort((a, b) => distance(me, a.pos as Offset) - distance(me, b.pos as Offset));
+  for (const id of LIGHT_AI.sira) {
+    const s = known.find((x) => x.id === id);
+    if (!s) continue;
+    const m = mechanicsAt(state, s);
+    const cmds: Command[] = [];
+    if (m.zone) {
+      const inRange = foes.filter((f) => distance(me, f.pos as Offset) * 5 <= s.rangeFt).map((f) => f.pos as Offset);
+      const first = inRange[0];
+      if (!first) continue;
+      if (m.lightPoints) {
+        // Dancing Lights: en yakın düşmandan başlayarak her biri seçilmiş bir ışığın 20 ft içinde, en çok N düşmanın üstü.
+        const pts: Offset[] = [first];
+        for (const p of inRange.slice(1)) if (pts.length < m.lightPoints && pts.some((q) => distance(q, p) <= DANCE_LINK_HEXES) && !pts.some((q) => q.col === p.col && q.row === p.row)) pts.push(p);
+        cmds.push({ type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: first, targetHexes: pts });
+      } else cmds.push({ type: 'cast_spell', actorId: actor.id, spellName: s.name, targetHex: first });
+    } else cmds.push({ type: 'cast_spell', actorId: actor.id, spellName: s.name, targetId: actor.id });
+    for (const cmd of cmds) {
+      const r = tryCmd(state, actor, cmd);
+      if (r.ok && blindPairs(r.state, ids, actor.side) < before) return cmd;
+    }
+  }
+  return null;
 }
 
 /**
@@ -2440,6 +2508,7 @@ registerAction({ id: 'eski:iyilestir', rule: true, kind: 'heal', note: 'ölmekte
 registerAction({ id: 'eski:yenilenme', rule: true, kind: 'damage', note: 'yerdeki yenilenen düşmana ateş/asit', gen: (s, a) => (partyBranch(a) ? [finishRegen(s, a)] : []) });
 registerAction({ id: 'eski:alan', rule: true, kind: 'damage', note: 'alan hasar büyüsü (2+ düşman, dost yok)', gen: (s, a, h) => (partyBranch(a) || (a.monsterId && a.spellNames.length && !a.summon) ? [areaSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word Kill/Stun, Mass Heal', gen: (s, a, h) => (partyBranch(a) ? [powerWordCommand(s, a, h.foes)] : []) });
+registerAction({ id: 'k67:isik', rule: true, kind: 'support', note: 'karanlıkta görmeyen dost varken ışık büyüsü (bir kez)', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [lightCommand(s, a, h.allies)] : []) });
 registerAction({ id: 'k66:yarik', rule: true, kind: 'control', note: 'Earthquake yarığı: dostsuz, düşman kesen, yol kesmeyen hat', gen: (s, a, h) => [fissureCommand(s, a, h.foes)] });
 registerAction({ id: 'k66:tirman', rule: true, kind: 'move', note: 'yarıktan tırmanma', gen: (s, a, h) => [fissureClimbCmd(s, a, h.foes)] });
 registerAction({ id: 'k65:duvar', rule: true, kind: 'control', note: 'panelli duvar: büyücüyle düşman grubu arasına serbest yol', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [wallCommand(s, a, h.foes)] : []) });

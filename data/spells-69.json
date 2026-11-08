@@ -1104,7 +1104,8 @@
     "healAllies": "4d12",
     "color": "#fff1a8",
     "icon": "✨"
-   }
+   },
+   "k67": {"zone": {"rounds": 100, "on": ["enter", "start"], "once": true, "save": "dex", "damage": "6d12", "damageType": "radiant", "half": true, "targets": "enemies", "light": 0, "healAllies": "4d12", "color": "#fff1a8", "icon": "✨"}}
   },
   "school": "Conjuration",
   "srdPage": 118,

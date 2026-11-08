@@ -241,6 +241,8 @@
               8
             ]
           ],
+          "brightRadiusHexes": 4,
+          "dimRadiusHexes": 4,
           "lightRadiusHexes": 2,
           "passivePerceptionPenalty": 5,
           "hideAdvantage": true,
