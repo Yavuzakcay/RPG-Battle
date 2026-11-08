@@ -157,6 +157,7 @@
   "variants": [
     {
       "id": "mesale",
+      "tavanFt": 15,
       "name": "Meşaleli koridor",
       "image": "maps/yeralti/yeralti-zindan.webp",
       "rules": [
@@ -224,6 +225,7 @@
     },
     {
       "id": "merdiven",
+      "tavanFt": 15,
       "name": "Merdiven",
       "image": "maps/yeralti/yeralti-zindan-merdiven.webp",
       "tiles": [
@@ -390,6 +392,7 @@
     },
     {
       "id": "merdiven-yuruyen",
+      "tavanFt": 15,
       "name": "Yürüyen merdiven",
       "image": "maps/yeralti/yeralti-zindan-merdiven.webp",
       "tiles": [
@@ -561,6 +564,7 @@
     },
     {
       "id": "hazine",
+      "tavanFt": 15,
       "name": "Hazine odası",
       "image": "maps/yeralti/yeralti-zindan-hazine.webp",
       "tiles": [

@@ -145,6 +145,7 @@
  "variants": [
   {
    "id": "karanlik",
+   "tavanFt": 20,
    "name": "Karanlık mağara",
    "nameEn": "Dark cave",
    "image": "maps/orman/orman-heykel-magarasi.webp",

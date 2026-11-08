@@ -1309,7 +1309,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = event.targetId ? state.combatants[event.targetId] : undefined;
       if (!c) return state;
       const prev = c.vertTurn && c.vertTurn.turn === event.turn ? c.vertTurn.ft : 0;
-      return withCombatant(state, c.id, { altitudeFt: event.altitudeFt, altitudeGentle: event.altitudeFt > 0 ? (event.gentle ?? c.altitudeGentle ?? false) : false, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
+      // Kuyruk K68b: tırmanma işareti tırmanma olayıyla gelir, irtifa 0'a (ya da altına) inince kalkar.
+      const climbing = event.altitudeFt > 0 && (event.climb || c.climbing) ? { climbing: true as const } : {};
+      const base = c.climbing && !climbing.climbing ? { ...state, combatants: { ...state.combatants, [c.id]: (({ climbing: _c, ...rest }) => rest)(c) } } : state;
+      return withCombatant(base, c.id, { altitudeFt: event.altitudeFt, altitudeGentle: event.altitudeFt > 0 ? (event.gentle ?? c.altitudeGentle ?? false) : false, ...climbing, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
         ...(event.turn ? { vertTurn: { turn: event.turn, ft: prev + (event.moved ?? 0) } } : {}) });
     }
     case 'retreated': {

@@ -112,6 +112,7 @@
  "variants": [
   {
    "id": "los",
+   "tavanFt": 20,
    "name": "Loş",
    "nameEn": "Dim",
    "image": "maps/hapishane/hapishane-hucre-platformu.webp",

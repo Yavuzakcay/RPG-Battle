@@ -14,9 +14,16 @@ export function flySpeed(c: Pick<Combatant, 'fly' | 'effects'>): number {
   return ft;
 }
 
-/** Havada mı (uçuş hızı var ya da Levitate gibi bir etkiyle süzülüyor). */
-export const isAirborne = (c: Pick<Combatant, 'fly' | 'effects'>): boolean =>
+/** Uçuyor ya da süzülüyor mu (uçuş hızı var ya da Levitate gibi bir etki); tırmanma sayılmaz. */
+export const fliesOrHovers = (c: Pick<Combatant, 'fly' | 'effects'>): boolean =>
   flySpeed(c) > 0 || !!c.effects?.some((e) => e.airborne);
+
+/**
+ * Havada mı (zeminden kopuk): uçuş hızı var, Levitate gibi bir etkiyle süzülüyor ya da (Kuyruk K68b, sürüm 52)
+ * tırmanma hızıyla duvarda/tavanda (`climbing` işareti yalnız sürüm 52'nin tırmanma olayıyla gelir; eski sürüm aynen).
+ */
+export const isAirborne = (c: Pick<Combatant, 'fly' | 'effects'> & { climbing?: true; altitudeFt?: number }): boolean =>
+  fliesOrHovers(c) || (!!c.climbing && (c.altitudeFt ?? 0) > 0);
 
 /** Etki yürümeyi engelliyor mu (Levitate: yalnızca itilip çekilerek yer değiştirir). */
 export const effectSpeedZero = (c: Pick<Combatant, 'effects'>): boolean => !!c.effects?.some((e) => e.speedZero);

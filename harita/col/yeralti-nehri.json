@@ -112,6 +112,7 @@
  "variants": [
   {
    "id": "gunduz",
+   "tavanFt": 20,
    "name": "Gündüz",
    "nameEn": "Day",
    "image": "maps/col/yeralti-nehri.webp",

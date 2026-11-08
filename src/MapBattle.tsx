@@ -40,7 +40,9 @@ import { ilhamOf } from './battle/bard';
 import { loadSettings as loadPreviewSettings, loadStore as loadDiscovery, record as recordDiscovery, saveStore as saveDiscovery } from './app/discovery';
 import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive, isTargetable } from './battle/common';
-import { hexLabel, occupantAt, speedHexes } from './battle/movement';
+import { hexLabel, highJumpProblem, highJumpReachFt, occupantAt, speedHexes } from './battle/movement';
+import { altitudeCapFt, atCeiling, ceilingFt, climbingAloft, wallHex } from './battle/altitude';
+import { cloudBaseFt, cloudCastProblem, cloudPointProblem, cloudRing } from './battle/cloud';
 import { speedZero as hasSpeedZero } from './rules/conditions';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
@@ -139,7 +141,7 @@ import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
 import { zoneShownTo } from './battle/hiddenZones';
 import { ruleVersion } from './battle/ruleVersion';
 import { heldWeapons, groundItemsNear } from './battle/heldItems';
-import { flySpeed } from './battle/flight';
+import { climbs, fliesOrHovers, flySpeed, spellJumpFt } from './battle/flight';
 import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
@@ -942,6 +944,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     return out;
   }, [state, active, actorId, mode, spell]);
   // Kuyruk 30 D3: alan nişanında geçerli noktalar (menzil, görüş) vurgulu; geçersizler soluk.
+  // Kuyruk K68b (Call Lightning): nişanda bulutun sınırı büyücünün çevresinde (döküm yerinin üstünde doğar).
+  const cloudPreview = useMemo(() => {
+    const me = state.combatants[actorId];
+    if (!active || mode !== 'aim' || areaAct?.kind !== 'spell' || !me?.pos) return null;
+    const cl = mechanicsAt(state, areaAct.spell).cloud;
+    return cl ? { id: 'onizleme', hexes: cloudRing(state, me.pos, Math.floor(cl.radiusFt / 5)), base: cloudBaseFt(state, cl) } : null;
+  }, [state, active, actorId, mode, areaAct]);
   const aimKeys = useMemo(() => {
     const me = state.combatants[actorId];
     if (!active || mode !== 'aim' || !areaAct || !me || !state.map) return null;
@@ -964,6 +973,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (wp && areaAct.kind === 'spell') {
       const out = new Set<string>();
       state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!aimPts.some((p) => sameHex(p, h)) && !pathAddProblem(state, me, areaAct.spell, aimPts, wp, h, areaPathRules(state, areaAct))) out.add(hexKey(h)); }));
+      return out;
+    }
+    // Kuyruk K68b (Call Lightning): şimşek noktası bulutun altında (dökümde büyücünün çevresinde 60 ft) ve menzilde.
+    const cl = areaAct.kind === 'spell' ? mechanicsAt(state, areaAct.spell).cloud : undefined;
+    if (cl && areaAct.kind === 'spell') {
+      const s = areaActSpec(me, areaAct);
+      const out = new Set<string>();
+      if (s) state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!('ok' in pickArea(state, me, s.spec, s.rangeFt, h)) && !cloudPointProblem(state, me, areaAct.spell, cl, h, undefined, false)) out.add(hexKey(h)); }));
       return out;
     }
     if (!freeHexRule(state)) return null;
@@ -1279,6 +1296,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const N = B.label;
   // Kuyruk K58 G2: motorun gerekçesi seçili dile (data/neden-metinleri.json).
   const why = (cmd: Command) => (actor ? loc(economyBlock(state, actor, cmd)) : Y.notYourTurn);
+  /** Kuyruk K68b: motorun reddi (zar atmadan deneme; düğmeyi kapatmak ve nedenini ipucunda göstermek için). */
+  const tryWhy = (cmd: Command): string | null => { const r = execute(state, cmd, contextFor(state, actorId), () => 0.5); return r.ok ? null : r.error; };
   const blocked = (cmd: Command) => why(cmd) !== null;
   const bonusCmd = (type: 'hide' | 'dash' | 'disengage'): Command => ({ type, actorId, bonus: actor ? preferBonus(actor, type) : false });
   const canAttack = actor ? !actor.economy.action || actor.economy.attacksLeft > 0 : false;
@@ -1622,6 +1641,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           {((zs) => {
             const items: SurfaceItem[] = [];
             const plain = zs.flatMap((z) => {
+              // Kuyruk K68b: Call Lightning bulutu yalnız sınır çizgisi (aşağıda).
+              if (z.cloud) return [];
               const hexes = zoneHexes(state, z);
               const look = zoneLook(z, hexes);
               if (look) { items.push({ id: z.id, look, hexes }); return []; }
@@ -1647,6 +1668,16 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               </>
             );
           })((state.map?.zones ?? []).filter((z) => zoneShownTo(state, z, 'party', showHiddenZones)))}
+          {/* Kuyruk K68b (sürüm 52): Call Lightning bulutunun sınırı (60 ft); nişanda büyücünün çevresinde önizleme. */}
+          {((rings) => rings.map(({ id, hexes, base }) => (
+            <g key={`cloud${id}`} className="cloud-ring" aria-hidden="true">
+              <title>{B.k68.cloud(base)}</title>
+              {hexes.map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.92)} />)}
+            </g>
+          )))([
+            ...(state.map?.zones ?? []).filter((z) => z.cloud).map((z) => ({ id: z.id, hexes: cloudRing(state, z.center, z.cloud?.radiusHexes ?? 0), base: z.cloud?.baseFt ?? 0 })),
+            ...(cloudPreview ? [cloudPreview] : []),
+          ])}
           {/* Görev S4: grup alanları (kurulumda hepsi; savaşta yalnızca uyuyan/habersiz olanlar). */}
           {(state.groups ?? []).filter((g) => setup || g.state !== 'alarmed').map((g) => {
             const first = g.hexes[0];
@@ -1822,7 +1853,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       // Kuyruk A2: en çok 3 rozet (öncelik veriden), fazlası "+N".
                       const all = [...statusIcons(c), ...effectIcons(state, c), ...(c.concentration ? [{ key: 'conc', icon: '◎', title: t().view.concentrating(c.concentration.spell) }] : []), ...(needSensed(state, c) ? [{ key: 'need', icon: '🕯', title: N.featureName['imza:imza_hizir/sense-of-need'] ?? 'Muhtaç Sezgisi' }] : []),
                         // Kuyruk S2: irtifa rozeti.
-                        ...((c.altitudeFt ?? 0) > 0 ? [{ key: 'alt', icon: `↑${c.altitudeFt}`, title: B.s2.altitude(c.altitudeFt ?? 0) }] : []),
+                        ...((c.altitudeFt ?? 0) > 0 ? [{ key: 'alt', icon: `${climbingAloft(c) ? '⇡' : '↑'}${c.altitudeFt}`, title: climbingAloft(c) ? B.k68.climbing(c.altitudeFt ?? 0, atCeiling(state, c)) : B.s2.altitude(c.altitudeFt ?? 0) }] : []),
                         // Kuyruk K66a: yarıkta (eksi irtifa).
                         ...((c.altitudeFt ?? 0) < 0 ? [{ key: 'alt', icon: `↓${-(c.altitudeFt ?? 0)}`, title: B.k66.inFissure(-(c.altitudeFt ?? 0)) }] : []),
                         // Kuyruk K66b: enkaz altında.
@@ -2129,7 +2160,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
                 {list.map(({ spell: sp, kind }) => {
                   const slot = hasSlotFor(actor, sp);
-                  const why = economyBlock(state, actor, { type: 'cast_spell', actorId, spellName: sp.name });
+                  // Kuyruk K68b: Call Lightning alçak tavanda yapılamaz (nedeni satırda).
+                  const why = economyBlock(state, actor, { type: 'cast_spell', actorId, spellName: sp.name })
+                    ?? ((cl) => (cl ? cloudCastProblem(state, actor, sp, cl) : null))(mechanicsAt(state, sp).cloud);
                   // Görev B1 (kuyruk 14): eğitimsiz zırh / sessizlik: gri, nedeni tek satır; hedef seçimine hiç girilmez.
                   const barred = castBarrierKind(state, actor, sp);
                   return (
@@ -2592,13 +2625,25 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               <span className={actor.economy.reaction ? 'spent' : ''}>{B.economy.reaction}</span>
               <span>{B.economy.move(Math.max(0, speedHexes(actor) - actor.movementUsed), speedHexes(actor))}</span>
               {/* Kuyruk S2 (sürüm 41): irtifa, dikey hareket (uçan), elindekini bırak, yerden al. */}
-              {ruleVersion(state) >= 41 && (actor.altitudeFt ?? 0) > 0 && <span>{B.s2.altitude(actor.altitudeFt ?? 0)}</span>}
+              {ruleVersion(state) >= 41 && (actor.altitudeFt ?? 0) > 0 && <span>{climbingAloft(actor) ? B.k68.climbing(actor.altitudeFt ?? 0, atCeiling(state, actor)) : B.s2.altitude(actor.altitudeFt ?? 0)}</span>}
+              {/* Kuyruk K68b (sürüm 52): tavanlı haritada üst sınır (tavan − boy); düğme sınırda kapalı, nedeni ipucunda. */}
+              {(flySpeed(actor) > 0 || climbingAloft(actor)) && ceilingFt(state) !== null && <span>{B.k68.cap(altitudeCapFt(state, actor))}</span>}
               {ruleVersion(state) >= 41 && flySpeed(actor) > 0 && (
                 <>
-                  <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) + 5 })}>{B.s2.up}</button>
+                  {((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? undefined} onClick={() => run(cmd)}>{B.s2.up}</button>)({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) + 5 })}
                   {(actor.altitudeFt ?? 0) > 0 && <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) - 5 })}>{B.s2.down}</button>}
                 </>
               )}
+              {/* Kuyruk K68b (sürüm 52): tırmanma hızıyla duvara/tavana (Spider Climb…): duvar dibinde ya da duvarda/tavanda. */}
+              {ruleVersion(state) >= 52 && !fliesOrHovers(actor) && climbs(actor, state) && actor.pos && (wallHex(state, actor.pos) || climbingAloft(actor)) && (
+                <>
+                  {((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? undefined} onClick={() => run(cmd)}>{B.k68.climbUp}</button>)({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) + 5 })}
+                  {(actor.altitudeFt ?? 0) > 0 && ((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? undefined} onClick={() => run(cmd)}>{B.k68.climbDown}</button>)({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) - 5 })}
+                </>
+              )}
+              {/* Kuyruk K68b (sürüm 52): Jump: yerinde yüksek zıplama (bu tur yakın dövüşte dikey erişim). */}
+              {ruleVersion(state) >= 52 && !highJumpProblem(state, actor) && <button className="hud-btn small" onClick={() => run({ type: 'jump', actorId, to: actor.pos as Offset })}>{B.k68.highJump(Math.min(spellJumpFt(actor), altitudeCapFt(state, actor)))}</button>}
+              {highJumpReachFt(state, actor) > 0 && <span>{B.k68.jumped(highJumpReachFt(state, actor))}</span>}
               {ruleVersion(state) >= 41 && Object.values(state.combatants).filter((c) => c.effects?.some((e) => e.levitate && e.sourceId === actorId)).map((c) => (
                 <span key={`lev${c.id}`}>
                   <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, targetId: c.id, toFt: (c.altitudeFt ?? 0) + 5 })}>{`${c.name} ${B.s2.up}`}</button>

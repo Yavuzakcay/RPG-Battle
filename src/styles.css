@@ -159,6 +159,9 @@ input[type='number'] { width: 90px; }
 .spell-zone polygon { fill: var(--zone); fill-opacity: 0.22; stroke: var(--zone); stroke-opacity: 0.7; stroke-width: 2; }
 .spell-zone.wall polygon { fill-opacity: 0.4; stroke-width: 4; stroke-dasharray: 8 5; }
 .spell-zone .zone-icon { font-size: 22px; text-anchor: middle; dominant-baseline: middle; }
+/* Kuyruk K68b: Call Lightning bulutunun sınırı (yalnız çizgi). */
+.cloud-ring { pointer-events: none; }
+.cloud-ring polygon { fill: none; stroke: #9fb4d8; stroke-opacity: 0.75; stroke-width: 2; stroke-dasharray: 5 4; }
 /* Görev Y1: yüzeyler (geçici renkli yer tutucu): daha opak dolgu, kesik kenar; buhar/zehir bulutu yarı saydam. */
 .spell-zone.surface polygon { fill-opacity: 0.45; stroke-dasharray: 6 4; }
 .spell-zone.surface.steam polygon, .spell-zone.surface.poison polygon { fill-opacity: 0.55; stroke-dasharray: none; }

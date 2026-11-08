@@ -3120,6 +3120,16 @@
         },
         "kapsamDisi": "Bulut büyücünün üstünde sayılır; nokta büyü menzilinde seçilir (silindir yüksekliği savaş modelinde yok).",
         "approx": null
+      },
+      "k68": {
+        "cloud": {
+          "radiusFt": 60,
+          "heightFt": 10,
+          "openBaseFt": 30,
+          "ceilingGapFt": 10,
+          "minRoomFt": 10
+        },
+        "kapsamDisi": "Bulut döküm yerinin üstünde sabit (taban açık gökte 30 ft, tavanlı yerde tavan − 10 ft); havadaki nokta yalnız yaratık seçilince; fırtına kontrolü yalnız +1d10."
       }
     },
     "school": "Conjuration",
@@ -6192,6 +6202,9 @@
       "a8": {
         "kapsamDisi": "Zıplamanın havadaki yayı ve yükseklik katmansız haritada dikey zıplama (katmansız haritada yükseklik yok).",
         "approx": null
+      },
+      "k68": {
+        "kapsamDisi": "Zıplamanın havadaki yayı; katmansız haritada dikey zıplama yalnız yüksek erişim (yerinde zıplama: bu tur yakın dövüşte dikeyde +30 ft erişim, tavanla sınırlı; havada kalınmaz)."
       }
     },
     "school": "Transmutation",
@@ -6228,6 +6241,9 @@
       "a8": {
         "kapsamDisi": "Duvar ve tavanda yürüme yükseklik katmanında tırmanma maliyetini kaldırır (`climb`); tavan modeli yok, eller serbest kuralı savaş dışı.",
         "approx": null
+      },
+      "k68": {
+        "kapsamDisi": "Eller serbest kuralı savaş dışı; açık alanda duvar boyu 20 ft (duvarın üstüne çıkılmaz); tavanda düşman altıgeninin üstünden geçilmez."
       }
     },
     "school": "Transmutation",

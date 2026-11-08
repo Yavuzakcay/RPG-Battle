@@ -29,7 +29,8 @@ import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, isAirborne, spellJumpFt } from './flight';
-import { heightAt, heightDelta, heightMoveRule, heightStepFn, levelFeet } from './heights';
+import { altitudeCapFt, atCeiling, climbingAloft, wallHex } from './altitude';
+import { heightAt, heightDelta, heightMoveRule, heightStepFn, layerActive, levelFeet } from './heights';
 import { mechanicsAt } from './spellVersion';
 import s2rules from '../../data/s2-kurallar.json';
 import { usedThisTurn } from './classTraits';
@@ -181,8 +182,12 @@ function moveCostBase(state: BattleState, actor: Combatant): (h: Offset, prev: O
 }
 
 function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
+  // Kuyruk K68b (sürüm 52): duvarda/tavanda tırmanan (Spider Climb…) zemin bakımından uçan gibi (zorlu arazi, sıvı, lav
+  // ve yer alanları yok); duvarda yalnız duvar altıgenlerine, tavanda her yere yürür. Tırmanıcı olmayana tek bayrak.
+  const aloft = climbingAloft(actor);
+  const onCeiling = aloft && atCeiling(state, actor);
   const flying = isAirborne(actor);
-  const stormFly = flying && stormNow(state);
+  const stormFly = flying && !aloft && stormNow(state);
   // Second-Story Work (Thief) ve Spider Climb (Görev K9c): tırmanma ek maliyeti yok.
   const climber = climbs(actor, state);
   const slowed = auraSlows(state, actor);
@@ -214,7 +219,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   // Kuyruk 20 A2: Prone yaratık yalnızca sürünür (SRD 5.2.1 Crawling: her ft için 1 ek ft); kural sürümü 2.
   const crawling = !flying && actor.conditions.includes('Prone') && srdConditions(state);
   // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
-  const tooDeep = deepWaterBlocks(state, actor);
+  const tooDeep = aloft ? () => false : deepWaterBlocks(state, actor);
   const walker = waterWalks(state, actor);
   const freeMove = !!actor.effects?.some((e) => e.freeMove || e.burrow);
   // Kuyruk K54b: Mevzi İşareti / Yol aç / Kuşbakışı Plan: korunan altıgende zor zemin yok.
@@ -235,8 +240,11 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const wallNear = (h: Offset) => neighbors(h, size0).some((n) => terrainAt(state, n).movement === 'blocked');
   const doorAt = (h: Offset) => (state.map?.objects ?? []).some((o) => (o.kind === 'door' || o.kind === 'gate') && o.state !== 'open' && sameHex(o.at, h));
   const sphere = s2 ? sphereLimit(state, actor) : null;
+  // Kuyruk K68b (sürüm 52): tavana değen Levitate'li her yerde tavana itinerek ilerler (SRD "against … a ceiling").
+  const gripCeil = grip && atCeiling(state, actor);
   return (h: Offset, prev: Offset): number | null => {
-    if (grip && !wallNear(prev)) return null;
+    if (grip && !gripCeil && !wallNear(prev)) return null;
+    if (aloft && !onCeiling && !wallHex(state, h)) return null;
     const sph = sphere ? sphere(h, prev) : 'ok';
     if (sph === 'block') return null;
     if (sph === 'jump') return 1;
@@ -420,6 +428,29 @@ function landingSlide(state: BattleState, actor: Combatant, jumped: BattleEvent)
 /** Jump büyüsünün tur kaydı anahtarı ve hareket maliyeti (10 ft = 2 altıgen; SRD 5.2.1 s. 143). */
 const SPELL_JUMP = 'spell:jump';
 const SPELL_JUMP_COST = 2;
+/** Kuyruk K68b: yerinde yüksek zıplama (bu tur yakın dövüşte dikey erişim eki) tur kaydı. */
+export const HIGH_JUMP = 'spell:jump-high';
+
+/**
+ * Kuyruk K68b (sürüm 52, karar 13): Jump etkisindeki yaratığın bu tur yerinde zıplamasıyla yakın dövüş erişimine dikeyde
+ * eklenen ft (0: yok). Katmansız haritada, en çok zıplama menzili (30 ft) ve tavan − boy. Havada kalmaz.
+ */
+export function highJumpReachFt(state: BattleState, c: Combatant): number {
+  if (ruleVersion(state) < 52 || !usedThisTurn(state, c, HIGH_JUMP)) return 0;
+  return Math.min(spellJumpFt(c), altitudeCapFt(state, c));
+}
+
+/** Yerinde yüksek zıplamanın sorunu (yoksa null): sürüm 52, katmansız harita, Jump etkisi, bu tur zıplanmamış, 10 ft hareket. */
+export function highJumpProblem(state: BattleState, actor: Combatant): string | null {
+  if (ruleVersion(state) < 52) return 'Zaten bu altıgende.';
+  if (spellJumpFt(actor) <= 0) return 'Yerinde zıplamak için Jump etkisi gerekir.';
+  if (layerActive(state)) return 'Yükseklik katmanlı haritada yüksek zıplama komşu yüksek altıgene yapılır.';
+  if (isAirborne(actor)) return 'Havadayken zıplanmaz.';
+  if (usedThisTurn(state, actor, SPELL_JUMP)) return 'Jump bu tur kullanıldı.';
+  if (altitudeCapFt(state, actor) <= 0) return 'Tavan çok alçak.';
+  if (SPELL_JUMP_COST > speedHexes(actor) - actor.movementUsed) return 'Hareket yetmiyor.';
+  return null;
+}
 
 /** Uzun atlama menzili (ft): koşarak STR skoru kadar, koşusuz yarısı (aşağı yuvarlanır). */
 export function jumpRangeFeet(c: Combatant, running: boolean, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): number {
@@ -438,7 +469,13 @@ export function jumpRangeFeet(c: Combatant, running: boolean, state?: Pick<Battl
 export function executeJump(state: BattleState, actor: Combatant, to: Offset, rng: Rng = () => 0.5): CommandResult {
   const from = checkMover(state, actor, to);
   if ('ok' in from) return from;
-  if (sameHex(from, to)) return fail('Zaten bu altıgende.');
+  if (sameHex(from, to)) {
+    // Kuyruk K68b (sürüm 52): yerinde yüksek zıplama: bu tur yakın dövüşte dikey erişim (havada kalmaz).
+    const why = highJumpProblem(state, actor);
+    if (why) return fail(why);
+    const t = turnKey(state);
+    return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap: 0, cost: SPELL_JUMP_COST, running: false, traitTurns: { [SPELL_JUMP]: t, [HIGH_JUMP]: t } }]);
+  }
   // Görev A4: tasma: atlayarak da uzaklaşılmaz.
   if (leashBlocks(leashOf(state, actor), to, from)) return fail('Tasma: bağlı olduğu yaratıktan daha uzağa gidemez.');
   if (lavaOver(state, from, to).length > 0) return executeIslandJump(state, actor, from, to, rng);

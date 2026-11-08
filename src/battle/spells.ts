@@ -11,6 +11,7 @@ import { executeTelekinesis, telekinesisOn } from './telekinesis';
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
 import { newZoneId, profileIn } from './zones';
+import { cloudCastProblem, cloudPointProblem, cloudZoneEvent } from './cloud';
 import { sightConditions } from './sight';
 import { ABILITIES, type Ability } from '../rules/abilities';
 import { attackDice, saveDice } from './effectDice';
@@ -47,7 +48,7 @@ import { castBarrier } from './castBarrier';
 import { teleportEvent, teleportProblem } from './teleport';
 import { askChoice } from '../rules/choice';
 import { gap } from './body';
-import { areaReachesAltitude, levitateRiseEvents } from './altitude';
+import { altitudeOf, areaReachesAltitude, levitateRiseEvents } from './altitude';
 import { quakeCastEvents } from './quake';
 import { executeLevitateObject, executeResizeObject, illusionEvents, recallBlade } from './s2spells';
 import { dropEvents, handsOn, heldMetal, heldWeapons, touchesMetal, wearsMetal } from './heldItems';
@@ -168,6 +169,12 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
   const aim = cmd.targetHex ?? named?.pos ?? null;
+  // Kuyruk K68b (sürüm 52, Call Lightning `cloud`): tavan yeterli mi, şimşek noktası bulutun altında mı.
+  const cloud = m.cloud;
+  if (cloud) {
+    const why = (!repeat ? cloudCastProblem(state, actor, spell, cloud) : null) ?? (aim ? cloudPointProblem(state, actor, spell, cloud, aim, named, repeat) : null);
+    if (why) return fail(why);
+  }
   // Alanın altıgenleri, nokta denetimi ve etkilenenler ortak seçicide (Görev R4: büyü, nefes, koni, çizgi aynı yol).
   // Kuyruk K65a (sürüm 49, `freeShape`): serbest şekil (Fire Storm): seçilen bitişik altıgenler (`targetHexes`; tek altıgen
   // seçildiyse `targetHex`); doğrulama ve etkilenenler `freeShape.ts`'te.
@@ -190,15 +197,19 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     + (actor.traits?.includes('mm-careful') ? Math.max(1, actor.modifiers.cha) : 0);
   const spared = new Set(pick.reached.filter((x) => x.c.side === actor.side).slice(0, sculpt).map((x) => x.c.id));
   // Kuyruk S2 (sürüm 41): alanın ulaşmadığı irtifadaki yaratık etkilenmez.
-  const reached = pick.reached.filter((x) => !spared.has(x.c.id) && (!spell.area || areaReachesAltitude(state, spell.area, x.c))).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
+  // Kuyruk K68b (Call Lightning): yaratık seçilince nokta onun irtifasında; noktanın 5 ft içi (dikeyde de) etkilenir.
+  const pointAlt = cloud && named ? altitudeOf(named) : 0;
+  const atAlt = (c: Combatant) => (pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : !spell.area || areaReachesAltitude(state, spell.area, c));
+  const reached = pick.reached.filter((x) => !spared.has(x.c.id) && atAlt(x.c)).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
   if (named && !reached.some((x) => x.c.id === named.id)) {
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
   }
 
   const slot = repeat ? repeatSlot(actor, spell) : spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
-  const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel))];
-  const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}` : '';
+  const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel)),
+    ...(cloud && !repeat ? cloudZoneEvent(state, actor, spell, cloud, slot.slotLevel) : [])];
+  const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}${pointAlt ? ` (${pointAlt} ft yükseklikte)` : ''}` : '';
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
     note: `Alan: ${fs ? `${pick.hexes.length} altıgen (serbest şekil)` : `${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}`}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,

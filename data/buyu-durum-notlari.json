@@ -20,7 +20,7 @@
     "dispel-magic": { "uyar": "evet", "neden": "SRD'ye uygun: eşyanın kendi büyüsü dağılmaz." },
     "remove-curse": { "uyar": "evet", "neden": "Lanetli eşyadan kopma savaş dışı; savaşta lanet kalkar." },
     "beacon-of-hope": { "uyar": "evet", "neden": "En yüksek iyileştirme büyü, iksir ve özellik zarlarında (src/battle/healMax.ts)." },
-    "call-lightning": { "uyar": "evet", "neden": "Silindir yüksekliği modelde yok; bulut büyücünün üstünde sayılır, hedef nokta menzilde." },
+    "call-lightning": { "uyar": "evet", "neden": "Sürüm 52 (K68b): bulut döküm yerinin üstünde sabit, nokta bulutun altında, alçak tavanda yapılmaz, yaratık seçilince şimşek onun irtifasında; fırtına kontrolü yalnız +1d10." },
     "conjure-animals": { "uyar": "evet", "neden": "Çok altıgen bayrağı kapalıyken her yaratık tek altıgen (oyunun genel kuralı)." },
     "animate-dead": { "uyar": "evet", "neden": "1 dakikalık döküm kurulumda; 24 saatlik yenileme savaş dışı." },
     "enlarge-reduce": { "uyar": "evet", "neden": "Boyut etkileri (hasar zarı, STR avantajı) tam; altıgen sayısı çok altıgen bayrağına bağlı." },
@@ -32,8 +32,8 @@
     "continual-flame": { "uyar": "evet", "neden": "Loş ışık ayrımı yok; aydınlatma tam." },
     "daylight": { "uyar": "kismen", "neden": "Ek 60 ft loş ışık yok: karanlık haritada aydınlattığı alan SRD'den dar." },
     "alter-self": { "uyar": "evet", "neden": "Change Appearance sosyal; savaş seçenekleri (Aquatic, Natural Weapons) tam." },
-    "jump": { "uyar": "evet", "neden": "Katmansız haritada dikey yükseklik yok; yatay uzunluk tam." },
-    "spider-climb": { "uyar": "evet", "neden": "Tırmanma maliyeti kalkar; tavan modeli yok, eller serbest kuralı savaş dışı." },
+    "jump": { "uyar": "evet", "neden": "Yatay uzunluk tam; katmansız haritada dikey zıplama sürüm 52'de (K68b) yüksek erişim olarak (yerinde zıplama), havada kalınmaz." },
+    "spider-climb": { "uyar": "evet", "neden": "Sürüm 52 (K68b): duvarda ve tavanda tırmanma, yürüme ve durma; büyü biterse düşer. Eller serbest kuralı savaş dışı." },
     "conjure-fey": { "uyar": "evet", "neden": "Fey görünüşü yalnız görsel." }
   }
 }

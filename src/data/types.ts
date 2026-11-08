@@ -244,6 +244,12 @@ export interface SpellMechanics {
   repeat?: { cost: 'action' | 'bonus'; target: 'same' | 'any' | 'enemy'; direction?: boolean; moveZoneFt?: number; point?: boolean; moveFt?: number;
     /** A1: bu büyüye karşı save'i başaran yaratık yeniden hedeflenemez (Eyebite). */
     noRetarget?: boolean };
+  /**
+   * Kuyruk K68b (sürüm 52, Call Lightning): döküm yerinin üstünde sabit fırtına bulutu (silindir). Şimşek noktası bulutun
+   * altında (yatayda `radiusFt` içinde, irtifası tabandan alçak); taban açık gökte `openBaseFt`, tavanlıda tavan −
+   * `ceilingGapFt`; tavan − büyücü boyu `minRoomFt`'ten azsa yapılamaz (`src/battle/cloud.ts`).
+   */
+  cloud?: { radiusFt: number; heightFt: number; openBaseFt: number; ceilingGapFt: number; minRoomFt: number };
   /** A1: menzili "Self" olup etkisi bir yaratığı hedefleyen büyü (Eyebite: 60 ft içinde görülen yaratık). */
   targetFt?: number;
   /** Görev B1, smite: isabette save; başarısızsa süregelen etki (`ongoing`) ve süresince durumlar (Ensnaring Strike: Restrained). */

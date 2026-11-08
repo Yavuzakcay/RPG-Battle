@@ -267,6 +267,7 @@
  "variants": [
   {
    "id": "varsayilan",
+   "tavanFt": 15,
    "name": "Derinlikler",
    "nameEn": "The Depths",
    "image": "maps/derinlikler/derinlikler-mezar-labirenti.webp",

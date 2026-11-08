@@ -114,7 +114,7 @@ export function movableHexes(state: BattleState, actorId: string): Map<string, n
 export function jumpHexes(state: BattleState, actorId: string): Offset[] {
   const actor = state.combatants[actorId];
   if (!actor?.pos || state.status !== 'active') return [];
-  return allHexes(gridOf(state)).filter((h) => tryCommand(state, { type: 'jump', actorId, to: h }).ok);
+  return allHexes(gridOf(state)).filter((h) => !(h.col === actor.pos?.col && h.row === actor.pos?.row) && tryCommand(state, { type: 'jump', actorId, to: h }).ok);
 }
 
 export interface AttackChoice {

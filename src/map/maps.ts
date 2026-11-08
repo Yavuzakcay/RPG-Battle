@@ -46,6 +46,8 @@ export interface MapVariant {
   startZones?: RawMap['startZones'];
   /** Kuyruk 21 D2b: varyantın kendi nesneleri (verilirse haritanınkini ezer; yürüyen merdivenin kolu gibi). */
   objects?: RawMap['objects'];
+  /** Kuyruk K68b: iç mekânın tavan yüksekliği (ft; yalnız kural sürümü 52+). Yoksa açık gök. `scripts/k68-tavan.py` yazar. */
+  tavanFt?: number;
 }
 
 /** Başlangıç bölgesi: 1 tabanlı sütun aralığı ve isteğe bağlı hazır altıgen listesi ([sütun, satır], 1 tabanlı). */
@@ -287,6 +289,7 @@ function validateBase(raw: RawMap, opts: { images?: ReadonlySet<string> }): stri
       if (typeof rule.id !== 'string') errors.push(`${where}: "${v.id}" varyantında kimliksiz kural`);
     }
     errors.push(...effectErrors(v.effects, `${where} "${v.id}" varyantı`));
+    if (v.tavanFt !== undefined && !(Number.isInteger(v.tavanFt) && v.tavanFt >= 5 && v.tavanFt <= 120)) errors.push(`${where}: "${v.id}" varyantının tavanı 5–120 ft tam sayı olmalı`);
   }
   return errors;
 }

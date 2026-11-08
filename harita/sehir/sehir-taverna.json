@@ -129,6 +129,7 @@
   "variants": [
     {
       "id": "ic-mekan",
+      "tavanFt": 12,
       "name": "İç mekân",
       "image": "maps/sehir/sehir-taverna.webp",
       "rules": [

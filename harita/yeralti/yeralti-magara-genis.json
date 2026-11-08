@@ -43,6 +43,7 @@
   "variants": [
     {
       "id": "magara",
+      "tavanFt": 20,
       "name": "Mağara",
       "nameEn": "Cave",
       "image": "maps/yeralti/yeralti-magara-genis.webp",

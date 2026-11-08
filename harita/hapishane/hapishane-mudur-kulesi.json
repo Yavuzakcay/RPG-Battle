@@ -116,6 +116,7 @@
  "variants": [
   {
    "id": "los",
+   "tavanFt": 15,
    "name": "Loş",
    "nameEn": "Dim",
    "image": "maps/hapishane/hapishane-mudur-kulesi.webp",

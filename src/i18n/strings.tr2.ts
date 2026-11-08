@@ -338,6 +338,11 @@ export const TR_EXTRA = {
       structures: (n: number, names: string): string => `Yapılar: ${n} çökecek (${names})`, structuresSafe: (n: number): string => `Yapılar: ${n} hasar alır, çökmez`,
       collapseHits: (foes: number, friends: number): string => `Çöküş: ${foes} düşman · ${friends} dost`, buried: 'Enkaz altında (Kurtul: DC 20 Athletics)', escapeRubble: 'Enkazdan kurtul' },
     s2: { altitude: (ft: number): string => `İrtifa ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `${item} bırak`, pick: (item: string): string => `${item} al` },
+    // Kuyruk K68b: tavan, tırmanma (Spider Climb), yerinde yüksek zıplama (Jump), Call Lightning bulutu.
+    k68: { ceiling: (ft: number): string => `tavan ${ft} ft`, cap: (ft: number): string => `en çok ${ft} ft`, climbUp: '▲ Tırman 5 ft', climbDown: '▼ İn 5 ft',
+      climbing: (ft: number, ceiling: boolean): string => (ceiling ? `Tavanda (${ft} ft)` : `Duvarda (${ft} ft)`),
+      highJump: (ft: number): string => `Yerinde zıpla (dikey erişim +${ft} ft)`, jumped: (ft: number): string => `Zıpladı: dikey erişim +${ft} ft`,
+      cloud: (base: number): string => `Call Lightning bulutu (taban ${base} ft, 60 ft yarıçap)` },
     start: 'Savaşı başlat',
     explore: { go: 'Keşfe devam', hint: 'Keşif: jetona dokunup seç, yürü; giriş altıgenine varınca Serüven\'e dönülür.' },
     summary: { party: 'Parti kazandı!', enemies: 'Düşmanlar kazandı.', rounds: (n: number) => `${n}. turda bitti`,
@@ -457,6 +462,7 @@ export const TR_EXTRA = {
     hideDark: 'karanlık: Gizlen zarı avantajlı', unlit: 'ışıksız (gece)',
     // Kuyruk K67a: ışık seviyesi (sürüm 51).
     lightLevel: { bright: 'ışık: parlak', dim: 'ışık: loş (görmeye dayalı Algı −5)', dark: 'ışık: karanlık' } as Record<string, string>,
+    ceiling: (ft: number): string => `tavan ${ft} ft`,
     hideWatch: (dc: number, name: string): string => `geçilmesi gereken ${dc} (${name} pasif Algısı)`,
     hiddenStealth: (n: number): string => `Gizli (Stealth: ${n})`,
     hiddenZones: (on: boolean): string => (on ? 'Gizli alanları gizle (Game Master)' : 'Gizli alanları göster (Game Master)'),

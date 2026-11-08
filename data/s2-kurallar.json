@@ -1,6 +1,6 @@
 {
   "note": "Kuyruk S2 (kural sürümü 41): sığmayan büyü parçalarının sayıları. SRD 5.2.1: düşme 10 ft başına 1d6 (en çok 20d6); Levitate 20 ft yükselme, turda 20 ft dikey değişim, 500 lb; nesne HP'si boyuta göre (dayanıklı sütun); hafif örtü görmeye dayalı Algıda dezavantaj (pasif −5).",
-  "irtifa": { "stepFt": 5, "maxFt": 120, "levitateRiseFt": 20, "levitatePerTurnFt": 20, "levitateObjectMaxLb": 500, "groundZoneTopFt": 0, "defaultZoneTopFt": 20 },
+  "irtifa": { "stepFt": 5, "maxFt": 120, "levitateRiseFt": 20, "levitatePerTurnFt": 20, "levitateObjectMaxLb": 500, "groundZoneTopFt": 0, "defaultZoneTopFt": 20, "wallFt": 20, "boyFt": { "T": 5, "S": 5, "M": 5, "L": 10, "H": 15, "G": 20 } },
   "nesneBoyut": {
     "order": ["Tiny", "Small", "Medium", "Large", "Huge"],
     "hp": { "Tiny": 5, "Small": 10, "Medium": 18, "Large": 27, "Huge": 27 },

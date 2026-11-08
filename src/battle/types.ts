@@ -773,6 +773,8 @@ export interface Combatant {
   vertTurn?: { turn: string; ft: number };
   /** Kuyruk S2: irtifa Levitate'ten (bitince süzülerek iner, hasarsız). */
   altitudeGentle?: boolean;
+  /** Kuyruk K68b (sürüm 52): irtifa tırmanmadan (duvarda/tavanda; zeminden kopuk sayılır, tutunamazsa düşer). */
+  climbing?: true;
   /** Kuyruk S2: elden bırakılan silah/eşya kimlikleri (elde tutulanlar = saldırı seçenekleri eksi bunlar; `hands.ts`). */
   dropped?: string[];
   /** Kuyruk S2 (paket `silahBagi`): bağlı silah kimlikleri (zorla düşmez, ele çağrılır). */
@@ -1219,6 +1221,8 @@ export interface SpellZone {
   fissure?: { depthFt?: number; pending?: { at: Offset; dir: number; parentId: string } };
   /** Kuyruk K54b: Mevzi İşareti / Yol Aç: sahibin tarafındaki dostlar burada zor zemini ve zemin hasarını yok sayar (`saveBonus`: kurtulma). */
   groundWard?: { saveBonus?: number };
+  /** Kuyruk K68b (sürüm 52): Call Lightning bulutu: merkez `center`, yatay yarıçap (altıgen) ve taban (ft); kuralsız, yalnız sınır. */
+  cloud?: { radiusHexes: number; baseFt: number };
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -2087,7 +2091,7 @@ export type BattleEvent =
   | { type: 'life_restored'; targetId: string; hpAfter: number; life: 'alive' | 'stable'; label: string }
   /** Görev S1: ışınlanma (fırsat saldırısı tetiklemez; sıra ve konsantrasyon korunur). */
   /** Kuyruk S2: irtifa (ft) değişti (yaratık ya da nesne); `cost` harcanan hareket (altıgen), `turn`/`moved` Levitate turluk sınırı. */
-  | { type: 'altitude_changed'; targetId?: string; objectId?: string; altitudeFt: number; label: string; cost?: number; turn?: string; moved?: number; byId?: string; /** Levitate: bitince süzülerek iner. */ gentle?: boolean }
+  | { type: 'altitude_changed'; targetId?: string; objectId?: string; altitudeFt: number; label: string; cost?: number; turn?: string; moved?: number; byId?: string; /** Levitate: bitince süzülerek iner. */ gentle?: boolean; /** Kuyruk K68b: tırmanma (duvar/tavan). */ climb?: true }
   /** Kuyruk S2: elden düşen eşya (yerde nesne olur; `options` geri alınınca dönen saldırı seçenekleri; nesnesizse kaybolur). */
   | { type: 'item_dropped'; actorId: string; item: string; label: string; objectId?: string; at?: Offset; options?: AttackOption[] }
   | { type: 'item_picked'; actorId: string; objectId: string; label: string; bond?: boolean }

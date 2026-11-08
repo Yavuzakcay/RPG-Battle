@@ -307,6 +307,7 @@
  "variants": [
   {
    "id": "varsayilan",
+   "tavanFt": 25,
    "name": "Volkan Seferi",
    "nameEn": "Volcano Expedition",
    "image": "maps/volkan/volkan-demirhane.webp",

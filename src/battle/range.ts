@@ -13,7 +13,7 @@ import { gap } from './body';
 import { reachFt } from './altitude';
 import { isIncapacitated } from '../rules/conditions';
 import { distance, line } from '../rules/hex';
-import { solidWallAt } from './movement';
+import { highJumpReachFt, solidWallAt } from './movement';
 import type { ModeSource } from '../rules/modes';
 import type { Cover } from '../map/terrain';
 import { fail, isIntangible, isTargetable, type Failure } from './common';
@@ -78,7 +78,10 @@ export function checkReach(
   // Görev A6: çok altıgenli gövdelerde en yakın iki altıgen arası.
   const d = gap(state, attacker, target);
   // Kuyruk S2 (sürüm 41): irtifa farkı (yatay uzaklıkla büyüğü).
-  const ft = reachFt(state, attacker, target, d * 5);
+  // Kuyruk K68b (sürüm 52): bu tur yerinde yüksek zıplayan (Jump) yakın dövüşte yukarıdakine zıplama yüksekliği kadar yaklaşır.
+  const hj = reach.kind === 'melee' ? highJumpReachFt(state, attacker) : 0;
+  const up = (target.altitudeFt ?? 0) - (attacker.altitudeFt ?? 0);
+  const ft = hj && up > 0 ? Math.max(d * 5, up - hj) : reachFt(state, attacker, target, d * 5);
   const sources: ModeSource[] = [];
   // Gizlenmiş saldıran görünmez sayılır: saldırı zarında avantaj (ardından ortaya çıkar).
   if (attacker.hidden) sources.push({ effect: 'advantage', reason: 'Gizlenmiş saldıran' });

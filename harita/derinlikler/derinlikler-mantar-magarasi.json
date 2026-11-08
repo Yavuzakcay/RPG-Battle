@@ -212,6 +212,7 @@
  "variants": [
   {
    "id": "varsayilan",
+   "tavanFt": 30,
    "name": "Derinlikler",
    "nameEn": "The Depths",
    "image": "maps/derinlikler/derinlikler-mantar-magarasi.webp",

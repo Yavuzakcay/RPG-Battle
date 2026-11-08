@@ -78,7 +78,8 @@ import aiData from '../../data/yapay-zeka.json';
 const REGEN_CUT: number = aiData.yenilenmeKesme;
 const cutsRegen = (type: string | undefined): boolean => type === 'fire' || type === 'acid';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
-import { isAirborne } from './flight';
+import { climbs, isAirborne } from './flight';
+import { climbCapFt, wallHex } from './altitude';
 import { legendaryOf } from './boss';
 import { bodyAt, bodyOf, gap } from './body';
 import { footprintDistance } from '../rules/footprint';
@@ -595,6 +596,25 @@ function fissureClimbCmd(state: BattleState, actor: Combatant, foes: Combatant[]
   const c = fissureClimbCommand(state, actor, foes);
   if (!c) return null;
   const cmd: Command = { type: 'vertical_move', actorId: actor.id, toFt: c.toFt, ...(c.to ? { to: c.to } : {}) };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
+/**
+ * Kuyruk K68b (sürüm 52, basit kural `k68:tirman`): tırmanma hızı olan (Spider Climb…) büyü yapan yaratık, yerdeki bir
+ * düşmana bitişikken ve duvara bitişikken yakın dövüş erişiminden çıkacak kadar (en az 10 ft) duvara/tavana tırmanır
+ * (hareketin ve tavanın izin verdiği en yükseğe). Uçan ve tırmanan düşmanlar sayılmaz. `kuralOnceligi['k68:tirman']`.
+ */
+function climbAwayCmd(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (ruleVersion(state) < 52 || !actor.pos || !actor.spellNames.length || actor.summon || isAirborne(actor) || !climbs(actor, state)) return null;
+  const alt = actor.altitudeFt ?? 0;
+  if (alt < 0 || !wallHex(state, actor.pos)) return null;
+  const me = actor.pos;
+  const melee = foes.filter((f) => f.pos && f.hp > 0 && !isAirborne(f) && (f.altitudeFt ?? 0) <= 0 && distance(me, f.pos) <= 1);
+  if (!melee.length) return null;
+  const left = speedHexes(actor) - actor.movementUsed;
+  const to = Math.min(climbCapFt(state, actor), alt + left * 5);
+  if (to < 10 || to <= alt) return null;
+  const cmd: Command = { type: 'vertical_move', actorId: actor.id, toFt: to };
   return tryCmd(state, actor, cmd).ok ? cmd : null;
 }
 
@@ -2511,6 +2531,7 @@ registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word K
 registerAction({ id: 'k67:isik', rule: true, kind: 'support', note: 'karanlıkta görmeyen dost varken ışık büyüsü (bir kez)', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [lightCommand(s, a, h.allies)] : []) });
 registerAction({ id: 'k66:yarik', rule: true, kind: 'control', note: 'Earthquake yarığı: dostsuz, düşman kesen, yol kesmeyen hat', gen: (s, a, h) => [fissureCommand(s, a, h.foes)] });
 registerAction({ id: 'k66:tirman', rule: true, kind: 'move', note: 'yarıktan tırmanma', gen: (s, a, h) => [fissureClimbCmd(s, a, h.foes)] });
+registerAction({ id: 'k68:tirman', rule: true, kind: 'move', note: 'tırmanıcı büyücü bitişik yerdeki düşmandan duvara/tavana tırmanır', gen: (s, a, h) => [climbAwayCmd(s, a, h.foes)] });
 registerAction({ id: 'k65:duvar', rule: true, kind: 'control', note: 'panelli duvar: büyücüyle düşman grubu arasına serbest yol', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [wallCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k65:firtina', rule: true, kind: 'damage', note: 'Fire Storm: serbest şekil, en kalabalık gruptan dostsuz bitişik yollarla', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [freeShapeCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k64:ele-gecir', rule: true, kind: 'control', note: 'Ghost Possession: 5 ft içindeki geçerli Humanoid hedefi ele geçir', gen: (s, a, h) => (a.monsterId && !a.summon ? [possessCommand(s, a, h.foes)] : []) });

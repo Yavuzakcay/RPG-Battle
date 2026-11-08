@@ -95,6 +95,7 @@
  "variants": [
   {
    "id": "karanlik",
+   "tavanFt": 10,
    "name": "Karanlık lağım",
    "nameEn": "Dark sewers",
    "image": "maps/yerlesim/kasaba-lagim.webp",

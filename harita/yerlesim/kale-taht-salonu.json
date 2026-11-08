@@ -115,6 +115,7 @@
  "variants": [
   {
    "id": "ic-mekan",
+   "tavanFt": 30,
    "name": "İç mekân",
    "nameEn": "Indoors",
    "image": "maps/yerlesim/kale-taht-salonu.webp",

@@ -113,6 +113,7 @@
   "variants": [
     {
       "id": "magara",
+      "tavanFt": 20,
       "name": "Mağara",
       "image": "maps/yeralti/yeralti-magara.webp",
       "rules": [

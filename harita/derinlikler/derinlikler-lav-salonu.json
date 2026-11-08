@@ -210,6 +210,7 @@
  "variants": [
   {
    "id": "varsayilan",
+   "tavanFt": 30,
    "name": "Derinlikler",
    "nameEn": "The Depths",
    "image": "maps/derinlikler/derinlikler-lav-salonu.webp",
