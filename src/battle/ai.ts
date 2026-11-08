@@ -507,7 +507,9 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const friends = inside.filter((c) => (c.side === actor.side || c.civilian) && !(z?.notCaster && c.id === actor.id) && z?.targets !== 'enemies').length;
       // Görev DRUID: hasar veren alan (Moonbeam) tek güçlü (20+ HP) düşmana da.
       const worth = enemies >= 2 || (!!z?.damage && foesIn.some((c) => c.hp >= 20));
-      if (worth && friends === 0 && (!best || enemies > best.foes)) best = { cmd, foes: enemies };
+      // Kuyruk Y1: yalnız ölçümde (`yz.deprem`) Earthquake dost varken de (en az 2 düşman). Varsayılan: alanda dost yok.
+      const loose = !!state.yz?.deprem && s.id === 'earthquake' && enemies >= 2;
+      if (worth && (friends === 0 || loose) && (!best || enemies > best.foes)) best = { cmd, foes: enemies };
     }
   }
   return best?.cmd ?? null;

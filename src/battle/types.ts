@@ -1322,7 +1322,9 @@ export interface BattleState {
    * Y1: yapay zekâ ayarı (karar olay değil, kural sürümü gerekmez). `zorluk` taraf başına (varsayılan Normal);
    * `eski: true` Y1 öncesi kural zincirini çalıştırır (regresyon ölçümü).
    */
-  yz?: { zorluk?: Partial<Record<'party' | 'enemies', 'kolay' | 'normal' | 'usta'>>; eski?: boolean };
+  yz?: { zorluk?: Partial<Record<'party' | 'enemies', 'kolay' | 'normal' | 'usta'>>; eski?: boolean;
+    /** Kuyruk Y1: yalnız denge ölçümü (simülasyon `setSimYz`; arayüzde yok): Earthquake alanda dost varken de seçilebilir (en az 2 düşman). */
+    deprem?: boolean };
   /**
    * Görev Y1: yüzey etkileşimi (tepkimeler: tutuşma, buhar, donma, erime, patlama, suda yıldırım). Varsayılan açık;
    * yalnızca `false` kapatır (eski kayıt: açık).

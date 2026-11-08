@@ -49,3 +49,16 @@ Durum: **geçerli** (YZ bugün yapmıyor), **geçersiz** (artık yapıyor ya da 
 - (e) madde 8: geçersiz (zaten var); değişiklik yok.
 - Earthquake (madde 3): yalnız ölçüm, karar kullanıcıda.
 - Diğerleri: sınıfına göre yapılmadı (kapsam dışı, denge kararı ya da Y1 listesinde değil).
+
+## Y1 sonrası durum (kural sürümü 55)
+
+| # | Madde | Sonuç |
+|---|---|---|
+| 1, 2 | Duvar paneli / Disintegrate ile Wall of Force | **yapıldı** (`y1:duvar`, df84096): yol kesen düşman duvarı. Sınır: panel saldırısı silah seçeneği olan yaratıkta; Wall of Stone paneli de aynı yoldan |
+| 3 | Earthquake | **ölçüldü, karar kullanıcıda** (DECISIONS.md Y1): gevşek kural (alanda dost olsa da en az 2 düşman) hiç döküm üretmiyor, değerlendirici dost ateşi cezasıyla eliyor; zorla kolu ortalamada −2 puan |
+| 4 | Charm Person | **yapıldı** (`eski:kontrol` sürümlü mekanik, 9f26317) |
+| 5 | Dancing Lights taşıma | **yapıldı** (`y1:isik-tasi`, 141bce3) |
+| 7 | Metamagic | **kısmen**: Heightened eklendi (önizleme, 55ad886); diğerleri yukarıdaki gerekçeyle yok. Motor çok hedefli yapımda Heightened uygulamaz |
+| 8, 9, 11 | Cutting Words, Thirsting Blade, Kaçın/Yardım | geçersiz (zaten var) |
+| 27 | Resilient Sphere'i Disintegrate ile kırma (YZ) | yapılmadı: motor Y1 G1'de bağlandı; YZ için ayrı kural yok (kürede düşman dost kurtarma kararı) |
+| diğerleri | — | sınıfına göre yapılmadı (kapsam dışı, denge kararı ya da orta ve Y1 listesinde değil) |

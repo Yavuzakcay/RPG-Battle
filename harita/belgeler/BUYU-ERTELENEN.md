@@ -57,5 +57,5 @@ Işık modeli bugün aydınlık/karanlık (`litHexes`). Tetikleyici: loş ışı
 ## 7. Kuyruk K70'te kapananlar (sürüm 54)
 
 - `flesh-to-stone` (6): Construct ilk ve tur sonu save'lerini otomatik başarır (SRD 5.2.1; K61'de kalan).
-- `disintegrate` (6): Wall of Force'u anında yok eder (K65c/Kuyruk 17'de açık kalan). ⚠ Forcecage'e uygulanmadı (Forcecage metninde Disintegrate yok). Açık: Resilient Sphere küresi ve Large ya da küçük büyüsüz nesneler.
+- `disintegrate` (6): Wall of Force'u anında yok eder (K65c/Kuyruk 17'de açık kalan). ⚠ Forcecage'e uygulanmadı (Forcecage metninde Disintegrate yok). Kuyruk Y1 (sürüm 55): Resilient Sphere küresini de yok eder; Dispel Magic Wall of Force/Forcecage'i kaldırmaz. ⚠ Açık: Large ya da küçük büyüsüz harita nesneleri (yıkım davranışları ayrı karar ister).
 - `beacon-of-hope` (3): bkz. §6.

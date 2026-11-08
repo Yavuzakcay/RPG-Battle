@@ -2,6 +2,26 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk Y1: YZ kuyruğu + K70 artıkları (kural sürümü 55)
+
+- **Sürüm:** `wip/y1` (60536ea üstüne). Kural sürümü 54 → 55; yeni davranış yalnız 55+ (büyü verisinde `y1` bloğu; YZ üreticileri `ruleVersion >= 55`). 54 ve altı değişmez (her madde 54 testiyle sabit; `src/sim/y1Regresyon.test.ts` 4 senaryo × 30 tohum 54 = 55 birebir). `SAVE_VERSION` 22 (yalnız `effect_ended.reason: 'destroyed'` değeri eklendi). Denge ayarı yok; yeni dikey ya da büyük yaratık taktiği yok (K73).
+- **Görev 0:** `harita/belgeler/Y1-ENVANTER.md` (27 satır; geçersiz bulunanlar: Cutting Words, Thirsting Blade, Kaçın/Yardım; sonuç tablosu belgenin sonunda).
+- **Görev 1 (SRD 5.2.1 metinleri doğrulandı):**
+  - Dispel Magic Wall of Force'u kaldırmaz (s. 172 "can't be dispelled by Dispel Magic"); Forcecage metninde de aynı cümle var (s. 133), kafes zaten Dispel dışındaydı, veride de işaretli (`y1.dispelImmune`).
+  - Disintegrate Resilient Sphere küresini içindekine zarar vermeden yok eder ("A Disintegrate spell targeting the globe destroys it without harming anything inside"): save/hasar yok, `effect_ended` `destroyed`, kürenin sahibinin konsantrasyonu biter (`y1.destroysSphere`, `spells.ts` `executeDestroySphere`).
+  - ⚠ Disintegrate ile büyüsüz Large ve küçük harita nesnelerinin yok edilmesi **uygulanmadı**: nesne yıkımında özel davranışlar (yağ dökülmesi, barut patlaması, çöken yapı, kırılmaz heykel gözü, donmuş şelale bayrağı, `destroy` hedefleri) "toza dönme" için her biri ayrı karar ister; risk yüksek.
+- **Görev 2 (YZ; her biri ayrı commit):**
+  - (a) `y1:duvar` (`kuralOnceligi` 10): karşı tarafın panelli duvarı ya da Wall of Force en yakın düşmana yürüme yolunu ≥ 3 altıgen uzatıyor/kesiyorsa ve bu tur hiçbir düşmana saldırılamıyorsa: Wall of Force'a Disintegrate, ya da erişimdeki panele silah saldırısı (`attack_object`). Sınır: canavar saldırısı panele değil (yalnız `weaponOptions`).
+  - (b) `y1:isik-tasi` (`kuralOnceligi` 6): Dancing Lights yerleştirildikten sonra görmeyen dost–düşman çifti kaldıysa bonus eylemle taşıma (ayrı ayrı ya da hepsi birlikte; ışık sayısı aynı).
+  - (c) Charm Person: `banishChoice` sürümlü mekaniği okur (G6 `dominate` ilkeli vardı; yeni mekanik yok); konsantrasyonsuz büyü konsantrasyon sürerken de seçilebilir.
+  - (d) Heightened Spell: `withMetamagic` önizleme kazancıyla (beklenen hasar ≥ bedel × 3 ya da başarısızlık olasılığı ≥ +0,15). Motor çok hedefli yapımda Heightened uygulamaz (açık). Diğer Metamagic seçenekleri yok (gerekçe envanterde).
+  - (e) Cutting Words: zaten SRD sırasına uygun (Kuyruk 43); değişiklik yok.
+- **Ölçüm:**
+  - YZ karar süresi (Mantar Mağarası, bayrak kapalı, 100 karar): sürüm 55 ortanca ≈1,65 ms (54: ≈1,73; sınır 2,06). YZ yeni eylem üreticisi: 2 (`y1:duvar`, `y1:isik-tasi`) + 2 değişen kural yolu (`eski:kontrol`, Metamagic).
+  - Hızlı regresyon (seviye 5, 6 senaryo × 50 tohum: Çöl, Kale, Mağara, Orman, Dungeon, Maden Ocağı; standart ve büyücü partisi, YZ değişmeden önce/sonra): **birebir aynı** (standart 92/60/96/54/100/90 %, büyücü hepsi %100). Sim partilerinde Charm Person, Heightened, Dancing Lights ya da düşman duvarı yok: yeni yollar simde tetiklenmiyor.
+  - **Earthquake (denge kararı, yalnız ölçüm):** 6 senaryo-seviye × 50 tohum; rahibe Earthquake verilerek üç kol: kati (bugünkü kural: alanda dost varsa seçmez), gevşek (yalnız ölçüm anahtarı `yz.deprem`: en az 2 düşman yeter), zorla (rahip ilk uygun turunda dökümü yapar). Parti kazanma: Çöl 15 56/56/40 %, Kale 15 54/54/64 %, Kale 20 86/86/78 %, Mağara 15 68/68/70 %, Mağara 20 14/14/14 %, Orman 15 98/98/98 %; ortalama kati 62,7 → zorla 60,7 (−2), savaş uzar (tur +%13). Gevşek kural hiç döküm üretmedi: değerlendirici kendi tarafına Prone/yarık riskini (dost ateşi) cezalandırıyor. Sonuç: YZ'ye Earthquake'i açmak ortalamada kazanç değil, senaryoya göre −16 ile +10 puan; karar kullanıcıda. `yz.deprem` anahtarı arayüzde yok, varsayılan kapalı.
+- **Açık:** Disintegrate nesneler (⚠), YZ'nin Resilient Sphere'i Disintegrate ile kırması, çok hedefli Heightened (motor), envanterdeki orta maddeler (Gizlen araması, Patient Defense/Step of the Wind, güçlendirme büyüleri, sarf eşyası, nesne eylemleri, yanıcı hane, imza kipleri, paket çıkış, arazi), DBF boncuk arayüz düğmesi, denge kararları (çağırma büyüleri, Adrenaline Rush, Earthquake).
+
 ## 2026-11-08 — Kuyruk K70: Küçük SRD farkları (kural sürümü 54)
 
 - **Sürüm:** `wip/k70` (115877f üstüne). Kural sürümü 53 → 54; her madde yalnız 54+ (büyü verisinde yeni `k70` bloğu: `mechanicsAt` ve `castSpell` LATER'ında). 53 ve altı oyun, kayıt ve tekrar için değişmez (her madde 53 testiyle sabit). `SAVE_VERSION` 22 (olay biçimine yalnız `zone_ended.reason: 'destroyed'` değeri eklendi; eski kayıtta yok).
@@ -11,12 +31,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Sonuç: bütün duvar anında kalkar (`zone_ended` sebep `destroyed`), sahibinin Wall of Force konsantrasyonu biter (`concentration_ended`), günlükte "Wall of Force yok edildi". Altıgenler hemen yürünebilir; yol bulma ve YZ durumdan hesaplar (önbellek yok).
   - Arayüz: büyü kipinde yok edilebilir duvar altıgenleri hedef olarak vurgulu; neden metinleri TR/EN.
   - ⚠ **Forcecage uygulanmadı:** Forcecage metninde (s. 133) Disintegrate anılmaz (yalnız "can't be dispelled by Dispel Magic"). Disintegrate'in genel cümlesi ("automatically disintegrates a Large or smaller … creation of magical force"; Huge ve üstünde 10 ft küp) kafesi kapsayabilir; görev kuralı gereği açık metin olmadığından liste dışı.
-  - Kapsam dışı kalan (rapor): Resilient Sphere metni "A Disintegrate spell targeting the globe destroys it" der; istenmediği için bağlanmadı. Disintegrate'in Large ya da küçük büyüsüz nesneyi yok etmesi (harita nesneleri) bağlanmadı. Dispel Magic bugün Wall of Force alanını da kaldırıyor (SRD: "can't be dispelled by Dispel Magic"); ayrı hata, açık.
+  - Kapsam dışı kalan (rapor; **Kuyruk Y1'de Resilient Sphere ve Dispel Magic kapandı**, nesneler ⚠ açık): Resilient Sphere metni "A Disintegrate spell targeting the globe destroys it" der; istenmediği için bağlanmadı. Disintegrate'in Large ya da küçük büyüsüz nesneyi yok etmesi (harita nesneleri) bağlanmadı. Dispel Magic bugün Wall of Force alanını da kaldırıyor (SRD: "can't be dispelled by Dispel Magic"); ayrı hata, açık.
 - **3. Beacon of Hope tek yardımcı:** `src/battle/healMax.ts` (`diceMaxOf`, `beaconMax`, `healRoll`); `spells.ts`'in ayrı `diceMax`'ı kaldırıldı.
   - (a) Uncanny Metabolism: `metabolismEvents(c, rng, state?)` imza değişikliği; sürüm kapısı arkasında (54+), `start_battle` savaş durumunu geçirir.
   - (b) Paket iyileştirme zarı (`paket/p11.ts` `paketHealRoll`, hedef parametresi): 54+ Beacon altında en yüksek, zar değiştirme ilkeli harcanmaz.
   - Aynı kural 54+ paket `iyilestirme` ilkeline ve Lifedrinker iyileştirmesine de bağlandı (çift yol bırakmamak için; ikisi de iyileştirme zarı).
-- **YZ:** yeni taktik yok; Disintegrate'i duvara YZ kullanmaz (oyuncu/Game Master). Karar süresi (Mantar Mağarası, bayrak kapalı): K69 sonrası ortanca 1,68 ms → K70 ortanca ≈1,65 ms (sınır 2,06).
+- **YZ:** yeni taktik yok; Disintegrate'i duvara YZ kullanmaz (oyuncu/Game Master) (**Kuyruk Y1'de kapandı**: `y1:duvar`). Karar süresi (Mantar Mağarası, bayrak kapalı): K69 sonrası ortanca 1,68 ms → K70 ortanca ≈1,65 ms (sınır 2,06).
 - **Kapsam dışı (bekliyor):** See Invisibility kamuflaj/gizlenme (kullanıcı kararı), Wish serbest dilek kolu (Game Master kararı), Charm Person YZ ve denge ölçümü, YZ'nin Earthquake kullanımı (denge), YZ'nin Wall of Ice panellerini hedeflemesi.
 - **Testler:** `src/battle/k70.test.ts` (Construct 54/53 ve tur sonu, diğer türler zar atar; Disintegrate duvarı kaldırır, konsantrasyon, slot, yürünebilirlik, menzil/duvarsız altıgen, Forcecage etkilenmez, 53 sabit; Beacon yardımcısı, Metabolism 54/53, start_battle, p11 54/53). Veriye bağlı: `ruleVersion.test.ts`, `g6.test.ts` 53 → 54.
 

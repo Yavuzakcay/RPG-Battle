@@ -2,6 +2,35 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk Y1: YZ kuyruğu — hızlı regresyon ve Earthquake ölçümü (2026-11-08)
+
+Hızlı regresyon (seviye 5, 50 tohum, YZ değişmeden önce / sonra, kural sürümü 55): **birebir aynı** (fark 0 puan).
+
+| Senaryo | Standart önce | Standart sonra | Büyücü önce | Büyücü sonra |
+|---|---:|---:|---:|---:|
+| Çöl — Gündüz | 92% | 92% | 100% | 100% |
+| Kale — Gündüz | 60% | 60% | 100% | 100% |
+| Mağara — karanlık | 96% | 96% | 100% | 100% |
+| Orman | 54% | 54% | 100% | 100% |
+| Dungeon — Koridor | 100% | 100% | 100% | 100% |
+| Derinlikler — Maden Ocağı | 90% | 90% | 100% | 100% |
+
+Sim partilerinde Charm Person, Heightened Spell, Dancing Lights ya da düşman duvarı yok; yeni YZ yolları simde tetiklenmiyor.
+
+Earthquake (denge kararı, yalnız ölçüm; 50 tohum; standart parti, rahibe Earthquake verildi; parti kazanma %):
+
+| Senaryo | Kati (bugün) | Gevşek (`yz.deprem`) | Zorla (ilk tur) | Zorla − kati |
+|---|---:|---:|---:|---:|
+| Çöl, 15 | 56 | 56 | 40 | −16 |
+| Kale, 15 | 54 | 54 | 64 | +10 |
+| Kale, 20 | 86 | 86 | 78 | −8 |
+| Mağara, 15 | 68 | 68 | 70 | +2 |
+| Mağara, 20 | 14 | 14 | 14 | 0 |
+| Orman, 15 | 98 | 98 | 98 | 0 |
+| Ortalama | 62,7 | 62,7 | 60,7 | −2,0 |
+
+Gevşek kuralda döküm 0: değerlendirici kendi tarafının Prone/yarık riskini cezalandırıyor. Zorla kolunda savaş ortalama %13 uzun. Karar kullanıcıda; ayar yapılmadı.
+
 ## Kuyruk K65a: Fire Storm serbest şekil (2026-11-08; ölçüm yok, yalnız not)
 
 Kural sürümü 49. Fire Storm'un alanı SRD'ye uydu: tek 25 ft küre (yarıçap 5 altıgen, ≈91 altıgen) yerine en çok 40 altıgenlik serbest bitişik alan (10 küp × 4). Kapsanan alan yaklaşık yarıya iner; büyü dağınık gruplarda zayıflar, dostları dışarıda bırakarak şekillendirilebildiği için kalabalık ve karışık savaşta güçlenir. Denge ayarı yapılmadı (SRD uyumu); 13+ seviye büyücü partilerinin ölçümü "Dungeondex öncesi tam test turu"na kalır.
