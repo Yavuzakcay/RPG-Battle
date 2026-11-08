@@ -71,7 +71,7 @@ export interface RawMap {
   /** Görev K13B: sefer haritası: açtığı ev kuralları (`data/ev-kurallari.json`, `sefer: true` olanlar). */
   seferKurallari?: string[];
   /** Görev S2: hazır nesne yerleşimi (1 tabanlı [sütun, satır]; Game Master kurulumda değiştirir). */
-  objects?: Array<{ id?: string; kind: string; at: [number, number]; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string }>;
+  objects?: Array<{ id?: string; kind: string; at: [number, number]; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string; /** Kuyruk K68a: yapı yüksekliği ezmesi (ft). */ yukseklikFt?: number }>;
   /** Görev S4: uyuyan/habersiz grup alanları (1 tabanlı altıgenler; durum asleep|calm|alarmed; komşular). */
   groups?: Array<{ id: string; state?: 'asleep' | 'calm' | 'alarmed'; hexes: Array<[number, number]>; links?: string[]; route?: Array<[number, number]>; pause?: number }>;
   /** Görev S3: hazır hedefler (1 tabanlı altıgenler; `battle/types` `Goals` biçimi). */

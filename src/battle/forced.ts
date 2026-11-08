@@ -31,6 +31,8 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 import type { CreatureSize } from '../data/types';
 import { isAirborne } from './flight';
 import { globalRule } from './ruleControl';
+import { ruleVersion } from './ruleVersion';
+import { fissureDepthAt } from './altitude';
 import { collisionDice, collisionOn, forcedMove, MOTION } from './motion';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
@@ -57,6 +59,8 @@ export type PushOutcome =
       ok: true; to: Offset; kind: 'move' | 'lava' | 'fall' | 'chasm' | 'bog' | 'stairwell' | 'tumble'; fallFeet: number; note: string;
       /** Merdiven boşluğuna düşen aynı odada buraya (en yakın alçak basamak) yerleşir. */
       land?: Offset;
+      /** Kuyruk K68a (sürüm 52): Earthquake yarığına düşen: iniş irtifası −derinlik (ft). */
+      fissureFt?: number;
     }
   | { ok: false; reason: string };
 
@@ -84,6 +88,10 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   }
   if (t.char === 'u') {
     if (flies(target)) return { ok: true, to, kind: 'move', fallFeet: 0, note: `${t.name} (uçuyor)` };
+    // Kuyruk K68a (sürüm 52): açık Earthquake yarığına itilen tek düşme, yarığın derinliği kadar; eksi irtifada kalır
+    // (sürüm 50–51: sabit 30 ft uçurum düşmesi ve komut sonunda ikinci kez yarık düşmesi; eski kayıtlar aynen).
+    const depth = ruleVersion(state) >= 52 ? fissureDepthAt(state, to) : 0;
+    if (depth > 0) return { ok: true, to, kind: 'fall', fallFeet: depth, fissureFt: depth, note: `Yarığa düşer: ${depth} ft (${Math.min(20, depth / 10)}d6)` };
     const feet = CHASM_FEET + here.height * LEVEL_FEET;
     return { ok: true, to, kind: 'chasm', fallFeet: feet, note: `Uçurum! ${feet} ft düşer (${Math.min(20, feet / 10)}d6)` };
   }
@@ -161,6 +169,7 @@ export function forcedMoveEvents(state: BattleState, targetId: string, out: Extr
     const fr = fallReactions(current, targetId, out.fallFeet, rng);
     push(fr.events);
     push([fallEffect(current.combatants[targetId] as Combatant, out.fallFeet, rng, fr)]);
+    if (out.fissureFt) push([{ type: 'altitude_changed', targetId, altitudeFt: -out.fissureFt, label: `yarığa düştü (${out.fissureFt} ft)` }]);
   }
   if (out.kind === 'tumble' || out.kind === 'stairwell') {
     const rule = ruleOf(current, out.kind === 'tumble' ? 'stairShove' : 'stairwellFall');

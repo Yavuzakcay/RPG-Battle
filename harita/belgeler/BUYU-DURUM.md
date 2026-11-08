@@ -13,7 +13,7 @@ Toplam 339 = savaşta kullanılan 225 + savaş dışı 114.
 | 6–9 | 50 | 0 | 0 | 34 | 84 |
 | **Toplam** | 225 | 0 | 0 | 114 | 339 |
 
-Çalışır olanlardan: Game Master notlu 4, kapsam dışı notlu 24, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
+Çalışır olanlardan: Game Master notlu 4, kapsam dışı notlu 23, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
 
 ## Game Master notlu (savaş etkisi tam, kalan parça Game Master'da)
 
@@ -32,7 +32,7 @@ Bu parçaların tetikleyiciye göre gruplu kaydı ve ne zaman ele alınacakları
 |---|---|---|---|
 | light | 0 | 1 saatlik süre savaştan uzun; nesne yerine yaratık da taşır (SRD: nesne). | evet: Işık modeli aydınlık/karanlık; loş ışık ayrımı savaşta küçük fark. |
 | entangle | 1 | Bitkilerin büyü bitince çekilmesi görseldir; karede zemin zorlu arazi. | evet: Bitkilerin çekilmesi yalnız görsel; zorlu arazi ve Restrained tam. |
-| fog-cloud | 1 | Kürenin yüksekliği ve köşeleri dönmesi (ızgarada küre, görüş katmansız); rüzgârla dağılma Kuyruk 18b rüzgârıyla. | evet: Küre ızgarada; rüzgârla dağılma rüzgâr kuralıyla. |
+| fog-cloud | 1 | Kürenin merkezi zeminde (havada merkezli küre yok); rüzgârla dağılma Kuyruk 18b rüzgârıyla. | evet: Küre ızgarada; rüzgârla dağılma rüzgâr kuralıyla. |
 | hex | 1 | Seçilen yetenek: savaşta kontrol yalnızca STR/DEX (İt, yakalama, kurtulma); seçim yoksa hedefin güçlü olanı | evet: Savaşta yapılan kontroller STR/DEX; diğer yetenek seçimi savaşta karşılıksız. |
 | jump | 1 | Zıplamanın havadaki yayı ve yükseklik katmansız haritada dikey zıplama (katmansız haritada yükseklik yok). | evet: Katmansız haritada dikey yükseklik yok; yatay uzunluk tam. |
 | mage-armor | 1 | Zırh giyince bitme: savaşta zırh giyilmez. | evet: Savaşta zırh giyilmez; bitme koşulu hiç tetiklenmez. |
@@ -51,8 +51,7 @@ Bu parçaların tetikleyiciye göre gruplu kaydı ve ne zaman ele alınacakları
 | dispel-magic | 3 | Sihirli eşyanın kendi büyüsü dağılmaz (SRD); nesnedeki süren büyü (Light, Continual Flame) altıgen hedefte kalkar. | evet: SRD'ye uygun: eşyanın kendi büyüsü dağılmaz. |
 | plant-growth | 3 | Enrichment (8 saatlik döküm, bir yıl verim) savaş dışı. | evet: Enrichment 8 saatlik döküm, savaş dışı; Overgrowth tam. |
 | remove-curse | 3 | Lanetli sihirli eşyada bağlılığı koparma savaş dışı. | evet: Lanetli eşyadan kopma savaş dışı; savaşta lanet kalkar. |
-| sleet-storm | 3 | Silindir yüksekliği (20 ft) ve açık alevlerin sönmesi `douses` ile; konsantrasyon save'i alana giren/başlayanda. | evet: Silindir yüksekliği modelde yok; alev söndürme ve konsantrasyon save'i tam. |
-| stinking-cloud | 3 | Kürenin dönmesi; rüzgârla dağılma yüzey sistemiyle. | evet: Kürenin köşeleri ızgaraya yuvarlanır; rüzgârla dağılma yüzey sisteminde. |
+| stinking-cloud | 3 | Kürenin merkezi zeminde (havada merkezli küre yok); rüzgârla dağılma yüzey sistemiyle. | evet: Kürenin köşeleri ızgaraya yuvarlanır; rüzgârla dağılma yüzey sisteminde. |
 | conjure-fey | 6 | Ruhun Fey görünüşü yalnızca görsel. | evet: Fey görünüşü yalnız görsel. |
 
 ## Yardımcı (utility) büyülerin koddaki karşılığı
@@ -130,7 +129,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | feather-fall | 1 | spells.json | çalışır |  |  |  |
 | find-familiar | 1 | spells.json | çalışır |  |  |  |
 | floating-disk | 1 | spells.json | savaş dışı |  |  |  |
-| fog-cloud | 1 | spells.json | çalışır | a8 (sürüm 37) |  |  |
+| fog-cloud | 1 | spells.json | çalışır | k68 (sürüm 52) |  |  |
 | goodberry | 1 | spells.json | savaş dışı |  |  |  |
 | grease | 1 | spells.json | çalışır |  |  |  |
 | guiding-bolt | 1 | spells.json | çalışır |  |  |  |
@@ -247,12 +246,12 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | remove-curse | 3 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | revivify | 3 | spells.json | çalışır |  |  |  |
 | sending | 3 | spells.json | savaş dışı |  |  |  |
-| sleet-storm | 3 | spells.json | çalışır | a8 (sürüm 37) |  |  |
+| sleet-storm | 3 | spells.json | çalışır | k68 (sürüm 52) |  |  |
 | slow | 3 | spells.json | çalışır | a8 (sürüm 37) |  |  |
 | speak-with-dead | 3 | spells.json | savaş dışı |  |  |  |
 | speak-with-plants | 3 | spells.json | savaş dışı |  |  |  |
 | spirit-guardians | 3 | spells.json | çalışır |  |  |  |
-| stinking-cloud | 3 | spells.json | çalışır | a8 (sürüm 37) |  |  |
+| stinking-cloud | 3 | spells.json | çalışır | k68 (sürüm 52) |  |  |
 | tiny-hut | 3 | spells.json | savaş dışı |  |  |  |
 | tongues | 3 | spells.json | savaş dışı |  |  |  |
 | vampiric-touch | 3 | spells.json | çalışır |  |  |  |

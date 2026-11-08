@@ -3,7 +3,7 @@
  * herkes kırmaya çalışabilir).
  * Parametreler haritanın JSON'undan.
  */
-import { checkBase } from './ruleVersion';
+import { checkBase, ruleVersion } from './ruleVersion';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
 import { checkMode, skillBonus } from '../rules/skills';
 import { finishCheck } from './effectDice';
@@ -28,6 +28,13 @@ function freed(state: BattleState, ev: Extract<BattleEvent, { type: 'map_effect'
 export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   // CILA (Entangle, Web): büyünün tuttuğu yaratık eylemle STR (Athletics) kontrolüyle kurtulur.
   const held = actor.effects?.find((e) => e.escapeCheck);
+  // Kuyruk K68a (sürüm 52): Freedom of Movement enkazı büyüsüz kısıtlama sayar: 5 ft hareket harcayarak kendiliğinden kurtulur
+  // (eylem yok; SRD "spend 5 feet of movement to automatically escape from nonmagical restraints").
+  if (held?.pinned && actor.pos && actor.effects?.some((e) => e.freeMove) && ruleVersion(state) >= 52) {
+    if (Math.floor(actor.speed / 5) - actor.movementUsed < 1) return fail('Freedom of Movement: kurtulmak için 5 ft hareket gerekli.');
+    const events: BattleEvent[] = [{ type: 'moved', actorId: actor.id, path: [actor.pos], cost: 1 }, { type: 'effect_ended', targetId: actor.id, effectId: held.id, name: held.name, reason: 'save' }];
+    return { ok: true, state: applyEvents(state, events), events };
+  }
   if (held?.escapeCheck) {
     const dc = held.escapeCheck.dc;
     // Kuyruk A6: Phantasmal Force'ta Study eylemi INT (Investigation).

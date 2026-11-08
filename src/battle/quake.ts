@@ -46,7 +46,8 @@ export function structuresIn(s: BattleState, hexes: Offset[], spec: StructSpec, 
   const keys = new Set(hexes.map(hexKey));
   const out: Structure[] = [];
   for (const o of s.map?.objects ?? []) {
-    const h = spec.heightsFt[o.kind];
+    // Kuyruk K68a (sürüm 52): yükseklik nesne verisinden (harita nesnesi ezer, yoksa türün `yukseklikFt`'i); 50–51 büyü tablosu.
+    const h = ruleVersion(s) >= 52 ? o.yukseklikFt ?? OBJECTS[o.kind]?.yukseklikFt : spec.heightsFt[o.kind];
     if (h === undefined || o.carriedBy || (o.altitudeFt ?? 0) > 0 || !keys.has(hexKey(o.at))) continue;
     out.push({ kind: 'object', at: o.at, heightFt: h, hp: o.hp, label: OBJECTS[o.kind]?.tr ?? o.kind, obj: o });
   }
@@ -108,7 +109,9 @@ function collapseEvents(state: BattleState, quake: SpellZone, spec: StructSpec, 
       damageRolls: roll.rolls, rawDamage: roll.total, appliedDamage: adj.amount, damageType: spec.collapse.type, damageNote: adj.note,
       targetHpAfter: fx.hpAfter, effects: fx.effects, conditionsAdded: buried && !c.conditions.includes('Prone') ? ['Prone'] : [], ...(save.extra ? { bonusDice: save.extra } : {}) }]);
     if (buried) push([{ type: 'effect_added', targetId: c.id, effect: { id: `${BURIED_PREFIX}${quake.id}:${at.col},${at.row}`, name: 'Enkaz altında', sourceId: quake.casterId,
-      speedZero: true, escapeCheck: { dc: spec.collapse.escapeDc, skill: 'athletics' } } }]);
+      speedZero: true, escapeCheck: { dc: spec.collapse.escapeDc, skill: 'athletics' },
+      // Kuyruk K68a (sürüm 52): enkaz uçuş dahil her hızı 0'lar.
+      ...(ruleVersion(s) >= 52 ? { pinned: true as const } : {}) } }]);
   }
   return out;
 }

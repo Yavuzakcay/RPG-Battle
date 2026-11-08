@@ -28,7 +28,8 @@ describe('BUYU-DURUM', () => {
     const N = (notes as { notlar: Record<string, { uyar: string; neden: string }> }).notlar;
     const need = rows.filter((r) => r.gm !== undefined || r.kapsam).map((r) => r.id);
     // Kuyruk K67c: sayı veriye bağlı (sürüme bağlanamaz): K67b'de Dancing Lights'ın kapsam dışı notu kalktı (dört ışık + birleşik biçim): 29 → 28.
-    expect(need.length).toBe(28); // Kuyruk K67a: Faerie Fire'ın kapsam dışı notu kalktı (loş ışık uygulandı); Kuyruk G6: Fear ve Beacon kapsam dışından çıktı; Animal Shapes/Enhance Ability savaş dışı; K64a: PfEG (ele geçirme uygulandı)
+    // Kuyruk K68a: Sleet Storm'un kapsam dışı notu kalktı (40 ft silindir): 28 → 27.
+    expect(need.length).toBe(27); // Kuyruk K67a: Faerie Fire'ın kapsam dışı notu kalktı (loş ışık uygulandı); Kuyruk G6: Fear ve Beacon kapsam dışından çıktı; Animal Shapes/Enhance Ability savaş dışı; K64a: PfEG (ele geçirme uygulandı)
     for (const id of need) { expect(N[id], id).toBeDefined(); expect(['evet', 'kismen', 'hayir']).toContain(N[id]?.uyar); }
   });
   it('belge güncel', () => {

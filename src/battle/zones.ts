@@ -563,7 +563,7 @@ export function newZoneId(state: BattleState, spellId: string, casterId: string)
  * (`spell_followup`, Moonbeam): slotsuz, büyücünün alanı yeni yere taşınır; taşınan alan içindekileri yine tetikler.
  */
 export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
-  const spec = spell0.mechanics.zone as ZoneSpec;
+  const spec0 = spell0.mechanics.zone as ZoneSpec;
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
   const aim = cmd.targetHex ?? named?.pos ?? null;
@@ -578,6 +578,8 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
   if (!slot.ok) return slot;
   // Görev K9b: yukarı slotta alan büyür (Fog Cloud +20 ft yarıçap).
   const spell = atSlot(spell0, slot.slotLevel);
+  // Kuyruk K68a (sürüm 52): zemine merkezli kürenin tepesi yarıçap (yukarı slot dahil; Fog Cloud, Stinking Cloud).
+  const spec: ZoneSpec = spec0.heightFromRadius && spell.area && ruleVersion(state) >= 52 ? { ...spec0, heightFt: spell.area.sizeFt } : spec0;
   // Kuyruk 18 H2: büyücüye bağlı yürüyen alan (Antilife Shell).
   if (spec.anchorSelf && !repeat) {
     const evs: BattleEvent[] = [...slot.events, ...concentrationEvent(state, actor, spell, slot.slotLevel),

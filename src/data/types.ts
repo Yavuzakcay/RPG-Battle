@@ -291,6 +291,8 @@ export interface SpellMechanics {
   k66?: Partial<SpellMechanics>;
   /** Kuyruk K67a (kural sürümü 51): loş ışık (Light, Continual Flame, Faerie Fire, Daylight; Wall of Fire ışıksız). */
   k67?: Partial<SpellMechanics>;
+  /** Kuyruk K68a (sürüm 52): dikey geometri (Sleet Storm 40 ft silindir, Fog/Stinking Cloud tepe = yarıçap). */
+  k68?: Partial<SpellMechanics>;
   /** Kuyruk K65a: serbest şekil (`src/battle/freeShape.ts`): en çok altıgen, menzil her altıgende, görüş ilk altıgende. */
   /** Kuyruk K65c: serbest duvar yolunun ek kuralları (her altıgen menzilde, ilk altıgen görüşte; Wind Wall'da yok). */
   pathRules?: { rangeAll?: boolean; sightFirst?: boolean };
@@ -555,6 +557,8 @@ export interface ZoneSpec {
   costToward?: number;
   /** Kuyruk S2 (sürüm 41): silindir yüksekliği (ft; Moonbeam 40); irtifası bunun üstündeki yaratık etkilenmez. */
   heightFt?: number;
+  /** Kuyruk K68a (sürüm 52): tepe = alanın (yukarı slotla büyümüş) yarıçapı (Fog Cloud, Stinking Cloud; zemine merkezli küre). */
+  heightFromRadius?: boolean;
   /** Kuyruk S2: kamufle alan (Spike Growth): büyücünün karşı tarafından gizli. */
   camouflaged?: boolean;
   /** Kuyruk S2: kuşatma mermisi geçer (Wind Wall; saldırı adında bu sözcükler). */

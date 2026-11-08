@@ -2,6 +2,24 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K68a: Dikey geometri, düşük riskli parça (kural sürümü 52)
+
+- **Sürüm:** `wip/k68` (plan 34fdf6a, `harita/belgeler/K68-PLAN.md`); 51 → 52, kapı `>= 52`; 51 ve altı oyun, kayıt ve tekrar aynen (her madde sürüm 51 testiyle sabit). Büyü verisinde `k68` bloğu (`mechanicsAt`, `castSpell` `LATER`, `buyu-durum.mjs` BLOCKS). Yeni olay türü yok (`altitude_changed`, `moved`, `effect_ended`), `SAVE_VERSION` 22. Görev 0 tabanı: 331 dosya, 3768 test.
+- **Yarığa zorla itme (karar 15, kullanıcı: yalnız 52'de):** `forced.ts` `pushOutcome`: açık Earthquake yarığı altıgeni (`fissureDepthAt`) `fall` sonucu, `fallFeet` = derinlik, iniş irtifası −derinlik (`fissureFt` → `altitude_changed`); komut sonu yarık kancası ikinci kez düşürmez. Save yok; Slow Fall/Feather Fall aynen. Sürüm 50–51'de eski hata (30 ft "uçurum" düşmesi + komut sonunda yarık düşmesi) kayıtlarda aynen.
+- **Levitate biten yarığın üstünde (karar 16):** süzülerek yarığın dibine iner (`altitude_changed` −derinlik): hasarsız, Prone yok.
+- **Enkaz altı (karar 17):** sürüm 52'de oluşan enkaz etkisinde `pinned`: uçuş dahil her hız 0, Freedom of Movement de aşamaz (`speedHexes`). Freedom of Movement'lı yaratık `escape` ile 5 ft hareket harcayarak kendiliğinden kurtulur (eylem yok, zar yok; `mapcommands.ts`, `economy.ts`). Sürüm 50–51 enkazı eskisi gibi (uçan ve FoM'lu hareket eder).
+- **Yapı yüksekliği (karar 18):** `data/nesneler.json` türde `yukseklikFt` (kapı 10, kale kapısı 15, çadır 10, çatlak duvar 10; K66b tablosundan taşındı), harita nesnesinde isteğe bağlı `yukseklikFt` ezmesi (`MapObject`, harita JSON'u); çökme yarıçapı yarı yükseklikten. Panel 10 ft büyü verisinde. 50–51: büyü tablosu (`heightsFt`).
+- **Silindir ve küre (karar 5):** Sleet Storm alanı `heightFt: 40`; Fog Cloud ve Stinking Cloud `heightFromRadius` (tepe = alanın yukarı slotla büyümüş yarıçapı; Fog Cloud 3. seviyede 60 ft). Küre zemine merkezli.
+- **Atlama (plan §3.6):** `u` zemini (uçurum, yarık; uçan geçer) atlamada engel değil boşluk: Long Jump (STR, koşu) ve Jump büyüsü (30 ft) yarığı atlar; iniş `u` olamaz.
+- **SRD'den ayrılan yerler:**
+  - ⚠ Yarığa itilende save yok (SRD zorla hareketle tehlikeye düşmede save yazmaz; yalnız yarığın açılışında var).
+  - ⚠ Enkaz "nonmagical restraint" sayıldı (Earthquake büyüsünden doğar; "magical effect" de sayılabilirdi).
+  - ⚠ Küre merkezi her zaman zeminde (SRD havada merkezi de sayar).
+  - ⚠ Long Jump'ta Game Master seçenekleri (alçak engel DC 10 Athletics, zorlu araziye inişte DC 10 Acrobatics) yok (değişmedi).
+  - ⚠ Üç boyutlu uzaklık max(yatay, dikey) (karar 4; değişmedi, SRD tanımlamaz).
+- **Açık kalanlar:** karar 10 (kabul edildi): açık alanda da uçan yaratık duvarın üstünden geçemez ve göremez (duvar yüksekliği verisi yok). Tavan modeli, Spider Climb duvar/tavan, Call Lightning bulutu, Jump yüksek erişim, Levitate tavana tutunma (K68b). Görüş hattında irtifa (K68c). Çok katlı binalar, altıgen başına tavan, havada merkezli küre (planın §8).
+- **Test:** `src/battle/k68a.test.ts` (11; her maddede sürüm 52 ve sürüm 51 sabitlemesi): yarığa itme tek düşme/eski çift düşme; Levitate yarığa süzülme/eski hasarlı düşme; enkazda uçan ve FoM hız 0, FoM 5 ft ile eylemsiz kurtulma/eski hareket; yapı yüksekliği tür ve ezme/eski tablo; Sleet 40, Fog 20 ve 3. seviyede 60, Stinking 20/eski 20; Sleet 45 ft'teki uçan dışarıda; yarık Long Jump ve Jump ile/eski engel. Veriye bağlı test değişiklikleri: `ruleVersion.test.ts` ve `g6.test.ts` güncel sürüm 51 → 52; `buyuDurum.test.ts` kapsam dışı notlu 28 → 27 (Sleet Storm'un notu kalktı).
+
 ## 2026-11-08 — Kuyruk K67c: Harita meşale ışığı kararı (kural sürümü 51, aynı sürüm)
 
 - **Karar (kullanıcı):** bütün haritalarda meşale ve mangal ışığı sürüm 51'de **10 ft parlak (2 altıgen) + 5 ft loş (1 altıgen)**, toplam 3 altıgen. Şehir Meydanı fenerleri (Hooded Lantern 30 + 30 ft) ve büyü ışıkları (Light, Continual Flame, Daylight, Dancing Lights…) değişmedi. Yeni sürüm, olay türü ve kod yok; `SAVE_VERSION` 22; sürüm 50 ve altı birebir.

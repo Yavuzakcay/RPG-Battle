@@ -2615,8 +2615,9 @@
         },
         "kapsamDisi": "Kürenin dönmesi; rüzgârla dağılma yüzey sistemiyle.",
         "approx": null
-      }
-    },
+      },
+   "k68": {"zone": {"surface": "poison", "rounds": 10, "obscured": "heavy", "on": ["start"], "save": "con", "conditions": ["Poisoned"], "hold": "turn", "color": "#b8c24a", "icon": "🤢", "noActBonus": true, "heightFromRadius": true}, "kapsamDisi": "Kürenin merkezi zeminde (havada merkezli küre yok); rüzgârla dağılma yüzey sistemiyle."}
+  },
     "school": "Conjuration",
     "srdPage": 165
   },
@@ -4014,8 +4015,9 @@
       "a8": {
         "kapsamDisi": "Kürenin yüksekliği ve köşeleri dönmesi (ızgarada küre, görüş katmansız); rüzgârla dağılma Kuyruk 18b rüzgârıyla.",
         "approx": null
-      }
-    },
+      },
+   "k68": {"zone": {"rounds": 600, "obscured": "heavy", "color": "#b9c2c8", "icon": "🌫", "heightFromRadius": true}, "kapsamDisi": "Kürenin merkezi zeminde (havada merkezli küre yok); rüzgârla dağılma Kuyruk 18b rüzgârıyla."}
+  },
     "school": "Conjuration",
     "srdPage": 133
   },
@@ -4183,8 +4185,9 @@
       "a8": {
         "kapsamDisi": "Silindir yüksekliği (20 ft) ve açık alevlerin sönmesi `douses` ile; konsantrasyon save'i alana giren/başlayanda.",
         "approx": null
-      }
-    },
+      },
+   "k68": {"zone": {"douses": true, "rounds": 10, "obscured": "heavy", "difficult": 2, "on": ["enter", "start"], "once": true, "save": "dex", "conditions": ["Prone"], "dropConcentration": true, "color": "#a8c6d8", "icon": "🌨", "heightFt": 40}, "kapsamDisi": null}
+  },
     "school": "Conjuration",
     "srdPage": 163
   },

@@ -23,6 +23,7 @@ import { applyEvents, speedHexes } from './reduce';
 import { ruleVersion } from './ruleVersion';
 import { registerCommandEnd } from './turnHooks';
 import type { BattleEvent, BattleState, Combatant, SpellZone } from './types';
+import type { Offset } from '../rules/hex';
 
 export const ALT = rules.irtifa;
 export const altitudeOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(s) >= 41;
@@ -59,6 +60,12 @@ export function areaReachesAltitude(state: Pick<BattleState, 'kuralSurumu'>, are
 }
 
 const levitateOn = (c: Combatant | undefined) => c?.effects?.find((e) => e.levitate);
+
+/** Kuyruk K68a: altıgendeki açık Earthquake yarığının derinliği (ft; yoksa 0). `fissure.ts`'e bağımlılık olmadan. */
+export function fissureDepthAt(state: Pick<BattleState, 'map'>, at: Offset): number {
+  const z = (state.map?.zones ?? []).find((x) => x.fissure && !x.fissure.pending && x.hexes.some((h) => h.col === at.col && h.row === at.row));
+  return z?.fissure?.depthFt ?? 0;
+}
 
 /** Dikey hareket. */
 export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: { targetId?: string; objectId?: string; toFt: number }): CommandResult {
@@ -121,7 +128,9 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
     const feet = altitudeOf(c);
     // Levitate bitti (önceki durumda vardı): süzülerek iner.
     if (c.altitudeGentle || levitateOn(before.combatants[c.id])) {
-      const evs: BattleEvent[] = [{ type: 'altitude_changed', targetId: c.id, altitudeFt: 0, label: 'Levitate bitti (süzülerek iniş)' }];
+      // Kuyruk K68a (sürüm 52): yarığın üstündeyse dibine süzülür (hasarsız, Prone yok; SRD "floats gently to the ground").
+      const pit = ruleVersion(next) >= 52 && c.pos ? fissureDepthAt(s, c.pos) : 0;
+      const evs: BattleEvent[] = [{ type: 'altitude_changed', targetId: c.id, altitudeFt: pit ? -pit : 0, label: pit ? `Levitate bitti (süzülerek yarığın dibine, ${pit} ft)` : 'Levitate bitti (süzülerek iniş)' }];
       out.push(...evs); s = applyEvents(s, evs);
       continue;
     }

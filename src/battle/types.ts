@@ -231,6 +231,8 @@ export interface ActiveEffect {
   fly?: number;
   airborne?: boolean;
   speedZero?: boolean;
+  /** Kuyruk K68a (sürüm 52, enkaz altı): uçuş dahil her hız 0; Freedom of Movement de aşamaz (yalnız 5 ft ile kurtulur). */
+  pinned?: true;
   /** Görev K9c: tırmanma hızı (Spider Climb; yükseklik maliyeti yok), büyülü zıplama menzili ft (Jump; turda bir). */
   climb?: boolean;
   jumpFt?: number;
@@ -1131,6 +1133,8 @@ export interface MapObject {
   altitudeFt?: number; levitatedBy?: string;
   item?: string; options?: AttackOption[];
   resized?: 'Enlarge' | 'Reduce'; resizedBy?: string; baseHp?: number;
+  /** Kuyruk K68a (sürüm 52): yapı yüksekliği ezmesi (ft; yoksa nesne türünün `yukseklikFt`'i). */
+  yukseklikFt?: number;
 }
 /** Görev S4: grup durumu ve grup (alan altıgenleri; üyeler savaş başında alanda duran düşmanlar). */
 export type GroupState = 'asleep' | 'calm' | 'alarmed';

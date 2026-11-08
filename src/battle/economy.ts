@@ -250,6 +250,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     case 'escape_grapple':
       // Kuyruk 19: Freedom of Movement ile kurtulmak eylem değil (5 ft hareket).
       if (cmd.type === 'escape_grapple' && actor.effects?.some((e) => e.freeMove)) return { ok: true, event: null };
+      // Kuyruk K68a (sürüm 52): enkazdan Freedom of Movement ile kurtulmak eylem değil (5 ft hareket).
+      if (cmd.type === 'escape' && ruleVersion(state) >= 52 && actor.effects?.some((e) => e.freeMove) && actor.effects?.some((e) => e.pinned)) return { ok: true, event: null };
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'help':
     case 'distract':

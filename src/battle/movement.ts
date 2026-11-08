@@ -473,7 +473,8 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   for (let i = 1; i <= gap; i++) {
     const h = axialToOffset({ q: start.q + step.q * i, r: start.r + step.r * i });
     const t = terrainAt(state, h);
-    if (t.movement === 'blocked') {
+    // Kuyruk K68a (sürüm 52): uçurum ve yarık (`u`, uçan geçer) engel değil boşluk: Long Jump "across a stream or chasm".
+    if (t.movement === 'blocked' && !(t.char === 'u' && ruleVersion(state) >= 52)) {
       blocked++;
       if (spellFt <= 0 || blocked > 1) return fail(`Aradaki ${hexLabel(h)} üstünden atlanamaz (${t.name}).`);
     }

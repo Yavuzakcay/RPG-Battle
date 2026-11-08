@@ -46,6 +46,8 @@ export function speedHexes(c: Combatant): number {
   // Kuyruk 19: Freedom of Movement: büyüler ve büyülü etkiler hızı düşüremez (büyüsüz Grappled yine durdurur).
   const free = !!c.effects?.some((e) => e.freeMove);
   if (speedZero(c.conditions) || (effectSpeedZero(c) && fly === 0 && !free)) return 0;
+  // Kuyruk K68a (sürüm 52'de oluşan enkaz etkisi): uçuş hızı ve Freedom of Movement da aşamaz.
+  if (c.effects?.some((e) => e.pinned)) return 0;
   // Haste ×2, Slow ×0,5 (Görev S1; etkilerin çarpımı).
   const mult0 = (c.effects ?? []).reduce((m, e) => m * (e.speedMult ?? 1), 1);
   const mult = free ? Math.max(1, mult0) : mult0;
