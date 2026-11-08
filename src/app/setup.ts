@@ -170,6 +170,16 @@ export function mirrorHexes(hexes: Offset[]): Offset[] {
 }
 
 /** Plandaki sorunlar (boşsa savaş kurulabilir). */
+/**
+ * Kuyruk K69: çok altıgen açıkken Gargantuan (19 altıgen) yalnız orta/geniş haritaya (en az 21×11) sığar; klasik (15×7)
+ * haritada Game Master seçicisi reddeder (motorun yedeği: yine kurulursa Huge şekli, `multiHexMax`).
+ */
+export const MULTIHEX_GARGANTUAN_MIN = { cols: 21, rows: 11 } as const;
+export function gargantuanTooBig(size: { cols: number; rows: number } | undefined, enemies: ReadonlyArray<{ monster: Pick<Monster, 'size'> }>, multiHex: boolean): boolean {
+  const s = size ?? { cols: 15, rows: 7 };
+  return multiHex && (s.cols < MULTIHEX_GARGANTUAN_MIN.cols || s.rows < MULTIHEX_GARGANTUAN_MIN.rows) && enemies.some((e) => e.monster.size === 'G');
+}
+
 export function planProblems(plan: BattlePlan): string[] {
   const out: string[] = [];
   if (plan.party.length === 0) out.push('En az bir oyuncu karakteri seçilmeli.');

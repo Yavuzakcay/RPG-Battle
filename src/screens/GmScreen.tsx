@@ -19,7 +19,7 @@ import { currentStatus, fullStatus, isRested, longRestStatus } from '../rules/ch
 import { MAX_LEVEL, changeLevel } from '../app/levelChange';
 import { statusBlock } from '../app/partyStatus';
 import { regenWarning } from '../battle/encounterWarn';
-import { createMapBattle, customMonster, customMonsterCr, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput, civilianHexProblem, civilianRule, dragonSetup, maxCivilians, type CivilianPlacement } from '../app/setup';
+import { createMapBattle, gargantuanTooBig, customMonster, customMonsterCr, customMonsterProblems, planParticipants, planProblems, type CustomMonsterInput, civilianHexProblem, civilianRule, dragonSetup, maxCivilians, type CivilianPlacement } from '../app/setup';
 import { allHexes, hexCenter, hexPoints, worldOf } from '../ui/mapView';
 import type { Offset } from '../rules/hex';
 import { newId } from '../app/storage';
@@ -188,7 +188,10 @@ export function GmScreen(props: {
     if (at >= 0) setCivilianHexes(civilianHexes.filter((_, i) => i !== at));
     else if (civilianHexes.length < plan.civilians && !civilianHexProblem(map.id, variant.id, false, h)) setCivilianHexes([...civilianHexes, h]);
   };
-  const problems = planProblems(plan);
+  // Kuyruk K69: çok altıgen açıkken Gargantuan (19 altıgen) yalnız orta/geniş haritada (en az 21×11); klasik haritada red.
+  const smallMap = gargantuanTooBig(map?.size, [{ monster: { size: 'G' } }], true);
+  const gargSmall = gargantuanTooBig(map?.size, plan.enemies, multiHex);
+  const problems = [...planProblems(plan), ...(gargSmall ? [t().gm.multiHex.gargantuanSmall] : [])];
   // Denge turu (madde 6): yenilenen düşman (Troll) varken partide ateş/asit kaynağı yoksa uyarı.
   const regenFoes = plan.enemies.some((e) => (e.monster.regeneration ?? 0) > 0) ? regenWarning(planParticipants(plan)) : [];
   const draftProblems = customMonsterProblems(draft);
@@ -409,7 +412,7 @@ export function GmScreen(props: {
               <h3 key={`k-${tier.id}`} className="monster-tier">{tierName(tier.id)} <small>({tier.label}) · {list.length}</small></h3>,
               ...list.map((m) => (
               <div className="monster-row" key={m.id}>
-                <span><b>{m.name}</b>{winterPick(m.id, variant.id) && <span className="winter" title={G.winter}> ❄</span>} <small>CR {m.cr} · HP {m.hp} · AC {m.ac}{monsterEnv(m.id) ? ` · ${monsterEnv(m.id)?.tema}` : ''}</small></span>
+                <span><b>{m.name}</b>{winterPick(m.id, variant.id) && <span className="winter" title={G.winter}> ❄</span>}{multiHex && smallMap && m.size === 'G' && <span className="garg-small" title={G.multiHex.gargantuanSmall}> ⚠</span>} <small>CR {m.cr} · HP {m.hp} · AC {m.ac}{monsterEnv(m.id) ? ` · ${monsterEnv(m.id)?.tema}` : ''}</small></span>
                 {customs.includes(m) && (confirmDelete === m.id
                   ? <span className="confirm">
                       <button className="danger" onClick={() => {
@@ -507,6 +510,7 @@ export function GmScreen(props: {
           <label className="multihex-toggle" title={G.multiHex.note}>
             <input type="checkbox" checked={multiHex} onChange={(e: { target: { checked: boolean } }) => setMultiHex(e.target.checked)} /> {G.multiHex.label}
           </label>
+          <small className="mute multihex-note">{G.multiHex.note}</small>
           <MapRulesPanel key={`${map.id}/${variant.id}`} mapId={map.id} variantId={variant.id} toggles={ruleToggles} params={ruleParams}
             onChange={(tg, ps) => { setRuleToggles(tg); setRuleParams(ps); }} />
           <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules())} onChange={setHouseRules} />

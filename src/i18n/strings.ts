@@ -347,7 +347,8 @@ const tr = {
     },
     /** Kuyruk K58 G5: yapay zekâ zorluğu (taraf başına; parti yapay zekâsı da). */
     aiDifficulty: { label: 'Yapay zekâ zorluğu', party: 'Parti', enemies: 'Düşmanlar', kolay: 'Kolay', normal: 'Normal', usta: 'Usta (deneysel)' } as Record<string, string>,
-    multiHex: { label: 'Büyük yaratıklar birden çok altıgen kaplar (deneysel)', note: 'Large 3, Huge 7, Gargantuan 19 altıgen (19 yalnızca orta/geniş haritada, klasik haritada 7). Varsayılan kapalı.' },
+    multiHex: { label: 'Çok altıgenli büyük yaratıklar (deneysel)', note: 'Large 3, Huge 7, Gargantuan 19 altıgen kaplar: hareket, erişim, alanlar, zemin, itme ve görüş gövdeye göre. Gargantuan yalnız orta/geniş haritada (en az 21×11). Varsayılan kapalı.',
+      gargantuanSmall: 'Gargantuan (19 altıgen) yalnız orta/geniş haritada (en az 21×11): bu haritada çok altıgen açıkken seçilemez.' },
     houseRules: { title: (n: number) => `Ev kuralları (${n} açık)`, note: 'SRD 5.2.1 dışı kurallar; her biri ayrı açılıp kapanır. Serüven kuralları yalnızca serüven haritalarında açık gelir.', sefer: 'serüven' },
     title: 'Game Master: savaşı kur',
     party: (n: number, max: number) => `Parti (${n}/${max})`,
