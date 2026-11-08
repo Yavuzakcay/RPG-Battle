@@ -11,6 +11,8 @@
  * (Spirit Guardians) girer. Daha alçak altıgene itilen her 10 ft (yükseklik seviyesi) için 1d6
  * düşer (SRD Falling, s. 182); uçuruma/yarığa (`u`) itilen 30 ft dibine düşer.
  */
+import { fall } from './fall';
+import { climbOn } from './climbing';
 import { knowsWhere } from './sight';
 import { heightDelta, heightFallRule, isRamp, layerActive, levelFeet } from './heights';
 import { saveDice } from './effectDice';
@@ -176,7 +178,10 @@ export function forcedMoveEvents(state: BattleState, targetId: string, out: Extr
     push([{ type: 'fell_into_lava', actorId: targetId, at: out.to }]);
     return events;
   }
-  if (out.kind === 'fall' || out.kind === 'chasm') {
+  if ((out.kind === 'fall' || out.kind === 'chasm') && climbOn(current)) {
+    // Kuyruk K71b (sürüm 57+): tek düşme işlevi (yarıkta irtifa eksi derinlik).
+    push(fall(current, targetId, out.fallFeet, out.fissureFt ? 'yarik' : 'itme', rng, { at: out.to, ...(out.fissureFt ? { altitudeTo: -out.fissureFt, label: `yarığa düştü (${out.fissureFt} ft)` } : {}) }));
+  } else if (out.kind === 'fall' || out.kind === 'chasm') {
     // Düşme tepkisi (Slow Fall, Feather Fall; Görev R1) hasardan önce.
     const fr = fallReactions(current, targetId, out.fallFeet, rng);
     push(fr.events);

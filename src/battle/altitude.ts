@@ -9,6 +9,7 @@
  *   (10 ft başına 1d6, en çok 20d6) ve Prone; Levitate bitince süzülerek iner (hasarsız). Levitate'li nesne de iner.
  * Saf; zar `rng` ile.
  */
+import { fall } from './fall';
 import rules from '../../data/s2-kurallar.json';
 import { spells } from '../data';
 import type { ZoneSpec } from '../data/types';
@@ -286,9 +287,11 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
       out.push(...evs); s = applyEvents(s, evs);
       continue;
     }
-    const fr = fallReactions(s, c.id, feet, rng);
-    const evs: BattleEvent[] = [...fr.events, { type: 'altitude_changed', targetId: c.id, altitudeFt: 0, label: 'düştü' },
-      ...(c.pos ? [fallEffect(s.combatants[c.id] as Combatant, feet, rng, fr)] : [])];
+    // Kuyruk K71b (sürüm 57+): tek düşme işlevi.
+    const fr = climbOn(s) ? null : fallReactions(s, c.id, feet, rng);
+    const evs: BattleEvent[] = fr ? [...fr.events, { type: 'altitude_changed', targetId: c.id, altitudeFt: 0, label: 'düştü' },
+      ...(c.pos ? [fallEffect(s.combatants[c.id] as Combatant, feet, rng, fr)] : [])]
+      : c.pos ? fall(s, c.id, feet, 'irtifa', rng, { altitudeTo: 0 }) : [{ type: 'altitude_changed', targetId: c.id, altitudeFt: 0, label: 'düştü' }];
     out.push(...evs); s = applyEvents(s, evs);
   }
   // Levitate'li nesne: yapanın Levitate konsantrasyonu bittiyse iner.

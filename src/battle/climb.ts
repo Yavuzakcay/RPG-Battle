@@ -5,6 +5,7 @@
  *   suya düşüşte hasar yok.
  * Yeni olay türü yok: `map_effect` (zar, `stopMovement`, hasar, Prone) ve `moved`. Yapay zekâ bu komutu vermez.
  */
+import { fall } from './fall';
 import { distance, sameHex, type Offset } from '../rules/hex';
 import type { Rng } from '../rules/dice';
 import { enterCost, terrainOf } from '../map/terrain';
@@ -80,7 +81,8 @@ export function executeClimb(state: BattleState, actor: Combatant, to: Offset, r
   push(opportunityAttacks(s, actor.id, { from, to }, rng));
   if (me().hp <= 0) return finish(state, events);
   push([{ type: 'moved', actorId: actor.id, path: [to], cost }]);
-  if (up < 0 && heightFallRule(state) && t.rule !== 'deepWater') {
+  if (up < 0 && heightFallRule(state) && k71) push(fall(s, actor.id, -up * levelFeet(state), 'atlama', rng, { at: to }));
+  else if (up < 0 && heightFallRule(state) && t.rule !== 'deepWater') {
     const feet = -up * levelFeet(state);
     const fr = fallReactions(s, actor.id, feet, rng);
     push(fr.events);
@@ -107,8 +109,8 @@ export function collapseFallEvents(next: BattleState, events: BattleEvent[], rng
     for (const c of Object.values(s.combatants)) {
       if (!c.pos || c.hp <= 0 || handled.has(c.id) || isAirborne(c) || !sameHex(c.pos, e.at)) continue;
       const feet = Math.max(30, (heightAt(s, e.at) - HEIGHT_RANGE.min) * levelFeet(s));
-      const fr = fallReactions(s, c.id, feet, rng);
-      const evs = [...fr.events, fallEffect(s.combatants[c.id] as Combatant, feet, rng, fr)];
+      const fr = climbOn(s) ? null : fallReactions(s, c.id, feet, rng);
+      const evs = fr ? [...fr.events, fallEffect(s.combatants[c.id] as Combatant, feet, rng, fr)] : fall(s, c.id, feet, 'cokme', rng);
       out.push(...evs); s = applyEvents(s, evs);
       handled.add(c.id);
     }

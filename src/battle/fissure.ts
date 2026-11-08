@@ -15,6 +15,8 @@
  * Yeni olay türü yok (`zone_created`/`zone_ended`, `tile_changed`, `save_resolved`, `map_effect`, `altitude_changed`,
  * `pushed`, `moved`). Saf; zar `rng` ile.
  */
+import { fall } from './fall';
+import { climbOn } from './climbing';
 import { AXIAL_DIRECTIONS, axialToOffset, distance, hexKey, isInside, neighbors, offsetToAxial, sameHex, type Offset } from '../rules/hex';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveSave } from '../rules/attack';
@@ -170,6 +172,8 @@ function edgeHex(s: BattleState, c: Combatant, from: Offset): Offset | null {
 
 /** Düşme: tepki (Feather Fall, Slow Fall), SRD düşme hasarı ve Prone, irtifa eksi derinlik. */
 function fallInEvents(s: BattleState, c: Combatant, depthFt: number, rng: Rng): BattleEvent[] {
+  // Kuyruk K71b (sürüm 57+): tek düşme işlevi.
+  if (climbOn(s)) return fall(s, c.id, depthFt, 'yarik', rng, { altitudeTo: -depthFt, label: `yarığa düştü (${depthFt} ft)` });
   const fr = fallReactions(s, c.id, depthFt, rng);
   const after = applyEvents(s, fr.events);
   return [...fr.events, fallEffect(after.combatants[c.id] as Combatant, depthFt, rng, fr), { type: 'altitude_changed', targetId: c.id, altitudeFt: -depthFt, label: `yarığa düştü (${depthFt} ft)` }];

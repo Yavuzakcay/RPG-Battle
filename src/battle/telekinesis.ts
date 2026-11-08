@@ -6,6 +6,8 @@
  * - Nesne: taşınmayan nesne kendiliğinden 30 ft taşınır; taşınıyorsa taşıyan STR save, başarısızsa nesne alınıp taşınır.
  * Sonraki turlarda Magic eylemiyle (`spell_followup`, hedef + `targetHex`/`choice: 'lift'`).
  */
+import { fall } from './fall';
+import { climbOn } from './climbing';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave } from '../rules/conditions';
 import { rollTag, type Rng } from '../rules/dice';
@@ -95,8 +97,11 @@ function releaseEvents(state: BattleState, id: string, rng: Rng): BattleEvent[] 
   const out: BattleEvent[] = [{ type: 'effect_ended', targetId: id, effectId: ID, name: e.name, reason: 'expired' }];
   if (e.tkFallFt && c.hp > 0) {
     const after = applyEvents(state, out);
-    const fr = fallReactions(after, id, e.tkFallFt, rng);
-    out.push(...fr.events, fallEffect(after.combatants[id] as Combatant, e.tkFallFt, rng, fr));
+    if (climbOn(after)) out.push(...fall(after, id, e.tkFallFt, 'telekinezi', rng));
+    else {
+      const fr = fallReactions(after, id, e.tkFallFt, rng);
+      out.push(...fr.events, fallEffect(after.combatants[id] as Combatant, e.tkFallFt, rng, fr));
+    }
   }
   return out;
 }
