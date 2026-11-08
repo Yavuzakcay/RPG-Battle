@@ -87,6 +87,9 @@ input[type='number'] { width: 90px; }
 .hx.warn { fill: rgba(255, 40, 0, 0.35); stroke: #ff3b1f; stroke-width: 4; animation: glow 0.8s ease-in-out infinite alternate; }
 /* Görülmeyen altıgen: harita ve jetonlar okunur kalsın diye yarı saydam gölge. */
 .hx.dark:not(.move):not(.jump):not(.area):not(.zone):not(.warn) { fill: rgba(5, 8, 20, 0.38); }
+/* Kuyruk K67a: ışık seviyeleri (sürüm 51): karanlık ve loş halka. */
+.hx.lvdark:not(.move):not(.jump):not(.area):not(.zone):not(.warn) { fill: rgba(3, 5, 14, 0.55); }
+.hx.lvdim:not(.move):not(.jump):not(.area):not(.zone):not(.warn) { fill: rgba(5, 8, 20, 0.26); }
 .hx.aimable { fill: rgba(255, 110, 30, 0.12); }
 .hx.dim { fill: rgba(0, 0, 0, 0.28); }
 .hx.summon { fill: rgba(120, 170, 255, 0.38); stroke: rgba(150, 200, 255, 0.95); stroke-width: 2.5; cursor: pointer; }

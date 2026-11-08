@@ -993,8 +993,9 @@
         "color": "#ff7a2a",
         "icon": "🔥"
       },
-      "k19": "Kuyruk 19: düz/yay ya da halka (20 ft çap); opak (yoğun örtü). Açılınca duvardakiler DEX save; tur sonu hasarı yalnızca büyücünün seçtiği yüzde (duvara 10 ft; varsayılan büyücüden uzak yan) ve duvarın içinde; duvara giren de hasar alır (anahtar spellsK19). 20 ft yükseklik: oyunda dikey irtifa yok (uçanlar da duvarda sayılır)."
-    },
+      "k19": "Kuyruk 19: düz/yay ya da halka (20 ft çap); opak (yoğun örtü). Açılınca duvardakiler DEX save; tur sonu hasarı yalnızca büyücünün seçtiği yüzde (duvara 10 ft; varsayılan büyücüden uzak yan) ve duvarın içinde; duvara giren de hasar alır (anahtar spellsK19). 20 ft yükseklik: oyunda dikey irtifa yok (uçanlar da duvarda sayılır).",
+   "k67": {"zone": {"sideDamage": true, "rounds": 10, "obscured": "heavy", "on": ["cast", "enter", "end"], "once": true, "save": "dex", "damage": "5d8", "damageType": "fire", "half": true, "color": "#ff7a2a", "icon": "🔥"}}
+  },
     "school": "Evocation",
     "srdPage": 172
   },

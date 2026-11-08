@@ -130,7 +130,8 @@ describe('görünmezlik', () => {
   it('Faerie Fire: DEX save başarısızsa işaretli; Invisible yararı yok, saldırı avantajlı, ışık', () => {
     const r = arena({ spellNames: ['Faerie Fire'] }, { conditions: ['Invisible'] }, {}, o(6, 3));
     r.cast({ spellName: 'Faerie Fire', targetHex: o(6, 3) });
-    expect(r.fx('B', 'spells:faerie-fire')).toMatchObject({ revealed: true, attackedAdv: true, light: 2, concentration: 'Faerie Fire' });
+    // Kuyruk K67a (güncel sürüm 51): SRD'deki 10 ft loş ışık (`lightDim: 2`); sürüm 50'de 2 altıgen aydınlık (k67a.test.ts).
+    expect(r.fx('B', 'spells:faerie-fire')).toMatchObject({ revealed: true, attackedAdv: true, lightDim: 2, concentration: 'Faerie Fire' });
     r.round();
     expect(attackMode(r.do({ type: 'attack', actorId: 'A', targetId: 'B', option: bow }))).toBe('advantage');
     r.replays();

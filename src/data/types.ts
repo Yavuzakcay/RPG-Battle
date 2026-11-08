@@ -234,7 +234,7 @@ export interface SpellMechanics {
    */
   afterHit?: { save?: Ability; attackDis?: { melee?: boolean; single?: boolean }; untilSourceTurn?: boolean; grants?: string[]; checkDis?: Ability[]; delayed?: { dice: string; type: string };
     /** Görev B4 (Starry Wisp): hedef görünmez olamaz ve ışık yayar (altıgen). */
-    revealed?: boolean; light?: number; untilSourceTurnEnd?: boolean };
+    revealed?: boolean; light?: number; /** Kuyruk K67a */ lightDim?: number; untilSourceTurnEnd?: boolean };
   /** Görev B1: verilen hasarın bu oranı kadar büyücü iyileşir (Vampiric Touch 0,5). */
   drain?: number;
   /**
@@ -289,6 +289,8 @@ export interface SpellMechanics {
   k65?: Partial<SpellMechanics>;
   /** Kuyruk K66a (kural sürümü 50): Earthquake yarıkları (alanda `fissures`). */
   k66?: Partial<SpellMechanics>;
+  /** Kuyruk K67a (kural sürümü 51): loş ışık (Light, Continual Flame, Faerie Fire, Daylight; Wall of Fire ışıksız). */
+  k67?: Partial<SpellMechanics>;
   /** Kuyruk K65a: serbest şekil (`src/battle/freeShape.ts`): en çok altıgen, menzil her altıgende, görüş ilk altıgende. */
   /** Kuyruk K65c: serbest duvar yolunun ek kuralları (her altıgen menzilde, ilk altıgen görüşte; Wind Wall'da yok). */
   pathRules?: { rangeAll?: boolean; sightFirst?: boolean };
@@ -371,6 +373,8 @@ export interface SpellMechanics {
   freeHand?: boolean;
   /** Kuyruk A7 (Light, Continual Flame): altıgendeki nesneye ışık (yarıçap altıgen); `objectLightKeep` yeniden yapınca eskisi sürer. */
   objectLight?: number;
+  /** Kuyruk K67a (sürüm 51): nesne ışığının ek loş halkası (Light, Continual Flame 4). */
+  objectLightDim?: number;
   objectLightKeep?: boolean;
   /** Kuyruk A8 (Meteor Swarm): en çok bu kadar merkez (komutta `targetHexes`; her yaratık bir kez). */
   multiPoint?: number;
@@ -517,6 +521,8 @@ export interface ZoneSpec {
    * (`dispels`: büyü kimlikleri; Daylight → Darkness).
    */
   light?: number;
+  /** Kuyruk K67a (sürüm 51): parlak yarıçapın ötesinde ek loş ışık (altıgen; Daylight 12). */
+  lightDim?: number;
   dark?: boolean;
   dispels?: string[];
   /** Görev Y1: oluşunca altındaki alev yüzeylerini söndürür (Sleet Storm: SRD "exposed flames in the area are doused"). */
@@ -701,6 +707,8 @@ export interface EffectSpec {
    * (`seeInvisible`; See Invisibility), ona saldırılar avantajlı (`attackedAdv`; Faerie Fire).
    */
   light?: number;
+  /** Kuyruk K67a (sürüm 51): ek loş ışık (altıgen; parlak yoksa merkezden: Faerie Fire 2). */
+  lightDim?: number;
   revealed?: boolean;
   seeInvisible?: boolean;
   /** Kuyruk K63 (sürüm 47): süren etki Truesight verir (ft; True Seeing 120). */

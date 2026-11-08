@@ -15,7 +15,7 @@
  * - Truesight (`boon-truesight`): 60 ft Truesight.
  */
 import { distance } from '../rules/hex';
-import { hasDarkness, litHexes } from './maprules';
+import { hasDarkness, inShadowAt } from './maprules';
 import { globalRule } from './ruleControl';
 import { resourceLeft, type BattleEvent, type BattleState, type Combatant } from './types';
 
@@ -33,7 +33,8 @@ export function boonResources(traits: string[]): Record<string, number> {
 /** Yaratık loş ışıkta ya da karanlıkta mı (karanlık/gece haritasında ışıksız altıgen). */
 export function inShadow(state: BattleState, c: Combatant): boolean {
   if (!c.pos || !hasDarkness(state)) return false;
-  return !litHexes(state).has(`${c.pos.col},${c.pos.row}`);
+  // Kuyruk K67a (sürüm 51): loş ışık da gölge sayılır (`inShadowAt`).
+  return inShadowAt(state, c.pos);
 }
 
 /** Night Spirit'in Shadowy Form direnci (Psychic ve Radiant dışı). */

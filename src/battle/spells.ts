@@ -26,7 +26,7 @@ import { combineModes, environmentSources, invertMode, type ModeSource } from '.
 import { checkReach, spellReach } from './range';
 import { heightOf } from './cover';
 import { AXIAL_DIRECTIONS, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
-import { hasDarkness, litHexes, ruleOf } from './maprules';
+import { hasDarkness, inShadowAt, litHexes, ruleOf } from './maprules';
 import { globalRule } from './ruleControl';
 import { after69, spells69Problem, wishProblem, wishSpell } from './spells69';
 import { freeCastingEvents } from './boons';
@@ -141,7 +141,7 @@ function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe:
     // Kuyruk 19: tur sonu save'i başarısızsa yinelenen hasar (Phantasmal Killer).
     ...(fe.repeatSave ? { repeatSave: { ability, dc: actor.spellSaveDc ?? 0, ...(fe.repeatFailDamage ? { failDamage: fe.repeatFailDamage } : {}), ...(fe.repeatTally ? { tally: { need: fe.repeatTally, s: 0, f: 0, ...(fe.tallyFailGrants ? { failGrants: fe.tallyFailGrants } : {}) } } : {}) } } : {}),
     // Görev B4: Faerie Fire (görünmez olamaz, saldırılar avantajlı, ışık).
-    ...(fe.revealed ? { revealed: true } : {}), ...(fe.attackedAdv ? { attackedAdv: true } : {}), ...(fe.light !== undefined ? { light: fe.light } : {}),
+    ...(fe.revealed ? { revealed: true } : {}), ...(fe.attackedAdv ? { attackedAdv: true } : {}), ...(fe.light !== undefined ? { light: fe.light } : {}), ...(fe.lightDim ? { lightDim: fe.lightDim } : {}),
     // Kuyruk 19: gecikmeli hasar (Vitriolic Sphere), saldırı ve yetenek kontrolünde dezavantaj (Phantasmal Killer).
     ...(fe.delayed ? { delayed: fe.delayed } : {}), ...(fe.attackDis ? { attackDis: fe.attackDis } : {}), ...(fe.checkDis ? { checkDis: fe.checkDis } : {}),
     ...(fe.compel ? { compel: {} } : {}), ...(fe.confused ? { confused: true } : {}), ...(fe.noBonus ? { noBonus: true } : {}),
@@ -467,7 +467,7 @@ function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand,
     // Kuyruk 19: One with Shadows (SRD 5.2.1): loş ışıkta ya da karanlıkta. Işıksız altıgen kavramı olmayan (gündüz)
     // haritada her yer aydınlık sayılır. Anahtar `oneWithShadows` (sürüm 16).
     if (actor0.traits?.includes('one-with-shadows') && spell0.name === 'Invisibility' && globalRule(state, 'oneWithShadows') && actor0.pos
-      && (!hasDarkness(state) || litHexes(state).has(hexKey(actor0.pos)))) return fail('One with Shadows: yalnızca loş ışıkta ya da karanlıkta (ışıksız altıgende).');
+      && !inShadowAt(state, actor0.pos)) return fail('One with Shadows: yalnızca loş ışıkta ya da karanlıkta (ışıksız altıgende).');
   }
   // Görev WARLOCK: Eldritch Spear (cantrip menzili).
   const reach = actor0.cantripMods?.[spell0.name]?.rangeFt;
@@ -540,7 +540,7 @@ function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, 
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
@@ -1031,7 +1031,7 @@ function afterHitEvents(state: BattleState, actor: Combatant, targetId: string, 
         ...(a.checkDis ? { checkDis: a.checkDis } : {}),
         // CILA: gecikmeli hasar da yukarı slotla artar (Acid Arrow: slot başına +1d4).
         ...(a.delayed ? { delayed: { ...a.delayed, dice: upcastDelayed(a.delayed.dice, m, upcast) } } : {}), ...(spell.concentration ? { concentration: spell.name } : {}),
-        ...(a.revealed ? { revealed: true } : {}), ...(a.light !== undefined ? { light: a.light } : {}),
+        ...(a.revealed ? { revealed: true } : {}), ...(a.light !== undefined ? { light: a.light } : {}), ...(a.lightDim ? { lightDim: a.lightDim } : {}),
         // Kuyruk A4 (Starry Wisp): büyücünün sonraki turunun sonuna dek.
         ...(a.untilSourceTurnEnd ? { endAfterSourceTurn: state.round, until: state.round + 2 } : {}) } });
     }
@@ -1669,7 +1669,7 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     ...(spec.commandPersist ? { commandPersist: true } : {}), ...(spec.fleeDash ? { fleeDash: true } : {}),
     ...(spec.sourceTurnDamage ? { sourceTurnDamage: spec.sourceTurnDamage } : {}), ...(spec.images ? { images: spec.images } : {}),
     // Görev B4: ışık, görünmezlik.
-    ...(spec.light !== undefined ? { light: spec.light } : {}), ...(spec.revealed ? { revealed: true } : {}),
+    ...(spec.light !== undefined ? { light: spec.light } : {}), ...(spec.lightDim ? { lightDim: spec.lightDim } : {}), ...(spec.revealed ? { revealed: true } : {}),
     ...(spec.seeInvisible ? { seeInvisible: true } : {}), ...(spec.truesight ? { truesight: spec.truesight } : {}), ...(spec.attackedAdv ? { attackedAdv: true } : {}),
     // Görev B5: karanlık görüş, kontrol avantajı, Stealth aurası.
     ...(spec.darkvision ? { darkvision: spec.darkvision } : {}), ...(spec.checkAdv === 'chosen' && choice ? { checkAdv: [choice as Ability] } : {}),

@@ -89,8 +89,11 @@ describe('gece', () => {
   it('ışıksız altıgende: karanlık görüşsüz gözcünün pasif Algısı −5, Gizlen avantajlı; karanlık görüşlü etkilenmez', () => {
     const s = night();
     expect(hideCheck(s, s.combatants.A as Combatant)).toMatchObject({ ok: true, dc: 15, advantage: true, watcher: { passive: 13 } });
-    const dv = night({ darkvision: 60 });
+    // Kuyruk K67a: sürüm 50'de karanlık görüşlü gözcü etkilenmez (pasif 18); 51+'da karanlığı loş görür: −5 (DC 15).
+    const dv = { ...night({ darkvision: 60 }), kuralSurumu: 50 };
     expect(hideCheck(dv, dv.combatants.A as Combatant)).toMatchObject({ dc: 18, advantage: true });
+    const dv51 = night({ darkvision: 60 });
+    expect(hideCheck(dv51, dv51.combatants.A as Combatant)).toMatchObject({ dc: 15, advantage: true, watcher: { passive: 13 } });
     const r = execute(s, { type: 'hide', actorId: 'A' }, P1, scripted([20, 4], [20, 12]));
     if (!r.ok) throw new Error(r.error);
     expect(r.events[0]).toMatchObject({ mode: 'advantage', natural: 12, total: 15, dc: 15, success: true });

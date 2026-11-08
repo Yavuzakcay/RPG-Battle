@@ -17,7 +17,7 @@ import { terrainSpellOn, terrainTags } from '../battle/terrainSpell';
 import { checkReach, monsterAttackReach, optionReach, spellReach, type Reach } from '../battle/range';
 import { hideInfo } from './stealthView';
 import { getMap } from '../map/maps';
-import { TRIGGERED, activeRules, isBog, litHexes, ruleHex, ruleOf } from '../battle/maprules';
+import { TRIGGERED, activeRules, darkRule, dimLightOn, isBog, lightLevels, litHexes, ruleHex, ruleOf } from '../battle/maprules';
 import { gateAt } from '../battle/mapcommands';
 import { areaHexes } from '../rules/area';
 import { distance, hexKey, type GridSize, type Offset } from '../rules/hex';
@@ -258,16 +258,23 @@ export function placeHexes(state: BattleState, actorId: string): Offset[] {
 }
 
 /** Haritadaki işaretler: lav uyarısı, bulunmuş tuzaklar, kapalı kapı, karanlık (ışıksız) altıgenler. */
-export function mapMarks(state: BattleState): { warn: Set<string>; traps: Set<string>; dark: Set<string> } {
+export function mapMarks(state: BattleState): { warn: Set<string>; traps: Set<string>; dark: Set<string>; dim: Set<string> } {
   const warn = new Set((state.map?.lavaWarning?.hexes ?? []).map(hexKey));
   const traps = new Set([...(state.map?.trapsFound ?? []), ...(state.map?.trapsSprung ?? [])]);
   const dark = new Set<string>();
+  const dim = new Set<string>();
+  // Kuyruk K67a (sürüm 51): karanlık kuralında ve "Gece görüşü kuralları" açık gece haritasında karanlık + loş halka.
+  if (dimLightOn(state) && darkRule(state)) {
+    const lv = lightLevels(state);
+    for (const h of allHexes(gridOf(state))) { const k = hexKey(h); const v = lv.get(k); if (!v) dark.add(k); else if (v === 'dim') dim.add(k); }
+    return { warn, traps, dark, dim };
+  }
   // Karartma yalnızca görüş sınırı olan karanlıkta (`darkness`); gecenin ışıksız altıgeni bilgi kutusunda.
   if (ruleOf(state, 'darkness')) {
     const lit = litHexes(state);
     for (const h of allHexes(gridOf(state))) if (!lit.has(hexKey(h))) dark.add(hexKey(h));
   }
-  return { warn, traps, dark };
+  return { warn, traps, dark, dim };
 }
 
 /** GM'in tetikleyebileceği harita olayları ve kapı (bu haritada varsa). */

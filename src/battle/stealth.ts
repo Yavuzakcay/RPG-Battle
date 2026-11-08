@@ -25,7 +25,7 @@ import { checkMode, skillBonus, strCheckAdvantage } from '../rules/skills';
 import { fail, type CommandResult } from './common';
 import { lineOfFire } from './cover';
 import { globalRule } from './ruleControl';
-import { canSee, darkvisionOf, isUnlit, litHexes, mapHideSources, nightStealth, ruleNumber, ruleOf, trapHexes } from './maprules';
+import { canSee, darkvisionOf, dimLightOn, isUnlit, litHexes, mapHideSources, nightStealth, perceivedLevel, ruleNumber, ruleOf, trapHexes } from './maprules';
 import { distance, neighbors } from '../rules/hex';
 import { combineModes } from '../rules/modes';
 import { terrainAt } from './movement';
@@ -80,7 +80,11 @@ export function passivePerception(state: BattleState, watcher: Combatant, at: Of
   // Kuyruk 41b: Dikkat dağıt etkisi (en büyüğü).
   const distracted = Math.max(0, ...(watcher.effects ?? []).map((e) => e.perceptionPenalty ?? 0));
   // Kuyruk S2 (sürüm 41, Web): hedef hafif örtülü alanda: görmeye dayalı Algı dezavantajlı (pasif −5).
-  const light = ruleVersion(state) >= 41 && lightlyObscured(state, at) ? s2rules.hafifOrtu.passivePenalty : 0;
+  const web = ruleVersion(state) >= 41 && lightlyObscured(state, at) ? s2rules.hafifOrtu.passivePenalty : 0;
+  // Kuyruk K67a (sürüm 51): gözcünün gördüğü loş ışık (karanlık görüşle karanlık da loş) hafif örtü: görmeye dayalı Algı
+  // dezavantajı (pasif −5); Web gibi öteki hafif örtüyle birikmez.
+  const dim = dimLightOn(state) && perceivedLevel(state, watcher, at) === 'dim' ? s2rules.hafifOrtu.passivePenalty : 0;
+  const light = Math.max(web, dim);
   return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark - distracted - light;
 }
 
@@ -186,10 +190,12 @@ export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): C
   const roll = rollD20(pmode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
   const { total, extra } = finishCheck(actor, 'perception', roll.kept, skillBonus(actor, 'perception'), null, pmode, rng);
   // Kuyruk S2 (sürüm 41, Web): hafif örtülü alandaki gizlenen için Arama dezavantajlı (ikinci zarın düşüğü).
-  const lowTotal = ruleVersion(state) >= 41 && Object.values(state.combatants).some((c) => c.hidden && c.pos && lightlyObscured(state, c.pos))
+  // Kuyruk K67a (sürüm 51): gözcünün gördüğü loş ışıktaki gizlenen de (birikmez: tek ikinci zar).
+  const obscured = (at: Offset) => lightlyObscured(state, at) || (dimLightOn(state) && perceivedLevel(state, actor, at) === 'dim');
+  const lowTotal = ruleVersion(state) >= 41 && Object.values(state.combatants).some((c) => c.hidden && c.pos && obscured(c.pos))
     ? Math.min(total, rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id })).kept + (total - roll.kept)) : total;
   const found = Object.values(state.combatants)
-    .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= (c.pos && lowTotal !== total && lightlyObscured(state, c.pos) ? lowTotal : total) && !lineOfFire(state, actor, c).blocked)
+    .filter((c) => c.side !== actor.side && c.hidden && c.hidden.dc <= (c.pos && lowTotal !== total && obscured(c.pos) ? lowTotal : total) && !lineOfFire(state, actor, c).blocked)
     .map((c) => c.id);
   const events: BattleEvent[] = [{ type: 'searched', actorId: actor.id, natural: roll.kept, total, found, ...(extra.length ? { bonusDice: extra } : {}) }];
   // Kuyruk S2 (sürüm 41): gizli alanlar (Spike Growth) da aranır.

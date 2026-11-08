@@ -11,7 +11,7 @@ import type { Offset } from '../rules/hex';
 import { economyBlock, preferBonus } from '../battle/economy';
 import { stuckInBog } from '../battle/maprules';
 import { HIDE_DC, hideCheck, hideRulesOf, hideSpot, hideSpotBonus } from '../battle/stealth';
-import { isUnlit, nightStealth } from '../battle/maprules';
+import { dimLightOn, hasDarkness, isUnlit, lightLevelAt, nightStealth } from '../battle/maprules';
 import { TERRAIN } from '../map/terrain';
 import type { HideCover } from '../map/maps';
 import { terrainAt } from '../battle/movement';
@@ -85,7 +85,9 @@ export function hideInfo(state: BattleState, actor: Combatant | undefined, at: O
       if (check?.watcher && check.dc > HIDE_DC) parts.push(V.hideWatch(check.dc, state.combatants[check.watcher.id]?.name ?? ''));
     }
   }
-  if (nightStealth(state) && isUnlit(state, at)) parts.push(V.unlit);
+  // Kuyruk K67a (sürüm 51): karanlık ya da gece haritasında altıgenin ışık seviyesi.
+  if (dimLightOn(state) && hasDarkness(state)) parts.push(V.lightLevel[lightLevelAt(state, at)] ?? '');
+  else if (nightStealth(state) && isUnlit(state, at)) parts.push(V.unlit);
   return parts.join(' · ');
 }
 

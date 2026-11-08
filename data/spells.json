@@ -1271,8 +1271,9 @@
       "s1": {
         "outlineObjects": true,
         "sigmayan": null
-      }
-    },
+      },
+   "k67": {"failEffect": {"rounds": 10, "revealed": true, "attackedAdv": true, "lightDim": 2, "raw": {"attackedAdvSee": true}}, "kapsamDisi": null}
+  },
     "school": "Evocation",
     "srdPage": 129,
     "area": {
@@ -4548,8 +4549,9 @@
           "icon": "💡",
           "self": true
         }
-      }
-    },
+      },
+   "k67": {"objectLight": 4, "objectLightDim": 4, "effect": {"targets": 1, "side": "ally", "rounds": 600, "light": 4, "lightDim": 4, "icon": "💡", "self": true}, "kapsamDisi": "1 saatlik süre savaştan uzun; nesne yerine yaratık da taşır (SRD: nesne)."}
+  },
     "school": "Evocation",
     "srdPage": 144
   },
@@ -4641,8 +4643,9 @@
           "icon": "🔥",
           "self": true
         }
-      }
-    },
+      },
+   "k67": {"objectLight": 4, "objectLightDim": 4, "effect": {"targets": 1, "side": "ally", "rounds": 14400, "light": 4, "lightDim": 4, "icon": "🔥", "self": true}, "kapsamDisi": "Nesne yerine yaratık da taşır (SRD: nesne); süre savaş boyunca."}
+  },
     "school": "Evocation",
     "srdPage": 119
   },
@@ -4692,8 +4695,9 @@
         },
         "kapsamDisi": "Taşınmayan nesneye yapılan ışık nesnenin altıgeninde durur; ek 60 ft loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık).",
         "approx": null
-      }
-    },
+      },
+   "k67": {"zone": {"rounds": 600, "light": 0, "lightDim": 12, "dispels": ["darkness"], "color": "#fff7d6", "icon": "☀", "sunlight": true}, "kapsamDisi": "Taşınmayan nesneye yapılan ışık nesnenin altıgeninde durur (nesneyle yürümez); Sunlight Sensitivity yalnız parlak alanda."}
+  },
     "school": "Evocation",
     "srdPage": 122
   },

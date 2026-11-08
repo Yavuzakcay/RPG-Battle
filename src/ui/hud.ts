@@ -228,6 +228,16 @@ export function areaPointCount(state: BattleState, act: AreaAct | null, choice?:
   return Math.max(1, m.multiPoint ?? (ruleVersion(state) >= 41 ? m.wallPath ?? 1 : 1));
 }
 
+/** Kuyruk K67a (sürüm 51): büyünün ışığı (ft): parlak ve ek loş (yoksa null). Alanın kendisi parlaksa (Daylight) alan boyu. */
+export function spellLightFt(state: BattleState, spell: Spell): { bright: number; dim: number } | null {
+  if (ruleVersion(state) < 51) return null;
+  const m = mechanicsAt(state, spell);
+  const src = [m.effect, m.failEffect, m.zone].find((x) => x && (x as { lightDim?: number }).lightDim) as { light?: number; lightDim?: number } | undefined;
+  if (!src?.lightDim) return null;
+  const bright = src === m.zone && src.light === 0 ? spell.area?.sizeFt ?? 0 : Math.max(0, src.light ?? 0) * 5;
+  return { bright, dim: src.lightDim * 5 };
+}
+
 /** Kuyruk K65a: alan büyüsünün serbest şekli (sürüm 49; yoksa undefined). */
 export const areaFreeShape = (state: BattleState, act: AreaAct | null, choice?: string | null) => {
   const fs = act?.kind === 'spell' ? freeShapeOf(state, act.spell) : undefined;

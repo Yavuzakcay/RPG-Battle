@@ -324,6 +324,8 @@ export const TR_EXTRA = {
         : 'Magic Circle (1 dakika): 10 ft silindir; seçilen türler içerdekini ele geçiremez, Charmed/Frightened edemez, ona saldırıları dezavantajlı.'),
       wardCast: (spell: string): string => `${spell} kur`, wardReverse: 'Ters yön (dışarıdakileri korur)' },
     k63: { truesight: (ft: number): string => `Gerçek görüş ${ft} ft (görünmezi, yanılsamayı, gerçek biçimi görür)`, trueForm: (name: string): string => `Gerçek biçim: ${name}` },
+    // Kuyruk K67a: büyünün ışığı (sürüm 51).
+    k67: { light: (bright: number, dim: number): string => (bright ? `ışık ${bright} ft parlak + ${dim} ft loş` : `ışık ${dim} ft loş`) },
     // Kuyruk K66a: Earthquake yarıkları.
     k66: { menu: (n: number, max: number): string => `Yarık yerleştir (${n}/${max})`, head: 'Earthquake: yarık', count: (n: number, max: number): string => `${n}/${max} yarık`,
       hint: 'Altıgene dokun, yönü seç; yarık tur sonunda açılır', dir: ['╲↑', '╲↓', '╱↑', '╱↓', '│→', '│←'], dirName: ['eğik (╲), üst yan', 'eğik (╲), alt yan', 'eğik (╱), üst yan', 'eğik (╱), alt yan', 'dikey, sağ yan', 'dikey, sol yan'], go: 'Yarığı yerleştir',
@@ -449,6 +451,8 @@ export const TR_EXTRA = {
     hideBehind: (name: string): string => `${name} arkası`, hideNoCover: (name: string): string => `${name}: örtü yok`,
     hideAdjacent: (name: string): string => `${name} hemen yanında, seni görüyor`,
     hideDark: 'karanlık: Gizlen zarı avantajlı', unlit: 'ışıksız (gece)',
+    // Kuyruk K67a: ışık seviyesi (sürüm 51).
+    lightLevel: { bright: 'ışık: parlak', dim: 'ışık: loş (görmeye dayalı Algı −5)', dark: 'ışık: karanlık' } as Record<string, string>,
     hideWatch: (dc: number, name: string): string => `geçilmesi gereken ${dc} (${name} pasif Algısı)`,
     hiddenStealth: (n: number): string => `Gizli (Stealth: ${n})`,
     hiddenZones: (on: boolean): string => (on ? 'Gizli alanları gizle (Game Master)' : 'Gizli alanları göster (Game Master)'),

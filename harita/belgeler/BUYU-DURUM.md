@@ -13,7 +13,7 @@ Toplam 339 = savaşta kullanılan 225 + savaş dışı 114.
 | 6–9 | 50 | 0 | 0 | 34 | 84 |
 | **Toplam** | 225 | 0 | 0 | 114 | 339 |
 
-Çalışır olanlardan: Game Master notlu 4, kapsam dışı notlu 26, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
+Çalışır olanlardan: Game Master notlu 4, kapsam dışı notlu 25, sığmayan parça notlu 0. 6–9. seviye açıklaması (`text`) boş: 0 / 84 (kart SRD sayfa referansını gösterir; Dungeondex açıklamaları ileride bağlanacak).
 
 ## Game Master notlu (savaş etkisi tam, kalan parça Game Master'da)
 
@@ -31,16 +31,15 @@ Bu parçaların tetikleyiciye göre gruplu kaydı ve ne zaman ele alınacakları
 | Kimlik | Sv | Kapsam dışı | Oyuna uyar mı? Neden |
 |---|---|---|---|
 | dancing-lights | 0 | Dört ayrı ışık yerine birleşik insansı biçim (SRD seçeneği); loş ışık ayrımı ışık modelinde yok. | evet: SRD'nin birleşik biçim seçeneği; loş ışık ayrımı yok. |
-| light | 0 | Loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık); 1 saatlik süre savaştan uzun. | evet: Işık modeli aydınlık/karanlık; loş ışık ayrımı savaşta küçük fark. |
+| light | 0 | 1 saatlik süre savaştan uzun; nesne yerine yaratık da taşır (SRD: nesne). | evet: Işık modeli aydınlık/karanlık; loş ışık ayrımı savaşta küçük fark. |
 | entangle | 1 | Bitkilerin büyü bitince çekilmesi görseldir; karede zemin zorlu arazi. | evet: Bitkilerin çekilmesi yalnız görsel; zorlu arazi ve Restrained tam. |
-| faerie-fire | 1 | Loş ışık (10 ft) yalnızca karanlık/gece haritasında anlamlı (ışık modeli aydınlık/karanlık). | evet: Loş ışık ayrımı ışık modelinde yok; gece/karanlık haritada aydınlatır, ana etki (avantaj, görünmezlik iptali) tam. |
 | fog-cloud | 1 | Kürenin yüksekliği ve köşeleri dönmesi (ızgarada küre, görüş katmansız); rüzgârla dağılma Kuyruk 18b rüzgârıyla. | evet: Küre ızgarada; rüzgârla dağılma rüzgâr kuralıyla. |
 | hex | 1 | Seçilen yetenek: savaşta kontrol yalnızca STR/DEX (İt, yakalama, kurtulma); seçim yoksa hedefin güçlü olanı | evet: Savaşta yapılan kontroller STR/DEX; diğer yetenek seçimi savaşta karşılıksız. |
 | jump | 1 | Zıplamanın havadaki yayı ve yükseklik katmansız haritada dikey zıplama (katmansız haritada yükseklik yok). | evet: Katmansız haritada dikey yükseklik yok; yatay uzunluk tam. |
 | mage-armor | 1 | Zırh giyince bitme: savaşta zırh giyilmez. | evet: Savaşta zırh giyilmez; bitme koşulu hiç tetiklenmez. |
 | alter-self | 2 | Change Appearance savaş dışı (Game Master). | evet: Change Appearance sosyal; savaş seçenekleri (Aquatic, Natural Weapons) tam. |
 | blindness-deafness | 2 | Deafened'in duymaya bağlı yetenek kontrolleri savaşta yok; sözlü buyruklar (Command, Suggestion) duyulmaz. | evet: Deafened'in savaşta karşılığı (sözlü buyruğu duymama) uygulanır; duymaya bağlı kontroller savaşta yok. |
-| continual-flame | 2 | Loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık). | evet: Loş ışık ayrımı yok; aydınlatma tam. |
+| continual-flame | 2 | Nesne yerine yaratık da taşır (SRD: nesne); süre savaş boyunca. | evet: Loş ışık ayrımı yok; aydınlatma tam. |
 | darkness | 2 | Taşınmayan nesneye yapılan karanlık nesnenin altıgeninde durur (noktaya yapmakla aynı); nesnenin üstünü örtmek savaş dışı. | evet: Nesneye yapılan karanlık nesnenin altıgeninde; örtüyle kapatma savaş dışı. |
 | enlarge-reduce | 2 | Boyut, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı). | evet: Boyut etkileri (hasar zarı, STR avantajı) tam; altıgen sayısı çok altıgen bayrağına bağlı. |
 | flaming-sphere | 2 | Taşıma bonus eylemle (yuvarlama) ve çarpma hasarı Kuyruk 19 yoluyla; ışık 20 ft (4 altıgen). | evet: Yuvarlama ve çarpma çalışır; ışık yarıçapı altıgene yuvarlanır. |
@@ -49,7 +48,7 @@ Bu parçaların tetikleyiciye göre gruplu kaydı ve ne zaman ele alınacakları
 | animate-dead | 3 | Döküm süresi 1 dakika: yalnızca kurulumda; 24 saatlik kontrol yenileme savaş dışı. | evet: 1 dakikalık döküm kurulumda; 24 saatlik yenileme savaş dışı. |
 | call-lightning | 3 | Bulut büyücünün üstünde sayılır; nokta büyü menzilinde seçilir (silindir yüksekliği savaş modelinde yok). | evet: Silindir yüksekliği modelde yok; bulut büyücünün üstünde sayılır, hedef nokta menzilde. |
 | conjure-animals | 3 | Large sürü, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı). | evet: Çok altıgen bayrağı kapalıyken her yaratık tek altıgen (oyunun genel kuralı). |
-| daylight | 3 | Taşınmayan nesneye yapılan ışık nesnenin altıgeninde durur; ek 60 ft loş ışık ayrımı ışık modelinde yok (aydınlık/karanlık). | kısmen: Ek 60 ft loş ışık yok: karanlık haritada aydınlattığı alan SRD'den dar. |
+| daylight | 3 | Taşınmayan nesneye yapılan ışık nesnenin altıgeninde durur (nesneyle yürümez); Sunlight Sensitivity yalnız parlak alanda. | kısmen: Ek 60 ft loş ışık yok: karanlık haritada aydınlattığı alan SRD'den dar. |
 | dispel-magic | 3 | Sihirli eşyanın kendi büyüsü dağılmaz (SRD); nesnedeki süren büyü (Light, Continual Flame) altıgen hedefte kalkar. | evet: SRD'ye uygun: eşyanın kendi büyüsü dağılmaz. |
 | plant-growth | 3 | Enrichment (8 saatlik döküm, bir yıl verim) savaş dışı. | evet: Enrichment 8 saatlik döküm, savaş dışı; Overgrowth tam. |
 | remove-curse | 3 | Lanetli sihirli eşyada bağlılığı koparma savaş dışı. | evet: Lanetli eşyadan kopma savaş dışı; savaşta lanet kalkar. |
@@ -86,7 +85,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | elementalism | 0 | spells.json | savaş dışı |  |  |  |
 | fire-bolt | 0 | spells.json | çalışır |  |  |  |
 | guidance | 0 | spells.json | çalışır |  |  |  |
-| light | 0 | spells.json | çalışır | a7 (sürüm 36) |  |  |
+| light | 0 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | mage-hand | 0 | spells.json | savaş dışı |  |  |  |
 | mending | 0 | spells.json | savaş dışı |  |  |  |
 | message | 0 | spells.json | savaş dışı |  |  |  |
@@ -127,7 +126,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | ensnaring-strike | 1 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | entangle | 1 | spells.json | çalışır | a8 (sürüm 37) |  |  |
 | expeditious-retreat | 1 | spells.json | çalışır | a4 (sürüm 32) |  |  |
-| faerie-fire | 1 | spells.json | çalışır | s1 (sürüm 40) |  |  |
+| faerie-fire | 1 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | false-life | 1 | spells.json | çalışır |  |  |  |
 | feather-fall | 1 | spells.json | çalışır |  |  |  |
 | find-familiar | 1 | spells.json | çalışır |  |  |  |
@@ -173,7 +172,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | blindness-deafness | 2 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | blur | 2 | spells.json | çalışır | a4 (sürüm 32) |  |  |
 | calm-emotions | 2 | spells.json | çalışır | s1 (sürüm 40) |  |  |
-| continual-flame | 2 | spells.json | çalışır | a7 (sürüm 36) |  |  |
+| continual-flame | 2 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | darkness | 2 | spells.json | çalışır | a7 (sürüm 36) |  |  |
 | darkvision | 2 | spells.json | çalışır |  |  |  |
 | detect-thoughts | 2 | spells.json | savaş dışı |  |  |  |
@@ -228,7 +227,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | conjure-animals | 3 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | counterspell | 3 | spells.json | çalışır |  |  |  |
 | create-food-and-water | 3 | spells.json | savaş dışı |  |  |  |
-| daylight | 3 | spells.json | çalışır | a7 (sürüm 36) |  |  |
+| daylight | 3 | spells.json | çalışır | k67 (sürüm 51) |  |  |
 | dispel-magic | 3 | spells.json | çalışır | a7 (sürüm 36) |  |  |
 | fear | 3 | spells.json | çalışır | g6 (sürüm 43) |  |  |
 | fireball | 3 | spells.json | çalışır |  |  |  |
@@ -294,7 +293,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | stone-shape | 4 | spells-45.json | savaş dışı |  |  |  |
 | stoneskin | 4 | spells-45.json | çalışır |  |  |  |
 | vitriolic-sphere | 4 | spells-45.json | çalışır |  |  |  |
-| wall-of-fire | 4 | spells-45.json | çalışır |  |  |  |
+| wall-of-fire | 4 | spells-45.json | çalışır | k67 (sürüm 51) |  |  |
 | animate-objects | 5 | spells-45.json | çalışır |  |  |  |
 | antilife-shell | 5 | spells-45.json | çalışır |  |  |  |
 | arcane-hand | 5 | spells-45.json | çalışır |  |  |  |

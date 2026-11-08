@@ -30,7 +30,7 @@ import { resourceDef, resourceUsable } from './rules/classFeatures';
 import { maps } from './map/maps';
 import { economyBlock, freeCastResource, preferBonus } from './battle/economy';
 import { bodyOf } from './battle/body';
-import { optionalRules, ruleOf, stuckInBog } from './battle/maprules';
+import { dimLightOn, optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
 import { rageProblem, recklessProblem } from './battle/rage';
 import { CUNNING, cunningOptions, hasTrait, usedThisTurn } from './battle/classTraits';
@@ -71,7 +71,7 @@ import {
 } from './ui/mapView';
 import {
   areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaFreeShape, areaPathRules, areaPointCount, areaWallPath, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
-  featureTeleportHexes, slotChoices, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
+  featureTeleportHexes, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { effectTargetCount, strideSpellOf } from './battle/spells';
@@ -1231,7 +1231,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const pickHexes = new Set(targeting ? [...[...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }), ...fireKeys] : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
-    const dark = marks.dark.has(k) ? ' dark' : '';
+    // Kuyruk K67a (sürüm 51): karanlık ve loş ayrı, daha belirgin sınıflar; sürüm 50'de eski karartma.
+    const dark = dimLightOn(state) ? (marks.dark.has(k) ? ' lvdark' : marks.dim.has(k) ? ' lvdim' : '') : marks.dark.has(k) ? ' dark' : '';
     return baseHexClass(h, k) + dark;
   };
   const hazardThreat = (() => { const id = drawerId ?? targetId; const c = id ? state.combatants[id] : undefined; return c && actor && c.side !== actor.side ? c.id : null; })();
@@ -2156,7 +2157,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
                       <span>{sp.name}</span>
-                      <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? loc(why) : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? (freeShapeOf(state, sp) ? B.k65.note(freeShapeOf(state, sp)?.maxHexes ?? 0) : B.spellNote.area(sp.area?.sizeFt ?? 0)) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}</>}</small>
+                      <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? loc(why) : sp.castingTime === 'bonus' ? B.spellNote.bonus : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? (freeShapeOf(state, sp) ? B.k65.note(freeShapeOf(state, sp)?.maxHexes ?? 0) : B.spellNote.area(sp.area?.sizeFt ?? 0)) : sp.mechanics.offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}{((lf) => (lf ? ` · ${B.k67.light(lf.bright, lf.dim)}` : ''))(spellLightFt(state, sp))}</>}</small>
                     </button>
                   );
                 })}
@@ -2422,6 +2423,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     {foes.length + friends.length > 0 && <><br />{[...foes, ...friends].map((c) => c.name).join(', ')}</>}
                   </small>
                 )}
+                {/* Kuyruk K67a: ışık büyüsünün parlak ve loş halkası. */}
+                {areaAct.kind === 'spell' && ((lf) => (lf ? <small>{B.k67.light(lf.bright, lf.dim)}</small> : null))(spellLightFt(state, areaAct.spell))}
                 {/* Kuyruk K66b: Earthquake: alandaki yapılar (50 hasar, çökecekler ve çöküşün vuracakları). */}
                 {ready && !areaInfo?.error && areaAct.kind === 'spell' && ((qs) => {
                   if (!qs) return null;
