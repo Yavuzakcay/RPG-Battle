@@ -2,6 +2,66 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K71b: herkes için tırmanma (Çeviklik), düşme tek işlev, Long Jump, 23 harita (kural sürümü 57)
+
+- **Sürüm:** `wip/k71b` (`wip/k71a` 125e59b üstüne). Kural sürümü 56 → 57; yeni davranış yalnız 57+ (`src/battle/climbing.ts` `climbOn`, `CLIMB_VERSION`). 56 ve altı birebir (`src/sim/k71bRegresyon.test.ts`, `K71B_TOHUM`). `SAVE_VERSION` 22 kalır: yeni olay türü yok; `map_effect`'e isteğe bağlı `burnMove` alanı eklendi, eski kayıtlar etkilenmez.
+- **Görev 0 (23 harita):**
+  - K71a öneri tablosu aynen `scripts/k71-dikey.py` `ONAYLI` tablosuna yazıldı: duvar boyu `harfFt` `s`/`O` (kale grubu, Beyaz Şehir kapısı ve saray avlusu 30; batak-kale 25; hapishane 20; kasaba 15; şehir meydanı 20; orman kampları 10; Heykel Gölü 15; buzul tapınağı ve diğer beşi 20).
+  - Betik idempotent (ikinci koşu 0 değişiklik).
+  - Bina içi tavan yalnız betiğin bulduğu ve açık zemin (`.`) içermeyen kapalı alanlarda işlendi: kale-avlu ve kale-baskini'de iki 3×3 oda (`tavanBolge`, 15 ft).
+  - ⚠ Betiğin kapalı alan olarak bulduğu avlular (kale-avlu/kale-baskini 162, kale-ic-avlu 93 altıgen) açık gök: tavan konmadı. Kullanıcının "3 haritada işlenir" talimatından bu nedenle sapıldı (avluya 15 ft tavan uçuşu ve görüşü bütün avluda keserdi). kale-ic-avlu tavansız.
+  - İç tavan önerilerinin geri kalanı (saray odaları 20, hapishane/kasaba 12, şehir 15, buzul tapınağı 20) bölgesi bulunamadığı için işlenmedi; elle bölge gerekir.
+  - Kullanıcı kararı "sur kaba yüzey": 8 kale/şehir haritasında `dikey.yuzey` `s` → kaba (DC 10). Şema `MapDikey.yuzey` + `dikeyErrors`.
+- **Görev 1 (K68 karar 9 sürüm 57+'da geri alındı; kullanıcı kararı Çeviklik zarı):**
+  - **Kim:** uçmayan, süzülmeyen ve tırmanma hızı olmayan herkes (`dexClimber`).
+    - Tırmanma hızı olan (Spider Climb, `climber`, Roving) K68b kuralıyla zarsız ve ×1 (aynen).
+    - Bu sürümde tırmanma hızı olanlar da duvar tepesinden öte yana geçebiliyor.
+  - **Yüzey (`data/dikey.json` `tirmanma`):** sınıflar kaba DC 10 ×2, duvar DC 12 ×2, pürüzsüz DC 15 ×3.
+    - Harfler: `a` ağaç ve `v` sarkıt kaba; `s` duvar ve `O` kapalı kapı normal; `c` ayakta sütun ve `m` direk/sütun pürüzsüz.
+    - Nesneler: kapı normal; kale kapısı, çatlak duvar ve kaya yığını kaba. Wall of Stone kaba; enkaz yığını kaba.
+    - Sıra: büyü duvarı > geçici engel > nesne > varyant `yuzey` > harf.
+    - Tepesi bilinmeyen (sonsuz) engel tırmanılmaz: ağaç nesnesi, heykel gözü, mangal, kazan, plaka, balista, dış kayalık. "Zorlu yüzey ×3" = pürüzsüz sınıfı.
+  - **Tırmanılmaz liste:** Wall of Force, Wall of Ice, Prismatic Wall, Forcecage (büyü); Işıklı kristal `e` (cam/kristal); donmuş şelale, çadır (nesne); Çizili Duvar, Dost Kalkanı (büyülü geçici engel).
+    - Pürüzsüz metal yüzey verisi yok (haritalarda metal duvar harfi yok).
+    - Forcecage zaten içeriden geçişi her irtifada keser (`cageStepBlocked`).
+  - **Zar:** yerden ilk yükselişte bir kez Çeviklik kontrolü: d20 + DEX değiştiricisi; Akrobasi değil, uzmanlık ve yetkinlik yok.
+    - Etkilerdeki DEX kontrol avantajı/dezavantajı, Frightened (`checkBase`), Exhaustion, Guidance ve ikinci şans (`finishCheck`) geçerli.
+    - Zar tohumlu zar sisteminden atılır (`rollTag` kind `check`), olayda `map_effect` (kural `climb`).
+  - **Başarısızlık:** düşme yok, yerinde kalır. Yanan hareket o tırmanış adımının, yani 5 ft'in hareketidir (sınıf çarpanı kadar altıgen, `burnMove`); istenen bütün tırmanış yanmaz.
+  - **Maliyet:** 5 ft dikey ya da duvarda bir altıgen = çarpan altıgen (inişte de).
+  - **Üst sınır ve tutunma:**
+    - Bitişik yüzeyin tepesi kadar tırmanılır; tavanlı yerde en çok tavan − boy.
+    - Tavana tutunma yok.
+    - Duvarda, tepesi irtifası kadar olan bitişik yüzeye tutunur; Prone, Incapacitated ya da hız 0 olursa düşer.
+  - **Geçiş:** irtifası engel tepesine yeten tırmanıcı engel altıgeninin üstünden öte yana geçer (Çeviklik tırmanıcısı ×çarpan); tepede durulmaz (K5, K72).
+    - Yürüyüş yarıda kesilirse son durulabilen altıgene döner (57+'da engel üstünden geçen uçan için de; K71a'daki açık durum, 56'da aynen).
+  - **K4:** katman `climb` komutu 57+'da aynı kural: `katmanUcurum` (kaba, DC 10) Çeviklik kontrolü, seviye başı ek maliyet ×2. Tutmazsa düşme ve hareket sonu yok, adımın tüm maliyeti yanar.
+    - ⚠ Katman soyutlaması korunur: 1 + levelCost × seviye × 2. SRD'nin ft başına maliyeti K71c'de (katman + irtifa).
+  - **YZ (K15, `src/battle/ai/climbAi.ts` `wallClimbCommand`):**
+    - Yerde yalnız tırmanılabilir yüzeye bitişikken değerlendirir (erken eleme).
+    - Duvarsız yol yoksa ya da beklenen tırmanma yolunun en az iki katıysa tırmanmaya başlar. Beklenen yol = tırmanış + geçiş + iniş + düşmana yürüyüş + (1/p − 1) × çarpan. Olasılık p = (21 − DC + DEX)/20; 0 ise denemez.
+    - Duvardayken in / ilerle / tepeye çık seçeneklerinden ucuzunu seçer.
+    - Tek çok kaynaklı Dijkstra, duruma bağlı önbellek.
+    - Yeni taktik yok. Tırmanma hızı olan yaratıklara uygulanmaz (K68b `k68:tirman` aynen).
+  - **Arayüz:**
+    - Çeviklik tırmanıcısına "Tırman 5 ft (Çeviklik DC N, ×k)" düğmesi; ilk dokunuş açıklamayı gösterir, ikincisi başlatır.
+    - Duvarda tırman/in düğmeleri.
+    - Altıgen bilgisinde "N ft, tırmanılır (Çeviklik DC, ×k)" ya da "tırmanılmaz"; günlükte yanan hareket.
+- **Görev 2 (düşme tek işlev, `src/battle/fall.ts` `fall(state, id, ft, neden, rng, {at, altitudeTo})`):**
+  - Sürüm 57+'da altı yer onu kullanır: katmanda aşağı atlama, zemin çökmesi, itmeyle düşme ve yarığa itilme, Earthquake yarığı, komut sonu irtifadan düşüş, Telekinesis bırakma.
+  - Davranış farkları (⚠):
+    - (1) Derin suya iniş artık her nedende hasarsız; eskiden yalnız katman atlaması ve itmede, havadan düşüş ve Telekinesis tam hasar veriyordu. SRD suya düşmede tepkiyle yarı hasar verir; bu tepki yeni mekanik olduğundan eklenmedi.
+    - (2) Hasar tepkiden sonraki durumdan hesaplanır; eskiden irtifa düşüşünde ve çökmede tepki öncesi durumdan.
+    - (3) 10 ft altı düşme hasarsız; eskiden çağıran 10 ft altını hiç vermiyordu.
+  - Birleştirilmeyenler (kendi verili hasarları; SRD Falling değil): köprü çöküşü `bridgeBreak` (DEX save + veri hasarı), kayalık çukur `pitFall` (veri hasarı, tur kaybı), Earthquake yapı çöküşü (12d6), merdivenden yuvarlanma (`stairShove`/`stairwellFall`).
+  - Çift hasar yok: çökme yarığı atlar, çökme yaratık başına bir kez (K55 kuralı korunur).
+- **Görev 3 (K7, Long Jump alçak engel):**
+  - Aradaki geçilmez engelin tepesi atlama mesafesinin dörtte biri ya da altıysa geçilir. Mesafe = kanal genişliği (aradaki altıgen × 5 ft; menzil ölçüsüyle aynı).
+  - ⚠ SRD'deki isteğe bağlı DC 10 Atletizm zarı atılmaz.
+  - Bugünkü verideki en alçak geçilmez engel 10 ft (40 ft atlama ister): kural yalnız alçak ezme/nesnede etkili.
+  - Jump büyüsünün tek engel kuralı değişmedi (planın büyüyü de katan önerisi ertelendi).
+- **Ölçüm:** aşağıdaki satırlar (YZ süresi, duvarlı 6 harita, regresyon, kontroller).
+
 ## 2026-11-08 — Kuyruk K71a: dikey veri modeli, uçanın engel aşması, görüşte zemin + engel tepesi, altıgen tavanı (kural sürümü 56)
 
 - **Sürüm:** `wip/k71a` (377200b üstüne). Kural sürümü 55 → 56; yeni davranış yalnız 56+ (`src/battle/vertical.ts` `dikeyOn`, `DIKEY_VERSION`). 55 ve altı birebir (testlerle sabit; `src/sim/k71Regresyon.test.ts` 4 senaryo × 30 tohum 55 = 56). `SAVE_VERSION` 22 kalır (olay biçimi değişmedi).
