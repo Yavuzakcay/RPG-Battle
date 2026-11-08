@@ -69,7 +69,7 @@ import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
 import { affinityBonus, castWithMetamagic, empowerRolls, innateFor, POINTS } from './sorcerer';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
 import { resourceLeft } from './types';
-import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage, MapObject } from './types';
+import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage, MapObject, SpellZone } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -549,7 +549,7 @@ function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, 
 }
 
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54], ['y1', 55]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
@@ -665,6 +665,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     if (!target) return fail('Hedef bulunamadı.');
     if (!isTargetable(target)) return fail('Hedef ayakta değil.');
     if (m.kind !== 'heal' && target.id === actor.id) return fail('Kendini hedefleyemezsin.');
+    // Kuyruk Y1 (sürüm 55): Disintegrate kürede (Resilient Sphere) hedefi içindekine zarar vermeden küreyi yok eder.
+    if (m.destroysSphere && !repeat && target.effects?.some((e) => e.sealed)) return executeDestroySphere(state, actor, cmd, spell, target);
   }
 
   // Dokunma menzilli (5 ft) büyü saldırısı yakın dövüş, diğerleri menzilli saldırıdır.
@@ -1297,7 +1299,9 @@ function executeDispel(state: BattleState, actor: Combatant, cmd: CastCommand, s
 function executeDispelZone(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
   const at = cmd.targetHex as NonNullable<CastCommand['targetHex']>;
   if (actor.pos && distance(actor.pos, at) * 5 > spell.rangeFt) return fail(`${spell.name} menzili ${spell.rangeFt} ft.`);
-  const zones = (state.map?.zones ?? []).filter((z) => !z.cage && zoneHexes(state, z).some((h) => h.col === at.col && h.row === at.row));
+  // Kuyruk Y1 (sürüm 55): Dispel Magic ile kaldırılamayan alanlar (Wall of Force, Forcecage: SRD "can't be dispelled").
+  const immune = (z: SpellZone) => { const sp = spells.find((x) => x.id === z.spellId); return !!sp && !!mechanicsAt(state, sp).dispelImmune; };
+  const zones = (state.map?.zones ?? []).filter((z) => !z.cage && !immune(z) && zoneHexes(state, z).some((h) => h.col === at.col && h.row === at.row));
   // Kuyruk A7 (sürüm 36): altıgendeki nesnede süren büyü (Light, Continual Flame ışığı) da kalkar.
   const lit = ruleVersion(state) >= 36 ? (state.map?.objects ?? []).filter((o) => !o.carriedBy && o.lightSpell && o.at.col === at.col && o.at.row === at.row) : [];
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
@@ -1356,6 +1360,27 @@ function executeDestroyForce(state: BattleState, actor: Combatant, cmd: CastComm
     events.push({ type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'destroyed' });
     const owner = state.combatants[z.casterId];
     if (z.concentration && owner?.concentration?.spell === z.concentration) events.push({ type: 'concentration_ended', actorId: owner.id, label: `${z.concentration} (${spell.name})` });
+  }
+  return finish(state, events);
+}
+
+/**
+ * Kuyruk Y1 (sürüm 55): Resilient Sphere (SRD 5.2.1): "A Disintegrate spell targeting the globe destroys it without harming
+ * anything inside." Kürenin etkisi (`sealed`) biter, kürenin sahibinin o büyüdeki konsantrasyonu düşer; hasar ve save yok.
+ */
+function executeDestroySphere(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, target: Combatant): CommandResult {
+  const r = checkReach(state, actor, target, spellReach(spell, actor));
+  if (!r.ok) return r;
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
+  if (!slot.ok) return slot;
+  const spheres = (target.effects ?? []).filter((e) => e.sealed);
+  const events: BattleEvent[] = [...slot.events,
+    { type: 'spell_cast', actorId: actor.id, targetId: target.id, label: spell.name, slotLevel: slot.slotLevel, note: `${spheres.map((e) => e.name).join(', ')} yok edildi (içindekine zarar yok)` }];
+  for (const e of spheres) {
+    events.push({ type: 'effect_ended', targetId: target.id, effectId: e.id, name: e.name, reason: 'destroyed' });
+    const owner = state.combatants[e.sourceId];
+    const conc = e.concentration ?? e.name;
+    if (owner?.concentration?.spell === conc) events.push({ type: 'concentration_ended', actorId: owner.id, label: `${conc} (${spell.name})` });
   }
   return finish(state, events);
 }

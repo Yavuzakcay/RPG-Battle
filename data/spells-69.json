@@ -241,6 +241,7 @@
   "rangeFt": 60,
   "text": "60 ft ışın: DEX save, başarısızsa 10d6 + 40 kuvvet; 0 HP'ye düşen toza döner; +3d6/slot",
   "mechanics": {
+   "y1": {"destroysSphere": true},
    "kind": "save",
    "save": "dex",
    "damage": "10d6+40",
@@ -1311,6 +1312,7 @@
   "text": "100 ft, görünmez kuvvet kafesi (20 ft kafes ya da 10 ft kutu): tamamen içindeki hapsolur, büyüsüz yolla çıkamaz; ışınlanmak için CHA save (konsantrasyon, 1 saat)",
   "concentration": true,
   "mechanics": {
+   "y1": {"dispelImmune": true},
    "kind": "effect",
    "effect": {
     "targets": 1,

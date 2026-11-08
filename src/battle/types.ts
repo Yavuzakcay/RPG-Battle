@@ -1774,7 +1774,7 @@ export type BattleEvent =
   /** Kuyruk K48: Moral değişti (dost düştü, korku, toparlama); `moral` yeni değer. */
   | { type: 'moral_changed'; targetId: string; delta: number; moral: number; reason: 'dost' | 'korku' | 'toparlama' | 'zafer'; byId?: string }
   /** Süren etki bitti (save, süre, kullanım, komutun turu). */
-  | { type: 'effect_ended'; targetId: string; effectId: string; name: string; reason: 'save' | 'used' | 'expired' | 'turn' | 'dispelled' }
+  | { type: 'effect_ended'; targetId: string; effectId: string; name: string; reason: 'save' | 'used' | 'expired' | 'turn' | 'dispelled' | 'destroyed' }
   /** Geçici HP (Heroism): yığılmaz, yüksek olan kalır. */
   | { type: 'temp_hp'; targetId: string; amount: number; label: string }
   /** En çok HP ve HP artışı (Aid). */

@@ -301,6 +301,8 @@ export interface SpellMechanics {
   k68?: Partial<SpellMechanics>;
   /** Kuyruk K70 (sürüm 54): küçük SRD farkları (Flesh to Stone Construct, Disintegrate duvarı). */
   k70?: Partial<SpellMechanics>;
+  /** Kuyruk Y1 (sürüm 55): K70 artıkları (Dispel Magic bağışıklığı, Disintegrate küresi). */
+  y1?: Partial<SpellMechanics>;
   /** Kuyruk K65a: serbest şekil (`src/battle/freeShape.ts`): en çok altıgen, menzil her altıgende, görüş ilk altıgende. */
   /** Kuyruk K65c: serbest duvar yolunun ek kuralları (her altıgen menzilde, ilk altıgen görüşte; Wind Wall'da yok). */
   pathRules?: { rangeAll?: boolean; sightFirst?: boolean };
@@ -338,6 +340,10 @@ export interface SpellMechanics {
   autoSuccessTypes?: string[];
   /** Kuyruk K70 (sürüm 54): büyü hedef altıgenindeki bu büyülerin kuvvet yapısını anında yok eder (Disintegrate: Wall of Force). */
   destroysForce?: string[];
+  /** Kuyruk Y1 (sürüm 55): bu büyünün alanı Dispel Magic ile kaldırılamaz (Wall of Force, Forcecage). */
+  dispelImmune?: boolean;
+  /** Kuyruk Y1 (sürüm 55): kürede (Resilient Sphere, `sealed`) hedefi içindekine zarar vermeden küreyi yok eder (Disintegrate). */
+  destroysSphere?: boolean;
   /** Görev B3: Calm Emotions: alandaki dost Humanoid'lere Charmed/Frightened bağışıklığı, düşmanlara (save) duraksama. */
   calm?: boolean;
   /** Kuyruk A6: Calm Emotions'ta dostlar da save yapar; düşmanlar kayıtsızlaşır (`indifferentTo`). */

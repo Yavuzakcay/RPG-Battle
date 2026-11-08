@@ -328,7 +328,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | telepathic-bond | 5 | spells-45.json | savaş dışı |  |  |  |
 | teleportation-circle | 5 | spells-45.json | savaş dışı |  |  |  |
 | tree-stride | 5 | spells-45.json | çalışır |  |  |  |
-| wall-of-force | 5 | spells-45.json | çalışır | k65 (sürüm 49) |  |  |
+| wall-of-force | 5 | spells-45.json | çalışır | y1 (sürüm 55) |  |  |
 | wall-of-stone | 5 | spells-45.json | çalışır | k65 (sürüm 49) |  |  |
 | blade-barrier | 6 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
 | chain-lightning | 6 | spells-69.json | çalışır |  |  | hayır |
@@ -336,7 +336,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | conjure-fey | 6 | spells-69.json | çalışır | k61 (sürüm 44) |  | hayır |
 | contingency | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | create-undead | 6 | spells-69.json | savaş dışı |  |  | hayır |
-| disintegrate | 6 | spells-69.json | çalışır | k70 (sürüm 54) |  | hayır |
+| disintegrate | 6 | spells-69.json | çalışır | y1 (sürüm 55) |  | hayır |
 | eyebite | 6 | spells-69.json | çalışır |  |  | hayır |
 | find-the-path | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | flesh-to-stone | 6 | spells-69.json | çalışır | k70 (sürüm 54) |  | hayır |
@@ -368,7 +368,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | etherealness | 7 | spells-69.json | çalışır |  |  | hayır |
 | finger-of-death | 7 | spells-69.json | çalışır |  |  | hayır |
 | fire-storm | 7 | spells-69.json | çalışır | k65 (sürüm 49) |  | hayır |
-| forcecage | 7 | spells-69.json | çalışır | k65 (sürüm 49) |  | hayır |
+| forcecage | 7 | spells-69.json | çalışır | y1 (sürüm 55) |  | hayır |
 | magnificent-mansion | 7 | spells-69.json | savaş dışı |  |  | hayır |
 | mirage-arcane | 7 | spells-69.json | savaş dışı |  |  | hayır |
 | plane-shift | 7 | spells-69.json | çalışır | s1 (sürüm 40) |  | hayır |

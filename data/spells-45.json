@@ -1233,6 +1233,7 @@
     "concentration": true,
     "text": "Geçilmez kuvvet duvarı (100 ft, panel yerine düz/yay): girilmez, saldırı ve büyü geçmez",
     "mechanics": {
+   "y1": {"dispelImmune": true},
       "kind": "zone",
       "zone": {
         "transparent": true,
