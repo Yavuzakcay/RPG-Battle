@@ -20,14 +20,15 @@ import type { BattleEvent, BattleState, Combatant, SpellZone } from './types';
 export type CloudSpec = NonNullable<SpellMechanics['cloud']>;
 
 /** Bulutun tabanı (ft): açık gökte `openBaseFt`, tavanlı haritada tavan − `ceilingGapFt`. */
-export function cloudBaseFt(state: BattleState, spec: CloudSpec): number {
-  const ceil = ceilingFt(state);
+export function cloudBaseFt(state: BattleState, spec: CloudSpec, at?: Offset | null): number {
+  // Kuyruk K71a (sürüm 56+): döküm altıgeninin tavanı (altıgen başına tavan); 55 ve altında harita tavanı.
+  const ceil = ceilingFt(state, at);
   return ceil === null ? spec.openBaseFt : Math.max(0, ceil - spec.ceilingGapFt);
 }
 
 /** Dökümün tavan sorunu (yoksa null): tavan − büyücü boyu `minRoomFt`'ten az. */
 export function cloudCastProblem(state: BattleState, actor: Combatant, spell: Spell, spec: CloudSpec): string | null {
-  const ceil = ceilingFt(state);
+  const ceil = ceilingFt(state, actor.pos);
   if (ceil !== null && ceil - bodyHeightFt(actor) < spec.minRoomFt) return `${spell.name}: bulut için tavan alçak (${ceil} ft).`;
   return null;
 }
@@ -46,7 +47,7 @@ export function cloudPointProblem(state: BattleState, actor: Combatant, spell: S
   if (!center) return null;
   const r = cloud?.cloud?.radiusHexes ?? Math.floor(spec.radiusFt / 5);
   if (distance(center, aim) > r) return `${spell.name}: şimşek noktası bulutun altında olmalı (merkezden ${r * 5} ft).`;
-  const base = cloud?.cloud?.baseFt ?? cloudBaseFt(state, spec);
+  const base = cloud?.cloud?.baseFt ?? cloudBaseFt(state, spec, center);
   if (named && altitudeOf(named) > base) return `${spell.name}: ${named.name} bulutun (taban ${base} ft) üstünde.`;
   return null;
 }
@@ -58,7 +59,7 @@ export function cloudZoneEvent(state: BattleState, actor: Combatant, spell: Spel
     id: newZoneId(state, spell.id, actor.id), spellId: spell.id, name: `${spell.name} (bulut)`, casterId: actor.id, side: actor.side,
     dc: actor.spellSaveDc ?? 10, slotLevel: slotLevel ?? spell.level, hexes: [actor.pos], center: actor.pos,
     ...(spell.concentration ? { concentration: spell.name } : {}),
-    cloud: { radiusHexes: Math.floor(spec.radiusFt / 5), baseFt: cloudBaseFt(state, spec) },
+    cloud: { radiusHexes: Math.floor(spec.radiusFt / 5), baseFt: cloudBaseFt(state, spec, actor.pos) },
   } }];
 }
 

@@ -46,8 +46,39 @@ export interface MapVariant {
   startZones?: RawMap['startZones'];
   /** Kuyruk 21 D2b: varyantın kendi nesneleri (verilirse haritanınkini ezer; yürüyen merdivenin kolu gibi). */
   objects?: RawMap['objects'];
-  /** Kuyruk K68b: iç mekânın tavan yüksekliği (ft; yalnız kural sürümü 52+). Yoksa açık gök. `scripts/k68-tavan.py` yazar. */
+  /** Kuyruk K68b: iç mekânın tavan yüksekliği (ft; yalnız kural sürümü 52+). Yoksa açık gök. `scripts/k71-dikey.py` yazar. */
   tavanFt?: number;
+  /** Kuyruk K71a: dikey ezmeler (yalnız kural sürümü 56+; `scripts/k71-dikey.py` `ONAYLI` yazar). */
+  dikey?: MapDikey;
+}
+
+/**
+ * Kuyruk K71a (sürüm 56+; K71-PLAN §3.4): varyantın dikey ezmeleri, hepsi isteğe bağlı. Anahtar "sütun,satır".
+ * - `harfFt`: bu haritada zemin harfinin engel yüksekliği (ft; `data/dikey.json` varsayılanını ezer).
+ * - `engel`: altıgen ezmesi (ft; null = sonsuz/tam engel).
+ * - `tavan`: altıgen tavanı (ft; 0 = açık gök); `tavanBolge`: dikdörtgen bölge [sütun0, satır0, sütun1, satır1] tavanı.
+ *   Altıgen ezmesi bölgeden önce; ikisi de yoksa varyantın `tavanFt`'i.
+ */
+export interface MapDikey {
+  harfFt?: Record<string, number>;
+  engel?: Record<string, number | null>;
+  tavan?: Record<string, number>;
+  tavanBolge?: Array<{ dikdortgen: [number, number, number, number]; ft: number }>;
+}
+
+const FT_OK = (n: unknown): boolean => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n <= 120 && n % 5 === 0;
+const KEY_OK = (k: string): boolean => /^\d+,\d+$/.test(k);
+/** Kuyruk K71a: `dikey` şeması (ft 0–120, 5'in katı; anahtar "sütun,satır"; tavan 0 = açık gök ya da ≥ 5). */
+export function dikeyErrors(d: MapDikey, where: string): string[] {
+  const out: string[] = [];
+  for (const [k, v] of Object.entries(d.harfFt ?? {})) if (k.length !== 1 || !FT_OK(v)) out.push(`${where}: harfFt "${k}" geçersiz`);
+  for (const [k, v] of Object.entries(d.engel ?? {})) if (!KEY_OK(k) || (v !== null && !FT_OK(v))) out.push(`${where}: engel "${k}" geçersiz`);
+  for (const [k, v] of Object.entries(d.tavan ?? {})) if (!KEY_OK(k) || !FT_OK(v) || (v > 0 && v < 5)) out.push(`${where}: tavan "${k}" geçersiz`);
+  for (const b of d.tavanBolge ?? []) {
+    const r = b.dikdortgen;
+    if (!Array.isArray(r) || r.length !== 4 || r.some((x) => !Number.isInteger(x) || x < 0) || r[0] > r[2] || r[1] > r[3] || !FT_OK(b.ft) || b.ft < 5) out.push(`${where}: tavanBolge ${JSON.stringify(r)} geçersiz`);
+  }
+  return out;
 }
 
 /** Başlangıç bölgesi: 1 tabanlı sütun aralığı ve isteğe bağlı hazır altıgen listesi ([sütun, satır], 1 tabanlı). */
@@ -290,6 +321,7 @@ function validateBase(raw: RawMap, opts: { images?: ReadonlySet<string> }): stri
     }
     errors.push(...effectErrors(v.effects, `${where} "${v.id}" varyantı`));
     if (v.tavanFt !== undefined && !(Number.isInteger(v.tavanFt) && v.tavanFt >= 5 && v.tavanFt <= 120)) errors.push(`${where}: "${v.id}" varyantının tavanı 5–120 ft tam sayı olmalı`);
+    if (v.dikey) errors.push(...dikeyErrors(v.dikey, `${where}: "${v.id}" varyantının dikey verisi`));
   }
   return errors;
 }

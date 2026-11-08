@@ -1056,6 +1056,8 @@ export interface MasteryMark {
 export interface MapState {
   id: string;
   variantId: string;
+  /** Kuyruk K71a (sürüm 56+): varyant `dikey` verisinin yerine geçen ezme (testler, Game Master); yoksa harita verisi. */
+  dikey?: import('../map/maps').MapDikey;
   mirrored: boolean;
   /** Satır satır zemin harfleri (lav yükselmesi gibi kurallarla değişebilir). */
   tiles: string[];

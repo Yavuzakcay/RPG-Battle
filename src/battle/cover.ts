@@ -14,11 +14,12 @@ import { distance, line, sameHex, type Offset } from '../rules/hex';
 import { bodyOf, covers, isMultiHex, isMultiHex53 } from './body';
 import { isTargetable } from './common';
 import { solidWallAt, terrainAt } from './movement';
-import { combatHeightAt, heightSightBlock, ledgeCover } from './heights';
+import { combatHeightAt, heightSightBlock, heightSightRule, layerActive, ledgeCover } from './heights';
 import { ALT, altitudeOf, bodyHeightFt, ceilingFt, eyeFt } from './altitude';
 import { objectAt, OBJECTS } from './objectData';
 import { solidBarrierAt } from './barriers';
 import { ruleVersion } from './ruleVersion';
+import { dikeyOn, engelEzme, harfFt, hasHexCeilings, zeminFt } from './vertical';
 import { spells } from '../data';
 import type { BattleState, Combatant } from './types';
 
@@ -67,6 +68,7 @@ const panelTopFt = (): number => (panelFt ??= spells.find((x) => x.id === 'earth
  */
 export function obstacleTopFt(state: BattleState, h: Offset, t: TerrainType = terrainAt(state, h)): number {
   if (t.outOfBounds) return Infinity;
+  if (dikeyOn(state)) return obstacleTop56(state, h, t);
   if (state.map?.zones?.length) {
     if (solidWallAt(state, h)) return panelTopFt();
     if (solidBarrierAt(state, h)) return Infinity;
@@ -78,6 +80,45 @@ export function obstacleTopFt(state: BattleState, h: Offset, t: TerrainType = te
   return (ch === 's' || ch === 'O') && ceilingFt(state) === null ? ALT.wallFt : Infinity;
 }
 
+/**
+ * Kuyruk K71a (sürüm 56+, K1/K12): engel tepesinin tek çözücüsü. Sıra: alan (Wall of Stone/Ice paneli 10 ft, geçici engel
+ * sonsuz) > nesne `yukseklikFt` (tür ya da ezme; yoksa sonsuz) > varyant `dikey.engel` altıgen ezmesi (null sonsuz) > tavanlı
+ * altıgende geçilmez engel tavana dek (sonsuz) > harf tablosu (`dikey.harfFt` ya da `data/dikey.json`) > sonsuz.
+ */
+function obstacleTop56(state: BattleState, h: Offset, t: TerrainType): number {
+  if (state.map?.zones?.length) {
+    if (solidWallAt(state, h)) return panelTopFt();
+    if (solidBarrierAt(state, h)) return Infinity;
+  }
+  const obj = state.map?.objects?.length ? objectAt(state, h) : undefined;
+  if (obj) return obj.yukseklikFt ?? OBJECTS[obj.kind]?.yukseklikFt ?? Infinity;
+  const ez = engelEzme(state, h);
+  if (ez !== undefined) return ez ?? Infinity;
+  if (t.movement === 'blocked' && ceilingFt(state, h) !== null) return Infinity;
+  return harfFt(state, state.map?.tiles[h.row]?.[h.col]) ?? Infinity;
+}
+
+/** Kuyruk K71a (sürüm 56+): hattın zemin ve çatı verisi (katmanlı haritada zemin yüksekliği; altıgen tavanı varsa çatı). */
+interface Ground { at: (h: Offset) => number; roofs: boolean }
+const groundOf = (state: BattleState): Ground | null => {
+  if (!dikeyOn(state)) return null;
+  // Zemin yalnız katmanlı haritada ve Game Master `heightSight` anahtarı açıkken (kapalıyken sırt da 2B'de yok).
+  const layered = layerActive(state) && heightSightRule(state);
+  const roofs = hasHexCeilings(state);
+  if (!layered && !roofs) return null;
+  return { at: layered ? (h) => zeminFt(state, h) : () => 0, roofs };
+};
+/** Hat altıgende zeminin altında (sırt) ya da altıgenin çatısının üstünde mi (sürüm 56+): kesen adı, yoksa null. */
+function groundBlock(state: BattleState, g: Ground, h: Offset, lh: number): string | null {
+  const z = g.at(h);
+  if (z > 0 && lh <= z) return 'yükselti';
+  if (g.roofs) {
+    const c = ceilingFt(state, h);
+    if (c !== null && lh >= z + c) return 'çatı';
+  }
+  return null;
+}
+
 /** İrtifalı değerlendirme: hattın altıgendeki yüksekliği engelin tepesinden büyükse engel görüşü kesmez, siper vermez. */
 function evaluateAlt(state: BattleState, path: Offset[], ignore: string[], target: Combatant, end: Offset | null, ends: Ends): LineOfFire {
   losStats.altPath++;
@@ -85,12 +126,19 @@ function evaluateAlt(state: BattleState, path: Offset[], ignore: string[], targe
   let coverBy: string | undefined;
   let over: string | undefined;
   const take = (c: Cover, by: string) => { if (c > cover) { cover = c; coverBy = by; } };
-  const ridge = heightSightBlock(state, path);
+  // Kuyruk K71a (sürüm 56+): katman sırtı hatta geometrik (zemin yüksekliği), uçlar zeminleriyle; 55 ve altında 2B sırt.
+  const g = groundOf(state);
+  const ridge = g ? null : heightSightBlock(state, path);
   if (ridge) return { blocked: true, blockedBy: ridge, cover: 0 };
   const n = path.length - 1;
+  const a0 = ends.a + (g ? g.at(path[0] as Offset) : 0);
+  const b0 = ends.b + (g ? g.at(path[n] as Offset) : 0);
   for (let i = 1; i < n; i++) {
     const h = path[i] as Offset;
-    const lh = ends.a + ((ends.b - ends.a) * i) / n;
+    const lh0 = a0 + ((b0 - a0) * i) / n;
+    if (g) { const gb = groundBlock(state, g, h, lh0); if (gb) return { blocked: true, blockedBy: gb, cover: 0 }; }
+    // Engel ve yaratık zeminden ölçülür (altıgenin zemin yüksekliği düşülür).
+    const lh = g ? lh0 - g.at(h) : lh0;
     const t = terrainAt(state, h);
     if (t.blocksSight || t.outOfBounds || t.cover) {
       const above = lh > obstacleTopFt(state, h, t);
@@ -248,15 +296,20 @@ export function sightBlockedBetween(state: BattleState, from: Offset, to: Offset
 /** Kuyruk K68c: `sightBlockedBetween`'in irtifalı yolu (hat engelin tepesinin üstündeyse kesmez). */
 function sightBlockedAlt(state: BattleState, from: Offset, to: Offset, ends: Ends): string | null {
   losStats.altPath++;
+  const g = groundOf(state);
   const blockedOn = (path: Offset[]) => {
-    const ridge = heightSightBlock(state, path);
+    const ridge = g ? null : heightSightBlock(state, path);
     if (ridge) return ridge;
     const n = path.length - 1;
+    const a0 = ends.a + (g ? g.at(path[0] as Offset) : 0);
+    const b0 = ends.b + (g ? g.at(path[n] as Offset) : 0);
     for (let i = 1; i < n; i++) {
       const h = path[i] as Offset;
+      const lh0 = a0 + ((b0 - a0) * i) / n;
+      if (g) { const gb = groundBlock(state, g, h, lh0); if (gb) return gb; }
       const t = terrainAt(state, h);
       if (!(t.blocksSight || t.outOfBounds)) continue;
-      if (ends.a + ((ends.b - ends.a) * i) / n > obstacleTopFt(state, h, t)) continue;
+      if (lh0 - (g ? g.at(h) : 0) > obstacleTopFt(state, h, t)) continue;
       return t.name;
     }
     return null;

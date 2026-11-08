@@ -2,6 +2,52 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K71a: dikey veri modeli, uçanın engel aşması, görüşte zemin + engel tepesi, altıgen tavanı (kural sürümü 56)
+
+- **Sürüm:** `wip/k71a` (377200b üstüne). Kural sürümü 55 → 56; yeni davranış yalnız 56+ (`src/battle/vertical.ts` `dikeyOn`, `DIKEY_VERSION`). 55 ve altı birebir (testlerle sabit; `src/sim/k71Regresyon.test.ts` 4 senaryo × 30 tohum 55 = 56). `SAVE_VERSION` 22 kalır (olay biçimi değişmedi).
+- **Onaylı kararlar (K71-PLAN):** K1, K9–K14, K16; K68 karar 10 geri alındı.
+- **Veri (K1, K12, K14):**
+  - harf tablosu `data/dikey.json` `harfFt`: `s` 20, `O` 20, `a` (ağaç) 30, `c` 15, `m`/`v`/`e` 10, `r`/`k`/`x`/`d`/`g` 5 ft; ⚠ hepsi tasarım değeri (SRD duvar/engel yüksekliği vermez);
+  - `O` (duvardaki kapalı kapı) duvarla aynı 20 ft: kapı lentosunun üstü duvardır (açık kapı `o` engel değil);
+  - varyant `dikey` (seyrek, ızgara yok): `harfFt` ezmesi, `engel` (`"c,r"` → ft, null tam engel), `tavan` (`"c,r"` → ft, 0 açık gök), `tavanBolge` (dikdörtgen + ft); yükleyici `dikeyErrors` doğrular (0–120, 5 ft adım);
+  - tek kaynak `python scripts/k71-dikey.py` (`k68-tavan.py` ona yönlenir): 14 tavanlı haritanın `tavanFt` değerleri K68 tablosundan aynen (test eşitliği denetler); `ONAYLI` tablosu boş;
+  - 23 duvarlı açık harita için öneri `harita/belgeler/K71-HARITA-ONERI.md` (yazılmadı): onaya dek K68c varsayılanları (duvar 20 ft).
+- **Engel tepesi çözücüsü (tek işlev):** `cover.ts` `obstacleTopFt` sürüm 56+'da `obstacleTop56`. Sıra:
+  - alan (Wall of Stone/Ice paneli 10 ft, geçici engel sonsuz);
+  - nesne `yukseklikFt` (yoksa sonsuz);
+  - `dikey.engel` ezmesi;
+  - tavanlı altıgende geçilmez engel tavana dek (sonsuz);
+  - harf (`dikey.harfFt`, sonra `data/dikey.json`);
+  - sonsuz.
+  55'te K68c kodu aynen.
+- **Altıgen tavanı (K11):** `ceilingFt(state, at)` 56+'da önce `dikey.tavan`/`tavanBolge`, yoksa varyant `tavanFt`. `ceilingOver(state, c)`: gövdenin altıgenlerinin en alçak tavanı (çok altıgende de). `altitudeCapFt`, `atCeiling`, `climbCapFt`, `vertical_move`, Levitate yükselişi ve komut sonu kırpma bundan. Call Lightning bulutu döküm altıgeninin tavanından. Altıgen bilgisi altıgenin tavanını gösterir, HUD aktörün altıgeninin.
+- **Uçanın engel aşması (K68 karar 10 geri):**
+  - uçuş hızı > 0, irtifası > 0 ve irtifası ≥ engel tepesi olan uçan, duvar/ağaç/çit altıgeninden 1 maliyetle geçer;
+  - kural "≥": 20 ft'te uçan 20 ft duvarı aşar;
+  - engel altıgeninde duramaz (`executeMove` engelde bitişi zaten reddeder);
+  - tavanlı altıgende engel tavana dek, geçilmez.
+  Altıgen tavanı olan haritada irtifası o altıgenin üst sınırını (tavan − boy) aşan uçan çatılı altıgene giremez.
+- **Görüş (K10):**
+  - K68c çekirdeği; hızlı yol (iki uç 0 irtifa) aynen, `losStats.altPath` artmaz;
+  - irtifalı yolda katmanlı haritada uçlara zemin yüksekliği eklenir, engel ve yaratık altıgenin zemininden ölçülür;
+  - hat zemin yüksekliğinin altında ya da eşitse "yükselti" keser; 56+'da bu geometrik sırt 2B `heightSightBlock`'un yerini alır;
+  - zemin yalnız Game Master `heightSight` anahtarı açıkken;
+  - altıgen tavanı olan haritada hat altıgenin çatısının (zemin + tavan) üstündeyse "çatı" keser;
+  - `ledgeCover` (kenar siperi) değişmedi;
+  - iki uç yerdeyse katmanlı haritada da 2B kod çalışır: tepedeki okçu ile duvar ilişkisi K71c'de (katman + irtifa) birleşir.
+- **K9 uzaklık:** `reachFt` = max(yatay, |Δirtifa|) K68'den beri. Mutlak yüksekliğe zemin terimi K71c'de girer; bu parçada değişmedi.
+- **K16:** yaratık boyu (`irtifa.boyFt`) yalnız tavan sınırında ve göz yüksekliğinde.
+- **Açık alanda tırmanma sınırı (56+):** tırmanıcının üst sınırı bitişik engelin tepesi (ağaç 30 ft, duvar 20 ft); yoksa `irtifa.wallFt` 20.
+- **Bu parçada yok:**
+  - herkes için tırmanma (K71b);
+  - düşman üstünden geçiş (K6);
+  - Long Jump alçak engel (K7);
+  - yüksek zemin (K8);
+  - katman + irtifa (K71c);
+  - duvar tepesinde durma (K5).
+  K71-PLAN tablosunda K71a satırındaki "yaratık üstünden uçma (K6)" kullanıcı kararıyla çıkarıldı.
+- **Ölçüm:** bkz. NİHAİ RAPOR satırları aşağıda (YZ süresi, ana parça).
+
 ## 2026-11-08 — Kuyruk K71-PLAN: yükseklik modeli planı (yalnız plan; kod, veri, test değişmedi)
 
 - **Belge:** `harita/belgeler/K71-PLAN.md`. Taban `wip/y1` 84969e8 (kural sürümü 55): tam test 340 dosya / 3981 test; ana parça 374 742 bayt; YZ ≈ 1,65 ms.

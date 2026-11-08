@@ -27,6 +27,8 @@ import { neighbors, type Offset } from '../rules/hex';
 import { bodyAt, isMultiHex53 } from './body';
 import { maps } from '../map/maps';
 import { terrainAt } from './movement';
+import { dikeyOn, tavanEzme } from './vertical';
+import { obstacleTopFt } from './cover';
 
 export const ALT = rules.irtifa;
 export const altitudeOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(s) >= 41;
@@ -67,9 +69,17 @@ const levitateOn = (c: Combatant | undefined) => c?.effects?.find((e) => e.levit
 // --- Kuyruk K68b (sürüm 52): tavan, yaratık boyu, duvar ve tırmanma ---------------------------------------------------
 
 const CEILING = new Map<string, number | null>();
-/** Haritanın (varyantın) tavan yüksekliği (ft; `tavanFt`, sürüm 52+); açık gökte ya da eski sürümde null. */
-export function ceilingFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>): number | null {
+/**
+ * Haritanın (varyantın) tavan yüksekliği (ft; `tavanFt`, sürüm 52+); açık gökte ya da eski sürümde null.
+ * Kuyruk K71a (sürüm 56+, K11): `at` verilirse altıgenin tavanı: varyant `dikey.tavan` / `tavanBolge` ezmesi (0 = açık gök),
+ * yoksa varyantın `tavanFt`'i. Sürüm 55 ve altında `at` yok sayılır (harita başına tek tavan).
+ */
+export function ceilingFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, at?: Offset | null): number | null {
   if (ruleVersion(state) < 52 || !state.map) return null;
+  if (at && dikeyOn(state)) {
+    const e = tavanEzme(state, at);
+    if (e !== undefined) return e;
+  }
   const key = `${state.map.id}\u0000${state.map.variantId}`;
   let v = CEILING.get(key);
   if (v === undefined) {
@@ -80,6 +90,19 @@ export function ceilingFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>): numb
   return v;
 }
 
+/**
+ * Kuyruk K71a (sürüm 56+): yaratığın üstündeki tavan (ft; yoksa null): çapanın altıgeni; çok altıgende gövdenin en alçak
+ * tavanı. Sürüm 55 ve altında harita başına tavan.
+ */
+export function ceilingOver(state: Pick<BattleState, 'kuralSurumu' | 'map'>, c: Pick<Combatant, 'size'> & { pos?: Offset | null; id?: string }): number | null {
+  if (!dikeyOn(state) || !c.pos) return ceilingFt(state);
+  const full = state as BattleState;
+  const hexes = full.combatants && c.id && full.combatants[c.id] && isMultiHex53(full, full.combatants[c.id] as Combatant) ? bodyAt(full, full.combatants[c.id] as Combatant, c.pos) : [c.pos];
+  let low: number | null = null;
+  for (const h of hexes) { const v = ceilingFt(state, h); if (v !== null && (low === null || v < low)) low = v; }
+  return low;
+}
+
 /** Yaratığın boyu (ft; ⚠ SRD vermez, K68 karar 3: boyuttan). */
 export const bodyHeightFt = (c: Pick<Combatant, 'size'>): number => (ALT.boyFt as Record<string, number>)[c.size] ?? 5;
 
@@ -87,15 +110,15 @@ export const bodyHeightFt = (c: Pick<Combatant, 'size'>): number => (ALT.boyFt a
 export const eyeFt = (c: Pick<Combatant, 'size' | 'altitudeFt'>): number => altitudeOf(c) + bodyHeightFt(c) / 2;
 
 /** İrtifa üst sınırı (ft, 5'in katı): tavanlı haritada tavan − boy, açık gökte `irtifa.maxFt`. */
-export function altitudeCapFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, c: Pick<Combatant, 'size'>): number {
-  const ceil = ceilingFt(state);
+export function altitudeCapFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, c: Pick<Combatant, 'size'> & { pos?: Offset | null; id?: string }): number {
+  const ceil = ceilingOver(state, c);
   if (ceil === null) return ALT.maxFt;
   return Math.max(0, Math.floor((ceil - bodyHeightFt(c)) / ALT.stepFt) * ALT.stepFt);
 }
 
 /** Tavana değiyor mu (tavanlı harita, irtifa = üst sınır > 0). */
 export const atCeiling = (state: Pick<BattleState, 'kuralSurumu' | 'map'>, c: Combatant): boolean => {
-  if (ceilingFt(state) === null) return false;
+  if (ceilingOver(state, c) === null) return false;
   const cap = altitudeCapFt(state, c);
   return cap > 0 && altitudeOf(c) >= cap;
 };
@@ -129,7 +152,19 @@ const climberHolds = (state: BattleState, c: Combatant): boolean => {
 
 /** Tırmanılabilecek en yüksek irtifa (ft): tavanlı haritada üst sınır, açık alanda duvar boyu `irtifa.wallFt`. */
 export const climbCapFt = (state: BattleState, c: Combatant): number =>
-  ceilingFt(state) === null ? Math.min(ALT.maxFt, ALT.wallFt) : altitudeCapFt(state, c);
+  ceilingOver(state, c) === null ? Math.min(ALT.maxFt, openWallFt(state, c)) : altitudeCapFt(state, c);
+
+/**
+ * Açık alanda tırmanılan duvarın boyu (ft): sürüm 56+ bitişik engellerin en yüksek tepesi (`obstacleTopFt`: harf tablosu,
+ * ezme, nesne; harita kenarı ve sonsuz engel `irtifa.maxFt`'e kırpılır), yoksa `irtifa.wallFt` (sürüm 55 ve altı: hep 20).
+ */
+function openWallFt(state: BattleState, c: Combatant): number {
+  if (!dikeyOn(state) || !c.pos || !state.map) return ALT.wallFt;
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  let best = 0;
+  for (const n of neighbors(c.pos, size)) { const t = terrainAt(state, n); if (t.movement === 'blocked' && !t.flyersPass) best = Math.max(best, obstacleTopFt(state, n, t)); }
+  return best > 0 ? Math.min(best, ALT.maxFt) : ALT.wallFt;
+}
 
 /** Kuyruk K68a: altıgendeki açık Earthquake yarığının derinliği (ft; yoksa 0). `fissure.ts`'e bağımlılık olmadan. */
 export function fissureDepthAt(state: Pick<BattleState, 'map'>, at: Offset): number {
@@ -158,7 +193,7 @@ export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: {
   const d = Math.abs(to - from);
   if (d === 0) return fail('Zaten o irtifada.');
   // Kuyruk K68b (sürüm 52): tavan − boy üst sınırı (açık gökte `maxFt`).
-  const ceil = ceilingFt(state);
+  const ceil = ceilingOver(state, t);
   if (ceil !== null && to > from && to > altitudeCapFt(state, t)) return fail(`Tavan ${ceil} ft: ${t.name} en çok ${altitudeCapFt(state, t)} ft yükselir.`);
   const lev = levitateOn(t);
   if (lev && lev.sourceId === actor.id) {
@@ -187,7 +222,7 @@ function climbMove(state: BattleState, actor: Combatant, from: number, to: numbe
   if (from <= 0 && !nearWall(state, actor)) return fail('Tırmanmak için duvara (engel ya da harita kenarı) bitişik ol.');
   if (from > 0 && !nearWall(state, actor)) return fail('İnmek için duvara bitişik ol (tavanın ortasından inilmez).');
   const cap = climbCapFt(state, actor);
-  if (to > cap) return fail(ceilingFt(state) === null ? `Duvar boyu ${cap} ft: daha yükseğe tırmanılmaz.` : `Tavan ${ceilingFt(state)} ft: en çok ${cap} ft tırmanılır.`);
+  if (to > cap) return fail(ceilingOver(state, actor) === null ? `Duvar boyu ${cap} ft: daha yükseğe tırmanılmaz.` : `Tavan ${ceilingOver(state, actor)} ft: en çok ${cap} ft tırmanılır.`);
   const d = Math.abs(to - from);
   const cost = d / 5;
   if (actor.movementUsed + cost > speedHexes(actor)) return fail(`Yeterli hareket yok (${d} ft tırmanma = ${cost} altıgen).`);
@@ -203,7 +238,7 @@ export function levitateRiseEvents(state: BattleState, events: BattleEvent[], wa
     if (!c || e.type !== 'effect_added') return [];
     // Kuyruk K68b (sürüm 52): tavana dek (tavan − boy).
     const to = Math.max(altitudeOf(c), Math.min(ft, altitudeCapFt(state, c)));
-    return to === altitudeOf(c) && ceilingFt(state) !== null ? []
+    return to === altitudeOf(c) && ceilingOver(state, c) !== null ? []
       : [{ type: 'altitude_changed', targetId: e.targetId, altitudeFt: to, label: 'Levitate', byId: e.effect.sourceId, gentle: true }];
   });
 }
@@ -230,9 +265,9 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
     // Kuyruk K66a: eksi irtifa (yarığın içi) düşüş değil.
     if (altitudeOf(c) <= 0) continue;
     // Kuyruk K68b (sürüm 52): tavanın üstündeki irtifa (boy büyüdü, tavanlı haritaya gelindi) tavana kırpılır (hasarsız).
-    const cap = ceilingFt(s) === null ? null : altitudeCapFt(s, c);
+    const cap = ceilingOver(s, c) === null ? null : altitudeCapFt(s, c);
     if (cap !== null && altitudeOf(c) > cap) {
-      const evs: BattleEvent[] = [{ type: 'altitude_changed', targetId: c.id, altitudeFt: cap, label: `tavan (${ceilingFt(s)} ft)` }];
+      const evs: BattleEvent[] = [{ type: 'altitude_changed', targetId: c.id, altitudeFt: cap, label: `tavan (${ceilingOver(s, c)} ft)` }];
       out.push(...evs); s = applyEvents(s, evs);
       c = s.combatants[c0.id] as Combatant;
       if (cap <= 0) continue;

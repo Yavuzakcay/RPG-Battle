@@ -29,7 +29,9 @@ import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, isAirborne, spellJumpFt } from './flight';
-import { altitudeCapFt, atCeiling, climbingAloft, wallHex } from './altitude';
+import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
+import { dikeyOn, hasHexCeilings } from './vertical';
+import { obstacleTopFt } from './cover';
 import { heightAt, heightDelta, heightMoveRule, heightStepFn, layerActive, levelFeet } from './heights';
 import { mechanicsAt } from './spellVersion';
 import s2rules from '../../data/s2-kurallar.json';
@@ -262,6 +264,15 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const sphere = s2 ? sphereLimit(state, actor) : null;
   // Kuyruk K68b (sürüm 52): tavana değen Levitate'li her yerde tavana itinerek ilerler (SRD "against … a ceiling").
   const gripCeil = grip && atCeiling(state, actor);
+  // Kuyruk K71a (sürüm 56+, K68 karar 10 geri alındı): uçuş hızıyla uçan, irtifası engelin tepesine eşit ya da yüksekse
+  // duvar/ağaç/çit/sütun altıgeninin üstünden geçer (altıgende duramaz: `executeMove` geçilmez hedefi reddeder).
+  // Tavanlı altıgende geçilmez engel tavana dek uzanır. Boy (K16) geçişte sayılmaz. Altıgen başına tavanlı haritada irtifası
+  // o altıgenin tavanı − boyu aşan yaratık oraya giremez (çatının içinden geçilmez).
+  const v56 = dikeyOn(state);
+  const altFt = altitudeOf(actor);
+  const overFt = v56 && flying && !aloft && flySpeed(actor) > 0 && altFt > 0 ? altFt : -1;
+  const roofCheck = v56 && altFt > 0 && hasHexCeilings(state);
+  const boy = bodyHeightFt(actor);
   return (h: Offset, prev: Offset): number | null => {
     if (grip && !gripCeil && !wallNear(prev)) return null;
     // Kuyruk K69 (sürüm 53, çok altıgen): duvar denetimi gövdenin bütününde (`moveCostBase`).
@@ -276,12 +287,14 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     if (tooDeep(h)) return null;
     if (uphill(h, prev)) return null;
     const t0 = terrainAt(state, h);
+    if (roofCheck) { const c = ceilingFt(state, h); if (c !== null && altFt > Math.max(0, Math.floor((c - boy) / 5) * 5)) return null; }
+    const overTop = overFt > 0 && t0.movement === 'blocked' && !t0.outOfBounds && !t0.flyersPass && overFt >= obstacleTopFt(state, h, t0);
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
     const free = freeMove || (!!ward && ward(h));
     const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = (!!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null) || (squeeze && doorAt(h));
-    const terrain = wall ? through : enterCost(t, flying);
+    const terrain = wall ? through : overTop ? 1 : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
     const enemy = enemyAt.get(hexKey(h));

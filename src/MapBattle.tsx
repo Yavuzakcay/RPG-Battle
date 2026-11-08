@@ -959,7 +959,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const me = state.combatants[actorId];
     if (!active || mode !== 'aim' || areaAct?.kind !== 'spell' || !me?.pos) return null;
     const cl = mechanicsAt(state, areaAct.spell).cloud;
-    return cl ? { id: 'onizleme', hexes: cloudRing(state, me.pos, Math.floor(cl.radiusFt / 5)), base: cloudBaseFt(state, cl) } : null;
+    return cl ? { id: 'onizleme', hexes: cloudRing(state, me.pos, Math.floor(cl.radiusFt / 5)), base: cloudBaseFt(state, cl, me.pos) } : null;
   }, [state, active, actorId, mode, areaAct]);
   const aimKeys = useMemo(() => {
     const me = state.combatants[actorId];
@@ -2646,7 +2646,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               {/* Kuyruk S2 (sürüm 41): irtifa, dikey hareket (uçan), elindekini bırak, yerden al. */}
               {ruleVersion(state) >= 41 && (actor.altitudeFt ?? 0) > 0 && <span>{climbingAloft(actor) ? B.k68.climbing(actor.altitudeFt ?? 0, atCeiling(state, actor)) : B.s2.altitude(actor.altitudeFt ?? 0)}</span>}
               {/* Kuyruk K68b (sürüm 52): tavanlı haritada üst sınır (tavan − boy); düğme sınırda kapalı, nedeni ipucunda. */}
-              {(flySpeed(actor) > 0 || climbingAloft(actor)) && ceilingFt(state) !== null && <span>{B.k68.cap(altitudeCapFt(state, actor))}</span>}
+              {(flySpeed(actor) > 0 || climbingAloft(actor)) && ceilingFt(state, actor.pos) !== null && <span>{B.k68.cap(altitudeCapFt(state, actor))}</span>}
               {ruleVersion(state) >= 41 && flySpeed(actor) > 0 && (
                 <>
                   {((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? undefined} onClick={() => run(cmd)}>{B.s2.up}</button>)({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) + 5 })}

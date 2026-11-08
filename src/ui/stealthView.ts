@@ -90,7 +90,8 @@ export function hideInfo(state: BattleState, actor: Combatant | undefined, at: O
   if (dimLightOn(state) && hasDarkness(state)) parts.push(V.lightLevel[lightLevelAt(state, at)] ?? '');
   else if (nightStealth(state) && isUnlit(state, at)) parts.push(V.unlit);
   // Kuyruk K68b (sürüm 52): iç mekânın tavanı.
-  const ceil = ceilingFt(state);
+  // Kuyruk K71a (sürüm 56+): altıgenin kendi tavanı (altıgen başına tavan).
+  const ceil = ceilingFt(state, at);
   if (ceil !== null) parts.push(V.ceiling(ceil));
   return parts.join(' · ');
 }
