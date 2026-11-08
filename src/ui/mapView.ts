@@ -11,7 +11,8 @@ import { bodyOf } from '../battle/body';
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { isTargetable } from '../battle/common';
-import { heightOf } from '../battle/cover';
+import { heightOf, obstacleTopFt } from '../battle/cover';
+import { ruleVersion } from '../battle/ruleVersion';
 import { terrainAt } from '../battle/movement';
 import { terrainSpellOn, terrainTags } from '../battle/terrainSpell';
 import { checkReach, monsterAttackReach, optionReach, spellReach, type Reach } from '../battle/range';
@@ -140,6 +141,8 @@ function previewText(state: BattleState, actor: Combatant, target: Combatant, re
     parts.push(V.distance(d));
   }
   if (r.cover) parts.push(V.cover(r.cover));
+  // Kuyruk K68c: görüş hattı engelin üstünden (irtifa).
+  if (r.over) parts.push(V.seenOver(r.over));
   const ha = heightOf(state, actor);
   const ht = heightOf(state, target);
   if (ha > ht) parts.push(V.highGround);
@@ -210,7 +213,8 @@ export function terrainInfo(state: BattleState, o: Offset, actor?: Combatant): s
   const parts = [`${hexText(o)} · "${tt.char}" ${tt.name}${tags.length ? ` (${tags.join(', ')})` : ''}`, lvl, V.move[tt.movement] ?? tt.movement];
   if (state.map?.heights && isRamp(state, o)) parts.push(V.ramp);
   if (tt.cover) parts.push(V.coverPlain(tt.cover));
-  if (tt.blocksSight) parts.push(V.blocksSight);
+  // Kuyruk K68c (sürüm 52): yüksekliği bilinen engel (duvar, kapı, panel) görüşü tepesine dek keser.
+  if (tt.blocksSight) parts.push(((top) => (Number.isFinite(top) ? V.blocksSightTo(top) : V.blocksSight))(ruleVersion(state) >= 52 ? obstacleTopFt(state, o) : Infinity));
   // Gizlenme (Görev K): saklanılabilir mi, neden; sırası gelen savaşçıya göre (bitişik düşman, gece, gözcü).
   if (state.map) parts.push(hideInfo(state, actor, o));
   if (tt.hazard) parts.push(`${tt.hazard.damage} ${tt.hazard.damageType}`);

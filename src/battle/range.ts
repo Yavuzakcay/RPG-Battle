@@ -51,6 +51,8 @@ export interface Targeting {
   cover: Cover;
   /** CILA: saldırı otomatik ıskalar (nedeni; Wind Wall: menzilli silah saldırısı duvardan geçerken). */
   autoMiss?: string;
+  /** Kuyruk K68c (sürüm 52): görüş hattı bu engelin üstünden geçiyor (irtifa; arayüz notu). */
+  over?: string;
 }
 
 /**
@@ -114,7 +116,7 @@ export function checkReach(
   // Görev B2: büyü alanları: yoğun örtü (Fog Cloud…), rüzgâr duvarı (menzilli silah saldırısı geçemez).
   const zone = reach.kind === 'effect' ? { sources: [] } : zoneAttackSources(state, attacker, target, reach.kind === 'ranged', reach.kind === 'ranged' && !!reach.spell, reach.kind === 'ranged' ? reach.label : undefined);
   return { ok: true, sources: [...sources, ...map.sources, ...zone.sources], cover: Math.max(lof.cover, map.cover) as Cover,
-    ...(zone.autoMiss ? { autoMiss: zone.autoMiss } : {}) };
+    ...(zone.autoMiss ? { autoMiss: zone.autoMiss } : {}), ...(lof.over ? { over: lof.over } : {}) };
 }
 
 /** Karakter saldırı seçeneğinin erişimi. Menzil bilgisi olmayan menzilli seçenek sınırsız sayılır. */

@@ -118,7 +118,7 @@ export function fireHexProblem(state: BattleState, actor: Combatant, spell: Spel
   if (!free && !flammableAt(state, at)) return 'Bu altıgende tutuşacak bir şey yok.';
   if (!actor.pos) return 'Konum yok.';
   if (distance(actor.pos, at) * 5 > Math.max(5, spell.rangeFt)) return `Altıgen menzil dışında (${distance(actor.pos, at) * 5} ft).`;
-  const wall = sightBlockedBetween(state, actor.pos, at);
+  const wall = sightBlockedBetween(state, actor.pos, at, { from: actor });
   if (wall) return `Altıgen görünmüyor: araya ${wall} giriyor.`;
   return null;
 }

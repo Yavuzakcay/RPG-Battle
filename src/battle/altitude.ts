@@ -82,6 +82,9 @@ export function ceilingFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>): numb
 /** Yaratığın boyu (ft; ⚠ SRD vermez, K68 karar 3: boyuttan). */
 export const bodyHeightFt = (c: Pick<Combatant, 'size'>): number => (ALT.boyFt as Record<string, number>)[c.size] ?? 5;
 
+/** Kuyruk K68c: göz yüksekliği (ft): irtifa + boyun yarısı (görüş hattının ucu). */
+export const eyeFt = (c: Pick<Combatant, 'size' | 'altitudeFt'>): number => altitudeOf(c) + bodyHeightFt(c) / 2;
+
 /** İrtifa üst sınırı (ft, 5'in katı): tavanlı haritada tavan − boy, açık gökte `irtifa.maxFt`. */
 export function altitudeCapFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, c: Pick<Combatant, 'size'>): number {
   const ceil = ceilingFt(state);

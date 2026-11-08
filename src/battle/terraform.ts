@@ -55,7 +55,7 @@ export function executeTerraform(state: BattleState, actor: Combatant, cmd: Cast
   let zoneExtra: Partial<import('./types').SpellZone> | null = null;
   if (mode === 'passwall') {
     if (!WOOD_OR_STONE.has(tileAt(state, at))) return fail('Passwall taş ya da ahşap bir yüzeye yapılır.');
-    const wall = sightBlockedBetween(state, actor.pos, at);
+    const wall = sightBlockedBetween(state, actor.pos, at, { from: actor });
     if (wall && distance(actor.pos, at) > 1) return fail(`Yüzey görülmüyor (${wall}).`);
     for (const h of lineFrom(state, actor.pos, at, 4)) {
       if (!WOOD_OR_STONE.has(tileAt(state, h))) break;

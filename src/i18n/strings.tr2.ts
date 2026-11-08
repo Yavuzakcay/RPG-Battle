@@ -454,6 +454,8 @@ export const TR_EXTRA = {
     heightLevel: (n: number, ft: number) => `yükseklik: ${n} (${ft} ft)`, ramp: 'rampa/merdiven (2+ seviye normal geçilir)',
     climbHint: (dc: number) => `tırman: Atletizm DC ${dc}`, dropHint: (ft: number) => `aşağı atla: ${ft} ft düşer`,
     height: (h: number) => `yükseklik ${h}`, coverPlain: (c: number) => `${c === 5 ? '3/4' : 'yarım'} siper`, blocksSight: 'görüşü keser',
+    // Kuyruk K68c: görüş hattında irtifa.
+    blocksSightTo: (ft: number) => `görüşü ${ft} ft'e dek keser`, seenOver: (name: string) => `${name} üstünden görünür`,
     hideSpot: (b: number) => `gizlenme yeri${b ? ` +${b}` : ''}`,
     hideYes: (what: string, b: number): string => `Saklanılabilir: evet (${what}${b ? ` +${b}` : ''})`,
     hideNo: (why: string): string => `Saklanılabilir: hayır (${why})`,

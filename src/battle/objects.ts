@@ -164,7 +164,7 @@ export function executeAttackObject(state: BattleState, actor: Combatant, object
     if (d * 5 > (option.range?.[1] ?? Infinity)) return fail(`Nesne menzil dışında (${d * 5} ft).`);
   } else if (d * 5 > (option.reachFt ?? 5)) return fail(`Nesne erişim dışında (${d * 5} ft).`);
   // Görev KB: görüş hattı (duvar, kapalı kapı arkasındaki nesneye saldırılmaz).
-  const wall = sightBlockedBetween(state, actor.pos, obj.at);
+  const wall = sightBlockedBetween(state, actor.pos, obj.at, { from: actor });
   if (wall) return fail(`Nesne görünmüyor: araya ${wall} giriyor.`);
   const def = OBJECTS[obj.kind];
   // Kuyruk S1 (Faerie Fire): parlayan nesneye saldırı avantajlı.

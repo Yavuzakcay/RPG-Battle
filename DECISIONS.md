@@ -2,6 +2,84 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K68c: Görüş hattında irtifa (kural sürümü 52, aynı sürüm)
+
+- **Sürüm:** `wip/k68` (5effaad üstüne); kural sürümü 52'de kaldı (K68a/b ile aynı). Sürüm 51 ve altı değişmez. Yeni olay, komut ve veri yok; `SAVE_VERSION` 22.
+- **Model (`src/battle/cover.ts`):**
+  - Hat iki ucun göz yüksekliği arasında doğrusal. Göz = irtifa + boyun yarısı (`eyeFt`; boy `irtifa.boyFt`, Medium göz 2,5 ft). ⚠ SRD göz yüksekliği vermez; hat uçtan uca merkezden çekilir.
+  - Hattın altıgendeki yüksekliği engelin tepesinden büyükse (eşit kesmez) engel görüşü kesmez ve siper vermez; arayüz notu için adı `LineOfFire.over`'da.
+  - Araya giren yaratık yalnız hat onun boyu içinden (irtifa…irtifa + boy) geçiyorsa yarım siper verir.
+  - Hedefin kendi altıgenindeki siper, hedef o engelin tepesinden yüksekteyse yok (yalnız yüksekliği bilinen engellerde).
+  - Yükseklik katmanı sırtı (`heightSightBlock`) ve kaya basamağı siperi değişmedi (karar 4).
+- **Hızlı yol (kritik):**
+  - Sürüm < 52 ya da iki ucun irtifası da tam 0 ise (`endsOf` null) bugünkü iki boyutlu kod aynen çalışır; erken dönüş `evaluate`, `coverFrom` ve `sightBlockedBetween` girişinde.
+  - Yarıkta eksi irtifa zeminde sayılmaz, irtifalı yola girer.
+  - Test sayacı `losStats.altPath`: iki uç zemindeyken artmaz.
+- **Engel tepeleri (yeni veri yok; `obstacleTopFt`):**
+  - Harita duvarı `s` ve duvardaki kapalı kapı `O` açık alanda `irtifa.wallFt` 20 ft. Tavanlı haritada aşılamaz (tavana dek; hat tavanın üstüne çıkamaz).
+  - Nesne `yukseklikFt` (ezme ya da tür): kapı 10, kale kapısı 15, çadır 10, çatlak duvar 10 (yalnız siper).
+  - Wall of Stone/Ice/Force paneli 10 ft (Earthquake yapı verisindeki `heightsFt.panel`).
+  - **Yüksekliği olmayan, bugünkü gibi tam engel:**
+    - Ağaç `a` (zemin ve nesne), dış kayalık `#`.
+    - Heykel gözü (`statueEye`), donmuş şelale (`frozenFall`).
+    - Geçici engeller (`barriers`).
+  - **Yüksekliği olmayan, bugünkü gibi siper veren:**
+    - Zemin: kum tepesi `d`, kaya kümesi `r`, sütunlar `c`/`k`/`m`, çalılık `g`, sarkıt `v`, ışıklı kristal `e`, varil/sandık/masa `x`.
+    - Nesneler: fıçılar, sandık, masa, mangal, levha, kaya, kaya yığını, kazan, balista.
+- **Yoğun örtü (madde 5, uygulandı):**
+  - `zones.ts` `zoneAttackSources`, irtifalı uçta. Uçtaki yaratık alanın tepesinin (`zoneTopFt`) üstündeyse örtüde sayılmaz. Aradaki altıgende hat tepeden yüksekse örtü görüşü kesmez.
+  - Tepeler: Fog Cloud ve Stinking Cloud yarıçap (K68a), Sleet Storm 40, Moonbeam 40, diğerleri 20 ft.
+  - Kapsam: Darkness, Cloudkill, Incendiary Cloud, Wall of Fire, Wall of Thorns.
+  - Maliyet yalnız irtifalı uçta.
+- **Çağrı yerleri (hepsi aynı çekirdek):**
+  - `lineOfFire`:
+    - `range.ts` `checkReach`: saldırı, büyü hedefleme, YZ adayları `tryCmd`, önizleme ve hedef seçimi;
+    - `stealth.ts` ×4: Hide gözcüleri, Ara, açığa çıkma;
+    - `alarm.ts`: gözcünün görmesi;
+    - `ruleVersion.ts` `frightenedNow`: korku kaynağı görüşü;
+    - `effects.ts`: kaynak görüşü.
+  - `coverFrom`: `areaAttack.ts` `pickArea`. Alan büyüleri ve nefesler: yaratıktan çıkan koni/çizgide sahibinin gözü, noktadan çıkanda zemin noktası.
+  - `sightBlockedBetween` (uçtaki yaratık parametresi `{ from, to }`):
+    - alan noktası (`areaAttack.ts`), ışınlanma (`teleport.ts`), nesneye saldırı (`objects.ts`);
+    - Passwall/Stone Shape (`terraform.ts`), tutuşturma (`ignite.ts`), serbest şekil (`freeShape.ts`);
+    - balista (`highlands.ts` ×2).
+  - Yoğun örtü: `zoneAttackSources`.
+  - Tremorsense görüş hattı kullanmıyor (`isAirborne`; değişmedi).
+- **⚠ Tutarsızlık (karar 10 değişmedi):**
+  - Duvarın ve engelin üstünden **görme** açıldı, **geçme** kapalı: uçan yaratık 20 ft duvarın üstünden yürüyerek ya da uçarak geçemez (`moveCostFn` aynen).
+  - Aynı biçimde Wall of Force ve Forcecage "hiçbir şey geçemez" denetimi (`checkReach` panel hattı, `cageBoxBlock`) iki boyutlu kaldı. Görüş açık olsa da saldırı panelin üstünden geçmez.
+- **Arayüz (TR/EN):** hedef önizlemesinde "<engel> üstünden görünür" (`view.seenOver`); altıgen bilgisinde yüksekliği bilinen engelde "görüşü N ft'e dek keser" (`view.blocksSightTo`).
+- **YZ:** yeni taktik yok. YZ'nin görüşü `checkReach` ve `tryCmd` üzerinden kendiliğinden irtifalı.
+- **⚠ SRD'den ayrılan yerler:**
+  - Üç boyutlu görüş hattı ve göz hizası SRD'de yok.
+  - Açık alanda duvar 20 ft (K68b karar 10).
+  - Hat uç merkezlerinden tek doğru (SRD'nin "herhangi bir köşe" serbestliği yalnız iki yanlı altıgen hattında, eskisi gibi).
+- **Açık kalanlar:**
+  - Duvar yüksekliği için tam 3B model (harita başına duvar boyu, duvarın üstüne çıkma ve üstünden geçme).
+  - Havada merkezli küre ve silindir.
+  - Herkes için tırmanma.
+  - Yarık kenarının görüşü kesmesi (zemin yüzeyi modeli yok: yarıktaki yaratığın hattı yalnız engellere bakar).
+  - Wall of Force/Forcecage geçişinin irtifası.
+  - Işık ve karanlık (Darkness'ın ışık kısmı) iki boyutlu.
+  - Uçan ve tırmanan düşmanların dikey taktiği (K73).
+- **Ölçüm:**
+  - **YZ karar süresi** (Mantar Mağarası 31×17, karanlık, 8 yaratık, sürüm 52, ısınma + 20 tekrar, üç tur; aynı oturumda eski kodla 5effaad):
+    - önce 3,02 / 1,69 / 1,60 ms;
+    - sonra 2,17 / 1,81 / 1,69 ms;
+    - kapı ≤ 2,06 ms, aşılmadı.
+  - **Görüş hattı mikro ölçümü** (`lineOfFire`, 20 000 çağrı, açık alanda duvar sütunu, kararlı tur):
+
+    | Durum | Önce | Sonra | Not |
+    |---|---|---|---|
+    | İki uç zeminde | 1,88 µs | 1,94 µs | Aynı yol |
+    | Bir uç 40 ft'te | 1,82 µs | 4,05 µs | Önce duvarda erken kesiliyordu, şimdi hat açık ve sona dek yürünüyor |
+    | İki uç 30 ft'te | 1,83 µs | 4,07 µs | Aynı neden |
+
+  - **Ana parça:** 374 543 bayt, değişmedi (kod tembel savaş parçasında).
+- **Test:**
+  - `src/battle/k68c.test.ts` (13): duvar üstünden görme (hat 22,5 / 20 / 17,5 ft sınırı) ve sürüm 51, kapı 10 ft sınırı, ağaç tam engel, altıgen bilgisi, tavanlı haritada etkisizlik, hızlı yol sayacı, yarıkta eksi irtifa, Fog Cloud tepesi ve sürüm 51, iki uç havada, hareket değişmez.
+  - `src/sim/k68cRegresyon.test.ts` (4): Çöl, Kale, Mağara, Orman; sürüm 52 = 51 son durum birebir. Test paketinde 1 tohum, `K68C_TOHUM=30` ile tam ölçüm.
+
 ## 2026-11-08 — Kuyruk K68b düzeltmesi: tavan listesi (kural sürümü 52, aynı sürüm)
 
 - **Karar (kullanıcı):** açık üstlü üç harita tavansız, açık gök sayılıyor: Portal Salonu (`isinlanma-salonu`), Lav Tapınağı (`lav-tapinagi`), Volkanik Demirhane (`volkanik-demirhane`). `scripts/k68-tavan.py` tablosundan çıktılar; betik satırlarını sildi, üç harita JSON'u K68b öncesiyle bayt bayt aynı.

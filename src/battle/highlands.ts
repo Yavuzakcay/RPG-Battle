@@ -82,7 +82,7 @@ export function executeHighlandsUse(state: BattleState, actor: Combatant, object
   const d = distance(obj.at, target.pos) * 5;
   const [normal, long] = Array.isArray(r.range) ? (r.range as number[]) : [120, 480];
   if (d > (long ?? 480)) return fail(`Hedef menzil dışında (${d} ft).`);
-  const wall = sightBlockedBetween(state, obj.at, target.pos);
+  const wall = sightBlockedBetween(state, obj.at, target.pos, { to: target });
   if (wall) return fail(`Hedef görünmüyor: araya ${wall} giriyor.`);
   const bonus = num(r.attackBonus, 6);
   const mode = d > (normal ?? 120) ? 'disadvantage' : 'normal';
@@ -188,7 +188,7 @@ export function ballistaTarget(state: BattleState, actor: Combatant, obj: MapObj
   if (!r) return null;
   const long = Array.isArray(r.range) ? num((r.range as number[])[1], 480) : 480;
   const foes = Object.values(state.combatants).filter((c) => c.pos && c.side !== actor.side && c.hp > 0 && isTargetable(c)
-    && distance(obj.at, c.pos) * 5 <= long && !sightBlockedBetween(state, obj.at, c.pos) && !c.civilian)
+    && distance(obj.at, c.pos) * 5 <= long && !sightBlockedBetween(state, obj.at, c.pos, { to: c }) && !c.civilian)
     .sort((a, b) => distance(obj.at, a.pos as Offset) - distance(obj.at, b.pos as Offset) || a.id.localeCompare(b.id));
   return foes[0]?.pos ?? null;
 }

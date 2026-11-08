@@ -43,7 +43,7 @@ import { pushAwayEvents } from './forced';
 import { disperseEvents } from './surfaceMix';
 import { ruleVersion } from './ruleVersion';
 import { mechanicsAt } from './spellVersion';
-import { altitudeInZone } from './altitude';
+import { altitudeInZone, altitudeOf, eyeFt, zoneTopFt } from './altitude';
 import { senseSees } from './sight';
 import { DANCE_COMBINED, danceMax, danceProblem } from './danceLights';
 import { concentrationEvent, spendSlot } from './slots';
@@ -452,14 +452,22 @@ export function zoneAttackSources(state: BattleState, attacker: Combatant, targe
   const out: ModeSource[] = [];
   // Kuyruk A7 (sürüm 36): Blindsight/Truesight menzilindeki yoğun örtü (Darkness, Fog Cloud) görüşü kesmez.
   const v36 = ruleVersion(state) >= 36;
-  const targetHidden = heavilyObscured(state, target.pos) && !(v36 && senseSees(state, attacker, target));
-  const attackerHidden = heavilyObscured(state, attacker.pos) && !(v36 && senseSees(state, target, attacker));
+  // Kuyruk K68c (sürüm 52): irtifalı uçta yoğun örtü yükseklikle: uçtaki yaratık alanın tepesinin üstündeyse örtüde değil,
+  // aradaki altıgende hat tepenin üstünden geçerse örtü görüşü kesmez. İki uç da 0 irtifada: bugünkü kod aynen.
+  const alt3 = ((attacker.altitudeFt ?? 0) !== 0 || (target.altitudeFt ?? 0) !== 0) && ruleVersion(state) >= 52;
+  const heavyAt = (at: Offset, ft: number) => zonesAt(state, at).some((z) => { const sp = zoneSpecOf(z); return sp?.obscured === 'heavy' && ft <= zoneTopFt(z, sp); });
+  const targetHidden = (alt3 ? heavyAt(target.pos, altitudeOf(target)) : heavilyObscured(state, target.pos)) && !(v36 && senseSees(state, attacker, target));
+  const attackerHidden = (alt3 ? heavyAt(attacker.pos, altitudeOf(attacker)) : heavilyObscured(state, attacker.pos)) && !(v36 && senseSees(state, target, attacker));
   if (targetHidden) out.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (yoğun örtü)' });
   if (attackerHidden) out.push({ effect: 'advantage', reason: 'Görülmeyen saldıran (yoğun örtü)' });
   // CILA: aradaki yoğun örtü (Fog Cloud, Stinking Cloud…) görüşü keser: iki taraf da birbirini görmez (avantaj ve
   // dezavantaj birbirini götürür; SRD 5.2.1 Unseen Attackers and Targets). Çizginin iki ucu yukarıda sayıldı.
   // Uçlardan biri örtüdeyse B2'nin kuralı geçerli (yukarıda); yalnızca ikisi de dışındayken aradaki örtü sayılır.
-  const between = !targetHidden && !attackerHidden && line(attacker.pos, target.pos).slice(1, -1).some((h) => heavilyObscured(state, h));
+  const path = !targetHidden && !attackerHidden ? line(attacker.pos, target.pos) : [];
+  const ea = alt3 ? eyeFt(attacker) : 0; const eb = alt3 ? eyeFt(target) : 0;
+  const between = path.length > 2 && (alt3
+    ? path.some((h, i) => i > 0 && i < path.length - 1 && heavyAt(h, ea + ((eb - ea) * i) / (path.length - 1)))
+    : path.slice(1, -1).some((h) => heavilyObscured(state, h)));
   if (between) out.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (arada yoğun örtü)' }, { effect: 'advantage', reason: 'Görülmeyen saldıran (arada yoğun örtü)' });
   // Kuyruk 18 H2: Antilife Shell: dışarıdan içerideki hedefe yakın dövüş ulaşmaz.
   const shell = !ranged ? (state.map.zones ?? []).find((z) => zoneSpecOf(z)?.repel && inZone(state, z, target.pos) && repelled(state, z, attacker)) : undefined;

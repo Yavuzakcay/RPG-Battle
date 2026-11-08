@@ -26,7 +26,7 @@ export function teleportProblem(state: BattleState, actor: Combatant, to: Offset
   if (other) return `${hexLabel(to)} dolu (${other.name}).`;
   if (spec.trees && (!byTree(state, actor.pos) || !byTree(state, to))) return 'Tree Stride: başlangıç ve varış yerinin yanında ağaç olmalı.';
   if (spec.sight) {
-    const wall = sightBlockedBetween(state, actor.pos, to);
+    const wall = sightBlockedBetween(state, actor.pos, to, { from: actor });
     if (wall) return `${hexLabel(to)} görülmüyor (${wall}).`;
     if (!canSee(state, actor, { ...actor, pos: to })) return `${hexLabel(to)} karanlıkta, görülmüyor.`;
   }

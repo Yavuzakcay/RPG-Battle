@@ -64,7 +64,7 @@ export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetS
     if (d * 5 > rangeFt) return fail(`Nokta menzil dışında: ${d} altıgen (${d * 5} ft), menzil ${rangeFt} ft.`);
     const t = terrainAt(state, aim);
     if (t.blocksSight || t.outOfBounds) return fail(`${hexLabel(aim)} noktasına ${what} yapılamaz (${t.name}).`);
-    const wall = sightBlockedBetween(state, actor.pos, aim);
+    const wall = sightBlockedBetween(state, actor.pos, aim, { from: actor });
     if (wall) return fail(`Nokta görülemiyor: arada ${wall} var.`);
   }
   const origin = spec.origin === 'point' && aim ? aim : actor.pos;
@@ -73,7 +73,7 @@ export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetS
   const inArea = (c: Combatant) => c.pos !== null && bodyOf(state, c).some((b) => hexes.some((h) => sameHex(h, b)));
   const reached = Object.values(state.combatants)
     .filter((c) => isTargetable(c) && !isIntangible(c) && inArea(c) && (spec.targets === 'all' || c.side !== actor.side))
-    .map((c) => ({ c, lof: coverFrom(state, origin, c, [actor.id]) }))
+    .map((c) => ({ c, lof: coverFrom(state, origin, c, [actor.id], spec.origin === 'point' ? null : actor) }))
     .filter((x) => !x.lof.blocked)
     .map((x) => ({ c: x.c, cover: x.lof.cover }));
   return { hexes, origin, reached };

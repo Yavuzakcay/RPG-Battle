@@ -66,7 +66,7 @@ export function freeHexProblem(state: BattleState, actor: Combatant, spell: Spel
   if (first && fs.sightFirst) {
     const t = terrainAt(state, h);
     if (t.blocksSight || t.outOfBounds) return `${hexLabel(h)} ilk altıgen olamaz (${t.name}).`;
-    const wall = sightBlockedBetween(state, actor.pos, h);
+    const wall = sightBlockedBetween(state, actor.pos, h, { from: actor });
     if (wall) return `İlk altıgen görülemiyor: arada ${wall} var.`;
   }
   return null;

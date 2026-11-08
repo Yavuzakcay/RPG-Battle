@@ -1031,6 +1031,7 @@ export const en: Strings = {
     heightLevel: (n: number, ft: number) => `height: ${n} (${ft} ft)`, ramp: 'ramp/stairs (2+ levels crossed normally)',
     climbHint: (dc: number) => `climb: Athletics DC ${dc}`, dropHint: (ft: number) => `jump down: fall ${ft} ft`,
     height: (h: number) => `height ${h}`, coverPlain: (c: number) => `${c === 5 ? 'three-quarters' : 'half'} cover`, blocksSight: 'blocks sight',
+    blocksSightTo: (ft: number) => `blocks sight up to ${ft} ft`, seenOver: (name: string) => `seen over: ${name}`,
     hideSpot: (b: number) => `hiding spot${b ? ` +${b}` : ''}`,
     hideYes: (what: string, b: number) => `Can hide: yes (${what}${b ? ` +${b}` : ''})`,
     hideNo: (why: string) => `Can hide: no (${why})`,
