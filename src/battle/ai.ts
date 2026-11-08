@@ -48,6 +48,7 @@ import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
 import { heightAt, heightCombatRule } from './heights';
 import { ruleVersion } from './ruleVersion';
+import { panelId, panelOf } from './walls';
 import { zoneKnownBy } from './hiddenZones';
 import { zoneSpecOf } from './zones';
 import { climbTargets } from './climb';
@@ -589,6 +590,61 @@ function fissureCommand(state: BattleState, actor: Combatant, foes: Combatant[])
   if (!aim || !b) return null;
   const cmd: Command = { type: 'spell_followup', actorId: actor.id, targetId: b.quake.id, targetHex: aim.at, choice: `fissure:${aim.dir}` };
   return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
+/**
+ * Kuyruk Y1 (sürüm 55, kural `y1:duvar`): yolu kesen düşman duvarını açma. Karşı tarafın panelli duvarı (Wall of Ice,
+ * Wall of Stone) ya da Wall of Force en yakın düşmana yürüme yolunu kesiyorsa (duvarsız yol en az `DUVAR_FARK` altıgen
+ * kısa ya da duvarla yol yok) ve yaratık bu tur hiçbir düşmana saldıramıyorsa: Wall of Force'a Disintegrate (K70), ya da
+ * erişimdeki panele silah saldırısı (`attack_object`, panel kimliği). Kuru çalıştırma değeri vermez (panel düşman değil):
+ * öncelik `kuralOnceligi['y1:duvar']`. Yeni taktik değil: yolu açmak.
+ */
+const DUVAR_FARK = 3;
+function wallBreakCands(state: BattleState, actor: Combatant, h: { foes: Combatant[]; canAct: boolean; ok: (c: Command) => boolean }): Command[] {
+  if (ruleVersion(state) < 55 || !state.map || !actor.pos || !h.canAct || actor.summon) return [];
+  const walls = (state.map.zones ?? []).filter((z) => z.side !== actor.side && (z.spellId === 'wall-of-force' || z.hexes.some((x) => panelOf(state, panelId(z, x)))));
+  if (!walls.length) return [];
+  const foes = h.foes.filter((c) => c.pos && c.hp > 0);
+  if (!foes.length) return [];
+  // Bu tur bir düşmana saldırabiliyorsa duvarla uğraşmaz.
+  const strikes = foes.some((f) => actor.weaponOptions.some((o) => h.ok({ type: 'attack', actorId: actor.id, targetId: f.id, option: o } as Command)));
+  if (strikes) return [];
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const ids = new Set(walls.map((z) => z.id));
+  const open: BattleState = { ...state, map: { ...state.map, zones: (state.map.zones ?? []).filter((z) => !ids.has(z.id)) } };
+  const toFoe = (st: BattleState): number => {
+    const costs = costsFrom(actor.pos as Offset, size, moveCostFn(st, actor), 60);
+    let best = Infinity;
+    for (const f of foes) for (const n of neighbors(f.pos as Offset, size)) best = Math.min(best, costs.get(hexKey(n)) ?? Infinity);
+    return best;
+  };
+  const withWall = toFoe(state);
+  const without = toFoe(open);
+  if (!Number.isFinite(without) || withWall - without < DUVAR_FARK) return [];
+  const out: Command[] = [];
+  const me = actor.pos;
+  for (const z of walls) {
+    const hexes = [...z.hexes].sort((a, b) => distance(me, a) - distance(me, b));
+    if (z.spellId === 'wall-of-force') {
+      const dis = castable(actor).find((s) => mechanicsAt(state, s).destroysForce?.includes('wall-of-force'));
+      if (!dis) continue;
+      for (const x of hexes) {
+        const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: dis.name, targetHex: x };
+        if (h.ok(cmd)) { out.push(cmd); break; }
+      }
+      continue;
+    }
+    for (const x of hexes.slice(0, 6)) {
+      const id = panelId(z, x);
+      if (!panelOf(state, id)) continue;
+      const d = distance(me, x) * 5;
+      const option = actor.weaponOptions.find((o) => (o.ranged ? d <= (o.range?.[1] ?? 0) : d <= (o.reachFt ?? 5)));
+      if (!option) continue;
+      const cmd: Command = { type: 'attack_object', actorId: actor.id, objectId: id, option };
+      if (h.ok(cmd)) { out.push(cmd); break; }
+    }
+  }
+  return out;
 }
 
 /** Kuyruk K66a: yarıktaki yaratık tırmanır (hareket yetiyorsa düşmana en yakın kenara çıkar). `kuralOnceligi['k66:tirman']`. */
@@ -2529,6 +2585,7 @@ registerAction({ id: 'eski:yenilenme', rule: true, kind: 'damage', note: 'yerdek
 registerAction({ id: 'eski:alan', rule: true, kind: 'damage', note: 'alan hasar büyüsü (2+ düşman, dost yok)', gen: (s, a, h) => (partyBranch(a) || (a.monsterId && a.spellNames.length && !a.summon) ? [areaSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:soz', rule: true, kind: 'damage', note: 'Power Word Kill/Stun, Mass Heal', gen: (s, a, h) => (partyBranch(a) ? [powerWordCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k67:isik', rule: true, kind: 'support', note: 'karanlıkta görmeyen dost varken ışık büyüsü (bir kez)', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [lightCommand(s, a, h.allies)] : []) });
+registerAction({ id: 'y1:duvar', rule: true, kind: 'move', note: 'yolu kesen düşman duvarı: panele saldırı ya da Wall of Force\'a Disintegrate (sürüm 55)', gen: (s, a, h) => wallBreakCands(s, a, h) });
 registerAction({ id: 'k66:yarik', rule: true, kind: 'control', note: 'Earthquake yarığı: dostsuz, düşman kesen, yol kesmeyen hat', gen: (s, a, h) => [fissureCommand(s, a, h.foes)] });
 registerAction({ id: 'k66:tirman', rule: true, kind: 'move', note: 'yarıktan tırmanma', gen: (s, a, h) => [fissureClimbCmd(s, a, h.foes)] });
 registerAction({ id: 'k68:tirman', rule: true, kind: 'move', note: 'tırmanıcı büyücü bitişik yerdeki düşmandan duvara/tavana tırmanır', gen: (s, a, h) => [climbAwayCmd(s, a, h.foes)] });
