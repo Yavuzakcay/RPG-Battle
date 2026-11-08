@@ -54,6 +54,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
     Ölçüm gürültüsü ±%15.
   - Ana parça 374 742 bayt (değişmedi; yeni kod `maps`/`manualDice` tembel parçalarında).
   - check:harita 96/0, check:ses 15/0.
+  - Tam test 342 dosya / 4011 test yeşil (taban 340 / 3981; +2 dosya, +30 test).
 
 ## 2026-11-08 — Kuyruk K71-PLAN: yükseklik modeli planı (yalnız plan; kod, veri, test değişmedi)
 
