@@ -12,11 +12,12 @@ import { seededRng } from '../rules/dice';
 import { altitudeCapFt, atCeiling, ceilingFt, wallHex } from './altitude';
 import { applyEvents } from './reduce';
 import { checkReach } from './range';
-import { moveCostFn } from './movement';
+import { highJumpReachFt, moveCostFn } from './movement';
 import { chooseCommand } from './ai';
 import { cloudOf } from './cloud';
 import { spells } from '../data';
 import { isAirborne } from './flight';
+import { hideInfo } from '../ui/stealthView';
 import type { Offset } from '../rules/hex';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, Command } from './types';
 
@@ -52,12 +53,11 @@ const fresh = (s: BattleState, id = 'A'): BattleState => ({ ...s, combatants: { 
 
 describe('K68b tavan verisi', () => {
   const TABLE: Record<string, number> = {
-    dungeon: 15, magara: 20, 'magara-genis': 20, 'kasaba-lagim': 10, 'yeralti-nehri': 20, 'derinlikler-magara-karakol': 20,
+    dungeon: 15, magara: 20, 'magara-genis': 20, 'kasaba-lagim': 10, 'yeralti-nehri': 10, 'derinlikler-magara-karakol': 20,
     'derinlikler-mezar-labirenti': 15, 'derinlikler-mantar-magarasi': 30, 'derinlikler-lav-salonu': 30, 'orman-heykel-magarasi': 20,
-    'hapishane-hucre-platformu': 20, 'hapishane-mudur-kulesi': 15, taverna: 12, 'kale-taht-salonu': 30, 'isinlanma-salonu': 30,
-    'lav-tapinagi': 30, 'volkanik-demirhane': 25,
+    'hapishane-hucre-platformu': 20, 'hapishane-mudur-kulesi': 15, taverna: 12, 'kale-taht-salonu': 30,
   };
-  it('17 iç mekân haritasının bütün varyantlarında tavan var, kalanlar açık gök', () => {
+  it('14 iç mekân haritasının bütün varyantlarında tavan var, kalanlar (açık üstlü salonlar dahil) açık gök', () => {
     for (const [id, ft] of Object.entries(TABLE)) for (const v of getMap(id).variants) expect([id, v.id, v.tavanFt]).toEqual([id, v.id, ft]);
     const withCeiling = maps.filter((m) => m.variants.some((v) => v.tavanFt !== undefined)).map((m) => m.id).sort();
     expect(withCeiling).toEqual(Object.keys(TABLE).sort());
@@ -93,6 +93,61 @@ describe('K68b tavan verisi', () => {
     expect(alt(s, 'A')).toBe(15);
     expect(s.combatants.A?.hp).toBe(200);
     expect(alt(high(51), 'A')).toBe(40);
+  });
+});
+
+describe('K68b açık üstlü haritalar (tavansız: Portal Salonu, Lav Tapınağı, Volkanik Demirhane)', () => {
+  const OPEN: Array<[string, string]> = [['isinlanma-salonu', 'varsayilan'], ['lav-tapinagi', 'varsayilan'], ['volkanik-demirhane', 'varsayilan']];
+  const at = (mapId: string, variantId: string, parts: Combatant[], pos: Record<string, Offset>, ver = 52) => room(parts, pos, ver, mapId, variantId);
+  it('varyantta `tavanFt` yok; tavan null, üst sınır açık gökteki 120 ft', () => {
+    for (const [id, v] of OPEN) {
+      expect(getMap(id).variants.every((x) => x.tavanFt === undefined)).toBe(true);
+      const s = at(id, v, [caster()], { A: H(1) });
+      expect(ceilingFt(s)).toBeNull();
+      expect(altitudeCapFt(s, mk('m'))).toBe(120);
+    }
+  });
+  it('uçuş 30 ft (kırpılmaz), Levitate 20 ft yükselir, komut sonunda irtifa kırpılmaz', () => {
+    for (const [id, v] of OPEN) {
+      const fly = run(at(id, v, [caster({ fly: 30 })], { A: H(7) }), { type: 'vertical_move', actorId: 'A', toFt: 30 } as Command).state;
+      expect(alt(fly, 'A')).toBe(30);
+      const lev = run(at(id, v, [caster(), foe('F')], { A: H(1), F: H(4) }), { type: 'cast_spell', actorId: 'A', spellName: 'Levitate', targetId: 'F' } as Command).state;
+      expect(alt(lev, 'F')).toBe(20);
+      const high = run(at(id, v, [caster({ fly: 60, altitudeFt: 40 }), foe('F')], { A: H(7), F: H(12) }), { type: 'end_turn', actorId: 'A' } as Command).state;
+      expect(alt(high, 'A')).toBe(40);
+    }
+  });
+  it('Jump yüksek erişimi 30 ft (tavanla kırpılmaz)', () => {
+    const s = at('volkanik-demirhane', 'varsayilan', [caster({ effects: [fx('spells:jump', { jumpFt: 30 })] }), foe('F', { fly: 30, altitudeFt: 30 })], { A: H(3), F: H(4) });
+    const r = run(s, { type: 'jump', actorId: 'A', to: H(3) } as Command).state;
+    expect(highJumpReachFt(r, r.combatants.A as Combatant)).toBe(30);
+    expect((checkReach(r, r.combatants.A as Combatant, r.combatants.F as Combatant, { kind: 'melee', reachFt: 5 }) as { ok: boolean }).ok).toBe(true);
+  });
+  it('Call Lightning yapılır, bulut tabanı açık gökteki 30 ft', () => {
+    for (const [id, v] of OPEN) {
+      const s = at(id, v, [caster(), foe('F')], { A: H(0), F: H(5) });
+      const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Call Lightning', targetHex: H(5) } as Command);
+      expect(cloudOf(r.state, r.state.combatants.A as Combatant, SP('Call Lightning'))?.cloud?.baseFt).toBe(30);
+    }
+  });
+  it('Spider Climb ve YZ açık alan duvar boyuyla (20 ft): tırmanıcı büyücü 20 ft\'e çıkar', () => {
+    const s0 = at('lav-tapinagi', 'varsayilan', [caster({ spellNames: ['Fire Bolt'] }), foe('F')], { A: H(0), F: H(1) });
+    const s = { ...s0, combatants: { ...s0.combatants, A: { ...(s0.combatants.A as Combatant), side: 'enemies' as const, ownerId: null, effects: [fx('spells:spider-climb', { climb: true })] }, F: { ...(s0.combatants.F as Combatant), side: 'party' as const } } };
+    expect(chooseCommand(s)).toMatchObject({ type: 'vertical_move', actorId: 'A', toFt: 20 });
+  });
+  it('altıgen bilgisinde "tavan" satırı yok; tavanlı haritada var', () => {
+    for (const [id, v] of OPEN) {
+      const s = at(id, v, [caster()], { A: H(1) });
+      expect(hideInfo(s, s.combatants.A, H(5))).not.toMatch(/tavan/);
+    }
+    const cave = room([caster()], { A: H(1) });
+    expect(hideInfo(cave, cave.combatants.A, H(5))).toMatch(/tavan 20 ft/);
+  });
+  it('Su Altı Geçidi tavanı 10 ft: Medium en çok 5 ft, Call Lightning yapılamaz', () => {
+    const s = room([caster(), foe('F')], { A: H(0), F: H(5) }, 52, 'yeralti-nehri', 'gunduz');
+    expect(ceilingFt(s)).toBe(10);
+    expect(altitudeCapFt(s, mk('m'))).toBe(5);
+    expect(failOf(s, { type: 'cast_spell', actorId: 'A', spellName: 'Call Lightning', targetHex: H(5) } as Command)).toBe('Call Lightning: bulut için tavan alçak (10 ft).');
   });
 });
 

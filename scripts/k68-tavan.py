@@ -13,13 +13,14 @@ import json
 import re
 import sys
 
-# kimlik: (tavanFt, gerekçe)
+# kimlik: (tavanFt, gerekçe). Açık üstlü (açık gök, tavansız; kullanıcı kararı, K68b düzeltmesi): Portal Salonu
+# (`isinlanma-salonu`), Lav Tapınağı (`lav-tapinagi`), Volkanik Demirhane (`volkanik-demirhane`).
 TAVAN = {
     'dungeon': (15, 'zindan koridoru ve odaları, taş tonoz'),
     'magara': (20, 'doğal mağara'),
     'magara-genis': (20, 'doğal mağara (geniş)'),
     'kasaba-lagim': (10, 'lağım tüneli, alçak tonoz'),
-    'yeralti-nehri': (20, 'yeraltı nehri mağarası, şelale geçidi'),
+    'yeralti-nehri': (10, 'su altı geçidi, alçak tünel (kullanıcı kararı, K68b düzeltmesi)'),
     'derinlikler-magara-karakol': (20, 'maden galerisi ve karakol mağarası'),
     'derinlikler-mezar-labirenti': (15, 'mezar koridorları (oda)'),
     'derinlikler-mantar-magarasi': (30, 'dev mantarlı büyük mağara'),
@@ -29,9 +30,6 @@ TAVAN = {
     'hapishane-mudur-kulesi': (15, 'kule katı (oda)'),
     'taverna': (12, 'han salonu, ahşap kirişli tek kat'),
     'kale-taht-salonu': (30, 'taht salonu (salon)'),
-    'isinlanma-salonu': (30, 'portal salonu (salon)'),
-    'lav-tapinagi': (30, 'tapınak salonu (salon)'),
-    'volkanik-demirhane': (25, 'demirhane salonu, ocak kubbesi'),
 }
 
 
