@@ -566,9 +566,13 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
     const p = axialToOffset({ q: start.q + step.q * (i - 1), r: start.r + step.r * (i - 1) });
     if (flow !== null && isUphillStep(state, p, h, flow)) return fail(`${hexLabel(h)}: yürüyen merdivenden yukarı atlanmaz.`);
   }
+  // Kuyruk K71b (sürüm 57+, K7): Long Jump alçak engelin (tepesi atlama mesafesinin dörtte biri ya da altı; SRD "low
+  // obstacle") üstünden geçer; SRD'deki isteğe bağlı DC 10 Atletizm zarı atılmaz (⚠). Mesafe: kanal genişliği (gap × 5 ft).
+  const lowFt = climbOn(state) ? (gap * 5) / 4 : -1;
   for (let i = 1; i <= gap; i++) {
     const h = axialToOffset({ q: start.q + step.q * i, r: start.r + step.r * i });
     const t = terrainAt(state, h);
+    if (lowFt >= 0 && t.movement === 'blocked' && !t.outOfBounds && obstacleTopFt(state, h, t) <= lowFt) continue;
     // Kuyruk K68a (sürüm 52): uçurum ve yarık (`u`, uçan geçer) engel değil boşluk: Long Jump "across a stream or chasm".
     if (t.movement === 'blocked' && !(t.char === 'u' && ruleVersion(state) >= 52)) {
       blocked++;
