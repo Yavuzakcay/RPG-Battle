@@ -23,7 +23,11 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - ⚠ Jump'ın yüksek erişimi ayrı adım (yerinde zıplama, sonra saldırı; SRD High Jump'ta zıplarken uzanılır) ve yüksekliği 30 ft (SRD Jump büyüsü yalnız "jump up to 30 feet" der).
   - ⚠ Tavanın üstündeki irtifa yaratığı aşağı indirir (SRD Enlarge "yerin izin verdiği en büyük boy" der; boy değişmez, irtifa iner).
 - **Açık kalanlar:** K68c (görüş hattında irtifa); karar 10 (duvar üstü ve yüksekliği); herkes için tırmanma; altıgen başına tavan (karışık haritalar tavansız); uçan ve tırmanan düşmanların tam dikey taktiği; Jump havadaki yay; Call Lightning fırtına kontrolü; çok katlı binalar (planın §8).
-- **Ölçüm:** ana parça 374 543 bayt (değişmedi: harita JSON'ları ayrı parçalarda, `tavanFt` satırları 17 harita parçasına girdi). Yapay zekâ karar süresi ve yürüme yolu: aşağıda (Mantar Mağarası 31×17, tavan 30 ft).
+- **Ölçüm:**
+  - Ana parça 374 543 bayt, değişmedi. Harita JSON'ları ayrı parçalarda; `tavanFt` satırları 17 harita parçasına girdi.
+  - YZ karar süresi: sürüm 51'de 1,74 ms, sürüm 52'de 1,79 ms. Sahne: Mantar Mağarası 31×17, tavan 30 ft, karanlık, 8 yaratık; ısınmadan sonra 20 tekrar, üçüncü tur.
+  - Yürüme yolu (`moveCostFn` + `findPath`, 4 yaratık × 4 hedef × 50): sürüm 51 1,70 ms, sürüm 52 yerde 1,62–1,72 ms, tavanda yürüyen tırmanıcı 1,46 ms.
+  - Hızlı regresyon (`sim:tek` 30 tohum, seviye 3; Çöl, Orman, Mağara, Kale): sürüm 52 ile 51 birebir aynı (kazanma %80/%73/%63/%80, tur, ölüm).
 - **Test:** `src/battle/k68b.test.ts` (21; her maddede sürüm 52 ve eski davranış değişen yerde sürüm 51 sabitlemesi): 17 haritanın tavanı; üst sınır boylara göre; uçuş kırpma/51'de 30 ft; Levitate yükselmesi lağımda 5 ft/51'de 20; tavan üstü irtifa kırpma/51'de aynen; Levitate tavana tutunma/51'de yok; Spider Climb tırmanma (açık alan 20 ft, ortada yok), engel ve uçurum, duvar/tavanda yürüme, düşme (konsantrasyon, Prone), erişim, 51'de yok; Call Lightning bulutu, tekrar bulut merkezinden, uçan hedef/51'de dışarıda, tabanın üstü, alçak tavan/51'de serbest, konsantrasyonla bitiş; Jump yüksek erişim, tavan sınırı/51'de yok; YZ `k68:tirman`/51'de yok.
 
 ## 2026-11-08 — Kuyruk K68a: Dikey geometri, düşük riskli parça (kural sürümü 52)
