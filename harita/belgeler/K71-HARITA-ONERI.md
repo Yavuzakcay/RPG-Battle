@@ -1,8 +1,10 @@
-# K71a: 23 duvarlı açık harita için dikey veri önerisi (onay bekliyor)
+# K71a: 23 duvarlı açık harita için dikey veri önerisi (K71b'de onaylandı)
 
-Üreten: `python scripts/k71-dikey.py --oneri`. **Bu öneriler haritalara yazılmadı:** kullanıcı onayına dek bu 23 harita
-K68c varsayılanıyla oynanır (duvar `s`/`O` 20 ft, ağaç 30 ft, diğer harfler `data/dikey.json`). Onaylanan değerler
-`scripts/k71-dikey.py` `ONAYLI` tablosuna yazılır ve betik varyantlara `"dikey": {...}` satırı ekler.
+Üreten: `python scripts/k71-dikey.py --oneri`. **Kuyruk K71b:** öneri tablosu kullanıcı onayıyla `scripts/k71-dikey.py`
+`ONAYLI` tablosuna yazıldı ve betik varyantlara `"dikey": {...}` satırı ekledi (duvar boyu `harfFt` `s`/`O`). Bina içi
+tavan bölgesi yalnız açık zemin (`.`) içermeyen kapalı alanlarda (kale-avlu, kale-baskini: iki 3×3 oda, 15 ft); açık zeminli
+kapalı alanlar avludur, tavansız (kale-avlu/kale-baskini 162 altıgen, kale-ic-avlu 93 altıgen). Bölgesi bulunamayan iç
+tavan önerileri işlenmedi (elle bölge gerekir).
 
 ⚠ Sur/bina boyları ve bina içi bölgeleri görselden doğrulanmalı; kapalı alan tespiti zemin harflerinden (duvar `s`,
 kapalı kapı `O`, kapı/geçit `o`, harita dışı `#` geçilmez sayılarak kenardan ulaşılamayan alanlar). Kapısı açık

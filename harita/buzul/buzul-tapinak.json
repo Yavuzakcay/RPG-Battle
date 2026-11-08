@@ -154,6 +154,7 @@
   "variants": [
     {
       "id": "gunduz",
+      "dikey": {"harfFt": {"s": 20, "O": 20}},
       "name": "Gündüz",
       "nameEn": "Day",
       "image": "maps/buzul/buzul-tapinak.webp",
@@ -215,6 +216,7 @@
     },
     {
       "id": "gece",
+      "dikey": {"harfFt": {"s": 20, "O": 20}},
       "name": "Gece",
       "nameEn": "Night",
       "image": "maps/buzul/buzul-tapinak-gece.webp",

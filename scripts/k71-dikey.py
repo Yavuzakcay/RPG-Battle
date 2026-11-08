@@ -5,8 +5,8 @@ Yaptığı işler (idempotent; harita üreticilerinden SONRA çalıştırılır;
 1. **Tavan (`tavanFt`, K68b, sürüm 52+):** `TAVAN` tablosundaki 14 haritanın BÜTÜN varyantlarına `"tavanFt": N` satırı
    (varyantın `id` satırının altına); tabloda olmayan haritalardan eski satır silinir. Değerler K68b'den aynen.
 2. **Altıgen/harf ezmesi (`dikey`, K71a, sürüm 56+):** `ONAYLI` tablosundaki haritaların varyantlarına tek satır
-   `"dikey": {...}` (harfFt, engel, tavan, tavanBolge). Kullanıcı onayı gelene dek tablo BOŞ: 23 duvarlı açık harita
-   K68c varsayılanıyla (duvar 20 ft, `data/dikey.json` harf tablosu) oynanır.
+   `"dikey": {...}` (harfFt, engel, tavan, tavanBolge). Kuyruk K71b: 23 duvarlı açık haritanın değerleri onaylandı
+   (K71a öneri tablosu); bina içi tavan bölgesi yalnız tespit edilen odalarda (avlular tavansız).
 3. **Öneri raporu** (`--oneri`): `harita/belgeler/K71-HARITA-ONERI.md`: 59 haritanın engel harfi sayıları ve harf
    tablosundaki yükseklikleri; 23 duvarlı açık haritada duvar bileşenleri (altıgen aralığı), önerilen sur/bina boyu,
    duvarla çevrili kapalı alanlar (bina içi tavan bölgesi önerisi) ve gerekçe. Haritalara yazmaz.
@@ -40,9 +40,46 @@ TAVAN = {
     'kale-taht-salonu': (30, 'taht salonu (salon)'),
 }
 
-# --- 2. Onaylı altıgen/harf ezmeleri (kullanıcı onayından sonra doldurulur) ------------------------------------------------
+# --- 2. Onaylı altıgen/harf ezmeleri (Kuyruk K71b: kullanıcı onayı, K71a öneri tablosu aynen) ------------------------------
 # kimlik: { 'harfFt': {...}, 'engel': {'s,r': ft}, 'tavan': {'s,r': ft}, 'tavanBolge': [{'dikdortgen': [c0, r0, c1, r1], 'ft': N}] }
-ONAYLI: dict = {}
+# Duvar boyu `s` ve duvardaki kapalı kapı `O` için aynı değer (kapı lentosunun üstü duvar). Bina içi tavan bölgesi yalnız
+# betiğin kapalı alan tespitinin bulduğu odalarda (kale-avlu, kale-baskini: 3×3'lük iki oda, dikdörtgen tam); açık zemin
+# (`.`) içeren kapalı alanlar avludur (kale-avlu/kale-baskini 162 altıgenlik avlu, kale-ic-avlu 93 altıgenlik iç avlu):
+# tavansız kalır (⚠ K71b kararı: avluya tavan konmaz). Önerideki diğer iç tavan değerleri (saray odaları 20, hapishane/
+# kasaba odaları 12, şehir 15, buzul tapınağı 20) bölgesi bulunamadığı için işlenmedi: elle bölge gerekir.
+def _duvar(ft, oda=None):
+    d = {'harfFt': {'s': ft, 'O': ft}}
+    if oda:
+        d['tavanBolge'] = [{'dikdortgen': list(r), 'ft': oda[0]} for r in oda[1]]
+    return d
+
+
+_KALE_ODALAR = (15, [(22, 4, 24, 6), (22, 10, 24, 12)])
+ONAYLI: dict = {
+    'kale': _duvar(30),
+    'kale-baskini': _duvar(30, _KALE_ODALAR),
+    'kale-avlu': _duvar(30, _KALE_ODALAR),
+    'kale-ic-avlu': _duvar(30),
+    'kale-onu': _duvar(30),
+    'beyaz-sehir-dis-kapi': _duvar(30),
+    'batak-kale': _duvar(25),
+    'beyaz-sehir-saray-avlusu': _duvar(30),
+    'hapishane-dis-halka': _duvar(20),
+    'hapishane-iskele': _duvar(20),
+    'kasaba-han': _duvar(15),
+    'kasaba-demirci-tapinak': _duvar(15),
+    'sehir-meydani': _duvar(20),
+    'orman-ork-kampi': _duvar(10),
+    'orman-oduncu-kampi': _duvar(10),
+    'orman-kemik-acikligi': _duvar(10),
+    'orman-heykel-golu': _duvar(15),
+    'buzul-tapinak': _duvar(20),
+    'kanyon-koprusu': _duvar(20),
+    'volkanik-demirhane': _duvar(20),
+    'isinlanma-salonu': _duvar(20),
+    'lav-tapinagi': _duvar(20),
+    'ortamlar-diyari': _duvar(20),
+}
 
 # --- 3. Öneri: 23 duvarlı açık haritanın kategorisi (duvar boyu, kapalı alan tavanı, gerekçe) -------------------------------
 KATEGORI = {
@@ -148,9 +185,14 @@ def write_maps(dry):
         dik = ONAYLI.get(mid)
         text2 = re.sub(r'\n[ \t]*"tavanFt": \d+,', '', text)
         text2 = re.sub(r'\n[ \t]*"dikey": \{.*\},', '', text2)
+        if mid in TAVAN or mid in ONAYLI:
+            seen.add(mid)
+        if dik and dik.get('tavanBolge'):
+            rooms = {bbox(c) for c in enclosed(first_tiles(data)) if not any(first_tiles(data)[r][cc] == '.' for cc, r in c)}
+            for b in dik['tavanBolge']:
+                if tuple(b['dikdortgen']) not in rooms:
+                    raise SystemExit(f'{path}: onaylı oda {b["dikdortgen"]} kapalı alan tespitiyle eşleşmiyor')
         if want or dik:
-            if want:
-                seen.add(mid)
             start = text2.index('"variants"')
             ins, pos = [], start
             for v in data.get('variants', []):
@@ -173,7 +215,7 @@ def write_maps(dry):
             touched.append(f'{mid} ({path})')
             if not dry:
                 open(path, 'w', encoding='utf-8', newline='\n').write(text2)
-    missing = sorted(set(TAVAN) - seen)
+    missing = sorted((set(TAVAN) | set(ONAYLI)) - seen)
     if missing:
         raise SystemExit(f'Haritası bulunamayan kimlikler: {", ".join(missing)}')
     print(f'{len(touched)} harita değişti ({len(TAVAN)} tavanlı, {len(ONAYLI)} onaylı dikey ezme):')
@@ -226,10 +268,12 @@ def report():
                 lines.append('- **Kapalı alan:** yok (duvarlar alanı tamamen çevirmiyor; bina içi tavanı elle bölge gerekir).')
             lines.append('')
             sections.append('\n'.join(lines))
-    out = ['# K71a: 23 duvarlı açık harita için dikey veri önerisi (onay bekliyor)', '',
-           'Üreten: `python scripts/k71-dikey.py --oneri`. **Bu öneriler haritalara yazılmadı:** kullanıcı onayına dek bu 23 harita',
-           'K68c varsayılanıyla oynanır (duvar `s`/`O` 20 ft, ağaç 30 ft, diğer harfler `data/dikey.json`). Onaylanan değerler',
-           '`scripts/k71-dikey.py` `ONAYLI` tablosuna yazılır ve betik varyantlara `"dikey": {...}` satırı ekler.', '',
+    out = ['# K71a: 23 duvarlı açık harita için dikey veri önerisi (K71b\'de onaylandı)', '',
+           'Üreten: `python scripts/k71-dikey.py --oneri`. **Kuyruk K71b:** öneri tablosu kullanıcı onayıyla `scripts/k71-dikey.py`',
+           '`ONAYLI` tablosuna yazıldı ve betik varyantlara `"dikey": {...}` satırı ekledi (duvar boyu `harfFt` `s`/`O`). Bina içi',
+           'tavan bölgesi yalnız açık zemin (`.`) içermeyen kapalı alanlarda (kale-avlu, kale-baskini: iki 3×3 oda, 15 ft); açık zeminli',
+           'kapalı alanlar avludur, tavansız (kale-avlu/kale-baskini 162 altıgen, kale-ic-avlu 93 altıgen). Bölgesi bulunamayan iç',
+           'tavan önerileri işlenmedi (elle bölge gerekir).', '',
            '⚠ Sur/bina boyları ve bina içi bölgeleri görselden doğrulanmalı; kapalı alan tespiti zemin harflerinden (duvar `s`,',
            'kapalı kapı `O`, kapı/geçit `o`, harita dışı `#` geçilmez sayılarak kenardan ulaşılamayan alanlar). Kapısı açık',
            '(`o` dışında geçiş olan) binalar kapalı alan çıkmaz: onlar için bölge elle verilir.', '',

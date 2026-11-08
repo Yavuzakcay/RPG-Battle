@@ -108,6 +108,7 @@
  "variants": [
   {
    "id": "los",
+   "dikey": {"harfFt": {"s": 20, "O": 20}},
    "name": "Loş",
    "nameEn": "Dim",
    "image": "maps/hapishane/hapishane-dis-halka.webp",

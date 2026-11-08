@@ -207,6 +207,7 @@
  "variants": [
   {
    "id": "varsayilan",
+   "dikey": {"harfFt": {"s": 20, "O": 20}},
    "name": "Volkan Seferi",
    "nameEn": "Volcano Expedition",
    "image": "maps/volkan/volkan-tapinak.webp",

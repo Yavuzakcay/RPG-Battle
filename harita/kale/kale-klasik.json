@@ -182,6 +182,7 @@
   "variants": [
     {
       "id": "gunduz",
+      "dikey": {"harfFt": {"s": 30, "O": 30}},
       "name": "Gündüz",
       "image": "maps/kale/kale-klasik.webp",
       "rules": [
@@ -230,6 +231,7 @@
     },
     {
       "id": "gece",
+      "dikey": {"harfFt": {"s": 30, "O": 30}},
       "name": "Gece",
       "image": "maps/kale/kale-klasik-gece.webp",
       "rules": [

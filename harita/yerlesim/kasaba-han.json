@@ -127,6 +127,7 @@
  "variants": [
   {
    "id": "gunduz",
+   "dikey": {"harfFt": {"s": 15, "O": 15}},
    "name": "Gündüz",
    "nameEn": "Day",
    "image": "maps/yerlesim/kasaba-han.webp",
@@ -135,6 +136,7 @@
   },
   {
    "id": "gece",
+   "dikey": {"harfFt": {"s": 15, "O": 15}},
    "name": "Gece",
    "nameEn": "Night",
    "image": "maps/yerlesim/kasaba-han-gece.webp",

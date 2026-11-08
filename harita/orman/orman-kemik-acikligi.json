@@ -176,6 +176,7 @@
  "variants": [
   {
    "id": "gunduz",
+   "dikey": {"harfFt": {"s": 10, "O": 10}},
    "name": "Gündüz",
    "nameEn": "Day",
    "image": "maps/orman/orman-kemik-acikligi.webp",
@@ -233,6 +234,7 @@
   },
   {
    "id": "gece",
+   "dikey": {"harfFt": {"s": 10, "O": 10}},
    "name": "Gece",
    "nameEn": "Night",
    "image": "maps/orman/orman-kemik-acikligi-gece.webp",

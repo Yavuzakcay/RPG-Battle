@@ -219,6 +219,7 @@
   "variants": [
     {
       "id": "gunduz",
+      "dikey": {"harfFt": {"s": 30, "O": 30}, "tavanBolge": [{"dikdortgen": [22, 4, 24, 6], "ft": 15}, {"dikdortgen": [22, 10, 24, 12], "ft": 15}]},
       "name": "Şafak baskını",
       "nameEn": "Dawn raid",
       "image": "maps/kale/kale-baskini.webp",

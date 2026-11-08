@@ -203,7 +203,9 @@ describe('K71a açık alanda tırmanma sınırı ve veri', () => {
     expect(withCeil.map((m) => m.id).sort()).toEqual(Object.keys(table).sort());
     for (const m of withCeil) for (const v of m.variants) expect([m.id, v.tavanFt]).toEqual([m.id, table[m.id]]);
   });
-  it('henüz onaylı dikey ezme yok: hiçbir harita varyantında `dikey` alanı yok (23 harita öneride)', () => {
-    expect(maps.flatMap((m) => m.variants.filter((v) => v.dikey).map((v) => `${m.id}/${v.id}`))).toEqual([]);
+  it('onaylı dikey ezme yalnız 23 duvarlı açık haritada (Kuyruk K71b onayı; tavanlı 14 haritada yok)', () => {
+    const withDikey = [...new Set(maps.flatMap((m) => m.variants.filter((v) => v.dikey).map(() => m.id)))];
+    expect(withDikey).toHaveLength(23);
+    expect(withDikey.some((id) => maps.find((m) => m.id === id)?.variants.some((v) => v.tavanFt !== undefined))).toBe(false);
   });
 });
