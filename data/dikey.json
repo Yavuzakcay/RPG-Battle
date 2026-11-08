@@ -1,0 +1,17 @@
+{
+  "note": "Kuyruk K71a (kural sürümü 56+; K71-PLAN karar K1, K12): engel tepesi harf tablosu (ft, altıgendeki engelin zeminden yüksekliği). Okuma sırası `src/battle/vertical.ts` `engelTepeFt`: alan (Wall of Stone/Ice paneli 10, geçici engel sonsuz) > nesne `yukseklikFt` > varyant `dikey.engel` altıgen ezmesi > varyant `dikey.harfFt` > bu tablo > sonsuz (bugünkü tam engel). Tavanlı altıgende (`tavanFt` ya da `dikey.tavan`/`tavanBolge`) geçilmez (blocked) engel tavana dek uzanır (sonsuz). ⚠ SRD 5.2.1 duvar/engel yüksekliği vermez: değerler tasarım. `O` (duvardaki kapalı kapı) duvarla aynı: kapı lentosunun üstü duvardır. Uçurum `u`, coşkun nehir `R` engel değil (uçan zaten geçer); dış kayalık `#` harita dışı (sonsuz). Tek kaynak `python scripts/k71-dikey.py` (bu tabloyu okur; haritalara yazmaz).",
+  "harfFt": {
+    "s": 20,
+    "O": 20,
+    "a": 30,
+    "c": 15,
+    "m": 10,
+    "v": 10,
+    "e": 10,
+    "r": 5,
+    "k": 5,
+    "x": 5,
+    "d": 5,
+    "g": 5
+  }
+}
