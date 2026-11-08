@@ -132,3 +132,22 @@ açıkken) ya da bilerek tek altıgen kalanın gerekçesi.
 - Hatalı (K69'da düzelecek): tırmanıcı duvar denetimi, yakalamanın sürmesi, itmede yarık.
 - Bilerek tek altıgen: koni/çizgi çıkışı, bataklık saplanması, gizlenme yeri, seyrek nokta menzilleri (tutuşturma, serbest
   şekil, Passwall, nesneye saldırı).
+
+## K69 sonrası durum (Görev 1–2, kural sürümü 53, yalnız bayrak açıkken)
+
+- **Kapanan eksikler (19):**
+  - Çağırma, ışınlanma ve atlama varışı; sürükleme.
+  - Nokta menzilleri (alan, ışınlanma, çağırma); alan siperi.
+  - Yüzey tepkimesi, patlama, karışım, tutuşma; harita mekanikleri (Orman, Buzul/Dağ/Bataklık, Çöl).
+  - İtmede lav; çarpma; YZ çağırma yeri.
+  - Arayüz: taban izi, hedef satırı, anahtar adı, Gargantuan reddi.
+- **Düzelen hatalar (3):** tırmanıcı duvar denetimi gövdeden, yakalama gövdeler arası, itmede yarık (tek düşme).
+- **Ek:** tur sonu tehlikede en kötü gövde altıgeni (bir kez).
+- **Yok kalan:** Squeezing (SRD 5.2.1'de yok, ⚠ dar geçit yasak).
+- **Bilerek tek altıgen (değişmedi):** koni/çizgi çıkışı, bataklık, gizlenme yeri, seyrek nokta menzilleri.
+- **Açık:**
+  - Large 3 altıgen (A6 şekli).
+  - Yarığa düşen gövdenin çevresi sığma denetimsiz.
+  - Uçuş bitişinde zemin yeniden denetlenmez.
+  - Büyük yaratık taktiği K73.
+- Ayrıntı: DECISIONS.md "Kuyruk K69", `harita/belgeler/COKLU-ALTIGEN.md`.

@@ -60,11 +60,35 @@ Kod: `src/rules/footprint.ts` (`SHAPES`, `footprint`, `footprintDistance`, `fits
 | Yapay zekâ | hedef sıralaması, bitişiklik, yaklaşma gövdeler arası (`gap`, `footprintDistance`) | `ai.ts` |
 | Arayüz | Game Master kurulumunda "Büyük yaratıklar birden çok altıgen kaplar (deneysel)" | `GmScreen.tsx` |
 
+### Kuyruk K69 eklemeleri (kural sürümü 53; yalnız bayrak açıkken, sürüm 52 ve altı değişmez)
+
+Ortak ayak izi çözücüsü `src/battle/body.ts`: `isMultiHex53`, `footprintOf`, `touches`/`touchesHexes` (yaratık başına bir
+kez), `reachToHex` (gövdenin en yakın altıgeninden), `auraGap`; sığma `movement.ts` `bodyFitProblem`. Denetim
+`harita/belgeler/K69-DENETIM.md`.
+
+| Konu | Kural | Yer |
+|---|---|---|
+| Gargantuan sınırı | Game Master seçicisi bayrak açıkken 15×7'de Gargantuan'ı reddeder (neden satırı); motorun Huge'a küçültmesi (`multiHexMax`) eski kayıtlar için kaldı | `app/setup.ts` `gargantuanTooBig`, `GmScreen.tsx` |
+| Varış sığması | ışınlanma, çağırma (en yakın sığan yer), atlama inişi, yakalama sürüklemesi: gövdenin her altıgeni harita içinde, geçilebilir, boş; yoksa neden satırı | `teleport.ts`, `summons.ts`, `movement.ts`, `grapple.ts` |
+| Menzil | ışınlanma, çağırma ve alan noktası menzili büyük yaratığın gövdesinin en yakın altıgeninden | `reachToHex` |
+| Yüzey/zemin tetikleri | patlama, yüzey karışımı, tutuşma, `hexResolver` hasarı, Orman/Buzul/Dağ/Bataklık/Çöl mekanikleri gövdenin herhangi bir altıgeninde, yaratık başına bir kez | `touches` |
+| Tur sonu tehlike | gövdedeki tehlikelerin en kötüsü (ortalama hasar), bir kez | `turnEndMapEvents` |
+| İtme | gövdenin bir altıgeni açık yarıkta → tek düşme (derinlik kadar, çapa en yakın yarık altıgenine); bir altıgeni lavsa lav; çarpma ön kenardaki ilk yaratıkla | `pushOutcome`, `forcedMove` |
+| Alan siperi | büyük hedefte origine en yakın 7 gövde altıgeninin en iyi hattı | `coverFrom` |
+| Aura | merkez sahibinin çapası, kapsama hedefin ayak izi | `auraGap` |
+| Tırmanma | gövdenin herhangi bir altıgeni duvar dibindeyse tutunur | `altitude.ts` `nearWall` |
+| Yapay zekâ | alan puanında büyük yaratık bir kez | `ai.ts` |
+| Arayüz | gövde tabanı (`.body-base`), hareket nişanında gövde izi, hedef bilgisinde "Huge: 7 altıgen" (TR/EN), anahtar "Çok altıgenli büyük yaratıklar (deneysel)" | `MapBattle.tsx`, `mapView.ts` |
+
 ### Kalanlar
 
-1. **Atlama, ışınlanma, uçuş inişi, yakalama sürüklemesi**: gövde sığma denetimi yok.
-2. **Görsel**: gövde altıgenleri için taban gölgesi; hedef hüzmesi gövde ortasında.
-3. Serüven ve yolculuk savaşları bayrağı açmaz (yalnızca Game Master kurulumu); simülasyonda yok.
+1. **Large şekli 3 altıgen** (K69 isteği 4; A6 şekli korundu): 4 altıgenlik karşılık simetrik değil, çapa ve yol bulma
+   değişirdi. Aura merkezi Large'da üçgenin köşesi (çapa).
+2. **Yarığa düşen gövde**: çapa en yakın yarık altıgenine iner; gövdenin geri kalanının sığması denetlenmez.
+3. **Uçuş bitişi**: havadaki büyük gövde indiğinde altındaki zemin (lav, yarık) yeniden denetlenmez.
+4. **Koni/çizgi çıkışı** büyük yaratıkta çapadan (gövde kenarından değil); gizlenme yeri, bataklık çapadan (bilerek tek altıgen).
+5. Serüven ve yolculuk savaşları bayrağı açmaz (yalnızca Game Master kurulumu); simülasyonda yok.
+6. Yeni taktik yok (K73): büyük yaratık için ayrı yaklaşma/çevreleme davranışı.
 
 ## Testler
 
@@ -72,3 +96,6 @@ Kod: `src/rules/footprint.ts` (`SHAPES`, `footprint`, `footprintDistance`, `fits
 - `src/battle/multihex.test.ts`: bayrak; doluluk; erişim gövdeye; hareket (engel, kenar, doluluk); fırsat saldırısı;
   Huge yerleştirme. Bayrak kapalıyken aynı konumlarda eski sonuç.
 - `src/battle/k43multihex.test.ts` (Kuyruk 43): Gargantuan sınırı, otomatik yerleşim, alan tetiği gövdeye, itme, görüş, yapay zekâ hedef sırası.
+- `src/battle/k69.test.ts` (Kuyruk K69): şekiller, Gargantuan 15×7 reddi, varış sığması, zemin bir kez, tur sonu, yarık, lav,
+  çarpma, siper, alan, aura, yakalama, tırmanma, dar geçit, fırsat saldırısı, YZ sayımı, hızlı yol sayacı, kayıt.
+- `src/sim/k69Regresyon.test.ts`: bayrak kapalı sürüm 52 = 53 (4 senaryo; `K69_TOHUM=30` tam ölçüm).

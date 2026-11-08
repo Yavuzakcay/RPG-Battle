@@ -2,6 +2,62 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-08 — Kuyruk K69: Çok altıgenli yaratıkların kalanları (kural sürümü 53)
+
+- **Sürüm:** `wip/k69` (3f09722 üstüne). Kural sürümü 52 → 53; yeni davranış yalnız `multiHex` açıkken ve sürüm 53'te.
+  - Sürüm 52 ve altı oyun, kayıt ve tekrar için değişmez.
+  - `SAVE_VERSION` 22 kaldı: bayrak zaten durumdaydı. Bayrağı olmayan eski kayıt kapalı sayılır (test).
+- **Hızlı yol:** bütün yeni dallar `isMultiHex53` (bayrak + sürüm + L/H/G) arkasında. Kapalıyken eski kod aynen çalışır.
+  - `bodyStats.multi` sayacı kapalıyken artmaz (test).
+  - Regresyon `src/sim/k69Regresyon.test.ts`: 4 senaryo, sürüm 52 = 53, 30 tohum geçti.
+- **Ortak ayak izi çözücüsü:**
+  - `body.ts`: `footprintOf`, `touches`/`touchesHexes` (yaratık başına bir kez), `reachToHex` (gövdenin en yakın altıgeni), `auraGap`.
+  - `movement.ts`: `bodyFitProblem` (her gövde altıgeni harita içinde, geçilebilir, boş).
+  - Denetim (61 satır): `harita/belgeler/K69-DENETIM.md`; özet tablo `harita/belgeler/COKLU-ALTIGEN.md`.
+- **Kararlar ve SRD'den sapmalar:**
+  - ⚠ **Large 3 altıgen** (istek 4). A6 şekli esas alındı: 4 altıgenlik küme altıgen ızgarada simetrik değil, çapa ve yol bulma değişirdi. Huge 7, Gargantuan 19 aynı.
+  - **Gargantuan 15×7:** bayrak açıkken Game Master seçicisi reddeder ve neden satırı gösterir (`gargantuanTooBig`, en az 21×11). Motorun Huge'a küçültmesi (`multiHexMax: 'H'`) eski kayıtlar ve seçici dışı yollar için kaldı.
+  - ⚠ **Dar geçit:** SRD 5.2.1'de Squeezing kuralı yok (2014 kuralıydı). Gövde sığmayan aralıktan geçilmez; "bir boy küçük" sıkışma yok.
+  - **Zemin bir kez:** yüzey patlaması, karışım, tutuşma, `hexResolver` hasarı ve Orman/Buzul/Dağ/Bataklık/Çöl mekanikleri yaratığı bir kez etkiler, gövdenin herhangi bir altıgeni yeterli.
+    - Tur sonu tehlikede gövdedeki en kötü zemin (ortalama hasar), bir kez.
+    - Yürürken zemine giriş A6 gibi adım başına, harf başına bir kez (tek altıgenliler de her adımda etkilenir).
+  - **Yarık:** itmede gövdenin herhangi bir altıgeni açık yarıktaysa tek düşme, derinlik kadar (K68a). Çapa, itme hedefine en yakın yarık altıgenine iner.
+    - ⚠ Gövdenin geri kalanının o çapada sığması denetlenmez.
+  - **Lav:** itmede gövdenin herhangi bir altıgeni lavsa lav; uçan hariç.
+  - **Çarpma:** itilen gövdenin önündeki ilk yaratıkla (gövdenin her altıgeninin hedefinde dolu altıgen).
+  - **Görüş:**
+    - Saldırıda A6'nın en iyi çifti aynen.
+    - Alan siperinde (`coverFrom`) büyük hedefin origine en yakın 7 gövde altıgeninden en iyi hat.
+    - K68c'nin iki uç zeminde hızlı yolu korunur.
+  - **Menzil:** ışınlanma, çağırma ve alan noktası menzili büyük yaratığın gövdesinin en yakın altıgeninden.
+  - **Aura:** merkez sahibinin çapası, kapsama hedefin ayak izi (SRD: emanation "extends from a creature").
+    - ⚠ Huge ve Gargantuan'da çapa ortada. Large'da üçgenin köşesi; gövde kenarından ölçmek yerine basitlik.
+  - **Varış sığması:** ışınlanma, çağırma, atlama inişi ve yakalama sürüklemesinde gövde sığmazsa red ve neden satırı.
+    - Çağırma için en yakın sığan yer aranır, boyut çağrılanın boyutu.
+    - A6'da Gargantuan, gövdesi sığmayan altıgene atlayabiliyordu; düzeldi.
+  - **Tırmanma:** gövdenin herhangi bir altıgeni duvar dibindeyse tutunur.
+  - **Yakalama:** büyük yakalayanda bitişiklik gövdeler arası (`gap`).
+  - **Yapay zekâ:** alan puanında büyük yaratık bir kez sayılır. Yeni taktik yok (K73).
+- **Arayüz:**
+  - Büyük yaratık gövde tabanı (`.body-base`) ve hareket nişanında gövde izi.
+  - Hedef bilgisinde "Huge: 7 altıgen" (TR/EN).
+  - Game Master anahtarı "Çok altıgenli büyük yaratıklar (deneysel)", varsayılan kapalı, açıklama satırıyla. Seçicide Gargantuan için ⚠.
+- **Ölçüm** (Mantar Mağarası sahnesi, 100 karar ortalaması, ısınma hariç):
+
+  | Durum | Sonuç |
+  |---|---|
+  | Bayrak kapalı, önce (3f09722, sürüm 52) | 1,56–1,84 ms, ortanca 1,72 |
+  | Bayrak kapalı, sonra (sürüm 53) | 1,44–1,91 ms (tek aykırı 2,41), ortanca 1,68; sınır 2,06 |
+  | Bayrak açık, Kale avlusu 31×17, Large | 4,3–5,0 ms; A6'da 4,6–6,2; aynı sahne kapalı 2,8–3,2 |
+  | Bayrak açık, Kale avlusu 31×17, Gargantuan | 4,5–5,0 ms; A6'da 5,6–5,8; aynı sahne kapalı 2,9–3,3 |
+
+  Mantar Mağarası'nda büyük gövde dar geçitlere sığmadığı için hareket etmiyor (A6'dan beri); açık ölçüm bu yüzden avluda.
+- **Açık kalanlar:**
+  - Uçuş bitince altındaki zemin (lav, yarık) yeniden denetlenmez.
+  - Koni/çizgi çıkışı, gizlenme yeri ve bataklık çapadan (bilerek tek altıgen).
+  - Serüven ve simülasyon bayrağı açmaz.
+  - Büyük yaratık taktiği (K73).
+
 ## 2026-11-08 — Kuyruk K68c: Görüş hattında irtifa (kural sürümü 52, aynı sürüm)
 
 - **Sürüm:** `wip/k68` (5effaad üstüne); kural sürümü 52'de kaldı (K68a/b ile aynı). Sürüm 51 ve altı değişmez. Yeni olay, komut ve veri yok; `SAVE_VERSION` 22.
