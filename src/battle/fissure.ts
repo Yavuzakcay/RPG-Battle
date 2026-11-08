@@ -250,27 +250,43 @@ export function executeFissureClimb(s: BattleState, actor: Combatant, cmd: { toF
   return finish(s, events);
 }
 
-/** Yürüyen yaratık için yürünebilir mi (yarık ve engel geçilmez; yaratıklar yok sayılır). */
-function walkable(s: BattleState, h: Offset, cut: Set<string>): boolean {
-  if (cut.has(hexKey(h))) return false;
-  return enterCost(terrainAt(s, h), false) !== null;
-}
-
-/** `from`'dan hedef kümesine yürüyerek varılır mı (BFS). */
-function reaches(s: BattleState, from: Offset, goals: Set<string>, cut: Set<string>): boolean {
-  const size = sizeOf(s);
-  const seen = new Set([hexKey(from)]);
-  const queue = [from];
-  while (queue.length) {
-    const h = queue.shift() as Offset;
-    if (goals.has(hexKey(h))) return true;
-    for (const n of neighbors(h, size)) {
-      const k = hexKey(n);
-      if (seen.has(k) || !walkable(s, n, cut)) continue;
-      seen.add(k); queue.push(n);
-    }
+/**
+ * Yürüme bağlılığı (yapay zekâ): harita altıgenleri dizinle (satır × sütun), komşular ve yürünebilirlik bir kez;
+ * her aday için tek geçişte bağlı bileşen etiketi (yarık ve engel geçilmez; yaratıklar yok sayılır). K66b ölçümü:
+ * aday başına iki BFS × yürüyen yerine tek etiketleme ve aynı hattın bir kez değerlendirilmesi.
+ */
+function walkGrid(s: BattleState, seeds: Offset[]) {
+  const cols = s.map?.tiles[0]?.length ?? 0;
+  const rows = s.map?.tiles.length ?? 0;
+  const size = { cols, rows };
+  const n = cols * rows;
+  const idx = (h: Offset) => h.row * cols + h.col;
+  const nbrs: number[][] = [];
+  const walk = new Uint8Array(n);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    const h = { col: c, row: r };
+    nbrs.push(neighbors(h, size).map(idx));
+    walk[idx(h)] = enterCost(terrainAt(s, h), false) !== null ? 1 : 0;
   }
-  return false;
+  for (const h of seeds) walk[idx(h)] = 1;
+  const label = (cut: Uint8Array): Int32Array => {
+    const comp = new Int32Array(n).fill(-1);
+    const queue = new Int32Array(n);
+    let id = 0;
+    for (let i = 0; i < n; i++) {
+      if (comp[i] !== -1 || !walk[i] || cut[i]) continue;
+      let head = 0, tail = 0;
+      queue[tail++] = i; comp[i] = id;
+      while (head < tail) {
+        const v = queue[head++] as number;
+        for (const w of nbrs[v] as number[]) if (comp[w] === -1 && walk[w] && !cut[w]) { comp[w] = id; queue[tail++] = w; }
+      }
+      id++;
+    }
+    return comp;
+  };
+  const cutOf = (hexes: Offset[]) => { const a = new Uint8Array(n); for (const h of hexes) a[idx(h)] = 1; return a; };
+  return { idx, nbrs, label, cutOf };
 }
 
 /**
@@ -283,25 +299,42 @@ export function fissureAim(s: BattleState, actor: Combatant, foes: Combatant[]):
   const friends = Object.values(s.combatants).filter((c) => c.pos && c.hp > 0 && (c.side === actor.side || c.civilian));
   const pendingHexes = (s.map?.zones ?? []).filter((z) => z.fissure?.pending?.parentId === b.quake.id)
     .flatMap((z) => z.hexes.filter((h) => convertible(s, h)));
-  // Hedef: hatta düşmeyecek düşmanların altıgeni ve komşuları (yarığa düşen düşmana yol aranmaz).
-  const goalsOf = (skip: Set<string>) => new Set(foes.filter((f) => f.pos && f.hp > 0 && !skip.has(hexKey(f.pos)))
-    .flatMap((f) => [f.pos as Offset, ...neighbors(f.pos as Offset, sizeOf(s))]).map(hexKey));
   const walkers = friends.filter((c) => !c.civilian && !isAirborne(c) && !c.summon?.gone && !isIntangible(c));
-  const base = new Set(pendingHexes.map(hexKey));
+  const g = walkGrid(s, walkers.map((c) => c.pos as Offset));
+  const live = foes.filter((f) => f.pos && f.hp > 0);
+  const baseCut = g.cutOf(pendingHexes);
+  const before = g.label(baseCut);
+  // Hedef: hatta düşmeyecek düşmanların altıgeni ve komşuları (yarığa düşen düşmana yol aranmaz).
+  const goalsOf = (cut: Uint8Array) => live.filter((f) => !cut[g.idx(f.pos as Offset)]).flatMap((f) => { const i = g.idx(f.pos as Offset); return [i, ...(g.nbrs[i] as number[])]; });
+  const reach = (comp: Int32Array, w: number, goals: number[]) => goals.some((x) => x === w || (comp[w] as number) >= 0 && comp[x] === comp[w]);
   let best: { at: Offset; dir: number; hexes: Offset[]; cut: number } | null = null;
+  const seen = new Set<string>();
   const anchors = foes.filter((f) => f.pos && f.hp > 0 && !isAirborne(f) && b.quake.hexes.some((h) => sameHex(h, f.pos as Offset))).map((f) => f.pos as Offset);
   for (const at of anchors) {
     for (let dir = 0; dir < 6; dir++) {
-      if (fissureProblem(s, actor, at, dir)) continue;
       const hexes = fissureLine(s, b.quake, at, dir, b.spec.widthHexes).filter((h) => convertible(s, h));
+      const lineKey = hexes.map(hexKey).sort().join(';');
+      if (seen.has(lineKey)) continue;
+      seen.add(lineKey);
+      if (fissureProblem(s, actor, at, dir)) continue;
       const keys = new Set(hexes.map(hexKey));
       const on = (c: Combatant) => !!c.pos && bodyAt(s, c, c.pos).some((x) => keys.has(hexKey(x)));
       if (friends.some(on)) continue;
       const cut = foes.filter((f) => f.hp > 0 && !isAirborne(f) && on(f)).length;
-      if (!cut) continue;
-      const all = new Set([...base, ...keys]);
-      const goals = goalsOf(all);
-      if (goals.size && walkers.some((c) => reaches(s, c.pos as Offset, goals, base) && !reaches(s, c.pos as Offset, goals, all))) continue;
+      if (!cut || (best && cut < best.cut)) continue;
+      const allCut = new Uint8Array(baseCut);
+      for (const h of hexes) allCut[g.idx(h)] = 1;
+      const goals = goalsOf(allCut);
+      if (goals.length) {
+        let after: Int32Array | null = null;
+        const cuts = walkers.some((c) => {
+          const w = g.idx(c.pos as Offset);
+          if (!reach(before, w, goals)) return false;
+          after ??= g.label(allCut);
+          return !reach(after, w, goals);
+        });
+        if (cuts) continue;
+      }
       if (!best || cut > best.cut || (cut === best.cut && hexes.length < best.hexes.length)) best = { at, dir, hexes, cut };
     }
   }

@@ -47,6 +47,7 @@ import { teleportEvent, teleportProblem } from './teleport';
 import { askChoice } from '../rules/choice';
 import { gap } from './body';
 import { areaReachesAltitude, levitateRiseEvents } from './altitude';
+import { quakeCastEvents } from './quake';
 import { executeLevitateObject, executeResizeObject, illusionEvents, recallBlade } from './s2spells';
 import { dropEvents, handsOn, heldMetal, heldWeapons, touchesMetal, wearsMetal } from './heldItems';
 import { OBJECTS } from './objectData';
@@ -561,7 +562,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const extra: BattleEvent[] = done ? [...lingerZoneEvents(r.state, actor, merged, r.events), ...areaObjectEvents(r.state, actor, merged, r.events),
       // Kuyruk S2: Levitate yükselmesi, Phantasmal Force yanılsama alanı.
       ...(merged.mechanics.effect?.levitate ? levitateRiseEvents(r.state, r.events, cmd.altitudeFt) : []),
-      ...(merged.mechanics.illusionAt ? illusionEvents(r.state, actor, merged, cmd, r.events) : [])] : [];
+      ...(merged.mechanics.illusionAt ? illusionEvents(r.state, actor, merged, cmd, r.events) : []),
+      // Kuyruk K66b (sürüm 50): Earthquake dökümde alandaki yapılara 50 Bludgeoning (çöküş, enkaz).
+      ...(merged.mechanics.zone?.structures ? quakeCastEvents(r.state, r.events, rng) : [])] : [];
     const note = merged.mechanics.sigmayan ?? (merged.mechanics.gmNoted && !merged.mechanics.offCombat ? merged.mechanics.gmNote : undefined);
     if (done && note && !repeat) extra.push({ type: 'map_note', text: `Game Master notu — ${spell.name}: ${note}` });
     return extra.length ? finish(state, [...r.events, ...extra]) : r;

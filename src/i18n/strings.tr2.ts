@@ -327,7 +327,10 @@ export const TR_EXTRA = {
     // Kuyruk K66a: Earthquake yarıkları.
     k66: { menu: (n: number, max: number): string => `Yarık yerleştir (${n}/${max})`, head: 'Earthquake: yarık', count: (n: number, max: number): string => `${n}/${max} yarık`,
       hint: 'Altıgene dokun, yönü seç; yarık tur sonunda açılır', dir: ['╲↑', '╲↓', '╱↑', '╱↓', '│→', '│←'], dirName: ['eğik (╲), üst yan', 'eğik (╲), alt yan', 'eğik (╱), üst yan', 'eğik (╱), alt yan', 'dikey, sağ yan', 'dikey, sol yan'], go: 'Yarığı yerleştir',
-      climb: (ft: number): string => `Tırman (yarıkta ${ft} ft)`, climbHint: 'Yarıktan çıkacağın bitişik altıgene dokun', inFissure: (ft: number): string => `Yarıkta (${ft} ft)` },
+      climb: (ft: number): string => `Tırman (yarıkta ${ft} ft)`, climbHint: 'Yarıktan çıkacağın bitişik altıgene dokun', inFissure: (ft: number): string => `Yarıkta (${ft} ft)`,
+      // Kuyruk K66b: yapı hasarı ve çöküş.
+      structures: (n: number, names: string): string => `Yapılar: ${n} çökecek (${names})`, structuresSafe: (n: number): string => `Yapılar: ${n} hasar alır, çökmez`,
+      collapseHits: (foes: number, friends: number): string => `Çöküş: ${foes} düşman · ${friends} dost`, buried: 'Enkaz altında (Kurtul: DC 20 Athletics)', escapeRubble: 'Enkazdan kurtul' },
     s2: { altitude: (ft: number): string => `İrtifa ${ft} ft`, up: '▲ 5 ft', down: '▼ 5 ft', drop: (item: string): string => `${item} bırak`, pick: (item: string): string => `${item} al` },
     start: 'Savaşı başlat',
     explore: { go: 'Keşfe devam', hint: 'Keşif: jetona dokunup seç, yürü; giriş altıgenine varınca Serüven\'e dönülür.' },

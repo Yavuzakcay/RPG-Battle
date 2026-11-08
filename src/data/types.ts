@@ -480,6 +480,12 @@ export interface ZoneSpec {
    * (altıgen), altından yarık geçemeyen yapı nesneleri.
    */
   fissures?: { count: string; depthDie: string; depthStepFt: number; widthHexes: number; structureKinds: string[] };
+  /**
+   * Kuyruk K66b (sürüm 50): Earthquake yapı hasarı (`src/battle/quake.ts`): dökümde ve büyücünün tur sonlarında yapıya hasar;
+   * yükseklik (ft) yapı türü başına (`panel`: Wall of Stone/Ice paneli); çöküş save'i, zarı, enkazdan kurtulma DC'si, enkaz zemini.
+   */
+  structures?: { damage: number; damageType: string; heightsFt: Record<string, number>;
+    collapse: { save: 'dex'; dice: string; type: string; escapeDc: number; rubble: string } };
   rounds?: number;
   difficult?: number;
   ground?: boolean;

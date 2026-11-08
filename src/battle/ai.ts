@@ -23,6 +23,7 @@
  */
 import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf, wallAim } from './freeShape';
 import { fissureAim, fissureBudget, fissureClimbCommand } from './fissure';
+import { quakeForecast } from './quake';
 import { aiLeaveWanted, controlConditions, possessSpecOf, possessionProblem } from './possession';
 import { possessorAt, possessorDisabled } from './possessionCore';
 import { hiddenFromTruesight } from './sight';
@@ -467,6 +468,19 @@ function spareAllies(state: BattleState, actor: Combatant, spell: (typeof spells
   return hexes.length ? { excludeHexes: hexes } : {};
 }
 
+/**
+ * Kuyruk K66b (sürüm 50): Earthquake'in yapı çöküşü (`quakeForecast`): dostu (ya da masumu) vuracak çöküş varsa `null`
+ * (büyü seçilmez), yoksa çöküşün vuracağı ve alanın dışında kalan düşman sayısı (alanın içindekiler zaten sayılır: 0).
+ */
+export function quakeCollapseValue(state: BattleState, actor: Combatant, spell: (typeof spells)[number], hexes: Offset[]): number | null {
+  const spec = mechanicsAt(state, spell).zone?.structures;
+  if (!spec || ruleVersion(state) < 50) return 0;
+  const f = quakeForecast(state, actor, hexes, spec);
+  if (f.friends.length) return null;
+  const keys = new Set(hexes.map((h) => `${h.col},${h.row}`));
+  return f.foes.filter((c) => c.pos && !keys.has(`${c.pos.col},${c.pos.row}`)).length;
+}
+
 function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
   if (!state.map) return null;
   const usable = castable(actor).filter((x) => x.area && x.mechanics.zone && x.mechanics.kind !== 'summon' && !x.mechanics.zone.windWall
@@ -483,7 +497,10 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && !c.summon?.intangible
         && made.zone.hexes.some((h) => h.col === c.pos?.col && h.row === c.pos?.row));
       const foesIn = inside.filter((c) => c.side !== actor.side && !c.civilian);
-      const enemies = foesIn.length;
+      // Kuyruk K66b (sürüm 50, Earthquake): çökecek yapıların vuracağı dost varsa seçilmez; vuracağı düşmanlar sayılır.
+      const collapse = quakeCollapseValue(state, actor, s, made.zone.hexes);
+      if (collapse === null) continue;
+      const enemies = foesIn.length + collapse;
       const friends = inside.filter((c) => (c.side === actor.side || c.civilian) && !(z?.notCaster && c.id === actor.id) && z?.targets !== 'enemies').length;
       // Görev DRUID: hasar veren alan (Moonbeam) tek güçlü (20+ HP) düşmana da.
       const worth = enemies >= 2 || (!!z?.damage && foesIn.some((c) => c.hp >= 20));

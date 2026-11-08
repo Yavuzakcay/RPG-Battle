@@ -27,6 +27,7 @@ import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
 import { collapseFallEvents, executeClimb } from './climb';
 import { executeFissureClimb, executeFissurePlace, fissureClimbApplies, fissureOpenEvents } from './fissure';
+import { quakeTurnEndEvents } from './quake';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { DODGE, dotEvents, executeDodge, executeHelp, timedCondition, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
@@ -552,6 +553,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const opened = fissureOpenEvents(current, actor.id, rng);
     events.push(...opened);
     current = applyEvents(current, opened);
+    // Kuyruk K66b (sürüm 50): Earthquake tur sonunda alandaki yapılara 50 Bludgeoning (çöküş, enkaz).
+    const quaked = quakeTurnEndEvents(current, actor.id, rng);
+    events.push(...quaked);
+    current = applyEvents(current, quaked);
     // Kuyruk K62 (sürüm 46): Delayed Blast Fireball boncuğu +1d6.
     const beadGrow = beadTurnEndEvents(current, actor.id);
     events.push(...beadGrow);

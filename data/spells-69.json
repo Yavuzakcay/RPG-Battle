@@ -1881,7 +1881,9 @@
     }
    },
    "k66": { "zone": { "rounds": 10, "difficult": 2, "on": ["cast"], "save": "dex", "conditions": ["Prone"], "breakConcentration": true, "color": "#8a6b3d", "icon": "🌋", "casterEnd": true,
-     "fissures": { "count": "1d6", "depthDie": "1d10", "depthStepFt": 10, "widthHexes": 2, "structureKinds": ["door", "gate", "tent", "crackedWall"] } } }
+     "fissures": { "count": "1d6", "depthDie": "1d10", "depthStepFt": 10, "widthHexes": 2, "structureKinds": ["door", "gate", "tent", "crackedWall"] },
+     "structures": { "damage": 50, "damageType": "bludgeoning", "heightsFt": { "door": 10, "gate": 15, "tent": 10, "crackedWall": 10, "panel": 10 },
+      "collapse": { "save": "dex", "dice": "12d6", "type": "bludgeoning", "escapeDc": 20, "rubble": "t" } } } }
   },
   "school": "Transmutation",
   "srdPage": 127,

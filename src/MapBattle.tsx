@@ -9,6 +9,7 @@ import { activePossession, possessedEffect } from './battle/possessionCore';
 import { setupWardOf } from './battle/possession';
 import { freeAddProblem, freeRemoveProblem, freeShapeOf, pathAddProblem } from './battle/freeShape';
 import { fissureBudget, fissureProblem, inFissure } from './battle/fissure';
+import { isBuried, quakeForecast } from './battle/quake';
 import { imzaHex as imzaHex0, imzaTargeted as imzaTargeted0 } from './battle/imza';
 import type { UsableFeature } from './battle/types';
 
@@ -1348,7 +1349,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       act: () => run({ type: 'escape_grapple', actorId }) }] : []),
     ...(stuckInBog(state, actor) ? [{ key: 'escape', label: N.escape, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
     // CILA: büyünün tuttuğu yaratık (Entangle, Web) eylemle Athletics kontrolüyle kurtulur.
-    ...(!stuckInBog(state, actor) && actor.effects?.some((e) => e.escapeCheck) ? [{ key: 'escapeSpell', label: N.escapeSpell, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
+    ...(!stuckInBog(state, actor) && actor.effects?.some((e) => e.escapeCheck) ? [{ key: 'escapeSpell', label: isBuried(actor) ? B.k66.escapeRubble : N.escapeSpell, reason: why({ type: 'escape', actorId }) ?? undefined, act: () => run({ type: 'escape', actorId }) }] : []),
     ...(actor.pos && Object.values(state.combatants).some((c) => c.side === actor.side && c.id !== actor.id && c.pos && actor.pos
       && distance(c.pos, actor.pos) === 1 && stuckInBog(state, c))
       ? [{ key: 'pull', label: N.pull, reason: why({ type: 'pull', actorId, targetId: '' }) ?? undefined, act: () => { reset(); setMode('pull'); setMenuOpen(false); } }] : []),
@@ -1811,6 +1812,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                         ...((c.altitudeFt ?? 0) > 0 ? [{ key: 'alt', icon: `↑${c.altitudeFt}`, title: B.s2.altitude(c.altitudeFt ?? 0) }] : []),
                         // Kuyruk K66a: yarıkta (eksi irtifa).
                         ...((c.altitudeFt ?? 0) < 0 ? [{ key: 'alt', icon: `↓${-(c.altitudeFt ?? 0)}`, title: B.k66.inFissure(-(c.altitudeFt ?? 0)) }] : []),
+                        // Kuyruk K66b: enkaz altında.
+                        ...(isBuried(c) ? [{ key: 'buried', icon: '🪨', title: B.k66.buried }] : []),
                         // Kuyruk K63 (sürüm 47): Truesight rozeti (menzil) ve Truesight'lı oyuncunun gördüğü asıl biçim.
                         ...(ruleVersion(state) >= 47 && truesightRange(state, c) > 0 ? [{ key: 'ts', icon: `👁${truesightRange(state, c)}`, title: B.k63.truesight(truesightRange(state, c)) }] : []),
                         ...(actor && c.shape && seesTrueForm(state, actor, c) ? [{ key: 'tf', icon: '🎭', title: B.k63.trueForm(c.name) }] : []),
@@ -2419,6 +2422,18 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     {foes.length + friends.length > 0 && <><br />{[...foes, ...friends].map((c) => c.name).join(', ')}</>}
                   </small>
                 )}
+                {/* Kuyruk K66b: Earthquake: alandaki yapılar (50 hasar, çökecekler ve çöküşün vuracakları). */}
+                {ready && !areaInfo?.error && areaAct.kind === 'spell' && ((qs) => {
+                  if (!qs) return null;
+                  const f = quakeForecast(state, actor, area, qs);
+                  if (!f.structures.length) return null;
+                  return (
+                    <small className={f.friends.length ? 'warn-text' : ''}>
+                      {f.falling.length ? B.k66.structures(f.falling.length, f.falling.map((x) => x.label).join(', ')) : B.k66.structuresSafe(f.structures.length)}
+                      {f.falling.length > 0 && <><br />{B.k66.collapseHits(f.foes.length, f.friends.length)}</>}
+                    </small>
+                  );
+                })(mechanicsAt(state, areaAct.spell).zone?.structures)}
                 {selfShape && actor.pos && (
                   <div className="dir-pad" role="group" aria-label={A.directions}>
                     {directionAims(actor.pos, sp.spec.sizeFt).map(({ dir, aim }) => (
