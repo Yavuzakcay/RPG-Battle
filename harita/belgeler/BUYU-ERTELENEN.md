@@ -51,5 +51,11 @@ Işık modeli bugün aydınlık/karanlık (`litHexes`). Tetikleyici: loş ışı
 - `animal-shapes` (8): kullanıcı kararı (2026-11-07) ile **vazgeçildi**, savaş dışı; ertelenmiş değil, kapalı.
 - `enhance-ability` (2): kullanıcı kararı ile savaş dışı; kapalı.
 - `see-invisibility` (2): kamuflaj/gizlenmeyi açığa çıkarma SRD'de yok; ev kuralı olarak ele alınacak (kullanıcı kararı bekliyor, motorda şimdi yalnızca `Invisible` durumunu etkiler).
-- `beacon-of-hope` (3): en yüksek iyileştirme kalan tek yol: Uncanny Metabolism (Monk; `metabolismEvents` savaş durumunu almıyor, kural sürümü kapısı için imza değişikliği gerekir) ve paket iyileştirme zarları (`paket/p11.ts`, kendi zar değiştirme yolu). İkisi küçük; tetikleyici: bir sonraki iyileştirme dokunuşu.
+- `beacon-of-hope` (3): **çözüldü (Kuyruk K70, sürüm 54)**: tek yardımcı `src/battle/healMax.ts`; Uncanny Metabolism ve paket iyileştirme zarı (ayrıca paket `iyilestirme` ilkeli, Lifedrinker) bağlandı. Eski not: en yüksek iyileştirme kalan tek yol: Uncanny Metabolism (Monk; `metabolismEvents` savaş durumunu almıyor, kural sürümü kapısı için imza değişikliği gerekir) ve paket iyileştirme zarları (`paket/p11.ts`, kendi zar değiştirme yolu). İkisi küçük; tetikleyici: bir sonraki iyileştirme dokunuşu.
 - `charm-person` (1): K61'de kapandı (sürüm 44: tepki bağı yalnız Dominate'te, `reactionLink`).
+
+## 7. Kuyruk K70'te kapananlar (sürüm 54)
+
+- `flesh-to-stone` (6): Construct ilk ve tur sonu save'lerini otomatik başarır (SRD 5.2.1; K61'de kalan).
+- `disintegrate` (6): Wall of Force'u anında yok eder (K65c/Kuyruk 17'de açık kalan). ⚠ Forcecage'e uygulanmadı (Forcecage metninde Disintegrate yok). Açık: Resilient Sphere küresi ve Large ya da küçük büyüsüz nesneler.
+- `beacon-of-hope` (3): bkz. §6.

@@ -6,4 +6,4 @@ Kuyruk M1'de `data/spells-69.json` `text` alanı SRD 5.2.1 metninden yazıldı. 
 |---|---|---|
 | — | — | — |
 
-0 satır (Kuyruk K61: blade-barrier, conjure-fey, sunburst, irresistible-dance, flesh-to-stone; K62: wall-of-ice, forcecage, delayed-blast-fireball; K63: true-seeing; K65a: fire-storm (sürüm 49, serbest şekil en çok 40 altıgen) kapandı; K66a: earthquake yarıkları, K66b: earthquake yapı hasarı ve çöküş (sürüm 50) kapandı; kalan satır yok).
+0 satır (Kuyruk K61: blade-barrier, conjure-fey, sunburst, irresistible-dance, flesh-to-stone; K62: wall-of-ice, forcecage, delayed-blast-fireball; K63: true-seeing; K65a: fire-storm (sürüm 49, serbest şekil en çok 40 altıgen) kapandı; K66a: earthquake yarıkları, K66b: earthquake yapı hasarı ve çöküş (sürüm 50) kapandı; kalan satır yok). Kuyruk K70 (sürüm 54): tabloya girmemiş üç küçük fark da kapandı: flesh-to-stone Construct otomatik başarısı, disintegrate ile Wall of Force'un yok edilmesi (Forcecage değil, ⚠), Beacon of Hope'un Uncanny Metabolism ve paket iyileştirme zarında da en yüksek değeri.
