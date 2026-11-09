@@ -153,7 +153,7 @@
   "variants": [
     {
       "id": "gunduz",
-      "dikey": {"harfFt": {"s": 25, "O": 25}, "yuzey": {"s": "kaba"}},
+      "dikey": {"harfFt": {"s": 25, "O": 25}, "yuzey": {"s": "kaba"}, "surUstu": ["s", "O"]},
       "name": "Gündüz",
       "nameEn": "Day",
       "image": "maps/bataklik/batak-kale.webp",
@@ -209,7 +209,7 @@
     },
     {
       "id": "gece",
-      "dikey": {"harfFt": {"s": 25, "O": 25}, "yuzey": {"s": "kaba"}},
+      "dikey": {"harfFt": {"s": 25, "O": 25}, "yuzey": {"s": "kaba"}, "surUstu": ["s", "O"]},
       "name": "Gece",
       "nameEn": "Night",
       "image": "maps/bataklik/batak-kale-gece.webp",

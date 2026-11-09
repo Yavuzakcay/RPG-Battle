@@ -204,7 +204,7 @@
  "variants": [
   {
    "id": "gunduz",
-   "dikey": {"harfFt": {"s": 10, "O": 10}},
+   "dikey": {"harfFt": {"s": 10, "O": 10}, "surUstu": ["s", "O"]},
    "name": "Gündüz",
    "nameEn": "Day",
    "image": "maps/orman/orman-ork-kampi.webp",
@@ -439,7 +439,7 @@
   },
   {
    "id": "gece",
-   "dikey": {"harfFt": {"s": 10, "O": 10}},
+   "dikey": {"harfFt": {"s": 10, "O": 10}, "surUstu": ["s", "O"]},
    "name": "Gece",
    "nameEn": "Night",
    "image": "maps/orman/orman-ork-kampi-gece.webp",

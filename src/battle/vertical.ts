@@ -7,7 +7,7 @@
 import dikeyData from '../../data/dikey.json';
 import { maps, type MapDikey } from '../map/maps';
 import type { Offset } from '../rules/hex';
-import { heightAt, heightMoveRule, katmanOn, layerActive, levelFeet } from './heights';
+import { heightAt, heightMoveRule, k72On, katmanOn, layerActive, levelFeet } from './heights';
 import { bandOf, type Band } from './cells';
 import { ruleVersion } from './ruleVersion';
 import type { BattleState, Combatant } from './types';
@@ -50,12 +50,31 @@ export function engelEzme(state: Pick<BattleState, 'map'>, h: Offset): number | 
   return k in e ? (e[k] ?? null) : undefined;
 }
 
-/** Altıgenin tavan ezmesi: sayı (ft), null (açık gök: `tavan` 0) ya da ezme yoksa undefined (varyant `tavanFt` geçerli). */
-export function tavanEzme(state: Pick<BattleState, 'map'>, h: Offset): number | null | undefined {
+const ODA = new WeakMap<MapDikey, Map<string, number>>();
+/** Kuyruk K72: varyantın oda tavanı tablosu (altıgen → ft; dikey nesnesi başına önbellek). */
+function odaTablo(d: MapDikey): Map<string, number> {
+  let m = ODA.get(d);
+  if (!m) {
+    m = new Map();
+    for (const o of d.odalar ?? []) for (const k of o.altigenler) if (!m.has(k)) m.set(k, o.ft);
+    ODA.set(d, m);
+  }
+  return m;
+}
+
+/**
+ * Altıgenin tavan ezmesi: sayı (ft), null (açık gök: `tavan` 0) ya da ezme yoksa undefined (varyant `tavanFt` geçerli).
+ * Kuyruk K72 (sürüm 60+): altıgen `tavan` ezmesinden sonra oda tavanı (`dikey.odalar`), sonra `tavanBolge`.
+ */
+export function tavanEzme(state: Pick<BattleState, 'map' | 'kuralSurumu'>, h: Offset): number | null | undefined {
   const d = dikeyOf(state);
   if (!d) return undefined;
   const t = d.tavan?.[key(h)];
   if (t !== undefined) return t > 0 ? t : null;
+  if (d.odalar?.length && k72On(state)) {
+    const o = odaTablo(d).get(key(h));
+    if (o !== undefined) return o;
+  }
   for (const b of d.tavanBolge ?? []) {
     const [c0, r0, c1, r1] = b.dikdortgen;
     if (h.col >= c0 && h.col <= c1 && h.row >= r0 && h.row <= r1) return b.ft;
@@ -63,10 +82,10 @@ export function tavanEzme(state: Pick<BattleState, 'map'>, h: Offset): number | 
   return undefined;
 }
 
-/** Haritada altıgen başına tavan verisi var mı (görüşte çatı denetimi yalnız o zaman). */
-export const hasHexCeilings = (state: Pick<BattleState, 'map'>): boolean => {
+/** Haritada altıgen başına tavan verisi var mı (görüşte çatı denetimi yalnız o zaman; K72: oda tavanı yalnız 60+). */
+export const hasHexCeilings = (state: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean => {
   const d = dikeyOf(state);
-  return !!d && (!!d.tavanBolge?.length || Object.keys(d.tavan ?? {}).length > 0);
+  return !!d && (!!d.tavanBolge?.length || Object.keys(d.tavan ?? {}).length > 0 || (!!d.odalar?.length && k72On(state)));
 };
 
 /** Altıgenin zemin yüksekliği (ft): katmanlı haritada seviye × `levelFt`, diğerlerinde 0 (sürüm 56+). */

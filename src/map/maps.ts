@@ -69,7 +69,16 @@ export interface MapDikey {
   tavanBolge?: Array<{ dikdortgen: [number, number, number, number]; ft: number }>;
   /** Kuyruk K71b (sürüm 57+): harfin tırmanma yüzeyi ezmesi (`data/dikey.json` `tirmanma.siniflar` sınıfı ya da `tirmanilmaz`). */
   yuzey?: Record<string, string>;
+  /** Kuyruk K72 (sürüm 60+): bina içi oda tavanı (altıgenler "sütun,satır", 0 tabanlı; `scripts/k72-tavan-bolge.py`). */
+  odalar?: Array<{ ft: number; altigenler: string[] }>;
+  /** Kuyruk K72 (sürüm 60+, K5): tepesinde durulan duvar harfleri (sur yolu). */
+  surUstu?: string[];
+  /** Kuyruk K72 (sürüm 60+): çok katlı binanın üst katları (döşeme `ft` altıgen zemininden; merdiven ve delik altıgenleri). */
+  katlar?: MapKat[];
 }
+
+/** Kuyruk K72: bir üst kat. `altigenler` döşemeli altıgenler; `merdiven` katlar arası geçiş; `delik` döşemesiz açıklık. */
+export interface MapKat { id: string; ad?: string; en?: string; ft: number; altigenler: string[]; merdiven?: string[]; delik?: string[]; hp?: number }
 
 const CLIMB_CLASSES = dikeyData.tirmanma.siniflar as Record<string, unknown>;
 const FT_OK = (n: unknown): boolean => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n <= 120 && n % 5 === 0;
@@ -85,6 +94,15 @@ export function dikeyErrors(d: MapDikey, where: string): string[] {
     if (!Array.isArray(r) || r.length !== 4 || r.some((x) => !Number.isInteger(x) || x < 0) || r[0] > r[2] || r[1] > r[3] || !FT_OK(b.ft) || b.ft < 5) out.push(`${where}: tavanBolge ${JSON.stringify(r)} geçersiz`);
   }
   for (const [k, v] of Object.entries(d.yuzey ?? {})) if (k.length !== 1 || !(v === 'tirmanilmaz' || v in CLIMB_CLASSES)) out.push(`${where}: yuzey "${k}" geçersiz`);
+  for (const o of d.odalar ?? []) if (!FT_OK(o.ft) || o.ft < 5 || !Array.isArray(o.altigenler) || !o.altigenler.length || !o.altigenler.every(KEY_OK)) out.push(`${where}: oda geçersiz`);
+  for (const k of d.surUstu ?? []) if (typeof k !== 'string' || k.length !== 1) out.push(`${where}: surUstu "${String(k)}" geçersiz`);
+  const ids = new Set<string>();
+  for (const k of d.katlar ?? []) {
+    const lists = [k.altigenler, k.merdiven ?? [], k.delik ?? []];
+    if (!k.id || ids.has(k.id) || !FT_OK(k.ft) || k.ft < 5 || !Array.isArray(k.altigenler) || !k.altigenler.length || lists.some((l) => !Array.isArray(l) || !l.every(KEY_OK))
+      || (k.hp !== undefined && !(Number.isInteger(k.hp) && k.hp > 0))) out.push(`${where}: kat "${String(k.id)}" geçersiz`);
+    ids.add(k.id);
+  }
   return out;
 }
 

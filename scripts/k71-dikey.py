@@ -297,6 +297,10 @@ def main() -> None:
     write_maps(dry)
     if '--oneri' in sys.argv:
         report()
+    # Kuyruk K72: "dikey" satırına oda tavanı (`odalar`) ve sur üstü (`surUstu`) alanları; bu betik satırı yeniden yazdığı için
+    # ardından çalışır (idempotent).
+    import subprocess
+    subprocess.run([sys.executable, 'scripts/k72-tavan-bolge.py'] + (['--kuru'] if dry else []), check=True)
 
 
 if __name__ == '__main__':

@@ -219,7 +219,7 @@
   "variants": [
     {
       "id": "gunduz",
-      "dikey": {"harfFt": {"s": 30, "O": 30}, "tavanBolge": [{"dikdortgen": [22, 4, 24, 6], "ft": 15}, {"dikdortgen": [22, 10, 24, 12], "ft": 15}], "yuzey": {"s": "kaba"}},
+      "dikey": {"harfFt": {"s": 30, "O": 30}, "tavanBolge": [{"dikdortgen": [22, 4, 24, 6], "ft": 15}, {"dikdortgen": [22, 10, 24, 12], "ft": 15}], "yuzey": {"s": "kaba"}, "odalar": [{"ft": 15, "altigenler": ["26,5", "26,6", "27,4", "27,5", "27,6", "28,5", "28,6"]}, {"ft": 15, "altigenler": ["26,11", "26,12", "27,10", "27,11", "27,12", "28,11", "28,12"]}], "surUstu": ["s", "O"]},
       "name": "Şafak baskını",
       "nameEn": "Dawn raid",
       "image": "maps/kale/kale-baskini.webp",

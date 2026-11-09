@@ -28,6 +28,12 @@ type St = Pick<BattleState, 'map' | 'kuralSurumu'>;
  */
 export const KATMAN_VERSION = 59;
 export const katmanOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= KATMAN_VERSION;
+/**
+ * Kuyruk K72 (kural sürümü 60+; `harita/belgeler/K72-DENETIM.md`): oda tavanı (`dikey.odalar`), sur üstünde durma
+ * (`dikey.surUstu`, K5) ve çok katlı bina (`dikey.katlar`): tek "duruş yüzeyi" modeli (`stand.ts`). 59 ve altı birebir.
+ */
+export const K72_VERSION = 60;
+export const k72On = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= K72_VERSION;
 const HG = dikeyData.yuksekZemin;
 
 /** Katman bu savaşta var mı (harita katmanı + kural sürümü 6). */

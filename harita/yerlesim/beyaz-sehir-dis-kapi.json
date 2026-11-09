@@ -135,7 +135,7 @@
  "variants": [
   {
    "id": "gunduz",
-   "dikey": {"harfFt": {"s": 30, "O": 30}, "yuzey": {"s": "kaba"}},
+   "dikey": {"harfFt": {"s": 30, "O": 30}, "yuzey": {"s": "kaba"}, "surUstu": ["s", "O"]},
    "name": "Gündüz",
    "nameEn": "Day",
    "image": "maps/yerlesim/beyaz-sehir-dis-kapi.webp",
@@ -144,7 +144,7 @@
   },
   {
    "id": "gece",
-   "dikey": {"harfFt": {"s": 30, "O": 30}, "yuzey": {"s": "kaba"}},
+   "dikey": {"harfFt": {"s": 30, "O": 30}, "yuzey": {"s": "kaba"}, "surUstu": ["s", "O"]},
    "name": "Gece",
    "nameEn": "Night",
    "image": "maps/yerlesim/beyaz-sehir-dis-kapi-gece.webp",
