@@ -2,6 +2,52 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-10 — Kuyruk E4b: duvar, bıçak, prizma, yerçekimi, taş halka, su sayfaları; su dokusu; zemin dokusu altıgen maskesi (yalnız görsel; kural sürümü 64 ve SAVE_VERSION değişmedi)
+
+- **Girdi:** altı sayfa bu kez `origin/wip/e4-ham` dalındaydı (`git checkout origin/wip/e4-ham -- assets-ham/efekt`; geçmiş birleştirilmedi). Hücreler kare değil; ızgara sayfa boyutundan bölündü (`esit`). Ayırıcı kalınlığı pikselle ölçüldü: bıçak/duvar-ek/prizma/durum-ek ≈ 10–12 px (kenar 8), yerçekimi ≈ 18 px (kenar 12), su ≈ 20 px siyah çizgi (kenar 14; görevdeki 6–8 px yetmezdi). Kontrol görselleri `npm run sprite-ice -- --efekt --kontrol <klasör>` ile üretildi, her sayfa gözle denetlendi.
+- **Kesim betiği:** `efekt-sayfa.mjs` iki küçük ekleme aldı: `opak` (su sayfası siyah zeminli değil, dolu resim: alfa 1, renk olduğu gibi; kayıt `karisim: normal`) ve mevcut `blokSatir` ile 2×2 sayfanın dört karesi tek efekt (taş halka). Tablo anahtarı dosya adıdır (`efekt-bicak` …).
+- **Kayıtlar (`data/efekt-e2.json`, 12 şerit; kullanılmayanlar `kullanilmiyor` işaretli, hiçbir bağlamada yok):** `duvar-bicak` (satır 1, dönen disk bıçaklar) · `duvar-bicak-hilal` (satır 2, KULLANILMIYOR) · `duvar-tas` · `duvar-diken` · `duvar-ruzgar` · `isin-prizma-yatay` (prizma satır 1, KULLANILMIYOR; eski `isin-prizma` ışını kalır) · `duvar-prizma` (satır 2) · `zemin-kuyu-yeni` (yerçekimi satır 1, KULLANILMIYOR; mevcut kuyu kalır) · `zemin-ters-yercekimi` (satır 2) · `durum-tas-halka` (4 kare) · `su-dalga` (satır 1) · `su-havuz` (satır 2).
+- **Bağlama tablosu:**
+
+| Büyü / durum | Sprite | Yol |
+|---|---|---|
+| Wall of Stone | `duvar-tas` | `duvar[wall-of-stone]` (zone `panels`) |
+| Wall of Thorns | `duvar-diken` | `duvar[wall-of-thorns]` |
+| Wind Wall | `duvar-ruzgar` | `duvar[wind-wall]` (eski `duvar-kuvvet` yerine) |
+| Blade Barrier | `duvar-bicak` | `duvar[blade-barrier]` |
+| Prismatic Wall | `duvar-prizma` | `duvar[prismatic-wall]` |
+| Reverse Gravity | `zemin-ters-yercekimi` | `buyu` yol `hedef`, etkilenen her yaratığın üstünde; `fxPlan.spellRef` `map_effect "Reverse Gravity…"` |
+| Flesh to Stone ve her Petrified | `durum-tas-halka` | `durumHalka[Petrified]`: jeton çevresinde halka (ortası siyah = saydam, jeton görünür), ölçek `tokenScale` |
+
+  Çizili Duvar yalnız Harita Öğretisi barikatında (`cizili-duvar`) kaldı; Wall of Stone yeni taş duvara bağlandı. **Dikişsizlik:** taş, diken, bıçak, prizma duvarı dikişsiz sayfa (parçalar uç uca); rüzgâr duvarı dikişsiz değil: `duvarYumusak[duvar-ruzgar] = 0.12`, `FxLayer` parçanın iki ucunu CSS `mask-image` ile %12 yumuşatır (komşu parçayla çapraz geçiş).
+- **Su (Görev 2):** savaş haritalarında su arka plan resminde pişmiştir; su altıgenleri (`w`, `R`; `data/efekt-baglama.json` `su`) üstüne yarı saydam (opaklık dalga 0,62 / havuz 0,58), normal karışımlı doku biner. Tür: `R` ve kıyıya (su olmayan altıgen; sığ su `n` dahil) ≤ 2 altıgen yakın su = **SU-DALGA** (nehir, kıyı); daha açık su = **SU-HAVUZ** (göl, vaha, okyanus). Harita bazında: `havuzHaritalari` (`orman-heykel-golu`, `col-vaha` göl/vaha; `kale-onu`, `kale-ic-avlu` hendek) bütün suyu havuz yapar; `denizHaritalari` (`ada`, `gemi`) kıyıyı yalnız gerçek karadan sayar (sığ su `n` kıyı sayılmaz: kıyıya yakın dalga, açık deniz havuz). Hesap saf `fxPlan.waterHexes` (zemin dizisine göre önbellekli); çizim `FxLayer.WaterLayer`: türün bütün altıgenleri **tek `path` + tek `pattern`**; desen karosu (3 altıgen eninde) dört yönde aynalanır (kenarlar uyar, dikiş yok) ve içindeki şerit tek animasyon örneğidir (4 kare, 880 ms; Chromium'da desen içinde adımlı animasyon çalışıyor, iki ekran görüntüsü farkı doğrulandı). Efekt ayarı kapalı / hareketi azalt: tek sabit kare; ekran bütçesine türü başına 1 sayılır. Eski `waveGlint`/`waterSparkle` katmanı iki deniz haritasından (`deniz-ada`, `deniz-gemi`) kaldırıldı (yağmur ve şimşek kaldı; efekt türleri `effects.ts`'te duruyor, dış içerik kullanabilir); `effects.test.ts` beklentisi buna göre güncellendi (veriye bağlı değer, gerekçe: bu karar).
+- **Su altıgenlerinin haritalara dağılımı (varyant başına; `R` hiçbir haritada yok: `riverBlocked` varsayılan kapalı):**
+
+| Harita (bölge) | Su altıgeni (`w`) | Tür |
+|---|---|---|
+| ada (deniz) | 29 | dalga 23, havuz 6 (okyanus) |
+| gemi (deniz) | 19 | dalga 19 |
+| batak-adalar (bataklık) | 132 | dalga 122, havuz 10 |
+| batak-cukur | 35 | dalga 32, havuz 3 |
+| batak-kale | 22 | dalga 22 |
+| batak-kamp | 15 | dalga 15 |
+| col-kanyon-nehri (çöl) | 22 | dalga 22 (nehir) |
+| col-vaha | 12 | havuz 12 (vaha) |
+| derinlikler-mantar-magarasi | 5 | dalga 5 |
+| hapishane-iskele | 77 | dalga 57, havuz 20 |
+| kale-ic-avlu (yerleşim) | 14 | havuz 14 (hendek) |
+| kale-onu | 33 | havuz 33 (hendek) |
+| kasaba-lagim | 47 | dalga 47 (kanal) |
+| orman-heykel-golu (orman) | 111 | havuz 111 (göl) |
+| orman-oduncu-kampi | 87 | dalga 87 (nehir) |
+| orman-yolu | 5 | dalga 5 |
+| ortamlar-diyari (vitrin) | 6 | dalga 6 |
+
+  Sığ su `n` çizilmez (çamur ve ford; yalnız `w`/`R`). Dünya haritası (tek baskılı karo resmi) bu kuyrukta DEĞİL; su dokusu orada yok, yalnız yüzme önizlemesi (jeton + halka dalga) duruyor. Control Water (alan yüzeyi yok, `terraform`) ve taşkın `flashFlood` yüzeyi (`yuzey-su`) bu kuyrukta bağlanmadı: yüzey sprite'ı zaten var, su dokusunu savaş haritası zemininden okuyoruz; ileride istenirse `WaterLayer`'a yüzey altıgenleri eklenir.
+- **Zemin dokusu altıgen maskesi (Görev 3):** zemin yamaları (`grease`, `spike`, `sleet`, `insect`, `tentacle` …) alan merkezine büyük kare çiziliyordu. Şimdi doku alanın altıgenlerinin birleşimine `clipPath` ile kırpılır (`GroundPatch.hexes`; yarıçap yine altıgen boyundan); tek doku altıgenler arasında kesilmez, alan dışına taşmaz. Su da aynı `hexPath` yardımcısını kullanır (komşu altıgenler %3 örtüşür). Önce/sonra ekran görüntüleri `docs/e4b/zemin-maske-once.jpg` / `-sonra.jpg` (6 doku: yağ, diken, sulu kar, böcek, dokunaç, sarmaşık), su `docs/e4b/su-gol-once.jpg` / `-sonra.jpg`, `su-nehir-sonra.jpg` (gerçek `FxGround`, react-dom/server + Playwright).
+- **Doğrulama:** `e2Verify` duvar anahtarı (`duvar:<sprite>`) ekledi; `verifyAll` 138 → **147/147** (duvarlar, Reverse Gravity). Yeni testler `fxPlan.e4b.test.ts` (kesim kayıtları ve işaretler, beş duvar gerçek motorla, rüzgâr yumuşatma ≠ diğerleri, Reverse Gravity, Petrified halkası ve ölçeği, su türleri, su önbelleği, yama altıgenleri, replay aynı). `fxPlan.e2.test.ts`: şerit 62 → 74. `BUYU-EFEKT-TABLOSU.md` savaşta 225: hazır **199 → 204**, genel 24 → 20, eksik 2 → 1; Gemini bekleyenler 5 sayfa/9 hücre → 3 sayfa/5 hücre (yercekimi 2: levitate/telekinesis/earthquake; zemin-kutu 2: silence/daylight; durum-ek 1: power-word-kill). Tablo betiğinde `prismatic-wall` ve `reverse-gravity` aile geçersiz kılmaları kaldırıldı, `flesh-to-stone` taş halka anahtarı eklendi.
+- **Açık kalanlar:** levitate, telekinesis, earthquake (yercekimi hücreleri), silence, daylight, power-word-kill; dünya haritası suyu; Control Water / `flashFlood` su yüzeyi dokusu; SU-HAVUZ aynalı desen simetrisi çok geniş gölde fark edilir (karo 3 altıgen; daha büyük karo piksel büyütür); su altıgenleri sığ kıyı resmiyle birebir örtüşmez (haritaların `w` verisi kıyıdan taşabilir; yalnız zemin harflerine bağlıyız).
+
 ## 2026-11-09 — Kuyruk E4: efekt ek sayfaları (zemin-ek, isin-ek) ve kaynak ikonu denetimi (yalnız görsel; kural sürümü 64 ve SAVE_VERSION değişmedi)
 
 - **Girdi eksikti (rapora yazıldı):** görevin altı yeni sayfası (`efekt-bicak`, `efekt-duvar-ek`, `efekt-su`, `efekt-prizma`, `efekt-yercekimi`, `efekt-durum-ek`) hiçbir dalda yoktu; atlandı. Eski boyalı `zemin-ek.jpg` ve `isin-ek.jpg` yalnız geçici dal `wip/e2-ham`'daydı, oradan `assets-ham/efekt/`'e alındı (kararlara göre içe aktarılacak eski sayfalar bunlar). Eski `duvar-ek.jpg` hiç alınmadı. Plan ve bağlama tablosu `harita/belgeler/E4-DENETIM.md`.

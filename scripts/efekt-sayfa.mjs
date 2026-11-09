@@ -106,13 +106,15 @@ function grid(img, spec) {
 }
 
 /** Hücreyi RGBA'ya (parlaklık alfası, renk alfaya bölünmüş) çevirir. */
-function cellRgba(img, x0, y0, x1, y1, black = BLACK) {
+function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false) {
   const cw = x1 - x0; const ch = y1 - y0;
   const out = Buffer.alloc(cw * ch * 4);
   let peak = 0;
   for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) {
     const s = ((y0 + y) * img.w + (x0 + x)) * 3; const d = (y * cw + x) * 4;
     const [r, g, b] = [img.data[s], img.data[s + 1], img.data[s + 2]];
+    // Kuyruk E4b: opak hücre (su dokusu: siyah zeminli değil, dolu resim): alfa 1, renk olduğu gibi (normal karışım).
+    if (opaque) { out[d] = r; out[d + 1] = g; out[d + 2] = b; out[d + 3] = 255; peak = 1; continue; }
     const a = lumAlpha(r, g, b, black);
     if (a > peak) peak = a;
     out[d] = a > 0 ? Math.min(255, Math.round(r / a)) : 0;
@@ -135,7 +137,7 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
   if (spec.adlar.length * per !== spec.satir) throw new Error(`${report.file}: ${spec.adlar.length} ad × ${per} satır ≠ ${spec.satir}`);
   const result = {};
   for (let n = 0; n < spec.adlar.length; n++) {
-    const cells = g.slice(n * per, n * per + per).flatMap((r) => r.cols.map((c) => cellRgba(img, c[0], r.y[0], c[1], r.y[1], spec.siyah ?? BLACK)));
+    const cells = g.slice(n * per, n * per + per).flatMap((r) => r.cols.map((c) => cellRgba(img, c[0], r.y[0], c[1], r.y[1], spec.siyah ?? BLACK, !!spec.opak?.includes(spec.adlar[n]))));
     // Sondaki boş kareler (ızgarada var, içerik yok) atılır.
     let count = cells.length;
     while (count > 1 && cells[count - 1].peak < emptyThr) count--;
@@ -256,7 +258,7 @@ export async function importEffects({ src = 'assets-ham/efekt', out = 'public/sp
       await writeStrip(path.join(dir, `${name}.webp`), r);
       if (r.dropped) notes.push(`${name}: ızgarada ${r.grid} kare, sondaki ${r.dropped} kare atıldı (boş ya da kare sınırı) → ${r.frames.length}`);
       const rec = {
-        kare: r.frames.length, sure: r.frames.length * spec.kareMs, tur: spec.turler?.[ad] ?? spec.tur, karisim: 'screen', yon: spec.yonler?.[ad] ?? null,
+        kare: r.frames.length, sure: r.frames.length * spec.kareMs, tur: spec.turler?.[ad] ?? spec.tur, karisim: spec.opak?.includes(ad) ? 'normal' : 'screen', yon: spec.yonler?.[ad] ?? null,
         en: r.fw, boy: r.fh, dongu: spec.donguler?.[ad] ?? !!spec.dongu, kaynak: `${sheet}`, ...(spec.ortusme ? { ortusme: spec.ortusme } : {}),
         // Kuyruk E4: içe aktarılan ama hiçbir büyüye bağlanmayan şerit (kullanıcı kararı; kayıtta işaretli).
         ...(spec.kullanilmiyor?.includes(ad) ? { kullanilmiyor: true } : {}),

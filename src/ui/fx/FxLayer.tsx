@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { Offset } from '../../rules/hex';
 import type { BattleEvent, BattleState, Combatant } from '../../battle/types';
-import { SCREEN_BUDGET, allocate, deathShots, fxShots, groundFx, stillFrame, type FxShot, type FxSprite } from './fxPlan';
+import { FX, SCREEN_BUDGET, SU, allocate, deathShots, fxShots, groundFx, stillFrame, waterHexes, type FxShot, type FxSprite, type WaterHex } from './fxPlan';
 import './fx.css';
 
 const BASE = import.meta.env.BASE_URL;
@@ -56,6 +56,14 @@ function TintFilter({ color }: { color: string }) {
 }
 
 type Live = FxShot & { id: number; animated: boolean };
+
+/** Kuyruk E4b: durum halkası çapı (altıgen yüksekliği katı; jeton çapı 0,72 × ölçek, halka deliği karenin ~%60'ı). */
+const RING_D = 1.3;
+/** Kuyruk E4b: parçanın iki ucunu `ratio` oranında saydamlaştıran maske (CSS mask-image; parçayla birlikte döner). */
+const softEnds = (ratio: number): CSSProperties => {
+  const g = `linear-gradient(to right, transparent 0, #000 ${ratio * 100}%, #000 ${100 - ratio * 100}%, transparent 100%)`;
+  return { maskImage: g, WebkitMaskImage: g };
+};
 
 /** Kuyruk E2: koni dokusu kırpma yolu (çıkıştan nişana, SRD genişliği = uzaklık: yarı açı ≈ 26,6°). */
 const CONE_TAN = 0.5;
@@ -160,30 +168,83 @@ export function FxShots({ state, events, enabled, reduceMotion, geo, lead, onAct
   );
 }
 
+/**
+ * Kuyruk E4b: su dokusu (savaş haritasında su arka plan resminde pişmiştir; üstüne yarı saydam, normal karışımlı hareketli doku).
+ * Türün bütün su altıgenleri tek yol (`path`) ve tek desen (`pattern`) kullanır: animasyon tek örnek, altıgenler arası dikiş yok.
+ * Desen karosu dört yönde aynalanır (kenarları uyumlu, karo dikişi görünmez). Efekt kapalı / hareketi azalt: tek sabit kare.
+ */
+/** Altıgenlerin birleşimi tek yol (komşu altıgenler `grow` kadar örtüşür; kıl çizgi olmasın). */
+function hexPath(hexes: Offset[], geo: Geo, grow = 1.03): string {
+  const R = (geo.hexW / 2) * grow;
+  return hexes.map((at) => {
+    const c = geo.hexCenter(at);
+    return `M${[0, 1, 2, 3, 4, 5].map((i) => { const a = (Math.PI / 3) * i; return `${(c.x + R * Math.cos(a)).toFixed(1)} ${(c.y + R * Math.sin(a)).toFixed(1)}`; }).join('L')}Z`;
+  }).join('');
+}
+
+function WaterLayer({ kind, hexes, geo, animated }: { kind: WaterHex['kind']; hexes: WaterHex[]; geo: Geo; animated: boolean }) {
+  const s = FX[SU.sprite[kind]];
+  if (!s) return null;
+  const tw = geo.hexW * SU.karoEn; const th = (tw * s.h) / s.w;
+  const d = hexPath(hexes.map((h) => h.at), geo);
+  const id = `fx-su-${kind}`;
+  const cell = (fx: number, fy: number) => (
+    <g key={`${fx}${fy}`} transform={`translate(${fx < 0 ? 2 * tw : 0} ${fy < 0 ? 2 * th : 0}) scale(${fx} ${fy})`}>
+      <Strip s={s} x={0} y={0} w={tw} h={th} animated={animated} loop />
+    </g>
+  );
+  return (
+    <g className="fx-water" data-water={kind}>
+      <defs>
+        <pattern id={id} patternUnits="userSpaceOnUse" width={2 * tw} height={2 * th}>
+          {cell(1, 1)}{cell(-1, 1)}{cell(1, -1)}{cell(-1, -1)}
+        </pattern>
+      </defs>
+      <path d={d} fill={`url(#${id})`} opacity={SU.opaklik[kind]} />
+    </g>
+  );
+}
+
 export function FxGround({ state, enabled, reduceMotion, geo, used, tokenUsed }: {
   state: BattleState; enabled: boolean; reduceMotion: boolean; geo: Geo;
   /** Ekranda zaten animasyonlu efekt sayısı (tek seferlikler + durum döngüleri) ve jeton başına kullanılan. */
   used: number; tokenUsed: ReadonlyMap<string, number>;
 }) {
   const { auras, walls, patches } = useMemo(() => groundFx(state), [state]);
-  const anim = allocate([...auras.map((a) => ({ key: a.key, tokenId: a.ownerId })), ...walls.map((w) => ({ key: w.key })), ...patches.map((z) => ({ key: z.key }))], { enabled, reduceMotion, used, tokenUsed });
+  // Kuyruk E4b: su altıgenleri (dalga/havuz); türün bütün altıgenleri tek animasyon örneğini (desen) paylaşır.
+  const water = useMemo(() => waterHexes(state), [state.map?.tiles]); // eslint-disable-line react-hooks/exhaustive-deps
+  const waterKinds = (['dalga', 'havuz'] as const).filter((k) => water.some((w) => w.kind === k));
+  const anim = allocate([...auras.map((a) => ({ key: a.key, tokenId: a.ownerId })), ...walls.map((w) => ({ key: w.key })), ...patches.map((z) => ({ key: z.key })),
+    ...waterKinds.map((k) => ({ key: `su:${k}` }))], { enabled, reduceMotion, used, tokenUsed });
   const tints = [...new Set([...walls.flatMap((w) => (w.tint ? [w.tint] : [])), ...patches.flatMap((z) => (z.ton ? [z.ton] : []))])];
-  if (!auras.length && !walls.length && !patches.length) return null;
+  if (!auras.length && !walls.length && !patches.length && !waterKinds.length) return null;
   return (
     <g className="fx-ground" aria-hidden="true">
       {tints.length > 0 && <defs>{tints.map((t) => <TintFilter key={t} color={t} />)}</defs>}
+      {waterKinds.map((k) => <WaterLayer key={k} kind={k} hexes={water.filter((w) => w.kind === k)} geo={geo} animated={anim.has(`su:${k}`)} />)}
       {patches.map((z) => {
         // Kuyruk E2: kalıcı alan zemin dokusu (alanın merkezinde, alan kadar; jetonların altında).
+        // Kuyruk E4b: doku alanın altıgenlerinin birleşimine kırpılır (altıgen maske): alan dışına taşmaz, tek doku altıgenler arasında kesilmez.
         const p = geo.hexCenter(z.at);
         const d = ((2 * z.radius + 1) * geo.hexH) / 0.8;
-        return <Strip key={z.key} s={z.sprite} x={p.x - d / 2} y={p.y - d / 2} w={d} h={d} animated={anim.has(z.key)} loop tint={z.ton} className="fx-patch" />;
+        const clip = `fx-hexclip-${z.key.replace(/[^A-Za-z0-9]/g, '')}`;
+        return (
+          <g key={z.key} className="fx-patch-clip">
+            <clipPath id={clip}><path d={hexPath(z.hexes, geo, 1)} /></clipPath>
+            <g clipPath={`url(#${clip})`}>
+              <Strip s={z.sprite} x={p.x - d / 2} y={p.y - d / 2} w={d} h={d} animated={anim.has(z.key)} loop tint={z.ton} className="fx-patch" />
+            </g>
+          </g>
+        );
       })}
       {walls.map((w) => (
         <g key={w.key} className="fx-wall">
           {w.hexes.map(({ at, rotate }) => {
             const p = geo.hexCenter(at);
             const pw = geo.hexW * 1.15; const ph = pw * w.sprite.h / w.sprite.w;
-            return <Strip key={`${at.col},${at.row}`} s={w.sprite} x={p.x - pw / 2} y={p.y - ph / 2} w={pw} h={ph} animated={anim.has(w.key)} loop rotate={rotate} cx={p.x} cy={p.y} tint={w.tint} outline={w.outline} />;
+            // Kuyruk E4b: dikişsiz olmayan duvar (rüzgâr): parça uçları yumuşar, komşu parçayla çapraz geçiş.
+            const soft = w.soft ? softEnds(w.soft) : undefined;
+            return <Strip key={`${at.col},${at.row}`} s={w.sprite} x={p.x - pw / 2} y={p.y - ph / 2} w={pw} h={ph} animated={anim.has(w.key)} loop rotate={rotate} cx={p.x} cy={p.y} tint={w.tint} outline={w.outline} style={soft} />;
           })}
         </g>
       ))}
@@ -192,8 +253,9 @@ export function FxGround({ state, enabled, reduceMotion, geo, used, tokenUsed }:
         if (!c?.pos) return null;
         const p = geo.tokenCenter(c);
         // Halka içeriği karenin ~%75'i: yarıçap (altıgen) kadar uzağı kapsasın.
-        const d = ((2 * a.radius + 1) * geo.hexH) / 0.75;
-        return <Strip key={a.key} s={a.sprite} x={p.x - d / 2} y={p.y - d / 2} w={d} h={d} animated={anim.has(a.key)} loop className="fx-aura" />;
+        // Kuyruk E4b: durum halkası (taşlaşma) jetonun görsel ölçeğine uyar (halka deliği jetonu kapsar, ortası siyah = saydam).
+        const d = a.ring ? RING_D * geo.hexH * Math.max(1, a.ring) : ((2 * a.radius + 1) * geo.hexH) / 0.75;
+        return <Strip key={a.key} s={a.sprite} x={p.x - d / 2} y={p.y - d / 2} w={d} h={d} animated={anim.has(a.key)} loop className={a.ring ? 'fx-aura fx-ring' : 'fx-aura'} />;
       })}
     </g>
   );

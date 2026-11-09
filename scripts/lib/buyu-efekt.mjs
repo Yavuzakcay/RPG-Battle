@@ -70,9 +70,9 @@ export const ALAN_HUCRE = {
   'conjure-celestial': ['e2', 'gokten-dusen: ışık sütunu'], 'storm-of-vengeance': ['e2', 'gokten-dusen: yıldırım çarpması'],
   'insect-plague': ['gemini', 'böcek sürüsü bulutu'], 'sleet-storm': ['gemini', 'sulu sepken / kar fırtınası zemini'],
   'silence': ['gemini', 'sessizlik küresi'], 'daylight': ['gemini', 'gün ışığı küresi'],
-  'wall-of-stone': ['gemini', 'taş duvar parçası'], 'wall-of-thorns': ['gemini', 'diken duvarı parçası'], 'blade-barrier': ['gemini', 'bıçak bariyeri parçası'],
-  'prismatic-wall': ['gemini', 'prizma duvar parçası'], 'prismatic-spray': ['gemini', 'prizma koni 7 renk'],
-  'earthquake': ['gemini', 'deprem yarığı zemin kutusu'], 'reverse-gravity': ['gemini', 'ters yerçekimi yükselen toz sütunu'],
+  // Kuyruk E4b: taş, diken, bıçak, prizma duvarı ve reverse-gravity hücreleri geldi (efekt-duvar-ek, efekt-bicak, efekt-prizma, efekt-yercekimi).
+  'prismatic-spray': ['gemini', 'prizma koni 7 renk'],
+  'earthquake': ['gemini', 'deprem yarığı zemin kutusu'],
   'telekinesis': ['gemini', 'ters yerçekimi yükselen toz sütunu'], 'levitate': ['gemini', 'ters yerçekimi yükselen toz sütunu'],
   'power-word-kill': ['gemini', 'ölüm sözü (kafatası rün, tek seferlik)'],
 };
@@ -113,8 +113,9 @@ export const OZEL = {
   'mass-heal': { tur: 'iyileştirme', aile: null },
   'divine-word': { tur: 'durum', aile: 'gokten', not: 'Kademeli durumlar (Blinded/Deafened/Stunned) + ölüm; ışık sütunu.' },
   'prismatic-spray': { tur: 'koni', aile: 'prizma', not: 'Özel yol (`prismaticEvents`): alan patlaması yok.' },
-  'prismatic-wall': { tur: 'duvar', aile: 'prizma' },
-  'reverse-gravity': { tur: 'küre/alan', aile: 'yercekimi' },
+  // Kuyruk E4b: prismatic-wall (duvar-prizma) ve reverse-gravity (zemin-ters-yercekimi) bağlandı; ailesi kalmadı.
+  'reverse-gravity': { tur: 'küre/alan', aile: null },
+  'flesh-to-stone': { tur: 'durum', aile: null, anahtar: 'durum-tas-halka (Petrified halkası)', durum: 'hazır' },
   'earthquake': { tur: 'zemin', aile: 'yercekimi' },
   'wish': { tur: 'yok', aile: null, anahtar: 'kopyalanan büyünün efekti', durum: 'genel' },
   'heat-metal': { tur: 'silah', aile: 'silah', not: 'Otomatik isabet: darbe-buyu + burn şeridi; kızaran metal parıltısı yok.' },

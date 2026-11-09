@@ -62,6 +62,18 @@
     "zemin-ek": { "klasor": "efekt", "satir": 6, "sutun": 4, "kesim": "karanlik", "kare": "kare", "boyut": 192, "kareMs": 180, "tur": "zemin", "dongu": true,
       "adlar": ["zemin-yag", "zemin-dikenli", "zemin-sulu-kar", "zemin-bocek", "zemin-su-eski", "zemin-dokunac"], "kullanilmiyor": ["zemin-su-eski"] },
     "isin-ek": { "klasor": "efekt", "satir": 4, "sutun": 4, "kesim": "esit", "kenar": 6, "kare": "serit", "boyut": 256, "kareMs": 90, "tur": "isin", "dongu": true,
-      "adlar": ["isin-prizma", "isin-kuvvet", "isin-nekrotik", "isin-asit"], "yonler": { "isin-prizma": "sag", "isin-kuvvet": "sag", "isin-nekrotik": "sag", "isin-asit": "sag" }, "kareBasla": { "isin-prizma": 1 } }
+      "adlar": ["isin-prizma", "isin-kuvvet", "isin-nekrotik", "isin-asit"], "yonler": { "isin-prizma": "sag", "isin-kuvvet": "sag", "isin-nekrotik": "sag", "isin-asit": "sag" }, "kareBasla": { "isin-prizma": 1 } },
+    "efekt-bicak": { "klasor": "efekt", "satir": 2, "sutun": 4, "kesim": "esit", "kenar": 8, "kare": "serit", "boyut": 256, "kareMs": 100, "tur": "duvar", "dongu": true,
+      "adlar": ["duvar-bicak", "duvar-bicak-hilal"], "yonler": { "duvar-bicak": "sag", "duvar-bicak-hilal": "sag" }, "kullanilmiyor": ["duvar-bicak-hilal"] },
+    "efekt-duvar-ek": { "klasor": "efekt", "satir": 3, "sutun": 4, "kesim": "esit", "kenar": 8, "kare": "serit", "boyut": 256, "kareMs": 140, "tur": "duvar", "dongu": true,
+      "adlar": ["duvar-tas", "duvar-diken", "duvar-ruzgar"], "yonler": { "duvar-tas": "sag", "duvar-diken": "sag", "duvar-ruzgar": "sag" } },
+    "efekt-prizma": { "klasor": "efekt", "satir": 2, "sutun": 4, "kesim": "esit", "kenar": 8, "kare": "serit", "boyut": 256, "kareMs": 110, "tur": "duvar", "turler": { "isin-prizma-yatay": "isin" }, "dongu": true,
+      "adlar": ["isin-prizma-yatay", "duvar-prizma"], "yonler": { "isin-prizma-yatay": "sag", "duvar-prizma": "sag" }, "kullanilmiyor": ["isin-prizma-yatay"] },
+    "efekt-yercekimi": { "klasor": "efekt", "satir": 2, "sutun": 4, "kesim": "esit", "kenar": 12, "kare": "kare", "boyut": 192, "kareMs": 150, "tur": "zemin", "dongu": true,
+      "adlar": ["zemin-kuyu-yeni", "zemin-ters-yercekimi"], "kullanilmiyor": ["zemin-kuyu-yeni"] },
+    "efekt-durum-ek": { "klasor": "efekt", "satir": 2, "sutun": 2, "blokSatir": 2, "kesim": "esit", "kenar": 8, "kare": "kare", "boyut": 256, "kareMs": 160, "tur": "durum", "dongu": true,
+      "adlar": ["durum-tas-halka"] },
+    "efekt-su": { "klasor": "efekt", "satir": 2, "sutun": 4, "kesim": "esit", "kenar": 14, "kare": "serit", "boyut": 320, "kareMs": 220, "tur": "su", "dongu": true,
+      "adlar": ["su-dalga", "su-havuz"], "opak": ["su-dalga", "su-havuz"] }
   }
 }

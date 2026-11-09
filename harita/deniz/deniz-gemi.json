@@ -198,12 +198,7 @@
           "note": "Sığ su n: zorlu zemin. Derin su w: yüzme, zorlu zemin."
         }
       ],
-      "effects": [
-        {
-          "type": "waterSparkle",
-          "intensity": 0.6
-        }
-      ]
+      "effects": []
     },
     {
       "id": "firtina",
@@ -251,10 +246,6 @@
         {
           "type": "lightning",
           "intensity": 0.6
-        },
-        {
-          "type": "waveGlint",
-          "intensity": 0.8
         }
       ]
     }

@@ -3,6 +3,8 @@
 Yalnız görsel ve belge: kural, sayı, yapay zekâ, kural sürümü (64) ve kayıt sürümü değişmedi. Bu belge elle yazıldı; sayılar
 `npm run buyu-efekt-tablosu` ve `npx vite-node scripts/e2-dogrula.ts` çıktısından.
 
+> **Kuyruk E4b güncellemesi (2026-11-10):** aşağıdaki "eksik sayfa", "su kararı çizim yolu" (bölüm 4) ve "açık kalanlar" (bölüm 5, madde 1–2) maddeleri E4b'de kapandı: altı sayfa içe aktarıldı ve bağlandı, su dokusu su altıgenlerine bağlandı, zemin dokusu altıgen maskesi eklendi. Ayrıntı ve harita tablosu `DECISIONS.md` (Kuyruk E4b). Kalanlar: levitate, telekinesis, earthquake, silence, daylight, power-word-kill hücreleri; dünya haritası suyu.
+
 ## 0. Girdi durumu (önemli)
 
 Görevde sayılan sayfaların **yalnız ikisi** depoda bulunabildi. `assets-ham/efekt/` içinde (wip/k73c ucunda) yeni sayfaların

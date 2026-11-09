@@ -12,8 +12,9 @@
 import esleme from '../../../data/sprite-esleme.json';
 import e2 from '../../../data/efekt-e2.json';
 import baglama from '../../../data/efekt-baglama.json';
-import type { Offset } from '../../rules/hex';
+import { distance, type Offset } from '../../rules/hex';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from '../../battle/types';
+import { tokenScale } from '../tokenSize';
 
 export interface FxSprite {
   /** Sprite adı (efekt- öneki olmadan, ör. `darbe-kesik`). */
@@ -253,7 +254,8 @@ function spellRef(e: BattleEvent): { id: string; actorId?: string; targetId?: st
     case 'buff_added': return { id: spellSlug(e.buff.source), actorId: e.buff.by, targetId: e.targetId };
     case 'time_stop': return { id: 'time-stop', actorId: e.actorId };
     // Kuyruk E4: özel yollu büyü (Prismatic Spray: `spell_cast` hedefsiz, ışınlar hedef başına `map_effect`; etiket "Büyü (Renk)").
-    case 'map_effect': return e.rule === 'spells69' && e.text.startsWith('Prismatic Spray (') ? { id: spellSlug(e.text), actorId: undefined, targetId: e.targetId, hit: true } : null;
+    // Kuyruk E4b: Reverse Gravity (alandaki her yaratık için save/düşüş olayı; sütun yaratığın üstünde).
+    case 'map_effect': return e.rule === 'spells69' && (e.text.startsWith('Prismatic Spray (') || e.text.startsWith('Reverse Gravity')) ? { id: spellSlug(e.text), actorId: undefined, targetId: e.targetId, hit: true } : null;
     default: return null;
   }
 }
@@ -372,10 +374,22 @@ function auraSprite(type: string | undefined, filter: string | undefined): FxSpr
   return sp((type && A[type]) || (filter === 'enemies' ? A.enemies : undefined) || A.varsayilan);
 }
 
-export interface GroundAura { key: string; ownerId: string; radius: number; sprite: FxSprite }
+export interface GroundAura {
+  key: string; ownerId: string; radius: number; sprite: FxSprite;
+  /** Kuyruk E4b: durum halkası (taşlaşma): yarıçap 0, jetonun görsel ölçeği (halka jetona uyar). */
+  ring?: number;
+}
 /** Kuyruk E2: kalıcı alan zemin dokusu (alanın merkezinde, alan kadar). */
-export interface GroundPatch { key: string; at: Offset; radius: number; sprite: FxSprite; ton?: string }
-export interface GroundWall { key: string; hexes: Array<{ at: Offset; rotate: number }>; sprite: FxSprite; tint?: string; outline?: string }
+export interface GroundPatch {
+  key: string; at: Offset; radius: number; sprite: FxSprite; ton?: string;
+  /** Kuyruk E4b: alanın altıgenleri (zemin dokusu bu altıgenlerin birleşimine kırpılır). */
+  hexes: Offset[];
+}
+export interface GroundWall {
+  key: string; hexes: Array<{ at: Offset; rotate: number }>; sprite: FxSprite; tint?: string; outline?: string;
+  /** Kuyruk E4b: dikişsiz olmayan duvar (rüzgâr): parça uçlarının yumuşama oranı (parça enine); yoksa dikişsiz. */
+  soft?: number;
+}
 
 /** Kalıcı efektler: auralar (yaratığa bağlı) ve duvarlar (engel alanları). */
 export function groundFx(state: BattleState): { auras: GroundAura[]; walls: GroundWall[]; patches: GroundPatch[] } {
@@ -392,6 +406,12 @@ export function groundFx(state: BattleState): { auras: GroundAura[]; walls: Grou
       const s = a && sp(a.sprite);
       if (s) auras.push({ key: `${c.id}:buyu:${id}`, ownerId: c.id, radius: Math.max(1, Math.round(a.ft / 5)), sprite: s });
     }
+    // Kuyruk E4b: durum halkası (Petrified → taş halka; Flesh to Stone'un üçüncü başarısızlığı ve her taşlaşma).
+    const H = (B as unknown as { durumHalka?: Record<string, string> }).durumHalka ?? {};
+    for (const cond of c.conditions ?? []) {
+      const rs = H[cond] && sp(H[cond]);
+      if (rs) auras.push({ key: `${c.id}:durum:${cond}`, ownerId: c.id, radius: 0, sprite: rs, ring: tokenScale(c) });
+    }
     for (const e of c.effects ?? []) {
       for (const a of [...(e.aura ? [e.aura] : []), ...(e.auras ?? [])]) {
         const type = a.effect.kind === 'damage' ? a.effect.type : undefined;
@@ -404,7 +424,7 @@ export function groundFx(state: BattleState): { auras: GroundAura[]; walls: Grou
   const Z = (B as unknown as { zemin?: Record<string, string> }).zemin ?? {};
   for (const z of zones) {
     const zs = !z.surface && z.hexes.length ? sp(Z[z.spellId]) : null;
-    if (zs) patches.push({ key: `zp:${z.id}`, at: centroid(z.hexes), radius: radiusOf(z.hexes.length), sprite: zs });
+    if (zs) patches.push({ key: `zp:${z.id}`, at: centroid(z.hexes), radius: radiusOf(z.hexes.length), sprite: zs, hexes: z.hexes });
     if (z.anchorId && z.radius !== undefined && state.combatants[z.anchorId]?.pos && !z.surface) {
       const s = auraSprite(z.spec?.damageType, undefined);
       if (s) auras.push({ key: `z:${z.id}`, ownerId: z.anchorId, radius: z.radius, sprite: s });
@@ -414,7 +434,8 @@ export function groundFx(state: BattleState): { auras: GroundAura[]; walls: Grou
     const s = sp(name);
     if (!s || !name || !z.hexes.length) continue;
     const outline = ((B as unknown as { kontur?: Record<string, string> }).kontur ?? {})[name];
-    walls.push({ key: z.id, sprite: s, tint: (B.ton as Record<string, string>)[name], ...(outline ? { outline } : {}), hexes: z.hexes.map((h) => ({ at: h, rotate: wallAngle(h, z.hexes) })) });
+    const soft = (B as unknown as { duvarYumusak?: Record<string, number> }).duvarYumusak?.[name];
+    walls.push({ key: z.id, sprite: s, tint: (B.ton as Record<string, string>)[name], ...(outline ? { outline } : {}), ...(soft ? { soft } : {}), hexes: z.hexes.map((h) => ({ at: h, rotate: wallAngle(h, z.hexes) })) });
   }
   return { auras, walls, patches };
 }
@@ -428,6 +449,46 @@ export function wallAngle(h: Offset, all: Offset[]): number {
   const AXES = [30, 90, 150];
   const score = (ax: number) => deg.reduce((s, d) => s + Math.min(Math.abs(d - ax), 180 - Math.abs(d - ax)), 0);
   return AXES.reduce((b, ax) => (score(ax) < score(b) ? ax : b), AXES[0]!);
+}
+
+/** Kuyruk E4b: su altıgeni ve dokusu (nehir/kıyı = dalga, göl/vaha/okyanus = havuz). */
+export interface WaterHex { at: Offset; kind: 'dalga' | 'havuz' }
+interface SuData { harf: string[]; nehirHarf: string[]; kiyiUzaklik: number; havuzHaritalari: string[]; denizHaritalari: string[]; sigHarf: string[]; sprite: Record<'dalga' | 'havuz', string>; opaklik: Record<'dalga' | 'havuz', number>; karoEn: number }
+export const SU = (baglama as unknown as { su: SuData }).su;
+const waterCache = new WeakMap<string[], WaterHex[]>();
+
+/**
+ * Savaş haritasının su altıgenleri ve türleri (yalnız görsel; zemin harfleri `tiles`'tan). Su arka plan resminde pişmiştir; bu
+ * liste üstüne yarı saydam hareketli doku çizmek içindir. Tür: `R` harfi ya da kıyıya (suda olmayan altıgen) `kiyiUzaklik`
+ * altıgen içindeki su dalga, daha açık su havuz; `havuzHaritalari` (göl, vaha, hendek) bütün suyu havuz yapar. Önbellekli
+ * (zemin dizisi aynı kaldıkça; suyun kuruması ya da taşması `tiles`'ı değiştirir).
+ */
+export function waterHexes(state: Pick<BattleState, 'map'>): WaterHex[] {
+  const m = state.map;
+  if (!m?.tiles?.length) return [];
+  const hit = waterCache.get(m.tiles);
+  if (hit) return hit;
+  const isWater = (ch: string | undefined): boolean => !!ch && SU.harf.includes(ch);
+  const water: Array<{ at: Offset; ch: string }> = []; const land: Offset[] = [];
+  m.tiles.forEach((line, row) => {
+    for (let col = 0; col < line.length; col++) {
+      const ch = line[col]!;
+      if (isWater(ch)) water.push({ at: { col, row }, ch }); else land.push({ col, row });
+    }
+  });
+  const id = (m as { id?: string }).id ?? '';
+  const lake = SU.havuzHaritalari.includes(id);
+  // Okyanus haritasında sığ su (n) kıyı sayılmaz: kıyı yalnız gerçek karadır.
+  const shores = SU.denizHaritalari.includes(id) ? land.filter((l) => !SU.sigHarf.includes(m.tiles[l.row]![l.col]!)) : land;
+  const out: WaterHex[] = water.map(({ at, ch }) => {
+    if (lake) return { at, kind: 'havuz' as const };
+    if (SU.nehirHarf.includes(ch)) return { at, kind: 'dalga' as const };
+    // Kıyıya uzaklık: suda olmayan en yakın altıgen (haritanın kenarı kıyı sayılmaz).
+    const shore = shores.some((l) => distance(at, l) <= SU.kiyiUzaklik);
+    return { at, kind: shore ? 'dalga' as const : 'havuz' as const };
+  });
+  waterCache.set(m.tiles, out);
+  return out;
 }
 
 /** Bütçe isteği: anahtar, jeton (varsa) ve öncelik sırası (dizideki sıra). */

@@ -47,6 +47,9 @@ export function expectedKeys(spell: Spell): string[] {
   const T = B as unknown as { zemin?: Record<string, string>; auraBuyu?: Record<string, { sprite: string }>; cagirRenk?: Record<string, { ton: string }>;
     koni?: Record<string, { sprite: string }>; darbeTon?: Record<string, string>; isin: Record<string, string> };
   if (T.zemin?.[id] && m.zone) out.push(`zemin:${T.zemin[id]}`);
+  // Kuyruk E4b: duvar bağlaması (`duvar[<id>]`; sürdüren alan duvar parçası olarak çizilir).
+  const D = (B.duvar as Record<string, string>)[id];
+  if (D && m.zone) out.push(`duvar:${D}`);
   if (T.auraBuyu?.[id]) out.push(`aura:${T.auraBuyu[id]!.sprite}`);
   if (T.cagirRenk?.[id] && m.kind === 'summon') out.push(`ton:${T.cagirRenk[id]!.ton}`);
   const dt = m.damageType;
@@ -71,6 +74,7 @@ function drawnKeys(shots: FxShot[], after: BattleState): Set<string> {
   }
   const g = groundFx(after);
   for (const p of g.patches) k.add(`zemin:${p.sprite.id}`);
+  for (const w of g.walls) k.add(`duvar:${w.sprite.id}`);
   for (const a of g.auras) k.add(`aura:${a.sprite.id}`);
   return k;
 }
