@@ -22,7 +22,7 @@
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
 import { canAirMove } from './airMove';
-import { bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
+import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
 import { wallClimbCommand } from './ai/climbAi';
 import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf, wallAim } from './freeShape';
 import { fissureAim, fissureBudget, fissureClimbCommand } from './fissure';
@@ -38,7 +38,7 @@ import { monsters, spells } from '../data';
 import { availableForms } from './druid';
 import { costsFrom, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { execute } from './commands';
-import { canSneak, spellOf } from './features';
+import { canSneak, meleeOf, spellOf } from './features';
 import { standUpProblem } from './grapple';
 import { pushOutcome, shoveDc, shoveHex, sizeRank } from './forced';
 import { cunningOptions, hasTrait } from './classTraits';
@@ -1248,36 +1248,86 @@ export const airAiStats = { calls: 0 };
 
 /**
  * Kuyruk K71c (sürüm 58+, Görev 3; yeni taktik yok, K73): uçan düşmanın sınırlı düzey seçimi: yer (0) ve "düşük" (yerdeki
- * düşmanların boyunun hemen üstü: üstlerinden geçer, 5 ft'ten yakın dövüş). Yer listesi düzey başına tek bütçeli Dijkstra
- * (o irtifada); maliyet max(yatay, düzey farkı) (çapraz adım tek adım), kesin yol `tryCmd` ile (`airMove.ts` A*). Şimdiki
- * düzeyin yerleri zaten `reachable`'da; düşük düzeyde yalnız yerden varılamayan altıgenler eklenir. Parti ve çağrı değişmez.
+ * düşmanların boyunun hemen üstü: üstlerinden geçer, 5 ft'ten yakın dövüş). Havadaki uçanın yer/düşük yerleri şimdiki
+ * irtifadaki erişimden türer (maliyet max(yatay, düzey farkı): çapraz adım tek adım; ek Dijkstra yok); yerdeki uçanın düşük
+ * düzey yerleri yalnız yerden saldırı yeri yoksa (`airLowSpots`). Kesin yol `tryCmd` ile (`airMove.ts` A*). Parti ve çağrı
+ * değişmez.
  */
 function airSpots(state: BattleState, actor: Combatant, ground: Spot[]): Spot[] {
   if (actor.side !== 'enemies' || actor.civilian || actor.summon || !actor.pos || !state.map || !canAirMove(state, actor)) return [];
+  const cur = levelOf(actor.altitudeFt ?? 0);
+  if (cur <= 0) return [];
   airAiStats.calls++;
-  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
   const budget = speedHexes(actor) - actor.movementUsed;
   if (budget <= 0) return [];
-  const cur = levelOf(actor.altitudeFt ?? 0);
   const cap = levelOf(altitudeCapFt(state, actor));
-  const low = Math.min(cap, Math.max(1, ...foesOf(state, actor).filter((f) => f.pos && (f.altitudeFt ?? 0) <= 0).map((f) => heightLevels(f))));
-  const seen = new Set(ground.map((s) => hexKey(s.to)));
+  const low = Math.min(cap, lowLevel(state, actor));
+  const strike = strikeAt(state, actor);
+  if (!strike) return [];
   const out: Spot[] = [];
+  // Havadaki uçan: yer ve düşük düzey yerleri şimdiki irtifadaki erişimden (yatay maliyet, düzey farkı: çapraz adım tek adım;
+  // ek Dijkstra yok). Kendi altıgeninde iniş de aday.
+  const here: Spot = { to: actor.pos, cost: 0, kind: 'move' };
   for (const l of [...new Set([0, low])]) {
     if (l === cur) continue;
     const ft = levelToFt(l);
     const band = bandOf(actor, ft);
-    const costs = costsFrom(actor.pos, size, moveCostFn(state, { ...actor, altitudeFt: ft }), budget);
-    for (const [key, c] of costs) {
-      const cost = Math.max(c, Math.abs(l - cur));
-      if (cost > budget || (l > 0 && cur === 0 && seen.has(key))) continue;
-      const [col, row] = key.split(',').map(Number) as [number, number];
-      const to = { col, row };
-      const t = terrainAt(state, to);
-      if (t.movement === 'blocked' || (l === 0 && t.movement === 'deadly') || occupantAt(state, to, actor.id, band)) continue;
-      out.push({ to, cost, kind: 'move', toFt: ft });
+    for (const s of [here, ...ground]) {
+      if (s.kind !== 'move') continue;
+      const cost = Math.max(s.cost, Math.abs(l - cur));
+      if (cost > budget) continue;
+      const t = terrainAt(state, s.to);
+      if (t.movement === 'blocked' || (l === 0 && t.movement === 'deadly') || !strike(s.to, ft) || occupantAt(state, s.to, actor.id, band)) continue;
+      out.push({ to: s.to, cost, kind: 'move', toFt: ft });
     }
-    if (l > 0) for (const s of out) seen.add(hexKey(s.to));
+  }
+  return out;
+}
+
+/**
+ * Hava yeri yalnız yakın dövüş içindir: `ft` irtifasında `h`'den bir düşman 3B erişimde mi (yatay gövde aralığı ve bant aralığı
+ * erişimi aşmaz). Yakın dövüşü olmayan uçanın hava yeri yok (menzilli uçan şimdiki irtifasından saldırır).
+ */
+function strikeAt(state: BattleState, actor: Combatant): ((h: Offset, ft: number) => boolean) | null {
+  const melee = meleeOf(actor);
+  if (!melee) return null;
+  const r = Math.max(1, Math.floor(melee.reachFt / 5));
+  const foes = foesOf(state, actor).filter((f) => f.pos && f.hp > 0);
+  return (h, ft) => {
+    const b = bandOf(actor, ft);
+    return foes.some((f) => footprintDistance(bodyAt(state, actor, h), bodyOf(state, f)) <= r && bandGap(b, bandOf(f)) <= r);
+  };
+}
+
+/** Yerdeki düşmanların boyunun hemen üstü (düşük düzey; en az 1). */
+const lowLevel = (state: BattleState, actor: Combatant): number =>
+  Math.max(1, ...foesOf(state, actor).filter((f) => f.pos && (f.altitudeFt ?? 0) <= 0).map((f) => heightLevels(f)));
+
+/**
+ * Kuyruk K71c: yerdeki uçan düşmanın düşük düzey yerleri (tek bütçeli Dijkstra o irtifada; yalnız yerden saldırı yeri
+ * bulunamazsa çağrılır). Yerden varılabilen altıgenler eklenmez.
+ */
+function airLowSpots(state: BattleState, actor: Combatant, ground: Spot[]): Spot[] {
+  if (actor.side !== 'enemies' || actor.civilian || actor.summon || !actor.pos || !state.map || !canAirMove(state, actor)) return [];
+  airAiStats.calls++;
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const budget = speedHexes(actor) - actor.movementUsed;
+  const l = Math.min(levelOf(altitudeCapFt(state, actor)), lowLevel(state, actor));
+  if (budget <= 0 || l <= 0) return [];
+  const ft = levelToFt(l);
+  const band = bandOf(actor, ft);
+  const strike = strikeAt(state, actor);
+  if (!strike) return [];
+  const seen = new Set(ground.map((s) => hexKey(s.to)));
+  const costs = costsFrom(actor.pos, size, moveCostFn(state, { ...actor, altitudeFt: ft }), budget);
+  const out: Spot[] = [];
+  for (const [key, c] of costs) {
+    const cost = Math.max(c, l);
+    if (cost > budget || seen.has(key)) continue;
+    const [col, row] = key.split(',').map(Number) as [number, number];
+    const to = { col, row };
+    if (terrainAt(state, to).movement === 'blocked' || !strike(to, ft) || occupantAt(state, to, actor.id, band)) continue;
+    out.push({ to, cost, kind: 'move', toFt: ft });
   }
   return out;
 }
@@ -2076,7 +2126,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   if (foes.length === 0) return now ?? end;
   // Kuyruk K71c: uçan düşmanın yer ve düşük düzey yerleri (birleşik uçuş).
   const spots0 = reachable(state, actor);
-  const spots = cellsOn(state) ? [...spots0, ...airSpots(state, actor, spots0)] : spots0;
+  let spots = cellsOn(state) ? [...spots0, ...airSpots(state, actor, spots0)] : spots0;
   const ranged = actor.side === 'party' && actor.weaponOptions.some((o) => o.ranged);
   // Kuyruk 43: `h` çapasındaki gövdeden hedefin gövdesine (çok altıgen kapalıyken `distance`).
   const gapFrom = (h: Offset, t: Combatant) => footprintDistance(bodyAt(state, actor, h), bodyOf(state, t));
@@ -2085,15 +2135,26 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Eylem yapabileceği en ucuz ve en güvenli altıgen (menzilli parti üyesi bitişikten kaçınır).
   // Y1 G2: menzilli yaratık yükseklik kuralı açıkken yüksek zemini tercih eder (seviye başına 1 maliyet indirimi).
   const lift = (h: Offset) => (!state.yz?.eski && heightCombatRule(state) && (ranged || actor.weaponOptions.some((o) => o.ranged) || actor.attacks.some((a) => a.ranged)) ? heightAt(state, h) : 0);
-  const scored = spots
+  const scoreOf = (list: Spot[]) => list
     .map((s) => ({ ...s, score: s.cost + risk(state, actor, s.to) + (ranged && enemyNear(s.to) ? 3 : 0) - lift(s.to) }))
     .sort((a, b) => a.score - b.score);
+  let scored = scoreOf(spots);
+  // Kuyruk K71c: yerdeki uçan düşman yerden saldıramıyorsa (kalabalık, kuşatılmış hedef) düşük düzey yerleri (düşmanların
+  // üstü) tembel olarak eklenir (tek Dijkstra; yerden saldırabilen uçan için hiç hesaplanmaz).
+  const lowLater = cellsOn(state) && (actor.altitudeFt ?? 0) === 0 ? () => airLowSpots(state, actor, spots0) : null;
   // K59 (Usta): saldırı yeri adayları çoğaltılır ve oradaki en iyi değerlendirici puanına göre sıralanır (yakın olan değil,
   // en değerli hedef: yaralı, öldürülebilir, tehlikeli); Normal/Kolay eskisi gibi en ucuz üç yer.
   const usta = !state.yz?.eski && difficultyOf(state, actor.side) === 'usta' ? USTA : null;
   let attackSpots: Spot[] = [];
   // Usta: hedef başına en ucuz yer (aynı hedefin yanındaki yerler tek aday), en çok `yerAday` hedef.
   const targetsSeen = new Set<string>();
+  for (let pass = 0; pass < 2; pass++) {
+  if (pass === 1) {
+    const low = attackSpots.length === 0 && lowLater ? lowLater() : [];
+    if (!low.length) break;
+    spots = [...spots, ...low];
+    scored = scoreOf(low);
+  }
   for (const s of scored) {
     const there = at(state, actor, s.to, s.toFt);
     const mover = { ...actor, pos: s.to, ...(s.toFt === undefined ? {} : { altitudeFt: s.toFt }) };
@@ -2107,6 +2168,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
       attackSpots.push(s);
       if (attackSpots.length >= (usta ? usta.yerAday : 3)) break;
     }
+  }
   }
   if (usta && attackSpots.length > 1) attackSpots = ustaSpotOrder(state, actor, attackSpots, usta);
   const go = guardMove(state, actor, firstMove(state, actor, attackSpots));

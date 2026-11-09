@@ -43,12 +43,10 @@ export const canAirMove = (state: BattleState, c: Combatant): boolean => cellsOn
 
 /** Düzey sınırları ve maliyet işlevleri (arama başına önbellek). */
 function searchCtx(state: BattleState, actor: Combatant) {
-  const fns = new Map<number, (h: Offset, prev: Offset) => number | null>();
-  const fnAt = (l: number) => {
-    let f = fns.get(l);
-    if (!f) { f = moveCostFn(state, { ...actor, altitudeFt: levelToFt(l) }); fns.set(l, f); }
-    return f;
-  };
+  // Tek maliyet işlevi, değişken irtifa (`AltRef`): düzey başına yeniden kurulum yok.
+  const dyn = { ft: 0 };
+  const fn = moveCostFn(state, actor, dyn);
+  const fnAt = (l: number) => (h: Offset, prev: Offset) => { dyn.ft = levelToFt(l); return fn(h, prev); };
   const caps = new Map<string, number>();
   const capAt = (h: Offset) => {
     const k = hexKey(h);
@@ -79,7 +77,7 @@ function canStop(state: BattleState, actor: Combatant, h: Offset, l: number, cap
 }
 
 /** Basit ikili yığın (en küçük `f`). */
-class Heap<T extends { f: number; seq: number }> {
+class Heap<T extends { f: number; g: number; seq: number }> {
   private a: T[] = [];
   get size() { return this.a.length; }
   push(x: T) { const a = this.a; a.push(x); let i = a.length - 1; while (i > 0) { const p = (i - 1) >> 1; if (less(a[p] as T, x)) break; a[i] = a[p] as T; i = p; } a[i] = x; }
@@ -103,7 +101,8 @@ class Heap<T extends { f: number; seq: number }> {
     return top;
   }
 }
-const less = (x: { f: number; seq: number }, y: { f: number; seq: number }) => x.f < y.f || (x.f === y.f && x.seq < y.seq);
+// Eşit `f`'de derin düğüm (büyük `g`) önce: Chebyshev uzayındaki çok sayıdaki eşit yol açılmadan hedefe iner.
+const less = (x: { f: number; g: number; seq: number }, y: { f: number; g: number; seq: number }) => x.f < y.f || (x.f === y.f && (x.g > y.g || (x.g === y.g && x.seq < y.seq)));
 
 /** (from, l0) → (to, lt) en ucuz hava yolu (bütçe içinde) ya da null. */
 export function airPath(state: BattleState, actor: Combatant, from: Offset, l0: number, to: Offset, lt: number, budget: number): { path: Step[]; cost: number } | null {

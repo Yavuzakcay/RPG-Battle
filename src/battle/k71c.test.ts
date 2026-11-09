@@ -126,7 +126,8 @@ describe('K71c birleşik hareket ve üst sınır', () => {
     const s = (alt: number) => field([F(), G()], { F: [H(6), alt], G: [H(13)] }, { tiles: wallCol(7) });
     const walk = (alt: number) => run(s(alt), { type: 'move', actorId: 'F', to: H(8) } as Command);
     expect(walk(20).ok).toBe(true);
-    expect(walk(15).ok && me(walk(15).state as BattleState).pos?.col === 8).toBe(false);
+    const w15 = walk(15);
+    expect(w15.ok && me(w15.state).pos?.col === 8).toBe(false);
     // Birleşik hareket 15 ft'ten duvarın üstüne (4. düzey) çaprazlama yükselip öte yanda 15 ft'e iner: 2 adım.
     const over = run(s(15), fly(H(8), 15));
     expect(over.ok && me(over.state).movementUsed).toBe(2);

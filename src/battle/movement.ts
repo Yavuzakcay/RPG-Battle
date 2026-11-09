@@ -180,15 +180,22 @@ export function checkMover(state: BattleState, actor: Combatant, to: Offset): Of
  * fark kuralları boyut modellenmediği için yok. Düşman Spirit Guardians yayılımında hız yarıya
  * iner: oradaki altıgenler iki kat maliyetli. Yakaladığını sürükleyenin her adımı da iki kat.
  */
-export function moveCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
-  const base = moveCostBase(state, actor);
+export function moveCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
+  const base = moveCostBase(state, actor, dyn);
   // Kuyruk 16 K16E (kural sürümü 2): korkan yaratık korku kaynağına isteyerek yaklaşamaz (SRD 5.2.1 Frightened).
   const fear = fearBlocksStep(state, actor);
   return fear ? (h, prev) => (fear(h, prev) ? null : base(h, prev)) : base;
 }
 
-function moveCostBase(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
-  const single = hexCostFn(state, actor);
+/**
+ * Kuyruk K71c (sürüm 58+): değişken irtifalı maliyet: işlev bir kez kurulur, irtifaya bağlı parçalar (engel tepesini aşma,
+ * altıgen tavanı, düşman hücresi bandı) her çağrıda `ref.ft`'ten (birleşik uçuş araması; düzey başına yeniden kurulum yok).
+ * Yalnız uçuş hızıyla uçan için (tırmanan ve süzülen değişmez).
+ */
+export interface AltRef { ft: number }
+
+function moveCostBase(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
+  const single = hexCostFn(state, actor, dyn);
   if (!isMultiHex(state, actor)) return single;
   // Görev A6: çok altıgenli yaratıkta çapanın adımı gövdenin bütün altıgenlerinin adımıdır; maliyet en kötüsü
   // (zemin, engel, zorlu zemin, düşman). Gövdenin kendi altıgenleri boş sayılır.
@@ -207,7 +214,7 @@ function moveCostBase(state: BattleState, actor: Combatant): (h: Offset, prev: O
   };
 }
 
-function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offset) => number | null {
+function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
   // Kuyruk K68b (sürüm 52): duvarda/tavanda tırmanan (Spider Climb…) zemin bakımından uçan gibi (zorlu arazi, sıvı, lav
   // ve yer alanları yok); duvarda yalnız duvar altıgenlerine, tavanda her yere yürür. Tırmanıcı olmayana tek bayrak.
   const aloft = climbingAloft(actor);
@@ -227,12 +234,22 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const dragging = !actor.traits?.includes('abduct') && Object.values(state.combatants).some((c) => c.grapple?.by === actor.id && !(wrestler && sizeRank(c.size) <= sizeRank(actor.size)));
   const enemyAt = new Map<string, Combatant>();
   // Kuyruk K71c (sürüm 58+): yalnız yürüyenin düzeylerini (bandını) kaplayan düşman yolu keser; uçan düşmanın üstünden
-  // (ya da altından) geçer (K6). Hızlı yol: havada kimse yokken bant hesabı yapılmaz (`fillsBand`).
+  // (ya da altından) geçer (K6). Hızlı yol: havada kimse yokken bant hesabı yapılmaz (`fillsBand`). Değişken irtifada
+  // (`dyn`) altıgendeki bütün düşmanlar tutulur, bant her çağrıda süzülür.
   const moverBand = cellsOn(state) ? bandOf(actor) : undefined;
+  const enemiesAt = dyn ? new Map<string, Combatant[]>() : null;
   for (const c of Object.values(state.combatants)) {
     // Dokunulamaz çağrının (ruh sürüsü, Flaming Sphere) içinden geçilir (Görev B2).
-    if (c.pos !== null && c.side !== actor.side && isTargetable(c) && !isIntangible(c) && fillsBand(state, c, moverBand)) enemyAt.set(hexKey(c.pos), c);
+    if (c.pos === null || c.side === actor.side || !isTargetable(c) || isIntangible(c)) continue;
+    if (enemiesAt) { const k = hexKey(c.pos); enemiesAt.set(k, [...(enemiesAt.get(k) ?? []), c]); } else if (fillsBand(state, c, moverBand)) enemyAt.set(hexKey(c.pos), c);
   }
+  const enemyFor = (k: string): Combatant | undefined => {
+    if (!enemiesAt || !dyn) return enemyAt.get(k);
+    const list = enemiesAt.get(k);
+    if (!list) return undefined;
+    const band = bandOf(actor, dyn.ft);
+    return list.find((c) => fillsBand(state, c, band));
+  };
   // Görev B2: büyü alanları (zorlu arazi, Plant Growth, rüzgâr duvarı); zemin maliyetiyle birikmez, büyüğü geçer.
   const zoneCost = zoneMoveCost(state, actor);
   // Görev A2: engelden geçen (Incorporeal Movement, `phase` etkisi) duvar/engel ve yaratık altıgenlerinden geçer.
@@ -278,8 +295,10 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   // o altıgenin tavanı − boyu aşan yaratık oraya giremez (çatının içinden geçilmez).
   const v56 = dikeyOn(state);
   const altFt = altitudeOf(actor);
-  const overFt = v56 && flying && !aloft && flySpeed(actor) > 0 && altFt > 0 ? altFt : -1;
-  const roofCheck = v56 && altFt > 0 && hasHexCeilings(state);
+  const flyOver = v56 && flying && !aloft && flySpeed(actor) > 0;
+  const roofs = v56 && hasHexCeilings(state);
+  const overFt = flyOver && altFt > 0 ? altFt : -1;
+  const roofCheck = roofs && altFt > 0;
   const boy = bodyHeightFt(actor);
   // Kuyruk K71b (sürüm 57+, K68 karar 9 geri): duvardaki tırmanıcı irtifası engelin tepesine yetiyorsa engelin üstünden öte
   // yana geçer (tepede duramaz: `executeMove`); tırmanma hızı olmayan (Çeviklik tırmanıcısı) yalnız tırmanılabilir yüzeyde
@@ -318,8 +337,11 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     if (tooDeep(h)) return null;
     if (uphill(h, prev)) return null;
     const t0 = terrainAt(state, h);
-    if (roofCheck) { const c = ceilingFt(state, h); if (c !== null && altFt > Math.max(0, Math.floor((c - boy) / 5) * 5)) return null; }
-    const overTop = overFt > 0 && t0.movement === 'blocked' && !t0.outOfBounds && !t0.flyersPass && overFt >= obstacleTopFt(state, h, t0);
+    // Kuyruk K71c: değişken irtifada (`dyn`) irtifaya bağlı denetimler çağrı anındaki irtifayla.
+    const aF = dyn ? dyn.ft : altFt;
+    const oF = dyn ? (flyOver && aF > 0 ? aF : -1) : overFt;
+    if (dyn ? roofs && aF > 0 : roofCheck) { const c = ceilingFt(state, h); if (c !== null && aF > Math.max(0, Math.floor((c - boy) / 5) * 5)) return null; }
+    const overTop = oF > 0 && t0.movement === 'blocked' && !t0.outOfBounds && !t0.flyersPass && oF >= obstacleTopFt(state, h, t0);
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
     const free = freeMove || (!!ward && ward(h));
@@ -328,7 +350,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
     const terrain = wall ? through : overTop || climbOver ? 1 : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
-    const enemy = enemyAt.get(hexKey(h));
+    const enemy = enemyFor(hexKey(h));
     const zc0 = handsOut ? (((z) => (z === null ? null : Math.max(z, interposeCost(state, actor, h))))(zoneCost(h))) : zoneCost(h);
     const zc = free && zc0 !== null ? 1 : zc0;
     const ground0 = base === null || zc === null ? null : Math.max(base, zc);
