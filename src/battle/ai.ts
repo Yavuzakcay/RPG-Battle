@@ -2211,7 +2211,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
 
   // Kuyruk K72 (sürüm 60+): bütün düşmanlar başka katta duruyorsa merdivene yürür, merdivende kat değiştirir (yol bulma; yeni
   // taktik değil).
-  const katGo = floorRoute(state, actor, foes);
+  const katGo = floorRoute(state, actor, foes, spots0);
   if (katGo) return katGo;
   // Kuyruk K71b (sürüm 57+, K15): Çeviklik tırmanıcısı duvarsız yol yoksa ya da tırmanma yolunun iki katıysa duvara tırmanır;
   // duvardayken tırmanmayı sürdürür, öte yana geçer ya da iner (yeni taktik yok: yalnız yol bulma).
@@ -2370,7 +2370,7 @@ function moveToward(state: BattleState, actor: Combatant, targets: Offset[], ok:
  * duruyorsa: merdiven altıgenindeyse en yakın düşmanın katına `vertical_move`; değilse o iki katı bağlayan en yakın
  * merdivene yürür. Havadaki/duvardaki düşman ya da aynı katta düşman varsa null.
  */
-function floorRoute(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+function floorRoute(state: BattleState, actor: Combatant, foes: Combatant[], ready?: Spot[]): Command | null {
   const katlar = katlarOf(state);
   if (!katlar.length || !actor.pos || fliesOrHovers(actor)) return null;
   const here = standAlt(state, actor);
@@ -2393,7 +2393,8 @@ function floorRoute(state: BattleState, actor: Combatant, foes: Combatant[]): Co
   const near = (h: Offset) => Math.min(...stairs.map((x) => distance(h, x)));
   const now = near(pos);
   if (now === 0) return null;
-  const spots = reachable(state, actor).filter((sp) => near(sp.to) < now).sort((a, b) => near(a.to) - near(b.to) || a.cost - b.cost);
+  // Kuyruk K73a: `decide`'ın hesapladığı yürüyüş yerleri (aynı liste; yeniden Dijkstra ve atlama taraması yok).
+  const spots = (ready ?? reachable(state, actor)).filter((sp) => sp.toFt === undefined && near(sp.to) < now).sort((a, b) => near(a.to) - near(b.to) || a.cost - b.cost);
   return firstMove(state, actor, spots);
 }
 
