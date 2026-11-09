@@ -2616,8 +2616,9 @@ function perchCommand(state: BattleState, actor: Combatant, now: Command | null,
   // Kuyruk K73b (sürüm 63+): yüzde tutunan menzilli tırmanışı sürdürür (çok turlu).
   const v63 = k73bOn(state);
   if (!canAct || actor.civilian || !actor.pos || !state.map || !hasStandData(state) || standingOn(state, actor) || (climbingAloft(actor) && !v63)) return null;
-  const rangedish = actor.weaponOptions.some((o) => o.ranged) || actor.attacks.some((a) => a.ranged) || rangedCommand(now, state, actor);
-  if (!rangedish || (now && !rangedCommand(now, state, actor))) return null;
+  // Canavar saldırısı burada menzilli sayılmaz (K73a gibi): K73b düşman tarafına yalnız uçan menzillinin yükselmesini açar.
+  const rangedish = actor.weaponOptions.some((o) => o.ranged) || actor.attacks.some((a) => a.ranged) || rangedCommand(now);
+  if (!rangedish || (now && !rangedCommand(now))) return null;
   if (climbingAloft(actor)) return v63 ? perchContinue(state, actor) : null;
   const foes = foesOf(state, actor);
   if (!foes.length || engaged(actor, foes) || highGroundBonus(state, actor, foes, actor.pos, altitudeOf(actor)) > 0) return null;
@@ -2702,15 +2703,19 @@ function dropCommand(state: BattleState, actor: Combatant, now: Command | null, 
 
 /**
  * Kuyruk K73b (sürüm 63+, Görev 1): yürüyen menzillinin sur tepesine çok turlu tırmanışı. Tepeye en çok `surTurSiniri` turda
- * (bu tur dahil) varılacaksa ve tepe getirisi varsa başlar: tepede (varsayımsal: hareketi bitmiş, tepede duran) en yakın
- * düşmana K8 yüksek zemin ve oradan saldırı (zayıf olasılıklı değil, şimdikinden kötü değil). Bu tur en az 5 ft yükselmeli.
+ * (bu tur dahil) varılacaksa ve tepe getirisi varsa başlar: yürüyerek aynı sürede hiçbir düşmanın yanına varılamıyor (yol
+ * mesafesi), tepede (varsayımsal: hareketi bitmiş, tepede duran) en yakın düşmana K8 yüksek zemin ve oradan saldırı (zayıf
+ * olasılıklı değil, şimdikinden kötü değil). Bu tur en az 5 ft yükselmeli.
  * Bitişikte/erişimde düşman yokken (`perchCommand` önce eler).
  */
 function perchMulti(state: BattleState, actor: Combatant, h: Offset, top: number, carpan: number, cur: number): Command | null {
   const speed = speedHexes(actor);
   const left = speed - actor.movementUsed;
   const need = 1 + climbCostHexes(top - altitudeOf(actor), carpan);
-  if (left < carpan || speed <= 0 || 1 + Math.ceil((need - left) / speed) > K73B.surTurSiniri) return null;
+  const turns = 1 + Math.ceil((need - left) / speed);
+  if (left < carpan || speed <= 0 || turns > K73B.surTurSiniri) return null;
+  // Getiri: yürüyerek aynı sürede bir düşmanın yanına varılabiliyorsa tırmanmaz (yol mesafesi, K73a alanı).
+  if (actor.pos && approachField(state, actor, foesOf(state, actor))(actor.pos) <= left + speed * (turns - 1)) return null;
   const me: Combatant = { ...actor, pos: h, altitudeFt: top, climbing: undefined, movementUsed: speed };
   const hyp: BattleState = { ...state, combatants: { ...state.combatants, [actor.id]: me } };
   if (highGroundBonus(hyp, me, foesOf(hyp, me), h, top) <= 0) return null;
