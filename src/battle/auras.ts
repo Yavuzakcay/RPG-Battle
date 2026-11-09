@@ -12,7 +12,8 @@ import { anyBirlik, shoulderOf } from './imzaBirlik';
 import { auraCoreOn, passiveAuraOf } from './auraCore';
 import { imzaAuraBonus } from './imzaCore';
 import { isIncapacitated } from '../rules/conditions';
-import { auraGap, gap } from './body';
+import { auraDist, rangeGap } from './adjacency';
+import { gap } from './body';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
 import { silencedAt, zoneSpecOf } from './zones';
@@ -31,7 +32,8 @@ export function auraSaveOf(state: BattleState, c: Combatant): number {
   let best = 0;
   for (const p of Object.values(state.combatants)) {
     if (p.id === c.id || p.side !== c.side || p.hp <= 0 || !p.pos || !p.traits?.includes(TRAIT) || isIncapacitated(p.conditions)) continue;
-    if (auraGap(state, p, c) > radiusOf(p)) continue;
+    // Kuyruk K73b (sürüm 63+): 3B uzaklık, döşeme keser.
+    if (auraDist(state, p, c) > radiusOf(p)) continue;
     best = Math.max(best, bonusOf(p));
   }
   const own = c.traits?.includes(TRAIT) ? bonusOf(c) : 0;
@@ -45,7 +47,7 @@ export function auraSaveOf(state: BattleState, c: Combatant): number {
 export function countercharmOf(state: BattleState, c: Combatant): string | undefined {
   if (c.hp <= 0 || !c.pos) return undefined;
   return Object.values(state.combatants).find((b) => b.side === c.side && b.hp > 0 && !!b.pos && b.traits?.includes('countercharm')
-    && !b.economy.reaction && !isIncapacitated(b.conditions) && (b.id === c.id || gap(state, b, c) <= 6))?.id;
+    && !b.economy.reaction && !isIncapacitated(b.conditions) && (b.id === c.id || rangeGap(state, b, c) <= 6))?.id;
 }
 
 /** Kuyruk 19: Aura of Life: taşıyan ve menzilindeki dostlar için dirençler. */
@@ -54,7 +56,7 @@ export function auraResistOf(state: BattleState, c: Combatant): string[] {
   const out = new Set<string>();
   for (const p of Object.values(state.combatants)) {
     if (p.side !== c.side || p.hp <= 0 || !p.pos) continue;
-    for (const e of p.effects ?? []) if (e.auraLife && auraGap(state, p, c) * 5 <= e.auraLife.radiusFt) for (const r of e.auraLife.resist) out.add(r);
+    for (const e of p.effects ?? []) if (e.auraLife && auraDist(state, p, c) * 5 <= e.auraLife.radiusFt) for (const r of e.auraLife.resist) out.add(r);
   }
   // Kuyruk 19 (Epic Boon): Night Spirit / Shadowy Form: loş ışıkta ya da karanlıkta Psychic ve Radiant dışı direnç.
   for (const r of shadowyFormResist(state, c)) out.add(r);

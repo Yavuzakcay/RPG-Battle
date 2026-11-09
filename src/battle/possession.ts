@@ -164,7 +164,7 @@ export function possessionCleanup(state: BattleState): BattleEvent[] {
 }
 
 /** Bedende izin verilen komutlar (ev sahibinin büyüleri, özellikleri, eşyaları ve tepkileri yok). */
-export const BODY_COMMANDS: readonly string[] = ['end_turn', 'possession_leave', 'attack', 'monster_attack', 'multiattack', 'move', 'jump', 'climb',
+export const BODY_COMMANDS: readonly string[] = ['end_turn', 'possession_leave', 'attack', 'monster_attack', 'multiattack', 'move', 'jump', 'climb', 'jump_down',
   'change_height', 'stand_up', 'shift_move', 'vertical_move', 'explore_move', 'hide', 'dash', 'disengage', 'search', 'dodge', 'help', 'grapple',
   'shove', 'escape', 'escape_grapple', 'attack_object', 'attack_gate', 'object_use', 'drop_item', 'pick_up', 'pull', 'gate'];
 

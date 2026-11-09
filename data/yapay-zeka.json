@@ -9,5 +9,10 @@
     "yuksekZeminPuan": 3,
     "surBasari": 0.5,
     "surMesafe": 4
+  },
+  "k73b": {
+    "_aciklama": "Kuyruk K73b (kural sürümü 63+): surTurSiniri: yürüyen menzillinin sur tepesine çok turlu tırmanışa başlaması için en çok tur sayısı (bu tur dahil). dusmeCanPayi: gönüllü düşmede canın en kötü düşme hasarından (zar × 6) fazla olması gereken oran (1 = en kötü hasar canı bitirmez).",
+    "surTurSiniri": 3,
+    "dusmeCanPayi": 1
   }
 }

@@ -5,6 +5,7 @@ import { formatDice, parseDice } from '../rules/dice';
 import { distance as hexDistance } from '../rules/hex';
 import { isIncapacitated, speedZero } from '../rules/conditions';
 import { applyEvents } from './reduce';
+import { adjacent3D, k73bOn } from './adjacency';
 import { globalRule } from './ruleControl';
 import { controlConditions, isPossessedBody, POSSESS_FLOOR, possessorDisabled } from './possessionCore';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
@@ -185,9 +186,11 @@ export function upcastDiceCount(m: SpellMechanics, levelsAbove: number): number 
 
 /**
  * Saldıran hedefin 5 ft içinde mi (Paralyzed/Unconscious otomatik kritiği; Görev H): haritada bitişik altıgen,
- * haritasız savaşta yakın dövüş saldırısı.
+ * haritasız savaşta yakın dövüş saldırısı. Kuyruk K73b (sürüm 63+): 3B bitişiklik (`adjacency.ts` `adjacent3D`: dikey bant
+ * aralığı ve döşeme dahil).
  */
 export function withinFiveFt(state: BattleState, a: Combatant, b: Combatant, melee: boolean): boolean {
+  if (state.map && k73bOn(state)) return adjacent3D(state, a, b);
   if (state.map) return !!a.pos && !!b.pos && hexDistance(a.pos, b.pos) <= 1;
   return melee;
 }

@@ -348,6 +348,9 @@ export const TR_EXTRA = {
     // Kuyruk U1a: süzülme (yere değmez; en çok N ft) ve zorunlu iniş.
     u1a: { hoverShort: (ft: number): string => `〰 Süzülüyor · en çok ${ft} ft`, hover: (ft: number): string => `Süzülüyor: yere değmez, en çok ${ft} ft (zorlu zemin, çamur, tuzak, sığ su işlemez; lav, derin su ve zemin alanları işler)`,
       cap: (ft: number): string => `Uçuş sınırı ${ft} ft`, glide: 'Uçuş yalnız kendi turunda: tur sonunda yere in, yoksa düşersin' },
+    // Kuyruk K73b: gönüllü düşme ve çok turlu tırmanış.
+    k73b: { drop: '⇣ Aşağı atla', dropHint: 'Aşağı atla: vurgulu altıgene dokun (her 10 ft için 1d6 düşme hasarı, hasar alırsan Prone; derin suda DC 15 kontrolle yarı hasar). Duvarda tutunurken kendi altıgenine dokunursan bırakırsın.',
+      dropLabel: (ft: number, dice: string): string => `⇣${ft}ft${dice ? ` ${dice}` : ''}`, climbMore: 'bu tur bitmez: yüzde yükselip sonraki turda sürer' },
     k72: { toggle: '⌂ Kat', toggleTitle: 'Kat görünümü: kat seç', panel: 'Kat görünümü', ground: 'Zemin',
       floor: (name: string, ft: number): string => `${name} · ${ft} ft`, hint: 'Seçili katta olmayan yaratıklar soluk. ▲▼ merdiven, ○ delik.' },
     k71c: { toggle: '☁ Hava', toggleTitle: 'Hava görünümü: düzey seç (her düzey 5 ft)', panel: 'Hava görünümü', levels: 'Düzeyler',
@@ -411,6 +414,7 @@ export const TR_EXTRA = {
     stunning: 'Sersemletici Vuruş (Stunning Strike): bu tur Monk silahıyla ya da silahsız vurduğun hedefe, 1 Focus, turda bir kez. CON save; başarısızsa senin sonraki turunun başına dek Stunned, başarılıysa ona sonraki saldırı avantajlı.',
     floor: 'Merdivenden geç: merdiven altıgenindeyken bütün parti öbür kata geçer; bu katta kalanlar bekler. Hareketin biter.',
     fissure: 'Yarık yerleştir: Earthquake\'in yapıldığı turda 1d6 yarığı yerleştir (altıgen + yön, 2 altıgen geniş, kenardan kenara); yarıklar tur sonunda açılır, içindekiler DEX save atar, başarısızsa düşer. Eylem harcamaz.',
+    drop: 'Aşağı atla: sur tepesinden, kat kenarından ya da delikten, uçurumdan bitişik altıgene atla ya da duvarda tutunurken bırak. Her 10 ft için 1d6 düşme hasarı, hasar alırsan Prone; derin suya düşerken tepkinle DC 15 Atletizm/Akrobasi kontrolü başarılıysa yarı hasar. 1 altıgen hareket.',
     fissureClimb: 'Tırman: yarıktan yukarı tırman (her 5 ft 2 altıgen hareket); dibe ulaşınca bitişik bir zemin altıgenine çık.',
     unpossess: 'Bedeni bırak: ele geçiren bedenden çıkar (bonus eylem) ve 5 ft içinde boş bir altıgende belirir; beden asıl tarafına döner, bu savaş boyunca o ele geçirene bağışık. Ghost Possession.',
     steady: 'Nişan Al (Steady Aim): bonus eylem, bu tur hareket etmediysen. Bu tur sonraki saldırın avantajlı; hızın tur sonuna dek 0. Rogue.',

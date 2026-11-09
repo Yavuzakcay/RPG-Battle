@@ -21,6 +21,7 @@ import { swimsByTrait } from './flight';
 import { knowsWhere } from './sight';
 import { featuresOn, shiftGrant } from './shift';
 import { gap } from './body';
+import { adjacent3D, k73bOn, separated } from './adjacency';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -109,7 +110,8 @@ const able = (c: Combatant) => c.hp > 0 && isTargetable(c) && !isIncapacitated(c
 function allyNextTo(state: BattleState, actor: Combatant, target: Combatant): boolean {
   return Object.values(state.combatants).some((c) => {
     if (c.id === actor.id || c.id === target.id || c.side !== actor.side || !able(c)) return false;
-    if (state.map && c.pos && target.pos) return gap(state, c, target) <= 1;
+    // Kuyruk K73b (sürüm 63+): 3B bitişiklik (hedefin 30 ft üstünde uçan dost sayılmaz; döşeme keser).
+    if (state.map && c.pos && target.pos) return k73bOn(state) ? adjacent3D(state, c, target) : gap(state, c, target) <= 1;
     return !state.map && heightOf(state, c) === heightOf(state, target) && meleeOf(c) !== null;
   });
 }
@@ -447,7 +449,10 @@ function leavesReach(state: BattleState, o: Combatant, mover: Combatant, reachFt
   const k9 = k9On(state);
   if (cellsOn(state) && (k9 || fromAlt !== undefined || toAlt !== undefined || anyAloft(state))) {
     const ob = absBand(state, o);
-    const d = (pos: Offset, alt: number) => Math.max(gap(state, o, { ...mover, pos }), bandGap(ob, k9 ? absBand(state, mover, pos, alt) : bandOf(mover, alt)));
+    // Kuyruk K73b (sürüm 63+): kat döşemesi ve Forcecage kutusu erişimi keser (`adjacency.ts` `separated`).
+    const cut = k73bOn(state);
+    const d = (pos: Offset, alt: number) => (cut && separated(state, o, { ...mover, pos, altitudeFt: alt }) ? Infinity
+      : Math.max(gap(state, o, { ...mover, pos }), bandGap(ob, k9 ? absBand(state, mover, pos, alt) : bandOf(mover, alt))));
     const a0 = fromAlt ?? mover.altitudeFt ?? 0;
     return d(from, a0) <= r && d(to, toAlt ?? a0) > r;
   }

@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeJumpDown } from './drop';
 import { executeAirMove } from './airMove';
 import { beadAfterEvents, beadTurnEndEvents, executeBeadTouch } from './bead';
 import { distance } from '../rules/hex';
@@ -811,6 +812,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'initiative_swap') return executeInitiativeSwap(state, actor, cmd.allyId);
   if (cmd.type === 'jump') return executeJump(state, actor, cmd.to, rng);
   if (cmd.type === 'climb') return executeClimb(state, actor, cmd.to, rng);
+  if (cmd.type === 'jump_down') return executeJumpDown(state, actor, cmd.to, rng);
   if (cmd.type === 'stand_up') return executeStandUp(state, actor);
   if (cmd.type === 'escape_grapple') return executeEscapeGrapple(state, actor, rng);
   if (cmd.type === 'hide') return executeHide(state, actor, rng);

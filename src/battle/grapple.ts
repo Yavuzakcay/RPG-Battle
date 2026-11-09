@@ -10,6 +10,7 @@
  * - Hücum ("20+ ft düz koşup vurursa"): turdaki son düz koşu (`run`) en az o kadar ve hedef koşu
  *   yönünde bitişikse tutar.
  */
+import { adjacent3D, k73bOn } from './adjacency';
 import { checkBase } from './ruleVersion';
 import { extrasTotal, rollExtras } from '../rules/attack';
 import { finishCheck, saveDice } from './effectDice';
@@ -90,7 +91,8 @@ export function grappleCleanup(state: BattleState): BattleEvent[] {
       : g.asleep ? 'yakalayan uyuyor' : isIncapacitated(g.conditions) ? 'yakalayan etkisiz'
         : !isTargetable(c) ? 'yakalanan düştü'
           // Kuyruk K69 (sürüm 53, çok altıgen): bitişiklik gövdeler arası (çapalar arası değil).
-          : state.map && g.pos && c.pos && (isMultiHex53(state, g) || isMultiHex53(state, c) ? gap(state, g, c) : distance(g.pos, c.pos)) > 1 ? 'aralarında mesafe açıldı' : null;
+          // Kuyruk K73b (sürüm 63+): 3B bitişiklik: yakalayan uçarak 10 ft yükselirse yakalama biter (taşıma yok, ⚠).
+          : state.map && g.pos && c.pos && (k73bOn(state) ? !adjacent3D(state, g, c) : (isMultiHex53(state, g) || isMultiHex53(state, c) ? gap(state, g, c) : distance(g.pos, c.pos)) > 1) ? 'aralarında mesafe açıldı' : null;
     if (reason) out.push({ type: 'grapple_ended', targetId: c.id, reason });
   }
   return out;

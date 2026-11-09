@@ -6,7 +6,7 @@
  * Burada etkili yaratığın tur başı: geçici HP (Heroism), süregelen hasar ve ardından kurtarma zarı (Searing Smite;
  * başarıda biter), Command (turunu kaybeder; Grovel önce yere düşer).
  */
-import { auraGap } from './body';
+import { auraDist } from './adjacency';
 import { damageProfile } from './common';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage } from '../rules/damage';
@@ -66,7 +66,7 @@ export function effectTurnStartEvents(state: BattleState, id: string, rng: Rng):
   const me = current.combatants[id];
   if (me && me.hp === 0 && (me.life === 'dying' || me.life === 'stable') && me.pos) {
     const holder = Object.values(current.combatants).find((p) => p.id !== id && p.side === me.side && p.hp > 0 && p.pos
-      && (p.effects ?? []).some((e) => e.auraLife?.revive && auraGap(current, p, me) * 5 <= e.auraLife.radiusFt));
+      && (p.effects ?? []).some((e) => e.auraLife?.revive && auraDist(current, p, me) * 5 <= e.auraLife.radiusFt));
     if (holder) {
       const heal: BattleEvent = { type: 'healed', actorId: holder.id, targetId: id, label: 'Aura of Life', amount: 1, targetHpAfter: 1 };
       events.push(heal);

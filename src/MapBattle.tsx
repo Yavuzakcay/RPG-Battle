@@ -101,6 +101,7 @@ import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
 import { globalRule } from './battle/ruleControl';
 import { pickArea } from './battle/areaAttack';
 import { climbLabel, climbTargets } from './battle/climb';
+import { dropTargets } from './battle/drop';
 import { hasStandData, katlarOf } from './battle/stand';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
@@ -476,7 +477,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk 19: Arcane Hand etkisi.
   // Kuyruk 19: genel hedef seçme kipi (Familiar saldırısı, Gaze of Two Minds): hedeften komut.
   const [pickCmd, setPickCmd] = useState<{ make: (id: string) => Command } | null>(null);
-  const [pickHexCmd, setPickHexCmd] = useState<{ make: (h: Offset) => Command; hint?: string } | null>(null);
+  const [pickHexCmd, setPickHexCmd] = useState<{ make: (h: Offset) => Command; hint?: string; /** Kuyruk K73b: gönüllü düşme (altıgenlerde ft ve zar). */ drop?: boolean } | null>(null);
   const [handPick, setHandPick] = useState<'fist' | 'force' | 'grasp' | 'crush' | 'interpose'>('fist');
   // Kurulumda Find Familiar biçimi ve türü (Görev R3).
   const [famForm, setFamForm] = useState<string | null>(null);
@@ -854,6 +855,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Kuyruk K72: sur tepesi (katmansız haritada da).
     return new Set(active && mode === 'idle' && me && (state.map?.heights || hasStandData(state)) ? climbTargets(state, me).map(hexKey) : []);
   }, [state, active, actorId, mode]);
+  // Kuyruk K73b (sürüm 63+): gönüllü düşme hedefleri (menü düğmesi ve seçimde ft/zar etiketi).
+  const dropPlans = useMemo(() => {
+    const me = state.combatants[actorId];
+    return active && me && (mode === 'idle' || (mode === 'pickHex' && pickHexCmd?.drop)) ? dropTargets(state, me) : [];
+  }, [state, active, actorId, mode, pickHexCmd]);
   const heightTint = state.map?.heights && heightShowRule(state) ? state.map.heights : null;
   // Atlamalar: lav üstünden olanlar (ada atlaması, `lavJump`) yalnızca "Atla" kipinde; diğerleri
   // (5e uzun atlama) hareket kipinde.
@@ -1553,6 +1559,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Kuyruk K66a (sürüm 50): Earthquake yarıklarını yerleştir (döküm turunda, ortak alan seçicisiyle).
     ...((fb) => (fb?.open && fb.placed < fb.count
       ? [{ key: 'fissure', label: B.k66.menu(fb.placed, fb.count), act: () => { reset(); setAreaAct({ kind: 'fissure', zoneId: fb.quake.id }); setChoicePick('fissure:4'); setMode('aim'); setMenuOpen(false); } }] : []))(fissureBudget(state, actor)),
+    // Kuyruk K73b (sürüm 63+): gönüllü düşme (sur tepesi, kat kenarı/deliği, uçurum, duvarda bırakma).
+    ...(dropPlans.length ? [{ key: 'drop', label: B.k73b.drop, act: () => { reset(); setPickHexCmd({ make: (h) => ({ type: 'jump_down', actorId, to: h }), hint: B.k73b.dropHint, drop: true }); setMode('pickHex'); setMenuOpen(false); } }] : []),
     // Kuyruk K66a: yarıktan tırmanma (çift maliyet); hareket yetiyorsa çıkış altıgeni seçilir, yetmiyorsa yetebildiği kadar.
     ...(inFissure(state, actor) ? [{ key: 'fissureClimb', label: B.k66.climb(-(actor.altitudeFt ?? 0)), act: () => {
       const alt = actor.altitudeFt ?? 0;
@@ -1661,7 +1669,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const me = state.combatants[actorId];
             // Kuyruk K71d: gerçek DC (57+ Çeviklik, uçurum sınıfı) ve 59+'da SRD maliyeti (altıgen).
             const cl = me?.pos ? climbLabel(state, me, h) : null;
-            return <text key={`cl${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">{cl?.up ? `⇡${cl.dc !== null ? `DC${cl.dc}` : ''}${cl.cost !== null ? ` ${cl.cost}` : ''}` : `⇣${cl?.ft ?? 0}ft`}</text>;
+            return <text key={`cl${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">{cl?.partial && <title>{B.k73b.climbMore}</title>}{cl?.up ? `⇡${cl.dc !== null ? `DC${cl.dc}` : ''}${cl.cost !== null ? ` ${cl.cost}` : ''}${cl.partial ? '…' : ''}` : `⇣${cl?.ft ?? 0}ft`}</text>;
+          })}
+          {mode === 'pickHex' && pickHexCmd?.drop && dropPlans.map((p) => {
+            const c = hexCenter(p.to);
+            return <text key={`dr${hexKey(p.to)}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">{B.k73b.dropLabel(p.ft, p.dice)}</text>;
           })}
           {[...movable.entries()].map(([key, cost]) => {
             const [col, row] = key.split(',').map(Number);

@@ -697,13 +697,35 @@ export function registerCastHook(h: CastHook): void { if (!castHooks.includes(h)
  * Düşme hasarından önce: düşen Slow Fall (hasar 5 × Monk seviyesi azalır) ya da Feather Fall yapabilir; yapmazsa
  * 60 ft içindeki, düşeni gören dostlar Feather Fall yapabilir (hasar yok).
  */
-export function fallReactions(state: BattleState, fallerId: string, feet: number, rng: Rng): { events: BattleEvent[]; reduce: number; negate: boolean; name?: string } {
+/** Kuyruk K73b: suya düşüşün tepki seçeneği (SRD 5.2.1 Falling). */
+export const WATER_LANDING = { id: 'suya-dusus', name: 'Suya düşüş (DC 15)' };
+
+export function fallReactions(state: BattleState, fallerId: string, feet: number, rng: Rng, opts: { water?: boolean } = {}): { events: BattleEvent[]; reduce: number; negate: boolean; name?: string; waterCheck?: boolean } {
   const f = state.combatants[fallerId];
   const none = { events: [], reduce: 0, negate: false };
   if (!f || feet < 10) return none;
   const candidates = [f, ...state.order.map((id) => state.combatants[id] as Combatant).filter((c) => c && c.id !== f.id && c.side === f.side)];
+  // Kuyruk K73b (sürüm 63+, SRD 5.2.1 Falling): suya düşen kendi tepkisiyle yüzeye baş ya da ayak üstü girmeyi dener (DC 15
+  // Atletizm/Akrobasi; zar `fall.ts`'te). Seçenekler Slow Fall ve kendine Feather Fall ile birlikte; öneri bedava olan: Slow
+  // Fall yarı hasardan çok azaltıyorsa o, yoksa suya düşüş. Reddederse dostların Feather Fall'u aşağıda.
+  if (opts.water && canReact(f)) {
+    const own = (f.reactions ?? []).filter((s) => usable(f, s) && ((s.kind === 'slowFall' && (f.fallReduction ?? 0) > 0) || s.kind === 'featherFall'));
+    const options = [...own.map((s) => option(f, s)), WATER_LANDING];
+    const half = Math.floor((Math.min(20, Math.floor(feet / 10)) * 3.5) / 2);
+    const slow = own.find((s) => s.kind === 'slowFall' && (f.fallReduction ?? 0) >= half);
+    const answer = askReaction(rng, { reactorId: f.id, trigger: 'fall', sourceId: f.id, info: { feet }, options,
+      suggested: slow ? answerFor(option(f, slow)) : { option: WATER_LANDING.id } });
+    if (answer?.option === WATER_LANDING.id) return { events: [reactionUsed(f, WATER_LANDING, 'fall', f.id)], reduce: 0, negate: false, name: WATER_LANDING.name, waterCheck: true };
+    const spec = answer ? own.find((s) => s.id === answer.option) : undefined;
+    if (spec) {
+      const slot = spendSlot(f, spec, answer as ReactionAnswer, 1);
+      const events = [...slot.events, reactionUsed(f, spec, 'fall', f.id)];
+      if (spec.kind === 'slowFall') return { events, reduce: f.fallReduction ?? 0, negate: false, name: spec.name };
+      return { events, reduce: 0, negate: true, name: spec.name };
+    }
+  }
   for (const r of candidates) {
-    if (!canReact(r)) continue;
+    if (!canReact(r) || (opts.water && r.id === f.id)) continue;
     const specs = (r.reactions ?? []).filter((s) => usable(r, s) && (
       (s.kind === 'slowFall' && r.id === f.id && (f.fallReduction ?? 0) > 0)
       || (s.kind === 'featherFall' && (r.id === f.id || (feetBetween(state, r, f) <= (s.rangeFt ?? 60) && sees(state, r, f))))));

@@ -926,6 +926,9 @@ export const en: Strings = {
     // Kuyruk K72: floor view (multi-storey building).
     u1a: { hoverShort: (ft: number): string => `〰 Hovering · max ${ft} ft`, hover: (ft: number): string => `Hovering: off the ground, at most ${ft} ft (difficult terrain, mud, traps and shallow water don't apply; lava, deep water and ground areas do)`,
       cap: (ft: number): string => `Flight limit ${ft} ft`, glide: 'Flight only on your own turn: land by the end of your turn or you fall' },
+    // Kuyruk K73b: voluntary falling and multi-turn climbing.
+    k73b: { drop: '⇣ Jump down', dropHint: 'Jump down: tap a highlighted hex (1d6 falling damage per 10 ft, Prone if damaged; into deep water a DC 15 check halves it). While clinging to a wall, tap your own hex to let go.',
+      dropLabel: (ft: number, dice: string): string => `⇣${ft}ft${dice ? ` ${dice}` : ''}`, climbMore: 'not this turn: climb the face now and finish next turn' },
     k72: { toggle: '⌂ Floor', toggleTitle: 'Floor view: pick a floor', panel: 'Floor view', ground: 'Ground',
       floor: (name: string, ft: number): string => `${name} · ${ft} ft`, hint: 'Creatures not on the selected floor are faded. ▲▼ stairs, ○ hole.' },
     k71c: { toggle: '☁ Air', toggleTitle: 'Air view: pick a level (each level 5 ft)', panel: 'Air view', levels: 'Levels',
@@ -988,6 +991,7 @@ export const en: Strings = {
     stunning: 'Stunning Strike: against the target you hit this turn with a Monk weapon or Unarmed Strike, 1 Focus Point, once per turn. Con save; on a failure Stunned until the start of your next turn, on a success the next attack against it has Advantage.',
     floor: 'Take the stairs: while on a stairs hex, the whole party moves to the other floor; those left behind wait. Your movement ends.',
     fissure: 'Place fissure: on the turn you cast Earthquake, place its 1d6 fissures (hex + direction, 2 hexes wide, edge to edge); they open at the end of the turn and creatures in them make a DEX save or fall in. No action.',
+    drop: 'Jump down: from a wall top, a floor edge or hole, or a cliff to an adjacent hex, or let go while clinging to a wall. 1d6 falling damage per 10 ft, Prone if damaged; falling into deep water, a DC 15 Athletics/Acrobatics check with your reaction halves it. Costs 1 hex of movement.',
     fissureClimb: 'Climb: climb up out of the fissure (each 5 ft costs 2 hexes of movement); at the top, step onto an adjacent ground hex.',
     unpossess: 'Leave the body: the possessor leaves the body (Bonus Action) and appears in an unoccupied space within 5 ft; the body returns to its side and is immune to that possessor for this battle. Ghost Possession.',
     steady: 'Steady Aim: Bonus Action, if you have not moved this turn. Your next attack this turn has Advantage; your Speed is 0 until the end of the turn. Rogue.',

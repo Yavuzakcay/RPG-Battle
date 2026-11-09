@@ -11,6 +11,7 @@
  * (Spirit Guardians) girer. Daha alçak altıgene itilen her 10 ft (yükseklik seviyesi) için 1d6
  * düşer (SRD Falling, s. 182); uçuruma/yarığa (`u`) itilen 30 ft dibine düşer.
  */
+import { adjacent3D, k73bOn, separated } from './adjacency';
 import { moverBand } from './cells';
 import { fall } from './fall';
 import { climbOn } from './climbing';
@@ -164,12 +165,18 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
 
 /**
  * Kuyruk K72 (sürüm 60+): iki yaratık arasında kat döşemesi var mı (biri döşemenin altında, öbürü üstünde; kendi altıgenlerinde
- * döşeme). Bitişiklik eylemleri (itme, yakalama) döşemenin içinden yapılmaz. ⚠ Genel 3B bitişiklik K73'te.
+ * döşeme). Bitişiklik eylemleri (itme, yakalama) döşemenin içinden yapılmaz. Sürüm 60–62; 63+'da `adjacency.ts` `separated`.
  */
 export function acrossSlab(state: BattleState, a: Combatant, b: Combatant): boolean {
   if (!a.pos || !b.pos || !katlarOf(state).length) return false;
   const x = a.altitudeFt ?? 0, y = b.altitudeFt ?? 0;
   return slabBetween(state, a.pos, x, y) || slabBetween(state, b.pos, x, y);
+}
+
+/** Kuyruk K73b: bitişiklik eyleminin ret nedeni (döşeme/kutu, yatay uzaklık ya da dikey aralık). */
+function adjacencyWhy(state: BattleState, a: Combatant, b: Combatant, what: string): string {
+  if (separated(state, a, b)) return 'Arada kat döşemesi ya da Forcecage kutusu var.';
+  return gap(state, a, b) > 1 ? `${what} için hedef bitişik olmalı (5 ft).` : `${what} için hedef bitişik olmalı (5 ft; dikeyde de).`;
 }
 
 /** `from`a en yakın, boş `char` altıgeni (eşitse satır, sütun sırası). */
@@ -257,8 +264,14 @@ export function executeGrapple(state: BattleState, actor: Combatant, targetId: s
   if (target.hidden && target.side !== actor.side && !knowsWhere(state, actor, target)) return fail(`${target.name} gizlenmiş: hedef alınamaz.`);
   if (target.conditions.includes('Grappled') && target.grapple?.by === actor.id) return fail(`${target.name} zaten yakalı.`);
   if (sizeRank(target.size) > sizeRank(actor.size) + 1) return fail(`${target.name} yakalanamayacak kadar büyük (en çok bir boyut büyük olabilir).`);
-  if (state.map && (!actor.pos || !target.pos || gap(state, actor, target) !== 1)) return fail('Yakalamak için hedef bitişik olmalı (5 ft).');
-  if (acrossSlab(state, actor, target)) return fail('Arada kat döşemesi var.');
+  // Kuyruk K73b (sürüm 63+): 3B bitişiklik (dikey ≤ 5 ft; döşeme ve Forcecage kutusu keser). K72'nin geçici döşeme kapatması
+  // (`acrossSlab`) bu işleve taşındı; 60–62 aynen.
+  if (state.map && k73bOn(state)) {
+    if (!actor.pos || !target.pos || !adjacent3D(state, actor, target)) return fail(adjacencyWhy(state, actor, target, 'Yakalamak'));
+  } else {
+    if (state.map && (!actor.pos || !target.pos || gap(state, actor, target) !== 1)) return fail('Yakalamak için hedef bitişik olmalı (5 ft).');
+    if (acrossSlab(state, actor, target)) return fail('Arada kat döşemesi var.');
+  }
   const ability: 'str' | 'dex' = target.saves.str >= target.saves.dex ? 'str' : 'dex';
   const dc = shoveDc(actor, state);
   const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
@@ -287,8 +300,12 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   // Kuyruk K53 (sürüm 24, ev kuralı carpmaHasari): itme engelde kalırsa hedef çarpar (1d6; engel yaratıksa o da 1d6).
   let slam: Offset | null = null;
   if (state.map) {
-    if (!actor.pos || !target.pos || gap(state, actor, target) !== 1) return fail('İtmek için hedef bitişik olmalı (5 ft).');
-    if (acrossSlab(state, actor, target)) return fail('Arada kat döşemesi var.');
+    if (k73bOn(state)) {
+      if (!actor.pos || !target.pos || !adjacent3D(state, actor, target)) return fail(adjacencyWhy(state, actor, target, 'İtmek'));
+    } else {
+      if (!actor.pos || !target.pos || gap(state, actor, target) !== 1) return fail('İtmek için hedef bitişik olmalı (5 ft).');
+      if (acrossSlab(state, actor, target)) return fail('Arada kat döşemesi var.');
+    }
     if (effect === 'push') {
       const to = shoveHex(actor, target, state);
       out = to ? pushOutcome(state, target, target.pos, to) : { ok: false, reason: 'yön yok' };

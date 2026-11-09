@@ -17,7 +17,8 @@ import { checkEffect, enterHexEvents, fallEffect } from './maprules';
 import { fallReactions } from './reactions';
 import { climbs, fliesOrHovers, isAirborne } from './flight';
 import { climbDc, heightAt, heightDelta, heightFallRule, heightMoveRule, isCliff, katmanOn, layerActive, levelCost, levelFeet } from './heights';
-import { altitudeOf } from './altitude';
+import { altitudeCapFt, altitudeOf, ceilingOver, verticalCellProblem } from './altitude';
+import { k73bOn } from './adjacency';
 import { mutlakFt } from './vertical';
 import { HEIGHT_RANGE } from '../map/maps';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -89,6 +90,12 @@ function executeWallClimb(state: BattleState, actor: Combatant, from: Offset, to
   const ft = Math.abs(endFt - alt);
   const cost = 1 + climbCostHexes(ft, surf.carpan);
   const remaining = speedHexes(actor) - actor.movementUsed;
+  // Kuyruk K73b (sürüm 63+): çok turlu tırmanış: hareket yetmezse yüzde yetebildiği kadar yükselir/iner, sonraki turda sürer.
+  if (cost > remaining && k73bOn(state)) {
+    const cls = { dc: surf.dc, carpan: surf.carpan, tr: CLIMB_CLASSES[surf.sinif]?.tr ?? surf.sinif };
+    return kind === 'up' ? partialRise(state, actor, from, cls, endFt, remaining, `${actor.name} sura tırmanıyor`, rng)
+      : partialDescent(state, actor, from, to, cls, endFt, remaining, rng);
+  }
   if (cost > remaining) return fail(`Hareket yetmiyor: ${cost} altıgen gerekli (${ft} ft tırmanma), ${Math.max(0, remaining)} kaldı.`);
   const events: BattleEvent[] = [];
   let s = state;
@@ -103,6 +110,53 @@ function executeWallClimb(state: BattleState, actor: Combatant, from: Offset, to
   push([{ type: 'moved', actorId: actor.id, path: [to], cost },
     { type: 'altitude_changed', targetId: actor.id, altitudeFt: endFt, label: kind === 'up' ? 'sur tepesine çıktı' : 'surdan indi', ...(endFt > 0 ? { stand: true as const } : {}) }]);
   if (endFt === 0 && (s.combatants[actor.id]?.hp ?? 0) > 0) push(enterHexEvents(s, s.combatants[actor.id] as Combatant, to, rng).events);
+  return finish(state, events);
+}
+
+/**
+ * Kuyruk K73b (sürüm 63+, çok turlu tırmanış): tepeye/üste hareket yetmiyorsa yüzde (sur duvarı ya da uçurum) kalan hareketin
+ * yettiği kadar yükselir: her 5 ft yüzeyin çarpanı kadar altıgen (SRD; tırmanma hızı olanlar bu yola girmez, ×1 K68b). Yerden
+ * başlarken bir kez Çeviklik zarı (K71b `climbAttempt`; duvarda tutunan atmaz), dikey hareket 3B erişimden çıkarsa fırsat
+ * saldırısı, komut sonunda yüzde tutunur (K71b: Prone/Incapacitated/hız 0 düşürür). Sonraki turda aynı `climb` kalan ft
+ * kadar ödeyerek tepeye çıkar (sur tepesinde K72 duruş yüzeyi). Bir adım (5 ft) bile yetmiyorsa ret.
+ */
+function partialRise(state: BattleState, actor: Combatant, from: Offset, cls: { dc: number; carpan: number; tr: string }, topFt: number, remaining: number, what: string, rng: Rng): CommandResult {
+  const alt = altitudeOf(actor);
+  const cap = ceilingOver(state, actor) === null ? topFt : Math.min(topFt, altitudeCapFt(state, actor));
+  const rise = Math.min(Math.floor(remaining / cls.carpan) * 5, cap - alt);
+  if (rise < 5) return fail(`Hareket yetmiyor: 5 ft tırmanma ${cls.carpan} altıgen, ${Math.max(0, remaining)} kaldı.`);
+  const to = alt + rise;
+  const cellWhy = verticalCellProblem(state, actor, alt, to);
+  if (cellWhy) return fail(cellWhy);
+  const events: BattleEvent[] = [];
+  let s = state;
+  const push = (evs: BattleEvent[]) => { events.push(...evs); s = applyEvents(s, evs); };
+  if (alt <= 0 && !actor.climbing) {
+    const r = climbAttempt(state, actor, cls, `${what} (${topFt - alt} ft)`, remaining, rng);
+    push([r.event]);
+    if (!r.ok) return finish(state, events);
+  }
+  push(opportunityAttacks(s, actor.id, { from, to: from, fromAlt: alt, toAlt: to }, rng));
+  if ((s.combatants[actor.id]?.hp ?? 0) <= 0) return finish(state, events);
+  push([{ type: 'altitude_changed', targetId: actor.id, altitudeFt: to, label: `tırmanıyor (${topFt - to} ft kaldı)`, cost: climbCostHexes(rise, cls.carpan), byId: actor.id, gentle: false, climb: true }]);
+  return finish(state, events);
+}
+
+/**
+ * Kuyruk K73b (sürüm 63+): sur tepesinden tırmanarak inişte hareket yetmiyorsa bitişik altıgene geçip duvarın yüzünde yettiği
+ * kadar iner (1 altıgen + her 5 ft çarpan); zarsız, hasarsız. Sonraki turda dikey hareketle (ya da yine `climb`) sürer.
+ */
+function partialDescent(state: BattleState, actor: Combatant, from: Offset, to: Offset, cls: { carpan: number }, endFt: number, remaining: number, rng: Rng): CommandResult {
+  const alt = altitudeOf(actor);
+  const down = Math.min(Math.floor((remaining - 1) / cls.carpan) * 5, alt - endFt);
+  if (down < 5) return fail(`Hareket yetmiyor: inmek için en az ${1 + cls.carpan} altıgen, ${Math.max(0, remaining)} kaldı.`);
+  const events: BattleEvent[] = [];
+  let s = state;
+  const push = (evs: BattleEvent[]) => { events.push(...evs); s = applyEvents(s, evs); };
+  push(opportunityAttacks(s, actor.id, { from, to, fromAlt: alt, toAlt: alt - down }, rng));
+  if ((s.combatants[actor.id]?.hp ?? 0) <= 0) return finish(state, events);
+  push([{ type: 'moved', actorId: actor.id, path: [to], cost: 1 + climbCostHexes(down, cls.carpan) },
+    { type: 'altitude_changed', targetId: actor.id, altitudeFt: alt - down, label: `surdan iniyor (${alt - down - endFt} ft kaldı)`, climb: true }]);
   return finish(state, events);
 }
 
@@ -180,6 +234,8 @@ function executeClimb59(state: BattleState, actor: Combatant, from: Offset, to: 
   if (upFt > 0 && !cls) return fail(`${t.name}: bu uçurum tırmanılmaz.`);
   const cost = cls ? 1 + climbCostHexes(upFt, cls.carpan) : 1;
   const remaining = speedHexes(actor) - actor.movementUsed;
+  // Kuyruk K73b (sürüm 63+): çok turlu tırmanış: uçurumun yüzünde yetebildiği kadar yükselir, sonraki turda `climb` sürer.
+  if (cost > remaining && cls && k73bOn(state)) return partialRise(state, actor, from, cls, alt + upFt, remaining, `${actor.name} uçuruma tırmanıyor`, rng);
   if (cost > remaining) {
     return fail(`Hareket yetmiyor: ${cost} altıgen gerekli (${upFt} ft tırmanma), ${Math.max(0, remaining)} kaldı. Uçurumun yüzünde dikey hareketle yükselip sonraki turda sürdürebilirsin.`);
   }
@@ -201,8 +257,16 @@ function executeClimb59(state: BattleState, actor: Combatant, from: Offset, to: 
   return finish(state, events);
 }
 
-/** Kuyruk K71d: arayüz: uçurum altıgeninin tırmanma DC'si ve maliyeti (sürüm 59+; öncesinde DC `climbDc`, maliyet null). */
-export function climbLabel(state: BattleState, actor: Combatant, to: Offset): { up: boolean; dc: number | null; cost: number | null; ft: number } {
+/**
+ * Kuyruk K71d: arayüz: uçurum altıgeninin tırmanma DC'si ve maliyeti (sürüm 59+; öncesinde DC `climbDc`, maliyet null). Kuyruk
+ * K73b (sürüm 63+): `partial` bu turun hareketi yetmiyor (yüzde yükselip sonraki turda sürer).
+ */
+export function climbLabel(state: BattleState, actor: Combatant, to: Offset): { up: boolean; dc: number | null; cost: number | null; ft: number; partial?: boolean } {
+  const r = climbLabel0(state, actor, to);
+  return r.up && r.cost !== null && k73bOn(state) && r.cost > speedHexes(actor) - actor.movementUsed ? { ...r, partial: true } : r;
+}
+
+function climbLabel0(state: BattleState, actor: Combatant, to: Offset): { up: boolean; dc: number | null; cost: number | null; ft: number } {
   const from = actor.pos as Offset;
   // Kuyruk K72 (sürüm 60+): sur tepesi.
   const wk = hasStandData(state) ? wallClimbKind(state, actor, from, to) : null;

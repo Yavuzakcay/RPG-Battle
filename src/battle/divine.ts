@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { adjacent3D, k73bOn } from './adjacency';
 import { circleAttackDis } from './possessionCore';
 import { healRoll } from './healMax';
 import { distance as hexDistance } from '../rules/hex';
@@ -53,7 +54,8 @@ export const usableFeature = (actor: Combatant, key: string): UsableFeature | un
 /** Dokunuş: kendisi ya da bitişik (haritasız savaşta aynı yükseklik). */
 function touching(state: BattleState, a: Combatant, b: Combatant): boolean {
   if (a.id === b.id) return true;
-  if (state.map) return !!a.pos && !!b.pos && distance(a.pos, b.pos) <= 1;
+  // Kuyruk K73b (sürüm 63+): 3B bitişiklik.
+  if (state.map) return !!a.pos && !!b.pos && (k73bOn(state) ? adjacent3D(state, a, b) : distance(a.pos, b.pos) <= 1);
   return heightOf(state, a) === heightOf(state, b);
 }
 

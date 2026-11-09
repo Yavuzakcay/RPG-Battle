@@ -7,7 +7,10 @@
  */
 import type { Rng } from '../rules/dice';
 import type { Offset } from '../rules/hex';
-import { fallEffect } from './maprules';
+import { checkEffect, fallEffect } from './maprules';
+import { skillBonus } from '../rules/skills';
+import { k73bOn } from './adjacency';
+import dikeyData from '../../data/dikey.json';
 import { occupantAt, terrainAt } from './movement';
 import { bandOf, cellsOn } from './cells';
 import { bodyAt } from './body';
@@ -15,6 +18,9 @@ import { hexKey, neighbors, sameHex } from '../rules/hex';
 import { fallReactions } from './reactions';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
+
+/** Kuyruk K73b: suya düşüşün kontrol DC'si (SRD 5.2.1 Falling: 15; `data/dikey.json` `suyaDusme.dc`). */
+const WATER_DC = (dikeyData as unknown as { suyaDusme: { dc: number } }).suyaDusme.dc;
 
 /** Düşmenin nedeni (ölçüm; günlük metni K68 ile aynı "N ft düştü"). */
 export type FallCause = 'atlama' | 'itme' | 'cokme' | 'yarik' | 'irtifa' | 'telekinezi';
@@ -40,14 +46,27 @@ export function fall(state: BattleState, id: string, ft: number, cause: FallCaus
   const land = at0 && opts.altitudeTo !== undefined && opts.altitudeTo >= 0 && cellsOn(state) ? landingSpot(state, c, at0, opts.altitudeTo) : null;
   const at = land ?? at0;
   const moved = land && at0 && !sameHex(land, at0) ? land : null;
-  if (ft < 10 || (at && terrainAt(state, at).rule === 'deepWater')) {
+  // Kuyruk K73b (sürüm 63+): derin suya düşen hasar alır (SRD 5.2.1 Falling); kendi tepkisiyle DC 15 Atletizm ya da Akrobasi
+  // (yüksek olanı) başarılıysa yarı hasar. 57–62'de derin suya iniş hasarsız (K71b ⚠).
+  const water = !!at && terrainAt(state, at).rule === 'deepWater';
+  const splash = water && k73bOn(state);
+  if (ft < 10 || (water && !splash)) {
     return moved ? [...alt, { type: 'map_effect', rule: 'fall', targetId: id, text: `düştü; alttaki hücre dolu, yanına indi`, moveTo: moved }] : alt;
   }
-  const fr = fallReactions(state, id, ft, rng);
-  const after = applyEvents(state, [...fr.events, ...alt]);
-  const ev = fallEffect(after.combatants[id] as Combatant, ft, rng, fr);
+  const fr = fallReactions(state, id, ft, rng, splash ? { water: true } : {});
+  const checked: BattleEvent[] = [];
+  let half = false;
+  if (fr.waterCheck) {
+    const f = applyEvents(state, fr.events).combatants[id] as Combatant;
+    const sk = skillBonus(f, 'acrobatics') > skillBonus(f, 'athletics') ? 'acrobatics' : 'athletics';
+    const ev = checkEffect(f, 'fall', 'suya baş ya da ayak üstü giriyor', sk, WATER_DC, rng, state);
+    half = !!ev.roll?.success;
+    checked.push(ev);
+  }
+  const after = applyEvents(state, [...fr.events, ...checked, ...alt]);
+  const ev = fallEffect(after.combatants[id] as Combatant, ft, rng, splash ? { ...fr, water: half ? 'half' : 'full' } : fr);
   causeStats[cause] = (causeStats[cause] ?? 0) + 1;
-  return [...fr.events, ...alt, moved ? { ...ev, moveTo: moved, text: `${ev.text}; alttaki hücre dolu, yanına indi` } : ev];
+  return [...fr.events, ...checked, ...alt, moved ? { ...ev, moveTo: moved, text: `${ev.text}; alttaki hücre dolu, yanına indi` } : ev];
 }
 
 /**

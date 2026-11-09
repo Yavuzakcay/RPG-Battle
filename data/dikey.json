@@ -96,5 +96,9 @@
   "katDosemesi": {
     "not": "Kuyruk K72 (kural sürümü 60+): çok katlı binanın döşemesi (varyant `dikey.katlar`). Earthquake yapı hasarı (50 Bludgeoning) bir kattaki döşemenin canından (`hp`, katta ezilir) az değilse alandaki döşeme altıgenleri çöker; üstündekiler alttaki en yüksek yüzeye tek düşmeyle iner. ⚠ SRD döşeme canı vermez (tasarım: ahşap döşeme).",
     "hp": 50
+  },
+  "suyaDusme": {
+    "not": "Kuyruk K73b (kural sürümü 63+; SRD 5.2.1 Falling): derin suya (`w`, kural `deepWater`) düşen düşme hasarını alır; kendi tepkisiyle DC `dc` Atletizm ya da Akrobasi (yüksek olanı) kontrolü başarılıysa hasar yarıya iner. Hasar alan Prone (SRD genel kural). Sığ su/çamur (`n`) ve batak (`b`) sıvı sayılmaz (düşmeyi yumuşatacak derinlik verisi yok). 57–62'de derin suya iniş hasarsız.",
+    "dc": 15
   }
 }

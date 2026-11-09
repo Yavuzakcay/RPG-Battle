@@ -36,6 +36,7 @@ import { obstacleTopFt } from './cover';
 import { climbOn, dexClimbMove, dexClimberHolds } from './climbing';
 import { bandGap, bandOf, bandsOverlap, cellsOn } from './cells';
 import { verticalOpportunity } from './verticalHook';
+import { k73bOn } from './adjacency';
 import { covers } from './body';
 import { isTargetable } from './common';
 import dikeyData from '../../data/dikey.json';
@@ -64,8 +65,16 @@ export function zoneTopFt(z: SpellZone, spec: ZoneSpec | null | undefined): numb
   return ALT.defaultZoneTopFt;
 }
 
-/** İrtifadaki yaratık alanın içinde mi (yükseklik bakımından). Sürüm < 41 ya da irtifa 0: her zaman. */
-export function altitudeInZone(state: Pick<BattleState, 'kuralSurumu'>, z: SpellZone, spec: ZoneSpec | null | undefined, c: Combatant | undefined): boolean {
+/**
+ * İrtifadaki yaratık alanın içinde mi (yükseklik bakımından). Sürüm < 41 ya da irtifa 0: her zaman. Kuyruk K73b (sürüm 63+):
+ * kat döşemesi alanı keser: alanın tabanı (yürüyen alanda bağlı yaratığın irtifası, değilse yer) ile yaratık arasında
+ * yaratığın altıgeninde döşeme varsa dışarıda (SRD alan etkisi: tam siper noktayı alandan çıkarır).
+ */
+export function altitudeInZone(state: Pick<BattleState, 'kuralSurumu'> & Partial<Pick<BattleState, 'map' | 'combatants'>>, z: SpellZone, spec: ZoneSpec | null | undefined, c: Combatant | undefined): boolean {
+  if (c?.pos && state.map && k73bOn(state) && katlarOf(state as Pick<BattleState, 'map' | 'kuralSurumu'>).length) {
+    const anchor = z.anchorId ? state.combatants?.[z.anchorId] : undefined;
+    if (slabBetween(state as Pick<BattleState, 'map' | 'kuralSurumu'>, c.pos, anchor ? altitudeOf(anchor) : 0, altitudeOf(c))) return false;
+  }
   const a = altitudeOf(c);
   if (!a || !altitudeOn(state)) return true;
   return a <= zoneTopFt(z, spec);

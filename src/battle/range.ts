@@ -3,6 +3,7 @@
  * menzili, büyü menzili. Haritasız savaşta (veya konumu olmayan savaşçıda) hiçbir şey
  * denetlenmez, eski davranış aynen sürer. Mesafe altıgen cinsinden (1 altıgen = 5 ft).
  */
+import { adjacent3D, k73bOn, separated } from './adjacency';
 import { cageBoxBlock } from './forcecage';
 import { inProtectiveAura } from './ruleVersion';
 import { knowsWhere } from './sight';
@@ -38,7 +39,8 @@ export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
   const pos = c.pos;
   return Object.values(state.combatants).some(
     (o) => o.side !== c.side && o.pos !== null && isTargetable(o) && o.hp > 0 && !isIncapacitated(o.conditions) && !isIntangible(o)
-      && gap(state, { ...c, pos }, o) === 1 && reachFt(state, c, o, 5) <= 5,
+      // Kuyruk K73b (sürüm 63+): 3B bitişiklik (hemen üstteki/altındaki aynı altıgende de; döşeme keser).
+      && (k73bOn(state) ? adjacent3D(state, c, o) : gap(state, { ...c, pos }, o) === 1 && reachFt(state, c, o, 5) <= 5),
   );
 }
 
@@ -75,6 +77,8 @@ export function checkReach(
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }
   if (!state.map || !attacker.pos || !target.pos) return { ok: true, sources: [], cover: 0 };
+  // Kuyruk K73b (sürüm 63+): kat döşemesi ya da Forcecage kutusu iki yaratığı ayırıyorsa erişim ve menzil yok.
+  if (k73bOn(state) && separated(state, attacker, target)) return fail(`${target.name}: arada kat döşemesi ya da Forcecage kutusu var.`);
   // Görev P6: ek paket erişim eki (`boyut.erisimFt`; süren etki `reachPlus`) yakın dövüşe.
   const plus = reach.kind === 'melee' ? (attacker.effects ?? []).reduce((n, e) => n + (e.reachPlus ?? 0), 0) : 0;
   if (plus) reach = { kind: 'melee', reachFt: (reach as { reachFt: number }).reachFt + plus };

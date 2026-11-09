@@ -25,6 +25,8 @@ import { canAirMove } from './airMove';
 import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
 import { wallClimbCommand } from './ai/climbAi';
 import { approachField, engaged, highGroundBonus, k73aOn, K73A, landingWanted, riseFt, concentrationFlight } from './ai/k73a';
+import { K73B } from './ai/k73b';
+import { k73bOn } from './adjacency';
 import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf, wallAim } from './freeShape';
 import { fissureAim, fissureBudget, fissureClimbCommand } from './fissure';
 import { quakeForecast } from './quake';
@@ -51,7 +53,7 @@ import { DANCE_LINK_HEXES, isCombined } from './danceLights';
 import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
 import { heightAt, heightCombatRule, katmanOn } from './heights';
-import { climbOdds, surfaceAt, surfacesNear } from './climbing';
+import { climbCostHexes, climbOdds, surfaceAt, surfacesNear } from './climbing';
 import { hasStandData, katlarOf, stairsAt, standAlt, standingOn, surTop } from './stand';
 import { absBand, k9On } from './vertical';
 
@@ -62,6 +64,7 @@ import { panelId, panelOf } from './walls';
 import { zoneKnownBy } from './hiddenZones';
 import { zoneSpecOf } from './zones';
 import { climbTargets } from './climb';
+import { dropTargets } from './drop';
 import { rageProblem, recklessProblem } from './rage';
 import { activeBuffs } from './divine';
 import { offhandProblem } from './offhand';
@@ -2062,6 +2065,10 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // yürüyen sur tepesine tırmanır (uçan konar): saldırmadan önce, bitişikte düşman yokken, oradan da saldırabiliyorsa.
   const lifted = k73aOn(state) ? riseCommand(state, actor, now, canAct) ?? perchCommand(state, actor, now, canAct) : null;
   if (lifted) return lifted;
+  // Kuyruk K73b (sürüm 63+): yüksekteki (sur tepesi, kat, duvar yüzü) uçmayan, yürüyerek saldıramıyorsa ya da kıstırılmışsa
+  // aşağı atlar (canı en kötü düşme hasarını kaldırıyorsa).
+  const dropped = k73bOn(state) ? dropCommand(state, actor, now, canAct) : null;
+  if (dropped) return dropped;
   // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
   // hasar; örn. savaşçı arbalet yerine kılıç) önce oraya yürür. Güvenli ve en ucuz yerler.
   if (now && canAct && actor.side === 'party' && !actor.civilian && actor.movementUsed < speedHexes(actor)) {
@@ -2558,21 +2565,34 @@ function featureFlight(state: BattleState, actor: Combatant): Command | null {
 }
 
 /** Komut menzilli mi (menzilli silah saldırısı ya da menzili 5 ft'ten uzun büyü): yükselme ve sur kararı için. */
-function rangedCommand(cmd: Command | null): boolean {
+function rangedCommand(cmd: Command | null, state?: BattleState, actor?: Combatant): boolean {
   if (!cmd) return false;
   if (cmd.type === 'attack') return !!cmd.option.ranged;
   if (cmd.type === 'cast_spell') return (spellOf(cmd.spellName)?.rangeFt ?? 0) > 5;
+  // Kuyruk K73b (sürüm 63+): canavar saldırısı (düşman tarafındaki uçan okçu): saldırının kendisi ya da Multiattack planının
+  // bütün saldırıları menzilli; plansız Multiattack'ta hedef bitişik değilse.
+  if (state && actor && k73bOn(state)) {
+    if (cmd.type === 'monster_attack') return !!actor.attacks[cmd.attackIndex]?.ranged;
+    if (cmd.type === 'multiattack') {
+      const steps = (cmd.plan ?? []).filter((x) => x.attack);
+      if (steps.length) return steps.every((x) => actor.attacks.find((a) => a.name === x.attack)?.ranged);
+      const t = state.combatants[cmd.targetId];
+      return !!t?.pos && !!actor.pos && gap(state, actor, t) > 1;
+    }
+  }
   return false;
 }
 
 /**
- * Kuyruk K73a (sürüm 62+, Görev 1): menzilli uçan parti üyesi (Fly, Wild Shape uçan biçim, `ucus` ilkeli, Draconic Flight)
+ * Kuyruk K73a (sürüm 62+, Görev 1): menzilli uçan parti üyesi (Fly, Wild Shape uçan biçim, `ucus` ilkeli, Draconic Flight;
+ * K73b sürüm 63+: düşman tarafındaki uçan menzilli de)
  * kendisine bir sonraki turunda yetişebilecek uçmayan yakın dövüşçülerin erişim bandının hemen üstüne yükselir (`riseFt`):
  * şimdiki en iyi hamlesi menzilliyse, bitişikte/erişimde düşman yokken (fırsat saldırısı yok) ve oradan da saldırabiliyorsa.
  * Konsantrasyonlu uçuşta en çok `konsantrasyonUstFt`; uçuşun kendi sınırı (süzülme 5 ft) yetmiyorsa yükselmez.
  */
 function riseCommand(state: BattleState, actor: Combatant, now: Command | null, canAct: boolean): Command | null {
-  if (!canAct || actor.side !== 'party' || actor.civilian || !actor.pos || !state.map || !canAirMove(state, actor) || !rangedCommand(now)) return null;
+  // Kuyruk K73b (sürüm 63+, Görev 5): düşman tarafındaki uçan menzilli de (aynı parametreler).
+  if (!canAct || (actor.side !== 'party' && !k73bOn(state)) || actor.civilian || !actor.pos || !state.map || !canAirMove(state, actor) || !rangedCommand(now, state, actor)) return null;
   const foes = foesOf(state, actor);
   if (engaged(actor, foes)) return null;
   const ft = riseFt(state, actor, foes);
@@ -2583,7 +2603,7 @@ function riseCommand(state: BattleState, actor: Combatant, now: Command | null, 
   const up = r.state.combatants[actor.id] as Combatant;
   if (up.economy.action && up.economy.attacksLeft <= 0) return null;
   const after = bestNow(r.state, up);
-  return after && rangedCommand(after) && !poorOdds(r.state, up, after) ? cmd : null;
+  return after && rangedCommand(after, r.state, up) && !poorOdds(r.state, up, after) ? cmd : null;
 }
 
 /**
@@ -2593,9 +2613,12 @@ function riseCommand(state: BattleState, actor: Combatant, now: Command | null, 
  * veriyorsa ve oradaki hamle şimdikinden kötü değilse. Zaten yüksek zemindeyse yok.
  */
 function perchCommand(state: BattleState, actor: Combatant, now: Command | null, canAct: boolean): Command | null {
-  if (!canAct || actor.civilian || !actor.pos || !state.map || !hasStandData(state) || standingOn(state, actor) || climbingAloft(actor)) return null;
-  const rangedish = actor.weaponOptions.some((o) => o.ranged) || actor.attacks.some((a) => a.ranged) || rangedCommand(now);
-  if (!rangedish || (now && !rangedCommand(now))) return null;
+  // Kuyruk K73b (sürüm 63+): yüzde tutunan menzilli tırmanışı sürdürür (çok turlu).
+  const v63 = k73bOn(state);
+  if (!canAct || actor.civilian || !actor.pos || !state.map || !hasStandData(state) || standingOn(state, actor) || (climbingAloft(actor) && !v63)) return null;
+  const rangedish = actor.weaponOptions.some((o) => o.ranged) || actor.attacks.some((a) => a.ranged) || rangedCommand(now, state, actor);
+  if (!rangedish || (now && !rangedCommand(now, state, actor))) return null;
+  if (climbingAloft(actor)) return v63 ? perchContinue(state, actor) : null;
   const foes = foesOf(state, actor);
   if (!foes.length || engaged(actor, foes) || highGroundBonus(state, actor, foes, actor.pos, altitudeOf(actor)) > 0) return null;
   const pos = actor.pos;
@@ -2620,6 +2643,12 @@ function perchCommand(state: BattleState, actor: Combatant, now: Command | null,
       const top = surTop(state, h);
       const surf = top !== null ? surfaceAt(state, h) : null;
       if (!surf || climbOdds(actor, surf.dc) < K73A.surBasari) continue;
+      // Kuyruk K73b (sürüm 63+): bu tura sığmayan tırmanış çok turlu başlar (tepe getirisi varsayımsal durumda ölçülür).
+      if (v63 && top !== null && 1 + climbCostHexes(top - altitudeOf(actor), surf.carpan) > speedHexes(actor) - actor.movementUsed) {
+        const multi = perchMulti(state, actor, h, top, surf.carpan, cur);
+        if (multi) return multi;
+        continue;
+      }
       cands.push({ type: 'climb', actorId: actor.id, to: h });
     }
   }
@@ -2632,6 +2661,77 @@ function perchCommand(state: BattleState, actor: Combatant, now: Command | null,
     const after = bestNow(r.state, me);
     if (!after || poorOdds(r.state, me, after) || commandScore(r.state, me, after) < cur) continue;
     return cmd;
+  }
+  return null;
+}
+
+/**
+ * Kuyruk K73b (sürüm 63+, Görev 3): gönüllü düşme kararı (yeni uzun taktik yok). Yalnız duruş yüzeyinde (sur tepesi, kat)
+ * ya da duvar yüzünde tutunan, uçmayan yaratık; canı en kötü düşme hasarından (`dusmeCanPayi` × zar × 6) fazlaysa:
+ * - hedefe ulaşmak: buradan ve yürüyerek bu tur saldıramıyor; atlayınca saldırabiliyor ya da düşmana yol mesafesi kısalıyor;
+ * - kaçmak: bitişikte düşman var, canı üçte birin altında, inişte bitişik düşman yok.
+ * En az düşülen ft önce.
+ */
+function dropCommand(state: BattleState, actor: Combatant, now: Command | null, canAct: boolean): Command | null {
+  if (!actor.pos || actor.civilian || !state.map || (isAirborne(actor) && !actor.climbing)) return null;
+  if (!(altitudeOf(actor) > 0 && (standingOn(state, actor) || climbingAloft(actor)))) return null;
+  const foes = foesOf(state, actor);
+  if (!foes.length) return null;
+  const flee = engaged(actor, foes) && actor.hp <= actor.maxHp / 3;
+  if (!flee && (now || !canAct)) return null;
+  const plans = dropTargets(state, actor).filter((p) => actor.hp > K73B.dusmeCanPayi * 6 * (p.ft >= 10 ? Math.min(20, Math.floor(p.ft / 10)) : 0))
+    .sort((a, b) => a.ft - b.ft || a.to.row - b.to.row || a.to.col - b.to.col);
+  if (!plans.length) return null;
+  if (!flee && reachable(state, actor).some((sp) => bestNow(at(state, actor, sp.to), { ...actor, pos: sp.to }) !== null)) return null;
+  const field = approachField(state, actor, foes);
+  const here = Math.min(...reachable(state, actor).map((sp) => field(sp.to)), field(actor.pos));
+  for (const p of plans) {
+    const cmd: Command = { type: 'jump_down', actorId: actor.id, to: p.to };
+    const r = tryCmd(state, actor, cmd);
+    if (!r.ok) continue;
+    const me = r.state.combatants[actor.id] as Combatant;
+    if (!me.pos || me.hp <= 0) continue;
+    if (flee) {
+      if (!engaged(me, foesOf(r.state, me))) return cmd;
+      continue;
+    }
+    if (bestNow(r.state, me) !== null || approachField(r.state, me, foesOf(r.state, me))(me.pos) < here) return cmd;
+  }
+  return null;
+}
+
+/**
+ * Kuyruk K73b (sürüm 63+, Görev 1): yürüyen menzillinin sur tepesine çok turlu tırmanışı. Tepeye en çok `surTurSiniri` turda
+ * (bu tur dahil) varılacaksa ve tepe getirisi varsa başlar: tepede (varsayımsal: hareketi bitmiş, tepede duran) en yakın
+ * düşmana K8 yüksek zemin ve oradan saldırı (zayıf olasılıklı değil, şimdikinden kötü değil). Bu tur en az 5 ft yükselmeli.
+ * Bitişikte/erişimde düşman yokken (`perchCommand` önce eler).
+ */
+function perchMulti(state: BattleState, actor: Combatant, h: Offset, top: number, carpan: number, cur: number): Command | null {
+  const speed = speedHexes(actor);
+  const left = speed - actor.movementUsed;
+  const need = 1 + climbCostHexes(top - altitudeOf(actor), carpan);
+  if (left < carpan || speed <= 0 || 1 + Math.ceil((need - left) / speed) > K73B.surTurSiniri) return null;
+  const me: Combatant = { ...actor, pos: h, altitudeFt: top, climbing: undefined, movementUsed: speed };
+  const hyp: BattleState = { ...state, combatants: { ...state.combatants, [actor.id]: me } };
+  if (highGroundBonus(hyp, me, foesOf(hyp, me), h, top) <= 0) return null;
+  const after = bestNow(hyp, me);
+  if (!after || poorOdds(hyp, me, after) || commandScore(hyp, me, after) < cur) return null;
+  const cmd: Command = { type: 'climb', actorId: actor.id, to: h };
+  return tryCmd(state, actor, cmd).ok ? cmd : null;
+}
+
+/**
+ * Kuyruk K73b (sürüm 63+): sur yüzünde tutunan menzilli tırmanışı sürdürür (kalan hareketle tepeye ya da yettiği kadar).
+ * Bitişikte/erişimde düşman varsa sürdürmez (dikey hareket 3B erişimden çıkar, fırsat saldırısı).
+ */
+function perchContinue(state: BattleState, actor: Combatant): Command | null {
+  if (engaged(actor, foesOf(state, actor))) return null;
+  const alt = altitudeOf(actor);
+  for (const h of climbTargets(state, actor)) {
+    const top = surTop(state, h);
+    if (top === null || top <= alt) continue;
+    const cmd: Command = { type: 'climb', actorId: actor.id, to: h };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
   }
   return null;
 }

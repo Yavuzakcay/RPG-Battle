@@ -1497,6 +1497,8 @@ export type Command =
   | { type: 'change_height'; actorId: string; toHeight: Height }
   /** Kuyruk 26: yükseklik katmanında 2+ seviye farkı aşma (yukarı tırmanma, aşağı atlama). */
   | { type: 'climb'; actorId: string; to: Offset }
+  /** Kuyruk K73b (sürüm 63+): gönüllü düşme: kenardan bitişik altıgene atlama ya da duvarda tutunurken kendi altıgeninde bırakma. */
+  | { type: 'jump_down'; actorId: string; to: Offset }
   /** Haritalı savaş: hedef altıgene en ucuz yoldan yürür. */
   | { type: 'move'; actorId: string; to: Offset; /** Kuyruk K71c (sürüm 58+): birleşik uçuş: hedef irtifa (ft). */ toFt?: number }
   /** Kuyruk 31: bitmiş Serüven savaşında keşif yürüyüşü (sıra ve hareket sınırı tur başına sıfırlanır). */

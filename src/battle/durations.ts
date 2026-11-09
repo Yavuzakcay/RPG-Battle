@@ -6,13 +6,14 @@
  * Sayaçlar tur başı/sonu kancalarında (`timerEvents`) işler; biten durum `condition_ended` olayı üretir.
  * Saldırı ve büyü etkilerinin süreleri `data/condition-effects.json`'da.
  */
+import { adjacent3D, k73bOn } from './adjacency';
 import { saveDice } from './effectDice';
 import effectsJson from '../../data/condition-effects.json';
 import type { Ability } from '../rules/abilities';
 import { resolveSave } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
-import { distance } from '../rules/hex';
+import { distance, type Offset } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { ruleVersion } from './ruleVersion';
 import { pfegRepeatAdv } from './mind';
@@ -172,6 +173,10 @@ export function executeDodge(state: BattleState, actor: Combatant): CommandResul
   return finish(state, [timedCondition(state, actor.id, spec, actor.id, 'Kaçın')]);
 }
 
+/** Kuyruk K73b (sürüm 63+): Yardım ve sarsma 3B bitişiklikle (dikey ≤ 5 ft, döşeme keser); öncesinde yatay altıgen. */
+const near5 = (state: BattleState, a: Combatant, b: Combatant): boolean =>
+  (k73bOn(state) ? adjacent3D(state, a, b) : distance(a.pos as Offset, b.pos as Offset) <= 1);
+
 /** Yardım: eylem; bitişik düşmana karşı tarafının ilk saldırısı avantajlı, sonraki turunun başına dek. */
 export function executeHelp(state: BattleState, actor: Combatant, targetId: string, rng?: Rng): CommandResult {
   const target = state.combatants[targetId];
@@ -179,7 +184,7 @@ export function executeHelp(state: BattleState, actor: Combatant, targetId: stri
   // Kuyruk A6 (sürüm 35): bitişik dosta yardım = sarsarak uyandırma (Sleep, Hypnotic Pattern: "someone … takes an action
   // to shake it"); hasarla biten uyku sayaçları ve `shakeable` etkiler biter.
   if (target.side === actor.side && target.id !== actor.id && ruleVersion(state) >= 35) {
-    if (state.map && (!actor.pos || !target.pos || distance(actor.pos, target.pos) > 1)) return fail('Sarsmak için dost bitişik olmalı.');
+    if (state.map && (!actor.pos || !target.pos || !near5(state, actor, target))) return fail('Sarsmak için dost bitişik olmalı.');
     const timers = (target.conditionTimers ?? []).filter((t) => t.wakeOnDamage && target.conditions.includes(t.condition));
     const effs = (target.effects ?? []).filter((e) => e.shakeable);
     // Ensnaring Strike: dostu sarmaşıktan kurtarma (Athletics).
@@ -194,7 +199,7 @@ export function executeHelp(state: BattleState, actor: Combatant, targetId: stri
   }
   if (target.side === actor.side) return fail('Yardım için bitişik bir düşman seç.');
   // Haritasız savaşta mesafe yok (yakın dövüş menzilinde sayılır).
-  if (state.map && (!actor.pos || !target.pos || distance(actor.pos, target.pos) > 1)) return fail('Hedef düşman bitişik olmalı.');
+  if (state.map && (!actor.pos || !target.pos || !near5(state, actor, target))) return fail('Hedef düşman bitişik olmalı.');
   const spec: Spec = { condition: helpMark(actor.side), owner: 'source', end: 'turnStart' };
   return finish(state, [timedCondition(state, target.id, spec, actor.id, `${actor.name}: Yardım`)]);
 }
