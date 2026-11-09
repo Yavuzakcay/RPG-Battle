@@ -2,6 +2,70 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-09 — Kuyruk K71c: prizma hava ızgarası (K6), uçuş üst sınırı, eksi düzey şeması (kural sürümü 58)
+
+- **Sürüm:** `wip/k71c` (`wip/k71b` 1422229 üstüne). Kural sürümü 57 → 58.
+  - Yeni davranış yalnız 58+ (`src/battle/cells.ts` `cellsOn`, `CELLS_VERSION`); 57 ve altı birebir (`src/sim/k71cRegresyon.test.ts`).
+  - `SAVE_VERSION` 22 kalır: olay türü yok. `move` komutuna isteğe bağlı `toFt`; olaylar mevcut `moved` + `altitude_changed`.
+  - Görevde anılan `claude/k71-plan-sonuc.md` ve `claude/k71b-sonuc.md` depoda yok; DECISIONS.md ve K71-PLAN.md esas alındı.
+- **Görev 0:** `harita/belgeler/K71C-DENETIM.md`. "Bir altıgende bir yaratık" varsayan 25 alan ve sürüm 58 kararları (58 / aynı / açık).
+- **Düzey ve hücre (kullanıcı kararları):**
+  - Düzey = ⌊irtifa / 5⌋, işaretli tamsayı. Yuvarlama: 5'in katı olmayan irtifa aşağı, yaratığın ayaklarının bulunduğu hücreye. Komutlar zaten 5'in katı ister.
+  - Yaratık, ayak izi (çok altıgen dahil) × boy düzeyi kadar hücre kaplar: T/S/M 1, L 2, H 3, G 4 (K68b boyu / 5).
+  - Aynı hücre paylaşılmaz. Tek çözücü `fillsBand`: `occupantAt(state, at, exceptId, band?)`.
+    - Bant verilmezse yer düzeyi (0) sorulur: eski "yere varış" çağrıları (çağırma, atlama inişi, yerleştirme, imza haritaları…) aynen çalışır, havadaki yaratık onları engellemez.
+  - Motor irtifayı sayı olarak tutar; ikinci harita verisi yok.
+- **Hareket:**
+  - Düşman yalnız bantlar çakışırsa yolu keser. Uçan, düşmanın üstünden geçer ve üstünde durur ("geçer ama duramaz" kalktı, K6).
+  - Yerdeki yaratık havadakinin altında durur.
+  - Birleşik uçuş `move.toFt` (`src/battle/airMove.ts`): (altıgen, düzey) uzayında A*.
+    - Yatay, düzey ve çapraz (altıgen + düzey) adım tek adım; uzaklık max(yatay, dikey) (K9).
+    - Yalnız uçuş hızıyla; tırmanan ve uçmayan ayrı komutla.
+    - Varış engel altıgeni olamaz (K5); düşman hücresinden geçilmez.
+    - Yarıda kesilirse son durulabilen düğüme geri sarılır.
+  - Dikey hareket (`vertical_move`): varış hücresi boş olmalı, yolda düşman hücresi olmamalı (dosttan geçilir).
+- **Erişim ve fırsat saldırısı:**
+  - Erişimin (`reachFt`) dikey bileşeni bant aralığı × 5 ft.
+  - ⚠ Medium/Small/Tiny için eskisiyle aynı. Large ve üstünün tepesine yakın uçana daha kısa: Large'ın 10 ft üstündeki uçan 5 ft'te (eskiden 10).
+  - `leavesReach` 3B; dikine yükselip erişimden çıkan uçan ve birleşik uçuşun her adımı fırsat saldırısı doğurur.
+  - Havada kimse yokken eski 2B kod çalışır (`anyAloft`).
+- **Uçuş üst sınırı:**
+  - Açık gökte `data/dikey.json` `ucus.ucusUstFt` 60 ft (12 düzey).
+  - Harita varyantı `ucusUstFt` ile ezer (yükleyici 5–120 ft, 5'in katı denetler); test/Game Master için durumda `map.ucusUstFt`.
+  - Tavanlı haritada tavan − boy (K68b, değişmedi). Tırmanan, duvar boyuyla sınırlı (değişmedi).
+  - ⚠ Eski kayıtta 60 ft üstündeki uçan, 58'de komut sonunda sınıra iner (hasarsız).
+  - Hiçbir harita bugün `ucusUstFt` vermiyor.
+- **Düşme çakışması (karar):** düşenin iniş hücresi (yer bandı) başka yaratıkla doluysa en yakın boş, girilebilir, gövdenin sığdığı altıgene iner (3 halkaya dek; eşitlikte satır, sütun).
+  - Ek hasar yok; düşme hasarı aynı (tek işlev `fall`, `map_effect.moveTo`).
+  - 3 halkada boş yer yoksa yerinde kalır, üst üste biner (⚠ çok kalabalık durum).
+  - Eksi düzeyde (yarık) bu kural yok.
+- **Eksi düzey:** yalnız şema (yarığın eksi irtifası aynı sayı; hücre sayımına girer); davranış eklenmedi.
+- **Tırmanan (K71b):** duvardaki yaratık irtifa sayısıyla hücre kaplar (10 ft = 2. düzey); dikey tırmanma ve duvar boyunca yürüyüş aynı çözücüden. Duvar tepesinde durma yine yasak (K5/K72).
+- **Engel tepesi (K71a) tutarlılığı:** 20 ft duvar 0–3. düzeyleri kaplar; uçan 4. düzeyden (20 ft) aşar (≥ kuralı). Birleşik uçuş daha alçaktan çaprazlama yükselip aşar.
+- **Değişmeyenler:**
+  - Alan büyüleri (merkez zeminde, küre/silindir/çizgi); fark yok (denetim §14).
+  - Aura (2B), otomatik kritik (2B bitişik), yakalama: açık, K73.
+  - Katman ile irtifa birleşmesi ve K8: K71d, dokunulmadı.
+  - Yeni tavan verisi yok (K72).
+- **Arayüz (Görev 2):**
+  - Sol kenarda "☁ Hava" düğmesi ve kaydırılabilir düzey listesi (üst sınırdan yere; düzeydeki yaratık sayısı; seçili düzey görünüme kayar).
+  - Hava görünümünde seçili düzeyde olmayan jetonlar soluk ve dokunulmaz.
+  - Uçabilen sıradaki yaratığa o düzeyde varılabilen altıgenler vurgulanır; dokunuş birleşik uçuş verir.
+  - Havadaki jeton irtifasıyla yukarı/sağa kayar; yerde gölge ve kesik bağ çizgisi. Yer görünümü aynı. TR/EN.
+- **YZ (Görev 3; yeni taktik yok, K73):** yalnız uçan düşman (parti, çağrı ve sivil değişmez).
+  - Yer (0) ve düşük düzey (yerdeki düşmanların boyunun hemen üstü) hava yerleri.
+    - Havadaki uçanınki şimdiki irtifa erişiminden türer (maliyet max(yatay, düzey farkı); ek Dijkstra yok).
+    - Yerdeki uçanınki yalnız yerden saldırı yeri bulunamazsa tek Dijkstra ile.
+    - Yalnız 3B yakın dövüş erişiminde bir düşman olan altıgenler.
+  - Yaklaşamazsa seyir düzeyi (en çok 30 ft).
+  - Kesin yol `tryCmd` (A*).
+  - ⚠ Parti YZ'si (ör. Fly ile uçan büyücü) hava düzeyi seçmez.
+- **Başarım:**
+  - `moveCostFn` isteğe bağlı `AltRef`: tek kurulum, irtifaya bağlı parçalar çağrı anında.
+  - A* eşit `f`'de derin düğümü önce açar (Chebyshev uzayındaki eşit yollar açılmaz).
+  - Hava yeri yalnız yakın dövüş erişiminde.
+- **Ölçüm:** aşağıdaki satırlar (NİHAİ RAPOR).
+
 ## 2026-11-08 — Kuyruk K71b: herkes için tırmanma (Çeviklik), düşme tek işlev, Long Jump, 23 harita (kural sürümü 57)
 
 - **Sürüm:** `wip/k71b` (`wip/k71a` 125e59b üstüne). Kural sürümü 56 → 57; yeni davranış yalnız 57+ (`src/battle/climbing.ts` `climbOn`, `CLIMB_VERSION`). 56 ve altı birebir (`src/sim/k71bRegresyon.test.ts`, `K71B_TOHUM`). `SAVE_VERSION` 22 kalır: yeni olay türü yok; `map_effect`'e isteğe bağlı `burnMove` alanı eklendi, eski kayıtlar etkilenmez.
