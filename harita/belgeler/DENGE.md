@@ -2,6 +2,26 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K73d: yeni kuralların etkisi: kazan düşman, su altı, fırtına (2026-11-10; ölçüm, denge ayarı yok)
+
+Kural sürümü 63 ↔ 64, aynı tohumlar (30), K73c kurallarının etkisini göstermek için üç yeni karşılaşma
+(`src/sim/k73dSenaryo.ts`; veri dosyasına girmedi; ölçüm `src/sim/k73dOlcum.test.ts`, `K73D_TOHUM=30`). 63'te bu kurallar yok:
+fark kuralın etkisidir. Zorluk ilk denemede (hepsi %100) yükseltildi; liste ayarı denge ayarı değil, yeni senaryonun kuruluşu.
+Parti kazanma %, ortalama tur, ortalama ölü karakter:
+
+| Karşılaşma | Parti, seviye | 63 | 64 | Fark |
+|---|---|---|---|---|
+| (a) Kazan düşman: Çöl, 3 Ankheg + 2 Bulette | standart, 5 | 47 / 4,7 / 0,23 | 47 / 4,7 / 0,23 | 0 (imza eşit) |
+| (a) Kazan düşman: Çöl, 3 Bulette + 2 Earth Elemental + Young Blue Dragon | standart, 9 | 53 / 7,1 / 0,70 | 53 / 7,1 / 0,70 | 0 (imza eşit) |
+| (b) Su altı: Mielikki Gölü, 3 Giant Shark + 2 Killer Whale + Water Elemental + 2 Giant Octopus, hepsi derin suda | standart, 5 | 100 / 6,9 / 0,13 | 100 / 8,6 / 0,13 | 0 puan, tur +1,7 |
+| (c) Fırtına: Deniz — Ada (fırtına), 8 Pirate + 2 Bandit Captain | k18-druid (Call Lightning), 5 | 87 / 11,5 / 0,20 | 80 / 11,3 / 0,33 | −7 |
+| (c) Fırtına: 7 Pirate + 2 Bandit Captain + Mage | k18-druid, 9 | 100 / 12,3 / 0,20 | 97 / 11,9 / 0,20 | −3 |
+
+8 puanı aşan kayma yok. Ayrıştırma:
+- **(a)** 64 = 63 (imza eşit): sayaçta kazma olayı 0. YZ yalnız yürüyerek hiçbir düşmana yol yokken kazar (K73c kararı: yeni uzun taktik yok); açık kumda her zaman yol var. Kazma kuralı bu ölçümde hiç çalışmadı; etkisi yalnız kazanın yürüyüşle ulaşamadığı haritada ya da Game Master/oyuncu kazarken görülür. ⚠ Ölçüm kuralın dengesini göstermiyor.
+- **(b)** Başlangıçta herkes derin suda: 64'te batık (irtifa −5 ft), 63'te yüzeyde (batıklık 63'te yok). Kazanma aynı, tur 6,9 → 8,6 (+%25): batık hedefe menzilli/yakın dövüş cezaları ve ateş direnci savaşı uzatıyor, ölü sayısı aynı. Boğulma 0: savaş nefes sınırından (1 + CON dakika = en az 10 tur) önce bitiyor. ⚠ Kimse kendiliğinden dalmaz (YZ dalış kararı yok); başlangıç yerleşimi ölçüm için elle verildi. Her iki sürümde parti %100: karşılaşma hâlâ kolay.
+- **(c)** Call Lightning'li druid: 64'te fırtına devralınıyor (Call Lightning 22 dökümün 22'sinde devralma, L9'da 1/1). 63'te 60 ft bulut sınırı vardı. 5. seviyede −7 puan, 9'da −3: 30 tohumda ±9 puan gürültü sınırında; ölü +0,13 (L5). Zaman aşımı iki sürümde de 2.
+
 ## Kuyruk K73c: kazma, su altı, havada merkezli alan, Call Lightning, çok altıgen zemini, 3B aura (2026-11-09; ölçüm, denge ayarı yok)
 
 Kural sürümü 63 ↔ 64, aynı tohumlar (3. seviye standart parti). Sürüm 63 K73c öncesi ağaçla (`wip/k73b` 62773e6, geçici

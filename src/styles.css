@@ -264,7 +264,7 @@ input[type='number'] { width: 90px; }
 .radial-tip.below { transform: translate(-50%, 0); }
 .radial-tip b { color: #ffd400; }
 .radial-btn:disabled { opacity: 1; background: rgba(40, 44, 50, 0.95); border-color: rgba(255, 255, 255, 0.25); color: rgba(255, 255, 255, 0.4); }
-.bubble { position: absolute; z-index: 5; display: flex; flex-direction: column; gap: 6px; background: rgba(15, 20, 26, 0.94); color: #fff;
+.bubble { position: absolute; z-index: 7; display: flex; flex-direction: column; gap: 6px; background: rgba(15, 20, 26, 0.94); color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 8px; overflow-y: auto; box-sizing: border-box;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55); }
 .bubble small { color: #b8c6cf; display: block; font-size: 12px; }
@@ -301,6 +301,8 @@ input[type='number'] { width: 90px; }
 .kat-stairs text, .kat-hole text { font-size: 11px; text-anchor: middle; fill: #fff; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 2px; pointer-events: none; }
 .air-panel { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; align-items: flex-start; z-index: 5; max-width: 46vw; }
 .air-panel .hud-btn.small { margin-left: 0; min-height: 40px; }
+/* Kuyruk K73d: nişan/seçim balonu açıkken (idle dışı kip) hava ve kat seçicisi gizli: balonla çakışmaz (balon ayrıca z-index 7). */
+.air-panel.away { visibility: hidden; pointer-events: none; }
 .air-panel .hud-btn.on { background: rgba(70, 140, 210, 0.9); }
 .air-levels { display: flex; flex-direction: column; gap: 3px; max-height: min(46vh, 300px); overflow-y: auto; overscroll-behavior: contain; padding: 2px; border-radius: 10px; background: rgba(15, 20, 26, 0.72); }
 .air-level { min-width: 84px; min-height: 32px; padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(40, 52, 66, 0.9); color: inherit; font-size: 12px; text-align: left; }

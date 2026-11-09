@@ -2,6 +2,38 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-10 — Kuyruk K73d: K73c kapanışı (tam paket, balon çakışması, yeni kuralların denge ölçümü)
+
+- **Sürüm:** `wip/k73d` (`wip/k73c` b65b5be üstüne). Kural sürümü 64 kalır, `SAVE_VERSION` 22; yeni mekanik ve denge ayarı yok.
+- **Görev 1, tam paket:** K73c düzeltmesinden (Ice Storm/Flame Strike notları) sonra ilk tam koşu: 364 dosya, 4277 test yeşil; kırık yok. Son koşu (bütün değişikliklerden sonra): 364 dosya yeşil + 1 atlanan (`k73dOlcum.test.ts`, yalnız `K73D_TOHUM` ile koşar), 4277 test + 5 atlanan. Ana parça 374 742 B, `check:harita` 96/0, `check:ses` 15/0 (`PW_CHROMIUM=/opt/pw-browsers/chromium`).
+- **Görev 2, arayüz çakışması (`src/MapBattle.tsx`, `src/styles.css`):** "☁ Hava" düzey seçicisi ve "⌂ Kat" seçicisi balonun etiketini örtüyordu (ikisi z-index 5, seçici sonra çiziliyordu).
+  - Balon z-index 7 (bütün `.bubble`'lar: 14 çizim yeri, ortak sınıf).
+  - İdle dışı kipte (nişan, büyü, saldırı… balonlar açıkken) iki seçici `.away` ile gizli (`visibility: hidden`): hava/kat seçimi yalnız boş kipte hareket içindir.
+  - Üç görünüm ekran görüntüsüyle doğrulandı (390×844 telefon dikey, 844×390 telefon yatay, 1280×720 masaüstü): balon seçicinin üstünde, etiket okunur. ⚠ Telefon dikeyde uygulamanın "Telefonu yatay çevirin" uyarısı zaten var.
+- **Görev 3, yeni kuralların denge ölçümü** (`src/sim/k73dSenaryo.ts`, `src/sim/k73dOlcum.test.ts`, `K73D_TOHUM`): sonuçlar `harita/belgeler/DENGE.md`.
+  - Senaryolar veri dosyasına girmedi (`data/sim-senaryolar.json` sayıları testlerce sayılıyor). İlk kuruluşta her karşılaşma %100'dü; düşman listeleri yükseltildi (yeni senaryonun kuruluşu, mevcut denge değil).
+  - Kazan düşman: 64 = 63 (kazma olayı 0: YZ yalnız yürüyerek yol yokken kazar). ⚠ Ölçüm kazma dengesini göstermiyor.
+  - Su altı: başlangıçta herkes derin suda (64'te batık, 63'te yüzeyde); kazanma aynı, tur +%25. ⚠ YZ dalmaz; başlangıç elle.
+  - Fırtına: Call Lightning'li druid; 64'te devralma 22/22 (L5) ve 1/1 (L9); −7 ve −3 puan (gürültü sınırında). 8 puanı aşan kayma yok.
+  - **YZ karar süresi** (medyan ms; 63 ↔ 64 aynı koşuda simetrik sıra, n = 8, N = 150; hepsi ≤ +%15):
+
+    | Sahne | 63 | 64 | Fark |
+    |---|---:|---:|---:|
+    | Mantar | 1,88 | 1,95 | +%4 |
+    | Katmanlı | 1,79 | 1,83 | +%2 |
+    | Uçan düşman | 1,94 | 1,85 | −%5 |
+    | Yakın dövüşlü uçan | 2,13 | 2,17 | +%2 |
+    | Duvarlı yerde | 2,20 | 2,36 | +%7 |
+    | Duvarda | 0,78 | 0,79 | +%1 |
+    | Katlı | 0,98 | 1,03 | +%5 |
+    | Süzülen düşman | 0,73 | 0,72 | −%1 |
+    | Çok turlu sur okçusu | 0,66 | 0,64 | −%3 |
+    | Kazan düşman (K73c) | 1,44 | 1,47 | +%2 |
+    | Su altı, düşman / parti (K73c) | 0,41 / 1,26 | 0,41 / 1,25 | 0 / −%1 |
+    | Fırtınalı, Call Lightning (yeni) | 0,72 | 0,74 | +%3 |
+
+- **Açık kalanlar:** YZ kazmıyor/dalmıyor (kazma ve su altı dengesi ölçülemedi); su altı karşılaşması kolay (%100); K73c açık kalanları aynen.
+
 ## 2026-11-09 — Kuyruk K73c: kazma, su altı savaşı, havada merkezli alan, Call Lightning fırtına devralma, çok altıgenli gövde zemini, 3B aura/tepki (kural sürümü 64)
 
 - **Sürüm:** `wip/k73c` (`wip/k73b` 62773e6 üstüne). Kural sürümü 63 → 64.

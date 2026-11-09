@@ -2723,7 +2723,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const levels = Array.from({ length: top + 1 }, (_, i) => top - i);
             const count = (l: number) => Object.values(state.combatants).filter((c) => c.pos && c.hp > 0 && !c.summon?.gone && ((b) => b.lo <= l && l <= b.hi)(bandOf(c))).length;
             return (
-              <div className={`air-panel${airView ? ' open' : ''}`} role="group" aria-label={B.k71c.panel}>
+              <div className={`air-panel${airView ? ' open' : ''}${mode !== 'idle' ? ' away' : ''}`} role="group" aria-label={B.k71c.panel}>
                 <button className={`hud-btn small${airView ? ' on' : ''}`} aria-pressed={airView} title={B.k71c.toggleTitle}
                   onClick={() => { setAirView((v) => !v); setAirLevel(Math.min(top, Math.max(0, actor ? levelOf(actor.altitudeFt ?? 0) : 0))); }}>{B.k71c.toggle}</button>
                 {airView && (
@@ -2743,7 +2743,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           })()}
           {/* Kuyruk K72: kat seçici (çok katlı bina; sürüm 60+). */}
           {katlarOf(state).length > 0 && state.status === 'active' && (
-            <div className={`air-panel kat-panel${katFt !== null ? ' open' : ''}`} role="group" aria-label={B.k72.panel}>
+            <div className={`air-panel kat-panel${katFt !== null ? ' open' : ''}${mode !== 'idle' ? ' away' : ''}`} role="group" aria-label={B.k72.panel}>
               <button className={`hud-btn small${katFt !== null ? ' on' : ''}`} aria-pressed={katFt !== null} title={B.k72.toggleTitle}
                 onClick={() => setKatFt((v) => (v === null ? (actor?.altitudeFt ?? 0) : null))}>{B.k72.toggle}</button>
               {katFt !== null && (
