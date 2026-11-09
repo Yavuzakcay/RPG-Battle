@@ -60,7 +60,16 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - ⚠ SRD'deki isteğe bağlı DC 10 Atletizm zarı atılmaz.
   - Bugünkü verideki en alçak geçilmez engel 10 ft (40 ft atlama ister): kural yalnız alçak ezme/nesnede etkili.
   - Jump büyüsünün tek engel kuralı değişmedi (planın büyüyü de katan önerisi ertelendi).
-- **Ölçüm:** aşağıdaki satırlar (YZ süresi, duvarlı 6 harita, regresyon, kontroller).
+- **Ölçüm:**
+  - YZ karar süresi (medyan, ms; v56 → v57):
+    - Mantar 1,61 → 1,65 (9 tekrar × 200; ≤ 2,05 kapısı);
+    - katmanlı sahne (Dağ Karakolu) 1,73 → 1,84 ve uçan düşman 1,46 → 1,66 (5 × 100);
+    - duvarlı tırmanma sahneleri (Kale ve avlu 31×17, DEX +3 parti sura bitişik): yerde 2,09 → 1,94 (yol kapıdan, tırmanmaz), duvarda 30 ft 0,47 → 0,54.
+    - Erken eleme: yerde yalnız tırmanılabilir yüzeye bitişik Çeviklik tırmanıcısı; tek çok kaynaklı Dijkstra; duruma bağlı önbellek. Ölçüm gürültüsü ±%15.
+  - Regresyon `K71B_TOHUM=30`: Çöl, Kale, Mağara, Orman 56 = 57 birebir.
+  - Duvarlı 6 harita × 50 tohum (`K71B_DUVAR=50`, 56 ↔ 57; kazanç, tur): kale-avlu-savunma %100/8,0 = %100/8,0; kale-baskini %42/7,6 = %42/7,6 (57'de 1 tırmanma, tuttu); orman-ork %90/11,6 =; k34-kale-ic-avlu %100/3,3 =; k36-dis-halka %100/2,1 =; k34-kasaba-han %100/3,3 =. Denge değişmedi (YZ bu senaryolarda duvarsız yolu seçiyor).
+  - Ana parça 374 742 bayt (değişmedi; yeni kod savaş parçalarında). check:harita 96/0, check:ses 15/0.
+  - Arayüz: tek ekran görüntüsü (tırmanma düğmesi ve onay balonu).
 
 ## 2026-11-08 — Kuyruk K71a: dikey veri modeli, uçanın engel aşması, görüşte zemin + engel tepesi, altıgen tavanı (kural sürümü 56)
 

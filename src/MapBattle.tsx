@@ -2680,7 +2680,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       onClick={() => { if (st && !armed) { setClimbArmed(armKey); return; } setClimbArmed(null); run(up); }}>
                       {armed && st ? `${B.k71.climbStart(st.dc, st.carpan)} ✓` : st ? B.k71.climbStart(st.dc, st.carpan) : B.k71.climbUp(k)}
                     </button>
-                    {armed && st && <span>{B.k71.confirm(st.dc, st.carpan, st.topFt)}</span>}
+                    {armed && st && <span className="climb-note" role="status">{B.k71.confirm(st.dc, st.carpan, st.topFt)}</span>}
                     {aloftDex && ((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? undefined} onClick={() => run(cmd)}>{B.k71.climbDown(k)}</button>)(down)}
                   </>
                 );
