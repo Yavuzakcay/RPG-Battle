@@ -4,7 +4,8 @@ import { describe, it, expect } from 'vitest';
 import { spellRows, spellDoc, featureRows, featureDoc } from './buyu-efekt-tablosu.mjs';
 import { AILELER, ILKEL_GORSEL } from './lib/buyu-efekt.mjs';
 
-const sprites = new Set(fs.readdirSync('public/sprites'));
+// Kuyruk E4b: E2/E4 sayfaları `public/efekt/` altındadır (duvar-ruzgar gibi öneksiz anahtarlar oradan); tablo betiği de üç klasöre bakar.
+const sprites = new Set([...fs.readdirSync('public/sprites'), ...fs.readdirSync('public/efekt')]);
 
 describe('büyü × efekt tablosu', () => {
   const rows = spellRows();
