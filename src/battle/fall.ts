@@ -32,7 +32,8 @@ export function fall(state: BattleState, id: string, ft: number, cause: FallCaus
   const c = state.combatants[id];
   if (!c) return [];
   fallStats.calls++;
-  const alt: BattleEvent[] = opts.altitudeTo !== undefined ? [{ type: 'altitude_changed', targetId: id, altitudeFt: opts.altitudeTo, label: opts.label ?? 'düştü' }] : [];
+  // Kuyruk K72 (sürüm 60+): bir duruş yüzeyine (alt kat, sur tepesi) inen tırmanma işaretini bırakır (`stand`).
+  const alt: BattleEvent[] = opts.altitudeTo !== undefined ? [{ type: 'altitude_changed', targetId: id, altitudeFt: opts.altitudeTo, label: opts.label ?? 'düştü', ...(opts.altitudeTo > 0 ? { stand: true as const } : {}) }] : [];
   const at0 = opts.at ?? c.pos;
   // Kuyruk K71c (sürüm 58+): iniş hücresi (yere ya da üstteki boş düzeye) başka yaratıkla doluysa en yakın boş altıgene
   // iner; ek hasar yok (DECISIONS.md K71c). Eksi düzeyde (yarık) davranış yok.

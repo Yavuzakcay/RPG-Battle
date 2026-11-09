@@ -31,6 +31,7 @@ import type { BattleEvent, BattleState, Combatant, CommandContext } from './type
 import { climbs, flySpeed, isAirborne, spellJumpFt } from './flight';
 import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
 import { k9On, dikeyOn, hasHexCeilings } from './vertical';
+import { hasStandData, standHeights, standingOn, surTop } from './stand';
 import { obstacleTopFt } from './cover';
 import { climbOn, holdSurface, surfaceAt } from './climbing';
 import { bandOf, cellsOn, fillsBand, GROUND_BAND, type Band } from './cells';
@@ -319,7 +320,18 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   // Kuyruk K71d (sürüm 59+, katmanlı harita): yüzde/duvarda tutunan, zemini farklı altıgene yürümez (göreli irtifası mutlak
   // yüksekliğini sıçratırdı); üste çıkış `climb`, iniş dikey hareketle.
   const layerLock = aloft && k9On(state);
+  // Kuyruk K72 (sürüm 60+): duruş yüzeyindeki (sur tepesi, kat döşemesi) uçmayan yaratık yalnız aynı yükseklikteki yüzeye
+  // yürür (normal maliyet; kenardan yürüyerek inilmez: `climb`, merdiven); zemin harfleri ve yer etkileri sayılmaz.
+  const standOn = !flying && standingOn(state, actor);
+  // Duvarda tutunan tırmanıcı, irtifası sur tepesine eşitken tepeye adım atar ve orada yürür (K5).
+  const topStep = aloft && !standOn && hasStandData(state);
   return (h: Offset, prev: Offset): number | null => {
+    if (standOn) {
+      if (!standHeights(state, h).includes(altFt) || leashBlocks(leash, h, prev)) return null;
+      if (enemyFor(hexKey(h))) return null;
+      return (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1);
+    }
+    if (topStep && surTop(state, h) === altFt) return enemyFor(hexKey(h)) ? null : 1;
     if (grip && !gripCeil && !wallNear(prev)) return null;
     if (layerLock && heightAt(state, h) !== heightAt(state, prev)) return null;
     // Kuyruk K69 (sürüm 53, çok altıgen): duvar denetimi gövdenin bütününde (`moveCostBase`).
@@ -403,11 +415,13 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   for (const h of bodyAt(state, actor, to)) {
     if (!isInside(h, size)) return fail('Harita dışına çıkılamaz.');
     const target = terrainAt(state, h);
-    if (target.movement === 'deadly' && !flying) return fail(`${hexLabel(h)} lav: gönüllü olarak girilemez.`);
+    // Kuyruk K72 (sürüm 60+): irtifasındaki duruş yüzeyine (sur tepesi, kat) varılır; zemin harfi sayılmaz.
+    const onTop = altitudeOf(actor) > 0 && standHeights(state, h).includes(altitudeOf(actor));
+    if (target.movement === 'deadly' && !flying && !onTop) return fail(`${hexLabel(h)} lav: gönüllü olarak girilemez.`);
     // Kuyruk S2 (sürüm 41, Gaseous Form): kapı aralığında ve başka yaratığın altıgeninde durabilir.
     const s2gas = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.shareSpace);
     const doorGap = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.squeeze) && (state.map?.objects ?? []).some((o) => (o.kind === 'door' || o.kind === 'gate') && o.state !== 'open' && sameHex(o.at, h));
-    if (target.movement === 'blocked' && !doorGap) return fail(`${hexLabel(h)} geçilmez (${target.name}).`);
+    if (target.movement === 'blocked' && !doorGap && !onTop) return fail(`${hexLabel(h)} geçilmez (${target.name}).`);
     const other = occupantAt(state, h, actor.id, cellsOn(state) ? bandOf(actor) : undefined);
     if (other && !s2gas) return fail(`${hexLabel(h)} dolu (${other.name}).`);
   }
@@ -477,12 +491,16 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   // geçtiği son boş ve geçilebilir altıgene (ya da başladığı yere) döner.
   // Kuyruk K71b (sürüm 57+): engelin üstünden geçen uçan ya da tırmanan da (K71a'da açık kalan durum).
   if ((phaseOf(actor) || (climbOn(state) && isAirborne(actor))) && walked > 0 && walked < path.path.length) {
-    const okEnd = (h: Offset) => terrainAt(state, h).movement !== 'blocked' && !occupantAt(current, h, actor.id);
+    const okEnd = (h: Offset) => (terrainAt(state, h).movement !== 'blocked' || standHeights(state, h).includes(altitudeOf(actor))) && !occupantAt(current, h, actor.id);
     while (walked > 0 && !okEnd(path.path[walked - 1] as Offset)) walked--;
     spent = path.path.slice(0, walked).reduce((n, h, i) => n + (cost(h, i ? path.path[i - 1] as Offset : from) ?? 0), 0);
   }
   const moved: BattleEvent[] = walked > 0 ? [{ type: 'moved', actorId: actor.id, path: path.path.slice(0, walked), cost: spent }] : [];
-  return finish(state, [...moved, ...effects]);
+  // Kuyruk K72 (sürüm 60+): duvarda tutunan sur tepesinde durunca tırmanma işareti kalkar (yerde sayılır).
+  const endAt = walked > 0 ? path.path[walked - 1] as Offset : null;
+  const stood: BattleEvent[] = endAt && actor.climbing && altitudeOf(actor) > 0 && standHeights(state, endAt).includes(altitudeOf(actor))
+    ? [{ type: 'altitude_changed', targetId: actor.id, altitudeFt: altitudeOf(actor), label: 'sur tepesinde', stand: true }] : [];
+  return finish(state, [...moved, ...effects, ...stood]);
 }
 
 /**

@@ -14,7 +14,7 @@ import { distance, line, sameHex, type Offset } from '../rules/hex';
 import { bodyOf, covers, isMultiHex, isMultiHex53 } from './body';
 import { isTargetable } from './common';
 import { solidWallAt, terrainAt } from './movement';
-import { combatHeightAt, heightAt, heightCombatRule, heightSightBlock, heightSightRule, highGroundK8, katmanOn, layerActive, ledgeCover } from './heights';
+import { combatHeightAt, heightAt, heightCombatRule, heightSightBlock, heightSightRule, highGroundK8, k72On, katmanOn, layerActive, ledgeCover } from './heights';
 import { ALT, altitudeOf, bodyHeightFt, ceilingFt, eyeFt } from './altitude';
 import { objectAt, OBJECTS } from './objectData';
 import { solidBarrierAt } from './barriers';
@@ -22,6 +22,8 @@ import { ruleVersion } from './ruleVersion';
 import { dikeyOn, engelEzme, harfFt, hasHexCeilings, zeminFt } from './vertical';
 import { spells } from '../data';
 import s2rules from '../../data/s2-kurallar.json';
+import dikeyData from '../../data/dikey.json';
+import { standAlt, standingOn } from './stand';
 import type { BattleState, Combatant } from './types';
 
 
@@ -197,7 +199,8 @@ function evaluateAlt(state: BattleState, path: Offset[], ignore: string[], targe
   }
   if (end) {
     const own = terrainAt(state, end);
-    if (own.cover && !(altitudeOf(target) > obstacleTopFt(state, end, own))) take(own.cover, own.name);
+    // Kuyruk K72 (sürüm 60+): duvarın tepesinde duran, durduğu duvardan siper almaz.
+    if (own.cover && !(altitudeOf(target) > obstacleTopFt(state, end, own)) && !standingOn(state, target)) take(own.cover, own.name);
   }
   // Kuyruk K71d (sürüm 59+): kenar siperi geometrik: göz–göz hattı açık, gözden hedefin ayağına hat zeminde kesiliyor (hedefin
   // alt yarısı kenarın ardında; `heightCombat` anahtarı). 58 ve altında 2B seviye kuralı.
@@ -385,7 +388,24 @@ export function heightOf(state: BattleState, c: Combatant): number {
  * Kural dışında eski seviye karşılaştırması (`heightOf`).
  */
 export function attackHeights(state: BattleState, a: Combatant, t: Combatant): { attackerHeight: number; targetHeight: number } {
-  const k8 = highGroundK8(state, a, t);
+  const k8 = highGroundOf(state, a, t);
   if (k8) return { attackerHeight: k8.side, targetHeight: 0 };
   return { attackerHeight: heightOf(state, a), targetHeight: heightOf(state, t) };
 }
+
+/**
+ * K8 yüksek zemin (`heights.ts` `highGroundK8`). Kuyruk K72 (sürüm 60+): duruş yüzeyinde (sur tepesi, kat döşemesi) duran
+ * yerde sayılır, yüksekliği zemin + duruş yüksekliği; katmansız haritada da (anahtarı yok; katmanlı haritada `heightCombat`).
+ * Havada ya da duvarda tutunan sayılmaz.
+ */
+export function highGroundOf(state: BattleState, a: Combatant, t: Combatant): { side: -1 | 0 | 1; ft: number; aloft?: true } | null {
+  if (k72On(state) && a.pos && t.pos && (standingOn(state, a) || standingOn(state, t)) && (!layerActive(state) || heightCombatRule(state))) {
+    const sa = standAlt(state, a);
+    const st = standAlt(state, t);
+    const ft = zeminFt(state, a.pos) + (sa ?? altitudeOf(a)) - (zeminFt(state, t.pos) + (st ?? altitudeOf(t)));
+    if (sa === null || st === null) return { side: 0, ft, aloft: true };
+    return { side: ft >= HG_FT ? 1 : ft <= -HG_FT ? -1 : 0, ft };
+  }
+  return highGroundK8(state, a, t);
+}
+const HG_FT = dikeyData.yuksekZemin.avantajFt;

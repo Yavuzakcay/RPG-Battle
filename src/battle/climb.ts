@@ -6,7 +6,7 @@
  * Yeni olay türü yok: `map_effect` (zar, `stopMovement`, hasar, Prone) ve `moved`. Yapay zekâ bu komutu vermez.
  */
 import { fall } from './fall';
-import { distance, sameHex, type Offset } from '../rules/hex';
+import { distance, neighbors, sameHex, type Offset } from '../rules/hex';
 import type { Rng } from '../rules/dice';
 import { enterCost, terrainOf, type TerrainType } from '../map/terrain';
 import { fail, finish, type CommandResult } from './common';
@@ -21,7 +21,9 @@ import { altitudeOf } from './altitude';
 import { mutlakFt } from './vertical';
 import { HEIGHT_RANGE } from '../map/maps';
 import type { BattleEvent, BattleState, Combatant } from './types';
-import { CLIMB_CLASSES, climbAttempt, climbCheckEvent, climbCostHexes, climbOn, cliffClass } from './climbing';
+import { CLIMB_CLASSES, climbAttempt, climbCheckEvent, climbCostHexes, climbOn, cliffClass, surfaceAt } from './climbing';
+import { hasStandData, landingFt, standHeights, standingOn, surTop } from './stand';
+import { bandOf } from './cells';
 import dikeyData from '../../data/dikey.json';
 
 const CLIFF = dikeyData.tirmanma.katmanUcurum;
@@ -36,11 +38,16 @@ const climbUser = (state: BattleState, actor: Combatant): boolean => {
   return !isAirborne(actor);
 };
 
-/** Tırmanılabilir/atlanabilir komşular (arayüz): uçurum kenarı, girilebilir ve boş. */
+/** Tırmanılabilir/atlanabilir komşular (arayüz): uçurum kenarı, girilebilir ve boş; K72 (60+): sur tepesine çıkış ve iniş. */
 export function climbTargets(state: BattleState, actor: Combatant): Offset[] {
-  if (!actor.pos || !heightMoveRule(state) || !climbUser(state, actor)) return [];
-  const out: Offset[] = [];
+  if (!actor.pos) return [];
   const from = actor.pos;
+  const out: Offset[] = [];
+  const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
+  if (hasStandData(state) && !fliesOrHovers(actor) && !climbs(actor, state)) {
+    for (const h of neighbors(from, size)) if (wallClimbKind(state, actor, from, h)) out.push(h);
+  }
+  if (!heightMoveRule(state) || !climbUser(state, actor)) return out;
   state.map?.tiles.forEach((row, r) => [...row].forEach((_, c) => {
     const h = { col: c, row: r };
     if (distance(from, h) !== 1 || !isCliff(state, from, h)) return;
@@ -50,9 +57,63 @@ export function climbTargets(state: BattleState, actor: Combatant): Offset[] {
   return out;
 }
 
+/**
+ * Kuyruk K72 (sürüm 60+, K5): sur tepesine çıkış ('up') ya da sur tepesinden bitişik alçak yüzeye iniş ('down'); değilse null.
+ * Çıkış: varış `surUstu` duvarı, tepesi yaratığın yüksekliğinden yüksek. İniş: yaratık bir sur tepesinde duruyor, varış o
+ * yükseklikte duruş yüzeyi değil ve geçilmez değil.
+ */
+function wallClimbKind(state: BattleState, actor: Combatant, from: Offset, to: Offset): 'up' | 'down' | null {
+  const alt = altitudeOf(actor);
+  const top = surTop(state, to);
+  if (top !== null && top > alt) return occupantAt(state, to, actor.id, bandOf(actor, top)) ? null : 'up';
+  if (surTop(state, from) === alt && standingOn(state, actor) && !standHeights(state, to).includes(alt)) {
+    const t = terrainAt(state, to);
+    if (t.movement === 'blocked' || t.outOfBounds) return null;
+    return occupantAt(state, to, actor.id, bandOf(actor, landingFt(state, to, alt))) ? null : 'down';
+  }
+  return null;
+}
+
+/**
+ * Kuyruk K72 (sürüm 60+, K5): sur tepesine tırmanma ve inme (katmandan bağımsız; K71b iç işlevi). Çıkış: 1 altıgen + her 5 ft
+ * için duvar yüzeyinin çarpanı; yerden (ya da bir yüzeyden) başlarken bir kez Çeviklik zarı (`climbAttempt`; duvarda
+ * tutunan zar atmaz), tepede durur (tırmanma işareti kalkar). İniş: tırmanarak, aynı maliyet, zarsız, hasarsız; alttaki en
+ * yüksek duruş yüzeyine.
+ */
+function executeWallClimb(state: BattleState, actor: Combatant, from: Offset, to: Offset, kind: 'up' | 'down', rng: Rng): CommandResult {
+  const alt = altitudeOf(actor);
+  const wall = kind === 'up' ? to : from;
+  const surf = surfaceAt(state, wall);
+  if (!surf) return fail('Bu duvar tırmanılmaz.');
+  const endFt = kind === 'up' ? (surTop(state, to) as number) : landingFt(state, to, alt);
+  const ft = Math.abs(endFt - alt);
+  const cost = 1 + climbCostHexes(ft, surf.carpan);
+  const remaining = speedHexes(actor) - actor.movementUsed;
+  if (cost > remaining) return fail(`Hareket yetmiyor: ${cost} altıgen gerekli (${ft} ft tırmanma), ${Math.max(0, remaining)} kaldı.`);
+  const events: BattleEvent[] = [];
+  let s = state;
+  const push = (evs: BattleEvent[]) => { events.push(...evs); s = applyEvents(s, evs); };
+  if (kind === 'up' && !actor.climbing) {
+    const r = climbAttempt(state, actor, { dc: surf.dc, carpan: surf.carpan, tr: CLIMB_CLASSES[surf.sinif]?.tr ?? surf.sinif }, `${actor.name} sura tırmanıyor (${ft} ft)`, remaining, rng);
+    push([r.event]);
+    if (!r.ok) return finish(state, events);
+  }
+  push(opportunityAttacks(s, actor.id, { from, to, fromAlt: alt, toAlt: endFt }, rng));
+  if ((s.combatants[actor.id]?.hp ?? 0) <= 0) return finish(state, events);
+  push([{ type: 'moved', actorId: actor.id, path: [to], cost },
+    { type: 'altitude_changed', targetId: actor.id, altitudeFt: endFt, label: kind === 'up' ? 'sur tepesine çıktı' : 'surdan indi', ...(endFt > 0 ? { stand: true as const } : {}) }]);
+  if (endFt === 0 && (s.combatants[actor.id]?.hp ?? 0) > 0) push(enterHexEvents(s, s.combatants[actor.id] as Combatant, to, rng).events);
+  return finish(state, events);
+}
+
 export function executeClimb(state: BattleState, actor: Combatant, to: Offset, rng: Rng): CommandResult {
   const from = checkMover(state, actor, to);
   if ('ok' in from) return from;
+  // Kuyruk K72 (sürüm 60+, K5): sur tepesine çıkış/iniş (katmansız haritada da).
+  if (hasStandData(state) && !fliesOrHovers(actor) && !climbs(actor, state) && distance(from, to) === 1) {
+    const kind = wallClimbKind(state, actor, from, to);
+    if (kind) return executeWallClimb(state, actor, from, to, kind, rng);
+  }
   if (!heightMoveRule(state)) return fail('Tırmanma yalnızca yükseklik katmanlı haritada (Game Master anahtarı açık).');
   if (!climbUser(state, actor)) return fail('Uçan ya da tırmanıcı yaratık normal yürür.');
   if (distance(from, to) !== 1) return fail('Tırmanma ve atlama yalnızca bitişik altıgene.');
@@ -143,6 +204,14 @@ function executeClimb59(state: BattleState, actor: Combatant, from: Offset, to: 
 /** Kuyruk K71d: arayüz: uçurum altıgeninin tırmanma DC'si ve maliyeti (sürüm 59+; öncesinde DC `climbDc`, maliyet null). */
 export function climbLabel(state: BattleState, actor: Combatant, to: Offset): { up: boolean; dc: number | null; cost: number | null; ft: number } {
   const from = actor.pos as Offset;
+  // Kuyruk K72 (sürüm 60+): sur tepesi.
+  const wk = hasStandData(state) ? wallClimbKind(state, actor, from, to) : null;
+  if (wk) {
+    const alt = altitudeOf(actor);
+    const surf = surfaceAt(state, wk === 'up' ? to : from);
+    const ft = Math.abs((wk === 'up' ? (surTop(state, to) as number) : landingFt(state, to, alt)) - alt);
+    return { up: wk === 'up', dc: wk === 'up' && surf && !actor.climbing ? surf.dc : null, cost: surf ? 1 + climbCostHexes(ft, surf.carpan) : null, ft };
+  }
   if (!katmanOn(state)) {
     const up = heightDelta(state, from, to);
     return { up: up > 0, dc: up > 0 ? (climbOn(state) ? CLIMB_CLASSES[CLIFF]?.dc ?? climbDc(state) : climbDc(state)) : null, cost: null, ft: Math.abs(up) * levelFeet(state) };

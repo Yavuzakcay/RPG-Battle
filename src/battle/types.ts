@@ -1060,6 +1060,8 @@ export interface MapState {
   dikey?: import('../map/maps').MapDikey;
   /** Kuyruk K71c: açık gök uçuş üst sınırı ezmesi (test, Game Master; yoksa varyant verisi). */
   ucusUstFt?: number;
+  /** Kuyruk K72 (sürüm 60+): çöken kat döşemesi altıgenleri ("katId|sütun,satır"; Earthquake). */
+  katCokuk?: string[];
   mirrored: boolean;
   /** Satır satır zemin harfleri (lav yükselmesi gibi kurallarla değişebilir). */
   tiles: string[];
@@ -1897,6 +1899,8 @@ export type BattleEvent =
       bonusDice?: RolledExtra[];
       /** Kuyruk K71b (sürüm 57+): yanan hareket (altıgen; tutmayan tırmanma kontrolü). */
       burnMove?: number;
+      /** Kuyruk K72 (sürüm 60+): çöken kat döşemesi altıgenleri ("katId|sütun,satır"). */
+      katCokuk?: string[];
     }
   /** Harita altıgeni değişti (lav yükselmesi). */
   | { type: 'tile_changed'; at: Offset; to: string }
@@ -2099,7 +2103,7 @@ export type BattleEvent =
   | { type: 'life_restored'; targetId: string; hpAfter: number; life: 'alive' | 'stable'; label: string }
   /** Görev S1: ışınlanma (fırsat saldırısı tetiklemez; sıra ve konsantrasyon korunur). */
   /** Kuyruk S2: irtifa (ft) değişti (yaratık ya da nesne); `cost` harcanan hareket (altıgen), `turn`/`moved` Levitate turluk sınırı. */
-  | { type: 'altitude_changed'; targetId?: string; objectId?: string; altitudeFt: number; label: string; cost?: number; turn?: string; moved?: number; byId?: string; /** Levitate: bitince süzülerek iner. */ gentle?: boolean; /** Kuyruk K68b: tırmanma (duvar/tavan). */ climb?: true }
+  | { type: 'altitude_changed'; targetId?: string; objectId?: string; altitudeFt: number; label: string; cost?: number; turn?: string; moved?: number; byId?: string; /** Levitate: bitince süzülerek iner. */ gentle?: boolean; /** Kuyruk K68b: tırmanma (duvar/tavan). */ climb?: true; /** Kuyruk K72 (sürüm 60+): duruş yüzeyinde (sur tepesi, kat döşemesi): tırmanma işareti kalkar. */ stand?: true }
   /** Kuyruk S2: elden düşen eşya (yerde nesne olur; `options` geri alınınca dönen saldırı seçenekleri; nesnesizse kaybolur). */
   | { type: 'item_dropped'; actorId: string; item: string; label: string; objectId?: string; at?: Offset; options?: AttackOption[] }
   | { type: 'item_picked'; actorId: string; objectId: string; label: string; bond?: boolean }

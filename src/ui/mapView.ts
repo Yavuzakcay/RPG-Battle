@@ -5,14 +5,14 @@
  * önizlemesi motorun menzil/siper/görüş denetimini kullanır.
  */
 import { climbOn, surfaceAt } from '../battle/climbing';
-import { heightAt, highGroundK8, isRamp, levelFeet } from '../battle/heights';
+import { heightAt, isRamp, levelFeet } from '../battle/heights';
 import { OBJECTS, objectAt } from '../battle/objectData';
 import { concealed, shownTerrainName } from '../battle/hiddenObjects';
 import { bodyOf, isMultiHex } from '../battle/body';
 import { spells, type Spell } from '../data';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { isTargetable } from '../battle/common';
-import { heightOf, obstacleTopFt } from '../battle/cover';
+import { heightOf, highGroundOf, obstacleTopFt } from '../battle/cover';
 import { ruleVersion } from '../battle/ruleVersion';
 import { terrainAt } from '../battle/movement';
 import { terrainSpellOn, terrainTags } from '../battle/terrainSpell';
@@ -147,7 +147,7 @@ function previewText(state: BattleState, actor: Combatant, target: Combatant, re
   // Kuyruk K68c: görüş hattı engelin üstünden (irtifa).
   if (r.over) parts.push(V.seenOver(r.over));
   // Kuyruk K71d (sürüm 59+, K8): yüksek zemin tek satır: ft farkıyla; havadaki/yüzdeki için "sayılmaz".
-  const k8 = highGroundK8(state, actor, target);
+  const k8 = highGroundOf(state, actor, target);
   if (k8) {
     if (k8.aloft && Math.abs(k8.ft) >= 10) parts.push(V.k71dAloft);
     else if (k8.side > 0) parts.push(V.k71dHigh(k8.ft));

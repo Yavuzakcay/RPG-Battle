@@ -38,6 +38,7 @@ import { damageEffects } from './damage-effects';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import { isAirborne } from './flight';
+import { standingOn } from './stand';
 
 // ---------------------------------------------------------------------------------------------
 // Kural verisi
@@ -105,6 +106,7 @@ export function ruleHex(state: BattleState, xy: unknown): Offset {
 const tileAt = (state: BattleState, o: Offset): TerrainType => terrainOf(state.map?.tiles[o.row]?.[o.col] ?? '#');
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 const flying = (c: Combatant) => isAirborne(c);
+
 const alive = (c: Combatant) => c.pos !== null && c.life !== 'dead' && (c.hp > 0 || c.regenPending);
 
 // ---------------------------------------------------------------------------------------------
@@ -419,6 +421,8 @@ export function turnEndMapEvents(state: BattleState, c: Combatant, rng: Rng): Ba
 /** Yürürken girilen altıgenin olayları; `stop` doğruysa yürüyüş orada biter. */
 export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng: Rng): { events: BattleEvent[]; stop: boolean } {
   if (!state.map || flying(c)) return { events: [], stop: false };
+  // Kuyruk K72 (sürüm 60+): duruş yüzeyindeki (sur tepesi, kat) yaratığa zemin etkileri işlemez.
+  if ((c.altitudeFt ?? 0) > 0 && standingOn(state, { pos: at, altitudeFt: c.altitudeFt })) return { events: [], stop: false };
   // Kuyruk 19: Water Walk: sıvı altıgende batak/batma yok (sudan çıkış sayacı sıfırlaması aşağıda yine çalışır).
   const walker = waterWalks(state, c) && isLiquidTile(tileAt(state, at));
   const events: BattleEvent[] = [];

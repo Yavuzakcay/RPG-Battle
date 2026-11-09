@@ -101,6 +101,7 @@ import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
 import { globalRule } from './battle/ruleControl';
 import { pickArea } from './battle/areaAttack';
 import { climbLabel, climbTargets } from './battle/climb';
+import { hasStandData } from './battle/stand';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
 import { seesTrueForm, truesightRange } from './battle/sight';
@@ -846,7 +847,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk 26: yükseklik katmanında tırmanılabilir/atlanabilir uçurum komşuları (Atletizm ya da düşme).
   const climbKeys = useMemo(() => {
     const me = state.combatants[actorId];
-    return new Set(active && mode === 'idle' && me && state.map?.heights ? climbTargets(state, me).map(hexKey) : []);
+    // Kuyruk K72: sur tepesi (katmansız haritada da).
+    return new Set(active && mode === 'idle' && me && (state.map?.heights || hasStandData(state)) ? climbTargets(state, me).map(hexKey) : []);
   }, [state, active, actorId, mode]);
   const heightTint = state.map?.heights && heightShowRule(state) ? state.map.heights : null;
   // Atlamalar: lav üstünden olanlar (ada atlaması, `lavJump`) yalnızca "Atla" kipinde; diğerleri

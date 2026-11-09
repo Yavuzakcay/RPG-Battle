@@ -36,6 +36,7 @@ import { climbs, isAirborne } from './flight';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
 import { climbingAloft, fissureDepthAt } from './altitude';
+import { landingFt, standHeights, standingOn } from './stand';
 import { collisionDice, collisionOn, forcedMove, MOTION } from './motion';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
@@ -98,6 +99,16 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   const here = terrainAt(state, from);
   const other = occupantAt(state, to, target.id, moverBand(state, target));
   if (other) return { ok: false, reason: `arkada ${other.name} var` };
+  // Kuyruk K72 (sürüm 60+): duruş yüzeyindeki (sur tepesi, kat) uçmayan yaratık: aynı yükseklikteki yüzeye itilir; kenardan
+  // itilirse alttaki en yüksek yüzeye tek düşme (`fall`); yüzeysiz geçilmez altıgen (daha yüksek duvar) iteni durdurur.
+  if (!flies(target) && standingOn(state, target)) {
+    const alt = target.altitudeFt ?? 0;
+    if (standHeights(state, to).includes(alt)) return { ok: true, to, kind: 'move', fallFeet: 0, note: '5 ft itilir (aynı yükseklikte)' };
+    const tt = terrainAt(state, to);
+    if (tt.movement === 'blocked' && !tt.flyersPass) return { ok: false, reason: `arkada ${tt.name.toLowerCase()}` };
+    const land = landingFt(state, to, alt);
+    return { ok: true, to, kind: 'fall', fallFeet: alt - land, landAlt: land, note: `${alt - land} ft düşer (${Math.min(20, Math.floor((alt - land) / 10))}d6)` };
+  }
   const well = ruleOf(state, 'stairwellFall');
   if (well && t.char === (well.terrain ?? 'u') && !flies(target)) {
     const land = nearestFree(state, target, to, (well.landOn as string | undefined) ?? 'l');

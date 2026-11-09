@@ -29,7 +29,8 @@ import { bodyAt, isMultiHex53 } from './body';
 import { maps } from '../map/maps';
 import { terrainAt } from './movement';
 import { absBand, dikeyOn, k9Ft, k9On, tavanEzme } from './vertical';
-import { katmanOn } from './heights';
+import { k72On, katmanOn } from './heights';
+import { landingFt, standingOn } from './stand';
 import { obstacleTopFt } from './cover';
 import { climbOn, dexClimbMove, dexClimberHolds } from './climbing';
 import { bandGap, bandOf, bandsOverlap, cellsOn } from './cells';
@@ -339,6 +340,8 @@ export function levitateRiseEvents(state: BattleState, events: BattleEvent[], wa
  */
 function staysUp(state: BattleState, c: Combatant): boolean {
   if (levitateOn(c)) return true;
+  // Kuyruk K72 (sürüm 60+): duruş yüzeyinde (sur tepesi, kat döşemesi) durur; Prone olsa da düşmez.
+  if (standingOn(state, c)) return true;
   // Kuyruk K71b (sürüm 57+): tırmanma hızı olmayan duvardaki tırmanıcı, bitişik tırmanılabilir yüzey (tepesi irtifası kadar) varken tutunur.
   if (climbingAloft(c)) return climberHolds(state, c) || (climbOn(state) && !climbs(c, state) && dexClimberHolds(state, c));
   if (!isAirborne(c)) return false;
@@ -377,9 +380,11 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
     }
     // Kuyruk K71b (sürüm 57+): tek düşme işlevi.
     const fr = climbOn(s) ? null : fallReactions(s, c.id, feet, rng);
+    // Kuyruk K72 (sürüm 60+): alttaki en yüksek duruş yüzeyine (alt kat döşemesi, sur tepesi) iner.
+    const land = c.pos && k72On(s) ? landingFt(s, c.pos, feet) : 0;
     const evs: BattleEvent[] = fr ? [...fr.events, { type: 'altitude_changed', targetId: c.id, altitudeFt: 0, label: 'düştü' },
       ...(c.pos ? [fallEffect(s.combatants[c.id] as Combatant, feet, rng, fr)] : [])]
-      : c.pos ? fall(s, c.id, feet, 'irtifa', rng, { altitudeTo: 0 }) : [{ type: 'altitude_changed', targetId: c.id, altitudeFt: 0, label: 'düştü' }];
+      : c.pos ? fall(s, c.id, feet - land, 'irtifa', rng, { altitudeTo: land }) : [{ type: 'altitude_changed', targetId: c.id, altitudeFt: 0, label: 'düştü' }];
     out.push(...evs); s = applyEvents(s, evs);
   }
   // Levitate'li nesne: yapanın Levitate konsantrasyonu bittiyse iner.
