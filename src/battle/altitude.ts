@@ -34,7 +34,7 @@ import { k72On, katmanOn } from './heights';
 import { katlarOf, landingFt, slabAbove, slabBetween, slabsAt, stairsAt, standingOn } from './stand';
 import { obstacleTopFt } from './cover';
 import { climbOn, dexClimbMove, dexClimberHolds } from './climbing';
-import { bandGap, bandOf, bandsOverlap, cellsOn } from './cells';
+import { bandGap, bandOf, bandsOverlap, cellsOn, levelOf } from './cells';
 import { verticalOpportunity } from './verticalHook';
 import { k73bOn } from './adjacency';
 import { k73cOn } from './k73cSurum';
@@ -81,6 +81,8 @@ export function altitudeInZone(state: Pick<BattleState, 'kuralSurumu'> & Partial
     const anchor = z.anchorId ? state.combatants?.[z.anchorId] : undefined;
     if (slabBetween(state as Pick<BattleState, 'map' | 'kuralSurumu'>, c.pos, anchor ? altitudeOf(anchor) : 0, altitudeOf(c))) return false;
   }
+  // Kuyruk K73c (sürüm 64+, Görev 3): havada merkezli alan: prizma düzeyleri zemine göre aralıkla kesişmeli (yerdeki de).
+  if (z.air && c && k73cOn(state)) return bandsOverlap(bandOf(c), { lo: levelOf(z.air.loFt), hi: levelOf(z.air.hiFt) });
   const a = altitudeOf(c);
   if (!a || !altitudeOn(state)) return true;
   return a <= zoneTopFt(z, spec);

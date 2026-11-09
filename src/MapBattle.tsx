@@ -46,7 +46,7 @@ import { climbStartInfo, dexClimber, holdSurface } from './battle/climbing';
 import { bandOf, cellsOn, levelOf, levelToFt } from './battle/cells';
 import { airReach, canAirMove } from './battle/airMove';
 import { flyCapFt } from './battle/altitude';
-import { cloudBaseFt, cloudCastProblem, cloudPointProblem, cloudRing } from './battle/cloud';
+import { cloudBaseFt, cloudCastProblem, cloudPointProblem, cloudRing, stormSourceOf } from './battle/cloud';
 import { speedZero as hasSpeedZero } from './rules/conditions';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
@@ -105,6 +105,7 @@ import { dropTargets } from './battle/drop';
 import { BURROW_DEPTH_FT, canBurrow, diggable } from './battle/burrow';
 import { breathesWater, breathLimit, inWater, submerged } from './battle/underwaterCore';
 import { k73cOn } from './battle/k73cSurum';
+import { airAimable } from './battle/airArea';
 import { hasStandData, katlarOf } from './battle/stand';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
@@ -553,6 +554,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   };
   // Alan eylemi (Görev R4): alan büyüsü, canavar nefesi/alan saldırısı ya da Dragonborn nefesi.
   const [areaAct, setAreaAct] = useState<AreaAct | null>(null);
+  // Kuyruk K73c (sürüm 64+): havada merkezli alanın merkez yüksekliği (ft, 5 ft adım; 0 = yerde).
+  const [airFt, setAirFt] = useState(0);
+  useEffect(() => { setAirFt(0); }, [areaAct]);
   const [menuOpen, setMenuOpen] = useState(true);
   // Hareket alt menüsü: Yürü, Koş, Geri Çekil.
   const [moveMenu, setMoveMenu] = useState(false);
@@ -988,7 +992,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const cloudPreview = useMemo(() => {
     const me = state.combatants[actorId];
     if (!active || mode !== 'aim' || areaAct?.kind !== 'spell' || !me?.pos) return null;
-    const cl = mechanicsAt(state, areaAct.spell).cloud;
+    const m = mechanicsAt(state, areaAct.spell);
+    const cl = m.cloud;
+    // Kuyruk K73c (sürüm 64+): fırtına devralınırsa yeni bulut yok (halka çizilmez).
+    if (cl && stormSourceOf(state, me, m)) return null;
     return cl ? { id: 'onizleme', hexes: cloudRing(state, me.pos, Math.floor(cl.radiusFt / 5)), base: cloudBaseFt(state, cl, me.pos) } : null;
   }, [state, active, actorId, mode, areaAct]);
   const aimKeys = useMemo(() => {
@@ -1020,7 +1027,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (cl && areaAct.kind === 'spell') {
       const s = areaActSpec(me, areaAct);
       const out = new Set<string>();
-      if (s) state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!('ok' in pickArea(state, me, s.spec, s.rangeFt, h)) && !cloudPointProblem(state, me, areaAct.spell, cl, h, undefined, false)) out.add(hexKey(h)); }));
+      const storm = stormSourceOf(state, me, mechanicsAt(state, areaAct.spell));
+      if (s) state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!('ok' in pickArea(state, me, s.spec, s.rangeFt, h)) && !cloudPointProblem(state, me, areaAct.spell, cl, h, undefined, false, { storm })) out.add(hexKey(h)); }));
       return out;
     }
     if (!freeHexRule(state)) return null;
@@ -1035,8 +1043,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
   const areaInfo = useMemo(() => (mode === 'aim' && areaAct && actor
     ? areaActPreview(state, actor, areaAct, areaActSpec(actor, areaAct)?.spec.shape === 'emanation' ? null : areaPointCount(state, areaAct, choicePick, wallShape) > 1 ? aimPts[0] ?? null : aimHex, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
-      areaPointCount(state, areaAct, choicePick, wallShape) > 1 ? aimPts : undefined, choicePick) : null),
-  [state, actor, areaAct, aimHex, aimPts, mode, wallShape, choicePick]);
+      areaPointCount(state, areaAct, choicePick, wallShape) > 1 ? aimPts : undefined, choicePick, airFt) : null),
+  [state, actor, areaAct, aimHex, aimPts, mode, wallShape, choicePick, airFt]);
   const area = areaInfo?.hexes ?? [];
   const areaFriends = new Set((areaInfo?.friends ?? []).map((c) => c.id));
   const areaFoes = new Set((areaInfo?.foes ?? []).map((c) => c.id));
@@ -2483,7 +2491,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const needAim = sp.spec.shape !== 'emanation';
             const picker = areaAct.kind === 'spell' && slotChoices(actor, areaAct.spell).length > 1 ? 64 : 0;
             const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker + (areaFreeShape(state, areaAct, choicePick) ? (areaAct.kind === 'spell' && mechanicsAt(state, areaAct.spell).zone?.cage ? 100 : 56) : 0)
-              + (areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? 130 : 0)) };
+              + (areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? 130 : 0) + (areaAct.kind === 'spell' && airAimable(state, areaAct.spell, mechanicsAt(state, areaAct.spell)) ? 40 : 0)) };
             // Balon alanın ve jetonun üstünü kapatmasın: alanın ağırlık merkezinin karşı kenarına yaslanır.
             const pts = [actorPx, ...area.map(px)];
             const cx = pts.reduce((n, q) => n + q.x, 0) / pts.length;
@@ -2621,16 +2629,24 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {areaExcludable(state, areaAct) && aimHex && (
                   <button type="button" className={excludeOn ? 'on' : ''} aria-pressed={excludeOn} onClick={() => setExcludeOn((v) => !v)}>{A.exclude(excluded.length)}</button>
                 )}
+                {/* Kuyruk K73c (sürüm 64+): havada merkez: önce altıgen, sonra yükseklik (5 ft adım). */}
+                {areaAct.kind === 'spell' && airAimable(state, areaAct.spell, mechanicsAt(state, areaAct.spell)) && (
+                  <div className="wall-shape" role="group" aria-label={B.k73c.centerHeight(airFt)}>
+                    <button type="button" disabled={airFt <= 0} onClick={() => setAirFt((v) => Math.max(0, v - 5))} aria-label={B.k73c.down5}>−5</button>
+                    <small>{B.k73c.centerHeight(airFt)}</small>
+                    <button type="button" onClick={() => setAirFt((v) => v + 5)} aria-label={B.k73c.up5}>+5</button>
+                  </div>
+                )}
                 {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
                 {/* Kuyruk K65b: Forcecage'de önizleme kartı yok (hasar/durum yok, "etkisiz" yanıltır); içeride kalacaklar yukarıdaki listede. */}
                 {pvSet.on && ready && !areaInfo?.error && !(areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage) && <Suspense fallback={null}><PreviewCard state={state} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet}
                   cmd={areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
                     areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? (choicePick === DANCE_COMBINED ? DANCE_COMBINED : null) : areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
-                    areaExcludable(state, areaAct) ? excluded : undefined)} /></Suspense>}
+                    areaExcludable(state, areaAct) ? excluded : undefined, airFt)} /></Suspense>}
                 <button className="cta" disabled={!ready || !!areaInfo?.error}
                   onClick={() => run(areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
                     areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? (choicePick === DANCE_COMBINED ? DANCE_COMBINED : null) : areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
-                    areaExcludable(state, areaAct) ? excluded : undefined))}>
+                    areaExcludable(state, areaAct) ? excluded : undefined, airFt))}>
                   {areaAct.kind === 'spell' ? B.cast : A.go(foes.length + friends.length)}
                 </button>
               </div>

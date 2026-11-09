@@ -3097,6 +3097,15 @@
     },
     "text": "DEX save, 3d10 lightning",
     "mechanics": {
+      "k73c": {
+        "stormTakeover": {
+          "mapRule": "storm",
+          "zoneSpells": [
+            "storm-of-vengeance"
+          ]
+        },
+        "kapsamDisi": "Açık gökte fırtınanın içindeyken (harita fırtınası ya da Storm of Vengeance) yeni bulut kurulmaz, fırtına devralınır: şimşek noktası fırtınanın altında, hasar +1d10, taban açık gökteki uçuş üst sınırı. Fırtınasızken bulut döküm yerinin üstünde sabit (taban açık gökte 30 ft, tavanlı yerde tavan − 10 ft). Havadaki nokta yaratık seçilince onun irtifasında, değilse merkez yüksekliğiyle (sürüm 64+)."
+      },
       "kind": "save",
       "damage": "3d10",
       "damageType": "lightning",

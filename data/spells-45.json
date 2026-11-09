@@ -185,6 +185,10 @@
     },
     "text": "20 ft silindir, DEX save, 2d10 bludgeoning + 4d6 cold (yarı); tur sonuna dek zorlu arazi",
     "mechanics": {
+      "k73c": {
+        "cylinderFt": 40,
+        "kapsamDisi": "Havada merkezlenince (sürüm 64+) 40 ft silindirin dairesi merkezde, aşağı uzanır; yerde merkezliyken eski küre kapsamı."
+      },
       "kind": "save",
       "save": "dex",
       "damage": "7d6",
@@ -357,6 +361,10 @@
     },
     "text": "10 ft silindir, DEX save, 5d6 fire + 5d6 radiant (yarı)",
     "mechanics": {
+      "k73c": {
+        "cylinderFt": 40,
+        "kapsamDisi": "Havada merkezlenince (sürüm 64+) 40 ft silindirin dairesi merkezde, aşağı uzanır; yerde merkezliyken eski küre kapsamı."
+      },
       "kind": "save",
       "save": "dex",
       "damage": "10d6",

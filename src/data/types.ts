@@ -303,6 +303,18 @@ export interface SpellMechanics {
   k70?: Partial<SpellMechanics>;
   /** Kuyruk Y1 (sürüm 55): K70 artıkları (Dispel Magic bağışıklığı, Disintegrate küresi). */
   y1?: Partial<SpellMechanics>;
+  /** Kuyruk K73c (sürüm 64): havada merkezli silindir yüksekliği, Call Lightning fırtına devralma. */
+  k73c?: Partial<SpellMechanics>;
+  /**
+   * Kuyruk K73c (sürüm 64+, Görev 3): anlık silindir büyüsünün yüksekliği (ft; veride biçim küre). Havada merkezlenince
+   * dairesi merkezde, silindir aşağı uzanır (`src/battle/airArea.ts`). Yerde merkezliyken kullanılmaz.
+   */
+  cylinderFt?: number;
+  /**
+   * Kuyruk K73c (sürüm 64+, Görev 4; Call Lightning): büyücü açık gökte bir fırtınanın içindeyse (harita kuralı `mapRule`
+   * ya da `zoneSpells` büyülerinden birinin alanı) yeni bulut kurulmaz, fırtına devralınır (`src/battle/cloud.ts`).
+   */
+  stormTakeover?: { mapRule: string; zoneSpells: string[] };
   /** Kuyruk K65a: serbest şekil (`src/battle/freeShape.ts`): en çok altıgen, menzil her altıgende, görüş ilk altıgende. */
   /** Kuyruk K65c: serbest duvar yolunun ek kuralları (her altıgen menzilde, ilk altıgen görüşte; Wind Wall'da yok). */
   pathRules?: { rangeAll?: boolean; sightFirst?: boolean };

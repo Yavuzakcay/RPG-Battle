@@ -129,7 +129,7 @@ export function fxShots(events: BattleEvent[], before: BattleState, stagger = 12
         area(e.actorId, e.hexes, e.damageType, e.shape, e.aim);
         break;
       case 'spell_cast':
-        if (e.area) area(e.actorId, e.area.hexes, e.area.damageType);
+        if (e.area) area(e.actorId, e.area.hexes.length ? e.area.hexes : e.area.airHexes ?? [], e.area.damageType);
         break;
       case 'effect_added':
         if (e.effect.sourceId === e.targetId || before.combatants[e.effect.sourceId]?.side === before.combatants[e.targetId]?.side) {

@@ -1090,6 +1090,9 @@
   "text": "90 ft içinde 10 ft yarıçaplı, 40 ft yüksek ışık sütunu: içindeki her yaratığa ya iyileştirme 4d12 + büyü değiştiricisi ya da DEX save 6d12 ışık (yarı); sütun 30 ft taşınır (konsantrasyon); +1d12/slot",
   "concentration": true,
   "mechanics": {
+   "k73c": {
+    "cylinderFt": 40
+   },
    "kind": "save",
    "save": "dex",
    "damage": "6d12",

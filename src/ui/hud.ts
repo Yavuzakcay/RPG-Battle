@@ -14,6 +14,8 @@ import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
 import { teleportHexes } from '../battle/teleport';
 import { freeCast } from '../battle/economy';
+import { airCenterProblem, airSpanFt, cylinderHeightFt, inAirSpan } from '../battle/airArea';
+import { cloudOf, cloudPointProblem, stormSourceOf } from '../battle/cloud';
 
 export interface Point {
   x: number;
@@ -288,7 +290,7 @@ export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetS
   return s ? { spec: { shape: s.shape, sizeFt: s.sizeFt, origin: 'self', targets: 'all', ...(s.widthFt ? { widthFt: s.widthFt } : {}) }, rangeFt: 0, label: 'Breath Weapon' } : null;
 }
 
-export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | 'ring' | null, choice?: string | null, points?: Offset[], exclude?: Offset[]): Command {
+export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | 'ring' | null, choice?: string | null, points?: Offset[], exclude?: Offset[], targetFt?: number): Command {
   // Kuyruk K66a: yarık yerleştirme (`spell_followup`, eylem harcamaz).
   if (act.kind === 'fissure') return { type: 'spell_followup', actorId, targetId: act.zoneId, ...(aim ? { targetHex: aim } : {}), choice: choice ?? 'fissure:0' };
   // Kuyruk K67b: ışıkları taşı (ilk ışık `targetHex`; birden çoksa hepsi sırayla `targetHexes`).
@@ -297,17 +299,20 @@ export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null
   if (act.kind === 'spell' && exclude?.length && !points?.length) return { ...areaActCommand(actorId, act, aim, slotLevel, wallShape, choice), excludeHexes: exclude } as Command;
   // Kuyruk K57 (Meteor Swarm): çok noktalı alanda ilk nokta `targetHex`, hepsi `targetHexes`.
   if (act.kind === 'spell' && points?.length) return { type: 'cast_spell', actorId, spellName: act.spell.name, targetHex: points[0] as Offset, ...(points.length > 1 ? { targetHexes: points } : {}), ...(slotLevel ? { slotLevel } : {}), ...(choice ? { choice } : {}) };
+  // Kuyruk K73c (sürüm 64+): havada merkezli küre/silindir ya da Call Lightning şimşek noktasının yüksekliği.
   if (act.kind === 'spell') return { type: 'cast_spell', actorId, spellName: act.spell.name, ...(aim ? { targetHex: aim } : {}), ...(slotLevel ? { slotLevel } : {}), ...(choice ? { choice } : {}),
-    ...(wallShape && act.spell.area?.shape === 'wall' ? { wallShape } : {}) };
+    ...(wallShape && act.spell.area?.shape === 'wall' ? { wallShape } : {}), ...(targetFt ? { targetFt } : {}) };
   if (act.kind === 'monster') return { type: 'monster_attack', actorId, targetId: '', attackIndex: act.index, ...(aim ? { targetHex: aim } : {}) };
   return { type: 'breath_weapon', actorId, shape: act.shape, targetHex: aim ?? { col: 0, row: 0 } };
 }
 
 /** Önizleme: kaplanan altıgenler, etkilenecek dostlar ve düşmanlar (motorla aynı), yapılamıyorsa nedeni. */
-export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAct, aim: Offset | null, wallShape?: 'arc' | 'ring' | null, points?: Offset[], choice?: string | null):
+export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAct, aim: Offset | null, wallShape?: 'arc' | 'ring' | null, points?: Offset[], choice?: string | null, targetFt?: number):
   { hexes: Offset[]; friends: Combatant[]; foes: Combatant[]; error: string | null } {
   const s = areaActSpec(actor, act);
   if (!s) return { hexes: [], friends: [], foes: [], error: null };
+  // Kuyruk K73c (sürüm 64+): havada merkezli alan: motorla aynı denetim ve dikey aralık (`airArea.ts`).
+  if (targetFt && act.kind === 'spell' && aim && !points?.length) return airPreview(state, actor, act.spell, s, aim, targetFt);
   // Kuyruk K66a: yarık önizlemesi motorla aynı denetimden (`fissureProblem`); gösterilen altıgenler yarığa dönecekler.
   if (act.kind === 'fissure') {
     const dir = Number((choice ?? 'fissure:0').slice(8));
@@ -375,6 +380,23 @@ export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAc
   }
   const friend = (c: Combatant) => c.side === actor.side || c.civilian;
   return { hexes: pick.hexes, friends: pick.reached.filter((x) => friend(x.c)).map((x) => x.c), foes: pick.reached.filter((x) => !friend(x.c)).map((x) => x.c), error: null };
+}
+
+/** Kuyruk K73c: havada merkezli alanın önizlemesi (motorun `executeAreaCast`/`executeZoneCast` denetimleri ve dikey aralığı). */
+function airPreview(state: BattleState, actor: Combatant, spell: Spell, s: NonNullable<ReturnType<typeof areaActSpec>>, aim: Offset, targetFt: number):
+  { hexes: Offset[]; friends: Combatant[]; foes: Combatant[]; error: string | null } {
+  const m = mechanicsAt(state, spell);
+  const cl = m.cloud;
+  const why = cl ? cloudPointProblem(state, actor, spell, cl, aim, undefined, !!cloudOf(state, actor, spell), { storm: cloudOf(state, actor, spell) ? null : stormSourceOf(state, actor, m), pointFt: targetFt })
+    : airCenterProblem(state, actor, spell.area, spell.rangeFt, aim, targetFt, m.zone ?? undefined);
+  const pick = pickArea(state, actor, s.spec, s.rangeFt, aim, 'büyü', cl ? undefined : targetFt);
+  if ('ok' in pick) return { hexes: [], friends: [], foes: [], error: pick.error };
+  if (why) return { hexes: pick.hexes, friends: [], foes: [], error: why };
+  const span = cl ? null : airSpanFt(s.spec.sizeFt, cylinderHeightFt(m, m.zone), targetFt);
+  const inside = (c: Combatant) => (span ? inAirSpan(state, c, aim, span) : Math.abs((c.altitudeFt ?? 0) - targetFt) <= s.spec.sizeFt);
+  const reached = pick.reached.filter((x) => inside(x.c));
+  const friend = (c: Combatant) => c.side === actor.side || c.civilian;
+  return { hexes: pick.hexes, friends: reached.filter((x) => friend(x.c)).map((x) => x.c), foes: reached.filter((x) => !friend(x.c)).map((x) => x.c), error: null };
 }
 
 /**

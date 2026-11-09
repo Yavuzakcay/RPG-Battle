@@ -48,6 +48,8 @@ import { senseSees } from './sight';
 import { DANCE_COMBINED, danceMax, danceProblem } from './danceLights';
 import { concentrationEvent, spendSlot } from './slots';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
+import { airCenterProblem, airSpanFt, cylinderHeightFt, inZoneAir } from './airArea';
+import { k73cOn } from './k73cSurum';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -457,10 +459,15 @@ export function zoneAttackSources(state: BattleState, attacker: Combatant, targe
   const v36 = ruleVersion(state) >= 36;
   // Kuyruk K68c (sürüm 52): irtifalı uçta yoğun örtü yükseklikle: uçtaki yaratık alanın tepesinin üstündeyse örtüde değil,
   // aradaki altıgende hat tepenin üstünden geçerse örtü görüşü kesmez. İki uç da 0 irtifada: bugünkü kod aynen.
-  const alt3 = ((attacker.altitudeFt ?? 0) !== 0 || (target.altitudeFt ?? 0) !== 0) && ruleVersion(state) >= 52;
-  const heavyAt = (at: Offset, ft: number) => zonesAt(state, at).some((z) => { const sp = zoneSpecOf(z); return sp?.obscured === 'heavy' && ft <= zoneTopFt(z, sp); });
-  const targetHidden = (alt3 ? heavyAt(target.pos, altitudeOf(target)) : heavilyObscured(state, target.pos)) && !(v36 && senseSees(state, attacker, target));
-  const attackerHidden = (alt3 ? heavyAt(attacker.pos, altitudeOf(attacker)) : heavilyObscured(state, attacker.pos)) && !(v36 && senseSees(state, target, attacker));
+  // Kuyruk K73c (sürüm 64+): havada merkezli yoğun örtü (`SpellZone.air`) varken yükseklikli yol: alan yalnız kendi aralığında;
+  // uçtaki yaratık prizma bandı aralıkla kesişirse örtüde. Hava alanı yokken 63'teki kod aynen.
+  const v64air = k73cOn(state) && (state.map.zones ?? []).some((z) => z.air);
+  const alt3 = (((attacker.altitudeFt ?? 0) !== 0 || (target.altitudeFt ?? 0) !== 0) && ruleVersion(state) >= 52) || v64air;
+  const heavyZ = (z: SpellZone, ft: number) => { const sp = zoneSpecOf(z); return sp?.obscured === 'heavy' && (z.air && v64air ? ft >= z.air.loFt && ft <= z.air.hiFt : ft <= zoneTopFt(z, sp)); };
+  const heavyAt = (at: Offset, ft: number) => zonesAt(state, at).some((z) => heavyZ(z, ft));
+  const heavyOn = (c: Combatant) => zonesAt(state, c.pos).some((z) => (z.air && v64air ? zoneSpecOf(z)?.obscured === 'heavy' && inZoneAir(z, c) : heavyZ(z, altitudeOf(c))));
+  const targetHidden = (alt3 ? heavyOn(target) : heavilyObscured(state, target.pos)) && !(v36 && senseSees(state, attacker, target));
+  const attackerHidden = (alt3 ? heavyOn(attacker) : heavilyObscured(state, attacker.pos)) && !(v36 && senseSees(state, target, attacker));
   if (targetHidden) out.push({ effect: 'disadvantage', reason: 'Görülmeyen hedef (yoğun örtü)' });
   if (attackerHidden) out.push({ effect: 'advantage', reason: 'Görülmeyen saldıran (yoğun örtü)' });
   // CILA: aradaki yoğun örtü (Fog Cloud, Stinking Cloud…) görüşü keser: iki taraf da birbirini görmez (avantaj ve
@@ -512,7 +519,7 @@ function repelled(state: BattleState, z: SpellZone, c: Combatant): boolean {
 }
 
 /** Alan büyüsü yapılırken ya da taşınırken altıgenler (büyünün alanı; duvar şekli `rules/area.ts`). */
-function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offset | null, wallShape?: 'arc' | 'ring', cmd?: CastCommand): Offset[] | CommandResult {
+function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offset | null, wallShape?: 'arc' | 'ring', cmd?: CastCommand, airFt?: number): Offset[] | CommandResult {
   if (!state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
   // Kuyruk K62 (sürüm 46, Forcecage): hazır ayarlı kafes ya da kutu; hedef altıgen menzilde olmalı.
   const cg = spell.mechanics.zone?.cage;
@@ -549,7 +556,7 @@ function castHexes(state: BattleState, actor: Combatant, spell: Spell, aim: Offs
   }
   // CILA: duvar yay biçiminde de kurulabilir (Wind Wall).
   const area = wallShape && spell.area.shape === 'wall' ? { ...spell.area, bend: wallShape } : spell.area;
-  const pick = pickArea(state, actor, area, spell.rangeFt, aim, 'büyü');
+  const pick = pickArea(state, actor, area, spell.rangeFt, aim, 'büyü', airFt);
   if ('ok' in pick) return pick;
   return pick.hexes;
 }
@@ -598,7 +605,13 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
     evs.push(anchoredZoneEvent(applyEvents(state, evs), actor, spell, actor.id, spec.anchorSelf, slot.slotLevel ?? spell.level));
     return finish(state, evs);
   }
-  const hexes = castHexes(state, actor, spell, aim, cmd.wallShape, cmd);
+  // Kuyruk K73c (sürüm 64+, Görev 3): havada merkezli küre/silindir alanı (`targetFt`); taşımada yükseklik aynı kalır.
+  const airFt = !existing && k73cOn(state) && cmd.targetFt ? cmd.targetFt : 0;
+  if (airFt) {
+    const why = airCenterProblem(state, actor, spell.area, spell.rangeFt, aim, airFt, spec);
+    if (why) return fail(why);
+  }
+  const hexes = castHexes(state, actor, spell, aim, cmd.wallShape, cmd, airFt || undefined);
   if (!Array.isArray(hexes)) return hexes;
   // Kuyruk 19: Guardian of Faith boş bir altıgende belirir.
   if (spec.occupy && !existing && aim && globalRule(state, 'spellsK19') && Object.values(state.combatants).some((c) => c.hp > 0 && c.pos && bodyAt(state, c, c.pos).some((b) => sameHex(b, aim)))) {
@@ -634,6 +647,7 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
       // Kuyruk K62: boncuk konsantrasyona alanda değil, patlama kancasında bağlıdır (patlamadan önce kalkmasın).
       ...(spec.bead && aim ? { center: aim, bead: { until: state.round + spec.bead.rounds - 1, throwFt: spec.bead.throwFt } } : {}),
       ...(spell.concentration && !spec.bead ? { concentration: spell.name } : {}),
+      ...(airFt && spell.area ? { air: airSpanFt(spell.area.sizeFt, cylinderHeightFt(spell.mechanics, spec), airFt) } : {}),
       ...(spec.rounds !== undefined ? { until: state.round + spec.rounds - 1 } : {}),
       ...(fissureCount ? { fissures: { count: fissureCount, turn: turnKey(state) } } : {}),
       // Kuyruk K67b: Dancing Lights ışık noktaları (taşıma ilk ışıktan ölçülür); birleşik biçim adında.

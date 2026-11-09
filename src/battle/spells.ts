@@ -11,7 +11,9 @@ import { executeTelekinesis, telekinesisOn } from './telekinesis';
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
 import { newZoneId, profileIn } from './zones';
-import { cloudCastProblem, cloudPointProblem, cloudZoneEvent } from './cloud';
+import { cloudCastProblem, cloudOf, cloudPointProblem, cloudZoneEvent, stormSourceOf } from './cloud';
+import { airCenterProblem, airSpanFt, cylinderHeightFt, inAirSpan } from './airArea';
+import { k73cOn } from './k73cSurum';
 import { sightConditions } from './sight';
 import { ABILITIES, type Ability } from '../rules/abilities';
 import { attackDice, saveDice } from './effectDice';
@@ -173,8 +175,18 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const aim = cmd.targetHex ?? named?.pos ?? null;
   // Kuyruk K68b (sürüm 52, Call Lightning `cloud`): tavan yeterli mi, şimşek noktası bulutun altında mı.
   const cloud = m.cloud;
+  // Kuyruk K73c (sürüm 64+, Görev 3): havada merkezli küre/silindir (`targetFt`); Call Lightning'de şimşek noktasının
+  // yüksekliği (yaratık seçilmediyse). Görev 4: açık gökteki fırtına devralınır (yeni bulut yok).
+  const v64 = k73cOn(state);
+  const storm = cloud && v64 && !repeat ? stormSourceOf(state, actor, m) : null;
+  const pointFt = cloud && v64 && !named ? cmd.targetFt ?? 0 : 0;
   if (cloud) {
-    const why = (!repeat ? cloudCastProblem(state, actor, spell, cloud) : null) ?? (aim ? cloudPointProblem(state, actor, spell, cloud, aim, named, repeat) : null);
+    const why = (!repeat && !storm ? cloudCastProblem(state, actor, spell, cloud) : null) ?? (aim ? cloudPointProblem(state, actor, spell, cloud, aim, named, repeat, { storm, pointFt }) : null);
+    if (why) return fail(why);
+  }
+  const airFt = !cloud && v64 && cmd.targetFt ? cmd.targetFt : 0;
+  if (airFt) {
+    const why = m.freeShape || m.multiPoint ? `${spell.name} havada merkezlenemez.` : airCenterProblem(state, actor, area, spell.rangeFt, aim, airFt);
     if (why) return fail(why);
   }
   // Alanın altıgenleri, nokta denetimi ve etkilenenler ortak seçicide (Görev R4: büyü, nefes, koni, çizgi aynı yol).
@@ -182,7 +194,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   // seçildiyse `targetHex`); doğrulama ve etkilenenler `freeShape.ts`'te.
   const fs = m.freeShape;
   const pick0 = fs ? freeShapeArea(state, actor, spell, fs, cmd.targetHexes?.length ? cmd.targetHexes : aim ? [aim] : [])
-    : pickArea(state, actor, area, spell.rangeFt, m.multiPoint && cmd.targetHexes?.length ? cmd.targetHexes[0] ?? aim : aim, 'büyü');
+    : pickArea(state, actor, area, spell.rangeFt, m.multiPoint && cmd.targetHexes?.length ? cmd.targetHexes[0] ?? aim : aim, 'büyü', airFt || undefined);
   if ('ok' in pick0) return pick0;
   // Kuyruk A8 (Meteor Swarm, `multiPoint`): birden çok merkez; altıgenler birleşir, her yaratık bir kez etkilenir.
   let pick = pick0;
@@ -200,10 +212,13 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const spared = new Set(pick.reached.filter((x) => x.c.side === actor.side).slice(0, sculpt).map((x) => x.c.id));
   // Kuyruk S2 (sürüm 41): alanın ulaşmadığı irtifadaki yaratık etkilenmez.
   // Kuyruk K68b (Call Lightning): yaratık seçilince nokta onun irtifasında; noktanın 5 ft içi (dikeyde de) etkilenir.
-  const pointAlt = cloud && named ? altitudeOf(named) : 0;
+  const pointAlt = cloud && named ? altitudeOf(named) : pointFt;
   // Kuyruk K71d (sürüm 59+, K9): alanın çıkış yüksekliğinden (yaratıktan çıkanda yaratığın, noktadan çıkanda noktanın zemini).
   const fromFt = katmanOn(state) ? areaOriginFt(state, actor, area, pick.origin) : undefined;
-  const atAlt = (c: Combatant) => (pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : !spell.area || areaReachesAltitude(state, spell.area, c, fromFt));
+  // Kuyruk K73c (sürüm 64+): havadaki merkezin dikey aralığı (prizma düzeyleri, mutlak yükseklik).
+  const span = airFt && aim ? airSpanFt(area.sizeFt, cylinderHeightFt(m), airFt) : null;
+  const atAlt = (c: Combatant) => (span && aim ? inAirSpan(state, c, aim, span)
+    : pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : !spell.area || areaReachesAltitude(state, spell.area, c, fromFt));
   const reached = pick.reached.filter((x) => !spared.has(x.c.id) && atAlt(x.c)).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
   if (named && !reached.some((x) => x.c.id === named.id)) {
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
@@ -212,13 +227,16 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const slot = repeat ? repeatSlot(actor, spell) : spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
   const events: BattleEvent[] = [...slot.events, ...(repeat ? [] : concentrationEvent(state, actor, spell, slot.slotLevel)),
-    ...(cloud && !repeat ? cloudZoneEvent(state, actor, spell, cloud, slot.slotLevel) : [])];
-  const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}${pointAlt ? ` (${pointAlt} ft yükseklikte)` : ''}` : '';
+    ...(cloud && !repeat ? cloudZoneEvent(state, actor, spell, cloud, slot.slotLevel, storm) : [])];
+  const upFt = airFt || pointAlt;
+  const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}${upFt ? ` (${upFt} ft yükseklikte)` : ''}` : '';
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
     note: `Alan: ${fs ? `${pick.hexes.length} altıgen (serbest şekil)` : `${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}`}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
     // Görev Y1: alanın altıgenleri ve hasar türü (yüzey tepkimeleri: tutuşma, buhar, donma, suda yıldırım).
-    area: { hexes: pick.hexes, ...(m.damageType ? { damageType: m.damageType } : {}), dc: actor.spellSaveDc ?? 10,
+    // Kuyruk K73c (sürüm 64+): yere değmeyen havadaki alan yerdeki yüzey/nesneye işlemez (altıgenler yalnız görsel: `airHexes`).
+    area: { hexes: span && span.loFt > 0 ? [] : pick.hexes, ...(span && span.loFt > 0 ? { airHexes: pick.hexes } : {}),
+      ...(m.damageType ? { damageType: m.damageType } : {}), dc: actor.spellSaveDc ?? 10,
       ...(m.damage ? { dice: m.damage } : {}), targetIds: reached.map((x) => x.c.id) },
   });
   // Kuyruk 19: Gust of Wind çizgisindeki gaz/buhar bulutlarını dağıtır (anahtar `gustDisperse`).
@@ -551,8 +569,18 @@ function pushDrops(state: BattleState, events: BattleEvent[], targetId: string, 
   return st;
 }
 
+/** Call Lightning fırtına eki geçerli mi: 63 ve altında fırtınalı harita; 64+'da devralınan fırtına sürüyorsa. */
+function stormBonusOn(state: BattleState, actor: Combatant, spell: Spell, repeat: boolean): boolean {
+  const m = spell.mechanics;
+  if (!m.stormTakeover || !k73cOn(state)) return !!ruleOf(state, 'storm');
+  if (!repeat) return !!stormSourceOf(state, actor, m);
+  const st = cloudOf(state, actor, spell)?.cloud?.storm;
+  if (!st) return false;
+  return st.kind === 'map' ? !!ruleOf(state, 'storm') : (state.map?.zones ?? []).some((z) => z.id === st.zoneId);
+}
+
 /** Sonraki tamamlama blokları ve kural sürümleri (sırayla birleşir). */
-const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54], ['y1', 55]] as const;
+const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54], ['y1', 55], ['k73c', 64]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
@@ -591,7 +619,8 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     }
   }
   // Kuyruk A6 (Call Lightning, `stormBonus`): fırtınalı haritada (açık hava) büyü fırtınayı yönetir, hasar +zar.
-  if (spell.mechanics.stormBonus && spell.mechanics.damage && ruleOf(state, 'storm')) {
+  // Kuyruk K73c (sürüm 64+, `stormTakeover`): yalnız devralınan fırtına (açık gökte harita fırtınası ya da fırtına alanı).
+  if (spell.mechanics.stormBonus && spell.mechanics.damage && stormBonusOn(state, actor, spell, repeat)) {
     const d0 = parseDice(spell.mechanics.damage);
     const b = parseDice(spell.mechanics.stormBonus);
     return castSpell(state, actor, cmd, { ...spell, mechanics: { ...spell.mechanics, stormBonus: undefined, damage: formatDice(d0.count + b.count, d0.sides, d0.bonus) } }, rng, repeat);

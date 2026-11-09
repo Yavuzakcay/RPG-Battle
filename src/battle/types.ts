@@ -1244,7 +1244,14 @@ export interface SpellZone {
   /** Kuyruk K54b: Mevzi İşareti / Yol Aç: sahibin tarafındaki dostlar burada zor zemini ve zemin hasarını yok sayar (`saveBonus`: kurtulma). */
   groundWard?: { saveBonus?: number };
   /** Kuyruk K68b (sürüm 52): Call Lightning bulutu: merkez `center`, yatay yarıçap (altıgen) ve taban (ft); kuralsız, yalnız sınır. */
-  cloud?: { radiusHexes: number; baseFt: number };
+  cloud?: { radiusHexes: number; baseFt: number;
+    /** Kuyruk K73c (sürüm 64+): devralınan fırtına (yeni bulut yok): harita fırtınası ya da fırtına alanı (Storm of Vengeance). */
+    storm?: { kind: 'map' } | { kind: 'zone'; zoneId: string } };
+  /**
+   * Kuyruk K73c (sürüm 64+): havada merkezli kalıcı alanın dikey aralığı (ft, zemine göre; küre merkez ± yarıçap, silindir
+   * merkezden aşağı). Yoksa yerden tepeye (`zoneTopFt`).
+   */
+  air?: { loFt: number; hiFt: number };
 }
 
 /** Görev Y1: yüzey türleri (`src/battle/surfaces.ts`). */
@@ -1578,6 +1585,11 @@ export type Command =
       excludeHexes?: Offset[];
       /** Kuyruk S2: Levitate ilk yükselme (ft; yoksa veriden). */
       altitudeFt?: number;
+      /**
+       * Kuyruk K73c (sürüm 64+): havada merkezli küre/silindir: merkezin `targetHex` zemininden yüksekliği (ft, 5'in katı;
+       * 0 ya da yoksa yerde). Call Lightning'de şimşek noktasının yüksekliği (`src/battle/airArea.ts`).
+       */
+      targetFt?: number;
       /** Görev SORCERER: bu yapımda kullanılan Metamagic seçenekleri. */
       metamagic?: string[];
       /**
@@ -2085,7 +2097,7 @@ export type BattleEvent =
   | { type: 'concentration_moved'; actorId: string; targetId?: string; pos?: Offset }
   | { type: 'spell_cast'; actorId: string; targetId: string | null; label: string; slotLevel: number | null; note: string;
       /** Görev Y1: alan büyüsünün altıgenleri, hasar türü, zorluk sınıfı, zarı ve etkilenenler (yüzey tepkimeleri). */
-      area?: { hexes: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[] } }
+      area?: { hexes: Offset[]; /** Kuyruk K73c: yere değmeyen havadaki alanın altıgenleri (yalnız görsel). */ airHexes?: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[] } }
   /** Görev Y1: yüzey tepkimesi (yalnızca günlük; alan değişiklikleri `zone_*` olaylarında). */
   /** Kuyruk K55: `row` tablo satırı (data/yuzey-etkilesimleri.json; keşif defteri), `pairs` zincirde çalışan ikililer (turda bir). */
   | { type: 'surface_reacted'; reaction: SurfaceReaction; hexes: Offset[]; sourceId?: string; label: string; row?: string; pairs?: string[] }

@@ -120,4 +120,6 @@ Fırsat saldırısı (K71c/K73b) zaten 3B.
 - 63 ve altı birebir: yeni kurallar `k73cOn` (64+) kapılı.
 - Kayıt biçimi:
   - yeni olay türü yok;
-  - yeni isteğe bağlı alanlar: `altitude_changed.burrow`, `cast_spell.targetFt`, `SpellZone.centerFt`, `MapStatus.breath`/`suffocation`.
+  - yeni isteğe bağlı alanlar: `altitude_changed.burrow`, `cast_spell.targetFt`, `SpellZone.air`, `SpellZone.cloud.storm`, `spell_cast.area.airHexes`, `MapStatus.breath`/`suffocation`, `Combatant.burrowFt`/`burrowed`;
+  - `SAVE_VERSION` 22 kalır (alanlar isteğe bağlı, eski kayıtta yok).
+- Büyü verisi: sürüm bloğu `k73c` (64+): Call Lightning `stormTakeover`, Flame Strike/Ice Storm/Conjure Celestial `cylinderFt`.

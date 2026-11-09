@@ -27,6 +27,7 @@ import type { Cover } from '../map/terrain';
 import { fail, finish, isTargetable, type CommandResult, type Failure, damageProfile, isIntangible } from './common';
 import { coverFrom, sightBlockedBetween } from './cover';
 import { areaOriginFt, areaReachesAltitude } from './altitude';
+import { airPoint } from './airArea';
 import { katmanOn } from './heights';
 import { damageEffects } from './damage-effects';
 import { attackEffect, saveMode, timedCondition } from './durations';
@@ -53,7 +54,7 @@ const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0
  * Alanın kapladığı altıgenler ve etkilenenler. `aim`: noktadan çıkan alanda merkez, yaratıktan çıkanda yön (yaratığın
  * kendi altıgeni olamaz); yayılımda kullanılmaz. `rangeFt`: noktanın en çok uzaklığı.
  */
-export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetSpec, rangeFt: number, aim: Offset | null, what = 'alan etkisi'): AreaPick | Failure {
+export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetSpec, rangeFt: number, aim: Offset | null, what = 'alan etkisi', airFt?: number): AreaPick | Failure {
   if (!state.map || !actor.pos) return fail('Alan etkisi yalnızca haritalı savaşta.');
   // Kuyruk K73c (sürüm 64+): yer altındaki alan etkisi yapamaz; yer üstü alan yer altındakine işlemez.
   if (isBurrowed(state, actor)) return fail(`${actor.name} yer altında: önce yüzeye çıkmalı.`);
@@ -70,7 +71,8 @@ export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetS
     if (d * 5 > rangeFt) return fail(`Nokta menzil dışında: ${d} altıgen (${d * 5} ft), menzil ${rangeFt} ft.`);
     const t = terrainAt(state, aim);
     if (t.blocksSight || t.outOfBounds) return fail(`${hexLabel(aim)} noktasına ${what} yapılamaz (${t.name}).`);
-    const wall = sightBlockedBetween(state, actor.pos, aim, { from: actor });
+    // Kuyruk K73c (sürüm 64+): havadaki merkezin görüşü ve 3B menzili çağıranda (`airArea.ts` `airCenterProblem`).
+    const wall = airFt ? null : sightBlockedBetween(state, actor.pos, aim, { from: actor });
     if (wall) return fail(`Nokta görülemiyor: arada ${wall} var.`);
   }
   const origin = spec.origin === 'point' && aim ? aim : actor.pos;
@@ -79,7 +81,7 @@ export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetS
   const inArea = (c: Combatant) => c.pos !== null && bodyOf(state, c).some((b) => hexes.some((h) => sameHex(h, b)));
   const reached = Object.values(state.combatants)
     .filter((c) => isTargetable(c) && !isIntangible(c) && inArea(c) && (spec.targets === 'all' || c.side !== actor.side) && !isBurrowed(state, c))
-    .map((c) => ({ c, lof: coverFrom(state, origin, c, [actor.id], spec.origin === 'point' ? null : actor) }))
+    .map((c) => ({ c, lof: coverFrom(state, origin, c, [actor.id], spec.origin === 'point' ? (airFt ? airPoint(origin, airFt) : null) : actor) }))
     .filter((x) => !x.lof.blocked)
     .map((x) => ({ c: x.c, cover: x.lof.cover }));
   return { hexes, origin, reached };

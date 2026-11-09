@@ -186,3 +186,106 @@ describe('K73c replay', () => {
     expect(JSON.stringify(replay(events).combatants)).toBe(JSON.stringify(s.combatants));
   });
 });
+
+// --- Görev 3 ve 4: havada merkezli küre/silindir, Call Lightning fırtına devralma -------------------------------------------
+const SLOTS = [4, 3, 3, 3, 3, 2, 2, 1, 1];
+const LOW = { str: -10, dex: -10, con: -10, int: -10, wis: -10, cha: -10 };
+const MAGE = (p: Partial<Combatant> = {}) => mk('A', { ownerId: 'p1', spellNames: ['Fireball', 'Shatter', 'Fog Cloud', 'Moonbeam', 'Darkness', 'Call Lightning', 'Flame Strike'],
+  spellSlots: SLOTS, spellSaveDc: 30, spellAttack: 10, spellMod: 5, casterTag: 'wizard', hp: 200, maxHp: 200, ...p });
+const FOE = (id: string, p: Partial<Combatant> = {}) => mk(id, { side: 'enemies', hp: 200, maxHp: 200, saves: LOW, ...p });
+const saved = (evs: BattleEvent[]) => evs.filter((e) => e.type === 'save_resolved').map((e) => (e as { targetId: string }).targetId).sort();
+function onMap(parts: Combatant[], pos: Record<string, [Offset, number?]>, mapId: string, variantId: string, ver = 64): BattleState {
+  const s = startBattle('k73c', 'k73c', parts, () => 0.5, { kuralSurumu: ver, map: { id: mapId, variantId, ruleToggles: { darkness: false, trap: false } } } as never).state;
+  const combatants = { ...s.combatants };
+  for (const [id, [p, alt]] of Object.entries(pos)) combatants[id] = { ...(combatants[id] as Combatant), pos: p, ...(alt ? { altitudeFt: alt } : {}) };
+  return { ...s, status: 'active', order: parts.map((c) => c.id), turnIndex: 0, combatants, map: { ...(s.map as NonNullable<BattleState['map']>), tiles: open(), objects: [] } };
+}
+
+describe('K73c havada merkezli alan (Görev 3)', () => {
+  const sky = (ver = 64) => field([MAGE(), FOE('F', { fly: 60, altitudeFt: 40 }), FOE('G')], { A: [H(0)], F: [H(6), 40], G: [H(7)] }, { ver });
+  const fb = (p: Partial<Command> = {}) => ({ type: 'cast_spell', actorId: 'A', spellName: 'Fireball', targetHex: H(6), ...p }) as Command;
+  it('Fireball merkezi 40 ft\'te: uçan vurulur, yerdeki dışarıda; yerde merkezliyken tersi; 63\'te yükseklik yok sayılır', () => {
+    expect(saved((run(sky(), fb({ targetFt: 40 })) as { events: BattleEvent[] }).events)).toEqual(['F']);
+    expect(saved((run(sky(), fb()) as { events: BattleEvent[] }).events)).toEqual(['G']);
+    const r63 = run(sky(63), fb({ targetFt: 40 }));
+    const r63b = run(sky(63), fb());
+    expect(r63.ok && r63b.ok && saved(r63.events)).toEqual(saved((r63b as { events: BattleEvent[] }).events));
+  });
+  it('merkez yüksekliği 5 ft adımla, açık gökte en çok uçuş üst sınırı; menzil 3B', () => {
+    expect(run(sky(), fb({ targetFt: 12 }))).toMatchObject({ ok: false, error: 'Merkez yüksekliği 5 ft adımla seçilir.' });
+    expect(run(sky(), fb({ targetFt: 65 }))).toMatchObject({ ok: false, error: 'Merkez en çok 60 ft yükseğe konur.' });
+    const s = sky();
+    const tall = { ...s, map: { ...(s.map as NonNullable<BattleState['map']>), ucusUstFt: 120 } };
+    const sh = (ft: number) => run(tall, { type: 'cast_spell', actorId: 'A', spellName: 'Shatter', targetHex: H(2), targetFt: ft } as Command);
+    expect(sh(60).ok).toBe(true);
+    expect(sh(65)).toMatchObject({ ok: false, error: 'Nokta menzil dışında: 65 ft (3B), menzil 60 ft.' });
+  });
+  it('havadaki silindir dairesi üstte: Flame Strike 40 ft silindir merkez 40 ft\'te yere iner, 50 ft\'te inmez', () => {
+    const fs = (ft: number) => saved((run(sky(), { type: 'cast_spell', actorId: 'A', spellName: 'Flame Strike', targetHex: H(6), targetFt: ft } as Command) as { events: BattleEvent[] }).events);
+    expect(fs(40)).toEqual(['F', 'G']);
+    expect(fs(50)).toEqual(['F']);
+  });
+  it('yere değmeyen havadaki alan yerdeki yüzeye işlemez (alan altıgenleri yalnız görsel)', () => {
+    const r = run(sky(), fb({ targetFt: 40 }));
+    const cast = r.ok ? r.events.find((e) => e.type === 'spell_cast' && (e as { area?: unknown }).area) as { area: { hexes: Offset[]; airHexes?: Offset[] } } : undefined;
+    expect([cast?.area.hexes.length, (cast?.area.airHexes?.length ?? 0) > 0]).toEqual([0, true]);
+  });
+  it('kalıcı alan: Fog Cloud havada aralığını kaydeder; Darkness yere bağlı (2B ışık) havada merkezlenmez', () => {
+    const r = run(sky(), { type: 'cast_spell', actorId: 'A', spellName: 'Fog Cloud', targetHex: H(6), targetFt: 40 } as Command);
+    expect(r.ok && r.state.map?.zones?.find((z) => z.spellId === 'fog-cloud')?.air).toEqual({ loFt: 20, hiFt: 60 });
+    expect(run(sky(), { type: 'cast_spell', actorId: 'A', spellName: 'Darkness', targetHex: H(6), targetFt: 40 } as Command)).toMatchObject({ ok: false, error: 'Bu alan yere bağlı: havada merkezlenemez.' });
+  });
+  it('havadaki Moonbeam silindiri (40 ft, merkez 50): uçan içeride, yerdeki dışarıda (altitudeInZone)', async () => {
+    const { altitudeInZone } = await import('./altitude');
+    const r = run(sky(), { type: 'cast_spell', actorId: 'A', spellName: 'Moonbeam', targetHex: H(6), targetFt: 50 } as Command);
+    const z = r.ok ? r.state.map?.zones?.find((x) => x.spellId === 'moonbeam') : undefined;
+    expect(z?.air).toEqual({ loFt: 10, hiFt: 50 });
+    if (!r.ok || !z) return;
+    expect([altitudeInZone(r.state, z, null, of(r.state, 'F')), altitudeInZone(r.state, z, null, of(r.state, 'G'))]).toEqual([true, false]);
+  });
+  it('önizleme motorla aynı: yalnız aralıktakiler', async () => {
+    const { areaActPreview } = await import('../ui/hud');
+    const { spells } = await import('../data');
+    const sp = spells.find((x) => x.name === 'Fireball') as NonNullable<(typeof spells)[number]>;
+    const s = sky();
+    const pv = areaActPreview(s, of(s, 'A'), { kind: 'spell', spell: sp }, H(6), null, undefined, null, 40);
+    expect([pv.error, pv.foes.map((c) => c.id)]).toEqual([null, ['F']]);
+  });
+});
+
+describe('K73c Call Lightning fırtına devralma (Görev 4)', () => {
+  const cl = (p: Partial<Command>) => ({ type: 'cast_spell', actorId: 'A', spellName: 'Call Lightning', ...p }) as Command;
+  const storm = (ver = 64) => onMap([MAGE(), FOE('F')], { A: [H(0)], F: [H(14)] }, 'ada', 'firtina', ver);
+  it('fırtınalı açık gökte yeni bulut yok: fırtına devralınır, nokta bulut yarıçapının ötesinde de olur, +1d10', () => {
+    const r = run(storm(), cl({ targetHex: H(14) }));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const z = r.state.map?.zones?.find((x) => x.spellId === 'call-lightning');
+    expect([z?.cloud?.storm, z?.hexes.length, z?.center]).toEqual([{ kind: 'map' }, 0, undefined]);
+    expect((r.events.find((e) => e.type === 'spell_cast' && (e as { area?: unknown }).area) as { area: { dice: string } }).area.dice).toBe('4d10');
+    // 63: yeni bulut kurulur, nokta 60 ft içinde olmalı.
+    expect(run(storm(63), cl({ targetHex: H(14) }))).toMatchObject({ ok: false });
+  });
+  it('Storm of Vengeance alanı altında devralır; nokta alanın dışındaysa red', () => {
+    const base = onMap([MAGE(), FOE('F')], { A: [H(0)], F: [H(5)] }, 'col', 'gunduz');
+    const sov = { id: 'sov', spellId: 'storm-of-vengeance', name: 'Storm of Vengeance', casterId: 'X', side: 'enemies' as const, dc: 15, slotLevel: 9,
+      hexes: Array.from({ length: 7 }, (_, c) => H(c)) };
+    const s = { ...base, map: { ...(base.map as NonNullable<BattleState['map']>), zones: [sov] } };
+    const r = run(s, cl({ targetHex: H(5) }));
+    expect(r.ok && r.state.map?.zones?.find((x) => x.spellId === 'call-lightning')?.cloud?.storm).toEqual({ kind: 'zone', zoneId: 'sov' });
+    expect(run(s, cl({ targetHex: H(9) }))).toMatchObject({ ok: false, error: 'Call Lightning: şimşek noktası fırtınanın (Storm of Vengeance) altında olmalı.' });
+  });
+  it('bulutsuz noktanın yüksekliği (yaratık seçilmeden): 20 ft\'teki uçan vurulur, tabanın üstü red', () => {
+    const s = field([MAGE(), FOE('F', { fly: 30, altitudeFt: 20 }), FOE('G')], { A: [H(0)], F: [H(6), 20], G: [H(7)] });
+    const r = run(s, cl({ targetHex: H(6), targetFt: 20 }));
+    expect(r.ok && saved(r.events)).toEqual(['F']);
+    expect(run(s, cl({ targetHex: H(6), targetFt: 35 }))).toMatchObject({ ok: false, error: 'Call Lightning: nokta bulutun tabanının (30 ft) altında olmalı.' });
+  });
+  it('replay: havadaki alan ve devralınan fırtına aynı durumu verir', () => {
+    let s = storm();
+    const events: BattleEvent[] = [{ type: 'battle_started', state: s } as BattleEvent];
+    const step = (cmd: Command) => { const r = execute(s, cmd, P1, () => 0.9); if (!r.ok) throw new Error(r.error); s = r.state; events.push(...r.events); };
+    step(cl({ targetHex: H(14) }));
+    expect(JSON.stringify(replay(events).map?.zones)).toBe(JSON.stringify(s.map?.zones));
+  });
+});
