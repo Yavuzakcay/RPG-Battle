@@ -5,6 +5,7 @@
 import { spells, spellDescriptionShown } from '../data';
 import type { BattleState, Combatant } from '../battle';
 import { getLang, t } from '../i18n';
+import { spellBadgeImg } from './damageFloats';
 
 /** `desc`: Kuyruk B2 büyü betimlemesi (mekanik `text`'in üstünde, italik; EN modunda ya da veri yoksa boş). */
 export interface EffectRow { key: string; icon: string; name: string; detail: string; text: string; harmful: boolean; desc?: string }
@@ -38,6 +39,14 @@ export function effectRows(state: BattleState, c: Combatant): EffectRow[] {
 }
 
 /** Jetondaki simgeler (en çok dört). */
-export function effectIcons(state: BattleState, c: Combatant): Array<{ key: string; icon: string; title: string }> {
-  return effectRows(state, c).slice(0, 4).map((r) => ({ key: `fx-${r.key}`, icon: r.icon, title: `${r.name}${r.detail ? ` — ${r.detail}` : ''}` }));
+export function effectIcons(state: BattleState, c: Combatant): Array<{ key: string; icon: string; title: string; img?: string }> {
+  // Kuyruk E2: büyüsü `rozetBuyu`'da olan etkinin rozeti sayı oku simgesi (yalnız görsel).
+  const rows = [...effectRows(state, c), ...(c.buffs ?? []).filter((b) => spellBadgeImg(b.source)).map((b) => ({ key: `buff:${b.source}`, icon: '✦', name: b.source, detail: '' })),
+    // Konsantrasyon koruması (ward: Shield of Faith, Protection from Evil and Good) hedefin jetonunda.
+    ...Object.values(state.combatants).filter((x) => x.concentration?.targetId === c.id && spellBadgeImg(x.concentration.spell))
+      .map((x) => ({ key: `ward:${x.id}`, icon: '✦', name: x.concentration!.spell, detail: t().effects.concentration(x.name) }))];
+  return rows.slice(0, 4).map((r) => {
+    const img = spellBadgeImg(r.name);
+    return { key: `fx-${r.key}`, icon: r.icon, title: `${r.name}${r.detail ? ` — ${r.detail}` : ''}`, ...(img ? { img } : {}) };
+  });
 }
