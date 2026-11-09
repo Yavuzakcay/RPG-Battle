@@ -8,11 +8,13 @@
  *   (karakterde `celestialAwakening`): her biçimde kendi turunda bir kez saldırı isabetine +PB (`celestialStrike`).
  *   Parlayan Ruh: 10 ft ışık; turunun sonunda 10 ft içindeki düşmanlara PB ışıltı (`celestialAura`).
  *   Gece Gözyaşı: uyanınca 10 ft içindeki düşmanlar WIS save (DC 8 + PB + CHA) ya da sonraki turunun başına dek Frightened.
- *   Kırık Kanat: yalnızca kendi turunda süzülme (yürüme hızının yarısı uçuş; `glide`), tur sonunda yere iner.
+ *   Kırık Kanat: yalnızca kendi turunda süzülme (yürüme hızının yarısı uçuş; `glide`), tur sonunda yere iner. Kuyruk U1a
+ *   (sürüm 61+): 13. seviyeden normal uçuş (yürüme hızı, ana etkide `fly`, zorunlu iniş yok; `data/celestial.json` `ucus`).
  * Saf.
  */
 export { AWAKENING_OPTIONS, CELESTIAL } from '../rules/celestialData';
 import { healRoll } from './healMax';
+import { u1aOn, ucusAt, ucusHiz } from './flightPrim';
 import { gap } from './body';
 import { damageProfile, fail, finish, isTargetable, type CommandResult } from './common';
 import { resolveSave } from '../rules/attack';
@@ -111,7 +113,13 @@ export function executeCelestial(state: BattleState, actor: Combatant, f: Usable
     celestialStrike: { bonus: num(CELESTIAL.awakening.bonus, pb), type: o.strikeType } };
   if (o.lightFt) base.light = Math.round(o.lightFt / 5);
   if (o.auraDamage) base.celestialAura = { radiusFt: o.radiusFt ?? 10, damage: num(o.auraDamage, pb), type: o.auraType ?? 'radiant' };
-  if (o.flyFraction) base.glide = Math.floor((actor.speed * o.flyFraction) / 5) * 5;
+  // Kuyruk U1a (sürüm 61+): Kırık Kanat `ucus` parametreleriyle (13. seviyeden normal uçuş, zorunlu iniş yok); 60 ve altı
+  // `flyFraction` (yarı hız, tur sonunda iniş). 3–12. seviyede iki yol aynı değeri verir.
+  if (o.ucus && u1aOn(state)) {
+    const q = ucusAt(o.ucus, actor.level);
+    const ft = ucusHiz(q, actor.speed, () => actor.speed);
+    if (q.zorunluInis === true) base.glide = ft; else base.fly = ft;
+  } else if (o.flyFraction) base.glide = Math.floor((actor.speed * o.flyFraction) / 5) * 5;
   events.push({ type: 'effect_added', targetId: actor.id, effect: base });
   if (base.glide) events.push(glideOn(actor, base.glide, until));
   if (o.condition && o.save) {

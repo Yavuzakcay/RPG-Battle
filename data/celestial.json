@@ -38,8 +38,10 @@
       },
       "kirik-kanat": {
         "tr": "Kırık Kanat", "en": "Broken Wing", "strikeType": "radiant", "icon": "🪶",
-        "metin": { "tr": "Kanatların açılır ama seni taşımaz: hareketinin yarısı kadar süzülürsün ve turun sonunda yere inmen gerekir.", "en": "Your wings open but cannot carry you: you glide for half your movement and must land at the end of your turn." },
-        "flyFraction": 0.5
+        "metin": { "tr": "Kanatların açılır ama seni taşımaz: hareketinin yarısı kadar süzülürsün ve turun sonunda yere inmen gerekir. 13. seviyeden itibaren kanatların iyileşir: uyanış boyunca yürüme hızın kadar uçarsın ve inmek zorunda değilsin.", "en": "Your wings open but cannot carry you: you glide for half your movement and must land at the end of your turn. From 13th level your wings heal: for the awakening you fly at your walking speed and need not land." },
+        "flyFraction": 0.5,
+        "ucus": { "not": "Kuyruk U1a (kural sürümü 61+; `ucus` ilkeli sözcükleri, src/battle/flightPrim.ts): 3–12. seviye yarı hız ve zorunlu iniş (eski davranış); 13. seviyeden normal uçuş (yürüme hızı, zorunlu iniş yok; süre Göksel Uyanış'ın 10 turu, kullanım uzun dinlenmede bir). 60 ve altında `flyFraction`.",
+          "hizCarpani": 0.5, "zorunluInis": true, "seviyeEsigi": 13, "esikSonrasi": { "hizCarpani": 1, "zorunluInis": false } }
       }
     }
   }
