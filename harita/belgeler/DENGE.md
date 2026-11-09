@@ -2,6 +2,23 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K73c: kazma, su altı, havada merkezli alan, Call Lightning, çok altıgen zemini, 3B aura (2026-11-09; ölçüm, denge ayarı yok)
+
+Kural sürümü 63 ↔ 64, aynı tohumlar (3. seviye standart parti). Sürüm 63 K73c öncesi ağaçla (`wip/k73b` 62773e6, geçici
+worktree) birebir aynı: 18 senaryonun hepsinde imza eşit. 64 de 63 ile 18 senaryoda imza eşit: bu senaryolarda kazan
+canavar, derin su savaşı, havada merkezli alan (YZ seçmez), fırtınalı harita, çok altıgen bayrağı ve paket/imza aurası yok.
+
+| Senaryo | Tohum | 63 | 64 | Fark |
+|---|---:|---:|---:|---:|
+| Çöl, Kale, Mağara, Orman | 30 | 77 / 11,4 · 80 / 9,3 · 80 / 8,3 · 63 / 7,3 | aynı (imza eşit) | 0 |
+| Kale avlusu (savunma), Kale İç Avlusu, Dış Halka, Kasaba Hanı | 50 | 100 / 6,9 · 100 / 3,3 · 100 / 2,1 · 100 / 3,3 | aynı | 0 |
+| Kale Baskını, Ork Kampı | 50 | 42 / 7,6 · 88 / 11,3 | aynı | 0 |
+| Buzul — Açık, Kamp, Kayalık, Tapınak | 20 | 85 / 6,8 · 100 / 8,1 · 70 / 6,3 · 60 / 5,9 | aynı | 0 |
+| Dağ — Karakol, Kayalık, Köprü, Nöbetçi | 20 | 15 / 8,8 · 80 / 7,8 · 65 / 11,2 · 100 / 6,5 | aynı | 0 |
+
+8 puanı aşan kayma yok. Yeni kurallar ancak kazan canavarlı (ankheg, bulette, ejderhalar…), derin sulu, fırtınalı ya da
+çok altıgen bayraklı karşılaşmada devreye girer; ayar "Dungeondex öncesi tam test turu"na.
+
 ## Kuyruk K73b: çok turlu tırmanış, 3B bitişiklik, gönüllü düşme, suya düşme (2026-11-09; ölçüm, denge ayarı yok)
 
 Kural sürümü 62 ↔ 63, aynı tohumlar (3. seviye standart parti). Sürüm 62 K73b öncesi ağaçla (`wip/k73a` 5b26c3c) birebir

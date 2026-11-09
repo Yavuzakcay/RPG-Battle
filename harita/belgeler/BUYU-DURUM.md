@@ -45,13 +45,13 @@ Bu parçaların tetikleyiciye göre gruplu kaydı ve ne zaman ele alınacakları
 | spider-climb | 2 | Eller serbest kuralı savaş dışı; açık alanda duvar boyu 20 ft (duvarın üstüne çıkılmaz); tavanda düşman altıgeninin üstünden geçilmez. | evet: Sürüm 52 (K68b): duvarda ve tavanda tırmanma, yürüme ve durma; büyü biterse düşer. Eller serbest kuralı savaş dışı. |
 | web | 2 | Tutunma yeri: savaş haritasında ağ zemine serili sayılır (SRD: yere serilen ağ çökmez); yanma K55 çözücüsünde (yanan ağ). | evet: Tutunma yeri haritada ağ zemine serili sayılır; yanma çözücüde. |
 | animate-dead | 3 | Döküm süresi 1 dakika: yalnızca kurulumda; 24 saatlik kontrol yenileme savaş dışı. | evet: 1 dakikalık döküm kurulumda; 24 saatlik yenileme savaş dışı. |
-| call-lightning | 3 | Bulut döküm yerinin üstünde sabit (taban açık gökte 30 ft, tavanlı yerde tavan − 10 ft); havadaki nokta yalnız yaratık seçilince; fırtına kontrolü yalnız +1d10. | evet: Sürüm 52 (K68b): bulut döküm yerinin üstünde sabit, nokta bulutun altında, alçak tavanda yapılmaz, yaratık seçilince şimşek onun irtifasında; fırtına kontrolü yalnız +1d10. |
+| call-lightning | 3 | Açık gökte fırtınanın içindeyken (harita fırtınası ya da Storm of Vengeance) yeni bulut kurulmaz, fırtına devralınır: şimşek noktası fırtınanın altında, hasar +1d10, taban açık gökteki uçuş üst sınırı. Fırtınasızken bulut döküm yerinin üstünde sabit (taban açık gökte 30 ft, tavanlı yerde tavan − 10 ft). Havadaki nokta yaratık seçilince onun irtifasında, değilse merkez yüksekliğiyle (sürüm 64+). | evet: Sürüm 64 (K73c): açık gökteki fırtına (harita fırtınası, Storm of Vengeance) devralınır, yeni bulut yok, +1d10; fırtınasızken bulut döküm yerinin üstünde sabit (K68b), nokta bulutun altında, yaratıksız noktanın yüksekliği seçilir. |
 | conjure-animals | 3 | Large sürü, çok altıgen bayrağı kapalıyken tek altıgen (oyunun genel kuralı). | evet: Çok altıgen bayrağı kapalıyken her yaratık tek altıgen (oyunun genel kuralı). |
 | daylight | 3 | Taşınmayan nesneye yapılan ışık nesnenin altıgeninde durur (nesneyle yürümez); Sunlight Sensitivity yalnız parlak alanda. | kısmen: Ek 60 ft loş ışık yok: karanlık haritada aydınlattığı alan SRD'den dar. |
 | dispel-magic | 3 | Sihirli eşyanın kendi büyüsü dağılmaz (SRD); nesnedeki süren büyü (Light, Continual Flame) altıgen hedefte kalkar. | evet: SRD'ye uygun: eşyanın kendi büyüsü dağılmaz. |
 | plant-growth | 3 | Enrichment (8 saatlik döküm, bir yıl verim) savaş dışı. | evet: Enrichment 8 saatlik döküm, savaş dışı; Overgrowth tam. |
 | remove-curse | 3 | Lanetli sihirli eşyada bağlılığı koparma savaş dışı. | evet: Lanetli eşyadan kopma savaş dışı; savaşta lanet kalkar. |
-| stinking-cloud | 3 | Kürenin merkezi zeminde (havada merkezli küre yok); rüzgârla dağılma yüzey sistemiyle. | evet: Kürenin köşeleri ızgaraya yuvarlanır; rüzgârla dağılma yüzey sisteminde. |
+| stinking-cloud | 3 | Kürenin merkezi zeminde (havada merkezli küre yok); rüzgârla dağılma yüzey sistemiyle. | evet: Kürenin köşeleri ızgaraya yuvarlanır; rüzgârla dağılma yüzey sisteminde. Zehir bulutu yüzeyi altıgen başına (2B): sürüm 64'te de havada merkezlenmez. |
 | conjure-fey | 6 | Ruhun Fey görünüşü yalnızca görsel. | evet: Fey görünüşü yalnız görsel. |
 
 ## Yardımcı (utility) büyülerin koddaki karşılığı
@@ -220,7 +220,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | beacon-of-hope | 3 | spells.json | çalışır | g6 (sürüm 43) |  |  |
 | bestow-curse | 3 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | blink | 3 | spells.json | çalışır | s1 (sürüm 40) |  |  |
-| call-lightning | 3 | spells.json | çalışır | k68 (sürüm 52) |  |  |
+| call-lightning | 3 | spells.json | çalışır | k73c (sürüm 64) |  |  |
 | clairvoyance | 3 | spells.json | savaş dışı |  |  |  |
 | conjure-animals | 3 | spells.json | çalışır | a6 (sürüm 35) |  |  |
 | counterspell | 3 | spells.json | çalışır |  |  |  |
@@ -281,7 +281,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | greater-invisibility | 4 | spells-45.json | çalışır |  |  |  |
 | guardian-of-faith | 4 | spells-45.json | çalışır |  |  |  |
 | hallucinatory-terrain | 4 | spells-45.json | savaş dışı |  |  |  |
-| ice-storm | 4 | spells-45.json | çalışır |  |  |  |
+| ice-storm | 4 | spells-45.json | çalışır | k73c (sürüm 64) |  |  |
 | locate-creature | 4 | spells-45.json | savaş dışı |  |  |  |
 | phantasmal-killer | 4 | spells-45.json | çalışır | k63 (sürüm 47) |  |  |
 | polymorph | 4 | spells-45.json | çalışır |  |  |  |
@@ -307,7 +307,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | dispel-evil-and-good | 5 | spells-45.json | çalışır | k64 (sürüm 48) |  |  |
 | dominate-person | 5 | spells-45.json | çalışır |  |  |  |
 | dream | 5 | spells-45.json | savaş dışı |  |  |  |
-| flame-strike | 5 | spells-45.json | çalışır |  |  |  |
+| flame-strike | 5 | spells-45.json | çalışır | k73c (sürüm 64) |  |  |
 | geas | 5 | spells-45.json | savaş dışı |  |  |  |
 | greater-restoration | 5 | spells-45.json | çalışır |  |  |  |
 | hallow | 5 | spells-45.json | savaş dışı | k64 (sürüm 48) |  |  |
@@ -362,7 +362,7 @@ Mekanik türü `utility` olan ve özel anahtarla işlenen büyüler; anahtar `sr
 | wind-walk | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | word-of-recall | 6 | spells-69.json | savaş dışı |  |  | hayır |
 | arcane-sword | 7 | spells-69.json | çalışır |  |  | hayır |
-| conjure-celestial | 7 | spells-69.json | çalışır | k67 (sürüm 51) |  | hayır |
+| conjure-celestial | 7 | spells-69.json | çalışır | k73c (sürüm 64) |  | hayır |
 | delayed-blast-fireball | 7 | spells-69.json | çalışır | k62 (sürüm 46) |  | hayır |
 | divine-word | 7 | spells-69.json | çalışır |  |  | hayır |
 | etherealness | 7 | spells-69.json | çalışır |  |  | hayır |

@@ -9,6 +9,7 @@ import { execute, startBattle } from './index';
 import { replay } from './reduce';
 import { checkReach } from './range';
 import { feetBetween } from './reactions';
+import { gap64 } from './adjacency';
 import { bodyZeminFt } from './vertical';
 import { bodyFitProblem } from './movement';
 import { pickArea } from './areaAttack';
@@ -168,6 +169,13 @@ describe('K73c çok altıgenli gövde ve 3B menzil (Görev 5, 6)', () => {
     }
     const floors = field([A(), mk('F', { side: 'enemies', hp: 20, maxHp: 20 })], { A: [H(6)], F: [H(6), 10] }, { tiles: KATLI_BINA_TILES, dikey: KATLI_BINA_DIKEY });
     expect(feetBetween(floors, of(floors, 'A'), of(floors, 'F'))).toBe(Infinity);
+  });
+  it('paket/imza aura uzaklığı (gap64): 64\'te 3B ve yer altı ayırır, 63\'te 2B', () => {
+    for (const [ver, want, under] of [[64, 6, Infinity], [63, 1, 1]] as const) {
+      const s = field([A(), mk('F', { side: 'enemies', fly: 60, hp: 20, maxHp: 20 }), DIGGER()], { A: [H(3)], F: [H(4), 30], D: [H(2)] }, { ver });
+      const dug = { ...s, combatants: { ...s.combatants, D: { ...of(s, 'D'), altitudeFt: -5, burrowed: true as const } } };
+      expect([gap64(s, of(s, 'A'), of(s, 'F')), gap64(dug, of(dug, 'A'), of(dug, 'D'))]).toEqual([want, under]);
+    }
   });
 });
 

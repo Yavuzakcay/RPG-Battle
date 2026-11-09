@@ -2632,8 +2632,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {/* Kuyruk K73c (sürüm 64+): havada merkez: önce altıgen, sonra yükseklik (5 ft adım). */}
                 {areaAct.kind === 'spell' && airAimable(state, areaAct.spell, mechanicsAt(state, areaAct.spell)) && (
                   <div className="wall-shape" role="group" aria-label={B.k73c.centerHeight(airFt)}>
-                    <button type="button" disabled={airFt <= 0} onClick={() => setAirFt((v) => Math.max(0, v - 5))} aria-label={B.k73c.down5}>−5</button>
                     <small>{B.k73c.centerHeight(airFt)}</small>
+                    <button type="button" disabled={airFt <= 0} onClick={() => setAirFt((v) => Math.max(0, v - 5))} aria-label={B.k73c.down5}>−5</button>
                     <button type="button" onClick={() => setAirFt((v) => v + 5)} aria-label={B.k73c.up5}>+5</button>
                   </div>
                 )}

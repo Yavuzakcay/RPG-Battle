@@ -2,6 +2,94 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-09 — Kuyruk K73c: kazma, su altı savaşı, havada merkezli alan, Call Lightning fırtına devralma, çok altıgenli gövde zemini, 3B aura/tepki (kural sürümü 64)
+
+- **Sürüm:** `wip/k73c` (`wip/k73b` 62773e6 üstüne). Kural sürümü 63 → 64.
+  - Yeni davranış yalnız 64+ (`src/battle/k73cSurum.ts` `k73cOn`, `K73C_VERSION`; yaprak modül). 63 ve altı birebir.
+  - `SAVE_VERSION` 22 kalır: yeni olay türü yok; yeni alanların hepsi isteğe bağlı (`altitude_changed.burrow`, `cast_spell.targetFt`, `SpellZone.air`, `SpellZone.cloud.storm`, `spell_cast.area.airHexes`, `MapStatus.breath`/`suffocation`, `Combatant.burrowFt`/`burrowed`).
+  - Veri: `data/dikey.json` `kazma`, `suAlti`; `data/yapay-zeka.json` `k73c.suRiski`; büyü sürüm bloğu `k73c` (64+): Call Lightning `stormTakeover`, Flame Strike/Ice Storm/Conjure Celestial `cylinderFt`.
+  - Kullanıcı kararları: (1) kazan yaratık yer altında sayılır, saldırı alamaz, yalnız yüzeye çıkarken saldırır; (2) tam SRD su altı savaşı; (3) uçan yakalayanın taşıması bu kuyrukta yok (ertelendi).
+- **Görev 0:** `harita/belgeler/K73C-DENETIM.md` (kazma verisi 21 canavar + 6 tremorsense, su verisi, merkezli alanlar, Call Lightning, çok altıgen, 2B paket/imza menzilleri, 9 çelişki, değişmeyenler).
+- **Görev 1, kazma (`src/battle/burrow.ts`):**
+  - Kazma hızı canavar hız notundan (`create.ts` `monsterBurrowFt`, "Burrow N ft"); `Combatant.burrowFt`.
+  - Yer altı = irtifa −5 ft + `burrowed` işareti (`vertical_move` `toFt: −5` kazar, `0` çıkar; 5 ft = 1 altıgen; olay `altitude_changed.burrow`). Yer altında hız kazma hızı (`reduce.ts` `speedHexes`).
+  - Kazılabilir zemin (SRD Burrow Speed: kum, toprak, çamur, buz): `kazma.harfler` `.`, `d`, `g`, `n`, `q`, `i`. ⚠ Mağara/zindan (`yeralt-ma-ara`) ve kasaba ortamında `.` ve `g` taş döşeme sayılır (harf tablosu ortamı ayırmıyor). Duvar, kaya, taşlık, su, lav, nesne, büyü duvarı, Forcecage sınırı ve kat döşemesi kazılmaz/geçilmez.
+  - Yer altında yürüyüş yalnız kazılabilir altıgenlerden, yaratıkların altından; giriş/aura/zemin/alan adımı olayları yok.
+  - Hedefleme (`range.ts` `checkReach` → `burrowTargetProblem`): yer altındaki hiçbir saldırı ve hedefli etki seçemez (önce yüzeye çıkmalı). Yer altındakini yalnız kazma hızı olan ya da tremorsense menzilindeki (kendisi yer üstünde) hedefler.
+  - Alanlar: yer altındaki alan etkisi yapamaz; yer üstü alan (`pickArea`), kalıcı alan (`altitudeInZone`) ve aura (`gap3D` sonsuz) yer altına işlemez. ⚠ Yer altına inen alan (Earthquake yarığı) yarık kuralıyla işler; ayrıca bir "yer altı alanı" sınıfı yok.
+  - Tünel bırakmaz (SRD varsayılanı).
+  - **YZ (`ai.ts` `burrowCommand`, yalnız düşman):** yürüyerek düşmana yol yokken kazar; yer altında düşmana yaklaşır, yatayda bitişikte yüzeye çıkar (sonra saldırır). Yeni uzun taktik yok.
+  - Arayüz: "Kaz" / "Yüzeye çık" düğmeleri, yer altı jetonu soluk (`.token.burrowed`), ⛏ rozeti.
+- **Görev 2, su altı savaşı (tam SRD 5.2.1; `src/battle/underwaterCore.ts` yaprak sorgular, `underwater.ts` komut sonu kancası):**
+  - Model (K71c prizma): derin su (`w`) altıgeninde irtifa 0 = yüzeyde yüzme, eksi irtifa = batık. Dalış/çıkış `vertical_move` (en çok `suAlti.derinlikFt` 20 ft); yüzme hızı olmayanın 5 ft'i 2 altıgen (`yuzmeCarpani`). Batık yalnız derin su altıgenlerinde yürür, sudan çıkış yüzeyden; itme/ışınlanmayla sudan çıkan batık komut sonunda yüzeye konur.
+  - Derin sudaki uçmayan/süzülmeyen (yüzeyde ya da batık) su altı savaş kurallarına girer (63'teki `isUnderwater` aynen). Süzülen (U1a) ve uçan girmez. ⚠ Sığ su/çamur (`n`) ve batak (`b`) sıvı sayılmadı (K73b sapması korunur: derinlik verisi yok).
+  - Silah (Impeded Weapons): yüzme hızı olmayanın Piercing olmayan yakın dövüş silahı dezavantajlı; menzilli silah normal menzil ötesinde otomatik ıska, içinde dezavantaj. 64'te hedef batıksa saldıran su dışında olsa da (`features.ts`, `monsters.ts`); canavar yakın dövüşünde yüzme hızı istisnası.
+    - ⚠ Görev metnindeki silah listesi (hançer, cirit, kısa kılıç, mızrak, trident) ve menzilli istisnalar (hafif tatar yayı, ağ, cirit, mızrak, trident, dart) SRD 5.1 kuralıdır. Tabandaki SRD 5.2.1'de yakın dövüş istisnası "Piercing hasar veren silah" (listedekilerin hepsi Piercing), menzilli istisna yok. SRD 5.2.1 uygulandı.
+  - Ateş direnci: su altındaki her şey (yüzeyde ve batık) ateşe dirençli (`auras.ts` `auraResistOf`).
+  - Nefes (Suffocation): batık ve su solumayan (canavar notunda Water Breathing/Amphibious/Hold Breath, ya da `water-breathing` etkisi) 1 + CON dakika (en az 30 sn = 3 tur; 1 dakika = 10 tur) tutar; bitince kendi tur sonunda 1 Exhaustion; nefes alınca (batık değilken) o seviyeler gider. Sayaçlar `mapStatus.breath`/`suffocation` (`map_effect` `suAlti`). ⚠ Hold Breath'li canavar (timsah) savaş boyunca yeter sayıldı.
+  - **YZ (`waterCommand`, `risk`):** yüzme hızı olmayan yere bağlı yaratık için derin su altıgeni riskli (`k73c.suRiski` 15; yalnız zorunluysa girer); batıkken nefesi bitmek üzereyse ya da saldıracak hedefi yoksa yüzeye çıkar. Su altında menzilli saldırıdan kaçınma ayrıca kodlanmadı: dezavantaj ve otomatik ıska önizleme puanına zaten giriyor.
+  - Arayüz: "Dal" / "Yüksel" düğmeleri, batık jeton (`.token.submerged`), nefes sayacı satırı.
+- **Görev 3, havada merkezli küre/silindir (`src/battle/airArea.ts`):**
+  - Komut `cast_spell.targetFt` (5 ft adım; 0 ya da yoksa bugünkü yer merkezli davranış). Merkez = hedef altıgenin K9 zemini + `targetFt`; açık gökte en çok uçuş üst sınırı (`ucusUstFt`), tavanlı altıgende tavan.
+  - Menzil 3B: yatay (K69 gövdenin en yakın altıgeni) ile dikey (büyücünün K9 yüksekliğinden) farkın büyüğü (K73b `gap3D` ölçüsü). Görüş ve siper merkez noktasından (K68c irtifalı hat).
+  - Dikey kapsam prizma düzeyleriyle (`inAirSpan`): küre [merkez − yarıçap, merkez + yarıçap]; havadaki silindirin dairesi merkezde, aşağı uzanır (SRD 5.2.1 Cylinder: "The circle must either be on the ground or at the height of the spell effect"). Yatay altıgen kümesi değişmez (3B ölçü yatay ve dikeyin büyüğü). ⚠ Veride silindirler küre biçiminde: yükseklik kalıcı alanda `zone.heightFt` (Moonbeam, Sleet Storm), anlık büyüde yeni `cylinderFt` (Flame Strike, Ice Storm; Conjure Celestial).
+  - Kalıcı alan: aralık alanın kaydında (`SpellZone.air`, zemine göre); `altitudeInZone` ve yoğun örtü (`zoneAttackSources`) bununla. Taşımada (Moonbeam) yükseklik aynı kalır.
+  - ⚠ Yere ya da altıgene bağlı alanlar havada merkezlenmez (`airZoneOk`; 2B çözülürler): zemin, yüzey (Stinking Cloud), zorlu arazi (Sleet Storm, Insect Plague), çevresine ışık yayan (Dancing Lights, Daylight) ve büyülü karanlık (Darkness), sessizlik (Silence), duvar/kafes/yarık/yapı, kaplanan merkez, büyücüye bağlı aura, boncuk. Kendi altıgenlerini aydınlatan (Moonbeam loş, Conjure Celestial) izinli; ışık altıgende 2B kalır.
+  - Yere değmeyen havadaki anlık alan yerdeki yüzey ve nesnelere işlemez (`spell_cast.area.hexes` boş; altıgenler yalnız efekt için `airHexes`). ⚠ "Yere değme" merkez altıgeninin zemininden ölçülür.
+  - Çok noktalı (Meteor Swarm) ve serbest şekil (Fire Storm) havada merkezlenmez. Koni/çizgi kapsam dışı. YZ havada merkez seçmez (yer merkezli kalır).
+  - Arayüz: alan nişanında önce altıgen, sonra "Merkez yüksekliği" ±5 ft (`airAimable`); önizleme ve önizleme kartı motorla aynı (`hud.ts` `airPreview`).
+- **Görev 4, Call Lightning fırtına devralma (`cloud.ts` `stormSourceOf`):**
+  - SRD: "If you're outdoors in a storm when you cast this spell, the spell gives you control over that storm instead of creating a new one." Fırtına: büyücü açık gökteyken (altıgeninde tavan yok) harita kuralı `storm` (Deniz — Ada/Gemi fırtına varyantı) ya da büyücünün altıgenini kaplayan Storm of Vengeance alanı (veri `stormTakeover`).
+  - Devralınca yeni bulut kurulmaz: alan kaydı yalnız devralmayı tutar (`cloud.storm`, altıgensiz, çizilmez; konsantrasyonla biter). Şimşek noktası fırtınanın altında: harita fırtınasında haritanın her yeri, alan fırtınasında alanın altıgenleri (büyü menzilinde). Taban açık gökteki uçuş üst sınırı. Hasar +1d10 (`stormBonus`); tekrarda fırtına sürüyorsa.
+  - ⚠ 63'te fırtınalı haritada bulut kurulup +1d10 veriliyordu (tavan bakılmadan); 64'te ek yalnız devralınan fırtınada. Devralınan alan (Storm of Vengeance) biterse nokta yalnız büyü menziliyle sınırlı, ek yok.
+  - Görev 3 ile: yaratık seçilmeden şimşek noktasının yüksekliği `targetFt` (bulut/fırtına tabanının altında); yaratık seçilince onun irtifası (K68b).
+- **Görev 5, çok altıgenli gövde, farklı zemin (tek tanım):**
+  - Gövdenin zemini = ayak izinin **en yüksek** ayak altı (`vertical.ts` `bodyZeminFt`, katman seviyesi `heights.ts` `bodyLevel`; ayak izi yaprak `bodyLeaf.ts` `body64At`). Mutlak yükseklik, K9 uzaklık/bitişiklik (`absBand` → `adjacent3D`), K8 yüksek zemin, kenar siperi tabanı (`cover.ts` `highGroundBase`) ve YZ zemin ölçüsü (`k73a.ts`) bundan.
+  - Hareket maliyeti: adım farkı gövdenin en yüksek ayak altından (`bodyHeightStepFn`); 2+ seviye fark uçurum.
+  - Yerleştirme: kat döşemesini aşan gövde yerleşmez (`bodyFitProblem`: döşeme gövde bandını keser ya da gövde bir katta dururken ayak izinin bir altıgeninde o kat yok).
+  - Uygulama noktaları `harita/belgeler/K73B-DENETIM.md` §8 Ek (K73c). Düşme iniş yüzeyi K72 `landingFt` (çapa) aynen.
+- **Görev 6, 3B aura ve tepki menzili:** paket/imza auraları ve menzilleri (`paket/sans.ts`, `core.ts`, `index.ts`, `p9.ts`, `p10.ts`, `imza.ts`, `imzaCore.ts`, `imzaBirlik.ts`, `celestial.ts`, `karadul.ts`), tepki menzili (`reactions.ts` `feetBetween`: Protection, Interception, Counterspell, Feather Fall…) ve Burst of Ingenuity (`auras.ts` `burstOf`) 64+'da 3B (`adjacency.ts` `gap64` = `gap3D`: dikey bant aralığı, döşeme ve Forcecage kutusu keser, yalnız biri yer altındaysa sonsuz). 63 ve altında 2B `gap`.
+- **Modül başlatma:** yeni yaprak modüller `k73cSurum.ts`, `bodyLeaf.ts`, `underwaterCore.ts`; `heights.ts`/`vertical.ts` `body.ts`'i, `features`/`monsters`/`auras` kancalı `underwater.ts`'i içe aktarmaz (yoksa `reactions.ts` başlamadan `imza54.ts` `registerAfterAttack`'ı çağırıyordu). Kanca `commands.ts`'ten yüklenir.
+- **Ölçüm:**
+  - **63 birebir:** yeni ağaçla K73c öncesi ağacın (`wip/k73b` 62773e6, geçici worktree) sürüm 63 imzaları karşılaştırıldı. 4 senaryo × 30, duvarlı 6 × 50, katmanlı 8 × 20 (sürüme sabitlenmiş geçici ölçüm testi; `sim:k26` sürümü yok sayar): 18 senaryonun hepsi birebir. Ayrıca `src/sim/k73cRegresyon.test.ts` altın imzaları (1 ve 30 tohum; 4 senaryoda 63 = 62, K73b altın imzalarıyla aynı).
+  - **63 ↔ 64 denge raporu** (`harita/belgeler/DENGE.md`): 18 senaryonun hepsinde 64 = 63 (imza eşit). Bu senaryolarda kazan canavar, derin su savaşı, havada merkez (YZ seçmez), fırtınalı harita, çok altıgen bayrağı ve paket/imza aurası yok. 8 puanı aşan kayma yok; ayar yok.
+  - **YZ karar süresi** (medyan ms; 63 ↔ 64 aynı koşuda, simetrik sıra 63, 64, 64, 63; n = 8, N = 150; hepsi ≤ +%15):
+
+    | Sahne | 63 | 64 | Fark |
+    |---|---:|---:|---:|
+    | Mantar | 1,82 | 1,66 | −%9 |
+    | Katmanlı | 1,77 | 1,69 | −%5 |
+    | Uçan düşman | 1,73 | 1,59 | −%8 |
+    | Yakın dövüşlü uçan | 1,90 | 1,98 | +%4 |
+    | Duvarlı yerde | 2,52 | 2,04 | −%19 |
+    | Duvarda | 0,74 | 0,70 | −%5 |
+    | Katlı | 0,99 | 1,02 | +%3 |
+    | Süzülen düşman | 0,79 | 0,81 | +%3 |
+    | Çok turlu sur okçusu | 0,80 | 0,68 | −%15 |
+    | Kazan düşman (yeni; kumda 4 kazıcı) | 1,63 | 1,40 | −%14 |
+    | Su altı, düşman (yeni; göl) | 0,44 | 0,43 | −%2 |
+    | Su altı, parti (yeni; suda yüzeyde) | 1,40 | 1,43 | +%2 |
+
+  - İlk koşu (N = 50) güçlü sıra etkisi gösterdi (her turda ikinci ölçülen sürüm %20–50 yavaş; JIT/GC); N = 150 ile simetrik tekrar yukarıdaki tablo. Makine K73b referansından genel olarak ~%10 yavaştı (Mantar 63'te 1,82; K73b 1,68).
+  - Ana parça 374 742 B (değişmedi). `check:harita` 96/0, `check:ses` 15/0 (`PW_CHROMIUM=/opt/pw-browsers/chromium`). Modül başlatma testi yeşil.
+  - Tam paket: 364 dosya, 4277 test. İlk koşuda `buyuDurum.test.ts` kapsam dışı notlu sayısı 27 → 29 oldu (Ice Storm ve Flame Strike'a not eklenmişti); notlar gereksizdi (havadaki silindir SRD'deki gibi), kaldırıldı, sayı 27.
+  - Arayüz: tek ekran görüntüsü (Fireball nişanı, merkez 40 ft: iki uçan harpi alanda, yerdeki haydut dışarıda; önizleme kartı).
+- **Testler:** `src/battle/k73c.test.ts` (28):
+  - kazma: kaz/63'te yok, hedeflenemez + tremorsense + yer altından saldırı yok, yer altında ilerleyip çıkıp saldırma, taşlık/mağara/duvar, yer üstü küre, YZ;
+  - su altı: dalış (yüzme hızsız ×2), ateş direnci + süzülen hariç, kıyıdan batığa menzilli, nefes ve boğulma, yüzen canavar, YZ yüzeye çıkış;
+  - çok altıgen: en yüksek ayak altı, döşeme; tepki menzili 3B ve döşeme; paket/imza uzaklığı `gap64` (3B, yer altı);
+  - havada merkez: Fireball (64/63), 5 ft adım, üst sınır, 3B menzil, havadaki silindir (Flame Strike), yere değmeyen alan, Fog Cloud `air`, Darkness reddi, Moonbeam `altitudeInZone`, önizleme;
+  - Call Lightning: harita fırtınası devralma (+1d10, bulut yok, 63'te ret), Storm of Vengeance altı, yaratıksız nokta yüksekliği;
+  - replay (kazma, çıkış, dalış, nefes; havadaki alan ve fırtına).
+  - Regresyon `src/sim/k73cRegresyon.test.ts` (`K73C_TOHUM`): 63 altın imzası K73c öncesi ağaçtan (1 ve 30 tohum); 64 çökmesiz.
+- **Açık kalanlar:**
+  - Uçan yakalayanın taşıması (kullanıcı kararıyla ertelendi).
+  - Yer altına inen alan sınıfı yok (Earthquake yarığı kendi kuralıyla); tünel yok.
+  - Sığ su/batak sıvı sayılmıyor (derinlik verisi yok); derin suyun derinliği tek değer (`suAlti.derinlikFt`).
+  - Havada merkezlenemeyen 2B alanlar (ışık yarıçapı, karanlık, sessizlik, zorlu arazi, yüzey); havadaki Moonbeam/Conjure Celestial ışığı altıgende 2B.
+  - YZ havada merkez seçmez; kazma/su altı YZ'si yalnız temel kurallar.
+  - Arayüz: alan nişan balonu sol kenardayken "☁ Hava" düzey seçicisi balonun etiketini örtüyor (bütün baloncuklarda var olan yerleşim çakışması).
+
 ## 2026-11-09 — Kuyruk K73b: çok turlu sur tırmanışı, 3B bitişiklik, gönüllü düşme, suya düşme (kural sürümü 63)
 
 - **Sürüm:** `wip/k73b` (`wip/k73a` 5b26c3c üstüne). Kural sürümü 62 → 63.
