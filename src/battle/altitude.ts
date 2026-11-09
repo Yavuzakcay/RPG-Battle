@@ -132,6 +132,7 @@ const FLY_CAP = new Map<string, number>();
 export function flyCapFt(state: Pick<BattleState, 'map'>): number {
   const m = state.map;
   if (!m) return dikeyData.ucus.ucusUstFt;
+  if (m.ucusUstFt !== undefined) return m.ucusUstFt;
   const key = `${m.id}\u0000${m.variantId}`;
   let v = FLY_CAP.get(key);
   if (v === undefined) {

@@ -1058,6 +1058,8 @@ export interface MapState {
   variantId: string;
   /** Kuyruk K71a (sürüm 56+): varyant `dikey` verisinin yerine geçen ezme (testler, Game Master); yoksa harita verisi. */
   dikey?: import('../map/maps').MapDikey;
+  /** Kuyruk K71c: açık gök uçuş üst sınırı ezmesi (test, Game Master; yoksa varyant verisi). */
+  ucusUstFt?: number;
   mirrored: boolean;
   /** Satır satır zemin harfleri (lav yükselmesi gibi kurallarla değişebilir). */
   tiles: string[];

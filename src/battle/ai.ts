@@ -21,6 +21,8 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { canAirMove } from './airMove';
+import { bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
 import { wallClimbCommand } from './ai/climbAi';
 import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf, wallAim } from './freeShape';
 import { fissureAim, fissureBudget, fissureClimbCommand } from './fissure';
@@ -81,7 +83,7 @@ const REGEN_CUT: number = aiData.yenilenmeKesme;
 const cutsRegen = (type: string | undefined): boolean => type === 'fire' || type === 'acid';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { climbs, isAirborne } from './flight';
-import { climbCapFt, wallHex } from './altitude';
+import { altitudeCapFt, climbCapFt, wallHex } from './altitude';
 import { legendaryOf } from './boss';
 import { bodyAt, bodyOf, gap, touchesHexes } from './body';
 import { footprintDistance } from '../rules/footprint';
@@ -1150,7 +1152,8 @@ function mustNotWake(state: BattleState, actor: Combatant): boolean {
   return actor.side === 'enemies' && !actor.civilian && sleepingDragon(state) !== undefined && !rousing(state, actor);
 }
 
-type Spot = { to: Offset; cost: number; kind: 'move' | 'jump' };
+/** Kuyruk K71c: `toFt` verilirse birleşik uçuş (o irtifaya, `move.toFt`). */
+type Spot = { to: Offset; cost: number; kind: 'move' | 'jump'; toFt?: number };
 
 /** Ada atlamasında (lav üstünden) en az bu kadar güvenli iniş şansı aranır; altı "DC çok yüksek". */
 const MIN_JUMP_SAFE = 0.6;
@@ -1223,14 +1226,87 @@ function firstMove(state: BattleState, actor: Combatant, order: Spot[]): Command
       if (r.ok && !(careful && wakesDragon(r.events))) return cmd;
       continue;
     }
-    const cmd: Command = { type: 'move', actorId: actor.id, to };
+    const toFt = order.find((s) => s.to === to)?.toFt;
+    const cmd: Command = toFt === undefined ? { type: 'move', actorId: actor.id, to } : { type: 'move', actorId: actor.id, to, toFt };
     const r = tryCmd(state, actor, cmd);
     if (careful && r.ok && wakesDragon(r.events)) continue;
+    // Kuyruk K71c: birleşik uçuş kendi yerinde (yalnız düzey) da geçerli; varış irtifası olayda.
+    if (toFt !== undefined && r.ok) {
+      const me = r.state.combatants[actor.id];
+      if (me?.pos && hexKey(me.pos) === hexKey(to) && (me.altitudeFt ?? 0) === toFt) return cmd;
+      continue;
+    }
     const ev = r.ok ? r.events[0] : undefined;
     const last = ev?.type === 'moved' ? ev.path[ev.path.length - 1] : undefined;
     if (last && hexKey(last) === hexKey(to)) return cmd;
   }
   return null;
+}
+
+/** Kuyruk K71c: uçan düşman YZ'sinin hava yeri sayacı (ölçüm; uçansız savaşta artmaz). */
+export const airAiStats = { calls: 0 };
+
+/**
+ * Kuyruk K71c (sürüm 58+, Görev 3; yeni taktik yok, K73): uçan düşmanın sınırlı düzey seçimi: yer (0) ve "düşük" (yerdeki
+ * düşmanların boyunun hemen üstü: üstlerinden geçer, 5 ft'ten yakın dövüş). Yer listesi düzey başına tek bütçeli Dijkstra
+ * (o irtifada); maliyet max(yatay, düzey farkı) (çapraz adım tek adım), kesin yol `tryCmd` ile (`airMove.ts` A*). Şimdiki
+ * düzeyin yerleri zaten `reachable`'da; düşük düzeyde yalnız yerden varılamayan altıgenler eklenir. Parti ve çağrı değişmez.
+ */
+function airSpots(state: BattleState, actor: Combatant, ground: Spot[]): Spot[] {
+  if (actor.side !== 'enemies' || actor.civilian || actor.summon || !actor.pos || !state.map || !canAirMove(state, actor)) return [];
+  airAiStats.calls++;
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const budget = speedHexes(actor) - actor.movementUsed;
+  if (budget <= 0) return [];
+  const cur = levelOf(actor.altitudeFt ?? 0);
+  const cap = levelOf(altitudeCapFt(state, actor));
+  const low = Math.min(cap, Math.max(1, ...foesOf(state, actor).filter((f) => f.pos && (f.altitudeFt ?? 0) <= 0).map((f) => heightLevels(f))));
+  const seen = new Set(ground.map((s) => hexKey(s.to)));
+  const out: Spot[] = [];
+  for (const l of [...new Set([0, low])]) {
+    if (l === cur) continue;
+    const ft = levelToFt(l);
+    const band = bandOf(actor, ft);
+    const costs = costsFrom(actor.pos, size, moveCostFn(state, { ...actor, altitudeFt: ft }), budget);
+    for (const [key, c] of costs) {
+      const cost = Math.max(c, Math.abs(l - cur));
+      if (cost > budget || (l > 0 && cur === 0 && seen.has(key))) continue;
+      const [col, row] = key.split(',').map(Number) as [number, number];
+      const to = { col, row };
+      const t = terrainAt(state, to);
+      if (t.movement === 'blocked' || (l === 0 && t.movement === 'deadly') || occupantAt(state, to, actor.id, band)) continue;
+      out.push({ to, cost, kind: 'move', toFt: ft });
+    }
+    if (l > 0) for (const s of out) seen.add(hexKey(s.to));
+  }
+  return out;
+}
+
+/**
+ * Kuyruk K71c (sürüm 58+): "seyir" düzeyi: uçan düşman yerden ve düşük düzeyden düşmana yaklaşamıyorsa (duvar, kalabalık)
+ * seyir irtifasında (en çok 30 ft, üst sınır) en çok yaklaştıran altıgene uçar; sonraki turda yer/düşük yerlerinden iner.
+ */
+function cruiseMove(state: BattleState, actor: Combatant, near: (h: Offset) => number, here: number): Command | null {
+  if (actor.side !== 'enemies' || actor.civilian || actor.summon || !actor.pos || !state.map || !canAirMove(state, actor)) return null;
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const budget = speedHexes(actor) - actor.movementUsed;
+  const cur = levelOf(actor.altitudeFt ?? 0);
+  const l = Math.min(levelOf(altitudeCapFt(state, actor)), 6);
+  if (budget <= 0 || l <= cur) return null;
+  const ft = levelToFt(l);
+  const band = bandOf(actor, ft);
+  const costs = costsFrom(actor.pos, size, moveCostFn(state, { ...actor, altitudeFt: ft }), budget);
+  const spots: Spot[] = [];
+  for (const [key, c] of costs) {
+    const cost = Math.max(c, l - cur);
+    if (cost > budget) continue;
+    const [col, row] = key.split(',').map(Number) as [number, number];
+    const to = { col, row };
+    if (near(to) >= here || terrainAt(state, to).movement === 'blocked' || occupantAt(state, to, actor.id, band)) continue;
+    spots.push({ to, cost, kind: 'move', toFt: ft });
+  }
+  spots.sort((a, b) => near(a.to) - near(b.to) || a.cost - b.cost);
+  return firstMove(state, actor, spots.slice(0, 6));
 }
 
 /**
@@ -1239,16 +1315,16 @@ function firstMove(state: BattleState, actor: Combatant, order: Spot[]): Command
  * önbelleklerini paylaşır.
  */
 const atCache = new WeakMap<BattleState, Map<string, BattleState>>();
-const at = (state: BattleState, actor: Combatant, to: Offset): BattleState => {
+const at = (state: BattleState, actor: Combatant, to: Offset, altFt?: number): BattleState => {
   let m = atCache.get(state);
   if (!m) { m = new Map(); atCache.set(state, m); }
-  const k = `${actor.id}|${to.col},${to.row}`;
+  const k = altFt === undefined ? `${actor.id}|${to.col},${to.row}` : `${actor.id}|${to.col},${to.row}|${altFt}`;
   const cur = state.combatants[actor.id];
   // Önbellek yalnız durumdaki yaratığın kendisinden türetilen konumlar için (geçici ekonomi değişikliği yok).
   const plain = cur === actor;
   const hit = plain ? m.get(k) : undefined;
   if (hit) return hit;
-  const out: BattleState = { ...state, combatants: { ...state.combatants, [actor.id]: { ...actor, pos: to } } };
+  const out: BattleState = { ...state, combatants: { ...state.combatants, [actor.id]: { ...actor, pos: to, ...(altFt === undefined ? {} : { altitudeFt: altFt }) } } };
   if (plain) m.set(k, out);
   return out;
 };
@@ -1998,7 +2074,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
 
   const foes = foesOf(state, actor);
   if (foes.length === 0) return now ?? end;
-  const spots = reachable(state, actor);
+  // Kuyruk K71c: uçan düşmanın yer ve düşük düzey yerleri (birleşik uçuş).
+  const spots0 = reachable(state, actor);
+  const spots = cellsOn(state) ? [...spots0, ...airSpots(state, actor, spots0)] : spots0;
   const ranged = actor.side === 'party' && actor.weaponOptions.some((o) => o.ranged);
   // Kuyruk 43: `h` çapasındaki gövdeden hedefin gövdesine (çok altıgen kapalıyken `distance`).
   const gapFrom = (h: Offset, t: Combatant) => footprintDistance(bodyAt(state, actor, h), bodyOf(state, t));
@@ -2017,8 +2095,8 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Usta: hedef başına en ucuz yer (aynı hedefin yanındaki yerler tek aday), en çok `yerAday` hedef.
   const targetsSeen = new Set<string>();
   for (const s of scored) {
-    const there = at(state, actor, s.to);
-    const mover = { ...actor, pos: s.to };
+    const there = at(state, actor, s.to, s.toFt);
+    const mover = { ...actor, pos: s.to, ...(s.toFt === undefined ? {} : { altitudeFt: s.toFt }) };
     const cmd = bestNow(there, mover);
     if (cmd && (!poor || !poorOdds(there, mover, cmd))) {
       if (usta) {
@@ -2050,7 +2128,8 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     .map((s) => ({ ...s, score: nearest(s.to) * 10 + risk(state, actor, s.to) + s.cost }))
     .sort((a, b) => a.score - b.score);
   // K17 G5: yürüyerek yaklaşamıyorsa yukarı tırman (kural sürümü 13).
-  return guardMove(state, actor, firstMove(state, actor, approach)) ?? climbToward(state, actor, nearest, here) ?? end;
+  // Kuyruk K71c: uçan düşman yaklaşamıyorsa seyir düzeyinde uçar.
+  return guardMove(state, actor, firstMove(state, actor, approach)) ?? climbToward(state, actor, nearest, here) ?? (cellsOn(state) ? cruiseMove(state, actor, nearest, here) : null) ?? end;
 }
 
 /**
