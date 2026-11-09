@@ -85,6 +85,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Duvarlı 6 harita × 50 tohum (`K71C_DUVAR=50`): kazanç ve tur 57 = 58, altı haritanın hepsinde.
   - Ana parça 374 742 bayt (değişmedi). check:harita 96/0 (düzeltmeden sonra, yeniden deneme yok), check:ses 15/0.
   - Tek ekran görüntüsü: Hava görünümü.
+  - Tam test 348 dosya / 4087 test yeşil (K71b sonu 345 / 4052).
 
 ## 2026-11-08 — Kuyruk K71b: herkes için tırmanma (Çeviklik), düşme tek işlev, Long Jump, 23 harita (kural sürümü 57)
 
