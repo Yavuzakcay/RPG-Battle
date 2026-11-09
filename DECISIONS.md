@@ -2,6 +2,98 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-09 — Kuyruk K73a: YZ dikey taktiği (parti hava düzeyi, yüksek zemin, ölü bölge, sur/kat, kilitlenme; kural sürümü 62)
+
+- **Sürüm:** `wip/k73a` (`wip/u1a` 58c6227 üstüne). Kural sürümü 61 → 62.
+  - Yeni davranış yalnız 62+ (`src/battle/ai/k73a.ts` `k73aOn`, `K73A_VERSION`); yalnız yapay zekâ kararı.
+  - Kural, denge verisi (düşman listeleri, DC, hasar) ve kayıt biçimi aynı; `SAVE_VERSION` 22.
+  - Parametreler `data/yapay-zeka.json` `k73a`.
+- **Görev 0:** `harita/belgeler/K73A-DENETIM.md` (bugünkü dikey kararlar, parti eksikleri, kilitlenme kökü, 8 çelişki).
+- **Görev 4, kilitlenme (Buzul — Kamp tohum 1, K26 kuralları açık):**
+  - Kök neden: komut döngüsü değil, hareketsizlik.
+    - "Yaklaş" adımı düz altıgen mesafesini kısaltan yeri arıyordu.
+    - Bitkin (hız 20 ft) Cleric ağaçların ardındaki cepte (6,7) kaldı: 4 altıgende hiçbir yer düz mesafeyi kısaltmıyor, çıkış batıdan dolanıyor. Her tur turu bitirdi.
+    - Okçular yüksekteki keşifçiyi bitkinlik −4 ve kenar siperiyle vuramadı; 21 turda zaman aşımı.
+  - Çözüm: 62'de yaklaşma **yol mesafesiyle**: düşmanın yanına yürüyüş alanı, `climbAi.ts` `foeField` (çok kaynaklı ters Dijkstra), durum + yaratık başına önbellek.
+    - Buradan yürüyerek yetişilemiyorsa eski düz mesafe.
+    - Ayrı ilerleme bekçisi gerekmedi: yol ölçüsü yerel minimumu kaldırıyor.
+  - Sonuç: tohum 1 9. turda parti zaferi. 61'de aynen zaman aşımı (`src/battle/k73a.test.ts`).
+  - ⚠ Yol mesafeli yaklaşma **iki tarafta** da (düşman YZ'si de engel arkasından dolanıyor). Denge kaymasının ana kaynağı bu (aşağıda).
+  - Not: Kilitlenme süreç geçmişine bağlı değil. İlk denemedeki "tek başına 8 turda biter" sonucu, günlük döngüsündeki fazladan bir `end_turn` çalıştırmasının paylaşılan zarlardan sayı tüketmesindendi.
+- **Görev 1, parti hava düzeyi:**
+  - **Yüksel (`riseCommand`):**
+    - Kim: uçabilen parti üyesi (Fly, Wild Shape uçan biçim, `ucus` ilkeli, Draconic Flight; Kırık Kanat'ta yalnız kendi turu).
+    - Ne zaman: şimdiki en iyi hamlesi menzilliyse (menzilli silah ya da menzili 5 ft'ten uzun büyü).
+    - Nereye: kendisine bir sonraki turunda yetişebilecek uçmayan yakın dövüşçülerin erişim bandının hemen üstü (Medium 5 ft erişime karşı 10 ft).
+    - Koşullar: bitişikte/erişimde düşman yokken (3B fırsat saldırısı yok) ve oradan da menzilli saldırabiliyorsa.
+  - **Sınırlar:**
+    - Konsantrasyonlu uçuşta en çok `konsantrasyonUstFt` 10 ft (düşme 1d6). 10 ft erişimli düşmana karşı Fly ile yükselmez (yetmez); kendi uçuş hızıyla 15 ft.
+    - Uçuşun kendi sınırı (süzülme 5 ft) erişimin üstüne çıkmıyorsa yükselmez. ⚠ Süzülme düzeyi (5 ft) yakın dövüşe karşı fayda vermediği için YZ seçmez.
+  - **İn:**
+    - Yakın dövüşçü uçan parti üyesi hedefe iner: `airSpots`/`airLowSpots`/`cruiseMove` 62'de partiye ve çağrılan uçana açık (K71c yer/düşük/seyir; inişte K71c'nin "düşük" düzeyi de geçerli vuruş yeri).
+    - Seyir irtifası konsantrasyonlu uçuşta 10 ft.
+  - **Süre ve konsantrasyon (`landCommand`):** turu bitirirken alttaki en yüksek duruş yüzeyine iner (hareketi yetmezse yettiği kadar alçalır), şu durumlarda:
+    - uçuşu bu tur bitiyorsa (süre `until` ≤ tur);
+    - zorunlu iniş alt etkisi varsa (Kırık Kanat, paket `zorunluInis`);
+    - konsantrasyonlu uçuşta can `inisCanOrani` (%34) altındaysa.
+  - **Kaynak (`featureFlight`):** özellik uçuşu (Draconic Flight `selfEffect`, paket `ucus` düğmesi) yalnız yürüyerek hiçbir düşmana yetişilemeyip uçarak yetişilebiliyorsa (Fly büyüsünün `flyToReach` kuralıyla aynı).
+    - ⚠ Paket süzülme düğmesi bu kurala girer; ayrıca kullanılmaz.
+- **Görev 2, yüksek zemin ve ölü bölge:**
+  - Saldırı yeri puanına K8 indirimi (`highGroundBonus`, `yuksekZeminPuan` 3 maliyet birimi): menzilli yaratığın yerindeki mutlak zemin + duruş yüksekliği (sur tepesi, kat) en yakın düşmanınkinden ≥ 10 ft.
+  - Havadaki ve süzülen için yok (K8 vermez). Eski katman indirimi (seviye başına 1) yanında kalır.
+  - Ölü bölgeden çıkma: saldırı yeri taraması zaten görüş isteyen yerlere bakıyor; K8 indirimiyle yüksekte kalan yer önce. Görüşü olmayan sur dibindeki okçu sura tırmanır (Görev 3).
+  - ⚠ Ayrı bir "ölü bölge" sezgiseli yok.
+- **Görev 3, sur ve kat:**
+  - **Sur (`perchCommand`):**
+    - Kim: menzilli yaratık.
+    - Yürüyen bitişik sura `climb` ile tırmanır (K72; Çeviklik başarı olasılığı ≥ `surBasari` 0,5; maliyet bu tura sığmalı).
+    - Uçan `surMesafe` 4 altıgen içindeki sur tepesine konar (`move.toFt`).
+    - Koşullar: bitişikte/erişimde düşman yokken; tepe en yakın düşmana K8 veriyorsa; oradan saldırabiliyorsa; oradaki hamle şimdikinden kötü değilse.
+    - ⚠ Tek turda sığma şartı: 15 ft sur 7 altıgen (30 ft hızla olmaz). ONAYLI 25–30 ft surlara pratikte yalnız uçan çıkar.
+  - **Kat (`floorRoute`):** en yakın düşman başka kattaysa (aynı katta daha uzak düşman olsa da) merdivene. 61'de yalnız bütün düşmanlar başka kattaysa.
+  - Kat yolu `decide`'ın hesapladığı yürüyüş yerlerini kullanır (YZ süresi).
+- **Ölçüm:**
+  - **61 birebir:** yeni ağaçla eski ağacın (`wip/u1a` 58c6227, geçici worktree) sürüm 61 imza özetleri karşılaştırıldı. 4 senaryo × 30, duvarlı 6 × 50, katmanlı 8 × 20: 18 senaryonun hepsi birebir aynı. Ayrıca `src/sim/k73aRegresyon.test.ts` `K73A_TOHUM=30`: 60 = 61, 62 çökmesiz.
+  - **61 ↔ 62 denge raporu** (parti kazancı %, ortalama tur; ayar yok): `harita/belgeler/DENGE.md`.
+    - 8 puanı aşan kaymalar: Mağara +17, Orman −10, Dağ — Karakol −20.
+    - Ayrıştırma (bileşen tek tek kapatılarak): üçü de yol mesafeli yaklaşmadan. Karakol'da yalnız düşman tarafınınki: düşman yaklaşması kapalıyken 61 değeri %40.
+    - Yüksek zemin indirimi Karakol'da −5. Parti hava/sur kuralları standart partide etkisiz (uçan yok).
+    - Buzul — Kamp %100 → %100.
+  - **YZ karar süresi** (medyan ms, 61 → 62 aynı koşuda, simetrik sıra 61, 62, 62, 61, n=12; hepsi ≤ +%15):
+
+    | Sahne | 61 | 62 | Fark |
+    |---|---:|---:|---:|
+    | Mantar | 1,63 | 1,64 | +%1 |
+    | Katmanlı | 1,57 | 1,56 | −%1 |
+    | Uçan düşman | 1,54 | 1,45 | −%6 |
+    | Yakın dövüşlü uçan | 1,71 | 1,74 | +%2 |
+    | Duvarlı yerde | 1,83 | 1,89 | +%3 |
+    | Duvarda | 0,59 | 0,60 | +%2 |
+    | Katlı | 0,96 | 0,93 | −%3 |
+    | Süzülen düşman | 0,65 | 0,56 | −%14 |
+    | Fly'lı parti okçusu (yeni) | 0,59 | 0,07 | yükselme kararı erken döner |
+    | Sur dibindeki okçu (yeni) | 0,95 | 0,08 | tırmanma kararı erken döner |
+
+  - Kat yolu ilk sürümde katlı sahnede +%60'tı: yürüyüş yerlerinin yeniden hesaplanması. Düzeltildi.
+  - Ana parça 374 742 B (değişmedi). `check:harita` 96/0, `check:ses` 15/0 (`PW_CHROMIUM=/opt/pw-browsers/chromium`).
+  - Tam paket: 360 dosya, 4219 test. Modül başlatma testi yeşil (`ai/k73a.ts` yalnız motor modüllerini içe aktarır, döngü yok).
+- **Testler:** `src/battle/k73a.test.ts` (15):
+  - yaklaşma cebi;
+  - yükselme, yükseldikten sonra saldırı, 10 ft erişim sınırı, bitişikte yükselmeme;
+  - iniş (süre, zorunlu iniş, kısmi alçalma, can eşiği);
+  - yakın dövüşçü uçanın inişi, özellik uçuşu;
+  - sur tırmanışı, uçanın sura konması, yüksek zemin indirimi, kat seçimi;
+  - Buzul — Kamp kilitlenmesi, replay.
+  - Her biri 61'de eski davranışla karşılaştırmalı.
+- **Açık kalanlar:**
+  - **Denge:** Dağ — Karakol (%20), Orman ve Mağara kaymaları "Dungeondex öncesi tam test turu"na. Ayar yok.
+    - Seçenek: yol mesafeli yaklaşmayı yalnız düz mesafe başarısızken kullanmak (kilitlenmeyi yine çözer, kayma azalır, gidip gelme riski).
+  - **Sur tepesine çok turlu tırmanma** (bugün tek tura sığmalı; K72).
+  - **K73b:** gönüllü düşme, kazma/su altı, SRD su-düşme tepkisi, 3B komşuluk (aura/otomatik kritik/yakalama/itme), kapanış turu.
+  - **Parti YZ'sinin süzülme düzeyi:** yakın dövüşe karşı fayda yok; yalnız yer etkisinden kaçınma için kullanılabilir.
+  - **Düşman uçan menzilli YZ'si** yükselme kuralını kullanmıyor (K71c: yakın dövüş için hava yeri, menzilli şimdiki irtifasından). Yalnız parti.
+
+
 ## 2026-11-09 — Kuyruk U1a: uçuş ilkeli motor tarafı (süzülme, sabit hız, azami irtifa, seviye eşiği; kural sürümü 61)
 
 - **Sürüm:** `wip/u1a` (`wip/k72` 30ab3f2 üstüne). Kural sürümü 60 → 61.

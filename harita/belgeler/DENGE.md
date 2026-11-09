@@ -2,6 +2,43 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K73a: YZ dikey taktiği (2026-11-09; ölçüm, denge ayarı yok)
+
+Kural sürümü 61 ↔ 62, aynı tohumlar (3. seviye standart parti). Sürüm 61 eski kodla birebir aynı (imza karşılaştırması).
+62'de yalnız YZ kararı değişti (yol mesafeli yaklaşma iki tarafta, menzillide K8 yüksek zemin tercihi, sur/kat; parti hava
+düzeyi standart partide etkisiz). Parti kazanma %, ortalama tur:
+
+| Senaryo | Tohum | 61 | 62 | Fark |
+|---|---:|---:|---:|---:|
+| Çöl | 30 | 80 / 11,2 | 77 / 11,4 | −3 |
+| Kale | 30 | 80 / 9,3 | 80 / 9,3 | 0 |
+| Mağara | 30 | 63 / 8,3 | **80** / 8,3 | **+17** ⚠ |
+| Orman | 30 | 73 / 6,6 | **63** / 7,3 | **−10** ⚠ |
+| Kale avlusu (savunma) | 50 | 100 / 8,0 | 100 / 6,9 | 0 |
+| Kale Baskını | 50 | 42 / 7,6 | 42 / 7,6 | 0 |
+| Ork Kampı | 50 | 90 / 11,6 | 88 / 11,1 | −2 |
+| Kale İç Avlusu, Dış Halka, Kasaba Hanı | 50 | 100 / 3,3 · 2,1 · 3,3 | aynı | 0 |
+| Buzul — Açık | 20 | 80 / 7,3 | 85 / 6,8 | +5 |
+| Buzul — Kamp | 20 | 100 / 8,3 | 100 / 8,1 | 0 |
+| Buzul — Kayalık | 20 | 70 / 6,3 | 70 / 7,0 | 0 |
+| Buzul — Tapınak | 20 | 75 / 6,5 | 70 / 6,5 | −5 |
+| Dağ — Karakol | 20 | 40 / 9,3 | **20** / 8,6 | **−20** ⚠ |
+| Dağ — Kayalık | 20 | 90 / 7,3 | 85 / 8,1 | −5 |
+| Dağ — Köprü | 20 | 65 / 11,2 | 65 / 11,2 | 0 |
+| Dağ — Nöbetçi | 20 | 100 / 6,3 | 100 / 6,5 | 0 |
+
+**Ayrıştırma (62'de bileşen tek tek kapatılarak):**
+
+| Senaryo | Hepsi açık | Yaklaşma kapalı | Yalnız düşmanda kapalı | Yalnız partide kapalı | Yüksek zemin kapalı |
+|---|---:|---:|---:|---:|---:|
+| Dağ — Karakol (20) | 20 | 40 | 40 | 20 | 35 |
+| Orman (30 / 20) | 63 | 73 | 70 | 65 | 63 |
+| Mağara (30 / 20) | 80 | 63 | 70 | 85 | 80 |
+
+- Kaymaların kaynağı yol mesafeli yaklaşma. Karakol'da düşman YZ'si artık engel arkasından dolanıp partiye ulaşıyor.
+- Kilitlenme (Buzul — Kamp tohum 1, K26 kuralları açık): 61'de 21 turda zaman aşımı, 62'de 9. turda parti zaferi.
+- Ayar "Dungeondex öncesi tam test turu"na.
+
 ## Kuyruk U1a: uçuş ilkeli kademeleri, süzülme (2026-11-09; ölçüm, denge ayarı yok)
 
 Kural sürümü 60 ↔ 61, aynı tohumlar. Standart partide ve senaryo düşmanlarında `ucus` ilkeli ve Celestial yok: yeni kademe
