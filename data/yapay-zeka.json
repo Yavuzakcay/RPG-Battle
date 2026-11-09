@@ -1,5 +1,13 @@
 {
   "_aciklama": "Kuyruk 41b: yapay zekâ ve simülasyon ayarları. yenilenmeKesme: yenilenen (Regeneration) hedefe ateş/asit hasarlı seçeneğin puan çarpanı; yenilenmesi bekleyen (0 HP) hedefe ateş/asit varsa önce o vurulur. turSiniri: simülasyonda savaşın en çok sürdüğü tur (Üst seviye 6–10 partilerde 30).",
   "yenilenmeKesme": 1.5,
-  "turSiniri": { "varsayilan": 20, "ustSeviye": 30, "ustSeviyeAlt": 6 }
+  "turSiniri": { "varsayilan": 20, "ustSeviye": 30, "ustSeviyeAlt": 6 },
+  "k73a": {
+    "_aciklama": "Kuyruk K73a (kural sürümü 62+): YZ dikey taktiği. konsantrasyonUstFt: konsantrasyonlu uçuşta (Fly) seçilen en yüksek irtifa (düşme riski: 10 ft = 1d6). inisCanOrani: konsantrasyonlu uçuşta can bu oranın altındaysa iner. yuksekZeminPuan: K8 yüksek zemin (≥ 10 ft) saldırı yerinin puan indirimi (maliyet birimi). surBasari: sur tepesine tırmanmayı denemek için en az Çeviklik başarı olasılığı. surMesafe: uçanın sur tepesine konma yerlerinin en çok uzaklığı (altıgen).",
+    "konsantrasyonUstFt": 10,
+    "inisCanOrani": 0.34,
+    "yuksekZeminPuan": 3,
+    "surBasari": 0.5,
+    "surMesafe": 4
+  }
 }

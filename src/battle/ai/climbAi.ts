@@ -28,7 +28,7 @@ const standable = (s: BattleState, h: Offset, me: string): boolean => {
 };
 
 /** Çok kaynaklı Dijkstra: her altıgenden düşman yanına yürüyüş maliyeti (ters yön: `cost(cur, n)`). */
-function foeField(state: BattleState, actor: Combatant, foes: Combatant[], cost: Cost): Map<string, number> {
+export function foeField(state: BattleState, actor: Combatant, foes: Combatant[], cost: Cost): Map<string, number> {
   climbAiStats.fields++;
   const size = sizeOf(state);
   const best = new Map<string, number>();
