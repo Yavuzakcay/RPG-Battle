@@ -49,6 +49,8 @@ export interface MapVariant {
   objects?: RawMap['objects'];
   /** Kuyruk K68b: iç mekânın tavan yüksekliği (ft; yalnız kural sürümü 52+). Yoksa açık gök. `scripts/k71-dikey.py` yazar. */
   tavanFt?: number;
+  /** Kuyruk K71c (sürüm 58+): açık gökte uçuş üst sınırı (ft, 5'in katı; yoksa `data/dikey.json` `ucus.ucusUstFt`, 60). */
+  ucusUstFt?: number;
   /** Kuyruk K71a: dikey ezmeler (yalnız kural sürümü 56+; `scripts/k71-dikey.py` `ONAYLI` yazar). */
   dikey?: MapDikey;
 }
@@ -327,6 +329,7 @@ function validateBase(raw: RawMap, opts: { images?: ReadonlySet<string> }): stri
     errors.push(...effectErrors(v.effects, `${where} "${v.id}" varyantı`));
     if (v.tavanFt !== undefined && !(Number.isInteger(v.tavanFt) && v.tavanFt >= 5 && v.tavanFt <= 120)) errors.push(`${where}: "${v.id}" varyantının tavanı 5–120 ft tam sayı olmalı`);
     if (v.dikey) errors.push(...dikeyErrors(v.dikey, `${where}: "${v.id}" varyantının dikey verisi`));
+    if (v.ucusUstFt !== undefined && (!FT_OK(v.ucusUstFt) || v.ucusUstFt < 5)) errors.push(`${where}: "${v.id}" varyantının ucusUstFt değeri 5–120 ft ve 5'in katı olmalı`);
   }
   return errors;
 }

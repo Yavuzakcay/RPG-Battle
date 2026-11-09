@@ -33,6 +33,7 @@ import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbing
 import { dikeyOn, hasHexCeilings } from './vertical';
 import { obstacleTopFt } from './cover';
 import { climbOn, holdSurface, surfaceAt } from './climbing';
+import { bandOf, cellsOn, fillsBand, GROUND_BAND, type Band } from './cells';
 import { heightAt, heightDelta, heightMoveRule, heightStepFn, layerActive, levelFeet } from './heights';
 import { mechanicsAt } from './spellVersion';
 import s2rules from '../../data/s2-kurallar.json';
@@ -78,9 +79,11 @@ export function solidWallAt(state: BattleState, h: Offset): string | null {
 export { speedHexes };
 
 /** Altıgende duran başka bir savaşçı (ölüler yer kaplamaz). */
-export function occupantAt(state: BattleState, at: Offset, exceptId?: string): Combatant | undefined {
+export function occupantAt(state: BattleState, at: Offset, exceptId?: string, band?: Band): Combatant | undefined {
+  // Kuyruk K71c (sürüm 58+): hücre doluluğu: yalnız `band` düzeylerini (verilmezse yer, düzey 0) kaplayan yaratık.
+  const probe = band ?? (cellsOn(state) ? GROUND_BAND : undefined);
   return Object.values(state.combatants).find(
-    (c) => c.id !== exceptId && c.pos !== null && !c.summon?.noSpace && covers(state, c, at) && isTargetable(c),
+    (c) => c.id !== exceptId && c.pos !== null && !c.summon?.noSpace && covers(state, c, at) && isTargetable(c) && fillsBand(state, c, probe),
   );
 }
 
@@ -102,12 +105,13 @@ export function placeProblem(state: BattleState, at: Offset): string | null {
  * engel/lav/derin su değil, başka yaratık yok). Sorun metni ya da null; tek altıgenli yaratık ve bayrak kapalıyken her zaman
  * null (çağıran kendi tek altıgen denetimini yapar). Çağırma, ışınlanma, atlama ve sürükleme varışı bu tek denetimden geçer.
  */
-export function bodyFitProblem(state: BattleState, c: Pick<Combatant, 'id' | 'name' | 'size'>, at: Offset, ignore: readonly string[] = []): string | null {
+export function bodyFitProblem(state: BattleState, c: Pick<Combatant, 'id' | 'name' | 'size'> & { altitudeFt?: number }, at: Offset, ignore: readonly string[] = []): string | null {
   if (!isMultiHex53(state, c)) return null;
   for (const h of bodyAt(state, c, at)) {
     const why = placeProblem(state, h);
     if (why) return `${c.name}: gövde ${hexLabel(at)} çapasına sığmıyor (${why})`;
-    const other = occupantAt(state, h, c.id);
+    // Kuyruk K71c (sürüm 58+): gövdenin bandı (havadaki büyük gövde yerdekinin üstüne sığar).
+    const other = occupantAt(state, h, c.id, cellsOn(state) ? bandOf(c) : undefined);
     if (other && !ignore.includes(other.id)) return `${c.name}: gövde ${hexLabel(at)} çapasına sığmıyor (${hexLabel(h)} dolu: ${other.name}).`;
   }
   return null;
@@ -222,9 +226,12 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   // Kuyruk 19 (Bugbear Abduct): yakaladığını taşımak ek hareket istemez.
   const dragging = !actor.traits?.includes('abduct') && Object.values(state.combatants).some((c) => c.grapple?.by === actor.id && !(wrestler && sizeRank(c.size) <= sizeRank(actor.size)));
   const enemyAt = new Map<string, Combatant>();
+  // Kuyruk K71c (sürüm 58+): yalnız yürüyenin düzeylerini (bandını) kaplayan düşman yolu keser; uçan düşmanın üstünden
+  // (ya da altından) geçer (K6). Hızlı yol: havada kimse yokken bant hesabı yapılmaz (`fillsBand`).
+  const moverBand = cellsOn(state) ? bandOf(actor) : undefined;
   for (const c of Object.values(state.combatants)) {
     // Dokunulamaz çağrının (ruh sürüsü, Flaming Sphere) içinden geçilir (Görev B2).
-    if (c.pos !== null && c.side !== actor.side && isTargetable(c) && !isIntangible(c)) enemyAt.set(hexKey(c.pos), c);
+    if (c.pos !== null && c.side !== actor.side && isTargetable(c) && !isIntangible(c) && fillsBand(state, c, moverBand)) enemyAt.set(hexKey(c.pos), c);
   }
   // Görev B2: büyü alanları (zorlu arazi, Plant Growth, rüzgâr duvarı); zemin maliyetiyle birikmez, büyüğü geçer.
   const zoneCost = zoneMoveCost(state, actor);
@@ -234,7 +241,7 @@ function hexCostFn(state: BattleState, actor: Combatant): (h: Offset, prev: Offs
   const phase = phaseOf(actor);
   const through = phase?.difficult ? 2 : 1;
   const allyAt = new Set<string>();
-  if (phase?.difficult) for (const c of Object.values(state.combatants)) if (c.pos !== null && c.id !== actor.id && c.side === actor.side && isTargetable(c)) allyAt.add(hexKey(c.pos));
+  if (phase?.difficult) for (const c of Object.values(state.combatants)) if (c.pos !== null && c.id !== actor.id && c.side === actor.side && isTargetable(c) && fillsBand(state, c, moverBand)) allyAt.add(hexKey(c.pos));
   // Görev A4: tasma: merkezden yarıçap dışına uzaklaşan adım yok.
   const leash = leashOf(state, actor);
   // Kuyruk 21 D2b: çalışan yürüyen merdivende yokuş yukarı kenar yol bulmada geçilmez (yapay zekâ uzun yolu seçer).
@@ -375,7 +382,7 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     const s2gas = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.shareSpace);
     const doorGap = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.squeeze) && (state.map?.objects ?? []).some((o) => (o.kind === 'door' || o.kind === 'gate') && o.state !== 'open' && sameHex(o.at, h));
     if (target.movement === 'blocked' && !doorGap) return fail(`${hexLabel(h)} geçilmez (${target.name}).`);
-    const other = occupantAt(state, h, actor.id);
+    const other = occupantAt(state, h, actor.id, cellsOn(state) ? bandOf(actor) : undefined);
     if (other && !s2gas) return fail(`${hexLabel(h)} dolu (${other.name}).`);
   }
 

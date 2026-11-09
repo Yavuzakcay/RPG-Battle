@@ -4,6 +4,7 @@
  * Hedef altıgen: harita içi, geçilebilir, boş, menzil içinde; görüş gerekiyorsa görüş hattı açık ve (karanlıkta)
  * görülebilir. Saf.
  */
+import { moverBand } from './cells';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { sightBlockedBetween } from './cover';
 import { canSee } from './maprules';
@@ -24,7 +25,8 @@ export function teleportProblem(state: BattleState, actor: Combatant, to: Offset
   // Kuyruk K69 (sürüm 53, çok altıgen): menzil gövdenin en yakın altıgeninden, varışta gövde sığmalı.
   const d = reachToHex(state, actor, to);
   if (d * 5 > spec.rangeFt) return `${hexLabel(to)} menzil dışında (en çok ${spec.rangeFt} ft).`;
-  const other = occupantAt(state, to, actor.id);
+  // Kuyruk K71c (sürüm 58+): ışınlananın kendi düzeyleri (havadaki yerdekinin üstüne gelir).
+  const other = occupantAt(state, to, actor.id, moverBand(state, actor));
   if (other) return `${hexLabel(to)} dolu (${other.name}).`;
   const fit = bodyFitProblem(state, actor, to);
   if (fit) return fit;

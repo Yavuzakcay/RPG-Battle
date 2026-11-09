@@ -2,6 +2,7 @@
  * İstekleri (komutları) doğrular ve çözümler: kim neyi yapabilir, zarlar, kurallar.
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
+import { executeAirMove } from './airMove';
 import { beadAfterEvents, beadTurnEndEvents, executeBeadTouch } from './bead';
 import { distance } from '../rules/hex';
 import { exhaustionGain } from './deathWard';
@@ -795,7 +796,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'dismount') return executeDismount(state, actor, cmd.to);
   // Kuyruk 19 (Mounted Combat): binici kendi yürümez; bineği taşır.
   if (actor.riding && (cmd.type === 'move' || cmd.type === 'jump' || cmd.type === 'shift_move')) return fail('Bineğin üstündesin: önce in (bineğin hareketiyle taşınırsın).');
-  if (cmd.type === 'move') return executeMove(state, actor, cmd.to, rng);
+  if (cmd.type === 'move') return cmd.toFt !== undefined ? executeAirMove(state, actor, cmd.to, cmd.toFt, rng) : executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'shift_move') return executeShiftMove(state, actor, cmd.to, rng);
   if (cmd.type === 'superior_defense') return executeSuperiorDefense(state, actor);
   if (cmd.type === 'steed_action') return executeSteedAction(state, actor, cmd.kind, rng, cmd.targetId, cmd.to);

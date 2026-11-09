@@ -11,6 +11,7 @@
  * (Spirit Guardians) girer. Daha alçak altıgene itilen her 10 ft (yükseklik seviyesi) için 1d6
  * düşer (SRD Falling, s. 182); uçuruma/yarığa (`u`) itilen 30 ft dibine düşer.
  */
+import { moverBand } from './cells';
 import { fall } from './fall';
 import { climbOn } from './climbing';
 import { knowsWhere } from './sight';
@@ -78,7 +79,7 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
     let lava = false;
     for (const h of bodyAt(state, target, to)) {
       if (!isInside(h, sizeOf(state))) return { ok: false, reason: 'harita dışı' };
-      const o = occupantAt(state, h, target.id);
+      const o = occupantAt(state, h, target.id, moverBand(state, target));
       if (o) return { ok: false, reason: `arkada ${o.name} var` };
       const th = terrainAt(state, h);
       if (k69 && th.char === 'u' && !flies(target) && fissureDepthAt(state, h) > 0) { if (!pit || distance(h, to) < distance(pit, to)) pit = h; continue; }
@@ -93,7 +94,7 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   }
   const t = terrainAt(state, to);
   const here = terrainAt(state, from);
-  const other = occupantAt(state, to, target.id);
+  const other = occupantAt(state, to, target.id, moverBand(state, target));
   if (other) return { ok: false, reason: `arkada ${other.name} var` };
   const well = ruleOf(state, 'stairwellFall');
   if (well && t.char === (well.terrain ?? 'u') && !flies(target)) {
@@ -277,7 +278,7 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   if (!save.success && slam) {
     const dice = collisionDice(1) as string;
     events.push(hitEffect(target, 'carpmaHasari', MOTION.carpma.metin.tr, { damage: dice, damageType: MOTION.carpma.tur }, rng));
-    const blocker = occupantAt(state, slam);
+    const blocker = occupantAt(state, slam, undefined, moverBand(state, target));
     if (blocker && blocker.id !== target.id && blocker.hp > 0) events.push(hitEffect(blocker, 'carpmaHasari', MOTION.carpma.metinCarpilan.tr, { damage: dice, damageType: MOTION.carpma.tur }, rng));
   }
   return finish(state, events);

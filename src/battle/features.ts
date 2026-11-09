@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { anyAloft, bandGap, bandOf, cellsOn } from './cells';
 import { BEACON_K70_VERSION, beaconMax, healRoll } from './healMax';
 import { afterOpportunityEvents } from './turnHooks';
 import { mechanicsAt } from './spellVersion';
@@ -436,9 +437,16 @@ const withPos = (state: BattleState, id: string, pos: Offset | null): BattleStat
 };
 
 /** Bu yaratık, savaşçının `from` → `to` hareketinde erişimden çıkıyor mu (haritalı savaş). */
-function leavesReach(state: BattleState, o: Combatant, mover: Combatant, reachFt: number, from: Offset, to: Offset): boolean {
+function leavesReach(state: BattleState, o: Combatant, mover: Combatant, reachFt: number, from: Offset, to: Offset, fromAlt?: number, toAlt?: number): boolean {
   if (!o.pos) return false;
   const r = Math.max(1, Math.floor(reachFt / 5));
+  // Kuyruk K71c (sürüm 58+, K9): 3B erişim: max(gövde aralığı, hücre bandı aralığı); dikey hareket (aynı altıgen) de çıkar.
+  if (cellsOn(state) && (fromAlt !== undefined || toAlt !== undefined || anyAloft(state))) {
+    const ob = bandOf(o);
+    const d = (pos: Offset, alt: number) => Math.max(gap(state, o, { ...mover, pos }), bandGap(ob, bandOf(mover, alt)));
+    const a0 = fromAlt ?? mover.altitudeFt ?? 0;
+    return d(from, a0) <= r && d(to, toAlt ?? a0) > r;
+  }
   // Görev A6: gövdeler arası (tek altıgenlide distance(o.pos, from/to) ile aynı).
   return gap(state, o, { ...mover, pos: from }) <= r && gap(state, o, { ...mover, pos: to }) > r;
 }
@@ -452,7 +460,7 @@ function leavesReach(state: BattleState, o: Combatant, mover: Combatant, reachFt
  * eden henüz `from`dadır.
  */
 export function opportunityAttacks(
-  state: BattleState, moverId: string, step: { from: Offset; to: Offset } | null, rng: Rng,
+  state: BattleState, moverId: string, step: { from: Offset; to: Offset; /** Kuyruk K71c (sürüm 58+): adımın irtifaları. */ fromAlt?: number; toAlt?: number } | null, rng: Rng,
 ): BattleEvent[] {
   const mover0 = state.combatants[moverId];
   if (!mover0 || mover0.economy.disengaged || mover0.hp <= 0) return [];
@@ -473,7 +481,7 @@ export function opportunityAttacks(
     const melee = meleeOf(o);
     if (!melee) continue;
     if (step) {
-      if (!leavesReach(current, o, mover, melee.reachFt, step.from, step.to)) continue;
+      if (!leavesReach(current, o, mover, melee.reachFt, step.from, step.to, step.fromAlt, step.toAlt)) continue;
       if (mover.hidden || !canSee(current, o, mover)) continue;
     } else if (state.map || heightOf(current, o) !== heightOf(current, mover) || mover.hidden) {
       continue;

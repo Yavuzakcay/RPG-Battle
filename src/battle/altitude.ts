@@ -31,6 +31,11 @@ import { terrainAt } from './movement';
 import { dikeyOn, tavanEzme } from './vertical';
 import { obstacleTopFt } from './cover';
 import { climbOn, dexClimbMove, dexClimberHolds } from './climbing';
+import { bandGap, bandOf, bandsOverlap, cellsOn } from './cells';
+import { covers } from './body';
+import { isTargetable } from './common';
+import { opportunityAttacks } from './features';
+import dikeyData from '../../data/dikey.json';
 
 export const ALT = rules.irtifa;
 export const altitudeOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(s) >= 41;
@@ -39,6 +44,9 @@ export const altitudeOf = (c: Pick<Combatant, 'altitudeFt'> | undefined): number
 /** Erişim uzaklığı (ft): yatay uzaklık ile irtifa farkının büyüğü (sürüm 41+; öncesinde yalnız yatay). */
 export function reachFt(state: Pick<BattleState, 'kuralSurumu'>, a: Combatant, b: Combatant, flatFt: number): number {
   if (!altitudeOn(state)) return flatFt;
+  // Kuyruk K71c (sürüm 58+, K9): dikey bileşen hücre bantları arası düzey aralığı (alt hücre − öbürünün üst hücresi);
+  // Medium/Small/Tiny için |Δirtifa| ile aynı, büyük gövde boyunca yakındır.
+  if (cellsOn(state)) return Math.max(flatFt, bandGap(bandOf(a), bandOf(b)) * 5);
   return Math.max(flatFt, Math.abs(altitudeOf(a) - altitudeOf(b)));
 }
 
@@ -114,8 +122,24 @@ export const eyeFt = (c: Pick<Combatant, 'size' | 'altitudeFt'>): number => alti
 /** İrtifa üst sınırı (ft, 5'in katı): tavanlı haritada tavan − boy, açık gökte `irtifa.maxFt`. */
 export function altitudeCapFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, c: Pick<Combatant, 'size'> & { pos?: Offset | null; id?: string }): number {
   const ceil = ceilingOver(state, c);
-  if (ceil === null) return ALT.maxFt;
+  // Kuyruk K71c (sürüm 58+): açık gökte uçuş üst sınırı (`ucusUstFt`, yoksa 60 ft); 57 ve altında `irtifa.maxFt`.
+  if (ceil === null) return cellsOn(state) ? flyCapFt(state) : ALT.maxFt;
   return Math.max(0, Math.floor((ceil - bodyHeightFt(c)) / ALT.stepFt) * ALT.stepFt);
+}
+
+const FLY_CAP = new Map<string, number>();
+/** Kuyruk K71c (sürüm 58+): açık gökte uçuş üst sınırı (ft): varyantın `ucusUstFt`'i, yoksa `data/dikey.json` `ucus.ucusUstFt`. */
+export function flyCapFt(state: Pick<BattleState, 'map'>): number {
+  const m = state.map;
+  if (!m) return dikeyData.ucus.ucusUstFt;
+  const key = `${m.id}\u0000${m.variantId}`;
+  let v = FLY_CAP.get(key);
+  if (v === undefined) {
+    const def = maps.find((x) => x.id === m.id);
+    v = (def?.variants.find((x) => x.id === m.variantId) ?? def?.variants[0])?.ucusUstFt ?? dikeyData.ucus.ucusUstFt;
+    FLY_CAP.set(key, v);
+  }
+  return v;
 }
 
 /** Tavana değiyor mu (tavanlı harita, irtifa = üst sınır > 0). */
@@ -194,6 +218,9 @@ export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: {
   const from = altitudeOf(t);
   const d = Math.abs(to - from);
   if (d === 0) return fail('Zaten o irtifada.');
+  // Kuyruk K71c (sürüm 58+): varış hücreleri boş olmalı; yolda düşmanın hücresinden geçilmez.
+  const cellWhy = cellsOn(state) ? verticalCellProblem(state, t, from, to) : null;
+  if (cellWhy) return fail(cellWhy);
   // Kuyruk K68b (sürüm 52): tavan − boy üst sınırı (açık gökte `maxFt`).
   const ceil = ceilingOver(state, t);
   if (ceil !== null && to > from && to > altitudeCapFt(state, t)) return fail(`Tavan ${ceil} ft: ${t.name} en çok ${altitudeCapFt(state, t)} ft yükselir.`);
@@ -210,9 +237,38 @@ export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: {
   // Kuyruk K71b (sürüm 57+, K68 karar 9 geri): uçmayan herkes duvara tırmanır (Çeviklik kontrolü, çarpanlı maliyet).
   if (!fliesOrHovers(actor) && climbOn(state)) return rng ? dexClimbMove(state, actor, from, to, rng) : fail('Tırmanma zarı gerekli.');
   if (flySpeed(actor) <= 0) return fail('Uçuş hızın yok.');
+  // Kuyruk K71c (sürüm 58+): açık gökte uçuş üst sınırı (`ucusUstFt`, yoksa 60 ft).
+  if (cellsOn(state) && to > from && to > altitudeCapFt(state, t)) return fail(`Uçuş üst sınırı ${altitudeCapFt(state, t)} ft.`);
   const cost = d / 5;
   if (actor.movementUsed + cost > speedHexes(actor)) return fail(`Yeterli hareket yok (${d} ft dikey = ${cost} altıgen).`);
-  return finish(state, [{ type: 'altitude_changed', targetId: t.id, altitudeFt: to, label: 'Uçuş', cost, byId: actor.id, gentle: false }]);
+  const rise: BattleEvent = { type: 'altitude_changed', targetId: t.id, altitudeFt: to, label: 'Uçuş', cost, byId: actor.id, gentle: false };
+  // Kuyruk K71c (sürüm 58+): dikine yükselip/alçalıp 3B erişimden çıkan uçan fırsat saldırısı yer.
+  if (cellsOn(state) && rng && actor.pos) {
+    const oa = opportunityAttacks(state, actor.id, { from: actor.pos, to: actor.pos, fromAlt: from, toAlt: to }, rng);
+    const after = applyEvents(state, oa);
+    if ((after.combatants[actor.id]?.hp ?? 0) <= 0) return finish(state, oa);
+    return finish(state, [...oa, rise]);
+  }
+  return finish(state, [rise]);
+}
+
+/**
+ * Kuyruk K71c (sürüm 58+): dikey hareketin hücre sorunu (yoksa null): varış bandı başka bir yaratığın hücresine çakışmaz;
+ * geçilen düzeylerde düşman hücresi yoktur (dost hücresinden geçilir, durulmaz).
+ */
+export function verticalCellProblem(state: BattleState, t: Combatant, from: number, to: number): string | null {
+  if (!t.pos) return null;
+  const hexes = bodyAt(state, t, t.pos);
+  const dest = bandOf(t, to);
+  const lo = Math.min(bandOf(t, from).lo, dest.lo);
+  const hi = Math.max(bandOf(t, from).hi, dest.hi);
+  for (const c of Object.values(state.combatants)) {
+    if (c.id === t.id || !c.pos || c.summon?.noSpace || !isTargetable(c) || !hexes.some((h) => covers(state, c, h))) continue;
+    const b = bandOf(c);
+    if (bandsOverlap(b, dest)) return `Hücre dolu: ${c.name} (${b.lo * 5}–${b.hi * 5 + 5} ft).`;
+    if (c.side !== t.side && bandsOverlap(b, { lo, hi })) return `${c.name} yolda: düşmanın hücresinden geçilmez.`;
+  }
+  return null;
 }
 
 /** Kuyruk K68b: tırmanma hızıyla duvarda yukarı/aşağı (hareketten öder). */
@@ -270,9 +326,11 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
     // Kuyruk K66a: eksi irtifa (yarığın içi) düşüş değil.
     if (altitudeOf(c) <= 0) continue;
     // Kuyruk K68b (sürüm 52): tavanın üstündeki irtifa (boy büyüdü, tavanlı haritaya gelindi) tavana kırpılır (hasarsız).
-    const cap = ceilingOver(s, c) === null ? null : altitudeCapFt(s, c);
+    // Kuyruk K71c (sürüm 58+): açık gökte de uçuş üst sınırına (tırmanan hariç: duvar boyu kendi sınırı).
+    const openSky = ceilingOver(s, c) === null;
+    const cap = openSky && !(cellsOn(s) && !climbingAloft(c)) ? null : altitudeCapFt(s, c);
     if (cap !== null && altitudeOf(c) > cap) {
-      const evs: BattleEvent[] = [{ type: 'altitude_changed', targetId: c.id, altitudeFt: cap, label: `tavan (${ceilingOver(s, c)} ft)` }];
+      const evs: BattleEvent[] = [{ type: 'altitude_changed', targetId: c.id, altitudeFt: cap, label: openSky ? `uçuş üst sınırı (${cap} ft)` : `tavan (${ceilingOver(s, c)} ft)` }];
       out.push(...evs); s = applyEvents(s, evs);
       c = s.combatants[c0.id] as Combatant;
       if (cap <= 0) continue;

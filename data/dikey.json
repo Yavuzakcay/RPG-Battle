@@ -82,5 +82,9 @@
         "dost-kalkani"
       ]
     }
+  },
+  "ucus": {
+    "not": "Kuyruk K71c (kural sürümü 58+; kullanıcı kararı): açık gökte uçuş üst sınırı (ft). Harita varyantı `ucusUstFt` ile ezer (5'in katı, 5–120); tavanlı haritada tavan − boy (K68b, değişmez). 57 ve altında açık gökte `irtifa.maxFt` (120).",
+    "ucusUstFt": 60
   }
 }
