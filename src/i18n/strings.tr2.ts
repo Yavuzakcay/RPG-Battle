@@ -344,6 +344,9 @@ export const TR_EXTRA = {
       highJump: (ft: number): string => `Yerinde zıpla (dikey erişim +${ft} ft)`, jumped: (ft: number): string => `Zıpladı: dikey erişim +${ft} ft`,
       cloud: (base: number): string => `Call Lightning bulutu (taban ${base} ft, 60 ft yarıçap)` },
     // Kuyruk K71c: Hava görünümü (prizma düzeyleri).
+    // Kuyruk K72: kat görünümü (çok katlı bina).
+    k72: { toggle: '⌂ Kat', toggleTitle: 'Kat görünümü: kat seç', panel: 'Kat görünümü', ground: 'Zemin',
+      floor: (name: string, ft: number): string => `${name} · ${ft} ft`, hint: 'Seçili katta olmayan yaratıklar soluk. ▲▼ merdiven, ○ delik.' },
     k71c: { toggle: '☁ Hava', toggleTitle: 'Hava görünümü: düzey seç (her düzey 5 ft)', panel: 'Hava görünümü', levels: 'Düzeyler',
       level: (ft: number, n: number): string => (ft === 0 ? `Yer${n ? ` · ${n}` : ''}` : `${ft} ft${n ? ` · ${n}` : ''}`),
       hintFly: (ft: number): string => `${ft} ft düzeyine uç: vurgulu altıgene dokun (altıgen + düzey tek adım).`,

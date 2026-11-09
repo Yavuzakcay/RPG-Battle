@@ -117,3 +117,91 @@ describe('K72 oda tavanı', () => {
 });
 
 export { applyEvents, scripted, landingFt, slabBetween };
+
+// --- Çok katlı bina -------------------------------------------------------------------------------------------------------
+import { KATLI_BINA, KATLI_BINA_DIKEY, KATLI_BINA_TILES } from '../map/fixtures/katliBina';
+import { dikeyErrors, validateMap } from '../map/maps';
+import ornek from '../../harita/belgeler/K72-ORNEK-KATLI-HARITA.json';
+import { quakeStructureEvents } from './quake';
+import { chooseCommand } from './ai';
+import type { SpellZone } from './types';
+import { spells } from '../data';
+import { mechanicsAt } from './spellVersion';
+
+const bina = (parts: Combatant[], pos: Record<string, [Offset, number?]>, ver = 60) => field(parts, pos, { ver, tiles: KATLI_BINA_TILES, dikey: KATLI_BINA_DIKEY });
+const F = (p: Partial<Combatant> = {}) => mk('A', { ownerId: 'p1', fly: 30, speed: 30, ...p });
+
+describe('K72 çok katlı bina', () => {
+  it('fikstür ve örnek taslak geçerli; duruş yükseklikleri: iç 0 + 10, merdiven 0 + 10, delik 0, duvar yok', () => {
+    expect(validateMap(KATLI_BINA)).toEqual([]);
+    expect(dikeyErrors(ornek.variants[0]?.dikey as MapDikey, 'örnek')).toEqual([]);
+    const s = bina([A()], { A: [H(1)] });
+    expect([standHeights(s, H(6)), standHeights(s, H(4, 2)), standHeights(s, H(8, 4)), standHeights(s, H(3))]).toEqual([[0, 10], [0, 10], [0], []]);
+    expect(standHeights(bina([A()], { A: [H(1)] }, 59), H(6))).toEqual([]);
+  });
+  it('üst katta yürüyüş: döşemede normal; delik ve döşeme dışı yürünmez; komut sonunda düşmez', () => {
+    const s = bina([A()], { A: [H(5, 2), 10] });
+    const r = run(s, { type: 'move', actorId: 'A', to: H(7, 2) });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect([me(r.state).pos, me(r.state).altitudeFt]).toEqual([H(7, 2), 10]);
+    expect(run(s, { type: 'move', actorId: 'A', to: H(8, 4) }).ok).toBe(false);
+  });
+  it('merdiven: zemin ↔ üst kat yürüyerek (10 ft = 2 altıgen); merdivensiz altıgende döşeme geçilmez', () => {
+    const up = run(bina([A()], { A: [H(4, 2)] }), { type: 'vertical_move', actorId: 'A', toFt: 10 } as Command);
+    expect(up.ok).toBe(true);
+    if (up.ok) expect([me(up.state).altitudeFt, me(up.state).movementUsed, me(up.state).climbing, standingOn(up.state, me(up.state))]).toEqual([10, 2, undefined, true]);
+    const wallUp = run(bina([A()], { A: [H(5, 2)] }), { type: 'vertical_move', actorId: 'A', toFt: 10 } as Command);
+    expect(wallUp.ok).toBe(false);
+    if (!wallUp.ok) expect(wallUp.error).toMatch(/kat döşemesi/);
+  });
+  it('uçan: alt katta döşemeye dek (5 ft), döşemeyi delik ya da merdivenden geçer; birleşik uçuş açıklığı kullanır', () => {
+    const s = bina([F()], { A: [H(6)] });
+    expect(run(s, { type: 'vertical_move', actorId: 'A', toFt: 5 } as Command).ok).toBe(true);
+    expect(run(s, { type: 'vertical_move', actorId: 'A', toFt: 10 } as Command).ok).toBe(false);
+    expect(run(bina([F()], { A: [H(8, 4)] }), { type: 'vertical_move', actorId: 'A', toFt: 15 } as Command).ok).toBe(true);
+    const r = run(s, { type: 'move', actorId: 'A', to: H(6, 2), toFt: 10 } as Command);
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      const path = (r.events.find((e) => e.type === 'moved') as Extract<BattleEvent, { type: 'moved' }>).path;
+      expect(path.some((h) => (h.col === 8 && h.row === 4) || (h.col === 4 && h.row === 2))).toBe(true);
+      expect([me(r.state).pos, me(r.state).altitudeFt]).toEqual([H(6, 2), 10]);
+    }
+  });
+  it('görüş: alt kattaki üst kattakini döşemeden göremez; aynı kattakiler görür', () => {
+    const s = bina([A(), G()], { A: [H(5, 3)], G: [H(7, 3), 10] });
+    expect(lineOfFire(s, me(s), me(s, 'G'))).toMatchObject({ blocked: true, blockedBy: 'döşeme' });
+    const same = bina([A(), G()], { A: [H(5, 3), 10], G: [H(7, 3), 10] });
+    expect(lineOfFire(same, me(same), me(same, 'G')).blocked).toBe(false);
+    expect(slabBetween(s, H(6), 0, 12)).toBe(true);
+    expect(slabBetween(s, H(8, 4), 0, 12)).toBe(false);
+  });
+  it('düşme alt kata: üst katın 15 ft üstünden düşen döşemeye iner (tek düşme), irtifa 10', () => {
+    const s = bina([A(), G()], { A: [H(6), 25], G: [H(13)] });
+    expect(landingFt(s, H(6), 25)).toBe(10);
+    const r = run(s, { type: 'end_turn', actorId: 'A' } as Command);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(falls(r.events)).toHaveLength(1);
+    expect(me(r.state).altitudeFt).toBe(10);
+  });
+  it('Earthquake kat çöküşü: alandaki döşeme çöker, üstündeki tek düşmeyle zemine iner', () => {
+    const s = bina([A(), G()], { A: [H(6), 10], G: [H(13)] });
+    const sp = spells.find((x) => x.id === 'earthquake') as NonNullable<ReturnType<typeof spells.find>>;
+    const quake = { id: 'q1', spellId: 'earthquake', name: 'Earthquake', casterId: 'G', side: 'enemies', dc: 15, hexes: [H(5), H(6), H(7)], rounds: 10, hits: {},
+      spec: mechanicsAt(s, sp).zone } as unknown as SpellZone;
+    const evs = quakeStructureEvents(s, quake, low);
+    expect(evs.some((e) => e.type === 'map_effect' && e.rule === 'katCokme')).toBe(true);
+    const after = applyEvents(s, evs);
+    expect(falls(evs)).toHaveLength(1);
+    expect([me(after).altitudeFt ?? 0, standHeights(after, H(6))]).toEqual([0, [0]]);
+    expect(standHeights(after, H(6, 2))).toEqual([0, 10]);
+  });
+  it('YZ: bütün düşmanlar üst kattaysa merdivene yürür, merdivende kata çıkar', () => {
+    const s0 = bina([A(), G('G', { speed: 30 })], { A: [H(6, 2), 10], G: [H(8, 3)] });
+    const s = { ...s0, order: ['G', 'A'] } as BattleState;
+    const c1 = chooseCommand(s);
+    expect(c1).toMatchObject({ type: 'move', actorId: 'G', to: H(4, 2) });
+    const onStairs = { ...s, combatants: { ...s.combatants, G: { ...me(s, 'G'), pos: H(4, 2) } } };
+    expect(chooseCommand(onStairs)).toMatchObject({ type: 'vertical_move', actorId: 'G', toFt: 10 });
+  });
+});

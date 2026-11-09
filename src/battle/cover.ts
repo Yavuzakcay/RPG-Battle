@@ -23,7 +23,7 @@ import { dikeyOn, engelEzme, harfFt, hasHexCeilings, zeminFt } from './vertical'
 import { spells } from '../data';
 import s2rules from '../../data/s2-kurallar.json';
 import dikeyData from '../../data/dikey.json';
-import { standAlt, standingOn } from './stand';
+import { katlarOf, slabBetween, standAlt, standingOn } from './stand';
 import type { BattleState, Combatant } from './types';
 
 
@@ -155,6 +155,22 @@ function groundBlock(state: BattleState, g: Ground, h: Offset, lh: number, floor
   return null;
 }
 
+/**
+ * Kuyruk K72 (sürüm 60+): hat bir kat döşemesini kesiyor mu (merdiven ve delik açık). Her altıgende hattın yarım adım önce ve
+ * sonraki yüksekliği (altıgen zemininden) döşemenin iki yanındaysa kesilir; uçların kendi altıgeni dahil.
+ */
+function slabCut(state: BattleState, g: Ground | null, path: Offset[], a0: number, b0: number): boolean {
+  if (!katlarOf(state).length) return false;
+  const n = path.length - 1;
+  const at = (x: number) => a0 + ((b0 - a0) * x) / n;
+  for (let i = 0; i <= n; i++) {
+    const h = path[i] as Offset;
+    const z = g ? g.at(h) : 0;
+    if (slabBetween(state, h, at(Math.max(0, i - 0.5)) - z, at(Math.min(n, i + 0.5)) - z)) return true;
+  }
+  return false;
+}
+
 /** İrtifalı değerlendirme: hattın altıgendeki yüksekliği engelin tepesinden büyükse engel görüşü kesmez, siper vermez. */
 function evaluateAlt(state: BattleState, path: Offset[], ignore: string[], target: Combatant, end: Offset | null, ends: Ends): LineOfFire {
   losStats.altPath++;
@@ -174,6 +190,7 @@ function evaluateAlt(state: BattleState, path: Offset[], ignore: string[], targe
   // Kuyruk K71d (sürüm 59+): sırt alt sınırı uçların alçak zemini; kenar siperi göz–ayak hattıyla (`ledge`).
   const floor = g?.v59 ? Math.min(za, zb) : 0;
   const feet = g?.v59 && ends.feetB !== undefined ? ends.feetB + zb : null;
+  if (slabCut(state, g, path, a0, b0)) return { blocked: true, blockedBy: 'döşeme', cover: 0 };
   let ledge = false;
   for (let i = 1; i < n; i++) {
     const h = path[i] as Offset;
@@ -357,6 +374,7 @@ function sightBlockedAlt(state: BattleState, from: Offset, to: Offset, ends: End
     const a0 = ends.a + za;
     const b0 = ends.b + zb;
     const floor = g?.v59 ? Math.min(za, zb) : 0;
+    if (slabCut(state, g, path, a0, b0)) return 'döşeme';
     for (let i = 1; i < n; i++) {
       const h = path[i] as Offset;
       const lh0 = a0 + ((b0 - a0) * i) / n;

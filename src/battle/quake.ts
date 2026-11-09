@@ -30,6 +30,9 @@ import { OBJECTS } from './objectData';
 import { damageObjectEvents } from './objects';
 import { panelDamageEvents, panelId, panelOf, panelStats } from './walls';
 import { zoneSpecOf } from './zones';
+import { fall } from './fall';
+import { katlarOf, landingFt } from './stand';
+import dikeyData from '../../data/dikey.json';
 import type { BattleEvent, BattleState, Combatant, MapObject, SpellZone } from './types';
 
 type StructSpec = NonNullable<ZoneSpec['structures']>;
@@ -136,6 +139,34 @@ export function quakeStructureEvents(state: BattleState, quake: SpellZone, rng: 
       const evs = panelDamageEvents(s, live, st.at, spec.damage, spec.damageType);
       push(evs);
       if (evs.some((e) => e.type === 'zone_moved' && e.zoneId === live.id)) push(collapseEvents(s, quake, spec, st.at, st.heightFt, st.label, rng));
+    }
+  }
+  push(floorCollapseEvents(s, quake, spec, rng));
+  return out;
+}
+
+/**
+ * Kuyruk K72 (sürüm 60+): Earthquake kat çöküşü. Alandaki her kat döşemesi yapıdır (can `hp`, yoksa `data/dikey.json`
+ * `katDosemesi.hp`); tremorun hasarı canından az değilse alandaki döşeme altıgenleri çöker (`map_effect.katCokuk`). Üstündeki
+ * yaratıklar alttaki en yüksek yüzeye tek `fall` ile iner (tek hasar; enkaz ve 12d6 yok).
+ */
+function floorCollapseEvents(state: BattleState, quake: SpellZone, spec: StructSpec, rng: Rng): BattleEvent[] {
+  const katlar = katlarOf(state);
+  if (!katlar.length || ['poison', 'psychic'].includes(spec.damageType)) return [];
+  const area = new Set(quake.hexes.map(hexKey));
+  const out: BattleEvent[] = [];
+  let s = state;
+  for (const k of katlar) {
+    if (spec.damage < (k.hp ?? dikeyData.katDosemesi.hp)) continue;
+    const hit = [...new Set([...k.altigenler, ...(k.merdiven ?? [])])].filter((h) => area.has(h) && !(s.map?.katCokuk ?? []).includes(`${k.id}|${h}`));
+    if (!hit.length || !s.combatants[quake.casterId]) continue;
+    const ev: BattleEvent = { type: 'map_effect', rule: 'katCokme', targetId: quake.casterId, text: `${k.ad ?? k.id} döşemesi çöktü (${hit.length} altıgen)`, katCokuk: hit.map((h) => `${k.id}|${h}`) };
+    out.push(ev); s = applyEvents(s, [ev]);
+    for (const c of Object.values(s.combatants)) {
+      if (!c.pos || c.hp <= 0 || (c.altitudeFt ?? 0) !== k.ft || !hit.includes(hexKey(c.pos)) || isIntangible(c)) continue;
+      const land = landingFt(s, c.pos, k.ft);
+      const evs = fall(s, c.id, k.ft - land, 'cokme', rng, { altitudeTo: land, label: `${k.ad ?? k.id} çöktü` });
+      out.push(...evs); s = applyEvents(s, evs);
     }
   }
   return out;

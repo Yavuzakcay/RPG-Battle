@@ -923,6 +923,9 @@ export const en: Strings = {
       climbing: (ft: number, ceiling: boolean): string => (ceiling ? `On the ceiling (${ft} ft)` : `On the wall (${ft} ft)`),
       highJump: (ft: number): string => `Jump in place (vertical reach +${ft} ft)`, jumped: (ft: number): string => `Jumped: vertical reach +${ft} ft`,
       cloud: (base: number): string => `Call Lightning cloud (base ${base} ft, 60 ft radius)` },
+    // Kuyruk K72: floor view (multi-storey building).
+    k72: { toggle: '⌂ Floor', toggleTitle: 'Floor view: pick a floor', panel: 'Floor view', ground: 'Ground',
+      floor: (name: string, ft: number): string => `${name} · ${ft} ft`, hint: 'Creatures not on the selected floor are faded. ▲▼ stairs, ○ hole.' },
     k71c: { toggle: '☁ Air', toggleTitle: 'Air view: pick a level (each level 5 ft)', panel: 'Air view', levels: 'Levels',
       level: (ft: number, n: number): string => (ft === 0 ? `Ground${n ? ` · ${n}` : ''}` : `${ft} ft${n ? ` · ${n}` : ''}`),
       hintFly: (ft: number): string => `Fly to the ${ft} ft level: tap a highlighted hex (hex + level is one step).`,

@@ -51,6 +51,7 @@ import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
 import { heightAt, heightCombatRule, katmanOn } from './heights';
 import { surfacesNear } from './climbing';
+import { katlarOf, stairsAt, standAlt } from './stand';
 import { absBand, k9On } from './vertical';
 
 /** Kuyruk K71d: irtifası 0 olmayan (havada, yüzde, yarıkta) yaratık. */
@@ -87,7 +88,7 @@ import aiData from '../../data/yapay-zeka.json';
 const REGEN_CUT: number = aiData.yenilenmeKesme;
 const cutsRegen = (type: string | undefined): boolean => type === 'fire' || type === 'acid';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
-import { climbs, isAirborne } from './flight';
+import { climbs, fliesOrHovers, isAirborne } from './flight';
 import { altitudeCapFt, climbCapFt, wallHex } from './altitude';
 import { legendaryOf } from './boss';
 import { bodyAt, bodyOf, gap, touchesHexes } from './body';
@@ -2186,6 +2187,10 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const fly = flyToReach(state, actor, attackSpots.length > 0);
   if (fly) return fly;
 
+  // Kuyruk K72 (sürüm 60+): bütün düşmanlar başka katta duruyorsa merdivene yürür, merdivende kat değiştirir (yol bulma; yeni
+  // taktik değil).
+  const katGo = floorRoute(state, actor, foes);
+  if (katGo) return katGo;
   // Kuyruk K71b (sürüm 57+, K15): Çeviklik tırmanıcısı duvarsız yol yoksa ya da tırmanma yolunun iki katıysa duvara tırmanır;
   // duvardayken tırmanmayı sürdürür, öte yana geçer ya da iner (yeni taktik yok: yalnız yol bulma).
   const climbWall = wallClimbCommand(state, actor, foes, tryCmd);
@@ -2330,6 +2335,36 @@ function moveToward(state: BattleState, actor: Combatant, targets: Offset[], ok:
     // Kuyruk 26: yükseklik katmanında eşit uzaklıkta yüksek zemin tercih edilir (hafif; katmansız haritada 0).
     .sort((a, b) => near(a.to) - near(b.to) || lift(b.to) - lift(a.to) || a.cost - b.cost);
   return firstMove(state, actor, spots) ?? climbToward(state, actor, near, here);
+}
+
+/**
+ * Kuyruk K72 (sürüm 60+): kat geçişi yol bulmada kenar. Uçmayan yaratığın bütün düşmanları başka bir katta (duruş yüksekliği)
+ * duruyorsa: merdiven altıgenindeyse en yakın düşmanın katına `vertical_move`; değilse o iki katı bağlayan en yakın
+ * merdivene yürür. Havadaki/duvardaki düşman ya da aynı katta düşman varsa null.
+ */
+function floorRoute(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  const katlar = katlarOf(state);
+  if (!katlar.length || !actor.pos || fliesOrHovers(actor)) return null;
+  const here = standAlt(state, actor);
+  if (here === null) return null;
+  const live = foes.filter((f) => f.pos && f.hp > 0);
+  const levels = live.map((f) => standAlt(state, f));
+  if (!live.length || levels.some((l) => l === null || l === here)) return null;
+  const pos = actor.pos;
+  const nearest = [...live].sort((a, b) => distance(pos, a.pos as Offset) - distance(pos, b.pos as Offset))[0] as Combatant;
+  const want = standAlt(state, nearest) as number;
+  if ([0, ...stairsAt(state, pos)].includes(want) && [0, ...stairsAt(state, pos)].includes(here) && stairsAt(state, pos).length) {
+    const cmd: Command = { type: 'vertical_move', actorId: actor.id, toFt: want };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  const parse = (k: string): Offset => { const [c, r] = k.split(',').map(Number); return { col: c ?? 0, row: r ?? 0 }; };
+  const stairs = katlar.filter((k) => [0, k.ft].includes(here) && [0, k.ft].includes(want)).flatMap((k) => (k.merdiven ?? []).map(parse));
+  if (!stairs.length) return null;
+  const near = (h: Offset) => Math.min(...stairs.map((x) => distance(h, x)));
+  const now = near(pos);
+  if (now === 0) return null;
+  const spots = reachable(state, actor).filter((sp) => near(sp.to) < now).sort((a, b) => near(a.to) - near(b.to) || a.cost - b.cost);
+  return firstMove(state, actor, spots);
 }
 
 /**

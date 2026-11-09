@@ -30,7 +30,7 @@ import { maps } from '../map/maps';
 import { terrainAt } from './movement';
 import { absBand, dikeyOn, k9Ft, k9On, tavanEzme } from './vertical';
 import { k72On, katmanOn } from './heights';
-import { landingFt, standingOn } from './stand';
+import { katlarOf, landingFt, slabAbove, slabBetween, slabsAt, stairsAt, standingOn } from './stand';
 import { obstacleTopFt } from './cover';
 import { climbOn, dexClimbMove, dexClimberHolds } from './climbing';
 import { bandGap, bandOf, bandsOverlap, cellsOn } from './cells';
@@ -251,6 +251,9 @@ export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: {
   // Kuyruk K71c (sürüm 58+): varış hücreleri boş olmalı; yolda düşmanın hücresinden geçilmez.
   const cellWhy = cellsOn(state) ? verticalCellProblem(state, t, from, to) : null;
   if (cellWhy) return fail(cellWhy);
+  // Kuyruk K72 (sürüm 60+): kat döşemesi dikey geçişi keser (merdiven ve delik dışında); gövde döşemenin içinde olamaz.
+  const slabWhy = slabProblem(state, t, from, to);
+  if (slabWhy) return fail(slabWhy);
   // Kuyruk K68b (sürüm 52): tavan − boy üst sınırı (açık gökte `maxFt`).
   const ceil = ceilingOver(state, t);
   if (ceil !== null && to > from && to > altitudeCapFt(state, t)) return fail(`Tavan ${ceil} ft: ${t.name} en çok ${altitudeCapFt(state, t)} ft yükselir.`);
@@ -261,6 +264,8 @@ export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: {
     return finish(state, [{ type: 'altitude_changed', targetId: t.id, altitudeFt: to, label: 'Levitate', turn, moved: d, byId: actor.id, gentle: true }]);
   }
   if (t.id !== actor.id) return fail('Yalnız kendini (uçarak) ya da Levitate hedefini yükseltip alçaltabilirsin.');
+  // Kuyruk K72 (sürüm 60+): merdiven altıgeninde katlar arası yürüyerek (5 ft = 1 altıgen, tırmanma değil).
+  if (!fliesOrHovers(actor) && stairsAt(state, actor.pos as Offset).length) return stairsMove(state, actor, from, to);
   // Kuyruk K68b (sürüm 52): tırmanma hızı olan (Spider Climb, `climber`, Roving…) duvara bitişikken tırmanır/iner
   // (tırmanma hızıyla ek maliyetsiz: 5 ft = 1 altıgen); üst sınır tavan − boy ya da açık alanda duvar boyu.
   if (!fliesOrHovers(actor) && ruleVersion(state) >= 52 && climbs(actor, state)) return climbMove(state, actor, from, to);
@@ -302,6 +307,27 @@ export function verticalCellProblem(state: BattleState, t: Combatant, from: numb
   return null;
 }
 
+/** Kuyruk K72 (sürüm 60+): dikey harekette döşeme sorunu (yoksa null). */
+export function slabProblem(state: BattleState, t: Combatant, from: number, to: number): string | null {
+  if (!t.pos || !katlarOf(state).length) return null;
+  if (slabBetween(state, t.pos, from, to)) return 'Arada kat döşemesi var: katlar arası yalnız merdiven ya da delikten.';
+  for (const f of slabsAt(state, t.pos)) if (to < f && f < to + bodyHeightFt(t)) return `Döşemenin içinde durulmaz (${f} ft).`;
+  return null;
+}
+
+/** Kuyruk K72 (sürüm 60+): merdivende kat değiştirme: zemin ve merdivenin bağladığı döşemeler arası, 5 ft = 1 altıgen. */
+function stairsMove(state: BattleState, actor: Combatant, from: number, to: number): CommandResult {
+  const pos = actor.pos as Offset;
+  const levels = [0, ...stairsAt(state, pos)];
+  if (!levels.includes(to)) return fail(`Merdiven yalnız şu yüksekliklere çıkar: ${levels.join(', ')} ft.`);
+  if (!levels.includes(from) && !standingOn(state, actor) && from !== 0) return fail('Merdivenden yalnız bir kattan öbürüne geçilir.');
+  const cost = Math.abs(to - from) / 5;
+  if (actor.movementUsed + cost > speedHexes(actor)) return fail(`Yeterli hareket yok (${Math.abs(to - from)} ft merdiven = ${cost} altıgen).`);
+  const cellWhy = cellsOn(state) ? verticalCellProblem(state, actor, from, to) : null;
+  if (cellWhy) return fail(cellWhy);
+  return finish(state, [{ type: 'altitude_changed', targetId: actor.id, altitudeFt: to, label: to > from ? 'merdivenden çıktı' : 'merdivenden indi', cost, byId: actor.id, gentle: false, ...(to > 0 ? { stand: true as const } : {}) }]);
+}
+
 /** Kuyruk K68b: tırmanma hızıyla duvarda yukarı/aşağı (hareketten öder). */
 function climbMove(state: BattleState, actor: Combatant, from: number, to: number): CommandResult {
   if (!actor.pos) return fail('Hedef bulunamadı.');
@@ -327,8 +353,10 @@ export function levitateRiseEvents(state: BattleState, events: BattleEvent[], wa
   return events.flatMap((e): BattleEvent[] => {
     const c = e.type === 'effect_added' && e.effect.levitate ? state.combatants[e.targetId] : undefined;
     if (!c || e.type !== 'effect_added') return [];
-    // Kuyruk K68b (sürüm 52): tavana dek (tavan − boy).
-    const to = Math.max(altitudeOf(c), Math.min(ft, altitudeCapFt(state, c)));
+    // Kuyruk K68b (sürüm 52): tavana dek (tavan − boy). Kuyruk K72 (sürüm 60+): üstteki kat döşemesine dek.
+    const slab = c.pos ? slabAbove(state, c.pos, altitudeOf(c)) : null;
+    const cap = slab === null ? altitudeCapFt(state, c) : Math.min(altitudeCapFt(state, c), Math.max(0, Math.floor((slab - bodyHeightFt(c)) / ALT.stepFt) * ALT.stepFt));
+    const to = Math.max(altitudeOf(c), Math.min(ft, cap));
     return to === altitudeOf(c) && ceilingOver(state, c) !== null ? []
       : [{ type: 'altitude_changed', targetId: e.targetId, altitudeFt: to, label: 'Levitate', byId: e.effect.sourceId, gentle: true }];
   });
@@ -374,7 +402,9 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
     if (c.altitudeGentle || levitateOn(before.combatants[c.id])) {
       // Kuyruk K68a (sürüm 52): yarığın üstündeyse dibine süzülür (hasarsız, Prone yok; SRD "floats gently to the ground").
       const pit = ruleVersion(next) >= 52 && c.pos ? fissureDepthAt(s, c.pos) : 0;
-      const evs: BattleEvent[] = [{ type: 'altitude_changed', targetId: c.id, altitudeFt: pit ? -pit : 0, label: pit ? `Levitate bitti (süzülerek yarığın dibine, ${pit} ft)` : 'Levitate bitti (süzülerek iniş)' }];
+      // Kuyruk K72 (sürüm 60+): alttaki en yüksek duruş yüzeyine (kat döşemesi, sur tepesi) süzülür.
+      const floorFt = !pit && c.pos && k72On(s) ? landingFt(s, c.pos, feet) : 0;
+      const evs: BattleEvent[] = [{ type: 'altitude_changed', targetId: c.id, altitudeFt: pit ? -pit : floorFt, label: pit ? `Levitate bitti (süzülerek yarığın dibine, ${pit} ft)` : 'Levitate bitti (süzülerek iniş)', ...(floorFt > 0 ? { stand: true as const } : {}) }];
       out.push(...evs); s = applyEvents(s, evs);
       continue;
     }

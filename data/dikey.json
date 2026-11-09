@@ -92,5 +92,9 @@
     "not": "Kuyruk K71d (kural sürümü 59+; K71-PLAN K8; ⚠ SRD'de yüksek zemin yok, Game Master `heightCombat` ev kuralı): yalnız katmanlı haritada ve iki uç yerdeyken (irtifa 0; havadaki uçan, duvardaki tırmanan, yarıktaki sayılmaz). Mutlak zemin farkı ≥ `avantajFt` ise yüksekteki avantajlı, alçaktaki dezavantajlı; ≥ `menzilEkiFt` ise menzilli saldırının normal menzili `heightCombat.rangeBonusHexes` altıgen uzar.",
     "avantajFt": 10,
     "menzilEkiFt": 20
+  },
+  "katDosemesi": {
+    "not": "Kuyruk K72 (kural sürümü 60+): çok katlı binanın döşemesi (varyant `dikey.katlar`). Earthquake yapı hasarı (50 Bludgeoning) bir kattaki döşemenin canından (`hp`, katta ezilir) az değilse alandaki döşeme altıgenleri çöker; üstündekiler alttaki en yüksek yüzeye tek düşmeyle iner. ⚠ SRD döşeme canı vermez (tasarım: ahşap döşeme).",
+    "hp": 50
   }
 }

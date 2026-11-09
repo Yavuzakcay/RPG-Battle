@@ -14,7 +14,8 @@
  */
 import type { Rng } from '../rules/dice';
 import { distance, hexKey, neighbors, sameHex, type Offset } from '../rules/hex';
-import { altitudeCapFt, altitudeOf, climbingAloft } from './altitude';
+import { altitudeCapFt, altitudeOf, bodyHeightFt, climbingAloft } from './altitude';
+import { katlarOf, slabBetween, slabsAt, standHeights } from './stand';
 import { bodyAt, covers } from './body';
 import { bandOf, bandsOverlap, cellsOn, levelOf, levelToFt } from './cells';
 import { fail, finish, isTargetable, type CommandResult } from './common';
@@ -55,12 +56,22 @@ function searchCtx(state: BattleState, actor: Combatant) {
     return v;
   };
   const others = Object.values(state.combatants).filter((c) => c.id !== actor.id && c.pos && isTargetable(c) && !c.summon?.noSpace);
+  // Kuyruk K72 (sürüm 60+): kat döşemesi düzey geçişini keser (merdiven ve delik dışında); gövde döşemenin içinde olamaz.
+  const kat = katlarOf(state).length > 0;
+  const boy = bodyHeightFt(actor);
+  const slabOk = (fromHex: Offset, fl: number, h: Offset, l: number): boolean => {
+    if (!kat) return true;
+    const a = levelToFt(fl), b = levelToFt(l);
+    if (slabBetween(state, h, a, b) || slabBetween(state, fromHex, a, b)) return false;
+    for (const f of slabsAt(state, h)) if (b < f && f < b + boy) return false;
+    return true;
+  };
   /** (h, l) düzeyinde yaratığın hücresi: düşman engel (geçilmez), dost geçilir (durulmaz). */
   const blockedBy = (h: Offset, l: number, foesOnly: boolean) => {
     const band = bandOf(actor, levelToFt(l));
     return others.find((c) => (!foesOnly || c.side !== actor.side) && covers(state, c, h) && bandsOverlap(bandOf(c), band));
   };
-  return { fnAt, capAt, blockedBy };
+  return { fnAt, capAt, blockedBy, slabOk };
 }
 
 /** (h, l) üstünde durulabilir mi: engel altıgeni değil, hücreler boş, sınır içinde. */
@@ -69,7 +80,8 @@ function canStop(state: BattleState, actor: Combatant, h: Offset, l: number, cap
   for (const b of bodyAt(state, actor, h)) {
     const t = terrainAt(state, b);
     if (t.outOfBounds) return 'Harita dışına çıkılamaz.';
-    if (t.movement === 'blocked' && !(t.flyersPass && l > 0)) return `${hexLabel(b)} üzerinde durulmaz (${t.name}).`;
+    // Kuyruk K72 (sürüm 60+): sur tepesinde (duruş yüzeyi) durulur.
+    if (t.movement === 'blocked' && !(t.flyersPass && l > 0) && !standHeights(state, b).includes(levelToFt(l))) return `${hexLabel(b)} üzerinde durulmaz (${t.name}).`;
     const o = occupantAt(state, b, actor.id, bandOf(actor, levelToFt(l)));
     if (o) return `${hexLabel(b)} dolu (${o.name}).`;
   }
@@ -108,7 +120,7 @@ const less = (x: { f: number; g: number; seq: number }, y: { f: number; g: numbe
 export function airPath(state: BattleState, actor: Combatant, from: Offset, l0: number, to: Offset, lt: number, budget: number): { path: Step[]; cost: number } | null {
   airStats.searches++;
   const size = sizeOf(state);
-  const { fnAt, capAt, blockedBy } = searchCtx(state, actor);
+  const { fnAt, capAt, blockedBy, slabOk } = searchCtx(state, actor);
   const h0 = (h: Offset, l: number) => Math.max(distance(h, to), Math.abs(l - lt));
   const g = new Map<string, number>([[nk(from, l0), 0]]);
   const prev = new Map<string, Step & { from: string }>();
@@ -128,7 +140,7 @@ export function airPath(state: BattleState, actor: Combatant, from: Offset, l0: 
       return { path, cost: cur.g };
     }
     const tryStep = (h: Offset, l: number, c: number | null) => {
-      if (c === null) return;
+      if (c === null || !slabOk(cur.hex, cur.level, h, l)) return;
       const ng = cur.g + c;
       if (ng > budget) return;
       const key = nk(h, l);
@@ -164,7 +176,7 @@ export function airReach(state: BattleState, actor: Combatant, level: number): A
   const budget = speedHexes(actor) - actor.movementUsed;
   if (budget <= 0) return [];
   const size = sizeOf(state);
-  const { fnAt, capAt, blockedBy } = searchCtx(state, actor);
+  const { fnAt, capAt, blockedBy, slabOk } = searchCtx(state, actor);
   const l0 = levelOf(altitudeOf(actor));
   // Düzey eksenli Dijkstra (bütçe sınırlı; düğüm sayısı küçük).
   const best = new Map<string, number>([[nk(actor.pos, l0), 0]]);
@@ -175,7 +187,7 @@ export function airReach(state: BattleState, actor: Combatant, level: number): A
     const cur = open.pop() as { hex: Offset; level: number; g: number; f: number; seq: number };
     if (cur.g > (best.get(nk(cur.hex, cur.level)) ?? Infinity)) continue;
     const push = (h: Offset, l: number, c: number | null) => {
-      if (c === null) return;
+      if (c === null || !slabOk(cur.hex, cur.level, h, l)) return;
       const ng = cur.g + c;
       const k = nk(h, l);
       if (ng > budget || ng >= (best.get(k) ?? Infinity)) return;

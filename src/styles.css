@@ -292,6 +292,13 @@ input[type='number'] { width: 90px; }
 .economy span.spent { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.45); text-decoration: line-through; }
 .economy span:last-child { background: transparent; }
 /* Kuyruk K71c: Hava görünümü: sol kenarda düğme ve kaydırılabilir düzey listesi; havadaki jetonun gölgesi. */
+/* Kuyruk K72: kat seçici ve kat döşemesi. */
+.air-panel.kat-panel { top: 22%; }
+.kat-floor polygon { fill: rgba(200, 170, 110, 0.28); stroke: rgba(150, 110, 50, 0.8); stroke-width: 1.5; }
+.kat-stairs polygon { fill: rgba(120, 180, 240, 0.35); stroke: rgba(60, 120, 200, 0.9); stroke-width: 2; }
+.kat-hole polygon { fill: rgba(20, 20, 20, 0.35); stroke: rgba(0, 0, 0, 0.8); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.kat-floor.gone polygon, .kat-stairs.gone polygon { fill: rgba(120, 60, 40, 0.25); stroke-dasharray: 2 3; }
+.kat-stairs text, .kat-hole text { font-size: 11px; text-anchor: middle; fill: #fff; paint-order: stroke; stroke: rgba(0, 0, 0, 0.7); stroke-width: 2px; pointer-events: none; }
 .air-panel { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; align-items: flex-start; z-index: 5; max-width: 46vw; }
 .air-panel .hud-btn.small { margin-left: 0; min-height: 40px; }
 .air-panel .hud-btn.on { background: rgba(70, 140, 210, 0.9); }

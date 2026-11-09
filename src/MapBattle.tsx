@@ -101,7 +101,7 @@ import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
 import { globalRule } from './battle/ruleControl';
 import { pickArea } from './battle/areaAttack';
 import { climbLabel, climbTargets } from './battle/climb';
-import { hasStandData } from './battle/stand';
+import { hasStandData, katlarOf } from './battle/stand';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
 import { seesTrueForm, truesightRange } from './battle/sight';
@@ -442,6 +442,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk K71c (sürüm 58+): Hava görünümü ve seçili düzey (0 = yer).
   const [airView, setAirView] = useState(false);
   const [airLevel, setAirLevel] = useState(0);
+  // Kuyruk K72: kat görünümü (null kapalı; 0 zemin; döşeme ft).
+  const [katFt, setKatFt] = useState<number | null>(null);
   const seenDice = useRef(diceSeenAtStart(props.initial.events, props.restored === true));
   // Otomatik kayıt: her tur (round) sonunda ve savaş bitince (tek kayıt yuvası, olay günlüğü).
   useEffect(() => {
@@ -1633,6 +1635,18 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const lv = heightTint[h.row]?.[h.col] ?? 0;
             return lv === 0 ? null : <polygon key={`hl${hexKey(h)}`} points={hexPoints(h, 0.98)} className={`height-tint ${lv > 0 ? 'up' : 'down'}`} style={{ opacity: Math.min(0.5, 0.1 * Math.abs(lv)) }} />;
           })}
+          {/* Kuyruk K72: seçili katın döşemesi, merdiven ▲▼ ve delik ○. */}
+          {katFt !== null && katFt > 0 && katlarOf(state).filter((k) => k.ft === katFt).flatMap((k) => [
+            ...k.altigenler.map((key) => ({ key, cls: 'kat-floor', mark: '' })),
+            ...(k.merdiven ?? []).map((key) => ({ key, cls: 'kat-stairs', mark: '▲▼' })),
+            ...(k.delik ?? []).map((key) => ({ key, cls: 'kat-hole', mark: '○' })),
+          ]).map(({ key, cls, mark }) => {
+            const [col, row] = key.split(',').map(Number);
+            const h = { col: col ?? 0, row: row ?? 0 };
+            const c = hexCenter(h);
+            const gone = state.map?.katCokuk?.some((x) => x.endsWith(`|${key}`));
+            return <g key={`kat${cls}${key}`} className={`${cls}${gone ? ' gone' : ''}`} aria-hidden="true"><polygon points={hexPoints(h, 0.94)} />{mark && <text x={c.x} y={c.y + 4}>{mark}</text>}</g>;
+          })}
           {heightTint && rampEdges(state).map((e) => {
             const a = hexCenter(e.from); const b = hexCenter(e.to);
             const angle = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
@@ -1828,7 +1842,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 const p0 = tokenCenter(state, c);
                 const lift = airLift(c);
                 const p = lift ? { x: p0.x + TOKEN_R * 0.35, y: p0.y - lift } : p0;
-                const offLevel = airOn && !inLevel(c);
+                const offLevel = (airOn && !inLevel(c)) || (katFt !== null && (c.altitudeFt ?? 0) !== katFt);
                 // Jeton filtreleri (Görev V): taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış.
                 const filters = tokenFilters(c);
                 const look = filterStyle(filters);
@@ -2692,6 +2706,25 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               </div>
             );
           })()}
+          {/* Kuyruk K72: kat seçici (çok katlı bina; sürüm 60+). */}
+          {katlarOf(state).length > 0 && state.status === 'active' && (
+            <div className={`air-panel kat-panel${katFt !== null ? ' open' : ''}`} role="group" aria-label={B.k72.panel}>
+              <button className={`hud-btn small${katFt !== null ? ' on' : ''}`} aria-pressed={katFt !== null} title={B.k72.toggleTitle}
+                onClick={() => setKatFt((v) => (v === null ? (actor?.altitudeFt ?? 0) : null))}>{B.k72.toggle}</button>
+              {katFt !== null && (
+                <>
+                  <div className="air-levels" role="listbox" aria-label={B.k72.panel}>
+                    {[...katlarOf(state)].sort((a, b) => b.ft - a.ft).map((k) => (
+                      <button key={k.id} role="option" aria-selected={katFt === k.ft} className={`air-level${katFt === k.ft ? ' on' : ''}`} onClick={() => setKatFt(k.ft)}>
+                        {B.k72.floor((getLang() === 'en' ? k.en : k.ad) ?? k.id, k.ft)}</button>
+                    ))}
+                    <button role="option" aria-selected={katFt === 0} className={`air-level${katFt === 0 ? ' on' : ''}`} onClick={() => setKatFt(0)}>{B.k72.ground}</button>
+                  </div>
+                  <div className="air-hint">{B.k72.hint}</div>
+                </>
+              )}
+            </div>
+          )}
           {active && actor && (
             <div className="economy" aria-label={B.economy.label}>
               <span className={actor.economy.action && actor.economy.attacksLeft === 0 ? 'spent' : ''}>{B.economy.action(actor.economy.attacksLeft)}</span>

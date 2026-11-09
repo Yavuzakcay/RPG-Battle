@@ -1,0 +1,143 @@
+{
+  "id": "k72-ornek-han",
+  "name": "Han (iki kat, K72 örnek taslağı)",
+  "not": "Kuyruk K72 örnek taslağı: YÜKLENMEZ (harita/belgeler/ altında; harita yükleyicisi okumaz). Gerçek katlı haritalar kullanıcıyla çizilecek; bu dosya `dikey.katlar` biçiminin örneğidir: üst kat döşemesi 10 ft (alt katın tavanı), merdiven (4,2) iki katı bağlar, delik (10,5) döşemesiz açıklık (uçan geçer, üstten düşülür). Altıgenler 0 tabanlı \"sütun,satır\". Oda tavanı `odalar` ile verilmez: alt katın tavanı döşemedir; üst katın tavanı (çatı) `dikey.tavan`/`tavanBolge` ya da `odalar` ile verilebilir.",
+  "environmentId": "kasaba",
+  "orientation": "flat-top",
+  "offset": "odd-q",
+  "size": {
+    "cols": 21,
+    "rows": 11
+  },
+  "hexFeet": 5,
+  "tiles": [
+    ".....................",
+    "..sssssssssss........",
+    "..s....s....s........",
+    "..s....s....s........",
+    "..s.........o........",
+    "..s....s....s........",
+    "..sssssssssss........",
+    ".....................",
+    "..g.g.g.g.g.g.g......",
+    ".....................",
+    "....................."
+  ],
+  "startZones": {
+    "players": {
+      "colRange": [
+        14,
+        16
+      ]
+    },
+    "enemies": {
+      "colRange": [
+        18,
+        20
+      ]
+    }
+  },
+  "variants": [
+    {
+      "id": "gunduz",
+      "name": "Gündüz",
+      "image": "maps/yerlesim/yerlesim-kasaba-han.webp",
+      "rules": [],
+      "dikey": {
+        "harfFt": {
+          "s": 25
+        },
+        "odalar": [
+          {
+            "ft": 30,
+            "altigenler": [
+              "3,2",
+              "4,2",
+              "5,2",
+              "6,2",
+              "8,2",
+              "9,2",
+              "10,2",
+              "11,2",
+              "3,3",
+              "4,3",
+              "5,3",
+              "6,3",
+              "8,3",
+              "9,3",
+              "10,3",
+              "11,3",
+              "3,4",
+              "4,4",
+              "5,4",
+              "6,4",
+              "7,4",
+              "8,4",
+              "9,4",
+              "10,4",
+              "11,4",
+              "3,5",
+              "4,5",
+              "5,5",
+              "6,5",
+              "8,5",
+              "9,5",
+              "10,5",
+              "11,5"
+            ]
+          }
+        ],
+        "katlar": [
+          {
+            "id": "ust",
+            "ad": "Üst kat",
+            "en": "Upper floor",
+            "ft": 10,
+            "altigenler": [
+              "3,2",
+              "4,2",
+              "5,2",
+              "6,2",
+              "8,2",
+              "9,2",
+              "10,2",
+              "11,2",
+              "3,3",
+              "4,3",
+              "5,3",
+              "6,3",
+              "8,3",
+              "9,3",
+              "10,3",
+              "11,3",
+              "3,4",
+              "4,4",
+              "5,4",
+              "6,4",
+              "7,4",
+              "8,4",
+              "9,4",
+              "10,4",
+              "11,4",
+              "3,5",
+              "4,5",
+              "5,5",
+              "6,5",
+              "8,5",
+              "9,5",
+              "10,5",
+              "11,5"
+            ],
+            "merdiven": [
+              "4,2"
+            ],
+            "delik": [
+              "10,5"
+            ],
+            "hp": 50
+          }
+        ]
+      }
+    }
+  ]
+}
