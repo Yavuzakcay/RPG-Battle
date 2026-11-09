@@ -37,6 +37,10 @@ import { climbOn, dexClimbMove, dexClimberHolds } from './climbing';
 import { bandGap, bandOf, bandsOverlap, cellsOn } from './cells';
 import { verticalOpportunity } from './verticalHook';
 import { k73bOn } from './adjacency';
+import { k73cOn } from './k73cSurum';
+import { BURROW_DEPTH_FT, canBurrow, diggable } from './burrow';
+import { DIVE_MAX_FT, inWater, SWIM_FACTOR } from './underwaterCore';
+import { hasSwimSpeed } from './deepWater';
 import { covers } from './body';
 import { isTargetable } from './common';
 import dikeyData from '../../data/dikey.json';
@@ -71,6 +75,8 @@ export function zoneTopFt(z: SpellZone, spec: ZoneSpec | null | undefined): numb
  * yaratığın altıgeninde döşeme varsa dışarıda (SRD alan etkisi: tam siper noktayı alandan çıkarır).
  */
 export function altitudeInZone(state: Pick<BattleState, 'kuralSurumu'> & Partial<Pick<BattleState, 'map' | 'combatants'>>, z: SpellZone, spec: ZoneSpec | null | undefined, c: Combatant | undefined): boolean {
+  // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) yer üstü alanlardan etkilenmez.
+  if (c?.burrowed && k73cOn(state)) return false;
   if (c?.pos && state.map && k73bOn(state) && katlarOf(state as Pick<BattleState, 'map' | 'kuralSurumu'>).length) {
     const anchor = z.anchorId ? state.combatants?.[z.anchorId] : undefined;
     if (slabBetween(state as Pick<BattleState, 'map' | 'kuralSurumu'>, c.pos, anchor ? altitudeOf(anchor) : 0, altitudeOf(c))) return false;
@@ -248,6 +254,9 @@ export function fissureDepthAt(state: Pick<BattleState, 'map'>, at: Offset): num
 /** Dikey hareket. */
 export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: { targetId?: string; objectId?: string; toFt: number }, rng?: Rng): CommandResult {
   if (!altitudeOn(state)) return fail('Dikey hareket bu kural sürümünde yok.');
+  // Kuyruk K73c (sürüm 64+): kazma (yer altına iniş/çıkış) ve dalış (derin suda eksi irtifa).
+  const k73c = k73cVerticalMove(state, actor, cmd, rng);
+  if (k73c) return k73c;
   const to = cmd.toFt;
   if (!Number.isFinite(to) || to < 0 || to % ALT.stepFt !== 0 || to > ALT.maxFt) return fail(`İrtifa 0–${ALT.maxFt} ft, ${ALT.stepFt} ft adımla.`);
   const turn = turnKey(state);
@@ -303,6 +312,48 @@ export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: {
     return finish(state, [...oa, rise]);
   }
   return finish(state, [rise]);
+}
+
+/**
+ * Kuyruk K73c (sürüm 64+): kazma ve dalışın dikey hareketi; ilgisizse null (eski yol).
+ * - Kazma (`burrow.ts`): kazma hızı olan, yerde (irtifa 0, duruş yüzeyinde değil), kazılabilir altıgende `derinlikFt` aşağı
+ *   iner (`altitude_changed.burrow`) ya da yer altından yüzeye çıkar; 5 ft = 1 altıgen kazma hareketi.
+ * - Dalış (`underwater.ts`): derin sudaki uçmayan eksi irtifaya iner/çıkar (en çok `suAlti.derinlikFt`); yüzme hızı olmayanın
+ *   5 ft'i `yuzmeCarpani` altıgen. Dikey hareket 3B erişimden çıkarsa fırsat saldırısı.
+ */
+function k73cVerticalMove(state: BattleState, actor: Combatant, cmd: { targetId?: string; objectId?: string; toFt: number }, rng?: Rng): CommandResult | null {
+  if (!k73cOn(state) || cmd.objectId || (cmd.targetId && cmd.targetId !== actor.id) || !actor.pos) return null;
+  const from = altitudeOf(actor);
+  const to = cmd.toFt;
+  if (!Number.isFinite(to) || to % ALT.stepFt !== 0) return null;
+  const pos = actor.pos;
+  const digDown = to < 0 && from === 0 && canBurrow(state, actor) && !isAirborne(actor) && !standingOn(state, actor) && diggable(state, pos);
+  if (actor.burrowed || digDown) {
+    if (to !== 0 && to !== -BURROW_DEPTH_FT) return fail(`Kazarak yalnız ${BURROW_DEPTH_FT} ft yer altına inilir ya da yüzeye çıkılır.`);
+    if (to === from) return fail('Zaten orada.');
+    const left = speedHexes({ ...actor, burrowed: true }) - actor.movementUsed;
+    if (left < 1) return fail('Kazma hareketi kalmadı.');
+    const cellWhy = verticalCellProblem(state, actor, from, to);
+    if (cellWhy) return fail(cellWhy);
+    const ev: BattleEvent = { type: 'altitude_changed', targetId: actor.id, altitudeFt: to, label: to < 0 ? 'kazarak yer altına indi' : 'yüzeye çıktı', cost: 1, byId: actor.id, gentle: false, ...(to < 0 ? { burrow: true as const } : {}) };
+    return finish(state, [ev]);
+  }
+  if (!inWater(state, actor) || (to >= 0 && from >= 0)) return null;
+  if (to > 0) return fail('Sudan yukarı yalnız yüzeye (0 ft) çıkılır.');
+  if (to < -DIVE_MAX_FT) return fail(`Su en çok ${DIVE_MAX_FT} ft derin (bu haritada derinlik verisi yok; varsayılan).`);
+  if (to === from) return fail('Zaten o derinlikte.');
+  const cost = (Math.abs(to - from) / ALT.stepFt) * (hasSwimSpeed(actor, state) ? 1 : SWIM_FACTOR);
+  if (actor.movementUsed + cost > speedHexes(actor)) return fail(`Yeterli hareket yok (${Math.abs(to - from)} ft yüzme = ${cost} altıgen).`);
+  const cellWhy = verticalCellProblem(state, actor, from, to);
+  if (cellWhy) return fail(cellWhy);
+  const ev: BattleEvent = { type: 'altitude_changed', targetId: actor.id, altitudeFt: to, label: to < from ? `daldı (${-to} ft)` : to === 0 ? 'yüzeye çıktı' : `yükseldi (${-to} ft derinlik)`, cost, byId: actor.id, gentle: false };
+  const opportunity = verticalOpportunity();
+  if (rng && opportunity) {
+    const oa = opportunity(state, actor.id, { from: pos, to: pos, fromAlt: from, toAlt: to }, rng);
+    if ((applyEvents(state, oa).combatants[actor.id]?.hp ?? 0) <= 0) return finish(state, oa);
+    return finish(state, [...oa, ev]);
+  }
+  return finish(state, [ev]);
 }
 
 /**

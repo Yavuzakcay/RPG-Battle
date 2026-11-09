@@ -17,7 +17,7 @@ import { flySpeed, fliesOrHovers, isAirborne } from '../flight';
 import { meleeOf } from '../features';
 import { moveCostFn, speedHexes } from '../movement';
 import { landingFt, standAlt, standingOn } from '../stand';
-import { zeminFt } from '../vertical';
+import { bodyZeminFt } from '../vertical';
 import { distance, hexKey, type Offset } from '../../rules/hex';
 import { foeField } from './climbAi';
 import type { BattleState, Combatant } from '../types';
@@ -119,7 +119,7 @@ const HG_FT = (dikeyData as { yuksekZemin: { avantajFt: number } }).yuksekZemin.
 export function groundOf(state: BattleState, c: Combatant, at: Offset = c.pos as Offset, alt: number = altitudeOf(c)): number | null {
   if (alt !== 0 && !standingOn(state, { pos: at, altitudeFt: alt })) return null;
   if (isAirborne(c) && alt === 0 && fliesOrHovers(c) && (c.fly ?? 0) <= 0 && c.effects?.some((e) => e.hover)) return null;
-  return zeminFt(state, at) + alt;
+  return bodyZeminFt(state, c, at) + alt;
 }
 
 /** Saldırı yeri puanı için yüksek zemin indirimi: yerdeki menzilli için en yakın düşmanın zemininden ≥ 10 ft yüksek yer. */
@@ -128,7 +128,7 @@ export function highGroundBonus(state: BattleState, actor: Combatant, foes: Comb
   if (mine === null) return 0;
   const near = foes.filter((f) => f.pos && f.hp > 0).sort((a, b) => distance(a.pos as Offset, at) - distance(b.pos as Offset, at))[0];
   if (!near?.pos) return 0;
-  const theirs = zeminFt(state, near.pos) + (standAlt(state, near) ?? altitudeOf(near));
+  const theirs = bodyZeminFt(state, near, near.pos) + (standAlt(state, near) ?? altitudeOf(near));
   return mine - theirs >= HG_FT ? K73A.yuksekZeminPuan : 0;
 }
 

@@ -130,3 +130,24 @@ Ayrıca düşman tarafındaki uçan menzilliye K73a yükselme kuralını açar. 
 - Kayıt biçimi aynı:
   - yeni olay türü yok (`moved`, `altitude_changed`, `map_effect`, `reaction_used`);
   - yeni komut `jump_down` yalnız 63+ kabul edilir.
+
+## 8. Ek (K73c, sürüm 64+): çok altıgenli gövdenin zemini
+
+**Tek tanım:** çok altıgenli gövde (K69 `isMultiHex53`) farklı zeminli altıgenlere yayıldığında gövdenin zemini, ayak izinin en yüksek ayak altıdır.
+- İşlevler: `vertical.ts` `bodyZeminFt`; katman seviyesinde `heights.ts` `bodyLevel` (aynı kural).
+- İrtifa bu zeminden ölçülür.
+- Tek altıgenlide, bayrak kapalıyken ve 63 ve altında çapanın zemini.
+
+| Uygulama noktası | Yer | 64+ |
+|---|---|---|
+| Mutlak yükseklik, K9 uzaklık ve erişim | `vertical.ts` `mutlakFt`, `k9Ft`, `absBand` | `bodyZeminFt` |
+| 3B bitişiklik, aura, tepki menzili | `adjacency.ts` `gap3D` (`absBand` üzerinden) | aynı tanımdan |
+| Fırsat saldırısı | `features.ts` `leavesReach` (`absBand`) | aynı tanımdan |
+| K8 yüksek zemin (katman) | `heights.ts` `highGroundK8` | `bodyLevel` |
+| K8 yüksek zemin (duruş yüzeyi) | `cover.ts` `highGroundBase` | `bodyZeminFt` |
+| YZ yüksek zemin indirimi | `ai/k73a.ts` `groundOf`, `highGroundBonus` | `bodyZeminFt` |
+| Hareket maliyeti (katman adımı) | `movement.ts` `heightStepFn` → `bodyHeightStepFn` | gövde seviyesi 2+ artarsa uçurum, 1 artarsa `levelCost` |
+| Yerleştirme / varış | `movement.ts` `bodyFitProblem` | döşemeyi aşan gövde (bandını döşeme kesiyor) ya da döşemede durup ayak izinin bir altıgeninde döşeme olmayan gövde reddedilir |
+
+- Düşme: irtifa en yüksek ayaktan ölçüldüğü için iniş o ayak düzeyine (yeni kod yok).
+- ⚠ Görüş/siper uçları çapadan (K69 `lineOfFire` en iyi çift aynen).

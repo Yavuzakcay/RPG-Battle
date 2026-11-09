@@ -52,7 +52,9 @@ export function speedHexes(c: Combatant): number {
   const mult0 = (c.effects ?? []).reduce((m, e) => m * (e.speedMult ?? 1), 1);
   const mult = free ? Math.max(1, mult0) : mult0;
   const bonus = (c.effects ?? []).reduce((n, e) => n + (free ? Math.max(0, e.speedFt ?? 0) : e.speedFt ?? 0), 0);
-  const ft = Math.floor(Math.max(0, (fly > 0 ? fly : c.speed) + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult);
+  // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) yaratık kazma hızıyla ilerler (işaret yalnız 64+ komutlarından gelir).
+  const base = c.burrowed && c.burrowFt ? c.burrowFt : fly > 0 ? fly : c.speed;
+  const ft = Math.floor(Math.max(0, base + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult);
   return Math.floor(ft / 5) * (1 + c.economy.dashes);
 }
 
@@ -1314,8 +1316,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // Kuyruk K68b: tırmanma işareti tırmanma olayıyla gelir, irtifa 0'a (ya da altına) inince kalkar.
       // Kuyruk K72 (sürüm 60+): duruş yüzeyine (sur tepesi, kat) çıkınca işaret kalkar.
       const climbing = event.altitudeFt > 0 && !event.stand && (event.climb || c.climbing) ? { climbing: true as const } : {};
-      const base = c.climbing && !climbing.climbing ? { ...state, combatants: { ...state.combatants, [c.id]: (({ climbing: _c, ...rest }) => rest)(c) } } : state;
-      return withCombatant(base, c.id, { altitudeFt: event.altitudeFt, altitudeGentle: event.altitudeFt > 0 ? (event.gentle ?? c.altitudeGentle ?? false) : false, ...climbing, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
+      // Kuyruk K73c (sürüm 64+): kazma işareti eksi irtifaya kazarak inince gelir, irtifa 0'a (ya da üstüne) çıkınca kalkar.
+      const burrowed = event.altitudeFt < 0 && (event.burrow || c.burrowed) ? { burrowed: true as const } : {};
+      const base0 = c.climbing && !climbing.climbing ? { ...state, combatants: { ...state.combatants, [c.id]: (({ climbing: _c, ...rest }) => rest)(c) } } : state;
+      const c1 = base0.combatants[c.id] as Combatant;
+      const base = c1.burrowed && !burrowed.burrowed ? { ...base0, combatants: { ...base0.combatants, [c.id]: (({ burrowed: _b, ...rest }) => rest)(c1) } } : base0;
+      return withCombatant(base, c.id, { altitudeFt: event.altitudeFt, altitudeGentle: event.altitudeFt > 0 ? (event.gentle ?? c.altitudeGentle ?? false) : false, ...climbing, ...burrowed, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
         ...(event.turn ? { vertTurn: { turn: event.turn, ft: prev + (event.moved ?? 0) } } : {}) });
     }
     case 'retreated': {

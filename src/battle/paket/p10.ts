@@ -8,7 +8,7 @@
  * - `buyuBasardi` (+ `hasarEkle`): komut sonu (senin büyün isabet etti ya da hedef kurtulmayı geçemedi).
  * Diğer P10 alanları yorumlayıcıda (`index.ts`, `p9.ts`). Saf; zar `rng` ile. Paketsiz savaşta olay üretmez.
  */
-import { gap } from '../body';
+import { gap64 } from '../adjacency';
 import { canReact, reactionUsed, registerTargeted } from '../reactions';
 import { registerAfterStep, registerCommandEnd } from '../turnHooks';
 import { applyEvents } from '../reduce';
@@ -64,7 +64,7 @@ registerAfterStep((state, moverId, from, rng) => {
     if (!g.paket || g.side === mover.side || !canReact(g) || g.hp <= 0 || !g.pos) continue;
     // Yeni bitişik: önceki altıgen bitişik değildi, şimdiki bitişik.
     const was = gapAt(state, g, from);
-    if (gap(state, g, mover) > 1 || was <= 1) continue;
+    if (gap64(state, g, mover) > 1 || was <= 1) continue;
     for (const r of refs(g, 'dusmanYaklasti')) {
       if (!ready(state, g, r, mover)) continue;
       const etki = r.p.etki as string;
@@ -82,7 +82,7 @@ registerAfterStep((state, moverId, from, rng) => {
 
 /** Bir altıgenle yaratık arası uzaklık (tek altıgen; çok altıgenli gövde `gap` ile ölçülür). */
 function gapAt(state: BattleState, g: Combatant, at: { col: number; row: number }): number {
-  return gap(state, g, { ...g, id: '__p10', pos: at } as Combatant);
+  return gap64(state, g, { ...g, id: '__p10', pos: at } as Combatant);
 }
 
 // ------------------------------------------------------------------ komut sonu

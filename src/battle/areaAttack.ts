@@ -7,6 +7,7 @@
  * - `areaSaveEvents`: hasar bir kez atılır (SRD: bütün hedefler için aynı zar), her hedef ayrı save yapar (elle zarda
  *   her hedef için ayrı istek), başarıda yarım hasar; hasar alanın tepkisi (Hellish Rebuke) her hedeften sonra.
  */
+import { isBurrowed } from './burrow';
 import { breathOf } from './breath';
 import { a2AreaDamage } from './ridersA2';
 import { bodyOf, reachToHex } from './body';
@@ -54,6 +55,8 @@ const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0
  */
 export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetSpec, rangeFt: number, aim: Offset | null, what = 'alan etkisi'): AreaPick | Failure {
   if (!state.map || !actor.pos) return fail('Alan etkisi yalnızca haritalı savaşta.');
+  // Kuyruk K73c (sürüm 64+): yer altındaki alan etkisi yapamaz; yer üstü alan yer altındakine işlemez.
+  if (isBurrowed(state, actor)) return fail(`${actor.name} yer altında: önce yüzeye çıkmalı.`);
   const size = sizeOf(state);
   if (spec.shape !== 'emanation') {
     if (!aim) return fail('Hedef altıgen seçmelisin.');
@@ -75,7 +78,7 @@ export function pickArea(state: BattleState, actor: Combatant, spec: AreaTargetS
   // Görev A6: çok altıgenli yaratık gövdesinin bir altıgeni alandaysa etkilenir.
   const inArea = (c: Combatant) => c.pos !== null && bodyOf(state, c).some((b) => hexes.some((h) => sameHex(h, b)));
   const reached = Object.values(state.combatants)
-    .filter((c) => isTargetable(c) && !isIntangible(c) && inArea(c) && (spec.targets === 'all' || c.side !== actor.side))
+    .filter((c) => isTargetable(c) && !isIntangible(c) && inArea(c) && (spec.targets === 'all' || c.side !== actor.side) && !isBurrowed(state, c))
     .map((c) => ({ c, lof: coverFrom(state, origin, c, [actor.id], spec.origin === 'point' ? null : actor) }))
     .filter((x) => !x.lof.blocked)
     .map((x) => ({ c: x.c, cover: x.lof.cover }));

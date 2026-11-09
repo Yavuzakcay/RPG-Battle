@@ -9,7 +9,7 @@
  *   `trackPools`; kaynak + tepki). Bağ sayısının 6'ya çıkması yok (açık).
  * Saf.
  */
-import { gap } from './body';
+import { gap64 } from './adjacency';
 import { imzaOn, imzaPasifler } from './imzaCore';
 import { ruleVersion } from './ruleVersion';
 import { registerCommandEnd } from './turnHooks';
@@ -34,7 +34,7 @@ export function shoulderOf(state: BattleState, c: Combatant): Combatant['shoulde
   if (!prm) return undefined;
   for (const b of Object.values(state.combatants)) {
     if (b.id === c.id || bondOwner(b) !== owner || b.hp <= 0 || !b.pos || b.economy.reaction || isIncapacitated(b.conditions)) continue;
-    if (gap(state, b, c) * 5 > prm.menzilFt) continue;
+    if (gap64(state, b, c) * 5 > prm.menzilFt) continue;
     return { id: b.id, bonus: Math.max(1, modOf(b, 'wis')) };
   }
   return undefined;

@@ -348,6 +348,11 @@ export const TR_EXTRA = {
     // Kuyruk U1a: süzülme (yere değmez; en çok N ft) ve zorunlu iniş.
     u1a: { hoverShort: (ft: number): string => `〰 Süzülüyor · en çok ${ft} ft`, hover: (ft: number): string => `Süzülüyor: yere değmez, en çok ${ft} ft (zorlu zemin, çamur, tuzak, sığ su işlemez; lav, derin su ve zemin alanları işler)`,
       cap: (ft: number): string => `Uçuş sınırı ${ft} ft`, glide: 'Uçuş yalnız kendi turunda: tur sonunda yere in, yoksa düşersin' },
+    // Kuyruk K73c: kazma, su altı.
+    k73c: { burrow: '⛏ Kaz (yer altına)', surface: '⛏ Yüzeye çık', burrowHint: 'Kazma hızıyla yer altına in (5 ft = 1 altıgen): yer altında hedeflenemezsin, saldıramazsın; yüzeye çıkınca saldırabilirsin. Kum, toprak, çamur, kar, buz kazılır; taş, duvar, su kazılmaz.',
+      dive: '▼ Dal 5 ft', rise: '▲ Yüksel 5 ft', diveHint: 'Derin suda dal: batıkken nefesini tutarsın (1 + CON dakika); süre bitince her tur sonu 1 Exhaustion. Su altında Piercing olmayan yakın dövüş ve menzilli silah dezavantajlı, ateşe dirençlisin.',
+      breath: (used: number, max: number): string => `🌊 Nefes ${Math.max(0, max - used)}/${max} tur`, breathWater: '🌊 Su soluyor', breathHint: 'Batık: nefes tutma sayacı (SRD Suffocation).',
+      underground: 'yer altında', submerged: (ft: number): string => `batık (${ft} ft)`, centerHeight: (ft: number): string => `Merkez yüksekliği: ${ft} ft`, up5: '+5 ft', down5: '−5 ft' },
     // Kuyruk K73b: gönüllü düşme ve çok turlu tırmanış.
     k73b: { drop: '⇣ Aşağı atla', dropHint: 'Aşağı atla: vurgulu altıgene dokun (her 10 ft için 1d6 düşme hasarı, hasar alırsan Prone; derin suda DC 15 kontrolle yarı hasar). Duvarda tutunurken kendi altıgenine dokunursan bırakırsın.',
       dropLabel: (ft: number, dice: string): string => `⇣${ft}ft${dice ? ` ${dice}` : ''}`, climbMore: 'bu tur bitmez: yüzde yükselip sonraki turda sürer' },
@@ -513,7 +518,7 @@ export const TR_EXTRA = {
       incapacitated: 'Etkisiz (Incapacitated): eylem, bonus eylem ve tepki yok; konsantrasyon kesilir',
       broken: 'Çökmüş (Moral 0): hareket ve eylem yok; ona saldırı avantajlı; bir dost toparlayabilir',
       bleeding: 'Kanıyor', restrained: 'Bağlandı (Restrained)', charmed: 'Büyülendi (Charmed)', frightened: 'Korkuyor (Frightened)',
-      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', hovering: 'Süzülüyor (yere değmez)', invisible: 'Görünmez (Invisible)', deafened: 'Sağır (Deafened)' },
+      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', hovering: 'Süzülüyor (yere değmez)', burrowed: 'Yer altında (kazarak): hedeflenemez', invisible: 'Görünmez (Invisible)', deafened: 'Sağır (Deafened)' },
     outcome: { crit: 'Kritik', hit: 'İsabet', miss: 'Iska', saved: 'Kurtardı', failed: 'Kurtaramadı', resisted: 'Direndi', prone: 'Yere düştü',
       pushed: 'İtildi', escaped: 'Kurtuldu', stuck: 'Kurtulamadı', success: 'Başarılı', failure: 'Başarısız', jumped: 'Atladı', burned: 'Yandı', fell: 'Düştü' },
   },

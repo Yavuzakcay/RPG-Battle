@@ -926,6 +926,11 @@ export const en: Strings = {
     // Kuyruk K72: floor view (multi-storey building).
     u1a: { hoverShort: (ft: number): string => `〰 Hovering · max ${ft} ft`, hover: (ft: number): string => `Hovering: off the ground, at most ${ft} ft (difficult terrain, mud, traps and shallow water don't apply; lava, deep water and ground areas do)`,
       cap: (ft: number): string => `Flight limit ${ft} ft`, glide: 'Flight only on your own turn: land by the end of your turn or you fall' },
+    // Kuyruk K73c: burrowing, underwater.
+    k73c: { burrow: '⛏ Burrow (underground)', surface: '⛏ Surface', burrowHint: 'Burrow underground with your Burrow Speed (5 ft = 1 hex): underground you can\'t be targeted or attack; surface to attack. Sand, earth, mud, snow and ice can be dug; stone, walls and water can\'t.',
+      dive: '▼ Dive 5 ft', rise: '▲ Rise 5 ft', diveHint: 'Dive in deep water: while submerged you hold your breath (1 + CON minutes); after that you gain 1 Exhaustion at the end of each turn. Underwater, non-Piercing melee and ranged weapon attacks have Disadvantage, and you resist fire.',
+      breath: (used: number, max: number): string => `🌊 Breath ${Math.max(0, max - used)}/${max} rounds`, breathWater: '🌊 Breathes water', breathHint: 'Submerged: breath-holding counter (SRD Suffocation).',
+      underground: 'underground', submerged: (ft: number): string => `submerged (${ft} ft)`, centerHeight: (ft: number): string => `Center height: ${ft} ft`, up5: '+5 ft', down5: '−5 ft' },
     // Kuyruk K73b: voluntary falling and multi-turn climbing.
     k73b: { drop: '⇣ Jump down', dropHint: 'Jump down: tap a highlighted hex (1d6 falling damage per 10 ft, Prone if damaged; into deep water a DC 15 check halves it). While clinging to a wall, tap your own hex to let go.',
       dropLabel: (ft: number, dice: string): string => `⇣${ft}ft${dice ? ` ${dice}` : ''}`, climbMore: 'not this turn: climb the face now and finish next turn' },
@@ -1081,7 +1086,7 @@ export const en: Strings = {
       incapacitated: 'Incapacitated: no action, Bonus Action or Reaction; Concentration is broken',
       broken: 'Broken (Morale 0): cannot move or act; attacks against it have Advantage; an ally can rally it',
       bleeding: 'Bleeding', restrained: 'Restrained', charmed: 'Charmed', frightened: 'Frightened',
-      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', hovering: 'Hovering (off the ground)', invisible: 'Invisible', deafened: 'Deafened' },
+      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', hovering: 'Hovering (off the ground)', burrowed: 'Underground (burrowing): can\'t be targeted', invisible: 'Invisible', deafened: 'Deafened' },
     outcome: { crit: 'Critical', hit: 'Hit', miss: 'Miss', saved: 'Saved', failed: 'Failed', resisted: 'Resisted', prone: 'Knocked down',
       pushed: 'Pushed', escaped: 'Escaped', stuck: 'Still held', success: 'Success', failure: 'Failure', jumped: 'Jumped', burned: 'Burned', fell: 'Fell' },
   },

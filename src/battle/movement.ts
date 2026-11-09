@@ -31,16 +31,18 @@ import type { BattleEvent, BattleState, Combatant, CommandContext } from './type
 import { climbs, flySpeed, hovers, isAirborne, spellJumpFt } from './flight';
 import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
 import { k9On, dikeyOn, hasHexCeilings } from './vertical';
-import { hasStandData, standHeights, standingOn, surTop } from './stand';
+import { floorsAt, hasStandData, katlarOf, slabsAt, standHeights, standingOn, surTop } from './stand';
+import { k73cOn } from './k73cSurum';
 import { obstacleTopFt } from './cover';
 import { climbOn, holdSurface, surfaceAt } from './climbing';
 import { bandOf, cellsOn, fillsBand, GROUND_BAND, type Band } from './cells';
-import { heightAt, heightDelta, heightMoveRule, heightStepFn, layerActive, levelFeet } from './heights';
+import { heightAt, heightDelta, heightMoveRule, bodyHeightStepFn, heightStepFn, layerActive, levelFeet } from './heights';
 import { mechanicsAt } from './spellVersion';
 import s2rules from '../../data/s2-kurallar.json';
 import { usedThisTurn } from './classTraits';
 import { turnKey } from './economy';
 import { conveyorBlocks, conveyorFlow, conveyorSlideEvents, isUphillStep } from './conveyor';
+import { diggable } from './burrow';
 
 /** Kullanıcıya gösterilen 1 tabanlı konum metni. */
 export const hexLabel = (o: Offset): string => `sütun ${o.col + 1}, satır ${o.row + 1}`;
@@ -106,8 +108,28 @@ export function placeProblem(state: BattleState, at: Offset): string | null {
  * engel/lav/derin su değil, başka yaratık yok). Sorun metni ya da null; tek altıgenli yaratık ve bayrak kapalıyken her zaman
  * null (çağıran kendi tek altıgen denetimini yapar). Çağırma, ışınlanma, atlama ve sürükleme varışı bu tek denetimden geçer.
  */
+/** Kuyruk K73c: Forcecage sınırı kazarken de geçilmez (kafes/kutu altıgen kümesinin içi ile dışı arası). */
+function cageCrossed(state: BattleState, a: Offset, b: Offset): boolean {
+  for (const z of state.map?.zones ?? []) {
+    if (!z.cage) continue;
+    if (z.hexes.some((h) => sameHex(h, a)) !== z.hexes.some((h) => sameHex(h, b))) return true;
+  }
+  return false;
+}
+
 export function bodyFitProblem(state: BattleState, c: Pick<Combatant, 'id' | 'name' | 'size'> & { altitudeFt?: number }, at: Offset, ignore: readonly string[] = []): string | null {
   if (!isMultiHex53(state, c)) return null;
+  // Kuyruk K73c (sürüm 64+): kat döşemesini aşan gövde yerleştirilemez: gövdenin bandını bir döşeme kesiyorsa ya da gövde bir
+  // döşemede duruyorken ayak izinin bir altıgeninde o döşeme yoksa (yarısı boşlukta).
+  if (k73cOn(state) && katlarOf(state).length) {
+    const alt = c.altitudeFt ?? 0;
+    const top = alt + bodyHeightFt(c);
+    const onFloor = alt > 0 && floorsAt(state, at).includes(alt);
+    for (const h of bodyAt(state, c, at)) {
+      if (slabsAt(state, h).some((f) => f > alt && f < top)) return `${c.name}: gövde ${hexLabel(at)} çapasında kat döşemesini aşıyor (${hexLabel(h)}).`;
+      if (onFloor && !floorsAt(state, h).includes(alt)) return `${c.name}: gövde ${hexLabel(at)} çapasında döşemenin kenarından taşıyor (${hexLabel(h)}).`;
+    }
+  }
   for (const h of bodyAt(state, c, at)) {
     const why = placeProblem(state, h);
     if (why) return `${c.name}: gövde ${hexLabel(at)} çapasına sığmıyor (${why})`;
@@ -169,7 +191,9 @@ export function checkMover(state: BattleState, actor: Combatant, to: Offset): Of
   if (!isInside(to, sizeOf(state))) return fail('Harita dışına çıkılamaz.');
   if (stuckInBog(state, actor)) return fail('Batağa saplandı: çıkmak için Athletics (Çık) ya da bir müttefik çekmeli.');
   // Kuyruk K66a (sürüm 50): yarıktaki (eksi irtifa) uçmayan yaratık önce tırmanır (`vertical_move`).
-  if ((actor.altitudeFt ?? 0) < 0 && !isAirborne(actor) && ruleVersion(state) >= 50) return fail('Yarıktasın: önce tırman.');
+  if ((actor.altitudeFt ?? 0) < 0 && !isAirborne(actor) && ruleVersion(state) >= 50
+    // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) ve derin sudaki batık yürür (kendi kurallarıyla).
+    && !(k73cOn(state) && (!!actor.burrowed || (!!actor.pos && terrainAt(state, actor.pos).rule === 'deepWater')))) return fail('Yarıktasın: önce tırman.');
   return actor.pos;
 }
 
@@ -182,7 +206,12 @@ export function checkMover(state: BattleState, actor: Combatant, to: Offset): Of
  * iner: oradaki altıgenler iki kat maliyetli. Yakaladığını sürükleyenin her adımı da iki kat.
  */
 export function moveCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
-  const base = moveCostBase(state, actor, dyn);
+  // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) yalnız kazılabilir altıgenlerde, yaratıkların altından 1'er altıgen; batık
+  // (derin suda eksi irtifa) yalnız derin su altıgenlerinde yürür.
+  if (k73cOn(state) && actor.burrowed) return (h, prev) => (diggable(state, h) && !cageCrossed(state, prev, h) ? 1 : null);
+  const base0 = moveCostBase(state, actor, dyn);
+  const base = k73cOn(state) && (actor.altitudeFt ?? 0) < 0 && !!actor.pos && terrainAt(state, actor.pos).rule === 'deepWater'
+    ? (h: Offset, prev: Offset) => (terrainAt(state, h).rule === 'deepWater' ? base0(h, prev) : null) : base0;
   // Kuyruk 16 K16E (kural sürümü 2): korkan yaratık korku kaynağına isteyerek yaklaşamaz (SRD 5.2.1 Frightened).
   const fear = fearBlocksStep(state, actor);
   return fear ? (h, prev) => (fear(h, prev) ? null : base(h, prev)) : base;
@@ -277,7 +306,8 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   // Kuyruk 19 (SRD Ice Walk): buz ve kar zemini zorlu arazi değil.
   const iceWalk = !!actor.effects?.some((e) => e.iceWalker);
   // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
-  const hstep = heightStepFn(state, flying || climber);
+  // Kuyruk K73c (sürüm 64+): çok altıgenli gövdede adım maliyeti en yüksek ayak altından (`bodyHeightStepFn`).
+  const hstep = k73cOn(state) && isMultiHex53(state, actor) ? bodyHeightStepFn(state, flying || climber, actor) : heightStepFn(state, flying || climber);
   // Kuyruk 19: Control Water girdabındaki yaratık (Athletics ile kaçmadıysa) merkezden uzaklaşamaz.
   const vortex = vortexBlocks(state, actor);
   // Kuyruk S2 (sürüm 41): Gaseous Form yaratık altıgeninden geçer ve kapı aralığından süzülür; Levitate'li yaratık
@@ -469,6 +499,8 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     walked += 1;
     current = withPos(current, actor.id, step);
     const me = current.combatants[actor.id] as Combatant;
+    // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) yer üstü zemin, aura, alan ve canavar adımı etkilerinden geçmez.
+    if (me.burrowed && k73cOn(current)) { prev = step; continue; }
     const entered = bodyEnterEvents(current, me, prev, step, rng);
     effects.push(...entered.events);
     current = applyEvents(current, entered.events);

@@ -1,4 +1,7 @@
 /** Canavar saldırıları: şablondan gelen saldırılar, nefes (save), Recharge ve Multiattack. */
+import { submerged } from './underwaterCore';
+import { hasSwimSpeed } from './deepWater';
+import { k73cOn } from './k73cSurum';
 import { globalRule } from './ruleControl';
 import { nonmagicalProfile } from './magicStrike';
 import { ruleVersion } from './ruleVersion';
@@ -126,7 +129,10 @@ export function monsterAttackEvents(
       (c) => c.id !== actor.id && c.side === actor.side && c.hp > 0,
     );
     const beyond = !!atk.range && !!actor.pos && !!target.pos && distance(actor.pos, target.pos) * 5 > atk.range[0];
-    const water = isUnderwater(state, actor) ? underwaterSources(atk.ranged, atk.damageType, beyond) : { sources: [], autoMiss: false };
+    // Kuyruk K73c (sürüm 64+, tam SRD): yüzme hızı olan canavarın yakın dövüşü cezasız; hedef batıksa saldıran su dışında da.
+    const v64 = k73cOn(state);
+    const wet = isUnderwater(state, actor) || (v64 && submerged(state, target));
+    const water = wet && !(v64 && !atk.ranged && hasSwimSpeed(actor, state)) ? underwaterSources(atk.ranged, atk.damageType, beyond) : { sources: [], autoMiss: false };
     const sources = [
       ...environmentSources(env, tag, { weapon: true, ranged: atk.ranged }),
       ...attackSources({

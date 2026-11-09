@@ -9,6 +9,9 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { submerged } from './underwaterCore';
+import { hasSwimSpeed } from './deepWater';
+import { k73cOn } from './k73cSurum';
 import { registerVerticalOpportunity } from './verticalHook';
 import { anyAloft, bandGap, bandOf, cellsOn } from './cells';
 import { absBand, k9On } from './vertical';
@@ -225,8 +228,10 @@ export function weaponAttackEvents(
   // Su altında (derin suda) SRD'nin su altı kuralları ortamdan bağımsız işler.
   const beyond = !!option.range && !!actor.pos && !!target.pos && hexDistance(actor.pos, target.pos) * 5 > option.range[0];
   // Kuyruk 19 (SRD Underwater Combat, `srdK19`): yüzme hızı olanın yakın dövüşü dezavantajsız.
-  const swimmer = !!globalRule(state, 'srdK19') && !option.ranged && swimsByTrait(actor, state);
-  const water = isUnderwater(state, actor) && !swimmer ? underwaterSources(option.ranged, option.damageType, beyond) : { sources: [], autoMiss: false };
+  // Kuyruk K73c (sürüm 64+, tam SRD): yüzme hızı (SRD listesi dahil) istisnası; hedef batıksa saldıran su dışında olsa da.
+  const v64 = k73cOn(state);
+  const swimmer = !option.ranged && (v64 ? hasSwimSpeed(actor, state) : !!globalRule(state, 'srdK19') && swimsByTrait(actor, state));
+  const water = (isUnderwater(state, actor) || (v64 && submerged(state, target))) && !swimmer ? underwaterSources(option.ranged, option.damageType, beyond) : { sources: [], autoMiss: false };
   const sources = [
     ...environmentSources(env, option.tag, { weapon: true, ranged: option.ranged }),
     ...attackSources({

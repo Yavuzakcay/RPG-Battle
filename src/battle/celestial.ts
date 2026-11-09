@@ -15,7 +15,7 @@
 export { AWAKENING_OPTIONS, CELESTIAL } from '../rules/celestialData';
 import { healRoll } from './healMax';
 import { u1aOn, ucusAt, ucusHiz } from './flightPrim';
-import { gap } from './body';
+import { gap64 } from './adjacency';
 import { damageProfile, fail, finish, isTargetable, type CommandResult } from './common';
 import { resolveSave } from '../rules/attack';
 import { adjustDamage, applyHealing } from '../rules/damage';
@@ -73,8 +73,8 @@ export function withCelestial(state: BattleState): BattleState {
   return changed ? { ...state, combatants } : state;
 }
 
-const touching = (state: BattleState, a: Combatant, b: Combatant) => a.id === b.id || !state.map || (!!a.pos && !!b.pos && gap(state, a, b) <= 1);
-const near = (state: BattleState, a: Combatant, b: Combatant, ft: number) => !state.map || (!!a.pos && !!b.pos && gap(state, a, b) * 5 <= ft);
+const touching = (state: BattleState, a: Combatant, b: Combatant) => a.id === b.id || !state.map || (!!a.pos && !!b.pos && gap64(state, a, b) <= 1);
+const near = (state: BattleState, a: Combatant, b: Combatant, ft: number) => !state.map || (!!a.pos && !!b.pos && gap64(state, a, b) * 5 <= ft);
 const foesNear = (state: BattleState, actor: Combatant, ft: number) => Object.values(state.combatants)
   .filter((c) => c.side !== actor.side && !c.civilian && c.hp > 0 && isTargetable(c) && near(state, actor, c, ft));
 

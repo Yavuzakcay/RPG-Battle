@@ -16,6 +16,8 @@
 import { hexKey, neighbors, type Offset } from '../rules/hex';
 import { terrainOf } from '../map/terrain';
 import { globalRule } from './ruleControl';
+import { k73cOn } from './k73cSurum';
+import { body64At } from './bodyLeaf';
 import dikeyData from '../../data/dikey.json';
 import type { BattleState, Combatant } from './types';
 
@@ -90,6 +92,20 @@ export function heightStepFn(state: St, exempt: boolean): ((h: Offset, prev: Off
   };
 }
 
+/**
+ * Kuyruk K73c (sürüm 64+, çok altıgen): gövdenin adım maliyeti en yüksek ayak altından: çapa adımında gövdenin seviyesi
+ * (ayak izinin en yükseği) 2+ artarsa geçilmez (uçurum), 1 artarsa `levelCost`; rampada normal. Tek altıgenlide `heightStepFn`.
+ */
+export function bodyHeightStepFn(state: St, exempt: boolean, c: { size?: Combatant['size'] }): ((h: Offset, prev: Offset) => number | null) | null {
+  if (exempt || !heightMoveRule(state)) return null;
+  const per = levelCost(state);
+  return (h, prev) => {
+    const up = bodyLevel(state, c, h) - bodyLevel(state, c, prev);
+    if (up >= 2 && !isRamp(state, h) && !isRamp(state, prev)) return null;
+    return up > 0 && !isRamp(state, h) && !isRamp(state, prev) ? per * up : 0;
+  };
+}
+
 /** Komşu altıgenler arasında katmanın verdiği seviye (savaş kuralı açıksa; değilse zemin yüksekliği). */
 export function combatHeightAt(state: St, h: Offset): number {
   if (heightCombatRule(state)) return heightAt(state, h);
@@ -118,9 +134,17 @@ export function rangeBonusFt(state: St, from: Offset, to: Offset, who?: { a: Pic
  * `yuksekZemin.avantajFt` (10): 1 saldıran yüksekte, −1 alçakta, 0 yok. Kural dışıysa (sürüm < 59, katmansız, anahtar kapalı)
  * null: çağıran eski seviye kuralını kullanır. `ft`: zemin farkı (saldıran − hedef).
  */
-export function highGroundK8(state: St, a: Pick<Combatant, 'pos' | 'altitudeFt'>, t: Pick<Combatant, 'pos' | 'altitudeFt'>): { side: -1 | 0 | 1; ft: number; aloft?: true } | null {
+/** Kuyruk K73c (sürüm 64+): gövdenin katman seviyesi: çok altıgenlide ayak izinin en yükseği, değilse çapanın. */
+function bodyLevel(state: St, c: { size?: Combatant['size'] }, at: Offset): number {
+  const foot = body64At(state as Parameters<typeof body64At>[0], c.size, at);
+  if (!foot) return heightAt(state, at);
+  return Math.max(...foot.map((h) => heightAt(state, h)));
+}
+
+export function highGroundK8(state: St, a: Pick<Combatant, 'pos' | 'altitudeFt'> & { size?: Combatant['size'] }, t: Pick<Combatant, 'pos' | 'altitudeFt'> & { size?: Combatant['size'] }): { side: -1 | 0 | 1; ft: number; aloft?: true } | null {
   if (!katmanOn(state) || !heightCombatRule(state) || !a.pos || !t.pos) return null;
-  const ft = (heightAt(state, a.pos) - heightAt(state, t.pos)) * levelFeet(state);
+  // Kuyruk K73c (sürüm 64+): çok altıgenli gövdede en yüksek ayak altı (`vertical.ts` `bodyZeminFt` ile aynı tanım).
+  const ft = (bodyLevel(state, a, a.pos) - bodyLevel(state, t, t.pos)) * levelFeet(state);
   if ((a.altitudeFt ?? 0) !== 0 || (t.altitudeFt ?? 0) !== 0) return { side: 0, ft, aloft: true };
   return { side: ft >= HG.avantajFt ? 1 : ft <= -HG.avantajFt ? -1 : 0, ft };
 }

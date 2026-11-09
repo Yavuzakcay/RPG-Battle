@@ -73,6 +73,8 @@ import './anchorZones';
 import { danceCleanupEvents } from './danceLights';
 import { executeVerticalMove } from './altitude';
 import './hiddenZones';
+// Kuyruk K73c: su altı nefes ve sudan çıkış (komut sonu kancası, sürüm 64+).
+import './underwater';
 import { executeDropItem, executePickUp } from './heldItems';
 import { allyStoredOwner } from './paket/p11cast';
 import { executeDropBlade } from './s2spells';

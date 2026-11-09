@@ -6,13 +6,15 @@
  * `saveDice` (bütün save'lerin ortak eklentisi) sabit eklenti olarak okur. Game Master anahtarı `auraOfProtection`
  * (global, kural sürümü 14); kapalıyken yalnızca Paladin'in kendi bonusu.
  */
+import { inWater } from './underwaterCore';
+import { k73cOn } from './k73cSurum';
 import { anyPaketSans, paketSansOf } from './paket/sans';
 import { groundWardSave } from './groundWard';
 import { anyBirlik, shoulderOf } from './imzaBirlik';
 import { auraCoreOn, passiveAuraOf } from './auraCore';
 import { imzaAuraBonus } from './imzaCore';
 import { isIncapacitated } from '../rules/conditions';
-import { auraDist, rangeGap } from './adjacency';
+import { auraDist, gap64, rangeGap } from './adjacency';
 import { gap } from './body';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
@@ -58,6 +60,8 @@ export function auraResistOf(state: BattleState, c: Combatant): string[] {
     if (p.side !== c.side || p.hp <= 0 || !p.pos) continue;
     for (const e of p.effects ?? []) if (e.auraLife && auraDist(state, p, c) * 5 <= e.auraLife.radiusFt) for (const r of e.auraLife.resist) out.add(r);
   }
+  // Kuyruk K73c (sürüm 64+, SRD Underwater Combat): su altındaki (derin suda, uçmayan) her şey ateşe dirençli.
+  if (k73cOn(state) && inWater(state, c)) out.add('fire');
   // Kuyruk 19 (Epic Boon): Night Spirit / Shadowy Form: loş ışıkta ya da karanlıkta Psychic ve Radiant dışı direnç.
   for (const r of shadowyFormResist(state, c)) out.add(r);
   // Kuyruk 19 (11–20): Nature's Sanctuary: alandaki dostlara Nature's Ward direnci.
@@ -75,7 +79,7 @@ export function burstOf(state: BattleState, c: Combatant): Combatant['burstBy'] 
     const spec = b.reactions?.find((r) => r.kind === 'burst');
     if (!spec?.pool) continue;
     const left = b.reactionUses?.[spec.pool] ?? spec.uses ?? 0;
-    if (left <= 0 || (b.id !== c.id && gap(state, b, c) * 5 > (spec.rangeFt ?? 30))) continue;
+    if (left <= 0 || (b.id !== c.id && gap64(state, b, c) * 5 > (spec.rangeFt ?? 30))) continue;
     return { id: b.id, pool: { id: spec.pool, remaining: left - 1 } };
   }
   return undefined;
@@ -90,7 +94,9 @@ export function syncAuras(state: BattleState): BattleState {
   const chainOn = !!globalRule(state, 'bardicInspirationChain');
   // Kuyruk 19 (11–20): devlet bilmeyen zar yollarında (ikinci şans) `featuresK19` anahtarı savaşçıda işaret olarak.
   const k19On = !!globalRule(state, 'featuresK19');
-  const anyLife = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.auraLife) || c.traits?.includes('night-spirit')) || !!state.map?.zones?.some((z) => z.spec?.resist?.length);
+  const anyLife = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.auraLife) || c.traits?.includes('night-spirit')) || !!state.map?.zones?.some((z) => z.spec?.resist?.length)
+    // Kuyruk K73c (sürüm 64+): su altındaki ateş direnci.
+    || (k73cOn(state) && !!state.map && Object.values(state.combatants).some((c) => inWater(state, c)));
   const anyFate = k19On && Object.values(state.combatants).some((c) => c.traits?.includes('improve-fate'));
   const anyBurst = !!globalRule(state, 'srdK19') && Object.values(state.combatants).some((c) => c.reactions?.some((r) => r.kind === 'burst'));
   let next = state;

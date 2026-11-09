@@ -15,13 +15,14 @@ import { auraGap, gap } from './body';
 import { bandGap } from './cells';
 import { absBand } from './vertical';
 import { katlarOf, slabBetween } from './stand';
+import { k73cOn } from './k73cSurum';
 import type { Offset } from '../rules/hex';
 import type { BattleState, Combatant } from './types';
 
 export const K73B_VERSION = 63;
 export const k73bOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= K73B_VERSION;
 
-type Body = Pick<Combatant, 'size' | 'pos' | 'altitudeFt'>;
+type Body = Pick<Combatant, 'size' | 'pos' | 'altitudeFt'> & { burrowed?: true };
 type St = Pick<BattleState, 'map' | 'kuralSurumu' | 'multiHex' | 'multiHexMax'>;
 
 /** İki yaratık arasında kat döşemesi var mı (biri döşemenin altında, öbürü üstünde; iki altıgenden birinde döşeme). */
@@ -53,6 +54,8 @@ export const separated = (state: St, a: Body, b: Body): boolean => slabSeparates
 export function gap3D(state: St, a: Body, b: Body, horiz?: number): number {
   if (!a.pos || !b.pos) return Infinity;
   if (separated(state, a, b)) return Infinity;
+  // Kuyruk K73c (sürüm 64+): yalnız biri yer altındaysa (kazarak) bitişiklik, aura ve tepki menzili yok.
+  if (k73cOn(state) && !!a.burrowed !== !!b.burrowed) return Infinity;
   const h = horiz ?? gap(state, a, b);
   return Math.max(h, bandGap(absBand(state, a), absBand(state, b)));
 }
@@ -73,3 +76,18 @@ export function auraDist(state: St, owner: Body, c: Body): number {
 export function rangeGap(state: St, a: Body, b: Body): number {
   return k73bOn(state) ? gap3D(state, a, b) : gap(state, a, b);
 }
+
+// --- Kuyruk K73c (kural sürümü 64+) ------------------------------------------------------------------------------------
+
+export { K73C_VERSION, k73cOn } from './k73cSurum';
+
+/**
+ * Kuyruk K73c (sürüm 64+): paket/imza auraları ve tepki menzilleri için uzaklık (altıgen): 64+'da 3B (`gap3D`: dikey bant
+ * aralığı, döşeme ve kutu keser), öncesinde 2B `gap` (63 ve altı aynen).
+ */
+export function gap64(state: St, a: Body, b: Body): number {
+  return k73cOn(state) ? gap3D(state, a, b) : gap(state, a, b);
+}
+
+/** 5 ft içinde mi: 64+'da 3B (`adjacent3D`), öncesinde 2B yatay bitişiklik (`gap ≤ 1`). */
+export const near5v64 = (state: St, a: Body, b: Body): boolean => (k73cOn(state) ? adjacent3D(state, a, b) : gap(state, a, b) <= 1);

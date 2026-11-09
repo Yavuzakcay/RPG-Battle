@@ -10,6 +10,8 @@ import type { Offset } from '../rules/hex';
 import { heightAt, heightMoveRule, k72On, katmanOn, layerActive, levelFeet } from './heights';
 import { bandOf, type Band } from './cells';
 import { ruleVersion } from './ruleVersion';
+import { k73cOn } from './k73cSurum';
+import { body64At } from './bodyLeaf';
 import type { BattleState, Combatant } from './types';
 
 /** Kuyruk K71a: dikey modelin kural sürümü. */
@@ -100,8 +102,22 @@ export function zeminFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, h: Offs
  * Mutlak yükseklik (ft; tek işlev): altıgenin zemin/katman yüksekliği (`zeminFt`) + irtifa. İrtifa yaratığın kendi altıgeninin
  * zemininden ölçülür (uçan araziyi izler; üst sınır ve tavan da o zeminden). Katmansız haritada zemin 0: mutlak = irtifa.
  */
-export function mutlakFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'pos' | 'altitudeFt'>, at: Offset | null = c.pos, alt: number = c.altitudeFt ?? 0): number {
-  return (at ? zeminFt(state, at) : 0) + alt;
+export function mutlakFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'pos' | 'altitudeFt'> & { size?: Combatant['size'] }, at: Offset | null = c.pos, alt: number = c.altitudeFt ?? 0): number {
+  return (at ? bodyZeminFt(state, c, at) : 0) + alt;
+}
+
+/**
+ * Kuyruk K73c (sürüm 64+, Görev 5; tek tanım): yaratığın gövdesinin zemini (ft). Çok altıgenli gövde (K69 `isMultiHex53`)
+ * farklı zeminli altıgenlere yayılınca en yüksek ayak altı: gövde en yüksek basamağın üstünde durur, irtifası oradan ölçülür.
+ * Mutlak yükseklik, K9 uzaklık/erişim (`absBand`, `adjacent3D`), K8 yüksek zemin ve YZ zemin ölçüsü bundan. Tek altıgenlide,
+ * bayrak kapalıyken ve 63 ve altında çapanın zemini (`zeminFt`).
+ */
+export function bodyZeminFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: { size?: Combatant['size'] }, at: Offset): number {
+  const foot = body64At(state as Parameters<typeof body64At>[0], c.size, at);
+  if (!foot) return zeminFt(state, at);
+  let top = -Infinity;
+  for (const h of foot) top = Math.max(top, zeminFt(state, h));
+  return Number.isFinite(top) ? top : zeminFt(state, at);
 }
 
 /**
@@ -111,8 +127,8 @@ export function mutlakFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pic
 export const k9On = (state: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean => katmanOn(state) && !!heightMoveRule(state);
 
 /** K9 yüksekliği (ft): K9 açıkken mutlak yükseklik (`mutlakFt`), kapalıyken irtifa (eski davranış). */
-export const k9Ft = (state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'pos' | 'altitudeFt'>, at: Offset | null = c.pos, alt: number = c.altitudeFt ?? 0): number =>
-  (k9On(state) && at ? zeminFt(state, at) : 0) + alt;
+export const k9Ft = (state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'pos' | 'altitudeFt'> & { size?: Combatant['size'] }, at: Offset | null = c.pos, alt: number = c.altitudeFt ?? 0): number =>
+  (k9On(state) && at ? bodyZeminFt(state, c, at) : 0) + alt;
 
 /**
  * K9 mutlak bant: yaratığın `at`'teki (yoksa kendi yerindeki) K9 yüksekliğinde kapladığı düzeyler; K9 kapalıyken göreli bant

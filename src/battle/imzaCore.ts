@@ -3,7 +3,7 @@
  * ve Taht Varlığı aurası (İmparator; içindeki dostlara WIS kurtulma bonusu). Saf.
  */
 import data from '../../data/imza.json';
-import { gap } from './body';
+import { gap64 } from './adjacency';
 import { houseRule, type HouseRuleId } from './houseRules';
 import { isIncapacitated } from '../rules/conditions';
 import type { Ability } from '../rules/abilities';
@@ -40,7 +40,7 @@ export function imzaAuraBonus(state: BattleState, c: Combatant, ability: Ability
       const a = p.etki.aura as { yaricapFt: Record<string, number>; save: Record<string, number>; yetenekler: string[] } | undefined;
       if (!a || !a.yetenekler.includes(ability)) continue;
       const ft = byLevel(a.yaricapFt, o.level) ?? 0;
-      if (state.map && o.pos && c.pos && gap(state, o, c) * 5 > ft) continue;
+      if (state.map && o.pos && c.pos && gap64(state, o, c) * 5 > ft) continue;
       best = Math.max(best, byLevel(a.save, o.level) ?? 0);
     }
   }

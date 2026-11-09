@@ -10,7 +10,7 @@
  *   geçici can). Saf; zar `rng` ile. Paketsiz savaşta olay üretmez.
  */
 import { ruleVersion } from '../ruleVersion';
-import { gap } from '../body';
+import { gap64 } from '../adjacency';
 import { canReact, reactionUsed, registerAfterAttack, registerCastHook, strikeApi } from '../reactions';
 import { registerAfterOpportunity, registerCommandEnd, registerTurnStart } from '../turnHooks';
 import { applyEvents, speedHexes } from '../reduce';
@@ -137,7 +137,7 @@ registerAfterAttack((state, attackerId, targetId, info, rng) => {
     // isaretliVurdu: senin işaretlediğin saldırgan sana ya da dostuna isabet etti.
     const marked = g.side === target.side && !!attacker.effects?.some((e) => e.id.startsWith('pk-isaret:') && e.id.endsWith(`:${g.id}`));
     // komsuHedefVuruldu: sana bitişik düşmana bir dostun isabet etti.
-    const neighbour = g.side === attacker.side && g.id !== attacker.id && target.side !== g.side && !!g.pos && !!target.pos && gap(state, g, target) <= 1;
+    const neighbour = g.side === attacker.side && g.id !== attacker.id && target.side !== g.side && !!g.pos && !!target.pos && gap64(state, g, target) <= 1;
     for (const r of refs(g, (p) => p.tur === 'tepki' && ((marked && p.olay === 'isaretliVurdu') || (neighbour && p.olay === 'komsuHedefVuruldu')))) {
       const foe = r.p.olay === 'isaretliVurdu' ? attacker : target;
       if (!alive(foe) || !ready(state, g, r, foe)) continue;

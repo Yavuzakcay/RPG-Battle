@@ -6,7 +6,7 @@
  * Kimin hangi kaynağa menzilde olduğu reducer türetimidir (`syncAuras` → `Combatant.pkSans`; replay aynı). Saf; ağır içe
  * aktarma yok.
  */
-import { gap } from '../body';
+import { gap64 } from '../adjacency';
 import { isIncapacitated } from '../../rules/conditions';
 import type { ExtraDie } from '../../rules/attack';
 import type { BattleState, Combatant } from '../types';
@@ -43,7 +43,7 @@ export function paketSansOf(state: BattleState, c: Combatant): PkSans[] {
   for (const h of Object.values(state.combatants)) {
     if (!h.paket || !ready(h)) continue;
     const foe = h.side !== c.side;
-    const near = (ft: number) => h.id === c.id || !state.map || !h.pos || !c.pos || gap(state, h, c) * 5 <= ft;
+    const near = (ft: number) => h.id === c.id || !state.map || !h.pos || !c.pos || gap64(state, h, c) * 5 <= ft;
     for (const { f, p } of prims(h, 'zarMuhru')) {
       const kim = (p.kim as string[] | undefined) ?? ['kendi', 'dost', 'dusman'];
       const who = h.id === c.id ? 'kendi' : foe ? 'dusman' : 'dost';

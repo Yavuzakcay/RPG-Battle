@@ -80,3 +80,8 @@ export function deepWaterBlocks(state: BattleState, actor: Combatant): (h: Offse
   if (limit === null || !tiles || canEnterVeryDeep(actor, state)) return () => false;
   return (h) => veryDeepAt(tiles, h, limit);
 }
+
+/** Kuyruk K73c (sürüm 64+): yüzme hızı var mı (SRD listesi, Alter Self/Roving/Gift of the Depths). Uçuş sayılmaz. */
+export function hasSwimSpeed(c: Combatant, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean {
+  return (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.traits?.includes('gift-of-the-depths') || swimsByTrait(c, state);
+}

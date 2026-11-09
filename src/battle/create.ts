@@ -458,6 +458,15 @@ export function crProficiency(cr: string): number {
   return Number.isFinite(n) ? 2 + Math.floor(Math.max(0, n - 1) / 4) : 2;
 }
 
+/** Kuyruk K73c: canavarın kazma hızı (ft; verinin "Hız: Burrow N ft" notundan) ya da 0. */
+export function monsterBurrowFt(monster: Pick<Monster, 'unsupported'>): number {
+  for (const u of monster.unsupported ?? []) {
+    const m = /^Hız:.*\bBurrow (\d+) ft/.exec(u);
+    if (m) return Number(m[1]);
+  }
+  return 0;
+}
+
 /** Kuyruk 19: canavarın Blindsight/Truesight/Tremorsense menzilleri (ft); verinin "Duyu:" notundan. */
 export function monsterSenses(monster: Pick<Monster, 'unsupported'>): Combatant['senses'] | undefined {
   const out: NonNullable<Combatant['senses']> = {};
@@ -518,6 +527,8 @@ export function combatantFromMonster(
     ...(monsterPhase(monster.traits) ? { phase: monsterPhase(monster.traits) } : {}),
     // Kuyruk 19: özel duyular (SRD; verideki "Duyu: Blindsight 30 ft…" notundan): görüş kuralları ve yapay zekâ.
     ...(monsterSenses(monster) ? { senses: monsterSenses(monster) } : {}),
+    // Kuyruk K73c: kazma hızı (verinin "Hız: Burrow N ft" notundan); yalnız 64+ kuralları okur.
+    ...(monsterBurrowFt(monster) ? { burrowFt: monsterBurrowFt(monster) } : {}),
     level: 0,
     spellMod: 0,
     spellSaveDc: null,

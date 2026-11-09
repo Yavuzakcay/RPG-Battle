@@ -308,6 +308,9 @@ input[type='number'] { width: 90px; }
 .air-level.on { background: rgba(70, 140, 210, 0.95); border-color: #fff; font-weight: 700; }
 .air-hint { max-width: 200px; font-size: 11px; line-height: 1.3; padding: 4px 8px; border-radius: 8px; background: rgba(15, 20, 26, 0.85); }
 .token.air-dim { opacity: 0.4; pointer-events: none; }
+/* Kuyruk K73c: yer altındaki (kazan) jeton soluk, batık jeton yarı saydam ve mavimsi. */
+.token.burrowed .token-filter { opacity: 0.35; filter: grayscale(0.6) sepia(0.4); }
+.token.submerged .token-filter { opacity: 0.6; filter: hue-rotate(160deg) saturate(0.7); }
 .air-shadow { fill: rgba(0, 0, 0, 0.38); }
 .air-tether { stroke: rgba(255, 255, 255, 0.35); stroke-width: 1.5; stroke-dasharray: 3 3; }
 /* Kuyruk K71b: tırmanma onayı açıklaması ekonomi çubuğunun üstünde, sarılan balon (çubuğu taşırmaz). */

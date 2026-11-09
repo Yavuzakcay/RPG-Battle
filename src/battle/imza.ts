@@ -8,7 +8,7 @@
 import { healRoll } from './healMax';
 import { resistImmunityEvent, resistImmunityId } from './auraCore';
 import data from '../../data/imza.json';
-import { gap } from './body';
+import { gap64 } from './adjacency';
 import { damageProfile as profileOf, fail, finish, isTargetable, type CommandResult } from './common';
 import { byLevel, imzaId, imzaOn, imzaPasifler, isImza } from './imzaCore';
 import { saveDice } from './effectDice';
@@ -156,7 +156,7 @@ const bondedOf = (state: BattleState, actor: Combatant) => Object.values(state.c
 
 function within(state: BattleState, a: Combatant, b: Combatant, ft: number | undefined): boolean {
   if (ft === undefined || !state.map || !a.pos || !b.pos) return true;
-  return gap(state, a, b) * 5 <= ft;
+  return gap64(state, a, b) * 5 <= ft;
 }
 const alive = (c: Combatant) => c.hp > 0 && c.life !== 'dead' && !c.summon?.gone && isTargetable(c);
 
@@ -169,7 +169,7 @@ function targetsOf(state: BattleState, actor: Combatant, spec: ImzaSpec, key: st
     const n = n0 * (byLevel(spec.enCokCarpan, actor.level) ?? 1);
     return list.slice(0, n);
   };
-  const near = (c: Combatant) => (state.map && actor.pos && c.pos ? gap(state, actor, c) : 0);
+  const near = (c: Combatant) => (state.map && actor.pos && c.pos ? gap64(state, actor, c) : 0);
   switch (spec.hedef) {
     case 'self': case 'hex': return [actor];
     case 'ally': case 'allyOrSelf': case 'enemy': {
@@ -385,7 +385,7 @@ function refrainTarget(state: BattleState, actor: Combatant, spec: ImzaSpec, tar
   const p = imzaPasifler(actor).find((x) => x.ozellik === 'refrain')?.etki.nakarat as { menzilFt: number } | undefined;
   if (!p) return null;
   return Object.values(state.combatants).filter((c) => alive(c) && c.id !== first.id && c.id !== actor.id && c.side === first.side && c.pos
-    && gap(state, first, c) * 5 <= p.menzilFt).sort((a, b) => gap(state, first, a) - gap(state, first, b) || a.id.localeCompare(b.id))[0] ?? null;
+    && gap64(state, first, c) * 5 <= p.menzilFt).sort((a, b) => gap64(state, first, a) - gap64(state, first, b) || a.id.localeCompare(b.id))[0] ?? null;
 }
 
 /** Aynı adlı etkilerin sınırı: sınırı aşacak kadar eskisi biter (en erken biteni önce). */

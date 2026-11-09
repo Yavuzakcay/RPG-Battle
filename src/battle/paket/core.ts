@@ -3,7 +3,7 @@
  * düğme gruplama ve savaş başı kurulumu (`withPaket`). Ağır bağımlılık yok (oluşturucu `create.ts` buradan içe aktarır).
  * Saf; zar `rng` ile.
  */
-import { gap } from '../body';
+import { gap64 } from '../adjacency';
 import { isTargetable } from '../common';
 import { turnKey } from '../economy';
 import { auraCoreOn } from '../auraCore';
@@ -85,7 +85,7 @@ export function dcOf(save: Record<string, unknown> | undefined, c: Combatant): n
 
 export const alive = (c: Combatant | undefined): c is Combatant => !!c && c.hp > 0 && c.life !== 'dead' && !c.summon?.gone && isTargetable(c);
 export const within = (state: BattleState, a: Combatant, b: Combatant, ft: number | undefined): boolean =>
-  ft === undefined || !state.map || !a.pos || !b.pos || gap(state, a, b) * 5 <= ft;
+  ft === undefined || !state.map || !a.pos || !b.pos || gap64(state, a, b) * 5 <= ft;
 
 /** Etki kimlikleri. */
 export const effId = (key: string, i: number, ownerId?: string): string => `pk:${key}#${i}${ownerId ? `:${ownerId}` : ''}`;
@@ -107,7 +107,7 @@ export function kosulOk(state: BattleState, actor: Combatant, p: Ilkel, target?:
     if (k === 'zirhsiz' && !actor.paket?.zirhsiz) return false;
     if (k === 'avantajli' && !adv) return false;
     if (k === 'konsantrasyon' && !actor.concentration) return false;
-    if (k === 'dostBitisik' && !(target && Object.values(state.combatants).some((o) => o.id !== actor.id && o.side === actor.side && alive(o) && o.pos && target.pos && gap(state, o, target) <= 1))) return false;
+    if (k === 'dostBitisik' && !(target && Object.values(state.combatants).some((o) => o.id !== actor.id && o.side === actor.side && alive(o) && o.pos && target.pos && gap64(state, o, target) <= 1))) return false;
     if (k.startsWith('bicim:') && !actor.effects?.some((e) => e.id === formId(actor.id, k.slice(6)))) return false;
     if (k.startsWith('isaretli:') && !target?.effects?.some((e) => e.id === markId(actor.id, k.slice(9)))) return false;
     // P6: bu tur büyü (her büyü: komut sonu işareti `pk-buyu`; slotlu: `economy.slotTurn`), harita bölgesi.

@@ -102,6 +102,9 @@ import { globalRule } from './battle/ruleControl';
 import { pickArea } from './battle/areaAttack';
 import { climbLabel, climbTargets } from './battle/climb';
 import { dropTargets } from './battle/drop';
+import { BURROW_DEPTH_FT, canBurrow, diggable } from './battle/burrow';
+import { breathesWater, breathLimit, inWater, submerged } from './battle/underwaterCore';
+import { k73cOn } from './battle/k73cSurum';
 import { hasStandData, katlarOf } from './battle/stand';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
@@ -1864,7 +1867,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', c.unaware ? 'unaware' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
                   c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
-                  loops.has(c.id) ? 'has-fx' : '', offLevel ? 'air-dim' : '', lift ? 'aloft' : ''].join(' ');
+                  loops.has(c.id) ? 'has-fx' : '', offLevel ? 'air-dim' : '', lift ? 'aloft' : '',
+                  // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) ve batık jeton soluk/yarı saydam.
+                  c.burrowed ? 'burrowed' : '', !c.burrowed && (c.altitudeFt ?? 0) < 0 && submerged(state, c) ? 'submerged' : ''].join(' ');
                 const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
                 // Figür altıgen merkezinde ortalı, ölçekle her yöne eşit büyür; Zzz rozeti figürün tepesine yakın.
                 const top = p.y - r * scale;
@@ -2788,6 +2793,17 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   </>
                 );
               })()}
+              {/* Kuyruk K73c (sürüm 64+): kazma (yer altına in / yüzeye çık) ve dalış (derin suda 5 ft aşağı/yukarı), nefes sayacı. */}
+              {canBurrow(state, actor) && ((actor.burrowed || ((actor.altitudeFt ?? 0) === 0 && !!actor.pos && diggable(state, actor.pos))) && ((cmd: Command) => (
+                <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? B.k73c.burrowHint} onClick={() => run(cmd)}>{actor.burrowed ? B.k73c.surface : B.k73c.burrow}</button>
+              ))({ type: 'vertical_move', actorId, toFt: actor.burrowed ? 0 : -BURROW_DEPTH_FT }))}
+              {k73cOn(state) && inWater(state, actor) && (
+                <>
+                  {((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? B.k73c.diveHint} onClick={() => run(cmd)}>{B.k73c.dive}</button>)({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) - 5 })}
+                  {(actor.altitudeFt ?? 0) < 0 && ((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? undefined} onClick={() => run(cmd)}>{B.k73c.rise}</button>)({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) + 5 })}
+                  {submerged(state, actor) && <span className="breath-note" title={B.k73c.breathHint}>{breathesWater(actor) ? B.k73c.breathWater : B.k73c.breath(actor.mapStatus.breath ?? 0, breathLimit(actor))}</span>}
+                </>
+              )}
               {/* Kuyruk K68b (sürüm 52): Jump: yerinde yüksek zıplama (bu tur yakın dövüşte dikey erişim). */}
               {ruleVersion(state) >= 52 && !highJumpProblem(state, actor) && <button className="hud-btn small" onClick={() => run({ type: 'jump', actorId, to: actor.pos as Offset })}>{B.k68.highJump(Math.min(spellJumpFt(actor), altitudeCapFt(state, actor)))}</button>}
               {highJumpReachFt(state, actor) > 0 && <span>{B.k68.jumped(highJumpReachFt(state, actor))}</span>}

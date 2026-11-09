@@ -15,6 +15,7 @@
  * Yeni olay türü yok (`zone_created`/`zone_ended`, `tile_changed`, `save_resolved`, `map_effect`, `altitude_changed`,
  * `pushed`, `moved`). Saf; zar `rng` ile.
  */
+import { k73cOn } from './k73cSurum';
 import { fall } from './fall';
 import { climbOn } from './climbing';
 import { AXIAL_DIRECTIONS, axialToOffset, distance, hexKey, isInside, neighbors, offsetToAxial, sameHex, type Offset } from '../rules/hex';
@@ -57,7 +58,9 @@ export const openFissures = (s: BattleState): SpellZone[] => (s.map?.zones ?? []
 /** Altıgendeki açık yarık (yoksa undefined). */
 export const fissureAt = (s: BattleState, h: Offset): SpellZone | undefined => openFissures(s).find((z) => z.hexes.some((x) => sameHex(x, h)));
 /** Yaratık yarığın içinde mi (eksi irtifa, uçmuyor). */
-export const inFissure = (s: Pick<BattleState, 'kuralSurumu'>, c: Combatant): boolean => fissureOn(s) && altitudeOf(c) < 0 && !isAirborne(c);
+export const inFissure = (s: Pick<BattleState, 'kuralSurumu'>, c: Combatant): boolean => fissureOn(s) && altitudeOf(c) < 0 && !isAirborne(c)
+  // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) ve derin sudaki batık yarıkta değil.
+  && !(k73cOn(s) && (!!c.burrowed || (!!c.pos && !!(s as BattleState).map && terrainAt(s as BattleState, c.pos).rule === 'deepWater')));
 
 /** Büyücünün yarık hakkı: Earthquake alanı, 1d6 sayısı, yerleştirilenler, yerleştirme turu mu. */
 export function fissureBudget(s: BattleState, actor: Combatant): { quake: SpellZone; spec: FissureSpec; count: number; placed: number; open: boolean } | null {

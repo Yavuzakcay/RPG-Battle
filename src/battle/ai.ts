@@ -26,6 +26,11 @@ import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './ce
 import { wallClimbCommand } from './ai/climbAi';
 import { approachField, engaged, highGroundBonus, k73aOn, K73A, landingWanted, riseFt, concentrationFlight } from './ai/k73a';
 import { K73B } from './ai/k73b';
+import { K73C } from './ai/k73c';
+import { k73cOn } from './k73cSurum';
+import { breathesWater, breathLimit, deepWaterHex, mapHasDeepWater, submerged } from './underwaterCore';
+import { BURROW_DEPTH_FT, canBurrow } from './burrow';
+import { hasSwimSpeed } from './deepWater';
 import { k73bOn } from './adjacency';
 import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf, wallAim } from './freeShape';
 import { fissureAim, fissureBudget, fissureClimbCommand } from './fissure';
@@ -1138,6 +1143,8 @@ function risk(state: BattleState, actor: Combatant, h: Offset): number {
   if (ruleOf(state, 'lavaEdge') && neighbors(h, size).some((n) => terrainAt(state, n).movement === 'deadly')) r += 8;
   // Kuyruk 41b: kayalık çukura girmek (hasar + tur kaybı) büyük risk.
   if (ruleOf(state, 'pitFall') && terrainAt(state, h).rule === 'pitFall') r += 40;
+  // Kuyruk K73c (sürüm 64+): yüzme hızı olmayan derin suya yalnız zorunluysa girer (su altı savaşı cezası).
+  if (k73cOn(state) && mapHasDeepWater(state) && deepWaterHex(state, h) && !hasSwimSpeed(actor, state)) r += K73C.suRiski;
   return r;
 }
 
@@ -2069,6 +2076,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // aşağı atlar (canı en kötü düşme hasarını kaldırıyorsa).
   const dropped = k73bOn(state) ? dropCommand(state, actor, now, canAct) : null;
   if (dropped) return dropped;
+  // Kuyruk K73c (sürüm 64+): batık nefesi tükenmeden ya da saldıramıyorsa yüzeye; kazan düşman yalnız hedefe ulaşmak için kazar.
+  const k73c = k73cOn(state) ? waterCommand(state, actor, now) ?? burrowCommand(state, actor, now, canAct) : null;
+  if (k73c) return k73c;
   // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
   // hasar; örn. savaşçı arbalet yerine kılıç) önce oraya yürür. Güvenli ve en ucuz yerler.
   if (now && canAct && actor.side === 'party' && !actor.civilian && actor.movementUsed < speedHexes(actor)) {
@@ -2664,6 +2674,49 @@ function perchCommand(state: BattleState, actor: Combatant, now: Command | null,
     return cmd;
   }
   return null;
+}
+
+/**
+ * Kuyruk K73c (sürüm 64+, Görev 2): batık yaratık: su solumayanın nefesi bir tura indiyse yüzeye çıkar; buradan saldıramıyorsa
+ * yüzeye doğru yükselir (hareketinin yettiği kadar). Yeni uzun taktik yok: YZ kendiliğinden dalmaz.
+ */
+function waterCommand(state: BattleState, actor: Combatant, now: Command | null): Command | null {
+  if (!submerged(state, actor)) return null;
+  const alt = altitudeOf(actor);
+  const air = !breathesWater(actor) && breathLimit(actor) - (actor.mapStatus.breath ?? 0) <= 1;
+  if (!air && now) return null;
+  for (let ft = 0; ft > alt; ft -= 5) {
+    const cmd: Command = { type: 'vertical_move', actorId: actor.id, toFt: ft };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  return null;
+}
+
+/**
+ * Kuyruk K73c (sürüm 64+, Görev 1): kazma hızı olan düşman. Yer altındayken: bir düşmanın bitişiğinde (yatay) yüzeye çıkar
+ * (sonra saldırır); değilse yer altında en yakın düşmana yaklaşır (yüzeye çıkmaya 1 altıgen bırakarak), ilerleyemiyorsa yüzeye
+ * çıkar. Yerdeyken yalnız hedefe ulaşmak için kazar: yürüyerek hiçbir düşmana yol yoksa ve kazılabilir zemindeyse.
+ */
+function burrowCommand(state: BattleState, actor: Combatant, now: Command | null, canAct: boolean): Command | null {
+  if (actor.side !== 'enemies' || !actor.pos || !canBurrow(state, actor)) return null;
+  const foes = foesOf(state, actor).filter((f) => f.pos && !f.burrowed);
+  if (!foes.length) return null;
+  const pos = actor.pos;
+  const surface: Command = { type: 'vertical_move', actorId: actor.id, toFt: 0 };
+  if (actor.burrowed) {
+    const near = (h: Offset) => Math.min(...foes.map((f) => distance(h, f.pos as Offset)));
+    if (near(pos) <= 1) return tryCmd(state, actor, surface).ok ? surface : null;
+    const left = speedHexes(actor) - actor.movementUsed;
+    const spots = reachable(state, actor).filter((sp) => sp.cost <= left - 1 && near(sp.to) < near(pos))
+      .sort((a, b) => near(a.to) - near(b.to) || a.cost - b.cost);
+    const go = firstMove(state, actor, spots);
+    if (go) return go;
+    return tryCmd(state, actor, surface).ok ? surface : null;
+  }
+  if (now || !canAct || altitudeOf(actor) !== 0) return null;
+  if (Number.isFinite(approachField(state, actor, foes)(pos))) return null;
+  const dig: Command = { type: 'vertical_move', actorId: actor.id, toFt: -BURROW_DEPTH_FT };
+  return tryCmd(state, actor, dig).ok ? dig : null;
 }
 
 /**

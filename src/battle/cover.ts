@@ -19,7 +19,7 @@ import { ALT, altitudeOf, bodyHeightFt, ceilingFt, eyeFt } from './altitude';
 import { objectAt, OBJECTS } from './objectData';
 import { solidBarrierAt } from './barriers';
 import { ruleVersion } from './ruleVersion';
-import { dikeyOn, engelEzme, harfFt, hasHexCeilings, zeminFt } from './vertical';
+import { dikeyOn, engelEzme, harfFt, hasHexCeilings, bodyZeminFt, zeminFt } from './vertical';
 import { spells } from '../data';
 import s2rules from '../../data/s2-kurallar.json';
 import dikeyData from '../../data/dikey.json';
@@ -427,7 +427,8 @@ function highGroundBase(state: BattleState, a: Combatant, t: Combatant): { side:
   if (k72On(state) && a.pos && t.pos && (standingOn(state, a) || standingOn(state, t)) && (!layerActive(state) || heightCombatRule(state))) {
     const sa = standAlt(state, a);
     const st = standAlt(state, t);
-    const ft = zeminFt(state, a.pos) + (sa ?? altitudeOf(a)) - (zeminFt(state, t.pos) + (st ?? altitudeOf(t)));
+    // Kuyruk K73c (sürüm 64+): çok altıgenli gövdede en yüksek ayak altı (`bodyZeminFt`).
+    const ft = bodyZeminFt(state, a, a.pos) + (sa ?? altitudeOf(a)) - (bodyZeminFt(state, t, t.pos) + (st ?? altitudeOf(t)));
     if (sa === null || st === null) return { side: 0, ft, aloft: true };
     return { side: ft >= HG_FT ? 1 : ft <= -HG_FT ? -1 : 0, ft };
   }

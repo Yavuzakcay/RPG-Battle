@@ -97,6 +97,21 @@
     "not": "Kuyruk K72 (kural sürümü 60+): çok katlı binanın döşemesi (varyant `dikey.katlar`). Earthquake yapı hasarı (50 Bludgeoning) bir kattaki döşemenin canından (`hp`, katta ezilir) az değilse alandaki döşeme altıgenleri çöker; üstündekiler alttaki en yüksek yüzeye tek düşmeyle iner. ⚠ SRD döşeme canı vermez (tasarım: ahşap döşeme).",
     "hp": 50
   },
+  "kazma": {
+    "not": "Kuyruk K73c (kural sürümü 64+; SRD 5.2.1 Burrow Speed: kum, toprak, çamur, buz; katı kaya yalnız özel özellikle): kazma hızı olan yaratık `harfler` zeminlerinde kazarak yer altına iner (`derinlikFt`) ve kazma hızıyla ilerler. `kayaOrtam` ortamlarında (mağara/zindan, kasaba) `kayaHarfler` taş döşeme sayılır (kazılmaz). Duvar, sütun, kaya, taşlık, bazalt, tahta/kaldırım, su, lav, uçurum kazılmaz; kat döşemesi ve sur içinden geçilmez.",
+    "harfler": [".", "d", "g", "n", "q", "i"],
+    "kayaOrtam": ["yeralt-ma-ara", "kasaba"],
+    "kayaHarfler": [".", "g"],
+    "derinlikFt": 5
+  },
+  "suAlti": {
+    "not": "Kuyruk K73c (kural sürümü 64+; SRD 5.2.1 Underwater Combat ve Suffocation): derin suda (`w`) irtifa 0 yüzeyde yüzme, eksi irtifa batık. Dalış en çok `derinlikFt` (⚠ harita verisinde derinlik yok; varsayılan). Yüzme hızı olmayanın dikey 5 ft'i `yuzmeCarpani` altıgen (SRD Swimming: her ft için 1 ek ft). Nefes: 1 + CON dakika (en az `enAzTur` tur = 30 sn), 1 dakika = `dakikaTur` tur; bitince her tur sonu 1 Exhaustion, nefes alınca o seviyeler gider. Su soluyanlar: canavar notunda `soluyanNotlar`.",
+    "derinlikFt": 20,
+    "yuzmeCarpani": 2,
+    "dakikaTur": 10,
+    "enAzTur": 3,
+    "soluyanNotlar": ["Water Breathing", "Amphibious", "Hold Breath"]
+  },
   "suyaDusme": {
     "not": "Kuyruk K73b (kural sürümü 63+; SRD 5.2.1 Falling): derin suya (`w`, kural `deepWater`) düşen düşme hasarını alır; kendi tepkisiyle DC `dc` Atletizm ya da Akrobasi (yüksek olanı) kontrolü başarılıysa hasar yarıya iner. Hasar alan Prone (SRD genel kural). Sığ su/çamur (`n`) ve batak (`b`) sıvı sayılmaz (düşmeyi yumuşatacak derinlik verisi yok). 57–62'de derin suya iniş hasarsız.",
     "dc": 15

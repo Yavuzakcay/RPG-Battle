@@ -3,6 +3,7 @@
  * menzili, büyü menzili. Haritasız savaşta (veya konumu olmayan savaşçıda) hiçbir şey
  * denetlenmez, eski davranış aynen sürer. Mesafe altıgen cinsinden (1 altıgen = 5 ft).
  */
+import { burrowTargetProblem } from './burrow';
 import { adjacent3D, k73bOn, separated } from './adjacency';
 import { cageBoxBlock } from './forcecage';
 import { inProtectiveAura } from './ruleVersion';
@@ -77,6 +78,9 @@ export function checkReach(
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }
   if (!state.map || !attacker.pos || !target.pos) return { ok: true, sources: [], cover: 0 };
+  // Kuyruk K73c (sürüm 64+): yer altındaki saldıramaz; yer altındakini yalnız kazan ya da tremorsense'i olan hedefler.
+  const dig = burrowTargetProblem(state, attacker, target, reachFt(state, attacker, target, gap(state, attacker, target) * 5));
+  if (dig) return fail(dig);
   // Kuyruk K73b (sürüm 63+): kat döşemesi ya da Forcecage kutusu iki yaratığı ayırıyorsa erişim ve menzil yok.
   if (k73bOn(state) && separated(state, attacker, target)) return fail(`${target.name}: arada kat döşemesi ya da Forcecage kutusu var.`);
   // Görev P6: ek paket erişim eki (`boyut.erisimFt`; süren etki `reachPlus`) yakın dövüşe.

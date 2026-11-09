@@ -33,6 +33,7 @@ import { mirrorImageHit } from './mind';
 import { freeSpellResource } from '../rules/classFeatures';
 import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
 import { globalRule } from './ruleControl';
+import { gap64 } from './adjacency';
 
 /** Kuyruk 19 (srdK19): Ink Cloud kancası (`monsterAbilities.ts` yükleyince kaydeder; döngüsel içe aktarma yok). */
 type InkHook = (state: BattleState, id: string, on: 'turnEnd' | 'damaged', rng: Rng) => BattleEvent[];
@@ -137,7 +138,8 @@ function answerFor(o: ReactionOption): ReactionAnswer {
 
 /** Uzaklık (ft): haritada altıgen × 5; haritasızda aynı yükseklik 5 ft, değilse 30 ft sayılır. */
 export function feetBetween(state: BattleState, a: Combatant, b: Combatant): number {
-  if (state.map && a.pos && b.pos) return gap(state, a, b) * 5;
+  // Kuyruk K73c (sürüm 64+): tepki menzilleri 3B (dikey bant aralığı; döşeme ve Forcecage kutusu keser).
+  if (state.map && a.pos && b.pos) return gap64(state, a, b) * 5;
   return heightOf(state, a) === heightOf(state, b) ? 5 : 30;
 }
 

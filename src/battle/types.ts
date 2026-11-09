@@ -530,6 +530,10 @@ export interface MapStatus {
   sink: number;
   /** Bataktan çıktıktan sonra süren zehir (tur başı hasar, tur sonu CON save ile biter). */
   lingeringPoison: boolean;
+  /** Kuyruk K73c (sürüm 64+): batık geçen tur (nefes tutma; SRD Suffocation). */
+  breath?: number;
+  /** Kuyruk K73c (sürüm 64+): boğulmadan kazanılan Exhaustion seviyeleri (nefes alınca gider). */
+  suffocation?: number;
 }
 
 export const FRESH_MAP_STATUS: MapStatus = { sink: 0, lingeringPoison: false };
@@ -726,6 +730,10 @@ export interface Combatant {
   /** Kuyruk 19: yetenek puanı azalması (puan ve değiştirici farkı; Shadow Draining Swipe). */
   abilityLoss?: Partial<Record<Ability, { amount: number; mod: number }>>;
   /** Kuyruk 19: özel duyular (ft; canavar verisinden): Blindsight, Truesight, Tremorsense. */
+  /** Kuyruk K73c (sürüm 64+): kazma hızı (ft; canavar verisinden). */
+  burrowFt?: number;
+  /** Kuyruk K73c (sürüm 64+): yer altında (kazarak; `altitude_changed.burrow`, irtifa eksi). Hedeflenemez, saldıramaz. */
+  burrowed?: true;
   senses?: { blindsight?: number; truesight?: number; tremorsense?: number };
   /** Kuyruk 19: içinde bulunduğu auranın verdiği dirençler (Aura of Life; reducer `syncAuras`). */
   auraResist?: string[];
@@ -2113,7 +2121,7 @@ export type BattleEvent =
   | { type: 'life_restored'; targetId: string; hpAfter: number; life: 'alive' | 'stable'; label: string }
   /** Görev S1: ışınlanma (fırsat saldırısı tetiklemez; sıra ve konsantrasyon korunur). */
   /** Kuyruk S2: irtifa (ft) değişti (yaratık ya da nesne); `cost` harcanan hareket (altıgen), `turn`/`moved` Levitate turluk sınırı. */
-  | { type: 'altitude_changed'; targetId?: string; objectId?: string; altitudeFt: number; label: string; cost?: number; turn?: string; moved?: number; byId?: string; /** Levitate: bitince süzülerek iner. */ gentle?: boolean; /** Kuyruk K68b: tırmanma (duvar/tavan). */ climb?: true; /** Kuyruk K72 (sürüm 60+): duruş yüzeyinde (sur tepesi, kat döşemesi): tırmanma işareti kalkar. */ stand?: true }
+  | { type: 'altitude_changed'; targetId?: string; objectId?: string; altitudeFt: number; label: string; cost?: number; turn?: string; moved?: number; byId?: string; /** Levitate: bitince süzülerek iner. */ gentle?: boolean; /** Kuyruk K68b: tırmanma (duvar/tavan). */ climb?: true; /** Kuyruk K72 (sürüm 60+): duruş yüzeyinde (sur tepesi, kat döşemesi): tırmanma işareti kalkar. */ stand?: true; /** Kuyruk K73c (sürüm 64+): kazarak yer altına (irtifa eksi). */ burrow?: true }
   /** Kuyruk S2: elden düşen eşya (yerde nesne olur; `options` geri alınınca dönen saldırı seçenekleri; nesnesizse kaybolur). */
   | { type: 'item_dropped'; actorId: string; item: string; label: string; objectId?: string; at?: Offset; options?: AttackOption[] }
   | { type: 'item_picked'; actorId: string; objectId: string; label: string; bond?: boolean }

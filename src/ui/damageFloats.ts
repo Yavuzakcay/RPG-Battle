@@ -84,6 +84,8 @@ function statusBadges(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<P
   if (hovers(c)) out.push({ key: 'flying', icon: '〰', title: S.hovering });
   else if (c.effects?.some((e) => e.fly || e.airborne)) out.push({ key: 'flying', icon: '🪽', title: S.flying });
   if (c.conditions.includes('Invisible')) out.push({ key: 'invisible', icon: '👁', title: S.invisible });
+  // Kuyruk K73c (sürüm 64+): yer altında (kazarak).
+  if ((c as { burrowed?: true }).burrowed) out.push({ key: 'burrowed', icon: '⛏', title: S.burrowed });
   // Görev E1: Deafened rozetle (yalnızca görsel).
   if (c.conditions.includes('Deafened')) out.push({ key: 'deafened', icon: '🔇', title: S.deafened });
   // Kuyruk K48: Moral 0'da Çökmüş (belirgin simge; Incapacitated simgesinin yerine).

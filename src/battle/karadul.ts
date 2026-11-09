@@ -13,7 +13,7 @@
 import data from '../../data/karadul.json';
 import creatureTypes from '../../data/canavar-turleri.json';
 import { getMonster, type Monster } from '../data';
-import { gap } from './body';
+import { gap64 } from './adjacency';
 import { fail, finish, type CommandResult } from './common';
 import { houseRule } from './houseRules';
 import { saveDice } from './effectDice';
@@ -94,7 +94,7 @@ export function karadulProblem(state: BattleState, actor: Combatant, f: UsableFe
   if (!t || t.hp <= 0 || t.side === actor.side) return 'Bir düşman seç.';
   if (!data.bakis.turler.includes(typeOf(t) ?? '')) return `${t.name} insansı ya da canavar değil.`;
   if (charmedBy(t, actor)) return `${t.name} zaten büyülenmiş.`;
-  if (state.map && (!actor.pos || !t.pos || gap(state, actor, t) * 5 > data.bakis.menzilFt)) return `${data.bakis.menzilFt} ft içinde olmalı.`;
+  if (state.map && (!actor.pos || !t.pos || gap64(state, actor, t) * 5 > data.bakis.menzilFt)) return `${data.bakis.menzilFt} ft içinde olmalı.`;
   if (charmCount(state, actor) >= Math.max(data.bakis.enAzHedef, humanMods(actor).cha)) return 'Aynı anda büyüleyebileceğin hedef sınırı doldu (CHA).';
   return null;
 }

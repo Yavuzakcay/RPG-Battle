@@ -5,7 +5,7 @@
  * yapay zekâ açıklayıcısı (`ai/actions.ts`; puan kuru çalıştırmayla). Tanımsız/kapalı ilkel çökmez, etkisiz kalır.
  * Saf; zar `rng` ile. Paketsiz savaşta kancalar hiçbir olay üretmez.
  */
-import { gap } from '../body';
+import { gap64 } from '../adjacency';
 import { damageProfile as profileOf, fail, finish, type CommandResult } from '../common';
 import { saveDice } from '../effectDice';
 import { BEACON_K70_VERSION, beaconMax } from '../healMax';
@@ -75,7 +75,7 @@ const untilOf = (state: BattleState, p: Ilkel): Partial<ActiveEffect> => {
 };
 const foesOf = (state: BattleState, a: Combatant) => Object.values(state.combatants).filter((c) => alive(c) && c.side !== a.side && !c.civilian);
 const alliesOf = (state: BattleState, a: Combatant) => Object.values(state.combatants).filter((c) => alive(c) && c.side === a.side && !c.civilian);
-const near = (state: BattleState, a: Combatant) => (c: Combatant) => (state.map && a.pos && c.pos ? gap(state, a, c) : 0);
+const near = (state: BattleState, a: Combatant) => (c: Combatant) => (state.map && a.pos && c.pos ? gap64(state, a, c) : 0);
 const ft = (p: Ilkel, f: string, c: Combatant) => flatNum(val(p, f), c);
 
 /** Merkez altıgen etrafındaki altıgenler (yarıçap altıgen). */
@@ -648,7 +648,7 @@ registerHitHook((state, actor, target, ctx, rng) => {
     const type = val<string>(p, 'hasarTuru') === 'silah' ? ctx.weaponType : val<string>(p, 'hasarTuru');
     // P10 (sürüm 39+): yan hedef: vurulana bitişik başka bir düşmana (yoksa vurulana).
     const side = p.yanHedef === true && p10On(state) && target.pos ? Object.values(state.combatants)
-      .filter((o) => alive(o) && o.id !== target.id && o.side === target.side && !o.civilian && o.pos && gap(state, o, target) <= 1)
+      .filter((o) => alive(o) && o.id !== target.id && o.side === target.side && !o.civilian && o.pos && gap64(state, o, target) <= 1)
       .sort((x, y) => x.hp - y.hp || x.id.localeCompare(y.id))[0] : undefined;
     if (side) marks.push(hitEffect(side, 'paket', (p.ad as string | undefined) ?? feat.ad, { damage: String(roll.total), damageType: type || 'force' }, rng));
     else {
@@ -892,7 +892,7 @@ registerAllyHit((state, hit, rng) => {
         // Saldırı ıskalar; hasar asıl hedefin menzilindeki başka bir (tepki verenin düşmanı) yaratığa.
         const r = ft(p, 'menzilFt', g);
         const other = Object.values(state.combatants).filter((c) => alive(c) && c.id !== hit.target.id && c.side !== g.side && within(state, hit.target, c, r))
-          .sort((x, y) => (state.map && x.pos && y.pos && hit.target.pos ? gap(state, hit.target, x) - gap(state, hit.target, y) : 0) || x.id.localeCompare(y.id))[0];
+          .sort((x, y) => (state.map && x.pos && y.pos && hit.target.pos ? gap64(state, hit.target, x) - gap64(state, hit.target, y) : 0) || x.id.localeCompare(y.id))[0];
         if (other) events.push(hitEffect(other, 'paket', name, { damage: String(hit.damage), damageType: hit.damageType || 'force' }, rng));
         return { name, events };
       }
