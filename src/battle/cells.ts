@@ -12,13 +12,18 @@
  * - Uzaklık max(yatay, dikey) (K9): dikey bileşen bant aralığı (alt hücre − öbürünün üst hücresi) × 5 ft.
  * Hızlı yol: savaşta irtifası 0 olmayan yaratık yoksa çağıranlar eski kodu kullanır (`anyAloft`). Saf.
  */
-import { bodyHeightFt } from './altitude';
-import { ruleVersion } from './ruleVersion';
+import rules from '../../data/s2-kurallar.json';
 import type { BattleState, Combatant } from './types';
+
+// Yaprak modül (yalnız veri ve tür içe aktarır): hareket, fırsat saldırısı ve düşme modülleri buradan okur; savaş
+// modüllerini içe aktarmak döngü giriş sırasını değiştirip dev sunucusunda başlatma hatasına yol açıyordu (DECISIONS.md K71c).
+const BOY_FT = rules.irtifa.boyFt as Record<string, number>;
+/** Yaratığın boyu (ft; `altitude.ts` `bodyHeightFt` ile aynı veri). */
+const bodyHeightFt = (c: Pick<Combatant, 'size'>): number => BOY_FT[c.size] ?? 5;
 
 /** Kuyruk K71c: hava ızgarasının kural sürümü. */
 export const CELLS_VERSION = 58;
-export const cellsOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(s) >= CELLS_VERSION;
+export const cellsOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= CELLS_VERSION;
 
 /** Bir düzeyin yüksekliği (ft). */
 export const LEVEL_FT = 5;

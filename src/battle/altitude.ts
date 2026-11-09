@@ -32,9 +32,9 @@ import { dikeyOn, tavanEzme } from './vertical';
 import { obstacleTopFt } from './cover';
 import { climbOn, dexClimbMove, dexClimberHolds } from './climbing';
 import { bandGap, bandOf, bandsOverlap, cellsOn } from './cells';
+import { verticalOpportunity } from './verticalHook';
 import { covers } from './body';
 import { isTargetable } from './common';
-import { opportunityAttacks } from './features';
 import dikeyData from '../../data/dikey.json';
 
 export const ALT = rules.irtifa;
@@ -244,8 +244,9 @@ export function executeVerticalMove(state: BattleState, actor: Combatant, cmd: {
   if (actor.movementUsed + cost > speedHexes(actor)) return fail(`Yeterli hareket yok (${d} ft dikey = ${cost} altıgen).`);
   const rise: BattleEvent = { type: 'altitude_changed', targetId: t.id, altitudeFt: to, label: 'Uçuş', cost, byId: actor.id, gentle: false };
   // Kuyruk K71c (sürüm 58+): dikine yükselip/alçalıp 3B erişimden çıkan uçan fırsat saldırısı yer.
-  if (cellsOn(state) && rng && actor.pos) {
-    const oa = opportunityAttacks(state, actor.id, { from: actor.pos, to: actor.pos, fromAlt: from, toAlt: to }, rng);
+  const opportunity = verticalOpportunity();
+  if (cellsOn(state) && rng && actor.pos && opportunity) {
+    const oa = opportunity(state, actor.id, { from: actor.pos, to: actor.pos, fromAlt: from, toAlt: to }, rng);
     const after = applyEvents(state, oa);
     if ((after.combatants[actor.id]?.hp ?? 0) <= 0) return finish(state, oa);
     return finish(state, [...oa, rise]);

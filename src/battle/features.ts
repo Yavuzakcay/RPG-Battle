@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { registerVerticalOpportunity } from './verticalHook';
 import { anyAloft, bandGap, bandOf, cellsOn } from './cells';
 import { BEACON_K70_VERSION, beaconMax, healRoll } from './healMax';
 import { afterOpportunityEvents } from './turnHooks';
@@ -781,3 +782,6 @@ registerStrikes({
     return r.ok ? r.events : [];
   },
 });
+
+// Kuyruk K71c: dikey harekette (uçarak yükselip alçalma) fırsat saldırısı (döngüsüz kayıt).
+registerVerticalOpportunity(opportunityAttacks);
