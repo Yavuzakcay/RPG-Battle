@@ -64,7 +64,27 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - `moveCostFn` isteğe bağlı `AltRef`: tek kurulum, irtifaya bağlı parçalar çağrı anında.
   - A* eşit `f`'de derin düğümü önce açar (Chebyshev uzayındaki eşit yollar açılmaz).
   - Hava yeri yalnız yakın dövüş erişiminde.
-- **Ölçüm:** aşağıdaki satırlar (NİHAİ RAPOR).
+- **Modül başlatma sırası (bulunan hata, düzeltildi):**
+  - İlk check:harita koşusu dev sunucusunda rastgele boş sayfa verdi (96'da 10 hata, sayfa hatası "Cannot access 'afterHooks' before initialization").
+  - Neden: `features.ts`'in başına eklenen `cells` içe aktarması (`cells → altitude → fall → reactions`). `reactions` döngüsüne derin yığından giriliyor, `imza54`/`imzaInfazci`/`paket` `registerAfterAttack`'i `reactions` gövdesinden önce çağırıyordu (giriş `screens/fixtures.ts`).
+  - Çözüm:
+    - `cells.ts` yaprak modül: yalnız veri; boy `s2-kurallar.json`'dan, sürüm denetimi doğrudan.
+    - `altitude.ts` `features`'ı içe aktarmıyor; dikey harekette fırsat saldırısı yaprak `verticalHook.ts` kaydıyla.
+  - Davranış değişmedi. Giriş noktası benzetimiyle (14 giriş) ve gerçek tarayıcıda doğrulandı.
+- **Ölçüm:**
+  - YZ süresi (medyan, 9 × 200 karar, aynı koşuda v57 → v58; kullanıcı tabanı K71b parantezde):
+    - Mantar 1,62 → 1,69 (1,65);
+    - katmanlı 1,75 → 1,72 (1,84);
+    - uçan düşman 1,53 → 1,47 (1,66);
+    - duvarlı yerde 1,88 → 2,03 (1,94);
+    - duvarda 0,49 → 0,59 (0,54; aynı koşuya göre +%20, mutlak +0,1 ms; tabana göre +%9).
+    - Ek sahne: yakın dövüşlü uçan düşman 1,60 → 1,60.
+    - Hepsi kullanıcı tabanına göre ≤ +%15.
+  - Uçansız savaşta hücre çözücüsünün tam yolu ve YZ hava yerleri çalışmaz (sayaç testi).
+  - Regresyon `K71C_TOHUM=30`: Çöl, Kale, Mağara, Orman 57 = 58 birebir.
+  - Duvarlı 6 harita × 50 tohum (`K71C_DUVAR=50`): kazanç ve tur 57 = 58, altı haritanın hepsinde.
+  - Ana parça 374 742 bayt (değişmedi). check:harita 96/0 (düzeltmeden sonra, yeniden deneme yok), check:ses 15/0.
+  - Tek ekran görüntüsü: Hava görünümü.
 
 ## 2026-11-08 — Kuyruk K71b: herkes için tırmanma (Çeviklik), düşme tek işlev, Long Jump, 23 harita (kural sürümü 57)
 
