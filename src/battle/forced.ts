@@ -15,7 +15,7 @@ import { moverBand } from './cells';
 import { fall } from './fall';
 import { climbOn } from './climbing';
 import { knowsWhere } from './sight';
-import { heightDelta, heightFallRule, isRamp, layerActive, levelFeet } from './heights';
+import { heightDelta, heightFallRule, isRamp, katmanOn, layerActive, levelFeet } from './heights';
 import { saveDice } from './effectDice';
 import { saveMode } from './durations';
 import { resolveSave } from '../rules/attack';
@@ -32,10 +32,10 @@ import { bodyAt, bodyOf, gap, isMultiHex } from './body';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import type { CreatureSize } from '../data/types';
-import { isAirborne } from './flight';
+import { climbs, isAirborne } from './flight';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
-import { fissureDepthAt } from './altitude';
+import { climbingAloft, fissureDepthAt } from './altitude';
 import { collisionDice, collisionOn, forcedMove, MOTION } from './motion';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
@@ -64,6 +64,8 @@ export type PushOutcome =
       land?: Offset;
       /** Kuyruk K68a (sürüm 52): Earthquake yarığına düşen: iniş irtifası −derinlik (ft). */
       fissureFt?: number;
+      /** Kuyruk K71d (sürüm 59+): yüzdeki tırmanıcının iniş irtifası (0; düşme irtifayı da içerir). */
+      landAlt?: number;
     }
   | { ok: false; reason: string };
 
@@ -121,9 +123,12 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
     const up = heightDelta(state, from, to);
     const ramp = isRamp(state, to) || isRamp(state, from);
     if (up > 0 && !ramp) return { ok: false, reason: 'arkası daha yüksek zemin' };
-    if (up < 0 && !ramp && !flies(target) && heightFallRule(state) && t.rule !== 'deepWater') {
-      const feet = -up * levelFeet(state);
-      return { ok: true, to, kind: 'fall', fallFeet: feet, note: `${feet} ft düşer (${Math.min(20, Math.floor(feet / 10))}d6)` };
+    // Kuyruk K71d (sürüm 59+): yüzde/duvarda tutunan (irtifadaki) Çeviklik tırmanıcısı kenardan itilince seviye farkı + irtifa
+    // tek düşme (komut sonunda ikinci düşme yok).
+    const aloftClimber = katmanOn(state) && climbingAloft(target) && !climbs(target, state);
+    if (up < 0 && !ramp && (!flies(target) || aloftClimber) && heightFallRule(state) && t.rule !== 'deepWater') {
+      const feet = -up * levelFeet(state) + (aloftClimber ? Math.max(0, target.altitudeFt ?? 0) : 0);
+      return { ok: true, to, kind: 'fall', fallFeet: feet, ...(aloftClimber ? { landAlt: 0 } : {}), note: `${feet} ft düşer (${Math.min(20, Math.floor(feet / 10))}d6)` };
     }
     if (isBog(state, to) && !flies(target)) return { ok: true, to, kind: 'bog', fallFeet: 0, note: 'Derin batak! Saplanır, zehirlenir, boğulabilir' };
     return { ok: true, to, kind: 'move', fallFeet: 0, note: '5 ft itilir' };
@@ -181,7 +186,7 @@ export function forcedMoveEvents(state: BattleState, targetId: string, out: Extr
   }
   if ((out.kind === 'fall' || out.kind === 'chasm') && climbOn(current)) {
     // Kuyruk K71b (sürüm 57+): tek düşme işlevi (yarıkta irtifa eksi derinlik).
-    push(fall(current, targetId, out.fallFeet, out.fissureFt ? 'yarik' : 'itme', rng, { at: out.to, ...(out.fissureFt ? { altitudeTo: -out.fissureFt, label: `yarığa düştü (${out.fissureFt} ft)` } : {}) }));
+    push(fall(current, targetId, out.fallFeet, out.fissureFt ? 'yarik' : 'itme', rng, { at: out.to, ...(out.fissureFt ? { altitudeTo: -out.fissureFt, label: `yarığa düştü (${out.fissureFt} ft)` } : out.landAlt !== undefined ? { altitudeTo: out.landAlt } : {}) }));
   } else if (out.kind === 'fall' || out.kind === 'chasm') {
     // Düşme tepkisi (Slow Fall, Feather Fall; Görev R1) hasardan önce.
     const fr = fallReactions(current, targetId, out.fallFeet, rng);

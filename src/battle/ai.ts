@@ -36,7 +36,7 @@ import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
 import { monsters, spells } from '../data';
 import { availableForms } from './druid';
-import { costsFrom, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
+import { costsFrom, distance, hexKey, neighbors, offsetToAxial, sameHex, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, meleeOf, spellOf } from './features';
 import { standUpProblem } from './grapple';
@@ -49,7 +49,12 @@ import { canSee, hasDarkness, isRiskyHex, perceivedLevel, ruleOf, stuckInBog } f
 import { DANCE_LINK_HEXES, isCombined } from './danceLights';
 import { masteryMechanic } from '../rules/mastery';
 import { heightOf } from './cover';
-import { heightAt, heightCombatRule } from './heights';
+import { heightAt, heightCombatRule, katmanOn } from './heights';
+import { surfacesNear } from './climbing';
+import { absBand, k9On } from './vertical';
+
+/** Kuyruk K71d: irtifası 0 olmayan (havada, yüzde, yarıkta) yaratık. */
+const s0Aloft = (c: Combatant): boolean => (c.altitudeFt ?? 0) !== 0;
 import { ruleVersion } from './ruleVersion';
 import { panelId, panelOf } from './walls';
 import { zoneKnownBy } from './hiddenZones';
@@ -1293,9 +1298,11 @@ function strikeAt(state: BattleState, actor: Combatant): ((h: Offset, ft: number
   if (!melee) return null;
   const r = Math.max(1, Math.floor(melee.reachFt / 5));
   const foes = foesOf(state, actor).filter((f) => f.pos && f.hp > 0);
+  // Kuyruk K71d (sürüm 59+, K9): katmanlı haritada bantlar mutlak yükseklikten (zemin + irtifa).
+  const k9 = k9On(state);
   return (h, ft) => {
-    const b = bandOf(actor, ft);
-    return foes.some((f) => footprintDistance(bodyAt(state, actor, h), bodyOf(state, f)) <= r && bandGap(b, bandOf(f)) <= r);
+    const b = k9 ? absBand(state, actor, h, ft) : bandOf(actor, ft);
+    return foes.some((f) => footprintDistance(bodyAt(state, actor, h), bodyOf(state, f)) <= r && bandGap(b, k9 ? absBand(state, f) : bandOf(f)) <= r);
   };
 }
 
@@ -2134,7 +2141,8 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
 
   // Eylem yapabileceği en ucuz ve en güvenli altıgen (menzilli parti üyesi bitişikten kaçınır).
   // Y1 G2: menzilli yaratık yükseklik kuralı açıkken yüksek zemini tercih eder (seviye başına 1 maliyet indirimi).
-  const lift = (h: Offset) => (!state.yz?.eski && heightCombatRule(state) && (ranged || actor.weaponOptions.some((o) => o.ranged) || actor.attacks.some((a) => a.ranged)) ? heightAt(state, h) : 0);
+  // Kuyruk K71d (sürüm 59+, K8): havadaki/yüzdeki yaratık yüksek zemin sayılmaz (tercih yok).
+  const lift = (h: Offset) => (!state.yz?.eski && heightCombatRule(state) && !(katmanOn(state) && (s0Aloft(actor))) && (ranged || actor.weaponOptions.some((o) => o.ranged) || actor.attacks.some((a) => a.ranged)) ? heightAt(state, h) : 0);
   const scoreOf = (list: Spot[]) => list
     .map((s) => ({ ...s, score: s.cost + risk(state, actor, s.to) + (ranged && enemyNear(s.to) ? 3 : 0) - lift(s.to) }))
     .sort((a, b) => a.score - b.score);
@@ -2336,6 +2344,20 @@ function climbToward(state: BattleState, actor: Combatant, near: (h: Offset) => 
   for (const to of opts) {
     const cmd: Command = { type: 'climb', actorId: actor.id, to };
     if (tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  // Kuyruk K71d (sürüm 59+): SRD maliyeti bu tura yetmiyorsa uçurumun yüzünde hareketin yettiği kadar yükselir (yeni taktik
+  // değil: aynı tırmanışın turlara bölünmesi); sonraki tur `climb` kalanı tamamlar.
+  if (katmanOn(state) && opts.length) {
+    const face = surfacesNear(state, actor).filter((s) => s.cliff && opts.some((o) => sameHex(o, s.hex))).sort((a, b) => a.carpan - b.carpan)[0];
+    const left = speedHexes(actor) - actor.movementUsed;
+    const alt = actor.altitudeFt ?? 0;
+    if (face) {
+      const toFt = Math.min(face.topFt, alt + Math.floor(left / face.carpan) * 5);
+      if (toFt > alt) {
+        const cmd: Command = { type: 'vertical_move', actorId: actor.id, toFt };
+        if (tryCmd(state, actor, cmd).ok) return cmd;
+      }
+    }
   }
   return null;
 }

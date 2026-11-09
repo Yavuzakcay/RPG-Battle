@@ -27,6 +27,7 @@ import { speedHexes } from './reduce';
 import { checkBase, ruleVersion } from './ruleVersion';
 import { spells } from '../data';
 import { dikeyOf } from './vertical';
+import { heightDelta, heightMoveRule, isCliff, katmanOn, levelFeet } from './heights';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import type { TerrainType } from '../map/terrain';
 
@@ -44,8 +45,39 @@ const NO: Record<Table, Set<string>> = {
 };
 const pick = (table: Table, key: string | undefined): string | null => (!key || NO[table].has(key) ? null : MAP[table][key] ?? null);
 
-/** Tırmanılabilir yüzey (sınıf, DC, çarpan, tepe). */
-export interface ClimbSurface { sinif: string; dc: number; carpan: number; topFt: number; hex: Offset }
+/** Tırmanılabilir yüzey (sınıf, DC, çarpan, tepe). Kuyruk K71d: `cliff` katman uçurumunun yüzü (tepe = zemin farkı). */
+export interface ClimbSurface { sinif: string; dc: number; carpan: number; topFt: number; hex: Offset; cliff?: true }
+
+/** Kuyruk K71d: tırmanılan ft'nin hareket maliyeti (altıgen): her 5 ft = çarpan altıgen (SRD Climbing: her ft 1 ek ft). */
+export const climbCostHexes = (ft: number, carpan: number): number => (ft / ALT.stepFt) * carpan;
+
+/**
+ * Kuyruk K71d (sürüm 59+): katman uçurumu yüzeyinin sınıfı (`climb` komutu ve uçurum yüzü). Varış altıgeninin harfi için varyant
+ * `dikey.yuzey` ezmesi (`tirmanilmaz`: null), yoksa `katmanUcurum` (kaba); varış zorlu araziyse çarpan en az `zorluCarpan` (SRD:
+ * zorlu arazide her ft 2 ek ft).
+ */
+export function cliffClass(state: BattleState, to: Offset): { sinif: string; dc: number; carpan: number; tr: string } | null {
+  const ch = state.map?.tiles[to.row]?.[to.col];
+  const over = ch ? dikeyOf(state)?.yuzey?.[ch] : undefined;
+  if (over === 'tirmanilmaz') return null;
+  const sinif = over && CLIMB_CLASSES[over] ? over : T.katmanUcurum;
+  const k = CLIMB_CLASSES[sinif];
+  if (!k) return null;
+  const rough = terrainAt(state, to).movement === 'difficult';
+  return { sinif, dc: k.dc, carpan: rough ? Math.max(k.carpan, T.zorluCarpan) : k.carpan, tr: k.tr };
+}
+
+/**
+ * Tırmanışın başlangıç zarı (K71b iç işlevi; duvar, uçurum yüzü ve katman `climb` komutu ortak): Çeviklik kontrolü; tutmazsa düşme
+ * yok, ilk 5 ft'in hareketi (çarpan altıgen, kalan hareketle sınırlı) yanar. `what`: günlük metninin başı.
+ */
+export function climbAttempt(state: BattleState, actor: Combatant, cls: { dc: number; carpan: number; tr: string }, what: string, left: number, rng: Rng):
+  { ok: boolean; event: Extract<BattleEvent, { type: 'map_effect' }> } {
+  const check = climbCheckEvent(state, actor, cls.dc, `${what} (${cls.tr}, DC ${cls.dc})`, rng);
+  if (check.roll?.success) return { ok: true, event: check };
+  const burn = Math.min(left, cls.carpan);
+  return { ok: false, event: { ...check, text: `${check.text}: tutunamadı (yerinde kaldı, ${burn} altıgen hareket yandı)`, burnMove: burn } };
+}
 
 const same = (a: Offset, b: Offset): boolean => a.col === b.col && a.row === b.row;
 
@@ -82,11 +114,16 @@ export const dexClimber = (state: BattleState, c: Combatant): boolean => climbOn
 
 const gridOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 
-/** Yaratığın (gövdesinin) bitişiğindeki tırmanılabilir yüzeyler. */
+/**
+ * Yaratığın (gövdesinin) bitişiğindeki tırmanılabilir yüzeyler. Kuyruk K71d (sürüm 59+, `heightMove` açık): katman uçurumunun
+ * yüzü de (bitişik altıgen 2+ seviye yüksek, rampasız; tepe = zemin farkı, sınıf `cliffClass`): duvar gibi tırmanılır, yüzde
+ * tutunulur; üste çıkış `climb` komutuyla.
+ */
 export function surfacesNear(state: BattleState, c: Combatant, at: Offset | null = c.pos): ClimbSurface[] {
   if (!at || !state.map) return [];
   const size = gridOf(state);
   const body = isMultiHex53(state, c) ? bodyAt(state, c, at) : [at];
+  const cliffs = katmanOn(state) && !!heightMoveRule(state);
   const out: ClimbSurface[] = [];
   const seen = new Set<string>();
   for (const b of body) for (const n of neighbors(b, size)) {
@@ -95,6 +132,10 @@ export function surfacesNear(state: BattleState, c: Combatant, at: Offset | null
     seen.add(k);
     const s = surfaceAt(state, n);
     if (s) out.push(s);
+    else if (cliffs && isCliff(state, b, n) && heightDelta(state, b, n) > 0) {
+      const cls = cliffClass(state, n);
+      if (cls) out.push({ sinif: cls.sinif, dc: cls.dc, carpan: cls.carpan, topFt: heightDelta(state, b, n) * levelFeet(state), hex: n, cliff: true });
+    }
   }
   return out;
 }
@@ -145,17 +186,14 @@ export function dexClimbMove(state: BattleState, actor: Combatant, from: number,
   const s = holdSurface(state, actor, actor.pos, Math.max(from, to));
   if (!s) return fail('Bu irtifada tutunacak yüzey yok.');
   const d = Math.abs(to - from);
-  const cost = (d / ALT.stepFt) * s.carpan;
+  const cost = climbCostHexes(d, s.carpan);
   const left = speedHexes(actor) - actor.movementUsed;
   if (cost > left) return fail(`Yeterli hareket yok (${d} ft tırmanma = ${cost} altıgen).`);
   const events: BattleEvent[] = [];
   if (from <= 0 && to > 0) {
-    const check = climbCheckEvent(state, actor, s.dc, `${actor.name} tırmanmaya başlıyor (${CLIMB_CLASSES[s.sinif]?.tr ?? s.sinif}, DC ${s.dc})`, rng);
-    if (!check.roll?.success) {
-      const burn = Math.min(left, s.carpan);
-      return finish(state, [{ ...check, text: `${check.text}: tutunamadı (yerinde kaldı, ${burn} altıgen hareket yandı)`, burnMove: burn }]);
-    }
-    events.push(check);
+    const r = climbAttempt(state, actor, { dc: s.dc, carpan: s.carpan, tr: CLIMB_CLASSES[s.sinif]?.tr ?? s.sinif }, `${actor.name} tırmanmaya başlıyor`, left, rng);
+    if (!r.ok) return finish(state, [r.event]);
+    events.push(r.event);
   }
   events.push({ type: 'altitude_changed', targetId: actor.id, altitudeFt: to, label: to > from ? 'Tırmanma' : 'İniş (tırmanarak)', cost, byId: actor.id, gentle: false, ...(to > 0 ? { climb: true as const } : {}) });
   return finish(state, events);

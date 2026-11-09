@@ -30,7 +30,7 @@ import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, isAirborne, spellJumpFt } from './flight';
 import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
-import { dikeyOn, hasHexCeilings } from './vertical';
+import { k9On, dikeyOn, hasHexCeilings } from './vertical';
 import { obstacleTopFt } from './cover';
 import { climbOn, holdSurface, surfaceAt } from './climbing';
 import { bandOf, cellsOn, fillsBand, GROUND_BAND, type Band } from './cells';
@@ -316,8 +316,12 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     if (dexAloft) { const s = surfaceAt(state, h, t); return s && altFt >= s.topFt ? s.carpan : null; }
     return altFt >= obstacleTopFt(state, h, t) ? 1 : null;
   };
+  // Kuyruk K71d (sürüm 59+, katmanlı harita): yüzde/duvarda tutunan, zemini farklı altıgene yürümez (göreli irtifası mutlak
+  // yüksekliğini sıçratırdı); üste çıkış `climb`, iniş dikey hareketle.
+  const layerLock = aloft && k9On(state);
   return (h: Offset, prev: Offset): number | null => {
     if (grip && !gripCeil && !wallNear(prev)) return null;
+    if (layerLock && heightAt(state, h) !== heightAt(state, prev)) return null;
     // Kuyruk K69 (sürüm 53, çok altıgen): duvar denetimi gövdenin bütününde (`moveCostBase`).
     let climbStep = 1;
     let climbOver = false;

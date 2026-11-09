@@ -160,8 +160,9 @@ describe('K26: yüksek zemin, menzil, siper, görüş', () => {
 });
 
 describe('K26: kayıt', () => {
+  // Kuyruk K71d: 59+'da 20 ft uçurum SRD maliyetiyle (9 altıgen) tek turda tırmanılmaz; kayıt denetimi sürüm 58'de.
   it('katmanlı savaş kaydedilir ve yüklenir; katman, anahtarlar ve tırmanma sonucu aynı', () => {
-    const { st, events } = scene(o(6, 2), undefined, { toggles: { heightShow: false } });
+    const { st, events } = scene(o(6, 2), undefined, { toggles: { heightShow: false }, v: 58 });
     const r = run(st, { type: 'climb', actorId: 'A', to: o(7, 2) }, high);
     expect(r.ok).toBe(true);
     if (!r.ok) return;

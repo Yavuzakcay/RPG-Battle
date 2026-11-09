@@ -16,9 +16,19 @@
 import { hexKey, neighbors, type Offset } from '../rules/hex';
 import { terrainOf } from '../map/terrain';
 import { globalRule } from './ruleControl';
-import type { BattleState } from './types';
+import dikeyData from '../../data/dikey.json';
+import type { BattleState, Combatant } from './types';
 
 type St = Pick<BattleState, 'map' | 'kuralSurumu'>;
+
+/**
+ * Kuyruk K71d (kural sürümü 59+; `harita/belgeler/K71D-DENETIM.md`): katman ile irtifa tek mutlak yükseklikte (zemin +
+ * irtifa; `vertical.ts` `mutlakFt`), K8 yüksek zemin (mutlak zemin farkı ≥ 10 ft, iki uç yerde), K9 uzaklıkta zemin terimi,
+ * katman uçurumunda SRD ft başına tırmanma. 58 ve altı birebir.
+ */
+export const KATMAN_VERSION = 59;
+export const katmanOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= KATMAN_VERSION;
+const HG = dikeyData.yuksekZemin;
 
 /** Katman bu savaşta var mı (harita katmanı + kural sürümü 6). */
 export const layerActive = (state: St): boolean => !!state.map?.heights && (state.kuralSurumu ?? 1) >= 6;
@@ -80,11 +90,33 @@ export function combatHeightAt(state: St, h: Offset): number {
   return terrainOf(state.map?.tiles[h.row]?.[h.col] ?? '#').height;
 }
 
-/** 2+ seviye üstten menzilli saldırının normal menzil eki (ft). */
-export function rangeBonusFt(state: St, from: Offset, to: Offset): number {
+/**
+ * 2+ seviye üstten menzilli saldırının normal menzil eki (ft). Kuyruk K71d (sürüm 59+, K8): iki uç yerdeyken (irtifa 0) ve
+ * mutlak zemin farkı ≥ `yuksekZemin.menzilEkiFt` (20 ft) iken; havadaki, duvardaki sayılmaz.
+ */
+export function rangeBonusFt(state: St, from: Offset, to: Offset, who?: { a: Pick<Combatant, 'altitudeFt'>; t: Pick<Combatant, 'altitudeFt'> }): number {
   const r = heightCombatRule(state);
-  if (!r || heightAt(state, from) - heightAt(state, to) < 2) return 0;
+  if (!r) return 0;
+  if (katmanOn(state)) {
+    if ((who?.a.altitudeFt ?? 0) !== 0 || (who?.t.altitudeFt ?? 0) !== 0) return 0;
+    if ((heightAt(state, from) - heightAt(state, to)) * levelFeet(state) < HG.menzilEkiFt) return 0;
+    return num(r.rangeBonusHexes, 1) * 5;
+  }
+  if (heightAt(state, from) - heightAt(state, to) < 2) return 0;
   return num(r.rangeBonusHexes, 1) * 5;
+}
+
+/**
+ * Kuyruk K71d (sürüm 59+, K8; ⚠ SRD'de yok, `heightCombat` ev kuralı): yüksek zemin. Yalnız katmanlı haritada, anahtar açıkken
+ * ve iki uç yerdeyken (irtifa 0: havadaki uçan, duvardaki tırmanan, yarıktaki sayılmaz). Mutlak zemin farkı (ft) ≥
+ * `yuksekZemin.avantajFt` (10): 1 saldıran yüksekte, −1 alçakta, 0 yok. Kural dışıysa (sürüm < 59, katmansız, anahtar kapalı)
+ * null: çağıran eski seviye kuralını kullanır. `ft`: zemin farkı (saldıran − hedef).
+ */
+export function highGroundK8(state: St, a: Pick<Combatant, 'pos' | 'altitudeFt'>, t: Pick<Combatant, 'pos' | 'altitudeFt'>): { side: -1 | 0 | 1; ft: number; aloft?: true } | null {
+  if (!katmanOn(state) || !heightCombatRule(state) || !a.pos || !t.pos) return null;
+  const ft = (heightAt(state, a.pos) - heightAt(state, t.pos)) * levelFeet(state);
+  if ((a.altitudeFt ?? 0) !== 0 || (t.altitudeFt ?? 0) !== 0) return { side: 0, ft, aloft: true };
+  return { side: ft >= HG.avantajFt ? 1 : ft <= -HG.avantajFt ? -1 : 0, ft };
 }
 
 /** Görüş: yol üstündeki (uçlar hariç) altıgen iki uçtan da yüksekse kesen "yükselti"; kural kapalıysa null. */

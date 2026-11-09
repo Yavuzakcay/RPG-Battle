@@ -100,7 +100,7 @@ import { zoneHexes, zoneSpecOf } from './battle/zones';
 import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
 import { globalRule } from './battle/ruleControl';
 import { pickArea } from './battle/areaAttack';
-import { climbTargets } from './battle/climb';
+import { climbLabel, climbTargets } from './battle/climb';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
 import { seesTrueForm, truesightRange } from './battle/sight';
@@ -1641,8 +1641,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const h = { col: col ?? 0, row: row ?? 0 };
             const c = hexCenter(h);
             const me = state.combatants[actorId];
-            const up = me?.pos ? heightDelta(state, me.pos, h) : 0;
-            return <text key={`cl${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">{up > 0 ? `⇡DC${climbDc(state)}` : `⇣${-up * levelFeet(state)}ft`}</text>;
+            // Kuyruk K71d: gerçek DC (57+ Çeviklik, uçurum sınıfı) ve 59+'da SRD maliyeti (altıgen).
+            const cl = me?.pos ? climbLabel(state, me, h) : null;
+            return <text key={`cl${key}`} x={c.x} y={c.y + HEX_H * 0.38} className="cost">{cl?.up ? `⇡${cl.dc !== null ? `DC${cl.dc}` : ''}${cl.cost !== null ? ` ${cl.cost}` : ''}` : `⇣${cl?.ft ?? 0}ft`}</text>;
           })}
           {[...movable.entries()].map(([key, cost]) => {
             const [col, row] = key.split(',').map(Number);

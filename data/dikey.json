@@ -15,7 +15,7 @@
     "g": 5
   },
   "tirmanma": {
-    "not": "Kuyruk K71b (kural sürümü 57+; kullanıcı kararı): herkes için duvara tırmanma. Tırmanışa başlarken bir kez Çeviklik kontrolü (d20 + DEX değiştiricisi; beceri yetkinliği yok, Akrobasi değil) yüzeyin DC'sine karşı; tutarsa tırmanır, hareket maliyeti sınıfın çarpanı (5 ft dikey ya da duvarda bir altıgen = çarpan altıgen); tutmazsa düşme yok, yerinde kalır, o tırmanış adımının (5 ft) hareketi yanar. Tırmanma hızı olan (Spider Climb, `climber`, Roving) zarsız, çarpan 1 (K68b). Yüzey sırası: büyü duvarı (`buyu`) > geçici engel (`engel`) > nesne (`nesne`) > varyant `dikey.yuzey` harf ezmesi > `harf`. Listede olmayan ya da `tirmanilmaz`daki yüzey tırmanılmaz; tepesi bilinmeyen (sonsuz) engel de tırmanılmaz (tırmanma hızı olan K68b gibi tırmanır). `katmanUcurum`: yükseklik katmanında 2+ seviye uçurumun (`climb` komutu, K4) yüzeyi. ⚠ DC ve çarpanlar tasarım (SRD Climbing: her ft 1 ek ft, zar yok).",
+    "not": "Kuyruk K71b (kural sürümü 57+; kullanıcı kararı): herkes için duvara tırmanma. Tırmanışa başlarken bir kez Çeviklik kontrolü (d20 + DEX değiştiricisi; beceri yetkinliği yok, Akrobasi değil) yüzeyin DC'sine karşı; tutarsa tırmanır, hareket maliyeti sınıfın çarpanı (5 ft dikey ya da duvarda bir altıgen = çarpan altıgen); tutmazsa düşme yok, yerinde kalır, o tırmanış adımının (5 ft) hareketi yanar. Tırmanma hızı olan (Spider Climb, `climber`, Roving) zarsız, çarpan 1 (K68b). Yüzey sırası: büyü duvarı (`buyu`) > geçici engel (`engel`) > nesne (`nesne`) > varyant `dikey.yuzey` harf ezmesi > `harf`. Listede olmayan ya da `tirmanilmaz`daki yüzey tırmanılmaz; tepesi bilinmeyen (sonsuz) engel de tırmanılmaz (tırmanma hızı olan K68b gibi tırmanır). `katmanUcurum`: yükseklik katmanında 2+ seviye uçurumun (`climb` komutu, K4) yüzeyi. ⚠ DC ve çarpanlar tasarım (SRD Climbing: her ft 1 ek ft, zar yok). Kuyruk K71d (sürüm 59+): katman uçurumu (`climb`) da ft başına: 1 altıgen + tırmanılan her 5 ft için sınıf çarpanı; varış altıgeni zorlu araziyse en az `zorluCarpan` (SRD: zorlu arazide her ft 2 ek ft). Varyant `dikey.yuzey` harf ezmesi varış altıgeninin harfine uygulanır.",
     "siniflar": {
       "kaba": {
         "dc": 10,
@@ -57,6 +57,7 @@
       "enkaz-yigini": "kaba"
     },
     "katmanUcurum": "kaba",
+    "zorluCarpan": 3,
     "tirmanilmaz": {
       "harf": [
         "e"
@@ -86,5 +87,10 @@
   "ucus": {
     "not": "Kuyruk K71c (kural sürümü 58+; kullanıcı kararı): açık gökte uçuş üst sınırı (ft). Harita varyantı `ucusUstFt` ile ezer (5'in katı, 5–120); tavanlı haritada tavan − boy (K68b, değişmez). 57 ve altında açık gökte `irtifa.maxFt` (120).",
     "ucusUstFt": 60
+  },
+  "yuksekZemin": {
+    "not": "Kuyruk K71d (kural sürümü 59+; K71-PLAN K8; ⚠ SRD'de yüksek zemin yok, Game Master `heightCombat` ev kuralı): yalnız katmanlı haritada ve iki uç yerdeyken (irtifa 0; havadaki uçan, duvardaki tırmanan, yarıktaki sayılmaz). Mutlak zemin farkı ≥ `avantajFt` ise yüksekteki avantajlı, alçaktaki dezavantajlı; ≥ `menzilEkiFt` ise menzilli saldırının normal menzili `heightCombat.rangeBonusHexes` altıgen uzar.",
+    "avantajFt": 10,
+    "menzilEkiFt": 20
   }
 }

@@ -7,9 +7,10 @@
 import dikeyData from '../../data/dikey.json';
 import { maps, type MapDikey } from '../map/maps';
 import type { Offset } from '../rules/hex';
-import { heightAt, layerActive, levelFeet } from './heights';
+import { heightAt, heightMoveRule, katmanOn, layerActive, levelFeet } from './heights';
+import { bandOf, type Band } from './cells';
 import { ruleVersion } from './ruleVersion';
-import type { BattleState } from './types';
+import type { BattleState, Combatant } from './types';
 
 /** Kuyruk K71a: dikey modelin kural sürümü. */
 export const DIKEY_VERSION = 56;
@@ -72,4 +73,32 @@ export const hasHexCeilings = (state: Pick<BattleState, 'map'>): boolean => {
 export function zeminFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, h: Offset): number {
   if (!dikeyOn(state) || !layerActive(state)) return 0;
   return heightAt(state, h) * levelFeet(state);
+}
+
+// --- Kuyruk K71d (kural sürümü 59+): mutlak yükseklik --------------------------------------------------------------------
+
+/**
+ * Mutlak yükseklik (ft; tek işlev): altıgenin zemin/katman yüksekliği (`zeminFt`) + irtifa. İrtifa yaratığın kendi altıgeninin
+ * zemininden ölçülür (uçan araziyi izler; üst sınır ve tavan da o zeminden). Katmansız haritada zemin 0: mutlak = irtifa.
+ */
+export function mutlakFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'pos' | 'altitudeFt'>, at: Offset | null = c.pos, alt: number = c.altitudeFt ?? 0): number {
+  return (at ? zeminFt(state, at) : 0) + alt;
+}
+
+/**
+ * K9 (sürüm 59+): uzaklık zemin terimi açık mı: katmanlı harita ve Game Master `heightMove` anahtarı (katman fiziksel; kapalıyken
+ * uçurum yürünür, uzaklıkta zemin terimi de yok).
+ */
+export const k9On = (state: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean => katmanOn(state) && !!heightMoveRule(state);
+
+/** K9 yüksekliği (ft): K9 açıkken mutlak yükseklik (`mutlakFt`), kapalıyken irtifa (eski davranış). */
+export const k9Ft = (state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'pos' | 'altitudeFt'>, at: Offset | null = c.pos, alt: number = c.altitudeFt ?? 0): number =>
+  (k9On(state) && at ? zeminFt(state, at) : 0) + alt;
+
+/**
+ * K9 mutlak bant: yaratığın `at`'teki (yoksa kendi yerindeki) K9 yüksekliğinde kapladığı düzeyler; K9 kapalıyken göreli bant
+ * (eski davranış). Altıgenler arası uzaklık ve erişim bununla.
+ */
+export function absBand(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'size' | 'pos' | 'altitudeFt'>, at: Offset | null = c.pos, alt: number = c.altitudeFt ?? 0): Band {
+  return bandOf(c, k9Ft(state, c, at, alt));
 }

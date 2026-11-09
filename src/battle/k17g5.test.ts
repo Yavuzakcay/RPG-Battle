@@ -26,8 +26,9 @@ function scene(b: Offset, v?: number): BattleState {
 }
 
 describe('K17 G5: yapay zekâ tırmanması', () => {
+  // Kuyruk K71d: tek komutta tırmanış sürüm 58'de (59+'da 20 ft uçurum SRD maliyetiyle 9 altıgen; `k71d.test.ts` iki turda).
   it('yürüyerek yaklaşamayan yakın dövüşçü platoya tırmanır (sürüm 13); sürüm 12 tırmanmaz; replay aynı', () => {
-    const s = scene(o(10, 2));
+    const s = scene(o(10, 2), 58);
     const cmd = chooseCommand(s);
     expect(cmd).toMatchObject({ type: 'climb', actorId: 'B' });
     const r = execute(s, cmd, GM, () => 0.99);

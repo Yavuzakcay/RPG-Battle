@@ -97,8 +97,12 @@ export function wallClimbCommand(state: BattleState, actor: Combatant, foes: Com
   const alt = altitudeOf(actor);
   const aloft = climbingAloft(actor);
   if (alt < 0 || (alt > 0 && !aloft)) return null;
-  const near = surfacesNear(state, actor);
+  // Kuyruk K71d (sürüm 59+): uçurum yüzü bu kararın dışında (üste çıkış `climb`: `ai.ts` `climbToward`); yalnız uçurum yüzünde
+  // tutunan da öyle.
+  const all = surfacesNear(state, actor);
+  const near = all.filter((s) => !s.cliff);
   if (!aloft && !near.length) return null;
+  if (aloft && !near.length && all.length) return null;
   const live = foes.filter((f) => f.pos && f.hp > 0);
   if (!live.length) return null;
   const left = speedHexes(actor) - actor.movementUsed;
