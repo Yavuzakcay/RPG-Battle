@@ -2,6 +2,79 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-09 — Kuyruk U1a: uçuş ilkeli motor tarafı (süzülme, sabit hız, azami irtifa, seviye eşiği; kural sürümü 61)
+
+- **Sürüm:** `wip/u1a` (`wip/k72` 30ab3f2 üstüne). Kural sürümü 60 → 61.
+  - Yeni davranış yalnız 61+ (`src/battle/flightPrim.ts` `u1aOn`, `U1A_VERSION`). 60 ve altı birebir (`src/sim/u1aRegresyon.test.ts`).
+  - `SAVE_VERSION` 22 kalır: yeni olay türü yok. Süren etkide yeni isteğe bağlı alanlar: `flyCapFt`, `hover`, `pkGlide`.
+  - Hiçbir alt sınıfa uçuş verilmedi (U1b). `icerik/` değişmedi.
+- **Görev 0:** `harita/belgeler/UCUS-ENVANTER.md` (uçuş kaynakları, K71c/K72 etkileşimleri, 12 çelişki).
+- **Görev 1, `ucus` ilkeli parametreleri** (JSON; kodda sabit yok; tek çözücü `flightPrim.ts` `ucusAt`, `ucusBody`, `ucusRounds`):
+  - `hizCarpani`: yürüme hızı × çarpan, 5'in katına aşağı (0 < çarpan ≤ 4). `hizFt` ile birlikte yazılmaz.
+  - `azamiIrtifaFt`: yaratık başına sınır (5'in katı) → etkide `flyCapFt`. `altitudeCapFt` yaratığın uçuş kaynaklarının hepsi sınırlıysa en büyüğünü uygular (`flight.ts` `ownFlyCapFt`).
+    - Kendi uçuş hızı, sınırsız uçuş etkisi ya da Levitate varsa sınır yok. Tırmanırken ve duruş yüzeyinde (sur tepesi, kat) uygulanmaz.
+  - `sureDakika`: 1 dk = 10 tur. `sure` (tur) ile birlikte yazılmaz.
+  - `kullanim`: `{ "sayi", "yenilenme": "uzun" | "kisa" }` → örtük kaynak `kullanim-<ilkel id>` (tablo anahtarı `pk-<alt sınıf>-kullanim-<id>`; `content/paket.ts`, `paket/bag.ts`, `ilkelSema.ts` `kullanimKaynak`/`kaynakRefOf`).
+    - Yalnız düğme tetiğiyle (`bonus`, `eylem`); `id` gerekir; `kaynak` ile birlikte yazılmaz.
+    - Maliyet sürüme bağlı değil: alan yeni, eski kayıtların paket kopyasında yok.
+  - `yeredegmez`: süzülme → etkide `hover` (Görev 2).
+  - `zorunluInis`: uçuş yalnız kendi turunda → ana etkide `pkGlide` (hız). Alt etki `<ana>:kanat` kendi turunun başında eklenir, sonunda kalkar (`glideTurnStartEvents`/`glideTurnEndEvents`). Havadaysa komut sonunda K71b düşmesi. Celestial'ın eski yoluyla aynı model.
+  - `seviyeEsigi` + `esikSonrasi`: karakter seviyesi eşiği; `esikSonrasi` uçuş parametrelerinin alt kümesi (`hizFt`, `hizCarpani`, `azamiIrtifaFt`, `sureDakika`, `sure`, `yeredegmez`, `zorunluInis`) üste yazılır.
+  - Şema: bilinmeyen alan `ilkelAlan`; aralık ve birliktelik `ilkelDeger`; eksik `ilkelEksik`. `PAKET-ILKELLER.md` yeniden üretildi.
+  - **U1b yamaları için kademe kalıpları:**
+    - Kalıcı: `{ "tur": "ucus", "tetik": "pasif" }` (hız = yürüme, sınır = haritanın uçuş sınırı, 60 ft).
+    - Kısa süreli: `{ "tur": "ucus", "id": "<id>", "tetik": "bonus", "sureDakika": 1, "kullanim": { "sayi": 1, "yenilenme": "uzun" } }`.
+    - Süzülme: kısa süreliye `"azamiIrtifaFt": 5, "yeredegmez": true`.
+    - Kırık kanat: `"hizCarpani": 0.5, "zorunluInis": true` (+ `"seviyeEsigi": 13, "esikSonrasi": { "hizCarpani": 1, "zorunluInis": false }`).
+  - Fly büyüsü, Wild Shape, Dragon Wings, Draconic Flight ve eski paketler değişmez (yeni alan yoksa eski gövde).
+- **Görev 2, süzülme** (`flight.ts` `hovers`, `groundBound`; uçuşunun bütün kaynakları süzülme etkisiyse):
+  - Uçan gibi: zorlu zemin, sığ su, buz, çamur/batak, tuzak plakası, çukur, sarmaşık ve listede olmayan harita mekanikleri işlemez.
+  - Yürüyen gibi:
+    - Lav: gönüllü girilmez, itilen girer; lav kenarı ve lav yükselmesi işler.
+    - Alev zemini (`f`, `hazard`): giriş ve tur sonu hasarı. ⚠ Kullanıcı listesinde yok; lavla aynı sınıf sayıldı.
+    - Derin su: derin su sınırı ve ağır zırhla batma işler. ⚠ Su altı savaşı (`isUnderwater`) işlemez.
+    - Zemin alanları ve yüzeyler (`spec.ground`): tetikleri ve zorlu arazileri dahil işler (Spike Growth, Grease, buz/alev yüzeyi, tepkime patlamaları).
+  - Sınır 5 ft (prizma düzey 1): 10 ft engel aşılmaz, tepesi 5 ft olan geçilmez engelin üstünden 5 ft irtifada geçilir (K71a).
+    - ⚠ Harf tablosunda tepesi 5 ft olan geçilmez engel yok (5 ft'lik `r`, `k`, `x`, `d`, `g` zaten yürünür); pratikte yalnız varyant ezmesiyle.
+  - K8: süzülen yerde sayılmaz, irtifası 0 olsa da (`cover.ts` `highGroundOf` → `aloft`). ⚠ Tam uçan irtifa 0'dayken K8'de hâlâ yerde sayılıyor (eski davranış).
+  - Bitişik vuruş: K9 bant aralığıyla kendiliğinden (yerdeki Medium ile 5 ft'teki Medium arası 5 ft).
+  - Başka uçuş kaynağı (Fly, Draconic Flight…) gelince süzülme ve sınır kalkar.
+  - ⚠ Fly biter, süzülme sürerse: komut sonunda 5 ft'e hasarsız kırpılır (üst sınır kırpması), düşme değil.
+  - YZ: yeni taktik yok. Risk hesabı süzüleni yer yüzeylerine ve zemin alanlarına açık sayar. Düşman tarafındaki süzülme düğmesi paket aday üretecinde geçerli komut.
+  - Arayüz:
+    - Süzülen jeton irtifa 0'da da hafif yukarıda, gölgeli (K71c çizimi). Rozet "〰".
+    - Ekonomi şeridinde "Süzülüyor · en çok N ft" (ipucunda kurallar), yaratık başına uçuş sınırı ve zorunlu iniş notu (TR/EN).
+- **Görev 3, ırklar:**
+  - Celestial Kırık Kanat: `data/celestial.json` `kirik-kanat.ucus` (`ucus` ilkeli sözcükleri).
+    - 3–12. seviye: yarı hız + zorunlu iniş (eski değer).
+    - 13+: yürüme hızı, zorunlu iniş yok, süre Göksel Uyanış'ın 10 turu, uzun dinlenmede bir.
+    - 60 ve altı `flyFraction`. Kimlik, karakter kaydı ve ev kuralı anahtarı aynı; metin TR/EN güncellendi.
+  - Dragonborn Draconic Flight: SRD verisinde (`data/srd/species.json`) ve `species.ts`'te zaten var (bonus eylem, 10 dk, yürüme hızı, uzun dinlenmede bir; `srdK19` anahtarı). Dokunulmadı.
+- **Çağrılan ejderin uçuşu:** R3 ve paket çağrısı uçuşu çalışıyor (`cagir` + yaratık `hiz.ucma` → `Monster.fly`). Testte doğrulandı: çağrılan yaratık `vertical_move` ve `move.toFt` ile uçar; binek yok.
+  - Ranger Ejder Muhafızı (`ejder-muhafizi`) paketi bu kopyada yok. U1b'de paket yaratığı `hiz.ucma` ya da `canavar` (SRD ejderhası) ile yazılmalı.
+  - ⚠ `hiz` alanı gevşek doğrulanıyor: yanlış anahtar (ör. `ucus`) sessizce yok sayılır.
+- **Ölçüm:**
+  - Regresyon 60 = 61 birebir: 4 senaryo × 30 tohum (`U1A_TOHUM=30`); duvarlı 6 harita × 50 tohum (`U1A_DUVAR=50`); katmanlı 8 harita × 20 tohum (`harita/belgeler/DENGE.md`).
+  - ⚠ `sim:k26` (`k26Run.ts`) `KURAL_SURUMU`'nu okumuyor (yalnız `run.ts` okur). Katmanlı ölçüm sürümü sabitleyen geçici testle (`setDefaultRuleVersion`) yapıldı.
+  - YZ karar süresi (medyan ms, 60 → 61 aynı koşuda):
+    - Sıralı koşu iki kez (60 önce, sonra 61 önce; birleşik n=22):
+      - Mantar 1,49 → 1,61 (+%8), katmanlı 1,42 → 1,61 (+%13), uçan düşman 1,33 → 1,35 (+%2), süzülen düşman 0,54 → 0,50 (−%7).
+      - Katlı 0,84 → 0,82 (−%2), yakın dövüşlü uçan 1,61 → 1,40 (−%13), duvarlı yerde 1,79 → 1,64 (−%8), duvarda 0,57 → 0,54 (−%5).
+    - Simetrik sıra (60, 61, 61, 60; n=16): Mantar 1,33 → 1,31, katmanlı 1,31 → 1,29, uçan düşman 1,21 → 1,20 (hepsi −%1/−%2).
+    - Sıralı koşulardaki sapmalar sıra ve makine gürültüsü: 61'e özgü yollar ilk satırda erken çıkar (etkisiz yaratıkta `hovers`/`ownFlyCapFt`).
+    - Hepsi ≤ +%15. Süzülen düşman sahnesi yeni (Çöl, dört süzülen düşman).
+  - Ana parça 374 742 B (değişmedi; ≤ 420 kB). `check:harita` 96/0, `check:ses` 15/0 (`PW_CHROMIUM=/opt/pw-browsers/chromium`).
+  - Tam paket: 358 dosya, 4200 test. Modül başlatma testi yeşil. `flightPrim.ts` yalnız tür içe aktarır (döngü yok).
+- **Testler:** `src/battle/u1a.test.ts` (18): şema, kalıcı, kısa süreli + süre bitişi + dinlenme, süzülme (sınır, zorlu zemin, alev, lav, derin su, zemin alanı, engel, K8, erişim, 60'ta eski, YZ adayı), zorunlu iniş ve 13. seviye eşiği, Celestial 12 → 13 ve 60'ta eski, Draconic Flight, çağrılan ejderin uçuşu; replay her uçtan uca senaryoda aynı.
+- **Açık kalanlar:**
+  - U1b: alt sınıf uçuşları (liste kullanıcıyla; kademe kalıpları yukarıda).
+  - Ejder Muhafızı paket yaratığı: `hiz.ucma` ile yazılmalı; `hiz` alanının sıkı doğrulanması.
+  - Kullanıcı onayı bekleyenler: alev zemininin lav gibi sayılması, itilen süzülenin lava girmesi, su altı savaşının süzülene işlememesi.
+  - K73: parti dikey taktiği (süzülme ve uçuş kademeleriyle YZ).
+  - Fly büyüsünün veri notu (`a8.sigmayan`) eskimiş.
+  - `sim:k26`'ya `--kural-surumu` desteği.
+
+
 ## 2026-11-09 — Kuyruk K72: tavan bölgeleri, sur üstünde durma (K5), çok katlı bina (kural sürümü 60)
 
 - **Sürüm:** `wip/k72` (`wip/k71d` ba70f21 üstüne). Kural sürümü 59 → 60.

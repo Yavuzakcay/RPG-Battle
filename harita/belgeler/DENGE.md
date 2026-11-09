@@ -2,6 +2,17 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk U1a: uçuş ilkeli kademeleri, süzülme (2026-11-09; ölçüm, denge ayarı yok)
+
+Kural sürümü 60 ↔ 61, aynı tohumlar. Standart partide ve senaryo düşmanlarında `ucus` ilkeli ve Celestial yok: yeni kademe
+yolları çalışmaz, denge değişmez.
+
+- **Regresyon:** Çöl, Kale, Mağara, Orman (3. seviye, standart parti, 30 tohum) birebir aynı.
+- **Duvarlı 6 harita** (50 tohum): kazanç, tur, tırmanma ve düşme aynı (Kale avlusu %100 / 8,0; Kale Baskını %42 / 7,6; Ork
+  Kampı %90 / 11,6; Kale İç Avlusu %100 / 3,3; Dış Halka %100 / 2,1; Kasaba Hanı %100 / 3,3).
+- **Katmanlı 8 harita** (20 tohum): 8'i de aynı (Buzul Açık %80, Kamp %100, Kayalık %70, Tapınak %75; Dağ Karakol %40,
+  Kayalık %90, Köprü %65, Nöbetçi %100).
+
 ## Kuyruk K72: tavan bölgeleri, sur üstü, çok katlı bina (2026-11-09; ölçüm, denge ayarı yok)
 
 Kural sürümü 59 ↔ 60, aynı tohumlar.

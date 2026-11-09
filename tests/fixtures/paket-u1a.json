@@ -1,0 +1,62 @@
+{
+  "format": "rpg-battle-icerik",
+  "version": 1,
+  "id": "u1a-ucus",
+  "name": { "tr": "U1a uçuş kademeleri (kurgusal)", "en": "U1a flight tiers (fictional)" },
+  "author": "Test",
+  "yaratiklar": [
+    {
+      "id": "sis-ejderi",
+      "ad": { "tr": "Sis Ejderi", "en": "Mist Drake" },
+      "boyut": "M",
+      "tur": "dragon",
+      "ac": "13+$pbYari",
+      "hp": "10+$lvl2",
+      "hiz": { "yurume": 30, "ucma": 60 },
+      "yetenekler": { "str": 14, "dex": 14, "con": 13, "int": 6, "wis": 12, "cha": 8 },
+      "saldirilar": [{ "ad": "Isırık", "tur": "yakin", "bonus": "sahip", "hasar": "1d8+$pb", "hasarTuru": "piercing" }],
+      "jeton": { "gorsel": "ejderha", "ton": 180 }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "bulut-yolcusu",
+      "class": "fighter",
+      "name": { "tr": "Bulut Yolcusu", "en": "Cloud Walker" },
+      "role": { "tr": "Kurgusal uçucu (test)", "en": "Fictional flyer (test)" },
+      "features": [
+        {
+          "id": "kalici-kanat", "level": 3, "status": "calisir",
+          "name": { "tr": "Kalıcı Kanat", "en": "Lasting Wings" },
+          "description": { "tr": "Kurgusal test özelliği: kalıcı uçuş.", "en": "Fictional test feature: permanent flight." },
+          "ilkeller": [{ "tur": "ucus", "tetik": "pasif" }]
+        },
+        {
+          "id": "kisa-kanat", "level": 3, "status": "calisir",
+          "name": { "tr": "Kısa Kanat", "en": "Brief Wings" },
+          "description": { "tr": "Kurgusal test özelliği: bir dakika uçuş, uzun dinlenmede bir.", "en": "Fictional test feature: one minute of flight, once per long rest." },
+          "ilkeller": [{ "tur": "ucus", "id": "kisa", "tetik": "bonus", "sureDakika": 1, "kullanim": { "sayi": 1, "yenilenme": "uzun" } }]
+        },
+        {
+          "id": "suzulme", "level": 3, "status": "calisir",
+          "name": { "tr": "Süzülme", "en": "Hover" },
+          "description": { "tr": "Kurgusal test özelliği: yere değmeden süzülme, en çok 5 ft.", "en": "Fictional test feature: hover off the ground, at most 5 ft." },
+          "ilkeller": [{ "tur": "ucus", "id": "suzul", "tetik": "bonus", "sureDakika": 1, "kullanim": { "sayi": 1, "yenilenme": "uzun" }, "azamiIrtifaFt": 5, "yeredegmez": true }]
+        },
+        {
+          "id": "kirik-kanat", "level": 3, "status": "calisir",
+          "name": { "tr": "Kırık Kanat", "en": "Broken Wing" },
+          "description": { "tr": "Kurgusal test özelliği: yarı hızla, yalnız kendi turunda; 13. seviyeden normal uçuş.", "en": "Fictional test feature: half speed, only on your turn; normal flight from 13th level." },
+          "ilkeller": [{ "tur": "ucus", "id": "kanat", "tetik": "bonus", "hizCarpani": 0.5, "zorunluInis": true, "sureDakika": 1, "kullanim": { "sayi": "$pb", "yenilenme": "kisa" },
+            "seviyeEsigi": 13, "esikSonrasi": { "hizCarpani": 1, "zorunluInis": false } }]
+        },
+        {
+          "id": "ejder-cagrisi", "level": 3, "status": "calisir",
+          "name": { "tr": "Ejder Çağrısı", "en": "Drake Call" },
+          "description": { "tr": "Kurgusal test özelliği: uçan ejder çağırır (binek değil).", "en": "Fictional test feature: summons a flying drake (not a mount)." },
+          "ilkeller": [{ "tur": "cagir", "tetik": "eylem", "yaratik": "sis-ejderi", "sure": 10 }]
+        }
+      ]
+    }
+  ]
+}
