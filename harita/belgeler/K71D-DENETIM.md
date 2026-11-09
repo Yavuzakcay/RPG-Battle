@@ -82,7 +82,10 @@ Karar dili:
    - Katman tırmanışı soyut (1 + seviye × 2). Duvar tırmanışı (K71b) ft başına.
    - 20 ft'lik uçurum 5 altıgen tutar. Aynı yükseklikteki duvar 8 altıgen tutar.
    - Başarısız zarda katmanda bütün maliyet yanar, duvarda yalnız ilk 5 ft.
-6. **`climb` irtifayı yok sayar:** duvarda tutunan (irtifa > 0) Çeviklik tırmanıcısı katman adımı atarsa irtifa korunur. Ya yanlış mutlak yükseklik olur ya da komut sonunda ikinci düşme.
+6. **Yüzdeki tırmanıcı ve katman:**
+   - `climb` duvarda tutunanı (irtifa > 0) reddeder (`isAirborne`).
+   - Duvar boyunca yürüyen tırmanıcı ise katman kenarında göreli irtifasını korur, mutlak yüksekliği seviye farkı kadar sıçrar.
+   - Uçurumun yüzü tırmanılabilir yüzey değildir: katman uçurumu yalnız tek komutta aşılır.
 7. **İtmede çift düşme:**
    - Duvarda (irtifa 10 ft) tırmanan, katman kenarından itilirse önce seviye farkı kadar düşer.
    - Komut sonunda tutunacak yüzey yoksa irtifası kadar bir kez daha düşer: iki hasar zarı, iki Prone olayı.

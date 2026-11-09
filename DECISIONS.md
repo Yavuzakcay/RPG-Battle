@@ -2,6 +2,102 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-09 — Kuyruk K71d: katman + irtifa birleşmesi, K8 yüksek zemin, K9 zemin terimi, tepedeki okçu (kural sürümü 59)
+
+- **Sürüm:** `wip/k71d` (`wip/k71c` bd7775e üstüne). Kural sürümü 58 → 59.
+  - Yeni davranış yalnız 59+ (`src/battle/heights.ts` `katmanOn`, `KATMAN_VERSION`). 58 ve altı birebir (`src/sim/k71dRegresyon.test.ts`).
+  - `SAVE_VERSION` 22 kalır: yeni olay türü yok. `map_effect`/`altitude_changed` mevcut alanlarla.
+- **Görev 0:** `harita/belgeler/K71D-DENETIM.md`.
+  - 25 alan, 15 çelişki.
+  - Mutlak yükseklik tanımı: altıgenin zemini + irtifa.
+- **Mutlak yükseklik (kullanıcı kararları):**
+  - Tek işlev `vertical.ts` `mutlakFt`.
+  - İrtifa yaratığın kendi altıgeninin zemininden ölçülür: uçan araziyi izler, platoya yatay uçuşta mutlak yüksekliği zemin farkı kadar artar. Uçuş üst sınırı ve tavan aynı zeminden (bugün de öyleydi; değişmedi).
+  - Kayıt biçimi aynı (göreli irtifa).
+- **Anahtar kapsamı (karar):**
+  - K9 uzaklıktaki zemin terimi `heightMove` anahtarına bağlı (`k9On`, `k9Ft`, `absBand`). Katman fiziksel: anahtar kapalıyken uçurum yürünür, uzaklıkta zemin terimi de olmamalı.
+  - K10 görüşteki zemin `heightSight`'ta, K8 `heightCombat`'ta kalır.
+- **Katman tırmanışı (SRD, K71b iç işlevi):**
+  - `climb` maliyeti: 1 altıgen + tırmanılan her 5 ft için sınıf çarpanı. Kaba ×2; varış altıgeni zorlu araziyse ×3 (`data/dikey.json` `tirmanma.zorluCarpan`). Tırmanılan ft = varış zemini − başlangıç mutlak yüksekliği.
+  - Zar ve yanma duvarla ortak (`climbing.ts` `climbAttempt`, `climbCostHexes`).
+    - Yerden başlarken bir kez Çeviklik zarı.
+    - Tutmazsa yalnız ilk 5 ft'in hareketi yanar (eskiden katmanda bütün maliyet); düşme yok.
+  - Varyant `dikey.yuzey` ezmesi varış harfine uygulanır.
+  - **Çok turlu tırmanış (karar):** SRD maliyetinde 20 ft uçurum 9 altıgen, 30 ft 13 altıgen tutar; hız 30 tek turda (Dash'le de 30 ft'i) çıkamaz.
+    - Uçurumun yüzü tırmanılabilir yüzey oldu (`surfacesNear` `cliff`; tepe = zemin farkı).
+    - Yüzde dikey hareketle yükselinir, komut sonunda tutunulur (K71b).
+    - Sonraki tur `climb` kalan ft kadar ödeyerek üste çıkarır; zar yeniden atılmaz.
+    - Çukurda (−3) kalıcı tutsaklık olmaz.
+  - Yüzde/duvarda tutunan, zemini farklı altıgene yürümez. Göreli irtifası mutlak yüksekliğini sıçratırdı; üste çıkış `climb`, iniş dikey hareket.
+  - 1 seviye basamak (yürünür, 1 + `levelCost`) ve rampa değişmedi: tırmanma sayılmaz.
+- **Düşme:** katman farkı + irtifa tek `fall`. Çift hasar yok.
+  - Aşağı atlamada düşülen = başlangıç mutlak − varış zemini.
+  - Yüzde/duvarda tutunan katman kenarından itilirse seviye farkı + irtifa tek düşme, irtifa 0 (`PushOutcome.landAlt`). Eskiden komut sonunda ikinci düşme.
+  - Çöken altıgende yüzdeki tırmanıcı da (çökme + irtifa).
+- **Hücre çözücüsü:** aynı altıgende zemin ortak olduğundan göreli bantla doğru çalışır; değişmedi (test).
+  - Altıgenler arası karşılaştırmalar (erişim, fırsat saldırısı, YZ vuruş yeri) mutlak bantla.
+- **K8 yüksek zemin (PLAN K8 aynen; ⚠ SRD'de yok, `heightCombat` ev kuralı):**
+  - Katmanlı haritada mutlak zemin farkı ≥ 10 ft (`data/dikey.json` `yuksekZemin.avantajFt`) ve iki uç yerde (irtifa 0): yüksekteki avantajlı, alçaktaki dezavantajlı (`highGroundK8`, `cover.ts` `attackHeights`; silah, canavar ve büyü saldırısı).
+  - Havadaki uçan, yüzdeki tırmanan, yarıktaki sayılmaz. İnmiş uçan (irtifa 0) yerde sayılır.
+  - Menzil eki iki uç yerdeyken ≥ 20 ft (`menzilEkiFt`).
+  - `levelFt` 5'e indirilirse 1 seviye artık yüksek zemin değil.
+  - Klasik (katmansız) haritada zemin harfi yüksekliği (H, h, z) eski kuralla kalır (açık).
+- **K9 uzaklık:** `reachFt` = max(yatay, mutlak bant aralığı × 5).
+  - ⚠ 10 ft basamağın üstü ile altı Medium için 10 ft: 5 ft erişimle yakın dövüş yok (Large hedefe var). 20 ft uçurumun dibi ile üstü 20 ft (58'de 5 ft: uçurumdan yukarı yakın dövüş vardı).
+  - Fırsat saldırısı katmanlı haritada her zaman 3B: aynı seviyeden 10 ft alçak bitişik altıgene inen erişimden çıkar.
+  - Jump erişimi mutlak farktan. Menzilli saldırı ve büyü menzili de max(yatay, dikey) (pratikte değişmez).
+  - ⚠ Dokunma büyüleri (5 ft) 10 ft basamak boyunca yapılmaz.
+  - Bitişiklik eylemleri (Grapple, Shove, Help, `withinFiveFt`) ve aura 2B kalır (K73).
+- **Alan:** dikey kapsam çıkış yüksekliğinden (`areaOriginFt`).
+  - Yaratıktan çıkan alanda (koni, çizgi, yayılım) yaratığın K9 yüksekliği; noktadan çıkanda noktanın zemini.
+  - Yukarıdaki için eski kural (silindir yüksekliği, çizgi 5 ft, diğerleri boyut); aşağıdaki için mutlak fark (küre/küp/koni boyut, çizgi 5 ft, silindir tabanının altına inmez).
+  - ⚠ 30 ft'te uçan büyücünün 15 ft konisi yere ulaşmaz (58'de ulaşıyordu). Yarıktaki (−30 ft) yaratığa yerdeki 20 ft Fireball ulaşmaz.
+  - Canavar nefesi ve Dragonborn alanı da aynı kurala bağlandı (K68 açığı: irtifaya hiç bakmıyordu).
+  - Kalıcı alanlar (bulut, yüzey) altıgen başına göreli kalır: alan her altıgenin zeminine yayılır.
+- **K10 tepedeki okçu (Görev 3):**
+  - Katmanlı haritada iki uç yerdeyken de `evaluateAlt` (zemin + göz + engel tepesi).
+  - Hızlı yol: iki ucun seviyesi aynı ve yolda daha yüksek altıgen yoksa 2B kod aynen (`losStats.groundFast`; `altPath` artmaz).
+  - Tepedeki yaratık alçak engelin üstünden görür ve vurur (5 ft kaya siper vermez).
+  - Kenar siperi geometrik: göz–göz hattı açık, gözden hedefin ayağına hat zeminde kesiliyorsa yarım siper ("kaya basamağı"). Alttaki, kenardan geri duran okçuyu siperli görür; okçu alttakini uzaktan siperle değil açık görür.
+  - ⚠ Ölü bölge: uçurumun bir altıgen gerisindeki okçu dipteki yaratığı göremez (58'de yarım siperle görüyordu); kenara çıkınca görür.
+  - Sırtın alt sınırı uçların alçak zemini (eksi seviyeli çukurda da keser; 56–58'de yalnız artı zemin).
+  - Nokta ucu (alan noktası, hedef altıgen) Medium göz yüksekliğinde (2,5 ft; 52–58'de 0). Balista namlusu `data/nesneler.json` `namluFt` 5 ft: 0 ft'lik hat kendi platosunun kenarında kesiliyordu.
+- **YZ (yeni taktik yok):**
+  - Vuruş yeri (`strikeAt`) mutlak bantla.
+  - Saldırı yerleri `bestNow` kuru çalıştırmasından (K8/K9/K10 kendiliğinden).
+  - `climbToward` tek tura yetmeyen uçurumda yüzde yükselir, sonraki tur `climb`. `climbAi` uçurum yüzünü kendi kararına katmaz.
+  - Havadaki/yüzdeki menzilliye yüksek zemin tercihi yok.
+- **Arayüz:**
+  - Hedef önizlemesinde yüksek zemin tek satır, ft farkıyla: "yüksek zemin (+10 ft): avantaj" / "alçak zemin (−10 ft): dezavantaj" / "yüksek zemin yok (havada/yüzde)" (TR/EN).
+  - Uçurumda gerçek DC (57+ Çeviklik) ve 59+ maliyeti.
+- **Modül başlatma testi:** `src/app/modulBaslatma.test.ts`. 21 giriş noktası (uygulama kökü, tembel ekranlar, `screens/fixtures.ts`, savaş modülleri) `vi.resetModules` ile taze grafikte yüklenir.
+  - K71c'deki hata geçici olarak geri getirilince 5 girişte "registerAfterAttack is not a function" ile yakalandı.
+  - Bu parçada aynı türden bir hata çıktı (`cover.ts`'te üst düzeyde döngüdeki `bodyHeightFt` çağrısı; testler yakaladı); değer doğrudan veriden okundu.
+- **Ölçüm:**
+  - YZ süresi (medyan, 9 × 200 karar, aynı koşuda v58 → v59; kullanıcı tabanı K71c parantezde):
+    - Mantar 1,47 → 1,38 (1,69);
+    - katmanlı 1,32 → 1,32 (1,72);
+    - uçan düşman 1,26 → 1,29 (1,47);
+    - duvarlı yerde 1,75 → 1,61 (2,03);
+    - duvarda 0,45 → 0,52 (0,59);
+    - yakın dövüşlü uçan 1,34 → 1,32 (1,60).
+    - Hepsi tabanın altında. Seçilen komutlar 58 ile aynı.
+  - Katmanlı sahne (59): K8 + K9 açık 1,32; K8 kapalı 1,41; K9 kapalı (`heightMove`) 1,72; ikisi kapalı 1,71.
+    - K9 kapalıyken uçurumlar yürünür, aday yer artar.
+  - Regresyon `K71D_TOHUM=30`: Çöl, Kale, Mağara, Orman 58 = 59 birebir.
+  - Duvarlı 6 harita × 50 tohum (`K71D_DUVAR=50`): kazanç ve tur 58 = 59.
+  - Katmanlı 8 harita (20 tohum, rapor; `harita/belgeler/DENGE.md`): Buzul — Kamp %55 → %100 ⚠, Dağ — Karakol %25 → %40 ⚠, diğerleri ±5.
+    - Düşman listesi ayarı tam test turuna.
+  - Ana parça 374 742 bayt (değişmedi).
+- **Açık kalanlar:**
+  - K72: çok katlı bina, tavan bölgeleri, sur üstünde yürüme.
+  - K73:
+    - YZ dikey taktik (yüksek zemin arama, ölü bölgeden çıkma, parti YZ'sinin hava düzeyi);
+    - aura, yakalama, itme bitişikliği, otomatik kritik 3B.
+  - Çok altıgenli gövde farklı zeminli altıgenlere yayılınca bant çapanın zemininden.
+  - Klasik haritada zemin harfi yüksekliğiyle (H, h, z) yüksek zemin eski kuralda.
+  - Buzul — Kamp ve Dağ — Karakol denge ayarı.
+
 ## 2026-11-09 — Kuyruk K71c: prizma hava ızgarası (K6), uçuş üst sınırı, eksi düzey şeması (kural sürümü 58)
 
 - **Sürüm:** `wip/k71c` (`wip/k71b` 1422229 üstüne). Kural sürümü 57 → 58.

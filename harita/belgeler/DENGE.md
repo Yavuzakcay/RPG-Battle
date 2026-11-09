@@ -2,6 +2,35 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K71d: katman + irtifa, K8, K9, tepedeki okçu (2026-11-09; ölçüm, denge ayarı yok)
+
+Kural sürümü 58 ↔ 59, aynı tohumlar.
+
+**Regresyon (katmansız haritalar):**
+- 3. seviye standart parti: Çöl, Kale, Mağara, Orman, 30 tohum, birebir aynı.
+- Duvarlı 6 harita, 50 tohum (Kale avlusu, Kale Baskını, Ork Kampı, Kale İç Avlusu, Dış Halka, Kasaba Hanı): kazanç ve tur aynı.
+
+**Katmanlı 8 harita** (3. seviye, 20 tohum, varsayılan Game Master anahtarları; parti kazanma %, ortalama tur):
+
+| Senaryo | 58 | 59 | Fark |
+|---|---:|---:|---:|
+| Buzul — Açık | 80 / 7,2 | 80 / 7,3 | 0 |
+| Buzul — Kamp | 55 / 8,3 | **100** / 8,3 | **+45** ⚠ |
+| Buzul — Kayalık | 75 / 6,3 | 70 / 6,3 | −5 |
+| Buzul — Tapınak | 75 / 6,5 | 75 / 6,5 | 0 |
+| Dağ — Karakol | 25 / 9,8 | **40** / 9,3 | **+15** ⚠ |
+| Dağ — Kayalık | 95 / 8,3 | 90 / 7,3 | −5 |
+| Dağ — Köprü | 65 / 11,2 | 65 / 11,2 | 0 |
+| Dağ — Nöbetçi | 100 / 6,3 | 100 / 6,3 | 0 |
+
+**Ayrıştırma (Dağ Karakolu, 10 tohum, 59'da tek tek kapatılarak):**
+- Hepsi açık 4/10. K9 kapalı 5/10. K10 (geometrik görüş) kapalı 2/10. K8 ve tırmanma kapalı 4/10. Hepsi kapalı 0/10 = 58.
+- Farkı en çok geometrik görüş (tepedeki düşmanın ölü bölgesi), sonra K9 (basamak boyunca yakın dövüş yok) veriyor.
+
+**K26 duman testi:** kurallar açıkken Buzul — Kamp tohum 1, 59'da 20 turda bitmiyor (zaman aşımı; çökme yok).
+
+**Sonuç:** Buzul — Kamp ve Dağ — Karakol düşman listesi ayarı "Dungeondex öncesi tam test turu"na bırakıldı (öneri: Buzul — Kamp'ta düşman gücü artırılmalı).
+
 ## Kuyruk Y1: YZ kuyruğu — hızlı regresyon ve Earthquake ölçümü (2026-11-08)
 
 Hızlı regresyon (seviye 5, 50 tohum, YZ değişmeden önce / sonra, kural sürümü 55): **birebir aynı** (fark 0 puan).
