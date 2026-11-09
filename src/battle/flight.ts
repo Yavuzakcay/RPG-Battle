@@ -25,6 +25,41 @@ export const fliesOrHovers = (c: Pick<Combatant, 'fly' | 'effects'>): boolean =>
 export const isAirborne = (c: Pick<Combatant, 'fly' | 'effects'> & { climbing?: true; altitudeFt?: number }): boolean =>
   fliesOrHovers(c) || (!!c.climbing && (c.altitudeFt ?? 0) > 0);
 
+/**
+ * Kuyruk U1a (sürüm 61+, `ucus.yeredegmez`): süzülüyor mu: uçuşunun bütün kaynakları süzülme etkisi (`hover`). Kendi uçuş
+ * hızı, süzülmesiz uçuş etkisi ya da Levitate varsa tam uçan sayılır. Süzülme etkisi yalnız 61+ savaşta oluşur (eski
+ * kayıtlarda alan yok: sonuç hep false).
+ */
+export function hovers(c: Pick<Combatant, 'fly' | 'effects'>): boolean {
+  if ((c.fly ?? 0) > 0 || !c.effects?.length) return false;
+  let hov = false;
+  for (const e of c.effects) {
+    if (e.airborne) return false;
+    if ((e.fly ?? 0) > 0) { if (!e.hover) return false; hov = true; }
+  }
+  return hov;
+}
+
+/**
+ * Kuyruk U1a: lav, derin su ve zemin alanları (yüzeyler dahil) bu yaratığa işler mi: yerde ya da süzülürken. Zorlu zemin,
+ * çamur, tuzak plakası, sığ su, çukur gibi diğer yer etkileri yalnız yerdekine (`isAirborne` aynen).
+ */
+export const groundBound = (c: Pick<Combatant, 'fly' | 'effects'> & { climbing?: true; altitudeFt?: number }): boolean => !isAirborne(c) || hovers(c);
+
+/**
+ * Kuyruk U1a (sürüm 61+, `ucus.azamiIrtifaFt`): yaratığın kendi uçuş irtifası sınırı (ft): uçuşunun bütün kaynakları sınırlı
+ * etkiyse en büyüğü; kendi uçuş hızı, sınırsız uçuş etkisi ya da Levitate varsa null (haritanın sınırı).
+ */
+export function ownFlyCapFt(c: Pick<Combatant, 'fly' | 'effects'>): number | null {
+  if ((c.fly ?? 0) > 0 || !c.effects?.length) return null;
+  let cap = -1;
+  for (const e of c.effects) {
+    if (e.airborne) return null;
+    if ((e.fly ?? 0) > 0) { if (e.flyCapFt === undefined) return null; cap = Math.max(cap, e.flyCapFt); }
+  }
+  return cap < 0 ? null : cap;
+}
+
 /** Etki yürümeyi engelliyor mu (Levitate: yalnızca itilip çekilerek yer değiştirir). */
 export const effectSpeedZero = (c: Pick<Combatant, 'effects'>): boolean => !!c.effects?.some((e) => e.speedZero);
 

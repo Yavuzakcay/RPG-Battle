@@ -32,7 +32,8 @@ import { bondRecallEvents } from '../heldItems';
 import { p11On } from './p11';
 import { castOrigins } from './p11cast';
 import { spellOf } from '../features';
-import { JETON_ARKETIP, JETON_YEDEK } from '../../content/ilkelSema';
+import { JETON_ARKETIP, JETON_YEDEK, kaynakRefOf } from '../../content/ilkelSema';
+import { glideSubEvent, u1aOn, ucusAt, ucusBody, ucusRounds } from '../flightPrim';
 import { resolveSave } from '../../rules/attack';
 import { askReaction } from '../../rules/reactionChoice';
 import { adjustDamage } from '../../rules/damage';
@@ -242,7 +243,17 @@ function runPrim(state: BattleState, c: Ctx): BattleEvent[] | string {
       const body = passiveBody(p, a);
       return body ? [effect(a, body as Partial<ActiveEffect>)] : [];
     }
-    case 'boyut': case 'ucus': case 'aura': case 'engeldenGec': case 'koruma': case 'algi': case 'saldirmadanSave': {
+    case 'ucus': {
+      // Kuyruk U1a (sürüm 61+): kademe parametreleri; süre `sureDakika` ya da `sure`; zorunlu inişte kendi turunda uçuş hemen.
+      if (!u1aOn(state)) { const body = passiveBody(p, a); return body ? [effect(a, body as Partial<ActiveEffect>)] : []; }
+      const q = ucusAt(p, a.level);
+      const rounds = ucusRounds(q);
+      const parent = { ...ucusBody(q, a.speed, (v) => flatNum(v, a)), id, name, sourceId: a.id, icon: '🪽', ...(rounds === null ? {} : { until: state.round + rounds - 1 }) } as ActiveEffect;
+      const evs: BattleEvent[] = [{ type: 'effect_added', targetId: a.id, effect: parent }];
+      if (parent.pkGlide && state.order[state.turnIndex] === a.id) evs.push(glideSubEvent(a.id, parent, state.round));
+      return evs;
+    }
+    case 'boyut': case 'aura': case 'engeldenGec': case 'koruma': case 'algi': case 'saldirmadanSave': {
       const body = p.tur === 'aura' ? { auras: [auraSpec(p, a, c.i)] } : passiveBody(p, a);
       return body ? [effect(a, body as Partial<ActiveEffect>)] : [];
     }
@@ -549,7 +560,7 @@ export function paketProblem(state: BattleState, actor: Combatant, f: UsableFeat
   const d = pickDugme(actor, f);
   if (!d) return 'Bilinmeyen özellik.';
   if (actor.hp <= 0) return 'Ayakta değil.';
-  const pay = d.prims.find((x) => x.p.kaynak);
+  const pay = d.prims.find((x) => kaynakRefOf(x.p));
   if (pay && !canPay(actor, pay.p)) return `${f.name}: kullanım kalmadı.`;
   if (d.prims.some((x) => x.p.turdaBir && usedThisTurn(state, actor, d.feat.key, x.i))) return `${f.name}: bu tur kullanıldı.`;
   if (d.prims.every((x) => !kosulOk(state, actor, x.p, targetId ? state.combatants[targetId] : undefined))) return `${f.name}: koşul sağlanmıyor.`;
@@ -577,7 +588,7 @@ export function executePaket(state: BattleState, actor: Combatant, f: UsableFeat
   if (!rng) return fail('Zar gerekli.');
   const d = pickDugme(actor, f) as Dugme;
   const events: BattleEvent[] = [];
-  const pay = d.prims.find((x) => x.p.kaynak);
+  const pay = d.prims.find((x) => kaynakRefOf(x.p));
   const k = pay ? costOf(actor, pay.p) : null;
   if (k) events.push({ type: 'feature_used', actorId: actor.id, feature: k.id, remaining: (actor.resources[k.id] ?? 0) - k.cost });
   let cur = applyEvents(state, events);

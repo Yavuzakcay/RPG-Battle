@@ -6,7 +6,7 @@
  */
 import { classData, type ResourceDef, type SubclassDef } from '../data';
 import { setExternalSubclasses } from '../rules/subclasses';
-import { paketKaynakId } from './ilkelSema';
+import { kullanimKaynak, paketKaynakId } from './ilkelSema';
 
 let registered: string[] = [];
 
@@ -41,6 +41,14 @@ export function registerPackResources(list: SubclassDef[]): void {
         // Kuyruk P12: sayaç kaynağı (güç deposu): başlangıç ve uzun dinlenme 1, kısa dinlenme 0'daysa 1.
         ...(p.yenilenme === 'depo' ? { depot: 1 } : {}),
       };
+      registered.push(key);
+    }
+    // Kuyruk U1a: `ucus.kullanim` örtük kaynağı (dinlenme başına kullanım; anahtar `pk-<alt sınıf>-kullanim-<id>`).
+    for (const { f, p } of all) {
+      const k = kullanimKaynak(p);
+      if (!k) continue;
+      const key = paketKaynakId(sub.id, k.id);
+      table[key] = { name: typeof p.ad === 'string' ? p.ad : f.name.tr, feature: `${sub.class}/${sub.id}:${f.id}`, uses: usesOf(k.sayi), recharge: rechargeOf(k.yenilenme) };
       registered.push(key);
     }
   }

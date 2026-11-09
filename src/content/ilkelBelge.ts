@@ -10,6 +10,7 @@ const TIP_ADI: Record<AlanSpec['tip'], string> = {
   hasarTurleri: 'hasar türü listesi', durum: 'durum', durumlar: 'durum listesi', yetenek: 'yetenek', yetenekler: 'yetenek listesi',
   kaynakRef: 'kaynak başvurusu', save: 'nesne', yaratikRef: 'yaratık kimliği', buyular: 'büyü adı listesi', kosullar: 'koşul listesi',
   sure: 'süre', kimlik: 'kimlik', enumListe: 'seçenek listesi', yaratikRefler: 'yaratık kimliği listesi', rastgeleListe: '{ "sayi": N }', vertigoTablo: 'vertigo satır listesi',
+  kullanim: '{ "sayi", "yenilenme" }', ucusEsik: 'uçuş parametreleri nesnesi',
 };
 const v = (x: unknown) => (x === undefined ? '—' : `\`${JSON.stringify(x)}\``);
 const cell = (s: string) => s.replace(/\|/g, '\\|').replace(/\n/g, ' ');

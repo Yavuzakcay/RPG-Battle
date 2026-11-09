@@ -39,7 +39,9 @@ export type Hedef = typeof HEDEFLER[number];
 export type AlanTip = 'tamsayi' | 'sayi' | 'bool' | 'metin' | 'enum' | 'formul' | 'hasarTuru' | 'hasarTurleri' | 'durum' | 'durumlar'
   | 'yetenek' | 'yetenekler' | 'kaynakRef' | 'save' | 'yaratikRef' | 'buyular' | 'kosullar' | 'sure' | 'kimlik' | 'enumListe' | 'yaratikRefler'
   /** P12: `{ "sayi": 8 }` (oyuncunun seçtiği büyü listesi), vertigo tablosu (satır listesi). */
-  | 'rastgeleListe' | 'vertigoTablo';
+  | 'rastgeleListe' | 'vertigoTablo'
+  /** U1a: `ucus.kullanim` (`{ "sayi", "yenilenme" }`) ve `ucus.esikSonrasi` (uçuş parametrelerinin alt kümesi). */
+  | 'kullanim' | 'ucusEsik';
 export interface AlanSpec {
   tip: AlanTip;
   zorunlu?: boolean;
@@ -221,10 +223,19 @@ export const ILKELLER: Record<string, IlkelSpec> = {
     ornek: { tur: 'boyut', tetik: 'bonus', boyut: 'L', sure: 10, ekHasar: '1d4', kaynak: { id: 'dev-ofkesi', maliyet: 1 } },
   },
   ucus: {
-    not: 'Uçuş hızı.', tetikler: ['pasif', 'bonus', 'eylem', 'savasBasi'],
-    alanlar: { hizFt: F('Uçuş hızı (ft; "yurume" yürüme hızı kadar).', { varsayilan: 'yurume' }), sure: SURE },
-    sistem: 'Süren etki `fly` (`flight.ts` `flySpeed`, `isAirborne`).',
-    ornek: { tur: 'ucus', tetik: 'bonus', hizFt: 30, sure: 10 },
+    not: 'Uçuş hızı. Kuyruk U1a (sürüm 61+) kademeleri: kalıcı (pasif), kısa süreli (bonus + `sureDakika` + `kullanim`), süzülme (`azamiIrtifaFt: 5` + `yeredegmez`), zorunlu inişli (`zorunluInis`); seviye eşiğinde parametre değişimi (`seviyeEsigi` + `esikSonrasi`). Sürüm 60 ve altında yalnız `hizFt` ve `sure`.',
+    tetikler: ['pasif', 'bonus', 'eylem', 'savasBasi'],
+    alanlar: { hizFt: F('Uçuş hızı (ft; "yurume" yürüme hızı kadar). `hizCarpani` ile birlikte yazılmaz.', { varsayilan: 'yurume' }), sure: SURE,
+      hizCarpani: { tip: 'sayi', not: 'U1a: uçuş hızı = yürüme hızı × çarpan (5\'in katına aşağı; 0 < çarpan ≤ 4; varsayılan 1). `hizFt` ile birlikte yazılmaz.' },
+      azamiIrtifaFt: N('U1a: bu uçuşla çıkılabilecek en yüksek irtifa (ft, 5\'in katı; yoksa haritanın uçuş sınırı). Süzülme 5. Tırmanırken ve duruş yüzeyinde (sur tepesi, kat) uygulanmaz; başka uçuş kaynağı (kendi uçuş hızı, sınırsız uçuş etkisi, Levitate) varsa sınır yok.'),
+      sureDakika: { tip: 'sayi', not: 'U1a: süre (dakika; 1 dk = 10 tur; 0 < süre ≤ 600). `sure` ile birlikte yazılmaz.' },
+      kullanim: { tip: 'kullanim', not: 'U1a: dinlenme başına kullanım `{ "sayi": 1, "yenilenme": "uzun" | "kisa" }` (`sayi`: `kaynak` ilkelinin `sayi` biçimi, varsayılan 1; `yenilenme` varsayılan `uzun`). İlkelde `id` gerekir; örtük kaynak `kullanim-<id>` (alt sınıfta benzersiz). Yalnız düğme tetiğiyle (`bonus`, `eylem`); `kaynak` ile birlikte yazılmaz.' },
+      yeredegmez: B('U1a: süzülme: zorlu zemin, çamur, tuzak plakası, sığ su, çukur işlemez; lav (gönüllü girilmez), derin su ve zemin alanı büyüleri/yüzeyler işler; yüksek zemin (K8) verilmez.'),
+      zorunluInis: B('U1a: uçuş yalnız kendi turunda (tur başında açılır, tur sonunda biter; havadaysa düşer). Celestial Kırık Kanat kipi.'),
+      seviyeEsigi: N('U1a: bu karakter seviyesinden itibaren `esikSonrasi` parametreleri geçerli (2–20).'),
+      esikSonrasi: { tip: 'ucusEsik', not: 'U1a: eşikten sonra üste yazılan parametreler (`hizFt`, `hizCarpani`, `azamiIrtifaFt`, `sureDakika`, `sure`, `yeredegmez`, `zorunluInis`).' } },
+    sistem: 'Süren etki `fly` (`flight.ts` `flySpeed`, `isAirborne`); U1a: `flightPrim.ts` `ucusAt`/`ucusBody` (etkide `flyCapFt`, `hover`, `pkGlide`), sınır `altitude.ts` `altitudeCapFt`, süzülme `flight.ts` `hovers`/`groundBound`, zorunlu iniş tur kancaları `glideTurnStartEvents`/`glideTurnEndEvents`, kullanım `content/paket.ts` örtük kaynak.',
+    ornek: { tur: 'ucus', id: 'suzul', tetik: 'bonus', hizCarpani: 1, sureDakika: 1, kullanim: { sayi: 1, yenilenme: 'uzun' }, azamiIrtifaFt: 5, yeredegmez: true },
   },
   isinlan: {
     not: 'Kendini görülen boş altıgene ışınlar.', tetikler: ['bonus', 'eylem', 'serbest'],
@@ -625,6 +636,20 @@ export function kaynakSayiOk(v: unknown): boolean {
 /** Paket kaynağının sınıf kaynakları tablosundaki anahtarı (alt sınıf kimliğiyle; çakışmaz). */
 export const paketKaynakId = (subId: string, id: string): string => `pk-${subId}-${id}`;
 
+/** Kuyruk U1a: `ucus.kullanim` örtük kaynağı (kimlik `kullanim-<ilkel id>`, kullanım sayısı, yenilenme); yoksa null. */
+export function kullanimKaynak(p: Record<string, unknown>): { id: string; sayi: unknown; yenilenme: string } | null {
+  if (p.tur !== 'ucus' || !isObj(p.kullanim) || typeof p.id !== 'string') return null;
+  return { id: `kullanim-${p.id}`, sayi: p.kullanim.sayi ?? 1, yenilenme: typeof p.kullanim.yenilenme === 'string' ? p.kullanim.yenilenme : 'uzun' };
+}
+/** İlkelin harcadığı kaynak: `kaynak` alanı, yoksa (U1a) örtük `kullanim` kaynağı (maliyet 1). */
+export function kaynakRefOf(p: Record<string, unknown>): { id: string; maliyet?: number } | undefined {
+  if (p.kaynak) return p.kaynak as { id: string; maliyet?: number };
+  const k = kullanimKaynak(p);
+  return k ? { id: k.id, maliyet: 1 } : undefined;
+}
+/** U1a: `esikSonrasi` nesnesinde yazılabilen uçuş parametreleri. */
+export const UCUS_ESIK_ALANLARI = ['hizFt', 'hizCarpani', 'azamiIrtifaFt', 'sureDakika', 'sure', 'yeredegmez', 'zorunluInis'] as const;
+
 interface Ctx { kaynaklar: Set<string>; sinifKaynaklari: Set<string>; yaratiklar: Set<string>; ilkelIdleri: Set<string> }
 
 /** P12: vertigo tablo satırının alan denetimi. */
@@ -639,6 +664,15 @@ function vertigoSatirHatasi(x: unknown, ctx: Ctx): boolean {
   if (x.yuzler !== undefined && (!Array.isArray(x.yuzler) || x.yuzler.length === 0 || x.yuzler.some((n) => !Number.isInteger(n) || (n as number) < 1 || (n as number) > 20))) return true;
   if (x.etki === 'patlama' && (x.zar === undefined || x.hasarTuru === undefined)) return true;
   return Object.entries(x).some(([k, v]) => k !== 'yuzler' && (!VERTIGO_ALANLARI[k] || alanHatasi(VERTIGO_ALANLARI[k] as AlanSpec, v, ctx)));
+}
+
+/** U1a: uçuş parametrelerinin değer aralıkları (tip denetiminin ötesi). */
+function ucusDegerHatasi(k: string, v: unknown): boolean {
+  if (k === 'hizCarpani') return typeof v !== 'number' || !(v > 0 && v <= 4);
+  if (k === 'sureDakika') return typeof v !== 'number' || !(v > 0 && v <= 600);
+  if (k === 'azamiIrtifaFt') return !Number.isInteger(v) || (v as number) % 5 !== 0;
+  if (k === 'seviyeEsigi') return !Number.isInteger(v) || (v as number) < 2 || (v as number) > 20;
+  return false;
 }
 
 function alanHatasi(spec: AlanSpec, v: unknown, ctx: Ctx): boolean {
@@ -667,6 +701,10 @@ function alanHatasi(spec: AlanSpec, v: unknown, ctx: Ctx): boolean {
       || (v.maliyet !== undefined && (!Number.isInteger(v.maliyet) || (v.maliyet as number) < 0)) || Object.keys(v).some((k) => k !== 'id' && k !== 'maliyet');
     case 'rastgeleListe': return !isObj(v) || !Number.isInteger(v.sayi) || (v.sayi as number) < 2 || (v.sayi as number) > 20 || Object.keys(v).some((k) => k !== 'sayi');
     case 'vertigoTablo': return !Array.isArray(v) || v.length === 0 || v.length > 20 || v.some((x) => vertigoSatirHatasi(x, ctx));
+    case 'kullanim': return !isObj(v) || Object.keys(v).some((k) => k !== 'sayi' && k !== 'yenilenme')
+      || (v.sayi !== undefined && !kaynakSayiOk(v.sayi)) || (v.yenilenme !== undefined && v.yenilenme !== 'uzun' && v.yenilenme !== 'kisa');
+    case 'ucusEsik': return !isObj(v) || Object.keys(v).length === 0 || Object.entries(v).some(([k, x]) => !(UCUS_ESIK_ALANLARI as readonly string[]).includes(k)
+      || alanHatasi((ILKELLER.ucus as IlkelSpec).alanlar[k] as AlanSpec, x, ctx) || ucusDegerHatasi(k, x));
     case 'save': return !isObj(v) || !(ABILITY_IDS as readonly string[]).includes(v.yetenek as string)
       || !(v.dc === undefined || v.dc === 'buyu' || (Number.isInteger(v.dc) && (v.dc as number) >= 1 && (v.dc as number) <= 30)
         || (Array.isArray(v.dc) && v.dc.length > 0 && v.dc.every((a) => (ABILITY_IDS as readonly string[]).includes(a as string))))
@@ -744,6 +782,21 @@ export function ilkelErrors(list: unknown, path: string, ctx: { kaynaklar: Set<s
     if (raw.tur === 'yuzeyOlustur' && raw.yuzey === 'alan' && raw.hasar === undefined && !raw.zorluArazi && raw.durum === undefined && raw.iyilestir === undefined) out.push({ path: `${p}.hasar`, kod: 'ilkelEksik', alan: 'hasar' });
     if (raw.tur === 'yuzeyOlustur' && raw.hasar !== undefined && raw.hasarTuru === undefined) out.push({ path: `${p}.hasarTuru`, kod: 'ilkelEksik', alan: 'hasarTuru' });
     if (raw.tur === 'durumUygula' && raw.durum === 'Invisible') out.push({ path: `${p}.durum`, kod: 'ilkelDeger', alan: 'durum' });
+    // U1a: uçuş kademeleri.
+    if (raw.tur === 'ucus') {
+      for (const k of ['hizCarpani', 'sureDakika', 'azamiIrtifaFt', 'seviyeEsigi']) if (raw[k] !== undefined && ucusDegerHatasi(k, raw[k])) bad(k);
+      if (raw.hizFt !== undefined && raw.hizCarpani !== undefined) bad('hizCarpani');
+      if (raw.sure !== undefined && raw.sureDakika !== undefined) bad('sureDakika');
+      if ((raw.seviyeEsigi === undefined) !== (raw.esikSonrasi === undefined)) out.push({ path: `${p}.${raw.seviyeEsigi === undefined ? 'seviyeEsigi' : 'esikSonrasi'}`, kod: 'ilkelEksik', alan: raw.seviyeEsigi === undefined ? 'seviyeEsigi' : 'esikSonrasi' });
+      if (isObj(raw.esikSonrasi) && ((raw.esikSonrasi.hizFt !== undefined && (raw.hizCarpani !== undefined || raw.esikSonrasi.hizCarpani !== undefined))
+        || (raw.esikSonrasi.sure !== undefined && (raw.sureDakika !== undefined || raw.esikSonrasi.sureDakika !== undefined)))) bad('esikSonrasi');
+      if (raw.kullanim !== undefined) {
+        if (typeof raw.id !== 'string') out.push({ path: `${p}.id`, kod: 'ilkelEksik', alan: 'id' });
+        else if (c.kaynaklar.has(`kullanim-${raw.id}`)) bad('id');
+        if (raw.kaynak !== undefined) bad('kullanim');
+        if (raw.tetik !== 'bonus' && raw.tetik !== 'eylem') bad('kullanim');
+      }
+    }
   });
   return out;
 }

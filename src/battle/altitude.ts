@@ -17,7 +17,8 @@ import { isIncapacitated, speedZero } from '../rules/conditions';
 import type { Rng } from '../rules/dice';
 import { fail, finish, type CommandResult } from './common';
 import { turnKey } from './economy';
-import { climbs, effectSpeedZero, fliesOrHovers, flySpeed, isAirborne } from './flight';
+import { climbs, effectSpeedZero, fliesOrHovers, flySpeed, isAirborne, ownFlyCapFt } from './flight';
+import { u1aOn } from './flightPrim';
 import { fallEffect } from './maprules';
 import { fallReactions } from './reactions';
 import { applyEvents, speedHexes } from './reduce';
@@ -148,12 +149,19 @@ export const bodyHeightFt = (c: Pick<Combatant, 'size'>): number => (ALT.boyFt a
 /** Kuyruk K68c: göz yüksekliği (ft): irtifa + boyun yarısı (görüş hattının ucu). */
 export const eyeFt = (c: Pick<Combatant, 'size' | 'altitudeFt'>): number => altitudeOf(c) + bodyHeightFt(c) / 2;
 
+type CapSubject = Pick<Combatant, 'size'> & { pos?: Offset | null; id?: string; fly?: number; effects?: Combatant['effects']; climbing?: true; altitudeFt?: number };
+
 /** İrtifa üst sınırı (ft, 5'in katı): tavanlı haritada tavan − boy, açık gökte `irtifa.maxFt`. */
-export function altitudeCapFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, c: Pick<Combatant, 'size'> & { pos?: Offset | null; id?: string }): number {
+export function altitudeCapFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, c: CapSubject): number {
   const ceil = ceilingOver(state, c);
   // Kuyruk K71c (sürüm 58+): açık gökte uçuş üst sınırı (`ucusUstFt`, yoksa 60 ft); 57 ve altında `irtifa.maxFt`.
-  if (ceil === null) return cellsOn(state) ? flyCapFt(state) : ALT.maxFt;
-  return Math.max(0, Math.floor((ceil - bodyHeightFt(c)) / ALT.stepFt) * ALT.stepFt);
+  const base = ceil === null ? (cellsOn(state) ? flyCapFt(state) : ALT.maxFt) : Math.max(0, Math.floor((ceil - bodyHeightFt(c)) / ALT.stepFt) * ALT.stepFt);
+  // Kuyruk U1a (sürüm 61+): yaratığın kendi uçuş sınırı (`ucus.azamiIrtifaFt`, süzülme 5 ft); tırmanırken ve duruş
+  // yüzeyindeyken (sur tepesi, kat) değil: sınır yalnız o etkiyle uçarken.
+  if (!c.effects?.length || !u1aOn(state)) return base;
+  const own = ownFlyCapFt({ fly: c.fly ?? 0, effects: c.effects });
+  if (own === null || c.climbing || (c.pos && (c.altitudeFt ?? 0) > 0 && standingOn(state, { pos: c.pos, altitudeFt: c.altitudeFt }))) return base;
+  return Math.min(base, own);
 }
 
 const FLY_CAP = new Map<string, number>();

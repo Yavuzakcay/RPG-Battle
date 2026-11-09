@@ -5,7 +5,7 @@
  */
 import { getProgression, items } from '../../data';
 import { findSubclass } from '../../rules/subclasses';
-import { ILKELLER, paketKaynakId } from '../../content/ilkelSema';
+import { ILKELLER, kullanimKaynak, paketKaynakId } from '../../content/ilkelSema';
 import type { CharacterSheet } from '../../rules/stats';
 
 export type Ilkel = Record<string, unknown> & { tur: string };
@@ -53,7 +53,12 @@ export function paketBag(sheet: Pick<CharacterSheet, 'classId' | 'subclassId' | 
     .filter((f) => f.ilkeller.length > 0);
   if (!ozellikler.length) return undefined;
   const kaynaklar: Record<string, string> = {};
-  for (const f of sub.features) for (const p of f.ilkeller ?? []) if (p.tur === 'kaynak' && typeof p.id === 'string') kaynaklar[p.id] = paketKaynakId(sub.id, p.id);
+  for (const f of sub.features) for (const p of f.ilkeller ?? []) {
+    if (p.tur === 'kaynak' && typeof p.id === 'string') kaynaklar[p.id] = paketKaynakId(sub.id, p.id);
+    // Kuyruk U1a: `ucus.kullanim` örtük kaynağı.
+    const k = kullanimKaynak(p);
+    if (k) kaynaklar[k.id] = paketKaynakId(sub.id, k.id);
+  }
   const refs = new Set(ozellikler.flatMap((f) => f.ilkeller.filter((p) => p.tur === 'cagir').map((p) => p.yaratik as string)));
   const yaratiklar = Object.fromEntries((sub.yaratiklar ?? []).filter((y) => refs.has(y.id as string)).map((y) => [y.id as string, y]));
   return {

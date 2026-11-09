@@ -9,7 +9,8 @@ import { turnKey } from '../economy';
 import { auraCoreOn } from '../auraCore';
 import { getMap } from '../../map/maps';
 import { sizeRank } from '../forced';
-import { DUGME_TETIKLERI, ILKELLER, ORTAK_ALANLAR, type Tetik } from '../../content/ilkelSema';
+import { DUGME_TETIKLERI, ILKELLER, ORTAK_ALANLAR, kaynakRefOf, type Tetik } from '../../content/ilkelSema';
+import { u1aOn, ucusAt, ucusBody } from '../flightPrim';
 import { ruleVersion } from '../ruleVersion';
 import { BOOK, hasBook, p12Features, twinSchoolOf } from './p12core';
 import { p12On } from './p12surum';
@@ -127,7 +128,8 @@ export function kosulOk(state: BattleState, actor: Combatant, p: Ilkel, target?:
 /** Kaynak anahtarı (yerel `kaynak` ilkeli → `pk-…`, yoksa sınıf kaynağı). */
 export const resKey = (c: Combatant, id: string): string => c.paket?.kaynaklar?.[id] ?? id;
 export function costOf(c: Combatant, p: Ilkel): { id: string; cost: number } | null {
-  const k = p.kaynak as { id: string; maliyet?: number } | undefined;
+  // Kuyruk U1a: `ucus.kullanim` örtük kaynağı da (`kullanim-<id>`).
+  const k = kaynakRefOf(p);
   return k ? { id: resKey(c, k.id), cost: k.maliyet ?? 1 } : null;
 }
 export const canPay = (c: Combatant, p: Ilkel): boolean => { const k = costOf(c, p); return !k || (c.resources[k.id] ?? 0) >= k.cost; };
@@ -171,9 +173,9 @@ export function paketHex(c: Combatant, key: string): 'hex' | 'after' | null {
 /** Savaşçının paket özellikleri (düğmeler). */
 export function paketFeatures(c: Combatant): UsableFeature[] {
   return dugmeler(c.paket).map((d) => {
-    const pay = d.prims.find((x) => x.p.kaynak);
+    const pay = d.prims.find((x) => kaynakRefOf(x.p));
     return { key: d.key, name: (d.prims[0]?.p.ad as string | undefined) ?? d.feat.ad, type: d.tetik === 'eylem' ? 'action' : d.tetik === 'bonus' ? 'bonus' : 'free',
-      ...(pay ? { resource: resKey(c, (pay.p.kaynak as { id: string }).id) } : {}),
+      ...(pay ? { resource: resKey(c, (kaynakRefOf(pay.p) as { id: string }).id) } : {}),
       effect: { kind: 'paket' as const, ...((n) => ({ ...(n.target ? { target: n.target } : {}), ...(n.hex ? { hex: n.target ? 'after' as const : 'hex' as const } : {}) }))(dugmeNeeds(d)) } };
   });
 }
@@ -190,7 +192,9 @@ export function passiveBody(p: Ilkel, c: Combatant, state?: BattleState): Partia
       return tip === 'bagisiklik' ? { immuneDamage: turler } : tip === 'zaaf' ? { vulnerable: turler } : { resist: turler };
     }
     case 'zarEtkisi': return zarBody(p, c);
-    case 'ucus': return { fly: p.hizFt === undefined || p.hizFt === 'yurume' ? c.speed : flatNum(p.hizFt, c) };
+    // Kuyruk U1a (sürüm 61+): kademe parametreleri (`flightPrim.ts`); 60 ve altı yalnız `hizFt`.
+    case 'ucus': return state && u1aOn(state) ? ucusBody(ucusAt(p, c.level), c.speed, (v) => flatNum(v, c))
+      : { fly: p.hizFt === undefined || p.hizFt === 'yurume' ? c.speed : flatNum(p.hizFt, c) };
     case 'hiz': return { speedFt: flatNum(p.artiFt, c) };
     case 'boyut': return { size: 1, ...(p.ekHasar ? { hitDie: formul(p.ekHasar, c) } : {}), ...(typeof p.erisimFt === 'number' ? { reachPlus: p.erisimFt } : {}) };
     // P6: engelden geçme (`phase.ts`; zorlu arazi) ve fırsat saldırısı yok.

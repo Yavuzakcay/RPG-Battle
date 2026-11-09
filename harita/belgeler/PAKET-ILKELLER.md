@@ -21,7 +21,7 @@ Ek paket alt sınıfının her özelliği `ilkeller` dizisi taşıyabilir: `"ilk
 | `isaret` | Hedefi işaretler; işaretliye avantaj ve diğer ilkellerin `isaretli:<id>` koşulu. | `bonus`, `eylem`, `isabet` | Hedefte süren etki (`attackedAdvBy` işaretleyene, `attackedAdv` herkese; `wardSources`). |
 | `cagir` | Paketin `yaratiklar` tanımından yaratık çağırır. | `eylem`, `bonus`, `savasBasi`, `sifirCan`, `oldurunce` | R3 çağırma (`summons.ts`): `summoned` olayı (yaratık olayın içinde, replay aynı), `summonCleanup` (0 HP, süre, sahip ölümü). |
 | `boyut` | Büyüme (Large/Huge): ek hasar zarı, jeton ölçeği. | `bonus`, `eylem`, `pasif` | Süren etki `size` (+1) ve `hitDie` (Enlarge yolu). |
-| `ucus` | Uçuş hızı. | `pasif`, `bonus`, `eylem`, `savasBasi` | Süren etki `fly` (`flight.ts` `flySpeed`, `isAirborne`). |
+| `ucus` | Uçuş hızı. Kuyruk U1a (sürüm 61+) kademeleri: kalıcı (pasif), kısa süreli (bonus + `sureDakika` + `kullanim`), süzülme (`azamiIrtifaFt: 5` + `yeredegmez`), zorunlu inişli (`zorunluInis`); seviye eşiğinde parametre değişimi (`seviyeEsigi` + `esikSonrasi`). Sürüm 60 ve altında yalnız `hizFt` ve `sure`. | `pasif`, `bonus`, `eylem`, `savasBasi` | Süren etki `fly` (`flight.ts` `flySpeed`, `isAirborne`); U1a: `flightPrim.ts` `ucusAt`/`ucusBody` (etkide `flyCapFt`, `hover`, `pkGlide`), sınır `altitude.ts` `altitudeCapFt`, süzülme `flight.ts` `hovers`/`groundBound`, zorunlu iniş tur kancaları `glideTurnStartEvents`/`glideTurnEndEvents`, kullanım `content/paket.ts` örtük kaynak. |
 | `isinlan` | Kendini görülen boş altıgene ışınlar. | `bonus`, `eylem`, `serbest` | K53 tek ışınlanma girişi (`teleport.ts` `teleportEvent`, `motion.ts` `withArrival`). |
 | `zorlaHareket` | İtme/çekme/yana kaydırma (isabette ya da eylemle). | `isabet`, `eylem`, `bonus` | K53 tek zorla hareket girişi (`motion.ts` `forcedMove`: çarpma, düşme, zemin tetikleri). |
 | `olumdenDon` | 0 HP'ye düşecekken ayakta kalır. | `sifirCan` | Death Ward yolu (`damage-effects.ts` `deathWard` etkisi; kullanılınca kaynak harcanır, gerekirse `healed`). |
@@ -354,20 +354,28 @@ Büyüme (Large/Huge): ek hasar zarı, jeton ölçeği.
 
 ## `ucus`
 
-Uçuş hızı.
+Uçuş hızı. Kuyruk U1a (sürüm 61+) kademeleri: kalıcı (pasif), kısa süreli (bonus + `sureDakika` + `kullanim`), süzülme (`azamiIrtifaFt: 5` + `yeredegmez`), zorunlu inişli (`zorunluInis`); seviye eşiğinde parametre değişimi (`seviyeEsigi` + `esikSonrasi`). Sürüm 60 ve altında yalnız `hizFt` ve `sure`.
 
 - Tetikler: `pasif`, `bonus`, `eylem`, `savasBasi` (varsayılan `pasif`).
-- Sistem ve kanca: Süren etki `fly` (`flight.ts` `flySpeed`, `isAirborne`).
+- Sistem ve kanca: Süren etki `fly` (`flight.ts` `flySpeed`, `isAirborne`); U1a: `flightPrim.ts` `ucusAt`/`ucusBody` (etkide `flyCapFt`, `hover`, `pkGlide`), sınır `altitude.ts` `altitudeCapFt`, süzülme `flight.ts` `hovers`/`groundBound`, zorunlu iniş tur kancaları `glideTurnStartEvents`/`glideTurnEndEvents`, kullanım `content/paket.ts` örtük kaynak.
 
 | Alan | Tip | Zorunlu | Varsayılan | Açıklama |
 |---|---|---|---|---|
-| `hizFt` | formül | hayır | `"yurume"` | Uçuş hızı (ft; "yurume" yürüme hızı kadar). |
+| `hizFt` | formül | hayır | `"yurume"` | Uçuş hızı (ft; "yurume" yürüme hızı kadar). `hizCarpani` ile birlikte yazılmaz. |
 | `sure` | süre | hayır | `10` | Süre: tur sayısı (1 tur = 6 sn) ya da "kalici" (savaş boyu). |
+| `hizCarpani` | sayı | hayır | — | U1a: uçuş hızı = yürüme hızı × çarpan (5'in katına aşağı; 0 < çarpan ≤ 4; varsayılan 1). `hizFt` ile birlikte yazılmaz. |
+| `azamiIrtifaFt` | tamsayı | hayır | — | U1a: bu uçuşla çıkılabilecek en yüksek irtifa (ft, 5'in katı; yoksa haritanın uçuş sınırı). Süzülme 5. Tırmanırken ve duruş yüzeyinde (sur tepesi, kat) uygulanmaz; başka uçuş kaynağı (kendi uçuş hızı, sınırsız uçuş etkisi, Levitate) varsa sınır yok. |
+| `sureDakika` | sayı | hayır | — | U1a: süre (dakika; 1 dk = 10 tur; 0 < süre ≤ 600). `sure` ile birlikte yazılmaz. |
+| `kullanim` | { "sayi", "yenilenme" } | hayır | — | U1a: dinlenme başına kullanım `{ "sayi": 1, "yenilenme": "uzun" \| "kisa" }` (`sayi`: `kaynak` ilkelinin `sayi` biçimi, varsayılan 1; `yenilenme` varsayılan `uzun`). İlkelde `id` gerekir; örtük kaynak `kullanim-<id>` (alt sınıfta benzersiz). Yalnız düğme tetiğiyle (`bonus`, `eylem`); `kaynak` ile birlikte yazılmaz. |
+| `yeredegmez` | true/false | hayır | `false` | U1a: süzülme: zorlu zemin, çamur, tuzak plakası, sığ su, çukur işlemez; lav (gönüllü girilmez), derin su ve zemin alanı büyüleri/yüzeyler işler; yüksek zemin (K8) verilmez. |
+| `zorunluInis` | true/false | hayır | `false` | U1a: uçuş yalnız kendi turunda (tur başında açılır, tur sonunda biter; havadaysa düşer). Celestial Kırık Kanat kipi. |
+| `seviyeEsigi` | tamsayı | hayır | — | U1a: bu karakter seviyesinden itibaren `esikSonrasi` parametreleri geçerli (2–20). |
+| `esikSonrasi` | uçuş parametreleri nesnesi | hayır | — | U1a: eşikten sonra üste yazılan parametreler (`hizFt`, `hizCarpani`, `azamiIrtifaFt`, `sureDakika`, `sure`, `yeredegmez`, `zorunluInis`). |
 
 Örnek:
 
 ```json
-{"tur":"ucus","tetik":"bonus","hizFt":30,"sure":10}
+{"tur":"ucus","id":"suzul","tetik":"bonus","hizCarpani":1,"sureDakika":1,"kullanim":{"sayi":1,"yenilenme":"uzun"},"azamiIrtifaFt":5,"yeredegmez":true}
 ```
 
 ## `isinlan`

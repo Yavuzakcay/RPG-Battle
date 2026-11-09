@@ -63,6 +63,7 @@ import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
+import { glideTurnEndEvents, glideTurnStartEvents } from './flightPrim';
 import { casterEndZoneEvents, casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
 import { askChoice } from '../rules/choice';
@@ -538,6 +539,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const celEnd = celestialTurnEndEvents(current, actor.id, rng);
     events.push(...celEnd);
     current = applyEvents(current, celEnd);
+    // Kuyruk U1a (sürüm 61+): zorunlu inişli uçuş (`ucus.zorunluInis`) tur sonunda biter.
+    const glideEnd = glideTurnEndEvents(current, actor.id);
+    events.push(...glideEnd);
+    current = applyEvents(current, glideEnd);
     // Kuyruk 19: Telekinesis: önceki turun hedefi bırakılır (havadaysa düşer).
     const tkEnd = telekinesisTurnEndEvents(current, actor.id, rng);
     events.push(...tkEnd);
@@ -689,6 +694,9 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const celStart = celestialTurnStartEvents(current, next.id);
       events.push(...celStart);
       current = applyEvents(current, celStart);
+      const glideStart = glideTurnStartEvents(current, next.id);
+      events.push(...glideStart);
+      current = applyEvents(current, glideStart);
       // Kuyruk 19: Animate Objects: sahibi bonus eylemle emretmediyse nesne yalnızca Kaçın yapar (turu geçer).
       const nx = current.combatants[next.id];
       const ownerOf = nx?.summon?.commandBonus ? current.combatants[nx.summon.by] : undefined;

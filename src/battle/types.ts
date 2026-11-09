@@ -229,6 +229,14 @@ export interface ActiveEffect {
   noCastForm?: boolean;
   /** Görev S1: uçuş hızı (Fly), havada süzülme (Levitate), yürüyemez, süresince verilen durumlar (Invisibility). */
   fly?: number;
+  /**
+   * Kuyruk U1a (sürüm 61+, `ucus` ilkeli): bu etkinin uçuşunun irtifa sınırı (ft; `azamiIrtifaFt`), süzülme (`yeredegmez`:
+   * zorlu zemin, çamur, tuzak, sığ su işlemez; lav, derin su, zemin alanları işler), zorunlu iniş (`zorunluInis`: uçuş yalnız
+   * kendi turunda; ana etkide `pkGlide` = hız, alt etki kendi turunda `fly`).
+   */
+  flyCapFt?: number;
+  hover?: true;
+  pkGlide?: number;
   airborne?: boolean;
   speedZero?: boolean;
   /** Kuyruk K68a (sürüm 52, enkaz altı): uçuş dahil her hız 0; Freedom of Movement de aşamaz (yalnız 5 ft ile kurtulur). */
