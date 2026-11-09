@@ -34,7 +34,7 @@ import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { saveDamage } from './classTraits';
-import { isAirborne } from './flight';
+import { groundBound, isAirborne } from './flight';
 import { pickArea } from './areaAttack';
 import { turnKey } from './economy';
 import { bodyAt } from './body';
@@ -89,7 +89,8 @@ export function zonesAt(state: BattleState, at: Offset | null): SpellZone[] {
 function affects(state: BattleState, z: SpellZone, spec: ZoneSpec, c: Combatant): boolean {
   if (isWebZone(z) && c.effects?.some((e) => e.webWalker)) return false;
   if (!isTargetable(c) || c.hp <= 0 || isIntangible(c) || c.id === z.anchorId) return false;
-  if (spec.ground && isAirborne(c)) return false;
+  // Kuyruk U1a (sürüm 61+): süzülen (`hover`) zemin alanlarından etkilenir (lav, derin su, zemin alanı listesi).
+  if (spec.ground && !groundBound(c)) return false;
   // Kuyruk K54b: zemin koruması (Mevzi İşareti, Yol aç, Kuşbakışı Plan): zemin yüzeyi ve zemin alanı etkilemez.
   if (groundZone(z, spec.ground) && groundWarded(state, c)) return false;
   if (spec.targets === 'enemies' && c.side === z.side) return false;
@@ -373,6 +374,8 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset, 
   const zones = state.map?.zones ?? [];
   if (!zones.length) return () => 1;
   const flying = isAirborne(mover);
+  // Kuyruk U1a: süzülen alanın zorlu arazisinden etkilenir (rüzgâr duvarında uçan sayılır).
+  const grounded = groundBound(mover);
   const small = mover.size === 'T' || mover.size === 'S';
   const gaseous = !!mover.effects?.some((e) => e.noAttack);
   const web = !!mover.effects?.some((e) => e.webWalker);
@@ -397,7 +400,7 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset, 
       // Kuyruk 19: yalnızca düşmanlar için zorlu arazi (Conjure Minor Elementals).
       if (spec.difficultFor === 'enemies' && mover.side === z.side) continue;
       if ((web && isWebZone(z)) || (ice && z.surface === 'ice')) continue;
-      if (spec.difficult && !flying) cost = Math.max(cost, spec.difficult);
+      if (spec.difficult && grounded) cost = Math.max(cost, spec.difficult);
       // Kuyruk A6 (Gust of Wind): hatta büyücüye (başlangıç yerinden) yaklaşan adım iki kat.
       const src = spec.costToward ? state.combatants[z.casterId]?.pos : undefined;
       const from = stepwise && prev ? prev : mover.pos;

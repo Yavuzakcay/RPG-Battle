@@ -37,7 +37,7 @@ import { fail, finish, isTargetable, type CommandResult, type Failure } from './
 import { damageEffects } from './damage-effects';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
-import { isAirborne } from './flight';
+import { groundBound, hovers, isAirborne } from './flight';
 import { standingOn } from './stand';
 
 // ---------------------------------------------------------------------------------------------
@@ -106,6 +106,8 @@ export function ruleHex(state: BattleState, xy: unknown): Offset {
 const tileAt = (state: BattleState, o: Offset): TerrainType => terrainOf(state.map?.tiles[o.row]?.[o.col] ?? '#');
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 const flying = (c: Combatant) => isAirborne(c);
+/** Kuyruk U1a: lav, alev zemini ve derin su süzülene de işler (uçan değil). */
+const lavaSafe = (c: Combatant) => !groundBound(c);
 
 const alive = (c: Combatant) => c.pos !== null && c.life !== 'dead' && (c.hp > 0 || c.regenPending);
 
@@ -341,7 +343,7 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
     }
   }
   const lavaEdge = ruleOf(state, 'lavaEdge');
-  if (lavaEdge && !flying(c) && adjacentToLava(state, c.pos)) {
+  if (lavaEdge && !lavaSafe(c) && adjacentToLava(state, c.pos)) {
     events.push(damageEffect(c, 'lavaEdge', 'lav kenarında sıcak dalga', { dice: text(lavaEdge, 'damage'), type: text(lavaEdge, 'damageType') }, rng));
   }
   const bog = ruleOf(state, 'bog');
@@ -357,7 +359,7 @@ export function turnStartMapEvents(state: BattleState, c: Combatant, rng: Rng): 
     const lp = obj(bog, 'lingeringPoison');
     events.push(damageEffect(c, 'bog', 'batak zehri sürüyor', { dice: text(lp, 'damage'), type: text(lp, 'damageType') }, rng));
   }
-  const water = !flying(c) && !(waterWalks(state, c) && isLiquidTile(tileAt(state, c.pos))) ? sinkingWater(state, c.pos) : undefined;
+  const water = !lavaSafe(c) && !(waterWalks(state, c) && isLiquidTile(tileAt(state, c.pos))) ? sinkingWater(state, c.pos) : undefined;
   if (water && c.heavyArmor) {
     const ev = checkEffect(c, 'deepWater', 'ağır zırhla suda', skill(water.skill), num(water, 'dc'), rng, state);
     if (!ev.roll?.success) {
@@ -390,7 +392,7 @@ export function turnEndMapEvents(state: BattleState, c: Combatant, rng: Rng): Ba
   // Kuyruk K69 (sürüm 53): birden çok tehlikede en kötüsü (ortalama hasarı en yüksek), yine bir kez.
   const hazards = bodyOf(state, c).map((h) => tileAt(state, h)).filter((t) => t.hazard);
   const here = (isMultiHex53(state, c) ? worstHazard(hazards) : hazards[0]) ?? tileAt(state, c.pos);
-  if (here.hazard && !flying(c)) {
+  if (here.hazard && !lavaSafe(c)) {
     events.push(damageEffect(c, 'fire', `${here.name} içinde turu bitirdi`, { dice: here.hazard.damage, type: here.hazard.damageType }, rng));
   }
   const heat = ruleOf(state, 'heat');
@@ -418,9 +420,21 @@ export function turnEndMapEvents(state: BattleState, c: Combatant, rng: Rng): Ba
   return events;
 }
 
+/** Kuyruk U1a: süzülenin girdiği altıgenin olayları (alev zemini, sudan çıkış). */
+function hoverEnterEvents(state: BattleState, c: Combatant, at: Offset, rng: Rng): { events: BattleEvent[]; stop: boolean } {
+  const events: BattleEvent[] = [];
+  const t = tileAt(state, at);
+  if (t.hazard) events.push(damageEffect({ ...c, pos: at }, 'fire', `${t.name} altıgenine girdi`, { dice: t.hazard.damage, type: t.hazard.damageType }, rng));
+  if (c.mapStatus.sink > 0 && !sinkingWater(state, at) && !isBog(state, at)) events.push({ type: 'map_effect', rule: 'deepWater', targetId: c.id, text: 'sudan çıktı', mapStatus: { sink: 0 } });
+  return { events, stop: events.some((e) => e.type === 'map_effect' && (e.hpAfter ?? 1) <= 0) };
+}
+
 /** Yürürken girilen altıgenin olayları; `stop` doğruysa yürüyüş orada biter. */
 export function enterHexEvents(state: BattleState, c: Combatant, at: Offset, rng: Rng): { events: BattleEvent[]; stop: boolean } {
-  if (!state.map || flying(c)) return { events: [], stop: false };
+  if (!state.map || (flying(c) && !hovers(c))) return { events: [], stop: false };
+  // Kuyruk U1a (sürüm 61+): süzülen yalnız alev zemininden (lav gönüllü girilmez) etkilenir; sudan çıkış sayacı sıfırlanır.
+  // Zorlu zemin, buz, çamur, tuzak plakası, çukur, sarmaşık ve diğer yer etkileri işlemez.
+  if (flying(c)) return hoverEnterEvents(state, c, at, rng);
   // Kuyruk K72 (sürüm 60+): duruş yüzeyindeki (sur tepesi, kat) yaratığa zemin etkileri işlemez.
   if ((c.altitudeFt ?? 0) > 0 && standingOn(state, { pos: at, altitudeFt: c.altitudeFt })) return { events: [], stop: false };
   // Kuyruk 19: Water Walk: sıvı altıgende batak/batma yok (sudan çıkış sayacı sıfırlaması aşağıda yine çalışır).
@@ -843,7 +857,7 @@ export function roundStartMapEvents(state: BattleState): BattleEvent[] {
   for (const h of warn.hexes) {
     events.push({ type: 'tile_changed', at: h, to: '~' });
     for (const c of Object.values(state.combatants)) {
-      if (c.pos && sameHex(c.pos, h) && !flying(c) && c.life !== 'dead') events.push({ type: 'fell_into_lava', actorId: c.id, at: h });
+      if (c.pos && sameHex(c.pos, h) && !lavaSafe(c) && c.life !== 'dead') events.push({ type: 'fell_into_lava', actorId: c.id, at: h });
     }
   }
   return events;

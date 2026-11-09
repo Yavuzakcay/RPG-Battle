@@ -8,6 +8,7 @@ import type { BattleEvent, Combatant } from '../battle/types';
 import spriteData from '../../data/efekt-sprites.json';
 import spriteMap from '../../data/sprite-esleme.json';
 import { t } from '../i18n';
+import { hovers } from '../battle/flight';
 
 export type FloatKind = 'fire' | 'poison' | 'cold' | 'acid' | 'hit';
 
@@ -79,7 +80,9 @@ function statusBadges(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<P
   if (c.conditions.includes('Prone')) out.push({ key: 'prone', icon: '⤵', title: S.prone });
   // Görev S1: bitkinlik seviyesi, büyüyle uçuş (kendi uçuş hızı olan yaratıkta rozet yok) ve görünmezlik.
   if ((c.exhaustion ?? 0) > 0) out.push({ key: 'exhaustion', icon: `😩${c.exhaustion}`, title: S.exhaustion(c.exhaustion ?? 0) });
-  if (c.effects?.some((e) => e.fly || e.airborne)) out.push({ key: 'flying', icon: '🪽', title: S.flying });
+  // Kuyruk U1a: süzülen (yere değmez) ayrı simgeyle.
+  if (hovers(c)) out.push({ key: 'flying', icon: '〰', title: S.hovering });
+  else if (c.effects?.some((e) => e.fly || e.airborne)) out.push({ key: 'flying', icon: '🪽', title: S.flying });
   if (c.conditions.includes('Invisible')) out.push({ key: 'invisible', icon: '👁', title: S.invisible });
   // Görev E1: Deafened rozetle (yalnızca görsel).
   if (c.conditions.includes('Deafened')) out.push({ key: 'deafened', icon: '🔇', title: S.deafened });

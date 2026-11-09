@@ -88,7 +88,7 @@ import aiData from '../../data/yapay-zeka.json';
 const REGEN_CUT: number = aiData.yenilenmeKesme;
 const cutsRegen = (type: string | undefined): boolean => type === 'fire' || type === 'acid';
 import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
-import { climbs, fliesOrHovers, isAirborne } from './flight';
+import { climbs, fliesOrHovers, groundBound, isAirborne } from './flight';
 import { altitudeCapFt, climbCapFt, wallHex } from './altitude';
 import { legendaryOf } from './boss';
 import { bodyAt, bodyOf, gap, touchesHexes } from './body';
@@ -1117,16 +1117,17 @@ function areaAttack(state: BattleState, actor: Combatant): Command | null {
 function risk(state: BattleState, actor: Combatant, h: Offset): number {
   let r = dragonRisk(state, actor, h);
   // Görev Y1: tehlikeli yüzey (alev, yanan ağ, zehir bulutu, buz) maliyet olarak; 50'nin altında: kazanç yeterliyse girilir.
-  r += surfaceRisk(state, h, isAirborne(actor));
+  // Kuyruk U1a: süzülen yer yüzeylerinden ve zemin alanlarından etkilenir (`groundBound`).
+  r += surfaceRisk(state, h, !groundBound(actor));
   // Görev S2: patlayacak barut fıçısının yanı (ev kuralı açıksa).
   r += objectRisk(state, h);
   // Kuyruk S2 (sürüm 41): bilinen düşman hasar alanı (Spike Growth); gizli ve fark edilmemişse bilinmez, kaçınılmaz.
   if (ruleVersion(state) >= 41) for (const z of state.map?.zones ?? []) {
     if (z.side === actor.side || !zoneKnownBy(z, actor) || !z.hexes.some((x) => x.col === h.col && x.row === h.row)) continue;
     const sp = zoneSpecOf(z);
-    if (sp?.damage && (sp.on ?? []).some((t) => t === 'move' || t === 'enter') && !(sp.ground && isAirborne(actor))) r += 20;
+    if (sp?.damage && (sp.on ?? []).some((t) => t === 'move' || t === 'enter') && !(sp.ground && !groundBound(actor))) r += 20;
   }
-  if (isAirborne(actor)) return r;
+  if (!groundBound(actor)) return r;
   if (isRiskyHex(state, h)) r += 50;
   if (state.map?.lavaWarning?.hexes.some((w) => w.col === h.col && w.row === h.row)) r += 100;
   const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };

@@ -345,6 +345,9 @@ export const TR_EXTRA = {
       cloud: (base: number): string => `Call Lightning bulutu (taban ${base} ft, 60 ft yarıçap)` },
     // Kuyruk K71c: Hava görünümü (prizma düzeyleri).
     // Kuyruk K72: kat görünümü (çok katlı bina).
+    // Kuyruk U1a: süzülme (yere değmez; en çok N ft) ve zorunlu iniş.
+    u1a: { hoverShort: (ft: number): string => `〰 Süzülüyor · en çok ${ft} ft`, hover: (ft: number): string => `Süzülüyor: yere değmez, en çok ${ft} ft (zorlu zemin, çamur, tuzak, sığ su işlemez; lav, derin su ve zemin alanları işler)`,
+      cap: (ft: number): string => `Uçuş sınırı ${ft} ft`, glide: 'Uçuş yalnız kendi turunda: tur sonunda yere in, yoksa düşersin' },
     k72: { toggle: '⌂ Kat', toggleTitle: 'Kat görünümü: kat seç', panel: 'Kat görünümü', ground: 'Zemin',
       floor: (name: string, ft: number): string => `${name} · ${ft} ft`, hint: 'Seçili katta olmayan yaratıklar soluk. ▲▼ merdiven, ○ delik.' },
     k71c: { toggle: '☁ Hava', toggleTitle: 'Hava görünümü: düzey seç (her düzey 5 ft)', panel: 'Hava görünümü', levels: 'Düzeyler',
@@ -506,7 +509,7 @@ export const TR_EXTRA = {
       incapacitated: 'Etkisiz (Incapacitated): eylem, bonus eylem ve tepki yok; konsantrasyon kesilir',
       broken: 'Çökmüş (Moral 0): hareket ve eylem yok; ona saldırı avantajlı; bir dost toparlayabilir',
       bleeding: 'Kanıyor', restrained: 'Bağlandı (Restrained)', charmed: 'Büyülendi (Charmed)', frightened: 'Korkuyor (Frightened)',
-      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', invisible: 'Görünmez (Invisible)', deafened: 'Sağır (Deafened)' },
+      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', hovering: 'Süzülüyor (yere değmez)', invisible: 'Görünmez (Invisible)', deafened: 'Sağır (Deafened)' },
     outcome: { crit: 'Kritik', hit: 'İsabet', miss: 'Iska', saved: 'Kurtardı', failed: 'Kurtaramadı', resisted: 'Direndi', prone: 'Yere düştü',
       pushed: 'İtildi', escaped: 'Kurtuldu', stuck: 'Kurtulamadı', success: 'Başarılı', failure: 'Başarısız', jumped: 'Atladı', burned: 'Yandı', fell: 'Düştü' },
   },

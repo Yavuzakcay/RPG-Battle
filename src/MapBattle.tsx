@@ -146,7 +146,7 @@ import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
 import { zoneShownTo } from './battle/hiddenZones';
 import { ruleVersion } from './battle/ruleVersion';
 import { heldWeapons, groundItemsNear } from './battle/heldItems';
-import { climbs, fliesOrHovers, flySpeed, spellJumpFt } from './battle/flight';
+import { climbs, fliesOrHovers, flySpeed, hovers, ownFlyCapFt, spellJumpFt } from './battle/flight';
 import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
 import { failText, goalText } from './ui/goalText';
@@ -836,7 +836,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     : active && mode === 'idle' && airOn ? new Map((state.combatants[actorId] ? airReach(state, state.combatants[actorId] as Combatant, airLevel) : []).map((x) => [hexKey(x.to), x.cost] as [string, number]))
     : active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode, exploreOn, explorerId, airOn, airLevel]);
   // Kuyruk K71c: havadaki jetonun yukarı kayması (px; düzey başına, en çok bir jeton yarıçapı) ve seçili düzeyde mi.
-  const airLift = (c: Combatant): number => (cellsOn(state) && (c.altitudeFt ?? 0) > 0 ? Math.min(TOKEN_R * 1.1, TOKEN_R * 0.45 + levelOf(c.altitudeFt ?? 0) * TOKEN_R * 0.1) : 0);
+  // Kuyruk U1a: süzülen (yere değmez) irtifa 0'da da hafif yukarıda ve gölgeli (K71c havadaki jetonla aynı çizim).
+  const airLift = (c: Combatant): number => (cellsOn(state) && (c.altitudeFt ?? 0) > 0 ? Math.min(TOKEN_R * 1.1, TOKEN_R * 0.45 + levelOf(c.altitudeFt ?? 0) * TOKEN_R * 0.1)
+    : (c.altitudeFt ?? 0) === 0 && hovers(c) ? TOKEN_R * 0.25 : 0);
   const inLevel = (c: Combatant): boolean => { const b = bandOf(c); return b.lo <= airLevel && airLevel <= b.hi; };
   const onExit = props.onExit;
   const moved = useRef(false);
@@ -2735,6 +2737,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               {ruleVersion(state) >= 41 && (actor.altitudeFt ?? 0) > 0 && <span>{climbingAloft(actor) ? B.k68.climbing(actor.altitudeFt ?? 0, atCeiling(state, actor)) : B.s2.altitude(actor.altitudeFt ?? 0)}</span>}
               {/* Kuyruk K68b (sürüm 52): tavanlı haritada üst sınır (tavan − boy); düğme sınırda kapalı, nedeni ipucunda. */}
               {(flySpeed(actor) > 0 || climbingAloft(actor)) && ceilingFt(state, actor.pos) !== null && <span>{B.k68.cap(altitudeCapFt(state, actor))}</span>}
+              {/* Kuyruk U1a: süzülme ve yaratık başına uçuş sınırı, zorunlu iniş. */}
+              {hovers(actor) ? <span title={B.u1a.hover(altitudeCapFt(state, actor))}>{B.u1a.hoverShort(altitudeCapFt(state, actor))}</span>
+                : ownFlyCapFt(actor) !== null && ceilingFt(state, actor.pos) === null ? <span>{B.u1a.cap(altitudeCapFt(state, actor))}</span> : null}
+              {actor.effects?.some((e) => e.pkGlide) && flySpeed(actor) > 0 && <span>{B.u1a.glide}</span>}
               {ruleVersion(state) >= 41 && flySpeed(actor) > 0 && (
                 <>
                   {((cmd: Command) => <button className="hud-btn small" disabled={!!tryWhy(cmd)} title={loc(tryWhy(cmd)) ?? undefined} onClick={() => run(cmd)}>{B.s2.up}</button>)({ type: 'vertical_move', actorId, toFt: (actor.altitudeFt ?? 0) + 5 })}

@@ -28,7 +28,7 @@ import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './featur
 import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
-import { climbs, flySpeed, isAirborne, spellJumpFt } from './flight';
+import { climbs, flySpeed, hovers, isAirborne, spellJumpFt } from './flight';
 import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
 import { k9On, dikeyOn, hasHexCeilings } from './vertical';
 import { hasStandData, standHeights, standingOn, surTop } from './stand';
@@ -222,6 +222,8 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   const onCeiling = aloft && atCeiling(state, actor);
   const bodyWall = aloft && isMultiHex53(state, actor);
   const flying = isAirborne(actor);
+  // Kuyruk U1a (sürüm 61+): süzülen lav altıgenine girmez (zorlu zemin ve diğer yer etkileri uçan gibi).
+  const hov = flying && hovers(actor);
   const stormFly = flying && !aloft && stormNow(state);
   // Second-Story Work (Thief) ve Spider Climb (Görev K9c): tırmanma ek maliyeti yok.
   const climber = climbs(actor, state);
@@ -363,7 +365,7 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     const free = freeMove || (!!ward && ward(h));
     const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = (!!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null) || (squeeze && doorAt(h));
-    const terrain = wall ? through : overTop || climbOver ? 1 : enterCost(t, flying);
+    const terrain = wall ? through : overTop || climbOver ? 1 : hov && t.movement === 'deadly' ? null : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
     const base = base0 === null ? null : base0 + lift;
     const enemy = enemyFor(hexKey(h));
@@ -411,13 +413,15 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   const size = sizeOf(state);
   if (sameHex(from, to)) return fail('Zaten bu altıgende.');
   const flying = isAirborne(actor);
+  // Kuyruk U1a (sürüm 61+): süzülen lava gönüllü giremez (yürüyen gibi).
+  const lavaSafe = flying && !hovers(actor);
   // Görev A6: çok altıgenli yaratıkta gövdenin bütün altıgenleri (tek altıgenlide yalnızca hedef).
   for (const h of bodyAt(state, actor, to)) {
     if (!isInside(h, size)) return fail('Harita dışına çıkılamaz.');
     const target = terrainAt(state, h);
     // Kuyruk K72 (sürüm 60+): irtifasındaki duruş yüzeyine (sur tepesi, kat) varılır; zemin harfi sayılmaz.
     const onTop = altitudeOf(actor) > 0 && standHeights(state, h).includes(altitudeOf(actor));
-    if (target.movement === 'deadly' && !flying && !onTop) return fail(`${hexLabel(h)} lav: gönüllü olarak girilemez.`);
+    if (target.movement === 'deadly' && !lavaSafe && !onTop) return fail(`${hexLabel(h)} lav: gönüllü olarak girilemez.`);
     // Kuyruk S2 (sürüm 41, Gaseous Form): kapı aralığında ve başka yaratığın altıgeninde durabilir.
     const s2gas = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.shareSpace);
     const doorGap = ruleVersion(state) >= 41 && actor.effects?.some((e) => e.squeeze) && (state.map?.objects ?? []).some((o) => (o.kind === 'door' || o.kind === 'gate') && o.state !== 'open' && sameHex(o.at, h));

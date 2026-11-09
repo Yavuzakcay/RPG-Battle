@@ -32,7 +32,7 @@ import { bodyAt, bodyOf, gap, isMultiHex } from './body';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import type { CreatureSize } from '../data/types';
-import { climbs, isAirborne } from './flight';
+import { climbs, groundBound, isAirborne } from './flight';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
 import { climbingAloft, fissureDepthAt } from './altitude';
@@ -56,6 +56,8 @@ export function shoveDc(c: Combatant, state?: BattleState): number {
 
 const sizeOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 const flies = (c: Combatant) => isAirborne(c);
+/** Kuyruk U1a: lav süzülene de işler (itilen süzülen lava girer). */
+const lavaSafe = (c: Combatant) => !groundBound(c);
 
 /** `from`dan `to`ya 5 ft itmenin sonucu: gidilecek altıgen ve ne olacağı, ya da engel. */
 export type PushOutcome =
@@ -87,7 +89,7 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
       const th = terrainAt(state, h);
       if (k69 && th.char === 'u' && !flies(target) && fissureDepthAt(state, h) > 0) { if (!pit || distance(h, to) < distance(pit, to)) pit = h; continue; }
       if (th.movement === 'blocked') return { ok: false, reason: `arkada ${th.name.toLowerCase()}` };
-      if (k69 && th.movement === 'deadly' && !flies(target)) lava = true;
+      if (k69 && th.movement === 'deadly' && !lavaSafe(target)) lava = true;
     }
     if (pit) {
       const depth = fissureDepthAt(state, pit);
@@ -125,7 +127,7 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   }
   if (t.movement === 'blocked') return { ok: false, reason: `arkada ${t.name.toLowerCase()}` };
   if (t.movement === 'deadly') {
-    return flies(target) ? { ok: true, to, kind: 'move', fallFeet: 0, note: 'Lav (uçuyor, etkilenmez)' }
+    return lavaSafe(target) ? { ok: true, to, kind: 'move', fallFeet: 0, note: 'Lav (uçuyor, etkilenmez)' }
       : { ok: true, to, kind: 'lava', fallFeet: 0, note: 'Lav! Düşerse ölür' };
   }
   // Kuyruk 26: yükseklik katmanı: seviyeler katmandan; rampadan rampaya düşme yok; düşme hasarı Game Master anahtarıyla;

@@ -31,7 +31,7 @@ import { damageEffects } from './damage-effects';
 import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { saveDamage } from './classTraits';
-import { isAirborne } from './flight';
+import { groundBound } from './flight';
 import { applyEvents } from './reduce';
 import { zoneHexes, zoneSpecOf } from './zones';
 import { houseRule } from './houseRules';
@@ -140,7 +140,7 @@ export function burstEvents(s: BattleState, hexes: Offset[], skip: Set<string>, 
   const cols = s.map?.tiles[0]?.length ?? 0;
   const idx = (c: { pos?: Offset | null }) => (c.pos ? c.pos.row * cols + c.pos.col : 0);
   const victims0 = Object.values(s.combatants).filter((c) => c.pos && touches(s, c, inside) && !skip.has(c.id) && c.hp > 0
-    && isTargetable(c) && !isAirborne(c));
+    && isTargetable(c) && groundBound(c));
   const victims = ordered ? [...victims0].sort((a, b) => idx(a) - idx(b) || a.id.localeCompare(b.id)) : victims0;
   if (!victims.length) return [];
   const roll = raw !== null ? { rolls: [] as number[], total: raw } : rollDice(dice, rollTag(rng, { kind: 'damage', by: actorId }));

@@ -924,6 +924,8 @@ export const en: Strings = {
       highJump: (ft: number): string => `Jump in place (vertical reach +${ft} ft)`, jumped: (ft: number): string => `Jumped: vertical reach +${ft} ft`,
       cloud: (base: number): string => `Call Lightning cloud (base ${base} ft, 60 ft radius)` },
     // Kuyruk K72: floor view (multi-storey building).
+    u1a: { hoverShort: (ft: number): string => `〰 Hovering · max ${ft} ft`, hover: (ft: number): string => `Hovering: off the ground, at most ${ft} ft (difficult terrain, mud, traps and shallow water don't apply; lava, deep water and ground areas do)`,
+      cap: (ft: number): string => `Flight limit ${ft} ft`, glide: 'Flight only on your own turn: land by the end of your turn or you fall' },
     k72: { toggle: '⌂ Floor', toggleTitle: 'Floor view: pick a floor', panel: 'Floor view', ground: 'Ground',
       floor: (name: string, ft: number): string => `${name} · ${ft} ft`, hint: 'Creatures not on the selected floor are faded. ▲▼ stairs, ○ hole.' },
     k71c: { toggle: '☁ Air', toggleTitle: 'Air view: pick a level (each level 5 ft)', panel: 'Air view', levels: 'Levels',
@@ -1075,7 +1077,7 @@ export const en: Strings = {
       incapacitated: 'Incapacitated: no action, Bonus Action or Reaction; Concentration is broken',
       broken: 'Broken (Morale 0): cannot move or act; attacks against it have Advantage; an ally can rally it',
       bleeding: 'Bleeding', restrained: 'Restrained', charmed: 'Charmed', frightened: 'Frightened',
-      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', invisible: 'Invisible', deafened: 'Deafened' },
+      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', hovering: 'Hovering (off the ground)', invisible: 'Invisible', deafened: 'Deafened' },
     outcome: { crit: 'Critical', hit: 'Hit', miss: 'Miss', saved: 'Saved', failed: 'Failed', resisted: 'Resisted', prone: 'Knocked down',
       pushed: 'Pushed', escaped: 'Escaped', stuck: 'Still held', success: 'Success', failure: 'Failure', jumped: 'Jumped', burned: 'Burned', fell: 'Fell' },
   },

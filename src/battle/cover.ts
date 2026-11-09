@@ -24,6 +24,8 @@ import { spells } from '../data';
 import s2rules from '../../data/s2-kurallar.json';
 import dikeyData from '../../data/dikey.json';
 import { katlarOf, slabBetween, standAlt, standingOn } from './stand';
+import { hovers } from './flight';
+import { u1aOn } from './flightPrim';
 import type { BattleState, Combatant } from './types';
 
 
@@ -417,6 +419,11 @@ export function attackHeights(state: BattleState, a: Combatant, t: Combatant): {
  * Havada ya da duvarda tutunan sayılmaz.
  */
 export function highGroundOf(state: BattleState, a: Combatant, t: Combatant): { side: -1 | 0 | 1; ft: number; aloft?: true } | null {
+  const r = highGroundBase(state, a, t);
+  // Kuyruk U1a (sürüm 61+): süzülen (`hover`) yerde sayılmaz, irtifası 0 olsa da (uçanlar gibi K8 almaz, vermez).
+  return r && !r.aloft && u1aOn(state) && (hovers(a) || hovers(t)) ? { side: 0, ft: r.ft, aloft: true } : r;
+}
+function highGroundBase(state: BattleState, a: Combatant, t: Combatant): { side: -1 | 0 | 1; ft: number; aloft?: true } | null {
   if (k72On(state) && a.pos && t.pos && (standingOn(state, a) || standingOn(state, t)) && (!layerActive(state) || heightCombatRule(state))) {
     const sa = standAlt(state, a);
     const st = standAlt(state, t);

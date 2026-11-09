@@ -30,7 +30,7 @@ export const isAirborne = (c: Pick<Combatant, 'fly' | 'effects'> & { climbing?: 
  * hızı, süzülmesiz uçuş etkisi ya da Levitate varsa tam uçan sayılır. Süzülme etkisi yalnız 61+ savaşta oluşur (eski
  * kayıtlarda alan yok: sonuç hep false).
  */
-export function hovers(c: Pick<Combatant, 'fly' | 'effects'>): boolean {
+export function hovers(c: { fly?: number; effects?: Combatant['effects'] }): boolean {
   if ((c.fly ?? 0) > 0 || !c.effects?.length) return false;
   let hov = false;
   for (const e of c.effects) {
@@ -50,7 +50,7 @@ export const groundBound = (c: Pick<Combatant, 'fly' | 'effects'> & { climbing?:
  * Kuyruk U1a (sürüm 61+, `ucus.azamiIrtifaFt`): yaratığın kendi uçuş irtifası sınırı (ft): uçuşunun bütün kaynakları sınırlı
  * etkiyse en büyüğü; kendi uçuş hızı, sınırsız uçuş etkisi ya da Levitate varsa null (haritanın sınırı).
  */
-export function ownFlyCapFt(c: Pick<Combatant, 'fly' | 'effects'>): number | null {
+export function ownFlyCapFt(c: { fly?: number; effects?: Combatant['effects'] }): number | null {
   if ((c.fly ?? 0) > 0 || !c.effects?.length) return null;
   let cap = -1;
   for (const e of c.effects) {

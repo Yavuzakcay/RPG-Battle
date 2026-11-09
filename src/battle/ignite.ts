@@ -24,7 +24,7 @@ import { applyEvents } from './reduce';
 import { surfaceEvent } from './surfaces';
 import { triggerEvents, zoneHexes } from './zones';
 import { OBJECTS } from './objectData';
-import { isAirborne } from './flight';
+import { groundBound } from './flight';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -67,7 +67,7 @@ export function greaseIgniteEvents(state: BattleState, hexes: Offset[], actorId:
     if (fire.type !== 'zone_created') continue;
     const keys = new Set(area.map(hexKey));
     for (const c of Object.values(s.combatants)) {
-      if (!c.pos || c.hp <= 0 || isAirborne(c) || !touches(s, c, keys)) continue;
+      if (!c.pos || c.hp <= 0 || !groundBound(c) || !touches(s, c, keys)) continue;
       const zone = s.map?.zones?.find((x) => x.id === fire.zone.id);
       if (!zone) break;
       const hurt = triggerEvents(s, zone, c.id, rng);

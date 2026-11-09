@@ -29,7 +29,7 @@ import { zoneHexes, zoneSpecOf, triggerEvents } from './zones';
 import { SURFACE_DATA, burstEvents, isWater, registerResolver, shrink, surfaceEvent, surfacesReact, waterChain } from './surfaces';
 import { freeCaptives } from './surfaceMix';
 import { solidBarrierAt } from './barriers';
-import { isAirborne } from './flight';
+import { groundBound } from './flight';
 import { terrainSpellEvents } from './terrainSpell';
 import type { BattleEvent, BattleState, Side, SpellZone, SurfaceKind, SurfaceReaction } from './types';
 
@@ -176,7 +176,7 @@ function applyRow(s0: BattleState, row: InteractionRow, it: Extract<Incoming, { 
     const at = keys(hexes);
     const ix = idxOf(s);
     for (const c of Object.values(s.combatants).filter((x) => x.pos && touches(s, x, at)).sort((a, b) => ix(a.pos as Offset) - ix(b.pos as Offset))) {
-      if (c.hp <= 0 || isAirborne(c) || ctx.burned.has(c.id)) continue;
+      if (c.hp <= 0 || !groundBound(c) || ctx.burned.has(c.id)) continue;
       const live = zonesOf(s).find((x) => x.id === zone.id);
       if (!live) break;
       ctx.burned.add(c.id);

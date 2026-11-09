@@ -15,7 +15,7 @@ import { triggerEvents, zoneHexes } from './zones';
 import { GREASE_SPELL, greaseIgniteEvents } from './ignite';
 import { WIND_VEC } from './forest';
 import { ruleOf } from './maprules';
-import { isAirborne } from './flight';
+import { groundBound } from './flight';
 import type { BattleEvent, BattleState, Side, SpellZone, SurfaceReaction } from './types';
 
 export const MIX_PARAMS = table.params;
@@ -62,7 +62,7 @@ export function freeCaptives(s: BattleState, web: SpellZone, hexes: Offset[], rn
       out.push(ev); cur = applyEvents(cur, [ev]);
       if (burn) {
         const z = cur.map?.zones?.find((x) => x.id === burn.id);
-        const hurt = z && !isAirborne(c) ? triggerEvents(cur, z, c.id, rng) : [];
+        const hurt = z && groundBound(c) ? triggerEvents(cur, z, c.id, rng) : [];
         out.push(...hurt); cur = applyEvents(cur, hurt);
       }
     }
@@ -154,7 +154,7 @@ export function surfaceMixEvents(next: BattleState, events: BattleEvent[], rng: 
       const live = s.map?.zones?.find((x) => x.id === made.id);
       const fromOil = events.some((x) => x.type === 'surface_reacted' && x.reaction === 'ignite' && x.hexes.some((h) => area.has(hexKey(h))));
       if (live && fromOil) for (const c of Object.values(s.combatants)) {
-        if (!c.pos || c.hp <= 0 || isAirborne(c) || !touches(s, c, area)) continue;
+        if (!c.pos || c.hp <= 0 || !groundBound(c) || !touches(s, c, area)) continue;
         push(triggerEvents(s, live, c.id, rng));
       }
     }

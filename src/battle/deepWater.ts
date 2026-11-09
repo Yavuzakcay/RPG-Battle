@@ -11,7 +11,7 @@ import data from '../../data/derin-su.json';
 import { neighbors, type Offset } from '../rules/hex';
 import { terrainOf } from '../map/terrain';
 import { globalRule } from './ruleControl';
-import { isAirborne } from './flight';
+import { groundBound } from './flight';
 import type { BattleState, Combatant } from './types';
 
 const SWIMMERS = new Set<string>(data.swimmers);
@@ -69,7 +69,8 @@ export const isLiquidTile = (t: { char: string; rule?: string }): boolean => t.r
 /** Çok derin suya girebilir mi: uçan/havada, yüzme hızı olan, suda yürüyen. */
 export function canEnterVeryDeep(c: Combatant, state?: BattleState): boolean {
   // Kuyruk 19: Gift of the Depths (Warlock) yüzme hızı verir.
-  return isAirborne(c) || (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths') || !!c.effects?.some((e) => e.freeMove) || swimsByTrait(c, state);
+  // Kuyruk U1a: süzülen derin suya yürüyen gibi (yalnız uçan, yüzen, suda yürüyen).
+  return !groundBound(c) || (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths') || !!c.effects?.some((e) => e.freeMove) || swimsByTrait(c, state);
 }
 
 /** Yol bulma: bu yaratık için çok derin su altıgeni geçilmez mi (mekanik kapalıysa hep false). */
