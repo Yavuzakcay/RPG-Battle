@@ -2669,17 +2669,20 @@ function perchCommand(state: BattleState, actor: Combatant, now: Command | null,
 /**
  * Kuyruk K73b (sürüm 63+, Görev 3): gönüllü düşme kararı (yeni uzun taktik yok). Yalnız duruş yüzeyinde (sur tepesi, kat)
  * ya da duvar yüzünde tutunan, uçmayan yaratık; canı en kötü düşme hasarından (`dusmeCanPayi` × zar × 6) fazlaysa:
- * - hedefe ulaşmak: buradan ve yürüyerek bu tur saldıramıyor; atlayınca saldırabiliyor ya da düşmana yol mesafesi kısalıyor;
+ * - hedefe ulaşmak (yalnız duruş yüzeyinde; duvardakinin yolu K15 kuralında): buradan ve yürüyerek bu tur saldıramıyor;
+ *   atlayınca saldırabiliyor ya da düşmana yol mesafesi kısalıyor;
  * - kaçmak: bitişikte düşman var, canı üçte birin altında, inişte bitişik düşman yok.
  * En az düşülen ft önce.
  */
 function dropCommand(state: BattleState, actor: Combatant, now: Command | null, canAct: boolean): Command | null {
   if (!actor.pos || actor.civilian || !state.map || (isAirborne(actor) && !actor.climbing)) return null;
-  if (!(altitudeOf(actor) > 0 && (standingOn(state, actor) || climbingAloft(actor)))) return null;
+  const standing = altitudeOf(actor) > 0 && standingOn(state, actor);
+  if (!standing && !(altitudeOf(actor) > 0 && climbingAloft(actor))) return null;
   const foes = foesOf(state, actor);
   if (!foes.length) return null;
   const flee = engaged(actor, foes) && actor.hp <= actor.maxHp / 3;
-  if (!flee && (now || !canAct)) return null;
+  // Duvarda tutunanın yolu K15 kuralında (in / ilerle / tepeye çık); bırakma yalnız kaçarken.
+  if (!flee && (now || !canAct || !standing)) return null;
   const plans = dropTargets(state, actor).filter((p) => actor.hp > K73B.dusmeCanPayi * 6 * (p.ft >= 10 ? Math.min(20, Math.floor(p.ft / 10)) : 0))
     .sort((a, b) => a.ft - b.ft || a.to.row - b.to.row || a.to.col - b.to.col);
   if (!plans.length) return null;
