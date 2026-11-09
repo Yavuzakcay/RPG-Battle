@@ -2,6 +2,75 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-09 — Kuyruk K72: tavan bölgeleri, sur üstünde durma (K5), çok katlı bina (kural sürümü 60)
+
+- **Sürüm:** `wip/k72` (`wip/k71d` ba70f21 üstüne). Kural sürümü 59 → 60.
+  - Yeni davranış yalnız 60+ (`heights.ts` `k72On`, `K72_VERSION`). 59 ve altı birebir (`src/sim/k72Regresyon.test.ts`).
+  - `SAVE_VERSION` 22 kalır: yeni olay türü yok. İsteğe bağlı alanlar: `altitude_changed.stand`, `map_effect.katCokuk`, `MapState.katCokuk`.
+- **Görev 0:** `harita/belgeler/K72-DENETIM.md` (bugünkü durum, model önerisi, 12 çelişki).
+- **Tek model "duruş yüzeyi"** (`src/battle/stand.ts`; PLAN K5 "sur yolu K72'de kat olarak"):
+  - Sur tepesi ve kat döşemesi aynı işlevden: `standHeights(h)` = zemin 0 + sur tepesi + döşemeler.
+  - Yaratığın katı ayrı alan değil, irtifasından (`standingOn`). ⚠ PLAN'daki `kat` alanından sapma; kayıt biçimi aynı kalır.
+  - Duran yaratık "yerde"dir: tırmanma işareti yok, komut sonunda düşmez (Prone olsa da), zemin etkileri ona işlemez.
+- **Görev 1, oda tavanı** (`scripts/k72-tavan-bolge.py`, idempotent; `k71-dikey.py` sonunda kendiliğinden çalışır):
+  - Varyant `dikey.odalar` [{ ft, altıgenler }], yalnız 60+.
+  - Okuma sırası: altıgen `tavan` > oda > `tavanBolge` > `tavanFt`.
+  - Otomatik tespit: kapalı alan (K71b) + tek altıgenlik kapı aralığı (iki karşı yanında duvar).
+    - 3–40 altıgen ve kutu doluluğu ≥ 0,6: oda.
+    - 41–100: belirsiz.
+    - Daha büyüğü avlu, tavansız (K71b kararı).
+  - Duvar/kapı altıgenleri tavansız: dışarıdan tırmanılır, tepesinde yürünür (K71a: tavanlı altıgende duvar sonsuz olurdu).
+  - **Sonuç:** otomatik 4 oda (kale-avlu ve kale-baskini'de kapı aralıklı ikişer oda, 15 ft); K71b'nin iki odası aynen.
+  - **Kalan 12 harita:** bina iç mekânı çizilmemiş (dolu duvar bloğu) ya da yalnız avlu.
+    - Liste `harita/belgeler/K72-BOLGE-LISTESI.md`, önizleme `harita/<bolge>/onizleme/<ad>-oda.png` (sütun/satır etiketli).
+    - Kullanıcı bölgeyi `ONAYLI_BOLGE` tablosuna yazar: altıgen listesi ya da dikdörtgen.
+- **Görev 2, sur üstü (K5):**
+  - Varyant `dikey.surUstu` (`s`, `O`). K71b ONAYLI 10/15/25/30 ft duvarlı 14 haritada; 20 ft bina duvarları işaretsiz.
+  - **Tırmanma:**
+    - `climb` ile sura çıkış katmansız haritada da: 1 altıgen + her 5 ft yüzey çarpanı; yerden başlarken Çeviklik zarı (K71b iç işlevi).
+    - Duvarda tutunan, irtifası tepeye eşitken tepeye adım atıp durur.
+    - İniş: `climb` ile tırmanarak, aynı maliyet, zarsız, hasarsız. ⚠ Katman uçurumundan iniş K71d'deki gibi atlama (düşme); sur, tırmanılan yüzey.
+  - **Hareket:** tepede aynı yükseklikteki yüzeye normal maliyet; kenardan yürüyerek inilmez.
+  - **İtme:** aynı yükseklikteki yüzeye kayar. Kenardan itilen, alttaki en yüksek yüzeye tek `fall` ile iner (`PushOutcome.landAlt`).
+  - **K8:** duruş yüzeyindeki yerde sayılır; yükseklik zemin + duruş yüksekliği.
+    - ⚠ Katmansız haritada da uygulanır (anahtarı yok); katmanlı haritada `heightCombat`.
+  - **Siper:** tepedeki, durduğu duvardan siper almaz. ⚠ Mazgal/korkuluk siperi yok.
+  - Dar tepe: K71c hücre kuralı (aynı hücre paylaşılmaz).
+- **Görev 3, çok katlı bina:**
+  - **Veri:** varyant `dikey.katlar` [{ id, ad, en, ft, altıgenler, merdiven, delik, hp }]. Döşeme `ft` altıgen zemininden; alt katın tavanı döşeme.
+  - **Geçiş:**
+    - Merdivende `vertical_move` ile zemin ↔ kat (yürüme, 5 ft = 1 altıgen, tırmanma değil).
+    - Delik döşemesiz: uçan geçer, üstten düşülür.
+    - Başka yoldan geçiş yok: döşeme, birleşik uçuş aramasında, dikey harekette ve Levitate yükselişinde düzey geçişini keser. Gövde döşemenin içinde olamaz.
+  - **Görüş:** döşemenin iki yanındaki uçlar arasında hat kesilir ("döşeme"). Merdiven ve delik açık.
+  - **Düşme ve Levitate bitişi:** alttaki en yüksek duruş yüzeyine.
+  - **Earthquake:** kat döşemesi yapı (can `data/dikey.json` `katDosemesi.hp` 50; katta `hp` ezer). Hasar ≥ can ise alandaki döşeme altıgenleri çöker; üstündekiler tek `fall` ile iner. ⚠ Enkaz ve 12d6 yok.
+  - **YZ:** yeni taktik yok. Bütün düşmanlar başka kattaysa merdivene yürür, merdivende kat değiştirir (kenar).
+  - **Arayüz:** "⌂ Kat" seçici (TR/EN); seçili katta olmayan jetonlar soluk; döşeme, merdiven ▲▼, delik ○ işaretli.
+  - **Fikstür ve taslak:** fikstür `src/map/fixtures/katliBina.ts`. Örnek taslak `harita/belgeler/K72-ORNEK-KATLI-HARITA.json` (yüklenmez). Gerçek katlı haritalar kullanıcıyla.
+  - `floors.ts` (`floorLink`, ayrı harita kat değişimi) aynen.
+- **Ölçüm:**
+  - Regresyon 59 = 60 birebir: 4 senaryo × 30 tohum (`K72_TOHUM=30`); duvarlı 6 harita × 50 tohum (`K72_DUVAR=50`); katmanlı 8 harita × 20 tohum (`harita/belgeler/DENGE.md`).
+  - YZ karar süresi (medyan ms, aynı koşuda 59 → 60, iki koşu birleşik n=22; makine K71d tabanından yavaş):
+    - Mantar 1,67 → 1,65 (−%1)
+    - katmanlı 1,50 → 1,61 (+%7)
+    - uçan düşman 1,46 → 1,52 (+%4)
+    - yakın dövüşlü uçan 1,75 → 1,79 (+%2)
+    - duvarlı yerde 1,94 → 1,88 (−%3)
+    - duvarda 0,51 → 0,56 (+%10)
+    - katlı sahne 0,93 → 0,97 (+%4)
+  - Hepsi ≤ +%15. Sur tepesi okuması zemin harfleri dizisi başına önbellekli (`surTop`); önbelleksiz "duvarda" +%24 idi.
+  - Ana parça 374 742 B (≤ 420 kB). `check:harita` 96/0, `check:ses` 15/0. Tam paket: 355 dosya, 4172 test.
+  - Modül başlatma testi yeşil. `stand.ts` yalnız `vertical`, `heights`, `map/terrain` içe aktarır (döngü yok).
+- **Açık kalanlar:**
+  - Gerçek katlı haritalar kullanıcıyla (fikstür ve taslak var).
+  - 12 harita `ONAYLI_BOLGE` bekliyor (`harita/belgeler/K72-BOLGE-LISTESI.md`).
+  - YZ sur/kat taktiği yok: sura çıkma, tepeyi tutma, kat seçme (K73).
+  - Katlar arası 3B komşuluk ve aura: döşeme görüşü (alan isabeti dahil, siper denetiminden), dikey hareketi, uçuşu, itme/yakalamayı keser. Kalıcı alanlar (`map.zones`) ve aura altıgene bakar, döşemeyi geçer. ⚠
+  - Mazgal/korkuluk siperi yok.
+  - Çok altıgenli gövde (`multiHex`) kat ve sur tepesinde: çapa altıgeni okunur. ⚠
+  - Döşeme yalnız Earthquake ile çöker: başka yapı hasarı yok, enkaz yok.
+
 ## 2026-11-09 — Kuyruk K71d: katman + irtifa birleşmesi, K8 yüksek zemin, K9 zemin terimi, tepedeki okçu (kural sürümü 59)
 
 - **Sürüm:** `wip/k71d` (`wip/k71c` bd7775e üstüne). Kural sürümü 58 → 59.
