@@ -18,5 +18,12 @@
   "k73c": {
     "_aciklama": "Kuyruk K73c (kural sürümü 64+): suRiski: yüzme hızı olmayanın derin su altıgeni risk puanı (yalnız zorunluysa suya girsin; 50'nin altı: kazanç yeterliyse girilir).",
     "suRiski": 15
+  },
+  "k73e": {
+    "_aciklama": "Kuyruk K73e (kural sürümü 65+): YZ kazma ve dalış. kazmaOrani: yer altından ulaşma süresi (kazma hızıyla, kazma + çıkış dahil) yürüme süresinin en çok bu katıysa kazar. kacisCan: canı en çok bu oranda (maxHp) ve yüzeyde tehdit altındaysa, kimse yer altını sezemiyorsa kazıp uzaklaşır. tehditMenzil: menzilli tehdit sayılan uzaklık (altıgen). nefesOrani: batık, su soluyamayan yaratık nefes sınırının bu oranına gelince yüzeye çıkar.",
+    "kazmaOrani": 0.5,
+    "kacisCan": 0.5,
+    "tehditMenzil": 24,
+    "nefesOrani": 0.5
   }
 }

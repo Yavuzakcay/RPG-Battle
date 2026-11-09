@@ -1,17 +1,19 @@
 /**
  * Kuyruk K73d: K73c kurallarının denge ölçümü (63 ↔ 64, aynı tohumlar; DENGE AYARI YOK). Yalnız `K73D_TOHUM` verilince
  * koşar (varsayılan atlanır). PowerShell: `$env:K73D_TOHUM=30; npx vitest run src/sim/k73dOlcum.test.ts`.
- * Çıktı satırı `K73D <senaryo> L<seviye> v<sürüm> kazanç % tur ort. ölü ort. zaman aşımı <n> imza <hash> | ...`.
+ * Çıktı satırı `K73D <senaryo> L<seviye> v<sürüm> kazanç % tur ort. ölü ort. zaman aşımı <n> sayaçlar imza <hash>`.
+ * Sürümler `K73D_SURUM` (varsayılan 63,64; K73e: `64,65`). Kuyruk K73e: sayaçlar durum geçişlerinden (kazma, yer altından
+ * çıkış, dalış, sudan çıkış, boğulma) ve YZ kaçış kararından (`k73eStats.digFlee`).
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { setDefaultRuleVersion } from '../battle/create';
 import { CURRENT_RULES } from '../battle/ruleVersion';
 import { execute } from '../battle';
 import { currentActorId } from '../battle/common';
-import { chooseCommand } from '../battle/ai';
+import { chooseCommand, k73eStats } from '../battle/ai';
 import { contextFor } from '../ui/session';
 import { roundLimit, seeded, setPartyKind, setupBattle } from './balance';
-import { K73D_SCENARIOS, submergeStart } from './k73dSenaryo';
+import { K73D_SCENARIOS, shoreStart, submergeStart } from './k73dSenaryo';
 import type { BattleEvent, BattleState, Command } from '../battle/types';
 import type { Rng } from '../rules/dice';
 
@@ -31,14 +33,29 @@ function hash(text: string): string {
   return (a.toString(16).padStart(8, '0') + b.toString(16).padStart(8, '0')).slice(0, 12);
 }
 
-/** `playBattle` ile aynı döngü (src/sim/balance.ts), olayları da toplar. */
-function play(start: BattleState, rng: Rng, maxRounds: number): { state: BattleState; events: BattleEvent[] } {
+/** Sayaçlar (durum geçişleri): kazma, yer altından çıkış, dalış, sudan çıkış. */
+interface Counts { kazma: number; cikis: number; dalis: number; sudanCikis: number }
+function transitions(before: BattleState, after: BattleState, c: Counts): void {
+  for (const [id, b] of Object.entries(before.combatants)) {
+    const a = after.combatants[id];
+    if (!a || !b.pos || !a.pos) continue;
+    const ba = b.altitudeFt ?? 0, aa = a.altitudeFt ?? 0;
+    if (!b.burrowed && a.burrowed) c.kazma++;
+    else if (b.burrowed && !a.burrowed) c.cikis++;
+    else if (!a.burrowed && !b.burrowed && ba >= 0 && aa < 0) c.dalis++;
+    else if (!a.burrowed && !b.burrowed && ba < 0 && aa >= 0) c.sudanCikis++;
+  }
+}
+
+/** `playBattle` ile aynı döngü (src/sim/balance.ts), olayları ve geçiş sayaçlarını da toplar. */
+function play(start: BattleState, rng: Rng, maxRounds: number, c: Counts): { state: BattleState; events: BattleEvent[] } {
   let state = start;
   const events: BattleEvent[] = [];
   const apply = (cmd: Command): boolean => {
     const actorId = 'actorId' in cmd ? cmd.actorId : '';
     const r = execute(state, cmd, contextFor(state, actorId), rng);
     if (!r.ok) return false;
+    transitions(state, r.state, c);
     state = r.state; events.push(...r.events);
     return true;
   };
@@ -58,7 +75,7 @@ afterEach(() => { setDefaultRuleVersion(CURRENT_RULES); setPartyKind('standart')
 
 const CASES: Array<{ id: string; level: number; party: string }> = [
   { id: 'k73d-kazan', level: 5, party: 'standart' }, { id: 'k73d-kazan', level: 9, party: 'standart' },
-  { id: 'k73d-sualti', level: 5, party: 'standart' },
+  { id: 'k73d-sualti', level: 5, party: 'standart' }, { id: 'k73d-kiyi', level: 5, party: 'standart' },
   { id: 'k73d-firtina', level: 5, party: 'k18-druid' }, { id: 'k73d-firtina', level: 9, party: 'k18-druid' },
 ];
 
@@ -72,26 +89,27 @@ describe.skipIf(!SEEDS)('K73d denge ölçümü: kazan, su altı, fırtına (63 �
         setDefaultRuleVersion(ver);
         setPartyKind(c.party);
         let sig = '';
-        let wins = 0, rounds = 0, dead = 0, timeouts = 0, digs = 0, dives = 0, boguldu = 0, cl = 0, devralma = 0;
+        let wins = 0, rounds = 0, dead = 0, timeouts = 0, boguldu = 0, cl = 0, devralma = 0;
+        const cnt: Counts = { kazma: 0, cikis: 0, dalis: 0, sudanCikis: 0 };
+        const flee0 = k73eStats.digFlee;
         for (let seed = 1; seed <= SEEDS; seed++) {
           const rng = seeded(seed);
           let start = setupBattle(sc, rng, c.level);
           if (c.id === 'k73d-sualti') start = submergeStart(start, ver >= 64);
-          const { state: end, events } = play(start, rng, roundLimit(c.level));
+          if (c.id === 'k73d-kiyi') start = shoreStart(start);
+          const { state: end, events } = play(start, rng, roundLimit(c.level), cnt);
           const dd = Object.values(end.combatants).filter((x) => x.side === 'party' && x.life === 'dead').length;
           const cs = Object.values(end.combatants).map((x) => `${x.id}:${x.hp}:${x.life}:${x.pos ? `${x.pos.col},${x.pos.row}` : '-'}:${x.altitudeFt ?? 0}`).sort();
           sig += `${end.status}|${end.winner ?? ''}|${end.round}|${cs.join(';')}\n`;
           if (end.status === 'finished' && end.winner === 'party') wins++;
           if (end.status !== 'finished') timeouts++;
           rounds += end.round; dead += dd;
-          // Kuralın çalıştığına dair sayaçlar (olay sayısı): kazma, dalış, boğulma, Call Lightning dökümü, devralınan fırtına.
-          digs += events.filter((e) => e.type === 'altitude_changed' && (e as { burrow?: boolean }).burrow).length;
-          dives += events.filter((e) => e.type === 'altitude_changed' && (e as { altitudeFt?: number }).altitudeFt !== undefined && ((e as { altitudeFt: number }).altitudeFt < 0)).length;
           boguldu += events.filter((e) => e.type === 'exhaustion_changed' && String((e as { reason?: string }).reason ?? '').includes('boğulma')).length;
           cl += events.filter((e) => e.type === 'spell_cast' && (e as { label?: string }).label === 'Call Lightning').length;
           devralma += events.filter((e) => e.type === 'zone_created' && (e as { zone: { cloud?: { storm?: unknown } } }).zone.cloud?.storm).length;
         }
-        console.log(`K73D ${c.id} L${c.level} v${ver} kazanc %${Math.round((100 * wins) / SEEDS)} tur ${(rounds / SEEDS).toFixed(1)} olu ${(dead / SEEDS).toFixed(2)} zaman ${timeouts} sayac kazma ${digs} dalis ${dives} bogulma ${boguldu} CL ${cl} devralma ${devralma} imza ${hash(sig)}`);
+        const kacis = k73eStats.digFlee - flee0;
+        console.log(`K73D ${c.id} L${c.level} v${ver} kazanc %${Math.round((100 * wins) / SEEDS)} tur ${(rounds / SEEDS).toFixed(1)} olu ${(dead / SEEDS).toFixed(2)} zaman ${timeouts} sayac kazma ${cnt.kazma} cikis ${cnt.cikis} kacis ${kacis} dalis ${cnt.dalis} sudanCikis ${cnt.sudanCikis} bogulma ${boguldu} CL ${cl} devralma ${devralma} imza ${hash(sig)}`);
       }
       expect(true).toBe(true);
     }, 3_600_000);

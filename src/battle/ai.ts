@@ -23,13 +23,15 @@
  */
 import { canAirMove } from './airMove';
 import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
-import { wallClimbCommand } from './ai/climbAi';
+import { foeField, wallClimbCommand } from './ai/climbAi';
 import { approachField, engaged, highGroundBonus, k73aOn, K73A, landingWanted, riseFt, concentrationFlight } from './ai/k73a';
 import { K73B } from './ai/k73b';
 import { K73C } from './ai/k73c';
+import { K73E } from './ai/k73e';
+import { k73eOn } from './k73eSurum';
 import { k73cOn } from './k73cSurum';
-import { breathesWater, breathLimit, deepWaterHex, mapHasDeepWater, submerged } from './underwaterCore';
-import { BURROW_DEPTH_FT, canBurrow } from './burrow';
+import { breathesWater, breathLimit, deepWaterHex, inWater, mapHasDeepWater, submerged } from './underwaterCore';
+import { BURROW_DEPTH_FT, canBurrow, diggable, tremorsenseFt } from './burrow';
 import { hasSwimSpeed } from './deepWater';
 import { k73bOn } from './adjacency';
 import { cageAim, freeShapeAim, freeShapeFor, freeShapeOf, wallAim } from './freeShape';
@@ -1230,6 +1232,9 @@ function reachable(state: BattleState, actor: Combatant): Spot[] {
     out.push({ to, cost, kind: 'move' });
   }
   const walk = new Set(out.map((x) => hexKey(x.to)));
+  // Kuyruk K73e (sürüm 65+): batıkken ve yer altındayken atlama adayı yok (motor batık atlamada varış hücresini denetlemiyor:
+  // aynı −5 ft hücreye iniş; K73E-DENETIM.md).
+  if (k73eOn(state) && (actor.burrowed || submerged(state, actor))) return out;
   return [...out, ...jumps(state, actor).filter((j) => !walk.has(hexKey(j.to)))];
 }
 
@@ -2077,7 +2082,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   const dropped = k73bOn(state) ? dropCommand(state, actor, now, canAct) : null;
   if (dropped) return dropped;
   // Kuyruk K73c (sürüm 64+): batık nefesi tükenmeden ya da saldıramıyorsa yüzeye; kazan düşman yalnız hedefe ulaşmak için kazar.
-  const k73c = k73cOn(state) ? waterCommand(state, actor, now) ?? burrowCommand(state, actor, now, canAct) : null;
+  // Kuyruk K73e (sürüm 65+): YZ kazma (yaklaşma, kaçış, çıkış) ve dalış (kaçınma, yaklaşma, nefes sınırının yarısında çıkış).
+  const k73c = k73eOn(state) ? waterCommand65(state, actor, now) ?? burrowCommand65(state, actor, now, canAct)
+    : k73cOn(state) ? waterCommand(state, actor, now) ?? burrowCommand(state, actor, now, canAct) : null;
   if (k73c) return k73c;
   // Parti: bu tur yürüyerek çok daha iyi bir saldırı yapabiliyorsa (en az %25 fazla ortalama
   // hasar; örn. savaşçı arbalet yerine kılıç) önce oraya yürür. Güvenli ve en ucuz yerler.
@@ -2717,6 +2724,125 @@ function burrowCommand(state: BattleState, actor: Combatant, now: Command | null
   if (Number.isFinite(approachField(state, actor, foes)(pos))) return null;
   const dig: Command = { type: 'vertical_move', actorId: actor.id, toFt: -BURROW_DEPTH_FT };
   return tryCmd(state, actor, dig).ok ? dig : null;
+}
+
+/** Kuyruk K73e: YZ kazma/dalış sayaçları (yalnız ölçüm; kararı etkilemez). */
+export const k73eStats = { digApproach: 0, digFlee: 0, surface: 0, diveAvoid: 0, diveApproach: 0, airUp: 0 };
+
+/** Yaratığın menzilli saldırısı var mı (silah, canavar saldırısı ya da büyü). */
+const hasRangedOption = (c: Combatant): boolean => c.weaponOptions.some((o) => o.ranged) || c.attacks.some((a) => a.ranged) || c.spellNames.length > 0;
+
+/**
+ * Kuyruk K73e (sürüm 65+): yüzeydeki yaratığa menzilli tehdit: suyun dışında (`inWater` değil), menzilli saldırısı olan,
+ * `tehditMenzil` altıgen içinde bir düşman.
+ */
+function rangedThreat(state: BattleState, actor: Combatant): boolean {
+  if (!actor.pos) return false;
+  const pos = actor.pos;
+  return foesOf(state, actor).some((f) => f.pos && !inWater(state, f) && hasRangedOption(f) && distance(f.pos, pos) <= K73E.tehditMenzil);
+}
+
+/** Yer altını sezebilen (tremorsense ya da kazma hızı) düşman var mı. */
+const someoneSensesUnder = (foes: Combatant[]): boolean => foes.some((f) => (f.burrowFt ?? 0) > 0 || tremorsenseFt(f) > 0);
+
+/**
+ * Kuyruk K73e (sürüm 65+): yer altı yolu: düşmanın yanındaki (çıkılabilir) altıgenlere kazılabilir altıgenlerden uzaklık
+ * (altıgen; `foeField` + kazma adımı). Duvar, kaya, su, döşeme ve Forcecage sınırı kazılmaz (motorun `moveCostFn`'iyle aynı).
+ */
+function burrowField(state: BattleState, actor: Combatant, foes: Combatant[]): (h: Offset) => number {
+  const cost = moveCostFn(state, { ...actor, burrowed: true, altitudeFt: -BURROW_DEPTH_FT });
+  const f = foeField(state, actor, foes.filter((x) => x.pos && x.hp > 0), cost);
+  return (h) => f.get(hexKey(h)) ?? Infinity;
+}
+
+/**
+ * Kuyruk K73e (sürüm 65+, Görev 1): kazma hızı olan yaratığın kazma kararı. Yalnız üç durum:
+ * - (c) ÇIKIŞ: yer altında, bir düşmanın yatayda bitişiğinde: yüzeye çıkar (ardından saldırır). Yer altında ilerlerken en yakın
+ *   düşmanın yanına (çıkışa bir altıgen bırakarak) gider; ilerleyemiyorsa yüzeye çıkar.
+ * - (b) KAÇIŞ: canı ≤ `kacisCan` ve yüzeyde yakın ya da menzilli tehdit altında, düşmanlardan kimse yer altını sezemiyorsa
+ *   (tremorsense, kazma hızı) kazar ve o tur yer altında kalır (hedeflenemez). Sonraki tur (c) ile çıkıp saldırır (vur-kaç).
+ *   ⚠ Aynı tur yer altında uzaklaşma yok: YZ durum tutmaz, "bu tur kazdı" ile "yer altında yaklaştı" ayrılamıyor (salınım).
+ * - (a) YAKLAŞMA: bu tur saldıramıyor ve yürüyerek hiçbir düşmanın yanına yol yok ya da yer altından ulaşma süresi (kazma
+ *   + yol + çıkış, kazma hızıyla) yürüme süresinin en çok `kazmaOrani` katı.
+ * Kazılamayan altıgende aday üretilmez.
+ */
+function burrowCommand65(state: BattleState, actor: Combatant, now: Command | null, canAct: boolean): Command | null {
+  if (!actor.pos || !canBurrow(state, actor) || actor.civilian) return null;
+  const foes = foesOf(state, actor).filter((f) => f.pos && !f.burrowed);
+  if (!foes.length) return null;
+  const pos = actor.pos;
+  const surface: Command = { type: 'vertical_move', actorId: actor.id, toFt: 0 };
+  const near = (h: Offset) => Math.min(...foes.map((f) => distance(h, f.pos as Offset)));
+  const low = actor.hp <= actor.maxHp * K73E.kacisCan;
+  const sensed = someoneSensesUnder(foes);
+  if (actor.burrowed) {
+    if (near(pos) <= 1) { if (tryCmd(state, actor, surface).ok) { k73eStats.surface++; return surface; } return null; }
+    const left = speedHexes(actor) - actor.movementUsed;
+    const spots = reachable(state, actor).filter((sp) => sp.cost <= left - 1 && near(sp.to) < near(pos))
+      .sort((a, b) => near(a.to) - near(b.to) || a.cost - b.cost);
+    const go = firstMove(state, actor, spots);
+    if (go) return go;
+    if (tryCmd(state, actor, surface).ok) { k73eStats.surface++; return surface; }
+    return null;
+  }
+  if (altitudeOf(actor) !== 0 || !diggable(state, pos)) return null;
+  const dig: Command = { type: 'vertical_move', actorId: actor.id, toFt: -BURROW_DEPTH_FT };
+  // (b) kaçış
+  if (low && !sensed && (engaged(actor, foes) || rangedThreat(state, actor))) {
+    if (tryCmd(state, actor, dig).ok) { k73eStats.digFlee++; return dig; }
+  }
+  // (a) yaklaşma
+  if (now || !canAct) return null;
+  const under = burrowField(state, actor, foes)(pos);
+  if (!Number.isFinite(under)) return null;
+  const walk = approachField(state, actor, foes)(pos);
+  const walkTurns = walk / Math.max(1, speedHexes({ ...actor, burrowed: undefined }));
+  const digTurns = (under + 2) / Math.max(1, Math.floor((actor.burrowFt ?? 0) / 5));
+  if (Number.isFinite(walk) && digTurns > walkTurns * K73E.kazmaOrani) return null;
+  if (tryCmd(state, actor, dig).ok) { k73eStats.digApproach++; return dig; }
+  return null;
+}
+
+/**
+ * Kuyruk K73e (sürüm 65+, Görev 2): dalış ve yüzeye çıkış. Derin su yoksa hiçbir şey.
+ * - Batıkken: su soluyamayan nefes sınırının `nefesOrani`na gelince yüzeye çıkar. Saldıracak hedefi yoksa ve suda (derin su
+ *   altıgeninde) hiç düşman yoksa çıkar (kıyıya gitmek için); suda düşman varsa ya da yüzücüye menzilli tehdit sürüyorsa batık kalır.
+ * - Yüzeyde, yüzme hızı olan (yalnız onlar dalar): (a) KAÇINMA: suyun dışından menzilli tehdit varsa dalar (su altı menzilli
+ *   kuralı batık hedefte dezavantaj/ıska); (b) YAKLAŞMA: en yakın düşman batıksa dalar.
+ * Süzülen ve uçan su altı sayılmaz (`inWater`).
+ */
+function waterCommand65(state: BattleState, actor: Combatant, now: Command | null): Command | null {
+  if (!actor.pos || !mapHasDeepWater(state)) return null;
+  if (submerged(state, actor)) {
+    const alt = altitudeOf(actor);
+    const up = (): Command | null => {
+      for (let ft = 0; ft > alt; ft -= 5) {
+        const cmd: Command = { type: 'vertical_move', actorId: actor.id, toFt: ft };
+        if (tryCmd(state, actor, cmd).ok) return cmd;
+      }
+      return null;
+    };
+    const air = !breathesWater(actor) && (actor.mapStatus.breath ?? 0) >= breathLimit(actor) * K73E.nefesOrani;
+    if (air) { const c = up(); if (c) k73eStats.airUp++; return c; }
+    if (now) return null;
+    const foes = foesOf(state, actor);
+    if (foes.some((f) => inWater(state, f))) return null;
+    // Menzilli tehditten dalan yüzücü tehdit sürerken batık kalır (çıkıp yeniden dalma salınımı yok).
+    if (hasSwimSpeed(actor, state) && rangedThreat(state, actor)) return null;
+    return up();
+  }
+  if (!inWater(state, actor) || altitudeOf(actor) !== 0 || !hasSwimSpeed(actor, state)) return null;
+  const dive: Command = { type: 'vertical_move', actorId: actor.id, toFt: -5 };
+  if (rangedThreat(state, actor)) {
+    if (tryCmd(state, actor, dive).ok) { k73eStats.diveAvoid++; return dive; }
+    return null;
+  }
+  const foes = foesOf(state, actor).filter((f) => f.pos);
+  if (!foes.length) return null;
+  const pos = actor.pos;
+  const nearest = foes.reduce((a, b) => (distance(a.pos as Offset, pos) <= distance(b.pos as Offset, pos) ? a : b));
+  if (submerged(state, nearest) && tryCmd(state, actor, dive).ok) { k73eStats.diveApproach++; return dive; }
+  return null;
 }
 
 /**
