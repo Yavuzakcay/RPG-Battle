@@ -36,7 +36,7 @@ import { climbs, isAirborne } from './flight';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
 import { climbingAloft, fissureDepthAt } from './altitude';
-import { landingFt, standHeights, standingOn } from './stand';
+import { katlarOf, landingFt, slabBetween, standHeights, standingOn } from './stand';
 import { collisionDice, collisionOn, forcedMove, MOTION } from './motion';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
@@ -160,6 +160,16 @@ export function pushOutcome(state: BattleState, target: Combatant, from: Offset,
   return { ok: true, to, kind: 'move', fallFeet: 0, note: `5 ft itilir${extra}` };
 }
 
+/**
+ * Kuyruk K72 (sürüm 60+): iki yaratık arasında kat döşemesi var mı (biri döşemenin altında, öbürü üstünde; kendi altıgenlerinde
+ * döşeme). Bitişiklik eylemleri (itme, yakalama) döşemenin içinden yapılmaz. ⚠ Genel 3B bitişiklik K73'te.
+ */
+export function acrossSlab(state: BattleState, a: Combatant, b: Combatant): boolean {
+  if (!a.pos || !b.pos || !katlarOf(state).length) return false;
+  const x = a.altitudeFt ?? 0, y = b.altitudeFt ?? 0;
+  return slabBetween(state, a.pos, x, y) || slabBetween(state, b.pos, x, y);
+}
+
 /** `from`a en yakın, boş `char` altıgeni (eşitse satır, sütun sırası). */
 function nearestFree(state: BattleState, target: Combatant, from: Offset, char: string): Offset | null {
   let best: Offset | null = null;
@@ -246,6 +256,7 @@ export function executeGrapple(state: BattleState, actor: Combatant, targetId: s
   if (target.conditions.includes('Grappled') && target.grapple?.by === actor.id) return fail(`${target.name} zaten yakalı.`);
   if (sizeRank(target.size) > sizeRank(actor.size) + 1) return fail(`${target.name} yakalanamayacak kadar büyük (en çok bir boyut büyük olabilir).`);
   if (state.map && (!actor.pos || !target.pos || gap(state, actor, target) !== 1)) return fail('Yakalamak için hedef bitişik olmalı (5 ft).');
+  if (acrossSlab(state, actor, target)) return fail('Arada kat döşemesi var.');
   const ability: 'str' | 'dex' = target.saves.str >= target.saves.dex ? 'str' : 'dex';
   const dc = shoveDc(actor, state);
   const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
@@ -275,6 +286,7 @@ export function executeShove(state: BattleState, actor: Combatant, targetId: str
   let slam: Offset | null = null;
   if (state.map) {
     if (!actor.pos || !target.pos || gap(state, actor, target) !== 1) return fail('İtmek için hedef bitişik olmalı (5 ft).');
+    if (acrossSlab(state, actor, target)) return fail('Arada kat döşemesi var.');
     if (effect === 'push') {
       const to = shoveHex(actor, target, state);
       out = to ? pushOutcome(state, target, target.pos, to) : { ok: false, reason: 'yön yok' };

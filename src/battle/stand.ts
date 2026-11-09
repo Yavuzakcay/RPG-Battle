@@ -79,12 +79,24 @@ export function stairsAt(state: St, h: Offset): number[] {
   return tab(d).stairs.get(key(h)) ?? [];
 }
 
+// Sur tepesi önbelleği: zemin harfleri dizisi başına (harf değişince yeni dizi gelir), altıgen → tepe.
+const TOPS = new WeakMap<string[], Map<string, number | null>>();
 /** Sur tepesi (ft): geçilmez, `surUstu` harfli, tepesi bilinen duvar; değilse null. */
 export function surTop(state: St, h: Offset): number | null {
   const d = k72On(state) ? dikeyOf(state) : null;
-  if (!d?.surUstu?.length) return null;
+  if (!d?.surUstu?.length || !state.map) return null;
+  let m = TOPS.get(state.map.tiles);
+  if (!m) { m = new Map(); TOPS.set(state.map.tiles, m); }
+  const k = key(h);
+  const hit = m.get(k);
+  if (hit !== undefined) return hit;
+  const v = surTopRaw(state, d, h);
+  m.set(k, v);
+  return v;
+}
+function surTopRaw(state: St, d: MapDikey, h: Offset): number | null {
   const ch = state.map?.tiles[h.row]?.[h.col];
-  if (!ch || !d.surUstu.includes(ch)) return null;
+  if (!ch || !d.surUstu?.includes(ch)) return null;
   const t = terrainOf(ch);
   if (t.movement !== 'blocked' || t.outOfBounds) return null;
   const ez = engelEzme(state, h);

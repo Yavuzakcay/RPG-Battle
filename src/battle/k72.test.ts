@@ -167,9 +167,13 @@ describe('K72 çok katlı bina', () => {
       expect([me(r.state).pos, me(r.state).altitudeFt]).toEqual([H(6, 2), 10]);
     }
   });
-  it('görüş: alt kattaki üst kattakini döşemeden göremez; aynı kattakiler görür', () => {
+  it('görüş: alt kattaki üst kattakini döşemeden göremez, itemez; aynı kattakiler görür', () => {
     const s = bina([A(), G()], { A: [H(5, 3)], G: [H(7, 3), 10] });
     expect(lineOfFire(s, me(s), me(s, 'G'))).toMatchObject({ blocked: true, blockedBy: 'döşeme' });
+    const near = bina([A(), G()], { A: [H(6, 3)], G: [H(6, 2), 10] });
+    const sh = execute(near, { type: 'shove', actorId: 'A', targetId: 'G', effect: 'push' }, P1, high);
+    expect(sh.ok).toBe(false);
+    if (!sh.ok) expect(sh.error).toMatch(/kat döşemesi/);
     const same = bina([A(), G()], { A: [H(5, 3), 10], G: [H(7, 3), 10] });
     expect(lineOfFire(same, me(same), me(same, 'G')).blocked).toBe(false);
     expect(slabBetween(s, H(6), 0, 12)).toBe(true);
