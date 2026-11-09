@@ -147,14 +147,15 @@ describe('K26: yüksek zemin, menzil, siper, görüş', () => {
     expect(rangeBonusFt(st, o(8, 2), o(12, 2))).toBe(5);
     expect(rangeBonusFt(st, o(12, 2), o(8, 2))).toBe(0);
   });
-  it('sırt iki uçtan yüksekse görüş kapalı, eşitse açık; kenar yarım siper', () => {
-    const { st } = scene(o(3, 1), o(5, 1));
+  // Kuyruk K71d: 2B seviye kuralı sürüm 58 ve altında (59+ geometrik: `k71d.test.ts`).
+  it('sırt iki uçtan yüksekse görüş kapalı, eşitse açık; kenar yarım siper (sürüm 58)', () => {
+    const { st } = scene(o(3, 1), o(5, 1), { v: 58 });
     expect(lineOfFire(st, A(st), st.combatants.B as Combatant)).toMatchObject({ blocked: true, blockedBy: 'yükselti' });
-    const off = scene(o(3, 1), o(5, 1), { toggles: { heightSight: false } }).st;
+    const off = scene(o(3, 1), o(5, 1), { toggles: { heightSight: false }, v: 58 }).st;
     expect(lineOfFire(off, A(off), off.combatants.B as Combatant).blocked).toBe(false);
-    const eq = scene(o(4, 0), o(4, 2)).st;
+    const eq = scene(o(4, 0), o(4, 2), { v: 58 }).st;
     expect(lineOfFire(eq, A(eq), eq.combatants.B as Combatant).blocked).toBe(false);
-    const ledge = scene(o(8, 2), o(10, 2)).st;
+    const ledge = scene(o(8, 2), o(10, 2), { v: 58 }).st;
     expect(lineOfFire(ledge, A(ledge), ledge.combatants.B as Combatant).cover).toBe(2);
   });
 });

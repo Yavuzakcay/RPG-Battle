@@ -14,13 +14,14 @@ import { distance, line, sameHex, type Offset } from '../rules/hex';
 import { bodyOf, covers, isMultiHex, isMultiHex53 } from './body';
 import { isTargetable } from './common';
 import { solidWallAt, terrainAt } from './movement';
-import { combatHeightAt, heightSightBlock, heightSightRule, highGroundK8, layerActive, ledgeCover } from './heights';
+import { combatHeightAt, heightAt, heightCombatRule, heightSightBlock, heightSightRule, highGroundK8, katmanOn, layerActive, ledgeCover } from './heights';
 import { ALT, altitudeOf, bodyHeightFt, ceilingFt, eyeFt } from './altitude';
 import { objectAt, OBJECTS } from './objectData';
 import { solidBarrierAt } from './barriers';
 import { ruleVersion } from './ruleVersion';
 import { dikeyOn, engelEzme, harfFt, hasHexCeilings, zeminFt } from './vertical';
 import { spells } from '../data';
+import s2rules from '../../data/s2-kurallar.json';
 import type { BattleState, Combatant } from './types';
 
 
@@ -39,21 +40,47 @@ export interface LineOfFire {
 
 // --- Kuyruk K68c (kural sürümü 52): görüş hattında irtifa -------------------------------------------------------------
 
-/** Hattın iki ucunun yüksekliği (ft): yaratıkta göz (irtifa + boyun yarısı), noktada 0 (zemin). */
-interface Ends { a: number; b: number }
-/** Test için: irtifalı yola kaç kez girildi (iki uç zemindeyken hiç girilmemeli). */
-export const losStats = { altPath: 0 };
+/**
+ * Hattın iki ucunun yüksekliği (ft): yaratıkta göz (irtifa + boyun yarısı), noktada 0 (zemin). Kuyruk K71d (sürüm 59+): `ground`
+ * iki uç yerde (irtifa 0) ve katmanlı harita: yol başına karar (aynı zemin, yolda yüksek altıgen yoksa 2B hızlı yol; değilse
+ * K10 çekirdeği). `feetA`/`feetB`: uçların ayak yüksekliği (irtifa; kenar siperi göz–ayak hattıyla).
+ */
+interface Ends { a: number; b: number; ground?: true; feetB?: number }
+/**
+ * Test için: irtifalı yola kaç kez girildi (iki uç zemindeyken hiç girilmemeli); Kuyruk K71d: `groundFast` katmanlı haritada iki
+ * uç yerdeyken hızlı yola (aynı zemin, düz yol) kaç kez dönüldü.
+ */
+export const losStats = { altPath: 0, groundFast: 0 };
 
 /**
  * Uçların yüksekliği; hızlı yol (null: bugünkü iki boyutlu kod aynen) sürüm < 52'de ya da iki ucun irtifası da tam 0
  * iken. Eksi irtifa (yarık) zeminde sayılmaz. `a`/`b`: uçtaki yaratık (yoksa zemindeki nokta).
+ * Kuyruk K71d (sürüm 59+, K10, tepedeki okçu): katmanlı haritada (`heightSight` açık) iki uç yerdeyken de `ground` uçları.
  */
-function endsOf(state: BattleState, a: Combatant | null | undefined, b: Combatant | null | undefined): Ends | null {
+function endsOf(state: BattleState, a: Combatant | null | undefined, b: Combatant | null | undefined, aEyeFt?: number): Ends | null {
   const aa = a?.altitudeFt ?? 0;
   const bb = b?.altitudeFt ?? 0;
-  if (aa === 0 && bb === 0) return null;
+  if (aa === 0 && bb === 0) {
+    if (!state.map?.heights || !katmanOn(state) || !layerActive(state) || !heightSightRule(state)) return null;
+    return { a: a ? eyeFt(a) : aEyeFt ?? POINT_EYE_FT, b: b ? eyeFt(b) : POINT_EYE_FT, ground: true, feetB: 0 };
+  }
   if (ruleVersion(state) < 52) return null;
-  return { a: a ? eyeFt(a) : 0, b: b ? eyeFt(b) : 0 };
+  // Kuyruk K71d (sürüm 59+): nokta ucu (alan noktası, hedef altıgen) Medium göz yüksekliğinde, nesne ucu (balista) kendi
+  // yüksekliğinde (`aEyeFt`); zeminde 0 ft hat kendi platosunun kenarında kesiliyordu. 52–58'de 0.
+  const k59 = katmanOn(state);
+  const pt = k59 ? POINT_EYE_FT : 0;
+  return { a: a ? eyeFt(a) : k59 ? aEyeFt ?? pt : 0, b: b ? eyeFt(b) : pt, ...(k59 ? { feetB: b ? altitudeOf(b) : 0 } : {}) };
+}
+
+/** Kuyruk K71d: nokta ucunun göz yüksekliği (ft): Medium boyun yarısı (doğrudan veriden: modül başlatma sırasından bağımsız). */
+const POINT_EYE_FT = (s2rules.irtifa.boyFt as Record<string, number>).M! / 2;
+
+/** Kuyruk K71d: katmanlı haritada yol düz mü: iki ucun seviyesi aynı ve aradaki hiçbir altıgen daha yüksek değil (2B hızlı yol). */
+function flatPath(state: BattleState, path: Offset[]): boolean {
+  const z = heightAt(state, path[0] as Offset);
+  if (heightAt(state, path[path.length - 1] as Offset) !== z) return false;
+  for (let i = 1; i < path.length - 1; i++) if (heightAt(state, path[i] as Offset) > z) return false;
+  return true;
 }
 
 let panelFt: number | null = null;
@@ -98,20 +125,27 @@ function obstacleTop56(state: BattleState, h: Offset, t: TerrainType): number {
   return harfFt(state, state.map?.tiles[h.row]?.[h.col]) ?? Infinity;
 }
 
-/** Kuyruk K71a (sürüm 56+): hattın zemin ve çatı verisi (katmanlı haritada zemin yüksekliği; altıgen tavanı varsa çatı). */
-interface Ground { at: (h: Offset) => number; roofs: boolean }
+/**
+ * Kuyruk K71a (sürüm 56+): hattın zemin ve çatı verisi (katmanlı haritada zemin yüksekliği; altıgen tavanı varsa çatı).
+ * Kuyruk K71d (sürüm 59+): `floor` sırtın kesmesi için alt sınır: uçların alçak zemini (eksi seviyeli çukurda da sırt keser;
+ * 58 ve altında 0: yalnız artı zemin).
+ */
+interface Ground { at: (h: Offset) => number; roofs: boolean; v59: boolean }
 const groundOf = (state: BattleState): Ground | null => {
   if (!dikeyOn(state)) return null;
   // Zemin yalnız katmanlı haritada ve Game Master `heightSight` anahtarı açıkken (kapalıyken sırt da 2B'de yok).
   const layered = layerActive(state) && heightSightRule(state);
   const roofs = hasHexCeilings(state);
   if (!layered && !roofs) return null;
-  return { at: layered ? (h) => zeminFt(state, h) : () => 0, roofs };
+  return { at: layered ? (h) => zeminFt(state, h) : () => 0, roofs, v59: !!layered && katmanOn(state) };
 };
-/** Hat altıgende zeminin altında (sırt) ya da altıgenin çatısının üstünde mi (sürüm 56+): kesen adı, yoksa null. */
-function groundBlock(state: BattleState, g: Ground, h: Offset, lh: number): string | null {
+/**
+ * Hat altıgende zeminin altında (sırt) ya da altıgenin çatısının üstünde mi (sürüm 56+): kesen adı, yoksa null. `floor`:
+ * sürüm 59+'da uçların alçak zemini (zemini bundan yüksek olmayan altıgen kesmez), öncesinde 0.
+ */
+function groundBlock(state: BattleState, g: Ground, h: Offset, lh: number, floor = 0): string | null {
   const z = g.at(h);
-  if (z > 0 && lh <= z) return 'yükselti';
+  if (z > floor && lh <= z) return 'yükselti';
   if (g.roofs) {
     const c = ceilingFt(state, h);
     if (c !== null && lh >= z + c) return 'çatı';
@@ -131,12 +165,19 @@ function evaluateAlt(state: BattleState, path: Offset[], ignore: string[], targe
   const ridge = g ? null : heightSightBlock(state, path);
   if (ridge) return { blocked: true, blockedBy: ridge, cover: 0 };
   const n = path.length - 1;
-  const a0 = ends.a + (g ? g.at(path[0] as Offset) : 0);
-  const b0 = ends.b + (g ? g.at(path[n] as Offset) : 0);
+  const za = g ? g.at(path[0] as Offset) : 0;
+  const zb = g ? g.at(path[n] as Offset) : 0;
+  const a0 = ends.a + za;
+  const b0 = ends.b + zb;
+  // Kuyruk K71d (sürüm 59+): sırt alt sınırı uçların alçak zemini; kenar siperi göz–ayak hattıyla (`ledge`).
+  const floor = g?.v59 ? Math.min(za, zb) : 0;
+  const feet = g?.v59 && ends.feetB !== undefined ? ends.feetB + zb : null;
+  let ledge = false;
   for (let i = 1; i < n; i++) {
     const h = path[i] as Offset;
     const lh0 = a0 + ((b0 - a0) * i) / n;
-    if (g) { const gb = groundBlock(state, g, h, lh0); if (gb) return { blocked: true, blockedBy: gb, cover: 0 }; }
+    if (g) { const gb = groundBlock(state, g, h, lh0, floor); if (gb) return { blocked: true, blockedBy: gb, cover: 0 }; }
+    if (feet !== null && !ledge && groundBlock(state, g as Ground, h, a0 + ((feet - a0) * i) / n, floor) === 'yükselti') ledge = true;
     // Engel ve yaratık zeminden ölçülür (altıgenin zemin yüksekliği düşülür).
     const lh = g ? lh0 - g.at(h) : lh0;
     const t = terrainAt(state, h);
@@ -158,7 +199,9 @@ function evaluateAlt(state: BattleState, path: Offset[], ignore: string[], targe
     const own = terrainAt(state, end);
     if (own.cover && !(altitudeOf(target) > obstacleTopFt(state, end, own))) take(own.cover, own.name);
   }
-  if (ledgeCover(state, path)) take(2, 'kaya basamağı');
+  // Kuyruk K71d (sürüm 59+): kenar siperi geometrik: göz–göz hattı açık, gözden hedefin ayağına hat zeminde kesiliyor (hedefin
+  // alt yarısı kenarın ardında; `heightCombat` anahtarı). 58 ve altında 2B seviye kuralı.
+  if (feet !== null ? ledge && heightCombatRule(state) : ledgeCover(state, path)) take(2, 'kaya basamağı');
   return { blocked: false, cover, ...(coverBy ? { coverBy } : {}), ...(over ? { over } : {}) };
 }
 
@@ -167,7 +210,9 @@ export const coverName = (c: Cover): string => COVER_NAME[c];
 
 /** `path` boyunca (uçlar hariç) görüş ve siper; `ignore` listesindekiler araya giren yaratık sayılmaz. */
 function evaluate(state: BattleState, path: Offset[], ignore: string[], target: Combatant, end: Offset | null = target.pos, ends: Ends | null = null): LineOfFire {
-  if (ends) return evaluateAlt(state, path, ignore, target, end, ends);
+  // Kuyruk K71d (sürüm 59+): iki uç yerde, katmanlı harita: düz yolda (aynı zemin, yolda yüksek altıgen yok) 2B hızlı yol.
+  if (ends?.ground && flatPath(state, path)) losStats.groundFast++;
+  else if (ends) return evaluateAlt(state, path, ignore, target, end, ends);
   let cover: Cover = 0;
   let coverBy: string | undefined;
   const take = (c: Cover, by: string) => {
@@ -276,9 +321,12 @@ export function coverFrom(state: BattleState, origin: Offset, target: Combatant,
  * İki altıgen arasında (uçlar hariç) görüşü kesen zeminin adı; açıksa null. İki yan da denenir. Kuyruk K68c: uçta yaratık
  * verilirse (`who.from`/`who.to`) onun gözünden (irtifalı yol); verilmeyen uç zemindeki nokta.
  */
-export function sightBlockedBetween(state: BattleState, from: Offset, to: Offset, who: { from?: Combatant | null; to?: Combatant | null } = {}): string | null {
-  const ends = endsOf(state, who.from, who.to);
-  if (ends) return sightBlockedAlt(state, from, to, ends);
+export function sightBlockedBetween(state: BattleState, from: Offset, to: Offset, who: { from?: Combatant | null; to?: Combatant | null; /** Kuyruk K71d (sürüm 59+): nesne ucunun yüksekliği (ft). */ fromEyeFt?: number } = {}): string | null {
+  const ends = endsOf(state, who.from, who.to, who.fromEyeFt);
+  if (ends && !ends.ground) return sightBlockedAlt(state, from, to, ends);
+  // Kuyruk K71d (sürüm 59+): iki uç yerde, katmanlı haritada düz olmayan yol K10 çekirdeğinden (iki yan da).
+  if (ends?.ground && !(flatPath(state, line(from, to, 1)) && flatPath(state, line(from, to, -1)))) return sightBlockedAlt(state, from, to, ends);
+  if (ends?.ground) losStats.groundFast++;
   const blockedOn = (path: Offset[]) => {
     const ridge = heightSightBlock(state, path);
     if (ridge) return ridge;
@@ -301,12 +349,15 @@ function sightBlockedAlt(state: BattleState, from: Offset, to: Offset, ends: End
     const ridge = g ? null : heightSightBlock(state, path);
     if (ridge) return ridge;
     const n = path.length - 1;
-    const a0 = ends.a + (g ? g.at(path[0] as Offset) : 0);
-    const b0 = ends.b + (g ? g.at(path[n] as Offset) : 0);
+    const za = g ? g.at(path[0] as Offset) : 0;
+    const zb = g ? g.at(path[n] as Offset) : 0;
+    const a0 = ends.a + za;
+    const b0 = ends.b + zb;
+    const floor = g?.v59 ? Math.min(za, zb) : 0;
     for (let i = 1; i < n; i++) {
       const h = path[i] as Offset;
       const lh0 = a0 + ((b0 - a0) * i) / n;
-      if (g) { const gb = groundBlock(state, g, h, lh0); if (gb) return gb; }
+      if (g) { const gb = groundBlock(state, g, h, lh0, floor); if (gb) return gb; }
       const t = terrainAt(state, h);
       if (!(t.blocksSight || t.outOfBounds)) continue;
       if (lh0 - (g ? g.at(h) : 0) > obstacleTopFt(state, h, t)) continue;

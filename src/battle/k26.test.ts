@@ -196,7 +196,9 @@ describe('K26 sim duman testi: 8 harita, kurallar açık ve kapalı', () => {
       const sc = SCENARIOS.find((x) => x.id === id);
       expect(sc, id).toBeTruthy();
       const r = simulate(sc!, 1, 20, 3);
-      expect(['party', 'enemies', null, 'draw']).toContain(r.winner ?? null);
+      // Kuyruk K71d: test çökmeyi denetler; sürüm 59'da buzul-kamp tohum 1 (kurallar açık) 20 turda bitmiyor (yüksek zemin +
+      // kenar siperi + SRD tırmanma + soğuktan bitkinlik): zaman aşımı da çökmesiz sonuçtur.
+      expect(['party', 'enemies', null, 'draw', 'timeout']).toContain(r.winner ?? null);
     }
   }, 120_000);
 });

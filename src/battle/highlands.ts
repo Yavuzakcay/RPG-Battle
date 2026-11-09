@@ -31,6 +31,10 @@ import { getMap } from '../map/maps';
 import { forcedMoveEvents, pushOutcome } from './forced';
 import { downwind } from './wilds';
 import type { BattleEvent, BattleState, Combatant, MapObject, ObjectAction } from './types';
+import nesneler from '../../data/nesneler.json';
+
+/** Kuyruk K71d (sürüm 59+): balista namlusunun zeminden yüksekliği (ft; görüş hattının ucu, `data/nesneler.json` `namluFt`). */
+const BALLISTA_EYE = (nesneler.kinds as Record<string, { namluFt?: number }>).ballista?.namluFt ?? 5;
 
 /** Bu dosyadaki mekaniklerin gerektirdiği kural sürümü. */
 export const K26_VERSION = 12;
@@ -82,7 +86,7 @@ export function executeHighlandsUse(state: BattleState, actor: Combatant, object
   const d = distance(obj.at, target.pos) * 5;
   const [normal, long] = Array.isArray(r.range) ? (r.range as number[]) : [120, 480];
   if (d > (long ?? 480)) return fail(`Hedef menzil dışında (${d} ft).`);
-  const wall = sightBlockedBetween(state, obj.at, target.pos, { to: target });
+  const wall = sightBlockedBetween(state, obj.at, target.pos, { to: target, fromEyeFt: BALLISTA_EYE });
   if (wall) return fail(`Hedef görünmüyor: araya ${wall} giriyor.`);
   const bonus = num(r.attackBonus, 6);
   const mode = d > (normal ?? 120) ? 'disadvantage' : 'normal';
@@ -188,7 +192,7 @@ export function ballistaTarget(state: BattleState, actor: Combatant, obj: MapObj
   if (!r) return null;
   const long = Array.isArray(r.range) ? num((r.range as number[])[1], 480) : 480;
   const foes = Object.values(state.combatants).filter((c) => c.pos && c.side !== actor.side && c.hp > 0 && isTargetable(c)
-    && distance(obj.at, c.pos) * 5 <= long && !sightBlockedBetween(state, obj.at, c.pos, { to: c }) && !c.civilian)
+    && distance(obj.at, c.pos) * 5 <= long && !sightBlockedBetween(state, obj.at, c.pos, { to: c, fromEyeFt: BALLISTA_EYE }) && !c.civilian)
     .sort((a, b) => distance(obj.at, a.pos as Offset) - distance(obj.at, b.pos as Offset) || a.id.localeCompare(b.id));
   return foes[0]?.pos ?? null;
 }
