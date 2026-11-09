@@ -11,6 +11,7 @@
  */
 import { registerVerticalOpportunity } from './verticalHook';
 import { anyAloft, bandGap, bandOf, cellsOn } from './cells';
+import { absBand, k9On } from './vertical';
 import { BEACON_K70_VERSION, beaconMax, healRoll } from './healMax';
 import { afterOpportunityEvents } from './turnHooks';
 import { mechanicsAt } from './spellVersion';
@@ -34,7 +35,7 @@ import { riderExtras, riderOf, riderReplace } from './riders';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { combineModes, environmentSources, invertMode, underwaterSources } from '../rules/modes';
 import { fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, type Failure, damageProfile } from './common';
-import { heightOf } from './cover';
+import { attackHeights, heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { turnKey } from './economy';
 import { celestialStrikeOf } from './celestial';
@@ -228,7 +229,7 @@ export function weaponAttackEvents(
     ...environmentSources(env, option.tag, { weapon: true, ranged: option.ranged }),
     ...attackSources({
       ...sightConditions(actor, target, state, !option.ranged), attackerSide: actor.side,
-      attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target),
+      ...attackHeights(state, actor, target),
       ranged: option.ranged, spell: option.spell, packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
     }),
     ...reach.sources,
@@ -442,9 +443,11 @@ function leavesReach(state: BattleState, o: Combatant, mover: Combatant, reachFt
   if (!o.pos) return false;
   const r = Math.max(1, Math.floor(reachFt / 5));
   // Kuyruk K71c (sürüm 58+, K9): 3B erişim: max(gövde aralığı, hücre bandı aralığı); dikey hareket (aynı altıgen) de çıkar.
-  if (cellsOn(state) && (fromAlt !== undefined || toAlt !== undefined || anyAloft(state))) {
-    const ob = bandOf(o);
-    const d = (pos: Offset, alt: number) => Math.max(gap(state, o, { ...mover, pos }), bandGap(ob, bandOf(mover, alt)));
+  // Kuyruk K71d (sürüm 59+, K9): katmanlı haritada her zaman 3B, bantlar mutlak yükseklikten (zemin + irtifa).
+  const k9 = k9On(state);
+  if (cellsOn(state) && (k9 || fromAlt !== undefined || toAlt !== undefined || anyAloft(state))) {
+    const ob = absBand(state, o);
+    const d = (pos: Offset, alt: number) => Math.max(gap(state, o, { ...mover, pos }), bandGap(ob, k9 ? absBand(state, mover, pos, alt) : bandOf(mover, alt)));
     const a0 = fromAlt ?? mover.altitudeFt ?? 0;
     return d(from, a0) <= r && d(to, toAlt ?? a0) > r;
   }

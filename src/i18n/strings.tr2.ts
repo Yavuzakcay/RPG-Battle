@@ -467,6 +467,7 @@ export const TR_EXTRA = {
     climbable: (ft: number, dc: number, k: number) => `${ft} ft, tırmanılır (Çeviklik DC ${dc}, ×${k})`, unclimbable: 'tırmanılmaz',
     // Kuyruk K69: çok altıgenli hedef.
     bodyHexes: (size: string, n: number) => `${({ L: 'Large', H: 'Huge', G: 'Gargantuan' } as Record<string, string>)[size] ?? size}: ${n} altıgen`, seenOver: (name: string) => `${name} üstünden görünür`,
+    k71dHigh: (ft: number) => `yüksek zemin (+${ft} ft): avantaj`, k71dLow: (ft: number) => `alçak zemin (−${ft} ft): dezavantaj`, k71dAloft: 'yüksek zemin yok (havada/yüzde)',
     hideSpot: (b: number) => `gizlenme yeri${b ? ` +${b}` : ''}`,
     hideYes: (what: string, b: number): string => `Saklanılabilir: evet (${what}${b ? ` +${b}` : ''})`,
     hideNo: (why: string): string => `Saklanılabilir: hayır (${why})`,

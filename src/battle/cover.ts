@@ -14,7 +14,7 @@ import { distance, line, sameHex, type Offset } from '../rules/hex';
 import { bodyOf, covers, isMultiHex, isMultiHex53 } from './body';
 import { isTargetable } from './common';
 import { solidWallAt, terrainAt } from './movement';
-import { combatHeightAt, heightSightBlock, heightSightRule, layerActive, ledgeCover } from './heights';
+import { combatHeightAt, heightSightBlock, heightSightRule, highGroundK8, layerActive, ledgeCover } from './heights';
 import { ALT, altitudeOf, bodyHeightFt, ceilingFt, eyeFt } from './altitude';
 import { objectAt, OBJECTS } from './objectData';
 import { solidBarrierAt } from './barriers';
@@ -326,4 +326,15 @@ function sightBlockedAlt(state: BattleState, from: Offset, to: Offset, ends: End
 export function heightOf(state: BattleState, c: Combatant): number {
   if (state.map && c.pos) return state.map.heights ? combatHeightAt(state, c.pos) : terrainAt(state, c.pos).height;
   return c.height;
+}
+
+/**
+ * Saldırı bağlamının yükseklik çifti (`AttackContext.attackerHeight/targetHeight`). Kuyruk K71d (sürüm 59+, K8; katmanlı harita,
+ * `heightCombat` açık): mutlak zemin farkı ≥ 10 ft ve iki uç yerdeyken (irtifa 0) yüksek zemin; havadaki/yüzdeki sayılmaz.
+ * Kural dışında eski seviye karşılaştırması (`heightOf`).
+ */
+export function attackHeights(state: BattleState, a: Combatant, t: Combatant): { attackerHeight: number; targetHeight: number } {
+  const k8 = highGroundK8(state, a, t);
+  if (k8) return { attackerHeight: k8.side, targetHeight: 0 };
+  return { attackerHeight: heightOf(state, a), targetHeight: heightOf(state, t) };
 }

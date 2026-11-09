@@ -11,6 +11,7 @@ import { stormRangeBonusFt } from './desert';
 import { againstStrongWind } from './forest';
 import { gap } from './body';
 import { reachFt } from './altitude';
+import { k9Ft } from './vertical';
 import { isIncapacitated } from '../rules/conditions';
 import { distance, line } from '../rules/hex';
 import { highJumpReachFt, solidWallAt } from './movement';
@@ -82,7 +83,8 @@ export function checkReach(
   // Kuyruk S2 (sürüm 41): irtifa farkı (yatay uzaklıkla büyüğü).
   // Kuyruk K68b (sürüm 52): bu tur yerinde yüksek zıplayan (Jump) yakın dövüşte yukarıdakine zıplama yüksekliği kadar yaklaşır.
   const hj = reach.kind === 'melee' ? highJumpReachFt(state, attacker) : 0;
-  const up = (target.altitudeFt ?? 0) - (attacker.altitudeFt ?? 0);
+  // Kuyruk K71d (sürüm 59+, K9): mutlak yükseklik farkı (katmanlı haritada zemin dahil).
+  const up = k9Ft(state, target) - k9Ft(state, attacker);
   const ft = hj && up > 0 ? Math.max(d * 5, up - hj) : reachFt(state, attacker, target, d * 5);
   const sources: ModeSource[] = [];
   // Gizlenmiş saldıran görünmez sayılır: saldırı zarında avantaj (ardından ortaya çıkar).
@@ -94,7 +96,7 @@ export function checkReach(
   } else {
     if (ft > reach.longFt) return fail(`Hedef menzil dışında: ${feetText(d)}, en uzak menzil ${reach.longFt} ft.`);
     // Kuyruk 26: 2+ seviye üstten menzilli saldırıda normal menzil uzar (yükseklik katmanı, yüksek zemin anahtarı).
-    if (ft > reach.normalFt + rangeBonusFt(state, attacker.pos, target.pos) + stormRangeBonusFt(state, attacker.pos, target.pos)) sources.push({ effect: 'disadvantage', reason: 'Uzun menzil' });
+    if (ft > reach.normalFt + rangeBonusFt(state, attacker.pos, target.pos, { a: attacker, t: target }) + stormRangeBonusFt(state, attacker.pos, target.pos)) sources.push({ effect: 'disadvantage', reason: 'Uzun menzil' });
     if (enemyAdjacent(state, attacker)) sources.push({ effect: 'disadvantage', reason: 'Yanında düşman (menzilli saldırı)' });
     // Gece kuyruğu 2 (K28 ortak): şiddetli rüzgâra karşı menzilli saldırı (Game Master: rüzgâr şiddeti; kural sürümü 7).
     if (againstStrongWind(state, attacker.pos, target.pos)) sources.push({ effect: 'disadvantage', reason: 'Şiddetli rüzgâra karşı' });

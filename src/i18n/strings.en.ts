@@ -1041,6 +1041,7 @@ export const en: Strings = {
     blocksSightTo: (ft: number) => `blocks sight up to ${ft} ft`,
     climbable: (ft: number, dc: number, k: number) => `${ft} ft, climbable (Dexterity DC ${dc}, ×${k})`, unclimbable: 'unclimbable',
     bodyHexes: (size: string, n: number) => `${({ L: 'Large', H: 'Huge', G: 'Gargantuan' } as Record<string, string>)[size] ?? size}: ${n} hexes`, seenOver: (name: string) => `seen over: ${name}`,
+    k71dHigh: (ft: number) => `high ground (+${ft} ft): advantage`, k71dLow: (ft: number) => `low ground (−${ft} ft): disadvantage`, k71dAloft: 'no high ground (airborne/climbing)',
     hideSpot: (b: number) => `hiding spot${b ? ` +${b}` : ''}`,
     hideYes: (what: string, b: number) => `Can hide: yes (${what}${b ? ` +${b}` : ''})`,
     hideNo: (why: string) => `Can hide: no (${why})`,

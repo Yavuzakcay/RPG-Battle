@@ -5,7 +5,7 @@
  * önizlemesi motorun menzil/siper/görüş denetimini kullanır.
  */
 import { climbOn, surfaceAt } from '../battle/climbing';
-import { heightAt, isRamp, levelFeet } from '../battle/heights';
+import { heightAt, highGroundK8, isRamp, levelFeet } from '../battle/heights';
 import { OBJECTS, objectAt } from '../battle/objectData';
 import { concealed, shownTerrainName } from '../battle/hiddenObjects';
 import { bodyOf, isMultiHex } from '../battle/body';
@@ -146,10 +146,18 @@ function previewText(state: BattleState, actor: Combatant, target: Combatant, re
   if (isMultiHex(state, target)) parts.push(V.bodyHexes(target.size, bodyOf(state, target).length));
   // Kuyruk K68c: görüş hattı engelin üstünden (irtifa).
   if (r.over) parts.push(V.seenOver(r.over));
-  const ha = heightOf(state, actor);
-  const ht = heightOf(state, target);
-  if (ha > ht) parts.push(V.highGround);
-  if (ha < ht) parts.push(V.lowGround);
+  // Kuyruk K71d (sürüm 59+, K8): yüksek zemin tek satır: ft farkıyla; havadaki/yüzdeki için "sayılmaz".
+  const k8 = highGroundK8(state, actor, target);
+  if (k8) {
+    if (k8.aloft && Math.abs(k8.ft) >= 10) parts.push(V.k71dAloft);
+    else if (k8.side > 0) parts.push(V.k71dHigh(k8.ft));
+    else if (k8.side < 0) parts.push(V.k71dLow(-k8.ft));
+  } else {
+    const ha = heightOf(state, actor);
+    const ht = heightOf(state, target);
+    if (ha > ht) parts.push(V.highGround);
+    if (ha < ht) parts.push(V.lowGround);
+  }
   for (const s of r.sources) parts.push(`${s.reason} (${s.effect === 'advantage' ? V.adv : V.dis})`);
   return { ok: true, text: parts.join(' · ') };
 }

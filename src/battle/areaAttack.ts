@@ -25,6 +25,8 @@ import { getEnvironment } from '../data';
 import type { Cover } from '../map/terrain';
 import { fail, finish, isTargetable, type CommandResult, type Failure, damageProfile, isIntangible } from './common';
 import { coverFrom, sightBlockedBetween } from './cover';
+import { areaOriginFt, areaReachesAltitude } from './altitude';
+import { katmanOn } from './heights';
 import { damageEffects } from './damage-effects';
 import { attackEffect, saveMode, timedCondition } from './durations';
 import { saveDice } from './effectDice';
@@ -96,8 +98,11 @@ export interface AreaSave {
 
 
 /** Alandaki her hedefin save'i ve hasarı (hasar bir kez atılır); `area_used` olayıyla başlar. */
-export function areaSaveEvents(state: BattleState, actor: Combatant, pick: AreaPick, spec: AreaTargetSpec, save: AreaSave, rng: Rng,
+export function areaSaveEvents(state: BattleState, actor: Combatant, pick0: AreaPick, spec: AreaTargetSpec, save: AreaSave, rng: Rng,
   aim: Offset | null): BattleEvent[] {
+  // Kuyruk K71d (sürüm 59+, K9; K68 açığı): canavar nefesi ve Dragonborn alanı büyüyle aynı dikey kapsamda (çıkış yüksekliğinden).
+  const fromFt = katmanOn(state) ? areaOriginFt(state, actor, spec, pick0.origin) : undefined;
+  const pick = fromFt === undefined ? pick0 : { ...pick0, reached: pick0.reached.filter((x) => areaReachesAltitude(state, spec, x.c, fromFt)) };
   const env = getEnvironment(state.environmentId);
   const reasons = environmentSources(env, `${actor.casterTag} ${save.label}`.toLowerCase());
   const mode = invertMode(combineModes(reasons));

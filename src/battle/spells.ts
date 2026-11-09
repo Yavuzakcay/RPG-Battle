@@ -26,7 +26,7 @@ import { formatDice, parseDice, rollD20, rollDie, rollDice, rollTag, type Rng } 
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
 import { checkReach, spellReach } from './range';
-import { heightOf, sightBlockedBetween } from './cover';
+import { attackHeights, sightBlockedBetween } from './cover';
 import { AXIAL_DIRECTIONS, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { hasDarkness, inShadowAt, litHexes, ruleOf } from './maprules';
 import { globalRule } from './ruleControl';
@@ -49,7 +49,8 @@ import { castBarrier } from './castBarrier';
 import { teleportEvent, teleportProblem } from './teleport';
 import { askChoice } from '../rules/choice';
 import { gap } from './body';
-import { altitudeOf, areaReachesAltitude, levitateRiseEvents } from './altitude';
+import { altitudeOf, areaOriginFt, areaReachesAltitude, levitateRiseEvents } from './altitude';
+import { katmanOn } from './heights';
 import { quakeCastEvents } from './quake';
 import { executeLevitateObject, executeResizeObject, illusionEvents, recallBlade } from './s2spells';
 import { dropEvents, handsOn, heldMetal, heldWeapons, touchesMetal, wearsMetal } from './heldItems';
@@ -200,7 +201,9 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   // Kuyruk S2 (sürüm 41): alanın ulaşmadığı irtifadaki yaratık etkilenmez.
   // Kuyruk K68b (Call Lightning): yaratık seçilince nokta onun irtifasında; noktanın 5 ft içi (dikeyde de) etkilenir.
   const pointAlt = cloud && named ? altitudeOf(named) : 0;
-  const atAlt = (c: Combatant) => (pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : !spell.area || areaReachesAltitude(state, spell.area, c));
+  // Kuyruk K71d (sürüm 59+, K9): alanın çıkış yüksekliğinden (yaratıktan çıkanda yaratığın, noktadan çıkanda noktanın zemini).
+  const fromFt = katmanOn(state) ? areaOriginFt(state, actor, area, pick.origin) : undefined;
+  const atAlt = (c: Combatant) => (pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : !spell.area || areaReachesAltitude(state, spell.area, c, fromFt));
   const reached = pick.reached.filter((x) => !spared.has(x.c.id) && atAlt(x.c)).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
   if (named && !reached.some((x) => x.c.id === named.id)) {
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
@@ -844,7 +847,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         ...environmentSources(env, tag),
         ...attackSources({
           ...sightConditions(actor, t, current, !rangedSpell), attackerSide: actor.side,
-          attackerHeight: heightOf(current, actor), targetHeight: heightOf(current, t), ranged: rangedSpell, spell: true,
+          ...attackHeights(current, actor, t), ranged: rangedSpell, spell: true,
           targetAsleep: t.asleep === true,
         }),
         ...rangeSources,

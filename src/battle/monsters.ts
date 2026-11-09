@@ -22,7 +22,7 @@ import { afterAttackMarks, elusiveFilter, saveDamage, traitSources } from './cla
 import { applyEvents } from './reduce';
 import { damagePenalty } from './effects';
 import { checkReach, monsterAttackReach } from './range';
-import { heightOf } from './cover';
+import { attackHeights } from './cover';
 import { isUnderwater } from './maprules';
 import { distance, type Offset } from '../rules/hex';
 import { executeMonsterArea, monsterAreaEvents } from './areaAttack';
@@ -131,7 +131,7 @@ export function monsterAttackEvents(
       ...environmentSources(env, tag, { weapon: true, ranged: atk.ranged }),
       ...attackSources({
         ...sightConditions(actor, target, state, !atk.ranged), attackerSide: actor.side,
-        attackerHeight: heightOf(state, actor), targetHeight: heightOf(state, target), ranged: atk.ranged, spell: false,
+        ...attackHeights(state, actor, target), ranged: atk.ranged, spell: false,
         packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
       }),
       ...inReach.sources,

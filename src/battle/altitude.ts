@@ -28,7 +28,8 @@ import { neighbors, type Offset } from '../rules/hex';
 import { bodyAt, isMultiHex53 } from './body';
 import { maps } from '../map/maps';
 import { terrainAt } from './movement';
-import { dikeyOn, tavanEzme } from './vertical';
+import { absBand, dikeyOn, k9Ft, k9On, tavanEzme } from './vertical';
+import { katmanOn } from './heights';
 import { obstacleTopFt } from './cover';
 import { climbOn, dexClimbMove, dexClimberHolds } from './climbing';
 import { bandGap, bandOf, bandsOverlap, cellsOn } from './cells';
@@ -42,8 +43,11 @@ export const altitudeOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => rule
 export const altitudeOf = (c: Pick<Combatant, 'altitudeFt'> | undefined): number => c?.altitudeFt ?? 0;
 
 /** Erişim uzaklığı (ft): yatay uzaklık ile irtifa farkının büyüğü (sürüm 41+; öncesinde yalnız yatay). */
-export function reachFt(state: Pick<BattleState, 'kuralSurumu'>, a: Combatant, b: Combatant, flatFt: number): number {
+export function reachFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, a: Combatant, b: Combatant, flatFt: number): number {
   if (!altitudeOn(state)) return flatFt;
+  // Kuyruk K71d (sürüm 59+, K9): katmanlı haritada bantlar mutlak yükseklikten (zemin + irtifa): 20 ft'lik uçurumun altı ile
+  // üstü arası 20 ft (Medium).
+  if (k9On(state)) return Math.max(flatFt, bandGap(absBand(state, a), absBand(state, b)) * 5);
   // Kuyruk K71c (sürüm 58+, K9): dikey bileşen hücre bantları arası düzey aralığı (alt hücre − öbürünün üst hücresi);
   // Medium/Small/Tiny için |Δirtifa| ile aynı, büyük gövde boyunca yakındır.
   if (cellsOn(state)) return Math.max(flatFt, bandGap(bandOf(a), bandOf(b)) * 5);
@@ -65,14 +69,38 @@ export function altitudeInZone(state: Pick<BattleState, 'kuralSurumu'>, z: Spell
   return a <= zoneTopFt(z, spec);
 }
 
-/** Alan büyüsü (küre, küp, silindir, koni, çizgi) bu irtifaya ulaşır mı. */
-export function areaReachesAltitude(state: Pick<BattleState, 'kuralSurumu'>, area: { shape: string; sizeFt: number; heightFt?: number }, c: Combatant): boolean {
+/**
+ * Alan büyüsü (küre, küp, silindir, koni, çizgi) bu irtifaya ulaşır mı. Kuyruk K71d (sürüm 59+, K9): `fromFt` alanın çıkış
+ * yüksekliği (`areaOriginFt`); fark = yaratığın K9 yüksekliği − çıkış. Yukarıdaki için eski kural (silindir yüksekliği, çizgi
+ * 5 ft, diğerleri boyut); aşağıdaki için mutlak fark: küre/küp/koni boyutu, çizgi 5 ft, silindir tabanının altına inmez.
+ */
+export function areaReachesAltitude(state: Pick<BattleState, 'kuralSurumu' | 'map'>, area: { shape: string; sizeFt: number; heightFt?: number }, c: Combatant, fromFt?: number): boolean {
+  if (fromFt !== undefined && katmanOn(state)) {
+    const off = k9Ft(state, c) - fromFt;
+    if (off >= 0) return areaReachesOffset(area, off);
+    if (area.heightFt !== undefined) return false;
+    return -off <= (area.shape === 'line' ? 5 : area.sizeFt);
+  }
   const a = altitudeOf(c);
   if (!a || !altitudeOn(state)) return true;
   if (area.heightFt !== undefined) return a <= area.heightFt;
   if (area.shape === 'line') return a <= 5;
   return a <= area.sizeFt;
 }
+
+/**
+ * Kuyruk K71d (sürüm 59+): alanın çıkış yüksekliği (ft): yaratıktan çıkan alan (koni, çizgi, yayılım) yaratığın K9 yüksekliği
+ * (zemin + irtifa), noktadan çıkan alan noktanın zemini.
+ */
+export const areaOriginFt = (state: Pick<BattleState, 'kuralSurumu' | 'map'>, actor: Combatant, spec: { origin?: string; shape: string }, origin: Offset): number =>
+  (spec.origin === 'point' ? k9Ft(state, { pos: origin, altitudeFt: 0 }) : k9Ft(state, actor));
+
+const areaReachesOffset = (area: { shape: string; sizeFt: number; heightFt?: number }, a: number): boolean => {
+  if (!a) return true;
+  if (area.heightFt !== undefined) return a <= area.heightFt;
+  if (area.shape === 'line') return a <= 5;
+  return a <= area.sizeFt;
+};
 
 const levitateOn = (c: Combatant | undefined) => c?.effects?.find((e) => e.levitate);
 
