@@ -2,6 +2,31 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K73b: çok turlu tırmanış, 3B bitişiklik, gönüllü düşme, suya düşme (2026-11-09; ölçüm, denge ayarı yok)
+
+Kural sürümü 62 ↔ 63, aynı tohumlar (3. seviye standart parti). Sürüm 62 K73b öncesi ağaçla (`wip/k73a` 5b26c3c) birebir
+aynı: 18 senaryonun hepsinde imza eşit. Parti kazanma %, ortalama tur:
+
+| Senaryo | Tohum | 62 | 63 | Fark |
+|---|---:|---:|---:|---:|
+| Çöl, Kale, Mağara, Orman | 30 | 77 / 11,4 · 80 / 9,3 · 80 / 8,3 · 63 / 7,3 | aynı (imza eşit) | 0 |
+| Kale avlusu (savunma), Kale İç Avlusu, Dış Halka, Kasaba Hanı | 50 | 100 / 6,9 · 100 / 3,3 · 100 / 2,1 · 100 / 3,3 | aynı | 0 |
+| Kale Baskını | 50 | 42 / 7,6 | 42 / 7,6 | 0 |
+| Ork Kampı | 50 | 88 / 11,1 | 88 / 11,3 | 0 |
+| Buzul — Açık, Kamp | 20 | 85 / 6,8 · 100 / 8,1 | aynı | 0 |
+| Buzul — Kayalık | 20 | 70 / 7,0 | 70 / 6,3 | 0 |
+| Buzul — Tapınak | 20 | 70 / 6,5 | **60** / 5,9 | **−10** ⚠ |
+| Dağ — Karakol | 20 | 20 / 8,6 | 15 / 8,8 | −5 |
+| Dağ — Kayalık | 20 | 85 / 8,1 | 80 / 7,8 | −5 |
+| Dağ — Köprü, Nöbetçi | 20 | 65 / 11,2 · 100 / 6,5 | aynı | 0 |
+
+**Ayrıştırma:**
+- Buzul — Tapınak: kaynak Görev 5. Uçan buz mephitleri (Frost Breath, menzilli canavar saldırısı) yerdeki yakın dövüşçülerin erişiminin üstüne (10 ft) yükselip oradan nefes veriyor. Düşman yükselmesi kapalıyken 63 = 62 (imza eşit, %70).
+- Dağ — Karakol ve Dağ — Kayalık (−5): katmanlı haritada 3B bitişiklik (Görev 2). Basamak üstündeki/altındaki düşman artık "yanında" sayılmıyor: menzilli saldırı dezavantajı, Sneak Attack dostu, itme. Parti silah/hedef seçimi değişiyor. Düşman yükselmesi kapalıyken de aynı.
+- Buzul — Kayalık: sonuç aynı, tur 7,0 → 6,3 (yükselme ve bitişiklik birlikte).
+- İlk denemede Kale −17 idi: düşmanlar yürünür yol varken sura çok turlu tırmanıyordu. Yürüme getirisi koşuluyla (`perchMulti`) giderildi; 63 = 62.
+- Ayar "Dungeondex öncesi tam test turu"na.
+
 ## Kuyruk K73a: YZ dikey taktiği (2026-11-09; ölçüm, denge ayarı yok)
 
 Kural sürümü 61 ↔ 62, aynı tohumlar (3. seviye standart parti). Sürüm 61 eski kodla birebir aynı (imza karşılaştırması).

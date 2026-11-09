@@ -2,6 +2,129 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-09 — Kuyruk K73b: çok turlu sur tırmanışı, 3B bitişiklik, gönüllü düşme, suya düşme (kural sürümü 63)
+
+- **Sürüm:** `wip/k73b` (`wip/k73a` 5b26c3c üstüne). Kural sürümü 62 → 63.
+  - Yeni davranış yalnız 63+ (`src/battle/adjacency.ts` `k73bOn`, `K73B_VERSION`). 62 ve altı birebir.
+  - `SAVE_VERSION` 22 kalır: yeni olay türü yok. Yeni komut `jump_down` yalnız 63+'da kabul edilir. Yeni tepki seçeneği kimliği `suya-dusus` (`reaction_used`).
+  - YZ parametreleri `data/yapay-zeka.json` `k73b`; suya düşme DC'si `data/dikey.json` `suyaDusme`.
+- **Görev 0:** `harita/belgeler/K73B-DENETIM.md`. İçerik:
+  - bitişiklik kullanım yerleri (19 satır);
+  - tırmanma durumu;
+  - 8 `fall` çağrı yeri;
+  - su verisi;
+  - K72 kapatmaları;
+  - 13 çelişki.
+- **Görev 1, çok turlu tırmanış (`climb.ts` `partialRise`, `partialDescent`):**
+  - `climb` sura ya da uçuruma hareket yetmiyorsa reddetmez. Yüzde, kalan hareketin yettiği kadar yükselir: her 5 ft yüzeyin çarpanı kadar altıgen (SRD).
+  - Çeviklik zarı yerden başlarken bir kez atılır (K71b `climbAttempt`). Tutmazsa ilk 5 ft yanar, düşme yok.
+  - Dikey hareket 3B erişimden çıkıyorsa fırsat saldırısı. Komut sonunda yüzde tutunur; Prone, Incapacitated ya da hız 0 düşürür (K71b).
+  - Sonraki turda aynı `climb` kalan ft'yi zarsız öder ve tepeye çıkar; sur tepesinde K72 duruş yüzeyi (tırmanma işareti kalkar).
+  - Sur tepesinden tırmanarak iniş de parçalı: bitişik altıgen + yettiği kadar aşağı, yüzde tutunur.
+  - Tırmanma hızı olanlar (Spider Climb, K68b) bu yola girmez: dikey hareketle ×1, tepeye adım (değişmedi).
+  - Arayüz: tırmanma etiketinde maliyetin yanında `…` (bu tur bitmez). Üzerine gelince açıklama (TR/EN).
+  - **YZ (`ai.ts` `perchMulti`, `perchContinue`):** K73a'nın "tek tura sığmalı" kısıtı kalktı. Yürüyen menzilli çok turlu tırmanışa şu koşullarla başlar:
+    - başarı olasılığı ≥ `surBasari`;
+    - tepeye en çok `surTurSiniri` (3) turda varılır;
+    - yürüyerek aynı sürede hiçbir düşmanın yanına varılamıyor (yol mesafesi, K73a alanı);
+    - tepede (varsayımsal durum) en yakın düşmana K8 ve oradan saldırı var (şimdikinden kötü değil).
+  - Yüzde tutunan menzilli sonraki turlarda tırmanışı sürdürür; bitişikte düşman varsa sürdürmez.
+  - K15 (`wallClimbCommand`) değişmedi.
+  - ⚠ İlk ölçümde düşmanlar yürünür yol varken sura tırmanıyordu (Kale −17); yürüme getirisi koşulu bunu kaldırdı.
+- **Görev 2, 3B bitişiklik (`src/battle/adjacency.ts`, tek işlev):**
+  - `gap3D` = max(yatay gövde aralığı `gap`, dikey bant aralığı `bandGap(absBand)`). `adjacent3D` = `gap3D ≤ 1` (5 ft). Aynı altıgende üst üste duranlar (5 ft) da bitişik.
+  - Büyük yaratık K71c bandıyla korunur: Large 2 düzey, Huge 3, Gargantuan 4.
+  - Ayıranlar (`separated`): kat döşemesi (K72 `slabBetween`) ve Forcecage kutusu.
+  - ⚠ Altıgen ızgarasında iki komşu altıgen arasında duvar yoktur (duvar altıgen kaplar). Duvar tepesindeki ile dibindeki dikey aralıkla ayrılır.
+  - Kullananlar (63+):
+    - otomatik kritik ve Prone "5 ft içinden" (`withinFiveFt`);
+    - yakalama, itme ve yakalamanın sürmesi;
+    - fırsat saldırısı (döşeme/kutu keser);
+    - yakın dövüş ve bütün hedefleme (`checkReach`: ayrılmışsa ret);
+    - menzilliye "yanında düşman" (`enemyAdjacent`);
+    - Sneak Attack dostu, Help ve sarsma, Cleave ikinci hedef, dokunma (`divine.ts`);
+    - auralar `auraDist` (Aura of Protection, Aura of Life, ortak aura altyapısı) ve Countercharm menzili.
+  - K72'nin geçici döşeme kapatması (`acrossSlab`) bu işleve taşındı; 60–62 yolu aynen.
+  - ⚠ Davranış farkları (63):
+    - Yerdeki yaratık bitişik altıgende 10 ft ve üstündeki uçanı yakalayamaz/itemez. Eskiden yakalanan uçan hızı 0 olup düşüyordu.
+    - Yakalayan uçarak 10 ft yükselirse yakalama biter. Taşıma (carry) modeli yok.
+    - 30 ft yukarıdaki Paralyzed yaratığa bitişik altıgenden otomatik kritik yok.
+- **Karar: aura ve kalıcı alan döşemede kesilir (K72 sapması kapandı):**
+  - SRD 5.2.1 Emanation bir alan etkisidir. Alan noktaları çıkış noktasından düz hatlarla yayılır; tam siper (döşeme) noktayı alandan çıkarır.
+  - Aura 3B uzaklıkla ölçülür, döşeme ve kutu keser.
+  - Kalıcı alan (`altitude.ts` `altitudeInZone`): alanın tabanı ile yaratık arasında, yaratığın altıgeninde döşeme varsa dışarıda. Taban: yürüyen alanda bağlı yaratığın irtifası, değilse yer.
+  - ⚠ Durağan alanın tabanı hep yer kabul edilir: noktalar yer seviyesinde (K72 görüş modeli), üst kata alan konmaz.
+  - ⚠ Paket/imza auraları (`paket/*`, `imza*.ts`) ve tepki menzilleri (`feetBetween`) 2B kaldı.
+- **Görev 3, gönüllü düşme (`jump_down`, `src/battle/drop.ts`):**
+  - Nereden:
+    - sur tepesi ya da kat döşemesi (K72);
+    - katman uçurumunun üstü;
+    - duvar/uçurum yüzünde tutunurken (kendi altıgeninde bırakır, hareketsiz).
+  - Nereye: bitişik altıgen (1 altıgen hareket). İniş alttaki en yüksek duruş yüzeyi (kat deliğinden alt kata, balkondan yere).
+  - Kısıtlar:
+    - aynı yükseklikte yürünen yüzeye atlanmaz;
+    - geçilmez altıgene ve lava gönüllü inilmez;
+    - uçan, süzülen ve Levitate'li dikey hareketle iner.
+  - Tek `fall` (SRD: her 10 ft 1d6, hasar alan Prone, düşme tepkileri; iniş hücresi doluysa yanına).
+  - Yatay adım fırsat saldırısı tetikler; düşüş tetiklemez.
+  - Katman uçurumunda Game Master `heightFall` kapalıysa hasarsız (`climb` aşağı gibi). `heightMove` kapalıyken uçurum yürünür, komut yalnız irtifadan.
+  - Arayüz: "⇣ Aşağı atla" menü düğmesi (hedef varken). Seçimde vurgulu altıgenlerde "⇣25ft 2d6"; ipucu ve eylem açıklaması TR/EN.
+  - **YZ (`dropCommand`, yeni uzun taktik yok):** yalnız duruş yüzeyinde ya da duvarda tutunan uçmayan. Can, en kötü düşme hasarından (`dusmeCanPayi` × zar × 6) fazla olmalı.
+    - Hedefe ulaşmak: buradan ve yürüyerek bu tur saldıramıyor; atlayınca saldırabiliyor ya da düşmana yol mesafesi kısalıyor.
+    - Kaçmak: bitişikte düşman, can üçte birin altında, inişte bitişik düşman yok.
+- **Görev 4, suya düşme (SRD 5.2.1 Falling):**
+  - Derin suya (`w`, `deepWater`) düşen düşme hasarını alır. Kendi tepkisiyle DC 15 Atletizm ya da Akrobasi (yüksek olanı) başarılıysa yarı hasar.
+  - Tepki sisteminden (`fallReactions(..., { water })`, seçenek `suya-dusus`). Slow Fall ve kendine Feather Fall ile aynı istemde.
+    - Öneri: Slow Fall yarı hasardan çok azaltıyorsa o, yoksa suya düşüş (bedava).
+    - Reddederse dostların Feather Fall'u.
+  - Hasar alan Prone (SRD genel kural).
+  - 57–62'de derin suya iniş hasarsızdı (K71b ⚠); 63'te SRD.
+  - ⚠ Sığ su/çamur (`n`) ve batak (`b`) sıvı sayılmadı: derinlik verisi yok (denetim §4).
+- **Görev 5, düşman uçan menzilli:**
+  - K73a `riseCommand` 63'te düşman tarafına da açık; aynı parametreler.
+  - Canavar saldırısı (`monster_attack`, planlı Multiattack; plansızda hedef bitişik değilse) menzilli sayılır.
+  - ⚠ Sur kararında (`perchCommand`) canavar saldırısı menzilli sayılmaz (K73a gibi). Düşman tarafına yalnız uçan menzillinin yükselmesi açıldı.
+- **Ölçüm:**
+  - **62 birebir:** yeni ağaçla K73b öncesi ağacın (`wip/k73a` 5b26c3c, geçici worktree) sürüm 62 imzaları karşılaştırıldı. 4 senaryo × 30, duvarlı 6 × 50, katmanlı 8 × 20: 18 senaryonun hepsi birebir aynı. Ayrıca `src/sim/k73bRegresyon.test.ts` altın imzaları (1 ve 30 tohum) yeşil.
+  - **62 ↔ 63 denge raporu** (parti kazancı %, ortalama tur; ayar yok): `harita/belgeler/DENGE.md`.
+    - 8 puanı aşan tek kayma: Buzul — Tapınak −10 (70 → 60). Kaynak Görev 5: uçan buz mephitleri erişimin üstüne yükselip nefes veriyor. Düşman yükselmesi kapalıyken 63 = 62.
+    - Dağ — Karakol −5, Dağ — Kayalık −5: katmanlı haritada 3B bitişiklik (basamak üstündeki düşman "yanında" sayılmıyor).
+    - Diğer 15 senaryo kazançta 0 (11'i imzada da aynı).
+  - **YZ karar süresi** (medyan ms; 62 ↔ 63 aynı koşuda, simetrik sıra 62, 63, 63, 62; n = 8; hepsi ≤ +%15):
+
+    | Sahne | 62 | 63 | Fark |
+    |---|---:|---:|---:|
+    | Mantar | 1,75 | 1,68 | −%4 |
+    | Katmanlı | 1,59 | 1,52 | −%4 |
+    | Uçan düşman | 1,38 | 1,44 | +%4 |
+    | Yakın dövüşlü uçan | 1,61 | 1,62 | +%1 |
+    | Duvarlı yerde | 1,88 | 1,95 | +%4 |
+    | Duvarda | 0,62 | 0,68 | +%10 |
+    | Katlı | 0,86 | 0,93 | +%8 |
+    | Süzülen düşman | 0,60 | 0,60 | 0 |
+    | Çok turlu sur okçusu (yeni; 25 ft kaba sur) | 1,11 | 0,76 | −%32 (karar erken döner) |
+    | Fly'lı parti okçusu / sur dibindeki okçu | 0,10 / 0,10 | 0,10 / 0,11 | — |
+
+  - İlk sürümde "duvarda" +%150 idi: duvarda tutunanın gönüllü düşme kararı her seferinde yürüyüş yerlerini tarıyordu. Bu karar yalnız duruş yüzeyine ve kaçışa sınırlandı.
+  - Ana parça 374 742 B (değişmedi). `check:harita` 96/0, `check:ses` 15/0 (`PW_CHROMIUM=/opt/pw-browsers/chromium`).
+  - Tam paket: 362 dosya, 4245 test. Modül başlatma testi yeşil (`adjacency.ts` yaprak modül: gövde, hücre, dikey, duruş).
+  - Arayüz: tek ekran görüntüsü (sur tepesinde "⇣ Aşağı atla", hedeflerde "⇣25ft 2d6").
+- **Testler:** `src/battle/k73b.test.ts` (22):
+  - çok turlu tırmanış: başla, devam, düş, zar tutmaz, parçalı iniş, YZ;
+  - `adjacent3D`: aynı yüzey, üst üste, büyük yaratık, döşeme;
+  - otomatik kritik, yakalama/itme, döşemeden itme, aura (dikey ve döşeme);
+  - gönüllü düşme: sur, önizleme, bırakma, kat deliği, YZ;
+  - suya düşme: yarı hasar, tepkisiz tam hasar, 62 ↔ 63;
+  - düşman uçan menzilli; replay.
+  - Her biri 62 ile karşılaştırmalı.
+  - Regresyon `src/sim/k73bRegresyon.test.ts` (`K73B_TOHUM`): sürüm 62 imzası K73b öncesi ağaçtan alınan altın imzayla aynı (1 ve 30 tohum); 63 çökmesiz.
+- **Açık kalanlar:**
+  - K73c: kazma/su altı (eksi düzey), havada merkezli küre/silindir, Call Lightning fırtına devri, çok altıgenli gövdenin farklı zeminler, katlar arası 3B komşulukta kalanlar.
+  - Paket/imza auraları ve tepki menzilleri 3B değil.
+  - Taşıma (uçan yakalayanın yakaladığını kaldırması) yok.
+  - Batak/sığ su suya düşme sayılmıyor (veri yok).
+  - Durağan kalıcı alanın tabanı hep yer.
+
 ## 2026-11-09 — Kuyruk K73a: YZ dikey taktiği (parti hava düzeyi, yüksek zemin, ölü bölge, sur/kat, kilitlenme; kural sürümü 62)
 
 - **Sürüm:** `wip/k73a` (`wip/u1a` 58c6227 üstüne). Kural sürümü 61 → 62.
