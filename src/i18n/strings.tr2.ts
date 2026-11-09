@@ -343,6 +343,11 @@ export const TR_EXTRA = {
       climbing: (ft: number, ceiling: boolean): string => (ceiling ? `Tavanda (${ft} ft)` : `Duvarda (${ft} ft)`),
       highJump: (ft: number): string => `Yerinde zıpla (dikey erişim +${ft} ft)`, jumped: (ft: number): string => `Zıpladı: dikey erişim +${ft} ft`,
       cloud: (base: number): string => `Call Lightning bulutu (taban ${base} ft, 60 ft yarıçap)` },
+    // Kuyruk K71c: Hava görünümü (prizma düzeyleri).
+    k71c: { toggle: '☁ Hava', toggleTitle: 'Hava görünümü: düzey seç (her düzey 5 ft)', panel: 'Hava görünümü', levels: 'Düzeyler',
+      level: (ft: number, n: number): string => (ft === 0 ? `Yer${n ? ` · ${n}` : ''}` : `${ft} ft${n ? ` · ${n}` : ''}`),
+      hintFly: (ft: number): string => `${ft} ft düzeyine uç: vurgulu altıgene dokun (altıgen + düzey tek adım).`,
+      hintView: (ft: number): string => `${ft} ft düzeyindeki yaratıklar; diğerleri soluk.` },
     // Kuyruk K71b: herkes için tırmanma (Çeviklik kontrolü, çarpanlı maliyet).
     k71: { climbStart: (dc: number, k: number): string => `▲ Tırman 5 ft (Çeviklik DC ${dc}, ×${k})`, climbUp: (k: number): string => `▲ Tırman 5 ft (×${k})`, climbDown: (k: number): string => `▼ İn 5 ft (×${k})`,
       confirm: (dc: number, k: number, top: number): string => `Tırmanmaya başla: Çeviklik kontrolü DC ${dc} (yetkinlik yok). Tutmazsa düşmezsin ama ${k} altıgen hareket yanar. Duvar tepesi ${top} ft; tepede durulmaz, üstünden öte yana geçilir.` },

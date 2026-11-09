@@ -43,6 +43,9 @@ import { civiliansAlive, isTargetable } from './battle/common';
 import { hexLabel, highJumpProblem, highJumpReachFt, occupantAt, speedHexes } from './battle/movement';
 import { altitudeCapFt, atCeiling, ceilingFt, climbingAloft, wallHex } from './battle/altitude';
 import { climbStartInfo, dexClimber, holdSurface } from './battle/climbing';
+import { bandOf, cellsOn, levelOf, levelToFt } from './battle/cells';
+import { airReach, canAirMove } from './battle/airMove';
+import { flyCapFt } from './battle/altitude';
 import { cloudBaseFt, cloudCastProblem, cloudPointProblem, cloudRing } from './battle/cloud';
 import { speedZero as hasSpeedZero } from './rules/conditions';
 import { distance, hexKey, sameHex, type Offset } from './rules/hex';
@@ -435,6 +438,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const [diceQueue, setDiceQueue] = useState<TrayItem[]>([]);
   // Kuyruk K71b: tırmanmaya başlama onayı (ilk dokunuş açıklar, ikincisi başlatır); anahtar aktör + harcanan hareket.
   const [climbArmed, setClimbArmed] = useState<string | null>(null);
+  // Kuyruk K71c (sürüm 58+): Hava görünümü ve seçili düzey (0 = yer).
+  const [airView, setAirView] = useState(false);
+  const [airLevel, setAirLevel] = useState(0);
   const seenDice = useRef(diceSeenAtStart(props.initial.events, props.restored === true));
   // Otomatik kayıt: her tur (round) sonunda ve savaş bitince (tek kayıt yuvası, olay günlüğü).
   useEffect(() => {
@@ -821,8 +827,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const exploreOn = (exploring && state.status === 'finished' && !!state.explore) || (state.status === 'active' && exploreReady(state));
   const explorerId = exploreOn ? (explorer && state.combatants[explorer]?.hp ? explorer : Object.values(state.combatants).find((c) => c.side === 'party' && !c.civilian && c.hp > 0 && c.pos)?.id ?? null) : null;
   useEffect(() => setMoveAim(null), [state.round, actorId]);
+  const airOn = airView && cellsOn(state);
   const movable = useMemo(() => (exploreOn && explorerId ? movableHexes(exploreView(state, explorerId), explorerId)
-    : active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode, exploreOn, explorerId]);
+    // Kuyruk K71c: Hava görünümünde uçabilen yaratık seçili düzeye birleşik uçuşla (yoksa vurgu yok).
+    : active && mode === 'idle' && airOn ? new Map((state.combatants[actorId] ? airReach(state, state.combatants[actorId] as Combatant, airLevel) : []).map((x) => [hexKey(x.to), x.cost] as [string, number]))
+    : active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode, exploreOn, explorerId, airOn, airLevel]);
+  // Kuyruk K71c: havadaki jetonun yukarı kayması (px; düzey başına, en çok bir jeton yarıçapı) ve seçili düzeyde mi.
+  const airLift = (c: Combatant): number => (cellsOn(state) && (c.altitudeFt ?? 0) > 0 ? Math.min(TOKEN_R * 1.1, TOKEN_R * 0.45 + levelOf(c.altitudeFt ?? 0) * TOKEN_R * 0.1) : 0);
+  const inLevel = (c: Combatant): boolean => { const b = bandOf(c); return b.lo <= airLevel && airLevel <= b.hi; };
   const onExit = props.onExit;
   const moved = useRef(false);
   useEffect(() => {
@@ -1179,7 +1191,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode !== 'idle' && mode !== 'jump') return;
     const key = hexKey(h);
     if (movable.has(key)) {
-      const cmd: Command = { type: 'move', actorId, to: h };
+      const cmd: Command = airOn ? { type: 'move', actorId, to: h, toFt: levelToFt(airLevel) } : { type: 'move', actorId, to: h };
       const tap = moveTap(moveAim, h, pvSet.on && !exploreOn, () => movePreview(state, cmd, contextFor(state, actorId), disc, pvSet));
       if (tap.kind === 'aim') { setMoveAim({ to: h, pv: tap.pv }); return; }
       setMoveAim(null);
@@ -1741,7 +1753,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               .filter((x) => x.view !== 'invisible')
               .map((x) => ({ ...x, id: x.c.id, pos: x.c.pos as Offset, y: hexCenter(x.c.pos as Offset).y, scale: tokenScale(x.c) }));
             // Aşağıdaki jeton üstte; büyük jeton komşusundaki küçüğü örtmez (drawOrder).
-            const ordered = drawOrder(shown);
+            // Kuyruk K71c: aynı yerde havadaki jeton yerdekinin üstünde çizilir (kararlı sıralama: yer sırası aynı).
+            const ordered = cellsOn(state) ? [...drawOrder(shown)].sort((a, b) => (a.c.altitudeFt ?? 0) - (b.c.altitudeFt ?? 0)) : drawOrder(shown);
             const r = TOKEN_R;
             // Sürekli durum efektleri (Görev V, V2): jeton başına tek efekt (çoklu durumda sırayla), ekranda en çok sekiz
             // animasyon; efekt ayarı kapalıysa yok; tek seferlik hasar efekti oynarken o jetonun döngüsü duraklar.
@@ -1807,7 +1820,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               ground,
               beams,
               ...ordered.map(({ c, view, scale }) => {
-                const p = tokenCenter(state, c);
+                // Kuyruk K71c (sürüm 58+): havadaki jeton irtifasıyla orantılı yukarıda, yerde gölgesi; Hava görünümünde seçili
+                // düzeyde olmayan jeton soluk ve dokunulmaz.
+                const p0 = tokenCenter(state, c);
+                const lift = airLift(c);
+                const p = lift ? { x: p0.x + TOKEN_R * 0.35, y: p0.y - lift } : p0;
+                const offLevel = airOn && !inLevel(c);
                 // Jeton filtreleri (Görev V): taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış.
                 const filters = tokenFilters(c);
                 const look = filterStyle(filters);
@@ -1815,12 +1833,14 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', c.unaware ? 'unaware' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
                   c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
-                  loops.has(c.id) ? 'has-fx' : ''].join(' ');
+                  loops.has(c.id) ? 'has-fx' : '', offLevel ? 'air-dim' : '', lift ? 'aloft' : ''].join(' ');
                 const cover = view !== 'normal' ? hideCover(state, c.pos as Offset) : null;
                 // Figür altıgen merkezinde ortalı, ölçekle her yöne eşit büyür; Zzz rozeti figürün tepesine yakın.
                 const top = p.y - r * scale;
                 return (
                   <g key={c.id} className={cls}>
+                    {lift > 0 && <ellipse cx={p0.x} cy={p0.y + r * 0.55} rx={r * 0.8} ry={r * 0.26} className="air-shadow" aria-hidden="true" />}
+                    {lift > 0 && <line x1={p0.x} y1={p0.y + r * 0.5} x2={p.x} y2={p.y + r * 0.9} className="air-tether" aria-hidden="true" />}
                     {filters.includes('prone') && <ellipse cx={p.x} cy={p.y + r * 0.62} rx={r * 0.95} ry={r * 0.32} className="prone-shadow" aria-hidden="true" />}
                     <g className="token-filter" style={look.filter || look.opacity < 1 ? { filter: look.filter || undefined, opacity: look.opacity } : undefined}
                       transform={look.shrink < 1 || look.tilt ? `translate(${p.x} ${p.y}) rotate(${look.tilt ?? 0}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
@@ -1909,9 +1929,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               }),
               // Tıklama alanları en üstte, her jetonun yalnızca kendi altıgeninde: büyük jeton komşuyu kapatmaz.
               <g key="hits" className="token-hits">
-                {ordered.flatMap(({ c }) => bodyOf(state, c).map((h, i) => {
+                {ordered.filter(({ c }) => !(airOn && !inLevel(c))).flatMap(({ c }) => bodyOf(state, c).map((h, i) => {
                   // Görev A6: çok altıgenli gövdenin her altıgeni tıklanır (tek altıgenlide yalnızca kendi altıgeni).
-                  const p = hexCenter(h);
+                  // Kuyruk K71c: havadaki jetonun tıklama alanı kaldırılmış konumunda.
+                  const p = ((q, l) => ({ x: q.x + (l ? TOKEN_R * 0.35 : 0), y: q.y - l }))(hexCenter(h), airLift(c));
                   const pr = press(c.pos as Offset);
                   return (
                     <circle key={i ? `${c.id}:${i}` : c.id} cx={p.x} cy={p.y} r={r} className={`hit${setup ? ' draggable' : ''}`} data-id={c.id} data-hex={hexKey(c.pos as Offset)}
@@ -2637,6 +2658,34 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   </div>
                 ))}
                 {actor.weaponOptions.length === 0 && <small>{B.noWeapon}</small>}
+              </div>
+            );
+          })()}
+          {/* Kuyruk K71c (sürüm 58+): Hava görünümü: düğme ve düzey seçici (0'dan üst sınıra; kaydırılır). Seçili düzeyde
+              olmayan jetonlar soluk ve dokunulmaz; uçabilen sıradaki yaratık vurgulu altıgene o düzeyde birleşik uçuşla gider. */}
+          {cellsOn(state) && state.status === 'active' && (() => {
+            const flyer = !!actor && active && canAirMove(state, actor);
+            const ceil = ceilingFt(state);
+            const capFt = flyer && actor ? altitudeCapFt(state, actor) : ceil !== null ? Math.max(0, ceil - 5) : flyCapFt(state);
+            const top = Math.floor(capFt / 5);
+            const levels = Array.from({ length: top + 1 }, (_, i) => top - i);
+            const count = (l: number) => Object.values(state.combatants).filter((c) => c.pos && c.hp > 0 && !c.summon?.gone && ((b) => b.lo <= l && l <= b.hi)(bandOf(c))).length;
+            return (
+              <div className={`air-panel${airView ? ' open' : ''}`} role="group" aria-label={B.k71c.panel}>
+                <button className={`hud-btn small${airView ? ' on' : ''}`} aria-pressed={airView} title={B.k71c.toggleTitle}
+                  onClick={() => { setAirView((v) => !v); setAirLevel(Math.min(top, Math.max(0, actor ? levelOf(actor.altitudeFt ?? 0) : 0))); }}>{B.k71c.toggle}</button>
+                {airView && (
+                  <>
+                    <div className="air-levels" role="listbox" aria-label={B.k71c.levels}>
+                      {levels.map((l) => (
+                        <button key={l} role="option" aria-selected={l === airLevel} className={`air-level${l === airLevel ? ' on' : ''}${count(l) ? ' busy' : ''}`}
+                          ref={l === airLevel ? (el) => el?.scrollIntoView?.({ block: 'nearest' }) : undefined}
+                          onClick={() => setAirLevel(l)}>{B.k71c.level(l * 5, count(l))}</button>
+                      ))}
+                    </div>
+                    <div className="air-hint">{flyer ? B.k71c.hintFly(airLevel * 5) : B.k71c.hintView(airLevel * 5)}</div>
+                  </>
+                )}
               </div>
             );
           })()}
