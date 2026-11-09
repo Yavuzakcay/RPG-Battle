@@ -70,6 +70,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Duvarlı 6 harita × 50 tohum (`K71B_DUVAR=50`, 56 ↔ 57; kazanç, tur): kale-avlu-savunma %100/8,0 = %100/8,0; kale-baskini %42/7,6 = %42/7,6 (57'de 1 tırmanma, tuttu); orman-ork %90/11,6 =; k34-kale-ic-avlu %100/3,3 =; k36-dis-halka %100/2,1 =; k34-kasaba-han %100/3,3 =. Denge değişmedi (YZ bu senaryolarda duvarsız yolu seçiyor).
   - Ana parça 374 742 bayt (değişmedi; yeni kod savaş parçalarında). check:harita 96/0, check:ses 15/0.
   - Arayüz: tek ekran görüntüsü (tırmanma düğmesi ve onay balonu).
+  - Tam test 345 dosya / 4052 test yeşil (K71a sonu 342 / 4011).
 
 ## 2026-11-08 — Kuyruk K71a: dikey veri modeli, uçanın engel aşması, görüşte zemin + engel tepesi, altıgen tavanı (kural sürümü 56)
 
