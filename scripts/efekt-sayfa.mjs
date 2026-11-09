@@ -142,7 +142,9 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
     // Kuyruk A2: tabloda kare sınırı (ham sayfa değişmeden; alan-yildirim'in son iki karesi ateş közü).
     const cap = spec.kareSiniri?.[spec.adlar[n]];
     if (cap && cap < count) count = cap;
-    const used = cells.slice(0, count);
+    // Kuyruk E4: tabloda başlangıç karesi (`kareBasla`: satırın ilk N karesi atılır; ör. ışının yalnız çıkış kıvılcımı olan ilk karesi döngüde titreme yapar).
+    const skip = Math.min(spec.kareBasla?.[spec.adlar[n]] ?? 0, count - 1);
+    const used = cells.slice(skip, count);
     let fw; let fh; let frames;
     if (spec.kare === 'serit') {
       // En-boy korunur; bütün karelerin içerik bandına (dikey) kırpılır, aynı pencere (titreme yok).
@@ -256,6 +258,8 @@ export async function importEffects({ src = 'assets-ham/efekt', out = 'public/sp
       const rec = {
         kare: r.frames.length, sure: r.frames.length * spec.kareMs, tur: spec.turler?.[ad] ?? spec.tur, karisim: 'screen', yon: spec.yonler?.[ad] ?? null,
         en: r.fw, boy: r.fh, dongu: spec.donguler?.[ad] ?? !!spec.dongu, kaynak: `${sheet}`, ...(spec.ortusme ? { ortusme: spec.ortusme } : {}),
+        // Kuyruk E4: içe aktarılan ama hiçbir büyüye bağlanmayan şerit (kullanıcı kararı; kayıtta işaretli).
+        ...(spec.kullanilmiyor?.includes(ad) ? { kullanilmiyor: true } : {}),
       };
       if (spec.klasor) e2.efektler[name] = { ...rec, yol: `${spec.klasor}/${name}` };
       else records[name] = rec;

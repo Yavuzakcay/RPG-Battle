@@ -252,6 +252,8 @@ function spellRef(e: BattleEvent): { id: string; actorId?: string; targetId?: st
     case 'effect_added': return { id: spellSlug(e.effect.name), actorId: e.effect.sourceId, targetId: e.targetId };
     case 'buff_added': return { id: spellSlug(e.buff.source), actorId: e.buff.by, targetId: e.targetId };
     case 'time_stop': return { id: 'time-stop', actorId: e.actorId };
+    // Kuyruk E4: özel yollu büyü (Prismatic Spray: `spell_cast` hedefsiz, ışınlar hedef başına `map_effect`; etiket "Büyü (Renk)").
+    case 'map_effect': return e.rule === 'spells69' && e.text.startsWith('Prismatic Spray (') ? { id: spellSlug(e.text), actorId: undefined, targetId: e.targetId, hit: true } : null;
     default: return null;
   }
 }

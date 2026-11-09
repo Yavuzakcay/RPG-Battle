@@ -25,47 +25,47 @@ Seviye grubu × sınıf. Bir büyü birden çok sınıfta sayılır; "Tümü" sa
 
 | Seviye | Sınıf | Toplam | Savaş dışı | Hazır | Genel | Eksik | Yeni anim. |
 |---|---|---|---|---|---|---|---|
-| 0–3 | Bard | 73 | 30 | 38 | 5 | 0 | 1 |
-| 0–3 | Cleric | 58 | 21 | 29 | 8 | 0 | 2 |
-| 0–3 | Druid | 63 | 18 | 38 | 7 | 0 | 2 |
+| 0–3 | Bard | 73 | 31 | 38 | 4 | 0 | 1 |
+| 0–3 | Cleric | 58 | 22 | 29 | 7 | 0 | 2 |
+| 0–3 | Druid | 63 | 19 | 39 | 5 | 0 | 1 |
 | 0–3 | Paladin | 30 | 10 | 18 | 2 | 0 | 1 |
-| 0–3 | Ranger | 40 | 13 | 21 | 6 | 0 | 2 |
-| 0–3 | Sorcerer | 85 | 16 | 61 | 8 | 0 | 3 |
+| 0–3 | Ranger | 40 | 14 | 21 | 5 | 0 | 2 |
+| 0–3 | Sorcerer | 85 | 17 | 62 | 6 | 0 | 2 |
 | 0–3 | Warlock | 40 | 12 | 24 | 4 | 0 | 0 |
-| 0–3 | Wizard | 110 | 35 | 67 | 8 | 0 | 2 |
-| 0–3 | **Tümü** | **183** | 52 | **116** | **15** | **0** | **4** |
+| 0–3 | Wizard | 110 | 36 | 68 | 6 | 0 | 1 |
+| 0–3 | **Tümü** | **183** | 53 | **117** | **13** | **0** | **3** |
 | 4–5 | Bard | 27 | 13 | 14 | 0 | 0 | 0 |
-| 4–5 | Cleric | 22 | 11 | 9 | 2 | 0 | 1 |
-| 4–5 | Druid | 33 | 11 | 20 | 2 | 0 | 2 |
+| 4–5 | Cleric | 22 | 11 | 10 | 1 | 0 | 0 |
+| 4–5 | Druid | 33 | 11 | 21 | 1 | 0 | 1 |
 | 4–5 | Paladin | 8 | 3 | 4 | 1 | 0 | 0 |
 | 4–5 | Ranger | 8 | 2 | 6 | 0 | 0 | 0 |
-| 4–5 | Sorcerer | 25 | 3 | 19 | 3 | 0 | 3 |
+| 4–5 | Sorcerer | 25 | 3 | 20 | 2 | 0 | 2 |
 | 4–5 | Warlock | 12 | 6 | 6 | 0 | 0 | 0 |
 | 4–5 | Wizard | 50 | 21 | 27 | 2 | 0 | 2 |
-| 4–5 | **Tümü** | **72** | 27 | **41** | **4** | **0** | **3** |
-| 6–9 | Bard | 30 | 13 | 12 | 3 | 2 | 3 |
+| 4–5 | **Tümü** | **72** | 27 | **42** | **3** | **0** | **2** |
+| 6–9 | Bard | 30 | 13 | 13 | 3 | 1 | 2 |
 | 6–9 | Cleric | 29 | 13 | 14 | 2 | 0 | 2 |
-| 6–9 | Druid | 28 | 13 | 12 | 2 | 1 | 3 |
-| 6–9 | Sorcerer | 30 | 4 | 21 | 2 | 3 | 4 |
+| 6–9 | Druid | 28 | 14 | 11 | 2 | 1 | 3 |
+| 6–9 | Sorcerer | 30 | 4 | 21 | 3 | 2 | 4 |
 | 6–9 | Warlock | 20 | 6 | 12 | 1 | 1 | 1 |
-| 6–9 | Wizard | 58 | 22 | 30 | 3 | 3 | 4 |
-| 6–9 | **Tümü** | **84** | 33 | **41** | **7** | **3** | **7** |
-| **0–9** | **Tümü** | **339** | 112 | **198** | **26** | **3** | **14** |
+| 6–9 | Wizard | 58 | 22 | 30 | 4 | 2 | 4 |
+| 6–9 | **Tümü** | **84** | 34 | **40** | **8** | **2** | **7** |
+| **0–9** | **Tümü** | **339** | 114 | **199** | **24** | **2** | **12** |
 
-Savaşta kullanılan 227 büyünün 198'i hazır (87%), 26'i genel, 3'i eksik; 14 büyü yeni animasyon (ya da bağlama) bekliyor.
+Savaşta kullanılan 225 büyünün 199'i hazır (88%), 24'i genel, 2'i eksik; 12 büyü yeni animasyon (ya da bağlama) bekliyor.
 
 Türe göre (savaş büyüleri):
 
 | Tür | Hazır | Genel | Eksik |
 |---|---|---|---|
-| koruma | 29 | 10 | 0 |
+| koruma | 29 | 9 | 0 |
 | durum | 17 | 5 | 1 |
-| küre/alan | 18 | 0 | 1 |
-| zemin | 13 | 5 | 0 |
+| zemin | 15 | 4 | 0 |
+| küre/alan | 17 | 0 | 1 |
 | çağırma | 16 | 0 | 0 |
-| dönüşüm | 11 | 1 | 0 |
 | iyileştirme | 11 | 0 | 0 |
 | tek hedef | 11 | 0 | 0 |
+| dönüşüm | 10 | 1 | 0 |
 | mermi | 10 | 0 | 0 |
 | silah | 10 | 0 | 0 |
 | ışın | 9 | 0 | 0 |
@@ -74,7 +74,7 @@ Türe göre (savaş büyüleri):
 | işaret | 7 | 0 | 0 |
 | ışınlanma | 7 | 0 | 0 |
 | gökten düşen | 6 | 0 | 0 |
-| koni | 5 | 0 | 1 |
+| koni | 6 | 0 | 0 |
 | dokunuş | 3 | 0 | 0 |
 | iptal | 3 | 0 | 0 |
 | yok | 0 | 1 | 0 |
@@ -98,7 +98,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | mending | 0 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | message | 0 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | minor-illusion | 0 | Illusion | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| poison-spray | 0 | Necromancy | mermi | `darbe-buyu`, `hasar:poison`, `mermi:mermi-kivilcim` | E2: mermi:mermi-kivilcim | hazır | — |
+| poison-spray | 0 | Necromancy | mermi | `darbe-buyu`, `hasar:poison`, `isin:isin-asit` | E2: isin:isin-asit | hazır | — |
 | prestidigitation | 0 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | produce-flame | 0 | Conjuration | mermi | `darbe-buyu`, `hasar:burn`, `mermi:mermi-kure` | E2: mermi:mermi-kure | hazır | — |
 | ray-of-frost | 0 | Evocation | ışın | `darbe-buyu`, `hasar:freeze`, `isin:isin-buz` | E2: isin:isin-buz | hazır | — |
@@ -141,7 +141,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | floating-disk | 1 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | fog-cloud | 1 | Conjuration | zemin | `zemin:yuzey-sis` |  | hazır | — |
 | goodberry | 1 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| grease | 1 | Conjuration | zemin | `zemin:yuzey-gres` |  | hazır | — |
+| grease | 1 | Conjuration | zemin | `zemin:yuzey-gres`, `zemin:zemin-yag` | E2: zemin:zemin-yag | hazır | — |
 | guiding-bolt | 1 | Evocation | mermi | `darbe-buyu`, `gokten:gokten-yildiz` | E2: gokten:gokten-yildiz | hazır | — |
 | healing-word | 1 | Abjuration | iyileştirme | `iyilestir-kucuk / iyilestir-buyuk` |  | hazır | — |
 | hellish-rebuke | 1 | Evocation | tek hedef | `hasar:burn`, `hedef:alan-ates` | E2: hedef:alan-ates | hazır | — |
@@ -159,7 +159,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | magic-missile | 1 | Evocation | mermi | `darbe-buyu`, `mermi:mermi-ok` | E2: mermi:mermi-ok | hazır | — |
 | protection-from-evil-and-good | 1 | Abjuration | koruma | `hedef:koruma-ruh`, `rozet:ok-kutsal-kalkan` | E2: hedef:koruma-ruh | hazır | — |
 | purify-food-and-drink | 1 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| ray-of-sickness | 1 | Necromancy | ışın | `darbe-buyu`, `hasar:poison`, `isin:isin-isik` | E2: isin:isin-isik | hazır | — |
+| ray-of-sickness | 1 | Necromancy | ışın | `darbe-buyu`, `hasar:poison`, `isin:isin-nekrotik` | E2: isin:isin-nekrotik | hazır | — |
 | sanctuary | 1 | Abjuration | koruma | `rozet:ok-kutsal-kalkan` | E2 rozet: ok-kutsal-kalkan | genel | — |
 | searing-smite | 1 | Evocation | silah | `darbe-<silah türü>`, `hasar:burn`, `hedef:silah-kivilcim` | E2: hedef:silah-kivilcim | hazır | — |
 | shield | 1 | Abjuration | koruma | `kendi:koruma-kalkan` | E2: kendi:koruma-kalkan | hazır | — |
@@ -185,7 +185,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | darkvision | 2 | Transmutation | koruma | `hedef:goz-nabiz` | E2: hedef:goz-nabiz | hazır | — |
 | detect-thoughts | 2 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | dragons-breath | 2 | Transmutation | koni | `koni:koni-<nefes türü>` | E2: koni:koni-<nefes türü> | hazır | — |
-| enhance-ability | 2 | Transmutation | koruma | `rozet:ok-avantaj` | E2 rozet: ok-avantaj | genel | — |
+| enhance-ability | 2 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | enlarge-reduce | 2 | Transmutation | dönüşüm | `hedef:buyume-halka` | E2: hedef:buyume-halka | hazır | — |
 | enthrall | 2 | Enchantment | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | find-steed | 2 | Conjuration | çağırma | `cagir-dogal` |  | hazır | — |
@@ -220,7 +220,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | shining-smite | 2 | Transmutation | silah | `darbe-<silah türü>`, `hedef:silah-kivilcim` | E2: hedef:silah-kivilcim | hazır | — |
 | silence | 2 | Illusion | zemin | `yer-tutucu:.spell-zone` | renkli altıgen yer tutucusu (spec.color/icon) | genel | Zemin kutuları (kalıcı büyü alanı dokusu) |
 | spider-climb | 2 | Transmutation | koruma | `rozet:ok-hiz-arti` | E2 rozet: ok-hiz-arti | genel | — |
-| spike-growth | 2 | Transmutation | zemin | `yer-tutucu:.spell-zone`, `zemin:zemin-diken` | E2: zemin:zemin-diken | hazır | — |
+| spike-growth | 2 | Transmutation | zemin | `yer-tutucu:.spell-zone`, `zemin:zemin-dikenli` | E2: zemin:zemin-dikenli | hazır | — |
 | spiritual-weapon | 2 | Evocation | çağırma | `darbe-buyu`, `hedef:ruh-balta` | E2: hedef:ruh-balta | hazır | — |
 | suggestion | 2 | Enchantment | durum | `durum:charmed` |  | hazır | — |
 | warding-bond | 2 | Abjuration | işaret | `koruma-kalkan`, `isaret:isaret-zincir` | E2: isaret:isaret-zincir | hazır | — |
@@ -256,7 +256,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | remove-curse | 3 | Abjuration | iptal | `hedef:iptal-muhur` | E2: hedef:iptal-muhur | hazır | — |
 | revivify | 3 | Necromancy | iyileştirme | `hedef:iyilestir-buyuk` | E2: hedef:iyilestir-buyuk | hazır | — |
 | sending | 3 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| sleet-storm | 3 | Conjuration | zemin | `yer-tutucu:.spell-zone` | renkli altıgen yer tutucusu (spec.color/icon) | genel | Zemin kutuları (kalıcı büyü alanı dokusu) |
+| sleet-storm | 3 | Conjuration | zemin | `yer-tutucu:.spell-zone`, `zemin:zemin-sulu-kar` | E2: zemin:zemin-sulu-kar | hazır | — |
 | slow | 3 | Transmutation | durum | `hedef:zaman-kadran` | E2: hedef:zaman-kadran | hazır | — |
 | speak-with-dead | 3 | Necromancy | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | speak-with-plants | 3 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
@@ -271,7 +271,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | arcane-eye | 4 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | aura-of-life | 4 | Abjuration | aura | `koruma-ruh`, `aura:aura-altin` | E2: aura:aura-altin | hazır | — |
 | banishment | 4 | Abjuration | ışınlanma | `durum:incapacitated`, `hedef:run-cember` | E2: hedef:run-cember | hazır | — |
-| black-tentacles | 4 | Conjuration | zemin | `yer-tutucu:.spell-zone`, `durum:restrained`, `zemin:zemin-girdap` | E2: zemin:zemin-girdap | hazır | — |
+| black-tentacles | 4 | Conjuration | zemin | `yer-tutucu:.spell-zone`, `durum:restrained`, `zemin:zemin-dokunac` | E2: zemin:zemin-dokunac | hazır | — |
 | blight | 4 | Necromancy | tek hedef | `hedef:alan-nekrotik` | E2: hedef:alan-nekrotik | hazır | — |
 | charm-monster | 4 | Enchantment | durum | `durum:charmed` |  | hazır | — |
 | compulsion | 4 | Enchantment | küre/alan | `durum:charmed` |  | hazır | — |
@@ -322,7 +322,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | greater-restoration | 5 | Abjuration | iyileştirme | `hedef:iyilestir-buyuk` | E2: hedef:iyilestir-buyuk | hazır | — |
 | hallow | 5 | Abjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | hold-monster | 5 | Enchantment | durum | `durum:paralyzed` |  | hazır | — |
-| insect-plague | 5 | Conjuration | zemin | `yer-tutucu:.spell-zone` | renkli altıgen yer tutucusu (spec.color/icon) | genel | Zemin kutuları (kalıcı büyü alanı dokusu) |
+| insect-plague | 5 | Conjuration | zemin | `yer-tutucu:.spell-zone`, `zemin:zemin-bocek` | E2: zemin:zemin-bocek | hazır | — |
 | legend-lore | 5 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | mass-cure-wounds | 5 | Abjuration | iyileştirme | `iyilestir-kucuk / iyilestir-buyuk` |  | hazır | — |
 | mislead | 5 | Illusion | koruma | `css:invisible` |  | hazır | — |
@@ -346,7 +346,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | conjure-fey | 6 | Conjuration | çağırma | `darbe-buyu`, `hedef:ruh-hancer` | E2: hedef:ruh-hancer | hazır | — |
 | contingency | 6 | Abjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | create-undead | 6 | Necromancy | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| disintegrate | 6 | Transmutation | ışın | `isin:isin-isik` | E2: isin:isin-isik | hazır | — |
+| disintegrate | 6 | Transmutation | ışın | `isin:isin-kuvvet` | E2: isin:isin-kuvvet | hazır | — |
 | eyebite | 6 | Necromancy | durum | `css:unconscious`, `durum:frightened` |  | hazır | — |
 | find-the-path | 6 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | flesh-to-stone | 6 | Transmutation | durum | `durum:restrained` |  | hazır | — |
@@ -373,16 +373,16 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | word-of-recall | 6 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | arcane-sword | 7 | Evocation | çağırma | `darbe-buyu`, `hedef:ruh-hancer` | E2: hedef:ruh-hancer | hazır | — |
 | conjure-celestial | 7 | Conjuration | gökten düşen | `yer-tutucu:.spell-zone`, `gokten:gokten-sutun`, `zemin:gokten-sutun` | E2: gokten:gokten-sutun, zemin:gokten-sutun | hazır | — |
-| delayed-blast-fireball | 7 | Evocation | küre/alan | `alan-ates`, `hasar:burn` |  | hazır | — |
+| delayed-blast-fireball | 7 | Evocation | zemin | `yer-tutucu:.spell-zone`, `hasar:burn` | renkli altıgen yer tutucusu (spec.color/icon) | genel | Zemin kutuları (kalıcı büyü alanı dokusu) |
 | divine-word | 7 | Evocation | durum | `gokten:gokten-sutun` | E2: gokten:gokten-sutun | hazır | — |
 | etherealness | 7 | Conjuration | dönüşüm | `kendi:run-cember` | E2: kendi:run-cember | hazır | — |
-| finger-of-death | 7 | Necromancy | tek hedef | `hedef:alan-nekrotik` | E2: hedef:alan-nekrotik | hazır | — |
+| finger-of-death | 7 | Necromancy | tek hedef | `isin:isin-nekrotik` | E2: isin:isin-nekrotik | hazır | — |
 | fire-storm | 7 | Evocation | küre/alan | `alan-ates`, `hasar:burn` |  | hazır | — |
-| forcecage | 7 | Evocation | durum | `hedef:kafes` | E2: hedef:kafes | hazır | — |
+| forcecage | 7 | Evocation | durum | `yer-tutucu:.spell-zone`, `hedef:kafes` | E2: hedef:kafes | hazır | — |
 | magnificent-mansion | 7 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | mirage-arcane | 7 | Illusion | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | plane-shift | 7 | Conjuration | ışınlanma | `hedef:run-cember` | E2: hedef:run-cember | hazır | — |
-| prismatic-spray | 7 | Evocation | koni | — | Özel yol (`prismaticEvents`): alan patlaması yok. | eksik | Prizma (gökkuşağı) ışını/duvarı |
+| prismatic-spray | 7 | Evocation | koni | `isin:isin-prizma` | E2: isin:isin-prizma | hazır | — |
 | project-image | 7 | Illusion | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | regenerate | 7 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | resurrection | 7 | Necromancy | yok | — | günlük/kart Game Master notu | savaş dışı | — |
@@ -391,7 +391,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | simulacrum | 7 | Illusion | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | symbol | 7 | Abjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | teleport | 7 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| animal-shapes | 8 | Transmutation | dönüşüm | `jeton:biçimin canavar jetonu`, `hedef:donusum-flas` | E2: hedef:donusum-flas | hazır | — |
+| animal-shapes | 8 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | antimagic-field | 8 | Abjuration | aura | `kendi:kalkan-kure` | E2: kendi:kalkan-kure | hazır | — |
 | antipathy-sympathy | 8 | Enchantment | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | befuddlement | 8 | Enchantment | tek hedef | `hedef:alan-psisik` | E2: hedef:alan-psisik | hazır | — |
@@ -432,10 +432,10 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | Aile | Büyü | Çözüm | Mevcut kaynak / E2 satırları | Büyüler |
 |---|---|---|---|---|
 | Ters yerçekimi / deprem (`yercekimi`) | 4 | Gemini |  | levitate, telekinesis, reverse-gravity, earthquake |
-| Zemin kutuları (kalıcı büyü alanı dokusu) (`zemin-kutu`) | 4 | E2 + Gemini | zemin-kutulari.jpg: lav/kor, spor bulutu, diken/sarmaşık, mor girdap, buz rün halkası, duman halkası, bitki, kara halka | silence, daylight, sleet-storm, insect-plague |
+| Zemin kutuları (kalıcı büyü alanı dokusu) (`zemin-kutu`) | 3 | E2 + Gemini | zemin-kutulari.jpg: lav/kor, spor bulutu, diken/sarmaşık, mor girdap, buz rün halkası, duman halkası, bitki, kara halka | silence, daylight, delayed-blast-fireball |
 | Eksik duvar türleri (`duvar-ek`) | 3 | Gemini |  | wall-of-stone, blade-barrier, wall-of-thorns |
-| Prizma (gökkuşağı) ışını/duvarı (`prizma`) | 2 | Gemini |  | prismatic-spray, prismatic-wall |
 | Öldürme sözü (tek seferlik) (`durum-ek`) | 1 | Gemini |  | power-word-kill |
+| Prizma (gökkuşağı) ışını/duvarı (`prizma`) | 1 | Gemini |  | prismatic-wall |
 
 ### İçe aktarılmamış E2 ham sayfaları
 
@@ -451,22 +451,22 @@ Yalnız E2 sayfalarında ve mevcut efektlerde karşılığı olmayan ihtiyaçlar
 | Sayfa adı | Hücre | Hücreler (büyüler) |
 |---|---|---|
 | efekt-yercekimi | 2 | ters yerçekimi yükselen toz sütunu (levitate, telekinesis, reverse-gravity); deprem yarığı zemin kutusu (earthquake) |
-| efekt-zemin-kutu | 4 | sessizlik küresi (silence); gün ışığı küresi (daylight); sulu sepken / kar fırtınası zemini (sleet-storm); böcek sürüsü bulutu (insect-plague) |
+| efekt-zemin-kutu | 2 | sessizlik küresi (silence); gün ışığı küresi (daylight) |
 | efekt-duvar-ek | 3 | taş duvar parçası (wall-of-stone); bıçak bariyeri parçası (blade-barrier); diken duvarı parçası (wall-of-thorns) |
-| efekt-prizma | 2 | prizma koni 7 renk (prismatic-spray); prizma duvar parçası (prismatic-wall) |
 | efekt-durum-ek | 1 | ölüm sözü (kafatası rün, tek seferlik) (power-word-kill) |
+| efekt-prizma | 1 | prizma duvar parçası (prismatic-wall) |
 
-Toplam 5 Gemini sayfası, 12 hücre.
+Toplam 5 Gemini sayfası, 9 hücre.
 
 ## 5. Kodla çözülecekler (CC işi)
 
 0 madde. Hepsi yalnız görsel (fxPlan / efekt-baglama / CSS); kural, sayı ve kural sürümü değişmez.
 
 
-## 6. Savaş dışı büyüler (112)
+## 6. Savaş dışı büyüler (114)
 
 Efekt gerekmez: kartta "savaş dışı", günlükte Game Master notu (`spell_cast` notu) yeter.
 
-- **0–3** (52): druidcraft, elementalism, mage-hand, mending, message, minor-illusion, prestidigitation, thaumaturgy, alarm, comprehend-languages, create-or-destroy-water, detect-evil-and-good, detect-magic, detect-poison-and-disease, disguise-self, floating-disk, goodberry, identify, illusory-script, purify-food-and-drink, silent-image, speak-with-animals, unseen-servant, animal-messenger, arcane-lock, arcanists-magic-aura, augury, detect-thoughts, enthrall, find-traps, gentle-repose, knock, locate-animals-or-plants, locate-object, magic-mouth, prayer-of-healing, rope-trick, zone-of-truth, clairvoyance, create-food-and-water, glyph-of-warding, magic-circle, major-image, meld-into-stone, nondetection, phantom-steed, sending, speak-with-dead, speak-with-plants, tiny-hut, tongues, water-breathing
+- **0–3** (53): druidcraft, elementalism, mage-hand, mending, message, minor-illusion, prestidigitation, thaumaturgy, alarm, comprehend-languages, create-or-destroy-water, detect-evil-and-good, detect-magic, detect-poison-and-disease, disguise-self, floating-disk, goodberry, identify, illusory-script, purify-food-and-drink, silent-image, speak-with-animals, unseen-servant, animal-messenger, arcane-lock, arcanists-magic-aura, augury, detect-thoughts, enhance-ability, enthrall, find-traps, gentle-repose, knock, locate-animals-or-plants, locate-object, magic-mouth, prayer-of-healing, rope-trick, zone-of-truth, clairvoyance, create-food-and-water, glyph-of-warding, magic-circle, major-image, meld-into-stone, nondetection, phantom-steed, sending, speak-with-dead, speak-with-plants, tiny-hut, tongues, water-breathing
 - **4–5** (27): arcane-eye, control-water, divination, fabricate, hallucinatory-terrain, locate-creature, private-sanctum, secret-chest, stone-shape, awaken, commune, commune-with-nature, contact-other-plane, creation, dream, geas, hallow, legend-lore, modify-memory, passwall, planar-binding, raise-dead, reincarnate, scrying, seeming, telepathic-bond, teleportation-circle
-- **6–9** (33): contingency, create-undead, find-the-path, forbiddance, guards-and-wards, heroes-feast, instant-summons, magic-jar, move-earth, planar-ally, programmed-illusion, transport-via-plants, wind-walk, word-of-recall, magnificent-mansion, mirage-arcane, project-image, regenerate, resurrection, sequester, simulacrum, symbol, teleport, antipathy-sympathy, clone, control-weather, demiplane, tsunami, astral-projection, foresight, gate, imprisonment, true-resurrection
+- **6–9** (34): contingency, create-undead, find-the-path, forbiddance, guards-and-wards, heroes-feast, instant-summons, magic-jar, move-earth, planar-ally, programmed-illusion, transport-via-plants, wind-walk, word-of-recall, magnificent-mansion, mirage-arcane, project-image, regenerate, resurrection, sequester, simulacrum, symbol, teleport, animal-shapes, antipathy-sympathy, clone, control-weather, demiplane, tsunami, astral-projection, foresight, gate, imprisonment, true-resurrection

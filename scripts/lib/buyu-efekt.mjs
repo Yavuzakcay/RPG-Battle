@@ -460,6 +460,9 @@ export const ILKEL_GORSEL = {
   zarHavuzu: { durum: 'eksik', aile: 'ikon-ok', anahtar: '' },
   silahFirlat: { durum: 'eksik', aile: 'cagir-ruhani-silah', anahtar: '' },
   silahBagi: { durum: 'eksik', aile: 'silah', anahtar: '' },
+  // Kuyruk P12 (K73c tabanında): vertigo satırı patlama/ışık/ışınlanma mevcut alan ve ışınlanma efektini kullanır; kontrol ilkeli görünümsüz.
+  vertigo: { durum: 'genel', aile: null, anahtar: 'alan-kuvvet / isinlan (satıra göre)' },
+  vertigoKontrol: { durum: 'gerekmez', aile: null, anahtar: '' },
   kritik: { durum: 'hazır', aile: null, anahtar: 'kritik-vurus' },
   duvarCizili: { durum: 'hazır', aile: null, anahtar: 'duvar-cizili' },
   zeminAlan: { durum: 'genel', aile: 'zemin-kutu', anahtar: 'yer-tutucu (.spell-zone)' },

@@ -26,7 +26,7 @@ const E2_SHEETS = ['buyu-yardimci', 'donusum-kanat', 'duman-ag-kafes', 'gokten-d
 describe('Kuyruk E2: içe aktarılan sayfalar', () => {
   it('12 sayfanın kesim kaydı var; şerit kayıtları dosyalı, kare sayısı ızgarayla tutarlı', () => {
     for (const s of E2_SHEETS) expect(sheets[s]?.klasor, s).toBe('efekt');
-    expect(Object.keys(recs)).toHaveLength(52);
+    expect(Object.keys(recs)).toHaveLength(62); // 52 (E2) + 10 (E4: zemin-ek 6, isin-ek 4)
     for (const [name, r] of Object.entries(recs)) {
       expect(files.has(r.yol), name).toBe(true);
       expect(r.yol).toBe(`efekt/${name}`);
@@ -142,9 +142,9 @@ describe('Kuyruk E2: kod maddeleri', () => {
     const ids = fxShots([life, temp, temp], s).map((x) => `${x.sprite.id}:${x.targetId}`);
     expect(ids).toEqual(['iyilestir-buyuk:F', 'koruma-kutsama:C']);
   });
-  it('kalıcı alan zemin dokusu (Spike Growth → zemin-diken)', () => {
+  it('kalıcı alan zemin dokusu (Spike Growth → zemin-dikenli; Kuyruk E4: eski zemin-diken yerine zemin-ek diken zemini)', () => {
     const sg = cast('Spike Growth', { targetHex: { col: 9, row: 5 } });
-    expect(groundFx(sg.after).patches.map((p) => p.sprite.id)).toContain('zemin-diken');
+    expect(groundFx(sg.after).patches.map((p) => p.sprite.id)).toContain('zemin-dikenli');
   });
   it('11: Faerie Fire konturu jeton filtresinde; 13: rozet sayı oku simgesi', () => {
     const c = { conditions: [], life: 'alive', exhaustion: 0, effects: [{ id: 'x', name: 'Faerie Fire', sourceId: 'A' }] } as unknown as Combatant;

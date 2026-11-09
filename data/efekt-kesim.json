@@ -58,6 +58,10 @@
     "zaman": { "klasor": "efekt", "satir": 4, "sutun": 8, "kesim": "karanlik", "kare": "kare", "boyut": 160, "kareMs": 90, "tur": "zaman", "dongu": false,
       "adlar": ["zaman-kure", "zaman-girdap", "zaman-kadran", "zaman-kumsaati"] },
     "zemin-kutulari": { "klasor": "efekt", "satir": 8, "sutun": 4, "kesim": "karanlik", "kare": "kare", "boyut": 192, "kareMs": 180, "tur": "zemin", "dongu": true,
-      "adlar": ["zemin-lav", "zemin-spor", "zemin-diken", "zemin-girdap", "zemin-buz-run", "zemin-duman-halka", "zemin-bitki", "zemin-kara-halka"] }
+      "adlar": ["zemin-lav", "zemin-spor", "zemin-diken", "zemin-girdap", "zemin-buz-run", "zemin-duman-halka", "zemin-bitki", "zemin-kara-halka"] },
+    "zemin-ek": { "klasor": "efekt", "satir": 6, "sutun": 4, "kesim": "karanlik", "kare": "kare", "boyut": 192, "kareMs": 180, "tur": "zemin", "dongu": true,
+      "adlar": ["zemin-yag", "zemin-dikenli", "zemin-sulu-kar", "zemin-bocek", "zemin-su-eski", "zemin-dokunac"], "kullanilmiyor": ["zemin-su-eski"] },
+    "isin-ek": { "klasor": "efekt", "satir": 4, "sutun": 4, "kesim": "esit", "kenar": 6, "kare": "serit", "boyut": 256, "kareMs": 90, "tur": "isin", "dongu": true,
+      "adlar": ["isin-prizma", "isin-kuvvet", "isin-nekrotik", "isin-asit"], "yonler": { "isin-prizma": "sag", "isin-kuvvet": "sag", "isin-nekrotik": "sag", "isin-asit": "sag" }, "kareBasla": { "isin-prizma": 1 } }
   }
 }

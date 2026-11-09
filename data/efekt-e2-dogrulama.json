@@ -1,5 +1,5 @@
 {
-  "not": "Kuyruk E2 (npx vite-node scripts/e2-dogrula.ts üretir; elle düzenlenmez): gerçek motorla dökülüp fxPlan çıktısında beklenen efekt anahtarı çizilen büyüler (efekt) ve jetonda sayı oku rozeti kalan büyüler (rozet); değer: nasıl dökülüğü. Tablo betiği (scripts/buyu-efekt-tablosu.mjs) yalnız buradakileri E2 hazır sayar.",
+  "not": "Kuyruk E2 (npx vite-node scripts/e2-dogrula.ts üretir; elle düzenlenmez): gerçek motorla dökülüp fxPlan çıktısında beklenen efekt anahtarı çizilen büyüler (efekt) ve jetonda sayı oku rozeti kalan büyüler (rozet); değer: nasıl döküldüğü. Tablo betiği (scripts/buyu-efekt-tablosu.mjs) yalnız buradakileri E2 hazır sayar.",
   "efekt": {
     "acid-arrow": "cast_spell {\"targetId\":\"B\"}",
     "acid-splash": "cast_spell {\"targetId\":\"B\"}",
@@ -69,6 +69,7 @@
     "forcecage": "cast_spell {\"targetId\":\"B\"}",
     "freezing-sphere": "cast_spell {\"targetId\":\"B\"}",
     "globe-of-invulnerability": "cast_spell {\"targetHex\":{\"col\":9,\"row\":5}}",
+    "grease": "cast_spell {\"targetId\":\"B\"}",
     "greater-restoration": "cast_spell {\"targetId\":\"C\"}",
     "guardian-of-faith": "cast_spell {\"targetHex\":{\"col\":9,\"row\":4}}",
     "guiding-bolt": "cast_spell {\"targetId\":\"B\"}",
@@ -84,6 +85,7 @@
     "ice-storm": "cast_spell {\"targetId\":\"B\"}",
     "incendiary-cloud": "cast_spell {\"targetId\":\"B\"}",
     "inflict-wounds": "cast_spell {\"targetId\":\"C\"}",
+    "insect-plague": "cast_spell {\"targetId\":\"B\"}",
     "lesser-restoration": "cast_spell {\"targetId\":\"C\"}",
     "lightning-bolt": "cast_spell {\"targetId\":\"B\"}",
     "magic-missile": "cast_spell {\"targetId\":\"B\"}",
@@ -100,6 +102,7 @@
     "plant-growth": "cast_spell {\"targetId\":\"B\"}",
     "poison-spray": "cast_spell {\"targetId\":\"B\"}",
     "polymorph": "cast_spell {\"targetId\":\"B\"}",
+    "prismatic-spray": "cast_spell {\"targetId\":\"B\"}",
     "produce-flame": "cast_spell {\"targetId\":\"B\"}",
     "protection-from-evil-and-good": "cast_spell {\"targetHex\":{\"col\":9,\"row\":5}}",
     "ray-of-frost": "cast_spell {\"targetId\":\"B\"}",
@@ -117,6 +120,7 @@
     "shillelagh": "cast_spell {\"targetHex\":{\"col\":9,\"row\":5}}",
     "shining-smite": "cast_spell {\"targetId\":\"N\"} (isabet sonrası)",
     "shocking-grasp": "cast_spell {\"targetId\":\"C\"}",
+    "sleet-storm": "cast_spell {\"targetId\":\"B\"}",
     "slow": "cast_spell {\"targetId\":\"B\"}",
     "sorcerous-burst": "cast_spell {\"targetId\":\"B\"}",
     "spare-the-dying": "cast_spell {\"targetId\":\"E\"}",

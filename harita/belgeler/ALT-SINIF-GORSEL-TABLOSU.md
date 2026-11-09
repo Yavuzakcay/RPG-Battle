@@ -2,7 +2,7 @@
 
 `npm run efekt-tablosu` üretir (`scripts/buyu-efekt-tablosu.mjs`, kurallar `scripts/lib/buyu-efekt.mjs` `ILKEL_GORSEL`); elle düzenlenmez. Salt okuma. Paket metni (açıklama) yazılmaz: yalnız kimlik, ad, sınıf/alt sınıf, seviye, ilkel türü, aile ve sayı.
 
-**Ek paket bu kopyada yok** (`icerik/` gitignore). Ek paket satırları yerine kurgusal fikstürler (`tests/fixtures/paket-*.json`, 7 dosya) kullanıldı; ilkel → görsel eşlemesi (2. bölüm) gerçek paket için de aynıdır. Gerçek 97 alt sınıf / 395 özellik için yerelde `npm run efekt-tablosu` (ya da `npm run efekt-tablosu -- <klasör>`) çalıştırın; belge yeniden üretilir. Beklenen dağılım için `harita/belgeler/PAKET-DURUM.md` (yerelde üretilir).
+**Ek paket bu kopyada yok** (`icerik/` gitignore). Ek paket satırları yerine kurgusal fikstürler (`tests/fixtures/paket-*.json`, 9 dosya) kullanıldı; ilkel → görsel eşlemesi (2. bölüm) gerçek paket için de aynıdır. Gerçek 97 alt sınıf / 395 özellik için yerelde `npm run efekt-tablosu` (ya da `npm run efekt-tablosu -- <klasör>`) çalıştırın; belge yeniden üretilir. Beklenen dağılım için `harita/belgeler/PAKET-DURUM.md` (yerelde üretilir).
 
 **Durum:** hazır (özel bağlı efekt var), genel (yedek/varsayılan görsel), eksik (görsel yok, gerekir), gerekmez (pasif sayı/beceri/kaynak; günlük ve kart yeter), planlı/hikâye (savaşta etkisi yok). Özelliğin durumu ilkellerinin en kötüsü (gerekmez sayılmaz).
 
@@ -15,19 +15,20 @@ Kaynaklar: çekirdek 4 = listede görünen SRD alt sınıfları (Circle of the L
 | SRD çekirdek | 4 | 21 | 2 | 1 | 2 | 16 | 0 |
 | imza | 11 | 66 | 7 | 7 | 18 | 32 | 2 |
 | imza (Karadul) | 1 | 6 | 2 | 3 | 1 | 0 | 0 |
-| kurgusal fikstür | 31 | 128 | 15 | 23 | 53 | 36 | 1 |
+| kurgusal fikstür | 41 | 150 | 15 | 30 | 57 | 46 | 2 |
 
 ### Aile özeti (aynı aile tek satır)
 
 | Aile | Özellik | Alt sınıf | Çözüm | Özellikler (alt sınıf/özellik) |
 |---|---|---|---|---|
+| İşaret simgesi ve bağ çizgisi (`isaret-bag`) | 28 | 19 | E2 + kod | imza_imparator/royal-word, imza_infazci/verdict, imza_ciftci/provisions, imza_dunganga/lullaby-blood, imza_dunganga/call, imza_astrolog/star-reading, imza_astrolog/seal-of-fate, imza_birlik/forge-bond, imza_birlik/shared-vitality, imza_sair/verse, imza_sair/master-poet, imza_harita/mark-the-ground, imza_harita/rewrite-the-ground, imza_harita/birds-eye, denge-muhafizi/av-isareti, denge-muhafizi/zincir, denge-muhafizi/birlik, zaman-muhru/muhur, ezgi-deposu/depo, kivilcim-okulu/kivilcim, yanki-okulu/yanki, muhur-okulu/muhur, tunc-kalkan/meydan, birlik-yolu/ortak-yurek, demir-nobet/lanet-isareti, zaman-katibi/buyu-ortakligi, zaman-katibi/olu-efendisi, kehribar-nobetci/av-isareti |
 | Tepki parıltısı (Shield, Feather Fall, paket tepkileri) (`tepki-koruma`) | 25 | 11 | kod | hunter/superior-hunters-defense, denge-muhafizi/denge-sozu, denge-muhafizi/siyrilan-adim, denge-muhafizi/av-takibi, denge-muhafizi/karsi-darbe, karsi-buyu/geri-tepen, karsi-buyu/basarili-buyu, el-cabuk/calma, kehanet-okulu/yazgi-sozu, demir-siper/siper-ol, kemik-cagirici/kemik-kalkan, kemik-cagirici/kemik-ayna, kemik-cagirici/kirik-kemik, tunc-kalkan/muhafiz-hatti, tunc-kalkan/diken, demir-nobet/durdurucu, demir-nobet/lanet-karsilik, demir-nobet/komsu-vurus, demir-nobet/siyrilma, demir-nobet/kacamaz, demir-nobet/buyu-kesici, demir-nobet/buyu-avcisi, kehribar-nobetci/kalkan-sozu, kehribar-nobetci/tas-deri, ruzgar-kartali/ruzgar-perdesi |
-| İşaret simgesi ve bağ çizgisi (`isaret-bag`) | 25 | 16 | E2 + kod | imza_imparator/royal-word, imza_infazci/verdict, imza_ciftci/provisions, imza_dunganga/lullaby-blood, imza_dunganga/call, imza_astrolog/star-reading, imza_astrolog/seal-of-fate, imza_birlik/forge-bond, imza_birlik/shared-vitality, imza_sair/verse, imza_sair/master-poet, imza_harita/mark-the-ground, imza_harita/rewrite-the-ground, imza_harita/birds-eye, denge-muhafizi/av-isareti, denge-muhafizi/zincir, denge-muhafizi/birlik, zaman-muhru/muhur, ezgi-deposu/depo, tunc-kalkan/meydan, birlik-yolu/ortak-yurek, demir-nobet/lanet-isareti, zaman-katibi/buyu-ortakligi, zaman-katibi/olu-efendisi, kehribar-nobetci/av-isareti |
-| Güçlendirme/zayıflatma oku (sayı oku ikonları) (`ikon-ok`) | 19 | 15 | E2 + kod | imza_imparator/exalted-throne, imza_astrolog/star-reading, imza_birlik/forge-bond, imza_bilge/nimble-elder, imza_bilge/final-lesson, imza_hizir/hastening-road, imza_harita/birds-eye, denge-muhafizi/agirlik, nagme-okulu/iade, nagme-okulu/bedava, nagme-okulu/mars, tas-kani/yogunluk, taktik-zar/taktik, kehanet-okulu/kehanet-zarlari, kehanet-okulu/sakin-zihin, tunc-kalkan/tunc-beden, demir-nobet/pusu-oncusu, kehribar-nobetci/tetik-gozu, ruzgar-kartali/kanat-cirpisi |
+| Güçlendirme/zayıflatma oku (sayı oku ikonları) (`ikon-ok`) | 21 | 17 | E2 + kod | imza_imparator/exalted-throne, imza_astrolog/star-reading, imza_birlik/forge-bond, imza_bilge/nimble-elder, imza_bilge/final-lesson, imza_hizir/hastening-road, imza_harita/birds-eye, denge-muhafizi/agirlik, nagme-okulu/iade, nagme-okulu/bedava, nagme-okulu/mars, tas-kani/yogunluk, taktik-zar/taktik, golge-taktik/golge, masal-yolu/calisan, kehanet-okulu/kehanet-zarlari, kehanet-okulu/sakin-zihin, tunc-kalkan/tunc-beden, demir-nobet/pusu-oncusu, kehribar-nobetci/tetik-gozu, ruzgar-kartali/kanat-cirpisi |
 | Aura bağlama (mevcut aura şeritleri, eksik bağ) (`aura-bagla`) | 9 | 8 | kod | imza_imparator/crown-presence, imza_hizir/aura-hard-times, suru-cobani/komut, buyu-kalkani/kalkan-aura, birlik-yolu/kalkan-aurasi, birlik-yolu/isik-aurasi, suru-cemberi/suru-gucu, zaman-katibi/ruh-besleme, kul-cagirani/sicak-hale |
 | Tek hedef büyü darbesi (save’li, saldırısız) (`tek-hedef`) | 8 | 6 | kod | imza_ciftci/provisions, imza_ciftci/harvest, imza_sair/verse, imza_sair/master-poet, imza_bilge/greater-mind-might, karadul-cemberi/final-kiss, birlik-yolu/dokunulmaz, kul-cagirani/kul-patlamasi |
 | Silah parıltısı (smite, büyülü silah) (`silah`) | 7 | 6 | E2 + kod | karadul-cemberi/widow-venom, denge-muhafizi/yan-vurus, tunc-kalkan/buyulu-yumruk, tunc-kalkan/dev-avcisi, demir-nobet/pusu-oncusu, ruzgar-kartali/firtina-oku, bag-muhafizi/kilic-bagi |
-| Paket çağrısının renkli portalı (`cagir-renk`) | 6 | 4 | kod | kemik-cagirici/kemik-diriltme, suru-cemberi/suru, suru-cemberi/son-koruyucu, zaman-katibi/ruh-cagrisi, kul-cagirani/kul-surusu, kul-cagirani/kor-cagrisi |
+| Paket çağrısının renkli portalı (`cagir-renk`) | 7 | 5 | kod | kemik-cagirici/kemik-diriltme, suru-cemberi/suru, suru-cemberi/son-koruyucu, zaman-katibi/ruh-cagrisi, kul-cagirani/kul-surusu, kul-cagirani/kor-cagrisi, bulut-yolcusu/ejder-cagrisi |
+| Kanat / havalanma (`kanat`) | 5 | 2 | E2 | ruzgar-kartali/kanat-cirpisi, bulut-yolcusu/kalici-kanat, bulut-yolcusu/kisa-kanat, bulut-yolcusu/suzulme, bulut-yolcusu/kirik-kanat |
 | Dönüşüm flaşı ve büyüme halkası (`donusum`) | 4 | 4 | E2 | karadul-cemberi/spider-shape, demir-siper/uzun-kol, kehribar-nobetci/dev-boyu, safak-bekcisi/safak-bicimi |
 | Hasarsız alan büyüsüne alan patlaması (`alan-turu`) | 3 | 3 | kod | circle-of-the-land/lands-aid, imza_dunganga/call, imza_astrolog/comet |
 | Diriltme / durum temizleme (`diriltme`) | 3 | 3 | kod | imza_imparator/undying-throne, imza_geride_kalan/risen-from-ashes, safak-bekcisi/son-isik |
@@ -36,7 +37,6 @@ Kaynaklar: çekirdek 4 = listede görünen SRD alt sınıfları (Circle of the L
 | Jeton parıltısı / ana hatları (CSS) (`parilti-css`) | 1 | 1 | kod | demir-siper/duvar-yuruyusu |
 | Geçici HP kazanımı (`gecici-can`) | 1 | 1 | kod | demir-nobet/sert-beden |
 | Zaman küresi (`zaman`) | 1 | 1 | E2 | zaman-katibi/zaman-cizgisi |
-| Kanat / havalanma (`kanat`) | 1 | 1 | E2 | ruzgar-kartali/kanat-cirpisi |
 | Ruhani silah / güç eli çağrısı (`cagir-ruhani-silah`) | 1 | 1 | E2 | bag-muhafizi/donen-kilic |
 
 ## 2. İlkel → görsel eşlemesi
@@ -99,6 +99,8 @@ Ek paket ilkelleri (`src/content/ilkelSema.ts`) ve imza/SRD verisinden türetile
 | zarHavuzu | eksik | — | `ikon-ok` |
 | silahFirlat | eksik | — | `cagir-ruhani-silah` |
 | silahBagi | eksik | — | `silah` |
+| vertigo | genel | alan-kuvvet / isinlan (satıra göre) | — |
+| vertigoKontrol | gerekmez | — | — |
 | kritik | hazır | kritik-vurus | — |
 | duvarCizili | hazır | duvar-cizili | — |
 | zeminAlan | genel | yer-tutucu (.spell-zone) | `zemin-kutu` |
@@ -214,7 +216,7 @@ Ek paket ilkelleri (`src/content/ilkelSema.ts`) ve imza/SRD verisinden türetile
 | druid | karadul-cemberi | web-sense | Ağ Duyusu | 10 | algi | eksik | — | `goz` |
 | druid | karadul-cemberi | final-kiss | Son Öpücük | 14 | hasar | genel | `hasar şeridi (ateş/soğuk/asit/zehir)` | `tek-hedef` |
 
-### kurgusal fikstür (31 alt sınıf, 128 özellik)
+### kurgusal fikstür (41 alt sınıf, 150 özellik)
 
 | Sınıf | Alt sınıf | Özellik | Ad | Sv | İlkeller | Durum | Bugünkü anahtar | Eksik aile |
 |---|---|---|---|---|---|---|---|---|
@@ -258,6 +260,23 @@ Ek paket ilkelleri (`src/content/ilkelSema.ts`) ve imza/SRD verisinden türetile
 | sorcerer | tas-kani | yogunluk | yogunluk | 1 | koruma, buyuDegisimi | genel | `koruma-* (etki alanı eşleşirse)`, `büyünün efekti` | `ikon-ok` |
 | fighter | taktik-zar | taktik-havuz | taktik-havuz | 3 | kaynak | gerekmez | — | — |
 | fighter | taktik-zar | taktik | taktik | 3 | zarHavuzu | eksik | — | `ikon-ok` |
+| wizard | kivilcim-okulu | kivilcim-havuz | kivilcim-havuz | 3 | kaynak | gerekmez | — | — |
+| wizard | kivilcim-okulu | kivilcim | kivilcim | 3 | gucDeposu | eksik | — | `isaret-bag` |
+| wizard | yanki-okulu | yanki-havuz | yanki-havuz | 3 | kaynak | gerekmez | — | — |
+| wizard | yanki-okulu | yanki | yanki | 3 | gucDeposu | eksik | — | `isaret-bag` |
+| warlock | sans-cini | sans-havuz | sans-havuz | 3 | kaynak | gerekmez | — | — |
+| warlock | sans-cini | sans | sans | 3 | buyuVer | gerekmez | `verilen büyünün efekti` | — |
+| barbarian | girdap-yolu | girdap | girdap | 3 | vertigo | genel | `alan-kuvvet / isinlan (satıra göre)` | — |
+| barbarian | girdap-yolu | denge | denge | 10 | vertigoKontrol | gerekmez | — | — |
+| barbarian | girdap-yolu | kontrol | kontrol | 14 | vertigoKontrol | gerekmez | — | — |
+| fighter | golge-taktik | golge-havuz | golge-havuz | 3 | kaynak | gerekmez | — | — |
+| fighter | golge-taktik | golge | golge | 3 | zarHavuzu | eksik | — | `ikon-ok` |
+| wizard | buyu-ikizi | ikiz-okul | ikiz-okul | 3 | buyuDegisimi | gerekmez | `büyünün efekti` | — |
+| wizard | kitap-ruhu | kitap | kitap | 3 | buyuDegisimi | gerekmez | `büyünün efekti` | — |
+| wizard | muhur-okulu | muhur-havuz | muhur-havuz | 3 | kaynak | gerekmez | — | — |
+| wizard | muhur-okulu | muhur | muhur | 3 | buyuSakla | eksik | — | `isaret-bag` |
+| rogue | masal-yolu | calisan | calisan | 3 | zarEtkisi | genel | `koruma-kutsama (yalnız dosta +zar)` | `ikon-ok` |
+| rogue | masal-yolu | anlati | anlati | 3 | — | planlı/hikâye | — | — |
 | wizard | kehanet-okulu | kehanet-havuzu | Kehanet Havuzu | 3 | kaynak | gerekmez | — | — |
 | wizard | kehanet-okulu | kehanet-zarlari | Kehanet Zarları | 3 | zarMuhru | eksik | — | `ikon-ok` |
 | wizard | kehanet-okulu | bukulmus-buyu | Bükülmüş Büyü | 3 | buyuDegisimi | gerekmez | `büyünün efekti` | — |
@@ -346,6 +365,11 @@ Ek paket ilkelleri (`src/content/ilkelSema.ts`) ve imza/SRD verisinden türetile
 | cleric | safak-bekcisi | safak-bicimi | Şafak Biçimi | 10 | bicim, direnc, boyut | eksik | `jeton biçime döner (geçiş yok)` | `donusum` |
 | fighter | bag-muhafizi | donen-kilic | donen-kilic | 3 | silahFirlat | eksik | — | `cagir-ruhani-silah` |
 | fighter | bag-muhafizi | kilic-bagi | kilic-bagi | 3 | silahBagi | eksik | — | `silah` |
+| fighter | bulut-yolcusu | kalici-kanat | Kalıcı Kanat | 3 | ucus | genel | `rozet 🪽` | `kanat` |
+| fighter | bulut-yolcusu | kisa-kanat | Kısa Kanat | 3 | ucus | genel | `rozet 🪽` | `kanat` |
+| fighter | bulut-yolcusu | suzulme | Süzülme | 3 | ucus | genel | `rozet 🪽` | `kanat` |
+| fighter | bulut-yolcusu | kirik-kanat | Kırık Kanat | 3 | ucus | genel | `rozet 🪽` | `kanat` |
+| fighter | bulut-yolcusu | ejder-cagrisi | Ejder Çağrısı | 3 | cagir | genel | `cagir-portal (varsayılan)` | `cagir-renk` |
 
 ## 4. Jeton görünümü
 
@@ -358,7 +382,7 @@ Karakter jeton atlası `public/characters/<ırk>-<cinsiyet>-<sınıf>.webp`: 10 
 - Kanat/uçuş: jetonda yalnız 🪽 rozeti; kanat katmanı E2 `donusum-kanat.jpg`’den (kod: jetonun arkasında katman). Ayrı jeton gerekmez.
 - Silah/kalkan değişimi (silah bağı, büyülü silah, ruhani silah): jetonda çizilmez; parıltı katmanı (`silah`), ayrı jeton gerekmez.
 
-Görünümü değiştiren ilkeli olan özellikler (7):
+Görünümü değiştiren ilkeli olan özellikler (11):
 
 | Kaynak | Alt sınıf | Özellik | İlkeller | Ayrı jeton | Öneri |
 |---|---|---|---|---|---|
@@ -369,5 +393,9 @@ Görünümü değiştiren ilkeli olan özellikler (7):
 | kurgusal fikstür | ruzgar-kartali | kanat-cirpisi | ucus | gerekmez | kanat katmanı |
 | kurgusal fikstür | kul-cagirani | kul-korkusu | gorunmezlik | gerekmez | hazır (CSS) |
 | kurgusal fikstür | safak-bekcisi | safak-bicimi | bicim, boyut | canavar jetonu (ödünç) | dönüşüm flaşı, büyüme halkası |
+| kurgusal fikstür | bulut-yolcusu | kalici-kanat | ucus | gerekmez | kanat katmanı |
+| kurgusal fikstür | bulut-yolcusu | kisa-kanat | ucus | gerekmez | kanat katmanı |
+| kurgusal fikstür | bulut-yolcusu | suzulme | ucus | gerekmez | kanat katmanı |
+| kurgusal fikstür | bulut-yolcusu | kirik-kanat | ucus | gerekmez | kanat katmanı |
 
 Eksik jeton hücresi (alt sınıf için zorunlu): **0**. Gerçek ek pakette `bicim` ilkeli canavar dışı bir biçim (`yaratiklar` jetonu) tanımlıyorsa jeton `JETON_ARKETIP`/`JETON_YEDEK` zincirine düşer (`src/content/ilkelSema.ts`); yerelde üretilen tabloda bu satırlar "canavar jetonu (ödünç)" olarak görünür.
