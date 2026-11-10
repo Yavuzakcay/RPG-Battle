@@ -2749,10 +2749,19 @@ const someoneSensesUnder = (foes: Combatant[]): boolean => foes.some((f) => (f.b
  * Kuyruk K73e (sürüm 65+): yer altı yolu: düşmanın yanındaki (çıkılabilir) altıgenlere kazılabilir altıgenlerden uzaklık
  * (altıgen; `foeField` + kazma adımı). Duvar, kaya, su, döşeme ve Forcecage sınırı kazılmaz (motorun `moveCostFn`'iyle aynı).
  */
+const BURROW_FIELD = new WeakMap<BattleState, Map<string, Map<string, number>>>();
 function burrowField(state: BattleState, actor: Combatant, foes: Combatant[]): (h: Offset) => number {
-  const cost = moveCostFn(state, { ...actor, burrowed: true, altitudeFt: -BURROW_DEPTH_FT });
-  const f = foeField(state, actor, foes.filter((x) => x.pos && x.hp > 0), cost);
-  return (h) => f.get(hexKey(h)) ?? Infinity;
+  let m = BURROW_FIELD.get(state);
+  if (!m) { m = new Map(); BURROW_FIELD.set(state, m); }
+  const key = `${actor.id}|${foes.map((f) => f.id).join(',')}`;
+  let f = m.get(key);
+  if (!f) {
+    const cost = moveCostFn(state, { ...actor, burrowed: true, altitudeFt: -BURROW_DEPTH_FT });
+    f = foeField(state, actor, foes.filter((x) => x.pos && x.hp > 0), cost);
+    m.set(key, f);
+  }
+  const field = f;
+  return (h) => field.get(hexKey(h)) ?? Infinity;
 }
 
 /**
@@ -2795,11 +2804,14 @@ function burrowCommand65(state: BattleState, actor: Combatant, now: Command | nu
   }
   // (a) yaklaşma
   if (now || !canAct) return null;
-  const under = burrowField(state, actor, foes)(pos);
-  if (!Number.isFinite(under)) return null;
   const walk = approachField(state, actor, foes)(pos);
   const walkTurns = walk / Math.max(1, speedHexes({ ...actor, burrowed: undefined }));
-  const digTurns = (under + 2) / Math.max(1, Math.floor((actor.burrowFt ?? 0) / 5));
+  const digHexes = Math.max(1, Math.floor((actor.burrowFt ?? 0) / 5));
+  // Erken çıkış: yer altı yolu en az en yakın düşmana uzaklık − 1 (alan hesabı gerekmez).
+  if (Number.isFinite(walk) && (near(pos) - 1 + 2) / digHexes > walkTurns * K73E.kazmaOrani) return null;
+  const under = burrowField(state, actor, foes)(pos);
+  if (!Number.isFinite(under)) return null;
+  const digTurns = (under + 2) / digHexes;
   if (Number.isFinite(walk) && digTurns > walkTurns * K73E.kazmaOrani) return null;
   if (tryCmd(state, actor, dig).ok) { k73eStats.digApproach++; return dig; }
   return null;
