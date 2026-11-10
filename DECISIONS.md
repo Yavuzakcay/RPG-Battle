@@ -2,6 +2,63 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-10 — Kuyruk K73e: YZ kazma ve dalış kararı (kural sürümü 65)
+
+- **Sürüm:** `wip/k73e` (`wip/k73d` cbc5798 üstüne). Kural sürümü 64 → 65; 65'te yalnız yapay zekâ kararı değişir (`src/battle/k73eSurum.ts` `k73eOn`). Kural motoru, olaylar ve kayıt biçimi 64 ile aynı; `SAVE_VERSION` 22. Parametreler `data/yapay-zeka.json` `k73e`.
+- **Görev 0:** `harita/belgeler/K73E-DENETIM.md`.
+  - Kazma: aday vardı ama tetikleyici (yürüyerek hiçbir düşmana yol yok) açık zeminde hiç doğmuyordu; kaçış kararı yoktu.
+  - Dalış: hiç aday üretilmiyordu (`waterCommand` yalnız yüzeye çıkarıyordu).
+  - Veri: kazma 21, tremorsense 6, yüzme 63 canavar; ⚠ yüzme hızı olan 17 canavar `derin-su.json` `swimmers` listesinde yok (kural verisi, değiştirilmedi).
+  - ⚠ Motor açığı: batıkken atlama varış hücresini denetlemiyor (iki yaratık aynı −5 ft hücrede; sonra yüzeye çıkış hücreye takılıp boğulma). Kural motoru değişmediğinden 65'te YZ batık ve yer altındayken atlama adayı üretmez; motor düzeltmesi ayrı görev.
+- **Görev 1, kazma (`ai.ts` `burrowCommand65`; taraf kısıtı yok, Game Master çağrısı da):**
+  - (a) Yaklaşma: bu tur saldıramıyor ve yürüyerek düşmana yol yok ya da yer altından ulaşma süresi (kazma + yol + çıkış, kazma hızıyla) yürüme süresinin en çok `kazmaOrani` (0,5) katı. Yer altı yolu `foeField` ile kazılabilir altıgenlerden (duvar, kaya, su, döşeme, Forcecage sınırı kesilir); durum başına önbellek, uzaklık alt sınırıyla erken çıkış.
+  - (b) Kaçış: canı ≤ `kacisCan` (%50), bitişikte düşman ya da suyun dışından menzilli tehdit (`tehditMenzil` 24 altıgen), düşmanlardan kimse yer altını sezemiyor (tremorsense ya da kazma hızı), kazılabilir zeminde ve **turun başında** (bu tur hareket ve eylem yok): kazar, o tur yer altında kalır.
+    - ⚠ "Yer altında uzaklaşma" yok: YZ durum tutmuyor, "bu tur kazdı" ile "yer altında yaklaştı" ayrılamıyor; denenen sürüm salınım yaptı. Yer altındaki zaten hedeflenemez.
+    - İlk sürümde turun başı koşulu yoktu: kazıcı çıktığı tur saldırmadan yeniden kazıyordu (L9: tur 7,1 → 13,6, 5 zaman aşımı). Düzeltildi.
+  - (c) Çıkış: yer altında, bir düşmanın yatayda bitişiğinde yüzeye çıkar, sonra saldırır; değilse yer altında en yakın düşmana yaklaşır (çıkışa bir altıgen bırakarak), ilerleyemezse çıkar. Yeniden kazmak sonraki tur.
+  - Tremorsense/kazma hızı olan YZ yer altındaki hedefi zaten seçebiliyordu (`checkReach` → `burrowTargetProblem`); test eklendi.
+- **Görev 2, dalış (`ai.ts` `waterCommand65`; yalnız yüzme hızı olan, `hasSwimSpeed`):**
+  - (a) Kaçınma: yüzeyde, suyun dışında menzilli saldırısı olan düşman `tehditMenzil` içindeyse dalar (batık hedefe menzilli dezavantaj/ıska, K73c). Tehdit sürerken batık kalır (çıkıp yeniden dalma salınımı yok).
+  - (b) Yaklaşma: en yakın düşman batıksa dalar.
+  - Nefes: batık, su soluyamayan (yüzme hızı olsun olmasın) nefes sınırının `nefesOrani` (%50) kadarını kullandıysa yüzeye çıkar. Saldıracak hedefi yoksa suda düşman varken batık kalır, suda düşman yokken çıkar (kıyıya gitmek için).
+  - Süzülen ve uçan su altı sayılmaz (`inWater`); derin su yoksa hiçbir değişiklik yok (test).
+  - Boğulma 0: test (iki taraf YZ, 12 tur batık başlangıç) ve 30 tohumluk ölçümde hiçbir YZ boğulmadı.
+- **Ölçüm:**
+  - **64 birebir:** eski ağaç (`wip/k73d` cbc5798, geçici worktree) ile 4 senaryo × 30, duvarlı 6 × 50, katmanlı 8 × 20 = 18 senaryoda 64 imzası birebir; 65 de 18'inde 64 ile aynı (kazıcı ve derin su savaşı yok). Regresyon testi `src/sim/k73eRegresyon.test.ts` (64 altın = K73c altınları; 65 = 64).
+  - **64 ↔ 65 denge** (30 tohum; `harita/belgeler/DENGE.md`): kazan L5 47 → 43, L9 53 → 57, su altı 100 → 100, kıyı 100 → 100, fırtına L5/L9 değişmedi (imza eşit). 8 puanı aşan kayma yok; ayar yok. Sayaçlar (65): kazma 89/149, çıkış 89/149, kaçış 89/149; dalış 211 (kıyı); sudan çıkış 2 (su altı; 64'te 335); boğulma 0.
+    - Yaklaşma kazması hiç tetiklenmedi: açık zeminde yol var ve SRD kazıcılarının kazma hızı yürüme hızını aşmıyor.
+    - Su altı ve kıyı karşılaşmaları iki sürümde de %100: kolay.
+  - **YZ karar süresi** (medyan ms; 64 ↔ 65 aynı koşuda simetrik sıra 64, 65, 65, 64; n = 8, N = 150; hepsi ≤ +%15):
+
+    | Sahne | 64 | 65 | Fark |
+    |---|---:|---:|---:|
+    | Mantar | 2,12 | 2,13 | 0 |
+    | Katmanlı | 2,16 | 2,07 | −%4 |
+    | Uçan düşman | 2,23 | 2,16 | −%3 |
+    | Yakın dövüşlü uçan | 2,54 | 2,45 | −%4 |
+    | Duvarlı yerde | 2,58 | 2,55 | −%1 |
+    | Duvarda | 0,89 | 0,92 | +%3 |
+    | Katlı | 1,23 | 1,23 | 0 |
+    | Süzülen düşman | 0,81 | 0,82 | +%1 |
+    | Çok turlu sur okçusu | 0,69 | 0,70 | +%1 |
+    | Kazan düşman | 1,75 | 1,77 | +%1 |
+    | Su altı, düşman / parti | 0,46 / 1,50 | 0,47 / 1,54 | +%2 / +%3 |
+    | Fırtınalı | 0,84 | 0,79 | −%6 |
+    | Kıyı (yeni; dalış) | 1,05 | 0,04 | karar erken döner |
+
+    - İlk koşuda kazan düşman +%14'tü: yer altı yol alanı her kararda yeniden hesaplanıyordu. Önbellek ve uzaklık alt sınırıyla +%1 (karar aynı).
+    - Makine K73d ölçümünden ~%13 yavaştı (Mantar 64'te 2,12; K73d'de 1,95).
+- **Kapı:** ana parça 374 742 B; `check:harita` 96/0, `check:ses` 15/0 (`PW_CHROMIUM=/opt/pw-browsers/chromium` açıldı); modül başlatma testi yeşil; tam paket (son koşu) 366 dosya + 1 atlanan (`k73dOlcum.test.ts`), 4293 test + 6 atlanan.
+- **Testler:** `src/battle/k73e.test.ts` (12):
+  - kazma: yaklaşma (hız oranı, 64'te yok), duvar sütununda aday yok, kaçış (tremorsense'te yok, 64'te yok), taşta aday yok, çıkış + saldırı, çıktığı/saldırdığı tur yeniden kazmama, tremorsense hedefleme;
+  - dalış: kaçınma (64'te yok, yüzme hızsız yok), yaklaşma, nefes yarısında çıkış;
+  - derin su/kazıcı yokken 64 = 65; boğulma 0 + replay.
+- **Açık kalanlar:**
+  - Motor: batıkken atlama hücre denetimi (K73c açığı); yüzme hızı listesi 17 canavar eksik.
+  - Yer altında uzaklaşma yok; yaklaşma kazması SRD verisinde pratikte tetiklenmiyor.
+  - YZ dalmak için yüzme hızı ister; nefes tutan yüzme hızsız yaratık dalmaz.
+  - Su altı/kıyı karşılaşmaları kolay (%100).
+
 ## 2026-11-10 — Kuyruk K73d: K73c kapanışı (tam paket, balon çakışması, yeni kuralların denge ölçümü)
 
 - **Sürüm:** `wip/k73d` (`wip/k73c` b65b5be üstüne). Kural sürümü 64 kalır, `SAVE_VERSION` 22; yeni mekanik ve denge ayarı yok.

@@ -2,6 +2,28 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K73e: YZ kazma ve dalış (2026-11-10; ölçüm, denge ayarı yok)
+
+Kural sürümü 64 ↔ 65 (65'te yalnız YZ kazma/dalış kararı), aynı tohumlar (30), K73d karşılaşmaları (`src/sim/k73dSenaryo.ts`)
++ yeni kıyı başlangıcı (`k73d-kiyi`: parti gölün kıyısında, deniz yaratıkları suda yüzeyde). Ölçüm `src/sim/k73dOlcum.test.ts`
+(`K73D_SURUM=64,65`, `K73D_TOHUM=30`). Sayaçlar durum geçişlerinden (30 savaş toplamı). Parti kazanma %, ortalama tur, ortalama ölü:
+
+| Karşılaşma | Parti, seviye | 64 | 65 | Fark | Sayaçlar (65) |
+|---|---|---|---|---|---|
+| (a) Kazan düşman (Çöl) | standart, 5 | 47 / 4,7 / 0,23 | 43 / 4,9 / 0,50 | −4 | kazma 89, çıkış 89, kaçış 89 |
+| (a) Kazan düşman (Çöl) | standart, 9 | 53 / 7,1 / 0,70 | 57 / 7,5 / 0,73 | +4 | kazma 149, çıkış 149, kaçış 149 |
+| (b) Su altı (herkes batık başlar) | standart, 5 | 100 / 8,6 / 0,13 | 100 / 9,1 / 0,07 | 0 | sudan çıkış 2 (64'te 335), boğulma 0 |
+| (b') Kıyı (parti karada) | standart, 5 | 100 / 7,9 / 0,30 | 100 / 8,6 / 0,30 | 0 | dalış 211, boğulma 0 |
+| (c) Fırtına | k18-druid, 5 | 80 / 11,3 / 0,33 | 80 / 11,3 / 0,33 | 0 (imza eşit) | — |
+| (c) Fırtına | k18-druid, 9 | 97 / 11,9 / 0,20 | 97 / 11,9 / 0,20 | 0 (imza eşit) | — |
+
+8 puanı aşan kayma yok. Ayrıştırma:
+- **Kazan:** bütün kazmalar kaçış tetikleyicisinden (canı yarının altında, bitişikte ya da menzilli tehdit, parti yer altını sezemiyor). Yaklaşma tetikleyicisi hiç çalışmadı: açık kumda yürüme yolu var ve SRD kazıcılarının kazma hızı yürüme hızından büyük değil (en iyi eşitlik: Bulette 40/40), yer altından ulaşma hiçbir zaman yürümenin yarı süresine inmiyor. Çıkış sayısı kazmaya eşit: her kaçışı sonraki turda çıkış + saldırı izliyor.
+  - İlk sürümde kazıcı çıktığı aynı turda saldırmadan yeniden kazıyordu: L9'da tur 7,1 → 13,6, 5 zaman aşımı, kazma 1619. Kaçış turun başına bağlandı; L9 tur 7,5, zaman aşımı 0.
+- **Su altı:** 64'te batık ve o an saldıramayan yüzeye çıkıyordu (335 çıkış), 65'te suda düşman varken batık kalıyor; nefes yetiyor (savaş 9 tur, parti nefes sınırının yarısı ≥ 10 tur). Boğulma 0. Karşılaşma iki sürümde de %100: kolay.
+- **Kıyı:** deniz yaratıkları karadaki okçulardan dalarak kaçınıyor (211 dalış); savaş 0,7 tur uzuyor, kazanma aynı (%100, kolay). Kıyıya çıkamayan deniz yaratıkları partiye pek dokunamıyor.
+- **Fırtına:** kazıcı ve yüzücü yok: 65 = 64.
+
 ## Kuyruk K73d: yeni kuralların etkisi: kazan düşman, su altı, fırtına (2026-11-10; ölçüm, denge ayarı yok)
 
 Kural sürümü 63 ↔ 64, aynı tohumlar (30), K73c kurallarının etkisini göstermek için üç yeni karşılaşma
