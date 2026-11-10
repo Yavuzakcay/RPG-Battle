@@ -106,7 +106,7 @@ function grid(img, spec) {
 }
 
 /** Hücreyi RGBA'ya (parlaklık alfası, renk alfaya bölünmüş) çevirir. */
-function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false) {
+function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, edge = 0) {
   const cw = x1 - x0; const ch = y1 - y0;
   const out = Buffer.alloc(cw * ch * 4);
   let peak = 0;
@@ -115,11 +115,18 @@ function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false) {
     const [r, g, b] = [img.data[s], img.data[s + 1], img.data[s + 2]];
     // Kuyruk E4b: opak hücre (su dokusu: siyah zeminli değil, dolu resim): alfa 1, renk olduğu gibi (normal karışım).
     if (opaque) { out[d] = r; out[d + 1] = g; out[d + 2] = b; out[d + 3] = 255; peak = 1; continue; }
-    const a = lumAlpha(r, g, b, black);
+    const a0 = lumAlpha(r, g, b, black);
+    // Kuyruk E4c: `kazanc` (loş kareye parlaklık: alfa kazançla çarpılır, renk özgün alfaya bölünür → toplamalı karışımda r·kazanç) ve
+    // `yumusat` (hücre kenarından `edge` px içeride alfa 0'dan 1'e smoothstep: kenara değen ışın/sütun dikişsiz biter).
+    let a = Math.min(1, a0 * gain);
+    if (edge > 0) {
+      const dEdge = Math.min(x + 1, y + 1, cw - x, ch - y);
+      if (dEdge < edge) { const u = dEdge / edge; a *= u * u * (3 - 2 * u); }
+    }
     if (a > peak) peak = a;
-    out[d] = a > 0 ? Math.min(255, Math.round(r / a)) : 0;
-    out[d + 1] = a > 0 ? Math.min(255, Math.round(g / a)) : 0;
-    out[d + 2] = a > 0 ? Math.min(255, Math.round(b / a)) : 0;
+    out[d] = a0 > 0 ? Math.min(255, Math.round(r / a0)) : 0;
+    out[d + 1] = a0 > 0 ? Math.min(255, Math.round(g / a0)) : 0;
+    out[d + 2] = a0 > 0 ? Math.min(255, Math.round(b / a0)) : 0;
     out[d + 3] = Math.round(a * 255);
   }
   return { buf: out, w: cw, h: ch, peak };
@@ -137,7 +144,18 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
   if (spec.adlar.length * per !== spec.satir) throw new Error(`${report.file}: ${spec.adlar.length} ad × ${per} satır ≠ ${spec.satir}`);
   const result = {};
   for (let n = 0; n < spec.adlar.length; n++) {
-    const cells = g.slice(n * per, n * per + per).flatMap((r) => r.cols.map((c) => cellRgba(img, c[0], r.y[0], c[1], r.y[1], spec.siyah ?? BLACK, !!spec.opak?.includes(spec.adlar[n]))));
+    const ad = spec.adlar[n];
+    let ci = 0;
+    const cells = g.slice(n * per, n * per + per).flatMap((r) => r.cols.map((c) => {
+      ci++;
+      let [x0, x1] = c; let [y0, y1] = r.y;
+      // Kuyruk E4c: `ortaKare` (opak zemin dokusu: hücrenin ortasından kısa kenar boyunda kare).
+      if (spec.ortaKare?.includes(ad)) {
+        const side = Math.min(x1 - x0, y1 - y0);
+        x0 += Math.floor((x1 - x0 - side) / 2); y0 += Math.floor((y1 - y0 - side) / 2); x1 = x0 + side; y1 = y0 + side;
+      }
+      return cellRgba(img, x0, y0, x1, y1, spec.siyah ?? BLACK, !!spec.opak?.includes(ad), spec.kazanc?.[ad]?.[String(ci)] ?? 1, spec.yumusat?.[ad] ?? 0);
+    }));
     // Sondaki boş kareler (ızgarada var, içerik yok) atılır.
     let count = cells.length;
     while (count > 1 && cells[count - 1].peak < emptyThr) count--;
@@ -146,7 +164,10 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
     if (cap && cap < count) count = cap;
     // Kuyruk E4: tabloda başlangıç karesi (`kareBasla`: satırın ilk N karesi atılır; ör. ışının yalnız çıkış kıvılcımı olan ilk karesi döngüde titreme yapar).
     const skip = Math.min(spec.kareBasla?.[spec.adlar[n]] ?? 0, count - 1);
-    const used = cells.slice(skip, count);
+    // Kuyruk E4c: `sira` (1 tabanlı hücre sırası: kare atma ve ileri-geri döngü; ör. [1,2,3,2] → 4 kare ping-pong).
+    const sira = spec.sira?.[ad];
+    const used = sira ? sira.map((i) => cells[i - 1]) : cells.slice(skip, count);
+    if (sira) count = cells.length;
     let fw; let fh; let frames;
     if (spec.kare === 'serit') {
       // En-boy korunur; bütün karelerin içerik bandına (dikey) kırpılır, aynı pencere (titreme yok).
@@ -154,17 +175,28 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
       for (const c of used) for (let y = 0; y < c.h; y++) for (let x = 0; x < c.w; x++) if (c.buf[(y * c.w + x) * 4 + 3] > 8) { top = Math.min(top, y); bot = Math.max(bot, y); }
       top = Math.max(0, top - 4); bot = Math.min(Math.min(...used.map((c) => c.h)) - 1, bot + 4);
       const cw = Math.min(...used.map((c) => c.w));
-      fw = spec.boyut; fh = Math.max(8, Math.round(spec.boyut * (bot - top + 1) / cw));
+      const bs = spec.boyutlar?.[ad] ?? spec.boyut;
+      fw = bs; fh = Math.max(8, Math.round(bs * (bot - top + 1) / cw));
       frames = await Promise.all(used.map((c) => sharp(c.buf, { raw: { width: c.w, height: c.h, channels: 4 } })
         .extract({ left: Math.floor((c.w - cw) / 2), top, width: cw, height: bot - top + 1 }).resize(fw, fh, { fit: 'fill' }).raw().toBuffer()));
     } else {
       // Kare: hücreler en büyük kenarlı kare tuvale, hücre ortası tuval ortasına; sonra hedef boya.
       const S = Math.max(...used.map((c) => Math.max(c.w, c.h)));
-      fw = fh = spec.boyut;
+      fw = fh = spec.boyutlar?.[ad] ?? spec.boyut;
       frames = await Promise.all(used.map(async (c) => {
         const canvas = Buffer.alloc(S * S * 4);
-        const ox = Math.floor((S - c.w) / 2); const oy = Math.floor((S - c.h) / 2);
-        for (let y = 0; y < c.h; y++) c.buf.copy(canvas, ((oy + y) * S + ox) * 4, y * c.w * 4, (y + 1) * c.w * 4);
+        let ox = Math.floor((S - c.w) / 2); let oy = Math.floor((S - c.h) / 2);
+        // Kuyruk E4c: `ortala` (kare kendi içerik sınır kutusunun merkezine göre tuval ortasına; hücrede kaymış kareler hizalanır).
+        if (spec.ortala?.includes(ad)) {
+          let x0 = c.w; let x1 = -1; let y0 = c.h; let y1 = -1;
+          for (let y = 0; y < c.h; y++) for (let x = 0; x < c.w; x++) if (c.buf[(y * c.w + x) * 4 + 3] > 40) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+          if (x1 >= 0) { ox = Math.round(S / 2 - (x0 + x1 + 1) / 2); oy = Math.round(S / 2 - (y0 + y1 + 1) / 2); }
+        }
+        for (let y = 0; y < c.h; y++) {
+          const ty = oy + y; if (ty < 0 || ty >= S) continue;
+          const sx0 = Math.max(0, -ox); const sx1 = Math.min(c.w, S - ox);
+          if (sx1 > sx0) c.buf.copy(canvas, (ty * S + ox + sx0) * 4, (y * c.w + sx0) * 4, (y * c.w + sx1) * 4);
+        }
         return sharp(canvas, { raw: { width: S, height: S, channels: 4 } }).resize(fw, fh, { kernel: 'lanczos3' }).raw().toBuffer();
       }));
     }
@@ -258,10 +290,12 @@ export async function importEffects({ src = 'assets-ham/efekt', out = 'public/sp
       await writeStrip(path.join(dir, `${name}.webp`), r);
       if (r.dropped) notes.push(`${name}: ızgarada ${r.grid} kare, sondaki ${r.dropped} kare atıldı (boş ya da kare sınırı) → ${r.frames.length}`);
       const rec = {
-        kare: r.frames.length, sure: r.frames.length * spec.kareMs, tur: spec.turler?.[ad] ?? spec.tur, karisim: spec.opak?.includes(ad) ? 'normal' : 'screen', yon: spec.yonler?.[ad] ?? null,
+        kare: r.frames.length, sure: r.frames.length * (spec.kareMsler?.[ad] ?? spec.kareMs), tur: spec.turler?.[ad] ?? spec.tur, karisim: spec.opak?.includes(ad) ? 'normal' : 'screen', yon: spec.yonler?.[ad] ?? null,
         en: r.fw, boy: r.fh, dongu: spec.donguler?.[ad] ?? !!spec.dongu, kaynak: `${sheet}`, ...(spec.ortusme ? { ortusme: spec.ortusme } : {}),
         // Kuyruk E4: içe aktarılan ama hiçbir büyüye bağlanmayan şerit (kullanıcı kararı; kayıtta işaretli).
         ...(spec.kullanilmiyor?.includes(ad) ? { kullanilmiyor: true } : {}),
+        // Kuyruk E4c: hareket azaltmada gösterilecek kare (0 tabanlı; yoksa ortadaki).
+        ...(spec.sabit?.[ad] !== undefined ? { sabit: spec.sabit[ad] } : {}),
       };
       if (spec.klasor) e2.efektler[name] = { ...rec, yol: `${spec.klasor}/${name}` };
       else records[name] = rec;

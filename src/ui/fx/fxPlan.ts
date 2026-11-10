@@ -20,15 +20,17 @@ export interface FxSprite {
   /** Sprite adı (efekt- öneki olmadan, ör. `darbe-kesik`). */
   id: string; file: string; frames: number; ms: number; kind: string; loop: boolean; w: number; h: number;
   dir: 'sag' | null; blend: string; overlap: number;
+  /** Kuyruk E4c: hareketi azaltta gösterilen kare (0 tabanlı; yoksa ortadaki). */
+  still?: number;
 }
-interface Rec { kare: number; sure: number; tur: string; karisim: string; yon: string | null; en: number; boy: number; dongu: boolean; ortusme?: number; yol?: string }
+interface Rec { kare: number; sure: number; tur: string; karisim: string; yon: string | null; en: number; boy: number; dongu: boolean; ortusme?: number; yol?: string; sabit?: number }
 
 // Kuyruk E2: E2 sayfaları ayrı kayıtta (data/efekt-e2.json, public/efekt/; yalnızca bu tembel parça okur).
 const RECS = { ...((esleme as unknown as { efektler?: Record<string, Rec> }).efektler ?? {}), ...((e2 as unknown as { efektler?: Record<string, Rec> }).efektler ?? {}) };
 export const FX: Record<string, FxSprite> = Object.fromEntries(Object.entries(RECS).map(([name, r]) => {
   const id = name.replace(/^efekt-/, '');
   return [id, { id, file: r.yol ? `${r.yol}.webp` : `sprites/${name}.webp`, frames: r.kare, ms: r.sure, kind: r.tur, loop: r.dongu, w: r.en, h: r.boy,
-    dir: r.yon === 'sag' ? 'sag' : null, blend: r.karisim, overlap: r.ortusme ?? 0 }];
+    dir: r.yon === 'sag' ? 'sag' : null, blend: r.karisim, overlap: r.ortusme ?? 0, ...(r.sabit !== undefined ? { still: r.sabit } : {}) }];
 }));
 /** Kuyruk E2: ikon sayfaları (işaret simgeleri, sayı okları): önek → ad → public/ yolu (uzantısız). */
 export const SIMGE: Record<string, Record<string, string>> = (e2 as unknown as { simgeler?: Record<string, Record<string, string>> }).simgeler ?? {};
@@ -71,11 +73,16 @@ export interface FxShot {
   hue?: number;
   /** Kuyruk E2: jeton merkezinden dikey kayma (altıgen eni katı; simge jetonun üstünde). */
   dy?: number;
+  /** Kuyruk E4c: çapa oranı (karenin üstten) jetonun tabanına, saydamlık. */
+  anchor?: number;
+  alpha?: number;
 }
 
 /** Kuyruk E2: büyü bağlaması (data/efekt-baglama.json `buyu`). */
 export interface SpellFx { yol: 'mermi' | 'isin' | 'hedef' | 'kendi' | 'alan' | 'gokten' | 'koni' | 'isaret'; sprite?: string; simge?: string; ton?: string; hue?: number;
-  olcek?: number; ek?: string; zincir?: boolean; hedefBasina?: boolean; bag?: boolean }
+  olcek?: number; ek?: string; zincir?: boolean; hedefBasina?: boolean; bag?: boolean;
+  /** Kuyruk E4c: şeridin çapa yeri (karenin üstten oranı): jetonun tabanına oturur (yükselen toz); `opaklik` tek seferlik efektin saydamlığı. */
+  ankraj?: number; opaklik?: number }
 export const SPELL_FX = (baglama as unknown as { buyu?: Record<string, SpellFx> }).buyu ?? {};
 
 const sp = (id: string | undefined): FxSprite | null => (id && FX[id]) || null;
@@ -254,8 +261,8 @@ function spellRef(e: BattleEvent): { id: string; actorId?: string; targetId?: st
     case 'buff_added': return { id: spellSlug(e.buff.source), actorId: e.buff.by, targetId: e.targetId };
     case 'time_stop': return { id: 'time-stop', actorId: e.actorId };
     // Kuyruk E4: özel yollu büyü (Prismatic Spray: `spell_cast` hedefsiz, ışınlar hedef başına `map_effect`; etiket "Büyü (Renk)").
-    // Kuyruk E4b: Reverse Gravity (alandaki her yaratık için save/düşüş olayı; sütun yaratığın üstünde).
-    case 'map_effect': return e.rule === 'spells69' && (e.text.startsWith('Prismatic Spray (') || e.text.startsWith('Reverse Gravity')) ? { id: spellSlug(e.text), actorId: undefined, targetId: e.targetId, hit: true } : null;
+    // Kuyruk E4b: Reverse Gravity (alandaki her yaratık için save/düşüş olayı; sütun yaratığın üstünde). Kuyruk E4c: Power Word Kill (hedefte `map_effect`; `spell_cast` hedefsiz).
+    case 'map_effect': return e.rule === 'spells69' && (e.text.startsWith('Prismatic Spray (') || e.text.startsWith('Reverse Gravity') || e.text.startsWith('Power Word Kill')) ? { id: spellSlug(e.text), actorId: undefined, targetId: e.targetId, hit: true } : null;
     default: return null;
   }
 }
@@ -291,7 +298,8 @@ function spellShots(id: string, u: SpellUse, before: BattleState, push: Push, pu
   const targets = u.targets.filter((t) => t !== u.actorId || f.yol === 'hedef' || f.yol === 'isaret');
   const onTargets = (list: string[]) => {
     const scale = f.olcek ? { scale: f.olcek } : {};
-    for (const t of list) pushOnce(`${s.id}:${t}`, s, { targetId: t, ...scale, ...tint });
+    const extra = { ...(f.ankraj !== undefined ? { anchor: f.ankraj } : {}), ...(f.opaklik !== undefined ? { alpha: f.opaklik } : {}) };
+    for (const t of list) pushOnce(`${s.id}:${t}`, s, { targetId: t, ...scale, ...tint, ...extra });
   };
   switch (f.yol) {
     case 'mermi':
@@ -380,10 +388,17 @@ export interface GroundAura {
   ring?: number;
 }
 /** Kuyruk E2: kalıcı alan zemin dokusu (alanın merkezinde, alan kadar). */
+/** Kuyruk E4c: altıgenin 12 çeşit görünümü (6 döndürme × aynalama), koordinattan türetilmiş (aynı altıgen her çizimde aynı). */
+export const hexVariant = (h: Offset): number => (((h.col * 73856093) ^ (h.row * 19349663)) >>> 0) % 12;
+/** Kuyruk E4c: altıgen başına döşenen zemin dokuları (data/efekt-baglama.json `zeminKaro`). */
+const KARO = ((B as unknown as { zeminKaro?: Record<string, { opaklik: number }> }).zeminKaro ?? {});
 export interface GroundPatch {
   key: string; at: Offset; radius: number; sprite: FxSprite; ton?: string;
   /** Kuyruk E4b: alanın altıgenleri (zemin dokusu bu altıgenlerin birleşimine kırpılır). */
   hexes: Offset[];
+  /** Kuyruk E4c: dokuyu altıgen başına (koordinattan türetilmiş döndürme/aynalama) döşe; opaklık. Tek seferlik (loop=false) doku son karede kalır. */
+  karo?: { opaklik: number };
+  loop: boolean;
 }
 export interface GroundWall {
   key: string; hexes: Array<{ at: Offset; rotate: number }>; sprite: FxSprite; tint?: string; outline?: string;
@@ -424,7 +439,7 @@ export function groundFx(state: BattleState): { auras: GroundAura[]; walls: Grou
   const Z = (B as unknown as { zemin?: Record<string, string> }).zemin ?? {};
   for (const z of zones) {
     const zs = !z.surface && z.hexes.length ? sp(Z[z.spellId]) : null;
-    if (zs) patches.push({ key: `zp:${z.id}`, at: centroid(z.hexes), radius: radiusOf(z.hexes.length), sprite: zs, hexes: z.hexes });
+    if (zs) patches.push({ key: `zp:${z.id}`, at: centroid(z.hexes), radius: radiusOf(z.hexes.length), sprite: zs, hexes: z.hexes, loop: zs.loop, ...(KARO[zs.id] ? { karo: KARO[zs.id]! } : {}) });
     if (z.anchorId && z.radius !== undefined && state.combatants[z.anchorId]?.pos && !z.surface) {
       const s = auraSprite(z.spec?.damageType, undefined);
       if (s) auras.push({ key: `z:${z.id}`, ownerId: z.anchorId, radius: z.radius, sprite: s });
@@ -518,4 +533,4 @@ export function allocate(reqs: FxReq[], opts: { enabled: boolean; reduceMotion: 
 }
 
 /** Statik görünümde gösterilecek kare (ortadaki; tek kare). */
-export const stillFrame = (s: Pick<FxSprite, 'frames'>): number => Math.floor(s.frames / 2);
+export const stillFrame = (s: Pick<FxSprite, 'frames'> & { still?: number }): number => Math.min(s.frames - 1, s.still ?? Math.floor(s.frames / 2));

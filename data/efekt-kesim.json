@@ -74,6 +74,16 @@
     "efekt-durum-ek": { "klasor": "efekt", "satir": 2, "sutun": 2, "blokSatir": 2, "kesim": "esit", "kenar": 8, "kare": "kare", "boyut": 256, "kareMs": 160, "tur": "durum", "dongu": true,
       "adlar": ["durum-tas-halka"] },
     "efekt-su": { "klasor": "efekt", "satir": 2, "sutun": 4, "kesim": "esit", "kenar": 14, "kare": "serit", "boyut": 320, "kareMs": 220, "tur": "su", "dongu": true,
-      "adlar": ["su-dalga", "su-havuz"], "opak": ["su-dalga", "su-havuz"] }
+      "adlar": ["su-dalga", "su-havuz"], "opak": ["su-dalga", "su-havuz"] },
+    "efekt-eksik": { "klasor": "efekt", "satir": 5, "sutun": 4, "kesim": "esit", "kenar": 14, "kare": "kare", "boyut": 256, "boyutlar": { "zemin-deprem-yarigi": 352 }, "kareMs": 150, "tur": "efekt", "turler": { "zemin-deprem-yarigi": "zemin", "zemin-sessizlik": "zemin", "zemin-gunisigi": "zemin" },
+      "adlar": ["yukselen-toz", "zemin-deprem-yarigi", "zemin-sessizlik", "zemin-gunisigi", "durum-olum-sozu"],
+      "kareMsler": { "zemin-deprem-yarigi": 400, "zemin-sessizlik": 300, "zemin-gunisigi": 250, "durum-olum-sozu": 140 },
+      "donguler": { "yukselen-toz": false, "zemin-deprem-yarigi": false, "zemin-sessizlik": true, "zemin-gunisigi": true, "durum-olum-sozu": false },
+      "opak": ["zemin-deprem-yarigi"], "ortaKare": ["zemin-deprem-yarigi"],
+      "kazanc": { "yukselen-toz": { "1": 1.8, "4": 1.8 } },
+      "yumusat": { "yukselen-toz": 6, "zemin-gunisigi": 6, "durum-olum-sozu": 6 },
+      "ortala": ["zemin-sessizlik", "durum-olum-sozu"],
+      "sira": { "zemin-sessizlik": [1, 2, 3, 2] },
+      "sabit": { "zemin-deprem-yarigi": 3, "zemin-sessizlik": 0, "zemin-gunisigi": 0 } }
   }
 }

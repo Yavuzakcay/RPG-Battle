@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { Offset } from '../../rules/hex';
 import type { BattleEvent, BattleState, Combatant } from '../../battle/types';
-import { FX, SCREEN_BUDGET, SU, allocate, deathShots, fxShots, groundFx, stillFrame, waterHexes, type FxShot, type FxSprite, type WaterHex } from './fxPlan';
+import { FX, SCREEN_BUDGET, SU, allocate, deathShots, fxShots, groundFx, hexVariant, stillFrame, waterHexes, type FxShot, type FxSprite, type GroundPatch, type WaterHex } from './fxPlan';
 import './fx.css';
 
 const BASE = import.meta.env.BASE_URL;
@@ -21,12 +21,16 @@ type Pt = { x: number; y: number };
 interface Geo { hexCenter: (o: Offset) => Pt; tokenCenter: (c: Combatant) => Pt; hexW: number; hexH: number }
 
 /** Tek şerit karesi: animasyonlu (`fx-play`, steps) ya da statik tek kare. */
-function Strip({ s, x, y, w, h, animated, delay = 0, loop, rotate, cx, cy, tint, outline, className, hue, style }: {
-  s: FxSprite; x: number; y: number; w: number; h: number; animated: boolean; delay?: number; loop?: boolean; rotate?: number; cx?: number; cy?: number;
+function Strip({ s, x, y, w, h, animated, delay = 0, loop, hold, rotate, cx, cy, tint, outline, className, hue, style }: {
+  s: FxSprite; x: number; y: number; w: number; h: number; animated: boolean; delay?: number; loop?: boolean;
+  /** Kuyruk E4c: tek seferlik ama kalıcı doku: kareler sırayla oynar, son karede kalır (normal tek seferlik animasyon sonunda boşa kayardı). */
+  hold?: boolean; rotate?: number; cx?: number; cy?: number;
   tint?: string; outline?: string; className?: string; hue?: number; style?: CSSProperties;
 }) {
   const frame = stillFrame(s);
-  const img: CSSProperties = animated
+  const img: CSSProperties = animated && hold && s.frames > 1
+    ? ({ '--shift': `${-s.w * (s.frames - 1)}px`, animation: `fx-play ${s.ms}ms steps(${s.frames - 1}) ${delay}ms both` } as CSSProperties)
+    : animated
     ? ({ '--shift': `${-s.w * s.frames}px`, animation: `fx-play ${s.ms}ms steps(${s.frames}) ${delay}ms ${loop ? 'infinite' : 'both'}` } as CSSProperties)
     : { transform: `translateX(${-s.w * frame}px)` };
   // Statik tek seferlik efekt gecikmesine dek gizli, sonra tek kare (hareket yok).
@@ -160,8 +164,10 @@ export function FxShots({ state, events, enabled, reduceMotion, geo, lead, onAct
         if (!p) return null;
         const w = geo.hexW * s.scale * (s.sprite.kind === 'alan' ? 0.75 : 0.55);
         const h = w * s.sprite.h / s.sprite.w;
-        const y = p.y + (s.dy ?? 0) * geo.hexW;
+        // Kuyruk E4c: çapa (karenin üstten oranı) jetonun tabanına (merkez + 0,36 altıgen yüksekliği) oturur: yükselen toz jetonun altından çıkar.
+        const y = s.anchor !== undefined ? p.y + geo.hexH * 0.36 - (s.anchor - 0.5) * h : p.y + (s.dy ?? 0) * geo.hexW;
         return <Strip key={s.id} s={s.sprite} x={p.x - w / 2} y={y - h / 2} w={w} h={h} animated={s.animated} delay={s.delay} rotate={s.rotate} tint={s.ton} hue={s.hue}
+          style={s.alpha !== undefined ? { opacity: s.alpha } : undefined}
           className={s.sprite.kind === 'isaret' ? `fx-simge${s.animated ? '' : ' still'}` : undefined} />;
       })}
     </g>
@@ -180,6 +186,43 @@ function hexPath(hexes: Offset[], geo: Geo, grow = 1.03): string {
     const c = geo.hexCenter(at);
     return `M${[0, 1, 2, 3, 4, 5].map((i) => { const a = (Math.PI / 3) * i; return `${(c.x + R * Math.cos(a)).toFixed(1)} ${(c.y + R * Math.sin(a)).toFixed(1)}`; }).join('L')}Z`;
   }).join('');
+}
+
+/**
+ * Kuyruk E4c: altıgen başına döşenen zemin dokusu (deprem yarığı): her altıgen kendi koordinatından türetilmiş döndürme ve aynalamayla,
+ * kendi altıgenine kırpılmış doku alır. 12 görünüm = 12 desen; desen karosu (3 × yarıçap, altıgen yüksekliği) iki sütunun altıgenlerini
+ * (tek sütunun karo sınırına taşan yarımları dahil beş çizim) taşır, aynı görünümdeki altıgenler tek yolda doldurulur (animasyon örneği görünüm başına bir; altıgen sayısından bağımsız).
+ */
+function TiledPatch({ patch, geo, animated }: { patch: GroundPatch; geo: Geo; animated: boolean }) {
+  const s = patch.sprite;
+  const S = geo.hexW / 2; const HH = geo.hexH;
+  const byVar = new Map<number, Offset[]>();
+  for (const h of patch.hexes) { const v = hexVariant(h); (byVar.get(v) ?? byVar.set(v, []).get(v)!).push(h); }
+  const hex = [0, 1, 2, 3, 4, 5].map((i) => `${(S * Math.cos((Math.PI / 3) * i)).toFixed(1)} ${(S * Math.sin((Math.PI / 3) * i)).toFixed(1)}`).join('L');
+  const key = patch.key.replace(/[^A-Za-z0-9]/g, '');
+  const d = S * 4.4; // doku altıgenden büyük: her altıgen çatlağın kendi parçasını gösterir (kırpma altıgene)
+  const tile = (v: number, cx: number, cy: number, k: string) => (
+    <g key={k} transform={`translate(${cx.toFixed(1)} ${cy.toFixed(1)})`} clipPath={`url(#fx-hk-${key})`}>
+      <g transform={`rotate(${(v % 6) * 60}) scale(${v >= 6 ? -1 : 1} 1)`}>
+        <Strip s={s} x={-d / 2} y={-d / 2} w={d} h={d} animated={animated} loop={patch.loop} hold={!patch.loop} />
+      </g>
+    </g>
+  );
+  return (
+    <g className="fx-patch-tiled" opacity={patch.karo!.opaklik}>
+      <defs><clipPath id={`fx-hk-${key}`}><path d={`M${hex}Z`} /></clipPath></defs>
+      {[...byVar.entries()].map(([v, hexes]) => (
+        <g key={v}>
+          <defs>
+            <pattern id={`fx-hp-${key}-${v}`} patternUnits="userSpaceOnUse" width={3 * S} height={HH}>
+              {tile(v, S, HH / 2, 'a')}{tile(v, 2.5 * S, 0, 'b')}{tile(v, 2.5 * S, HH, 'c')}{tile(v, -0.5 * S, 0, 'd')}{tile(v, -0.5 * S, HH, 'e')}
+            </pattern>
+          </defs>
+          <path d={hexPath(hexes, geo, 1.01)} fill={`url(#fx-hp-${key}-${v})`} />
+        </g>
+      ))}
+    </g>
+  );
 }
 
 function WaterLayer({ kind, hexes, geo, animated }: { kind: WaterHex['kind']; hexes: WaterHex[]; geo: Geo; animated: boolean }) {
@@ -228,11 +271,12 @@ export function FxGround({ state, enabled, reduceMotion, geo, used, tokenUsed }:
         const p = geo.hexCenter(z.at);
         const d = ((2 * z.radius + 1) * geo.hexH) / 0.8;
         const clip = `fx-hexclip-${z.key.replace(/[^A-Za-z0-9]/g, '')}`;
+        if (z.karo) return <TiledPatch key={z.key} patch={z} geo={geo} animated={anim.has(z.key)} />;
         return (
           <g key={z.key} className="fx-patch-clip">
             <clipPath id={clip}><path d={hexPath(z.hexes, geo, 1)} /></clipPath>
             <g clipPath={`url(#${clip})`}>
-              <Strip s={z.sprite} x={p.x - d / 2} y={p.y - d / 2} w={d} h={d} animated={anim.has(z.key)} loop tint={z.ton} className="fx-patch" />
+              <Strip s={z.sprite} x={p.x - d / 2} y={p.y - d / 2} w={d} h={d} animated={anim.has(z.key)} loop={z.loop} tint={z.ton} className="fx-patch" />
             </g>
           </g>
         );
