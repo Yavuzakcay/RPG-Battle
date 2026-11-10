@@ -5,6 +5,36 @@ Yalnız görsel ve belge: kural, sayı, yapay zekâ, kural sürümü (64) ve kay
 
 > **Kuyruk E4b güncellemesi (2026-11-10):** aşağıdaki "eksik sayfa", "su kararı çizim yolu" (bölüm 4) ve "açık kalanlar" (bölüm 5, madde 1–2) maddeleri E4b'de kapandı: altı sayfa içe aktarıldı ve bağlandı, su dokusu su altıgenlerine bağlandı, zemin dokusu altıgen maskesi eklendi. Ayrıntı ve harita tablosu `DECISIONS.md` (Kuyruk E4b). Kalanlar: levitate, telekinesis, earthquake, silence, daylight, power-word-kill hücreleri; dünya haritası suyu.
 
+## E4c sayımı (2026-11-10)
+
+> Kuyruk E4c: `efekt-eksik` (5 şerit) ve `kaynak-ikonlari` (8 ikon) içe aktarıldı ve bağlandı. Bölüm 5 madde 1 ve 3 (kaynak ikonları, Silence/Daylight/Levitate/Telekinesis/Earthquake/Power Word Kill) kapandı. Ayrıntı `DECISIONS.md` (Kuyruk E4c).
+
+**(a) Dosyalar** (kuyruk sonu; şerit = animasyonlu sprite sayfası, simge = arayüz simgesi):
+
+| Klasör | Dosya | Şerit (gerçek animasyon) | Arayüz simgesi / ikon | Diğer |
+|---|---|---|---|---|
+| `public/efekt` | 111 | 79 (4 "kullanılmıyor": `duvar-bicak-hilal`, `isin-prizma-yatay`, `zemin-kuyu-yeni`, `zemin-su-eski`) | 32 (16 işaret simgesi `efekt-isaret-*`, 16 sayı oku `efekt-ok-*`) | — |
+| `public/sprites` | 81 | 41 (E1 şeritleri `efekt-*`) | 15 durum ikonu (`efekt-ikon-*`) | 25 yüzey/nesne sprite'ı (`yuzey-*`, `nesne-*`) |
+| `public/efektler` | 13 | 13 (5 hasar, 7 durum döngüsü, 1 engel; Görev V) | — | — |
+| `public/kaynak` (yeni) | 24 | — | 8 kaynak ikonu × 3 boy (192, 96, 64 px) | — |
+| **Toplam** | **229** | **133** animasyonlu şerit (129 kullanımda) | 55 simge/ikon (16 işaret + 16 sayı oku + 15 durum + 8 kaynak) | 25 yüzey/nesne |
+
+**(b) Büyülerin kullandığı farklı efekt anahtarı** (savaşta 225 büyü, `BUYU-EFEKT-TABLOSU.md` anahtarlar sütunundan; `ton`/`<tür>` kalıpları sayılmadı): **105 → 110** farklı efekt anahtarı (E4b sonu → E4c sonu: +yukselen-toz, zemin-deprem-yarigi, zemin-sessizlik, zemin-gunisigi, durum-olum-sozu). Ayrı satırlar: yer tutucu (renkli altıgen) 1, CSS jeton filtresi 4, sayı oku rozeti 12, durum ikonu 1, ışık katmanı/kopya 4.
+
+| Durum (savaşta 225) | E4 sonu | E4b sonu | **E4c sonu** |
+|---|---|---|---|
+| hazır | 199 | 204 | **210** |
+| genel | 24 | 20 | **15** |
+| eksik | 2 | 1 | **0** |
+
+**(c) Kalan "genel" 15 büyü ve nedeni:**
+
+| Büyü | Neden genel | Kodla çözülür mü |
+|---|---|---|
+| resistance, bane, command, expeditious-retreat, jump, longstrider, sanctuary, ray-of-enfeeblement, spider-climb, water-walk, death-ward, irresistible-dance, glibness (13) | Tek görsel: süren etkinin jetondaki sayı oku rozeti (`rozet:ok-*`); büyüye özel olay animasyonu yok (tablo tanımı: yalnız rozet = genel) | Evet, sayfa gerekmez: olay anında hedefte mevcut şerit (örn. `koruma-ruh`, `koruma-kutsama`) bağlanabilir; hangi büyüye hangi şerit kararı bekliyor |
+| delayed-blast-fireball | Boncuk (zemin nesnesi) renkli altıgen yer tutucusu; patlaması `alan-ates` ile çizilir, boncuk dokusu yok | Kısmen: `alan-ates` boncuk yerine kullanılabilir (yaklaşık); özgün boncuk için yeni hücre |
+| wish | Kopyalanan büyünün efekti (kendi görseli yok; kopya büyünün bağlaması çalışır, tablo "genel" sayar) | Gerekmez (davranış doğru); tablo ölçütü değişirse "hazır" |
+
 ## 0. Girdi durumu (önemli)
 
 Görevde sayılan sayfaların **yalnız ikisi** depoda bulunabildi. `assets-ham/efekt/` içinde (wip/k73c ucunda) yeni sayfaların

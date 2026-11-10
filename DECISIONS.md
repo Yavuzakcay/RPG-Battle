@@ -2,6 +2,41 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-10 — Kuyruk E4c: efekt-eksik sayfası, kaynak ikonları, sayım (yalnız görsel ve arayüz; kural sürümü 64 ve SAVE_VERSION değişmedi)
+
+- **Girdi:** `efekt-eksik.jpg` ve `kaynak-ikonlari.jpg` `origin/wip/e4-ham`'dan (`git checkout origin/wip/e4-ham -- …`; geçmiş birleştirilmedi). `assets-ham/efekt/*` değiştirilmedi.
+- **Kesim (`efekt-eksik`, 5 satır × 4 sütun, eşit bölme + kenar 14 px):** betiğe küçük, genel alanlar eklendi: `ortaKare` (opak doku için hücrenin ortasından kare), `ortala` (her kare kendi içerik sınır kutusunun merkezine göre: sessizlik kare 2 ve ölüm sözü kare 2 kaymaları), `yumusat` (hücre kenarında 6 px smoothstep alfa: toz sütunu, gün ışığı ve ölüm sözü ışınları kenara değiyor), `kazanc` (loş kareye parlaklık: toz kare 1 ve 4 ×1,8; alfa kazançla, renk özgün alfaya bölünür), `sira` (kare atma/ileri-geri: sessizlik 1-2-3-2), `sabit` (hareket azaltmada kare), `boyutlar`, `kareMsler` (şerit başına süre; `fxPlan.e2.test.ts` buna göre güncellendi: veriye bağlı değer). Kontrol görseli `docs/e4c/efekt-kontrol.jpg`.
+- **Bağlama tablosu:**
+
+| Büyü | Şerit | Karışım ve ayar |
+|---|---|---|
+| Levitate, Telekinesis | `yukselen-toz` | toplamalı, `hedef` yolu, hedef jetonun tabanına oturur (çapa 0,77: karenin %77'si jeton tabanı), ölçek 1,9, saydamlık 0,8 (yüzü örtmesin), tek seferlik, 4 × 150 ms |
+| Earthquake | `zemin-deprem-yarigi` | **opak, normal karışım %88**, 352×352 ortadan kare; **altıgen başına döşeme**: altıgen koordinatından türetilmiş 6 döndürme × aynalama (12 görünüm, `hexVariant`), her altıgen kendi altıgenine kırpılır; kare 1 → 4 (çatlak büyür) bir kez oynar, son karede kalır (`hold`); hareket azaltta kare 4 |
+| Silence | `zemin-sessizlik` | toplamalı; kare 4 atıldı (parlaklığın %1'i), 1-2-3-2 ileri-geri döngü (300 ms); alan birleşimine tek doku + E4b altıgen maskesi; hareket azaltta kare 1 |
+| Daylight | `zemin-gunisigi` | toplamalı; dört kare ardışık (disk → spiral → yıldız → spiral) yavaş (250 ms ≈ 4 fps); maske + 6 px yumuşatma; hareket azaltta kare 1 (disk); `zone.light` ışık katmanı aynen (yalnız doku) |
+| Power Word Kill | `durum-olum-sozu` | toplamalı, tek seferlik, hedefte (4 × 140 ms); kare 2 ve diğerleri kendi kutusuna ortalı; hareket azaltta kare 3 (kafatası); `fxPlan.spellRef` PWK `map_effect`'ini büyüye bağlar (`spell_cast` hedefsiz; ilk denemede etki büyücüde çiziliyordu, düzeltildi); hedef ölünce `olum-toz` zaten çıkıyor, dokunulmadı |
+
+  Altıgen döşeme verimi: deprem alanı 231 altıgene kadar çıkar; her altıgen ayrı animasyon yerine 12 görünümün her biri bir `pattern` (karo = 3 × yarıçap × altıgen yüksekliği, tek sütun yarımları dahil beş altıgen çizimi) ve tek yol: animasyon örneği ≤ 12, altıgen sayısından bağımsız. Tek seferlik kalıcı doku için `Strip` `hold` kipi: `steps(kare − 1)` ve son kare `forwards` (varsayılan tek seferlik animasyon sonunda şeridi boşa kaydırıyordu).
+- **Doğrulama:** `e2Verify` 147 → **153/153**; yeni testler `fxPlan.e4c.test.ts` (kayıtlar, ayarlar, 6 büyü gerçek motorla, çapa, PWK yalnız hedefte, karo ve tek seferlik, görünüm dağılımı, replay aynı). Görsel doğrulama: gerçek `FxGround`/`FxShots` Vite sayfasında Playwright (toz sütunu jetonun tabanında, ölüm sözü hedefte, deprem altıgen döşemesi, hareket azaltta statik).
+- **Kaynak ikonları (Görev 2):** `kaynak-ikonlari.jpg` macenta zeminli, madalyonlar ızgaraya oturmuyor → `npm run kaynak-ikon` (`scripts/kaynak-ikon.mjs`): macenta (R ve B, G'den ≥ 90 büyük) dışı pikseller **bağlı bileşen** (8 komşu) ile 8 madalyona ayrılır, soldan sağa/üstten alta sıralanır; saçak için alfa elipsten (yarıçap − 2,5 px, 1,2 px yumuşak kenar; alt sıra 529×551 hafif elips → kare kutuya oranlanır, yuvarlak görünür). Çıktı `public/kaynak/kaynak-<ad>.webp` (192 px) + `-96` + `-64` (24 dosya). Adlar: ki, ilham, ustunluk-zari, kader-d20, ruh-kristali, buyu-puani, sifa-havuzu, arcanum.
+- **İkon eşlemesi** (`data/kaynak-ikon.json`, yalnız görünüm):
+
+| İkon | Kaynaklar |
+|---|---|
+| ki | `focus`, `uncannyMetabolism`, `wholenessOfBody` |
+| ilham | `bardicInspiration`, `imzaUstaSair`, `imzaOlumsuzDize` |
+| ustunluk-zari | ek paket `zarHavuzu` kaynağı (`registerPackResources` `ResourceDef.icon`, yalnız görünüm alanı) |
+| kader-d20 | `strokeOfLuck`, `darkOnesLuck`, `imzaFal`, `imzaYazgi` |
+| ruh-kristali | ek paket kaynağı, adı kristal/crystal/ruh geçenler (ad deseni; SRD'de yok) |
+| buyu-puani | `sorceryPoints`, `innateSorcery` |
+| arcanum | `arcanum6`–`arcanum9` |
+| sifa-havuzu | `layOnHands`, `celestialHeal`, `imzaHavuz`, `imzaHukumdar` |
+
+  Eşleşmeyen kaynak (Rage, Action Surge, …) yalnız metin kalır.
+- **Arayüz kararı:** kaynak göstergesi "ikon + sayı" (karakter listesinde "ikon + sayı/üst sınır"): `ResourceChip` (`src/ui/ResourceChip.tsx`; savaş kartı `MapBattle.tsx` Drawer ve `Screens.tsx` `RestPanel`). İkon **en az 32 px** (`data/kaynak-ikon.json` `boyut`; 24 px altında ince çizgili ki / d20 / arcanum okunmaz; 64 px kaynak 2×, 96 px 3× yoğunluk için `srcSet`); ad ve sayı `title` ve `aria-label`'da (`role="img"`); ikonlu kaynak metin satırından çıkar, ayrı satırda; tek satıra sığmazsa sarar (`flex-wrap`). **Karar:** aynı ikonu paylaşan kaynaklar (Monk'ta Focus ve Uncanny Metabolism ikisi ki) yan yana iki özdeş ikon olurdu: yalnız bu durumda ad da görünür (`sharedIcons`). 3 viewport ekran görüntüsü (telefon yatay 844×390, tablet 1024×768, masaüstü 1440×900; çekmecede Lin/Monk; liste: dinlenme paneli): `docs/e4c/kaynak-savas-*.jpg`, `kaynak-liste-telefon-yatay.jpg`. Ölçülen ikon 32×32 css px üç görünümde.
+- **Sayım (Görev 3):** `E4-DENETIM.md` "E4c sayımı" (dosya sayıları klasöre göre: 229 dosya, 133 animasyonlu şerit (129 kullanımda), 55 simge/ikon; farklı efekt anahtarı 105 → 110; savaşta 225 büyü hazır/genel/eksik 204/20/1 → **210/15/0**; kalan 15 genel: 13 yalnız rozet, delayed-blast-fireball, wish, nedenleri ve kodla çözülüp çözülemeyeceği orada). Tablo betiği: `reverse-gravity`, `prismatic-wall` aile geçersiz kılmaları E4b'de kalkmıştı; E4c'de ek değişiklik gerekmedi (bağlamalar `efekt-baglama.json`'dan okunuyor).
+- **Açık kalanlar:** 13 rozet-only büyü için olay-anı efekti kararı; delayed-blast-fireball boncuk dokusu; dünya haritası suyu; Control Water / `flashFlood` su yüzeyi dokusu (E4b'den); kaynak ikonu için TR/EN ayrı etiket yok (etiket kaynak adı).
+
 ## 2026-11-10 — Kuyruk E4b: duvar, bıçak, prizma, yerçekimi, taş halka, su sayfaları; su dokusu; zemin dokusu altıgen maskesi (yalnız görsel; kural sürümü 64 ve SAVE_VERSION değişmedi)
 
 - **Girdi:** altı sayfa bu kez `origin/wip/e4-ham` dalındaydı (`git checkout origin/wip/e4-ham -- assets-ham/efekt`; geçmiş birleştirilmedi). Hücreler kare değil; ızgara sayfa boyutundan bölündü (`esit`). Ayırıcı kalınlığı pikselle ölçüldü: bıçak/duvar-ek/prizma/durum-ek ≈ 10–12 px (kenar 8), yerçekimi ≈ 18 px (kenar 12), su ≈ 20 px siyah çizgi (kenar 14; görevdeki 6–8 px yetmezdi). Kontrol görselleri `npm run sprite-ice -- --efekt --kontrol <klasör>` ile üretildi, her sayfa gözle denetlendi.

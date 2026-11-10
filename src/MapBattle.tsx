@@ -161,6 +161,7 @@ import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 import { MoralBar } from './ui/MoralBar';
+import { ResourceChip, iconed, plain, sharedIcons } from './ui/ResourceChip';
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -295,11 +296,15 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
         })}</p>
       ))(lineageAbilityList({ raceId: c.raceId, lineageId: c.lineageId, level: c.level }))}
       {c.concentration && <p>{D.concentration(c.concentration.spell)}</p>}
-      {(usableResources(c).length > 0 || c.sneakAttackDice > 0) && (
+      {(plain(usableResources(c)).length > 0 || c.sneakAttackDice > 0) && (
         <p>{D.features([
-          ...usableResources(c).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}`),
+          ...plain(usableResources(c)).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}`),
           c.sneakAttackDice > 0 ? `Sneak Attack ${c.sneakAttackDice}d6` : '',
         ].filter(Boolean).join(' · '))}</p>
+      )}
+      {/* Kuyruk E4c: ikonlu kaynaklar "ikon + sayı" (ad title/aria-label'da). */}
+      {iconed(usableResources(c)).length > 0 && (
+        <p className="res-chips">{iconed(usableResources(c)).map(([id, n]) => <ResourceChip key={id} id={id} n={n} showName={sharedIcons(iconed(usableResources(c)).map(([x]) => x)).has(id)} />)}</p>
       )}
       {c.spellSlots.some((n) => n > 0) && <p>{D.slots(c.spellSlots.map((n, i) => (n > 0 ? D.slot(i + 1, n) : '')).filter(Boolean).join(' · '))}</p>}
     </aside>

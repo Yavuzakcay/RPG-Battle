@@ -29,6 +29,7 @@ import { savedBattleSummary, type SaveSummary } from '../app/saveKey';
 import { version as appVersion } from '../../package.json';
 import { LANGS, setLang, t, useLang } from '../i18n';
 import { APP_NAME } from '../app/appName';
+import { ResourceChip, iconed, plain, sharedIcons } from '../ui/ResourceChip';
 
 /** Görev K5: kayıtlı karakterin yük durumu (Ayarlar'daki kurala göre; hesaplanamazsa sorun yok sayılır). */
 const carryLevel = (sheet: Parameters<typeof carryLoad>[0]): LoadLevel => { try { return carryLoad(sheet, storedCarryRule()).level; } catch { return 'ok'; } };
@@ -217,13 +218,16 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   const drillPanel = drills && <MasteryDrills c={props.c} before={drills} onUpdate={props.onUpdate} onDone={() => setDrills(null)} />;
   if (isRested(sheet, props.c.status)) return note || drillPanel ? <>{note && <small className="ok">{note}</small>}{drillPanel}</> : null;
   const left = sheet.level - s.hitDiceSpent;
-  const res = Object.entries(s.resources).filter(([id]) => (full.resources[id] ?? 0) > 0)
-    .map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}/${full.resources[id]}`).join(', ');
+  const resList = Object.entries(s.resources).filter(([id]) => (full.resources[id] ?? 0) > 0);
+  const res = plain(resList).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}/${full.resources[id]}`).join(', ');
+  const resIcons = iconed(resList);
   const slots = s.slots.map((n, i) => (full.slots[i] ? `${i + 1}: ${n}/${full.slots[i]}` : '')).filter(Boolean).join(' · ');
   return (
     <div className="rest-panel">
       <small>{R.status(s.hp, full.hp, left, sheet.level)}</small>
       {res && <small>{R.resources(res)}</small>}
+      {/* Kuyruk E4c: ikonlu kaynaklar "ikon + sayı/üst sınır". */}
+      {resIcons.length > 0 && <span className="res-chips">{resIcons.map(([id, n]) => <ResourceChip key={id} id={id} n={n} max={full.resources[id]} showName={sharedIcons(resIcons.map(([x]) => x)).has(id)} />)}</span>}
       {slots && <small>{R.slots(slots)}</small>}
       {s.dead ? (
         <>

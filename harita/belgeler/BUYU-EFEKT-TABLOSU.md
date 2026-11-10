@@ -25,47 +25,47 @@ Seviye grubu × sınıf. Bir büyü birden çok sınıfta sayılır; "Tümü" sa
 
 | Seviye | Sınıf | Toplam | Savaş dışı | Hazır | Genel | Eksik | Yeni anim. |
 |---|---|---|---|---|---|---|---|
-| 0–3 | Bard | 73 | 31 | 38 | 4 | 0 | 1 |
-| 0–3 | Cleric | 58 | 22 | 29 | 7 | 0 | 2 |
-| 0–3 | Druid | 63 | 19 | 39 | 5 | 0 | 1 |
-| 0–3 | Paladin | 30 | 10 | 18 | 2 | 0 | 1 |
-| 0–3 | Ranger | 40 | 14 | 21 | 5 | 0 | 2 |
-| 0–3 | Sorcerer | 85 | 17 | 62 | 6 | 0 | 2 |
+| 0–3 | Bard | 73 | 31 | 39 | 3 | 0 | 0 |
+| 0–3 | Cleric | 58 | 22 | 31 | 5 | 0 | 0 |
+| 0–3 | Druid | 63 | 19 | 40 | 4 | 0 | 0 |
+| 0–3 | Paladin | 30 | 10 | 19 | 1 | 0 | 0 |
+| 0–3 | Ranger | 40 | 14 | 23 | 3 | 0 | 0 |
+| 0–3 | Sorcerer | 85 | 17 | 64 | 4 | 0 | 0 |
 | 0–3 | Warlock | 40 | 12 | 24 | 4 | 0 | 0 |
-| 0–3 | Wizard | 110 | 36 | 68 | 6 | 0 | 1 |
-| 0–3 | **Tümü** | **183** | 53 | **117** | **13** | **0** | **3** |
+| 0–3 | Wizard | 110 | 36 | 69 | 5 | 0 | 0 |
+| 0–3 | **Tümü** | **183** | 53 | **120** | **10** | **0** | **0** |
 | 4–5 | Bard | 27 | 13 | 14 | 0 | 0 | 0 |
 | 4–5 | Cleric | 22 | 11 | 10 | 1 | 0 | 0 |
 | 4–5 | Druid | 33 | 11 | 22 | 0 | 0 | 0 |
 | 4–5 | Paladin | 8 | 3 | 4 | 1 | 0 | 0 |
 | 4–5 | Ranger | 8 | 2 | 6 | 0 | 0 | 0 |
-| 4–5 | Sorcerer | 25 | 3 | 21 | 1 | 0 | 1 |
+| 4–5 | Sorcerer | 25 | 3 | 22 | 0 | 0 | 0 |
 | 4–5 | Warlock | 12 | 6 | 6 | 0 | 0 | 0 |
-| 4–5 | Wizard | 50 | 21 | 28 | 1 | 0 | 1 |
-| 4–5 | **Tümü** | **72** | 27 | **43** | **2** | **0** | **1** |
-| 6–9 | Bard | 30 | 13 | 14 | 2 | 1 | 1 |
-| 6–9 | Cleric | 29 | 13 | 15 | 1 | 0 | 1 |
-| 6–9 | Druid | 28 | 14 | 13 | 1 | 0 | 1 |
-| 6–9 | Sorcerer | 30 | 4 | 22 | 3 | 1 | 3 |
-| 6–9 | Warlock | 20 | 6 | 12 | 1 | 1 | 1 |
-| 6–9 | Wizard | 58 | 22 | 32 | 3 | 1 | 2 |
-| 6–9 | **Tümü** | **84** | 34 | **44** | **5** | **1** | **3** |
-| **0–9** | **Tümü** | **339** | 114 | **204** | **20** | **1** | **7** |
+| 4–5 | Wizard | 50 | 21 | 29 | 0 | 0 | 0 |
+| 4–5 | **Tümü** | **72** | 27 | **44** | **1** | **0** | **0** |
+| 6–9 | Bard | 30 | 13 | 15 | 2 | 0 | 0 |
+| 6–9 | Cleric | 29 | 13 | 16 | 0 | 0 | 0 |
+| 6–9 | Druid | 28 | 14 | 14 | 0 | 0 | 0 |
+| 6–9 | Sorcerer | 30 | 4 | 24 | 2 | 0 | 1 |
+| 6–9 | Warlock | 20 | 6 | 13 | 1 | 0 | 0 |
+| 6–9 | Wizard | 58 | 22 | 33 | 3 | 0 | 1 |
+| 6–9 | **Tümü** | **84** | 34 | **46** | **4** | **0** | **1** |
+| **0–9** | **Tümü** | **339** | 114 | **210** | **15** | **0** | **1** |
 
-Savaşta kullanılan 225 büyünün 204'i hazır (91%), 20'i genel, 1'i eksik; 7 büyü yeni animasyon (ya da bağlama) bekliyor.
+Savaşta kullanılan 225 büyünün 210'i hazır (93%), 15'i genel, 0'i eksik; 1 büyü yeni animasyon (ya da bağlama) bekliyor.
 
 Türe göre (savaş büyüleri):
 
 | Tür | Hazır | Genel | Eksik |
 |---|---|---|---|
 | koruma | 29 | 9 | 0 |
-| durum | 17 | 5 | 1 |
-| zemin | 15 | 4 | 0 |
+| durum | 19 | 4 | 0 |
+| zemin | 18 | 1 | 0 |
 | küre/alan | 18 | 0 | 0 |
 | çağırma | 16 | 0 | 0 |
 | iyileştirme | 11 | 0 | 0 |
 | tek hedef | 11 | 0 | 0 |
-| dönüşüm | 10 | 1 | 0 |
+| dönüşüm | 11 | 0 | 0 |
 | mermi | 10 | 0 | 0 |
 | silah | 10 | 0 | 0 |
 | ışın | 9 | 0 | 0 |
@@ -199,7 +199,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | invisibility | 2 | Illusion | koruma | `css:invisible` |  | hazır | — |
 | knock | 2 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | lesser-restoration | 2 | Abjuration | iyileştirme | `hedef:iyilestir-kucuk` | E2: hedef:iyilestir-kucuk | hazır | — |
-| levitate | 2 | Transmutation | dönüşüm | `rozet:🪽` | Havalanma rozeti (🪽); yükselme toz sütunu. | genel | Ters yerçekimi / deprem |
+| levitate | 2 | Transmutation | dönüşüm | `rozet:🪽`, `hedef:yukselen-toz` | E2: hedef:yukselen-toz | hazır | — |
 | locate-animals-or-plants | 2 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | locate-object | 2 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | magic-mouth | 2 | Illusion | yok | — | günlük/kart Game Master notu | savaş dışı | — |
@@ -218,7 +218,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | see-invisibility | 2 | Divination | koruma | `hedef:goz-nabiz` | E2: hedef:goz-nabiz | hazır | — |
 | shatter | 2 | Evocation | küre/alan | `alan-ses` |  | hazır | — |
 | shining-smite | 2 | Transmutation | silah | `darbe-<silah türü>`, `hedef:silah-kivilcim` | E2: hedef:silah-kivilcim | hazır | — |
-| silence | 2 | Illusion | zemin | `yer-tutucu:.spell-zone` | renkli altıgen yer tutucusu (spec.color/icon) | genel | Zemin kutuları (kalıcı büyü alanı dokusu) |
+| silence | 2 | Illusion | zemin | `yer-tutucu:.spell-zone`, `zemin:zemin-sessizlik` | E2: zemin:zemin-sessizlik | hazır | — |
 | spider-climb | 2 | Transmutation | koruma | `rozet:ok-hiz-arti` | E2 rozet: ok-hiz-arti | genel | — |
 | spike-growth | 2 | Transmutation | zemin | `yer-tutucu:.spell-zone`, `zemin:zemin-dikenli` | E2: zemin:zemin-dikenli | hazır | — |
 | spiritual-weapon | 2 | Evocation | çağırma | `darbe-buyu`, `hedef:ruh-balta` | E2: hedef:ruh-balta | hazır | — |
@@ -235,7 +235,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | conjure-animals | 3 | Conjuration | çağırma | `cagir-dogal` | eşlik eden alan: renkli yer tutucu | hazır | — |
 | counterspell | 3 | Abjuration | iptal | `kendi:iptal-muhur` | E2: kendi:iptal-muhur | hazır | — |
 | create-food-and-water | 3 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| daylight | 3 | Evocation | zemin | `yer-tutucu:.spell-zone` | renkli altıgen yer tutucusu (spec.color/icon); Işık alanı ışık katmanına yazılır; küre dokusu yok. | genel | Zemin kutuları (kalıcı büyü alanı dokusu) |
+| daylight | 3 | Evocation | zemin | `yer-tutucu:.spell-zone`, `zemin:zemin-gunisigi` | E2: zemin:zemin-gunisigi | hazır | — |
 | dispel-magic | 3 | Abjuration | iptal | `hedef:iptal-muhur` | E2: hedef:iptal-muhur | hazır | — |
 | fear | 3 | Illusion | koni | `durum:frightened`, `koni:koni-yesil` | E2: koni:koni-yesil | hazır | — |
 | fireball | 3 | Evocation | küre/alan | `alan-ates`, `hasar:burn` |  | hazır | — |
@@ -334,7 +334,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | scrying | 5 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | seeming | 5 | Illusion | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | summon-dragon | 5 | Conjuration | çağırma | `cagir-portal`, `cagir:cagir-portal+ton` | E2: cagir:cagir-portal+ton | hazır | — |
-| telekinesis | 5 | Transmutation | durum | `itme-toz`, `durum:restrained` | Taşıma: itme-toz değil (yer değiştirme olayı); yükselme toz sütunu. | genel | Ters yerçekimi / deprem |
+| telekinesis | 5 | Transmutation | durum | `itme-toz`, `durum:restrained`, `hedef:yukselen-toz` | E2: hedef:yukselen-toz | hazır | — |
 | telepathic-bond | 5 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | teleportation-circle | 5 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | tree-stride | 5 | Conjuration | ışınlanma | `isinlan-cikis → isinlan-giris` |  | hazır | — |
@@ -399,7 +399,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | control-weather | 8 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | demiplane | 8 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | dominate-monster | 8 | Enchantment | işaret | `durum:charmed`, `isaret:isaret-kristal` | E2: isaret:isaret-kristal | hazır | — |
-| earthquake | 8 | Transmutation | zemin | `yer-tutucu:.spell-zone`, `css:prone` | renkli altıgen yer tutucusu (spec.color/icon) | genel | Ters yerçekimi / deprem |
+| earthquake | 8 | Transmutation | zemin | `yer-tutucu:.spell-zone`, `css:prone`, `zemin:zemin-deprem-yarigi` | E2: zemin:zemin-deprem-yarigi | hazır | — |
 | glibness | 8 | Enchantment | koruma | `rozet:ok-avantaj` | E2 rozet: ok-avantaj | genel | — |
 | holy-aura | 8 | Abjuration | aura | `koruma-kutsama`, `aura:aura-altin` | E2: aura:aura-altin | hazır | — |
 | incendiary-cloud | 8 | Conjuration | zemin | `yer-tutucu:.spell-zone`, `hasar:burn`, `zemin:duman-kor` | E2: zemin:duman-kor | hazır | — |
@@ -415,7 +415,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | mass-heal | 9 | Abjuration | iyileştirme | `iyilestir-kucuk / iyilestir-buyuk` |  | hazır | — |
 | meteor-swarm | 9 | Evocation | gökten düşen | `alan-ates`, `hasar:burn`, `gokten:gokten-meteor` | E2: gokten:gokten-meteor | hazır | — |
 | power-word-heal | 9 | Enchantment | iyileştirme | `iyilestir-kucuk / iyilestir-buyuk` |  | hazır | — |
-| power-word-kill | 9 | Enchantment | durum | — | Ölüm tozu (olum-toz) hedef ölünce zaten; sözün kendisi görselsiz. | eksik | Öldürme sözü (tek seferlik) |
+| power-word-kill | 9 | Enchantment | durum | `hedef:durum-olum-sozu` | E2: hedef:durum-olum-sozu | hazır | — |
 | prismatic-wall | 9 | Abjuration | duvar | `duvar-prizma` |  | hazır | — |
 | shapechange | 9 | Transmutation | dönüşüm | `jeton:biçimin canavar jetonu`, `hedef:donusum-flas` | E2: hedef:donusum-flas | hazır | — |
 | storm-of-vengeance | 9 | Conjuration | gökten düşen | `yer-tutucu:.spell-zone`, `ikon:deafened`, `gokten:gokten-yildirim`, `zemin:gokten-yildirim` | E2: gokten:gokten-yildirim, zemin:gokten-yildirim | hazır | — |
@@ -431,16 +431,15 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 
 | Aile | Büyü | Çözüm | Mevcut kaynak / E2 satırları | Büyüler |
 |---|---|---|---|---|
-| Ters yerçekimi / deprem (`yercekimi`) | 3 | Gemini |  | levitate, telekinesis, earthquake |
-| Zemin kutuları (kalıcı büyü alanı dokusu) (`zemin-kutu`) | 3 | E2 + Gemini | zemin-kutulari.jpg: lav/kor, spor bulutu, diken/sarmaşık, mor girdap, buz rün halkası, duman halkası, bitki, kara halka | silence, daylight, delayed-blast-fireball |
-| Öldürme sözü (tek seferlik) (`durum-ek`) | 1 | Gemini |  | power-word-kill |
+| Zemin kutuları (kalıcı büyü alanı dokusu) (`zemin-kutu`) | 1 | E2 | zemin-kutulari.jpg: lav/kor, spor bulutu, diken/sarmaşık, mor girdap, buz rün halkası, duman halkası, bitki, kara halka | delayed-blast-fireball |
 
 ### İçe aktarılmamış E2 ham sayfaları
 
-`assets-ham/efekt/` içinde `data/efekt-kesim.json`’da kaydı olmayan 0 sayfa (Gemini’den gelmiş, `npm run sprite-ice -- --efekt` ile içe aktarılmamış). Satırlar görsel incelemeyle; hepsi siyah zeminli (ikon sayfaları macenta zeminli). Bu sayfalar efekt sayılmadı (hazır değil).
+`assets-ham/efekt/` içinde `data/efekt-kesim.json`’da kaydı olmayan 1 sayfa (Gemini’den gelmiş, `npm run sprite-ice -- --efekt` ile içe aktarılmamış). Satırlar görsel incelemeyle; hepsi siyah zeminli (ikon sayfaları macenta zeminli). Bu sayfalar efekt sayılmadı (hazır değil).
 
-Kuyruk E2: 12 sayfanın hepsi içe aktarıldı (`data/efekt-kesim.json` `klasor: efekt` → `public/efekt/`, kayıt `data/efekt-e2.json`).
-
+| Sayfa | Satırlar | Karşıladığı aileler |
+|---|---|---|
+| kaynak-ikonlari.jpg | (incelenmedi) | — |
 
 ## 4. Önerilen Gemini sayfaları
 
@@ -448,16 +447,14 @@ Yalnız E2 sayfalarında ve mevcut efektlerde karşılığı olmayan ihtiyaçlar
 
 | Sayfa adı | Hücre | Hücreler (büyüler) |
 |---|---|---|
-| efekt-yercekimi | 2 | ters yerçekimi yükselen toz sütunu (levitate, telekinesis); deprem yarığı zemin kutusu (earthquake) |
-| efekt-zemin-kutu | 2 | sessizlik küresi (silence); gün ışığı küresi (daylight) |
-| efekt-durum-ek | 1 | ölüm sözü (kafatası rün, tek seferlik) (power-word-kill) |
 
-Toplam 3 Gemini sayfası, 5 hücre.
+Toplam 0 Gemini sayfası, 0 hücre.
 
 ## 5. Kodla çözülecekler (CC işi)
 
-0 madde. Hepsi yalnız görsel (fxPlan / efekt-baglama / CSS); kural, sayı ve kural sürümü değişmez.
+1 madde. Hepsi yalnız görsel (fxPlan / efekt-baglama / CSS); kural, sayı ve kural sürümü değişmez.
 
+1. **E2 sayfalarının içe aktarılması** — `data/efekt-kesim.json`’a 1 sayfa kaydı (satır/sütun, kesim, tür, boyut) + `npm run sprite-ice -- --efekt`; ardından ailelere bağlama (mermi, koni, gökten düşen, patlama-ek, zemin kutuları, duman/kafes, dönüşüm/kanat, iptal, zaman, silah, işaret/ikon). (1: kaynak-ikonlari.jpg)
 
 ## 6. Savaş dışı büyüler (114)
 

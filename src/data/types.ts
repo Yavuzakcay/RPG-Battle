@@ -1296,6 +1296,8 @@ export interface ResourceDef {
    * üst sınır); kısa dinlenme yalnız sayaç 0'sa bu değere getirir. Üst sınır `uses`.
    */
   depot?: number;
+  /** Kuyruk E4c: yalnız görünüm: kaynak ikonu (`data/kaynak-ikon.json` `ikonlar`; ek paket zar havuzu kaynağı `ustunluk-zari`). */
+  icon?: string;
   /** Kaynak kaldıkça bu büyü slotsuz yapılır (Favored Enemy → Hunter's Mark). */
   freeSpell?: string;
   /** Görev P0: ek paket kaynağı birden çok büyüyü slotsuz yaptırır (`buyuVer.bedava`). */
