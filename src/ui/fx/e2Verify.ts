@@ -51,6 +51,9 @@ export function expectedKeys(spell: Spell): string[] {
   const D = (B.duvar as Record<string, string>)[id];
   if (D && m.zone) out.push(`duvar:${D}`);
   if (T.auraBuyu?.[id]) out.push(`aura:${T.auraBuyu[id]!.sprite}`);
+  // Kuyruk E5: süren etkiye bağlı döngü (`etkiHalka`; çizimde `aura:` anahtarı).
+  const EH = (B as unknown as { etkiHalka?: Record<string, { sprite: string }> }).etkiHalka?.[id];
+  if (EH) out.push(`aura:${EH.sprite}`);
   if (T.cagirRenk?.[id] && m.kind === 'summon') out.push(`ton:${T.cagirRenk[id]!.ton}`);
   const dt = m.damageType;
   const shape = spell.area?.shape;

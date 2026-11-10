@@ -2,6 +2,36 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-10 — Kuyruk E5: 13 rozet-only büyüye efekt (tek sayfa, prosedürel canlandırma; yalnız görsel ve arayüz; kural sürümü 64 ve SAVE_VERSION değişmedi)
+
+- **Girdi:** `rozet-efekt-13.jpg` `origin/wip/e4-ham`'dan (`git checkout origin/wip/e4-ham -- assets-ham/efekt/rozet-efekt-13.jpg`; geçmiş birleştirilmedi). Dosya **2048×2048** (istekte 2000×2000 yazıyordu; 4×4 eşit hücre, hücre 512 px, oran aynı, kesim eşit bölmeyle yüzdeden çalışır). 13 hücre dolu, son üçü boş. `assets-ham/efekt/*` değiştirilmedi.
+- **Kesim (yeni `hucre: "efekt"` kipi, `scripts/efekt-sayfa.mjs`):** her hücre ayrı bir efektin **tek karesi** (satırlar önceki kiplerdeki gibi kare değil). JPG gürültüsü: zemin tam siyah değil (0–15) → `siyah: 16` (parlaklık alfası `(max(R,G,B) − 16) / 239`, yumuşak geçiş; ≤ 16 tam saydam, haleler kendiliğinden temizlenir), hücre kenarından 6 px smoothstep (`yumusat: { "*": 6 }`). Her kare kendi sınır kutusu merkezine göre ortalanır (kutu: alfa > 24); kare tuvali = içerik × 1,45 (ölçek/kayma payı), 256×256.
+- **Prosedürel canlandırma (`scripts/efekt-canlandir.mjs`, saf; kalıcı şerit olarak üretilir, çalışma zamanı maliyeti yok):** tek kareden 5 (dans 6) kare; önceden çarpılmış alfada bilinear yeniden örnekleme, deterministik. Türler (`canlandirma[ad].tur`): **nabız** (ölçek 0,85 → 1,08 → yerine oturur; alfa belirir, tutar, solar: resistance, ray-of-enfeeblement, glibness), **kayma** (yönlü ilerleme/yükselme, ease-out + solma: command ve expeditious-retreat ve longstrider sağa +%12, bane aşağı +%10, jump yukarı −%14 ve 0,9 → 1,1 ölçek), **halka** (0,75–0,8 → 1,15–1,2 genişler ve solar: sanctuary, water-walk, death-ward), **yayıl** (spider-climb: `merkez: [0, 0.5]` = ışınların çıktığı temas noktası kutunun sol-ortası tuval merkezine alınır ve ölçek o noktadan büyür; çapa temas noktası jeton merkezinde), **dönme** (irresistible-dance: döngü, 6 kare; satır kayması dalgası `genlik 0,07 · dalga 2,6` + ±0,05 rad salınım; kare 0 = kare 6 kapanır). Sarmal "düzlemde döndürülürse" notalar ters çıkıyordu, bu yüzden dalga kayması (sarmalın halkaları dikey fazla kayar → dönüyor izlenimi) seçildi.
+- **Karışım kararı (gözle, 3 zeminde yan yana `screen` ↔ `over`):** gri/bej/koyu dolgulu parçalar toplamalıda sönük kalıyordu (bane'in koyu kırmızı okları kumda neredeyse görünmez, kalkan dolgusu, balçık, rüzgâr). **Normal karışım** (`normal` listesi, alfa yine parlaklıktan): resistance, bane, expeditious-retreat (duman tozu), longstrider, jump (bej toz), ray-of-enfeeblement, irresistible-dance, glibness. **Toplamalı (screen):** command, sanctuary, spider-climb, water-walk, death-ward (parlak ince çizgiler; normalde iç dolgusu bulanıyor). Bane'e ek `kazanc 2,4` (koyu kırmızı okların alfası yükseltilir, renk özgün alfaya bölünmüş kalır), kayıtta karışım `normal`.
+- **Bağlama tablosu** (`data/efekt-baglama.json` `buyu`; çapa = karenin üstten oranı, jetonun tabanı; ölçek altıgen eni katı):
+
+| Büyü | Şerit | Yol / yer | Ölçek, çapa | Süre |
+|---|---|---|---|---|
+| resistance | `rozet-resistance` | hedefte | 2,2; saydamlık 0,9 | tek seferlik, 5 × 140 ms |
+| bane | `rozet-bane` | her hedefte (hedef başına bir) | 2,4; çapa 0,6 | tek seferlik |
+| command | `rozet-command` | hedefte | 2,4; saydamlık 0,9 | tek seferlik |
+| expeditious-retreat | `rozet-hizli-gerilis` | yapanın ayak tabanı (`kendi`) | 2,6; 0,62 | tek seferlik |
+| longstrider | `rozet-uzun-adim` | hedefin ayak tabanı | 2,6; 0,62 | tek seferlik |
+| jump | `rozet-ziplama` | hedefin ayak tabanı | 2,8; 0,68 | tek seferlik |
+| sanctuary | `rozet-siginak` | hedefin tabanında halka | 2,6; 0,5 | tek seferlik |
+| ray-of-enfeeblement | `rozet-zayiflatma` | hedefte | 2,3; saydamlık 0,9 | tek seferlik |
+| spider-climb | `rozet-orumcek` | hedefte, çapa = temas noktası (kare sol-orta, kesimde tuval merkezine alındı) | 2,8 | tek seferlik |
+| water-walk | `rozet-su-uzeri` | hedefin ayak tabanı | 2,6; 0,5 | tek seferlik |
+| death-ward | `rozet-olum-korumasi` | hedefte halka (taban) | 2,6; 0,5 | tek seferlik |
+| irresistible-dance | `rozet-dans` | hedef jetonda, **etki sürdükçe** döngü | halka ×1,7 jeton boyu | döngü, 6 × 130 ms |
+| glibness | `rozet-akici-dil` | yapanın üstünde (`kendi`) | 2,4; 0,7 | tek seferlik |
+
+  İlk denemede ölçekler (1,7–2,2) efekt yeşil/kum zeminde küçük ve soluk kaldığından ekran incelemesiyle ≈ %25 büyütüldü. Sayı oku rozeti (`rozetBuyu`) **aynen** kaldı; efekt onun üzerine eklenir (`fxPlan.e5.test.ts` 13 büyünün rozetini de doğrular).
+- **Kalıcı döngü (irresistible-dance):** tablo "durum süresince döngü" dedi; Dance bir durum değil süren etki olduğundan (`conditions` içinde yok) yeni küçük bir veri anahtarı eklendi: `etkiHalka` (büyü kimliği → { sprite, olcek }) ve `groundFx` içinde `durumHalka` ile aynı halka yoluna bağlandı (`${id}:etki:<büyü>`; etki biterken `effects` listesinden çıkar çıkmaz halka kalkar). Yeni mekanik değil (yalnız çizim; `e2Verify.expectedKeys` ve tablo betiği `aura:<sprite>` olarak sayar). Efekt kapalı ya da hareketi azaltta tek sabit kare (kare 1); animasyon bütçesi (ekran 12 / jeton 2) aynı `allocate` yolundan.
+- **Hareketi azalt / efekt kapalı:** her şerit `sabit` kare taşır (nabız/kayma kare 3, halka kare 2, dans kare 1; 0 tabanlı kayıtta 2/1/0). Efekt ayarı kapalıyken `allocate` boş döner (testli).
+- **Doğrulama:** `e2Verify` 153 → **166/166** (13 yeni bağlama gerçek motor `cast_spell` → çizim), rozet 17/17 aynı; `fxPlan.e5.test.ts` 21 test (kesim kaydı, 13 şerit, karışım, hareket azalt, 13 büyü gerçek motor, Dance etkiyle döngü, yer/çapa, hedef başına tek efekt, rozet, replay aynı); `fxPlan.e2.test.ts` şerit sayısı 79 → 92 (sebep: 13 yeni şerit; sürenin `kare × kareMs` kuralı aynı).
+- **Sayım:** tablo hazır/genel/eksik **210/15/0 → 223/2/0** (kalan genel: delayed-blast-fireball boncuğu, wish).
+
 ## 2026-11-10 — Kuyruk E4c: efekt-eksik sayfası, kaynak ikonları, sayım (yalnız görsel ve arayüz; kural sürümü 64 ve SAVE_VERSION değişmedi)
 
 - **Girdi:** `efekt-eksik.jpg` ve `kaynak-ikonlari.jpg` `origin/wip/e4-ham`'dan (`git checkout origin/wip/e4-ham -- …`; geçmiş birleştirilmedi). `assets-ham/efekt/*` değiştirilmedi.

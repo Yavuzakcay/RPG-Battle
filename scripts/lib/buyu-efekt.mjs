@@ -228,6 +228,9 @@ export function e2Visual(ctx, s, m) {
   if (z && m.zone && ctx.fx(z)) keys.push(`zemin:${z}`);
   const a = B.auraBuyu?.[id];
   if (a && ctx.fx(a.sprite)) keys.push(`aura:${a.sprite}`);
+  // Kuyruk E5: süren etkiye bağlı döngü (`etkiHalka`).
+  const eh = B.etkiHalka?.[id];
+  if (eh && ctx.fx(eh.sprite)) keys.push(`aura:${eh.sprite}`);
   const c = B.cagirRenk?.[id];
   if (c && m.kind === 'summon' && ctx.fx(c.sprite)) keys.push(`cagir:${c.sprite}+ton`);
   const dt = m.damageType;

@@ -84,6 +84,27 @@
       "yumusat": { "yukselen-toz": 6, "zemin-gunisigi": 6, "durum-olum-sozu": 6 },
       "ortala": ["zemin-sessizlik", "durum-olum-sozu"],
       "sira": { "zemin-sessizlik": [1, 2, 3, 2] },
-      "sabit": { "zemin-deprem-yarigi": 3, "zemin-sessizlik": 0, "zemin-gunisigi": 0 } }
+      "sabit": { "zemin-deprem-yarigi": 3, "zemin-sessizlik": 0, "zemin-gunisigi": 0 } },
+    "rozet-efekt-13": { "klasor": "efekt", "hucre": "efekt", "satir": 4, "sutun": 4, "kesim": "esit", "kenar": 0, "kare": "kare", "boyut": 256,
+      "kareMs": 140, "kareMsler": { "rozet-dans": 130 }, "tur": "efekt", "siyah": 16, "kenarPayi": 1.45,
+      "adlar": ["rozet-resistance", "rozet-bane", "rozet-command", "rozet-hizli-gerilis", "rozet-uzun-adim", "rozet-ziplama", "rozet-siginak", "rozet-zayiflatma", "rozet-orumcek", "rozet-su-uzeri", "rozet-olum-korumasi", "rozet-dans", "rozet-akici-dil"],
+      "yumusat": { "*": 6 }, "normal": ["rozet-resistance", "rozet-bane", "rozet-hizli-gerilis", "rozet-uzun-adim", "rozet-ziplama", "rozet-zayiflatma", "rozet-dans", "rozet-akici-dil"],
+      "kazanc": { "rozet-bane": { "1": 2.4 } }, "donguler": { "rozet-dans": true },
+      "sabit": {"rozet-resistance": 2, "rozet-bane": 2, "rozet-command": 2, "rozet-hizli-gerilis": 2, "rozet-uzun-adim": 2, "rozet-ziplama": 2, "rozet-siginak": 1, "rozet-zayiflatma": 2, "rozet-orumcek": 1, "rozet-su-uzeri": 1, "rozet-olum-korumasi": 1, "rozet-dans": 0, "rozet-akici-dil": 2},
+      "canlandirma": {
+        "rozet-resistance": {"tur": "nabiz", "kare": 5, "olcek": [0.85, 1.08]},
+        "rozet-bane": {"tur": "kayma", "kare": 5, "dy": 0.1, "olcek": [1, 1]},
+        "rozet-command": {"tur": "kayma", "kare": 5, "dx": 0.12, "olcek": [0.95, 1.05]},
+        "rozet-hizli-gerilis": {"tur": "kayma", "kare": 5, "dx": 0.12, "olcek": [0.95, 1.05]},
+        "rozet-uzun-adim": {"tur": "kayma", "kare": 5, "dx": 0.12, "olcek": [0.95, 1.05]},
+        "rozet-ziplama": {"tur": "kayma", "kare": 5, "dy": -0.14, "olcek": [0.9, 1.1]},
+        "rozet-siginak": {"tur": "halka", "kare": 5, "olcek": [0.75, 1.15]},
+        "rozet-zayiflatma": {"tur": "nabiz", "kare": 5, "olcek": [0.9, 1.06]},
+        "rozet-orumcek": {"tur": "yayil", "kare": 5, "merkez": [0, 0.5], "olcek": [0.75, 1.15]},
+        "rozet-su-uzeri": {"tur": "halka", "kare": 5, "olcek": [0.8, 1.2]},
+        "rozet-olum-korumasi": {"tur": "halka", "kare": 5, "olcek": [0.8, 1.15]},
+        "rozet-dans": {"tur": "donme", "kare": 6, "olcek": [0.97, 1.03], "genlik": 0.07, "dalga": 2.6, "salinim": 0.05},
+        "rozet-akici-dil": {"tur": "nabiz", "kare": 5, "olcek": [0.85, 1.08]}
+      } }
   }
 }

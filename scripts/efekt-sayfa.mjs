@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
+import { animate } from './efekt-canlandir.mjs';
 
 const BLACK = 12;
 /** Parlaklıktan alfa (0..1): (max(R,G,B) − siyah) / (255 − siyah); `siyah` varsayılan 12 (Kuyruk E2: sayfa başına `siyah`, gri yamalı zemin). */
@@ -139,6 +140,22 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
   const report = { file: path.basename(file), size: `${img.w}×${img.h}`, rows: g.length, cols: g.map((r) => r.cols.length) };
   if (g.length !== spec.satir || g.some((r, i) => r.cols.length !== (spec.sutunlar?.[i] ?? spec.sutun))) {
     throw new Error(`${report.file}: ızgara ${g.length} satır × [${report.cols.join(',')}] sütun; beklenen ${spec.satir}×${spec.sutunlar ? `[${spec.sutunlar.join(',')}]` : spec.sutun}`);
+  }
+  // Kuyruk E5: `hucre: 'efekt'` (her hücre ayrı bir efektin tek karesi, satır sırasıyla `adlar`; boş hücreler atılır): kare sınır kutusu
+  // ortalanır, kenar `yumusat` px yumuşar, `canlandirma[ad]` ile 4–6 karelik prosedürel şeride çevrilir (`scripts/efekt-canlandir.mjs`).
+  if (spec.hucre === 'efekt') {
+    const flat = g.flatMap((r) => r.cols.map((c) => ({ x: c, y: r.y })));
+    if (spec.adlar.length > flat.length) throw new Error(`${report.file}: ${spec.adlar.length} ad > ${flat.length} hücre`);
+    const result = {};
+    for (let n = 0; n < spec.adlar.length; n++) {
+      const ad = spec.adlar[n]; const f = flat[n];
+      const c = cellRgba(img, f.x[0], f.y[0], f.x[1], f.y[1], spec.siyah ?? BLACK, false, spec.kazanc?.[ad]?.['1'] ?? 1, spec.yumusat?.[ad] ?? spec.yumusat?.['*'] ?? 0);
+      if (c.peak < emptyThr) throw new Error(`${report.file}: ${n + 1}. hücre (${ad}) boş`);
+      const S = spec.boyutlar?.[ad] ?? spec.boyut;
+      const frames = await animate(c, spec.canlandirma[ad], S, spec.kenarPayi ?? 1.45);
+      result[ad] = { frames, fw: S, fh: S, dropped: 0, grid: frames.length };
+    }
+    return { result, report };
   }
   const per = spec.blokSatir ?? 1;
   if (spec.adlar.length * per !== spec.satir) throw new Error(`${report.file}: ${spec.adlar.length} ad × ${per} satır ≠ ${spec.satir}`);
@@ -290,7 +307,7 @@ export async function importEffects({ src = 'assets-ham/efekt', out = 'public/sp
       await writeStrip(path.join(dir, `${name}.webp`), r);
       if (r.dropped) notes.push(`${name}: ızgarada ${r.grid} kare, sondaki ${r.dropped} kare atıldı (boş ya da kare sınırı) → ${r.frames.length}`);
       const rec = {
-        kare: r.frames.length, sure: r.frames.length * (spec.kareMsler?.[ad] ?? spec.kareMs), tur: spec.turler?.[ad] ?? spec.tur, karisim: spec.opak?.includes(ad) ? 'normal' : 'screen', yon: spec.yonler?.[ad] ?? null,
+        kare: r.frames.length, sure: r.frames.length * (spec.kareMsler?.[ad] ?? spec.kareMs), tur: spec.turler?.[ad] ?? spec.tur, karisim: spec.opak?.includes(ad) || spec.normal?.includes(ad) ? 'normal' : 'screen', yon: spec.yonler?.[ad] ?? null,
         en: r.fw, boy: r.fh, dongu: spec.donguler?.[ad] ?? !!spec.dongu, kaynak: `${sheet}`, ...(spec.ortusme ? { ortusme: spec.ortusme } : {}),
         // Kuyruk E4: içe aktarılan ama hiçbir büyüye bağlanmayan şerit (kullanıcı kararı; kayıtta işaretli).
         ...(spec.kullanilmiyor?.includes(ad) ? { kullanilmiyor: true } : {}),

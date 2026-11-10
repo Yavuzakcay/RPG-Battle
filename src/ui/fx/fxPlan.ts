@@ -427,6 +427,13 @@ export function groundFx(state: BattleState): { auras: GroundAura[]; walls: Grou
       const rs = H[cond] && sp(H[cond]);
       if (rs) auras.push({ key: `${c.id}:durum:${cond}`, ownerId: c.id, radius: 0, sprite: rs, ring: tokenScale(c) });
     }
+    // Kuyruk E5: süren etkiye bağlı döngü (Irresistible Dance: etki sürdükçe jetonun üstünde döner; `etkiHalka[büyü kimliği]` → sprite).
+    const EH = (B as unknown as { etkiHalka?: Record<string, { sprite: string; olcek: number }> }).etkiHalka ?? {};
+    for (const e of c.effects ?? []) {
+      const id = spellSlug(e.name);
+      const es = EH[id] && sp(EH[id].sprite);
+      if (es) auras.push({ key: `${c.id}:etki:${id}`, ownerId: c.id, radius: 0, sprite: es, ring: tokenScale(c) * EH[id]!.olcek });
+    }
     for (const e of c.effects ?? []) {
       for (const a of [...(e.aura ? [e.aura] : []), ...(e.auras ?? [])]) {
         const type = a.effect.kind === 'damage' ? a.effect.type : undefined;

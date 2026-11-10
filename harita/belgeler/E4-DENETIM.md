@@ -5,6 +5,22 @@ Yalnız görsel ve belge: kural, sayı, yapay zekâ, kural sürümü (64) ve kay
 
 > **Kuyruk E4b güncellemesi (2026-11-10):** aşağıdaki "eksik sayfa", "su kararı çizim yolu" (bölüm 4) ve "açık kalanlar" (bölüm 5, madde 1–2) maddeleri E4b'de kapandı: altı sayfa içe aktarıldı ve bağlandı, su dokusu su altıgenlerine bağlandı, zemin dokusu altıgen maskesi eklendi. Ayrıntı ve harita tablosu `DECISIONS.md` (Kuyruk E4b). Kalanlar: levitate, telekinesis, earthquake, silence, daylight, power-word-kill hücreleri; dünya haritası suyu.
 
+## E5 sayımı (2026-11-10)
+
+> Kuyruk E5: `rozet-efekt-13` (13 tek kareli efekt, prosedürel 5–6 kare) içe aktarıldı ve 13 rozet-only büyüye bağlandı (ayrıntı ve bağlama tablosu `DECISIONS.md` Kuyruk E5). E4c "kalan genel" tablosunun ilk satırı (13 büyü) kapandı.
+
+**(a) Dosyalar:** `public/efekt` 111 → **124** (+13 şerit `efekt-rozet-*`); `public/sprites` 81, `public/efektler` 13, `public/kaynak` 24 aynı → toplam 229 → **242**. Animasyonlu şerit 133 → **146** (142 kullanımda; "kullanılmıyor" 4 aynı).
+
+**(b) Farklı efekt anahtarı:** 110 → **123** (+13: `rozet-resistance`, `rozet-bane`, `rozet-command`, `rozet-hizli-gerilis`, `rozet-uzun-adim`, `rozet-ziplama`, `rozet-siginak`, `rozet-zayiflatma`, `rozet-orumcek`, `rozet-su-uzeri`, `rozet-olum-korumasi`, `rozet-dans`, `rozet-akici-dil`).
+
+| Durum (savaşta 225) | E4c sonu | **E5 sonu** |
+|---|---|---|
+| hazır | 210 | **223** |
+| genel | 15 | **2** |
+| eksik | 0 | **0** |
+
+**(c) Kalan "genel" 2 büyü:** delayed-blast-fireball (boncuk dokusu yok; patlaması `alan-ates`), wish (kopyalanan büyünün efekti; kendi görseli yok, davranış doğru).
+
 ## E4c sayımı (2026-11-10)
 
 > Kuyruk E4c: `efekt-eksik` (5 şerit) ve `kaynak-ikonlari` (8 ikon) içe aktarıldı ve bağlandı. Bölüm 5 madde 1 ve 3 (kaynak ikonları, Silence/Daylight/Levitate/Telekinesis/Earthquake/Power Word Kill) kapandı. Ayrıntı `DECISIONS.md` (Kuyruk E4c).

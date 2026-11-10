@@ -25,41 +25,41 @@ Seviye grubu × sınıf. Bir büyü birden çok sınıfta sayılır; "Tümü" sa
 
 | Seviye | Sınıf | Toplam | Savaş dışı | Hazır | Genel | Eksik | Yeni anim. |
 |---|---|---|---|---|---|---|---|
-| 0–3 | Bard | 73 | 31 | 39 | 3 | 0 | 0 |
-| 0–3 | Cleric | 58 | 22 | 31 | 5 | 0 | 0 |
-| 0–3 | Druid | 63 | 19 | 40 | 4 | 0 | 0 |
-| 0–3 | Paladin | 30 | 10 | 19 | 1 | 0 | 0 |
-| 0–3 | Ranger | 40 | 14 | 23 | 3 | 0 | 0 |
-| 0–3 | Sorcerer | 85 | 17 | 64 | 4 | 0 | 0 |
-| 0–3 | Warlock | 40 | 12 | 24 | 4 | 0 | 0 |
-| 0–3 | Wizard | 110 | 36 | 69 | 5 | 0 | 0 |
-| 0–3 | **Tümü** | **183** | 53 | **120** | **10** | **0** | **0** |
+| 0–3 | Bard | 73 | 31 | 42 | 0 | 0 | 0 |
+| 0–3 | Cleric | 58 | 22 | 36 | 0 | 0 | 0 |
+| 0–3 | Druid | 63 | 19 | 44 | 0 | 0 | 0 |
+| 0–3 | Paladin | 30 | 10 | 20 | 0 | 0 | 0 |
+| 0–3 | Ranger | 40 | 14 | 26 | 0 | 0 | 0 |
+| 0–3 | Sorcerer | 85 | 17 | 68 | 0 | 0 | 0 |
+| 0–3 | Warlock | 40 | 12 | 28 | 0 | 0 | 0 |
+| 0–3 | Wizard | 110 | 36 | 74 | 0 | 0 | 0 |
+| 0–3 | **Tümü** | **183** | 53 | **130** | **0** | **0** | **0** |
 | 4–5 | Bard | 27 | 13 | 14 | 0 | 0 | 0 |
-| 4–5 | Cleric | 22 | 11 | 10 | 1 | 0 | 0 |
+| 4–5 | Cleric | 22 | 11 | 11 | 0 | 0 | 0 |
 | 4–5 | Druid | 33 | 11 | 22 | 0 | 0 | 0 |
-| 4–5 | Paladin | 8 | 3 | 4 | 1 | 0 | 0 |
+| 4–5 | Paladin | 8 | 3 | 5 | 0 | 0 | 0 |
 | 4–5 | Ranger | 8 | 2 | 6 | 0 | 0 | 0 |
 | 4–5 | Sorcerer | 25 | 3 | 22 | 0 | 0 | 0 |
 | 4–5 | Warlock | 12 | 6 | 6 | 0 | 0 | 0 |
 | 4–5 | Wizard | 50 | 21 | 29 | 0 | 0 | 0 |
-| 4–5 | **Tümü** | **72** | 27 | **44** | **1** | **0** | **0** |
-| 6–9 | Bard | 30 | 13 | 15 | 2 | 0 | 0 |
+| 4–5 | **Tümü** | **72** | 27 | **45** | **0** | **0** | **0** |
+| 6–9 | Bard | 30 | 13 | 17 | 0 | 0 | 0 |
 | 6–9 | Cleric | 29 | 13 | 16 | 0 | 0 | 0 |
 | 6–9 | Druid | 28 | 14 | 14 | 0 | 0 | 0 |
 | 6–9 | Sorcerer | 30 | 4 | 24 | 2 | 0 | 1 |
-| 6–9 | Warlock | 20 | 6 | 13 | 1 | 0 | 0 |
-| 6–9 | Wizard | 58 | 22 | 33 | 3 | 0 | 1 |
-| 6–9 | **Tümü** | **84** | 34 | **46** | **4** | **0** | **1** |
-| **0–9** | **Tümü** | **339** | 114 | **210** | **15** | **0** | **1** |
+| 6–9 | Warlock | 20 | 6 | 14 | 0 | 0 | 0 |
+| 6–9 | Wizard | 58 | 22 | 34 | 2 | 0 | 1 |
+| 6–9 | **Tümü** | **84** | 34 | **48** | **2** | **0** | **1** |
+| **0–9** | **Tümü** | **339** | 114 | **223** | **2** | **0** | **1** |
 
-Savaşta kullanılan 225 büyünün 210'i hazır (93%), 15'i genel, 0'i eksik; 1 büyü yeni animasyon (ya da bağlama) bekliyor.
+Savaşta kullanılan 225 büyünün 223'i hazır (99%), 2'i genel, 0'i eksik; 1 büyü yeni animasyon (ya da bağlama) bekliyor.
 
 Türe göre (savaş büyüleri):
 
 | Tür | Hazır | Genel | Eksik |
 |---|---|---|---|
-| koruma | 29 | 9 | 0 |
-| durum | 19 | 4 | 0 |
+| koruma | 38 | 0 | 0 |
+| durum | 23 | 0 | 0 |
 | zemin | 18 | 1 | 0 |
 | küre/alan | 18 | 0 | 0 |
 | çağırma | 16 | 0 | 0 |
@@ -102,7 +102,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | prestidigitation | 0 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | produce-flame | 0 | Conjuration | mermi | `darbe-buyu`, `hasar:burn`, `mermi:mermi-kure` | E2: mermi:mermi-kure | hazır | — |
 | ray-of-frost | 0 | Evocation | ışın | `darbe-buyu`, `hasar:freeze`, `isin:isin-buz` | E2: isin:isin-buz | hazır | — |
-| resistance | 0 | Abjuration | koruma | `rozet:ok-direnc` | E2 rozet: ok-direnc | genel | — |
+| resistance | 0 | Abjuration | koruma | `hedef:rozet-resistance`, `rozet:ok-direnc` | E2: hedef:rozet-resistance | hazır | — |
 | sacred-flame | 0 | Evocation | gökten düşen | `gokten:gokten-sutun` | E2: gokten:gokten-sutun | hazır | — |
 | shillelagh | 0 | Transmutation | silah | `kendi:silah-halka` | E2: kendi:silah-halka | hazır | — |
 | shocking-grasp | 0 | Evocation | dokunuş | `darbe-buyu`, `darbe-buyu+ton(lightning)` | E2: darbe-buyu+ton(lightning) | hazır | — |
@@ -114,13 +114,13 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | vicious-mockery | 0 | Enchantment | tek hedef | `hedef:alan-psisik` | E2: hedef:alan-psisik | hazır | — |
 | alarm | 1 | Abjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | animal-friendship | 1 | Enchantment | durum | `durum:charmed` |  | hazır | — |
-| bane | 1 | Enchantment | durum | `rozet:ok-zar-eksi` | E2 rozet: ok-zar-eksi | genel | — |
+| bane | 1 | Enchantment | durum | `hedef:rozet-bane`, `rozet:ok-zar-eksi` | E2: hedef:rozet-bane | hazır | — |
 | bless | 1 | Enchantment | koruma | `koruma-kutsama`, `rozet:ok-zar-arti` |  | hazır | — |
 | burning-hands | 1 | Evocation | koni | `alan-ates`, `hasar:burn`, `koni:koni-ates` | E2: koni:koni-ates | hazır | — |
 | charm-person | 1 | Enchantment | durum | `durum:charmed` |  | hazır | — |
 | chromatic-orb | 1 | Evocation | mermi | `darbe-buyu`, `hasar:burn`, `mermi:mermi-kure` | E2: mermi:mermi-kure | hazır | — |
 | color-spray | 1 | Illusion | koni | `css:blinded`, `koni:koni-isik` | E2: koni:koni-isik | hazır | — |
-| command | 1 | Enchantment | durum | `rozet:ok-dezavantaj` | E2 rozet: ok-dezavantaj | genel | — |
+| command | 1 | Enchantment | durum | `hedef:rozet-command`, `rozet:ok-dezavantaj` | E2: hedef:rozet-command | hazır | — |
 | comprehend-languages | 1 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | create-or-destroy-water | 1 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | cure-wounds | 1 | Abjuration | iyileştirme | `iyilestir-kucuk / iyilestir-buyuk` |  | hazır | — |
@@ -133,7 +133,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | divine-smite | 1 | Evocation | silah | `darbe-<silah türü>`, `hedef:silah-kivilcim` | E2: hedef:silah-kivilcim | hazır | — |
 | ensnaring-strike | 1 | Conjuration | silah | `darbe-<silah türü>`, `hedef:silah-kivilcim` | E2: hedef:silah-kivilcim | hazır | — |
 | entangle | 1 | Conjuration | zemin | `yer-tutucu:.spell-zone`, `durum:restrained`, `zemin:zemin-diken` | E2: zemin:zemin-diken | hazır | — |
-| expeditious-retreat | 1 | Transmutation | koruma | `rozet:ok-hiz-arti` | E2 rozet: ok-hiz-arti | genel | — |
+| expeditious-retreat | 1 | Transmutation | koruma | `kendi:rozet-hizli-gerilis`, `rozet:ok-hiz-arti` | E2: kendi:rozet-hizli-gerilis | hazır | — |
 | faerie-fire | 1 | Evocation | küre/alan | `alan:alan-isik` | E2: alan:alan-isik | hazır | — |
 | false-life | 1 | Necromancy | koruma | `kendi:koruma-kutsama` | E2: kendi:koruma-kutsama | hazır | — |
 | feather-fall | 1 | Transmutation | koruma | `kendi:koruma-ruh` | E2: kendi:koruma-ruh | hazır | — |
@@ -153,14 +153,14 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | identify | 1 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | illusory-script | 1 | Illusion | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | inflict-wounds | 1 | Necromancy | tek hedef | `hedef:alan-nekrotik` | E2: hedef:alan-nekrotik | hazır | — |
-| jump | 1 | Transmutation | koruma | `rozet:ok-kanat` | E2 rozet: ok-kanat | genel | — |
-| longstrider | 1 | Transmutation | koruma | `rozet:ok-hiz-arti` | E2 rozet: ok-hiz-arti | genel | — |
+| jump | 1 | Transmutation | koruma | `hedef:rozet-ziplama`, `rozet:ok-kanat` | E2: hedef:rozet-ziplama | hazır | — |
+| longstrider | 1 | Transmutation | koruma | `hedef:rozet-uzun-adim`, `rozet:ok-hiz-arti` | E2: hedef:rozet-uzun-adim | hazır | — |
 | mage-armor | 1 | Abjuration | koruma | `koruma-kalkan` |  | hazır | — |
 | magic-missile | 1 | Evocation | mermi | `darbe-buyu`, `mermi:mermi-ok` | E2: mermi:mermi-ok | hazır | — |
 | protection-from-evil-and-good | 1 | Abjuration | koruma | `hedef:koruma-ruh`, `rozet:ok-kutsal-kalkan` | E2: hedef:koruma-ruh | hazır | — |
 | purify-food-and-drink | 1 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | ray-of-sickness | 1 | Necromancy | ışın | `darbe-buyu`, `hasar:poison`, `isin:isin-nekrotik` | E2: isin:isin-nekrotik | hazır | — |
-| sanctuary | 1 | Abjuration | koruma | `rozet:ok-kutsal-kalkan` | E2 rozet: ok-kutsal-kalkan | genel | — |
+| sanctuary | 1 | Abjuration | koruma | `hedef:rozet-siginak`, `rozet:ok-kutsal-kalkan` | E2: hedef:rozet-siginak | hazır | — |
 | searing-smite | 1 | Evocation | silah | `darbe-<silah türü>`, `hasar:burn`, `hedef:silah-kivilcim` | E2: hedef:silah-kivilcim | hazır | — |
 | shield | 1 | Abjuration | koruma | `kendi:koruma-kalkan` | E2: kendi:koruma-kalkan | hazır | — |
 | shield-of-faith | 1 | Abjuration | koruma | `hedef:koruma-kalkan`, `rozet:ok-ac-arti` | E2: hedef:koruma-kalkan | hazır | — |
@@ -212,14 +212,14 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | phantasmal-force | 2 | Illusion | durum | `hedef:alan-psisik` | E2: hedef:alan-psisik | hazır | — |
 | prayer-of-healing | 2 | Abjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | protection-from-poison | 2 | Abjuration | koruma | `koruma-ruh` |  | hazır | — |
-| ray-of-enfeeblement | 2 | Necromancy | durum | `rozet:ok-hasar-eksi` | E2 rozet: ok-hasar-eksi | genel | — |
+| ray-of-enfeeblement | 2 | Necromancy | durum | `hedef:rozet-zayiflatma`, `rozet:ok-hasar-eksi` | E2: hedef:rozet-zayiflatma | hazır | — |
 | rope-trick | 2 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | scorching-ray | 2 | Evocation | ışın | `darbe-buyu`, `hasar:burn`, `isin:isin-ates` | E2: isin:isin-ates | hazır | — |
 | see-invisibility | 2 | Divination | koruma | `hedef:goz-nabiz` | E2: hedef:goz-nabiz | hazır | — |
 | shatter | 2 | Evocation | küre/alan | `alan-ses` |  | hazır | — |
 | shining-smite | 2 | Transmutation | silah | `darbe-<silah türü>`, `hedef:silah-kivilcim` | E2: hedef:silah-kivilcim | hazır | — |
 | silence | 2 | Illusion | zemin | `yer-tutucu:.spell-zone`, `zemin:zemin-sessizlik` | E2: zemin:zemin-sessizlik | hazır | — |
-| spider-climb | 2 | Transmutation | koruma | `rozet:ok-hiz-arti` | E2 rozet: ok-hiz-arti | genel | — |
+| spider-climb | 2 | Transmutation | koruma | `hedef:rozet-orumcek`, `rozet:ok-hiz-arti` | E2: hedef:rozet-orumcek | hazır | — |
 | spike-growth | 2 | Transmutation | zemin | `yer-tutucu:.spell-zone`, `zemin:zemin-dikenli` | E2: zemin:zemin-dikenli | hazır | — |
 | spiritual-weapon | 2 | Evocation | çağırma | `darbe-buyu`, `hedef:ruh-balta` | E2: hedef:ruh-balta | hazır | — |
 | suggestion | 2 | Enchantment | durum | `durum:charmed` |  | hazır | — |
@@ -266,7 +266,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | tongues | 3 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | vampiric-touch | 3 | Necromancy | dokunuş | `darbe-buyu`, `darbe-buyu+ton(necrotic)` | E2: darbe-buyu+ton(necrotic) | hazır | — |
 | water-breathing | 3 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| water-walk | 3 | Transmutation | koruma | `rozet:ok-hiz-arti` | E2 rozet: ok-hiz-arti | genel | — |
+| water-walk | 3 | Transmutation | koruma | `hedef:rozet-su-uzeri`, `rozet:ok-hiz-arti` | E2: hedef:rozet-su-uzeri | hazır | — |
 | wind-wall | 3 | Evocation | duvar | `duvar-ruzgar` |  | hazır | — |
 | arcane-eye | 4 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | aura-of-life | 4 | Abjuration | aura | `koruma-ruh`, `aura:aura-altin` | E2: aura:aura-altin | hazır | — |
@@ -279,7 +279,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | conjure-minor-elementals | 4 | Conjuration | çağırma | `aura:aura-kirmizi` | E2: aura:aura-kirmizi | hazır | — |
 | conjure-woodland-beings | 4 | Conjuration | aura | `alan-kuvvet`, `aura:aura-altin` | E2: aura:aura-altin | hazır | — |
 | control-water | 4 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| death-ward | 4 | Abjuration | koruma | `rozet:ok-yenilenme` | E2 rozet: ok-yenilenme | genel | — |
+| death-ward | 4 | Abjuration | koruma | `hedef:rozet-olum-korumasi`, `rozet:ok-yenilenme` | E2: hedef:rozet-olum-korumasi | hazır | — |
 | dimension-door | 4 | Conjuration | ışınlanma | `isinlan-cikis → isinlan-giris` |  | hazır | — |
 | divination | 4 | Divination | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | dominate-beast | 4 | Enchantment | işaret | `durum:charmed`, `isaret:isaret-pence` | E2: isaret:isaret-pence | hazır | — |
@@ -358,7 +358,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | heal | 6 | Abjuration | iyileştirme | `iyilestir-kucuk / iyilestir-buyuk` |  | hazır | — |
 | heroes-feast | 6 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | instant-summons | 6 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
-| irresistible-dance | 6 | Enchantment | durum | `rozet:ok-dezavantaj` | E2 rozet: ok-dezavantaj | genel | — |
+| irresistible-dance | 6 | Enchantment | durum | `aura:rozet-dans`, `rozet:ok-dezavantaj` | E2: aura:rozet-dans | hazır | — |
 | magic-jar | 6 | Necromancy | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | mass-suggestion | 6 | Enchantment | durum | `durum:charmed` |  | hazır | — |
 | move-earth | 6 | Transmutation | yok | — | günlük/kart Game Master notu | savaş dışı | — |
@@ -400,7 +400,7 @@ Tür: mermi, ışın, koni, küre/alan, duvar, zemin, aura, çağırma, dönüş
 | demiplane | 8 | Conjuration | yok | — | günlük/kart Game Master notu | savaş dışı | — |
 | dominate-monster | 8 | Enchantment | işaret | `durum:charmed`, `isaret:isaret-kristal` | E2: isaret:isaret-kristal | hazır | — |
 | earthquake | 8 | Transmutation | zemin | `yer-tutucu:.spell-zone`, `css:prone`, `zemin:zemin-deprem-yarigi` | E2: zemin:zemin-deprem-yarigi | hazır | — |
-| glibness | 8 | Enchantment | koruma | `rozet:ok-avantaj` | E2 rozet: ok-avantaj | genel | — |
+| glibness | 8 | Enchantment | koruma | `kendi:rozet-akici-dil`, `rozet:ok-avantaj` | E2: kendi:rozet-akici-dil | hazır | — |
 | holy-aura | 8 | Abjuration | aura | `koruma-kutsama`, `aura:aura-altin` | E2: aura:aura-altin | hazır | — |
 | incendiary-cloud | 8 | Conjuration | zemin | `yer-tutucu:.spell-zone`, `hasar:burn`, `zemin:duman-kor` | E2: zemin:duman-kor | hazır | — |
 | maze | 8 | Conjuration | ışınlanma | `durum:incapacitated`, `hedef:run-cember` | E2: hedef:run-cember | hazır | — |

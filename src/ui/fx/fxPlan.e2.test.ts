@@ -26,7 +26,7 @@ const E2_SHEETS = ['buyu-yardimci', 'donusum-kanat', 'duman-ag-kafes', 'gokten-d
 describe('Kuyruk E2: içe aktarılan sayfalar', () => {
   it('12 sayfanın kesim kaydı var; şerit kayıtları dosyalı, kare sayısı ızgarayla tutarlı', () => {
     for (const s of E2_SHEETS) expect(sheets[s]?.klasor, s).toBe('efekt');
-    expect(Object.keys(recs)).toHaveLength(79); // 52 (E2) + 10 (E4: zemin-ek 6, isin-ek 4) + 12 (E4b: bıçak 2, duvar-ek 3, prizma 2, yerçekimi 2, durum-ek 1, su 2) + 5 (E4c: efekt-eksik)
+    expect(Object.keys(recs)).toHaveLength(92); // 52 (E2) + 10 (E4: zemin-ek 6, isin-ek 4) + 12 (E4b: bıçak 2, duvar-ek 3, prizma 2, yerçekimi 2, durum-ek 1, su 2) + 5 (E4c: efekt-eksik) + 13 (E5: rozet-efekt-13)
     for (const [name, r] of Object.entries(recs)) {
       expect(files.has(r.yol), name).toBe(true);
       expect(r.yol).toBe(`efekt/${name}`);
