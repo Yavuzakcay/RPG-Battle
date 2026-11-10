@@ -14,9 +14,11 @@ describe('harita efektleri verisi', () => {
     for (const m of maps) for (const v of m.variants) expect(Array.isArray(v.effects)).toBe(true);
   });
   it('istenen eşleşmeler (GOREV 10c)', () => {
-    expect(types('ada', 'firtina')).toEqual(['rain', 'lightning', 'waveGlint']);
-    expect(types('gemi', 'firtina')).toEqual(['rain', 'lightning', 'waveGlint']);
-    expect(types('ada', 'gunes')).toEqual(['waterSparkle']);
+    // Kuyruk E4b: deniz haritalarının dalga/su parıltısı katmanı, su altıgenleri üstüne bağlanan SU-DALGA/SU-HAVUZ dokusuyla değişti
+    // (src/ui/fx; harita verisinde yalnız yağmur ve şimşek kaldı).
+    expect(types('ada', 'firtina')).toEqual(['rain', 'lightning']);
+    expect(types('gemi', 'firtina')).toEqual(['rain', 'lightning']);
+    expect(types('ada', 'gunes')).toEqual([]);
     expect(types('bataklik', 'bataklik')).toEqual(['fog', 'bubbles', 'fireflies']);
     expect(types('magara', 'magara')).toEqual(['crystalFlicker', 'drip']);
     expect(types('dungeon', 'mesale')).toEqual(['flicker', 'dust']);

@@ -87,8 +87,11 @@ describe('olay → efekt', () => {
     const hexes = [{ col: 5, row: 3 }, { col: 5, row: 4 }, { col: 6, row: 3 }];
     const area = (shape: string, damageType: string) => ({ type: 'area_used', actorId: 'A', label: '', shape, sizeFt: 15, hexes, targetIds: [], damageType }) as BattleEvent;
     expect(ids([area('sphere', 'fire')])).toEqual(['alan-ates']);
-    expect(ids([area('cone', 'thunder')])).toEqual(['alan-ses']);
-    expect(ids([area('sphere', 'cold')])).toEqual([]);
+    // Kuyruk E2: koni alan dokusu (gök gürültüsü: buz satırı + hue), soğuk alanda patlama-ek (alan-buz); delmede patlama yok.
+    expect(ids([area('cone', 'thunder')])).toEqual(['koni-buz']);
+    expect(fxShots([area('cone', 'thunder')], st())[0]).toMatchObject({ cone: true, hue: 20, from: { col: 2, row: 2 } });
+    expect(ids([area('sphere', 'cold')])).toEqual(['alan-buz']);
+    expect(ids([area('sphere', 'piercing')])).toEqual([]);
     const line = fxShots([area('line', 'lightning')], st());
     expect(line[0]).toMatchObject({ sprite: { id: 'isin-sok' }, from: { col: 2, row: 2 } });
     const cast = { type: 'spell_cast', actorId: 'A', targetId: null, label: '', slotLevel: 3, note: '', area: { hexes, damageType: 'fire' } } as BattleEvent;

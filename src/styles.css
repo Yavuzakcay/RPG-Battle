@@ -369,6 +369,13 @@ button.cta { background: var(--party); color: var(--on); border-color: var(--par
 .card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .rest-panel { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
 .rest-panel .card-actions { align-items: flex-end; margin-top: 4px; }
+/* Kuyruk E4c: kaynak göstergesi "ikon + sayı" (en az 32 px: ince çizgili ikonlar daha küçükte okunmaz; ad title/aria-label'da). */
+.res-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 4px 0; }
+.res-chip { display: inline-flex; align-items: center; gap: 4px; }
+.res-chip img { width: 32px; height: 32px; flex: none; pointer-events: none; }
+.res-chip em { font-style: normal; font-size: 0.8rem; color: var(--mute); }
+.res-chip b { font-size: 1rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.res-chip b small { font-size: 0.75em; font-weight: 600; color: var(--mute); }
 .rest-dice { display: flex; flex-direction: column; font-size: 12px; color: var(--mute); }
 .builder-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: start; }
 .builder-summary { position: sticky; top: 8px; font-size: 14px; }

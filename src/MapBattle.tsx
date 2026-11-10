@@ -114,7 +114,7 @@ import { mechanicsAt, sigmayanNote } from './battle/spellVersion';
 import { breathOf } from './battle/breath';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
-import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
+import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, outlineColor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
 import { ReactionPrompt } from './ui/ReactionPrompt';
@@ -161,6 +161,7 @@ import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 import { MoralBar } from './ui/MoralBar';
+import { ResourceChip, iconed, plain, sharedIcons } from './ui/ResourceChip';
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -295,11 +296,15 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
         })}</p>
       ))(lineageAbilityList({ raceId: c.raceId, lineageId: c.lineageId, level: c.level }))}
       {c.concentration && <p>{D.concentration(c.concentration.spell)}</p>}
-      {(usableResources(c).length > 0 || c.sneakAttackDice > 0) && (
+      {(plain(usableResources(c)).length > 0 || c.sneakAttackDice > 0) && (
         <p>{D.features([
-          ...usableResources(c).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}`),
+          ...plain(usableResources(c)).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}`),
           c.sneakAttackDice > 0 ? `Sneak Attack ${c.sneakAttackDice}d6` : '',
         ].filter(Boolean).join(' · '))}</p>
+      )}
+      {/* Kuyruk E4c: ikonlu kaynaklar "ikon + sayı" (ad title/aria-label'da). */}
+      {iconed(usableResources(c)).length > 0 && (
+        <p className="res-chips">{iconed(usableResources(c)).map(([id, n]) => <ResourceChip key={id} id={id} n={n} showName={sharedIcons(iconed(usableResources(c)).map(([x]) => x)).has(id)} />)}</p>
       )}
       {c.spellSlots.some((n) => n > 0) && <p>{D.slots(c.spellSlots.map((n, i) => (n > 0 ? D.slot(i + 1, n) : '')).filter(Boolean).join(' · '))}</p>}
     </aside>
@@ -1870,7 +1875,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 const offLevel = (airOn && !inLevel(c)) || (katFt !== null && (c.altitudeFt ?? 0) !== katFt);
                 // Jeton filtreleri (Görev V): taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış.
                 const filters = tokenFilters(c);
-                const look = filterStyle(filters);
+                const look = filterStyle(filters, outlineColor(c));
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', c.unaware ? 'unaware' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',

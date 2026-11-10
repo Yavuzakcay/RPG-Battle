@@ -33,6 +33,7 @@
     "check:harita": "node scripts/kara-ekran.mjs",
     "masumlar": "node scripts/masumlar.mjs",
     "efektler": "node scripts/efektler.mjs",
+    "kaynak-ikon": "node scripts/kaynak-ikon.mjs",
     "sprite-ice": "node scripts/sprite-ice.mjs",
     "acilis": "node scripts/acilis.mjs",
     "son-video": "node scripts/son-video.mjs",
@@ -53,7 +54,9 @@
     "check:ses": "node scripts/ses-kontrol.mjs",
     "logo": "vite-node scripts/logo.ts",
     "check:icerik": "vite-node scripts/icerik-kontrol.ts",
-    "paket-durum": "vite-node scripts/paket-durum.ts"
+    "paket-durum": "vite-node scripts/paket-durum.ts",
+    "efekt-tablosu": "node scripts/buyu-efekt-tablosu.mjs",
+    "buyu-efekt-tablosu": "node scripts/buyu-efekt-tablosu.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

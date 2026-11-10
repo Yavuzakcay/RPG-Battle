@@ -1,6 +1,6 @@
 // Kuyruk 14 SP1: Gemini sprite'larını içe aktarır. Çalıştırma:
 //   npm run sprite-ice [klasör] [--golge-sil] [--tolerans N] [--boyut N] [--cikti klasör]
-//   npm run sprite-ice -- --efekt   (Görev E1: assets-ham/efekt/ siyah zeminli efekt sayfaları ve macenta durum ikonları;
+//   npm run sprite-ice -- --efekt [--kontrol <klasör>]   (Kuyruk E2: kontrol görseli; Görev E1: assets-ham/efekt/ siyah zeminli efekt sayfaları ve macenta durum ikonları;
 //                                    kesim data/efekt-kesim.json, çıktı public/sprites/efekt-*.webp + data/sprite-esleme.json `efektler`)
 // assets-ham/sprite/*.(png|jpg|jpeg) → public/sprites/<ad>.webp (kayıpsız) + data/sprite-mevcut.json (üretilen adlar).
 // Adımlar: köşe renginden zemin (toleranslı), dışarıdan doldurma + iç boşluklar (ağ delikleri), yeşil ya da magenta
@@ -131,13 +131,13 @@ function writeList() {
 async function main() {
   if (flag('--efekt')) {
     const { importEffects } = await import('./efekt-sayfa.mjs');
-    const r = await importEffects({ src: args.find((a) => !a.startsWith('--')) ?? 'assets-ham/efekt', out: OUT, processSprite });
+    const r = await importEffects({ src: args.find((a, i) => !a.startsWith('--') && args[i - 1] !== '--kontrol') ?? 'assets-ham/efekt', out: OUT, processSprite, kontrol: opt('--kontrol', null) });
     if (!r) return;
     for (const n of r.notes) console.log(`ℹ ${n}`);
     if (r.missing.length) console.warn(`⚠ tabloda olup klasörde olmayan sayfa: ${r.missing.join(', ')}`);
     if (r.unmatched.length) console.warn(`⚠ tabloda karşılığı olmayan dosya (işlenmedi): ${r.unmatched.join(', ')}`);
     const all = writeList();
-    console.log(`${Object.keys(r.records).length} efekt şeridi, ${Object.keys(r.icons).length} ikon; liste ${LIST} (${all.length}).`);
+    console.log(`${Object.keys(r.records).length} efekt şeridi, ${Object.keys(r.icons).length} ikon; E2: ${Object.keys(r.e2.efektler).length} şerit, ${Object.values(r.e2.simgeler).reduce((n, o) => n + Object.keys(o).length, 0)} simge; liste ${LIST} (${all.length}).`);
     return;
   }
   if (!fs.existsSync(SRC)) { console.log(`${SRC} yok; işlenecek sprite yok.`); return; }

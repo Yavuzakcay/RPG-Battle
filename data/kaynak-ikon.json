@@ -1,0 +1,42 @@
+{
+  "not": "Kuyruk E4c: kaynak ikonları (npm run kaynak-ikon → public/kaynak/kaynak-<ad>.webp 192 px, -96, -64). Yalnız görünüm. kaynak: kaynak anahtarı → ikon adı (E4-DENETIM (a) tablosu). desen: ek paket (`pk-…`) kaynak adına bakan yedek eşleme (ruh kristali); ResourceDef.icon (paket zarHavuzu kaynağı → ustunluk-zari) önce okunur. Eşleşmeyen kaynak yalnız metin kalır. En küçük gösterim boyu: boyut px (24 px altında ince çizgili ikonlar okunmaz).",
+  "boyut": 32,
+  "ikonlar": [
+    "ki",
+    "ilham",
+    "ustunluk-zari",
+    "kader-d20",
+    "ruh-kristali",
+    "buyu-puani",
+    "sifa-havuzu",
+    "arcanum"
+  ],
+  "kaynak": {
+    "focus": "ki",
+    "uncannyMetabolism": "ki",
+    "wholenessOfBody": "ki",
+    "bardicInspiration": "ilham",
+    "imzaUstaSair": "ilham",
+    "imzaOlumsuzDize": "ilham",
+    "strokeOfLuck": "kader-d20",
+    "darkOnesLuck": "kader-d20",
+    "imzaFal": "kader-d20",
+    "imzaYazgi": "kader-d20",
+    "sorceryPoints": "buyu-puani",
+    "innateSorcery": "buyu-puani",
+    "arcanum6": "arcanum",
+    "arcanum7": "arcanum",
+    "arcanum8": "arcanum",
+    "arcanum9": "arcanum",
+    "layOnHands": "sifa-havuzu",
+    "celestialHeal": "sifa-havuzu",
+    "imzaHavuz": "sifa-havuzu",
+    "imzaHukumdar": "sifa-havuzu"
+  },
+  "desen": [
+    {
+      "ara": "kristal|crystal|soul gem|ruh",
+      "ikon": "ruh-kristali"
+    }
+  ]
+}

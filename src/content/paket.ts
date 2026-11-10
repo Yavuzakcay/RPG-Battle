@@ -40,6 +40,8 @@ export function registerPackResources(list: SubclassDef[]): void {
         uses: usesOf(poolTiers(all, p.id) ?? p.sayi), recharge: rechargeOf(p.yenilenme), ...(free.length ? { freeSpells: free } : {}),
         // Kuyruk P12: sayaç kaynağı (güç deposu): başlangıç ve uzun dinlenme 1, kısa dinlenme 0'daysa 1.
         ...(p.yenilenme === 'depo' ? { depot: 1 } : {}),
+        // Kuyruk E4c: kaynağı sayan zar havuzu varsa ikon üstünlük zarı (yalnız görünüm).
+        ...(all.some((x) => x.p.tur === 'zarHavuzu' && (x.p.kaynak as { id?: string } | undefined)?.id === p.id) ? { icon: 'ustunluk-zari' } : {}),
       };
       registered.push(key);
     }
