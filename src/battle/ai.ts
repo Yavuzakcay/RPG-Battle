@@ -2760,7 +2760,8 @@ function burrowField(state: BattleState, actor: Combatant, foes: Combatant[]): (
  * - (c) ÇIKIŞ: yer altında, bir düşmanın yatayda bitişiğinde: yüzeye çıkar (ardından saldırır). Yer altında ilerlerken en yakın
  *   düşmanın yanına (çıkışa bir altıgen bırakarak) gider; ilerleyemiyorsa yüzeye çıkar.
  * - (b) KAÇIŞ: canı ≤ `kacisCan` ve yüzeyde yakın ya da menzilli tehdit altında, düşmanlardan kimse yer altını sezemiyorsa
- *   (tremorsense, kazma hızı) kazar ve o tur yer altında kalır (hedeflenemez). Sonraki tur (c) ile çıkıp saldırır (vur-kaç).
+ *   (tremorsense, kazma hızı) ve turun başındaysa (bu tur hareket ve eylem yok) kazar, o tur yer altında kalır (hedeflenemez). Sonraki tur
+ *   (c) ile çıkıp saldırır ve o tur yüzeyde kalır; yeniden kazmak ondan sonraki tur.
  *   ⚠ Aynı tur yer altında uzaklaşma yok: YZ durum tutmaz, "bu tur kazdı" ile "yer altında yaklaştı" ayrılamıyor (salınım).
  * - (a) YAKLAŞMA: bu tur saldıramıyor ve yürüyerek hiçbir düşmanın yanına yol yok ya da yer altından ulaşma süresi (kazma
  *   + yol + çıkış, kazma hızıyla) yürüme süresinin en çok `kazmaOrani` katı.
@@ -2788,7 +2789,8 @@ function burrowCommand65(state: BattleState, actor: Combatant, now: Command | nu
   if (altitudeOf(actor) !== 0 || !diggable(state, pos)) return null;
   const dig: Command = { type: 'vertical_move', actorId: actor.id, toFt: -BURROW_DEPTH_FT };
   // (b) kaçış
-  if (low && !sensed && (engaged(actor, foes) || rangedThreat(state, actor))) {
+  // Yalnız turun başında (bu tur hareket ve eylem yok): çıkıp saldırdığı tur yüzeyde kalır, yeniden kazmak sonraki tur.
+  if (low && !sensed && !actor.economy.action && actor.movementUsed === 0 && (engaged(actor, foes) || rangedThreat(state, actor))) {
     if (tryCmd(state, actor, dig).ok) { k73eStats.digFlee++; return dig; }
   }
   // (a) yaklaşma

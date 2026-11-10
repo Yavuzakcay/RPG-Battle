@@ -60,6 +60,15 @@ describe('K73e YZ kazma', () => {
     const r = execute(s, { type: 'vertical_move', actorId: 'D', toFt: 0 }, { playerId: 'gm', isGm: true }, () => 0.5);
     expect(r.ok && chooseCommand(r.state)).toMatchObject({ type: 'monster_attack', actorId: 'D', targetId: 'A' });
   });
+  it('(b)+(c) çıktığı/saldırdığı tur yeniden kazmaz (canı düşük olsa da); sonraki tur kazabilir', () => {
+    const s = field([A(), DIG({ hp: 10 })], { A: [H(3)], D: [H(4)] }, 65, open(), 'D');
+    const after = { ...s, combatants: { ...s.combatants, D: { ...of(s, 'D'), economy: { ...of(s, 'D').economy, action: true } } } };
+    expect(chooseCommand(after)).not.toEqual(dig);
+    // Yer altından bu tur çıktı (hareket harcandı): saldırmadan yeniden kazmaz.
+    const surfaced = { ...s, combatants: { ...s.combatants, D: { ...of(s, 'D'), movementUsed: 1 } } };
+    expect(chooseCommand(surfaced)).not.toEqual(dig);
+    expect(chooseCommand(s)).toEqual(dig);
+  });
   it('tremorsense\'li YZ yer altındaki düşmanı hedefler', () => {
     const s = field([A({ senses: { tremorsense: 30 } }), DIG()], { A: [H(3)], D: [H(4), -5] }, 65, open(), 'A');
     expect(chooseCommand(s)).toMatchObject({ targetId: 'D' });
