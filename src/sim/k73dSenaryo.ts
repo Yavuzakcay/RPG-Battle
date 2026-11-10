@@ -7,6 +7,7 @@
  * - firtina: Deniz — Ada (fırtına varyantı), Druid partisi (Call Lightning); 63'te bulut kurulur, 64'te fırtına devralınır.
  * - kiyi (Kuyruk K73e): Mielikki Gölü, parti batı kıyısında (karada), deniz yaratıkları gölde yüzeyde: YZ dalışının (65)
  *   gerçek akışta ölçümü (menzilli tehditten kaçınma).
+ * - k73f-kiyi (Kuyruk K73f): aynı kıyı başlangıcı, 66'da yüzücü listesine eklenen canavarlarla.
  * Ayar yok; ölçüm `src/sim/k73dOlcum.test.ts` (`K73D_TOHUM`).
  */
 import type { Scenario } from './balance';
@@ -19,6 +20,10 @@ export const K73D_SCENARIOS: Scenario[] = [
     enemies: { 'giant-shark': 3, 'killer-whale': 2, 'water-elemental': 1, 'giant-octopus': 2 }, byLevel: { 5: { 'giant-shark': 3, 'killer-whale': 2, 'water-elemental': 1, 'giant-octopus': 2 } } },
   { id: 'k73d-kiyi', name: 'Kıyı karşılaşması (Mielikki Gölü)', map: { mapId: 'orman-heykel-golu', variantId: 'gunduz' },
     enemies: { 'giant-shark': 3, 'killer-whale': 2, 'water-elemental': 1, 'giant-octopus': 2 }, byLevel: { 5: { 'giant-shark': 3, 'killer-whale': 2, 'water-elemental': 1, 'giant-octopus': 2 } } },
+  // Kuyruk K73f: kıyı, 66'da yüzücü listesine eklenen canavarlarla (kara ayı ve beyaz ejderha yavrusu 65'te yüzmez; Chuul
+  // ve kutup ayısı 65'te de `srdK19` hız notundan yüzer).
+  { id: 'k73f-kiyi', name: 'Kıyı karşılaşması, K73f yüzücüleri (Mielikki Gölü)', map: { mapId: 'orman-heykel-golu', variantId: 'gunduz' },
+    enemies: { 'white-dragon-wyrmling': 2, 'black-bear': 2, chuul: 1, 'polar-bear': 1 }, byLevel: { 5: { 'white-dragon-wyrmling': 2, 'black-bear': 2, chuul: 1, 'polar-bear': 1 } } },
   { id: 'k73d-firtina', name: 'Fırtınalı karşılaşma (Deniz — Ada)', map: { mapId: 'ada', variantId: 'firtina' },
     enemies: { pirate: 8, 'bandit-captain': 2 }, byLevel: { 5: { pirate: 8, 'bandit-captain': 2 }, 9: { pirate: 7, 'bandit-captain': 2, mage: 1 } } },
 ];

@@ -2,6 +2,32 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-10 — Kuyruk K73f: su ve atlama kalanları (kural sürümü 66)
+
+- **Sürüm:** `wip/k73f` (`wip/k73e` 35acdbc üstüne). Kural sürümü 65 → 66 (`src/battle/k73fSurum.ts` `k73fOn`); 65 ve altı birebir. Yeni olay ya da alan yok; `SAVE_VERSION` 22. Sonuç `harita/belgeler/K73F-SONUC.md`.
+- **Görev 1, batık/yer altı atlama varışı (motor; `movement.ts` `underJumpProblem`, `executeJump`):**
+  - 66'da batık (derin suda eksi irtifa) ya da yer altındaki (kazan) atlayanın varışı **kendi katmanında** denetlenir: varış hücresi atlayanın bandında boş olmalı (`occupantAt(..., bandOf(actor))`), batık yalnız derin suya, yer altındaki yalnız kazılabilir zemine atlar; değilse komut reddi (YZ adayı `tryCmd` reddiyle üretilmez).
+  - Yüzeydeki yaratık batık/yer altındaki atlayanın varışını engellemez (ayrı katman); yüzeydeki atlayanın yer düzeyi denetimi aynen. Aynı altıgende yüzeye çıkış ayrıca `verticalCellProblem` ile (değişmedi): yüzeyi dolu altıgene inen batık, komşu su altıgenine yüzüp çıkar (test: boğulma 0).
+  - 65'te eski davranış (aynı −5 ft hücreye iniş; replay testi). K73e'nin YZ önlemi (batık/yer altındayken atlama adayı yok) 66'da da kalır: su altında uzun atlama doğal değil, aday taraması da gereksiz.
+- **Görev 2, yüzücü listesi (`data/derin-su.json` `swimmers66`, `deepWater.ts` `listedSwimmer`):**
+  - Hız satırında Swim olup `swimmers` listesinde olmayan 17 canavar 66'da listeye eklendi (kullanıcı kararı 2026-11-10). 65'te liste eski.
+  - Düzeltme (K73e denetimine): `srdK19` (varsayılan açık) hız notu "Hız: Swim" ile başlayan canavara zaten yüzme özelliği veriyordu (`monsterTraits.ts`, `gift-of-the-depths`): 17'nin 11'i 65'te de yüzüyordu. Notu Burrow/Climb ile başlayan 6'sı (dört beyaz ejderha, Black Bear, Guardian Naga) yüzmüyordu; 66'da hepsi `srdK19`'dan bağımsız yüzücü.
+  - Su soluyamayan 10'u (dört beyaz ejderha, Black Bear, Polar Bear, Flying Snake, Gibbering Mouther, Guardian Naga, Shambling Mound) için K73e nefes kuralı (sınırın yarısında çık) aynen; 7'si su solur (Amphibious/Water Breathing/Hold Breath). Ölçümde boğulma 0.
+  - Yüzme hızı olmayıp nefes tutabilen canavar veride yok (0): dalma adayı üretilmez (K73e'de de yok). Karar kullanıcıda.
+- **Görev 3, Call Lightning fırtına devralma:** SRD 5.2.1 metni ("If you're outdoors in a storm when you cast this spell, the spell gives you control over that storm instead of creating a new one. Under such conditions, the spell's damage increases by 1d10.") K73c'de (sürüm 64) birebir uygulanmış: açık gökte harita fırtınası ya da Storm of Vengeance alanı altında yeni bulut yok (`cloud.storm`), hasar +1d10; fırtına verisi tek kaynaktan (`cloud.ts` `stormSourceOf`, `spells.ts` `stormBonusOn`). 66'da kod değişmedi (66 kapısı gerekmedi); 66 testleri: fırtınada 4d10 + devralma, fırtınasız 3d10 + yeni bulut, süre ve konsantrasyon aynı, 65 = 66.
+- **Görev 4, YZ yer altında uzaklaşma (`ai.ts` `burrowCommand65`, 66 kolu; parametre `data/yapay-zeka.json` `k73f.kacisCan` 0,15):**
+  - Kaçış kipi: canı ≤ `k73f.kacisCan` ve düşmanlardan kimse yer altını sezemiyor. Yüzeyde turun başında tehdit altındaysa kazar (K73e koşulları); yer altında bu tur hareket ettiyse (kazdı ya da yürüdü) yalnız uzaklaşır (en uzak yer altı altıgeni), uzaklaşamıyorsa yer altında kalır; turun başında yer altındaysa çıkar ve dövüşür (kovalanırken sonsuz kaçış ve zaman aşımı yok). Kaçış kipinde yaklaşma kazması yok.
+  - Karar konum, can eşiği ve motorun kalan hareketiyle (`movementUsed`, motor durumu); YZ'de tur içi sayaç yok. Salınım testi: 6 tur boyunca her tur en çok bir dikey hareket, aynı tur kaz-çık yok.
+  - K73e kusuru kapandı: 65'te kaçış kazması aynı tur bitişikteki çıkış kuralıyla hemen yüzeye çıkıyordu (yalnız 2 hareket harcıyordu).
+  - Eşik: 65'in %50'si 66'da kazan L9'u 64'e göre +14 puan oynattı, %25 +10; %15'te +7 (Görev 4 sınırı 8). Seçilen %15; %15–%50 arasında kaçış kazması yok.
+- **Ölçüm:**
+  - **Regresyon:** eski ağaç (`wip/k73e` 35acdbc, geçici worktree) ile 4 × 30, duvarlı 6 × 50, katmanlı 8 × 20 = 18 senaryoda 65 ve 66 imzası birebir (kazıcı, derin su, listeye eklenen canavar yok: 66 farklı senaryo yok). `src/sim/k73fRegresyon.test.ts` (65 altın = K73e altınları, 66 = 65; 30 tohumda da geçti).
+  - **Denge 65 ↔ 66** (30 tohum; `harita/belgeler/DENGE.md`): kazan L5 43 → 47, L9 57 → 60; su altı, kıyı, fırtına imza eşit; yeni kıyı (66 yüzücüleri) 100 → 100 (dalış 60 → 93). 8 puanı aşan kayma yok; ayar yok. Zaman aşımı 0, boğulma 0.
+  - **YZ karar süresi** (medyan ms, simetrik sıra 65, 66, 66, 65; n = 8, N = 150; hepsi ≤ +%15): Mantar 2,06 → 1,99; katmanlı 1,93 → 1,94; uçan 1,98 → 2,02; yakın dövüşlü uçan 2,38 → 2,29; duvarlı yerde 2,40 → 2,34; duvarda 0,83 → 0,80; katlı 1,13 → 1,17 (+%4); süzülen 0,76 → 0,75; çok turlu sur 0,67 → 0,62; kazan 1,70 → 1,66; su altı düşman/parti 0,45/1,35 → 0,46/1,42 (+%2/+%5); fırtına 0,77 → 0,76; kıyı 0,05 → 0,04. Yeni sahne "kaçan kazıcı" 0,06 → 0,18 (65 çıkıyordu, 66 yer altı uzaklaşma araması).
+- **Kapı:** ana parça 374,74 kB; `check:harita` 96/0, `check:ses` 15/0 (`PW_CHROMIUM=/opt/pw-browsers/chromium`); modül başlatma testi yeşil; tam paket (son koşu) 368 dosya + 1 atlanan (`k73dOlcum.test.ts`), 4314 test + 7 atlanan.
+- **Testler:** `src/battle/k73f.test.ts` (17): batık dolu hücre reddi (65'te iniyordu), boş hücre, karaya red, yüzeydeki/batık katman ayrımı, yüzeyi dolu hücrede boğulmama, yer altı dolu hücre ve kazılamaz zemin reddi, 65 replay; 17 liste, 66/65 yüzücü, kara ayı dalışı ve nefes yarısında çıkış, su soluyanlar; Call Lightning fırtına/fırtınasız, süre/konsantrasyon; kaçış + uzaklaşma (65'te aynı tur çıkış), tur başında çıkış, salınım, %15–%50 arası kazmama, tremorsense'te 65 = 66.
+- **Açık kalanlar:** yüzme hızsız nefes tutan canavar yok (veride 0; ileride paket yaratığı için karar kullanıcıda); su altı ve kıyı karşılaşmaları kolay (%100); yaklaşma kazması SRD verisinde pratikte tetiklenmiyor (K73e'den); `monsterTraits.ts` hız notunun yalnız ilk hızına bakması (Climb/Burrow önce gelince Swim okunmuyor) 66 listesiyle etkisiz, ayrıştırıcı düzeltilmedi.
+
 ## 2026-11-10 — Kuyruk K73e: YZ kazma ve dalış kararı (kural sürümü 65)
 
 - **Sürüm:** `wip/k73e` (`wip/k73d` cbc5798 üstüne). Kural sürümü 64 → 65; 65'te yalnız yapay zekâ kararı değişir (`src/battle/k73eSurum.ts` `k73eOn`). Kural motoru, olaylar ve kayıt biçimi 64 ile aynı; `SAVE_VERSION` 22. Parametreler `data/yapay-zeka.json` `k73e`.

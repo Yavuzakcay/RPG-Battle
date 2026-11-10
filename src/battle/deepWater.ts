@@ -12,9 +12,15 @@ import { neighbors, type Offset } from '../rules/hex';
 import { terrainOf } from '../map/terrain';
 import { globalRule } from './ruleControl';
 import { groundBound } from './flight';
+import { k73fOn } from './k73fSurum';
 import type { BattleState, Combatant } from './types';
 
 const SWIMMERS = new Set<string>(data.swimmers);
+/** Kuyruk K73f (sürüm 66+): hız satırında Swim olup ilk listede olmayan 17 canavar. */
+const SWIMMERS66 = new Set<string>(data.swimmers66);
+/** Canavar yüzücü listesinde mi (66+ ek liste dahil; sürümsüz çağrıda eski liste). */
+export const listedSwimmer = (c: Pick<Combatant, 'monsterId'>, state?: Pick<BattleState, 'kuralSurumu'>): boolean =>
+  !!c.monsterId && (SWIMMERS.has(c.monsterId) || (!!state && k73fOn(state) && SWIMMERS66.has(c.monsterId)));
 const WATER_WALK = new Set<string>(data.waterWalkEffects);
 const cache = new WeakMap<readonly string[], Int16Array>();
 
@@ -70,7 +76,7 @@ export const isLiquidTile = (t: { char: string; rule?: string }): boolean => t.r
 export function canEnterVeryDeep(c: Combatant, state?: BattleState): boolean {
   // Kuyruk 19: Gift of the Depths (Warlock) yüzme hızı verir.
   // Kuyruk U1a: süzülen derin suya yürüyen gibi (yalnız uçan, yüzen, suda yürüyen).
-  return !groundBound(c) || (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths') || !!c.effects?.some((e) => e.freeMove) || swimsByTrait(c, state);
+  return !groundBound(c) || listedSwimmer(c, state) || !!c.effects?.some((e) => WATER_WALK.has(e.id)) || !!c.traits?.includes('gift-of-the-depths') || !!c.effects?.some((e) => e.freeMove) || swimsByTrait(c, state);
 }
 
 /** Yol bulma: bu yaratık için çok derin su altıgeni geçilmez mi (mekanik kapalıysa hep false). */
@@ -83,5 +89,5 @@ export function deepWaterBlocks(state: BattleState, actor: Combatant): (h: Offse
 
 /** Kuyruk K73c (sürüm 64+): yüzme hızı var mı (SRD listesi, Alter Self/Roving/Gift of the Depths). Uçuş sayılmaz. */
 export function hasSwimSpeed(c: Combatant, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): boolean {
-  return (!!c.monsterId && SWIMMERS.has(c.monsterId)) || !!c.traits?.includes('gift-of-the-depths') || swimsByTrait(c, state);
+  return listedSwimmer(c, state) || !!c.traits?.includes('gift-of-the-depths') || swimsByTrait(c, state);
 }

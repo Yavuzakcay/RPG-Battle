@@ -2,6 +2,31 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K73f: su ve atlama kalanları (2026-11-10; ölçüm, denge ayarı yok)
+
+Kural sürümü 65 ↔ 66, aynı tohumlar (30), K73d/K73e karşılaşmaları + yeni kıyı karşılaşması `k73f-kiyi` (66'da yüzücü listesine
+eklenen canavarlar: 2 White Dragon Wyrmling, 2 Black Bear, Chuul, Polar Bear). Ölçüm `src/sim/k73dOlcum.test.ts`
+(`K73D_SURUM=65,66`, `K73D_TOHUM=30`). Parti kazanma %, ortalama tur, ortalama ölü:
+
+| Karşılaşma | Parti, seviye | 64 | 65 | 66 | 66 − 65 | 66 − 64 | Sayaçlar (66) |
+|---|---|---|---|---|---|---|---|
+| Kazan düşman (Çöl) | standart, 5 | 47 / 4,7 / 0,23 | 43 / 4,9 / 0,50 | 47 / 5,1 / 0,30 | +4 | 0 | kazma 22, çıkış 16, kaçış 22, uzaklaşma 20, zaman aşımı 0 |
+| Kazan düşman (Çöl) | standart, 9 | 53 / 7,1 / 0,70 | 57 / 7,5 / 0,73 | 60 / 8,2 / 0,70 | +3 | +7 | kazma 43, çıkış 38, kaçış 43, uzaklaşma 43, zaman aşımı 0 |
+| Su altı (herkes batık) | standart, 5 | 100 / 8,6 | 100 / 9,1 / 0,07 | 100 / 9,1 / 0,07 | 0 (imza eşit) | 0 | sudan çıkış 2, boğulma 0 |
+| Kıyı (K73e deniz yaratıkları) | standart, 5 | 100 / 7,9 | 100 / 8,6 / 0,30 | 100 / 8,6 / 0,30 | 0 (imza eşit) | 0 | dalış 211, boğulma 0 |
+| Kıyı (66 yüzücüleri) | standart, 5 | — | 100 / 4,0 / 0,03 | 100 / 4,1 / 0,03 | 0 | — | dalış 60 → 93, boğulma 0 |
+| Fırtına | k18-druid, 5 | 80 / 11,3 / 0,33 | 80 / 11,3 / 0,33 | 80 / 11,3 / 0,33 | 0 (imza eşit) | 0 | CL 22, devralma 22 |
+| Fırtına | k18-druid, 9 | 97 / 11,9 / 0,20 | 97 / 11,9 / 0,20 | 97 / 11,9 / 0,20 | 0 (imza eşit) | 0 | CL 1, devralma 1 |
+
+8 puanı aşan kayma yok (65 ↔ 66 ve 64 ↔ 66). Ayrıştırma:
+- **Kazan:** 66'da kaçış kipi (kazma + yer altında uzaklaşma) canı ≤ %15'te (`k73f.kacisCan`); 65'teki %50 kaçış kazması (aynı tur
+  çıkıyordu) %15–%50 arasında artık yok. Eşik denemeleri (30 tohum, 66): %50 → L5 53, L9 67 (64'e göre +14); %25 → L5 40, L9 63
+  (+10); %15 → L5 47, L9 60 (+7). Görev 4'ün sınırı (64'e göre ≤ 8 puan) yalnız %15'te sağlandı. Uzaklaşan kazıcı o tur
+  saldırmıyor ve bir parti turu hedeflenemiyor: parti kazancı artıyor.
+- **Kıyı (66 yüzücüleri):** Black Bear ve beyaz ejderha yavrusu 66'da yüzücü: dalış 60 → 93; karşılaşma kolay (%100, 4 tur).
+- **Su altı, kıyı (K73e), fırtına:** kazıcı ve listeye eklenen canavar yok: 66 = 65 (imza eşit). Call Lightning fırtına devralma
+  64'ten beri aynı.
+
 ## Kuyruk K73e: YZ kazma ve dalış (2026-11-10; ölçüm, denge ayarı yok)
 
 Kural sürümü 64 ↔ 65 (65'te yalnız YZ kazma/dalış kararı), aynı tohumlar (30), K73d karşılaşmaları (`src/sim/k73dSenaryo.ts`)

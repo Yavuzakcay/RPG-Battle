@@ -25,5 +25,9 @@
     "kacisCan": 0.5,
     "tehditMenzil": 24,
     "nefesOrani": 0.5
+  },
+  "k73f": {
+    "_aciklama": "Kuyruk K73f (kural sürümü 66+): YZ yer altında uzaklaşma. kacisCan: kaçış kipi (yüzeyde kazma + yer altında uzaklaşma) canı en çok bu oranda (maxHp) ve kimse yer altını sezemiyorken; 65'teki k73e.kacisCan (0,5) yerine. 0,25'te kazan L9 64'e göre +10 puan (sınır 8), 0,15'te +7 (K73F-SONUC.md).",
+    "kacisCan": 0.15
   }
 }

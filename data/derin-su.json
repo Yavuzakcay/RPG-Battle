@@ -6,5 +6,8 @@
     "giant-venomous-snake", "gold-dragon-wyrmling", "green-dragon-wyrmling", "hippopotamus", "hunter-shark", "killer-whale", "merrow", "octopus", "piranha",
     "plesiosaurus", "reef-shark", "sahuagin-warrior", "sea-hag", "storm-giant", "swarm-of-piranhas", "swarm-of-venomous-snakes", "venomous-snake",
     "water-elemental", "young-black-dragon", "young-bronze-dragon", "young-gold-dragon", "young-green-dragon"],
+  "swimmers66": ["adult-white-dragon", "ancient-white-dragon", "archelon", "black-bear", "chuul", "flying-snake", "gibbering-mouther", "green-hag",
+    "guardian-naga", "hydra", "kraken", "merfolk-skirmisher", "polar-bear", "seahorse", "shambling-mound", "white-dragon-wyrmling", "young-white-dragon"],
+  "swimmers66Not": "Kuyruk K73f (kural sürümü 66+): SRD 5.2.1 hız satırında Swim olup `swimmers` listesinde unutulmuş 17 canavar. 65 ve altında liste eski (yalnız `swimmers`).",
   "waterWalkEffects": ["water-walk", "spells:water-walk"]
 }

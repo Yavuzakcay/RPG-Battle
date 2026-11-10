@@ -3,7 +3,8 @@
  * koşar (varsayılan atlanır). PowerShell: `$env:K73D_TOHUM=30; npx vitest run src/sim/k73dOlcum.test.ts`.
  * Çıktı satırı `K73D <senaryo> L<seviye> v<sürüm> kazanç % tur ort. ölü ort. zaman aşımı <n> sayaçlar imza <hash>`.
  * Sürümler `K73D_SURUM` (varsayılan 63,64; K73e: `64,65`). Kuyruk K73e: sayaçlar durum geçişlerinden (kazma, yer altından
- * çıkış, dalış, sudan çıkış, boğulma) ve YZ kaçış kararından (`k73eStats.digFlee`).
+ * çıkış, dalış, sudan çıkış, boğulma) ve YZ kaçış kararından (`k73eStats.digFlee`). Kuyruk K73f: yer altında uzaklaşma
+ * (`k73eStats.digRetreat`) ve 66 yüzücüleriyle kıyı (`k73f-kiyi`); `K73D_SURUM=65,66`.
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { setDefaultRuleVersion } from '../battle/create';
@@ -76,6 +77,7 @@ afterEach(() => { setDefaultRuleVersion(CURRENT_RULES); setPartyKind('standart')
 const CASES: Array<{ id: string; level: number; party: string }> = [
   { id: 'k73d-kazan', level: 5, party: 'standart' }, { id: 'k73d-kazan', level: 9, party: 'standart' },
   { id: 'k73d-sualti', level: 5, party: 'standart' }, { id: 'k73d-kiyi', level: 5, party: 'standart' },
+  { id: 'k73f-kiyi', level: 5, party: 'standart' },
   { id: 'k73d-firtina', level: 5, party: 'k18-druid' }, { id: 'k73d-firtina', level: 9, party: 'k18-druid' },
 ];
 
@@ -91,12 +93,12 @@ describe.skipIf(!SEEDS)('K73d denge ölçümü: kazan, su altı, fırtına (63 �
         let sig = '';
         let wins = 0, rounds = 0, dead = 0, timeouts = 0, boguldu = 0, cl = 0, devralma = 0;
         const cnt: Counts = { kazma: 0, cikis: 0, dalis: 0, sudanCikis: 0 };
-        const flee0 = k73eStats.digFlee;
+        const flee0 = k73eStats.digFlee, retreat0 = k73eStats.digRetreat;
         for (let seed = 1; seed <= SEEDS; seed++) {
           const rng = seeded(seed);
           let start = setupBattle(sc, rng, c.level);
           if (c.id === 'k73d-sualti') start = submergeStart(start, ver >= 64);
-          if (c.id === 'k73d-kiyi') start = shoreStart(start);
+          if (c.id === 'k73d-kiyi' || c.id === 'k73f-kiyi') start = shoreStart(start);
           const { state: end, events } = play(start, rng, roundLimit(c.level), cnt);
           const dd = Object.values(end.combatants).filter((x) => x.side === 'party' && x.life === 'dead').length;
           const cs = Object.values(end.combatants).map((x) => `${x.id}:${x.hp}:${x.life}:${x.pos ? `${x.pos.col},${x.pos.row}` : '-'}:${x.altitudeFt ?? 0}`).sort();
@@ -108,8 +110,8 @@ describe.skipIf(!SEEDS)('K73d denge ölçümü: kazan, su altı, fırtına (63 �
           cl += events.filter((e) => e.type === 'spell_cast' && (e as { label?: string }).label === 'Call Lightning').length;
           devralma += events.filter((e) => e.type === 'zone_created' && (e as { zone: { cloud?: { storm?: unknown } } }).zone.cloud?.storm).length;
         }
-        const kacis = k73eStats.digFlee - flee0;
-        console.log(`K73D ${c.id} L${c.level} v${ver} kazanc %${Math.round((100 * wins) / SEEDS)} tur ${(rounds / SEEDS).toFixed(1)} olu ${(dead / SEEDS).toFixed(2)} zaman ${timeouts} sayac kazma ${cnt.kazma} cikis ${cnt.cikis} kacis ${kacis} dalis ${cnt.dalis} sudanCikis ${cnt.sudanCikis} bogulma ${boguldu} CL ${cl} devralma ${devralma} imza ${hash(sig)}`);
+        const kacis = k73eStats.digFlee - flee0, uzak = k73eStats.digRetreat - retreat0;
+        console.log(`K73D ${c.id} L${c.level} v${ver} kazanc %${Math.round((100 * wins) / SEEDS)} tur ${(rounds / SEEDS).toFixed(1)} olu ${(dead / SEEDS).toFixed(2)} zaman ${timeouts} sayac kazma ${cnt.kazma} cikis ${cnt.cikis} kacis ${kacis} uzaklasma ${uzak} dalis ${cnt.dalis} sudanCikis ${cnt.sudanCikis} bogulma ${boguldu} CL ${cl} devralma ${devralma} imza ${hash(sig)}`);
       }
       expect(true).toBe(true);
     }, 3_600_000);

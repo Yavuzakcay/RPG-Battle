@@ -33,6 +33,8 @@ import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbing
 import { k9On, dikeyOn, hasHexCeilings } from './vertical';
 import { floorsAt, hasStandData, katlarOf, slabsAt, standHeights, standingOn, surTop } from './stand';
 import { k73cOn } from './k73cSurum';
+import { k73fOn } from './k73fSurum';
+import { submerged } from './underwaterCore';
 import { obstacleTopFt } from './cover';
 import { climbOn, holdSurface, surfaceAt } from './climbing';
 import { bandOf, cellsOn, fillsBand, GROUND_BAND, type Band } from './cells';
@@ -624,6 +626,10 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   }
   // Görev A4: tasma: atlayarak da uzaklaşılmaz.
   if (leashBlocks(leashOf(state, actor), to, from)) return fail('Tasma: bağlı olduğu yaratıktan daha uzağa gidemez.');
+  // Kuyruk K73f (sürüm 66+): batık ya da yer altındaki atlayanın varışı kendi katmanında denetlenir (65'te denetlenmiyordu).
+  const layered = k73fOn(state) && (!!actor.burrowed || submerged(state, actor));
+  const under = layered ? underJumpProblem(state, actor, to) : null;
+  if (under) return fail(under);
   if (lavaOver(state, from, to).length > 0) return executeIslandJump(state, actor, from, to, rng);
   const dir = directionTo(from, to);
   if (dir === null) return fail('Atlama düz bir doğrultuda olmalı.');
@@ -669,7 +675,8 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const landing = terrainAt(state, to);
   if (landing.movement === 'deadly') return fail(`İniş altıgeni ${hexLabel(to)} lav: atlama reddedildi.`);
   if (landing.movement === 'blocked') return fail(`${hexLabel(to)} üzerine inilemez (${landing.name}).`);
-  const other = occupantAt(state, to, actor.id);
+  // Kuyruk K73f (66+): batık/yer altındaki atlayanın varışı yalnız kendi katmanında (yukarıda); yüzeydeki yaratık engel değil.
+  const other = layered ? undefined : occupantAt(state, to, actor.id);
   if (other) return fail(`${hexLabel(to)} dolu (${other.name}).`);
   // Kuyruk K69 (sürüm 53, çok altıgen): inişte gövde sığmalı.
   const fit = bodyFitProblem(state, actor, to);
@@ -695,6 +702,23 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
     ? { type: 'jumped', actorId: actor.id, from, to, gap, cost, running, traitTurns: { [SPELL_JUMP]: turnKey(state) } }
     : { type: 'jumped', actorId: actor.id, from, to, gap, cost, running };
   return finish(state, [jumped, ...landingSlide(state, actor, jumped)]);
+}
+
+/**
+ * Kuyruk K73f (sürüm 66+): batık (derin suda eksi irtifa) ya da yer altındaki (kazan) yaratığın atlama varışı. Yer düzeyinin
+ * doluluğu (`occupantAt` yer bandı) bu katmanı görmez: 65'te batık atlayan, aynı −5 ft hücredeki düşmanın üstüne inebiliyordu
+ * (iki yaratık tek hücrede; yüzeye çıkış `verticalCellProblem`'e takılır, nefes biter). Batık yalnız derin suya, yer altındaki
+ * yalnız kazılabilir zemine atlar; varış hücresi atlayanın kendi bandında boş olmalı. Yüzeydeki (irtifa 0) atlayanın yer
+ * düzeyi denetimi ayrı ve aynen (`executeJump`). Sorun metni ya da null.
+ */
+export function underJumpProblem(state: BattleState, actor: Combatant, to: Offset): string | null {
+  const sub = submerged(state, actor);
+  if (!sub && !actor.burrowed) return null;
+  if (sub && terrainAt(state, to).rule !== 'deepWater') return `Batıkken yalnız derin suya atlanır (${hexLabel(to)}).`;
+  if (actor.burrowed && !diggable(state, to)) return `Yer altındayken yalnız kazılabilir zemine atlanır (${hexLabel(to)}).`;
+  const other = occupantAt(state, to, actor.id, bandOf(actor));
+  if (other) return `${hexLabel(to)} hücresi dolu (${other.name}, ${actor.altitudeFt ?? 0} ft).`;
+  return null;
 }
 
 /**

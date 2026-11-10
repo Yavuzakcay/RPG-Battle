@@ -27,8 +27,9 @@ import { foeField, wallClimbCommand } from './ai/climbAi';
 import { approachField, engaged, highGroundBonus, k73aOn, K73A, landingWanted, riseFt, concentrationFlight } from './ai/k73a';
 import { K73B } from './ai/k73b';
 import { K73C } from './ai/k73c';
-import { K73E } from './ai/k73e';
+import { K73E, K73F } from './ai/k73e';
 import { k73eOn } from './k73eSurum';
+import { k73fOn } from './k73fSurum';
 import { k73cOn } from './k73cSurum';
 import { breathesWater, breathLimit, deepWaterHex, inWater, mapHasDeepWater, submerged } from './underwaterCore';
 import { BURROW_DEPTH_FT, canBurrow, diggable, tremorsenseFt } from './burrow';
@@ -2727,7 +2728,7 @@ function burrowCommand(state: BattleState, actor: Combatant, now: Command | null
 }
 
 /** Kuyruk K73e: YZ kazma/dalış sayaçları (yalnız ölçüm; kararı etkilemez). */
-export const k73eStats = { digApproach: 0, digFlee: 0, surface: 0, diveAvoid: 0, diveApproach: 0, airUp: 0 };
+export const k73eStats = { digApproach: 0, digFlee: 0, surface: 0, diveAvoid: 0, diveApproach: 0, airUp: 0, digRetreat: 0 };
 
 /** Yaratığın menzilli saldırısı var mı (silah, canavar saldırısı ya da büyü). */
 const hasRangedOption = (c: Combatant): boolean => c.weaponOptions.some((o) => o.ranged) || c.attacks.some((a) => a.ranged) || c.spellNames.length > 0;
@@ -2771,7 +2772,10 @@ function burrowField(state: BattleState, actor: Combatant, foes: Combatant[]): (
  * - (b) KAÇIŞ: canı ≤ `kacisCan` ve yüzeyde yakın ya da menzilli tehdit altında, düşmanlardan kimse yer altını sezemiyorsa
  *   (tremorsense, kazma hızı) ve turun başındaysa (bu tur hareket ve eylem yok) kazar, o tur yer altında kalır (hedeflenemez). Sonraki tur
  *   (c) ile çıkıp saldırır ve o tur yüzeyde kalır; yeniden kazmak ondan sonraki tur.
- *   ⚠ Aynı tur yer altında uzaklaşma yok: YZ durum tutmaz, "bu tur kazdı" ile "yer altında yaklaştı" ayrılamıyor (salınım).
+ *   ⚠ 65: aynı tur yer altında uzaklaşma yok (kazdığı tur bitişikteki (c) ile hemen çıkıyordu).
+ *   66+ (K73f Görev 4): kaçış kipinde (can ≤ eşik, sezen yok) bu tur hareket etmişse yalnız uzaklaşır (en uzak yer altı
+ *   altıgeni) ya da yer altında kalır; turun başında yer altındaysa çıkar. Karar konum, can eşiği ve motorun kalan hareketi
+ *   (`movementUsed`); YZ'de tur içi sayaç yok.
  * - (a) YAKLAŞMA: bu tur saldıramıyor ve yürüyerek hiçbir düşmanın yanına yol yok ya da yer altından ulaşma süresi (kazma
  *   + yol + çıkış, kazma hızıyla) yürüme süresinin en çok `kazmaOrani` katı.
  * Kazılamayan altıgende aday üretilmez.
@@ -2783,9 +2787,24 @@ function burrowCommand65(state: BattleState, actor: Combatant, now: Command | nu
   const pos = actor.pos;
   const surface: Command = { type: 'vertical_move', actorId: actor.id, toFt: 0 };
   const near = (h: Offset) => Math.min(...foes.map((f) => distance(h, f.pos as Offset)));
-  const low = actor.hp <= actor.maxHp * K73E.kacisCan;
+  // Kuyruk K73f (sürüm 66+, Görev 4): kaçış kipi: canı `k73f.kacisCan` (65'te `k73e.kacisCan`) altında ve kimse yer altını sezemiyor.
+  const v66 = k73fOn(state);
+  const low = actor.hp <= actor.maxHp * (v66 ? K73F.kacisCan : K73E.kacisCan);
   const sensed = someoneSensesUnder(foes);
+  const fleeing = v66 && low && !sensed;
   if (actor.burrowed) {
+    if (fleeing) {
+      // Turun başında (bu tur hareket yok) yer altındaysa çıkar ve dövüşür: kovalanırken sonsuz kaçış (zaman aşımı) yok.
+      if (actor.movementUsed === 0) { if (tryCmd(state, actor, surface).ok) { k73eStats.surface++; return surface; } return null; }
+      // Bu tur kazdı ya da yer altında yürüdü: yalnız uzaklaşır (en uzak), uzaklaşamıyorsa yer altında kalır (yaklaşma ve
+      // çıkış yok: aynı tur kaz-çık ya da kaç-yaklaş salınımı olmaz).
+      const left = speedHexes(actor) - actor.movementUsed;
+      const away = reachable(state, actor).filter((sp) => sp.cost <= left && near(sp.to) > near(pos))
+        .sort((a, b) => near(b.to) - near(a.to) || a.cost - b.cost || a.to.row - b.to.row || a.to.col - b.to.col);
+      const go = firstMove(state, actor, away);
+      if (go) k73eStats.digRetreat++;
+      return go;
+    }
     if (near(pos) <= 1) { if (tryCmd(state, actor, surface).ok) { k73eStats.surface++; return surface; } return null; }
     const left = speedHexes(actor) - actor.movementUsed;
     const spots = reachable(state, actor).filter((sp) => sp.cost <= left - 1 && near(sp.to) < near(pos))
@@ -2802,8 +2821,8 @@ function burrowCommand65(state: BattleState, actor: Combatant, now: Command | nu
   if (low && !sensed && !actor.economy.action && actor.movementUsed === 0 && (engaged(actor, foes) || rangedThreat(state, actor))) {
     if (tryCmd(state, actor, dig).ok) { k73eStats.digFlee++; return dig; }
   }
-  // (a) yaklaşma
-  if (now || !canAct) return null;
+  // (a) yaklaşma (66+: kaçış kipinde yaklaşmak için kazmaz; yer altında uzaklaşma kipine girerdi)
+  if (now || !canAct || fleeing) return null;
   const walk = approachField(state, actor, foes)(pos);
   const walkTurns = walk / Math.max(1, speedHexes({ ...actor, burrowed: undefined }));
   const digHexes = Math.max(1, Math.floor((actor.burrowFt ?? 0) / 5));
