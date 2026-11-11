@@ -229,21 +229,28 @@ function WaterLayer({ kind, hexes, geo, animated }: { kind: WaterHex['kind']; he
   const s = FX[SU.sprite[kind]];
   if (!s) return null;
   const tw = geo.hexW * SU.karoEn; const th = (tw * s.h) / s.w;
-  const d = hexPath(hexes.map((h) => h.at), geo);
   const id = `fx-su-${kind}`;
   const cell = (fx: number, fy: number) => (
     <g key={`${fx}${fy}`} transform={`translate(${fx < 0 ? 2 * tw : 0} ${fy < 0 ? 2 * th : 0}) scale(${fx} ${fy})`}>
       <Strip s={s} x={0} y={0} w={tw} h={th} animated={animated} loop />
     </g>
   );
+  // Kuyruk SU3: aynı desen (tek animasyon örneği), dört yol: iç / kıyı (soluk + yumuşak kenar) × normal / sığ (`ekle`, soluk).
+  const groups = [false, true].flatMap((shallow) => [false, true].map((shore) => ({ shallow, shore, at: hexes.filter((h) => !!h.shallow === shallow && !!h.shore === shore).map((h) => h.at) })))
+    .filter((g) => g.at.length);
   return (
     <g className="fx-water" data-water={kind}>
       <defs>
         <pattern id={id} patternUnits="userSpaceOnUse" width={2 * tw} height={2 * th}>
           {cell(1, 1)}{cell(-1, 1)}{cell(1, -1)}{cell(-1, -1)}
         </pattern>
+        {groups.some((g) => g.shore) && <filter id={`${id}-yumusat`} x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation={SU.kenarYumusat} /></filter>}
       </defs>
-      <path d={d} fill={`url(#${id})`} opacity={SU.opaklik[kind]} />
+      {groups.map((g) => (
+        <path key={`${+g.shallow}${+g.shore}`} d={hexPath(g.at, geo)} fill={`url(#${id})`} data-shore={g.shore ? '1' : undefined} data-shallow={g.shallow ? '1' : undefined}
+          opacity={+(SU.opaklik[kind] * (g.shallow ? SU.ekleOpaklik : 1) * (g.shore ? SU.kiyiOpaklik : 1)).toFixed(3)}
+          filter={g.shore ? `url(#${id}-yumusat)` : undefined} />
+      ))}
     </g>
   );
 }

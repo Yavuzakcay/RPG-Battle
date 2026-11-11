@@ -142,6 +142,10 @@ Sayılar §3.2 tablosundan; "etkilenen" = ölçülen kusuru olan harita (yer tut
 3. **Kural sürümü, `SAVE_VERSION`, yapay zekâ** değişmez (c için). Mekanik donması kapsamında "görsel/efekt" olarak serbest.
 4. Veri girişi tarafında kalıcı önlem (isteğe bağlı, kod değil süreç): yeni harita `duzeltme` satırlarını yazarken kıyı hex'inde "yarıdan fazlası su değilse `w` yazma" kuralı; `harita-zemin` paletine su rengi örnekleri (şimdi yalnız mavi, yeşil bataklık yok) eklenirse (a) otomatiğe daha yakın olur.
 
+## 5b. Uygulama (Kuyruk SU3)
+
+Seçenek (c) hafif hâli uygulandı: `su.haric` 44 hex (4 harita), `su.ekle` 47 hex (Heykel Gölü, Vaha), kıyı soluklaştırma. Önce/sonra: `docs/su3/su3-once-sonra.jpg`. Düşük güvenli haritalar (Batak Adalar/Kale/Kamp, Kasaba Lağımı, Mantar Mağarası) elle teyit gerekli olarak bırakıldı. Ayrıntı DECISIONS.md.
+
 ## 6. Sınırlar ve açık noktalar
 
 - Resim suyu sınıflandırması renge dayanır; **D** haritalarda (bataklık, lağım, mantar) rakamlar yalnız yön gösterir. Bunların taşan/eksik sayıları kesin sayılmamalı.
