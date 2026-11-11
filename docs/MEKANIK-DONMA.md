@@ -1,5 +1,8 @@
 # Mekanik donması (Kuyruk K57)
 
+> **KALDIRILDI 2026-11-12, kullanıcı kararı** (Kuyruk K57-KALDIR; DECISIONS.md). Yeni mekanik eklenebilir; geçerli kurallar
+> CLAUDE.md "Çalışma şekli"nde. Aşağıdaki içerik tarihsel kayıttır; ev kuralı varsayılan tablosu başvuru olarak geçerlidir.
+
 **Karar (2026-11-06):** bu noktadan (kural sürümü 37, `main` 459ef5d + K57) sonra **yeni mekanik eklenmez**. İzin verilen işler:
 
 - **Hata düzeltme:** var olan bir kuralın SRD 5.2.1'e ya da kendi verisine aykırı çalışması. Davranış değişiyorsa kural sürümü

@@ -170,7 +170,7 @@ npm run srd:buyu       # data/spells.json'u SRD ile eşitle, docs/BUYU-ESITLEME.
 
 ## Çalışma şekli
 
-- **Mekanik donması (Kuyruk K57, `docs/MEKANIK-DONMA.md`):** yeni mekanik eklenmez (yeni komut/olay, etki alanı, harita kuralı türü, ev kuralı, ilkel); yalnız hata düzeltme, denge ayarı, görsel/efekt/ses, metin. Donmayı yalnızca kullanıcı kaldırır. Ev kuralı varsayılanları o belgedeki tabloda.
+- **Mekanik donması kaldırıldı (2026-11-12; Kuyruk K57-KALDIR, tarihsel kayıt `docs/MEKANIK-DONMA.md`).** Yeni mekanik eklenebilir; kurallar: (a) kural sürümü değişen her iş sürümü bir artırır, aynı anda yalnız bir şerit sürüm artırır (şu an güncel kural sürümü 67, K62-ACIK); (b) yeni mekanik veriyle ve Game Master anahtarıyla gelir, eski kayıt/replay aynen oynar; (c) ana parça 420 kB sınırı geçerli; (d) hafif doğrulama modu aynen. Ev kuralı varsayılanları `docs/MEKANIK-DONMA.md` tablosunda.
 - **Dil:** Yanıtlar, arayüz metinleri ve belgeler Türkçe. Kod tanımlayıcıları İngilizce olabilir; yorumlar Türkçe.
 - **Ekran metinleri** `src/i18n/strings.ts` (TR) ve `src/i18n/strings.en.ts` (EN, tembel), aynı yapı; arayüz `t()` ile okur, koda metin yazılmaz. "Game Master" yazılır, "GM" değil.
 - **Komutlar:** Kullanıcıya verilen komutlar PowerShell sözdiziminde.

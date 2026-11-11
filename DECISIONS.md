@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)
+
+- **Karar (kullanıcı):** K57 mekanik donması (2026-11-06, `docs/MEKANIK-DONMA.md`) tamamen kaldırıldı. Belge tarihsel kayıt olarak kalır; ev kuralı varsayılan tablosu başvuru olarak geçerli.
+- **Gerekçe:** donma bekleyen işleri engelliyordu: AS1, AS2, BINEK şeritleri, Hallow ek etkileri (K62-ACIK Madde 5, kullanıcı kararı bekliyor) ve Truesight'ı bilmeyen motor yolları (fırsat saldırısı görme, hareket algısı, Cleave, mastery ikinci hedef, ejderha Algısı; K62-ACIK Madde 3).
+- **Kalan kurallar** (CLAUDE.md "Çalışma şekli"): kural sürümü değişen her iş sürümü bir artırır, aynı anda yalnız bir şerit sürüm artırır (güncel 67, K62-ACIK; sıradaki şerit 68); yeni mekanik veriyle ve Game Master anahtarıyla gelir, eski kayıt/replay aynen; ana parça 420 kB sınırı; hafif doğrulama modu aynen.
+
 ## 2026-11-11 — Kuyruk SU1: Su hex denetimi (salt okuma; kural sürümü 66, SAVE_VERSION, veri, kod, görsel değişmedi)
 
 - Rapor `harita/belgeler/SU-HEX-DENETIM.md`: doku suyu (`fxPlan.waterHexes`) ve mekanik su aynı `tiles` harflerinden (`w`, `R`) gelir, ayrı görsel su verisi yok; boyalı su ile hex suyu kayması hizalama ya da kırpmadan değil, el ile girilen `w` satırlarından (derin çekirdek/sığ `n` halkası, kıyı hex'i yuvarlaması, duvar altı hendek) kaynaklanır (görsel doğrulanmış 10 haritada 439 `w` hex'in 44'ü kara üstünde). Öneri: (c) hafif hâli, mekanik `w`'ye dokunmadan doku için hex bazında `haric`/`ekle` listesi (yeni kuyruk, kullanıcı onayı bekliyor); `w`'yi resme göre yeniden türetmek (a) önerilmez.
