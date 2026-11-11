@@ -15,6 +15,8 @@ export const en: Strings = {
     close: 'Close', all: 'All', loading: 'Loading…', loadingMonsters: 'Loading monsters…', monsterLoadError: 'Monster data could not be loaded; reload the page.', classLoadError: 'Class data could not be loaded; reload the page.',
     subclassAssigned: (list: string) => `Characters without a subclass were given the SRD subclass (${list}). You can change it in the builder.`,
     lineageAssigned: (list: string) => `Characters without a lineage were given the first lineage (${list}). You can change it in the builder.`,
+    // Kuyruk AS1a: species with an optional lineage (Dwarf, Halfling, Orc, Human) keep old saves lineage-less; one-time notice.
+    lineagePick: (list: string) => `Pick a sub-lineage: ${list}. Until you do, no sub-lineage effect applies. You can pick it in the builder.`,
     slotsRepaired: (list: string) => `Spell slots and class resources were filled in from class and level (${list}).`,
     gm: 'Game Master', unnamed: '(unnamed)', incomplete: 'incomplete', problems: (n: number) => `${n} problem${n === 1 ? '' : 's'}`, ft: 'ft',
     theme: { auto: 'Theme: auto', light: 'Theme: light', dark: 'Theme: dark' },
@@ -277,6 +279,11 @@ export const en: Strings = {
       skillFromBg: (bg: string) => `Background (${bg})`, countOther: (n: number, max: number) => `Extra skill (species) ${n}/${max}`,
       skillConflict: 'also picked as a class skill: choose another class skill',
       raceBonusNote: 'Ability score bonuses come from your background, not your species.',
+      // Kuyruk AS1a: sub-lineage buff/debuff descriptions (text only; effects do not work in the game yet).
+      lineageBuff: 'Plus', lineageDebuff: 'Minus', lineagePlanned: 'planned', lineageNotYet: 'These effects do not work in the game yet (planned); description only for now.',
+      lineageOptionalHint: 'No sub-lineage chosen: no sub-lineage effect until you pick one.',
+      skinTitle: 'Skin tone', skinHelp: 'Skin tone is independent of culture; pick any tone with any culture.',
+      cultureTitle: 'Culture',
       lineageAbilities: 'Lineage abilities', preview: 'Token preview',
       notInGame: 'not in the game yet', offCombat: 'out of combat: the Game Master narrates',
       giantNote: {

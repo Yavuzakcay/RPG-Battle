@@ -176,7 +176,88 @@
       "poison"
     ],
     "hpPerLevel": 1,
-    "traits": "Darkvision 120 ft, Dwarven Resilience (poison direnci, Poisoned'a karşı save advantage), Dwarven Toughness (+1 HP/seviye), Stonecunning"
+    "traits": "Darkvision 120 ft, Dwarven Resilience (poison direnci, Poisoned'a karşı save advantage), Dwarven Toughness (+1 HP/seviye), Stonecunning",
+    "lineageOptional": true,
+    "lineages": [
+      {
+        "id": "crag",
+        "name": "Crag Dwarf",
+        "ad": {
+          "tr": "Dağ",
+          "en": "Crag Dwarf"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Ağır zırh hız cezası yok · suda Atletizm dezavantajı",
+          "en": "No heavy-armor speed penalty · disadvantage on Athletics in water"
+        },
+        "buff": [
+          {
+            "tr": "Ağır zırhın hız cezası sana işlemez.",
+            "en": "Heavy armor never slows you."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Suda Atletizm (Athletics) kontrollerinde dezavantaj.",
+            "en": "Disadvantage on Athletics checks in water."
+          }
+        ],
+        "durum": "planli"
+      },
+      {
+        "id": "knoll",
+        "name": "Knoll Dwarf",
+        "ad": {
+          "tr": "Tepe",
+          "en": "Knoll Dwarf"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Seviye başına +1 HP · Çeviklik kurtarma −1",
+          "en": "+1 HP per level · −1 on Dexterity saving throws"
+        },
+        "buff": [
+          {
+            "tr": "Her seviyede +1 HP.",
+            "en": "+1 hit point per level."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Çeviklik kurtarma zarlarında −1.",
+            "en": "−1 on Dexterity saving throws."
+          }
+        ],
+        "durum": "planli"
+      },
+      {
+        "id": "undervault",
+        "name": "Undervault Dwarf",
+        "ad": {
+          "tr": "Yeraltı",
+          "en": "Undervault Dwarf"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Karanlık görüş 120 ft · gün ışığında saldırı dezavantajı",
+          "en": "Darkvision 120 ft · disadvantage on attacks in daylight"
+        },
+        "buff": [
+          {
+            "tr": "Karanlık görüş 120 ft.",
+            "en": "Darkvision 120 ft."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Gün ışığında saldırı zarlarında dezavantaj.",
+            "en": "Disadvantage on attack rolls in daylight."
+          }
+        ],
+        "durum": "planli"
+      }
+    ]
   },
   {
     "id": "elf",
@@ -344,6 +425,36 @@
             }
           }
         ]
+      },
+      {
+        "id": "subterranean",
+        "name": "Subterranean Gnome",
+        "ad": {
+          "tr": "Yeraltı",
+          "en": "Subterranean Gnome"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Karanlık görüş 120 ft · Gizlen +2 · parlak ışıkta Algı dezavantajı",
+          "en": "Darkvision 120 ft · Stealth +2 · disadvantage on Perception in bright light"
+        },
+        "buff": [
+          {
+            "tr": "Karanlık görüş 120 ft.",
+            "en": "Darkvision 120 ft."
+          },
+          {
+            "tr": "Gizlen (Stealth) kontrollerinde +2.",
+            "en": "+2 on Stealth checks."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Parlak ışıkta Algı (Perception) kontrollerinde dezavantaj.",
+            "en": "Disadvantage on Perception checks in bright light."
+          }
+        ],
+        "durum": "planli"
       }
     ],
     "defaultLineage": "forest-gnome"
@@ -431,7 +542,70 @@
     "speed": 30,
     "darkvision": 0,
     "resistances": [],
-    "traits": "Brave, Halfling Nimbleness, Luck, Naturally Stealthy"
+    "traits": "Brave, Halfling Nimbleness, Luck, Naturally Stealthy",
+    "lineageOptional": true,
+    "lineages": [
+      {
+        "id": "slender",
+        "name": "Slender Halfling",
+        "ad": {
+          "tr": "İnce",
+          "en": "Slender Halfling"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Çeviklik +1, hız +5 ft · Güç kontrollerinde dezavantaj",
+          "en": "Dexterity +1, speed +5 ft · disadvantage on Strength checks"
+        },
+        "buff": [
+          {
+            "tr": "Çeviklik +1.",
+            "en": "Dexterity +1."
+          },
+          {
+            "tr": "Hız +5 ft.",
+            "en": "Speed +5 ft."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Güç (Strength) kontrollerinde dezavantaj.",
+            "en": "Disadvantage on Strength checks."
+          }
+        ],
+        "durum": "planli"
+      },
+      {
+        "id": "sturdy",
+        "name": "Sturdy Halfling",
+        "ad": {
+          "tr": "Kalın",
+          "en": "Sturdy Halfling"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Güç +1, Dayanıklılık +1 · hız −5 ft",
+          "en": "Strength +1, Constitution +1 · speed −5 ft"
+        },
+        "buff": [
+          {
+            "tr": "Güç +1.",
+            "en": "Strength +1."
+          },
+          {
+            "tr": "Dayanıklılık +1.",
+            "en": "Constitution +1."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Hızın −5 ft.",
+            "en": "Speed −5 ft."
+          }
+        ],
+        "durum": "planli"
+      }
+    ]
   },
   {
     "id": "human",
@@ -443,7 +617,122 @@
     "speed": 30,
     "darkvision": 0,
     "resistances": [],
-    "traits": "Resourceful (Heroic Inspiration), Skillful (1 skill), Versatile (Origin feat)"
+    "traits": "Resourceful (Heroic Inspiration), Skillful (1 skill), Versatile (Origin feat)",
+    "lineageOptional": true,
+    "lineages": [
+      {
+        "id": "tenhausser",
+        "name": "Tenhausser",
+        "ad": {
+          "tr": "Tenhausser",
+          "en": "Tenhausser"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Güç +1, Dayanıklılık +1 · Diplomasi ve Gizlen −1",
+          "en": "Strength +1, Constitution +1 · −1 on Persuasion and Stealth"
+        },
+        "buff": [
+          {
+            "tr": "Güç +1, Dayanıklılık +1.",
+            "en": "Strength +1, Constitution +1."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Diplomasi (Persuasion) ve Gizlen (Stealth) kontrollerinde −1.",
+            "en": "−1 on Persuasion and Stealth checks."
+          }
+        ],
+        "durum": "planli"
+      },
+      {
+        "id": "khadyrga",
+        "name": "Khadyrga",
+        "ad": {
+          "tr": "Khadyrga",
+          "en": "Khadyrga"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Zekâ +1, Karizma +1 · zorlu arazide hız −5 ft",
+          "en": "Intelligence +1, Charisma +1 · −5 ft speed in difficult terrain"
+        },
+        "buff": [
+          {
+            "tr": "Zekâ +1, Karizma +1.",
+            "en": "Intelligence +1, Charisma +1."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Zorlu arazide hızın −5 ft.",
+            "en": "−5 ft speed in difficult terrain."
+          }
+        ],
+        "durum": "planli"
+      },
+      {
+        "id": "pure-city",
+        "name": "Pure City",
+        "ad": {
+          "tr": "Saf Kent",
+          "en": "Pure City"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Bilgelik +1, Çeviklik +1 · zırhsız AC −1",
+          "en": "Wisdom +1, Dexterity +1 · unarmored AC −1"
+        },
+        "buff": [
+          {
+            "tr": "Bilgelik +1, Çeviklik +1.",
+            "en": "Wisdom +1, Dexterity +1."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Zırhsızken AC −1.",
+            "en": "−1 AC while unarmored."
+          }
+        ],
+        "durum": "planli"
+      },
+      {
+        "id": "outwall",
+        "name": "Outwall",
+        "ad": {
+          "tr": "Sur Dışı",
+          "en": "Outwall"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Dayanıklılık +1, Bilgelik +1, Hayatta Kalma ve Algı +2 · iç mekânda saldırı/inisiyatif −2 · yerleşimde Karizma dezavantajı",
+          "en": "Constitution +1, Wisdom +1, +2 Survival and Perception · −2 attacks and initiative indoors · disadvantage on Charisma in settlements"
+        },
+        "buff": [
+          {
+            "tr": "Dayanıklılık +1, Bilgelik +1.",
+            "en": "Constitution +1, Wisdom +1."
+          },
+          {
+            "tr": "Hayatta Kalma (Survival) ve Algı (Perception) +2.",
+            "en": "+2 on Survival and Perception."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "İç mekânda saldırı −2 ve inisiyatif −2.",
+            "en": "−2 on attacks and initiative indoors."
+          },
+          {
+            "tr": "Yerleşimde Karizma (Charisma) kontrollerinde dezavantaj.",
+            "en": "Disadvantage on Charisma checks in settlements."
+          }
+        ],
+        "durum": "planli"
+      }
+    ]
   },
   {
     "id": "orc",
@@ -454,7 +743,92 @@
     "speed": 30,
     "darkvision": 120,
     "resistances": [],
-    "traits": "Adrenaline Rush, Darkvision 120 ft, Relentless Endurance"
+    "traits": "Adrenaline Rush, Darkvision 120 ft, Relentless Endurance",
+    "lineageOptional": true,
+    "lineages": [
+      {
+        "id": "glacier",
+        "name": "Glacier Orc",
+        "ad": {
+          "tr": "Buzul",
+          "en": "Glacier Orc"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Soğuk direnci · ateşe karşı kurtarma dezavantajı",
+          "en": "Cold resistance · disadvantage on saves against fire"
+        },
+        "buff": [
+          {
+            "tr": "Soğuk hasarına direnç.",
+            "en": "Resistance to cold damage."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Ateş hasarına karşı kurtarma zarlarında dezavantaj.",
+            "en": "Disadvantage on saving throws against fire damage."
+          }
+        ],
+        "durum": "planli"
+      },
+      {
+        "id": "wildwood",
+        "name": "Wildwood Orc",
+        "ad": {
+          "tr": "Orman",
+          "en": "Wildwood Orc"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Bitkisel zorlu arazi yok sayılır · zehire karşı kurtarma dezavantajı",
+          "en": "Ignores plant-based difficult terrain · disadvantage on saves against poison"
+        },
+        "buff": [
+          {
+            "tr": "Bitkisel zorlu araziyi yok sayarsın.",
+            "en": "You ignore difficult terrain made of plants."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Zehir hasarına karşı kurtarma zarlarında dezavantaj.",
+            "en": "Disadvantage on saving throws against poison damage."
+          }
+        ],
+        "durum": "planli"
+      },
+      {
+        "id": "fen",
+        "name": "Fen Orc",
+        "ad": {
+          "tr": "Bataklık",
+          "en": "Fen Orc"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Zehir direnci · yüzme hızı = yürüme hızı · soğuğa karşı kurtarma dezavantajı",
+          "en": "Poison resistance · swim speed = walking speed · disadvantage on saves against cold"
+        },
+        "buff": [
+          {
+            "tr": "Zehir hasarına direnç.",
+            "en": "Resistance to poison damage."
+          },
+          {
+            "tr": "Yüzme hızın yürüme hızına eşittir.",
+            "en": "Your swim speed equals your walking speed."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Soğuk hasarına karşı kurtarma zarlarında dezavantaj.",
+            "en": "Disadvantage on saving throws against cold damage."
+          }
+        ],
+        "durum": "planli"
+      }
+    ]
   },
   {
     "id": "tiefling",
@@ -547,6 +921,36 @@
             "resource": "infernal:darkness"
           }
         ]
+      },
+      {
+        "id": "winged",
+        "name": "Winged",
+        "ad": {
+          "tr": "Kanatlı",
+          "en": "Winged"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Yarım hızla süzülme (yeterlilik bonusu kadar) · soy hasar direnci yok",
+          "en": "Glide at half speed (proficiency bonus times) · no lineage damage resistance"
+        },
+        "buff": [
+          {
+            "tr": "Kanatlarınla yarım hızla süzülürsün; kullanım sayısı yeterlilik bonusu kadardır.",
+            "en": "You glide at half speed on your wings; uses equal your proficiency bonus."
+          }
+        ],
+        "debuff": [
+          {
+            "tr": "Soy hasar direncini kaybedersin.",
+            "en": "You lose the lineage damage resistance."
+          },
+          {
+            "tr": "Orta ya da ağır zırhla uçamazsın.",
+            "en": "You cannot fly in medium or heavy armor."
+          }
+        ],
+        "durum": "planli"
       }
     ],
     "defaultLineage": "infernal",

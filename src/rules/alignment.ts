@@ -7,6 +7,8 @@
 import cfg from '../../data/hizalanma.json';
 import table from '../../data/hizalanma-baslangic.json';
 import events from '../../data/hizalanma-olaylari.json';
+import { races } from '../data';
+import { CELESTIAL } from './celestialData';
 
 export type Axis = 'duzen' | 'iyilik';
 export type Bucket = 'pos' | 'neu' | 'neg';
@@ -72,8 +74,24 @@ export function alignmentLabel(duzen: Bucket, iyilik: Bucket, lang: 'tr' | 'en')
   return `${cfg.duzen[duzen][lang]} ${cfg.iyilik[iyilik][lang]}`;
 }
 
-/** Başlangıç katkıları (ırk satırı en altta; tabloda olmayan kalem atlanır, yani 0). */
-export function startContributions(sheet: { classId: string; backgroundId?: string; subclassId?: string; raceId: string }, irk = true): Contribution[] {
+const ALT_SOY = (table as unknown as { altSoy: Record<string, { duzen: number; iyilik: number; gerekce: { tr: string; en: string } }> }).altSoy;
+
+/**
+ * Kuyruk AS1a: alt soy tablosunun anahtarı (`<ırk>/<alt soy>`). Soyu olmayan ya da seçilmemiş kayıtta anahtar yok; Celestial'da 3. seviyeden itibaren Göksel Uyanış (seçilmediyse varsayılanı), öncesinde yok.
+ */
+export function altSoyKey(sheet: { raceId: string; lineageId?: string; celestialAwakening?: string; level?: number }): string | undefined {
+  const race = races.find((r) => r.id === sheet.raceId);
+  if (!race) return undefined;
+  if (race.evKurali) return sheet.level !== undefined && sheet.level >= CELESTIAL.awakening.minLevel ? `${race.id}/${sheet.celestialAwakening ?? CELESTIAL.awakening.default}` : undefined;
+  // Soyu seçilmemiş kayıt (eski kayıt, `lineageId` yok) eski ırk değerine düşer; `defaultLineage` burada devreye girmez.
+  return sheet.lineageId ? `${race.id}/${sheet.lineageId}` : undefined;
+}
+
+/**
+ * Başlangıç katkıları (ırk satırı en altta; tabloda olmayan kalem atlanır, yani 0). Kuyruk AS1a: alt soy satırı varsa
+ * ırk satırının YERİNE geçer (mutlak değer; kaynak yine `irk`, kimlik `<ırk>/<alt soy>`); yoksa eski ırk değeri.
+ */
+export function startContributions(sheet: { classId: string; backgroundId?: string; subclassId?: string; raceId: string; lineageId?: string; celestialAwakening?: string; level?: number }, irk = true): Contribution[] {
   const out: Contribution[] = [];
   const add = (kaynak: Contribution['kaynak'], id: string | undefined) => {
     const r = id ? T[kaynak][id] : undefined;
@@ -82,7 +100,12 @@ export function startContributions(sheet: { classId: string; backgroundId?: stri
   add('sinif', sheet.classId);
   add('gecmis', sheet.backgroundId);
   add('altSinif', sheet.subclassId);
-  if (irk) add('irk', sheet.raceId);
+  if (irk) {
+    const key = altSoyKey(sheet);
+    const alt = key ? ALT_SOY[key] : undefined;
+    if (key && alt) out.push({ kaynak: 'irk', id: key, duzen: alt.duzen, iyilik: alt.iyilik, gerekce: alt.gerekce });
+    else add('irk', sheet.raceId);
+  }
   return out;
 }
 /** Katkı toplamı ±50'ye kırpılmış. */

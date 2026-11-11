@@ -1,0 +1,83 @@
+/**
+ * Kuyruk AS1a: alt soy görünümü (yalnızca görsel; kural sürümüne girmez). Veri `data/alt-soy-gorunum.json`: alt soylara
+ * ayrı çizim yok; renk filtresi (tint/maskesi olmayan ırklar için CSS `filter`), en-boy/ölçek, kanat katmanı yuvaları ve
+ * Celestial hale kuralı. Human ten tonu kültürden bağımsız ayrı seçimdir (`skinTone`). Saf: DOM bilmez.
+ */
+import data from '../../data/alt-soy-gorunum.json';
+
+export interface WingSlot {
+  id: string;
+  ad: { tr: string; en: string };
+  /** Kendi sprite'ı (`public/` altı yol); null: yer tutucu olarak `efekt` kanat şeridi (ilk kare). */
+  sprite: string | null;
+  efekt: string;
+  ne_zaman: 'surekli' | 'ucarken';
+  minSeviye?: number;
+  olcek: number;
+  yukari: number;
+  filtre?: string;
+}
+export interface SkinTone { id: string; ad: { tr: string; en: string }; renk: string; filtre: string }
+export interface LookSheet { raceId: string; lineageId?: string; celestialAwakening?: string; level?: number; skinTone?: string }
+export interface LineageLook {
+  /** CSS `filter` (boşsa yok). */
+  filter: string;
+  scaleX: number;
+  scaleY: number;
+  wing: WingSlot | null;
+  /** Celestial hale gizli (görselin üst bandı kırpılır). */
+  hideHalo: boolean;
+}
+
+const D = data as unknown as {
+  altSoylar: Record<string, { filtre?: string; oran?: { en: number; boy: number }; kanat?: string }>;
+  celestialUyanis: Record<string, { hale: boolean; filtre?: string; kanat?: string }>;
+  kanatYuvalari: Record<string, Omit<WingSlot, 'id'>>;
+  hale: { gizleUstYuzde: number };
+  ten: { varsayilan: string; tonlar: SkinTone[]; kulturTen: Record<string, string> };
+};
+/** Celestial Göksel Uyanış 3. seviyeden etkin (`data/celestial.json` `awakening.minLevel`; test eşitliği denetler). */
+export const AWAKENING_FROM = 3;
+export const AWAKENING_DEFAULT = 'parlayan-ruh';
+export const HALO_CLIP_PCT = D.hale.gizleUstYuzde;
+export const SKIN_TONES: SkinTone[] = D.ten.tonlar;
+export const DEFAULT_SKIN_TONE = D.ten.varsayilan;
+/** Kültür → ten tonu eşlemesi: bilerek boş (kullanıcı doldurur); doluysa yeni karakterde ilk öneri. */
+export const CULTURE_SKIN: Record<string, string> = D.ten.kulturTen;
+export const WING_SLOTS = Object.keys(D.kanatYuvalari);
+export const lookEntries = (): string[] => Object.keys(D.altSoylar);
+export const awakeningLookIds = (): string[] => Object.keys(D.celestialUyanis);
+
+const slot = (id: string): WingSlot => ({ id, ...(D.kanatYuvalari[id] as Omit<WingSlot, 'id'>) });
+
+/** Karakterin görünümü; `flying`: uçarken görünen kanatlar (Draconic Flight) da çizilir. */
+export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): LineageLook {
+  const filters: string[] = [];
+  let scaleX = 1, scaleY = 1, hideHalo = false;
+  let wingId: string | undefined;
+  const level = sheet.level ?? 1;
+  if (sheet.raceId === 'human') {
+    const tone = SKIN_TONES.find((x) => x.id === (sheet.skinTone ?? DEFAULT_SKIN_TONE));
+    if (tone?.filtre) filters.push(tone.filtre);
+  }
+  if (sheet.raceId === 'celestial') {
+    const aw = D.celestialUyanis[sheet.celestialAwakening ?? AWAKENING_DEFAULT];
+    if (aw && level >= AWAKENING_FROM) {
+      hideHalo = !aw.hale;
+      if (aw.filtre) filters.push(aw.filtre);
+      wingId = aw.kanat;
+    }
+  } else {
+    const entry = sheet.lineageId ? D.altSoylar[`${sheet.raceId}/${sheet.lineageId}`] : undefined;
+    if (entry?.filtre) filters.push(entry.filtre);
+    if (entry?.oran) { scaleX = entry.oran.en; scaleY = entry.oran.boy; }
+    wingId = entry?.kanat;
+  }
+  if (!wingId && sheet.raceId === 'dragonborn' && opts.flying) wingId = 'dragonborn-ucus';
+  let wing = wingId ? slot(wingId) : null;
+  if (wing && ((wing.minSeviye ?? 1) > level || (wing.ne_zaman === 'ucarken' && !opts.flying))) wing = null;
+  return { filter: filters.join(' '), scaleX, scaleY, wing, hideHalo };
+}
+
+/** Ten tonu (Human) için kimlik denetimi. */
+export const skinToneOf = (id: string | undefined): SkinTone | undefined => SKIN_TONES.find((x) => x.id === (id ?? DEFAULT_SKIN_TONE));

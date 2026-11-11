@@ -30,6 +30,13 @@ export function lineageSpells(sheet: LineageSheet & Pick<CharacterSheet, 'level'
   return (lineageOf(sheet)?.spells ?? []).filter((s) => sheet.level >= s.level).map((s) => s.name);
 }
 
+/** Kuyruk AS1a: soyun görünen adı (TR/EN `ad`; yoksa `name`). */
+export const lineageName = (l: Lineage, lang: 'tr' | 'en'): string => l.ad?.[lang] ?? l.name;
+
+/** Kuyruk AS1a: soy seçeneğinin buff/debuff açıklaması (yalnızca metin; etkisi AS1b'de). */
+export const lineageNotes = (l: Lineage, lang: 'tr' | 'en'): { buff: string[]; debuff: string[]; planned: boolean } =>
+  ({ buff: (l.buff ?? []).map((x) => x[lang] ?? x.tr), debuff: (l.debuff ?? []).map((x) => x[lang] ?? x.tr), planned: l.durum === 'planli' });
+
 /** Soy seçeneğinin özeti (geçerli dilde). */
 export const lineageSummary = (l: Lineage, lang: 'tr' | 'en'): string => l.summary[lang] ?? l.summary.tr;
 
@@ -68,17 +75,21 @@ export interface LineageNotes {
 
 /**
  * Eski kayıtlar (Görev K3): soyu boş (ya da artık bulunmayan) karakterlere türün ilk soyu atanır; kimlere atandığı döner
- * (bir kerelik not). Soyu olmayan türler ve geçerli soy değişmez; değişiklik yoksa aynı liste.
+ * (bir kerelik not). Soyu olmayan türler ve geçerli soy değişmez; değişiklik yoksa aynı liste. Kuyruk AS1a: soyu isteğe bağlı
+ * türde (`lineageOptional`) atama yok, `pending` döner ("alt soy seç" bildirimi).
  */
-export function migrateLineages<T extends { sheet: CharacterSheet }>(list: T[]): { list: T[]; assigned: Array<{ name: string; lineage: string }> } {
+export function migrateLineages<T extends { sheet: CharacterSheet; id?: string }>(list: T[]): { list: T[]; assigned: Array<{ name: string; lineage: string }>; pending: Array<{ id?: string; name: string; race: string }> } {
   const assigned: Array<{ name: string; lineage: string }> = [];
+  const pending: Array<{ id?: string; name: string; race: string }> = [];
   const out = list.map((c) => {
     const race = races.find((r) => r.id === c.sheet.raceId);
     const first = race?.lineages?.[0];
     if (!race || !first || race.lineages?.some((l) => l.id === c.sheet.lineageId)) return c;
+    // Kuyruk AS1a: soyu isteğe bağlı tür (Dwarf, Halfling, Orc, Human) eski kayıtta soysuz kalır; yalnızca bildirilir.
+    if (race.lineageOptional) { pending.push({ ...(c.id ? { id: c.id } : {}), name: c.sheet.name, race: race.name }); return c; }
     const pick = race.lineages?.find((l) => l.id === race.defaultLineage) ?? first;
     assigned.push({ name: c.sheet.name, lineage: `${race.name} ${pick.name}` });
     return { ...c, sheet: { ...c.sheet, lineageId: pick.id } };
   });
-  return { list: assigned.length > 0 ? out : list, assigned };
+  return { list: assigned.length > 0 ? out : list, assigned, pending };
 }

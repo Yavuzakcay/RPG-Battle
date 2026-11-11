@@ -36,9 +36,12 @@ describe('ırklar (SRD 5.2.1 türleri)', () => {
         continue;
       }
       expect(unique(r.lineages.map((l) => l.id))).toBe(true);
-      expect(r.lineages.some((l) => l.id === r.defaultLineage)).toBe(true);
+      // Kuyruk AS1a: soyu isteğe bağlı türlerde (Dwarf, Halfling, Orc, Human) varsayılan soy yoktur; eski kayıt soysuz kalır.
+      if (r.lineageOptional) expect(r.defaultLineage).toBeUndefined();
+      else expect(r.lineages.some((l) => l.id === r.defaultLineage)).toBe(true);
     }
-    expect(getRace('tiefling').lineages?.map((l) => l.id)).toEqual(['abyssal', 'chthonic', 'infernal']);
+    expect(races.filter((x) => x.lineageOptional).map((x) => x.id).sort()).toEqual(['dwarf', 'halfling', 'human', 'orc']);
+    expect(getRace('tiefling').lineages?.map((l) => l.id)).toEqual(['abyssal', 'chthonic', 'infernal', 'winged']);
   });
   it('getRace çalışır, olmayan ırkta hata verir', () => {
     expect(getRace('human').name).toBe('Human');
