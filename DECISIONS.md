@@ -18,7 +18,8 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Doğrulama:**
   - `src/battle/binekMb3.test.ts` 15 test. MB1 testleri (15) değişmeden yeşil.
   - Regresyon `src/sim/binekMb3Regresyon.test.ts`: 68 altın (MB3 öncesi ağaç), 69 = 68; Çöl, Kale, Mağara, Orman × 30 tohum. Denge ölçümü yok.
-  - Ana parça 376,78 kB.
+  - Ana parça 376,78 kB. `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 382 dosya geçti + 1 atlandı; 4473 test geçti + 7 atlandı; 0 kırık.
 - **Kalan:**
   - **MB4:** çok altıgenli bineğin bütün gövdesinde tavan/yığın, gövde dışına iniş, binicinin gövdesi.
   - **MB7:** Find Steed/Phantom Steed, paket `binek`.

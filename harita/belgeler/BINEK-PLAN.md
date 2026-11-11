@@ -524,6 +524,8 @@ Doğrulanmayan açık yok.
 
 - `binekMb3.test.ts`: 15 test (Görev 0'ın 9 açığı + 4 sahne + 68 eski davranış), uçtan uca senaryolarda replay aynı.
 - Regresyon `src/sim/binekMb3Regresyon.test.ts`: 68 altın (MB3 öncesi ağaç `main` b659f68), 69 = 68. Çöl, Kale, Mağara, Orman × 1 ve × 30 tohum.
+- Ana parça 376,78 kB. `check:harita` 96/0, `check:ses` 15/0.
+- Tam paket: 382 dosya, 4473 test geçti (7 atlandı), 0 kırık.
 
 **Kalan açıklar:**
 
