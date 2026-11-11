@@ -16,6 +16,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Prone binici binemez (`needsStand` önce kaldırır).
 - **Lance:** veri alanı `twoHandedUnlessMounted` artık okunuyor (saldırı seçeneğinde `unlessMounted`, `handBusy`). `docs/SRD-DENETIM.md` "tam" satırı MB1'den önce yanlıştı.
 - **Belge onarımı:** `main`'deki DECISIONS.md'de K57-KALDIR ile BINEK-PLAN birleştirmesinden kalmış çakışma işaretleri (`<<<<<<<`/`=======`/`>>>>>>>`) kaldırıldı; iki kayıt da korundu.
+- **Doğrulama:**
+  - `src/battle/binekMb1.test.ts`: 15 test. Görev 0'ın 10 açık testi + 67 eski davranış + 4 sahne (fırsat saldırısı yalnız bineğe, alan büyüsünde iki ayrı save, B13 kazma, B11 tavan); her uçtan uca senaryoda replay aynı.
+  - Regresyon `src/sim/binekRegresyon.test.ts`: 67 imzası MB1 öncesi ağaçtan alınan altınlarla aynı, 68 = 67. 4 senaryo (Çöl, Kale, Mağara, Orman) × 1 ve × 30 tohum (`BINEK_TOHUM=30`). Binek yokken fark yok.
+  - Ana parça 376,78 kB (≤ 420). `check:harita` 96/0, `check:ses` 15/0 (`PW_CHROMIUM=/opt/pw-browsers/chromium`).
+  - Tam paket 379 dosya geçti + 1 atlandı; 4444 test geçti + 7 atlandı; 0 kırık.
+  - Binekli savaşta YZ karar süresi ölçümü MB5'e.
 - **MB3'e kalan:** uçan binekle birlikte düşen binicinin hasarı (iki `fall`, B12), yürüyüş/uçuş yolunda yığın boyu, kat döşemesi ve Forcecage, binicinin su altı nefesi, binicili tırmanma (B14), havadan inme/binme (`toFt`), Fey Step varış sığması.
 
 ## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)

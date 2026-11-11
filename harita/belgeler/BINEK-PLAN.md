@@ -457,6 +457,13 @@ Doğrulanmayan açık yok.
 - **B7:** fırsat saldırısı yalnız bineğe (zaten öyleydi; sahne testiyle doğrulandı). Alan büyüsünde binici ve binek ayrı hedef (sahne testi).
 - Yeni olay türü yok: `dismounted` olayına isteğe bağlı `fell`. `SAVE_VERSION` 22. Günlük: "X binekten düştü." (TR/EN).
 
+**Doğrulama:**
+
+- `binekMb1.test.ts`: 15 test.
+- Regresyon (`binekRegresyon.test.ts`): 4 senaryo × 30 tohumda 67 = altın (MB1 öncesi ağaç) ve 68 = 67.
+- Ana parça 376,78 kB. `check:harita` 96/0, `check:ses` 15/0.
+- Tam paket: 379 dosya, 4444 test geçti (7 atlandı), 0 kırık.
+
 **MB3'e bırakılan açıklar:**
 
 - Uçan binekten düşen binici bineğin 5 ft içine düşer ve komut sonu irtifa düşüşüyle (`fall`) yere iner. Binek de düşüyorsa (Prone/Incapacitated uçan), binici save'i geçse bile bineğiyle birlikte **hasarsız** iner (eşitleme). İki ayrı `fall` (B12) MB3'te.
