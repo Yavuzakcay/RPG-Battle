@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-11 — Kuyruk SU1: Su hex denetimi (salt okuma; kural sürümü 66, SAVE_VERSION, veri, kod, görsel değişmedi)
+
+- Rapor `harita/belgeler/SU-HEX-DENETIM.md`: doku suyu (`fxPlan.waterHexes`) ve mekanik su aynı `tiles` harflerinden (`w`, `R`) gelir, ayrı görsel su verisi yok; boyalı su ile hex suyu kayması hizalama ya da kırpmadan değil, el ile girilen `w` satırlarından (derin çekirdek/sığ `n` halkası, kıyı hex'i yuvarlaması, duvar altı hendek) kaynaklanır (görsel doğrulanmış 10 haritada 439 `w` hex'in 44'ü kara üstünde). Öneri: (c) hafif hâli, mekanik `w`'ye dokunmadan doku için hex bazında `haric`/`ekle` listesi (yeni kuyruk, kullanıcı onayı bekliyor); `w`'yi resme göre yeniden türetmek (a) önerilmez.
+
 ## 2026-11-10 — Kuyruk K73f: su ve atlama kalanları (kural sürümü 66)
 
 - **Sürüm:** `wip/k73f` (`wip/k73e` 35acdbc üstüne). Kural sürümü 65 → 66 (`src/battle/k73fSurum.ts` `k73fOn`); 65 ve altı birebir. Yeni olay ya da alan yok; `SAVE_VERSION` 22. Sonuç `harita/belgeler/K73F-SONUC.md`.
