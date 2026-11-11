@@ -76,6 +76,8 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
     ...(pact ? { pact: true, altDamageTypes: ['necrotic', 'psychic', 'radiant'] } : {}),
     // Kuyruk 19 (SRD 5.2.1 Heavy, Loading, Ammunition): motor `srdK19` anahtarıyla uygular.
     ...(weapon.heavy && (weapon.ranged ? d.scores.dex < 13 : d.scores.str < 13) ? { heavyDis: true } : {}),
+    // Kuyruk MB1 (SRD Lance "Two-Handed (unless mounted)"): motor 68+ binekte değilken diğer el doluysa reddeder.
+    ...(weapon.twoHandedUnlessMounted ? { unlessMounted: true, ...(!otherHandFree(sheet) ? { handBusy: true } : {}) } : {}),
     ...(weapon.loading && use !== 'thrown' ? { loading: true } : {}),
     ...(weapon.ammunition && use !== 'thrown' && weapon.ammo ? { ammo: weapon.ammo } : {}),
   };

@@ -4,6 +4,7 @@
  */
 import { BOON_TURN_REFILL } from './boons';
 import { syncRiders } from './mounted';
+import { binekOn } from './binekSurum';
 import { syncAuthority } from './authority';
 import { spells } from '../data';
 import { homeSide, syncAllegiance } from './allegiance';
@@ -330,7 +331,7 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return syncAuthority(syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event))))));
+  return syncAuthority(syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)))), state));
 }
 
 /**
@@ -1239,7 +1240,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       const m = state.combatants[event.mountId];
       if (!c || !m) return state;
-      const s1 = withCombatant(state, c.id, { riding: m.id, pos: m.pos, movementUsed: c.movementUsed + event.cost });
+      // Kuyruk MB1 (68+): binici bineğin irtifasına da geçer.
+      const alt = binekOn(state) && ((m.altitudeFt ?? 0) !== 0 || c.altitudeFt !== undefined) ? { altitudeFt: m.altitudeFt ?? 0 } : {};
+      const s1 = withCombatant(state, c.id, { riding: m.id, pos: m.pos, movementUsed: c.movementUsed + event.cost, ...alt });
       return withCombatant(s1, m.id, { rider: c.id });
     }
     case 'dismounted': {

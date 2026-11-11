@@ -42,6 +42,7 @@ import { BURROW_DEPTH_FT, canBurrow, diggable } from './burrow';
 import { DIVE_MAX_FT, inWater, SWIM_FACTOR } from './underwaterCore';
 import { hasSwimSpeed } from './deepWater';
 import { covers } from './body';
+import { riderStackFt, seatedRider } from './riderCore';
 import { isTargetable } from './common';
 import dikeyData from '../../data/dikey.json';
 
@@ -166,13 +167,14 @@ export const bodyHeightFt = (c: Pick<Combatant, 'size'>): number => (ALT.boyFt a
 /** Kuyruk K68c: göz yüksekliği (ft): irtifa + boyun yarısı (görüş hattının ucu). */
 export const eyeFt = (c: Pick<Combatant, 'size' | 'altitudeFt'>): number => altitudeOf(c) + bodyHeightFt(c) / 2;
 
-type CapSubject = Pick<Combatant, 'size'> & { pos?: Offset | null; id?: string; fly?: number; effects?: Combatant['effects']; climbing?: true; altitudeFt?: number };
+type CapSubject = Pick<Combatant, 'size'> & { pos?: Offset | null; id?: string; fly?: number; effects?: Combatant['effects']; climbing?: true; altitudeFt?: number; rider?: string };
 
 /** İrtifa üst sınırı (ft, 5'in katı): tavanlı haritada tavan − boy, açık gökte `irtifa.maxFt`. */
 export function altitudeCapFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, c: CapSubject): number {
   const ceil = ceilingOver(state, c);
   // Kuyruk K71c (sürüm 58+): açık gökte uçuş üst sınırı (`ucusUstFt`, yoksa 60 ft); 57 ve altında `irtifa.maxFt`.
-  const base = ceil === null ? (cellsOn(state) ? flyCapFt(state) : ALT.maxFt) : Math.max(0, Math.floor((ceil - bodyHeightFt(c)) / ALT.stepFt) * ALT.stepFt);
+  // Kuyruk MB1 (68+, B11 ⚠): binicisi üstündeki binekte yığın boyu (binek + binici) tavanın altına sığmalı.
+  const base = ceil === null ? (cellsOn(state) ? flyCapFt(state) : ALT.maxFt) : Math.max(0, Math.floor((ceil - bodyHeightFt(c) - (c.rider ? riderStackFt(state, c) : 0)) / ALT.stepFt) * ALT.stepFt);
   // Kuyruk U1a (sürüm 61+): yaratığın kendi uçuş sınırı (`ucus.azamiIrtifaFt`, süzülme 5 ft); tırmanırken ve duruş
   // yüzeyindeyken (sur tepesi, kat) değil: sınır yalnız o etkiyle uçarken.
   if (!c.effects?.length || !u1aOn(state)) return base;
@@ -454,6 +456,8 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
   let s = next;
   for (const c0 of Object.values(next.combatants)) {
     let c = s.combatants[c0.id] as Combatant;
+    // Kuyruk MB1 (68+): bineğinin üstündeki binici bineğin irtifasını izler (düşmez, kırpılmaz).
+    if (c?.riding && seatedRider(s, c)) continue;
     // Kuyruk K66a: eksi irtifa (yarığın içi) düşüş değil.
     if (altitudeOf(c) <= 0) continue;
     // Kuyruk K68b (sürüm 52): tavanın üstündeki irtifa (boy büyüdü, tavanlı haritaya gelindi) tavana kırpılır (hasarsız).

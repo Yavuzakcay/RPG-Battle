@@ -112,7 +112,7 @@ export const TR_EXTRA = {
     dashed: (a: string) => `${a} koşuyor (Dash): bu tur hareketi iki katı.`,
     disengaged: (a: string) => `${a} geri çekiliyor (Disengage).`,
     initiativeSwapped: (a: string, b: string) => `${a} ile ${b} inisiyatif değiştirdi (Alert).`,
-    mounted: (a: string, m: string) => `${a} ${m} üstüne bindi.`, dismounted: (a: string) => `${a} binekten indi.`, relentlessEndurance: 'Relentless Endurance: 1 HP ile ayakta kaldı', relentlessRage: (n: number, t: number, dc: number, ok: boolean, hp: number) => `Relentless Rage: CON ${n} → ${t} / DC ${dc}${ok ? `, ayakta (${hp} HP)` : ', başarısız'}.`,
+    mounted: (a: string, m: string) => `${a} ${m} üstüne bindi.`, dismounted: (a: string) => `${a} binekten indi.`, fellFromMount: (a: string) => `${a} binekten düştü.`, relentlessEndurance: 'Relentless Endurance: 1 HP ile ayakta kaldı', relentlessRage: (n: number, t: number, dc: number, ok: boolean, hp: number) => `Relentless Rage: CON ${n} → ${t} / DC ${dc}${ok ? `, ayakta (${hp} HP)` : ', başarısız'}.`,
     shiftGranted: (a: string, ft: number) => `${a} ${ft} ft fırsat saldırısı almadan kayabilir.`,
     mapRoll: (label: string, d20: string, mode: string, total: number, dc: number, ok: boolean) => `${label} zar ${d20}${mode}, toplam ${total} / DC ${dc}: ${ok ? 'başarılı' : 'başarısız'}`,
     became: (c: string) => `${c} oldu`, wore: (c: string) => `${c} geçti`, sink: (n: number) => `batma sayacı ${n}`, stop: 'hareketi bitti', burn: (n: number) => `${n} altıgen hareket yandı`,

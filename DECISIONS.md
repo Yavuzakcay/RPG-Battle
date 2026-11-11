@@ -3,6 +3,27 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk MB1: binek çekirdek SRD kuralları (kural sürümü 68)
+
+- **Sürüm:** `main` 6a1a4dc üstüne. Kural sürümü 67 → **68** (tek sabit `src/battle/binekSurum.ts` `BINEK_VERSION`, B19); 67 ve altı birebir. Yeni olay türü yok (`dismounted.fell` isteğe bağlı alan); `SAVE_VERSION` 22 (B20). Anahtar `srdK19` (B21), yeni ev kuralı yok. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §11.
+- **Görev 0:** BINEK-PLAN §1.1 açıklarının hepsi düzeltmeden önce başarısız testle doğrulandı (11 madde; hücre doluluğu açığı irtifa eşitlemesiyle ortaya çıkıyor). Doğrulanmayan açık yok.
+- **Yapılan B maddeleri:** B1 (yığın: binici bineğin altıgeni + irtifası, hücre kaplamaz, irtifa düşüşü işlemez), B3, B7 (zaten; test), B8, B9, B10, B23, B24; binicinin `climb`/`jump_down`/`vertical_move` reddi; B11 ve B13'ün MB1'e düşen parçaları.
+- **SRD'de yazmıyor, yorum (⚠):**
+  - **B6:** binicinin bandı kendi boyuyla bineğin irtifasından (bineğin bandının alt düzeyi); tam "bineğin bandı" MB3/MB4.
+  - **B8:** Prone save'i başarılıysa binici Prone olmaz ve üstte kalır (Prone kaldırılır, "Binekte kaldı").
+  - **B9:** itilen binici save'siz iner (Prone yok).
+  - **B11:** binme için bineğin irtifası + boyu + binicinin boyu ≤ tavan; binicisi üstündeki bineğin irtifa üst sınırı yığın boyuyla. Binicinin katkısı tam boyu (Medium +5, Large +10): plandaki "boyunun yarısı" ifadesi plandaki sayılarla çelişiyordu, sayılar esas alındı. Yürüme/uçuş yolunda yığın boyu MB3.
+  - **B13:** binicisi üstündeki binek kazamaz (suya dalış serbest).
+  - Prone binici binemez (`needsStand` önce kaldırır).
+- **Lance:** veri alanı `twoHandedUnlessMounted` artık okunuyor (saldırı seçeneğinde `unlessMounted`, `handBusy`). `docs/SRD-DENETIM.md` "tam" satırı MB1'den önce yanlıştı.
+- **Belge onarımı:** `main`'deki DECISIONS.md'de K57-KALDIR ile BINEK-PLAN birleştirmesinden kalmış çakışma işaretleri (`<<<<<<<`/`=======`/`>>>>>>>`) kaldırıldı; iki kayıt da korundu.
+- **Doğrulama:**
+  - `src/battle/binekMb1.test.ts`: 15 test. Görev 0'ın 10 açık testi + 67 eski davranış + 4 sahne (fırsat saldırısı yalnız bineğe, alan büyüsünde iki ayrı save, B13 kazma, B11 tavan); her uçtan uca senaryoda replay aynı.
+  - Regresyon `src/sim/binekRegresyon.test.ts`: 67 imzası MB1 öncesi ağaçtan alınan altınlarla aynı, 68 = 67. 4 senaryo (Çöl, Kale, Mağara, Orman) × 1 ve × 30 tohum (`BINEK_TOHUM=30`). Binek yokken fark yok.
+  - Ana parça 376,78 kB (≤ 420). `check:harita` 96/0, `check:ses` 15/0 (`PW_CHROMIUM=/opt/pw-browsers/chromium`).
+  - Tam paket 379 dosya geçti + 1 atlandı; 4444 test geçti + 7 atlandı; 0 kırık.
+  - Binekli savaşta YZ karar süresi ölçümü MB5'e.
+- **MB3'e kalan:** uçan binekle birlikte düşen binicinin hasarı (iki `fall`, B12), yürüyüş/uçuş yolunda yığın boyu, kat döşemesi ve Forcecage, binicinin su altı nefesi, binicili tırmanma (B14), havadan inme/binme (`toFt`), Fey Step varış sığması.
 
 ## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)
 
