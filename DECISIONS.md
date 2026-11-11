@@ -19,7 +19,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - **Fırsat saldırısı:** yalnız binek tetikler (SRD 5.2.1).
   - **Sürüm ve kayıt:** yeni olay türü yok (`SAVE_VERSION` 22). Kural sürümü MB1 = 68 (Şerit B 67'yi alabilir; tek sabit `BINEK_SURUM`). `srdK19` anahtarı altında, yeni ev kuralı yok.
   - **Find Greater Steed** SRD 5.2.1'de yok (⚠): yalnız ek paket.
-- **Taban:** tam test (main f740c07) sonucu sonraki commit'te.
+- **Taban:** tam test (main f740c07) 375 dosya geçti + 1 atlandı, 4410 test geçti + 7 atlandı, 0 kırık (681 sn).
 
 ## 2026-11-11 — Kuyruk SU1: Su hex denetimi (salt okuma; kural sürümü 66, SAVE_VERSION, veri, kod, görsel değişmedi)
 

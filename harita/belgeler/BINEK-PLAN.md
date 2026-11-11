@@ -18,7 +18,7 @@ Yalnız plan: kod, veri ve test değişmedi. Taban `main` f740c07 (kural sürüm
 
 | Ölçü | Değer |
 |---|---|
-| Tam test (`wip/binek-plan` = `main` f740c07) | **ölçüm sürüyor** (`npx vitest run`; sonuç sonraki commit'te) |
+| Tam test (`wip/binek-plan` = `main` f740c07) | **375 dosya geçti + 1 atlandı; 4410 test geçti + 7 atlandı; 0 kırık** (`npx vitest run`, 681 sn) |
 | Ana parça | 374 742 B (son ölçüm K73f, DECISIONS.md; sınır 420 kB, pay ≈ 45 kB). Bu planda build koşulmadı (kod değişmedi). |
 | YZ karar süresi | Son ölçüm K73f: Mantar 1,99 ms, uçan 2,02 ms, katmanlı 1,94 ms (medyan) |
 | Binek testi | 1 (`src/battle/k19items.test.ts` "Binek: bin, bineğin hareketiyle taşın, binek Prone olunca düş; kapalıyken binilemez") |
