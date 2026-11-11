@@ -2,6 +2,25 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Kuyruk BINEK-PLAN: binek (mount) sistemi planı (yalnız plan; kural sürümü 66, SAVE_VERSION 22, kod/veri/test değişmedi)
+
+- **Kullanıcı kararı:** binek mekaniği yapılacak; K57 donması yalnız bu iş için sınırlı kalkacak (kapsam metni planın §7.1'inde; `docs/MEKANIK-DONMA.md` uygulama kuyruğunda güncellenecek). İlk kullanım Ranger Ejder Muhafızı (`ejder-muhafizi`, ek paket; depoda yok): 14. seviyede Large ejderha binicisiyle uçar.
+- **Plan:** `harita/belgeler/BINEK-PLAN.md`. Envanter, SRD 5.2.1 "Mounted Combat" özeti, veri modeli, etkileşimler, YZ, arayüz, alt kuyruklar MB1–MB8, karar listesi B1–B24, Ejder Muhafızı yükseltme yolu.
+- **Bulunan açıklar** (kod okumasıyla, test edilmedi; MB1'de testle doğrulanacak):
+  - `syncRiders` yalnız `pos` eşitliyor: uçan binekte binici yerde kalıyor. Summon Dragon ruhuna bugün binilebiliyor.
+  - Binicinin kendi ışınlanması ve itilmesi reducer sonunda geri alınıyor.
+  - `riderCleanup` başarılı save'de de indiriyor. Bineğin isteği dışında hareketi ve binicinin Prone olması tetik değil.
+  - Binicinin `climb` ve `vertical_move` komutları açık.
+  - Lance `twoHandedUnlessMounted` verisi kodda okunmuyor (`docs/SRD-DENETIM.md` "tam" diyor ⚠).
+  - Kontrollü binek ve YZ binek kararı yok.
+- **Öneriler (karar kullanıcıda):**
+  - **Model:** iki savaşçı + yığın (binici türetilmiş konum/irtifa, hücre kaplamaz, gövde = bineğin ayak izi).
+  - **Kontrollü binek:** birleşik tur, yalnız Dash/Disengage/Dodge.
+  - **Fırsat saldırısı:** yalnız binek tetikler (SRD 5.2.1).
+  - **Sürüm ve kayıt:** yeni olay türü yok (`SAVE_VERSION` 22). Kural sürümü MB1 = 68 (Şerit B 67'yi alabilir; tek sabit `BINEK_SURUM`). `srdK19` anahtarı altında, yeni ev kuralı yok.
+  - **Find Greater Steed** SRD 5.2.1'de yok (⚠): yalnız ek paket.
+- **Taban:** tam test (main f740c07) sonucu sonraki commit'te.
+
 ## 2026-11-11 — Kuyruk SU1: Su hex denetimi (salt okuma; kural sürümü 66, SAVE_VERSION, veri, kod, görsel değişmedi)
 
 - Rapor `harita/belgeler/SU-HEX-DENETIM.md`: doku suyu (`fxPlan.waterHexes`) ve mekanik su aynı `tiles` harflerinden (`w`, `R`) gelir, ayrı görsel su verisi yok; boyalı su ile hex suyu kayması hizalama ya da kırpmadan değil, el ile girilen `w` satırlarından (derin çekirdek/sığ `n` halkası, kıyı hex'i yuvarlaması, duvar altı hendek) kaynaklanır (görsel doğrulanmış 10 haritada 439 `w` hex'in 44'ü kara üstünde). Öneri: (c) hafif hâli, mekanik `w`'ye dokunmadan doku için hex bazında `haric`/`ekle` listesi (yeni kuyruk, kullanıcı onayı bekliyor); `w`'yi resme göre yeniden türetmek (a) önerilmez.
