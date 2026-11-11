@@ -77,7 +77,7 @@
     "efekt-zemin-bitki": { "kare": 4, "sure": 720, "tur": "zemin", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": true, "kaynak": "zemin-kutulari", "yol": "efekt/efekt-zemin-bitki" },
     "efekt-zemin-bocek": { "kare": 4, "sure": 720, "tur": "zemin", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": true, "kaynak": "zemin-ek", "yol": "efekt/efekt-zemin-bocek" },
     "efekt-zemin-buz-run": { "kare": 4, "sure": 720, "tur": "zemin", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": true, "kaynak": "zemin-kutulari", "yol": "efekt/efekt-zemin-buz-run" },
-    "efekt-zemin-deprem-yarigi": { "kare": 4, "sure": 1600, "tur": "zemin", "karisim": "normal", "yon": null, "en": 352, "boy": 352, "dongu": false, "kaynak": "efekt-eksik", "sabit": 3, "yol": "efekt/efekt-zemin-deprem-yarigi" },
+    "efekt-zemin-deprem-yarigi": { "kare": 4, "sure": 1600, "tur": "zemin", "karisim": "normal", "yon": null, "en": 352, "boy": 352, "dongu": false, "kaynak": "efekt-eksik", "sabit": 3, "alfa": 0.64, "ton": ["#28120e", "#802c16"], "yol": "efekt/efekt-zemin-deprem-yarigi" },
     "efekt-zemin-diken": { "kare": 4, "sure": 720, "tur": "zemin", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": true, "kaynak": "zemin-kutulari", "yol": "efekt/efekt-zemin-diken" },
     "efekt-zemin-dikenli": { "kare": 4, "sure": 720, "tur": "zemin", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": true, "kaynak": "zemin-ek", "yol": "efekt/efekt-zemin-dikenli" },
     "efekt-zemin-dokunac": { "kare": 4, "sure": 720, "tur": "zemin", "karisim": "screen", "yon": null, "en": 192, "boy": 192, "dongu": true, "kaynak": "zemin-ek", "yol": "efekt/efekt-zemin-dokunac" },

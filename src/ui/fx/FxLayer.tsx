@@ -195,6 +195,23 @@ function hexPath(hexes: Offset[], geo: Geo, grow = 1.03): string {
  */
 function TiledPatch({ patch, geo, animated }: { patch: GroundPatch; geo: Geo; animated: boolean }) {
   const s = patch.sprite;
+  // Kuyruk SU2: `tekKaro` (altıgen eni katı): altıgen başına döndürme yok; tek büyük karo dünya koordinatında dört yönde aynalanır
+  // (karo dikişi görünmez), alan altıgenlerinin birleşimine kırpılır → çatlaklar komşu altıgenlerde kesilmeden devam eder; animasyon örneği 1.
+  if (patch.karo!.tekKaro) {
+    const tw = geo.hexW * patch.karo!.tekKaro; const th = (tw * s.h) / s.w;
+    const id = `fx-hk1-${patch.key.replace(/[^A-Za-z0-9]/g, '')}`;
+    const cell = (fx: number, fy: number) => (
+      <g key={`${fx}${fy}`} transform={`translate(${fx < 0 ? 2 * tw : 0} ${fy < 0 ? 2 * th : 0}) scale(${fx} ${fy})`}>
+        <Strip s={s} x={0} y={0} w={tw} h={th} animated={animated} loop={patch.loop} hold={!patch.loop} />
+      </g>
+    );
+    return (
+      <g className="fx-patch-tiled fx-patch-single" opacity={patch.karo!.opaklik}>
+        <defs><pattern id={id} patternUnits="userSpaceOnUse" width={2 * tw} height={2 * th}>{cell(1, 1)}{cell(-1, 1)}{cell(1, -1)}{cell(-1, -1)}</pattern></defs>
+        <path d={hexPath(patch.hexes, geo, 1.01)} fill={`url(#${id})`} />
+      </g>
+    );
+  }
   const S = geo.hexW / 2; const HH = geo.hexH;
   const byVar = new Map<number, Offset[]>();
   for (const h of patch.hexes) { const v = hexVariant(h); (byVar.get(v) ?? byVar.set(v, []).get(v)!).push(h); }

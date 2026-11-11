@@ -35,7 +35,7 @@
     "wall-of-stone": "duvar-tas", "wall-of-thorns": "duvar-diken", "blade-barrier": "duvar-bicak", "prismatic-wall": "duvar-prizma" },
   "duvarYumusak": { "duvar-ruzgar": 0.12 },
   "durumHalka": { "Petrified": "durum-tas-halka" },
-  "zeminKaro": { "zemin-deprem-yarigi": { "opaklik": 0.88 } },
+  "zeminKaro": { "zemin-deprem-yarigi": { "opaklik": 1, "tekKaro": 6 } },
   "su": { "harf": ["w", "R"], "nehirHarf": ["R"], "kiyiUzaklik": 2, "havuzHaritalari": ["orman-heykel-golu", "col-vaha", "kale-onu", "kale-ic-avlu"], "denizHaritalari": ["ada", "gemi"], "sigHarf": ["n"],
     "sprite": { "dalga": "su-dalga", "havuz": "su-havuz" }, "opaklik": { "dalga": 0.62, "havuz": 0.58 }, "karoEn": 3 },
   "ton": { "duvar-cizili": "#f2e3c4" },
