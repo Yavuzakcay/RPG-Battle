@@ -12,7 +12,7 @@
 import esleme from '../../../data/sprite-esleme.json';
 import e2 from '../../../data/efekt-e2.json';
 import baglama from '../../../data/efekt-baglama.json';
-import { distance, type Offset } from '../../rules/hex';
+import { distance, neighbors, type Offset } from '../../rules/hex';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from '../../battle/types';
 import { tokenScale } from '../tokenSize';
 
@@ -473,22 +473,39 @@ export function wallAngle(h: Offset, all: Offset[]): number {
   return AXES.reduce((b, ax) => (score(ax) < score(b) ? ax : b), AXES[0]!);
 }
 
-/** Kuyruk E4b: su altıgeni ve dokusu (nehir/kıyı = dalga, göl/vaha/okyanus = havuz). */
-export interface WaterHex { at: Offset; kind: 'dalga' | 'havuz' }
-interface SuData { harf: string[]; nehirHarf: string[]; kiyiUzaklik: number; havuzHaritalari: string[]; denizHaritalari: string[]; sigHarf: string[]; sprite: Record<'dalga' | 'havuz', string>; opaklik: Record<'dalga' | 'havuz', number>; karoEn: number }
+/**
+ * Kuyruk E4b: su altıgeni ve dokusu (nehir/kıyı = dalga, göl/vaha/okyanus = havuz). Kuyruk SU3: `shallow` (resimde net su olan
+ * bilinçli sığ `n` halkası, `su.ekle`; dalga, daha soluk), `shore` (komşusu doku çizilmeyen kıyı altıgeni; soluk + yumuşak kenar).
+ */
+export interface WaterHex { at: Offset; kind: 'dalga' | 'havuz'; shallow?: boolean; shore?: boolean }
+type HexAddr = ReadonlyArray<readonly [number, number]>;
+interface SuData {
+  harf: string[]; nehirHarf: string[]; kiyiUzaklik: number; havuzHaritalari: string[]; denizHaritalari: string[]; sigHarf: string[];
+  sprite: Record<'dalga' | 'havuz', string>; opaklik: Record<'dalga' | 'havuz', number>; karoEn: number;
+  /** Kuyruk SU3: kıyı altıgeninin opaklık oranı, kenar bulanıklığı (px, dünya birimi), `ekle` altıgeninin opaklık oranı. */
+  kiyiOpaklik: number; kenarYumusat: number; ekleOpaklik: number;
+  /** Kuyruk SU3: harita kimliği → `[sütun, satır]` (1 tabanlı, harita JSON'u gibi); doku çizilmeyecek / çizilecek altıgenler. */
+  haric: Record<string, HexAddr>; ekle: Record<string, HexAddr>;
+}
 export const SU = (baglama as unknown as { su: SuData }).su;
-const waterCache = new WeakMap<string[], WaterHex[]>();
+// Zemin dizisi → (harita kimliği → liste). Aynı zemin farklı kimlikle (test, varyant) başka listeye düşebilir.
+const waterCache = new WeakMap<string[], Map<string, WaterHex[]>>();
+const hexKey0 = (c: number, r: number): string => `${c},${r}`;
 
 /**
- * Savaş haritasının su altıgenleri ve türleri (yalnız görsel; zemin harfleri `tiles`'tan). Su arka plan resminde pişmiştir; bu
- * liste üstüne yarı saydam hareketli doku çizmek içindir. Tür: `R` harfi ya da kıyıya (suda olmayan altıgen) `kiyiUzaklik`
- * altıgen içindeki su dalga, daha açık su havuz; `havuzHaritalari` (göl, vaha, hendek) bütün suyu havuz yapar. Önbellekli
- * (zemin dizisi aynı kaldıkça; suyun kuruması ya da taşması `tiles`'ı değiştirir).
+ * Savaş haritasının su dokusu altıgenleri ve türleri (yalnız görsel; mekanik su sorguları bunu KULLANMAZ). Sıra: (1) `tiles`'tan
+ * türet: `R` harfi ya da kıyıya (suda olmayan altıgen) `kiyiUzaklik` altıgen içindeki su dalga, daha açık su havuz;
+ * `havuzHaritalari` bütün suyu havuz yapar; (2) `su.haric[haritaKimliği]` altıgenlerini düş (resimde kara olan `w`, mekanik
+ * `w` kalır); (3) `su.ekle[haritaKimliği]` altıgenlerini sığ dalga olarak ekle (yalnız hâlâ sığ su `n` olanlar);
+ * (4) komşusu listede olmayan (kara, `haric`, `n`; harita kenarı sayılmaz) altıgene `shore` işareti koy. Önbellekli (zemin
+ * dizisi ve harita kimliği aynı kaldıkça; suyun kuruması ya da taşması `tiles`'ı değiştirir).
  */
 export function waterHexes(state: Pick<BattleState, 'map'>): WaterHex[] {
   const m = state.map;
   if (!m?.tiles?.length) return [];
-  const hit = waterCache.get(m.tiles);
+  const id = (m as { id?: string }).id ?? '';
+  const byId = waterCache.get(m.tiles) ?? new Map<string, WaterHex[]>();
+  const hit = byId.get(id);
   if (hit) return hit;
   const isWater = (ch: string | undefined): boolean => !!ch && SU.harf.includes(ch);
   const water: Array<{ at: Offset; ch: string }> = []; const land: Offset[] = [];
@@ -498,18 +515,29 @@ export function waterHexes(state: Pick<BattleState, 'map'>): WaterHex[] {
       if (isWater(ch)) water.push({ at: { col, row }, ch }); else land.push({ col, row });
     }
   });
-  const id = (m as { id?: string }).id ?? '';
   const lake = SU.havuzHaritalari.includes(id);
   // Okyanus haritasında sığ su (n) kıyı sayılmaz: kıyı yalnız gerçek karadır.
   const shores = SU.denizHaritalari.includes(id) ? land.filter((l) => !SU.sigHarf.includes(m.tiles[l.row]![l.col]!)) : land;
-  const out: WaterHex[] = water.map(({ at, ch }) => {
+  const base: WaterHex[] = water.map(({ at, ch }) => {
     if (lake) return { at, kind: 'havuz' as const };
     if (SU.nehirHarf.includes(ch)) return { at, kind: 'dalga' as const };
     // Kıyıya uzaklık: suda olmayan en yakın altıgen (haritanın kenarı kıyı sayılmaz).
     const shore = shores.some((l) => distance(at, l) <= SU.kiyiUzaklik);
     return { at, kind: shore ? 'dalga' as const : 'havuz' as const };
   });
-  waterCache.set(m.tiles, out);
+  const drop = new Set((SU.haric[id] ?? []).map(([c, r]) => hexKey0(c - 1, r - 1)));
+  let list = drop.size ? base.filter((w) => !drop.has(hexKey0(w.at.col, w.at.row))) : base;
+  const add = (SU.ekle[id] ?? []).flatMap(([c, r]): WaterHex[] => {
+    const ch = m.tiles[r - 1]?.[c - 1];
+    return ch !== undefined && SU.sigHarf.includes(ch) && !list.some((w) => w.at.col === c - 1 && w.at.row === r - 1)
+      ? [{ at: { col: c - 1, row: r - 1 }, kind: 'dalga', shallow: true }] : [];
+  });
+  if (add.length) list = [...list, ...add];
+  // Kıyı altıgenleri: komşularından biri (harita içinde) doku çizilmeyen altıgen.
+  const size = { cols: m.tiles[0]?.length ?? 0, rows: m.tiles.length };
+  const has = new Set(list.map((w) => hexKey0(w.at.col, w.at.row)));
+  const out: WaterHex[] = list.map((w) => (neighbors(w.at, size).some((n) => !has.has(hexKey0(n.col, n.row))) ? { ...w, shore: true } : w));
+  byId.set(id, out); waterCache.set(m.tiles, byId);
   return out;
 }
 

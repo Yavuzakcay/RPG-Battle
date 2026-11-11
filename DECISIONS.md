@@ -2,13 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
-<<<<<<< HEAD
+
+
 ## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)
 
 - **Karar (kullanıcı):** K57 mekanik donması (2026-11-06, `docs/MEKANIK-DONMA.md`) tamamen kaldırıldı. Belge tarihsel kayıt olarak kalır; ev kuralı varsayılan tablosu başvuru olarak geçerli.
 - **Gerekçe:** donma bekleyen işleri engelliyordu: AS1, AS2, BINEK şeritleri, Hallow ek etkileri (K62-ACIK Madde 5, kullanıcı kararı bekliyor) ve Truesight'ı bilmeyen motor yolları (fırsat saldırısı görme, hareket algısı, Cleave, mastery ikinci hedef, ejderha Algısı; K62-ACIK Madde 3).
 - **Kalan kurallar** (CLAUDE.md "Çalışma şekli"): kural sürümü değişen her iş sürümü bir artırır, aynı anda yalnız bir şerit sürüm artırır (güncel 67, K62-ACIK; sıradaki şerit 68); yeni mekanik veriyle ve Game Master anahtarıyla gelir, eski kayıt/replay aynen; ana parça 420 kB sınırı; hafif doğrulama modu aynen.
-=======
+
 ## 2026-11-12 — Kuyruk BINEK-PLAN: binek (mount) sistemi planı (yalnız plan; kural sürümü 66, SAVE_VERSION 22, kod/veri/test değişmedi)
 
 - **Kullanıcı kararı:** binek mekaniği yapılacak; K57 donması yalnız bu iş için sınırlı kalkacak (kapsam metni planın §7.1'inde; `docs/MEKANIK-DONMA.md` uygulama kuyruğunda güncellenecek). İlk kullanım Ranger Ejder Muhafızı (`ejder-muhafizi`, ek paket; depoda yok): 14. seviyede Large ejderha binicisiyle uçar.
@@ -27,7 +28,17 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - **Sürüm ve kayıt:** yeni olay türü yok (`SAVE_VERSION` 22). Kural sürümü MB1 = 68 (Şerit B 67'yi alabilir; tek sabit `BINEK_SURUM`). `srdK19` anahtarı altında, yeni ev kuralı yok.
   - **Find Greater Steed** SRD 5.2.1'de yok (⚠): yalnız ek paket.
 - **Taban:** tam test (main f740c07) 375 dosya geçti + 1 atlandı, 4410 test geçti + 7 atlandı, 0 kırık (681 sn).
->>>>>>> origin/wip/binek-plan
+
+
+## 2026-11-11 — Kuyruk SU3: su dokusunun hex listesi mekanik sudan ayrıldı (yalnız görsel; kural sürümü 66, SAVE_VERSION, motor, YZ, harita `tiles`, replay değişmedi)
+
+- **Veri (`data/efekt-baglama.json` `su`):** `haric` (harita kimliği → `[sütun, satır]`, 1 tabanlı, harita JSON'u gibi; doku çizilmeyen `w`), `ekle` (doku çizilen sığ `n`), `ekleOpaklik` 0,7, `kiyiOpaklik` 0,5, `kenarYumusat` 1,5 (px). Adres biçimi belirsizdi; harita JSON'unun 1 tabanlı biçimi seçildi. Varyantlar aynı `tiles`'ı paylaştığı için harita kimliği yeterli.
+- **`waterHexes`:** `tiles`'tan türet (eskisi gibi) → `haric` düş → `ekle` ekle (yalnız hâlâ `n` olanlar; sığ dalga, `shallow`) → komşusu listede olmayan altıgene `shore`. Önbellek anahtarı zemin dizisi + harita kimliği. `WaterLayer` aynı desenle (tek animasyon örneği) dört yol çizer: iç/kıyı × normal/sığ; kıyı yolu `feGaussianBlur` (`kenarYumusat`) ve opaklık × `kiyiOpaklik`, sığ × `ekleOpaklik`. Kıyı soluklaştırma bütün haritalarda topolojiden (harita kenarı kıyı sayılmaz), yalnız listeli haritalarda değil. Efekt kapalı / hareketi azalt: aynı liste, tek sabit kare.
+- **Listeler (SU1 §3.1 yöntemi yeniden çalıştırıldı, betik depo dışı):** 10 doğrulanmış haritadan `haric` 44 hex / 4 harita (Heykel Gölü 16, Oduncu Kampı 16, Batak Çukuru 10, Kale Önü 2); `ekle` yalnız Heykel Gölü 30 ve Vaha 17 (SU1'in 19'undan nehrin sol ucundaki iki yalıtık yama çıkarıldı, önce/sonra görüntüde hayalet gibi duruyordu). **`ekle` kaldı**: önce/sonra görüntüde sığ halka boyalı suyla örtüşüyor. Düşük güvenli haritalara (Batak Adalar/Kale/Kamp, Kasaba Lağımı, Mantar Mağarası) dokunulmadı; "elle teyit gerekli" olarak kaldı.
+- **Mekanik ayrımı testle sabit (`src/ui/fx/su3.test.ts`):** `haric` altıgeni `tiles`'ta `w`, `isWater`/`shoreDistances` su sayar, dokuda yok; `ekle` altıgeni mekanikte `n`; `battle/rules/map/app/sim` altında `waterHexes`/`fxPlan`/`efekt-baglama.json` içe aktarımı yok.
+- **Eski testler:** `fxPlan.e4b.test.ts` su testleri güncellendi (gerekçe: Heykel Gölü ve Vaha artık `ekle` ile sığ dalga içeriyor, liste sayısı `harf − haric + ekle`; derin `w` hâlâ yalnız havuz).
+- **Görüntü:** `docs/su3/su3-once-sonra.jpg` (Heykel Gölü, Vaha, Kale Önü; gerçek `FxGround` Vite sayfası, geçici harness depoya girmedi). Kale Önü hendeği duvar ve kara komşusu yüzünden bütünüyle kıyı sayılıp belirgin soluklaştı; ölçüte uygun, ama piksel maskesi (SU1 seçenek b) bu kuyrukta yok: kullanıcı karar verir.
+
 
 ## 2026-11-11 — Kuyruk SU1: Su hex denetimi (salt okuma; kural sürümü 66, SAVE_VERSION, veri, kod, görsel değişmedi)
 
