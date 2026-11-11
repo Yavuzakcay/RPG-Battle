@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import fix from '../../tests/fixtures/paket-u1a.json';
 import { envanterMarkdown, ucusEnvanteri, HEDEFLER } from '../../scripts/lib/ucus-envanter.mjs';
 
 // Kuyruk U1b Görev 0: envanter mantığı (kurgusal U1a fikstürü üstünde; paket metni çıktıya girmez).
-const fix = JSON.parse(readFileSync('tests/fixtures/paket-u1a.json', 'utf8'));
 
 describe('U1b uçuş envanteri', () => {
   it('fikstürdeki dört uçuş kademesini ve çağrıyı bulur; metin yazmaz', () => {
