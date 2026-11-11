@@ -331,6 +331,9 @@ export const TR_EXTRA = {
       danceCount: (n: number, max: number): string => `${n}/${max} ışık`, moveApart: 'Işıkları ayrı taşı', moveHead: 'Dancing Lights: ışıkları taşı',
       moveHint: (n: number): string => `${n} ışığın her biri için sırayla yeni yer seç (en çok 60 ft; bonus eylem).`, moveGo: 'Taşı (bonus eylem)' },
     // Kuyruk K66a: Earthquake yarıkları.
+    // Kuyruk K62-ACIK: Delayed Blast Fireball boncuğu.
+    k62: { throwMenu: (d: number): string => `Boncuğu fırlat (${d}d6)`, touchMenu: (d: number): string => `Boncuğa dokun (${d}d6)`, head: 'Delayed Blast Fireball: boncuk',
+      dice: (d: number): string => `${d}d6 ateş, 20 ft küre`, hint: 'Önce DEX save; başarıda en çok 40 ft fırlatılır, yaratığa ya da engele çarparsa patlar', go: 'Dokun ve fırlat' },
     k66: { menu: (n: number, max: number): string => `Yarık yerleştir (${n}/${max})`, head: 'Earthquake: yarık', count: (n: number, max: number): string => `${n}/${max} yarık`,
       hint: 'Altıgene dokun, yönü seç; yarık tur sonunda açılır', dir: ['╲↑', '╲↓', '╱↑', '╱↓', '│→', '│←'], dirName: ['eğik (╲), üst yan', 'eğik (╲), alt yan', 'eğik (╱), üst yan', 'eğik (╱), alt yan', 'dikey, sağ yan', 'dikey, sol yan'], go: 'Yarığı yerleştir',
       climb: (ft: number): string => `Tırman (yarıkta ${ft} ft)`, climbHint: 'Yarıktan çıkacağın bitişik altıgene dokun', inFissure: (ft: number): string => `Yarıkta (${ft} ft)`,

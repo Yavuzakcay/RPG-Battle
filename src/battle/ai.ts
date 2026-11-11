@@ -40,7 +40,7 @@ import { fissureAim, fissureBudget, fissureClimbCommand } from './fissure';
 import { quakeForecast } from './quake';
 import { aiLeaveWanted, controlConditions, possessSpecOf, possessionProblem } from './possession';
 import { possessorAt, possessorDisabled } from './possessionCore';
-import { hiddenFromTruesight } from './sight';
+import { hiddenFromTruesight, truesightRange } from './sight';
 import { heldFollow, mechanicsAt } from './spellVersion';
 import { breathOf } from './breath';
 import { isIncapacitated } from '../rules/conditions';
@@ -68,7 +68,7 @@ import { absBand, k9On } from './vertical';
 /** Kuyruk K71d: irtifası 0 olmayan (havada, yüzde, yarıkta) yaratık. */
 const s0Aloft = (c: Combatant): boolean => (c.altitudeFt ?? 0) !== 0;
 import { ruleVersion } from './ruleVersion';
-import { panelId, panelOf } from './walls';
+import { panelId, panelOf, panelStats } from './walls';
 import { zoneKnownBy } from './hiddenZones';
 import { zoneSpecOf } from './zones';
 import { climbTargets } from './climb';
@@ -99,7 +99,7 @@ import aiData from '../../data/yapay-zeka.json';
 /** Kuyruk 41b: yenilenen hedefe ateş/asit (yenilenmeyi keser) seçeneğinin puan çarpanı. */
 const REGEN_CUT: number = aiData.yenilenmeKesme;
 const cutsRegen = (type: string | undefined): boolean => type === 'fire' || type === 'acid';
-import { resourceLeft, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
+import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CommandContext, type CunningOption } from './types';
 import { climbs, fliesOrHovers, flySpeed, groundBound, isAirborne } from './flight';
 import { altitudeCapFt, altitudeOf, climbCapFt, climbingAloft, wallHex } from './altitude';
 import { legendaryOf } from './boss';
@@ -664,6 +664,9 @@ function fissureCommand(state: BattleState, actor: Combatant, foes: Combatant[])
  * öncelik `kuralOnceligi['y1:duvar']`. Yeni taktik değil: yolu açmak.
  */
 const DUVAR_FARK = 3;
+/** Kuyruk K62-ACIK: canavar saldırısı nesne/panel saldırısı seçeneği olarak (`attack_object`). */
+const monsterOption = (a: Combatant['attacks'][number]): AttackOption => ({ label: a.name, attackBonus: a.bonus, damage: a.damageDice as string,
+  ...(a.damageType ? { damageType: a.damageType } : {}), ranged: !!a.ranged, spell: false, tag: a.name, reachFt: a.reachFt ?? 5, ...(a.range ? { range: a.range } : {}) });
 function wallBreakCands(state: BattleState, actor: Combatant, h: { foes: Combatant[]; canAct: boolean; ok: (c: Command) => boolean }): Command[] {
   if (ruleVersion(state) < 55 || !state.map || !actor.pos || !h.canAct || actor.summon) return [];
   const walls = (state.map.zones ?? []).filter((z) => z.side !== actor.side && (z.spellId === 'wall-of-force' || z.hexes.some((x) => panelOf(state, panelId(z, x)))));
@@ -698,13 +701,20 @@ function wallBreakCands(state: BattleState, actor: Combatant, h: { foes: Combata
       }
       continue;
     }
+    // Kuyruk K62-ACIK: silah seçenekleri ve canavar saldırıları; panelin bağışık olduğu türler elenir, beklenen hasar
+    // (zayıflıkta iki kat: Wall of Ice'a ateş) en yüksek olan seçilir.
+    const stats = panelStats(z);
+    const opts = [...actor.weaponOptions, ...actor.attacks.filter((a) => a.damageDice && !a.save && !a.area).map(monsterOption)]
+      .filter((o) => !stats.immune.includes(o.damageType ?? 'bludgeoning'))
+      .map((o) => ({ o, dmg: avg(o.damage) * (stats.vuln.includes(o.damageType ?? 'bludgeoning') ? 2 : 1) }))
+      .sort((a, b) => b.dmg - a.dmg);
     for (const x of hexes.slice(0, 6)) {
       const id = panelId(z, x);
       if (!panelOf(state, id)) continue;
       const d = distance(me, x) * 5;
-      const option = actor.weaponOptions.find((o) => (o.ranged ? d <= (o.range?.[1] ?? 0) : d <= (o.reachFt ?? 5)));
-      if (!option) continue;
-      const cmd: Command = { type: 'attack_object', actorId: actor.id, objectId: id, option };
+      const pick = opts.find(({ o }) => (o.ranged ? d <= (o.range?.[1] ?? 0) : d <= (o.reachFt ?? 5)));
+      if (!pick) continue;
+      const cmd: Command = { type: 'attack_object', actorId: actor.id, objectId: id, option: pick.o };
       if (h.ok(cmd)) { out.push(cmd); break; }
     }
   }
@@ -1930,7 +1940,9 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     for (const f of (actor.features ?? []).filter((x) => x.effect.kind === 'divineSense')) {
       const types = (f.effect as { types: string[] }).types;
       const cmd: Command = { type: 'use_feature', actorId, feature: f.key };
-      if (foesOf(state, actor).some((c) => c.hidden && c.creatureType && types.includes(c.creatureType)) && tryCmd(state, actor, cmd).ok) return cmd;
+      // Kuyruk K62-ACIK: gizlenmiş düşman `foesOf`'ta yoktur (Truesight'sız elenir): bütün yaşayan düşmanlara bakılır.
+      const other = actor.side === 'enemies' ? 'party' : 'enemies';
+      if (Object.values(state.combatants).some((c) => c.side === other && c.hp > 0 && c.hidden && c.creatureType && types.includes(c.creatureType)) && tryCmd(state, actor, cmd).ok) return cmd;
     }
   }
   // Süren güçlendirme özelliği (Sacred Weapon; basit kural): saldırabilecekken, etkin değilse ve yakında düşman varsa.
@@ -2019,7 +2031,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
     if (actor.side === 'enemies') {
       if (!canAct) return end;
       const target = Object.values(state.combatants)
-        .filter((c) => c.side === 'party' && c.hp > 0 && !c.hidden)
+        .filter((c) => c.side === 'party' && c.hp > 0 && !hiddenFromTruesight(state, actor, c))
         .sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
       if (!target) return end;
       return monsterCommands(actor, target.id, false).find((cmd) => tryCmd(state, actor, cmd).ok) ?? end;
@@ -2270,7 +2282,8 @@ function enemyDoor(state: BattleState, actor: Combatant): Command | null {
   const pos = actor.pos;
   const doors = objs.filter((o) => OBJECTS[o.kind]?.door && o.state === 'closed' && !o.carriedBy && distance(o.at, pos) === 1);
   if (!doors.length) return null;
-  const foes = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.civilian && c.hp > 0 && c.pos && !c.hidden);
+  // Kuyruk K62-ACIK: gizlenmiş kahraman Truesight menzilinde görülür (K63 tek sorgu).
+  const foes = Object.values(state.combatants).filter((c) => c.side === 'party' && !c.civilian && c.hp > 0 && c.pos && !hiddenFromTruesight(state, actor, c));
   if (!foes.length) return null;
   const nearest = (h: Offset) => Math.min(...foes.map((f) => distance(h, f.pos as Offset)));
   const door = doors.find((d) => nearest(d.at) < nearest(pos));
@@ -3218,7 +3231,8 @@ export function blindChoice(state: BattleState, actor: Combatant): Command | nul
   const foe = foesOf(state, actor).filter((c) => c.hp >= 20 && !c.conditions.includes('Blinded') && !c.conditions.includes('Deafened'))
     .sort((a, b) => b.hp - a.hp)[0];
   if (!foe) return null;
-  const sees = !!(foe.senses?.blindsight || foe.senses?.truesight || foe.senses?.tremorsense || foe.traits?.includes('boon-truesight'));
+  // Kuyruk K62-ACIK: Truesight tek kaynaktan (`truesightRange`: kendi duyusu, True Seeing, paket, Epic Boon).
+  const sees = !!(foe.senses?.blindsight || foe.senses?.tremorsense || truesightRange(state, foe) > 0);
   const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: spell.name, targetId: foe.id, choice: sees ? 'Deafened' : 'Blinded' };
   return worthIt(state, actor, cmd) ? cmd : null;
 }

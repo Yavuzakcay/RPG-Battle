@@ -1,6 +1,7 @@
 /** Harita üstü arayüzün (HUD) saf yardımcıları: yüzen menü ve balon yerleşimi, parlayan hedefler. */
 import { freeShapeArea, freeShapeFor, freeShapeOf, pathProblem } from '../battle/freeShape';
 import { fissureHexes, fissureProblem } from '../battle/fissure';
+import { beadsOf, beadThrowLanding, touchableBeads } from '../battle/bead';
 import { DANCE_COMBINED, danceMax, danceMoveHexes, danceProblem } from '../battle/danceLights';
 import { breathOf } from '../battle/breath';
 import { spells, type Spell } from '../data';
@@ -219,7 +220,9 @@ export type AreaAct = { kind: 'spell'; spell: Spell } | { kind: 'monster'; index
   /** Kuyruk K66a: Earthquake yarığı yerleştirme (`zoneId` Earthquake alanı; yön `choice` `fissure:<0–5>`). */
   | { kind: 'fissure'; zoneId: string }
   /** Kuyruk K67b: Dancing Lights ışıklarını ayrı ayrı taşıma (`count` ışık sayısı; bonus eylem). */
-  | { kind: 'danceMove'; zoneId: string; count: number };
+  | { kind: 'danceMove'; zoneId: string; count: number }
+  /** Kuyruk K62-ACIK: Delayed Blast Fireball boncuğunu fırlatma (`zoneId` boncuk alanı; dokunma DEX save'i motorda). */
+  | { kind: 'bead'; zoneId: string };
 
 /** Kuyruk K57: alan büyüsünün savaşın kural sürümündeki nokta sayısı (Meteor Swarm 4; çoğu büyüde 1). */
 export function areaPointCount(state: BattleState, act: AreaAct | null, choice?: string | null, wallShape?: string | null): number {
@@ -275,6 +278,8 @@ export const areaExcludable = (state: BattleState, act: AreaAct | null): boolean
 export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetSpec; rangeFt: number; label: string } | null {
   // Kuyruk K66a: yarık seçicisi (alanı hat belirler; yer tutucu 10 ft çizgi).
   if (act.kind === 'fissure') return { spec: { shape: 'line', sizeFt: 10, origin: 'point', targets: 'all' }, rangeFt: 500, label: 'Earthquake' };
+  // Kuyruk K62-ACIK: boncuk fırlatma (inişte 20 ft küre; menzil 40 ft, ölçü boncuktan: önizleme `beadThrowLanding`).
+  if (act.kind === 'bead') return { spec: { shape: 'sphere', sizeFt: 20, origin: 'point', targets: 'all' }, rangeFt: 40, label: 'Delayed Blast Fireball' };
   // Kuyruk K67b: ışık taşıma seçicisi (nokta; menzil büyünün).
   if (act.kind === 'danceMove') return { spec: { shape: 'sphere', sizeFt: 5, origin: 'point', targets: 'all' }, rangeFt: spells.find((x) => x.id === 'dancing-lights')?.rangeFt ?? 120, label: 'Dancing Lights' };
   // Kuyruk K65b (Forcecage serbest şekil): alan tanımı yok; seçici için 10 ft küp yer tutucusu (şekli seçim belirler).
@@ -293,6 +298,8 @@ export function areaActSpec(actor: Combatant, act: AreaAct): { spec: AreaTargetS
 export function areaActCommand(actorId: string, act: AreaAct, aim: Offset | null, slotLevel?: number | null, wallShape?: 'arc' | 'ring' | null, choice?: string | null, points?: Offset[], exclude?: Offset[], targetFt?: number): Command {
   // Kuyruk K66a: yarık yerleştirme (`spell_followup`, eylem harcamaz).
   if (act.kind === 'fissure') return { type: 'spell_followup', actorId, targetId: act.zoneId, ...(aim ? { targetHex: aim } : {}), choice: choice ?? 'fissure:0' };
+  // Kuyruk K62-ACIK: boncuğa dokun ve fırlat (`spell_followup` `choice: 'bead'`; nişan yoksa yalnız dokunma).
+  if (act.kind === 'bead') return { type: 'spell_followup', actorId, targetId: act.zoneId, ...(aim ? { targetHex: aim } : {}), choice: 'bead' };
   // Kuyruk K67b: ışıkları taşı (ilk ışık `targetHex`; birden çoksa hepsi sırayla `targetHexes`).
   if (act.kind === 'danceMove') { const to = points?.[0] ?? aim; return { type: 'spell_followup', actorId, targetId: actorId, ...(to ? { targetHex: to } : {}), ...(points && points.length > 1 ? { targetHexes: points } : {}) }; }
   // Kuyruk S2 (Plant Growth): dışarıda bırakılan altıgenler.
@@ -313,6 +320,17 @@ export function areaActPreview(state: BattleState, actor: Combatant, act: AreaAc
   if (!s) return { hexes: [], friends: [], foes: [], error: null };
   // Kuyruk K73c (sürüm 64+): havada merkezli alan: motorla aynı denetim ve dikey aralık (`airArea.ts`).
   if (targetFt && act.kind === 'spell' && aim && !points?.length) return airPreview(state, actor, act.spell, s, aim, targetFt);
+  // Kuyruk K62-ACIK: boncuğun inişi motorla aynı yoldan (`beadThrowLanding`); gösterilen altıgenler patlamanın küresi.
+  if (act.kind === 'bead') {
+    const z = beadsOf(state).find((x) => x.id === act.zoneId);
+    if (!z || !aim) return { hexes: [], friends: [], foes: [], error: z ? null : 'Dokunulacak boncuk yok.' };
+    if (!touchableBeads(state, actor).some((x) => x.id === z.id)) return { hexes: [], friends: [], foes: [], error: 'Boncuğa dokunmak için yanında olmalısın.' };
+    const { hexes } = beadThrowLanding(state, actor, z, aim);
+    const keys = new Set(hexes.map((h) => `${h.col},${h.row}`));
+    const on = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && keys.has(`${c.pos.col},${c.pos.row}`));
+    const friend = (c: Combatant) => c.side === actor.side || c.civilian;
+    return { hexes, friends: on.filter(friend), foes: on.filter((c) => !friend(c)), error: null };
+  }
   // Kuyruk K66a: yarık önizlemesi motorla aynı denetimden (`fissureProblem`); gösterilen altıgenler yarığa dönecekler.
   if (act.kind === 'fissure') {
     const dir = Number((choice ?? 'fissure:0').slice(8));

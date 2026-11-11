@@ -34,6 +34,8 @@ import { k9On, dikeyOn, hasHexCeilings } from './vertical';
 import { floorsAt, hasStandData, katlarOf, slabsAt, standHeights, standingOn, surTop } from './stand';
 import { k73cOn } from './k73cSurum';
 import { k73fOn } from './k73fSurum';
+import { k62acikOn } from './k62acikSurum';
+import { wardStepBlocked } from './possessionCore';
 import { submerged } from './underwaterCore';
 import { obstacleTopFt } from './cover';
 import { climbOn, holdSurface, surfaceAt } from './climbing';
@@ -208,6 +210,13 @@ export function checkMover(state: BattleState, actor: Combatant, to: Offset): Of
  * iner: oradaki altıgenler iki kat maliyetli. Yakaladığını sürükleyenin her adımı da iki kat.
  */
 export function moveCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
+  // Kuyruk K62-ACIK (sürüm 67+): Magic Circle / Hallow: seçilen tür alana isteyerek giremez (ters Magic Circle'dan çıkamaz).
+  const fn = moveCostInner(state, actor, dyn);
+  if (!k62acikOn(state) || !actor.creatureType || !(state.map?.zones ?? []).some((z) => z.ward)) return fn;
+  return (h, prev) => (wardStepBlocked(state, actor, prev, h) ? null : fn(h, prev));
+}
+
+function moveCostInner(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
   // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) yalnız kazılabilir altıgenlerde, yaratıkların altından 1'er altıgen; batık
   // (derin suda eksi irtifa) yalnız derin su altıgenlerinde yürür.
   if (k73cOn(state) && actor.burrowed) return (h, prev) => (diggable(state, h) && !cageCrossed(state, prev, h) ? 1 : null);
@@ -630,6 +639,9 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const layered = k73fOn(state) && (!!actor.burrowed || submerged(state, actor));
   const under = layered ? underJumpProblem(state, actor, to) : null;
   if (under) return fail(under);
+  // Kuyruk K62-ACIK (sürüm 67+): koruma alanına atlayarak da isteyerek girilmez (ters Magic Circle'dan çıkılmaz).
+  const ward = k62acikOn(state) ? wardStepBlocked(state, actor, from, to) : undefined;
+  if (ward) return fail(`${ward.name}: ${actor.name} bu alana isteyerek giremez${ward.ward?.reverse ? ' (ya da çıkamaz)' : ''}.`);
   if (lavaOver(state, from, to).length > 0) return executeIslandJump(state, actor, from, to, rng);
   const dir = directionTo(from, to);
   if (dir === null) return fail('Atlama düz bir doğrultuda olmalı.');

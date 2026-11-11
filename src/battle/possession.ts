@@ -29,6 +29,9 @@ import { occupantAt, placeProblem } from './movement';
 import { activePossession, hallowAt, POSSESS_FLOOR, possessedEffect, wardProtects } from './possessionCore';
 import { globalRule } from './ruleControl';
 import { sightConditions } from './sight';
+import { saveEffect } from './maprules';
+import { k62acikOn } from './k62acikSurum';
+import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext, ShapeStats } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -298,3 +301,33 @@ export const possessorIncapacitated = (state: BattleState, body: Combatant): boo
   const g = e ? state.combatants[e.sourceId] : undefined;
   return !!g && isIncapacitated(g.conditions);
 };
+
+/**
+ * Kuyruk K62-ACIK (sürüm 67+): Magic Circle'a ışınlanma (SRD 5.2.1: "If the creature tries to use teleportation or
+ * interplanar travel to do so, it must first succeed on a Charisma saving throw"). Komutun `teleported` olaylarından seçilen
+ * türün silindire girişi (ters yönde çıkışı): büyücünün büyü DC'sine CHA save; başarısızlıkta yaratık ışınlandığı yere geri
+ * döner (`teleported`, ışınlanma boşa gider). Bütün ışınlanma yolları (büyü, özellik, canavar yeteneği, tepki) tek noktada.
+ * ⚠ Save varıştan sonra atılır: varışta tetiklenen alan etkileri (aynı komutta) geri alınmaz.
+ */
+export function wardTeleportEvents(next: BattleState, events: readonly BattleEvent[], rng: Rng): BattleEvent[] {
+  if (!k62acikOn(next) || !(next.map?.zones ?? []).some((z) => z.ward?.kind === 'circle')) return [];
+  const out: BattleEvent[] = [];
+  const has = (hexes: readonly Offset[], h: Offset) => hexes.some((x) => x.col === h.col && x.row === h.row);
+  for (const e of events) {
+    if (e.type !== 'teleported') continue;
+    const c = next.combatants[e.actorId];
+    if (!c?.creatureType || c.hp <= 0 || !c.pos || c.pos.col !== e.to.col || c.pos.row !== e.to.row) continue;
+    const type = c.creatureType;
+    const z = (next.map?.zones ?? []).find((w) => w.ward?.kind === 'circle' && w.ward.types.includes(type)
+      && (w.ward.reverse ? has(w.hexes, e.from) && !has(w.hexes, e.to) : !has(w.hexes, e.from) && has(w.hexes, e.to)));
+    if (!z) continue;
+    const dc = next.combatants[z.casterId]?.spellSaveDc ?? 13;
+    const save = saveEffect(c, 'magicCircle', `${z.name}: ışınlanma`, 'cha', dc, rng);
+    out.push(save);
+    if (save.type === 'map_effect' && save.roll?.success) continue;
+    if (occupantAt(next, e.from, c.id)) { out.push({ type: 'map_note', text: `${c.name}: ${z.name} ışınlanmayı geri çevirdi ama çıkış yeri dolu (Game Master).` }); continue; }
+    out.push({ type: 'teleported', actorId: c.id, from: e.to, to: e.from, label: z.name },
+      { type: 'map_note', text: `${c.name}: ${z.name} ışınlanmayı geri çevirdi.` });
+  }
+  return out;
+}

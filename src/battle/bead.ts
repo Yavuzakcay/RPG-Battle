@@ -97,7 +97,18 @@ export function executeBeadTouch(state: BattleState, actor: Combatant, zoneId: s
     return finish(state, events);
   }
   if (!to) return finish(state, events);
-  // Fırlatma: en çok 40 ft; yaratık altıgenine girerse ya da katı engele çarparsa orada patlar.
+  const { land, hit, hexes } = beadThrowLanding(state, actor, z, to);
+  events.push({ type: 'zone_moved', zoneId: z.id, hexes, center: land }, { type: 'map_note', text: `${actor.name} boncuğu fırlattı (${hit ? 'çarptı' : 'indi'}).` });
+  if (hit && caster?.concentration?.spell === z.name) events.push({ type: 'concentration_ended', actorId: z.casterId, label: z.name });
+  return finish(state, events);
+}
+
+/**
+ * Fırlatmanın inişi (motor ve arayüz önizlemesi ortak): en çok 40 ft; yaratık altıgenine girerse ya da katı engele çarparsa
+ * orada patlar (`hit`). `hexes`: inişteki 20 ft küre (patlarsa etkilenecek altıgenler).
+ */
+export function beadThrowLanding(state: BattleState, actor: Pick<Combatant, 'id'>, z: SpellZone, to: Offset): { land: Offset; hit: boolean; hexes: Offset[] } {
+  const at = centerOf(z);
   const size = sizeOf(state);
   const path = line(at, to).slice(1).filter((h) => distance(at, h) * 5 <= (z.bead?.throwFt ?? 40));
   let land = at;
@@ -108,11 +119,12 @@ export function executeBeadTouch(state: BattleState, actor: Combatant, zoneId: s
     land = h;
     if (occupantAt(state, h, actor.id)) { hit = true; break; }
   }
-  const hexes = areaHexes({ shape: 'sphere', sizeFt: 20, origin: 'point', targets: 'all' } as never, land, land, size);
-  events.push({ type: 'zone_moved', zoneId: z.id, hexes, center: land }, { type: 'map_note', text: `${actor.name} boncuğu fırlattı (${hit ? 'çarptı' : 'indi'}).` });
-  if (hit && caster?.concentration?.spell === z.name) events.push({ type: 'concentration_ended', actorId: z.casterId, label: z.name });
-  return finish(state, events);
+  return { land, hit, hexes: areaHexes({ shape: 'sphere', sizeFt: 20, origin: 'point', targets: 'all' } as never, land, land, size) };
 }
+
+/** Arayüz: yaratığın dokunabileceği (altıgeninde ya da bitişiğinde) boncuklar. */
+export const touchableBeads = (state: BattleState, actor: Combatant): SpellZone[] =>
+  actor.pos ? beadsOf(state).filter((z) => distance(actor.pos as Offset, centerOf(z)) <= 1) : [];
 
 /** Yapay zekâ: boncuğu en çok düşmanı kapsayan, dost kapsamayan noktaya (en az 2 düşman ya da 20+ HP bir düşman). */
 export function beadAim(state: BattleState, actor: Combatant, foes: Combatant[], hexesAround: (c: Offset) => Offset[]): Offset | null {

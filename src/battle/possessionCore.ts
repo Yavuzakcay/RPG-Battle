@@ -70,6 +70,18 @@ export function wardProtects(state: Pick<BattleState, 'map'>, target: Pick<Comba
   return wardZones(state).find((z) => z.ward?.types.includes(type) && (z.ward.reverse ? !inZone(z, target) && inZone(z, source) : inZone(z, target)));
 }
 
+/**
+ * Kuyruk K62-ACIK (sürüm 67+, çağıran denetler): koruma alanı bu adımı engelliyor mu (SRD 5.2.1). Magic Circle: seçilen tür
+ * silindire büyüsüz yollarla isteyerek giremez; ters yönde silindirden çıkamaz. Hallow (Hallowed Ward): seçilen tür alana
+ * isteyerek giremez. Yalnız isteyerek yapılan adım (yürüme, atlama, kazma); zorla hareket ve ışınlanma ayrı.
+ */
+export function wardStepBlocked(state: Pick<BattleState, 'map'>, mover: Pick<Combatant, 'creatureType'>, from: Offset, to: Offset): SpellZone | undefined {
+  const type = mover.creatureType;
+  if (!type) return undefined;
+  const has = (z: SpellZone, h: Offset) => z.hexes.some((x) => x.col === h.col && x.row === h.row);
+  return wardZones(state).find((z) => z.ward?.types.includes(type) && (z.ward.kind === 'circle' && z.ward.reverse ? has(z, from) && !has(z, to) : !has(z, from) && has(z, to)));
+}
+
 /** Kuyruk K64b: Hallow alanında mı (bu türün ele geçirmesi/durumu bastırılır)? */
 export function hallowAt(state: Pick<BattleState, 'map'>, target: Pick<Combatant, 'pos'>, type: string | undefined): SpellZone | undefined {
   if (!type) return undefined;

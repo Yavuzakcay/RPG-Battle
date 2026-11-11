@@ -9,6 +9,7 @@ import { activePossession, possessedEffect } from './battle/possessionCore';
 import { setupWardOf } from './battle/possession';
 import { freeAddProblem, freeRemoveProblem, freeShapeOf, pathAddProblem } from './battle/freeShape';
 import { fissureBudget, fissureProblem, inFissure } from './battle/fissure';
+import { beadDice, beadsOf, touchableBeads } from './battle/bead';
 import { isBuried, quakeForecast } from './battle/quake';
 import { imzaHex as imzaHex0, imzaTargeted as imzaTargeted0 } from './battle/imza';
 import type { UsableFeature } from './battle/types';
@@ -1572,6 +1573,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...(actor.effects?.some((e) => e.held) && !(actor.concentration && spellOf(actor.concentration.spell)?.mechanics.repeat)
       ? [{ key: 'followup', label: N.repeat, reason: why({ type: 'spell_followup', actorId, targetId: '' }) ?? (reach.followup === 0 ? Y.noTarget : undefined),
         act: () => { reset(); setMode('followup'); setMenuOpen(false); } }] : []),
+    // Kuyruk K62-ACIK: Delayed Blast Fireball boncuğu (bitişikte): dokun (DEX save) ya da dokunup fırlat (en çok 40 ft).
+    ...touchableBeads(state, actor).flatMap((z) => [
+      { key: `beadThrow-${z.id}`, label: B.k62.throwMenu(beadDice(z)), reason: why({ type: 'spell_followup', actorId, targetId: z.id, choice: 'bead' }) ?? undefined,
+        act: () => { reset(); setAreaAct({ kind: 'bead', zoneId: z.id }); setMode('aim'); setMenuOpen(false); } },
+      { key: `beadTouch-${z.id}`, label: B.k62.touchMenu(beadDice(z)), reason: why({ type: 'spell_followup', actorId, targetId: z.id, choice: 'bead' }) ?? undefined,
+        act: () => run({ type: 'spell_followup', actorId, targetId: z.id, choice: 'bead' }) }]),
     // Kuyruk K66a (sürüm 50): Earthquake yarıklarını yerleştir (döküm turunda, ortak alan seçicisiyle).
     ...((fb) => (fb?.open && fb.placed < fb.count
       ? [{ key: 'fissure', label: B.k66.menu(fb.placed, fb.count), act: () => { reset(); setAreaAct({ kind: 'fissure', zoneId: fb.quake.id }); setChoicePick('fissure:4'); setMode('aim'); setMenuOpen(false); } }] : []))(fissureBudget(state, actor)),
@@ -2528,6 +2535,27 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     </small>
                   )}
                   <button className="cta" disabled={!done || !!areaInfo?.error} onClick={() => run(areaActCommand(actorId, areaAct, aimHex, null, null, null, areaAct.count > 1 ? aimPts : undefined))}>{K.moveGo}</button>
+                </div>
+              );
+            }
+            // Kuyruk K62-ACIK: boncuk fırlatma balonu (ortak alan seçicisi; iniş ve küre motorla aynı `beadThrowLanding`).
+            if (areaAct.kind === 'bead') {
+              const K = B.k62;
+              const z = beadsOf(state).find((x) => x.id === areaAct.zoneId);
+              return (
+                <div className="bubble area-bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h + 60 }} role="dialog" aria-label={K.head}>
+                  <strong>{K.head}</strong>
+                  <small>{K.dice(z ? beadDice(z) : 0)} · {K.hint}</small>
+                  {!aimHex && <small>{A.pickPoint}</small>}
+                  {aimHex && areaInfo?.error && <small className="warn-text">{areaInfo.error}</small>}
+                  {aimHex && !areaInfo?.error && (
+                    <small>
+                      <span className="area-count foe">{A.foes(foes.length)}</span>{' · '}
+                      <span className={`area-count friend${friends.length ? ' bad' : ''}`}>{A.friends(friends.length)}</span>
+                      {foes.length + friends.length > 0 && <><br />{[...foes, ...friends].map((c) => c.name).join(', ')}</>}
+                    </small>
+                  )}
+                  <button className="cta" disabled={!aimHex || !!areaInfo?.error} onClick={() => run(areaActCommand(actorId, areaAct, aimHex))}>{K.go}</button>
                 </div>
               );
             }

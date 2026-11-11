@@ -913,6 +913,9 @@ export const en: Strings = {
       danceForm: 'Form', danceFour: 'Four lights', danceOne: 'Combined form', danceHint: 'Each light within 20 ft of another light; each sheds 10 ft of dim light.',
       danceCount: (n: number, max: number): string => `${n}/${max} lights`, moveApart: 'Move lights separately', moveHead: 'Dancing Lights: move the lights',
       moveHint: (n: number): string => `Pick a new space for each of the ${n} lights in order (up to 60 ft; Bonus Action).`, moveGo: 'Move (Bonus Action)' },
+    // Kuyruk K62-ACIK: Delayed Blast Fireball bead.
+    k62: { throwMenu: (d: number): string => `Throw the bead (${d}d6)`, touchMenu: (d: number): string => `Touch the bead (${d}d6)`, head: 'Delayed Blast Fireball: bead',
+      dice: (d: number): string => `${d}d6 fire, 20 ft sphere`, hint: 'DEX save first; on a success you throw it up to 40 ft, it explodes if it hits a creature or obstacle', go: 'Touch and throw' },
     k66: { menu: (n: number, max: number): string => `Place fissure (${n}/${max})`, head: 'Earthquake: fissure', count: (n: number, max: number): string => `${n}/${max} fissures`,
       hint: 'Tap a hex, pick a direction; the fissure opens at the end of the turn', dir: ['╲↑', '╲↓', '╱↑', '╱↓', '│→', '│←'], dirName: ['diagonal (╲), upper side', 'diagonal (╲), lower side', 'diagonal (╱), upper side', 'diagonal (╱), lower side', 'vertical, right side', 'vertical, left side'], go: 'Place fissure',
       climb: (ft: number): string => `Climb (${ft} ft down a fissure)`, climbHint: 'Tap the adjacent hex to climb out to', inFissure: (ft: number): string => `In a fissure (${ft} ft)`,

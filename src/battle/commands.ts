@@ -84,7 +84,7 @@ import { executeFontOfMagic } from './sorcerer';
 import { blessingEvents, executeEldritchSmite } from './warlock';
 import { superiorInspirationEvents } from './bard';
 import { evergreenEvents, executeWildResurgence, executeWildShape, shapeCleanup } from './druid';
-import { executePossessionLeave, executeSetupWard, hallowSyncEvents, possessionCleanup, possessionCommandProblem, setupWardOf } from './possession';
+import { executePossessionLeave, executeSetupWard, hallowSyncEvents, possessionCleanup, possessionCommandProblem, setupWardOf, wardTeleportEvents } from './possession';
 import { poolCreateEvents, poolSyncEvents } from './hpPool';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
 import { executeBreathWeapon } from './areaAttack';
@@ -206,6 +206,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     next = applyEvents(next, [woke]);
     events = [...events, woke];
   }
+  // Kuyruk K62-ACIK (sürüm 67+): Magic Circle'a ışınlanarak giren (tersinde çıkan) seçilen tür önce CHA save atar.
+  const warded = wardTeleportEvents(next, events, rng);
+  if (warded.length) { next = applyEvents(next, warded); events = [...events, ...warded]; }
   // Kuyruk K62 (sürüm 46): Delayed Blast Fireball boncuğu: büyü bitti / süre doldu → patlar (yüzey ve nesne işlemleri öncesi).
   const bead = beadAfterEvents(next, rng);
   if (bead.length) { next = applyEvents(next, bead); events = [...events, ...bead]; }
