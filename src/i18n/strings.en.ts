@@ -585,7 +585,7 @@ export const en: Strings = {
     dashed: (a: string) => `${a} dashes (Dash): double movement this turn.`,
     disengaged: (a: string) => `${a} disengages (Disengage).`,
     initiativeSwapped: (a: string, b: string) => `${a} and ${b} swap Initiative (Alert).`,
-    mounted: (a: string, m: string) => `${a} mounts ${m}.`, dismounted: (a: string) => `${a} dismounts.`, relentlessEndurance: 'Relentless Endurance: stays up at 1 HP', relentlessRage: (n: number, t: number, dc: number, ok: boolean, hp: number) => `Relentless Rage: CON ${n} → ${t} / DC ${dc}${ok ? `, stays up (${hp} HP)` : ', fails'}.`,
+    mounted: (a: string, m: string) => `${a} mounts ${m}.`, dismounted: (a: string) => `${a} dismounts.`, fellFromMount: (a: string) => `${a} falls off the mount.`, relentlessEndurance: 'Relentless Endurance: stays up at 1 HP', relentlessRage: (n: number, t: number, dc: number, ok: boolean, hp: number) => `Relentless Rage: CON ${n} → ${t} / DC ${dc}${ok ? `, stays up (${hp} HP)` : ', fails'}.`,
     shiftGranted: (a: string, ft: number) => `${a} may shift ${ft} ft without provoking Opportunity Attacks.`,
     mapRoll: (label: string, d20: string, mode: string, total: number, dc: number, ok: boolean) => `${label} roll ${d20}${mode}, total ${total} / DC ${dc}: ${ok ? 'success' : 'failure'}`,
     became: (c: string) => `became ${c}`, wore: (c: string) => `${c} wore off`, sink: (n: number) => `sinking counter ${n}`, stop: 'movement ended', burn: (n: number) => `${n} hexes of movement lost`,

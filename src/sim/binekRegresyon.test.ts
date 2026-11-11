@@ -1,0 +1,59 @@
+/**
+ * Kuyruk MB1: sürüm 67'nin değişmediğinin regresyonu ve sürüm 68'in (binek çekirdek SRD kuralları) binek olmayan savaşta
+ * 67 ile aynı olduğu. Dört senaryo (Çöl, Kale, Mağara, Orman; 3. seviye standart parti; binici yok):
+ * - Sürüm 67'nin imzası MB1 öncesi ağaçtan (`main` 6a1a4dc) alınan altın imzalarla aynı.
+ * - Sürüm 68 imzası 67 ile aynı.
+ * Tohum sayısı varsayılan 1; tam ölçüm `BINEK_TOHUM=30` (PowerShell: `$env:BINEK_TOHUM=30; npx vitest run src/sim/binekRegresyon.test.ts`).
+ */
+import { afterEach, describe, expect, it } from 'vitest';
+import { setDefaultRuleVersion } from '../battle/create';
+import { CURRENT_RULES } from '../battle/ruleVersion';
+import { playBattle, SCENARIOS, seeded, setupBattle } from './balance';
+
+declare const process: { env: Record<string, string | undefined> };
+const SEEDS = Number(process.env.BINEK_TOHUM ?? 1);
+const IDS = ['col', 'kale', 'magara', 'orman'] as const;
+/** Sürüm 67 imzaları (`hash`): MB1 öncesi ağaçtan. */
+const ALTIN_1: Record<string, string> = { col: '60c316337f70', kale: '1cfe61ee421e', magara: 'efae21cc4b01', orman: '65dd25f0c6f2' };
+const ALTIN_30: Record<string, string> = {};
+
+afterEach(() => setDefaultRuleVersion(CURRENT_RULES));
+
+function run(id: string, seed: number, ver: number) {
+  setDefaultRuleVersion(ver);
+  const s = SCENARIOS.find((x) => x.id === id);
+  if (!s) throw new Error(`senaryo yok: ${id}`);
+  const rng = seeded(seed);
+  return playBattle(setupBattle(s, rng, 3), rng, 20);
+}
+/** FNV-1a (iki 32 bit tohum) → 12 onaltılık hane. */
+function hash(text: string): string {
+  let a = 0x811c9dc5, b = 0x01000193 ^ 0x5bd1e995;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charCodeAt(i);
+    a = Math.imul(a ^ ch, 0x01000193) >>> 0;
+    b = Math.imul(b ^ ch, 0x01000193) >>> 0;
+  }
+  return (a.toString(16).padStart(8, '0') + b.toString(16).padStart(8, '0')).slice(0, 12);
+}
+function signature(id: string, seeds: number, ver: number): string {
+  let text = '';
+  for (let seed = 1; seed <= seeds; seed++) {
+    const end = run(id, seed, ver);
+    const cs = Object.values(end.combatants).map((c) => `${c.id}:${c.hp}:${c.life}:${c.pos ? `${c.pos.col},${c.pos.row}` : '-'}:${c.altitudeFt ?? 0}`).sort();
+    text += `${end.status}|${end.winner ?? ''}|${end.round}|${cs.join(';')}\n`;
+  }
+  return hash(text);
+}
+
+describe('MB1 regresyon: sürüm 67 altın imzalarla aynı; sürüm 68 aynı imza', () => {
+  for (const id of IDS) {
+    it(`${id}: ${SEEDS} tohum`, () => {
+      const gold = SEEDS === 1 ? ALTIN_1[id] : SEEDS === 30 ? ALTIN_30[id] : undefined;
+      const sig = signature(id, SEEDS, 67);
+      console.log(`BINEK_IMZA ${id} ${SEEDS} ${sig}`);
+      if (gold) expect(sig, id).toBe(gold);
+      expect(signature(id, SEEDS, 68), `${id} 68`).toBe(sig);
+    }, 900_000);
+  }
+});

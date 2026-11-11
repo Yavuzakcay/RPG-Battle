@@ -416,3 +416,55 @@ MB1 → MB2 → MB3 ∥ MB4 → MB7 → MB5 → MB6 → MB8
 3. B6 / B11: binicinin bandı ve yığın boyu.
 4. B9: binicinin itilmesinde save var mı?
 5. Ejder Muhafızı ilk sürümü bağımsız kipte mi (MB2'siz, daha erken) yoksa kontrollü mü?
+
+---
+
+## 11. MB1 sonucu (kural sürümü 68)
+
+**Görev 0, açıkların testle doğrulanması** (`src/battle/binekMb1.test.ts`; düzeltmeden önce sürüm 68 durumunda koşuldu):
+
+| # | Açık (§1.1) | Sonuç |
+|---|---|---|
+| 1 | `syncRiders` irtifayı eşitlemiyor | **Doğrulandı** (uçan binek 20 ft'e çıktı, binici 0'da kaldı) |
+| 2 | Binicinin ışınlanması geri alınıyor | **Doğrulandı** (Misty Step sonrası binici bineğin altıgeninde) |
+| 3 | İtilen binici geri çekiliyor | **Doğrulandı** (Shove sonrası binici bineğin altıgeninde) |
+| 4 | Hücre doluluğu (binici ve binek aynı bant) | **Doğrulandı, koşullu**: bugün gözlenmiyordu; irtifa eşitlemesiyle ortaya çıkıyor (istisna kapatılınca `occupantAt` bineğin hücresinde biniciyi döndürüyor) |
+| 5 | `riderCleanup` başarılı save'de de indiriyor | **Doğrulandı** |
+| 6 | Bineğin isteği dışında itilmesi tetik değil | **Doğrulandı** (save yok) |
+| 7 | Binicinin Prone olması tetik değil | **Doğrulandı** |
+| 8 | Binicinin `vertical_move`'u açık | **Doğrulandı** (kendi uçuşu olan binici bineğin üstünde 10 ft'e çıktı); `climb` ve `jump_down` aynı korumaya alındı |
+| 9 | Binme maliyeti yukarı yuvarlanıyor | **Doğrulandı** (25 ft hızda 3 altıgen) |
+| 10 | Ölü binekte save atılıyor | **Doğrulandı** (B10'a göre fark) |
+| 11 | Lance `twoHandedUnlessMounted` okunmuyor | **Doğrulandı** (binekte değilken kalkanla saldırı kabul ediliyordu) |
+| — | Summon Dragon ruhuna binilebiliyor | Doğrulandı (genel kural: aynı taraf, Large, uçar); MB1'de değişmedi, çağrı/paket binek alanı MB7 |
+| — | Kontrollü binek ve YZ binek kararı yok | Doğru (kapsam MB2, MB5); test yazılmadı |
+
+Doğrulanmayan açık yok.
+
+**Yapılanlar (sürüm ≥ 68; 67 ve altı birebir):**
+
+- **B1 yığın:** binici bineğin altıgenini ve irtifasını izler (`syncRiders(state, prev)`, `mounted` olayında irtifa). Bineğin üstündeki binici hücre kaplamaz (`riderCore.ts` `seatedRider`, `movement.ts` `occupantAt`). Komut sonu irtifa düşüşü ve kırpması biniciye işlemez (`altitude.ts`).
+- **B3:** binme/inme hızın yarısı, 5 ft'e aşağı, en az 5 ft. Prone binemez (önce kalkar; `needsStand` kendiliğinden kaldırır).
+- **B8 ⚠:** bineği yeni Prone olan ya da kendisi Prone olan binici DEX 10. Başarıda binici Prone olmaz (kalkar: `condition_changed present: false`, "Binekte kaldı"), üstte kalır. Başarısızsa bineğin 5 ft içinde boş altıgene düşer, Prone (`dismounted.fell`). Tetik yalnız komutta yeni Prone olunca (yerde yatan binekte sonraki komutlar save istemez).
+- **SRD düşme:** bineği isteği dışında itilen (`pushed` olayı; itme, sürükleme, konveyör) binici DEX 10.
+- **B9 ⚠, B24:** binicinin kendi konumu ya da irtifası bir olayla değişirse (ışınlanma, itme, Levitate) bineğe geri çekilmez; komut sonunda save'siz, bulunduğu yerde iner.
+- **B10:** ölü ya da kaybolmuş binekten save'siz iniş. Baygın/Incapacitated binek: eski davranış (DEX 10 yalnız Prone'u belirler, her durumda iner).
+- **Binicinin komutları:** `climb`, `jump_down`, kendi `vertical_move`'u reddedilir.
+- **B11 ⚠ (MB1 parçası):** binme şartı: bineğin irtifası + bineğin boyu + binicinin boyu ≤ tavan. Binicisi üstündeki binekte `altitudeCapFt` yığın boyuyla (binicinin tam boyu: Medium +5, Large +10). Plandaki "binicinin boyunun yarısı" ifadesi plandaki sayılarla çelişiyordu; sayılar (Medium +5, Large +10) esas alındı.
+- **B13 ⚠ (koruma):** binicisi üstündeki binek kazamaz (irtifa eşitlemesi kazmada tutarsız yer altı binicisi üretirdi); suya dalış serbest.
+- **B23:** Lance (`AttackOption.unlessMounted`, `handBusy`): binekte değilken diğer el doluysa (kalkan, yan el) saldırı reddedilir; binekte diğer el doluyken Great Weapon Fighting uygulanmaz.
+- **B6 ⚠ (kısmi):** binicinin bandı kendi boyuyla bineğin irtifasından (bineğin bandının alt düzeyi). Yerdeki yakın dövüşçü Huge bineğin binicisine 5 ft'ten vurur. Bineğin üst düzeylerindeki yaratıkla bant aralığı farkı MB3'e.
+- **B7:** fırsat saldırısı yalnız bineğe (zaten öyleydi; sahne testiyle doğrulandı). Alan büyüsünde binici ve binek ayrı hedef (sahne testi).
+- Yeni olay türü yok: `dismounted` olayına isteğe bağlı `fell`. `SAVE_VERSION` 22. Günlük: "X binekten düştü." (TR/EN).
+
+**MB3'e bırakılan açıklar:**
+
+- Uçan binekten düşen binici bineğin 5 ft içine düşer ve komut sonu irtifa düşüşüyle (`fall`) yere iner. Binek de düşüyorsa (Prone/Incapacitated uçan), binici save'i geçse bile bineğiyle birlikte **hasarsız** iner (eşitleme). İki ayrı `fall` (B12) MB3'te.
+- Binicili binek tavanı alçak altıgene yürüyerek girebilir. Yığın boyu yalnız binmede ve irtifa üst sınırında. `moveCostFn` ve `airPath` (B11) MB3'te.
+- Kat döşemesi ve Forcecage kutusunda yığın boyu yok (B11).
+- Yüzen binek binicisiyle dalınca binici batık sayılır, ama nefes ve su soluma ayrıca denetlenmedi.
+- Binicili tırmanma (B14) MB3'te.
+- Fey Step varışı yığınla gider (eski davranış), tavan/multiHex sığması denetlenmiyor.
+- Havadan inme/binme (`toFt`) MB3'te.
+- B6'nın tamamı (binicinin bandı = bineğin bandı) MB3/MB4'te.
+- Çok altıgende binicinin gövdesi bineğin ayak izi (MB4).

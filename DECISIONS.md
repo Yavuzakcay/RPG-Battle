@@ -2,13 +2,28 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
-<<<<<<< HEAD
+## 2026-11-12 — Kuyruk MB1: binek çekirdek SRD kuralları (kural sürümü 68)
+
+- **Sürüm:** `main` 6a1a4dc üstüne. Kural sürümü 67 → **68** (tek sabit `src/battle/binekSurum.ts` `BINEK_VERSION`, B19); 67 ve altı birebir. Yeni olay türü yok (`dismounted.fell` isteğe bağlı alan); `SAVE_VERSION` 22 (B20). Anahtar `srdK19` (B21), yeni ev kuralı yok. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §11.
+- **Görev 0:** BINEK-PLAN §1.1 açıklarının hepsi düzeltmeden önce başarısız testle doğrulandı (11 madde; hücre doluluğu açığı irtifa eşitlemesiyle ortaya çıkıyor). Doğrulanmayan açık yok.
+- **Yapılan B maddeleri:** B1 (yığın: binici bineğin altıgeni + irtifası, hücre kaplamaz, irtifa düşüşü işlemez), B3, B7 (zaten; test), B8, B9, B10, B23, B24; binicinin `climb`/`jump_down`/`vertical_move` reddi; B11 ve B13'ün MB1'e düşen parçaları.
+- **SRD'de yazmıyor, yorum (⚠):**
+  - **B6:** binicinin bandı kendi boyuyla bineğin irtifasından (bineğin bandının alt düzeyi); tam "bineğin bandı" MB3/MB4.
+  - **B8:** Prone save'i başarılıysa binici Prone olmaz ve üstte kalır (Prone kaldırılır, "Binekte kaldı").
+  - **B9:** itilen binici save'siz iner (Prone yok).
+  - **B11:** binme için bineğin irtifası + boyu + binicinin boyu ≤ tavan; binicisi üstündeki bineğin irtifa üst sınırı yığın boyuyla. Binicinin katkısı tam boyu (Medium +5, Large +10): plandaki "boyunun yarısı" ifadesi plandaki sayılarla çelişiyordu, sayılar esas alındı. Yürüme/uçuş yolunda yığın boyu MB3.
+  - **B13:** binicisi üstündeki binek kazamaz (suya dalış serbest).
+  - Prone binici binemez (`needsStand` önce kaldırır).
+- **Lance:** veri alanı `twoHandedUnlessMounted` artık okunuyor (saldırı seçeneğinde `unlessMounted`, `handBusy`). `docs/SRD-DENETIM.md` "tam" satırı MB1'den önce yanlıştı.
+- **Belge onarımı:** `main`'deki DECISIONS.md'de K57-KALDIR ile BINEK-PLAN birleştirmesinden kalmış çakışma işaretleri (`<<<<<<<`/`=======`/`>>>>>>>`) kaldırıldı; iki kayıt da korundu.
+- **MB3'e kalan:** uçan binekle birlikte düşen binicinin hasarı (iki `fall`, B12), yürüyüş/uçuş yolunda yığın boyu, kat döşemesi ve Forcecage, binicinin su altı nefesi, binicili tırmanma (B14), havadan inme/binme (`toFt`), Fey Step varış sığması.
+
 ## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)
 
 - **Karar (kullanıcı):** K57 mekanik donması (2026-11-06, `docs/MEKANIK-DONMA.md`) tamamen kaldırıldı. Belge tarihsel kayıt olarak kalır; ev kuralı varsayılan tablosu başvuru olarak geçerli.
 - **Gerekçe:** donma bekleyen işleri engelliyordu: AS1, AS2, BINEK şeritleri, Hallow ek etkileri (K62-ACIK Madde 5, kullanıcı kararı bekliyor) ve Truesight'ı bilmeyen motor yolları (fırsat saldırısı görme, hareket algısı, Cleave, mastery ikinci hedef, ejderha Algısı; K62-ACIK Madde 3).
 - **Kalan kurallar** (CLAUDE.md "Çalışma şekli"): kural sürümü değişen her iş sürümü bir artırır, aynı anda yalnız bir şerit sürüm artırır (güncel 67, K62-ACIK; sıradaki şerit 68); yeni mekanik veriyle ve Game Master anahtarıyla gelir, eski kayıt/replay aynen; ana parça 420 kB sınırı; hafif doğrulama modu aynen.
-=======
+
 ## 2026-11-12 — Kuyruk BINEK-PLAN: binek (mount) sistemi planı (yalnız plan; kural sürümü 66, SAVE_VERSION 22, kod/veri/test değişmedi)
 
 - **Kullanıcı kararı:** binek mekaniği yapılacak; K57 donması yalnız bu iş için sınırlı kalkacak (kapsam metni planın §7.1'inde; `docs/MEKANIK-DONMA.md` uygulama kuyruğunda güncellenecek). İlk kullanım Ranger Ejder Muhafızı (`ejder-muhafizi`, ek paket; depoda yok): 14. seviyede Large ejderha binicisiyle uçar.
@@ -27,7 +42,6 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - **Sürüm ve kayıt:** yeni olay türü yok (`SAVE_VERSION` 22). Kural sürümü MB1 = 68 (Şerit B 67'yi alabilir; tek sabit `BINEK_SURUM`). `srdK19` anahtarı altında, yeni ev kuralı yok.
   - **Find Greater Steed** SRD 5.2.1'de yok (⚠): yalnız ek paket.
 - **Taban:** tam test (main f740c07) 375 dosya geçti + 1 atlandı, 4410 test geçti + 7 atlandı, 0 kırık (681 sn).
->>>>>>> origin/wip/binek-plan
 
 ## 2026-11-11 — Kuyruk SU1: Su hex denetimi (salt okuma; kural sürümü 66, SAVE_VERSION, veri, kod, görsel değişmedi)
 

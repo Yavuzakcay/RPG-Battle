@@ -10,6 +10,8 @@ import { exhaustionGain } from './deathWard';
 import { commandEndHookEvents, turnStartHookEvents } from './turnHooks';
 import { auraTriggerEvents } from './auraCore';
 import { executeDismount, executeMount, riderCleanup } from './mounted';
+import { binekOn } from './binekSurum';
+import { inWater } from './underwaterCore';
 import { brutalOptions } from './brutal';
 import { executeShiftMove, featuresOn } from './shift';
 import { executeInitiativeSwap } from './alert';
@@ -255,7 +257,7 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (loose.length) { next = applyEvents(next, loose); events = [...events, ...loose]; }
   // Çağrılmış yaratıklar (Görev R3): 0 HP, konsantrasyon, sahibin ölümü ya da süre bitince kaybolur.
   // Kuyruk 19 (Mounted Combat): bineği düşen binici.
-  const fell = globalRule(next, 'srdK19') ? riderCleanup(next, rng) : [];
+  const fell = globalRule(next, 'srdK19') ? riderCleanup(next, rng, state, events) : [];
   if (fell.length) { next = applyEvents(next, fell); events = [...events, ...fell]; }
   // Kuyruk 19: ölüm patlaması, yutulanlar, Hydra başları, Misty Escape.
   const mon = monsterAfterEvents(next, rng, events);
@@ -516,6 +518,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk S1 (Suggestion "bırak"): silahını bırakan silahla saldıramaz (silahsız vuruş serbest; canavar saldırıları da durur).
   const dropped = actor.effects?.find((e) => e.disarmed);
   if (dropped && (((cmd.type === 'attack' || cmd.type === 'offhand_attack') && !('option' in cmd && cmd.option?.weaponId === 'unarmed-strike')) || cmd.type === 'monster_attack' || cmd.type === 'multiattack')) return fail(`${dropped.name}: silahını bıraktı, silahla saldıramaz.`);
+  // Kuyruk MB1 (68+, B23; SRD Lance "Two-Handed (unless mounted)"): binekte değilken diğer el doluysa (kalkan, yan el) kullanılamaz.
+  if (cmd.type === 'attack' && cmd.option?.unlessMounted && cmd.option.handBusy && !actor.riding && binekOn(state)) return fail(`${cmd.option.label}: binekte değilken iki el ister (kalkan ya da yan el silahıyla kullanılamaz).`);
   const events: BattleEvent[] = [];
 
   if (cmd.type === 'end_turn') {
@@ -810,6 +814,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'dismount') return executeDismount(state, actor, cmd.to);
   // Kuyruk 19 (Mounted Combat): binici kendi yürümez; bineği taşır.
   if (actor.riding && (cmd.type === 'move' || cmd.type === 'jump' || cmd.type === 'shift_move')) return fail('Bineğin üstündesin: önce in (bineğin hareketiyle taşınırsın).');
+  // Kuyruk MB1 (68+): binicinin kendi tırmanması, dikey hareketi ve aşağı atlaması da yok (bineğin irtifasını izler).
+  if (actor.riding && binekOn(state) && (cmd.type === 'climb' || cmd.type === 'jump_down' || (cmd.type === 'vertical_move' && !cmd.targetId && !cmd.objectId))) return fail('Bineğin üstündesin: önce in (bineğin hareketiyle taşınırsın).');
+  // Kuyruk MB1 (68+, B13 ⚠): binicisi üstündeki binek kazamaz (yer altında binici yok); suya dalış serbest.
+  if (actor.rider && binekOn(state) && cmd.type === 'vertical_move' && !cmd.targetId && !cmd.objectId && cmd.toFt < 0 && !inWater(state, actor)) return fail('Binici varken kazılamaz: önce binici insin.');
   if (cmd.type === 'move') return cmd.toFt !== undefined ? executeAirMove(state, actor, cmd.to, cmd.toFt, rng) : executeMove(state, actor, cmd.to, rng);
   if (cmd.type === 'shift_move') return executeShiftMove(state, actor, cmd.to, rng);
   if (cmd.type === 'superior_defense') return executeSuperiorDefense(state, actor);

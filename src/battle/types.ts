@@ -1450,6 +1450,9 @@ export interface AttackOption {
   pact?: boolean;
   /** Kuyruk 19 (SRD Heavy): yetersiz STR (yakın) ya da DEX (menzilli) ile dezavantaj; Loading: eylem başına bir atış; cephane türü. */
   heavyDis?: boolean;
+  /** Kuyruk MB1 (68+, SRD Lance): binek dışında iki elli (`unlessMounted`); karakterin diğer eli dolu (kalkan ya da yan el; `handBusy`). */
+  unlessMounted?: boolean;
+  handBusy?: boolean;
   loading?: boolean;
   ammo?: string;
   /** K13: Wild Shape biçiminin saldırısı (canavar kimliği ve saldırı adı): ek etkileri (rider, süreli etki) canavardaki gibi. */
@@ -1859,7 +1862,7 @@ export type BattleEvent =
   | { type: 'combat_started' }
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
   | { type: 'mounted'; actorId: string; mountId: string; cost: number }
-  | { type: 'dismounted'; actorId: string; at: Offset; cost: number }
+  | { type: 'dismounted'; actorId: string; at: Offset; cost: number; /** Kuyruk MB1 (68+): binekten düşerek (günlük). */ fell?: true }
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number; /** Kuyruk 19: serbest kayma (`shiftLeft`'ten düşer). */ free?: boolean }
   | { type: 'shift_granted'; actorId: string; hexes: number }
   | { type: 'initiative_swapped'; actorId: string; allyId: string }

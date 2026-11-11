@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { binekOn } from './binekSurum';
 import { submerged } from './underwaterCore';
 import { hasSwimSpeed } from './deepWater';
 import { k73cOn } from './k73cSurum';
@@ -274,7 +275,8 @@ export function weaponAttackEvents(
       attackBonus: option.attackBonus + itemAttackPlus(actor, option, k19i) - corrodedOf(actor, option), targetAc, mode, ...(k19i && target.effects?.some((e) => e.noCrit) ? { noCrit: true } : {}), damage: swap?.dice ?? option.damage, autoCritical: isAutoCritical(target.conditions, withinFiveFt(state, actor, target, !option.ranged)) || kissReady(state, actor, target, option),
       // Kuyruk K54c: Yazgı Mührü: mühürlüye turun ilk saldırısı kendiliğinden isabet (kritik değil).
       extra: sealed ? [{ label: 'Yazgı Mührü', die: 'hit', sign: 1, reroll: 'success' }, ...attackDice(actor)] : attackDice(actor),
-      ...(option.minDie ? { minDie: option.minDie } : {}),
+      // Kuyruk MB1 (68+, B23): binekte tek elle tutulan Lance (diğer el dolu) iki elli sayılmaz: Great Weapon Fighting yok.
+      ...(option.minDie && !(option.unlessMounted && option.handBusy && binekOn(state)) ? { minDie: option.minDie } : {}),
       // Improved/Superior Critical (Görev F): silah ve silahsız saldırılarda.
       // Görev P6: ek paket kritik eşiği (`zarEtkisi.kritikAralik`; süren etki `pkCritOn`).
       ...((c) => (c < 20 ? { critOn: c } : {}))(Math.min(actor.critOn && !option.spell ? actor.critOn : 20, ...(actor.effects ?? []).map((e) => e.pkCritOn ?? 20))),

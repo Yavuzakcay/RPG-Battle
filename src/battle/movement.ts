@@ -29,6 +29,7 @@ import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, hovers, isAirborne, spellJumpFt } from './flight';
+import { seatedRider } from './riderCore';
 import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
 import { k9On, dikeyOn, hasHexCeilings } from './vertical';
 import { floorsAt, hasStandData, katlarOf, slabsAt, standHeights, standingOn, surTop } from './stand';
@@ -90,7 +91,8 @@ export function occupantAt(state: BattleState, at: Offset, exceptId?: string, ba
   // Kuyruk K71c (sürüm 58+): hücre doluluğu: yalnız `band` düzeylerini (verilmezse yer, düzey 0) kaplayan yaratık.
   const probe = band ?? (cellsOn(state) ? GROUND_BAND : undefined);
   return Object.values(state.combatants).find(
-    (c) => c.id !== exceptId && c.pos !== null && !c.summon?.noSpace && covers(state, c, at) && isTargetable(c) && fillsBand(state, c, probe),
+    // Kuyruk MB1 (68+): bineğinin üstündeki binici hücre kaplamaz (bineğin hücreleri yığının hücreleri).
+    (c) => c.id !== exceptId && c.pos !== null && !c.summon?.noSpace && !(c.riding && seatedRider(state, c)) && covers(state, c, at) && isTargetable(c) && fillsBand(state, c, probe),
   );
 }
 
