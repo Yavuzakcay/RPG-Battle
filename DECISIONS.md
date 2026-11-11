@@ -25,6 +25,16 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Binekli savaşta YZ karar süresi ölçümü MB5'e.
 - **MB3'e kalan:** uçan binekle birlikte düşen binicinin hasarı (iki `fall`, B12), yürüyüş/uçuş yolunda yığın boyu, kat döşemesi ve Forcecage, binicinin su altı nefesi, binicili tırmanma (B14), havadan inme/binme (`toFt`), Fey Step varış sığması.
 
+## 2026-11-11 — Kuyruk SU2: Deprem zemin efekti okunabilirliği (yalnız görsel; kural sürümü 67, SAVE_VERSION, motor, YZ, replay değişmedi)
+
+- **Sorun:** 100 ft deprem alanında (~230 altıgen) E4c dokusu opaktı (%88): harita, zemin işaretleri, yüzeyler okunmuyordu; altıgen başına döndürme/aynalama çatlakları komşuda bağlamıyor, parlak turuncu mozaik çıkıyordu.
+- **A (şeffaf çatlak):** `scripts/efekt-sayfa.mjs` `crackPixel`: ham kareden alfa üretir (koyu çatlak içi: `dBase − max(RGB)` smoothstep; turuncu kenar: doygunluk × R−B; kum tabanı alfa 0). Parametreler `data/efekt-kesim.json` `catlak`. Yalnız bu şeridi üretmek için `node scripts/su2-deprem.mjs` (`assets-ham/efekt/efekt-eksik.jpg` değişmedi; çıktı `public/efekt/efekt-zemin-deprem-yarigi.webp`, artık RGBA). Tam kesim `npm run sprite-ice -- --efekt` da aynı sonucu verir.
+- **B (opaklık/renk):** tepe alfa `tepe` 0,64 (çatlak çizgisi ≤ %65), renk koyu kahve-kızıl `darkC` [40,18,14], pas `glowC` [128,44,22]; kayıt `data/efekt-e2.json` `alfa`/`ton` (bilgi), çalışma zamanı `zeminKaro.opaklik` 1 (alfa dokuda pişmiş; 0,88 → 1).
+- **Bağlanma:** altıgen başına 12 görünüm yerine `zeminKaro.tekKaro: 6`: tek büyük karo (altıgen eninin 6 katı) dünya koordinatında dört yönde aynalanır, alan altıgenlerinin birleşimine kırpılır; çatlaklar altıgen sınırında kesilmez, animasyon örneği 1 (≤ 12). Eski `TiledPatch` yolu (`tekKaro` yoksa) korundu.
+- **C gerekmedi:** A+B sonrası çatlak kapsamı seyrek; alan başına döşeme seyreltmesi eklenmedi.
+- **Sabit kare / ayarlar:** efekt kapalı ya da hareketi azaltta 4. kare (aynı alfa/ton); jeton, eylem çemberi, altıgen çizgileri efektin üstünde.
+- **Doğrulama:** gerçek `FxGround`, 21×11 alan, ortada Druid + düşmanlar; `docs/su2/once-sonra.png` (yan yana). `fxPlan.e4c.test.ts` beklentisi `opaklik 0.88 → 1, tekKaro 6` güncellendi (gerekçe: opaklık dokuya taşındı).
+
 ## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)
 
 - **Karar (kullanıcı):** K57 mekanik donması (2026-11-06, `docs/MEKANIK-DONMA.md`) tamamen kaldırıldı. Belge tarihsel kayıt olarak kalır; ev kuralı varsayılan tablosu başvuru olarak geçerli.
