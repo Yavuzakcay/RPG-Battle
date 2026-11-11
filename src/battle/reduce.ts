@@ -1249,7 +1249,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       if (!c) return state;
       const { riding: mid, ...rest } = c;
-      let s1: BattleState = { ...state, combatants: { ...state.combatants, [c.id]: { ...rest, pos: event.at, movementUsed: c.movementUsed + event.cost } as Combatant } };
+      let s1: BattleState = { ...state, combatants: { ...state.combatants, [c.id]: { ...rest, pos: event.at, movementUsed: c.movementUsed + event.cost, ...(event.toFt !== undefined ? { altitudeFt: event.toFt } : {}) } as Combatant } };
       const m = mid ? s1.combatants[mid] : undefined;
       if (m) { const { rider: _r, ...mr } = m; s1 = { ...s1, combatants: { ...s1.combatants, [m.id]: mr as Combatant } }; }
       return s1;

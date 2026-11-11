@@ -10,7 +10,9 @@ import { exhaustionGain } from './deathWard';
 import { commandEndHookEvents, turnStartHookEvents } from './turnHooks';
 import { auraTriggerEvents } from './auraCore';
 import { executeDismount, executeMount, riderCleanup } from './mounted';
-import { binekOn } from './binekSurum';
+import { binekMb3On, binekOn } from './binekSurum';
+import { climbs, fliesOrHovers } from './flight';
+import { stairsAt } from './stand';
 import { inWater } from './underwaterCore';
 import { brutalOptions } from './brutal';
 import { executeShiftMove, featuresOn } from './shift';
@@ -811,11 +813,16 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return r.ok ? { ok: true, state: r.state, events: [...stood, ...r.events] } : r;
   }
   if (cmd.type === 'mount') return executeMount(state, actor, cmd.mountId);
-  if (cmd.type === 'dismount') return executeDismount(state, actor, cmd.to);
+  if (cmd.type === 'dismount') return executeDismount(state, actor, cmd.to, cmd.toFt);
   // Kuyruk 19 (Mounted Combat): binici kendi yürümez; bineği taşır.
   if (actor.riding && (cmd.type === 'move' || cmd.type === 'jump' || cmd.type === 'shift_move')) return fail('Bineğin üstündesin: önce in (bineğin hareketiyle taşınırsın).');
   // Kuyruk MB1 (68+): binicinin kendi tırmanması, dikey hareketi ve aşağı atlaması da yok (bineğin irtifasını izler).
   if (actor.riding && binekOn(state) && (cmd.type === 'climb' || cmd.type === 'jump_down' || (cmd.type === 'vertical_move' && !cmd.targetId && !cmd.objectId))) return fail('Bineğin üstündesin: önce in (bineğin hareketiyle taşınırsın).');
+  // Kuyruk MB3 (69+, B14 ⚠): tırmanma hızı olmayan binek binicisiyle tırmanamaz (duvar, sur, katman uçurumu; K71b Çeviklik
+  // tırmanışı dahil). Uçuş, Levitate, merdiven ve suda yükselme tırmanma değil.
+  if (actor.rider && binekMb3On(state) && !climbs(actor, state) && !fliesOrHovers(actor) && (cmd.type === 'climb'
+    || (cmd.type === 'vertical_move' && !cmd.targetId && !cmd.objectId && cmd.toFt > 0 && cmd.toFt > (actor.altitudeFt ?? 0)
+      && !actor.effects?.some((e) => e.levitate) && !(actor.pos && stairsAt(state, actor.pos).length)))) return fail('Binici varken tırmanılamaz: bineğin tırmanma hızı yok.');
   // Kuyruk MB1 (68+, B13 ⚠): binicisi üstündeki binek kazamaz (yer altında binici yok); suya dalış serbest.
   if (actor.rider && binekOn(state) && cmd.type === 'vertical_move' && !cmd.targetId && !cmd.objectId && cmd.toFt < 0 && !inWater(state, actor)) return fail('Binici varken kazılamaz: önce binici insin.');
   if (cmd.type === 'move') return cmd.toFt !== undefined ? executeAirMove(state, actor, cmd.to, cmd.toFt, rng) : executeMove(state, actor, cmd.to, rng);

@@ -3,6 +3,30 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk MB3: binek dikey kuralları (kural sürümü 69)
+
+- **Sürüm:** `main` b659f68 üstüne. Kural sürümü 68 → **69** (tek sabit `src/battle/binekSurum.ts` `BINEK_MB3_VERSION`); 68 ve altı birebir. Yeni olay türü yok (`dismounted.toFt`, `dismount.toFt` isteğe bağlı alanlar); `SAVE_VERSION` 22. Yeni veri `data/binek.json` (`kafesBoyuFt`). Ayrıntı `harita/belgeler/BINEK-PLAN.md` §12.
+- **Görev 0:** MB1'in bıraktığı 9 açığın hepsi düzeltmeden önce başarısız testle doğrulandı. Nefes açığı başka nedenden: binicili binek hiç dalamıyordu (`verticalCellProblem` biniciyi dolu hücre sayıyordu; aynı hata binicili uçan bineğin 5 ft alçalmasını da engelliyordu). Engel kalkınca nefes sayacı zaten işliyor. Doğrulanmayan açık yok.
+- **Yapılanlar:** B12 iki ayrı düşme; B11 yığın boyu (yürüyüş, uçuş, kat döşemesi, Forcecage, ışınlanma/Fey Step, binme); dikey hareket ve dalışta binicinin hücresi; B14 binicili tırmanma; havada binme (3B bitişiklik) ve inme (`toFt`); B6 bant; B13 bütün kazma girişleri (`canBurrow`).
+- **SRD'de yazmıyor, yorum (⚠):**
+  - **B6:** binicinin dikey bandı bineğin bandı (3B uzaklık, erişim, fırsat saldırısı, menzil).
+  - **B11:** yığın boyu = bineğin boyu + binicinin tam boyu (MB1 yorumu korundu: Medium +5, Large +10). Forcecage küpüne sığmayan yığında binici itilir, binek tutsak kalır (SRD "too large to fit" yığına uygulandı).
+  - **B12:** binek düşüyorsa binici DEX save'ini geçse de ayrılır ve ayrı düşer. Save yalnız düşmeyen bineğin üstünde kalmayı belirler. Levitate biten (süzülerek inen) binekte binici üstünde kalır.
+  - **B13:** binicisi üstündeki binek kazamaz; yer altındaki bineğe binilmez.
+  - **B14:** tırmanma hızı olmayan binek binicisiyle tırmanamaz (K71b Çeviklik tırmanışı dahil). Duvarda tutunan (tırmanma hızsız) bineğe binilmez.
+  - **Havada inme:** farklı irtifa yalnız uçabilene, bineğin bandının 5 ft yakınında. Uçamayan havadaki binekten iner ve düşer (SRD'de havadan inme yok).
+- **Doğrulama:**
+  - `src/battle/binekMb3.test.ts` 15 test. MB1 testleri (15) değişmeden yeşil.
+  - Regresyon `src/sim/binekMb3Regresyon.test.ts`: 68 altın (MB3 öncesi ağaç), 69 = 68; Çöl, Kale, Mağara, Orman × 30 tohum. Denge ölçümü yok.
+  - Ana parça 376,78 kB.
+- **Kalan:**
+  - **MB4:** çok altıgenli bineğin bütün gövdesinde tavan/yığın, gövde dışına iniş, binicinin gövdesi.
+  - **MB7:** Find Steed/Phantom Steed, paket `binek`.
+  - **MB2:** kontrollü binek.
+  - **MB5:** YZ binicisi, dalışta binicinin nefesi, yığının yükselme kararı.
+  - **MB6:** havada inme irtifası seçicisi.
+  - CLAUDE.md "Çalışma şekli"ndeki "şu an güncel kural sürümü 67" ifadesi başka şeridin satırı olduğu için değiştirilmedi (güncel: 69).
+
 ## 2026-11-12 — Kuyruk MB1: binek çekirdek SRD kuralları (kural sürümü 68)
 
 - **Sürüm:** `main` 6a1a4dc üstüne. Kural sürümü 67 → **68** (tek sabit `src/battle/binekSurum.ts` `BINEK_VERSION`, B19); 67 ve altı birebir. Yeni olay türü yok (`dismounted.fell` isteğe bağlı alan); `SAVE_VERSION` 22 (B20). Anahtar `srdK19` (B21), yeni ev kuralı yok. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §11.

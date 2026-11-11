@@ -42,7 +42,8 @@ import { BURROW_DEPTH_FT, canBurrow, diggable } from './burrow';
 import { DIVE_MAX_FT, inWater, SWIM_FACTOR } from './underwaterCore';
 import { hasSwimSpeed } from './deepWater';
 import { covers } from './body';
-import { riderStackFt, seatedRider } from './riderCore';
+import { bandSizeOf, fallOffSpot, riderStackFt, seatedRider, seatedRiderOf } from './riderCore';
+import { binekMb3On } from './binekSurum';
 import { isTargetable } from './common';
 import dikeyData from '../../data/dikey.json';
 
@@ -58,7 +59,8 @@ export function reachFt(state: Pick<BattleState, 'kuralSurumu' | 'map'>, a: Comb
   if (k9On(state)) return Math.max(flatFt, bandGap(absBand(state, a), absBand(state, b)) * 5);
   // Kuyruk K71c (sürüm 58+, K9): dikey bileşen hücre bantları arası düzey aralığı (alt hücre − öbürünün üst hücresi);
   // Medium/Small/Tiny için |Δirtifa| ile aynı, büyük gövde boyunca yakındır.
-  if (cellsOn(state)) return Math.max(flatFt, bandGap(bandOf(a), bandOf(b)) * 5);
+  // Kuyruk MB3 (69+, B6): binicinin bandı bineğin bandı.
+  if (cellsOn(state)) return Math.max(flatFt, bandGap(bandOf(a.riding ? { ...a, size: bandSizeOf(state, a) } : a), bandOf(b.riding ? { ...b, size: bandSizeOf(state, b) } : b)) * 5);
   return Math.max(flatFt, Math.abs(altitudeOf(a) - altitudeOf(b)));
 }
 
@@ -372,6 +374,8 @@ export function verticalCellProblem(state: BattleState, t: Combatant, from: numb
   const hi = Math.max(bandOf(t, from).hi, dest.hi);
   for (const c of Object.values(state.combatants)) {
     if (c.id === t.id || !c.pos || c.summon?.noSpace || !isTargetable(c) || !hexes.some((h) => covers(state, c, h))) continue;
+    // Kuyruk MB3 (69+): bineğinin üstündeki binici hücre kaplamaz (bineğin dikey hareketini, dalışını tıkamaz).
+    if (c.riding && binekMb3On(state) && seatedRider(state, c)) continue;
     const b = bandOf(c);
     if (bandsOverlap(b, dest)) return `Hücre dolu: ${c.name} (${b.lo * 5}–${b.hi * 5 + 5} ft).`;
     if (c.side !== t.side && bandsOverlap(b, { lo, hi })) return `${c.name} yolda: düşmanın hücresinden geçilmez.`;
@@ -383,7 +387,9 @@ export function verticalCellProblem(state: BattleState, t: Combatant, from: numb
 export function slabProblem(state: BattleState, t: Combatant, from: number, to: number): string | null {
   if (!t.pos || !katlarOf(state).length) return null;
   if (slabBetween(state, t.pos, from, to)) return 'Arada kat döşemesi var: katlar arası yalnız merdiven ya da delikten.';
-  for (const f of slabsAt(state, t.pos)) if (to < f && f < to + bodyHeightFt(t)) return `Döşemenin içinde durulmaz (${f} ft).`;
+  // Kuyruk MB3 (69+, B11 ⚠): binicisi üstündeki binekte yığın boyu (binek + binicinin boyu).
+  const top = to + bodyHeightFt(t) + (t.rider ? riderStackFt(state, t) : 0);
+  for (const f of slabsAt(state, t.pos)) if (to < f && f < top) return `Döşemenin içinde durulmaz (${f} ft).`;
   return null;
 }
 
@@ -454,6 +460,19 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
   if (!altitudeOn(next)) return [];
   const out: BattleEvent[] = [];
   let s = next;
+  // Kuyruk MB3 (69+, B12): düşecek bineğin binicisi ayrı düşer (önce bineğin 5 ft içine iner, sonra aşağıdaki döngüde kendi
+  // düşmesi: ayrı hasar, ayrı düşme tepkileri). Levitate biten binek süzülerek inerse binici üstünde kalır.
+  if (binekMb3On(next)) {
+    for (const r0 of Object.values(next.combatants)) {
+      if (!r0.riding) continue;
+      const r = s.combatants[r0.id] as Combatant;
+      const m = s.combatants[r0.riding];
+      if (!m?.pos || !seatedRider(s, r) || altitudeOf(m) <= 0 || staysUp(s, m)) continue;
+      if (m.altitudeGentle || levitateOn(before.combatants[m.id])) continue;
+      const evs: BattleEvent[] = [{ type: 'dismounted', actorId: r.id, at: fallOffSpot(s, m.pos) ?? m.pos, cost: 0, fell: true }];
+      out.push(...evs); s = applyEvents(s, evs);
+    }
+  }
   for (const c0 of Object.values(next.combatants)) {
     let c = s.combatants[c0.id] as Combatant;
     // Kuyruk MB1 (68+): bineğinin üstündeki binici bineğin irtifasını izler (düşmez, kırpılmaz).

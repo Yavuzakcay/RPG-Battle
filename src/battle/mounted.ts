@@ -31,7 +31,13 @@ import { saveMode } from './durations';
 import { sizeRank } from './forced';
 import { globalRule } from './ruleControl';
 import { binekOn } from './binekSurum';
-import { bodyHeightFt, ceilingOver } from './altitude';
+import { altitudeCapFt, bodyHeightFt, ceilingOver, climbingAloft } from './altitude';
+import { binekMb3On } from './binekSurum';
+import { adjacent3D } from './adjacency';
+import { bandOf } from './cells';
+import { climbs, flySpeed } from './flight';
+import { occupantAt, placeProblem } from './movement';
+import { slabsAt } from './stand';
 import { anyRiders, riderOnMount } from './riderCore';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
@@ -54,7 +60,16 @@ export function mountProblem(state: BattleState, actor: Combatant, mountId: stri
   if (m.side !== actor.side) return 'Yalnızca gönüllü (dost) bir yaratığa binilir.';
   if (m.rider) return 'Bineğin üstünde zaten biri var.';
   if (sizeRank(m.size) <= sizeRank(actor.size)) return 'Binek senden en az bir boy büyük olmalı.';
-  if (state.map && (!actor.pos || !m.pos || distance(actor.pos, m.pos) > 1)) return 'Bineğe bitişik olmalısın.';
+  // Kuyruk MB3 (69+): bitişiklik 3B (havadaki bineğe havadan binilir); yer altındaki ya da duvarda tutunan (tırmanma hızı
+  // olmayan) bineğe binilmez; yığın kat döşemesinin altına da sığmalı (B11).
+  if (binekMb3On(state) && state.map) {
+    if (!actor.pos || !m.pos || !adjacent3D(state, actor, m)) return 'Bineğe bitişik olmalısın (havadaki bineğe havadan binilir).';
+    if (m.burrowed) return 'Yer altındaki bineğe binilmez.';
+    if (climbingAloft(m) && !climbs(m, state)) return 'Duvarda tutunan bineğe binilmez.';
+    const top = (m.altitudeFt ?? 0) + bodyHeightFt(m) + bodyHeightFt(actor);
+    const slab = slabsAt(state, m.pos).find((f) => f > (m.altitudeFt ?? 0) && f < top);
+    if (slab !== undefined) return `Kat döşemesi alçak (${slab} ft): binekle birlikte sığmazsın.`;
+  } else if (state.map && (!actor.pos || !m.pos || distance(actor.pos, m.pos) > 1)) return 'Bineğe bitişik olmalısın.';
   if (binekOn(state)) {
     if (actor.conditions.includes('Prone')) return 'Yerde yatarken binilmez: önce kalk.';
     // B11 (⚠ SRD'de boy yok): bineğin boyu + binicinin boyu tavanın altına sığmalı.
@@ -71,12 +86,36 @@ export function executeMount(state: BattleState, actor: Combatant, mountId: stri
   return finish(state, [{ type: 'mounted', actorId: actor.id, mountId, cost: halfSpeed(state, actor) }]);
 }
 
-export function executeDismount(state: BattleState, actor: Combatant, to?: Offset): CommandResult {
+export function executeDismount(state: BattleState, actor: Combatant, to?: Offset, toFt?: number): CommandResult {
   if (!actor.riding) return fail('Bir bineğin üstünde değilsin.');
+  if (binekMb3On(state)) return dismount69(state, actor, to, toFt);
   const at = to ?? (actor.pos ? freeNeighbor(state, actor.pos) : null);
   if (!at || (actor.pos && distance(actor.pos, at) > 1) || occupied(state, at)) return fail('İnmek için bitişik boş bir altıgen seç.');
   if (actor.movementUsed + halfSpeed(state, actor) > Math.floor(actor.speed / 5) * (1 + actor.economy.dashes)) return fail('İnmek için hızının yarısı kadar hareketin kalmalı.');
   return finish(state, [{ type: 'dismounted', actorId: actor.id, at, cost: halfSpeed(state, actor) }]);
+}
+
+/**
+ * Kuyruk MB3 (69+): inme. Varış bitişik altıgen, binicinin hücresi kendi bandında boş olmalı. `toFt` verilmezse bineğin
+ * irtifası (havadaki binekten uçamayan inerse komut sonunda düşer); farklı irtifa yalnız uçabilene, bineğin bandının 5 ft
+ * yakınında ve irtifa üst sınırı (tavan) altında.
+ */
+function dismount69(state: BattleState, actor: Combatant, to?: Offset, toFt?: number): CommandResult {
+  const m = state.combatants[actor.riding ?? ''];
+  const alt = actor.altitudeFt ?? 0;
+  const ft = toFt ?? alt;
+  if (ft % 5 !== 0) return fail('İrtifa 5 ft\'in katı olmalı.');
+  if (ft !== alt && flySpeed(actor) <= 0) return fail('Başka bir irtifada inmek için uçabilmelisin.');
+  if (m && (ft < alt - 5 || ft > alt + bodyHeightFt(m))) return fail('Bineğin 5 ft yakınında inilir.');
+  if (ft < Math.min(0, alt)) return fail('Bu derinliğe inilmez.');
+  const band = bandOf(actor, ft);
+  const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
+  const free = (h: Offset) => !occupantAt(state, h, actor.id, band) && (ft > 0 || !placeProblem(state, h));
+  const at = to ?? (actor.pos ? neighbors(actor.pos, size).find(free) ?? null : null);
+  if (!at || !actor.pos || distance(actor.pos, at) !== 1 || !free(at)) return fail('İnmek için bitişik boş bir altıgen seç.');
+  if (ft > 0 && ft > altitudeCapFt(state, { ...actor, pos: at })) return fail('Tavan alçak: o irtifada inilmez.');
+  if (actor.movementUsed + halfSpeed(state, actor) > Math.floor(actor.speed / 5) * (1 + actor.economy.dashes)) return fail('İnmek için hızının yarısı kadar hareketin kalmalı.');
+  return finish(state, [{ type: 'dismounted', actorId: actor.id, at, cost: halfSpeed(state, actor), ...(ft !== alt ? { toFt: ft } : {}) }]);
 }
 
 /**
