@@ -13,3 +13,6 @@ docs/sabah/soy-inceleme/
 
 # Kuyruk 19B M4: ham varlıklar depo dışı (kullanıcı yerelde depodan çıkarıyor; git'teki mevcut dosyalar bu satırdan etkilenmez).
 assets-ham/
+
+# Kuyruk U1b: yerel paket envanteri (node scripts/u1b-envanter.mjs --yaz üretir).
+harita/belgeler/U1B-ENVANTER-YEREL.md

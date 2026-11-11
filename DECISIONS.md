@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-11 — Kuyruk U1b, Görev 0: alt sınıf uçuş verisi envanteri (DURDU: `icerik/` yok; yalnız belge ve araç, kural sürümü 67 değişmedi)
+
+- **Kapsam:** yalnız veri işi (mevcut `ucus` ilkeli ve U1a kademeleri; yeni ilkel/alan/komut yok). Görev 0'dan sonra durma talimatıyla duruldu; Görev 1–4 başlatılmadı.
+- **Engel:** bu çalışma kopyasında `icerik/` yok (ek paketler gitignore'da, bulut kopyasına gelmiyor). Paket düzeyinde envanter ve veri bağlama yapılamaz; özellik kimlik/ad/seviyesi tahmin edilmedi.
+- **Çıktı:** `harita/belgeler/U1B-ENVANTER.md` (izlenen `icerik-liste.txt` ile alt sınıf eşleşmesi, U1a kademe sözleşmesi, ırk uçuşları, ifade edilebilirlik analizi); `node scripts/u1b-envanter.mjs [klasör] [--yaz]` (`scripts/lib/ucus-envanter.mjs`, test `src/content/ucusEnvanter.test.ts`): yerel `icerik/` üstünde uçuş envanterini kimlik/ad/seviye/ilkel parametresiyle üretir, paket metni yazmaz.
+- **Bulunamayan:** Sorcerer Pulkanat (listede yok; tahmin edilmedi). Ejder Muhafızı seviyesi çelişkili (görev 14, U1a belgesi 15).
+- **Eksik yol adayları** (paket görülünce kesinleşecek): Yakamoz'un loş/karanlık şartı (`KOSULLAR`'da ışık koşulu yok → yalnız metinde), Ejderha Disiplini'nin Step of the Wind'e bağlanması (ilkelde Focus kancası yok → yedek: ayrı Ki bedelli bonus eylem), Paratoner dostla paylaşım (`ucus` yalnız kendine).
+- **Not:** bu dosyanın başındaki `<<<<<<< HEAD … >>>>>>> origin/wip/binek-plan` çakışma işaretleri önceki birleştirmeden (6a1a4dc) kalmış; bu iş çözmedi (K57-KALDIR ve BINEK-PLAN girdileri ikisi de korunmalı).
+
 <<<<<<< HEAD
 ## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)
 
