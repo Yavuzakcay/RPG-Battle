@@ -743,6 +743,7 @@ Tek sabit `src/battle/binekMb2Surum.ts` (`BINEK_MB2_VERSION`, `binekMb2On`), kur
   - Karar sayısı 238 → 288 (bineğin adımları); savaş başına toplam süre ≈ +%10.
 - **Paket boyutu:** ana parça değişmedi (`vite build` 387,29 kB). Savaş parçası +2,46 kB.
 - **Tarayıcı kontrolleri:** `check:harita` 96/0, `check:ses` 15/0.
+- **Tam paket:** 395 dosya, 4644 test geçti (7 atlandı), 0 kırık.
 - **Kayıt:** `SAVE_VERSION` 22'de kaldı. Yeni olay türü yok; `mounted` olayına isteğe bağlı alan, `Combatant`'a isteğe bağlı `controlledBy`/`ridTurn`.
 
 **Arayüz işi (bu görevde yapılmadı, SD2 eylem menüsüyle):**

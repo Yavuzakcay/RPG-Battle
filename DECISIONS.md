@@ -35,6 +35,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Regresyon 4 senaryo × 30 tohum: binekli olmayanda 73 altınla aynı, 74 = 73; bağımsız binekli 74 = 73; kontrollü binekli çökmesiz.
   - Ana parça değişmedi.
   - `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 395 dosya geçti + 1 atlandı; 4644 test geçti + 7 atlandı; 0 kırık.
 - **Test değeri güncellemesi:** `ruleVersion.test.ts` ve `g6.test.ts` güncel sürüm 73 → 74 (veriye bağlı değer). `PAKET-ILKELLER.md` şemadan yeniden üretildi (`binek.kontrol`).
 - **Arayüz işi (yapılmadı):**
   - Çekmecede "Binek" bölümü (Dash/Disengage/Dodge).
