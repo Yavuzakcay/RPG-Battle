@@ -120,6 +120,15 @@ describe('MB2: binicinin turunda binek (sürüm 74)', () => {
     expect(chain(s, [...mv.events, ...dodge.events])).toEqual(dodge.state);
   });
 
+  it('binicinin yürüyüş komutu kontrollü bineğine gider (arayüzün mevcut "yürü" dokunuşu); 73\'te binici yürüyemez', () => {
+    const s = mountA(scene(74)).state;
+    const r = run(s, { type: 'move', actorId: 'A', to: o(9) });
+    expect(r.events.find((e) => e.type === 'moved')).toMatchObject({ actorId: 'H' });
+    expect(C(r.state, 'H').pos).toEqual(o(9));
+    expect(C(r.state, 'A').movementUsed).toBe(C(s, 'A').movementUsed);
+    expect(err(mountA(scene(73)).state, { type: 'move', actorId: 'A', to: o(9) })).not.toBeNull();
+  });
+
   it('binek kendi turunu almaz; binicinin turunun başında hareketi tazelenir; binicinin turu dışında komut almaz', () => {
     const s = mountA(scene(74)).state;
     const r = seq(s, [{ type: 'move', actorId: 'H', to: o(14) } as Command, { type: 'end_turn', actorId: 'A' }]);

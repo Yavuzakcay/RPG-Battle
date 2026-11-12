@@ -26,6 +26,8 @@ const slow = Number(opt('--yavas', '4'));
 const flag = (k: string): boolean => { const i = args.indexOf(k); if (i < 0) return false; args = args.filter((_, j) => j !== i); return true; };
 const binek = flag('--binek');
 const coklu = flag('--coklu');
+// Kuyruk MB2: `--kontrollu` (binek kontrollü başlar; 74+'da kendi turu yok, binicinin turunda yürür).
+const kontrollu = flag('--kontrollu');
 const surum = opt('--kural-surumu', '');
 if (surum) setDefaultRuleVersion(Number(surum));
 if (!PARTY_KINDS[kind]) throw new Error(`--parti ${Object.keys(PARTY_KINDS).join('|')}`);
@@ -42,7 +44,7 @@ for (let seed = 1; seed <= runs; seed++) {
   const rng = seeded(seed);
   let state: BattleState = setupBattle(sc, rng, level);
   if (coklu) state = { ...state, multiHex: true };
-  if (binek) state = mountedStart(state);
+  if (binek) state = mountedStart(state, { control: kontrollu });
   for (let g = 0; g < 2000 && state.status === 'active' && state.round <= roundLimit(level); g++) {
     const id = currentActorId(state);
     for (let step = 0; step < 12; step++) {

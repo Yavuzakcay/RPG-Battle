@@ -10,7 +10,7 @@ import { exhaustionGain } from './deathWard';
 import { commandEndHookEvents, turnStartHookEvents } from './turnHooks';
 import { auraTriggerEvents } from './auraCore';
 import { executeDismount, executeMount, riderCleanup } from './mounted';
-import { controlledCommandProblem, controlledNow, ridMountIds } from './binekMb2';
+import { controlledCommandProblem, controlledMountOf, controlledNow, ridMountIds } from './binekMb2';
 import { binekMb2On } from './binekMb2Surum';
 import { binekMb3On, binekOn } from './binekSurum';
 import { climbs, fliesOrHovers } from './flight';
@@ -498,6 +498,12 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk K64a: Game Master ele geçirmeyi her an bitirir (eylemsiz).
   if (cmd.type === 'possession_leave' && cmd.gm) return executePossessionLeave(state, cmd.actorId, true, ctx);
   // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke) başkasının turunda da yapılır.
+  // Kuyruk MB2 (74+): binicinin yürüyüş/atlama komutu kontrollü bineğine gider (binici bineğin hareketiyle taşınır; arayüzün
+  // mevcut "yürü" dokunuşu bineği yürütür).
+  if ((cmd.type === 'move' || cmd.type === 'jump') && binekMb2On(state) && state.status === 'active') {
+    const steed = controlledMountOf(state, state.combatants[cmd.actorId]);
+    if (steed && state.order[state.turnIndex] === cmd.actorId) return executeCommand(state, { ...cmd, actorId: steed.id }, ctx, rng);
+  }
   const outOfTurn0 = (cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName)) || cmd.type === 'initiative_swap';
   // Kuyruk MB2 (74+): kontrollü binek binicisinin turunda, binicinin kararıyla oynar (yalnız hareket, Dash, Disengage, Dodge).
   const ctrl = controlledGate(state, cmd, ctx, outOfTurn0);
