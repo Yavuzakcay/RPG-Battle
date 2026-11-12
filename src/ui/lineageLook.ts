@@ -8,12 +8,13 @@ import wings from '../../data/kanat-esleme.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
 import type { TintSpec } from '../battle/types';
 import { rgbToLab } from './color';
+import { findSubclass } from '../rules/subclasses';
 
 /** Çözülmüş kanat katmanı (jetonun arkası): `src` o anki durumun görseli (`public/` altı yol), filtre renk için. */
 /** `capa`: kanat kökü görsel oranı; `omuz`: kökün jeton yüksekliğinde tepeden oranı; `enBoy`: görsel yüksekliği/genişliği. */
 export interface WingLayerSpec { id: string; src: string; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre: string; open: boolean }
 export interface SkinTone { id: string; ad: { tr: string; en: string }; /** Hedef ten rengi (hex); null: boyasız. */ renk: string | null; rozetRenk: string }
-export interface LookSheet { raceId: string; lineageId?: string; celestialAwakening?: string; level?: number; skinTone?: string }
+export interface LookSheet { raceId: string; classId?: string; /** Seçili alt sınıf kimliği (`kanat-esleme.json` `altSinif` eşlemesi için). */ subclassId?: string; lineageId?: string; celestialAwakening?: string; level?: number; skinTone?: string }
 export interface LineageLook {
   /** CSS `filter` (boşsa yok). */
   filter: string;
@@ -43,9 +44,24 @@ export const tonesFor = (lineageId: string | undefined): SkinTone[] => SKIN_TONE
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
-type WingSlotData = { dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
+type WingSlotData = { altSinif?: string; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
 const W = wings as unknown as { klasor: string; slotlar: Record<string, WingSlotData> };
 export const WING_SLOTS = Object.keys(W.slotlar);
+/** Kanat slotuna bağlı alt sınıf kimlikleri (`altSinif`) ve slotun kimliği. */
+export const wingSlotOfSubclass = (subclassId: string | undefined): string | undefined =>
+  subclassId ? Object.keys(W.slotlar).find((id) => W.slotlar[id]?.altSinif === subclassId) : undefined;
+/** Alt sınıfa bağlı bir kanat slotu var mı (jeton görünümü yalnız o zaman `look` taşır). */
+export const hasSubclassWing = (subclassId: string | undefined): boolean => !!wingSlotOfSubclass(subclassId);
+/**
+ * Seçili alt sınıfın kanat slotu: alt sınıf seçili ve (sınıf biliniyorsa) kayıtta yüklüyse; yüklü değilse (dış içerik silindi ya
+ * da yok) slot yok, hata yok.
+ */
+function subclassWingId(sheet: LookSheet): string | undefined {
+  const id = wingSlotOfSubclass(sheet.subclassId);
+  if (!id) return undefined;
+  if (sheet.classId && !findSubclass(sheet.classId, sheet.subclassId)) return undefined;
+  return id;
+}
 export const lookEntries = (): string[] => Object.keys(D.altSoylar);
 export const awakeningLookIds = (): string[] => Object.keys(D.celestialUyanis);
 
@@ -73,8 +89,12 @@ export function wingBox(wing: WingLayerSpec, cx: number, cy: number, w: number):
   return { x: cx - wing.capa[0] * width, y: cy - w / 2 + w * wing.omuz - wing.capa[1] * height, width, height };
 }
 
-/** Karakterin görünümü; `flying`: uçarken görünen kanatlar (Draconic Flight) da çizilir. */
-export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): LineageLook {
+/**
+ * Karakterin görünümü; `flying`: uçarken görünen kanatlar (Draconic Flight) da çizilir. `ability` (karakter ekranları: liste,
+ * oluşturucu, jeton önizlemesi): karakterin uçma yeteneği varsa (kanat slotu soy/alt soy/alt sınıf ve seviye eşiğiyle eşleşiyorsa)
+ * havada olmasa da açık kanat çizilir; savaş bunu geçirmez, orada kural aynen (yalnız havadayken, `herZaman` hariç).
+ */
+export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?: boolean } = {}): LineageLook {
   const filters: string[] = [];
   let scaleX = 1, scaleY = 1, hideHalo = false;
   let wingId: string | undefined;
@@ -92,8 +112,10 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): 
     if (entry?.oran) { scaleX = entry.oran.en; scaleY = entry.oran.boy; }
     wingId = entry?.kanat;
   }
+  // Alt sınıfa bağlı slot (örn. Melek) ırk/alt soy kanadının yerine geçer; seçili/yüklü değilse hiçbir şey değişmez.
+  wingId = subclassWingId(sheet) ?? wingId;
   if (!wingId && sheet.raceId === 'dragonborn') wingId = 'dragonborn';
-  const wing = wingId ? wingLayer(wingId, level, !!opts.flying, sheet.lineageId) : null;
+  const wing = wingId ? wingLayer(wingId, level, !!(opts.flying || opts.ability), sheet.lineageId) : null;
   return { filter: filters.join(' '), scaleX, scaleY, wing, hideHalo };
 }
 

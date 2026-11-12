@@ -1,5 +1,5 @@
 {
-  "not": "Kuyruk AS1c + kanat bağlama: savaş jetonu kanat katmanı eşlemesi (yalnız görünüm). Katman jetonun ARKASINDA çizilir. Görünürlük: `herZaman: true` her zaman açık sprite ile; yoksa yalnız süzülürken/uçarken (isAirborne) `dosya`, havada değilken `dosyaKapali` (null ise katman yok). `dosya` null iken katman sessizce yok. Görsel: şeffaf WebP, sol+sağ kanat tek görselde, BEYAZ-GRİ taban; renk `filtre` / `renkFiltreleri` (CSS filter) ile verilir. Yerleşim (kanat başına ayarlanabilir): `capa` = [x, y] kanat KÖKÜ, görselin oranı olarak (0–1); `olcek` = kanat çifti genişliği / jeton genişliği; `omuz` = kanat kökünün jeton sprite yüksekliğinde tepeden oranı (≈ omuz yüksekliği); kök jetonun yatay merkezindedir. `enBoy` = görsel yüksekliği / genişliği. AYNALAMA YOK (Celestial kanadı asimetrik). `minSeviye`: slotun göründüğü en düşük karakter seviyesi.",
+  "not": "Kuyruk AS1c + kanat bağlama: savaş jetonu kanat katmanı eşlemesi (yalnız görünüm). Katman jetonun ARKASINDA çizilir. Görünürlük: `herZaman: true` her zaman açık sprite ile; yoksa yalnız süzülürken/uçarken (isAirborne) `dosya`, havada değilken `dosyaKapali` (null ise katman yok). `dosya` null iken katman sessizce yok. Görsel: şeffaf WebP, sol+sağ kanat tek görselde, BEYAZ-GRİ taban; renk `filtre` / `renkFiltreleri` (CSS filter) ile verilir. Yerleşim (kanat başına ayarlanabilir): `capa` = [x, y] kanat KÖKÜ, görselin oranı olarak (0–1); `olcek` = kanat çifti genişliği / jeton genişliği; `omuz` = kanat kökünün jeton sprite yüksekliğinde tepeden oranı (≈ omuz yüksekliği); kök jetonun yatay merkezindedir. `enBoy` = görsel yüksekliği / genişliği. AYNALAMA YOK (Celestial kanadı asimetrik). `minSeviye`: slotun göründüğü en düşük karakter seviyesi. `altSinif` (isteğe bağlı): slotu alt sınıf kimliğine bağlar (örn. `melek`); karakterin seçili alt sınıfı bu kimlikse (ve alt sınıf kayıtta yüklüyse) slot, ırk/alt soy kanadının yerine geçer; alt sınıf seçili ya da yüklü değilse slot hiçbir etki yapmaz. Alan yoksa slot ırk/alt soy/Göksel Uyanış eşlemesiyle (`alt-soy-gorunum.json`) seçilir.",
   "klasor": "kanat",
   "slotlar": {
     "tiefling-kanatli": {
@@ -63,6 +63,23 @@
       ],
       "enBoy": 0.3659,
       "omuz": 0.46
+    },
+    "melek-acik": {
+      "ad": {
+        "tr": "Melek alt sınıfı açık kanadı",
+        "en": "Angel subclass open wing"
+      },
+      "altSinif": "melek",
+      "dosya": "melek-acik.webp",
+      "dosyaKapali": null,
+      "capa": [
+        0.5,
+        0.383
+      ],
+      "enBoy": 0.2721,
+      "olcek": 1.5,
+      "omuz": 0.46,
+      "filtre": ""
     }
   }
 }
