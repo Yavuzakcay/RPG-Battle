@@ -3,6 +3,28 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Görev SD4: açıklamalar Türkçe, adlar İngilizce (kural sürümü 74, kayıt sürümü 22 aynı)
+
+- **Karar (kullanıcı):** eşya, büyü, tür, sınıf, feat, Invocation, silah ve sınıf özelliği **adları İngilizce** kalır; ne yaptığını anlatan açıklama **Türkçe**. Alt sınıf ve geçmiş adları şimdiki Türkçe hâliyle kalır. Hizalanma sistemi görünen adlarıyla **İngilizce**: "Alignment", eksenler "Law–Chaos" / "Good–Evil", 9 etiket (Lawful Good … True Neutral) her dilde İngilizce; açıklama ve günlük metinleri Türkçe. Tek kaynak `data/hizalanma.json` (`ad`, `eksenAdi`, `duzen`/`iyilik`/`gercekTarafsiz` artık düz İngilizce metin); `strings.ts` (adım adı), `strings.tr2.ts`, `strings.en.ts` ve `alignment.ts` `alignmentLabel` oradan okur (`lang` parametresi imzada kaldı, etkisiz). Kimlikler (`duzen`/`iyilik`, `pos`/`neu`/`neg`) ve karakter kayıt sürümü 2 aynı. `ev-kurallari.json` metinleri de "Alignment".
+- **Tarama (oluşturucu ⓘ / kart özeti ve savaş kartı):**
+
+| Kayıt türü | Toplam | Türkçe açıklamalı (önce → sonra) | Eksik |
+|---|---|---|---|
+| Büyü (0–9, `buyu-betimleme.json` + mekanik `text`) | 339 | 339 → 339 | 0 |
+| Eşya (`items.json` + `items-srd.json`) | 399 | 42 → 399 (önce 357'si SRD'nin İngilizce ham metniydi) | 0 |
+| Tür özelliği (`species:<tür>/<özellik>`) | 41 | 0 → 41 (önce yalnız `races.json` traits ad listesi) | 0 |
+| Feat (`aciklamalar.json` feats) | 17 | 17 → 17 | 0 |
+| Sınıf özelliği (SRD tablosu, `sınıf:özellik`) | 185 | 137 → 185 (eksik 48 = her sınıfta alt sınıf, ASI, Subclass Feature, Epic Boon genel satırı) | 0 |
+| Alt sınıf özelliği (`subclasses.json` description) | 58 | 58 → 58 | 0 |
+| Invocation (`class-features.json` `note`) | 28 | 28 → 28 | 0 |
+| Silah ustalığı / silah özelliği | 8 / 9 | 8 / 9 → aynı | 0 |
+
+- **Veri:** yeni `data/aciklamalar-tr.json` (`esyalar`: eşya kimliği → metin; `turOzellikleri`: SRD tür özelliği → `{ ad, tr }`), yalnız Builder parçası okur (`src/ui/descriptions.ts` `itemDescription`, `speciesTraits`); ≈70 kB, ana parçaya girmez. Kimlik ve kapsam testi `src/data/sd4.test.ts` (eşya kimliği gerçek kayıtta, tür özelliği SRD'de ve adı SRD adıyla aynı, her sınıf özelliğinin özeti var). `data/srd/*.json` değişmedi. Metinler SRD 5.2.1'den kısa, düz Türkçe (sayı, zar, DC, ft korunur); kesik SRD metinli birkaç eşya (Efreeti Bottle, Feather Token, Figurine of Wondrous Power) genel anlatıldı.
+- **Gösterim:** eşyada oyunda veriyle tanımlı etki varsa kart özeti etkiyi yazar, yoksa Türkçe açıklamayı (önce SRD ham metni); ⓘ'de "Ad: açıklama — etki". Tür ⓘ'si "Özellik adı: açıklama" satırları (SRD'de olmayan Celestial eskisi gibi). `holy-water` kısa `text`'i 2d6 → 2d8 (mekanik zaten SRD'deki 2d8'di; yalnız görünen not).
+- **İngilizce arayüz:** Türkçe açıklaması olan kayıtta "Description available in Turkish only." notu (`builder.trOnly`), SRD ham metni gösterilmez: eşya, tür özelliği, sınıf özelliği (eski `features.en` SRD'nin ilk cümlesiydi, kaldırıldı) ve savaşta süren etki satırının büyü betimlemesi. Elle yazılmış İngilizce metinler (feat "Ne yapar?", ustalık, silah özelliği, sınıf/tür tanıtımı, alt sınıf) aynen gösterilir.
+- **`characterIssues`:** metinleri `strings.ts`/`strings.en.ts` `builder.issues` tablosuna taşındı (Invocation sorunları da). Kural modülü saf kalsın diye tablo parametre: `characterIssues(c, { msg })`, `invocationProblems(..., M)`; varsayılan `STRINGS_TR` (testler ve eski çağrılar Türkçe). Arayüz (oluşturucu, karakter kartı) `t().builder.issues` verir. Alt modüllerin kendi metinleri (`classSkillProblem`, `advancementProblems`, `masteryProblems`, `offHandProblem`, `magicInitiateProblems`, `featSkillProblems`) bu görevde taşınmadı; önekleri ("Sınıf becerileri:", "Silah ustalığı:", "Yan el:") tabloda.
+- **Değişen testler:** `alignment.test.ts` etiketleri İngilizce (kullanıcı kararı); `altSoy41.test.tsx` tür ⓘ'si "Darkvision: 120 ft…" (SRD özellik listesi); `spellDescription.test.ts` EN'de betimleme yerine not.
+
 ## 2026-11-12 — Kuyruk MB8: binek hattının denge ölçümü ve kapanışı (kural sürümü 74'te kaldı)
 
 - **Sürüm:** planda MB8 için kural değişikliği yazılı değil (BINEK-PLAN §7.2 "Kural sürümü —"); sürüm **74'te kaldı**, `ruleVersion.test.ts`/`g6.test.ts` değişmedi, regresyon testi gerekmedi. YZ süresi ölçümündeki 75 sütunu yok (73 ↔ 74 karşılaştırıldı).

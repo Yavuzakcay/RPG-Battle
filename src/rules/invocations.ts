@@ -5,6 +5,8 @@
  */
 import { classData, spells, type Invocation } from '../data';
 import { gainedFeatures, tableValue } from './classFeatures';
+import { STRINGS_TR } from '../i18n/strings';
+import type { IssueTexts } from './builder';
 
 /** Bu sınıfın Invocation özelliği ve seviyedeki sayı (yoksa null). */
 export function invocationSlots(classId: string, level: number): { list: Invocation[]; count: number } | null {
@@ -43,26 +45,26 @@ export const TOME_RITUALS = (): string[] => allInvocations().find((v) => v.id ==
 export const LESSON_FEATS = ['alert', 'magic-initiate', 'savage-attacker', 'skilled'];
 
 /** Seçimin sorunları (boş liste: geçerli). */
-export function invocationProblems(classId: string, level: number, chosen: string[] = [], known: string[] = []): string[] {
+export function invocationProblems(classId: string, level: number, chosen: string[] = [], known: string[] = [], M: IssueTexts = STRINGS_TR.builder.issues): string[] {
   const slots = invocationSlots(classId, level);
-  if (!slots) return chosen.length ? ['Bu sınıfta Invocation yok.'] : [];
+  if (!slots) return chosen.length ? [M.invNone] : [];
   const out: string[] = [];
-  if (chosen.length !== slots.count) out.push(`Eldritch Invocations: ${slots.count} seçilmeli (${chosen.length} seçildi).`);
+  if (chosen.length !== slots.count) out.push(M.invCount(slots.count, chosen.length));
   const ids = chosen.map((x) => parseInvocation(x)[0]);
   for (const x of chosen) {
     const [id, cantrip] = parseInvocation(x);
     const inv = slots.list.find((v) => v.id === id);
-    if (!inv) { out.push(`Bilinmeyen Invocation: ${id}.`); continue; }
-    if (level < inv.minLevel) out.push(`${inv.name} ${inv.minLevel}. seviyeden.`);
-    if (inv.requires && !ids.includes(inv.requires)) out.push(`${inv.name} için önce ${slots.list.find((v) => v.id === inv.requires)?.name ?? inv.requires}.`);
-    if (inv.repeatable && inv.repeatable !== 'feat' && (!cantrip || !eligibleCantrips(inv, known).includes(cantrip))) out.push(`${inv.name}: uygun bir cantrip seçilmeli.`);
+    if (!inv) { out.push(M.invUnknown(id)); continue; }
+    if (level < inv.minLevel) out.push(M.invMinLevel(inv.name, inv.minLevel));
+    if (inv.requires && !ids.includes(inv.requires)) out.push(M.invRequires(inv.name, slots.list.find((v) => v.id === inv.requires)?.name ?? inv.requires));
+    if (inv.repeatable && inv.repeatable !== 'feat' && (!cantrip || !eligibleCantrips(inv, known).includes(cantrip))) out.push(M.invCantrip(inv.name));
     // Kuyruk 19: Pact of the Tome: iki ritüel büyüsü.
-    if (inv.effect?.rituals && (cantrip ?? '').split('|').filter((n) => TOME_RITUALS().includes(n)).length < inv.effect.rituals) out.push(`${inv.name}: ${inv.effect.rituals} ritüel büyüsü seçilmeli.`);
+    if (inv.effect?.rituals && (cantrip ?? '').split('|').filter((n) => TOME_RITUALS().includes(n)).length < inv.effect.rituals) out.push(M.invRituals(inv.name, inv.effect.rituals));
     // Kuyruk 19: Lessons of the First Ones: bir köken feat'i (Magic Initiate'te liste de).
-    if (inv.repeatable === 'feat' && (!cantrip || !LESSON_FEATS.includes(cantrip.split('@')[0] as string) || (cantrip.startsWith('magic-initiate') && !cantrip.includes('@')))) out.push(`${inv.name}: bir köken feat'i seçilmeli.`);
-    if (!inv.repeatable && ids.filter((y) => y === id).length > 1) out.push(`${inv.name} bir kez seçilir.`);
+    if (inv.repeatable === 'feat' && (!cantrip || !LESSON_FEATS.includes(cantrip.split('@')[0] as string) || (cantrip.startsWith('magic-initiate') && !cantrip.includes('@')))) out.push(M.invFeat(inv.name));
+    if (!inv.repeatable && ids.filter((y) => y === id).length > 1) out.push(M.invOnce(inv.name));
   }
-  if (new Set(chosen).size !== chosen.length) out.push('Aynı Invocation aynı cantrip için iki kez seçilemez.');
+  if (new Set(chosen).size !== chosen.length) out.push(M.invTwice);
   return out;
 }
 

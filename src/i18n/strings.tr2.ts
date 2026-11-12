@@ -3,6 +3,8 @@
  * `src/i18n/index.ts` `loadTrExtra` ilk çizimden önce yükleyip `STRINGS_TR`'ye ekler (davranış aynı).
  */
 import { whyTable } from '../ui/reasons';
+// Görev SD4: Alignment görünen adları tek kaynaktan (data/hizalanma.json).
+import HZ from '../../data/hizalanma.json';
 /** Görev S2: nesne adları (günlük). */
 const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg: 'barut fıçısı', chest: 'sandık', table: 'masa', door: 'kapı', brazier: 'mangal' };
 
@@ -471,26 +473,26 @@ export const TR_EXTRA = {
     unavailable: (reason: string) => ` Şu an kullanılamaz: ${reason}`, unavailablePlain: ' Şu an kullanılamaz.',
   },
   view: {
-    /** Kuyruk K51: Hizalanma (ev kuralı; tembel parça). */
+    /** Kuyruk K51: Alignment (ev kuralı; tembel parça). Görev SD4: adlar İngilizce, data/hizalanma.json. */
     hizalanma: {
-      title: 'Hizalanma', step: 'Hizalanma', law: 'Düzen', good: 'İyilik', start: 'Başlangıç', now: 'Şimdi',
-      cols: ['Düzenli', 'Tarafsız', 'Kaotik'], rows: ['İyi', 'Tarafsız', 'Kötü'],
-      intro: 'Sınıfın, geçmişin, alt sınıfın ve kültürün başlangıç hizalanmanı belirler (en çok ±50). İbre otomatik yerleşti.',
+      title: HZ.ad, step: HZ.ad, law: HZ.eksenAdi.duzen, good: HZ.eksenAdi.iyilik, start: 'Başlangıç', now: 'Şimdi',
+      cols: [HZ.duzen.pos, HZ.duzen.neu, HZ.duzen.neg], rows: [HZ.iyilik.pos, HZ.iyilik.neu, HZ.iyilik.neg],
+      intro: `Sınıfın, geçmişin, alt sınıfın ve kültürün başlangıç ${HZ.ad} değerini belirler (eksen başına en çok ±50). İbre otomatik yerleşti.`,
       sources: { sinif: 'Sınıf', gecmis: 'Geçmiş', altSinif: 'Alt sınıf', irk: 'Irk/kültür' } as Record<string, string>,
       total: 'Toplam (kırpılmış)', accept: 'Kabul et', reject: 'Kabul etme',
-      options: { orta: 'Orta nokta (0/0)', 'satir-orta': 'Satırın orta çizgisi (Düzen 0)', 'sutun-orta': 'Sütunun orta çizgisi (İyilik 0)' } as Record<string, string>,
+      options: { orta: 'Orta nokta (0/0)', 'satir-orta': `Satırın orta çizgisi (${HZ.eksenAdi.duzen} 0)`, 'sutun-orta': `Sütunun orta çizgisi (${HZ.eksenAdi.iyilik} 0)` } as Record<string, string>,
       chosen: (k: string) => `Seçim: ${k}`,
       kinds: { otomatik: 'otomatik', orta: 'orta nokta', 'satir-orta': 'satır orta çizgisi', 'sutun-orta': 'sütun orta çizgisi', gm: 'Game Master' } as Record<string, string>,
       autoOnly: 'Game Master ayarı: başlangıç yalnız otomatik.',
       locked: 'Başlangıç belirlendi; yalnız Game Master yeniden belirleyebilir.',
       updated: (d: number, g: number) => `Alt sınıf değişti: başlangıç yeni toplama güncellenecek (${d}/${g}).`,
       suggested: (d: number, g: number) => `Önerilen şu olurdu: ${d}/${g} (başlangıcın değişmez).`,
-      panel: 'Hizalanma', pick: 'Karakter', quick: 'Hazır olaylar', free: 'Serbest giriş', reason: 'Gerekçe', amount: 'Miktar', add: 'Ekle',
+      panel: HZ.ad, pick: 'Karakter', quick: 'Hazır olaylar', free: 'Serbest giriş', reason: 'Gerekçe', amount: 'Miktar', add: 'Ekle',
       log: 'Günlük', undo: 'Geri al', redo: 'Geri getir', half: 'yarı etki', hide: 'Kartta gizli', redetermine: 'Yeniden belirle',
       redetermineReason: 'Game Master yeniden belirledi', empty: 'Henüz kayıt yok.',
-      flag: 'Hizalanma (ev kuralı)', raceFlag: 'Irk/kültür katkısı', autoFlag: 'Başlangıç yalnız otomatik (kabul etmeme kapalı)',
+      flag: `${HZ.ad} (ev kuralı)`, raceFlag: 'Irk/kültür katkısı', autoFlag: 'Başlangıç yalnız otomatik (kabul etmeme kapalı)',
       note: 'Savaş hesabına girmez. Kapalıyken hiçbir yerde görünmez.',
-      moralFlag: 'Hizalanma ↔ Moral bağı (hizalanma ve Moral de açıkken)',
+      moralFlag: `${HZ.ad} ↔ Moral bağı (${HZ.ad} ve Moral de açıkken)`,
       moralLine: (m: number, max: number) => `Moral ${m}/${max}`, swing: (k: number) => `savrulma ×${k}`,
       moralOff: 'Bu olayda Moral etkisi yok',
       reasons: { vicdan: 'vicdan çatışması', huzur: 'iç huzur', yeniYol: 'yeni yol' } as Record<string, string>,

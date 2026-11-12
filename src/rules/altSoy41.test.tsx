@@ -70,7 +70,8 @@ describe('41 alt soy', () => {
     const m = html(char({ raceId: 'dwarf', lineageId: 'knoll' }));
     expect(m).toContain('Dayanıklılık kurtarma zarlarında +1');
     expect(m).toContain('Çeviklik kurtarma zarlarında −1');
-    expect(m).toContain('Darkvision 120 ft');
+    // Görev SD4: tür ⓘ'si SRD özellik listesi (ad İngilizce + Türkçe açıklama); eski özet satırı "Darkvision 120 ft" yerine.
+    expect(m).toContain('Darkvision: 120 ft');
     // SD3: "çalışır / kısmi" durum etiketi oyuncuya gösterilmez (yalnız planlı için küçük "yakında").
     expect(m).not.toContain('data-status');
   });

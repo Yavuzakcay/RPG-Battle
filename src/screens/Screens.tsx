@@ -173,7 +173,7 @@ function masteryList(sheet: SavedCharacter['sheet']): string {
 
 function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; rest?: React.ReactNode }) {
   const { sheet } = props.c;
-  const problems = characterProblems(props.c);
+  const problems = characterProblems(props.c, { msg: t().builder.issues });
   let line = '';
   try {
     const d = deriveStats(sheet);

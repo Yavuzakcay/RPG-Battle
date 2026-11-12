@@ -8,7 +8,7 @@ import { eligibleForms, shapeLimits } from '../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, LESSON_FEATS, parseInvocation } from '../rules/invocations';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { armor, classDataLoaded, classes, getClass, items, loadMonsters, monsters, monstersLoaded, races, spells, weapons } from '../data';
-import { classBlurb, featInfo, raceBlurb } from '../ui/descriptions';
+import { classBlurb, featInfo, raceBlurb, speciesTraits } from '../ui/descriptions';
 import { characterTokenFile, monsterAvatar, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
@@ -148,7 +148,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const final = withSkills(c);
   // Görev K5: taşıma kuralı (Ayarlar); SRD sınırında aşan karakter eksik.
   const carryRule = useMemo(() => storedCarryRule(), []);
-  const issues = characterIssues(final, { carryRule });
+  const issues = characterIssues(final, { carryRule, msg: t().builder.issues });
   const problems = issues.map((x) => x.text);
   const derived = useMemo(() => {
     try { return deriveStats(final.sheet); } catch { return null; }
@@ -443,7 +443,7 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           <p><b>{race.name}</b> {raceBlurb(race.id, lang)}
             <InfoPop text={[W.speed(raceSpeed(s)), raceDarkvision(s) ? W.darkvision(raceDarkvision(s)) : '',
               race.resistances?.length || lineage?.resistances.length ? W.resist([...new Set([...race.resistances, ...(lineage?.resistances ?? [])])].join(', ')) : '',
-              race.evKurali ? [CELESTIAL.hikaye[lang], ...CELESTIAL.ozellikler.map((o) => `${o[lang]}: ${o.metin[lang]}`)].join('\n') : race.traits].filter(Boolean).join(' · ')} /></p>
+              race.evKurali ? [CELESTIAL.hikaye[lang], ...CELESTIAL.ozellikler.map((o) => `${o[lang]}: ${o.metin[lang]}`)].join('\n') : raceTraitsText(race.id, race.traits)].filter(Boolean).join(' · ')} /></p>
           {abilities.length > 0 && <LineageAbilities list={abilities} />}
         </div>
       )}
@@ -1361,6 +1361,18 @@ function masteryLabels(s: CharacterSheet): string[] {
     const name = m ? masteryText(m)?.name ?? m : '';
     return `${w?.name ?? id} (${name}${m && !masteryWorks(m) ? `, ${T.masteryNotWorking}` : ''})`;
   });
+}
+
+/**
+ * Görev SD4: türün SRD özellikleri ⓘ'de "Ad: açıklama" satırları (ad İngilizce, açıklama Türkçe; EN'de "yalnız Türkçe"
+ * notu bir kez). Tür SRD'de yoksa verideki özet (`races.json` traits).
+ */
+function raceTraitsText(raceId: string, fallback: string): string {
+  const lang = getLang();
+  const list = speciesTraits(raceId, lang);
+  if (list.length === 0) return fallback;
+  if (lang !== 'tr') return `${list.map((x) => x.name).join(', ')} (${t().builder.trOnly})`;
+  return list.map((x) => `${x.name}: ${x.text}`).join('\n');
 }
 
 /**

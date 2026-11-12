@@ -135,7 +135,7 @@
     "srd": "gear:holy-water",
     "attunement": false,
     "weight": 1,
-    "text": "2d6 radiant (fiend/undead)",
+    "text": "2d8 radiant (fiend/undead)",
     "effects": {},
     "use": {
       "kind": "throw",

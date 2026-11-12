@@ -26,10 +26,10 @@ describe('büyü betimlemesi (etki satırı)', () => {
     const s = setup('Düz', { C: { effects: [{ id: 'ozel:yok', name: 'Özel', sourceId: 'A', until: 5 }] } });
     expect('desc' in effectRows(s, s.combatants.C as Combatant)[0]!).toBe(false);
   });
-  it('EN modunda betimleme gizli (en metni yok, tr gösterilmez); en eklenirse görünür', () => {
+  it('EN modunda Türkçe betimleme gösterilmez, yerine "yalnız Türkçe" notu (Görev SD4); en eklenirse görünür', () => {
     setLang('en'); // EN tablosu test kurulumunda yüklü (src/test-setup.ts)
     expect(getLang()).toBe('en');
-    expect('desc' in rowOf(bless())).toBe(false);
+    expect(rowOf(bless()).desc).toBe('Description available in Turkish only.');
     const saved = spellDescriptions.bless;
     spellDescriptions.bless = { ...saved!, en: 'A divine light falls.' };
     try { expect(rowOf(bless()).desc).toBe('A divine light falls.'); } finally { spellDescriptions.bless = saved!; }

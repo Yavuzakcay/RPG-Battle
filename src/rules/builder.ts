@@ -18,6 +18,9 @@ import { masteryProblems } from './mastery';
 import { carryLoad, type CarryRule } from './carry';
 import { offHandProblem } from './hands';
 import type { CharacterStatus } from './characterRest';
+// Görev SD4: sorun metinleri i18n tablosundan (saf veri; arayüz dilin tablosunu `msg` ile verir, varsayılan TR).
+import { STRINGS_TR } from '../i18n/strings';
+export type IssueTexts = typeof STRINGS_TR.builder.issues;
 
 export const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8] as const;
 export const POINT_BUY_BUDGET = 27;
@@ -312,7 +315,8 @@ export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equi
 export interface CharacterIssue { step: BuilderStep; text: string }
 
 /** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */
-export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRule } = {}): CharacterIssue[] {
+export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRule; msg?: IssueTexts } = {}): CharacterIssue[] {
+  const M = opts.msg ?? STRINGS_TR.builder.issues;
   // Görev K20: eski kayıtta Skilled becerileri diğer becerilerin içinde.
   const c = normalizeFeatSkills(c0);
   // Görev K17: başka sınıfa ait seçimler sessizce yok sayılır.
@@ -320,82 +324,82 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   const out: CharacterIssue[] = [];
   let step: BuilderStep = 'character';
   const push = (text: string) => out.push({ step, text });
-  if (s.name.trim() === '') push('Ad boş olamaz.');
+  if (s.name.trim() === '') push(M.nameEmpty);
   const race = races.find((r) => r.id === s.raceId);
-  if (!race) push('Tür seçilmeli.');
-  if (!classes.some((k) => k.id === s.classId)) push('Sınıf seçilmeli.');
-  if (!Number.isInteger(s.level) || s.level < 1 || s.level > 20) push('Seviye 1–20 olmalı.');
+  if (!race) push(M.raceNeeded);
+  if (!classes.some((k) => k.id === s.classId)) push(M.classNeeded);
+  if (!Number.isInteger(s.level) || s.level < 1 || s.level > 20) push(M.levelRange);
   if (race?.lineages && race.lineages.length > 0 && !race.lineageOptional && !race.lineages.some((l) => l.id === s.lineageId)) {
-    push(`${race.name} için soy seçilmeli.`);
+    push(M.lineageNeeded(race.name));
   }
   step = 'scores';
-  if (c.method === 'standard' && !usesStandardArray(s.baseScores)) push('Standart dizi (15, 14, 13, 12, 10, 8) her skora bir kez dağıtılmalı.');
-  if (c.method === 'roll' && !usesRolled(s.baseScores, c.rolled)) push(c.rolled ? 'Atılan altı değer her skora bir kez dağıtılmalı.' : 'Skorlar için zar atılmalı (4d6).');
+  if (c.method === 'standard' && !usesStandardArray(s.baseScores)) push(M.standardArray);
+  if (c.method === 'roll' && !usesRolled(s.baseScores, c.rolled)) push(c.rolled ? M.rolledAssign : M.rollNeeded);
   if (c.method === 'pointBuy') {
     const cost = pointBuyCost(s.baseScores);
-    if (cost === null) push('Point buy\'da skorlar 8–15 arası olmalı.');
-    else if (cost > POINT_BUY_BUDGET) push(`Point buy ${cost} puan: en çok ${POINT_BUY_BUDGET}.`);
+    if (cost === null) push(M.pointBuyRange);
+    else if (cost > POINT_BUY_BUDGET) push(M.pointBuyOver(cost, POINT_BUY_BUDGET));
   }
   step = 'skills';
   if (classes.some((k) => k.id === s.classId)) {
     const level = Number.isInteger(s.level) && s.level >= 1 && s.level <= 20 ? s.level : 1;
     const skillProblem = classSkillProblem(s.classId, c.classSkills, classKit(s.classId, level, s.subclassId).extraClassSkills);
-    if (skillProblem) push(`Sınıf becerileri: ${skillProblem}`);
+    if (skillProblem) push(M.classSkills(skillProblem));
   }
   // Görev K20: Skilled becerileri ayrı (İlerleme adımı); geçmiş ve türden en çok 3.
-  if (c.otherSkills.length > 3) push('Geçmiş ve türden en çok 3 beceri.');
-  if (c.otherSkills.some((x) => c.classSkills.includes(x))) push('Aynı beceri hem sınıftan hem geçmişten seçilmiş.');
+  if (c.otherSkills.length > 3) push(M.otherSkillsMax);
+  if (c.otherSkills.some((x) => c.classSkills.includes(x))) push(M.skillTwice);
   // Görev G1: geçmişin iki becerisi kilitli; sınıftan da seçilmişse çakışma (K20 uyarısı gibi).
-  for (const x of backgroundSkills(s)) if (c.classSkills.includes(x)) push(`${SKILLS[x].name} zaten geçmişten geliyor; başka bir sınıf becerisi seç.`);
-  if (c.otherSkills.some((x) => !SKILL_IDS.includes(x))) push('Bilinmeyen beceri.');
+  for (const x of backgroundSkills(s)) if (c.classSkills.includes(x)) push(M.skillFromBackground(SKILLS[x].name));
+  if (c.otherSkills.some((x) => !SKILL_IDS.includes(x))) push(M.unknownSkill);
   step = 'equipment';
-  if (!armor.some((a) => a.name === s.armorName)) push('Zırh seçilmeli.');
+  if (!armor.some((a) => a.name === s.armorName)) push(M.armorNeeded);
   // Görev K4: SRD "Attunement": en çok 3 uyumlu eşya (fazlasının etkisi savaşta uygulanmaz).
   const attuned = s.itemNames.filter((n) => items.find((i) => i.name === n)?.attunement).length;
-  if (attuned > MAX_ATTUNED) push(`Uyum gerektiren en çok ${MAX_ATTUNED} eşya (${attuned} seçildi).`);
+  if (attuned > MAX_ATTUNED) push(M.attuneMax(MAX_ATTUNED, attuned));
   // Görev K5: SRD taşıma sınırı (yalnızca oluşturucu sorar; kayıtlı karakter listede ve savaşta engellenmez).
   if (opts.carryRule === 'srd') {
     const load = carryLoad(s, 'srd');
-    if (load.level === 'over') push(`Taşınan ${load.weight} lb, kapasite ${load.capacity} lb (Güç × 15).`);
+    if (load.level === 'over') push(M.carryOver(load.weight, load.capacity));
   }
-  for (const w of s.weapons ?? []) if (!weapons.some((x) => x.name === w.name)) push(`Bilinmeyen silah: ${w.name}`);
+  for (const w of s.weapons ?? []) if (!weapons.some((x) => x.name === w.name)) push(M.unknownWeapon(w.name));
   step = 'spells';
   if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= 20) {
     const alt = alternativeCantrips(s);
     const own = new Set(spellOptions(s.classId, s.level));
     const allowed = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alt.options]);
-    for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) push(`${sp} bu sınıf ve seviyede seçilemez.`);
+    for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) push(M.spellNotAllowed(sp));
     // Kuyruk 18 H3: Magical Discoveries sınırı (başka listelerden en çok N büyü).
     const cap = discoveryCap(s.classId, s.level, s.subclassId);
     const off = (s.spellNames ?? []).filter((n) => !own.has(n) && !alt.options.includes(n) && allowed.has(n)).length;
-    if (cap !== null && cap > 0 && off > cap) push(`Başka listelerden en çok ${cap} büyü (${off} seçildi).`);
+    if (cap !== null && cap > 0 && off > cap) push(M.discoveryCap(cap, off));
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
-    if (altChosen > alt.max) push(`Blessed Warrior gibi seçenekten en çok ${alt.max} cantrip (${altChosen} seçildi).`);
+    if (altChosen > alt.max) push(M.altCantrips(alt.max, altChosen));
     // Görev K6: SRD tablosundaki sınırlar; fazla seçim sessizce ayıklanmaz, eksik olarak görünür.
     const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
     const cnt = spellCounts(s);
-    if (cnt.cantrips > lim.cantrips) push(`Cantrip fazla (${cnt.cantrips} / ${lim.cantrips}).`);
-    if (cnt.prepared > lim.prepared) push(`Hazırlanan büyü fazla (${cnt.prepared} / ${lim.prepared}).`);
+    if (cnt.cantrips > lim.cantrips) push(M.cantripsOver(cnt.cantrips, lim.cantrips));
+    if (cnt.prepared > lim.prepared) push(M.preparedOver(cnt.prepared, lim.prepared));
     if (lim.spellbook !== null) {
-      if (cnt.book.length > lim.spellbook) push(`Büyü kitabı fazla (${cnt.book.length} / ${lim.spellbook}).`);
+      if (cnt.book.length > lim.spellbook) push(M.spellbookOver(cnt.book.length, lim.spellbook));
       for (const n of s.spellNames ?? []) {
-        if ((spells.find((x) => x.name === n)?.level ?? 0) > 0 && !cnt.book.includes(n)) push(`${n} büyü kitabında değil.`);
+        if ((spells.find((x) => x.name === n)?.level ?? 0) > 0 && !cnt.book.includes(n)) push(M.notInBook(n));
       }
     }
     // Alt sınıf, seviye yuvaları (ASI/feat), uzmanlık hakkı (Görev N).
     // Kayıtta olmayan alt sınıf (dış içerik silindi ya da kapalı; Görev E1) sorun sayılmaz: karakter bozulmaz, alt sınıf
     // özellikleri olmadan oynar, listede "içerik eksik" görünür (`subclassMissing`).
     step = 'character';
-    if (!s.subclassId && needsSubclass(s)) push(`Alt sınıf seçilmeli (${subclassLevel(s.classId)}. seviyede).`);
+    if (!s.subclassId && needsSubclass(s)) push(M.subclassNeeded(subclassLevel(s.classId) ?? 0));
     // Görev SORCERER: Metamagic seçenekleri (sayı sınıf verisinden).
     const mm = classKit(s.classId, s.level, s.subclassId).metamagic;
     const picked = s.metamagic ?? [];
-    if (mm && mm.count > 0 && picked.length !== mm.count) push(`Metamagic: ${mm.count} seçenek seçilmeli (${picked.length} seçildi).`);
-    if (mm && picked.some((id) => mm.costs[id] === undefined)) push('Metamagic: bilinmeyen seçenek.');
+    if (mm && mm.count > 0 && picked.length !== mm.count) push(M.metamagicCount(mm.count, picked.length));
+    if (mm && picked.some((id) => mm.costs[id] === undefined)) push(M.metamagicUnknown);
     // Görev WARLOCK: Eldritch Invocations (sayı SRD tablosundan) ve pact silahı.
-    invocationProblems(s.classId, s.level, s.invocations, s.spellNames ?? []).forEach(push);
+    invocationProblems(s.classId, s.level, s.invocations, s.spellNames ?? [], M).forEach(push);
     if (invocationKit(s.classId, s.level, s.invocations).pactWeapon && !(s.weapons ?? []).some((w) => w.name === s.pactWeapon)) {
-      push('Pact of the Blade: taşınan bir yakın dövüş silahı pact silahı seçilmeli.');
+      push(M.pactBlade);
     }
     step = 'progress';
     featSkillProblems(c).forEach(push);
@@ -410,18 +414,18 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     const ekit = classKit(s.classId, s.level, s.subclassId);
     const allowedExpertise = ekit.expertise;
     const chosen = s.expertise ?? [];
-    if (chosen.length > allowedExpertise) push(`Uzmanlık (Expertise) en çok ${allowedExpertise} beceride (${chosen.length} seçildi).`);
+    if (chosen.length > allowedExpertise) push(M.expertiseMax(allowedExpertise, chosen.length));
     // Kuyruk 19: listeyle sınırlı uzmanlık (Scholar): serbest hak sayısını aşan seçimler listeden olmalı.
     const limited = ekit.expertiseLimited.reduce((n, g) => n + g.count, 0);
     if (limited > 0) {
       const pool = new Set(ekit.expertiseLimited.flatMap((g) => g.skills));
       const outside = chosen.filter((k) => !pool.has(k)).length;
-      if (outside > allowedExpertise - limited) push(`Uzmanlık: ${limited} seçim yalnızca şu becerilerden: ${[...pool].join(', ')}.`);
+      if (outside > allowedExpertise - limited) push(M.expertiseLimited(limited, [...pool].join(', ')));
     }
     step = 'equipment';
-    masteryProblems(s).forEach((p) => push(`Silah ustalığı: ${p}`));
+    masteryProblems(s).forEach((p) => push(M.mastery(p)));
     const hand = offHandProblem(s);
-    if (hand) push(`Yan el: ${hand}`);
+    if (hand) push(M.offHand(hand));
   }
   if (out.length === 0) {
     step = 'summary';
@@ -436,7 +440,7 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
 
 /** Karakter alt sınıf seçmiş olmalı mı (alt sınıf seviyesine ulaştı). */
 /** Kaydetmeyi engelleyen sorunlar (metin). */
-export function characterProblems(c: SavedCharacter, opts: { carryRule?: CarryRule } = {}): string[] {
+export function characterProblems(c: SavedCharacter, opts: { carryRule?: CarryRule; msg?: IssueTexts } = {}): string[] {
   return characterIssues(c, opts).map((x) => x.text);
 }
 

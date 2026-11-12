@@ -3,7 +3,8 @@
  * Yalnızca veri alanlarından üretilir (data/armor.json, weapons.json, items.json; SRD 5.2.1 tabloları).
  */
 import type { Armor, Item, Weapon } from '../data/types';
-import { t } from '../i18n';
+import { getLang, t } from '../i18n';
+import { itemDescription } from './descriptions';
 
 const abilityShort = (a: string) => a.toUpperCase();
 
@@ -56,8 +57,8 @@ export function weaponDetail(w: Weapon): string {
   return parts.join(' ');
 }
 
-/** Eşyanın oyunda uygulanan etkileri; uygulanmayanlarda verideki açıklama. */
-export function itemSummary(it: Item): string {
+/** Eşyanın oyunda uygulanan etkilerinin kısa metinleri (boş: veriyle tanımlı etki yok). */
+function itemEffectsText(it: Item): string[] {
   const e = t().equip;
   const fx: string[] = [];
   if (it.effects.acBonus) fx.push(e.itemEffect.acBonus(it.effects.acBonus));
@@ -73,7 +74,16 @@ export function itemSummary(it: Item): string {
   if (it.spells?.length) fx.push(e.itemEffect.spells(it.spells.map((x) => x.name).join(', '), it.charges));
   if (it.use) fx.push(e.itemEffect.use[it.use.kind] ?? '');
   if (it.passive && Object.keys(it.passive).length) fx.push(e.itemEffect.passive);
-  return [...(fx.length ? fx : [it.text]), it.attunement ? e.attunement : ''].filter(Boolean).join(' · ');
+  return fx;
+}
+
+/**
+ * Eşyanın oyunda uygulanan etkileri; uygulanmayanlarda kısa açıklaması (Görev SD4: `data/aciklamalar-tr.json`, EN'de
+ * "yalnız Türkçe" notu; SRD ham metni gösterilmez).
+ */
+export function itemSummary(it: Item): string {
+  const fx = itemEffectsText(it);
+  return [...(fx.length ? fx : [itemDescription(it.id, getLang()) || it.text]), it.attunement ? t().equip.attunement : ''].filter(Boolean).join(' · ');
 }
 
 /** Kuyruk A5: eşyanın savaşta veriyle tanımlı bir etkisi var mı (yoksa "Game Master işler"). */
@@ -84,5 +94,9 @@ export function itemHasMechanic(it: Item): boolean {
 export function itemDetail(it: Item): string {
   const e = t().equip;
   const auto = itemHasMechanic(it);
-  return `${it.name}: ${itemSummary(it)}${auto ? '' : ` (${e.noMechanic})`}.`;
+  // Görev SD4: önce ne olduğu (Türkçe açıklama), sonra oyundaki etkisi.
+  const desc = itemDescription(it.id, getLang());
+  const fx = [...itemEffectsText(it), it.attunement ? e.attunement : ''].filter(Boolean).join(' · ');
+  const body = [desc, fx || (desc ? '' : it.text)].filter(Boolean).join(' — ');
+  return `${it.name}: ${body}${auto ? '' : ` (${e.noMechanic})`}`;
 }

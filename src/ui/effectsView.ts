@@ -2,7 +2,10 @@
  * Süren etkilerin görünümü (Görev R2): jetondaki simgeler ve karttaki satırlar (simge, ad, kaynak, kalan tur ya da
  * konsantrasyon, açıklama). İşaretler (Hunter's Mark, Hex) büyücünün konsantrasyon hedefinden okunur.
  */
-import { spells, spellDescriptionShown } from '../data';
+import { spells, spellDescriptionOf, spellDescriptionShown } from '../data';
+
+/** Görev SD4: o dilde betimleme yoksa ve Türkçesi varsa EN'de "yalnız Türkçe" notu. */
+const descOf = (id: string): string | undefined => spellDescriptionShown(id, getLang()) ?? (spellDescriptionOf(id, 'tr') ? t().builder.trOnly : undefined);
 import type { BattleState, Combatant } from '../battle';
 import { getLang, t } from '../i18n';
 import { spellBadgeImg } from './damageFloats';
@@ -22,7 +25,7 @@ export function effectRows(state: BattleState, c: Combatant): EffectRow[] {
     const icon = e.icon ?? sp?.mechanics.effect?.icon ?? sp?.mechanics.ongoing?.icon ?? '✦';
     const left = e.concentration ? E.concentration(n(e.sourceId)) : e.until !== undefined ? E.rounds(Math.max(1, e.until - state.round + 1)) : '';
     const harmful = e.dice?.sign === -1 || !!e.ongoing || !!e.command || !!e.damagePenalty || !!e.attackDis || !!e.repeatSave || !!e.delayed || e.size === -1 || !!e.noReactions || !!e.saveDis;
-    const desc = sp ? spellDescriptionShown(sp.id, getLang()) : undefined;
+    const desc = sp ? descOf(sp.id) : undefined;
     rows.push({ key: e.id, icon, name: e.name, detail: [E.from(n(e.sourceId)), left].filter(Boolean).join(' · '), text: sp?.text ?? '', harmful, ...(desc ? { desc } : {}) });
   }
   // İşaret (Hunter's Mark, Hex): bir büyücünün konsantrasyon hedefi bu savaşçıysa.
@@ -30,7 +33,7 @@ export function effectRows(state: BattleState, c: Combatant): EffectRow[] {
     const conc = caster.concentration;
     const sp = spells.find((s) => s.name === conc?.spell);
     if (conc?.targetId === c.id && sp?.mechanics.kind === 'mark') {
-      const desc = spellDescriptionShown(sp.id, getLang());
+      const desc = descOf(sp.id);
       rows.push({ key: `mark:${caster.id}`, icon: '🎯', name: sp.name, detail: E.concentration(caster.name), text: E.mark(sp.name, caster.name), harmful: true, ...(desc ? { desc } : {}) });
     }
   }

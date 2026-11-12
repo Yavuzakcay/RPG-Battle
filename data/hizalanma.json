@@ -1,42 +1,26 @@
 {
- "not": "K51: hizalanma parametreleri (eksen aralığı, başlangıç kırpması, etiket eşiği, histerezis, serbest giriş sınırı) ve 9 etiket.",
+ "not": "K51: hizalanma parametreleri (eksen aralığı, başlangıç kırpması, etiket eşiği, histerezis, serbest giriş sınırı) ve 9 etiket. SD4 (kullanıcı kararı): görünen adlar İngilizce ve tek kaynak burası (ad, eksenAdi, 9 etiket); açıklama ve günlük metinleri Türkçe kalır; kimlikler (duzen/iyilik, pos/neu/neg) ve kayıt biçimi aynı.",
  "eksen": 50,
  "baslangicKirp": 50,
  "esik": 17,
  "histerezis": 2,
  "serbestEnCok": 10,
+ "ad": "Alignment",
+ "eksenAdi": {
+  "duzen": "Law–Chaos",
+  "iyilik": "Good–Evil"
+ },
  "duzen": {
-  "pos": {
-   "tr": "Düzenli",
-   "en": "Lawful"
-  },
-  "neu": {
-   "tr": "Tarafsız",
-   "en": "Neutral"
-  },
-  "neg": {
-   "tr": "Kaotik",
-   "en": "Chaotic"
-  }
+  "pos": "Lawful",
+  "neu": "Neutral",
+  "neg": "Chaotic"
  },
  "iyilik": {
-  "pos": {
-   "tr": "İyi",
-   "en": "Good"
-  },
-  "neu": {
-   "tr": "Tarafsız",
-   "en": "Neutral"
-  },
-  "neg": {
-   "tr": "Kötü",
-   "en": "Evil"
-  }
+  "pos": "Good",
+  "neu": "Neutral",
+  "neg": "Evil"
  },
- "gercekTarafsiz": {
-  "tr": "Gerçek Tarafsız",
-  "en": "True Neutral"
- },
+ "gercekTarafsiz": "True Neutral",
  "moral": {
   "not": "Kuyruk K52: Moral (Motivasyon) bağı (ev kuralı hizalanmaMoral; hizalanma ve moralSistemi de açıkken). Sayılar Moral denge turunda ayarlanacak.",
   "esik": 17,

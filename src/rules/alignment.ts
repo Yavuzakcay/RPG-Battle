@@ -68,10 +68,10 @@ export function bucketOf(v: number, prev?: Bucket): Bucket {
   if (v <= -e) return 'neg';
   return 'neu';
 }
-/** Etiket (dil). */
-export function alignmentLabel(duzen: Bucket, iyilik: Bucket, lang: 'tr' | 'en'): string {
-  if (duzen === 'neu' && iyilik === 'neu') return cfg.gercekTarafsiz[lang];
-  return `${cfg.duzen[duzen][lang]} ${cfg.iyilik[iyilik][lang]}`;
+/** Görev SD4: etiket her dilde İngilizce (Lawful Good…; `data/hizalanma.json` tek kaynak). `lang` eski imza için kalır. */
+export function alignmentLabel(duzen: Bucket, iyilik: Bucket, _lang: 'tr' | 'en'): string {
+  if (duzen === 'neu' && iyilik === 'neu') return cfg.gercekTarafsiz;
+  return `${cfg.duzen[duzen]} ${cfg.iyilik[iyilik]}`;
 }
 
 const ALT_SOY = (table as unknown as { altSoy: Record<string, { duzen: number; iyilik: number; gerekce: { tr: string; en: string } }> }).altSoy;

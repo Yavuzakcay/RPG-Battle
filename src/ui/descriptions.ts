@@ -4,6 +4,8 @@
  */
 import { ilkelOzet } from './ilkelOzet';
 import data from '../../data/aciklamalar.json';
+import TR_DATA from '../../data/aciklamalar-tr.json';
+import { t } from '../i18n';
 import OZELLIK_ADLARI from '../../data/ozellik-adlari.json';
 import DONANIM_ADLARI from '../../data/donanim-adlari.json';
 import { findSubclass } from '../rules/subclasses';
@@ -11,9 +13,30 @@ import type { Weapon } from '../data/types';
 import type { Lang } from '../i18n/strings';
 
 type Texts = Record<Lang, Record<string, string>>;
-const FEATURES = data.features as Texts;
+/** Görev SD4: sınıf özelliği özetleri yalnız Türkçe (eski `en` SRD'nin ilk cümlesiydi, kaldırıldı). */
+const FEATURES_TR = data.features.tr as Record<string, string>;
 const MASTERY = data.mastery as Texts;
 const PROPS = data.properties as Texts;
+
+/**
+ * Görev SD4: Türkçe açıklaması olan kaydın gösterilecek metni. Türkçe arayüzde metnin kendisi; İngilizce arayüzde
+ * "açıklama yalnız Türkçe" notu (SRD ham metni gösterilmez). Açıklama yoksa boş.
+ */
+export function trText(tr: string | undefined, lang: Lang): string {
+  if (!tr) return '';
+  return lang === 'tr' ? tr : t().builder.trOnly;
+}
+
+const ITEMS_TR = TR_DATA.esyalar as Record<string, string>;
+const SPECIES_TR = TR_DATA.turOzellikleri as Record<string, { ad: string; tr: string }>;
+
+/** Görev SD4: eşyanın kısa Türkçe açıklaması (`data/aciklamalar-tr.json` esyalar; EN'de not). */
+export const itemDescription = (id: string, lang: Lang): string => trText(ITEMS_TR[id], lang);
+
+/** Görev SD4: türün SRD özellikleri, adı İngilizce + açıklaması (`species:<tür>/<özellik>`; EN'de not). Tür SRD'de yoksa boş. */
+export function speciesTraits(raceId: string, lang: Lang): Array<{ key: string; name: string; text: string }> {
+  return Object.entries(SPECIES_TR).filter(([k]) => k.startsWith(`${raceId}/`)).map(([k, v]) => ({ key: k, name: v.ad, text: trText(v.tr, lang) }));
+}
 
 const firstSentence = (t: string) => (t.match(/^.+?[.!?](\s|$)/)?.[0] ?? t).trim();
 
@@ -26,7 +49,7 @@ export function featureSummary(f: { key: string; id: string; from: 'class' | 'su
     const oz = ilkelOzet(feat?.ilkeller as Array<{ tur: string }> | undefined);
     return [d ? firstSentence(d[lang] ?? d.tr ?? '') : '', oz ? `[${oz}]` : ''].filter(Boolean).join(' ');
   }
-  return FEATURES[lang]?.[f.key] || FEATURES.tr[f.key] || '';
+  return trText(FEATURES_TR[f.key], lang);
 }
 
 /**

@@ -3,6 +3,8 @@
  * (`Strings` tipi). Değişken içeren metinler fonksiyon. Oyun terimleri SRD 5.2.1'deki İngilizce
  * adlarıyla parantez içinde verilir (Finesse, Disadvantage…), Türkçe metinde de tutarlı.
  */
+// Görev SD4: Alignment görünen adları tek kaynaktan (data/hizalanma.json; 1 kB).
+import HZ from '../../data/hizalanma.json';
 
 /** Küçük sayılar yazıyla ("iki d6"). */
 const COUNT_TR: Record<number, string> = { 2: 'iki', 3: 'üç', 4: 'dört', 5: 'beş', 6: 'altı', 7: 'yedi', 8: 'sekiz', 9: 'dokuz', 10: 'on' };
@@ -105,6 +107,47 @@ const tr = {
     },
   },
   builder: {
+    /** Görev SD4: `characterIssues` ve `invocationProblems` metinleri (kural modülü tabloyu parametre olarak alır). */
+    issues: {
+      nameEmpty: 'Ad boş olamaz.', raceNeeded: 'Tür seçilmeli.', classNeeded: 'Sınıf seçilmeli.', levelRange: 'Seviye 1–20 olmalı.',
+      lineageNeeded: (race: string) => `${race} için soy seçilmeli.`,
+      standardArray: 'Standart dizi (15, 14, 13, 12, 10, 8) her skora bir kez dağıtılmalı.',
+      rolledAssign: 'Atılan altı değer her skora bir kez dağıtılmalı.', rollNeeded: 'Skorlar için zar atılmalı (4d6).',
+      pointBuyRange: 'Point buy\'da skorlar 8–15 arası olmalı.', pointBuyOver: (cost: number, max: number) => `Point buy ${cost} puan: en çok ${max}.`,
+      classSkills: (p: string) => `Sınıf becerileri: ${p}`, otherSkillsMax: 'Geçmiş ve türden en çok 3 beceri.',
+      skillTwice: 'Aynı beceri hem sınıftan hem geçmişten seçilmiş.',
+      skillFromBackground: (skill: string) => `${skill} zaten geçmişten geliyor; başka bir sınıf becerisi seç.`,
+      unknownSkill: 'Bilinmeyen beceri.', armorNeeded: 'Zırh seçilmeli.',
+      attuneMax: (max: number, n: number) => `Uyum gerektiren en çok ${max} eşya (${n} seçildi).`,
+      carryOver: (w: number, cap: number) => `Taşınan ${w} lb, kapasite ${cap} lb (Güç × 15).`,
+      unknownWeapon: (name: string) => `Bilinmeyen silah: ${name}`,
+      spellNotAllowed: (spell: string) => `${spell} bu sınıf ve seviyede seçilemez.`,
+      discoveryCap: (cap: number, n: number) => `Başka listelerden en çok ${cap} büyü (${n} seçildi).`,
+      altCantrips: (max: number, n: number) => `Blessed Warrior gibi seçenekten en çok ${max} cantrip (${n} seçildi).`,
+      cantripsOver: (n: number, max: number) => `Cantrip fazla (${n} / ${max}).`,
+      preparedOver: (n: number, max: number) => `Hazırlanan büyü fazla (${n} / ${max}).`,
+      spellbookOver: (n: number, max: number) => `Büyü kitabı fazla (${n} / ${max}).`,
+      notInBook: (spell: string) => `${spell} büyü kitabında değil.`,
+      subclassNeeded: (level: number) => `Alt sınıf seçilmeli (${level}. seviyede).`,
+      metamagicCount: (count: number, n: number) => `Metamagic: ${count} seçenek seçilmeli (${n} seçildi).`,
+      metamagicUnknown: 'Metamagic: bilinmeyen seçenek.',
+      pactBlade: 'Pact of the Blade: taşınan bir yakın dövüş silahı pact silahı seçilmeli.',
+      expertiseMax: (max: number, n: number) => `Uzmanlık (Expertise) en çok ${max} beceride (${n} seçildi).`,
+      expertiseLimited: (n: number, list: string) => `Uzmanlık: ${n} seçim yalnızca şu becerilerden: ${list}.`,
+      mastery: (p: string) => `Silah ustalığı: ${p}`, offHand: (p: string) => `Yan el: ${p}`,
+      invNone: 'Bu sınıfta Invocation yok.',
+      invCount: (count: number, n: number) => `Eldritch Invocations: ${count} seçilmeli (${n} seçildi).`,
+      invUnknown: (id: string) => `Bilinmeyen Invocation: ${id}.`,
+      invMinLevel: (name: string, level: number) => `${name} ${level}. seviyeden.`,
+      invRequires: (name: string, req: string) => `${name} için önce ${req}.`,
+      invCantrip: (name: string) => `${name}: uygun bir cantrip seçilmeli.`,
+      invRituals: (name: string, n: number) => `${name}: ${n} ritüel büyüsü seçilmeli.`,
+      invFeat: (name: string) => `${name}: bir köken feat'i seçilmeli.`,
+      invOnce: (name: string) => `${name} bir kez seçilir.`,
+      invTwice: 'Aynı Invocation aynı cantrip için iki kez seçilemez.',
+    },
+    /** Görev SD4: İngilizce arayüzde Türkçe açıklaması olan kayıtta gösterilen not (SRD ham metni gösterilmez). */
+    trOnly: 'Açıklama yalnız Türkçe.',
     editing: (name: string) => `${name} düzenleniyor`, newTitle: 'Yeni karakter',
     limitNote: (max: number) => `Partiye en fazla ${max} karakter katılır.`,
     identity: 'Kimlik', name: 'Ad', level: 'Seviye', avatar: 'Görünüm', male: 'Erkek', female: 'Kadın',
@@ -274,7 +317,7 @@ const tr = {
         quickened: 'Hızlandırılmış Büyü', seeking: 'Arayan Büyü', subtle: 'Sessiz Büyü', transmuted: 'Dönüştürülmüş Büyü', twinned: 'İkiz Büyü' } as Record<string, string>,
       stepCrash: 'Bu adımda bir sorun oluştu, Geri\'ye bas.',
       steps: { character: 'Karakter', scores: 'Puanlar', skills: 'Beceriler', progress: 'İlerleme', equipment: 'Donanım',
-        spells: 'Büyüler', summary: 'Özet', alignment: 'Hizalanma' } as Record<string, string>,
+        spells: 'Büyüler', summary: 'Özet', alignment: HZ.ad } as Record<string, string>,
       stepOf: (n: number, total: number, label: string) => `${n} / ${total} · ${label}`,
       back: 'Geri', next: 'Devam', save: 'Kaydet', missing: (n: number) => `${n} eksik`, missingTitle: 'Eksikler', noMissing: 'Eksik yok',
       goTo: (step: string) => `${step} adımına git`,
