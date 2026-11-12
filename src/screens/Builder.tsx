@@ -8,7 +8,8 @@ import { eligibleForms, shapeLimits } from '../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, LESSON_FEATS, parseInvocation } from '../rules/invocations';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { armor, classDataLoaded, classes, getClass, items, loadMonsters, monsters, monstersLoaded, races, spells, weapons } from '../data';
-import { classBlurb, featInfo, raceBlurb } from '../ui/descriptions';
+import { classBlurb, featInfo, raceBlurb, raceTraitLines } from '../ui/descriptions';
+import { describeTr } from '../ui/trDesc';
 import { characterTokenFile, monsterAvatar, sheetAvatar } from '../battle/avatar';
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
@@ -443,7 +444,8 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           <p><b>{race.name}</b> {raceBlurb(race.id, lang)}
             <InfoPop text={[W.speed(raceSpeed(s)), raceDarkvision(s) ? W.darkvision(raceDarkvision(s)) : '',
               race.resistances?.length || lineage?.resistances.length ? W.resist([...new Set([...race.resistances, ...(lineage?.resistances ?? [])])].join(', ')) : '',
-              race.evKurali ? [CELESTIAL.hikaye[lang], ...CELESTIAL.ozellikler.map((o) => `${o[lang]}: ${o.metin[lang]}`)].join('\n') : race.traits].filter(Boolean).join(' · ')} /></p>
+              race.evKurali ? [CELESTIAL.hikaye[lang], ...CELESTIAL.ozellikler.map((o) => `${o[lang]}: ${o.metin[lang]}`)].join('\n') : race.traits,
+              ...raceTraitLines(race.id, lang)].filter(Boolean).join(race.evKurali ? ' · ' : '\n')} /></p>
           {abilities.length > 0 && <LineageAbilities list={abilities} />}
         </div>
       )}
@@ -991,7 +993,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
     if (!sp || kit.alwaysPrepared.includes(x.name)) return null;
     return (
       <li key={x.id} className={`spell-row${on ? ' on' : ''}`} title={sp.mechanics.unsupported ?? sp.mechanics.approx ?? undefined}>
-        <span className="spell-name">{x.name}{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
+        <span className="spell-name">{x.name}<InfoPop text={describeTr('buyu', sp.id) ?? ''} />{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
           {/* Kuyruk MB7: güncel sürümde savaşta çalışan büyü (Phantom Steed `mb7`) savaş dışı sayılmaz. */}{(sp.mechanics.mb7?.offCombat ?? sp.mechanics.offCombat) ? <small className="tag-offcombat" title={T.spellOffCombatTip}>{T.spellOffCombat}</small> : null}</span>
         {book && x.level > 0 && (
           <button className={`badge book${inBook ? ' on' : ''}`} aria-pressed={inBook} disabled={!inBook && cnt.book.length >= (lim.spellbook ?? 0)}
@@ -1022,6 +1024,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
           const sp = spells.find((x) => x.name === n);
           return (
             <li key={n} className="eq-row on"><span className="eq-main"><b>{n}</b><small>{(sp?.level ?? 0) === 0 ? W.cantripGroup : W.levelGroup(sp?.level ?? 0)}</small></span>
+              {sp && <InfoPop text={describeTr('buyu', sp.id) ?? ''} />}
               <button className="ghost eq-remove" aria-label={W.removeItem(n)} onClick={() => toggleSpell(n, false)}>×</button></li>
           );
         })}
@@ -1373,7 +1376,7 @@ function FeatCard(props: { id: string; selected?: boolean }) {
   const info = featInfo(props.id, lang);
   const f = featById(props.id) ?? slotAlternativeById(props.id);
   // SD3: ana satırda yalnız "ne yapar" (düz Türkçe); örnek, SRD faydaları ve İngilizce ad ⓘ'de.
-  const detail = [info ? `${T.featExample} ${info.example}` : '', featBenefits(props.id)].filter(Boolean).join('\n');
+  const detail = info ? `${T.featExample} ${info.example}` : '';
   return (
     <div className={`feat-card${props.selected ? ' selected' : ''}`}>
       <b>{f?.name ?? props.id}</b> {detail && <InfoPop text={detail} />}
@@ -1414,9 +1417,3 @@ function SkilledPicker({ c, setC }: { c: SavedCharacter; setC: StepProps['setC']
   );
 }
 
-/** Feat'in SRD faydalarının adları (İngilizce SRD metni; yalnız ⓘ'de); adı olmayan feat'te SRD metninin ilk cümlesi. */
-function featBenefits(id: string): string {
-  const f = featById(id);
-  if (!f) return '';
-  return f.benefits.length > 0 ? f.benefits.map((b) => b.name).join(', ') : (f.text.split(/(?<=\.)\s/)[0] ?? f.text);
-}

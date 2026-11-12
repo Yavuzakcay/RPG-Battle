@@ -3,6 +3,30 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-13 — SD4: adlar İngilizce, açıklamalar Türkçe; Alignment İngilizce; oluşturucu sorun metinleri i18n'de (yalnız arayüz/veri; kural sürümü 74, kayıt sürümü 22 değişmedi)
+
+- **Kullanıcı kararı:** eşya, büyü, tür, sınıf, feat, Invocation, silah ve sınıf özelliği **adları İngilizce** kalır; açıklamalar Türkçe. İstisna: alt sınıf ve Geçmiş adları şimdiki Türkçe hâliyle kalır. Bu yüzden **SD3'ün Türkçe ad katmanı geri alındı**: `data/ozellik-adlari.json` ve `data/donanim-adlari.json` silindi; sınıf güçleri, silah/zırh adları, Metamagic ve özellik seçenek adları yine SRD İngilizce adıyla (seçenek adı İngilizce + Türkçe açıklama biçimi `featureOption` eskisi gibi); ⓘ "İngilizce adı" kalktı. Tür/sınıf kartlarındaki Türkçe tek cümlelik tanıtımlar (SD3) açıklama olduğu için kalır.
+- **Tarama** (`npx vite-node scripts/sd4-aciklama-tara.ts` → `harita/belgeler/ACIKLAMA-TARAMA.md`; ölçüt: kartta gösterilen açıklama Türkçe mi; dil sezgisi `src/data/aciklamaDil.ts`). Önce → sonra:
+
+| Kayıt türü | Toplam | Önce: Türkçe açıklamalı | Önce: eksik | Sonra: Türkçe açıklamalı |
+|---|---|---|---|---|
+| Büyü (mekanik açıklama) | 339 | 0 (339 kısaltma: "20 ft, DEX save, 8d6 fire" gibi TR/EN karışık; 33'ü İngilizce ağırlıklı) | 339 | 339 |
+| Büyü (betimleme, italik) | 339 | 339 | 0 | 339 |
+| Eşya | 399 | 228 | 171 (SRD ham İngilizce metni) | 399 |
+| Tür özelliği (`species:`) | 41 | 0 (yalnız tür başına tek satır `races.json` `traits`) | 41 (boş) | 41 |
+| Feat | 17 | 17 | 0 | 17 |
+| Sınıf özelliği | 137 | 135 | 2 | 137 |
+| Alt sınıf özelliği | 130 | 128 | 2 | 130 |
+| Invocation | 28 | 24 | 4 | 28 |
+| Silah ustalığı / özelliği | 8 / 9 | 8 / 9 | 0 | 8 / 9 |
+
+- **Yazılanlar:** `data/aciklamalar-tr.json` (kimlik = SRD kimliği; `buyu` 339, `esya` 171, `tur` 41, `yetenek` 2, `altsinif` 2, `invocation` 4; 1–2 cümle, ad İngilizce ve parantezsiz, sayı/zar/mesafe korunur). Taslağı paralel yazım ajanlarıyla SRD metninden çıkardım ve toplu denetledim (tek satır, ≤ 240 karakter, İngilizce ağırlıklı değil). `data/srd/*.json` elle düzenlenmedi. Bilinen dayanak notları: Belt of Giant Strength STR değerleri (Hill 21, Frost/Stone 23, Fire 25, Cloud 27, Storm 29) `data/srd` metninde tablo olmadığı için SRD tablosundan bilgiyle; Poisoner's Kit SRD'de metinsiz (genel bilgiyle); Goliath ve Rock Gnome tür özellikleri SRD PDF'inden; `shield-1/2/3` ve `armor-1/2/3` tek SRD kaydından bonusla yazıldı.
+- **Gösterim:** savaş kartında süren etki satırı mekanik açıklama yerine bu Türkçe açıklamayı gösterir (`effectsView`, eskiden SRD kısaltması `text`; `text` ortam kuralı için olduğu gibi); oluşturucuda büyü satırında ⓘ, eşya özet satırı (etki özeti yoksa), tür kartı ⓘ (türün özellikleri "Name: açıklama"), sınıf/alt sınıf özelliği özeti ve Invocation ⓘ. FeatCard'daki İngilizce SRD "fayda adları" kalktı. **EN arayüzde** Türkçe açıklama gösterilmez: "Description available in Turkish only" notu (`common.descTrOnly`, `describeTr`); kaynak SRD metni gösterilmez.
+- **Alignment (ev kuralı):** sistem adı, eksen (Law / Chaos, Good / Evil) ve etiket adları (Lawful Good … True Neutral … Chaotic Evil) her arayüz dilinde İngilizce (`alignmentLabel`, `view.hizalanma` TR/EN, adım adı). Açıklama, günlük ve Moral bağı metinleri Türkçe; kimlikler (`hizalanma`, `duzen`, `iyilik`), anahtarlar ve kayıt biçimi (karakter kayıt sürümü 2) aynı.
+- **Sorun metinleri:** `characterIssues` ve yardımcıları (ustalık, yan el, feat, Invocation, Magic Initiate, beceri) ~100 gömülü Türkçe metin `strings.ts` / `strings.en.ts` `issues` bölümüne taşındı (TR metinler birebir aynı; EN çevirisi eklendi). Kural modülleri saf kalır: `src/rules/issueText.ts` `I()` varsayılan TR tablosunu okur, arayüz dilini `src/i18n/index.ts` `setIssueTexts` ile bağlar.
+- **Testler:** `alignment.test.ts` etiket beklentileri İngilizce (Lawful Good, True Neutral, …; gerekçe: kullanıcı kararı); `sd3.test.tsx`, `k4.test.tsx` SD3'ün Türkçe ad beklentileri İngilizceye döndü. Yeni: `src/data/aciklamalarTr.test.ts` (kimlik, kapsam, dil, EN notu), `src/rules/issueText.test.ts`.
+- **Kalanlar:** canavar özellik/saldırı metinleri (`MapBattle` canavar kartı) bu görevin kapsamı dışında İngilizce SRD metniyle; harita/zemin adları aynen.
+
 ## 2026-11-12 — SD3: karakter oluşturucu sadeleştirildi (Yönelim A; yalnız arayüz ve metin; kural sürümü 74, kayıt sürümü 22 değişmedi)
 
 - **Kapsam:** `harita/belgeler/SADELESTIRME-DENETIM.md` §2 ve ortak bulgular uygulandı. Tek sade arayüz, mod yok, yeni Ayarlar anahtarı yok; komut, olay, kural ve kayıt alanı eklenmedi. Adımlar aynı (7; büyü seçemeyen sınıfta 6). Kod `src/screens/builder/` (`shared.tsx` ortak `Fold`/`InfoPop`, `Features.tsx`, `Equipment.tsx`) ve `src/screens/builderDefaults.ts` (yalnız Builder parçası; ana parça 396,8 kB / 420).

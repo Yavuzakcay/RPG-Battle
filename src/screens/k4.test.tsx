@@ -72,15 +72,15 @@ describe('yetkinlik', () => {
     expect(armorProficient('cleric', 'shield')).toBe(true);
   });
   it('rozetler; silah süzgeci varsayılan açık (Wizard\'da Longsword yok); eğitimsiz zırhta uyarı (Görev K9d: motorda ceza var)', () => {
-    // SD3: düz Türkçe silah adları (İngilizce adı ⓘ'de); yetkin olmayan silahlar listede yok, eğitimsiz zırh uyarısı var.
+    // SD3/SD4: silah adları İngilizce (SRD adı); yetkin olmayan silahlar listede yok, eğitimsiz zırh uyarısı var.
     const w = html(ch({ classId: 'wizard', armorName: 'Chain Mail' }), 'equipment');
     expect(w).toContain('Yalnızca yetkin olduklarım');
-    expect(w).not.toContain('<b>Uzun kılıç</b>');
-    expect(w).toContain('<b>Hançer</b>');
+    expect(w).not.toContain('<b>Longsword</b>');
+    expect(w).toContain('<b>Dagger</b>');
     expect(w).toContain('büyü yapılamaz');
     const f = html(ch(), 'equipment');
     expect(f).not.toContain('armor-warn');
-    expect(f).toContain('<b>Uzun kılıç</b>');
+    expect(f).toContain('<b>Longsword</b>');
   });
 });
 

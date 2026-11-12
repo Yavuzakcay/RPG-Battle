@@ -1356,3 +1356,5 @@ button.cta.soft { opacity: .65; }
 .eq-row .mastery-btn { width: auto; border: 1px solid var(--line); border-radius: 10px; min-height: 36px; padding: 0 10px; white-space: nowrap; }
 .eq-row .mastery-btn.on { border-color: var(--wz); }
 .eq-row .eq-main b { overflow-wrap: anywhere; }
+/* SD4: satır sonundaki ⓘ açıklaması sağa değil sola açılır (kart dışına taşmaz). */
+.eq-row .info-pop-wrap .term-pop, .spell-row .info-pop-wrap .term-pop { left: auto; right: 0; min-width: 240px; }
