@@ -306,7 +306,7 @@ Başka yeni mekanik yok. Yeni ev kuralı yok.
 | **MB2 Kontrollü binek** | `control`, `controlledBy`, birleşik tur (§3.3), eylem kısıtı, tur kancaları, `data/binek.json` eğitimli listesi, Find Steed kontrollü + Incapacitated'da bağımsız | 69 | **Yüksek** (tur sırası, `nextActor`, tur başı/sonu kancaları, tepki yenilenmesi) | ≈ 20 | ≈ 0 | — (YZ dokunulmaz; MB5) |
 | **MB3 Dikey** | Uçan/yüzen/tırmanan binekle taşıma, yığın boyu (tavan, K72 kat, Forcecage), havadan düşme (iki `fall`), havadan in/bin (`toFt`), Fey Step varışı, su altı nefesi | 70 | **Yüksek** (K71c hücre, `airPath`, `stand.ts`) | ≈ 20 + duvarlı/katmanlı regresyon | ≈ 0 | Uçan sahne ≤ +%5 |
 | **MB4 Çok altıgen** | Binicinin gövdesi bineğin ayak izi, erişim/alan/aura, inişte gövde bitişiği, varış sığması (multiHex açıkken) | 71 (ya da MB3 ile aynı) | Orta | ≈ 10 | 0 | — |
-| **MB5 YZ** | Parti/düşman binicisi, kontrollü binek planı, inme eşiği, uçan yığın (K73a), "binmiş başla" | 72 (yalnız YZ, K73a kalıbı) | Orta | ≈ 12 + `sim:yz-sure` binekli sahne | 0 | **≤ +%15** binekli sahne, binicisiz ≤ +%2 |
+| **MB5 YZ (tamam, 73)** | Parti/düşman binicisi, kontrollü binek planı, inme eşiği, uçan yığın (K73a), "binmiş başla" | 72 (yalnız YZ, K73a kalıbı) | Orta | ≈ 12 + `sim:yz-sure` binekli sahne | 0 | **≤ +%15** binekli sahne, binicisiz ≤ +%2 |
 | **MB6 Arayüz** | Yığın jetonu, seçim döngüsü, "Binek" bölümü, kurulumda binmiş başla ve eğitimli anahtarı, TR/EN, mobil; tek ekran görüntüsü | — (görsel) | Düşük–orta | ≈ 8 arayüz testi | TR menü metni ≈ +0,3 kB (savaş metinleri tembel) | — |
 | **MB7 Büyü ve paket** | Find Steed binek (`unsupported` kalkar), Faithful Steed `partial` → `ok` adayı, Phantom Steed savaşta (kurulumda ritüel, Riding Horse + hız 100, hasarla biter), paket yaratığında `binek` (§9), kurgusal fikstür `tests/fixtures/paket-binek.json`, `PAKET-ILKELLER.md` | 73 | Orta | ≈ 15 | 0 | — |
 | **MB8 Denge ve kapanış** | Binekli senaryolar (`sim-senaryolar.json` atlı devriye, ejder binicisi 15. seviye), DENGE.md, tam paket, `check:harita`/`check:ses`, SRD-DENETIM Mounted Combat satırı, CLAUDE.md "Bilinen eksikler" satırı | — | Düşük | — | — | Son ölçüm |
@@ -677,3 +677,18 @@ Yalnız Game Master anahtarı "Çok altıgenli büyük yaratıklar" (`multiHex`)
 - **MB8:** binekli senaryolar ve denge, tam ölçüm.
 - **Çok altıgen genel kalanları** (`harita/belgeler/COKLU-ALTIGEN.md`): döndürme, Large'ın 3 altıgeni.
 
+## 16. MB5 sonucu (kural sürümü 73) — tamam
+
+Yalnız YZ kararı (yeni komut/olay yok; `SAVE_VERSION` aynı). `src/battle/binekMb5Surum.ts` `BINEK_MB5_VERSION`, `binekMb5On`; yardımcılar `src/battle/ai/binekMb5.ts`; 72 ve altında eski karar.
+
+**Yapılanlar:**
+
+- **YZ binicisi (iki taraf):** binici (`riding`) yürüyüş/atlama adayı üretmez (`reachable`; bineğin hareketiyle taşınır). Karar 72 ile aynı; fark kuru çalıştırma sayısında: binicinin turu 98 → 1 reddedilen deneme (`aiStats.tryMisses`). Binicinin eylemi (erişimdeki düşmana saldırı) aynen, bineğin kendi sırasındaki hareketi aynen.
+- **Dar geçit:** çok altıgenli yaratığın gövdesi sığmayan çapalar (`bodyFitProblem`: dar geçit, gövde altıgeninde dost) saldırı/yaklaşma yeri sayılmaz (`reachable`). Gövde ve yığın boyu zaten `moveCostFn` ve K73a yaklaşma alanında (`approachField`) hesaba katılıyordu; yol yoksa alan sonsuz kalır ve eski davranış (düz mesafe) sürer.
+- **Zorla yer değiştirme:** B24 (biniciyi kayıpsız indirme) dokunulmadı.
+
+**Denendi, eklenmedi (⚠ karar):** "binicisi yakın dövüşçü bineğin saldırı yeri puanında binicinin erişebildiği yeri tercih" (binici çapada tek altıgen, `meleeOf` erişimi). 525 bineğin/düşmanın konumunda (Large ve Huge) 72 ile 73 kararı hiç ayrışmadı, puan 4'ten 40'a çıkarılınca da: bineğin en ucuz saldırı yeri zaten çapanın önde olduğu yöndür; ters yönde çapa bitişik yer gövdeye sığmaz. Ölü kod olacağından kaldırıldı. Huge bineğin binicisi 5 ft erişimle gövde kenarındaki düşmana zaten vuramaz (MB4 tek altıgen modeli).
+
+**Doğrulama:** `src/battle/binekMb5.test.ts` 9 test; regresyon `src/sim/binekMb5Regresyon.test.ts` (4 senaryo, 1 tohum: binekli olmayan 72 imzası `main`'den alınan altınla aynı, 73 = 72; binekli çok altıgen kapalı 73 = 72).
+
+**Kalan:** MB2 (kontrollü binek turu), MB6 (arayüz), MB8 (denge). Binekli ejderha binicisi / "binmiş başla" YZ kararı ve inme eşiği MB5'e alınmadı (yeni komut gerektirir).

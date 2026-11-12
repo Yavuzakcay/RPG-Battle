@@ -3,6 +3,14 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk MB5: YZ binicisi ve büyük bineğin dar geçitten kaçınması (kural sürümü 72 → 73)
+
+- **Sürüm:** `main` 1eba7a44 (MB4 + kanat, 72) üstüne; kural sürümü 72 → **73**. Tek sabit `src/battle/binekMb5Surum.ts` `BINEK_MB5_VERSION`; yalnız yapay zekâ kararı, yeni komut/olay yok. 72 ve altında eski karar (regresyon altın imzası).
+- **Yapılan:** binici (`riding`) YZ'de yürüyüş/atlama yeri üretmez (karar aynı, kuru çalıştırma 98 → 1); çok altıgenli yaratığın gövdesi sığmayan çapalar (`bodyFitProblem`) aday sayılmaz. Yardımcılar `src/battle/ai/binekMb5.ts`. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §16.
+- **Sabit yok:** `data/yapay-zeka.json`'a yazılacak parametre çıkmadı (aşağıdaki tercih denenip kaldırıldı).
+- ⚠ **Binici erişim tercihi eklenmedi:** bineğin saldırı yeri puanında binicinin (çapada tek altıgen) erişebildiği yere bonus denendi; 525 konumda 72/73 kararı ayrışmadı (puan 4 ve 40), ölü kod olacağından kaldırıldı. Gövde zaten `moveCostFn` ve K73a yaklaşma alanında hesaba katılıyordu; MB5'in dar geçit kısmı bu yüzden yalnız aday süzmesi.
+- **Test değeri güncellemesi:** `src/battle/ruleVersion.test.ts` güncel sürüm beklentisi 72 → 73 (veriye bağlı değer).
+
 ## 2026-11-12 — Kanat katmanı bağlandı (yalnız arayüz; kural sürümü 72 kalır)
 
 - Üç slot (`tiefling-kanatli`, `celestial-kirik-kanat`, `dragonborn`) `data/kanat-esleme.json`'da `public/kanat/` dosyalarına bağlandı; çapa (`capa`), `olcek` 1.45, `omuz` 0.46 ve `enBoy` kanat başına veride. Kök jetonun yatay merkezinde, omuz yüksekliğinde; kanat jetonun arkasında. Eski `yukari` alanı kalktı; kare kutu yerine görselin gerçek oranı kullanılır.
