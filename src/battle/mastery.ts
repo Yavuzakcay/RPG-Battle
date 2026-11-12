@@ -9,6 +9,7 @@
  * Nick saldırıya değil yan el ek saldırısının ekonomisine etki eder (`economy.ts` `offhand_attack`, Görev P1).
  * Parametreler `data/class-features.json` "masteries"ten.
  */
+import { hiddenTo } from './k74Surum';
 import { adjacent3D, k73bOn } from './adjacency';
 import { saveDice } from './effectDice';
 import { resolveSave } from '../rules/attack';
@@ -72,7 +73,7 @@ type Attack = (state: BattleState, actor: Combatant, target: Combatant, option: 
 function cleaveTarget(state: BattleState, actor: Combatant, first: Combatant, option: AttackOption): Combatant | undefined {
   return state.order
     .map((id) => state.combatants[id])
-    .filter((c): c is Combatant => alive(c) && c.id !== first.id && c.id !== actor.id && c.side !== actor.side && !c.civilian && !c.hidden)
+    .filter((c): c is Combatant => alive(c) && c.id !== first.id && c.id !== actor.id && c.side !== actor.side && !c.civilian && !hiddenTo(state, actor, c))
     .filter((c) => (state.map
       // Kuyruk K73b (sürüm 63+): 3B bitişiklik.
       ? !!c.pos && !!first.pos && (k73bOn(state) ? adjacent3D(state, c, first) : distance(c.pos, first.pos) <= 1)

@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { hiddenTo } from './k74Surum';
 import { binekOn } from './binekSurum';
 import { submerged } from './underwaterCore';
 import { hasSwimSpeed } from './deepWater';
@@ -498,8 +499,9 @@ export function opportunityAttacks(
     if (!melee) continue;
     if (step) {
       if (!leavesReach(current, o, mover, melee.reachFt, step.from, step.to, step.fromAlt, step.toAlt)) continue;
-      if (mover.hidden || !canSee(current, o, mover)) continue;
-    } else if (state.map || heightOf(current, o) !== heightOf(current, mover) || mover.hidden) {
+      // Kuyruk K74 (sürüm 75+): Truesight menzilindeki gizlenmiş yürüyen görülür.
+      if (hiddenTo(current, o, mover) || !canSee(current, o, mover)) continue;
+    } else if (state.map || heightOf(current, o) !== heightOf(current, mover) || hiddenTo(current, o, mover)) {
       continue;
     }
     // Erişim (zarsız) denetlenir, sonra karar (Görev R1): oyuncuya sorulabilir; tepki saldırıdan önce harcanır

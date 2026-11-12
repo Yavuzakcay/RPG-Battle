@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Kuyruk K74: Truesight motor yolları + Hallow toplu koruma (kural sürümü 75), batıran çamurun bedeli + tehlike katmanında çamur (76)
+
+- **Tek sabit:** `src/battle/k74Surum.ts` (`K74_VERSION` 75, `K74B_VERSION` 76, `k74On`/`k74bOn`), sabitler `data/k74.json`. Kayıt sürümü 22 değişmedi (yeni olay türü yok). 74 ve altı kayıt/replay birebir.
+- **Truesight (75):** ikinci kopya yazılmadı; tek yardımcı `hiddenTo(state, gözlemci, hedef)` = `hidden` ve K63 `truesightSees` değil. Bağlanan beş yol (KUYRUK-DURUM 4c): fırsat saldırısı görme (`reactions.ts` `sees`), yürüyüşte fırsat saldırısı algısı (`features.ts` `opportunityAttacks`), Superior Hunter's Prey ikinci hedefi (`classTraits.ts`; denetim "Cleave" yazmıştı, gerçek yer Hunter), Cleave ikinci hedefi (`mastery.ts`), uyuyan ejderhanın Algı süzgeci (`dragon.ts`).
+- **Hallow (75):** Extra Effect (10 seçenek) **kapsam dışı** (kullanıcı kararı: yapılmayacak). Hallow tek toplu koruma: kurulumda tür seçimi yok sayılır, SRD'nin altı türü (Aberration, Celestial, Elemental, Fey, Fiend, Undead) birden (`data/k74.json` `hallow.turler`); koruma K64b/K62-ACIK altyapısıyla aynen (`wardProtects`, `hallowSyncEvents`, `wardStepBlocked`). ⚠ SRD "choose any of these types" der; toplu koruma hepsini seçmekle aynı. Yeni komut/olay/etki alanı yok. Bastırmanın birden çok kaynağı denendi; reducer koruma alanındaki yeni Charmed/Frightened'ı zaten süzdüğü için (`wardedFrom`) etkisizdi, geri alındı.
+- **Batıran çamur (76):** BK1 öneri 3. Ağır zırhlı `n`'de Atletizm'i geçemezse yürüyüş biter **ve** Restrained (süren etki `sinkMud:<altıgen>`, `escapeCheck` Atletizm, DC = kuralın DC'si + `kacisDcFark` 0); başarıda bedel yok. Hafif/orta zırha yayılmadı (kural metni "ağır zırhlı"). Ölü `sinkMud` (Kale, Çukur; BK1 HATA 1) dokunulmadı.
+- **Tehlike katmanı (görünüm):** yeni tür `mud` ("Çamur/batak zemini"): açık `sinkMud`/`leeches`/`bog` kuralının zemin harfi (`data/k74.json` `tehlikeZemin`). Kuralı olmayan haritada yok.
+- **Testler:** `src/battle/k74.test.ts` (75/74 her yol, Hallow türleri, çamur 76/75, katman); `ruleVersion.test.ts` ve `g6.test.ts` güncel sürüm beklentisi 74 → 76 (gerekçe: sürüm arttı). Regresyon `src/sim/k74Regresyon.test.ts` (`K74_TOHUM`; 74 = MB2 altınları, 75 = 76 = 74).
+
 ## 2026-11-12 — Görev DURUM: kuyruk durum denetimi (salt okuma; kod, veri, harita, görsel, kural sürümü 74 ve SAVE_VERSION 22 değişmedi)
 
 - Rapor `harita/belgeler/KUYRUK-DURUM.md` (madde durumu + kanıt, 60–74 sürüm zinciri, 8 birleşmemiş dal, kullanıcı kararı bekleyenler, önerilen 5 iş); CLAUDE.md donma maddesi tek cümleye indirildi, `docs/MEKANIK-DONMA.md` başına aynı not eklendi.

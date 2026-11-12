@@ -13,6 +13,7 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
+import { hiddenTo } from './k74Surum';
 import { spells } from '../data';
 import { chainResist } from './chainPact';
 import { gap } from './body';
@@ -143,7 +144,8 @@ export function feetBetween(state: BattleState, a: Combatant, b: Combatant): num
   return heightOf(state, a) === heightOf(state, b) ? 5 : 30;
 }
 
-const sees = (state: BattleState, a: Combatant, b: Combatant) => !b.hidden && canSee(state, a, b);
+// Kuyruk K74 (sürüm 75+): Truesight menzilindeki gizlenmiş yaratık görülür (`hiddenTo`).
+const sees = (state: BattleState, a: Combatant, b: Combatant) => !hiddenTo(state, a, b) && canSee(state, a, b);
 
 const profileOf = (c: Combatant) => damageProfile(c);
 

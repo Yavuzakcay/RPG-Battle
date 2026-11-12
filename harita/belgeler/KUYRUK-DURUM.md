@@ -6,7 +6,7 @@ numaraları bu denetimdeki dosyaya göre), `harita/belgeler/*`, kaynak dosyalar.
 
 ## Özet
 
-- Kural sürümü **74** (MB2, `data/kural-surumu.json`), `SAVE_VERSION` **22** (`src/app/battleSave.ts:31`). 60–74 zinciri kesintisiz, her sürümün DECISIONS.md kaydı var.
+- Kural sürümü **76** (K74, `data/kural-surumu.json`; denetim anında 74), `SAVE_VERSION` **22** (`src/app/battleSave.ts:31`). 60–74 zinciri kesintisiz, her sürümün DECISIONS.md kaydı var.
 - SU1, SU2, SU3, K62-ACIK (1–4), K73e/f, binek hattı (MB1–MB8), SD1–SD3 main'de. Açık: Hallow ek etkileri (kullanıcı kararı), U1b Görev 1–4 (`icerik/` gerekli), motorda Truesight'ı bilmeyen 5 yol.
 - Birleşmemiş uzak dal 8: biri iş (SD4, kullanıcı kararı bekliyor), biri yarım (U1b Görev 0), üçü ham görsel (geçici), üçü eski Görev F yığını (artık gereksiz).
 - CLAUDE.md'deki kural sürümü cümlesi güncel (74). Donma maddesi zaten "kaldırıldı" diyordu; bu görevde istenen tek cümleye indirildi, `docs/MEKANIK-DONMA.md` başına aynı cümle eklendi.
@@ -21,9 +21,9 @@ numaraları bu denetimdeki dosyaya göre), `harita/belgeler/*`, kaynak dosyalar.
 | 3 | SU3 su dokusu `haric`/`ekle` | YAPILDI | commit b9e79022; `data/efekt-baglama.json` `su` (haric 44 hex/4 harita, ekle Heykel Gölü 30 + Vaha 17); test `src/ui/fx/su3.test.ts`; DECISIONS.md:348. Açık: Kale Önü hendeği tamamen kıyı sayılıyor, piksel maskesi (SU1 seçenek b) kullanıcı kararı; düşük güvenli 5 harita "elle teyit gerekli" |
 | 4a | Delayed Blast Fireball boncuk arayüzü | YAPILDI | K62-ACIK Madde 1 (sürümsüz), commit dd3b6ad0; `bead.ts` `beadThrowLanding`; test `src/battle/k62acik.test.ts`; `docs/k62acik/boncuk-firlat.png`. Boncuk **efekt dokusu** yok (bkz. 6) |
 | 4b | Wall of Ice YZ hedeflemesi | YAPILDI | K62-ACIK Madde 2; `ai.ts` `wallBreakCands` canavar saldırısı, bağışıklık/zayıflık; `k62acik.test.ts` |
-| 4c | Truesight eski YZ yolu | YAPILDI (YZ) / KISMEN (motor) | K62-ACIK Madde 3: `blindChoice`, kapı, haritasız hedef, Divine Sense. Motorda 5 yol hâlâ `!c.hidden`: fırsat saldırısı görme (`reactions.ts`), hareket algısı (`features.ts`), Cleave (`classTraits.ts`), mastery ikinci hedef (`mastery.ts`), ejderha Algısı (`dragon.ts`) (`K62ACIK-DENETIM.md` son bölüm; DECISIONS.md:325) |
+| 4c | Truesight eski YZ yolu | YAPILDI (YZ); motor K74'te (sürüm 75) | K62-ACIK Madde 3: `blindChoice`, kapı, haritasız hedef, Divine Sense. Motorda 5 yol hâlâ `!c.hidden`: fırsat saldırısı görme (`reactions.ts`), hareket algısı (`features.ts`), Cleave (`classTraits.ts`), mastery ikinci hedef (`mastery.ts`), ejderha Algısı (`dragon.ts`) (`K62ACIK-DENETIM.md` son bölüm; DECISIONS.md:325) |
 | 4d | Magic Circle (isteyerek giriş, ışınlanmada CHA save) | YAPILDI | Kural sürümü 67, `src/battle/k62acikSurum.ts`, `possessionCore.ts` `wardStepBlocked`, `possession.ts` `wardTeleportEvents`; regresyon `src/sim/k62acikRegresyon.test.ts`. ⚠ save varıştan sonra (varıştaki alan etkisi geri alınmaz) |
-| 4e | Hallow ek etkileri | KISMEN | Girememe kolu 67'de yapıldı; **Extra Effect (10 seçenek) yapılmadı, kullanıcı kararı bekliyor** (DECISIONS.md:373, `K62ACIK-DENETIM.md` "Madde 5 ayrıntı"). Donma artık engel değil |
+| 4e | Hallow ek etkileri | KAPANDI (K74, sürüm 75: tek toplu koruma; Extra Effect kapsam dışı, kullanıcı kararı) | Girememe kolu 67'de yapıldı; **Extra Effect (10 seçenek) yapılmadı, kullanıcı kararı bekliyor** (DECISIONS.md:373, `K62ACIK-DENETIM.md` "Madde 5 ayrıntı"). Donma artık engel değil |
 | 5a | K73e/f: nefes tutan (yüzme hızsız) yaratık | YAPILMADI (veride 0) | DECISIONS.md:387, 400: SRD verisinde yok; paket yaratığı için karar kullanıcıda |
 | 5b | Su altı / kıyı karşılaşması kolay (%100) | YAPILMADI | DECISIONS.md:400, 457; K73f denge `harita/belgeler/DENGE.md` (kıyı 100 → 100); ayar "Dungeondex öncesi tam test turu"na |
 | 5c | Yaklaşma kazması pratikte tetiklenmiyor | YAPILMADI | DECISIONS.md:400, 455; `K73E-DENETIM.md`; kod değişmedi |
@@ -38,7 +38,7 @@ numaraları bu denetimdeki dosyaya göre), `harita/belgeler/*`, kaynak dosyalar.
 | 9 | Birleşmemiş uzak dallar | — | Aşağıdaki tablo |
 | 10 | CLAUDE.md / docs bayatlığı | YAPILDI (bu görev) | Kural sürümü cümlesi 74 ile güncel (CLAUDE.md "Kural sürümü" ve "Çalışma şekli"). Donma maddesi K57-KALDIR'da (9f01f864) zaten güncellenmişti; istenen tek cümleye indirildi. `docs/MEKANIK-DONMA.md` başında "KALDIRILDI" notu vardı; istenen cümle en başa eklendi, içerik silinmedi. Tarihsel belgeler (`K62ACIK-DENETIM.md`, `BINEK-PLAN.md` §7.1) donmayı o günkü hâliyle anlatır; `BATAKLIK-TANI.md:101` "güncel 73" (şimdi 74). SD4 birleşirse CLAUDE.md'deki SD3 satırı ("düz Türkçe adlar `data/ozellik-adlari.json`…") bayatlar |
 
-## Kural sürümü tablosu (60 → 74)
+## Kural sürümü tablosu (60 → 76)
 
 `SAVE_VERSION` bütün aralıkta 22 (yeni olay türü yok; `LOADABLE_VERSIONS` 3–22).
 
@@ -59,6 +59,8 @@ numaraları bu denetimdeki dosyaya göre), `harita/belgeler/*`, kaynak dosyalar.
 | 72 | MB4 | Çok altıgenli binek gövdesi | `BINEK_MB4_VERSION` | 64b6bfbb | :112 |
 | 73 | MB5 | YZ binicisi, dar geçit | `binekMb5Surum.ts` | 369a728a | :97 |
 | 74 | MB2 | Kontrollü binek turu | `binekMb2Surum.ts` | 91befdd0 | :44 |
+| 75 | K74 | Truesight motor yolları, Hallow toplu koruma | `k74Surum.ts` `K74_VERSION` | (toplu dal) | K74 |
+| 76 | K74b | Batıran çamur bedeli, tehlike katmanında çamur | `k74Surum.ts` `K74B_VERSION` | (toplu dal) | K74 |
 
 Sürüm değiştirmeyen işler (aynı dönem): K73d, E4–E5, SU1–SU3, K57-KALDIR, BINEK-PLAN, AS1a/AS1a-2, AS1c, MB6 (arayüz, 70'te), kanat, KG1, BK1, SD1, SD2, SD3 (:17, "kural sürümü 74, kayıt sürümü 22 değişmedi"), MB8 (:6, "74'te kaldı").
 
@@ -98,7 +100,7 @@ Not: sığ klonda 68 dal "birleşmemiş" görünüyordu (sahte sonuç); tam geç
 | K72 tavan bölgeleri | K72 (:1053) | 12 harita `ONAYLI_BOLGE` (`scripts/k72-tavan-bolge.py:43` hâlâ boş) |
 | Gerçek katlı haritalar | K72 (:1052) | Harita tasarımı kullanıcıyla |
 | Denge kaymaları (Dağ — Karakol %20, su altı/kıyı %100) | K73a (:910), K73f (:400) | "Dungeondex öncesi tam test turu" |
-| BK1 bataklık önerileri | `BATAKLIK-TANI.md` | 1 tehlike katmanına zemin, 2 ölü `sinkMud`, 3 çamura gerçek bedel; donma kalkınca zemin tehlike tablosu vb. |
+| BK1 bataklık önerileri | `BATAKLIK-TANI.md` | 1 ve 3 K74'te yapıldı (sürüm 76); 2 ölü `sinkMud` ve zemin tehlike tablosu açık |
 | SD1 ilke 5 yorumu | `SADELESTIRME-DENETIM.md:33` | Yapılamayanı gizle mi, soluk + neden mi |
 
 ## Önerilen sıradaki 5 CC işi (bağımlılık sırasıyla)

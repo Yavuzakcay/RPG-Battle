@@ -26,6 +26,7 @@ import { fail, finish, type CommandResult } from './common';
 import { shapeStats } from './druid';
 import { pfegTypesOf } from './mind';
 import { occupantAt, placeProblem } from './movement';
+import { K74, k74On } from './k74Surum';
 import { activePossession, hallowAt, POSSESS_FLOOR, possessedEffect, wardProtects } from './possessionCore';
 import { globalRule } from './ruleControl';
 import { sightConditions } from './sight';
@@ -288,7 +289,9 @@ export function executeSetupWard(state: BattleState, cmd: CastCommand, ctx: Comm
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name);
   if (!slot.ok) return slot;
   const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
-  const ward = { kind: w.kind, types: picked.length ? picked : w.types, ...(w.kind === 'circle' && opts.includes('ters') ? { reverse: true } : {}) };
+  // Kuyruk K74 (sürüm 75+): Hallow tek toplu koruma: seçim yok, SRD'nin altı türü birden (`data/k74.json`).
+  const types = w.kind === 'hallow' && k74On(state) ? [...K74.hallow.turler] : picked.length ? picked : w.types;
+  const ward = { kind: w.kind, types, ...(w.kind === 'circle' && opts.includes('ters') ? { reverse: true } : {}) };
   return finish(state, [...slot.events,
     { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: `${radiusFt} ft; türler: ${ward.types.join(', ')}${ward.reverse ? '; ters yön' : ''}${w.note ? `. ${w.note}` : ''}` },
     { type: 'zone_created', zone: { id: `ward:${spell.id}:${actor.id}`, spellId: spell.id, name: spell.name, casterId: actor.id, side: actor.side, dc: 0,

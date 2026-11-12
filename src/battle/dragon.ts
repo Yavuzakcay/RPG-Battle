@@ -12,6 +12,7 @@
  * GM her an uyandırabilir (`wake_dragon`). Yapay zekâ düşmanları `dragonWake` kipine uyar (ai.ts);
  * `chance` kipinde tur başında `rouse_dragon` ile uyandırma eğilimi zarı atılır.
  */
+import { hiddenTo } from './k74Surum';
 import { spells } from '../data';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { distance, sameHex, type Offset } from '../rules/hex';
@@ -112,7 +113,7 @@ export function dragonRoundEvents(state: BattleState, rng: Rng): BattleEvent[] {
   const at = d.pos;
   const events: BattleEvent[] = [];
   const watchers = Object.values(state.combatants)
-    .filter((c) => c.side === 'party' && !c.civilian && c.hp > 0 && !c.hidden && c.pos && distance(c.pos, at) * 5 <= w.perceptionFt);
+    .filter((c) => c.side === 'party' && !c.civilian && c.hp > 0 && !hiddenTo(state, d, c) && c.pos && distance(c.pos, at) * 5 <= w.perceptionFt);
   const bonus = skillBonus(d, 'perception');
   for (const c of watchers) {
     const r = rollD20('normal', rollTag(rng, { kind: 'check', by: d.id, bonus }));

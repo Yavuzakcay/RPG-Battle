@@ -3,6 +3,7 @@
  * savaşçıda `traits` işaretiyle (veriden: `data/class-features.json` ve `data/subclasses.json` `trait`); kodda sınıf adı
  * yok. Saf; saldırı, save ve hareket kodu buradan sorar. SRD 5.2.1.
  */
+import { hiddenTo } from './k74Surum';
 import { featuresOn, shiftGrant } from './shift';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
@@ -157,7 +158,7 @@ export function cunningEvents(state: BattleState, actor: Combatant, target: Comb
 export function superiorPreyEvents(state: BattleState, actor: Combatant, first: Combatant, mark: { raw: number; rolls: number[]; type: string }, rng: Rng): BattleEvent[] {
   if (!hasTrait(actor, 'superior-hunters-prey') || usedThisTurn(state, actor, 'superior-hunters-prey') || mark.raw <= 0) return [];
   const second = Object.values(state.combatants)
-    .filter((c) => c.id !== first.id && c.side !== actor.side && !c.civilian && c.hp > 0 && !c.hidden && !c.summon?.gone)
+    .filter((c) => c.id !== first.id && c.side !== actor.side && !c.civilian && c.hp > 0 && !hiddenTo(state, actor, c) && !c.summon?.gone)
     .filter((c) => (state.map ? !!c.pos && !!first.pos && distance(c.pos, first.pos) <= 6 : true))
     .sort((a, b) => a.hp - b.hp)[0];
   if (!second) return [];

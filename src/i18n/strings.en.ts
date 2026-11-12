@@ -1197,7 +1197,7 @@ export const en: Strings = {
     hiddenZones: (on: boolean) => (on ? 'Hide hidden areas (Game Master)' : 'Show hidden areas (Game Master)'),
     zones: (on: boolean) => (on ? 'Hide hiding spots' : 'Show hiding spots'),
     hazard: (on: boolean): string => (on ? 'Hide hazard layer' : 'Show hazard layer'),
-    hazardKind: { surface: 'Surface/zone', aura: 'Aura', barrier: 'Barrier', fireSpread: 'Fire may spread', move: 'Movement range', oa: 'Opportunity attack zone', threat: 'Selected enemy threat (approx.)' } as Record<string, string>,
+    hazardKind: { surface: 'Surface/zone', aura: 'Aura', barrier: 'Barrier', fireSpread: 'Fire may spread', mud: 'Mud/bog ground', move: 'Movement range', oa: 'Opportunity attack zone', threat: 'Selected enemy threat (approx.)' } as Record<string, string>,
     concentrating: (spell: string): string => `Concentrating: ${spell}`, more: (n: number): string => `+${n}`,
     bog: 'deep bog: you get stuck', deepWater: 'heavy armor sinks',
     ice: 'slippery: DEX saving throw', stairs: 'stairs (no climbing)', conveyor: (on: boolean) => (on ? 'conveyor stairs: flow downward; a creature stepping up slides back one hex (flying and teleporting are exempt; a lever stops it)' : 'conveyor stairs stopped (lever pulled): ordinary stairs'), leverState: (pulled: boolean) => (pulled ? 'pulled' : 'not pulled'), loot: (note: string) => `treasure: ${note}`, lootDefault: 'the Game Master works it into the story',
