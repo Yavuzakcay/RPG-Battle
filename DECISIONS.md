@@ -3,6 +3,18 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk MB8: binek hattının denge ölçümü ve kapanışı (kural sürümü 74'te kaldı)
+
+- **Sürüm:** planda MB8 için kural değişikliği yazılı değil (BINEK-PLAN §7.2 "Kural sürümü —"); sürüm **74'te kaldı**, `ruleVersion.test.ts`/`g6.test.ts` değişmedi, regresyon testi gerekmedi. YZ süresi ölçümündeki 75 sütunu yok (73 ↔ 74 karşılaştırıldı).
+- **Mastiff (açık soru 2, B2): eklendi.** `data/binek.json` `egitimli` + `mastiff`. Gerekçe SRD 5.2.1:
+  - s. 15 "Mounted Combat": binek binicisinden en az bir boy büyük; "Domesticated horses, mules, and similar creatures have such training."
+  - s. 100 "Mounts and Other Animals" tablosu Mastiff'i binek hayvanı olarak listeler (195 lb., 25 GP), Pony ile yan yana.
+  - s. 357 Mastiff: Medium Beast. Boy kuralı motorda zaten var (`mounted.ts` `mountProblem`): yalnız Small/Tiny binici biner; Medium binici reddedilir. Test `binekMb2.test.ts` (MB8).
+  - ⚠ Sürüm kapısı yok: kontrol bilgisi `mounted.control` olayında taşındığı için kayıtlı savaşların replay'i değişmez; yalnız 74 savaşında bundan sonra Small binicinin Mastiff'e yeni binişi kontrollü olur (parti tarafında Mastiff ancak Charm/Dominate ile taraf değiştirmiş düşmanla olur).
+- **Denge:** ölçüm yalnız, düzeltme denemesi yok; `data/monsters.json` değişmedi. Koşucu `src/sim/binekDengeRun.ts` (`binekStart.ts` `mountedStart` + `balance.ts` `playBattle`). Sonuçlar `harita/belgeler/DENGE.md` "Kuyruk MB8".
+- **SRD denetimi:** `scripts/srd-denetim.ts` Mounted Combat satırı MB1–MB8'e göre; büyü satırı MB7 bloğunu (sürüm 70+) okur (Phantom Steed "tam"). Belge yeniden üretildi; bayat kalmış başka satırlar da güncel veriye göre değişti (Bag of Tricks, Figurine, Horn of Valhalla, Rod of Resurrection, Staff of the Python "tam"; Animal Shapes, Enhance Ability "savaş dışı"; Charm Person, Continual Flame, Hideous Laughter, Light gibi satırlarda eski "yaklaşık" notu kalktı).
+- **Bilerek yapılmayanlar:** `sim-senaryolar.json` binekli senaryo (atlı devriye, ejder binicisi 15) eklenmedi: senaryo verisinde "binmiş başla" alanı yok, yeni kurulum alanı olurdu (K57 kapsamı dışı; ölçüm `mountedStart` ile yapıldı). YZ savaş içi binme ve inme eşiği (B22, yeni komut). Arayüz işleri MB6b'ye.
+
 ## 2026-11-12 — KG1: karakter ekranlarında çerçevesiz jeton, ten tonu ve kültür adları (yalnız görünüm/metin; kural sürümü değişmedi)
 
 - **Jeton (karakter listesi, oluşturucu önizlemesi):** yuvarlak rozet çerçevesi kalktı; `CharacterFigure` (`src/ui/Avatar.tsx`) savaştaki `AvatarCircle` → `TokenFigure` yolunu küçük bir SVG içinde kullanır (silüet, kanat jetonun arkasında, aynı `wingBox`; `ability`: uçma yeteneği olan karakter kanatlı). SVG kutusu jeton + kanat sınırını kapsar, kanat kırpılmaz. Kanatsız karakterde de aynı çerçevesiz görünüm; kaybolmasın diye silüet gölgesi + ayak altı zemin parıltısı (`.char-figure`). `LookFrame` yalnız savaş şeridi rozetlerinde kalır.

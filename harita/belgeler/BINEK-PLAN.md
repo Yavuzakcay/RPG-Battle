@@ -755,3 +755,49 @@ Tek sabit `src/battle/binekMb2Surum.ts` (`BINEK_MB2_VERSION`, `binekMb2On`), kur
 
 **Kalan:** MB6 arayüz işleri (yukarıda), MB8 (denge ve kapanış).
 
+
+---
+
+## 18. MB8 sonucu ve binek hattının kapanışı (kural sürümü 74'te kaldı)
+
+Planda MB8 için kural değişikliği yazılı değil (§7.2 "Kural sürümü —"); sürüm **74'te kaldı**. Yeni komut, olay, ilkel ya da Ayarlar anahtarı yok; `SAVE_VERSION` 22.
+
+**Yapılanlar (MB8):**
+
+- **Denge ölçümü (hafif mod):** 5. seviye standart parti, 100 tohum, Çöl/Kale/Mağara/Orman × binicisiz/bağımsız/kontrollü; koşucu `src/sim/binekDengeRun.ts` (`binekStart.ts` + `balance.ts`). Tablo ve bulgular `harita/belgeler/DENGE.md` "Kuyruk MB8". Özet: binek Kale'de (71 → 16/22) ve Orman'da (67 → 45/42) partiyi zayıflatıyor; neden YZ: at düşman hattına dalıyor, üstündeki menzilli binici odak oluyor. Düzeltme denenmedi, canavar verisi değişmedi.
+- **YZ süresi:** kontrollü binekli Çöl, 73 ↔ 74: karar başına −%5, savaş başına toplam +%14,6 (sınır +%15).
+- **Açık soru 2 (Mastiff):** eklendi (`data/binek.json` `egitimli`). SRD 5.2.1 s. 15 (bir boy büyük binek; "horses, mules, and similar creatures"), s. 100 (Mounts and Other Animals tablosu), s. 357 (Medium Beast). Boy kuralı motorda: yalnız Small/Tiny binici. Kontrol `mounted.control` olayında taşındığından replay değişmez. Karar DECISIONS.md.
+- **SRD denetimi:** `scripts/srd-denetim.ts` Mounted Combat satırı ve Phantom Steed (MB7 bloğu) güncel; `docs/SRD-DENETIM.md` yeniden üretildi.
+- **CLAUDE.md:** binek paragrafı ve "Bilinen eksikler" binek satırı.
+
+**Doğrulama:** typecheck; binek testleri (`binekMb2.test.ts` 17 test: Mastiff testi eklendi); build ana parça 392,39 kB (sınır 420); `check:harita` 96/0, `check:ses` 15/0; tam paket 396 dosya, 4668 test geçti (7 atlandı), 0 kırık. Sürüm değişmediğinden `ruleVersion.test.ts`/`g6.test.ts` ve regresyon testi gerekmedi.
+
+**Binek hattı toplamı (MB1–MB8):**
+
+| Kuyruk | Sürüm | Konu |
+|---|---|---|
+| MB1 | 68 | Yığın modeli, bin/in maliyeti, düşme tetikleri, ışınlanma/itmeyle iniş, Lance |
+| MB3 | 69 | Dikey: yığın boyu, havadan düşme, tırmanma/kazma, havada bin/in |
+| MB7 | 70 | Çağrılan binekler: Find Steed, Phantom Steed, paket `binek` |
+| MB6 | — | Arayüz: havada inme seçici, ret nedenleri, 🐎 rozeti, kurulum notu |
+| MB4 | 72 | Çok altıgenli binek gövdesi (`multiHex`) |
+| MB5 | 73 | YZ binicisi, dar geçit |
+| MB2 | 74 | Kontrollü binek, birleşik tur (B4-A) |
+| MB8 | — | Denge ölçümü, Mastiff, kapanış |
+
+**Bilerek yapılmayanlar:**
+
+- `data/sim-senaryolar.json` binekli senaryoları (atlı devriye, ejder binicisi 15. seviye): senaryo verisinde "binmiş başla" alanı yok; eklemek yeni kurulum alanı demek. Ölçüm `mountedStart` ile yapıldı.
+- YZ'nin savaş içinde binmesi ve inme eşiği (B22; yeni komut/karar). Binek YZ'sinin binicinin rolüne bakması (menzilli binici geride kalsın): DENGE.md bulgusu; sonraki YZ kuyruğuna öneri.
+- Find Greater Steed (B18; SRD'de yok), çalınmış/düşman bineği (B15), çok altıgende döndürme.
+- ⚠ Yorumlar §8'deki gibi kalır (B1, B6, B8–B11, B13, B14 ve MB2'nin Find Steed genellemesi).
+
+**Arayüz işleri (MB6b):**
+
+- Binicinin çekmecesinde "Binek" bölümü: bineğin Dash, Disengage, Dodge'u ve bonus eylemleri (motor komutları hazır, `actorId` = binek).
+- Hareket önizlemesi ve erişim gölgesi bineğin hızıyla.
+- Tur şeridinde kontrollü binek binicinin kutusunda.
+- Game Master kurulumunda "eğitimli binek" anahtarı ve "binmiş başla".
+- Hamle önizleme kartında binek satırı.
+
+Binek hattı (MB1–MB8) kapandı; kalan yalnız MB6b arayüzü ve YZ önerisi.

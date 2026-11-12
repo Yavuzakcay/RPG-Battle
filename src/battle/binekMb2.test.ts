@@ -71,6 +71,13 @@ describe('MB2: binince kontrol (sürüm 74)', () => {
     expect(chain(s, r.events)).toEqual(r.state);
   });
 
+  it('MB8: Mastiff eğitimli binek (SRD s. 15, 100): Small binici binince kontrollü; Medium binici binemez (bir boy büyük kuralı)', () => {
+    const small = mountA(scene(74, { size: 'S', speed: 25 }, { monsterId: 'mastiff', size: 'M', speed: 40 }));
+    expect(small.events.find((e) => e.type === 'mounted')).toMatchObject({ control: 'kontrollu' });
+    expect(C(small.state, 'H').controlledBy).toBe('A');
+    expect(err(scene(74, {}, { monsterId: 'mastiff', size: 'M', speed: 40 }), { type: 'mount', actorId: 'A', mountId: 'H' })).toMatch(/boy büyük/);
+  });
+
   it('eğitimsiz binek (veride yok) bağımsız kalır; 73\'te eğitimli binek de bağımsız', () => {
     const wild = mountA(scene(74, {}, { monsterId: undefined }));
     expect(C(wild.state, 'H').controlledBy).toBeUndefined();
