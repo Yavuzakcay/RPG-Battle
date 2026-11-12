@@ -9,7 +9,6 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
-import { hiddenTo } from './k74Surum';
 import { binekOn } from './binekSurum';
 import { submerged } from './underwaterCore';
 import { hasSwimSpeed } from './deepWater';
@@ -76,6 +75,7 @@ import { afterAttackReactions, askOpportunity, canReact, hitReactions, OPPORTUNI
 import { applyEvents } from './reduce';
 import { damagePenalty } from './effects';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type CunningOption, type ExtraDamage } from './types';
+import { hiddenTo } from './k74Surum';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 

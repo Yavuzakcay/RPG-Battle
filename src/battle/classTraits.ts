@@ -3,7 +3,6 @@
  * savaşçıda `traits` işaretiyle (veriden: `data/class-features.json` ve `data/subclasses.json` `trait`); kodda sınıf adı
  * yok. Saf; saldırı, save ve hareket kodu buradan sorar. SRD 5.2.1.
  */
-import { hiddenTo } from './k74Surum';
 import { featuresOn, shiftGrant } from './shift';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
@@ -18,6 +17,7 @@ import { turnKey } from './economy';
 import { damageEffects } from './damage-effects';
 import { sizeRank } from './forced';
 import type { AttackOption, BattleEvent, BattleState, Combatant, CunningOption, MasteryMark } from './types';
+import { hiddenTo } from './k74Surum';
 
 export const hasTrait = (c: Pick<Combatant, 'traits'> | undefined, trait: string): boolean => !!c?.traits?.includes(trait);
 /** Bu tur kullanıldı mı (turda bir kez özellikler). */

@@ -9,7 +9,6 @@
  * Nick saldırıya değil yan el ek saldırısının ekonomisine etki eder (`economy.ts` `offhand_attack`, Görev P1).
  * Parametreler `data/class-features.json` "masteries"ten.
  */
-import { hiddenTo } from './k74Surum';
 import { adjacent3D, k73bOn } from './adjacency';
 import { saveDice } from './effectDice';
 import { resolveSave } from '../rules/attack';
@@ -29,6 +28,7 @@ import { globalRule } from './ruleControl';
 import { checkReach, optionReach } from './range';
 import { applyEvents } from './reduce';
 import type { AttackOption, BattleEvent, BattleState, Combatant, MasteryMark } from './types';
+import { hiddenTo } from './k74Surum';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 const alive = (c: Combatant | undefined): c is Combatant => !!c && c.hp > 0 && isTargetable(c);

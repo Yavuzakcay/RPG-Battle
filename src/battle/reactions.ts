@@ -13,7 +13,6 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
-import { hiddenTo } from './k74Surum';
 import { spells } from '../data';
 import { chainResist } from './chainPact';
 import { gap } from './body';
@@ -35,6 +34,7 @@ import { freeSpellResource } from '../rules/classFeatures';
 import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
 import { globalRule } from './ruleControl';
 import { gap64 } from './adjacency';
+import { hiddenTo } from './k74Surum';
 
 /** Kuyruk 19 (srdK19): Ink Cloud kancası (`monsterAbilities.ts` yükleyince kaydeder; döngüsel içe aktarma yok). */
 type InkHook = (state: BattleState, id: string, on: 'turnEnd' | 'damaged', rng: Rng) => BattleEvent[];

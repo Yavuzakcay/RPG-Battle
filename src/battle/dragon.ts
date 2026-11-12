@@ -12,7 +12,6 @@
  * GM her an uyandırabilir (`wake_dragon`). Yapay zekâ düşmanları `dragonWake` kipine uyar (ai.ts);
  * `chance` kipinde tur başında `rouse_dragon` ile uyandırma eğilimi zarı atılır.
  */
-import { hiddenTo } from './k74Surum';
 import { spells } from '../data';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { distance, sameHex, type Offset } from '../rules/hex';
@@ -20,6 +19,7 @@ import { skillBonus } from '../rules/skills';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { ruleOf } from './maprules';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
+import { hiddenTo } from './k74Surum';
 
 interface WakeRule {
   onDamage: boolean;
