@@ -1293,3 +1293,18 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .lineage-planned.status-calisir { color: var(--party); border-color: var(--party); }
 .lineage-planned.status-kismi { color: #b98200; border-color: #b98200; }
 .awakening-debuff { display: block; margin-top: 4px; }
+
+/* Görev SD2: halka menü sade; Büyü ve Özel balonlarında sekmeler ve kaydırılabilir liste; hızlı eylem rozeti; tek satır alt şerit. */
+.menu-tabs { display: flex; flex-wrap: nowrap; gap: 4px; overflow-x: auto; padding-bottom: 2px; flex: none; }
+.menu-tabs button { flex: none; min-height: 32px; padding: 0 10px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.25); background: rgba(255, 255, 255, 0.06); color: #fff; font-size: 12px; white-space: nowrap; }
+.menu-tabs button.on { background: #ffd400; color: #1a1a1a; border-color: #ffd400; font-weight: 700; }
+.menu-tabs button small { display: inline; color: inherit; opacity: 0.7; }
+.menu-scroll { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+.menu-scroll > button { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.06);
+  color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); text-align: left; min-height: 44px; flex: none; cursor: pointer; }
+.cost-badge { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 8px; background: #ffd400; color: #1a1a1a; font-style: normal; font-size: 11px; font-weight: 700; line-height: 16px; vertical-align: middle; }
+.economy-extra { bottom: 38px; flex-wrap: wrap; justify-content: center; max-width: calc(100% - 16px); white-space: normal; }
+.economy-extra:empty { display: none; }
+.economy-extra .hud-btn { pointer-events: auto; }
+.economy span.climb-note, .economy-extra span.climb-note { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: min(340px, calc(100vw - 32px));
+  white-space: normal; background: rgba(15, 20, 26, 0.92); padding: 6px 10px; border-radius: 10px; font-size: 12px; line-height: 1.35; }

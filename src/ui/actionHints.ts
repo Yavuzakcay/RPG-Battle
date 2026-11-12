@@ -6,7 +6,10 @@ import { t } from '../i18n';
 
 /** Düğme anahtarının açıklaması (geçerli dilde); bilinmeyen anahtarda boş. */
 export function actionHint(key: string): string {
-  const v = (t().hints as Record<string, unknown>)[key];
+  const h = t().hints as Record<string, unknown>;
+  // SD2: değişken kimlikli öğeler (hayvan formu, slot yenileme, iksir) ortak açıklamayı paylaşır.
+  const k = h[key] !== undefined ? key : key.startsWith('shape-') ? 'shape' : key.startsWith('magician-') ? 'magician' : key.startsWith('item-') ? 'itemUse' : key;
+  const v = h[k];
   return typeof v === 'string' ? v : '';
 }
 
