@@ -10,6 +10,7 @@ import { applyIncreases, featEffects, sheetFeats, type Advancement } from './adv
 import { lineageEtki, raceSpeed } from './lineage';
 import { findSubclass } from './subclasses';
 import { bonusesOf, type MagicInitiatePick } from './backgrounds';
+import { I } from './issueText';
 
 export type Scores = Record<Ability, number>;
 
@@ -235,11 +236,11 @@ function checkSkills(sheet: CharacterSheet): void {
 export function classSkillProblem(classId: string, chosen: readonly Skill[], extra = 0): string | null {
   const { from } = getClass(classId).skillChoices;
   const count = getClass(classId).skillChoices.count + extra;
-  if (chosen.length !== count) return `${count} beceri seçilmeli (${chosen.length} seçildi).`;
-  if (new Set(chosen).size !== chosen.length) return 'Aynı beceri iki kez seçilmiş.';
+  if (chosen.length !== count) return I().skillCount(count, chosen.length);
+  if (new Set(chosen).size !== chosen.length) return I().skillDup;
   if (from !== 'any') {
     const bad = chosen.filter((s) => !from.includes(s));
-    if (bad.length > 0) return `Sınıf listesinde yok: ${bad.join(', ')}`;
+    if (bad.length > 0) return I().skillNotInClass(bad.join(', '));
   }
   return null;
 }

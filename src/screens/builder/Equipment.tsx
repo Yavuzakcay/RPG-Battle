@@ -9,7 +9,7 @@
  */
 import { useState } from 'react';
 import { armor, weapons, items } from '../../data';
-import { gearName, masteryDescription, propertyDescription, weaponPropertyKeys } from '../../ui/descriptions';
+import { masteryDescription, propertyDescription, weaponPropertyKeys } from '../../ui/descriptions';
 import { carryLoad, type CarryLoad, type CarryRule } from '../../rules/carry';
 import { MAX_ATTUNED, armorProficient, type CharacterSheet } from '../../rules/stats';
 import { masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId, weaponProficient } from '../../rules/mastery';
@@ -35,7 +35,7 @@ function weaponTip(w: (typeof weapons)[number]): string {
   const mText = mid ? masteryText(mid) : undefined;
   const props = weaponPropertyKeys(w).map((k) => `${W.propName[k] ?? k}: ${propertyDescription(k, getLang())}`);
   const mastery = mid && mText ? [`${mText.name}: ${masteryDescription(mid, getLang())}${!masteryWorks(mid) ? ` (${W.soonTag})` : ''}`] : [];
-  return [getLang() === 'tr' ? W.enName(w.name) : '', weaponDetail(w), ...props, ...mastery].filter(Boolean).join('\n');
+  return [weaponDetail(w), ...props, ...mastery].filter(Boolean).join('\n');
 }
 
 export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSheet; set: SetFn; carryRule: CarryRule }) {
@@ -92,7 +92,6 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
 
   const lights = chosenWeapons.filter((w) => w.light);
   const handOptions = lights.filter((w) => offHandOptionProblem(s, w.name) === null);
-  const armorName = (n: string) => gearName('zirh', n, lang);
 
   return (
     <>
@@ -103,7 +102,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
 
         {/* Zırh: tam bir seçim (1/1) + isteğe bağlı kalkan. */}
         <div className="eq-group">
-          <p className="counters"><b>{T.armor}</b> <span className="ok">{W.eqCount(1, 1)}</span>{chosenArmor && <InfoPop text={`${lang === 'tr' ? `${W.enName(chosenArmor.name)}\n` : ''}${armorDetail(chosenArmor)}${s.shield ? ` ${L.equip.shieldDetail}` : ''}`} />}</p>
+          <p className="counters"><b>{T.armor}</b> <span className="ok">{W.eqCount(1, 1)}</span>{chosenArmor && <InfoPop text={`${armorDetail(chosenArmor)}${s.shield ? ` ${L.equip.shieldDetail}` : ''}`} />}</p>
           <div className="seg" role="radiogroup" aria-label={T.armor}>
             {okKinds.map(kindBtn)}
             {shieldOk && (
@@ -114,7 +113,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
             <div className="card-grid">
               {armor.filter((a) => (a.type ?? 'none') === kind).map((a) => (
                 <button key={a.name} className={`pick-card${a.name === s.armorName ? ' on' : ''}`} aria-pressed={a.name === s.armorName} title={armorDetail(a)}
-                  onClick={() => wearArmor(a.name)}><b>{armorName(a.name)}</b><small>{armorSummary(a)}</small>{lb(a.weight)}</button>
+                  onClick={() => wearArmor(a.name)}><b>{a.name}</b><small>{armorSummary(a)}</small>{lb(a.weight)}</button>
               ))}
             </div>
           )}
@@ -155,7 +154,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
               const full = chosenM.length >= (right?.count ?? 0);
               return (
                 <li key={w.name} className="eq-row on">
-                  <span className="eq-main"><b>{gearName('silah', w.name, lang)}</b><small>{weaponLine(w)}</small>{lb(w.weight)}</span>
+                  <span className="eq-main"><b>{w.name}</b><small>{weaponLine(w)}</small>{lb(w.weight)}</span>
                   <InfoPop text={weaponTip(w)} />
                   {right && eligible.has(w.id) && mText && (
                     <button className={`mastery-btn star${mOn ? ' on' : ''}`} aria-pressed={mOn} disabled={!mOn && full}
@@ -163,7 +162,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
                       title={!mOn && full ? W.limitFull(right.count) : mOn ? W.masteryStarOn(mText.name) : W.masteryStarOff(mText.name)}
                       onClick={() => set({ weaponMasteries: toggle(chosenM, w.id, !mOn) })}>{mOn ? '★' : '☆'} <small>{W.masteryWord}</small></button>
                   )}
-                  <button className="ghost eq-remove" aria-label={W.removeItem(gearName('silah', w.name, lang))} onClick={() => setWeapon(w, false)}>×</button>
+                  <button className="ghost eq-remove" aria-label={W.removeItem(w.name)} onClick={() => setWeapon(w, false)}>×</button>
                 </li>
               );
             })}
@@ -175,18 +174,18 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
             <div className="card-grid weapons">
               {addShown.map((w) => (
                 <button key={w.name} className="pick-card weapon" title={weaponDetail(w)} onClick={() => setWeapon(w, true)}>
-                  <b>{gearName('silah', w.name, lang)}</b><small>{weaponLine(w)}</small>
+                  <b>{w.name}</b><small>{weaponLine(w)}</small>
                 </button>
               ))}
             </div>
           </Fold>
           {handOptions.length > 0 || s.offHand ? (
-            <Fold title={T.offHand} summary={s.offHand ? gearName('silah', s.offHand, lang) : W.noneShort} className="eq-offhand">
+            <Fold title={T.offHand} summary={s.offHand ? s.offHand : W.noneShort} className="eq-offhand">
               <label>{T.offHand}
                 <select aria-label={T.offHand} value={s.offHand ?? ''} onChange={(e: { target: { value: string } }) => set({ offHand: e.target.value || undefined })}>
                   <option value="">{T.offHandEmpty}</option>
-                  {handOptions.map((w) => <option key={w.name} value={w.name}>{gearName('silah', w.name, lang)}</option>)}
-                  {s.offHand && !handOptions.some((w) => w.name === s.offHand) && <option value={s.offHand}>{gearName('silah', s.offHand, lang)}</option>}
+                  {handOptions.map((w) => <option key={w.name} value={w.name}>{w.name}</option>)}
+                  {s.offHand && !handOptions.some((w) => w.name === s.offHand) && <option value={s.offHand}>{s.offHand}</option>}
                 </select>
               </label>
               <small className="mute">{s.offHand ? (offHandProblem(s) ?? W.offHandShort) : W.offHandShort}</small>

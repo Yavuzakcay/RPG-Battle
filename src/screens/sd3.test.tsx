@@ -11,11 +11,8 @@ import { armor, classes, weapons } from '../data';
 import { blankCharacter, characterIssues, newCharacter, switchClass, type SavedCharacter } from '../rules/builder';
 import { gainedFeatures } from '../rules/classFeatures';
 import { MAX_ATTUNED } from '../rules/stats';
-import { featureLabel } from '../ui/descriptions';
 import { FEATURE_VISIBLE, splitFeatures } from './builder/Features';
 import { reSuggestAfterClassSwitch, reSuggestAfterLevel, recommendedKit, recommendedSkills, withSuggestions } from './builderDefaults';
-import ozellikAdlari from '../../data/ozellik-adlari.json';
-import donanimAdlari from '../../data/donanim-adlari.json';
 import onerilen from '../../data/onerilen-baslangic.json';
 
 const html = (c: SavedCharacter, step: Parameters<typeof Builder>[0]['step'], suggest = false) =>
@@ -32,19 +29,8 @@ describe('SD3 veri dosyaları', () => {
       expect(armor.some((a) => a.name === k.zirh), `${id} zırh`).toBe(true);
       for (const w of k.silahlar) expect(weapons.some((x) => x.name === w), `${id} ${w}`).toBe(true);
     }
-    for (const w of weapons) expect(donanimAdlari.silah, w.name).toHaveProperty([w.name]);
-    for (const a of armor) expect(donanimAdlari.zirh, a.name).toHaveProperty([a.name]);
     expect(onerilen.ozelTurler.length).toBe(6);
     expect(onerilen.ozelSiniflar.length).toBe(6);
-  });
-  it('1–20 bütün sınıf özelliklerinin düz Türkçe adı var; alt sınıf özelliklerinde Türkçe ad kullanılır', () => {
-    for (const c of classes) for (const f of gainedFeatures(c.id, 20)) {
-      expect((ozellikAdlari.tr as Record<string, string>)[f.key] ?? (f.from === 'subclass' ? 'ok' : ''), f.key).not.toBe('');
-      expect(featureLabel(f, c.id, undefined, 'tr').en, f.key).toBe(f.name);
-    }
-    const f = gainedFeatures('ranger', 1)[1]!;
-    expect(featureLabel(f, 'ranger', undefined, 'tr')).toEqual({ name: 'Gözde Düşman', en: 'Favored Enemy' });
-    expect(featureLabel(f, 'ranger', undefined, 'en').name).toBe('Favored Enemy');
   });
 });
 
@@ -106,9 +92,9 @@ describe('SD3 Donanım ekranı', () => {
     expect(m).toContain('Silahsız vuruş');
     expect(m).toContain('Zırh: Hafif, Orta, Ağır, Kalkan');
     expect(m).toContain('Ustalık 2/3');
-    // Türkçe ad ana satırda; İngilizce adı ⓘ'de.
-    expect(m).toContain('<b>Uzun kılıç</b>');
-    expect(m).toMatch(/title="İngilizce adı: Longsword/);
+    // SD4: adlar İngilizce kalır; açıklama Türkçe.
+    expect(m).toContain('<b>Longsword</b>');
+    expect(m).not.toContain('İngilizce adı');
   });
   it('ustalık hakkı dolunca kalan yıldızlar kilitli ve nedeni yazılı', () => {
     const c = fresh('fighter');
@@ -129,24 +115,24 @@ describe('SD3 Donanım ekranı', () => {
 });
 
 describe('SD3 Sınıf güçleri', () => {
-  it('ana listede en çok 6 güç, kalanı "Diğer güçler"; durum etiketi ve renk lejandı yok; ad Türkçe, İngilizce adı ⓘ\'de', () => {
+  it('ana listede en çok 6 güç, kalanı "Diğer güçler"; durum etiketi ve renk lejandı yok; ad İngilizce, açıklama Türkçe', () => {
     const c = fresh('fighter', 20);
     const m = html({ ...c, sheet: { ...c.sheet, subclassId: 'champion' } }, 'character');
     expect(m).toContain('Sınıf güçlerin');
     expect(m).toContain('Diğer güçler (');
     expect(m).not.toContain('feature-legend');
     expect(m).not.toContain('savaşta çalışır');
-    expect(m).toContain('<b>Çifte Saldırı</b>');
-    expect(m).toMatch(/title="İngilizce adı: Extra Attack"/);
+    expect(m).toContain('<b>Extra Attack</b>');
+    expect(m).not.toContain('İngilizce adı');
     const list = gainedFeatures('fighter', 20, 'champion');
     const { main, rest } = splitFeatures(list, 'fighter', 'champion', 20);
     expect(main.length).toBeLessThanOrEqual(FEATURE_VISIBLE);
     expect(main.length + rest.length).toBe(list.length);
   });
-  it('seçenekli güç (Dövüş Stili dışı: Cleric Kutsal Düzen) ana listede kalır ve Türkçe seçenek adıyla', () => {
+  it('seçenekli güç (Cleric Divine Order) ana listede kalır; seçenek adı İngilizce, açıklaması Türkçe', () => {
     const c = fresh('cleric', 20);
     const m = html({ ...c, sheet: { ...c.sheet, subclassId: 'life-domain' } }, 'character');
-    expect(m).toContain('Koruyucu: ağır zırh ve savaş silahı eğitimi');
+    expect(m).toContain('Protector (Heavy zırh ve Martial silah eğitimi)');
   });
 });
 

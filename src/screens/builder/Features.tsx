@@ -8,7 +8,8 @@ import { useEffect, useState } from 'react';
 import { eligibleForms, shapeLimits } from '../../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, LESSON_FEATS, parseInvocation } from '../../rules/invocations';
 import { loadMonsters, monsters, monstersLoaded, spells, weapons } from '../../data';
-import { featureLabel, featureSummary } from '../../ui/descriptions';
+import { featureSummary } from '../../ui/descriptions';
+import { describeTr } from '../../ui/trDesc';
 import { monsterAvatar } from '../../battle/avatar';
 import { AvatarBadge } from '../../ui/Avatar';
 import { classKit, gainedFeatures, missingFeatures } from '../../rules/classFeatures';
@@ -35,7 +36,7 @@ export function InvocationPicker(props: { classId: string; level: number; invoca
         const on = mine.length > 0;
         const blocked = !!v.requires && !ids.includes(v.requires);
         const cantrips = v.repeatable && v.repeatable !== 'feat' ? eligibleCantrips(v, props.known) : [];
-        const info = `${v.note ?? ''}${v.gmNote ? ` — ${T.invocationOffCombat}: ${v.gmNote}` : ''}${v.status === 'none' ? ` (${T.invocationNone})` : ''}`;
+        const info = `${describeTr('invocation', v.id) ?? v.note ?? ''}${v.gmNote ? ` — ${T.invocationOffCombat}: ${v.gmNote}` : ''}${v.status === 'none' ? ` (${T.invocationNone})` : ''}`;
         return (
           <span key={v.id} className="invocation">
             <button type="button" className={on ? 'on' : ''} aria-pressed={on} disabled={!on && (full || blocked || (!!v.repeatable && v.repeatable !== 'feat' && cantrips.length === 0))}
@@ -174,23 +175,21 @@ export function FeaturesPanel(props: {
   const { main, rest } = splitFeatures(features, props.classId, props.subclassId, props.level);
 
   const row = (f: Gained) => {
-    const label = featureLabel(f, props.classId, props.subclassId, lang);
     const sum = featureSummary(f, props.classId, props.subclassId, lang);
     const soon = !f.mechanic || f.mechanic.status === 'missing';
     const n = wishCountOf(props.classId, props.subclassId, f.key);
     return (
       <li key={f.key} className={`feature${f.mechanic?.story ? ' story' : ''}${soon ? ' soon' : ''}`}>
         <span className="feature-head">
-          <b>{label.name}</b> <small className="feature-lv">{W.featureLevel(f.level)}</small>
+          <b>{f.name}</b> <small className="feature-lv">{W.featureLevel(f.level)}</small>
           {f.mechanic?.story && <span className="feature-tag">{T.storyTag}</span>}
           {soon && <span className="feature-tag soon">{W.soonTag}</span>}
-          {lang === 'tr' && label.en !== label.name && <InfoPop text={W.enName(label.en)} />}
         </span>
         {sum && <small className="feature-sum">{sum}</small>}
         {f.mechanic?.options && (
-          <select aria-label={label.name} value={props.choices[f.key] ?? f.mechanic.default ?? f.mechanic.options[0]?.id}
+          <select aria-label={f.name} value={props.choices[f.key] ?? f.mechanic.default ?? f.mechanic.options[0]?.id}
             onChange={(e: { target: { value: string } }) => props.onChoose(f.key, e.target.value)}>
-            {f.mechanic.options.map((o) => <option key={o.id} value={o.id}>{W.optionName[o.id] ?? T.featureOption[o.id] ?? o.id}</option>)}
+            {f.mechanic.options.map((o) => <option key={o.id} value={o.id}>{T.featureOption[o.id] ?? o.id}</option>)}
           </select>
         )}
         {/* Kuyruk P12: ek paket rastgele büyü listesi (`buyuVer.rastgeleListe`): bildiği/hazırladığı N büyü. */}
@@ -199,7 +198,7 @@ export function FeaturesPanel(props: {
           return <div className="wish-pick"><small>{T.wishPick(n, picked)}</small>
             {Array.from({ length: n }, (_, i) => {
               const key = wishPickKey(f.key, i + 1);
-              return <select key={key} aria-label={`${label.name} ${T.wishSlot(i + 1)}`} value={props.choices[key] ?? ''} onChange={(e: { target: { value: string } }) => props.onChoose(key, e.target.value)}>
+              return <select key={key} aria-label={`${f.name} ${T.wishSlot(i + 1)}`} value={props.choices[key] ?? ''} onChange={(e: { target: { value: string } }) => props.onChoose(key, e.target.value)}>
                 <option value="">{T.wishSlot(i + 1)}: {T.wishEmpty}</option>
                 {props.known.map((x) => <option key={x} value={x}>{x}</option>)}
               </select>;
@@ -209,7 +208,7 @@ export function FeaturesPanel(props: {
         {f.mechanic?.spellPicks?.filter((p) => props.level >= (p.minClassLevel ?? 1)).map((p) => {
           const list = (p.all ? spells.map((x) => x.name) : props.known).filter((nm) => { const sp = spells.find((x) => x.name === nm); return sp?.level === p.level && sp.classes.includes(p.cls ?? 'Wiz'); });
           const key = `${f.key}/${p.slot}`;
-          return <select key={key} aria-label={`${label.name} ${p.slot}`} value={props.choices[key] ?? ''}
+          return <select key={key} aria-label={`${f.name} ${p.slot}`} value={props.choices[key] ?? ''}
             onChange={(e: { target: { value: string } }) => props.onChoose(key, e.target.value)}>
             <option value="">{T.spellPickAuto(p.level)}</option>
             {list.map((nm) => <option key={nm} value={nm}>{nm}</option>)}
@@ -238,7 +237,7 @@ export function FeaturesPanel(props: {
                 disabled={!on && props.metamagic.length >= mm.count}
                 title={!on && props.metamagic.length >= mm.count ? W.limitFull(mm.count) : undefined}
                 onClick={() => props.onMetamagic(on ? props.metamagic.filter((x) => x !== id) : [...props.metamagic, id])}>
-                {W.metamagicPlain[id] ?? T.metamagicName[id] ?? id} <small>{T.metamagicCost(cost)}</small> <InfoTip text={`${lang === 'tr' ? `${T.metamagicName[id] ?? id}: ` : ''}${T.metamagicInfo[id] ?? ''}`} /></button>;
+                {T.metamagicName[id] ?? id} <small>{T.metamagicCost(cost)}</small> <InfoTip text={`${lang === 'tr' ? `${T.metamagicName[id] ?? id}: ` : ''}${T.metamagicInfo[id] ?? ''}`} /></button>;
             })}
             {props.metamagic.length >= mm.count && <p className="mute limit-note">{W.limitFull(mm.count)}</p>}
           </div>
@@ -246,7 +245,7 @@ export function FeaturesPanel(props: {
       )}
       <InvocationPicker {...props} />
       <FormPicker classId={props.classId} level={props.level} subclassId={props.subclassId} forms={props.forms} onForms={props.onForms} />
-      {missing.length > 0 && <p className="mute">{W.comingFeatures(missing.map((f) => featureLabel(f, props.classId, props.subclassId, lang).name).join(', '))}</p>}
+      {missing.length > 0 && <p className="mute">{W.comingFeatures(missing.map((f) => f.name).join(', '))}</p>}
     </section>
   );
 }

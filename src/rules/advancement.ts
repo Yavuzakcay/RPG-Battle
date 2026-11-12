@@ -11,6 +11,7 @@ import { classData, getProgression, type FeatMechanic, type SrdFeat } from '../d
 import { ABILITIES, type Ability } from './abilities';
 import { classKit } from './classFeatures';
 import { originFeatOf } from './backgrounds';
+import { I } from './issueText';
 
 export type Scores = Record<Ability, number>;
 
@@ -63,16 +64,16 @@ function prereqLevel(f: SrdFeat): number {
 
 /** Feat bu yuvaya ve karaktere uygun mu; uygunsa null, değilse nedeni. */
 export function featProblem(f: SrdFeat, slot: AdvancementSlot, ctx: { scores: Scores; casterClass: boolean }): string | null {
-  if (slot.kind === 'style' && f.category !== 'Fighting Style') return `${f.name} bir Fighting Style feat'i değil.`;
+  if (slot.kind === 'style' && f.category !== 'Fighting Style') return I().featNotStyle(f.name);
   // F1: SRD 5.2.1 "Ability Score Improvement… or another feat of your choice for which you qualify": ön koşulsuz köken
   // feat'leri de (Magic Initiate, Skilled…) seviye yuvasına alınabilir.
-  if (slot.kind === 'asi' && !['General', 'Origin'].includes(f.category)) return `${f.name} bu seviyede alınamaz (General ya da Origin feat ya da ASI).`;
-  if (slot.kind === 'epic' && !['Epic Boon', 'General', 'Origin'].includes(f.category)) return `${f.name} bu seviyede alınamaz (Epic Boon, General ya da Origin).`;
-  if (prereqLevel(f) > slot.level) return `${f.name} için en az ${prereqLevel(f)}. seviye gerekir.`;
+  if (slot.kind === 'asi' && !['General', 'Origin'].includes(f.category)) return I().featNotAsi(f.name);
+  if (slot.kind === 'epic' && !['Epic Boon', 'General', 'Origin'].includes(f.category)) return I().featNotEpic(f.name);
+  if (prereqLevel(f) > slot.level) return I().featLevel(f.name, prereqLevel(f));
   const pre = f.prerequisite ?? '';
   const ab = /(Strength|Dexterity) or (Strength|Dexterity) (\d+)\+/.exec(pre);
-  if (ab && Math.max(ctx.scores.str, ctx.scores.dex) < Number(ab[3])) return `${f.name}: Güç ya da Çeviklik ${ab[3]}+ gerekir.`;
-  if (/Spellcasting Feature/.test(pre) && !ctx.casterClass) return `${f.name}: büyü yapma özelliği gerekir.`;
+  if (ab && Math.max(ctx.scores.str, ctx.scores.dex) < Number(ab[3])) return I().featAbility(f.name, ab[3] as string);
+  if (/Spellcasting Feature/.test(pre) && !ctx.casterClass) return I().featSpellcasting(f.name);
   return null;
 }
 
@@ -87,15 +88,15 @@ export const originFeats = (): SrdFeat[] => allFeats().filter((f) => f.category 
 export function increaseProblem(a: Advancement): string | null {
   const m = featMechanic(a.featId)?.abilityIncrease;
   const vals = Object.entries(a.abilities ?? {}).filter(([, v]) => v);
-  if (!m) return vals.length > 0 ? `${featById(a.featId)?.name ?? a.featId} yetenek artışı vermez.` : null;
+  if (!m) return vals.length > 0 ? I().noIncrease(featById(a.featId)?.name ?? a.featId) : null;
   if (vals.length === 0) return null; // henüz dağıtılmadı
   if (m.kind === 'asi') {
     const key = vals.map(([, v]) => v).sort().join(',');
-    return key === '2' || key === '1,1' ? null : 'ASI: bir skora +2 ya da iki skora +1.';
+    return key === '2' || key === '1,1' ? null : I().asiRule;
   }
-  if (vals.length !== 1 || vals[0]?.[1] !== (m.amount ?? 1)) return `Bir skora +${m.amount ?? 1}.`;
+  if (vals.length !== 1 || vals[0]?.[1] !== (m.amount ?? 1)) return I().oneScore(m.amount ?? 1);
   const ab = vals[0]?.[0] as Ability;
-  if (m.choices && !m.choices.includes(ab)) return `Yalnızca ${m.choices.map((x) => x.toUpperCase()).join(' ya da ')}.`;
+  if (m.choices && !m.choices.includes(ab)) return I().onlyAbilities(m.choices.map((x) => x.toUpperCase()).join(I().orWord));
   return null;
 }
 
@@ -232,8 +233,8 @@ export function advancementProblems(
   const origin = originFeatOf(sheet);
   if (origin) {
     const f = featById(origin);
-    if (!f) out.push(`Bilinmeyen köken feat'i: ${origin}`);
-    else if (f.category !== 'Origin') out.push(`${f.name} bir köken (Origin) feat'i değil.`);
+    if (!f) out.push(I().originUnknown(origin));
+    else if (f.category !== 'Origin') out.push(I().originNot(f.name));
   }
   const slots = advancementSlots(sheet.classId, sheet.level, sheet.subclassId);
   const used = new Set<string>();
@@ -244,20 +245,20 @@ export function advancementProblems(
     // Yuvanın seçeneği (Blessed Warrior): yalnızca o sınıfın Fighting Style yuvasında.
     if (slotAlternativeById(a.featId)) {
       const own = classKit(sheet.classId, sheet.level, sheet.subclassId).slotAlternatives.some((x) => x.id === a.featId && x.level === a.level);
-      if (!slot || slot.kind !== 'style' || !own) { out.push(`${a.level}. seviyede ${slotAlternativeById(a.featId)?.name} için yuva yok.`); continue; }
+      if (!slot || slot.kind !== 'style' || !own) { out.push(I().noSlotAlt(a.level, slotAlternativeById(a.featId)?.name ?? a.featId)); continue; }
       used.add(`${slot.level}:${slot.kind}`);
       continue;
     }
     const f = featById(a.featId);
-    if (!f) { out.push(`Bilinmeyen feat: ${a.featId}`); continue; }
-    if (!slot) { out.push(`${a.level}. seviyede ${f.name} için yuva yok.`); continue; }
+    if (!f) { out.push(I().featUnknown(a.featId)); continue; }
+    if (!slot) { out.push(I().noSlotAlt(a.level, f.name)); continue; }
     used.add(`${slot.level}:${slot.kind}`);
     const p = featProblem(f, slot, ctx);
     if (p) out.push(p);
-    if (taken.includes(f.id) && !f.repeatable) out.push(`${f.name} bir kez alınabilir.`);
+    if (taken.includes(f.id) && !f.repeatable) out.push(I().featOnce(f.name));
     taken.push(f.id);
     const inc = increaseProblem(a);
-    if (inc) out.push(`${a.level}. seviye ${f.name}: ${inc}`);
+    if (inc) out.push(I().featLine(a.level, f.name, inc));
   }
   return out;
 }

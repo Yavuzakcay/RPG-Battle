@@ -4,6 +4,7 @@
  */
 import type { Armor, Item, Weapon } from '../data/types';
 import { t } from '../i18n';
+import { describeTr } from './trDesc';
 
 const abilityShort = (a: string) => a.toUpperCase();
 
@@ -73,7 +74,10 @@ export function itemSummary(it: Item): string {
   if (it.spells?.length) fx.push(e.itemEffect.spells(it.spells.map((x) => x.name).join(', '), it.charges));
   if (it.use) fx.push(e.itemEffect.use[it.use.kind] ?? '');
   if (it.passive && Object.keys(it.passive).length) fx.push(e.itemEffect.passive);
-  return [...(fx.length ? fx : [it.text]), it.attunement ? e.attunement : ''].filter(Boolean).join(' · ');
+  // Görev SD4: etki özeti yoksa Türkçe açıklama (data/aciklamalar-tr.json); İngilizce arayüzde SRD ham metni yerine
+  // "açıklama yalnız Türkçe" notu. Türkçe açıklaması olmayan (elle yazılmış kısa) metin olduğu gibi.
+  const fallback = describeTr('esya', it.id) ?? it.text;
+  return [...(fx.length ? fx : [fallback]), it.attunement ? e.attunement : ''].filter(Boolean).join(' · ');
 }
 
 /** Kuyruk A5: eşyanın savaşta veriyle tanımlı bir etkisi var mı (yoksa "Game Master işler"). */

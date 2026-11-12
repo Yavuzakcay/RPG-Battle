@@ -43,10 +43,10 @@ describe('başlangıç hesabı', () => {
 
 describe('uç buildler (taslak v1.1, 3. seviye)', () => {
   const cases: Array<[string, string, string, string, number, number, string]> = [
-    ['paladin', 'acolyte', 'imza_hizir', 'celestial', 45, 48, 'Düzenli İyi'],
-    ['bard', 'criminal', 'imza_sair', 'elf', -36, 18, 'Kaotik İyi'],
-    ['fighter', 'soldier', 'imza_imparator', 'goliath', 36, -36, 'Düzenli Kötü'],
-    ['rogue', 'criminal', 'imza_infazci', 'tiefling', -45, -48, 'Kaotik Kötü'],
+    ['paladin', 'acolyte', 'imza_hizir', 'celestial', 45, 48, 'Lawful Good'],
+    ['bard', 'criminal', 'imza_sair', 'elf', -36, 18, 'Chaotic Good'],
+    ['fighter', 'soldier', 'imza_imparator', 'goliath', 36, -36, 'Lawful Evil'],
+    ['rogue', 'criminal', 'imza_infazci', 'tiefling', -45, -48, 'Chaotic Evil'],
   ];
   for (const [classId, backgroundId, subclassId, raceId, d, g, label] of cases) {
     it(`${classId} + ${backgroundId} + ${subclassId} + ${raceId} = (${d}, ${g}) ${label}`, () => {
@@ -57,10 +57,10 @@ describe('uç buildler (taslak v1.1, 3. seviye)', () => {
   }
   // Kuyruk AS1a/AS1a-2: aynı dört uç build alt soyla (alt soy satırı ırk satırının yerine geçer; soysuz kayıt yukarıdaki eski değere düşer; değerler AS1a-2 doğru tablosundan).
   const altCases: Array<[string, string, string, string, string, number, number, number, string]> = [
-    ['paladin', 'acolyte', 'imza_hizir', 'celestial', 'parlayan-ruh', 3, 47, 49, 'Düzenli İyi'],
-    ['bard', 'criminal', 'imza_sair', 'elf', 'wood-elf', 3, -38, 20, 'Kaotik İyi'],
-    ['fighter', 'soldier', 'imza_imparator', 'goliath', 'stone', 3, 38, -32, 'Düzenli Kötü'],
-    ['rogue', 'criminal', 'imza_infazci', 'tiefling', 'abyssal', 3, -45, -50, 'Kaotik Kötü'],
+    ['paladin', 'acolyte', 'imza_hizir', 'celestial', 'parlayan-ruh', 3, 47, 49, 'Lawful Good'],
+    ['bard', 'criminal', 'imza_sair', 'elf', 'wood-elf', 3, -38, 20, 'Chaotic Good'],
+    ['fighter', 'soldier', 'imza_imparator', 'goliath', 'stone', 3, 38, -32, 'Lawful Evil'],
+    ['rogue', 'criminal', 'imza_infazci', 'tiefling', 'abyssal', 3, -45, -50, 'Chaotic Evil'],
   ];
   for (const [classId, backgroundId, subclassId, raceId, lin, level, d, g, label] of altCases) {
     it(`alt soyla: ${classId} + ${backgroundId} + ${subclassId} + ${raceId}/${lin} = (${d}, ${g}) ${label}`, () => {
@@ -77,8 +77,10 @@ describe('uç buildler (taslak v1.1, 3. seviye)', () => {
 
 describe('etiket ve histerezis', () => {
   it('9 etiket; eşik ±17; 2 puan histerezis', () => {
-    expect(alignmentLabel('pos', 'pos', 'tr')).toBe('Düzenli İyi');
-    expect(alignmentLabel('neu', 'neu', 'tr')).toBe('Gerçek Tarafsız');
+    // Görev SD4: etiket adları her arayüz dilinde İngilizce (kimlikler ve kayıt biçimi aynı).
+    expect(alignmentLabel('pos', 'pos', 'tr')).toBe('Lawful Good');
+    expect(alignmentLabel('neg', 'neg', 'tr')).toBe('Chaotic Evil');
+    expect(alignmentLabel('neu', 'neu', 'tr')).toBe('True Neutral');
     expect(alignmentLabel('neg', 'neg', 'en')).toBe('Chaotic Evil');
     expect(bucketOf(17)).toBe('pos');
     expect(bucketOf(16)).toBe('neu');
@@ -90,7 +92,7 @@ describe('etiket ve histerezis', () => {
 });
 
 describe('başlangıç seçenekleri', () => {
-  it('üç geçiş; orta çizgideki seçenek gizli; Gerçek Tarafsız ise kabul etmeme yok', () => {
+  it('üç geçiş; orta çizgideki seçenek gizli; True Neutral ise kabul etmeme yok', () => {
     expect(rejectOptions({ duzen: 20, iyilik: 20 })).toEqual(['orta', 'satir-orta', 'sutun-orta']);
     expect(rejectOptions({ duzen: 5, iyilik: 20 })).toEqual(['orta', 'sutun-orta']);
     expect(rejectOptions({ duzen: 20, iyilik: -3 })).toEqual(['orta', 'satir-orta']);
@@ -145,10 +147,10 @@ describe('günlük', () => {
     expect(a.iyilik).toBe(4); // K52: Masumu korudu İ +4 (taslak)
     expect(a.gunluk.at(-1)?.tur).toBe('yeniden');
   });
-  it('eski kayıt (alan yok) 0/0 açılır; etiket Gerçek Tarafsız', () => {
+  it('eski kayıt (alan yok) 0/0 açılır; etiket True Neutral', () => {
     const a = alignmentOf(undefined);
     expect([a.duzen, a.iyilik]).toEqual([0, 0]);
-    expect(labelOf(a, 'tr')).toBe('Gerçek Tarafsız');
+    expect(labelOf(a, 'tr')).toBe('True Neutral');
     expect(blankCharacter('x').hizalanma).toBeUndefined();
   });
 });
@@ -162,7 +164,7 @@ describe('kural kapalı / açık', () => {
   });
   it('kart etiketi: gizli işaretliyse çizilmez', () => {
     const a = newAlignment({ duzen: 20, iyilik: 20 }, 'otomatik');
-    expect(renderToStaticMarkup(createElement(AlignmentBadge, { value: a }))).toContain('Düzenli İyi');
+    expect(renderToStaticMarkup(createElement(AlignmentBadge, { value: a }))).toContain('Lawful Good');
     expect(renderToStaticMarkup(createElement(AlignmentBadge, { value: { ...a, gizli: true } }))).toBe('');
   });
 });
