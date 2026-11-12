@@ -138,12 +138,14 @@ describe('oluşturucu: soy kartları', () => {
   it('Human: 4 kültür kartı + ayrı ten tonu seçici; ten kültüre bağlı değil (eşleme alanı boş)', () => {
     const m = html(char({ raceId: 'human', lineageId: 'khadyrga' }));
     expect((m.match(/lineage-card/g) ?? []).length).toBeGreaterThanOrEqual(4);
-    for (const n of ['Tenhausser Sürgünü', 'Khadyrga Sürgünü', 'Saf Kent Sürgünü', 'Sur Dışı']) expect(m, n).toContain(n);
+    // AS1b düzeltmesi (kullanıcı): ilk üç kültürün adında "Sürgünü" eki yok.
+    for (const n of ['Tenhausser', 'Khadyrga', 'Saf Kent', 'Sur Dışı']) expect(m, n).toContain(n);
+    expect(m).not.toContain('Sürgünü');
     expect(m).toContain('Kültür');
     expect((m.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(3);
     expect(SKIN_TONES.map((t) => t.id)).toEqual(['orijinal', 'siyahi', 'dogu-asyali']);
-    // AS1b: her kültür üç tonu da seçebilir.
-    for (const k of ['tenhausser', 'khadyrga', 'pure-city', 'outwall']) expect(CULTURE_SKIN[k]).toEqual(['orijinal', 'siyahi', 'dogu-asyali']);
+    // AS1b düzeltmesi (kullanıcı): kültür–ten eşlemesi BOŞ (kullanıcı dolduracak); satır yokken üç ton serbest.
+    expect(CULTURE_SKIN).toEqual({});
     expect(html(char({ raceId: 'elf', lineageId: 'drow' }))).not.toContain('skin-tone');
   });
   it('seçili alt soyun buff/debuff açıklaması ve "planlı" etiketi görünür; İngilizce metin de var', () => {

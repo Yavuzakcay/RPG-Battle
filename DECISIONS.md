@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Görev AS1b düzeltmesi (kullanıcı): Human kültürleri ve Sur Dışı sürgünü (yalnız oluşturucu/görünüm; kural sürümü 77, kayıt sürümü değişmedi)
+
+- **Adlar:** kültür kartları Tenhausser, Khadyrga, Saf Kent (EN Pure City), Sur Dışı; ilk üçünde "Sürgünü/Exile" eki kalktı (`data/races.json` `ad`; hizalanma gerekçe metinleri de). Kart buff/debuff metinleri aynen.
+- **Kültür–ten eşlemesi BOŞ** (`data/alt-soy-gorunum.json` `ten.kulturTen: {}`; AS1c'de üç kültüre üç ton açıktı). Ten tonu seçicisi (Orijinal/Koyu/Altın) aynen.
+- **Sur Dışı sürgünü:** Sur Dışı seçilince "Sürgün" seçimi: Tenhausser Sürgünü, Khadyrga Sürgünü, Saf Kent Sürgünü (veri `ten.surgun`: kültür, seçenekler, TR/EN ad). Karakterde isteğe bağlı `exileCulture` (eski kayıtta yok, etkilenmez). Yalnız görünüm: buff/debuff ve mekanik her zaman Sur Dışı'nınki. Başka kültürde seçim görünmez; Sur Dışı'ndan çıkınca ya da tür değişince sıfırlanır (`lineageLook.ts` `pickCulture`).
+- **Geçici davranış:** sürgün kültürünün `kulturTen` satırı yok/boşken üç ton serbest; satır tek tona inince o ton kendiliğinden seçilir ve seçici yalnız onu gösterir (`tonesFor`, `toneAfter`; yalnız veri doldurulur, kod değişmez). Aynı kural Sur Dışı dışındaki kültürlerin kendi satırına da uygulanır.
+- **Testler:** `src/rules/as1bSurgun.test.tsx` (5); `altSoy41.test.tsx` beklentileri güncellendi (gerekçe: kullanıcı kararı: adlar ekisiz, eşleme boş). Ekran görüntüsü `docs/as1b/karakter-adimi-mobil.png` yenilendi (Sur Dışı + Sürgün seçimi).
+
 ## 2026-11-12 — Görev AS2 (toplu): DURDU — yalnız envanter (kod değişmedi; kural sürümü 77'de kaldı, 78 kullanılmadı)
 
 - Envanter `harita/belgeler/AS2-ENVANTER.md` (kimlik/ad/sayı; paket metni yok).

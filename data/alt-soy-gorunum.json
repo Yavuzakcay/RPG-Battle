@@ -90,7 +90,7 @@
     "gizleUstYuzde": 9.5
   },
   "ten": {
-    "not": "Kuyruk AS1c: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
+    "not": "Kuyruk AS1c: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar (kültür → ton kimlikleri; BOŞ: kullanıcı dolduracak; satırı olmayan kültürde bütün tonlar serbest, tek ton varsa kendiliğinden seçilir). Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
     "yerTutucu": false,
     "filtreUygula": true,
     "varsayilan": "orijinal",
@@ -123,27 +123,16 @@
         "rozetRenk": "#E2B880"
       }
     ],
-    "kulturTen": {
-      "tenhausser": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
-      ],
-      "khadyrga": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
-      ],
-      "pure-city": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
-      ],
-      "outwall": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
-      ]
+    "kulturTen": {},
+    "surgun": {
+      "not": "Görev AS1b düzeltmesi: Sur Dışı (`kultur`) seçilince ek \"Sürgün\" seçimi (karakterde `exileCulture`). Seçenekler yalnız bu üç kültür; buff/debuff her zaman Sur Dışı'nınki. Görünüm (ten tonu) sürgün kültürünün `kulturTen` satırından: satır boşken üç ton serbest, tek tona inince o ton kendiliğinden seçilir (yalnız veri).",
+      "kultur": "outwall",
+      "secenekler": ["tenhausser", "khadyrga", "pure-city"],
+      "ad": {
+        "tenhausser": { "tr": "Tenhausser Sürgünü", "en": "Tenhausser Exile" },
+        "khadyrga": { "tr": "Khadyrga Sürgünü", "en": "Khadyrga Exile" },
+        "pure-city": { "tr": "Saf Kent Sürgünü", "en": "Pure City Exile" }
+      }
     }
   },
   "orijinal": [
