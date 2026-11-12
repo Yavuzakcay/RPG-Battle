@@ -90,7 +90,7 @@
     "gizleUstYuzde": 9.5
   },
   "ten": {
-    "not": "Kuyruk AS1c: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
+    "not": "Kuyruk AS1c: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez. DÜZELTME: tonlar Beyaz/Siyah/Sarı; `kulturTen` (kültür kimliği → ton kimliği) ve `surgunTen` (Sur Dışı Sürgün kimliği → ton kimliği) BOŞ: doldurulunca seçim görünümü otomatik belirler (yalnız veri); boşken ton serbest seçilir.",
     "yerTutucu": false,
     "filtreUygula": true,
     "varsayilan": "orijinal",
@@ -98,8 +98,8 @@
       {
         "id": "orijinal",
         "ad": {
-          "tr": "Orijinal",
-          "en": "Original"
+          "tr": "Beyaz",
+          "en": "White"
         },
         "renk": null,
         "rozetRenk": "#c18d62"
@@ -107,8 +107,8 @@
       {
         "id": "siyahi",
         "ad": {
-          "tr": "Koyu",
-          "en": "Dark"
+          "tr": "Siyah",
+          "en": "Black"
         },
         "renk": "#96623E",
         "rozetRenk": "#96623E"
@@ -116,35 +116,15 @@
       {
         "id": "dogu-asyali",
         "ad": {
-          "tr": "Altın",
-          "en": "Golden"
+          "tr": "Sarı",
+          "en": "Yellow"
         },
         "renk": "#E2B880",
         "rozetRenk": "#E2B880"
       }
     ],
-    "kulturTen": {
-      "tenhausser": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
-      ],
-      "khadyrga": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
-      ],
-      "pure-city": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
-      ],
-      "outwall": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
-      ]
-    }
+    "kulturTen": {},
+    "surgunTen": {}
   },
   "orijinal": [
     "elf/wood-elf",
@@ -160,5 +140,31 @@
     "tiefling/infernal",
     "gnome/rock-gnome",
     "goliath/hill"
-  ]
+  ],
+  "surgun": {
+    "kultur": "outwall",
+    "secenekler": [
+      {
+        "id": "tenhausser",
+        "ad": {
+          "tr": "Tenhausser Sürgünü",
+          "en": "Tenhausser Exile"
+        }
+      },
+      {
+        "id": "khadyrga",
+        "ad": {
+          "tr": "Khadyrga Sürgünü",
+          "en": "Khadyrga Exile"
+        }
+      },
+      {
+        "id": "pure-city",
+        "ad": {
+          "tr": "Saf Kent Sürgünü",
+          "en": "Pure City Exile"
+        }
+      }
+    ]
+  }
 }

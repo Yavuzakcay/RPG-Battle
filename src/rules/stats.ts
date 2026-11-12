@@ -62,6 +62,8 @@ export interface CharacterSheet {
   soyKapali?: true;
   /** Kuyruk AS1a: Human ten tonu (`data/alt-soy-gorunum.json` `ten.tonlar`); kültürden bağımsız, yalnızca görünüm. */
   skinTone?: string;
+  /** AS1b düzeltme: Human Sur Dışı kültüründe Sürgün seçimi (`tenhausser`/`khadyrga`/`pure-city`); yalnız görünüm, buff/debuff hep Sur Dışı'nın. Başka kültürde yok sayılır. */
+  exileCulture?: string;
   /** Taşıdığı silahlar (data/weapons.json adları), isteğe bağlı büyülü bonusla. */
   weapons?: Array<{ name: string; enchant?: number }>;
   /** Yan eldeki Light silah (data/weapons.json adı; Görev P1): Light özelliğinin ek saldırısı. Kalkanla olmaz. */

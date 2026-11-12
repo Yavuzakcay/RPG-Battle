@@ -30,7 +30,8 @@ const D = data as unknown as {
   orijinal: string[];
   celestialUyanis: Record<string, { hale: boolean; filtre?: string; kanat?: string }>;
   hale: { gizleUstYuzde: number };
-  ten: { varsayilan: string; filtreUygula: boolean; tonlar: SkinTone[]; kulturTen: Record<string, string[]> };
+  ten: { varsayilan: string; filtreUygula: boolean; tonlar: SkinTone[]; kulturTen: Record<string, string>; surgunTen: Record<string, string> };
+  surgun: { kultur: string; secenekler: Array<{ id: string; ad: { tr: string; en: string } }> };
 };
 /** Celestial Göksel Uyanış 3. seviyeden etkin (`data/celestial.json` `awakening.minLevel`; test eşitliği denetler). */
 export const AWAKENING_FROM = 3;
@@ -38,9 +39,25 @@ export const AWAKENING_DEFAULT = 'parlayan-ruh';
 export const HALO_CLIP_PCT = D.hale.gizleUstYuzde;
 export const SKIN_TONES: SkinTone[] = D.ten.tonlar;
 export const DEFAULT_SKIN_TONE = D.ten.varsayilan;
-/** Kültür (alt soy) → seçilebilecek ten tonları (`ten.kulturTen`; AS1b'de üç kültürde de üç ton). */
-export const CULTURE_SKIN: Record<string, string[]> = D.ten.kulturTen;
-export const tonesFor = (lineageId: string | undefined): SkinTone[] => SKIN_TONES.filter((t) => !lineageId || !CULTURE_SKIN[lineageId] || CULTURE_SKIN[lineageId]!.includes(t.id));
+/** Kültür (alt soy) → ten tonu eşlemesi (`ten.kulturTen`; şimdilik BOŞ: kültür görünümü kendi başına belirlemez). */
+export const CULTURE_SKIN: Record<string, string> = D.ten.kulturTen;
+/** Sur Dışı Sürgün seçimi → ten tonu eşlemesi (`ten.surgunTen`; şimdilik BOŞ). */
+export const EXILE_SKIN: Record<string, string> = D.ten.surgunTen;
+/** Sur Dışı'nın Sürgün seçenekleri (yalnız üç: Tenhausser, Khadyrga, Saf Kent). */
+export const EXILE_CULTURE = D.surgun.kultur;
+export const EXILE_OPTIONS = D.surgun.secenekler;
+export const isExileOption = (id: string | undefined): boolean => !!id && EXILE_OPTIONS.some((x) => x.id === id);
+/** Ten seçici her zaman bütün tonları sunar (kültürden bağımsız); eşleme dolunca seçim `mappedTone` ile otomatik belirlenir. */
+export const tonesFor = (_lineageId?: string): SkinTone[] => SKIN_TONES;
+/** Eşlemeden gelen ton: Sur Dışı'nda Sürgün seçimi, diğer kültürlerde kültür; eşleme boşsa undefined (serbest ton). */
+export const mappedTone = (lineageId: string | undefined, exile: string | undefined): string | undefined => {
+  if (!lineageId) return undefined;
+  if (lineageId === EXILE_CULTURE) return isExileOption(exile) ? EXILE_SKIN[exile!] : undefined;
+  return CULTURE_SKIN[lineageId];
+};
+/** Karakterin etkin ten tonu: eşleme belirlediyse o, yoksa seçilen ton. */
+export const effectiveSkinTone = (s: { raceId: string; lineageId?: string; exileCulture?: string; skinTone?: string }): string | undefined =>
+  s.raceId === 'human' ? mappedTone(s.lineageId, s.exileCulture) ?? s.skinTone : s.skinTone;
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);

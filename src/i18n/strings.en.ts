@@ -312,6 +312,8 @@ export const en: Strings = {
       skillFromBg: (bg: string) => `Background (${bg})`, countOther: (n: number, max: number) => `Extra skill (species) ${n}/${max}`,
       skillConflict: 'also picked as a class skill: choose another class skill',
       raceBonusNote: 'Ability score bonuses come from your background, not your species.',
+      raceBonusNoteHuman: 'Ability score bonuses come from your background, not your species; for Human they also come from your chosen culture.',
+      exileTitle: 'Exile',
       // Kuyruk AS1a: sub-lineage buff/debuff descriptions (text only; effects do not work in the game yet).
       lineageBuff: 'Plus', lineageDebuff: 'Minus', lineageStatus: { calisir: 'works', kismi: 'partial', planli: 'planned' } as Record<string, string>, lineageNotYet: 'These effects do not work in the game yet (planned); description only for now.',
       lineageOptionalHint: 'No sub-lineage chosen: no sub-lineage effect until you pick one.',

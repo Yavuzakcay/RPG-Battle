@@ -13,8 +13,9 @@ import { lineageNotes as notesOf } from '../ui/lineageNotes';
 import { races } from '../data';
 import { AWAKENING_OPTIONS, CELESTIAL } from './celestialData';
 import { newPendingLineages, LINEAGE_NOTICE_KEY } from '../app/lineageNotice';
-import { skinTint, ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
+import { skinTint, ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, EXILE_SKIN, EXILE_OPTIONS, effectiveSkinTone, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
 import { LookFrame } from '../ui/LookFrame';
+import { setLang } from '../i18n';
 import hizalanma from '../../data/hizalanma-baslangic.json';
 import gorunum from '../../data/alt-soy-gorunum.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
@@ -138,12 +139,14 @@ describe('oluşturucu: soy kartları', () => {
   it('Human: 4 kültür kartı + ayrı ten tonu seçici; ten kültüre bağlı değil (eşleme alanı boş)', () => {
     const m = html(char({ raceId: 'human', lineageId: 'khadyrga' }));
     expect((m.match(/lineage-card/g) ?? []).length).toBeGreaterThanOrEqual(4);
-    for (const n of ['Tenhausser Sürgünü', 'Khadyrga Sürgünü', 'Saf Kent Sürgünü', 'Sur Dışı']) expect(m, n).toContain(n);
+    for (const n of ['Tenhausser', 'Khadyrga', 'Saf Kent', 'Sur Dışı']) expect(m, n).toContain(n);
+    expect(m).not.toContain('Sürgünü');
     expect(m).toContain('Kültür');
     expect((m.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(3);
     expect(SKIN_TONES.map((t) => t.id)).toEqual(['orijinal', 'siyahi', 'dogu-asyali']);
-    // AS1b: her kültür üç tonu da seçebilir.
-    for (const k of ['tenhausser', 'khadyrga', 'pure-city', 'outwall']) expect(CULTURE_SKIN[k]).toEqual(['orijinal', 'siyahi', 'dogu-asyali']);
+    // AS1b düzeltme: tonlar Beyaz/Siyah/Sarı; kültür–ten eşlemesi BOŞ (kullanıcı dolduracak).
+    expect(SKIN_TONES.map((x) => x.ad.tr).sort()).toEqual(['Beyaz', 'Sarı', 'Siyah']);
+    expect(CULTURE_SKIN).toEqual({}); expect(EXILE_SKIN).toEqual({});
     expect(html(char({ raceId: 'elf', lineageId: 'drow' }))).not.toContain('skin-tone');
   });
   it('seçili alt soyun buff/debuff açıklaması ve "planlı" etiketi görünür; İngilizce metin de var', () => {
@@ -165,6 +168,51 @@ describe('oluşturucu: soy kartları', () => {
     expect(m.pending.map((p) => p.race)).toEqual(['Human']);
     // Soyu zorunlu türler (Elf) eskisi gibi atanır.
     expect(migrateLineages([char({ raceId: 'elf', lineageId: undefined })]).assigned.length).toBe(1);
+  });
+});
+
+describe('Sur Dışı Sürgün seçimi (AS1b düzeltme)', () => {
+  const exile = (m: string) => (m.match(/class="pick-card lineage-card exile-card( on)?"/g) ?? []).length;
+  it('yalnız Sur Dışı kültüründe çıkar ve tam üç seçenek var; diğer kültürlerde ve ırklarda çıkmaz', () => {
+    const m = html(char({ raceId: 'human', lineageId: 'outwall' }));
+    expect(exile(m)).toBe(3);
+    for (const n of ['Tenhausser Sürgünü', 'Khadyrga Sürgünü', 'Saf Kent Sürgünü']) expect(m, n).toContain(n);
+    expect(EXILE_OPTIONS.map((o) => o.id)).toEqual(['tenhausser', 'khadyrga', 'pure-city']);
+    for (const k of ['tenhausser', 'khadyrga', 'pure-city']) expect(exile(html(char({ raceId: 'human', lineageId: k, exileCulture: 'khadyrga' })))).toBe(0);
+    expect(exile(html(char({ raceId: 'elf', lineageId: 'drow' })))).toBe(0);
+  });
+  it('EN metin; eşleme boşken Sürgün görünümü belirlemez (ton serbest), buff/debuff Sur Dışı\'nın kalır', () => {
+    setLang('en');
+    try {
+      const m = html(char({ raceId: 'human', lineageId: 'outwall', exileCulture: 'pure-city' }));
+      expect(exile(m)).toBe(3);
+      for (const n of ['Tenhausser Exile', 'Khadyrga Exile', 'Pure City Exile']) expect(m, n).toContain(n);
+      expect(m).toContain('for Human they also come from your chosen culture');
+    } finally { setLang('tr'); }
+    for (const e of [undefined, 'tenhausser', 'khadyrga', 'pure-city']) expect(effectiveSkinTone({ raceId: 'human', lineageId: 'outwall', exileCulture: e, skinTone: 'siyahi' })).toBe('siyahi');
+    // Buff/debuff (kartlar ve seçili alt soy notu) Sürgün seçiminden bağımsız: yalnız Sürgün kartlarının seçili durumu değişir.
+    const strip = (e?: string) => html(char({ raceId: 'human', lineageId: 'outwall', exileCulture: e })).replace(/aria-checked="(true|false)" class="pick-card lineage-card exile-card( on)?"/g, 'X');
+    expect(strip('khadyrga')).toBe(strip('tenhausser'));
+    expect(strip('khadyrga')).toBe(strip(undefined));
+    expect(strip('pure-city')).toContain('Hayatta Kalma ve Algı +2');
+  });
+  it('eşleme dolunca (yalnız veri) Sürgün/kültür görünümü otomatik belirler; boşalınca serbest', () => {
+    EXILE_SKIN.khadyrga = 'siyahi'; CULTURE_SKIN.tenhausser = 'dogu-asyali';
+    try {
+      expect(effectiveSkinTone({ raceId: 'human', lineageId: 'outwall', exileCulture: 'khadyrga', skinTone: 'orijinal' })).toBe('siyahi');
+      expect(effectiveSkinTone({ raceId: 'human', lineageId: 'tenhausser', skinTone: 'orijinal' })).toBe('dogu-asyali');
+      expect(effectiveSkinTone({ raceId: 'human', lineageId: 'khadyrga', exileCulture: 'khadyrga', skinTone: 'orijinal' })).toBe('orijinal');
+    } finally { delete EXILE_SKIN.khadyrga; delete CULTURE_SKIN.tenhausser; }
+  });
+  it('Human bonus notu kültürden de geldiğini söyler (TR); diğer ırkta eski not', () => {
+    expect(html(char({ raceId: 'human', lineageId: 'outwall' }))).toContain('Human&#x27;da ayrıca seçtiğin kültürden de gelir');
+    expect(html(char({ raceId: 'elf', lineageId: 'drow' }))).toContain('Yetenek puanı bonusu türden değil, geçmişten gelir.');
+  });
+  it('sıfırlanma: kültür/ırk değişince Sürgün kalkar; eski kayıt alansız etkilenmez', () => {
+    // Sürgün yalnız Sur Dışı'nda etkin: başka kültürde seçim görünmez, kayıtlı alan ten tonunu etkilemez.
+    expect(exile(html(char({ raceId: 'human', lineageId: 'tenhausser', exileCulture: 'khadyrga' })))).toBe(0);
+    expect(exile(html(char({ raceId: 'human', lineageId: 'outwall' })))).toBe(3);
+    expect(html(char({ raceId: 'human', lineageId: 'outwall' }))).not.toContain('exile-card on');
   });
 });
 

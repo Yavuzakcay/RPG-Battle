@@ -90,7 +90,7 @@ describe('sihirbaz adımları ve eksikler', () => {
     expect(issues.map((x) => x.text)).toEqual(characterProblems(elf));
     const m = html(fighter(), 'character');
     for (const h of ['Kimlik', 'Tür', 'Sınıf']) expect(m).toContain(`<h3>${h}</h3>`);
-    expect(m).toContain('Yetenek puanı bonusu türden değil, geçmişten gelir.');
+    expect(m).toContain('Yetenek puanı bonusu türden değil, geçmişten gelir; Human&#x27;da ayrıca seçtiğin kültürden de gelir.');
   });
   it('Görev K3: jeton önizlemesi tür, sınıf ve görünüm değişince değişir', () => {
     const src = (p: Partial<SavedCharacter['sheet']>) => /class="token-preview wiz-preview-side"[\s\S]*?characters\/([a-z-]+\.webp)/.exec(html(fighter(p), 'character'))?.[1];

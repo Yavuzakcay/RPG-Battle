@@ -42,7 +42,7 @@ import { AvatarBadge, CharacterFigure, preloadImages } from '../ui/Avatar';
 import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageName, lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
 import { lineageNotes } from '../ui/lineageNotes';
-import { skinToneOf, tonesFor } from '../ui/lineageLook';
+import { EXILE_CULTURE, EXILE_OPTIONS, effectiveSkinTone, mappedTone, skinToneOf, tonesFor } from '../ui/lineageLook';
 import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateAll, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, type MagicInitiatePick } from '../rules/backgrounds';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
@@ -426,7 +426,7 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
   const others = races.filter((r) => !RACE_FEATURED.includes(r.id));
   const card = (r: (typeof races)[number]) => (
     <button key={r.id} className={`pick-card${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
-      onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id })}>
+      onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id, exileCulture: undefined })}>
       <b>{r.name}</b><small>{raceBlurb(r.id, lang)}</small>
     </button>
   );
@@ -452,12 +452,12 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
       {hasLineage && race && (
         <Fold title={race.id === 'human' ? W.cultureTitle : W.lineageTitle} summary={lineage ? lineageName(lineage, lang) : W.noneShort}
           open={!lineage && !race.lineageOptional} className="lineage-fold">
-          <p className="mute race-note">{W.raceBonusNote}</p>
+          <p className="mute race-note">{race.id === 'human' ? W.raceBonusNoteHuman : W.raceBonusNote}</p>
           {/* Görev K3: soy seçimi kartlarla; kartta yalnızca bu seçeneği ayıran özet. */}
           <div className="card-grid lineage-grid" role="radiogroup" aria-label={W.lineageTitle}>
             {(race.lineages ?? []).map((l) => (
               <button key={l.id} role="radio" aria-checked={l.id === lineage?.id} className={`pick-card lineage-card${l.id === lineage?.id ? ' on' : ''}`}
-                onClick={() => set({ lineageId: l.id })}>
+                onClick={() => set({ lineageId: l.id, ...(l.id === EXILE_CULTURE ? {} : { exileCulture: undefined }), ...(race.id === 'human' && mappedTone(l.id, undefined) ? { skinTone: mappedTone(l.id, undefined) } : {}) })}>
                 <b>{lineageName(l, lang)}</b>
                 <small>{lineageSummary(l, lang)}</small>
               </button>
@@ -465,13 +465,30 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           </div>
           {race.lineageOptional && !lineage && <p className="soft-warn">⚠ {W.lineageOptionalHint}</p>}
           {lineage && <LineageNotes raceId={race.id} lineage={lineage} />}
+          {race.id === 'human' && s.lineageId === EXILE_CULTURE && (
+            <>
+              <h4 className="lineage-title">{W.exileTitle}</h4>
+              {/* AS1b düzeltme: Sürgün yalnız görünümü belirler (eşleme dolunca otomatik); buff/debuff hep Sur Dışı'nın. */}
+              <div className="card-grid lineage-grid exile-grid" role="radiogroup" aria-label={W.exileTitle}>
+                {EXILE_OPTIONS.map((o) => {
+                  const on = s.exileCulture === o.id;
+                  return (
+                    <button key={o.id} type="button" role="radio" aria-checked={on} className={`pick-card lineage-card exile-card${on ? ' on' : ''}`} data-exile={o.id}
+                      onClick={() => set({ exileCulture: o.id, ...(mappedTone(EXILE_CULTURE, o.id) ? { skinTone: mappedTone(EXILE_CULTURE, o.id) } : {}) })}>
+                      <b>{o.ad[lang]}</b>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
           {race.id === 'human' && (
             <>
               <h4 className="lineage-title">{W.skinTitle}</h4>
               {/* Kuyruk AS1a: ten tonu kültürden bağımsız ayrı seçim (kültür–ten eşlemesi veride boş). */}
               <div className="skin-tones" role="radiogroup" aria-label={W.skinTitle}>
                 {tonesFor(s.lineageId).map((tone) => {
-                  const on = skinToneOf(s.skinTone)?.id === tone.id;
+                  const on = skinToneOf(effectiveSkinTone(s))?.id === tone.id;
                   return (
                     <button key={tone.id} type="button" role="radio" aria-checked={on} className={`skin-tone${on ? ' on' : ''}`} data-tone={tone.id} onClick={() => set({ skinTone: tone.id })}>
                       <i style={{ background: tone.rozetRenk }} />{tone.ad[lang]}

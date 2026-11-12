@@ -329,6 +329,8 @@ const tr = {
       skillFromBg: (bg: string) => `Geçmiş (${bg})`, countOther: (n: number, max: number) => `Ek beceri (tür) ${n}/${max}`,
       skillConflict: 'sınıftan da seçilmiş: başka bir sınıf becerisi seç',
       raceBonusNote: 'Yetenek puanı bonusu türden değil, geçmişten gelir.',
+      raceBonusNoteHuman: 'Yetenek puanı bonusu türden değil, geçmişten gelir; Human\'da ayrıca seçtiğin kültürden de gelir.',
+      exileTitle: 'Sürgün',
       // Kuyruk AS1a: alt soy buff/debuff açıklamaları (yalnızca metin; etkisi henüz oyunda çalışmıyor).
       lineageBuff: 'Artı', lineageDebuff: 'Eksi', lineageStatus: { calisir: 'çalışır', kismi: 'kısmi', planli: 'planlı' } as Record<string, string>, lineageNotYet: 'Bu etkiler henüz oyunda çalışmıyor (planlı); şimdilik yalnızca açıklama.',
       lineageOptionalHint: 'Alt soy seçilmedi: seçene dek alt soy etkisi yok.',
