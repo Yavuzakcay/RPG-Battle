@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Görev AS1b (toplu): alt soy oluşturucu seçimi ve görünüm denetimi (yalnız denetim; kural sürümü 77, kod değişmedi)
+
+- Görev metnindeki işler main'de zaten vardı (Kuyruk AS1a: oluşturucu kartları, Human 4 kültür + ayrı ten seçici, eski kayıt bildirimi `src/app/lineageNotice.ts`; AS1c: savaş jetonuna görünüm, kanat katmanı altyapısı `data/kanat-esleme.json` üç yuva: Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn; Celestial Parlayan Ruh haleli / Kırık Kanat halesiz + kanat / Gece Gözyaşı halesiz + koyu filtre; Halfling İnce/Kalın oranı; Dragonborn jetonu ve `soy-renkleri.json` aynen). Baştan yazılmadı.
+- Testler zaten karşılıyor: `src/rules/altSoy41.test.tsx` (kart seçimi ve buff/debuff metni, Human ten tonu kültürden bağımsız, eski Human kaydı bildirimi, görünüm/oran/kanat/Celestial verisi), `src/ui/as1cGorunum.test.tsx`, `src/ui/tint.test.ts`.
+- Metinden fark (önceki kullanıcı kararıyla kalan): Human `kulturTen` her kültüre üç tonun hepsini açar (bağlama yok = metindeki "eşleme boş" ile aynı sonuç; Sur Dışı dahil hepsi her tonu seçer); ton renkleri yer tutucu değil (KG1/AS1c kararı).
+- Ekran görüntüsü `docs/as1b/karakter-adimi-mobil.png` (Karakter adımı, Human kültür kartları, 390 px). Ana parça değişmedi.
+- Yer tutucu kalanlar: kanat sprite'ı olmayan yuva yok (üç yuvanın dosyası var); Kanatlı uçuş kararı U1b'de.
+
 ## 2026-11-12 — Görev AS1a (toplu): 41 alt soy denetimi, kurtarma dezavantajı bütün yollarda (kural sürümü 77)
 
 - **Durum:** görev metnindeki 41 alt soyun verisi, buff/debuff mekaniği ve hizalanma başlangıcı main'de zaten vardı (Kuyruk AS1a, AS1a-2, AS1b = sürüm 71, AS1c görünüm). Çalışan sistem baştan yazılmadı; metinle karşılaştırıldı. Sayı 41 = 38 ırk soyu + 3 Celestial uyanışı (test denetler). Hizalanma `altSoy` 41 satırın hepsi metindeki değerlerle **birebir** (betikle karşılaştırıldı; K51 uç build testleri değişmedi).
