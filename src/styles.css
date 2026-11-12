@@ -255,6 +255,13 @@ input[type='number'] { width: 90px; }
 .strip-item.out { opacity: 0.35; }
 .hud-hint { position: absolute; top: 56px; left: 50%; transform: translateX(-50%); display: flex; align-items: center;
   background: rgba(15, 20, 26, 0.85); padding: 4px 6px 4px 14px; border-radius: 22px; white-space: nowrap; }
+/* Kuyruk MB6: havada inme irtifa seçici ipucu hapının içinde: hap sarılır (çok düğme), kısa düğmeler, uçamayan için tek satır uyarı. */
+.hud-hint:has(.dismount-picker) { flex-direction: column; align-items: stretch; white-space: normal; border-radius: 16px; max-width: min(92vw, 560px); padding: 6px 12px; gap: 4px; }
+.hud-hint .dismount-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.hud-hint .dismount-picker button { min-height: 32px; min-width: 56px; padding: 0 8px; font-size: 12px; }
+.hud-hint .dismount-picker button.ghost { color: #e6eef3; border-color: rgba(255, 255, 255, 0.35); }
+.hud-hint .dismount-picker > small { flex-basis: 100%; color: #b8c6cf; }
+.hud-hint .dismount-hint { color: #ffd9a0; white-space: normal; margin-left: 8px; }
 .radial-btn { position: absolute; z-index: 4; border-radius: 50%; background: rgba(15, 20, 26, 0.9); color: #fff; border: 2px solid #ffd400;
   font-size: 11px; line-height: 1.1; padding: 2px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); }
 .radial-btn.disabled { opacity: 1; background: rgba(40, 44, 50, 0.95); border-color: rgba(255, 255, 255, 0.25); color: rgba(255, 255, 255, 0.4); cursor: default; }

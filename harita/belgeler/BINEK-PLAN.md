@@ -607,3 +607,23 @@ Doğrulanmayan açık yok.
   - Binme menüsü çağrılan bineği gösterir, ama binek kuralı nedenlerinin metni yalnız Türkçe (motor gerekçeleri).
   - Havada inme irtifası.
 - **Paket (Ejder Muhafızı):** gerçek paketin (`icerik/ek-ranger.json`) yaması ayrıca yapılacak (bu oturumda `icerik/` yok). Binek kuralı çağrılan yaratığın boyutunu değiştirmez: Medium binici için ejderhanın 14. seviyede Large olması gerekir (MB1: binek en az bir boy büyük).
+
+---
+
+## 14. MB6 sonucu (yalnız arayüz; kural sürümü 70'te kalır)
+
+`git diff -- src/battle data/kural-surumu.json` boş: kural dosyaları değişmedi. Yeni komut, olay ve Ayarlar anahtarı yok.
+
+**Yapılanlar:**
+
+- **Havada inme irtifa seçici** (`src/ui/dismountOptions.ts`, `src/ui/DismountPicker.tsx`, `MapBattle.tsx`):
+  - Uçabilen binici "Binekten in" ipucunda 5 ft adımlı irtifa seçer; seçim `dismount.toFt` olarak gider (bineğin irtifasıyla aynıysa gönderilmez).
+  - Seçenekler MB3 motor sınırlarını okur (bineğin bandının 5 ft yakınında, tavan/uçuş üst sınırı altında, yerin altına inmeden); her seçenek geçerli komut, dışındakiler reddedilir.
+  - Uçamayan biniciye seçici yok; havadaysa kısa uyarı. 68 ve altında seçici yok.
+- **Ret nedenleri TR/EN:** motor metinleri değişmedi; `data/neden-metinleri.json`'a 33 kalıp. Test kaynak metinlerini tarayıp kalıpsız binek gerekçesini yakalar. Binemeyen biniciye menüde neden satırı.
+- **Göstergeler:** binici ve bineğinde tek 🐎 rozeti (rozet önceliğinin sonunda, 3 + "+N" bütçesi aynen); altıgen bilgisinde "binek: <ad>" / "üstünde: <binici>".
+- **Kurulum:** Phantom Steed kurulum çağırma kutusunda listelenmiyordu (kutu `castingTime: ritual` süzüyordu); `summons.json` `setup` bayrağına çevrildi, binek çağırmalar için doğru TR/EN ritüel notu.
+
+**Doğrulama:** `binekMb6.test.tsx` 10 test; ekran görüntüsü `docs/mb6/hava-inme-secici.png`; ana parça 389,14 kB.
+
+**Kalan:** MB2 (kontrollü binek turu), MB4 (çok altıgen), MB5 (YZ binicisi). Hamle önizleme kartında binek satırı yok.

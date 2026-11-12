@@ -59,7 +59,7 @@ const ICON_OF: Record<string, string> = { poison: 'poisoned', exhaustion: 'exhau
 export interface StatusIcon { key: string; icon: string; title: string; img?: string; count?: number }
 
 /** Süren durumların jetondaki kalıcı simgeleri (yanıyor, zehirli, donmuş, yakalandı, yerde). */
-export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<Pick<Combatant, 'exhaustion' | 'effects'>>): StatusIcon[] {
+export function statusIcons(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<Pick<Combatant, 'exhaustion' | 'effects' | 'riding' | 'rider'>>): StatusIcon[] {
   const out = statusBadges(c);
   return out.map((s) => {
     const name = ICONS[ICON_OF[s.key] ?? ''];
@@ -77,7 +77,7 @@ export function spellBadgeImg(name: string): string | undefined {
   return ad ? `${okSimge(ad)}.webp` : undefined;
 }
 
-function statusBadges(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<Pick<Combatant, 'exhaustion' | 'effects'>>): StatusIcon[] {
+function statusBadges(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<Pick<Combatant, 'exhaustion' | 'effects' | 'riding' | 'rider'>>): StatusIcon[] {
   const out: StatusIcon[] = [];
   const S = t().view.status;
   if (c.conditions.includes('Burning')) out.push({ key: 'burning', icon: '🔥', title: S.burning });
@@ -102,6 +102,9 @@ function statusBadges(c: Pick<Combatant, 'conditions' | 'mapStatus'> & Partial<P
   // Kuyruk K48: Moral 0'da Çökmüş (belirgin simge; Incapacitated simgesinin yerine).
   const broken = c.effects?.some((e) => e.id === 'moral:cokmus');
   if (broken) out.push({ key: 'broken', icon: '💔', title: S.broken });
+  // Kuyruk MB6 (yalnız görsel): bineğin üstündeki (biniyor) ve binicisi olan bineğin (binici var) tek rozeti; düşük öncelik.
+  if (c.riding) out.push({ key: 'mounted', icon: '🐎', title: S.mounted });
+  else if (c.rider) out.push({ key: 'ridden', icon: '🐎', title: S.ridden });
   // Etkisiz bırakan durumlar (Görev H): Paralyzed ve Stunned Incapacitated'ı içerir, yalnızca biri gösterilir.
   if (broken) { /* Çökmüş: Incapacitated simgesi yinelenmez */ } else if (c.conditions.includes('Paralyzed')) out.push({ key: 'paralyzed', icon: '⛓', title: S.paralyzed });
   else if (c.conditions.includes('Stunned')) out.push({ key: 'stunned', icon: '💫', title: S.stunned });
