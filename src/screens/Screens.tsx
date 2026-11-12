@@ -184,7 +184,7 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
   }
   return (
     <div className="char-card">
-      <LookFrame sheet={sheet} size={44}><AvatarBadge avatar={sheetAvatar(sheet)} size={44} ring="var(--party)" eager /></LookFrame>
+      <LookFrame sheet={sheet} size={44} ability><AvatarBadge avatar={sheetAvatar(sheet)} size={44} ring="var(--party)" eager /></LookFrame>
       <div>
         <strong>{sheet.name || t().common.unnamed}</strong>
         <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>

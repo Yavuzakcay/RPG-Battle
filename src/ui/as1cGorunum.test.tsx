@@ -13,6 +13,8 @@ import { blankCharacter } from '../rules/builder';
 import { rgbToLab } from './color';
 import { CURRENT_RULES } from '../battle/ruleVersion';
 import kanat from '../../data/kanat-esleme.json';
+import soyRenkleri from '../../data/soy-renkleri.json';
+import { LookFrame } from './LookFrame';
 import type { CharacterSheet } from '../rules/stats';
 
 const sheet = (patch: Partial<CharacterSheet>): CharacterSheet => ({ ...blankCharacter('as1c').sheet, name: 'Görünüm', ...patch });
@@ -160,6 +162,44 @@ describe('alt sınıfa bağlı kanat slotu (altSinif)', () => {
     expect(air.indexOf('kanat/melek-acik.webp')).toBeGreaterThanOrEqual(0);
     expect(air.indexOf('kanat/melek-acik.webp')).toBeLessThan(air.indexOf('x.webp'));
     expect(renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={look} /></svg>)).not.toContain('melek-acik');
+  });
+});
+
+describe('karakter ekranlarında kanat (uçma yeteneği; havada olması gerekmez)', () => {
+  const ab = (sh: Parameters<typeof lineageLook>[0]) => lineageLook(sh, { ability: true }).wing;
+  it('uçma yeteneği olan karakter kanatlı: Tiefling Kanatlı, Dragonborn (5+), Celestial Kırık Kanat; yeteneği olmayan değil', () => {
+    expect(ab({ raceId: 'tiefling', lineageId: 'winged', level: 1 })).toMatchObject({ id: 'tiefling-kanatli', open: true });
+    expect(ab({ raceId: 'dragonborn', lineageId: 'red', level: 5 })).toMatchObject({ id: 'dragonborn' });
+    expect(ab({ raceId: 'dragonborn', lineageId: 'red', level: 4 })).toBeNull();
+    expect(ab({ raceId: 'celestial', celestialAwakening: 'kirik-kanat', level: 3 })).toMatchObject({ id: 'celestial-kirik-kanat' });
+    expect(ab({ raceId: 'celestial', celestialAwakening: 'parlayan-ruh', level: 5 })).toBeNull();
+    expect(ab({ raceId: 'tiefling', lineageId: 'infernal', level: 5 })).toBeNull();
+    expect(ab({ raceId: 'human', subclassId: 'melek', level: 5 })).toMatchObject({ id: 'melek-acik' });
+    expect(ab({ raceId: 'human', subclassId: 'baska', level: 5 })).toBeNull();
+  });
+  it('savaş kuralı aynen: ability geçmeyen çözümde Tiefling/Dragonborn/Melek yalnız havadayken, Celestial Kırık Kanat her zaman', () => {
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }).wing).toBeNull();
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).not.toBeNull();
+    expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }).wing).toBeNull();
+    expect(lineageLook({ raceId: 'human', subclassId: 'melek' }).wing).toBeNull();
+    expect(lineageLook({ raceId: 'celestial', celestialAwakening: 'kirik-kanat', level: 3 }).wing).not.toBeNull();
+  });
+  it('LookFrame: ability ile kanat çizilir (karakter listesi, oluşturucu önizlemesi); ability yoksa yerdeki jetonda çizilmez', () => {
+    const sh = { raceId: 'tiefling', lineageId: 'winged' };
+    expect(renderToStaticMarkup(<LookFrame sheet={sh} size={44} ability><i /></LookFrame>)).toContain('kanat/tiefling-kanatli.webp');
+    expect(renderToStaticMarkup(<LookFrame sheet={sh} size={44}><i /></LookFrame>)).not.toContain('look-wing');
+    expect(renderToStaticMarkup(<LookFrame sheet={sh} size={44} flying><i /></LookFrame>)).toContain('look-wing');
+  });
+});
+
+describe('Tiefling alt soy renkleri (kök neden: Kanatlı soyu sarı-yeşile boyuyordu)', () => {
+  const L = (soyRenkleri.races as unknown as Record<string, { lineages: Record<string, { lch: { h: number; c: number; hueKeep?: number } } | null> }>).tiefling!.lineages;
+  it('Kanatlı soyu sarı-yeşil ton bandında (45–150°) değil; iki yönden de jetonu tek renge boyamaz (orijinal sapmanın payı korunur)', () => {
+    const w = L.winged!.lch;
+    expect(w.h < 45 || w.h > 150).toBe(true);
+    expect(w.hueKeep ?? 0.3).toBeGreaterThanOrEqual(0.6);
+    expect(L.infernal).toBeNull();
+    for (const id of ['abyssal', 'chthonic']) expect(L[id]!.lch.hueKeep ?? 0.3).toBeGreaterThanOrEqual(0.6);
   });
 });
 

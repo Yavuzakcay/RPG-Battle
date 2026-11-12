@@ -89,8 +89,12 @@ export function wingBox(wing: WingLayerSpec, cx: number, cy: number, w: number):
   return { x: cx - wing.capa[0] * width, y: cy - w / 2 + w * wing.omuz - wing.capa[1] * height, width, height };
 }
 
-/** Karakterin görünümü; `flying`: uçarken görünen kanatlar (Draconic Flight) da çizilir. */
-export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): LineageLook {
+/**
+ * Karakterin görünümü; `flying`: uçarken görünen kanatlar (Draconic Flight) da çizilir. `ability` (karakter ekranları: liste,
+ * oluşturucu, jeton önizlemesi): karakterin uçma yeteneği varsa (kanat slotu soy/alt soy/alt sınıf ve seviye eşiğiyle eşleşiyorsa)
+ * havada olmasa da açık kanat çizilir; savaş bunu geçirmez, orada kural aynen (yalnız havadayken, `herZaman` hariç).
+ */
+export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?: boolean } = {}): LineageLook {
   const filters: string[] = [];
   let scaleX = 1, scaleY = 1, hideHalo = false;
   let wingId: string | undefined;
@@ -111,7 +115,7 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): 
   // Alt sınıfa bağlı slot (örn. Melek) ırk/alt soy kanadının yerine geçer; seçili/yüklü değilse hiçbir şey değişmez.
   wingId = subclassWingId(sheet) ?? wingId;
   if (!wingId && sheet.raceId === 'dragonborn') wingId = 'dragonborn';
-  const wing = wingId ? wingLayer(wingId, level, !!opts.flying, sheet.lineageId) : null;
+  const wing = wingId ? wingLayer(wingId, level, !!(opts.flying || opts.ability), sheet.lineageId) : null;
   return { filter: filters.join(' '), scaleX, scaleY, wing, hideHalo };
 }
 

@@ -25,3 +25,5 @@ Alt sınıfa bağlı slot (`altSinif`, isteğe bağlı): slotun içine alt sın�
 ```
 
 Karakterin seçili alt sınıfı bu kimlikse (ve alt sınıf kayıtta yüklüyse; ek paket yoksa slot hiçbir etki yapmaz, hata vermez) slot ırk/alt soy kanadının yerine geçer. `altSinif` yoksa slot eskisi gibi ırk/alt soy/Göksel Uyanış eşlemesiyle seçilir. Genişlik `olcek` (jeton genişliğine oran; Melek için 1,5) ile ayarlanır.
+
+Karakter ekranları (karakter listesi, oluşturucu önizlemesi): `LookFrame` `ability` ile uçma yeteneği olan karakter (slot soy/alt soy/alt sınıf ve seviyeyle eşleşiyorsa) havada olmadan da kanatlı görünür. Savaş jetonunda kural aynen: `herZaman` olmayan slot yalnız havadayken.

@@ -3,6 +3,12 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Melek-kanat düzeltmeleri: Tiefling Kanatlı rengi ve karakter ekranlarında kanat (yalnız görsel)
+
+- **Kök neden (Tiefling Kanatlı jetonu sarı):** kanat filtresi değil, `data/soy-renkleri.json` `tiefling.lineages.winged` boyaması: `lch` tonu 90° (sarı-yeşil), kroma 40; ten maskesi geniş seçtiği için ten, boynuz, kuyruk ve koyu kıyafet pikselleri tek ton olan sarıya çekiliyordu (`hueKeep` varsayılan 0,3). Düzeltme: Kanatlı 318° (soluk menekşe), `hueKeep` 0,8, `chromaKeep` 0,7; Abyssal ve Chthonic `hueKeep` 0,6'ya çıkarıldı (orijinal pikseller arası ton farkı korunur: kıyafet tek renge boyanmaz). Soylar birbirinden ayırt edilir (ΔE ≥ 15 testi, `data/soy-olcum.json` yalnız Tiefling satırları yeniden ölçüldü). Kanat filtresi (koyu kırmızı-mor) aynen.
+- **Karakter ekranlarında kanat:** `LookFrame` `ability` ile (karakter listesi, oluşturucu jeton önizlemesi ve yan önizleme) uçma yeteneği olan karakter havada olmadan da kanatlı görünür. Yetenek kaynağı kanat slotlarının kendisi: Kanatlı soy (Kanat Süzülüşü), Dragonborn 5+ (Draconic Flight), Celestial Kırık Kanat, Melek alt sınıfı (`altSinif`). Savaş kuralı değişmedi: Tiefling Kanatlı, Dragonborn ve Melek yalnız havadayken, Celestial Kırık Kanat her zaman.
+- ⚠ Yetenek tespiti slot eşlemesinden; ek paketin `ucus` ilkeli olan başka alt sınıfı için slot eklenmeden kanat çıkmaz.
+
 ## 2026-11-12 — Melek açık kanadı: alt sınıfa bağlı kanat slotu (yalnız görsel; kural sürümü değişmez)
 
 - `data/kanat-esleme.json` şemasına isteğe bağlı `altSinif` eklendi; yeni slot `melek-acik` (`altSinif: "melek"`, ek paket alt sınıfı, sınıf Warlock). `lineageLook` seçili alt sınıfa bağlı slotu ırk/alt soy kanadının yerine koyar; alt sınıf seçili ya da (sınıf bilindiğinde) kayıtta yüklü değilse etkisiz. Genişlik çarpanı 1,5 (`olcek`), omuz 0,46, çapa 0,5 / 0,383; renk filtresi yok.
