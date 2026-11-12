@@ -23,7 +23,9 @@ describe('K54b Harita Öğretisi', () => {
     const old = H(14, { kuralSurumu: 26 }).keys();
     expect(old).toContain('imza:imza_harita/rewrite-the-ground');
     expect(old).not.toContain('imza:imza_harita/drawn-wall');
-    expect(H(14, { house: false }).keys().filter((x) => x.startsWith('imza:'))).toEqual([]);
+    // Görev AS2 (kural sürümü 78): ev kuralı kapısı yalnız 77 ve altı kayıt/replay için; 78+ kural kapalıyken de çalışır.
+    expect(H(14, { house: false, kuralSurumu: 77 }).keys().filter((x) => x.startsWith('imza:'))).toEqual([]);
+    expect(H(14, { house: false }).keys()).toContain('imza:imza_harita/drawn-wall');
   });
   it('Mevzi İşareti: üç altıgen; dost orada zor zemini yok sayar ve +1 kurtulma alır', () => {
     const r = H(3, { place: { C: o(6, 5) } });

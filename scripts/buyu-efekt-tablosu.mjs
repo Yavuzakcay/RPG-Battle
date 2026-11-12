@@ -176,7 +176,9 @@ function spellDoc(rows) {
 // ── B) Alt sınıf özellikleri ──
 export function featureRows(paketDir) {
   const rows = [];
-  const subs = read('data/subclasses.json').subclasses;
+  // Görev AS2: SRD 12 alt sınıfı uygulamada dış pakette (aynı kimlik ve mekanik); depodaki kopya fikstür. Hepsi görünür.
+  const subs = read('src/rules/fixtures/srd-alt-siniflar.json').subclasses;
+  const srdIds = new Set(subs.map((s) => s.id));
   const hidden = new Set(read('data/alt-sinif-gorunum.json').kaldirilan.map((x) => x.id));
   for (const s of subs) if (!hidden.has(s.id)) for (const f of s.features) {
     rows.push({ kaynak: 'SRD çekirdek', cls: s.class, sub: s.id, id: f.id, ad: f.name.tr, level: f.level, ...featureVisual(srdIlkeller(f)) });
@@ -198,7 +200,7 @@ export function featureRows(paketDir) {
   const src = local.length ? 'ek paket' : 'kurgusal fikstür';
   for (const file of files) {
     const p = JSON.parse(fs.readFileSync(file, 'utf8'));
-    for (const s of p.subclasses ?? []) for (const f of s.features ?? []) {
+    for (const s of (p.subclasses ?? []).filter((x) => !srdIds.has(x.id))) for (const f of s.features ?? []) {
       const il = (f.ilkeller ?? []).map((x) => x.tur);
       const hikaye = f.status === 'hikaye' || f.status === 'planli';
       rows.push({ kaynak: src, dosya: path.basename(file), cls: s.class, sub: s.id, id: f.id, ad: f.name?.tr ?? f.id, level: f.level, planli: hikaye, ...featureVisual(hikaye ? [] : il) });
@@ -217,7 +219,7 @@ function featureDoc({ rows, paketYerel, paketDosya }) {
       ? `Ek paket: yerel klasörden okundu (${paketDosya.length} dosya).`
       : `**Ek paket bu kopyada yok** (\`icerik/\` gitignore). Ek paket satırları yerine kurgusal fikstürler (\`tests/fixtures/paket-*.json\`, ${paketDosya.length} dosya) kullanıldı; ilkel → görsel eşlemesi (2. bölüm) gerçek paket için de aynıdır. Gerçek 97 alt sınıf / 395 özellik için yerelde \`npm run efekt-tablosu\` (ya da \`npm run efekt-tablosu -- <klasör>\`) çalıştırın; belge yeniden üretilir. Beklenen dağılım için \`harita/belgeler/PAKET-DURUM.md\` (yerelde üretilir).`, '',
     '**Durum:** hazır (özel bağlı efekt var), genel (yedek/varsayılan görsel), eksik (görsel yok, gerekir), gerekmez (pasif sayı/beceri/kaynak; günlük ve kart yeter), planlı/hikâye (savaşta etkisi yok). Özelliğin durumu ilkellerinin en kötüsü (gerekmez sayılmaz).', '',
-    'Kaynaklar: çekirdek 4 = listede görünen SRD alt sınıfları (Circle of the Land, Champion, Hunter, Thief; diğer 8 SRD alt sınıfı `data/alt-sinif-gorunum.json` `kaldirilan`). İmza: `data/imza.json` (11 alt sınıf; özellik → `eylemler`/`pasifler` alanlarından ilkel) + Karadul Çemberi (`data/karadul.json`, `src/battle/karadul.ts`). Olay yolları: paket `src/battle/paket/index.ts`, imza `src/battle/imza*.ts`, aura `auraCore.ts` (etki `auras` → groundFx).', '');
+    'Kaynaklar: çekirdek 12 = SRD 5.2.1 alt sınıfları (Görev AS2: uygulamada dış pakette aynı kimlikle, hepsi seçilebilir; mekanik `src/rules/fixtures/srd-alt-siniflar.json`, paket satırlarında tekrar edilmez). İmza: `data/imza.json` (11 alt sınıf; özellik → `eylemler`/`pasifler` alanlarından ilkel) + Karadul Çemberi (`data/karadul.json`, `src/battle/karadul.ts`). Olay yolları: paket `src/battle/paket/index.ts`, imza `src/battle/imza*.ts`, aura `auraCore.ts` (etki `auras` → groundFx).', '');
 
   // 1. Özet
   out.push('## 1. Özet', '', '| Kaynak | Alt sınıf | Özellik | Hazır | Genel | Eksik | Gerekmez | Planlı/hikâye |', '|---|---|---|---|---|---|---|---|');

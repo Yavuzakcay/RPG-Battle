@@ -5,7 +5,11 @@
  */
 import { loadTrExtra } from '../i18n';
 import { classData, loadClassData, loadMonsters } from '../data';
+import { defaultSubclass } from '../rules/classFeatures';
+import { findSubclass } from '../rules/subclasses';
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
+// Görev AS2: alt sınıf paketi (icerik/ ya da 12 kaydın fikstürü).
+await (await import('./simIcerik')).loadSimContent();
 const { SCENARIOS, measure, setPartyKind, setPartySubclass, setSimHouseRules } = await import('./balance');
 
 declare const process: { argv: string[] };
@@ -17,7 +21,7 @@ const ids = (opt('--senaryo') ?? 'col,kale,magara,orman').split(',');
 const alt = opt('--alt');
 const sub = classData.subclasses.find((s) => s.id === alt);
 if (!sub) throw new Error(`imza alt sınıfı yok: ${alt}`);
-const srd = classData.subclasses.find((s) => s.class === sub.class && !s.ev);
+const srd = findSubclass(sub.class, defaultSubclass(sub.class)); // Görev AS2: SRD karşılığı dış pakette (varsayılan eşleme)
 if (!srd) throw new Error(`SRD alt sınıfı yok: ${sub.class}`);
 setPartyKind(opt('--parti') ?? `k18-${sub.class}`);
 setSimHouseRules(sub.evKurali ? { [sub.evKurali]: true } : {});

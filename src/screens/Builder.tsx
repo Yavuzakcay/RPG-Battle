@@ -25,12 +25,12 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import karadulData from '../../data/karadul.json';
 import { UPPER_LEVEL_CAP } from '../app/limits';
-import { alignmentAutoOnly, alignmentEnabled, alignmentRace, imzaEnabled, karadulEnabled, karadulWomenOnly } from '../app/features';
+import { alignmentAutoOnly, alignmentEnabled, alignmentRace } from '../app/features';
 import { AlignmentGrid } from '../ui/AlignmentGrid';
 import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startContributions, startValue, type Alignment, type StartKind } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
-import { findSubclass, houseSubclassVisible, packExperimental, subclassLabel, subclassMissing } from '../rules/subclasses';
+import { findSubclass, genderVisible, isOtherClassSubclass, notWorkingCount, packExperimental, subclassLabel, subclassMissing } from '../rules/subclasses';
 import { wishPickKey } from '../battle/paket/bag';
 import {
   ASI_FEAT, advancementSlots, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
@@ -107,7 +107,7 @@ export function wizardSteps(sheet: CharacterSheet): BuilderStep[] {
 }
 
 /**
- * Kayıt açılırken (Görev K1): sınıfta bulunmayan alt sınıf boşa çevrilir (dolgu ya da başka sınıfın alt sınıfı);
+ * Kayıt açılırken (Görev K1): başka sınıfın alt sınıfı boşa çevrilir (Görev AS2: kayıtta olmayan kimlik kalır, "içerik eksik");
  * döner: temizlenen kimlik (bir kerelik not için) ya da null.
  */
 /** Kuyruk K48: Karadul skor takası (insan → örümcek; iki sütun tek satırda): "STR 8→16 · CHA 16→8 …". */
@@ -118,7 +118,9 @@ function karadulSwapText(sheet: CharacterSheet): string {
 
 export function clearInvalidSubclass(c: SavedCharacter): { character: SavedCharacter; cleared: string | null } {
   const id = c.sheet.subclassId;
-  if (!id || !classDataLoaded() || subclassesOf(c.sheet.classId).some((x) => x.id === id)) return { character: c, cleared: null };
+  // Görev AS2: kayıtta hiç bulunmayan kimlik (içerik yüklenmemiş: mobil, icerik/ yok) silinmez ("içerik eksik" kalır);
+  // yalnız sınıfın listesinde olmayıp başka bir sınıfa ait kimlik temizlenir.
+  if (!id || !classDataLoaded() || subclassesOf(c.sheet.classId).some((x) => x.id === id) || !isOtherClassSubclass(c.sheet.classId, id)) return { character: c, cleared: null };
   return { character: { ...c, sheet: { ...c.sheet, subclassId: undefined } }, cleared: id };
 }
 
@@ -580,11 +582,9 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
   const s = c.sheet;
   const cls = getClass(s.classId);
   const subLevel = subclassLevel(s.classId);
-  // Kuyruk K48: ev kuralı alt sınıfları (Karadul) yalnızca Ayarlar anahtarıyla ve (kısıt açıkken) kadın karakterde; mevcut seçim kalır.
-  // Kuyruk K50: imza alt sınıflar kendi ev kuralı açıkken (Birlik Manastırı her zaman); Karadul kendi anahtarıyla.
-  const subs = subclassesOf(s.classId).filter((x) => (x.evKurali !== undefined
-    ? x.evKurali === null || x.id === s.subclassId || imzaEnabled(x.evKurali)
-    : houseSubclassVisible(x, s, karadulEnabled(), karadulWomenOnly())));
+  // Görev AS2: tek liste (paket + imza + Karadul), hepsi her zaman seçilebilir; yalnız cinsiyet kuralı alt sınıfın kendisinde
+  // (Karadul Çemberi kadın, İmparator erkek); mevcut seçim her zaman görünür.
+  const subs = subclassesOf(s.classId).filter((x) => genderVisible(x, s));
   const chosen = subs.find((x) => x.id === s.subclassId);
   const swap = chosen?.ev && chosen.replaces?.length ? karadulSwapText(s) : null;
   // Görev K17: eski sınıfın seçimleri taslakta saklanır, geri dönünce uyanları gelir (`switchClass`). SD3: dokunulmamış
@@ -619,7 +619,7 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
         <label>{T.subclass}
           <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
             <option value="">{T.subclassNone}</option>
-            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang(), x.class)}{x.ev ? ` (${T.subclassHouse})` : ''}{packExperimental(x) ? ` (${t().content.experimental})` : ''}</option>)}
+            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang(), x.class)}{notWorkingCount(x) > 0 ? ` (${T.subclassNotWorking(notWorkingCount(x))})` : packExperimental(x) ? ` (${t().content.experimental})` : ''}</option>)}
             {/* Kuyruk K49 B5: listeden kaldırılmış alt sınıfı seçili eski karakter açılır (seçimi görünür kalır). */}
             {!!s.subclassId && !subs.some((x) => x.id === s.subclassId) && !subclassMissing(s.classId, s.subclassId) && (
               <option value={s.subclassId}>{subclassLabel(findSubclass(s.classId, s.subclassId)?.name ?? { tr: s.subclassId, en: s.subclassId }, getLang(), s.classId)}</option>

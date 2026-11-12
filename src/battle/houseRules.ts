@@ -6,7 +6,10 @@
 import data from '../../data/ev-kurallari.json';
 import type { BattleState } from './types';
 
-/** `gizli`: motorda karşılığı olmayan (ertelenmiş) kural; Game Master panelinde görünmez (A1: `asitHavuzu`). */
+/**
+ * `gizli`: Game Master panelinde görünmez: motorda karşılığı olmayan (ertelenmiş) kural (A1: `asitHavuzu`) ya da Görev AS2'den
+ * beri yeni savaşta etkisi olmayan alt sınıf kapısı (`karadulCemberi`, `imza_<ad>`; yalnız kural sürümü < 78 kayıt/replay okur).
+ */
 export interface HouseRuleDef { default: boolean; sefer?: boolean; karakter?: boolean; gizli?: boolean; tr: string; en: string }
 export const HOUSE_RULES = data.rules as Record<string, HouseRuleDef>;
 export type HouseRuleId = keyof typeof data.rules;

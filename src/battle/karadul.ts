@@ -1,6 +1,6 @@
 /**
  * Kuyruk K48 Adım C: Karadul Çemberi (özgün Druid alt sınıfı), EV KURALI (`data/karadul.json`; ev kuralı
- * `karadulCemberi`, varsayılan kapalı; kural sürümü `surum`). Wild Shape alt sınıf seçilince düşer (`replaces`,
+ * `karadulCemberi`, varsayılan kapalı; kural sürümü `surum`; Görev AS2: 78+ ev kuralı yok, hep açık). Wild Shape alt sınıf seçilince düşer (`replaces`,
  * `gainedFeatures`); savaşta (kural açıkken) yerine:
  * - Büyüleyici Bakış (`ev:karadul/gaze`, eylem; 6+ bonus eylem): menzildeki insansı/canavar WIS save ya da Charmed
  *   (`charm`: büyüleyene saldıramaz; büyüleyenin tarafı saldırır ya da zarar verirse biter). En çok CHA kadar hedef.
@@ -10,6 +10,7 @@
  * - Karadul Zehri, Tatlı Tuzak, Ağ Duyusu, Son Öpücük: saldırı kancaları (`features.ts`).
  * Alt sınıf DC'si 8 + yeterlilik + insan biçimindeki CHA. Kural kapalıyken özellikler savaşta yok. Saf.
  */
+import { as2On } from './as2Surum';
 import data from '../../data/karadul.json';
 import creatureTypes from '../../data/canavar-turleri.json';
 import { getMonster, type Monster } from '../data';
@@ -36,8 +37,9 @@ export const SPIDER_WEAPON = 'karadul:spider';
 const TYPES = creatureTypes.types as Record<string, string>;
 const R = data.kaynaklar;
 
+/** Görev AS2: 78+ savaşta hep açık (alt sınıf hep seçilebilir); 21–77 ev kuralı `karadulCemberi` ile (eski kayıt/replay). */
 export const karadulOn = (state: Pick<BattleState, 'houseRules' | 'map' | 'kuralSurumu'>): boolean =>
-  (state.kuralSurumu ?? 1) >= data.surum && houseRule(state, 'karadulCemberi');
+  as2On(state) || ((state.kuralSurumu ?? 1) >= data.surum && houseRule(state, 'karadulCemberi'));
 
 /** Seviyeye göre veri satırı (`{"3": x, "10": y}` → seviyenin en büyük eşiği). */
 export function byLevel<T>(table: Record<string, T>, level: number): T | undefined {

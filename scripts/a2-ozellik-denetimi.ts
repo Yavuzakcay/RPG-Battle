@@ -7,7 +7,9 @@
 import { writeFileSync } from 'node:fs';
 import { loadClassData } from '../src/data';
 await loadClassData();
-const { gainedFeatures, subclassesOf } = await import('../src/rules/classFeatures');
+// Görev AS2: SRD alt sınıfları dış pakette (icerik/ ya da 12 kaydın fikstürü).
+await (await import('../src/sim/simIcerik')).loadSimContent();
+const { defaultSubclass, gainedFeatures, subclassesOf } = await import('../src/rules/classFeatures');
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
 type M = { status?: string; note?: string } | undefined;
 const label = (m: M, durum?: string): string => {
@@ -23,7 +25,7 @@ function audit(min: number, max: number, file: string, title: string): string {
   const count: Record<string, number> = {};
   const perClass: Record<string, number> = {};
   for (const c of CLASSES) {
-    const sub = (subclassesOf(c) as Array<{ id: string; srd?: boolean; durum?: string; features?: Array<{ id: string; durum?: string }> }>).find((s) => s.srd);
+    const sub = (subclassesOf(c) as Array<{ id: string; srd?: boolean; durum?: string; features?: Array<{ id: string; durum?: string }> }>).find((s) => s.id === defaultSubclass(c));
     for (const f of gainedFeatures(c, max, sub?.id)) {
       if ((f.level ?? 0) < min) continue;
       const durum = f.from === 'class' ? undefined : sub?.features?.find((x) => f.key.endsWith(`:${x.id}`))?.durum;

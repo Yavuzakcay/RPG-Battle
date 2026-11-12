@@ -1,10 +1,10 @@
 /**
  * Ayarlar (Görev E1; tembel parça): "Dış içerik" bölümü. Paketler dosya seçiciyle (mobil dahil) ya da masaüstünde
- * klasör seçiciyle içe aktarılır; liste, tek tek açma/kapama ve silme. Hata mesajları TR/EN, bozuk dosya uygulamayı
- * bozmaz. Kod çalıştırılmaz: yalnızca JSON veri.
+ * klasör seçiciyle içe aktarılır; yerel `icerik/` klasörü kendiliğinden yüklenir. Görev AS2: paket aç/kapa, silme ve
+ * kopya politikası yok (alt sınıflar hep seçilebilir); yalnız toplam ve geçersiz paket hatası. Hata mesajları TR/EN,
+ * bozuk dosya uygulamayı bozmaz. Kod çalıştırılmaz: yalnızca JSON veri.
  */
-import { alignmentAutoOnly, alignmentEnabled, alignmentMoralEnabled, alignmentRace, setAlignmentMoralEnabled, setAlignmentAutoOnly, setAlignmentEnabled, setAlignmentRace, imzaEnabledList, journeyEnabled, karadulEnabled, karadulWomenOnly, setImzaEnabled, setJourneyEnabled, setKaradulEnabled, setKaradulWomenOnly, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
-import { HOUSE_RULES, HOUSE_RULE_IDS } from '../battle/houseRules';
+import { alignmentAutoOnly, alignmentEnabled, alignmentMoralEnabled, alignmentRace, setAlignmentMoralEnabled, setAlignmentAutoOnly, setAlignmentEnabled, setAlignmentRace, journeyEnabled, setJourneyEnabled, setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
 import { useState } from 'react';
 import { getLang, t } from '../i18n';
 import { textOf } from '../rules/subclasses';
@@ -17,8 +17,7 @@ import { DiscoveryBook } from '../ui/preview/DiscoveryBook';
 import { loadSettings as loadPv, saveSettings as savePv, type PreviewSettings } from '../app/discovery';
 import { DICE_THEMES, diceThemeName, saveDiceTheme, storedDiceTheme } from '../ui/diceTheme';
 import { LIMITS, type ContentError } from '../content/schema';
-import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, removePack, saveDuplicatePolicy, setPackEnabled, type ImportResult, type PackRow } from '../content/store';
-import { DUPLICATE_POLICIES, duplicatePolicy, type DuplicatePolicy } from '../rules/subclasses';
+import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, type ImportResult, type PackRow } from '../content/store';
 
 export function errorText(e: ContentError): string {
   const f = t().content.errors[e.code];
@@ -29,18 +28,12 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const C = t().content;
   const lang = getLang();
   const [rows, setRows] = useState<PackRow[]>(() => applyStoredContent());
-  // Kuyruk 25: SRD ile paket alt sınıf kopyalarında hangisi görünsün.
-  const [dup, setDup] = useState<DuplicatePolicy>(() => duplicatePolicy());
   const [results, setResults] = useState<ImportResult[]>([]);
-  const [confirm, setConfirm] = useState<string | null>(null);
   const K = t().carry;
   const [carry, setCarry] = useState<CarryRule>(storedCarryRule);
   const V = t().endVideo;
   const [video, setVideo] = useState<boolean>(storedEndVideo);
   const [upper, setUpper] = useState<boolean>(upperLevelsEnabled);
-  const [karadul, setKaradul] = useState<boolean>(karadulEnabled);
-  const [karadulWomen, setKaradulWomen] = useState<boolean>(karadulWomenOnly);
-  const [imza, setImza] = useState<string[]>(imzaEnabledList);
   const [align, setAlign] = useState({ on: alignmentEnabled(), race: alignmentRace(), auto: alignmentAutoOnly(), moral: alignmentMoralEnabled() });
   const MT = t().mapTint;
   const CV = t().cityView;
@@ -69,17 +62,7 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
           {/* Kuyruk 38: Game Master "Üst seviye (6–20)" (varsayılan kapalı). */}
           <label><input type="checkbox" checked={upper} onChange={(e) => { setUpperLevelsEnabled(e.target.checked); setUpper(e.target.checked); }} /> {t().journey.upperFlag}</label>
           <p className="mute">{t().journey.upperNote}</p>
-          {/* Kuyruk K20: Celestial (Düşmüş) ırkı ev kuralı (varsayılan kapalı). */}
-          <label><input type="checkbox" checked={karadul} onChange={(e) => { setKaradulEnabled(e.target.checked); setKaradul(e.target.checked); }} /> {t().journey.karadulFlag}</label>
-          <label><input type="checkbox" checked={karadulWomen} disabled={!karadul} onChange={(e) => { setKaradulWomenOnly(e.target.checked); setKaradulWomen(e.target.checked); }} /> {t().journey.karadulWomen}</label>
-          <p className="mute">{t().journey.karadulNote}</p>
-          {/* Kuyruk K50: imza alt sınıflar (her biri ev kuralı, varsayılan kapalı). */}
-          <fieldset className="imza-flags"><legend>{t().journey.imzaTitle}</legend>
-            {HOUSE_RULE_IDS.filter((id) => id.startsWith('imza_')).map((id) => (
-              <label key={id}><input type="checkbox" checked={imza.includes(id)} onChange={(e) => { setImzaEnabled(id, e.target.checked); setImza(imzaEnabledList()); }} /> {getLang() === 'en' ? HOUSE_RULES[id]?.en : HOUSE_RULES[id]?.tr}</label>
-            ))}
-            <p className="mute">{t().journey.imzaNote}</p>
-          </fieldset>
+          {/* Görev AS2: Karadul Çemberi ve imza alt sınıf anahtarları kalktı (alt sınıflar hep seçilebilir). */}
           {/* Kuyruk K51: hizalanma ev kuralı (varsayılan kapalı) ve iki Game Master ayarı. */}
           <fieldset className="align-flags"><legend>{t().view.hizalanma.flag}</legend>
             <label><input type="checkbox" checked={align.on} onChange={(e) => { setAlignmentEnabled(e.target.checked); setAlign({ ...align, on: e.target.checked }); }} /> {t().view.hizalanma.flag}</label>
@@ -183,15 +166,6 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
               onClick={() => { void readFolder().then((f) => { if (f) load(f); }, () => { /* seçim iptal */ }); }}>{C.importFolder}</button>
           </div>
           {!folderSupported() && <small className="mute">{C.folderUnsupported}</small>}
-          <div className="gm-row">
-            <span>{C.duplicates}</span>
-            <div className="seg" role="radiogroup" aria-label={C.duplicates}>
-              {DUPLICATE_POLICIES.map((p) => (
-                <button key={p} role="radio" aria-checked={dup === p} className={dup === p ? 'on' : ''}
-                  onClick={() => { saveDuplicatePolicy(p); setDup(p); props.onChanged?.(); }}>{C.duplicateOptions[p]}</button>
-              ))}
-            </div>
-          </div>
           {results.length > 0 && (
             <ul className="content-results" aria-live="polite">
               {results.map((r) => (
@@ -202,32 +176,13 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
               ))}
             </ul>
           )}
+          {/* Görev AS2: paket başına satır, aç/kapa ve sil yok; yalnız toplam ve geçersiz paketlerin ilk hatası. */}
           {rows.length === 0 ? <p className="mute">{C.empty}</p> : (
-            <ul className="content-list">
-              {rows.map((r) => (
-                <li key={r.pack.id} className={r.errors.length ? 'invalid' : ''}>
-                  <div>
-                    <strong>{textOf(r.pack.name, lang)}</strong> <small className="mute">{r.pack.id}{r.pack.author ? ` · ${r.pack.author}` : ''}</small>
-                    <small>{C.summary(r.summary.subclasses.length, r.summary.notWorking)}{r.source === 'klasor' ? ` · ${C.fromFolder}` : ''}</small>
-                    <small className="mute">{r.pack.subclasses.map((s) => `${textOf(s.name, lang)} (${s.class})`).join(', ')}</small>
-                    {r.errors.length > 0 && <small className="error">{C.invalid}: {errorText(r.errors[0] as ContentError)}</small>}
-                  </div>
-                  <div className="card-actions">
-                    <button className={r.enabled ? 'on' : 'ghost'} aria-pressed={r.enabled} onClick={() => changed(setPackEnabled(r.pack.id, !r.enabled))}>
-                      {r.enabled ? C.enabled : C.disabled}
-                    </button>
-                    {confirm === r.pack.id ? (
-                      <>
-                        <span className="mute">{C.confirmRemove(textOf(r.pack.name, lang))}</span>
-                        <button onClick={() => { setConfirm(null); changed(removePack(r.pack.id)); }}>{C.remove}</button>
-                        <button className="ghost" onClick={() => setConfirm(null)}>{t().common.cancel}</button>
-                      </>
-                    ) : <button className="ghost" onClick={() => setConfirm(r.pack.id)}>{C.remove}</button>}
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <p className="mute">{C.loadedTotal(rows.filter((r) => r.errors.length === 0).reduce((n, r) => n + r.pack.subclasses.length, 0), rows.filter((r) => r.errors.length === 0).length)}</p>
           )}
+          {rows.filter((r) => r.errors.length > 0).map((r) => (
+            <p key={r.pack.id} className="error">{textOf(r.pack.name ?? { tr: r.pack.id, en: r.pack.id }, lang)} ({r.pack.id}): {C.invalid}: {errorText(r.errors[0] as ContentError)}</p>
+          ))}
         </section>
       </main>
     </div>

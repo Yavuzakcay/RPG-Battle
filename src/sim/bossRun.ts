@@ -6,6 +6,8 @@ import { loadTrExtra } from '../i18n';
 import { loadClassData, loadMonsters } from '../data';
 import data from '../../data/sim-boss.json';
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
+// Görev AS2: alt sınıf paketi (icerik/ ya da 12 kaydın fikstürü).
+await (await import('./simIcerik')).loadSimContent();
 const { SCENARIOS, measure, setPartyKind } = await import('./balance');
 
 declare const process: { argv: string[] };

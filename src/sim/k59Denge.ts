@@ -8,7 +8,11 @@
  */
 import { loadTrExtra } from '../i18n';
 import { classData, loadClassData, loadMonsters } from '../data';
+import { defaultSubclass } from '../rules/classFeatures';
+import { findSubclass } from '../rules/subclasses';
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
+// Görev AS2: alt sınıf paketi (icerik/ ya da 12 kaydın fikstürü).
+await (await import('./simIcerik')).loadSimContent();
 const { SCENARIOS, measure, setPartyKind, setPartySubclass, setSimHouseRules } = await import('./balance');
 
 declare const process: { argv: string[] };
@@ -28,7 +32,7 @@ const classes = (opt('--sinif') ?? 'barbarian,bard,cleric,druid,fighter,monk,pal
 interface Unit { level: number; cls: string; sub: string; house: string | null; scenario: string }
 const units: Unit[] = [];
 for (const level of levels) for (const cls of classes) {
-  const srd = classData.subclasses.find((s) => s.class === cls && !s.ev);
+  const srd = findSubclass(cls, defaultSubclass(cls)); // Görev AS2: SRD karşılığı dış pakette (varsayılan eşleme)
   const own = classData.subclasses.find((s) => s.class === cls && s.ev);
   const subs = [...(which !== 'ozel' && srd ? [{ id: srd.id, house: null }] : []), ...(which !== 'srd' && own ? [{ id: own.id, house: own.evKurali ?? null }] : [])];
   for (const s of subs) for (const scenario of scen) units.push({ level, cls, sub: s.id, house: s.house, scenario });

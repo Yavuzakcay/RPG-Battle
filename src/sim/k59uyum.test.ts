@@ -106,10 +106,12 @@ describe('K59: ev kuralları tek tek', () => {
     expect(withoutHouse(on.state)).toBe(withoutHouse(off.state));
   }, 120_000);
 
-  it('duyarlılık: güncel sürümde Moral ve Karadul açık ≠ kapalı (yukarıdaki eşitlik boş değil)', () => {
+  // Görev AS2 (kural sürümü 78): Karadul ve imza ev kuralı kapısı yalnız 77 ve altında; duyarlılık o sürümde ölçülür.
+  it('duyarlılık: Moral (güncel) ve Karadul (sürüm 77) açık ≠ kapalı (yukarıdaki eşitlik boş değil)', () => {
     for (const id of ['moralSistemi', 'karadulCemberi']) {
-      const on = play({ group: 'A', house: { ...ALL_OFF, [id]: true } });
-      const off = play({ group: 'A', house: { ...ALL_OFF, [id]: false } });
+      const version = id === 'karadulCemberi' ? 77 : undefined;
+      const on = play({ group: 'A', house: { ...ALL_OFF, [id]: true }, version });
+      const off = play({ group: 'A', house: { ...ALL_OFF, [id]: false }, version });
       expect(withoutHouse(on.state), id).not.toBe(withoutHouse(off.state));
     }
   }, 120_000);
@@ -122,9 +124,12 @@ describe('K59: ev kuralları tek tek', () => {
     }
   }, 120_000);
 
-  it('kapalı imza/Karadul/Moral savaşta iz bırakmaz', () => {
+  // Görev AS2: "kapalı imza/Karadul iz bırakmaz" yalnız sürüm 77 ve altı kayıt/replay için (78+ kapı yok, hep çalışır).
+  it('kapalı imza/Karadul/Moral savaşta iz bırakmaz (sürüm 77); 78+ imza kural kapalıyken de çalışır', () => {
+    const now = play({ group: 'A', house: ALL_OFF, rounds: 1 });
+    expect(Object.values(now.state.combatants).some((c) => !!c.imza)).toBe(true);
     for (const group of ['A', 'B'] as const) {
-      const run = play({ group, house: ALL_OFF, rounds: 3 });
+      const run = play({ group, house: ALL_OFF, rounds: 3, version: 77 });
       const json = JSON.stringify(run.events.slice(1));
       expect(json).not.toMatch(/"feature":"imza:/);
       expect(json).not.toMatch(/ev:karadul\//);

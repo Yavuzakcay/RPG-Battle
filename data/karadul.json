@@ -7,6 +7,7 @@
     "ev": true,
     "replaces": ["druid:wild-shape"],
     "ekBeceriler": ["persuasion", "deception"],
+    "cinsiyet": "kadin",
     "name": { "tr": "Karadul Çemberi", "en": "Circle of the Black Widow" },
     "role": { "tr": "Cazibe avcısı: büyüler, yaklaşır, örümceğe dönüşüp vurur", "en": "Charm hunter: beguiles, closes in, strikes in spider form" },
     "features": [

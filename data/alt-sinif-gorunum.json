@@ -1,43 +1,25 @@
 {
-  "note": "Kuyruk K49 B4/B5/B7: alt sınıfların seçimde görünümü (veri değişmez; kimlikler ve kayıtlı karakterler aynı). kaldirilan: listeden çıkan alt sınıflar (kimlik ya da EN ad; SRD ve dış paket kopyası birlikte); sınıfın başka seçeneği yoksa son alt sınıf kalır. adKurallari: TR görünen ad dönüşümleri (Cleric '... Alanı' → '... Manastırı'); istisnalar sonra uygulanır. Parantezli takma ad ('Psişik Hançerler (Kirpi)') yalnızca takma adla görünür.",
+  "note": "Kuyruk K49 B4/B5/B7: alt sınıfların seçimde görünümü (veri değişmez; kimlikler ve kayıtlı karakterler aynı). kaldirilan: listeden çıkan alt sınıflar (kimlik ya da EN ad). Görev AS2: 120 alt sınıf hep seçilebilir; listede yalnız Barış Alanı (paketten çıkar, kimliği eskiKimlik ile Birlik Manastırı'na yönlenir). varsayilan: alt sınıf seviyesindeki eski kayıtta alt sınıf boşsa atanan ve sihirbazın önerdiği alt sınıf (eskiden SRD'nin tek alt sınıfı; aynı kimlikler artık dış pakette). adKurallari: TR görünen ad dönüşümleri (Cleric '... Alanı' → '... Manastırı'); istisnalar sonra uygulanır. Parantezli takma ad ('Psişik Hançerler (Kirpi)') yalnızca takma adla görünür.",
   "kaldirilan": [
-    {
-      "id": "path-of-the-berserker",
-      "en": "Path of the Berserker"
-    },
-    {
-      "id": "college-of-lore",
-      "en": "College of Lore"
-    },
-    {
-      "id": "life-domain",
-      "en": "Life Domain"
-    },
-    {
-      "id": "warrior-of-the-open-hand",
-      "en": "Warrior of the Open Hand"
-    },
-    {
-      "id": "oath-of-devotion",
-      "en": "Oath of Devotion"
-    },
-    {
-      "id": "draconic-sorcery",
-      "en": "Draconic Sorcery"
-    },
-    {
-      "id": "fiend-patron",
-      "en": "Fiend Patron"
-    },
-    {
-      "id": "evoker",
-      "en": "Evoker"
-    },
     {
       "id": "baris-alani",
       "en": ""
     }
   ],
+  "varsayilan": {
+    "barbarian": "path-of-the-berserker",
+    "bard": "college-of-lore",
+    "cleric": "life-domain",
+    "druid": "circle-of-the-land",
+    "fighter": "champion",
+    "monk": "warrior-of-the-open-hand",
+    "paladin": "oath-of-devotion",
+    "ranger": "hunter",
+    "rogue": "thief",
+    "sorcerer": "draconic-sorcery",
+    "warlock": "fiend-patron",
+    "wizard": "evoker"
+  },
   "adKurallari": [
     {
       "sinif": "cleric",

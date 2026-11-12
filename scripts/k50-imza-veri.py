@@ -24,10 +24,13 @@ alt = []
 eylem = {}
 pasif = []
 
-def sub(sid, cls, tr, en, rtr, ren, feats, beceri=None, kural=True):
+def sub(sid, cls, tr, en, rtr, ren, feats, beceri=None, kural=True, cinsiyet=None):
     d = {'id': sid, 'class': cls, 'ev': True, 'evKurali': sid if kural else None, 'name': {'tr': tr, 'en': en}, 'role': {'tr': rtr, 'en': ren}, 'features': feats}
     if beceri:
         d['ekBeceriler'] = beceri
+    # Görev AS2: cinsiyet kuralı alt sınıfın kendisinde (oluşturucuda yalnız bu cinsiyette görünür).
+    if cinsiyet:
+        d['cinsiyet'] = cinsiyet
     alt.append(d)
 
 def act(sid, fid, **spec):
@@ -60,7 +63,7 @@ sub(s, 'fighter', 'İmparator', 'Emperor', 'Komutan: dostlarını büyüten hük
     F('wider-throne', 10, 'Genişleyen Taht', 'Wider Throne', "Taht Varlığı'nın alanı büyür.", 'Crown Presence reaches farther.'),
     F('exalted-throne', 15, 'Yüce Taht', 'Exalted Throne', '10 tur boyunca dostların daha sert vurur, sen hasara dayanıklı olur ve canın yenilenir.', 'For 10 rounds allies hit harder, you resist damage and regain vigor.'),
     F('undying-throne', 15, 'Ölümsüz Taht', 'Undying Throne', 'Ölecekken bir kez 1 canla ayakta kalırsın.', 'Once, when you would drop, you stay up at 1 HP.'),
-], beceri=['persuasion'])
+], beceri=['persuasion'], cinsiyet='erkek')
 act(s, 'decree', seviye=3, tur='bonus', kaynak={'id': 'imzaBuyruk', **PB}, hedef='ally', menzilFt=30, ozel='buyruk',
     ad='Buyruk', not_='En yakın düşmana tek silah saldırısı; sürüm 28+ dostun tepkisi harcanır.')
 act(s, 'decree-move', seviye=3, tur='bonus', kaynak={'id': 'imzaBuyruk', **PB}, hedef='ally', menzilFt=30, hedefVeHex=True, ozel='buyrukYer', ozellikAdi='decree',

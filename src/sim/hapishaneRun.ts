@@ -7,6 +7,8 @@
 import { loadTrExtra } from '../i18n';
 import { loadClassData, loadMonsters } from '../data';
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
+// Görev AS2: alt sınıf paketi (icerik/ ya da 12 kaydın fikstürü).
+await (await import('./simIcerik')).loadSimContent();
 const { executeSeruven } = await import('../journey/seruven');
 const { HAPIS } = await import('../journey/hapishane');
 const { hapisResultCommands, hapisSession } = await import('../app/seruvenBattle');

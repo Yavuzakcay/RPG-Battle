@@ -20,7 +20,9 @@ describe('K54c Geride Kalan', () => {
     expect(a.yipranmaNormal).toBeGreaterThan(0);
     expect(a.moralMax).toBe(Math.max(1, Math.floor((a.yipranmaNormal ?? 0) / 3)));
     expect(G(3, { kuralSurumu: 27 }).c('A').moralMax).toBeUndefined();
-    expect(G(3, { house: false }).c('A').moralMax).toBeUndefined();
+    // Görev AS2 (kural sürümü 78): ev kuralı kapısı yalnız 77 ve altı kayıt/replay için; 78+ kural kapalıyken de çalışır.
+    expect(G(3, { house: false, kuralSurumu: 77 }).c('A').moralMax).toBeUndefined();
+    expect(G(3, { house: false }).c('A').moralMax).toBe(a.moralMax);
   });
   it('Öfkeyle Ayakta: öfkedeyken 0 puanda çökmez, öfke bitince çöker', () => {
     const r = G(3);

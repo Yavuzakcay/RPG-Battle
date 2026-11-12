@@ -7,7 +7,7 @@
  */
 import { classData, getProgression, type FeatureAlternative, type FeatureEffect, type FeatureMechanic, type FocusAction, type ReactionMechanic, type ResourceDef, type SubclassFeatureDef } from '../data';
 import type { Ability } from './abilities';
-import { findSubclass, subclassDefs, subclassMechanic, visibleSubclasses } from './subclasses';
+import { defaultSubclassId, findSubclass, subclassMechanic, visibleSubclasses } from './subclasses';
 
 export interface GainedFeature {
   /** `sınıf:özellik` ya da `sınıf/altsınıf:özellik`. */
@@ -22,13 +22,15 @@ export interface GainedFeature {
 /** Yapı taşı özellikleri (seçim ya da başka bir yerde ele alınanlar): eksik sayılmaz. */
 const STRUCTURAL = new Set(['ability-score-improvement', 'epic-boon', 'subclass-feature']);
 
-/** Sınıfın alt sınıfları (Görev E1: jenerik şema; SRD'deki tek alt sınıf + dış içerik). */
+/** Sınıfın alt sınıfları (Görev E1: jenerik şema; Görev AS2: oyunun kendi + dış paket, tek liste). */
 export function subclassesOf(classId: string) {
-  // Kuyruk 25: seçim listesi kopyalarda tek sürüm (`visibleSubclasses`, Ayarlar'daki politika).
   return visibleSubclasses(classId);
 }
-/** Eski kayıtlarda boş kalan alt sınıfa atanacak alt sınıf (SRD'deki tek alt sınıf). Motor bunu varsaymaz. */
-export const defaultSubclass = (classId: string): string | undefined => subclassDefs(classId).find((s) => s.srd)?.id;
+/**
+ * Eski kayıtlarda boş kalan alt sınıfa atanacak alt sınıf (Görev AS2: `data/alt-sinif-gorunum.json` `varsayilan`; eskiden
+ * SRD'deki tek alt sınıf, kimlikler aynı, artık dış pakette). Motor bunu varsaymaz.
+ */
+export const defaultSubclass = (classId: string): string | undefined => defaultSubclassId(classId);
 /** Alt sınıfın seçildiği seviye (SRD: 3). */
 export const subclassLevel = (classId: string): number | null => getProgression(classId).subclassLevel;
 
