@@ -624,6 +624,6 @@ Doğrulanmayan açık yok.
 - **Göstergeler:** binici ve bineğinde tek 🐎 rozeti (rozet önceliğinin sonunda, 3 + "+N" bütçesi aynen); altıgen bilgisinde "binek: <ad>" / "üstünde: <binici>".
 - **Kurulum:** Phantom Steed kurulum çağırma kutusunda listelenmiyordu (kutu `castingTime: ritual` süzüyordu); `summons.json` `setup` bayrağına çevrildi, binek çağırmalar için doğru TR/EN ritüel notu.
 
-**Doğrulama:** `binekMb6.test.tsx` 10 test; ekran görüntüsü `docs/mb6/hava-inme-secici.png`; ana parça 389,14 kB.
+**Doğrulama:** `binekMb6.test.tsx` 12 test (seçici, seçenek–motor bire bir, ret kalıpları, rozet bütçesi, kurulum notu, menü neden satırı, tur sırası); ekran görüntüsü `docs/mb6/hava-inme-secici.png`; ana parça 389,14 kB; `check:harita` 96/0, `check:ses` 15/0; tam paket 386 dosya, 4523 test geçti (7 atlandı), 0 kırık.
 
 **Kalan:** MB2 (kontrollü binek turu), MB4 (çok altıgen), MB5 (YZ binicisi). Hamle önizleme kartında binek satırı yok.
