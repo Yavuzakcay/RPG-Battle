@@ -801,3 +801,15 @@ Planda MB8 için kural değişikliği yazılı değil (§7.2 "Kural sürümü �
 - Hamle önizleme kartında binek satırı.
 
 Binek hattı (MB1–MB8) kapandı; kalan yalnız MB6b arayüzü ve YZ önerisi.
+
+---
+
+## 19. MB6b sonucu (yalnız arayüz; kural sürümü 76'da, değişmedi)
+
+- Binicinin Hareket alt menüsünde "Binek: Koşu/Çekil/Kaçın" + bineğin bonus eylemleri (komut `actorId` = binek).
+- Hareket önizlemesi bineğin hızıyla; yığın jetonu (binici %72, yukarıda, bineğinden sonra çizilir); 🐎 ipucunda kontrollü/bağımsız.
+- Tur şeridinde kontrollü binek binicinin kutusunda; çekmecede binek/binici satırı.
+- Önizleme kartında bin/in maliyeti ve kalan hareket; günlükte inme ayrıntısı.
+- Game Master kurulumunda "binmiş başla" (B22): kurulumda yalnız GM bağlamıyla `mount`/`dismount` (yeni kural/olay yok).
+- Testler `src/ui/binekMb6b.test.ts`; ekran görüntüsü `docs/mb6b/binekli-sahne-mobil.png`.
+- Kalan: kurulumda eğitimli anahtarı, YZ savaş içi binme, binekli sim senaryoları.

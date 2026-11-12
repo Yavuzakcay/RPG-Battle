@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Görev MB6b: binek arayüzü (yalnız arayüz; kural sürümü 76, kayıt sürümü 22 değişmedi)
+
+- **Binek bölümü:** kontrollü bineğin binicisinin Hareket alt menüsünde "Binek: Koşu/Çekil/Kaçın" ve bineğin bonus eylemleri (`mountDash`, `mountDisengage`, `mountDodge`, `mountSteed-<k>`; komut `actorId` = binek, motor `controlledGate` denetler; geçersizse motor gerekçesi `neden-metinleri.json` kalıbıyla TR/EN). Saf yardımcılar `src/ui/mountUi.ts`.
+- **Hareket önizlemesi** kontrollü bineğin binicisinde bineğin hızıyla (`moverFor`; motorun `move` yönlendirmesiyle aynı yaratık).
+- **Yığın jetonu:** binici bineğin üstünde %72 ölçek ve jeton yarıçapının 0,55'i kadar yukarıda, bineğinden sonra çizilir; HP çubuğu binicide jetonun üstünde (bineğinki altta). Mekanik tek altıgen motordan. 🐎 rozetinin ipucunda kontrollü/bağımsız.
+- **Tur şeridi:** kontrollü binek kendi kutusunda gösterilmez (sırası binicinin turunda), binicinin kutusunda küçük binek rozeti; binici Incapacitated olunca binek bağımsız ve kendi kutusunda.
+- **Çekmece:** "Binek: X" / "Binici: Y" + kontrollü/bağımsız rozeti.
+- **Önizleme kartı:** `mount`/`dismount` komutunda maliyet (hızın yarısı, ft), kalan hareket, binek kontrollü olur mu, uçamayan binici havadan düşer uyarısı (`movePreview` `mount`; binme hedef seçiminde ilk uygun binek, inmede seçili irtifa).
+- **Günlük:** inme/düşme satırının açılır ayrıntısı: binek adı (binek 0 HP ise "save'siz iner"), Prone ya da harcanan hareket, iniş irtifası (`logEntries` `mountDetail`; binek son `mounted` olayından).
+- **Game Master kurulumu "binmiş başla" (B22):** seçili yaratığın bitişiğindeki uygun bineklerde "🐎 X üstünde başla" (adaylar motorun `mountProblem`'iyle). ⚠ Motorun kurulumda yeni alanı yoktu; kurulumda **yalnız Game Master bağlamıyla** mevcut `mount`/`dismount` komutu kabul edilir (`commands.ts`, olay `mounted`/`dismounted` aynen; kural ve sürüm yok, harcanan hareket ilk turun başında tazelenir). Yeni Ayarlar anahtarı yok. "Eğitimli binek" anahtarı yapılmadı (eğitimli liste veride; kullanıcı istemedi).
+- **Paket:** ana parça 400,03 kB (sınır 420; değişmedi: kod savaş parçasında). Testler `src/ui/binekMb6b.test.ts` (10). Ekran görüntüsü `docs/mb6b/binekli-sahne-mobil.png` (telefon yatay).
+- **Açık:** çok altıgenli bineğin yığın çizimi (binici çapada; ayrı ince ayar yok), YZ savaş içi binme (B22), binekli sim senaryoları.
+
 ## 2026-11-12 — Kuyruk K74: Truesight motor yolları + Hallow toplu koruma (kural sürümü 75), batıran çamurun bedeli + tehlike katmanında çamur (76)
 
 - **Tek sabit:** `src/battle/k74Surum.ts` (`K74_VERSION` 75, `K74B_VERSION` 76, `k74On`/`k74bOn`), sabitler `data/k74.json`. Kayıt sürümü 22 değişmedi (yeni olay türü yok). 74 ve altı kayıt/replay birebir.

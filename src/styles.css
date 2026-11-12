@@ -1359,3 +1359,11 @@ button.cta.soft { opacity: .65; }
 .eq-row .eq-main b { overflow-wrap: anywhere; }
 /* SD4: satır sonundaki ⓘ açıklaması sağa değil sola açılır (kart dışına taşmaz). */
 .eq-row .info-pop-wrap .term-pop, .spell-row .info-pop-wrap .term-pop { left: auto; right: 0; min-width: 240px; }
+/* Görev MB6b: binek arayüzü (tur şeridinde binicinin kutusundaki binek, çekmece satırı, kurulumda binmiş başla). */
+.strip-item .strip-mount { position: absolute; right: -6px; bottom: -6px; line-height: 0; pointer-events: none; }
+.mount-line .mount-badge { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 8px; font-size: 0.75em; background: rgba(255, 255, 255, 0.12); }
+.mount-line .mount-badge.kontrollu { background: rgba(90, 170, 255, 0.28); }
+.mount-line .mount-badge.bagimsiz { background: rgba(240, 180, 60, 0.28); }
+.setup-mount { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; max-width: min(100%, 420px); }
+.setup-mount small { flex-basis: 100%; }
+.preview-card .pv-mount span { white-space: normal; }

@@ -8,6 +8,7 @@ const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg
 
 export const TR_EXTRA = {
   log: {
+    mountDetail: { mount: (name: string): string => `Binek: ${name}`, down: (name: string): string => `${name} düştü (0 HP): binici save'siz iner`, prone: 'Binici Prone', cost: (ft: number): string => `Harcanan hareket: ${ft} ft`, alt: (ft: number): string => `İniş irtifası: ${ft} ft`, rider: (name: string): string => `Binici: ${name}` },
     /** Kuyruk K58 G3: tur özeti. */
     turnSummary: (name: string, hits: number, attacks: number, dmg: number, heal: number, saves: number): string => `Tur özeti · ${name}: ${attacks ? `${attacks} saldırı, ${hits} isabet` : 'saldırı yok'}${saves ? `, ${saves} kurtulma zorladı` : ''}, ${dmg} hasar${heal ? `, ${heal} iyileştirme` : ''}`,
     summaryToggle: 'Tur özeti', expandHint: 'Ayrıntı için dokun',
@@ -323,6 +324,7 @@ export const TR_EXTRA = {
     /** Kuyruk K58 G8: büyünün çıkış noktası (paket çağrısı). */
     origin: { label: 'Çıkış noktası', self: 'Kendin' },
     preview: {
+      mount: (ft: number, left: number): string => `Binme: hızın yarısı (${ft} ft); kalan hareket ${left} ft`, dismount: (ft: number, left: number): string => `İnme: hızın yarısı (${ft} ft); kalan hareket ${left} ft`, mountFall: 'Uçamazsın: havadaki binekten inince düşersin', mountMode: (mode: string): string => `Binek ${mode} olur`,
       hit: (p: string): string => `İsabet ${p}`, crit: (p: string): string => `kritik ${p}`, dmg: (r: string): string => `hasar ${r}`, heal: (r: string): string => `iyileşme ${r}`,
       save: (ab: string, dc: number, p: string): string => `${ab.toUpperCase()} kurtulma DC ${dc} · başarı ${p}`, kill: (p: string): string => `düşürme ${p}`,
       friendly: (name: string, n: number): string => `Dost: ${name} ${n} hasar alır`, self: (n: number): string => `Kendine ${n} hasar`,
@@ -371,6 +373,16 @@ export const TR_EXTRA = {
       dive: '▼ Dal 5 ft', rise: '▲ Yüksel 5 ft', diveHint: 'Derin suda dal: batıkken nefesini tutarsın (1 + CON dakika); süre bitince her tur sonu 1 Exhaustion. Su altında Piercing olmayan yakın dövüş ve menzilli silah dezavantajlı, ateşe dirençlisin.',
       breath: (used: number, max: number): string => `🌊 Nefes ${Math.max(0, max - used)}/${max} tur`, breathWater: '🌊 Su soluyor', breathHint: 'Batık: nefes tutma sayacı (SRD Suffocation).',
       underground: 'yer altında', submerged: (ft: number): string => `batık (${ft} ft)`, centerHeight: (ft: number): string => `Merkez yüksekliği: ${ft} ft`, up5: '+5 ft', down5: '−5 ft' },
+    // Görev MB6b: binek arayüzü (Binek bölümü, rozet, tur şeridi, kurulumda binmiş başla, önizleme, günlük ayrıntısı).
+    mb6b: { section: (name: string): string => `🐎 Binek: ${name}`,
+      act: { dash: 'Binek: Koşu (Dash)', disengage: 'Binek: Çekil (Disengage)', dodge: 'Binek: Kaçın (Dodge)' } as Record<string, string>,
+      steed: (label: string): string => `Binek: ${label}`,
+      badge: { kontrollu: 'kontrollü binek (binicinin turunda hareket eder)', bagimsiz: 'bağımsız binek (kendi turunda oynar)' } as Record<string, string>,
+      badgeShort: { kontrollu: 'kontrollü', bagimsiz: 'bağımsız' } as Record<string, string>,
+      riderLine: (name: string): string => `Binici: ${name}`, mountLine: (name: string): string => `Binek: ${name}`,
+      stripMount: (name: string): string => `${name}: binicinin turunda hareket eder`,
+      setupTitle: (name: string): string => `Binmiş başla: ${name}`, setupMount: (name: string): string => `🐎 ${name} üstünde başla`, setupDismount: 'Binekten indir',
+      setupNote: 'Game Master: binicinin bineğe bitişik yerleşmesi gerekir; binek kurallarına uymayan çift listelenmez.' },
     // Kuyruk MB6: binek arayüzü (havada inme irtifası, rozet, hedef bilgisi, ret nedenleri başlığı).
     mb6: { panel: 'İniş irtifası', title: 'İniş irtifası', levels: 'İrtifalar',
       level: (ft: number, same: boolean): string => (ft === 0 ? 'Yer' : `${ft} ft`) + (same ? ' · bineğin irtifası' : ''),

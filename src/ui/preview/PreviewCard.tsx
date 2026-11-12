@@ -35,6 +35,13 @@ export default function PreviewCard(props: { state: BattleState; cmd: Command | 
           {l.ally && !l.self && l.damage.max > 0 && <em className="warn">{P.friendly(l.name, Math.round(l.damage.avg))}</em>}
         </div>
       ))}
+      {mp.mount && (
+        <div className="pv-line pv-mount">
+          <span>{(mp.mount.kind === 'mount' ? P.mount : P.dismount)(mp.mount.costFt, mp.mount.leftFt)}</span>
+          {mp.mount.control && <small>{P.mountMode(t().battle.mb6b.badgeShort[mp.mount.control] ?? mp.mount.control)}</small>}
+          {mp.mount.fell && <em className="warn">{P.mountFall}</em>}
+        </div>
+      )}
       {mp.selfDamage > 0.5 && <em className="warn">{P.self(Math.round(mp.selfDamage))}</em>}
       {mp.opportunity.map((o, i) => <em key={i} className="warn">{P.oa(name(o.attackerId), o.at ? hexText(o.at) : '', Math.round(o.damage))}</em>)}
       {mp.reactions.length > 0 && <small>{P.reactions}: {mp.reactions.join(', ')}</small>}

@@ -573,6 +573,7 @@ export const en: Strings = {
     str: 'Strength (STR)', dex: 'Dexterity (DEX)', con: 'Constitution (CON)', int: 'Intelligence (INT)', wis: 'Wisdom (WIS)', cha: 'Charisma (CHA)',
   } as Record<string, string>,
   log: {
+    mountDetail: { mount: (name: string): string => `Mount: ${name}`, down: (name: string): string => `${name} dropped (0 HP): the rider dismounts without a save`, prone: 'Rider is Prone', cost: (ft: number): string => `Movement spent: ${ft} ft`, alt: (ft: number): string => `Landing altitude: ${ft} ft`, rider: (name: string): string => `Rider: ${name}` },
     turnSummary: (name: string, hits: number, attacks: number, dmg: number, heal: number, saves: number): string => `Turn summary · ${name}: ${attacks ? `${attacks} attack${attacks === 1 ? '' : 's'}, ${hits} hit${hits === 1 ? '' : 's'}` : 'no attacks'}${saves ? `, forced ${saves} save${saves === 1 ? '' : 's'}` : ''}, ${dmg} damage${heal ? `, ${heal} healing` : ''}`,
     summaryToggle: 'Turn summary', expandHint: 'Tap for details',
     hex: (col: number, row: number) => `column ${col}, row ${row}`,
@@ -998,6 +999,7 @@ export const en: Strings = {
       name: {"douse": "Dousing area + Fire → put out", "waterFire": "Water + Fire → steam", "waterGrease": "Water + Grease → disperses", "waterPoison": "Water + Poison cloud → thins", "waterWeb": "Water + Web → dissolves", "oilSpread": "Burning oil → spreads", "fireOil": "Fire + Oil → blaze", "fireWeb": "Fire + Web → burning web", "fireIce": "Fire + Ice → melts", "fireWater": "Fire + Water → steam", "fireGrease": "Fire + Grease → blaze", "fireFog": "Fire + Fog → evaporates", "coldWater": "Cold + Water → ice", "coldTile": "Cold + Shallow water → freezes", "coldSteam": "Cold + Steam → water", "lightningIce": "Lightning + Ice → cracks", "lightningOil": "Lightning + Oil → blaze", "lightningGrease": "Lightning + Grease → blaze", "forceWater": "Force + Water → overflows", "acidWeb": "Acid + Web → dissolves", "webFree": "Burning web → captive freed", "firePoison": "Fire + Poison cloud → explosion", "lightningWater": "Lightning + Water → spreads", "windClouds": "Wind + Cloud → drifts", "gustClouds": "Gust + Cloud → scatters", "waterDecay": "Water + Surface → fades", "oilMove": "Oil → slip", "greaseMove": "Grease → slip", "iceMove": "Ice → slip", "fireKeg": "Fire + Powder keg → explosion", "acidWood": "Acid + Wood → corrodes", "waterOil": "Water + Oil → displaces"} as Record<string, string> },
     origin: { label: 'Point of origin', self: 'Yourself' },
     preview: {
+      mount: (ft: number, left: number): string => `Mounting: half your speed (${ft} ft); ${left} ft of movement left`, dismount: (ft: number, left: number): string => `Dismounting: half your speed (${ft} ft); ${left} ft of movement left`, mountFall: 'You can\'t fly: dismounting from an airborne mount, you fall', mountMode: (mode: string): string => `The mount becomes ${mode}`,
       hit: (p: string): string => `Hit ${p}`, crit: (p: string): string => `crit ${p}`, dmg: (r: string): string => `damage ${r}`, heal: (r: string): string => `healing ${r}`,
       save: (ab: string, dc: number, p: string): string => `${ab.toUpperCase()} save DC ${dc} · success ${p}`, kill: (p: string): string => `drop ${p}`,
       friendly: (name: string, n: number): string => `Ally: ${name} takes ${n} damage`, self: (n: number): string => `Self ${n} damage`,
@@ -1042,6 +1044,16 @@ export const en: Strings = {
       underground: 'underground', submerged: (ft: number): string => `submerged (${ft} ft)`, centerHeight: (ft: number): string => `Center height: ${ft} ft`, up5: '+5 ft', down5: '−5 ft' },
     // Kuyruk K73b: voluntary falling and multi-turn climbing.
     // Kuyruk MB6: mount UI (airborne dismount altitude, badge, target info, reason headings).
+    // Task MB6b: mount UI (Mount section, badge, turn strip, start mounted, preview, log details).
+    mb6b: { section: (name: string): string => `🐎 Mount: ${name}`,
+      act: { dash: 'Mount: Dash', disengage: 'Mount: Disengage', dodge: 'Mount: Dodge' } as Record<string, string>,
+      steed: (label: string): string => `Mount: ${label}`,
+      badge: { kontrollu: 'controlled mount (moves on the rider\'s turn)', bagimsiz: 'independent mount (acts on its own turn)' } as Record<string, string>,
+      badgeShort: { kontrollu: 'controlled', bagimsiz: 'independent' } as Record<string, string>,
+      riderLine: (name: string): string => `Rider: ${name}`, mountLine: (name: string): string => `Mount: ${name}`,
+      stripMount: (name: string): string => `${name}: moves on the rider's turn`,
+      setupTitle: (name: string): string => `Start mounted: ${name}`, setupMount: (name: string): string => `🐎 Start on ${name}`, setupDismount: 'Dismount',
+      setupNote: 'Game Master: the rider must be placed next to the mount; pairs that break the mount rules are not listed.' },
     mb6: { panel: 'Landing altitude', title: 'Landing altitude', levels: 'Altitudes',
       level: (ft: number, same: boolean): string => (ft === 0 ? 'Ground' : `${ft} ft`) + (same ? ' · mount\'s altitude' : ''),
       hint: (ft: number): string => `Dismount ${ft === 0 ? 'to the ground' : `at ${ft} ft`}: tap an adjacent empty hex.`,

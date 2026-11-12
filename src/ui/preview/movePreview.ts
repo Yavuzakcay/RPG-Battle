@@ -10,6 +10,8 @@ import { distance, type Offset } from '../../rules/hex';
 import type { BattleEvent, BattleState, Command, CommandContext } from '../../battle/types';
 import { visibleReactions, type DiscoveryStore, type PreviewSettings } from '../../app/discovery';
 
+import { flySpeed } from '../../battle/flight';
+
 export interface TargetLine {
   id: string;
   name: string;
@@ -41,8 +43,24 @@ export interface MovePreview {
   /** Gösterilebilen tepkime satırları ve keşfedilmemiş tepkime var mı ("?" rozeti). */
   reactions: string[];
   mystery: boolean;
+  /** Görev MB6b: binme/inme maliyeti (ft; hızın yarısı), kalan hareket, binek kontrollü olur mu, havadan düşme. */
+  mount?: { kind: 'mount' | 'dismount'; costFt: number; leftFt: number; control?: 'kontrollu'; fell?: boolean };
   /** Ham önizleme (testler). */
   raw: CommandPreview;
+}
+
+/** Görev MB6b: binme/inme satırı (motorun `mounted`/`dismounted` olayından; kural yok). */
+function mountLine(state: BattleState, cmd: Command, p: CommandPreview): MovePreview['mount'] {
+  if (cmd.type !== 'mount' && cmd.type !== 'dismount') return undefined;
+  const e = p.events.find((x) => (x.type === 'mounted' || x.type === 'dismounted') && x.actorId === cmd.actorId) as Extract<BattleEvent, { type: 'mounted' | 'dismounted' }> | undefined;
+  const a = state.combatants[cmd.actorId];
+  if (!e || !a) return undefined;
+  const budget = Math.floor(a.speed / 5) * (1 + a.economy.dashes);
+  const left = Math.max(0, budget - a.movementUsed - e.cost) * 5;
+  // Uçamayan binici havadaki binekten inince komut sonunda düşer (MB3).
+  const fell = (e.type === 'dismounted' && (e.toFt ?? a.altitudeFt ?? 0) > 0 && flySpeed(a) <= 0) || undefined;
+  return { kind: e.type === 'mounted' ? 'mount' : 'dismount', costFt: e.cost * 5, leftFt: left,
+    ...(e.type === 'mounted' && e.control === 'kontrollu' ? { control: 'kontrollu' as const } : {}), ...(fell ? { fell } : {}) };
 }
 
 const reasonsOf = (events: BattleEvent[], targetId: string): string[] => {
@@ -97,6 +115,7 @@ export function movePreview(state: BattleState, cmd: Command, ctx: CommandContex
     friendlyFire: p.friendlyFire, selfDamage: p.selfDamage,
     opportunity: p.opportunity.map((o, i) => ({ ...o, ...(oa[i]?.at ? { at: oa[i]?.at } : {}) })),
     reactions: vis.shown, mystery: vis.hidden.length > 0 && set.hints,
+    ...(mountLine(state, cmd, p) ? { mount: mountLine(state, cmd, p) } : {}),
     raw: p,
   };
 }
