@@ -186,23 +186,28 @@
       "lineages": {
         "abyssal": {
           "lch": {
-            "h": 260,
-            "c": 35
+            "h": 262,
+            "c": 30,
+            "hueKeep": 0.6,
+            "chromaKeep": 0.6
           }
         },
         "chthonic": {
           "lch": {
             "h": 300,
             "c": 12,
-            "dL": -10
+            "dL": -10,
+            "hueKeep": 0.6
           }
         },
         "infernal": null,
         "winged": {
           "lch": {
-            "h": 90,
-            "c": 40,
-            "dL": 10
+            "h": 318,
+            "c": 44,
+            "dL": 10,
+            "hueKeep": 0.8,
+            "chromaKeep": 0.7
           }
         }
       },

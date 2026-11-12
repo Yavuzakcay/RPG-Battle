@@ -19,8 +19,9 @@ export function WingLayer(props: { wing: WingLayerSpec; size: number }) {
   return <img className="look-wing" data-wing={wing.id} src={`${BASE}${wing.src}`} alt="" style={style} aria-hidden="true" onError={() => setGone(true)} />;
 }
 
-export function LookFrame(props: { sheet: LookSheet; size: number; flying?: boolean; children: ReactNode }) {
-  const look = lineageLook(props.sheet, props.flying ? { flying: true } : {});
+/** `ability`: karakter ekranı (liste, oluşturucu önizlemesi): uçma yeteneği olan karakter havada olmasa da kanatlı görünür. */
+export function LookFrame(props: { sheet: LookSheet; size: number; flying?: boolean; ability?: boolean; children: ReactNode }) {
+  const look = lineageLook(props.sheet, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) });
   const style = {
     width: props.size, height: props.size,
     '--look-filter': look.filter || 'none', '--look-sx': look.scaleX, '--look-sy': look.scaleY, '--halo-clip': `${HALO_CLIP_PCT}%`,

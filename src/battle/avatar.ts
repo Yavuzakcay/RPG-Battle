@@ -6,7 +6,7 @@ import type { Monster } from '../data';
 import type { CharacterSheet } from '../rules/stats';
 import type { Avatar, TintSpec } from './types';
 import soyRenkleri from '../../data/soy-renkleri.json';
-import { skinTint } from '../ui/lineageLook';
+import { hasSubclassWing, skinTint } from '../ui/lineageLook';
 
 /** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
 type PaletRef = { palet: string };
@@ -107,8 +107,8 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
       return tint ? { tint } : {};
     })(),
     // Kuyruk AS1c: alt soy görünümü (oran, hale, filtre, kanat) savaş jetonunda da aynı çözücüyle (`lineageLook`).
-    ...(!sheet.avatar && (sheet.lineageId || sheet.raceId === 'celestial')
-      ? { look: { raceId: sheet.raceId, ...(sheet.lineageId ? { lineageId: sheet.lineageId } : {}), ...(sheet.celestialAwakening ? { celestialAwakening: sheet.celestialAwakening } : {}), level: sheet.level } } : {}),
+    ...(!sheet.avatar && (sheet.lineageId || sheet.raceId === 'celestial' || hasSubclassWing(sheet.subclassId))
+      ? { look: { raceId: sheet.raceId, ...(hasSubclassWing(sheet.subclassId) ? { classId: sheet.classId, subclassId: sheet.subclassId } : {}), ...(sheet.lineageId ? { lineageId: sheet.lineageId } : {}), ...(sheet.celestialAwakening ? { celestialAwakening: sheet.celestialAwakening } : {}), level: sheet.level } } : {}),
   };
 }
 

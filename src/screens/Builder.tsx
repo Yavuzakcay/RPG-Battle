@@ -321,7 +321,7 @@ function TokenPreview(props: { sheet: CharacterSheet; size: number; className: s
   const l = lineageOf(s);
   return (
     <figure className={`token-preview ${props.className}`} aria-label={W.preview}>
-      <LookFrame sheet={s} size={props.size}><AvatarBadge key={avatar.src} avatar={avatar} size={props.size} ring="var(--party)" eager /></LookFrame>
+      <LookFrame sheet={s} size={props.size} ability><AvatarBadge key={avatar.src} avatar={avatar} size={props.size} ring="var(--party)" eager /></LookFrame>
       <figcaption><b>{s.name || '—'}</b><small>{race?.name ?? s.raceId}{l ? ` · ${lineageName(l, getLang())}` : ''} · {getClass(s.classId).name} {s.level}</small></figcaption>
     </figure>
   );
