@@ -37,10 +37,9 @@ import {
 } from '../rules/advancement';
 import { offHandOptionProblem, offHandProblem } from '../rules/hands';
 import { masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId, weaponProficient } from '../rules/mastery';
-import { AvatarBadge, preloadImages } from '../ui/Avatar';
+import { AvatarBadge, CharacterFigure, preloadImages } from '../ui/Avatar';
 import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageName, lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
-import { LookFrame } from '../ui/LookFrame';
 import { lineageNotes } from '../ui/lineageNotes';
 import { skinToneOf, tonesFor } from '../ui/lineageLook';
 import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateAll, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, type MagicInitiatePick } from '../rules/backgrounds';
@@ -321,7 +320,7 @@ function TokenPreview(props: { sheet: CharacterSheet; size: number; className: s
   const l = lineageOf(s);
   return (
     <figure className={`token-preview ${props.className}`} aria-label={W.preview}>
-      <LookFrame sheet={s} size={props.size} ability><AvatarBadge key={avatar.src} avatar={avatar} size={props.size} ring="var(--party)" eager /></LookFrame>
+      <CharacterFigure key={avatar.src} avatar={avatar} size={props.size} title={s.name || '—'} />
       <figcaption><b>{s.name || '—'}</b><small>{race?.name ?? s.raceId}{l ? ` · ${lineageName(l, getLang())}` : ''} · {getClass(s.classId).name} {s.level}</small></figcaption>
     </figure>
   );

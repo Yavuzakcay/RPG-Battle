@@ -21,8 +21,7 @@ import { alignmentEnabled } from '../app/features';
 // Kuyruk K51: hizalanma etiketi tembel (ana parça sınırı).
 const AlignmentBadge = lazy(() => import('../ui/AlignmentBadge'));
 import { MAX_PARTY } from '../app/limits';
-import { AvatarBadge } from '../ui/Avatar';
-import { LookFrame } from '../ui/LookFrame';
+import { CharacterFigure } from '../ui/Avatar';
 import { useTheme } from '../ui/theme';
 import { SoundPanel } from '../ui/SoundPanel';
 import { IconAuto, IconGear, IconHexDie, IconMoon, IconPlay, IconSound, IconSun, IconUser } from '../ui/icons';
@@ -184,7 +183,7 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
   }
   return (
     <div className="char-card">
-      <LookFrame sheet={sheet} size={44} ability><AvatarBadge avatar={sheetAvatar(sheet)} size={44} ring="var(--party)" eager /></LookFrame>
+      <CharacterFigure avatar={sheetAvatar(sheet)} size={48} title={sheet.name || t().common.unnamed} />
       <div>
         <strong>{sheet.name || t().common.unnamed}</strong>
         <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>

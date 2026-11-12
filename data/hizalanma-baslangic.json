@@ -773,24 +773,24 @@
    "duzen": 8,
    "iyilik": -2,
    "gerekce": {
-    "tr": "Tenhausser: soğuk iklimin disiplini",
-    "en": "Tenhausser: the discipline of the cold north"
+    "tr": "Tenhausser Sürgünü: soğuk iklimin disiplini",
+    "en": "Tenhausser Exile: the discipline of the cold north"
    }
   },
   "human/khadyrga": {
    "duzen": -3,
    "iyilik": -3,
    "gerekce": {
-    "tr": "Khadyrga: göçer bilgi ve pazarlık",
-    "en": "Khadyrga: nomad lore and bargaining"
+    "tr": "Khadyrga Sürgünü: göçer bilgi ve pazarlık",
+    "en": "Khadyrga Exile: nomad lore and bargaining"
    }
   },
   "human/pure-city": {
    "duzen": 3,
    "iyilik": 3,
    "gerekce": {
-    "tr": "Saf Kent: kurallı kent yaşamı",
-    "en": "Pure City: ordered city life"
+    "tr": "Saf Kent Sürgünü: kurallı kent yaşamı",
+    "en": "Pure City Exile: ordered city life"
    }
   },
   "human/outwall": {

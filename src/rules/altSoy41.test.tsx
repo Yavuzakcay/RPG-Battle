@@ -137,7 +137,7 @@ describe('oluşturucu: soy kartları', () => {
   it('Human: 4 kültür kartı + ayrı ten tonu seçici; ten kültüre bağlı değil (eşleme alanı boş)', () => {
     const m = html(char({ raceId: 'human', lineageId: 'khadyrga' }));
     expect((m.match(/lineage-card/g) ?? []).length).toBeGreaterThanOrEqual(4);
-    for (const n of ['Tenhausser', 'Khadyrga', 'Saf Kent', 'Sur Dışı']) expect(m, n).toContain(n);
+    for (const n of ['Tenhausser Sürgünü', 'Khadyrga Sürgünü', 'Saf Kent Sürgünü', 'Sur Dışı']) expect(m, n).toContain(n);
     expect(m).toContain('Kültür');
     expect((m.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(3);
     expect(SKIN_TONES.map((t) => t.id)).toEqual(['orijinal', 'siyahi', 'dogu-asyali']);
@@ -207,7 +207,7 @@ describe('görünüm verisi', () => {
     expect(AWAKENING_FROM).toBe(CELESTIAL.awakening.minLevel);
     expect(AWAKENING_DEFAULT).toBe(CELESTIAL.awakening.default);
   });
-  it('Human ten tonu (AS1c): filtre yok (giysi renkleri bozulmaz); Orijinal boyasız, Siyahi ve Doğu Asyalı ten maskesiyle (tint), kültürden bağımsız', () => {
+  it('Human ten tonu (AS1c): filtre yok (giysi renkleri bozulmaz); Orijinal boyasız, Koyu ve Altın ten maskesiyle (tint), kültürden bağımsız', () => {
     for (const lin of ['tenhausser', 'khadyrga', 'pure-city', 'outwall']) {
       for (const tone of ['orijinal', 'siyahi', 'dogu-asyali', 'abanoz']) expect(lineageLook({ raceId: 'human', lineageId: lin, skinTone: tone })).toMatchObject({ filter: '', scaleX: 1, scaleY: 1 });
     }

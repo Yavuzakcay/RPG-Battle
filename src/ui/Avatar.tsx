@@ -3,7 +3,7 @@
  * tutucu). Görselin varlığı tarayıcıda yüklenerek anlaşılır ve önbelleğe alınır; böylece
  * dosya adı kuralına uyan bir görsel eklenince kod değişmeden görünür.
  */
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState, type CSSProperties } from 'react';
 import { HALO_CLIP_PCT, lineageLook, wingBox } from './lineageLook';
 import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
@@ -142,9 +142,9 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
  * Kuyruk AS1c: jeton figürü (SVG): kanat katmanı (jetonun arkasında; `lineageLook`), alt soy oranı, Celestial hale gizleme ve
  * filtre. Yalnız çizim: `x/y/width/height` ve tıklama alanı aynı.
  */
-export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; look?: AvatarData['look']; flying?: boolean }) {
+export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; look?: AvatarData['look']; flying?: boolean; /** Karakter ekranları: uçma yeteneği olan karakter havada olmasa da kanatlı. */ ability?: boolean }) {
   const { cx, cy, w } = props;
-  const lk = props.look ? lineageLook(props.look, props.flying ? { flying: true } : {}) : null;
+  const lk = props.look ? lineageLook(props.look, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) }) : null;
   const clipId = useId();
   const by = cy + w / 2;
   const shape = lk && (lk.scaleX !== 1 || lk.scaleY !== 1) ? `translate(${cx} ${by}) scale(${lk.scaleX} ${lk.scaleY}) translate(${-cx} ${-by})` : undefined;
@@ -164,10 +164,12 @@ export function TokenFigure(props: { href: string; cx: number; cy: number; w: nu
 }
 
 export function AvatarCircle(props: {
-  avatar: AvatarData; cx: number; cy: number; r: number; asleep?: boolean; flip?: boolean; scale?: number; /** Kuyruk AS1c: havada (kanat katmanı açık sprite). */ flying?: boolean;
+  avatar: AvatarData; cx: number; cy: number; r: number; asleep?: boolean; flip?: boolean; scale?: number; /** Kuyruk AS1c: havada (kanat katmanı açık sprite). */ flying?: boolean; ability?: boolean; /** Karakter ekranları: yüklenmesi beklenmeden ilk görseli çiz (yüklenemezse zincirdeki sıradaki, sonra baş harfler). */ eager?: boolean;
 }) {
   const { avatar, cx, cy, r } = props;
-  const src = useImageChain(chainOf(avatar, props.asleep === true));
+  const chain = chainOf(avatar, props.asleep === true);
+  const chained = useImageChain(chain);
+  const src = chained ?? (props.eager && cache.get(chain[0] ?? "") !== false ? chain[0] ?? null : null);
   const shown = useTinted(src, avatar.tint);
   const w = 2 * r * (props.scale ?? 1);
   return (
@@ -177,7 +179,7 @@ export function AvatarCircle(props: {
         {avatar.ring && <ellipse cx={cx} cy={cy + r * 0.78} rx={r * 0.92} ry={r * 0.3} fill="none" stroke={avatar.ring} strokeWidth={Math.max(1.5, r * 0.09)} opacity={0.9} />}
         {/* Görev P0: ek paket yaratığının renk tonu; Kuyruk AS1c: alt soy görünümü `TokenFigure` içinde. */}
         <g className="breathe" style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}>
-          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={props.flip} look={avatar.look} flying={props.flying} />
+          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={props.flip} look={avatar.look} flying={props.flying} ability={props.ability} />
         </g>
       </g>
     ) : (
@@ -186,5 +188,27 @@ export function AvatarCircle(props: {
         <text x={cx} y={cy + r * 0.32} className="initials" style={{ fontSize: r * 0.9 }}>{avatar.label}</text>
       </>
     )
+  );
+}
+
+/**
+ * Karakter ekranları (liste, oluşturucu önizlemesi): savaş jetonuyla aynı çizim yolu (`AvatarCircle` → `TokenFigure`; çerçevesiz
+ * silüet, kanat jetonun arkasında, aynı `wingBox`), küçük bir SVG içinde. SVG kutusu jeton + kanat sınırını kapsar; kanat
+ * kırpılmaz. `look` varsa uçma yeteneği olan karakter kanatlıdır (`ability`). Yalnız görünüm.
+ */
+export function CharacterFigure(props: { avatar: AvatarData; size: number; title?: string }) {
+  const { avatar, size } = props;
+  const lk = avatar.look ? lineageLook(avatar.look, { ability: true }) : null;
+  const wb = lk?.wing ? wingBox(lk.wing, size / 2, size / 2, size) : null;
+  const pad = Math.max(2, size * 0.06);
+  const x0 = Math.min(0, wb?.x ?? 0) - pad, y0 = Math.min(0, wb?.y ?? 0) - pad;
+  const x1 = Math.max(size, wb ? wb.x + wb.width : 0) + pad, y1 = Math.max(size, wb ? wb.y + wb.height : 0) + pad;
+  return (
+    <svg className="char-figure" width={x1 - x0} height={y1 - y0} viewBox={`${x0} ${y0} ${x1 - x0} ${y1 - y0}`} role="img" aria-label={props.title ?? avatar.label}
+      style={{ '--fig-w': `${x1 - x0}px` } as CSSProperties}>
+      {/* Çerçeve yok: jeton arka planda kaybolmasın diye ayak altında hafif zemin parıltısı (CSS `.char-ground`). */}
+      <ellipse className="char-ground" cx={size / 2} cy={size * 0.93} rx={size * 0.34} ry={size * 0.08} />
+      <AvatarCircle avatar={avatar} cx={size / 2} cy={size / 2} r={size / 2} ability eager />
+    </svg>
   );
 }
