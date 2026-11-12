@@ -3,6 +3,45 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk MB2: kontrollü binek turu (kural sürümü 73 → 74)
+
+- **Sürüm:** `main` 4b0e400d (MB5, 73) üstüne; kural sürümü 73 → **74**. Tek sabit `src/battle/binekMb2Surum.ts` `BINEK_MB2_VERSION`; 73 ve altında bütün binekler bağımsız. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §17.
+- **B4:** A seçildi (birleşik tur). Kontrollü binek kendi turunu almaz; binicinin turunda ve binicinin kararıyla hareket eder; vur-kaç mümkün.
+- **B2:**
+  - `data/binek.json` `egitimli`: Riding Horse, Warhorse, Draft Horse, Mule, Pony, Camel, Elephant (plan önerisi; Mastiff eklenmedi, açık soru 2).
+  - Çağrıda `mount.kontrol` (Find Steed, Phantom Steed), paket `binek.kontrol`.
+- **B5:**
+  - Eylem yalnız Dash/Disengage/Dodge.
+  - Bonus eylem (`steed_action`) ve tepkiler serbest.
+  - Bonus Dash/Disengage (`bonus: true`) reddedilir.
+- **Sıra:**
+  - Binince binek binicinin hemen ardına alınır, inisiyatifi eşitlenir; geçerli savaşçı korunur (reducer `controlMount`).
+  - İnince sıra yerinde kalır. `ridTurn` o turdaki ikinci turu engeller.
+- **Tur kancaları:**
+  - `end_turn`'ün tur başı/sonu zincirleri `turnStartChain`/`turnEndChain` işlevlerine çıkarıldı; sıra birebir aynı.
+  - Kontrollü bineğe aynı zincirler binicininkiyle çalışır. Yeni olay türü yok; `SAVE_VERSION` 22.
+- **Binicinin yürüyüşü bineğe:** 74+'da binicinin `move`/`jump` komutu kontrollü bineğine yönlendirilir. Bu motorda; amaç, yeni düğme eklemeden arayüzün mevcut yürüme dokunuşunun çalışması.
+- ⚠ **Binici Incapacitated/0 HP → binek bağımsız:** SRD yalnız Find Steed için yazar; bütün kontrollü bineklere genellendi (binek binicinin ardında kendi turunu alır).
+- ⚠ **Binildiği tur:**
+  - Bu turda henüz oynamamış bineğin ekonomisi tazelenir ve tur başı kancaları binme anında çalışır.
+  - Önceden oynamış binek kalan hareketini kullanır (çift tur yok).
+- ⚠ **Command ile tur kaybı:** kontrollü bineğin turunu aldıran süren etki (Command) binicinin turunda yok sayılır.
+- **YZ:**
+  - Binici o adımda bir şey yapamıyorsa bineğin kendi kararı (yaklaşma, Dash, Disengage, Dodge) bineğe uygulanır (`controlledMountStep`).
+  - MB5 süzmesi aynen.
+  - `sim:yz-sure` kontrollü binekli Çöl, 73/74/74/73: karar başına 28,95 → 26,35 ms (−%9); karar sayısı +%21; savaş başına toplam ≈ +%10.
+- **Doğrulama:**
+  - `binekMb2.test.ts` 16 test.
+  - Regresyon 4 senaryo × 30 tohum: binekli olmayanda 73 altınla aynı, 74 = 73; bağımsız binekli 74 = 73; kontrollü binekli çökmesiz.
+  - Ana parça değişmedi.
+  - `check:harita` 96/0, `check:ses` 15/0.
+- **Test değeri güncellemesi:** `ruleVersion.test.ts` ve `g6.test.ts` güncel sürüm 73 → 74 (veriye bağlı değer). `PAKET-ILKELLER.md` şemadan yeniden üretildi (`binek.kontrol`).
+- **Arayüz işi (yapılmadı):**
+  - Çekmecede "Binek" bölümü (Dash/Disengage/Dodge).
+  - Hareket gölgesinin bineğin hızıyla çizilmesi.
+  - Tur şeridinde kontrollü bineğin gösterimi.
+  - Game Master kurulumunda eğitimli binek anahtarı.
+
 ## 2026-11-12 — Kuyruk MB5: YZ binicisi ve büyük bineğin dar geçitten kaçınması (kural sürümü 72 → 73)
 
 - **Sürüm:** `main` 1eba7a44 (MB4 + kanat, 72) üstüne; kural sürümü 72 → **73**. Tek sabit `src/battle/binekMb5Surum.ts` `BINEK_MB5_VERSION`; yalnız yapay zekâ kararı, yeni komut/olay yok. 72 ve altında eski karar (regresyon altın imzası).
