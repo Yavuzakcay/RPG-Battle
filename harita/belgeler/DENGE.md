@@ -2,6 +2,24 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk K74: Truesight bağlama, Hallow toplu koruma (75), sinkMud bedeli (76) (2026-11-12; ölçüm, denge ayarı yok)
+
+Kural sürümü 74 → 75 → 76. 3. seviye standart parti, 100 tohum (`npm run sim -- 100 … --seviye 3`; yeni parti yok). Çöl/Kale/Mağara/Orman ve dört Bataklık senaryosu; sürüm farkı ayrıca `src/sim/k74Regresyon.test.ts` ile (75 = 74; 76 = 75 çamursuz haritalarda).
+
+| Senaryo | Kazanma | Berabere | Tur | Ölü | Durum |
+|---|---:|---:|---:|---:|---|
+| Çöl — Gündüz | 71% | 3% | 11.2 | 0.55 | aralıkta |
+| Kale — Gündüz | 77% | 3% | 9.0 | 0.57 | aralıkta |
+| Mağara — karanlık | 76% | 0% | 8.6 | 0.44 | aralıkta |
+| Orman | 67% | 0% | 6.8 | 0.39 | aralıkta |
+| Bataklık — Cadının Kampı | 100% | 0% | 4.8 | 0.01 | aralık dışı (kolay) |
+| Bataklık — Batık Çukur | 100% | 0% | 3.5 | 0.00 | aralık dışı (kolay) |
+| Bataklık — Batık Kale | 100% | 0% | 3.8 | 0.00 | aralık dışı (kolay) |
+| Bataklık — Kütük Adaları | 100% | 0% | 3.1 | 0.00 | aralık dışı (kolay) |
+
+- **Bataklık %100 sürümden bağımsız:** Kamp ve Adalar'da 30 tohum, 75 ↔ 76: %100 ↔ %100, ölü 0,03 ↔ 0,03 / 0,00 ↔ 0,00 (standart partide ağır zırhlı çamura girmiyor ya da kurtuluyor; Restrained bedeli sonuca yansımadı). Bu haritaların kolaylığı K29'dan kalma; düzeltme denenmedi ("Dungeondex öncesi tam test turu").
+- Çöl ve Kale'de %3 berabere (20 tur): önceki ölçümlerle aynı düzey, K74 sürümünden değil.
+
 ## Kuyruk MB8: binek hattı denge ölçümü (2026-11-12; ölçüm, denge ayarı yok)
 
 Kural sürümü 74 (değişmedi). 5. seviye standart parti, 100 tohum, aynı tohumlar; partinin ilk üyesi savaş başında Warhorse'un üstünde (`src/sim/binekStart.ts` `mountedStart`; binicinin kim olduğu inisiyatif sırasına göre değişir). Komut: `npx vite-node src/sim/binekDengeRun.ts -- 100 col,kale,magara,orman --kip yok|bagimsiz|kontrollu`. Hedef parti kazanma %60–80. "Binek" sütunu: savaş sonunda at ayakta / binici hâlâ üstünde. Canavar verisi ve düşman listeleri değişmedi.
