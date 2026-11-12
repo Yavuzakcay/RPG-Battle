@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Görev AS2 (toplu): DURDU — yalnız envanter (kod değişmedi; kural sürümü 77'de kaldı, 78 kullanılmadı)
+
+- Envanter `harita/belgeler/AS2-ENVANTER.md` (kimlik/ad/sayı; paket metni yok).
+- **Durma nedeni:** dış paket (`icerik/*.json`, gitignore) bu oturumda yok. SRD 12'sinin kaldırılması, göç tablosu (`champion` → bizim sürüm), yeni motor/sim varsayılanları, hizalanma `altSinif` eşlemesi ve "108 + 12 = 120" testi paketin kimliklerini ister; bunlar depoda yok (`icerik-liste.txt` 97 satır, sınıf başına bir eksik: yerelleştirilmiş SRD sürümleri). Paket depoya girmeden yapılırsa paketsiz build'de sınıflar alt sınıfsız kalır (Fighter yalnız İmparator = kadın Fighter alt sınıfsız). Görev metni gereği kullanıcıya bildirildi; seçenekler envanterde (A: paketi depoya al, B: yerelde gömülü yükleme, C: yalnız ayar sadeleştirmesi).
+
 ## 2026-11-12 — Görev AS1b (toplu): alt soy oluşturucu seçimi ve görünüm denetimi (yalnız denetim; kural sürümü 77, kod değişmedi)
 
 - Görev metnindeki işler main'de zaten vardı (Kuyruk AS1a: oluşturucu kartları, Human 4 kültür + ayrı ten seçici, eski kayıt bildirimi `src/app/lineageNotice.ts`; AS1c: savaş jetonuna görünüm, kanat katmanı altyapısı `data/kanat-esleme.json` üç yuva: Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn; Celestial Parlayan Ruh haleli / Kırık Kanat halesiz + kanat / Gece Gözyaşı halesiz + koyu filtre; Halfling İnce/Kalın oranı; Dragonborn jetonu ve `soy-renkleri.json` aynen). Baştan yazılmadı.
