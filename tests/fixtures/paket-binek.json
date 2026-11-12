@@ -1,0 +1,56 @@
+{
+  "format": "rpg-battle-icerik",
+  "version": 1,
+  "id": "mb7-binek",
+  "name": { "tr": "MB7 binek alanı (kurgusal)", "en": "MB7 mount field (fictional)" },
+  "author": "Test",
+  "yaratiklar": [
+    {
+      "id": "titan-ejder",
+      "ad": { "tr": "Titan Ejder", "en": "Titan Drake" },
+      "boyut": "L",
+      "tur": "dragon",
+      "ac": "14+$pbYari",
+      "hp": "20+$lvl2",
+      "hiz": { "yurume": 40, "ucma": 30 },
+      "yetenekler": { "str": 18, "dex": 12, "con": 15, "int": 6, "wis": 12, "cha": 8 },
+      "saldirilar": [{ "ad": "Isırık", "tur": "yakin", "bonus": "sahip", "hasar": "1d10+$pb", "hasarTuru": "piercing" }],
+      "binek": { "kural": "sahip", "enBuyukBinici": "M", "biniciSayisi": 1, "minSeviye": 14 },
+      "jeton": { "gorsel": "ejderha", "ton": 30 }
+    },
+    {
+      "id": "yaban-kurt",
+      "ad": { "tr": "Yaban Kurdu", "en": "Wild Wolf" },
+      "boyut": "L",
+      "tur": "beast",
+      "ac": 13,
+      "hp": 30,
+      "hiz": { "yurume": 50 },
+      "yetenekler": { "str": 17, "dex": 15, "con": 15, "int": 3, "wis": 12, "cha": 7 },
+      "saldirilar": [{ "ad": "Isırık", "tur": "yakin", "bonus": "sahip", "hasar": "2d6+$pb", "hasarTuru": "piercing" }],
+      "jeton": { "gorsel": "kurt" }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "titan-yolcusu",
+      "class": "fighter",
+      "name": { "tr": "Titan Yolcusu", "en": "Titan Rider" },
+      "role": { "tr": "Kurgusal binici (test)", "en": "Fictional rider (test)" },
+      "features": [
+        {
+          "id": "titan-cagrisi", "level": 3, "status": "calisir",
+          "name": { "tr": "Titan Çağrısı", "en": "Titan Call" },
+          "description": { "tr": "Kurgusal test özelliği: binilebilen uçan ejder çağırır (14. seviyeden yalnız çağıran biner).", "en": "Fictional test feature: summons a rideable flying drake (only the summoner, from level 14)." },
+          "ilkeller": [{ "tur": "cagir", "tetik": "eylem", "yaratik": "titan-ejder", "sure": 10 }]
+        },
+        {
+          "id": "yaban-cagrisi", "level": 3, "status": "calisir",
+          "name": { "tr": "Yaban Çağrısı", "en": "Wild Call" },
+          "description": { "tr": "Kurgusal test özelliği: binek olmayan büyük kurt çağırır.", "en": "Fictional test feature: summons a large wolf that is not a mount." },
+          "ilkeller": [{ "tur": "cagir", "tetik": "eylem", "yaratik": "yaban-kurt", "sure": 10 }]
+        }
+      ]
+    }
+  ]
+}

@@ -59,7 +59,8 @@ describe('41 alt soy', () => {
     expect(races.find((r) => r.id === 'gnome')?.defaultLineage).toBe('forest-gnome');
   });
   it('kural sürümü 68 ve savaş dosyalarına dokunulmadı', () => {
-    expect((kuralSurumu as { surum: number }).surum).toBe(68);
+    // AS1a kural sürümünü artırmadı (68); sonraki şeritler (MB3 69, MB7 70) artırır: alt sınır.
+    expect((kuralSurumu as { surum: number }).surum).toBeGreaterThanOrEqual(68);
   });
 });
 

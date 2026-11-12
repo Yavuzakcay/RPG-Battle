@@ -5,7 +5,7 @@
 import { neighbors, sameHex, type Offset } from '../rules/hex';
 import rules from '../../data/s2-kurallar.json';
 import { binekMb3On, binekOn } from './binekSurum';
-import type { BattleState, Combatant } from './types';
+import type { BattleState, Combatant, MountRule } from './types';
 
 const BOY_FT = rules.irtifa.boyFt as Record<string, number>;
 /** Yaratığın boyu (ft; `altitude.ts` `bodyHeightFt` ile aynı veri; yaprak kopya). */
@@ -61,4 +61,11 @@ export function fallOffSpot(state: Pick<BattleState, 'combatants' | 'map'>, at: 
   const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
   const occupied = (h: Offset) => Object.values(state.combatants).some((o) => o.hp > 0 && !!o.pos && sameHex(o.pos, h) && !o.summon?.gone);
   return neighbors(at, size).find((h) => !occupied(h)) ?? null;
+}
+
+/** Kuyruk MB7: veri/paket binek tanımı → savaşçıdaki binek kuralı. */
+export function mountRuleOf(m: { kural?: unknown; enBuyukBinici?: unknown; minSeviye?: unknown } | undefined): MountRule | undefined {
+  if (!m) return undefined;
+  return { ...(m.kural === 'sahip' ? { ownerOnly: true as const } : {}), ...(typeof m.enBuyukBinici === 'string' ? { maxRider: m.enBuyukBinici as MountRule['maxRider'] } : {}),
+    ...(typeof m.minSeviye === 'number' ? { minLevel: m.minSeviye } : {}) };
 }

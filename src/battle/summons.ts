@@ -31,6 +31,8 @@ import { anchoredZoneEvent, triggerEvents } from './zones';
 import { costsFrom } from '../rules/hex';
 import { executeMove, moveCostFn, terrainAt } from './movement';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext, SummonInfo, SummonVanishReason } from './types';
+import { binekMb7On } from './binekSurum';
+import { mountRuleOf } from './riderCore';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -122,7 +124,14 @@ export interface SummonDef {
   handK19?: boolean;
   /** Kuyruk 19: boyut karışımı (Animate Objects: Large 2, Huge 3 sayılır; seçim `form` medium|large|huge). */
   sizeMix?: boolean;
+  /** Kuyruk MB7 (70+): binek kuralı (`kural: sahip|dost`, `enBuyukBinici`, `minSeviye`); yoksa çağrıya binilmez. */
+  mount?: { kural: 'sahip' | 'dost'; enBuyukBinici?: string; minSeviye?: number };
+  /** Kuyruk MB7 (70+): yürüme hızı (ft; Phantom Steed 100). */
+  speedFt?: number;
+  /** Kuyruk MB7 (70+): hasar alınca kaybolur (Phantom Steed). */
+  endsOnDamage?: boolean;
 }
+
 
 const DATA = summonData as unknown as { summons: Record<string, SummonDef>; creatures: Record<string, CreatureDef> };
 
@@ -374,10 +383,14 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     ...(def.commandBonusV35 && ruleVersion(current) >= 35 ? { commandBonus: true, commandFt: def.commandBonusV35 } : {}),
     ...(def.withOwnerV35 && ruleVersion(current) >= 35 ? { withOwner: true } : {}),
     ...(def.handK19 && k19 ? { hand: true, noSpace: true, ownerBonus: { moveFt: 60 } } : {}),
+    // Kuyruk MB7 (70+): binek kuralı ve hasarla kaybolma.
+    ...(def.mount && binekMb7On(current) ? { mount: mountRuleOf(def.mount) } : {}),
+    ...(def.endsOnDamage && binekMb7On(current) ? { endsOnDamage: true as const } : {}),
   };
   const combatant: Combatant = {
     ...base,
     side: actor.side, ownerId: actor.ownerId, initiative, pos: current.map && at ? at : null,
+    ...(def.speedFt && binekMb7On(current) ? { speed: def.speedFt } : {}),
     avatar: { ...base.avatar, bg: actor.avatar.bg, ...(creature?.ringByChoice?.[choice ?? ''] ? { ring: creature.ringByChoice[choice ?? ''] } : {}) },
     ...(typeOf ? { creatureType: typeOf } : {}),
     ...(k19 && creature?.traits?.length ? { traits: [...(base.traits ?? []), ...creature.traits] } : {}),
@@ -406,7 +419,8 @@ export function executeSetupSummon(state: BattleState, cmd: CastCommand, ctx: Co
   if (!canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
   const spell = spells.find((s) => s.name === cmd.spellName);
   if (!spell || !actor.spellNames.includes(spell.name)) return fail('Bu büyüyü bilmiyor.');
-  if (!summonDef(spell.id)?.setup) return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
+  // Kuyruk MB7: büyünün çağırma oluşu sürüme bağlı olabilir (Phantom Steed `mb7`: 70+).
+  if (!summonDef(spell.id)?.setup || mechanicsAt(state, spell).kind !== 'summon') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
   // Görev B1 (kuyruk 14): ritüel de büyüdür; eğitimsiz zırh engeli savaştakiyle aynı.
   const barrier = castBarrier(state, actor, spell);
   if (barrier) return fail(barrier);
@@ -428,6 +442,8 @@ export function summonCleanup(state: BattleState): BattleEvent[] {
     else if (s.concentration && owner?.concentration?.spell !== s.spell) reason = 'concentration';
     else if (s.endsOnOwnerDeath && (!owner || owner.life === 'dead')) reason = 'owner';
     else if (s.until !== undefined && state.round > s.until) reason = 'duration';
+    // Kuyruk MB7 (70+): Phantom Steed herhangi bir hasar alınca biter (SRD "The spell ends early if the steed takes any damage").
+    else if (s.endsOnDamage && c.hp < c.maxHp) reason = 'damaged';
     if (reason) out.push({ type: 'summon_vanished', actorId: c.id, ownerId: s.by, reason });
   }
   return out;

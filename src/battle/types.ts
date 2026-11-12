@@ -584,7 +584,17 @@ export interface BreathSpec {
   shapes: Array<{ shape: 'cone' | 'line'; sizeFt: number; widthFt?: number }>;
 }
 
-export type SummonVanishReason = 'hp' | 'concentration' | 'owner' | 'replaced' | 'duration' | 'dispelled';
+export type SummonVanishReason = 'hp' | 'concentration' | 'owner' | 'replaced' | 'duration' | 'dispelled' | /** Kuyruk MB7 (70+): Phantom Steed hasar alınca. */ 'damaged';
+
+/** Kuyruk MB7 (70+): çağrılan yaratığın binek kuralı (data/summons.json `mount`, paket yaratığında `binek`). */
+export interface MountRule {
+  /** Yalnız çağıran biner (yoksa her dost). */
+  ownerOnly?: true;
+  /** Binicinin en büyük boyutu (MB1 kuralı ayrıca: binek en az bir boy büyük). */
+  maxRider?: CreatureSize;
+  /** Sahibin (çağıranın) seviye eşiği. */
+  minLevel?: number;
+}
 
 export interface SummonInfo {
   /** Çağıranın savaşçı kimliği. */
@@ -616,6 +626,10 @@ export interface SummonInfo {
   commandFt?: number;
   /** Kuyruk A6 (Conjure Animals): sahibi bu tur yürüdüyse taşımak bonus eylem istemez; sahibine STR save avantajı. */
   withOwner?: boolean;
+  /** Kuyruk MB7 (70+): binek kuralı; yoksa çağrılan yaratığa binilmez. */
+  mount?: MountRule;
+  /** Kuyruk MB7 (70+): hasar alınca kaybolur (Phantom Steed). */
+  endsOnDamage?: true;
   gone?: boolean;
 }
 

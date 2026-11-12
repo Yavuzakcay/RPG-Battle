@@ -32,7 +32,7 @@ import { sizeRank } from './forced';
 import { globalRule } from './ruleControl';
 import { binekOn } from './binekSurum';
 import { altitudeCapFt, bodyHeightFt, ceilingOver, climbingAloft } from './altitude';
-import { binekMb3On } from './binekSurum';
+import { binekMb3On, binekMb7On } from './binekSurum';
 import { adjacent3D } from './adjacency';
 import { bandOf } from './cells';
 import { climbs, flySpeed } from './flight';
@@ -60,6 +60,15 @@ export function mountProblem(state: BattleState, actor: Combatant, mountId: stri
   if (m.side !== actor.side) return 'Yalnızca gönüllü (dost) bir yaratığa binilir.';
   if (m.rider) return 'Bineğin üstünde zaten biri var.';
   if (sizeRank(m.size) <= sizeRank(actor.size)) return 'Binek senden en az bir boy büyük olmalı.';
+  // Kuyruk MB7 (70+): çağrılan yaratığa yalnız binek kuralı varsa binilir (Find Steed, Phantom Steed, paket `binek`).
+  if (m.summon && binekMb7On(state)) {
+    const rule = m.summon.mount;
+    if (!rule) return `${m.name} binek değil (çağrılan yaratık).`;
+    if (rule.ownerOnly && actor.id !== m.summon.by) return `${m.name}: yalnız çağıranı biner.`;
+    if (rule.maxRider && sizeRank(actor.size) > sizeRank(rule.maxRider)) return `${m.name}: binici en çok ${rule.maxRider} boyutunda olur.`;
+    const owner = state.combatants[m.summon.by];
+    if (rule.minLevel && (owner?.level ?? 0) < rule.minLevel) return `${m.name}: çağıranın ${rule.minLevel}. seviyesinden binilir.`;
+  }
   // Kuyruk MB3 (69+): bitişiklik 3B (havadaki bineğe havadan binilir); yer altındaki ya da duvarda tutunan (tırmanma hızı
   // olmayan) bineğe binilmez; yığın kat döşemesinin altına da sığmalı (B11).
   if (binekMb3On(state) && state.map) {
