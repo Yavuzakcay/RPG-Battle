@@ -3,6 +3,13 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Melek açık kanadı: alt sınıfa bağlı kanat slotu (yalnız görsel; kural sürümü değişmez)
+
+- `data/kanat-esleme.json` şemasına isteğe bağlı `altSinif` eklendi; yeni slot `melek-acik` (`altSinif: "melek"`, ek paket alt sınıfı, sınıf Warlock). `lineageLook` seçili alt sınıfa bağlı slotu ırk/alt soy kanadının yerine koyar; alt sınıf seçili ya da (sınıf bilindiğinde) kayıtta yüklü değilse etkisiz. Genişlik çarpanı 1,5 (`olcek`), omuz 0,46, çapa 0,5 / 0,383; renk filtresi yok.
+- Jetonun kapalı kanatları jeton görselinde boyalı kalır, dokunulmadı. Açık kanat yalnız havadayken (`isAirborne`) jetonun arkasında katman olarak eklenir.
+- ⚠ **Çift kanat görünümü:** havadayken boyalı kapalı kanatlar ile açık kanat katmanı birlikte görünebilir. Çözüm adayı: havadayken kanatsız jetona geçiş (şimdi yapılmıyor).
+- Kural sürümü, mekanik ve Ayarlar anahtarı yok. Testler ek paketi kullanmaz (kurgusal alt sınıf kimliği).
+
 ## 2026-11-12 — Kuyruk MB5: YZ binicisi ve büyük bineğin dar geçitten kaçınması (kural sürümü 72 → 73)
 
 - **Sürüm:** `main` 1eba7a44 (MB4 + kanat, 72) üstüne; kural sürümü 72 → **73**. Tek sabit `src/battle/binekMb5Surum.ts` `BINEK_MB5_VERSION`; yalnız yapay zekâ kararı, yeni komut/olay yok. 72 ve altında eski karar (regresyon altın imzası).
