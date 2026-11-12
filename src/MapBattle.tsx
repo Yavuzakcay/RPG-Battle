@@ -26,7 +26,7 @@ import { dismountOptions } from './ui/dismountOptions';
 import { sizeRank } from './battle/forced';
 import { eldritchSmiteProblem } from './battle/warlock';
 import { availableForms, wildShapeFeature } from './battle/druid';
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
@@ -88,6 +88,10 @@ import { wishCandidates } from './battle/spells69';
 import { movableZoneOf } from './battle/zones';
 import { DANCE_COMBINED, danceAddProblem, danceMax } from './battle/danceLights';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
+import { isAirborne } from './battle/flight';
+import { LookFrame } from './ui/LookFrame';
+/** Kuyruk AS1c: alt soyu olan oyuncu karakterinin rozetine alt soy görünümü (oran, hale, filtre, kanat); diğerleri aynen. */
+const framedBadge = (c: Combatant, size: number, node: ReactNode): ReactNode => (c.avatar.look ? <LookFrame sheet={c.avatar.look} size={size} flying={isAirborne(c)}>{node}</LookFrame> : node);
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionTip } from './ui/actionHints';
 import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
@@ -225,7 +229,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
   return (
     <aside className="drawer" aria-label={D.details(c.name)}>
       <div className="drawer-head">
-        <AvatarBadge avatar={c.avatar} size={56} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} />
+        {framedBadge(c, 56, <AvatarBadge avatar={c.avatar} size={56} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} />)}
         <div>
           <strong>{displayName(c)}</strong>
           <small>{c.civilian ? `${c.name} · ` : ''}{D.stats(c.hp, c.maxHp, c.ac, c.speed, c.fly)}</small>
@@ -1922,7 +1926,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <g className="token-filter" style={look.filter || look.opacity < 1 ? { filter: look.filter || undefined, opacity: look.opacity } : undefined}
                       transform={look.shrink < 1 || look.tilt ? `translate(${p.x} ${p.y}) rotate(${look.tilt ?? 0}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
                       <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
-                        flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} />
+                        flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} flying={isAirborne(c)} />
                       {/* Takım halkası yalnızca resimsiz (baş harfli) jetonda: resimli jetonda `.fig ~ .ring` gizler (Görev V2). */}
                       <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     </g>
@@ -2105,7 +2109,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               return (
                 <button key={id} role="listitem" className={`strip-item${id === actorId && active ? ' now' : ''}${out ? ' out' : ''}${c.concentration ? ' conc' : ''}`}
                   onClick={() => setDrawerId(id)} aria-label={B.drawer.details(c.name)} title={c.concentration ? t().view.concentrating(c.concentration.spell) : c.name}>
-                  <AvatarBadge avatar={c.avatar} size={30} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} title={c.name} />
+                  {framedBadge(c, 30, <AvatarBadge avatar={c.avatar} size={30} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} title={c.name} />)}
                   {c.concentration && <span className="strip-conc" aria-label={t().view.concentrating(c.concentration.spell)}>◎</span>}
                   {statusIcons(c).length > 0 && <span className="strip-status">{statusIcons(c).slice(0, 2).map((s) => <i key={s.key} title={s.title}>{s.icon}</i>)}</span>}
                 </button>

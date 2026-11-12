@@ -3,7 +3,8 @@
  * tutucu). Görselin varlığı tarayıcıda yüklenerek anlaşılır ve önbelleğe alınır; böylece
  * dosya adı kuralına uyan bir görsel eklenince kod değişmeden görünür.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
+import { HALO_CLIP_PCT, lineageLook } from './lineageLook';
 import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
 import { tintedReady, tintedUrl } from './tint';
@@ -137,8 +138,33 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
  * parıltısı CSS drop-shadow ile figürün silüetinde). Resim yoksa baş harfli daire okunurluk için kalır.
  * Resim hafifçe "nefes alır" (CSS, hareket azaltma tercihinde kapalı).
  */
+/**
+ * Kuyruk AS1c: jeton figürü (SVG): kanat katmanı (jetonun arkasında; `lineageLook`), alt soy oranı, Celestial hale gizleme ve
+ * filtre. Yalnız çizim: `x/y/width/height` ve tıklama alanı aynı.
+ */
+export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; look?: AvatarData['look']; flying?: boolean }) {
+  const { cx, cy, w } = props;
+  const lk = props.look ? lineageLook(props.look, props.flying ? { flying: true } : {}) : null;
+  const clipId = useId();
+  const by = cy + w / 2;
+  const shape = lk && (lk.scaleX !== 1 || lk.scaleY !== 1) ? `translate(${cx} ${by}) scale(${lk.scaleX} ${lk.scaleY}) translate(${-cx} ${-by})` : undefined;
+  const wing = lk?.wing;
+  const ww = wing ? w * wing.olcek : 0;
+  return (
+    <>
+      {wing && <image className="look-wing" href={assetSrc(wing.src)} x={cx - ww / 2} y={cy - ww / 2 + w * wing.yukari} width={ww} height={ww} preserveAspectRatio="xMidYMid meet"
+        style={wing.filtre ? { filter: wing.filtre } : undefined} aria-hidden="true" />}
+      {lk?.hideHalo && <clipPath id={clipId}><rect x={cx - w / 2} y={cy - w / 2 + (w * HALO_CLIP_PCT) / 100} width={w} height={w} /></clipPath>}
+      <g transform={shape} clipPath={lk?.hideHalo ? `url(#${clipId})` : undefined}>
+        <image href={props.href} x={cx - w / 2} y={cy - w / 2} width={w} height={w} preserveAspectRatio="xMidYMid slice"
+          transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} style={lk?.filter ? { filter: lk.filter } : undefined} />
+      </g>
+    </>
+  );
+}
+
 export function AvatarCircle(props: {
-  avatar: AvatarData; cx: number; cy: number; r: number; asleep?: boolean; flip?: boolean; scale?: number;
+  avatar: AvatarData; cx: number; cy: number; r: number; asleep?: boolean; flip?: boolean; scale?: number; /** Kuyruk AS1c: havada (kanat katmanı açık sprite). */ flying?: boolean;
 }) {
   const { avatar, cx, cy, r } = props;
   const src = useImageChain(chainOf(avatar, props.asleep === true));
@@ -149,9 +175,9 @@ export function AvatarCircle(props: {
       <g className={`fig${avatar.outfit ? ` outfit-${avatar.outfit}` : ''}`}>
         {/* Görev P0: ek paket yaratığının halkası ve renk tonu (çizim anında; ek görsel dosyası yok). */}
         {avatar.ring && <ellipse cx={cx} cy={cy + r * 0.78} rx={r * 0.92} ry={r * 0.3} fill="none" stroke={avatar.ring} strokeWidth={Math.max(1.5, r * 0.09)} opacity={0.9} />}
+        {/* Görev P0: ek paket yaratığının renk tonu; Kuyruk AS1c: alt soy görünümü `TokenFigure` içinde. */}
         <g className="breathe" style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}>
-          <image href={shown ?? assetSrc(src)} x={cx - w / 2} y={cy - w / 2} width={w} height={w}
-            preserveAspectRatio="xMidYMid slice" transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
+          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={props.flip} look={avatar.look} flying={props.flying} />
         </g>
       </g>
     ) : (

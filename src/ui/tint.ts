@@ -112,7 +112,7 @@ function maskedPixels(data: Uint8ClampedArray, tint: TintSpec, mask: Uint8Array)
     return idx.length;
   }
   if (!('lch' in to)) return 0;
-  const { h, c, hueKeep = 0.3, chromaKeep = 0.5, gain = 1, dL = 0, contrast = 1 } = to.lch;
+  const { h, c, L: targetL, hueKeep = 0.3, chromaKeep = 0.5, gain = 1, dL = 0, contrast = 1 } = to.lch;
   // Ten ortalaması: kroma ve ton (dairesel ortalama, kromayla ağırlıklı).
   let sa = 0, sb = 0, sc = 0, sl = 0;
   for (const l of labs) { sa += l[1]; sb += l[2]; sc += Math.hypot(l[1], l[2]); sl += l[0]; }
@@ -123,7 +123,7 @@ function maskedPixels(data: Uint8ClampedArray, tint: TintSpec, mask: Uint8Array)
     const nh = ((h + dh * hueKeep) * Math.PI) / 180;
     const nc = Math.max(0, c + (C - mc) * chromaKeep);
     // K19 `contrast`: açıklığın ten ortalamasından sapması büyütülür (işaret/dövme pikselleri belirginleşir).
-    const nl = Math.max(0, Math.min(100, (ml + (l[0] - ml) * contrast) * gain + dL));
+    const nl = targetL !== undefined ? Math.max(0, Math.min(100, targetL + (l[0] - ml) * contrast)) : Math.max(0, Math.min(100, (ml + (l[0] - ml) * contrast) * gain + dL));
     const [r, g, b] = labToRgb(nl, nc * Math.cos(nh), nc * Math.sin(nh));
     const i = idx[k]!; data[i] = r; data[i + 1] = g; data[i + 2] = b;
   });

@@ -6,6 +6,7 @@ import type { Monster } from '../data';
 import type { CharacterSheet } from '../rules/stats';
 import type { Avatar, TintSpec } from './types';
 import soyRenkleri from '../../data/soy-renkleri.json';
+import { skinTint } from '../ui/lineageLook';
 
 /** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
 type PaletRef = { palet: string };
@@ -99,7 +100,15 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
     fallbacks: sheet.avatar ? [] : [`avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],
     bg: RACE_COLOR[sheet.raceId] ?? '#4a5560',
     label: CLASS_LABEL[sheet.classId] ?? sheet.classId.slice(0, 2),
-    ...(!sheet.avatar && lineageTint(sheet.raceId, sheet.lineageId, gender) ? { tint: lineageTint(sheet.raceId, sheet.lineageId, gender) } : {}),
+    // Kuyruk AS1c: Human ten tonu ten maskesiyle (jetonun yalnız teni); diğer alt soylar soy rengiyle.
+    ...((): Partial<Avatar> => {
+      if (sheet.avatar) return {};
+      const tint = skinTint(sheet.raceId, sheet.skinTone) ?? lineageTint(sheet.raceId, sheet.lineageId, gender);
+      return tint ? { tint } : {};
+    })(),
+    // Kuyruk AS1c: alt soy görünümü (oran, hale, filtre, kanat) savaş jetonunda da aynı çözücüyle (`lineageLook`).
+    ...(!sheet.avatar && (sheet.lineageId || sheet.raceId === 'celestial')
+      ? { look: { raceId: sheet.raceId, ...(sheet.lineageId ? { lineageId: sheet.lineageId } : {}), ...(sheet.celestialAwakening ? { celestialAwakening: sheet.celestialAwakening } : {}), level: sheet.level } } : {}),
   };
 }
 

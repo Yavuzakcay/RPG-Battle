@@ -1,5 +1,5 @@
 {
-  "not": "Kuyruk AS1a: alt soy görünümü (yalnızca görsel; kural sürümüne girmez, savaş koduna dokunmaz). Alt soylara ayrı çizim yok: renk filtresi (CSS `filter`; tint/maske tablosunda yeri olmayan ırklar için), en-boy/ölçek, kanat katmanı ve Celestial hale kuralı burada. Maskeli (soy-renkleri.json) ırklarda renk oradadır: Tiefling Kanatlı, Gnome Yeraltı. Kuyruk AS1a-2 (İş 3): `orijinal` listesindeki alt soylar boyasız ORİJİNAL jetonla gelir (filtre/tint/maske yok; yalnız oran değişebilir); Dragonborn hariç her ırkta en az bir tane. Savaş jetonuna bağlama (Avatar tipi src/battle/types.ts'te) AS1b/MB3 sonrası.",
+  "not": "Kuyruk AS1a: alt soy görünümü (yalnızca görsel; kural sürümüne girmez, savaş koduna dokunmaz). Alt soylara ayrı çizim yok: renk filtresi (CSS `filter`; tint/maske tablosunda yeri olmayan ırklar için), en-boy/ölçek, kanat katmanı ve Celestial hale kuralı burada. Maskeli (soy-renkleri.json) ırklarda renk oradadır: Tiefling Kanatlı, Gnome Yeraltı. Kuyruk AS1a-2 (İş 3): `orijinal` listesindeki alt soylar boyasız ORİJİNAL jetonla gelir (filtre/tint/maske yok; yalnız oran değişebilir); Dragonborn hariç her ırkta en az bir tane. Savaş jetonuna bağlama (Avatar tipi src/battle/types.ts'te) AS1b/MB3 sonrası. AS1c: kanat slotları `data/kanat-esleme.json`'a taşındı; savaş jetonuna `Avatar.look` ile uygulanır.",
   "maskesizIrklar": [
     "dwarf",
     "halfling",
@@ -56,7 +56,7 @@
       "orijinal": true
     },
     "tiefling/winged": {
-      "kanat": "tiefling"
+      "kanat": "tiefling-kanatli"
     },
     "elf/wood-elf": {
       "orijinal": true
@@ -89,47 +89,9 @@
     "not": "Celestial jetonlarında hale çizimin içinde (256 px yükseklikte satır 8–23, baş ≈24'ten başlar). Gizlenince üstteki bu yüzde kırpılır.",
     "gizleUstYuzde": 9.5
   },
-  "kanatYuvalari": {
-    "tiefling": {
-      "ad": {
-        "tr": "Tiefling kanadı",
-        "en": "Tiefling wing"
-      },
-      "sprite": null,
-      "efekt": "efekt-kanat-seytan",
-      "ne_zaman": "surekli",
-      "olcek": 1.45,
-      "yukari": -0.04
-    },
-    "celestial-kirik-kanat": {
-      "ad": {
-        "tr": "Kırık Kanat",
-        "en": "Broken Wing"
-      },
-      "sprite": null,
-      "efekt": "efekt-kanat-melek",
-      "ne_zaman": "surekli",
-      "minSeviye": 3,
-      "olcek": 1.3,
-      "yukari": -0.02,
-      "filtre": "grayscale(0.45) brightness(0.8)"
-    },
-    "dragonborn-ucus": {
-      "ad": {
-        "tr": "Draconic Flight kanadı",
-        "en": "Draconic Flight wing"
-      },
-      "sprite": null,
-      "efekt": "efekt-kanat-ates",
-      "ne_zaman": "ucarken",
-      "minSeviye": 5,
-      "olcek": 1.5,
-      "yukari": -0.04
-    }
-  },
   "ten": {
-    "not": "Kuyruk AS1b İş 4: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar (üçü de). Ton rengi jetonun TAMAMINA CSS filtresiyle uygulanır (maske yok). ⚠ YER TUTUCU: `siyahi` ve `dogu-asyali` değerleri GEÇİCİDİR (kullanıcı gerçek değerleri sonra bu dosyada `tonlar[].hsl` alanına yazacak; kod değişmez). `orijinal`: filtre yok (varsayılan).",
-    "yerTutucu": true,
+    "not": "Kuyruk AS1c: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
+    "yerTutucu": false,
     "filtreUygula": true,
     "varsayilan": "orijinal",
     "tonlar": [
@@ -139,14 +101,8 @@
           "tr": "Orijinal",
           "en": "Original"
         },
-        "renk": "#c18d62",
-        "hsl": {
-          "hueRotate": 0,
-          "saturate": 1,
-          "brightness": 1,
-          "sepia": 0
-        },
-        "yorum": "Filtre yok: jeton orijinal teniyle gelir (kesin değer; yer tutucu değil)."
+        "renk": null,
+        "rozetRenk": "#c18d62"
       },
       {
         "id": "siyahi",
@@ -154,14 +110,8 @@
           "tr": "Siyahi",
           "en": "Black"
         },
-        "renk": "#5a3a2a",
-        "hsl": {
-          "hueRotate": 0,
-          "saturate": 1.1,
-          "brightness": 0.72,
-          "sepia": 0.15
-        },
-        "yorum": "YER TUTUCU (geçici): gerçek HSL değerleri kullanıcıdan gelecek; bu alanı (hsl) düzenle, başka yerde değişiklik gerekmez."
+        "renk": "#96623E",
+        "rozetRenk": "#96623E"
       },
       {
         "id": "dogu-asyali",
@@ -169,14 +119,8 @@
           "tr": "Doğu Asyalı",
           "en": "East Asian"
         },
-        "renk": "#e3c079",
-        "hsl": {
-          "hueRotate": -8,
-          "saturate": 0.9,
-          "brightness": 1.08,
-          "sepia": 0.2
-        },
-        "yorum": "YER TUTUCU (geçici): gerçek HSL değerleri kullanıcıdan gelecek; bu alanı (hsl) düzenle, başka yerde değişiklik gerekmez."
+        "renk": "#E2B880",
+        "rozetRenk": "#E2B880"
       }
     ],
     "kulturTen": {

@@ -1,0 +1,52 @@
+{
+  "not": "Kuyruk AS1c: savaş jetonu kanat katmanı eşlemesi (yalnız görünüm). Katman jetonun ARKASINDA, yalnız süzülürken/uçarken (isAirborne) açık sprite ile çizilir; `dosyaKapali` varsa havada değilken o, yoksa katman çizilmez. `dosya` null iken (sprite henüz yok) katman SESSİZCE yok: dosyayı public/kanat/ altına koyup adını buraya yaz. Görsel şartı: jeton kutusuna göre (kare), şeffaf PNG/WebP, BEYAZ taban; renk `filtre` / `renkFiltreleri` (CSS filter) ile verilir. Dragonborn için 10 renk filtresi (değerler YER TUTUCU: gerçek sprite gelince ayarla). `olcek`: jeton genişliğine oran; `yukari`: dikey kayma (jeton boyuna oran, eksi yukarı). `minSeviye`: slotun göründüğü en düşük karakter seviyesi.",
+  "klasor": "kanat",
+  "slotlar": {
+    "tiefling-kanatli": {
+      "ad": {
+        "tr": "Kanatlı Tiefling kanadı",
+        "en": "Winged Tiefling wing"
+      },
+      "dosya": null,
+      "dosyaKapali": null,
+      "olcek": 1.45,
+      "yukari": -0.04,
+      "filtre": "sepia(0.6) saturate(2) hue-rotate(-20deg) brightness(0.7)"
+    },
+    "celestial-kirik-kanat": {
+      "ad": {
+        "tr": "Celestial Kırık Kanat",
+        "en": "Celestial Broken Wing"
+      },
+      "dosya": null,
+      "dosyaKapali": null,
+      "minSeviye": 3,
+      "olcek": 1.3,
+      "yukari": -0.02,
+      "filtre": "brightness(0.85) saturate(0.3)"
+    },
+    "dragonborn": {
+      "ad": {
+        "tr": "Dragonborn Draconic Flight kanadı",
+        "en": "Dragonborn Draconic Flight wing"
+      },
+      "dosya": null,
+      "dosyaKapali": null,
+      "minSeviye": 5,
+      "olcek": 1.5,
+      "yukari": -0.04,
+      "renkFiltreleri": {
+        "black": "brightness(0.22)",
+        "blue": "sepia(1) hue-rotate(170deg) saturate(3) brightness(0.8)",
+        "brass": "sepia(1) saturate(2.2) brightness(0.9)",
+        "bronze": "sepia(1) hue-rotate(-15deg) saturate(2.4) brightness(0.7)",
+        "copper": "sepia(1) hue-rotate(-30deg) saturate(3) brightness(0.7)",
+        "gold": "sepia(1) hue-rotate(10deg) saturate(4) brightness(1)",
+        "green": "sepia(1) hue-rotate(60deg) saturate(3) brightness(0.7)",
+        "red": "sepia(1) hue-rotate(-50deg) saturate(5) brightness(0.7)",
+        "silver": "saturate(0) brightness(0.85)",
+        "white": ""
+      }
+    }
+  }
+}

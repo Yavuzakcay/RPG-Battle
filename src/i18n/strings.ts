@@ -291,7 +291,7 @@ const tr = {
       // Kuyruk AS1a: alt soy buff/debuff açıklamaları (yalnızca metin; etkisi henüz oyunda çalışmıyor).
       lineageBuff: 'Artı', lineageDebuff: 'Eksi', lineageStatus: { calisir: 'çalışır', kismi: 'kısmi', planli: 'planlı' } as Record<string, string>, lineageNotYet: 'Bu etkiler henüz oyunda çalışmıyor (planlı); şimdilik yalnızca açıklama.',
       lineageOptionalHint: 'Alt soy seçilmedi: seçene dek alt soy etkisi yok.',
-      skinTitle: 'Ten tonu', skinHelp: 'Ten tonu kültürden bağımsızdır; istediğin kültürle istediğin tonu seçebilirsin. Siyahi ve Doğu Asyalı renkleri geçici yer tutucudur.',
+      skinTitle: 'Ten tonu', skinHelp: 'Ten tonu kültürden bağımsızdır; istediğin kültürle istediğin tonu seçebilirsin.',
       cultureTitle: 'Kültür',
       lineageAbilities: 'Soy yetenekleri', preview: 'Jeton önizlemesi',
       notInGame: 'henüz oyunda yok', offCombat: 'savaş dışı: Game Master anlatır',

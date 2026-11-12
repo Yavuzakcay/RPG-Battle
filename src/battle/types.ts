@@ -684,7 +684,7 @@ export interface TintSpec {
 export type TintTarget =
   | { h: number | null; s: number; l: number }
   /** Ton `h` (Lab derece), kroma `c`; orijinal ton/kroma sapmasının korunan payı; açıklık `L' = L·gain + dL`. */
-  | { lch: { h: number; c: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number; contrast?: number } }
+  | { lch: { h: number; c: number; /** Kuyruk AS1c: hedef ortalama açıklık (verilirse `gain`/`dL` yerine; gölge/ışık sapması korunur). */ L?: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number; contrast?: number } }
   /**
    * Ten açıklığı (maskede %5–%95 aralığı) gölge → orta → vurgu Lab duraklarına parçalı doğrusal eşlenir.
    * DROW-PALET: `contrast` (0–1) orta tonlarda S-eğrisi; `chromaKeep` (0–1) orijinal pikselin a/b'sinin ten
@@ -703,6 +703,8 @@ export interface Avatar {
   fallbacks?: string[];
   /** Görev K8b: soy rengi (karakter jetonu çalışma anında yeniden boyanır). */
   tint?: TintSpec;
+  /** Kuyruk AS1c: alt soy görünümü (yalnız çizim: oran, hale, filtre, kanat katmanı; `src/ui/lineageLook.ts` çözer). Yalnız alt soyu olan oyuncu karakteri. */
+  look?: { raceId: string; lineageId?: string; celestialAwakening?: string; level?: number };
   /** Kuyruk 36: geçici kıyafet (mahkûm: Keşiş jetonu + turuncu hale; yalnızca görsel). */
   outfit?: 'mahkum';
   /** Görev P0: renk tonu kaydırma (derece; CSS hue-rotate) ve halka rengi (çizim anında; ek görsel yok). */
