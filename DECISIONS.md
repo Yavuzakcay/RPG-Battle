@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Human kültür–ten eşlemesi (yalnız görünüm; kural sürümü 77, kayıt sürümü aynı)
+
+- **Eşleme** (`data/alt-soy-gorunum.json` `ten.kulturTen`): Tenhausser Sürgünü `siyahi` (Koyu), Khadyrga Sürgünü `orijinal`, Saf Kent Sürgünü `dogu-asyali` (Altın), Sur Dışı üçü. Kullanıcının "Siyah / Beyaz / Sarı" tonları veride `siyahi` / `orijinal` / `dogu-asyali` kimlikleri; ton adları (Koyu, Orijinal, Altın) değişmedi.
+- **Sürgün:** ayrı kimlik yok; Sürgün adları AS1b'de kültürlerin yeniden adlandırılması (kimlikler `tenhausser`, `khadyrga`, `pure-city` aynı). Ayrı `surgunTen` alanı eklenmedi (kullanıcı kararı); Sürgünün tonu `kulturTen`'den. Kültür tek seçimli olduğundan "Sur Dışı + Sürgün" birlikte seçilemez.
+- **Kendiliğinden seçim** (kullanıcı kararı: "Tenhausser'ı seçer seçmez koyu olsun"; görev "yalnız veri" diyordu, veri tek başına yetmiyordu): `src/ui/lineageLook.ts` `cultureSkinTone(lineageId, toneId)`: kayıtlı ton kültürün listesinde yoksa listedeki ilk ton. Oluşturucu kültür kartına basınca `skinTone`'u bununla yazar, seçili rozet de bununla; jeton (`battle/avatar.ts` `sheetAvatar`) aynı yardımcıyla boyanır, böylece eski kayıtta (Tenhausser, ton boş) da Koyu. Sur Dışı'nda ve kültürsüz Human'da kayıtlı ton aynen.
+- **Test:** `src/rules/altSoy41.test.tsx` eski beklenti "her kültür üç ton" (AS1b) yeni eşlemeye güncellendi; tek tonlu kültürde rozet ve jeton tonu denetlenir. Kullanılmayan `skinHelp` metni (TR/EN) "ten kültürden bağımsız" demeyecek biçimde düzeltildi.
+
 ## 2026-11-12 — Görev AS2 (toplu): DURDU — yalnız envanter (kod değişmedi; kural sürümü 77'de kaldı, 78 kullanılmadı)
 
 - Envanter `harita/belgeler/AS2-ENVANTER.md` (kimlik/ad/sayı; paket metni yok).

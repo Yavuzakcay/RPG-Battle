@@ -1,7 +1,7 @@
 /**
  * Kuyruk AS1a: alt soy görünümü (yalnızca görsel; kural sürümüne girmez). Veri `data/alt-soy-gorunum.json`: alt soylara
  * ayrı çizim yok; renk filtresi (tint/maskesi olmayan ırklar için CSS `filter`), en-boy/ölçek, kanat katmanı yuvaları ve
- * Celestial hale kuralı. Human ten tonu kültürden bağımsız ayrı seçimdir (`skinTone`). Saf: DOM bilmez.
+ * Celestial hale kuralı. Human ten tonu ayrı seçimdir (`skinTone`), kültürün izin verdiği tonlardan (`cultureSkinTone`). Saf: DOM bilmez.
  */
 import data from '../../data/alt-soy-gorunum.json';
 import wings from '../../data/kanat-esleme.json';
@@ -38,7 +38,7 @@ export const AWAKENING_DEFAULT = 'parlayan-ruh';
 export const HALO_CLIP_PCT = D.hale.gizleUstYuzde;
 export const SKIN_TONES: SkinTone[] = D.ten.tonlar;
 export const DEFAULT_SKIN_TONE = D.ten.varsayilan;
-/** Kültür (alt soy) → seçilebilecek ten tonları (`ten.kulturTen`; AS1b'de üç kültürde de üç ton). */
+/** Kültür (alt soy) → seçilebilecek ten tonları (`ten.kulturTen`; Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın, Sur Dışı üçü). */
 export const CULTURE_SKIN: Record<string, string[]> = D.ten.kulturTen;
 export const tonesFor = (lineageId: string | undefined): SkinTone[] => SKIN_TONES.filter((t) => !lineageId || !CULTURE_SKIN[lineageId] || CULTURE_SKIN[lineageId]!.includes(t.id));
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
@@ -122,6 +122,16 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean; ability?
 /** Ten tonu (Human) için kimlik denetimi. */
 /** Ten tonu (bilinmeyen eski kimlik: varsayılan Orijinal). */
 export const skinToneOf = (id: string | undefined): SkinTone | undefined => SKIN_TONES.find((x) => x.id === id) ?? SKIN_TONES.find((x) => x.id === DEFAULT_SKIN_TONE);
+/**
+ * Kültürde geçerli ten tonu: kayıtlı ton kültürün listesinde (`ten.kulturTen`) varsa o, yoksa listedeki ilk ton (tek tonlu kültür
+ * seçilince ton kendiliğinden gelir; Tenhausser Sürgünü → Koyu). Kültürsüz ya da eşlemesiz kültürde kayıtlı ton.
+ */
+export function cultureSkinTone(lineageId: string | undefined, toneId: string | undefined): string | undefined {
+  const allowed = lineageId ? CULTURE_SKIN[lineageId] : undefined;
+  if (!allowed?.length) return toneId;
+  const id = skinToneOf(toneId)?.id;
+  return id && allowed.includes(id) ? id : allowed[0];
+}
 
 /**
  * Kuyruk AS1c: Human ten tonunun jeton boyaması (ten maskesiyle yalnız ten pikselleri; `soy-renkleri.json` `human` maskesi). Hedef

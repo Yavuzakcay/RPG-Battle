@@ -42,7 +42,7 @@ import { AvatarBadge, CharacterFigure, preloadImages } from '../ui/Avatar';
 import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageName, lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
 import { lineageNotes } from '../ui/lineageNotes';
-import { skinToneOf, tonesFor } from '../ui/lineageLook';
+import { cultureSkinTone, skinToneOf, tonesFor } from '../ui/lineageLook';
 import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateAll, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, type MagicInitiatePick } from '../rules/backgrounds';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
@@ -457,7 +457,7 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           <div className="card-grid lineage-grid" role="radiogroup" aria-label={W.lineageTitle}>
             {(race.lineages ?? []).map((l) => (
               <button key={l.id} role="radio" aria-checked={l.id === lineage?.id} className={`pick-card lineage-card${l.id === lineage?.id ? ' on' : ''}`}
-                onClick={() => set({ lineageId: l.id })}>
+                onClick={() => set(race.id === 'human' ? { lineageId: l.id, skinTone: cultureSkinTone(l.id, s.skinTone) } : { lineageId: l.id })}>
                 <b>{lineageName(l, lang)}</b>
                 <small>{lineageSummary(l, lang)}</small>
               </button>
@@ -468,10 +468,10 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           {race.id === 'human' && (
             <>
               <h4 className="lineage-title">{W.skinTitle}</h4>
-              {/* Kuyruk AS1a: ten tonu kültürden bağımsız ayrı seçim (kültür–ten eşlemesi veride boş). */}
+              {/* Ten tonu ayrı seçim; kültürün izin verdiği tonlar (`kulturTen`), tek tonlu kültürde kendiliğinden seçili. */}
               <div className="skin-tones" role="radiogroup" aria-label={W.skinTitle}>
                 {tonesFor(s.lineageId).map((tone) => {
-                  const on = skinToneOf(s.skinTone)?.id === tone.id;
+                  const on = (cultureSkinTone(s.lineageId, s.skinTone) ?? skinToneOf(s.skinTone)?.id) === tone.id;
                   return (
                     <button key={tone.id} type="button" role="radio" aria-checked={on} className={`skin-tone${on ? ' on' : ''}`} data-tone={tone.id} onClick={() => set({ skinTone: tone.id })}>
                       <i style={{ background: tone.rozetRenk }} />{tone.ad[lang]}

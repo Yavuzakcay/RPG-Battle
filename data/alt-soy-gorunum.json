@@ -90,7 +90,7 @@
     "gizleUstYuzde": 9.5
   },
   "ten": {
-    "not": "Kuyruk AS1c: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
+    "not": "Kuyruk AS1c: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar (Sürgün kültürleri aynı kimlikle: Tenhausser Sürgünü Koyu, Khadyrga Sürgünü Orijinal, Saf Kent Sürgünü Altın; Sur Dışı üçü). Kayıtlı ton kültürde yoksa listedeki ilk ton geçerlidir (`cultureSkinTone`): tek tonlu kültür seçilince ton kendiliğinden gelir. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
     "yerTutucu": false,
     "filtreUygula": true,
     "varsayilan": "orijinal",
@@ -125,18 +125,12 @@
     ],
     "kulturTen": {
       "tenhausser": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
+        "siyahi"
       ],
       "khadyrga": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
+        "orijinal"
       ],
       "pure-city": [
-        "orijinal",
-        "siyahi",
         "dogu-asyali"
       ],
       "outwall": [
