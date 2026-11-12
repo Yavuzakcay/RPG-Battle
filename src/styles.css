@@ -1278,7 +1278,7 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .look-frame { position: relative; display: inline-block; vertical-align: middle; }
 .look-frame .avatar img { filter: var(--look-filter, none); transform: scale(var(--look-sx, 1), var(--look-sy, 1)); transform-origin: 50% 100%; }
 .look-frame.halo-hidden .avatar img { clip-path: inset(var(--halo-clip, 9.5%) 0 0 0); }
-.look-wing { position: absolute; pointer-events: none; z-index: 0; mix-blend-mode: screen; opacity: 0.9; }
+.look-wing { position: absolute; pointer-events: none; z-index: 0; }
 .look-frame .avatar { position: relative; z-index: 1; }
 .skin-tones { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 2px; }
 .skin-tone { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: inherit; cursor: pointer; }

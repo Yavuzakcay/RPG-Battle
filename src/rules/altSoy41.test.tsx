@@ -189,18 +189,17 @@ describe('görünüm verisi', () => {
     expect([t.scaleX, t.scaleY]).toEqual([1.1, 0.97]);
     expect(lineageLook({ raceId: 'orc', lineageId: 'glacier' }).filter).toContain('hue-rotate');
   });
-  it('üç kanat slotu (Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn): sprite dosyası tanımlı değilken katman yok; tanımlıysa yalnız havadayken açık', () => {
+  it('üç kanat slotu (Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn): sprite bağlı; Tiefling ve Dragonborn yalnız havadayken', () => {
     expect(WING_SLOTS.sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']);
-    // Sprite henüz yok (`dosya: null`): hiçbir durumda katman çizilmez, hata yok.
-    for (const fly of [false, true]) {
-      expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: fly }).wing).toBeNull();
-      expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }, { flying: fly }).wing).toBeNull();
+    for (const [race, lin] of [['tiefling', 'winged'], ['dragonborn', 'red']] as const) {
+      expect(lineageLook({ raceId: race, lineageId: lin, level: 5 }, { flying: false }).wing).toBeNull();
+      expect(lineageLook({ raceId: race, lineageId: lin, level: 5 }, { flying: true }).wing).not.toBeNull();
     }
   });
   it('Celestial: Parlayan Ruh haleli; Kırık Kanat halesiz + kanat; Gece Gözyaşı halesiz + koyu filtre; 3. seviyeden', () => {
     const at = (a: string, level = 3) => lineageLook({ raceId: 'celestial', celestialAwakening: a, level });
     expect(at('parlayan-ruh')).toMatchObject({ hideHalo: false, wing: null, filter: '' });
-    expect(at('kirik-kanat')).toMatchObject({ hideHalo: true });
+    expect(at('kirik-kanat')).toMatchObject({ hideHalo: true, wing: { id: 'celestial-kirik-kanat' } });
     expect(at('gece-gozyasi').hideHalo).toBe(true);
     expect(at('gece-gozyasi').filter).toContain('brightness');
     expect(at('kirik-kanat', 2)).toMatchObject({ hideHalo: false, wing: null });
@@ -257,7 +256,8 @@ describe('boyasız orijinal alt soylar (AS1a-2 İş 3)', () => {
   });
   it('Tiefling Kanatlı (kararsız kalan) mevcut halinde: tintli, kanat yuvası', () => {
     expect(table.tiefling!.lineages.winged).not.toBeNull();
-    // Kanat sprite'ı henüz yok (AS1c): slot tanımlı, dosya null, katman yok.
-    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).toBeNull();
+    // Kanat sprite'ı bağlı: havadayken katman var, yerdeyken yok.
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).toMatchObject({ id: 'tiefling-kanatli' });
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: false }).wing).toBeNull();
   });
 });

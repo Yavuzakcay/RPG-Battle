@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import sharp from 'sharp';
 import { AvatarCircle, TokenFigure } from './Avatar';
-import { lineageLook, skinTint } from './lineageLook';
+import { lineageLook, skinTint, wingBox } from './lineageLook';
 import { tintPixels } from './tint';
 import { lineageTint, sheetAvatar } from '../battle/avatar';
 import { blankCharacter } from '../rules/builder';
@@ -53,39 +53,53 @@ describe('savaş jetonu görünümü (Avatar.look, tek çözücü)', () => {
   });
 });
 
-describe('kanat katmanı altyapısı', () => {
-  it('eşleme: üç slot, dosya null (sprite sonra gelecek), Dragonborn 10 renk filtresi', () => {
-    const s = kanat.slotlar as Record<string, { dosya: string | null; dosyaKapali: string | null; renkFiltreleri?: Record<string, string> }>;
+describe('kanat katmanı (bağlı)', () => {
+  type Slot = { dosya: string | null; dosyaKapali: string | null; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; renkFiltreleri?: Record<string, string>; filtre?: string };
+  const s = kanat.slotlar as unknown as Record<string, Slot>;
+  const svgOf = (raceId: string, lineageId: string | undefined, level: number, flying: boolean, awakening?: string) =>
+    renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={sheetAvatar(sheet({ raceId, lineageId, level, ...(awakening ? { celestialAwakening: awakening } : {}) })).look} flying={flying} /></svg>);
+  it('eşleme: üç slot, dosyalar bağlı ve gerçekten var, çapa/oran/omuz veride, Dragonborn 10 renk filtresi', async () => {
     expect(Object.keys(s).sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']);
-    for (const w of Object.values(s)) expect(w.dosya).toBeNull();
+    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.568, 0.438], dragonborn: [0.5, 0.626] };
+    for (const [id, w] of Object.entries(s)) {
+      expect(w.dosya, id).toBe(`${id}.webp`);
+      const meta = await sharp(`public/kanat/${w.dosya}`).metadata();
+      expect(meta.hasAlpha, id).toBe(true);
+      expect(w.enBoy, id).toBeCloseTo(meta.height! / meta.width!, 3);
+      expect(w.capa, id).toEqual(capa[id as keyof typeof capa]);
+      expect(w.olcek).toBeCloseTo(1.45); expect(w.omuz).toBeCloseTo(0.46); expect(w.enBoy).toBeGreaterThan(0.2);
+    }
     expect(Object.keys(s.dragonborn!.renkFiltreleri!).sort()).toEqual(['black', 'blue', 'brass', 'bronze', 'copper', 'gold', 'green', 'red', 'silver', 'white']);
   });
-  it('sprite yokken katman yok (havada da); jeton çiziminde kanat görseli yok, hata yok', () => {
-    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).toBeNull();
-    const svg = renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={sheetAvatar(sheet({ raceId: 'tiefling', lineageId: 'winged' })).look} flying /></svg>);
-    expect(svg).not.toContain('look-wing');
+  it('görünürlük: Tiefling Kanatlı ve Dragonborn yalnız havada; Celestial Kırık Kanat her zaman', () => {
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).toMatchObject({ id: 'tiefling-kanatli', src: 'kanat/tiefling-kanatli.webp', open: true });
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: false }).wing).toBeNull();
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'infernal' }, { flying: true }).wing).toBeNull();
+    expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }, { flying: true }).wing).toMatchObject({ id: 'dragonborn' });
+    expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }, { flying: false }).wing).toBeNull();
+    expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 4 }, { flying: true }).wing).toBeNull();
+    for (const flying of [false, true]) expect(lineageLook({ raceId: 'celestial', celestialAwakening: 'kirik-kanat', level: 3 }, { flying }).wing).toMatchObject({ id: 'celestial-kirik-kanat', open: true });
+    expect(lineageLook({ raceId: 'celestial', celestialAwakening: 'parlayan-ruh', level: 5 }, { flying: true }).wing).toBeNull();
+    expect(lineageLook({ raceId: 'celestial', celestialAwakening: 'kirik-kanat', level: 2 }, { flying: false }).wing).toBeNull();
   });
-  it('sprite tanımlıysa: havada açık dosya, havada değilken yalnız dosyaKapali (yoksa yok); seviye eşiği; Dragonborn renk filtresi', async () => {
-    const s = kanat.slotlar as Record<string, { dosya: string | null; dosyaKapali: string | null }>;
-    const keep = JSON.stringify(s);
-    try {
-      s['tiefling-kanatli']!.dosya = 'tiefling-kanatli.webp';
-      s.dragonborn!.dosya = 'dragonborn.webp'; s.dragonborn!.dosyaKapali = 'dragonborn-kapali.webp';
-      expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).toMatchObject({ id: 'tiefling-kanatli', src: 'kanat/tiefling-kanatli.webp', open: true });
-      expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: false }).wing).toBeNull();
-      expect(lineageLook({ raceId: 'tiefling', lineageId: 'infernal' }, { flying: true }).wing).toBeNull();
-      const red = lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }, { flying: true }).wing!;
-      expect(red.filtre).toContain('hue-rotate');
-      expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }, { flying: false }).wing).toMatchObject({ src: 'kanat/dragonborn-kapali.webp', open: false });
-      expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 4 }, { flying: true }).wing).toBeNull();
-      const svg = renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={sheetAvatar(sheet({ raceId: 'tiefling', lineageId: 'winged' })).look} flying /></svg>);
-      expect(svg).toContain('kanat/tiefling-kanatli.webp');
-      // Kanat jetonun ARKASINDA: kanat image'ı ana görselden önce.
-      expect(svg.indexOf('kanat/tiefling-kanatli.webp')).toBeLessThan(svg.indexOf('x.webp'));
-    } finally {
-      const orig = JSON.parse(keep) as typeof s;
-      for (const k of Object.keys(orig)) { s[k]!.dosya = orig[k]!.dosya; s[k]!.dosyaKapali = orig[k]!.dosyaKapali; }
-    }
+  it('Dragonborn kanat rengi soya göre filtreyle; beyaz filtresiz', () => {
+    const red = lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }, { flying: true }).wing!;
+    const white = lineageLook({ raceId: 'dragonborn', lineageId: 'white', level: 5 }, { flying: true }).wing!;
+    expect(red.filtre).toContain('hue-rotate');
+    expect(white.filtre).toBe('');
+  });
+  it('jeton çizimi: kanat jetonun ARKASINDA, kök jetonun yatay merkezinde ve omuz yüksekliğinde, ayna yok', () => {
+    const svg = svgOf('tiefling', 'winged', 1, true);
+    expect(svg).toContain('kanat/tiefling-kanatli.webp');
+    expect(svg.indexOf('kanat/tiefling-kanatli.webp')).toBeLessThan(svg.indexOf('x.webp'));
+    const wing = lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing!;
+    const b = wingBox(wing, 50, 50, 40);
+    expect(b.width).toBeCloseTo(58);
+    expect(b.x + wing.capa[0] * b.width).toBeCloseTo(50);
+    expect(b.y + wing.capa[1] * b.height).toBeCloseTo(50 - 20 + 40 * 0.46);
+    expect(svgOf('celestial', undefined, 3, false, 'kirik-kanat')).toContain('kanat/celestial-kirik-kanat.webp');
+    expect(svgOf('celestial', undefined, 3, false, 'kirik-kanat')).not.toContain('scale(-1');
+    expect(svgOf('tiefling', 'winged', 1, false)).not.toContain('look-wing');
   });
 });
 

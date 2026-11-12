@@ -3,6 +3,13 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kanat katmanı bağlandı (yalnız arayüz; kural sürümü 72 kalır)
+
+- Üç slot (`tiefling-kanatli`, `celestial-kirik-kanat`, `dragonborn`) `data/kanat-esleme.json`'da `public/kanat/` dosyalarına bağlandı; çapa (`capa`), `olcek` 1.45, `omuz` 0.46 ve `enBoy` kanat başına veride. Kök jetonun yatay merkezinde, omuz yüksekliğinde; kanat jetonun arkasında. Eski `yukari` alanı kalktı; kare kutu yerine görselin gerçek oranı kullanılır.
+- Tiefling Kanatlı ve Dragonborn yalnız havadayken (`isAirborne`); Celestial Kırık Kanat HER ZAMAN.
+- ⚠ **Celestial her zaman görünür:** SRD/oyun kuralı değil, görsel karar. Kırık Kanat yerdeyken de çizilir (kanat kırık, uçuş gerektirmez); kural sürümü ve Ayarlar anahtarı yok. İstenirse `herZaman` JSON'dan kapatılır.
+- Renk: beyaz-gri taban + CSS filtresi; Dragonborn 10 renk filtresi tarayıcıda gerçek jetonla göz kararı ayarlandı (kırmızı/bakır/bronz birbirine yakın, kanat zarı yarı saydam olduğu için). `mix-blend-mode: screen` kaldırıldı (koyu renkler görünmüyordu).
+
 ## 2026-11-12 — Kuyruk MB4: çok altıgenli binek gövdesi (kural sürümü 71 → 72)
 
 - **Sürüm:**
