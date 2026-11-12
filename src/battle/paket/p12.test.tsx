@@ -337,8 +337,9 @@ describe('P12 G8/G2: oluşturucu çizimi', () => {
   };
   it('hikâye özelliği satırında "Hikâye" etiketi (eksik değil)', () => {
     const m = draw('rogue', 'masal-yolu', 3);
-    expect(m).toMatch(/3\. anlati <span class="feature-tag">Hikâye<\/span>/);
-    expect(m).toContain('hikâye: savaş dışı');
+    // SD3: ad + seviye etiketi; "Hikâye" türü etiketi kalır, geliştirici durum metni (hikâye: savaş dışı) gösterilmez.
+    expect(m).toMatch(/anlati<\/b> <small class="feature-lv">3\. seviye<\/small><span class="feature-tag">Hikâye<\/span>/);
+    expect(m).not.toContain('hikâye: savaş dışı');
   });
   it('rastgele liste: 8 seçim kutusu, seçilen sayısı', () => {
     const m = draw('warlock', 'sans-cini', 3, { spellNames: ['Eldritch Blast', 'Hex'], featureChoices: { 'warlock/sans-cini:sans/dilek1': 'Hex' } });

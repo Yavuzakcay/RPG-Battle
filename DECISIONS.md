@@ -3,6 +3,7 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+<<<<<<< HEAD
 ## 2026-11-12 — Kuyruk MB8: binek hattının denge ölçümü ve kapanışı (kural sürümü 74'te kaldı)
 
 - **Sürüm:** planda MB8 için kural değişikliği yazılı değil (BINEK-PLAN §7.2 "Kural sürümü —"); sürüm **74'te kaldı**, `ruleVersion.test.ts`/`g6.test.ts` değişmedi, regresyon testi gerekmedi. YZ süresi ölçümündeki 75 sütunu yok (73 ↔ 74 karşılaştırıldı).
@@ -14,6 +15,29 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Denge:** ölçüm yalnız, düzeltme denemesi yok; `data/monsters.json` değişmedi. Koşucu `src/sim/binekDengeRun.ts` (`binekStart.ts` `mountedStart` + `balance.ts` `playBattle`). Sonuçlar `harita/belgeler/DENGE.md` "Kuyruk MB8".
 - **SRD denetimi:** `scripts/srd-denetim.ts` Mounted Combat satırı MB1–MB8'e göre; büyü satırı MB7 bloğunu (sürüm 70+) okur (Phantom Steed "tam"). Belge yeniden üretildi; bayat kalmış başka satırlar da güncel veriye göre değişti (Bag of Tricks, Figurine, Horn of Valhalla, Rod of Resurrection, Staff of the Python "tam"; Animal Shapes, Enhance Ability "savaş dışı"; Charm Person, Continual Flame, Hideous Laughter, Light gibi satırlarda eski "yaklaşık" notu kalktı).
 - **Bilerek yapılmayanlar:** `sim-senaryolar.json` binekli senaryo (atlı devriye, ejder binicisi 15) eklenmedi: senaryo verisinde "binmiş başla" alanı yok, yeni kurulum alanı olurdu (K57 kapsamı dışı; ölçüm `mountedStart` ile yapıldı). YZ savaş içi binme ve inme eşiği (B22, yeni komut). Arayüz işleri MB6b'ye.
+=======
+## 2026-11-12 — SD3: karakter oluşturucu sadeleştirildi (Yönelim A; yalnız arayüz ve metin; kural sürümü 74, kayıt sürümü 22 değişmedi)
+
+- **Kapsam:** `harita/belgeler/SADELESTIRME-DENETIM.md` §2 ve ortak bulgular uygulandı. Tek sade arayüz, mod yok, yeni Ayarlar anahtarı yok; komut, olay, kural ve kayıt alanı eklenmedi. Adımlar aynı (7; büyü seçemeyen sınıfta 6). Kod `src/screens/builder/` (`shared.tsx` ortak `Fold`/`InfoPop`, `Features.tsx`, `Equipment.tsx`) ve `src/screens/builderDefaults.ts` (yalnız Builder parçası; ana parça 396,8 kB / 420).
+- **Donanım: kural koddan doğrulandı (kural değişmedi).**
+  - Zırh: tam bir gövde zırhı (varsayılan Zırhsız) + isteğe bağlı kalkan; eğitimsiz kuşanmak engellenmez (uyarı).
+  - Silah: **sayı sınırı yok** (yalnız SRD taşıma sınırı, Ayarlar'daki taşıma kuralı). Sınıf tablosundaki **Weapon Mastery hakkı** (`masteryRight`, örn. Fighter 3) yalnız uygun silahlarda ★ ile seçilir.
+  - Eşya: yalnız **uyum (attunement) gerektirenler** sayılır, en çok `MAX_ATTUNED` = 3 (`characterIssues`, `activeItemNames`); uyum istemeyen eşyanın sayı sınırı yok.
+  - "3 seç deniyor ama 10 seçiliyor" geri bildirimi bu yüzdendi: eski ekranda "uyum n/3" ve "Ustalık n/3" küçük, ayrı ve ilgisiz yerlerde duruyor, silah ve uyumsuz eşya sayılmıyordu. Başlangıç donanımı kuralı yok: "otomatik gelen" donanım yalnız silahsız vuruş (herkes) ve sınıf eğitimleri.
+  - Gösterim kuralla uyuşmazlığı **yok**; ekran kurala uydu: "Seçtiklerin" (zırh 1/1, silahlar n seçili (sınır yok) + Ustalık n/N, eşyalar n seçili (sınır yok) + Uyumlu eşya n/3) ve "Zaten sende (otomatik)" (Silahsız vuruş, Zırh/Silah eğitimin). Limit dolunca kalanlar kilitlenir ve nedeni yazılır.
+- **Ne gizlendi / katlandı (varsayılan görünümde en çok 6 seçenek/karar; kalanı "Gelişmiş" katlarında):**
+  - Karakter: 6 tür + "Diğer türler (4)", 6 sınıf + "Diğer sınıflar (6)" (kartta tek cümle, zar/kurtarma ⓘ'de; öne çıkanlar `data/onerilen-baslangic.json` `ozelTurler`/`ozelSiniflar`); soy/kültür + ten tonu "Soy" katında; 12 geçmiş kartı "Geçmiş" katında (kartlarda alet satırı kalktı); "çalışır / kısmi" etiketi kalktı (yalnız planlıda küçük "yakında").
+  - Sınıf güçleri: ana listede kararı olan güçler + en yeni güçler (en çok 6), kalanı "Diğer güçler (n)"; düz Türkçe ad (`data/ozellik-adlari.json`, 137 sınıf özelliği; alt sınıfta mevcut TR ad), İngilizce kural adı yalnız ⓘ'de; durum etiketi, renk lejandı ve geliştirici notları (`featStatus`, `note`) kalktı, yalnız oyunda olmayan güçte "yakında". Metamagic / Invocation / Wild Shape seçicileri katlı (eksikse açık gelir, sayaç dürüst).
+  - Puanlar: 6 salt okunur kart (sınıfa göre dağılmış + geçmiş bonusu); yöntem, çipler, point buy, zar, geçmiş bonusu "Puanları kendin dağıt (Gelişmiş)" altında; geçmiş dışı üç yetenek gizli.
+  - Beceriler: seçilen beceriler + "Zaten sende (geçmişinden)"; değiştirme, ek beceri ve uzmanlık katlı (limit dolunca kilit + neden); beceri adı yalnız Türkçe.
+  - İlerleme: köken feat'i tek satır + "ne yapar"; her yuva katlı (boşsa/tamamlanmamışsa açık); yetenek artışı "Bir yeteneğe +2" altı düğme (önerilen ★), +1/+1 ve elle dağıtım katlı; Dövüş Stili seçenek kartları katlı.
+  - Donanım: bkz. yukarı; tür/kademe süzgeçli 400 eşya "Eşya ekle", 38 silah "Silah ekle", yan el seçici (yalnız geçerli seçenek varken) katlı; eğitimsiz zırh türleri "Eğitimin olmayan zırhlar" katında; silah/zırh adları Türkçe (`data/donanim-adlari.json`), terimler ⓘ'de.
+  - Büyüler: "Seçtiklerin" listesi + "Büyü ekle ya da değiştir" katı; erişilemeyen seviyeler ve oyunda olmayan büyüler gizli (tek satır ipucu).
+  - Çerçeve: Kaydet artık `disabled` değil; eksik varken dokununca "Önce N eksiği tamamla" + ilk eksik adıma gider (`onSave` bu denetimden sonra). Eksik listesi dört yerden ikiye (Özet gövdesi ya da yan panel; mobil alt çubuk) indi, adım altı sorun listesi kalktı.
+- **Varsayılanlar ("İleri'ye basınca makul karakter"; audit karar 6):** yalnız Builder `suggest` ile açılan yeni karakterde (`App.tsx`: adsız, becerisiz) ve yalnız dokunulmamış alanlarda: ad (`adlar` listesi), önerilen sınıf becerileri (sınıfın öncelikli yeteneğiyle uyuşanlar, geçmişin kilitli becerisi hariç), geçmiş bonusu (+2/+1), donanım (`siniflar`, SRD ustalık hakkı kadar ustalık), büyüler (`buyuOnceligi`; SRD tablosundaki cantrip/hazırlanan/kitap sayısı kadar), yetenek artışı +2 (en önemli yetenek, 20'yi aşmayan). Sınıf/geçmiş/seviye değişince dokunulmamış öneriler yenilenir; elle seçim ve geri gelen sınıf taslağı ezilmez. Soyu isteğe bağlı türlerde (Human…) soy boş kalır (oyundaki varsayılan değişmedi). Yeni kayıt alanı yok; hepsi mevcut alanlar. Veri JSON'larında, her adı gerçek kayıtlarla eşleşme testi (`sd3.test.tsx`).
+- **Testler (silinmedi; kullanıcıya görünen metin/DOM değişti):** `wizard`, `k4`, `k5`, `k6`, `k18`, `k20`, `g1`, `altSoy41`, `p12` testleri yeni DOM'a göre güncellendi: Kaydet `aria-disabled` + `cta soft` (k5), uyum sayacı "Uyumlu eşya 3/3" ve kilit nedeni (k4), silah adları Türkçe (k4), beceri satırı Türkçe-only (k4, wizard), geçmişte olmayan yetenek sayacı gizli (g1), durum etiketleri gösterilmez (altSoy41, k18), kilitli büyü seviyeleri gizli (k6), seçili silahta ⓘ (k18), "Hayvan biçimleri" başlığı (k18), Hikâye etiketi satırı (p12). Yeni `src/screens/sd3.test.tsx` (15 test).
+- **Kalanlar (bu görevde yapılmadı):** eşya, büyü ve Invocation adları ile tür/sınıf adları oyunun her yerinde SRD İngilizce adıyla kalıyor (tek tutarlılık için; çeviri ayrı görev); `characterIssues` metinleri hâlâ `src/rules/builder.ts` içinde gömülü TR (i18n'e taşıma ayrı alt görev; 5 test birebir sınıyor); `Builder.tsx` kısmen bölündü (Equipment, Features, shared); Büyüler adımı büyü başına kısa açıklama yok. Mobil yerleşim (CSS) SSR'da doğrulanamaz; masaüstü tek görüntü alındı.
+>>>>>>> origin/claude/simplify-character-creator-ffm9z1
 
 ## 2026-11-12 — KG1: karakter ekranlarında çerçevesiz jeton, ten tonu ve kültür adları (yalnız görünüm/metin; kural sürümü değişmedi)
 
