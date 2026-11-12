@@ -469,7 +469,7 @@ registerCommandEnd((before, next, _events, _cmd, rng: Rng) => {
       const m = s.combatants[r0.riding];
       if (!m?.pos || !seatedRider(s, r) || altitudeOf(m) <= 0 || staysUp(s, m)) continue;
       if (m.altitudeGentle || levitateOn(before.combatants[m.id])) continue;
-      const evs: BattleEvent[] = [{ type: 'dismounted', actorId: r.id, at: fallOffSpot(s, m.pos) ?? m.pos, cost: 0, fell: true }];
+      const evs: BattleEvent[] = [{ type: 'dismounted', actorId: r.id, at: fallOffSpot(s, m.pos, m) ?? m.pos, cost: 0, fell: true }];
       out.push(...evs); s = applyEvents(s, evs);
     }
   }

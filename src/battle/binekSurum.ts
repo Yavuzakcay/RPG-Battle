@@ -21,3 +21,12 @@ export const binekMb3On = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.k
  */
 export const BINEK_MB7_VERSION = 70;
 export const binekMb7On = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= BINEK_MB7_VERSION;
+
+/**
+ * Kuyruk MB4 (kural sürümü 72; `BINEK-PLAN.md` §15): çok altıgenli (multiHex) binek gövdesi: binici bineğin çapa altıgeninde,
+ * gövdeye bitişikten binme, gövdenin dışına inme ve düşme, yığın boyu gövdenin bütün altıgenlerinde, varış sığması.
+ * Yalnız Game Master anahtarı "Çok altıgenli büyük yaratıklar" açıkken; kapalıyken 71 ile birebir.
+ */
+export const BINEK_MB4_VERSION = 72;
+export const binekMb4On = (s: Pick<BattleState, 'kuralSurumu'> & Partial<Pick<BattleState, 'multiHex'>>): boolean =>
+  !!s.multiHex && (s.kuralSurumu ?? 1) >= BINEK_MB4_VERSION;

@@ -31,7 +31,7 @@ import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, hovers, isAirborne, spellJumpFt } from './flight';
 import { riderStackFt, seatedRider } from './riderCore';
-import { binekMb3On } from './binekSurum';
+import { binekMb3On, binekMb4On } from './binekSurum';
 import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
 import { k9On, dikeyOn, hasHexCeilings } from './vertical';
 import { floorsAt, hasStandData, katlarOf, slabsAt, standHeights, standingOn, surTop } from './stand';
@@ -229,9 +229,12 @@ export function stackFitProblem(state: BattleState, mount: Combatant, at: Offset
   const extra = riderStackFt(state, mount);
   if (!extra) return null;
   const top = alt + bodyHeightFt(mount) + extra;
-  const ceil = ceilingFt(state, at);
-  if (ceil !== null && top > ceil) return `Tavan alçak (${ceil} ft): ${mount.name} binicisiyle ${hexLabel(at)} altıgenine sığmaz.`;
-  for (const f of slabsAt(state, at)) if (f > alt && f < top) return `Kat döşemesi alçak (${f} ft): ${mount.name} binicisiyle ${hexLabel(at)} altıgenine sığmaz.`;
+  // Kuyruk MB4 (72+, çok altıgen): yığın gövdenin bütün altıgenlerinde sığmalı (MB3: yalnız çapa).
+  for (const h of binekMb4On(state) && isMultiHex53(state, mount) ? bodyAt(state, mount, at) : [at]) {
+    const ceil = ceilingFt(state, h);
+    if (ceil !== null && top > ceil) return `Tavan alçak (${ceil} ft): ${mount.name} binicisiyle ${hexLabel(h)} altıgenine sığmaz.`;
+    for (const f of slabsAt(state, h)) if (f > alt && f < top) return `Kat döşemesi alçak (${f} ft): ${mount.name} binicisiyle ${hexLabel(h)} altıgenine sığmaz.`;
+  }
   return null;
 }
 
@@ -514,6 +517,10 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
       return finish(state, [moved, ...conveyorSlideEvents(applyEvents(state, [moved]), actor.id, to, from)]);
     }
     const any = findPath(from, to, size, cost);
+    // Kuyruk MB4 (72+, çok altıgen): binicili bineğin gövdesi geçide sığmıyorsa (tek altıgenlik yol varken) açık neden.
+    if (!any && actor.rider && binekMb4On(state) && isMultiHex53(state, actor) && findPath(from, to, size, moveCostFn(state, { ...actor, size: 'M' }))) {
+      return fail(`Dar geçit: ${actor.name} gövdesiyle ${hexLabel(to)} yoluna sığmıyor.`);
+    }
     if (!any) return fail(`${hexLabel(to)} için yol yok.`);
     return fail(`Hareket yetmiyor: ${any.cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
   }

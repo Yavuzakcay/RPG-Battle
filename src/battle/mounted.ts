@@ -32,13 +32,14 @@ import { sizeRank } from './forced';
 import { globalRule } from './ruleControl';
 import { binekOn } from './binekSurum';
 import { altitudeCapFt, bodyHeightFt, ceilingOver, climbingAloft } from './altitude';
-import { binekMb3On, binekMb7On } from './binekSurum';
+import { binekMb3On, binekMb4On, binekMb7On } from './binekSurum';
 import { adjacent3D } from './adjacency';
 import { bandOf } from './cells';
 import { climbs, flySpeed } from './flight';
-import { occupantAt, placeProblem } from './movement';
+import { bodyFitProblem, occupantAt, placeProblem, stackFitProblem } from './movement';
 import { slabsAt } from './stand';
-import { anyRiders, riderOnMount } from './riderCore';
+import { anyRiders, bodyOutsideSpots, fallOffSpot, riderOnMount } from './riderCore';
+import { bodyAt, covers, isMultiHex53 } from './body';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 /** Binme/inme maliyeti (altıgen). 68+: hızın yarısı 5 ft'e aşağı, en az 1 altıgen (B3); öncesi yukarı yuvarlama. */
@@ -76,7 +77,9 @@ export function mountProblem(state: BattleState, actor: Combatant, mountId: stri
     if (m.burrowed) return 'Yer altındaki bineğe binilmez.';
     if (climbingAloft(m) && !climbs(m, state)) return 'Duvarda tutunan bineğe binilmez.';
     const top = (m.altitudeFt ?? 0) + bodyHeightFt(m) + bodyHeightFt(actor);
-    const slab = slabsAt(state, m.pos).find((f) => f > (m.altitudeFt ?? 0) && f < top);
+    // Kuyruk MB4 (72+, çok altıgen): döşeme gövdenin bütün altıgenlerinde denetlenir.
+    const under = binekMb4On(state) && isMultiHex53(state, m) ? bodyAt(state, m, m.pos).flatMap((h) => slabsAt(state, h)) : slabsAt(state, m.pos);
+    const slab = under.find((f) => f > (m.altitudeFt ?? 0) && f < top);
     if (slab !== undefined) return `Kat döşemesi alçak (${slab} ft): binekle birlikte sığmazsın.`;
   } else if (state.map && (!actor.pos || !m.pos || distance(actor.pos, m.pos) > 1)) return 'Bineğe bitişik olmalısın.';
   if (binekOn(state)) {
@@ -120,8 +123,22 @@ function dismount69(state: BattleState, actor: Combatant, to?: Offset, toFt?: nu
   const band = bandOf(actor, ft);
   const size = { cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 };
   const free = (h: Offset) => !occupantAt(state, h, actor.id, band) && (ft > 0 || !placeProblem(state, h));
+  // Kuyruk MB4 (72+, çok altıgen): bineğin gövdesinin dışına, gövdeye bitişik boş altıgene (çapaya en yakın); binicinin kendi
+  // gövdesi (Large binici) sığmalı.
+  if (m && binekMb4On(state) && isMultiHex53(state, m)) {
+    const off = { ...actor, riding: undefined } as Combatant;
+    const spots = bodyOutsideSpots(state, m);
+    const fits = (h: Offset) => free(h) && !bodyFitProblem(state, { ...off, altitudeFt: ft }, h, []) && !bodyAt(state, off, h).some((x) => covers(state, m, x));
+    const at = to ?? spots.find(fits) ?? null;
+    if (!at || !spots.some((h) => sameHex(h, at)) || !fits(at)) return fail('Binekten inmek için gövdesine bitişik boş bir altıgen seç.');
+    return dismountTail(state, actor, at, ft, alt);
+  }
   const at = to ?? (actor.pos ? neighbors(actor.pos, size).find(free) ?? null : null);
   if (!at || !actor.pos || distance(actor.pos, at) !== 1 || !free(at)) return fail('İnmek için bitişik boş bir altıgen seç.');
+  return dismountTail(state, actor, at, ft, alt);
+}
+
+function dismountTail(state: BattleState, actor: Combatant, at: Offset, ft: number, alt: number): CommandResult {
   if (ft > 0 && ft > altitudeCapFt(state, { ...actor, pos: at })) return fail('Tavan alçak: o irtifada inilmez.');
   if (actor.movementUsed + halfSpeed(state, actor) > Math.floor(actor.speed / 5) * (1 + actor.economy.dashes)) return fail('İnmek için hızının yarısı kadar hareketin kalmalı.');
   return finish(state, [{ type: 'dismounted', actorId: actor.id, at, cost: halfSpeed(state, actor), ...(ft !== alt ? { toFt: ft } : {}) }]);
@@ -190,8 +207,10 @@ export function riderCleanup(state: BattleState, rng: Rng, before?: BattleState,
 function riderCleanup68(state: BattleState, rng: Rng, before: BattleState | undefined, events: readonly BattleEvent[]): BattleEvent[] {
   if (!anyRiders(state)) return [];
   const out: BattleEvent[] = [];
+  // Kuyruk MB4 (72+, çok altıgen): bineğin gövdesinin dışında, gövdeye bitişik boş altıgen.
+  const spot = (m: Combatant): Offset | null => (binekMb4On(state) && isMultiHex53(state, m) ? fallOffSpot(state, m.pos as Offset, m) : freeNeighbor(state, m.pos as Offset));
   const fallOff = (c: Combatant, m: Combatant, alreadyProne: boolean) => {
-    const at = m.pos ? freeNeighbor(state, m.pos) ?? m.pos : c.pos;
+    const at = m.pos ? spot(m) ?? m.pos : c.pos;
     if (at) out.push({ type: 'dismounted', actorId: c.id, at, cost: 0, fell: true });
     if (!alreadyProne) out.push({ type: 'condition_changed', targetId: c.id, condition: 'Prone', present: true, reason: 'Binekten düşme' });
   };
@@ -200,13 +219,20 @@ function riderCleanup68(state: BattleState, rng: Rng, before: BattleState | unde
     const m = state.combatants[c.riding];
     // Ayrılmış binici (B9, B24) ya da kendisi düşmüş/ölmüş binici: save'siz, bulunduğu yerde iner.
     if (!m || c.hp <= 0 || !riderOnMount(state, c)) {
-      const at = c.pos ?? (m?.pos ? freeNeighbor(state, m.pos) : null);
+      const at = c.pos ?? (m?.pos ? spot(m) : null);
+      if (at) out.push({ type: 'dismounted', actorId: c.id, at, cost: 0 });
+      continue;
+    }
+    // Kuyruk MB4 (72+, çok altıgen; B24): zorla varışta (itme, kafes, gövdenin en yakın sığdığı yere konması) yığın gövdenin bir
+    // altıgeninde tavana/döşemeye sığmıyorsa binici save'siz, gövdenin dışına iner.
+    if (binekMb4On(state) && isMultiHex53(state, m) && m.pos && stackFitProblem(state, m, m.pos)) {
+      const at = spot(m) ?? c.pos;
       if (at) out.push({ type: 'dismounted', actorId: c.id, at, cost: 0 });
       continue;
     }
     // Ölü ya da kaybolmuş binek (B10): save'siz iner.
     if (m.life === 'dead' || !!m.summon?.gone || (m.hp <= 0 && m.life === 'alive')) {
-      const at = m.pos ? freeNeighbor(state, m.pos) ?? m.pos : c.pos;
+      const at = m.pos ? spot(m) ?? m.pos : c.pos;
       if (at) out.push({ type: 'dismounted', actorId: c.id, at, cost: 0 });
       continue;
     }
@@ -214,7 +240,7 @@ function riderCleanup68(state: BattleState, rng: Rng, before: BattleState | unde
     if (m.hp <= 0 || isIncapacitated(m.conditions)) {
       const s = fallSave(c, rng);
       out.push(s.event);
-      const at = m.pos ? freeNeighbor(state, m.pos) ?? m.pos : c.pos;
+      const at = m.pos ? spot(m) ?? m.pos : c.pos;
       if (at) out.push({ type: 'dismounted', actorId: c.id, at, cost: 0, ...(s.success ? {} : { fell: true as const }) });
       if (!s.success && !c.conditions.includes('Prone')) out.push({ type: 'condition_changed', targetId: c.id, condition: 'Prone', present: true, reason: 'Binekten düşme' });
       continue;
