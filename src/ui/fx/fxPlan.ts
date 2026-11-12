@@ -391,13 +391,13 @@ export interface GroundAura {
 /** Kuyruk E4c: altıgenin 12 çeşit görünümü (6 döndürme × aynalama), koordinattan türetilmiş (aynı altıgen her çizimde aynı). */
 export const hexVariant = (h: Offset): number => (((h.col * 73856093) ^ (h.row * 19349663)) >>> 0) % 12;
 /** Kuyruk E4c: altıgen başına döşenen zemin dokuları (data/efekt-baglama.json `zeminKaro`). */
-const KARO = ((B as unknown as { zeminKaro?: Record<string, { opaklik: number }> }).zeminKaro ?? {});
+const KARO = ((B as unknown as { zeminKaro?: Record<string, { opaklik: number; tekKaro?: number }> }).zeminKaro ?? {});
 export interface GroundPatch {
   key: string; at: Offset; radius: number; sprite: FxSprite; ton?: string;
   /** Kuyruk E4b: alanın altıgenleri (zemin dokusu bu altıgenlerin birleşimine kırpılır). */
   hexes: Offset[];
   /** Kuyruk E4c: dokuyu altıgen başına (koordinattan türetilmiş döndürme/aynalama) döşe; opaklık. Tek seferlik (loop=false) doku son karede kalır. */
-  karo?: { opaklik: number };
+  karo?: { opaklik: number; tekKaro?: number };
   loop: boolean;
 }
 export interface GroundWall {
