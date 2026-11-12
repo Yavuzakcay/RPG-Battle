@@ -704,7 +704,7 @@ export interface Avatar {
   /** Görev K8b: soy rengi (karakter jetonu çalışma anında yeniden boyanır). */
   tint?: TintSpec;
   /** Kuyruk AS1c: alt soy görünümü (yalnız çizim: oran, hale, filtre, kanat katmanı; `src/ui/lineageLook.ts` çözer). Yalnız alt soyu olan oyuncu karakteri. */
-  look?: { raceId: string; lineageId?: string; celestialAwakening?: string; level?: number };
+  look?: { raceId: string; classId?: string; subclassId?: string; lineageId?: string; celestialAwakening?: string; level?: number };
   /** Kuyruk 36: geçici kıyafet (mahkûm: Keşiş jetonu + turuncu hale; yalnızca görsel). */
   outfit?: 'mahkum';
   /** Görev P0: renk tonu kaydırma (derece; CSS hue-rotate) ve halka rengi (çizim anında; ek görsel yok). */

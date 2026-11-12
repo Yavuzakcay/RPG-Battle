@@ -24,6 +24,7 @@
 import { canAirMove } from './airMove';
 import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
 import { foeField, wallClimbCommand } from './ai/climbAi';
+import { bodyUnfit, riderStays } from './ai/binekMb5';
 import { approachField, engaged, highGroundBonus, k73aOn, K73A, landingWanted, riseFt, concentrationFlight } from './ai/k73a';
 import { K73B } from './ai/k73b';
 import { K73C } from './ai/k73c';
@@ -1230,6 +1231,8 @@ function jumps(state: BattleState, actor: Combatant): Spot[] {
 /** Yürünebilen boş altıgenler ve tahmini maliyetleri (tek Dijkstra) ve atlamalar. */
 function reachable(state: BattleState, actor: Combatant): Spot[] {
   if (!actor.pos || !state.map) return [];
+  // Kuyruk MB5 (sürüm 73+): binici bineğin hareketiyle taşınır, kendi yürüyüş/atlama yeri yok.
+  if (riderStays(state, actor)) return [];
   const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
   const budget = speedHexes(actor) - actor.movementUsed;
   if (budget <= 0) return [];
@@ -1240,6 +1243,8 @@ function reachable(state: BattleState, actor: Combatant): Spot[] {
     const [col, row] = key.split(',').map(Number) as [number, number];
     const to = { col, row };
     if (occupantAt(state, to, actor.id) || terrainAt(state, to).movement === 'deadly' || terrainAt(state, to).movement === 'blocked') continue;
+    // Kuyruk MB5 (73+): gövdesi sığmayan çapa (dar geçit, gövde altıgeninde dost) aday sayılmaz; motor zaten reddederdi.
+    if (bodyUnfit(state, actor, to)) continue;
     out.push({ to, cost, kind: 'move' });
   }
   const walk = new Set(out.map((x) => hexKey(x.to)));
