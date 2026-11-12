@@ -17,7 +17,7 @@ import { hexKey, neighbors, type Offset } from '../rules/hex';
 import { terrainOf } from '../map/terrain';
 import { globalRule } from './ruleControl';
 import { k73cOn } from './k73cSurum';
-import { body64At } from './bodyLeaf';
+import { body64At, footSize } from './bodyLeaf';
 import dikeyData from '../../data/dikey.json';
 import type { BattleState, Combatant } from './types';
 
@@ -135,8 +135,9 @@ export function rangeBonusFt(state: St, from: Offset, to: Offset, who?: { a: Pic
  * null: çağıran eski seviye kuralını kullanır. `ft`: zemin farkı (saldıran − hedef).
  */
 /** Kuyruk K73c (sürüm 64+): gövdenin katman seviyesi: çok altıgenlide ayak izinin en yükseği, değilse çapanın. */
-function bodyLevel(state: St, c: { size?: Combatant['size'] }, at: Offset): number {
-  const foot = body64At(state as Parameters<typeof body64At>[0], c.size, at);
+function bodyLevel(state: St, c: { size?: Combatant['size']; riding?: string }, at: Offset): number {
+  const st = state as Parameters<typeof body64At>[0];
+  const foot = body64At(st, footSize(st, c), at);
   if (!foot) return heightAt(state, at);
   return Math.max(...foot.map((h) => heightAt(state, h)));
 }

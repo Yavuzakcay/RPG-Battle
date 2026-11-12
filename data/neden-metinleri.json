@@ -130,6 +130,8 @@
     { "kalip": "^(.+): binekte değilken iki el ister \\(kalkan ya da yan el silahıyla kullanılamaz\\)\\.$", "en": "$1: needs two hands when not mounted (cannot be used with a shield or an off-hand weapon)." },
     { "kalip": "^Tavan alçak \\((\\d+) ft\\): (.+) binicisiyle (.+) altıgenine sığmaz\\.$", "en": "The ceiling is too low ($1 ft): $2 and its rider do not fit into hex $3." },
     { "kalip": "^Kat döşemesi alçak \\((\\d+) ft\\): (.+) binicisiyle (.+) altıgenine sığmaz\\.$", "en": "The floor slab is too low ($1 ft): $2 and its rider do not fit into hex $3." },
+    { "kalip": "^Dar geçit: (.+) gövdesiyle sütun (\\d+), satır (\\d+) yoluna sığmıyor\\.$", "en": "Narrow passage: $1's body does not fit along the path to column $2, row $3." },
+    { "kalip": "^Binekten inmek için gövdesine bitişik boş bir altıgen seç\\.$", "en": "To dismount, pick a free hex adjacent to the mount's body." },
     { "kalip": "menzil", "bayrak": "i", "en": "Out of range." },
     { "kalip": "görüş", "bayrak": "i", "en": "No line of sight." }
   ]
