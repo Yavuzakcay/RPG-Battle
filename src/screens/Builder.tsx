@@ -437,8 +437,8 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
             {tonesFor(s.lineageId).map((tone) => {
               const on = skinToneOf(s.skinTone)?.id === tone.id;
               return (
-                <button key={tone.id} type="button" role="radio" aria-checked={on} className={`skin-tone${on ? ' on' : ''}`} title={tone.yorum} data-tone={tone.id} onClick={() => set({ skinTone: tone.id })}>
-                  <i style={{ background: tone.renk }} />{tone.ad[getLang()]}
+                <button key={tone.id} type="button" role="radio" aria-checked={on} className={`skin-tone${on ? ' on' : ''}`} data-tone={tone.id} onClick={() => set({ skinTone: tone.id })}>
+                  <i style={{ background: tone.rozetRenk }} />{tone.ad[getLang()]}
                 </button>
               );
             })}

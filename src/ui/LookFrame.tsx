@@ -1,24 +1,22 @@
 /**
- * Kuyruk AS1a: alt soy görünüm çerçevesi (yalnızca görsel). Çocuğu (AvatarBadge) sarar: renk filtresi ve en-boy
- * CSS değişkeniyle görsele, Celestial hale gizleme üst bant kırpmasıyla, kanat katmanı jetonun arkasına. Kanat sprite'ı
- * yoksa efekt sistemindeki kanat şeridinin ilk karesi yer tutucudur (`public/efekt/<ad>.webp`, 4 kare yatay).
+ * Kuyruk AS1a/AS1c: alt soy görünüm çerçevesi (yalnızca görsel; rozetler: oluşturucu, karakter kartı, tur şeridi). Çocuğu
+ * (AvatarBadge) sarar: filtre ve en-boy CSS değişkeniyle görsele, Celestial hale gizleme üst bant kırpmasıyla, kanat katmanı
+ * jetonun arkasına (yalnız `flying` iken açık sprite; sprite dosyası tanımlı değilse katman yok). Savaş jetonu (SVG) aynı çözücüyü
+ * `Avatar.tsx` içinde kullanır.
  */
-import type { CSSProperties, ReactNode } from 'react';
-import { HALO_CLIP_PCT, lineageLook, type LookSheet, type WingSlot } from './lineageLook';
+import { useState, type CSSProperties, type ReactNode } from 'react';
+import { HALO_CLIP_PCT, lineageLook, type LookSheet, type WingLayerSpec } from './lineageLook';
 
 const BASE = import.meta.env.BASE_URL;
 
-/** Kanat katmanı: kendi sprite'ı varsa o; yoksa efekt şeridinin ilk karesi (yer tutucu). */
-export function WingLayer(props: { wing: WingSlot; size: number }) {
+/** Kanat katmanı (rozet): sprite yüklenemezse sessizce gizlenir. */
+export function WingLayer(props: { wing: WingLayerSpec; size: number }) {
   const { wing, size } = props;
+  const [gone, setGone] = useState(false);
+  if (gone) return null;
   const w = size * wing.olcek;
-  const style: CSSProperties = {
-    width: w, height: w, left: (size - w) / 2, top: (size - w) / 2 + size * wing.yukari,
-    backgroundImage: `url(${BASE}${wing.sprite ?? `efekt/${wing.efekt}.webp`})`,
-    backgroundSize: wing.sprite ? 'contain' : '400% 100%', backgroundPosition: '0 0', backgroundRepeat: 'no-repeat',
-    ...(wing.filtre ? { filter: wing.filtre } : {}),
-  };
-  return <span className={`look-wing${wing.sprite ? '' : ' placeholder'}`} data-wing={wing.id} style={style} aria-hidden="true" />;
+  const style: CSSProperties = { width: w, height: w, left: (size - w) / 2, top: (size - w) / 2 + size * wing.yukari, ...(wing.filtre ? { filter: wing.filtre } : {}) };
+  return <img className="look-wing" data-wing={wing.id} src={`${BASE}${wing.src}`} alt="" style={style} aria-hidden="true" onError={() => setGone(true)} />;
 }
 
 export function LookFrame(props: { sheet: LookSheet; size: number; flying?: boolean; children: ReactNode }) {

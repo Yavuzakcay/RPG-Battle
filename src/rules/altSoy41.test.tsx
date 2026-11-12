@@ -13,7 +13,7 @@ import { lineageNotes as notesOf } from '../ui/lineageNotes';
 import { races } from '../data';
 import { AWAKENING_OPTIONS, CELESTIAL } from './celestialData';
 import { newPendingLineages, LINEAGE_NOTICE_KEY } from '../app/lineageNotice';
-import { ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
+import { skinTint, ORIGINAL_LINEAGES, isOriginalLineage, AWAKENING_DEFAULT, AWAKENING_FROM, CULTURE_SKIN, SKIN_TONES, WING_SLOTS, awakeningLookIds, lineageLook, lookEntries } from '../ui/lineageLook';
 import { LookFrame } from '../ui/LookFrame';
 import hizalanma from '../../data/hizalanma-baslangic.json';
 import gorunum from '../../data/alt-soy-gorunum.json';
@@ -189,25 +189,18 @@ describe('görünüm verisi', () => {
     expect([t.scaleX, t.scaleY]).toEqual([1.1, 0.97]);
     expect(lineageLook({ raceId: 'orc', lineageId: 'glacier' }).filter).toContain('hue-rotate');
   });
-  it('üç kanat sprite yuvası (Tiefling, Celestial Kırık Kanat, Dragonborn) ve yer tutucu', () => {
-    expect(WING_SLOTS.sort()).toEqual(['celestial-kirik-kanat', 'dragonborn-ucus', 'tiefling']);
-    for (const id of WING_SLOTS) {
-      const w = (gorunum.kanatYuvalari as Record<string, { sprite: string | null; efekt: string }>)[id]!;
-      expect(w.sprite).toBeNull();
-      expect(w.efekt).toMatch(/^efekt-kanat-/);
+  it('üç kanat slotu (Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn): sprite dosyası tanımlı değilken katman yok; tanımlıysa yalnız havadayken açık', () => {
+    expect(WING_SLOTS.sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']);
+    // Sprite henüz yok (`dosya: null`): hiçbir durumda katman çizilmez, hata yok.
+    for (const fly of [false, true]) {
+      expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: fly }).wing).toBeNull();
+      expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }, { flying: fly }).wing).toBeNull();
     }
-    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }).wing?.id).toBe('tiefling');
-    expect(lineageLook({ raceId: 'tiefling', lineageId: 'infernal' }).wing).toBeNull();
-    // Dragonborn kanadı yalnızca uçarken ve 5. seviyeden.
-    expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }).wing).toBeNull();
-    expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }, { flying: true }).wing?.id).toBe('dragonborn-ucus');
-    expect(lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 3 }, { flying: true }).wing).toBeNull();
   });
   it('Celestial: Parlayan Ruh haleli; Kırık Kanat halesiz + kanat; Gece Gözyaşı halesiz + koyu filtre; 3. seviyeden', () => {
     const at = (a: string, level = 3) => lineageLook({ raceId: 'celestial', celestialAwakening: a, level });
     expect(at('parlayan-ruh')).toMatchObject({ hideHalo: false, wing: null, filter: '' });
     expect(at('kirik-kanat')).toMatchObject({ hideHalo: true });
-    expect(at('kirik-kanat').wing?.id).toBe('celestial-kirik-kanat');
     expect(at('gece-gozyasi').hideHalo).toBe(true);
     expect(at('gece-gozyasi').filter).toContain('brightness');
     expect(at('kirik-kanat', 2)).toMatchObject({ hideHalo: false, wing: null });
@@ -215,22 +208,19 @@ describe('görünüm verisi', () => {
     expect(AWAKENING_FROM).toBe(CELESTIAL.awakening.minLevel);
     expect(AWAKENING_DEFAULT).toBe(CELESTIAL.awakening.default);
   });
-  it('Human ten tonu (AS1b): Orijinal filtresiz (varsayılan, bilinmeyen eski kimlik de), Siyahi ve Doğu Asyalı filtre uygular; kültürden bağımsız; YER TUTUCU işaretli', () => {
+  it('Human ten tonu (AS1c): filtre yok (giysi renkleri bozulmaz); Orijinal boyasız, Siyahi ve Doğu Asyalı ten maskesiyle (tint), kültürden bağımsız', () => {
     for (const lin of ['tenhausser', 'khadyrga', 'pure-city', 'outwall']) {
-      expect(lineageLook({ raceId: 'human', lineageId: lin })).toMatchObject({ filter: '', scaleX: 1, scaleY: 1 });
-      expect(lineageLook({ raceId: 'human', lineageId: lin, skinTone: 'orijinal' }).filter).toBe('');
-      expect(lineageLook({ raceId: 'human', lineageId: lin, skinTone: 'abanoz' }).filter).toBe('');
+      for (const tone of ['orijinal', 'siyahi', 'dogu-asyali', 'abanoz']) expect(lineageLook({ raceId: 'human', lineageId: lin, skinTone: tone })).toMatchObject({ filter: '', scaleX: 1, scaleY: 1 });
     }
-    const a = lineageLook({ raceId: 'human', lineageId: 'tenhausser', skinTone: 'siyahi' }).filter;
-    const b = lineageLook({ raceId: 'human', lineageId: 'khadyrga', skinTone: 'siyahi' }).filter;
-    expect(a).not.toBe('');
-    expect(a).toBe(b);
-    expect(lineageLook({ raceId: 'human', lineageId: 'outwall', skinTone: 'dogu-asyali' }).filter).not.toBe(a);
-    expect(gorunum.ten.filtreUygula).toBe(true);
-    for (const t of SKIN_TONES.filter((x) => x.id !== 'orijinal')) expect(t.yorum, t.id).toMatch(/YER TUTUCU/);
+    expect(skinTint('human', undefined)).toBeUndefined();
+    expect(skinTint('human', 'orijinal')).toBeUndefined();
+    expect(skinTint('human', 'abanoz')).toBeUndefined();
+    expect(skinTint('elf', 'siyahi')).toBeUndefined();
+    const a = skinTint('human', 'siyahi')!, b = skinTint('human', 'dogu-asyali')!;
+    expect('lch' in a.to && 'lch' in b.to && a.to.lch.L !== b.to.lch.L).toBe(true);
+    expect(SKIN_TONES.map((t) => t.renk)).toEqual([null, '#96623E', '#E2B880']);
     const w = renderToStaticMarkup(<LookFrame sheet={{ raceId: 'tiefling', lineageId: 'winged' }} size={44}><i /></LookFrame>);
-    expect(w).toContain('look-wing placeholder');
-    expect(w).toContain('efekt-kanat-seytan');
+    expect(w).not.toContain('look-wing');
     const h = renderToStaticMarkup(<LookFrame sheet={{ raceId: 'celestial', celestialAwakening: 'gece-gozyasi', level: 3 }} size={44}><i /></LookFrame>);
     expect(h).toContain('halo-hidden');
   });
@@ -267,6 +257,7 @@ describe('boyasız orijinal alt soylar (AS1a-2 İş 3)', () => {
   });
   it('Tiefling Kanatlı (kararsız kalan) mevcut halinde: tintli, kanat yuvası', () => {
     expect(table.tiefling!.lineages.winged).not.toBeNull();
-    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }).wing?.id).toBe('tiefling');
+    // Kanat sprite'ı henüz yok (AS1c): slot tanımlı, dosya null, katman yok.
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).toBeNull();
   });
 });

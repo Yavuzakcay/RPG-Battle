@@ -30,7 +30,8 @@ describe('soy → renk', () => {
     const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown> }>;
     // Kuyruk AS1a: tint/maske tablosunda yeri olmayan ırklar (Dwarf, Halfling, Orc, Human) CSS filtresiyle `alt-soy-gorunum.json`'dan boyanır.
     const withLineage = races.filter((r) => (r.lineages ?? []).length > 0 && !gorunum.maskesizIrklar.includes(r.id));
-    expect(Object.keys(table).sort()).toEqual(withLineage.map((r) => r.id).sort());
+    // Kuyruk AS1c: Human'ın ten maskesi var (ten tonu seçici için); soyları orijinal (null).
+    expect(Object.keys(table).sort()).toEqual([...withLineage.map((r) => r.id), 'human'].sort());
     for (const r of withLineage) {
       expect(Object.keys(table[r.id]?.lineages ?? {}).sort(), r.id).toEqual((r.lineages ?? []).map((l) => l.id).sort());
       // Kuyruk AS1a-2: boyasız ORİJİNAL alt soylar (`alt-soy-gorunum.json` `orijinal`) tabloda null; diğerleri boyalı.

@@ -282,7 +282,7 @@ export const en: Strings = {
       // Kuyruk AS1a: sub-lineage buff/debuff descriptions (text only; effects do not work in the game yet).
       lineageBuff: 'Plus', lineageDebuff: 'Minus', lineageStatus: { calisir: 'works', kismi: 'partial', planli: 'planned' } as Record<string, string>, lineageNotYet: 'These effects do not work in the game yet (planned); description only for now.',
       lineageOptionalHint: 'No sub-lineage chosen: no sub-lineage effect until you pick one.',
-      skinTitle: 'Skin tone', skinHelp: 'Skin tone is independent of culture; pick any tone with any culture. The Black and East Asian colours are temporary placeholders.',
+      skinTitle: 'Skin tone', skinHelp: 'Skin tone is independent of culture; pick any tone with any culture.',
       cultureTitle: 'Culture',
       lineageAbilities: 'Lineage abilities', preview: 'Token preview',
       notInGame: 'not in the game yet', offCombat: 'out of combat: the Game Master narrates',

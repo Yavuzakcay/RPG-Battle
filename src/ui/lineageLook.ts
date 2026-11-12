@@ -4,33 +4,21 @@
  * Celestial hale kuralı. Human ten tonu kültürden bağımsız ayrı seçimdir (`skinTone`). Saf: DOM bilmez.
  */
 import data from '../../data/alt-soy-gorunum.json';
+import wings from '../../data/kanat-esleme.json';
+import soyRenkleri from '../../data/soy-renkleri.json';
+import type { TintSpec } from '../battle/types';
+import { rgbToLab } from './color';
 
-export interface WingSlot {
-  id: string;
-  ad: { tr: string; en: string };
-  /** Kendi sprite'ı (`public/` altı yol); null: yer tutucu olarak `efekt` kanat şeridi (ilk kare). */
-  sprite: string | null;
-  efekt: string;
-  ne_zaman: 'surekli' | 'ucarken';
-  minSeviye?: number;
-  olcek: number;
-  yukari: number;
-  filtre?: string;
-}
-export interface SkinTone { id: string; ad: { tr: string; en: string }; renk: string; hsl: { hueRotate: number; saturate: number; brightness: number; sepia: number }; yorum?: string }
-/** Ten tonunun CSS filtresi (`hsl` alanından; Orijinal: boş). */
-export function toneFilter(t: SkinTone): string {
-  const h = t.hsl;
-  const parts = [h.hueRotate ? `hue-rotate(${h.hueRotate}deg)` : '', h.sepia ? `sepia(${h.sepia})` : '', h.saturate !== 1 ? `saturate(${h.saturate})` : '', h.brightness !== 1 ? `brightness(${h.brightness})` : ''];
-  return parts.filter(Boolean).join(' ');
-}
+/** Çözülmüş kanat katmanı (jetonun arkası): `src` o anki durumun görseli (`public/` altı yol), filtre renk için. */
+export interface WingLayerSpec { id: string; src: string; olcek: number; yukari: number; filtre: string; open: boolean }
+export interface SkinTone { id: string; ad: { tr: string; en: string }; /** Hedef ten rengi (hex); null: boyasız. */ renk: string | null; rozetRenk: string }
 export interface LookSheet { raceId: string; lineageId?: string; celestialAwakening?: string; level?: number; skinTone?: string }
 export interface LineageLook {
   /** CSS `filter` (boşsa yok). */
   filter: string;
   scaleX: number;
   scaleY: number;
-  wing: WingSlot | null;
+  wing: WingLayerSpec | null;
   /** Celestial hale gizli (görselin üst bandı kırpılır). */
   hideHalo: boolean;
 }
@@ -39,7 +27,6 @@ const D = data as unknown as {
   altSoylar: Record<string, { filtre?: string; oran?: { en: number; boy: number }; kanat?: string; orijinal?: true }>;
   orijinal: string[];
   celestialUyanis: Record<string, { hale: boolean; filtre?: string; kanat?: string }>;
-  kanatYuvalari: Record<string, Omit<WingSlot, 'id'>>;
   hale: { gizleUstYuzde: number };
   ten: { varsayilan: string; filtreUygula: boolean; tonlar: SkinTone[]; kulturTen: Record<string, string[]> };
 };
@@ -55,11 +42,24 @@ export const tonesFor = (lineageId: string | undefined): SkinTone[] => SKIN_TONE
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
-export const WING_SLOTS = Object.keys(D.kanatYuvalari);
+type WingSlotData = { dosya: string | null; dosyaKapali: string | null; minSeviye?: number; olcek: number; yukari: number; filtre?: string; renkFiltreleri?: Record<string, string> };
+const W = wings as unknown as { klasor: string; slotlar: Record<string, WingSlotData> };
+export const WING_SLOTS = Object.keys(W.slotlar);
 export const lookEntries = (): string[] => Object.keys(D.altSoylar);
 export const awakeningLookIds = (): string[] => Object.keys(D.celestialUyanis);
 
-const slot = (id: string): WingSlot => ({ id, ...(D.kanatYuvalari[id] as Omit<WingSlot, 'id'>) });
+/**
+ * Kanat katmanı: slot karakter seviyesine uyuyorsa ve o durumun (`flying`: açık, değilse kapalı) görseli eşlemede varsa; görsel
+ * dosyası tanımlı değilse (sprite henüz yok) katman yok.
+ */
+function wingLayer(id: string, level: number, flying: boolean, lineageId?: string): WingLayerSpec | null {
+  const w = W.slotlar[id];
+  if (!w || (w.minSeviye ?? 1) > level) return null;
+  const file = flying ? w.dosya : w.dosyaKapali;
+  if (!file) return null;
+  const filtre = [w.filtre, lineageId ? w.renkFiltreleri?.[lineageId] : undefined].filter(Boolean).join(' ');
+  return { id, src: `${W.klasor}/${file}`, olcek: w.olcek, yukari: w.yukari, filtre, open: flying };
+}
 
 /** Karakterin görünümü; `flying`: uçarken görünen kanatlar (Draconic Flight) da çizilir. */
 export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): LineageLook {
@@ -67,12 +67,6 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): 
   let scaleX = 1, scaleY = 1, hideHalo = false;
   let wingId: string | undefined;
   const level = sheet.level ?? 1;
-  if (sheet.raceId === 'human') {
-    // Ten tonu filtresi eşleme eklenene dek kapalı (`ten.filtreUygula`): bütün Human jetonları orijinal.
-    const tone = D.ten.filtreUygula ? skinToneOf(sheet.skinTone) : undefined;
-    const tf = tone ? toneFilter(tone) : '';
-    if (tf) filters.push(tf);
-  }
   if (sheet.raceId === 'celestial') {
     const aw = D.celestialUyanis[sheet.celestialAwakening ?? AWAKENING_DEFAULT];
     if (aw && level >= AWAKENING_FROM) {
@@ -86,12 +80,27 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): 
     if (entry?.oran) { scaleX = entry.oran.en; scaleY = entry.oran.boy; }
     wingId = entry?.kanat;
   }
-  if (!wingId && sheet.raceId === 'dragonborn' && opts.flying) wingId = 'dragonborn-ucus';
-  let wing = wingId ? slot(wingId) : null;
-  if (wing && ((wing.minSeviye ?? 1) > level || (wing.ne_zaman === 'ucarken' && !opts.flying))) wing = null;
+  if (!wingId && sheet.raceId === 'dragonborn') wingId = 'dragonborn';
+  const wing = wingId ? wingLayer(wingId, level, !!opts.flying, sheet.lineageId) : null;
   return { filter: filters.join(' '), scaleX, scaleY, wing, hideHalo };
 }
 
 /** Ten tonu (Human) için kimlik denetimi. */
 /** Ten tonu (bilinmeyen eski kimlik: varsayılan Orijinal). */
 export const skinToneOf = (id: string | undefined): SkinTone | undefined => SKIN_TONES.find((x) => x.id === id) ?? SKIN_TONES.find((x) => x.id === DEFAULT_SKIN_TONE);
+
+/**
+ * Kuyruk AS1c: Human ten tonunun jeton boyaması (ten maskesiyle yalnız ten pikselleri; `soy-renkleri.json` `human` maskesi). Hedef
+ * ten rengi `ten.tonlar[].renk` (hex): ton ve kroma hedefe kayar, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur.
+ * Orijinal (renk null), filtre kapalı ya da Human olmayan karakterde undefined.
+ */
+export function skinTint(raceId: string, toneId: string | undefined): TintSpec | undefined {
+  if (raceId !== 'human' || !D.ten.filtreUygula) return undefined;
+  const hex = skinToneOf(toneId)?.renk;
+  if (!hex) return undefined;
+  const n = parseInt(hex.slice(1), 16);
+  const [L, a, b] = rgbToLab((n >> 16) & 255, (n >> 8) & 255, n & 255);
+  const h = ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360;
+  const select = (soyRenkleri.races as unknown as Record<string, { select: TintSpec['select'] }>).human!.select;
+  return { select, to: { lch: { h, c: Math.hypot(a, b), L, hueKeep: 0.3, chromaKeep: 0.5 } } };
+}

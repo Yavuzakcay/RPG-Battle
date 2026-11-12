@@ -72,16 +72,14 @@ Toplam: 41.
 
 Alt soylara ayrı çizim yoktur. `data/alt-soy-gorunum.json`: Dwarf/Orc için CSS renk filtresi (tint/maske tablosunda yeri yok); Tiefling Kanatlı ve Gnome Yeraltı `data/soy-renkleri.json` tint tablosunda; Halfling İnce/Kalın en-boy oranı; Celestial hale (Parlayan Ruh haleli, Kırık Kanat halesiz + kanat, Gece Gözyaşı halesiz + koyu filtre); üç kanat yuvası (Tiefling, Celestial Kırık Kanat, Dragonborn Draconic Flight; sprite yoksa efekt sistemindeki `efekt-kanat-*` şeridinin ilk karesi yer tutucu).
 
-### Human ten tonu — ⚠ YER TUTUCU renkler
+### Human ten tonu (AS1c: ten maskesi)
 
-Ten tonu kültürden bağımsız ayrı seçimdir (`skinTone`); her kültür üç tonu da seçebilir (`ten.kulturTen`). Seçici görünür; Orijinal (varsayılan) filtresizdir, Siyahi ve Doğu Asyalı seçilince jetonun tamamına CSS filtresi uygulanır (oluşturucu önizlemesi ve karakter kartı; savaş jetonu AS1b sonrası). **Siyahi ve Doğu Asyalı değerleri GEÇİCİ yer tutucudur.** Gerçek değerler tek yerde düzenlenir: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].hsl` (`hueRotate` derece, `saturate`, `brightness`, `sepia`; filtre bunlardan türetilir, kod değişmez; `renk` seçici rozetinin rengi). Geçici değerler:
+Ten tonu kültürden bağımsız ayrı seçimdir (`skinTone`); her kültür üç tonu da seçebilir (`ten.kulturTen`). Seçici görünür; Orijinal (varsayılan) boyasızdır, Siyahi (#96623E) ve Doğu Asyalı (#E2B880) seçilince jetonun yalnız TEN pikselleri boyanır (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu; saç, giysi, silah, kuşak değişmez; oluşturucu önizlemesi, karakter kartı ve savaş jetonu aynı yol). Renkler tek yerde: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].renk` (hex; null = boyasız).
 
-| Ton | hueRotate | saturate | brightness | sepia |
-|---|---|---|---|---|
-| orijinal | 0 | 1 | 1 | 0 |
-| siyahi (YER TUTUCU) | 0 | 1.1 | 0.72 | 0.15 |
-| dogu-asyali (YER TUTUCU) | -8 | 0.9 | 1.08 | 0.2 |
+### Savaş jetonu ve kanat katmanı (AS1c)
+
+Alt soy görünümü (oran, hale gizleme, koyu filtre, kanat katmanı) savaş jetonunda da `lineageLook` ile uygulanır. Kanat katmanı: `data/kanat-esleme.json` + `public/kanat/` (şimdilik boş; `dosya: null` iken katman yok); jetonun arkasında, yalnız havadayken açık sprite; şart: kare, şeffaf PNG/WebP, BEYAZ taban, renk CSS filtreyle (Dragonborn 10 renk).
 
 ## AS1b sonrasına kalanlar
 
-Savaş jetonuna görünüm bağlama (`Avatar` tipi `src/battle/types.ts`), kanat sprite'ları (Gemini), Dragonborn beyaz tabanı, ek paket/imza/eşya kurtarmalarına SaveCtx, Human ten tonlarının gerçek renkleri.
+Kanat sprite'ları (Gemini), Dragonborn beyaz tabanı, ek paket/imza/eşya kurtarmalarına SaveCtx.
