@@ -32,6 +32,7 @@ import { costsFrom } from '../rules/hex';
 import { executeMove, moveCostFn, terrainAt } from './movement';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext, SummonInfo, SummonVanishReason } from './types';
 import { binekMb7On } from './binekSurum';
+import { binekMb2On } from './binekMb2Surum';
 import { mountRuleOf } from './riderCore';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -125,7 +126,7 @@ export interface SummonDef {
   /** Kuyruk 19: boyut karışımı (Animate Objects: Large 2, Huge 3 sayılır; seçim `form` medium|large|huge). */
   sizeMix?: boolean;
   /** Kuyruk MB7 (70+): binek kuralı (`kural: sahip|dost`, `enBuyukBinici`, `minSeviye`); yoksa çağrıya binilmez. */
-  mount?: { kural: 'sahip' | 'dost'; enBuyukBinici?: string; minSeviye?: number };
+  mount?: { kural: 'sahip' | 'dost'; enBuyukBinici?: string; minSeviye?: number; kontrol?: 'kontrollu' | 'bagimsiz' };
   /** Kuyruk MB7 (70+): yürüme hızı (ft; Phantom Steed 100). */
   speedFt?: number;
   /** Kuyruk MB7 (70+): hasar alınca kaybolur (Phantom Steed). */
@@ -384,7 +385,7 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
     ...(def.withOwnerV35 && ruleVersion(current) >= 35 ? { withOwner: true } : {}),
     ...(def.handK19 && k19 ? { hand: true, noSpace: true, ownerBonus: { moveFt: 60 } } : {}),
     // Kuyruk MB7 (70+): binek kuralı ve hasarla kaybolma.
-    ...(def.mount && binekMb7On(current) ? { mount: mountRuleOf(def.mount) } : {}),
+    ...(def.mount && binekMb7On(current) ? { mount: mountRuleOf(def.mount, binekMb2On(current)) } : {}),
     ...(def.endsOnDamage && binekMb7On(current) ? { endsOnDamage: true as const } : {}),
   };
   const combatant: Combatant = {

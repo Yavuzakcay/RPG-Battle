@@ -10,6 +10,8 @@ import { exhaustionGain } from './deathWard';
 import { commandEndHookEvents, turnStartHookEvents } from './turnHooks';
 import { auraTriggerEvents } from './auraCore';
 import { executeDismount, executeMount, riderCleanup } from './mounted';
+import { controlledCommandProblem, controlledNow, ridMountIds } from './binekMb2';
+import { binekMb2On } from './binekMb2Surum';
 import { binekMb3On, binekOn } from './binekSurum';
 import { climbs, fliesOrHovers } from './flight';
 import { stairsAt } from './stand';
@@ -41,7 +43,7 @@ import { ruleVersion, srdConditions } from './ruleVersion';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
 import { playerThrowObject, throwObject } from './objectMotion';
-import { checkActor, currentActorId, fail, finish, isTargetable, nextActor, retreatedLoser, winnerOf, type CommandResult } from './common';
+import { canControl, checkActor, currentActorId, fail, finish, isTargetable, nextActor, retreatedLoser, winnerOf, type CommandResult } from './common';
 import {
   auraStepEvents, auraTurnEndEvents, executeActionSurge, executeFollowup, executeSecondWind, opportunityAttacks,
   weaponAttackEvents,
@@ -496,8 +498,12 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk K64a: Game Master ele geçirmeyi her an bitirir (eylemsiz).
   if (cmd.type === 'possession_leave' && cmd.gm) return executePossessionLeave(state, cmd.actorId, true, ctx);
   // Tepki büyüleri (Shield, Counterspell, Hellish Rebuke) başkasının turunda da yapılır.
-  const outOfTurn = (cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName)) || cmd.type === 'initiative_swap';
-  const checked = checkActor(state, cmd.actorId, ctx, cmd.type !== 'end_turn' && cmd.type !== 'rouse_dragon', outOfTurn,
+  const outOfTurn0 = (cmd.type === 'cast_spell' && isReactionSpell(cmd.spellName)) || cmd.type === 'initiative_swap';
+  // Kuyruk MB2 (74+): kontrollü binek binicisinin turunda, binicinin kararıyla oynar (yalnız hareket, Dash, Disengage, Dodge).
+  const ctrl = controlledGate(state, cmd, ctx, outOfTurn0);
+  if (ctrl && 'error' in ctrl) return fail(ctrl.error);
+  const outOfTurn = outOfTurn0 || !!ctrl;
+  const checked = checkActor(state, cmd.actorId, ctrl ? ctrl.ctx : ctx, cmd.type !== 'end_turn' && cmd.type !== 'rouse_dragon', outOfTurn,
     MOVE_ONLY_COMMANDS.includes(cmd.type));
   if (!checked.ok) return checked;
   const actor = checked.actor;
@@ -528,77 +534,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'end_turn') {
     let current = state;
     let from = actor.id;
-    // Tur sonu harita etkileri (sıcak, soğuk, alevde bitirme) sırası biten için.
-    const ending = turnEndMapEvents(current, actor, rng);
-    events.push(...ending);
-    current = applyEvents(current, ending);
-    // Turunu düşman yayılımında (Spirit Guardians) bitiren save yapar.
-    const aura = auraTurnEndEvents(current, current.combatants[actor.id] as Combatant, rng);
-    events.push(...aura);
-    current = applyEvents(current, aura);
-    // Rage: bu tur uzatılmadıysa biter.
-    const rageEnd = rageTurnEndEvents(current.combatants[actor.id] as Combatant);
-    events.push(...rageEnd);
-    current = applyEvents(current, rageEnd);
-    // Süreli durumlar: sırası biten savaşçının tur sonu sayaçları ("sonuna dek", "save ends").
-    const timedEnd = timerEvents(current, actor.id, 'turnEnd', rng);
-    events.push(...timedEnd);
-    current = applyEvents(current, timedEnd);
-    // Süren etkilerin tur sonu (Görev B1): gecikmeli hasar (Acid Arrow), tekrar save (Slow, Ray of Enfeeblement).
-    const fxEnd = [...effectTurnEndEvents(current, actor.id, rng)];
-    events.push(...fxEnd);
-    current = applyEvents(current, fxEnd);
-    // Kuyruk K20 (ev kuralı): Celestial Kırık Kanat iner, Parlayan Ruh aurası.
-    const celEnd = celestialTurnEndEvents(current, actor.id, rng);
-    events.push(...celEnd);
-    current = applyEvents(current, celEnd);
-    // Kuyruk U1a (sürüm 61+): zorunlu inişli uçuş (`ucus.zorunluInis`) tur sonunda biter.
-    const glideEnd = glideTurnEndEvents(current, actor.id);
-    events.push(...glideEnd);
-    current = applyEvents(current, glideEnd);
-    // Kuyruk 19: Telekinesis: önceki turun hedefi bırakılır (havadaysa düşer).
-    const tkEnd = telekinesisTurnEndEvents(current, actor.id, rng);
-    events.push(...tkEnd);
-    current = applyEvents(current, tkEnd);
-    // K17 G2 (kural sürümü 13): Monk Self-Restoration: tur sonunda Charmed, Frightened ve Poisoned biter.
-    const restored = selfRestorationEvents(current, actor.id);
-    events.push(...restored);
-    current = applyEvents(current, restored);
-    // Büyü alanlarında tur bitirmek (Görev B2: Grease, Moonbeam, Flaming Sphere, ruh sürüsü).
-    const zoneEnd = zoneTurnEvents(current, actor.id, 'end', rng);
-    events.push(...zoneEnd);
-    current = applyEvents(current, zoneEnd);
-    // Kuyruk K61 (sürüm 44): büyücünün alanı her tur sonunda alandakileri tetikler (Earthquake).
-    const casterEnd = casterEndZoneEvents(current, actor.id, rng);
-    events.push(...casterEnd);
-    current = applyEvents(current, casterEnd);
-    // Kuyruk K66a (sürüm 50): Earthquake'in bu turda yerleştirilen yarıkları açılır (sıradakinin turu başında açık).
-    const opened = fissureOpenEvents(current, actor.id, rng);
-    events.push(...opened);
-    current = applyEvents(current, opened);
-    // Kuyruk K66b (sürüm 50): Earthquake tur sonunda alandaki yapılara 50 Bludgeoning (çöküş, enkaz).
-    const quaked = quakeTurnEndEvents(current, actor.id, rng);
-    events.push(...quaked);
-    current = applyEvents(current, quaked);
-    // Kuyruk K62 (sürüm 46): Delayed Blast Fireball boncuğu +1d6.
-    const beadGrow = beadTurnEndEvents(current, actor.id);
-    events.push(...beadGrow);
-    current = applyEvents(current, beadGrow);
-    // Kuyruk K53 S5: veriden auraların tur sonu tetikleri.
-    const auraEnd = auraTriggerEvents(current, actor.id, 'turnEnd', rng);
-    events.push(...auraEnd);
-    current = applyEvents(current, auraEnd);
-    // Kuyruk 19 (srdK19): canavarın tur sonu yetenekleri (Heat Aura, Mucus Cloud, akan su, Hydra başları).
-    const monEnd = monsterTurnEvents(current, current.combatants[actor.id] as Combatant, 'end', rng);
-    events.push(...monEnd);
-    current = applyEvents(current, monEnd);
-    const anyEnd = anyTurnEndEvents(current);
-    events.push(...anyEnd);
-    current = applyEvents(current, anyEnd);
-    // Kuyruk 19 (srdK19): tur sonu canavar tepkileri (Ink Cloud, Pursuit).
-    const reactEnd = reactionTurnEndEvents(current, actor.id, rng);
-    events.push(...reactEnd);
-    current = applyEvents(current, reactEnd);
+    const endChain = turnEndChain(current, actor.id, rng, true);
+    events.push(...endChain.events);
+    current = endChain.state;
+    // Kuyruk MB2 (74+): bu tur binicinin turunda oynayan kontrollü bineğin tur sonu kancaları.
+    for (const mid of ridMountIds(current, actor.id)) {
+      const mEnd = turnEndChain(current, mid, rng, false);
+      events.push(...mEnd.events);
+      current = mEnd.state;
+    }
     // Kuyruk 33: başka bir yaratığın turunun hemen ardından boss'un efsanevi eylemi (kural sürümü 11, anahtar).
     const legend = legendaryEvents(current, actor.id, rng);
     events.push(...legend);
@@ -648,72 +592,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       }
       const nextCombatant = current.combatants[next.id];
       if (!nextCombatant) break;
-      // Kuyruk 33: boss'un turu başlarken efsanevi eylem kullanımları yenilenir.
-      const refresh = legendaryRefreshEvents(current, next.id);
-      events.push(...refresh);
-      current = applyEvents(current, refresh);
-      const start = startOfTurnEvents(nextCombatant, rng);
-      events.push(...start);
-      current = applyEvents(current, start);
-      // Kuyruk 19 (srdK19): canavar yeteneklerinin şarjı ve tur başı yetenekleri (güneş, Barbed Hide, yutulanlar, Berserk).
-      const monStart = [...abilitiesOf(current, nextCombatant).filter((a) => a.recharge !== undefined && nextCombatant.abilityRecharge?.includes(a.id)).map((a) => {
-        const d6 = rollDie(6, rollTag(rng, { kind: 'recharge', by: nextCombatant.id }));
-        return { type: 'ability_recharge', actorId: nextCombatant.id, abilityId: a.id, d6, recharged: d6 >= (a.recharge ?? 6) } as BattleEvent;
-      }), ...monsterTurnEvents(current, current.combatants[next.id] as Combatant, 'start', rng)];
-      events.push(...monStart);
-      current = applyEvents(current, monStart);
-      // Bitişikteki gizli düşmanları fark eder (Görev K).
-      const noticed = noticeEvents(current, current.combatants[next.id] as Combatant);
-      events.push(...noticed);
-      current = applyEvents(current, noticed);
-      const startMap = turnStartMapEvents(current, current.combatants[next.id] as Combatant, rng);
-      events.push(...startMap);
-      current = applyEvents(current, startMap);
-      // Tur başlatana düşman tepkisi (Unnerving Gaze; Görev R1).
-      const gaze = turnStartReactions(current, next.id, rng);
-      events.push(...gaze);
-      current = applyEvents(current, gaze);
-      // Süreli durumlar: sırası gelen savaşçının tur başı sayaçları ("başına dek", Kaçın, Yardım).
-      const timedStart = timerEvents(current, next.id, 'turnStart', rng);
-      events.push(...timedStart);
-      current = applyEvents(current, timedStart);
-      // Süren durum hasarı (zehir, cehennem yarası): sırası gelenin tur başında.
-      const dot = dotEvents(current, next.id, rng);
-      events.push(...dot);
-      current = applyEvents(current, dot);
-      // Süren etkiler (Görev R2): geçici HP (Heroism), süregelen hasar ve save (Searing Smite), Command.
-      // Büyü alanında tur başlatmak (Görev B2: Web, Sleet Storm, Stinking Cloud).
-      // Kuyruk 19: büyücünün turunun başında ondan uzaklaşan bulut (Cloudkill).
-      const drift = [...zoneDriftEvents(current, next.id)];
-      events.push(...drift);
-      current = applyEvents(current, drift);
-      // Kuyruk 19: büyücünün tur başı alanı (Faithful Hound ısırığı).
-      const bite = casterTurnZoneEvents(current, next.id, rng);
-      events.push(...bite);
-      current = applyEvents(current, bite);
-      const zoneStart = zoneTurnEvents(current, next.id, 'start', rng);
-      events.push(...zoneStart);
-      current = applyEvents(current, zoneStart);
-      const auraStart = auraTriggerEvents(current, next.id, 'turnStart', rng);
-      events.push(...auraStart);
-      current = applyEvents(current, auraStart);
-      // Kuyruk K54b: kayıtlı tur başı kancaları (imza: Arazi Okuma).
-      const hooked = turnStartHookEvents(current, next.id, rng, applyEvents);
-      events.push(...hooked);
-      current = applyEvents(current, hooked);
-      const fx = effectTurnStartEvents(current, next.id, rng);
-      events.push(...fx.events);
-      current = applyEvents(current, fx.events);
-      const celStart = celestialTurnStartEvents(current, next.id);
-      events.push(...celStart);
-      current = applyEvents(current, celStart);
-      const glideStart = glideTurnStartEvents(current, next.id);
-      events.push(...glideStart);
-      current = applyEvents(current, glideStart);
-      // Kuyruk AS1b (alt soy etkisi): zorlu arazide hız farkı.
-      const soyStart = soyTurnStartEvents(current, next.id);
-      events.push(...soyStart);
-      current = applyEvents(current, soyStart);
+      const startChain = turnStartChain(current, next.id, rng);
+      events.push(...startChain.events);
+      current = startChain.state;
+      const fx = { skip: startChain.skip };
       // Kuyruk 19: Animate Objects: sahibi bonus eylemle emretmediyse nesne yalnızca Kaçın yapar (turu geçer).
       const nx = current.combatants[next.id];
       const ownerOf = nx?.summon?.commandBonus ? current.combatants[nx.summon.by] : undefined;
@@ -727,7 +609,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const after = current.combatants[next.id];
       // Yenilenemeyip ölen, uyuyan yaratığın, masumun ve Command'la turunu kaybedenin turu atlanır (masum tur başı
       // etkilerini yine alır).
-      if (after && (after.hp > 0 || after.regenPending) && !after.asleep && (!after.unaware || patrolOf(current, after)) && !after.civilian && !fx.skip) break;
+      if (after && (after.hp > 0 || after.regenPending) && !after.asleep && (!after.unaware || patrolOf(current, after)) && !after.civilian && !fx.skip) {
+        // Kuyruk MB2 (74+): binicinin turunda oynayan kontrollü bineğin tur başı kancaları (bineğin kendi turu yok).
+        for (const mid of ridMountIds(current, next.id)) {
+          const mStart = turnStartChain(current, mid, rng);
+          events.push(...mStart.events);
+          current = mStart.state;
+        }
+        break;
+      }
       // Atlanan turun sonu da sayılır: sahibinin turuna bağlı süreler takılı kalmaz.
       const skippedEnd = [...timerEvents(current, next.id, 'turnEnd', rng)];
       skippedEnd.push(...effectTurnEndEvents(applyEvents(current, skippedEnd), next.id, rng));
@@ -817,7 +707,14 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     const r = executeCommand(up, cmd, ctx, rng);
     return r.ok ? { ok: true, state: r.state, events: [...stood, ...r.events] } : r;
   }
-  if (cmd.type === 'mount') return executeMount(state, actor, cmd.mountId);
+  if (cmd.type === 'mount') {
+    const r = executeMount(state, actor, cmd.mountId);
+    // Kuyruk MB2 (74+): bu turda henüz oynamamış binek kontrollü olunca tur başı kancaları binicinin turunda çalışır.
+    const m = r.ok ? r.state.combatants[cmd.mountId] : undefined;
+    if (!r.ok || !m?.ridTurn?.hooks || m.ridTurn.round !== r.state.round || state.combatants[cmd.mountId]?.ridTurn?.round === state.round) return r;
+    const chain = turnStartChain(r.state, m.id, rng);
+    return finish(state, [...r.events, ...chain.events]);
+  }
   if (cmd.type === 'dismount') return executeDismount(state, actor, cmd.to, cmd.toFt);
   // Kuyruk 19 (Mounted Combat): binici kendi yürümez; bineği taşır.
   if (actor.riding && (cmd.type === 'move' || cmd.type === 'jump' || cmd.type === 'shift_move')) return fail('Bineğin üstündesin: önce in (bineğin hareketiyle taşınırsın).');
@@ -999,5 +896,147 @@ function executeExploreMove(state: BattleState, cmd: Extract<Command, { type: 'e
   const r = executeCommand(live, { type: 'move', actorId: c.id, to: cmd.to }, ctx, rng);
   if (!r.ok) return r;
   return { ok: true, state: { ...r.state, status: state.status, turnIndex: state.turnIndex }, events: [step, ...r.events] };
+}
+
+/**
+ * Tur sonu kanca zinciri (sırası biten savaşçı için; Kuyruk MB2'de kontrollü bineğe de). `global`: tur başına bir kez
+ * çalışan genel tur sonu (`anyTurnEndEvents`) dahil mi. Olaylar tek tek uygulanarak üretilir (eski satır içi kodla aynı sıra).
+ */
+function turnEndChain(state: BattleState, id: string, rng: Rng, global: boolean): { events: BattleEvent[]; state: BattleState } {
+  const events: BattleEvent[] = [];
+  let cur = state;
+  const push = (evs: readonly BattleEvent[]) => { events.push(...evs); cur = applyEvents(cur, evs as BattleEvent[]); };
+  // Tur sonu harita etkileri (sıcak, soğuk, alevde bitirme) sırası biten için.
+  const ending = turnEndMapEvents(cur, cur.combatants[id] as Combatant, rng);
+  push(ending);
+  // Turunu düşman yayılımında (Spirit Guardians) bitiren save yapar.
+  const aura = auraTurnEndEvents(cur, cur.combatants[id] as Combatant, rng);
+  push(aura);
+  // Rage: bu tur uzatılmadıysa biter.
+  const rageEnd = rageTurnEndEvents(cur.combatants[id] as Combatant);
+  push(rageEnd);
+  // Süreli durumlar: sırası biten savaşçının tur sonu sayaçları ("sonuna dek", "save ends").
+  const timedEnd = timerEvents(cur, id, 'turnEnd', rng);
+  push(timedEnd);
+  // Süren etkilerin tur sonu (Görev B1): gecikmeli hasar (Acid Arrow), tekrar save (Slow, Ray of Enfeeblement).
+  const fxEnd = [...effectTurnEndEvents(cur, id, rng)];
+  push(fxEnd);
+  // Kuyruk K20 (ev kuralı): Celestial Kırık Kanat iner, Parlayan Ruh aurası.
+  const celEnd = celestialTurnEndEvents(cur, id, rng);
+  push(celEnd);
+  // Kuyruk U1a (sürüm 61+): zorunlu inişli uçuş (`ucus.zorunluInis`) tur sonunda biter.
+  const glideEnd = glideTurnEndEvents(cur, id);
+  push(glideEnd);
+  // Kuyruk 19: Telekinesis: önceki turun hedefi bırakılır (havadaysa düşer).
+  const tkEnd = telekinesisTurnEndEvents(cur, id, rng);
+  push(tkEnd);
+  // K17 G2 (kural sürümü 13): Monk Self-Restoration: tur sonunda Charmed, Frightened ve Poisoned biter.
+  const restored = selfRestorationEvents(cur, id);
+  push(restored);
+  // Büyü alanlarında tur bitirmek (Görev B2: Grease, Moonbeam, Flaming Sphere, ruh sürüsü).
+  const zoneEnd = zoneTurnEvents(cur, id, 'end', rng);
+  push(zoneEnd);
+  // Kuyruk K61 (sürüm 44): büyücünün alanı her tur sonunda alandakileri tetikler (Earthquake).
+  const casterEnd = casterEndZoneEvents(cur, id, rng);
+  push(casterEnd);
+  // Kuyruk K66a (sürüm 50): Earthquake'in bu turda yerleştirilen yarıkları açılır (sıradakinin turu başında açık).
+  const opened = fissureOpenEvents(cur, id, rng);
+  push(opened);
+  // Kuyruk K66b (sürüm 50): Earthquake tur sonunda alandaki yapılara 50 Bludgeoning (çöküş, enkaz).
+  const quaked = quakeTurnEndEvents(cur, id, rng);
+  push(quaked);
+  // Kuyruk K62 (sürüm 46): Delayed Blast Fireball boncuğu +1d6.
+  const beadGrow = beadTurnEndEvents(cur, id);
+  push(beadGrow);
+  // Kuyruk K53 S5: veriden auraların tur sonu tetikleri.
+  const auraEnd = auraTriggerEvents(cur, id, 'turnEnd', rng);
+  push(auraEnd);
+  // Kuyruk 19 (srdK19): canavarın tur sonu yetenekleri (Heat Aura, Mucus Cloud, akan su, Hydra başları).
+  const monEnd = monsterTurnEvents(cur, cur.combatants[id] as Combatant, 'end', rng);
+  push(monEnd);
+  if (global) push(anyTurnEndEvents(cur));
+  // Kuyruk 19 (srdK19): tur sonu canavar tepkileri (Ink Cloud, Pursuit).
+  const reactEnd = reactionTurnEndEvents(cur, id, rng);
+  push(reactEnd);
+  return { events, state: cur };
+}
+
+/**
+ * Tur başı kanca zinciri (sırası gelen savaşçı için; Kuyruk MB2'de kontrollü bineğe de). `skip`: süren etki turunu
+ * aldırıyor (Command). Olaylar tek tek uygulanarak üretilir (eski satır içi kodla aynı sıra).
+ */
+function turnStartChain(state: BattleState, id: string, rng: Rng): { events: BattleEvent[]; state: BattleState; skip: boolean } {
+  const events: BattleEvent[] = [];
+  let cur = state;
+  const c0 = cur.combatants[id] as Combatant;
+  const push = (evs: readonly BattleEvent[]) => { events.push(...evs); cur = applyEvents(cur, evs as BattleEvent[]); };
+  // Kuyruk 33: boss'un turu başlarken efsanevi eylem kullanımları yenilenir.
+  const refresh = legendaryRefreshEvents(cur, id);
+  push(refresh);
+  const start = startOfTurnEvents(c0, rng);
+  push(start);
+  // Kuyruk 19 (srdK19): canavar yeteneklerinin şarjı ve tur başı yetenekleri (güneş, Barbed Hide, yutulanlar, Berserk).
+  const monStart = [...abilitiesOf(cur, c0).filter((a) => a.recharge !== undefined && c0.abilityRecharge?.includes(a.id)).map((a) => {
+    const d6 = rollDie(6, rollTag(rng, { kind: 'recharge', by: c0.id }));
+    return { type: 'ability_recharge', actorId: c0.id, abilityId: a.id, d6, recharged: d6 >= (a.recharge ?? 6) } as BattleEvent;
+  }), ...monsterTurnEvents(cur, cur.combatants[id] as Combatant, 'start', rng)];
+  push(monStart);
+  // Bitişikteki gizli düşmanları fark eder (Görev K).
+  const noticed = noticeEvents(cur, cur.combatants[id] as Combatant);
+  push(noticed);
+  const startMap = turnStartMapEvents(cur, cur.combatants[id] as Combatant, rng);
+  push(startMap);
+  // Tur başlatana düşman tepkisi (Unnerving Gaze; Görev R1).
+  const gaze = turnStartReactions(cur, id, rng);
+  push(gaze);
+  // Süreli durumlar: sırası gelen savaşçının tur başı sayaçları ("başına dek", Kaçın, Yardım).
+  const timedStart = timerEvents(cur, id, 'turnStart', rng);
+  push(timedStart);
+  // Süren durum hasarı (zehir, cehennem yarası): sırası gelenin tur başında.
+  const dot = dotEvents(cur, id, rng);
+  push(dot);
+  // Süren etkiler (Görev R2): geçici HP (Heroism), süregelen hasar ve save (Searing Smite), Command.
+  // Büyü alanında tur başlatmak (Görev B2: Web, Sleet Storm, Stinking Cloud).
+  // Kuyruk 19: büyücünün turunun başında ondan uzaklaşan bulut (Cloudkill).
+  const drift = [...zoneDriftEvents(cur, id)];
+  push(drift);
+  // Kuyruk 19: büyücünün tur başı alanı (Faithful Hound ısırığı).
+  const bite = casterTurnZoneEvents(cur, id, rng);
+  push(bite);
+  const zoneStart = zoneTurnEvents(cur, id, 'start', rng);
+  push(zoneStart);
+  const auraStart = auraTriggerEvents(cur, id, 'turnStart', rng);
+  push(auraStart);
+  // Kuyruk K54b: kayıtlı tur başı kancaları (imza: Arazi Okuma).
+  const hooked = turnStartHookEvents(cur, id, rng, applyEvents);
+  push(hooked);
+  const fx = effectTurnStartEvents(cur, id, rng);
+  push(fx.events);
+  const celStart = celestialTurnStartEvents(cur, id);
+  push(celStart);
+  const glideStart = glideTurnStartEvents(cur, id);
+  push(glideStart);
+  // Kuyruk AS1b (alt soy etkisi): zorlu arazide hız farkı.
+  const soyStart = soyTurnStartEvents(cur, id);
+  push(soyStart);
+  return { events, state: cur, skip: !!fx.skip };
+}
+
+/**
+ * Kuyruk MB2 (74+): kontrollü bineğin komut kapısı. Komutu veren kontrollü binekse: yalnız binicisinin turunda, yalnız izinli
+ * komutlar (`controlledCommandProblem`), binicinin oyuncusu da yönetir (yetki için bineğin sahibinin bağlamı döner). Kontrollü
+ * binek değilse null.
+ */
+function controlledGate(state: BattleState, cmd: Command, ctx: CommandContext, outOfTurn: boolean): { ctx: CommandContext } | { error: string } | null {
+  if (outOfTurn || !binekMb2On(state) || !('actorId' in cmd) || state.status !== 'active') return null;
+  const m = state.combatants[cmd.actorId];
+  if (!m || !controlledNow(state, m)) return null;
+  const rider = state.combatants[m.controlledBy as string] as Combatant;
+  if (state.order[state.turnIndex] !== rider.id) return { error: `${m.name} kontrollü binek: yalnız binicisinin (${rider.name}) turunda hareket eder.` };
+  const why = controlledCommandProblem(m, cmd);
+  if (why) return { error: why };
+  if (canControl(m, ctx)) return { ctx };
+  if (!canControl(rider, ctx)) return { error: 'Bu savaşçıyı yönetme yetkin yok.' };
+  return { ctx: m.side === 'enemies' || m.civilian ? { ...ctx, isGm: true } : { ...ctx, playerId: m.ownerId ?? ctx.playerId } };
 }
 

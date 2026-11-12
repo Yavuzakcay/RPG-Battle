@@ -25,6 +25,7 @@ import { canAirMove } from './airMove';
 import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
 import { foeField, wallClimbCommand } from './ai/climbAi';
 import { bodyUnfit, riderStays } from './ai/binekMb5';
+import { controlledMountOf } from './binekMb2';
 import { approachField, engaged, highGroundBonus, k73aOn, K73A, landingWanted, riseFt, concentrationFlight } from './ai/k73a';
 import { K73B } from './ai/k73b';
 import { K73C } from './ai/k73c';
@@ -1728,7 +1729,9 @@ export function chooseCommand(state: BattleState): Command {
   const cmd0 = withMetamagic(state, actor, decide(state, actor, end), end);
   // Kuyruk K73a (sürüm 62+): turu bitirmeden önce uçuşu bu tur bitenin (süre, zorunlu iniş) ya da konsantrasyonlu uçuşta canı
   // azalanın inişi (düşme riski yok).
-  const cmd = cmd0.type === 'end_turn' && k73aOn(state) ? landCommand(state, actor) ?? cmd0 : cmd0;
+  const cmd1 = cmd0.type === 'end_turn' && k73aOn(state) ? landCommand(state, actor) ?? cmd0 : cmd0;
+  // Kuyruk MB2 (74+): binici bu adımda bir şey yapamıyorsa kontrollü bineğini yürütür (binicinin turunda, binicinin kararıyla).
+  const cmd = cmd1.type === 'end_turn' ? controlledMountStep(state, actor) ?? cmd1 : cmd1;
   // Ejderhayı uyandırmaması gereken düşman: komut yine de uyandırıyorsa (gürültülü saldırı gibi) yapmaz.
   if (cmd.type !== 'end_turn' && mustNotWake(state, actor)) {
     const r = tryCmd(state, actor, cmd);
@@ -1849,6 +1852,19 @@ function rouseMove(state: BattleState, actor: Combatant, dragon: Combatant): Com
     .filter((s) => actor.pos && s.d < distance(actor.pos, at) && risk(state, actor, s.to) < 50)
     .sort((a, b) => a.d - b.d || a.cost - b.cost);
   return firstMove(state, actor, spots);
+}
+
+/**
+ * Kuyruk MB2 (74+): kontrollü bineğin adımı. Binicinin turunda binici o an bir şey yapamıyorsa (saldırı yeri erişimde değil),
+ * bineğin kendi kararı (yaklaşma, kaçış, Dash, Disengage, Dodge) bineğe uygulanır; binicinin saldırısı bineğin gittiği yerden
+ * sonraki adımda. Bineğin saldırı ve diğer eylemleri motor reddeder (`controlledCommandProblem`), aday olamaz.
+ */
+const MOUNT_STEPS = new Set<string>(['move', 'jump', 'dash', 'disengage', 'dodge', 'vertical_move', 'climb', 'stand_up']);
+function controlledMountStep(state: BattleState, rider: Combatant): Command | null {
+  const m = controlledMountOf(state, rider);
+  if (!m || m.hp <= 0) return null;
+  const c = decide(state, m, { type: 'end_turn', actorId: m.id });
+  return MOUNT_STEPS.has(c.type) && tryCmd(state, m, c).ok ? c : null;
 }
 
 function decide(state: BattleState, actor: Combatant, end: Command): Command {
