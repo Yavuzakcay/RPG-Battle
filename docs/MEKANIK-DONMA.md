@@ -1,3 +1,5 @@
+> **Not:** Mekanik donması kaldırıldı (kullanıcı, 2026-11-12); yeni mekanik eklenebilir, kural sürümü ve kayıt sürümü kuralları geçerli.
+
 # Mekanik donması (Kuyruk K57)
 
 > **KALDIRILDI 2026-11-12, kullanıcı kararı** (Kuyruk K57-KALDIR; DECISIONS.md). Yeni mekanik eklenebilir; geçerli kurallar
