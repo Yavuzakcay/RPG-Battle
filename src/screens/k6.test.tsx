@@ -54,15 +54,17 @@ describe('SRD tablo sayıları', () => {
 });
 
 describe('sihirbaz', () => {
-  it('Wizard 5: sayaçlar, gruplar, 4+ seviye kilitli, oyunda olmayan soluk', () => {
+  it('Wizard 5: sayaçlar, gruplar; 4+ seviye ve oyunda olmayan büyüler gizli', () => {
     const m = html(caster('wizard', 5, { spellNames: ['Fire Bolt', 'Magic Missile', 'Shield', 'Fireball'], spellbook: ['Magic Missile', 'Shield', 'Fireball', 'Sleep'] }));
     expect(m).toContain('Cantrip 1 / 4');
     expect(m).toContain('Hazırlanan 3 / 9');
     expect(m).toContain('Büyü kitabı 4 / 14');
     expect(m).toContain('<h3>3. seviye</h3>');
-    expect(m).toMatch(/<details class="spell-group locked"><summary>🔒 4\. seviye/);
-    // Görev K9a'dan beri Wizard'ın 0–3. seviye SRD büyülerinin hepsi oyunda; oyunda olmayanlar kilitli 4+ seviyede soluk.
-    expect(m).toContain('class="spell-row missing"');
+    // SD3: erişilemeyen (4+) seviyeler ve oyunda olmayan büyüler listede gizlenir; tek satır ipucu kalır.
+    expect(m).not.toContain('spell-group locked');
+    expect(m).not.toContain('<h3>4. seviye</h3>');
+    expect(m).not.toContain('class="spell-row missing"');
+    expect(m).toContain('Daha güçlü büyüler seviye atlayınca açılır.');
   });
   it('sınıra gelince seçilmemiş hazırlama düğmeleri kapalı; kitapta olmayan hazırlanamaz', () => {
     const nine = spells.filter((x) => x.classes.includes('Wiz') && x.level >= 1 && x.level <= 3).slice(0, 9).map((x) => x.name);

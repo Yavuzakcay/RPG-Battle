@@ -51,7 +51,9 @@ describe('uyum (attunement) sınırı', () => {
   });
   it('arayüz: sayaç, dördüncü uyumlu eşya seçilemez', () => {
     const m = html(ch({ itemNames: four.slice(0, 3) }), 'equipment');
-    expect(m).toContain('uyum 3 / 3');
+    expect(m).toContain('Uyumlu eşya 3/3');
+    // SD3: limit dolunca nedeni yazılır; uyum istemeyen eşyanın sayı sınırı yok.
+    expect(m).toContain('Uyum doldu (3/3)');
     const headband = /<label[^>]*><input type="checkbox"[^>]*\/>(?:(?!<\/label>).)*Headband of Intellect/.exec(m)?.[0] ?? '';
     expect(headband).toContain('disabled');
     const potion = /<label[^>]*><input type="checkbox"[^>]*\/>(?:(?!<\/label>).)*Potion of Healing</.exec(m)?.[0] ?? '';
@@ -70,16 +72,15 @@ describe('yetkinlik', () => {
     expect(armorProficient('cleric', 'shield')).toBe(true);
   });
   it('rozetler; silah süzgeci varsayılan açık (Wizard\'da Longsword yok); eğitimsiz zırhta uyarı (Görev K9d: motorda ceza var)', () => {
+    // SD3: düz Türkçe silah adları (İngilizce adı ⓘ'de); yetkin olmayan silahlar listede yok, eğitimsiz zırh uyarısı var.
     const w = html(ch({ classId: 'wizard', armorName: 'Chain Mail' }), 'equipment');
-    expect(w).toContain('prof-badge no');
     expect(w).toContain('Yalnızca yetkin olduklarım');
-    expect(w).not.toContain('<b>Longsword</b>');
-    expect(w).toContain('<b>Dagger</b>');
+    expect(w).not.toContain('<b>Uzun kılıç</b>');
+    expect(w).toContain('<b>Hançer</b>');
     expect(w).toContain('büyü yapılamaz');
     const f = html(ch(), 'equipment');
     expect(f).not.toContain('armor-warn');
-    expect(f).toContain('<b>Longsword</b>');
-    expect(f).not.toContain('prof-badge no');
+    expect(f).toContain('<b>Uzun kılıç</b>');
   });
 });
 
@@ -95,7 +96,9 @@ describe('özet ve adlar', () => {
   });
   it('beceri adları Türkçe (İngilizce adı yanında); alt sınıf "Evokasyon Ustası (Evoker)"', () => {
     const m = html(ch(), 'skills');
-    expect(m).toContain('Atletizm <small class="skill-en">Athletics</small>');
+    // SD3: beceri adı yalnız Türkçe (İngilizce adı yanında gösterilmez).
+    expect(m).toContain('Atletizm');
+    expect(m).not.toContain('skill-en');
     const evoker = classData.subclasses.find((x) => x.id === 'evoker');
     expect(evoker && subclassLabel(evoker.name, 'tr')).toBe('Evokasyon Ustası (Evoker)');
     expect(evoker && subclassLabel(evoker.name, 'en')).toBe('Evoker');

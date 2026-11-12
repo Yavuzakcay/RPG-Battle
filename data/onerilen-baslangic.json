@@ -1,0 +1,283 @@
+{
+  "_aciklama": "Görev SD3: oluşturucuda yeni karakter için önerilen başlangıç donanımı (yalnızca öneri; kayda yazılan alanlar mevcut alanlar: zırh, kalkan, silahlar). Ustalık hakkı sınıf tablosundan, uygun silahlardan ilk sırayla doldurulur. Adlar data/armor.json ve data/weapons.json adlarıdır (test denetler). Sim partileriyle (data/sim-partiler.json) ilişkisi yok. buyuOnceligi: sınıf başına önerilen büyülerin öncelik sırası (cantrip ve seviyeli birlikte; uygun olmayanlar atlanır, eksik kalan sıra dışı uygun büyülerle dolar).",
+  "siniflar": {
+    "barbarian": {
+      "zirh": "Zırhsız",
+      "kalkan": false,
+      "silahlar": [
+        "Greataxe",
+        "Handaxe"
+      ]
+    },
+    "bard": {
+      "zirh": "Leather Armor",
+      "kalkan": false,
+      "silahlar": [
+        "Rapier",
+        "Dagger"
+      ]
+    },
+    "cleric": {
+      "zirh": "Chain Shirt",
+      "kalkan": true,
+      "silahlar": [
+        "Mace"
+      ]
+    },
+    "druid": {
+      "zirh": "Leather Armor",
+      "kalkan": true,
+      "silahlar": [
+        "Quarterstaff"
+      ]
+    },
+    "fighter": {
+      "zirh": "Chain Mail",
+      "kalkan": true,
+      "silahlar": [
+        "Longsword",
+        "Light crossbow"
+      ]
+    },
+    "monk": {
+      "zirh": "Zırhsız",
+      "kalkan": false,
+      "silahlar": [
+        "Spear",
+        "Dagger"
+      ]
+    },
+    "paladin": {
+      "zirh": "Chain Mail",
+      "kalkan": true,
+      "silahlar": [
+        "Longsword",
+        "Javelin"
+      ]
+    },
+    "ranger": {
+      "zirh": "Chain Shirt",
+      "kalkan": false,
+      "silahlar": [
+        "Longbow",
+        "Shortsword"
+      ]
+    },
+    "rogue": {
+      "zirh": "Studded Leather Armor",
+      "kalkan": false,
+      "silahlar": [
+        "Rapier",
+        "Shortbow"
+      ]
+    },
+    "sorcerer": {
+      "zirh": "Zırhsız",
+      "kalkan": false,
+      "silahlar": [
+        "Dagger"
+      ]
+    },
+    "warlock": {
+      "zirh": "Leather Armor",
+      "kalkan": false,
+      "silahlar": [
+        "Dagger"
+      ]
+    },
+    "wizard": {
+      "zirh": "Zırhsız",
+      "kalkan": false,
+      "silahlar": [
+        "Quarterstaff"
+      ]
+    }
+  },
+  "adlar": [
+    "Aylin",
+    "Deniz",
+    "Efe",
+    "Kaan",
+    "Mira",
+    "Toprak",
+    "Yıldız",
+    "Rüzgâr",
+    "Ateş",
+    "Işık",
+    "Ela",
+    "Bora"
+  ],
+  "ozelTurler": [
+    "human",
+    "elf",
+    "dwarf",
+    "halfling",
+    "tiefling",
+    "dragonborn"
+  ],
+  "ozelSiniflar": [
+    "fighter",
+    "wizard",
+    "rogue",
+    "cleric",
+    "ranger",
+    "barbarian"
+  ],
+  "buyuOnceligi": {
+    "wizard": [
+      "Fire Bolt",
+      "Mage Hand",
+      "Ray of Frost",
+      "Prestidigitation",
+      "Magic Missile",
+      "Shield",
+      "Sleep",
+      "Mage Armor",
+      "Burning Hands",
+      "Thunderwave",
+      "Find Familiar",
+      "Misty Step",
+      "Scorching Ray",
+      "Invisibility",
+      "Web",
+      "Hold Person",
+      "Mirror Image",
+      "Fireball",
+      "Counterspell",
+      "Fly",
+      "Haste",
+      "Lightning Bolt",
+      "Hypnotic Pattern",
+      "Dispel Magic"
+    ],
+    "sorcerer": [
+      "Fire Bolt",
+      "Ray of Frost",
+      "Mage Hand",
+      "Prestidigitation",
+      "Magic Missile",
+      "Shield",
+      "Sleep",
+      "Burning Hands",
+      "Mage Armor",
+      "Misty Step",
+      "Scorching Ray",
+      "Hold Person",
+      "Fireball",
+      "Counterspell",
+      "Haste",
+      "Lightning Bolt",
+      "Fly",
+      "Dispel Magic"
+    ],
+    "warlock": [
+      "Eldritch Blast",
+      "Minor Illusion",
+      "Hex",
+      "Hellish Rebuke",
+      "Charm Person",
+      "Misty Step",
+      "Hold Person",
+      "Invisibility",
+      "Counterspell",
+      "Hypnotic Pattern",
+      "Fear",
+      "Fly"
+    ],
+    "cleric": [
+      "Sacred Flame",
+      "Guidance",
+      "Light",
+      "Spare the Dying",
+      "Cure Wounds",
+      "Healing Word",
+      "Bless",
+      "Guiding Bolt",
+      "Shield of Faith",
+      "Sanctuary",
+      "Spiritual Weapon",
+      "Lesser Restoration",
+      "Aid",
+      "Hold Person",
+      "Spirit Guardians",
+      "Revivify",
+      "Mass Healing Word",
+      "Dispel Magic",
+      "Beacon of Hope"
+    ],
+    "druid": [
+      "Produce Flame",
+      "Shillelagh",
+      "Guidance",
+      "Druidcraft",
+      "Cure Wounds",
+      "Healing Word",
+      "Entangle",
+      "Faerie Fire",
+      "Thunderwave",
+      "Goodberry",
+      "Moonbeam",
+      "Barkskin",
+      "Pass without Trace",
+      "Heat Metal",
+      "Call Lightning",
+      "Conjure Animals",
+      "Dispel Magic",
+      "Revivify"
+    ],
+    "bard": [
+      "Vicious Mockery",
+      "Minor Illusion",
+      "Mage Hand",
+      "Prestidigitation",
+      "Healing Word",
+      "Cure Wounds",
+      "Faerie Fire",
+      "Dissonant Whispers",
+      "Thunderwave",
+      "Heroism",
+      "Sleep",
+      "Invisibility",
+      "Hold Person",
+      "Shatter",
+      "Hypnotic Pattern",
+      "Slow",
+      "Fear",
+      "Dispel Magic",
+      "Mass Healing Word"
+    ],
+    "paladin": [
+      "Bless",
+      "Cure Wounds",
+      "Shield of Faith",
+      "Command",
+      "Divine Favor",
+      "Searing Smite",
+      "Heroism",
+      "Aid",
+      "Lesser Restoration",
+      "Shining Smite",
+      "Find Steed",
+      "Revivify",
+      "Dispel Magic",
+      "Magic Circle"
+    ],
+    "ranger": [
+      "Hunter's Mark",
+      "Cure Wounds",
+      "Ensnaring Strike",
+      "Entangle",
+      "Fog Cloud",
+      "Longstrider",
+      "Goodberry",
+      "Spike Growth",
+      "Barkskin",
+      "Pass without Trace",
+      "Lesser Restoration",
+      "Conjure Animals",
+      "Plant Growth",
+      "Revivify",
+      "Wind Wall"
+    ]
+  }
+}

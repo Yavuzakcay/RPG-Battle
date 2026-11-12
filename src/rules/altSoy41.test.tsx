@@ -71,7 +71,8 @@ describe('41 alt soy', () => {
     expect(m).toContain('Dayanıklılık kurtarma zarlarında +1');
     expect(m).toContain('Çeviklik kurtarma zarlarında −1');
     expect(m).toContain('Darkvision 120 ft');
-    expect(m).toContain('data-status="calisir"');
+    // SD3: "çalışır / kısmi" durum etiketi oyuncuya gösterilmez (yalnız planlı için küçük "yakında").
+    expect(m).not.toContain('data-status');
   });
   it('soyu isteğe bağlı türler (Dwarf, Halfling, Orc, Human) varsayılan soysuz; diğerlerinin varsayılanı korunur', () => {
     for (const r of races) {
@@ -150,8 +151,8 @@ describe('oluşturucu: soy kartları', () => {
     expect(m).toContain('lineage-notes');
     expect(m).toContain('Zehir hasarına direnç.');
     expect(m).toContain('Soğuk hasarına karşı kurtarma zarlarında dezavantaj.');
-    expect(m).toContain('data-status="kismi"');
-    expect(m).toContain('kısmi');
+    expect(m).not.toContain('data-status');
+    expect(m).not.toContain('kısmi');
     expect((m.match(/lineage-card/g) ?? []).length).toBeGreaterThanOrEqual(3);
   });
   it('eski Human kaydı soysuz kalır: sorun çıkmaz, ipucu görünür; kaydedilirken soy atanmaz', () => {

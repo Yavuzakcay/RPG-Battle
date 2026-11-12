@@ -467,5 +467,61 @@
     "example": "You see an Invisible enemy within 60 feet."
    }
   }
+ },
+ "classes": {
+  "tr": {
+   "barbarian": "Öfkeyle dövüşen, çok dayanıklı yakın dövüşçü.",
+   "bard": "Müzik ve büyüyle dostlarına güç veren gezgin.",
+   "cleric": "Tanrısından aldığı güçle dostlarını iyileştiren zırhlı rahip.",
+   "druid": "Doğanın büyüsünü kullanan, hayvana dönüşebilen bilge.",
+   "fighter": "Her silahı kullanan, sağlam ve güvenilir savaşçı.",
+   "monk": "Silahsız ve çevik dövüşen dövüş sanatçısı.",
+   "paladin": "Kutsal yeminli zırhlı şövalye; hem vurur hem iyileştirir.",
+   "ranger": "Yay ve kılıçla avlanan, doğada yolunu bulan izci.",
+   "rogue": "Gizlice yaklaşıp tek vuruşta büyük hasar veren hırsız.",
+   "sorcerer": "Doğuştan gelen güçle ateş ve yıldırım saçan büyücü.",
+   "warlock": "Gizemli bir varlıkla anlaşma yapıp güç kazanan büyücü.",
+   "wizard": "Büyü kitabından çeşit çeşit büyü yapan bilgin."
+  },
+  "en": {
+   "barbarian": "A tough fighter who battles in a rage.",
+   "bard": "A traveller who powers up friends with music and magic.",
+   "cleric": "An armored priest who heals allies with divine power.",
+   "druid": "A nature wise-one who casts primal magic and turns into animals.",
+   "fighter": "A sturdy, reliable warrior who can use any weapon.",
+   "monk": "A quick martial artist who fights without weapons.",
+   "paladin": "A holy knight in armor who both strikes and heals.",
+   "ranger": "A scout who hunts with bow and blade and knows the wild.",
+   "rogue": "A sneaky thief who deals big damage in one strike.",
+   "sorcerer": "A caster born with power who hurls fire and lightning.",
+   "warlock": "A caster who gains power from a pact with a mysterious being.",
+   "wizard": "A scholar who casts many kinds of spells from a spellbook."
+  }
+ },
+ "races": {
+  "tr": {
+   "celestial": "Gökten düşmüş; ışık ve şifa gücü taşır.",
+   "dragonborn": "Ejderha soyundan gelir; nefesiyle ateş ya da buz püskürtür.",
+   "dwarf": "Sert ve dayanıklı dağ halkı; zehre karşı güçlüdür.",
+   "elf": "Zarif, keskin duyulu, uzun ömürlü orman halkı.",
+   "gnome": "Küçük, zeki ve meraklı; büyüye karşı dirençlidir.",
+   "goliath": "Dev soyundan gelen, iri ve güçlü dağlı.",
+   "halfling": "Küçük, şanslı ve cesur; kolay yakalanmaz.",
+   "human": "Her işe uyum sağlayan çok yönlü insan.",
+   "orc": "Güçlü ve yorulmaz; zor anda ayakta kalabilir.",
+   "tiefling": "Cehennem soyundan gelir; ateşe dayanıklı ve büyülüdür."
+  },
+  "en": {
+   "celestial": "Fallen from the sky; carries light and healing.",
+   "dragonborn": "Of dragon blood; breathes fire or frost.",
+   "dwarf": "Tough mountain folk; strong against poison.",
+   "elf": "Graceful, sharp-sensed, long-lived forest folk.",
+   "gnome": "Small, clever and curious; resists magic.",
+   "goliath": "Giant-blooded, big and strong highlander.",
+   "halfling": "Small, lucky and brave; hard to catch.",
+   "human": "A versatile person who adapts to any job.",
+   "orc": "Strong and tireless; can stay up when it counts.",
+   "tiefling": "Of infernal blood; resists fire and has innate magic."
+  }
  }
 }

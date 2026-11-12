@@ -4,6 +4,8 @@
  */
 import { ilkelOzet } from './ilkelOzet';
 import data from '../../data/aciklamalar.json';
+import OZELLIK_ADLARI from '../../data/ozellik-adlari.json';
+import DONANIM_ADLARI from '../../data/donanim-adlari.json';
 import { findSubclass } from '../rules/subclasses';
 import type { Weapon } from '../data/types';
 import type { Lang } from '../i18n/strings';
@@ -27,6 +29,19 @@ export function featureSummary(f: { key: string; id: string; from: 'class' | 'su
   return FEATURES[lang]?.[f.key] || FEATURES.tr[f.key] || '';
 }
 
+/**
+ * Görev SD3: sınıf ya da alt sınıf özelliğinin gösterilecek düz Türkçe adı (`data/ozellik-adlari.json`, alt sınıfta
+ * `subclasses.json` TR adı) ve İngilizce kural adı (yalnızca ⓘ'de). Veri kimlikleri değişmez.
+ */
+export function featureLabel(f: { key: string; id: string; name: string; from: 'class' | 'subclass' }, classId: string, subclassId: string | undefined, lang: Lang): { name: string; en: string } {
+  if (f.from === 'subclass') {
+    const n = findSubclass(classId, subclassId)?.features.find((x) => x.id === f.id)?.name;
+    return { name: (lang === 'tr' ? n?.tr : n?.en) || f.name, en: n?.en || f.name };
+  }
+  const tr = (OZELLIK_ADLARI.tr as Record<string, string>)[f.key];
+  return { name: lang === 'tr' && tr ? tr : f.name, en: f.name };
+}
+
 /** Görev K20: feat'in "Ne yapar?" ve "Örnek" metni (yoksa null: çeviri yok). */
 export function featInfo(id: string, lang: Lang): { what: string; example: string } | null {
   const F = (data as unknown as { feats: Record<Lang, Record<string, { what: string; example: string }>> }).feats;
@@ -42,3 +57,16 @@ export function weaponPropertyKeys(w: Weapon): string[] {
 }
 
 export const propertyDescription = (key: string, lang: Lang): string => PROPS[lang]?.[key] ?? PROPS.tr[key] ?? '';
+
+/**
+ * Görev SD3: silah ve zırhın gösterilecek düz Türkçe adı (`data/donanim-adlari.json`); veride ya da İngilizce arayüzde
+ * kayıttaki (SRD) ad. Kayıt alanları ve kimlikler değişmez.
+ */
+export function gearName(kind: 'silah' | 'zirh', name: string, lang: Lang): string {
+  if (lang !== 'tr') return name;
+  return (DONANIM_ADLARI[kind] as Record<string, string>)[name] ?? name;
+}
+
+/** Görev SD3: sınıf ve türün tek cümlelik oyun dili tanıtımı (`data/aciklamalar.json` classes/races; yoksa boş). */
+export const classBlurb = (id: string, lang: Lang): string => (data as unknown as { classes: Texts }).classes?.[lang]?.[id] ?? '';
+export const raceBlurb = (id: string, lang: Lang): string => (data as unknown as { races: Texts }).races?.[lang]?.[id] ?? '';

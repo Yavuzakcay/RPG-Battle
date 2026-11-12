@@ -39,7 +39,8 @@ describe('geçmiş verisi', () => {
     for (const n of ['Mürit', 'Suçlu', 'Bilge', 'Asker']) expect(m).toContain(n);
     expect(m).toMatch(/aria-checked="true" class="pick-card background-card on"><b>Asker/);
     expect(m).toContain('Savage Attacker ile turda bir kez');
-    expect(m).toContain('Alet: Hırsız aletleri');
+    // SD3: kartlarda alet satırı yok (yalnızca bilgi); geçmiş "Geçmiş" katlı bölümünde.
+    expect(m).toContain('background-fold');
   });
 });
 
@@ -57,8 +58,10 @@ describe('bonus sınırı', () => {
   it('Puanlar adımı: geçmişte olmayan yeteneğin + düğmesi kapalı', () => {
     const m = html(char({ backgroundId: 'soldier' }), 'scores');
     expect(m).toContain('Yalnızca geçmişin yetenekleri: Güç (STR), Çeviklik (DEX), Dayanıklılık (CON).');
-    expect(m).toMatch(/stepper bg-bonus off" aria-label="Zekâ[^"]*"><small class="step-tag">INT<\/small><button[^>]*>−<\/button><b[^>]*>0<\/b><button[^>]*disabled/);
-    expect(m).not.toMatch(/stepper bg-bonus off" aria-label="Güç/);
+    // SD3: geçmişte olmayan üç yetenek gizlenir (soluk bırakılmaz); yalnız geçmişin yeteneklerinin sayaçları var.
+    expect(m).not.toMatch(/stepper bg-bonus[^>]*aria-label="Zekâ/);
+    expect((m.match(/class="stepper bg-bonus"/g) ?? []).length).toBe(3);
+    expect(m).toMatch(/stepper bg-bonus" aria-label="Güç/);
   });
 });
 
