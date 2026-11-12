@@ -55,6 +55,21 @@ describe('uç buildler (taslak v1.1, 3. seviye)', () => {
       expect(labelOf(newAlignment(v, 'otomatik'), 'tr')).toBe(label);
     });
   }
+  // Kuyruk AS1a: aynı dört uç build alt soyla (alt soy satırı ırk satırının yerine geçer; soysuz kayıt yukarıdaki eski değere düşer).
+  const altCases: Array<[string, string, string, string, string, number, number, number, string]> = [
+    ['paladin', 'acolyte', 'imza_hizir', 'celestial', 'parlayan-ruh', 3, 48, 50, 'Düzenli İyi'],
+    ['bard', 'criminal', 'imza_sair', 'elf', 'wood-elf', 3, -37, 19, 'Kaotik İyi'],
+    ['fighter', 'soldier', 'imza_imparator', 'goliath', 'stone', 3, 38, -34, 'Düzenli Kötü'],
+    ['rogue', 'criminal', 'imza_infazci', 'tiefling', 'abyssal', 3, -47, -50, 'Kaotik Kötü'],
+  ];
+  for (const [classId, backgroundId, subclassId, raceId, lin, level, d, g, label] of altCases) {
+    it(`alt soyla: ${classId} + ${backgroundId} + ${subclassId} + ${raceId}/${lin} = (${d}, ${g}) ${label}`, () => {
+      const sh = { classId, backgroundId, subclassId, raceId, level, ...(raceId === 'celestial' ? { celestialAwakening: lin } : { lineageId: lin }) };
+      const v = startValue(startContributions(sh));
+      expect(v).toEqual({ duzen: d, iyilik: g });
+      expect(labelOf(newAlignment(v, 'otomatik'), 'tr')).toBe(label);
+    });
+  }
   it('"Kabul etme" artık çoğu karakterde görünür (Paladin + Soldier + Human)', () => {
     expect(rejectOptions(startValue(startContributions({ classId: 'paladin', backgroundId: 'soldier', raceId: 'human' })))).toContain('orta');
   });

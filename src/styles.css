@@ -1266,3 +1266,19 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .strip-item .strip-status { position: absolute; left: -2px; bottom: -4px; font-size: 10px; font-style: normal; }
 .strip-item .strip-status i { font-style: normal; }
 .strip-more { background: rgba(255, 255, 255, 0.12); border: none; color: #fff; border-radius: 12px; padding: 0 8px; min-width: 28px; }
+
+/* Kuyruk AS1a: alt soy görünümü (yalnızca görsel): renk filtresi, en-boy, Celestial hale gizleme, kanat katmanı. */
+.look-frame { position: relative; display: inline-block; vertical-align: middle; }
+.look-frame .avatar img { filter: var(--look-filter, none); transform: scale(var(--look-sx, 1), var(--look-sy, 1)); transform-origin: 50% 100%; }
+.look-frame.halo-hidden .avatar img { clip-path: inset(var(--halo-clip, 9.5%) 0 0 0); }
+.look-wing { position: absolute; pointer-events: none; z-index: 0; mix-blend-mode: screen; opacity: 0.9; }
+.look-frame .avatar { position: relative; z-index: 1; }
+.skin-tones { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 2px; }
+.skin-tone { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: inherit; cursor: pointer; }
+.skin-tone.on { border-color: var(--party); box-shadow: 0 0 0 1px var(--party); }
+.skin-tone i { width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.35); }
+.lineage-notes { display: grid; gap: 4px; margin: 6px 0 0; }
+.lineage-notes ul { margin: 2px 0 0; padding-left: 18px; }
+.lineage-notes .buff b { color: var(--party); }
+.lineage-notes .debuff b { color: var(--enemy); }
+.lineage-planned { font-size: 0.8em; padding: 0 6px; border: 1px solid var(--line); border-radius: 999px; color: var(--mute); margin-left: 6px; }

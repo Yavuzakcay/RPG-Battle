@@ -18,6 +18,8 @@ export type GiantAncestry = 'cloud' | 'fire' | 'frost' | 'hill' | 'stone' | 'sto
 export interface Lineage {
   id: string;
   name: string;
+  /** Kuyruk AS1a: görünen ad (TR/EN); yoksa `name`. */
+  ad?: LocalText;
   /** Seçim kartında, özet panelinde ve karakter kartında: yalnızca bu seçeneği ayıran özellikler (Görev K3). */
   summary: LocalText;
   /** Bu seçimden gelen hasar dirençleri. */
@@ -32,6 +34,13 @@ export interface Lineage {
   giant?: GiantAncestry;
   /** Oyunda olmayan ya da kısmi soy özellikleri (yalnızca ⓘ ipucunda). */
   extras?: Array<{ name: LocalText; status: 'partial' | 'none'; note: LocalText }>;
+  /**
+   * Kuyruk AS1a: yalnızca açıklama (etkisi oyunda çalışmaz; mekanik AS1b'de). `durum: 'planli'` etiketini kartta
+   * "planlı" olarak gösterir. Bu alanlar `resistances`/`speed`/`spells` gibi motor alanlarına yazılmaz.
+   */
+  buff?: LocalText[];
+  debuff?: LocalText[];
+  durum?: 'planli';
 }
 
 /** SRD 5.2.1 türü (species). Ability bonusları türden değil, geçmişten (background) gelir. */
@@ -51,6 +60,11 @@ export interface Race {
   lineages?: Lineage[];
   /** Seçim yapılmamışsa kullanılan miras (oluşturucu ekranı gelene kadar geçici). */
   defaultLineage?: string;
+  /**
+   * Kuyruk AS1a: soyu isteğe bağlı tür (Dwarf, Halfling, Orc, Human): `defaultLineage` yoktur; eski kayıt soysuz kalır
+   * (`migrateLineages` atamaz, bir kerelik bildirim), seçilene dek soy etkisi yoktur.
+   */
+  lineageOptional?: boolean;
   traits: string;
   /** Kuyruk K20: ev kuralı türü (Celestial): bu ev kuralı açık değilse oluşturucuda seçilemez (`data/ev-kurallari.json`). */
   evKurali?: string;

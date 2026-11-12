@@ -22,6 +22,7 @@ import { alignmentEnabled } from '../app/features';
 const AlignmentBadge = lazy(() => import('../ui/AlignmentBadge'));
 import { MAX_PARTY } from '../app/limits';
 import { AvatarBadge } from '../ui/Avatar';
+import { LookFrame } from '../ui/LookFrame';
 import { useTheme } from '../ui/theme';
 import { SoundPanel } from '../ui/SoundPanel';
 import { IconAuto, IconGear, IconHexDie, IconMoon, IconPlay, IconSound, IconSun, IconUser } from '../ui/icons';
@@ -183,7 +184,7 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
   }
   return (
     <div className="char-card">
-      <AvatarBadge avatar={sheetAvatar(sheet)} size={44} ring="var(--party)" eager />
+      <LookFrame sheet={sheet} size={44}><AvatarBadge avatar={sheetAvatar(sheet)} size={44} ring="var(--party)" eager /></LookFrame>
       <div>
         <strong>{sheet.name || t().common.unnamed}</strong>
         <small>{t().player.cardTitle(raceName(sheet.raceId), className(sheet.classId), sheet.level)} · {line}</small>

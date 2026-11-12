@@ -57,6 +57,8 @@ export interface CharacterSheet {
   featureChoices?: Record<string, string>;
   /** Kuyruk K20 (ev kuralı): Celestial Göksel Uyanış biçimi (`data/celestial.json` `awakening.secenekler`). */
   celestialAwakening?: string;
+  /** Kuyruk AS1a: Human ten tonu (`data/alt-soy-gorunum.json` `ten.tonlar`); kültürden bağımsız, yalnızca görünüm. */
+  skinTone?: string;
   /** Taşıdığı silahlar (data/weapons.json adları), isteğe bağlı büyülü bonusla. */
   weapons?: Array<{ name: string; enchant?: number }>;
   /** Yan eldeki Light silah (data/weapons.json adı; Görev P1): Light özelliğinin ek saldırısı. Kalkanla olmaz. */

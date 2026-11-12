@@ -11,6 +11,7 @@ import { maskUrlFor, tintPixels } from './tint';
 import { deltaE, rgbToLab } from './color';
 import olcum from '../../data/soy-olcum.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
+import gorunum from '../../data/alt-soy-gorunum.json';
 
 const files = new Set(Object.keys(import.meta.glob('/public/characters/*.webp')).map((f) => f.replace('/public/', '')));
 const masks = new Set(Object.keys(import.meta.glob('/public/characters/maske/*.png')).map((f) => f.replace('/public/', '')));
@@ -20,7 +21,8 @@ const MIN_DELTA_E = 15;
 describe('soy → renk', () => {
   it('soyu olan her ırkın her soyu tabloda; Wood Elf boyamasız (klasik elf), diğerleri boyalı', () => {
     const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown> }>;
-    const withLineage = races.filter((r) => (r.lineages ?? []).length > 0);
+    // Kuyruk AS1a: tint/maske tablosunda yeri olmayan ırklar (Dwarf, Halfling, Orc, Human) CSS filtresiyle `alt-soy-gorunum.json`'dan boyanır.
+    const withLineage = races.filter((r) => (r.lineages ?? []).length > 0 && !gorunum.maskesizIrklar.includes(r.id));
     expect(Object.keys(table).sort()).toEqual(withLineage.map((r) => r.id).sort());
     for (const r of withLineage) {
       expect(Object.keys(table[r.id]?.lineages ?? {}).sort(), r.id).toEqual((r.lineages ?? []).map((l) => l.id).sort());
@@ -33,7 +35,7 @@ describe('soy → renk', () => {
       for (const k of classes) for (const gender of ['erkek', 'kadin'] as const) {
         const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: r.id, classId: k.id, gender, ...(lineageId ? { lineageId } : {}) });
         expect(files.has(a.src), a.src).toBe(true);
-        if (lineageId) expect(masks.has(maskUrlFor(a.src) ?? ''), `${a.src} maske`).toBe(true);
+        if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src) ?? ''), `${a.src} maske`).toBe(true);
       }
     }
     expect(maskUrlFor('/base/characters/kucuk/goliath-male-fighter.webp')).toBe('/base/characters/maske/goliath-male-fighter.png');
