@@ -21,8 +21,21 @@ export function kindOf(e: BattleEvent): LogKind {
 
 /** Metni başlık + ayrıntıya böler ('. ' ayracı; sayılardaki nokta bölünmez). */
 export function splitLine(text: string): { head: string; detail: string[] } {
-  const parts = text.split(/\.\s+(?=\S)/).map((p) => p.trim()).filter(Boolean);
-  return { head: parts[0] ?? text, detail: parts.slice(1) };
+  // Cümle sonu nokta + boşluk + sonraki cümle. Görev SD2: sıra sayısı ("3. seviye slot", "1. tur") cümle sonu değildir:
+  // 1–2 basamaklı sayıdan sonra gelen nokta, ardından küçük harfle başlayan sözcük varsa bölünmez.
+  const parts: string[] = [];
+  let start = 0;
+  for (const m of text.matchAll(/\.\s+(?=\S)/g)) {
+    const at = m.index ?? 0;
+    const next = text[at + m[0].length] ?? '';
+    const lower = next === next.toLocaleLowerCase('tr') && next !== next.toLocaleUpperCase('tr');
+    if (lower && /(?:^|[\s(])\d{1,2}$/.test(text.slice(start, at))) continue;
+    parts.push(text.slice(start, at));
+    start = at + m[0].length;
+  }
+  parts.push(text.slice(start));
+  const cleaned = parts.map((p) => p.trim()).filter(Boolean);
+  return { head: cleaned[0] ?? text, detail: cleaned.slice(1) };
 }
 
 interface Tally { attacks: number; hits: number; dmg: number; heal: number; saves: number }
