@@ -3,6 +3,26 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk MB6: binek arayüzü (yalnız arayüz; kural sürümü 70'te kalır)
+
+- **Sürüm:** kural sürümü, `SAVE_VERSION` ve `src/battle/*` değişmedi (`git diff -- src/battle data/kural-surumu.json` boş). Yeni komut, olay ve Ayarlar anahtarı yok. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §14.
+- **1. Havada inme irtifa seçici:**
+  - `src/ui/dismountOptions.ts` (saf) seçenekleri MB3 motor sınırlarından okur: bineğin bandının 5 ft yakınında (alt − 5 … alt + bineğin boyu), 5 ft adımlı, irtifa üst sınırı/tavan altında, yer altına inmeden. Her seçenek motorda geçerli komut, dışındakiler reddedilir (testle doğrulandı).
+  - Seçici (`src/ui/DismountPicker.tsx`, tembel parça) "Binekten in" ipucu hapının içinde, yatay sarılan düğmeler; seçili irtifa `dismount.toFt` ile gider (bineğin irtifasıyla aynıysa `toFt` gönderilmez). İpucu seçimi izler.
+  - Uçamayan biniciye seçici yok: düğme eskisi gibi, havadaysa kısa uyarı "uçamazsın, havadaki binekten inersen düşersin" (TR/EN). 68 ve altında seçici yok.
+  - K71c "☁ Hava" düzey seçicisinin kalıbı (5 ft düğme listesi); biçim, baloncuk/hap içinde dikey kolon sığmadığı için `slot-picker` yatay biçimine uyduruldu (tek ekran görüntüsünde bulunan taşma düzeltildi).
+- **2. Ret nedenleri TR/EN:** motor gerekçelerine dokunulmadı; `data/neden-metinleri.json` `motor` dizisine 33 kalıp eklendi (binme, inme, havada inme, yığın/tavan/döşeme, tırmanma, kazma, Lance). `loc`/`Why` yolu zaten `reasonText`'ten geçiyor. Test, `mounted.ts`/`commands.ts`/`movement.ts` kaynak metinlerini tarar; kalıbı olmayan her binek gerekçesi testi kırar (silinen kalıpla doğrulandı).
+  - Menüde "Bin" yalnız uygun binek varken çıkıyordu; binemeyen biniciye neden satırı eklendi (yakında büyük dost var ama binilemiyorsa ilk bineğin reddi, "Binemezsin"). "Binekten in" düğmesinde motorun reddi gerekçe olarak gösterilir.
+- **3. Göstergeler (yalnız görsel):** binicide ve bineğinde tek 🐎 rozeti (`mounted`/`ridden`; `statusBadges`), rozet önceliğinde en sonda (`efekt-baglama.json` `rozet.oncelik`; `limitBadges` 3 + "+N" bütçesi aynen, üç ağır durum varken taşar). Altıgen bilgisinde "binek: <ad>" (binici için) ve "🐎 üstünde: <binici>" (binek için). Tur şeridine dokunulmadı: Phantom Steed ve Find Steed sırası motorun `after-owner` sırasıdır (MB7), arayüz yalnız okur.
+- **4. Kurulum ritüel notu:** Phantom Steed, kurulum çağırma kutusunda **listelenmiyordu**: kutu `castingTime === 'ritual'` süzüyordu, Phantom Steed verisi `action`. MB7'de eklenen kurulum yolu arayüzden erişilemiyordu. Kutu `summons.json` `setup` bayrağına ve güncel sürümün mekaniğine (`mechanicsAt`) çevrildi; binek çağırmalar için ayrı not (`summons.familiar.noteMount`, TR/EN: "ritüel, slotsuz; binek: bitişikken hızının yarısıyla binilir; sahibinin ardından oynar, hasar alınca kaybolur"). Find Steed kurulumda değil, normal savaş büyüsü.
+- **Doğrulama:**
+  - `src/ui/binekMb6.test.tsx` (`renderToStaticMarkup` seçici, seçenek–motor bire bir, ret kalıpları, rozet bütçesi, kurulum notu).
+  - Ekran görüntüsü `docs/mb6/hava-inme-secici.png` (kayıtlı savaş: uçan binek 20 ft'te, uçabilen binici, seçici açık). İlk görüntüde seçici ipucu şeridine taşıp okunmuyordu; düzeltilip yeniden alındı.
+  - Ana parça 389,14 kB (MB7 sonrası 388,92; +0,22 kB: TR menü metinleri ve rozet kodu; seçici tembel).
+  - `binekMb6.test.tsx` son hâliyle 12 test (menü neden satırı ve tur sırası testleri eklendi); `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 386 dosya geçti + 1 atlandı; 4523 test geçti + 7 atlandı; 0 kırık.
+- **Kalan:** MB2 (kontrollü binek turu), MB4 (çok altıgen), MB5 (YZ binicisi). Binek ret nedenleri (`mountProblem` metni) arayüzde yalnız menü satırında gösteriliyor; hamle önizleme kartında binek satırı yok (hamle önizlemesi MB'nin kapsamı dışı).
+
 ## 2026-11-12 — Kuyruk MB7: çağrılan binekler: Find Steed, Phantom Steed, paket `binek` alanı (kural sürümü 70)
 
 - **Sürüm:** `main` b493a10 üstüne. Kural sürümü 69 → **70** (tek sabit `src/battle/binekSurum.ts` `BINEK_MB7_VERSION`); 69 ve altı birebir.

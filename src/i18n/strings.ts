@@ -666,6 +666,7 @@ const tr = {
       cast: (spell: string): string => `${spell}: çağır`,
       note: 'Savaştan önce yapılır, slot harcamaz. Familiar saldıramaz; kendi inisiyatifinde oynar (Kaçın, Yardım, hareket).',
       noteSlot: 'Savaştan önce yapılır (döküm süresi 1 dakika), slot harcar. Yaratık sahibinin hemen ardından oynar.',
+      noteMount: 'Savaştan önce yapılır (ritüel), slot harcamaz. Binek: bitişikken hızının yarısıyla binilir; sahibinin hemen ardından oynar, hasar alınca kaybolur.',
     },
   },
   reactions: {
