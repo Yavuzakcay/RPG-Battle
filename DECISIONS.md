@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Görev AS1a (toplu): 41 alt soy denetimi, kurtarma dezavantajı bütün yollarda (kural sürümü 77)
+
+- **Durum:** görev metnindeki 41 alt soyun verisi, buff/debuff mekaniği ve hizalanma başlangıcı main'de zaten vardı (Kuyruk AS1a, AS1a-2, AS1b = sürüm 71, AS1c görünüm). Çalışan sistem baştan yazılmadı; metinle karşılaştırıldı. Sayı 41 = 38 ırk soyu + 3 Celestial uyanışı (test denetler). Hizalanma `altSoy` 41 satırın hepsi metindeki değerlerle **birebir** (betikle karşılaştırıldı; K51 uç build testleri değişmedi).
+- **Gerçek eksik (kapatıldı, sürüm 77):** 13 alt soy (`durum: kismi`) "X hasarına/durumuna karşı kurtarma dezavantajı"nı ek paket, imza, eşya kurtarmalarında taşımıyordu. En küçük genel genişleme: `SaveCtx.genis` (yeni yol işareti) + `ActiveEffect.saveDisVsGenis` (77+ savaşın başında `withSoy` yazar); yeni yollar: ek paket `saveEvent` (hasar türü + `durumUygula` durumu), P12 vertigo patlaması, imza eylemi, eşya fırlatma (hasar + `grants`), harita `saveEffect` (hasar + başarısızlık durumu), Cunning Strike Trip (Prone), `grapple.ts` ek kurtarması (durum), tepki save'li hasarı (Hellish Rebuke gibi) ve bakış tepkisi, Delayed Blast Fireball boncuğu (ateş). 13 alt soy `calisir`. Kalan: P9 tepki ilkellerinin hasarsız kurtarması (bağlam yok). 76 ve altı aynen (eski etki `saveDisVsGenis` taşımaz).
+- **Sürüm 77 (görev planındaki sıra).** Tek sabit `src/battle/altSoySurum.ts` `ALT_SOY_77_VERSION`.
+- **Metinden bilerek ayrılan, önceki kararla kalanlar:**
+  - Dwarf Tepe buff'ı "+1 HP/seviye" yerine Dayanıklılık kurtarması +1, Yeraltı "karanlık görüş 120 ft" yerine Gizlen +2: taban Dwarf'ta zaten Dwarven Toughness ve 120 ft karanlık görüş var; AS1b kullanıcı kararı (DECISIONS AS1b "Dwarf Tepe ve Yeraltı").
+  - **Tiefling Kanatlı:** metin "U1b'ye kadar yalnız veri yer tutucusu" diyor; Kanat Süzülüşü AS1b'de (71) zaten çalışır durumda (U1a uçuş ilkeli üstünde). Kaldırmak 71–76 kayıtlarını bozar ve "çalışan sistemi baştan yazma" kuralına aykırı: **dokunulmadı**; U1b kararları gelince orada güncellenir.
+  - Goliath Storm SRD Storm's Thunder: hasar türü SRD'de Thunder (metinde "yıldırım"); SRD korundu.
+  - Halfling Kalın taşıma ×1,5 taşıma kuralı açıkken çalışır (AS1b).
+- **Testler:** `src/battle/as1a77.test.ts` (sabit, savaş başı işareti 77/76, `genis` bağlamı, harita mekaniğinde Red soğuk ve Hill Prone 77/76); `ruleVersion.test.ts`/`g6.test.ts` güncel sürüm 76 → 77 (sürüm arttı). Regresyon `src/sim/as1a77Regresyon.test.ts` (`AS1A77_TOHUM`): standart parti 77 = 76.
+- **Ertelenen:** Kanatlı uçuşunun U1b kararları; Kalın taşıma kuralı kapalıyken etkisiz; P9 tepki ilkelleri.
+
 ## 2026-11-12 — Görev MB6b: binek arayüzü (yalnız arayüz; kural sürümü 76, kayıt sürümü 22 değişmedi)
 
 - **Binek bölümü:** kontrollü bineğin binicisinin Hareket alt menüsünde "Binek: Koşu/Çekil/Kaçın" ve bineğin bonus eylemleri (`mountDash`, `mountDisengage`, `mountDodge`, `mountSteed-<k>`; komut `actorId` = binek, motor `controlledGate` denetler; geçersizse motor gerekçesi `neden-metinleri.json` kalıbıyla TR/EN). Saf yardımcılar `src/ui/mountUi.ts`.

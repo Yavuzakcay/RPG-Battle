@@ -11,13 +11,22 @@ export const ALT_SOY_VERSION = 71;
 export const altSoyOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= ALT_SOY_VERSION;
 
 /**
+ * Görev AS1a (toplu, kural sürümü 77): alt soyun "X hasarına/durumuna karşı kurtarma dezavantajı" ek paket, imza alt sınıf,
+ * eşya, harita mekaniği, itme/yakalama ve boncuk kurtarmalarında da (71–76'da yalnız büyü/canavar/alan/yüzey/süren etki).
+ * Bu yeni yollardan gelen bağlam `genis` işaretlidir; yalnız 77+ savaşın başında `genis` alan alt soy etkisi ona bakar
+ * (`soyEtki.ts` `withSoy`), eski kayıt/replay aynen.
+ */
+export const ALT_SOY_77_VERSION = 77;
+export const altSoy77On = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= ALT_SOY_77_VERSION;
+
+/**
  * Kurtarma bağlamı (`saveMode` 5. parametresi): etkinin hasar türü ve uyguladığı durumlar. Süren etkilerin `saveDisVs` kaydı
  * (alt soy: "X hasarına/durumuna karşı kurtarma dezavantajı") bununla karşılaştırılır. Yaprak.
  */
-export interface SaveCtx { damage?: string; against?: string[] }
-export function saveDisVs(effects: ReadonlyArray<{ saveDisVs?: Array<{ damage?: string; condition?: string }> }> | undefined, ctx: SaveCtx | undefined): boolean {
+export interface SaveCtx { damage?: string; against?: string[]; /** AS1a (77): yeni kurtarma yolu (yalnız `saveDisVsGenis` etkide). */ genis?: true }
+export function saveDisVs(effects: ReadonlyArray<{ saveDisVs?: Array<{ damage?: string; condition?: string }>; saveDisVsGenis?: true }> | undefined, ctx: SaveCtx | undefined): boolean {
   if (!ctx || !effects) return false;
-  return effects.some((e) => e.saveDisVs?.some((r) => (!!r.damage && r.damage === ctx.damage) || (!!r.condition && !!ctx.against?.includes(r.condition))));
+  return effects.some((e) => (!ctx.genis || e.saveDisVsGenis) && e.saveDisVs?.some((r) => (!!r.damage && r.damage === ctx.damage) || (!!r.condition && !!ctx.against?.includes(r.condition))));
 }
 
 type Fx = { effects?: ReadonlyArray<{ fallMult?: number; teleportEnds?: true; plantWalker?: true }> };

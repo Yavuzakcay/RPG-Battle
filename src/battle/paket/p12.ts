@@ -245,19 +245,19 @@ function rowBurst(state: BattleState, c: Combatant, r: Ref, row: VertigoRow, rng
   const dmg = row.etki === 'patlama' ? rollDice(formul(row.zar, c), rollTag(rng, { kind: 'damage', by: c.id })) : null;
   const type = row.hasarTuru ?? 'force';
   for (const t of ts) {
-    const sv = save ? resolveSave({ extra: saveDice(t, ab), modifier: t.saves[ab], dc, mode: saveMode('normal', t, ab, c) }, rollTag(rng, { by: t.id })) : null;
+    const sv = save ? resolveSave({ extra: saveDice(t, ab), modifier: t.saves[ab], dc, mode: saveMode('normal', t, ab, c, { ...(row.etki === 'patlama' ? { damage: type } : {}), genis: true }) }, rollTag(rng, { by: t.id })) : null;
     const success = !!sv?.success;
     if (row.etki === 'patlama' && dmg) {
       const half = !!(save as { yari?: boolean } | undefined)?.yari;
       const raw = save ? saveDamage(t, ab, success, dmg.total, half) : dmg.total;
       const adj = raw > 0 ? adjustDamage(raw, type, damageProfile(t)) : { amount: 0, note: null };
       const fx = damageEffects(t, adj.amount, type, false, rng);
-      out.push({ type: 'save_resolved', actorId: c.id, targetId: t.id, label: name, ability: ab, dc, mode: sv ? saveMode('normal', t, ab, c) : 'normal', reasons: [],
+      out.push({ type: 'save_resolved', actorId: c.id, targetId: t.id, label: name, ability: ab, dc, mode: sv ? saveMode('normal', t, ab, c, { ...(row.etki === 'patlama' ? { damage: type } : {}), genis: true }) : 'normal', reasons: [],
         d20: sv?.d20?.rolls ?? [], natural: sv?.d20?.kept ?? null, total: sv?.total ?? 0, success, damageRolls: dmg.rolls, rawDamage: dmg.total, appliedDamage: adj.amount,
         damageType: type, damageNote: adj.note, targetHpAfter: fx.hpAfter, conditionsAdded: [], effects: fx.effects, ...(sv?.extra ? { bonusDice: sv.extra } : {}) });
       continue;
     }
-    if (sv) out.push({ type: 'save_resolved', actorId: c.id, targetId: t.id, label: name, ability: ab, dc, mode: saveMode('normal', t, ab, c), reasons: [],
+    if (sv) out.push({ type: 'save_resolved', actorId: c.id, targetId: t.id, label: name, ability: ab, dc, mode: saveMode('normal', t, ab, c, { ...(row.etki === 'patlama' ? { damage: type } : {}), genis: true }), reasons: [],
       d20: sv.d20?.rolls ?? [], natural: sv.d20?.kept ?? null, total: sv.total, success, damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null,
       targetHpAfter: t.hp, conditionsAdded: [], effects: [], ...(sv.extra ? { bonusDice: sv.extra } : {}) });
     if (success) continue;

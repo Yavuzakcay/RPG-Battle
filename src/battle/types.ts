@@ -176,6 +176,8 @@ export interface ActiveEffect {
    * arazide duruyorsa hız farkı (ft).
    */
   saveDisVs?: Array<{ damage?: string; condition?: string }>;
+  /** Görev AS1a (sürüm 77+): `saveDisVs` paket/imza/eşya/harita/itme kurtarmalarında da (`SaveCtx.genis`). */
+  saveDisVsGenis?: true;
   checkDisSkill?: Array<{ skill?: string; ability?: Ability; when?: 'bright' | 'darkMap' | 'water' | 'settlement' }>;
   fallMult?: number;
   teleportEnds?: true;

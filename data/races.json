@@ -148,7 +148,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       },
       {
         "id": "green",
@@ -188,7 +188,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       },
       {
         "id": "silver",
@@ -209,7 +209,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       },
       {
         "id": "white",
@@ -464,7 +464,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       }
     ],
     "defaultLineage": "drow"
@@ -508,7 +508,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       },
       {
         "id": "rock-gnome",
@@ -628,7 +628,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       },
       {
         "id": "frost",
@@ -648,7 +648,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       },
       {
         "id": "hill",
@@ -668,7 +668,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       },
       {
         "id": "stone",
@@ -911,7 +911,7 @@
           "tr": "Soğuk direnci · ateşe karşı kurtarma dezavantajı",
           "en": "Cold resistance · disadvantage on saves against fire"
         },
-        "durum": "kismi",
+        "durum": "calisir",
         "etki": {
           "direnc": [
             "cold"
@@ -937,7 +937,7 @@
           "tr": "Bitkisel zorlu arazi yok sayılır · zehire karşı kurtarma dezavantajı",
           "en": "Ignores plant-based difficult terrain · disadvantage on saves against poison"
         },
-        "durum": "kismi",
+        "durum": "calisir",
         "etki": {
           "efekt": {
             "plantWalker": true,
@@ -961,7 +961,7 @@
           "tr": "Zehir direnci · yüzme hızı = yürüme hızı · soğuğa karşı kurtarma dezavantajı",
           "en": "Poison resistance · swim speed = walking speed · disadvantage on saves against cold"
         },
-        "durum": "kismi",
+        "durum": "calisir",
         "etki": {
           "direnc": [
             "poison"
@@ -1057,7 +1057,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       },
       {
         "id": "infernal",
@@ -1094,7 +1094,7 @@
             ]
           }
         },
-        "durum": "kismi"
+        "durum": "calisir"
       },
       {
         "id": "winged",
