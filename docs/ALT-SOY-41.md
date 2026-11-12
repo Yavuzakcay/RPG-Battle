@@ -50,6 +50,8 @@ Toplam: 41.
 
 ## Görünüm
 
+**Boyasız orijinal alt soylar** (AS1a-2 İş 3; `data/alt-soy-gorunum.json` `orijinal`): Elf Wood-elf, Dwarf Tepe, Halfling İnce/Kalın, Orc Orman, Celestial Parlayan Ruh, Human 4 kültür, Tiefling Infernal, Gnome Rock, Goliath Hill; filtre/tint/maske yok (yalnız oran). Human ten filtresi eşleme eklenene dek kapalı.
+
 Alt soylara ayrı çizim yoktur. `data/alt-soy-gorunum.json`: Dwarf/Halfling/Orc/Human için CSS renk filtresi (tint/maske tablosunda yeri yok); Tiefling Kanatlı ve Gnome Yeraltı `data/soy-renkleri.json` tint tablosunda; Halfling İnce/Kalın en-boy oranı; Human ten tonu kültürden bağımsız (`skinTone`, `kulturTen` bilerek boş); Celestial hale (Parlayan Ruh haleli, Kırık Kanat halesiz + kanat, Gece Gözyaşı halesiz + koyu filtre); üç kanat yuvası (Tiefling, Celestial Kırık Kanat, Dragonborn Draconic Flight; sprite yoksa efekt sistemindeki `efekt-kanat-*` şeridinin ilk karesi yer tutucu).
 
 ## AS1b'ye kalanlar

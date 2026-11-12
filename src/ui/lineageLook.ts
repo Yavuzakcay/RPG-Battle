@@ -30,11 +30,12 @@ export interface LineageLook {
 }
 
 const D = data as unknown as {
-  altSoylar: Record<string, { filtre?: string; oran?: { en: number; boy: number }; kanat?: string }>;
+  altSoylar: Record<string, { filtre?: string; oran?: { en: number; boy: number }; kanat?: string; orijinal?: true }>;
+  orijinal: string[];
   celestialUyanis: Record<string, { hale: boolean; filtre?: string; kanat?: string }>;
   kanatYuvalari: Record<string, Omit<WingSlot, 'id'>>;
   hale: { gizleUstYuzde: number };
-  ten: { varsayilan: string; tonlar: SkinTone[]; kulturTen: Record<string, string> };
+  ten: { varsayilan: string; filtreUygula: boolean; tonlar: SkinTone[]; kulturTen: Record<string, string> };
 };
 /** Celestial Göksel Uyanış 3. seviyeden etkin (`data/celestial.json` `awakening.minLevel`; test eşitliği denetler). */
 export const AWAKENING_FROM = 3;
@@ -44,6 +45,9 @@ export const SKIN_TONES: SkinTone[] = D.ten.tonlar;
 export const DEFAULT_SKIN_TONE = D.ten.varsayilan;
 /** Kültür → ten tonu eşlemesi: bilerek boş (kullanıcı doldurur); doluysa yeni karakterde ilk öneri. */
 export const CULTURE_SKIN: Record<string, string> = D.ten.kulturTen;
+/** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
+export const ORIGINAL_LINEAGES: string[] = D.orijinal;
+export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
 export const WING_SLOTS = Object.keys(D.kanatYuvalari);
 export const lookEntries = (): string[] => Object.keys(D.altSoylar);
 export const awakeningLookIds = (): string[] => Object.keys(D.celestialUyanis);
@@ -57,7 +61,8 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): 
   let wingId: string | undefined;
   const level = sheet.level ?? 1;
   if (sheet.raceId === 'human') {
-    const tone = SKIN_TONES.find((x) => x.id === (sheet.skinTone ?? DEFAULT_SKIN_TONE));
+    // Ten tonu filtresi eşleme eklenene dek kapalı (`ten.filtreUygula`): bütün Human jetonları orijinal.
+    const tone = D.ten.filtreUygula ? SKIN_TONES.find((x) => x.id === (sheet.skinTone ?? DEFAULT_SKIN_TONE)) : undefined;
     if (tone?.filtre) filters.push(tone.filtre);
   }
   if (sheet.raceId === 'celestial') {
@@ -69,7 +74,7 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): 
     }
   } else {
     const entry = sheet.lineageId ? D.altSoylar[`${sheet.raceId}/${sheet.lineageId}`] : undefined;
-    if (entry?.filtre) filters.push(entry.filtre);
+    if (entry?.filtre && !entry.orijinal) filters.push(entry.filtre);
     if (entry?.oran) { scaleX = entry.oran.en; scaleY = entry.oran.boy; }
     wingId = entry?.kanat;
   }

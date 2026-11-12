@@ -192,18 +192,12 @@
             "dL": -10
           }
         },
-        "infernal": {
-          "lch": {
-            "h": 30,
-            "c": 55,
-            "dL": -5
-          }
-        },
+        "infernal": null,
         "winged": {
           "lch": {
-            "h": 345,
-            "c": 42,
-            "dL": 6
+            "h": 90,
+            "c": 40,
+            "dL": 10
           }
         }
       },
@@ -456,12 +450,7 @@
             "dL": -6
           }
         },
-        "rock-gnome": {
-          "lch": {
-            "h": 35,
-            "c": 35
-          }
-        },
+        "rock-gnome": null,
         "subterranean": {
           "lch": {
             "h": 250,
@@ -520,13 +509,7 @@
             "dL": 8
           }
         },
-        "hill": {
-          "lch": {
-            "h": 70,
-            "c": 26,
-            "dL": -6
-          }
-        },
+        "hill": null,
         "stone": {
           "lch": {
             "h": 85,
