@@ -449,7 +449,7 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
       )}
       {hasLineage && race && (
         <Fold title={race.id === 'human' ? W.cultureTitle : W.lineageTitle} summary={lineage ? lineageName(lineage, lang) : W.noneShort}
-          open={!lineage} className="lineage-fold">
+          open={!lineage && !race.lineageOptional} className="lineage-fold">
           <p className="mute race-note">{W.raceBonusNote}</p>
           {/* Görev K3: soy seçimi kartlarla; kartta yalnızca bu seçeneği ayıran özet. */}
           <div className="card-grid lineage-grid" role="radiogroup" aria-label={W.lineageTitle}>

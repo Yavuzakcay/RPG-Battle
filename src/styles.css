@@ -1349,3 +1349,10 @@ button.cta.soft { opacity: .65; }
 .skill-list.have .skill-row { opacity: .9; }
 .score-box:not(.pickable) { cursor: default; }
 .scores-auto { margin: 0 0 8px; }
+/* SD3 düzeltmeleri: güç listesi tek sütun, seçili silah satırında yıldız düğmesi satır içi. */
+.feature-panel .feature-list { display: grid; grid-template-columns: 1fr; gap: 6px; font-size: 14px; }
+.feature-panel .feature-list .feature { border-radius: 10px; padding: 6px 10px; }
+.feature-panel .feature-list .feature .feature-sum { max-width: none; font-size: 13px; opacity: .9; }
+.eq-row .mastery-btn { width: auto; border: 1px solid var(--line); border-radius: 10px; min-height: 36px; padding: 0 10px; white-space: nowrap; }
+.eq-row .mastery-btn.on { border-color: var(--wz); }
+.eq-row .eq-main b { overflow-wrap: anywhere; }
