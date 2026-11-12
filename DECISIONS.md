@@ -27,6 +27,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Test güncellemesi (veriye bağlı değer):**
   - `summons.test.ts` çağırma büyüsü listesini güncel sürümün mekaniğinden okur (Phantom Steed yalnız 70+'da çağırma). Phantom Steed'in biçimi CR 0 değil, Riding Horse.
   - `ruleVersion.test.ts` / `g6.test.ts` güncel sürüm 69 → 70.
+- **Doğrulama:**
+  - `binekMb7.test.ts` 7 test. Regresyon 69 altın = 70 (4 senaryo × 30 tohum).
+  - Ana parça 388,92 kB; MB7 ana parçaya ekleme yapmadı, MB7 öncesi main de 388,92 kB. 376,78 → 388,92 artışı AS1a birleşmesinden.
+  - `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 385 dosya geçti + 1 atlandı; 4506 test geçti + 7 atlandı; 0 kırık.
+- **Başka şeridin testi:** `src/rules/altSoy41.test.tsx` "kural sürümü 68" beklentisi MB3 birleşmesinden beri main'de kırıktı (69). Amacı "AS1a sürümü artırmadı" olduğundan alt sınıra (≥ 68) çevrildi.
 - **Ejder Muhafızı yaması (paket dışı, yapılmadı):** `kucuk-ejderha` yaratığına `"binek": { "kural": "sahip", "enBuyukBinici": "M", "biniciSayisi": 1, "minSeviye": 14 }`. Medium binici için ejderha 14. seviyede Large olmalı (MB1 boyut şartı).
 - **Kalan:**
   - **MB2:** kontrollü binek, Find Steed ve Phantom Steed'in binicinin turunda hareketi.

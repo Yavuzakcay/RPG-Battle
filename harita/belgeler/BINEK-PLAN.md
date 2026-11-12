@@ -592,6 +592,8 @@ Doğrulanmayan açık yok.
 - `binekMb7.test.ts`: 7 test (Görev 0'ın 3 maddesi + 3 paket + 69 eski davranış), replay aynı.
 - `summons.test.ts` veri testi güncel sürümün mekaniğine bakacak biçimde güncellendi (Phantom Steed 70+ çağırma; biçimi Riding Horse).
 - Regresyon `src/sim/binekMb7Regresyon.test.ts`: 69 altın (MB7 öncesi ağaç `main` b493a10), 70 = 69. Çöl, Kale, Mağara, Orman × 1 ve × 30 tohum.
+- Ana parça 388,92 kB (MB7 öncesi main ile aynı). `check:harita` 96/0, `check:ses` 15/0.
+- Tam paket: 385 dosya, 4506 test geçti (7 atlandı), 0 kırık.
 
 **Kalan açıklar:**
 
