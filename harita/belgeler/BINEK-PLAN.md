@@ -665,6 +665,7 @@ Yalnız Game Master anahtarı "Çok altıgenli büyük yaratıklar" (`multiHex`)
   - 41,9 → 41,45 ms (−%1; sınır +%15).
 - **Paket boyutu:** ana parça değişmedi (`vite build` 385,42 kB → 385,42 kB; `paket-siniri` ölçüsü 389,88 kB). Savaş parçası +1,72 kB, neden metinleri +0,30 kB.
 - **Tarayıcı kontrolleri:** `check:harita` 96/0, `check:ses` 15/0.
+- **Tam paket:** 390 dosya, 4586 test geçti (7 atlandı), 0 kırık.
 - **Kayıt:** `SAVE_VERSION` 22'de kaldı (yeni olay alanı yok).
 
 **Kalan:**

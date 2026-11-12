@@ -37,6 +37,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - `sim:yz-sure` binekli + çok altıgenli Çöl, ABBA: 41,9 → 41,45 ms/karar (−%1).
   - Ana parça değişmedi (385,42 kB `vite build`).
   - `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 390 dosya geçti + 1 atlandı; 4586 test geçti + 7 atlandı; 0 kırık.
 - **Ek:** `sim:yz-sure` bayrakları `--binek`, `--coklu`, `--kural-surumu N` (kurulum `src/sim/binekStart.ts`).
 
 ## 2026-11-12 — Kuyruk MB6: binek arayüzü (yalnız arayüz; kural sürümü 70'te kalır)
