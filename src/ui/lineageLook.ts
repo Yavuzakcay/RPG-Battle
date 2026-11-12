@@ -10,7 +10,8 @@ import type { TintSpec } from '../battle/types';
 import { rgbToLab } from './color';
 
 /** Çözülmüş kanat katmanı (jetonun arkası): `src` o anki durumun görseli (`public/` altı yol), filtre renk için. */
-export interface WingLayerSpec { id: string; src: string; olcek: number; yukari: number; filtre: string; open: boolean }
+/** `capa`: kanat kökü görsel oranı; `omuz`: kökün jeton yüksekliğinde tepeden oranı; `enBoy`: görsel yüksekliği/genişliği. */
+export interface WingLayerSpec { id: string; src: string; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre: string; open: boolean }
 export interface SkinTone { id: string; ad: { tr: string; en: string }; /** Hedef ten rengi (hex); null: boyasız. */ renk: string | null; rozetRenk: string }
 export interface LookSheet { raceId: string; lineageId?: string; celestialAwakening?: string; level?: number; skinTone?: string }
 export interface LineageLook {
@@ -42,7 +43,7 @@ export const tonesFor = (lineageId: string | undefined): SkinTone[] => SKIN_TONE
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
-type WingSlotData = { dosya: string | null; dosyaKapali: string | null; minSeviye?: number; olcek: number; yukari: number; filtre?: string; renkFiltreleri?: Record<string, string> };
+type WingSlotData = { dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
 const W = wings as unknown as { klasor: string; slotlar: Record<string, WingSlotData> };
 export const WING_SLOTS = Object.keys(W.slotlar);
 export const lookEntries = (): string[] => Object.keys(D.altSoylar);
@@ -55,10 +56,21 @@ export const awakeningLookIds = (): string[] => Object.keys(D.celestialUyanis);
 function wingLayer(id: string, level: number, flying: boolean, lineageId?: string): WingLayerSpec | null {
   const w = W.slotlar[id];
   if (!w || (w.minSeviye ?? 1) > level) return null;
-  const file = flying ? w.dosya : w.dosyaKapali;
+  // `herZaman`: havada olmasa da açık sprite (Celestial Kırık Kanat); aksi halde yalnız süzülürken açık, değilken `dosyaKapali`.
+  const open = flying || !!w.herZaman;
+  const file = open ? w.dosya : w.dosyaKapali;
   if (!file) return null;
   const filtre = [w.filtre, lineageId ? w.renkFiltreleri?.[lineageId] : undefined].filter(Boolean).join(' ');
-  return { id, src: `${W.klasor}/${file}`, olcek: w.olcek, yukari: w.yukari, filtre, open: flying };
+  return { id, src: `${W.klasor}/${file}`, olcek: w.olcek, omuz: w.omuz, capa: w.capa, enBoy: w.enBoy, filtre, open };
+}
+
+/**
+ * Kanat görselinin kutusu (jeton merkezi `cx,cy`, jeton genişliği `w` cinsinden, yukarı-sol köşe + boyut): kök (`capa`) jetonun
+ * yatay merkezinde ve tepeden `omuz` yüksekliğinde. SVG jeton ve rozet aynı hesabı kullanır.
+ */
+export function wingBox(wing: WingLayerSpec, cx: number, cy: number, w: number): { x: number; y: number; width: number; height: number } {
+  const width = w * wing.olcek, height = width * wing.enBoy;
+  return { x: cx - wing.capa[0] * width, y: cy - w / 2 + w * wing.omuz - wing.capa[1] * height, width, height };
 }
 
 /** Karakterin görünümü; `flying`: uçarken görünen kanatlar (Draconic Flight) da çizilir. */

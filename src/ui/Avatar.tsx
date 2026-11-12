@@ -4,7 +4,7 @@
  * dosya adı kuralına uyan bir görsel eklenince kod değişmeden görünür.
  */
 import { useEffect, useId, useState } from 'react';
-import { HALO_CLIP_PCT, lineageLook } from './lineageLook';
+import { HALO_CLIP_PCT, lineageLook, wingBox } from './lineageLook';
 import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
 import { tintedReady, tintedUrl } from './tint';
@@ -149,10 +149,10 @@ export function TokenFigure(props: { href: string; cx: number; cy: number; w: nu
   const by = cy + w / 2;
   const shape = lk && (lk.scaleX !== 1 || lk.scaleY !== 1) ? `translate(${cx} ${by}) scale(${lk.scaleX} ${lk.scaleY}) translate(${-cx} ${-by})` : undefined;
   const wing = lk?.wing;
-  const ww = wing ? w * wing.olcek : 0;
+  const wb = wing ? wingBox(wing, cx, cy, w) : null;
   return (
     <>
-      {wing && <image className="look-wing" href={assetSrc(wing.src)} x={cx - ww / 2} y={cy - ww / 2 + w * wing.yukari} width={ww} height={ww} preserveAspectRatio="xMidYMid meet"
+      {wing && wb && <image className="look-wing" data-wing={wing.id} href={assetSrc(wing.src)} x={wb.x} y={wb.y} width={wb.width} height={wb.height} preserveAspectRatio="xMidYMid meet"
         style={wing.filtre ? { filter: wing.filtre } : undefined} aria-hidden="true" />}
       {lk?.hideHalo && <clipPath id={clipId}><rect x={cx - w / 2} y={cy - w / 2 + (w * HALO_CLIP_PCT) / 100} width={w} height={w} /></clipPath>}
       <g transform={shape} clipPath={lk?.hideHalo ? `url(#${clipId})` : undefined}>

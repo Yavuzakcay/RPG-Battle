@@ -5,7 +5,7 @@
  * `Avatar.tsx` içinde kullanır.
  */
 import { useState, type CSSProperties, type ReactNode } from 'react';
-import { HALO_CLIP_PCT, lineageLook, type LookSheet, type WingLayerSpec } from './lineageLook';
+import { HALO_CLIP_PCT, lineageLook, wingBox, type LookSheet, type WingLayerSpec } from './lineageLook';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -14,8 +14,8 @@ export function WingLayer(props: { wing: WingLayerSpec; size: number }) {
   const { wing, size } = props;
   const [gone, setGone] = useState(false);
   if (gone) return null;
-  const w = size * wing.olcek;
-  const style: CSSProperties = { width: w, height: w, left: (size - w) / 2, top: (size - w) / 2 + size * wing.yukari, ...(wing.filtre ? { filter: wing.filtre } : {}) };
+  const b = wingBox(wing, size / 2, size / 2, size);
+  const style: CSSProperties = { width: b.width, height: b.height, left: b.x, top: b.y, ...(wing.filtre ? { filter: wing.filtre } : {}) };
   return <img className="look-wing" data-wing={wing.id} src={`${BASE}${wing.src}`} alt="" style={style} aria-hidden="true" onError={() => setGone(true)} />;
 }
 

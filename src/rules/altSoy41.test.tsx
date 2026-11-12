@@ -257,7 +257,8 @@ describe('boyasız orijinal alt soylar (AS1a-2 İş 3)', () => {
   });
   it('Tiefling Kanatlı (kararsız kalan) mevcut halinde: tintli, kanat yuvası', () => {
     expect(table.tiefling!.lineages.winged).not.toBeNull();
-    // Kanat sprite'ı henüz yok (AS1c): slot tanımlı, dosya null, katman yok.
-    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).toBeNull();
+    // Kanat sprite'ı bağlı: havadayken katman var, yerdeyken yok.
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).toMatchObject({ id: 'tiefling-kanatli' });
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: false }).wing).toBeNull();
   });
 });
