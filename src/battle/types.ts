@@ -1545,7 +1545,7 @@ export type Command =
   | { type: 'escape'; actorId: string }
   /** Kuyruk 19 (SRD Mounted Combat): bin / in. */
   | { type: 'mount'; actorId: string; mountId: string }
-  | { type: 'dismount'; actorId: string; to?: Offset }
+  | { type: 'dismount'; actorId: string; to?: Offset; /** Kuyruk MB3 (69+): havada iniş irtifası (ft; uçabilen). */ toFt?: number }
   /** CILA: Haste'in ek eylemi (turda bir; eylem kullanıldıktan sonra). */
   | { type: 'haste_action'; actorId: string }
   /** CILA: sahibi bonus eylemle çağrısını taşır (Flaming Sphere, ruh sürüsü); `ramId` bitişik yaratığa çarptırma. */
@@ -1862,7 +1862,7 @@ export type BattleEvent =
   | { type: 'combat_started' }
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
   | { type: 'mounted'; actorId: string; mountId: string; cost: number }
-  | { type: 'dismounted'; actorId: string; at: Offset; cost: number; /** Kuyruk MB1 (68+): binekten düşerek (günlük). */ fell?: true }
+  | { type: 'dismounted'; actorId: string; at: Offset; cost: number; /** Kuyruk MB1 (68+): binekten düşerek (günlük). */ fell?: true; /** Kuyruk MB3 (69+): havada iniş irtifası (ft; yoksa irtifa değişmez). */ toFt?: number }
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number; /** Kuyruk 19: serbest kayma (`shiftLeft`'ten düşer). */ free?: boolean }
   | { type: 'shift_granted'; actorId: string; hexes: number }
   | { type: 'initiative_swapped'; actorId: string; allyId: string }

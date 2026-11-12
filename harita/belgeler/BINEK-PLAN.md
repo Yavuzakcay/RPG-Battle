@@ -475,3 +475,71 @@ Doğrulanmayan açık yok.
 - Havadan inme/binme (`toFt`) MB3'te.
 - B6'nın tamamı (binicinin bandı = bineğin bandı) MB3/MB4'te.
 - Çok altıgende binicinin gövdesi bineğin ayak izi (MB4).
+
+---
+
+## 12. MB3 sonucu (kural sürümü 69)
+
+Tek sabit `src/battle/binekSurum.ts` `BINEK_MB3_VERSION` (`binekMb3On`). 68 ve altı birebir.
+
+**Görev 0, açıkların testle doğrulanması** (`src/battle/binekMb3.test.ts`; düzeltmeden önce sürüm 69 durumunda koşuldu):
+
+| # | Açık (§11 "MB3'e bırakılan") | Sonuç |
+|---|---|---|
+| 1 | B12: binek düşerken save'i geçen binici bineğiyle hasarsız iniyor | **Doğrulandı** (binici binekte kaldı, can 40/40) |
+| 2 | Yığın boyu yürüyüş/uçuşta yok (B11) | **Doğrulandı** (10 ft tavanlı altıgene binicili Large binek girdi; 15 ft tavanda 5 ft'te uçarak girdi) |
+| 3a | Kat döşemesinde yığın boyu yok | **Doğrulandı** (10 ft döşemenin altına girdi; döşeme altında binildi) |
+| 3b | Forcecage küpünde yığın boyu yok | **Doğrulandı** (10 ft kutuda binici itilmedi) |
+| 4 | Bineği dalan binicinin nefesi | **Doğrulandı, farklı nedenle**: binicili binek hiç dalamıyordu (`verticalCellProblem` biniciyi dolu hücre sayıyordu: "Hücre dolu: A"). Engel kalkınca nefes sayacı binicinin kendi tur sonunda zaten işliyor (ayrı düzeltme gerekmedi). Aynı hücre hatası binicili uçan bineğin 5 ft alçalmasını da engelliyordu. |
+| 5 | B14: binicili tırmanma | **Doğrulandı** (tırmanma hızı olmayan binek binicisiyle duvara tırmandı) |
+| 6 | Havadan binme/inme | **Doğrulandı** (20 ft'teki bineğe yerden binildi: 2B bitişiklik) |
+| 7 | Fey Step varışında yığın | **Doğrulandı** (10 ft tavanlı altıgene ışınlandı) |
+| 8 | B6: binicinin bandı = bineğin bandı | **Doğrulandı** (15 ft'teki uçan, Huge bineğin binicisine bitişik değildi) |
+| 9 | B13: bütün kazma girişleri | **Doğrulandı** (`canBurrow` binicili bineğe true; kazmış bineğe binildi) |
+
+Doğrulanmayan açık yok.
+
+**Yapılanlar (sürüm ≥ 69):**
+
+- **B12:** komut sonu irtifa denetimi (`altitude.ts`), düşecek bineğin binicisini önce bineğin 5 ft içine indirir (`dismounted.fell`, `riderCore.ts` `fallOffSpot`). Sonra ikisi ayrı ayrı düşer: ayrı hasar, ayrı düşme tepkileri (Feather Fall, Slow Fall), ayrı Prone. Binicinin DEX 10 save'i (MB1) yalnız bineğin üstünde kalıp kalmayacağını belirler; binek düşüyorsa binici her durumda ayrılır. Levitate biten binek süzülerek inerse binici üstünde kalır. Kendi uçuşu olan binici ayrılır, düşmez.
+- **B11 ⚠ (yığın boyu):** `movement.ts` `stackFitProblem` (bineğin irtifası + bineğin boyu + binicinin tam boyu; MB1 yorumu: Medium +5, Large +10):
+  - `moveCostFn`: yürüyüş ve birleşik uçuş (`airMove.ts` aynı işlevi kullanır), altıgen tavanı ve kat döşemesi.
+  - `slabProblem`: dikey harekette döşeme.
+  - `airMove.ts` `slabOk`: uçuş aramasında döşeme.
+  - `mountProblem`: döşeme altında binme.
+  - `teleportProblem`: bütün ışınlanma varışları, Fey Step dahil.
+  - Forcecage (`forcecage.ts` `cageOpenEvents`): yığın küpün kenarından (`data/binek.json` `kafesBoyuFt`: kutu 10, kafes 20 ft) uzunsa binici dökümde dışarı itilir, binek tutsak kalır (⚠ yorum: SRD "too large to fit" bineğe değil yığına uygulandı).
+- **Dikey hücre:** bineğin üstündeki binici `verticalCellProblem`'de hücre kaplamaz (MB1 `occupantAt` istisnasının dikey eşi). Dalış ve alçalma çalışır. Dalan binicinin nefesi kendi tur sonunda (`breathTurnEndEvents`).
+- **B14 ⚠:** tırmanma hızı olmayan binek binicisiyle tırmanamaz: `climb` komutu, yukarı `vertical_move` (uçuş, Levitate, merdiven ve suda yükselme hariç), K71b Çeviklik tırmanışı (`dexClimber` false). Tırmanma hızlı binek tırmanır, binici irtifasını izler.
+- **Havada binme/inme:**
+  - `mountProblem`: 3B bitişiklik (`adjacent3D`). Yer altındaki ya da duvarda tutunan (tırmanma hızı olmayan) bineğe binilmez.
+  - `dismount.toFt`: varış hücresi binicinin bandında boş olmalı. Farklı irtifa yalnız uçabilene, bineğin bandının 5 ft yakınında ve tavan altında. Olay `dismounted.toFt`.
+  - Uçamayan binici havadaki binekten bineğin irtifasında iner ve komut sonunda düşer.
+- **B6 ⚠:** binicinin dikey bandı bineğin bandı (`riderCore.ts` `bandSizeOf` → `vertical.ts` `absBand`, `altitude.ts` `reachFt`). Kapsadığı yollar:
+  - 3B uzaklık (`gap3D`): yakın dövüş, otomatik kritik, fırsat saldırısı, auralar, menzil (`rangeGap`).
+- **B13 ⚠:** `burrow.ts` `canBurrow` binicisi üstündeki binekte false. Kapsadığı yollar: komut (`vertical_move`), YZ kazma adayları (`burrowCommand`, `burrowCommand65`).
+- Yeni olay türü yok: `dismounted.toFt` isteğe bağlı alan, komut `dismount.toFt`. `SAVE_VERSION` 22. Günlük metni yeni değil (MB1 "binekten düştü").
+
+**Doğrulama:**
+
+- `binekMb3.test.ts`: 15 test (Görev 0'ın 9 açığı + 4 sahne + 68 eski davranış), uçtan uca senaryolarda replay aynı.
+- Regresyon `src/sim/binekMb3Regresyon.test.ts`: 68 altın (MB3 öncesi ağaç `main` b659f68), 69 = 68. Çöl, Kale, Mağara, Orman × 1 ve × 30 tohum.
+- Ana parça 376,78 kB. `check:harita` 96/0, `check:ses` 15/0.
+- Tam paket: 382 dosya, 4473 test geçti (7 atlandı), 0 kırık.
+
+**Kalan açıklar:**
+
+- **MB4 (çok altıgen):**
+  - Binicinin gövdesi bineğin ayak izi.
+  - `stackFitProblem` ve tavan denetimi yalnız çapa altıgeninde; çok altıgenli bineğin gövdesinin bütün altıgenlerinde değil.
+  - `fallOffSpot` bineğin çapasının komşusunda (gövdenin dışında olmayabilir).
+  - Forcecage'de çok altıgenli binek + binici.
+- **MB7:**
+  - Find Steed / Phantom Steed binek kolları (Otherworldly Steed `unsupported` kalkar).
+  - Paket yaratığında `binek` alanı (Ejder Muhafızı: 14. seviyeden yalnız sahibi biner).
+  - Çağrılan paket yaratığına binme kısıtı.
+- **MB2:** kontrollü binek turu (B4), eğitimli binek listesi.
+- **MB5:** YZ binicisi.
+  - Uçan yığının yükselme kararı (K73a) bineğin kendi kararıyla çalışıyor; binicinin hedefine göre değil.
+  - YZ dalışı su soluyamayan biniciyi gözetmiyor (bineğin nefesine bakıyor).
+- **MB6:** havada inme irtifası seçicisi (arayüz `dismount` `toFt` göndermiyor; varsayılan bineğin irtifası).

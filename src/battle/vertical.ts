@@ -12,6 +12,7 @@ import { bandOf, type Band } from './cells';
 import { ruleVersion } from './ruleVersion';
 import { k73cOn } from './k73cSurum';
 import { body64At } from './bodyLeaf';
+import { bandSizeOf } from './riderCore';
 import type { BattleState, Combatant } from './types';
 
 /** Kuyruk K71a: dikey modelin kural sürümü. */
@@ -135,5 +136,6 @@ export const k9Ft = (state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Co
  * (eski davranış). Altıgenler arası uzaklık ve erişim bununla.
  */
 export function absBand(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'size' | 'pos' | 'altitudeFt'>, at: Offset | null = c.pos, alt: number = c.altitudeFt ?? 0): Band {
-  return bandOf(c, k9Ft(state, c, at, alt));
+  // Kuyruk MB3 (69+, B6 ⚠): bineğinin üstündeki binicinin bandı bineğin bandı (boy bineğin boyutundan).
+  return bandOf((c as Partial<Combatant>).riding ? { size: bandSizeOf(state, c) } : c, k9Ft(state, c, at, alt));
 }

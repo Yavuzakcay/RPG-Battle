@@ -29,7 +29,8 @@ import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, hovers, isAirborne, spellJumpFt } from './flight';
-import { seatedRider } from './riderCore';
+import { riderStackFt, seatedRider } from './riderCore';
+import { binekMb3On } from './binekSurum';
 import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
 import { k9On, dikeyOn, hasHexCeilings } from './vertical';
 import { floorsAt, hasStandData, katlarOf, slabsAt, standHeights, standingOn, surTop } from './stand';
@@ -212,6 +213,28 @@ export function checkMover(state: BattleState, actor: Combatant, to: Offset): Of
  * iner: oradaki altıgenler iki kat maliyetli. Yakaladığını sürükleyenin her adımı da iki kat.
  */
 export function moveCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
+  // Kuyruk MB3 (69+, B11 ⚠): binicisi üstündeki binek yığın boyu (binek + binici) sığmayan altıgene giremez (tavan, döşeme).
+  const fn0 = moveCostFlat(state, actor, dyn);
+  if (!actor.rider || !binekMb3On(state) || !riderStackFt(state, actor)) return fn0;
+  return (h, prev) => (stackFitProblem(state, actor, h, dyn ? dyn.ft : altitudeOf(actor)) ? null : fn0(h, prev));
+}
+
+/**
+ * Kuyruk MB3 (69+, B11 ⚠ yorum): binicisi üstündeki binek `at` altıgeninde `alt` irtifasında yığınıyla (bineğin boyu + binicinin
+ * boyu; MB1: binicinin tam boyu) sığıyor mu: altıgenin tavanı ve kat döşemeleri. Sığıyorsa ya da binici yoksa null.
+ */
+export function stackFitProblem(state: BattleState, mount: Combatant, at: Offset, alt: number = altitudeOf(mount)): string | null {
+  if (!mount.rider || !binekMb3On(state)) return null;
+  const extra = riderStackFt(state, mount);
+  if (!extra) return null;
+  const top = alt + bodyHeightFt(mount) + extra;
+  const ceil = ceilingFt(state, at);
+  if (ceil !== null && top > ceil) return `Tavan alçak (${ceil} ft): ${mount.name} binicisiyle ${hexLabel(at)} altıgenine sığmaz.`;
+  for (const f of slabsAt(state, at)) if (f > alt && f < top) return `Kat döşemesi alçak (${f} ft): ${mount.name} binicisiyle ${hexLabel(at)} altıgenine sığmaz.`;
+  return null;
+}
+
+function moveCostFlat(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
   // Kuyruk K62-ACIK (sürüm 67+): Magic Circle / Hallow: seçilen tür alana isteyerek giremez (ters Magic Circle'dan çıkamaz).
   const fn = moveCostInner(state, actor, dyn);
   if (!k62acikOn(state) || !actor.creatureType || !(state.map?.zones ?? []).some((z) => z.ward)) return fn;
