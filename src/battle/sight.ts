@@ -7,6 +7,7 @@ import { isAirborne } from './flight';
 import { withinFiveFt } from './common';
 import { frightenedNow, grappleAttackRule, srdConditions } from './ruleVersion';
 import { globalRule } from './ruleControl';
+import { k74On } from './k74Surum';
 import { distance } from '../rules/hex';
 import type { BattleState, Combatant } from './types';
 
@@ -47,6 +48,14 @@ export function truesightSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | 
 /** Gizlenmiş (Hide) yaratık Truesight sahibinden saklanamaz (Hide Invisible verir; sürüm 47+). */
 export const hiddenFromTruesight = (state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean =>
   !!target.hidden && !truesightSees(state, observer, target);
+
+/**
+ * Kuyruk K74 (sürüm 75+): gizlenmiş (`hidden`) hedef `observer`dan gizli mi? Truesight menzilindeki gözlemciden saklanılamaz
+ * (`hiddenFromTruesight`). Sürüm 74 ve altında Truesight'a bakılmaz (eski davranış: `target.hidden`). Motorun gizlenmişi
+ * eleyen her yolu (fırsat saldırısı, hareket algısı, Cleave, mastery, ejderha Algısı) bu tek sorgudan geçer.
+ */
+export const hiddenFrom = (state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean =>
+  !!target.hidden && !(!!state && k74On(state) && truesightSees(state, observer, target));
 
 /** Asıl biçimini algılar mı: dönüşmüş (Polymorph, Wild Shape) hedefin gerçek biçimi Truesight ile görülür (sürüm 47+). */
 export const seesTrueForm = (state: Pick<BattleState, 'map' | 'kuralSurumu'> | undefined, observer: Combatant, target: Combatant): boolean =>

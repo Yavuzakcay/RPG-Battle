@@ -28,6 +28,7 @@ import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
 import { canSee, saveEffect } from './maprules';
+import { hiddenFrom } from './sight';
 import { applyEvents } from './reduce';
 import { mirrorImageHit } from './mind';
 import { freeSpellResource } from '../rules/classFeatures';
@@ -143,7 +144,8 @@ export function feetBetween(state: BattleState, a: Combatant, b: Combatant): num
   return heightOf(state, a) === heightOf(state, b) ? 5 : 30;
 }
 
-const sees = (state: BattleState, a: Combatant, b: Combatant) => !b.hidden && canSee(state, a, b);
+// Kuyruk K74 (sürüm 75+): Truesight menzilindeki gözlemciden gizlenilemez (`hiddenFrom`).
+const sees = (state: BattleState, a: Combatant, b: Combatant) => !hiddenFrom(state, a, b) && canSee(state, a, b);
 
 const profileOf = (c: Combatant) => damageProfile(c);
 

@@ -21,6 +21,8 @@ import { terrainOf } from '../map/terrain';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
 import { wardedFrom } from './mind';
+import { k74On } from './k74Surum';
+import { wardProtects } from './possessionCore';
 import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type ConditionTimer, type DamageEffect } from './types';
 import { effectSpeedZero, flySpeed } from './flight';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
@@ -981,6 +983,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const has = c.conditions.includes(event.condition);
       // Bağışıklık (Heroism: Frightened): durum eklenmez.
       if (event.present && !has && immuneTo(c, event.condition, state)) return state;
+      // Kuyruk K74 (sürüm 75+): koruma alanı (Hallow, Magic Circle) tek koruma: seçilen türden gelen yeni Charmed/Frightened alanda
+      // hiç tutmaz (zamanlı durum yolu dahil; eskiden tutup sonra bastırılırdı, alandan çıkınca geri gelirdi).
+      if (event.present && !has && event.sourceId && (event.condition === 'Charmed' || event.condition === 'Frightened') && k74On(state)
+        && wardProtects(state, c, state.combatants[event.sourceId])) return state;
       const conditions = event.present
         ? has ? c.conditions : [...c.conditions, event.condition]
         : c.conditions.filter((x) => x !== event.condition);

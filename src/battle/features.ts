@@ -22,7 +22,7 @@ import { mechanicsAt } from './spellVersion';
 import { auraCoreOn, auraEnterEvents } from './auraCore';
 import { isAirborne } from './flight';
 import { swimsByTrait } from './flight';
-import { knowsWhere } from './sight';
+import { hiddenFrom, knowsWhere } from './sight';
 import { featuresOn, shiftGrant } from './shift';
 import { gap } from './body';
 import { adjacent3D, k73bOn, separated } from './adjacency';
@@ -498,7 +498,7 @@ export function opportunityAttacks(
     if (!melee) continue;
     if (step) {
       if (!leavesReach(current, o, mover, melee.reachFt, step.from, step.to, step.fromAlt, step.toAlt)) continue;
-      if (mover.hidden || !canSee(current, o, mover)) continue;
+      if (hiddenFrom(current, o, mover) || !canSee(current, o, mover)) continue;
     } else if (state.map || heightOf(current, o) !== heightOf(current, mover) || mover.hidden) {
       continue;
     }

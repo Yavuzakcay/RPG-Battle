@@ -16,6 +16,7 @@ import { saveMode, timedCondition } from './durations';
 import { turnKey } from './economy';
 import { damageEffects } from './damage-effects';
 import { sizeRank } from './forced';
+import { hiddenFrom } from './sight';
 import type { AttackOption, BattleEvent, BattleState, Combatant, CunningOption, MasteryMark } from './types';
 
 export const hasTrait = (c: Pick<Combatant, 'traits'> | undefined, trait: string): boolean => !!c?.traits?.includes(trait);
@@ -157,7 +158,7 @@ export function cunningEvents(state: BattleState, actor: Combatant, target: Comb
 export function superiorPreyEvents(state: BattleState, actor: Combatant, first: Combatant, mark: { raw: number; rolls: number[]; type: string }, rng: Rng): BattleEvent[] {
   if (!hasTrait(actor, 'superior-hunters-prey') || usedThisTurn(state, actor, 'superior-hunters-prey') || mark.raw <= 0) return [];
   const second = Object.values(state.combatants)
-    .filter((c) => c.id !== first.id && c.side !== actor.side && !c.civilian && c.hp > 0 && !c.hidden && !c.summon?.gone)
+    .filter((c) => c.id !== first.id && c.side !== actor.side && !c.civilian && c.hp > 0 && !hiddenFrom(state, actor, c) && !c.summon?.gone)
     .filter((c) => (state.map ? !!c.pos && !!first.pos && distance(c.pos, first.pos) <= 6 : true))
     .sort((a, b) => a.hp - b.hp)[0];
   if (!second) return [];

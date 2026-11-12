@@ -18,6 +18,7 @@ import { distance, sameHex, type Offset } from '../rules/hex';
 import { skillBonus } from '../rules/skills';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { ruleOf } from './maprules';
+import { hiddenFrom } from './sight';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 
 interface WakeRule {
@@ -112,7 +113,7 @@ export function dragonRoundEvents(state: BattleState, rng: Rng): BattleEvent[] {
   const at = d.pos;
   const events: BattleEvent[] = [];
   const watchers = Object.values(state.combatants)
-    .filter((c) => c.side === 'party' && !c.civilian && c.hp > 0 && !c.hidden && c.pos && distance(c.pos, at) * 5 <= w.perceptionFt);
+    .filter((c) => c.side === 'party' && !c.civilian && c.hp > 0 && !hiddenFrom(state, d, c) && c.pos && distance(c.pos, at) * 5 <= w.perceptionFt);
   const bonus = skillBonus(d, 'perception');
   for (const c of watchers) {
     const r = rollD20('normal', rollTag(rng, { kind: 'check', by: d.id, bonus }));
