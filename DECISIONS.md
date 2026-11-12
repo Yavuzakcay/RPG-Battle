@@ -2,6 +2,9 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Görev DURUM: kuyruk durum denetimi (salt okuma; kod, veri, harita, görsel, kural sürümü 74 ve SAVE_VERSION 22 değişmedi)
+
+- Rapor `harita/belgeler/KUYRUK-DURUM.md` (madde durumu + kanıt, 60–74 sürüm zinciri, 8 birleşmemiş dal, kullanıcı kararı bekleyenler, önerilen 5 iş); CLAUDE.md donma maddesi tek cümleye indirildi, `docs/MEKANIK-DONMA.md` başına aynı not eklendi.
 
 ## 2026-11-12 — Kuyruk MB8: binek hattının denge ölçümü ve kapanışı (kural sürümü 74'te kaldı)
 
