@@ -851,6 +851,11 @@ header.brand .brand-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-co
 /* Görev K3: tek "Karakter" adımı; jeton önizlemesi masaüstünde sağ panelde büyük, mobilde üstte küçük ve yapışkan. */
 .wiz-character > h3 { margin: 14px 0 4px; font-size: 18px; font-family: Cinzel, "Cormorant Garamond", Georgia, serif; color: var(--wz); }
 .wiz-character > h3:first-of-type { margin-top: 4px; }
+.char-figure { display: block; flex: none; overflow: visible; max-width: none; }
+.char-figure .fig { filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px var(--party)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)); }
+.char-card .char-figure { margin-right: max(0px, calc(72px - var(--fig-w, 72px))); }
+.token-preview .char-figure { max-width: 100%; height: auto; }
+.char-figure .char-ground { fill: var(--party); opacity: 0.32; filter: blur(2px); }
 .token-preview { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
 .token-preview figcaption { display: flex; flex-direction: column; gap: 2px; }
 .token-preview figcaption small { color: var(--mute); }

@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import sharp from 'sharp';
-import { AvatarCircle, TokenFigure } from './Avatar';
+import { AvatarCircle, CharacterFigure, TokenFigure } from './Avatar';
 import { hasSubclassWing, lineageLook, skinTint, wingBox, wingSlotOfSubclass } from './lineageLook';
 import { tintPixels } from './tint';
 import { lineageTint, sheetAvatar } from '../battle/avatar';
@@ -192,6 +192,27 @@ describe('karakter ekranlarında kanat (uçma yeteneği; havada olması gerekmez
   });
 });
 
+describe('KG1: karakter ekranı jetonu savaşla aynı çizim yolu, çerçevesiz', () => {
+  const fig = (sheet: CharacterSheet, size = 48) => renderToStaticMarkup(<CharacterFigure avatar={sheetAvatar(sheet)} size={size} />);
+  it('kanatlı Tiefling: yuvarlak rozet (class="avatar") yok; kanat jetonun arkasında, SVG kutusu kanadı kapsar (kırpılmaz)', () => {
+    const sh = sheet({ raceId: 'tiefling', lineageId: 'winged', classId: 'wizard' });
+    const m = fig(sh);
+    expect(m).not.toContain('class="avatar');
+    expect(m).toContain('kanat/tiefling-kanatli.webp');
+    expect(m.indexOf('look-wing')).toBeLessThan(m.indexOf('characters/'));
+    const wb = wingBox(lineageLook(sh, { ability: true }).wing!, 24, 24, 48);
+    const vb = /viewBox="(-?[\d.]+) (-?[\d.]+) ([\d.]+) ([\d.]+)"/.exec(m)!.slice(1).map(Number) as [number, number, number, number];
+    expect(vb[0]).toBeLessThanOrEqual(wb.x); expect(vb[1]).toBeLessThanOrEqual(wb.y);
+    expect(vb[0] + vb[2]).toBeGreaterThanOrEqual(wb.x + wb.width); expect(vb[1] + vb[3]).toBeGreaterThanOrEqual(wb.y + wb.height);
+  });
+  it('kanatsız karakter de aynı çerçevesiz yol: kanat katmanı yok, jeton görseli var', () => {
+    const m = fig(sheet({ raceId: 'human', classId: 'fighter' }));
+    expect(m).not.toContain('class="avatar');
+    expect(m).not.toContain('look-wing');
+    expect(m).toContain('characters/');
+  });
+});
+
 describe('Tiefling alt soy renkleri (kök neden: Kanatlı soyu sarı-yeşile boyuyordu)', () => {
   const L = (soyRenkleri.races as unknown as Record<string, { lineages: Record<string, { lch: { h: number; c: number; hueKeep?: number } } | null> }>).tiefling!.lineages;
   it('Kanatlı soyu sarı-yeşil ton bandında (45–150°) değil; iki yönden de jetonu tek renge boyamaz (orijinal sapmanın payı korunur)', () => {
@@ -219,7 +240,7 @@ const meanLab = (d: Uint8ClampedArray, mask: Uint8Array) => {
 
 describe('Human ten maskesi: yalnız ten boyanır (3 jeton × 3 ton)', () => {
   for (const name of TOKENS) {
-    it(`${name}: ten dışı piksel farkı 0; Orijinal aynen; Siyahi ve Doğu Asyalı teni hedef renge yaklaşır, açıklık sırası korunur`, async () => {
+    it(`${name}: ten dışı piksel farkı 0; Orijinal aynen; Koyu ve Altın teni hedef renge yaklaşır, açıklık sırası korunur`, async () => {
       const { data, mask } = await load(name);
       expect(lineageTint('human', 'tenhausser')).toBeUndefined();
       const base = meanLab(data, mask);
@@ -235,7 +256,7 @@ describe('Human ten maskesi: yalnız ten boyanır (3 jeton × 3 ton)', () => {
         result[tone] = meanLab(px, mask);
       }
       expect(result.orijinal).toEqual(base);
-      // Hedef ortalama açıklık: Siyahi koyu, Doğu Asyalı açık; ton hedefe yakın.
+      // Hedef ortalama açıklık: Koyu koyu, Altın açık; ton hedefe yakın.
       const target = (hex: string) => { const n = parseInt(hex.slice(1), 16); return rgbToLab((n >> 16) & 255, (n >> 8) & 255, n & 255); };
       for (const [tone, hex] of [['siyahi', '#96623E'], ['dogu-asyali', '#E2B880']] as const) {
         const t = target(hex), r = result[tone]!;

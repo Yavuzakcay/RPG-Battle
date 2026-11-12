@@ -31,9 +31,9 @@
 | Goliath | Storm's Thunder / Storm's Thunder | — (özet satırında; mevcut soy) | Gizlen (Stealth) kontrollerinde dezavantaj. | -3 / +2 | çalışır |
 | Halfling | İnce / Slender Halfling | Çeviklik +1.; Hız +5 ft. | Güç (Strength) kontrollerinde dezavantaj. | -1 / +5 | çalışır |
 | Halfling | Kalın / Sturdy Halfling | Güç +1, Dayanıklılık +1.; Taşıma kapasiten ×1,5. | Hızın −5 ft. | +5 / +5 | çalışır |
-| Human | Tenhausser / Tenhausser | Güç +1, Dayanıklılık +1. | Diplomasi (Persuasion) ve Gizlen (Stealth) kontrollerinde −1. | +8 / -2 | çalışır |
-| Human | Khadyrga / Khadyrga | Zekâ +1, Karizma +1. | Zorlu arazide hızın −5 ft. | -3 / -3 | çalışır |
-| Human | Saf Kent / Pure City | Bilgelik +1, Çeviklik +1. | Zırhsızken AC −1. | +3 / +3 | çalışır |
+| Human | Tenhausser Sürgünü / Tenhausser Exile | Güç +1, Dayanıklılık +1. | Diplomasi (Persuasion) ve Gizlen (Stealth) kontrollerinde −1. | +8 / -2 | çalışır |
+| Human | Khadyrga Sürgünü / Khadyrga Exile | Zekâ +1, Karizma +1. | Zorlu arazide hızın −5 ft. | -3 / -3 | çalışır |
+| Human | Saf Kent Sürgünü / Pure City Exile | Bilgelik +1, Çeviklik +1. | Zırhsızken AC −1. | +3 / +3 | çalışır |
 | Human | Sur Dışı / Outwall | Dayanıklılık +1, Bilgelik +1.; Hayatta Kalma (Survival) ve Algı (Perception) +2. | İç mekânda saldırı −2 ve inisiyatif −2.; Yerleşimde Karizma (Charisma) kontrollerinde dezavantaj. | -8 / +2 | çalışır |
 | Orc | Buzul / Glacier Orc | Soğuk hasarına direnç. | Ateş hasarına karşı kurtarma zarlarında dezavantaj. | +7 / -3 | kısmi |
 | Orc | Orman / Wildwood Orc | Bitkisel zorlu araziyi yok sayarsın. | Zehir hasarına karşı kurtarma zarlarında dezavantaj. | +3 / -1 | kısmi |
@@ -74,7 +74,7 @@ Alt soylara ayrı çizim yoktur. `data/alt-soy-gorunum.json`: Dwarf/Orc için CS
 
 ### Human ten tonu (AS1c: ten maskesi)
 
-Ten tonu kültürden bağımsız ayrı seçimdir (`skinTone`); her kültür üç tonu da seçebilir (`ten.kulturTen`). Seçici görünür; Orijinal (varsayılan) boyasızdır, Siyahi (#96623E) ve Doğu Asyalı (#E2B880) seçilince jetonun yalnız TEN pikselleri boyanır (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu; saç, giysi, silah, kuşak değişmez; oluşturucu önizlemesi, karakter kartı ve savaş jetonu aynı yol). Renkler tek yerde: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].renk` (hex; null = boyasız).
+Ten tonu kültürden bağımsız ayrı seçimdir (`skinTone`); her kültür üç tonu da seçebilir (`ten.kulturTen`). Seçici görünür; Orijinal (varsayılan) boyasızdır, Koyu (#96623E) ve Altın (#E2B880) seçilince jetonun yalnız TEN pikselleri boyanır (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu; saç, giysi, silah, kuşak değişmez; oluşturucu önizlemesi, karakter kartı ve savaş jetonu aynı yol). Renkler tek yerde: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].renk` (hex; null = boyasız).
 
 ### Savaş jetonu ve kanat katmanı (AS1c)
 

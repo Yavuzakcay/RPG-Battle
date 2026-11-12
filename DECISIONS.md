@@ -3,6 +3,12 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — KG1: karakter ekranlarında çerçevesiz jeton, ten tonu ve kültür adları (yalnız görünüm/metin; kural sürümü değişmedi)
+
+- **Jeton (karakter listesi, oluşturucu önizlemesi):** yuvarlak rozet çerçevesi kalktı; `CharacterFigure` (`src/ui/Avatar.tsx`) savaştaki `AvatarCircle` → `TokenFigure` yolunu küçük bir SVG içinde kullanır (silüet, kanat jetonun arkasında, aynı `wingBox`; `ability`: uçma yeteneği olan karakter kanatlı). SVG kutusu jeton + kanat sınırını kapsar, kanat kırpılmaz. Kanatsız karakterde de aynı çerçevesiz görünüm; kaybolmasın diye silüet gölgesi + ayak altı zemin parıltısı (`.char-figure`). `LookFrame` yalnız savaş şeridi rozetlerinde kalır.
+- **Ten tonu etiketleri:** yalnız görünen ad: Siyahi → Koyu (EN Dark), Doğu Asyalı → Altın (EN Golden); kimlikler `siyahi`/`dogu-asyali` ve renkler aynı (kayıtlı karakter bozulmaz). Test başlıkları/yorumları güncellendi.
+- **Human kültür adları:** Tenhausser → Tenhausser Sürgünü, Khadyrga → Khadyrga Sürgünü, Saf Kent → Saf Kent Sürgünü (EN: … Exile, Pure City Exile); Sur Dışı aynı. Kimlikler (`tenhausser`, `khadyrga`, `pure-city`) aynı; hizalanma başlangıç gerekçeleri ve `docs/ALT-SOY-41.md` tutarlı. "Khadyrga Limanı" bir yer adıdır, değişmedi.
+
 ## 2026-11-12 — Melek-kanat düzeltmeleri: Tiefling Kanatlı rengi ve karakter ekranlarında kanat (yalnız görsel)
 
 - **Kök neden (Tiefling Kanatlı jetonu sarı):** kanat filtresi değil, `data/soy-renkleri.json` `tiefling.lineages.winged` boyaması: `lch` tonu 90° (sarı-yeşil), kroma 40; ten maskesi geniş seçtiği için ten, boynuz, kuyruk ve koyu kıyafet pikselleri tek ton olan sarıya çekiliyordu (`hueKeep` varsayılan 0,3). Düzeltme: Kanatlı 318° (soluk menekşe), `hueKeep` 0,8, `chromaKeep` 0,7; Abyssal ve Chthonic `hueKeep` 0,6'ya çıkarıldı (orijinal pikseller arası ton farkı korunur: kıyafet tek renge boyanmaz). Soylar birbirinden ayırt edilir (ΔE ≥ 15 testi, `data/soy-olcum.json` yalnız Tiefling satırları yeniden ölçüldü). Kanat filtresi (koyu kırmızı-mor) aynen.
@@ -112,7 +118,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Kanat Süzülüşü: bonus eylem, kullanım yeterlilik bonusu kadar (`$pb` ifadesi yok: kaynak `uses.proficiency`), 1 dakika (10 tur), yarım hız, en çok 30 ft, yere değmez; orta/ağır zırhla yok. Tiefling tabanında direnç olmadığı için "direnci kaybeder" kendiliğinden (Kanatlı soy direnç vermez).
   - Orc Orman "bitkisel zorlu arazi": zemin `g` (çalılık, sazlık) ve Entangle/Plant Growth/Spike Growth alanları (`data/alt-soy.json`).
 - **Dwarf Tepe ve Yeraltı:** AS1a-2'de boşaltılan buff'lar artık yeni (kullanıcı kararı): Tepe Dayanıklılık kurtarma +1, Yeraltı Gizlen +2.
-- **Human ten tonu (İş 4):** seçici görünür; `kulturTen` dolu (dört kültür × üç ton: Orijinal, Siyahi, Doğu Asyalı), varsayılan Orijinal (filtre yok), `ten.filtreUygula: true`; oluşturucu önizlemesi ve karakter kartında filtre uygulanır. **⚠ YER TUTUCU:** Siyahi ve Doğu Asyalı renkleri geçici; gerçek değerler tek yerde: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].hsl` (`hueRotate`, `saturate`, `brightness`, `sepia`); kod ve test değişmez. Eski 6 tonluk seçim kimlikleri (acik, bugday…) Orijinal sayılır.
+- **Human ten tonu (İş 4):** seçici görünür; `kulturTen` dolu (dört kültür × üç ton: Orijinal, Koyu, Altın; eski adlar Siyahi, Doğu Asyalı, KG1), varsayılan Orijinal (filtre yok), `ten.filtreUygula: true`; oluşturucu önizlemesi ve karakter kartında filtre uygulanır. **⚠ YER TUTUCU:** Siyahi ve Doğu Asyalı renkleri geçici; gerçek değerler tek yerde: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].hsl` (`hueRotate`, `saturate`, `brightness`, `sepia`); kod ve test değişmez. Eski 6 tonluk seçim kimlikleri (acik, bugday…) Orijinal sayılır.
 - **Testler:** `src/battle/altSoy.test.ts` (türetme, her kurtarma/kontrol/harita/hareket kuralı, Kanatlı, Dragonborn doğrulaması, sürüm kapısı), `src/sim/altSoyRegresyon.test.ts` (70 altın imza AS1b öncesi ağaçtan; Human parti 71 = 70; Drow parti 71 ≠ 70), `altSoy41.test.tsx` güncellendi (durum etiketi, Tepe/Yeraltı yeni buff, üç ton). Sürüm sabiti testleri (`g6`, `ruleVersion`) 71.
 - **Kapsam dışı:** ek paket/imza/eşya kurtarmalarına `SaveCtx`; savaş jetonuna görünüm; kanat sprite'ları; Dragonborn beyaz tabanı; Human ten tonlarının gerçek renkleri.
 

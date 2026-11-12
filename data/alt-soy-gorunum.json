@@ -107,8 +107,8 @@
       {
         "id": "siyahi",
         "ad": {
-          "tr": "Siyahi",
-          "en": "Black"
+          "tr": "Koyu",
+          "en": "Dark"
         },
         "renk": "#96623E",
         "rozetRenk": "#96623E"
@@ -116,8 +116,8 @@
       {
         "id": "dogu-asyali",
         "ad": {
-          "tr": "Doğu Asyalı",
-          "en": "East Asian"
+          "tr": "Altın",
+          "en": "Golden"
         },
         "renk": "#E2B880",
         "rozetRenk": "#E2B880"

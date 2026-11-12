@@ -785,8 +785,8 @@
         "id": "tenhausser",
         "name": "Tenhausser",
         "ad": {
-          "tr": "Tenhausser",
-          "en": "Tenhausser"
+          "tr": "Tenhausser Sürgünü",
+          "en": "Tenhausser Exile"
         },
         "resistances": [],
         "summary": {
@@ -809,8 +809,8 @@
         "id": "khadyrga",
         "name": "Khadyrga",
         "ad": {
-          "tr": "Khadyrga",
-          "en": "Khadyrga"
+          "tr": "Khadyrga Sürgünü",
+          "en": "Khadyrga Exile"
         },
         "resistances": [],
         "summary": {
@@ -832,8 +832,8 @@
         "id": "pure-city",
         "name": "Pure City",
         "ad": {
-          "tr": "Saf Kent",
-          "en": "Pure City"
+          "tr": "Saf Kent Sürgünü",
+          "en": "Pure City Exile"
         },
         "resistances": [],
         "summary": {
