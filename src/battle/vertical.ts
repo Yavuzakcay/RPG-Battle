@@ -11,7 +11,8 @@ import { heightAt, heightMoveRule, k72On, katmanOn, layerActive, levelFeet } fro
 import { bandOf, type Band } from './cells';
 import { ruleVersion } from './ruleVersion';
 import { k73cOn } from './k73cSurum';
-import { body64At } from './bodyLeaf';
+import { body64At, footSize } from './bodyLeaf';
+import { bandSizeOf } from './riderCore';
 import type { BattleState, Combatant } from './types';
 
 /** Kuyruk K71a: dikey modelin kural sürümü. */
@@ -112,8 +113,9 @@ export function mutlakFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pic
  * Mutlak yükseklik, K9 uzaklık/erişim (`absBand`, `adjacent3D`), K8 yüksek zemin ve YZ zemin ölçüsü bundan. Tek altıgenlide,
  * bayrak kapalıyken ve 63 ve altında çapanın zemini (`zeminFt`).
  */
-export function bodyZeminFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: { size?: Combatant['size'] }, at: Offset): number {
-  const foot = body64At(state as Parameters<typeof body64At>[0], c.size, at);
+export function bodyZeminFt(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: { size?: Combatant['size']; riding?: string }, at: Offset): number {
+  const st = state as Parameters<typeof body64At>[0];
+  const foot = body64At(st, footSize(st, c), at);
   if (!foot) return zeminFt(state, at);
   let top = -Infinity;
   for (const h of foot) top = Math.max(top, zeminFt(state, h));
@@ -135,5 +137,6 @@ export const k9Ft = (state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Co
  * (eski davranış). Altıgenler arası uzaklık ve erişim bununla.
  */
 export function absBand(state: Pick<BattleState, 'map' | 'kuralSurumu'>, c: Pick<Combatant, 'size' | 'pos' | 'altitudeFt'>, at: Offset | null = c.pos, alt: number = c.altitudeFt ?? 0): Band {
-  return bandOf(c, k9Ft(state, c, at, alt));
+  // Kuyruk MB3 (69+, B6 ⚠): bineğinin üstündeki binicinin bandı bineğin bandı (boy bineğin boyutundan).
+  return bandOf((c as Partial<Combatant>).riding ? { size: bandSizeOf(state, c) } : c, k9Ft(state, c, at, alt));
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CELESTIAL } from './celestialData';
 import srdFeats from '../../data/srd/feats.json';
 import srdSpecies from '../../data/srd/species.json';
-import { classData, classes, spellSlots } from '../data';
+import { classData, classes, races, spellSlots } from '../data';
 import srdClasses from '../../data/srd/classes.json';
 import srdSubclasses from '../../data/srd/subclasses.json';
 import {
@@ -55,9 +55,11 @@ describe('SRD sınıf verisi (npm run srd)', () => {
     // F1: feat kaynakları (Magic Initiate) SRD feat'ine bağlı: `feat:<feat>`.
     const feats = new Set(srdFeats.feats.map((f) => `feat:${f.id}`));
     const houseTraits = new Set(CELESTIAL.ozellikler.map((o) => `ev:celestial/${o.id}`));
+    // Kuyruk AS1b: alt soy özelliği (Kanat Süzülüşü) kaynağı `alt:<tür>/<anahtar>`, kimliği `data/races.json` `lineages[].etki.ozellik`.
+    const altTraits = new Set(races.flatMap((r) => (r.lineages ?? []).flatMap((l) => (l.etki?.ozellik ? [`alt:${r.id}/${l.etki.ozellik.anahtar}`] : []))));
     for (const [id, d] of Object.entries(classData.mechanics.resources)) {
       // Kuyruk K20: ev kuralı türünün (Celestial, SRD dışı) kaynakları kendi verisindeki özelliğe bağlı: `ev:<tür>/<özellik>`.
-      for (const f of Array.isArray(d.feature) ? d.feature : [d.feature]) expect((f.startsWith('ev:') ? houseTraits : d.race ? traits : d.feat ? feats : known).has(f), `${id}: ${f}`).toBe(true);
+      for (const f of Array.isArray(d.feature) ? d.feature : [d.feature]) expect((f.startsWith('ev:') ? houseTraits : f.startsWith('alt:') ? altTraits : d.race ? traits : d.feat ? feats : known).has(f), `${id}: ${f}`).toBe(true);
     }
   });
 });

@@ -14,7 +14,7 @@ import type { BattleEvent, BattleState, Combatant } from './types';
 export function rollSkillCheck(c: Combatant, skill: Skill, dc: number, rng: Rng, reason?: string, state?: BattleState): BattleEvent {
   // Kuyruk 16 K16E (kural sürümü 2): korku kaynağı görüş hattındaki Frightened yaratık dezavantajlı (`checkBase`).
   const base = skill === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal';
-  const mode = checkMode(c, skill, state ? checkBase(state, c, base) : base);
+  const mode = checkMode(c, skill, state ? checkBase(state, c, base, skill) : base);
   const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: c.id, bonus: skillBonus(c, skill) }));
   // Zar eklentisi (Guidance: seçilen beceri; Görev R2), Reliable Talent ve ikinci şans (Görev F).
   const { total, extra } = finishCheck(c, skill, roll.kept, skillBonus(c, skill), dc, mode, rng);

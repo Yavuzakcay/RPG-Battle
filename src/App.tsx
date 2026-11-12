@@ -8,6 +8,7 @@ import type { BattleState } from './battle/types';
 import { applyBattleResult } from './app/partyStatus';
 import { migrateSubclasses, type SavedCharacter } from './rules/builder';
 import { migrateLineages } from './rules/lineage';
+import { newPendingLineages } from './app/lineageNotice';
 import { repairSlots } from './rules/characterRest';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
@@ -159,13 +160,16 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     const g = migrateLineages(m.list);
     // H-SLOT: eski kayıtlı durumda (slot en çoğu yok) slotlar sınıf ve seviyenin tablosuna tamamlanır.
     const r = repairSlots(g.list);
-    if (m.assigned.length === 0 && g.assigned.length === 0 && r.list === g.list) return;
+    // Kuyruk AS1a: soyu isteğe bağlı türdeki eski kayıtlar soysuz kalır; her karakter için yalnızca bir kez bildirilir.
+    const pick = newPendingLineages(g.pending);
+    if (m.assigned.length === 0 && g.assigned.length === 0 && r.list === g.list && pick.length === 0) return;
     store(r.list);
-    if (m.assigned.length === 0 && g.assigned.length === 0 && r.repaired.length === 0) return;
+    if (m.assigned.length === 0 && g.assigned.length === 0 && r.repaired.length === 0 && pick.length === 0) return;
     setSubclassNotice([
       m.assigned.length ? t().common.subclassAssigned(m.assigned.map((a) => `${a.name}: ${a.subclass}`).join(', ')) : '',
       g.assigned.length ? t().common.lineageAssigned(g.assigned.map((a) => `${a.name}: ${a.lineage}`).join(', ')) : '',
       r.repaired.length ? t().common.slotsRepaired(r.repaired.join(', ')) : '',
+      pick.length ? t().common.lineagePick(pick.map((p) => `${p.name} (${p.race})`).join(', ')) : '',
     ].filter(Boolean).join(' '));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classInfo.ready]);

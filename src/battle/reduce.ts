@@ -22,6 +22,7 @@ import { wardedFrom } from './mind';
 import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type ConditionTimer, type DamageEffect } from './types';
 import { effectSpeedZero, flySpeed } from './flight';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
+import { soyTeleportEnds } from './altSoySurum';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -1249,7 +1250,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       if (!c) return state;
       const { riding: mid, ...rest } = c;
-      let s1: BattleState = { ...state, combatants: { ...state.combatants, [c.id]: { ...rest, pos: event.at, movementUsed: c.movementUsed + event.cost } as Combatant } };
+      let s1: BattleState = { ...state, combatants: { ...state.combatants, [c.id]: { ...rest, pos: event.at, movementUsed: c.movementUsed + event.cost, ...(event.toFt !== undefined ? { altitudeFt: event.toFt } : {}) } as Combatant } };
       const m = mid ? s1.combatants[mid] : undefined;
       if (m) { const { rider: _r, ...mr } = m; s1 = { ...s1, combatants: { ...s1.combatants, [m.id]: mr as Combatant } }; }
       return s1;
@@ -1258,6 +1259,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       return withCombatant(state, c.id, { pos: event.to, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
+        // Kuyruk AS1b (alt soy etkisi `teleportEnds`, Cloud): ışınlanınca turun kalan hareketi biter.
+        ...(soyTeleportEnds(c) ? { movementUsed: Math.max(c.movementUsed + (event.cost ?? 0), speedHexes(c)) } : {}),
         ...(event.stride ? { economy: { ...c.economy, treeStride: true } } : {}) });
     }
     case 'ability_recharge': {

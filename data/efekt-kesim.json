@@ -80,6 +80,7 @@
       "kareMsler": { "zemin-deprem-yarigi": 400, "zemin-sessizlik": 300, "zemin-gunisigi": 250, "durum-olum-sozu": 140 },
       "donguler": { "yukselen-toz": false, "zemin-deprem-yarigi": false, "zemin-sessizlik": true, "zemin-gunisigi": true, "durum-olum-sozu": false },
       "opak": ["zemin-deprem-yarigi"], "ortaKare": ["zemin-deprem-yarigi"],
+      "catlak": { "zemin-deprem-yarigi": { "dBase": 165, "dLo": 20, "dHi": 80, "sLo": 0.55, "sHi": 0.78, "gLo": 90, "gHi": 150, "glowA": 1, "tepe": 0.64, "darkC": [40, 18, 14], "glowC": [128, 44, 22] } },
       "kazanc": { "yukselen-toz": { "1": 1.8, "4": 1.8 } },
       "yumusat": { "yukselen-toz": 6, "zemin-gunisigi": 6, "durum-olum-sozu": 6 },
       "ortala": ["zemin-sessizlik", "durum-olum-sozu"],

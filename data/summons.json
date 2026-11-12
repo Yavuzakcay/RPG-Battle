@@ -1,5 +1,5 @@
 {
-  "_aciklama": "Çağırma büyüleri ve çağrılan yaratıkların stat blokları (Görev R3; SRD 5.2.1). `summons` anahtarı büyünün kimliği (data/spells.json `id`), `srd` büyünün SRD kaydı. `turn`: own = kendi inisiyatifini atar ve kendi turunda oynar (Find Familiar), after-owner = sahibinin inisiyatifini paylaşır ve turunu sahibinin hemen ardından oynar (Find Steed, Summon Dragon). `rangeFt`: çağırma yeri sahibine en çok bu uzaklıkta boş altıgen. `setup`: ritüel (1 saat), yalnızca savaş öncesinde (kurulumda) yapılır. `replace`: aynı büyünün önceki yaratığı kaybolur (tek familiar, tek at, yeni Summon Dragon). `endsOnOwnerDeath`: sahibi ölünce kaybolur. `durationRounds`: süre (tur; 1 saat = 600). `canAttack: false`: saldırı yapamaz (familiar). `choice`: büyü yapılırken seçilen (yaratık türü ya da nefes hasar türü). `forms`: familiar biçimleri, data/monsters.json kimlikleri (CR 0 Beast; SRD listesi). Yaratıklarda `ac`/`hp` formülü: base + perLevel × (büyü seviyesi − fromLevel); büyü seviyesi yukarı slotta slot seviyesidir. Saldırıda `bonus: spellAttack` sahibinin büyü saldırı bonusu, `dc: spellSaveDc` sahibinin büyü save DC'si, `plusLevel` hasara büyü seviyesi eklenir, `repeat: halfLevel` Multiattack'ta büyü seviyesinin yarısı kadar. `typeByChoice`: hasar türü seçilen yaratık türünden, `type: choice` seçilen hasar türü. `unsupported`: motorun uygulamadığı özellikler (bilgi). `area` (Görev R4): alanlı saldırının şekli (rules/areaParse.ts AttackArea); Draconic Spirit'in nefesi 30 ft koni. `setupSlot` (Görev S1): kurulumda yapılır ama slot harcar (Animate Dead: döküm süresi 1 dakika, ritüel değil). Görev B2: `intangible` dokunulamaz (hedef alınmaz, alanlardan etkilenmez; Flaming Sphere, Conjure Animals), `zoneRadius` yaratıkla yürüyen büyü alanının yarıçapı (altıgen; kuralı büyünün `mechanics.zone`), `count` yaratık sayısı base + perLevel × (slot − büyü seviyesi) (Animate Dead), saldırıda `diceFromLevel` zar sayısı o seviyeden sonra seviye başına +1.",
+  "_aciklama": "Çağırma büyüleri ve çağrılan yaratıkların stat blokları (Görev R3; SRD 5.2.1). `summons` anahtarı büyünün kimliği (data/spells.json `id`), `srd` büyünün SRD kaydı. `turn`: own = kendi inisiyatifini atar ve kendi turunda oynar (Find Familiar), after-owner = sahibinin inisiyatifini paylaşır ve turunu sahibinin hemen ardından oynar (Find Steed, Summon Dragon). `rangeFt`: çağırma yeri sahibine en çok bu uzaklıkta boş altıgen. `setup`: ritüel (1 saat), yalnızca savaş öncesinde (kurulumda) yapılır. `replace`: aynı büyünün önceki yaratığı kaybolur (tek familiar, tek at, yeni Summon Dragon). `endsOnOwnerDeath`: sahibi ölünce kaybolur. `durationRounds`: süre (tur; 1 saat = 600). `canAttack: false`: saldırı yapamaz (familiar). `choice`: büyü yapılırken seçilen (yaratık türü ya da nefes hasar türü). `forms`: familiar biçimleri, data/monsters.json kimlikleri (CR 0 Beast; SRD listesi). Yaratıklarda `ac`/`hp` formülü: base + perLevel × (büyü seviyesi − fromLevel); büyü seviyesi yukarı slotta slot seviyesidir. Saldırıda `bonus: spellAttack` sahibinin büyü saldırı bonusu, `dc: spellSaveDc` sahibinin büyü save DC'si, `plusLevel` hasara büyü seviyesi eklenir, `repeat: halfLevel` Multiattack'ta büyü seviyesinin yarısı kadar. `typeByChoice`: hasar türü seçilen yaratık türünden, `type: choice` seçilen hasar türü. `unsupported`: motorun uygulamadığı özellikler (bilgi). `area` (Görev R4): alanlı saldırının şekli (rules/areaParse.ts AttackArea); Draconic Spirit'in nefesi 30 ft koni. `setupSlot` (Görev S1): kurulumda yapılır ama slot harcar (Animate Dead: döküm süresi 1 dakika, ritüel değil). Görev B2: `intangible` dokunulamaz (hedef alınmaz, alanlardan etkilenmez; Flaming Sphere, Conjure Animals), `zoneRadius` yaratıkla yürüyen büyü alanının yarıçapı (altıgen; kuralı büyünün `mechanics.zone`), `count` yaratık sayısı base + perLevel × (slot − büyü seviyesi) (Animate Dead), saldırıda `diceFromLevel` zar sayısı o seviyeden sonra seviye başına +1. Kuyruk MB7 (kural sürümü 70+): `mount` binek kuralı (`kural`: sahip = yalnız çağıran / dost = her dost biner, `enBuyukBinici` boyut, `minSeviye` çağıranın seviyesi); `mount` olmayan çağrıya binilmez. `speedFt` yürüme hızı, `endsOnDamage` hasar alınca kaybolur (Phantom Steed). Phantom Steed büyüsü `mb7` bloğuyla 70+'da çağırmadır (68–69'da savaş dışı).",
   "summons": {
     "find-familiar": {
       "srd": "spells:find-familiar",
@@ -44,6 +44,9 @@
           "fey",
           "fiend"
         ]
+      },
+      "mount": {
+        "kural": "dost"
       }
     },
     "summon-dragon": {
@@ -176,6 +179,21 @@
           "cold"
         ]
       }
+    },
+    "phantom-steed": {
+      "srd": "spells:phantom-steed",
+      "turn": "after-owner",
+      "rangeFt": 30,
+      "setup": true,
+      "forms": [
+        "riding-horse"
+      ],
+      "speedFt": 100,
+      "durationRounds": 600,
+      "endsOnDamage": true,
+      "mount": {
+        "kural": "dost"
+      }
     }
   },
   "creatures": {
@@ -218,9 +236,6 @@
             "fiend": "necrotic"
           }
         }
-      ],
-      "unsupported": [
-        "binek olarak kullanma (mounted combat)"
       ]
     },
     "draconic-spirit": {
@@ -369,8 +384,16 @@
       "size": "L",
       "creatureType": "beast",
       "avatar": "monsters/giant-spider.webp",
-      "avatarByChoice": { "spider": "monsters/giant-spider.webp", "centipede": "monsters/giant-centipede.webp", "wasp": "monsters/giant-wasp.webp" },
-      "ringByChoice": { "spider": "#8a7fd0", "centipede": "#c9894a", "wasp": "#e3c74a" },
+      "avatarByChoice": {
+        "spider": "monsters/giant-spider.webp",
+        "centipede": "monsters/giant-centipede.webp",
+        "wasp": "monsters/giant-wasp.webp"
+      },
+      "ringByChoice": {
+        "spider": "#8a7fd0",
+        "centipede": "#c9894a",
+        "wasp": "#e3c74a"
+      },
       "ac": {
         "base": 11,
         "perLevel": 1

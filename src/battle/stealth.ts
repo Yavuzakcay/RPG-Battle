@@ -11,6 +11,7 @@
  */
 import { sizeRank } from './forced';
 import { checkBase, ruleVersion } from './ruleVersion';
+import { soyCheckDis } from './soyEtki';
 import { searchZoneEvents } from './hiddenZones';
 import { extrasTotal, rollExtras } from '../rules/attack';
 import { finishCheck } from './effectDice';
@@ -85,7 +86,9 @@ export function passivePerception(state: BattleState, watcher: Combatant, at: Of
   // dezavantajı (pasif −5); Web gibi öteki hafif örtüyle birikmez.
   const dim = dimLightOn(state) && perceivedLevel(state, watcher, at) === 'dim' ? s2rules.hafifOrtu.passivePenalty : 0;
   const light = Math.max(web, dim);
-  return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark - distracted - light;
+  // Kuyruk AS1b (sürüm 71+ alt soy etkisi): Algı kontrolü dezavantajı pasif Algıyı 5 düşürür (SRD).
+  const soyDis = soyCheckDis(state, watcher, 'perception') ? s2rules.hafifOrtu.passivePenalty : 0;
+  return stealthJson.passivePerceptionBase + skillBonus(watcher, 'perception') - dark - distracted - light - soyDis;
 }
 
 export interface HideCheck {
@@ -151,6 +154,8 @@ export function executeHide(state: BattleState, actor: Combatant, rng: Rng): Com
     ...(actor.stealthDisadvantage ? [{ effect: 'disadvantage' as const, reason: 'Zırh' }] : []),
     // Kuyruk 16 K16E (kural sürümü 2): korkan yaratık (kaynak görüş hattında) yetenek kontrolünde dezavantajlı.
     ...(checkBase(state, actor) === 'disadvantage' ? [{ effect: 'disadvantage' as const, reason: 'Frightened' }] : []),
+    // Kuyruk AS1b (sürüm 71+ alt soy etkisi): Gizlen kontrolü dezavantajı (Blue, Storm; karanlıkta Parlayan Ruh).
+    ...(soyCheckDis(state, actor, 'stealth') ? [{ effect: 'disadvantage' as const, reason: 'Alt soy' }] : []),
     ...mapHideSources(state),
     ...(check.advantage ? [{ effect: 'advantage' as const, reason: 'Karanlık (gece)' }] : []),
     // Rage + Primal Knowledge: Stealth STR ile yapılırsa Strength avantajı.
@@ -186,7 +191,7 @@ export function noticeEvents(state: BattleState, c: Combatant): BattleEvent[] {
  */
 export function executeSearch(state: BattleState, actor: Combatant, rng: Rng): CommandResult {
   if (!state.map || !actor.pos) return fail('Arama yalnızca haritalı savaşta yapılır.');
-  const pmode = checkMode(actor, 'perception', checkBase(state, actor));
+  const pmode = checkMode(actor, 'perception', checkBase(state, actor, 'normal', 'perception'));
   const roll = rollD20(pmode, rollTag(rng, { kind: 'check', by: actor.id, bonus: skillBonus(actor, 'perception') }));
   const { total, extra } = finishCheck(actor, 'perception', roll.kept, skillBonus(actor, 'perception'), null, pmode, rng);
   // Kuyruk S2 (sürüm 41, Web): hafif örtülü alandaki gizlenen için Arama dezavantajlı (ikinci zarın düşüğü).

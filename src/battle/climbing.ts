@@ -30,6 +30,7 @@ import { dikeyOf } from './vertical';
 import { heightDelta, heightMoveRule, isCliff, katmanOn, levelFeet } from './heights';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import type { TerrainType } from '../map/terrain';
+import { binekMb3On } from './binekSurum';
 
 /** Kuyruk K71b: herkes için tırmanmanın kural sürümü. */
 export const CLIMB_VERSION = 57;
@@ -110,7 +111,8 @@ export function surfaceAt(state: BattleState, h: Offset, t: TerrainType = terrai
 }
 
 /** Çeviklik tırmanıcısı (sürüm 57+): uçmayan, süzülmeyen, tırmanma hızı olmayan. */
-export const dexClimber = (state: BattleState, c: Combatant): boolean => climbOn(state) && !fliesOrHovers(c) && !climbs(c, state);
+// Kuyruk MB3 (69+, B14): binicisi üstündeki binek Çeviklik tırmanışı yapmaz.
+export const dexClimber = (state: BattleState, c: Combatant): boolean => climbOn(state) && !fliesOrHovers(c) && !climbs(c, state) && !(c.rider && binekMb3On(state));
 
 const gridOf = (state: BattleState) => ({ cols: state.map?.tiles[0]?.length ?? 0, rows: state.map?.tiles.length ?? 0 });
 

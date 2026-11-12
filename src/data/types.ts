@@ -18,6 +18,8 @@ export type GiantAncestry = 'cloud' | 'fire' | 'frost' | 'hill' | 'stone' | 'sto
 export interface Lineage {
   id: string;
   name: string;
+  /** Kuyruk AS1a: görünen ad (TR/EN); yoksa `name`. */
+  ad?: LocalText;
   /** Seçim kartında, özet panelinde ve karakter kartında: yalnızca bu seçeneği ayıran özellikler (Görev K3). */
   summary: LocalText;
   /** Bu seçimden gelen hasar dirençleri. */
@@ -32,6 +34,45 @@ export interface Lineage {
   giant?: GiantAncestry;
   /** Oyunda olmayan ya da kısmi soy özellikleri (yalnızca ⓘ ipucunda). */
   extras?: Array<{ name: LocalText; status: 'partial' | 'none'; note: LocalText }>;
+  /**
+   * Kuyruk AS1b: etkinin oyundaki durumu (savaş sürümü ≥ 71): `calisir`, `kismi` (not `data/alt-soy-metin.json` `kismiNot`) ya da
+   * `planli` (yalnız açıklama). Buff/debuff metinleri ana parçayı şişirmemek için `data/alt-soy-metin.json`'da (oluşturucu okur).
+   */
+  durum?: 'planli' | 'calisir' | 'kismi';
+  /** Kuyruk AS1b (savaş sürümü ≥ 71): alt soyun mekaniği (veriden; kodda alt soy adıyla koşul yok). */
+  etki?: LineageEtki;
+}
+
+/**
+ * Kuyruk AS1b: alt soy mekaniği. Statik kısım karakter türetmesine (`rules/lineageMods.ts`), `efekt` savaş başında süren etkiye
+ * (`battle/soyEtki.ts`; alanlar `ActiveEffect` alanlarıdır), `harita` haritaya bağlı koşullara (savaş başında çözülür),
+ * `ozellik` kullanılabilir özelliğe dönüşür.
+ */
+export interface LineageEtki {
+  /** Yetenek skoru artışı (geçmiş bonusuna ek; tavan 20). */
+  yetenek?: Partial<Record<Ability, number>>;
+  /** Hız (ft) farkı. */
+  hiz?: number;
+  /** Kurtarma zarı sabit farkı. */
+  kurtarma?: Partial<Record<Ability, number>>;
+  /** Beceri bonusu (negatif: ceza). */
+  beceri?: Partial<Record<Skill, number>>;
+  /** Zırhsızken AC farkı. */
+  zirhsizAc?: number;
+  /** Ek hasar direnci. */
+  direnc?: string[];
+  /** Karanlık görüş (ft; türünkinin yerine). */
+  karanlikGorus?: number;
+  /** Ağır zırhın Güç şartı hız cezası yok sayılır. */
+  agirZirhHizCezasiYok?: boolean;
+  /** Taşıma kapasitesi çarpanı. */
+  tasima?: number;
+  /** Savaşta süren etki alanları (`ActiveEffect`): saveDis, checkDis, saveDisVs, checkDisSkill, concDis, fallMult, … */
+  efekt?: Record<string, unknown>;
+  /** Haritaya bağlı koşullar (savaş başında): gün ışığında saldırı dezavantajı, iç mekânda saldırı ve inisiyatif farkı. */
+  harita?: { gunisigiSaldiriDez?: boolean; icMekanSaldiri?: number; icMekanInisiyatif?: number };
+  /** Kullanılabilir özellik (uçuş ilkeli parametreleriyle). */
+  ozellik?: { anahtar: string; ad: LocalText; tur: 'bonus' | 'action' | 'free'; kullanim: 'pb'; zirhYok?: Array<'medium' | 'heavy'>; ucus: Record<string, unknown> };
 }
 
 /** SRD 5.2.1 türü (species). Ability bonusları türden değil, geçmişten (background) gelir. */
@@ -51,6 +92,11 @@ export interface Race {
   lineages?: Lineage[];
   /** Seçim yapılmamışsa kullanılan miras (oluşturucu ekranı gelene kadar geçici). */
   defaultLineage?: string;
+  /**
+   * Kuyruk AS1a: soyu isteğe bağlı tür (Dwarf, Halfling, Orc, Human): `defaultLineage` yoktur; eski kayıt soysuz kalır
+   * (`migrateLineages` atamaz, bir kerelik bildirim), seçilene dek soy etkisi yoktur.
+   */
+  lineageOptional?: boolean;
   traits: string;
   /** Kuyruk K20: ev kuralı türü (Celestial): bu ev kuralı açık değilse oluşturucuda seçilemez (`data/ev-kurallari.json`). */
   evKurali?: string;
@@ -305,6 +351,8 @@ export interface SpellMechanics {
   y1?: Partial<SpellMechanics>;
   /** Kuyruk K73c (sürüm 64): havada merkezli silindir yüksekliği, Call Lightning fırtına devralma. */
   k73c?: Partial<SpellMechanics>;
+  /** Kuyruk MB7 (kural sürümü 70+): Phantom Steed çağırma (`data/summons.json` `phantom-steed`). */
+  mb7?: Partial<SpellMechanics>;
   /**
    * Kuyruk K73c (sürüm 64+, Görev 3): anlık silindir büyüsünün yüksekliği (ft; veride biçim küre). Havada merkezlenince
    * dairesi merkezde, silindir aşağı uzanır (`src/battle/airArea.ts`). Yerde merkezliyken kullanılmaz.

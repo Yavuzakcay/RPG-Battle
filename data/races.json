@@ -36,7 +36,18 @@
         "summary": {
           "tr": "Acid nefesi + Acid direnci",
           "en": "Acid breath + Acid resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "checkDisSkill": [
+              {
+                "skill": "perception",
+                "when": "bright"
+              }
+            ]
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "blue",
@@ -47,7 +58,17 @@
         "summary": {
           "tr": "Lightning nefesi + Lightning direnci",
           "en": "Lightning breath + Lightning resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "checkDisSkill": [
+              {
+                "skill": "stealth"
+              }
+            ]
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "brass",
@@ -58,7 +79,17 @@
         "summary": {
           "tr": "Fire nefesi + Fire direnci",
           "en": "Fire breath + Fire resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "checkDisSkill": [
+              {
+                "skill": "insight"
+              }
+            ]
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "bronze",
@@ -69,7 +100,13 @@
         "summary": {
           "tr": "Lightning nefesi + Lightning direnci",
           "en": "Lightning breath + Lightning resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "concDis": true
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "copper",
@@ -80,7 +117,17 @@
         "summary": {
           "tr": "Acid nefesi + Acid direnci",
           "en": "Acid breath + Acid resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "checkDisSkill": [
+              {
+                "skill": "persuasion"
+              }
+            ]
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "gold",
@@ -91,7 +138,17 @@
         "summary": {
           "tr": "Fire nefesi + Fire direnci",
           "en": "Fire breath + Fire resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "condition": "Frightened"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
       },
       {
         "id": "green",
@@ -102,7 +159,15 @@
         "summary": {
           "tr": "Poison nefesi + Poison direnci",
           "en": "Poison breath + Poison resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "saveDis": [
+              "wis"
+            ]
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "red",
@@ -113,7 +178,17 @@
         "summary": {
           "tr": "Fire nefesi + Fire direnci",
           "en": "Fire breath + Fire resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "damage": "cold"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
       },
       {
         "id": "silver",
@@ -124,7 +199,17 @@
         "summary": {
           "tr": "Cold nefesi + Cold direnci",
           "en": "Cold breath + Cold resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "damage": "fire"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
       },
       {
         "id": "white",
@@ -135,7 +220,15 @@
         "summary": {
           "tr": "Cold nefesi + Cold direnci",
           "en": "Cold breath + Cold resistance"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "checkDis": [
+              "int"
+            ]
+          }
+        },
+        "durum": "calisir"
       }
     ],
     "defaultLineage": "red",
@@ -176,7 +269,77 @@
       "poison"
     ],
     "hpPerLevel": 1,
-    "traits": "Darkvision 120 ft, Dwarven Resilience (poison direnci, Poisoned'a karşı save advantage), Dwarven Toughness (+1 HP/seviye), Stonecunning"
+    "traits": "Darkvision 120 ft, Dwarven Resilience (poison direnci, Poisoned'a karşı save advantage), Dwarven Toughness (+1 HP/seviye), Stonecunning",
+    "lineageOptional": true,
+    "lineages": [
+      {
+        "id": "crag",
+        "name": "Crag Dwarf",
+        "ad": {
+          "tr": "Dağ",
+          "en": "Crag Dwarf"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Ağır zırh hız cezası yok · suda Atletizm dezavantajı",
+          "en": "No heavy-armor speed penalty · disadvantage on Athletics in water"
+        },
+        "durum": "calisir",
+        "etki": {
+          "agirZirhHizCezasiYok": true,
+          "efekt": {
+            "checkDisSkill": [
+              {
+                "skill": "athletics",
+                "when": "water"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "knoll",
+        "name": "Knoll Dwarf",
+        "ad": {
+          "tr": "Tepe",
+          "en": "Knoll Dwarf"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Dayanıklılık kurtarma +1 · Çeviklik kurtarma −1",
+          "en": "+1 Constitution saves · −1 Dexterity saves"
+        },
+        "durum": "calisir",
+        "etki": {
+          "kurtarma": {
+            "con": 1,
+            "dex": -1
+          }
+        }
+      },
+      {
+        "id": "undervault",
+        "name": "Undervault Dwarf",
+        "ad": {
+          "tr": "Yeraltı",
+          "en": "Undervault Dwarf"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Gizlen +2 · gün ışığında saldırı dezavantajı",
+          "en": "Stealth +2 · disadvantage on attacks in daylight"
+        },
+        "durum": "calisir",
+        "etki": {
+          "beceri": {
+            "stealth": 2
+          },
+          "harita": {
+            "gunisigiSaldiriDez": true
+          }
+        }
+      }
+    ]
   },
   {
     "id": "elf",
@@ -213,7 +376,13 @@
             "level": 5,
             "resource": "drow:darkness"
           }
-        ]
+        ],
+        "etki": {
+          "harita": {
+            "gunisigiSaldiriDez": true
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "high-elf",
@@ -251,7 +420,15 @@
               "en": "Swapping Prestidigitation for another Wizard cantrip on a long rest is not in the game yet"
             }
           }
-        ]
+        ],
+        "etki": {
+          "efekt": {
+            "saveDis": [
+              "con"
+            ]
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "wood-elf",
@@ -277,7 +454,17 @@
             "level": 5,
             "resource": "wood-elf:pass-without-trace"
           }
-        ]
+        ],
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "damage": "fire"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
       }
     ],
     "defaultLineage": "drow"
@@ -311,7 +498,17 @@
             "level": 1,
             "resource": "forest-gnome:speak-with-animals"
           }
-        ]
+        ],
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "damage": "fire"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
       },
       {
         "id": "rock-gnome",
@@ -343,7 +540,45 @@
               "en": "Building tiny clockwork devices with Prestidigitation (up to 3) is not in the game yet"
             }
           }
-        ]
+        ],
+        "etki": {
+          "efekt": {
+            "checkDisSkill": [
+              {
+                "skill": "athletics"
+              }
+            ]
+          }
+        },
+        "durum": "calisir"
+      },
+      {
+        "id": "subterranean",
+        "name": "Subterranean Gnome",
+        "ad": {
+          "tr": "Yeraltı",
+          "en": "Subterranean Gnome"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Karanlık görüş 120 ft · Gizlen +2 · parlak ışıkta Algı dezavantajı",
+          "en": "Darkvision 120 ft · Stealth +2 · disadvantage on Perception in bright light"
+        },
+        "durum": "calisir",
+        "etki": {
+          "karanlikGorus": 120,
+          "beceri": {
+            "stealth": 2
+          },
+          "efekt": {
+            "checkDisSkill": [
+              {
+                "skill": "perception",
+                "when": "bright"
+              }
+            ]
+          }
+        }
       }
     ],
     "defaultLineage": "forest-gnome"
@@ -367,7 +602,13 @@
         "summary": {
           "tr": "Bonus eylemle 30 ft ışınlanma",
           "en": "Bonus Action: teleport 30 ft"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "teleportEnds": true
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "fire",
@@ -377,7 +618,17 @@
         "summary": {
           "tr": "İsabette +1d10 Fire",
           "en": "+1d10 Fire on a hit"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "damage": "cold"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
       },
       {
         "id": "frost",
@@ -387,7 +638,17 @@
         "summary": {
           "tr": "İsabette +1d6 Cold ve hedefin hızı −10 ft",
           "en": "+1d6 Cold on a hit and target speed −10 ft"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "damage": "fire"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
       },
       {
         "id": "hill",
@@ -397,7 +658,17 @@
         "summary": {
           "tr": "İsabette Large ya da daha küçük hedef Prone",
           "en": "On a hit, a Large or smaller target is knocked Prone"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "condition": "Prone"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
       },
       {
         "id": "stone",
@@ -407,7 +678,11 @@
         "summary": {
           "tr": "Tepki: alınan hasarı 1d12 + CON azaltır",
           "en": "Reaction: reduce damage taken by 1d12 + CON"
-        }
+        },
+        "etki": {
+          "hiz": -5
+        },
+        "durum": "calisir"
       },
       {
         "id": "storm",
@@ -417,7 +692,17 @@
         "summary": {
           "tr": "Tepki: 60 ft içinde hasar verene 1d8 Thunder",
           "en": "Reaction: 1d8 Thunder to a creature within 60 ft that damaged you"
-        }
+        },
+        "etki": {
+          "efekt": {
+            "checkDisSkill": [
+              {
+                "skill": "stealth"
+              }
+            ]
+          }
+        },
+        "durum": "calisir"
       }
     ],
     "defaultLineage": "cloud"
@@ -431,7 +716,57 @@
     "speed": 30,
     "darkvision": 0,
     "resistances": [],
-    "traits": "Brave, Halfling Nimbleness, Luck, Naturally Stealthy"
+    "traits": "Brave, Halfling Nimbleness, Luck, Naturally Stealthy",
+    "lineageOptional": true,
+    "lineages": [
+      {
+        "id": "slender",
+        "name": "Slender Halfling",
+        "ad": {
+          "tr": "İnce",
+          "en": "Slender Halfling"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Çeviklik +1, hız +5 ft · Güç kontrollerinde dezavantaj",
+          "en": "Dexterity +1, speed +5 ft · disadvantage on Strength checks"
+        },
+        "durum": "calisir",
+        "etki": {
+          "yetenek": {
+            "dex": 1
+          },
+          "hiz": 5,
+          "efekt": {
+            "checkDis": [
+              "str"
+            ]
+          }
+        }
+      },
+      {
+        "id": "sturdy",
+        "name": "Sturdy Halfling",
+        "ad": {
+          "tr": "Kalın",
+          "en": "Sturdy Halfling"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Güç +1, Dayanıklılık +1 · hız −5 ft",
+          "en": "Strength +1, Constitution +1 · speed −5 ft"
+        },
+        "durum": "calisir",
+        "etki": {
+          "yetenek": {
+            "str": 1,
+            "con": 1
+          },
+          "hiz": -5,
+          "tasima": 1.5
+        }
+      }
+    ]
   },
   {
     "id": "human",
@@ -443,7 +778,114 @@
     "speed": 30,
     "darkvision": 0,
     "resistances": [],
-    "traits": "Resourceful (Heroic Inspiration), Skillful (1 skill), Versatile (Origin feat)"
+    "traits": "Resourceful (Heroic Inspiration), Skillful (1 skill), Versatile (Origin feat)",
+    "lineageOptional": true,
+    "lineages": [
+      {
+        "id": "tenhausser",
+        "name": "Tenhausser",
+        "ad": {
+          "tr": "Tenhausser",
+          "en": "Tenhausser"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Güç +1, Dayanıklılık +1 · Diplomasi ve Gizlen −1",
+          "en": "Strength +1, Constitution +1 · −1 on Persuasion and Stealth"
+        },
+        "durum": "calisir",
+        "etki": {
+          "yetenek": {
+            "str": 1,
+            "con": 1
+          },
+          "beceri": {
+            "persuasion": -1,
+            "stealth": -1
+          }
+        }
+      },
+      {
+        "id": "khadyrga",
+        "name": "Khadyrga",
+        "ad": {
+          "tr": "Khadyrga",
+          "en": "Khadyrga"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Zekâ +1, Karizma +1 · zorlu arazide hız −5 ft",
+          "en": "Intelligence +1, Charisma +1 · −5 ft speed in difficult terrain"
+        },
+        "durum": "calisir",
+        "etki": {
+          "yetenek": {
+            "int": 1,
+            "cha": 1
+          },
+          "efekt": {
+            "zorluArazideHiz": -5
+          }
+        }
+      },
+      {
+        "id": "pure-city",
+        "name": "Pure City",
+        "ad": {
+          "tr": "Saf Kent",
+          "en": "Pure City"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Bilgelik +1, Çeviklik +1 · zırhsız AC −1",
+          "en": "Wisdom +1, Dexterity +1 · unarmored AC −1"
+        },
+        "durum": "calisir",
+        "etki": {
+          "yetenek": {
+            "wis": 1,
+            "dex": 1
+          },
+          "zirhsizAc": -1
+        }
+      },
+      {
+        "id": "outwall",
+        "name": "Outwall",
+        "ad": {
+          "tr": "Sur Dışı",
+          "en": "Outwall"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Dayanıklılık +1, Bilgelik +1, Hayatta Kalma ve Algı +2 · iç mekânda saldırı/inisiyatif −2 · yerleşimde Karizma dezavantajı",
+          "en": "Constitution +1, Wisdom +1, +2 Survival and Perception · −2 attacks and initiative indoors · disadvantage on Charisma in settlements"
+        },
+        "durum": "calisir",
+        "etki": {
+          "yetenek": {
+            "con": 1,
+            "wis": 1
+          },
+          "beceri": {
+            "survival": 2,
+            "perception": 2
+          },
+          "harita": {
+            "icMekanSaldiri": -2,
+            "icMekanInisiyatif": -2
+          },
+          "efekt": {
+            "checkDisSkill": [
+              {
+                "ability": "cha",
+                "when": "settlement"
+              }
+            ]
+          }
+        }
+      }
+    ]
   },
   {
     "id": "orc",
@@ -454,7 +896,87 @@
     "speed": 30,
     "darkvision": 120,
     "resistances": [],
-    "traits": "Adrenaline Rush, Darkvision 120 ft, Relentless Endurance"
+    "traits": "Adrenaline Rush, Darkvision 120 ft, Relentless Endurance",
+    "lineageOptional": true,
+    "lineages": [
+      {
+        "id": "glacier",
+        "name": "Glacier Orc",
+        "ad": {
+          "tr": "Buzul",
+          "en": "Glacier Orc"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Soğuk direnci · ateşe karşı kurtarma dezavantajı",
+          "en": "Cold resistance · disadvantage on saves against fire"
+        },
+        "durum": "kismi",
+        "etki": {
+          "direnc": [
+            "cold"
+          ],
+          "efekt": {
+            "saveDisVs": [
+              {
+                "damage": "fire"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "wildwood",
+        "name": "Wildwood Orc",
+        "ad": {
+          "tr": "Orman",
+          "en": "Wildwood Orc"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Bitkisel zorlu arazi yok sayılır · zehire karşı kurtarma dezavantajı",
+          "en": "Ignores plant-based difficult terrain · disadvantage on saves against poison"
+        },
+        "durum": "kismi",
+        "etki": {
+          "efekt": {
+            "plantWalker": true,
+            "saveDisVs": [
+              {
+                "damage": "poison"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "fen",
+        "name": "Fen Orc",
+        "ad": {
+          "tr": "Bataklık",
+          "en": "Fen Orc"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Zehir direnci · yüzme hızı = yürüme hızı · soğuğa karşı kurtarma dezavantajı",
+          "en": "Poison resistance · swim speed = walking speed · disadvantage on saves against cold"
+        },
+        "durum": "kismi",
+        "etki": {
+          "direnc": [
+            "poison"
+          ],
+          "efekt": {
+            "swim": true,
+            "saveDisVs": [
+              {
+                "damage": "cold"
+              }
+            ]
+          }
+        }
+      }
+    ]
   },
   {
     "id": "tiefling",
@@ -492,7 +1014,13 @@
             "level": 5,
             "resource": "abyssal:hold-person"
           }
-        ]
+        ],
+        "etki": {
+          "efekt": {
+            "concDis": true
+          }
+        },
+        "durum": "calisir"
       },
       {
         "id": "chthonic",
@@ -519,7 +1047,17 @@
             "level": 5,
             "resource": "chthonic:ray-of-enfeeblement"
           }
-        ]
+        ],
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "damage": "radiant"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
       },
       {
         "id": "infernal",
@@ -546,7 +1084,52 @@
             "level": 5,
             "resource": "infernal:darkness"
           }
-        ]
+        ],
+        "etki": {
+          "efekt": {
+            "saveDisVs": [
+              {
+                "damage": "cold"
+              }
+            ]
+          }
+        },
+        "durum": "kismi"
+      },
+      {
+        "id": "winged",
+        "name": "Winged",
+        "ad": {
+          "tr": "Kanatlı",
+          "en": "Winged"
+        },
+        "resistances": [],
+        "summary": {
+          "tr": "Yarım hızla süzülme (yeterlilik bonusu kadar) · soy hasar direnci yok",
+          "en": "Glide at half speed (proficiency bonus times) · no lineage damage resistance"
+        },
+        "durum": "calisir",
+        "etki": {
+          "ozellik": {
+            "anahtar": "winged-glide",
+            "ad": {
+              "tr": "Kanat Süzülüşü",
+              "en": "Wing Glide"
+            },
+            "tur": "bonus",
+            "kullanim": "pb",
+            "zirhYok": [
+              "medium",
+              "heavy"
+            ],
+            "ucus": {
+              "hizCarpani": 0.5,
+              "azamiIrtifaFt": 30,
+              "yeredegmez": true,
+              "sureDakika": 1
+            }
+          }
+        }
       }
     ],
     "defaultLineage": "infernal",

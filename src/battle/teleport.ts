@@ -8,7 +8,7 @@ import { moverBand } from './cells';
 import { distance, neighbors, type Offset } from '../rules/hex';
 import { sightBlockedBetween } from './cover';
 import { canSee } from './maprules';
-import { bodyFitProblem, hexLabel, occupantAt, placeProblem } from './movement';
+import { bodyFitProblem, hexLabel, occupantAt, placeProblem, stackFitProblem } from './movement';
 import { reachToHex } from './body';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
@@ -30,6 +30,9 @@ export function teleportProblem(state: BattleState, actor: Combatant, to: Offset
   if (other) return `${hexLabel(to)} dolu (${other.name}).`;
   const fit = bodyFitProblem(state, actor, to);
   if (fit) return fit;
+  // Kuyruk MB3 (69+, B11): binicisini taşıyan bineğin (Fey Step) varışında yığın tavana ve döşemeye sığmalı.
+  const stack = stackFitProblem(state, actor, to);
+  if (stack) return stack;
   if (spec.trees && (!byTree(state, actor.pos) || !byTree(state, to))) return 'Tree Stride: başlangıç ve varış yerinin yanında ağaç olmalı.';
   if (spec.sight) {
     const wall = sightBlockedBetween(state, actor.pos, to, { from: actor });

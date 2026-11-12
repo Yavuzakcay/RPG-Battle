@@ -19,6 +19,8 @@ import { LOADABLE_VERSIONS, SAVE_VERSION, restoreSession, serializeSession } fro
 import type { Offset } from '../rules/hex';
 import { distance } from '../rules/hex';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
+import { mechanicsAt } from './spellVersion';
+import { CURRENT_RULES } from './ruleVersion';
 
 const o = (col: number, row: number): Offset => ({ col, row });
 const flat = Array.from({ length: 7 }, () => '.'.repeat(15));
@@ -57,15 +59,20 @@ describe('veri (data/summons.json; kimlik kuralı)', () => {
     const data = summonData as { summons: Record<string, { srd: string; creature?: string; forms?: string[] }>; creatures: Record<string, { srd: string }> };
     const srdIds = new Set((srdSpells.spells as Array<{ id: string }>).map((x) => `spells:${x.id}`));
     for (const [id, def] of Object.entries(data.summons)) {
-      expect(spells.find((x) => x.id === id)).toMatchObject({ srd: def.srd, mechanics: { kind: 'summon' } });
+      // Kuyruk MB7: çağırma oluşu sürüme bağlı olabilir (Phantom Steed `mb7` bloğu, 70+): güncel sürümün mekaniği.
+      const sp = spells.find((x) => x.id === id);
+      expect(sp).toMatchObject({ srd: def.srd });
+      expect(sp && mechanicsAt({ kuralSurumu: CURRENT_RULES }, sp).kind).toBe('summon');
       expect(srdIds.has(def.srd)).toBe(true);
       if (def.creature) expect(data.creatures[def.creature]?.srd).toBe(def.srd);
       // Görev S1: Animate Dead'in biçimleri SRD Undead (Skeleton, Zombie); diğerleri familiar (CR 0).
-      for (const f of def.forms ?? []) expect(getMonster(f)).toMatchObject(id === 'animate-dead' ? {} : { cr: '0' });
+      // Kuyruk MB7: Phantom Steed'in biçimi Riding Horse (SRD: "uses the Riding Horse stat block").
+      for (const f of def.forms ?? []) expect(getMonster(f)).toMatchObject(id === 'animate-dead' || id === 'phantom-steed' ? {} : { cr: '0' });
+      if (id === 'phantom-steed') expect(def.forms).toEqual(['riding-horse']);
       if (id === 'animate-dead') expect(def.forms).toEqual(['skeleton', 'zombie']);
     }
     for (const c of Object.values(data.creatures)) expect(srdIds.has(c.srd)).toBe(true);
-    expect(spells.filter((x) => x.mechanics.kind === 'summon').map((x) => x.id).sort()).toEqual(Object.keys(data.summons).sort());
+    expect(spells.filter((x) => mechanicsAt({ kuralSurumu: CURRENT_RULES }, x).kind === 'summon').map((x) => x.id).sort()).toEqual(Object.keys(data.summons).sort());
   });
 });
 

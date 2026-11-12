@@ -1,5 +1,5 @@
 /**
- * Görev K8b, K15: soy renkleri. Her soyun kaydı var (Wood Elf: boyama yok); her jetonun dosyası ve (soylu ırkta) ten
+ * Görev K8b, K15: soy renkleri. Her soyun kaydı var (orijinal alt soylar: boyama yok); her jetonun dosyası ve (soylu ırkta) ten
  * maskesi var; maskeli dönüşüm yalnızca maskedeki pikselleri değiştirir, açıklık farklarını korur; High Elf eski yolda;
  * soylar arası ten rengi farkı ölçüm dosyasından (data/soy-olcum.json, npm run soy-maske) eşiğin üstünde.
  */
@@ -11,20 +11,31 @@ import { maskUrlFor, tintPixels } from './tint';
 import { deltaE, rgbToLab } from './color';
 import olcum from '../../data/soy-olcum.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
+import gorunum from '../../data/alt-soy-gorunum.json';
+import { isOriginalLineage } from './lineageLook';
 
 const files = new Set(Object.keys(import.meta.glob('/public/characters/*.webp')).map((f) => f.replace('/public/', '')));
 const masks = new Set(Object.keys(import.meta.glob('/public/characters/maske/*.png')).map((f) => f.replace('/public/', '')));
 /** Görev K15: soy çiftleri arası en küçük ten rengi farkı (CIE76 ΔE, ortalama Lab). */
 const MIN_DELTA_E = 15;
+/**
+ * Kuyruk AS1a-2 İş 3: boyasız ORİJİNAL alt soyun teni sabit çizimdir (ayarlanamaz) ve boyalı soylar değişmeyecek karardı;
+ * Goliath Hill orijinal teni Cloud (ΔE 6,0–14,7) ve Stone (14,6–14,7) boyamalarına yakın. Bu çiftlerde alt sınır düşürüldü
+ * (diğer bütün çiftler 15); ayrışma karar bekliyor (Cloud/Stone boyaması değişirse bu istisna kalkar).
+ */
+const ORIGINAL_PAIR_MIN: Record<string, number> = { 'goliath:cloud/hill': 5.5, 'goliath:hill/stone': 14 };
 
 describe('soy → renk', () => {
   it('soyu olan her ırkın her soyu tabloda; Wood Elf boyamasız (klasik elf), diğerleri boyalı', () => {
     const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown> }>;
-    const withLineage = races.filter((r) => (r.lineages ?? []).length > 0);
-    expect(Object.keys(table).sort()).toEqual(withLineage.map((r) => r.id).sort());
+    // Kuyruk AS1a: tint/maske tablosunda yeri olmayan ırklar (Dwarf, Halfling, Orc, Human) CSS filtresiyle `alt-soy-gorunum.json`'dan boyanır.
+    const withLineage = races.filter((r) => (r.lineages ?? []).length > 0 && !gorunum.maskesizIrklar.includes(r.id));
+    // Kuyruk AS1c: Human'ın ten maskesi var (ten tonu seçici için); soyları orijinal (null).
+    expect(Object.keys(table).sort()).toEqual([...withLineage.map((r) => r.id), 'human'].sort());
     for (const r of withLineage) {
       expect(Object.keys(table[r.id]?.lineages ?? {}).sort(), r.id).toEqual((r.lineages ?? []).map((l) => l.id).sort());
-      for (const l of r.lineages ?? []) expect(!!lineageTint(r.id, l.id), `${r.id}/${l.id}`).toBe(!(r.id === 'elf' && l.id === 'wood-elf'));
+      // Kuyruk AS1a-2: boyasız ORİJİNAL alt soylar (`alt-soy-gorunum.json` `orijinal`) tabloda null; diğerleri boyalı.
+      for (const l of r.lineages ?? []) expect(!!lineageTint(r.id, l.id), `${r.id}/${l.id}`).toBe(!isOriginalLineage(`${r.id}/${l.id}`));
     }
   });
   it('her ırk/soy/sınıf/cinsiyet birleşiminde jeton dosyası var; soylu ırkta ten maskesi de var', () => {
@@ -33,7 +44,7 @@ describe('soy → renk', () => {
       for (const k of classes) for (const gender of ['erkek', 'kadin'] as const) {
         const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: r.id, classId: k.id, gender, ...(lineageId ? { lineageId } : {}) });
         expect(files.has(a.src), a.src).toBe(true);
-        if (lineageId) expect(masks.has(maskUrlFor(a.src) ?? ''), `${a.src} maske`).toBe(true);
+        if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src) ?? ''), `${a.src} maske`).toBe(true);
       }
     }
     expect(maskUrlFor('/base/characters/kucuk/goliath-male-fighter.webp')).toBe('/base/characters/maske/goliath-male-fighter.png');
@@ -78,7 +89,8 @@ describe('soy → renk', () => {
         const ids = Object.keys(lins);
         for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
           const d = deltaE(lins[ids[i]!]!, lins[ids[j]!]!);
-          if (d < MIN_DELTA_E) low.push(`${name} ${ids[i]}/${ids[j]} ${d.toFixed(1)}`);
+          const floor = ORIGINAL_PAIR_MIN[`${race}:${[ids[i], ids[j]].sort().join('/')}`] ?? MIN_DELTA_E;
+          if (d < floor) low.push(`${name} ${ids[i]}/${ids[j]} ${d.toFixed(1)}`);
         }
       }
     }

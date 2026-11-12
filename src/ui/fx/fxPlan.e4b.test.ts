@@ -124,13 +124,18 @@ describe('Kuyruk E4b: su dokusu (SU-DALGA / SU-HAVUZ su altıgenlerinde)', () =>
     const w = waterHexes({ map: { id, tiles: m.tiles } } as never);
     return { w, dalga: w.filter((x) => x.kind === 'dalga').length, havuz: w.filter((x) => x.kind === 'havuz').length, tiles: m.tiles };
   };
-  it('su harfleri w ve R; yalnız bu harfli altıgenler listelenir (kara ve sığ su n çizilmez)', () => {
+  it('su harfleri w ve R; kara ve sığ su n çizilmez (yalnız Kuyruk SU3 `ekle` listesi n ekler, `haric` w düşer)', () => {
     const k = kinds('orman-heykel-golu', 'gunduz');
-    expect(k.w.length).toBe(k.tiles.join('').split('').filter((c) => SU.harf.includes(c)).length);
-    for (const x of k.w) expect(SU.harf).toContain(k.tiles[x.at.row]![x.at.col]);
+    const letters = k.tiles.join('').split('').filter((c) => SU.harf.includes(c)).length;
+    expect(k.w.length).toBe(letters - (SU.haric['orman-heykel-golu']?.length ?? 0) + (SU.ekle['orman-heykel-golu']?.length ?? 0));
+    for (const x of k.w) expect(x.shallow ? SU.sigHarf : SU.harf).toContain(k.tiles[x.at.row]![x.at.col]);
+    // Listesiz harita: harf sayısı birebir (Kuyruk SU3 öncesi davranış).
+    const o = kinds('ada', 'gunes');
+    expect(o.w.length).toBe(o.tiles.join('').split('').filter((c) => SU.harf.includes(c)).length);
   });
   it('göl ve vaha (orman-heykel-golu, col-vaha) ve hendek (kale-onu) bütün suyu havuz; nehir ve kıyı dalga', () => {
-    for (const id of ['orman-heykel-golu', 'col-vaha', 'kale-onu']) { const k = kinds(id); expect(k.w.length, id).toBeGreaterThan(0); expect(k.dalga, id).toBe(0); }
+    // Kuyruk SU3: `ekle` sığ halkası (n) dalgadır; derin su (w) bütünüyle havuz kalır.
+    for (const id of ['orman-heykel-golu', 'col-vaha', 'kale-onu']) { const k = kinds(id); expect(k.w.length, id).toBeGreaterThan(0); expect(k.w.filter((x) => !x.shallow && x.kind === 'dalga').length, id).toBe(0); expect(k.dalga, id).toBe(k.w.filter((x) => x.shallow).length); }
     for (const id of ['col-kanyon-nehri', 'kasaba-lagim', 'orman-oduncu-kampi']) { const k = kinds(id); expect(k.havuz, id).toBe(0); expect(k.dalga, id).toBeGreaterThan(0); }
   });
   it('okyanus (ada): kıyıya yakın dalga, açık deniz havuz (sığ su kıyı sayılmaz)', () => {

@@ -3,10 +3,10 @@
  * Lineage, Goliath Giant Ancestry. Veri `data/races.json` (`lineages`; her seçenekte TR/EN `summary`), kaynaklar
  * `data/class-features.json` (`race` + `lineage` + `minLevel`). Saf: ekran ya da depolama bilmez.
  */
-import { getRace, races, spells, type Lineage } from '../data';
+import { getRace, races, spells, type Lineage, type LineageEtki } from '../data';
 import type { CharacterSheet } from './stats';
 
-type LineageSheet = Pick<CharacterSheet, 'raceId' | 'lineageId'>;
+type LineageSheet = Pick<CharacterSheet, 'raceId' | 'lineageId' | 'soyKapali'>;
 
 /** Karakterin soyu (seçilmemişse türün varsayılanı); soyu olmayan türde undefined. */
 export function lineageOf(sheet: LineageSheet): Lineage | undefined {
@@ -15,20 +15,32 @@ export function lineageOf(sheet: LineageSheet): Lineage | undefined {
   return race?.lineages?.find((l) => l.id === id);
 }
 
-/** Türün ve soyun hızı (Wood Elf 35 ft). */
-export function raceSpeed(sheet: LineageSheet): number {
-  return lineageOf(sheet)?.speed ?? getRace(sheet.raceId).speed;
+/**
+ * Kuyruk AS1b: alt soyun mekaniği (veriden `lineages[].etki`); `sheet.soyKapali` (savaş sürümü < 71'de oluşan savaşçı) ya da
+ * soy seçilmemişse (soyu isteğe bağlı türün eski kaydı: "seçilene dek bonus yok") undefined.
+ */
+export function lineageEtki(sheet: LineageSheet): LineageEtki | undefined {
+  if (sheet.soyKapali) return undefined;
+  return lineageOf(sheet)?.etki;
 }
 
-/** Türün ve soyun karanlık görüşü (Drow 120 ft). */
+/** Türün ve soyun hızı (Wood Elf 35 ft; AS1b: alt soyun hız farkı). */
+export function raceSpeed(sheet: LineageSheet): number {
+  return (lineageOf(sheet)?.speed ?? getRace(sheet.raceId).speed) + (lineageEtki(sheet)?.hiz ?? 0);
+}
+
+/** Türün ve soyun karanlık görüşü (Drow 120 ft; AS1b: Yeraltı Gnome). */
 export function raceDarkvision(sheet: LineageSheet): number {
-  return lineageOf(sheet)?.darkvision ?? getRace(sheet.raceId).darkvision;
+  return lineageEtki(sheet)?.karanlikGorus ?? lineageOf(sheet)?.darkvision ?? getRace(sheet.raceId).darkvision;
 }
 
 /** Bu seviyede soydan gelen büyüler (cantrip'ler her zaman; seviyeli büyüler eşikten itibaren, slotsuz kullanımla). */
 export function lineageSpells(sheet: LineageSheet & Pick<CharacterSheet, 'level'>): string[] {
   return (lineageOf(sheet)?.spells ?? []).filter((s) => sheet.level >= s.level).map((s) => s.name);
 }
+
+/** Kuyruk AS1a: soyun görünen adı (TR/EN `ad`; yoksa `name`). */
+export const lineageName = (l: Lineage, lang: 'tr' | 'en'): string => l.ad?.[lang] ?? l.name;
 
 /** Soy seçeneğinin özeti (geçerli dilde). */
 export const lineageSummary = (l: Lineage, lang: 'tr' | 'en'): string => l.summary[lang] ?? l.summary.tr;
@@ -68,17 +80,21 @@ export interface LineageNotes {
 
 /**
  * Eski kayıtlar (Görev K3): soyu boş (ya da artık bulunmayan) karakterlere türün ilk soyu atanır; kimlere atandığı döner
- * (bir kerelik not). Soyu olmayan türler ve geçerli soy değişmez; değişiklik yoksa aynı liste.
+ * (bir kerelik not). Soyu olmayan türler ve geçerli soy değişmez; değişiklik yoksa aynı liste. Kuyruk AS1a: soyu isteğe bağlı
+ * türde (`lineageOptional`) atama yok, `pending` döner ("alt soy seç" bildirimi).
  */
-export function migrateLineages<T extends { sheet: CharacterSheet }>(list: T[]): { list: T[]; assigned: Array<{ name: string; lineage: string }> } {
+export function migrateLineages<T extends { sheet: CharacterSheet; id?: string }>(list: T[]): { list: T[]; assigned: Array<{ name: string; lineage: string }>; pending: Array<{ id?: string; name: string; race: string }> } {
   const assigned: Array<{ name: string; lineage: string }> = [];
+  const pending: Array<{ id?: string; name: string; race: string }> = [];
   const out = list.map((c) => {
     const race = races.find((r) => r.id === c.sheet.raceId);
     const first = race?.lineages?.[0];
     if (!race || !first || race.lineages?.some((l) => l.id === c.sheet.lineageId)) return c;
+    // Kuyruk AS1a: soyu isteğe bağlı tür (Dwarf, Halfling, Orc, Human) eski kayıtta soysuz kalır; yalnızca bildirilir.
+    if (race.lineageOptional) { pending.push({ ...(c.id ? { id: c.id } : {}), name: c.sheet.name, race: race.name }); return c; }
     const pick = race.lineages?.find((l) => l.id === race.defaultLineage) ?? first;
     assigned.push({ name: c.sheet.name, lineage: `${race.name} ${pick.name}` });
     return { ...c, sheet: { ...c.sheet, lineageId: pick.id } };
   });
-  return { list: assigned.length > 0 ? out : list, assigned };
+  return { list: assigned.length > 0 ? out : list, assigned, pending };
 }

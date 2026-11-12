@@ -29,17 +29,23 @@
       "parlayan-ruh": {
         "tr": "Parlayan Ruh", "en": "Radiant Soul", "strikeType": "radiant", "icon": "☀",
         "metin": { "tr": "Çevren göğün ışığıyla yanar: 10 ft içi aydınlıktır; turunun sonunda 10 ft içindeki her düşman yeterlilik bonusun kadar ışıltı hasarı alır.", "en": "The sky's light burns around you: 10 ft of bright light; at the end of your turn every enemy within 10 ft takes radiant damage equal to your proficiency bonus." },
-        "radiusFt": 10, "auraDamage": "pb", "auraType": "radiant", "lightFt": 10
+        "radiusFt": 10, "auraDamage": "pb", "auraType": "radiant", "lightFt": 10,
+        "debuff": { "tr": "Uyanış sürerken karanlıkta Gizlen (Stealth) kontrollerinde dezavantaj (parıltın seni ele verir).", "en": "While awake, disadvantage on Stealth checks in darkness (your glow gives you away)." },
+        "efekt": { "checkDisSkill": [{ "skill": "stealth", "when": "darkMap" }] }
       },
       "gece-gozyasi": {
         "tr": "Gece Gözyaşı", "en": "Night Tears", "strikeType": "necrotic", "icon": "💧",
         "metin": { "tr": "Gözlerinden karanlık yaşlar akar: uyandığında 10 ft içindeki düşmanlar Bilgelik kurtarma zarı atar (DC 8 + yeterlilik + Karizma), başaramayan bir sonraki turunun başına dek korkar.", "en": "Dark tears run from your eyes: when you awaken, enemies within 10 ft make a Wisdom saving throw (DC 8 + proficiency + Charisma) or are frightened until the start of your next turn." },
-        "radiusFt": 10, "save": "wis", "dcAbility": "cha", "condition": "Frightened"
+        "radiusFt": 10, "save": "wis", "dcAbility": "cha", "condition": "Frightened",
+        "debuff": { "tr": "Uyanış sürerken Karizma kontrollerinde dezavantaj.", "en": "While awake, disadvantage on Charisma checks." },
+        "efekt": { "checkDis": ["cha"] }
       },
       "kirik-kanat": {
         "tr": "Kırık Kanat", "en": "Broken Wing", "strikeType": "radiant", "icon": "🪶",
         "metin": { "tr": "Kanatların açılır ama seni taşımaz: hareketinin yarısı kadar süzülürsün ve turun sonunda yere inmen gerekir. 13. seviyeden itibaren kanatların iyileşir: uyanış boyunca yürüme hızın kadar uçarsın ve inmek zorunda değilsin.", "en": "Your wings open but cannot carry you: you glide for half your movement and must land at the end of your turn. From 13th level your wings heal: for the awakening you fly at your walking speed and need not land." },
         "flyFraction": 0.5,
+        "debuff": { "tr": "Uyanış sürerken aldığın düşme hasarı ×2.", "en": "While awake, you take double fall damage." },
+        "efekt": { "fallMult": 2 },
         "ucus": { "not": "Kuyruk U1a (kural sürümü 61+; `ucus` ilkeli sözcükleri, src/battle/flightPrim.ts): 3–12. seviye yarı hız ve zorunlu iniş (eski davranış); 13. seviyeden normal uçuş (yürüme hızı, zorunlu iniş yok; süre Göksel Uyanış'ın 10 turu, kullanım uzun dinlenmede bir). 60 ve altında `flyFraction`.",
           "hizCarpani": 0.5, "zorunluInis": true, "seviyeEsigi": 13, "esikSonrasi": { "hizCarpani": 1, "zorunluInis": false } }
       }

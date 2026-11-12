@@ -8,7 +8,9 @@ type Text = { tr: string; en: string };
 export type AwakeningOption = Text & { metin: Text; strikeType: string; icon: string; radiusFt?: number; auraDamage?: string; auraType?: string;
   lightFt?: number; save?: string; dcAbility?: string; condition?: string; flyFraction?: number;
   /** Kuyruk U1a (sürüm 61+): uçuş parametreleri (`ucus` ilkeli sözcükleri; seviye eşiği). */
-  ucus?: Record<string, unknown> };
+  ucus?: Record<string, unknown>;
+  /** Kuyruk AS1b (sürüm 71+): uyanış sürerken süren etkiye eklenen alanlar (debuff; `ActiveEffect` alanları) ve metni. */
+  efekt?: Record<string, unknown>; debuff?: Text };
 export const CELESTIAL = data as unknown as {
   lightSpell: string; healingTouch: { die: string; count: string; touch: boolean; resource: string };
   awakening: { minLevel: number; rounds: number; resource: string; bonus: string; default: string; secenekler: Record<string, AwakeningOption> };

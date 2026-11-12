@@ -107,7 +107,22 @@ function grid(img, spec) {
 }
 
 /** Hücreyi RGBA'ya (parlaklık alfası, renk alfaya bölünmüş) çevirir. */
-function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, edge = 0) {
+/**
+ * Kuyruk SU2: şeffaf çatlak (opak zemin dokusundan yalnız çatlak çizgilerini çıkarır; kum tabanı alfa 0).
+ * Koyu çatlak içi (`dBase − max(R,G,B)` smoothstep dLo..dHi) ve turuncu kenar (doygunluk sLo..sHi × R−B gLo..gHi, `glowA` ile) alfa üretir;
+ * toplam alfa `tepe` ile sınırlanır; renk koyu kahverengi-kızıl (`darkC`) ile yumuşak pas (`glowC`) arasında. Veri `data/efekt-kesim.json` `catlak`.
+ */
+const smooth = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+export function crackPixel(r, g, b, p) {
+  const mx = Math.max(r, g, b); const mn = Math.min(r, g, b); const sat = mx > 0 ? (mx - mn) / mx : 0;
+  const dark = smooth(p.dLo, p.dHi, p.dBase - mx);
+  const glow = smooth(p.sLo, p.sHi, sat) * smooth(p.gLo, p.gHi, r - b) * p.glowA;
+  const a = Math.max(dark, glow) * p.tepe;
+  const w = dark + glow > 1e-6 ? glow / (dark + glow) : 0;
+  return { a, c: [0, 1, 2].map((i) => Math.round(p.darkC[i] * (1 - w) + p.glowC[i] * w)) };
+}
+
+function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, edge = 0, crack = null) {
   const cw = x1 - x0; const ch = y1 - y0;
   const out = Buffer.alloc(cw * ch * 4);
   let peak = 0;
@@ -115,6 +130,7 @@ function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, 
     const s = ((y0 + y) * img.w + (x0 + x)) * 3; const d = (y * cw + x) * 4;
     const [r, g, b] = [img.data[s], img.data[s + 1], img.data[s + 2]];
     // Kuyruk E4b: opak hücre (su dokusu: siyah zeminli değil, dolu resim): alfa 1, renk olduğu gibi (normal karışım).
+    if (crack) { const { a, c } = crackPixel(r, g, b, crack); out[d] = c[0]; out[d + 1] = c[1]; out[d + 2] = c[2]; out[d + 3] = Math.round(a * 255); if (a > peak) peak = a; continue; }
     if (opaque) { out[d] = r; out[d + 1] = g; out[d + 2] = b; out[d + 3] = 255; peak = 1; continue; }
     const a0 = lumAlpha(r, g, b, black);
     // Kuyruk E4c: `kazanc` (loş kareye parlaklık: alfa kazançla çarpılır, renk özgün alfaya bölünür → toplamalı karışımda r·kazanç) ve
@@ -171,7 +187,7 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
         const side = Math.min(x1 - x0, y1 - y0);
         x0 += Math.floor((x1 - x0 - side) / 2); y0 += Math.floor((y1 - y0 - side) / 2); x1 = x0 + side; y1 = y0 + side;
       }
-      return cellRgba(img, x0, y0, x1, y1, spec.siyah ?? BLACK, !!spec.opak?.includes(ad), spec.kazanc?.[ad]?.[String(ci)] ?? 1, spec.yumusat?.[ad] ?? 0);
+      return cellRgba(img, x0, y0, x1, y1, spec.siyah ?? BLACK, !!spec.opak?.includes(ad) && !spec.catlak?.[ad], spec.kazanc?.[ad]?.[String(ci)] ?? 1, spec.yumusat?.[ad] ?? 0, spec.catlak?.[ad] ?? null);
     }));
     // Sondaki boş kareler (ızgarada var, içerik yok) atılır.
     let count = cells.length;

@@ -168,6 +168,21 @@ export interface ActiveEffect {
   light?: number;
   /** Kuyruk K67a (sürüm 51): ek loş ışık (altıgen). */
   lightDim?: number;
+  /**
+   * Kuyruk AS1b (sürüm 71+, alt soy etkileri; `src/battle/soyEtki.ts`): `saveDisVs` bu hasar türünü ya da durumu uygulayan
+   * etkinin kurtarmasında dezavantaj; `checkDisSkill` beceri (ya da yetenek) kontrolünde, koşullu (`bright` parlak ışık,
+   * `darkMap` karanlık harita, `water` suda, `settlement` yerleşim haritası); `fallMult` düşme hasarı çarpanı; `teleportEnds`
+   * ışınlanınca turun kalan hareketi biter; `plantWalker` bitkisel zorlu arazi yok sayılır; `zorluArazideHiz` tur başında zorlu
+   * arazide duruyorsa hız farkı (ft).
+   */
+  saveDisVs?: Array<{ damage?: string; condition?: string }>;
+  checkDisSkill?: Array<{ skill?: string; ability?: Ability; when?: 'bright' | 'darkMap' | 'water' | 'settlement' }>;
+  fallMult?: number;
+  teleportEnds?: true;
+  plantWalker?: true;
+  zorluArazideHiz?: number;
+  /** Kuyruk AS1b: haritaya bağlı alt soy koşulları (savaş başında çözülür: `soyEtki.ts` `withSoy`). */
+  soyHarita?: { gunisigiSaldiriDez?: boolean; icMekanSaldiri?: number; icMekanInisiyatif?: number };
   /** Kuyruk K20 (Celestial Göksel Uyanış): kendi turunda bir kez saldırı isabetine ek hasar; tur sonu aura hasarı; Kırık Kanat süzülme hızı (ft). */
   celestialStrike?: { bonus: number; type: string };
   celestialAura?: { radiusFt: number; damage: number; type: string };
@@ -466,6 +481,8 @@ export interface UsableFeature {
   type: 'action' | 'bonus' | 'free';
   resource?: string;
   when?: 'attackAction';
+  /** Kuyruk AS1b: bu zırh türlerinde kullanılamaz (Kanat Süzülüşü: orta/ağır). */
+  noArmor?: Array<'medium' | 'heavy'>;
   effect: FeatureEffect;
 }
 
@@ -584,7 +601,17 @@ export interface BreathSpec {
   shapes: Array<{ shape: 'cone' | 'line'; sizeFt: number; widthFt?: number }>;
 }
 
-export type SummonVanishReason = 'hp' | 'concentration' | 'owner' | 'replaced' | 'duration' | 'dispelled';
+export type SummonVanishReason = 'hp' | 'concentration' | 'owner' | 'replaced' | 'duration' | 'dispelled' | /** Kuyruk MB7 (70+): Phantom Steed hasar alınca. */ 'damaged';
+
+/** Kuyruk MB7 (70+): çağrılan yaratığın binek kuralı (data/summons.json `mount`, paket yaratığında `binek`). */
+export interface MountRule {
+  /** Yalnız çağıran biner (yoksa her dost). */
+  ownerOnly?: true;
+  /** Binicinin en büyük boyutu (MB1 kuralı ayrıca: binek en az bir boy büyük). */
+  maxRider?: CreatureSize;
+  /** Sahibin (çağıranın) seviye eşiği. */
+  minLevel?: number;
+}
 
 export interface SummonInfo {
   /** Çağıranın savaşçı kimliği. */
@@ -616,6 +643,10 @@ export interface SummonInfo {
   commandFt?: number;
   /** Kuyruk A6 (Conjure Animals): sahibi bu tur yürüdüyse taşımak bonus eylem istemez; sahibine STR save avantajı. */
   withOwner?: boolean;
+  /** Kuyruk MB7 (70+): binek kuralı; yoksa çağrılan yaratığa binilmez. */
+  mount?: MountRule;
+  /** Kuyruk MB7 (70+): hasar alınca kaybolur (Phantom Steed). */
+  endsOnDamage?: true;
   gone?: boolean;
 }
 
@@ -653,7 +684,7 @@ export interface TintSpec {
 export type TintTarget =
   | { h: number | null; s: number; l: number }
   /** Ton `h` (Lab derece), kroma `c`; orijinal ton/kroma sapmasının korunan payı; açıklık `L' = L·gain + dL`. */
-  | { lch: { h: number; c: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number; contrast?: number } }
+  | { lch: { h: number; c: number; /** Kuyruk AS1c: hedef ortalama açıklık (verilirse `gain`/`dL` yerine; gölge/ışık sapması korunur). */ L?: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number; contrast?: number } }
   /**
    * Ten açıklığı (maskede %5–%95 aralığı) gölge → orta → vurgu Lab duraklarına parçalı doğrusal eşlenir.
    * DROW-PALET: `contrast` (0–1) orta tonlarda S-eğrisi; `chromaKeep` (0–1) orijinal pikselin a/b'sinin ten
@@ -672,6 +703,8 @@ export interface Avatar {
   fallbacks?: string[];
   /** Görev K8b: soy rengi (karakter jetonu çalışma anında yeniden boyanır). */
   tint?: TintSpec;
+  /** Kuyruk AS1c: alt soy görünümü (yalnız çizim: oran, hale, filtre, kanat katmanı; `src/ui/lineageLook.ts` çözer). Yalnız alt soyu olan oyuncu karakteri. */
+  look?: { raceId: string; lineageId?: string; celestialAwakening?: string; level?: number };
   /** Kuyruk 36: geçici kıyafet (mahkûm: Keşiş jetonu + turuncu hale; yalnızca görsel). */
   outfit?: 'mahkum';
   /** Görev P0: renk tonu kaydırma (derece; CSS hue-rotate) ve halka rengi (çizim anında; ek görsel yok). */
@@ -849,6 +882,8 @@ export interface Combatant {
   legendaryUsed?: string[];
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
   heavyArmor: boolean;
+  /** Kuyruk AS1b: orta zırh giyiyor (Kanatlı Tiefling uçamaz). */
+  mediumArmor?: true;
   /** Kuyruk A6: zırh giyiyor (karakterde zırh türü `none` değil; canavarda bilinmez). */
   armored?: boolean;
   /** Kuyruk S2: metal zırh giyiyor (Heat Metal). */
@@ -1545,7 +1580,7 @@ export type Command =
   | { type: 'escape'; actorId: string }
   /** Kuyruk 19 (SRD Mounted Combat): bin / in. */
   | { type: 'mount'; actorId: string; mountId: string }
-  | { type: 'dismount'; actorId: string; to?: Offset }
+  | { type: 'dismount'; actorId: string; to?: Offset; /** Kuyruk MB3 (69+): havada iniş irtifası (ft; uçabilen). */ toFt?: number }
   /** CILA: Haste'in ek eylemi (turda bir; eylem kullanıldıktan sonra). */
   | { type: 'haste_action'; actorId: string }
   /** CILA: sahibi bonus eylemle çağrısını taşır (Flaming Sphere, ruh sürüsü); `ramId` bitişik yaratığa çarptırma. */
@@ -1862,7 +1897,7 @@ export type BattleEvent =
   | { type: 'combat_started' }
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
   | { type: 'mounted'; actorId: string; mountId: string; cost: number }
-  | { type: 'dismounted'; actorId: string; at: Offset; cost: number; /** Kuyruk MB1 (68+): binekten düşerek (günlük). */ fell?: true }
+  | { type: 'dismounted'; actorId: string; at: Offset; cost: number; /** Kuyruk MB1 (68+): binekten düşerek (günlük). */ fell?: true; /** Kuyruk MB3 (69+): havada iniş irtifası (ft; yoksa irtifa değişmez). */ toFt?: number }
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number; /** Kuyruk 19: serbest kayma (`shiftLeft`'ten düşer). */ free?: boolean }
   | { type: 'shift_granted'; actorId: string; hexes: number }
   | { type: 'initiative_swapped'; actorId: string; allyId: string }

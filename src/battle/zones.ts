@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { isPlantZone, soyPlantWalker } from './altSoySurum';
 import { freeShapeFor, freeShapeProblem, pathProblem } from './freeShape';
 import { cageOpenEvents, cageStepBlocked, castCageHexes } from './forcecage';
 import { healRoll } from './healMax';
@@ -167,7 +168,7 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   }
   const ability = spec.save;
   const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(victim.conditions);
-  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability], dc: z.dc, mode: saveMode('normal', victim, ability, state.combatants[z.casterId]), autoFail },
+  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability], dc: z.dc, mode: saveMode('normal', victim, ability, state.combatants[z.casterId], { ...(dtype ? { damage: dtype } : {}), against: spec.conditions }), autoFail },
     rollTag(rng, { by: victim.id }));
   const d = expr ? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId })) : { rolls: [] as number[], total: 0 };
   const amount = expr ? saveDamage(victim, ability, save.success, d.total, !!spec.half) : 0;
@@ -382,6 +383,8 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset, 
   const gaseous = !!mover.effects?.some((e) => e.noAttack);
   const web = !!mover.effects?.some((e) => e.webWalker);
   const ice = !!mover.effects?.some((e) => e.iceWalker);
+  // Kuyruk AS1b (alt soy etkisi `plantWalker`): bitkisel alanların zorlu arazisi yok sayılır.
+  const plant = soyPlantWalker(mover);
   // Kuyruk S1 (sürüm 40): Gust of Wind'de büyücüye yaklaşma adım adım (önceki altıgene göre).
   const stepwise = ruleVersion(state) >= 40;
   return (h, prev) => {
@@ -401,7 +404,7 @@ export function zoneMoveCost(state: BattleState, mover: Combatant): (h: Offset, 
       if (spec.windWall && ((flying && small) || gaseous)) return null;
       // Kuyruk 19: yalnızca düşmanlar için zorlu arazi (Conjure Minor Elementals).
       if (spec.difficultFor === 'enemies' && mover.side === z.side) continue;
-      if ((web && isWebZone(z)) || (ice && z.surface === 'ice')) continue;
+      if ((web && isWebZone(z)) || (ice && z.surface === 'ice') || (plant && isPlantZone(z.spellId))) continue;
       if (spec.difficult && grounded) cost = Math.max(cost, spec.difficult);
       // Kuyruk A6 (Gust of Wind): hatta büyücüye (başlangıç yerinden) yaklaşan adım iki kat.
       const src = spec.costToward ? state.combatants[z.casterId]?.pos : undefined;

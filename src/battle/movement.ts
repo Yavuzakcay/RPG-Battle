@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { plantChar, soyPlantWalker } from './altSoySurum';
 import { afterStepEvents } from './turnHooks';
 import { groundWardFn } from './groundWard';
 import { solidBarrierAt } from './barriers';
@@ -29,7 +30,8 @@ import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, hovers, isAirborne, spellJumpFt } from './flight';
-import { seatedRider } from './riderCore';
+import { riderStackFt, seatedRider } from './riderCore';
+import { binekMb3On, binekMb4On } from './binekSurum';
 import { altitudeCapFt, altitudeOf, atCeiling, bodyHeightFt, ceilingFt, climbingAloft, wallHex } from './altitude';
 import { k9On, dikeyOn, hasHexCeilings } from './vertical';
 import { floorsAt, hasStandData, katlarOf, slabsAt, standHeights, standingOn, surTop } from './stand';
@@ -212,6 +214,31 @@ export function checkMover(state: BattleState, actor: Combatant, to: Offset): Of
  * iner: oradaki altıgenler iki kat maliyetli. Yakaladığını sürükleyenin her adımı da iki kat.
  */
 export function moveCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
+  // Kuyruk MB3 (69+, B11 ⚠): binicisi üstündeki binek yığın boyu (binek + binici) sığmayan altıgene giremez (tavan, döşeme).
+  const fn0 = moveCostFlat(state, actor, dyn);
+  if (!actor.rider || !binekMb3On(state) || !riderStackFt(state, actor)) return fn0;
+  return (h, prev) => (stackFitProblem(state, actor, h, dyn ? dyn.ft : altitudeOf(actor)) ? null : fn0(h, prev));
+}
+
+/**
+ * Kuyruk MB3 (69+, B11 ⚠ yorum): binicisi üstündeki binek `at` altıgeninde `alt` irtifasında yığınıyla (bineğin boyu + binicinin
+ * boyu; MB1: binicinin tam boyu) sığıyor mu: altıgenin tavanı ve kat döşemeleri. Sığıyorsa ya da binici yoksa null.
+ */
+export function stackFitProblem(state: BattleState, mount: Combatant, at: Offset, alt: number = altitudeOf(mount)): string | null {
+  if (!mount.rider || !binekMb3On(state)) return null;
+  const extra = riderStackFt(state, mount);
+  if (!extra) return null;
+  const top = alt + bodyHeightFt(mount) + extra;
+  // Kuyruk MB4 (72+, çok altıgen): yığın gövdenin bütün altıgenlerinde sığmalı (MB3: yalnız çapa).
+  for (const h of binekMb4On(state) && isMultiHex53(state, mount) ? bodyAt(state, mount, at) : [at]) {
+    const ceil = ceilingFt(state, h);
+    if (ceil !== null && top > ceil) return `Tavan alçak (${ceil} ft): ${mount.name} binicisiyle ${hexLabel(h)} altıgenine sığmaz.`;
+    for (const f of slabsAt(state, h)) if (f > alt && f < top) return `Kat döşemesi alçak (${f} ft): ${mount.name} binicisiyle ${hexLabel(h)} altıgenine sığmaz.`;
+  }
+  return null;
+}
+
+function moveCostFlat(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offset, prev: Offset) => number | null {
   // Kuyruk K62-ACIK (sürüm 67+): Magic Circle / Hallow: seçilen tür alana isteyerek giremez (ters Magic Circle'dan çıkamaz).
   const fn = moveCostInner(state, actor, dyn);
   if (!k62acikOn(state) || !actor.creatureType || !(state.map?.zones ?? []).some((z) => z.ward)) return fn;
@@ -318,6 +345,8 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   const ward = groundWardFn(state, actor);
   // Kuyruk 19 (SRD Ice Walk): buz ve kar zemini zorlu arazi değil.
   const iceWalk = !!actor.effects?.some((e) => e.iceWalker);
+  // Kuyruk AS1b (alt soy etkisi `plantWalker`, Orc Orman): bitkisel zeminin (çalılık, sazlık) zorlu arazisi yok sayılır.
+  const plantWalk = soyPlantWalker(actor);
   // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
   // Kuyruk K73c (sürüm 64+): çok altıgenli gövdede adım maliyeti en yüksek ayak altından (`bodyHeightStepFn`).
   const hstep = k73cOn(state) && isMultiHex53(state, actor) ? bodyHeightStepFn(state, flying || climber, actor) : heightStepFn(state, flying || climber);
@@ -406,7 +435,7 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
     const free = freeMove || (!!ward && ward(h));
-    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
+    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q')) || (plantWalk && plantChar(t0.char))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = (!!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null) || (squeeze && doorAt(h));
     const terrain = wall ? through : overTop || climbOver ? 1 : hov && t.movement === 'deadly' ? null : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
@@ -488,6 +517,10 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
       return finish(state, [moved, ...conveyorSlideEvents(applyEvents(state, [moved]), actor.id, to, from)]);
     }
     const any = findPath(from, to, size, cost);
+    // Kuyruk MB4 (72+, çok altıgen): binicili bineğin gövdesi geçide sığmıyorsa (tek altıgenlik yol varken) açık neden.
+    if (!any && actor.rider && binekMb4On(state) && isMultiHex53(state, actor) && findPath(from, to, size, moveCostFn(state, { ...actor, size: 'M' }))) {
+      return fail(`Dar geçit: ${actor.name} gövdesiyle ${hexLabel(to)} yoluna sığmıyor.`);
+    }
     if (!any) return fail(`${hexLabel(to)} için yol yok.`);
     return fail(`Hareket yetmiyor: ${any.cost} altıgen gerekli, ${Math.max(0, remaining)} kaldı.`);
   }

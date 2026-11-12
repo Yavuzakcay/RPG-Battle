@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { soyFeatureProblem } from './soyEtki';
 import { adjacent3D, k73bOn } from './adjacency';
 import { circleAttackDis } from './possessionCore';
 import { healRoll } from './healMax';
@@ -63,6 +64,9 @@ function touching(state: BattleState, a: Combatant, b: Combatant): boolean {
 export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFeature): string | null {
   const f = usableFeature(actor, cmd.feature);
   if (!f) return 'Bu özellik yok.';
+  // Kuyruk AS1b: alt soy özelliğinin zırh kısıtı (Kanat Süzülüşü: orta/ağır zırhla uçulmaz).
+  const armorBlock = f.noArmor ? soyFeatureProblem(actor, f) : null;
+  if (armorBlock) return armorBlock;
   // Kuyruk 19 (11–20): alt sınıf özellikleri (kaynak denetimi kendi içinde: Rage/Sorcery Point yedeği).
   if (isApex(f)) return apexProblem(state, actor, f, cmd);
   if (f.effect.kind === 'celestialHeal' || f.effect.kind === 'celestialAwakening') return celestialProblem(state, actor, f, cmd.targetId);

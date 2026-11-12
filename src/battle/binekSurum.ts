@@ -6,3 +6,27 @@ import type { BattleState } from './types';
 
 export const BINEK_VERSION = 68;
 export const binekOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= BINEK_VERSION;
+
+/**
+ * Kuyruk MB3 (kural sürümü 69; `BINEK-PLAN.md` §12): binek dikey kuralları: iki ayrı düşme (B12), yürüyüş/uçuş/kat/kafes ve
+ * ışınlanmada yığın boyu (B11), dikey hareket ve dalışta binicinin hücresi, binicili tırmanma (B14), havada binme/inme,
+ * binicinin bandı = bineğin bandı (B6), kazma girişlerinin hepsi (B13).
+ */
+export const BINEK_MB3_VERSION = 69;
+export const binekMb3On = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= BINEK_MB3_VERSION;
+
+/**
+ * Kuyruk MB7 (kural sürümü 70; `BINEK-PLAN.md` §13): çağrılan binekler: Find Steed / Faithful Steed atı ve Phantom Steed
+ * binek kuralını taşır (`SummonInfo.mount`), paket yaratığında `binek` alanı; binek kuralı olmayan çağrıya binilmez.
+ */
+export const BINEK_MB7_VERSION = 70;
+export const binekMb7On = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= BINEK_MB7_VERSION;
+
+/**
+ * Kuyruk MB4 (kural sürümü 72; `BINEK-PLAN.md` §15): çok altıgenli (multiHex) binek gövdesi: binici bineğin çapa altıgeninde,
+ * gövdeye bitişikten binme, gövdenin dışına inme ve düşme, yığın boyu gövdenin bütün altıgenlerinde, varış sığması.
+ * Yalnız Game Master anahtarı "Çok altıgenli büyük yaratıklar" açıkken; kapalıyken 71 ile birebir.
+ */
+export const BINEK_MB4_VERSION = 72;
+export const binekMb4On = (s: Pick<BattleState, 'kuralSurumu'> & Partial<Pick<BattleState, 'multiHex'>>): boolean =>
+  !!s.multiHex && (s.kuralSurumu ?? 1) >= BINEK_MB4_VERSION;

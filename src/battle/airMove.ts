@@ -28,6 +28,8 @@ import { bodyEnterEvents, checkMover, hexLabel, moveCostFn, occupantAt, terrainA
 import { applyEvents, speedHexes } from './reduce';
 import { zoneStepEvents } from './zones';
 import type { BattleEvent, BattleState, Combatant } from './types';
+import { binekMb3On } from './binekSurum';
+import { riderStackFt } from './riderCore';
 
 /** Düğüm: altıgen ve düzey. */
 export interface AirNode { hex: Offset; level: number }
@@ -58,7 +60,8 @@ function searchCtx(state: BattleState, actor: Combatant) {
   const others = Object.values(state.combatants).filter((c) => c.id !== actor.id && c.pos && isTargetable(c) && !c.summon?.noSpace);
   // Kuyruk K72 (sürüm 60+): kat döşemesi düzey geçişini keser (merdiven ve delik dışında); gövde döşemenin içinde olamaz.
   const kat = katlarOf(state).length > 0;
-  const boy = bodyHeightFt(actor);
+  // Kuyruk MB3 (69+, B11): binicisi üstündeki binekte yığın boyu.
+  const boy = bodyHeightFt(actor) + (actor.rider && binekMb3On(state) ? riderStackFt(state, actor) : 0);
   const slabOk = (fromHex: Offset, fl: number, h: Offset, l: number): boolean => {
     if (!kat) return true;
     const a = levelToFt(fl), b = levelToFt(l);

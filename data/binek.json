@@ -1,0 +1,4 @@
+{
+  "_aciklama": "Binek kuralları (Kuyruk MB3+; harita/belgeler/BINEK-PLAN.md). kafesBoyuFt: Forcecage küpünün kenarı (SRD 5.2.1: kafes 20 ft, kutu 10 ft); yığın (binek + binici) bundan uzunsa binici dökümde dışarı itilir (⚠ yorum).",
+  "kafesBoyuFt": { "box": 10, "bars": 20 }
+}

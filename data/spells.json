@@ -6596,7 +6596,11 @@
       "kind": "utility",
       "offCombat": true,
       "gmNote": "Savaş dışı (1 dakika): yolculuk için hayalet at (1 saat, hız 100 ft); savaşta binek kuralı yok.",
-      "gmNoteEn": "Out of combat (1 minute): a phantom horse for travel (1 hour, speed 100 ft); no mounted combat in the game."
+      "gmNoteEn": "Out of combat (1 minute): a phantom horse for travel (1 hour, speed 100 ft); no mounted combat in the game.",
+      "mb7": {
+        "kind": "summon",
+        "offCombat": false
+      }
     },
     "school": "Illusion",
     "srdPage": 152

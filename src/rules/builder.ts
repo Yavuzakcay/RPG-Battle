@@ -325,7 +325,7 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   if (!race) push('Tür seçilmeli.');
   if (!classes.some((k) => k.id === s.classId)) push('Sınıf seçilmeli.');
   if (!Number.isInteger(s.level) || s.level < 1 || s.level > 20) push('Seviye 1–20 olmalı.');
-  if (race?.lineages && race.lineages.length > 0 && !race.lineages.some((l) => l.id === s.lineageId)) {
+  if (race?.lineages && race.lineages.length > 0 && !race.lineageOptional && !race.lineages.some((l) => l.id === s.lineageId)) {
     push(`${race.name} için soy seçilmeli.`);
   }
   step = 'scores';

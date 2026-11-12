@@ -13,6 +13,11 @@ import { occupantAt } from './movement';
 import { ruleVersion } from './ruleVersion';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, SpellZone } from './types';
+import binekData from '../../data/binek.json';
+import { binekMb3On } from './binekSurum';
+import { heightFtOf, seatedRider } from './riderCore';
+
+const KAFES = (binekData as { kafesBoyuFt: Record<string, number> }).kafesBoyuFt;
 
 export const CAGE_VERSION = 46;
 const on = (s: Pick<BattleState, 'kuralSurumu'>) => ruleVersion(s) >= CAGE_VERSION;
@@ -72,7 +77,11 @@ export function cageOpenEvents(state: BattleState, zone: SpellZone): BattleEvent
     if (!c.pos || c.hp <= 0 || c.life === 'dead') continue;
     const body = isMultiHex(state, c) ? bodyAt(state, c, c.pos) : [c.pos];
     const inside = body.filter((h) => keys.has(hexKey(h))).length;
-    if (!inside || (inside === body.length && body.length <= zone.hexes.length)) continue;
+    // Kuyruk MB3 (69+, B11 ⚠ yorum): binek + binici yığını küpün kenarından (`data/binek.json` `kafesBoyuFt`) uzunsa binici
+    // sığmaz ve dışarı itilir (binek tutsak kalır).
+    const m = c.riding && binekMb3On(state) && seatedRider(state, c) ? state.combatants[c.riding] : undefined;
+    const tooTall = !!m && (m.altitudeFt ?? 0) + heightFtOf(m) + heightFtOf(c) > (KAFES[zone.cage ?? 'box'] ?? Infinity);
+    if (!inside || (inside === body.length && body.length <= zone.hexes.length && !tooTall)) continue;
     const options = withinRange(c.pos, 6, size)
       .filter((p) => isInside(p, size) && !occupantAt(state, p, c.id) && (isMultiHex(state, c) ? bodyAt(state, c, p) : [p]).every((h) => isInside(h, size) && !keys.has(hexKey(h))))
       .sort((a, b) => distance(c.pos as Offset, a) - distance(c.pos as Offset, b));

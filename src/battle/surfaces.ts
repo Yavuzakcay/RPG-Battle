@@ -150,7 +150,7 @@ export function burstEvents(s: BattleState, hexes: Offset[], skip: Set<string>, 
     const v = current.combatants[v0.id];
     if (!v || v.hp <= 0) continue;
     const autoFail = autoFailsStrDexSave(v.conditions);
-    const save = resolveSave({ extra: saveDice(v, 'dex'), modifier: v.saves.dex, dc, mode: saveMode('normal', v, 'dex'), autoFail }, rollTag(rng, { by: v.id }));
+    const save = resolveSave({ extra: saveDice(v, 'dex'), modifier: v.saves.dex, dc, mode: saveMode('normal', v, 'dex', undefined, { damage: damageType }), autoFail }, rollTag(rng, { by: v.id }));
     const amount = saveDamage(v, 'dex', save.success, roll.total, true);
     const adj = amount > 0 ? adjustDamage(amount, damageType, damageProfile(v)) : { amount: 0, note: null };
     const fx = damageEffects(v, adj.amount, damageType, false, rng);

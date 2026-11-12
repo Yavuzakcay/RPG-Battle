@@ -6,6 +6,7 @@
 import { footprint, footprintDistance, type FootprintSize } from '../rules/footprint';
 import { distance, sameHex, type Offset } from '../rules/hex';
 import { ruleVersion } from './ruleVersion';
+import { binekMb4On } from './binekSurum';
 import type { BattleState, Combatant } from './types';
 
 /** Kuyruk K69: test sayacı: çok altıgen yoluna kaç kez girildi (bayrak kapalıyken hiç artmamalı: hızlı yol). */
@@ -22,6 +23,8 @@ export function bodySize(state: MH, c: Pick<Combatant, 'size'>): FootprintSize {
 /** Çok altıgen kuralı bu yaratıkta geçerli mi. */
 export function isMultiHex(state: MH, c: Pick<Combatant, 'size'>): boolean {
   if (!state.multiHex) return false;
+  // Kuyruk MB4 (72+, ⚠ karar): bineğinin üstündeki binici tek altıgen (bineğin çapası): hedefleme, menzil, görüş, siper, alan.
+  if ((c as Partial<Combatant>).riding && binekMb4On(state as Pick<BattleState, 'kuralSurumu' | 'multiHex'>)) return false;
   const big = c.size === 'L' || c.size === 'H' || c.size === 'G';
   if (big) bodyStats.multi++;
   return big;

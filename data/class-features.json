@@ -501,6 +501,7 @@
       },
       "freeSpell": "Darkness"
     },
+    "soy:winged-glide": { "name": "Wing Glide", "feature": "alt:tiefling/winged-glide", "race": "tiefling", "lineage": "winged", "uses": { "proficiency": true }, "recharge": { "long": "all" } },
     "giantAncestry": {
       "name": "Giant Ancestry",
       "feature": "species:goliath/giant-ancestry",

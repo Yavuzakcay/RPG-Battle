@@ -51,6 +51,8 @@ import './p9';
 import './p10';
 import './p11hooks';
 import { isP12Feature, p12Execute, p12Problem } from './p12';
+import { binekMb7On } from '../binekSurum';
+import { mountRuleOf } from '../riderCore';
 
 export { paketHex, paketTargeted, withPaket } from './core';
 
@@ -512,6 +514,8 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
       ...(val<boolean>(p, 'sahipOlunceKaybolur') ? { endsOnOwnerDeath: true } : {}),
       ...(!eylemler.includes('saldiri') ? { noAttack: true } : {}),
       ...(val<string>(p, 'komut') === 'bonus' ? { commandBonus: true } : {}),
+      // Kuyruk MB7 (70+): yaratığın `binek` alanı → binek kuralı (yoksa çağrıya binilmez).
+      ...(def.binek && typeof def.binek === 'object' && binekMb7On(cur) ? { mount: mountRuleOf(def.binek as Record<string, unknown>) } : {}),
     };
     const immune = def.durumBagisikliklari as string[] | undefined;
     const combatant: Combatant = {

@@ -15,6 +15,7 @@ import { terrainAt } from './movement';
 import { k73cOn } from './k73cSurum';
 import type { Offset } from '../rules/hex';
 import type { BattleState, Combatant } from './types';
+import { binekMb3On } from './binekSurum';
 
 const K = (dikeyData as unknown as { kazma: { harfler: string[]; kayaOrtam: string[]; kayaHarfler: string[]; derinlikFt: number } }).kazma;
 export const BURROW_DEPTH_FT = K.derinlikFt;
@@ -22,8 +23,8 @@ const DIG = new Set(K.harfler);
 const ROCK_ENV = new Set(K.kayaOrtam);
 const ROCK_LETTER = new Set(K.kayaHarfler);
 
-/** Kazabilir mi (64+, kazma hızı var). */
-export const canBurrow = (state: Pick<BattleState, 'kuralSurumu'>, c: Pick<Combatant, 'burrowFt'>): boolean => k73cOn(state) && (c.burrowFt ?? 0) > 0;
+/** Kazabilir mi (64+, kazma hızı var). Kuyruk MB3 (69+, B13 ⚠): binicisi üstündeki binek hiçbir yoldan kazamaz (komut, YZ adayı). */
+export const canBurrow = (state: Pick<BattleState, 'kuralSurumu'>, c: Pick<Combatant, 'burrowFt'> & { rider?: string }): boolean => k73cOn(state) && (c.burrowFt ?? 0) > 0 && !(c.rider && binekMb3On(state));
 
 /** Yer altında mı (64+). */
 export const isBurrowed = (state: Pick<BattleState, 'kuralSurumu'>, c: Pick<Combatant, 'burrowed'> | undefined): boolean => !!c?.burrowed && k73cOn(state);

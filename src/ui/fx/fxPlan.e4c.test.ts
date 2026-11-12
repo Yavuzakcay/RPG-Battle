@@ -23,7 +23,7 @@ describe('Kuyruk E4c: içe aktarma ve ayarlar', () => {
     expect(sh.adlar).toEqual(['yukselen-toz', 'zemin-deprem-yarigi', 'zemin-sessizlik', 'zemin-gunisigi', 'durum-olum-sozu']);
     for (const n of ['yukselen-toz', 'zemin-deprem-yarigi', 'zemin-sessizlik', 'zemin-gunisigi', 'durum-olum-sozu']) expect(recs[`efekt-${n}`]?.kare, n).toBe(4);
   });
-  it('deprem yarığı opak (normal karışım), kare 352×352, tek seferlik, hareket azaltta kare 4; diğerleri toplamalı', () => {
+  it('deprem yarığı şeffaf çatlak (normal karışım), kare 352×352, tek seferlik, hareket azaltta kare 4; diğerleri toplamalı', () => {
     expect(recs['efekt-zemin-deprem-yarigi']).toMatchObject({ karisim: 'normal', en: 352, boy: 352, dongu: false, sabit: 3 });
     for (const n of ['yukselen-toz', 'zemin-sessizlik', 'zemin-gunisigi', 'durum-olum-sozu']) expect(recs[`efekt-${n}`]?.karisim, n).toBe('screen');
     expect(stillFrame(FX['zemin-deprem-yarigi']!)).toBe(3);
@@ -63,13 +63,13 @@ describe('Kuyruk E4c: büyü bağlama (gerçek motor → beklenen sprite çizimd
       if (id === 'levitate') expect(shots[0]).toMatchObject({ anchor: 0.77 });
     }
   });
-  it('deprem yarığı altıgen başına döşenir (karo), diğerleri tek doku; deprem tek seferlik', () => {
+  it('deprem yarığı tek büyük karo (şeffaf çatlak, alfa dokuda), diğerleri tek doku; deprem tek seferlik', () => {
     const eq = spell('earthquake');
     const s = field(eq);
     const r = execute(s, { type: 'cast_spell', actorId: 'A', spellName: eq.name, slotLevel: 8, targetHex: { col: 10, row: 5 } }, P1, seededRng(2));
     if (!r.ok) throw new Error(r.error);
     const p = groundFx(applyEvents(s, r.events)).patches.find((x) => x.sprite.id === 'zemin-deprem-yarigi')!;
-    expect(p.karo).toMatchObject({ opaklik: 0.88 });
+    expect(p.karo).toMatchObject({ opaklik: 1, tekKaro: 6 });
     expect(p.loop).toBe(false);
     expect(p.hexes.length).toBeGreaterThan(1);
     const sl = spell('silence');

@@ -3,7 +3,7 @@
  * modülü (`rules/lineage.ts`) dil dosyasını bilmez; notlar buradan verilir.
  */
 import type { Lineage } from '../data';
-import { lineageAbilities, lineageOf, lineageSummary, type LineageAbility } from '../rules/lineage';
+import { lineageAbilities, lineageName, lineageOf, lineageSummary, type LineageAbility } from '../rules/lineage';
 import type { CharacterSheet } from '../rules/stats';
 import { getLang, t } from '../i18n';
 
@@ -22,7 +22,7 @@ export function lineageAbilityList(sheet: Pick<CharacterSheet, 'raceId' | 'linea
 /** "Drow — Karanlık görüş 120 ft · …" (özet paneli ve karakter kartı); soyu olmayan türde null. */
 export function lineageLine(sheet: Pick<CharacterSheet, 'raceId' | 'lineageId'>): string | null {
   const l = lineageOf(sheet);
-  return l ? `${l.name} — ${lineageSummary(l, getLang())}` : null;
+  return l ? `${lineageName(l, getLang())} — ${lineageSummary(l, getLang())}` : null;
 }
 
 /** Bilgi ipucunun metni: oyunda olmayan ya da kısmi yetenekte not. */

@@ -21,6 +21,8 @@ const tr = {
     close: 'Kapat', all: 'Tümü', loading: 'Yükleniyor…', loadingMonsters: 'Canavarlar yükleniyor…', monsterLoadError: 'Canavar verisi yüklenemedi; sayfayı yenileyin.', classLoadError: 'Sınıf verisi yüklenemedi; sayfayı yenileyin.',
     subclassAssigned: (list: string) => `Alt sınıfı seçilmemiş karakterlere SRD alt sınıfı atandı (${list}). Oluşturucudan değiştirebilirsin.`,
     lineageAssigned: (list: string) => `Soyu seçilmemiş karakterlere ilk soy atandı (${list}). Oluşturucudan değiştirebilirsin.`,
+    // Kuyruk AS1a: soyu isteğe bağlı türlerde (Dwarf, Halfling, Orc, Human) eski kayıt soysuz kalır; bir kerelik bildirim.
+    lineagePick: (list: string) => `Alt soy seç: ${list}. Seçilene dek alt soy etkisi yoktur. Oluşturucudan seçebilirsin.`,
     slotsRepaired: (list: string) => `Büyü yuvaları ve sınıf kaynakları sınıf ve seviyeye göre tamamlandı (${list}).`,
     gm: 'Game Master', unnamed: '(adsız)', incomplete: 'eksik', problems: (n: number) => `${n} sorun`, ft: 'ft',
     theme: { auto: 'Tema: otomatik', light: 'Tema: açık', dark: 'Tema: koyu' },
@@ -286,6 +288,11 @@ const tr = {
       skillFromBg: (bg: string) => `Geçmiş (${bg})`, countOther: (n: number, max: number) => `Ek beceri (tür) ${n}/${max}`,
       skillConflict: 'sınıftan da seçilmiş: başka bir sınıf becerisi seç',
       raceBonusNote: 'Yetenek puanı bonusu türden değil, geçmişten gelir.',
+      // Kuyruk AS1a: alt soy buff/debuff açıklamaları (yalnızca metin; etkisi henüz oyunda çalışmıyor).
+      lineageBuff: 'Artı', lineageDebuff: 'Eksi', lineageStatus: { calisir: 'çalışır', kismi: 'kısmi', planli: 'planlı' } as Record<string, string>, lineageNotYet: 'Bu etkiler henüz oyunda çalışmıyor (planlı); şimdilik yalnızca açıklama.',
+      lineageOptionalHint: 'Alt soy seçilmedi: seçene dek alt soy etkisi yok.',
+      skinTitle: 'Ten tonu', skinHelp: 'Ten tonu kültürden bağımsızdır; istediğin kültürle istediğin tonu seçebilirsin.',
+      cultureTitle: 'Kültür',
       lineageAbilities: 'Soy yetenekleri', preview: 'Jeton önizlemesi',
       notInGame: 'henüz oyunda yok', offCombat: 'savaş dışı: Game Master anlatır',
       giantNote: {
@@ -659,6 +666,7 @@ const tr = {
       cast: (spell: string): string => `${spell}: çağır`,
       note: 'Savaştan önce yapılır, slot harcamaz. Familiar saldıramaz; kendi inisiyatifinde oynar (Kaçın, Yardım, hareket).',
       noteSlot: 'Savaştan önce yapılır (döküm süresi 1 dakika), slot harcar. Yaratık sahibinin hemen ardından oynar.',
+      noteMount: 'Savaştan önce yapılır (ritüel), slot harcamaz. Binek: bitişikken hızının yarısıyla binilir; sahibinin hemen ardından oynar, hasar alınca kaybolur.',
     },
   },
   reactions: {

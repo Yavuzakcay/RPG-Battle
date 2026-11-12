@@ -2,6 +2,192 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+
+## 2026-11-12 — Kanat katmanı bağlandı (yalnız arayüz; kural sürümü 72 kalır)
+
+- Üç slot (`tiefling-kanatli`, `celestial-kirik-kanat`, `dragonborn`) `data/kanat-esleme.json`'da `public/kanat/` dosyalarına bağlandı; çapa (`capa`), `olcek` 1.45, `omuz` 0.46 ve `enBoy` kanat başına veride. Kök jetonun yatay merkezinde, omuz yüksekliğinde; kanat jetonun arkasında. Eski `yukari` alanı kalktı; kare kutu yerine görselin gerçek oranı kullanılır.
+- Tiefling Kanatlı ve Dragonborn yalnız havadayken (`isAirborne`); Celestial Kırık Kanat HER ZAMAN.
+- ⚠ **Celestial her zaman görünür:** SRD/oyun kuralı değil, görsel karar. Kırık Kanat yerdeyken de çizilir (kanat kırık, uçuş gerektirmez); kural sürümü ve Ayarlar anahtarı yok. İstenirse `herZaman` JSON'dan kapatılır.
+- Renk: beyaz-gri taban + CSS filtresi; Dragonborn 10 renk filtresi tarayıcıda gerçek jetonla göz kararı ayarlandı (kırmızı/bakır/bronz birbirine yakın, kanat zarı yarı saydam olduğu için). `mix-blend-mode: screen` kaldırıldı (koyu renkler görünmüyordu).
+
+## 2026-11-12 — Kuyruk MB4: çok altıgenli binek gövdesi (kural sürümü 71 → 72)
+
+- **Sürüm:**
+  - `main` 95a1189 (AS1b birleşmiş, 71) üstüne. Kural sürümü 71 → **72**.
+  - Tek sabit `src/battle/binekSurum.ts` `BINEK_MB4_VERSION`; `binekMb4On` = `multiHex` açık ve sürüm ≥ 72.
+  - Anahtar kapalıyken ve 71'de birebir.
+  - Ayrıntı `harita/belgeler/BINEK-PLAN.md` §15.
+- **⚠ Binicinin gövdesi:**
+  - Binici bineğin çapa altıgeninde tek altıgen (hedefleme, menzil, görüş, siper, alan).
+  - Alternatif (binici bineğin bütün gövdesini kaplar) seçilmedi: her erişim/alan sorgusunda binicinin bineğin gövdesiyle değişmesi gerekirdi; SRD yığının ayak izini tanımlamaz.
+  - Large binici (Huge+ bineğin üstünde) de tek altıgen: `body.ts` `isMultiHex` binicide yanlış.
+- **⚠ Binicinin ayak altı:** bineğin gövdesi (`bodyLeaf.ts` `footSize`). Engebeli zeminde binicinin mutlak yüksekliği bineğinki; MB3 B6 bandıyla tutarlı.
+- **⚠ İniş yeri:**
+  - Gövdeye bitişik (5 ft), gövdenin dışında, çapaya en yakın boş altıgen; eşitlikte gövde ve komşu sırası.
+  - Elle seçimde de gövdeye bitişiklik (SRD "within 5 feet of it": bineğin herhangi bir noktası).
+- **⚠ Zorla varış (B24 genişlemesi):**
+  - Komutsuz yer değişiminde (itme, kafes, gövdenin en yakın sığdığı yer) yığın gövdenin bir altıgeninde tavana/döşemeye sığmıyorsa binici save'siz iner.
+  - Bu kontrol, itilen bineğin DEX 10 save'inden önce gelir.
+- **⚠ Dar geçit nedeni:** yalnız binicili bineğe ("Dar geçit: …"). Binicisiz çok altıgenli yaratıkta K69 metni ("… için yol yok.") aynen; o metnin kalıbı yok (K69 kapsamı).
+- **Değişmeyenler (test kilitler):**
+  - Gövdeden binme bitişikliği (`gap`, `adjacent3D`).
+  - Fırsat saldırısı yalnız bineğe, gövdeden erişim.
+  - Gövdeyle itme.
+  - Uçan bineğin bandı.
+  - Alan tek sayım.
+  - B13/B14.
+  - YZ (MB5'e kadar yeni taktik yok).
+  - Arayüzde binicinin jetonu çapada.
+- **Doğrulama:**
+  - `binekMb4.test.ts` 17 test.
+  - Regresyon binekli 4 senaryo × 30 tohum: 71 altın imzalarla aynı, 72 = 71 (`BINEK_MB4_TOHUM`).
+  - `sim:yz-sure` binekli + çok altıgenli Çöl, ABBA: 41,9 → 41,45 ms/karar (−%1).
+  - Ana parça değişmedi (385,42 kB `vite build`).
+  - `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 390 dosya geçti + 1 atlandı; 4586 test geçti + 7 atlandı; 0 kırık.
+- **Ek:** `sim:yz-sure` bayrakları `--binek`, `--coklu`, `--kural-surumu N` (kurulum `src/sim/binekStart.ts`).
+## 2026-11-12 — Kuyruk AS1c-görünüm: alt soy görünümü savaş jetonuna, Human ten maskesi, kanat katmanı altyapısı (kural sürümü 71 kalır)
+
+- **Kapsam:** yalnız görünüm; kural sürümü, `SAVE_VERSION`, Ayarlar, komut/olay değişmedi. Yalnız alt soyu olan oyuncu karakteri (`sheetAvatar`); düşman, çağrılan, masum jetonu etkilenmez.
+- **Tek çözücü:** `Avatar.look` (`{ raceId, lineageId?, celestialAwakening?, level? }`, yalnız çizim) → `lineageLook` (`src/ui/lineageLook.ts`; veri `data/alt-soy-gorunum.json`, `data/kanat-esleme.json`). Savaş jetonu `TokenFigure` (SVG; `AvatarCircle` içinde): oran (aşağı-orta eksende ölçek), Celestial hale gizleme (`clipPath`), filtre (Gece Gözyaşı koyu; Dwarf Dağ/Yeraltı, Orc CSS), kanat katmanı. Oluşturucu/karakter kartı/tur şeridi rozetleri `LookFrame` (aynı çözücü). Hitbox, altıgen, `x/y/width/height` aynı. Efekt, halka, hüzme, durum katmanları ve hareketi azalt/efekt kapalı davranışı aynen (kanat sprite'ı statik görsel).
+- **Human ten maskesi:** AS1b'nin bütün jetona CSS filtresi kalktı (giysi rengini bozuyordu). `soy-renkleri.json`'a `human` (maske ayarı Elf ile aynı, soylar `null`) eklendi, `npm run soy-maske human` 24 ten maskesi üretti (`public/characters/maske/human-*.png`; elle maske klasörüne yazılmadı; betiğin silip değiştirdiği Goliath kafa kaplaması dosyaları ve `soy-bas.json`/`soy-maske-rapor.json` `git checkout` ile tek tek geri alındı). Tonlar `ten.tonlar[].renk` (hex): Orijinal null (boyasız), Siyahi #96623E, Doğu Asyalı #E2B880; `hsl` alanı silindi. Tint `lch` yoluna `L` (hedef ortalama açıklık) eklendi: ton ve kroma hedefe kayar, ortalama açıklık hedefe taşınır, gölge/ışık sapması korunur. `skinTint` (`lineageLook.ts`), `sheetAvatar` içinde Human için `lineageTint` yerine; Orijinal ve filtre kapalıyken eskisi gibi. Test: 3 jeton × 3 ton ten dışı piksel farkı 0, hedef renge yakınlık (L < 6, ab < 14), açıklık korelasyonu > 0,95.
+- **⚠ Yorum:** maske otomatik (Elf ayarı): kimi jetonda ten dışı küçük parçalar (kürk, turuncu keşiş giysisinin kolu) maskeye girebilir ve boyanır; görsel denetimde yüz/kol/bacak dışı sapma küçük, elle maske gerekirse `assets/soy-maske-el/` (K21/K24 yolu).
+- **Kanat katmanı:** `data/kanat-esleme.json` (slotlar `tiefling-kanatli`, `celestial-kirik-kanat`, `dragonborn` + Dragonborn 10 renk filtresi, değerler yer tutucu), `public/kanat/` boş + README. Katman jetonun arkasında, yalnız `isAirborne` iken `dosya` (açık), havada değilken varsa `dosyaKapali`; `dosya: null` (şimdi hepsi) iken katman sessizce yok. AS1a'nın efekt şeridi yer tutucusu kaldırıldı (yer tutucu sprite üretilmez). Slot uygulanırlığı: Tiefling Kanatlı, Celestial Kırık Kanat (3. seviyeden), Dragonborn (5. seviyeden, Draconic Flight uçarken).
+- **Sapma:** Celestial halesiz/koyu görünüm uyanışın etkin olup olmamasına bakmaz (karakterde uyanış seçili ve seviye ≥ 3 ise çizimde sürekli), oluşturucuyla aynı.
+- **Ana parça** 389,70 → 391,36 kB (savaş jetonu çözücüsünün verisi ana parçaya girdi).
+
+## 2026-11-12 — Kuyruk MB6: binek arayüzü (yalnız arayüz; kural sürümü 70'te kalır)
+
+- **Sürüm:** kural sürümü, `SAVE_VERSION` ve `src/battle/*` değişmedi (`git diff -- src/battle data/kural-surumu.json` boş). Yeni komut, olay ve Ayarlar anahtarı yok. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §14.
+- **1. Havada inme irtifa seçici:**
+  - `src/ui/dismountOptions.ts` (saf) seçenekleri MB3 motor sınırlarından okur: bineğin bandının 5 ft yakınında (alt − 5 … alt + bineğin boyu), 5 ft adımlı, irtifa üst sınırı/tavan altında, yer altına inmeden. Her seçenek motorda geçerli komut, dışındakiler reddedilir (testle doğrulandı).
+  - Seçici (`src/ui/DismountPicker.tsx`, tembel parça) "Binekten in" ipucu hapının içinde, yatay sarılan düğmeler; seçili irtifa `dismount.toFt` ile gider (bineğin irtifasıyla aynıysa `toFt` gönderilmez). İpucu seçimi izler.
+  - Uçamayan biniciye seçici yok: düğme eskisi gibi, havadaysa kısa uyarı "uçamazsın, havadaki binekten inersen düşersin" (TR/EN). 68 ve altında seçici yok.
+  - K71c "☁ Hava" düzey seçicisinin kalıbı (5 ft düğme listesi); biçim, baloncuk/hap içinde dikey kolon sığmadığı için `slot-picker` yatay biçimine uyduruldu (tek ekran görüntüsünde bulunan taşma düzeltildi).
+- **2. Ret nedenleri TR/EN:** motor gerekçelerine dokunulmadı; `data/neden-metinleri.json` `motor` dizisine 33 kalıp eklendi (binme, inme, havada inme, yığın/tavan/döşeme, tırmanma, kazma, Lance). `loc`/`Why` yolu zaten `reasonText`'ten geçiyor. Test, `mounted.ts`/`commands.ts`/`movement.ts` kaynak metinlerini tarar; kalıbı olmayan her binek gerekçesi testi kırar (silinen kalıpla doğrulandı).
+  - Menüde "Bin" yalnız uygun binek varken çıkıyordu; binemeyen biniciye neden satırı eklendi (yakında büyük dost var ama binilemiyorsa ilk bineğin reddi, "Binemezsin"). "Binekten in" düğmesinde motorun reddi gerekçe olarak gösterilir.
+- **3. Göstergeler (yalnız görsel):** binicide ve bineğinde tek 🐎 rozeti (`mounted`/`ridden`; `statusBadges`), rozet önceliğinde en sonda (`efekt-baglama.json` `rozet.oncelik`; `limitBadges` 3 + "+N" bütçesi aynen, üç ağır durum varken taşar). Altıgen bilgisinde "binek: <ad>" (binici için) ve "🐎 üstünde: <binici>" (binek için). Tur şeridine dokunulmadı: Phantom Steed ve Find Steed sırası motorun `after-owner` sırasıdır (MB7), arayüz yalnız okur.
+- **4. Kurulum ritüel notu:** Phantom Steed, kurulum çağırma kutusunda **listelenmiyordu**: kutu `castingTime === 'ritual'` süzüyordu, Phantom Steed verisi `action`. MB7'de eklenen kurulum yolu arayüzden erişilemiyordu. Kutu `summons.json` `setup` bayrağına ve güncel sürümün mekaniğine (`mechanicsAt`) çevrildi; binek çağırmalar için ayrı not (`summons.familiar.noteMount`, TR/EN: "ritüel, slotsuz; binek: bitişikken hızının yarısıyla binilir; sahibinin ardından oynar, hasar alınca kaybolur"). Find Steed kurulumda değil, normal savaş büyüsü.
+- **Doğrulama:**
+  - `src/ui/binekMb6.test.tsx` (`renderToStaticMarkup` seçici, seçenek–motor bire bir, ret kalıpları, rozet bütçesi, kurulum notu).
+  - Ekran görüntüsü `docs/mb6/hava-inme-secici.png` (kayıtlı savaş: uçan binek 20 ft'te, uçabilen binici, seçici açık). İlk görüntüde seçici ipucu şeridine taşıp okunmuyordu; düzeltilip yeniden alındı.
+  - Ana parça 389,14 kB (MB7 sonrası 388,92; +0,22 kB: TR menü metinleri ve rozet kodu; seçici tembel).
+  - `binekMb6.test.tsx` son hâliyle 12 test (menü neden satırı ve tur sırası testleri eklendi); `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 386 dosya geçti + 1 atlandı; 4523 test geçti + 7 atlandı; 0 kırık.
+- **Kalan:** MB2 (kontrollü binek turu), MB4 (çok altıgen), MB5 (YZ binicisi). Binek ret nedenleri (`mountProblem` metni) arayüzde yalnız menü satırında gösteriliyor; hamle önizleme kartında binek satırı yok (hamle önizlemesi MB'nin kapsamı dışı).
+
+## 2026-11-12 — Kuyruk AS1b: alt soy buff/debuff mekaniği (kural sürümü 70 → 71)
+
+- **Sürüm:** `main` e51ad648 üstüne. Kural sürümü 70 → **71** (tek sabit `src/battle/altSoySurum.ts` `ALT_SOY_VERSION`, MB kalıbı); 70 ve altı birebir. Savaş sürümü ≥ 71'de oluşan savaşçıda alt soy mekaniği; `CharacterSheet.soyKapali` (yalnız savaş kurulumunda `combatantFromSheet` yazar, kayda girmez) 70'te türetmeyi kapatır; açık `kuralSurumu < 71` ile kurulan savaşta `withSoy` süren etkileri ve özelliği söker (türetilen skor ve hız savaşçı oluşurken `defaultRuleVersion()` ile belirlenir; yüksek varsayılan + açık düşük sürüm karışımında skorlar kalır ⚠ yalnız testlerde olur). Yeni olay türü yok; `SAVE_VERSION` değişmedi; Ayarlar'a anahtar yok.
+- **Veri ile:** her alt soy `data/races.json` `lineages[].etki` (statik: `yetenek`, `hiz`, `kurtarma`, `beceri`, `zirhsizAc`, `direnc`, `karanlikGorus`, `agirZirhHizCezasiYok`, `tasima`; `efekt` = savaşta süren etkinin `ActiveEffect` alanları; `harita` = haritaya bağlı koşullar; `ozellik` = kullanılabilir özellik). Kodda alt soy adıyla koşul yok. Durum etiketi `durum`: 25 `calisir`, 13 `kismi` (hasar türü/durum bağlamlı kurtarma dezavantajı; kapsam `docs/ALT-SOY-41.md`); Celestial uyanış debuff'ları `celestial.json` `efekt` (çalışır).
+- **Genel genişlemeler (en küçük):** `ActiveEffect`: `saveDisVs`, `checkDisSkill`, `fallMult`, `teleportEnds`, `plantWalker`, `zorluArazideHiz`, `soyHarita`; `saveMode(…, ctx: SaveCtx)` (büyü, canavar saldırısı/nefesi, alan, yüzey, bölge, süren etki ve durum zamanlayıcısı kurtarmaları bağlam taşır); `checkBase(…, skill)` beceri/ışık/su/yerleşim koşullu kontrol dezavantajı (+ pasif Algı −5 ve Gizlen komutu); `fallEffect` ×; `teleported` olayında hareket biter; tur başı `soyTurnStartEvents`; hareket ve alan maliyetinde `plantWalker`; `UsableFeature.noArmor`; `Combatant.mediumArmor`.
+- **SRD'de yazmıyor, yorum (⚠):**
+  - "X kurt. dez." = o hasar türünü ya da durumu uygulayan etkinin kurtarmasında dezavantaj; "konsantrasyon" = mevcut `concDis`.
+  - Gün ışığı = karanlık kavramı olmayan harita (Sunlight Sensitivity gibi) ya da Daylight alanı; parlak ışık = K67 `lightLevelAt` parlak; iç mekân = varyantı tavanlı harita; yerleşim = bölgesi `yerlesim`/`sehir`; suda = ıslak zemin etiketli altıgen.
+  - Parlayan Ruh "karanlıkta Gizlen dez." parıltısı kendi ışığını verdiği için harita düzeyinde (karanlık/gece haritası).
+  - Khadyrga "zorlu arazide hız −5": turun başında zorlu arazi altıgeninde (zemin ya da alan) duran yaratığın o tur hareketinden 1 altıgen yanar.
+  - Sur Dışı iç mekân saldırı −2: silah ve büyü saldırı bonusuna savaş başında yazılır; inisiyatif −2 zar atılırken.
+  - Dwarf Dağ "ağır zırh hız cezası yok": zırhın Güç şartı eksikliği −10 ft'i kalkar. Halfling Kalın taşıma ×1,5 (taşıma kuralı açıkken). Cloud: her ışınlanma o turun kalan hareketini bitirir.
+  - Kanat Süzülüşü: bonus eylem, kullanım yeterlilik bonusu kadar (`$pb` ifadesi yok: kaynak `uses.proficiency`), 1 dakika (10 tur), yarım hız, en çok 30 ft, yere değmez; orta/ağır zırhla yok. Tiefling tabanında direnç olmadığı için "direnci kaybeder" kendiliğinden (Kanatlı soy direnç vermez).
+  - Orc Orman "bitkisel zorlu arazi": zemin `g` (çalılık, sazlık) ve Entangle/Plant Growth/Spike Growth alanları (`data/alt-soy.json`).
+- **Dwarf Tepe ve Yeraltı:** AS1a-2'de boşaltılan buff'lar artık yeni (kullanıcı kararı): Tepe Dayanıklılık kurtarma +1, Yeraltı Gizlen +2.
+- **Human ten tonu (İş 4):** seçici görünür; `kulturTen` dolu (dört kültür × üç ton: Orijinal, Siyahi, Doğu Asyalı), varsayılan Orijinal (filtre yok), `ten.filtreUygula: true`; oluşturucu önizlemesi ve karakter kartında filtre uygulanır. **⚠ YER TUTUCU:** Siyahi ve Doğu Asyalı renkleri geçici; gerçek değerler tek yerde: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].hsl` (`hueRotate`, `saturate`, `brightness`, `sepia`); kod ve test değişmez. Eski 6 tonluk seçim kimlikleri (acik, bugday…) Orijinal sayılır.
+- **Testler:** `src/battle/altSoy.test.ts` (türetme, her kurtarma/kontrol/harita/hareket kuralı, Kanatlı, Dragonborn doğrulaması, sürüm kapısı), `src/sim/altSoyRegresyon.test.ts` (70 altın imza AS1b öncesi ağaçtan; Human parti 71 = 70; Drow parti 71 ≠ 70), `altSoy41.test.tsx` güncellendi (durum etiketi, Tepe/Yeraltı yeni buff, üç ton). Sürüm sabiti testleri (`g6`, `ruleVersion`) 71.
+- **Kapsam dışı:** ek paket/imza/eşya kurtarmalarına `SaveCtx`; savaş jetonuna görünüm; kanat sprite'ları; Dragonborn beyaz tabanı; Human ten tonlarının gerçek renkleri.
+
+## 2026-11-12 — Kuyruk MB7: çağrılan binekler: Find Steed, Phantom Steed, paket `binek` alanı (kural sürümü 70)
+
+- **Sürüm:** `main` b493a10 üstüne. Kural sürümü 69 → **70** (tek sabit `src/battle/binekSurum.ts` `BINEK_MB7_VERSION`); 69 ve altı birebir.
+  - Yeni olay türü yok: `summon_vanished.reason` yeni değer `damaged`; çağrı bağında `mount`, `endsOnDamage`. `SAVE_VERSION` 22.
+  - Ayrıntı `harita/belgeler/BINEK-PLAN.md` §13.
+- **Görev 0:** üç madde (Find Steed binek bağı + kuralsız çağrıya binilmesi, Phantom Steed savaşta yok, paket `binek` alanı yok) düzeltmeden önce başarısız testle doğrulandı. Doğrulanmayan yok.
+- **Yapılanlar:**
+  - Binek kuralı `SummonInfo.mount` (`ownerOnly`, `maxRider`, `minLevel`).
+  - Find Steed / Faithful Steed atı `mount: { kural: dost }`.
+  - Phantom Steed savaşta (büyü verisinde `mb7` bloğu, `data/summons.json` `phantom-steed`).
+  - Paket yaratığında `binek` alanı (şema, doğrulama, `check:icerik`, `PAKET-ILKELLER.md`, kurgusal fikstür `tests/fixtures/paket-binek.json`).
+  - CLAUDE.md "şu an güncel kural sürümü" 67 → 70.
+- **SRD'de yazmıyor, yorum (⚠):**
+  - Kuralı olmayan çağrılan yaratığa binilmez (Summon Dragon ruhu, paket ve canavar yeteneği çağrıları). SRD'nin genel binek şartı "uygun anatomi"; plan §9 / B16 yorumu.
+  - Find Steed atına çağıranın dostları da biner (SRD "controlled mount while you ride it" der, başkasını yasaklamaz).
+  - Phantom Steed "you or a creature you choose" tek binici seçimi yerine her dost.
+  - Phantom Steed kendi inisiyatifini atmaz, sahibinin hemen ardından oynar (`after-owner`; kontrollü binek MB2'de).
+  - Phantom Steed yalnız kurulumda ve slotsuz (döküm süresi 1 dakika ya da ritüel; Find Familiar/Animate Dead kalıbı).
+  - Phantom Steed bitince binici hemen ve save'siz iner (SRD "1 minute to dismount"; savaşta 10 tur beklemek yerine).
+  - Herhangi bir hasar = canı en yüksek değerin altına inmesi.
+  - Paket `minSeviye` çağıranın karakter seviyesiyle karşılaştırılır (sınıf seviyesi değil). `biniciSayisi` yalnız 1.
+- **Test güncellemesi (veriye bağlı değer):**
+  - `summons.test.ts` çağırma büyüsü listesini güncel sürümün mekaniğinden okur (Phantom Steed yalnız 70+'da çağırma). Phantom Steed'in biçimi CR 0 değil, Riding Horse.
+  - `ruleVersion.test.ts` / `g6.test.ts` güncel sürüm 69 → 70.
+- **Doğrulama:**
+  - `binekMb7.test.ts` 7 test. Regresyon 69 altın = 70 (4 senaryo × 30 tohum).
+  - Ana parça 388,92 kB; MB7 ana parçaya ekleme yapmadı, MB7 öncesi main de 388,92 kB. 376,78 → 388,92 artışı AS1a birleşmesinden.
+  - `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 385 dosya geçti + 1 atlandı; 4506 test geçti + 7 atlandı; 0 kırık.
+- **Başka şeridin testi:** `src/rules/altSoy41.test.tsx` "kural sürümü 68" beklentisi MB3 birleşmesinden beri main'de kırıktı (69). Amacı "AS1a sürümü artırmadı" olduğundan alt sınıra (≥ 68) çevrildi.
+- **Ejder Muhafızı yaması (paket dışı, yapılmadı):** `kucuk-ejderha` yaratığına `"binek": { "kural": "sahip", "enBuyukBinici": "M", "biniciSayisi": 1, "minSeviye": 14 }`. Medium binici için ejderha 14. seviyede Large olmalı (MB1 boyut şartı).
+- **Kalan:**
+  - **MB2:** kontrollü binek, Find Steed ve Phantom Steed'in binicinin turunda hareketi.
+  - **MB4:** çok altıgen.
+  - **MB5:** YZ binicisi, YZ Phantom Steed.
+  - **MB6:** arayüz (binek nedenleri yalnız TR motor metni, havada inme irtifası).
+
+## 2026-11-12 — Kuyruk MB3: binek dikey kuralları (kural sürümü 69)
+
+- **Sürüm:** `main` b659f68 üstüne. Kural sürümü 68 → **69** (tek sabit `src/battle/binekSurum.ts` `BINEK_MB3_VERSION`); 68 ve altı birebir. Yeni olay türü yok (`dismounted.toFt`, `dismount.toFt` isteğe bağlı alanlar); `SAVE_VERSION` 22. Yeni veri `data/binek.json` (`kafesBoyuFt`). Ayrıntı `harita/belgeler/BINEK-PLAN.md` §12.
+- **Görev 0:** MB1'in bıraktığı 9 açığın hepsi düzeltmeden önce başarısız testle doğrulandı. Nefes açığı başka nedenden: binicili binek hiç dalamıyordu (`verticalCellProblem` biniciyi dolu hücre sayıyordu; aynı hata binicili uçan bineğin 5 ft alçalmasını da engelliyordu). Engel kalkınca nefes sayacı zaten işliyor. Doğrulanmayan açık yok.
+- **Yapılanlar:** B12 iki ayrı düşme; B11 yığın boyu (yürüyüş, uçuş, kat döşemesi, Forcecage, ışınlanma/Fey Step, binme); dikey hareket ve dalışta binicinin hücresi; B14 binicili tırmanma; havada binme (3B bitişiklik) ve inme (`toFt`); B6 bant; B13 bütün kazma girişleri (`canBurrow`).
+- **SRD'de yazmıyor, yorum (⚠):**
+  - **B6:** binicinin dikey bandı bineğin bandı (3B uzaklık, erişim, fırsat saldırısı, menzil).
+  - **B11:** yığın boyu = bineğin boyu + binicinin tam boyu (MB1 yorumu korundu: Medium +5, Large +10). Forcecage küpüne sığmayan yığında binici itilir, binek tutsak kalır (SRD "too large to fit" yığına uygulandı).
+  - **B12:** binek düşüyorsa binici DEX save'ini geçse de ayrılır ve ayrı düşer. Save yalnız düşmeyen bineğin üstünde kalmayı belirler. Levitate biten (süzülerek inen) binekte binici üstünde kalır.
+  - **B13:** binicisi üstündeki binek kazamaz; yer altındaki bineğe binilmez.
+  - **B14:** tırmanma hızı olmayan binek binicisiyle tırmanamaz (K71b Çeviklik tırmanışı dahil). Duvarda tutunan (tırmanma hızsız) bineğe binilmez.
+  - **Havada inme:** farklı irtifa yalnız uçabilene, bineğin bandının 5 ft yakınında. Uçamayan havadaki binekten iner ve düşer (SRD'de havadan inme yok).
+- **Doğrulama:**
+  - `src/battle/binekMb3.test.ts` 15 test. MB1 testleri (15) değişmeden yeşil.
+  - Regresyon `src/sim/binekMb3Regresyon.test.ts`: 68 altın (MB3 öncesi ağaç), 69 = 68; Çöl, Kale, Mağara, Orman × 30 tohum. Denge ölçümü yok.
+  - Ana parça 376,78 kB. `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 382 dosya geçti + 1 atlandı; 4473 test geçti + 7 atlandı; 0 kırık.
+- **Kalan:**
+  - **MB4:** çok altıgenli bineğin bütün gövdesinde tavan/yığın, gövde dışına iniş, binicinin gövdesi.
+  - **MB7:** Find Steed/Phantom Steed, paket `binek`.
+  - **MB2:** kontrollü binek.
+  - **MB5:** YZ binicisi, dalışta binicinin nefesi, yığının yükselme kararı.
+  - **MB6:** havada inme irtifası seçicisi.
+  - CLAUDE.md "Çalışma şekli"ndeki "şu an güncel kural sürümü 67" ifadesi başka şeridin satırı olduğu için değiştirilmedi (güncel: 69).
+## 2026-11-12 — Kuyruk AS1a-2: alt soy düzeltmeleri (kural sürümü 68'de kalır)
+
+- **Hizalanma tablosu:** `altSoy` 41 satırı kullanıcının doğru tablosuyla değiştirildi (AS1a'daki türetilmiş değerler kalktı; kimlikler eşleşti, eşleşmeyen satır yok). K51 uç build testleri (alt soylu) yeni toplamlara güncellendi: Celestial/parlayan-ruh 47/49, Elf/wood-elf −38/20, Goliath/stone 38/−32, Tiefling/abyssal −45/−50; etiketler değişmedi. Soysuz sheet'li eski uç build testleri aynen geçer (ırk değerine düşme).
+- **Yalnız fark:** taban türün bonusları tür seçiminde (tür kartı + "Irk özellikleri" paneli), alt soyun bonusları alt soy seçiminde gösterilir; alt soy metni taban türde zaten olan etkiyi tekrar etmez. 41 soyun taban türle karşılaştırması (`data/races.json`, `data/srd/species.json`): yalnız **Dwarf Tepe** (+1 HP/seviye; taban Dwarven Toughness) ve **Dwarf Yeraltı** (karanlık görüş 120 ft; taban Darkvision 120) tekrar ediyordu. İkisinin buff'ı BOŞ bırakıldı (yeni buff icat edilmedi; karar kullanıcıda), kartta yalnız debuff + "taban tür özellikleri geçerli" notu, kart özeti yalnız debuff + "taban özellikler geçerli". Diğer 39 soyda taban tekrarı yok (Gnome Yeraltı 120 ft taban 60 ft'in farkı; Orc Bataklık zehir direnci tabanda yok).
+- **Test:** `altSoy41.test.tsx` boş buff'lı alt soyları sabitler (`EMPTY_BUFF`) ve Dwarf kartında taban özelliklerin tabanda, farkın alt soyda göründüğünü denetler.
+
+
+## 2026-11-12 — Kuyruk AS1a-2 İş 3: boyasız orijinal alt soylar (kural sürümü 68'de kalır)
+
+- **Karar (kullanıcı):** her ırkta (Dragonborn hariç; beyaz tabanı ayrı iş) en az bir alt soy boyasız ORİJİNAL jetonla gelir. 13 orijinal: Elf Wood-elf, Dwarf Tepe, Halfling İnce ve Kalın, Orc Orman, Celestial Parlayan Ruh (hale var), Human 4 kültürün hepsi, Tiefling Infernal, Gnome Rock, Goliath Hill. Liste tek yerde: `data/alt-soy-gorunum.json` `orijinal` (`isOriginalLineage`, `src/ui/lineageLook.ts`).
+- **Veri:** `data/soy-renkleri.json`'da Infernal, Rock ve Hill girdisi `null` (Wood-elf gibi; boyama yok). Goliath `basKaplama`/`govdeBoya` ve diğer boyalı satırlar dokunulmadı. Boyalı kalanlar: Dragonborn 10, Goliath Cloud/Fire/Frost/Stone/Storm, Elf Drow/High, Tiefling Abyssal/Chthonic, Gnome Forest/Yeraltı, Celestial Gece Gözyaşı (koyu filtre), Dwarf Dağ/Yeraltı, Orc Buzul/Bataklık. Geçici CSS filtresi yalnız boyalı Dwarf/Orc'ta (Dağ ve Yeraltı filtresi okunur kalsın diye güçlendirildi); orijinallerde filtre kalktı. Oranlar: Dwarf Tepe genişlik ×1,04; Halfling İnce ×0,94 / ×1,05, Kalın ×1,10 / ×0,97 (en/boy).
+- **Human:** ten tonu eşlemesi eklenene dek hepsi orijinal: `ten.filtreUygula: false` (ten seçici ve `skinTone` saklanır, filtre uygulanmaz); eşleme eklenince true.
+- **Ölçüm** (`data/soy-olcum.json`, elle; `npm run soy-maske` çalıştırılmadı): Infernal, Rock, Hill için boyasız maske ortalaması. Yöntem Wood-elf'in mevcut ölçümünü 24/24 jetonda birebir üretti (doğrulama).
+- **Test güncellemeleri (gerekçe):** `tint.test.ts` tablo denetimi "orijinal ⇔ null" oldu (eskiden yalnız Wood Elf). ΔE ≥ 15 denetimi korundu; Goliath Hill'in orijinal teni Cloud ve Stone boyamalarına yakın (Cloud/Hill ΔE 6,0–14,7, Hill/Stone 14,6–14,7) ve boyalılar değişmeyecek karardı, bu iki çift için alt sınır düşürüldü (`ORIGINAL_PAIR_MIN`: 5,5 ve 14). **Açık:** Hill ↔ Cloud ayrışması zayıf; Cloud/Stone boyaması değişirse istisna kalkar (karar kullanıcıda).
+- **Tiefling Kanatlı** orijinal/boyalı listelerinde yoktu: boyalı bırakıldı; Infernal orijinal olunca eski gül tinti (h345) ona ΔE 11'e düştüğü için tinti altın-zeytin yapıldı (h90, c40, dL+10; ΔE ≥ 15 geçer; ölçümü elle). Karar kullanıcıda.
+- **Görsel doğrulama:** `docs/alt-soy-dwarf.png` oluşturucu önizlemesi Dwarf Tepe (orijinal) ↔ Dağ ↔ Yeraltı yan yana. Kayıtlı karakterlerde yalnız görünüm değişir (Infernal, Rock, Hill); mekanik değişmez.
+
+
+## 2026-11-12 — Kuyruk AS1a: 41 alt soy, mekaniksiz yarısı (kural sürümü ARTMAZ, 68'de kalır)
+
+- **Kapsam:** yalnız veri, oluşturucu, hizalanma başlangıcı, görünüm, metinler. `src/battle/*`, `data/kural-surumu.json` ve savaş komutlarına dokunulmadı (MB3 şeridi 68'i kullanıyor). Buff/debuff mekaniği (kurtarma/kontrol dezavantajı, ışık koşulu, yetenek bonusu, uçuş, hız…) AS1b'de ve kural sürümünü artırır. Tablo: `docs/ALT-SOY-41.md`.
+- **Sayı:** 41 = Dragonborn 10, Goliath 6, Elf 3, Tiefling 3 + **Kanatlı**, Gnome 2 + **Yeraltı**, Celestial 3 uyanış, Dwarf 3 (Dağ, Tepe, Yeraltı), Halfling 2 (İnce, Kalın), Orc 3 (Buzul, Orman, Bataklık), Human 4 kültür (Tenhausser, Khadyrga, Saf Kent, Sur Dışı). 14 yeni; adlar özgün, resmî alt ırk adı/mekaniği kopyalanmadı.
+- **Yalnızca açıklama:** yeni soylarda `buff`/`debuff` TR/EN metin + `durum: "planli"`; `resistances` boş, `speed`/`darkvision`/`spells` yok (test denetler). Kartta "planlı" etiketi. Veri `data/races.json`, tip `Lineage.ad/buff/debuff/durum` (`src/data/types.ts`).
+- **Soyu isteğe bağlı türler** (`lineageOptional`: Dwarf, Halfling, Orc, Human): `defaultLineage` yok. Eski kayıt soysuz kalır (`migrateLineages` atamaz, `pending` döner; Elf/Gnome/Goliath/Tiefling/Dragonborn eskisi gibi ilk soyu alır); `characterIssues` soy zorunlu saymaz; oluşturucu "Alt soy seçilmedi" ipucu verir; bir kerelik "alt soy seç" bildirimi `src/app/lineageNotice.ts` (karakter başına bir kez, `rpg-battle-altsoy-bildirildi`). Seçilene dek bonus yok (bonus mekaniği AS1b). Yeni karakterde tür seçilince ilk soy önseçilir (eskisi gibi).
+- **Human:** 4 kültür soy kartı + AYRI ten tonu seçici (`CharacterSheet.skinTone`, 6 ton `data/alt-soy-gorunum.json`). Kültür–ten eşlemesi (`ten.kulturTen`) bilerek BOŞ; kullanıcı doldurur.
+- **Hizalanma:** `data/hizalanma-baslangic.json` `altSoy` (41 satır, `<ırk>/<alt soy>`). Satır ırk satırının YERİNE geçer (mutlak değer, üstüne eklenmez); soyu olmayan/eski kayıt (`lineageId` yok) ve satırı olmayan eski `irk` değerine düşer. Celestial satırı 3. seviyeden, Göksel Uyanış (seçilmediyse varsayılan) ile; uyanış seçilince oluşturucu başlangıcı "otomatik kabul" ise yeniden hesaplar (`withAlignment`). **⚠ Değerler:** proje belgesi "kuyruk-as1-alt-soy-41" sonundaki tablo bu oturumda erişilebilir değildi (depoda yok); değerler ırk satırı ±8 aralığında türetildi (Dragonborn metalik/kromatik, Drow vb.). Belge tablosu gelince yalnız `altSoy` verisi değiştirilir (kod ve testler değişmez; `src/rules/altSoy41.test.tsx` kimlik/aralık denetler).
+- **K51 uç build testleri:** mevcut 4 uç build soysuz sheet verdiği için (alt soy yok → ırk değeri) değerleri değişmedi, aynen geçiyor (soysuz fallback'i sınar). Eklendi: aynı 4 build alt soyla yeni değerlerle (Celestial/parlayan-ruh 48/50, Elf/wood-elf −37/19, Goliath/stone 38/−34, Tiefling/abyssal −47/−50); etiketler değişmedi.
+- **Testlerde güncelleme (gerekçe):** `data.test.ts` miraslı tür denetimi `lineageOptional` türlerde `defaultLineage` yok diye ayrıldı, Tiefling soyları `winged` içerir; `tint.test.ts` tint/maske tablosu denetimi `data/alt-soy-gorunum.json` `maskesizIrklar` (Dwarf, Halfling, Orc, Human) dışındaki ırklara uygulanır (bu ırkların ten maskesi yok; renk CSS filtresiyle).
+- **Görünüm** (`src/ui/lineageLook.ts`, `LookFrame.tsx`, `data/alt-soy-gorunum.json`; yalnız görsel): Tiefling Kanatlı ve Gnome Yeraltı `data/soy-renkleri.json` tint satırı (+ `npm run soy-maske` yalnız `data/soy-olcum.json` ölçümü yenilendi; ΔE ≥ 15 geçti; Goliath ölçümü yerel kafa kaplaması kaynağı olmadığı için eski değerinde bırakıldı, betiğin sildiği `public/characters/bas/*` geri alındı); Dwarf/Orc/Halfling/Human için CSS `filter`; Halfling İnce/Kalın en-boy oranı; üç kanat yuvası (Tiefling, Celestial Kırık Kanat, Dragonborn Draconic Flight; sprite yoksa efekt sistemindeki `efekt-kanat-seytan/melek/ates` şeridinin ilk karesi yer tutucu, Dragonborn yalnızca uçarken ve 5. seviyeden); Celestial: Parlayan Ruh haleli (varsayılan), Kırık Kanat halesiz (üst %9,5 kırpılır; hale 256 px çizimde satır 8–23) + kanat, Gece Gözyaşı halesiz + koyu filtre. Bağlandığı yerler: oluşturucu jeton önizlemesi ve karakter listesi kartı. **Savaş jetonuna bağlanmadı:** `Avatar` tipi `src/battle/types.ts`'te (savaş dosyası, yasak); AS1b/MB3 sonrası.
+- **Dragonborn beyaz tabanı** AS1a kapsamı dışı.
+
+
 ## 2026-11-12 — Kuyruk MB1: binek çekirdek SRD kuralları (kural sürümü 68)
 
 - **Sürüm:** `main` 6a1a4dc üstüne. Kural sürümü 67 → **68** (tek sabit `src/battle/binekSurum.ts` `BINEK_VERSION`, B19); 67 ve altı birebir. Yeni olay türü yok (`dismounted.fell` isteğe bağlı alan); `SAVE_VERSION` 22 (B20). Anahtar `srdK19` (B21), yeni ev kuralı yok. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §11.
@@ -23,6 +209,16 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Tam paket 379 dosya geçti + 1 atlandı; 4444 test geçti + 7 atlandı; 0 kırık.
   - Binekli savaşta YZ karar süresi ölçümü MB5'e.
 - **MB3'e kalan:** uçan binekle birlikte düşen binicinin hasarı (iki `fall`, B12), yürüyüş/uçuş yolunda yığın boyu, kat döşemesi ve Forcecage, binicinin su altı nefesi, binicili tırmanma (B14), havadan inme/binme (`toFt`), Fey Step varış sığması.
+
+## 2026-11-11 — Kuyruk SU2: Deprem zemin efekti okunabilirliği (yalnız görsel; kural sürümü 67, SAVE_VERSION, motor, YZ, replay değişmedi)
+
+- **Sorun:** 100 ft deprem alanında (~230 altıgen) E4c dokusu opaktı (%88): harita, zemin işaretleri, yüzeyler okunmuyordu; altıgen başına döndürme/aynalama çatlakları komşuda bağlamıyor, parlak turuncu mozaik çıkıyordu.
+- **A (şeffaf çatlak):** `scripts/efekt-sayfa.mjs` `crackPixel`: ham kareden alfa üretir (koyu çatlak içi: `dBase − max(RGB)` smoothstep; turuncu kenar: doygunluk × R−B; kum tabanı alfa 0). Parametreler `data/efekt-kesim.json` `catlak`. Yalnız bu şeridi üretmek için `node scripts/su2-deprem.mjs` (`assets-ham/efekt/efekt-eksik.jpg` değişmedi; çıktı `public/efekt/efekt-zemin-deprem-yarigi.webp`, artık RGBA). Tam kesim `npm run sprite-ice -- --efekt` da aynı sonucu verir.
+- **B (opaklık/renk):** tepe alfa `tepe` 0,64 (çatlak çizgisi ≤ %65), renk koyu kahve-kızıl `darkC` [40,18,14], pas `glowC` [128,44,22]; kayıt `data/efekt-e2.json` `alfa`/`ton` (bilgi), çalışma zamanı `zeminKaro.opaklik` 1 (alfa dokuda pişmiş; 0,88 → 1).
+- **Bağlanma:** altıgen başına 12 görünüm yerine `zeminKaro.tekKaro: 6`: tek büyük karo (altıgen eninin 6 katı) dünya koordinatında dört yönde aynalanır, alan altıgenlerinin birleşimine kırpılır; çatlaklar altıgen sınırında kesilmez, animasyon örneği 1 (≤ 12). Eski `TiledPatch` yolu (`tekKaro` yoksa) korundu.
+- **C gerekmedi:** A+B sonrası çatlak kapsamı seyrek; alan başına döşeme seyreltmesi eklenmedi.
+- **Sabit kare / ayarlar:** efekt kapalı ya da hareketi azaltta 4. kare (aynı alfa/ton); jeton, eylem çemberi, altıgen çizgileri efektin üstünde.
+- **Doğrulama:** gerçek `FxGround`, 21×11 alan, ortada Druid + düşmanlar; `docs/su2/once-sonra.png` (yan yana). `fxPlan.e4c.test.ts` beklentisi `opaklik 0.88 → 1, tekKaro 6` güncellendi (gerekçe: opaklık dokuya taşındı).
 
 ## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)
 
@@ -48,6 +244,17 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - **Sürüm ve kayıt:** yeni olay türü yok (`SAVE_VERSION` 22). Kural sürümü MB1 = 68 (Şerit B 67'yi alabilir; tek sabit `BINEK_SURUM`). `srdK19` anahtarı altında, yeni ev kuralı yok.
   - **Find Greater Steed** SRD 5.2.1'de yok (⚠): yalnız ek paket.
 - **Taban:** tam test (main f740c07) 375 dosya geçti + 1 atlandı, 4410 test geçti + 7 atlandı, 0 kırık (681 sn).
+
+
+## 2026-11-11 — Kuyruk SU3: su dokusunun hex listesi mekanik sudan ayrıldı (yalnız görsel; kural sürümü 66, SAVE_VERSION, motor, YZ, harita `tiles`, replay değişmedi)
+
+- **Veri (`data/efekt-baglama.json` `su`):** `haric` (harita kimliği → `[sütun, satır]`, 1 tabanlı, harita JSON'u gibi; doku çizilmeyen `w`), `ekle` (doku çizilen sığ `n`), `ekleOpaklik` 0,7, `kiyiOpaklik` 0,5, `kenarYumusat` 1,5 (px). Adres biçimi belirsizdi; harita JSON'unun 1 tabanlı biçimi seçildi. Varyantlar aynı `tiles`'ı paylaştığı için harita kimliği yeterli.
+- **`waterHexes`:** `tiles`'tan türet (eskisi gibi) → `haric` düş → `ekle` ekle (yalnız hâlâ `n` olanlar; sığ dalga, `shallow`) → komşusu listede olmayan altıgene `shore`. Önbellek anahtarı zemin dizisi + harita kimliği. `WaterLayer` aynı desenle (tek animasyon örneği) dört yol çizer: iç/kıyı × normal/sığ; kıyı yolu `feGaussianBlur` (`kenarYumusat`) ve opaklık × `kiyiOpaklik`, sığ × `ekleOpaklik`. Kıyı soluklaştırma bütün haritalarda topolojiden (harita kenarı kıyı sayılmaz), yalnız listeli haritalarda değil. Efekt kapalı / hareketi azalt: aynı liste, tek sabit kare.
+- **Listeler (SU1 §3.1 yöntemi yeniden çalıştırıldı, betik depo dışı):** 10 doğrulanmış haritadan `haric` 44 hex / 4 harita (Heykel Gölü 16, Oduncu Kampı 16, Batak Çukuru 10, Kale Önü 2); `ekle` yalnız Heykel Gölü 30 ve Vaha 17 (SU1'in 19'undan nehrin sol ucundaki iki yalıtık yama çıkarıldı, önce/sonra görüntüde hayalet gibi duruyordu). **`ekle` kaldı**: önce/sonra görüntüde sığ halka boyalı suyla örtüşüyor. Düşük güvenli haritalara (Batak Adalar/Kale/Kamp, Kasaba Lağımı, Mantar Mağarası) dokunulmadı; "elle teyit gerekli" olarak kaldı.
+- **Mekanik ayrımı testle sabit (`src/ui/fx/su3.test.ts`):** `haric` altıgeni `tiles`'ta `w`, `isWater`/`shoreDistances` su sayar, dokuda yok; `ekle` altıgeni mekanikte `n`; `battle/rules/map/app/sim` altında `waterHexes`/`fxPlan`/`efekt-baglama.json` içe aktarımı yok.
+- **Eski testler:** `fxPlan.e4b.test.ts` su testleri güncellendi (gerekçe: Heykel Gölü ve Vaha artık `ekle` ile sığ dalga içeriyor, liste sayısı `harf − haric + ekle`; derin `w` hâlâ yalnız havuz).
+- **Görüntü:** `docs/su3/su3-once-sonra.jpg` (Heykel Gölü, Vaha, Kale Önü; gerçek `FxGround` Vite sayfası, geçici harness depoya girmedi). Kale Önü hendeği duvar ve kara komşusu yüzünden bütünüyle kıyı sayılıp belirgin soluklaştı; ölçüte uygun, ama piksel maskesi (SU1 seçenek b) bu kuyrukta yok: kullanıcı karar verir.
+
 
 ## 2026-11-11 — Kuyruk SU1: Su hex denetimi (salt okuma; kural sürümü 66, SAVE_VERSION, veri, kod, görsel değişmedi)
 
