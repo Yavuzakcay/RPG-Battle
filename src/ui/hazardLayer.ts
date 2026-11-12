@@ -6,12 +6,28 @@
  */
 import { distance, hexKey, neighbors, type Offset } from '../rules/hex';
 import { canReact } from '../battle/reactions';
+import { ruleOf } from '../battle/maprules';
 import { zoneHexes } from '../battle/zones';
 import type { BattleState, Combatant } from '../battle/types';
 import { gridOf } from './mapView';
 
-export type HazardKind = 'surface' | 'aura' | 'barrier' | 'fireSpread' | 'move' | 'oa' | 'threat';
-export const HAZARD_KINDS: HazardKind[] = ['surface', 'aura', 'barrier', 'fireSpread', 'move', 'oa', 'threat'];
+export type HazardKind = 'surface' | 'aura' | 'barrier' | 'fireSpread' | 'move' | 'oa' | 'threat' | 'mud';
+export const HAZARD_KINDS: HazardKind[] = ['surface', 'aura', 'barrier', 'fireSpread', 'move', 'oa', 'threat', 'mud'];
+
+/**
+ * Bataklık tanısı (BK1, yalnız görünüm): açık harita kurallarının çamur/batak zemin harfi olan altıgenler (`sinkMud` batıran
+ * çamur, `leeches` sülük suyu: ikisi de `terrain`; klasik `bog` batak). Kural kapalıysa ya da haritada yoksa hiçbiri. Durum değişmez.
+ */
+export function mudHexes(state: BattleState): Offset[] {
+  const tiles = state.map?.tiles;
+  if (!tiles) return [];
+  const letters = new Set<string>();
+  for (const id of ['sinkMud', 'leeches', 'bog']) { const t = ruleOf(state, id)?.terrain; if (typeof t === 'string' && t) letters.add(t); }
+  if (!letters.size) return [];
+  const out: Offset[] = [];
+  tiles.forEach((row, r) => { for (let c = 0; c < row.length; c++) if (letters.has(row[c] as string)) out.push({ col: c, row: r }); });
+  return out;
+}
 
 const FLAMMABLE = new Set(['oil', 'slick', 'burningWeb']);
 
@@ -41,6 +57,7 @@ export function hazardHexes(state: BattleState, o: { actorId?: string; movable?:
     if (z.surface === 'fire') fire.push(...hs);
     if (z.surface && FLAMMABLE.has(z.surface)) for (const h of hs) flam.add(hexKey(h));
   }
+  for (const h of mudHexes(state)) add(h, 'mud');
   for (const f of fire) for (const n of neighbors(f)) if (flam.has(hexKey(n))) add(n, 'fireSpread');
   for (const k of o.movable ?? []) add(k, 'move');
   const actor = o.actorId ? state.combatants[o.actorId] : undefined;

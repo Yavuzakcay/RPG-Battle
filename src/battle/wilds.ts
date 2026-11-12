@@ -5,7 +5,8 @@
  * - Hava (ortak): `snowfall` (şiddet 0 kapalı, 1 hafif, 2 orta, 3 şiddetli) ve `fog` (şiddet 1–3): görüş menzili ve
  *   menzilli saldırı dezavantajı; şiddetli karda açık kar (.) zorlu zemin. Rüzgâr kıran taşların (k) dibi kardan korunur.
  * - Giriş: `thinIce` (yarık komşusu buzda ağır zırhlı DEX save; başarısızsa soğuk su hasarı + Prone, yürüyüş biter),
- *   `sinkMud` (çamurda (n) ağır zırhlı Atletizm; başarısızsa batar, yürüyüş biter).
+ *   `sinkMud` (çamurda (n) ağır zırhlı Atletizm; başarısızsa batar, yürüyüş biter; Kuyruk K74 sürüm 76+: ayrıca Restrained,
+ *   eylemle Atletizm kurtulma `escapeDc`).
  * - Tur başı: `bridgeGust` (köprüde (p) DEX save; başarısızsa rüzgâr yönünde itilir: uçurumsa düşer), `sentinelGaze`
  *   (gece heykelin gözü: yakındaki parti üyesi WIS save; başarısızsa bir tur Frightened).
  * - Tur sonu: `leeches` (sığ suda/çamurda (n) CON save; başarısızsa küçük hasar).
@@ -18,6 +19,7 @@
  * Saf; zarlar rng'den.
  */
 import { footprintOf, touchesHexes } from './body';
+import { k74SinkMudOn } from './k74Surum';
 import { AXIAL_DIRECTIONS, addAxial, axialToOffset, directionTo, distance, neighbors, offsetToAxial, sameHex, type Offset } from '../rules/hex';
 import type { Rng } from '../rules/dice';
 import { getMonster } from '../data';
@@ -106,6 +108,12 @@ export function wildsEnterEvents(state: BattleState, c: Combatant, at: Offset, r
     const ev = checkEffect(mover, 'sinkMud', 'ağır zırhla çamura batıyor', 'athletics', num(mud.dc, 10), rng, state);
     if (!ev.roll?.success) ev.stopMovement = true;
     events.push(ev);
+    // Kuyruk K74 (sürüm 76+): "batar" gerçek bedel: başarısız Atletizm Restrained verir (hız 0, saldırıda dezavantaj), eylemle Atletizm
+    // (`escape` komutu) ya da müttefik yardımıyla kurtulur; kurtulma DC'si kuralda `escapeDc` (yoksa `dc`). Başarılıda bedel yok.
+    if (k74SinkMudOn(state) && !ev.roll?.success && !c.conditions.includes('Restrained')) {
+      events.push({ type: 'effect_added', targetId: c.id, effect: { id: `sinkMud:${at.col},${at.row}`, name: 'Çamura battı', sourceId: 'harita', grants: ['Restrained'],
+        escapeCheck: { dc: num(mud.escapeDc, num(mud.dc, 10)), skill: 'athletics' } } });
+    }
   }
   return { events, stop: events.some((e) => e.type === 'map_effect' && e.stopMovement === true) };
 }

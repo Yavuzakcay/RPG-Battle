@@ -185,7 +185,8 @@
           "surum": 8,
           "terrain": "n",
           "dc": 10,
-          "note": "Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter."
+          "escapeDc": 10,
+          "note": "Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter (kural sürümü 76+: ayrıca Restrained; eylemle Atletizm DC 10 ile kurtulur)."
         },
         {
           "id": "bridgeBreak",
@@ -289,7 +290,8 @@
           "surum": 8,
           "terrain": "n",
           "dc": 10,
-          "note": "Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter."
+          "escapeDc": 10,
+          "note": "Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter (kural sürümü 76+: ayrıca Restrained; eylemle Atletizm DC 10 ile kurtulur)."
         },
         {
           "id": "bridgeBreak",

@@ -8,7 +8,7 @@ def one(c, r): return [c + 1, r + 1]
 def R(id, **kw): return {"id": id, "surum": S, **kw}
 FOG = lambda sev: R('fog', severity=sev, note="Sis: görüş menzili (şiddet 1: 6, 2: 4, 3: 2 altıgen); yarısından uzağa menzilli saldırı dezavantajlı.")
 SNOW = lambda sev: R('snowfall', severity=sev, note="Kar yağışı: 0 kapalı, 1 hafif, 2 orta (6 altıgen görüş), 3 şiddetli (3 altıgen, açık kar zorlu). Rüzgâr kıran taş (k) dibi korunur.")
-MUD = R('sinkMud', terrain='n', dc=10, note="Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter.")
+MUD = R('sinkMud', terrain='n', dc=10, escapeDc=10, note="Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter (kural sürümü 76+: ayrıca Restrained; eylemle Atletizm DC 10 ile kurtulur).")
 def obj(id, kind, c, r, **kw): return {"id": id, "kind": kind, "at": one(c, r), **kw}
 
 # harita → (gündüz ek kurallar, gece ek kurallar, nesneler, gece ışıkları değişikliği)

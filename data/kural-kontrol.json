@@ -83,7 +83,7 @@
     "thinIce": { "surum": 8, "tr": "İnce buz (yarık kenarında ağır zırh: DEX save, soğuk su + Prone)", "en": "Thin ice (heavy armour near crevasses: DEX save, cold water + Prone)",
       "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "DEX DC", "en": "DEX DC" }, { "key": "damage", "type": "dice", "tr": "Hasar", "en": "Damage" } ] },
     "sinkMud": { "surum": 8, "tr": "Batıran çamur (ağır zırhlı batar; Atletizm ile çıkar)", "en": "Sinking mud (heavy armour sinks; Athletics to escape)",
-      "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "Atletizm DC", "en": "Athletics DC" } ] },
+      "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "Atletizm DC", "en": "Athletics DC" }, { "key": "escapeDc", "type": "int", "min": 5, "max": 25, "tr": "Kurtulma DC (kural sürümü 76: başarısızsa Restrained; boşsa Atletizm DC)", "en": "Escape DC (rule version 76: a failure restrains; defaults to the Athletics DC)" } ] },
     "leeches": { "surum": 8, "tr": "Sülük suyu (sığ suda tur sonu CON save)", "en": "Leech water (end turn in shallows: CON save)",
       "params": [ { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "CON DC", "en": "CON DC" }, { "key": "damage", "type": "dice", "tr": "Hasar", "en": "Damage" } ] },
     "pitFall": { "surum": 11, "tr": "Kayalık çukur: giren 1d6 düşme hasarı alır ve bir turunu kaybeder", "en": "Rocky pit: a creature that enters takes 1d6 falling damage and loses its next turn",

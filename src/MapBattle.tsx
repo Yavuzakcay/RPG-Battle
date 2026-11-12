@@ -2162,7 +2162,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
 
           {hazard && (
             <ul className="hazard-legend" aria-label={t().view.hazard(true)}>
-              {HAZARD_KINDS.map((k) => <li key={k} className={`hz-key hz-${k}`}><i />{t().view.hazardKind[k]}</li>)}
+              {HAZARD_KINDS.filter((k) => k !== 'mud' || [...hazard.values()].some((ks) => ks.includes('mud'))).map((k) => <li key={k} className={`hz-key hz-${k}`}><i />{t().view.hazardKind[k]}</li>)}
             </ul>
           )}
           <div className={`hud-corner tl${optionsOpen ? ' open' : ''}`}>

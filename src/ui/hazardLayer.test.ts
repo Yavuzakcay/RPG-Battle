@@ -2,7 +2,9 @@
 import { describe, expect, it } from 'vitest';
 import { setup, sword } from '../battle/fixtures';
 import type { BattleState, Combatant, SpellZone } from '../battle/types';
-import { hazardHexes } from './hazardLayer';
+import { startBattle } from '../battle/create';
+import { mk } from '../battle/fixtures';
+import { hazardHexes, mudHexes } from './hazardLayer';
 
 const at = (s: BattleState, id: string, col: number, row: number): BattleState => ({ ...s, combatants: { ...s.combatants, [id]: { ...(s.combatants[id] as Combatant), pos: { col, row } } } });
 const zone = (id: string, surface: SpellZone['surface'], hexes: Array<[number, number]>): SpellZone =>
@@ -26,5 +28,21 @@ describe('tehlike katmanı', () => {
     expect(m.get('5,4')).toContain('fireSpread');
     expect(m.get('9,9') ?? []).not.toContain('fireSpread');
     expect(m.get('1,1')).toContain('move');
+  });
+});
+
+describe('tehlike katmanı: çamur zemini (Bataklık tanısı)', () => {
+  const swamp = (id: string, toggles?: Record<string, boolean>): BattleState =>
+    startBattle('bk1', 'dag', [mk('A', { ownerId: 'p1' }), mk('B', { side: 'enemies' })], () => 0.5, { map: { id, ...(toggles ? { ruleToggles: toggles } : {}) } }).state;
+  it('Cadının Kampı: çamur (n) altıgenleri "mud"; kural kapalıysa ve çamursuz haritada yok; durum değişmez', () => {
+    const s = swamp('batak-kamp');
+    const m = hazardHexes(s, {});
+    expect(m.get('1,4')).toContain('mud');
+    expect(m.get('0,0') ?? []).not.toContain('mud');
+    expect(mudHexes(s).length).toBe(15);
+    const off = swamp('batak-kamp', { sinkMud: false, leeches: false });
+    expect(mudHexes(off)).toEqual([]);
+    expect(mudHexes(swamp('kale'))).toEqual([]);
+    expect(hazardHexes(s, {})).toEqual(m);
   });
 });

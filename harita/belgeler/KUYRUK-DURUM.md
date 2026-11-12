@@ -1,12 +1,14 @@
 # Kuyruk durum denetimi (Görev DURUM)
 
+> **K74 güncellemesi (2026-11-12):** Truesight motor yolları (madde 4c) ve Hallow (madde 4e) kural sürümü 75'te, BK1 öneri 1 ve 3 (`sinkMud` bedeli, tehlike katmanında çamur) sürüm 76'da kapandı; kural sürümü artık **76**. Aşağıdaki tablo satırlarında o maddelerin yanına K74 notu eklendi; geri kalanı DURUM taban noktasındaki (`6691df1d`) halidir.
+
 Salt okuma. Taban `origin/main` 6691df1d (2026-11-12). Kod, veri, harita, görsel ve kural değişmedi. Kanıtlar: `git log`
 (main + bütün uzak dallar; depo önce sığ klondu, `git fetch --unshallow` ile tam geçmiş alındı), DECISIONS.md (satır
 numaraları bu denetimdeki dosyaya göre), `harita/belgeler/*`, kaynak dosyalar.
 
 ## Özet
 
-- Kural sürümü **74** (MB2, `data/kural-surumu.json`), `SAVE_VERSION` **22** (`src/app/battleSave.ts:31`). 60–74 zinciri kesintisiz, her sürümün DECISIONS.md kaydı var.
+- Kural sürümü **74** (MB2; K74'ten sonra 76, `data/kural-surumu.json`), `SAVE_VERSION` **22** (`src/app/battleSave.ts:31`). 60–74 zinciri kesintisiz, her sürümün DECISIONS.md kaydı var.
 - SU1, SU2, SU3, K62-ACIK (1–4), K73e/f, binek hattı (MB1–MB8), SD1–SD3 main'de. Açık: Hallow ek etkileri (kullanıcı kararı), U1b Görev 1–4 (`icerik/` gerekli), motorda Truesight'ı bilmeyen 5 yol.
 - Birleşmemiş uzak dal 8: biri iş (SD4, kullanıcı kararı bekliyor), biri yarım (U1b Görev 0), üçü ham görsel (geçici), üçü eski Görev F yığını (artık gereksiz).
 - CLAUDE.md'deki kural sürümü cümlesi güncel (74). Donma maddesi zaten "kaldırıldı" diyordu; bu görevde istenen tek cümleye indirildi, `docs/MEKANIK-DONMA.md` başına aynı cümle eklendi.
@@ -21,9 +23,9 @@ numaraları bu denetimdeki dosyaya göre), `harita/belgeler/*`, kaynak dosyalar.
 | 3 | SU3 su dokusu `haric`/`ekle` | YAPILDI | commit b9e79022; `data/efekt-baglama.json` `su` (haric 44 hex/4 harita, ekle Heykel Gölü 30 + Vaha 17); test `src/ui/fx/su3.test.ts`; DECISIONS.md:348. Açık: Kale Önü hendeği tamamen kıyı sayılıyor, piksel maskesi (SU1 seçenek b) kullanıcı kararı; düşük güvenli 5 harita "elle teyit gerekli" |
 | 4a | Delayed Blast Fireball boncuk arayüzü | YAPILDI | K62-ACIK Madde 1 (sürümsüz), commit dd3b6ad0; `bead.ts` `beadThrowLanding`; test `src/battle/k62acik.test.ts`; `docs/k62acik/boncuk-firlat.png`. Boncuk **efekt dokusu** yok (bkz. 6) |
 | 4b | Wall of Ice YZ hedeflemesi | YAPILDI | K62-ACIK Madde 2; `ai.ts` `wallBreakCands` canavar saldırısı, bağışıklık/zayıflık; `k62acik.test.ts` |
-| 4c | Truesight eski YZ yolu | YAPILDI (YZ) / KISMEN (motor) | K62-ACIK Madde 3: `blindChoice`, kapı, haritasız hedef, Divine Sense. Motorda 5 yol hâlâ `!c.hidden`: fırsat saldırısı görme (`reactions.ts`), hareket algısı (`features.ts`), Cleave (`classTraits.ts`), mastery ikinci hedef (`mastery.ts`), ejderha Algısı (`dragon.ts`) (`K62ACIK-DENETIM.md` son bölüm; DECISIONS.md:325) |
+| 4c | Truesight eski YZ yolu | YAPILDI (YZ) / YAPILDI (motor, K74 sürüm 75: `sight.ts` `hiddenFrom`; test `src/battle/k74.test.ts`) — eski not: KISMEN (motor) | K62-ACIK Madde 3: `blindChoice`, kapı, haritasız hedef, Divine Sense. Motorda 5 yol hâlâ `!c.hidden`: fırsat saldırısı görme (`reactions.ts`), hareket algısı (`features.ts`), Cleave (`classTraits.ts`), mastery ikinci hedef (`mastery.ts`), ejderha Algısı (`dragon.ts`) (`K62ACIK-DENETIM.md` son bölüm; DECISIONS.md:325) |
 | 4d | Magic Circle (isteyerek giriş, ışınlanmada CHA save) | YAPILDI | Kural sürümü 67, `src/battle/k62acikSurum.ts`, `possessionCore.ts` `wardStepBlocked`, `possession.ts` `wardTeleportEvents`; regresyon `src/sim/k62acikRegresyon.test.ts`. ⚠ save varıştan sonra (varıştaki alan etkisi geri alınmaz) |
-| 4e | Hallow ek etkileri | KISMEN | Girememe kolu 67'de yapıldı; **Extra Effect (10 seçenek) yapılmadı, kullanıcı kararı bekliyor** (DECISIONS.md:373, `K62ACIK-DENETIM.md` "Madde 5 ayrıntı"). Donma artık engel değil |
+| 4e | Hallow ek etkileri | KISMEN → K74 (sürüm 75): Extra Effect KAPSAM DIŞI (kullanıcı kararı, DECISIONS.md K74); Hallow tek, toplu koruma (zamanlı Charmed/Frightened yolu kapatıldı) — eski not: KISMEN | Girememe kolu 67'de yapıldı; **Extra Effect (10 seçenek) yapılmadı, kullanıcı kararı bekliyor** (DECISIONS.md:373, `K62ACIK-DENETIM.md` "Madde 5 ayrıntı"). Donma artık engel değil |
 | 5a | K73e/f: nefes tutan (yüzme hızsız) yaratık | YAPILMADI (veride 0) | DECISIONS.md:387, 400: SRD verisinde yok; paket yaratığı için karar kullanıcıda |
 | 5b | Su altı / kıyı karşılaşması kolay (%100) | YAPILMADI | DECISIONS.md:400, 457; K73f denge `harita/belgeler/DENGE.md` (kıyı 100 → 100); ayar "Dungeondex öncesi tam test turu"na |
 | 5c | Yaklaşma kazması pratikte tetiklenmiyor | YAPILMADI | DECISIONS.md:400, 455; `K73E-DENETIM.md`; kod değişmedi |
@@ -98,7 +100,7 @@ Not: sığ klonda 68 dal "birleşmemiş" görünüyordu (sahte sonuç); tam geç
 | K72 tavan bölgeleri | K72 (:1053) | 12 harita `ONAYLI_BOLGE` (`scripts/k72-tavan-bolge.py:43` hâlâ boş) |
 | Gerçek katlı haritalar | K72 (:1052) | Harita tasarımı kullanıcıyla |
 | Denge kaymaları (Dağ — Karakol %20, su altı/kıyı %100) | K73a (:910), K73f (:400) | "Dungeondex öncesi tam test turu" |
-| BK1 bataklık önerileri | `BATAKLIK-TANI.md` | 1 tehlike katmanına zemin, 2 ölü `sinkMud`, 3 çamura gerçek bedel; donma kalkınca zemin tehlike tablosu vb. |
+| BK1 bataklık önerileri | `BATAKLIK-TANI.md` | **K74'te yapıldı: 1 tehlike katmanına çamur zemini (sürümsüz), 3 `sinkMud` gerçek bedeli (sürüm 76)**; açık: 2 ölü `sinkMud` (Kale/Çukur); donma kalkınca zemin tehlike tablosu vb. |
 | SD1 ilke 5 yorumu | `SADELESTIRME-DENETIM.md:33` | Yapılamayanı gizle mi, soluk + neden mi |
 
 ## Önerilen sıradaki 5 CC işi (bağımlılık sırasıyla)
@@ -108,5 +110,5 @@ Not: sığ klonda 68 dal "birleşmemiş" görünüyordu (sahte sonuç); tam geç
 1. **SD4 kararı ve birleştirme** (sürümsüz): dal hazır; birleşirse CLAUDE.md SD3 satırı güncellenir. Diğer arayüz işlerinden (MB6b) önce, çünkü ad katmanı ortak.
 2. **MB6b binek arayüzü** (sürümsüz): motor ve YZ tamam, oyuncunun eli eksik. SD4'ten sonra (metinler).
 3. **BK1 öneri 1, tehlike katmanına zemin** (sürümsüz, yalnız arayüz): öneri 2–3'ten bağımsız, hemen yapılabilir.
-4. ⚑ **Truesight motor yolları** (75): fırsat saldırısı görme, hareket algısı, Cleave, mastery ikinci hedef, ejderha Algısı tek sorguya (`truesightSees`). Kullanıcı kararı gerekmez (SRD).
-5. ⚑ **Hallow Extra Effect** (76, kullanıcı kararından sonra) ya da ⚑ **BK1 öneri 3, `sinkMud` bedeli** (aynı sürüm şeridi sırasıyla). U1b Görev 1–4 yalnız yerelde (`icerik/`) yapılabilir; bulut oturumuna verilmemeli.
+4. ✔ (K74, sürüm 75) ⚑ **Truesight motor yolları** (75): fırsat saldırısı görme, hareket algısı, Cleave, mastery ikinci hedef, ejderha Algısı tek sorguya (`truesightSees`). Kullanıcı kararı gerekmez (SRD).
+5. ✔ (K74) **Hallow Extra Effect** kapsam dışı bırakıldı (yerine toplu koruma, sürüm 75); ⚑ **BK1 öneri 3, `sinkMud` bedeli** sürüm 76'da yapıldı. U1b Görev 1–4 yalnız yerelde (`icerik/`) yapılabilir; bulut oturumuna verilmemeli.
