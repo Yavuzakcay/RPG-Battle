@@ -512,9 +512,13 @@ function LineageNotes(props: { lineage: NonNullable<ReturnType<typeof lineageOf>
   const W = t().builder.wiz;
   const n = lineageNotes(props.lineage, getLang());
   if (n.buff.length === 0 && n.debuff.length === 0) return null;
+  // Kuyruk AS1a-2: alt soy kartında yalnız alt soyun FARKI; taban türün özellikleri tür seçiminde görünür. Buff'ı taban türde zaten
+  // olan alt soyda artı listesi boş, yerine "taban özellikler geçerli" notu.
   return (
     <div className="lineage-notes" data-testid="lineage-notes">
-      <div className="buff"><b>{W.lineageBuff}</b>{n.planned && <span className="lineage-planned">{W.lineagePlanned}</span>}<ul>{n.buff.map((x) => <li key={x}>{x}</li>)}</ul></div>
+      {n.buff.length > 0
+        ? <div className="buff"><b>{W.lineageBuff}</b>{n.planned && <span className="lineage-planned">{W.lineagePlanned}</span>}<ul>{n.buff.map((x) => <li key={x}>{x}</li>)}</ul></div>
+        : <p className="mute base-applies">{W.lineageBaseApplies}</p>}
       <div className="debuff"><b>{W.lineageDebuff}</b><ul>{n.debuff.map((x) => <li key={x}>{x}</li>)}</ul></div>
       {n.planned && <p className="mute">{W.lineageNotYet}</p>}
     </div>

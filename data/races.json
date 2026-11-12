@@ -214,15 +214,10 @@
         },
         "resistances": [],
         "summary": {
-          "tr": "Seviye başına +1 HP · Çeviklik kurtarma −1",
-          "en": "+1 HP per level · −1 on Dexterity saving throws"
+          "tr": "Çeviklik kurtarma zarlarında −1 · taban özellikler geçerli",
+          "en": "−1 on Dexterity saving throws · base species traits apply"
         },
-        "buff": [
-          {
-            "tr": "Her seviyede +1 HP.",
-            "en": "+1 hit point per level."
-          }
-        ],
+        "buff": [],
         "debuff": [
           {
             "tr": "Çeviklik kurtarma zarlarında −1.",
@@ -240,15 +235,10 @@
         },
         "resistances": [],
         "summary": {
-          "tr": "Karanlık görüş 120 ft · gün ışığında saldırı dezavantajı",
-          "en": "Darkvision 120 ft · disadvantage on attacks in daylight"
+          "tr": "Gün ışığında saldırı dezavantajı · taban özellikler geçerli",
+          "en": "Disadvantage on attacks in daylight · base species traits apply"
         },
-        "buff": [
-          {
-            "tr": "Karanlık görüş 120 ft.",
-            "en": "Darkvision 120 ft."
-          }
-        ],
+        "buff": [],
         "debuff": [
           {
             "tr": "Gün ışığında saldırı zarlarında dezavantaj.",

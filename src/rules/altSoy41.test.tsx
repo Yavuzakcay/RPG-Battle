@@ -21,6 +21,8 @@ import kuralSurumu from '../../data/kural-surumu.json';
 const COUNTS: Record<string, number> = { dragonborn: 10, goliath: 6, elf: 3, tiefling: 4, gnome: 3, dwarf: 3, halfling: 2, orc: 3, human: 4 };
 const NEW = ['tiefling/winged', 'gnome/subterranean', 'dwarf/crag', 'dwarf/knoll', 'dwarf/undervault', 'halfling/slender', 'halfling/sturdy', 'orc/glacier', 'orc/wildwood', 'orc/fen',
   'human/tenhausser', 'human/khadyrga', 'human/pure-city', 'human/outwall'];
+/** Buff'ı taban türde zaten bulunan (tekrar çıkarıldı) alt soylar: Dwarf taban türünde +1 HP/seviye ve karanlık görüş 120 ft var. */
+const EMPTY_BUFF = ['dwarf/knoll', 'dwarf/undervault'];
 const ALT = (hizalanma as unknown as { altSoy: Record<string, { duzen: number; iyilik: number; gerekce: { tr: string; en: string } }> }).altSoy;
 const ids = (): string[] => [...races.flatMap((r) => (r.lineages ?? []).map((l) => `${r.id}/${l.id}`)), ...AWAKENING_OPTIONS.map((a) => `celestial/${a}`)];
 const char = (patch: Partial<SavedCharacter['sheet']>): SavedCharacter => { const b = blankCharacter('as1'); return { ...b, sheet: { ...b.sheet, name: 'Alt', ...patch } }; };
@@ -42,13 +44,32 @@ describe('41 alt soy', () => {
         expect(lineageName(l!, lang).length, key).toBeGreaterThan(1);
         expect(l!.summary[lang].length, key).toBeGreaterThan(10);
         const n = lineageNotes(l!, lang);
-        expect(n.buff.length, `${key} buff`).toBeGreaterThan(0);
+        // AS1a-2: yalnız FARK yazılır; buff'ı taban türde zaten olan alt soyun buff alanı boştur (kullanıcı karar verir).
+        if (EMPTY_BUFF.includes(key)) expect(n.buff, `${key} buff`).toEqual([]); else expect(n.buff.length, `${key} buff`).toBeGreaterThan(0);
         expect(n.debuff.length, `${key} debuff`).toBeGreaterThan(0);
         expect(n.planned, key).toBe(true);
       }
       expect(l!.resistances, key).toEqual([]);
       for (const f of ['speed', 'darkvision', 'spells', 'giant', 'extras'] as const) expect(l![f], `${key}.${f}`).toBeUndefined();
     }
+  });
+  it('alt soy metni taban türü tekrar etmez: Dwarf Tepe/Yeraltı buff boş, debuff kalır; ırk özellik kartı taban özellikleri gösterir', () => {
+    const dwarf = races.find((r) => r.id === 'dwarf')!;
+    expect(dwarf.hpPerLevel).toBe(1);
+    expect(dwarf.darkvision).toBe(120);
+    for (const id of ['knoll', 'undervault']) {
+      const l = dwarf.lineages!.find((x) => x.id === id)!;
+      expect(l.buff).toEqual([]);
+      expect(l.debuff!.length).toBeGreaterThan(0);
+      const text = JSON.stringify([l.buff, l.summary]).toLowerCase();
+      expect(text).not.toMatch(/hp|karanlık görüş|darkvision/);
+    }
+    const m = html(char({ raceId: 'dwarf', lineageId: 'knoll' }));
+    expect(m).toContain('Çeviklik kurtarma zarlarında −1');
+    expect(m).toContain('taban tür özellikleri geçerli');
+    expect(m).toContain('Darkvision 120 ft');
+    expect(m).not.toContain('Her seviyede +1 HP');
+    expect(m).toContain('Dwarven Toughness');
   });
   it('soyu isteğe bağlı türler (Dwarf, Halfling, Orc, Human) varsayılan soysuz; diğerlerinin varsayılanı korunur', () => {
     for (const r of races) {
@@ -85,7 +106,7 @@ describe('hizalanma alt soy tablosu', () => {
   });
   it('uç buildler alt soyla: toplam hesaplanır, ±50 içinde', () => {
     const v = startValue(startContributions({ classId: 'rogue', backgroundId: 'criminal', subclassId: 'imza_infazci', raceId: 'tiefling', lineageId: 'abyssal' }));
-    expect(v).toEqual({ duzen: -45 - -8 + -10, iyilik: -48 - -3 + -5 });
+    expect(v).toEqual({ duzen: -45, iyilik: -50 });
     expect(v.duzen).toBeGreaterThanOrEqual(-50);
   });
   it('Celestial: uyanış 3. seviyeden etkin; seçilince yeniden hesaplanır', () => {

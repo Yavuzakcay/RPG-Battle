@@ -3,6 +3,13 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk AS1a-2: alt soy düzeltmeleri (kural sürümü 68'de kalır)
+
+- **Hizalanma tablosu:** `altSoy` 41 satırı kullanıcının doğru tablosuyla değiştirildi (AS1a'daki türetilmiş değerler kalktı; kimlikler eşleşti, eşleşmeyen satır yok). K51 uç build testleri (alt soylu) yeni toplamlara güncellendi: Celestial/parlayan-ruh 47/49, Elf/wood-elf −38/20, Goliath/stone 38/−32, Tiefling/abyssal −45/−50; etiketler değişmedi. Soysuz sheet'li eski uç build testleri aynen geçer (ırk değerine düşme).
+- **Yalnız fark:** taban türün bonusları tür seçiminde (tür kartı + "Irk özellikleri" paneli), alt soyun bonusları alt soy seçiminde gösterilir; alt soy metni taban türde zaten olan etkiyi tekrar etmez. 41 soyun taban türle karşılaştırması (`data/races.json`, `data/srd/species.json`): yalnız **Dwarf Tepe** (+1 HP/seviye; taban Dwarven Toughness) ve **Dwarf Yeraltı** (karanlık görüş 120 ft; taban Darkvision 120) tekrar ediyordu. İkisinin buff'ı BOŞ bırakıldı (yeni buff icat edilmedi; karar kullanıcıda), kartta yalnız debuff + "taban tür özellikleri geçerli" notu, kart özeti yalnız debuff + "taban özellikler geçerli". Diğer 39 soyda taban tekrarı yok (Gnome Yeraltı 120 ft taban 60 ft'in farkı; Orc Bataklık zehir direnci tabanda yok).
+- **Test:** `altSoy41.test.tsx` boş buff'lı alt soyları sabitler (`EMPTY_BUFF`) ve Dwarf kartında taban özelliklerin tabanda, farkın alt soyda göründüğünü denetler.
+
+
 ## 2026-11-12 — Kuyruk AS1a: 41 alt soy, mekaniksiz yarısı (kural sürümü ARTMAZ, 68'de kalır)
 
 - **Kapsam:** yalnız veri, oluşturucu, hizalanma başlangıcı, görünüm, metinler. `src/battle/*`, `data/kural-surumu.json` ve savaş komutlarına dokunulmadı (MB3 şeridi 68'i kullanıyor). Buff/debuff mekaniği (kurtarma/kontrol dezavantajı, ışık koşulu, yetenek bonusu, uçuş, hız…) AS1b'de ve kural sürümünü artırır. Tablo: `docs/ALT-SOY-41.md`.
