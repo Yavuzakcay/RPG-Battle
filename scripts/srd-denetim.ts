@@ -61,18 +61,19 @@ const RULES: Array<[string, string, string]> = [
   ['Cover (yarım, üç çeyrek, tam)', 'tam', 'cover.ts; Kuyruk 19: eşya/özellik yarım siperi'],
   ['Grapple / Shove', 'tam', 'oyuncu yakalama (Kuyruk 19), Shove itme/Prone'],
   ['Two-Weapon Fighting', 'tam', 'Light ek saldırısı, Nick, TWF stili'],
-  ['Mounted Combat', 'tam', 'Kuyruk 19 (srdK19): bin/in (hızın yarısı), binici bineğiyle taşınır, binek düşünce DEX DC 10; bağımsız binek'],
+  ['Mounted Combat', 'tam', 'Kuyruk 19 (srdK19) + Kuyruk MB1–MB8 (kural sürümü 68–74; harita/belgeler/BINEK-PLAN.md): bin/in hızın yarısı (aşağı yuvarlanır), binici bineğin altıgenini ve irtifasını izler, isteği dışında hareket/Prone DEX DC 10, kontrollü binek (eğitimli liste data/binek.json, Find Steed, Phantom Steed: binicinin turunda, yalnız Dash/Disengage/Dodge) ve bağımsız binek, uçan bineğin dikey kuralları, çok altıgenli binek gövdesi; ⚠ yorumlar BINEK-PLAN.md §8'],
   ['Underwater Combat', 'tam', 'yakın dövüş dezavantajı (piercing ve yüzme hızı istisna), menzilli dezavantaj ve menzil ötesi ıska; Kuyruk 19: su altındakine ateş direnci'],
 ];
 for (const [n, st, note] of RULES) add('Savaş kuralı', n, st, note);
 // Büyüler (0–9. seviye; data/spells.json, spells-45.json, spells-69.json): savaş dışı, motorla tam, yaklaşık notlu.
-const allSpells = [...J('data/spells.json'), ...J('data/spells-45.json'), ...J('data/spells-69.json')] as Array<{ name: string; level: number; mechanics: { kind: string; offCombat?: boolean; unsupported?: string; approx?: string; gmNote?: string } }>;
+const allSpells = [...J('data/spells.json'), ...J('data/spells-45.json'), ...J('data/spells-69.json')] as Array<{ name: string; level: number; mechanics: { kind: string; offCombat?: boolean; unsupported?: string; approx?: string; gmNote?: string; mb7?: { offCombat?: boolean } } }>;
 const srdSpellNames = (J('data/srd/spells.json') as { spells: Array<{ name: string }> }).spells.map((x) => x.name);
 for (const n of srdSpellNames) {
   const norm = (x: string) => x.replace(/[’']/g, "'");
   const sp = allSpells.find((x) => norm(x.name) === norm(n));
   if (!sp) { add('Büyü', n, 'yok', 'veride yok'); continue; }
-  const m = sp.mechanics;
+  // Kuyruk MB8: MB7 bloğu (sürüm 70+, Phantom Steed savaşta) güncel sürümde geçerli.
+  const m = sp.mechanics.mb7 ? { ...sp.mechanics, ...sp.mechanics.mb7 } : sp.mechanics;
   const st = m.unsupported ? 'yok' : m.offCombat ? 'savaş dışı' : 'tam';
   add('Büyü', `${n} (${sp.level})`, st, m.unsupported ?? (m.offCombat ? m.gmNote ?? '' : m.approx ? `yaklaşık: ${m.approx}` : ''));
 }

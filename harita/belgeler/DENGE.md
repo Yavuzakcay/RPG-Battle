@@ -2,6 +2,34 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## Kuyruk MB8: binek hattı denge ölçümü (2026-11-12; ölçüm, denge ayarı yok)
+
+Kural sürümü 74 (değişmedi). 5. seviye standart parti, 100 tohum, aynı tohumlar; partinin ilk üyesi savaş başında Warhorse'un üstünde (`src/sim/binekStart.ts` `mountedStart`; binicinin kim olduğu inisiyatif sırasına göre değişir). Komut: `npx vite-node src/sim/binekDengeRun.ts -- 100 col,kale,magara,orman --kip yok|bagimsiz|kontrollu`. Hedef parti kazanma %60–80. "Binek" sütunu: savaş sonunda at ayakta / binici hâlâ üstünde. Canavar verisi ve düşman listeleri değişmedi.
+
+| Senaryo | Kip | Kazanma | Zaman aşımı | Tur | Ölü | Ölüm oranı | Binek | Durum |
+|---|---|---:|---:|---:|---:|---:|---|---|
+| Çöl — Gündüz | binicisiz | 90% | 0% | 6.6 | 0.23 | 18% | – | aralık dışı (kolay) |
+| Çöl — Gündüz | bağımsız | 86% | 0% | 6.3 | 0.33 | 30% | 25% / 1% | aralık dışı (kolay) |
+| Çöl — Gündüz | kontrollü | 84% | 0% | 6.6 | 0.42 | 32% | 20% / 2% | aralık dışı (kolay) |
+| Kale — Gündüz | binicisiz | 71% | 0% | 6.3 | 0.15 | 11% | – | aralıkta |
+| Kale — Gündüz | bağımsız | **16%** | 0% | 5.9 | 0.40 | 36% | 2% / 0% | aralık dışı (zor) |
+| Kale — Gündüz | kontrollü | **22%** | 0% | 6.5 | 0.54 | 47% | 2% / 0% | aralık dışı (zor) |
+| Mağara — karanlık | binicisiz | 83% | 5% | 7.8 | 0.28 | 19% | – | aralık dışı (kolay) |
+| Mağara — karanlık | bağımsız | 80% | 7% | 9.4 | 0.35 | 24% | 25% / 0% | aralıkta |
+| Mağara — karanlık | kontrollü | 82% | 5% | 9.2 | 0.42 | 33% | 32% / 0% | aralık dışı (kolay) |
+| Orman | binicisiz | 67% | 0% | 5.4 | 0.11 | 10% | – | aralıkta |
+| Orman | bağımsız | **45%** | 0% | 6.2 | 0.35 | 31% | 13% / 0% | aralık dışı (zor) |
+| Orman | kontrollü | **42%** | 0% | 6.2 | 0.38 | 29% | 14% / 1% | aralık dışı (zor) |
+
+**Bulgular (düzeltme denenmedi):**
+
+- **Binek partiyi zayıflatıyor (Kale −49/−55, Orman −22/−25 puan); bağımsız ile kontrollü arasında anlamlı fark yok.** İz (Kale, tohum 1–6): at ilk turda 60 ft hızla düşman hattına dalar (ör. sütun 1 → 11), üstündeki binici çoğunlukla menzilli üye (Rogue, kısa yay) düşmanların ortasında kalır; at (19 HP, AC 11) aynı tur ölür, binici DEX 10 ile iner ya da düşer ve odak olur, ardından parti dağınık yakalanır. Kontrollü kipte de bineğin hareketi bineğin kendi YZ'sinden geldiği (MB2 `controlledMountStep`) için sonuç aynı.
+- **Neden YZ kararı:** binek YZ'si binicinin rolüne (menzilli/yakın) bakmıyor; binekli menzilli binici için "geride kal" kararı yok (MB5'te alınmadı: binekli binici / inme eşiği). Kural değil, YZ işi: sonraki YZ kuyruğuna öneri.
+- Çöl ve Mağara binicisiz de kolay (aralığın üstünde); binek bu iki haritada küçük fark yaratıyor (−4…−8 puan, ölüm oranı +5…+14).
+- Binici savaş sonunda neredeyse hiç binekte değil (≤ %2): at ilk turlarda ölüyor.
+
+**YZ süresi** (`npm run sim:yz-sure -- 3 col --binek --kontrollu --kural-surumu 73|74`, 73/74/74/73 sırası; 75 yok, sürüm değişmedi): karar başına ortalama 73'te 35,8 ve 34,2 ms, 74'te 33,1 ve 33,2 ms → **−%5**; karar sayısı 238 → 288 (bineğin binicinin turundaki adımları), savaş başına toplam süre ≈ **+%14,6** (sınır +%15). İmzalar 73 `5e5dbb3e`, 74 `3e4fcab0` (iki koşuda aynı).
+
 ## Kuyruk K73f: su ve atlama kalanları (2026-11-10; ölçüm, denge ayarı yok)
 
 Kural sürümü 65 ↔ 66, aynı tohumlar (30), K73d/K73e karşılaşmaları + yeni kıyı karşılaşması `k73f-kiyi` (66'da yüzücü listesine

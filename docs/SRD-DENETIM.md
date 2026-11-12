@@ -9,12 +9,12 @@
 - **Weapon Mastery**: tam 8
 - **Zırh**: tam 13
 - **Maceracı eşyası**: tam 14, savaş dışı 67
-- **Sihirli eşya**: tam 171, savaş dışı 87
+- **Sihirli eşya**: tam 176, savaş dışı 82
 - **Feat**: tam 17
 - **Tür özelliği**: tam 38, savaş dışı 2, kapsam dışı 1
 - **Geçmiş**: tam 4
 - **Savaş kuralı**: tam 8
-- **Büyü**: tam 227, savaş dışı 112
+- **Büyü**: tam 226, savaş dışı 113
 - **Canavar yeteneği**: tam 139, savaş dışı 55
 
 ## Tablo
@@ -186,7 +186,7 @@
 | Sihirli eşya | Bag of Beans | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | Sihirli eşya | Bag of Devouring | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | Sihirli eşya | Bag of Holding | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
-| Sihirli eşya | Bag of Tricks | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
+| Sihirli eşya | Bag of Tricks | tam |  |
 | Sihirli eşya | Bead of Force | tam | yüklü büyü: Resilient Sphere |
 | Sihirli eşya | Bead of Nourishment | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | Sihirli eşya | Belt of Dwarvenkind | tam | kalıcı etki |
@@ -248,7 +248,7 @@
 | Sihirli eşya | Eyes of Minute Seeing | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | Sihirli eşya | Eyes of the Eagle | tam | kalıcı etki |
 | Sihirli eşya | Feather Token | tam | yüklü büyü: Feather Fall |
-| Sihirli eşya | Figurine of Wondrous Power | savaş dışı | çağrılan yaratık Game Master tarafından eklenir (canavar listesinden) |
+| Sihirli eşya | Figurine of Wondrous Power | tam |  |
 | Sihirli eşya | Flame Tongue | tam | kalıcı etki; isabet eki |
 | Sihirli eşya | Folding Boat | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | Sihirli eşya | Frost Brand | tam | kalıcı etki; isabet eki |
@@ -272,7 +272,7 @@
 | Sihirli eşya | Helm of Teleportation | tam | yüklü büyü: Misty Step |
 | Sihirli eşya | Holy Avenger | tam | kalıcı etki; büyülü bonus; isabet eki |
 | Sihirli eşya | Horn of Blasting | tam | kullanım: throw |
-| Sihirli eşya | Horn of Valhalla | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
+| Sihirli eşya | Horn of Valhalla | tam |  |
 | Sihirli eşya | Horseshoes of a Zephyr | tam | kalıcı etki |
 | Sihirli eşya | Horseshoes of Speed | tam | kalıcı etki |
 | Sihirli eşya | Immovable Rod | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
@@ -363,7 +363,7 @@
 | Sihirli eşya | Rod of Absorption | savaş dışı | büyü emme (tepki); Counterspell benzeri: Game Master notu |
 | Sihirli eşya | Rod of Alertness | tam | kalıcı etki |
 | Sihirli eşya | Rod of Lordly Might | tam | büyülü bonus |
-| Sihirli eşya | Rod of Resurrection | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
+| Sihirli eşya | Rod of Resurrection | tam | yüklü büyü: Heal |
 | Sihirli eşya | Rod of Rulership | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | Sihirli eşya | Rod of Security | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
 | Sihirli eşya | Rope of Climbing | savaş dışı | savaşta mekanik etkisi yok (hikâye, keşif, yolculuk) |
@@ -388,7 +388,7 @@
 | Sihirli eşya | Staff of Striking | tam | büyülü bonus; isabet eki |
 | Sihirli eşya | Staff of Swarming Insects | tam | yüklü büyü: Giant Insect, Insect Plague |
 | Sihirli eşya | Staff of the Magi | tam | kalıcı etki; büyülü bonus; yüklü büyü: Fireball, Lightning Bolt, Ice Storm, Wall of Fire, Dispel Magic, Flaming Sphere, Web, Knock |
-| Sihirli eşya | Staff of the Python | savaş dışı | yılana dönüşen asa: çağırma (Giant Constrictor Snake) — Game Master |
+| Sihirli eşya | Staff of the Python | tam |  |
 | Sihirli eşya | Staff of the Woodlands | tam | büyülü bonus; yüklü büyü: Barkskin, Speak with Animals, Pass without Trace, Speak with Plants, Animal Friendship |
 | Sihirli eşya | Staff of Thunder and Lightning | tam | büyülü bonus; yüklü büyü: Lightning Bolt, Thunderwave |
 | Sihirli eşya | Staff of Withering | tam | isabet eki |
@@ -496,7 +496,7 @@
 | Savaş kuralı | Cover (yarım, üç çeyrek, tam) | tam | cover.ts; Kuyruk 19: eşya/özellik yarım siperi |
 | Savaş kuralı | Grapple / Shove | tam | oyuncu yakalama (Kuyruk 19), Shove itme/Prone |
 | Savaş kuralı | Two-Weapon Fighting | tam | Light ek saldırısı, Nick, TWF stili |
-| Savaş kuralı | Mounted Combat | tam | Kuyruk 19 (srdK19): bin/in (hızın yarısı), binici bineğiyle taşınır, binek düşünce DEX DC 10; bağımsız binek |
+| Savaş kuralı | Mounted Combat | tam | Kuyruk 19 (srdK19) + Kuyruk MB1–MB8 (kural sürümü 68–74; harita/belgeler/BINEK-PLAN.md): bin/in hızın yarısı (aşağı yuvarlanır), binici bineğin altıgenini ve irtifasını izler, iste |
 | Savaş kuralı | Underwater Combat | tam | yakın dövüş dezavantajı (piercing ve yüzme hızı istisna), menzilli dezavantaj ve menzil ötesi ıska; Kuyruk 19: su altındakine ateş direnci |
 | Büyü | Acid Arrow (2) | tam |  |
 | Büyü | Acid Splash (0) | tam |  |
@@ -505,7 +505,7 @@
 | Büyü | Alter Self (2) | tam | yaklaşık: Yalnızca Natural Weapons (hasar türü Bludgeoning kalır); Aquatic Adaptation ve Change Appearance savaş dışı (Game Master) |
 | Büyü | Animal Friendship (1) | tam |  |
 | Büyü | Animal Messenger (2) | savaş dışı | Savaş dışı: Tiny Beast ileti taşır |
-| Büyü | Animal Shapes (8) | tam | yaklaşık: Polymorph biçim olayıyla, istekli dostlar |
+| Büyü | Animal Shapes (8) | savaş dışı | Bütün ekibi hayvan biçimine çevirmek Druid'in değerini azaltır: savaş dışı, Game Master uygular (savaşta seçicide yok). |
 | Büyü | Animate Dead (3) | tam | yaklaşık: Döküm süresi 1 dakika olduğu için yalnızca kurulumda; bonus eylemle komut yerine sahibinin ardından kendisi oynar |
 | Büyü | Animate Objects (5) | tam |  |
 | Büyü | Antilife Shell (5) | tam |  |
@@ -538,7 +538,7 @@
 | Büyü | Calm Emotions (2) | tam | yaklaşık: Dostlara save yok (isteyerek başarısız sayılır); var olan Charmed/Frightened bastırılmaz, kalkar; kayıtsızlık "her turunu kaybeder" olarak |
 | Büyü | Chain Lightning (6) | tam |  |
 | Büyü | Charm Monster (4) | tam |  |
-| Büyü | Charm Person (1) | tam | yaklaşık: dostluk tutumu ve sosyal avantaj yok |
+| Büyü | Charm Person (1) | tam |  |
 | Büyü | Chill Touch (0) | tam |  |
 | Büyü | Chromatic Orb (1) | tam | yaklaşık: Sıçrama: aynı iki hasar zarında 30 ft içindeki en yakın düşmana yeni saldırı, slot seviyesi kadar (hedef seçimi yapay zekâda en yakın) |
 | Büyü | Circle of Death (6) | tam |  |
@@ -562,7 +562,7 @@
 | Büyü | Contact Other Plane (5) | savaş dışı | Başka düzlemden beş soru (ritüel; INT save) |
 | Büyü | Contagion (5) | tam |  |
 | Büyü | Contingency (6) | savaş dışı | Koşula bağlı büyü saklar (10 gün) |
-| Büyü | Continual Flame (2) | tam | yaklaşık: Nesne yerine bir yaratık taşır; yalnızca parlak ışık (20 ft); süre savaş boyunca |
+| Büyü | Continual Flame (2) | tam |  |
 | Büyü | Control Water (4) | savaş dışı | Su seviyesi, akıntı, yarılma ya da girdap (10 dakika); savaşta Game Master karar verir |
 | Büyü | Control Weather (8) | savaş dışı | Hava durumu (8 saat) |
 | Büyü | Counterspell (3) | tam |  |
@@ -601,7 +601,7 @@
 | Büyü | Earthquake (8) | tam |  |
 | Büyü | Eldritch Blast (0) | tam |  |
 | Büyü | Elementalism (0) | savaş dışı | Seçilen küçük element etkisini uygula; hasar ya da durum yok |
-| Büyü | Enhance Ability (2) | tam | yaklaşık: Kontroller savaşta az (İt, Gizlen, kurtulma) |
+| Büyü | Enhance Ability (2) | savaş dışı | Seçilen yetenekte kontrol avantajı: savaş dışı, Game Master uygular (savaşta seçicide yok). |
 | Büyü | Enlarge/Reduce (2) | tam | yaklaşık: Boyut yalnızca jeton etiketi (mekanik tek altıgen); STR kontrolleri ve nesneler yok |
 | Büyü | Ensnaring Strike (1) | tam | yaklaşık: Kurtulma eylemle STR (Athletics) kontrolü yerine tur başı hasardan sonra STR save; yalnızca bu tur yakın dövüş isabeti |
 | Büyü | Entangle (1) | tam | yaklaşık: Kurtulma eylemle STR (Athletics) kontrolüyle; bitki sarmaşığının bitişik altıgenlere yayılması yok |
@@ -664,7 +664,7 @@
 | Büyü | Heroes’ Feast (6) | savaş dışı | Ziyafet (1 saat): 24 saat Poisoned ve Frightened bağışıklığı, +2d10 HP |
 | Büyü | Heroism (1) | tam |  |
 | Büyü | Hex (1) | tam | yaklaşık: Seçilen yeteneğin kontrollerinde dezavantaj yok (savaşta kontrol azdır) |
-| Büyü | Hideous Laughter (1) | tam | yaklaşık: Prone kendi başına kaldırılamaz kuralı ayrıca denetlenmez (Incapacitated kalkmayı zaten engeller) |
+| Büyü | Hideous Laughter (1) | tam |  |
 | Büyü | Hold Monster (5) | tam |  |
 | Büyü | Hold Person (2) | tam |  |
 | Büyü | Holy Aura (8) | tam | yaklaşık: Fiend/Undead vurana CON save ya da Blinded yansıması yok |
@@ -686,7 +686,7 @@
 | Büyü | Legend Lore (5) | savaş dışı | Efsane bilgisi |
 | Büyü | Lesser Restoration (2) | tam |  |
 | Büyü | Levitate (2) | tam | yaklaşık: Yükseklik modeli yok: havadaki yükseklik farkı maliyetini ve zemin engelini yok sayar (Görev K9c) ama yürüyemez; 20 ft yükselme ve duvardan itinerek hareket yok; nesneye  |
-| Büyü | Light (0) | tam | yaklaşık: Nesne yerine bir yaratık (büyücü ya da dost) taşır; yalnızca parlak ışık (20 ft = 4 altıgen), loş ışık ayrı değil; ışık yalnızca karanlık/gece haritalarında etkili |
+| Büyü | Light (0) | tam |  |
 | Büyü | Lightning Bolt (3) | tam |  |
 | Büyü | Locate Animals or Plants (2) | savaş dışı | Savaş dışı: 5 mil içindeki en yakın türün yönü ve uzaklığı |
 | Büyü | Locate Creature (4) | savaş dışı | 1000 ft içinde tanıdık yaratığın yönü (1 saat) |
@@ -725,7 +725,7 @@
 | Büyü | Pass without Trace (2) | tam |  |
 | Büyü | Phantasmal Force (2) | tam | yaklaşık: Yanılsamanın biçimi ve konumu yok: her turda hasar verir; Study eylemiyle (Investigation) kurtulma yok |
 | Büyü | Phantasmal Killer (4) | tam |  |
-| Büyü | Phantom Steed (3) | savaş dışı | Savaş dışı (1 dakika): yolculuk için hayalet at (1 saat, hız 100 ft); savaşta binek kuralı yok. |
+| Büyü | Phantom Steed (3) | tam |  |
 | Büyü | Planar Ally (6) | savaş dışı | Varlıktan yardım ister (pazarlık) |
 | Büyü | Planar Binding (5) | savaş dışı | Çağrılan yaratığı hizmete bağlar |
 | Büyü | Plane Shift (7) | tam | yaklaşık: İstemsiz hedef: melee büyü saldırısı + CHA save; başka düzleme gider (savaş boyunca sürgün) |
@@ -766,7 +766,7 @@
 | Büyü | Scrying (5) | savaş dışı | Uzaktaki hedefi gözetler (10 dakika) |
 | Büyü | Searing Smite (1) | tam |  |
 | Büyü | Secret Chest (4) | savaş dışı | Sandığı Ethereal Plane'de saklar |
-| Büyü | See Invisibility (2) | tam | yaklaşık: Ethereal Plane görüşü yok |
+| Büyü | See Invisibility (2) | tam |  |
 | Büyü | Seeming (5) | savaş dışı | Yaratıkların görünüşünü değiştirir (8 saat) |
 | Büyü | Sending (3) | savaş dışı | Savaş dışı: ileti ve 25 sözcüklük yanıt |
 | Büyü | Sequester (7) | savaş dışı | Nesne/istekli yaratık saklanır |

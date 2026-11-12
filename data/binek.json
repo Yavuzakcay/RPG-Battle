@@ -1,5 +1,5 @@
 {
-  "_aciklama": "Binek kuralları (Kuyruk MB3+; harita/belgeler/BINEK-PLAN.md). kafesBoyuFt: Forcecage küpünün kenarı (SRD 5.2.1: kafes 20 ft, kutu 10 ft); yığın (binek + binici) bundan uzunsa binici dökümde dışarı itilir (⚠ yorum). Kuyruk MB2 (kural sürümü 74): egitimli: binicisini kabul etmeye eğitilmiş SRD binek hayvanları (data/monsters.json kimlikleri; B2); bunlara binilince binek kontrollü olur (kendi turu yok, binicinin turunda hareket eder, eylemi yalnız Dash/Disengage/Dodge). Çağrılan binekte kontrol data/summons.json mount.kontrol, paket yaratığında binek.kontrol alanından.",
+  "_aciklama": "Binek kuralları (Kuyruk MB3+; harita/belgeler/BINEK-PLAN.md). kafesBoyuFt: Forcecage küpünün kenarı (SRD 5.2.1: kafes 20 ft, kutu 10 ft); yığın (binek + binici) bundan uzunsa binici dökümde dışarı itilir (⚠ yorum). Kuyruk MB2 (kural sürümü 74): egitimli: binicisini kabul etmeye eğitilmiş SRD binek hayvanları (data/monsters.json kimlikleri; B2; Kuyruk MB8: Mastiff eklendi, Medium binek: yalnız Small/Tiny binici, SRD 5.2.1 s. 15, 100); bunlara binilince binek kontrollü olur (kendi turu yok, binicinin turunda hareket eder, eylemi yalnız Dash/Disengage/Dodge). Çağrılan binekte kontrol data/summons.json mount.kontrol, paket yaratığında binek.kontrol alanından.",
   "kafesBoyuFt": {
     "box": 10,
     "bars": 20
@@ -11,6 +11,7 @@
     "mule",
     "pony",
     "camel",
-    "elephant"
+    "elephant",
+    "mastiff"
   ]
 }
