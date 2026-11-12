@@ -12,6 +12,8 @@ import { currentActorId } from '../battle/common';
 import { chooseCommand } from '../battle/ai';
 import { aiStats, resetAiStats } from '../battle/ai/preview';
 import { contextFor } from '../ui/session';
+import { setDefaultRuleVersion } from '../battle/create';
+import { mountedStart } from './binekStart';
 
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
 declare const process: { argv: string[] };
@@ -20,6 +22,12 @@ const opt = (k: string, d: string): string => { const i = args.indexOf(k); if (i
 const kind = opt('--parti', 'buyucu');
 const level = Number(opt('--seviye', '5'));
 const slow = Number(opt('--yavas', '4'));
+// Kuyruk MB4: `--binek` (partinin ilk üyesi Warhorse'un üstünde başlar), `--coklu` (çok altıgen açık), `--kural-surumu N`.
+const flag = (k: string): boolean => { const i = args.indexOf(k); if (i < 0) return false; args = args.filter((_, j) => j !== i); return true; };
+const binek = flag('--binek');
+const coklu = flag('--coklu');
+const surum = opt('--kural-surumu', '');
+if (surum) setDefaultRuleVersion(Number(surum));
 if (!PARTY_KINDS[kind]) throw new Error(`--parti ${Object.keys(PARTY_KINDS).join('|')}`);
 setPartyKind(kind);
 const runs = Number(args[0] ?? 5) || 5;
@@ -33,6 +41,8 @@ resetAiStats();
 for (let seed = 1; seed <= runs; seed++) {
   const rng = seeded(seed);
   let state: BattleState = setupBattle(sc, rng, level);
+  if (coklu) state = { ...state, multiHex: true };
+  if (binek) state = mountedStart(state);
   for (let g = 0; g < 2000 && state.status === 'active' && state.round <= roundLimit(level); g++) {
     const id = currentActorId(state);
     for (let step = 0; step < 12; step++) {

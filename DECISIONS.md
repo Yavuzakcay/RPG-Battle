@@ -3,6 +3,42 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk MB4: çok altıgenli binek gövdesi (kural sürümü 71 → 72)
+
+- **Sürüm:**
+  - `main` 95a1189 (AS1b birleşmiş, 71) üstüne. Kural sürümü 71 → **72**.
+  - Tek sabit `src/battle/binekSurum.ts` `BINEK_MB4_VERSION`; `binekMb4On` = `multiHex` açık ve sürüm ≥ 72.
+  - Anahtar kapalıyken ve 71'de birebir.
+  - Ayrıntı `harita/belgeler/BINEK-PLAN.md` §15.
+- **⚠ Binicinin gövdesi:**
+  - Binici bineğin çapa altıgeninde tek altıgen (hedefleme, menzil, görüş, siper, alan).
+  - Alternatif (binici bineğin bütün gövdesini kaplar) seçilmedi: her erişim/alan sorgusunda binicinin bineğin gövdesiyle değişmesi gerekirdi; SRD yığının ayak izini tanımlamaz.
+  - Large binici (Huge+ bineğin üstünde) de tek altıgen: `body.ts` `isMultiHex` binicide yanlış.
+- **⚠ Binicinin ayak altı:** bineğin gövdesi (`bodyLeaf.ts` `footSize`). Engebeli zeminde binicinin mutlak yüksekliği bineğinki; MB3 B6 bandıyla tutarlı.
+- **⚠ İniş yeri:**
+  - Gövdeye bitişik (5 ft), gövdenin dışında, çapaya en yakın boş altıgen; eşitlikte gövde ve komşu sırası.
+  - Elle seçimde de gövdeye bitişiklik (SRD "within 5 feet of it": bineğin herhangi bir noktası).
+- **⚠ Zorla varış (B24 genişlemesi):**
+  - Komutsuz yer değişiminde (itme, kafes, gövdenin en yakın sığdığı yer) yığın gövdenin bir altıgeninde tavana/döşemeye sığmıyorsa binici save'siz iner.
+  - Bu kontrol, itilen bineğin DEX 10 save'inden önce gelir.
+- **⚠ Dar geçit nedeni:** yalnız binicili bineğe ("Dar geçit: …"). Binicisiz çok altıgenli yaratıkta K69 metni ("… için yol yok.") aynen; o metnin kalıbı yok (K69 kapsamı).
+- **Değişmeyenler (test kilitler):**
+  - Gövdeden binme bitişikliği (`gap`, `adjacent3D`).
+  - Fırsat saldırısı yalnız bineğe, gövdeden erişim.
+  - Gövdeyle itme.
+  - Uçan bineğin bandı.
+  - Alan tek sayım.
+  - B13/B14.
+  - YZ (MB5'e kadar yeni taktik yok).
+  - Arayüzde binicinin jetonu çapada.
+- **Doğrulama:**
+  - `binekMb4.test.ts` 17 test.
+  - Regresyon binekli 4 senaryo × 30 tohum: 71 altın imzalarla aynı, 72 = 71 (`BINEK_MB4_TOHUM`).
+  - `sim:yz-sure` binekli + çok altıgenli Çöl, ABBA: 41,9 → 41,45 ms/karar (−%1).
+  - Ana parça değişmedi (385,42 kB `vite build`).
+  - `check:harita` 96/0, `check:ses` 15/0.
+- **Ek:** `sim:yz-sure` bayrakları `--binek`, `--coklu`, `--kural-surumu N` (kurulum `src/sim/binekStart.ts`).
+
 ## 2026-11-12 — Kuyruk MB6: binek arayüzü (yalnız arayüz; kural sürümü 70'te kalır)
 
 - **Sürüm:** kural sürümü, `SAVE_VERSION` ve `src/battle/*` değişmedi (`git diff -- src/battle data/kural-surumu.json` boş). Yeni komut, olay ve Ayarlar anahtarı yok. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §14.
@@ -22,6 +58,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - `binekMb6.test.tsx` son hâliyle 12 test (menü neden satırı ve tur sırası testleri eklendi); `check:harita` 96/0, `check:ses` 15/0.
   - Tam paket 386 dosya geçti + 1 atlandı; 4523 test geçti + 7 atlandı; 0 kırık.
 - **Kalan:** MB2 (kontrollü binek turu), MB4 (çok altıgen), MB5 (YZ binicisi). Binek ret nedenleri (`mountProblem` metni) arayüzde yalnız menü satırında gösteriliyor; hamle önizleme kartında binek satırı yok (hamle önizlemesi MB'nin kapsamı dışı).
+
 ## 2026-11-12 — Kuyruk AS1b: alt soy buff/debuff mekaniği (kural sürümü 70 → 71)
 
 - **Sürüm:** `main` e51ad648 üstüne. Kural sürümü 70 → **71** (tek sabit `src/battle/altSoySurum.ts` `ALT_SOY_VERSION`, MB kalıbı); 70 ve altı birebir. Savaş sürümü ≥ 71'de oluşan savaşçıda alt soy mekaniği; `CharacterSheet.soyKapali` (yalnız savaş kurulumunda `combatantFromSheet` yazar, kayda girmez) 70'te türetmeyi kapatır; açık `kuralSurumu < 71` ile kurulan savaşta `withSoy` süren etkileri ve özelliği söker (türetilen skor ve hız savaşçı oluşurken `defaultRuleVersion()` ile belirlenir; yüksek varsayılan + açık düşük sürüm karışımında skorlar kalır ⚠ yalnız testlerde olur). Yeni olay türü yok; `SAVE_VERSION` değişmedi; Ayarlar'a anahtar yok.

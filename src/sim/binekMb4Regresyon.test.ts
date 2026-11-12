@@ -6,30 +6,19 @@
  * Tohum sayısı varsayılan 1; tam ölçüm `BINEK_MB4_TOHUM=30` (PowerShell: `$env:BINEK_MB4_TOHUM=30; npx vitest run src/sim/binekMb4Regresyon.test.ts`).
  */
 import { afterEach, describe, expect, it } from 'vitest';
-import { combatantFromMonster, setDefaultRuleVersion } from '../battle/create';
+import { setDefaultRuleVersion } from '../battle/create';
 import { CURRENT_RULES } from '../battle/ruleVersion';
-import { getMonster } from '../data';
+import { mountedStart } from './binekStart';
 import { playBattle, SCENARIOS, seeded, setupBattle } from './balance';
-import type { BattleState, Combatant } from '../battle/types';
 
 declare const process: { env: Record<string, string | undefined> };
 const SEEDS = Number(process.env.BINEK_MB4_TOHUM ?? 1);
 const IDS = ['col', 'kale', 'magara', 'orman'] as const;
 /** Sürüm 71 imzaları (`hash`): MB4 öncesi ağaçtan. */
 const ALTIN_1: Record<string, string> = { col: 'c3c285b62303', kale: 'c9e5665a294a', magara: '398894b22cf5', orman: 'b147dc655577' };
-const ALTIN_30: Record<string, string> = {};
+const ALTIN_30: Record<string, string> = { col: '4ac81c7dc804', kale: 'b1bcc2fa6844', magara: 'e57c6df85501', orman: '82bdd9f06480' };
 
 afterEach(() => setDefaultRuleVersion(CURRENT_RULES));
-
-/** Partinin ilk üyesi savaş başında bir Warhorse'un üstünde ("binmiş başla"): at sırada binicinin hemen ardında. */
-export function mountedStart(s: BattleState): BattleState {
-  const rider = Object.values(s.combatants).find((c) => c.side === 'party' && !c.civilian && c.pos) as Combatant;
-  const horse = combatantFromMonster(getMonster('warhorse'), { id: 'binek-at' });
-  const mount: Combatant = { ...horse, side: 'party', ownerId: rider.ownerId, pos: rider.pos, rider: rider.id };
-  const order = [...s.order];
-  order.splice(order.indexOf(rider.id) + 1, 0, mount.id);
-  return { ...s, order, combatants: { ...s.combatants, [rider.id]: { ...rider, riding: mount.id }, [mount.id]: mount } };
-}
 
 function run(id: string, seed: number, ver: number) {
   setDefaultRuleVersion(ver);

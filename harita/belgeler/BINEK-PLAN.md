@@ -627,3 +627,52 @@ Doğrulanmayan açık yok.
 **Doğrulama:** `binekMb6.test.tsx` 12 test (seçici, seçenek–motor bire bir, ret kalıpları, rozet bütçesi, kurulum notu, menü neden satırı, tur sırası); ekran görüntüsü `docs/mb6/hava-inme-secici.png`; ana parça 389,14 kB; `check:harita` 96/0, `check:ses` 15/0; tam paket 386 dosya, 4523 test geçti (7 atlandı), 0 kırık.
 
 **Kalan:** MB2 (kontrollü binek turu), MB4 (çok altıgen), MB5 (YZ binicisi). Hamle önizleme kartında binek satırı yok.
+
+---
+
+## 15. MB4 sonucu (kural sürümü 72)
+
+Not: görev metni bu kaydı "§14" diye anar; §14 MB6'ya ayrılmış olduğu için MB4 §15'te.
+
+Yalnız Game Master anahtarı "Çok altıgenli büyük yaratıklar" (`multiHex`) açıkken ve sürüm 72+ (`src/battle/binekSurum.ts` `BINEK_MB4_VERSION`, `binekMb4On`). Anahtar kapalıyken ve 71'de birebir eski kod.
+
+**Yapılanlar:**
+
+- **Binicinin yeri (⚠ karar):** binici bineğin çapa altıgeninde, tek altıgen. Hedefleme, menzil, görüş, siper ve alan isabeti için binicinin tek altıgeni çapa. `body.ts` `isMultiHex` bineğindeki binicide yanlış döner (Large binici de tek altıgen). Binicinin ayak altı bineğin gövdesidir: `bodyLeaf.ts` `footSize`, mutlak yükseklik ve katman seviyesi bineğinkiyle aynı.
+- **Binme:** gövdenin herhangi bir altıgenine bitişikten (K69 `gap` ve MB3 `adjacent3D` zaten gövdeden; test kilitler). Döşeme denetimi gövdenin bütün altıgenlerinde; tavan denetimi zaten gövdeden (`ceilingOver`).
+- **İnme ve düşme:** binici gövdenin dışına, gövdeye bitişik boş altıgene iner (çapaya en yakın; `riderCore.ts` `bodyOutsideSpots`). Elle seçilen altıgen gövdeye bitişik olmalı (çapaya değil). Large binicinin kendi gövdesi sığmalı (`bodyFitProblem`). Düşen binici de gövdenin dışına düşer (`riderCleanup` ve B12 `fallOffSpot(..., mount)`). Maliyet MB1 (hızın yarısı).
+- **Hareket:** gövde K69 sığma kurallarıyla yürür, binici çapayla taşınır. Dar geçitte gövde sığmazsa ret: "Dar geçit: <binek> gövdesiyle <altıgen> yoluna sığmıyor." (TR/EN kalıbı `data/neden-metinleri.json`). Döndürme yok: K69 şekilleri sabit.
+- **Fırsat saldırısı ve erişim:** bineğin gövdesinden (K69); saldırı yalnız bineğe (B7). Değişiklik gerekmedi, test kilitler.
+- **İtme:** gövde K69 kurallarıyla itilir, binici çapayla gider; B8/B9 aynen.
+- **Yığın boyu (B11):** tavan ve kat döşemesi gövdenin bütün altıgenlerinde (`movement.ts` `stackFitProblem`). Yürüyüş, uçuş, ışınlanma (Fey Step) ve binme bu tek denetimden geçer. MB3'te yalnız çapadaydı.
+- **Zorla varış (B24):** itme, kafes ya da gövdenin en yakın sığdığı yere konması sonunda yığın gövdenin bir altıgeninde tavana/döşemeye sığmıyorsa binici save'siz, gövdenin dışına iner. Binek itildiği yerde kalır. Işınlanan binici MB1'deki gibi iner. Bineğin komutlu ışınlanmasında gövde ve yığın sığmazsa ret.
+- **Bant:** uçan bineğin binicisinde bant bineğin çapa bandı (MB3 B6; Huge 3 düzey). Test kilitler.
+- **Alan:** binek gövdesiyle (`bodyInZone`), binici çapasıyla; ikisi ayrı ve birer kez save. Test kilitler.
+- **Kazma, tırmanma, yüzme:** MB3 B13/B14 kuralları gövdeyle aynen; gövde sığmazsa K69 reddeder.
+- **YZ:** yeni taktik yok (MB5). K69 tek sayım aynen.
+- **Arayüz:** binicinin jetonu ve rozeti bineğin çapa altıgeninde (`tokenCenter`; tek altıgen). Hedef bilgi satırı aynen. Yeni Ayarlar anahtarı yok.
+
+**Doğrulama:**
+
+- **Testler:** `src/battle/binekMb4.test.ts` 17 test.
+  - Görev 0: 72 durumunda gövdenin dışına inme ve düşme, dar geçit nedeni, gövdede yığın boyu ve zorla varışta B24 başarısızdı.
+  - Öteki maddeler K69 + MB1/MB3 ile zaten doğruydu; testler bunları kilitler.
+- **Regresyon:** `src/sim/binekMb4Regresyon.test.ts`, binekli dört senaryo (Çöl, Kale, Mağara, Orman; partinin ilk üyesi Warhorse'un üstünde başlar; kurulum `src/sim/binekStart.ts`), çok altıgen kapalı, 30 tohum.
+  - Sürüm 71, MB4 öncesi ağaçtan (`main` 95a1189) alınan altın imzalarla aynı.
+  - Sürüm 72 = 71.
+- **YZ süresi:** `npm run sim:yz-sure -- 3 col --binek --coklu --kural-surumu 71|72`, ABBA sırası.
+  - Karar başına ortalama: 71'de 42,9 ve 40,9 ms; 72'de 41,9 ve 41,0 ms.
+  - 41,9 → 41,45 ms (−%1; sınır +%15).
+- **Paket boyutu:** ana parça değişmedi (`vite build` 385,42 kB → 385,42 kB; `paket-siniri` ölçüsü 389,88 kB). Savaş parçası +1,72 kB, neden metinleri +0,30 kB.
+- **Tarayıcı kontrolleri:** `check:harita` 96/0, `check:ses` 15/0.
+- **Kayıt:** `SAVE_VERSION` 22'de kaldı (yeni olay alanı yok).
+
+**Kalan:**
+
+- **MB5:** YZ binicisi.
+  - Büyük bineğin dar geçitten kaçınma planı.
+  - Binicinin gövde kenarından saldırı yeri seçimi.
+- **MB2:** kontrollü binek turu.
+- **MB8:** binekli senaryolar ve denge, tam ölçüm.
+- **Çok altıgen genel kalanları** (`harita/belgeler/COKLU-ALTIGEN.md`): döndürme, Large'ın 3 altıgeni.
+
