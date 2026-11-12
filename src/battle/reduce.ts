@@ -22,6 +22,7 @@ import { wardedFrom } from './mind';
 import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type ConditionTimer, type DamageEffect } from './types';
 import { effectSpeedZero, flySpeed } from './flight';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
+import { soyTeleportEnds } from './altSoySurum';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -1258,6 +1259,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       return withCombatant(state, c.id, { pos: event.to, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
+        // Kuyruk AS1b (alt soy etkisi `teleportEnds`, Cloud): ışınlanınca turun kalan hareketi biter.
+        ...(soyTeleportEnds(c) ? { movementUsed: Math.max(c.movementUsed + (event.cost ?? 0), speedHexes(c)) } : {}),
         ...(event.stride ? { economy: { ...c.economy, treeStride: true } } : {}) });
     }
     case 'ability_recharge': {

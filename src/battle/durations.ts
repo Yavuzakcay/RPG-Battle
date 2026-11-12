@@ -16,6 +16,7 @@ import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
 import { distance, type Offset } from '../rules/hex';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { ruleVersion } from './ruleVersion';
+import { saveDisVs, type SaveCtx } from './altSoySurum';
 import { pfegRepeatAdv } from './mind';
 import { allyEscapeEvents } from './mapcommands';
 import type { BattleEvent, BattleState, Combatant, ConditionTimer, StageSpec } from './types';
@@ -103,7 +104,7 @@ export function timerEvents(state: BattleState, ownerId: string, end: ConditionT
       if (t.save && c.hp > 0) {
         // Kuyruk A6: Protection from Evil and Good (kaynak korunulan türdense Charmed/Frightened save'i avantajlı).
         const pfeg = pfegRepeatAdv(state, c.id, t.sourceId, [t.condition]);
-        const r = resolveSave({ extra: saveDice(c, t.save.ability), modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, t.save.ability),
+        const r = resolveSave({ extra: saveDice(c, t.save.ability), modifier: c.saves[t.save.ability], dc: t.save.dc, mode: saveMode(pfeg ? 'advantage' : 'normal', c, t.save.ability, undefined, { against: [t.condition] }),
           autoFail: (t.save.ability === 'str' || t.save.ability === 'dex') && autoFailsStrDexSave(c.conditions) }, rollTag(rng, { by: c.id }));
         out.push({ type: 'condition_save', targetId: c.id, condition: t.condition, ability: t.save.ability, dc: t.save.dc,
           d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success, ...(r.extra ? { bonusDice: r.extra } : {}) });
@@ -133,13 +134,13 @@ export function dodgeActive(conds: string[]): boolean {
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
 export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean;
-  effects?: Array<{ saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
+  effects?: Array<{ saveDisVs?: Array<{ damage?: string; condition?: string }>; saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
 
 /**
  * Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı; Danger Sense gibi avantajlı save'ler (Incapacitated
  * değilken); Rage sürerken STR save'leri avantajlı. Eski çağrılar yalnızca durum listesi verebilir.
  */
-export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string; paket?: { ozellikler: Array<{ ilkeller: Array<Record<string, unknown>> }> }; effects?: Array<{ pkSaveAdvFor?: string }> }): RollMode {
+export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string; paket?: { ozellikler: Array<{ ilkeller: Array<Record<string, unknown>> }> }; effects?: Array<{ pkSaveAdvFor?: string }> }, ctx?: SaveCtx): RollMode {
   const s: SaveSubject = Array.isArray(who) ? { conditions: who } : who;
   // Kuyruk 19 (11–20): Holy Nimbus: Fiend/Undead etkilerine save avantajı (kaynağı bilinen save'lerde).
   const vs = source?.creatureType?.toLowerCase();
@@ -157,7 +158,8 @@ export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: A
     // Kuyruk P10: ek paket `isaret.kurtulmaAvantaji` (kaynak işaretliyse, işaretleyenin kurtulması avantajlı).
     || (!!(s as { id?: string }).id && !!source?.effects?.some((e) => e.pkSaveAdvFor === (s as { id?: string }).id));
   // Görev B1: süren etkinin save dezavantajı (Reduce, Ray of Enfeeblement: STR).
-  const dis = !!s.auraSaveDis || !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage'))
+  // Kuyruk AS1b (sürüm 71+ alt soy etkisi): hasar türü / durum bağlamlı kurtarma dezavantajı (`saveDisVs`).
+  const dis = !!s.auraSaveDis || saveDisVs(s.effects, ctx) || !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage'))
     // Görev P6: ek paket `buyuDegisimi.kurtulmaDezavantaji` (kaynağın büyüleri ve alan etkileri; koşulsuz pasif).
     || !!source?.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'buyuDegisimi' && p.kurtulmaDezavantaji === true && !p.kosul));
   // Kuyruk K54c: Yıldız Falı (Uğurlu): ilk kurtulma zarı avantajlı.

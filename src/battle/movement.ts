@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { plantChar, soyPlantWalker } from './altSoySurum';
 import { afterStepEvents } from './turnHooks';
 import { groundWardFn } from './groundWard';
 import { solidBarrierAt } from './barriers';
@@ -341,6 +342,8 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   const ward = groundWardFn(state, actor);
   // Kuyruk 19 (SRD Ice Walk): buz ve kar zemini zorlu arazi değil.
   const iceWalk = !!actor.effects?.some((e) => e.iceWalker);
+  // Kuyruk AS1b (alt soy etkisi `plantWalker`, Orc Orman): bitkisel zeminin (çalılık, sazlık) zorlu arazisi yok sayılır.
+  const plantWalk = soyPlantWalker(actor);
   // Kuyruk 26: yükseklik katmanı (yalnızca katmanlı haritada): çıkış maliyeti, 2+ seviye uçurum/duvar yürünmez.
   // Kuyruk K73c (sürüm 64+): çok altıgenli gövdede adım maliyeti en yüksek ayak altından (`bodyHeightStepFn`).
   const hstep = k73cOn(state) && isMultiHex53(state, actor) ? bodyHeightStepFn(state, flying || climber, actor) : heightStepFn(state, flying || climber);
@@ -429,7 +432,7 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
     const free = freeMove || (!!ward && ward(h));
-    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q'))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
+    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q')) || (plantWalk && plantChar(t0.char))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = (!!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null) || (squeeze && doorAt(h));
     const terrain = wall ? through : overTop || climbOver ? 1 : hov && t.movement === 'deadly' ? null : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);

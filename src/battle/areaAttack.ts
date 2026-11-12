@@ -126,7 +126,7 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick0: Area
     if (!t || !isTargetable(t)) continue;
     const autoFail = (save.ability === 'str' || save.ability === 'dex') && autoFailsStrDexSave(t.conditions);
     const dexCover = save.ability === 'dex' ? cover : 0;
-    const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability, actor), autoFail },
+    const r = resolveSave({ extra: saveDice(t, save.ability), modifier: t.saves[save.ability] + dexCover, dc: save.dc, mode: saveMode(mode, t, save.ability, actor, { damage: save.damageType }), autoFail },
       rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, save.ability, r.success, damage.total, !!save.halfOnSave);
     // Kuyruk 19 (11–20): Superior Hunter's Defense alan hasarında da (SRD "hasar aldığında"): tepkiyle o türe direnç.

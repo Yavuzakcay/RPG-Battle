@@ -289,9 +289,9 @@ const tr = {
       skillConflict: 'sınıftan da seçilmiş: başka bir sınıf becerisi seç',
       raceBonusNote: 'Yetenek puanı bonusu türden değil, geçmişten gelir.',
       // Kuyruk AS1a: alt soy buff/debuff açıklamaları (yalnızca metin; etkisi henüz oyunda çalışmıyor).
-      lineageBuff: 'Artı', lineageDebuff: 'Eksi', lineagePlanned: 'planlı', lineageNotYet: 'Bu etkiler henüz oyunda çalışmıyor (planlı); şimdilik yalnızca açıklama.',
-      lineageBaseApplies: 'Bu alt soy ek artı vermez; taban tür özellikleri geçerli.', lineageOptionalHint: 'Alt soy seçilmedi: seçene dek alt soy etkisi yok.',
-      skinTitle: 'Ten tonu', skinHelp: 'Ten tonu kültürden bağımsızdır; istediğin kültürle istediğin tonu seçebilirsin.',
+      lineageBuff: 'Artı', lineageDebuff: 'Eksi', lineageStatus: { calisir: 'çalışır', kismi: 'kısmi', planli: 'planlı' } as Record<string, string>, lineageNotYet: 'Bu etkiler henüz oyunda çalışmıyor (planlı); şimdilik yalnızca açıklama.',
+      lineageOptionalHint: 'Alt soy seçilmedi: seçene dek alt soy etkisi yok.',
+      skinTitle: 'Ten tonu', skinHelp: 'Ten tonu kültürden bağımsızdır; istediğin kültürle istediğin tonu seçebilirsin. Siyahi ve Doğu Asyalı renkleri geçici yer tutucudur.',
       cultureTitle: 'Kültür',
       lineageAbilities: 'Soy yetenekleri', preview: 'Jeton önizlemesi',
       notInGame: 'henüz oyunda yok', offCombat: 'savaş dışı: Game Master anlatır',

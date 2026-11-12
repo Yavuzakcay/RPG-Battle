@@ -1,0 +1,15 @@
+{
+  "not": "Kuyruk AS1b (kural sürümü 71): alt soy mekaniğinin sabitleri. Alt soyların kendisi data/races.json lineages[].etki alanında; burada yalnız harita sınıflaması. yerlesimBolgeleri: harita kaydının `bolge` değeri (kasaba, şehir, han). bitkiselAlanlar: zorlu arazi veren bitkisel alan büyülerinin SRD kimlikleri (Orc Orman bunları yok sayar); bitkiselZemin: zorlu arazi veren bitkisel zemin harfleri (src/map/terrain.ts: g Çalılık, sazlık).",
+  "yerlesimBolgeleri": [
+    "yerlesim",
+    "sehir"
+  ],
+  "bitkiselAlanlar": [
+    "entangle",
+    "plant-growth",
+    "spike-growth"
+  ],
+  "bitkiselZemin": [
+    "g"
+  ]
+}

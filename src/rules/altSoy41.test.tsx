@@ -8,7 +8,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { Builder } from '../screens/Builder';
 import { blankCharacter, characterIssues, type SavedCharacter } from './builder';
 import { altSoyKey, newAlignment, startContributions, startValue } from './alignment';
-import { lineageName, lineageNotes, migrateLineages } from './lineage';
+import { lineageName, migrateLineages } from './lineage';
+import { lineageNotes as notesOf } from '../ui/lineageNotes';
 import { races } from '../data';
 import { AWAKENING_OPTIONS, CELESTIAL } from './celestialData';
 import { newPendingLineages, LINEAGE_NOTICE_KEY } from '../app/lineageNotice';
@@ -22,8 +23,6 @@ import kuralSurumu from '../../data/kural-surumu.json';
 const COUNTS: Record<string, number> = { dragonborn: 10, goliath: 6, elf: 3, tiefling: 4, gnome: 3, dwarf: 3, halfling: 2, orc: 3, human: 4 };
 const NEW = ['tiefling/winged', 'gnome/subterranean', 'dwarf/crag', 'dwarf/knoll', 'dwarf/undervault', 'halfling/slender', 'halfling/sturdy', 'orc/glacier', 'orc/wildwood', 'orc/fen',
   'human/tenhausser', 'human/khadyrga', 'human/pure-city', 'human/outwall'];
-/** Buff'ı taban türde zaten bulunan (tekrar çıkarıldı) alt soylar: Dwarf taban türünde +1 HP/seviye ve karanlık görüş 120 ft var. */
-const EMPTY_BUFF = ['dwarf/knoll', 'dwarf/undervault'];
 const ALT = (hizalanma as unknown as { altSoy: Record<string, { duzen: number; iyilik: number; gerekce: { tr: string; en: string } }> }).altSoy;
 const ids = (): string[] => [...races.flatMap((r) => (r.lineages ?? []).map((l) => `${r.id}/${l.id}`)), ...AWAKENING_OPTIONS.map((a) => `celestial/${a}`)];
 const char = (patch: Partial<SavedCharacter['sheet']>): SavedCharacter => { const b = blankCharacter('as1'); return { ...b, sheet: { ...b.sheet, name: 'Alt', ...patch } }; };
@@ -36,41 +35,43 @@ describe('41 alt soy', () => {
     expect(new Set(ids()).size).toBe(41);
     expect(AWAKENING_OPTIONS.length).toBe(3);
   });
-  it('yeni 14 alt soy: TR/EN ad ve özet, buff/debuff açıklaması, durum planlı; motor alanı (direnç, hız, görüş, büyü) yok', () => {
+  it('41 alt soy: TR/EN ad ve özet; 38 soyun hepsinde debuff metni ve durum (çalışır/kısmi), mekanik veride `etki`; yeni 14 soyda buff metni (Tepe/Yeraltı dahil)', () => {
+    let n = 0;
+    for (const r of races) for (const l of r.lineages ?? []) {
+      const key = `${r.id}/${l.id}`;
+      n++;
+      for (const lang of ['tr', 'en'] as const) {
+        expect(lineageName(l, lang).length, key).toBeGreaterThan(1);
+        expect(l.summary[lang].length, key).toBeGreaterThan(5);
+        const x = notesOf(r.id, l, lang);
+        // Debuff metni: yeni 14'te ve eski 27'de (Kanatlı, Gnome Yeraltı, Dağ... buff'lı olanlar ayrıca debuff'lı).
+        if (!['tiefling/winged', 'dwarf/crag', 'halfling/sturdy', 'orc/glacier', 'orc/wildwood', 'orc/fen', 'human/tenhausser', 'human/khadyrga', 'human/pure-city', 'human/outwall', 'halfling/slender', 'gnome/subterranean'].includes(key)) expect(x.debuff.length, `${key} debuff`).toBeGreaterThan(0);
+        expect(['calisir', 'kismi'], key).toContain(x.status);
+      }
+      expect(l.etki, key).toBeDefined();
+      expect(l.durum, key).not.toBe('planli');
+    }
+    expect(n).toBe(38);
     for (const key of NEW) {
       const [r, id] = key.split('/') as [string, string];
-      const l = races.find((x) => x.id === r)?.lineages?.find((x) => x.id === id);
-      expect(l, key).toBeDefined();
-      for (const lang of ['tr', 'en'] as const) {
-        expect(lineageName(l!, lang).length, key).toBeGreaterThan(1);
-        expect(l!.summary[lang].length, key).toBeGreaterThan(10);
-        const n = lineageNotes(l!, lang);
-        // AS1a-2: yalnız FARK yazılır; buff'ı taban türde zaten olan alt soyun buff alanı boştur (kullanıcı karar verir).
-        if (EMPTY_BUFF.includes(key)) expect(n.buff, `${key} buff`).toEqual([]); else expect(n.buff.length, `${key} buff`).toBeGreaterThan(0);
-        expect(n.debuff.length, `${key} debuff`).toBeGreaterThan(0);
-        expect(n.planned, key).toBe(true);
-      }
-      expect(l!.resistances, key).toEqual([]);
-      for (const f of ['speed', 'darkvision', 'spells', 'giant', 'extras'] as const) expect(l![f], `${key}.${f}`).toBeUndefined();
+      const l = races.find((x) => x.id === r)!.lineages!.find((x) => x.id === id)!;
+      expect(notesOf(r, l, 'tr').buff.length + notesOf(r, l, 'tr').debuff.length, key).toBeGreaterThan(0);
     }
   });
-  it('alt soy metni taban türü tekrar etmez: Dwarf Tepe/Yeraltı buff boş, debuff kalır; ırk özellik kartı taban özellikleri gösterir', () => {
+  it('Dwarf Tepe ve Yeraltı artık yeni buff taşır (taban türü tekrar etmez: +1 HP / karanlık görüş yok)', () => {
     const dwarf = races.find((r) => r.id === 'dwarf')!;
     expect(dwarf.hpPerLevel).toBe(1);
     expect(dwarf.darkvision).toBe(120);
     for (const id of ['knoll', 'undervault']) {
       const l = dwarf.lineages!.find((x) => x.id === id)!;
-      expect(l.buff).toEqual([]);
-      expect(l.debuff!.length).toBeGreaterThan(0);
-      const text = JSON.stringify([l.buff, l.summary]).toLowerCase();
-      expect(text).not.toMatch(/hp|karanlık görüş|darkvision/);
+      expect(notesOf('dwarf', l, 'tr').buff.length).toBe(1);
+      expect(JSON.stringify([notesOf('dwarf', l, 'tr').buff, l.summary]).toLowerCase()).not.toMatch(/\bhp\b|karanlık görüş|darkvision/);
     }
     const m = html(char({ raceId: 'dwarf', lineageId: 'knoll' }));
+    expect(m).toContain('Dayanıklılık kurtarma zarlarında +1');
     expect(m).toContain('Çeviklik kurtarma zarlarında −1');
-    expect(m).toContain('taban tür özellikleri geçerli');
     expect(m).toContain('Darkvision 120 ft');
-    expect(m).not.toContain('Her seviyede +1 HP');
-    expect(m).toContain('Dwarven Toughness');
+    expect(m).toContain('data-status="calisir"');
   });
   it('soyu isteğe bağlı türler (Dwarf, Halfling, Orc, Human) varsayılan soysuz; diğerlerinin varsayılanı korunur', () => {
     for (const r of races) {
@@ -138,8 +139,10 @@ describe('oluşturucu: soy kartları', () => {
     expect((m.match(/lineage-card/g) ?? []).length).toBeGreaterThanOrEqual(4);
     for (const n of ['Tenhausser', 'Khadyrga', 'Saf Kent', 'Sur Dışı']) expect(m, n).toContain(n);
     expect(m).toContain('Kültür');
-    expect((m.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(SKIN_TONES.length);
-    expect(Object.keys(CULTURE_SKIN)).toEqual([]);
+    expect((m.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(3);
+    expect(SKIN_TONES.map((t) => t.id)).toEqual(['orijinal', 'siyahi', 'dogu-asyali']);
+    // AS1b: her kültür üç tonu da seçebilir.
+    for (const k of ['tenhausser', 'khadyrga', 'pure-city', 'outwall']) expect(CULTURE_SKIN[k]).toEqual(['orijinal', 'siyahi', 'dogu-asyali']);
     expect(html(char({ raceId: 'elf', lineageId: 'drow' }))).not.toContain('skin-tone');
   });
   it('seçili alt soyun buff/debuff açıklaması ve "planlı" etiketi görünür; İngilizce metin de var', () => {
@@ -147,7 +150,8 @@ describe('oluşturucu: soy kartları', () => {
     expect(m).toContain('lineage-notes');
     expect(m).toContain('Zehir hasarına direnç.');
     expect(m).toContain('Soğuk hasarına karşı kurtarma zarlarında dezavantaj.');
-    expect(m).toContain('planlı');
+    expect(m).toContain('data-status="kismi"');
+    expect(m).toContain('kısmi');
     expect((m.match(/lineage-card/g) ?? []).length).toBeGreaterThanOrEqual(3);
   });
   it('eski Human kaydı soysuz kalır: sorun çıkmaz, ipucu görünür; kaydedilirken soy atanmaz', () => {
@@ -211,11 +215,19 @@ describe('görünüm verisi', () => {
     expect(AWAKENING_FROM).toBe(CELESTIAL.awakening.minLevel);
     expect(AWAKENING_DEFAULT).toBe(CELESTIAL.awakening.default);
   });
-  it('Human: ten eşlemesi eklenene dek (ten.filtreUygula false) her ten tonu ve kültür orijinal jeton; seçim saklanır; çerçeve ve kanat yer tutucusu çizilir', () => {
-    for (const lin of ['tenhausser', 'khadyrga', 'pure-city', 'outwall']) for (const tone of ['acik', 'abanoz']) {
-      expect(lineageLook({ raceId: 'human', lineageId: lin, skinTone: tone })).toMatchObject({ filter: '', scaleX: 1, scaleY: 1 });
+  it('Human ten tonu (AS1b): Orijinal filtresiz (varsayılan, bilinmeyen eski kimlik de), Siyahi ve Doğu Asyalı filtre uygular; kültürden bağımsız; YER TUTUCU işaretli', () => {
+    for (const lin of ['tenhausser', 'khadyrga', 'pure-city', 'outwall']) {
+      expect(lineageLook({ raceId: 'human', lineageId: lin })).toMatchObject({ filter: '', scaleX: 1, scaleY: 1 });
+      expect(lineageLook({ raceId: 'human', lineageId: lin, skinTone: 'orijinal' }).filter).toBe('');
+      expect(lineageLook({ raceId: 'human', lineageId: lin, skinTone: 'abanoz' }).filter).toBe('');
     }
-    expect(SKIN_TONES.length).toBe(6);
+    const a = lineageLook({ raceId: 'human', lineageId: 'tenhausser', skinTone: 'siyahi' }).filter;
+    const b = lineageLook({ raceId: 'human', lineageId: 'khadyrga', skinTone: 'siyahi' }).filter;
+    expect(a).not.toBe('');
+    expect(a).toBe(b);
+    expect(lineageLook({ raceId: 'human', lineageId: 'outwall', skinTone: 'dogu-asyali' }).filter).not.toBe(a);
+    expect(gorunum.ten.filtreUygula).toBe(true);
+    for (const t of SKIN_TONES.filter((x) => x.id !== 'orijinal')) expect(t.yorum, t.id).toMatch(/YER TUTUCU/);
     const w = renderToStaticMarkup(<LookFrame sheet={{ raceId: 'tiefling', lineageId: 'winged' }} size={44}><i /></LookFrame>);
     expect(w).toContain('look-wing placeholder');
     expect(w).toContain('efekt-kanat-seytan');

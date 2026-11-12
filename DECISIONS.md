@@ -3,6 +3,25 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk AS1b: alt soy buff/debuff mekaniği (kural sürümü 70 → 71)
+
+- **Sürüm:** `main` e51ad648 üstüne. Kural sürümü 70 → **71** (tek sabit `src/battle/altSoySurum.ts` `ALT_SOY_VERSION`, MB kalıbı); 70 ve altı birebir. Savaş sürümü ≥ 71'de oluşan savaşçıda alt soy mekaniği; `CharacterSheet.soyKapali` (yalnız savaş kurulumunda `combatantFromSheet` yazar, kayda girmez) 70'te türetmeyi kapatır; açık `kuralSurumu < 71` ile kurulan savaşta `withSoy` süren etkileri ve özelliği söker (türetilen skor ve hız savaşçı oluşurken `defaultRuleVersion()` ile belirlenir; yüksek varsayılan + açık düşük sürüm karışımında skorlar kalır ⚠ yalnız testlerde olur). Yeni olay türü yok; `SAVE_VERSION` değişmedi; Ayarlar'a anahtar yok.
+- **Veri ile:** her alt soy `data/races.json` `lineages[].etki` (statik: `yetenek`, `hiz`, `kurtarma`, `beceri`, `zirhsizAc`, `direnc`, `karanlikGorus`, `agirZirhHizCezasiYok`, `tasima`; `efekt` = savaşta süren etkinin `ActiveEffect` alanları; `harita` = haritaya bağlı koşullar; `ozellik` = kullanılabilir özellik). Kodda alt soy adıyla koşul yok. Durum etiketi `durum`: 25 `calisir`, 13 `kismi` (hasar türü/durum bağlamlı kurtarma dezavantajı; kapsam `docs/ALT-SOY-41.md`); Celestial uyanış debuff'ları `celestial.json` `efekt` (çalışır).
+- **Genel genişlemeler (en küçük):** `ActiveEffect`: `saveDisVs`, `checkDisSkill`, `fallMult`, `teleportEnds`, `plantWalker`, `zorluArazideHiz`, `soyHarita`; `saveMode(…, ctx: SaveCtx)` (büyü, canavar saldırısı/nefesi, alan, yüzey, bölge, süren etki ve durum zamanlayıcısı kurtarmaları bağlam taşır); `checkBase(…, skill)` beceri/ışık/su/yerleşim koşullu kontrol dezavantajı (+ pasif Algı −5 ve Gizlen komutu); `fallEffect` ×; `teleported` olayında hareket biter; tur başı `soyTurnStartEvents`; hareket ve alan maliyetinde `plantWalker`; `UsableFeature.noArmor`; `Combatant.mediumArmor`.
+- **SRD'de yazmıyor, yorum (⚠):**
+  - "X kurt. dez." = o hasar türünü ya da durumu uygulayan etkinin kurtarmasında dezavantaj; "konsantrasyon" = mevcut `concDis`.
+  - Gün ışığı = karanlık kavramı olmayan harita (Sunlight Sensitivity gibi) ya da Daylight alanı; parlak ışık = K67 `lightLevelAt` parlak; iç mekân = varyantı tavanlı harita; yerleşim = bölgesi `yerlesim`/`sehir`; suda = ıslak zemin etiketli altıgen.
+  - Parlayan Ruh "karanlıkta Gizlen dez." parıltısı kendi ışığını verdiği için harita düzeyinde (karanlık/gece haritası).
+  - Khadyrga "zorlu arazide hız −5": turun başında zorlu arazi altıgeninde (zemin ya da alan) duran yaratığın o tur hareketinden 1 altıgen yanar.
+  - Sur Dışı iç mekân saldırı −2: silah ve büyü saldırı bonusuna savaş başında yazılır; inisiyatif −2 zar atılırken.
+  - Dwarf Dağ "ağır zırh hız cezası yok": zırhın Güç şartı eksikliği −10 ft'i kalkar. Halfling Kalın taşıma ×1,5 (taşıma kuralı açıkken). Cloud: her ışınlanma o turun kalan hareketini bitirir.
+  - Kanat Süzülüşü: bonus eylem, kullanım yeterlilik bonusu kadar (`$pb` ifadesi yok: kaynak `uses.proficiency`), 1 dakika (10 tur), yarım hız, en çok 30 ft, yere değmez; orta/ağır zırhla yok. Tiefling tabanında direnç olmadığı için "direnci kaybeder" kendiliğinden (Kanatlı soy direnç vermez).
+  - Orc Orman "bitkisel zorlu arazi": zemin `g` (çalılık, sazlık) ve Entangle/Plant Growth/Spike Growth alanları (`data/alt-soy.json`).
+- **Dwarf Tepe ve Yeraltı:** AS1a-2'de boşaltılan buff'lar artık yeni (kullanıcı kararı): Tepe Dayanıklılık kurtarma +1, Yeraltı Gizlen +2.
+- **Human ten tonu (İş 4):** seçici görünür; `kulturTen` dolu (dört kültür × üç ton: Orijinal, Siyahi, Doğu Asyalı), varsayılan Orijinal (filtre yok), `ten.filtreUygula: true`; oluşturucu önizlemesi ve karakter kartında filtre uygulanır. **⚠ YER TUTUCU:** Siyahi ve Doğu Asyalı renkleri geçici; gerçek değerler tek yerde: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].hsl` (`hueRotate`, `saturate`, `brightness`, `sepia`); kod ve test değişmez. Eski 6 tonluk seçim kimlikleri (acik, bugday…) Orijinal sayılır.
+- **Testler:** `src/battle/altSoy.test.ts` (türetme, her kurtarma/kontrol/harita/hareket kuralı, Kanatlı, Dragonborn doğrulaması, sürüm kapısı), `src/sim/altSoyRegresyon.test.ts` (70 altın imza AS1b öncesi ağaçtan; Human parti 71 = 70; Drow parti 71 ≠ 70), `altSoy41.test.tsx` güncellendi (durum etiketi, Tepe/Yeraltı yeni buff, üç ton). Sürüm sabiti testleri (`g6`, `ruleVersion`) 71.
+- **Kapsam dışı:** ek paket/imza/eşya kurtarmalarına `SaveCtx`; savaş jetonuna görünüm; kanat sprite'ları; Dragonborn beyaz tabanı; Human ten tonlarının gerçek renkleri.
+
 ## 2026-11-12 — Kuyruk MB7: çağrılan binekler: Find Steed, Phantom Steed, paket `binek` alanı (kural sürümü 70)
 
 - **Sürüm:** `main` b493a10 üstüne. Kural sürümü 69 → **70** (tek sabit `src/battle/binekSurum.ts` `BINEK_MB7_VERSION`); 69 ve altı birebir.

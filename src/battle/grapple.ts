@@ -70,7 +70,7 @@ export function executeEscapeGrapple(state: BattleState, actor: Combatant, rng: 
   const skill = acr > ath ? 'acrobatics' : 'athletics';
   // Kuyruk 19: Powerful Build (Goliath; SRD 5.2.1): Grappled'ı bitirme denetiminde avantaj (anahtar `powerfulBuild`, sürüm 16).
   const pb = actor.raceId === 'goliath' && !!globalRule(state, 'powerfulBuild');
-  const mode0 = checkMode(actor, skill, checkBase(state, actor));
+  const mode0 = checkMode(actor, skill, checkBase(state, actor, 'normal', skill));
   // Avantaj ile dezavantaj birbirini götürür (SRD).
   const mode: RollMode = !pb ? mode0 : mode0 === 'disadvantage' ? 'normal' : 'advantage';
   const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: Math.max(ath, acr) }));

@@ -40,7 +40,7 @@ export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): C
     // Kuyruk A6: Phantasmal Force'ta Study eylemi INT (Investigation).
     const skill = held.escapeCheck.skill ?? 'athletics';
     const bonus = skillBonus(actor, skill);
-    const mode = checkMode(actor, skill, checkBase(state, actor));
+    const mode = checkMode(actor, skill, checkBase(state, actor, 'normal', skill));
     const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus }));
     const { total, extra } = finishCheck(actor, skill, d.kept, bonus, dc, mode, rng);
     const success = total >= dc;
@@ -131,7 +131,7 @@ export function allyEscapeEvents(state: BattleState, actor: Combatant, target: C
   if (!held?.escapeCheck) return null;
   const dc = held.escapeCheck.dc;
   const bonus = skillBonus(actor, 'athletics');
-  const mode = checkMode(actor, 'athletics', checkBase(state, actor));
+  const mode = checkMode(actor, 'athletics', checkBase(state, actor, 'normal', 'athletics'));
   const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus }));
   const { total, extra } = finishCheck(actor, 'athletics', d.kept, bonus, dc, mode, rng);
   const success = total >= dc;

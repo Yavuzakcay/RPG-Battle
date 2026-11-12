@@ -1282,3 +1282,7 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 .lineage-notes .buff b { color: var(--party); }
 .lineage-notes .debuff b { color: var(--enemy); }
 .lineage-planned { font-size: 0.8em; padding: 0 6px; border: 1px solid var(--line); border-radius: 999px; color: var(--mute); margin-left: 6px; }
+
+.lineage-planned.status-calisir { color: var(--party); border-color: var(--party); }
+.lineage-planned.status-kismi { color: #b98200; border-color: #b98200; }
+.awakening-debuff { display: block; margin-top: 4px; }
