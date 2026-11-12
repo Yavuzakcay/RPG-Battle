@@ -168,6 +168,21 @@ export interface ActiveEffect {
   light?: number;
   /** Kuyruk K67a (sürüm 51): ek loş ışık (altıgen). */
   lightDim?: number;
+  /**
+   * Kuyruk AS1b (sürüm 71+, alt soy etkileri; `src/battle/soyEtki.ts`): `saveDisVs` bu hasar türünü ya da durumu uygulayan
+   * etkinin kurtarmasında dezavantaj; `checkDisSkill` beceri (ya da yetenek) kontrolünde, koşullu (`bright` parlak ışık,
+   * `darkMap` karanlık harita, `water` suda, `settlement` yerleşim haritası); `fallMult` düşme hasarı çarpanı; `teleportEnds`
+   * ışınlanınca turun kalan hareketi biter; `plantWalker` bitkisel zorlu arazi yok sayılır; `zorluArazideHiz` tur başında zorlu
+   * arazide duruyorsa hız farkı (ft).
+   */
+  saveDisVs?: Array<{ damage?: string; condition?: string }>;
+  checkDisSkill?: Array<{ skill?: string; ability?: Ability; when?: 'bright' | 'darkMap' | 'water' | 'settlement' }>;
+  fallMult?: number;
+  teleportEnds?: true;
+  plantWalker?: true;
+  zorluArazideHiz?: number;
+  /** Kuyruk AS1b: haritaya bağlı alt soy koşulları (savaş başında çözülür: `soyEtki.ts` `withSoy`). */
+  soyHarita?: { gunisigiSaldiriDez?: boolean; icMekanSaldiri?: number; icMekanInisiyatif?: number };
   /** Kuyruk K20 (Celestial Göksel Uyanış): kendi turunda bir kez saldırı isabetine ek hasar; tur sonu aura hasarı; Kırık Kanat süzülme hızı (ft). */
   celestialStrike?: { bonus: number; type: string };
   celestialAura?: { radiusFt: number; damage: number; type: string };
@@ -466,6 +481,8 @@ export interface UsableFeature {
   type: 'action' | 'bonus' | 'free';
   resource?: string;
   when?: 'attackAction';
+  /** Kuyruk AS1b: bu zırh türlerinde kullanılamaz (Kanat Süzülüşü: orta/ağır). */
+  noArmor?: Array<'medium' | 'heavy'>;
   effect: FeatureEffect;
 }
 
@@ -863,6 +880,8 @@ export interface Combatant {
   legendaryUsed?: string[];
   /** Ağır zırh giyiyor (çöl sıcağı, derin suda batma). */
   heavyArmor: boolean;
+  /** Kuyruk AS1b: orta zırh giyiyor (Kanatlı Tiefling uçamaz). */
+  mediumArmor?: true;
   /** Kuyruk A6: zırh giyiyor (karakterde zırh türü `none` değil; canavarda bilinmez). */
   armored?: boolean;
   /** Kuyruk S2: metal zırh giyiyor (Heat Metal). */

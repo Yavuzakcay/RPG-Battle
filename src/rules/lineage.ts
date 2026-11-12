@@ -3,10 +3,10 @@
  * Lineage, Goliath Giant Ancestry. Veri `data/races.json` (`lineages`; her seçenekte TR/EN `summary`), kaynaklar
  * `data/class-features.json` (`race` + `lineage` + `minLevel`). Saf: ekran ya da depolama bilmez.
  */
-import { getRace, races, spells, type Lineage } from '../data';
+import { getRace, races, spells, type Lineage, type LineageEtki } from '../data';
 import type { CharacterSheet } from './stats';
 
-type LineageSheet = Pick<CharacterSheet, 'raceId' | 'lineageId'>;
+type LineageSheet = Pick<CharacterSheet, 'raceId' | 'lineageId' | 'soyKapali'>;
 
 /** Karakterin soyu (seçilmemişse türün varsayılanı); soyu olmayan türde undefined. */
 export function lineageOf(sheet: LineageSheet): Lineage | undefined {
@@ -15,14 +15,23 @@ export function lineageOf(sheet: LineageSheet): Lineage | undefined {
   return race?.lineages?.find((l) => l.id === id);
 }
 
-/** Türün ve soyun hızı (Wood Elf 35 ft). */
-export function raceSpeed(sheet: LineageSheet): number {
-  return lineageOf(sheet)?.speed ?? getRace(sheet.raceId).speed;
+/**
+ * Kuyruk AS1b: alt soyun mekaniği (veriden `lineages[].etki`); `sheet.soyKapali` (savaş sürümü < 71'de oluşan savaşçı) ya da
+ * soy seçilmemişse (soyu isteğe bağlı türün eski kaydı: "seçilene dek bonus yok") undefined.
+ */
+export function lineageEtki(sheet: LineageSheet): LineageEtki | undefined {
+  if (sheet.soyKapali) return undefined;
+  return lineageOf(sheet)?.etki;
 }
 
-/** Türün ve soyun karanlık görüşü (Drow 120 ft). */
+/** Türün ve soyun hızı (Wood Elf 35 ft; AS1b: alt soyun hız farkı). */
+export function raceSpeed(sheet: LineageSheet): number {
+  return (lineageOf(sheet)?.speed ?? getRace(sheet.raceId).speed) + (lineageEtki(sheet)?.hiz ?? 0);
+}
+
+/** Türün ve soyun karanlık görüşü (Drow 120 ft; AS1b: Yeraltı Gnome). */
 export function raceDarkvision(sheet: LineageSheet): number {
-  return lineageOf(sheet)?.darkvision ?? getRace(sheet.raceId).darkvision;
+  return lineageEtki(sheet)?.karanlikGorus ?? lineageOf(sheet)?.darkvision ?? getRace(sheet.raceId).darkvision;
 }
 
 /** Bu seviyede soydan gelen büyüler (cantrip'ler her zaman; seviyeli büyüler eşikten itibaren, slotsuz kullanımla). */
@@ -32,10 +41,6 @@ export function lineageSpells(sheet: LineageSheet & Pick<CharacterSheet, 'level'
 
 /** Kuyruk AS1a: soyun görünen adı (TR/EN `ad`; yoksa `name`). */
 export const lineageName = (l: Lineage, lang: 'tr' | 'en'): string => l.ad?.[lang] ?? l.name;
-
-/** Kuyruk AS1a: soy seçeneğinin buff/debuff açıklaması (yalnızca metin; etkisi AS1b'de). */
-export const lineageNotes = (l: Lineage, lang: 'tr' | 'en'): { buff: string[]; debuff: string[]; planned: boolean } =>
-  ({ buff: (l.buff ?? []).map((x) => x[lang] ?? x.tr), debuff: (l.debuff ?? []).map((x) => x[lang] ?? x.tr), planned: l.durum === 'planli' });
 
 /** Soy seçeneğinin özeti (geçerli dilde). */
 export const lineageSummary = (l: Lineage, lang: 'tr' | 'en'): string => l.summary[lang] ?? l.summary.tr;

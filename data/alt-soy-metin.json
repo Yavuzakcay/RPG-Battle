@@ -1,0 +1,425 @@
+{
+  "not": "Kuyruk AS1a/AS1b: alt soy buff/debuff açıklamaları (TR/EN; yalnız oluşturucu okur: tembel parça, ana parçaya girmez). Anahtar `<tür>/<alt soy>`; mekanik `data/races.json` `lineages[].etki`. `kismiNot`: durumu `kismi` olan soyların ortak notu.",
+  "kismiNot": {
+    "tr": "Kurtarma dezavantajı büyü, canavar saldırısı/nefesi, alan ve yüzey hasarı, süren etkilerin yeniden kurtarması ve durum zamanlayıcılarında çalışır; ek paket, imza alt sınıf ve eşya kaynaklı kurtarmalarda henüz yok.",
+    "en": "The saving-throw disadvantage works for spells, monster attacks and breaths, area and surface damage, repeat saves of lasting effects and condition timers; not yet for extension-pack, signature-subclass and item saves."
+  },
+  "soylar": {
+    "dragonborn/black": {
+      "debuff": [
+        {
+          "tr": "Parlak ışıkta Algı (Perception) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Perception checks in bright light."
+        }
+      ]
+    },
+    "dragonborn/blue": {
+      "debuff": [
+        {
+          "tr": "Gizlen (Stealth) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Stealth checks."
+        }
+      ]
+    },
+    "dragonborn/brass": {
+      "debuff": [
+        {
+          "tr": "Sezgi (Insight) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Insight checks."
+        }
+      ]
+    },
+    "dragonborn/bronze": {
+      "debuff": [
+        {
+          "tr": "Konsantrasyon kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on concentration saving throws."
+        }
+      ]
+    },
+    "dragonborn/copper": {
+      "debuff": [
+        {
+          "tr": "İkna (Persuasion) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Persuasion checks."
+        }
+      ]
+    },
+    "dragonborn/gold": {
+      "debuff": [
+        {
+          "tr": "Korku (Frightened) uygulayan etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against effects that frighten you."
+        }
+      ]
+    },
+    "dragonborn/green": {
+      "debuff": [
+        {
+          "tr": "Bilgelik kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on Wisdom saving throws."
+        }
+      ]
+    },
+    "dragonborn/red": {
+      "debuff": [
+        {
+          "tr": "Soğuk hasarı veren etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against cold damage."
+        }
+      ]
+    },
+    "dragonborn/silver": {
+      "debuff": [
+        {
+          "tr": "Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against fire damage."
+        }
+      ]
+    },
+    "dragonborn/white": {
+      "debuff": [
+        {
+          "tr": "Zekâ (Intelligence) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Intelligence checks."
+        }
+      ]
+    },
+    "dwarf/crag": {
+      "buff": [
+        {
+          "tr": "Ağır zırhın hız cezası sana işlemez.",
+          "en": "Heavy armor never slows you."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Suda Atletizm (Athletics) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Athletics checks in water."
+        }
+      ]
+    },
+    "dwarf/knoll": {
+      "buff": [
+        {
+          "tr": "Dayanıklılık kurtarma zarlarında +1.",
+          "en": "+1 on Constitution saving throws."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Çeviklik kurtarma zarlarında −1.",
+          "en": "−1 on Dexterity saving throws."
+        }
+      ]
+    },
+    "dwarf/undervault": {
+      "buff": [
+        {
+          "tr": "Gizlen (Stealth) kontrollerinde +2.",
+          "en": "+2 on Stealth checks."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Gün ışığında saldırı zarlarında dezavantaj.",
+          "en": "Disadvantage on attack rolls in daylight."
+        }
+      ]
+    },
+    "elf/drow": {
+      "debuff": [
+        {
+          "tr": "Gün ışığında saldırı atışlarında dezavantaj.",
+          "en": "Disadvantage on attack rolls in daylight."
+        }
+      ]
+    },
+    "elf/high-elf": {
+      "debuff": [
+        {
+          "tr": "Dayanıklılık kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on Constitution saving throws."
+        }
+      ]
+    },
+    "elf/wood-elf": {
+      "debuff": [
+        {
+          "tr": "Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against fire damage."
+        }
+      ]
+    },
+    "gnome/forest-gnome": {
+      "debuff": [
+        {
+          "tr": "Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against fire damage."
+        }
+      ]
+    },
+    "gnome/rock-gnome": {
+      "debuff": [
+        {
+          "tr": "Atletizm (Athletics) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Athletics checks."
+        }
+      ]
+    },
+    "gnome/subterranean": {
+      "buff": [
+        {
+          "tr": "Karanlık görüş 120 ft.",
+          "en": "Darkvision 120 ft."
+        },
+        {
+          "tr": "Gizlen (Stealth) kontrollerinde +2.",
+          "en": "+2 on Stealth checks."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Parlak ışıkta Algı (Perception) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Perception checks in bright light."
+        }
+      ]
+    },
+    "goliath/cloud": {
+      "debuff": [
+        {
+          "tr": "Işınlanınca o turun kalan hareketin biter.",
+          "en": "When you teleport, the rest of your movement this turn ends."
+        }
+      ]
+    },
+    "goliath/fire": {
+      "debuff": [
+        {
+          "tr": "Soğuk hasarı veren etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against cold damage."
+        }
+      ]
+    },
+    "goliath/frost": {
+      "debuff": [
+        {
+          "tr": "Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against fire damage."
+        }
+      ]
+    },
+    "goliath/hill": {
+      "debuff": [
+        {
+          "tr": "Yere yıkılma (Prone) uygulayan etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against effects that knock you Prone."
+        }
+      ]
+    },
+    "goliath/stone": {
+      "debuff": [
+        {
+          "tr": "Hızın −5 ft.",
+          "en": "Your speed is −5 ft."
+        }
+      ]
+    },
+    "goliath/storm": {
+      "debuff": [
+        {
+          "tr": "Gizlen (Stealth) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Stealth checks."
+        }
+      ]
+    },
+    "halfling/slender": {
+      "buff": [
+        {
+          "tr": "Çeviklik +1.",
+          "en": "Dexterity +1."
+        },
+        {
+          "tr": "Hız +5 ft.",
+          "en": "Speed +5 ft."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Güç (Strength) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Strength checks."
+        }
+      ]
+    },
+    "halfling/sturdy": {
+      "buff": [
+        {
+          "tr": "Güç +1, Dayanıklılık +1.",
+          "en": "Strength +1, Constitution +1."
+        },
+        {
+          "tr": "Taşıma kapasiten ×1,5.",
+          "en": "Your carrying capacity is ×1.5."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Hızın −5 ft.",
+          "en": "Speed −5 ft."
+        }
+      ]
+    },
+    "human/tenhausser": {
+      "buff": [
+        {
+          "tr": "Güç +1, Dayanıklılık +1.",
+          "en": "Strength +1, Constitution +1."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Diplomasi (Persuasion) ve Gizlen (Stealth) kontrollerinde −1.",
+          "en": "−1 on Persuasion and Stealth checks."
+        }
+      ]
+    },
+    "human/khadyrga": {
+      "buff": [
+        {
+          "tr": "Zekâ +1, Karizma +1.",
+          "en": "Intelligence +1, Charisma +1."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Zorlu arazide hızın −5 ft.",
+          "en": "−5 ft speed in difficult terrain."
+        }
+      ]
+    },
+    "human/pure-city": {
+      "buff": [
+        {
+          "tr": "Bilgelik +1, Çeviklik +1.",
+          "en": "Wisdom +1, Dexterity +1."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Zırhsızken AC −1.",
+          "en": "−1 AC while unarmored."
+        }
+      ]
+    },
+    "human/outwall": {
+      "buff": [
+        {
+          "tr": "Dayanıklılık +1, Bilgelik +1.",
+          "en": "Constitution +1, Wisdom +1."
+        },
+        {
+          "tr": "Hayatta Kalma (Survival) ve Algı (Perception) +2.",
+          "en": "+2 on Survival and Perception."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "İç mekânda saldırı −2 ve inisiyatif −2.",
+          "en": "−2 on attacks and initiative indoors."
+        },
+        {
+          "tr": "Yerleşimde Karizma (Charisma) kontrollerinde dezavantaj.",
+          "en": "Disadvantage on Charisma checks in settlements."
+        }
+      ]
+    },
+    "orc/glacier": {
+      "buff": [
+        {
+          "tr": "Soğuk hasarına direnç.",
+          "en": "Resistance to cold damage."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Ateş hasarına karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against fire damage."
+        }
+      ]
+    },
+    "orc/wildwood": {
+      "buff": [
+        {
+          "tr": "Bitkisel zorlu araziyi yok sayarsın.",
+          "en": "You ignore difficult terrain made of plants."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Zehir hasarına karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against poison damage."
+        }
+      ]
+    },
+    "orc/fen": {
+      "buff": [
+        {
+          "tr": "Zehir hasarına direnç.",
+          "en": "Resistance to poison damage."
+        },
+        {
+          "tr": "Yüzme hızın yürüme hızına eşittir.",
+          "en": "Your swim speed equals your walking speed."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Soğuk hasarına karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against cold damage."
+        }
+      ]
+    },
+    "tiefling/abyssal": {
+      "debuff": [
+        {
+          "tr": "Konsantrasyon kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on concentration saving throws."
+        }
+      ]
+    },
+    "tiefling/chthonic": {
+      "debuff": [
+        {
+          "tr": "Işıltı (Radiant) hasarı veren etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against radiant damage."
+        }
+      ]
+    },
+    "tiefling/infernal": {
+      "debuff": [
+        {
+          "tr": "Soğuk hasarı veren etkilere karşı kurtarma zarlarında dezavantaj.",
+          "en": "Disadvantage on saving throws against cold damage."
+        }
+      ]
+    },
+    "tiefling/winged": {
+      "buff": [
+        {
+          "tr": "Kanatlarınla yarım hızla süzülürsün; kullanım sayısı yeterlilik bonusu kadardır.",
+          "en": "You glide at half speed on your wings; uses equal your proficiency bonus."
+        }
+      ],
+      "debuff": [
+        {
+          "tr": "Soy hasar direncini kaybedersin.",
+          "en": "You lose the lineage damage resistance."
+        },
+        {
+          "tr": "Orta ya da ağır zırhla uçamazsın.",
+          "en": "You cannot fly in medium or heavy armor."
+        }
+      ]
+    }
+  }
+}

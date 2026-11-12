@@ -4,10 +4,10 @@
  */
 import { armor as armorList, getClass, getRace, items as itemList, spellSlots } from '../data';
 import { ABILITIES, abilityModifier, proficiencyBonus, type Ability } from './abilities';
-import { isSkill, skillTable, type Skill } from './skills';
+import { isSkill, SKILLS, skillTable, type Skill } from './skills';
 import { classKit, gainedFeatures, optionTraining, packTraining, speedBonus } from './classFeatures';
 import { applyIncreases, featEffects, sheetFeats, type Advancement } from './advancement';
-import { raceSpeed } from './lineage';
+import { lineageEtki, raceSpeed } from './lineage';
 import { findSubclass } from './subclasses';
 import { bonusesOf, type MagicInitiatePick } from './backgrounds';
 
@@ -57,6 +57,8 @@ export interface CharacterSheet {
   featureChoices?: Record<string, string>;
   /** Kuyruk K20 (ev kuralı): Celestial Göksel Uyanış biçimi (`data/celestial.json` `awakening.secenekler`). */
   celestialAwakening?: string;
+  /** Kuyruk AS1b: savaş sürümü < 71'de oluşan savaşçı için alt soy mekaniği kapalı (yalnız savaş kurulumu yazar; kayda girmez). */
+  soyKapali?: true;
   /** Kuyruk AS1a: Human ten tonu (`data/alt-soy-gorunum.json` `ten.tonlar`); kültürden bağımsız, yalnızca görünüm. */
   skinTone?: string;
   /** Taşıdığı silahlar (data/weapons.json adları), isteğe bağlı büyülü bonusla. */
@@ -156,7 +158,9 @@ export function finalScores(sheet: CharacterSheet): Scores {
   const bonuses = bonusesOf(sheet);
   checkBackgroundBonuses(bonuses);
   const base = {} as Scores;
-  for (const a of ABILITIES) base[a] = Math.min(20, sheet.baseScores[a] + (bonuses[a] ?? 0));
+  // Kuyruk AS1b: alt soyun yetenek artışı geçmiş bonusuna ek (tavan 20; savaş sürümü ≥ 71).
+  const soyUp = lineageEtki(sheet)?.yetenek ?? {};
+  for (const a of ABILITIES) base[a] = Math.min(20, sheet.baseScores[a] + (bonuses[a] ?? 0) + (soyUp[a] ?? 0));
   // Seviye yuvalarındaki yetenek artışları (ASI +2/+1, feat'lerin +1'i; tavan feat'e göre).
   const s = applyIncreases(base, sheet.advancements);
   // Kuyruk 19: sınıf özelliğinden yetenek artışı (Primal Champion, Body and Mind: +4, en çok 25).
@@ -174,13 +178,13 @@ export function finalScores(sheet: CharacterSheet): Scores {
 }
 
 /** Türden ve seçilen mirastan gelen hasar dirençleri. */
-export function raceResistances(sheet: Pick<CharacterSheet, 'raceId' | 'lineageId'>): string[] {
+export function raceResistances(sheet: Pick<CharacterSheet, 'raceId' | 'lineageId' | 'soyKapali'>): string[] {
   const race = getRace(sheet.raceId);
   const lineageId = sheet.lineageId ?? race.defaultLineage;
   if (lineageId === undefined) return [...race.resistances];
   const lineage = race.lineages?.find((l) => l.id === lineageId);
   if (!lineage) throw new Error(`${race.name} için miras bulunamadı: "${lineageId}"`);
-  return [...new Set([...race.resistances, ...lineage.resistances])];
+  return [...new Set([...race.resistances, ...lineage.resistances, ...(lineageEtki(sheet)?.direnc ?? [])])];
 }
 
 /** Sınıfın büyü slotları (9 elemanlı dizi). Büyücü olmayanlarda hepsi 0. */
@@ -240,6 +244,14 @@ export function classSkillProblem(classId: string, chosen: readonly Skill[], ext
   return null;
 }
 
+/** Kuyruk AS1b: alt soyun beceri bonusu (yetkin olunmayan beceride yetenek değiştiricisi + Jack üstüne). */
+function withSoySkills(skills: DerivedStats['skills'], modifiers: Scores, jack: number, bonus: Partial<Record<Skill, number>> | undefined): DerivedStats['skills'] {
+  if (!bonus) return skills;
+  const out = { ...skills };
+  for (const [k, v] of Object.entries(bonus) as Array<[Skill, number]>) out[k] = (out[k] ?? modifiers[SKILLS[k].ability] + jack) + v;
+  return out;
+}
+
 export function deriveStats(sheet: CharacterSheet): DerivedStats {
   checkSkills(sheet);
   const race = getRace(sheet.raceId);
@@ -266,6 +278,9 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     if (ud && (ud.shield || !sheet.shield)) {
       for (const a of ud.abilities) if (a !== 'dex') acParts.push({ kind: a, value: modifiers[a] });
     }
+    // Kuyruk AS1b: alt soyun zırhsız AC farkı (Saf Kent −1).
+    const soyAc = lineageEtki(sheet)?.zirhsizAc;
+    if (soyAc) acParts.push({ kind: 'feat', value: soyAc, name: 'Alt soy' });
   } else {
     acParts.push({ kind: 'armor', value: ar.baseAc, name: ar.name });
     const dexPart = ar.type === 'light' ? modifiers.dex : ar.type === 'medium' ? Math.min(modifiers.dex, 2) : 0;
@@ -299,15 +314,17 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
   // Görev K3: soy hızı (Wood Elf 35 ft).
   let speed = raceSpeed(sheet);
   const armorStrengthShort = ar.strength !== undefined && scores.str < ar.strength ? ar.strength : undefined;
-  if (armorStrengthShort !== undefined) speed -= 10;
+  // Kuyruk AS1b: Dağ alt soyu ağır zırhın Güç şartı hız cezasını yok sayar.
+  if (armorStrengthShort !== undefined && !(ar.type === 'heavy' && lineageEtki(sheet)?.agirZirhHizCezasiYok)) speed -= 10;
   // Fast Movement, Unarmored Movement (veriden).
   speed += speedBonus(cls.id, level, { type: ar.type, shield: sheet.shield }, sheet.subclassId);
 
   // Save'ler
+  const soyEtki = lineageEtki(sheet);
   const saveBonus = sum((e) => e.saveBonus);
   const saves = {} as Scores;
   for (const a of ABILITIES) {
-    saves[a] = modifiers[a] + saveBonus + (cls.saves.includes(a) || kit.saveProficiencies.includes(a) ? prof : 0);
+    saves[a] = modifiers[a] + saveBonus + (soyEtki?.kurtarma?.[a] ?? 0) + (cls.saves.includes(a) || kit.saveProficiencies.includes(a) ? prof : 0);
   }
 
   const castMod = cls.casting ? modifiers[cls.casting.ability] : 0;
@@ -328,7 +345,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     jack,
     saves,
     saveProficiencies: [...cls.saves, ...kit.saveProficiencies.filter((a) => !cls.saves.includes(a))],
-    skills: skillTable(modifiers, prof, subclassSkills(sheet), sheet.expertise ?? []),
+    skills: withSoySkills(skillTable(modifiers, prof, subclassSkills(sheet), sheet.expertise ?? []), modifiers, jack, soyEtki?.beceri),
     spellSaveDc: cls.casting ? 8 + prof + castMod : null,
     spellAttack: cls.casting ? prof + castMod : null,
     spellSlots: spellSlotsFor(cls.id, level),

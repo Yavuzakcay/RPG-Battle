@@ -294,7 +294,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     // Kuyruk K63 (sürüm 47, `illusion`): Truesight'lı hedef görsel yanılsamaya karşı save'i otomatik geçer.
     const sleepOrSee = sleepless || !!m.illusion && truesightSees(state, t, actor);
     const save = sleepOrSee ? { d20: null, total: null, success: true } as ReturnType<typeof resolveSave>
-      : resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
+      : resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability, actor, { damage: damageType, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
     const adjusted = amount > 0 ? adjustDamage(amount, damageType, profileIn(state, t, true)) : { amount: 0, note: null };
     const amount2 = second ? saveDamage(t, ability, save.success, second.total, !!m.halfOnSave) : 0;
@@ -803,7 +803,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     // Kuyruk K70 (sürüm 54): türü save'i otomatik başaran (Flesh to Stone: Construct).
     const typeOk = autoSucceedsType(m.autoSuccessTypes, target);
     const save = resolveSave({ ...((m.illusion && truesightSees(state, target, actor)) || typeOk ? { autoSuccess: true } : {}), extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
-      mode: saveMode(mode, target, ability, actor), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: target.id }));
+      mode: saveMode(mode, target, ability, actor, { damage: m.damageType, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: target.id }));
     let raw = 0;
     let rolls: number[] = [];
     if (m.damage) {

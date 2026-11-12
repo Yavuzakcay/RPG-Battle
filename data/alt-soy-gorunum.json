@@ -128,66 +128,79 @@
     }
   },
   "ten": {
-    "not": "Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`). `kulturTen` bilerek boş: kullanıcı kültür–ten eşlemesini kendisi doldurur. AS1a-2 İş 3: ten eşlemesi eklenene dek bütün Human jetonları orijinal; `filtreUygula: false` iken ten tonu filtresi uygulanmaz (seçim saklanır). Eşleme eklenince true yapılır.",
-    "varsayilan": "orta",
+    "not": "Kuyruk AS1b İş 4: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar (üçü de). Ton rengi jetonun TAMAMINA CSS filtresiyle uygulanır (maske yok). ⚠ YER TUTUCU: `siyahi` ve `dogu-asyali` değerleri GEÇİCİDİR (kullanıcı gerçek değerleri sonra bu dosyada `tonlar[].hsl` alanına yazacak; kod değişmez). `orijinal`: filtre yok (varsayılan).",
+    "yerTutucu": true,
+    "filtreUygula": true,
+    "varsayilan": "orijinal",
     "tonlar": [
       {
-        "id": "acik",
+        "id": "orijinal",
         "ad": {
-          "tr": "Açık",
-          "en": "Fair"
-        },
-        "renk": "#f1d3b8",
-        "filtre": "brightness(1.08) saturate(0.9)"
-      },
-      {
-        "id": "bugday",
-        "ad": {
-          "tr": "Buğday",
-          "en": "Wheat"
-        },
-        "renk": "#e0b48a",
-        "filtre": "brightness(1.02) sepia(0.08)"
-      },
-      {
-        "id": "orta",
-        "ad": {
-          "tr": "Orta",
-          "en": "Medium"
+          "tr": "Orijinal",
+          "en": "Original"
         },
         "renk": "#c18d62",
-        "filtre": ""
+        "hsl": {
+          "hueRotate": 0,
+          "saturate": 1,
+          "brightness": 1,
+          "sepia": 0
+        },
+        "yorum": "Filtre yok: jeton orijinal teniyle gelir (kesin değer; yer tutucu değil)."
       },
       {
-        "id": "bakir",
+        "id": "siyahi",
         "ad": {
-          "tr": "Bakır",
-          "en": "Copper"
+          "tr": "Siyahi",
+          "en": "Black"
         },
-        "renk": "#a56b43",
-        "filtre": "brightness(0.93) sepia(0.12) saturate(1.05)"
+        "renk": "#5a3a2a",
+        "hsl": {
+          "hueRotate": 0,
+          "saturate": 1.1,
+          "brightness": 0.72,
+          "sepia": 0.15
+        },
+        "yorum": "YER TUTUCU (geçici): gerçek HSL değerleri kullanıcıdan gelecek; bu alanı (hsl) düzenle, başka yerde değişiklik gerekmez."
       },
       {
-        "id": "koyu",
+        "id": "dogu-asyali",
         "ad": {
-          "tr": "Koyu",
-          "en": "Deep"
+          "tr": "Doğu Asyalı",
+          "en": "East Asian"
         },
-        "renk": "#7a4c32",
-        "filtre": "brightness(0.84) sepia(0.1) saturate(1.05)"
-      },
-      {
-        "id": "abanoz",
-        "ad": {
-          "tr": "Abanoz",
-          "en": "Ebony"
+        "renk": "#e3c079",
+        "hsl": {
+          "hueRotate": -8,
+          "saturate": 0.9,
+          "brightness": 1.08,
+          "sepia": 0.2
         },
-        "renk": "#4d2f22",
-        "filtre": "brightness(0.72) sepia(0.12) saturate(1.1)"
+        "yorum": "YER TUTUCU (geçici): gerçek HSL değerleri kullanıcıdan gelecek; bu alanı (hsl) düzenle, başka yerde değişiklik gerekmez."
       }
     ],
-    "kulturTen": {},
-    "filtreUygula": false
+    "kulturTen": {
+      "tenhausser": [
+        "orijinal",
+        "siyahi",
+        "dogu-asyali"
+      ],
+      "khadyrga": [
+        "orijinal",
+        "siyahi",
+        "dogu-asyali"
+      ],
+      "pure-city": [
+        "orijinal",
+        "siyahi",
+        "dogu-asyali"
+      ],
+      "outwall": [
+        "orijinal",
+        "siyahi",
+        "dogu-asyali"
+      ]
+    }
   },
   "orijinal": [
     "elf/wood-elf",

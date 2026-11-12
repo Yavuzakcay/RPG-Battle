@@ -17,7 +17,13 @@ export interface WingSlot {
   yukari: number;
   filtre?: string;
 }
-export interface SkinTone { id: string; ad: { tr: string; en: string }; renk: string; filtre: string }
+export interface SkinTone { id: string; ad: { tr: string; en: string }; renk: string; hsl: { hueRotate: number; saturate: number; brightness: number; sepia: number }; yorum?: string }
+/** Ten tonunun CSS filtresi (`hsl` alanından; Orijinal: boş). */
+export function toneFilter(t: SkinTone): string {
+  const h = t.hsl;
+  const parts = [h.hueRotate ? `hue-rotate(${h.hueRotate}deg)` : '', h.sepia ? `sepia(${h.sepia})` : '', h.saturate !== 1 ? `saturate(${h.saturate})` : '', h.brightness !== 1 ? `brightness(${h.brightness})` : ''];
+  return parts.filter(Boolean).join(' ');
+}
 export interface LookSheet { raceId: string; lineageId?: string; celestialAwakening?: string; level?: number; skinTone?: string }
 export interface LineageLook {
   /** CSS `filter` (boşsa yok). */
@@ -35,7 +41,7 @@ const D = data as unknown as {
   celestialUyanis: Record<string, { hale: boolean; filtre?: string; kanat?: string }>;
   kanatYuvalari: Record<string, Omit<WingSlot, 'id'>>;
   hale: { gizleUstYuzde: number };
-  ten: { varsayilan: string; filtreUygula: boolean; tonlar: SkinTone[]; kulturTen: Record<string, string> };
+  ten: { varsayilan: string; filtreUygula: boolean; tonlar: SkinTone[]; kulturTen: Record<string, string[]> };
 };
 /** Celestial Göksel Uyanış 3. seviyeden etkin (`data/celestial.json` `awakening.minLevel`; test eşitliği denetler). */
 export const AWAKENING_FROM = 3;
@@ -43,8 +49,9 @@ export const AWAKENING_DEFAULT = 'parlayan-ruh';
 export const HALO_CLIP_PCT = D.hale.gizleUstYuzde;
 export const SKIN_TONES: SkinTone[] = D.ten.tonlar;
 export const DEFAULT_SKIN_TONE = D.ten.varsayilan;
-/** Kültür → ten tonu eşlemesi: bilerek boş (kullanıcı doldurur); doluysa yeni karakterde ilk öneri. */
-export const CULTURE_SKIN: Record<string, string> = D.ten.kulturTen;
+/** Kültür (alt soy) → seçilebilecek ten tonları (`ten.kulturTen`; AS1b'de üç kültürde de üç ton). */
+export const CULTURE_SKIN: Record<string, string[]> = D.ten.kulturTen;
+export const tonesFor = (lineageId: string | undefined): SkinTone[] => SKIN_TONES.filter((t) => !lineageId || !CULTURE_SKIN[lineageId] || CULTURE_SKIN[lineageId]!.includes(t.id));
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
@@ -62,8 +69,9 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): 
   const level = sheet.level ?? 1;
   if (sheet.raceId === 'human') {
     // Ten tonu filtresi eşleme eklenene dek kapalı (`ten.filtreUygula`): bütün Human jetonları orijinal.
-    const tone = D.ten.filtreUygula ? SKIN_TONES.find((x) => x.id === (sheet.skinTone ?? DEFAULT_SKIN_TONE)) : undefined;
-    if (tone?.filtre) filters.push(tone.filtre);
+    const tone = D.ten.filtreUygula ? skinToneOf(sheet.skinTone) : undefined;
+    const tf = tone ? toneFilter(tone) : '';
+    if (tf) filters.push(tf);
   }
   if (sheet.raceId === 'celestial') {
     const aw = D.celestialUyanis[sheet.celestialAwakening ?? AWAKENING_DEFAULT];
@@ -85,4 +93,5 @@ export function lineageLook(sheet: LookSheet, opts: { flying?: boolean } = {}): 
 }
 
 /** Ten tonu (Human) için kimlik denetimi. */
-export const skinToneOf = (id: string | undefined): SkinTone | undefined => SKIN_TONES.find((x) => x.id === (id ?? DEFAULT_SKIN_TONE));
+/** Ten tonu (bilinmeyen eski kimlik: varsayılan Orijinal). */
+export const skinToneOf = (id: string | undefined): SkinTone | undefined => SKIN_TONES.find((x) => x.id === id) ?? SKIN_TONES.find((x) => x.id === DEFAULT_SKIN_TONE);

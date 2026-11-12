@@ -9,6 +9,7 @@
 import { armor, getRace, items, weapons } from '../data';
 import carry from '../../data/tasima.json';
 import { finalScores, type CharacterSheet } from './stats';
+import { lineageEtki } from './lineage';
 
 export type CarryRule = 'off' | 'srd' | 'tiered';
 export const CARRY_RULES: CarryRule[] = ['off', 'srd', 'tiered'];
@@ -44,7 +45,8 @@ export function carryLoad(sheet: CharacterSheet, rule: CarryRule): CarryLoad {
   let str = 10;
   try { str = finalScores(sheet).str; } catch { /* geçersiz geçmiş bonusu: varsayılan */ }
   const weight = carriedWeight(sheet);
-  const sizeMult = carrySizeMult(sheet.raceId);
+  // Kuyruk AS1b: alt soyun taşıma çarpanı (Kalın Halfling ×1,5; savaş sürümü ≥ 71).
+  const sizeMult = carrySizeMult(sheet.raceId) * (lineageEtki(sheet)?.tasima ?? 1);
   const capacity = str * carry.capacityPerStr * sizeMult;
   const encumberedAt = str * carry.encumberedPerStr * sizeMult;
   const heavyAt = str * carry.heavyPerStr * sizeMult;

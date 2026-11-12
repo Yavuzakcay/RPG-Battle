@@ -39,9 +39,10 @@ import { offHandOptionProblem, offHandProblem } from '../rules/hands';
 import { masteryOptions, masteryRight, masteryText, masteryWorks, weaponMasteryId, weaponProficient } from '../rules/mastery';
 import { AvatarBadge, preloadImages } from '../ui/Avatar';
 import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
-import { lineageName, lineageNotes, lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
+import { lineageName, lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
 import { LookFrame } from '../ui/LookFrame';
-import { DEFAULT_SKIN_TONE, SKIN_TONES } from '../ui/lineageLook';
+import { lineageNotes } from '../ui/lineageNotes';
+import { skinToneOf, tonesFor } from '../ui/lineageLook';
 import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateAll, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, type MagicInitiatePick } from '../rules/backgrounds';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
@@ -424,7 +425,7 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
             ))}
           </div>
           {race.lineageOptional && !lineage && <p className="soft-warn">⚠ {W.lineageOptionalHint}</p>}
-          {lineage && <LineageNotes lineage={lineage} />}
+          {lineage && <LineageNotes raceId={race.id} lineage={lineage} />}
         </>
       )}
       {race?.id === 'human' && (
@@ -433,10 +434,10 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           <p className="mute">{W.skinHelp}</p>
           {/* Kuyruk AS1a: ten tonu kültürden bağımsız ayrı seçim (kültür–ten eşlemesi veride boş). */}
           <div className="skin-tones" role="radiogroup" aria-label={W.skinTitle}>
-            {SKIN_TONES.map((tone) => {
-              const on = (s.skinTone ?? DEFAULT_SKIN_TONE) === tone.id;
+            {tonesFor(s.lineageId).map((tone) => {
+              const on = skinToneOf(s.skinTone)?.id === tone.id;
               return (
-                <button key={tone.id} type="button" role="radio" aria-checked={on} className={`skin-tone${on ? ' on' : ''}`} onClick={() => set({ skinTone: tone.id })}>
+                <button key={tone.id} type="button" role="radio" aria-checked={on} className={`skin-tone${on ? ' on' : ''}`} title={tone.yorum} data-tone={tone.id} onClick={() => set({ skinTone: tone.id })}>
                   <i style={{ background: tone.renk }} />{tone.ad[getLang()]}
                 </button>
               );
@@ -471,6 +472,7 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
                   onClick={() => set({ celestialAwakening: id })}>
                   <b>{opt[getLang()]}</b>
                   <small>{opt.metin[getLang()]}</small>
+                  {opt.debuff && <small className="awakening-debuff"><b>{W.lineageDebuff}:</b> {opt.debuff[getLang()]} <span className="lineage-planned status-calisir" data-status="calisir">{W.lineageStatus.calisir}</span></small>}
                 </button>
               );
             })}
@@ -507,20 +509,21 @@ function BackgroundStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch:
   );
 }
 
-/** Kuyruk AS1a: seçili soyun buff/debuff açıklaması (yalnızca metin; "planlı"). */
-function LineageNotes(props: { lineage: NonNullable<ReturnType<typeof lineageOf>> }) {
+/**
+ * Kuyruk AS1a/AS1b: seçili soyun buff/debuff açıklaması ve durum etiketi (çalışır / kısmi / planlı). Yalnız bu soyun FARKI
+ * (taban türün özellikleri tür seçiminde görünür); buff'ı olmayan soyda yalnız debuff (buff'ı özet satırında).
+ */
+function LineageNotes(props: { raceId: string; lineage: NonNullable<ReturnType<typeof lineageOf>> }) {
   const W = t().builder.wiz;
-  const n = lineageNotes(props.lineage, getLang());
+  const n = lineageNotes(props.raceId, props.lineage, getLang());
   if (n.buff.length === 0 && n.debuff.length === 0) return null;
-  // Kuyruk AS1a-2: alt soy kartında yalnız alt soyun FARKI; taban türün özellikleri tür seçiminde görünür. Buff'ı taban türde zaten
-  // olan alt soyda artı listesi boş, yerine "taban özellikler geçerli" notu.
+  const tag = n.status ? <span className={`lineage-planned status-${n.status}`} data-status={n.status}>{W.lineageStatus[n.status]}</span> : null;
   return (
     <div className="lineage-notes" data-testid="lineage-notes">
-      {n.buff.length > 0
-        ? <div className="buff"><b>{W.lineageBuff}</b>{n.planned && <span className="lineage-planned">{W.lineagePlanned}</span>}<ul>{n.buff.map((x) => <li key={x}>{x}</li>)}</ul></div>
-        : <p className="mute base-applies">{W.lineageBaseApplies}</p>}
-      <div className="debuff"><b>{W.lineageDebuff}</b><ul>{n.debuff.map((x) => <li key={x}>{x}</li>)}</ul></div>
-      {n.planned && <p className="mute">{W.lineageNotYet}</p>}
+      {n.buff.length > 0 && <div className="buff"><b>{W.lineageBuff}</b>{tag}<ul>{n.buff.map((x) => <li key={x}>{x}</li>)}</ul></div>}
+      <div className="debuff"><b>{W.lineageDebuff}</b>{n.buff.length === 0 && tag}<ul>{n.debuff.map((x) => <li key={x}>{x}</li>)}</ul></div>
+      {n.status === 'planli' && <p className="mute">{W.lineageNotYet}</p>}
+      {n.status === 'kismi' && n.note && <p className="mute">ⓘ {n.note}</p>}
     </div>
   );
 }

@@ -32,6 +32,8 @@ import { monsterPhase } from './phase';
 import creatureTypes from '../../data/canavar-turleri.json';
 import yuzeyler from '../../data/yuzeyler.json';
 import { CURRENT_RULES } from './ruleVersion';
+import { ALT_SOY_VERSION } from './altSoySurum';
+import { soyEffects, soyFeatures, soyInitMod, withSoy } from './soyEtki';
 import { controlState, defaultRuleToggles } from './ruleControl';
 import { applyForestStart } from './forestStart';
 import monsterReactions from '../../data/monster-reactions.json';
@@ -159,7 +161,8 @@ export function combatantFromSheet(
   sheet: CharacterSheet,
   opts: { id: string; ownerId: string; height?: Height; carryRule?: CarryRule },
 ): Combatant {
-  const c0 = combatantFromSheetBase(sheet, opts);
+  // Kuyruk AS1b: savaş sürümü < 71'de oluşan savaşçıda alt soy mekaniği kapalı (türetme `lineageEtki`).
+  const c0 = combatantFromSheetBase(defaultRuleVersion() < ALT_SOY_VERSION ? { ...sheet, soyKapali: true } : sheet, opts);
   // Görev P7: eşya kancaları (eşyanın paket ilkelleri savaşçının paketine).
   const ib = itemBag(activeItemNames(sheet));
   const c = ib ? { ...c0, paket: mergeBags(c0.paket, ib.bag), resources: { ...c0.resources, ...ib.resources } } : c0;
@@ -212,6 +215,7 @@ function combatantFromSheetBase(
   const untrained = !armorProficient(sheet.classId, armor.find((a) => a.name === sheet.armorName)?.type, sheet.featureChoices, sheet);
   const standing: ActiveEffect[] = [
     ...(heavy ? [{ id: 'load:heavy', name: 'Ağır yüklü', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex', 'con'], checkDis: ['str', 'dex', 'con'] } satisfies ActiveEffect] : []),
+    ...soyEffects(sheet, opts.id),
     ...(untrained ? [{ id: 'armor:untrained', name: 'Eğitimsiz zırh', sourceId: opts.id, attackDis: {}, saveDis: ['str', 'dex'], checkDis: ['str', 'dex'], noCast: true } satisfies ActiveEffect] : []),
   ];
   const race = getRace(sheet.raceId);
@@ -283,6 +287,8 @@ function combatantFromSheetBase(
     hidden: null,
     stealthDisadvantage: armorStealthDisadvantage(sheet.armorName),
     heavyArmor: armor.find((a) => a.name === sheet.armorName)?.type === 'heavy',
+    // Kuyruk AS1b: orta zırh (Kanat Süzülüşü kullanılamaz).
+    ...(armor.find((a) => a.name === sheet.armorName)?.type === 'medium' ? { mediumArmor: true as const } : {}),
     // Kuyruk A6: zırh giyiyor (Mage Armor zırhlıya yapılamaz).
     ...((armor.find((a) => a.name === sheet.armorName)?.type ?? 'none') !== 'none' ? { armored: true } : {}),
     // Kuyruk S2: metal zırh (Heat Metal; zırh verisinde `metal`).
@@ -390,7 +396,7 @@ function combatantFromSheetBase(
     ...(kit.frenzy ? { frenzy: true } : {}),
     ...(kit.primalSkills.length > 0 ? { primalSkills: kit.primalSkills as Skill[] } : {}),
     // Savaşta kullanılan sınıf özellikleri (Lay On Hands, Sacred Weapon; veriden).
-    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...imzaFeatures(sheet), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
+    ...((): Partial<Combatant> => { const f = [...kit.usable, ...lineageFeatures(lineage), ...soyFeatures(sheet, d.speed), ...celestialFeatures(sheet.raceId, sheet.level, sheet.celestialAwakening), ...karadulFeatures(sheet), ...imzaFeatures(sheet), ...boonFeatures(featEffects(sheetFeats(sheet)).traits)]; return f.length > 0 ? { features: f } : {}; })(),
     // Kuyruk K50: imza alt sınıfı (pasifler ve saldırı kancası; kural kapalıysa `withImza` etkisiz bırakır).
     ...(isImza(sheet.subclassId) && sheet.level >= 3 ? { imza: imzaId(sheet.subclassId) as string } : {}),
     // Görev P0: ek paket ilkelleri ve yaratıkları (veri savaşçıda; düğmeler/pasifler `withPaket`).
@@ -750,7 +756,8 @@ export function startBattle(
     const dis = isIncapacitated(p.conditions);
     const d = adv !== dis ? rollD20(adv ? 'advantage' : 'disadvantage', tag).kept : rollDie(20, tag);
     // Bitkinlik (Görev S1): inisiyatif DEX kontrolü, −2 × seviye.
-    return { ...p, initiative: d + p.initiativeBonus - exhaustionD20Penalty(p.exhaustion) };
+    // Kuyruk AS1b (sürüm 71): iç mekân haritasında alt soyun inisiyatif farkı.
+    return { ...p, initiative: d + p.initiativeBonus + soyInitMod(p, { kuralSurumu: rules, map }) - exhaustionD20Penalty(p.exhaustion) };
   });
   // Aynı toplamda, listede önce gelen önce oynar (sıralama kararlıdır).
   const sorted = [...rolled].sort((a, b) => b.initiative - a.initiative);
@@ -782,7 +789,7 @@ export function startBattle(
   };
   // Kuyruk 24: Orman mekaniklerinin savaş başı kısmı (alarm grupları, kütük siperi, nehir; kural sürümü 3 ve Game Master anahtarı).
   // Kuyruk K48: Moral tam modu (ev kuralı + sürüm 20): karakterlere havuz; kapalıysa kayıtlı Moral alanı silinir.
-  const final = withPaket(withImza(withKaradul(withMorale(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state))))));
+  const final = withPaket(withImza(withKaradul(withMorale(withSoy(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state)))))));
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

@@ -67,6 +67,7 @@ import { executeBonusStrike, executeFocusAction, executeStunningStrike, metaboli
 import { executeOffhandAttack } from './offhand';
 import { reactionRechargeEvents, turnStartReactions } from './reactions';
 import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
+import { soyTurnStartEvents } from './soyEtki';
 import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
 import { glideTurnEndEvents, glideTurnStartEvents } from './flightPrim';
 import { casterEndZoneEvents, casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
@@ -709,6 +710,10 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       const glideStart = glideTurnStartEvents(current, next.id);
       events.push(...glideStart);
       current = applyEvents(current, glideStart);
+      // Kuyruk AS1b (alt soy etkisi): zorlu arazide hız farkı.
+      const soyStart = soyTurnStartEvents(current, next.id);
+      events.push(...soyStart);
+      current = applyEvents(current, soyStart);
       // Kuyruk 19: Animate Objects: sahibi bonus eylemle emretmediyse nesne yalnızca Kaçın yapar (turu geçer).
       const nx = current.combatants[next.id];
       const ownerOf = nx?.summon?.commandBonus ? current.combatants[nx.summon.by] : undefined;

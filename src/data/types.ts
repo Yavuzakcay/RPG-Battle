@@ -35,12 +35,44 @@ export interface Lineage {
   /** Oyunda olmayan ya da kısmi soy özellikleri (yalnızca ⓘ ipucunda). */
   extras?: Array<{ name: LocalText; status: 'partial' | 'none'; note: LocalText }>;
   /**
-   * Kuyruk AS1a: yalnızca açıklama (etkisi oyunda çalışmaz; mekanik AS1b'de). `durum: 'planli'` etiketini kartta
-   * "planlı" olarak gösterir. Bu alanlar `resistances`/`speed`/`spells` gibi motor alanlarına yazılmaz.
+   * Kuyruk AS1b: etkinin oyundaki durumu (savaş sürümü ≥ 71): `calisir`, `kismi` (not `data/alt-soy-metin.json` `kismiNot`) ya da
+   * `planli` (yalnız açıklama). Buff/debuff metinleri ana parçayı şişirmemek için `data/alt-soy-metin.json`'da (oluşturucu okur).
    */
-  buff?: LocalText[];
-  debuff?: LocalText[];
-  durum?: 'planli';
+  durum?: 'planli' | 'calisir' | 'kismi';
+  /** Kuyruk AS1b (savaş sürümü ≥ 71): alt soyun mekaniği (veriden; kodda alt soy adıyla koşul yok). */
+  etki?: LineageEtki;
+}
+
+/**
+ * Kuyruk AS1b: alt soy mekaniği. Statik kısım karakter türetmesine (`rules/lineageMods.ts`), `efekt` savaş başında süren etkiye
+ * (`battle/soyEtki.ts`; alanlar `ActiveEffect` alanlarıdır), `harita` haritaya bağlı koşullara (savaş başında çözülür),
+ * `ozellik` kullanılabilir özelliğe dönüşür.
+ */
+export interface LineageEtki {
+  /** Yetenek skoru artışı (geçmiş bonusuna ek; tavan 20). */
+  yetenek?: Partial<Record<Ability, number>>;
+  /** Hız (ft) farkı. */
+  hiz?: number;
+  /** Kurtarma zarı sabit farkı. */
+  kurtarma?: Partial<Record<Ability, number>>;
+  /** Beceri bonusu (negatif: ceza). */
+  beceri?: Partial<Record<Skill, number>>;
+  /** Zırhsızken AC farkı. */
+  zirhsizAc?: number;
+  /** Ek hasar direnci. */
+  direnc?: string[];
+  /** Karanlık görüş (ft; türünkinin yerine). */
+  karanlikGorus?: number;
+  /** Ağır zırhın Güç şartı hız cezası yok sayılır. */
+  agirZirhHizCezasiYok?: boolean;
+  /** Taşıma kapasitesi çarpanı. */
+  tasima?: number;
+  /** Savaşta süren etki alanları (`ActiveEffect`): saveDis, checkDis, saveDisVs, checkDisSkill, concDis, fallMult, … */
+  efekt?: Record<string, unknown>;
+  /** Haritaya bağlı koşullar (savaş başında): gün ışığında saldırı dezavantajı, iç mekânda saldırı ve inisiyatif farkı. */
+  harita?: { gunisigiSaldiriDez?: boolean; icMekanSaldiri?: number; icMekanInisiyatif?: number };
+  /** Kullanılabilir özellik (uçuş ilkeli parametreleriyle). */
+  ozellik?: { anahtar: string; ad: LocalText; tur: 'bonus' | 'action' | 'free'; kullanim: 'pb'; zirhYok?: Array<'medium' | 'heavy'>; ucus: Record<string, unknown> };
 }
 
 /** SRD 5.2.1 türü (species). Ability bonusları türden değil, geçmişten (background) gelir. */

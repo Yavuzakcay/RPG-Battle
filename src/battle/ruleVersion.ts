@@ -6,6 +6,8 @@ import data from '../../data/kural-surumu.json';
 import { distance } from '../rules/hex';
 import { lineOfFire } from './cover';
 import { globalRule } from './ruleControl';
+import type { Skill } from '../rules/skills';
+import { soyCheckHook } from './altSoySurum';
 import type { BattleState, Combatant } from './types';
 
 export const CURRENT_RULES: number = data.surum;
@@ -67,7 +69,10 @@ export function fearBlocksStep(state: BattleState, c: Combatant): ((to: { col: n
 }
 
 /** Yetenek kontrolünün temel kipi: sürüm 2'de korku kaynağı görüş hattındaki Frightened yaratık dezavantajlı. */
-export function checkBase(state: BattleState, c: Combatant, base: 'normal' | 'advantage' | 'disadvantage' = 'normal'): 'normal' | 'advantage' | 'disadvantage' {
-  if (!srdConditions(state) || !frightenedNow(state, c)) return base;
+export function checkBase(state: BattleState, c: Combatant, base: 'normal' | 'advantage' | 'disadvantage' = 'normal', skill?: Skill): 'normal' | 'advantage' | 'disadvantage' {
+  // Kuyruk AS1b (sürüm 71+ alt soy etkisi): beceri ve koşula (ışık, su, yerleşim) bağlı kontrol dezavantajı.
+  const soyDis = !!skill && soyCheckHook(state, c, skill);
+  const fear = srdConditions(state) && frightenedNow(state, c);
+  if (!soyDis && !fear) return base;
   return base === 'advantage' ? 'normal' : 'disadvantage';
 }

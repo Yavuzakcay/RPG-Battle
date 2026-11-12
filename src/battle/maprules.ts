@@ -39,6 +39,7 @@ import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 import { groundBound, hovers, isAirborne } from './flight';
 import { standingOn } from './stand';
+import { soyFallMult } from './altSoySurum';
 
 // ---------------------------------------------------------------------------------------------
 // Kural verisi
@@ -162,7 +163,7 @@ export function saveEffect(
 /** Beceri kontrollü etki (bataktan çıkış, batma). */
 export function checkEffect(c: Combatant, rule: string, what: string, sk: Skill, dc: number, rng: Rng, state?: BattleState): Extract<BattleEvent, { type: 'map_effect' }> {
   const base = sk === 'stealth' && c.stealthDisadvantage ? 'disadvantage' : 'normal';
-  const mode = checkMode(c, sk, state ? checkBase(state, c, base) : base);
+  const mode = checkMode(c, sk, state ? checkBase(state, c, base, sk) : base);
   // Reliable Talent, eklenti zarları ve ikinci şans (Görev F; `finishCheck`).
   const d = rollD20(mode, rollTag(rng, { by: c.id, bonus: skillBonus(c, sk) }));
   const r = finishCheck(c, sk, d.kept, skillBonus(c, sk), dc, mode, rng);
@@ -174,7 +175,8 @@ export function checkEffect(c: Combatant, rule: string, what: string, sk: Skill,
 /** Düşme (SRD 5.2.1 Falling, s. 182): her 10 ft için 1d6 bludgeoning (en çok 20d6), hasar alırsa Prone. */
 export function fallEffect(c: Combatant, feet: number, rng: Rng, reaction: { reduce: number; negate: boolean; name?: string; /** Kuyruk K73b: suya düşüş (SRD): başarılı kontrolle yarı hasar. */ water?: 'half' | 'full' } = { reduce: 0, negate: false }):
   Extract<BattleEvent, { type: 'map_effect' }> {
-  const dice = Math.min(20, Math.floor(feet / 10));
+  // Kuyruk AS1b (sürüm 71+ alt soy etkisi): düşme hasarı çarpanı (Kırık Kanat uyanışı ×2; zar sayısı üst sınırı 20 çarpılmadan önce).
+  const dice = Math.min(20, Math.floor(feet / 10)) * soyFallMult(c);
   // Tepki (Görev R1, `reactions.ts`): Slow Fall hasarı 5 × Monk seviyesi azaltır, Feather Fall hasarı keser.
   if (reaction.negate) return { type: 'map_effect', rule: 'fall', targetId: c.id, text: `${feet} ft düştü (${reaction.name ?? 'Feather Fall'}: hasar yok)` };
   const reduce = reaction.reduce;

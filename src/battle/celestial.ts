@@ -15,6 +15,7 @@
 export { AWAKENING_OPTIONS, CELESTIAL } from '../rules/celestialData';
 import { healRoll } from './healMax';
 import { u1aOn, ucusAt, ucusHiz } from './flightPrim';
+import { altSoyOn } from './altSoySurum';
 import { gap64 } from './adjacency';
 import { damageProfile, fail, finish, isTargetable, type CommandResult } from './common';
 import { resolveSave } from '../rules/attack';
@@ -111,6 +112,8 @@ export function executeCelestial(state: BattleState, actor: Combatant, f: Usable
   const until = state.round + CELESTIAL.awakening.rounds - 1;
   const base: ActiveEffect = { id: AWAKEN_KEY, name: f.name, sourceId: actor.id, until, icon: o.icon,
     celestialStrike: { bonus: num(CELESTIAL.awakening.bonus, pb), type: o.strikeType } };
+  // Kuyruk AS1b (sürüm 71+): uyanışın debuff'ı süren etkide (Parlayan Ruh karanlıkta Gizlen dez., Gece Gözyaşı CHA kontrol dez., Kırık Kanat düşme ×2).
+  if (o.efekt && altSoyOn(state)) Object.assign(base, o.efekt);
   if (o.lightFt) base.light = Math.round(o.lightFt / 5);
   if (o.auraDamage) base.celestialAura = { radiusFt: o.radiusFt ?? 10, damage: num(o.auraDamage, pb), type: o.auraType ?? 'radiant' };
   // Kuyruk U1a (sürüm 61+): Kırık Kanat `ucus` parametreleriyle (13. seviyeden normal uçuş, zorunlu iniş yok); 60 ve altı
