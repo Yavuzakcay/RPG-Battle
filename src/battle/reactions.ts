@@ -34,6 +34,7 @@ import { freeSpellResource } from '../rules/classFeatures';
 import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
 import { globalRule } from './ruleControl';
 import { gap64 } from './adjacency';
+import { hiddenTo } from './k74Surum';
 
 /** Kuyruk 19 (srdK19): Ink Cloud kancası (`monsterAbilities.ts` yükleyince kaydeder; döngüsel içe aktarma yok). */
 type InkHook = (state: BattleState, id: string, on: 'turnEnd' | 'damaged', rng: Rng) => BattleEvent[];
@@ -143,7 +144,8 @@ export function feetBetween(state: BattleState, a: Combatant, b: Combatant): num
   return heightOf(state, a) === heightOf(state, b) ? 5 : 30;
 }
 
-const sees = (state: BattleState, a: Combatant, b: Combatant) => !b.hidden && canSee(state, a, b);
+// Kuyruk K74 (sürüm 75+): Truesight menzilindeki gizlenmiş yaratık görülür (`hiddenTo`).
+const sees = (state: BattleState, a: Combatant, b: Combatant) => !hiddenTo(state, a, b) && canSee(state, a, b);
 
 const profileOf = (c: Combatant) => damageProfile(c);
 
@@ -525,7 +527,8 @@ export function redirectEvents(state: BattleState, reactorId: string, attackerId
 /** Save'li hasar (Hellish Rebuke, geri yöneltme): başarısızsa tam, `halfOnSave` ise başarıda yarısı. */
 function saveDamage(actor: Combatant, target: Combatant, label: string, ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha',
   dc: number, dice: string, damageType: string, halfOnSave: boolean, rng: Rng): BattleEvent {
-  const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability),
+  // Görev AS1a (77+): alt soyun hasar türü kurtarma dezavantajı (`genis`).
+  const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability, undefined, { damage: damageType, genis: true }),
     autoFail: (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   const d = rollDice(dice, rollTag(rng, { kind: 'damage', by: actor.id }));
   const amount = !save.success ? d.total : halfOnSave ? halfDamage(d.total) : 0;
@@ -768,8 +771,8 @@ export function turnStartReactions(state: BattleState, actorId: string, rng: Rng
     events.push(reactionUsed(r, spec, 'turnStart', a.id));
     const ability = spec.save ?? 'wis';
     const dc = spec.dc ?? 10;
-    const save = resolveSave({ extra: saveDice(a, ability), modifier: a.saves[ability], dc, mode: saveMode('normal', a, ability) }, rollTag(rng, { by: a.id }));
     const condition = spec.condition ?? 'Frightened';
+    const save = resolveSave({ extra: saveDice(a, ability), modifier: a.saves[ability], dc, mode: saveMode('normal', a, ability, undefined, { against: [condition], genis: true }) }, rollTag(rng, { by: a.id }));
     const added = !save.success && !a.conditions.includes(condition) ? [condition] : [];
     events.push({
       type: 'save_resolved', actorId: r.id, targetId: a.id, label: spec.name, ability, dc, mode: 'normal', reasons: [],

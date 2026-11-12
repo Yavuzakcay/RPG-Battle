@@ -409,6 +409,14 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Kuyruk K64b (sürüm 48): koruma alanı (Magic Circle, Hallow) da kurulumda.
   if (cmd.type === 'cast_spell' && state.status === 'setup' && setupWardOf(state, cmd.spellName)) return executeSetupWard(state, cmd, ctx);
   if (cmd.type === 'cast_spell' && state.status === 'setup') return executeSetupSummon(state, cmd, ctx, rng);
+  // Görev MB6b (B22): Game Master kurulumunda "binmiş başla": mevcut `mount`/`dismount` komutu ve olayı (yeni kural yok; motorun
+  // denetimi `mountProblem` aynen; harcanan hareket ilk turun başında tazelenir).
+  if ((cmd.type === 'mount' || cmd.type === 'dismount') && state.status === 'setup') {
+    if (!ctx.isGm) return fail('Binmiş başlatmayı kurulumda yalnızca Game Master seçer.');
+    const a = state.combatants[cmd.actorId];
+    if (!a) return fail('Savaşçı bulunamadı.');
+    return cmd.type === 'mount' ? executeMount(state, a, cmd.mountId) : executeDismount(state, a, cmd.to, cmd.toFt);
+  }
   if (state.status === 'setup') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
 
   if (cmd.type === 'set_condition') {

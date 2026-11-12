@@ -34,7 +34,9 @@ export type MenuArea = 'top' | 'move' | 'items' | 'special' | 'hidden';
 export interface Place { area: MenuArea; group?: SpecialGroup }
 
 /** Hareket alt menüsüne giden öğeler (yürü, koş… ve ayağa kalkma / kurtulma / kat, binek, düşme). */
-const MOVE_KEYS = new Set(['walk', 'dash', 'disengage', 'jump', 'stand', 'escape_grapple', 'escape', 'escapeSpell', 'floor', 'mount', 'dismount', 'drop', 'fissureClimb', 'shift']);
+const MOVE_KEYS = new Set(['walk', 'dash', 'disengage', 'jump', 'stand', 'escape_grapple', 'escape', 'escapeSpell', 'floor', 'mount', 'dismount', 'drop', 'fissureClimb', 'shift',
+  // Görev MB6b: kontrollü bineğin eylemleri (binicinin Hareket alt menüsünde "Binek: …").
+  'mountDash', 'mountDisengage', 'mountDodge']);
 /** Eşya alt menüsü: iksirler (`item-<kimlik>`), nesne ve fırlatma. */
 const ITEM_KEYS = new Set(['object', 'throwObject']);
 /** "Diğer" grubu: her zaman yapılabilen temel eylemler. */
@@ -53,7 +55,7 @@ const SUMMON_RE = /^(steed-|sphereCarry-|beadThrow-|beadTouch-)/;
 export function placeOf(key: string): Place {
   if ((TOP_KEYS as readonly string[]).includes(key)) return { area: 'top' };
   if (key === 'mountWhy') return { area: 'hidden' };
-  if (MOVE_KEYS.has(key)) return { area: 'move' };
+  if (MOVE_KEYS.has(key) || key.startsWith('mountSteed-')) return { area: 'move' };
   if (ITEM_KEYS.has(key) || key.startsWith('item-')) return { area: 'items' };
   if (OTHER_KEYS.has(key)) return { area: 'special', group: 'other' };
   if (SHAPE_RE.test(key)) return { area: 'special', group: 'shape' };
@@ -67,7 +69,7 @@ export function placeOf(key: string): Place {
 const BONUS_KEYS = new Set(['rage', 'wind', 'steady', 'strike', 'steer', 'unpossess', 'famOrder', 'gaze', 'commandSummons', 'flurry-of-blows', 'patient-defense', 'step-of-the-wind']);
 export function costOfKey(key: string, featureType?: string): MenuCost | undefined {
   if (featureType === 'bonus') return 'bonus';
-  if (BONUS_KEYS.has(key) || key.startsWith('shape-') || key.startsWith('steed-')) return 'bonus';
+  if (BONUS_KEYS.has(key) || key.startsWith('shape-') || key.startsWith('steed-') || key.startsWith('mountSteed-')) return 'bonus';
   return undefined;
 }
 

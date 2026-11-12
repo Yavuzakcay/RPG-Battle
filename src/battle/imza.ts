@@ -321,7 +321,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
     if (spec.save && isFoe) {
       const ab = spec.save.yetenek;
       const dez = (spec.save.dezVs ?? []).some((x) => t.conditions.includes(x)) || (spec.save.dezEtki ?? []).some((n) => t.effects?.some((e) => e.name === n));
-      const mode = saveMode(dez ? 'disadvantage' : 'normal', t, ab, actor);
+      const mode = saveMode(dez ? 'disadvantage' : 'normal', t, ab, actor, { ...(spec.hasar?.tur ? { damage: spec.hasar.tur } : {}), genis: true });
       const sv = resolveSave({ extra: saveDice(t, ab), modifier: t.saves[ab], dc, mode }, rollTag(rng, { by: t.id }));
       failed = !sv.success;
       const dice = spec.hasar ? expr(byLevel(spec.hasar.zar, actor.level) ?? '0', actor) : '';

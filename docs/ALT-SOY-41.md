@@ -1,6 +1,6 @@
 # Alt soy tablosu (Kuyruk AS1a, AS1a-2, AS1b)
 
-41 alt soy = 38 ırk soyu + 3 Celestial Göksel Uyanış. **AS1b (kural sürümü 71)**: buff/debuff mekaniği çalışır (`data/races.json` `lineages[].etki`; kodda alt soy adıyla koşul yok; savaş sürümü ≥ 71, 70 ve altı aynen). Alt soy metni yalnız taban türe göre FARKI yazar (taban türün özellikleri tür seçiminde görünür; taban özellikle aynı etki tekrar edilmez). "Düzen / İyilik" hizalanma başlangıç değeridir (`data/hizalanma-baslangic.json` `altSoy`, mutlak değer; ırk satırının yerine geçer). Bu dosya veriden türetilmiştir; doğru kaynak `data/races.json`, `data/celestial.json` ve `data/hizalanma-baslangic.json`.
+41 alt soy = 38 ırk soyu + 3 Celestial Göksel Uyanış. **AS1a toplu (kural sürümü 77)**: kurtarma dezavantajı bütün kurtarma yollarında, 13 kısmi → çalışır. **AS1b (kural sürümü 71)**: buff/debuff mekaniği çalışır (`data/races.json` `lineages[].etki`; kodda alt soy adıyla koşul yok; savaş sürümü ≥ 71, 70 ve altı aynen). Alt soy metni yalnız taban türe göre FARKI yazar (taban türün özellikleri tür seçiminde görünür; taban özellikle aynı etki tekrar edilmez). "Düzen / İyilik" hizalanma başlangıç değeridir (`data/hizalanma-baslangic.json` `altSoy`, mutlak değer; ırk satırının yerine geçer). Bu dosya veriden türetilmiştir; doğru kaynak `data/races.json`, `data/celestial.json` ve `data/hizalanma-baslangic.json`.
 
 | Irk | Alt soy (TR / EN) | Buff | Debuff | Düzen / İyilik | Durum |
 |---|---|---|---|---|---|
@@ -9,24 +9,24 @@
 | Dragonborn | Brass / Brass | — (özet satırında; mevcut soy) | Sezgi (Insight) kontrollerinde dezavantaj. | +3 / +3 | çalışır |
 | Dragonborn | Bronze / Bronze | — (özet satırında; mevcut soy) | Konsantrasyon kurtarma zarlarında dezavantaj. | +8 / +4 | çalışır |
 | Dragonborn | Copper / Copper | — (özet satırında; mevcut soy) | İkna (Persuasion) kontrollerinde dezavantaj. | -5 / +3 | çalışır |
-| Dragonborn | Gold / Gold | — (özet satırında; mevcut soy) | Korku (Frightened) uygulayan etkilere karşı kurtarma zarlarında dezavantaj. | +8 / +6 | kısmi |
+| Dragonborn | Gold / Gold | — (özet satırında; mevcut soy) | Korku (Frightened) uygulayan etkilere karşı kurtarma zarlarında dezavantaj. | +8 / +6 | çalışır |
 | Dragonborn | Green / Green | — (özet satırında; mevcut soy) | Bilgelik kurtarma zarlarında dezavantaj. | +2 / -6 | çalışır |
-| Dragonborn | Red / Red | — (özet satırında; mevcut soy) | Soğuk hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | -4 / -7 | kısmi |
-| Dragonborn | Silver / Silver | — (özet satırında; mevcut soy) | Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | +5 / +6 | kısmi |
+| Dragonborn | Red / Red | — (özet satırında; mevcut soy) | Soğuk hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | -4 / -7 | çalışır |
+| Dragonborn | Silver / Silver | — (özet satırında; mevcut soy) | Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | +5 / +6 | çalışır |
 | Dragonborn | White / White | — (özet satırında; mevcut soy) | Zekâ (Intelligence) kontrollerinde dezavantaj. | -6 / -3 | çalışır |
 | Dwarf | Dağ / Crag Dwarf | Ağır zırhın hız cezası sana işlemez. | Suda Atletizm (Athletics) kontrollerinde dezavantaj. | +9 / -1 | çalışır |
 | Dwarf | Tepe / Knoll Dwarf | Dayanıklılık kurtarma zarlarında +1. | Çeviklik kurtarma zarlarında −1. | +6 / +1 | çalışır |
 | Dwarf | Yeraltı / Undervault Dwarf | Gizlen (Stealth) kontrollerinde +2. | Gün ışığında saldırı zarlarında dezavantaj. | +3 / -4 | çalışır |
 | Elf | Drow / Drow | — (özet satırında; mevcut soy) | Gün ışığında saldırı atışlarında dezavantaj. | -6 / -4 | çalışır |
 | Elf | High Elf / High Elf | — (özet satırında; mevcut soy) | Dayanıklılık kurtarma zarlarında dezavantaj. | +1 / +3 | çalışır |
-| Elf | Wood Elf / Wood Elf | — (özet satırında; mevcut soy) | Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | -6 / +5 | kısmi |
-| Gnome | Forest Gnome / Forest Gnome | — (özet satırında; mevcut soy) | Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | -2 / +5 | kısmi |
+| Elf | Wood Elf / Wood Elf | — (özet satırında; mevcut soy) | Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | -6 / +5 | çalışır |
+| Gnome | Forest Gnome / Forest Gnome | — (özet satırında; mevcut soy) | Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | -2 / +5 | çalışır |
 | Gnome | Rock Gnome / Rock Gnome | — (özet satırında; mevcut soy) | Atletizm (Athletics) kontrollerinde dezavantaj. | +2 / +3 | çalışır |
 | Gnome | Yeraltı / Subterranean Gnome | Karanlık görüş 120 ft.; Gizlen (Stealth) kontrollerinde +2. | Parlak ışıkta Algı (Perception) kontrollerinde dezavantaj. | -4 / -1 | çalışır |
 | Goliath | Cloud's Jaunt / Cloud's Jaunt | — (özet satırında; mevcut soy) | Işınlanınca o turun kalan hareketin biter. | +3 / +2 | çalışır |
-| Goliath | Fire's Burn / Fire's Burn | — (özet satırında; mevcut soy) | Soğuk hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | +8 / -4 | kısmi |
-| Goliath | Frost's Chill / Frost's Chill | — (özet satırında; mevcut soy) | Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | +6 / -2 | kısmi |
-| Goliath | Hill's Tumble / Hill's Tumble | — (özet satırında; mevcut soy) | Yere yıkılma (Prone) uygulayan etkilere karşı kurtarma zarlarında dezavantaj. | +5 / +0 | kısmi |
+| Goliath | Fire's Burn / Fire's Burn | — (özet satırında; mevcut soy) | Soğuk hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | +8 / -4 | çalışır |
+| Goliath | Frost's Chill / Frost's Chill | — (özet satırında; mevcut soy) | Ateş hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | +6 / -2 | çalışır |
+| Goliath | Hill's Tumble / Hill's Tumble | — (özet satırında; mevcut soy) | Yere yıkılma (Prone) uygulayan etkilere karşı kurtarma zarlarında dezavantaj. | +5 / +0 | çalışır |
 | Goliath | Stone's Endurance / Stone's Endurance | — (özet satırında; mevcut soy) | Hızın −5 ft. | +8 / +1 | çalışır |
 | Goliath | Storm's Thunder / Storm's Thunder | — (özet satırında; mevcut soy) | Gizlen (Stealth) kontrollerinde dezavantaj. | -3 / +2 | çalışır |
 | Halfling | İnce / Slender Halfling | Çeviklik +1.; Hız +5 ft. | Güç (Strength) kontrollerinde dezavantaj. | -1 / +5 | çalışır |
@@ -35,12 +35,12 @@
 | Human | Khadyrga Sürgünü / Khadyrga Exile | Zekâ +1, Karizma +1. | Zorlu arazide hızın −5 ft. | -3 / -3 | çalışır |
 | Human | Saf Kent Sürgünü / Pure City Exile | Bilgelik +1, Çeviklik +1. | Zırhsızken AC −1. | +3 / +3 | çalışır |
 | Human | Sur Dışı / Outwall | Dayanıklılık +1, Bilgelik +1.; Hayatta Kalma (Survival) ve Algı (Perception) +2. | İç mekânda saldırı −2 ve inisiyatif −2.; Yerleşimde Karizma (Charisma) kontrollerinde dezavantaj. | -8 / +2 | çalışır |
-| Orc | Buzul / Glacier Orc | Soğuk hasarına direnç. | Ateş hasarına karşı kurtarma zarlarında dezavantaj. | +7 / -3 | kısmi |
-| Orc | Orman / Wildwood Orc | Bitkisel zorlu araziyi yok sayarsın. | Zehir hasarına karşı kurtarma zarlarında dezavantaj. | +3 / -1 | kısmi |
-| Orc | Bataklık / Fen Orc | Zehir hasarına direnç.; Yüzme hızın yürüme hızına eşittir. | Soğuk hasarına karşı kurtarma zarlarında dezavantaj. | +4 / -3 | kısmi |
+| Orc | Buzul / Glacier Orc | Soğuk hasarına direnç. | Ateş hasarına karşı kurtarma zarlarında dezavantaj. | +7 / -3 | çalışır |
+| Orc | Orman / Wildwood Orc | Bitkisel zorlu araziyi yok sayarsın. | Zehir hasarına karşı kurtarma zarlarında dezavantaj. | +3 / -1 | çalışır |
+| Orc | Bataklık / Fen Orc | Zehir hasarına direnç.; Yüzme hızın yürüme hızına eşittir. | Soğuk hasarına karşı kurtarma zarlarında dezavantaj. | +4 / -3 | çalışır |
 | Tiefling | Abyssal / Abyssal | — (özet satırında; mevcut soy) | Konsantrasyon kurtarma zarlarında dezavantaj. | -8 / -6 | çalışır |
-| Tiefling | Chthonic / Chthonic | — (özet satırında; mevcut soy) | Işıltı (Radiant) hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | -6 / -2 | kısmi |
-| Tiefling | Infernal / Infernal | — (özet satırında; mevcut soy) | Soğuk hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | +2 / -5 | kısmi |
+| Tiefling | Chthonic / Chthonic | — (özet satırında; mevcut soy) | Işıltı (Radiant) hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | -6 / -2 | çalışır |
+| Tiefling | Infernal / Infernal | — (özet satırında; mevcut soy) | Soğuk hasarı veren etkilere karşı kurtarma zarlarında dezavantaj. | +2 / -5 | çalışır |
 | Tiefling | Kanatlı / Winged | Kanatlarınla yarım hızla süzülürsün; kullanım sayısı yeterlilik bonusu kadardır. | Soy hasar direncini kaybedersin.; Orta ya da ağır zırhla uçamazsın. | -9 / +2 | çalışır |
 | Celestial | Parlayan Ruh / Radiant Soul | — (Göksel Uyanış, K20) | Uyanış sürerken karanlıkta Gizlen (Stealth) kontrollerinde dezavantaj (parıltın seni ele verir). | +7 / +9 | çalışır (uyanış süresince) |
 | Celestial | Gece Gözyaşı / Night Tears | — (Göksel Uyanış, K20) | Uyanış sürerken Karizma kontrollerinde dezavantaj. | +1 / +4 | çalışır (uyanış süresince) |
@@ -48,9 +48,9 @@
 
 Toplam: 41.
 
-## Kurtarma dezavantajının kapsamı (kısmi)
+## Kurtarma dezavantajının kapsamı
 
-"X hasarına/durumuna karşı kurtarma dezavantajı" (Red, Silver, Gold, Fire, Frost, Hill, Wood-elf, Chthonic, Infernal, Forest, Glacier, Wildwood, Fen) büyü, canavar saldırısı/nefesi, alan ve yüzey hasarı, süren etkilerin yeniden kurtarması ve durum zamanlayıcılarında çalışır (`saveMode` 5. parametresi `SaveCtx`: hasar türü + uygulanan durumlar). Ek paket, imza alt sınıf ve eşya kaynaklı kurtarmalar bağlama taşımaz: bu 13 alt soy `kısmi`. Yetenek kurtarması (Green, High-elf), konsantrasyon (Bronze, Abyssal) ve kontrol dezavantajları tam.
+"X hasarına/durumuna karşı kurtarma dezavantajı" (Red, Silver, Gold, Fire, Frost, Hill, Wood-elf, Chthonic, Infernal, Forest, Glacier, Wildwood, Fen) 71'den beri büyü, canavar saldırısı/nefesi, alan ve yüzey hasarı, süren etkilerin yeniden kurtarması ve durum zamanlayıcılarında çalışır (`saveMode` 5. parametresi `SaveCtx`). **77'den beri** ek paket (hasar, durum uygulama, vertigo patlaması), imza alt sınıf eylemi, eşya fırlatma, harita mekaniği (`saveEffect`: hasar türü + başarısızlık durumu), Cunning Strike Trip (Prone), itme/yakalama ekleri (`grapple.ts`), save'li hasarlı tepkiler (Hellish Rebuke, Deflect Attacks yöneltmesi), bakış tepkisi ve Delayed Blast Fireball boncuğunda da (`SaveCtx.genis`; yalnız 77+ savaşın başında `saveDisVsGenis` alan alt soy etkisi bakar, 71–76 kayıtları aynen). Kalan: ek paket P9 tepki ilkelleri (`kontrolEt` gibi hasarsız/durumsuz kurtarmalar; bağlamı yok). Yetenek kurtarması (Green, High-elf), konsantrasyon (Bronze, Abyssal) ve kontrol dezavantajları tam.
 
 ## Yorumlar (SRD'de yazmıyor)
 

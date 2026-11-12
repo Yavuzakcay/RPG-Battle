@@ -2,6 +2,54 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Görev AS2 (toplu): DURDU — yalnız envanter (kod değişmedi; kural sürümü 77'de kaldı, 78 kullanılmadı)
+
+- Envanter `harita/belgeler/AS2-ENVANTER.md` (kimlik/ad/sayı; paket metni yok).
+- **Durma nedeni:** dış paket (`icerik/*.json`, gitignore) bu oturumda yok. SRD 12'sinin kaldırılması, göç tablosu (`champion` → bizim sürüm), yeni motor/sim varsayılanları, hizalanma `altSinif` eşlemesi ve "108 + 12 = 120" testi paketin kimliklerini ister; bunlar depoda yok (`icerik-liste.txt` 97 satır, sınıf başına bir eksik: yerelleştirilmiş SRD sürümleri). Paket depoya girmeden yapılırsa paketsiz build'de sınıflar alt sınıfsız kalır (Fighter yalnız İmparator = kadın Fighter alt sınıfsız). Görev metni gereği kullanıcıya bildirildi; seçenekler envanterde (A: paketi depoya al, B: yerelde gömülü yükleme, C: yalnız ayar sadeleştirmesi).
+
+## 2026-11-12 — Görev AS1b (toplu): alt soy oluşturucu seçimi ve görünüm denetimi (yalnız denetim; kural sürümü 77, kod değişmedi)
+
+- Görev metnindeki işler main'de zaten vardı (Kuyruk AS1a: oluşturucu kartları, Human 4 kültür + ayrı ten seçici, eski kayıt bildirimi `src/app/lineageNotice.ts`; AS1c: savaş jetonuna görünüm, kanat katmanı altyapısı `data/kanat-esleme.json` üç yuva: Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn; Celestial Parlayan Ruh haleli / Kırık Kanat halesiz + kanat / Gece Gözyaşı halesiz + koyu filtre; Halfling İnce/Kalın oranı; Dragonborn jetonu ve `soy-renkleri.json` aynen). Baştan yazılmadı.
+- Testler zaten karşılıyor: `src/rules/altSoy41.test.tsx` (kart seçimi ve buff/debuff metni, Human ten tonu kültürden bağımsız, eski Human kaydı bildirimi, görünüm/oran/kanat/Celestial verisi), `src/ui/as1cGorunum.test.tsx`, `src/ui/tint.test.ts`.
+- Metinden fark (önceki kullanıcı kararıyla kalan): Human `kulturTen` her kültüre üç tonun hepsini açar (bağlama yok = metindeki "eşleme boş" ile aynı sonuç; Sur Dışı dahil hepsi her tonu seçer); ton renkleri yer tutucu değil (KG1/AS1c kararı).
+- Ekran görüntüsü `docs/as1b/karakter-adimi-mobil.png` (Karakter adımı, Human kültür kartları, 390 px). Ana parça değişmedi.
+- Yer tutucu kalanlar: kanat sprite'ı olmayan yuva yok (üç yuvanın dosyası var); Kanatlı uçuş kararı U1b'de.
+
+## 2026-11-12 — Görev AS1a (toplu): 41 alt soy denetimi, kurtarma dezavantajı bütün yollarda (kural sürümü 77)
+
+- **Durum:** görev metnindeki 41 alt soyun verisi, buff/debuff mekaniği ve hizalanma başlangıcı main'de zaten vardı (Kuyruk AS1a, AS1a-2, AS1b = sürüm 71, AS1c görünüm). Çalışan sistem baştan yazılmadı; metinle karşılaştırıldı. Sayı 41 = 38 ırk soyu + 3 Celestial uyanışı (test denetler). Hizalanma `altSoy` 41 satırın hepsi metindeki değerlerle **birebir** (betikle karşılaştırıldı; K51 uç build testleri değişmedi).
+- **Gerçek eksik (kapatıldı, sürüm 77):** 13 alt soy (`durum: kismi`) "X hasarına/durumuna karşı kurtarma dezavantajı"nı ek paket, imza, eşya kurtarmalarında taşımıyordu. En küçük genel genişleme: `SaveCtx.genis` (yeni yol işareti) + `ActiveEffect.saveDisVsGenis` (77+ savaşın başında `withSoy` yazar); yeni yollar: ek paket `saveEvent` (hasar türü + `durumUygula` durumu), P12 vertigo patlaması, imza eylemi, eşya fırlatma (hasar + `grants`), harita `saveEffect` (hasar + başarısızlık durumu), Cunning Strike Trip (Prone), `grapple.ts` ek kurtarması (durum), tepki save'li hasarı (Hellish Rebuke gibi) ve bakış tepkisi, Delayed Blast Fireball boncuğu (ateş). 13 alt soy `calisir`. Kalan: P9 tepki ilkellerinin hasarsız kurtarması (bağlam yok). 76 ve altı aynen (eski etki `saveDisVsGenis` taşımaz).
+- **Sürüm 77 (görev planındaki sıra).** Tek sabit `src/battle/altSoySurum.ts` `ALT_SOY_77_VERSION`.
+- **Metinden bilerek ayrılan, önceki kararla kalanlar:**
+  - Dwarf Tepe buff'ı "+1 HP/seviye" yerine Dayanıklılık kurtarması +1, Yeraltı "karanlık görüş 120 ft" yerine Gizlen +2: taban Dwarf'ta zaten Dwarven Toughness ve 120 ft karanlık görüş var; AS1b kullanıcı kararı (DECISIONS AS1b "Dwarf Tepe ve Yeraltı").
+  - **Tiefling Kanatlı:** metin "U1b'ye kadar yalnız veri yer tutucusu" diyor; Kanat Süzülüşü AS1b'de (71) zaten çalışır durumda (U1a uçuş ilkeli üstünde). Kaldırmak 71–76 kayıtlarını bozar ve "çalışan sistemi baştan yazma" kuralına aykırı: **dokunulmadı**; U1b kararları gelince orada güncellenir.
+  - Goliath Storm SRD Storm's Thunder: hasar türü SRD'de Thunder (metinde "yıldırım"); SRD korundu.
+  - Halfling Kalın taşıma ×1,5 taşıma kuralı açıkken çalışır (AS1b).
+- **Testler:** `src/battle/as1a77.test.ts` (sabit, savaş başı işareti 77/76, `genis` bağlamı, harita mekaniğinde Red soğuk ve Hill Prone 77/76); `ruleVersion.test.ts`/`g6.test.ts` güncel sürüm 76 → 77 (sürüm arttı). Regresyon `src/sim/as1a77Regresyon.test.ts` (`AS1A77_TOHUM`): standart parti 77 = 76.
+- **Ertelenen:** Kanatlı uçuşunun U1b kararları; Kalın taşıma kuralı kapalıyken etkisiz; P9 tepki ilkelleri.
+
+## 2026-11-12 — Görev MB6b: binek arayüzü (yalnız arayüz; kural sürümü 76, kayıt sürümü 22 değişmedi)
+
+- **Binek bölümü:** kontrollü bineğin binicisinin Hareket alt menüsünde "Binek: Koşu/Çekil/Kaçın" ve bineğin bonus eylemleri (`mountDash`, `mountDisengage`, `mountDodge`, `mountSteed-<k>`; komut `actorId` = binek, motor `controlledGate` denetler; geçersizse motor gerekçesi `neden-metinleri.json` kalıbıyla TR/EN). Saf yardımcılar `src/ui/mountUi.ts`.
+- **Hareket önizlemesi** kontrollü bineğin binicisinde bineğin hızıyla (`moverFor`; motorun `move` yönlendirmesiyle aynı yaratık).
+- **Yığın jetonu:** binici bineğin üstünde %72 ölçek ve jeton yarıçapının 0,55'i kadar yukarıda, bineğinden sonra çizilir; HP çubuğu binicide jetonun üstünde (bineğinki altta). Mekanik tek altıgen motordan. 🐎 rozetinin ipucunda kontrollü/bağımsız.
+- **Tur şeridi:** kontrollü binek kendi kutusunda gösterilmez (sırası binicinin turunda), binicinin kutusunda küçük binek rozeti; binici Incapacitated olunca binek bağımsız ve kendi kutusunda.
+- **Çekmece:** "Binek: X" / "Binici: Y" + kontrollü/bağımsız rozeti.
+- **Önizleme kartı:** `mount`/`dismount` komutunda maliyet (hızın yarısı, ft), kalan hareket, binek kontrollü olur mu, uçamayan binici havadan düşer uyarısı (`movePreview` `mount`; binme hedef seçiminde ilk uygun binek, inmede seçili irtifa).
+- **Günlük:** inme/düşme satırının açılır ayrıntısı: binek adı (binek 0 HP ise "save'siz iner"), Prone ya da harcanan hareket, iniş irtifası (`logEntries` `mountDetail`; binek son `mounted` olayından).
+- **Game Master kurulumu "binmiş başla" (B22):** seçili yaratığın bitişiğindeki uygun bineklerde "🐎 X üstünde başla" (adaylar motorun `mountProblem`'iyle). ⚠ Motorun kurulumda yeni alanı yoktu; kurulumda **yalnız Game Master bağlamıyla** mevcut `mount`/`dismount` komutu kabul edilir (`commands.ts`, olay `mounted`/`dismounted` aynen; kural ve sürüm yok, harcanan hareket ilk turun başında tazelenir). Yeni Ayarlar anahtarı yok. "Eğitimli binek" anahtarı yapılmadı (eğitimli liste veride; kullanıcı istemedi).
+- **Paket:** ana parça 400,03 kB (sınır 420; değişmedi: kod savaş parçasında). Testler `src/ui/binekMb6b.test.ts` (10). Ekran görüntüsü `docs/mb6b/binekli-sahne-mobil.png` (telefon yatay).
+- **Açık:** çok altıgenli bineğin yığın çizimi (binici çapada; ayrı ince ayar yok), YZ savaş içi binme (B22), binekli sim senaryoları.
+
+## 2026-11-12 — Kuyruk K74: Truesight motor yolları + Hallow toplu koruma (kural sürümü 75), batıran çamurun bedeli + tehlike katmanında çamur (76)
+
+- **Tek sabit:** `src/battle/k74Surum.ts` (`K74_VERSION` 75, `K74B_VERSION` 76, `k74On`/`k74bOn`), sabitler `data/k74.json`. Kayıt sürümü 22 değişmedi (yeni olay türü yok). 74 ve altı kayıt/replay birebir.
+- **Truesight (75):** ikinci kopya yazılmadı; tek yardımcı `hiddenTo(state, gözlemci, hedef)` = `hidden` ve K63 `truesightSees` değil. Bağlanan beş yol (KUYRUK-DURUM 4c): fırsat saldırısı görme (`reactions.ts` `sees`), yürüyüşte fırsat saldırısı algısı (`features.ts` `opportunityAttacks`), Superior Hunter's Prey ikinci hedefi (`classTraits.ts`; denetim "Cleave" yazmıştı, gerçek yer Hunter), Cleave ikinci hedefi (`mastery.ts`), uyuyan ejderhanın Algı süzgeci (`dragon.ts`).
+- **Hallow (75):** Extra Effect (10 seçenek) **kapsam dışı** (kullanıcı kararı: yapılmayacak). Hallow tek toplu koruma: kurulumda tür seçimi yok sayılır, SRD'nin altı türü (Aberration, Celestial, Elemental, Fey, Fiend, Undead) birden (`data/k74.json` `hallow.turler`); koruma K64b/K62-ACIK altyapısıyla aynen (`wardProtects`, `hallowSyncEvents`, `wardStepBlocked`). ⚠ SRD "choose any of these types" der; toplu koruma hepsini seçmekle aynı. Yeni komut/olay/etki alanı yok. Bastırmanın birden çok kaynağı denendi; reducer koruma alanındaki yeni Charmed/Frightened'ı zaten süzdüğü için (`wardedFrom`) etkisizdi, geri alındı.
+- **Batıran çamur (76):** BK1 öneri 3. Ağır zırhlı `n`'de Atletizm'i geçemezse yürüyüş biter **ve** Restrained (süren etki `sinkMud:<altıgen>`, `escapeCheck` Atletizm, DC = kuralın DC'si + `kacisDcFark` 0); başarıda bedel yok. Hafif/orta zırha yayılmadı (kural metni "ağır zırhlı"). Ölü `sinkMud` (Kale, Çukur; BK1 HATA 1) dokunulmadı.
+- **Tehlike katmanı (görünüm):** yeni tür `mud` ("Çamur/batak zemini"): açık `sinkMud`/`leeches`/`bog` kuralının zemin harfi (`data/k74.json` `tehlikeZemin`). Kuralı olmayan haritada yok.
+- **Testler:** `src/battle/k74.test.ts` (75/74 her yol, Hallow türleri, çamur 76/75, katman); `ruleVersion.test.ts` ve `g6.test.ts` güncel sürüm beklentisi 74 → 76 (gerekçe: sürüm arttı). Regresyon `src/sim/k74Regresyon.test.ts` (`K74_TOHUM`; 74 = MB2 altınları, 75 = 76 = 74).
+
 ## 2026-11-12 — Görev DURUM: kuyruk durum denetimi (salt okuma; kod, veri, harita, görsel, kural sürümü 74 ve SAVE_VERSION 22 değişmedi)
 
 - Rapor `harita/belgeler/KUYRUK-DURUM.md` (madde durumu + kanıt, 60–74 sürüm zinciri, 8 birleşmemiş dal, kullanıcı kararı bekleyenler, önerilen 5 iş); CLAUDE.md donma maddesi tek cümleye indirildi, `docs/MEKANIK-DONMA.md` başına aynı not eklendi.

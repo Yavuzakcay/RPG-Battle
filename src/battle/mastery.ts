@@ -28,6 +28,7 @@ import { globalRule } from './ruleControl';
 import { checkReach, optionReach } from './range';
 import { applyEvents } from './reduce';
 import type { AttackOption, BattleEvent, BattleState, Combatant, MasteryMark } from './types';
+import { hiddenTo } from './k74Surum';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 const alive = (c: Combatant | undefined): c is Combatant => !!c && c.hp > 0 && isTargetable(c);
@@ -72,7 +73,7 @@ type Attack = (state: BattleState, actor: Combatant, target: Combatant, option: 
 function cleaveTarget(state: BattleState, actor: Combatant, first: Combatant, option: AttackOption): Combatant | undefined {
   return state.order
     .map((id) => state.combatants[id])
-    .filter((c): c is Combatant => alive(c) && c.id !== first.id && c.id !== actor.id && c.side !== actor.side && !c.civilian && !c.hidden)
+    .filter((c): c is Combatant => alive(c) && c.id !== first.id && c.id !== actor.id && c.side !== actor.side && !c.civilian && !hiddenTo(state, actor, c))
     .filter((c) => (state.map
       // Kuyruk K73b (sürüm 63+): 3B bitişiklik.
       ? !!c.pos && !!first.pos && (k73bOn(state) ? adjacent3D(state, c, first) : distance(c.pos, first.pos) <= 1)

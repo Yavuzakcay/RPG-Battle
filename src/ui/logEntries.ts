@@ -50,6 +50,28 @@ function tally(t0: Tally, e: BattleEvent, actorId: string): void {
   if (e.type === 'healed' && e.actorId === actorId) t0.heal += e.amount;
 }
 
+/**
+ * Görev MB6b: binekten inme/düşme satırının açılır ayrıntısı: hangi binek, binek 0 HP'ye düştüyse save'siz iniş, Prone,
+ * harcanan hareket, iniş irtifası. Binek, olaylardaki son `mounted` olayından (yoksa başlangıç durumundaki `riding`).
+ */
+function mountDetail(events: BattleEvent[], i: number, e: BattleEvent, state: BattleState): string[] {
+  if (e.type !== 'dismounted') return [];
+  const D = t().log.mountDetail;
+  let mountId: string | undefined;
+  for (let k = i - 1; k >= 0 && !mountId; k--) {
+    const x = events[k];
+    if (x?.type === 'mounted' && x.actorId === e.actorId) mountId = x.mountId;
+    if (x?.type === 'battle_started') mountId = x.state.combatants[e.actorId]?.riding;
+  }
+  const m = mountId ? state.combatants[mountId] : undefined;
+  const out: string[] = [];
+  if (m) out.push(m.hp <= 0 ? D.down(m.name) : D.mount(m.name));
+  if (e.fell) out.push(D.prone);
+  else if (e.cost > 0) out.push(D.cost(e.cost * 5));
+  if (e.toFt !== undefined) out.push(D.alt(e.toFt));
+  return out;
+}
+
 export function logEntries(events: BattleEvent[], state: BattleState, opts: { summary?: boolean } = {}): LogEntry[] {
   const L = t().log;
   const out: LogEntry[] = [];
@@ -64,7 +86,7 @@ export function logEntries(events: BattleEvent[], state: BattleState, opts: { su
     const text = describeEvent(e, state);
     if (text) {
       const { head, detail } = splitLine(text);
-      out.push({ key: `e${i}`, head, detail, kind: kindOf(e) });
+      out.push({ key: `e${i}`, head, detail: [...detail, ...mountDetail(events, i, e, state)], kind: kindOf(e) });
     }
     if (e.type === 'turn_ended') {
       const x = tl.get(e.actorId);

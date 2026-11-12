@@ -23,6 +23,7 @@ import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { overchannelProblem } from './battle/apex';
 import { mountProblem } from './battle/mounted';
 import { dismountOptions } from './ui/dismountOptions';
+import { mountActions, mountBadge, moverFor, ridersOnTop, riderStack, setupMountCandidates, stripMountOf } from './ui/mountUi';
 import { sizeRank } from './battle/forced';
 import { eldritchSmiteProblem } from './battle/warlock';
 import { availableForms, wildShapeFeature } from './battle/druid';
@@ -241,6 +242,11 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
       </div>
       {c.asleep && <p><b>{D.asleep}</b> {D.asleepText}</p>}
       {c.summon && <p>{t().summons.ownedBy(props.state.combatants[c.summon.by]?.name ?? c.summon.by, c.summon.spell)}</p>}
+      {/* Görev MB6b: binek/binici satırı ve kontrol kipi. */}
+      {(() => { const mb = mountBadge(props.state, c); if (!mb) return null; const M = t().battle.mb6b;
+        const other = c.riding ? props.state.combatants[c.riding] : c.rider ? props.state.combatants[c.rider] : undefined;
+        if (!other) return null;
+        return <p className="mount-line">{c.riding ? M.mountLine(displayName(other)) : M.riderLine(displayName(other))} <small className={`mount-badge ${mb}`} title={M.badge[mb]}>{M.badgeShort[mb]}</small></p>; })()}
       {(props.notes ?? []).length > 0 && <ul className="wake-notes">{props.notes?.map((n) => <li key={n}>{n}</li>)}</ul>}
       {c.conditions.filter((x) => !x.startsWith('Immune:')).length > 0 && <p>{D.conditions(c.conditions.filter((x) => !x.startsWith('Immune:')).join(', '))}</p>}
       {fxRows.length > 0 && (
@@ -864,7 +870,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const movable = useMemo(() => (exploreOn && explorerId ? movableHexes(exploreView(state, explorerId), explorerId)
     // Kuyruk K71c: Hava görünümünde uçabilen yaratık seçili düzeye birleşik uçuşla (yoksa vurgu yok).
     : active && mode === 'idle' && airOn ? new Map((state.combatants[actorId] ? airReach(state, state.combatants[actorId] as Combatant, airLevel) : []).map((x) => [hexKey(x.to), x.cost] as [string, number]))
-    : active && mode === 'idle' ? movableHexes(state, actorId) : new Map<string, number>()), [state, active, actorId, mode, exploreOn, explorerId, airOn, airLevel]);
+    // Görev MB6b: kontrollü bineğin binicisinde hareket menzili bineğin hızıyla (yürüyüş komutu bineğe gider).
+    : active && mode === 'idle' ? movableHexes(state, moverFor(state, actorId)) : new Map<string, number>()), [state, active, actorId, mode, exploreOn, explorerId, airOn, airLevel]);
   // Kuyruk K71c: havadaki jetonun yukarı kayması (px; düzey başına, en çok bir jeton yarıçapı) ve seçili düzeyde mi.
   // Kuyruk U1a: süzülen (yere değmez) irtifa 0'da da hafif yukarıda ve gölgeli (K71c havadaki jetonla aynı çizim).
   const airLift = (c: Combatant): number => (cellsOn(state) && (c.altitudeFt ?? 0) > 0 ? Math.min(TOKEN_R * 1.1, TOKEN_R * 0.45 + levelOf(c.altitudeFt ?? 0) * TOKEN_R * 0.1)
@@ -1570,6 +1577,17 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     ...(actor.riding ? [{ key: 'dismount', label: N.dismount, reason: loc(tryWhy({ type: 'dismount', actorId })) ?? undefined,
       act: () => { reset(); setDismountFt(dismountOpts.defaultFt); setPickHexCmd({ make: (h) => ({ type: 'dismount', actorId, to: h }), dismount: true, hint: B.mb6.hint(dismountOpts.defaultFt) });
         setMode('pickHex'); setMenuOpen(false); } }] : []),
+    // Görev MB6b: kontrollü bineğin Dash/Disengage/Dodge'u ve bonus eylemleri (komut `actorId` = binek; motor denetler).
+    ...((() => {
+      const ma = mountActions(state, actor);
+      if (!ma) return [];
+      const m = ma.mount;
+      return ma.actions.map((a) => (a.cmd
+        ? { key: `mount${a.key[0]?.toUpperCase()}${a.key.slice(1)}`, label: B.mb6b.act[a.key] ?? a.key, reason: loc(tryWhy(a.cmd)) ?? undefined, act: () => run(a.cmd as Command) }
+        : { key: `mountSteed-${a.key}`, label: B.mb6b.steed(N.steed[a.key] ?? a.key), reason: m.economy.bonus ? Y.steerBonus : undefined,
+          act: () => { reset(); if (a.key === 'fey-step') { setPickHexCmd({ make: (h) => ({ type: 'steed_action', actorId: m.id, kind: a.key as 'fey-step', to: h }) }); setMode('pickHex'); }
+            else { setPickCmd({ make: (id) => ({ type: 'steed_action', actorId: m.id, kind: a.key as 'fell-glare', targetId: id }) }); setMode('pick'); } setMenuOpen(false); } }));
+    })()),
     // Kuyruk MB6: binemeyen için neden satırı (uygun binek yoksa "Bin" düğmesi yerine kısa neden).
     ...(globalRule(state, 'srdK19') && !actor.riding && mountWhy ? [{ key: 'mountWhy', label: B.mb6.whyMount, reason: mountWhy, act: () => undefined }] : []),
     // Kuyruk K48: Moral tam modu: çökmüş dostu toparla (eylem; motorda denenerek).
@@ -1874,7 +1892,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               .map((x) => ({ ...x, id: x.c.id, pos: x.c.pos as Offset, y: hexCenter(x.c.pos as Offset).y, scale: tokenScale(x.c) }));
             // Aşağıdaki jeton üstte; büyük jeton komşusundaki küçüğü örtmez (drawOrder).
             // Kuyruk K71c: aynı yerde havadaki jeton yerdekinin üstünde çizilir (kararlı sıralama: yer sırası aynı).
-            const ordered = cellsOn(state) ? [...drawOrder(shown)].sort((a, b) => (a.c.altitudeFt ?? 0) - (b.c.altitudeFt ?? 0)) : drawOrder(shown);
+            // Görev MB6b: binici bineğinden sonra (üstte) çizilir.
+            const ordered = ridersOnTop(state, cellsOn(state) ? [...drawOrder(shown)].sort((a, b) => (a.c.altitudeFt ?? 0) - (b.c.altitudeFt ?? 0)) : drawOrder(shown));
             const r = TOKEN_R;
             // Sürekli durum efektleri (Görev V, V2): jeton başına tek efekt (çoklu durumda sırayla), ekranda en çok sekiz
             // animasyon; efekt ayarı kapalıysa yok; tek seferlik hasar efekti oynarken o jetonun döngüsü duraklar.
@@ -1939,12 +1958,16 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             return [
               ground,
               beams,
-              ...ordered.map(({ c, view, scale }) => {
+              ...ordered.map(({ c, view, scale: scale0 }) => {
                 // Kuyruk K71c (sürüm 58+): havadaki jeton irtifasıyla orantılı yukarıda, yerde gölgesi; Hava görünümünde seçili
                 // düzeyde olmayan jeton soluk ve dokunulmaz.
+                // Görev MB6b: binici bineğinin üstünde küçük ve yukarıda (yığın; mekanik tek altıgen motordan).
+                const stack = riderStack(state, c);
+                const scale = stack ? scale0 * stack.scale : scale0;
                 const p0 = tokenCenter(state, c);
                 const lift = airLift(c);
-                const p = lift ? { x: p0.x + TOKEN_R * 0.35, y: p0.y - lift } : p0;
+                const p1 = lift ? { x: p0.x + TOKEN_R * 0.35, y: p0.y - lift } : p0;
+                const p = stack ? { x: p1.x, y: p1.y - r * stack.lift } : p1;
                 const offLevel = (airOn && !inLevel(c)) || (katFt !== null && (c.altitudeFt ?? 0) !== katFt);
                 // Jeton filtreleri (Görev V): taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış.
                 const filters = tokenFilters(c);
@@ -2006,10 +2029,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       <text x={Math.min(cam.world.w - 90, Math.max(90, p.x))} y={Math.max(18, p.y - r - 8)} className="hide-label">{t().view.hiddenStealth(c.hidden.dc)}</text>
                     )}
                     {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
-                    <rect x={p.x - r} y={p.y + r + 3} width={2 * r} height={8} className="hpbg" />
-                    <rect x={p.x - r} y={p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
+                    {/* Görev MB6b: binicinin HP çubuğu jetonunun üstünde (bineğinki altta kalır). */}
+                    <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r} height={8} className="hpbg" />
+                    <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
                     {/* Kuyruk K48: Moral çubuğu (tam mod; HP'nin altında, ayrı renk). */}
-                    {c.moralMax !== undefined && (<>
+                    {c.moralMax !== undefined && !stack && (<>
                       <rect x={p.x - r} y={p.y + r + 12} width={2 * r} height={4} className="hpbg" />
                       <rect x={p.x - r} y={p.y + r + 12} width={2 * r * Math.max(0, (c.moral ?? 0) / Math.max(1, c.moralMax))} height={4} className="moral" />
                     </>)}
@@ -2028,6 +2052,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                         // Kuyruk K64a: ele geçirilmiş beden rozeti.
                         ...(possessedEffect(c) ? [{ key: 'poss', icon: '👻', title: (possessedEffect(c)?.dormant ? B.k64.dormant : B.k64.possessed)(state.combatants[possessedEffect(c)?.sourceId ?? '']?.name ?? '?') }] : [])] as StatusIcon[];
                       if (all.length === 0) return null;
+                      // Görev MB6b: 🐎 rozetinde kontrollü / bağımsız.
+                      const mb = mountBadge(state, c);
+                      if (mb) for (const x of all) if (x.key === 'mounted' || x.key === 'ridden') x.title = `${x.title} · ${B.mb6b.badge[mb]}`;
                       const { shown, more } = limitBadges(all);
                       return (
                         <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
@@ -2136,7 +2163,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               // Kuyruk K58 G4: sıra şimdiki yaratıktan başlar; şimdiki + sonraki 5 (açılınca hepsi), durum simgeleri, konsantrasyon.
               const n = state.order.length;
               const rot = [...state.order.slice(state.turnIndex), ...state.order.slice(0, state.turnIndex)]
-                .filter((id) => { const c = state.combatants[id]; return !!c && !c.summon?.gone; });
+                // Görev MB6b: kontrollü binek kendi kutusunda değil, binicinin kutusunda (rozet).
+                .filter((id) => { const c = state.combatants[id]; return !!c && !c.summon?.gone && !stripMountOf(state, id).hide; });
               return { shown: stripAll ? rot : rot.slice(0, 6), hidden: stripAll ? 0 : Math.max(0, rot.length - 6), n };
             })().shown.map((id) => {
               const c = state.combatants[id];
@@ -2152,11 +2180,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   onClick={() => setDrawerId(id)} aria-label={B.drawer.details(c.name)} title={c.concentration ? t().view.concentrating(c.concentration.spell) : c.name}>
                   {framedBadge(c, 30, <AvatarBadge avatar={c.avatar} size={30} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} title={c.name} />)}
                   {c.concentration && <span className="strip-conc" aria-label={t().view.concentrating(c.concentration.spell)}>◎</span>}
+                  {(() => { const sm = stripMountOf(state, id).mount; return sm ? (
+                    <span className="strip-mount" title={B.mb6b.stripMount(sm.name)} aria-label={B.mb6b.stripMount(sm.name)}>
+                      <AvatarBadge avatar={sm.avatar} size={16} ring="var(--party)" title={sm.name} />
+                    </span>) : null; })()}
                   {statusIcons(c).length > 0 && <span className="strip-status">{statusIcons(c).slice(0, 2).map((s) => <i key={s.key} title={s.title}>{s.icon}</i>)}</span>}
                 </button>
               );
             })}
-            {(() => { const h = state.order.filter((id) => { const c = state.combatants[id]; return !!c && !c.summon?.gone; }).length - 6;
+            {(() => { const h = state.order.filter((id) => { const c = state.combatants[id]; return !!c && !c.summon?.gone && !stripMountOf(state, id).hide; }).length - 6;
               return h > 0 || stripAll ? <button className="strip-more" onClick={() => setStripAll((v) => !v)}>{stripAll ? '‹' : t().view.more(h)}</button> : null; })()}
           </div>
 
@@ -2236,6 +2268,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       onClick={() => { setOriginId(c?.id ?? null); setTargetId(null); }}>{c ? (c.id === BOOK(actorId) ? B.p12.book : c.name) : B.origin.self}</button>
                   ))}
                 </div>
+              )}
+              {/* Görev MB6b: binme/inme maliyeti önizleme kartında (binmede ilk uygun binek; inmede seçili irtifa). */}
+              {pvSet.on && mode === 'pick' && pickCmd && (() => {
+                const first = [...glowing][0];
+                const cmd = first ? pickCmd.make(first) : null;
+                return cmd?.type === 'mount' ? <Suspense fallback={null}><PreviewCard state={state} cmd={cmd} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet} /></Suspense> : null;
+              })()}
+              {pvSet.on && mode === 'pickHex' && pickHexCmd?.dismount && (
+                <Suspense fallback={null}><PreviewCard state={state} cmd={{ type: 'dismount', actorId, ...(dismountFt !== null && dismountFt !== dismountOpts.defaultFt ? { toFt: dismountFt } : {}) }} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet} /></Suspense>
               )}
               {/* Kuyruk MB6: havada inme irtifası (uçabilen binici; uçamayan için yalnız kısa uyarı). */}
               {mode === 'pickHex' && pickHexCmd?.dismount && (
@@ -3149,6 +3190,26 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     </div>
                   );
                 })}
+              </div>
+            );
+          })()}
+
+          {setup && selected && (() => {
+            // Görev MB6b (B22): Game Master kurulumunda "binmiş başla" (motorun `mount`/`dismount` komutu, kurulumda GM bağlamı).
+            const c = state.combatants[selected];
+            if (!c) return null;
+            const cands = setupMountCandidates(state, c.id);
+            const on = c.riding ? state.combatants[c.riding] : undefined;
+            if (!cands.length && !on) return null;
+            const M = B.mb6b;
+            return (
+              <div className="civ-picker familiar-picker setup-mount" role="group" aria-label={M.setupTitle(c.name)}>
+                <strong>{M.setupTitle(c.name)}</strong>
+                <small>{M.setupNote}</small>
+                {cands.map((m) => (
+                  <button key={m.id} className="hud-btn" onClick={() => dice.play((rng) => dispatch(session, { type: 'mount', actorId: c.id, mountId: m.id }, rng, GM_CONTEXT))}>{M.setupMount(m.name)}</button>
+                ))}
+                {on && <button className="hud-btn" onClick={() => dice.play((rng) => dispatch(session, { type: 'dismount', actorId: c.id }, rng, GM_CONTEXT))}>{M.setupDismount} ({on.name})</button>}
               </div>
             );
           })()}
