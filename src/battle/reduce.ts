@@ -5,6 +5,8 @@
 import { BOON_TURN_REFILL } from './boons';
 import { syncRiders } from './mounted';
 import { binekOn } from './binekSurum';
+import { binekMb2On } from './binekMb2Surum';
+import { controlledNow } from './binekMb2';
 import { syncAuthority } from './authority';
 import { spells } from '../data';
 import { homeSide, syncAllegiance } from './allegiance';
@@ -583,13 +585,15 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const nx = next.combatants[event.nextActorId];
       // Kuyruk 18 H3: Heroic Warrior (Champion 10): tur başında Heroic Inspiration yoksa gelir (anahtar heroicWarrior).
       const heroic = nx?.traits?.includes('heroic-warrior') && globalRule(next, 'heroicWarrior') && resourceLeft(nx, 'heroicInspiration') < 1;
-      return nx
+      const started = nx
         ? withCombatant(next, event.nextActorId, {
           movementUsed: 0, run: null,
           economy: { ...FRESH_ECONOMY, slotTurn: nx.economy.slotTurn },
           ...(heroic || boonRefill(nx) ? { resources: { ...nx.resources, ...(heroic ? { heroicInspiration: 1 } : {}), ...boonRefill(nx) } } : {}),
         })
         : next;
+      // Kuyruk MB2 (74+): binicinin turu bineğin de turu: kontrollü bineğin hareketi ve ekonomisi tazelenir.
+      return binekMb2On(started) ? refreshControlledMounts(started, event.nextActorId, event.round) : started;
     }
     case 'placed':
       return withCombatant(state, event.actorId, { pos: event.at });
@@ -1244,7 +1248,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // Kuyruk MB1 (68+): binici bineğin irtifasına da geçer.
       const alt = binekOn(state) && ((m.altitudeFt ?? 0) !== 0 || c.altitudeFt !== undefined) ? { altitudeFt: m.altitudeFt ?? 0 } : {};
       const s1 = withCombatant(state, c.id, { riding: m.id, pos: m.pos, movementUsed: c.movementUsed + event.cost, ...alt });
-      return withCombatant(s1, m.id, { rider: c.id });
+      const s2 = withCombatant(s1, m.id, { rider: c.id });
+      return event.control === 'kontrollu' && binekMb2On(state) ? controlMount(s2, c.id, m.id) : s2;
     }
     case 'dismounted': {
       const c = state.combatants[event.actorId];
@@ -1252,7 +1257,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const { riding: mid, ...rest } = c;
       let s1: BattleState = { ...state, combatants: { ...state.combatants, [c.id]: { ...rest, pos: event.at, movementUsed: c.movementUsed + event.cost, ...(event.toFt !== undefined ? { altitudeFt: event.toFt } : {}) } as Combatant } };
       const m = mid ? s1.combatants[mid] : undefined;
-      if (m) { const { rider: _r, ...mr } = m; s1 = { ...s1, combatants: { ...s1.combatants, [m.id]: mr as Combatant } }; }
+      // Kuyruk MB2 (74+): inince kontrol düşer (sırası binicinin hemen ardında kalır; bu turdaki sırası `ridTurn` ile kullanılmış).
+      if (m) { const { rider: _r, controlledBy: _cb, ...mr } = m; s1 = { ...s1, combatants: { ...s1.combatants, [m.id]: mr as Combatant } }; }
       return s1;
     }
     case 'teleported': {
@@ -1442,3 +1448,34 @@ function withCivilianLooks(state: BattleState): BattleState {
   for (const c of missing) combatants[c.id] = withCivilianLook(c, defaultCivilianLook(Number(c.id.replace(/\D/g, '')) || 1));
   return { ...state, combatants };
 }
+
+/** Kuyruk MB2 (74+): binilen binek kontrollü olur: sırası binicinin hemen ardına, inisiyatifi binicininki; bu turda henüz oynamadıysa
+ * hareketi ve ekonomisi tazelenir ve tur kancaları binicininkiyle çalışır (`ridTurn.hooks`). Geçerli savaşçı aynı kalır. */
+function controlMount(state: BattleState, riderId: string, mountId: string): BattleState {
+  const r = state.combatants[riderId];
+  const m = state.combatants[mountId];
+  if (!r || !m) return state;
+  if (state.status !== 'active') return withCombatant(state, m.id, { controlledBy: r.id, initiative: r.initiative });
+  const curId = state.order[state.turnIndex];
+  const oldIdx = state.order.indexOf(m.id);
+  const order = state.order.filter((id) => id !== m.id);
+  order.splice(order.indexOf(r.id) + 1, 0, m.id);
+  const turnIndex = curId !== undefined && order.includes(curId) ? order.indexOf(curId) : state.turnIndex;
+  const already = m.ridTurn?.round === state.round;
+  const fresh = !already && oldIdx > state.turnIndex;
+  const patch: Partial<Combatant> = { controlledBy: r.id, initiative: r.initiative,
+    ...(already ? {} : { ridTurn: { by: r.id, round: state.round, ...(fresh ? { hooks: true as const } : {}) } }),
+    ...(fresh ? { movementUsed: 0, run: null, economy: { ...FRESH_ECONOMY, slotTurn: m.economy.slotTurn } } : {}) };
+  return withCombatant({ ...state, order, turnIndex }, m.id, patch);
+}
+
+/** Kuyruk MB2 (74+): sırası gelen binicinin kontrollü bineği: hareketi ve ekonomisi tazelenir, bu turdaki sırası kullanılmış sayılır. */
+function refreshControlledMounts(state: BattleState, riderId: string, round: number): BattleState {
+  let next = state;
+  for (const c of Object.values(state.combatants)) {
+    if (c.controlledBy !== riderId || !controlledNow(next, c)) continue;
+    next = withCombatant(next, c.id, { movementUsed: 0, run: null, economy: { ...FRESH_ECONOMY, slotTurn: c.economy.slotTurn }, ridTurn: { by: riderId, round, hooks: true } });
+  }
+  return next;
+}
+

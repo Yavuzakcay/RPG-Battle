@@ -692,3 +692,66 @@ Yalnız YZ kararı (yeni komut/olay yok; `SAVE_VERSION` aynı). `src/battle/bine
 **Doğrulama:** `src/battle/binekMb5.test.ts` 9 test; regresyon `src/sim/binekMb5Regresyon.test.ts` (4 senaryo, 1 tohum: binekli olmayan 72 imzası `main`'den alınan altınla aynı, 73 = 72; binekli çok altıgen kapalı 73 = 72).
 
 **Kalan:** MB2 (kontrollü binek turu), MB6 (arayüz), MB8 (denge). Binekli ejderha binicisi / "binmiş başla" YZ kararı ve inme eşiği MB5'e alınmadı (yeni komut gerektirir).
+
+---
+
+## 17. MB2 sonucu (kural sürümü 74)
+
+Tek sabit `src/battle/binekMb2Surum.ts` (`BINEK_MB2_VERSION`, `binekMb2On`), kurallar `src/battle/binekMb2.ts`. B4 için seçilen yol **B4-A, birleşik tur**. Sürüm 73 ve altında bütün binekler bağımsız (eski davranış).
+
+**Yapılanlar:**
+
+- **Kontrol türü veriden** (yaratık adıyla koşul yok; `mountControlled`):
+  - Çağrıda `data/summons.json` `mount.kontrol: "kontrollu"`: Find Steed (SRD "functions as a controlled mount") ve Phantom Steed (Riding Horse).
+  - Paket yaratığında `binek.kontrol` (`kontrollu`/`bagimsiz`, varsayılan bağımsız; şema `ilkelSema.ts`).
+  - Çağrı olmayan binek: `data/binek.json` `egitimli`. B2 listesi: Riding Horse, Warhorse, Draft Horse, Mule, Pony, Camel, Elephant.
+  - Summon Dragon ruhuna zaten binilmez (MB7).
+- **Binme:** kontrollü bineğe binince `mounted.control: "kontrollu"`, bineğe `controlledBy`.
+  - Sırası binicinin hemen ardına alınır, inisiyatifi binicininki olur. Geçerli savaşçı değişmez (reducer `controlMount`).
+  - Binek bu turda henüz oynamadıysa hareketi ve ekonomisi tazelenir, tur başı kancaları çalışır. SRD: binildiği tur da hareket edebilir.
+- **Tur (B4-A):** kontrollü binek kendi turunu almaz (`nextActorPlain` → `mountSkipsTurn`).
+  - Binicinin turunun başında bineğin hareketi ve ekonomisi tazelenir (`refreshControlledMounts`, `ridTurn`).
+  - Bineğin tur başı ve sonu kancaları binicininkiyle aynı anda çalışır: süreli durumlar, süren etkiler, alanlar, harita tur başı/sonu.
+  - Bunun için `end_turn`'ün satır içi kanca zincirleri `turnStartChain`/`turnEndChain` işlevlerine çıkarıldı. Sıra aynı; yeni olay türü yok.
+- **Eylem kısıtı (B5):** kontrollü binek yalnız hareket komutları, Dash, Disengage, Dodge ve bineğin bonus eylemleri (`steed_action`: Fey Step…) yapar. Saldırı, büyü ve tur bitirme reddedilir (`controlledCommandProblem`).
+  - Komutları yalnız binicinin turunda alır. Binicinin oyuncusu da yönetir (`commands.ts` `controlledGate`).
+  - Binicinin `move`/`jump` komutu kontrollü bineğine gider: arayüzün mevcut "yürü" dokunuşu bineği yürütür.
+- **Fırsat saldırısı:** yalnız binek tetikler (B7, MB1'den aynen). Disengage'li binekte fırsat saldırısı yok.
+- **Bağımsıza dönüş:** inince kontrol düşer.
+  - `ridTurn` bu turda bineği atlatır, çift tur olmaz.
+  - Sonraki turdan itibaren binek binicinin hemen ardında kendi turunu oynar (SRD: inisiyatifi değişmiş kalır).
+  - Binici Incapacitated ya da 0 HP iken binek bağımsız davranır ve binicinin ardından kendi turunu alır.
+  - ⚠ Bu, SRD Find Steed kuralının bütün kontrollü bineklere genellenmesidir.
+- **B8–B10, B24, B23:** aynen. Binek ölünce binici iner ve kontrol düşer. İtilen bineğin binicisi DEX 10 atar. Lance binekte tek elle kullanılır.
+- **YZ (MB5 ile uyumlu):** binici bu adımda bir şey yapamıyorsa kontrollü bineğini yürütür (`ai.ts` `controlledMountStep`).
+  - Bineğin yaklaşma, Dash, Disengage ve Dodge kararı bineğin YZ'sinden, binicinin turunda gelir. Binici sonraki adımda saldırır.
+  - MB5'in binici aday süzmesi (`riderStays`) aynen.
+- **⚠ Yorumlar:**
+  - Binildiği turda henüz oynamamış bineğin tur başı kancaları binme anında çalışır. Önceden oynamış bineğin ekonomisi tazelenmez: kalan hareketini kullanır.
+  - Bineğin süren etkisi turunu aldırıyorsa (Command) bu, binicinin turunda yok sayılır.
+  - Kontrollü bineğin hedef seçimi bineğin kendi YZ'sinden gelir; binici tek altıgende çapada olduğundan sonuç binicinin yakın dövüşüyle örtüşür.
+
+**Doğrulama:**
+
+- **Testler:** `src/battle/binekMb2.test.ts` 16 test.
+- **Regresyon:** `src/sim/binekMb2Regresyon.test.ts`, 4 senaryo × 30 tohum.
+  - Binekli olmayan savaşta 73, MB2 öncesi ağaçtan (`main` 4b0e400d) alınan altın imzalarla aynı; 74 = 73.
+  - Bağımsız binekli savaşta 74 = 73.
+  - Kontrollü binekli savaş (74) çökmeden biter.
+- **YZ süresi:** `npm run sim:yz-sure -- 3 col --binek --kontrollu --kural-surumu 73|74`, 73/74/74/73 sırası.
+  - Karar başına ortalama 28,95 → 26,35 ms (−%9).
+  - Karar sayısı 238 → 288 (bineğin adımları); savaş başına toplam süre ≈ +%10.
+- **Paket boyutu:** ana parça değişmedi (`vite build` 387,29 kB). Savaş parçası +2,46 kB.
+- **Tarayıcı kontrolleri:** `check:harita` 96/0, `check:ses` 15/0.
+- **Tam paket:** 395 dosya, 4644 test geçti (7 atlandı), 0 kırık.
+- **Kayıt:** `SAVE_VERSION` 22'de kaldı. Yeni olay türü yok; `mounted` olayına isteğe bağlı alan, `Combatant`'a isteğe bağlı `controlledBy`/`ridTurn`.
+
+**Arayüz işi (bu görevde yapılmadı, SD2 eylem menüsüyle):**
+
+- Binicinin çekmecesinde "Binek" bölümü: bineğin Dash, Disengage ve Dodge'u. Motor komutları hazır, `actorId` = binek.
+- Hareket önizlemesi bineğin hızıyla. Bugün yürüme dokunuşu bineği yürütür, ama erişim gölgesi binicinin hızından çiziliyor.
+- Tur şeridinde kontrollü bineğin binicinin kutusunda gösterilmesi. Bugün binek tur şeridinde kendi yerinde duruyor ama atlanıyor.
+- Game Master kurulumunda "eğitimli binek" anahtarı ve "binmiş başla".
+
+**Kalan:** MB6 arayüz işleri (yukarıda), MB8 (denge ve kapanış).
+

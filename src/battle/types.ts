@@ -611,6 +611,8 @@ export interface MountRule {
   maxRider?: CreatureSize;
   /** Sahibin (çağıranın) seviye eşiği. */
   minLevel?: number;
+  /** Kuyruk MB2 (74+): kontrollü binek (SRD "controlled mount"; veride `kontrol: "kontrollu"`); yoksa bağımsız. */
+  controlled?: true;
 }
 
 export interface SummonInfo {
@@ -793,6 +795,13 @@ export interface Combatant {
   /** Kuyruk 19 (Mounted Combat): bindiği yaratık ve üstündeki binici. */
   riding?: string;
   rider?: string;
+  /** Kuyruk MB2 (74+): kontrollü bineğin binicisi (binek kendi turunu almaz, binicinin turunda hareket eder). */
+  controlledBy?: string;
+  /**
+   * Kuyruk MB2 (74+): bineğin bu turdaki sırası binicinin turunda kullanıldı (`by` binici, `round` tur). İndikten sonra aynı
+   * turda ikinci kez oynamaz. `hooks`: bineğin tur başı/sonu kancaları binicininkiyle birlikte çalışır.
+   */
+  ridTurn?: { by: string; round: number; hooks?: true };
   /** Kuyruk 19 (SRD Ammunition): türe göre kalan cephane (savaş başında 20; kılıf/sadak). */
   ammo?: Record<string, number>;
   /** Kuyruk 19 (Irresistible Offense): artırılan yetenek skoru (doğal 20 ek hasarı). */
@@ -1896,7 +1905,7 @@ export type BattleEvent =
   | { type: 'dice_rolled'; rolls: DiceRoll[] }
   | { type: 'combat_started' }
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
-  | { type: 'mounted'; actorId: string; mountId: string; cost: number }
+  | { type: 'mounted'; actorId: string; mountId: string; cost: number; /** Kuyruk MB2 (74+): kontrollü binek. */ control?: 'kontrollu' }
   | { type: 'dismounted'; actorId: string; at: Offset; cost: number; /** Kuyruk MB1 (68+): binekten düşerek (günlük). */ fell?: true; /** Kuyruk MB3 (69+): havada iniş irtifası (ft; yoksa irtifa değişmez). */ toFt?: number }
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number; /** Kuyruk 19: serbest kayma (`shiftLeft`'ten düşer). */ free?: boolean }
   | { type: 'shift_granted'; actorId: string; hexes: number }

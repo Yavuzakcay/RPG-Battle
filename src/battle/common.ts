@@ -8,6 +8,7 @@ import { applyEvents } from './reduce';
 import { adjacent3D, k73bOn } from './adjacency';
 import { globalRule } from './ruleControl';
 import { controlConditions, isPossessedBody, POSSESS_FLOOR, possessorDisabled } from './possessionCore';
+import { mountSkipsTurn } from './binekMb2';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 
 export interface Failure {
@@ -64,7 +65,8 @@ function nextActorPlain(state: BattleState): { id: string; round: number } {
     const id = state.order[index];
     const c = id ? state.combatants[id] : undefined;
     // CILA: sahibinin bonus eylemiyle taşınan çağrının (Flaming Sphere, ruh sürüsü) kendi turu yok.
-    if (id && c && !c.summon?.ownerBonus && !c.offFloor && (c.hp > 0 || c.regenPending || c.life === 'dying')) return { id, round };
+    // Kuyruk MB2 (74+): kontrollü binek (ya da bu turdaki sırası binicinin turunda kullanılmış binek) kendi turunu almaz.
+    if (id && c && !c.summon?.ownerBonus && !c.offFloor && (c.hp > 0 || c.regenPending || c.life === 'dying') && !mountSkipsTurn(state, c, round)) return { id, round };
   }
   return { id: currentActorId(state), round };
 }
