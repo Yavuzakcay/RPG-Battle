@@ -1,25 +1,89 @@
 {
-  "not": "Kuyruk AS1a: alt soy görünümü (yalnızca görsel; kural sürümüne girmez, savaş koduna dokunmaz). Alt soylara ayrı çizim yok: renk filtresi (CSS `filter`; tint/maske tablosunda yeri olmayan ırklar için), en-boy/ölçek, kanat katmanı ve Celestial hale kuralı burada. Maskeli (soy-renkleri.json) ırklarda renk oradadır: Tiefling Kanatlı, Gnome Yeraltı. Savaş jetonuna bağlama (Avatar tipi src/battle/types.ts'te) AS1b/MB3 sonrası.",
-  "maskesizIrklar": ["dwarf", "halfling", "orc", "human"],
+  "not": "Kuyruk AS1a: alt soy görünümü (yalnızca görsel; kural sürümüne girmez, savaş koduna dokunmaz). Alt soylara ayrı çizim yok: renk filtresi (CSS `filter`; tint/maske tablosunda yeri olmayan ırklar için), en-boy/ölçek, kanat katmanı ve Celestial hale kuralı burada. Maskeli (soy-renkleri.json) ırklarda renk oradadır: Tiefling Kanatlı, Gnome Yeraltı. Kuyruk AS1a-2 (İş 3): `orijinal` listesindeki alt soylar boyasız ORİJİNAL jetonla gelir (filtre/tint/maske yok; yalnız oran değişebilir); Dragonborn hariç her ırkta en az bir tane. Savaş jetonuna bağlama (Avatar tipi src/battle/types.ts'te) AS1b/MB3 sonrası.",
+  "maskesizIrklar": [
+    "dwarf",
+    "halfling",
+    "orc",
+    "human"
+  ],
   "altSoylar": {
-    "dwarf/crag": { "filtre": "saturate(0.88) brightness(0.97)" },
-    "dwarf/knoll": { "filtre": "sepia(0.12) saturate(1.1)" },
-    "dwarf/undervault": { "filtre": "brightness(0.86) saturate(0.82) hue-rotate(-8deg)" },
-    "halfling/slender": { "oran": { "en": 0.92, "boy": 1.04 } },
-    "halfling/sturdy": { "oran": { "en": 1.08, "boy": 0.96 }, "filtre": "saturate(1.05)" },
-    "orc/glacier": { "filtre": "hue-rotate(75deg) saturate(0.65) brightness(1.06)" },
-    "orc/wildwood": { "filtre": "hue-rotate(-14deg) saturate(1.08)" },
-    "orc/fen": { "filtre": "hue-rotate(-28deg) saturate(0.9) brightness(0.88)" },
-    "human/tenhausser": {},
-    "human/khadyrga": {},
-    "human/pure-city": {},
-    "human/outwall": {},
-    "tiefling/winged": { "kanat": "tiefling" }
+    "dwarf/crag": {
+      "filtre": "saturate(0.6) brightness(0.94) hue-rotate(14deg)"
+    },
+    "dwarf/knoll": {
+      "orijinal": true,
+      "oran": {
+        "en": 1.04,
+        "boy": 1
+      }
+    },
+    "dwarf/undervault": {
+      "filtre": "brightness(0.78) saturate(0.75) hue-rotate(-12deg)"
+    },
+    "halfling/slender": {
+      "orijinal": true,
+      "oran": {
+        "en": 0.94,
+        "boy": 1.05
+      }
+    },
+    "halfling/sturdy": {
+      "orijinal": true,
+      "oran": {
+        "en": 1.1,
+        "boy": 0.97
+      }
+    },
+    "orc/glacier": {
+      "filtre": "hue-rotate(75deg) saturate(0.65) brightness(1.06)"
+    },
+    "orc/wildwood": {
+      "orijinal": true
+    },
+    "orc/fen": {
+      "filtre": "hue-rotate(-28deg) saturate(0.9) brightness(0.88)"
+    },
+    "human/tenhausser": {
+      "orijinal": true
+    },
+    "human/khadyrga": {
+      "orijinal": true
+    },
+    "human/pure-city": {
+      "orijinal": true
+    },
+    "human/outwall": {
+      "orijinal": true
+    },
+    "tiefling/winged": {
+      "kanat": "tiefling"
+    },
+    "elf/wood-elf": {
+      "orijinal": true
+    },
+    "tiefling/infernal": {
+      "orijinal": true
+    },
+    "gnome/rock-gnome": {
+      "orijinal": true
+    },
+    "goliath/hill": {
+      "orijinal": true
+    }
   },
   "celestialUyanis": {
-    "parlayan-ruh": { "hale": true },
-    "gece-gozyasi": { "hale": false, "filtre": "brightness(0.74) saturate(0.85) hue-rotate(12deg)" },
-    "kirik-kanat": { "hale": false, "kanat": "celestial-kirik-kanat" }
+    "parlayan-ruh": {
+      "hale": true,
+      "orijinal": true
+    },
+    "gece-gozyasi": {
+      "hale": false,
+      "filtre": "brightness(0.74) saturate(0.85) hue-rotate(12deg)"
+    },
+    "kirik-kanat": {
+      "hale": false,
+      "kanat": "celestial-kirik-kanat"
+    }
   },
   "hale": {
     "not": "Celestial jetonlarında hale çizimin içinde (256 px yükseklikte satır 8–23, baş ≈24'ten başlar). Gizlenince üstteki bu yüzde kırpılır.",
@@ -27,7 +91,10 @@
   },
   "kanatYuvalari": {
     "tiefling": {
-      "ad": { "tr": "Tiefling kanadı", "en": "Tiefling wing" },
+      "ad": {
+        "tr": "Tiefling kanadı",
+        "en": "Tiefling wing"
+      },
       "sprite": null,
       "efekt": "efekt-kanat-seytan",
       "ne_zaman": "surekli",
@@ -35,7 +102,10 @@
       "yukari": -0.04
     },
     "celestial-kirik-kanat": {
-      "ad": { "tr": "Kırık Kanat", "en": "Broken Wing" },
+      "ad": {
+        "tr": "Kırık Kanat",
+        "en": "Broken Wing"
+      },
       "sprite": null,
       "efekt": "efekt-kanat-melek",
       "ne_zaman": "surekli",
@@ -45,7 +115,10 @@
       "filtre": "grayscale(0.45) brightness(0.8)"
     },
     "dragonborn-ucus": {
-      "ad": { "tr": "Draconic Flight kanadı", "en": "Draconic Flight wing" },
+      "ad": {
+        "tr": "Draconic Flight kanadı",
+        "en": "Draconic Flight wing"
+      },
       "sprite": null,
       "efekt": "efekt-kanat-ates",
       "ne_zaman": "ucarken",
@@ -55,16 +128,80 @@
     }
   },
   "ten": {
-    "not": "Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`). `kulturTen` bilerek boş: kullanıcı kültür–ten eşlemesini kendisi doldurur.",
+    "not": "Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`). `kulturTen` bilerek boş: kullanıcı kültür–ten eşlemesini kendisi doldurur. AS1a-2 İş 3: ten eşlemesi eklenene dek bütün Human jetonları orijinal; `filtreUygula: false` iken ten tonu filtresi uygulanmaz (seçim saklanır). Eşleme eklenince true yapılır.",
     "varsayilan": "orta",
     "tonlar": [
-      { "id": "acik", "ad": { "tr": "Açık", "en": "Fair" }, "renk": "#f1d3b8", "filtre": "brightness(1.08) saturate(0.9)" },
-      { "id": "bugday", "ad": { "tr": "Buğday", "en": "Wheat" }, "renk": "#e0b48a", "filtre": "brightness(1.02) sepia(0.08)" },
-      { "id": "orta", "ad": { "tr": "Orta", "en": "Medium" }, "renk": "#c18d62", "filtre": "" },
-      { "id": "bakir", "ad": { "tr": "Bakır", "en": "Copper" }, "renk": "#a56b43", "filtre": "brightness(0.93) sepia(0.12) saturate(1.05)" },
-      { "id": "koyu", "ad": { "tr": "Koyu", "en": "Deep" }, "renk": "#7a4c32", "filtre": "brightness(0.84) sepia(0.1) saturate(1.05)" },
-      { "id": "abanoz", "ad": { "tr": "Abanoz", "en": "Ebony" }, "renk": "#4d2f22", "filtre": "brightness(0.72) sepia(0.12) saturate(1.1)" }
+      {
+        "id": "acik",
+        "ad": {
+          "tr": "Açık",
+          "en": "Fair"
+        },
+        "renk": "#f1d3b8",
+        "filtre": "brightness(1.08) saturate(0.9)"
+      },
+      {
+        "id": "bugday",
+        "ad": {
+          "tr": "Buğday",
+          "en": "Wheat"
+        },
+        "renk": "#e0b48a",
+        "filtre": "brightness(1.02) sepia(0.08)"
+      },
+      {
+        "id": "orta",
+        "ad": {
+          "tr": "Orta",
+          "en": "Medium"
+        },
+        "renk": "#c18d62",
+        "filtre": ""
+      },
+      {
+        "id": "bakir",
+        "ad": {
+          "tr": "Bakır",
+          "en": "Copper"
+        },
+        "renk": "#a56b43",
+        "filtre": "brightness(0.93) sepia(0.12) saturate(1.05)"
+      },
+      {
+        "id": "koyu",
+        "ad": {
+          "tr": "Koyu",
+          "en": "Deep"
+        },
+        "renk": "#7a4c32",
+        "filtre": "brightness(0.84) sepia(0.1) saturate(1.05)"
+      },
+      {
+        "id": "abanoz",
+        "ad": {
+          "tr": "Abanoz",
+          "en": "Ebony"
+        },
+        "renk": "#4d2f22",
+        "filtre": "brightness(0.72) sepia(0.12) saturate(1.1)"
+      }
     ],
-    "kulturTen": {}
-  }
+    "kulturTen": {},
+    "filtreUygula": false
+  },
+  "orijinal": [
+    "elf/wood-elf",
+    "dwarf/knoll",
+    "halfling/slender",
+    "halfling/sturdy",
+    "orc/wildwood",
+    "celestial/parlayan-ruh",
+    "human/tenhausser",
+    "human/khadyrga",
+    "human/pure-city",
+    "human/outwall",
+    "tiefling/infernal",
+    "gnome/rock-gnome",
+    "goliath/hill"
+  ]
 }

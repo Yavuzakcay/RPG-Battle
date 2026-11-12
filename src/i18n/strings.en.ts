@@ -281,7 +281,7 @@ export const en: Strings = {
       raceBonusNote: 'Ability score bonuses come from your background, not your species.',
       // Kuyruk AS1a: sub-lineage buff/debuff descriptions (text only; effects do not work in the game yet).
       lineageBuff: 'Plus', lineageDebuff: 'Minus', lineagePlanned: 'planned', lineageNotYet: 'These effects do not work in the game yet (planned); description only for now.',
-      lineageOptionalHint: 'No sub-lineage chosen: no sub-lineage effect until you pick one.',
+      lineageBaseApplies: 'This sub-lineage adds no extra plus; the base species traits apply.', lineageOptionalHint: 'No sub-lineage chosen: no sub-lineage effect until you pick one.',
       skinTitle: 'Skin tone', skinHelp: 'Skin tone is independent of culture; pick any tone with any culture.',
       cultureTitle: 'Culture',
       lineageAbilities: 'Lineage abilities', preview: 'Token preview',

@@ -1,5 +1,5 @@
 {
- "not": "K51b: hizalanma başlangıç katkıları (Düzen + Düzenli / − Kaotik; İyilik + İyi / − Kötü; ±50 ölçeği). Kaynak docs/hizalanma-sistemi-taslak.md (v1.1): sınıf, SRD geçmişleri, imza alt sınıflar, Karadul ve ırklar taslaktan; 8 özgün geçmiş ve 12 SRD alt sınıfı K51 değerinin ≈×1.6'sı (DECISIONS.md). Tabloda olmayan kalem 0. Kuyruk AS1a: `altSoy` (ırk/alt soy kimliği, 41 satır) mutlak başlangıç değeridir (ırk satırının yerine geçer, üstüne eklenmez); satır yoksa (soyu olmayan ya da eski kayıt) `irk` değeri kullanılır; Celestial satırları Göksel Uyanış (3. seviyeden). Değerler ırk satırı ±8 aralığında türetilmiştir; proje belgesi tablosuyla değiştirilebilir (yalnız veri).",
+ "not": "K51b: hizalanma başlangıç katkıları (Düzen + Düzenli / − Kaotik; İyilik + İyi / − Kötü; ±50 ölçeği). Kaynak docs/hizalanma-sistemi-taslak.md (v1.1): sınıf, SRD geçmişleri, imza alt sınıflar, Karadul ve ırklar taslaktan; 8 özgün geçmiş ve 12 SRD alt sınıfı K51 değerinin ≈×1.6'sı (DECISIONS.md). Tabloda olmayan kalem 0. Kuyruk AS1a: `altSoy` (ırk/alt soy kimliği, 41 satır) mutlak başlangıç değeridir (ırk satırının yerine geçer, üstüne eklenmez); satır yoksa (soyu olmayan ya da eski kayıt) `irk` değeri kullanılır; Celestial satırları Göksel Uyanış (3. seviyeden). Değerler kullanıcının doğru tablosundan (Kuyruk AS1a-2).",
  "sinif": {
   "barbarian": {
    "duzen": -10,
@@ -475,54 +475,54 @@
  "altSoy": {
   "dragonborn/gold": {
    "duzen": 8,
-   "iyilik": 4,
+   "iyilik": 6,
    "gerekce": {
     "tr": "Altın soy: yargı ve koruyuculuk",
     "en": "Gold line: judgement and guardianship"
    }
   },
   "dragonborn/silver": {
-   "duzen": 6,
-   "iyilik": 5,
+   "duzen": 5,
+   "iyilik": 6,
    "gerekce": {
     "tr": "Gümüş soy: merhametli düzen",
     "en": "Silver line: merciful order"
    }
   },
   "dragonborn/bronze": {
-   "duzen": 7,
-   "iyilik": 3,
+   "duzen": 8,
+   "iyilik": 4,
    "gerekce": {
     "tr": "Bronz soy: onurlu savaşçı geleneği",
     "en": "Bronze line: honourable warrior tradition"
    }
   },
   "dragonborn/brass": {
-   "duzen": 2,
-   "iyilik": 2,
+   "duzen": 3,
+   "iyilik": 3,
    "gerekce": {
     "tr": "Pirinç soy: konuşkan ve rahat",
     "en": "Brass line: talkative and easygoing"
    }
   },
   "dragonborn/copper": {
-   "duzen": -2,
-   "iyilik": 2,
+   "duzen": -5,
+   "iyilik": 3,
    "gerekce": {
     "tr": "Bakır soy: şakacı ve kurnaz",
     "en": "Copper line: jesting and sly"
    }
   },
   "dragonborn/red": {
-   "duzen": 4,
-   "iyilik": -6,
+   "duzen": -4,
+   "iyilik": -7,
    "gerekce": {
     "tr": "Kızıl soy: hırs ve ateşli gurur",
     "en": "Red line: ambition and fiery pride"
    }
   },
   "dragonborn/blue": {
-   "duzen": 8,
+   "duzen": 6,
    "iyilik": -4,
    "gerekce": {
     "tr": "Mavi soy: soğukkanlı otorite",
@@ -530,23 +530,23 @@
    }
   },
   "dragonborn/black": {
-   "duzen": -2,
-   "iyilik": -6,
+   "duzen": -6,
+   "iyilik": -5,
    "gerekce": {
     "tr": "Siyah soy: sinsi ve acımasız",
     "en": "Black line: sly and ruthless"
    }
   },
   "dragonborn/green": {
-   "duzen": 4,
-   "iyilik": -5,
+   "duzen": 2,
+   "iyilik": -6,
    "gerekce": {
     "tr": "Yeşil soy: hile ve çıkar",
     "en": "Green line: guile and profit"
    }
   },
   "dragonborn/white": {
-   "duzen": 0,
+   "duzen": -6,
    "iyilik": -3,
    "gerekce": {
     "tr": "Beyaz soy: vahşi içgüdü",
@@ -555,14 +555,14 @@
   },
   "goliath/cloud": {
    "duzen": 3,
-   "iyilik": 0,
+   "iyilik": 2,
    "gerekce": {
     "tr": "Bulut soyu: yüksekte özgür, adil",
     "en": "Cloud line: free and fair on the heights"
    }
   },
   "goliath/fire": {
-   "duzen": 6,
+   "duzen": 8,
    "iyilik": -4,
    "gerekce": {
     "tr": "Ateş soyu: sert rekabet",
@@ -570,7 +570,7 @@
    }
   },
   "goliath/frost": {
-   "duzen": 5,
+   "duzen": 6,
    "iyilik": -2,
    "gerekce": {
     "tr": "Buz soyu: dayanıklı ve ketum",
@@ -578,8 +578,8 @@
    }
   },
   "goliath/hill": {
-   "duzen": 4,
-   "iyilik": -1,
+   "duzen": 5,
+   "iyilik": 0,
    "gerekce": {
     "tr": "Tepe soyu: sürüsünü gözetir",
     "en": "Hill line: looks after its own"
@@ -587,15 +587,15 @@
   },
   "goliath/stone": {
    "duzen": 8,
-   "iyilik": -1,
+   "iyilik": 1,
    "gerekce": {
     "tr": "Taş soyu: kural ve sabır",
     "en": "Stone line: rule and patience"
    }
   },
   "goliath/storm": {
-   "duzen": 2,
-   "iyilik": 1,
+   "duzen": -3,
+   "iyilik": 2,
    "gerekce": {
     "tr": "Fırtına soyu: gürül gürül ama cömert",
     "en": "Storm line: stormy yet generous"
@@ -603,14 +603,14 @@
   },
   "elf/drow": {
    "duzen": -6,
-   "iyilik": -2,
+   "iyilik": -4,
    "gerekce": {
     "tr": "Drow soyu: gölgede kurulan güven",
     "en": "Drow line: trust built in shadow"
    }
   },
   "elf/high-elf": {
-   "duzen": -1,
+   "duzen": 1,
    "iyilik": 3,
    "gerekce": {
     "tr": "Yüksek Elf soyu: bilgi ve zarafet",
@@ -618,16 +618,16 @@
    }
   },
   "elf/wood-elf": {
-   "duzen": -5,
-   "iyilik": 4,
+   "duzen": -6,
+   "iyilik": 5,
    "gerekce": {
     "tr": "Orman Elfi soyu: özgür ve şefkatli",
     "en": "Wood Elf line: free and gentle"
    }
   },
   "tiefling/abyssal": {
-   "duzen": -10,
-   "iyilik": -5,
+   "duzen": -8,
+   "iyilik": -6,
    "gerekce": {
     "tr": "Uçurum mirası: dizginsiz karanlık",
     "en": "Abyssal legacy: unbridled darkness"
@@ -642,16 +642,16 @@
    }
   },
   "tiefling/infernal": {
-   "duzen": -3,
-   "iyilik": -4,
+   "duzen": 2,
+   "iyilik": -5,
    "gerekce": {
     "tr": "Cehennem mirası: pazarlık ve sözleşme",
     "en": "Infernal legacy: bargains and contracts"
    }
   },
   "tiefling/winged": {
-   "duzen": -8,
-   "iyilik": 1,
+   "duzen": -9,
+   "iyilik": 2,
    "gerekce": {
     "tr": "Kanatlı soy: dışlanmışlığa karşı yükseğe bakış",
     "en": "Winged line: looking skyward against exclusion"
@@ -674,31 +674,31 @@
    }
   },
   "gnome/subterranean": {
-   "duzen": -3,
-   "iyilik": 0,
+   "duzen": -4,
+   "iyilik": -1,
    "gerekce": {
     "tr": "Yeraltı soyu: sessiz ve temkinli",
     "en": "Subterranean line: quiet and wary"
    }
   },
   "celestial/parlayan-ruh": {
-   "duzen": 8,
-   "iyilik": 10,
+   "duzen": 7,
+   "iyilik": 9,
    "gerekce": {
     "tr": "Parlayan Ruh: ışığa tam bağlılık",
     "en": "Radiant Soul: devoted to the light"
    }
   },
   "celestial/gece-gozyasi": {
-   "duzen": 2,
-   "iyilik": 3,
+   "duzen": 1,
+   "iyilik": 4,
    "gerekce": {
     "tr": "Gece Gözyaşı: yaslı ve kararsız",
     "en": "Night Tears: grieving and uncertain"
    }
   },
   "celestial/kirik-kanat": {
-   "duzen": 0,
+   "duzen": -3,
    "iyilik": 7,
    "gerekce": {
     "tr": "Kırık Kanat: alçakgönüllü yeniden başlangıç",
@@ -715,14 +715,14 @@
   },
   "dwarf/knoll": {
    "duzen": 6,
-   "iyilik": 2,
+   "iyilik": 1,
    "gerekce": {
     "tr": "Tepe soyu: sıcak ocak, ortak sofra",
     "en": "Knoll line: warm hearth, shared table"
    }
   },
   "dwarf/undervault": {
-   "duzen": 7,
+   "duzen": 3,
    "iyilik": -4,
    "gerekce": {
     "tr": "Yeraltı soyu: gizli ve kuşkucu",
@@ -730,7 +730,7 @@
    }
   },
   "halfling/slender": {
-   "duzen": 0,
+   "duzen": -1,
    "iyilik": 5,
    "gerekce": {
     "tr": "İnce soy: gezgin ve çabuk dost",
@@ -738,7 +738,7 @@
    }
   },
   "halfling/sturdy": {
-   "duzen": 6,
+   "duzen": 5,
    "iyilik": 5,
    "gerekce": {
     "tr": "Kalın soy: yuvaya ve topluluğa bağlı",
@@ -747,7 +747,7 @@
   },
   "orc/glacier": {
    "duzen": 7,
-   "iyilik": -1,
+   "iyilik": -3,
    "gerekce": {
     "tr": "Buzul soyu: sert klan disiplini",
     "en": "Glacier line: harsh clan discipline"
@@ -755,7 +755,7 @@
   },
   "orc/wildwood": {
    "duzen": 3,
-   "iyilik": 1,
+   "iyilik": -1,
    "gerekce": {
     "tr": "Orman soyu: av ve ortak yaşam",
     "en": "Wildwood line: the hunt and shared living"
@@ -770,32 +770,32 @@
    }
   },
   "human/tenhausser": {
-   "duzen": 5,
-   "iyilik": -1,
+   "duzen": 8,
+   "iyilik": -2,
    "gerekce": {
     "tr": "Tenhausser: soğuk iklimin disiplini",
     "en": "Tenhausser: the discipline of the cold north"
    }
   },
   "human/khadyrga": {
-   "duzen": -1,
-   "iyilik": 2,
+   "duzen": -3,
+   "iyilik": -3,
    "gerekce": {
     "tr": "Khadyrga: göçer bilgi ve pazarlık",
     "en": "Khadyrga: nomad lore and bargaining"
    }
   },
   "human/pure-city": {
-   "duzen": 7,
-   "iyilik": 1,
+   "duzen": 3,
+   "iyilik": 3,
    "gerekce": {
     "tr": "Saf Kent: kurallı kent yaşamı",
     "en": "Pure City: ordered city life"
    }
   },
   "human/outwall": {
-   "duzen": -5,
-   "iyilik": -1,
+   "duzen": -8,
+   "iyilik": 2,
    "gerekce": {
     "tr": "Sur Dışı: yasanın ulaşmadığı yerde",
     "en": "Outwall: where the law does not reach"

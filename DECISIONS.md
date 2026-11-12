@@ -64,6 +64,24 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - **MB5:** YZ binicisi, dalışta binicinin nefesi, yığının yükselme kararı.
   - **MB6:** havada inme irtifası seçicisi.
   - CLAUDE.md "Çalışma şekli"ndeki "şu an güncel kural sürümü 67" ifadesi başka şeridin satırı olduğu için değiştirilmedi (güncel: 69).
+## 2026-11-12 — Kuyruk AS1a-2: alt soy düzeltmeleri (kural sürümü 68'de kalır)
+
+- **Hizalanma tablosu:** `altSoy` 41 satırı kullanıcının doğru tablosuyla değiştirildi (AS1a'daki türetilmiş değerler kalktı; kimlikler eşleşti, eşleşmeyen satır yok). K51 uç build testleri (alt soylu) yeni toplamlara güncellendi: Celestial/parlayan-ruh 47/49, Elf/wood-elf −38/20, Goliath/stone 38/−32, Tiefling/abyssal −45/−50; etiketler değişmedi. Soysuz sheet'li eski uç build testleri aynen geçer (ırk değerine düşme).
+- **Yalnız fark:** taban türün bonusları tür seçiminde (tür kartı + "Irk özellikleri" paneli), alt soyun bonusları alt soy seçiminde gösterilir; alt soy metni taban türde zaten olan etkiyi tekrar etmez. 41 soyun taban türle karşılaştırması (`data/races.json`, `data/srd/species.json`): yalnız **Dwarf Tepe** (+1 HP/seviye; taban Dwarven Toughness) ve **Dwarf Yeraltı** (karanlık görüş 120 ft; taban Darkvision 120) tekrar ediyordu. İkisinin buff'ı BOŞ bırakıldı (yeni buff icat edilmedi; karar kullanıcıda), kartta yalnız debuff + "taban tür özellikleri geçerli" notu, kart özeti yalnız debuff + "taban özellikler geçerli". Diğer 39 soyda taban tekrarı yok (Gnome Yeraltı 120 ft taban 60 ft'in farkı; Orc Bataklık zehir direnci tabanda yok).
+- **Test:** `altSoy41.test.tsx` boş buff'lı alt soyları sabitler (`EMPTY_BUFF`) ve Dwarf kartında taban özelliklerin tabanda, farkın alt soyda göründüğünü denetler.
+
+
+## 2026-11-12 — Kuyruk AS1a-2 İş 3: boyasız orijinal alt soylar (kural sürümü 68'de kalır)
+
+- **Karar (kullanıcı):** her ırkta (Dragonborn hariç; beyaz tabanı ayrı iş) en az bir alt soy boyasız ORİJİNAL jetonla gelir. 13 orijinal: Elf Wood-elf, Dwarf Tepe, Halfling İnce ve Kalın, Orc Orman, Celestial Parlayan Ruh (hale var), Human 4 kültürün hepsi, Tiefling Infernal, Gnome Rock, Goliath Hill. Liste tek yerde: `data/alt-soy-gorunum.json` `orijinal` (`isOriginalLineage`, `src/ui/lineageLook.ts`).
+- **Veri:** `data/soy-renkleri.json`'da Infernal, Rock ve Hill girdisi `null` (Wood-elf gibi; boyama yok). Goliath `basKaplama`/`govdeBoya` ve diğer boyalı satırlar dokunulmadı. Boyalı kalanlar: Dragonborn 10, Goliath Cloud/Fire/Frost/Stone/Storm, Elf Drow/High, Tiefling Abyssal/Chthonic, Gnome Forest/Yeraltı, Celestial Gece Gözyaşı (koyu filtre), Dwarf Dağ/Yeraltı, Orc Buzul/Bataklık. Geçici CSS filtresi yalnız boyalı Dwarf/Orc'ta (Dağ ve Yeraltı filtresi okunur kalsın diye güçlendirildi); orijinallerde filtre kalktı. Oranlar: Dwarf Tepe genişlik ×1,04; Halfling İnce ×0,94 / ×1,05, Kalın ×1,10 / ×0,97 (en/boy).
+- **Human:** ten tonu eşlemesi eklenene dek hepsi orijinal: `ten.filtreUygula: false` (ten seçici ve `skinTone` saklanır, filtre uygulanmaz); eşleme eklenince true.
+- **Ölçüm** (`data/soy-olcum.json`, elle; `npm run soy-maske` çalıştırılmadı): Infernal, Rock, Hill için boyasız maske ortalaması. Yöntem Wood-elf'in mevcut ölçümünü 24/24 jetonda birebir üretti (doğrulama).
+- **Test güncellemeleri (gerekçe):** `tint.test.ts` tablo denetimi "orijinal ⇔ null" oldu (eskiden yalnız Wood Elf). ΔE ≥ 15 denetimi korundu; Goliath Hill'in orijinal teni Cloud ve Stone boyamalarına yakın (Cloud/Hill ΔE 6,0–14,7, Hill/Stone 14,6–14,7) ve boyalılar değişmeyecek karardı, bu iki çift için alt sınır düşürüldü (`ORIGINAL_PAIR_MIN`: 5,5 ve 14). **Açık:** Hill ↔ Cloud ayrışması zayıf; Cloud/Stone boyaması değişirse istisna kalkar (karar kullanıcıda).
+- **Tiefling Kanatlı** orijinal/boyalı listelerinde yoktu: boyalı bırakıldı; Infernal orijinal olunca eski gül tinti (h345) ona ΔE 11'e düştüğü için tinti altın-zeytin yapıldı (h90, c40, dL+10; ΔE ≥ 15 geçer; ölçümü elle). Karar kullanıcıda.
+- **Görsel doğrulama:** `docs/alt-soy-dwarf.png` oluşturucu önizlemesi Dwarf Tepe (orijinal) ↔ Dağ ↔ Yeraltı yan yana. Kayıtlı karakterlerde yalnız görünüm değişir (Infernal, Rock, Hill); mekanik değişmez.
+
+
 ## 2026-11-12 — Kuyruk AS1a: 41 alt soy, mekaniksiz yarısı (kural sürümü ARTMAZ, 68'de kalır)
 
 - **Kapsam:** yalnız veri, oluşturucu, hizalanma başlangıcı, görünüm, metinler. `src/battle/*`, `data/kural-surumu.json` ve savaş komutlarına dokunulmadı (MB3 şeridi 68'i kullanıyor). Buff/debuff mekaniği (kurtarma/kontrol dezavantajı, ışık koşulu, yetenek bonusu, uçuş, hız…) AS1b'de ve kural sürümünü artırır. Tablo: `docs/ALT-SOY-41.md`.

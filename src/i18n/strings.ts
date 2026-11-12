@@ -290,7 +290,7 @@ const tr = {
       raceBonusNote: 'Yetenek puanı bonusu türden değil, geçmişten gelir.',
       // Kuyruk AS1a: alt soy buff/debuff açıklamaları (yalnızca metin; etkisi henüz oyunda çalışmıyor).
       lineageBuff: 'Artı', lineageDebuff: 'Eksi', lineagePlanned: 'planlı', lineageNotYet: 'Bu etkiler henüz oyunda çalışmıyor (planlı); şimdilik yalnızca açıklama.',
-      lineageOptionalHint: 'Alt soy seçilmedi: seçene dek alt soy etkisi yok.',
+      lineageBaseApplies: 'Bu alt soy ek artı vermez; taban tür özellikleri geçerli.', lineageOptionalHint: 'Alt soy seçilmedi: seçene dek alt soy etkisi yok.',
       skinTitle: 'Ten tonu', skinHelp: 'Ten tonu kültürden bağımsızdır; istediğin kültürle istediğin tonu seçebilirsin.',
       cultureTitle: 'Kültür',
       lineageAbilities: 'Soy yetenekleri', preview: 'Jeton önizlemesi',
