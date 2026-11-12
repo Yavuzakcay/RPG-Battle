@@ -182,7 +182,7 @@ export const TR_EXTRA = {
     zoneEnded: (spell: string) => `${spell} alanı kalktı.`,
     area: (who: string, label: string, size: number, shape: string, names: string) => `${who}: ${label} — ${size} ft ${shape}; etkilenen: ${names || 'kimse'}.`,
     shapeName: { cone: 'koni', line: 'çizgi', sphere: 'küre', cube: 'küp', emanation: 'yayılım', cylinder: 'silindir', wall: 'duvar' } as Record<string, string>,
-    summonWhy: { hp: '0 HP', concentration: 'konsantrasyon bitti', owner: 'sahibi öldü', replaced: 'yenisi çağrıldı', duration: 'süre doldu', dispelled: 'Dispel Magic' } as Record<string, string>,
+    summonWhy: { hp: '0 HP', concentration: 'konsantrasyon bitti', owner: 'sahibi öldü', replaced: 'yenisi çağrıldı', duration: 'süre doldu', dispelled: 'Dispel Magic', damaged: 'hasar aldı' } as Record<string, string>,
     markMoved: (a: string, b: string) => `${a}: işaret ${b} üstüne taşındı.`,
     altitude: (who: string, ft: number, what: string): string => (ft > 0 ? `${who}: irtifa ${ft} ft (${what}).` : `${who} yere indi (${what}).`),
     altitudeObject: (what: string, ft: number): string => `${what}: nesne ${ft} ft irtifada.`,

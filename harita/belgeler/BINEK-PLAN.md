@@ -543,3 +543,65 @@ Doğrulanmayan açık yok.
   - Uçan yığının yükselme kararı (K73a) bineğin kendi kararıyla çalışıyor; binicinin hedefine göre değil.
   - YZ dalışı su soluyamayan biniciyi gözetmiyor (bineğin nefesine bakıyor).
 - **MB6:** havada inme irtifası seçicisi (arayüz `dismount` `toFt` göndermiyor; varsayılan bineğin irtifası).
+
+---
+
+## 13. MB7 sonucu (kural sürümü 70)
+
+Tek sabit `src/battle/binekSurum.ts` `BINEK_MB7_VERSION` (`binekMb7On`). 69 ve altı birebir.
+
+**Görev 0, açıkların testle doğrulanması** (`src/battle/binekMb7.test.ts`; düzeltmeden önce sürüm 70 durumunda koşuldu):
+
+| # | Açık | Sonuç |
+|---|---|---|
+| 1 | Find Steed / Faithful Steed atının binek bağı yok; kuralı olmayan çağrıya (Summon Dragon ruhu) binilebiliyor | **Doğrulandı** (at `summon.mount` taşımıyordu; ruha binilmesi reddedilmiyordu) |
+| 2 | Phantom Steed savaşta yok | **Doğrulandı** (kurulumda "Savaş henüz başlamadı" ile reddedildi; büyü savaş dışı notu) |
+| 3 | Paket yaratığında `binek` alanı yok | **Doğrulandı** (şema `ilkelAlan` hatası verdi; paket yüklenemedi) |
+
+Doğrulanmayan açık yok.
+
+**Yapılanlar (sürüm ≥ 70):**
+
+- **Binek kuralı (`SummonInfo.mount` = `MountRule`):** çağrılan yaratığa yalnız binek kuralı varsa binilir (`mountProblem`). Alanlar:
+  - `ownerOnly`: yalnız çağıran biner.
+  - `maxRider`: binicinin en büyük boyutu.
+  - `minLevel`: çağıranın seviye eşiği.
+  - Veri `data/summons.json` `mount` ve paket yaratığında `binek`; dönüştürücü `riderCore.ts` `mountRuleOf`.
+  - Binme/inme, düşme, uçan binek ve yığın kuralları MB1/MB3'ten aynen.
+  - Kuralı olmayan çağrıya (Summon Dragon ruhu, paket yaratığı, canavar yeteneği çağrısı) binilmez.
+- **Find Steed / Faithful Steed:**
+  - At `mount: { kural: dost }` taşır: çağıran ve dostları biner (⚠ yorum).
+  - Faithful Steed'in slotsuz Find Steed'i aynı yoldan.
+  - Otherworldly Steed'in `unsupported` listesinden "binek" çıktı.
+  - Kontrollü binek turu (B4) MB2'ye kaldı. At bugünkü gibi sahibinin ardından kendi turunu oynar (bağımsız binek gibi).
+- **Phantom Steed** (büyü verisinde `mb7` bloğu, `spells.ts` `LATER`, `summons.json` `phantom-steed`):
+  - Kurulumda ritüel (slotsuz; 1 dakika döküm süresi savaş içine sığmaz).
+  - Riding Horse stat bloğu, yürüme hızı 100 ft (`speedFt`), uçmaz.
+  - Kendi inisiyatifini atmaz, sahibinin hemen ardından oynar (`after-owner`; ⚠ yorum).
+  - 1 saat (600 tur).
+  - Herhangi bir hasarda kaybolur (`endsOnDamage` → `summon_vanished` `damaged`; günlük TR/EN "hasar aldı"/"took damage"). Binici save'siz iner (MB1 B10 kaybolan binek).
+  - 69 ve altında büyü eskisi gibi savaş dışı; kurulum kapısı sürüme bağlı mekaniğe bakar (`executeSetupSummon`).
+  - Arayüz notu ve oluşturucudaki "savaş dışı" etiketi güncel mekanikten.
+- **Paket `binek` alanı** (`ilkelSema.ts` `YARATIK_ALANLARI`, doğrulama `yaratikErrors`, belge `PAKET-ILKELLER.md` yeniden üretildi; `check:icerik` tanır):
+  - Biçim: `{ "kural": "sahip" | "dost", "enBuyukBinici": "T"–"G", "biniciSayisi": 1, "minSeviye": 1–20 }`.
+  - `biniciSayisi` şimdilik yalnız 1.
+  - Kurgusal fikstür `tests/fixtures/paket-binek.json`: Titan Ejder (`binek` var, 14. seviye, yalnız sahip) ve Yaban Kurdu (`binek` yok).
+
+**Doğrulama:**
+
+- `binekMb7.test.ts`: 7 test (Görev 0'ın 3 maddesi + 3 paket + 69 eski davranış), replay aynı.
+- `summons.test.ts` veri testi güncel sürümün mekaniğine bakacak biçimde güncellendi (Phantom Steed 70+ çağırma; biçimi Riding Horse).
+- Regresyon `src/sim/binekMb7Regresyon.test.ts`: 69 altın (MB7 öncesi ağaç `main` b493a10), 70 = 69. Çöl, Kale, Mağara, Orman × 1 ve × 30 tohum.
+
+**Kalan açıklar:**
+
+- **MB2:**
+  - Kontrollü binek turu (Find Steed SRD: "functions as a controlled mount while you ride it"; binici Incapacitated olunca bağımsız).
+  - Phantom Steed'in kontrollü binek olarak binicinin turunda hareketi.
+  - Eğitimli binek listesi.
+- **MB4:** çok altıgenli bineğin gövdesi (MB3 §12 kalanları).
+- **MB5:** YZ binicisi. YZ çağrılan bineğe binmez; Phantom Steed'i kurulumda yapmaz.
+- **MB6:** arayüz:
+  - Binme menüsü çağrılan bineği gösterir, ama binek kuralı nedenlerinin metni yalnız Türkçe (motor gerekçeleri).
+  - Havada inme irtifası.
+- **Paket (Ejder Muhafızı):** gerçek paketin (`icerik/ek-ranger.json`) yaması ayrıca yapılacak (bu oturumda `icerik/` yok). Binek kuralı çağrılan yaratığın boyutunu değiştirmez: Medium binici için ejderhanın 14. seviyede Large olması gerekir (MB1: binek en az bir boy büyük).

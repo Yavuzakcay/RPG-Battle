@@ -14,3 +14,10 @@ export const binekOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kura
  */
 export const BINEK_MB3_VERSION = 69;
 export const binekMb3On = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= BINEK_MB3_VERSION;
+
+/**
+ * Kuyruk MB7 (kural sürümü 70; `BINEK-PLAN.md` §13): çağrılan binekler: Find Steed / Faithful Steed atı ve Phantom Steed
+ * binek kuralını taşır (`SummonInfo.mount`), paket yaratığında `binek` alanı; binek kuralı olmayan çağrıya binilmez.
+ */
+export const BINEK_MB7_VERSION = 70;
+export const binekMb7On = (s: Pick<BattleState, 'kuralSurumu'>): boolean => (s.kuralSurumu ?? 1) >= BINEK_MB7_VERSION;

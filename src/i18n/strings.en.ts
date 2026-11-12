@@ -662,7 +662,7 @@ export const en: Strings = {
     zoneEnded: (spell: string) => `${spell} area ends.`,
     area: (who: string, label: string, size: number, shape: string, names: string) => `${who}: ${label} — ${size} ft ${shape}; affected: ${names || 'no one'}.`,
     shapeName: { cone: 'cone', line: 'line', sphere: 'sphere', cube: 'cube', emanation: 'emanation', cylinder: 'cylinder', wall: 'wall' } as Record<string, string>,
-    summonWhy: { hp: '0 HP', concentration: 'concentration ended', owner: 'summoner died', replaced: 'replaced by a new one', duration: 'duration ended', dispelled: 'Dispel Magic' } as Record<string, string>,
+    summonWhy: { hp: '0 HP', concentration: 'concentration ended', owner: 'summoner died', replaced: 'replaced by a new one', duration: 'duration ended', dispelled: 'Dispel Magic', damaged: 'took damage' } as Record<string, string>,
     markMoved: (a: string, b: string) => `${a}: mark moved to ${b}.`,
     altitude: (who: string, ft: number, what: string): string => (ft > 0 ? `${who}: altitude ${ft} ft (${what}).` : `${who} landed (${what}).`),
     altitudeObject: (what: string, ft: number): string => `${what}: object at ${ft} ft.`,

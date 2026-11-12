@@ -319,6 +319,8 @@ export interface SpellMechanics {
   y1?: Partial<SpellMechanics>;
   /** Kuyruk K73c (sürüm 64): havada merkezli silindir yüksekliği, Call Lightning fırtına devralma. */
   k73c?: Partial<SpellMechanics>;
+  /** Kuyruk MB7 (kural sürümü 70+): Phantom Steed çağırma (`data/summons.json` `phantom-steed`). */
+  mb7?: Partial<SpellMechanics>;
   /**
    * Kuyruk K73c (sürüm 64+, Görev 3): anlık silindir büyüsünün yüksekliği (ft; veride biçim küre). Havada merkezlenince
    * dairesi merkezde, silindir aşağı uzanır (`src/battle/airArea.ts`). Yerde merkezliyken kullanılmaz.

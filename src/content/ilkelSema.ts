@@ -597,6 +597,7 @@ export const YARATIK_ALANLARI: Record<string, AlanSpec> = {
   ozellikler: { tip: 'enumListe', degerler: ['tirmanici', 'surudeTaktik'], not: 'Motorun bildiği özellikler: tirmanici (Spider Climb), surudeTaktik (Pack Tactics).' },
   eylemler: { tip: 'enumListe', degerler: ['saldiri', 'kacin', 'yardim'], varsayilan: ['saldiri', 'kacin', 'yardim'], not: 'Eylem seçenekleri; `saldiri` yoksa saldıramaz (familiar gibi).' },
   jeton: { tip: 'save', not: 'Jeton: `{ "gorsel": "<canavar kimliği ya da arketip>", "ton": 0–359 (renk tonu kaydırma, derece), "halka": "#rrggbb" }`.' },
+  binek: { tip: 'save', not: 'MB7 (kural sürümü 70+): binek olabilen çağrı yaratığı: `{ "kural": "sahip" | "dost", "enBuyukBinici": "T"–"G", "biniciSayisi": 1, "minSeviye": 1–20 }`. `kural`: sahip = yalnız çağıran biner, dost = her dost (varsayılan dost). `enBuyukBinici`: binicinin en büyük boyutu (motor ayrıca bineğin binicide en az bir boy büyük olmasını ister). `biniciSayisi`: şimdilik yalnız 1. `minSeviye`: çağıranın seviyesi bu eşiğin altındaysa binilmez. Alan yoksa çağrıya binilmez (70+); binme/inme, düşme ve uçan binek kuralları çekirdek binek sisteminden (MB1/MB3).' },
 };
 export const SALDIRI_ALANLARI: Record<string, AlanSpec> = {
   ad: { tip: 'metin', zorunlu: true, not: 'Saldırı adı (TR).' },
@@ -825,6 +826,14 @@ export function yaratikErrors(raw: unknown, path: string, monsterIds?: Set<strin
     if (!a) { bad(k, 'ilkelAlan'); continue; }
     if (k === 'ad') { if (!isObj(v) || typeof v.tr !== 'string' || typeof v.en !== 'string' || !v.tr.trim() || v.tr.length > 60 || v.en.length > 60) bad(k); continue; }
     if (k === 'hiz') { if (!isObj(v) || Object.entries(v).some(([h, x]) => !['yurume', 'ucma', 'yuzme', 'tirmanma'].includes(h) || !Number.isInteger(x) || (x as number) < 0 || (x as number) > 200)) bad(k); continue; }
+    if (k === 'binek') {
+      if (!isObj(v) || Object.keys(v).some((x) => !['kural', 'enBuyukBinici', 'biniciSayisi', 'minSeviye'].includes(x))
+        || (v.kural !== undefined && v.kural !== 'sahip' && v.kural !== 'dost')
+        || (v.enBuyukBinici !== undefined && !(SIZES as readonly unknown[]).includes(v.enBuyukBinici))
+        || (v.biniciSayisi !== undefined && v.biniciSayisi !== 1)
+        || (v.minSeviye !== undefined && (!Number.isInteger(v.minSeviye) || (v.minSeviye as number) < 1 || (v.minSeviye as number) > 20))) bad(k);
+      continue;
+    }
     if (k === 'yetenekler') { if (!isObj(v) || ABILITY_IDS.some((ab) => !Number.isInteger(v[ab]) || (v[ab] as number) < 1 || (v[ab] as number) > 30) || Object.keys(v).length !== 6) bad(k); continue; }
     if (k === 'jeton') {
       if (!isObj(v) || Object.keys(v).some((x) => !['gorsel', 'ton', 'halka'].includes(x))

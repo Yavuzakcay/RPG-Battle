@@ -3,6 +3,37 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+## 2026-11-12 — Kuyruk MB7: çağrılan binekler: Find Steed, Phantom Steed, paket `binek` alanı (kural sürümü 70)
+
+- **Sürüm:** `main` b493a10 üstüne. Kural sürümü 69 → **70** (tek sabit `src/battle/binekSurum.ts` `BINEK_MB7_VERSION`); 69 ve altı birebir.
+  - Yeni olay türü yok: `summon_vanished.reason` yeni değer `damaged`; çağrı bağında `mount`, `endsOnDamage`. `SAVE_VERSION` 22.
+  - Ayrıntı `harita/belgeler/BINEK-PLAN.md` §13.
+- **Görev 0:** üç madde (Find Steed binek bağı + kuralsız çağrıya binilmesi, Phantom Steed savaşta yok, paket `binek` alanı yok) düzeltmeden önce başarısız testle doğrulandı. Doğrulanmayan yok.
+- **Yapılanlar:**
+  - Binek kuralı `SummonInfo.mount` (`ownerOnly`, `maxRider`, `minLevel`).
+  - Find Steed / Faithful Steed atı `mount: { kural: dost }`.
+  - Phantom Steed savaşta (büyü verisinde `mb7` bloğu, `data/summons.json` `phantom-steed`).
+  - Paket yaratığında `binek` alanı (şema, doğrulama, `check:icerik`, `PAKET-ILKELLER.md`, kurgusal fikstür `tests/fixtures/paket-binek.json`).
+  - CLAUDE.md "şu an güncel kural sürümü" 67 → 70.
+- **SRD'de yazmıyor, yorum (⚠):**
+  - Kuralı olmayan çağrılan yaratığa binilmez (Summon Dragon ruhu, paket ve canavar yeteneği çağrıları). SRD'nin genel binek şartı "uygun anatomi"; plan §9 / B16 yorumu.
+  - Find Steed atına çağıranın dostları da biner (SRD "controlled mount while you ride it" der, başkasını yasaklamaz).
+  - Phantom Steed "you or a creature you choose" tek binici seçimi yerine her dost.
+  - Phantom Steed kendi inisiyatifini atmaz, sahibinin hemen ardından oynar (`after-owner`; kontrollü binek MB2'de).
+  - Phantom Steed yalnız kurulumda ve slotsuz (döküm süresi 1 dakika ya da ritüel; Find Familiar/Animate Dead kalıbı).
+  - Phantom Steed bitince binici hemen ve save'siz iner (SRD "1 minute to dismount"; savaşta 10 tur beklemek yerine).
+  - Herhangi bir hasar = canı en yüksek değerin altına inmesi.
+  - Paket `minSeviye` çağıranın karakter seviyesiyle karşılaştırılır (sınıf seviyesi değil). `biniciSayisi` yalnız 1.
+- **Test güncellemesi (veriye bağlı değer):**
+  - `summons.test.ts` çağırma büyüsü listesini güncel sürümün mekaniğinden okur (Phantom Steed yalnız 70+'da çağırma). Phantom Steed'in biçimi CR 0 değil, Riding Horse.
+  - `ruleVersion.test.ts` / `g6.test.ts` güncel sürüm 69 → 70.
+- **Ejder Muhafızı yaması (paket dışı, yapılmadı):** `kucuk-ejderha` yaratığına `"binek": { "kural": "sahip", "enBuyukBinici": "M", "biniciSayisi": 1, "minSeviye": 14 }`. Medium binici için ejderha 14. seviyede Large olmalı (MB1 boyut şartı).
+- **Kalan:**
+  - **MB2:** kontrollü binek, Find Steed ve Phantom Steed'in binicinin turunda hareketi.
+  - **MB4:** çok altıgen.
+  - **MB5:** YZ binicisi, YZ Phantom Steed.
+  - **MB6:** arayüz (binek nedenleri yalnız TR motor metni, havada inme irtifası).
+
 ## 2026-11-12 — Kuyruk MB3: binek dikey kuralları (kural sürümü 69)
 
 - **Sürüm:** `main` b659f68 üstüne. Kural sürümü 68 → **69** (tek sabit `src/battle/binekSurum.ts` `BINEK_MB3_VERSION`); 68 ve altı birebir. Yeni olay türü yok (`dismounted.toFt`, `dismount.toFt` isteğe bağlı alanlar); `SAVE_VERSION` 22. Yeni veri `data/binek.json` (`kafesBoyuFt`). Ayrıntı `harita/belgeler/BINEK-PLAN.md` §12.
