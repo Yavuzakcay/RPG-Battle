@@ -182,7 +182,7 @@
     "entangle": "zemin-diken", "spike-growth": "zemin-dikenli", "plant-growth": "zemin-bitki", "black-tentacles": "zemin-dokunac",
     "grease": "zemin-yag", "sleet-storm": "zemin-sulu-kar", "insect-plague": "zemin-bocek",
     "cloudkill": "zemin-spor", "earthquake": "zemin-deprem-yarigi", "silence": "zemin-sessizlik", "daylight": "zemin-gunisigi", "darkness": "zemin-kara-halka", "incendiary-cloud": "duman-kor", "faithful-hound": "zemin-buz-run",
-    "guardian-of-faith": "zemin-duman-halka", "moonbeam": "gokten-sutun", "conjure-celestial": "gokten-sutun", "storm-of-vengeance": "gokten-yildirim"
+    "control-water": "zemin-girdap", "delayed-blast-fireball": "zemin-lav", "guardian-of-faith": "zemin-duman-halka", "moonbeam": "gokten-sutun", "conjure-celestial": "gokten-sutun", "storm-of-vengeance": "gokten-yildirim"
   },
   "etkiHalka": { "irresistible-dance": { "sprite": "rozet-dans", "olcek": 1.7 } },
   "auraBuyu": {
