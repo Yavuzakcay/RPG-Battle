@@ -140,6 +140,20 @@ describe('büyüleme (Charmed)', () => {
   });
 });
 
+describe('K75: Protection from Evil and Good süreli durum', () => {
+  const timed = (r: ReturnType<typeof arena>, v: number): BattleState => {
+    const ev: BattleEvent = { type: 'condition_changed', targetId: 'C', condition: 'Frightened', present: true, reason: 'Fiend: Gaze', sourceId: 'B',
+      timer: { condition: 'Frightened', ownerId: 'C', end: 'turnEnd', count: 2, label: 'Fiend: Gaze', sourceId: 'B' } };
+    return applyEvents({ ...r.state, kuralSurumu: v }, [ev]);
+  };
+  it('79+: korunan, Fiend kaynaklı süreli Frightened almaz; 78 alır (eski davranış)', () => {
+    const r = arena({ spellNames: ['Protection from Evil and Good'] }, { creatureType: 'fiend' });
+    r.cast({ spellName: 'Protection from Evil and Good', targetId: 'C' });
+    expect(timed(r, 79).combatants.C?.conditions).not.toContain('Frightened');
+    expect(timed(r, 78).combatants.C?.conditions).toContain('Frightened');
+  });
+});
+
 describe('zorlama', () => {
   it('Command Flee: sırası gelince büyücüden uzaklaşır ve turu biter; Approach: bitişiğe gelir', () => {
     const r = arena({ spellNames: ['Command'] }, {}, {}, o(6, 3));
