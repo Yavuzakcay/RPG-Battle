@@ -1367,3 +1367,4 @@ button.cta.soft { opacity: .65; }
 .setup-mount { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; max-width: min(100%, 420px); }
 .setup-mount small { flex-basis: 100%; }
 .preview-card .pv-mount span { white-space: normal; }
+.pick-card.exile-card { min-height: 0; }
