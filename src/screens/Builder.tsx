@@ -42,7 +42,7 @@ import { AvatarBadge, CharacterFigure, preloadImages } from '../ui/Avatar';
 import { abilityTip, lineageAbilityList, lineageLine } from '../ui/lineageText';
 import { lineageName, lineageOf, lineageSummary, raceDarkvision, raceSpeed, type LineageAbility } from '../rules/lineage';
 import { lineageNotes } from '../ui/lineageNotes';
-import { exileName, exileOptions, pickCulture, skinToneOf, toneAfter, tonesFor } from '../ui/lineageLook';
+import { cultureSkinTone, exileName, exileOptions, pickCulture, tonesFor } from '../ui/lineageLook';
 import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magicInitiateAll, magicInitiateOf, magicInitiateOptions, originFeatOf, otherSkillMax, type MagicInitiatePick } from '../rules/backgrounds';
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
@@ -477,7 +477,7 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
                       const on = s.exileCulture === id;
                       return (
                         <button key={id} type="button" role="radio" aria-checked={on} className={`pick-card exile-card${on ? ' on' : ''}`} data-exile={id}
-                          onClick={() => set({ exileCulture: id, skinTone: toneAfter(s.lineageId, id, s.skinTone) })}>
+                          onClick={() => set({ exileCulture: id, skinTone: cultureSkinTone(s.lineageId, s.skinTone, id) })}>
                           <b>{exileName(id, lang)}</b>
                         </button>
                       );
@@ -486,10 +486,10 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
                 </>
               )}
               <h4 className="lineage-title">{W.skinTitle}</h4>
-              {/* Kuyruk AS1a: ten tonu kültürden bağımsız ayrı seçim (kültür–ten eşlemesi veride boş). */}
+              {/* Ten tonu ayrı seçim; kültürün izin verdiği tonlar (`kulturTen`), tek tonlu kültürde kendiliğinden seçili. */}
               <div className="skin-tones" role="radiogroup" aria-label={W.skinTitle}>
                 {tonesFor(s.lineageId, s.exileCulture).map((tone) => {
-                  const on = skinToneOf(s.skinTone)?.id === tone.id;
+                  const on = cultureSkinTone(s.lineageId, s.skinTone, s.exileCulture) === tone.id;
                   return (
                     <button key={tone.id} type="button" role="radio" aria-checked={on} className={`skin-tone${on ? ' on' : ''}`} data-tone={tone.id} onClick={() => set({ skinTone: tone.id })}>
                       <i style={{ background: tone.rozetRenk }} />{tone.ad[lang]}

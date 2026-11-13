@@ -1,7 +1,7 @@
 /**
  * Kuyruk AS1a: alt soy görünümü (yalnızca görsel; kural sürümüne girmez). Veri `data/alt-soy-gorunum.json`: alt soylara
  * ayrı çizim yok; renk filtresi (tint/maskesi olmayan ırklar için CSS `filter`), en-boy/ölçek, kanat katmanı yuvaları ve
- * Celestial hale kuralı. Human ten tonu kültürden bağımsız ayrı seçimdir (`skinTone`). Saf: DOM bilmez.
+ * Celestial hale kuralı. Human ten tonu ayrı seçimdir (`skinTone`), kültürün izin verdiği tonlardan (`cultureSkinTone`). Saf: DOM bilmez.
  */
 import data from '../../data/alt-soy-gorunum.json';
 import wings from '../../data/kanat-esleme.json';
@@ -39,7 +39,7 @@ export const AWAKENING_DEFAULT = 'parlayan-ruh';
 export const HALO_CLIP_PCT = D.hale.gizleUstYuzde;
 export const SKIN_TONES: SkinTone[] = D.ten.tonlar;
 export const DEFAULT_SKIN_TONE = D.ten.varsayilan;
-/** Kültür (alt soy) → seçilebilecek ten tonları (`ten.kulturTen`; AS1b'de üç kültürde de üç ton). */
+/** Kültür (alt soy) → seçilebilecek ten tonları (`ten.kulturTen`; Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın, Sur Dışı üçü). */
 export const CULTURE_SKIN: Record<string, string[]> = D.ten.kulturTen;
 /** Görev AS1b düzeltmesi: Sur Dışı'nın "Sürgün" seçimi (veri `ten.surgun`). */
 export const EXILE = D.ten.surgun;
@@ -49,25 +49,33 @@ export const exileName = (id: string, lang: 'tr' | 'en'): string => EXILE.ad[id]
 /** Geçerli sürgün kültürü (Sur Dışı değilse ya da listede yoksa yok). */
 export const exileOf = (lineageId: string | undefined, exile: string | undefined): string | undefined =>
   exile && exileOptions(lineageId).includes(exile) ? exile : undefined;
-/**
- * Seçilebilir ten tonları: kültürün (Sur Dışı'nda seçili sürgün kültürünün) `kulturTen` satırından; satır yok ya da boşsa bütün
- * tonlar serbest. Satır tek tona inerse görünümü o belirler (oluşturucu kendiliğinden seçer).
- */
-export const tonesFor = (lineageId: string | undefined, exile?: string): SkinTone[] => {
-  const key = exileOf(lineageId, exile) ?? lineageId;
+/** Ten tonunun kültür anahtarı: Sur Dışı'nda seçili sürgün kültürü, yoksa kültürün kendisi. */
+const toneKey = (lineageId: string | undefined, exile?: string): string | undefined => exileOf(lineageId, exile) ?? lineageId;
+const allowedTones = (lineageId: string | undefined, exile?: string): string[] | undefined => {
+  const key = toneKey(lineageId, exile);
   const list = key ? CULTURE_SKIN[key] : undefined;
-  return list?.length ? SKIN_TONES.filter((t) => list.includes(t.id)) : SKIN_TONES;
+  return list?.length ? list : undefined;
 };
-/** Kültür/sürgün değişince ton: izinli değilse ya da tek ton varsa ilk izinli ton; yoksa aynen. */
-export function toneAfter(lineageId: string | undefined, exile: string | undefined, current: string | undefined): string | undefined {
-  const ts = tonesFor(lineageId, exile);
-  if (ts.length === SKIN_TONES.length && ts.length > 1) return current;
-  return ts.length === 1 || !ts.some((t) => t.id === current) ? ts[0]?.id ?? current : current;
+/** Seçilebilir ten tonları: kültürün (Sur Dışı'nda seçili sürgün kültürünün) `kulturTen` satırından; satır yoksa bütün tonlar. */
+export const tonesFor = (lineageId: string | undefined, exile?: string): SkinTone[] => {
+  const list = allowedTones(lineageId, exile);
+  return list ? SKIN_TONES.filter((t) => list.includes(t.id)) : SKIN_TONES;
+};
+/**
+ * TEK ton çözücüsü (kültür + Sürgün): kayıtlı ton kültürün (Sur Dışı'nda sürgün kültürünün) listesinde varsa o, yoksa listedeki
+ * ilk ton; tek tonlu kültürde kayıtlı ton ne olursa olsun kültürün tonu. Eşlemesiz kültürde kayıtlı ton. Seçici, kültür/sürgün
+ * değişimi ve jeton boyası (`sheetAvatar`) bunu kullanır.
+ */
+export function cultureSkinTone(lineageId: string | undefined, toneId: string | undefined, exile?: string): string | undefined {
+  const allowed = allowedTones(lineageId, exile);
+  if (!allowed) return toneId;
+  const id = skinToneOf(toneId)?.id;
+  return id && allowed.includes(id) ? id : allowed[0];
 }
-/** Kültür seçimi: Sur Dışı'ndan çıkınca sürgün seçimi sıfırlanır; ton izinli değilse ilk izinliye. */
+/** Kültür seçimi: Sur Dışı'ndan çıkınca sürgün seçimi sıfırlanır; ton tek çözücüden. */
 export function pickCulture(sheet: { lineageId?: string; exileCulture?: string; skinTone?: string }, lineageId: string): { lineageId: string; exileCulture: string | undefined; skinTone: string | undefined } {
   const exile = exileOf(lineageId, sheet.exileCulture);
-  return { lineageId, exileCulture: exile, skinTone: toneAfter(lineageId, exile, sheet.skinTone) };
+  return { lineageId, exileCulture: exile, skinTone: cultureSkinTone(lineageId, sheet.skinTone, exile) };
 }
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;

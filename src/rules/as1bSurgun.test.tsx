@@ -9,8 +9,9 @@ import { Builder } from '../screens/Builder';
 import { blankCharacter, type SavedCharacter } from './builder';
 import { setLang } from '../i18n';
 import { races } from '../data';
+import { sheetAvatar } from '../battle/avatar';
 import { lineageSummary } from './lineage';
-import { CULTURE_SKIN, EXILE, exileName, exileOf, exileOptions, pickCulture, SKIN_TONES, toneAfter, tonesFor } from '../ui/lineageLook';
+import { CULTURE_SKIN, EXILE, exileName, exileOf, exileOptions, pickCulture, SKIN_TONES, cultureSkinTone, skinTint, tonesFor } from '../ui/lineageLook';
 
 const char = (patch: Partial<SavedCharacter['sheet']>): SavedCharacter => { const b = blankCharacter('as1b'); return { ...b, sheet: { ...b.sheet, name: 'Alt', ...patch } }; };
 const html = (c: SavedCharacter) => renderToStaticMarkup(<Builder initial={c} onSave={() => {}} onCancel={() => {}} step="character" />);
@@ -44,18 +45,27 @@ describe('AS1b düzeltmesi: Human kültürleri ve Sur Dışı sürgünü', () =>
     const sum = outwall ? lineageSummary(outwall, 'tr') : '';
     expect(sum.length).toBeGreaterThan(0);
     expect(a).toContain(sum); expect(b).toContain(sum);
-    expect(b.replace(/ on"/g, '"').replace(/aria-checked="true"/g, 'aria-checked="false"')).toBe(a.replace(/ on"/g, '"').replace(/aria-checked="true"/g, 'aria-checked="false"'));
+    // Ten tonu listesi sürgüne göre değişir (tasarım); buff/debuff notları aynı kalır.
+    const notes = (h: string) => h.match(/<div class="lineage-notes".*?<\/ul><\/div><\/div>/s)?.[0];
+    expect(notes(b)).toBeDefined(); expect(notes(b)).toBe(notes(a));
   });
-  it('eşleme boşken üç ton serbest; eşleme tek tona inince (yalnız veri) sürgün görünümü belirler', () => {
-    expect(CULTURE_SKIN).toEqual({});
-    expect(tonesFor('outwall', 'tenhausser')).toEqual(SKIN_TONES);
-    expect(toneAfter('outwall', 'tenhausser', 'siyahi')).toBe('siyahi');
-    CULTURE_SKIN.tenhausser = ['dogu-asyali'];
-    try {
-      expect(tonesFor('outwall', 'tenhausser').map((t) => t.id)).toEqual(['dogu-asyali']);
-      expect(toneAfter('outwall', 'tenhausser', 'siyahi')).toBe('dogu-asyali');
-      expect(tonesFor('outwall', 'khadyrga')).toEqual(SKIN_TONES);
-    } finally { delete CULTURE_SKIN.tenhausser; }
+  it('Sur Dışı + Sürgün: tonlar sürgün kültürünün satırından (tek ton kendiliğinden); sürgünsüz üç ton; jeton boyası aynı çözücüden', () => {
+    expect(CULTURE_SKIN).toEqual({ tenhausser: ['siyahi'], khadyrga: ['orijinal'], 'pure-city': ['dogu-asyali'], outwall: ['orijinal', 'siyahi', 'dogu-asyali'] });
+    expect(tonesFor('outwall')).toEqual(SKIN_TONES);
+    expect(tonesFor('outwall', 'tenhausser').map((t) => t.id)).toEqual(['siyahi']);
+    expect(tonesFor('outwall', 'pure-city').map((t) => t.id)).toEqual(['dogu-asyali']);
+    expect(cultureSkinTone('outwall', 'orijinal', 'tenhausser')).toBe('siyahi');
+    expect(cultureSkinTone('outwall', 'dogu-asyali', 'khadyrga')).toBe('orijinal');
+    expect(cultureSkinTone('outwall', 'siyahi')).toBe('siyahi');
+    expect(pickCulture({ lineageId: 'outwall', exileCulture: 'pure-city', skinTone: 'siyahi' }, 'outwall').skinTone).toBe('dogu-asyali');
+    expect(pickCulture({ lineageId: 'outwall', exileCulture: 'khadyrga', skinTone: 'siyahi' }, 'tenhausser')).toEqual({ lineageId: 'tenhausser', exileCulture: undefined, skinTone: 'siyahi' });
+    const h = html(char({ raceId: 'human', lineageId: 'outwall', exileCulture: 'tenhausser', skinTone: 'orijinal' }));
+    expect((h.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(1);
+    expect(h).toContain('class="skin-tone on" data-tone="siyahi"');
+    const sheet = (exileCulture?: string, skinTone?: string) => ({ ...char({ raceId: 'human', lineageId: 'outwall', exileCulture, skinTone }).sheet });
+    expect(sheetAvatar(sheet('tenhausser', 'orijinal')).tint).toEqual(skinTint('human', 'siyahi'));
+    expect(sheetAvatar(sheet('khadyrga', 'siyahi')).tint).toBeUndefined();
+    expect(sheetAvatar(sheet(undefined, 'siyahi')).tint).toEqual(skinTint('human', 'siyahi'));
   });
   it('eski kayıt (sürgün alanı yok) etkilenmez; TR/EN metinler', () => {
     expect(html(char({ raceId: 'human', lineageId: 'outwall' }))).toContain('Sürgün');

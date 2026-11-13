@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-13 — Human kültür–ten eşlemesi ile Sürgün seçimi birleştirildi (yalnız görünüm/veri; kural sürümü 78 ve kayıt sürümü değişmedi)
+
+- **Tek akış:** `kulturTen` dolu (Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın, Sur Dışı üçü). Sur Dışı + Sürgün seçiliyse tonlar sürgün kültürünün satırından (tek ton kendiliğinden), seçili değilse Sur Dışı'nın üç tonu.
+- **Tek çözücü:** `cultureSkinTone(soy, ton, sürgün?)` (`src/ui/lineageLook.ts`); `tonesFor`, `pickCulture`, sürgün düğmesi, seçici ve jeton boyası (`sheetAvatar`, `exileCulture` ile) buna dayanır; `toneAfter` kaldırıldı.
+- **Test beklentileri değişti (gerekçe: iki dalın kararı birleşti):** `as1bSurgun.test.tsx` "eşleme boşken üç ton serbest" artık dolu eşleme + Sürgün tek ton + jeton tint'i; "buff/debuff" testi yalnız not bölümünü karşılaştırır (ton listesi sürgüne göre değişir); `altSoy41.test.tsx` "Sürgünü eki yok" denetimi Sürgün kartları bölümünü (`exile-grid`) dışarıda bırakır. `skinHelp` TR/EN iki davranışı anlatır. Ekran görüntüsü `docs/as1b/karakter-adimi-mobil.png` yenilendi.
+
 ## 2026-11-12 — Görev AS1b düzeltmesi (kullanıcı): Human kültürleri ve Sur Dışı sürgünü (yalnız oluşturucu/görünüm; kural sürümü 77, kayıt sürümü değişmedi)
 
 - **Adlar:** kültür kartları Tenhausser, Khadyrga, Saf Kent (EN Pure City), Sur Dışı; ilk üçünde "Sürgünü/Exile" eki kalktı (`data/races.json` `ad`; hizalanma gerekçe metinleri de). Kart buff/debuff metinleri aynen.
@@ -9,6 +15,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Sur Dışı sürgünü:** Sur Dışı seçilince "Sürgün" seçimi: Tenhausser Sürgünü, Khadyrga Sürgünü, Saf Kent Sürgünü (veri `ten.surgun`: kültür, seçenekler, TR/EN ad). Karakterde isteğe bağlı `exileCulture` (eski kayıtta yok, etkilenmez). Yalnız görünüm: buff/debuff ve mekanik her zaman Sur Dışı'nınki. Başka kültürde seçim görünmez; Sur Dışı'ndan çıkınca ya da tür değişince sıfırlanır (`lineageLook.ts` `pickCulture`).
 - **Geçici davranış:** sürgün kültürünün `kulturTen` satırı yok/boşken üç ton serbest; satır tek tona inince o ton kendiliğinden seçilir ve seçici yalnız onu gösterir (`tonesFor`, `toneAfter`; yalnız veri doldurulur, kod değişmez). Aynı kural Sur Dışı dışındaki kültürlerin kendi satırına da uygulanır.
 - **Testler:** `src/rules/as1bSurgun.test.tsx` (5); `altSoy41.test.tsx` beklentileri güncellendi (gerekçe: kullanıcı kararı: adlar ekisiz, eşleme boş). Ekran görüntüsü `docs/as1b/karakter-adimi-mobil.png` yenilendi (Sur Dışı + Sürgün seçimi).
+## 2026-11-12 — Human kültür–ten eşlemesi (yalnız görünüm; kural sürümü 77, kayıt sürümü aynı)
+
+- **Eşleme** (`data/alt-soy-gorunum.json` `ten.kulturTen`): Tenhausser Sürgünü `siyahi` (Koyu), Khadyrga Sürgünü `orijinal`, Saf Kent Sürgünü `dogu-asyali` (Altın), Sur Dışı üçü. Kullanıcının "Siyah / Beyaz / Sarı" tonları veride `siyahi` / `orijinal` / `dogu-asyali` kimlikleri; ton adları (Koyu, Orijinal, Altın) değişmedi.
+- **Sürgün:** ayrı kimlik yok; Sürgün adları AS1b'de kültürlerin yeniden adlandırılması (kimlikler `tenhausser`, `khadyrga`, `pure-city` aynı). Ayrı `surgunTen` alanı eklenmedi (kullanıcı kararı); Sürgünün tonu `kulturTen`'den. Kültür tek seçimli olduğundan "Sur Dışı + Sürgün" birlikte seçilemez.
+- **Kendiliğinden seçim** (kullanıcı kararı: "Tenhausser'ı seçer seçmez koyu olsun"; görev "yalnız veri" diyordu, veri tek başına yetmiyordu): `src/ui/lineageLook.ts` `cultureSkinTone(lineageId, toneId)`: kayıtlı ton kültürün listesinde yoksa listedeki ilk ton. Oluşturucu kültür kartına basınca `skinTone`'u bununla yazar, seçili rozet de bununla; jeton (`battle/avatar.ts` `sheetAvatar`) aynı yardımcıyla boyanır, böylece eski kayıtta (Tenhausser, ton boş) da Koyu. Sur Dışı'nda ve kültürsüz Human'da kayıtlı ton aynen.
+- **Test:** `src/rules/altSoy41.test.tsx` eski beklenti "her kültür üç ton" (AS1b) yeni eşlemeye güncellendi; tek tonlu kültürde rozet ve jeton tonu denetlenir. Kullanılmayan `skinHelp` metni (TR/EN) "ten kültürden bağımsız" demeyecek biçimde düzeltildi.
 
 ## 2026-11-12 — Görev AS2 (toplu): DURDU — yalnız envanter (kod değişmedi; kural sürümü 77'de kaldı, 78 kullanılmadı)
 
