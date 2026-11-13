@@ -18,6 +18,8 @@ import { hitEffect } from '../maprules';
 import { teleportEvent, teleportProblem } from '../teleport';
 import { saveDice } from '../effectDice';
 import { saveMode } from '../durations';
+import { k75On } from '../k75Surum';
+import type { SaveCtx } from '../altSoySurum';
 import { turnKey } from '../economy';
 import { resolveSave } from '../../rules/attack';
 import { askReaction } from '../../rules/reactionChoice';
@@ -49,11 +51,16 @@ function ask(rng: Rng, g: Combatant, src: Combatant, label: string, opt: { id: s
 }
 
 /** Kurtulma (hasarsız): `save_resolved` olayı ve sonuç. */
-function saveVs(g: Combatant, label: string, p: Ilkel, t: Combatant, rng: Rng): { ev: BattleEvent; success: boolean } {
+function saveVs(state: BattleState, g: Combatant, label: string, p: Ilkel, t: Combatant, rng: Rng): { ev: BattleEvent; success: boolean } {
   const save = p.save as Record<string, unknown>;
   const ab = (save.yetenek ?? 'con') as Ability;
   const dc = dcOf(save, g);
-  const mode = saveMode('normal', t, ab, g);
+  // Kuyruk K75 (79+): tepki ilkellerinin kurtulması da alt soyun hasar türü / durum dezavantajına bakar (AS1a `genis`; P9'da eksikti).
+  const type = val<string>(p, 'hasarTuru');
+  const ctx: SaveCtx | undefined = k75On(state)
+    ? { ...(type ? { damage: type } : {}), ...(typeof p.durum === 'string' ? { against: [p.durum] } : {}), genis: true }
+    : undefined;
+  const mode = saveMode('normal', t, ab, g, ctx);
   const sv = resolveSave({ extra: saveDice(t, ab), modifier: t.saves[ab], dc, mode }, rollTag(rng, { by: t.id }));
   return { success: sv.success, ev: { type: 'save_resolved', actorId: g.id, targetId: t.id, label, ability: ab, dc, mode, reasons: [], d20: sv.d20?.rolls ?? [], natural: sv.d20?.kept ?? null,
     total: sv.total, success: sv.success, damageRolls: [], rawDamage: 0, appliedDamage: 0, damageType: '', damageNote: null, targetHpAfter: t.hp, effects: [], conditionsAdded: [],
@@ -66,7 +73,7 @@ function onFoe(state: BattleState, g: Combatant, r: Ref, t: Combatant, rng: Rng)
   if (r.p.etki === 'hasarEkle') return [hitEffect(t, 'paket', name, { damage: formul(r.p.miktar, g), damageType: val<string>(r.p, 'hasarTuru') }, rng)];
   if (r.p.etki === 'hizSifir') {
     const out: BattleEvent[] = [];
-    if (r.p.save) { const sv = saveVs(g, name, r.p, t, rng); out.push(sv.ev); if (sv.success) return out; }
+    if (r.p.save) { const sv = saveVs(state, g, name, r.p, t, rng); out.push(sv.ev); if (sv.success) return out; }
     out.push({ type: 'effect_added', targetId: t.id, effect: { id: `pk-hiz0:${g.id}:${t.id}`, name, sourceId: g.id, speedZero: true, untilOwnTurnEnd: true, until: state.round + 1, icon: '⛓' } as ActiveEffect });
     return out;
   }
@@ -194,7 +201,7 @@ registerCastHook((state, caster, spellName, _level, rng) => {
       const k = costOf(g, r.p);
       const events: BattleEvent[] = [reactionUsed(g, { ...opt, ...(k ? { resource: k.id } : {}) }, 'cast', caster.id), ...costEvents(state, g, { ...r, p: { ...r.p, kaynak: undefined } })];
       if (r.p.etki === 'buyuIptal') {
-        if (r.p.save) { const sv = saveVs(g, nameOf(r), r.p, caster, rng); events.push(sv.ev); if (sv.success) return { countered: false, events }; }
+        if (r.p.save) { const sv = saveVs(state, g, nameOf(r), r.p, caster, rng); events.push(sv.ev); if (sv.success) return { countered: false, events }; }
         // P10 (sürüm 39+): geri tepme hasarı büyücüye.
         if (r.p.geriTepme !== undefined && p10On(state)) events.push(hitEffect(caster, 'paket', nameOf(r), { damage: formul(r.p.geriTepme, g), damageType: val<string>(r.p, 'hasarTuru') }, rng));
         // P11 (sürüm 42+): engellenen büyü çalınır (slotsuz bir kez; `paket/p11cast.ts`).

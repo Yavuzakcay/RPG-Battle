@@ -369,3 +369,22 @@ describe('PAKET-ILKELLER belgesi yeni ilkelleri içerir', () => {
   });
 });
 
+
+describe('K75: tepki kurtulması alt soy dezavantajına bakar (79+)', () => {
+  const scene = (v: number): Run => {
+    const r = fighter(['buyu-kesici']);
+    const c = r.c('A');
+    const feats = (c.paket?.ozellikler ?? []).map((f) => ({ ...f, ilkeller: f.ilkeller.map((p) => (p.etki === 'buyuIptal' ? { ...p, hasarTuru: 'fire' } : p)) }));
+    patch(r, 'A', { paket: { ...(c.paket as NonNullable<Combatant['paket']>), ozellikler: feats } });
+    patch(r, 'B', { spellNames: ['Fire Bolt'], spellAttack: 5, spellSaveDc: 13, spellMod: 3, effects: [{ id: 'soy:test', name: 'Soy', sourceId: 'B', saveDisVs: [{ damage: 'fire' }], saveDisVsGenis: true } as never] });
+    r.state = { ...r.state, kuralSurumu: v };
+    turnOf(r, 'B');
+    rebase(r);
+    return r;
+  };
+  it('79: hasarTuru ile save dezavantajlı; 78: normal', () => {
+    const modeOf = (v: number) => scene(v).gm({ type: 'cast_spell', actorId: 'B', spellName: 'Fire Bolt', targetId: 'A' }, fixed(0.5)).find((e) => e.type === 'save_resolved' && e.targetId === 'B');
+    expect(modeOf(79)).toMatchObject({ mode: 'disadvantage' });
+    expect(modeOf(78)).toMatchObject({ mode: 'normal' });
+  });
+});
