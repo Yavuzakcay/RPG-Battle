@@ -90,7 +90,7 @@
     "gizleUstYuzde": 9.5
   },
   "ten": {
-    "not": "Kuyruk AS1c: Human ten tonu kültürden bağımsız ayrı seçimdir (karakterde `skinTone`); `kulturTen` her kültürün seçebileceği tonlar. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
+    "not": "Kuyruk AS1c: Human ten tonu karakterde `skinTone`; `kulturTen` her kültürün seçebileceği tonlar (Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın, Sur Dışı üçü). Sur Dışı'nda Sürgün seçiliyse (`surgun`) tonlar sürgün kültürünün satırından, seçili değilse Sur Dışı'nın üç tonu. Kayıtlı ton listede yoksa listedeki ilk ton geçerlidir (tek çözücü `cultureSkinTone`): tek tonlu kültür ya da sürgün seçilince ton kendiliğinden gelir, jeton boyası da buna uyar. Ton jetonun yalnız TEN pikselini boyar (ten maskesi `public/characters/maske/human-*.png`, `src/ui/tint.ts` lch yolu: `renk` hedef ten rengi, ortalama açıklık hedefe taşınır, gölge/ışık orantısı korunur); saç, giysi, silah renkleri değişmez. `renk` null: boyasız (Orijinal). `rozetRenk` yalnız seçici rozeti. Gerçek renkleri bu alanda düzenle; kod ve test değişmez.",
     "yerTutucu": false,
     "filtreUygula": true,
     "varsayilan": "orijinal",
@@ -125,18 +125,12 @@
     ],
     "kulturTen": {
       "tenhausser": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
+        "siyahi"
       ],
       "khadyrga": [
-        "orijinal",
-        "siyahi",
-        "dogu-asyali"
+        "orijinal"
       ],
       "pure-city": [
-        "orijinal",
-        "siyahi",
         "dogu-asyali"
       ],
       "outwall": [
@@ -144,6 +138,16 @@
         "siyahi",
         "dogu-asyali"
       ]
+    },
+    "surgun": {
+      "not": "Görev AS1b düzeltmesi: Sur Dışı (`kultur`) seçilince ek \"Sürgün\" seçimi (karakterde `exileCulture`). Seçenekler yalnız bu üç kültür; buff/debuff her zaman Sur Dışı'nınki. Görünüm (ten tonu) sürgün kültürünün `kulturTen` satırından: tek ton varsa (Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın) o ton kendiliğinden seçilir; Sürgün seçili değilse Sur Dışı'nın üç tonu (yalnız veri).",
+      "kultur": "outwall",
+      "secenekler": ["tenhausser", "khadyrga", "pure-city"],
+      "ad": {
+        "tenhausser": { "tr": "Tenhausser Sürgünü", "en": "Tenhausser Exile" },
+        "khadyrga": { "tr": "Khadyrga Sürgünü", "en": "Khadyrga Exile" },
+        "pure-city": { "tr": "Saf Kent Sürgünü", "en": "Pure City Exile" }
+      }
     }
   },
   "orijinal": [
