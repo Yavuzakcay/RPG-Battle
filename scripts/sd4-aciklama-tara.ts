@@ -13,6 +13,8 @@ import srdSpecies from '../data/srd/species.json';
 import aciklamalar from '../data/aciklamalar.json';
 
 await Promise.all([loadMonsters(), loadClassData()]);
+// Görev AS2: SRD alt sınıfları dış pakette (icerik/ ya da 12 kaydın fikstürü).
+await (await import('../src/sim/simIcerik')).loadSimContent();
 const trPath = new URL('../data/aciklamalar-tr.json', import.meta.url);
 const tr = (existsSync(trPath) && !process.env.SD4_ONCE ? JSON.parse(readFileSync(trPath, 'utf8')) : {}) as Record<string, Record<string, string>>;
 const betimleme = (await import('../data/buyu-betimleme.json')).default as Record<string, { tr?: string }>;

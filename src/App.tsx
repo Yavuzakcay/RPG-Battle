@@ -120,8 +120,9 @@ function useClassData(): { ready: boolean; error: string | null } {
   useEffect(() => {
     if (ready) return;
     // Dış içerik (Görev E1): kayıtlı paketler sınıf verisinden sonra doğrulanıp uygulanır; hata olursa içeriksiz devam.
+    // Görev AS2: yerel icerik/ klasörü kalıcı ana kaynak; karakter ekranları (eski kayıt alt sınıf ataması dahil) onu bekler.
     loadClassData()
-      .then(() => import('./content/store').then((m) => { m.applyStoredContent(); void m.loadLocalFolder(); }, () => undefined))
+      .then(() => import('./content/store').then((m) => { m.applyStoredContent(); return m.loadLocalFolder().then(() => undefined, () => undefined); }, () => undefined))
       .then(() => setReady(true), () => setError(t().common.classLoadError));
   }, [ready]);
   return { ready, error };

@@ -12,13 +12,15 @@ const ext = (id: string, cls: string, tr: string, en: string): SubclassDef => ({
 afterEach(() => setExternalSubclasses([]));
 
 describe('alt sınıf görünümü', () => {
-  it('kaldırılan sekiz alt sınıf başka seçenek varken listede yok (SRD ve paket kopyası); son seçenek kalır', () => {
-    expect(visibleSubclasses('barbarian').filter((s) => !s.ev).map((s) => s.id)).toEqual(['path-of-the-berserker']); // başka yok → kalır (ev kuralı alt sınıfları sayılmaz)
-    setExternalSubclasses([ext('paket-berserker', 'barbarian', 'Çılgın', 'Path of the Berserker'), ext('ofke', 'barbarian', 'Öfke', 'Rage Path')]);
-    expect(visibleSubclasses('barbarian').filter((s) => !s.ev).map((s) => s.id)).toEqual(['ofke']);
-    // Eski kayıt: motor yine bulur.
+  // Görev AS2: K49 B5'in sekiz SRD alt sınıfı listeye döndü (SRD 12 pakette, 120 alt sınıf hep seçilebilir); `kaldirilan`
+  // listesinde yalnız Barış Alanı. Eski beklenti "başka seçenek varken sekizi gizli" yerine: hepsi görünür, Barış çıkar.
+  it('Görev AS2: kaldırılan yalnız Barış Alanı; SRD kimlikli ve aynı EN adlı alt sınıflar görünür', () => {
+    setExternalSubclasses([ext('paket-berserker', 'barbarian', 'Çılgın', 'Path of the Berserker'), ext('ofke', 'barbarian', 'Öfke', 'Rage Path'), ext('baris-alani', 'cleric', 'Barış Alanı', 'Peace Domain')]);
+    expect(visibleSubclasses('barbarian').filter((s) => !s.ev).map((s) => s.id)).toEqual(['path-of-the-berserker', 'paket-berserker', 'ofke']);
     expect(findSubclass('barbarian', 'path-of-the-berserker')?.id).toBe('path-of-the-berserker');
-    expect(isRemovedSubclass(ext('x', 'wizard', 'a', 'Evoker'))).toBe(true);
+    expect(isRemovedSubclass(ext('x', 'wizard', 'a', 'Evoker'))).toBe(false);
+    expect(isRemovedSubclass(ext('baris-alani', 'cleric', 'Barış Alanı', ''))).toBe(true);
+    expect(visibleSubclasses('cleric').some((s) => s.id === 'baris-alani')).toBe(false);
   });
   it('adlar: parantezli takma ad, Cleric Alanı → Manastırı, Barış → Birlik; "dış içerik" eki yok', () => {
     expect(displayName({ tr: 'Psişik Hançerler (Kirpi)', en: 'Psychic Blades (Hedgehog)' })).toEqual({ tr: 'Kirpi', en: 'Hedgehog' });

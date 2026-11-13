@@ -1125,13 +1125,16 @@ export interface SubclassDef {
   name: LocalText;
   role: LocalText;
   features: SubclassFeatureDef[];
-  /** Kuyruk K48: ev kuralı alt sınıfı (SRD dışı; oluşturucuda Ayarlar anahtarıyla görünür). */
+  /** Kuyruk K48: oyunun kendi alt sınıfı (SRD dışı; imza ve Karadul). Görev AS2: anahtar yok, hep seçilebilir. */
   ev?: boolean;
+  /** Görev AS2: cinsiyet kuralı (oluşturucuda yalnız bu cinsiyetteki karaktere görünür; Karadul kadın, İmparator erkek). */
+  cinsiyet?: 'erkek' | 'kadin';
   /** Kuyruk K48: bu alt sınıf seçilince kaybedilen sınıf özellikleri (anahtar; ör. `druid:wild-shape`). */
   replaces?: string[];
   /** Kuyruk K48: alt sınıf seviyesinde ek beceri yetkinlikleri. */
   ekBeceriler?: string[];
-  /** Kuyruk K50: imza alt sınıfın ev kuralı kimliği (`imza_<ad>`); null her zaman açık (Birlik Manastırı). */
+  /** Kuyruk K50: imza alt sınıfın ev kuralı kimliği (`imza_<ad>`); null her zaman açık (Birlik Manastırı). Görev AS2: yalnız
+   * kural sürümü < 78 savaşta (eski kayıt/replay) kapı; 78+ hep açık. */
   evKurali?: string | null;
   /** Görev P0: paketin çağrı yaratıkları (yükleyici paket düzeyindeki `yaratiklar`ı her alt sınıfa kopyalar). */
   yaratiklar?: Array<Record<string, unknown>>;

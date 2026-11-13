@@ -6,6 +6,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { loadClassData, items, weapons, armor } from '../src/data';
 await loadClassData();
+// Görev AS2: SRD alt sınıfları dış pakette (icerik/ ya da 12 kaydın fikstürü).
+await (await import('../src/sim/simIcerik')).loadSimContent();
 const J = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
 const srdW = J('data/srd/weapons.json'), srdA = J('data/srd/armor.json').armor, gear = J('data/srd/gear.json').gear;
 const magic = J('data/srd/magic-items.json').items, feats = J('data/srd/feats.json').feats, species = J('data/srd/species.json').species;

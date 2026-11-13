@@ -7,6 +7,8 @@ import { loadTrExtra } from '../i18n';
 import { loadClassData, loadMonsters } from '../data';
 // Kuyruk 34a: TR savaş metinleri (günlük) tembel parçada; oturum günlüğü için yüklenir.
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
+// Görev AS2: alt sınıf paketi (icerik/ ya da 12 kaydın fikstürü).
+await (await import('./simIcerik')).loadSimContent();
 const { simulateChain } = await import('./chain');
 const { setPartyKind } = await import('./balance');
 const { setRestPolicy } = await import('./chain');

@@ -10,7 +10,7 @@ import { replay } from './reduce';
 import { P1, mk } from './fixtures';
 import { blankCharacter } from '../rules/builder';
 import { gainedFeatures } from '../rules/classFeatures';
-import { findSubclass, houseSubclassVisible } from '../rules/subclasses';
+import { findSubclass, genderVisible } from '../rules/subclasses';
 import { deriveStats, type CharacterSheet } from '../rules/stats';
 import { GAZE_KEY, KARADUL_ID, SPIDER_KEY, karadulDc } from './karadul';
 import type { Rng } from '../rules/dice';
@@ -51,15 +51,23 @@ function arena(a: Combatant, opts: { on?: boolean; kuralSurumu?: number; b?: Par
 const bite = (r: ReturnType<typeof arena>) => ({ type: 'attack', actorId: 'A', targetId: 'B', option: r.c('A').weaponOptions[0] }) as Command;
 
 describe('Karadul: oluşturucu ve sınıf özellikleri', () => {
-  it('ev kuralı kapalıyken görünmez; kadın kısıtı açıkken yalnız kadın; mevcut seçim hep görünür', () => {
+  // Görev AS2: Ayarlar anahtarı (karadulEnabled) ve kadın kısıtı ayarı (karadulWomenOnly) kalktı; cinsiyet kuralı alt sınıfın
+  // kendisinde (`cinsiyet: 'kadin'`). Eski beklenti "anahtar kapalıyken görünmez" yerine: kadına her zaman, erkeğe hiç.
+  it('cinsiyet kuralı alt sınıfta: yalnız kadın karaktere görünür (anahtar yok); mevcut seçim hep görünür; İmparator yalnız erkek', () => {
     const sub = findSubclass('druid', KARADUL_ID);
     expect(sub?.ev).toBe(true);
     if (!sub) return;
-    expect(houseSubclassVisible(sub, { gender: 'kadin' }, false, true)).toBe(false);
-    expect(houseSubclassVisible(sub, { gender: 'kadin' }, true, true)).toBe(true);
-    expect(houseSubclassVisible(sub, { gender: 'erkek' }, true, true)).toBe(false);
-    expect(houseSubclassVisible(sub, { gender: 'erkek' }, true, false)).toBe(true);
-    expect(houseSubclassVisible(sub, { gender: 'erkek', subclassId: KARADUL_ID }, false, true)).toBe(true);
+    expect(sub.cinsiyet).toBe('kadin');
+    expect(genderVisible(sub, { gender: 'kadin' })).toBe(true);
+    expect(genderVisible(sub, { gender: 'erkek' })).toBe(false);
+    expect(genderVisible(sub, {})).toBe(false);
+    expect(genderVisible(sub, { gender: 'erkek', subclassId: KARADUL_ID })).toBe(true);
+    const imp = findSubclass('fighter', 'imza_imparator');
+    expect(imp?.cinsiyet).toBe('erkek');
+    if (!imp) return;
+    expect(genderVisible(imp, { gender: 'erkek' })).toBe(true);
+    expect(genderVisible(imp, { gender: 'kadin' })).toBe(false);
+    expect(genderVisible(findSubclass('fighter', 'champion') ?? imp, { gender: 'kadin' })).toBe(true);
   });
   it('Wild Shape kalkar (kaynağıyla), ek beceriler Persuasion ve Deception', () => {
     expect(gainedFeatures('druid', 6, KARADUL_ID).some((f) => f.key === 'druid:wild-shape')).toBe(false);
@@ -75,10 +83,12 @@ describe('Karadul: oluşturucu ve sınıf özellikleri', () => {
 });
 
 describe('Karadul: savaş', () => {
-  it('kural kapalı ya da eski sürüm (20): Karadul özellikleri yok', () => {
-    for (const r of [arena(widow(), { on: false }), arena(widow(), { kuralSurumu: 20 })]) {
+  // Görev AS2 (kural sürümü 78): ev kuralı kapısı kalktı; eski beklenti "kural kapalıyken yok" yalnız 77 ve altı kayıt/replay için.
+  it('eski sürüm (77) kural kapalı ya da sürüm 20: Karadul özellikleri yok; 78+ kural kapalıyken de var', () => {
+    for (const r of [arena(widow(), { on: false, kuralSurumu: 77 }), arena(widow(), { kuralSurumu: 20 })]) {
       expect(r.c('A').features?.some((f) => f.key.startsWith('ev:karadul/'))).toBeFalsy();
     }
+    expect(arena(widow(), { on: false }).c('A').features?.some((f) => f.key.startsWith('ev:karadul/'))).toBe(true);
   });
   it('Örümcek Biçimi: skor takası STR↔CHA, CON↔WIS; DC insan CHA\'sından; biçim canı geçici HP; bırakınca döner', () => {
     const r = arena(widow());

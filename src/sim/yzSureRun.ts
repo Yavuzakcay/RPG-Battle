@@ -16,6 +16,8 @@ import { setDefaultRuleVersion } from '../battle/create';
 import { mountedStart } from './binekStart';
 
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
+// Görev AS2: alt sınıf paketi (icerik/ ya da 12 kaydın fikstürü).
+await (await import('./simIcerik')).loadSimContent();
 declare const process: { argv: string[] };
 let args = process.argv.slice(2);
 const opt = (k: string, d: string): string => { const i = args.indexOf(k); if (i < 0) return d; const v = args[i + 1] ?? d; args = args.filter((_, j) => j !== i && j !== i + 1); return v; };

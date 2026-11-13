@@ -8,7 +8,9 @@
 import { writeFileSync } from 'node:fs';
 import { loadClassData, spells } from '../src/data';
 await loadClassData();
-const { gainedFeatures, subclassesOf } = await import('../src/rules/classFeatures');
+// Görev AS2: SRD alt sınıfları dış pakette (icerik/ ya da 12 kaydın fikstürü).
+await (await import('../src/sim/simIcerik')).loadSimContent();
+const { defaultSubclass, gainedFeatures, subclassesOf } = await import('../src/rules/classFeatures');
 const CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
 type M = { status?: string; note?: string } | undefined;
 const count: Record<string, number> = {};
@@ -33,7 +35,7 @@ const featRows: string[] = [];
 const seen = new Set<string>();
 for (const c of CLASSES) {
   for (const sub of subclassesOf(c) as Array<{ id: string; srd?: boolean; features?: Array<{ id: string; durum?: string; status?: string }> }>) {
-    if (!sub.srd) continue;
+    if (sub.id !== defaultSubclass(c)) continue;
     for (const f of gainedFeatures(c, 10, sub.id)) {
       if (seen.has(f.key)) continue;
       seen.add(f.key);

@@ -4,6 +4,7 @@
  */
 import data from '../../data/imza.json';
 import { gap64 } from './adjacency';
+import { as2On } from './as2Surum';
 import { houseRule, type HouseRuleId } from './houseRules';
 import { isIncapacitated } from '../rules/conditions';
 import type { Ability } from '../rules/abilities';
@@ -17,11 +18,14 @@ const PASIF = data.pasifler as unknown as Pasif[];
 export const imzaId = (id: string | undefined): string | undefined => (id ? (data.eskiKimlik as Record<string, string>)[id] ?? id : undefined);
 export const isImza = (id: string | undefined): boolean => !!id && SUBS.some((s) => s.id === imzaId(id));
 
-/** Alt sınıf bu savaşta çalışır mı (sürüm 23+ ve ev kuralı; Birlik Manastırı'nda kural yok). */
+/**
+ * Alt sınıf bu savaşta çalışır mı (sürüm 23+ ve ev kuralı; Birlik Manastırı'nda kural yok). Görev AS2: 78+ savaşta ev
+ * kuralı kapısı yok (alt sınıf hep açık); 23–77 eski kayıt/replay eskisi gibi.
+ */
 export function imzaOn(state: Pick<BattleState, 'houseRules' | 'map' | 'kuralSurumu'>, sinif: string | undefined): boolean {
   const sub = SUBS.find((s) => s.id === imzaId(sinif));
   if (!sub || (state.kuralSurumu ?? 1) < data.surum) return false;
-  return sub.evKurali === null || houseRule(state, sub.evKurali as HouseRuleId);
+  return as2On(state) || sub.evKurali === null || houseRule(state, sub.evKurali as HouseRuleId);
 }
 
 /** Seviyeye göre tablo değeri (`{"3": x, "11": y}`). */

@@ -7,7 +7,7 @@ import { armor, classes, getClass, races, weapons } from '../data';
 import { ABILITIES, type Ability } from '../rules/abilities';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
 import { backgroundById, backgroundSkills, type Background } from '../rules/backgrounds';
-import { classKit, subclassesOf } from '../rules/classFeatures';
+import { classKit, defaultSubclass, subclassesOf } from '../rules/classFeatures';
 import { ASI_FEAT, advancementSlots, isStyleChoice, scoresBeforeSlot, type Advancement } from '../rules/advancement';
 import { bonusesOf } from '../rules/backgrounds';
 import { masteryOptions } from '../rules/mastery';
@@ -118,8 +118,9 @@ function defaultLineage(raceId: string): string | undefined {
 export function withClassChoices(c: SavedCharacter): SavedCharacter {
   let s = c.sheet;
   if (needsSubclass(s) && !s.subclassId) {
-    const sub = subclassesOf(s.classId).find((x) => !x.ev && x.evKurali === undefined && !packExperimental(x));
-    if (sub) s = { ...s, subclassId: sub.id };
+    // Görev AS2: önce sınıfın varsayılanı (data/alt-sinif-gorunum.json `varsayilan`), yoksa ilk tam çalışan paket alt sınıfı.
+    const sub = defaultSubclass(s.classId) ?? subclassesOf(s.classId).find((x) => !x.ev && !packExperimental(x))?.id;
+    if (sub) s = { ...s, subclassId: sub };
   }
   const mm = classKit(s.classId, s.level, s.subclassId).metamagic;
   if (mm && mm.count > 0 && (s.metamagic ?? []).length === 0) s = { ...s, metamagic: Object.keys(mm.costs).slice(0, mm.count) };
