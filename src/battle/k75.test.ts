@@ -63,3 +63,17 @@ describe('K75: eğitimli binek bayrağı ve YZ', () => {
   });
 });
 void GM;
+
+describe('K75: batıran çamur ölü satırı', () => {
+  it('sinkMud kuralı olan her haritada kuralın zemin harfi haritada var (Kale ve Çukur\'dan kalktı)', async () => {
+    const { maps: MAPS } = await import('../map/maps');
+    for (const m of MAPS) {
+      for (const v of m.variants) {
+        for (const r of v.rules ?? []) {
+          if (r.id !== 'sinkMud') continue;
+          expect(m.tiles.some((row) => row.includes(String(r.terrain ?? 'n'))), `${m.id}/${v.id}`).toBe(true);
+        }
+      }
+    }
+  });
+});

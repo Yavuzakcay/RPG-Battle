@@ -39,17 +39,17 @@ PLAN = {
                   [obj('plaka', 'plaque', 5, 4)], None),
   'batak-kamp': ([FOG(1), MUD, R('witchCauldron', dc=12, hag='green-hag', note="Cadı kazanı: sağlamken her tur çevresinde zehirli buhar; söndürülür ya da yıkılırsa cadı bir tur saldırılarında dezavantajlı.")],
                  [FOG(2), MUD, R('witchCauldron', dc=12, hag='green-hag')], [obj('kazan', 'cauldron', 18, 4)], None),
-  'batak-kale': ([FOG(1), MUD, R('boneRise', monster='skeleton', rounds=2, note="Hortlak kemikler: 2 tur sonra iskelet; dağıt eylemi ya da ateş/ışıltı önler.")],
-                 [FOG(2), MUD, R('boneRise', monster='skeleton', rounds=1)], [obj('kemik1', 'bonePile', 13, 2), obj('kemik2', 'bonePile', 12, 7), obj('kemik3', 'bonePile', 14, 1)], None),
+  'batak-kale': ([FOG(1), R('boneRise', monster='skeleton', rounds=2, note="Hortlak kemikler: 2 tur sonra iskelet; dağıt eylemi ya da ateş/ışıltı önler.")],
+                 [FOG(2), R('boneRise', monster='skeleton', rounds=1)], [obj('kemik1', 'bonePile', 13, 2), obj('kemik2', 'bonePile', 12, 7), obj('kemik3', 'bonePile', 14, 1)], None),
   'batak-adalar': ([FOG(1), MUD, R('bridgeBreak', bridges={"kutuk1": [one(c, r) for c, r in [(3, 5), (4, 5), (5, 5)]], "kutuk2": [one(c, r) for c, r in [(16, 5), (17, 5), (18, 5)]]},
                      to={"kutuk1": 'w', "kutuk2": 'w'}, note="Kütük köprüler HP'li nesne: yıkılınca ada bağlantısı kopar."),
                    R('leeches', terrain='n', dc=10, damage='1d4', damageType='piercing', note="Sülük suyu: sığ suda turunu bitiren CON DC 10, başarısızsa 1d4.")],
                    [FOG(2), MUD, R('bridgeBreak', bridges={"kutuk1": [one(c, r) for c, r in [(3, 5), (4, 5), (5, 5)]], "kutuk2": [one(c, r) for c, r in [(16, 5), (17, 5), (18, 5)]]},
                      to={"kutuk1": 'w', "kutuk2": 'w'}), R('leeches', terrain='n', dc=10, damage='1d4', damageType='piercing')],
                    [obj('kutuk1', 'bridge', 4, 5), obj('kutuk2', 'bridge', 17, 5)], None),
-  'batak-cukur': ([FOG(1), MUD, R('pitGas', interval=3, dc=12, hexes=[one(c, r) for c, r in [(12, 4), (13, 4), (14, 4), (12, 5), (13, 5), (14, 5), (13, 6), (13, 3)]],
+  'batak-cukur': ([FOG(1), R('pitGas', interval=3, dc=12, hexes=[one(c, r) for c, r in [(12, 4), (13, 4), (14, 4), (12, 5), (13, 5), (14, 5), (13, 6), (13, 3)]],
                     note="Zehirli gaz: her 3 turda çukurun ortasında zehirli bulut (CON DC 12, Poisoned).")],
-                  [FOG(2), MUD, R('pitGas', interval=3, dc=12, hexes=[one(c, r) for c, r in [(12, 4), (13, 4), (14, 4), (12, 5), (13, 5), (14, 5), (13, 6), (13, 3)]])], [], None),
+                  [FOG(2), R('pitGas', interval=3, dc=12, hexes=[one(c, r) for c, r in [(12, 4), (13, 4), (14, 4), (12, 5), (13, 5), (14, 5), (13, 6), (13, 3)]])], [], None),
 }
 BOLGE = {'buzul': 'buzul', 'dag': 'dag', 'batak': 'bataklik'}
 for ad, (day, night, objects, light) in PLAN.items():
