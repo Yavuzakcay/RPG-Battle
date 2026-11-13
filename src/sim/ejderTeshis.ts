@@ -17,6 +17,8 @@ import { loadClassData, loadMonsters } from '../data';
 // Canavar verisi tembel yüklenir.
 // Kuyruk 34a: TR savaş metinleri (günlük) tembel parçada; oturum günlüğü için yüklenir.
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
+// Görev AS2: alt sınıf paketi (icerik/ ya da 12 kaydın fikstürü).
+await (await import('./simIcerik')).loadSimContent();
 declare const process: { argv: string[] };
 
 const N = Number(process.argv[2] ?? 200);

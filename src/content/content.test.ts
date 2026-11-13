@@ -1,11 +1,14 @@
 /**
  * Görev E1: jenerik alt sınıf şeması ve dış içerik yükleyici. SRD'nin 12 alt sınıfının regresyonu (şemaya taşımadan
- * önceki `gainedFeatures` + `classKit` çıktısının özeti), şema doğrulaması, yükleme, çakışma, silme ve 3. seviye kuralı.
+ * önceki `gainedFeatures` + `classKit` çıktısının özeti), şema doğrulaması, yükleme, çakışma ve 3. seviye kuralı.
+ * Görev AS2: 12 SRD alt sınıfı uygulamada dış pakette (icerik/); testler aynı mekanikteki fikstürü (`src/rules/fixtures/srd-alt-siniflar.json`,
+ * `src/test-setup.ts`) kullanır. Paket aç/kapa, silme ve "silinen yeniden gelmesin" kalktı; yerel klasör kalıcı ana kaynak.
  */
 import { afterEach, describe, it, expect } from 'vitest';
 import { classData } from '../data';
 import srdSubclasses from '../../data/srd/subclasses.json';
-import builtin from '../../data/subclasses.json';
+import builtin from '../rules/fixtures/srd-alt-siniflar.json';
+import dataSubclasses from '../../data/subclasses.json';
 import before from '../rules/fixtures/alt-sinif-oncesi.json';
 import sample from './fixtures/ornek-paket.json';
 import { classKit, gainedFeatures, subclassesOf } from '../rules/classFeatures';
@@ -14,7 +17,7 @@ import { characterProblems } from '../rules/builder';
 import { combatantFromSheet } from '../battle';
 import { demoCharacters } from '../screens/fixtures';
 import { effectErrors, LIMITS, parsePack, summarize, validatePack } from './schema';
-import { applyStoredContent, importTexts, loadLocalFolder, readIgnored, readStore, removePack, setPackEnabled } from './store';
+import { applyStoredContent, importTexts, loadLocalFolder, readStore, writeStore } from './store';
 import docSample from '../../docs/ornek-paket/ornek-paket.json';
 import { SAVE_VERSION, restoreSession, serializeSession } from '../app/battleSave';
 import { createSession } from '../ui/session';
@@ -31,7 +34,10 @@ const text = (x: unknown) => { const s = JSON.stringify(x); return { name: 'p.js
 
 afterEach(() => setExternalSubclasses([]));
 
-describe('SRD alt sınıfları (data/subclasses.json)', () => {
+describe('SRD alt sınıfları (Görev AS2: data/subclasses.json boş; mekanik fikstürde, uygulamada dış pakette)', () => {
+  it('Görev AS2: orijinal SRD 12 alt sınıfı uygulama verisinden kaldırıldı (kayıt kaynağı: dış paket + imza + Karadul)', () => {
+    expect(dataSubclasses.subclasses).toEqual([]);
+  });
   it('12 alt sınıf, kimlikler benzersiz, her biri ve her özelliği SRD kaydıyla eşleşir', () => {
     const list = builtin.subclasses;
     expect(list).toHaveLength(12);
@@ -150,7 +156,7 @@ describe('paket şeması', () => {
   });
 });
 
-describe('yükleme, açma/kapama, silme', () => {
+describe('yükleme (Görev AS2: açma/kapama ve silme yok)', () => {
   it('içe aktarılan alt sınıf normal alt sınıf gibi görünür; ikinci kez yükleme reddedilir', () => {
     const s = memStore();
     expect(importTexts([text(sample)], s)).toEqual([{ file: 'p.json', ok: true, packId: 'ornek-kurgusal', errors: [] }]);
@@ -176,18 +182,18 @@ describe('yükleme, açma/kapama, silme', () => {
     const amber = combatantFromSheet({ ...bor, level: 3, subclassId: 'kehribar-muhafizi' }, { id: 'a', ownerId: 'p' });
     expect(amber.speed).toBe(plain.speed + 5);
   });
-  it('kapatılan ya da silinen içerik: karakter bozulmaz, "içerik eksik", alt sınıf özelliksiz savaşa girer', () => {
+  // Görev AS2: paket kapatma/silme kalktı (eski beklenti: kapatılınca "içerik eksik"). Eski kayıttaki `enabled: false` yok
+  // sayılır; içerik yüklenmemişse (mobil, icerik/ yok) karakter yine bozulmaz.
+  it('eski "kapalı" kayıt da uygulanır; içerik yüklenmemişse karakter bozulmaz, "içerik eksik", alt sınıf özelliksiz savaşa girer', () => {
     const s = memStore();
     importTexts([text(sample)], s);
     const c = demoCharacters()[1] as NonNullable<ReturnType<typeof demoCharacters>[number]>;
     const ch = { ...c, sheet: { ...c.sheet, subclassId: 'kehribar-muhafizi' } };
     expect(subclassMissing('fighter', 'kehribar-muhafizi')).toBe(false);
-    setPackEnabled('ornek-kurgusal', false, s);
-    expect(subclassMissing('fighter', 'kehribar-muhafizi')).toBe(true);
-    setPackEnabled('ornek-kurgusal', true, s);
+    writeStore(readStore(s).map((p) => ({ ...p, enabled: false })), s);
+    expect(applyStoredContent(s).map((r) => [r.pack.id, r.enabled, r.errors.length])).toEqual([['ornek-kurgusal', true, 0]]);
     expect(subclassMissing('fighter', 'kehribar-muhafizi')).toBe(false);
-    removePack('ornek-kurgusal', s);
-    expect(readStore(s)).toEqual([]);
+    setExternalSubclasses([]);
     expect(subclassMissing('fighter', 'kehribar-muhafizi')).toBe(true);
     expect(characterProblems(ch)).toEqual(characterProblems(c));
     expect(ch.sheet.subclassId).toBe('kehribar-muhafizi');
@@ -206,20 +212,25 @@ describe('yükleme, açma/kapama, silme', () => {
   });
 });
 
-describe('yerel icerik/ klasörü (Kuyruk 20 A1)', () => {
-  it('açılışta yeni paketler klasörden yüklenir; yüklü olan atlanır; silinen yeniden gelmez, elle içe aktarınca döner; bozuk dosya uygulamayı bozmaz', async () => {
+// Görev AS2: klasör kalıcı ana kaynak (eski beklenti: localStorage'a kopyalanır, silinen yeniden gelmez). Her açılışta
+// klasörün güncel hâli okunur; eski `source: 'klasor'` kopyaları silinir; aynı kimlikli içe aktarılan eski kopya atlanır.
+describe('yerel icerik/ klasörü (Kuyruk 20 A1; Görev AS2 kalıcı kaynak)', () => {
+  it('klasör her açılışta okunur ve uygulanır (localStorage\'a kopyalanmaz); güncel hâli geçerli; bozuk dosya uygulamayı bozmaz', async () => {
     const s = memStore();
+    writeStore([{ pack: clone(sample) as never, enabled: false, addedAt: '', source: 'klasor' }], s);
     const loaders = { '../../icerik/ornek.json': async () => JSON.stringify(sample), '../../icerik/bozuk.json': async () => '{ bozuk' };
     const first = await loadLocalFolder(s, loaders);
-    expect(first.map((r) => [r.file, r.ok])).toEqual([['ornek.json', true], ['bozuk.json', false]]);
-    expect(readStore(s)[0]).toMatchObject({ source: 'klasor', enabled: true });
-    expect(await loadLocalFolder(s, { '../../icerik/ornek.json': async () => JSON.stringify(sample) })).toEqual([]);
-    removePack('ornek-kurgusal', s);
-    expect(readIgnored(s)).toEqual(['ornek-kurgusal']);
-    expect(await loadLocalFolder(s, { '../../icerik/ornek.json': async () => JSON.stringify(sample) })).toEqual([]);
-    expect(importTexts([text(sample)], s)[0]?.ok).toBe(true);
-    expect(readIgnored(s)).toEqual([]);
+    expect(first.map((r) => [r.file, r.ok])).toEqual([['bozuk.json', false], ['ornek-kurgusal', true]]);
+    expect(readStore(s)).toEqual([]);
+    expect(findSubclass('rogue', 'sis-yolcusu')?.pack).toBe('ornek-kurgusal');
+    const renamed = clone(sample) as { subclasses: Array<{ id: string; name: { tr: string; en: string } }> };
+    (renamed.subclasses[1] as { name: { tr: string; en: string } }).name = { tr: 'Yeni Ad', en: 'New Name' };
+    await loadLocalFolder(s, { '../../icerik/ornek.json': async () => JSON.stringify(renamed) });
+    expect(findSubclass('rogue', 'sis-yolcusu')?.name.tr).toBe('Yeni Ad');
+    // İçe aktarılan aynı kimlikli paket klasördekinin yerine geçmez (klasör önce; çakışan içe aktarma reddedilir).
+    expect(importTexts([text(sample)], s)[0]).toMatchObject({ ok: false });
     expect(await loadLocalFolder(s, {})).toEqual([]);
+    expect(findSubclass('rogue', 'sis-yolcusu')).toBeUndefined();
   });
   it('docs/ornek-paket örneği testteki kurgusal fikstürle aynı', () => {
     expect(docSample).toEqual(sample);
@@ -235,7 +246,8 @@ describe('kayıt sürümü', () => {
     const started = JSON.parse(serializeSession(createSession(state, []))) as { content?: string[] };
     expect(started.content).toEqual(['ornek-kurgusal']);
     const file = JSON.stringify({ version: 17, savedAt: '', content: ['ornek-kurgusal'], events: [{ type: 'battle_started', state: minimalState() }] });
-    removePack('ornek-kurgusal', s);
+    // Görev AS2: silme düğmesi yok; içerik yüklenmemiş cihaz (mobil, icerik/ yok) aynı durum.
+    setExternalSubclasses([]);
     expect(restoreSession(file)).toMatchObject({ ok: true, missingContent: ['ornek-kurgusal'] });
     expect(restoreSession(JSON.stringify({ version: 16, savedAt: '', events: [{ type: 'battle_started', state: minimalState() }] })).ok).toBe(true);
   });

@@ -55,14 +55,18 @@ describe('imza: kayıt ve kural', () => {
     expect(classData.subclasses.filter((s) => s.evKurali !== undefined)).toHaveLength(11);
     expect(findSubclass('cleric', 'baris-alani')?.id).toBe('imza_birlik');
   });
-  it('kural kapalıyken ya da eski sürümde (22) özellik yok; Birlik Manastırı kuralsız ama sürüme bağlı', () => {
-    for (const r of [arena(hero('ranger', 'imza_ciftci', 7), { on: false }), arena(hero('ranger', 'imza_ciftci', 7), { kuralSurumu: 22 })]) {
+  it('kural kapalıyken (sürüm 77) ya da eski sürümde (22) özellik yok; 78+ kapı yok; Birlik Manastırı kuralsız ama sürüme bağlı', () => {
+    // Görev AS2 (kural sürümü 78): ev kuralı kapısı yalnız 77 ve altı kayıt/replay için; 78+ kural kapalıyken de çalışır.
+    for (const r of [arena(hero('ranger', 'imza_ciftci', 7), { on: false, kuralSurumu: 77 }), arena(hero('ranger', 'imza_ciftci', 7), { kuralSurumu: 22 })]) {
       expect(r.c('A').features?.some((f) => f.key.startsWith('imza:'))).toBeFalsy();
       expect(r.c('A').effects?.some((e) => e.id.startsWith('imza:'))).toBeFalsy();
     }
     expect(imzaOn({ houseRules: {}, kuralSurumu: 23 }, 'imza_birlik')).toBe(true);
     expect(imzaOn({ houseRules: {}, kuralSurumu: 22 }, 'imza_birlik')).toBe(false);
     expect(imzaOn({ houseRules: {}, kuralSurumu: 23 }, 'imza_ciftci')).toBe(false);
+    expect(imzaOn({ houseRules: {}, kuralSurumu: 77 }, 'imza_ciftci')).toBe(false);
+    expect(imzaOn({ houseRules: {}, kuralSurumu: 78 }, 'imza_ciftci')).toBe(true);
+    expect(arena(hero('ranger', 'imza_ciftci', 7), { on: false }).c('A').features?.some((f) => f.key.startsWith('imza:'))).toBe(true);
   });
   it('her eylemin anahtarı veride ve alt sınıfı kayıtta', () => {
     for (const [key, s] of Object.entries(IMZA_SPECS)) {

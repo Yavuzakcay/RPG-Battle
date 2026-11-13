@@ -7,6 +7,8 @@
 import { loadTrExtra } from '../i18n';
 import { loadClassData, loadMonsters } from '../data';
 await Promise.all([loadMonsters(), loadClassData(), loadTrExtra()]);
+// Görev AS2: alt sınıf paketi (icerik/ ya da 12 kaydın fikstürü).
+await (await import('./simIcerik')).loadSimContent();
 const { SCENARIOS, setupBattle, playBattle, roundLimit, seeded, setPartyKind } = await import('./balance');
 const { mountedStart } = await import('./binekStart');
 const { setDefaultRuleVersion } = await import('../battle/create');

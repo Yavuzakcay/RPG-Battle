@@ -4,7 +4,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { maps } from '../map/maps';
 import { dayNight, mapRegions, regionOf } from './GmScreen';
-import { setDuplicatePolicy, setExternalSubclasses, visibleSubclasses } from '../rules/subclasses';
+import { setExternalSubclasses, subclassDefs, visibleSubclasses } from '../rules/subclasses';
 import { subclassesOf } from '../rules/classFeatures';
 import { classData, type SubclassDef } from '../data';
 
@@ -28,22 +28,19 @@ describe('Kuyruk 25: harita seçici', () => {
   });
 });
 
-describe('Kuyruk 25: alt sınıf kopyaları', () => {
-  afterEach(() => { setExternalSubclasses([]); setDuplicatePolicy('paket'); });
-  it('aynı kimlikli ya da aynı adlı paket alt sınıfı: varsayılan paket görünür; SRD ve ikisi de seçenekleri', () => {
+// Görev AS2: "kopyalarda hangisi kalsın" (Paket/SRD/İkisi de) kalktı; SRD kaydı pakete taşındı (tek kaynak). Eski beklenti
+// "varsayılan politikada SRD gizlenir" yerine: seçim listesi kaydın kendisi (yalnız `kaldirilan` Barış Alanı çıkar).
+describe('Görev AS2: tek alt sınıf listesi (Kuyruk 25 kopya politikası kalktı)', () => {
+  afterEach(() => { setExternalSubclasses([]); });
+  it('aynı adlı paket alt sınıfı da gizlenmez; çalışan özelliği olmayan paket alt sınıfı da seçilebilir; Barış Alanı çıkar', () => {
     const srd = classData.subclasses.find((s) => s.class === 'fighter') as SubclassDef;
     const { srd: _s, ...base } = srd;
-    const pack: SubclassDef = { ...base, pack: 'ornek' };
     const renamed: SubclassDef = { ...base, id: 'paket-champion', pack: 'ornek' };
-    for (const ext of [pack, renamed]) {
-      setExternalSubclasses([ext]);
-      expect(visibleSubclasses('fighter').filter((s) => s.name.en === srd.name.en)).toEqual([ext]);
-      expect(subclassesOf('fighter').filter((s) => s.name.en === srd.name.en)).toHaveLength(1);
-      setDuplicatePolicy('srd');
-      expect(visibleSubclasses('fighter').filter((s) => s.name.en === srd.name.en)).toEqual([srd]);
-      setDuplicatePolicy('ikisi');
-      expect(visibleSubclasses('fighter').filter((s) => s.name.en === srd.name.en)).toHaveLength(2);
-      setDuplicatePolicy('paket');
-    }
+    const planned: SubclassDef = { ...base, id: 'paket-planli', pack: 'ornek', features: base.features.map((f) => ({ ...f, status: 'planli' as const, effect: undefined })) };
+    const peace: SubclassDef = { ...base, id: 'baris-alani', class: 'cleric', pack: 'ornek' };
+    setExternalSubclasses([renamed, planned, peace]);
+    expect(visibleSubclasses('fighter')).toEqual(subclassDefs('fighter'));
+    expect(subclassesOf('fighter').filter((s) => s.name.en === srd.name.en).map((s) => s.id)).toEqual([srd.id, 'paket-champion', 'paket-planli']);
+    expect(subclassesOf('cleric').some((s) => s.id === 'baris-alani')).toBe(false);
   });
 });

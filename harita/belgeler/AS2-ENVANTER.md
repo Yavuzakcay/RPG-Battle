@@ -1,115 +1,86 @@
-# AS2 envanteri: 120 alt sınıf tek paket (salt okuma; kod değişmedi)
+# AS2 envanteri: 120 alt sınıf tek paket
 
-Görev AS2 adım 1 ("önce, koddan önce"). Tarih 2026-11-12, dal `wip/toplu-k74-as2` (kural sürümü 77). Bu belge yalnız
-kimlik, ad ve sayı içerir; dış paketin özellik metni yazılmaz.
+Görev AS2. Bu belge yalnız kimlik, ad ve sayı içerir; dış paketin özellik metni yazılmaz. İlk sürüm (2026-11-12, bulut
+oturumu, kural sürümü 77) paket depoda olmadığı için durmuştu; bu sürüm (2026-11-13, yerel oturum) doğrulanmış ve
+tamamlanmış hâlidir. Kararlar `DECISIONS.md` (Görev AS2), kitapçık ↔ kayıt farkları `harita/belgeler/AS2-FARKLAR.md`.
 
-## Sonuç: AS2 bu oturumda DURDU
+## Sonuç
 
-Dış paket (`icerik/*.json`) bu bulut kopyasında **yok** (`icerik/` gitignore'da; `ls icerik` → yok). Görevin üç adımı
-paketin kendisini gerektiriyor ve paketin depoya girmesi gerekecek:
+- **120 = 108 paket + 12 bizim** (test `src/content/as2.test.ts`, yerel `icerik/` varken). Kural sürümü 78.
+- Paket (`icerik/ek-<sınıf>.json`, 12 dosya, depoya girmez): **109** alt sınıf. Görevin başında **97** idi; eksik 12 tam olarak
+  SRD karşılıklarıydı (sınıf başına bir). 12 SRD kaydı `data/subclasses.json`'dan aynı kimlikle pakete taşındı (mekanik
+  kayıttan, Türkçe adlar kitapçıktan). Barış Alanı pakette kalır, listeden çıkar (`kaldirilan`) → **108** görünür.
+- Bizim (`classData.subclasses`): 11 imza (`data/imza.json`) + Karadul Çemberi (`data/karadul.json`) = **12**.
+- Orijinal SRD 12 kaydı uygulamadan kaldırıldı (`data/subclasses.json` boş); depodaki kopya yalnız test/sim fikstürü
+  (`src/rules/fixtures/srd-alt-siniflar.json`).
 
-1. **SRD 12'si kaldırılınca motorun ve sim partilerinin yeni varsayılanı** (Fighter → "bizim Şampiyon" vb.) paketin
-   kimliklerinden gelir. Depoda paket yoksa build'de sınıf başına yalnız imza/Karadul alt sınıfı kalır (Fighter yalnız
-   İmparator = yalnız erkek: kadın Fighter alt sınıfsız kalır; Cleric yalnız Birlik Manastırı…). Testler (Champion/Thief/Hunter
-   `classTraits.ts`, sim partileri, `srdIds`) paketsiz koşamaz; "108 + 12 = 120" sayımı depoda doğrulanamaz.
-2. **Göç tablosu** (`champion` → bizim sürüm kimliği): paketteki 12 yerelleştirilmiş SRD sürümünün kimlikleri depoda hiçbir
-   yerde yok. `icerik-liste.txt` 97 satır (aşağıda); görevdeki 108'den 11 eksik, eksikler tam olarak yerelleştirilmiş SRD
-   sürümleri (sınıf başına bir) gibi görünüyor ama kimlikleri bilinmiyor. Kimlik uydurmak göçü bozar.
-3. **Hizalanma `altSinif` tablosu** yeni kimliklere eşlenecek; değer uydurulmayacak; eşlenecek kimlikler paketsiz bilinmiyor.
+## Sınıf başına
 
-Görev metni: "paket içeriğinin repoya girmesi gerekiyorsa DUR ve kullanıcıya bildir (içerik gitignore'da)". Seçenekler
-aşağıda (Karar gereken); kullanıcı kararı gelmeden kod yazılmadı.
+| Sınıf | Paket (görünen) | Bizim | Toplam | Paketteki SRD karşılığı (kimlik → TR ad) | Bizim |
+|---|---|---|---|---|---|
+| Barbarian | 8 | 1 | 9 | `path-of-the-berserker` → Berserker Yolu | `imza_geride_kalan` |
+| Bard | 8 | 1 | 9 | `college-of-lore` → Kadim Bilgi Koleji | `imza_sair` |
+| Cleric | 7 (Barış hariç) | 1 | 8 | `life-domain` → Yaşam Alanı | `imza_birlik` (eski `baris-alani` buna yönlenir) |
+| Druid | 7 | 1 | 8 | `circle-of-the-land` → Toprak Çemberi | `karadul-cemberi` (yalnız kadın) |
+| Fighter | 10 | 1 | 11 | `champion` → Şampiyon | `imza_imparator` (yalnız erkek) |
+| Monk | 10 | 1 | 11 | `warrior-of-the-open-hand` → Sadelik Disiplini | `imza_bilge` |
+| Paladin | 9 | 1 | 10 | `oath-of-devotion` → Sadakat Yemini | `imza_hizir` |
+| Ranger | 8 | 1 | 9 | `hunter` → Avcı | `imza_ciftci` |
+| Rogue | 9 | 1 | 10 | `thief` → Hırsız | `imza_infazci` |
+| Sorcerer | 8 | 1 | 9 | `draconic-sorcery` → Pulkanat | `imza_dunganga` |
+| Warlock | 10 | 1 | 11 | `fiend-patron` → Zebani | `imza_astrolog` |
+| Wizard | 14 | 1 | 15 | `evoker` → Azap Öğretisi | `imza_harita` |
+| **Toplam** | **108** | **12** | **120** | | |
 
-## Kaynaklar (bugün ayrı)
+Kitapçık (`icerik/belge/`, PDF, depoya girmez) aynı sayıları verir: 109 alt sınıf (Barış dahil), sınıf başına yukarıdaki
+paket sayıları.
 
-| Kaynak | Dosya / anahtar | Sayı | Kapı |
-|---|---|---|---|
-| SRD 5.2.1 | `data/subclasses.json` (+ `data/srd/` kaydı) | 12 (sınıf başına 1) | yok (her zaman) |
-| İmza (ev kuralı) | `data/imza.json` `altSiniflar` | 11 | ev kuralı `imza_<ad>` (savaşta sürüm 23+), Ayarlar `rpg-battle-deneysel.imza`; Birlik Manastırı `evKurali: null` (her zaman) |
-| Karadul Çemberi (ev kuralı) | `data/karadul.json` `subclass` | 1 (Druid) | Ayarlar `karadulEnabled` + `karadulWomenOnly`, savaşta ev kuralı `karadulCemberi` (sürüm 21+) |
-| Dış paketler | `icerik/*.json` (yerelde, gitignore), localStorage `rpg-battle-icerik`, `loadLocalFolder` (`source: 'klasor'`), silinen `rpg-battle-icerik-yoksay` | `icerik-liste.txt`: 97 (görev: 109 gömülü) | Ayarlar "Dış içerik" (aç/sil), "kopyalarda hangisi kalsın" (Paket/SRD/İkisi de, `visibleSubclasses`), çalışan özelliği olmayan paket alt sınıfı seçimde gizli |
+## Kaynaklar (görev öncesi → sonrası)
 
-### SRD 12 (kaldırılacak)
-
-| Sınıf | Kimlik | Ad (TR / EN) |
+| Kaynak | Önce | Sonra |
 |---|---|---|
-| Barbarian | `path-of-the-berserker` | Çılgın Savaşçı Yolu / Path of the Berserker |
-| Bard | `college-of-lore` | Bilgi Koleji / College of Lore |
-| Cleric | `life-domain` | Yaşam Etki Alanı / Life Domain |
-| Druid | `circle-of-the-land` | Toprak Çemberi / Circle of the Land |
-| Fighter | `champion` | Şampiyon / Champion |
-| Monk | `warrior-of-the-open-hand` | Açık El Savaşçısı / Warrior of the Open Hand |
-| Paladin | `oath-of-devotion` | Bağlılık Yemini / Oath of Devotion |
-| Ranger | `hunter` | Avcı / Hunter |
-| Rogue | `thief` | Hırsız / Thief |
-| Sorcerer | `draconic-sorcery` | Ejderha Büyücülüğü / Draconic Sorcery |
-| Warlock | `fiend-patron` | İblis Hamisi / Fiend Patron |
-| Wizard | `evoker` | Evokasyon Ustası / Evoker |
+| SRD 5.2.1 (`data/subclasses.json`) | 12, her zaman | boş; aynı kimlikler pakette |
+| İmza (`data/imza.json`) | 11; ev kuralı `imza_<ad>` (sürüm 23+), Ayarlar `rpg-battle-deneysel.imza` | 11; hep seçilebilir; savaşta 78+ hep açık, 23–77 ev kuralıyla |
+| Karadul (`data/karadul.json`) | Ayarlar `karadulEnabled` + `karadulWomenOnly`; ev kuralı `karadulCemberi` (21+) | hep seçilebilir, yalnız kadın (`cinsiyet`); savaşta 78+ hep açık |
+| Dış paket (`icerik/*.json`) | 97; localStorage kopyası, aç/sil, kopya politikası, çalışmayanı gizle | 109 (108 görünür); klasör kalıcı ana kaynak, hepsi seçilebilir |
 
-### Bizim 12 (kalır)
+## Paket yamaları (`icerik/yama/`)
 
-| Sınıf | Kimlik | Not |
-|---|---|---|
-| Fighter | `imza_imparator` | görev kararı: yalnız erkek |
-| Rogue | `imza_infazci` | |
-| Ranger | `imza_ciftci` | |
-| Sorcerer | `imza_dunganga` | |
-| Warlock | `imza_astrolog` | |
-| Cleric | `imza_birlik` | eski `baris-alani` kimliği buna yönlenir (`data/imza.json`) |
-| Barbarian | `imza_geride_kalan` | |
-| Bard | `imza_sair` | |
-| Monk | `imza_bilge` | |
-| Paladin | `imza_hizir` | |
-| Wizard | `imza_harita` | |
-| Druid | Karadul Çemberi (`data/karadul.json`) | görev kararı: yalnız kadın (bugün Ayarlar `karadulWomenOnly`) |
+Yamalar alt sınıf sayısını ve kimliklerini değiştirmez: `ek-yama.mjs` yalnız var olan özelliklere `ilkeller`/`status` ve paket
+düzeyinde `yaratiklar` işler; `durum-yukselt.mjs` yalnız `kismi` → `calisir` yapar. Hedef aldıkları bütün alt sınıf
+kimlikleri pakette var. `uygulanan/` (p1…p11b) işlenmiş; kökteki `p11.yama.json` uygulanmışla aynı dosya değil (22 özellik
+yaması). Bu görevde yama çalıştırılmadı. `yedek/` ve `yedek-durum/` okunmadı.
 
-### Dış paket listesi (`icerik-liste.txt`, depoda; yalnız kimlik sayısı)
+## Çakışma denetimi
 
-| Sınıf | Listede | Görevde (yerelleştirilen) | Fark |
-|---|---|---|---|
-| Barbarian | 7 | 8 | 1 |
-| Bard | 7 | 8 | 1 |
-| Cleric | 7 (Barış Alanı dahil) | 7 (Barış Alanı çıkar) | 1 (Barış çıkınca 6 → 7 için 1 eksik) |
-| Druid | 6 | 7 | 1 |
-| Fighter | 9 | 10 | 1 |
-| Monk | 9 | 10 | 1 |
-| Paladin | 8 | 9 | 1 |
-| Ranger | 7 | 8 | 1 |
-| Rogue | 8 | 9 | 1 |
-| Sorcerer | 7 | 8 | 1 |
-| Warlock | 9 | 10 | 1 |
-| Wizard | 13 | 14 | 1 |
-| **Toplam** | **97** | **108** | **12** (Barış dahil 97 − 1 + 12 = 108) |
+- Paket kimlikleri imza (`imza_` önekli) ve Karadul kimliğiyle çakışmaz; 12 SRD kimliği artık yalnız pakette (tek kayıt).
+- `baris-alani` (paket) ↔ yönlendirme `baris-alani` → `imza_birlik`: Barış Alanı listeden çıkar, kimlik yönlenir.
+- Ad: "Ejderha Disiplini" (Monk) ↔ "Pulkanat"/eski "Ejderha Büyücülüğü" (Sorcerer) farklı sınıf, sorun değil.
 
-Her sınıfta tam bir eksik: büyük olasılıkla paketin "bizim sürüm" SRD alt sınıfı (Şampiyon'un yerelleştirilmiş hâli vb.).
-Liste dosyası bunları içermiyor; kimlikleri paketsiz bilinemez.
+## Hizalanma başlangıcı (`data/hizalanma-baslangic.json` `altSinif`)
 
-### Çakışma denetimi (kimlik/ad)
+Değişmedi (kimlikler aynı): 24 satır = 12 SRD karşılığı + 11 imza + Karadul. Değer uydurulmadı; satırı olmayan 96 paket alt
+sınıfı katkı 0:
 
-- Liste kimlikleri SRD (12) ve imza (11) kimlikleriyle çakışmıyor (imza `imza_` önekli; liste kimlikleri öneksiz Türkçe).
-- Tek bilinen çakışma: `baris-alani` (liste: Cleric Barış Alanı) ↔ imza yönlendirmesi `baris-alani` → `imza_birlik`. Görev kararı
-  Barış Alanı'nı paketten çıkarır; yönlendirme kalır.
-- Ad çakışması: liste "Ejderha Disiplini" (Monk) ↔ SRD "Ejderha Büyücülüğü" (Sorcerer) farklı sınıf, sorun değil.
-- Paketin yerelleştirilmiş SRD sürümlerinin kimlikleri SRD kimliğiyle aynıysa (ör. `champion`) mevcut `visibleSubclasses`
-  (Paket/SRD/İkisi de) zaten bunu çözüyordu; aynı değilse göç tablosu gerekir. Paketsiz bilinemez.
+varis-yolu, element-yolu, kaos-yolu, saman-yolu, ilkelligin-yolu, vahset-yolu, heybet-yolu, varolus-koleji, hatip-koleji,
+arzu-koleji, agit-koleji, akrobat-koleji, harp-koleji, islik-koleji, demirci-alani, firtina-alani, aydin-alani, yakamoz-alani,
+mezar-alani, savas-alani, uyku-cemberi, cagri-cemberi, anka-cemberi, element-cemberi, curuyus-cemberi, feza-cemberi,
+sahin-gozlu, capkin-kavalye, hissi-kablel, pehlivan, ninja, cift-dikis, samuray, hokkabaz, sancaktar, astral-disiplini,
+ayyaslik-disiplini, olumsuzluk-disiplini, element-disiplini, keskinlik-disiplini, azizlik-disiplini, ejderha-disiplini,
+karanlik-disiplini, isik-disiplini, asi-yemin-bozan, biat-yemini, intikam-yemini, muhafiz-yemini, antik-yemin, zafer-yemini,
+fetih-yemini, kefaret-yemini, coban, seyyah, kovanci, izci, avare, ibliskiran, ejder-muhafizi, illuzyonist, kamufle,
+taktisyen, psisik-hancerler-kirpi, dedektif, suikastci, kasif, silahsor, ceren-urperten, ilahi-kan, lanetli, otonom-evren,
+paratoner, alevbaz, titan-kani, kargisci, cin, ruhsar, kraken, muhterem, melek, gulyabani, paradoks, hortlak,
+siginak-ogretisi, kehanet-ogretisi, diriltme-ogretisi, tezahur-ogretisi, aldatma-ogretisi, serap-ogretisi, simya-ogretisi,
+kilic-sarkisi-ogretisi, uzay-bukme-ogretisi, harp-ogretisi, hattat-ogretisi, zamanalti-ogretisi, anka-ogretisi.
 
-## Kaldırılacak Ayarlar öğeleri (yalnız alt sınıfla ilgili; kod yeri)
+## Kaldırılan Ayarlar öğeleri (yalnız alt sınıfla ilgili)
 
 | Öğe | Yer |
 |---|---|
-| Karadul Çemberi anahtarı `karadulEnabled`, kadın kısıtı `karadulWomenOnly` | `src/app/features.ts`, `src/rules/subclasses.ts` `houseSubclassVisible`, `src/screens/SettingsScreen.tsx`, `src/screens/Builder.tsx` |
-| İmza ev kuralı kapısı `rpg-battle-deneysel.imza`, `characterHouseRules` | `src/app/features.ts`, `src/rules/classFeatures.ts` |
-| Dış içerik aç/sil düğmeleri, 12 "Ek alt sınıflar" satırı | `src/screens/SettingsScreen.tsx`, `src/content/store` |
-| "Kopyalarda hangisi kalsın" (Paket/SRD/İkisi de) | `visibleSubclasses` (`src/rules/subclasses.ts`), Ayarlar |
-| Çalışan özelliği olmayan paket alt sınıfının gizlenmesi | `src/content/paket.ts` `applyPackSubclasses` |
-
-## Karar gereken (kullanıcı)
-
-A. **Paketi depoya al** (önerilen tek yol, görevin bütün sayım/göç/test şartları için): 108 alt sınıfı derleme zamanı veri
-   dosyası olarak (`data/alt-siniflar-paket.json` gibi) depoya koy; `.gitignore`'daki `icerik/` kuralı kişisel ek paketler için
-   kalır. Lisans/sahiplik kararı kullanıcıda (görev "içerik kullanıcıya aittir, repoya GİRMEZ" diyor).
-B. **Paket depo dışında kalsın, yerelde gömülü yüklensin** (mevcut `loadLocalFolder`, `import.meta.glob('icerik/*.json')`):
-   kod yazılabilir ama SRD 12'si kaldırılınca paketsiz build/CI'da sınıflar alt sınıfsız kalır, göç tablosu yerelde üretilir
-   (kimlikler veride yalnız yerelde), testler 120'yi yalnız yerelde doğrular. Bulut oturumunda yapılamaz.
-C. **SRD 12'si kalsın, paket gelene dek** yalnız ayarların sadeleşmesi (Karadul/İmza kapılarının kalkması, cinsiyet kuralının
-   alt sınıfa taşınması) ayrı, küçük bir görev olarak yapılsın (kural sürümü 78).
+| Karadul anahtarı `karadulEnabled`, kadın kısıtı `karadulWomenOnly` | `src/app/features.ts`, `src/screens/SettingsScreen.tsx`, `src/screens/Builder.tsx` (`houseSubclassVisible` → `genderVisible`) |
+| İmza ev kuralı kapısı `rpg-battle-deneysel.imza` (`imzaEnabled`), `characterHouseRules`'taki imza/Karadul | `src/app/features.ts`, Ayarlar, oluşturucu |
+| Dış paket aç/kapa ve sil düğmeleri, paket başına satırlar, "silinen yeniden gelmesin" | `src/content/store.ts`, Ayarlar |
+| "Kopyalarda hangisi kalsın" (Paket/SRD/İkisi de) | `src/rules/subclasses.ts`, `src/content/store.ts`, Ayarlar |
+| Çalışan özelliği olmayan paket alt sınıfının gizlenmesi (`packSelectable`) | `src/rules/subclasses.ts` |
+| Game Master ev kuralı listesinde `karadulCemberi`, `imza_<ad>` | `data/ev-kurallari.json` `gizli` (yalnız < 78 kayıt okur) |

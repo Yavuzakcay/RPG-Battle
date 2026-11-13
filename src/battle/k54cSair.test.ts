@@ -53,7 +53,9 @@ describe('K54c Şair Koleji', () => {
     expect(r.c('A').resources.bardicInspiration).toBe(bi);
     expect(r.c('A').resources.imzaUstaSair).toBe(0);
     expect(S(14, { kuralSurumu: 27 }).keys()).not.toContain('imza:imza_sair/praise-master');
-    expect(S(14, { house: false }).keys().filter((k) => k.startsWith('imza:'))).toEqual([]);
+    // Görev AS2 (kural sürümü 78): ev kuralı kapısı yalnız 77 ve altı kayıt/replay için; 78+ kural kapalıyken de çalışır.
+    expect(S(14, { house: false, kuralSurumu: 77 }).keys().filter((k) => k.startsWith('imza:'))).toEqual([]);
+    expect(S(14, { house: false }).keys()).toContain('imza:imza_sair/praise-master');
   });
   it('YZ: yarı canın altındaki dosta Övgü', () => {
     const r = S(6, { place: { A: o(3, 3), C: o(4, 3), B: o(10, 7) } });

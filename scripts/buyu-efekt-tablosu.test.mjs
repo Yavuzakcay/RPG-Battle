@@ -35,9 +35,10 @@ describe('büyü × efekt tablosu', () => {
 
 describe('alt sınıf × görsel tablosu', () => {
   const fr = featureRows('icerik');
-  it('çekirdek 4 ve imza 12 alt sınıf; ilkeller eşlemede', () => {
+  // Görev AS2: K49 B5 ile gizlenen sekiz SRD alt sınıfı listeye döndü (120 hep seçilebilir): çekirdek 4 → 12.
+  it('çekirdek 12 ve imza 12 alt sınıf; ilkeller eşlemede', () => {
     const subs = (k) => new Set(fr.rows.filter((r) => r.kaynak.startsWith(k)).map((r) => r.sub)).size;
-    expect(subs('SRD')).toBe(4);
+    expect(subs('SRD')).toBe(12);
     expect(subs('imza')).toBe(12);
     for (const r of fr.rows) {
       expect(['hazır', 'genel', 'eksik', 'gerekmez']).toContain(r.durum);

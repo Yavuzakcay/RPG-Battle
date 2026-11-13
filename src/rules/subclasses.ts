@@ -1,12 +1,14 @@
 /**
- * Alt sınıf kaydı (Görev E1): SRD alt sınıfları (`data/subclasses.json`, sınıf verisiyle tembel) ve dış içerik
- * paketlerinden gelenler (`setExternalSubclasses`; yalnızca JSON veri, kod çalıştırılmaz). İkisi de aynı jenerik
- * şemada; motor ve oluşturucu ayrım yapmaz. Saf: depolama ve dosya okuma `src/content/`.
+ * Alt sınıf kaydı (Görev E1; Görev AS2 tek kaynak): oyunun kendi alt sınıfları (imza `data/imza.json` + Karadul
+ * `data/karadul.json`; sınıf verisiyle tembel, `classData.subclasses`) ve dış içerik paketlerinden gelenler
+ * (`setExternalSubclasses`; yalnızca JSON veri, kod çalıştırılmaz; SRD'nin 12 alt sınıfı da artık pakette). Hepsi aynı
+ * jenerik şemada; motor ve oluşturucu ayrım yapmaz. Saf: depolama ve dosya okuma `src/content/`.
  */
 import { classData, classDataLoaded, type FeatureMechanic, type LocalText, type SubclassDef } from '../data';
 import view from '../../data/alt-sinif-gorunum.json';
 
 let external: SubclassDef[] = [];
+const norm = (x: string | undefined) => (x ?? '').trim().toLocaleLowerCase('tr');
 
 /** Etkin dış içerik alt sınıfları (uygulama açılışta ve ayarlar değişince yazar; testler sıfırlar). */
 export function setExternalSubclasses(list: SubclassDef[]): void {
@@ -14,60 +16,49 @@ export function setExternalSubclasses(list: SubclassDef[]): void {
 }
 export const externalSubclasses = (): SubclassDef[] => external;
 
-/** Sınıfın alt sınıfları: önce SRD, sonra dış içerik. */
+/** Sınıfın alt sınıfları: önce oyunun kendi (imza, Karadul), sonra dış içerik. */
 export function subclassDefs(classId: string): SubclassDef[] {
   return [...classData.subclasses.filter((s) => s.class === classId), ...external.filter((s) => s.class === classId)];
 }
 
 /**
- * Kuyruk 25: dış paket alt sınıfı SRD alt sınıfının kopyası mı (aynı sınıf ve aynı kimlik ya da aynı TR/EN ad). Seçimde
- * yalnızca politikanın sürümü görünür: `paket` (varsayılan; SRD gizlenir), `srd` (paket gizlenir), `ikisi`. Veri silinmez.
+ * Görev AS2: cinsiyet kuralı alt sınıfın kendisinde (`cinsiyet`; Karadul Çemberi yalnız kadın, İmparator yalnız erkek):
+ * oluşturucuda yalnız o cinsiyette görünür. Karakterin mevcut seçimi her zaman görünür (eski kayıt bozulmaz).
  */
-export type DuplicatePolicy = 'paket' | 'srd' | 'ikisi';
-export const DUPLICATE_POLICIES: DuplicatePolicy[] = ['paket', 'srd', 'ikisi'];
-let policy: DuplicatePolicy = 'paket';
-export const setDuplicatePolicy = (p: DuplicatePolicy): void => { policy = DUPLICATE_POLICIES.includes(p) ? p : 'paket'; };
-export const duplicatePolicy = (): DuplicatePolicy => policy;
-const norm = (x: string | undefined) => (x ?? '').trim().toLocaleLowerCase('tr');
-const sameAs = (a: SubclassDef, b: SubclassDef) => a.class === b.class
-  && (a.id === b.id || (!!norm(a.name.tr) && norm(a.name.tr) === norm(b.name.tr)) || (!!norm(a.name.en) && norm(a.name.en) === norm(b.name.en)));
-
-/**
- * Kuyruk K48: ev kuralı alt sınıfı oluşturucuda görünür mü (Ayarlar anahtarı; kadın kısıtı açıkken yalnız kadın
- * karakter). Karakterin mevcut seçimi her zaman görünür (eski kayıt bozulmaz). SRD/dış içerik alt sınıfı hep görünür.
- */
-export function houseSubclassVisible(sub: SubclassDef, sheet: { subclassId?: string; gender?: string }, enabled: boolean, womenOnly: boolean): boolean {
-  return !sub.ev || sub.id === sheet.subclassId || (enabled && (!womenOnly || sheet.gender === 'kadin'));
+export function genderVisible(sub: Pick<SubclassDef, 'id' | 'cinsiyet'>, sheet: { subclassId?: string; gender?: string }): boolean {
+  return !sub.cinsiyet || sub.id === sheet.subclassId || sub.cinsiyet === sheet.gender;
 }
 
-/**
- * Görev P0: ek paket alt sınıfının hiç çalışan (çalışır/kısmi) özelliği yoksa seçim listesinde görünmez (veri silinmez;
- * çalışır oldukça görünür; seçili eski karakter `findSubclass` ile bulunur). Tam çalışmayan alt sınıf "Deneysel".
- */
-export const packSelectable = (s: SubclassDef): boolean => !s.pack || s.features.some((f) => f.status === 'calisir' || f.status === 'kismi');
+/** Görev P0: tam çalışmayan (kısmi/planlı/çalışmıyor özelliği olan) paket alt sınıfı "Deneysel" (seçilebilir). */
 export const packExperimental = (s: SubclassDef): boolean => !!s.pack && s.features.some((f) => f.status !== 'calisir' && f.status !== 'hikaye');
+/** Görev AS2: alt sınıfın savaşta çalışmayan (planlı/çalışmıyor) özellik sayısı (kartta etiket; alt sınıf yine seçilir). */
+export const notWorkingCount = (s: SubclassDef): number => s.features.filter((f) => f.status === 'planli' || f.status === 'calismiyor').length;
 
-/** Seçimde görünen alt sınıflar (kopyalarda politikaya göre tek sürüm). */
-export function visibleSubclasses(classId: string, p: DuplicatePolicy = policy): SubclassDef[] {
-  const srd = classData.subclasses.filter((s) => s.class === classId);
-  const ext = external.filter((s) => s.class === classId && packSelectable(s));
-  if (p === 'ikisi') return withoutRemoved([...srd, ...ext]);
-  if (p === 'srd') return withoutRemoved([...srd, ...ext.filter((e) => !srd.some((x) => sameAs(e, x)))]);
-  return withoutRemoved([...srd.filter((x) => !ext.some((e) => sameAs(e, x))), ...ext]);
+/**
+ * Seçimde görünen alt sınıflar (Görev AS2: tek liste, hepsi her zaman seçilebilir; yalnız `kaldirilan` (Barış Alanı)
+ * çıkar). Kaynak: imza + Karadul (`classData.subclasses`) ve dış paket (`setExternalSubclasses`). Aç/kapa, kopya
+ * politikası ve "çalışan özelliği yoksa gizle" ayrımı yok.
+ */
+export function visibleSubclasses(classId: string): SubclassDef[] {
+  return subclassDefs(classId).filter((s) => !isRemovedSubclass(s));
 }
 
 /**
- * Kuyruk K49 B5 (kullanıcı kararı): listeden kaldırılan alt sınıflar (`data/alt-sinif-gorunum.json` `kaldirilan`; kimlik
- * ya da EN ad, SRD ve dış paket kopyası birlikte). Sınıfın başka seçeneği kalmıyorsa liste olduğu gibi (son alt sınıf
- * kalır). Veri silinmez: kayıtlı karakter açılır, motor bulur (`findSubclass` → `subclassDefs`).
+ * Kuyruk K49 B5 / Görev AS2: listeden kaldırılan alt sınıflar (`data/alt-sinif-gorunum.json` `kaldirilan`; kimlik ya da
+ * EN ad). Veri silinmez: kayıtlı karakter açılır, motor bulur (`findSubclass` → `subclassDefs`).
  */
 export const isRemovedSubclass = (s: SubclassDef): boolean =>
   view.kaldirilan.some((r) => r.id === s.id || (!!r.en && norm(r.en) === norm(s.name.en)));
-function withoutRemoved(list: SubclassDef[]): SubclassDef[] {
-  const kept = list.filter((s) => !isRemovedSubclass(s));
-  // Kuyruk K50: ev kuralı alt sınıfları (Karadul, imza) seçenek sayılmaz: SRD/paket seçeneği kalmazsa kaldırılan kalır.
-  return kept.some((s) => !s.ev) ? kept : list;
-}
+
+/**
+ * Görev AS2: alt sınıf seviyesindeki eski kayıtta boş kalan alt sınıfa atanan ve sihirbazın önerdiği alt sınıf
+ * (`data/alt-sinif-gorunum.json` `varsayilan`; eskiden SRD'nin tek alt sınıfı, kimlikler aynı). Kayıtta yoksa (içerik
+ * yüklenmemiş) undefined: atama yapılmaz.
+ */
+export const defaultSubclassId = (classId: string): string | undefined => {
+  const id = (view.varsayilan as Record<string, string | undefined>)[classId];
+  return id && visibleSubclasses(classId).some((s) => s.id === id) ? id : undefined;
+};
 
 /** Kuyruk K49 B4/B7: görünen ad: parantezli takma ad yalnız takma adla; Cleric "… Alanı" → "… Manastırı"; istisnalar (Barış → Birlik). */
 export function displayName(name: LocalText, classId?: string): LocalText {
@@ -79,7 +70,7 @@ export function displayName(name: LocalText, classId?: string): LocalText {
   return ex ? { tr: ex.tr, en: ex.en } : { tr, en };
 }
 
-/** Kimlikle alt sınıf: aynı kimlikte görünen sürüm önce (paket politikasında paket). */
+/** Kimlikle alt sınıf (görünen liste önce, sonra bütün kayıt). */
 export const findSubclass = (classId: string, id0: string | undefined): SubclassDef | undefined => {
   // Kuyruk K50: eski kimlik (dış paketin Barış Alanı) imza alt sınıfına (Birlik Manastırı) yönlenir.
   const id = id0 ? (view.eskiKimlik as Record<string, string>)[id0] ?? id0 : undefined;
@@ -90,7 +81,10 @@ export const findSubclass = (classId: string, id0: string | undefined): Subclass
 export const subclassMissing = (classId: string, id: string | undefined): boolean =>
   !!id && classDataLoaded() && !findSubclass(classId, id);
 
-/** Bütün alt sınıf kimlikleri (çakışma denetimi için; SRD + dış içerik). */
+/** Görev AS2: kimlik başka bir sınıfın alt sınıfı mı (oluşturucu yalnız bunu temizler; kayıtta olmayan kimlik "içerik eksik" kalır). */
+export const isOtherClassSubclass = (classId: string, id: string): boolean => [...classData.subclasses, ...external].some((s) => s.id === id && s.class !== classId);
+
+/** Bütün alt sınıf kimlikleri (çakışma denetimi için; kendi + dış içerik). */
 export const allSubclassIds = (): string[] => [...classData.subclasses, ...external].map((s) => s.id);
 
 /** Alt sınıf özelliğinin mekaniği (`sınıf/altsınıf:özellik`). */
