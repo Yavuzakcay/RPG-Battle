@@ -493,6 +493,7 @@ export function combatantFromMonster(
   return {
     id: opts.id,
     monsterId: monster.id,
+    ...(monster.egitimli ? { egitimli: true as const } : {}),
     // SRD yaratık türü (Divine Smite, Protection from Evil and Good; data/canavar-turleri.json).
     ...((creatureTypes.types as Record<string, string>)[monster.id] ? { creatureType: (creatureTypes.types as Record<string, string>)[monster.id] } : {}),
     name: opts.name ?? monster.name,

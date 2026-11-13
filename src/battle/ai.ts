@@ -25,6 +25,7 @@ import { canAirMove } from './airMove';
 import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
 import { foeField, wallClimbCommand } from './ai/climbAi';
 import { bodyUnfit, riderStays } from './ai/binekMb5';
+import { mountDecision } from './ai/k75';
 import { controlledMountOf } from './binekMb2';
 import { approachField, engaged, highGroundBonus, k73aOn, K73A, landingWanted, riseFt, concentrationFlight } from './ai/k73a';
 import { K73B } from './ai/k73b';
@@ -1726,6 +1727,9 @@ export function chooseCommand(state: BattleState): Command {
   // Kuyruk 33: uçan boss saldırdıktan sonra kalan hareketiyle yer düşmanlarının erişiminden çıkar (lav üstü tercih).
   const lift = bossFlightMove(state, actor);
   if (lift) return lift;
+  // Kuyruk K75 (79+): yakın dövüşçü bitişik eğitimli bineğe biner; ağır yaralı bineğinden iner (mevcut komutlar).
+  const mountCmd = mountDecision(state, actor, (c) => tryCmd(state, actor, c).ok);
+  if (mountCmd) return mountCmd;
   const cmd0 = withMetamagic(state, actor, decide(state, actor, end), end);
   // Kuyruk K73a (sürüm 62+): turu bitirmeden önce uçuşu bu tur bitenin (süre, zorunlu iniş) ya da konsantrasyonlu uçuşta canı
   // azalanın inişi (düşme riski yok).

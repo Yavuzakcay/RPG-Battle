@@ -16,9 +16,10 @@ import type { BattleState, Combatant, Command } from './types';
 const TRAINED = new Set<string>((binekData as { egitimli?: string[] }).egitimli ?? []);
 
 /** Binek kontrollü olabilir mi (veriden; sürümden bağımsız). */
-export function mountControlled(m: Pick<Combatant, 'summon' | 'monsterId'>): boolean {
+export function mountControlled(m: Pick<Combatant, 'summon' | 'monsterId' | 'egitimli'>): boolean {
   if (m.summon) return !!m.summon.mount?.controlled;
-  return !!m.monsterId && TRAINED.has(m.monsterId);
+  // Kuyruk K75: canavar verisindeki `egitimli` bayrağı (özel canavar) listeye ek; bayrak yalnız yeni savaşta kurulur.
+  return !!m.egitimli || (!!m.monsterId && TRAINED.has(m.monsterId));
 }
 
 /** 74+: binek şu an kontrollü mü (binicisi üstünde, ayakta ve Incapacitated değil). */
