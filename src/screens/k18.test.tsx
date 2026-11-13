@@ -45,9 +45,10 @@ describe('Weapon Mastery ve silah özellikleri', () => {
       expect(propertyDescription(k, 'en').length, k).toBeGreaterThan(10);
     }
   });
-  it('silah kartında ustalık adı açıklama düğmesi, seçim ayrı yıldız düğmesi', () => {
-    const m = html(make('fighter', 1), 'equipment');
-    expect(m).toContain('term-btn');
+  it('seçili silahın satırında ustalık bilgi simgesinde, seçim ayrı yıldız düğmesi', () => {
+    // SD3: ustalık ve silah özellikleri ⓘ'de (dokununca açılır); seçim yalnız seçilmiş silahın satırında ayrı yıldız düğmesi.
+    const m = html(make('fighter', 1, { weapons: [{ name: 'Greatsword' }] }), 'equipment');
+    expect(m).toContain('info-pop-btn');
     expect(m).toMatch(/aria-label="Ustalığı seç: [A-Za-z]+"/);
     expect(m).toContain(masteryDescription('graze', 'tr').replace(/'/g, '&#x27;'));
   });
@@ -65,22 +66,23 @@ describe('sınıf özelliği özetleri ve renk göstergesi', () => {
     const m = html(make('druid', 3, { subclassId: 'circle-of-the-land' }), 'character');
     expect(m).toContain('feature-sum');
     expect(m).toContain('Bonus eylemle bildiğin bir hayvan biçimine girersin');
-    expect(m).toContain('savaşta çalışır');
-    expect(m).toContain('kısmen çalışır');
-    expect(m).toContain('savaşta etkisi yok');
-    expect(m).toContain('oyunda henüz yok');
+    // SD3: "çalışır / kısmi / planlı" durum etiketleri ve renk lejandı oyuncuya gösterilmez.
+    expect(m).not.toContain('feature-legend');
+    expect(m).not.toContain('savaşta çalışır');
+    expect(m).not.toContain('kısmen çalışır');
+    expect(m).not.toContain('savaşta etkisi yok');
+    expect(m).not.toContain('oyunda henüz yok');
   });
 });
 
 describe('Wild Shape biçim seçicisi', () => {
   it('uygun hayvanlar ad, CR, hız ve jetonla listelenir; otomatik seçim notu açık; sayaç yalnızca listeyle', () => {
     const m = html(make('druid', 2), 'character');
-    expect(m).toContain('Bilinen Wild Shape biçimleri');
+    expect(m).toContain('Hayvan biçimleri: 0/4 seçildi');
     expect(m).toContain('Boş bırakırsan savaşta en güçlü uygun biçimler otomatik seçilir.');
     expect(m).toContain('form-card');
     expect(m).toContain('Wolf');
     expect(m).toMatch(/CR 1\/4 · 40 ft/);
-    expect(m).toContain('(0/4 seçildi)');
-    expect(m).not.toContain('boşsa savaşta en güçlüleri');
+    expect(m).not.toContain('Wild Shape biçimleri');
   });
 });

@@ -75,6 +75,7 @@ import { afterAttackReactions, askOpportunity, canReact, hitReactions, OPPORTUNI
 import { applyEvents } from './reduce';
 import { damagePenalty } from './effects';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type CunningOption, type ExtraDamage } from './types';
+import { hiddenTo } from './k74Surum';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 
@@ -498,8 +499,9 @@ export function opportunityAttacks(
     if (!melee) continue;
     if (step) {
       if (!leavesReach(current, o, mover, melee.reachFt, step.from, step.to, step.fromAlt, step.toAlt)) continue;
-      if (mover.hidden || !canSee(current, o, mover)) continue;
-    } else if (state.map || heightOf(current, o) !== heightOf(current, mover) || mover.hidden) {
+      // Kuyruk K74 (sürüm 75+): Truesight menzilindeki gizlenmiş yürüyen görülür.
+      if (hiddenTo(current, o, mover) || !canSee(current, o, mover)) continue;
+    } else if (state.map || heightOf(current, o) !== heightOf(current, mover) || hiddenTo(current, o, mover)) {
       continue;
     }
     // Erişim (zarsız) denetlenir, sonra karar (Görev R1): oyuncuya sorulabilir; tepki saldırıdan önce harcanır

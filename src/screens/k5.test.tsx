@@ -24,6 +24,7 @@ describe('Donanım adımında yük', () => {
     expect(m).toContain('carry-over');
     const sum = renderToStaticMarkup(<Builder initial={heavy} onSave={() => {}} onCancel={() => {}} step="summary" />);
     expect(sum).toMatch(/Taşınan \d+ lb, kapasite 120 lb/);
-    expect(sum).toMatch(/<button class="cta" disabled="">Kaydet<\/button>/);
+    // SD3: Kaydet soluk (disabled) kalmaz; dokununca nedenini söyler ve kayıt yapılmaz (aria-disabled).
+    expect(sum).toMatch(/<button class="cta soft" aria-disabled="true">Kaydet<\/button>/);
   });
 });

@@ -85,7 +85,7 @@ export function executeUseItem(state: BattleState, actor: Combatant, itemId: str
   }
   // Fırlatma: save'li hasar/durum.
   const dc = u.dc ?? 8 + actor.modifiers.dex + actor.proficiency;
-  const save = resolveSave({ extra: saveDice(t, u.save), modifier: t.saves[u.save], dc, mode: saveMode('normal', t, u.save, actor) }, rollTag(rng, { by: t.id }));
+  const save = resolveSave({ extra: saveDice(t, u.save), modifier: t.saves[u.save], dc, mode: saveMode('normal', t, u.save, actor, { ...(u.damageType ? { damage: u.damageType } : {}), ...(u.grants?.length ? { against: u.grants } : {}), genis: true }) }, rollTag(rng, { by: t.id }));
   const typeOk = !u.vs || u.vs.includes((t.creatureType ?? '').toLowerCase());
   const d = !save.success && u.damage && typeOk ? rollDice(u.damage, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
   const adj = d.total > 0 ? adjustDamage(d.total, u.damageType, damageProfile(t)) : { amount: 0, note: null };

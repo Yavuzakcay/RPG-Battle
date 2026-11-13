@@ -69,9 +69,10 @@ export function bucketOf(v: number, prev?: Bucket): Bucket {
   return 'neu';
 }
 /** Etiket (dil). */
-export function alignmentLabel(duzen: Bucket, iyilik: Bucket, lang: 'tr' | 'en'): string {
-  if (duzen === 'neu' && iyilik === 'neu') return cfg.gercekTarafsiz[lang];
-  return `${cfg.duzen[duzen][lang]} ${cfg.iyilik[iyilik][lang]}`;
+export function alignmentLabel(duzen: Bucket, iyilik: Bucket, _lang: 'tr' | 'en'): string {
+  // Görev SD4: etiket adları (Lawful Good, True Neutral, Chaotic Evil…) her arayüz dilinde İngilizce; `_lang` API uyumu için kalır.
+  if (duzen === 'neu' && iyilik === 'neu') return cfg.gercekTarafsiz.en;
+  return `${cfg.duzen[duzen].en} ${cfg.iyilik[iyilik].en}`;
 }
 
 const ALT_SOY = (table as unknown as { altSoy: Record<string, { duzen: number; iyilik: number; gerekce: { tr: string; en: string } }> }).altSoy;

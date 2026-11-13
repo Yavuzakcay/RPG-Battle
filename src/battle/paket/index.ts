@@ -52,6 +52,7 @@ import './p10';
 import './p11hooks';
 import { isP12Feature, p12Execute, p12Problem } from './p12';
 import { binekMb7On } from '../binekSurum';
+import { binekMb2On } from '../binekMb2Surum';
 import { mountRuleOf } from '../riderCore';
 
 export { paketHex, paketTargeted, withPaket } from './core';
@@ -150,7 +151,9 @@ function saveEvent(state: BattleState, c: Ctx, t: Combatant, dice: string | null
   const save = c.p.save as Record<string, unknown> | undefined;
   const ab = (save?.yetenek ?? 'con') as Ability;
   const dc = save ? dcOf(save, c.actor) : 0;
-  const sv = save ? resolveSave({ extra: saveDice(t, ab), modifier: t.saves[ab], dc, mode: saveMode('normal', t, ab, c.actor) }, rollTag(c.rng, { by: t.id })) : null;
+  // Görev AS1a (77+): alt soyun hasar türü / durum kurtarma dezavantajı (`genis`).
+  const saveCtx77 = { ...(type ? { damage: type } : {}), ...(c.p.tur === 'durumUygula' && typeof c.p.durum === 'string' ? { against: [c.p.durum] } : {}), genis: true as const };
+  const sv = save ? resolveSave({ extra: saveDice(t, ab), modifier: t.saves[ab], dc, mode: saveMode('normal', t, ab, c.actor, saveCtx77) }, rollTag(c.rng, { by: t.id })) : null;
   const success = !!sv?.success;
   const roll = dice && (!success || half) ? rollDice(dice, rollTag(c.rng, { kind: 'damage', by: c.actor.id })) : { rolls: [] as number[], total: 0 };
   const raw = save ? saveDamage(t, ab, success, roll.total, half) : roll.total;
@@ -158,7 +161,7 @@ function saveEvent(state: BattleState, c: Ctx, t: Combatant, dice: string | null
   const fx = damageEffects(t, adj.amount, type, false, c.rng);
   return {
     success,
-    ev: { type: 'save_resolved', actorId: c.actor.id, targetId: t.id, label: nameOf(c), ability: ab, dc, mode: sv ? saveMode('normal', t, ab, c.actor) : 'normal', reasons: [],
+    ev: { type: 'save_resolved', actorId: c.actor.id, targetId: t.id, label: nameOf(c), ability: ab, dc, mode: sv ? saveMode('normal', t, ab, c.actor, saveCtx77) : 'normal', reasons: [],
       d20: sv?.d20?.rolls ?? [], natural: sv?.d20?.kept ?? null, total: sv?.total ?? 0, success, damageRolls: roll.rolls, rawDamage: roll.total, appliedDamage: adj.amount,
       damageType: type, damageNote: adj.note, targetHpAfter: fx.hpAfter, conditionsAdded: [], effects: fx.effects, ...(sv?.extra ? { bonusDice: sv.extra } : {}) },
   };
@@ -515,7 +518,7 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
       ...(!eylemler.includes('saldiri') ? { noAttack: true } : {}),
       ...(val<string>(p, 'komut') === 'bonus' ? { commandBonus: true } : {}),
       // Kuyruk MB7 (70+): yaratığın `binek` alanı → binek kuralı (yoksa çağrıya binilmez).
-      ...(def.binek && typeof def.binek === 'object' && binekMb7On(cur) ? { mount: mountRuleOf(def.binek as Record<string, unknown>) } : {}),
+      ...(def.binek && typeof def.binek === 'object' && binekMb7On(cur) ? { mount: mountRuleOf(def.binek as Record<string, unknown>, binekMb2On(cur)) } : {}),
     };
     const immune = def.durumBagisikliklari as string[] | undefined;
     const combatant: Combatant = {

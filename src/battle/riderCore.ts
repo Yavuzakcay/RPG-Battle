@@ -109,8 +109,10 @@ export function bodyOutsideSpots(state: MhState, mount: Combatant): Offset[] {
 }
 
 /** Kuyruk MB7: veri/paket binek tanımı → savaşçıdaki binek kuralı. */
-export function mountRuleOf(m: { kural?: unknown; enBuyukBinici?: unknown; minSeviye?: unknown } | undefined): MountRule | undefined {
+export function mountRuleOf(m: { kural?: unknown; enBuyukBinici?: unknown; minSeviye?: unknown; kontrol?: unknown } | undefined, control = false): MountRule | undefined {
   if (!m) return undefined;
   return { ...(m.kural === 'sahip' ? { ownerOnly: true as const } : {}), ...(typeof m.enBuyukBinici === 'string' ? { maxRider: m.enBuyukBinici as MountRule['maxRider'] } : {}),
-    ...(typeof m.minSeviye === 'number' ? { minLevel: m.minSeviye } : {}) };
+    ...(typeof m.minSeviye === 'number' ? { minLevel: m.minSeviye } : {}),
+    // Kuyruk MB2 (74+; `control` çağıran sürümü denetler): kontrollü binek.
+    ...(control && m.kontrol === 'kontrollu' ? { controlled: true as const } : {}) };
 }

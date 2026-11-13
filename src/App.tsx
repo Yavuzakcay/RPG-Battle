@@ -202,7 +202,9 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         onEdit={(c) => setScreen({ name: 'builder', character: c })}
         onDelete={(id) => store(characters.filter((c) => c.id !== id))} />;
     case 'builder':
-      return <Builder initial={screen.character} onCancel={() => setScreen({ name: 'player' })}
+      // Görev SD3: yeni karakter (adsız, becerisiz) önerilen başlangıç değerleriyle açılır.
+      return <Builder initial={screen.character} suggest={screen.character.sheet.name === '' && screen.character.classSkills.length === 0}
+        onCancel={() => setScreen({ name: 'player' })}
         onSave={(c) => {
           store(characters.some((x) => x.id === c.id) ? characters.map((x) => (x.id === c.id ? c : x)) : [...characters, c]);
           setScreen({ name: 'player' });

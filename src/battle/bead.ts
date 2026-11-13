@@ -88,7 +88,7 @@ export function executeBeadTouch(state: BattleState, actor: Combatant, zoneId: s
   if (!z || !actor.pos) return fail('Dokunulacak boncuk yok.');
   const at = centerOf(z);
   if (distance(actor.pos, at) > 1) return fail('Boncuğa dokunmak için yanında olmalısın.');
-  const r = resolveSave({ extra: saveDice(actor, 'dex'), modifier: actor.saves.dex, dc: z.dc, mode: saveMode('normal', actor, 'dex'),
+  const r = resolveSave({ extra: saveDice(actor, 'dex'), modifier: actor.saves.dex, dc: z.dc, mode: saveMode('normal', actor, 'dex', undefined, { damage: 'fire', genis: true }),
     autoFail: autoFailsStrDexSave(actor.conditions) }, rollTag(rng, { by: actor.id }));
   const events: BattleEvent[] = [{ type: 'map_note', text: `${actor.name}: parlayan boncuğa dokundu, DEX save ${r.total}/${z.dc} — ${r.success ? 'dayandı' : 'boncuk patlıyor'}` }];
   const caster = state.combatants[z.casterId];

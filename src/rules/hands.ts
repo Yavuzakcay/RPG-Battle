@@ -9,6 +9,7 @@
  */
 import { weapons, type Weapon } from '../data';
 import type { CharacterSheet } from './stats';
+import { I } from './issueText';
 
 type HandsSheet = Pick<CharacterSheet, 'weapons' | 'shield' | 'offHand'>;
 
@@ -18,12 +19,12 @@ const carried = (s: HandsSheet): Weapon[] =>
 /** Bu silah yan ele alınabilir mi: sorun yoksa null, varsa nedeni. */
 export function offHandOptionProblem(s: HandsSheet, weaponName: string): string | null {
   const w = weapons.find((x) => x.name === weaponName);
-  if (!w || !(s.weapons ?? []).some((x) => x.name === weaponName)) return 'Yan el silahı taşınan silahlardan olmalı.';
-  if (!w.light) return `${w.name} Light değil: yan elde yalnızca Light silah tutulur.`;
-  if (s.shield) return 'Kalkan varken yan elde silah tutulamaz.';
+  if (!w || !(s.weapons ?? []).some((x) => x.name === weaponName)) return I().handNotCarried;
+  if (!w.light) return I().handNotLight(w.name);
+  if (s.shield) return I().handShield;
   const two = carried(s).find((x) => x.twoHanded && !x.ranged);
-  if (two) return `İki elli yakın dövüş silahı taşınıyor (${two.name}): yan el silahı seçilemez.`;
-  if (!carried(s).some((x) => x.light && x.name !== w.name)) return 'Ana elde farklı bir Light silah gerekir.';
+  if (two) return I().handTwoHanded(two.name);
+  if (!carried(s).some((x) => x.light && x.name !== w.name)) return I().handNeedLight;
   return null;
 }
 

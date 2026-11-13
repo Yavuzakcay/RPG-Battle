@@ -10,6 +10,7 @@ import backgroundsJson from '../../data/backgrounds.json';
 import { classes, spells } from '../data';
 import type { Ability } from './abilities';
 import type { Skill } from './skills';
+import { I } from './issueText';
 
 export interface Background {
   id: string;
@@ -154,13 +155,13 @@ export function magicInitiateProblems(sheet: BackgroundSheet): string[] {
   const out: string[] = [];
   const all = magicInitiateAll(sheet);
   for (const mi of all) {
-    const where = mi.source === 'background' ? 'Magic Initiate' : mi.source === 'lessons' ? 'Lessons of the First Ones: Magic Initiate' : `${mi.source}. seviye Magic Initiate`;
-    if (!mi.list) { out.push(`${where}: büyü listesi seçilmeli (Cleric, Druid ya da Wizard).`); continue; }
-    if (mi.cantrips.length !== 2) out.push(`${where}: 2 cantrip seçilmeli (${mi.cantrips.length} seçildi).`);
-    if (!mi.spell) out.push(`${where}: bir 1. seviye büyü seçilmeli.`);
+    const where = mi.source === 'background' ? 'Magic Initiate' : mi.source === 'lessons' ? 'Lessons of the First Ones: Magic Initiate' : I().miLevel(mi.source);
+    if (!mi.list) { out.push(I().miList(where)); continue; }
+    if (mi.cantrips.length !== 2) out.push(I().miCantrips(where, mi.cantrips.length));
+    if (!mi.spell) out.push(I().miSpell(where));
   }
   const lists = all.map((mi) => mi.list).filter(Boolean);
-  if (new Set(lists).size !== lists.length) out.push('Magic Initiate her seferinde farklı bir büyü listesiyle alınmalı.');
+  if (new Set(lists).size !== lists.length) out.push(I().miDistinct);
   return out;
 }
 

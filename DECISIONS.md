@@ -2,6 +2,159 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-12 — Görev AS2 (toplu): DURDU — yalnız envanter (kod değişmedi; kural sürümü 77'de kaldı, 78 kullanılmadı)
+
+- Envanter `harita/belgeler/AS2-ENVANTER.md` (kimlik/ad/sayı; paket metni yok).
+- **Durma nedeni:** dış paket (`icerik/*.json`, gitignore) bu oturumda yok. SRD 12'sinin kaldırılması, göç tablosu (`champion` → bizim sürüm), yeni motor/sim varsayılanları, hizalanma `altSinif` eşlemesi ve "108 + 12 = 120" testi paketin kimliklerini ister; bunlar depoda yok (`icerik-liste.txt` 97 satır, sınıf başına bir eksik: yerelleştirilmiş SRD sürümleri). Paket depoya girmeden yapılırsa paketsiz build'de sınıflar alt sınıfsız kalır (Fighter yalnız İmparator = kadın Fighter alt sınıfsız). Görev metni gereği kullanıcıya bildirildi; seçenekler envanterde (A: paketi depoya al, B: yerelde gömülü yükleme, C: yalnız ayar sadeleştirmesi).
+
+## 2026-11-12 — Görev AS1b (toplu): alt soy oluşturucu seçimi ve görünüm denetimi (yalnız denetim; kural sürümü 77, kod değişmedi)
+
+- Görev metnindeki işler main'de zaten vardı (Kuyruk AS1a: oluşturucu kartları, Human 4 kültür + ayrı ten seçici, eski kayıt bildirimi `src/app/lineageNotice.ts`; AS1c: savaş jetonuna görünüm, kanat katmanı altyapısı `data/kanat-esleme.json` üç yuva: Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn; Celestial Parlayan Ruh haleli / Kırık Kanat halesiz + kanat / Gece Gözyaşı halesiz + koyu filtre; Halfling İnce/Kalın oranı; Dragonborn jetonu ve `soy-renkleri.json` aynen). Baştan yazılmadı.
+- Testler zaten karşılıyor: `src/rules/altSoy41.test.tsx` (kart seçimi ve buff/debuff metni, Human ten tonu kültürden bağımsız, eski Human kaydı bildirimi, görünüm/oran/kanat/Celestial verisi), `src/ui/as1cGorunum.test.tsx`, `src/ui/tint.test.ts`.
+- Metinden fark (önceki kullanıcı kararıyla kalan): Human `kulturTen` her kültüre üç tonun hepsini açar (bağlama yok = metindeki "eşleme boş" ile aynı sonuç; Sur Dışı dahil hepsi her tonu seçer); ton renkleri yer tutucu değil (KG1/AS1c kararı).
+- Ekran görüntüsü `docs/as1b/karakter-adimi-mobil.png` (Karakter adımı, Human kültür kartları, 390 px). Ana parça değişmedi.
+- Yer tutucu kalanlar: kanat sprite'ı olmayan yuva yok (üç yuvanın dosyası var); Kanatlı uçuş kararı U1b'de.
+
+## 2026-11-12 — Görev AS1a (toplu): 41 alt soy denetimi, kurtarma dezavantajı bütün yollarda (kural sürümü 77)
+
+- **Durum:** görev metnindeki 41 alt soyun verisi, buff/debuff mekaniği ve hizalanma başlangıcı main'de zaten vardı (Kuyruk AS1a, AS1a-2, AS1b = sürüm 71, AS1c görünüm). Çalışan sistem baştan yazılmadı; metinle karşılaştırıldı. Sayı 41 = 38 ırk soyu + 3 Celestial uyanışı (test denetler). Hizalanma `altSoy` 41 satırın hepsi metindeki değerlerle **birebir** (betikle karşılaştırıldı; K51 uç build testleri değişmedi).
+- **Gerçek eksik (kapatıldı, sürüm 77):** 13 alt soy (`durum: kismi`) "X hasarına/durumuna karşı kurtarma dezavantajı"nı ek paket, imza, eşya kurtarmalarında taşımıyordu. En küçük genel genişleme: `SaveCtx.genis` (yeni yol işareti) + `ActiveEffect.saveDisVsGenis` (77+ savaşın başında `withSoy` yazar); yeni yollar: ek paket `saveEvent` (hasar türü + `durumUygula` durumu), P12 vertigo patlaması, imza eylemi, eşya fırlatma (hasar + `grants`), harita `saveEffect` (hasar + başarısızlık durumu), Cunning Strike Trip (Prone), `grapple.ts` ek kurtarması (durum), tepki save'li hasarı (Hellish Rebuke gibi) ve bakış tepkisi, Delayed Blast Fireball boncuğu (ateş). 13 alt soy `calisir`. Kalan: P9 tepki ilkellerinin hasarsız kurtarması (bağlam yok). 76 ve altı aynen (eski etki `saveDisVsGenis` taşımaz).
+- **Sürüm 77 (görev planındaki sıra).** Tek sabit `src/battle/altSoySurum.ts` `ALT_SOY_77_VERSION`.
+- **Metinden bilerek ayrılan, önceki kararla kalanlar:**
+  - Dwarf Tepe buff'ı "+1 HP/seviye" yerine Dayanıklılık kurtarması +1, Yeraltı "karanlık görüş 120 ft" yerine Gizlen +2: taban Dwarf'ta zaten Dwarven Toughness ve 120 ft karanlık görüş var; AS1b kullanıcı kararı (DECISIONS AS1b "Dwarf Tepe ve Yeraltı").
+  - **Tiefling Kanatlı:** metin "U1b'ye kadar yalnız veri yer tutucusu" diyor; Kanat Süzülüşü AS1b'de (71) zaten çalışır durumda (U1a uçuş ilkeli üstünde). Kaldırmak 71–76 kayıtlarını bozar ve "çalışan sistemi baştan yazma" kuralına aykırı: **dokunulmadı**; U1b kararları gelince orada güncellenir.
+  - Goliath Storm SRD Storm's Thunder: hasar türü SRD'de Thunder (metinde "yıldırım"); SRD korundu.
+  - Halfling Kalın taşıma ×1,5 taşıma kuralı açıkken çalışır (AS1b).
+- **Testler:** `src/battle/as1a77.test.ts` (sabit, savaş başı işareti 77/76, `genis` bağlamı, harita mekaniğinde Red soğuk ve Hill Prone 77/76); `ruleVersion.test.ts`/`g6.test.ts` güncel sürüm 76 → 77 (sürüm arttı). Regresyon `src/sim/as1a77Regresyon.test.ts` (`AS1A77_TOHUM`): standart parti 77 = 76.
+- **Ertelenen:** Kanatlı uçuşunun U1b kararları; Kalın taşıma kuralı kapalıyken etkisiz; P9 tepki ilkelleri.
+
+## 2026-11-12 — Görev MB6b: binek arayüzü (yalnız arayüz; kural sürümü 76, kayıt sürümü 22 değişmedi)
+
+- **Binek bölümü:** kontrollü bineğin binicisinin Hareket alt menüsünde "Binek: Koşu/Çekil/Kaçın" ve bineğin bonus eylemleri (`mountDash`, `mountDisengage`, `mountDodge`, `mountSteed-<k>`; komut `actorId` = binek, motor `controlledGate` denetler; geçersizse motor gerekçesi `neden-metinleri.json` kalıbıyla TR/EN). Saf yardımcılar `src/ui/mountUi.ts`.
+- **Hareket önizlemesi** kontrollü bineğin binicisinde bineğin hızıyla (`moverFor`; motorun `move` yönlendirmesiyle aynı yaratık).
+- **Yığın jetonu:** binici bineğin üstünde %72 ölçek ve jeton yarıçapının 0,55'i kadar yukarıda, bineğinden sonra çizilir; HP çubuğu binicide jetonun üstünde (bineğinki altta). Mekanik tek altıgen motordan. 🐎 rozetinin ipucunda kontrollü/bağımsız.
+- **Tur şeridi:** kontrollü binek kendi kutusunda gösterilmez (sırası binicinin turunda), binicinin kutusunda küçük binek rozeti; binici Incapacitated olunca binek bağımsız ve kendi kutusunda.
+- **Çekmece:** "Binek: X" / "Binici: Y" + kontrollü/bağımsız rozeti.
+- **Önizleme kartı:** `mount`/`dismount` komutunda maliyet (hızın yarısı, ft), kalan hareket, binek kontrollü olur mu, uçamayan binici havadan düşer uyarısı (`movePreview` `mount`; binme hedef seçiminde ilk uygun binek, inmede seçili irtifa).
+- **Günlük:** inme/düşme satırının açılır ayrıntısı: binek adı (binek 0 HP ise "save'siz iner"), Prone ya da harcanan hareket, iniş irtifası (`logEntries` `mountDetail`; binek son `mounted` olayından).
+- **Game Master kurulumu "binmiş başla" (B22):** seçili yaratığın bitişiğindeki uygun bineklerde "🐎 X üstünde başla" (adaylar motorun `mountProblem`'iyle). ⚠ Motorun kurulumda yeni alanı yoktu; kurulumda **yalnız Game Master bağlamıyla** mevcut `mount`/`dismount` komutu kabul edilir (`commands.ts`, olay `mounted`/`dismounted` aynen; kural ve sürüm yok, harcanan hareket ilk turun başında tazelenir). Yeni Ayarlar anahtarı yok. "Eğitimli binek" anahtarı yapılmadı (eğitimli liste veride; kullanıcı istemedi).
+- **Paket:** ana parça 400,03 kB (sınır 420; değişmedi: kod savaş parçasında). Testler `src/ui/binekMb6b.test.ts` (10). Ekran görüntüsü `docs/mb6b/binekli-sahne-mobil.png` (telefon yatay).
+- **Açık:** çok altıgenli bineğin yığın çizimi (binici çapada; ayrı ince ayar yok), YZ savaş içi binme (B22), binekli sim senaryoları.
+
+## 2026-11-12 — Kuyruk K74: Truesight motor yolları + Hallow toplu koruma (kural sürümü 75), batıran çamurun bedeli + tehlike katmanında çamur (76)
+
+- **Tek sabit:** `src/battle/k74Surum.ts` (`K74_VERSION` 75, `K74B_VERSION` 76, `k74On`/`k74bOn`), sabitler `data/k74.json`. Kayıt sürümü 22 değişmedi (yeni olay türü yok). 74 ve altı kayıt/replay birebir.
+- **Truesight (75):** ikinci kopya yazılmadı; tek yardımcı `hiddenTo(state, gözlemci, hedef)` = `hidden` ve K63 `truesightSees` değil. Bağlanan beş yol (KUYRUK-DURUM 4c): fırsat saldırısı görme (`reactions.ts` `sees`), yürüyüşte fırsat saldırısı algısı (`features.ts` `opportunityAttacks`), Superior Hunter's Prey ikinci hedefi (`classTraits.ts`; denetim "Cleave" yazmıştı, gerçek yer Hunter), Cleave ikinci hedefi (`mastery.ts`), uyuyan ejderhanın Algı süzgeci (`dragon.ts`).
+- **Hallow (75):** Extra Effect (10 seçenek) **kapsam dışı** (kullanıcı kararı: yapılmayacak). Hallow tek toplu koruma: kurulumda tür seçimi yok sayılır, SRD'nin altı türü (Aberration, Celestial, Elemental, Fey, Fiend, Undead) birden (`data/k74.json` `hallow.turler`); koruma K64b/K62-ACIK altyapısıyla aynen (`wardProtects`, `hallowSyncEvents`, `wardStepBlocked`). ⚠ SRD "choose any of these types" der; toplu koruma hepsini seçmekle aynı. Yeni komut/olay/etki alanı yok. Bastırmanın birden çok kaynağı denendi; reducer koruma alanındaki yeni Charmed/Frightened'ı zaten süzdüğü için (`wardedFrom`) etkisizdi, geri alındı.
+- **Batıran çamur (76):** BK1 öneri 3. Ağır zırhlı `n`'de Atletizm'i geçemezse yürüyüş biter **ve** Restrained (süren etki `sinkMud:<altıgen>`, `escapeCheck` Atletizm, DC = kuralın DC'si + `kacisDcFark` 0); başarıda bedel yok. Hafif/orta zırha yayılmadı (kural metni "ağır zırhlı"). Ölü `sinkMud` (Kale, Çukur; BK1 HATA 1) dokunulmadı.
+- **Tehlike katmanı (görünüm):** yeni tür `mud` ("Çamur/batak zemini"): açık `sinkMud`/`leeches`/`bog` kuralının zemin harfi (`data/k74.json` `tehlikeZemin`). Kuralı olmayan haritada yok.
+- **Testler:** `src/battle/k74.test.ts` (75/74 her yol, Hallow türleri, çamur 76/75, katman); `ruleVersion.test.ts` ve `g6.test.ts` güncel sürüm beklentisi 74 → 76 (gerekçe: sürüm arttı). Regresyon `src/sim/k74Regresyon.test.ts` (`K74_TOHUM`; 74 = MB2 altınları, 75 = 76 = 74).
+
+## 2026-11-12 — Görev DURUM: kuyruk durum denetimi (salt okuma; kod, veri, harita, görsel, kural sürümü 74 ve SAVE_VERSION 22 değişmedi)
+
+- Rapor `harita/belgeler/KUYRUK-DURUM.md` (madde durumu + kanıt, 60–74 sürüm zinciri, 8 birleşmemiş dal, kullanıcı kararı bekleyenler, önerilen 5 iş); CLAUDE.md donma maddesi tek cümleye indirildi, `docs/MEKANIK-DONMA.md` başına aynı not eklendi.
+
+## 2026-11-12 — Kuyruk MB8: binek hattının denge ölçümü ve kapanışı (kural sürümü 74'te kaldı)
+
+- **Sürüm:** planda MB8 için kural değişikliği yazılı değil (BINEK-PLAN §7.2 "Kural sürümü —"); sürüm **74'te kaldı**, `ruleVersion.test.ts`/`g6.test.ts` değişmedi, regresyon testi gerekmedi. YZ süresi ölçümündeki 75 sütunu yok (73 ↔ 74 karşılaştırıldı).
+- **Mastiff (açık soru 2, B2): eklendi.** `data/binek.json` `egitimli` + `mastiff`. Gerekçe SRD 5.2.1:
+  - s. 15 "Mounted Combat": binek binicisinden en az bir boy büyük; "Domesticated horses, mules, and similar creatures have such training."
+  - s. 100 "Mounts and Other Animals" tablosu Mastiff'i binek hayvanı olarak listeler (195 lb., 25 GP), Pony ile yan yana.
+  - s. 357 Mastiff: Medium Beast. Boy kuralı motorda zaten var (`mounted.ts` `mountProblem`): yalnız Small/Tiny binici biner; Medium binici reddedilir. Test `binekMb2.test.ts` (MB8).
+  - ⚠ Sürüm kapısı yok: kontrol bilgisi `mounted.control` olayında taşındığı için kayıtlı savaşların replay'i değişmez; yalnız 74 savaşında bundan sonra Small binicinin Mastiff'e yeni binişi kontrollü olur (parti tarafında Mastiff ancak Charm/Dominate ile taraf değiştirmiş düşmanla olur).
+- **Denge:** ölçüm yalnız, düzeltme denemesi yok; `data/monsters.json` değişmedi. Koşucu `src/sim/binekDengeRun.ts` (`binekStart.ts` `mountedStart` + `balance.ts` `playBattle`). Sonuçlar `harita/belgeler/DENGE.md` "Kuyruk MB8".
+- **SRD denetimi:** `scripts/srd-denetim.ts` Mounted Combat satırı MB1–MB8'e göre; büyü satırı MB7 bloğunu (sürüm 70+) okur (Phantom Steed "tam"). Belge yeniden üretildi; bayat kalmış başka satırlar da güncel veriye göre değişti (Bag of Tricks, Figurine, Horn of Valhalla, Rod of Resurrection, Staff of the Python "tam"; Animal Shapes, Enhance Ability "savaş dışı"; Charm Person, Continual Flame, Hideous Laughter, Light gibi satırlarda eski "yaklaşık" notu kalktı).
+- **Bilerek yapılmayanlar:** `sim-senaryolar.json` binekli senaryo (atlı devriye, ejder binicisi 15) eklenmedi: senaryo verisinde "binmiş başla" alanı yok, yeni kurulum alanı olurdu (K57 kapsamı dışı; ölçüm `mountedStart` ile yapıldı). YZ savaş içi binme ve inme eşiği (B22, yeni komut). Arayüz işleri MB6b'ye.
+## 2026-11-13 — SD4: adlar İngilizce, açıklamalar Türkçe; Alignment İngilizce; oluşturucu sorun metinleri i18n'de (yalnız arayüz/veri; kural sürümü 74, kayıt sürümü 22 değişmedi)
+
+- **Kullanıcı kararı:** eşya, büyü, tür, sınıf, feat, Invocation, silah ve sınıf özelliği **adları İngilizce** kalır; açıklamalar Türkçe. İstisna: alt sınıf ve Geçmiş adları şimdiki Türkçe hâliyle kalır. Bu yüzden **SD3'ün Türkçe ad katmanı geri alındı**: `data/ozellik-adlari.json` ve `data/donanim-adlari.json` silindi; sınıf güçleri, silah/zırh adları, Metamagic ve özellik seçenek adları yine SRD İngilizce adıyla (seçenek adı İngilizce + Türkçe açıklama biçimi `featureOption` eskisi gibi); ⓘ "İngilizce adı" kalktı. Tür/sınıf kartlarındaki Türkçe tek cümlelik tanıtımlar (SD3) açıklama olduğu için kalır.
+- **Tarama** (`npx vite-node scripts/sd4-aciklama-tara.ts` → `harita/belgeler/ACIKLAMA-TARAMA.md`; ölçüt: kartta gösterilen açıklama Türkçe mi; dil sezgisi `src/data/aciklamaDil.ts`). Önce → sonra:
+
+| Kayıt türü | Toplam | Önce: Türkçe açıklamalı | Önce: eksik | Sonra: Türkçe açıklamalı |
+|---|---|---|---|---|
+| Büyü (mekanik açıklama) | 339 | 0 (339 kısaltma: "20 ft, DEX save, 8d6 fire" gibi TR/EN karışık; 33'ü İngilizce ağırlıklı) | 339 | 339 |
+| Büyü (betimleme, italik) | 339 | 339 | 0 | 339 |
+| Eşya | 399 | 228 | 171 (SRD ham İngilizce metni) | 399 |
+| Tür özelliği (`species:`) | 41 | 0 (yalnız tür başına tek satır `races.json` `traits`) | 41 (boş) | 41 |
+| Feat | 17 | 17 | 0 | 17 |
+| Sınıf özelliği | 137 | 135 | 2 | 137 |
+| Alt sınıf özelliği | 130 | 128 | 2 | 130 |
+| Invocation | 28 | 24 | 4 | 28 |
+| Silah ustalığı / özelliği | 8 / 9 | 8 / 9 | 0 | 8 / 9 |
+
+- **Yazılanlar:** `data/aciklamalar-tr.json` (kimlik = SRD kimliği; `buyu` 339, `esya` 171, `tur` 41, `yetenek` 2, `altsinif` 2, `invocation` 4; 1–2 cümle, ad İngilizce ve parantezsiz, sayı/zar/mesafe korunur). Taslağı paralel yazım ajanlarıyla SRD metninden çıkardım ve toplu denetledim (tek satır, ≤ 240 karakter, İngilizce ağırlıklı değil). `data/srd/*.json` elle düzenlenmedi. Bilinen dayanak notları: Belt of Giant Strength STR değerleri (Hill 21, Frost/Stone 23, Fire 25, Cloud 27, Storm 29) `data/srd` metninde tablo olmadığı için SRD tablosundan bilgiyle; Poisoner's Kit SRD'de metinsiz (genel bilgiyle); Goliath ve Rock Gnome tür özellikleri SRD PDF'inden; `shield-1/2/3` ve `armor-1/2/3` tek SRD kaydından bonusla yazıldı.
+- **Gösterim:** savaş kartında süren etki satırı mekanik açıklama yerine bu Türkçe açıklamayı gösterir (`effectsView`, eskiden SRD kısaltması `text`; `text` ortam kuralı için olduğu gibi); oluşturucuda büyü satırında ⓘ, eşya özet satırı (etki özeti yoksa), tür kartı ⓘ (türün özellikleri "Name: açıklama"), sınıf/alt sınıf özelliği özeti ve Invocation ⓘ. FeatCard'daki İngilizce SRD "fayda adları" kalktı. **EN arayüzde** Türkçe açıklama gösterilmez: "Description available in Turkish only" notu (`common.descTrOnly`, `describeTr`); kaynak SRD metni gösterilmez.
+- **Alignment (ev kuralı):** sistem adı, eksen (Law / Chaos, Good / Evil) ve etiket adları (Lawful Good … True Neutral … Chaotic Evil) her arayüz dilinde İngilizce (`alignmentLabel`, `view.hizalanma` TR/EN, adım adı). Açıklama, günlük ve Moral bağı metinleri Türkçe; kimlikler (`hizalanma`, `duzen`, `iyilik`), anahtarlar ve kayıt biçimi (karakter kayıt sürümü 2) aynı.
+- **Sorun metinleri:** `characterIssues` ve yardımcıları (ustalık, yan el, feat, Invocation, Magic Initiate, beceri) ~100 gömülü Türkçe metin `strings.ts` / `strings.en.ts` `issues` bölümüne taşındı (TR metinler birebir aynı; EN çevirisi eklendi). Kural modülleri saf kalır: `src/rules/issueText.ts` `I()` varsayılan TR tablosunu okur, arayüz dilini `src/i18n/index.ts` `setIssueTexts` ile bağlar.
+- **Testler:** `alignment.test.ts` etiket beklentileri İngilizce (Lawful Good, True Neutral, …; gerekçe: kullanıcı kararı); `sd3.test.tsx`, `k4.test.tsx` SD3'ün Türkçe ad beklentileri İngilizceye döndü. Yeni: `src/data/aciklamalarTr.test.ts` (kimlik, kapsam, dil, EN notu), `src/rules/issueText.test.ts`.
+- **Kalanlar:** canavar özellik/saldırı metinleri (`MapBattle` canavar kartı) bu görevin kapsamı dışında İngilizce SRD metniyle; harita/zemin adları aynen.
+
+## 2026-11-12 — SD3: karakter oluşturucu sadeleştirildi (Yönelim A; yalnız arayüz ve metin; kural sürümü 74, kayıt sürümü 22 değişmedi)
+
+- **Kapsam:** `harita/belgeler/SADELESTIRME-DENETIM.md` §2 ve ortak bulgular uygulandı. Tek sade arayüz, mod yok, yeni Ayarlar anahtarı yok; komut, olay, kural ve kayıt alanı eklenmedi. Adımlar aynı (7; büyü seçemeyen sınıfta 6). Kod `src/screens/builder/` (`shared.tsx` ortak `Fold`/`InfoPop`, `Features.tsx`, `Equipment.tsx`) ve `src/screens/builderDefaults.ts` (yalnız Builder parçası; ana parça 396,8 kB / 420).
+- **Donanım: kural koddan doğrulandı (kural değişmedi).**
+  - Zırh: tam bir gövde zırhı (varsayılan Zırhsız) + isteğe bağlı kalkan; eğitimsiz kuşanmak engellenmez (uyarı).
+  - Silah: **sayı sınırı yok** (yalnız SRD taşıma sınırı, Ayarlar'daki taşıma kuralı). Sınıf tablosundaki **Weapon Mastery hakkı** (`masteryRight`, örn. Fighter 3) yalnız uygun silahlarda ★ ile seçilir.
+  - Eşya: yalnız **uyum (attunement) gerektirenler** sayılır, en çok `MAX_ATTUNED` = 3 (`characterIssues`, `activeItemNames`); uyum istemeyen eşyanın sayı sınırı yok.
+  - "3 seç deniyor ama 10 seçiliyor" geri bildirimi bu yüzdendi: eski ekranda "uyum n/3" ve "Ustalık n/3" küçük, ayrı ve ilgisiz yerlerde duruyor, silah ve uyumsuz eşya sayılmıyordu. Başlangıç donanımı kuralı yok: "otomatik gelen" donanım yalnız silahsız vuruş (herkes) ve sınıf eğitimleri.
+  - Gösterim kuralla uyuşmazlığı **yok**; ekran kurala uydu: "Seçtiklerin" (zırh 1/1, silahlar n seçili (sınır yok) + Ustalık n/N, eşyalar n seçili (sınır yok) + Uyumlu eşya n/3) ve "Zaten sende (otomatik)" (Silahsız vuruş, Zırh/Silah eğitimin). Limit dolunca kalanlar kilitlenir ve nedeni yazılır.
+- **Ne gizlendi / katlandı (varsayılan görünümde en çok 6 seçenek/karar; kalanı "Gelişmiş" katlarında):**
+  - Karakter: 6 tür + "Diğer türler (4)", 6 sınıf + "Diğer sınıflar (6)" (kartta tek cümle, zar/kurtarma ⓘ'de; öne çıkanlar `data/onerilen-baslangic.json` `ozelTurler`/`ozelSiniflar`); soy/kültür + ten tonu "Soy" katında; 12 geçmiş kartı "Geçmiş" katında (kartlarda alet satırı kalktı); "çalışır / kısmi" etiketi kalktı (yalnız planlıda küçük "yakında").
+  - Sınıf güçleri: ana listede kararı olan güçler + en yeni güçler (en çok 6), kalanı "Diğer güçler (n)"; düz Türkçe ad (`data/ozellik-adlari.json`, 137 sınıf özelliği; alt sınıfta mevcut TR ad), İngilizce kural adı yalnız ⓘ'de; durum etiketi, renk lejandı ve geliştirici notları (`featStatus`, `note`) kalktı, yalnız oyunda olmayan güçte "yakında". Metamagic / Invocation / Wild Shape seçicileri katlı (eksikse açık gelir, sayaç dürüst).
+  - Puanlar: 6 salt okunur kart (sınıfa göre dağılmış + geçmiş bonusu); yöntem, çipler, point buy, zar, geçmiş bonusu "Puanları kendin dağıt (Gelişmiş)" altında; geçmiş dışı üç yetenek gizli.
+  - Beceriler: seçilen beceriler + "Zaten sende (geçmişinden)"; değiştirme, ek beceri ve uzmanlık katlı (limit dolunca kilit + neden); beceri adı yalnız Türkçe.
+  - İlerleme: köken feat'i tek satır + "ne yapar"; her yuva katlı (boşsa/tamamlanmamışsa açık); yetenek artışı "Bir yeteneğe +2" altı düğme (önerilen ★), +1/+1 ve elle dağıtım katlı; Dövüş Stili seçenek kartları katlı.
+  - Donanım: bkz. yukarı; tür/kademe süzgeçli 400 eşya "Eşya ekle", 38 silah "Silah ekle", yan el seçici (yalnız geçerli seçenek varken) katlı; eğitimsiz zırh türleri "Eğitimin olmayan zırhlar" katında; silah/zırh adları Türkçe (`data/donanim-adlari.json`), terimler ⓘ'de.
+  - Büyüler: "Seçtiklerin" listesi + "Büyü ekle ya da değiştir" katı; erişilemeyen seviyeler ve oyunda olmayan büyüler gizli (tek satır ipucu).
+  - Çerçeve: Kaydet artık `disabled` değil; eksik varken dokununca "Önce N eksiği tamamla" + ilk eksik adıma gider (`onSave` bu denetimden sonra). Eksik listesi dört yerden ikiye (Özet gövdesi ya da yan panel; mobil alt çubuk) indi, adım altı sorun listesi kalktı.
+- **Varsayılanlar ("İleri'ye basınca makul karakter"; audit karar 6):** yalnız Builder `suggest` ile açılan yeni karakterde (`App.tsx`: adsız, becerisiz) ve yalnız dokunulmamış alanlarda: ad (`adlar` listesi), önerilen sınıf becerileri (sınıfın öncelikli yeteneğiyle uyuşanlar, geçmişin kilitli becerisi hariç), geçmiş bonusu (+2/+1), donanım (`siniflar`, SRD ustalık hakkı kadar ustalık), büyüler (`buyuOnceligi`; SRD tablosundaki cantrip/hazırlanan/kitap sayısı kadar), yetenek artışı +2 (en önemli yetenek, 20'yi aşmayan). Sınıf/geçmiş/seviye değişince dokunulmamış öneriler yenilenir; elle seçim ve geri gelen sınıf taslağı ezilmez. Soyu isteğe bağlı türlerde (Human…) soy boş kalır (oyundaki varsayılan değişmedi). Yeni kayıt alanı yok; hepsi mevcut alanlar. Veri JSON'larında, her adı gerçek kayıtlarla eşleşme testi (`sd3.test.tsx`).
+- **Testler (silinmedi; kullanıcıya görünen metin/DOM değişti):** `wizard`, `k4`, `k5`, `k6`, `k18`, `k20`, `g1`, `altSoy41`, `p12` testleri yeni DOM'a göre güncellendi: Kaydet `aria-disabled` + `cta soft` (k5), uyum sayacı "Uyumlu eşya 3/3" ve kilit nedeni (k4), silah adları Türkçe (k4), beceri satırı Türkçe-only (k4, wizard), geçmişte olmayan yetenek sayacı gizli (g1), durum etiketleri gösterilmez (altSoy41, k18), kilitli büyü seviyeleri gizli (k6), seçili silahta ⓘ (k18), "Hayvan biçimleri" başlığı (k18), Hikâye etiketi satırı (p12). Yeni `src/screens/sd3.test.tsx` (15 test).
+- **Kalanlar (bu görevde yapılmadı):** eşya, büyü ve Invocation adları ile tür/sınıf adları oyunun her yerinde SRD İngilizce adıyla kalıyor (tek tutarlılık için; çeviri ayrı görev); `characterIssues` metinleri hâlâ `src/rules/builder.ts` içinde gömülü TR (i18n'e taşıma ayrı alt görev; 5 test birebir sınıyor); `Builder.tsx` kısmen bölündü (Equipment, Features, shared); Büyüler adımı büyü başına kısa açıklama yok. Mobil yerleşim (CSS) SSR'da doğrulanamaz; masaüstü tek görüntü alındı.
+
+## 2026-11-12 — KG1: karakter ekranlarında çerçevesiz jeton, ten tonu ve kültür adları (yalnız görünüm/metin; kural sürümü değişmedi)
+
+- **Jeton (karakter listesi, oluşturucu önizlemesi):** yuvarlak rozet çerçevesi kalktı; `CharacterFigure` (`src/ui/Avatar.tsx`) savaştaki `AvatarCircle` → `TokenFigure` yolunu küçük bir SVG içinde kullanır (silüet, kanat jetonun arkasında, aynı `wingBox`; `ability`: uçma yeteneği olan karakter kanatlı). SVG kutusu jeton + kanat sınırını kapsar, kanat kırpılmaz. Kanatsız karakterde de aynı çerçevesiz görünüm; kaybolmasın diye silüet gölgesi + ayak altı zemin parıltısı (`.char-figure`). `LookFrame` yalnız savaş şeridi rozetlerinde kalır.
+- **Ten tonu etiketleri:** yalnız görünen ad: Siyahi → Koyu (EN Dark), Doğu Asyalı → Altın (EN Golden); kimlikler `siyahi`/`dogu-asyali` ve renkler aynı (kayıtlı karakter bozulmaz). Test başlıkları/yorumları güncellendi.
+- **Human kültür adları:** Tenhausser → Tenhausser Sürgünü, Khadyrga → Khadyrga Sürgünü, Saf Kent → Saf Kent Sürgünü (EN: … Exile, Pure City Exile); Sur Dışı aynı. Kimlikler (`tenhausser`, `khadyrga`, `pure-city`) aynı; hizalanma başlangıç gerekçeleri ve `docs/ALT-SOY-41.md` tutarlı. "Khadyrga Limanı" bir yer adıdır, değişmedi.
+## 2026-11-12 — Kuyruk MB2: kontrollü binek turu (kural sürümü 73 → 74)
+
+- **Sürüm:** `main` 4b0e400d (MB5, 73) üstüne; kural sürümü 73 → **74**. Tek sabit `src/battle/binekMb2Surum.ts` `BINEK_MB2_VERSION`; 73 ve altında bütün binekler bağımsız. Ayrıntı `harita/belgeler/BINEK-PLAN.md` §17.
+- **B4:** A seçildi (birleşik tur). Kontrollü binek kendi turunu almaz; binicinin turunda ve binicinin kararıyla hareket eder; vur-kaç mümkün.
+- **B2:**
+  - `data/binek.json` `egitimli`: Riding Horse, Warhorse, Draft Horse, Mule, Pony, Camel, Elephant (plan önerisi; Mastiff eklenmedi, açık soru 2).
+  - Çağrıda `mount.kontrol` (Find Steed, Phantom Steed), paket `binek.kontrol`.
+- **B5:**
+  - Eylem yalnız Dash/Disengage/Dodge.
+  - Bonus eylem (`steed_action`) ve tepkiler serbest.
+  - Bonus Dash/Disengage (`bonus: true`) reddedilir.
+- **Sıra:**
+  - Binince binek binicinin hemen ardına alınır, inisiyatifi eşitlenir; geçerli savaşçı korunur (reducer `controlMount`).
+  - İnince sıra yerinde kalır. `ridTurn` o turdaki ikinci turu engeller.
+- **Tur kancaları:**
+  - `end_turn`'ün tur başı/sonu zincirleri `turnStartChain`/`turnEndChain` işlevlerine çıkarıldı; sıra birebir aynı.
+  - Kontrollü bineğe aynı zincirler binicininkiyle çalışır. Yeni olay türü yok; `SAVE_VERSION` 22.
+- **Binicinin yürüyüşü bineğe:** 74+'da binicinin `move`/`jump` komutu kontrollü bineğine yönlendirilir. Bu motorda; amaç, yeni düğme eklemeden arayüzün mevcut yürüme dokunuşunun çalışması.
+- ⚠ **Binici Incapacitated/0 HP → binek bağımsız:** SRD yalnız Find Steed için yazar; bütün kontrollü bineklere genellendi (binek binicinin ardında kendi turunu alır).
+- ⚠ **Binildiği tur:**
+  - Bu turda henüz oynamamış bineğin ekonomisi tazelenir ve tur başı kancaları binme anında çalışır.
+  - Önceden oynamış binek kalan hareketini kullanır (çift tur yok).
+- ⚠ **Command ile tur kaybı:** kontrollü bineğin turunu aldıran süren etki (Command) binicinin turunda yok sayılır.
+- **YZ:**
+  - Binici o adımda bir şey yapamıyorsa bineğin kendi kararı (yaklaşma, Dash, Disengage, Dodge) bineğe uygulanır (`controlledMountStep`).
+  - MB5 süzmesi aynen.
+  - `sim:yz-sure` kontrollü binekli Çöl, 73/74/74/73: karar başına 28,95 → 26,35 ms (−%9); karar sayısı +%21; savaş başına toplam ≈ +%10.
+- **Doğrulama:**
+  - `binekMb2.test.ts` 16 test.
+  - Regresyon 4 senaryo × 30 tohum: binekli olmayanda 73 altınla aynı, 74 = 73; bağımsız binekli 74 = 73; kontrollü binekli çökmesiz.
+  - Ana parça değişmedi.
+  - `check:harita` 96/0, `check:ses` 15/0.
+  - Tam paket 395 dosya geçti + 1 atlandı; 4644 test geçti + 7 atlandı; 0 kırık.
+- **Test değeri güncellemesi:** `ruleVersion.test.ts` ve `g6.test.ts` güncel sürüm 73 → 74 (veriye bağlı değer). `PAKET-ILKELLER.md` şemadan yeniden üretildi (`binek.kontrol`).
+- **Arayüz işi (yapılmadı):**
+  - Çekmecede "Binek" bölümü (Dash/Disengage/Dodge).
+  - Hareket gölgesinin bineğin hızıyla çizilmesi.
+  - Tur şeridinde kontrollü bineğin gösterimi.
+  - Game Master kurulumunda eğitimli binek anahtarı.
 
 ## 2026-11-12 — Melek-kanat düzeltmeleri: Tiefling Kanatlı rengi ve karakter ekranlarında kanat (yalnız görsel)
 
@@ -112,7 +265,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
   - Kanat Süzülüşü: bonus eylem, kullanım yeterlilik bonusu kadar (`$pb` ifadesi yok: kaynak `uses.proficiency`), 1 dakika (10 tur), yarım hız, en çok 30 ft, yere değmez; orta/ağır zırhla yok. Tiefling tabanında direnç olmadığı için "direnci kaybeder" kendiliğinden (Kanatlı soy direnç vermez).
   - Orc Orman "bitkisel zorlu arazi": zemin `g` (çalılık, sazlık) ve Entangle/Plant Growth/Spike Growth alanları (`data/alt-soy.json`).
 - **Dwarf Tepe ve Yeraltı:** AS1a-2'de boşaltılan buff'lar artık yeni (kullanıcı kararı): Tepe Dayanıklılık kurtarma +1, Yeraltı Gizlen +2.
-- **Human ten tonu (İş 4):** seçici görünür; `kulturTen` dolu (dört kültür × üç ton: Orijinal, Siyahi, Doğu Asyalı), varsayılan Orijinal (filtre yok), `ten.filtreUygula: true`; oluşturucu önizlemesi ve karakter kartında filtre uygulanır. **⚠ YER TUTUCU:** Siyahi ve Doğu Asyalı renkleri geçici; gerçek değerler tek yerde: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].hsl` (`hueRotate`, `saturate`, `brightness`, `sepia`); kod ve test değişmez. Eski 6 tonluk seçim kimlikleri (acik, bugday…) Orijinal sayılır.
+- **Human ten tonu (İş 4):** seçici görünür; `kulturTen` dolu (dört kültür × üç ton: Orijinal, Koyu, Altın; eski adlar Siyahi, Doğu Asyalı, KG1), varsayılan Orijinal (filtre yok), `ten.filtreUygula: true`; oluşturucu önizlemesi ve karakter kartında filtre uygulanır. **⚠ YER TUTUCU:** Siyahi ve Doğu Asyalı renkleri geçici; gerçek değerler tek yerde: `data/alt-soy-gorunum.json` → `ten.tonlar[<ton>].hsl` (`hueRotate`, `saturate`, `brightness`, `sepia`); kod ve test değişmez. Eski 6 tonluk seçim kimlikleri (acik, bugday…) Orijinal sayılır.
 - **Testler:** `src/battle/altSoy.test.ts` (türetme, her kurtarma/kontrol/harita/hareket kuralı, Kanatlı, Dragonborn doğrulaması, sürüm kapısı), `src/sim/altSoyRegresyon.test.ts` (70 altın imza AS1b öncesi ağaçtan; Human parti 71 = 70; Drow parti 71 ≠ 70), `altSoy41.test.tsx` güncellendi (durum etiketi, Tepe/Yeraltı yeni buff, üç ton). Sürüm sabiti testleri (`g6`, `ruleVersion`) 71.
 - **Kapsam dışı:** ek paket/imza/eşya kurtarmalarına `SaveCtx`; savaş jetonuna görünüm; kanat sprite'ları; Dragonborn beyaz tabanı; Human ten tonlarının gerçek renkleri.
 

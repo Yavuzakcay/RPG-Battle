@@ -2,16 +2,18 @@
  * Kuyruk K58 G4: tehlike katmanı (açılır/kapanır). Altıgen başına türler: yüzey, aura (bağlı ya da yarıçaplı alan),
  * geçici engel, alev yayılım riski (alevin komşusu yanıcı yüzey: yağ, kaygan/gres, yanan ağ), hareket menzili,
  * fırsat saldırısı bölgesi (tepkisi duran düşmanların yakın dövüş erişimi), seçili düşmanın tehdit menzili (yaklaşık:
- * hız + erişim). Yalnız gösterim: motor sorgusu, durum değişmez. Saf.
+ * hız + erişim), K74: çamur/batak zemini (harita kuralının zemin harfi). Yalnız gösterim: motor sorgusu, durum değişmez. Saf.
  */
 import { distance, hexKey, neighbors, type Offset } from '../rules/hex';
 import { canReact } from '../battle/reactions';
 import { zoneHexes } from '../battle/zones';
 import type { BattleState, Combatant } from '../battle/types';
 import { gridOf } from './mapView';
+import { ruleOf } from '../battle/maprules';
+import k74 from '../../data/k74.json';
 
-export type HazardKind = 'surface' | 'aura' | 'barrier' | 'fireSpread' | 'move' | 'oa' | 'threat';
-export const HAZARD_KINDS: HazardKind[] = ['surface', 'aura', 'barrier', 'fireSpread', 'move', 'oa', 'threat'];
+export type HazardKind = 'surface' | 'aura' | 'barrier' | 'fireSpread' | 'mud' | 'move' | 'oa' | 'threat';
+export const HAZARD_KINDS: HazardKind[] = ['surface', 'aura', 'barrier', 'fireSpread', 'mud', 'move', 'oa', 'threat'];
 
 const FLAMMABLE = new Set(['oil', 'slick', 'burningWeb']);
 
@@ -42,6 +44,13 @@ export function hazardHexes(state: BattleState, o: { actorId?: string; movable?:
     if (z.surface && FLAMMABLE.has(z.surface)) for (const h of hs) flam.add(hexKey(h));
   }
   for (const f of fire) for (const n of neighbors(f)) if (flam.has(hexKey(n))) add(n, 'fireSpread');
+  // Kuyruk K74: çamur/batak zemini (açık harita kuralının zemin harfi: batıran çamur, sülük, derin batak; yalnız görünüm).
+  const letters = new Set<string>();
+  for (const [id, def] of Object.entries(k74.tehlikeZemin.kurallar)) {
+    const r = state.map?.id ? ruleOf(state, id) : undefined;
+    if (r) letters.add(typeof r.terrain === 'string' ? r.terrain : def);
+  }
+  if (letters.size) (state.map?.tiles ?? []).forEach((row, r) => [...row].forEach((ch, c) => { if (letters.has(ch)) add({ col: c, row: r }, 'mud'); }));
   for (const k of o.movable ?? []) add(k, 'move');
   const actor = o.actorId ? state.combatants[o.actorId] : undefined;
   if (actor) {

@@ -5,7 +5,7 @@
  * - Hava (ortak): `snowfall` (şiddet 0 kapalı, 1 hafif, 2 orta, 3 şiddetli) ve `fog` (şiddet 1–3): görüş menzili ve
  *   menzilli saldırı dezavantajı; şiddetli karda açık kar (.) zorlu zemin. Rüzgâr kıran taşların (k) dibi kardan korunur.
  * - Giriş: `thinIce` (yarık komşusu buzda ağır zırhlı DEX save; başarısızsa soğuk su hasarı + Prone, yürüyüş biter),
- *   `sinkMud` (çamurda (n) ağır zırhlı Atletizm; başarısızsa batar, yürüyüş biter).
+ *   `sinkMud` (çamurda (n) ağır zırhlı Atletizm; başarısızsa batar, yürüyüş biter; K74 sürüm 76+ Restrained + Atletizm kurtulması).
  * - Tur başı: `bridgeGust` (köprüde (p) DEX save; başarısızsa rüzgâr yönünde itilir: uçurumsa düşer), `sentinelGaze`
  *   (gece heykelin gözü: yakındaki parti üyesi WIS save; başarısızsa bir tur Frightened).
  * - Tur sonu: `leeches` (sığ suda/çamurda (n) CON save; başarısızsa küçük hasar).
@@ -18,6 +18,7 @@
  * Saf; zarlar rng'den.
  */
 import { footprintOf, touchesHexes } from './body';
+import { K74, k74bOn } from './k74Surum';
 import { AXIAL_DIRECTIONS, addAxial, axialToOffset, directionTo, distance, neighbors, offsetToAxial, sameHex, type Offset } from '../rules/hex';
 import type { Rng } from '../rules/dice';
 import { getMonster } from '../data';
@@ -106,6 +107,12 @@ export function wildsEnterEvents(state: BattleState, c: Combatant, at: Offset, r
     const ev = checkEffect(mover, 'sinkMud', 'ağır zırhla çamura batıyor', 'athletics', num(mud.dc, 10), rng, state);
     if (!ev.roll?.success) ev.stopMovement = true;
     events.push(ev);
+    // Kuyruk K74 (sürüm 76+): gerçek bedel: başarısızlıkta çamura saplanır (Restrained, Atletizm ile kurtulma; `data/k74.json`).
+    if (!ev.roll?.success && k74bOn(state)) {
+      const m = K74.sinkMud;
+      events.push({ type: 'effect_added', targetId: c.id, effect: { id: `sinkMud:${at.col},${at.row}`, name: m.etkiAdi.tr, sourceId: 'harita',
+        grants: [m.durum], escapeCheck: { dc: num(mud.dc, 10) + m.kacisDcFark, skill: 'athletics' } } });
+    }
   }
   return { events, stop: events.some((e) => e.type === 'map_effect' && e.stopMovement === true) };
 }

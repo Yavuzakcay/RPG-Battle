@@ -1,0 +1,17 @@
+{
+  "not": "Kuyruk K74 sabitleri. 75: Truesight motor yolları + Hallow toplu koruma; 76: batıran çamurun gerçek bedeli + tehlike katmanında zemin.",
+  "hallow": {
+    "not": "Sürüm 75+: Hallow (Hallowed Ward) tek toplu koruma; seçim yok, SRD'nin altı türü birden. Extra Effect kapsam dışı.",
+    "turler": ["aberration", "celestial", "elemental", "fey", "fiend", "undead"]
+  },
+  "sinkMud": {
+    "not": "Sürüm 76+: başarısız Atletizm'de ağır zırhlı çamura saplanır: Restrained, yürüyüş biter; kurtulma eylemiyle Atletizm (DC = kuralın DC'si + kacisDcFark).",
+    "durum": "Restrained",
+    "kacisDcFark": 0,
+    "etkiAdi": { "tr": "Çamura saplandı", "en": "Stuck in mud" }
+  },
+  "tehlikeZemin": {
+    "not": "Tehlike katmanı (yalnız görünüm): bu harita kurallarının zemin harfi 'mud' türüyle gösterilir. Değer = kural yoksa varsayılan harf.",
+    "kurallar": { "sinkMud": "n", "leeches": "n", "bog": "b" }
+  }
+}

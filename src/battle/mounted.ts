@@ -33,6 +33,8 @@ import { globalRule } from './ruleControl';
 import { binekOn } from './binekSurum';
 import { altitudeCapFt, bodyHeightFt, ceilingOver, climbingAloft } from './altitude';
 import { binekMb3On, binekMb4On, binekMb7On } from './binekSurum';
+import { binekMb2On } from './binekMb2Surum';
+import { mountControlled } from './binekMb2';
 import { adjacent3D } from './adjacency';
 import { bandOf } from './cells';
 import { climbs, flySpeed } from './flight';
@@ -95,7 +97,9 @@ export function mountProblem(state: BattleState, actor: Combatant, mountId: stri
 export function executeMount(state: BattleState, actor: Combatant, mountId: string): CommandResult {
   const why = mountProblem(state, actor, mountId);
   if (why) return fail(why);
-  return finish(state, [{ type: 'mounted', actorId: actor.id, mountId, cost: halfSpeed(state, actor) }]);
+  // Kuyruk MB2 (74+): eğitimli/kontrollü binek (veriden) kontrollü olur.
+  const m = state.combatants[mountId] as Combatant;
+  return finish(state, [{ type: 'mounted', actorId: actor.id, mountId, cost: halfSpeed(state, actor), ...(binekMb2On(state) && mountControlled(m) ? { control: 'kontrollu' as const } : {}) }]);
 }
 
 export function executeDismount(state: BattleState, actor: Combatant, to?: Offset, toFt?: number): CommandResult {

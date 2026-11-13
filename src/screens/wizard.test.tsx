@@ -65,8 +65,9 @@ describe('sihirbaz adımları ve eksikler', () => {
   it('geçmişten gelen beceri kilitli: sınıf düğmesi yok, tekrar seçilemez; sayaçlar', () => {
     const c = withSkills(fighter({}, { classSkills: ['perception'], otherSkills: ['athletics'] }));
     const m = html(c, 'skills');
+    // SD3: seçilenler üstte satır olarak; geçmişten gelen (kilitli) beceri "Zaten sende" bölümünde, sınıf seçim listesinde yok.
     const row = /<li class="skill-row[^"]*"><span class="skill-name">Atletizm[\s\S]*?<\/li>/.exec(m)?.[0] ?? '';
-    expect(row).toContain('locked');
+    expect(row).toContain('Atletizm');
     expect(row).not.toContain('badge cls');
     expect(m).toContain('Sınıf becerisi 1/2');
     expect(m).toContain('Geçmişten gelen 1/3');

@@ -54,7 +54,8 @@ describe('İlerleme ekranı', () => {
     expect(m).toContain('Geçmişinden gelen başlangıç yeteneği');
     expect(m).toContain('Bu, ASI ve feat yuvalarından ayrıdır.');
     expect(m).toContain('Skilled: 3 beceri seç');
-    expect(m).toContain('Ne yapar?');
+    // SD3: kartta yalnız "ne yapar" satırı; örnek ve SRD faydaları ⓘ'de.
+    expect(m).toContain('feat-card');
     expect(m).toContain('1 ya da 2 gelirse 3 sayılır');
     expect(m).toContain('1. seviye: Dövüş Stili (Fighting Style)');
     expect(m).toMatch(/class="feat-card selected"><b>Great Weapon Fighting/);

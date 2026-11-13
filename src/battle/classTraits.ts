@@ -17,6 +17,7 @@ import { turnKey } from './economy';
 import { damageEffects } from './damage-effects';
 import { sizeRank } from './forced';
 import type { AttackOption, BattleEvent, BattleState, Combatant, CunningOption, MasteryMark } from './types';
+import { hiddenTo } from './k74Surum';
 
 export const hasTrait = (c: Pick<Combatant, 'traits'> | undefined, trait: string): boolean => !!c?.traits?.includes(trait);
 /** Bu tur kullanıldı mı (turda bir kez özellikler). */
@@ -137,7 +138,8 @@ export function cunningEvents(state: BattleState, actor: Combatant, target: Comb
     if (p === 'trip' && sizeRank(target.size) > sizeRank('L')) continue;
     if (target.hp <= 0) continue;
     const ab = def.save as 'dex' | 'con';
-    const r = resolveSave({ extra: saveDice(target, ab), modifier: target.saves[ab], dc, mode: saveMode('normal', target, ab),
+    // Görev AS1a (77+): Trip Prone (alt soy durum kurtarma dezavantajı, `genis`).
+    const r = resolveSave({ extra: saveDice(target, ab), modifier: target.saves[ab], dc, mode: saveMode('normal', target, ab, undefined, p === 'trip' ? { against: ['Prone'], genis: true } : undefined),
       autoFail: ab === 'dex' && autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
     const condition = { trip: 'Prone', daze: 'Dazed', 'knock-out': 'Unconscious', obscure: 'Blinded', poison: 'Poisoned' }[p as Exclude<CunningOption, 'withdraw' | 'stealth'>] as string;
     out.push({ type: 'condition_save', targetId: target.id, condition, ability: ab, dc, d20: r.d20?.rolls ?? [], total: r.total ?? 0, success: r.success,
@@ -157,7 +159,7 @@ export function cunningEvents(state: BattleState, actor: Combatant, target: Comb
 export function superiorPreyEvents(state: BattleState, actor: Combatant, first: Combatant, mark: { raw: number; rolls: number[]; type: string }, rng: Rng): BattleEvent[] {
   if (!hasTrait(actor, 'superior-hunters-prey') || usedThisTurn(state, actor, 'superior-hunters-prey') || mark.raw <= 0) return [];
   const second = Object.values(state.combatants)
-    .filter((c) => c.id !== first.id && c.side !== actor.side && !c.civilian && c.hp > 0 && !c.hidden && !c.summon?.gone)
+    .filter((c) => c.id !== first.id && c.side !== actor.side && !c.civilian && c.hp > 0 && !hiddenTo(state, actor, c) && !c.summon?.gone)
     .filter((c) => (state.map ? !!c.pos && !!first.pos && distance(c.pos, first.pos) <= 6 : true))
     .sort((a, b) => a.hp - b.hp)[0];
   if (!second) return [];

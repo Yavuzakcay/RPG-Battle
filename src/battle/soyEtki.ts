@@ -16,7 +16,7 @@ import type { CharacterSheet } from '../rules/stats';
 import soy from '../../data/alt-soy.json';
 import { maps } from '../map/maps';
 import { ceilingFt } from './altitude';
-import { altSoyOn, registerSoyCheck } from './altSoySurum';
+import { altSoy77On, altSoyOn, registerSoyCheck } from './altSoySurum';
 export { isPlantZone, plantChar, saveDisVs, soyFallMult, soyPlantWalker, soyTeleportEnds, type SaveCtx } from './altSoySurum';
 import { ucusBody } from './flightPrim';
 import { hasDarkness, lightLevelAt } from './maprules';
@@ -111,6 +111,10 @@ export function withSoy(state: BattleState): BattleState {
       continue;
     }
     let next: Combatant = c;
+    // Görev AS1a (77+): kurtarma dezavantajı yeni yollarda da (`SaveCtx.genis`).
+    if (altSoy77On(state) && mine.some((e) => e.saveDisVs?.length && !e.saveDisVsGenis)) {
+      next = { ...next, effects: (next.effects ?? []).map((e) => (e.id.startsWith(SOY_EFFECT) && e.saveDisVs?.length ? { ...e, saveDisVsGenis: true as const } : e)) };
+    }
     const extra: ActiveEffect[] = [];
     for (const e of mine) {
       const h = e.soyHarita;

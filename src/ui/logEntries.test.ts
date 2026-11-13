@@ -13,6 +13,15 @@ describe('günlük satırları', () => {
     expect(splitLine('tek parça').detail).toEqual([]);
   });
 
+  it('sıra sayısı ("3. seviye slot", "1. tur") cümle sonu sayılmaz (Görev SD2)', () => {
+    const s = splitLine('Ayşe: 3. seviye slot harcandı (kalan 1). Sıra 2. tur başladı');
+    expect(s.head).toBe('Ayşe: 3. seviye slot harcandı (kalan 1)');
+    expect(s.detail).toEqual(['Sıra 2. tur başladı']);
+    expect(splitLine('Ayşe: 3. seviye slot harcandı (kalan 1).').detail).toEqual([]);
+    // Büyük harfle başlayan sonraki cümle, sayıyla bitse de ayrılır.
+    expect(splitLine('hasar 29. Direnç uygulandı').detail).toEqual(['Direnç uygulandı']);
+  });
+
   it('tür: tepki, yüzey, Moral', () => {
     expect(kindOf({ type: 'reaction_used' } as unknown as BattleEvent)).toBe('reaction');
     expect(kindOf({ type: 'surface_reacted' } as unknown as BattleEvent)).toBe('surface');

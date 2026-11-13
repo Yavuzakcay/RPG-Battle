@@ -7,6 +7,7 @@
 import { classData, getClass, weapons, type MasteryId, type MasteryMechanic, type SrdMastery, type Weapon } from '../data';
 import { classKit, optionTraining, packTraining } from './classFeatures';
 import type { CharacterSheet } from './stats';
+import { I } from './issueText';
 
 /** Sınıf bu silahta yetkin mi (Simple hep; Martial sınıfa ya da Finesse/Light özelliğine göre). */
 export function weaponProficient(classId: string, weapon: Weapon, choices?: Record<string, string>, who?: { subclassId?: string; level?: number }): boolean {
@@ -46,12 +47,12 @@ export function masteryProblems(sheet: CharacterSheet): string[] {
   const chosen = sheet.weaponMasteries ?? [];
   if (chosen.length === 0) return [];
   const right = masteryRight(sheet);
-  if (!right) return ['Bu sınıfın silah ustalığı yok.'];
+  if (!right) return [I().masteryNone];
   const out: string[] = [];
-  if (chosen.length > right.count) out.push(`En çok ${right.count} silah seçilebilir.`);
-  if (new Set(chosen).size !== chosen.length) out.push('Aynı silah iki kez seçilmiş.');
+  if (chosen.length > right.count) out.push(I().masteryMax(right.count));
+  if (new Set(chosen).size !== chosen.length) out.push(I().masteryDup);
   const ok = new Set(masteryOptions(sheet).map((w) => w.id));
-  for (const id of chosen) if (!ok.has(id)) out.push(`${id}: bu silahın ustalığı seçilemez.`);
+  for (const id of chosen) if (!ok.has(id)) out.push(I().masteryNotEligible(id));
   return out;
 }
 
@@ -75,6 +76,6 @@ export function masterySwapProblem(sheet: CharacterSheet, next: string[]): strin
   const before = new Set(sheet.weaponMasteries ?? []);
   const changed = next.filter((id) => !before.has(id)).length;
   const limit = masterySwapLimit(sheet);
-  if (changed > limit) return `Uzun dinlenmede en çok ${limit} silah seçimi değişebilir.`;
+  if (changed > limit) return I().masterySwap(limit);
   return masteryProblems({ ...sheet, weaponMasteries: next })[0] ?? null;
 }
