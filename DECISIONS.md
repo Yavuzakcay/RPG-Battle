@@ -2,6 +2,18 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-14 — Kuyruk K75: küçük açıklar (kural sürümü 79; kayıt sürümü 22 değişmedi)
+
+Yeni komut, olay, ilkel ya da ev kuralı yok; her mekanik değişiklik `k75On` (`src/battle/k75Surum.ts`, `K75_VERSION` 79) kapısında, 78 ve altı aynen.
+
+- **1. Binek YZ:** `Combatant.egitimli` ("trained mount") bayrağı canavar verisinden (`Monster.egitimli`, özel canavar için) gelir ve `mountControlled`'a `data/binek.json` `egitimli` listesine ek olarak girer (kontrol yine `mounted.control` olayında taşınır, replay değişmez). Yapay zekâ (`src/battle/ai/k75.ts` `mountDecision`, 79+) yalnız mevcut `mount`/`dismount` komutlarını kullanır. ⚠ Karar (MB8 bulgusu: menzilli binici atla düşman hattına taşınıyor): yalnız **yakın dövüşçü** (menzilli silah/saldırısı ve büyü slotu yok) biner, yalnız **bitişik, boş, eğitimli** dost bineğe, hareketini harcamadan ve düşman bir hareket turundan uzaktayken; bineğin canı ≤ %25 (`INME_CAN`) ise iner. Kurulumda eğitimli anahtarı ve rol bazlı binek hareketi hâlâ açık (BINEK-PLAN).
+- **2. Protection from Evil and Good:** süreli Charmed/Frightened (`condition_changed` + `timer`, canavar saldırı ekleri) `immuneTo`'dan sonra `wardedFrom`'a da takılır (79+); önceden yalnız `effect_added` yolu korunuyordu. Magic Circle, Hallow ve aura bağışıklığı aynı yoldan.
+- **3. Batıran çamur:** zırh kararı **değişmedi**: yalnız ağır zırh (K74 kararı; hafif/orta yayılmadı, BK1 öneri 3'ün ikinci yarısı bilerek yapılmadı). Ölü satırlar (BK1 öneri 2): `batak-kale` ve `batak-cukur`'dan `sinkMud` kuralı (haritada `n` yok, hiç tetiklenmiyordu) veriden ve `scripts/k28b-mekanikler.py`'den kaldırıldı; davranış değişmediği için sürüm kapısı gerekmedi, Game Master panelinde bu iki haritada anlamsız anahtar kalktı. Test: `sinkMud` kuralı olan her haritada `n` var.
+- **4. P9 tepki save'i:** `p9.ts` `saveVs` (hizSifir, buyuIptal) 79+ `SaveCtx` (`hasarTuru`, `durum`, `genis`) geçirir; alt soyun hasar/durum kurtarma dezavantajı (AS1a) bu yollarda da çalışır. İlkelde tür/durum yoksa etkisi yok (yalnız `genis` bayrağı).
+- **5. Dünya haritası ızgaraları:** denetim (bölge ↔ yürüme ↔ yüzme ↔ deniz rotası) tutarlı çıktı: 1790 yüzme hücresi hiçbiri yürünür değil, bölgeli her hücre kara ya da yüzme, bölgesiz kara/yüzme yok, deniz rotaları karadan geçmez (iskele uçları hariç; `beyaz_sehir_iskelesi` yürünür hücrede). **Veri değişmedi**; `src/world/izgaraTutarlilik.test.ts` koruma olarak eklendi.
+- **6. Su ve boncuk dokuları (yalnız görünüm):** `efekt-baglama.json` `zemin`: `control-water` → `zemin-girdap` (yalnız girdap alanı; flood/part alanı `control-water:terrain` yama çizmez), `delayed-blast-fireball` → `zemin-lav` (boncuğun alanı). Control Water flood/part ve `flashFlood` zaten `tile_changed` ile zemini değiştirdiğinden su dokusu (`waterHexes`, zemin harfinden türetilir) ek bağlama olmadan izler; test eklendi. ⚠ `zemin-lav` boncuk için yaklaşık bir görsel (özel boncuk sprite'ı yok).
+- **Testler:** `ruleVersion.test.ts` güncel sürüm beklentisi 78 → 79 (gerekçe: K75 sürümü). Yeni: `src/battle/k75.test.ts`, `b3.test.ts` (PfEG süreli), `paket/p9.test.ts` (save dezavantajı), `src/world/izgaraTutarlilik.test.ts`, `src/ui/fx/k75.test.ts`.
+
 ## 2026-11-13 — Human kültür–ten eşlemesi ile Sürgün seçimi birleştirildi (yalnız görünüm/veri; kural sürümü 78 ve kayıt sürümü değişmedi)
 
 - **Tek akış:** `kulturTen` dolu (Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın, Sur Dışı üçü). Sur Dışı + Sürgün seçiliyse tonlar sürgün kültürünün satırından (tek ton kendiliğinden), seçili değilse Sur Dışı'nın üç tonu.
