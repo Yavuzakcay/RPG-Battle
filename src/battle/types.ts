@@ -799,6 +799,8 @@ export interface Combatant {
   rider?: string;
   /** Kuyruk MB2 (74+): kontrollü bineğin binicisi (binek kendi turunu almaz, binicinin turunda hareket eder). */
   controlledBy?: string;
+  /** Kuyruk K75: eğitimli binek ("trained mount") bayrağı, canavar verisinden (`Monster.egitimli`); `mountControlled` okur. */
+  egitimli?: true;
   /**
    * Kuyruk MB2 (74+): bineğin bu turdaki sırası binicinin turunda kullanıldı (`by` binici, `round` tur). İndikten sonra aynı
    * turda ikinci kez oynamaz. `hooks`: bineğin tur başı/sonu kancaları binicininkiyle birlikte çalışır.

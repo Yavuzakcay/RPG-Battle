@@ -181,13 +181,6 @@
           "note": "Sis: görüş menzili (şiddet 1: 6, 2: 4, 3: 2 altıgen); yarısından uzağa menzilli saldırı dezavantajlı."
         },
         {
-          "id": "sinkMud",
-          "surum": 8,
-          "terrain": "n",
-          "dc": 10,
-          "note": "Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter."
-        },
-        {
           "id": "pitGas",
           "surum": 8,
           "interval": 3,
@@ -276,13 +269,6 @@
           "surum": 8,
           "severity": 2,
           "note": "Sis: görüş menzili (şiddet 1: 6, 2: 4, 3: 2 altıgen); yarısından uzağa menzilli saldırı dezavantajlı."
-        },
-        {
-          "id": "sinkMud",
-          "surum": 8,
-          "terrain": "n",
-          "dc": 10,
-          "note": "Batıran çamur: ağır zırhlı çamura girince Atletizm DC 10; başarısızsa batar, yürüyüş biter."
         },
         {
           "id": "pitGas",

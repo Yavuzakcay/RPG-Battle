@@ -21,6 +21,7 @@ import { terrainOf } from '../map/terrain';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
 import { wardedFrom } from './mind';
+import { k75On } from './k75Surum';
 import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type ConditionTimer, type DamageEffect } from './types';
 import { effectSpeedZero, flySpeed } from './flight';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
@@ -981,6 +982,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const has = c.conditions.includes(event.condition);
       // Bağışıklık (Heroism: Frightened): durum eklenmez.
       if (event.present && !has && immuneTo(c, event.condition, state)) return state;
+      // Kuyruk K75 (79+): süreli Charmed/Frightened da korumaya (Protection from Evil and Good, Magic Circle, Hallow, aura) takılır.
+      if (event.present && !has && k75On(state) && wardedFrom(state, c.id, event.sourceId ?? event.timer?.sourceId, event.condition)) return state;
       const conditions = event.present
         ? has ? c.conditions : [...c.conditions, event.condition]
         : c.conditions.filter((x) => x !== event.condition);

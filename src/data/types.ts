@@ -1024,6 +1024,8 @@ export type CreatureSize = 'T' | 'S' | 'M' | 'L' | 'H' | 'G';
 export interface Monster {
   id: string;
   name: string;
+  /** Kuyruk K75 (79+): binicisini kabul etmeye eğitilmiş binek (kontrollü binek; `data/binek.json` `egitimli` listesine ek, özel canavar için). */
+  egitimli?: boolean;
   /** Boyut; verilmezse Medium. */
   size?: CreatureSize;
   ac: number;
