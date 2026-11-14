@@ -15,7 +15,11 @@ export function WingLayer(props: { wing: WingLayerSpec; size: number }) {
   const [gone, setGone] = useState(false);
   if (gone) return null;
   const b = wingBox(wing, size / 2, size / 2, size);
-  const style: CSSProperties = { width: b.width, height: b.height, left: b.x, top: b.y, ...(wing.filtre ? { filter: wing.filtre } : {}) };
+  const sp = wing.sprite;
+  // Animasyonlu sayfa: karakter ekranlarında yalnız ilk kare sabit (arka plan kesiti).
+  const style: CSSProperties = { width: b.width, height: b.height, left: b.x, top: b.y, ...(wing.filtre ? { filter: wing.filtre } : {}),
+    ...(sp ? { backgroundImage: `url(${BASE}${wing.src})`, backgroundSize: `${sp.sutun * 100}% ${sp.satir * 100}%`, backgroundPosition: '0 0', backgroundRepeat: 'no-repeat' } : {}) };
+  if (sp) return <span className="look-wing" data-wing={wing.id} style={style} aria-hidden="true" />;
   return <img className="look-wing" data-wing={wing.id} src={`${BASE}${wing.src}`} alt="" style={style} aria-hidden="true" onError={() => setGone(true)} />;
 }
 

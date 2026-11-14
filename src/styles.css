@@ -1368,3 +1368,11 @@ button.cta.soft { opacity: .65; }
 .setup-mount small { flex-basis: 100%; }
 .preview-card .pv-mount span { white-space: normal; }
 .pick-card.exile-card { min-height: 0; }
+
+/* Anka kanadı: 4x2 sayfa, 8 kare, adımlı döngü (süre satır içi; kapalıyken ilk kare sabit). */
+.wing-anim { animation: wing-sheet-8 800ms step-end infinite; }
+@keyframes wing-sheet-8 {
+  0% { transform: translate(0, 0); } 12.5% { transform: translate(-512px, 0); } 25% { transform: translate(-1024px, 0); } 37.5% { transform: translate(-1536px, 0); }
+  50% { transform: translate(0, -382px); } 62.5% { transform: translate(-512px, -382px); } 75% { transform: translate(-1024px, -382px); } 87.5% { transform: translate(-1536px, -382px); }
+}
+@media (prefers-reduced-motion: reduce) { .wing-anim { animation: none; } }

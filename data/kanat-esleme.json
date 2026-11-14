@@ -80,6 +80,24 @@
       "olcek": 1.5,
       "omuz": 0.46,
       "filtre": ""
+    },
+    "anka-ogretisi": {
+      "ad": {
+        "tr": "Anka Öğretisi kanadı (animasyonlu)",
+        "en": "Phoenix Doctrine wing (animated)"
+      },
+      "altSinif": "anka-ogretisi",
+      "dosya": "efekt-kanat-anka.webp",
+      "dosyaKapali": null,
+      "sprite": { "klasor": "efekt", "sutun": 4, "satir": 2, "kareEn": 512, "kareBoy": 382, "kareMs": 100 },
+      "capa": [
+        0.5,
+        0.78
+      ],
+      "enBoy": 0.7461,
+      "olcek": 1.5,
+      "omuz": 0.46,
+      "filtre": ""
     }
   }
 }

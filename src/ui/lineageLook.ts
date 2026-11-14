@@ -12,7 +12,8 @@ import { findSubclass } from '../rules/subclasses';
 
 /** Çözülmüş kanat katmanı (jetonun arkası): `src` o anki durumun görseli (`public/` altı yol), filtre renk için. */
 /** `capa`: kanat kökü görsel oranı; `omuz`: kökün jeton yüksekliğinde tepeden oranı; `enBoy`: görsel yüksekliği/genişliği. */
-export interface WingLayerSpec { id: string; src: string; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre: string; open: boolean }
+export interface WingLayerSpec { id: string; src: string; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre: string; open: boolean; /** Animasyonlu sayfa (4x2 vb.); yoksa tek görsel. */ sprite?: WingSprite }
+export interface WingSprite { sutun: number; satir: number; kareEn: number; kareBoy: number; kareMs: number }
 export interface SkinTone { id: string; ad: { tr: string; en: string }; /** Hedef ten rengi (hex); null: boyasız. */ renk: string | null; rozetRenk: string }
 export interface LookSheet { raceId: string; classId?: string; /** Seçili alt sınıf kimliği (`kanat-esleme.json` `altSinif` eşlemesi için). */ subclassId?: string; lineageId?: string; celestialAwakening?: string; level?: number; skinTone?: string }
 export interface LineageLook {
@@ -80,7 +81,7 @@ export function pickCulture(sheet: { lineageId?: string; exileCulture?: string; 
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
-type WingSlotData = { altSinif?: string; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
+type WingSlotData = { altSinif?: string; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
 const W = wings as unknown as { klasor: string; slotlar: Record<string, WingSlotData> };
 export const WING_SLOTS = Object.keys(W.slotlar);
 /** Kanat slotuna bağlı alt sınıf kimlikleri (`altSinif`) ve slotun kimliği. */
@@ -113,7 +114,8 @@ function wingLayer(id: string, level: number, flying: boolean, lineageId?: strin
   const file = open ? w.dosya : w.dosyaKapali;
   if (!file) return null;
   const filtre = [w.filtre, lineageId ? w.renkFiltreleri?.[lineageId] : undefined].filter(Boolean).join(' ');
-  return { id, src: `${W.klasor}/${file}`, olcek: w.olcek, omuz: w.omuz, capa: w.capa, enBoy: w.enBoy, filtre, open };
+  const { klasor: sk, ...sprite } = w.sprite ?? ({} as { klasor?: string });
+  return { id, src: `${sk ?? W.klasor}/${file}`, olcek: w.olcek, omuz: w.omuz, capa: w.capa, enBoy: w.enBoy, filtre, open, ...(w.sprite ? { sprite: sprite as WingSprite } : {}) };
 }
 
 /**

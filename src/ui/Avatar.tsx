@@ -4,7 +4,8 @@
  * dosya adı kuralına uyan bir görsel eklenince kod değişmeden görünür.
  */
 import { useEffect, useId, useState, type CSSProperties } from 'react';
-import { HALO_CLIP_PCT, lineageLook, wingBox } from './lineageLook';
+import { HALO_CLIP_PCT, lineageLook, wingBox, type WingLayerSpec } from './lineageLook';
+import { useWingAnim } from './wingAnim';
 import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
 import { tintedReady, tintedUrl } from './tint';
@@ -138,6 +139,26 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
  * parıltısı CSS drop-shadow ile figürün silüetinde). Resim yoksa baş harfli daire okunurluk için kalır.
  * Resim hafifçe "nefes alır" (CSS, hareket azaltma tercihinde kapalı).
  */
+/** Kanat görseli (jetonun arkası); animasyonlu sayfada kare kesitli iç SVG, figürle birlikte aynalanır. Animasyon kapalıysa ilk kare. */
+function WingImage(props: { wing: WingLayerSpec; wb: { x: number; y: number; width: number; height: number }; flip?: boolean; cx: number }) {
+  const { wing, wb, cx } = props;
+  const animate = useWingAnim(!!wing.sprite);
+  const transform = props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined;
+  const sp = wing.sprite;
+  if (!sp) {
+    return <image className="look-wing" data-wing={wing.id} href={assetSrc(wing.src)} x={wb.x} y={wb.y} width={wb.width} height={wb.height} preserveAspectRatio="xMidYMid meet"
+      transform={transform} style={wing.filtre ? { filter: wing.filtre } : undefined} aria-hidden="true" />;
+  }
+  return (
+    <g transform={transform} style={wing.filtre ? { filter: wing.filtre } : undefined} aria-hidden="true">
+      <svg className="look-wing wing-sprite" data-wing={wing.id} x={wb.x} y={wb.y} width={wb.width} height={wb.height} viewBox={`0 0 ${sp.kareEn} ${sp.kareBoy}`} overflow="hidden">
+        <image className={animate ? 'wing-sheet wing-anim' : 'wing-sheet'} href={assetSrc(wing.src)} width={sp.kareEn * sp.sutun} height={sp.kareBoy * sp.satir}
+          style={animate ? { animationDuration: `${sp.kareMs * sp.sutun * sp.satir}ms` } : undefined} />
+      </svg>
+    </g>
+  );
+}
+
 /**
  * Kuyruk AS1c: jeton figürü (SVG): kanat katmanı (jetonun arkasında; `lineageLook`), alt soy oranı, Celestial hale gizleme ve
  * filtre. Yalnız çizim: `x/y/width/height` ve tıklama alanı aynı.
@@ -152,9 +173,7 @@ export function TokenFigure(props: { href: string; cx: number; cy: number; w: nu
   const wb = wing ? wingBox(wing, cx, cy, w) : null;
   return (
     <>
-      {wing && wb && <image className="look-wing" data-wing={wing.id} href={assetSrc(wing.src)} x={wb.x} y={wb.y} width={wb.width} height={wb.height} preserveAspectRatio="xMidYMid meet"
-        transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined}
-        style={wing.filtre ? { filter: wing.filtre } : undefined} aria-hidden="true" />}
+      {wing && wb && <WingImage wing={wing} wb={wb} flip={props.flip} cx={cx} />}
       {lk?.hideHalo && <clipPath id={clipId}><rect x={cx - w / 2} y={cy - w / 2 + (w * HALO_CLIP_PCT) / 100} width={w} height={w} /></clipPath>}
       <g transform={shape} clipPath={lk?.hideHalo ? `url(#${clipId})` : undefined}>
         <image href={props.href} x={cx - w / 2} y={cy - w / 2} width={w} height={w} preserveAspectRatio="xMidYMid slice"

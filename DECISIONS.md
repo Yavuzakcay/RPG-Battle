@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-14 — Anka Öğretisi (Wizard) kanadı (yalnız görünüm; kural/kayıt sürümü, YZ, motor, replay değişmedi)
+
+- Şeytan kanadı (`efekt-kanat-seytan`) hiçbir koşula bağlı değil (yalnız kesim kaydı); gerçek jeton kanat mekanizması `data/kanat-esleme.json` `altSinif` slotları (Melek). Anka aynı yoldan bağlandı: slot `anka-ogretisi` (`altSinif: "anka-ogretisi"`, Wizard Anka Öğretisi `icerik/` dış paketinde), koşul Melek ile aynı: yalnız havadayken (uçuş) ya da karakter ekranlarında uçma yeteneği olarak; `herZaman` yok.
+- Slot biçimine isteğe bağlı `sprite` eklendi (`sutun`/`satir`/`kareEn`/`kareBoy`/`kareMs`, `klasor`: `public/efekt/`): 4x2, 8 kare, döngü, normal karışım (screen yok). Savaş jetonunda iç SVG kesitiyle adımlı CSS animasyonu (`.wing-anim`, 800 ms), figürle birlikte aynalanır (K75b `flip`); karakter ekranlarında (`LookFrame`) yalnız ilk kare sabit.
+- "Hareketi azalt" ya da Ayarlar "Efekt animasyonu" kapalıysa yalnız ilk kare; ekranda en çok 8 animasyon (`src/ui/wingAnim.ts`, `MAX_ANIMATED`); fazlası ilk karede kalır. Kanat jetonun arkasında tek katman, rozet kuralları etkilenmez.
+- İnce sürüm (`efekt-kanat-anka-ince.webp`, 2048×426, kare 512×213) bağlanmadı: slot biçimi tek görsel oranı taşıyor (alternatif boyut yok); dosya yerinde duruyor.
+- `data/efekt-e2.json` kaydı eklenmedi: kanat FxLayer efekti değil jeton katmanı. Slot çapası (`capa` [0.5, 0.78], `olcek` 1.5) kare görselinden tahmin; ekran görüntüsüyle ince ayar yapılmadı.
+- Alt sınıf bu ortamda yüklü değil (`icerik/` depo dışı); yüklü değilse slot etkisiz (mevcut kural).
+
 ## 2026-11-14 — Kuyruk K75b: K75 doğrulama mührü ve parti jetonu yönü (kural sürümü 79, kayıt sürümü 22 değişmedi)
 
 - Doğrulama (ayrıntı `harita/belgeler/K75B-SONUC.md`): check:ses K75 öncesi ve sonrası 3'er koşu hepsi 15/15, kararsızlık gözlenmedi (kök neden aranmadı); 78 ↔ 79 binek yokken dört senaryoda 30 tohum birebir aynı; YZ süresi 79, 78'e göre +%5 ve %0; binekli denge kayması 0 puan. Ayar yapılmadı.
