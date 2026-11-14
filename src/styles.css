@@ -1377,10 +1377,12 @@ button.cta.soft { opacity: .65; }
 }
 @media (prefers-reduced-motion: reduce) { .wing-anim { animation: none; } }
 
-/* SD5: tür ve sınıf tek ızgara; küçük kartlar, satır kırar. */
-.race-grid, .class-grid { grid-template-columns: repeat(auto-fill, minmax(min(104px, 46%), 1fr)); gap: 6px; }
-.pick-card.race-card-small, .pick-card.class-card-small { min-height: 40px; justify-content: center; padding: 6px 10px; }
 .req-mark { color: #e06c6c; }
 .lineage-section { margin-top: 6px; }
-.race-grid .pick-card b, .class-grid .pick-card b { overflow-wrap: normal; font-size: 14px; }
-.race-grid, .class-grid { grid-template-columns: repeat(auto-fill, minmax(min(112px, 46%), 1fr)); }
+
+/* SD6: tür 5+5, sınıf 6+6 simetrik ızgara; her genişlikte aynı düzen, dar ekranda yazı küçülür, kart yükseklikleri eşit. */
+.race-grid, .class-grid { display: grid; gap: 6px; grid-auto-rows: 1fr; }
+.race-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.class-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.pick-card.race-card-small, .pick-card.class-card-small { min-height: 40px; align-items: center; justify-content: center; text-align: center; padding: 6px 2px; }
+.race-grid .pick-card b, .class-grid .pick-card b { overflow-wrap: normal; word-break: normal; font-size: clamp(8px, 2.5vw, 14px); line-height: 1.15; }

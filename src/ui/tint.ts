@@ -130,6 +130,9 @@ function maskedPixels(data: Uint8ClampedArray, tint: TintSpec, mask: Uint8Array)
   return idx.length;
 }
 
+/** SD6: ten maskesi temizliği hangi jetonlara: Human (her kültür) ve Dark Elf (`elf-*`, gradyan paleti). */
+export const skinCleanup = (name: string, tint: TintSpec): boolean => /^human-/.test(name) || (/^elf-/.test(name) && 'gradient' in tint.to);
+
 const done = new Map<string, string | null>();
 const waiting = new Map<string, Promise<string | null>>();
 export const tintKey = (url: string, tint: TintSpec) => `${url}|${JSON.stringify(tint)}`;
@@ -204,8 +207,9 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
         ctx.drawImage(img, 0, 0);
         const px = ctx.getImageData(0, 0, W, H);
         const entry = spriteName(url) ? headEntry(spriteName(url) as string) : undefined;
-        // SD5: Human ten maskesindeki küçük delikler (yüz, kulak, eller) çizim tarafında kapatılır; dosyalar değişmez.
-        if ((mask || weights) && /^human-/.test(spriteName(url) ?? '')) {
+        // SD5/SD6: ten maskesi delikleri ve kenar saçağı çizim tarafında temizlenir (`maskClose.ts`); dosyalar değişmez.
+        // SD6: aynı temizlik Dark Elf (Drow gradyan paleti) jetonlarında da; diğer ırklar etkilenmez.
+        if ((mask || weights) && skinCleanup(spriteName(url) ?? '', tint)) {
           // Ana parça küçük kalsın: delik kapatma tembel parça.
           const { closeSkinHoles } = await import('./maskClose');
           const closed = closeSkinHoles(px.data, mask, weights, W, H);

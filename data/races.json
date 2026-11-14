@@ -350,11 +350,11 @@
     "speed": 30,
     "darkvision": 60,
     "resistances": [],
-    "traits": "Darkvision 60 ft, Elven Lineage (Drow, High Elf ya da Wood Elf), Fey Ancestry, Keen Senses, Trance",
+    "traits": "Darkvision 60 ft, Elven Lineage (Dark Elf, High Elf ya da Wood Elf), Fey Ancestry, Keen Senses, Trance",
     "lineages": [
       {
         "id": "drow",
-        "name": "Drow",
+        "name": "Dark Elf",
         "resistances": [],
         "darkvision": 120,
         "summary": {

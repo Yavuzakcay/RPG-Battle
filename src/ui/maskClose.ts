@@ -45,21 +45,46 @@ export function closeMask(on: Uint8Array, W: number, H: number, opts: CloseOptio
 }
 
 /**
- * SD5: ten maskesi delik kapatma (`maskClose.ts`): eklenen piksel görselde dolu, çok koyu değil ve renksiz beyaz/gri değil
- * (göz akı, bebek, koyu ağız çizgisi delik sayılmaz). Elle maskede eklenen piksel tam ağırlık alır.
+ * SD5/SD6: ten maskesi temizliği (çizim tarafı; dosyalar değişmez). 1) Delik kapatma: küçük boşluklar dolar; eklenen piksel görselde
+ * dolu, L ≥ 30 ve renksiz beyaz/gri değil (göz akı, bebek, koyu çizgi delik sayılmaz). 2) Kenar saçağı (SD6): ten maskesine
+ * bitişik, maskenin dışında kalan açık ten pikselleri (anti-alias saçağı: yanak-çene, kulak, boyun, saç çizgisi, el/parmak kenarı)
+ * 1 piksel genişletmeyle maskeye alınır; yalnız ten tonunda (ortalama ten tonundan en çok 28° sapan, krosu ortalamanın yarısından
+ * yüksek) ve çok açık değil/renksiz beyaz değil pikseller: gömlek yakası, manşet, dantel, göz akı, diş ve gerçek vurgular dokunulmaz.
+ * Elle maskede eklenen piksel tam ağırlık alır.
  */
 export function closeSkinHoles(data: Uint8ClampedArray, mask: Uint8Array | undefined, weights: Uint8Array | undefined, W: number, H: number): { mask?: Uint8Array; weights?: Uint8Array } {
   const base = mask ?? Uint8Array.from(weights as Uint8Array, (w) => (w > 0 ? 1 : 0));
+  const lab = (p: number) => rgbToLab(data[p * 4] ?? 0, data[p * 4 + 1] ?? 0, data[p * 4 + 2] ?? 0);
   const keep = (p: number) => {
-    const i = p * 4;
-    if ((data[i + 3] ?? 0) < 10) return false;
-    const [L, a, b] = rgbToLab(data[i] ?? 0, data[i + 1] ?? 0, data[i + 2] ?? 0);
+    if ((data[p * 4 + 3] ?? 0) < 10) return false;
+    const [L, a, b] = lab(p);
     return L >= 30 && !(L > 80 && Math.hypot(a, b) < 6);
   };
   const closed = closeMask(base, W, H, { keep });
-  if (mask) return { mask: closed };
+  // Kenar saçağı: ten ortalaması (ton, kroma).
+  let sa = 0, sb = 0, sc = 0, n = 0;
+  for (let p = 0; p < closed.length; p++) if (closed[p] && (data[p * 4 + 3] ?? 0) >= 10) { const [, a, b] = lab(p); sa += a; sb += b; sc += Math.hypot(a, b); n++; }
+  const out = Uint8Array.from(closed);
+  if (n > 0) {
+    const mh = (Math.atan2(sb, sa) * 180) / Math.PI, mc = sc / n;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const p = y * W + x;
+      if (closed[p] || (data[p * 4 + 3] ?? 0) < 10) continue;
+      let nb = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx, yy = y + dy;
+        if ((dx || dy) && xx >= 0 && xx < W && yy >= 0 && yy < H && closed[yy * W + xx]) nb++;
+      }
+      if (nb < 2) continue;
+      const [L, a, b] = lab(p);
+      const c = Math.hypot(a, b);
+      const dh = Math.abs((((Math.atan2(b, a) * 180) / Math.PI - mh + 540) % 360) - 180);
+      if (L < 45 || L > 94 || c < mc * 0.5 || dh > 28 || (L > 80 && c < 10)) continue;
+      out[p] = 1;
+    }
+  }
+  if (mask) return { mask: out };
   const w2 = Uint8Array.from(weights as Uint8Array);
-  for (let p = 0; p < closed.length; p++) if (closed[p] && !base[p]) w2[p] = 255;
+  for (let p = 0; p < out.length; p++) if (out[p] && !base[p]) w2[p] = 255;
   return { weights: w2 };
 }
-
