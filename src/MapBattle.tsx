@@ -89,6 +89,7 @@ import { wishCandidates } from './battle/spells69';
 import { movableZoneOf } from './battle/zones';
 import { DANCE_COMBINED, danceAddProblem, danceMax } from './battle/danceLights';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
+import { facesLeft as tokenFacesLeft } from './ui/tokenFacing';
 import { isAirborne } from './battle/flight';
 import { LookFrame } from './ui/LookFrame';
 /** Kuyruk AS1c: alt soyu olan oyuncu karakterinin rozetine alt soy görünümü (oran, hale, filtre, kanat); diğerleri aynen. */
@@ -1332,12 +1333,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
   const jumpRisks = new Map(mode === 'jump' ? islandTargets.flatMap((t) => (t.risk ? [[hexKey(t.to), t.risk] as const] : [])) : []);
   // Canavar resimleri sağa bakar: en yakın karakter soldaysa jeton aynalanır (hep karakterlere dönük).
+  // Kuyruk K75b: parti da düşmana döner; tek saf işlev (`ui/tokenFacing.ts`), eşitlikte önceki yön korunur.
+  const facing = useRef(new Map<string, boolean>());
   const facesLeft = (c: Combatant) => {
-    if (!c.pos) return false;
-    const me = hexCenter(c.pos);
-    const pcs = Object.values(state.combatants).filter((x) => x.side === 'party' && !x.civilian && x.pos && x.hp > 0);
-    const near = pcs.sort((a, b) => distance(a.pos as Offset, c.pos as Offset) - distance(b.pos as Offset, c.pos as Offset))[0];
-    return near ? hexCenter(near.pos as Offset).x < me.x : me.x > cam.world.w / 2;
+    const f = tokenFacesLeft(state.combatants, c, cam.world.w, facing.current.get(c.id));
+    facing.current.set(c.id, f);
+    return f;
   };
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
@@ -1990,7 +1991,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <g className="token-filter" style={look.filter || look.opacity < 1 ? { filter: look.filter || undefined, opacity: look.opacity } : undefined}
                       transform={look.shrink < 1 || look.tilt ? `translate(${p.x} ${p.y}) rotate(${look.tilt ?? 0}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
                       <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
-                        flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} flying={isAirborne(c)} />
+                        flip={!c.civilian && facesLeft(c)} scale={scale} flying={isAirborne(c)} />
                       {/* Takım halkası yalnızca resimsiz (baş harfli) jetonda: resimli jetonda `.fig ~ .ring` gizler (Görev V2). */}
                       <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     </g>

@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-14 — Kuyruk K75b: K75 doğrulama mührü ve parti jetonu yönü (kural sürümü 79, kayıt sürümü 22 değişmedi)
+
+- Doğrulama (ayrıntı `harita/belgeler/K75B-SONUC.md`): check:ses K75 öncesi ve sonrası 3'er koşu hepsi 15/15, kararsızlık gözlenmedi (kök neden aranmadı); 78 ↔ 79 binek yokken dört senaryoda 30 tohum birebir aynı; YZ süresi 79, 78'e göre +%5 ve %0; binekli denge kayması 0 puan. Ayar yapılmadı.
+- Parti jetonu yönü (yalnız görünüm): jetonlar en yakın canlı karşı taraf yaratığına döner (`src/ui/tokenFacing.ts` `facesLeft`, parti ve düşman ortak). Eşitlikte önceki yön korunur (önbellek `useRef`, kayda girmez), karşı taraf yoksa önceki yön ya da harita ortası. Kanat katmanı figürle birlikte aynalanır. Sivil jeton, halka, rozet, efekt, `.body-base` ve karakter ekranlarındaki rozetler değişmedi.
+- Ters yerleşimin (parti sağda) ekran görüntüsü alınamadı; kayıt olaylardan yeniden oynatıldığı için konum enjekte edilemedi. Mantık birim testiyle kapsandı.
+
 ## 2026-11-14 — Kuyruk K75: küçük açıklar (kural sürümü 79; kayıt sürümü 22 değişmedi)
 
 Yeni komut, olay, ilkel ya da ev kuralı yok; her mekanik değişiklik `k75On` (`src/battle/k75Surum.ts`, `K75_VERSION` 79) kapısında, 78 ve altı aynen.

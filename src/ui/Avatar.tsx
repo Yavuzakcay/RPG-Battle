@@ -153,6 +153,7 @@ export function TokenFigure(props: { href: string; cx: number; cy: number; w: nu
   return (
     <>
       {wing && wb && <image className="look-wing" data-wing={wing.id} href={assetSrc(wing.src)} x={wb.x} y={wb.y} width={wb.width} height={wb.height} preserveAspectRatio="xMidYMid meet"
+        transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined}
         style={wing.filtre ? { filter: wing.filtre } : undefined} aria-hidden="true" />}
       {lk?.hideHalo && <clipPath id={clipId}><rect x={cx - w / 2} y={cy - w / 2 + (w * HALO_CLIP_PCT) / 100} width={w} height={w} /></clipPath>}
       <g transform={shape} clipPath={lk?.hideHalo ? `url(#${clipId})` : undefined}>
