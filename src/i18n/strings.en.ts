@@ -314,7 +314,7 @@ export const en: Strings = {
       // Kuyruk AS1a: sub-lineage buff/debuff descriptions (text only; effects do not work in the game yet).
       lineageBuff: 'Plus', lineageDebuff: 'Minus', lineageStatus: { calisir: 'works', kismi: 'partial', planli: 'planned' } as Record<string, string>, lineageNotYet: 'These effects do not work in the game yet (planned); description only for now.',
       lineageOptionalHint: 'No sub-lineage chosen: no sub-lineage effect until you pick one.',
-      skinTitle: 'Skin tone', exileTitle: 'Exile', exileHelp: 'As an Outwall, pick the culture you were exiled from: it only sets your look; traits and flaws stay Outwall\'s.', skinHelp: 'Skin tone comes from culture; for Outwall the exile culture\'s tone applies, otherwise any of the three.',
+      exileRequired: 'Pick an Exile culture for Outwall.', skinTitle: 'Skin tone', exileTitle: 'Exile', exileHelp: 'As an Outwall, pick the culture you were exiled from: it only sets your look; traits and flaws stay Outwall\'s.', skinHelp: 'Skin tone comes from culture; for Outwall the exile culture\'s tone applies, otherwise any of the three.',
       cultureTitle: 'Culture',
       lineageAbilities: 'Lineage abilities', preview: 'Token preview',
       notInGame: 'not in the game yet', offCombat: 'out of combat: the Game Master narrates',
@@ -329,6 +329,7 @@ export const en: Strings = {
   },
   issues: {
     nameEmpty: 'Name cannot be empty.', raceMissing: 'Pick a species.', classMissing: 'Pick a class.', levelRange: 'Level must be 1–20.',
+    exileMissing: 'Pick an Exile culture for Outwall.',
     lineageMissing: (race: string) => `Pick a lineage for ${race}.`,
     standardArray: 'Assign the standard array (15, 14, 13, 12, 10, 8) once to each score.',
     rolledArray: 'Assign the six rolled values once to each score.', rollNeeded: 'Roll for the scores (4d6).',

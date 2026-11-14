@@ -30,7 +30,7 @@ import { AlignmentGrid } from '../ui/AlignmentGrid';
 import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startContributions, startValue, type Alignment, type StartKind } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
-import { findSubclass, genderVisible, isOtherClassSubclass, notWorkingCount, packExperimental, subclassLabel, subclassMissing } from '../rules/subclasses';
+import { findSubclass, genderVisible, isOtherClassSubclass, subclassMissing, subclassPlainName } from '../rules/subclasses';
 import { wishPickKey } from '../battle/paket/bag';
 import {
   ASI_FEAT, advancementSlots, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
@@ -414,8 +414,9 @@ function IdentityStep({ c, setC, set, suggest }: StepProps) {
 }
 
 /**
- * Tür (SD3): 6 öne çıkan tür kartı + "Diğer türler"; seçilen türün tek satırlık tanıtımı. Soy/kültür ve ten tonu
- * "Soy ve görünüm" altında katlı (varsayılan seçili); soy zorunlu ve boşsa açık gelir.
+ * Tür (SD5): bütün türler tek ızgarada (kartta yalnız ad; satır kırar, kaydırma yok). Soy/kültür kartları seçildiği anda
+ * jeton önizlemesini değiştirir (önizleme sayfanın ortak jetonu). Human'ın 4 kültürü; Sur Dışı'nda Sürgün seçimi zorunlu,
+ * ten tonu kültür/sürgün seçiminden kendiliğinden gelir (ayrı ten bölmesi yok). Kartlarda açıklama yok; yalnız artı/eksi satırları.
  */
 function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
   const T = t().builder;
@@ -424,26 +425,20 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
   const race = races.find((r) => r.id === s.raceId);
   const lineage = lineageOf(s);
   const abilities = lineageAbilityList(s);
-  const featured = races.filter((r) => RACE_FEATURED.includes(r.id));
-  const others = races.filter((r) => !RACE_FEATURED.includes(r.id));
   const card = (r: (typeof races)[number]) => (
-    <button key={r.id} className={`pick-card${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
-      onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id, exileCulture: undefined })}>
-      <b>{r.name}</b><small>{raceBlurb(r.id, lang)}</small>
+    <button key={r.id} className={`pick-card race-card-small${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
+      onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id, exileCulture: undefined, ...(r.id === 'human' ? { skinTone: cultureSkinTone(r.lineages?.[0]?.id, s.skinTone) } : {}) })}>
+      <b>{r.name}</b>
     </button>
   );
   const hasLineage = !!race?.lineages && race.lineages.length > 0;
+  const exiles = exileOptions(s.lineageId);
   return (
     <>
-      <div className="card-grid">{featured.map(card)}</div>
-      {others.length > 0 && (
-        <Fold title={W.otherRaces(others.length)} open={others.some((r) => r.id === s.raceId)} className="race-more">
-          <div className="card-grid">{others.map(card)}</div>
-        </Fold>
-      )}
+      <div className="card-grid race-grid">{races.map(card)}</div>
       {race && (
         <div className="info-card race-card">
-          <p><b>{race.name}</b> {raceBlurb(race.id, lang)}
+          <p><b>{race.name}</b>
             <InfoPop text={[W.speed(raceSpeed(s)), raceDarkvision(s) ? W.darkvision(raceDarkvision(s)) : '',
               race.resistances?.length || lineage?.resistances.length ? W.resist([...new Set([...race.resistances, ...(lineage?.resistances ?? [])])].join(', ')) : '',
               race.evKurali ? [CELESTIAL.hikaye[lang], ...CELESTIAL.ozellikler.map((o) => `${o[lang]}: ${o.metin[lang]}`)].join('\n') : race.traits,
@@ -452,10 +447,10 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
         </div>
       )}
       {hasLineage && race && (
-        <Fold title={race.id === 'human' ? W.cultureTitle : W.lineageTitle} summary={lineage ? lineageName(lineage, lang) : W.noneShort}
-          open={!lineage && !race.lineageOptional} className="lineage-fold">
+        <section className="lineage-section" aria-label={race.id === 'human' ? W.cultureTitle : W.lineageTitle}>
+          <h4 className="lineage-title">{race.id === 'human' ? W.cultureTitle : W.lineageTitle}</h4>
           <p className="mute race-note">{W.raceBonusNote}</p>
-          {/* Görev K3: soy seçimi kartlarla; kartta yalnızca bu seçeneği ayıran özet. */}
+          {/* SD5: soy/kültür seçimi anında jeton önizlemesine yansır; kartta yalnız ad + artı/eksi özeti. */}
           <div className="card-grid lineage-grid" role="radiogroup" aria-label={W.lineageTitle}>
             {(race.lineages ?? []).map((l) => (
               <button key={l.id} role="radio" aria-checked={l.id === lineage?.id} className={`pick-card lineage-card${l.id === lineage?.id ? ' on' : ''}`}
@@ -467,41 +462,26 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           </div>
           {race.lineageOptional && !lineage && <p className="soft-warn">⚠ {W.lineageOptionalHint}</p>}
           {lineage && <LineageNotes raceId={race.id} lineage={lineage} />}
-          {race.id === 'human' && (
+          {race.id === 'human' && exiles.length > 0 && (
             <>
-              {/* Görev AS1b düzeltmesi: Sur Dışı'nda "Sürgün" seçimi (yalnız görünüm; buff/debuff Sur Dışı'nınki). */}
-              {exileOptions(s.lineageId).length > 0 && (
-                <>
-                  <h4 className="lineage-title">{W.exileTitle}</h4>
-                  <p className="mute race-note">{W.exileHelp}</p>
-                  <div className="card-grid lineage-grid exile-grid" role="radiogroup" aria-label={W.exileTitle}>
-                    {exileOptions(s.lineageId).map((id) => {
-                      const on = s.exileCulture === id;
-                      return (
-                        <button key={id} type="button" role="radio" aria-checked={on} className={`pick-card exile-card${on ? ' on' : ''}`} data-exile={id}
-                          onClick={() => set({ exileCulture: id, skinTone: cultureSkinTone(s.lineageId, s.skinTone, id) })}>
-                          <b>{exileName(id, lang)}</b>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-              <h4 className="lineage-title">{W.skinTitle}</h4>
-              {/* Ten tonu ayrı seçim; kültürün izin verdiği tonlar (`kulturTen`), tek tonlu kültürde kendiliğinden seçili. */}
-              <div className="skin-tones" role="radiogroup" aria-label={W.skinTitle}>
-                {tonesFor(s.lineageId, s.exileCulture).map((tone) => {
-                  const on = cultureSkinTone(s.lineageId, s.skinTone, s.exileCulture) === tone.id;
+              {/* Sur Dışı: Sürgün seçimi ZORUNLU (yalnız görünüm); seçim ten tonunu kendiliğinden belirler. */}
+              <h4 className="lineage-title">{W.exileTitle} <span className="req-mark" aria-hidden="true">*</span></h4>
+              <p className="mute race-note">{W.exileHelp}</p>
+              <div className="card-grid lineage-grid exile-grid" role="radiogroup" aria-label={W.exileTitle} aria-required="true">
+                {exiles.map((id) => {
+                  const on = s.exileCulture === id;
                   return (
-                    <button key={tone.id} type="button" role="radio" aria-checked={on} className={`skin-tone${on ? ' on' : ''}`} data-tone={tone.id} onClick={() => set({ skinTone: tone.id })}>
-                      <i style={{ background: tone.rozetRenk }} />{tone.ad[lang]}
+                    <button key={id} type="button" role="radio" aria-checked={on} className={`pick-card exile-card${on ? ' on' : ''}`} data-exile={id}
+                      onClick={() => set({ exileCulture: id, skinTone: cultureSkinTone(s.lineageId, s.skinTone, id) })}>
+                      <b>{exileName(id, lang)}</b>
                     </button>
                   );
                 })}
               </div>
+              {!s.exileCulture && <p className="soft-warn">⚠ {W.exileRequired}</p>}
             </>
           )}
-        </Fold>
+        </section>
       )}
       {race?.evKurali && (
         <>
@@ -611,23 +591,16 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
     const next = switchClass(x, id, x.method === 'standard' ? { baseScores: suggestedScores(id) } : {});
     return suggest ? reSuggestAfterClassSwitch(x, next) : next;
   });
-  const featured = classes.filter((k) => CLASS_FEATURED.includes(k.id));
-  const others = classes.filter((k) => !CLASS_FEATURED.includes(k.id));
   const card = (k: (typeof classes)[number]) => (
-    <button key={k.id} className={`pick-card${k.id === s.classId ? ' on' : ''}`} aria-pressed={k.id === s.classId} onClick={() => choose(k.id)}>
-      <b>{k.name}</b><small>{classBlurb(k.id, lang)}</small>
+    <button key={k.id} className={`pick-card class-card-small${k.id === s.classId ? ' on' : ''}`} aria-pressed={k.id === s.classId} onClick={() => choose(k.id)}>
+      <b>{k.name}</b>
     </button>
   );
   return (
     <>
-      <div className="card-grid">{featured.map(card)}</div>
-      {others.length > 0 && (
-        <Fold title={W.otherClasses(others.length)} open={others.some((k) => k.id === s.classId)} className="class-more">
-          <div className="card-grid">{others.map(card)}</div>
-        </Fold>
-      )}
+      <div className="card-grid class-grid">{classes.map(card)}</div>
       <p className="info-card">
-        <b>{cls.name}</b> {classBlurb(cls.id, lang)}
+        <b>{cls.name}</b>
         <InfoPop text={`${W.hitDie(cls.hitDie)} · ${W.saves(cls.saves.map((a) => a.toUpperCase()).join(', '))} · ${cls.casting ? W.castAbility(cls.casting.ability.toUpperCase()) : W.noCasting}${subLevel !== null ? ` · ${W.subclassAtLevel(subLevel)}` : ''}`} />
       </p>
       {subLevel !== null && subs.length === 0 && (
@@ -637,10 +610,10 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
         <label>{T.subclass}
           <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
             <option value="">{T.subclassNone}</option>
-            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang(), x.class)}{notWorkingCount(x) > 0 ? ` (${T.subclassNotWorking(notWorkingCount(x))})` : packExperimental(x) ? ` (${t().content.experimental})` : ''}</option>)}
+            {subs.map((x) => <option key={x.id} value={x.id}>{subclassPlainName(x.name, getLang(), x.class)}</option>)}
             {/* Kuyruk K49 B5: listeden kaldırılmış alt sınıfı seçili eski karakter açılır (seçimi görünür kalır). */}
             {!!s.subclassId && !subs.some((x) => x.id === s.subclassId) && !subclassMissing(s.classId, s.subclassId) && (
-              <option value={s.subclassId}>{subclassLabel(findSubclass(s.classId, s.subclassId)?.name ?? { tr: s.subclassId, en: s.subclassId }, getLang(), s.classId)}</option>
+              <option value={s.subclassId}>{subclassPlainName(findSubclass(s.classId, s.subclassId)?.name ?? { tr: s.subclassId, en: s.subclassId }, getLang(), s.classId)}</option>
             )}
             {subclassMissing(s.classId, s.subclassId) && <option value={s.subclassId}>{T.subclassMissing(s.subclassId ?? '')}</option>}
           </select>

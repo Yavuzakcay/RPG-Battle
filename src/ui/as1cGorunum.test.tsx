@@ -62,16 +62,17 @@ describe('kanat katmanı (bağlı)', () => {
     renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={sheetAvatar(sheet({ raceId, lineageId, level, ...(awakening ? { celestialAwakening: awakening } : {}) })).look} flying={flying} /></svg>);
   it('eşleme: üç slot, dosyalar bağlı ve gerçekten var, çapa/oran/omuz veride, Dragonborn 10 renk filtresi', async () => {
     expect(Object.keys(s).sort()).toEqual(['anka-ogretisi', 'celestial-kirik-kanat', 'dragonborn', 'melek-acik', 'tiefling-kanatli']);
-    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.568, 0.438], dragonborn: [0.5, 0.626], 'melek-acik': [0.5, 0.383] };
+    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.568, 0.438], dragonborn: [0.5, 0.626], 'melek-acik': [0.5, 0.3] };
     for (const [id, w] of Object.entries(s).filter(([k]) => k !== 'anka-ogretisi')) {
       expect(w.dosya, id).toBe(`${id}.webp`);
       const meta = await sharp(`public/kanat/${w.dosya}`).metadata();
       expect(meta.hasAlpha, id).toBe(true);
-      expect(w.enBoy, id).toBeCloseTo(meta.height! / meta.width!, 3);
+      // SD5: Melek kanadı oransız (esnet) oturur; diğerlerinde en-boy görselinki.
+      if (!(w as { esnet?: boolean }).esnet) expect(w.enBoy, id).toBeCloseTo(meta.height! / meta.width!, 3);
       expect(w.capa, id).toEqual(capa[id as keyof typeof capa]);
-      expect(w.olcek).toBeCloseTo(id === 'melek-acik' ? 1.5 : 1.45); expect(w.omuz).toBeCloseTo(0.46); expect(w.enBoy).toBeGreaterThan(0.2);
+      expect(w.olcek).toBeCloseTo(id === 'melek-acik' ? 1.2 : 1.45); expect(w.omuz).toBeCloseTo(0.46); expect(w.enBoy).toBeGreaterThan(0.2);
     }
-    expect(Object.keys(s.dragonborn!.renkFiltreleri!).sort()).toEqual(['black', 'blue', 'brass', 'bronze', 'copper', 'gold', 'green', 'red', 'silver', 'white']);
+    expect(Object.keys((s.dragonborn as unknown as { renkPaletleri: Record<string, unknown> }).renkPaletleri).sort()).toEqual(['black', 'blue', 'brass', 'bronze', 'copper', 'gold', 'green', 'red', 'silver', 'white']);
   });
   it('Anka Öğretisi: animasyonlu 4x2 sayfa, yalnız havada, kanat figürle aynalanır, ilk kare sabit (rozet)', async () => {
     const w = s['anka-ogretisi'] as unknown as { altSinif: string; dosya: string; sprite: { klasor: string; sutun: number; satir: number; kareEn: number; kareBoy: number }; enBoy: number };
@@ -99,11 +100,12 @@ describe('kanat katmanı (bağlı)', () => {
     expect(lineageLook({ raceId: 'celestial', celestialAwakening: 'parlayan-ruh', level: 5 }, { flying: true }).wing).toBeNull();
     expect(lineageLook({ raceId: 'celestial', celestialAwakening: 'kirik-kanat', level: 2 }, { flying: false }).wing).toBeNull();
   });
-  it('Dragonborn kanat rengi soya göre filtreyle; beyaz filtresiz', () => {
+  it('Dragonborn kanat rengi soya göre palet filtresiyle (SD5: opak, pul rengi); Tiefling kanadı tek palet', () => {
     const red = lineageLook({ raceId: 'dragonborn', lineageId: 'red', level: 5 }, { flying: true }).wing!;
     const white = lineageLook({ raceId: 'dragonborn', lineageId: 'white', level: 5 }, { flying: true }).wing!;
-    expect(red.filtre).toContain('hue-rotate');
-    expect(white.filtre).toBe('');
+    expect(red.palet).toBeTruthy(); expect(white.palet).toBeTruthy(); expect(red.palet).not.toEqual(white.palet);
+    expect(red.filtre).toBe('');
+    expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing!.palet).toBeTruthy();
   });
   it('jeton çizimi: kanat jetonun ARKASINDA, kök jetonun yatay merkezinde ve omuz yüksekliğinde, ayna yok', () => {
     const svg = svgOf('tiefling', 'winged', 1, true);
@@ -136,7 +138,7 @@ describe('alt sınıfa bağlı kanat slotu (altSinif)', () => {
   });
   it('melek: havadayken katman (açık sprite), yerdeyken yok; hata yok', () => {
     const sh = { raceId: 'human', classId: undefined, subclassId: 'melek', level: 5 };
-    expect(lineageLook(sh, { flying: true }).wing).toMatchObject({ id: 'melek-acik', src: 'kanat/melek-acik.webp', open: true, filtre: '', olcek: 1.5 });
+    expect(lineageLook(sh, { flying: true }).wing).toMatchObject({ id: 'melek-acik', src: 'kanat/melek-acik.webp', open: true, filtre: '', olcek: 1.2, esnet: true });
     expect(lineageLook(sh, { flying: false }).wing).toBeNull();
     expect(lineageLook(sh).wing).toBeNull();
   });

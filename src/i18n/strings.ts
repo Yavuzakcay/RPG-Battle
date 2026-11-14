@@ -331,7 +331,7 @@ const tr = {
       // Kuyruk AS1a: alt soy buff/debuff açıklamaları (yalnızca metin; etkisi henüz oyunda çalışmıyor).
       lineageBuff: 'Artı', lineageDebuff: 'Eksi', lineageStatus: { calisir: 'çalışır', kismi: 'kısmi', planli: 'planlı' } as Record<string, string>, lineageNotYet: 'Bu etkiler henüz oyunda çalışmıyor (planlı); şimdilik yalnızca açıklama.',
       lineageOptionalHint: 'Alt soy seçilmedi: seçene dek alt soy etkisi yok.',
-      skinTitle: 'Ten tonu', exileTitle: 'Sürgün', exileHelp: 'Sur Dışı olarak hangi kültürden sürüldüğünü seç: yalnız görünümü belirler, yetenek ve kusurlar Sur Dışı\'nınki kalır.', skinHelp: 'Ten tonu kültürden gelir; Sur Dışı seçeneğinde sürgün kültürünün tonu geçerli, yoksa üç ton.',
+      exileRequired: 'Sur Dışı için Sürgün kültürünü seç.', skinTitle: 'Ten tonu', exileTitle: 'Sürgün', exileHelp: 'Sur Dışı olarak hangi kültürden sürüldüğünü seç: yalnız görünümü belirler, yetenek ve kusurlar Sur Dışı\'nınki kalır.', skinHelp: 'Ten tonu kültürden gelir; Sur Dışı seçeneğinde sürgün kültürünün tonu geçerli, yoksa üç ton.',
       cultureTitle: 'Kültür',
       lineageAbilities: 'Soy yetenekleri', preview: 'Jeton önizlemesi',
       notInGame: 'henüz oyunda yok', offCombat: 'savaş dışı: Game Master anlatır',
@@ -347,6 +347,7 @@ const tr = {
   /** Görev SD4: oluşturucu sorun metinleri (`characterIssues` ve yardımcıları; eskiden kural modüllerinde gömülü Türkçe). */
   issues: {
     nameEmpty: 'Ad boş olamaz.', raceMissing: 'Tür seçilmeli.', classMissing: 'Sınıf seçilmeli.', levelRange: 'Seviye 1–20 olmalı.',
+    exileMissing: 'Sur Dışı için Sürgün kültürü seçilmeli.',
     lineageMissing: (race: string) => `${race} için soy seçilmeli.`,
     standardArray: 'Standart dizi (15, 14, 13, 12, 10, 8) her skora bir kez dağıtılmalı.',
     rolledArray: 'Atılan altı değer her skora bir kez dağıtılmalı.', rollNeeded: 'Skorlar için zar atılmalı (4d6).',

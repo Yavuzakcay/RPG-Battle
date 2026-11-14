@@ -5,7 +5,8 @@
  * `Avatar.tsx` içinde kullanır.
  */
 import { useState, type CSSProperties, type ReactNode } from 'react';
-import { HALO_CLIP_PCT, lineageLook, wingBox, type LookSheet, type WingLayerSpec } from './lineageLook';
+import { WingFilterDefs } from './WingFilter';
+import { HALO_CLIP_PCT, lineageLook, wingBox, wingFilterId, type LookSheet, type WingLayerSpec } from './lineageLook';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -16,11 +17,13 @@ export function WingLayer(props: { wing: WingLayerSpec; size: number }) {
   if (gone) return null;
   const b = wingBox(wing, size / 2, size / 2, size);
   const sp = wing.sprite;
+  const filter = wing.palet ? `url(#${wingFilterId(wing.palet)})` : wing.filtre || undefined;
+  const defs = wing.palet ? <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true"><WingFilterDefs palet={wing.palet} /></svg> : null;
   // Animasyonlu sayfa: karakter ekranlarında yalnız ilk kare sabit (arka plan kesiti).
-  const style: CSSProperties = { width: b.width, height: b.height, left: b.x, top: b.y, ...(wing.filtre ? { filter: wing.filtre } : {}),
+  const style: CSSProperties = { width: b.width, height: b.height, left: b.x, top: b.y, ...(filter ? { filter } : {}),
     ...(sp ? { backgroundImage: `url(${BASE}${wing.src})`, backgroundSize: `${sp.sutun * 100}% ${sp.satir * 100}%`, backgroundPosition: '0 0', backgroundRepeat: 'no-repeat' } : {}) };
-  if (sp) return <span className="look-wing" data-wing={wing.id} style={style} aria-hidden="true" />;
-  return <img className="look-wing" data-wing={wing.id} src={`${BASE}${wing.src}`} alt="" style={style} aria-hidden="true" onError={() => setGone(true)} />;
+  if (sp) return <>{defs}<span className="look-wing" data-wing={wing.id} style={style} aria-hidden="true" /></>;
+  return <>{defs}<img className="look-wing" data-wing={wing.id} src={`${BASE}${wing.src}`} alt="" style={{ ...style, ...(wing.esnet ? { objectFit: 'fill' } : {}) }} aria-hidden="true" onError={() => setGone(true)} /></>;
 }
 
 /** `ability`: karakter ekranı (liste, oluşturucu önizlemesi): uçma yeteneği olan karakter havada olmasa da kanatlı görünür. */

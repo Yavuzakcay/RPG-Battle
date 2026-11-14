@@ -1,5 +1,5 @@
 {
-  "not": "Kuyruk AS1c + kanat bağlama: savaş jetonu kanat katmanı eşlemesi (yalnız görünüm). Katman jetonun ARKASINDA çizilir. Görünürlük: `herZaman: true` her zaman açık sprite ile; yoksa yalnız süzülürken/uçarken (isAirborne) `dosya`, havada değilken `dosyaKapali` (null ise katman yok). `dosya` null iken katman sessizce yok. Görsel: şeffaf WebP, sol+sağ kanat tek görselde, BEYAZ-GRİ taban; renk `filtre` / `renkFiltreleri` (CSS filter) ile verilir. Yerleşim (kanat başına ayarlanabilir): `capa` = [x, y] kanat KÖKÜ, görselin oranı olarak (0–1); `olcek` = kanat çifti genişliği / jeton genişliği; `omuz` = kanat kökünün jeton sprite yüksekliğinde tepeden oranı (≈ omuz yüksekliği); kök jetonun yatay merkezindedir. `enBoy` = görsel yüksekliği / genişliği. AYNALAMA YOK (Celestial kanadı asimetrik). `minSeviye`: slotun göründüğü en düşük karakter seviyesi. `altSinif` (isteğe bağlı): slotu alt sınıf kimliğine bağlar (örn. `melek`); karakterin seçili alt sınıfı bu kimlikse (ve alt sınıf kayıtta yüklüyse) slot, ırk/alt soy kanadının yerine geçer; alt sınıf seçili ya da yüklü değilse slot hiçbir etki yapmaz. Alan yoksa slot ırk/alt soy/Göksel Uyanış eşlemesiyle (`alt-soy-gorunum.json`) seçilir.",
+  "not": "Kuyruk AS1c + kanat bağlama: savaş jetonu kanat katmanı eşlemesi (yalnız görünüm). Katman jetonun ARKASINDA çizilir. Görünürlük: `herZaman: true` her zaman açık sprite ile; yoksa yalnız süzülürken/uçarken (isAirborne) `dosya`, havada değilken `dosyaKapali` (null ise katman yok). `dosya` null iken katman sessizce yok. Görsel: şeffaf WebP, sol+sağ kanat tek görselde, BEYAZ-GRİ taban; renk `filtre` / `renkFiltreleri` (CSS filter) ile verilir. Yerleşim (kanat başına ayarlanabilir): `capa` = [x, y] kanat KÖKÜ, görselin oranı olarak (0–1); `olcek` = kanat çifti genişliği / jeton genişliği; `omuz` = kanat kökünün jeton sprite yüksekliğinde tepeden oranı (≈ omuz yüksekliği); kök jetonun yatay merkezindedir. `enBoy` = görsel yüksekliği / genişliği. AYNALAMA YOK (Celestial kanadı asimetrik). `minSeviye`: slotun göründüğü en düşük karakter seviyesi. `altSinif` (isteğe bağlı): slotu alt sınıf kimliğine bağlar (örn. `melek`); karakterin seçili alt sınıfı bu kimlikse (ve alt sınıf kayıtta yüklüyse) slot, ırk/alt soy kanadının yerine geçer; alt sınıf seçili ya da yüklü değilse slot hiçbir etki yapmaz. Alan yoksa slot ırk/alt soy/Göksel Uyanış eşlemesiyle (`alt-soy-gorunum.json`) seçilir. SD5: `palet` ({golge, isik} hex) kanadı SVG filtresiyle parlaklık→renk eşler (opak kalır; renkli CSS `filter` yerine); `renkPaletleri` soy kimliğine göre (Dragonborn pul rengi); `esnet: true` görseli kutuya oransız oturtur (Melek kanadı daha yüksek, daha az yassı).",
   "klasor": "kanat",
   "slotlar": {
     "tiefling-kanatli": {
@@ -10,13 +10,16 @@
       "dosya": "tiefling-kanatli.webp",
       "dosyaKapali": null,
       "olcek": 1.45,
-      "filtre": "sepia(1) saturate(4) hue-rotate(-72deg) brightness(0.5)",
       "capa": [
         0.501,
         0.708
       ],
       "enBoy": 0.3246,
-      "omuz": 0.46
+      "omuz": 0.46,
+      "palet": {
+        "golge": "#4b1d52",
+        "isik": "#b86aa8"
+      }
     },
     "celestial-kirik-kanat": {
       "ad": {
@@ -45,24 +48,54 @@
       "dosyaKapali": null,
       "minSeviye": 5,
       "olcek": 1.45,
-      "renkFiltreleri": {
-        "black": "grayscale(1) brightness(0.3)",
-        "blue": "sepia(1) saturate(4.5) hue-rotate(172deg) brightness(0.7)",
-        "brass": "sepia(1) saturate(3) hue-rotate(-6deg) brightness(0.75)",
-        "bronze": "sepia(1) saturate(2.5) hue-rotate(-4deg) brightness(0.42)",
-        "copper": "sepia(1) saturate(4.5) hue-rotate(-34deg) brightness(0.62)",
-        "gold": "sepia(1) saturate(4.5) hue-rotate(-6deg) brightness(0.9)",
-        "green": "sepia(1) saturate(3.5) hue-rotate(72deg) brightness(0.55)",
-        "red": "sepia(1) saturate(6) hue-rotate(-68deg) brightness(0.55)",
-        "silver": "grayscale(1) brightness(0.82) contrast(0.9)",
-        "white": ""
-      },
       "capa": [
         0.5,
         0.626
       ],
       "enBoy": 0.3659,
-      "omuz": 0.46
+      "omuz": 0.46,
+      "renkPaletleri": {
+        "black": {
+          "golge": "#2c363e",
+          "isik": "#767f86"
+        },
+        "blue": {
+          "golge": "#315b8f",
+          "isik": "#8ca8d6"
+        },
+        "brass": {
+          "golge": "#8d6d35",
+          "isik": "#d9ba8a"
+        },
+        "bronze": {
+          "golge": "#6b482a",
+          "isik": "#af8e73"
+        },
+        "copper": {
+          "golge": "#89502f",
+          "isik": "#ce987b"
+        },
+        "gold": {
+          "golge": "#967918",
+          "isik": "#e4c679"
+        },
+        "green": {
+          "golge": "#30583c",
+          "isik": "#7ea086"
+        },
+        "red": {
+          "golge": "#9c2c2d",
+          "isik": "#da7872"
+        },
+        "silver": {
+          "golge": "#5d8191",
+          "isik": "#b4d2df"
+        },
+        "white": {
+          "golge": "#a8acae",
+          "isik": "#e3e6e8"
+        }
+      }
     },
     "melek-acik": {
       "ad": {
@@ -74,12 +107,13 @@
       "dosyaKapali": null,
       "capa": [
         0.5,
-        0.383
+        0.3
       ],
-      "enBoy": 0.2721,
-      "olcek": 1.5,
+      "enBoy": 0.44,
+      "olcek": 1.2,
       "omuz": 0.46,
-      "filtre": ""
+      "filtre": "",
+      "esnet": true
     },
     "anka-ogretisi": {
       "ad": {
@@ -89,7 +123,14 @@
       "altSinif": "anka-ogretisi",
       "dosya": "efekt-kanat-anka.webp",
       "dosyaKapali": null,
-      "sprite": { "klasor": "efekt", "sutun": 4, "satir": 2, "kareEn": 512, "kareBoy": 382, "kareMs": 100 },
+      "sprite": {
+        "klasor": "efekt",
+        "sutun": 4,
+        "satir": 2,
+        "kareEn": 512,
+        "kareBoy": 382,
+        "kareMs": 100
+      },
       "capa": [
         0.5,
         0.78

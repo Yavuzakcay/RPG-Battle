@@ -4,6 +4,7 @@
  * SRD 5.2.1 "Character Creation": standart dizi 15, 14, 13, 12, 10, 8; point buy 27 puan,
  * skorlar 8–15, maliyet tablosu aşağıda. Ability bonusları geçmişten (+2/+1 veya +1/+1/+1).
  */
+import ALT_SOY_GORUNUM from '../../data/alt-soy-gorunum.json';
 import type { Alignment } from './alignment';
 import { invocationKit, invocationProblems, invocationSlots, parseInvocation } from './invocations';
 import { armor, classes, getClass, items, races, spells, weapons } from '../data';
@@ -329,6 +330,8 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   if (race?.lineages && race.lineages.length > 0 && !race.lineageOptional && !race.lineages.some((l) => l.id === s.lineageId)) {
     push(I().lineageMissing(race.name));
   }
+  // SD5: Sur Dışı'nda Sürgün kültürü seçimi zorunlu (yalnız görünüm; ton buradan gelir).
+  if (race?.id === 'human' && s.lineageId === ALT_SOY_GORUNUM.ten.surgun.kultur && !ALT_SOY_GORUNUM.ten.surgun.secenekler.includes(s.exileCulture ?? '')) push(I().exileMissing);
   step = 'scores';
   if (c.method === 'standard' && !usesStandardArray(s.baseScores)) push(I().standardArray);
   if (c.method === 'roll' && !usesRolled(s.baseScores, c.rolled)) push(c.rolled ? I().rolledArray : I().rollNeeded);

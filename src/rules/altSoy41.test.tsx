@@ -144,7 +144,8 @@ describe('oluşturucu: soy kartları', () => {
     // Kültür kartlarında "Sürgünü" eki yok (Sürgün seçimi kartları ayrı bölümde: exile-grid).
     expect(m.split('exile-grid')[0]).not.toContain('Sürgünü');
     expect(m).toContain('Kültür');
-    expect((m.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(3);
+    // SD5: ayrı "Ten tonu" bölmesi kaldırıldı; ton kültür/sürgün seçiminden kendiliğinden gelir.
+    expect((m.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(0);
     expect(SKIN_TONES.map((t) => t.id)).toEqual(['orijinal', 'siyahi', 'dogu-asyali']);
     // Kültür–ten eşlemesi: Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın, Sur Dışı üçü.
     expect(CULTURE_SKIN).toEqual({ tenhausser: ['siyahi'], khadyrga: ['orijinal'], 'pure-city': ['dogu-asyali'], outwall: ['orijinal', 'siyahi', 'dogu-asyali'] });
@@ -152,15 +153,14 @@ describe('oluşturucu: soy kartları', () => {
     for (const [lin, tone] of [['tenhausser', 'siyahi'], ['khadyrga', 'orijinal'], ['pure-city', 'dogu-asyali']] as const) {
       for (const saved of [undefined, 'orijinal', 'siyahi', 'dogu-asyali', 'abanoz']) {
         expect(cultureSkinTone(lin, saved), `${lin}/${saved}`).toBe(tone);
-        const h = html(char({ raceId: 'human', lineageId: lin, skinTone: saved }));
-        expect((h.match(/class="skin-tone( on)?"/g) ?? []).length).toBe(1);
-        expect(h).toContain(`class="skin-tone on" data-tone="${tone}"`);
+        // SD5: ten seçici yok; ton jeton boyasından (sheetAvatar) kendiliğinden.
+        expect(html(char({ raceId: 'human', lineageId: lin, skinTone: saved }))).not.toContain('skin-tone');
       }
     }
     // Sur Dışı ve kültürsüz: kayıtlı ton aynen (bilinmeyen → Orijinal seçili).
     expect(cultureSkinTone('outwall', 'siyahi')).toBe('siyahi');
     expect(cultureSkinTone(undefined, 'dogu-asyali')).toBe('dogu-asyali');
-    expect(html(char({ raceId: 'human', lineageId: 'outwall', skinTone: 'abanoz' }))).toContain('class="skin-tone on" data-tone="orijinal"');
+    expect(cultureSkinTone('outwall', 'abanoz')).toBe('orijinal');
     expect(html(char({ raceId: 'elf', lineageId: 'drow' }))).not.toContain('skin-tone');
   });
   it('jeton tonu kültürden: Tenhausser kayıtlı tonsuz da Koyu boyanır, Khadyrga kayıtlı Koyu ile de boyasız', () => {

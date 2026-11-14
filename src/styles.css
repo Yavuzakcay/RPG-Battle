@@ -1376,3 +1376,11 @@ button.cta.soft { opacity: .65; }
   50% { transform: translate(0, -382px); } 62.5% { transform: translate(-512px, -382px); } 75% { transform: translate(-1024px, -382px); } 87.5% { transform: translate(-1536px, -382px); }
 }
 @media (prefers-reduced-motion: reduce) { .wing-anim { animation: none; } }
+
+/* SD5: tür ve sınıf tek ızgara; küçük kartlar, satır kırar. */
+.race-grid, .class-grid { grid-template-columns: repeat(auto-fill, minmax(min(104px, 46%), 1fr)); gap: 6px; }
+.pick-card.race-card-small, .pick-card.class-card-small { min-height: 40px; justify-content: center; padding: 6px 10px; }
+.req-mark { color: #e06c6c; }
+.lineage-section { margin-top: 6px; }
+.race-grid .pick-card b, .class-grid .pick-card b { overflow-wrap: normal; font-size: 14px; }
+.race-grid, .class-grid { grid-template-columns: repeat(auto-fill, minmax(min(112px, 46%), 1fr)); }

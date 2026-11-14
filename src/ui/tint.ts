@@ -204,6 +204,14 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
         ctx.drawImage(img, 0, 0);
         const px = ctx.getImageData(0, 0, W, H);
         const entry = spriteName(url) ? headEntry(spriteName(url) as string) : undefined;
+        // SD5: Human ten maskesindeki küçük delikler (yüz, kulak, eller) çizim tarafında kapatılır; dosyalar değişmez.
+        if ((mask || weights) && /^human-/.test(spriteName(url) ?? '')) {
+          // Ana parça küçük kalsın: delik kapatma tembel parça.
+          const { closeSkinHoles } = await import('./maskClose');
+          const closed = closeSkinHoles(px.data, mask, weights, W, H);
+          if (closed.mask) mask = closed.mask;
+          if (closed.weights) weights = closed.weights;
+        }
         if (overlay && entry && (mask || weights)) {
           const base = mask ?? Uint8Array.from(weights as Uint8Array, (w) => (w > 0 ? 1 : 0));
           const r = applyHeadOverlay(px.data, base, overlay, entry.box, W, { body: entry.govdeBoya !== false });

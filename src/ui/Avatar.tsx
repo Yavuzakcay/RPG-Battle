@@ -6,6 +6,8 @@
 import { useEffect, useId, useState, type CSSProperties } from 'react';
 import { HALO_CLIP_PCT, lineageLook, wingBox, type WingLayerSpec } from './lineageLook';
 import { useWingAnim } from './wingAnim';
+import { WingFilterDefs } from './WingFilter';
+import { wingFilterId } from './lineageLook';
 import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
 import { tintedReady, tintedUrl } from './tint';
@@ -145,12 +147,18 @@ function WingImage(props: { wing: WingLayerSpec; wb: { x: number; y: number; wid
   const animate = useWingAnim(!!wing.sprite);
   const transform = props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined;
   const sp = wing.sprite;
+  const filter = wing.palet ? `url(#${wingFilterId(wing.palet)})` : wing.filtre || undefined;
+  const style = filter ? { filter } : undefined;
+  const defs = wing.palet ? <WingFilterDefs palet={wing.palet} /> : null;
   if (!sp) {
-    return <image className="look-wing" data-wing={wing.id} href={assetSrc(wing.src)} x={wb.x} y={wb.y} width={wb.width} height={wb.height} preserveAspectRatio="xMidYMid meet"
-      transform={transform} style={wing.filtre ? { filter: wing.filtre } : undefined} aria-hidden="true" />;
+    return (
+      <>{defs}<image className="look-wing" data-wing={wing.id} href={assetSrc(wing.src)} x={wb.x} y={wb.y} width={wb.width} height={wb.height} preserveAspectRatio={wing.esnet ? 'none' : 'xMidYMid meet'}
+        transform={transform} style={style} aria-hidden="true" /></>
+    );
   }
   return (
-    <g transform={transform} style={wing.filtre ? { filter: wing.filtre } : undefined} aria-hidden="true">
+    <g transform={transform} style={style} aria-hidden="true">
+      {defs}
       <svg className="look-wing wing-sprite" data-wing={wing.id} x={wb.x} y={wb.y} width={wb.width} height={wb.height} viewBox={`0 0 ${sp.kareEn} ${sp.kareBoy}`} overflow="hidden">
         <image className={animate ? 'wing-sheet wing-anim' : 'wing-sheet'} href={assetSrc(wing.src)} width={sp.kareEn * sp.sutun} height={sp.kareBoy * sp.satir}
           style={animate ? { animationDuration: `${sp.kareMs * sp.sutun * sp.satir}ms` } : undefined} />
@@ -158,7 +166,6 @@ function WingImage(props: { wing: WingLayerSpec; wb: { x: number; y: number; wid
     </g>
   );
 }
-
 /**
  * Kuyruk AS1c: jeton figürü (SVG): kanat katmanı (jetonun arkasında; `lineageLook`), alt soy oranı, Celestial hale gizleme ve
  * filtre. Yalnız çizim: `x/y/width/height` ve tıklama alanı aynı.
