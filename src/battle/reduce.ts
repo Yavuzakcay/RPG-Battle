@@ -1180,6 +1180,14 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       // Kaybolan yaratık savaşçılarda kalır (günlük adları), sırada atlanır (0 HP, ölü), haritadan kalkar.
       const c = state.combatants[event.actorId];
       if (!c) return state;
+      // HATA-FAMILIAR: savaş öncesi (kurulum) kaybolan yaratığın kaydı tamamen silinir (yeniden çağrı = biçim değişimi; artık kayıt
+      // "Henüz yerleşmeyenler var" diye başlatmayı kilitlemez). Savaşta günlük adları için kayıt kalır.
+      if (state.status === 'setup') {
+        const { [c.id]: _gone, ...rest } = state.combatants;
+        // Kaldırılan kaydı binek olarak gösteren binici bağı da temizlenir (artık kayıt "binekten indi" gürültüsü üretmesin).
+        for (const [id, x] of Object.entries(rest)) if (x.riding === c.id) { const { riding: _r, ...nx } = x; rest[id] = nx as typeof x; }
+        return { ...state, combatants: rest, order: state.order.filter((id) => id !== c.id) };
+      }
       return withCombatant(state, c.id, {
         hp: 0, pos: null, life: 'dead', conditions: [], concentration: null, effects: [], tempHp: 0,
         ...(c.summon ? { summon: { ...c.summon, gone: true } } : {}),

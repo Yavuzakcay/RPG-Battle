@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-22 — HATA-FAMILIAR: kurulumda Find Familiar yeniden çağrısı birikiyordu, "Savaşı başlat" kilitleniyordu (Kuyruk KQ1; kural sürümü ve kayıt sürümü değişmedi)
+
+- **Kök neden:** Çağrı komutu doğruydu (`def.replace`: önceki familiar için `summon_vanished`), ama reducer kaybolan yaratığı `gone: true, pos: null` olarak **savaşçılarda bırakıyordu** (savaşta günlük adları için). Kurulumda bu artık kayıtlar `executeStartBattle`'ın "haritada olmayan = yerleşmemiş" denetimine takılıyordu (`c.pos === null`): her yeniden çağrı bir artık daha ekliyor, "Henüz yerleşmeyenler var: Spider, Spider…" sonsuza dek kalıyordu. Yerleşmemiş kayıt sayısı çağrı sayısıyla büyüdü (7 Spider + 3 Rat örneği); testle yeniden üretildi (`src/battle/hataFamiliar.test.ts`).
+- **Düzeltme:** (1) reducer `summon_vanished`: durum `setup` ise kayıt tamamen silinir (savaşçılar + sıra; yeniden çağrı = biçim değişimi, sahibi başına tek familiar); kaydı bineği gösteren binici bağı (`riding`) da temizlenir. Savaşta eskisi gibi (günlük için kayıt kalır). (2) `executeStartBattle`: `summon.gone` kayıtlar yerleşmemiş sayılmaz — eski kayıtlardaki artıklar da başlatmayı engellemez (kural sürümü gerekmedi: yalnız kurulum ve saf artık).
+- **"Spider … binekten indi":** kodda yeniden çağrının kendisi `dismounted` üretmiyor (olay dökümü doğrulandı). Olası kaynak kurulumdaki "binmiş başla" menüsü: seçili familiar için aday listesinde yerleşmiş herkes çıkıyordu; kayıt silinirken bağlı `riding` temizlenmediği için `riderCleanup` artık kaydı "binekten düştü/indi" diye raporlayabilirdi. Artık kayıt silindiği ve bağ temizlendiği için bu olay üretilmez. Kullanıcıdan gerçek günlük gelirse yeniden bakılır (açık: menüde familiar'ın biniciliği aday olması ayrıca sadeleştirilmedi).
+- Doğrulama: `src/battle` + `k59uyum` 208 dosya / 3309 test yeşil (reducer ortak olduğu için).
+
 ## 2026-11-21 — SD8 (Ayarlar): sade Ayarlar, "Oda kuralları", Keşif Defteri sayfası, zar seçimi oluşturucuda (yalnız arayüz/veri; kural sürümü, kayıt sürümü, motor değişmedi)
 
 - **Not:** "SD8" kimliği daha önce Dark Elf paletleri içindi; bu iş "SD8 (Ayarlar)". Denetim tablosu `harita/belgeler/SD8-AYARLAR.md`; ekran görüntüleri `docs/sd8/ayarlar-once-*.png` / `ayarlar-sonra-*.png` (masaüstü + dar).

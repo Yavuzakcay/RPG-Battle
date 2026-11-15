@@ -179,7 +179,8 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
 export function executeStartBattle(state: BattleState, ctx: CommandContext): CommandResult {
   if (!ctx.isGm) return fail('Savaşı yalnızca GM başlatabilir.');
   if (state.status !== 'setup') return fail('Savaş zaten başladı.');
-  const missing = Object.values(state.combatants).filter((c) => c.pos === null);
+  // HATA-FAMILIAR: kaybolmuş çağrılar (eski kayıtlarda kalan artıklar) haritada olmadığı için yerleşmeyen sayılmaz.
+  const missing = Object.values(state.combatants).filter((c) => c.pos === null && !c.summon?.gone);
   if (missing.length > 0) return fail(`Henüz yerleşmeyenler var: ${missing.map((c) => c.name).join(', ')}.`);
   const events: BattleEvent[] = [{ type: 'combat_started' }];
   return { ok: true, state: applyEvents(state, events), events };
