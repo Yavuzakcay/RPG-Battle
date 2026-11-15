@@ -1,6 +1,6 @@
 # SD9: Game Master kurulum ekranı denetimi ve yeni düzen
 
-Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: hiçbir satır kaldırılmadı; varsayılanlar, saklama anahtarları ve savaş kaydındaki değerler aynı. "Kaldırma adayı" işaretliler altyapı satırlarıdır; kullanıcı bu tablodan seçecek.
+Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: SD9 aşamasında hiçbir satır kaldırılmadı; SD9B ile 7 altyapı satırı kurulumdan gizlendi (bölüm 5); varsayılanlar, saklama anahtarları ve savaş kaydındaki değerler aynı. "Kaldırma adayı" işaretliler altyapı satırlarıdır; kullanıcı bu tablodan seçecek.
 
 Üretim: `node scripts/sd9-kurulum-tablo.mjs` (veri: `data/kural-kontrol.json`, `data/ev-kurallari.json`, `data/kurulum-gruplari.json`).
 
@@ -55,7 +55,7 @@ Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: hiçbi
 
 | Kimlik | Ad | Tür | Varsayılan | Grup | Kaldırma adayı |
 |---|---|---|---|---|---|
-| `freeHexTarget` | Alan/atma etkileri her altıgene atılabilir (ateş büyüsü boş zemine düşünce söner) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
+| `freeHexTarget` | Alan/atma etkileri her altıgene atılabilir (ateş büyüsü boş zemine düşünce söner) | global | açık | Diğer (altyapı) | **kaldırma adayı** (Diğer'de kaldı) |
 | `waterSurfaceDecay` | Suda yüzey etkileri azalsın (gres/yağ her tur yarıya iner, alev söner) | global | açık | Yüzey ve su tepkimeleri |  |
 | `hiddenObjects` | Gizli nesneleri oyunculardan sakla (komşuya girince ya da pasif Algıyla bulunur) | global | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `deepWaterLimit` | Çok derin su (kıyıdan uzak derin suya yalnızca yüzücü, suda yürüyen, uçan) | global | açık | Harita (lav, derin su, gizli nesne…) |  |
@@ -64,7 +64,7 @@ Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: hiçbi
 | `heightFall` | Düşme hasarı (yükseklik katmanı: 10 ft başına 1d6, Prone) | global | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `heightCombat` | Yüksek zemin (seviye farkıyla avantaj/dezavantaj, menzil, kenar siperi) | global | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `heightSight` | Yükseklik görüşü keser (tepe, sur) | global | açık | Büyü ve görüş sistemleri |  |
-| `heightShow` | Yükseklik katmanını göster | global | açık | Diğer (altyapı) | **kaldırma adayı** |
+| `heightShow` | Yükseklik katmanını göster | global | açık | Diğer (altyapı) | **kaldırma adayı** (Diğer'de kaldı) |
 | `heat` | Çöl sıcağı (ağır zırhlı, gölgesiz CON save) | harita | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `sandstorm` | Kum fırtınası (görüş, menzilli dezavantaj, gizlenme avantajı) | harita | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `lavaEdge` | Lav kenarı (bitişikte tur başı ateş hasarı) | harita | açık | Harita (lav, derin su, gizli nesne…) |  |
@@ -131,33 +131,33 @@ Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: hiçbi
 | `supremeSneak` | Supreme Sneak (Thief 9: Stealth Attack, ¾ siperde saldıran gizli kalır) | global | açık | Sınıf özellikleri |  |
 | `heightenedDefense` | Heightened Focus: Patient Defense (Monk 10: Focus'lu Patient Defense iki Martial Arts zarı geçici HP) | global | açık | Sınıf özellikleri |  |
 | `naturesWard` | Nature's Ward: Poisoned bağışıklığı (Circle of the Land 10) | global | açık | Sınıf özellikleri |  |
-| `bardicInspirationFix` | Bardic Inspiration düzeltmesi (özelliği olan savaşçıda da başarısız d20'ye eklenir) | global | açık | Sınıf özellikleri | **kaldırma adayı** |
+| `bardicInspirationFix` | Bardic Inspiration düzeltmesi (özelliği olan savaşçıda da başarısız d20'ye eklenir) | global | açık | Sınıf özellikleri | **kaldırma adayı** (Diğer'de kaldı) |
 | `bardicInspirationChain` | Bardic Inspiration zinciri (Indomitable, Luck, Tactical Mind gibi ikinci şans tutmazsa ilham zarı da atılır) | global | açık | Sınıf özellikleri |  |
 | `pushChoice` | Push ustalığı isteğe bağlı (her isabette itmeyi seç ya da atla; seçim yoksa son saldırıda) | global | açık | Sınıf özellikleri |  |
 | `stepWindJump` | Step of the Wind: bu tur atlama mesafesi iki katı (Monk) | global | açık | Sınıf özellikleri |  |
 | `aiBlindness` | Yapay zekâ: Blindness/Deafness (güçlü düşmana; görüşe dayanmayana Deafened) | global | açık | Yapay zekâ davranışları |  |
 | `waterWalk` | Water Walk: sıvı zeminde (su, çamur, batak) normal yürüme, batma yok | global | açık | Yüzey ve su tepkimeleri |  |
-| `powerfulBuild` | Powerful Build: Goliath Grappled'dan kurtulma denetiminde avantajlı | global | açık | Sınıf özellikleri | **kaldırma adayı** |
+| `powerfulBuild` | Powerful Build: Goliath Grappled'dan kurtulma denetiminde avantajlı | global | açık | Sınıf özellikleri | **kaldırma adayı** (Diğer'de kaldı) |
 | `gustDisperse` | Gust of Wind çizgisindeki gaz ve buhar bulutlarını dağıtır | global | açık | Yüzey ve su tepkimeleri |  |
 | `lifedrinkerFull` | Lifedrinker tam: hasar türü seçimi (Necrotic/Psychic/Radiant) ve HP zarı harcayıp iyileşme | global | açık | Sınıf özellikleri |  |
 | `oneWithShadows` | One with Shadows: slotsuz Invisibility yalnızca loş ışıkta ya da karanlıkta | global | açık | Sınıf özellikleri |  |
 | `specialSenses` | Özel duyular: Blindsight/Truesight menzilinde görünmez ve karanlıktaki (büyülü dahil) yaratık görülür | global | açık | Büyü ve görüş sistemleri |  |
 | `pactBladeTypes` | Pact of the Blade: pact silahı Necrotic, Psychic ya da Radiant vurabilir (hedefe en çok işleyen) | global | açık | Sınıf özellikleri |  |
-| `spellsK19` | 4–5. seviye büyülerin tam SRD yan etkileri (Kuyruk 19: iki hasar türü, kalan zemin, gecikmeli hasar, tür otomatik başarısızlığı vb.) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
+| `spellsK19` | 4–5. seviye büyülerin tam SRD yan etkileri (Kuyruk 19: iki hasar türü, kalan zemin, gecikmeli hasar, tür otomatik başarısızlığı vb.) | global | açık | Diğer (altyapı) | **SD9B: kurulumdan gizlendi** |
 | `invocationsK19` | Eldritch Invocation kalanları (Pact of the Chain biçimleri ve saldırısı, Chain Master, Gift of the Protectors, Gaze of Two Minds) | global | açık | Sınıf özellikleri |  |
-| `teleportArrival` | Işınlanma varışı: varılan altıgenin yüzey/tuzak kuralı, aura ve büyü alanı girişi çalışır (Kuyruk K53) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
-| `objectMotion` | Nesne hareketi: hareketli nesneler itilir/fırlatılır, zeminden enkaz çağrılır (Kuyruk K53) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
-| `tempBarriers` | Geçici engel: veriden tanımlı engel altıgenleri (süre, HP, kimin geçtiği, görüş) (Kuyruk K53) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
+| `teleportArrival` | Işınlanma varışı: varılan altıgenin yüzey/tuzak kuralı, aura ve büyü alanı girişi çalışır (Kuyruk K53) | global | açık | Diğer (altyapı) | **SD9B: kurulumdan gizlendi** |
+| `objectMotion` | Nesne hareketi: hareketli nesneler itilir/fırlatılır, zeminden enkaz çağrılır (Kuyruk K53) | global | açık | Diğer (altyapı) | **SD9B: kurulumdan gizlendi** |
+| `tempBarriers` | Geçici engel: veriden tanımlı engel altıgenleri (süre, HP, kimin geçtiği, görüş) (Kuyruk K53) | global | açık | Diğer (altyapı) | **SD9B: kurulumdan gizlendi** |
 | `araziBuyuEtkisi` | Arazi × büyü: ateş ve soğuk büyüleri zemin türüne göre yüzey bırakır (kuru ot tutuşur, sığ su donar, kar erir; hasar zarı değişmez; Kuyruk K56; altıgen etki çözücüsü açıkken) | global | açık | Yüzey ve su tepkimeleri |  |
 | `hexResolver` | Altıgen etki çözücüsü: yüzey, gaz, duvar ve büyü tepkimeleri tek tablodan, sabit öncelik sırası, katman başına bir yüzey, zincir derinliği 3 (Kuyruk K55) | global | açık | Yüzey ve su tepkimeleri |  |
-| `auraCore` | Aura altyapısı: veriden auralar (tetik, süzgeç, etki, en güçlüsü uygulanır) ve direnç bağışıklık sayacı (Kuyruk K53) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
+| `auraCore` | Aura altyapısı: veriden auralar (tetik, süzgeç, etki, en güçlüsü uygulanır) ve direnç bağışıklık sayacı (Kuyruk K53) | global | açık | Diğer (altyapı) | **SD9B: kurulumdan gizlendi** |
 | `featuresK19` | Sınıf özelliklerinin kalanları (Tactical Shift/Withdraw yarı hızla serbest kayma, Knock Out hasarla biter, Grapple, Poison…) | global | açık | Sınıf özellikleri |  |
 | `nightVision` | Gece görüşü kuralları (SRD: ışıksız altıgen karanlık; Darkvision/ışık menzili görür; görmeyen saldıran dezavantajlı, görülmeyen avantajlı) | global | kapalı | Büyü ve görüş sistemleri |  |
-| `darkvisionRange` | Karanlık görüş menzili yaratığın kendi değeri (SRD: 60, 90, 120 ft…; kapalıyken herkes 60 ft) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
+| `darkvisionRange` | Karanlık görüş menzili yaratığın kendi değeri (SRD: 60, 90, 120 ft…; kapalıyken herkes 60 ft) | global | açık | Diğer (altyapı) | **kaldırma adayı** (Diğer'de kaldı) |
 | `stormRules` | Fırtına kuralları (kuvvetli rüzgâr/fırtına: menzilli saldırı dezavantajı, uçuş iki kat hareket; yağmurda pasif Algı −5) | global | kapalı | Büyü ve görüş sistemleri |  |
-| `spells69` | 6.–9. seviye büyüler (SRD 5.2.1; Power Word, Time Stop, Mass Heal, Prismatic Spray…) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
-| `srdK19` | SRD denetimi kalanları (Heavy/Loading silah kuralları, cephane, sihirli eşyalar, binek ve sualtı savaşı, canavar yetenekleri) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
-| `monsterDrain` | Canavarın kalıcı azaltması (HP maksimumu, yetenek puanı; Greater Restoration kaldırır) | global | açık | Diğer (altyapı) | **kaldırma adayı** |
+| `spells69` | 6.–9. seviye büyüler (SRD 5.2.1; Power Word, Time Stop, Mass Heal, Prismatic Spray…) | global | açık | Diğer (altyapı) | **SD9B: kurulumdan gizlendi** |
+| `srdK19` | SRD denetimi kalanları (Heavy/Loading silah kuralları, cephane, sihirli eşyalar, binek ve sualtı savaşı, canavar yetenekleri) | global | açık | Diğer (altyapı) | **SD9B: kurulumdan gizlendi** |
+| `monsterDrain` | Canavarın kalıcı azaltması (HP maksimumu, yetenek puanı; Greater Restoration kaldırır) | global | açık | Diğer (altyapı) | **kaldırma adayı** (Diğer'de kaldı) |
 | `floorLink` | Kat merdiveni (merdivendeki parti üyesi bütün partiyi öbür kata götürür; kattakiler bekler) | harita | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `aiPatrol` | Yapay zekâ: devriye yürüyüşü (gruptaki rota) | global | açık | Yapay zekâ davranışları |  |
 | `aiCutRunner` | Yapay zekâ: düşman hedef taşıyıcısını ve çıkışı keser | global | açık | Yapay zekâ davranışları |  |
@@ -180,4 +180,24 @@ Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: hiçbi
 | Harita (lav, derin su, gizli nesne…) | 45 |
 | Diğer (altyapı) | 11 |
 
-Kaldırma adayı toplam: 13.
+Kaldırma adayı toplam: 13; SD9B'de kurulumdan gizlenen: 7; Gelişmiş > Diğer'de kalan: 6.
+
+## 5. SD9B kararları (13 aday)
+
+Ölçüt: kapatılınca oyunu bozuyor mu? Bozuyorsa altyapıdır ve kurulumdan gizlenir (varsayılan açık, kural ve eski kayıt aynı; `data/kural-kontrol.json` değişmedi). Küçük/isteğe bağlı davranış Gelişmiş > Diğer'de kalır.
+
+| Kimlik | Karar | Gerekçe |
+|---|---|---|
+| `auraCore` | gizle | kapalıyken aura tabanlı özellikler ve büyüler çalışmaz |
+| `bardicInspirationFix` | Diğer'de kal | tek özelliğin düzeltmesi; kapalıyken eski davranış |
+| `darkvisionRange` | Diğer'de kal | kapalıyken herkes 60 ft; oyun bozulmaz |
+| `freeHexTarget` | Diğer'de kal | yalnız boş altıgene atma kolaylığı; kapalıyken oyun bozulmaz |
+| `heightShow` | Diğer'de kal | yalnız görünüm (yükseklik tonu) |
+| `monsterDrain` | Diğer'de kal | kalıcı azaltma; kapalıyken yalnız o saldırılar hafifler |
+| `objectMotion` | gizle | kapalıyken nesne itme/fırlatma ve enkaz çalışmaz |
+| `powerfulBuild` | Diğer'de kal | tek tür özelliği |
+| `spells69` | gizle | kapalıyken 6.–9. seviye büyüler savaşta çalışmaz |
+| `spellsK19` | gizle | kapalıyken 4–5. seviye büyülerin yan etkileri eksik kalır |
+| `srdK19` | gizle | kapalıyken silah/zırh kalanları, sihirli eşyalar, binek ve canavar yetenekleri düşer |
+| `teleportArrival` | gizle | kapalıyken ışınlanma varışında yüzey/tuzak/aura girişi atlanır |
+| `tempBarriers` | gizle | kapalıyken geçici engel veren büyüler etkisiz |

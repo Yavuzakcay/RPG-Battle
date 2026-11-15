@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import kontrol from '../../data/kural-kontrol.json';
 import gruplar from '../../data/kurulum-gruplari.json';
-import { MapRulesPanel, groupOf } from '../ui/gm/MapRulesPanel';
+import { HIDDEN_IN_SETUP, MapRulesPanel, groupOf } from '../ui/gm/MapRulesPanel';
 import { RoomRules } from '../ui/settings/RoomRules';
 import { t } from '../i18n';
 
@@ -15,7 +15,17 @@ describe('SD9 veri', () => {
     for (const id of rules) expect(ids.has(groupOf(id)), id).toBe(true);
     for (const [id, g] of Object.entries(gruplar.kural)) { expect(rules, id).toContain(id); expect(ids.has(g), id).toBe(true); }
     for (const id of gruplar.kaldirmaAdayi) expect(rules, id).toContain(id);
+    for (const id of gruplar.kurulumdaGizli) { expect(rules, id).toContain(id); expect(gruplar.kaldirmaAdayi, id).toContain(id); }
     expect(gruplar.gruplar.map((g) => g.id)).toEqual(['yuzey', 'sinif', 'yz', 'buyu', 'harita', 'diger']);
+  });
+});
+
+describe('SD9B', () => {
+  it('altyapı anahtarları kurulum panelinde yok, kural verisinde durur', () => {
+    for (const id of gruplar.kurulumdaGizli) expect(HIDDEN_IN_SETUP.has(id), id).toBe(true);
+    const html = renderToStaticMarkup(<MapRulesPanel mapId="orman" variantId="gunduz" toggles={{}} params={{}} onChange={() => {}} />);
+    for (const id of gruplar.kurulumdaGizli) expect(html).not.toContain(`>${id}<`);
+    expect(gruplar.kaldirmaAdayi.length - gruplar.kurulumdaGizli.length).toBe(6);
   });
 });
 

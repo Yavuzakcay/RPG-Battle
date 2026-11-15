@@ -9,7 +9,9 @@ import type { MapRuleData } from '../../map/maps';
 import { getLang, t } from '../../i18n';
 import groups from '../../../data/kurulum-gruplari.json';
 
-const GROUPS = groups as unknown as { gruplar: Array<{ id: string; tr: string; en: string }>; kural: Record<string, string> };
+const GROUPS = groups as unknown as { gruplar: Array<{ id: string; tr: string; en: string }>; kural: Record<string, string>; kurulumdaGizli: string[] };
+/** SD9B: kapalıyken oyunu bozan altyapı anahtarları kurulumda gösterilmez (varsayılan açık; kural ve eski kayıt aynı). */
+export const HIDDEN_IN_SETUP: ReadonlySet<string> = new Set(GROUPS.kurulumdaGizli);
 export const groupOf = (ruleId: string): string => GROUPS.kural[ruleId] ?? 'harita';
 
 export function MapRulesPanel(props: {
@@ -19,7 +21,7 @@ export function MapRulesPanel(props: {
 }) {
   const M = t().gm.mapRules;
   const en = getLang() === 'en';
-  const list = controllableRules(props.mapId, props.variantId);
+  const list = controllableRules(props.mapId, props.variantId).filter((x) => !HIDDEN_IN_SETUP.has(x.rule.id));
   if (!list.length) return null;
   const on = (id: string, def: boolean) => props.toggles[id] ?? def;
   const count = list.filter(({ rule, spec }) => on(rule.id, spec.default !== false)).length;

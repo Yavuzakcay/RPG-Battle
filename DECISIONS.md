@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-24 — SD9B: kurulum ekranından 7 altyapı anahtarı gizlendi (Kuyruk KQ2; yalnız arayüz)
+
+- SD9-KURULUM.md'deki 13 "kaldırma adayı" tek tek incelendi (tablo: `harita/belgeler/SD9-KURULUM.md` bölüm 5). Ölçüt: kapalıyken oyunu bozuyor mu.
+- **Gizlenen 7 (kapalıyken oyun bozulur):** `spells69`, `srdK19`, `spellsK19`, `auraCore`, `tempBarriers`, `objectMotion`, `teleportArrival`. `data/kurulum-gruplari.json` `kurulumdaGizli`; `MapRulesPanel` süzer (`HIDDEN_IN_SETUP`). Varsayılan açık kalır, `data/kural-kontrol.json` ve motor aynı, eski kayıtlardaki değerler olduğu gibi çalışır; panel sayacı yalnız görünenleri sayar.
+- **Gelişmiş > Diğer'de kalan 6 (küçük):** `freeHexTarget`, `heightShow`, `bardicInspirationFix`, `powerfulBuild`, `darkvisionRange`, `monsterDrain`.
+- Ekran görüntüsü bulutta alınamadı (Playwright zaman aşımı); yerelde alınacak (`docs/sd9/`). Ana parça 418,99 kB.
+
 ## 2026-11-23 — SD12: Alignment başlangıç kare seçimi ve katkı çarpanı ×1,8 (Kuyruk KQ2; yalnız veri + oluşturucu arayüzü, kural/kayıt sürümü değişmedi)
 
 - **Çarpan:** tüm başlangıç katkıları tek `katkiCarpani` ile ölçeklenir (`data/hizalanma.json`, `src/rules/alignment.ts` `KATKI_CARPANI`). 11232 sınıf×ırk×geçmiş×alt sınıf birleşimiyle ölçüm (`scripts/alignment-baslangic.ts` → `harita/belgeler/ALIGNMENT-BASLANGIC.md`): ×1 iken True Neutral payı çok yüksek; ×1,8'de %23,8 (hedef %20–30). ×3 öneri olarak değil üst sınır olarak tabloda; ×1,8 seçildi çünkü hedef aralığın ortasında ve diğer 8 kare de dolu kalıyor.

@@ -1,5 +1,5 @@
 {
- "_aciklama": "SD9: Game Master kurulumunda harita mekanikleri temalı gruplara ayrılır (yalnız arayüz). Anahtar kimlikleri ve varsayılanlar data/kural-kontrol.json'da; burada yalnız grup. Listede olmayan kural 'harita' grubuna düşer. 'diger' grubundaki kurallar altyapı satırlarıdır (Gelişmiş > Diğer); kaldirmaAdayi: kullanıcı tablodan seçecek, hiçbiri kaldırılmadı.",
+ "_aciklama": "SD9: Game Master kurulumunda harita mekanikleri temalı gruplara ayrılır (yalnız arayüz). Anahtar kimlikleri ve varsayılanlar data/kural-kontrol.json'da; burada yalnız grup. Listede olmayan kural 'harita' grubuna düşer. 'diger' grubundaki kurallar altyapı satırlarıdır (Gelişmiş > Diğer); kaldirmaAdayi: SD9'daki 13 aday; SD9B'de kurulum ekranından gizlenenler 'kurulumdaGizli' (kapalıyken oyunu bozan altyapı; varsayılan açık kalır, kural ve eski kayıt aynı), kalan 6'sı Gelişmiş > Diğer'de durur.",
  "gruplar": [
   {
    "id": "yuzey",
@@ -116,5 +116,14 @@
   "srdK19",
   "teleportArrival",
   "tempBarriers"
+ ],
+ "kurulumdaGizli": [
+  "spells69",
+  "srdK19",
+  "spellsK19",
+  "auraCore",
+  "tempBarriers",
+  "objectMotion",
+  "teleportArrival"
  ]
 }
