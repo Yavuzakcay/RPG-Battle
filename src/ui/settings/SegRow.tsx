@@ -24,7 +24,7 @@ export function OnOffRow(props: { label: string; help?: string; value: boolean; 
       <div className="set-text"><strong>{props.label}</strong>{props.help ? <p className="mute">{props.help}</p> : null}</div>
       <div className="set-seg" role="radiogroup" aria-label={props.label}>
         {[true, false].map((v) => (
-          <button key={String(v)} type="button" role="radio" aria-checked={props.value === v} disabled={props.disabled} className={props.value === v ? 'on' : 'ghost'} onClick={() => props.onChange(v)}>{v ? props.on : props.off}</button>
+          <button key={String(v)} type="button" role="radio" aria-checked={props.value === v} disabled={props.disabled} className={props.value === v ? (v ? 'on' : 'off') : 'ghost'} onClick={() => props.onChange(v)}>{v ? props.on : props.off}</button>
         ))}
       </div>
     </div>

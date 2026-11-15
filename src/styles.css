@@ -1,6 +1,8 @@
 :root {
   --bg: #e8edf0; --card: #f7f9fa; --ink: #1b2733; --mute: #566673; --line: #c3cfd6;
   --party: #2f6f73; --enemy: #8c2f39; --on: #fff;
+  /* SD10: açık/seçili/etkin = turuncu, kapalı/pasif = gri; oyunun her yerinde aynı. */
+  --sel: #e8892b; --sel-ink: #1b130b; --off: #8a959d; --off-ink: #10181e; --idle-line: #9aa7b0;
   font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--ink); background: var(--bg);
 }
@@ -10,11 +12,13 @@
   :root:not([data-theme="light"]) {
     --bg: #161e25; --card: #1f2a33; --ink: #e6ecf0; --mute: #97a8b4; --line: #33434f; --party: #6fb5b9; --enemy: #e0707b; --on: #161e25;
     --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
+    --sel: #f09a3e; --sel-ink: #1b130b; --off: #5b6a75; --off-ink: #e6ecf0; --idle-line: #566673;
   }
 }
 :root[data-theme="dark"] {
   --bg: #161e25; --card: #1f2a33; --ink: #e6ecf0; --mute: #97a8b4; --line: #33434f; --party: #6fb5b9; --enemy: #e0707b; --on: #161e25;
   --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
+  --sel: #f09a3e; --sel-ink: #1b130b; --off: #5b6a75; --off-ink: #e6ecf0; --idle-line: #566673;
 }
 /* Menü arka planı (public/acilis/): video veya poster, üstünde okunaklılık degradesi. */
 .menu-bg { position: fixed; inset: 0; z-index: 0; background: var(--bg); overflow: hidden; pointer-events: none; }
@@ -1452,3 +1456,31 @@ button.cta.soft { opacity: .65; }
 .rule-group { margin: 6px 0 6px 10px; }
 .rule-group > summary { cursor: pointer; font-weight: 600; min-height: 36px; display: flex; align-items: center; list-style: none; }
 .gm-advanced { margin: 8px 0; }
+
+/* ================= SD10: açık/seçili = turuncu dolu, kapalı = gri dolu, seçilmeyen = nötr çerçeve (tek kaynak) =================
+   Teal çerçeve yalnız seçilebilir ama seçili olmayan nötr öğede ve eylem düğmelerinde kalır (button.ghost); seçili/seçilmemiş
+   anlamı taşıyan gruplarda nötr gri çerçeveye çevrilir. Dokunma hedefi ≥ 40 px korunur. */
+input[type="checkbox"], input[type="radio"], input[type="range"], progress { accent-color: var(--sel); }
+input[type="range"]:disabled { accent-color: var(--off); }
+.set-seg button.on, .set-seg button[aria-checked="true"], .wizard .seg button.on, .wizard .seg button[aria-checked="true"], .pick-card.on, .chip.on,
+.lang-switch button.on, .menu-tabs button.on, .value-chip.on, .metamagic-pick button.on, .dice-step-list button.on, .dice-picker button.on,
+.dice-pick-row button.on, .slot-picker button.on, .bubble .slot-picker button.on, .bubble .slot-picker button[aria-checked="true"], .gm-tool button.on,
+.home2 .home-lang button.on, .civ-grid button.on, .wall-shape button.on, .air-level.on, button.on[aria-pressed="true"], [role="radio"].on, [role="radio"][aria-checked="true"],
+.map-card.on, .eq-row.on, .spell-row.on, .asi-cell.on, .skin-tone.on, .term-btn.on, .mastery-btn.on, .air-panel .hud-btn.on, .cam-controls .hud-btn.on,
+.hud-btn.on, .region-chip.on, .map-region.on, .tier-chip.on {
+  background: var(--sel); border-color: var(--sel); color: var(--sel-ink); font-weight: 700; box-shadow: none;
+}
+/* Kapalı (seçili "Kapalı"/susturulmuş) = gri dolu. */
+.set-seg button.off, .set-seg button.off[aria-checked], .dice-step-list button.off, button.off[aria-checked="true"], button.off[aria-pressed="true"], .sound-row button.off {
+  background: var(--off); border-color: var(--off); color: var(--off-ink); font-weight: 700;
+}
+/* Seçilmeyen taraf: nötr çerçeve. */
+.set-seg button.ghost, .dice-step-list button.ghost, .lang-switch button:not(.on), .wizard .seg button:not(.on), [role="radio"].ghost, .sound-row button.ghost,
+.dice-picker button.ghost, .dice-pick-row button.ghost {
+  background: transparent; border-color: var(--idle-line); color: var(--ink);
+}
+.set-seg button, .set-seg button.ghost { min-height: 44px; }
+.sound-row button { min-height: 40px; }
+/* Açık/seçili çiplerde okunur yazı (turuncu üstünde koyu), koyu temada da. */
+.on > small, .on .mute { color: inherit; }
+@media (forced-colors: active) { .set-seg button.on, [aria-checked="true"] { outline: 3px solid Highlight; } }

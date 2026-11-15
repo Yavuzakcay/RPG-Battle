@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-23 — SD10: açık/kapalı renk uyumu (turuncu = açık/seçili, gri = kapalı) (Kuyruk KQ2; yalnız arayüz)
+
+- **Kural (kullanıcı kararı):** turuncu dolu = açık/seçili/etkin; gri dolu = kapalı/pasif ("Kapalı" seçiliyken de turuncu olması hatası düzeltildi); seçilmeyen taraf nötr gri çerçeve. Teal çerçeve yalnız eylem düğmelerinde (`button.ghost`) ve seçilebilir-seçili-olmayan nötr öğede kalır.
+- **Uygulama:** tek jeton ailesi `src/styles.css` kökünde `--sel`, `--sel-ink`, `--off`, `--off-ink`, `--idle-line` (açık/koyu tema ayrı değerli, turuncu üstünde koyu yazı) ve dosya sonundaki tek "SD10" bloğu: önceden dağınık `.on` stilleri (Ayarlar `.set-seg`, oluşturucu `.seg`/`.pick-card`/`.value-chip`, çipler, sekmeler, dil anahtarı, slot seçici, zar seçici, Game Master araçları, harita kartları/çipleri…) aynı kurala bağlandı; `accent-color` (onay kutusu, radyo, kaydırıcı) turuncu, susturulmuş kaydırıcı gri; `forced-colors` için çerçeve. `OnOffRow` ve Ses panelinde seçili "Kapalı"/susturulmuş düğme `off` sınıfıyla gri dolu. Dokunma hedefi 44 px korundu.
+- **Belirsiz okuma:** savaş menüsündeki düz metin düğmeleri ("Efekt: Açık/Kapalı" gibi tek düğmeli döngü) renkle durum göstermiyor, dokunulmadı; kural yalnız durumu renkle gösteren öğelere uygulandı.
+- Ekran görüntüleri `docs/sd10/` (Ayarlar, Game Master kurulumu; önce/sonra; masaüstü + dar). Oluşturucu görüntüsü alınamadı (bulutta karakter yüklenemedi); oluşturucu seçimleri aynı sınıflarla (`.seg`, `.pick-card`, `.value-chip`) tek bloğa bağlı.
+
 ## 2026-11-22 — HS1: harita temizliği (klasik Kale, Ortamlar Diyarı, Dungeon düz "Merdiven" silindi) (Kuyruk KQ1; kural sürümü ve kayıt sürümü değişmedi)
 
 - **Plan belgesi** (ayrı commit): `harita/belgeler/HARITA-TEMIZLIK.md`. Deniz haritaları (Ada, Güverte) olduğu gibi kaldı; **dünya haritasına bağlama kullanıcıya bırakıldı**.
