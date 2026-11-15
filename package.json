@@ -48,6 +48,7 @@
     "karakter-kucuk": "node scripts/karakter-kucuk.mjs",
     "olcum": "node scripts/yukleme-olcum.mjs",
     "zarlar": "node scripts/zarlar.mjs",
+    "karakter-kes": "node scripts/karakter-kes.mjs",
     "srd": "node scripts/srd-ayristir.mjs",
     "srd:buyu": "node scripts/srd-buyu-esitle.mjs",
     "ses": "node scripts/ses.mjs",

@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-19 — Wizard ırk sayfaları 4x2 (A/B) kesici (yalnız betik/görünüm; kural, kayıt sürümü, motor değişmedi)
+
+- Depoda sınıf jetonu sayfası kesen betik yoktu; yeni: `npm run karakter-kes` (`scripts/karakter-kes.mjs`, saf kütüphane `scripts/lib/karakter-kesim.mjs`, test `src/ui/karakterKesim.test.ts`). Girdi `assets-ham/karakter/wizard-<erkek|kadin>-<irk>-<a|b>.png` (depoya girmez), çıktı `wizard-<erkek|kadin>-<irk>-<slug>.png` (varsayılan `public/characters`, `--cikti` ile değişir).
+- Izgara koyu (L<45) çizgi koşularından bulunur; bulunamazsa eşit bölme + uyarı. Zemin hücre başına kenar halkasından ölçülür (yeşil/macenta); kenardan bağlı bileşenle silinir (karakter içindeki yeşil/mor ayrıntı kalır), 2 geçişli hale temizliği + zemin sızıntısı bastırma. Ölçek hücre→tuval (256), yatay ortalı, alta hizalı; B sayfasının 8. hücresi atlanır. Var olan dosya `--zorla` olmadan ezilmez; `--kuru` yazmadan rapor verir (hücre başına zemin, karakter boyu, kenar uzaklığı, kalan zemin pikseli, diğer sınıflarla yükseklik karşılaştırması).
+- Gerçek sayfalar bulutta yok; doğrulama yapay 4x2 sayfalarla (A: 8, B: 7 çıktı).
+
 ## 2026-11-19 — Kemik ve Obsidyen zar temaları kaldırıldı (yalnız veri/görünüm; kural, kayıt sürümü, motor değişmedi)
 
 - Kullanıcı kararı: eski CSS filtreli Kemik (zaten Klasik) ve Obsidyen (gerçek zar değil; gerçek karşılığı Oltu Taşı) kaldırıldı: `data/zar-gorselleri.json` artık tam 63 tema, `zar-esleme.json` ödül sırasından çıktı, testler ve CLAUDE.md güncellendi. Eski kayıt/profil göçü (`LEGACY_IDS`, `normalize`): seçili kemik → Klasik; seçili obsidyen → Oltu Taşı (açıksa; değilse Klasik); açılmış obsidyen → Oltu Taşı açık; kemik açılan/bildirim kayıtları atılır (Klasik her zaman açık). Göçten sonra eski kimlik hiçbir yerde kalmaz.
