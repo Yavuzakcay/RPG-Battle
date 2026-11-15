@@ -1412,3 +1412,31 @@ button.cta.soft { opacity: .65; }
 .dice-notice { margin: 4px 0; padding: 6px 10px; border-radius: 10px; background: linear-gradient(90deg, #6b3fa0, #b8860b); color: #fff; font-weight: 600; }
 .dice-notice button { margin-left: 8px; min-width: 28px; min-height: 24px; padding: 0 6px; color: #fff; border-color: rgba(255, 255, 255, 0.6); }
 .dice-all-open { display: block; margin: 6px 0; font-size: 13px; }
+
+/* SD8 (Ayarlar): sade ayar satırları. Etiket + tek cümle solda, seçenek düğmeleri sağda; dar ekranda tek sütun. */
+.set-panel { display: flex; flex-direction: column; gap: 4px; }
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; padding: 10px 0; border-bottom: 1px solid color-mix(in srgb, var(--fg, #fff) 12%, transparent); }
+.set-row:last-child { border-bottom: 0; }
+.set-row.disabled { opacity: 0.55; }
+.set-text { flex: 1 1 220px; min-width: 0; }
+.set-text p { margin: 2px 0 0; }
+.set-seg { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.set-seg button, .set-btns > * { min-height: 44px; min-width: 72px; }
+.set-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0; }
+.set-sub { margin-left: 14px; padding-left: 10px; border-left: 2px solid color-mix(in srgb, var(--fg, #fff) 18%, transparent); }
+.set-sound .sound-panel { flex: 1 1 260px; max-width: 420px; box-shadow: none; position: static; background: transparent; border: 0; padding: 0; }
+.set-sound .sound-panel > strong { display: none; }
+.set-fold > summary, .settings-advanced > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+.set-fold h3, .settings-advanced h3 { margin: 14px 0 4px; font-size: 1rem; }
+.room-rules-fold { margin: 8px 0; }
+@media (max-width: 640px) {
+  .set-row { flex-direction: column; align-items: stretch; gap: 6px; }
+  .set-text, .set-sound .sound-panel { flex: none; max-width: none; }
+  .set-seg { justify-content: flex-start; }
+  .set-seg button { flex: 1 1 auto; }
+}
+.dice-step-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.dice-step-list button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+@media (max-width: 640px) { .dice-step-list button { flex: 1 1 100%; } }
+.set-seg button.on, .dice-step-list button.on { background: var(--acc, #e8b84a); color: #1b130b; border-color: transparent; font-weight: 700; }
+.set-seg button.ghost, .dice-step-list button.ghost { background: transparent; }

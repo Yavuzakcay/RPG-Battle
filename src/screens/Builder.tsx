@@ -27,6 +27,8 @@ import karadulData from '../../data/karadul.json';
 import { UPPER_LEVEL_CAP } from '../app/limits';
 import { alignmentAutoOnly, alignmentEnabled, alignmentRace } from '../app/features';
 import { AlignmentGrid } from '../ui/AlignmentGrid';
+import { DiceStep } from '../ui/DiceStep';
+import '../app/alignDiceHook';
 import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startContributions, startValue, type Alignment, type StartKind } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
@@ -226,6 +228,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
                 <SummaryBody final={final} derived={derived} raceName={raceName} />
                 <h3>{W.missingTitle}</h3>
                 {issues.length > 0 ? <>{missingList}<p className="mute">{W.summaryHint}</p></> : <p className="ok">{T.ready}</p>}
+                {/* SD8 eki: zar seçimi son ekranda (Alignment ev kuralı açıkken Alignment adımında). */}
+                {!alignmentEnabled() && <DiceStep c={c} setC={setC} />}
               </div>
             )}
             {saveHint && issues.length > 0 && (
@@ -323,6 +327,7 @@ function AlignmentStep(props: { c: SavedCharacter; setC: (f: (x: SavedCharacter)
           <p className="mute">{H.chosen(H.kinds[chosen] ?? chosen)}</p>
         </>
       )}
+      <DiceStep c={props.c} setC={props.setC} alignment={shown} />
     </div>
   );
 }

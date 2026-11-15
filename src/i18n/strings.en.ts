@@ -10,6 +10,29 @@ const OBJ_EN: Record<string, string> = { oilBarrel: 'oil barrel', powderKeg: 'po
 export const en: Strings = {
   camera: { label: 'Camera', zoomIn: 'Zoom in', zoomOut: 'Zoom out', overview: 'Show all (view only)', follow: 'Follow the creature whose turn it is', minimap: 'Minimap: tap to go there', goEvent: 'Go to off-screen event' },
   lang: { name: 'English', label: 'Language', tr: 'Türkçe', en: 'English' },
+  settingsUi: {
+    language: 'Language', sound: 'Sound', effects: 'Effect animation', effectsHelp: 'Map effects move.', mapFx: 'Map effects',
+    on: 'On', off: 'Off',
+    video: 'End-of-battle video', videoHelp: 'A short video plays when a battle ends.',
+    preview: 'Move preview', previewHelp: 'Shows the result before you confirm.', detail: 'Detail', short: 'Short', full: 'Full',
+    city: 'City view', cityHelp: 'Towns show a top-down map.', tint: 'Map color', tintHelp: 'The battle map takes the settlement color.',
+    book: 'Discovery Book', bookCount: (a: number, b: number) => `${a}/${b}`, bookOpen: 'Open', bookBack: 'Settings', bookEmpty: 'Nothing discovered yet.',
+    advanced: 'Advanced', advancedHelp: 'Most players never need these.', packs: (n: number) => `Packs loaded: ${n}`,
+    backup: 'Discovery Book backup',
+  },
+  diceStep: {
+    title: 'Your dice', intro: 'Which dice should this character roll in battle? Only the ones you have unlocked are listed.',
+    mine: 'Basic dice', alignment: 'Alignment dice', rewards: 'Dice you earned',
+    classDie: (n: string): string => `Class dice: ${n}`, raceDie: (n: string): string => `Race dice: ${n}`,
+  },
+  roomRules: {
+    title: 'Room rules', help: 'Chosen when you set up a room. Stays the same in every battle.',
+    upper: 'Upper levels (6–20)', upperHelp: 'Characters can reach level 20.',
+    carry: 'Carrying load', carryHelp: { off: 'Weight is shown, no limit.', srd: 'Cannot carry over Strength × 15 lb.', tiered: 'You slow down as you get heavier.' } as Record<string, string>,
+    align: 'Alignment', alignHelp: 'A character\'s good/evil and law/chaos lean (house rule).', alignRace: 'Race and culture bonus', alignAuto: 'Automatic changes only', alignMoral: 'Link to Morale',
+    discovery: 'Discovery mode', discoveryHelp: 'Reactions are learned the first time you see them.', hints: 'Hint badges', hintsHelp: 'A "?" shows on targets that may react in an unknown way.',
+    journey: 'Journey (trial)', journeyHelp: 'Adds a trial entry to the main menu.',
+  },
   common: {
     descTrOnly: 'Description available in Turkish only.',
     home: 'Home', cancel: 'Cancel', save: 'Save', edit: 'Edit', delete: 'Delete', confirmDelete: 'Delete? Yes',

@@ -47,6 +47,10 @@ export interface SavedCharacter {
   levelLog?: Array<{ from: number; to: number; at: string; by: 'gm' }>;
   /** Kuyruk K51: hizalanma (ev kuralı `hizalanma`); yoksa 0/0 (eski kayıt). */
   hizalanma?: Alignment;
+  /** SD8 eki (yalnız görünüm): karakterin seçtiği zar ('klasik', 'sinif', 'irk', açılmış tema kimliği); yoksa oyuncu profili yedeği, o da yoksa sınıf zarı. Otomatik değiştirilmez. */
+  zar?: string;
+  /** SD8 eki: açılmış Alignment zarları (`hizalanma-<kare>`, tekrarsız); açılan zar kalıcıdır. */
+  hizalanmaZarlar?: string[];
   /** Kuyruk K51: karakter kayıt sürümü (yoksa 1; 2 = hizalanma alanı tanınır). */
   surum?: number;
   /**

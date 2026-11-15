@@ -1550,6 +1550,222 @@
         "fumble": "#e0453a",
         "ring": "#ffd84a"
       }
+    },
+    {
+      "id": "hizalanma-lawful-good",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Lawful Good",
+        "en": "Lawful Good"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-lawful-good",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#e8d27a",
+        "face": "#f3e6a8",
+        "edge": "#6b5a1a",
+        "number": "#2e2406",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-neutral-good",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Neutral Good",
+        "en": "Neutral Good"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-neutral-good",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#7fc78a",
+        "face": "#a6dcae",
+        "edge": "#2f6a3a",
+        "number": "#10301a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-chaotic-good",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Chaotic Good",
+        "en": "Chaotic Good"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-chaotic-good",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#8fd0e8",
+        "face": "#b6e3f2",
+        "edge": "#2e6f86",
+        "number": "#0f3340",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-lawful-neutral",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Lawful Neutral",
+        "en": "Lawful Neutral"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-lawful-neutral",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#7d93b8",
+        "face": "#a3b4d0",
+        "edge": "#2f405e",
+        "number": "#10192b",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-true-neutral",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "True Neutral",
+        "en": "True Neutral"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-true-neutral",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#a6a6a6",
+        "face": "#c8c8c8",
+        "edge": "#4a4a4a",
+        "number": "#1a1a1a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-chaotic-neutral",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Chaotic Neutral",
+        "en": "Chaotic Neutral"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-chaotic-neutral",
+      "text": {
+        "color": "#1c1408",
+        "stroke": "#fff3c4",
+        "size": 30
+      },
+      "three": {
+        "body": "#b58fd0",
+        "face": "#d0b4e3",
+        "edge": "#5a3a76",
+        "number": "#24103a",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-lawful-evil",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Lawful Evil",
+        "en": "Lawful Evil"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-lawful-evil",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#9a2a38",
+        "face": "#c0505d",
+        "edge": "#4a0f18",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-neutral-evil",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Neutral Evil",
+        "en": "Neutral Evil"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-neutral-evil",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#4a4a4a",
+        "face": "#6e6e6e",
+        "edge": "#161616",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
+    },
+    {
+      "id": "hizalanma-chaotic-evil",
+      "kategori": "hizalanma",
+      "name": {
+        "tr": "Chaotic Evil",
+        "en": "Chaotic Evil"
+      },
+      "base": "klasik",
+      "seti": "zarlar/hizalanma-chaotic-evil",
+      "text": {
+        "color": "#f5eedc",
+        "stroke": "#140e08",
+        "size": 30
+      },
+      "three": {
+        "body": "#8a2a8a",
+        "face": "#b457b4",
+        "edge": "#401040",
+        "number": "#f5eedc",
+        "crit": "#ffd84a",
+        "fumble": "#e0453a",
+        "ring": "#ffd84a"
+      }
     }
   ]
 }

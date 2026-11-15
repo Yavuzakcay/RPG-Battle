@@ -23,7 +23,7 @@ export interface DiceTheme {
 }
 
 const RAW = themesJson.themes as unknown as Array<Omit<DiceTheme, 'dice'> & { dice?: Record<string, DieArt>; seti?: string; kategori?: DiceCategory }>;
-export type DiceCategory = 'malzeme' | 'sinif' | 'irk' | 'harita' | 'dusman' | 'esya';
+export type DiceCategory = 'malzeme' | 'sinif' | 'irk' | 'harita' | 'dusman' | 'esya' | 'hizalanma';
 const SIDES = ['4', '6', '8', '10', '12', '20', '100'];
 /** Görseli üretilmiş temalar (`npm run zarlar` → data/zar-mevcut.json). */
 const READY = new Set<string>((mevcut as { mevcut: string[] }).mevcut);

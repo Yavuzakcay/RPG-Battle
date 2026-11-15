@@ -32,17 +32,19 @@ const mapIds = new Set(Object.values(import.meta.glob('../../harita/*/*.json', {
 const NO_SRD = ['dusman-devoruer', 'dusman-flumph'];
 
 describe('SD9: temalar', () => {
-  it('tam 63 ham kimlik; Kemik/Obsidyen ve uydurma kimlik yok; kimlik küçük harf/tire (dosya adı zar-<kimlik>.jpg)', () => {
+  it('63 ham kimlik + 9 Alignment yer tutucusu (hizalanma-<kare>, ham dosyası henüz yok); Kemik/Obsidyen ve uydurma kimlik yok; kimlik küçük harf/tire', () => {
     expect(new Set(RAW63).size).toBe(63);
     const have = gorseller.themes.map((x) => x.id);
-    expect([...have].sort()).toEqual([...RAW63].sort());
+    const align = have.filter((id) => id.startsWith('hizalanma-'));
+    expect(align).toHaveLength(9);
+    expect([...have.filter((id) => !id.startsWith('hizalanma-'))].sort()).toEqual([...RAW63].sort());
     for (const id of have) expect(id, id).toMatch(/^[a-z0-9-]+$/);
     for (const gone of ['kemik', 'obsidyen', 'bakir', 'demir', 'kristal', 'mermer', 'ahsap', 'harita-buzul', 'harita-liman', 'dusman-vampir', 'esya-iksir', 'esya-kumsaati']) expect(have).not.toContain(gone);
   });
   it('kategori sayıları: malzeme 12 / sınıf 12 / ırk 10 / harita 15 / düşman 12 / eşya 2', () => {
     const count: Record<string, number> = {};
     for (const x of DICE_THEMES) count[diceCategoryOf(x.id)] = (count[diceCategoryOf(x.id)] ?? 0) + 1;
-    expect(count).toEqual({ malzeme: 12, sinif: 12, irk: 10, harita: 15, dusman: 12, esya: 2 });
+    expect(count).toEqual({ malzeme: 12, sinif: 12, irk: 10, harita: 15, dusman: 12, esya: 2, hizalanma: 9 });
   });
   it('görseli olmayan tema Klasik görselle çizilir, kendi 3D renkleri var', () => {
     const t = diceThemeOf('dusman-ejderha');

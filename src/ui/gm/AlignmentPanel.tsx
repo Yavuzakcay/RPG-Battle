@@ -5,6 +5,7 @@
  * Kuyruk K52: Moral bağı (`moralBond`: hizalanma + moralSistemi + hizalanmaMoral) açıkken olay uygulanmadan önce Moral
  * önizlemesi (düğmede ve serbest girişte), "bu olayda Moral etkisi yok" seçeneği, karakterin Moral'i ve savrulma.
  */
+import '../../app/alignDiceHook';
 import { useState } from 'react';
 import { ALIGN, ALIGN_EVENTS, alignmentOf, gmRedetermine, toggleUndo, type Alignment, type Axis } from '../../rules/alignment';
 import { applyAlignAct, characterMoral, swingOf, type AlignAct, type MoralCtx, type MoralResult } from '../../rules/alignmentMoral';

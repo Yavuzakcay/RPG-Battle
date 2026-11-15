@@ -14,7 +14,7 @@ import { DEFAULT_PROFILE, loadStore as loadDiscovery } from './discovery';
 
 export interface DiceProfile { acilan: Record<string, number>; secim: Record<string, string>; yeni: string[] }
 export interface DiceStore { profiller: Record<string, DiceProfile>; hepsiAcik: boolean }
-type Cat = 'malzeme' | 'sinif' | 'irk' | 'harita' | 'dusman' | 'esya';
+type Cat = 'malzeme' | 'sinif' | 'irk' | 'harita' | 'dusman' | 'esya' | 'hizalanma';
 interface Rule { tema: string; id?: string[]; tur?: string[] }
 const E = esleme as unknown as {
   varsayilan: string; siniflar: Record<string, string>; irklar: Record<string, string>; dusmanlar: Rule[];
@@ -30,8 +30,8 @@ const KEY = 'rpg-battle-zar-acilanlar';
 const EVENT = 'rpg-dice-unlock';
 
 export const categoryOf = (id: string): Cat => THEMES.find((x) => x.id === id)?.kategori ?? 'malzeme';
-/** Her zaman açık: Klasik + sınıf + ırk zarları. */
-export const alwaysOpen = (id: string): boolean => id === E.varsayilan || categoryOf(id) === 'sinif' || categoryOf(id) === 'irk';
+/** Her zaman açık (profil düzeyinde): Klasik + sınıf + ırk zarları. Alignment zarları (kategori `hizalanma`) karakter başına açılır (`hizalanmaZarlar`), profil kilidi yok. */
+export const alwaysOpen = (id: string): boolean => id === E.varsayilan || categoryOf(id) === 'sinif' || categoryOf(id) === 'irk' || categoryOf(id) === 'hizalanma';
 
 export const emptyStore = (): DiceStore => ({ profiller: {}, hepsiAcik: false });
 const prof = (s: DiceStore, name: string): DiceProfile => s.profiller[name] ?? { acilan: {}, secim: {}, yeni: [] };
@@ -147,7 +147,11 @@ export function classOfCombatant(c: Pick<Combatant, 'avatar'>): string | undefin
   return b?.[1];
 }
 
-export interface RollThemeCtx { state: Pick<BattleState, 'combatants' | 'map'>; store: DiceStore; regionOf?: (mapId: string) => string | undefined }
+export interface RollThemeCtx {
+  state: Pick<BattleState, 'combatants' | 'map'>; store: DiceStore; regionOf?: (mapId: string) => string | undefined;
+  /** SD8 eki: karakter kaydındaki zar seçimi (çözülmüş: 'sinif' | 'irk' | tema kimliği); yoksa oyuncu profili seçimi. */
+  charChoice?: (ownerId: string) => string | undefined;
+}
 /**
  * Atışın zar teması: düşman/boss atışı canavar teması (açılma şartı yok, herkese görünür); oyuncu atışı karakterin seçimi
  * (Sınıf/Irk/Klasik/açık tema); atıcısız ya da eşleşmesiz atış (harita) bölge zarı, o da yoksa Klasik.
@@ -158,7 +162,7 @@ export function themeForRoll(by: string | undefined, ctx: RollThemeCtx): string 
   if (!c) return region ?? E.varsayilan;
   if (c.side === 'enemies' && !c.civilian) return monsterTheme(c.monsterId) ?? region ?? E.varsayilan;
   const owner = c.summon ? ctx.state.combatants[c.summon.by] ?? c : c;
-  const pick = choiceOf(ctx.store, owner.ownerId ?? undefined);
+  const pick = (owner.ownerId ? ctx.charChoice?.(owner.ownerId) : undefined) ?? choiceOf(ctx.store, owner.ownerId ?? undefined);
   if (pick === 'irk') return raceTheme(owner.raceId) ?? E.varsayilan;
   if (pick === 'sinif') return classTheme(classOfCombatant(owner)) ?? raceTheme(owner.raceId) ?? E.varsayilan;
   return pick;

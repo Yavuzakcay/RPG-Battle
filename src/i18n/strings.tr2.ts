@@ -7,6 +7,31 @@ import { whyTable } from '../ui/reasons';
 const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg: 'barut fıçısı', chest: 'sandık', table: 'masa', door: 'kapı', brazier: 'mangal' };
 
 export const TR_EXTRA = {
+  /** SD8 (Ayarlar): sade Ayarlar ekranı, Gelişmiş katı ve Game Master kurulumundaki "Oda kuralları". */
+  settingsUi: {
+    language: 'Dil', sound: 'Ses', effects: 'Efekt animasyonu', effectsHelp: 'Haritadaki efektler hareket eder.', mapFx: 'Harita efektleri',
+    on: 'Açık', off: 'Kapalı',
+    video: 'Savaş sonu videosu', videoHelp: 'Savaş bitince kısa bir video oynar.',
+    preview: 'Hamle önizlemesi', previewHelp: 'Hedef seçince sonucu önceden gösterir.', detail: 'Ayrıntı', short: 'Kısa', full: 'Tam',
+    city: 'Şehir görünümü', cityHelp: 'Şehirde üstten harita görünür.', tint: 'Harita rengi', tintHelp: 'Savaş haritası yerleşimin rengini alır.',
+    book: 'Keşif Defteri', bookCount: (a: number, b: number) => `${a}/${b}`, bookOpen: 'Aç', bookBack: 'Ayarlar', bookEmpty: 'Henüz keşfedilen yok.',
+    advanced: 'Gelişmiş', advancedHelp: 'Çoğu oyuncunun buna dokunması gerekmez.', packs: (n: number) => `Yüklü paket: ${n}`,
+    backup: 'Keşif Defteri yedeği',
+  },
+  /** SD8 eki: karakter oluşturucunun son ekranında zar seçimi (karakter başına). */
+  diceStep: {
+    title: 'Zarın', intro: 'Bu karakter savaşta hangi zarı atsın? Yalnızca açtıkların listelenir.',
+    mine: 'Temel zarlar', alignment: 'Alignment zarları', rewards: 'Kazandığın zarlar',
+    classDie: (n: string): string => `Sınıf zarı: ${n}`, raceDie: (n: string): string => `Irk zarı: ${n}`,
+  },
+  roomRules: {
+    title: 'Oda kuralları', help: 'Oda kurarken seçilir. Her savaşta aynı kalır.',
+    upper: 'Üst seviye (6–20)', upperHelp: 'Karakterler 20. seviyeye çıkabilir.',
+    carry: 'Taşıma yükü', carryHelp: { off: 'Ağırlık gösterilir, sınır yok.', srd: 'Güç × 15 lb üstü taşınamaz.', tiered: 'Ağırlaştıkça yavaşlar.' } as Record<string, string>,
+    align: 'Alignment', alignHelp: 'Karakterin iyilik ve düzen eğilimi (ev kuralı).', alignRace: 'Irk ve kültür katkısı', alignAuto: 'Yalnız otomatik değişsin', alignMoral: 'Moral ile bağlantı',
+    discovery: 'Keşif modu', discoveryHelp: 'Tepkimeler ilk görülünce öğrenilir.', hints: 'İpucu rozetleri', hintsHelp: 'Bilinmeyen tepkime olabilecek hedefte "?" görünür.',
+    journey: 'Yolculuk (deneme)', journeyHelp: 'Ana menüye deneme girişi ekler.',
+  },
   log: {
     mountDetail: { mount: (name: string): string => `Binek: ${name}`, down: (name: string): string => `${name} düştü (0 HP): binici save'siz iner`, prone: 'Binici Prone', cost: (ft: number): string => `Harcanan hareket: ${ft} ft`, alt: (ft: number): string => `İniş irtifası: ${ft} ft`, rider: (name: string): string => `Binici: ${name}` },
     /** Kuyruk K58 G3: tur özeti. */

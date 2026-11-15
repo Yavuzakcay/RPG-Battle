@@ -47,7 +47,7 @@ describe('SD9c: seçicide Oltu Taşı', () => {
 
 describe('SD9c: Altın renk teması ve gerçek set', () => {
   it('63 tema; Kemik/Obsidyen yok; Altın set hazır değilken Klasik görsel + CSS filtre, hazırken gerçek set ve filtresiz', () => {
-    expect(DICE_THEMES.length).toBe(63);
+    expect(DICE_THEMES.length).toBe(72); // 63 ham + 9 Alignment yer tutucusu
     expect(DICE_THEMES.map((x) => x.id)).not.toContain('kemik'); expect(DICE_THEMES.map((x) => x.id)).not.toContain('obsidyen');
     expect(DEFAULT_DICE_THEME).toBe('klasik');
     const gold = diceThemeOf('altin');

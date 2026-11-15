@@ -22,7 +22,12 @@ export function loadCharacters(): SavedCharacter[] {
   return memory ?? [];
 }
 
-export function saveCharacters(list: SavedCharacter[]): void {
+/** SD8 eki: kayıt öncesi karakter kancaları (tembel parçalar kaydeder; ana parça küçük kalır). Alignment zarı: `app/alignDiceHook.ts`. */
+const saveHooks: Array<(c: SavedCharacter) => SavedCharacter> = [];
+export const addCharacterSaveHook = (h: (c: SavedCharacter) => SavedCharacter): number => saveHooks.push(h); // kancalar idempotent
+
+export function saveCharacters(list0: SavedCharacter[]): void {
+  const list = list0.map((c) => saveHooks.reduce((x, h) => h(x), c));
   memory = list;
   try {
     localStorage.setItem(KEY, JSON.stringify(list.map((c) => ({ ...c, surum: CHARACTER_SAVE_VERSION }))));

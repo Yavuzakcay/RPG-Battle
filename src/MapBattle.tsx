@@ -137,6 +137,8 @@ import type { TrayItem } from './ui/DiceTray';
 import { diceThemeOf } from './ui/diceTheme';
 import { NewDiceNotice } from './ui/DiceThemePicker';
 import { loadDiceStore, recordUnlocks, themeForRoll, unlocksFromBattle } from './app/diceUnlock';
+import { resolveDice } from './app/diceOwn';
+import { loadCharacters } from './app/storage';
 import { dice3dAllowed } from './ui/dice3dSupport';
 import { emitDiceSound } from './ui/diceSound';
 import { battleSoundScene, leaveBattleEnd, playEndJingle, useSceneRequest } from './ui/audio/sound';
@@ -864,7 +866,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return () => window.clearTimeout(timer);
     }
     if (!timings || rolls.length === 0) return;
-    setDiceQueue((q) => [...q, ...rolls.map((roll) => ({ id: Math.random(), roll, title: diceTitle(roll, session.state), themeId: themeForRoll(roll.by, { state: session.state, store: loadDiceStore(), regionOf: mapRegionOf }) }))]);
+    // SD8 eki: oyuncunun zarı karakter kaydındaki seçimden (kayıt yoksa profil yedeği); yalnız görünüm.
+    const chars = loadCharacters(), dstore = loadDiceStore();
+    const charChoice = (ownerId: string) => { const ch = chars.find((x) => x.id === ownerId); return ch ? resolveDice(ch, dstore) : undefined; };
+    setDiceQueue((q) => [...q, ...rolls.map((roll) => ({ id: Math.random(), roll, title: diceTitle(roll, session.state), themeId: themeForRoll(roll.by, { state: session.state, store: dstore, regionOf: mapRegionOf, charChoice }) }))]);
   }, [session]);
 
   // SD9: açılma kancası: savaş olaylarını DİNLER (yenilen düşman, bölge haritası, kullanılan eşya/büyü) ve oyuncu profiline yazar

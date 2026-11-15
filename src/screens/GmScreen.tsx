@@ -32,6 +32,7 @@ import { DICE_MODES, type DiceMode } from '../rules/manualDice';
 import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
 import { HouseRulesPanel } from '../ui/gm/HouseRulesPanel';
+import { RoomRules } from '../ui/settings/RoomRules';
 import { MapRulesPanel } from '../ui/gm/MapRulesPanel';
 import type { RuleParams } from '../battle/ruleControl';
 import { GoalsPanel } from '../ui/gm/GoalsPanel';
@@ -511,6 +512,7 @@ export function GmScreen(props: {
             <input type="checkbox" checked={multiHex} onChange={(e: { target: { checked: boolean } }) => setMultiHex(e.target.checked)} /> {G.multiHex.label}
           </label>
           <small className="mute multihex-note">{G.multiHex.note}</small>
+          <RoomRules />
           <MapRulesPanel key={`${map.id}/${variant.id}`} mapId={map.id} variantId={variant.id} toggles={ruleToggles} params={ruleParams}
             onChange={(tg, ps) => { setRuleToggles(tg); setRuleParams(ps); }} />
           <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules())} onChange={setHouseRules} />
