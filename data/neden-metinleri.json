@@ -140,5 +140,13 @@
     { "kalip": "^Binekten inmek için gövdesine bitişik boş bir altıgen seç\\.$", "en": "To dismount, pick a free hex adjacent to the mount's body." },
     { "kalip": "menzil", "bayrak": "i", "en": "Out of range." },
     { "kalip": "görüş", "bayrak": "i", "en": "No line of sight." }
+  ],
+  "tamamla": [
+    {"kalip": "^Eylem bu tur kullanıldı\\.$", "tr": "Bu tur eylemini zaten kullandın. Eylem gerektiren bir şey için sonraki turu bekle; bonus eylem hakkın duruyorsa bonus eylemle yapılan seçenekleri kullanabilirsin.", "en": "You already used your action this turn. Wait for next turn for anything that needs an action; if your bonus action is unused, you can still use bonus-action options."},
+    {"kalip": "^Bonus eylem bu tur kullanıldı\\.$", "tr": "Bu tur bonus eylemini zaten kullandın. Bonus eylem gerektiren bir şey için sonraki turu bekle; eylemin duruyorsa onunla yapılan seçenekleri kullanabilirsin.", "en": "You already used your bonus action this turn. Wait for next turn for anything that needs a bonus action; if your action is unused, you can still use action options."},
+    {"kalip": "^Bu tur zaten büyü slotu harcandı", "tr": "Bu tur zaten slotlu bir büyü yaptın; turda yalnız bir slotlu büyü yapılabilir. Bu tur eylemle yalnız cantrip yapabilirsin.", "en": "You already cast a spell with a slot this turn; only one slotted spell per turn. This turn you can only cast a cantrip with your action."},
+    {"kalip": "^Bu büyü slotsuz yapılamaz", "tr": "Bu büyü slotsuz yapılamaz (kullanım hakkın kalmadı ya da büyü listende değil). Bir slot harca ya da başka bir büyü seç.", "en": "This spell cannot be cast without a slot (no uses left, or it is not on your list). Spend a slot or pick another spell."},
+    {"kalip": "^Action Surge'ün ek eylemiyle büyü yapılamaz\\.$", "tr": "Action Surge'ün ek eylemiyle büyü yapılamaz. Ek eylemi saldırı, Dash gibi bir eylemle kullan.", "en": "You cannot cast a spell with Action Surge's extra action. Use it for an attack, Dash or a similar action."},
+    {"kalip": "^(.+) bonus eylemle yapılamaz\\.$", "tr": "$1 bonus eylemle yapılamaz; eylemle yap.", "en": "$1 cannot be done as a bonus action; use your action."}
   ]
 }

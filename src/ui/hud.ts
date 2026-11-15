@@ -5,6 +5,7 @@ import { beadsOf, beadThrowLanding, touchableBeads } from '../battle/bead';
 import { DANCE_COMBINED, danceMax, danceMoveHexes, danceProblem } from '../battle/danceLights';
 import { breathOf } from '../battle/breath';
 import { spells, type Spell } from '../data';
+import type { SpellMechanics } from '../data/types';
 import { execute, type BattleState, type Combatant, type Command } from '../battle';
 import { summonDef } from '../battle/summons';
 import { axialToOffset, distance, isInside, offsetToAxial, withinRange, type Offset } from '../rules/hex';
@@ -144,6 +145,15 @@ export function slotChoices(actor: Combatant, spell: Spell): number[] {
   if (spell.level === 0) return [];
   return actor.spellSlots.map((n, i) => (n > 0 && i + 1 >= spell.level ? i + 1 : 0)).filter((l) => l > 0);
 }
+
+/**
+ * SD7: tamamen savaş dışı büyü (`offCombat`: etkisi yok, Game Master anlatır) savaş büyü menüsünde görünmez; karakter ekranı, oluşturucu
+ * ve büyü defterinde "savaş dışı" etiketiyle durur. Savaşta çalışan kolu olan büyüler (arazi dönüştürme, koruma alanı, binek, diriltme,
+ * etki/çağırma/ışınlanma, alan) savaş dışı sayılmaz.
+ */
+const COMBAT_ARMS = ['upgrade', 'combatIfCast', 'k64', 'mb7', 'revive', 'zone', 'effect', 'teleport', 'summon', 'healTargets'];
+export const offCombatOnly = (spell: Spell, m: SpellMechanics = spell.mechanics): boolean =>
+  !!m.offCombat && !spell.area && !COMBAT_ARMS.some((k) => (m as unknown as Record<string, unknown>)[k] !== undefined);
 
 /** Büyü slotu var mı (cantrip her zaman). */
 export function hasSlotFor(actor: Combatant, spell: Spell): boolean {

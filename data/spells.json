@@ -4902,7 +4902,7 @@
       "Wiz"
     ],
     "rangeFt": 30,
-    "text": "element hilesi (esinti, toz, kıvılcım, su)",
+    "text": "element cantrip'i (esinti, toz, kıvılcım, su)",
     "mechanics": {
       "kind": "utility",
       "offCombat": true,
@@ -5278,7 +5278,7 @@
       "Wiz"
     ],
     "rangeFt": 10,
-    "text": "küçük büyü hileleri",
+    "text": "küçük büyü cantrip'leri",
     "mechanics": {
       "kind": "utility",
       "offCombat": true,
@@ -5873,7 +5873,7 @@
       "Drd"
     ],
     "rangeFt": 30,
-    "text": "küçük doğa hilesi",
+    "text": "küçük doğa cantrip'i",
     "mechanics": {
       "kind": "utility",
       "offCombat": true,

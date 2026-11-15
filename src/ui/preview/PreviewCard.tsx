@@ -5,7 +5,8 @@
  * "?" ipucu). Ayrıntı Kısa: hedef başına tek satır; Tam: kaynaklar ve durumlar da.
  */
 import { useMemo } from 'react';
-import { t } from '../../i18n';
+import { getLang, t } from '../../i18n';
+import { completeReason } from '../reasons';
 import { hexText } from '../log';
 import type { BattleState, Command, CommandContext } from '../../battle/types';
 import type { DiscoveryStore, PreviewSettings } from '../../app/discovery';
@@ -15,7 +16,7 @@ export default function PreviewCard(props: { state: BattleState; cmd: Command | 
   const P = t().battle.preview;
   const mp = useMemo(() => (props.cmd ? movePreview(props.state, props.cmd, props.ctx, props.disc, props.settings) : null), [props.state, props.cmd, props.ctx, props.disc, props.settings]);
   if (!mp) return null;
-  if (!mp.ok) return <div className="preview-card bad"><small>{P.error(mp.error ?? '')}</small></div>;
+  if (!mp.ok) return <div className="preview-card bad"><small>{P.error(completeReason(mp.error ?? '', getLang()))}</small></div>;
   const full = props.settings.detail === 'tam';
   const name = (id: string) => props.state.combatants[id]?.name ?? id;
   return (

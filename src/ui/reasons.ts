@@ -8,7 +8,8 @@ import table from '../../data/neden-metinleri.json';
 type Lang = 'tr' | 'en';
 interface Row { tr: string; en: string }
 interface Pattern { kalip: string; bayrak?: string; en: string }
-const T = table as { genel: Row; arayuz: Record<string, Row>; motor: Pattern[] };
+const T = table as { genel: Row; arayuz: Record<string, Row>; motor: Pattern[]; tamamla: Array<{ kalip: string; tr: string; en: string }> };
+const completed = T.tamamla.map((p) => ({ re: new RegExp(p.kalip), tr: p.tr, en: p.en }));
 const compiled = T.motor.map((p) => ({ re: new RegExp(p.kalip, p.bayrak ?? ''), en: p.en }));
 
 /** Arayüz gerekçe anahtarları → metin. */
@@ -24,6 +25,18 @@ export function reasonText(msg: string, lang: Lang): string {
     if (m) return p.en.replace(/\$(\d)/g, (_, i: string) => m[Number(i)] ?? '');
   }
   return msg;
+}
+
+/**
+ * SD7: "Yapılamaz" mesajı tam cümle ve ne yapılabileceğiyle (`tamamla` tablosu); tabloda yoksa motor gerekçesi aynen (dile çevrilmiş).
+ * Motor metni değişmez; yalnız gösterim.
+ */
+export function completeReason(msg: string, lang: Lang): string {
+  for (const p of completed) {
+    const m = p.re.exec(msg);
+    if (m) return p[lang].replace(/\$(\d)/g, (_, i: string) => m[Number(i)] ?? '');
+  }
+  return reasonText(msg, lang);
 }
 
 /** Kalıbı olan mı (test). */

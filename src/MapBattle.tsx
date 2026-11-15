@@ -31,6 +31,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } 
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
+import { pickerLevels, usesShown } from './ui/slotInfo';
 import { maps } from './map/maps';
 import { economyBlock, freeCastResource, preferBonus } from './battle/economy';
 import { bodyAt, bodyOf, isMultiHex } from './battle/body';
@@ -56,7 +57,7 @@ import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
 import { getLang, t, useLang } from './i18n';
-import { reasonOr, reasonText } from './ui/reasons';
+import { completeReason, reasonOr, reasonText } from './ui/reasons';
 /** Motor gerekçesi seçili dile (null kalır). */
 const loc = (m: string | null | undefined): string | null => (m ? reasonText(m, getLang()) : null);
 /** Devre dışı düğmenin gerekçe satırı. */
@@ -81,7 +82,7 @@ import {
 } from './ui/mapView';
 import {
   areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaFreeShape, areaPathRules, areaPointCount, areaWallPath, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
-  featureTeleportHexes, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
+  featureTeleportHexes, offCombatOnly, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { destroyForceProblem, effectTargetCount, strideSpellOf } from './battle/spells';
@@ -154,6 +155,7 @@ const FxGround = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.
 const EndVideo = lazy(() => import('./ui/EndVideo'));
 // Kuyruk K58: hamle önizleme kartı (tembel).
 const PreviewCard = lazy(() => import('./ui/preview/PreviewCard'));
+const SlotEffect = lazy(() => import('./ui/preview/SlotEffect'));
 import { movePreview, moveTap, type MovePreview } from './ui/preview/movePreview';
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
@@ -315,7 +317,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
       {c.concentration && <p>{D.concentration(c.concentration.spell)}</p>}
       {(plain(usableResources(c)).length > 0 || c.sneakAttackDice > 0) && (
         <p>{D.features([
-          ...plain(usableResources(c)).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}`),
+          ...plain(usableResources(c)).map(([id, n]) => `${resourceDef(id)?.name ?? id}${usesShown(n) === null ? '' : ` ${n}`}`),
           c.sneakAttackDice > 0 ? `Sneak Attack ${c.sneakAttackDice}d6` : '',
         ].filter(Boolean).join(' · '))}</p>
       )}
@@ -337,11 +339,11 @@ const slotFields = (slot: number | null): { slotLevel?: number; free?: true } =>
 const withSlot = (cmd: Command, slot: number | null): Command =>
   (cmd.type === 'cast_spell' && slot !== null ? { ...cmd, ...slotFields(slot) } : cmd);
 
-/** Büyü seçenekleri: yukarı slot ve (Görev SORCERER) Metamagic. */
+/** Büyü seçenekleri: yukarı slot ve (Görev SORCERER) Metamagic. `cmdFor`: seçili slotla yapılacak komut (hedef seçiliyse; SD7 hedef başına satırlar). */
 function SpellOptions(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void;
-  mm: string[]; onMm: (ids: string[]) => void; tm: string; onTm: (t: string) => void; state: BattleState }) {
+  mm: string[]; onMm: (ids: string[]) => void; tm: string; onTm: (t: string) => void; state: BattleState; cmdFor?: (slot: number | null) => Command | null }) {
   return <>
-    <SlotPicker actor={props.actor} spell={props.spell} value={props.value} onChange={props.onChange} />
+    <SlotPicker actor={props.actor} spell={props.spell} value={props.value} onChange={props.onChange} state={props.state} cmdFor={props.cmdFor} />
     <MetamagicPicker actor={props.actor} spell={props.spell} value={props.mm} onChange={props.onMm} state={props.state} />
     {props.mm.includes('transmuted') && (
       <div className="slot-picker" role="radiogroup" aria-label={t().battle.transmuteTo}>
@@ -395,18 +397,25 @@ function MetamagicPicker(props: { actor: Combatant; spell: Spell; value: string[
   );
 }
 
+/** SD7: slot seçicinin (düğmeler + etki satırları) balonda ayıracağı yükseklik; seçici yoksa 0. */
+const pickerHeight = (actor: Combatant, spell: Spell): number =>
+  spell.level > 0 && (slotChoices(actor, spell).length > 1 || !!freeCastResource(actor, spell.name, undefined, true)) ? 250 : 0;
+
 /**
- * Yukarı slot seçimi: büyünün seviyesi ve üstündeki dolu slotlar. Motorun henüz uygulamadığı yukarı slot
- * etkisi (veride `upcast`, `applied` değil) açıkça yazılır.
+ * Slot seçimi (SD7): yalnız şu an kullanılabilen seviyeler (büyü seviyesi ve üstü, kalan slotu > 0), varsayılan en düşük; seçili düğme
+ * dolu vurgulu. Altında seçilen slotla atılacak zar tek satırda ve (hedef seçiliyse) hedef başına ne kadarının işleyeceği. Yukarı
+ * slotla güçlenmeyen büyüde yalnız en düşük slot. "Slotsuz" yalnız hakkı varken; sınırsız yer tutucu sayı görünmez.
  */
-function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void }) {
+function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void; state?: BattleState; cmdFor?: (slot: number | null) => Command | null }) {
   const B = t().battle;
-  const levels = slotChoices(props.actor, props.spell);
+  const usable = slotChoices(props.actor, props.spell);
+  const levels = pickerLevels(usable, props.spell);
   // Kuyruk 43b: Divine Intervention gibi listeli kaynak kaldıysa "slotsuz" seçeneği (slot kalmış olsa da).
   const freeId = props.spell.level > 0 ? freeCastResource(props.actor, props.spell.name, undefined, true) : null;
-  if (props.spell.level === 0 || (levels.length < 2 && !freeId)) return null;
-  const current = props.value ?? levels[0];
-  const up = props.spell.mechanics.upcast;
+  if (props.spell.level === 0 || (usable.length < 2 && !freeId)) return null;
+  const valid = props.value === FREE_SLOT ? !!freeId : props.value !== null && levels.includes(props.value);
+  const current = valid ? (props.value as number) : (levels[0] ?? FREE_SLOT);
+  const effLevel = current === FREE_SLOT ? props.spell.level : current;
   return (
     <div className="slot-picker" role="radiogroup" aria-label={B.slotPick}>
       <small>{B.slotPick}</small>
@@ -416,10 +425,13 @@ function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | nul
       ))}
       {freeId && (
         <button role="radio" aria-checked={current === FREE_SLOT} className={current === FREE_SLOT ? 'on' : 'ghost'} title={B.freeCastInfo}
-          onClick={() => props.onChange(current === FREE_SLOT ? null : FREE_SLOT)}>{B.freeCast(resourceLeft(props.actor, freeId))}</button>
+          onClick={() => props.onChange(current === FREE_SLOT ? null : FREE_SLOT)}>{B.freeCast(resourceDef(freeId)?.name ?? freeId, usesShown(resourceLeft(props.actor, freeId)))}</button>
       )}
-      {current !== undefined && current !== FREE_SLOT && current > props.spell.level && (
-        <small>{up?.applied ? B.upcastApplied(current - props.spell.level) : up ? B.upcastNotYet : B.upcastNone}</small>
+      {props.state && (
+        <Suspense fallback={null}>
+          <SlotEffect state={props.state} ctx={contextFor(props.state, props.actor.id)} spell={props.spell} slotLevel={effLevel} multi={usable.length > 1}
+            cmd={props.cmdFor ? props.cmdFor(current) : null} />
+        </Suspense>
       )}
     </div>
   );
@@ -1101,7 +1113,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   }, [session.events.length, cam.big]);
 
   const toast = (text: string) => {
-    const item = { id: Math.random(), text, error: true };
+    const item = { id: Math.random(), text: completeReason(text, getLang()), error: true };
     setToasts((t) => [...t, item].slice(-3));
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
@@ -1426,7 +1438,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       ?? ((cl) => (cl ? cloudCastProblem(state, actor as Combatant, sp, cl) : null))(mechanicsAt(state, sp).cloud);
     // Görev B1 (kuyruk 14): eğitimsiz zırh / sessizlik.
     const barred = castBarrierKind(state, actor as Combatant, sp);
-    return { slot, why, barred, usable: slot && why === null && barred === null && !sp.mechanics.unsupported };
+    // SD7: tamamen savaş dışı büyü (etkisi yok) savaş menüsünde görünmez.
+    const hidden = offCombatOnly(sp, mechanicsAt(state, sp));
+    return { slot, why, barred, usable: slot && why === null && barred === null && !sp.mechanics.unsupported && !hidden };
   };
   const spellReason = !actor ? undefined : !actor.spellNames.length ? Y.noCaster
     : spellMenu(actor).some(({ spell: sp }) => spellInfo(sp).usable) ? undefined : Y.noSpell;
@@ -2364,7 +2378,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           })()}
 
           {active && actor && actorPx && mode === 'spells' && (() => {
-            // SD2: yalnız yapılabilen büyüler; sekmeler: Hile, 1. seviye, 2. seviye… (grup içi kaydırma serbest, ilk sekme varsayılan).
+            // SD2: yalnız yapılabilen büyüler; sekmeler: Cantrip, 1. seviye, 2. seviye… (grup içi kaydırma serbest, ilk sekme varsayılan).
             const usable = spellMenu(actor).filter(({ spell: sp }) => spellInfo(sp).usable);
             const tabs = spellGroups(usable.map((e) => ({ ...e, level: e.spell.level })));
             const tabLevel = spellTab !== null && tabs.some((g) => g.level === spellTab) ? spellTab : tabs[0]?.level ?? 0;
@@ -2468,7 +2482,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           })()}
 
           {active && target?.pos && (mode === 'attack' || mode === 'spell') && (() => {
-            const picker = mode === 'spell' && spell && actor && slotChoices(actor, spell).length > 1 ? 64 : 0;
+            const picker = mode === 'spell' && spell && actor ? pickerHeight(actor, spell) : 0;
             // Cunning Strike seçenekleri (Görev F): başlık + seçenek başına bir satır.
             const cunning = (mode === 'attack' && actor && cunningOptions(actor).max > 0 ? 64 + cunningOptions(actor).options.length * 36 : 0)
               + (mode === 'attack' && actor?.weaponOptions.some((o) => o.mastery === 'push') ? 64 + 3 * 36 : 0);
@@ -2495,7 +2509,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     ))}
                   </div>
                 )}
-                {mode === 'spell' && spell && actor && <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
+                {mode === 'spell' && spell && actor && <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state}
+                  cmdFor={(slot) => { const c0 = choices.find((x) => x.command)?.command; return c0 ? withOrigin(withSlot(withChoice(c0), slot)) : null; }} />}
                 {mode === 'attack' && actor && actor.traits?.includes('brutal-strike') && globalRule(state, 'brutalStrike') && (
                   <fieldset className="cunning-picks">
                     <legend>{N.brutalPick} <small>{N.cunningHint(brutalOptions(actor).max)}</small></legend>
@@ -2531,7 +2546,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const E = t().effects;
             const max = effectTargetCount(spell, slotPick ?? spell.level);
             const opts = spell.mechanics.effect?.choices ?? [];
-            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + (slotChoices(actor, spell).length > 1 ? 64 : 0)) };
+            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + pickerHeight(actor, spell)) };
             const at = bubbleAt(actorPx, size, box, tokenR + 8);
             const label = (o: string) => E.choiceName[o] ?? (SKILL_IDS.includes(o as never) ? SKILLS[o as keyof typeof SKILLS].name : o);
             return (
@@ -2558,7 +2573,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const S = t().summons;
             const def = summonDef(spell.id);
             const opts = def?.choice?.options ?? [];
-            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + (slotChoices(actor, spell).length > 1 ? 64 : 0)) };
+            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + pickerHeight(actor, spell)) };
             const at = bubbleAt(actorPx, size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
@@ -2656,7 +2671,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             if (!sp) return null;
             const selfShape = sp.spec.origin === 'self' && sp.spec.shape !== 'emanation';
             const needAim = sp.spec.shape !== 'emanation';
-            const picker = areaAct.kind === 'spell' && slotChoices(actor, areaAct.spell).length > 1 ? 64 : 0;
+            const picker = areaAct.kind === 'spell' ? pickerHeight(actor, areaAct.spell) : 0;
             const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker + (areaFreeShape(state, areaAct, choicePick) ? (areaAct.kind === 'spell' && mechanicsAt(state, areaAct.spell).zone?.cage ? 100 : 56) : 0)
               + (areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? 130 : 0) + (areaAct.kind === 'spell' && airAimable(state, areaAct.spell, mechanicsAt(state, areaAct.spell)) ? 40 : 0)) };
             // Balon alanın ve jetonun üstünü kapatmasın: alanın ağırlık merkezinin karşı kenarına yaslanır.
@@ -2825,7 +2840,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <button type="button" onClick={() => setAirFt((v) => v + 5)} aria-label={B.k73c.up5}>+5</button>
                   </div>
                 )}
-                {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
+                {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state}
+                  cmdFor={(slot) => (ready && !areaInfo?.error ? areaActCommand(actorId, areaAct, needAim ? aimHex : null, slot, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
+                    areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? (choicePick === DANCE_COMBINED ? DANCE_COMBINED : null) : areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
+                    areaExcludable(state, areaAct) ? excluded : undefined, airFt) : null)} />}
                 {/* Kuyruk K65b: Forcecage'de önizleme kartı yok (hasar/durum yok, "etkisiz" yanıltır); içeride kalacaklar yukarıdaki listede. */}
                 {pvSet.on && ready && !areaInfo?.error && !(areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage) && <Suspense fallback={null}><PreviewCard state={state} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet}
                   cmd={areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
