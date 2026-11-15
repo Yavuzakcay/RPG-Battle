@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-23 — SD12: Alignment başlangıç kare seçimi ve katkı çarpanı ×1,8 (Kuyruk KQ2; yalnız veri + oluşturucu arayüzü, kural/kayıt sürümü değişmedi)
+
+- **Çarpan:** tüm başlangıç katkıları tek `katkiCarpani` ile ölçeklenir (`data/hizalanma.json`, `src/rules/alignment.ts` `KATKI_CARPANI`). 11232 sınıf×ırk×geçmiş×alt sınıf birleşimiyle ölçüm (`scripts/alignment-baslangic.ts` → `harita/belgeler/ALIGNMENT-BASLANGIC.md`): ×1 iken True Neutral payı çok yüksek; ×1,8'de %23,8 (hedef %20–30). ×3 öneri olarak değil üst sınır olarak tabloda; ×1,8 seçildi çünkü hedef aralığın ortasında ve diğer 8 kare de dolu kalıyor.
+- **Seçici:** son ekranda 9 kare (3×3, dar ekranda tek sütun), otomatik kare "Önerilen" etiketli, "Otomatiğe dön"; kare merkezi ±`kareMerkezi` (33). Seçili kare kayıtta `kova` ile saklanır, zar kancası (`alignDiceHook`) kayıtlı kareyi kullanır. "Yalnız otomatik" ayarı seçimi kilitler. Eski karakterler değişmez: kendi `katkiCarpani` alanıyla (yoksa 1) yeniden hesaplanır, kova bozulmaz.
+- **Ekran görüntüsü:** bulutta Playwright zaman aşımına düştü (`docs/sd12/` yok); yerelde alınacak.
+- Testler: `src/rules/alignment.test.ts` (mevcut tablo iddiaları `carpan=1`), `src/screens/sd12-alignment.test.tsx`. Ana parça 418,99 kB.
+
 ## 2026-11-23 — SD11: oluşturucuda önerilen seçimler açık ("Önerilen" etiketi, "Önerilenleri seç" / "Temizle") (Kuyruk KQ2; yalnız arayüz, kayıt alanı yok)
 
 - **Etiket:** yeni karakter oturumunda öneri kümesinde olan ve seçili her öğede küçük "Önerilen" (büyü ve cantrip, sınıf becerisi, silah, alt sınıf, geçmiş bonusu). Oyuncu bir öğeyi çıkarırsa kalanlarda etiket sürer; kendi eklediği (öneride olmayan) öğede etiket yok. **Belirsiz okuma:** oyuncu önerilen bir öğeyi kendisi seçerse etiketi görür (ayırt edilemez, zararsız).

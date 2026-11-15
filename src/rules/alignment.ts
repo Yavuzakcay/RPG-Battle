@@ -12,7 +12,7 @@ import { CELESTIAL } from './celestialData';
 
 export type Axis = 'duzen' | 'iyilik';
 export type Bucket = 'pos' | 'neu' | 'neg';
-export type StartKind = 'otomatik' | 'orta' | 'satir-orta' | 'sutun-orta' | 'gm';
+export type StartKind = 'otomatik' | 'orta' | 'satir-orta' | 'sutun-orta' | 'gm' | 'kare';
 export interface AlignmentEntry {
   id: string;
   /** olay: hazır düğme; serbest: Game Master serbest girişi; yeniden: Game Master başlangıcı yeniden belirledi; altSinif: alt sınıf değişince güncelleme. */
@@ -41,6 +41,8 @@ export interface Alignment {
   iyilik: number;
   baslangic: { duzen: number; iyilik: number };
   baslangicTuru: StartKind;
+  /** SD12: başlangıç katkılarının hesaplandığı çarpan (yoksa 1: eski karakter, değerlerine dokunulmaz). */
+  katkiCarpani?: number;
   gunluk: AlignmentEntry[];
   /** Karakter kartında gizli (Game Master). */
   gizli?: boolean;
@@ -75,6 +77,9 @@ export function alignmentLabel(duzen: Bucket, iyilik: Bucket, _lang: 'tr' | 'en'
   return `${cfg.duzen[duzen].en} ${cfg.iyilik[iyilik].en}`;
 }
 
+/** SD12: başlangıç katkılarının tek çarpanı (`data/hizalanma.json` `katkiCarpani`; elle ayarlanabilir; yalnız yeni karakterler). */
+export const KATKI_CARPANI: number = (cfg as { katkiCarpani?: number }).katkiCarpani ?? 1;
+
 const ALT_SOY = (table as unknown as { altSoy: Record<string, { duzen: number; iyilik: number; gerekce: { tr: string; en: string } }> }).altSoy;
 
 /**
@@ -92,11 +97,12 @@ export function altSoyKey(sheet: { raceId: string; lineageId?: string; celestial
  * Başlangıç katkıları (ırk satırı en altta; tabloda olmayan kalem atlanır, yani 0). Kuyruk AS1a: alt soy satırı varsa
  * ırk satırının YERİNE geçer (mutlak değer; kaynak yine `irk`, kimlik `<ırk>/<alt soy>`); yoksa eski ırk değeri.
  */
-export function startContributions(sheet: { classId: string; backgroundId?: string; subclassId?: string; raceId: string; lineageId?: string; celestialAwakening?: string; level?: number }, irk = true): Contribution[] {
+export function startContributions(sheet: { classId: string; backgroundId?: string; subclassId?: string; raceId: string; lineageId?: string; celestialAwakening?: string; level?: number }, irk = true, carpan: number = KATKI_CARPANI): Contribution[] {
   const out: Contribution[] = [];
+  const k = (n: number) => Math.round(n * carpan);
   const add = (kaynak: Contribution['kaynak'], id: string | undefined) => {
     const r = id ? T[kaynak][id] : undefined;
-    if (id && r) out.push({ kaynak, id, duzen: r.duzen, iyilik: r.iyilik, gerekce: r.gerekce });
+    if (id && r) out.push({ kaynak, id, duzen: k(r.duzen), iyilik: k(r.iyilik), gerekce: r.gerekce });
   };
   add('sinif', sheet.classId);
   add('gecmis', sheet.backgroundId);
@@ -104,7 +110,7 @@ export function startContributions(sheet: { classId: string; backgroundId?: stri
   if (irk) {
     const key = altSoyKey(sheet);
     const alt = key ? ALT_SOY[key] : undefined;
-    if (key && alt) out.push({ kaynak: 'irk', id: key, duzen: alt.duzen, iyilik: alt.iyilik, gerekce: alt.gerekce });
+    if (key && alt) out.push({ kaynak: 'irk', id: key, duzen: k(alt.duzen), iyilik: k(alt.iyilik), gerekce: alt.gerekce });
     else add('irk', sheet.raceId);
   }
   return out;
@@ -141,10 +147,21 @@ export function recompute(a: Alignment): Alignment {
   return { ...a, duzen, iyilik, kova: { duzen: bucketOf(duzen, a.kova?.duzen), iyilik: bucketOf(iyilik, a.kova?.iyilik) } };
 }
 /** Yeni hizalanma (oluşturucu son adımı). */
-export function newAlignment(computed: { duzen: number; iyilik: number }, kind: StartKind): Alignment {
+export function newAlignment(computed: { duzen: number; iyilik: number }, kind: StartKind, carpan: number = KATKI_CARPANI): Alignment {
   const start = applyStartKind(kind, computed);
-  return recompute({ duzen: 0, iyilik: 0, baslangic: start, baslangicTuru: kind, gunluk: [] });
+  return recompute({ duzen: 0, iyilik: 0, baslangic: start, baslangicTuru: kind, katkiCarpani: carpan, gunluk: [] });
 }
+/** SD12: karenin merkez değeri (Düzenli/İyi +33, Tarafsız 0, Kaotik/Kötü −33; Gerçek Tarafsız 0/0). */
+export function squareCenter(d: Bucket, g: Bucket): { duzen: number; iyilik: number } {
+  const m = (cfg as { kareMerkezi?: number }).kareMerkezi ?? 33;
+  const v = (b: Bucket) => (b === 'pos' ? m : b === 'neg' ? -m : 0);
+  return { duzen: v(d), iyilik: v(g) };
+}
+/** SD12: oyuncunun seçtiği kareden başlangıç ('kare' türü); kare önerilenle aynıysa çağıran 'otomatik' kullanır. */
+export function newAlignmentAt(d: Bucket, g: Bucket, carpan: number = KATKI_CARPANI): Alignment {
+  return recompute({ duzen: 0, iyilik: 0, baslangic: squareCenter(d, g), baslangicTuru: 'kare', katkiCarpani: carpan, gunluk: [] });
+}
+export const squareOf = (v: { duzen: number; iyilik: number }): { d: Bucket; g: Bucket } => ({ d: bucketOf(v.duzen), g: bucketOf(v.iyilik) });
 /** Eski kayıt (alan yok): 0/0, günlük boş. */
 export const alignmentOf = (a: Alignment | undefined): Alignment => a ?? recompute({ duzen: 0, iyilik: 0, baslangic: { duzen: 0, iyilik: 0 }, baslangicTuru: 'orta', gunluk: [] });
 export const labelOf = (a: Alignment, lang: 'tr' | 'en'): string => alignmentLabel(a.kova?.duzen ?? bucketOf(a.duzen), a.kova?.iyilik ?? bucketOf(a.iyilik), lang);

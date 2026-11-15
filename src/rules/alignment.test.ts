@@ -10,8 +10,6 @@ import {
   addEvent, addFree, alignmentLabel, alignmentOf, applyStartKind, bucketOf, gmRedetermine, labelOf, newAlignment, onSubclassChange,
   rejectOptions, startContributions, startValue, toggleUndo, ALIGN_EVENTS,
 } from './alignment';
-import { blankCharacter } from './builder';
-import { classes, races } from '../data';
 import backgrounds from '../../data/backgrounds.json';
 import { wizardSteps } from '../screens/Builder';
 import { setAlignmentEnabled } from '../app/features';
@@ -24,9 +22,10 @@ const sheet = (p: Record<string, string>) => ({ classId: 'fighter', raceId: 'hum
 const Z = '2026-11-05T10:00:00.000Z';
 afterEach(() => { try { localStorage.removeItem('rpg-battle-deneysel'); } catch { /* yok */ } });
 
+// SD12: tablo değerleri ×1 çarpanla sınanır (katkiCarpani yalnız yeni karakterlerin hesabını ölçekler); dağılım ve çarpan testleri aşağıda.
 describe('başlangıç hesabı', () => {
   it('katkılar toplanır, ±50 kırpılır; ırk satırı en sonda; tabloda olmayan kalem 0 (çökme yok)', () => {
-    const list = startContributions(sheet({ classId: 'paladin', backgroundId: 'acolyte', subclassId: 'oath-of-devotion', raceId: 'dwarf' }));
+    const list = startContributions(sheet({ classId: 'paladin', backgroundId: 'acolyte', subclassId: 'oath-of-devotion', raceId: 'dwarf' }), true, 1);
     expect(list.map((x) => x.kaynak)).toEqual(['sinif', 'gecmis', 'altSinif', 'irk']);
     expect(startValue(list)).toEqual({ duzen: 50, iyilik: 31 }); // 20+10+13+8 = 51 → 50; 15+5+13−2 = 31
     const g = { gerekce: { tr: '', en: '' } };
@@ -50,7 +49,7 @@ describe('uç buildler (taslak v1.1, 3. seviye)', () => {
   ];
   for (const [classId, backgroundId, subclassId, raceId, d, g, label] of cases) {
     it(`${classId} + ${backgroundId} + ${subclassId} + ${raceId} = (${d}, ${g}) ${label}`, () => {
-      const v = startValue(startContributions({ classId, backgroundId, subclassId, raceId }));
+      const v = startValue(startContributions({ classId, backgroundId, subclassId, raceId }, true, 1));
       expect(v).toEqual({ duzen: d, iyilik: g });
       expect(labelOf(newAlignment(v, 'otomatik'), 'tr')).toBe(label);
     });
@@ -65,13 +64,13 @@ describe('uç buildler (taslak v1.1, 3. seviye)', () => {
   for (const [classId, backgroundId, subclassId, raceId, lin, level, d, g, label] of altCases) {
     it(`alt soyla: ${classId} + ${backgroundId} + ${subclassId} + ${raceId}/${lin} = (${d}, ${g}) ${label}`, () => {
       const sh = { classId, backgroundId, subclassId, raceId, level, ...(raceId === 'celestial' ? { celestialAwakening: lin } : { lineageId: lin }) };
-      const v = startValue(startContributions(sh));
+      const v = startValue(startContributions(sh, true, 1));
       expect(v).toEqual({ duzen: d, iyilik: g });
       expect(labelOf(newAlignment(v, 'otomatik'), 'tr')).toBe(label);
     });
   }
   it('"Kabul etme" artık çoğu karakterde görünür (Paladin + Soldier + Human)', () => {
-    expect(rejectOptions(startValue(startContributions({ classId: 'paladin', backgroundId: 'soldier', raceId: 'human' })))).toContain('orta');
+    expect(rejectOptions(startValue(startContributions({ classId: 'paladin', backgroundId: 'soldier', raceId: 'human' }, true, 1)))).toContain('orta');
   });
 });
 
@@ -174,11 +173,55 @@ describe('duman testi', () => {
     const bgs = (backgrounds as unknown as { backgrounds: Array<{ id: string }> }).backgrounds.map((b) => b.id);
     let n = 0;
     for (const c of classes) for (const b of bgs) for (const r of races) for (const irk of [true, false]) {
-      const v = startValue(startContributions({ classId: c.id, backgroundId: b, raceId: r.id }, irk));
+      const v = startValue(startContributions({ classId: c.id, backgroundId: b, raceId: r.id }, irk, 1));
       expect(Math.abs(v.duzen)).toBeLessThanOrEqual(50);
       expect(Math.abs(v.iyilik)).toBeLessThanOrEqual(50);
       n++;
     }
     expect(n).toBeGreaterThanOrEqual(12 * bgs.length * races.length);
+  });
+});
+
+import tablo from '../../data/hizalanma-baslangic.json';
+import { KATKI_CARPANI, newAlignmentAt, squareCenter, squareOf } from './alignment';
+import { alignDiceOf, withAlignDice } from './alignDice';
+import { blankCharacter } from './builder';
+import { classes, races } from '../data';
+
+describe('SD12: katkı çarpanı ve kare seçimi', () => {
+  it('çarpan veride tek değer; dağılım raporundaki aralıkta (True Neutral %20–30)', () => {
+    expect(KATKI_CARPANI).toBe(1.8);
+    const bgs = Object.keys((tablo as unknown as { gecmis: Record<string, unknown> }).gecmis);
+    const variants: Array<{ raceId: string; lineageId?: string }> = [];
+    for (const r of races) { if (r.lineages?.length) for (const l of r.lineages) variants.push({ raceId: r.id, lineageId: l.id }); else variants.push({ raceId: r.id }); }
+    let tn = 0, n = 0;
+    const seen = new Set<string>();
+    for (const cl of classes) for (const bg of bgs) for (const rv of variants) {
+      const v = startValue(startContributions({ classId: cl.id, backgroundId: bg, ...rv }));
+      const sq = squareOf(v); seen.add(`${sq.d}-${sq.g}`);
+      if (sq.d === 'neu' && sq.g === 'neu') tn++; n++;
+    }
+    expect(tn / n).toBeGreaterThan(0.15); expect(tn / n).toBeLessThan(0.35);
+    expect(seen.size).toBeGreaterThanOrEqual(8);
+  });
+  it('karenin merkezi: kare → değerler; True Neutral 0,0; kare seçimi kayıtta başlangıç türü kare', () => {
+    expect(squareCenter('neu', 'neu')).toEqual({ duzen: 0, iyilik: 0 });
+    const a = newAlignmentAt('pos', 'neg');
+    expect([a.baslangic, a.baslangicTuru, a.duzen, a.iyilik]).toEqual([{ duzen: 33, iyilik: -33 }, 'kare', 33, -33]);
+    expect(alignDiceOf(a)).toBe('hizalanma-lawful-evil');
+    const tn = newAlignmentAt('neu', 'neu');
+    expect(alignDiceOf(tn)).toBe('hizalanma-true-neutral');
+  });
+  it('otomatik hesap çarpanı kayda yazar; eski karakter (çarpan yok) ×1 ile hesaplanır, değeri değişmez', () => {
+    const v = { duzen: 10, iyilik: 10 };
+    expect(newAlignment(v, 'otomatik').katkiCarpani).toBe(KATKI_CARPANI);
+    const old = newAlignment(v, 'otomatik', 1);
+    delete (old as { katkiCarpani?: number }).katkiCarpani;
+    const sheet = { classId: 'paladin', backgroundId: 'acolyte', raceId: 'dwarf' };
+    const withOld = startValue(startContributions(sheet, true, old.katkiCarpani ?? 1));
+    expect(withOld).toEqual(startValue(startContributions(sheet, true, 1)));
+    // Seçilen karenin zarı kayıtla açılır (SD8 kancası)
+    const c = withAlignDice({ ...blankCharacter('x'), hizalanma: newAlignmentAt('neg', 'pos') });
+    expect(c.hizalanmaZarlar).toEqual(['hizalanma-chaotic-good']);
   });
 });

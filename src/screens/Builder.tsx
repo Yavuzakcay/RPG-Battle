@@ -31,7 +31,7 @@ import { DiceStep } from '../ui/DiceStep';
 import { RecoBar, RecoProvider, RecoTag, useRecoSets } from './builder/Reco';
 import { applyReco, clearReco } from './builderDefaults';
 import '../app/alignDiceHook';
-import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startContributions, startValue, type Alignment, type StartKind } from '../rules/alignment';
+import { KATKI_CARPANI, newAlignment, newAlignmentAt, onSubclassChange, squareOf, startContributions, startValue, type Alignment, type Bucket } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
 import { findSubclass, genderVisible, isOtherClassSubclass, subclassMissing, subclassPlainName } from '../rules/subclasses';
@@ -284,29 +284,56 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
  */
 function withAlignment(ch: SavedCharacter, initial: SavedCharacter): SavedCharacter {
   if (!alignmentEnabled()) return ch;
-  const computed = startValue(startContributions(ch.sheet, alignmentRace()));
-  if (initial.hizalanma) return { ...ch, hizalanma: onSubclassChange(initial.hizalanma, computed, 'oluşturucu', new Date().toISOString()).alignment };
-  return { ...ch, hizalanma: ch.hizalanma ?? newAlignment(computed, 'otomatik') };
+  // SD12: eski karakter kendi çarpanıyla (yoksa 1) hesaplanır: değerlerine dokunulmaz; yeni karakter güncel çarpanla.
+  if (initial.hizalanma) {
+    const computed = startValue(startContributions(ch.sheet, alignmentRace(), initial.hizalanma.katkiCarpani ?? 1));
+    return { ...ch, hizalanma: onSubclassChange(initial.hizalanma, computed, 'oluşturucu', new Date().toISOString()).alignment };
+  }
+  // Yeni karakter: oyuncu kare seçtiyse o ('kare'), değilse güncel otomatik hesap.
+  if (ch.hizalanma?.baslangicTuru === 'kare' && !alignmentAutoOnly()) return ch;
+  return { ...ch, hizalanma: newAlignment(startValue(startContributions(ch.sheet, alignmentRace())), 'otomatik') };
 }
 
-/** Kuyruk K51: hizalanma son adımı (katkı dökümü, ızgara, Kabul et / Kabul etme ve üç geçiş seçeneği). */
+/** SD12: 9 kare seçici (satırlar Good/Neutral/Evil, sütunlar Lawful/Neutral/Chaotic): önerilen kare "Önerilen" etiketli, seçili turuncu. */
+export function AlignmentPicker(props: { rec: { d: Bucket; g: Bucket }; sel: { d: Bucket; g: Bucket }; locked: boolean; onPick: (d: Bucket, g: Bucket) => void }) {
+  const H = t().view.hizalanma;
+  const order: Bucket[] = ['pos', 'neu', 'neg'];
+  return (
+    <div className="align-picker" role="radiogroup" aria-label={H.pickTitle}>
+      {order.map((g, r) => order.map((d, c) => {
+        const on = props.sel.d === d && props.sel.g === g;
+        const isRec = props.rec.d === d && props.rec.g === g;
+        const label = d === 'neu' && g === 'neu' ? 'True Neutral' : `${H.cols[c]} ${H.rows[r]}`;
+        return (
+          <button key={`${r}${c}`} type="button" role="radio" aria-checked={on} disabled={props.locked && !on} className={on ? 'on' : 'ghost'} data-kare={`${d}-${g}`}
+            onClick={() => props.onPick(d, g)}>{label}{isRec ? <small className="reco-tag">{t().reco.tag}</small> : null}</button>
+        );
+      }))}
+    </div>
+  );
+}
+
+/** Kuyruk K51: hizalanma son adımı (katkı dökümü, ızgara). SD12: 9 kare seçici (kapalıyken yalnız otomatik: Game Master ayarı). */
 function AlignmentStep(props: { c: SavedCharacter; setC: (f: (x: SavedCharacter) => SavedCharacter) => void; initial: SavedCharacter }) {
   const H = t().view.hizalanma;
   const lang = getLang();
-  const list = startContributions(props.c.sheet, alignmentRace());
-  const computed = startValue(list);
   const old = props.initial.hizalanma;
-  const [rejecting, setRejecting] = useState(false);
-  const chosen: StartKind = props.c.hizalanma?.baslangicTuru ?? 'otomatik';
-  const choose = (k: StartKind) => props.setC((x) => ({ ...x, hizalanma: newAlignment(computed, k) }));
-  const opts = alignmentAutoOnly() ? [] : rejectOptions(computed);
+  const carpan = old?.katkiCarpani ?? KATKI_CARPANI; // eski karakter kendi çarpanıyla
+  const list = startContributions(props.c.sheet, alignmentRace(), carpan);
+  const computed = startValue(list);
+  const autoOnly = alignmentAutoOnly();
+  const picked = props.c.hizalanma?.baslangicTuru === 'kare' && !autoOnly ? props.c.hizalanma : undefined;
   const sorted = [...list.filter((x) => x.kaynak !== 'irk'), ...list.filter((x) => x.kaynak === 'irk')];
   const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
-  const shown: Alignment = old ? onSubclassChange(old, computed, '', '').alignment : props.c.hizalanma ?? newAlignment(computed, 'otomatik');
+  const auto = newAlignment(computed, 'otomatik', carpan);
+  const shown: Alignment = old ? onSubclassChange(old, computed, '', '').alignment : picked ?? auto;
+  const rec = squareOf(computed);
+  const sel = squareOf((old ?? picked ?? auto).baslangic);
+  const differs = !old && picked !== undefined && (sel.d !== rec.d || sel.g !== rec.g);
   return (
     <div className="align-step">
       <p className="mute">{H.intro}</p>
-      <AlignmentGrid value={shown} start={old ? old.baslangic : applyStartKind(chosen, computed)} label={shown} bars />
+      <AlignmentGrid value={shown} start={old ? old.baslangic : shown.baslangic} label={shown} bars />
       <table className="align-contrib"><tbody>
         {sorted.map((x) => (
           <tr key={`${x.kaynak}:${x.id}`}><td>{H.sources[x.kaynak]}: {x.gerekce[lang]}</td><td className="num">{H.law} {sign(x.duzen)} · {H.good} {sign(x.iyilik)}</td></tr>
@@ -319,17 +346,12 @@ function AlignmentStep(props: { c: SavedCharacter; setC: (f: (x: SavedCharacter)
           : H.suggested(computed.duzen, computed.iyilik)}</p>
       ) : (
         <>
-          <div className="align-actions">
-            <button type="button" className={chosen === 'otomatik' ? 'on' : ''} onClick={() => { setRejecting(false); choose('otomatik'); }}>{H.accept}</button>
-            {opts.length > 0 && <button type="button" className={chosen !== 'otomatik' ? 'on' : ''} onClick={() => setRejecting(true)}>{H.reject}</button>}
-          </div>
-          {(rejecting || chosen !== 'otomatik') && opts.length > 0 && (
-            <div className="align-actions">
-              {opts.map((k) => <button key={k} type="button" className={chosen === k ? 'on' : ''} onClick={() => choose(k)}>{H.options[k]}</button>)}
-            </div>
-          )}
-          {alignmentAutoOnly() && <p className="mute">{H.autoOnly}</p>}
-          <p className="mute">{H.chosen(H.kinds[chosen] ?? chosen)}</p>
+          <p className="mute">{autoOnly ? H.autoOnly : H.pickHelp}</p>
+          <AlignmentPicker rec={rec} sel={sel} locked={autoOnly}
+            onPick={(d, g) => props.setC((x) => ({ ...x, hizalanma: d === rec.d && g === rec.g ? newAlignment(computed, 'otomatik') : newAlignmentAt(d, g) }))} />
+          {!autoOnly && picked && <div className="align-actions"><button type="button" className="ghost" onClick={() => props.setC((x) => ({ ...x, hizalanma: newAlignment(computed, 'otomatik') }))}>{H.backAuto}</button></div>}
+          {differs && <p className="mute">{H.differs}</p>}
+          <p className="mute">{H.chosen(H.kinds[picked ? 'kare' : 'otomatik'] ?? '')}</p>
         </>
       )}
       <DiceStep c={props.c} setC={props.setC} alignment={shown} />

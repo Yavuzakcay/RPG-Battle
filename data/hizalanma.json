@@ -1,7 +1,7 @@
 {
  "not": "K51: hizalanma parametreleri (eksen aralığı, başlangıç kırpması, etiket eşiği, histerezis, serbest giriş sınırı) ve 9 etiket.",
  "eksen": 50,
- "baslangicKirp": 50,
+ "baslangicKirp": 50, "katkiCarpani": 1.8, "kareMerkezi": 33,
  "esik": 17,
  "histerezis": 2,
  "serbestEnCok": 10,

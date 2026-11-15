@@ -1491,3 +1491,7 @@ input[type="range"]:disabled { accent-color: var(--off); }
 
 /* SD10/SD11: seçili liste satırları turuncu çerçeve + hafif dolgu (tam dolgu yalnız düğme/çipte). */
 .eq-row.on, .spell-row.on, .asi-cell.on, .skill-row.on { border-color: var(--sel); background: color-mix(in srgb, var(--sel) 16%, var(--panel)); color: var(--ink); }
+/* SD12: Alignment başlangıç karesi seçici (3×3). */
+.align-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
+.align-picker button { min-height: 52px; font-size: 13px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+@media (max-width: 640px) { .align-picker { grid-template-columns: 1fr; } }
