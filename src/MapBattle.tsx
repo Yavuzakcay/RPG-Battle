@@ -102,6 +102,7 @@ import { actionHint, actionTip } from './ui/actionHints';
 import { activeSpecialGroups, costOfKey, pageOf, spellGroups, splitMenu, visible, type MenuItem, type SpecialGroup } from './ui/actionMenu';
 import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
 import { enemyHpVis } from './oda/active';
+import { SpellComps } from './ui/SpellComps';
 import { hpBand, hpBarFraction, hpPercent } from './oda/hp';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
@@ -1470,7 +1471,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const barred = castBarrierKind(state, actor as Combatant, sp);
     // SD7: tamamen savaş dışı büyü (etkisi yok) savaş menüsünde görünmez.
     const hidden = offCombatOnly(sp, mechanicsAt(state, sp));
-    return { slot, why, barred, usable: slot && why === null && barred === null && !sp.mechanics.unsupported && !hidden };
+    // SD13: Sessizlik alanındaki sözlü büyü menüde gri satır (V vurgulu, nedeni yazılı); başka nedenle yapılamayan yine görünmez.
+    const base = slot && why === null && !sp.mechanics.unsupported && !hidden;
+    return { slot, why, barred, usable: base && barred === null, silenced: base && barred === 'silence' };
   };
   const spellReason = !actor ? undefined : !actor.spellNames.length ? Y.noCaster
     : spellMenu(actor).some(({ spell: sp }) => spellInfo(sp).usable) ? undefined : Y.noSpell;
@@ -2416,7 +2419,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
 
           {active && actor && actorPx && mode === 'spells' && (() => {
             // SD2: yalnız yapılabilen büyüler; sekmeler: Cantrip, 1. seviye, 2. seviye… (grup içi kaydırma serbest, ilk sekme varsayılan).
-            const usable = spellMenu(actor).filter(({ spell: sp }) => spellInfo(sp).usable);
+            const usable = spellMenu(actor).filter(({ spell: sp }) => spellInfo(sp).usable || spellInfo(sp).silenced);
             const tabs = spellGroups(usable.map((e) => ({ ...e, level: e.spell.level })));
             const tabLevel = spellTab !== null && tabs.some((g) => g.level === spellTab) ? spellTab : tabs[0]?.level ?? 0;
             const list = tabs.find((g) => g.level === tabLevel)?.items ?? [];
@@ -2479,7 +2482,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       }
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
-                      <span>{sp.name}{sp.castingTime === 'bonus' && <i className="cost-badge" title={N.fast}>{N.fastMark}</i>}</span>
+                      <span>{sp.name}{sp.castingTime === 'bonus' && <i className="cost-badge" title={N.fast}>{N.fastMark}</i>}<SpellComps spell={sp} compact silenced={barred === 'silence'} /></span>
                       <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? loc(why) : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? (freeShapeOf(state, sp) ? B.k65.note(freeShapeOf(state, sp)?.maxHexes ?? 0) : B.spellNote.area(sp.area?.sizeFt ?? 0)) : mechanicsAt(state, sp).offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}{((lf) => (lf ? ` · ${B.k67.light(lf.bright, lf.dim)}` : ''))(spellLightFt(state, sp))}</>}</small>
                     </button>
                   );
@@ -2527,7 +2530,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
-                <strong>{maskHp(B.targetHead(target.name, target.hp, target.maxHp, target.ac), target)}</strong>
+                <strong>{maskHp(B.targetHead(target.name, target.hp, target.maxHp, target.ac), target)}</strong>{spell && mode !== 'attack' && <SpellComps spell={spell} silenced={castBarrierKind(state, actor as Combatant, spell) === 'silence'} />}
                 {choices.map((ch) => (
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
@@ -2614,7 +2617,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const at = bubbleAt(actorPx, size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
-                <strong>{S.head(spell.name, def?.rangeFt ?? spell.rangeFt)}</strong>
+                <strong>{S.head(spell.name, def?.rangeFt ?? spell.rangeFt)}</strong><SpellComps spell={spell} silenced={castBarrierKind(state, actor, spell) === 'silence'} />
                 {summonKeys.size === 0 && <small>{castBarrierKind(state, actor, spell) ? B.spellNote.barred[castBarrierKind(state, actor, spell) as 'armor'] : S.noHex}</small>}
                 {opts.length > 0 && def?.choice && (
                   <label className="fx-choice">{S.choice[def.choice.kind]}{' '}

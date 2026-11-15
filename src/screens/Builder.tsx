@@ -4,6 +4,7 @@
  * zırh, silah, eşya (her birinin bir satır özeti, ayrıntı üzerine gelince ya da seçilince); büyüler.
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
+import { SpellComps, componentsInfo } from '../ui/SpellComps';
 import { eligibleForms, shapeLimits } from '../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, LESSON_FEATS, parseInvocation } from '../rules/invocations';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -134,6 +135,12 @@ export function clearInvalidSubclass(c: SavedCharacter): { character: SavedChara
  * yalnızca "Kaydet"i. Masaüstünde sağda özet paneli ve üstte adım çubuğu; mobilde üst başlık, ilerleme çubuğu ve alt
  * özet çubuğu. `step` (testler) başlangıç adımı.
  */
+/** Görev SD13: yalnız adı bilinen büyü satırlarında küçük bileşen grubu. */
+function NameComps(props: { name: string }) {
+  const sp = spells.find((x) => x.name === props.name);
+  return sp ? <SpellComps spell={sp} compact /> : null;
+}
+
 export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedCharacter) => void; onCancel: () => void; step?: BuilderStep;
   /** Görev SD3: yeni karakter: ad, beceri, geçmiş bonusu, donanım, büyü ve yetenek artışı önerileri hazır gelir. */ suggest?: boolean }) {
   const L = t();
@@ -1023,7 +1030,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
     if (!sp || kit.alwaysPrepared.includes(x.name)) return null;
     return (
       <li key={x.id} className={`spell-row${on ? ' on' : ''}`} title={sp.mechanics.unsupported ?? sp.mechanics.approx ?? undefined}>
-        <span className="spell-name">{x.name}<RecoTag show={on && !!reco?.spells.includes(x.name)} /><InfoPop text={describeTr('buyu', sp.id) ?? ''} />{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
+        <span className="spell-name">{x.name}<RecoTag show={on && !!reco?.spells.includes(x.name)} /><InfoPop text={`${describeTr('buyu', sp.id) ?? ''} ${componentsInfo(sp)}`.trim()} /><SpellComps spell={sp} />{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
           {/* Kuyruk MB7: güncel sürümde savaşta çalışan büyü (Phantom Steed `mb7`) savaş dışı sayılmaz. */}{(sp.mechanics.mb7?.offCombat ?? sp.mechanics.offCombat) ? <small className="tag-offcombat" title={T.spellOffCombatTip}>{T.spellOffCombat}</small> : null}</span>
         {book && x.level > 0 && (
           <button className={`badge book${inBook ? ' on' : ''}`} aria-pressed={inBook} disabled={!inBook && cnt.book.length >= (lim.spellbook ?? 0)}
@@ -1055,7 +1062,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
           const sp = spells.find((x) => x.name === n);
           return (
             <li key={n} className="eq-row on"><span className="eq-main"><b>{n}<RecoTag show={!!reco?.spells.includes(n)} /></b><small>{(sp?.level ?? 0) === 0 ? W.cantripGroup : W.levelGroup(sp?.level ?? 0)}</small></span>
-              {sp && <InfoPop text={describeTr('buyu', sp.id) ?? ''} />}
+              {sp && <SpellComps spell={sp} compact />}{sp && <InfoPop text={`${describeTr('buyu', sp.id) ?? ''} ${componentsInfo(sp)}`.trim()} />}
               <button className="ghost eq-remove" aria-label={W.removeItem(n)} onClick={() => toggleSpell(n, false)}>×</button></li>
           );
         })}
@@ -1079,7 +1086,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
             <ul className="spell-list">{alt.map((n) => {
               const on = chosen.includes(n);
               return (
-                <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}</span>
+                <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}<NameComps name={n} /></span>
                   <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && altCount >= altKit.max} onClick={() => toggleSpell(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
               );
             })}</ul>
@@ -1093,7 +1100,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
               const lv = spells.find((x) => x.name === n)?.level ?? 0;
               const full = cap ? extraCount >= cap : lv === 0 ? cnt.cantrips >= lim.cantrips : cnt.prepared >= lim.prepared;
               return (
-                <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n} <small className="mute">{lv === 0 ? W.cantripGroup : W.levelGroup(lv)}</small></span>
+                <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n} <small className="mute">{lv === 0 ? W.cantripGroup : W.levelGroup(lv)}</small><NameComps name={n} /></span>
                   <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && full} onClick={() => toggleSpell(n, !on)}>{on ? W.spellPrepOn : W.spellPrepTag}</button></li>
               );
             })}</ul>
@@ -1212,7 +1219,7 @@ function MagicInitiatePicker({ sheet: s, set, list }: { sheet: CharacterSheet; s
       <ul className="spell-list">{opt.cantrips.map((n) => {
         const on = mi.cantrips.includes(n);
         return (
-          <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}</span>
+          <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}<NameComps name={n} /></span>
             <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && mi.cantrips.length >= 2}
               onClick={() => toggleCantrip(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
         );

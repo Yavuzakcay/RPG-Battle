@@ -1510,3 +1510,13 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .oda-rules-read li.on b { color: var(--sel); }
 .oda-ready { cursor: default; }
 @media (max-width: 640px) { .oda-name { flex-direction: column; align-items: stretch; } }
+
+/* Görev SD13: büyü bileşen etiketleri (V/S/M). SD10: dolu = turuncu; olmayan gösterilmez; Sessizlikte V vurgulu (çerçeve). */
+.spell-comps { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-inline-start: 6px; vertical-align: middle; }
+.spell-comps .comp { font: inherit; font-size: 0.68rem; font-weight: 700; line-height: 1; padding: 2px 5px; min-width: 0; min-height: 0; border-radius: 4px; border: 1px solid var(--sel); background: var(--sel); color: var(--sel-ink); cursor: default; }
+.spell-comps button.comp { cursor: pointer; }
+.spell-comps.compact .comp { padding: 1px 3px; border: 0; }
+.spell-comps .comp.hot { background: transparent; color: var(--sel); outline: 2px solid var(--sel); }
+.spell-comps .comp-gp { font-style: normal; font-size: 0.75rem; color: var(--sel); }
+.spell-comps .comp-note { flex-basis: 100%; font-weight: 400; color: inherit; opacity: 0.85; }
+.spell-comps .comp-note.hot { font-weight: 700; }

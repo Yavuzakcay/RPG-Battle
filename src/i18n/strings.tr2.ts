@@ -84,6 +84,16 @@ export const TR_EXTRA = {
       jetonYedek: (path: string, d: string) => `Uyarı: jeton görseli yok, yedek arketip kullanılır (${path}).`,
     } as Record<string, (path: string, detail: string) => string>,
   },
+  /** Görev SD13: büyü bileşenleri (V/S/M) etiketleri ve tek satır açıklamaları (yalnız bilgi; motorda yalnız V: Sessizlik). */
+  comps: {
+    v: 'V', s: 'S', m: 'M', label: 'Bileşenler',
+    vName: 'Verbal', sName: 'Somatic', mName: 'Material',
+    vHelp: 'Sözlü. Büyüyü söylemen gerekir; Sessizlik alanında yapılamaz.',
+    sHelp: 'Hareketli. Elinle işaret yapman gerekir; ellerin bağlıysa ya da tutsaksan zordur.',
+    mHelp: 'Malzeme. Küçük bir malzeme ya da odak gerekir (büyücü odağı, bileşen kesesi ya da elin boşsa elinde tutarak).',
+    material: (text: string): string => `Malzeme: ${text}`, gp: (n: number): string => `${n.toLocaleString('tr-TR')}+ altın`, consumed: 'tüketilir',
+    valuable: 'Değerli malzeme', silenced: 'V: sözlü, Sessizlik alanındasın',
+  },
   /** Görev OD1: yerel Oda kur / Odaya katıl, oda ayarları, düşman HP görünürlüğü. */
   oda: {
     createTitle: 'Oda kur', joinTitle: 'Odaya katıl', quickTitle: 'Hızlı savaş', rooms: 'Odalar',
@@ -409,7 +419,7 @@ export const TR_EXTRA = {
     spriteAnim: (on: boolean): string => (on ? 'Efekt animasyonu (yüzeyler): Açık' : 'Efekt animasyonu (yüzeyler): Kapalı'),
     mapTint: (on: boolean): string => (on ? 'Yerleşim görünümü: Açık' : 'Yerleşim görünümü: Kapalı'),
     fxDensity: (d: string): string => `Efekt yoğunluğu: ${({ low: 'düşük', medium: 'orta', high: 'yüksek' } as Record<string, string>)[d] ?? d}`, changeMap: 'Harita değiştir', toSetup: 'Kuruluma dön', newBattle: 'Yeni savaş', endVideoSkip: 'Sonuca geç (dokun)',
-    spellNote: { barred: { armor: 'eğitimsiz zırh: büyü yapılamaz', silence: 'sessizlik: sözlü büyü yapılamaz', form: 'bu biçimde büyü yapılamaz' }, onceFree: 'bir kez, slotsuz', noSlot: 'slot yok', unavailable: 'şu an yapılamaz', bonus: 'hızlı eylem', reaction: 'tepki', area: (ft: number) => `${ft} ft alan`, self: 'elle uygulanır', offCombat: 'savaş dışı · etkisi yok, Game Master anlatır', notWorking: 'Yakında (yeni sistem gerekir)', gmNote: 'Game Master notu (bir parça savaşa sığmıyor)', range: (ft: number) => `${ft} ft` },
+    spellNote: { barred: { armor: 'eğitimsiz zırh: büyü yapılamaz', silence: 'V: sözlü, Sessizlik alanındasın', form: 'bu biçimde büyü yapılamaz' }, onceFree: 'bir kez, slotsuz', noSlot: 'slot yok', unavailable: 'şu an yapılamaz', bonus: 'hızlı eylem', reaction: 'tepki', area: (ft: number) => `${ft} ft alan`, self: 'elle uygulanır', offCombat: 'savaş dışı · etkisi yok, Game Master anlatır', notWorking: 'Yakında (yeni sistem gerekir)', gmNote: 'Game Master notu (bir parça savaşa sığmıyor)', range: (ft: number) => `${ft} ft` },
     targetHead: (name: string, hp: number, max: number, ac: number) => `${name} · HP ${hp}/${max} · AC ${ac}`, cast: 'Yap', hit: 'Vur',
     shove: { head: (name: string, ab: string, dc: number) => `${name} · ${ab} kurtarma zarı / DC ${dc}`, push: 'İt (5 ft)', cantPush: (r: string) => `İtilemez: ${r}`, noPos: 'Konum yok',
       pushBtn: 'İt', prone: 'Yere düşür', alreadyProne: 'Zaten yerde', proneBtn: 'Düşür',

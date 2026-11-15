@@ -40,6 +40,16 @@ export const en: Strings = {
     all: 'Fill everything with suggestions', clearAll: 'Clear everything',
     help: 'The most-used choices for this class are ready. Change anything you like.',
   },
+  /** Task SD13: spell components (V/S/M) labels and one-line explanations (info only; the engine enforces only V: Silence). */
+  comps: {
+    v: 'V', s: 'S', m: 'M', label: 'Components',
+    vName: 'Verbal', sName: 'Somatic', mName: 'Material',
+    vHelp: 'Verbal. You must speak the spell; it cannot be cast inside a Silence area.',
+    sHelp: 'Somatic. You must gesture with a hand; hard if your hands are bound or you are restrained.',
+    mHelp: 'Material. A small material or a focus is needed (a spellcasting focus, a component pouch, or held in a free hand).',
+    material: (text: string): string => `Material: ${text}`, gp: (n: number): string => `${n.toLocaleString('en-US')}+ gp`, consumed: 'consumed',
+    valuable: 'Valuable material', silenced: 'V: verbal, you are in a Silence area',
+  },
   /** Task OD1: local Create room / Join room, room settings, enemy HP visibility. */
   oda: {
     createTitle: 'Create room', joinTitle: 'Join room', quickTitle: 'Quick battle', rooms: 'Rooms',
@@ -1040,7 +1050,7 @@ export const en: Strings = {
     spriteAnim: (on: boolean) => (on ? 'Effect animation (surfaces): On' : 'Effect animation (surfaces): Off'),
     mapTint: (on: boolean) => (on ? 'Settlement look: On' : 'Settlement look: Off'),
     fxDensity: (d: string): string => `Effect density: ${({ low: 'low', medium: 'medium', high: 'high' } as Record<string, string>)[d] ?? d}`, changeMap: 'Change map', toSetup: 'Back to setup', newBattle: 'New battle', endVideoSkip: 'Skip to results (tap)',
-    spellNote: { barred: { armor: 'untrained armor: no spellcasting', silence: 'silence: no verbal spells', form: 'no spellcasting in this form' }, onceFree: 'once, no slot', noSlot: 'no slot', unavailable: 'not available now', bonus: 'quick action', reaction: 'reaction', area: (ft: number) => `${ft} ft area`, self: 'apply by hand', offCombat: 'out of combat · no effect, the Game Master narrates', notWorking: 'Coming soon (needs a new system)', gmNote: 'Game Master note (one part does not fit combat)', range: (ft: number) => `${ft} ft` },
+    spellNote: { barred: { armor: 'untrained armor: no spellcasting', silence: 'V: verbal, you are in a Silence area', form: 'no spellcasting in this form' }, onceFree: 'once, no slot', noSlot: 'no slot', unavailable: 'not available now', bonus: 'quick action', reaction: 'reaction', area: (ft: number) => `${ft} ft area`, self: 'apply by hand', offCombat: 'out of combat · no effect, the Game Master narrates', notWorking: 'Coming soon (needs a new system)', gmNote: 'Game Master note (one part does not fit combat)', range: (ft: number) => `${ft} ft` },
     targetHead: (name: string, hp: number, max: number, ac: number) => `${name} · HP ${hp}/${max} · AC ${ac}`, cast: 'Cast', hit: 'Strike',
     shove: { head: (name: string, ab: string, dc: number) => `${name} · ${ab} saving throw / DC ${dc}`, push: 'Push (5 ft)', cantPush: (r: string) => `Cannot push: ${r}`, noPos: 'No position',
       pushBtn: 'Push', prone: 'Knock prone', alreadyProne: 'Already prone', proneBtn: 'Knock down',
