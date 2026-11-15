@@ -1550,3 +1550,12 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .story-fields { display: grid; gap: 12px; }
 .story-field { display: flex; flex-direction: column; gap: 4px; }
 .story-field textarea { width: 100%; box-sizing: border-box; resize: vertical; font: inherit; }
+
+/* Kuyruk KQ5 YZ1: yüzey katmanı (data/yuzey-gorunum.json). Kırpılmış düz dolgu + dış kenar; adımlı animasyon (ortak 1/6 sn tık). */
+.surface-layer { pointer-events: none; }
+.surface-fill.anim-nabiz { animation-name: surf-nabiz; animation-timing-function: steps(6); animation-iteration-count: infinite; animation-direction: alternate; }
+.surface-fill.anim-titrek { animation-name: surf-titrek; animation-timing-function: steps(3); animation-iteration-count: infinite; animation-direction: alternate; }
+@keyframes surf-nabiz { from { opacity: 1; } to { opacity: var(--surf-lo, 0.78); } }
+@keyframes surf-titrek { from { opacity: 1; } to { opacity: var(--surf-lo, 0.7); } }
+.sprites-paused .surface-fill { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) { .surface-fill { animation: none !important; } }

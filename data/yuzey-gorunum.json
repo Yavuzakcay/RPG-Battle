@@ -1,0 +1,16 @@
+{
+  "_aciklama": "Kuyruk KQ5 YZ1: yüzey (zemin efekti) görünümü, tür başına tek tutarlı stil. Her yüzey altıgen kenarına kırpılır (taşma yok); komşu aynı tür birleşik tek şekil (kenar çizgisi yalnız dış sınırda). dolguOpak: yarı saydam dolgu; kenarKalinlik (px, kırpma içinde yarısı görünür); karisim: CSS mix-blend-mode; dokuOpak: mevcut sprite'ın yalnız doku olarak içerideki opaklığı (0 = doku yok, yalnız düz renk); anim: nabiz (yavaş opaklık nabzı), titrek (alev), yok. Adımlı animasyon mevcut TICK_MS (1/6 sn) ile. Sprite yok ya da yüklenmediyse düz renk dolgu yedeği bu değerlerle çizilir. Doku dosya eşlemesi data/sprite-esleme.json'da kalır (dosyalar sonra altıgene sığan özgün dokularla değişecek).",
+  "varsayilan": { "renk": "#99aabb", "kenar": "#e8eef2", "dolguOpak": 0.5, "kenarKalinlik": 2, "kenarOpak": 0.85, "karisim": "normal", "dokuOpak": 0.35, "anim": "yok" },
+  "tur": {
+    "alev": { "renk": "#e0731f", "kenar": "#ffd27a", "dolguOpak": 0.6, "kenarKalinlik": 2.5, "karisim": "screen", "dokuOpak": 0.4, "anim": "titrek" },
+    "yag": { "renk": "#1c191c", "kenar": "#6a5f6e", "dolguOpak": 0.72, "kenarKalinlik": 2, "dokuOpak": 0.3, "anim": "yok" },
+    "gres": { "renk": "#6b4630", "kenar": "#b38a60", "dolguOpak": 0.62, "kenarKalinlik": 2, "dokuOpak": 0.3, "anim": "yok" },
+    "buz": { "renk": "#9fd2e4", "kenar": "#eef8fb", "dolguOpak": 0.55, "kenarKalinlik": 2, "dokuOpak": 0.35, "anim": "yok" },
+    "su": { "renk": "#4aa8d8", "kenar": "#cdeefa", "dolguOpak": 0.52, "kenarKalinlik": 2, "dokuOpak": 0.35, "anim": "nabiz" },
+    "zehir": { "renk": "#9fb04a", "kenar": "#d6e48a", "dolguOpak": 0.42, "kenarKalinlik": 1.6, "dokuOpak": 0.4, "anim": "nabiz" },
+    "buhar": { "renk": "#d6dadc", "kenar": "#f4f6f7", "dolguOpak": 0.34, "kenarKalinlik": 1.4, "dokuOpak": 0.4, "anim": "nabiz" },
+    "sis": { "renk": "#aebcbe", "kenar": "#e3ebec", "dolguOpak": 0.4, "kenarKalinlik": 1.4, "dokuOpak": 0.4, "anim": "nabiz" },
+    "ag": { "renk": "#b8c2ad", "kenar": "#eef2e6", "dolguOpak": 0.3, "kenarKalinlik": 1.6, "dokuOpak": 0.5, "anim": "yok" }
+  },
+  "animasyon": { "nabizDusuk": 0.78, "titrekDusuk": 0.7, "sureTik": 18 }
+}
