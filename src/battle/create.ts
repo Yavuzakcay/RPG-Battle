@@ -263,6 +263,8 @@ function combatantFromSheetBase(
     hp: d.maxHp,
     maxHp: d.maxHp,
     speed: Math.max(0, d.speed - carrySpeedPenalty(load.level, carryRule)),
+    // Kuyruk KQ3 NA1: nesne taşıma kapasitesi (boyut ve Powerful Build dahil) ve kendi yükü.
+    carryCapLb: load.capacity, carryUsedLb: load.weight,
     ...(load.level !== 'ok' ? { load: load.level } : {}),
     ...((): Partial<Combatant> => {
       // Görev WARLOCK: savaştan önce yapılmış sayılan büyü (Armor of Shadows: zırhsızsa Mage Armor; 8 saat).
@@ -689,6 +691,7 @@ export function startBattle(
   participants: Combatant[],
   rng: Rng,
   opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; /** Kuyruk K58 G5: yapay zekâ zorluğu (kayıtta). */ yz?: BattleState['yz']; yuzeyEtkilesimi?: boolean; kuralSurumu?: number; houseRules?: Record<string, boolean>; goals?: Goals | null; groupStates?: Record<string, { state?: GroupState; links?: string[] }>;
+    /** Kuyruk KQ3 NA1: Taşıma yükü oda kuralı (nesne ağırlığı sınırı; kapalı ya da yoksa sınır yok). */ tasima?: 'off' | 'srd' | 'tiered';
     /** Kuyruk 31: Serüven savaşı: bitince keşfe devam ve çıkış altıgenleri. */ explore?: { exits: Offset[] } } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
@@ -785,6 +788,7 @@ export function startBattle(
     ...(opts.houseRules ? { houseRules: { ...opts.houseRules } } : {}),
     // Görev S3: hedefler: Game Master'ın listesi (null = hedefsiz), yoksa haritanın hazır hedefleri.
     ...(goals ? { goals } : {}),
+    ...(opts.tasima ? { tasima: opts.tasima } : {}),
     // Görev S4: uyuyan/habersiz gruplar (üyeler savaş başında, `groups_formed`).
     ...(groups ? { groups } : {}),
   };

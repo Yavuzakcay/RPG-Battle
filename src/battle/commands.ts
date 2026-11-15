@@ -94,6 +94,7 @@ import { evergreenEvents, executeWildResurgence, executeWildShape, shapeCleanup 
 import { executePossessionLeave, executeSetupWard, hallowSyncEvents, possessionCleanup, possessionCommandProblem, setupWardOf, wardTeleportEvents } from './possession';
 import { poolCreateEvents, poolSyncEvents } from './hpPool';
 import { executeSetupSummon, executeSummonMove, summonCleanup } from './summons';
+import { carryCleanupEvents, executeSetObjectWeight } from './nesneAgirlik';
 import { executeBreathWeapon } from './areaAttack';
 import { SURFACES, surfaceEvent, surfaceReactionEvents } from './surfaces';
 import { globalRule } from './ruleControl';
@@ -276,6 +277,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   const vanished = summonCleanup(next);
   if (vanished.length) { next = applyEvents(next, vanished); events = [...events, ...vanished]; }
+  // Kuyruk KQ3 NA1 (sürüm 80): taşıyan düştü/Incapacitated/Prone ya da ağırlık kapasiteyi aştı: nesne düşer / yük kalanlara geçer.
+  const dropped = carryCleanupEvents(next);
+  if (dropped.length) { next = applyEvents(next, dropped); events = [...events, ...dropped]; }
   // Kuyruk K67b (sürüm 51): büyücünün menzilinden çıkan Dancing Lights ışığı söner.
   const dimmed = danceCleanupEvents(next);
   if (dimmed.length) { next = applyEvents(next, dimmed); events = [...events, ...dimmed]; }
@@ -419,6 +423,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   // Görev OD1C: Game Master kurulumda da nesne yerleştirir (hedef nesnesi savaş öncesi haritaya konur; yeni olay yok).
   if (cmd.type === 'place_object' && state.status === 'setup') return executePlaceObject(state, cmd, ctx.isGm);
+  if (cmd.type === 'set_object_weight' && state.status === 'setup') return executeSetObjectWeight(state, cmd, ctx.isGm);
   if (state.status === 'setup') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
 
   if (cmd.type === 'set_condition') {
@@ -486,6 +491,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   // Görev S2: Game Master nesne yerleştirir/kaldırır.
   if (cmd.type === 'place_object') return executePlaceObject(state, cmd, ctx.isGm);
+  if (cmd.type === 'set_object_weight') return executeSetObjectWeight(state, cmd, ctx.isGm);
   if (cmd.type === 'reveal_object') {
     if (!ctx.isGm) return fail('Yalnızca Game Master gizli nesneyi açığa çıkarır.');
     const ob = state.map?.objects?.find((o) => o.id === cmd.objectId);

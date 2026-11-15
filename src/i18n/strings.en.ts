@@ -50,6 +50,13 @@ export const en: Strings = {
     material: (text: string): string => `Material: ${text}`, gp: (n: number): string => `${n.toLocaleString('en-US')}+ gp`, consumed: 'consumed',
     valuable: 'Valuable material', silenced: 'V: verbal, you are in a Silence area',
   },
+  /** Task NA1: object weight and carrying (UI). */
+  na1: {
+    weightTool: 'Weight', toolHint: 'Tap the object whose weight you want to change.', noObject: 'No object here.', cardTitle: (name: string): string => `${name}: weight`,
+    lb: 'lb', save: 'Save', reset: 'Back to default', close: 'Close', range: (min: number, max: number): string => `${min}–${max} lb`,
+    info: (lb: number, cls: string): string => `weight ${lb} lb (${cls})`, cls: { hafif: 'light', orta: 'medium', agir: 'heavy' } as Record<string, string>,
+    carry: (free: number): string => `your free capacity is ${free} lb`, carryNo: 'you cannot carry it alone', carryYes: 'you can carry it', needPeople: (n: number): string => `${n} people needed`,
+  },
   /** Task OD1: local Create room / Join room, room settings, enemy HP visibility. */
   oda: {
     createTitle: 'Create room', joinTitle: 'Join room', quickTitle: 'Quick battle', rooms: 'Rooms',

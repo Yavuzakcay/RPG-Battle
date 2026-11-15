@@ -718,6 +718,8 @@ export interface Avatar {
 
 /** Savaştaki bir yaratık (karakter veya düşman). */
 export interface Combatant {
+  /** Kuyruk KQ3 NA1 (sürüm 80): taşıma kapasitesi (lb; STR × 15 × boyut), kendi yükü (lb) ve ortak taşıma (hız yarıya). */
+  carryCapLb?: number; carryUsedLb?: number; groupCarry?: boolean;
   id: string;
   name: string;
   avatar: Avatar;
@@ -1188,13 +1190,16 @@ export type ObjectKind = 'oilBarrel' | 'powderKeg' | 'chest' | 'table' | 'door' 
   /** Kuyruk K53 S3: zeminden çağrılan taş/enkaz (`objectMotion.ts`). */
   | 'rock'
   /** Kuyruk S2: elden düşen eşya (`heldItems.ts`). */
-  | 'droppedItem';
+  | 'droppedItem'
+  /** Kuyruk KQ3 NA1: taşınabilir yeni nesneler (kılıç, heykel; dört büyülü eşya). */
+  | 'sword' | 'statue' | 'potion' | 'wand' | 'amulet' | 'ring';
 export type ObjectState = 'open' | 'closed' | 'locked' | 'tipped' | 'burning' | 'read' | 'out'
   /** Görev K26: balista yüklü / boş. */
   | 'loaded' | 'spent';
 /** Görev S2: haritadaki nesne (konum, kalan HP, durum). Yıkılınca listeden çıkar. */
 export interface MapObject {
   id: string; kind: ObjectKind; at: Offset; hp: number; state?: ObjectState; lockDc?: number; /** Görev S3: taşıyan savaşçı (retrieve). */ carriedBy?: string;
+  /** Kuyruk KQ3 NA1 (sürüm 80): ağırlık (lb; Game Master ya da harita ezmesi; yoksa veriden) ve ek taşıyıcılar (ağırlığı paylaşanlar). */ agirlikLb?: number; carriers?: string[];
   /** Kuyruk A7: nesneye yapılmış ışık büyüsü (yarıçap altıgen, büyü kimliği, yapan; Light, Continual Flame). */
   light?: number; lightSpell?: string; lightBy?: string;
   /** Kuyruk 30 D1: keşif nesnesi (oyuncudan saklı, bulunana dek); bulma DC'si (pasif Algı), bulununca keşif bayrağı. */
@@ -1395,6 +1400,8 @@ export interface BattleState {
    * başlar; eski kayıtta yok = 1 (eski kurallar, replay aynı).
    */
   kuralSurumu?: number;
+  /** Kuyruk KQ3 NA1: Taşıma yükü oda kuralı ('off' ya da yoksa nesne ağırlığı sınırı yok). */
+  tasima?: 'off' | 'srd' | 'tiered';
   /**
    * Y1: yapay zekâ ayarı (karar olay değil, kural sürümü gerekmez). `zorluk` taraf başına (varsayılan Normal);
    * `eski: true` Y1 öncesi kural zincirini çalıştırır (regresyon ölçümü).
@@ -1583,6 +1590,8 @@ export type Command =
   | { type: 'map_trigger'; rule: string; at?: Offset }
   /** Yalnızca GM: kapıyı aç veya kapat. */
   | { type: 'gate'; at: Offset; open: boolean }
+  /** Kuyruk KQ3 NA1 (sürüm 80): Game Master nesnenin ağırlığını değiştirir (lb; null = varsayılana dön). */
+  | { type: 'set_object_weight'; objectId: string; lb: number | null }
   /** GM: uyuyan ejderhayı uyandır (her kipte, her an). */
   | { type: 'wake_dragon' }
   /** Yapay zekâ düşmanı (`dragonWake: chance`): tur başında uyandırma eğilimi zarı. */
@@ -2161,6 +2170,7 @@ export type BattleEvent =
       roll?: { d20: number; total: number; ac: number; hit: boolean } }
   | { type: 'object_destroyed'; objectId: string; label: string }
   | { type: 'object_changed'; objectId: string; state?: ObjectState; label: string; /** Kuyruk A7: nesne ışığı (null kaldırır). */ light?: { r: number; spell: string; by: string } | null; /** Kuyruk 30 D1: gizli nesne bulundu. */ found?: boolean; check?: { d20: number; total: number; dc: number; success: boolean }; carriedBy?: string | null; at?: Offset;
+      /** Kuyruk KQ3 NA1: ek taşıyıcılar (null kaldırır) ve ağırlık ezmesi (lb; null varsayılana döner). */ carriers?: string[] | null; agirlikLb?: number | null;
       /** Kuyruk S1 (Faerie Fire): parlama süresi (tur). */ outlined?: number;
       /** Kuyruk S2: irtifa / Levitate / boyut büyüsü (null kaldırır). */ altitudeFt?: number; levitatedBy?: string | null; resized?: 'Enlarge' | 'Reduce' | null; resizedBy?: string; hp?: number;
       /** Kuyruk 36: doğaçlama silah alındı: taşıyanın silah seçeneklerine eklenir. */ arm?: AttackOption }

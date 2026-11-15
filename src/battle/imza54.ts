@@ -43,7 +43,7 @@ export function mindObjectProblem(state: BattleState, actor: Combatant, to: Offs
   if (!to) return 'Nesnenin altıgenini seç.';
   const o = objectAt(state, to);
   if (!o) return 'Orada nesne yok.';
-  const w = weightOf(o);
+  const w = weightOf(o, state);
   if (!w || !allowed.includes(w)) return 'Bu nesne zihinle taşınamayacak kadar ağır ya da sabit.';
   if (actor.pos && distance(actor.pos, to) * 5 > range) return `${range} ft içinde olmalı.`;
   return null;
@@ -63,7 +63,7 @@ export function hurlEvents(state: BattleState, actor: Combatant, target: Combata
   let cur = state;
   const events: BattleEvent[] = [];
   let obj = objectAt(cur, to);
-  if (!obj || !weightOf(obj)) {
+  if (!obj || !weightOf(obj, cur)) {
     const d = conjureDebris(cur, to);
     if (!d) return 'Orada fırlatılacak bir şey yok.';
     events.push(...d.events);

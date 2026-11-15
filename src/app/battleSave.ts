@@ -13,7 +13,8 @@ import { HP_VIS, enemyHpVis, type HpVis } from '../oda/active';
 
 export { SAVE_KEY, hasSavedBattle };
 /**
- * Kayıt biçimi sürümü. 18: Fighter/Rogue/Ranger (Görev F): `mark_added`, `steady_aim_used`, `extra_damage` olayları; `attack.cunning`,
+ * Kayıt biçimi sürümü. 23: nesne ağırlığı ve ortak taşıma (Kuyruk KQ3 NA1: `set_object_weight` komutu; `object_changed.carriers`/`agirlikLb`; savaşta `tasima`,
+ * savaşçıda `carryCapLb`/`carryUsedLb`/`groupCarry`; nesnede `agirlikLb`/`carriers`; kural sürümü 80). 18: Fighter/Rogue/Ranger (Görev F): `mark_added`, `steady_aim_used`, `extra_damage` olayları; `attack.cunning`,
  * `steady_aim`, `horde_breaker` komutları; `attack_resolved.traitTurns/steadyAim/cunning`; savaşçıda `traits`, `critOn`, `traitTurns`,
  * `steadyAim`; ikinci şans zarları (`bonusDice.resource`). 17: kayıtta o an açık dış içerik paketlerinin kimlikleri (`content`; Görev E1; olaylar aynı,
  * savaşçılar alt sınıf özellikleriyle olaylarda olduğu için paket silinse de kayıt oynar). 16: alan şekilleri (`area_used` olayı; `monster_attack.targetHex`, `breath_weapon` komutu; savaşçıda
@@ -29,15 +30,15 @@ export { SAVE_KEY, hasSavedBattle };
  * Kaçın ve Yardım. 22: Kuyruk 41b/43 olayları (`distracted`, `item_used`, `death_ward` hasar etkisi, Legendary Resistance kilidi). 21: doğaçlama silah (`object_changed.arm`) ve anahtar/doğaçlama silah nesneleri (Kuyruk 36). 20: geçmiş (savaşçıda `backgroundId`, Magic Initiate büyüleri `spellNames`'te; Görev G1). 19: büyü alanları (`zone_created`, `zone_moved`, `zone_triggered`, `zone_ended` olayları; haritada `zones`; Görev B2).
  * Eski sürümler oynatılmaz: "yüklenemedi".
  */
-export const SAVE_VERSION = 22;
+export const SAVE_VERSION = 23;
 /**
- * Yüklenebilen sürümler: her sürümün olayları bir sonrakinin alt kümesi. 3: görünümü olmayan masumlar tohumlu
+ * Yüklenebilen sürümler: her sürümün olayları bir sonrakinin alt kümesi. 3–22: nesne ağırlığı/ortak taşıma yok (reducer aynı okur; kural sürümü 79 ve altı eski kurallar). 3: görünümü olmayan masumlar tohumlu
  * varsayılana düşer. 3–4: zar modu yok (otomatik), zar kaydı yok. 3–6: kaynaklar üç alanlı nesne (sıfırlar dahil);
  * yeni kayıt biçimiyle aynı okunur (olmayan kaynak 0). 3–7: ustalık olayı yok (savaşçılarda işaret yok). 3–8: Rage olayları yok
  * (Barbarian savaşçısında Rage alanları yok: Rage düğmesi görünmez). 3–9: yan el yok. 3–10: Paladin alanları yok (özellik düğmeleri görünmez). 3–11: Monk alanları yok.
  * 3–21: dikkat dağıtma, eşya kullanımı ve Legendary Resistance yok (reducer aynı okur). 3–20: doğaçlama silah ve anahtar nesnesi yok (reducer aynı okur). 3–19: geçmiş yok (savaşçılarda `backgroundId` yok; eski karakterler geçmişsiz oynar). 3–18: büyü alanı yok (haritada `zones` yok). 3–17: Görev F alanları yok (savaşçılarda işaret yok: özellikler çalışmaz, eski davranış). 3–16: `content` yok (dış içerik yoktu). 3–15: alan olayı yok (nefesler tek hedefli `save_resolved`; reducer aynı okur). 3–14: çağrılmış yaratık yok. 3–13: etki alanları yok (Bless vb. çalışmıyordu; savaşçılarda `effects` yok). 3–12: tepki alanları yok (fırsat saldırısı ve Deflect Attacks `action_used`/`deflected` ile harcanmış; reducer ikisini de okur).
  */
-export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 
 /** `hp`: düşman HP görünürlüğü (Görev OD1B; yalnız görünüm, olay biçimi aynı: sürüm artmaz; yoksa Tam). */
 interface SaveFile { version: number; savedAt: string; events: BattleEvent[]; content?: string[]; hp?: HpVis }

@@ -103,6 +103,7 @@ import { activeSpecialGroups, costOfKey, pageOf, spellGroups, splitMenu, visible
 import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
 import { hpFraction, hpModeFor, maskHpText } from './ui/hpVisibility';
 import { SpellComps } from './ui/SpellComps';
+import { AGIRLIK, objectWeightLb } from './battle/nesneAgirlik';
 import { bindObject, pendingItems, resolveDraft, toggleHex, type GoalsDraft } from './oda/hedef';
 import { withGoals } from './ui/goalSetup';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
@@ -484,6 +485,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Görev OD1C: bekleyen hedefler (altıgen/nesne haritada seçilir). `goalPick`: şu an hangi hedef için hangi seçim açık.
   const [gd, setGd] = useState<GoalsDraft | null>(props.goalDraft ?? null);
   const [goalPick, setGoalPick] = useState<{ id: string; how: 'hex' | 'obj' | 'place' } | null>(null);
+  // Kuyruk KQ3 NA1: Game Master nesne ağırlığı kartı.
+  const [weightEdit, setWeightEdit] = useState<string | null>(null);
+  const [weightText, setWeightText] = useState('');
   // Zar modu (Game Master kurulumda seçer): fiziksel zarda gereken zar istenir, adım aynı zarlarla yeniden çalışır.
   const isPlayer = (id: string) => { const c = session.state.combatants[id]; return !!c && c.side === 'party' && !c.civilian; };
   // Tepki ayarı (Görev R1): oyuncu karakterine sor / her zaman / asla; düşmanlar yapay zekâ / her zaman / asla.
@@ -1196,9 +1200,15 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       setGd(bindObject(gd, goalPick.id, ob.id)); setGoalPick(null); toast(t().oda.goal.boundObject(ob.id));
       return;
     }
+    if (mode === 'gmObject' && objectPick === 'weight') {
+      const ob = state.map?.objects?.find((x) => sameHex(x.at, h) && !x.carriedBy);
+      if (!ob) { toast(t().na1.noObject); return; }
+      setWeightEdit(ob.id); setWeightText(String(objectWeightLb(ob)));
+      return;
+    }
     if (mode === 'gmObject') {
       const had = new Set((state.map?.objects ?? []).map((o) => o.id));
-      const next = dispatch(session, objectPick === 'remove' ? { type: 'place_object', at: h } : { type: 'place_object', kind: objectPick.kind, at: h, ...(objectPick.state ? { state: objectPick.state } : {}) }, Math.random, GM_CONTEXT);
+      const next = dispatch(session, objectPick === 'remove' || objectPick === 'weight' ? { type: 'place_object', at: h } : { type: 'place_object', kind: objectPick.kind, at: h, ...(objectPick.state ? { state: objectPick.state } : {}) }, Math.random, GM_CONTEXT);
       if (next.error) toast(next.error); else {
         setSession(next);
         // Görev OD1C: "Nesne yerleştir" ile koyulan yeni nesne bekleyen hedefe kendiliğinden bağlanır.
@@ -2230,7 +2240,24 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
 
         <div className="hud">
           {cam.big && <CameraHud cam={cam} state={state} alerts={alerts} />}
-          {mode === 'gmObject' && <ObjectTool pick={objectPick} onPick={setObjectPick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
+          {mode === 'gmObject' && <ObjectTool pick={objectPick} onPick={setObjectPick} onClose={() => { setMode('idle'); setMenuOpen(true); setWeightEdit(null); }} />}
+          {weightEdit && (() => {
+            const ob = state.map?.objects?.find((x) => x.id === weightEdit);
+            if (!ob) return null;
+            const W = t().na1;
+            const lb = Number(weightText.replace(',', '.'));
+            const ok = Number.isFinite(lb) && lb >= AGIRLIK.minLb && lb <= AGIRLIK.maxLb;
+            return (
+              <div className="gm-tool weight-card" role="dialog" aria-label={W.cardTitle(OBJECTS[ob.kind]?.tr ?? ob.kind)}>
+                <strong className="gm-tool-title">{W.cardTitle(OBJECTS[ob.kind]?.tr ?? ob.kind)}</strong>
+                <label>{W.lb} <input type="number" min={AGIRLIK.minLb} max={AGIRLIK.maxLb} step={0.5} value={weightText} aria-label={W.lb} onChange={(e: { target: { value: string } }) => setWeightText(e.target.value)} /></label>
+                <small className="mute">{W.range(AGIRLIK.minLb, AGIRLIK.maxLb)}</small>
+                <button className="cta" disabled={!ok} onClick={() => { run({ type: 'set_object_weight', objectId: ob.id, lb }); setWeightEdit(null); }}>{W.save}</button>
+                <button onClick={() => { run({ type: 'set_object_weight', objectId: ob.id, lb: null }); setWeightEdit(null); }}>{W.reset}</button>
+                <button onClick={() => setWeightEdit(null)}>{W.close}</button>
+              </div>
+            );
+          })()}
           {mode === 'gmSurface' && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
           <div className="turn-strip" role="list" aria-label={B.order}>
             {(() => {

@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { limitsOn, liftPlan } from './nesneAgirlik';
 import { canAirMove } from './airMove';
 import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
 import { foeField, wallClimbCommand } from './ai/climbAi';
@@ -2531,6 +2532,8 @@ function goalCommand(state: BattleState, actor: Combatant, canAct: boolean): Com
     if (g.kind === 'retrieve' && ob && g.hexes?.length) {
       if (ob.carriedBy === actor.id) { const go = moveToward(state, actor, g.hexes, sneak); if (go) return go; continue; }
       if (ob.carriedBy) continue;
+      // Kuyruk KQ3 NA1 (sürüm 80): yapay zekâ taşıyamayacağı nesneyi seçmez; ortak taşıma koordinasyonu yok (yardımcı gerekiyorsa vazgeçer).
+      if (limitsOn(state)) { const plan = liftPlan(state, actor, ob); if ('problem' in plan || plan.helpers.length) continue; }
       const closest = [...party].sort((a, b) => distance(a.pos as Offset, ob.at) - distance(b.pos as Offset, ob.at))[0];
       if (closest?.id !== actor.id) continue;
       if (distance(pos, ob.at) <= 1) return { type: 'object_use', actorId: actor.id, objectId: ob.id, action: 'take' };

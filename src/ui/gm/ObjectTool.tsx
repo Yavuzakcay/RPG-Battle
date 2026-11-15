@@ -7,8 +7,8 @@ import { OBJECTS, OBJECT_KINDS } from '../../battle/objectData';
 import type { ObjectKind, ObjectState } from '../../battle/types';
 import { getLang, t } from '../../i18n';
 
-export type ObjectPick = { kind: ObjectKind; state?: ObjectState } | 'remove';
-const same = (a: ObjectPick, b: ObjectPick) => (a === 'remove' || b === 'remove' ? a === b : a.kind === b.kind && a.state === b.state);
+export type ObjectPick = { kind: ObjectKind; state?: ObjectState } | 'remove' | 'weight';
+const same = (a: ObjectPick, b: ObjectPick) => (typeof a === 'string' || typeof b === 'string' ? a === b : a.kind === b.kind && a.state === b.state);
 
 export function ObjectTool(props: { pick: ObjectPick; onPick: (p: ObjectPick) => void; onClose: () => void }) {
   const O = t().battle.gm.objectTool;
@@ -23,6 +23,7 @@ export function ObjectTool(props: { pick: ObjectPick; onPick: (p: ObjectPick) =>
       {picks.map((p) => (
         <button key={p.label} className={same(props.pick, p.pick) ? 'on' : ''} aria-pressed={same(props.pick, p.pick)} onClick={() => props.onPick(p.pick)}>{p.label}</button>
       ))}
+      <button className={props.pick === 'weight' ? 'on' : ''} aria-pressed={props.pick === 'weight'} onClick={() => props.onPick('weight')}>⚖ {t().na1.weightTool}</button>
       <button className={props.pick === 'remove' ? 'on' : ''} aria-pressed={props.pick === 'remove'} onClick={() => props.onPick('remove')}>✕ {O.remove}</button>
       <button onClick={props.onClose}>{O.close}</button>
     </div>

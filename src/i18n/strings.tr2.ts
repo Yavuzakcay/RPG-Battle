@@ -94,6 +94,13 @@ export const TR_EXTRA = {
     material: (text: string): string => `Malzeme: ${text}`, gp: (n: number): string => `${n.toLocaleString('tr-TR')}+ altın`, consumed: 'tüketilir',
     valuable: 'Değerli malzeme', silenced: 'V: sözlü, Sessizlik alanındasın',
   },
+  /** Kuyruk KQ3 NA1: nesne ağırlığı ve taşıma (arayüz). */
+  na1: {
+    weightTool: 'Ağırlık', toolHint: 'Ağırlığını değiştireceğin nesneye dokun.', noObject: 'Burada nesne yok.', cardTitle: (name: string): string => `${name}: ağırlık`,
+    lb: 'lb', save: 'Kaydet', reset: 'Varsayılana dön', close: 'Kapat', range: (min: number, max: number): string => `${min}–${max} lb`,
+    info: (lb: number, cls: string): string => `ağırlık ${lb} lb (${cls})`, cls: { hafif: 'hafif', orta: 'orta', agir: 'ağır' } as Record<string, string>,
+    carry: (free: number): string => `boş kapasiten ${free} lb`, carryNo: 'tek başına taşıyamazsın', carryYes: 'taşıyabilirsin', needPeople: (n: number): string => `${n} kişi gerekir`,
+  },
   /** Görev OD1: yerel Oda kur / Odaya katıl, oda ayarları, düşman HP görünürlüğü. */
   oda: {
     createTitle: 'Oda kur', joinTitle: 'Odaya katıl', quickTitle: 'Hızlı savaş', rooms: 'Odalar',

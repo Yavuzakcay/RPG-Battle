@@ -2,6 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import nesneAgirlik from '../../data/nesne-agirlik.json';
 import { BOON_TURN_REFILL } from './boons';
 import { syncRiders } from './mounted';
 import { binekOn } from './binekSurum';
@@ -59,7 +60,9 @@ export function speedHexes(c: Combatant): number {
   const bonus = (c.effects ?? []).reduce((n, e) => n + (free ? Math.max(0, e.speedFt ?? 0) : e.speedFt ?? 0), 0);
   // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) yaratık kazma hızıyla ilerler (işaret yalnız 64+ komutlarından gelir).
   const base = c.burrowed && c.burrowFt ? c.burrowFt : fly > 0 ? fly : c.speed;
-  const ft = Math.floor(Math.max(0, base + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult);
+  // Kuyruk KQ3 NA1: ortak taşımada (iki ya da daha çok taşıyıcı) hız yarıya (`data/nesne-agirlik.json`).
+  const groupMult = c.groupCarry ? nesneAgirlik.grupHizCarpani : 1;
+  const ft = Math.floor(Math.max(0, base + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult * groupMult);
   return Math.floor(ft / 5) * (1 + c.economy.dashes);
 }
 
@@ -334,7 +337,30 @@ function withEffects(state: BattleState, id: string, effects: DamageEffect[]): B
   return next;
 }
 
+/**
+ * Kuyruk KQ3 NA1: ortak taşıma işareti. İki ya da daha çok taşıyıcılı nesnenin taşıyıcıları `groupCarry` alır (hız yarıya,
+ * `speedHexes`); tek taşıyıcıda ya da bırakınca işaret kalkar. Yalnız taşıyıcı değişen olaylardan sonra.
+ */
+function syncGroupCarry(state: BattleState, event: BattleEvent): BattleState {
+  if (event.type !== 'object_changed' || (event.carriedBy === undefined && event.carriers === undefined)) return state;
+  const group = new Set<string>();
+  for (const o of state.map?.objects ?? []) if (o.carriedBy && (o.carriers?.length ?? 0) > 0) { group.add(o.carriedBy); for (const id of o.carriers ?? []) group.add(id); }
+  let changed = false;
+  const combatants = { ...state.combatants };
+  for (const c of Object.values(state.combatants)) {
+    if (group.has(c.id) === !!c.groupCarry) continue;
+    const { groupCarry: _g, ...rest } = c;
+    combatants[c.id] = group.has(c.id) ? { ...rest, groupCarry: true } : rest;
+    changed = true;
+  }
+  return changed ? { ...state, combatants } : state;
+}
+
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
+  return syncGroupCarry(applyEventCore(state, event), event);
+}
+
+function applyEventCore(state: BattleState, event: BattleEvent): BattleState {
   return syncAuthority(syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)))), state));
 }
 
@@ -1092,7 +1118,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return state.map ? { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => (o.id === event.objectId ? { ...o, hp: event.hpAfter } : o)) } } : state;
     case 'object_changed':
       if (!state.map || (!event.state && event.carriedBy === undefined && !event.at && !event.found && event.light === undefined && event.outlined === undefined
-        && event.altitudeFt === undefined && event.levitatedBy === undefined && event.resized === undefined && event.hp === undefined)) return state;
+        && event.altitudeFt === undefined && event.levitatedBy === undefined && event.resized === undefined && event.hp === undefined
+        && event.carriers === undefined && event.agirlikLb === undefined)) return state;
       return { ...state, map: { ...state.map, objects: (state.map.objects ?? []).map((o) => {
         if (o.id !== event.objectId) return o;
         // Görev S3: taşıma (retrieve): `carriedBy` null bırakır, `at` düştüğü yer.
@@ -1101,7 +1128,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         const { light: _l, lightSpell: _ls, lightBy: _lb, ...bare } = rest0;
         const rest = event.light === undefined ? rest0 : event.light === null ? bare : { ...bare, light: event.light.r, lightSpell: event.light.spell, lightBy: event.light.by };
         const carried = event.carriedBy === undefined ? o.carriedBy : event.carriedBy ?? undefined;
-        const base = { ...rest, ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}), ...(event.outlined !== undefined ? { outlined: event.outlined } : {}),
+        // Kuyruk KQ3 NA1: ek taşıyıcılar (taşıyan yoksa hiç) ve ağırlık ezmesi.
+        const { carriers: _cs, agirlikLb: _ag, ...rest1 } = rest;
+        const carriers = !carried ? undefined : event.carriers === undefined ? o.carriers : event.carriers ?? undefined;
+        const agirlik = event.agirlikLb === undefined ? o.agirlikLb : event.agirlikLb ?? undefined;
+        const base = { ...rest1, ...(carriers?.length ? { carriers } : {}), ...(agirlik !== undefined ? { agirlikLb: agirlik } : {}), ...(event.state ? { state: event.state } : {}), ...(event.at ? { at: event.at } : {}), ...(carried ? { carriedBy: carried } : {}), ...(event.found ? { found: true } : {}), ...(event.outlined !== undefined ? { outlined: event.outlined } : {}),
           ...(event.altitudeFt !== undefined ? { altitudeFt: event.altitudeFt } : {}), ...(event.hp !== undefined ? { hp: event.hp } : {}) };
         // Kuyruk S2: Levitate ve boyut büyüsü (null kaldırır).
         const { levitatedBy: _lv, ...noLev } = base;
