@@ -32,9 +32,9 @@ describe('GH1 aktif araç modeli', () => {
     s = openModeTool(openGoalTool(idle, { id: 'g1', how: 'obj' }), 'gmObject');
     expect(s.goalPick).toBeNull();
   });
-  it('kurulum dışında hedef seçimi dokunuşu almaz; ağırlık aracı kendi sahibi', () => {
+  it('kurulum dışında hedef seçimi dokunuşu almaz; İncele kendi sahibi', () => {
     expect(hexOwner({ mode: 'idle', goalPick: { id: 'g', how: 'hex' } }, false)).toBe('default');
-    expect(hexOwner({ mode: 'gmObject', goalPick: null }, true, 'weight')).toBe('weight');
+    expect(hexOwner({ mode: 'gmObject', goalPick: null }, true, 'inspect')).toBe('inspect');
     expect(hexOwner({ mode: 'gmObject', goalPick: null }, true)).toBe('object');
   });
 });

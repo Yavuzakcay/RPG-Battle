@@ -103,10 +103,9 @@ import { activeSpecialGroups, costOfKey, pageOf, spellGroups, splitMenu, visible
 import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
 import { hpFraction, hpModeFor, maskHpText } from './ui/hpVisibility';
 import { SpellComps } from './ui/SpellComps';
-import { AGIRLIK, objectWeightLb } from './battle/nesneAgirlik';
-import { bindObject, clearHexes, hasMapGoals, isPending, needsOf, pendingItems, resolveDraft, toggleHex, type GoalsDraft } from './oda/hedef';
+import { addDraftGoal, bindObject, clearHexes, hasMapGoals, isPending, needsOf, pendingItems, resolveDraft, toggleHex, type GoalsDraft } from './oda/hedef';
 import { withGoals } from './ui/goalSetup';
-import { hexOwner, openGoalTool, toolbarShown, type GoalPick } from './ui/mapTools';
+import { activeTool, hexOwner, openGoalTool, toolbarShown, type ActiveTool, type GoalPick } from './ui/mapTools';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -171,7 +170,9 @@ const SlotEffect = lazy(() => import('./ui/preview/SlotEffect'));
 import { movePreview, moveTap, type MovePreview } from './ui/preview/movePreview';
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
-import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
+import { ObjectPanel, type ObjectPick } from './ui/gm/ObjectPanel';
+import { ObjectCard } from './ui/gm/ObjectCard';
+import { nesneOn } from './battle/nesneSurum';
 import { castBarrierKind } from './battle/castBarrier';
 import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
 import { zoneShownTo } from './battle/hiddenZones';
@@ -487,8 +488,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const [gd, setGd] = useState<GoalsDraft | null>(props.goalDraft ?? null);
   const [goalPick, setGoalPick] = useState<GoalPick | null>(null);
   // Kuyruk KQ3 NA1: Game Master nesne ağırlığı kartı.
-  const [weightEdit, setWeightEdit] = useState<string | null>(null);
-  const [weightText, setWeightText] = useState('');
+  const [cardId, setCardId] = useState<string | null>(null);
   // Zar modu (Game Master kurulumda seçer): fiziksel zarda gereken zar istenir, adım aynı zarlarla yeniden çalışır.
   const isPlayer = (id: string) => { const c = session.state.combatants[id]; return !!c && c.side === 'party' && !c.civilian; };
   // Tepki ayarı (Görev R1): oyuncu karakterine sor / her zaman / asla; düşmanlar yapay zekâ / her zaman / asla.
@@ -631,7 +631,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Görev K13B: Game Master yüzey aracı (savaş ekranı).
   const [surfacePick, setSurfacePick] = useState<SurfacePick>('oil');
   // Görev S2: Game Master nesne aracı.
-  const [objectPick, setObjectPick] = useState<ObjectPick>({ kind: 'oilBarrel' });
+  const [objectPick, setObjectPick] = useState<ObjectPick>('inspect');
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [gateAim, setGateAim] = useState(false);
   const [artError, setArtError] = useState<string | null>(null);
@@ -1203,15 +1203,16 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       setGd(bindObject(gd, goalPick.id, ob.id)); setGoalPick(null); toast(t().oda.goal.boundObject(ob.id));
       return;
     }
-    if (mode === 'gmObject' && objectPick === 'weight') {
+    if (mode === 'gmObject' && objectPick === 'inspect') {
+      // Kuyruk KQ5 NU1: "İncele": dokunulan nesnenin kartı (ad, açıklama, ağırlık, kaldır, hedef yap).
       const ob = state.map?.objects?.find((x) => sameHex(x.at, h) && !x.carriedBy);
       if (!ob) { toast(t().na1.noObject); return; }
-      setWeightEdit(ob.id); setWeightText(String(objectWeightLb(ob)));
+      setCardId(ob.id);
       return;
     }
     if (mode === 'gmObject') {
       const had = new Set((state.map?.objects ?? []).map((o) => o.id));
-      const next = dispatch(session, objectPick === 'remove' || objectPick === 'weight' ? { type: 'place_object', at: h } : { type: 'place_object', kind: objectPick.kind, at: h, ...(objectPick.state ? { state: objectPick.state } : {}) }, Math.random, GM_CONTEXT);
+      const next = dispatch(session, objectPick === 'remove' || objectPick === 'inspect' ? { type: 'place_object', at: h } : { type: 'place_object', kind: objectPick.kind, at: h, ...(objectPick.state ? { state: objectPick.state } : {}) }, Math.random, GM_CONTEXT);
       if (next.error) toast(next.error); else {
         setSession(next);
         // Görev OD1C: "Nesne yerleştir" ile koyulan yeni nesne bekleyen hedefe kendiliğinden bağlanır.
@@ -1220,7 +1221,11 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       }
       return;
     }
-    if (setup) { if (selected) placeAt(selected, h); return; }
+    if (setup) {
+      if (selected) placeAt(selected, h);
+      else { const ob = state.map?.objects?.find((x) => sameHex(x.at, h) && !x.carriedBy); if (ob) setCardId(ob.id); }
+      return;
+    }
     if (exploreOn && explorerId) {
       if (!movable.has(hexKey(h))) return;
       const next = dispatch(session, { type: 'explore_move', actorId: explorerId, to: h }, Math.random, contextFor(state, explorerId));
@@ -2246,22 +2251,39 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
 
         <div className="hud">
           {cam.big && <CameraHud cam={cam} state={state} alerts={alerts} />}
-          {toolbarShown({ mode, goalPick }, 'object') && <ObjectTool pick={objectPick} onPick={setObjectPick} onClose={() => { setMode('idle'); setMenuOpen(true); setWeightEdit(null); }} />}
-          {weightEdit && (() => {
-            const ob = state.map?.objects?.find((x) => x.id === weightEdit);
-            if (!ob) return null;
-            const W = t().na1;
-            const lb = Number(weightText.replace(',', '.'));
-            const ok = Number.isFinite(lb) && lb >= AGIRLIK.minLb && lb <= AGIRLIK.maxLb;
+          {/* Kuyruk KQ5 NU1: tek Nesne paneli + nesne kartı + harita aracı anahtarı (Yaratık / Nesne / Yüzey / Hedef; yalnız biri etkin). */}
+          {state.map && (setup || mode === 'gmObject' || mode === 'gmSurface') && (() => {
+            const N = t().nu1;
+            const tool = activeTool({ mode, goalPick });
+            const pickGoal = () => {
+              const it = gd ? gd.list.find((g) => needsOf(g).hexes) ?? gd.list.find((g) => needsOf(g).object) : undefined;
+              if (!it || !gd) return;
+              const next = openGoalTool({ mode, goalPick }, { id: it.id, how: needsOf(it).hexes ? 'hex' : 'obj' });
+              setMode(next.mode as Mode); setGoalPick(next.goalPick); setMenuOpen(false); setOptionsOpen(false);
+            };
+            const btn = (id: ActiveTool, on: () => void, disabled = false, title?: string) => (
+              <button key={id} type="button" className={tool === id ? 'on' : ''} aria-pressed={tool === id} disabled={disabled} title={title} onClick={on}>{N.tools[id]}</button>
+            );
             return (
-              <div className="gm-tool weight-card" role="dialog" aria-label={W.cardTitle(OBJECTS[ob.kind]?.tr ?? ob.kind)}>
-                <strong className="gm-tool-title">{W.cardTitle(OBJECTS[ob.kind]?.tr ?? ob.kind)}</strong>
-                <label>{W.lb} <input type="number" min={AGIRLIK.minLb} max={AGIRLIK.maxLb} step={0.5} value={weightText} aria-label={W.lb} onChange={(e: { target: { value: string } }) => setWeightText(e.target.value)} /></label>
-                <small className="mute">{W.range(AGIRLIK.minLb, AGIRLIK.maxLb)}</small>
-                <button className="cta" disabled={!ok} onClick={() => { run({ type: 'set_object_weight', objectId: ob.id, lb }); setWeightEdit(null); }}>{W.save}</button>
-                <button onClick={() => { run({ type: 'set_object_weight', objectId: ob.id, lb: null }); setWeightEdit(null); }}>{W.reset}</button>
-                <button onClick={() => setWeightEdit(null)}>{W.close}</button>
+              <div className="map-tools" role="toolbar" aria-label={N.toolsLabel}>
+                {btn('creature', () => { reset(); setGoalPick(null); setCardId(null); })}
+                {btn('object', () => { reset(); setGoalPick(null); setMode('gmObject'); setObjectPick('inspect'); setMenuOpen(false); setOptionsOpen(false); })}
+                {btn('surface', () => { reset(); setGoalPick(null); setCardId(null); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }, !active, !active ? N.surfaceOnlyActive : undefined)}
+                {hasMapGoals(gd) && btn('goal', pickGoal)}
               </div>
+            );
+          })()}
+          {toolbarShown({ mode, goalPick }, 'object') && <ObjectPanel pick={objectPick} onPick={(p) => { setObjectPick(p); setCardId(null); }} title={goalPick?.how === 'place' ? t().oda.goal.placeObject : undefined}
+            onClose={() => { setMode('idle'); setMenuOpen(true); setCardId(null); if (goalPick?.how === 'place') setGoalPick(null); }} />}
+          {cardId && (() => {
+            const ob = state.map?.objects?.find((x) => x.id === cardId);
+            if (!ob) return null;
+            return (
+              <ObjectCard obj={ob} weightOn={nesneOn(state)} {...(setup ? { goalKinds: ['protect', 'destroy', 'retrieve'] as Array<'protect' | 'destroy' | 'retrieve'> } : {})}
+                onWeight={(lb) => { const next = dispatch(session, { type: 'set_object_weight', objectId: ob.id, lb }, Math.random, GM_CONTEXT); if (next.error) toast(next.error); else setSession(next); }}
+                onRemove={() => { const next = dispatch(session, { type: 'place_object', at: ob.at }, Math.random, GM_CONTEXT); if (next.error) toast(next.error); else setSession(next); setCardId(null); }}
+                onGoal={(kind) => { setGd(addDraftGoal(gd, kind, { objectId: ob.id, ...(kind === 'protect' ? { wantsObject: true } : {}) })); toast(t().nu1.card.goalAdded(t().goals.kind[kind])); }}
+                onClose={() => setCardId(null)} />
             );
           })()}
           {toolbarShown({ mode, goalPick }, 'surface') && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
@@ -2323,7 +2345,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 {active && (state.groups ?? []).filter((g) => g.state !== 'alarmed').map((g) => (
                   <button key={`al${g.id}`} onClick={() => { dice.play((rng) => dispatch(session, { type: 'alarm_group', groupId: g.id }, rng, GM_CONTEXT)); setMenuOpen(false); }}>{t().alarm.gm.alarm(g.id)}</button>
                 ))}
-                {(active || setup) && state.map && <button onClick={() => { reset(); setGoalPick(null); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.objectTool.open}</button>}
+                {(active || setup) && state.map && <button onClick={() => { reset(); setGoalPick(null); setObjectPick('inspect'); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.objectTool.open}</button>}
                 {active && sleepingDragon(state) && (
                   <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>{B.gm.wake}</button>
                 )}

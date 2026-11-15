@@ -75,6 +75,15 @@ export const en: Strings = {
     importErrors: { json: 'The file could not be read: not valid JSON.', format: 'This is not a character file.', version: 'The file version is not supported.', fields: 'The character data is missing or broken.' } as Record<string, string>,
     importOk: (name: string): string => `${name} added.`, depends: 'Note: if a subclass or external content is not loaded, the character shows "content missing".',
   },
+  /** Task KQ5 NU1: single Object panel and object card. */
+  nu1: {
+    tools: { creature: 'Creature', object: 'Object', surface: 'Surface', goal: 'Goal' } as Record<string, string>, toolsLabel: 'Map tool', surfaceOnlyActive: 'The Surface tool opens once the battle starts.',
+    panelTitle: 'Object', search: 'Search', searchPlaceholder: 'Search objects…',
+    cats: { tumu: 'All', tasinabilir: 'Portable', dekor: 'Decor', silah: 'Weapon', buyulu: 'Magic item', mekanik: 'Door/Mechanism' } as Record<string, string>,
+    lb: 'lb', one: '1 person', two: '2+ people', pick: (name: string): string => `${name} selected: tap a hex on the map.`, inspectHint: 'Tap an object to open its card.',
+    lockedDoor: 'Locked door', done: 'Done', inspect: 'Inspect',
+    card: { weight: 'Weight', minus: 'Decrease', plus: 'Increase', reset: 'Back to default', remove: 'Remove', close: 'Close', makeGoal: 'Make goal', protect: 'Protect', destroy: 'Destroy', retrieve: 'Retrieve', noDesc: 'No description.', goalAdded: (g: string): string => `Goal added: ${g}.` },
+  },
   /** Task OD1: local Create room / Join room, room settings, enemy HP visibility. */
   oda: {
     createTitle: 'Create room', joinTitle: 'Join room', quickTitle: 'Quick battle', rooms: 'Rooms',

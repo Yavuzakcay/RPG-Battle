@@ -119,6 +119,15 @@ export const TR_EXTRA = {
     importErrors: { json: 'Dosya okunamadı: geçerli bir JSON değil.', format: 'Bu bir karakter dosyası değil.', version: 'Dosya sürümü desteklenmiyor.', fields: 'Karakter verisi eksik ya da bozuk.' } as Record<string, string>,
     importOk: (name: string): string => `${name} eklendi.`, depends: 'Not: alt sınıf ya da dış içerik yüklü değilse karakterde "içerik eksik" görünür.',
   },
+  /** Kuyruk KQ5 NU1: tek Nesne paneli ve nesne kartı. */
+  nu1: {
+    tools: { creature: 'Yaratık', object: 'Nesne', surface: 'Yüzey', goal: 'Hedef' } as Record<string, string>, toolsLabel: 'Harita aracı', surfaceOnlyActive: 'Yüzey aracı savaş başlayınca açılır.',
+    panelTitle: 'Nesne', search: 'Ara', searchPlaceholder: 'Nesne ara…',
+    cats: { tumu: 'Hepsi', tasinabilir: 'Taşınabilir', dekor: 'Dekor', silah: 'Silah', buyulu: 'Büyülü eşya', mekanik: 'Kapı/Mekanik' } as Record<string, string>,
+    lb: 'lb', one: '1 kişi', two: '2+ kişi', pick: (name: string): string => `${name} seçili: haritada bir altıgene dokun.`, inspectHint: 'Bir nesneye dokun: kartı açılır.',
+    lockedDoor: 'Kilitli kapı', done: 'Bitti', inspect: 'İncele',
+    card: { weight: 'Ağırlık', minus: 'Azalt', plus: 'Artır', reset: 'Varsayılana dön', remove: 'Kaldır', close: 'Kapat', makeGoal: 'Hedef yap', protect: 'Koru', destroy: 'Yok et', retrieve: 'Al ve çıkar', noDesc: 'Açıklama yok.', goalAdded: (g: string): string => `Hedef eklendi: ${g}.` },
+  },
   /** Görev OD1: yerel Oda kur / Odaya katıl, oda ayarları, düşman HP görünürlüğü. */
   oda: {
     createTitle: 'Oda kur', joinTitle: 'Odaya katıl', quickTitle: 'Hızlı savaş', rooms: 'Odalar',

@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-07 — NU1: tek Nesne paneli ve nesne kartı (Kuyruk KQ5; yalnız arayüz, kural/kayıt sürümü değişmedi)
+
+- Araç çubuğu Yaratık / Nesne / Yüzey / Hedef; `src/ui/mapTools.ts` modeliyle yalnız biri etkin (GH1). Yüzey yalnız kurulumda etkin.
+- Nesne paneli (`ObjectPanel`, `objectCatalog.ts`): arama + kategori çipleri (Taşınabilir, Dekor, Silah, Büyülü eşya, Kapı/Mekanik); kartta simge, İngilizce ad, lb, "1 kişi / 2+ kişi" (eşik 150 lb, ⚠ karar). Karta, sonra altıgene dokun; Bitti kapatır. Ayrı "Ağırlık" aracı ve `ObjectTool` kaldırıldı.
+- Yerleşmiş nesneye dokunmak (araç kapalıyken) tek kart açar (`ObjectCard`): ad, Türkçe açıklama (büyülü eşyalar), ağırlık −/sayı/+ (yalnız sürüm 80+), varsayılana dön, Kaldır, kurulumda "Hedef yap" (Koru/Yok et/Al ve çıkar). Hedef şeridi aynı kartı kullanır.
+- Ağırlık değişimi mevcut `set_object_weight` komutuyla. Ekran görüntüsü: bulutta kurulum ekranı alınamadı (yerelde bakılacak).
+
 ## 2026-12-06 — YZ1: yüzey (zemin efekti) görünümü (Kuyruk KQ5; yalnız görsel, kural sürümü değişmedi)
 
 - **Sorun:** K16A/E4b yüzey katmanı tuvalde bulanık hale + altıgenden %40–80 büyük örtüşen sprite yamalarıyla çiziyordu: altıgen dışına taşma, türler arası farklı üslup. **Yeni:** `SurfaceLayer` (`src/ui/SpriteZone.tsx`) her alanı kendi altıgenlerinin birleşimine **kırpar** (`<clipPath>`, taşma yok; tuval ve bulanıklık kalktı), tür başına tek stil: yarı saydam düz dolgu, **yalnız dış sınırda** ince kenar çizgisi (komşu aynı tür tek şekil: ortak kenar çizilmez, `outerEdgePath`), mevcut sprite yalnız **doku olarak düşük opaklıkta içeride**, hafif adımlı animasyon (CSS, ortak `TICK_MS`; alev "titrek", su/zehir/buhar/sis "nabız"). Jeton ve hedef işaretleri yüzeyin üstünde (katman sırası aynı).

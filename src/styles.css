@@ -1559,3 +1559,24 @@ input[type="range"]:disabled { accent-color: var(--off); }
 @keyframes surf-titrek { from { opacity: 1; } to { opacity: var(--surf-lo, 0.7); } }
 .sprites-paused .surface-fill { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) { .surface-fill { animation: none !important; } }
+
+/* Kuyruk KQ5 NU1: harita aracı anahtarı, tek Nesne paneli ve nesne kartı. SD10: turuncu = etkin. */
+.map-tools { position: absolute; top: 8px; left: 8px; z-index: 8; display: flex; gap: 4px; padding: 4px; border-radius: 10px; background: rgba(15, 20, 26, 0.9); }
+.map-tools button { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; padding: 4px 10px; min-height: 34px; }
+.map-tools button.on { background: var(--sel); color: var(--sel-ink); border-color: var(--sel); font-weight: 700; }
+.map-tools button:disabled { opacity: 0.45; }
+.object-panel { max-width: min(96%, 820px); max-height: 56vh; overflow: auto; gap: 8px; }
+.object-search { flex: 1 1 160px; min-width: 120px; }
+.object-cats { display: flex; flex-wrap: wrap; gap: 4px; }
+.object-cats button.on, .object-card.on { background: var(--sel) !important; color: var(--sel-ink) !important; border-color: var(--sel) !important; }
+.object-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; width: 100%; }
+.object-card { display: flex; flex-direction: column; align-items: center; gap: 1px; text-align: center; padding: 6px 4px; min-height: 76px; }
+.object-card .oc-icon { font-size: 1.4rem; line-height: 1; }
+.object-card .oc-name { font-weight: 600; font-size: 0.85rem; }
+.object-card small { flex-basis: auto; font-size: 0.7rem; opacity: 0.85; }
+.object-card-panel { max-width: min(94%, 520px); gap: 6px; text-align: left; }
+.object-desc { margin: 0; flex-basis: 100%; font-size: 0.85rem; }
+.object-weight { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex-basis: 100%; }
+.object-weight input { width: 5.5em; }
+.object-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex-basis: 100%; }
+@media (max-width: 640px) { .map-tools { top: auto; bottom: 8px; } }

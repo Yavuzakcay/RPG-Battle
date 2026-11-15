@@ -7,7 +7,7 @@
 export type GoalPick = { id: string; how: 'hex' | 'obj' | 'place' };
 export interface ToolState { mode: string; goalPick: GoalPick | null }
 export type ActiveTool = 'goal' | 'surface' | 'object' | 'creature';
-export type HexOwner = 'goal-hex' | 'goal-obj' | 'weight' | 'object' | 'surface' | 'default';
+export type HexOwner = 'goal-hex' | 'goal-obj' | 'inspect' | 'object' | 'surface' | 'default';
 
 export function activeTool(s: ToolState): ActiveTool {
   if (s.goalPick) return s.goalPick.how === 'place' ? 'object' : 'goal';
@@ -27,7 +27,7 @@ export const openModeTool = (_s: ToolState, mode: 'gmSurface' | 'gmObject' | 'id
 export function hexOwner(s: ToolState, setup: boolean, objectPick?: string): HexOwner {
   if (s.goalPick && setup && s.goalPick.how === 'hex') return 'goal-hex';
   if (s.goalPick && setup && s.goalPick.how === 'obj') return 'goal-obj';
-  if (s.mode === 'gmObject') return objectPick === 'weight' ? 'weight' : 'object';
+  if (s.mode === 'gmObject') return objectPick === 'inspect' ? 'inspect' : 'object';
   if (s.mode === 'gmSurface') return 'surface';
   return 'default';
 }
