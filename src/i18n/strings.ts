@@ -554,7 +554,10 @@ const tr = {
   },
   diceThemeSetting: {
     title: 'Zar teması',
-    help: 'Yalnızca görünüm (renk ve doku); zar sonuçları, kayıt ve tekrar oynatma etkilenmez. Seçim bu cihazda hatırlanır.',
+    help: 'Yalnızca görünüm; zar sonuçları, kayıt ve tekrar oynatma etkilenmez. Klasik, sınıf ve ırk zarların her zaman açık; düşman, harita, malzeme ve eşya zarları oynadıkça açılır. Seçim oyuncu profilinde (bu cihaz) hatırlanır.',
+    choiceClass: 'Sınıf', choiceRace: 'Irk', choiceClassic: 'Klasik', locked: 'Kilitli', rowAll: 'Tüm karakterler (varsayılan)', rowChar: (name: string): string => `Zar teması: ${name}`,
+    cats: { malzeme: 'Malzeme zarları', dusman: 'Düşman zarları', harita: 'Harita zarları', esya: 'Eşya zarları' } as Record<string, string>,
+    notice: (names: string): string => `Yeni zar: ${names}`, allOpen: 'Tüm zarlar açık (Game Master / test)', current: (name: string): string => `Seçili: ${name}`,
   },
   previewSetting: {
     title: 'Hamle önizlemesi', on: 'Açık', off: 'Kapalı', kisa: 'Kısa', tam: 'Tam',

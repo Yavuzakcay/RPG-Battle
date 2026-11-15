@@ -15,7 +15,8 @@ import { saveMapTint, storedMapTint } from '../ui/mapTintSetting';
 import { saveCityView, storedCityView } from '../ui/cityViewSetting';
 import { DiscoveryBook } from '../ui/preview/DiscoveryBook';
 import { loadSettings as loadPv, saveSettings as savePv, type PreviewSettings } from '../app/discovery';
-import { DICE_THEMES, diceThemeName, saveDiceTheme, storedDiceTheme } from '../ui/diceTheme';
+import { DiceAllOpenToggle, DiceThemePicker } from '../ui/DiceThemePicker';
+import { ALL_CHARACTERS } from '../app/diceUnlock';
 import { LIMITS, type ContentError } from '../content/schema';
 import { applyStoredContent, folderSupported, importTexts, readFiles, readFolder, type ImportResult, type PackRow } from '../content/store';
 
@@ -43,7 +44,6 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [pv, setPv] = useState<PreviewSettings>(loadPv);
   const setPvs = (p: Partial<PreviewSettings>) => { const n = { ...pv, ...p }; savePv(n); setPv(n); };
   const PV = t().previewSetting;
-  const [diceTheme, setDiceTheme] = useState<string>(storedDiceTheme);
   const DT = t().diceThemeSetting;
   const [journey, setJourney] = useState<boolean>(journeyEnabled);
   const changed = (next: PackRow[]) => { setRows(next); props.onChanged?.(); };
@@ -98,12 +98,8 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
         {/* Kuyruk 17 G6: zar teması (yalnızca görünüm). */}
         <section className="panel" aria-labelledby="zar-temasi">
           <h2 id="zar-temasi">{DT.title}</h2>
-          <div className="seg" role="radiogroup" aria-label={DT.title}>
-            {DICE_THEMES.map((x) => (
-              <button key={x.id} role="radio" aria-checked={diceTheme === x.id} className={diceTheme === x.id ? 'on' : ''} data-zar-tema={x.id}
-                onClick={() => { saveDiceTheme(x.id); setDiceTheme(x.id); }}>{diceThemeName(x, getLang())}</button>
-            ))}
-          </div>
+          <DiceThemePicker charId={ALL_CHARACTERS} label={DT.rowAll} />
+          <DiceAllOpenToggle />
           <p className="mute">{DT.help}</p>
         </section>
         {/* Kuyruk K58: hamle önizlemesi, keşif modu ve Keşif Defteri. */}

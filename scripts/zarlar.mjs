@@ -1,6 +1,9 @@
 // Zar görselleri: assets-ham/zarlar/zar-<tema>.jpg (macenta zeminde yan yana boş yüzlü zarlar, soldan sağa
 // d4, d6, d8, d10, d12, d20, d100) → public/zarlar/<tema>/d4.webp … d100.webp (128×128, saydam).
-// Çalıştırma: npm run zarlar
+// Çalıştırma: npm run zarlar [-- --kuru] [-- --yalniz tema1,tema2]
+// SD9: 63 tema (data/zar-gorselleri.json kimlikleri; ham dosya zar-<kimlik>.jpg). `--kuru`: görsel yazmaz; ham dosyaları
+// ve veriyi karşılaştırır (veride olmayan ham, ham'ı olmayan tema, zar sayısı), boyut raporu verir. İş bitince
+// data/zar-mevcut.json (görseli üretilmiş temalar) güncellenir; kuru kipte yazılmaz.
 //
 // Masum ve efekt betikleriyle aynı yöntem:
 // 1. Arka plan: görüntü kenarından flood-fill (sıkı macenta eşiği); kapalı boşluklar yalnızca saf arka plan
@@ -79,16 +82,31 @@ async function dice(file) {
   return { data, w, h, bg, comp, kept, spots: parts.length - kept.length };
 }
 
-const files = fs.readdirSync(RAW).filter((f) => /^zar-[a-z0-9-]+\.(jpg|png)$/.test(f)).sort();
-if (files.length === 0) throw new Error(`${RAW} altında zar-<tema>.jpg yok`);
-for (const f of files) {
-  const theme = f.replace(/^zar-/, '').replace(/\.(jpg|png)$/, '');
+const argv = process.argv.slice(2);
+const DRY = argv.includes('--kuru');
+const only = argv.includes('--yalniz') ? (argv[argv.indexOf('--yalniz') + 1] ?? '').split(',').filter(Boolean) : null;
+const themeIds = JSON.parse(fs.readFileSync(path.join(root, 'data/zar-gorselleri.json'), 'utf8')).themes.map((x) => x.id);
+const rawFiles = fs.existsSync(RAW) ? fs.readdirSync(RAW).filter((f) => /^zar-[a-z0-9-]+\.(jpg|png)$/.test(f)).sort() : [];
+const rawTheme = (f) => f.replace(/^zar-/, '').replace(/\.(jpg|png)$/, '');
+const rawIds = rawFiles.map(rawTheme);
+const unknown = rawIds.filter((id) => !themeIds.includes(id));
+const noRaw = themeIds.filter((id) => !rawIds.includes(id));
+console.log(`Veride ${themeIds.length} tema; ham dosya ${rawFiles.length}.`);
+if (unknown.length) console.log(`Veride OLMAYAN ham dosya (kimlik data/zar-gorselleri.json'a eklenmeli ya da ad düzeltilmeli): ${unknown.join(', ')}`);
+if (noRaw.length) console.log(`Ham dosyası OLMAYAN tema (klasik yedekle çizilir): ${noRaw.join(', ')}`);
+if (rawFiles.length === 0 && !DRY) throw new Error(`${RAW} altında zar-<tema>.jpg yok (yalnız kurulum yerelde; bulutta --kuru kullan)`);
+let failed = false;
+for (const f of rawFiles) {
+  const theme = rawTheme(f);
+  if (!themeIds.includes(theme) || (only && !only.includes(theme))) continue;
   const d = await dice(path.join(RAW, f));
   if (d.kept.length !== NAMES.length) {
     console.error(`${f}: ${d.kept.length} zar bulundu, ${NAMES.length} bekleniyordu. Bileşen boyları: ${d.kept.map((p) => p.count).join(', ')}`
       + ' (zarlar birbirine değiyorsa birleşir; zeminde kopuk parça varsa fazla çıkar). Görsel düzeltilmeli.');
-    process.exit(1);
+    failed = true;
+    continue;
   }
+  if (DRY) { console.log(`${theme}: ${d.kept.length} zar (kuru kip, yazılmadı)`); continue; }
   const largest = Math.max(...d.kept.map((p) => Math.max(p.maxX - p.minX + 1, p.maxY - p.minY + 1)));
   const scale = LARGEST / largest;
   const out = path.join(OUT, theme);
@@ -113,7 +131,20 @@ for (const f of files) {
       fig.copy(canvas, (Y * SIZE + X) * 4, (y * tw + x) * 4, (y * tw + x) * 4 + 4);
     }
     await sharp(canvas, { raw: { width: SIZE, height: SIZE, channels: 4 } }).webp({ lossless: true }).toFile(path.join(out, `${NAMES[k]}.webp`));
-    console.log(`${theme}/${NAMES[k]}: ${bw}×${bh} → ${tw}×${th}, sol ${left}, üst ${top}`);
   }
   console.log(`${theme}: ${d.kept.length} zar, ölçek ${scale.toFixed(4)}, atılan leke ${d.spots}`);
 }
+
+// Boyut raporu ve hazır tema listesi (public/zarlar/<tema>/ içinde yedi görsel olanlar).
+const sizeOf = (id) => NAMES.reduce((n, k) => { const f = path.join(OUT, id, `${k}.webp`); return n + (fs.existsSync(f) ? fs.statSync(f).size : 0); }, 0);
+const ready = themeIds.filter((id) => NAMES.every((k) => fs.existsSync(path.join(OUT, id, `${k}.webp`))));
+let total = 0;
+for (const id of ready) { const b = sizeOf(id); total += b; console.log(`  ${id}: ${(b / 1024).toFixed(0)} KB`); }
+const perTheme = ready.length ? total / ready.length : 0;
+console.log(`Hazır tema ${ready.length}/${themeIds.length}; toplam ${(total / 1048576).toFixed(2)} MB; tema başına ort. ${(perTheme / 1024).toFixed(0)} KB; 63 tema tahmini ${(perTheme * themeIds.length / 1048576).toFixed(1)} MB.`);
+if (perTheme * themeIds.length > 25 * 1048576) console.log('UYARI: > 25 MB: tembel indirme önerilir (tema görselleri ilk seçimde indirilsin, ön yükleme yalnız seçili tema).');
+if (!DRY) {
+  fs.writeFileSync(path.join(root, 'data/zar-mevcut.json'), JSON.stringify({ _aciklama: 'npm run zarlar yazar: public/zarlar/<tema>/ altında görseli üretilmiş temalar. Listede olmayan tema klasik görsellerle (ve kendi 3D renkleriyle) çizilir.', mevcut: ready }, null, 2) + '\n');
+  console.log(`data/zar-mevcut.json güncellendi (${ready.length} tema).`);
+}
+if (failed) process.exit(1);

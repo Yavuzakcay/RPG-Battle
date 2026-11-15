@@ -30,6 +30,7 @@ import { version as appVersion } from '../../package.json';
 import { LANGS, setLang, t, useLang } from '../i18n';
 import { APP_NAME } from '../app/appName';
 import { ResourceChip, iconed, plain, sharedIcons } from '../ui/ResourceChip';
+const DiceThemePicker = lazy(() => import('../ui/DiceThemePicker').then((m) => ({ default: m.DiceThemePicker })));
 
 /** Görev K5: kayıtlı karakterin yük durumu (Ayarlar'daki kurala göre; hesaplanamazsa sorun yok sayılır). */
 const carryLevel = (sheet: Parameters<typeof carryLoad>[0]): LoadLevel => { try { return carryLoad(sheet, storedCarryRule()).level; } catch { return 'ok'; } };
@@ -194,6 +195,8 @@ function CharacterCard(props: { c: SavedCharacter; children?: React.ReactNode; r
         {problems.length > 0 && <small className="error">{t().common.problems(problems.length)}</small>}
         {subclassMissing(sheet.classId, sheet.subclassId) && <small className="error">{t().content.missing(sheet.subclassId ?? '')}</small>}
         {alignmentEnabled() && <Suspense fallback={null}><AlignmentBadge value={props.c.hizalanma} /></Suspense>}
+        {/* SD9: karakter başına zar teması (Sınıf varsayılan / Irk / Klasik / açılmışlar); tembel parça. */}
+        <Suspense fallback={null}><DiceThemePicker charId={props.c.id} /></Suspense>
         {props.rest}
       </div>
       <div className="card-actions">{props.children}</div>

@@ -12,7 +12,9 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import type { DiceRoll } from '../battle';
 import { diceCaption, keptIndex } from './diceAnim';
-import type { DiceTheme } from './diceTheme';
+import { diceThemeOf, type DiceTheme } from './diceTheme';
+
+const classic = diceThemeOf('klasik');
 import { reportDice3dFps } from './dice3dSupport';
 import { emitDiceSound } from './diceSound';
 
@@ -20,7 +22,8 @@ import { emitDiceSound } from './diceSound';
 const Dice3D = lazy(() => import('./dice3d/Dice3D'));
 import { t } from '../i18n';
 
-export interface TrayItem { id: number; roll: DiceRoll; title: string }
+/** `themeId`: bu atışın zar teması (SD9: atıcıya göre); yoksa tepsinin varsayılan teması. */
+export interface TrayItem { id: number; roll: DiceRoll; title: string; themeId?: string }
 
 const SHAPES: Record<number, string> = {
   4: '50,8 94,88 6,88',
@@ -43,7 +46,9 @@ function Die(props: {
   theme: DiceTheme; onBroken: () => void;
 }) {
   const cls = ['die', props.spinning ? 'spin' : '', props.faded ? 'faded' : '', props.crit ? 'crit' : '', props.fumble ? 'fumble' : ''].filter(Boolean).join(' ');
-  const art = props.theme.dice[String(props.sides)];
+  // SD9: temanın görseli yüklenemezse (dosya yok) Klasik görsele düşer; o da yoksa SVG şekil.
+  const own = props.theme.dice[String(props.sides)];
+  const art = own && !broken.has(own.image) ? own : classic.dice[String(props.sides)];
   if (art && !broken.has(art.image)) {
     const k = DIE_PX / 128;
     return (
@@ -74,16 +79,18 @@ export default function DiceTray(props: {
   allow3d?: boolean;
 }) {
   const [, rerender] = useState(0);
+  const { items, timings } = props;
+  const cur = items[0];
+  // SD9: tema atışa göre (atıcının zarı); tema ya da görseli yoksa Klasik yedek (`resolveDice`/`broken`).
+  const theme = cur?.themeId ? diceThemeOf(cur.themeId) : props.theme;
   // Temanın bütün zarları tepsi ilk açılınca önceden yüklenir (tembel; ana parçada değil).
   useEffect(() => {
-    for (const art of Object.values(props.theme.dice)) {
+    for (const art of Object.values(theme.dice)) {
       const img = new Image();
       img.onerror = () => { broken.add(art.image); rerender((n) => n + 1); };
       img.src = `${BASE}${art.image}`;
     }
-  }, [props.theme]);
-  const { items, timings } = props;
-  const cur = items[0];
+  }, [theme]);
   const [phase, setPhase] = useState<'spin' | 'show'>(timings.spin > 0 ? 'spin' : 'show');
   const [flicker, setFlicker] = useState<number[]>([]);
   // Sıradaki grup: önce dönme (sayılar hızla değişir), sonra sonuç; süre dolunca kuyruktan düşer.
@@ -95,7 +102,7 @@ export default function DiceTray(props: {
       ? window.setInterval(() => setFlicker(roll.values.map(() => 1 + Math.floor(Math.random() * roll.sides))), 70) : null;
     // Ses (Görev S): atış anında tekli/çoklu zar sesi; 3D'de sekme ve durma sesini Dice3D yayınlar, 2D'de durma burada.
     emitDiceSound({ type: 'throw', sides: roll.sides, count: roll.values.length });
-    const threeD = props.allow3d && timings.spin > 0 && !!props.theme.three;
+    const threeD = props.allow3d && timings.spin > 0 && !!theme.three;
     const settle = () => {
       if (threeD) return;
       const v = roll.values[keptIndex(roll)] ?? 0;
@@ -125,14 +132,14 @@ export default function DiceTray(props: {
     <div className="dice-row">
       {r.values.map((v, i) => (
         <Die key={i} sides={r.sides} spinning={spinning} value={spinning ? (flicker[i] ?? null) : v}
-          theme={props.theme} onBroken={() => rerender((n) => n + 1)}
+          theme={theme} onBroken={() => rerender((n) => n + 1)}
           faded={!spinning && twoD20 && i !== kept}
           crit={!spinning && r.sides === 20 && v === 20 && (!twoD20 || i === kept)}
           fumble={!spinning && r.sides === 20 && v === 1 && (!twoD20 || i === kept)} />
       ))}
     </div>
   );
-  const colors3d = props.allow3d && timings.spin > 0 ? props.theme.three : undefined;
+  const colors3d = props.allow3d && timings.spin > 0 ? theme.three : undefined;
   return (
     <div className={`dice-tray${cap.crit && !spinning ? ' crit' : ''}${cap.fumble && !spinning ? ' fumble' : ''}${colors3d ? ' has3d' : ''}`} aria-live="polite">
       <small>{cur.title}</small>

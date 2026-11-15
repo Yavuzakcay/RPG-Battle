@@ -531,7 +531,10 @@ export const en: Strings = {
   },
   diceThemeSetting: {
     title: 'Dice theme',
-    help: 'Looks only (colour and texture); dice results, saves and replays are unaffected. Remembered on this device.',
+    help: 'Appearance only; roll results, saves and replays are not affected. Classic, your class and species dice are always open; enemy, map, material and item dice unlock as you play. The choice is kept in the player profile (this device).',
+    choiceClass: 'Class', choiceRace: 'Species', choiceClassic: 'Classic', locked: 'Locked', rowAll: 'All characters (default)', rowChar: (name: string): string => `Dice theme: ${name}`,
+    cats: { malzeme: 'Material dice', dusman: 'Enemy dice', harita: 'Map dice', esya: 'Item dice' } as Record<string, string>,
+    notice: (names: string): string => `New dice: ${names}`, allOpen: 'All dice unlocked (Game Master / test)', current: (name: string): string => `Selected: ${name}`,
   },
   previewSetting: {
     title: 'Move preview', on: 'On', off: 'Off', kisa: 'Short', tam: 'Full',

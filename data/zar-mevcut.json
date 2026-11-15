@@ -1,0 +1,6 @@
+{
+  "_aciklama": "npm run zarlar yazar: public/zarlar/<tema>/ altında görseli üretilmiş temalar. Listede olmayan tema klasik görsellerle (ve kendi 3D renkleriyle) çizilir.",
+  "mevcut": [
+    "klasik"
+  ]
+}

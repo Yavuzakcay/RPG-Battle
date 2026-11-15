@@ -1,0 +1,208 @@
+{
+  "_aciklama": "SD9 zar sahipliği ve eşleme (tek kaynak; kodda sabit yok). `siniflar`/`irklar`: her zaman açık zar. `dusmanlar`: sırayla ilk eşleşen kural (canavar kimliği `id` ya da `tur`); düşmanın kendi atışında herkese görünür, oyuncu kendi zarı olarak seçmesi canavar ilk kez yenilince açılır. `bolgeler`: savaş haritasının bölgesi (harita/_ortak/harita-bolgeleri.json), `seruvenSayfalar`: Serüven sayfası, `yerlesimler`: yerleşim; haritada zar ve açılma. `oduller`: Serüven ödül/hazine düğümü (sayfa/düğüm) → malzeme zarı; `hazineSirasi`: listede olmayan diğer ödül düğümleri ilk ziyarette sıradaki malzemeyi açar. `esyalar`: kullanılan eşya kimliği parçası; `buyuler`: yapılan büyü. `ipuclari`: kategori başına kilit ipucu ({ad} tema adı); `ipucuOzel`: tema başına.",
+  "varsayilan": "klasik",
+  "siniflar": {
+    "barbarian": "sinif-barbarian",
+    "bard": "sinif-bard",
+    "cleric": "sinif-cleric",
+    "druid": "sinif-druid",
+    "fighter": "sinif-fighter",
+    "monk": "sinif-monk",
+    "paladin": "sinif-paladin",
+    "ranger": "sinif-ranger",
+    "rogue": "sinif-rogue",
+    "sorcerer": "sinif-sorcerer",
+    "warlock": "sinif-warlock",
+    "wizard": "sinif-wizard"
+  },
+  "irklar": {
+    "celestial": "irk-celestial",
+    "dragonborn": "irk-dragonborn",
+    "dwarf": "irk-dwarf",
+    "elf": "irk-elf",
+    "gnome": "irk-gnome",
+    "goliath": "irk-goliath",
+    "halfling": "irk-halfling",
+    "human": "irk-human",
+    "orc": "irk-orc",
+    "tiefling": "irk-tiefling"
+  },
+  "dusmanlar": [
+    {
+      "tema": "dusman-lich",
+      "id": [
+        "lich"
+      ]
+    },
+    {
+      "tema": "dusman-tarrasque",
+      "id": [
+        "tarrasque"
+      ]
+    },
+    {
+      "tema": "dusman-kraken",
+      "id": [
+        "kraken"
+      ]
+    },
+    {
+      "tema": "dusman-hidra",
+      "id": [
+        "hydra"
+      ]
+    },
+    {
+      "tema": "dusman-vampir",
+      "id": [
+        "vampire",
+        "vampire-spawn",
+        "vampire-familiar"
+      ]
+    },
+    {
+      "tema": "dusman-golem",
+      "id": [
+        "stone-golem",
+        "iron-golem",
+        "flesh-golem",
+        "clay-golem",
+        "shield-guardian"
+      ]
+    },
+    {
+      "tema": "dusman-beholder",
+      "id": [
+        "beholder",
+        "spectator",
+        "gauth",
+        "gibbering-mouther",
+        "darkmantle",
+        "roper"
+      ]
+    },
+    {
+      "tema": "dusman-illithid",
+      "id": [
+        "mind-flayer",
+        "aboleth",
+        "cloaker",
+        "grick",
+        "grimlock"
+      ]
+    },
+    {
+      "tema": "dusman-ejderha",
+      "tur": [
+        "dragon"
+      ]
+    },
+    {
+      "tema": "dusman-iblis",
+      "tur": [
+        "fiend"
+      ]
+    },
+    {
+      "tema": "dusman-dev",
+      "tur": [
+        "giant"
+      ]
+    },
+    {
+      "tema": "dusman-iskelet",
+      "tur": [
+        "undead"
+      ]
+    }
+  ],
+  "bolgeler": {
+    "bataklik": "harita-bataklik",
+    "buzul": "harita-buzul",
+    "col": "harita-col",
+    "dag": "harita-dag",
+    "deniz": "harita-deniz",
+    "kale": "harita-kale",
+    "orman": "harita-orman",
+    "sehir": "harita-sehir",
+    "yeralti": "harita-yeralti",
+    "volkan": "harita-volkan",
+    "derinlikler": "harita-derinlikler",
+    "yerlesim": "harita-yerlesim",
+    "hapishane": "harita-hapishane"
+  },
+  "seruvenSayfalar": {
+    "buzul": "harita-buzul",
+    "dag": "harita-dag",
+    "orman": "harita-orman",
+    "bataklik": "harita-bataklik",
+    "col": "harita-col",
+    "bati-kiyisi": "harita-bati-kiyisi",
+    "derinlikler": "harita-derinlikler",
+    "volkan": "harita-volkan",
+    "hapishane-adasi": "harita-hapishane"
+  },
+  "yerlesimler": {
+    "kral-kalesi": "harita-kale",
+    "beyaz-sehir": "harita-sehir",
+    "liman": "harita-liman",
+    "kasaba-ornek": "harita-yerlesim",
+    "cuce-kalesi": "harita-kale",
+    "goliath-kalesi": "harita-kale",
+    "ejder-kalesi": "harita-kale",
+    "elf-kasabasi": "harita-yerlesim",
+    "gnom-kasabasi": "harita-yerlesim",
+    "yarimcik-kasabasi": "harita-yerlesim",
+    "ork-kasabasi": "harita-yerlesim",
+    "tiefling-kasabasi": "harita-yerlesim"
+  },
+  "oduller": {
+    "derinlikler/hazine": "altin",
+    "derinlikler/sandik": "bronz",
+    "volkan/odul": "yakut"
+  },
+  "hazineSirasi": [
+    "kemik",
+    "obsidyen",
+    "gumus",
+    "bakir",
+    "demir",
+    "kristal",
+    "mermer",
+    "ahsap"
+  ],
+  "esyalar": {
+    "potion": "esya-iksir"
+  },
+  "buyuler": {
+    "Time Stop": "esya-kumsaati"
+  },
+  "ipuclari": {
+    "malzeme": {
+      "tr": "Serüven ödül duraklarından ya da hazine odalarından kazan.",
+      "en": "Earn it from Adventure reward stops or treasure rooms."
+    },
+    "dusman": {
+      "tr": "{ad} türünden bir canavarı savaşta ilk kez yen.",
+      "en": "Defeat a {ad}-type monster in battle for the first time."
+    },
+    "harita": {
+      "tr": "{ad} bölgesinde bir haritayı ilk kez tamamla.",
+      "en": "Complete a map in the {ad} region for the first time."
+    },
+    "esya": {
+      "tr": "İlgili eşyayı ilk kez kullan.",
+      "en": "Use the item for the first time."
+    }
+  },
+  "ipucuOzel": {
+    "esya-iksir": {
+      "tr": "Bir iksiri savaşta ilk kez kullan.",
+      "en": "Use a potion in battle for the first time."
+    },
+    "esya-kumsaati": {
+      "tr": "Time Stop büyüsünü ilk kez yap (SRD'de kum saati eşyası yok).",
+      "en": "Cast Time Stop for the first time (the SRD has no hourglass item)."
+    }
+  }
+}

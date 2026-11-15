@@ -32,7 +32,7 @@ import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
 import { pickerLevels, usesShown } from './ui/slotInfo';
-import { maps } from './map/maps';
+import { getMap, maps } from './map/maps';
 import { economyBlock, freeCastResource, preferBonus } from './battle/economy';
 import { bodyAt, bodyOf, isMultiHex } from './battle/body';
 import { dimLightOn, optionalRules, ruleOf, stuckInBog } from './battle/maprules';
@@ -59,6 +59,8 @@ import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
 import { getLang, t, useLang } from './i18n';
 import { completeReason, reasonOr, reasonText } from './ui/reasons';
 /** Motor gerekçesi seçili dile (null kalır). */
+/** SD9: haritanın bölgesi (zar teması ve açılma); bulunamazsa yok. */
+const mapRegionOf = (id: string): string | undefined => { try { return getMap(id).bolge; } catch { return undefined; } };
 const loc = (m: string | null | undefined): string | null => (m ? reasonText(m, getLang()) : null);
 /** Devre dışı düğmenin gerekçe satırı. */
 const Why = ({ msg }: { msg: string | null | undefined }) => <small className="why-line">⊘ {reasonOr(msg, getLang())}</small>;
@@ -132,7 +134,9 @@ import { ReactionPrompt } from './ui/ReactionPrompt';
 import { reactionDecider, useReactionPolicies } from './ui/reactionSetting';
 import { diceLead, diceSeenAtStart, diceTimings, diceTitle, keptIndex, liveDiceRolls, useDiceAnimSetting } from './ui/diceAnim';
 import type { TrayItem } from './ui/DiceTray';
-import { diceThemeName, useDiceThemeSetting } from './ui/diceTheme';
+import { diceThemeOf } from './ui/diceTheme';
+import { NewDiceNotice } from './ui/DiceThemePicker';
+import { loadDiceStore, recordUnlocks, themeForRoll, unlocksFromBattle } from './app/diceUnlock';
 import { dice3dAllowed } from './ui/dice3dSupport';
 import { emitDiceSound } from './ui/diceSound';
 import { battleSoundScene, leaveBattleEnd, playEndJingle, useSceneRequest } from './ui/audio/sound';
@@ -474,7 +478,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const dice = useDiceFlow<Session>(session.state.diceMode ?? 'auto', isPlayer, setSession, Math.random, reactionDecider(policies, isPlayer));
   // Zar animasyonu: yalnızca canlı zarlar (kayıttan yüklenen oturumun eski zarları oynamaz), sırayla.
   const [diceAnim, cycleDiceAnim] = useDiceAnimSetting();
-  const [diceTheme, cycleDiceTheme] = useDiceThemeSetting();
+  // SD9: tema atışa göre (`themeForRoll`: oyuncu seçimi, düşman canavar zarı, harita bölge zarı); tepsinin varsayılanı Klasik.
+  const diceTheme = diceThemeOf('klasik');
   const [diceQueue, setDiceQueue] = useState<TrayItem[]>([]);
   // Kuyruk K71b: tırmanmaya başlama onayı (ilk dokunuş açıklar, ikincisi başlatır); anahtar aktör + harcanan hareket.
   const [climbArmed, setClimbArmed] = useState<string | null>(null);
@@ -859,8 +864,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return () => window.clearTimeout(timer);
     }
     if (!timings || rolls.length === 0) return;
-    setDiceQueue((q) => [...q, ...rolls.map((roll) => ({ id: Math.random(), roll, title: diceTitle(roll, session.state) }))]);
+    setDiceQueue((q) => [...q, ...rolls.map((roll) => ({ id: Math.random(), roll, title: diceTitle(roll, session.state), themeId: themeForRoll(roll.by, { state: session.state, store: loadDiceStore(), regionOf: mapRegionOf }) }))]);
   }, [session]);
+
+  // SD9: açılma kancası: savaş olaylarını DİNLER (yenilen düşman, bölge haritası, kullanılan eşya/büyü) ve oyuncu profiline yazar
+  // (idempotent; komut/reducer/olay biçimi değişmez, kayda ve replay'e girmez).
+  useEffect(() => { recordUnlocks(unlocksFromBattle(session.state, session.events, mapRegionOf)); }, [session.events.length, session.state.status]);
 
   // Sıra değişince menü yeniden açılır, kip sıfırlanır.
   // Görev B1 (kuyruk 14): Esc her seçim kipinden çıkar (hiçbir kipte kilitlenme yok).
@@ -2256,7 +2265,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {ruleVersion(state) >= 41 && <button onClick={() => { setShowHiddenZones((v) => !v); setOptionsOpen(false); }}>{t().view.hiddenZones(showHiddenZones)}</button>}
                 <ThemeButton className="" />
                 <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>
-                <button onClick={cycleDiceTheme}>{t().dice.themeLabel(diceThemeName(diceTheme, lang))}</button>
+                
                 <button onClick={() => cyclePolicy('player')}>{t().reactions.policy.player(t().reactions.policy[policies.player])}</button>
                 <button onClick={() => cyclePolicy('enemy')}>{t().reactions.policy.enemy(t().reactions.policy[policies.enemy])}</button>
                 {(variant?.effects?.length ?? 0) > 0 && (
@@ -3082,6 +3091,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   {state.explore && <button onClick={() => setExploring(true)}>{B.explore.go}</button>}
                   <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.newBattle}</button>
                 </div>
+                <NewDiceNotice />
                 <table>
                   <thead><tr>{B.summary.cols.map((h) => <th key={h}>{h}</th>)}</tr></thead>
                   <tbody>
