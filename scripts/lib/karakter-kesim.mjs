@@ -80,8 +80,12 @@ export function cellBackground(d, w, h) {
   const name = cnt.yesil >= cnt.macenta ? 'yesil' : 'macenta';
   const arr = px[name];
   if (!arr[0].length) return { name, color: [...BG_REFS[name]] };
+  const raw = arr.map((a) => a.slice());
   const color = arr.map((a) => { a.sort((p, q) => p - q); return a[a.length >> 1]; });
-  return { name, color };
+  // Gürültü: seçilen piksellerin ortalama sapması (JPG'den çevrilmiş PNG'de de yüksek çıkar)
+  let dev = 0;
+  for (let i = 0; i < arr[0].length; i++) dev += Math.hypot(raw[0][i] - color[0], raw[1][i] - color[1], raw[2][i] - color[2]);
+  return { name, color, noise: dev / arr[0].length };
 }
 
 /** Zemini kenardan bağlı bileşenle siler (+ hale), ardından kapalı zemin renkli bölgeleri (kol arası, yay içi…) siler,
@@ -211,7 +215,7 @@ export function processSheet(data, w, h, kind, opts = {}) {
     const d = rect(data, w, r);
     const bg = cellBackground(d, r.w, r.h);
     const slug = slugs[i] ?? null;
-    const res = removeBackground(d, r.w, r.h, bg, { jpeg: !!opts.jpeg });
+    const res = removeBackground(d, r.w, r.h, bg, { jpeg: !!opts.jpeg || (bg.noise ?? 0) > 4 });
     const box = bboxOf(res.rgba, r.w, r.h);
     const empty = !slug || !box || res.count < r.w * r.h * 0.002;
     return {
