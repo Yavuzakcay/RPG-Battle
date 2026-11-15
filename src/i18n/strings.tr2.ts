@@ -35,6 +35,12 @@ export const TR_EXTRA = {
     } as Record<string, string>,
     familiarKindNote: 'Tür yalnızca yaratığın ruh türünü belirler; statları değiştirmez. Gücü hayvan biçimi (Spider, Hawk...) belirler.',
   },
+  /** SD11: oluşturucuda önerilen seçimler açık: etiket, bölüm düğmeleri, kısayol. */
+  reco: {
+    tag: 'Önerilen', pick: 'Önerilenleri seç', clear: 'Temizle', confirm: 'Mevcut seçimin üstüne yazılacak.', yes: 'Onayla', no: 'Vazgeç',
+    all: 'Hepsini önerilenle doldur', clearAll: 'Hepsini temizle',
+    help: 'Sınıfın en çok kullanılan seçimleri hazır geldi. İstediğini değiştir.',
+  },
   roomRules: {
     title: 'Oda kuralları', help: 'Oda kurarken seçilir. Her savaşta aynı kalır.',
     upper: 'Üst seviye (6–20)', upperHelp: 'Karakterler 20. seviyeye çıkabilir.',

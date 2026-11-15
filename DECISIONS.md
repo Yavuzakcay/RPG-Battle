@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-23 — SD11: oluşturucuda önerilen seçimler açık ("Önerilen" etiketi, "Önerilenleri seç" / "Temizle") (Kuyruk KQ2; yalnız arayüz, kayıt alanı yok)
+
+- **Etiket:** yeni karakter oturumunda öneri kümesinde olan ve seçili her öğede küçük "Önerilen" (büyü ve cantrip, sınıf becerisi, silah, alt sınıf, geçmiş bonusu). Oyuncu bir öğeyi çıkarırsa kalanlarda etiket sürer; kendi eklediği (öneride olmayan) öğede etiket yok. **Belirsiz okuma:** oyuncu önerilen bir öğeyi kendisi seçerse etiketi görür (ayırt edilemez, zararsız).
+- **Bölüm düğmeleri** (`src/screens/builder/Reco.tsx` `RecoBar`): Beceriler, Büyüler, Donanım, Sınıf seçimleri (alt sınıf + Metamagic + Invocation), Geçmiş bonusu, Seviye ilerlemesi (yetenek artışı). "Önerilenleri seç" mevcut seçimi önerilenden farklıysa tek satır onay ister, boşsa onaysız doldurur; "Temizle" bölümü boşaltır. Özet ekranında "Hepsini önerilenle doldur / Hepsini temizle". Mantık saf: `builderDefaults.ts` `applyReco`, `clearReco`, `recoSets`, `recoWouldOverwrite` (SD3'ün aynı öneri fonksiyonları; seviyeye, slot ve hazırlanan sayısına zaten uyuyor: `spellLimits`).
+- **"En çok kullanılan" kaynağı:** `data/onerilen-baslangic.json` `buyuOnceligi` (sınıf başına öncelik listesi); listede olmayan büyülerde SRD sınıf listesi sırası (`recommendedSpells`: erişilebilir seviye, çalışan büyü, hazırlanan/cantrip sayısına kes). 6+ ve üst seviyede aynı mantık (listeler sınıf tablosundaki sayılara kesilir; test 1–12. seviye).
+- Kaydet davranışı SD3'teki gibi (disabled değil, eksikse nedenini söyler); öneri etiketli seçimler normal seçim. Büyü eksikliği kaydı zaten engellemiyor (sayaç gösterir); sınıf becerisi eksikliği nedenini söylüyor (testte).
+- Ana parça değişmedi (418,99 kB); metinler tembel `strings.tr2.ts` / `strings.en.ts` `reco`. Renkler SD10 jetonlarıyla (`--sel`); seçili liste satırları tam turuncu yerine turuncu çerçeve + hafif dolgu (SD10 sonrası ayar).
+- Ekran görüntüsü `docs/sd11/buyuler-sonra.png` (yalnız "sonra"; "önce" alınamadı: eski sürüm bu görev için ayrı çalıştırılmadı).
+
 ## 2026-11-23 — SD10: açık/kapalı renk uyumu (turuncu = açık/seçili, gri = kapalı) (Kuyruk KQ2; yalnız arayüz)
 
 - **Kural (kullanıcı kararı):** turuncu dolu = açık/seçili/etkin; gri dolu = kapalı/pasif ("Kapalı" seçiliyken de turuncu olması hatası düzeltildi); seçilmeyen taraf nötr gri çerçeve. Teal çerçeve yalnız eylem düğmelerinde (`button.ghost`) ve seçilebilir-seçili-olmayan nötr öğede kalır.

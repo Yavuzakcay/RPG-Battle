@@ -1466,7 +1466,7 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .lang-switch button.on, .menu-tabs button.on, .value-chip.on, .metamagic-pick button.on, .dice-step-list button.on, .dice-picker button.on,
 .dice-pick-row button.on, .slot-picker button.on, .bubble .slot-picker button.on, .bubble .slot-picker button[aria-checked="true"], .gm-tool button.on,
 .home2 .home-lang button.on, .civ-grid button.on, .wall-shape button.on, .air-level.on, button.on[aria-pressed="true"], [role="radio"].on, [role="radio"][aria-checked="true"],
-.map-card.on, .eq-row.on, .spell-row.on, .asi-cell.on, .skin-tone.on, .term-btn.on, .mastery-btn.on, .air-panel .hud-btn.on, .cam-controls .hud-btn.on,
+.map-card.on, .skin-tone.on, .term-btn.on, .mastery-btn.on, .air-panel .hud-btn.on, .cam-controls .hud-btn.on,
 .hud-btn.on, .region-chip.on, .map-region.on, .tier-chip.on {
   background: var(--sel); border-color: var(--sel); color: var(--sel-ink); font-weight: 700; box-shadow: none;
 }
@@ -1484,3 +1484,10 @@ input[type="range"]:disabled { accent-color: var(--off); }
 /* Açık/seçili çiplerde okunur yazı (turuncu üstünde koyu), koyu temada da. */
 .on > small, .on .mute { color: inherit; }
 @media (forced-colors: active) { .set-seg button.on, [aria-checked="true"] { outline: 3px solid Highlight; } }
+/* SD11: oluşturucuda "Önerilen" etiketi ve bölüm düğmeleri. */
+.reco-tag { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; background: color-mix(in srgb, var(--sel) 22%, transparent); color: var(--ink); border: 1px solid var(--sel); vertical-align: middle; }
+.reco-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 6px 0 10px; }
+.reco-bar button { min-height: 40px; }
+
+/* SD10/SD11: seçili liste satırları turuncu çerçeve + hafif dolgu (tam dolgu yalnız düğme/çipte). */
+.eq-row.on, .spell-row.on, .asi-cell.on, .skill-row.on { border-color: var(--sel); background: color-mix(in srgb, var(--sel) 16%, var(--panel)); color: var(--ink); }

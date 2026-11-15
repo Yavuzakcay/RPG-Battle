@@ -35,6 +35,11 @@ export const en: Strings = {
     } as Record<string, string>,
     familiarKindNote: 'The type only sets the creature\'s spirit type; it does not change its stats. Its power comes from the animal form (Spider, Hawk...).',
   },
+  reco: {
+    tag: 'Suggested', pick: 'Pick suggested', clear: 'Clear', confirm: 'This will replace your current choices.', yes: 'Confirm', no: 'Cancel',
+    all: 'Fill everything with suggestions', clearAll: 'Clear everything',
+    help: 'The most-used choices for this class are ready. Change anything you like.',
+  },
   roomRules: {
     title: 'Room rules', help: 'Chosen when you set up a room. Stays the same in every battle.',
     upper: 'Upper levels (6–20)', upperHelp: 'Characters can reach level 20.',

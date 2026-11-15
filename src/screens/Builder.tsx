@@ -28,6 +28,8 @@ import { UPPER_LEVEL_CAP } from '../app/limits';
 import { alignmentAutoOnly, alignmentEnabled, alignmentRace } from '../app/features';
 import { AlignmentGrid } from '../ui/AlignmentGrid';
 import { DiceStep } from '../ui/DiceStep';
+import { RecoBar, RecoProvider, RecoTag, useRecoSets } from './builder/Reco';
+import { applyReco, clearReco } from './builderDefaults';
 import '../app/alignDiceHook';
 import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startContributions, startValue, type Alignment, type StartKind } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
@@ -215,6 +217,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             <h2>{stepLabel(current)}</h2>
             <StepBoundary key={current} where={`sihirbaz:${current}`} context={{ step: current, classId: s.classId, raceId: s.raceId, lineageId: s.lineageId,
               subclassId: s.subclassId, level: s.level, originFeat: s.originFeat, backgroundId: s.backgroundId, backgroundBonuses: s.backgroundBonuses }}>
+            <RecoProvider value={{ c, setC, suggest: !!props.suggest }}>
             {current === 'character' && <CharacterStep c={c} setC={setC} set={set} suggest={props.suggest} />}
             {current === 'scores' && <ScoresStep c={c} setC={setC} set={set} />}
             {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} />}
@@ -222,10 +225,12 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             {current === 'equipment' && <EquipmentStep sheet={s} set={set} carryRule={carryRule} />}
             {current === 'spells' && <SpellsStep sheet={s} set={set} />}
             {current === 'alignment' && <AlignmentStep c={c} setC={setC} initial={props.initial} />}
+            </RecoProvider>
             </StepBoundary>
             {current === 'summary' && (
               <div className="wiz-summary-step">
                 <SummaryBody final={final} derived={derived} raceName={raceName} />
+                <div className="reco-bar"><button type="button" className="ghost" onClick={() => setC((x) => applyReco(x, 'all'))}>{t().reco.all}</button><button type="button" className="ghost" onClick={() => setC((x) => clearReco(x, 'all'))}>{t().reco.clearAll}</button></div>
                 <h3>{W.missingTitle}</h3>
                 {issues.length > 0 ? <>{missingList}<p className="mute">{W.summaryHint}</p></> : <p className="ok">{T.ready}</p>}
                 {/* SD8 eki: zar seçimi son ekranda (Alignment ev kuralı açıkken Alignment adımında). */}
@@ -579,6 +584,7 @@ function LineageAbilities(props: { list: LineageAbility[] }) {
  * alt sınıf (veride yoksa "Yakında") ve "Sınıf güçlerin" paneli.
  */
 function ClassStep({ c, setC, set, suggest }: StepProps) {
+  const reco = useRecoSets();
   const T = t().builder;
   const W = T.wiz;
   const lang = getLang();
@@ -611,8 +617,9 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
       {subLevel !== null && subs.length === 0 && (
         <div className="coming-soon"><b>{W.comingSoon}</b><p>{W.comingSoonText}</p></div>
       )}
-      {subLevel !== null && subs.length > 0 && s.level >= subLevel && (
-        <label>{T.subclass}
+      {subLevel !== null && subs.length > 0 && s.level >= subLevel && (<>
+        <RecoBar part="class" />
+        <label>{T.subclass}{reco?.subclass && reco.subclass === s.subclassId ? <RecoTag show /> : null}
           <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
             <option value="">{T.subclassNone}</option>
             {subs.map((x) => <option key={x.id} value={x.id}>{subclassPlainName(x.name, getLang(), x.class)}</option>)}
@@ -623,7 +630,7 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
             {subclassMissing(s.classId, s.subclassId) && <option value={s.subclassId}>{T.subclassMissing(s.subclassId ?? '')}</option>}
           </select>
         </label>
-      )}
+      </>)}
       {swap && <p className="warn">{T.karadulWarn} {T.karadulSwap(swap)}</p>}
       {subLevel !== null && subs.length > 0 && s.level < subLevel && <p className="mute">{T.subclass}: {T.subclassAt(subLevel)}</p>}
       <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={experimentalFrom(s.classId, s.subclassId)}
@@ -642,6 +649,7 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
  * iki kutu yer değiştirir. Puan satın almada −/+ ve kalan puan çubuğu. Geçmiş bonusu tek satır.
  */
 function ScoresStep({ c, setC, set }: StepProps) {
+  const recoB = useRecoSets();
   const T = t().builder;
   const W = T.wiz;
   const s = c.sheet;
@@ -770,6 +778,7 @@ function ScoresStep({ c, setC, set }: StepProps) {
             <b>{T.bgTitle}:</b> {pattern === '2-1' || pattern === '1-1-1' ? T.bgDone(patternText) : T.bgHelp}
             {bg && <> {W.bgOnly(bg.abilities.map((a) => abilityName(a)).join(', '))}</>}
           </p>
+          <RecoBar part="bonuses" />
           <div className="bonus-grid">
             {ABILITIES.filter((a) => !bg || bg.abilities.includes(a)).map((a) => {
               const bonus = bonuses[a] ?? 0;
@@ -778,7 +787,7 @@ function ScoresStep({ c, setC, set }: StepProps) {
                 <span key={a} className="stepper bg-bonus" aria-label={`${name}: ${T.bgTitle}`}>
                   <small className="step-tag">{a.toUpperCase()}</small>
                   <button aria-label={T.bgRemove(name)} disabled={bonus <= 0} onClick={() => setBonus(a, bonus - 1)}>−</button>
-                  <b className={bonus ? 'on' : ''}>{bonus ? `+${bonus}` : '0'}</b>
+                  <b className={bonus ? 'on' : ''}>{bonus ? `+${bonus}` : '0'}</b>{bonus > 0 && (recoB?.bonuses[a] ?? 0) === bonus ? <RecoTag show /> : null}
                   <button aria-label={T.bgAdd(name, bonus + 1)} disabled={!canRaiseBonus(bonuses, a)} onClick={() => setBonus(a, bonus + 1)}>+</button>
                 </span>
               );
@@ -851,6 +860,7 @@ function AsiSlotCard(props: { sheet: CharacterSheet; slot: AdvancementSlot; adva
  */
 function SkillsStep({ c, setC, set }: StepProps) {
   const W = t().builder.wiz;
+  const reco = useRecoSets();
   const s = c.sheet;
   const cls = getClass(s.classId);
   const kit = classKit(s.classId, s.level, s.subclassId);
@@ -867,8 +877,8 @@ function SkillsStep({ c, setC, set }: StepProps) {
   const otherFull = other.length >= otherMax;
   const pickClass = (k: Skill, on: boolean) => setC((x) => ({ ...x, classSkills: toggle(x.classSkills, k, on) }));
   const pickOther = (k: Skill, on: boolean) => setC((x) => ({ ...x, otherSkills: toggle(otherSkillsOf(x), k, on) }));
-  const line = (k: Skill, extra?: ReactNode) => (
-    <li key={k} className="skill-row on"><span className="skill-name">{skillName(k)} <small>{abil(k)}</small></span>{extra}</li>
+  const line = (k: Skill, extra?: ReactNode, rec?: boolean) => (
+    <li key={k} className="skill-row on"><span className="skill-name">{skillName(k)} <small>{abil(k)}</small><RecoTag show={!!rec} /></span>{extra}</li>
   );
   return (
     <>
@@ -877,6 +887,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
         {otherMax > 0 && <span>{bg ? W.countOther(other.length, otherMax) : W.countBackground(other.length, otherMax)}</span>}
         {kit.expertise > 0 && <span className={expertise.length === kit.expertise ? 'ok' : ''}>{W.countExpertise(expertise.length, kit.expertise)}</span>}
       </div>
+      <RecoBar part="skills" />
       <h3>{W.skillsChosen}</h3>
       <ul className="skill-list">
         {c.classSkills.map((k) => bgSkills.includes(k)
@@ -887,7 +898,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
               <button className="badge cls on conflict" aria-pressed={true} onClick={() => pickClass(k, false)}>⚠ {W.skillClass} ×</button>
             </li>
           )
-          : line(k, <button className="ghost eq-remove" aria-label={W.removeItem(skillName(k))} onClick={() => pickClass(k, false)}>×</button>))}
+          : line(k, <button className="ghost eq-remove" aria-label={W.removeItem(skillName(k))} onClick={() => pickClass(k, false)}>×</button>, !!reco?.skills.includes(k)))}
         {other.map((k) => line(k, <button className="ghost eq-remove" aria-label={W.removeItem(skillName(k))} onClick={() => pickOther(k, false)}>×</button>))}
       </ul>
       {c.classSkills.length + other.length === 0 && <p className="mute">{W.skillsNone}</p>}
@@ -898,7 +909,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
             const on = c.classSkills.includes(k);
             return (
               <button key={k} type="button" className={`chip${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && classFull}
-                title={!on && classFull ? W.limitFull(classMax) : undefined} onClick={() => pickClass(k, !on)}>{skillName(k)} <small>{abil(k)}</small></button>
+                title={!on && classFull ? W.limitFull(classMax) : undefined} onClick={() => pickClass(k, !on)}>{skillName(k)} <small>{abil(k)}</small>{on && reco?.skills.includes(k) ? <RecoTag show /> : null}</button>
             );
           })}
         </div>
@@ -948,7 +959,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
 /** 6. Seviye ilerlemesi: köken feat'i (ayrı kutu, Skilled becerileri), ASI/feat yuvaları, Fighting Style. */
 function ProgressStep({ c, setC, set }: StepProps) {
   const [featMode, setFeatMode] = useState<Record<number, boolean>>({});
-  return <AdvancementPanel c={c} setC={setC} sheet={c.sheet} set={set} featMode={featMode} setFeatMode={(level, on) => setFeatMode((m) => ({ ...m, [level]: on }))} />;
+  return <><RecoBar part="asi" /><AdvancementPanel c={c} setC={setC} sheet={c.sheet} set={set} featMode={featMode} setFeatMode={(level, on) => setFeatMode((m) => ({ ...m, [level]: on }))} /></>;
 }
 
 /**
@@ -958,6 +969,7 @@ function ProgressStep({ c, setC, set }: StepProps) {
  */
 function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
   const T = t().builder;
+  const reco = useRecoSets();
   const W = T.wiz;
   const kit = classKit(s.classId, s.level, s.subclassId);
   const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
@@ -989,7 +1001,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
     if (!sp || kit.alwaysPrepared.includes(x.name)) return null;
     return (
       <li key={x.id} className={`spell-row${on ? ' on' : ''}`} title={sp.mechanics.unsupported ?? sp.mechanics.approx ?? undefined}>
-        <span className="spell-name">{x.name}<InfoPop text={describeTr('buyu', sp.id) ?? ''} />{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
+        <span className="spell-name">{x.name}<RecoTag show={on && !!reco?.spells.includes(x.name)} /><InfoPop text={describeTr('buyu', sp.id) ?? ''} />{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
           {/* Kuyruk MB7: güncel sürümde savaşta çalışan büyü (Phantom Steed `mb7`) savaş dışı sayılmaz. */}{(sp.mechanics.mb7?.offCombat ?? sp.mechanics.offCombat) ? <small className="tag-offcombat" title={T.spellOffCombatTip}>{T.spellOffCombat}</small> : null}</span>
         {book && x.level > 0 && (
           <button className={`badge book${inBook ? ' on' : ''}`} aria-pressed={inBook} disabled={!inBook && cnt.book.length >= (lim.spellbook ?? 0)}
@@ -1006,6 +1018,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
   };
   return (
     <>
+      <RecoBar part="spells" />
       <p className="counters">
         <span className={cnt.cantrips > lim.cantrips ? 'error' : cnt.cantrips === lim.cantrips ? 'ok' : ''}>{W.countCantrips(cnt.cantrips, lim.cantrips)}</span>
         <span className={cnt.prepared > lim.prepared ? 'error' : cnt.prepared === lim.prepared ? 'ok' : ''}>{W.countPrepared(cnt.prepared, lim.prepared)}</span>
@@ -1019,7 +1032,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
         {chosen.map((n) => {
           const sp = spells.find((x) => x.name === n);
           return (
-            <li key={n} className="eq-row on"><span className="eq-main"><b>{n}</b><small>{(sp?.level ?? 0) === 0 ? W.cantripGroup : W.levelGroup(sp?.level ?? 0)}</small></span>
+            <li key={n} className="eq-row on"><span className="eq-main"><b>{n}<RecoTag show={!!reco?.spells.includes(n)} /></b><small>{(sp?.level ?? 0) === 0 ? W.cantripGroup : W.levelGroup(sp?.level ?? 0)}</small></span>
               {sp && <InfoPop text={describeTr('buyu', sp.id) ?? ''} />}
               <button className="ghost eq-remove" aria-label={W.removeItem(n)} onClick={() => toggleSpell(n, false)}>×</button></li>
           );

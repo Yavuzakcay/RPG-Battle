@@ -19,6 +19,7 @@ import { ITEM_KINDS, ITEM_TIERS, itemKind, itemTier, type ItemKind, type ItemTie
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail } from '../../ui/equipmentText';
 import { getLang, t } from '../../i18n';
 import { Fold, InfoPop, toggle } from './shared';
+import { RecoBar, RecoTag, useRecoSets } from './Reco';
 
 type SetFn = (patch: Partial<CharacterSheet>) => void;
 
@@ -43,6 +44,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
   const T = L.builder;
   const W = T.wiz;
   const lang = getLang();
+  const reco = useRecoSets();
   const cls = getClass(s.classId);
   const chosenArmor = armor.find((a) => a.name === s.armorName);
   const kind = chosenArmor?.type ?? 'none';
@@ -96,6 +98,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
   return (
     <>
       <CarryBar load={load} rule={carryRule} />
+      <RecoBar part="kit" />
 
       <section className="eq-block eq-chosen">
         <h3>{W.eqChosen}</h3>
@@ -154,7 +157,7 @@ export function EquipmentStep({ sheet: s, set, carryRule }: { sheet: CharacterSh
               const full = chosenM.length >= (right?.count ?? 0);
               return (
                 <li key={w.name} className="eq-row on">
-                  <span className="eq-main"><b>{w.name}</b><small>{weaponLine(w)}</small>{lb(w.weight)}</span>
+                  <span className="eq-main"><b>{w.name}<RecoTag show={!!reco?.weapons.includes(w.name)} /></b><small>{weaponLine(w)}</small>{lb(w.weight)}</span>
                   <InfoPop text={weaponTip(w)} />
                   {right && eligible.has(w.id) && mText && (
                     <button className={`mastery-btn star${mOn ? ' on' : ''}`} aria-pressed={mOn} disabled={!mOn && full}
