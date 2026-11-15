@@ -66,8 +66,9 @@ describe('soy → renk', () => {
     tintPixels(drow, lineageTint('elf', 'drow')!, new Uint8Array([1, 1]));
     expect(rgbToLab(drow[0]!, drow[1]!, drow[2]!)[0]).toBeLessThan(20);
     const hi = rgbToLab(drow[4]!, drow[5]!, drow[6]!);
-    expect(hi[0]).toBeLessThanOrEqual(60);
-    expect(hi[1]).toBeLessThanOrEqual(1);
+    // SD8 (kullanıcı kararı): Dark Elf teni koyu mor-gri (D: koyu #4A4577, orta #7B72A8, açık #A79BC7); vurgu artık mor (a > 0, b < 0).
+    expect(hi[0]).toBeLessThanOrEqual(76);
+    expect(hi[1]).toBeGreaterThan(0); expect(hi[2]).toBeLessThan(0);
     expect(hi[2]).toBeLessThan(-4);
     // Dragonborn Black: en koyu ten düz siyahın üstünde, hafif soğuk.
     const black = new Uint8ClampedArray([110, 80, 60, 255, 230, 190, 160, 255]);
@@ -182,21 +183,21 @@ describe('K19: cinsiyete göre soy boyaması', () => {
   });
   // DROW-PALET: ortalama sınırı 33 → 40: 7 duraklı skala, S-eğrisi ve korunan kroma sapması gölge/ışık detayını geri
   // getirdi (eski 4 duraklı skala düz ve mat görünüyordu); en açık durak sınırı (L ≤ 60, K19) aynı.
-  it('Drow koyu: her palette ten ortalama açıklığı ≤ 40, en açık durak L ≤ 60, en az 6 durak; High ve Wood Elf aynı', () => {
+  it('Drow mor-gri (SD8): her palette ten ortalama açıklığı ≤ 62, en açık durak L ≤ 80, en az 6 durak; High ve Wood Elf aynı', () => {
     const E = (olcum.races as Record<string, Record<string, Record<string, number[]>>>).elf!;
     const Ls = Object.values(E).map((r) => r.drow![0]!);
-    expect(Ls.reduce((a, b) => a + b, 0) / Ls.length).toBeLessThanOrEqual(40);
+    expect(Ls.reduce((a, b) => a + b, 0) / Ls.length).toBeLessThanOrEqual(62);
     const P = (olcum as unknown as { paletler: Record<string, Record<string, Record<string, number[]>>> }).paletler['elf/drow']!;
     expect(Object.keys(P).sort()).toEqual(['A', 'B', 'C', 'D']);
     for (const [k, rows] of Object.entries(P)) {
       const m = Object.values(rows).reduce((a, v) => a + v[0]!, 0) / Object.keys(rows).length;
-      expect(m, k).toBeLessThanOrEqual(40);
+      expect(m, k).toBeLessThanOrEqual(62);
       const g = (paletteTint('elf', 'drow', k)?.to as { gradient: number[][] }).gradient;
       expect(g.length, k).toBeGreaterThanOrEqual(6);
-      expect(Math.max(...g.map((s) => s[0]!)), k).toBeLessThanOrEqual(60);
+      expect(Math.max(...g.map((s) => s[0]!)), k).toBeLessThanOrEqual(80);
     }
     const g = (lineageTint('elf', 'drow')?.to as { gradient: number[][] }).gradient;
-    expect(Math.max(...g.map((s) => s[0]!))).toBeLessThanOrEqual(60);
+    expect(Math.max(...g.map((s) => s[0]!))).toBeLessThanOrEqual(80);
     expect(lineageTint('elf', 'high-elf', 'kadin')?.to).toEqual({ h: 30, s: 0.7, l: 1.08 });
     expect(lineageTint('elf', 'wood-elf', 'kadin')).toBeUndefined();
   });

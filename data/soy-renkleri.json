@@ -1,5 +1,5 @@
 {
-  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. K19: `byGender.<male|female>` cinsiyete özel `lineages` (ortak kaydın önüne geçer; erkek Dragonborn Blue/Brass/Bronze/Copper/Gold/Red/Silver ve (Z1) White eski K8b HSL yolunda); `mask.fill` (kapatma + delik doldurma + sınırlı büyütme, Dragonborn kadın), `mask.byGender` (cinsiyete göre aday aralığı); `lch.contrast` açıklığın ten ortalamasından sapmasını büyütür (Goliath kadın Cloud dövmeleri). K21: Drow dört duraklı soğuk mavi-gri skala (gölge siyaha yakın mavi-indigo, orta koyu mavi-gri, en açık L 46; mor yok); duraklar [L, a, b], değiştirilebilir. Elle maske önceliği: assets/soy-maske-el/ (docs/soy-maske-el.md). K22: `basKaplama` ({ ırk: { siniflar, govdeBoya } }): bu jetonlarda kafa, assets/soy-bas/<ırk>-<kadin|erkek>.png temiz kafa görseliyle değiştirilip soy rengiyle boyanır (npm run soy-bas; data/soy-bas.json). Z1: kafa görselinin opak boyutu kafa kutusuyla ±`basOlcekToleransPx` (2) içinde eşleşirse ölçeklenmez (×1); değilse kutuyu örtecek ölçek + uyarı. K23: `govdeBoya: false` kafa kaplaması dışında soy rengi uygulanmaz (gövde, eller, boyun orijinal; boyun geçişi 2 piksel yumuşatılır); jeton başına açmak için `govdeBoya: { \"<jeton>\": true }` biçimi de okunur (verilmeyen jeton false). DROW-PALET: Drow rengi seçilebilir paletten: `elf.drowPalet` (A kömür-mavi, B mor-mavi, C kül-gri, D gece-mavi; Z1: varsayılan D; geçersizse `paletler.drow.varsayilan`, uyarıyla); her palet 7 duraklı parçalı doğrusal gradyan (en açık L ≤ 60), `contrast` orta tonlarda S-eğrisi, `chromaKeep` orijinal ten pikselinin a/b sapmasının korunan payı. Değeri değiştirince oyun ve inceleme sayfası (npm run soy-maske && npm run soy-incele) değişir. R1: soy rozetleri (K13/K19/K22 `badges`) kullanıcı kararıyla kaldırıldı; soylar yalnızca renkle ayrışır (ΔE ≥ 15 testi).",
+  "note": "Görev K8b, K15: soy (alt ırk) renkleri. K15: jetonun yalnızca ten/pul bölgesi boyanır; maske sprite'ın gerçek ten paletinden çevrimdışı üretilir (npm run soy-maske → public/characters/maske/; `mask`: ırkın gevşek aday rengi Lab'da L/C/h aralığı, `bright` palete giren en parlak kümelerin açıklık aralığı, `th` paletten ΔE eşiği; `maskFix` sprite başına dışlanan/eklenen dikdörtgenler, 256 px). Soy hedefi: `lch` (Lab tonu h, kroma c, orijinal sapmanın korunan payı hueKeep/chromaKeep, açıklık L' = L·gain + dL: gölge-ışık farkları korunur) ya da `gradient` (ten açıklığı gölge→orta→vurgu Lab duraklarına; Drow). `null`: boyama yok (Wood Elf: klasik elf). High Elf eski K8b yolu (`select` ton aralığı + HSL h/s/l), dokunulmadı. K19: `byGender.<male|female>` cinsiyete özel `lineages` (ortak kaydın önüne geçer; erkek Dragonborn Blue/Brass/Bronze/Copper/Gold/Red/Silver ve (Z1) White eski K8b HSL yolunda); `mask.fill` (kapatma + delik doldurma + sınırlı büyütme, Dragonborn kadın), `mask.byGender` (cinsiyete göre aday aralığı); `lch.contrast` açıklığın ten ortalamasından sapmasını büyütür (Goliath kadın Cloud dövmeleri). K21: Drow dört duraklı soğuk mavi-gri skala (gölge siyaha yakın mavi-indigo, orta koyu mavi-gri, en açık L 46; mor yok); duraklar [L, a, b], değiştirilebilir. Elle maske önceliği: assets/soy-maske-el/ (docs/soy-maske-el.md). K22: `basKaplama` ({ ırk: { siniflar, govdeBoya } }): bu jetonlarda kafa, assets/soy-bas/<ırk>-<kadin|erkek>.png temiz kafa görseliyle değiştirilip soy rengiyle boyanır (npm run soy-bas; data/soy-bas.json). Z1: kafa görselinin opak boyutu kafa kutusuyla ±`basOlcekToleransPx` (2) içinde eşleşirse ölçeklenmez (×1); değilse kutuyu örtecek ölçek + uyarı. K23: `govdeBoya: false` kafa kaplaması dışında soy rengi uygulanmaz (gövde, eller, boyun orijinal; boyun geçişi 2 piksel yumuşatılır); jeton başına açmak için `govdeBoya: { \"<jeton>\": true }` biçimi de okunur (verilmeyen jeton false). DROW-PALET: Drow rengi seçilebilir paletten: `elf.drowPalet` (A kömür-mavi, B mor-mavi, C kül-gri, D gece-mavi; Z1: varsayılan D; geçersizse `paletler.drow.varsayilan`, uyarıyla); her palet 7 duraklı parçalı doğrusal gradyan (en açık L ≤ 60), `contrast` orta tonlarda S-eğrisi, `chromaKeep` orijinal ten pikselinin a/b sapmasının korunan payı. Değeri değiştirince oyun ve inceleme sayfası (npm run soy-maske && npm run soy-incele) değişir. R1: soy rozetleri (K13/K19/K22 `badges`) kullanıcı kararıyla kaldırıldı; soylar yalnızca renkle ayrışır (ΔE ≥ 15 testi). SD8: Dark Elf paleti mor-gri (DECISIONS.md).",
   "races": {
     "human": {
       "select": { "hMin": 0, "hMax": 45, "sMin": 0.25, "lMin": 0.5, "lMax": 0.95 },
@@ -261,39 +261,39 @@
             "A": {
               "gradient": [
                 [
-                  3,
-                  12,
-                  -10
-                ],
-                [
-                  8,
                   18,
-                  -16
-                ],
-                [
-                  14,
-                  15,
-                  -18
-                ],
-                [
-                  21,
-                  11,
-                  -17
-                ],
-                [
-                  29,
-                  7,
+                  8,
                   -14
                 ],
                 [
-                  40,
-                  2,
-                  -10
+                  39,
+                  15,
+                  -28
                 ],
                 [
-                  56,
-                  -3,
-                  -7
+                  48,
+                  15,
+                  -28
+                ],
+                [
+                  58,
+                  16,
+                  -28
+                ],
+                [
+                  66,
+                  14,
+                  -24
+                ],
+                [
+                  73,
+                  13,
+                  -21
+                ],
+                [
+                  79,
+                  12,
+                  -19
                 ]
               ],
               "contrast": 0.35,
@@ -302,39 +302,39 @@
             "B": {
               "gradient": [
                 [
-                  3,
-                  15,
-                  -10
-                ],
-                [
+                  10,
                   8,
-                  23,
-                  -18
-                ],
-                [
-                  14,
-                  24,
-                  -22
-                ],
-                [
-                  21,
-                  21,
-                  -22
-                ],
-                [
-                  29,
-                  16,
-                  -19
-                ],
-                [
-                  40,
-                  11,
                   -14
                 ],
                 [
-                  56,
-                  5,
-                  -9
+                  25,
+                  15,
+                  -28
+                ],
+                [
+                  34,
+                  15,
+                  -28
+                ],
+                [
+                  44,
+                  16,
+                  -28
+                ],
+                [
+                  52,
+                  14,
+                  -24
+                ],
+                [
+                  59,
+                  13,
+                  -21
+                ],
+                [
+                  65,
+                  12,
+                  -19
                 ]
               ],
               "contrast": 0.35,
@@ -343,39 +343,39 @@
             "C": {
               "gradient": [
                 [
-                  3,
-                  10,
-                  -5
-                ],
-                [
-                  8,
-                  15,
-                  -6
-                ],
-                [
-                  14,
-                  14,
-                  -5
-                ],
-                [
-                  21,
-                  13,
-                  -4
-                ],
-                [
-                  29,
+                  16,
                   11,
-                  -3
+                  -16
                 ],
                 [
-                  40,
-                  7,
-                  -3
+                  35,
+                  20,
+                  -32
                 ],
                 [
-                  56,
-                  1,
-                  -2
+                  44,
+                  20,
+                  -32
+                ],
+                [
+                  54,
+                  21,
+                  -32
+                ],
+                [
+                  62,
+                  20,
+                  -28
+                ],
+                [
+                  69,
+                  18,
+                  -25
+                ],
+                [
+                  75,
+                  17,
+                  -23
                 ]
               ],
               "contrast": 0.35,
@@ -384,39 +384,39 @@
             "D": {
               "gradient": [
                 [
-                  3,
-                  13,
+                  14,
+                  8,
                   -14
                 ],
                 [
-                  8,
-                  20,
-                  -24
+                  32,
+                  15,
+                  -28
                 ],
                 [
+                  41,
+                  15,
+                  -28
+                ],
+                [
+                  51,
+                  16,
+                  -28
+                ],
+                [
+                  59,
                   14,
-                  18,
-                  -30
-                ],
-                [
-                  21,
-                  13,
-                  -32
-                ],
-                [
-                  29,
-                  8,
-                  -30
-                ],
-                [
-                  40,
-                  1,
                   -24
                 ],
                 [
-                  56,
-                  -5,
-                  -16
+                  66,
+                  13,
+                  -21
+                ],
+                [
+                  72,
+                  12,
+                  -19
                 ]
               ],
               "contrast": 0.35,

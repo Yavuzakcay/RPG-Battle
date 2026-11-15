@@ -43,12 +43,12 @@ describe('SD6', () => {
     expect(r[2 * W + 4]).toBe(0);
     expect(r[0 * W + 6]).toBe(0);
   });
-  it('Drow paletleri: koyu/orta duraklarda hafif mor (a > 0), vurgu mor değil (a ≤ 1), parlaklık değişmedi (L ≤ 60)', () => {
+  it('Drow paletleri (SD8 güncellemesi): koyu/orta duraklarda mor (a > 0), 7 durak, L sıralı artar, en açık ≤ 80', () => {
     for (const k of ['A', 'B', 'C', 'D']) {
       const g = (paletteTint('elf', 'drow', k)!.to as { gradient: number[][] }).gradient;
       for (const s of g.slice(0, 5)) expect(s[1]!, k).toBeGreaterThan(0);
-      expect(g[g.length - 1]![1]!, k).toBeLessThanOrEqual(k === 'B' ? 5 : 1); // B vurgusu baştan morumsu (değişmedi)
-      expect(Math.max(...g.map((s) => s[0]!)), k).toBeLessThanOrEqual(60);
+      for (let i = 1; i < g.length; i++) expect(g[i]![0]!, k).toBeGreaterThan(g[i - 1]![0]!);
+      expect(Math.max(...g.map((s) => s[0]!)), k).toBeLessThanOrEqual(80);
       expect(g.length).toBe(7);
     }
   });

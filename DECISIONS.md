@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-18 — SD8: Dark Elf teni koyu mor-gri (yalnız görünüm; kural sürümü, kayıt sürümü, motor, YZ değişmedi)
+
+- Kullanıcı kararı: Dark Elf (`drow` kimliği, ad "Dark Elf") ten rengi koyu mor-gri; dört palet denenip seçilecek. `data/soy-renkleri.json` `races.elf.paletler.drow.secenekler` (tek yer), `drowPalet` varsayılan D. D: 7 duraklı gradyan; durak 1 = koyu #4A4577, 3 = orta #7B72A8, 5 = açık #A79BC7 (Lab'a çevrilmiş), 0 çok koyu uç (çizgi/gölge), 2 ve 4 ara, 6 vurgu (L 72). A: D'den açık (L +7), B: D'den koyu (L −7), C: lavantaya kaçan (a +5, b −4, L +3). Eski ten maskesi, delik kapatma/kenar temizliği (SD5/SD6), `contrast` 0,35 ve `chromaKeep` 0,35 aynen. Ölçüm (yüz ortalaması, kadın Wizard): D ≈ #847BA7 (hedef orta #7B72A8), A #968DB9, B #736B95, C #9180B6.
+- Testler (gerekçe): eski K19/K21 kuralı "Drow koyu/mor yok: en açık durak L ≤ 60, vurgu a ≤ 1, ten ortalaması ≤ 40" kullanıcı kararıyla geçersiz: en açık durak L ≤ 80, ortalama ≤ 62, vurgu mor (a > 0, b < 0) (`tint.test.ts`, `sd6.test.tsx`); yeni `src/ui/drowPalet.test.ts` (D üç renk ±6 RGB, A açık/B koyu/C lavanta). `data/soy-olcum.json` (npm run soy-maske çıktısı) yerelde yeniden üretilince yeni paletle güncellenir (testler yeni eşiklerle uyumlu).
+- Önizleme: `npm run drow-onizleme -- D` (ya da `A B C D`; boşsa dördü): son commit'teki D (önce) ile çalışma ağacındaki palet(ler) yan yana, Wizard/Barbarian/Rogue × erkek/kadın → `docs/sd8/onizleme-<palet>.png` ve yüz 8× `…-yuz.png`. Paleti değiştirmek için JSON'da duraklar [L, a, b] düzenlenip komut tekrar çalıştırılır. Görseller `docs/sd8/onizleme-ABCD.png` (tam boy), `onizleme-ABCD-yuz.png` (yüz).
+
 ## 2026-11-18 — Görev 2: zar temaları ve sahiplik (yalnız görünüm/profil; kural sürümü, kayıt sürümü, motor, YZ, replay değişmedi)
 
 - Boşa giden iş: yok. İlk plan (Ayarlar'da düz tema listesi + otomatik tema) başlamadan kullanıcı kararıyla değişti; kod baştan sahiplik kurallarıyla yazıldı. Eski tek-satırlık döngü düğmesi (savaş seçenekleri "Zar teması: …") ve Ayarlar'daki düz tema listesi kalktı; eski `rpg-battle-dice-theme` anahtarı okunmaz.

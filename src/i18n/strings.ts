@@ -815,7 +815,6 @@ const tr = {
     anim: {
       label: (v: string): string => `Zar animasyonu: ${v}`, normal: 'Normal', fast: 'Hızlı', off: 'Kapalı',
     } as { label: (v: string) => string; normal: string; fast: string; off: string },
-    themeLabel: (name: string): string => `Zar teması: ${name}`,
     critMark: 'KRİTİK', fumbleMark: 'KRİTİK HATA', critDice: 'kritik', kept: 'sayılan',
   },
 };
