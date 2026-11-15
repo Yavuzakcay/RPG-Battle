@@ -27,22 +27,22 @@ export type DiceCategory = 'malzeme' | 'sinif' | 'irk' | 'harita' | 'dusman' | '
 const SIDES = ['4', '6', '8', '10', '12', '20', '100'];
 /** Görseli üretilmiş temalar (`npm run zarlar` → data/zar-mevcut.json). */
 const READY = new Set<string>((mevcut as { mevcut: string[] }).mevcut);
-const CLASSIC = RAW.find((x) => x.id === themesJson.default);
 /**
  * SD9: görsel seti hazırsa (`seti`, `zar-mevcut.json`) o setin görselleri (sayı konumu klasikten ya da temanın `dice`'ından);
- * hazır değilse `base` temanın (klasik) görselleri. 3D renkleri her zaman temanın `three`'si.
+ * hazır değilse `base` temanın (klasik) görselleri. 3D renkleri her zaman temanın `three`'si. Gerçek set hazırsa renk filtresi
+ * (Altın) uygulanmaz: görsel kendi rengini taşır.
  */
-function resolveDice(x: (typeof RAW)[number]): Record<string, DieArt> {
-  if (x.dice) return x.dice;
-  const base = RAW.find((b) => b.id === x.base)?.dice ?? CLASSIC?.dice ?? {};
-  if (!x.seti || !READY.has(x.id)) return base;
-  return Object.fromEntries(SIDES.map((k) => [k, { ...(base[k] as DieArt), image: `${x.seti}/d${k}.webp` }]));
+export function buildThemes(ready: ReadonlySet<string>): DiceTheme[] {
+  const classic = RAW.find((x) => x.id === themesJson.default);
+  return RAW.map((x) => {
+    const own = !!x.seti && ready.has(x.id);
+    const base = RAW.find((b) => b.id === x.base)?.dice ?? classic?.dice ?? {};
+    const dice = x.dice ?? (own ? Object.fromEntries(SIDES.map((k) => [k, { ...(base[k] as DieArt), image: `${x.seti}/d${k}.webp` }])) : base);
+    const { filter, ...rest } = x as typeof x & { filter?: string };
+    return { ...rest, dice, ...(filter && !own ? { filter } : {}) } as DiceTheme;
+  });
 }
-// Gerçek görsel seti hazırsa renk filtresi (Kuyruk 17 renk teması) uygulanmaz: görsel zaten kendi rengini taşır.
-export const DICE_THEMES: readonly DiceTheme[] = RAW.map((x) => {
-  const { filter, ...rest } = x as typeof x & { filter?: string };
-  return { ...rest, dice: resolveDice(x), ...(filter && !(x.seti && READY.has(x.id)) ? { filter } : {}) } as DiceTheme;
-});
+export const DICE_THEMES: readonly DiceTheme[] = buildThemes(READY);
 export const DEFAULT_DICE_THEME: string = themesJson.default;
 /** Temanın kategorisi (yoksa malzeme). */
 export const diceCategoryOf = (id: string): DiceCategory => RAW.find((x) => x.id === id)?.kategori ?? 'malzeme';

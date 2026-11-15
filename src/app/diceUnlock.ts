@@ -37,6 +37,12 @@ export const emptyStore = (): DiceStore => ({ profiller: {}, hepsiAcik: false })
 const prof = (s: DiceStore, name: string): DiceProfile => s.profiller[name] ?? { acilan: {}, secim: {}, yeni: [] };
 export const activeProfile = (): string => { try { return loadDiscovery().profil; } catch { return DEFAULT_PROFILE; } };
 
+/**
+ * Kaldırılmış eski tema kimlikleri (SD9c): Kemik Klasik'in kendisiydi, Obsidyen gerçek zar değildi (karşılığı Oltu Taşı).
+ * Eski kayıtta açılmış Obsidyen → Oltu Taşı açık; seçili kemik → Klasik, seçili obsidyen → Oltu Taşı (açıksa; değilse Klasik).
+ */
+export const LEGACY_IDS: Record<string, string> = { kemik: 'klasik', obsidyen: 'oltu-tasi' };
+
 export function normalize(raw: unknown): DiceStore {
   const out = emptyStore();
   if (!raw || typeof raw !== 'object') return out;
@@ -46,10 +52,19 @@ export function normalize(raw: unknown): DiceStore {
   for (const [name, p0] of Object.entries(r.profiller ?? {})) {
     const p = p0 as Partial<DiceProfile>;
     const acilan: Record<string, number> = {};
-    for (const [id, n] of Object.entries(p?.acilan ?? {})) if (ids.has(id) && typeof n === 'number' && n > 0) acilan[id] = Math.floor(n);
+    for (const [id0, n] of Object.entries(p?.acilan ?? {})) {
+      const id = LEGACY_IDS[id0] ?? id0;
+      if (ids.has(id) && !alwaysOpen(id) && typeof n === 'number' && n > 0) acilan[id] = Math.max(acilan[id] ?? 0, Math.floor(n));
+    }
+    const open = (id: string) => out.hepsiAcik || alwaysOpen(id) || (acilan[id] ?? 0) > 0;
     const secim: Record<string, string> = {};
-    for (const [c, v] of Object.entries(p?.secim ?? {})) if (typeof v === 'string') secim[c] = v;
-    out.profiller[name] = { acilan, secim, yeni: (p?.yeni ?? []).filter((id) => ids.has(id)) };
+    for (const [c, v] of Object.entries(p?.secim ?? {})) {
+      if (typeof v !== 'string') continue;
+      const target = LEGACY_IDS[v];
+      secim[c] = target === undefined ? v : open(target) ? target : 'klasik';
+    }
+    const yeni = [...new Set((p?.yeni ?? []).map((id) => LEGACY_IDS[id] ?? id))].filter((id) => ids.has(id) && !alwaysOpen(id));
+    out.profiller[name] = { acilan, secim, yeni };
   }
   return out;
 }

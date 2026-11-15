@@ -11,7 +11,7 @@ import seruven from '../../data/seruven.json';
 import yerlesim from '../../data/yerlesim.json';
 import { classes, races } from '../data';
 import { DICE_THEMES, diceCategoryOf, diceThemeOf } from '../ui/diceTheme';
-import { alwaysOpen, choiceOf, classOfCombatant, emptyStore, isUnlocked, mapTheme, monsterTheme, normalize, setChoice, themeForRoll, unlock, unlockHint, unlocksFromBattle, unlocksFromSeruven } from './diceUnlock';
+import { LEGACY_IDS, alwaysOpen, choiceOf, classOfCombatant, emptyStore, isUnlocked, mapTheme, monsterTheme, normalize, setChoice, themeForRoll, unlock, unlockHint, unlocksFromBattle, unlocksFromSeruven } from './diceUnlock';
 import type { BattleState, Combatant } from '../battle/types';
 
 const ids = new Set(gorseller.themes.map((x) => x.id));
@@ -32,17 +32,17 @@ const mapIds = new Set(Object.values(import.meta.glob('../../harita/*/*.json', {
 const NO_SRD = ['dusman-devoruer', 'dusman-flumph'];
 
 describe('SD9: temalar', () => {
-  it('63 ham kimlik + Kemik/Obsidyen (Kuyruk 17); uydurma kimlik yok; kimlik küçük harf/tire (dosya adı zar-<kimlik>.jpg)', () => {
+  it('tam 63 ham kimlik; Kemik/Obsidyen ve uydurma kimlik yok; kimlik küçük harf/tire (dosya adı zar-<kimlik>.jpg)', () => {
     expect(new Set(RAW63).size).toBe(63);
     const have = gorseller.themes.map((x) => x.id);
-    expect([...have].sort()).toEqual([...RAW63, 'kemik', 'obsidyen'].sort());
+    expect([...have].sort()).toEqual([...RAW63].sort());
     for (const id of have) expect(id, id).toMatch(/^[a-z0-9-]+$/);
-    for (const gone of ['bakir', 'demir', 'kristal', 'mermer', 'ahsap', 'harita-buzul', 'harita-liman', 'dusman-vampir', 'esya-iksir', 'esya-kumsaati']) expect(have).not.toContain(gone);
+    for (const gone of ['kemik', 'obsidyen', 'bakir', 'demir', 'kristal', 'mermer', 'ahsap', 'harita-buzul', 'harita-liman', 'dusman-vampir', 'esya-iksir', 'esya-kumsaati']) expect(have).not.toContain(gone);
   });
-  it('kategori sayıları: malzeme 12 (+ Kemik, Obsidyen) / sınıf 12 / ırk 10 / harita 15 / düşman 12 / eşya 2', () => {
+  it('kategori sayıları: malzeme 12 / sınıf 12 / ırk 10 / harita 15 / düşman 12 / eşya 2', () => {
     const count: Record<string, number> = {};
     for (const x of DICE_THEMES) count[diceCategoryOf(x.id)] = (count[diceCategoryOf(x.id)] ?? 0) + 1;
-    expect(count).toEqual({ malzeme: 14, sinif: 12, irk: 10, harita: 15, dusman: 12, esya: 2 });
+    expect(count).toEqual({ malzeme: 12, sinif: 12, irk: 10, harita: 15, dusman: 12, esya: 2 });
   });
   it('görseli olmayan tema Klasik görselle çizilir, kendi 3D renkleri var', () => {
     const t = diceThemeOf('dusman-ejderha');
@@ -87,6 +87,31 @@ describe('SD9: temalar', () => {
     expect(unlockHint('dusman-ejderha', 'tr')).toContain('Ejderha'); expect(unlockHint('dusman-ejderha', 'en')).toContain('Dragon');
     expect(unlockHint('item-kum-saati', 'tr')).toContain('Time Stop'); expect(unlockHint('sinif-wizard', 'tr')).toBe(''); expect(unlockHint('klasik', 'en')).toBe('');
     for (const id of ['harita-space', 'harita-coral', 'harita-cyberpunk', 'dusman-devoruer']) { expect(unlockHint(id, 'tr'), id).not.toBe(''); expect(unlockHint(id, 'en'), id).not.toBe(''); }
+  });
+});
+
+describe('SD9c: Oltu Taşı ve eski kayıt göçü', () => {
+  it('kaldırılmış kimlikler eşleme/ipucu/ödül dosyalarında kalmadı; Oltu Taşı malzeme grubunda, ödülde ve açılır', () => {
+    const text = JSON.stringify(gorseller) + JSON.stringify(esleme);
+    expect(text).not.toMatch(/"kemik"|"obsidyen"/); expect(text).not.toMatch(/Obsidian|Obsidyen/);
+    expect(diceCategoryOf('oltu-tasi')).toBe('malzeme'); expect(DICE_THEMES.some((x) => x.id === 'oltu-tasi')).toBe(true);
+    expect(Object.values(E.oduller)).toContain('oltu-tasi');
+    expect(unlockHint('oltu-tasi', 'tr')).not.toBe(''); expect(unlockHint('oltu-tasi', 'en')).not.toBe('');
+    expect(unlocksFromSeruven([{ type: 'seruven_visited', key: 'derinlikler/sandik', gold: 1, potions: 0, items: [] }] as never, () => false)).toEqual(['oltu-tasi']);
+    const s0 = emptyStore(); expect(setChoice(s0, 'c1', 'oltu-tasi', 'p')).toBe(s0);
+    const s1 = unlock(s0, ['oltu-tasi'], 'p').store; expect(choiceOf(setChoice(s1, 'c1', 'oltu-tasi', 'p'), 'c1', 'p')).toBe('oltu-tasi');
+  });
+  it('eski kayıt: kemik → Klasik; obsidyen → Oltu Taşı (açılmışsa), açılmamışsa Klasik; açılan/bildirim göçü', () => {
+    expect(LEGACY_IDS).toEqual({ kemik: 'klasik', obsidyen: 'oltu-tasi' });
+    const opened = normalize({ profiller: { p: { acilan: { obsidyen: 2, kemik: 1, 'dusman-lich': 1 }, secim: { a: 'kemik', b: 'obsidyen', c: 'altin' }, yeni: ['obsidyen', 'kemik'] } } }).profiller.p!;
+    expect(opened.acilan).toEqual({ 'oltu-tasi': 2, 'dusman-lich': 1 });
+    expect(opened.secim).toEqual({ a: 'klasik', b: 'oltu-tasi', c: 'altin' }); expect(opened.yeni).toEqual(['oltu-tasi']);
+    const closed = normalize({ profiller: { p: { acilan: {}, secim: { b: 'obsidyen', a: 'kemik' } } } }).profiller.p!;
+    expect(closed.secim).toEqual({ b: 'klasik', a: 'klasik' });
+    const all = normalize({ hepsiAcik: true, profiller: { p: { acilan: {}, secim: { b: 'obsidyen' } } } }).profiller.p!;
+    expect(all.secim.b).toBe('oltu-tasi');
+    // göç sonrası seçim geçerli kimlik: choiceOf eski kimliği hiç görmez (açılmamış obsidyen → Klasik)
+    expect(choiceOf(normalize({ profiller: { p: { secim: { b: 'obsidyen' } } } }), 'b', 'p')).toBe('klasik');
   });
 });
 
@@ -143,7 +168,7 @@ describe('SD9: atışın teması ve olay kancaları', () => {
     const none = () => false;
     expect(unlocksFromSeruven([{ type: 'seruven_result', key: 'orman/x', outcome: 'won', statuses: {}, xp: 0, gold: 0, potions: 0 }] as never, none)).toEqual(['harita-orman']);
     expect(unlocksFromSeruven([{ type: 'seruven_visited', key: 'derinlikler/hazine', gold: 5, potions: 0, items: [] }] as never, none)).toEqual(['altin']);
-    expect(unlocksFromSeruven([{ type: 'seruven_visited', key: 'orman/baska', gold: 5, potions: 0, items: [] }, { type: 'seruven_visited', key: 'orman/baska2', gold: 5, potions: 0, items: [] }] as never, none)).toEqual(['kemik', 'obsidyen']);
-    expect(unlocksFromSeruven([{ type: 'seruven_visited', key: 'orman/baska', gold: 5, potions: 0, items: [] }] as never, (id) => id === 'kemik')).toEqual(['obsidyen']);
+    expect(unlocksFromSeruven([{ type: 'seruven_visited', key: 'orman/baska', gold: 5, potions: 0, items: [] }, { type: 'seruven_visited', key: 'orman/baska2', gold: 5, potions: 0, items: [] }] as never, none)).toEqual(['bronz', 'gumus']);
+    expect(unlocksFromSeruven([{ type: 'seruven_visited', key: 'orman/baska', gold: 5, potions: 0, items: [] }] as never, (id) => id === 'bronz')).toEqual(['gumus']);
   });
 });

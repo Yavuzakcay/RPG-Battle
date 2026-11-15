@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-19 — Kemik ve Obsidyen zar temaları kaldırıldı (yalnız veri/görünüm; kural, kayıt sürümü, motor değişmedi)
+
+- Kullanıcı kararı: eski CSS filtreli Kemik (zaten Klasik) ve Obsidyen (gerçek zar değil; gerçek karşılığı Oltu Taşı) kaldırıldı: `data/zar-gorselleri.json` artık tam 63 tema, `zar-esleme.json` ödül sırasından çıktı, testler ve CLAUDE.md güncellendi. Eski kayıt/profil göçü (`LEGACY_IDS`, `normalize`): seçili kemik → Klasik; seçili obsidyen → Oltu Taşı (açıksa; değilse Klasik); açılmış obsidyen → Oltu Taşı açık; kemik açılan/bildirim kayıtları atılır (Klasik her zaman açık). Göçten sonra eski kimlik hiçbir yerde kalmaz.
+- Oltu Taşı denetimi: temada var (malzeme, 3D renkleri #3a2a22 gövde, görsel seti `zarlar/oltu-tasi`, yoksa Klasik görsel); seçicide Malzeme zarları grubunda (kilitliyken ipucuyla); `oduller` `derinlikler/sandik` → Oltu Taşı (Bronz `hazineSirasi` başına geçti); 2D/3D tepsi per-atış tema (`TrayItem.themeId`) Klasik yedekle çalışır (test). Altın: gerçek set hazırsa (`zar-mevcut.json`) `zarlar/altin` görselleri ve CSS filtresiz (`buildThemes`, test); hazır değilken Klasik görsel + altın filtresi.
+
 ## 2026-11-19 — Zar kimlikleri ham dosyalara uydu + zar sayfası kesici (yalnız veri/betik/görünüm; kural, kayıt sürümü, motor değişmedi)
 
 - Kimlikler: `data/zar-gorselleri.json` temaları tam kullanıcının 63 ham kimliği (malzeme 12: altin, bronz, elmas, epoksi, gokkusagi, gumus, inci, oltu-tasi, safir, yakut, zumrut, klasik; `sinif-<ad>` 12; `irk-<ad>` 10; `harita-` ada, bataklik, col, coral, cyberpunk, dag, dungeon, gemi, kale, magara, orman, sehir, space, taverna, volkan 15; `dusman-` beholder, bosluk, couatl, dev, devoruer, ejderha, flumph, gibbering, iblis, illithid, lich, tarrasque 12; `item-kum-saati`, `item-potion`) + Kuyruk 17'nin Kemik ve Obsidyen renk temaları (dokunulmadı; toplam 65). Uydurma kimlikler kaldırıldı (bakir, demir, kristal, mermer, ahsap; harita-buzul/deniz/yeralti/derinlikler/yerlesim/hapishane/bati-kiyisi/liman; dusman-vampir/hidra/golem/kraken/iskelet; esya-iksir/esya-kumsaati). Altın (Kuyruk 17 renk teması, tanımı aynı) yalnız `seti: zarlar/altin` aldı: ham `zar-altin.jpg` işlenince gerçek set kullanılır ve CSS renk filtresi uygulanmaz (`diceTheme.ts`); set yoksa eski davranış.

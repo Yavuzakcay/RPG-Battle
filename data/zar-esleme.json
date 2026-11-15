@@ -147,18 +147,16 @@
   },
   "oduller": {
     "derinlikler/hazine": "altin",
-    "derinlikler/sandik": "bronz",
+    "derinlikler/sandik": "oltu-tasi",
     "volkan/odul": "yakut"
   },
   "hazineSirasi": [
-    "kemik",
-    "obsidyen",
+    "bronz",
     "gumus",
     "safir",
     "zumrut",
     "inci",
     "elmas",
-    "oltu-tasi",
     "epoksi",
     "gokkusagi",
     "harita-coral",
