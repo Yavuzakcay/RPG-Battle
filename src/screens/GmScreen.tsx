@@ -41,7 +41,7 @@ import { GroupsPanel, type GroupChoice } from '../ui/gm/GroupsPanel';
 import { goalsFromData } from '../battle/goals';
 import { SEFERLER } from '../journey/sefer';
 import { presetObjects } from '../battle/objects';
-import type { Goals } from '../battle/types';
+import { draftFromGoals, failPending, resetForMap, resolveDraft, type GoalsDraft } from '../oda/hedef';
 import type { ReactNode } from 'react';
 import type { Oda } from '../oda/model';
 import { joinRoom, leaveRoom } from '../oda/store';
@@ -76,7 +76,7 @@ async function shrinkImage(file: File): Promise<string> {
 /** Kuyruk K58 G5: yapay zekâ zorluğu. */
 type AiDiff = 'kolay' | 'normal' | 'usta';
 export function GmScreen(props: {
-  characters: SavedCharacter[]; onStart: (s: Session) => void; onBack: () => void;
+  characters: SavedCharacter[]; onStart: (s: Session, goalDraft?: GoalsDraft) => void; onBack: () => void;
   /** Dinlenme (herkes uzun dinlensin): karakter listesini günceller. */
   onUpdateCharacters?: (list: SavedCharacter[]) => void;
   /** Açılışta seçili harita, varyant ve ejderha uyandırma kipi (testler ve kısayollar için). */
@@ -159,17 +159,24 @@ export function GmScreen(props: {
   const ruleToggles = room ? room.ayarlar.gelismis.ruleToggles : ruleTogglesLocal;
   const ruleParams: RuleParams = room ? room.ayarlar.gelismis.ruleParams : ruleParamsLocal;
   // Harita değişince liste haritanın varsayılanına döner (sefer kuralları haritaya bağlı).
-  useEffect(() => { setHouseRules(null); setGoals(undefined); setGroupStates({}); if (!room) { setRuleToggles({}); setRuleParams({}); } }, [mapId]);
+  useEffect(() => { setHouseRules(null); setGoalDraft((d) => resetForMap(d)); setGroupStates({}); if (!room) { setRuleToggles({}); setRuleParams({}); } }, [mapId]);
   // Görev S4: grup durumları ve komşuları (boş = haritanın varsayılanı).
   const [groupStates, setGroupStates] = useState<GroupChoice>({});
   // Görev S3: hedefler (undefined = haritanın hazır hedefleri; null = hedefsiz, eski kural).
-  const [goals, setGoals] = useState<Goals | null | undefined>(undefined);
+  // Görev OD1C: hedef taslağı (yalnız tür; altıgen ve nesne haritada seçilir). Haritadaki hedefler (`undefined`) taslağa çevrilir.
+  const [goalLocal, setGoalLocal] = useState<GoalsDraft | null | undefined>(undefined);
+  const goalDraft = room ? room.ayarlar.hedefler : goalLocal;
+  const setGoalDraft = (f: (d: GoalsDraft | null | undefined) => GoalsDraft | null | undefined) => {
+    if (room) rm((o) => ({ ...o, ayarlar: { ...o.ayarlar, ...(((n) => (n === undefined ? {} : { hedefler: n }))(f(o.ayarlar.hedefler))) } }));
+    else setGoalLocal(f);
+  };
   const mapGoals = useMemo(() => (map?.goals ? goalsFromData(map.goals) ?? null : null), [map]);
   const mapObjects = useMemo(() => presetObjects(map?.objects ?? []).map((o) => ({ id: o.id, kind: o.kind })), [map]);
   // Kurulan savaşın katılımcıları (zarı atan oyuncu mu); tıklamada hemen gerektiği için ref.
   const starting = useRef<Combatant[]>([]);
   const isPlayer = (id: string) => starting.current.some((c) => c.id === id && c.side === 'party' && !c.civilian);
-  const dice = useDiceFlow<Session>(diceMode, isPlayer, props.onStart);
+  const pendingRef = useRef<GoalsDraft | undefined>(undefined);
+  const dice = useDiceFlow<Session>(diceMode, isPlayer, (s) => props.onStart(s, pendingRef.current));
   const pool = useMemo(() => (allMonsters ? all : all.filter((m) => fitsMap(m.id, mapId))), [all, allMonsters, mapId]);
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -182,6 +189,7 @@ export function GmScreen(props: {
       .sort((a, b) => cold(a) - cold(b) || crNumber(a.cr) - crNumber(b.cr) || a.name.localeCompare(b.name));
   }, [all, pool, query, counts, variant, tierFilter]);
   const tiers = TIERS.map((t) => ({ tier: t, list: shown.filter((m) => tierOf(m.cr) === t) })).filter((g) => g.list.length > 0);
+  const resolved = resolveDraft(goalDraft);
   if (!map || !variant) return null;
   const optional = optionalRules(map.id, variant.id);
   const plan = {
@@ -529,7 +537,7 @@ export function GmScreen(props: {
               </label>
             ))}
           </fieldset>}
-          <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
+          <GoalsPanel value={goalDraft === undefined ? draftFromGoals(mapGoals) : goalDraft} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={(d) => setGoalDraft(() => d)} />
           {room && <Fold title={t().setupUi.advanced} help={t().setupUi.advancedHelp} className="gm-advanced"><fieldset className="oda-lock" disabled={roomLocked}>
           <label className="multihex-toggle" title={G.multiHex.note}>
             <input type="checkbox" checked={multiHex} onChange={(e: { target: { checked: boolean } }) => setMultiHex(e.target.checked)} /> {G.multiHex.label}
@@ -547,7 +555,8 @@ export function GmScreen(props: {
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()), ...(multiHex ? { multiHex: true } : {}), ...(aiDiff.party !== 'normal' || aiDiff.enemies !== 'normal' ? { yz: { zorluk: { ...(aiDiff.party !== 'normal' ? { party: aiDiff.party } : {}), ...(aiDiff.enemies !== 'normal' ? { enemies: aiDiff.enemies } : {}) } } } : {}), ...(goals !== undefined ? { goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
+              pendingRef.current = resolved.pending.length || (goalDraft?.fail ?? []).some(failPending) ? goalDraft ?? undefined : undefined;
+              dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()), ...(multiHex ? { multiHex: true } : {}), ...(aiDiff.party !== 'normal' || aiDiff.enemies !== 'normal' ? { yz: { zorluk: { ...(aiDiff.party !== 'normal' ? { party: aiDiff.party } : {}), ...(aiDiff.enemies !== 'normal' ? { enemies: aiDiff.enemies } : {}) } } } : {}), ...(resolved.goals !== undefined ? { goals: resolved.goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
             <DicePrompt key={dice.pending.step} request={dice.pending.request}

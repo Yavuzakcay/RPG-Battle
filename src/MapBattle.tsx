@@ -103,6 +103,8 @@ import { activeSpecialGroups, costOfKey, pageOf, spellGroups, splitMenu, visible
 import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
 import { hpFraction, hpModeFor, maskHpText } from './ui/hpVisibility';
 import { SpellComps } from './ui/SpellComps';
+import { bindObject, pendingItems, resolveDraft, toggleHex, type GoalsDraft } from './oda/hedef';
+import { withGoals } from './ui/goalSetup';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -476,9 +478,12 @@ const usableResources = (c: Combatant): Array<[string, number]> =>
   Object.entries(c.resources).filter(([id, n]) => n > 0 && resourceUsable(id));
 
 /** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
-export function Battle(props: { initial: Session; mapFilter?: string; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean }) {
+export function Battle(props: { initial: Session; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler içeren taslak. */ goalDraft?: GoalsDraft; mapFilter?: string; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean }) {
   const box = useStage();
   const [session, setSession] = useState<Session>(props.initial);
+  // Görev OD1C: bekleyen hedefler (altıgen/nesne haritada seçilir). `goalPick`: şu an hangi hedef için hangi seçim açık.
+  const [gd, setGd] = useState<GoalsDraft | null>(props.goalDraft ?? null);
+  const [goalPick, setGoalPick] = useState<{ id: string; how: 'hex' | 'obj' | 'place' } | null>(null);
   // Zar modu (Game Master kurulumda seçer): fiziksel zarda gereken zar istenir, adım aynı zarlarla yeniden çalışır.
   const isPlayer = (id: string) => { const c = session.state.combatants[id]; return !!c && c.side === 'party' && !c.civilian; };
   // Tepki ayarı (Görev R1): oyuncu karakterine sor / her zaman / asla; düşmanlar yapay zekâ / her zaman / asla.
@@ -1152,6 +1157,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       ? { ...cmd0, ...(mm.length ? { metamagic: mm } : {}), ...(mmPick.includes('overchannel') ? { overchannel: true } : {}), ...(mmPick.includes('store') ? { store: true } : {}), ...(mm.includes('transmuted') ? { transmute: tmPick } : {}) } : cmd0;
     dice.play((rng) => dispatch(session, cmd, rng)); reset();
   };
+  // Görev OD1C: başlatırken tamamlanan hedefler oturuma yazılır; tamamlanmayanlar yok sayılır ve günlüğe yazılır.
+  const startBattle = () => {
+    if (!gd) { run({ type: 'start_battle' }); return; }
+    const left = pendingItems(gd).length;
+    const patched = withGoals(session, resolveDraft(gd).goals ?? null, left > 0 ? t().oda.goal.ignored(left) : undefined);
+    dice.play((rng) => dispatch(patched, { type: 'start_battle' }, rng)); reset(); setGoalPick(null);
+  };
   // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
   const placeAt = (id: string, at: Offset) => setSession((s) => dispatch(s, { type: 'place', actorId: id, at }, Math.random, GM_CONTEXT));
   const dragId = useRef<string | null>(null);
@@ -1176,9 +1188,23 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const onHex = (h: Offset) => {
     if (longPressed.current) { longPressed.current = false; return; }
     // Görev S2: Game Master nesne yerleştirir/kaldırır (kurulumda da; zar yok).
+    // Görev OD1C: bekleyen hedef için altıgen işaretle / nesne seç.
+    if (goalPick && gd && setup && goalPick.how !== 'place') {
+      if (goalPick.how === 'hex') { setGd(toggleHex(gd, goalPick.id, h)); return; }
+      const ob = state.map?.objects?.find((o) => sameHex(o.at, h));
+      if (!ob) { toast(t().oda.goal.noObjectHere); return; }
+      setGd(bindObject(gd, goalPick.id, ob.id)); setGoalPick(null); toast(t().oda.goal.boundObject(ob.id));
+      return;
+    }
     if (mode === 'gmObject') {
+      const had = new Set((state.map?.objects ?? []).map((o) => o.id));
       const next = dispatch(session, objectPick === 'remove' ? { type: 'place_object', at: h } : { type: 'place_object', kind: objectPick.kind, at: h, ...(objectPick.state ? { state: objectPick.state } : {}) }, Math.random, GM_CONTEXT);
-      if (next.error) toast(next.error); else setSession(next);
+      if (next.error) toast(next.error); else {
+        setSession(next);
+        // Görev OD1C: "Nesne yerleştir" ile koyulan yeni nesne bekleyen hedefe kendiliğinden bağlanır.
+        const fresh = (next.state.map?.objects ?? []).find((o) => !had.has(o.id));
+        if (goalPick?.how === 'place' && gd && fresh) { setGd(bindObject(gd, goalPick.id, fresh.id)); setGoalPick(null); setMode('idle'); toast(t().oda.goal.boundObject(fresh.id)); }
+      }
       return;
     }
     if (setup) { if (selected) placeAt(selected, h); return; }
@@ -1963,6 +1989,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {moveAim && actor && isMultiHex(state, actor) && (
                   <g key="bodyAim" className="body-base aim">{bodyAt(state, actor, moveAim.to).map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.94)} />)}</g>
                 )}
+                {/* Görev OD1C: kurulumda haritada işaretlenen hedef altıgenleri. */}
+                {setup && gd?.list.flatMap((g) => g.hexes ?? []).map((h) => (
+                  <polygon key={`gp${hexKey(h)}`} points={hexPoints(h, 0.9)} className="goal-pick-hex" />
+                ))}
                 {/* Görev S3: hedef altıgenleri (ulaş/çıkış, yok edilecek/alınacak/korunacak nesne). */}
                 {goalHexes(state).map((h) => {
                   const p = hexCenter(h);
@@ -2918,6 +2948,29 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               {ruleOf(state, 'lairEruption') && <span className="goal">🌋 {B.boss.lair}</span>}
             </div>
           ))}
+          {setup && gd && pendingItems(gd).length > 0 && (() => {
+            const Q = t().oda.goal;
+            const G = t().goals;
+            return (
+              <div className="goals-strip goal-setup-strip" aria-label={Q.stripTitle}>
+                <strong>{Q.stripTitle}</strong> <span className="mute">{Q.stripHelp}</span>
+                {pendingItems(gd).map((it) => (
+                  <span key={it.id} className="goal pending-goal">
+                    {it.kind === 'fail' ? Q.failObject : G.kind[it.kind]}{it.hexes ? ` (${Q.hexCount(it.hexes)})` : ''}
+                    {it.needs.includes('hex') && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'hex' ? 'on' : ''} onClick={() => { reset(); setGoalPick(goalPick?.id === it.id && goalPick.how === 'hex' ? null : { id: it.id, how: 'hex' }); }}>{Q.markHex}</button>}
+                    {it.needs.includes('object') && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'obj' ? 'on' : ''} onClick={() => { reset(); setGoalPick(goalPick?.id === it.id && goalPick.how === 'obj' ? null : { id: it.id, how: 'obj' }); }}>{Q.pickObject}</button>}
+                    {it.needs.includes('object') && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'place' ? 'on' : ''} onClick={() => { reset(); setGoalPick({ id: it.id, how: 'place' }); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{Q.placeObject}</button>}
+                  </span>
+                ))}
+                {goalPick && (
+                  <span className="goal-pick-note" role="status">
+                    {goalPick.how === 'hex' ? Q.tapHex : goalPick.how === 'obj' ? Q.tapObject : Q.placeNote}
+                    {' '}<button type="button" onClick={() => { setGoalPick(null); if (goalPick.how === 'place') setMode('idle'); }}>{Q.markDone}</button>
+                  </span>
+                )}
+              </div>
+            );
+          })()}
           {state.goals && (state.goals.list.length > 0 || (state.goals.fail?.length ?? 0) > 0) && (
             <div className="goals-strip" aria-label={t().goals.title}>
               {state.goals.list.map((g) => {
@@ -3083,7 +3136,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               {ruleVersion(state) >= 41 && groundItemsNear(state, actor).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(o.item ?? '')}</button>)}
             </div>
           )}
-          {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>{B.start}</button>}
+          {setup && gd && pendingItems(gd).length > 0 && <span className="goal-warn" role="status">{t().oda.goal.warn(pendingItems(gd).length)}</span>}
+          {setup && <button className="hud-cta" onClick={startBattle}>{B.start}</button>}
           {endVideo?.shown && state.status === 'finished' && (
             <Suspense fallback={null}>
               <EndVideo plan={endVideo.plan} label={B.endVideoSkip} stopJingle={leaveBattleEnd} onDone={() => setEndVideo(null)} />

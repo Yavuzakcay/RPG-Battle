@@ -16,6 +16,7 @@ import { removeStaticSplash, splashEnabled, watchResume, type SplashKind } from 
 import { badgeChain, preloadImages } from './ui/Avatar';
 import { sheetAvatar } from './battle/avatar';
 import { t, useLang } from './i18n';
+import type { GoalsDraft } from './oda/hedef';
 import { setBattleHpVis, setRoomOverlay, type HpVis, type RoomOverlay } from './oda/active';
 import { useResolvedTheme } from './ui/theme';
 import { menuScene, useSceneRequest, useSoundBoot } from './ui/audio/sound';
@@ -57,7 +58,7 @@ type Screen =
   | { name: 'gm' }
   | { name: 'oda'; roomId?: string }
   | { name: 'katil'; roomId?: string }
-  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string; /** Görev OD1: odadan kurulan savaş (oda kimliği). */ oda?: string; /** Görev OD1B: kayıttan devam eden savaşın HP görünürlüğü. */ hp?: HpVis }
+  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string; /** Görev OD1: odadan kurulan savaş (oda kimliği). */ oda?: string; /** Görev OD1B: kayıttan devam eden savaşın HP görünürlüğü. */ hp?: HpVis; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler. */ goalDraft?: GoalsDraft }
   | { name: 'seruven'; result?: { final: BattleState; node: string } | null }
   | { name: 'journey'; result?: BattleState | null; preset?: string }
   | { name: 'status' }
@@ -221,11 +222,11 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         }} />;
     case 'gm':
       if (!data.ready) return <Loading error={data.error} />;
-      return <GmScreen characters={characters} onBack={home} onStart={(session) => setScreen({ name: 'battle', session })}
+      return <GmScreen characters={characters} onBack={home} onStart={(session, goalDraft) => setScreen({ name: 'battle', session, ...(goalDraft ? { goalDraft } : {}) })}
         onUpdateCharacters={store} onSefer={(id) => setScreen({ name: 'journey', preset: id })} />;
     case 'oda':
       if (!data.ready) return <Loading error={data.error} />;
-      return <OdaKur characters={characters} onBack={home} roomId={screen.roomId} onStart={(session, oda) => setScreen({ name: 'battle', session, oda })}
+      return <OdaKur characters={characters} onBack={home} roomId={screen.roomId} onStart={(session, oda, goalDraft) => setScreen({ name: 'battle', session, oda, ...(goalDraft ? { goalDraft } : {}) })}
         onUpdateCharacters={store} onSefer={(id) => setScreen({ name: 'journey', preset: id })}
         onResume={(oda) => {
           void import('./app/battleSave').then(({ loadBattle }) => {
@@ -249,7 +250,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         onExit={(final) => setScreen({ name: 'journey', result: final?.status === 'finished' ? final : null })} />;
       if (screen.oda) {
         const oda = screen.oda;
-        return <Battle initial={screen.session} restored={screen.restored === true} exitLabel={t().oda.back}
+        return <Battle initial={screen.session} goalDraft={screen.goalDraft} restored={screen.restored === true} exitLabel={t().oda.back}
           onExit={(final) => {
             if (final?.status === 'finished') store(applyBattleResult(characters, final));
             // Bitince oda ayarları açılır ve son savaş özeti yazılır; bitmediyse kayıtlı savaş için kilitli kalır.
@@ -257,7 +258,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
             setScreen({ name: 'oda', roomId: oda });
           }} />;
       }
-      return <Battle initial={screen.session} restored={screen.restored === true} exitLabel={t().battle.toSetup}
+      return <Battle initial={screen.session} goalDraft={screen.goalDraft} restored={screen.restored === true} exitLabel={t().battle.toSetup}
         onExit={(final) => {
           // Biten savaşta karakterlerin kalan HP'si, kaynakları ve slotları kaydedilir (dinlenmezse yaralı başlarlar).
           if (final?.status === 'finished') store(applyBattleResult(characters, final));

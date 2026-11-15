@@ -1520,3 +1520,11 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .spell-comps .comp-gp { font-style: normal; font-size: 0.75rem; color: var(--sel); }
 .spell-comps .comp-note { flex-basis: 100%; font-weight: 400; color: inherit; opacity: 0.85; }
 .spell-comps .comp-note.hot { font-weight: 700; }
+
+/* Görev OD1C: hedeflerde haritadan seçim. Turuncu = seçili/işaretli (SD10); eylem düğmeleri turkuaz. */
+.goal-pick-hex { fill: var(--sel); fill-opacity: 0.38; stroke: var(--sel); stroke-width: 3; pointer-events: none; }
+.goal-setup-strip { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.goal-setup-strip .pending-goal { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.goal-setup-strip button.on { background: var(--sel); color: var(--sel-ink); border-color: var(--sel); }
+.goal-warn { color: var(--off-ink); background: var(--off); border-radius: 6px; padding: 2px 8px; font-size: 0.85rem; }
+.goal-list li.pending { opacity: 0.85; }

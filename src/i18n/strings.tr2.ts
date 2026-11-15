@@ -107,6 +107,17 @@ export const TR_EXTRA = {
     hpVis: 'Düşman HP görünürlüğü', hpVisHelp: { gizli: 'Düşmanın canı hiç gösterilmez.', etiket: 'Sağlam, yaralı gibi kısa etiket.', yuzde: 'Yüzde olarak gösterilir.', tam: 'Tam sayı gösterilir.' } as Record<string, string>,
     hp: { gizli: 'Gizli', etiket: 'Etiket', yuzde: 'Yüzde', tam: 'Tam' } as Record<string, string>,
     band: { full: 'Sağlam', hurt: 'Yaralı', bloodied: 'Ağır yaralı', dying: 'Ölmek üzere', down: 'Yere düştü' } as Record<string, string>,
+    /** Görev OD1C: hedeflerde altıgen ve nesne haritada seçilir. */
+    goal: {
+      pending: 'bekliyor', needHex: 'Haritada altıgen seç', needObject: 'Haritada nesne seç/yerleştir', afterMap: 'Haritaya girince nesne seç ya da yerleştir.',
+      objectLater: 'Haritada seç / yerleştir', civilians: 'Masumlar', hexCount: (n: number): string => `${n} altıgen`, ready: 'hazır',
+      stripTitle: 'Hedefleri tamamla', stripHelp: 'Bekleyen hedefler haritadan tamamlanır.', markHex: 'Altıgen işaretle', markDone: 'Bitti',
+      pickObject: 'Nesne seç', placeObject: 'Nesne yerleştir',
+      tapHex: 'Hedef altıgenlere dokun (tekrar dokununca kalkar).', tapObject: 'Haritada bir nesneye dokun.', placeNote: 'Nesneyi haritaya koy; hedefe kendiliğinden bağlanır.',
+      boundObject: (id: string): string => `Nesne bağlandı: ${id}`, noObjectHere: 'Burada nesne yok.',
+      warn: (n: number): string => `${n} hedef tamamlanmadı`, ignored: (n: number): string => `${n} hedef tamamlanmadığı için yok sayıldı.`,
+      failObject: 'Nesne kaybolursa kaybedersin', done: 'tamam',
+    },
     hpHidden: 'HP gizli',
     hpLog: { hurt: 'yaralandı', down: 'düştü', healed: 'iyileşti', status: (b: string): string => `durumu: ${b}`, percent: (n: number): string => `kalan can %${n}`, buff: 'canı arttı' },
     locked: 'Bu savaş için kilitli', lockedHelp: 'Savaş sürerken oda ayarları değişmez. Savaş bitince açılır.', unlock: 'Yeni savaş için aç', backToBattle: 'Savaşa dön',

@@ -1,18 +1,19 @@
 /**
- * Görev S3: Game Master hedef paneli (kurulum). Hedef ekle/kaldır (tür, altıgen ya da nesne, tur), birleşim
- * (hepsi/herhangi biri), başarısızlık koşulları ve hazır şablonlar (haritanın hedefleri, yalnızca yen, kaç, dayan).
- * Ayrı bileşen: GM Atölyesi aynı paneli kullanacak. Altıgenler ekranda 1 tabanlı (sütun,satır), içeride 0 tabanlı.
+ * Görev S3: Game Master hedef paneli (kurulum). Görev OD1C: yalnız hedef TÜRÜ ve başarısızlık koşulu seçilir; altıgen ve nesne
+ * haritada (savaş öncesi yerleştirme şeridi, `MapBattle`) seçilir, bekleyen hedef "bekliyor" görünür. Taslak (`oda/hedef.ts`)
+ * oda kaydında ve Hızlı savaşta aynı. Ayrı bileşen: GM Atölyesi aynı paneli kullanacak. Altıgenler ekranda 1 tabanlı.
  */
 import { useState } from 'react';
-import type { BattleState, Goal, GoalFail, GoalFailKind, GoalKind, Goals } from '../../battle/types';
+import type { Goal, GoalFailKind, GoalKind, Goals } from '../../battle/types';
 import type { Offset } from '../../rules/hex';
 import { t } from '../../i18n';
 import { failText, goalText } from '../goalText';
+import { addDraftGoal, draftFromGoals, failPending, isPending, pendingNeeds, type DraftGoal, type GoalsDraft } from '../../oda/hedef';
 
 const KINDS: GoalKind[] = ['defeat', 'reach', 'protect', 'destroy', 'survive', 'retrieve'];
 const FAILS: GoalFailKind[] = ['rounds', 'civilians', 'object', 'alarm'];
 
-/** "15,3 16,3" → 0 tabanlı altıgenler (geçersizler atlanır). */
+/** "15,3 16,3" → 0 tabanlı altıgenler (geçersizler atlanır). Panelde artık kullanılmaz; testler ve içe aktarma için duruyor. */
 export function parseHexes(text: string): Offset[] {
   return text.split(/[\s;]+/).map((p) => p.split(',').map(Number)).filter((x) => x.length === 2 && x.every((n) => Number.isInteger(n) && n > 0))
     .map(([c, r]) => ({ col: (c as number) - 1, row: (r as number) - 1 }));
@@ -26,84 +27,86 @@ export function goalPreset(kind: 'defeat' | 'escape' | 'survive', size: { cols: 
 }
 
 export function GoalsPanel(props: {
-  value: Goals | null; mapGoals: Goals | null; objects: Array<{ id: string; kind: string }>; size: { cols: number; rows: number };
-  onChange: (next: Goals | null) => void;
+  value: GoalsDraft | null; mapGoals: Goals | null; objects: Array<{ id: string; kind: string }>; size: { cols: number; rows: number };
+  onChange: (next: GoalsDraft | null) => void;
 }) {
   const G = t().goals;
   const P = G.gm;
+  const Q = t().oda.goal;
   const v = props.value;
-  const fake = { map: { objects: props.objects } } as unknown as BattleState;
+  const fake = { map: { objects: props.objects } } as unknown as import('../../battle/types').BattleState;
   const [kind, setKind] = useState<GoalKind>('reach');
-  const [hexes, setHexes] = useState('');
   const [objectId, setObjectId] = useState('');
   const [rounds, setRounds] = useState(5);
   const [who, setWho] = useState(false);
   const [failKind, setFailKind] = useState<GoalFailKind>('rounds');
   const [failN, setFailN] = useState(6);
-  const base: Goals = v ?? { mode: 'all', list: [] };
-  const set = (g: Goals) => props.onChange(g.list.length || g.fail?.length ? g : null);
-  const needsHexes = kind === 'reach' || kind === 'retrieve';
+  const set = (g: GoalsDraft) => props.onChange(g.list.length || g.fail?.length ? g : null);
   const needsObject = kind === 'destroy' || kind === 'retrieve';
   const canObject = needsObject || kind === 'protect';
   const needsRounds = kind === 'survive' || kind === 'protect';
   const add = () => {
-    const hx = parseHexes(hexes);
-    if (needsHexes && !hx.length) return;
-    const obj = objectId || (needsObject ? props.objects[0]?.id ?? '' : '');
-    if (needsObject && !obj) return;
-    let n = base.list.length + 1;
-    while (base.list.some((g) => g.id === `g${n}`)) n++;
-    const g: Goal = { id: `g${n}`, kind, ...(needsHexes ? { hexes: hx } : {}), ...(canObject && obj ? { objectId: obj } : {}),
-      ...(needsRounds && rounds > 0 ? { rounds } : {}), ...(kind === 'reach' && who ? { who: 'all' as const } : {}) };
-    set({ ...base, list: [...base.list, g] });
+    const picked = objectId && objectId !== '?' ? objectId : '';
+    const extra: Partial<DraftGoal> = {
+      ...(canObject && picked ? { objectId: picked } : {}),
+      ...(kind === 'protect' && objectId !== '' ? { wantsObject: true } : {}),
+      ...(needsRounds && rounds > 0 ? { rounds } : {}), ...(kind === 'reach' && who ? { who: 'all' as const } : {}),
+    };
+    set(addDraftGoal(v, kind, kind === 'protect' && objectId === '' ? { ...extra } : extra));
   };
   const addFail = () => {
-    const f: GoalFail = failKind === 'object' ? { kind: 'object', objectId: objectId || props.objects[0]?.id || '' }
-      : failKind === 'civilians' ? { kind: 'civilians', needed: failN } : { kind: failKind, rounds: failN };
-    if (failKind === 'object' && !f.objectId) return;
-    set({ ...base, fail: [...(base.fail ?? []), f] });
+    const f = failKind === 'object' ? { kind: 'object' as const, objectId: objectId && objectId !== '?' ? objectId : '' }
+      : failKind === 'civilians' ? { kind: 'civilians' as const, needed: failN } : { kind: failKind, rounds: failN };
+    set({ ...(v ?? { mode: 'all' as const, list: [] }), fail: [...(v?.fail ?? []), f] });
+  };
+  const goalLine = (g: DraftGoal): string => {
+    if (!isPending(g)) return `${goalText({ id: g.id, kind: g.kind, ...(g.hexes ? { hexes: g.hexes } : {}), ...(g.objectId ? { objectId: g.objectId } : {}), ...(g.rounds !== undefined ? { rounds: g.rounds } : {}) } as Goal, fake)}${g.hexes?.length ? ` [${g.hexes.map((h) => `${h.col + 1},${h.row + 1}`).join(' ')}]` : ''}`;
+    return `${G.kind[g.kind]}${g.rounds ? ` (${g.rounds})` : ''}`;
   };
   return (
     <details className="goals-panel">
       <summary>{P.summary} ({v?.list.length ?? 0}{v?.fail?.length ? ` + ${v.fail.length} ✗` : ''})</summary>
       <div className="row wrap">
         <span className="mute">{P.presets}:</span>
-        {props.mapGoals && <button type="button" onClick={() => props.onChange(props.mapGoals)}>{P.presetMap}</button>}
-        <button type="button" onClick={() => props.onChange(goalPreset('defeat', props.size))}>{P.presetDefeat}</button>
-        <button type="button" onClick={() => props.onChange(goalPreset('escape', props.size))}>{P.presetEscape}</button>
-        <button type="button" onClick={() => props.onChange(goalPreset('survive', props.size))}>{P.presetSurvive}</button>
+        {props.mapGoals && <button type="button" onClick={() => props.onChange(draftFromGoals(props.mapGoals))}>{P.presetMap}</button>}
+        <button type="button" onClick={() => props.onChange(draftFromGoals(goalPreset('defeat', props.size)))}>{P.presetDefeat}</button>
+        <button type="button" onClick={() => props.onChange(draftFromGoals(goalPreset('escape', props.size)))}>{P.presetEscape}</button>
+        <button type="button" onClick={() => props.onChange(draftFromGoals(goalPreset('survive', props.size)))}>{P.presetSurvive}</button>
         <button type="button" onClick={() => props.onChange(null)}>{P.clear}</button>
       </div>
       {!v ? <p className="mute">{P.none}</p> : (
         <>
           <label>{P.mode}{' '}
-            <select value={v.mode} onChange={(e) => set({ ...v, mode: e.target.value as Goals['mode'] })}>
+            <select value={v.mode} onChange={(e) => set({ ...v, mode: e.target.value as GoalsDraft['mode'] })}>
               <option value="all">{G.all}</option><option value="any">{G.any}</option>
             </select>
           </label>
           <ul className="goal-list">
             {v.list.map((g) => (
-              <li key={g.id}>{goalText(g, fake)}{g.hexes?.length ? ` [${g.hexes.map((h) => `${h.col + 1},${h.row + 1}`).join(' ')}]` : ''}
+              <li key={g.id} className={isPending(g) ? 'pending' : ''}>{goalLine(g)}
+                {isPending(g) && <small className="mute"> — {Q.pending}: {pendingNeeds(g).map((n) => (n === 'hex' ? Q.needHex : Q.needObject)).join(', ')}</small>}
                 {' '}<button type="button" onClick={() => set({ ...v, list: v.list.filter((x) => x !== g) })}>{P.remove}</button></li>
             ))}
             {(v.fail ?? []).map((f, i) => (
-              <li key={`f${i}`} className="fail">✗ {failText(f, fake)}{' '}
+              <li key={`f${i}`} className={`fail${failPending(f) ? ' pending' : ''}`}>✗ {failPending(f) ? Q.failObject : failText(f, fake)}
+                {failPending(f) && <small className="mute"> — {Q.pending}: {Q.needObject}</small>}{' '}
                 <button type="button" onClick={() => set({ ...v, fail: (v.fail ?? []).filter((_, j) => j !== i) })}>{P.remove}</button></li>
             ))}
           </ul>
+          {v.list.some(isPending) && <p className="mute">{Q.afterMap}</p>}
         </>
       )}
       <div className="row wrap goal-add">
         <select value={kind} onChange={(e) => setKind(e.target.value as GoalKind)} aria-label={P.add}>
           {KINDS.map((k) => <option key={k} value={k}>{G.kind[k]}</option>)}
         </select>
-        {needsHexes && <input value={hexes} onChange={(e) => setHexes(e.target.value)} placeholder={P.hexes} aria-label={P.hexes} />}
-        {(canObject || failKind === 'object') && (props.objects.length
-          ? <select value={objectId} onChange={(e) => setObjectId(e.target.value)} aria-label={P.object}>
-              {kind === 'protect' && <option value="">{G.text.civilians}</option>}
-              {props.objects.map((o) => <option key={o.id} value={o.id}>{o.id}</option>)}
-            </select>
-          : needsObject ? <span className="mute">{P.noObject}</span> : null)}
+        {(canObject || failKind === 'object') && (
+          <select value={objectId} onChange={(e) => setObjectId(e.target.value)} aria-label={P.object}>
+            {kind === 'protect' ? <option value="">{Q.civilians}</option> : null}
+            <option value={kind === 'protect' ? '?' : ''}>{Q.objectLater}</option>
+            {props.objects.map((o) => <option key={o.id} value={o.id}>{o.id}</option>)}
+          </select>
+        )}
         {needsRounds && <label>{P.rounds} <input type="number" min={0} max={50} value={rounds} onChange={(e) => setRounds(Number(e.target.value))} /></label>}
         {kind === 'reach' && <label><input type="checkbox" checked={who} onChange={(e) => setWho(e.target.checked)} /> {P.who}</label>}
         <button type="button" onClick={add}>{P.add}</button>

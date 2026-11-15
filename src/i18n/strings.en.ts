@@ -63,6 +63,17 @@ export const en: Strings = {
     hpVis: 'Enemy HP visibility', hpVisHelp: { gizli: 'Enemy health is never shown.', etiket: 'A short label like healthy or wounded.', yuzde: 'Shown as a percentage.', tam: 'The full number is shown.' } as Record<string, string>,
     hp: { gizli: 'Hidden', etiket: 'Label', yuzde: 'Percent', tam: 'Full' } as Record<string, string>,
     band: { full: 'Healthy', hurt: 'Wounded', bloodied: 'Badly wounded', dying: 'Near death', down: 'Down' } as Record<string, string>,
+    /** Task OD1C: goal hexes and objects are picked on the map. */
+    goal: {
+      pending: 'waiting', needHex: 'Pick hexes on the map', needObject: 'Pick or place an object on the map', afterMap: 'Once on the map, pick or place an object.',
+      objectLater: 'Pick / place on the map', civilians: 'Civilians', hexCount: (n: number): string => `${n} hex${n === 1 ? '' : 'es'}`, ready: 'ready',
+      stripTitle: 'Finish the goals', stripHelp: 'Waiting goals are finished on the map.', markHex: 'Mark hexes', markDone: 'Done',
+      pickObject: 'Pick object', placeObject: 'Place object',
+      tapHex: 'Tap the goal hexes (tap again to remove).', tapObject: 'Tap an object on the map.', placeNote: 'Put the object on the map; it links to the goal by itself.',
+      boundObject: (id: string): string => `Object linked: ${id}`, noObjectHere: 'No object here.',
+      warn: (n: number): string => `${n} goal${n === 1 ? '' : 's'} not finished`, ignored: (n: number): string => `${n} unfinished goal${n === 1 ? ' was' : 's were'} ignored.`,
+      failObject: 'You lose if the object is lost', done: 'done',
+    },
     hpHidden: 'HP hidden',
     hpLog: { hurt: 'was wounded', down: 'went down', healed: 'recovered', status: (b: string): string => `condition: ${b}`, percent: (n: number): string => `health left ${n}%`, buff: 'gained health' },
     locked: 'Locked for this battle', lockedHelp: 'Room settings do not change while a battle is going on. They open when it ends.', unlock: 'Open for a new battle', backToBattle: 'Back to the battle',

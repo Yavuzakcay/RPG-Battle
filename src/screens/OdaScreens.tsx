@@ -23,6 +23,7 @@ import { MAX_PARTY } from '../app/limits';
 import { characterProblems, type SavedCharacter } from '../rules/builder';
 import { alignmentAutoOnly, alignmentMoralEnabled, alignmentRace } from '../app/features';
 import type { Session } from '../ui/session';
+import type { GoalsDraft } from '../oda/hedef';
 
 /** Yeni odanın kuralları: cihazın o anki genel değerlerinin kopyası (oda kaydı kendi kopyasını taşır). */
 export function globalRules(): OdaKurallar {
@@ -110,7 +111,7 @@ export function RoomPanel(props: { room: Oda; locked: boolean; onChange: (fn: (o
 
 /** Oda kur: oda listesi + oda düzenleyicisi (eski Game Master kurulumu içinde). */
 export function OdaKur(props: {
-  characters: SavedCharacter[]; onBack: () => void; onStart: (s: Session, odaId: string) => void;
+  characters: SavedCharacter[]; onBack: () => void; onStart: (s: Session, odaId: string, goalDraft?: GoalsDraft) => void;
   onUpdateCharacters?: (list: SavedCharacter[]) => void; onSefer?: (id: string) => void;
   /** Kayıtlı savaşa bu odadan dön (App kaydı yükler). */
   onResume?: (odaId: string) => void; roomId?: string;
@@ -132,7 +133,7 @@ export function OdaKur(props: {
     return (
       <GmScreen characters={props.characters} room={room} locked={locked} onRoomChange={change}
         onBack={() => setSel(null)} backLabel={O.back} title={`${O.createTitle}: ${room.ad}`}
-        onStart={(s) => { change((o) => ({ ...o, kilit: { baslangic: new Date().toISOString() } })); props.onStart(s, room.id); }}
+        onStart={(s, gd) => { change((o) => ({ ...o, kilit: { baslangic: new Date().toISOString() } })); props.onStart(s, room.id, gd); }}
         {...(props.onUpdateCharacters ? { onUpdateCharacters: props.onUpdateCharacters } : {})} {...(props.onSefer ? { onSefer: props.onSefer } : {})}
         roomPanel={<RoomPanel room={room} locked={locked} onChange={change}
           onRename={(ad, g) => commit((l) => updateRoom(renameRoom(l, room.id, ad), room.id, (o) => ({ ...o, gmAdi: g.trim().slice(0, ODA_AD_MAX) })))}

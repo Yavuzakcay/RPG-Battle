@@ -417,6 +417,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     if (!a) return fail('Savaşçı bulunamadı.');
     return cmd.type === 'mount' ? executeMount(state, a, cmd.mountId) : executeDismount(state, a, cmd.to, cmd.toFt);
   }
+  // Görev OD1C: Game Master kurulumda da nesne yerleştirir (hedef nesnesi savaş öncesi haritaya konur; yeni olay yok).
+  if (cmd.type === 'place_object' && state.status === 'setup') return executePlaceObject(state, cmd, ctx.isGm);
   if (state.status === 'setup') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
 
   if (cmd.type === 'set_condition') {

@@ -9,6 +9,8 @@ import type { CarryRule } from '../rules/carry';
 import { CARRY_RULES, DEFAULT_CARRY_RULE } from '../rules/carry';
 import { HP_VIS, type HpVis, type RoomOverlay } from './active';
 import { MAX_PARTY } from '../app/limits';
+import type { GoalsDraft } from './hedef';
+import { normalizeDraft } from './hedef';
 
 export const ODA_SURUM = 1;
 export const ODA_KEY = 'rpg-battle-oda';
@@ -43,6 +45,8 @@ export interface OdaAyarlar {
   zorluk: { party: AiDiff; enemies: AiDiff };
   kurallar: OdaKurallar;
   gelismis: OdaGelismis;
+  /** Görev OD1C: hedef taslağı (yalnız tür ve bekleyen durum; undefined = haritanın hedefleri, null = hedefsiz). */
+  hedefler?: GoalsDraft | null;
 }
 
 export interface SonSavas { zaman: string; harita: string; sonuc: 'zafer' | 'yenilgi' | 'bitmedi' }
@@ -114,6 +118,7 @@ export function normalizeRoom(raw: unknown): Oda | null {
         ruleToggles: g.ruleToggles && typeof g.ruleToggles === 'object' ? Object.fromEntries(Object.entries(g.ruleToggles as Record<string, unknown>).filter(([, v]) => typeof v === 'boolean')) as Record<string, boolean> : {},
         ruleParams: g.ruleParams && typeof g.ruleParams === 'object' ? (g.ruleParams as OdaGelismis['ruleParams']) : {},
       },
+      ...(a.hedefler === null ? { hedefler: null } : normalizeDraft(a.hedefler) ? { hedefler: normalizeDraft(a.hedefler) as GoalsDraft } : {}),
     },
     parti, kilit,
     ...(son && typeof son.zaman === 'string' ? { sonSavas: { zaman: son.zaman, harita: typeof son.harita === 'string' ? son.harita : '', sonuc: pick(son.sonuc, ['zafer', 'yenilgi', 'bitmedi'] as const, 'bitmedi') } } : {}),
