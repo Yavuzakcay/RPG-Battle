@@ -1,12 +1,12 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { classDataLoaded, loadClassData, loadMonsters, monstersLoaded } from './data';
 import { Home, PlayerScreen } from './screens/Screens';
-import { loadCharacters, saveCharacters } from './app/storage';
+import { loadCharacters, newId, saveCharacters } from './app/storage';
 import { hasSavedBattle } from './app/saveKey';
 import { journeyEnabled } from './app/features';
 import type { BattleState } from './battle/types';
 import { applyBattleResult } from './app/partyStatus';
-import { migrateSubclasses, type SavedCharacter } from './rules/builder';
+import { migrateSubclasses, newCharacter, type SavedCharacter } from './rules/builder';
 import { migrateLineages } from './rules/lineage';
 import { newPendingLineages } from './app/lineageNotice';
 import { repairSlots } from './rules/characterRest';
@@ -16,7 +16,7 @@ import { removeStaticSplash, splashEnabled, watchResume, type SplashKind } from 
 import { badgeChain, preloadImages } from './ui/Avatar';
 import { sheetAvatar } from './battle/avatar';
 import { t, useLang } from './i18n';
-import { setRoomOverlay } from './oda/active';
+import { setBattleHpVis, setRoomOverlay, type HpVis, type RoomOverlay } from './oda/active';
 import { useResolvedTheme } from './ui/theme';
 import { menuScene, useSceneRequest, useSoundBoot } from './ui/audio/sound';
 import { SCREEN_SOUND } from './ui/audio/soundPlan';
@@ -53,11 +53,11 @@ const WorldMapViewer = lazy(() => import('./ui/world/WorldMapViewer'));
 type Screen =
   | { name: 'home' }
   | { name: 'player' }
-  | { name: 'builder'; character: SavedCharacter }
+  | { name: 'builder'; character: SavedCharacter; /** Görev OD1B: odaya katıl ekranından açıldı (oda kuralları oluşturucuda geçerli). */ oda?: { id: string; overlay: RoomOverlay } }
   | { name: 'gm' }
   | { name: 'oda'; roomId?: string }
-  | { name: 'katil' }
-  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string; /** Görev OD1: odadan kurulan savaş (oda kimliği). */ oda?: string }
+  | { name: 'katil'; roomId?: string }
+  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string; /** Görev OD1: odadan kurulan savaş (oda kimliği). */ oda?: string; /** Görev OD1B: kayıttan devam eden savaşın HP görünürlüğü. */ hp?: HpVis }
   | { name: 'seruven'; result?: { final: BattleState; node: string } | null }
   | { name: 'journey'; result?: BattleState | null; preset?: string }
   | { name: 'status' }
@@ -145,7 +145,9 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   const data = useMonsters(screen.name === 'gm' || screen.name === 'oda' || screen.name === 'battle' || screen.name === 'journey' || screen.name === 'seruven');
   const classInfo = useClassData();
   // Görev OD1: oda kuralları yalnız oda ekranlarında ve odadan kurulan savaşta etkin; başka yerde genel (cihaz) ayarlar.
-  if (!(screen.name === 'oda' || screen.name === 'katil' || (screen.name === 'battle' && screen.oda))) setRoomOverlay(null);
+  setBattleHpVis(screen.name === 'battle' ? screen.hp ?? null : null);
+  if (screen.name === 'builder' && screen.oda) setRoomOverlay(screen.oda.overlay);
+  else if (!(screen.name === 'oda' || screen.name === 'katil' || (screen.name === 'battle' && screen.oda))) setRoomOverlay(null);
   const [characters, setCharacters] = useState<SavedCharacter[]>(loadCharacters);
   // İlk ekranda (giriş) kayıtlı karakterlerin küçük jetonları boşta indirilir; Oyuncu listesi anında açılır.
   useEffect(() => {
@@ -201,7 +203,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
           // Kayıt yükleme (olayları oynatan motor) ayrı parçada: giriş ekranı onu beklemez.
           void import('./app/battleSave').then(({ loadBattle }) => {
             const r = loadBattle();
-            if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true }); } else setResumeError(r.error);
+            if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true, hp: r.hp }); } else setResumeError(r.error);
           });
         } : undefined} />;
     case 'player':
@@ -212,10 +214,10 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     case 'builder':
       // Görev SD3: yeni karakter (adsız, becerisiz) önerilen başlangıç değerleriyle açılır.
       return <Builder initial={screen.character} suggest={screen.character.sheet.name === '' && screen.character.classSkills.length === 0}
-        onCancel={() => setScreen({ name: 'player' })}
+        onCancel={() => setScreen(screen.oda ? { name: 'katil', roomId: screen.oda.id } : { name: 'player' })}
         onSave={(c) => {
           store(characters.some((x) => x.id === c.id) ? characters.map((x) => (x.id === c.id ? c : x)) : [...characters, c]);
-          setScreen({ name: 'player' });
+          setScreen(screen.oda ? { name: 'katil', roomId: screen.oda.id } : { name: 'player' });
         }} />;
     case 'gm':
       if (!data.ready) return <Loading error={data.error} />;
@@ -228,11 +230,12 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
         onResume={(oda) => {
           void import('./app/battleSave').then(({ loadBattle }) => {
             const r = loadBattle();
-            if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true, oda }); } else setResumeError(r.error);
+            if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true, oda, hp: r.hp }); } else setResumeError(r.error);
           });
         }} />;
     case 'katil':
-      return <OdaKatil characters={characters} onBack={home} />;
+      return <OdaKatil characters={characters} onBack={home} roomId={screen.roomId}
+        onBuild={(id, overlay) => setScreen({ name: 'builder', character: newCharacter(newId()), oda: { id, overlay } })} />;
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
       // Kuyruk 14 Y1: yolculuk savaşı biter; sonuç yolculuğa döner (karakter deposu değişmez).

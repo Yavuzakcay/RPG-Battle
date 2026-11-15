@@ -21,5 +21,8 @@ let current: RoomOverlay | null = null;
 
 export const roomOverlay = (): RoomOverlay | null => current;
 export function setRoomOverlay(o: RoomOverlay | null): void { current = o; }
-/** Savaş ekranındaki düşman HP görünürlüğü; oda yoksa (Hızlı savaş, Serüven…) tam. */
-export const enemyHpVis = (): HpVis => current?.hp ?? 'tam';
+/** Görev OD1B: kayıttan devam eden savaşın kaydındaki HP görünürlüğü (oda örtüsünden önce gelir). */
+let battleHp: HpVis | null = null;
+export function setBattleHpVis(h: HpVis | null): void { battleHp = h; }
+/** Savaş ekranındaki düşman HP görünürlüğü; kayıtlı değer, yoksa oda; ikisi de yoksa (Hızlı savaş, Serüven…) tam. */
+export const enemyHpVis = (): HpVis => battleHp ?? current?.hp ?? 'tam';

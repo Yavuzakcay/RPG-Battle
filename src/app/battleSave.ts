@@ -9,6 +9,7 @@ import { createSession, type Session } from '../ui/session';
 import { externalSubclasses } from '../rules/subclasses';
 
 import { SAVE_KEY, hasSavedBattle } from './saveKey';
+import { HP_VIS, enemyHpVis, type HpVis } from '../oda/active';
 
 export { SAVE_KEY, hasSavedBattle };
 /**
@@ -38,7 +39,8 @@ export const SAVE_VERSION = 22;
  */
 export const LOADABLE_VERSIONS: readonly number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
 
-interface SaveFile { version: number; savedAt: string; events: BattleEvent[]; content?: string[] }
+/** `hp`: düşman HP görünürlüğü (Görev OD1B; yalnız görünüm, olay biçimi aynı: sürüm artmaz; yoksa Tam). */
+interface SaveFile { version: number; savedAt: string; events: BattleEvent[]; content?: string[]; hp?: HpVis }
 type Store = Pick<Storage, 'getItem' | 'setItem'>;
 
 const store = (): Store | null => {
@@ -47,12 +49,12 @@ const store = (): Store | null => {
 
 export function serializeSession(session: Session, now = new Date()): string {
   const content = [...new Set(externalSubclasses().map((s) => s.pack).filter((x): x is string => !!x))];
-  const file: SaveFile = { version: SAVE_VERSION, savedAt: now.toISOString(), events: session.events, ...(content.length ? { content } : {}) };
+  const file: SaveFile = { version: SAVE_VERSION, savedAt: now.toISOString(), events: session.events, hp: enemyHpVis(), ...(content.length ? { content } : {}) };
   return JSON.stringify(file);
 }
 
 /** `missingContent`: kayıttaki dış içerik paketlerinden şu an yüklü olmayanlar (bilgi; savaş yine oynar). */
-export type Restored = { ok: true; session: Session; savedAt: string; missingContent?: string[] } | { ok: false; error: string };
+export type Restored = { ok: true; session: Session; savedAt: string; /** Kaydın düşman HP görünürlüğü (yoksa Tam). */ hp: HpVis; missingContent?: string[] } | { ok: false; error: string };
 
 export function restoreSession(text: string | null): Restored {
   if (!text) return { ok: false, error: 'Kayıt yok.' };
@@ -64,7 +66,7 @@ export function restoreSession(text: string | null): Restored {
     const state = replay(events);
     const loaded = new Set(externalSubclasses().map((s) => s.pack));
     const missing = (Array.isArray(file.content) ? file.content : []).filter((id) => !loaded.has(id));
-    return { ok: true, session: createSession(state, events), savedAt: file.savedAt ?? '', ...(missing.length ? { missingContent: missing } : {}) };
+    return { ok: true, session: createSession(state, events), savedAt: file.savedAt ?? '', hp: HP_VIS.includes(file.hp as HpVis) ? (file.hp as HpVis) : 'tam', ...(missing.length ? { missingContent: missing } : {}) };
   } catch {
     return { ok: false, error: 'Kayıt yüklenemedi: dosya bozuk.' };
   }

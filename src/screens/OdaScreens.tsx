@@ -11,7 +11,8 @@ import { GmScreen } from './GmScreen';
 import { RoomRules } from '../ui/settings/RoomRules';
 import { SegRow } from '../ui/settings/SegRow';
 import { DICE_MODES, type DiceMode } from '../rules/manualDice';
-import { HP_VIS, setRoomOverlay, type HpVis } from '../oda/active';
+import { HP_VIS, setRoomOverlay, type HpVis, type RoomOverlay } from '../oda/active';
+import { levelCap } from '../app/limits';
 import { overlayOf, rulesSummary, cleanName, ODA_AD_MAX, type AiDiff, type Oda, type OdaKurallar } from '../oda/model';
 import { createRoom, deleteRoom, isLocked, joinRoom, leaveRoom, loadRooms, renameRoom, saveRooms, unlockRoom, updateRoom } from '../oda/store';
 import { alignmentEnabled, journeyEnabled, upperLevelsEnabled } from '../app/features';
@@ -195,7 +196,7 @@ function RulesReadOnly(props: { rules: OdaKurallar }) {
 }
 
 /** Odaya katıl: oda seç, kendi karakterini seç ("Hazır"); oda kuralları yalnız okunur. */
-export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => void; roomId?: string }) {
+export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => void; roomId?: string; /** Odanın kurallarıyla karakter oluşturucuyu aç. */ onBuild?: (roomId: string, overlay: RoomOverlay) => void }) {
   const O = t().oda, C = t().common;
   const [rooms, commit] = useRooms();
   const [sel, setSel] = useState<string | null>(props.roomId ?? null);
@@ -233,6 +234,8 @@ export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => vo
             </section>
             <section className="panel">
               <h2>{O.joinChars} <small className="mute">{O.joinCount(room.parti.filter((id) => valid.some((c) => c.id === id)).length, MAX_PARTY)}</small></h2>
+              {props.onBuild && <div className="set-btns"><button type="button" className="cta" onClick={() => props.onBuild?.(room.id, overlayOf(room))}>{O.joinBuild}</button><small className="mute">{O.joinBuildHelp}</small></div>}
+              {room.ayarlar.kurallar.ustSeviye ? null : valid.filter((c) => c.sheet.level > levelCap(false)).map((c) => <p key={c.id} className="warn">{c.sheet.name}: {O.levelCapWarn(c.sheet.level, levelCap(false))}</p>)}
               {valid.length === 0 && <p className="empty-state">{O.joinNoChars}</p>}
               {full && <p className="mute">{O.joinFull(MAX_PARTY)}</p>}
               <ul className="oda-list">

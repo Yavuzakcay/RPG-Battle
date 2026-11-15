@@ -101,9 +101,8 @@ import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionHint, actionTip } from './ui/actionHints';
 import { activeSpecialGroups, costOfKey, pageOf, spellGroups, splitMenu, visible, type MenuItem, type SpecialGroup } from './ui/actionMenu';
 import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
-import { enemyHpVis } from './oda/active';
+import { hpFraction, hpModeFor, maskHpText } from './ui/hpVisibility';
 import { SpellComps } from './ui/SpellComps';
-import { hpBand, hpBarFraction, hpPercent } from './oda/hp';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -186,19 +185,9 @@ import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf 
 import { MoralBar } from './ui/MoralBar';
 import { ResourceChip, iconed, plain, sharedIcons } from './ui/ResourceChip';
 
-/** Görev OD1: düşman HP görünürlüğü (oda ayarı). Savaş mantığı ve kayıt aynı; yalnız çizim. */
-const hpHiddenFor = (c: { side: string; civilian?: boolean }): boolean => c.side === 'enemies' && !c.civilian && enemyHpVis() !== 'tam';
-function enemyHpFraction(c: { side: string; civilian?: boolean; hp: number; maxHp: number }): number | null {
-  return hpHiddenFor(c) ? hpBarFraction(c.hp, c.maxHp, enemyHpVis()) : Math.max(0, c.hp / c.maxHp);
-}
-/** "HP 12/38" metnini oda ayarına göre gizler, etikete ya da yüzdeye çevirir. */
-function maskHp(text: string, c: { side: string; civilian?: boolean; hp: number; maxHp: number }): string {
-  if (!hpHiddenFor(c)) return text;
-  const mode = enemyHpVis();
-  const O = t().oda;
-  const repl = mode === 'gizli' ? O.hpHidden : mode === 'etiket' ? (O.band[hpBand(c.hp, c.maxHp)] ?? '') : `HP ${hpPercent(c.hp, c.maxHp)}%`;
-  return text.replace(/HP \d+\/\d+/, repl);
-}
+/** Görev OD1B: düşman HP görünürlüğü tek çözücüden (`ui/hpVisibility`). */
+const enemyHpFraction = hpFraction;
+const maskHp = maskHpText;
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -2170,7 +2159,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 <g className={`dmg-float ${fl.kind}`} transform={`translate(${p.x},${top})`}>
                   <g className="dmg-anim" style={{ animationDelay: `${fl.delay}ms` }}>
                     {icon && <text className="dmg-icon" x={-14} y={0}>{icon}</text>}
-                    <text className="dmg-num" x={icon ? 10 : 0} y={0}>-{fl.amount}</text>
+                    <text className="dmg-num" x={icon ? 10 : 0} y={0}>{hpModeFor(c) ? '•' : `-${fl.amount}`}</text>
                   </g>
                 </g>
               </g>

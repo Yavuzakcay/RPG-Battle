@@ -12,6 +12,8 @@ import type { BattleState, Command, CommandContext } from '../../battle/types';
 import type { DiscoveryStore, PreviewSettings } from '../../app/discovery';
 import { movePreview, pct, rangeText } from './movePreview';
 
+import { hpModeFor } from '../hpVisibility';
+
 export default function PreviewCard(props: { state: BattleState; cmd: Command | null; ctx: CommandContext; disc: DiscoveryStore; settings: PreviewSettings }) {
   const P = t().battle.preview;
   const mp = useMemo(() => (props.cmd ? movePreview(props.state, props.cmd, props.ctx, props.disc, props.settings) : null), [props.state, props.cmd, props.ctx, props.disc, props.settings]);
@@ -28,7 +30,7 @@ export default function PreviewCard(props: { state: BattleState; cmd: Command | 
           {l.dc !== undefined && <span>{P.save(l.ability ?? '', l.dc, pct(l.saveP))}</span>}
           {l.damage.max > 0 && <span>{P.dmg(rangeText(l.damage))}</span>}
           {l.healing.max > 0 && <span>{P.heal(rangeText(l.healing))}</span>}
-          {l.killP > 0.01 && <span>{P.kill(pct(l.killP))}</span>}
+          {l.killP > 0.01 && !hpModeFor(props.state.combatants[l.id]) && <span>{P.kill(pct(l.killP))}</span>}
           {l.movedTo && <span>{P.moved(hexText(l.movedTo))}</span>}
           {l.teleportedTo && <span>{P.teleport(hexText(l.teleportedTo))}</span>}
           {full && l.conditions.length > 0 && <small>{P.conditions}: {l.conditions.join(', ')}</small>}
