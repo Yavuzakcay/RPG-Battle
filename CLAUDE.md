@@ -179,7 +179,13 @@ npm run srd:buyu       # data/spells.json'u SRD ile eşitle, docs/BUYU-ESITLEME.
 - **Ekran metinleri** `src/i18n/strings.ts` (TR) ve `src/i18n/strings.en.ts` (EN, tembel), aynı yapı; arayüz `t()` ile okur, koda metin yazılmaz. "Game Master" yazılır, "GM" değil.
 - **Komutlar:** Kullanıcıya verilen komutlar PowerShell sözdiziminde.
 - **Küçük adımlar:** Her adımda typecheck, ilgili testler ve build yeşil kalmalı (ayrıntı: hafif doğrulama modu).
-- **Hafif doğrulama modu (kalıcı kural, her görevde):** Her görevde `npm run typecheck`, ilgili testler, `npm run build`, `npm run check:harita` ve `npm run check:ses` çalıştırılır (atlanmaz); tam test paketi (`npm test`) görev sonunda bir kez. Denge ölçümü yalnızca yeni parti eklenen görevlerde ve 100 tohumla; 200 tohum, eski partilerin tam ölçümü ve düşman listesi düzeltme denemeleri yapılmaz, aralık dışı satırlar `harita/belgeler/DENGE.md`'ye yazılır. Ortak motor değişirse yalnızca 3–4 senaryolu hızlı regresyon. Ekran görüntüsü yalnızca arayüz değişen görevlerde ve tek görüntü. Tam ölçüm, düzeltme ve optimizasyon "Dungeondex öncesi tam test turu" görevine kalır; kullanıcı o görevi verene kadar yapılmaz.
+- **Hafif doğrulama modu (kalıcı kural):**
+  - Her görevde: `npm run typecheck`, ilgili testler, `npm run build`.
+  - `npm run check:harita`: yalnız harita verisi, harita çizimi, jeton/efekt katmanı ya da savaş ekranı çizimi değiştiyse.
+  - `npm run check:ses`: yalnız ses motoru/verisi/`public/ses` değiştiyse; bulutta TimeoutError verir, bulutta çalıştırılmaz, rapora "yerelde çalıştırılacak" yazılır.
+  - Tam `npm test`: yalnız (a) ortak motor/kural/veri şeması değiştiğinde, (b) birlesik→main PR öncesi, (c) kullanıcı istediğinde. Arayüz/metin/stil işlerinde yalnız ilgili test klasörleri.
+  - Uzun testleri arka planda başlatıp sonuç gelmeden "geçti" denmez; rapora gerçek durum yazılır.
+  - Denge ölçümü yalnızca yeni parti eklenen görevlerde ve 100 tohumla; 200 tohum, eski partilerin tam ölçümü ve düşman listesi düzeltme denemeleri yapılmaz, aralık dışı satırlar `harita/belgeler/DENGE.md`'ye yazılır. Ortak motor değişirse yalnızca 3–4 senaryolu hızlı regresyon. Ekran görüntüsü yalnızca arayüz değişen görevlerde ve tek görüntü. Tam ölçüm, düzeltme ve optimizasyon "Dungeondex öncesi tam test turu" görevine kalır; kullanıcı o görevi verene kadar yapılmaz.
 - **Kararlar** `DECISIONS.md`'ye yazılır, en yeni karar en üstte. Denge ölçümleri `harita/belgeler/DENGE.md`'ye.
 - **Commit mesajı tırnak içinde verilir:** `git commit -m "Kısa açıklama"`.
 - Rapor kısa tutulur; arayüz değişikliklerinde ekran görüntüsü alınır.

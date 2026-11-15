@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-18 — Hafif doğrulama modu güncellendi (yalnız belge)
+
+- CLAUDE.md "Hafif doğrulama modu": her görevde yalnız typecheck + ilgili testler + build; `check:harita` yalnız harita/jeton/efekt/savaş çizimi değişince; `check:ses` yalnız ses değişince ve bulutta çalıştırılmaz ("yerelde çalıştırılacak"); tam `npm test` yalnız ortak motor/kural/şema değişince, birlesik→main PR öncesi ya da istenince; uzun testlerde sonuç gelmeden "geçti" denmez. Neden: her görevde tam doğrulama hız kesiyor (tam test ≈ 25 dk), `check:ses` bulutta (başsız tarayıcı, ses bağlamı) TimeoutError veriyor.
+- SD6+SD7 sonrası gerçek tam koşu: `npm test` 413 dosya geçti, 4789 test geçti (2 dosya / 11 test atlandı); `check:harita` 96 kontrol, 0 hata.
+
 ## 2026-11-17 — Görev SD7: büyü menüsü sadeleştirmesi (yalnız arayüz; kural sürümü, kayıt sürümü, motor, YZ, replay değişmedi)
 
 - "Hile" → "Cantrip": savaş büyü sekmesi (`battle.label.cantrip`), Işık Cantrip'i (Celestial `data/celestial.json` `tr`), `races.json`/Celestial metni, üç büyünün malzeme/açıklama metni (`spells.json`: element cantrip'i, küçük büyü cantrip'leri, küçük doğa cantrip'i). Taranan yerler: `src/i18n`, `data/*.json`, `src`; kalan "hile" geçişleri başka anlamda (hizalanma "hile ve çıkar" = düzenbazlık, P11 yorumu "slot hilesi"). Oluşturucu/karakter ekranı/kartlar zaten "cantrip" yazıyordu.
