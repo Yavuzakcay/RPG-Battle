@@ -1,5 +1,5 @@
-// Wizard ırk sayfaları (4x2, A ve B) → jeton PNG'leri. Kullanım: npm run karakter-kes -- [--kuru] [--zorla] [--girdi klasör] [--cikti klasör] [--tuval 256] [--yalniz ad]
-// Girdi: assets-ham/karakter/wizard-<erkek|kadin>-<irk>-<a|b>.png (depoya girmez). Çıktı: wizard-<erkek|kadin>-<irk>-<slug>.png (varsayılan public/characters).
+// Wizard ırk sayfaları (4x2, A ve B) → jeton PNG'leri. Kullanım: npm run karakter-kes -- [--kuru] [--zorla] [--girdi klasör] [--cikti klasör] [--tuval 512] [--yalniz ad]
+// Girdi: assets-ham/karakter/wizard-<male|female>-<irk>-<a|b>.<png|jpg> (assets-ham kökünde, depoya girmez; erkek/kadin de kabul). Çıktı: wizard-<erkek|kadin>-<irk>-<slug>.png (varsayılan public/characters).
 // Var olan dosya --zorla olmadan ezilmez. --kuru hiçbir şey yazmaz, ızgara/hücre raporu verir.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,15 +11,15 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const flag = (n) => args.includes(n);
 const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
-const IN = path.resolve(opt('--girdi', path.join(root, 'assets-ham/karakter')));
+const IN = path.resolve(opt('--girdi', path.join(root, 'assets-ham')));
 const OUT = path.resolve(opt('--cikti', path.join(root, 'public/characters')));
-const CANVAS = Number(opt('--tuval', 256));
+const CANVAS = Number(opt('--tuval', 512));
 const MARGIN = Math.round(CANVAS * 0.05);
 const kuru = flag('--kuru'), zorla = flag('--zorla'), yalniz = opt('--yalniz', null);
 
-if (!fs.existsSync(IN)) { console.log(`girdi klasörü yok: ${IN} (ham sayfalar assets-ham/karakter/ altına konur)`); process.exit(0); }
-const files = fs.readdirSync(IN).map((f) => ({ f, m: /^wizard-(erkek|kadin)-(.+)-(a|b)\.png$/i.exec(f) })).filter((x) => x.m && (!yalniz || x.f.includes(yalniz))).sort((p, q) => p.f.localeCompare(q.f));
-if (!files.length) console.log('eşleşen sayfa yok (wizard-<erkek|kadin>-<irk>-<a|b>.png)');
+if (!fs.existsSync(IN)) { console.log(`girdi klasörü yok: ${IN} (ham sayfalar assets-ham/ kökünde)`); process.exit(0); }
+const files = fs.readdirSync(IN).map((f) => ({ f, m: /^wizard-(male|female|erkek|kadin)-(.+)-(a|b)\.(?:png|jpe?g)$/i.exec(f) })).filter((x) => x.m && (!yalniz || x.f.includes(yalniz))).sort((p, q) => p.f.localeCompare(q.f));
+if (!files.length) console.log('eşleşen sayfa yok (wizard-<male|female>-<irk>-<a|b>.png|jpg)');
 
 // Çapraz sınıf karşılaştırması: mevcut jetonlarda karakter yüksekliği (alfa kutusu) ortalaması
 async function existingHeights() {
@@ -40,7 +40,8 @@ const heights = [];
 let written = 0, skipped = 0;
 if (!kuru) fs.mkdirSync(OUT, { recursive: true });
 for (const { f, m } of files) {
-  const [, gender, race, kind] = m;
+  const [, g0, race, kind] = m;
+  const gender = { male: 'erkek', female: 'kadin' }[g0.toLowerCase()] ?? g0.toLowerCase();
   const { data, info } = await sharp(path.join(IN, f)).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const { grid, cells } = processSheet(new Uint8Array(data), info.width, info.height, kind.toLowerCase());
   console.log(`\n${f}: ${info.width}x${info.height}, ızgara ${grid.ok ? 'tamam' : 'BULUNAMADI'}, ${grid.cells.length} hücre (${grid.cells[0].w}x${grid.cells[0].h})`);
