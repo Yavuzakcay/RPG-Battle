@@ -38,6 +38,15 @@ function sheet(opts: { magenta?: number[]; empty?: number[]; noGrid?: boolean })
 }
 
 describe('karakter sayfası kesimi', () => {
+  it('JPEG: bulanık ızgara kalıntısı olan hücrede zemin yine silinir', async () => {
+    const jpg = await sharp(Buffer.from(sheet({})), { raw: { width: W, height: H, channels: 3 } }).blur(2.5).jpeg({ quality: 70 }).toBuffer();
+    const { data, info } = await sharp(jpg).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+    const r = lib.processSheet(new Uint8Array(data), info.width, info.height, 'a');
+    for (const c of r.cells) {
+      expect(c.box.w).toBeLessThan(400);
+      expect(c.box.h).toBeLessThan(500);
+    }
+  });
   it('ızgara: 4x2 hücre, çizgiler atlanır', () => {
     const g = lib.detectGrid(sheet({}), W, H);
     expect(g.ok).toBe(true);

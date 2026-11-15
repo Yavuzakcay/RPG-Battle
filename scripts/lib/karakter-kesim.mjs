@@ -65,17 +65,23 @@ function rect(data, w, r) {
 
 /** Hücre zemini: kenar halkasındaki piksellerin medyanı; yeşil mi macenta mı (ad + ölçülen renk). */
 export function cellBackground(d, w, h) {
-  const ring = Math.max(2, Math.round(Math.min(w, h) * 0.01));
-  const ch = [[], [], []];
+  // Halka bulanık ızgara çizgisi kalıntısı içerebilir: yalnız bir referansa 100'den yakın pikseller oy verir ve ölçüme girer
+  const ring = Math.max(2, Math.round(Math.min(w, h) * 0.02));
+  const px = { yesil: [[], [], []], macenta: [[], [], []] };
+  const cnt = { yesil: 0, macenta: 0 };
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     if (x >= ring && x < w - ring && y >= ring && y < h - ring) { x = w - ring - 1; continue; }
     const p = (y * w + x) * 3;
-    for (let k = 0; k < 3; k++) ch[k].push(d[p + k]);
+    for (const n of ['yesil', 'macenta']) {
+      const r = BG_REFS[n];
+      if (Math.hypot(d[p] - r[0], d[p + 1] - r[1], d[p + 2] - r[2]) < 100) { cnt[n]++; for (let k = 0; k < 3; k++) px[n][k].push(d[p + k]); }
+    }
   }
-  const med = ch.map((a) => { a.sort((p, q) => p - q); return a[a.length >> 1]; });
-  const dist = (ref) => Math.hypot(med[0] - ref[0], med[1] - ref[1], med[2] - ref[2]);
-  const name = dist(BG_REFS.yesil) <= dist(BG_REFS.macenta) ? 'yesil' : 'macenta';
-  return { name, color: med };
+  const name = cnt.yesil >= cnt.macenta ? 'yesil' : 'macenta';
+  const arr = px[name];
+  if (!arr[0].length) return { name, color: [...BG_REFS[name]] };
+  const color = arr.map((a) => { a.sort((p, q) => p - q); return a[a.length >> 1]; });
+  return { name, color };
 }
 
 /** Zemini kenardan bağlı bileşenle siler, haleyi temizler. Dönüş: { rgba, alpha, count (karakter piksel sayısı) }. */
@@ -86,8 +92,20 @@ export function removeBackground(d, w, h, bg, opts = {}) {
   const gone = new Uint8Array(w * h);
   const stack = [];
   const push = (x, y) => { const i = y * w + x; if (!gone[i] && dist(i * 3) < tol) { gone[i] = 1; stack.push(i); } };
-  for (let x = 0; x < w; x++) { push(x, 0); push(x, h - 1); }
-  for (let y = 0; y < h; y++) { push(0, y); push(w - 1, y); }
+  // Kenar bandı (JPEG'de bulanık ızgara çizgisi kalıntısı): ilk 5 px'te koyu, 12 px'e dek zemin↔koyu karışım doğrusundaki piksel tohumdur
+  const band = opts.band ?? 12, dk = 20;
+  const seg = [br - dk, bgc - dk, bb - dk], sl = seg[0] * seg[0] + seg[1] * seg[1] + seg[2] * seg[2];
+  const mixDist = (p) => {
+    const v = [d[p] - dk, d[p + 1] - dk, d[p + 2] - dk];
+    const t = Math.max(0, Math.min(1, (v[0] * seg[0] + v[1] * seg[1] + v[2] * seg[2]) / sl));
+    return Math.hypot(v[0] - t * seg[0], v[1] - t * seg[1], v[2] - t * seg[2]);
+  };
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (x >= band && x < w - band && y >= band && y < h - band) { x = w - band - 1; continue; }
+    const p = (y * w + x) * 3, i = y * w + x;
+    const e = Math.min(x, y, w - 1 - x, h - 1 - y);
+    if (!gone[i] && ((e < 5 && lum(d[p], d[p + 1], d[p + 2]) < 70) || dist(p) < halo || mixDist(p) < 40)) { gone[i] = 1; stack.push(i); }
+  }
   while (stack.length) {
     const i = stack.pop(), x = i % w, y = (i / w) | 0;
     if (x > 0) push(x - 1, y); if (x < w - 1) push(x + 1, y); if (y > 0) push(x, y - 1); if (y < h - 1) push(x, y + 1);
