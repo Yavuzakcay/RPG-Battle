@@ -43,7 +43,7 @@ describe('karakter sayfası kesimi', () => {
   it('JPEG: bulanık ızgara kalıntısı olan hücrede zemin yine silinir', async () => {
     const jpg = await sharp(Buffer.from(sheet({})), { raw: { width: W, height: H, channels: 3 } }).blur(2.5).jpeg({ quality: 70 }).toBuffer();
     const { data, info } = await sharp(jpg).removeAlpha().raw().toBuffer({ resolveWithObject: true });
-    const r = lib.processSheet(new Uint8Array(data), info.width, info.height, 'a');
+    const r = lib.processSheet(new Uint8Array(data), info.width, info.height, lib.SLUGS.a);
     for (const c of r.cells) {
       expect(c.box.w).toBeLessThan(400);
       expect(c.box.h).toBeLessThan(500);
@@ -63,7 +63,7 @@ describe('karakter sayfası kesimi', () => {
     expect(g.cells).toHaveLength(8);
   });
   it('A sayfası: 8 hücre, bir macenta; içteki yeşil ayrıntı korunur', () => {
-    const r = lib.processSheet(sheet({ magenta: [2] }), W, H, 'a');
+    const r = lib.processSheet(sheet({ magenta: [2] }), W, H, lib.SLUGS.a);
     expect(r.cells.filter((c: any) => !c.empty)).toHaveLength(8);
     expect(r.cells[2].bg.name).toBe('macenta');
     expect(r.cells[0].bg.name).toBe('yesil');
@@ -75,7 +75,7 @@ describe('karakter sayfası kesimi', () => {
     expect(c.rgba[((c.box.y + py) * c.rect.w + (c.box.x + px)) * 4 + 3]).toBe(255);
   });
   it('kapalı zemin deliği silinir, farklı tondaki yeşil ayrıntı ve izole nokta kuralı', () => {
-    const r = lib.processSheet(sheet({ hole: true, speck: true, magenta: [2] }), W, H, 'a');
+    const r = lib.processSheet(sheet({ hole: true, speck: true, magenta: [2] }), W, H, lib.SLUGS.a);
     for (const c of r.cells) {
       const w = c.rect.w, at = (x: number, y: number) => c.rgba[(y * w + x) * 4 + 3];
       expect(at(380, 320)).toBe(0); // delik şeffaf
@@ -87,7 +87,7 @@ describe('karakter sayfası kesimi', () => {
     expect(r.cells[2].bg.name).toBe('macenta');
   });
   it('B sayfası: 8. hücre boş, 7 çıktı', () => {
-    const r = lib.processSheet(sheet({ empty: [7] }), W, H, 'b');
+    const r = lib.processSheet(sheet({ empty: [7] }), W, H, lib.SLUGS.b);
     expect(r.cells.filter((c: any) => !c.empty)).toHaveLength(7);
     expect(r.cells[7].empty).toBe(true);
   });
@@ -113,6 +113,39 @@ describe('karakter sayfası kesimi', () => {
     const meta = await sharp(path.join(outDir, out[0])).metadata();
     expect([meta.width, meta.height]).toEqual([512, 512]);
     expect(run()).toContain('0 yazıldı, 30 atlandı');
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }, 60000);
+  it('barbarian 3x3: veriden 9 slug, çıktı sınıf klasörüne, --kuru yazmaz, ezmez', async () => {
+    const cw = 640, ch = 640, L = 24, BW = L + 3 * (cw + L), BH = L + 3 * (ch + L);
+    const d = new Uint8Array(BW * BH * 3);
+    for (let y = 0; y < BH; y++) for (let x = 0; x < BW; x++) {
+      const fx = x - L, fy = y - L, cx = Math.floor(fx / (cw + L)), cy = Math.floor(fy / (ch + L));
+      let px = [20, 20, 20];
+      if (fx >= 0 && fy >= 0 && cx < 3 && cy < 3 && fx - cx * (cw + L) < cw && fy - cy * (ch + L) < ch) {
+        const ix = fx - cx * (cw + L), iy = fy - cy * (ch + L), mag = cy * 3 + cx === 4;
+        px = mag ? MAG : GREEN;
+        if (ix > 200 && ix < 440 && iy > 120 && iy < 540) px = [120, 60, 200];
+      }
+      d.set(px, (y * BW + x) * 3);
+    }
+    const cfg = lib.CONFIG.siniflar.barbarian;
+    expect(cfg.sayfalar['']).toHaveLength(9);
+    expect(cfg.cikti).toBe('public/Subclass/Barbarian');
+    expect(lib.CONFIG.siniflar.wizard.cikti).toBe('public/characters');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'karakter-kes-b-'));
+    const inDir = path.join(tmp, 'girdi'), outDir = path.join(tmp, 'Subclass', 'Barbarian');
+    fs.mkdirSync(inDir);
+    await sharp(Buffer.from(d), { raw: { width: BW, height: BH, channels: 3 } }).png().toFile(path.join(inDir, 'barbarian-female-half-orc.png'));
+    const run = (...a: string[]) => execFileSync('node', ['scripts/karakter-kes.mjs', '--sinif', 'barbarian', '--girdi', inDir, '--cikti', outDir, ...a], { encoding: 'utf8' });
+    const rep = run('--kuru');
+    expect(rep).toContain('9 hücre (beklenen 9');
+    expect(fs.existsSync(outDir)).toBe(false);
+    run();
+    const out = fs.readdirSync(outDir).sort();
+    expect(out).toHaveLength(9);
+    expect(out).toContain('barbarian-kadin-half-orc-varis-yolu.png');
+    expect(out).toContain('barbarian-kadin-half-orc-geride-kalan.png');
+    expect(run()).toContain('0 yazıldı, 9 atlandı');
     fs.rmSync(tmp, { recursive: true, force: true });
   }, 60000);
 });

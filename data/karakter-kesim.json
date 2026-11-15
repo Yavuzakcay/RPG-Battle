@@ -1,0 +1,24 @@
+{
+  "not": "Karakter jeton sayfası kesimi (scripts/karakter-kes.mjs). Sınıf başına düzen, girdi/çıktı klasörü ve hücre slug'ları. sayfalar: anahtar = dosya adı eki (a, b) ya da boş anahtar (ekiz tek sayfa); slug null = boş hücre (atlanır). Hücre sırası soldan sağa, yukarıdan aşağı.",
+  "siniflar": {
+    "wizard": {
+      "sutun": 4,
+      "satir": 2,
+      "girdi": "assets-ham",
+      "cikti": "public/characters",
+      "sayfalar": {
+        "a": ["blast", "deception", "phoenix", "revival", "war", "scribe", "prophecy", "sword-song"],
+        "b": ["mirage", "sanctuary", "alchemy", "manifestation", "space-bending", "time", "map", null]
+      }
+    },
+    "barbarian": {
+      "sutun": 3,
+      "satir": 3,
+      "girdi": "assets-ham",
+      "cikti": "public/Subclass/Barbarian",
+      "sayfalar": {
+        "": ["varis-yolu", "element-yolu", "kaos-yolu", "saman-yolu", "ilkelligin-yolu", "vahset-yolu", "heybet-yolu", "cilgin-yol", "geride-kalan"]
+      }
+    }
+  }
+}

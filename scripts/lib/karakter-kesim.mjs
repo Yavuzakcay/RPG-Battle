@@ -2,13 +2,16 @@
 // Izgara: koyu (L<45) çizgi aralıkları taranır; bulunamazsa eşit bölme + uyarı. Zemin: hücrenin kenar piksellerinden yeşil/macenta ölçülür,
 // kenardan bağlı bileşenle silinir (karakterin içindeki yeşil/mor ayrıntıya dokunulmaz), sonra kenar halesi temizlenir.
 
-export const COLS = 4;
-export const ROWS = 2;
-/** Sayfa A: 8 hücre; sayfa B: 7 hücre + boş 8. (soldan sağa, yukarıdan aşağı) */
-export const SLUGS = {
-  a: ['blast', 'deception', 'phoenix', 'revival', 'war', 'scribe', 'prophecy', 'sword-song'],
-  b: ['mirage', 'sanctuary', 'alchemy', 'manifestation', 'space-bending', 'time', 'map', null],
-};
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+/** Sınıf düzenleri `data/karakter-kesim.json`'dan. */
+export const CONFIG = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), '../../data/karakter-kesim.json'), 'utf8'));
+/** Wizard için eski kısayol (testler): SLUGS.a / SLUGS.b */
+export const SLUGS = CONFIG.siniflar.wizard.sayfalar;
+export const COLS = CONFIG.siniflar.wizard.sutun;
+export const ROWS = CONFIG.siniflar.wizard.satir;
 export const BG_REFS = { yesil: [0, 255, 0], macenta: [255, 0, 255] };
 const DARK = 45;
 const lum = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
@@ -207,10 +210,9 @@ export function leftoverBg(rgba, bg, n = 60) {
   return c;
 }
 
-/** Bir sayfa: hücreleri ayırır, çözümler. kind: 'a' | 'b'. Boş hücre (slug null ya da karakter yok) `empty: true`. */
-export function processSheet(data, w, h, kind, opts = {}) {
-  const grid = detectGrid(data, w, h);
-  const slugs = SLUGS[kind];
+/** Bir sayfa: hücreleri ayırır, çözümler. slugs: hücre adları (null = boş); opts: { cols, rows, jpeg }. Boş hücre (slug null ya da karakter yok) `empty: true`. */
+export function processSheet(data, w, h, slugs, opts = {}) {
+  const grid = detectGrid(data, w, h, opts.cols ?? COLS, opts.rows ?? ROWS);
   const cells = grid.cells.map((r, i) => {
     const d = rect(data, w, r);
     const bg = cellBackground(d, r.w, r.h);
