@@ -43,7 +43,7 @@ for (const { f, m } of files) {
   const [, g0, race, kind] = m;
   const gender = { male: 'erkek', female: 'kadin' }[g0.toLowerCase()] ?? g0.toLowerCase();
   const { data, info } = await sharp(path.join(IN, f)).removeAlpha().raw().toBuffer({ resolveWithObject: true });
-  const { grid, cells } = processSheet(new Uint8Array(data), info.width, info.height, kind.toLowerCase());
+  const { grid, cells } = processSheet(new Uint8Array(data), info.width, info.height, kind.toLowerCase(), { jpeg: /\.jpe?g$/i.test(f) });
   console.log(`\n${f}: ${info.width}x${info.height}, ızgara ${grid.ok ? 'tamam' : 'BULUNAMADI'}, ${grid.cells.length} hücre (${grid.cells[0].w}x${grid.cells[0].h})`);
   if (grid.warn) console.warn(`  UYARI: ${grid.warn}`);
   for (const c of cells) {
@@ -52,7 +52,7 @@ for (const { f, m } of files) {
     const pl = placement(c.box, c.rect, CANVAS, MARGIN);
     heights.push(pl.h / CANVAS);
     const warn = c.distEdge < 6 ? '  ⚠ kenara yakın (kırpılmış olabilir)' : '';
-    console.log(`${tag}: zemin ${c.bg.name}, karakter ${c.box.w}x${c.box.h}, kenara ${c.distEdge} px, kalan zemin pikseli ${c.leftover}${warn}`);
+    console.log(`${tag}: zemin ${c.bg.name}, karakter ${c.box.w}x${c.box.h}, kenara ${c.distEdge} px, opak ${c.stats.opaque}, içte zemin pikseli ${c.stats.interiorBefore} → ${c.stats.interiorAfter}, izole nokta ${c.stats.specks}, kalan zemin renkli ${c.leftover}${warn}`);
     const name = `wizard-${gender}-${race}-${c.slug}.png`;
     const target = path.join(OUT, name);
     if (kuru) continue;

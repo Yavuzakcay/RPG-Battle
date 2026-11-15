@@ -14,7 +14,7 @@ import * as lib from '../../scripts/lib/karakter-kesim.mjs';
 
 const W = 2680, H = 1352, LINE = 24;
 const GREEN: [number, number, number] = [0, 255, 0], MAG: [number, number, number] = [255, 0, 255];
-function sheet(opts: { magenta?: number[]; empty?: number[]; noGrid?: boolean }): Uint8Array {
+function sheet(opts: { magenta?: number[]; empty?: number[]; noGrid?: boolean; hole?: boolean; speck?: boolean }): Uint8Array {
   const d = new Uint8Array(W * H * 3);
   const cw = (W - 5 * LINE) / 4, ch = (H - 3 * LINE) / 2;
   const cellAt = (x: number, y: number) => {
@@ -30,7 +30,9 @@ function sheet(opts: { magenta?: number[]; empty?: number[]; noGrid?: boolean })
     if (c) {
       px = opts.magenta?.includes(c.i) ? MAG : GREEN;
       const inChar = !opts.empty?.includes(c.i) && c.ix > 200 && c.ix < 440 && c.iy > 120 && c.iy < 540;
-      if (inChar) px = (c.ix > 280 && c.ix < 340 && c.iy > 200 && c.iy < 260) ? [0, 255, 0] : [120, 60, 200]; // içeride yeşil ayrıntı
+      if (inChar) px = (c.ix > 280 && c.ix < 340 && c.iy > 200 && c.iy < 260) ? [60, 200, 90] : [120, 60, 200]; // içeride yeşil ayrıntı (anahtar renginden farklı ton)
+      if (opts.hole && !opts.empty?.includes(c.i) && c.ix > 360 && c.ix < 400 && c.iy > 300 && c.iy < 340) px = c.i === 0 || !opts.magenta?.includes(c.i) ? GREEN : MAG; // kapalı zemin deliği
+      if (opts.speck && c.ix >= 100 && c.ix < 102 && c.iy >= 100 && c.iy < 102) px = [80, 200, 80]; // izole nokta
     }
     d.set(px, (y * W + x) * 3);
   }
@@ -71,6 +73,18 @@ describe('karakter sayfası kesimi', () => {
     const bx = c.box, px = (280 + 20) - bx.x, py = (200 + 20) - bx.y;
     expect(bx.w).toBeGreaterThan(200);
     expect(c.rgba[((c.box.y + py) * c.rect.w + (c.box.x + px)) * 4 + 3]).toBe(255);
+  });
+  it('kapalı zemin deliği silinir, farklı tondaki yeşil ayrıntı ve izole nokta kuralı', () => {
+    const r = lib.processSheet(sheet({ hole: true, speck: true, magenta: [2] }), W, H, 'a');
+    for (const c of r.cells) {
+      const w = c.rect.w, at = (x: number, y: number) => c.rgba[(y * w + x) * 4 + 3];
+      expect(at(380, 320)).toBe(0); // delik şeffaf
+      expect(at(300, 230)).toBe(255); // ayrıntı korunur
+      expect(c.stats.interiorBefore).toBeGreaterThanOrEqual(39 * 39);
+      expect(c.stats.interiorAfter).toBe(0);
+      if (c.bg.name === 'yesil') expect(at(100, 100)).toBe(0); // izole nokta silindi (yeşil zeminli hücrelerde)
+    }
+    expect(r.cells[2].bg.name).toBe('macenta');
   });
   it('B sayfası: 8. hücre boş, 7 çıktı', () => {
     const r = lib.processSheet(sheet({ empty: [7] }), W, H, 'b');

@@ -84,12 +84,15 @@ export function cellBackground(d, w, h) {
   return { name, color };
 }
 
-/** Zemini kenardan bağlı bileşenle siler, haleyi temizler. Dönüş: { rgba, alpha, count (karakter piksel sayısı) }. */
+/** Zemini kenardan bağlı bileşenle siler (+ hale), ardından kapalı zemin renkli bölgeleri (kol arası, yay içi…) siler,
+ * izole 1–3 piksellik zemin renkli noktaları temizler. opts.jpeg: JPG için iç eşik geniş. Dönüş: { rgba, gone, count, stats }. */
 export function removeBackground(d, w, h, bg, opts = {}) {
   const tol = opts.tol ?? 80, halo = opts.halo ?? 140, hpass = opts.haloPasses ?? 2;
+  const tight = opts.tight ?? (opts.jpeg ? 75 : 40); // kapalı bölge eşiği: anahtar renge dar yakınlık (gerçek yeşil/macenta ayrıntılar daha uzak tonda)
   const [br, bgc, bb] = bg.color;
   const dist = (p) => Math.hypot(d[p] - br, d[p + 1] - bgc, d[p + 2] - bb);
   const gone = new Uint8Array(w * h);
+  const inner = new Uint8Array(w * h);
   const stack = [];
   const push = (x, y) => { const i = y * w + x; if (!gone[i] && dist(i * 3) < tol) { gone[i] = 1; stack.push(i); } };
   // Kenar bandı (JPEG'de bulanık ızgara çizgisi kalıntısı): ilk 5 px'te koyu, 12 px'e dek zemin↔koyu karışım doğrusundaki piksel tohumdur
@@ -110,24 +113,62 @@ export function removeBackground(d, w, h, bg, opts = {}) {
     const i = stack.pop(), x = i % w, y = (i / w) | 0;
     if (x > 0) push(x - 1, y); if (x < w - 1) push(x + 1, y); if (y > 0) push(x, y - 1); if (y < h - 1) push(x, y + 1);
   }
-  // Hale: silinmişe bitişik, zemine yakın pikseller de silinir (JPEG/anti-alias taşması)
-  for (let pass = 0; pass < hpass; pass++) {
+  const haloPass = (only) => {
     const add = [];
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
       const i = y * w + x;
       if (gone[i]) continue;
-      const nb = (x > 0 && gone[i - 1]) || (x < w - 1 && gone[i + 1]) || (y > 0 && gone[i - w]) || (y < h - 1 && gone[i + w]);
+      const g = only || gone;
+      const nb = (x > 0 && g[i - 1]) || (x < w - 1 && g[i + 1]) || (y > 0 && g[i - w]) || (y < h - 1 && g[i + w]);
       if (nb && dist(i * 3) < halo) add.push(i);
     }
-    for (const i of add) gone[i] = 1;
+    return add;
+  };
+  for (let pass = 0; pass < hpass; pass++) for (const i of haloPass(null)) gone[i] = 1;
+
+  // İçte kalan (kenardan bağlı olmayan) zemin renkli bölgeler: dar eşikle 4 komşu bileşenler, hepsi silinir
+  const keyLike = (i) => !gone[i] && dist(i * 3) < tight;
+  let interiorBefore = 0;
+  for (let i = 0; i < w * h; i++) if (keyLike(i)) interiorBefore++;
+  const seen = new Uint8Array(w * h);
+  for (let s0 = 0; s0 < w * h; s0++) {
+    if (seen[s0] || !keyLike(s0)) continue;
+    const comp = [s0], st = [s0];
+    seen[s0] = 1;
+    while (st.length) {
+      const i = st.pop(), x = i % w, y = (i / w) | 0;
+      const nbs = [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1];
+      for (const n of nbs) if (n >= 0 && !seen[n] && keyLike(n)) { seen[n] = 1; comp.push(n); st.push(n); }
+    }
+    for (const i of comp) { gone[i] = 1; inner[i] = 1; }
   }
+  // İç bölgelerin kenarındaki sızıntı: yalnız iç bölgeye bitişik, zemine yakın pikseller (1 geçiş) silinir
+  for (const i of haloPass(inner)) { gone[i] = 1; inner[i] = 1; }
+
+  // İzole 1–3 piksellik (8 komşu) zemin renkli noktalar
+  let specks = 0;
+  const seen2 = new Uint8Array(w * h);
+  for (let s0 = 0; s0 < w * h; s0++) {
+    if (seen2[s0] || gone[s0]) continue;
+    const comp = [s0], st = [s0];
+    seen2[s0] = 1;
+    while (st.length && comp.length <= 4) {
+      const i = st.pop(), x = i % w, y = (i / w) | 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx, yy = y + dy;
+        if ((dx || dy) && xx >= 0 && xx < w && yy >= 0 && yy < h) { const n = yy * w + xx; if (!seen2[n] && !gone[n]) { seen2[n] = 1; comp.push(n); st.push(n); } }
+      }
+    }
+    if (comp.length <= 3 && !st.length && comp.every((i) => dist(i * 3) < halo)) { for (const i of comp) gone[i] = 1; specks++; }
+  }
+
   const rgba = new Uint8Array(w * h * 4);
-  let count = 0;
+  let count = 0, interiorAfter = 0;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const i = y * w + x, p = i * 3, o = i * 4;
     let r = d[p], g = d[p + 1], b = d[p + 2];
     if (gone[i]) { rgba[o + 3] = 0; continue; }
-    // Kenar piksellerinde zemin rengi sızıntısını bastır (yalnız silinene 2 px içinde)
+    // Silinene 2 px içindeki piksellerde zemin rengi sızıntısını bastır (yumuşak despill)
     let near = false;
     for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) {
       const xx = x + dx, yy = y + dy;
@@ -139,8 +180,9 @@ export function removeBackground(d, w, h, bg, opts = {}) {
     }
     rgba[o] = r; rgba[o + 1] = g; rgba[o + 2] = b; rgba[o + 3] = 255;
     count++;
+    if (dist(p) < tight) interiorAfter++;
   }
-  return { rgba, gone, count };
+  return { rgba, gone, count, stats: { interiorBefore, interiorAfter, specks } };
 }
 
 export function bboxOf(rgba, w, h) {
@@ -162,20 +204,20 @@ export function leftoverBg(rgba, bg, n = 60) {
 }
 
 /** Bir sayfa: hücreleri ayırır, çözümler. kind: 'a' | 'b'. Boş hücre (slug null ya da karakter yok) `empty: true`. */
-export function processSheet(data, w, h, kind) {
+export function processSheet(data, w, h, kind, opts = {}) {
   const grid = detectGrid(data, w, h);
   const slugs = SLUGS[kind];
   const cells = grid.cells.map((r, i) => {
     const d = rect(data, w, r);
     const bg = cellBackground(d, r.w, r.h);
     const slug = slugs[i] ?? null;
-    const res = removeBackground(d, r.w, r.h, bg);
+    const res = removeBackground(d, r.w, r.h, bg, { jpeg: !!opts.jpeg });
     const box = bboxOf(res.rgba, r.w, r.h);
     const empty = !slug || !box || res.count < r.w * r.h * 0.002;
     return {
       index: i + 1, slug, rect: r, bg, empty, rgba: res.rgba, box,
       distEdge: box ? edgeDistance(box, r.w, r.h) : null,
-      leftover: leftoverBg(res.rgba, bg),
+      leftover: leftoverBg(res.rgba, bg), stats: { ...res.stats, opaque: res.count },
     };
   });
   return { grid, cells };
