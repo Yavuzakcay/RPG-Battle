@@ -18,7 +18,7 @@ type Cat = 'malzeme' | 'sinif' | 'irk' | 'harita' | 'dusman' | 'esya';
 interface Rule { tema: string; id?: string[]; tur?: string[] }
 const E = esleme as unknown as {
   varsayilan: string; siniflar: Record<string, string>; irklar: Record<string, string>; dusmanlar: Rule[];
-  bolgeler: Record<string, string>; seruvenSayfalar: Record<string, string>; yerlesimler: Record<string, string>;
+  haritalar: Record<string, string>; bolgeler: Record<string, string>; seruvenSayfalar: Record<string, string>; yerlesimler: Record<string, string>;
   oduller: Record<string, string>; hazineSirasi: string[]; esyalar: Record<string, string>; buyuler: Record<string, string>;
   ipuclari: Record<string, { tr: string; en: string }>; ipucuOzel: Record<string, { tr: string; en: string }>;
 };
@@ -84,7 +84,8 @@ export function clearNotices(s: DiceStore, profil = activeProfile()): DiceStore 
 export function choiceOf(s: DiceStore, charId: string | undefined, profil = activeProfile()): string {
   const p = prof(s, profil);
   const v = (charId ? p.secim[charId] : undefined) ?? p.secim[ALL_CHARACTERS] ?? DEFAULT_CHOICE;
-  return v === 'sinif' || v === 'irk' || isUnlocked(s, v, profil) ? v : DEFAULT_CHOICE;
+  // Kaldırılmış/bilinmeyen tema kimliği (eski kayıt) sessizce Sınıfa (o da yoksa Klasik'e) düşer.
+  return v === 'sinif' || v === 'irk' || (THEMES.some((x) => x.id === v) && isUnlocked(s, v, profil)) ? v : DEFAULT_CHOICE;
 }
 /** Seçimi kaydet; kilitli tema seçilemez (store aynen döner). */
 export function setChoice(s: DiceStore, charId: string, value: string, profil = activeProfile()): DiceStore {
@@ -118,6 +119,9 @@ export function monsterTheme(monsterId: string | undefined): string | null {
 export const classTheme = (classId: string | undefined): string | null => (classId ? E.siniflar[classId] ?? null : null);
 export const raceTheme = (raceId: string | undefined): string | null => (raceId ? E.irklar[raceId] ?? null : null);
 export const regionTheme = (bolge: string | undefined): string | null => (bolge ? E.bolgeler[bolge] ?? null : null);
+/** Savaş haritasının zar teması: önce harita kimliği (`haritalar`: Taverna, Zindan, Ada…), sonra bölge; eşleşme yoksa null (Klasik). */
+export const mapTheme = (mapId: string | undefined, regionOf?: (mapId: string) => string | undefined): string | null =>
+  !mapId ? null : E.haritalar[mapId] ?? regionTheme(regionOf?.(mapId));
 
 /** Oyuncu savaşçısının sınıfı (jeton görsel adından: `characters/<ırk>-<cinsiyet>-<sınıf>` ya da `avatars/<ırk>-<sınıf>-<cinsiyet>`). */
 export function classOfCombatant(c: Pick<Combatant, 'avatar'>): string | undefined {
@@ -135,7 +139,7 @@ export interface RollThemeCtx { state: Pick<BattleState, 'combatants' | 'map'>; 
  */
 export function themeForRoll(by: string | undefined, ctx: RollThemeCtx): string {
   const c = by ? ctx.state.combatants[by] : undefined;
-  const region = (() => { const m = ctx.state.map?.id; const b = m && ctx.regionOf ? ctx.regionOf(m) : undefined; return regionTheme(b); })();
+  const region = mapTheme(ctx.state.map?.id, ctx.regionOf);
   if (!c) return region ?? E.varsayilan;
   if (c.side === 'enemies' && !c.civilian) return monsterTheme(c.monsterId) ?? region ?? E.varsayilan;
   const owner = c.summon ? ctx.state.combatants[c.summon.by] ?? c : c;
@@ -159,7 +163,7 @@ export function unlocksFromBattle(state: BattleState, events: BattleEvent[], reg
       if (c.side !== 'enemies' || c.civilian || c.summon || c.hp > 0) continue;
       const t = monsterTheme(c.monsterId); if (t) out.push(t);
     }
-    const mid = state.map?.id; const rt = mid && regionOf ? regionTheme(regionOf(mid)) : null; if (rt) out.push(rt);
+    const rt = mapTheme(state.map?.id, regionOf); if (rt) out.push(rt);
   }
   const party = (id: string) => state.combatants[id]?.side === 'party';
   for (const e of events) {

@@ -1,5 +1,5 @@
 {
-  "_aciklama": "SD9 zar sahipliği ve eşleme (tek kaynak; kodda sabit yok). `siniflar`/`irklar`: her zaman açık zar. `dusmanlar`: sırayla ilk eşleşen kural (canavar kimliği `id` ya da `tur`); düşmanın kendi atışında herkese görünür, oyuncu kendi zarı olarak seçmesi canavar ilk kez yenilince açılır. `bolgeler`: savaş haritasının bölgesi (harita/_ortak/harita-bolgeleri.json), `seruvenSayfalar`: Serüven sayfası, `yerlesimler`: yerleşim; haritada zar ve açılma. `oduller`: Serüven ödül/hazine düğümü (sayfa/düğüm) → malzeme zarı; `hazineSirasi`: listede olmayan diğer ödül düğümleri ilk ziyarette sıradaki malzemeyi açar. `esyalar`: kullanılan eşya kimliği parçası; `buyuler`: yapılan büyü. `ipuclari`: kategori başına kilit ipucu ({ad} tema adı); `ipucuOzel`: tema başına.",
+  "_aciklama": "SD9 zar sahipliği ve eşleme (tek kaynak; kodda sabit yok). `siniflar`/`irklar`: her zaman açık zar. `dusmanlar`: sırayla ilk eşleşen kural (canavar kimliği `id` ya da `tur`); düşmanın kendi atışında herkese görünür, oyuncu kendi zarı olarak seçmesi canavar ilk kez yenilince açılır. `haritalar`: savaş haritası kimliği (bölgeden önce bakılır), `bolgeler`: savaş haritasının bölgesi (harita/_ortak/harita-bolgeleri.json), `seruvenSayfalar`: Serüven sayfası, `yerlesimler`: yerleşim; haritada zar ve açılma. `oduller`: Serüven ödül/hazine düğümü (sayfa/düğüm) → malzeme zarı; `hazineSirasi`: listede olmayan diğer ödül düğümleri ilk ziyarette sıradaki malzemeyi açar. `esyalar`: kullanılan eşya kimliği parçası; `buyuler`: yapılan büyü. `ipuclari`: kategori başına kilit ipucu ({ad} tema adı); `ipucuOzel`: tema başına.",
   "varsayilan": "klasik",
   "siniflar": {
     "barbarian": "sinif-barbarian",
@@ -41,33 +41,32 @@
       ]
     },
     {
-      "tema": "dusman-kraken",
+      "tema": "dusman-couatl",
       "id": [
-        "kraken"
+        "couatl"
       ]
     },
     {
-      "tema": "dusman-hidra",
+      "tema": "dusman-gibbering",
       "id": [
-        "hydra"
+        "gibbering-mouther"
       ]
     },
     {
-      "tema": "dusman-vampir",
-      "id": [
-        "vampire",
-        "vampire-spawn",
-        "vampire-familiar"
-      ]
+      "tema": "dusman-devoruer",
+      "id": []
     },
     {
-      "tema": "dusman-golem",
+      "tema": "dusman-flumph",
+      "id": []
+    },
+    {
+      "tema": "dusman-bosluk",
       "id": [
-        "stone-golem",
-        "iron-golem",
-        "flesh-golem",
-        "clay-golem",
-        "shield-guardian"
+        "shadow",
+        "specter",
+        "wraith",
+        "ghost"
       ]
     },
     {
@@ -76,7 +75,6 @@
         "beholder",
         "spectator",
         "gauth",
-        "gibbering-mouther",
         "darkmantle",
         "roper"
       ]
@@ -108,53 +106,44 @@
       "tur": [
         "giant"
       ]
-    },
-    {
-      "tema": "dusman-iskelet",
-      "tur": [
-        "undead"
-      ]
     }
   ],
   "bolgeler": {
     "bataklik": "harita-bataklik",
-    "buzul": "harita-buzul",
     "col": "harita-col",
     "dag": "harita-dag",
-    "deniz": "harita-deniz",
+    "deniz": "harita-gemi",
     "kale": "harita-kale",
     "orman": "harita-orman",
     "sehir": "harita-sehir",
-    "yeralti": "harita-yeralti",
+    "yeralti": "harita-magara",
     "volkan": "harita-volkan",
-    "derinlikler": "harita-derinlikler",
-    "yerlesim": "harita-yerlesim",
-    "hapishane": "harita-hapishane"
+    "derinlikler": "harita-magara",
+    "yerlesim": "harita-sehir",
+    "hapishane": "harita-dungeon"
   },
   "seruvenSayfalar": {
-    "buzul": "harita-buzul",
     "dag": "harita-dag",
     "orman": "harita-orman",
     "bataklik": "harita-bataklik",
     "col": "harita-col",
-    "bati-kiyisi": "harita-bati-kiyisi",
-    "derinlikler": "harita-derinlikler",
+    "derinlikler": "harita-magara",
     "volkan": "harita-volkan",
-    "hapishane-adasi": "harita-hapishane"
+    "hapishane-adasi": "harita-dungeon"
   },
   "yerlesimler": {
     "kral-kalesi": "harita-kale",
     "beyaz-sehir": "harita-sehir",
-    "liman": "harita-liman",
-    "kasaba-ornek": "harita-yerlesim",
+    "liman": "harita-ada",
+    "kasaba-ornek": "harita-sehir",
     "cuce-kalesi": "harita-kale",
     "goliath-kalesi": "harita-kale",
     "ejder-kalesi": "harita-kale",
-    "elf-kasabasi": "harita-yerlesim",
-    "gnom-kasabasi": "harita-yerlesim",
-    "yarimcik-kasabasi": "harita-yerlesim",
-    "ork-kasabasi": "harita-yerlesim",
-    "tiefling-kasabasi": "harita-yerlesim"
+    "elf-kasabasi": "harita-sehir",
+    "gnom-kasabasi": "harita-sehir",
+    "yarimcik-kasabasi": "harita-sehir",
+    "ork-kasabasi": "harita-sehir",
+    "tiefling-kasabasi": "harita-sehir"
   },
   "oduller": {
     "derinlikler/hazine": "altin",
@@ -165,17 +154,21 @@
     "kemik",
     "obsidyen",
     "gumus",
-    "bakir",
-    "demir",
-    "kristal",
-    "mermer",
-    "ahsap"
+    "safir",
+    "zumrut",
+    "inci",
+    "elmas",
+    "oltu-tasi",
+    "epoksi",
+    "gokkusagi",
+    "harita-coral",
+    "harita-cyberpunk"
   ],
   "esyalar": {
-    "potion": "esya-iksir"
+    "potion": "item-potion"
   },
   "buyuler": {
-    "Time Stop": "esya-kumsaati"
+    "Time Stop": "item-kum-saati"
   },
   "ipuclari": {
     "malzeme": {
@@ -196,13 +189,43 @@
     }
   },
   "ipucuOzel": {
-    "esya-iksir": {
+    "item-potion": {
       "tr": "Bir iksiri savaşta ilk kez kullan.",
       "en": "Use a potion in battle for the first time."
     },
-    "esya-kumsaati": {
+    "item-kum-saati": {
       "tr": "Time Stop büyüsünü ilk kez yap (SRD'de kum saati eşyası yok).",
       "en": "Cast Time Stop for the first time (the SRD has no hourglass item)."
+    },
+    "harita-space": {
+      "tr": "Test/vitrin haritası Ortamlar Diyarı'nda bir savaşı kazan.",
+      "en": "Win a battle on the Realm of Environments showcase map."
+    },
+    "harita-coral": {
+      "tr": "Serüven ödül duraklarından ya da hazine odalarından kazan.",
+      "en": "Earn it from Adventure reward stops or treasure rooms."
+    },
+    "harita-cyberpunk": {
+      "tr": "Serüven ödül duraklarından ya da hazine odalarından kazan.",
+      "en": "Earn it from Adventure reward stops or treasure rooms."
+    },
+    "dusman-devoruer": {
+      "tr": "Devourer'ı yen (SRD'de yok: yalnız Game Master/test anahtarıyla açılır).",
+      "en": "Defeat a Devourer (not in the SRD: unlocked only with the Game Master/test switch)."
+    },
+    "dusman-flumph": {
+      "tr": "Flumph'ı yen (SRD'de yok: yalnız Game Master/test anahtarıyla açılır).",
+      "en": "Defeat a Flumph (not in the SRD: unlocked only with the Game Master/test switch)."
     }
+  },
+  "haritalar": {
+    "ada": "harita-ada",
+    "gemi": "harita-gemi",
+    "taverna": "harita-taverna",
+    "kasaba-han": "harita-taverna",
+    "dungeon": "harita-dungeon",
+    "magara": "harita-magara",
+    "magara-genis": "harita-magara",
+    "ortamlar-diyari": "harita-space"
   }
 }

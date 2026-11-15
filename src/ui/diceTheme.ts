@@ -38,7 +38,11 @@ function resolveDice(x: (typeof RAW)[number]): Record<string, DieArt> {
   if (!x.seti || !READY.has(x.id)) return base;
   return Object.fromEntries(SIDES.map((k) => [k, { ...(base[k] as DieArt), image: `${x.seti}/d${k}.webp` }]));
 }
-export const DICE_THEMES: readonly DiceTheme[] = RAW.map((x) => ({ ...x, dice: resolveDice(x) }));
+// Gerçek görsel seti hazırsa renk filtresi (Kuyruk 17 renk teması) uygulanmaz: görsel zaten kendi rengini taşır.
+export const DICE_THEMES: readonly DiceTheme[] = RAW.map((x) => {
+  const { filter, ...rest } = x as typeof x & { filter?: string };
+  return { ...rest, dice: resolveDice(x), ...(filter && !(x.seti && READY.has(x.id)) ? { filter } : {}) } as DiceTheme;
+});
 export const DEFAULT_DICE_THEME: string = themesJson.default;
 /** Temanın kategorisi (yoksa malzeme). */
 export const diceCategoryOf = (id: string): DiceCategory => RAW.find((x) => x.id === id)?.kategori ?? 'malzeme';

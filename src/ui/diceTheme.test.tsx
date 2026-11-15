@@ -37,7 +37,7 @@ describe('Kuyruk 17 G6: renk temaları', () => {
   it('en az 4 tema; varsayılan Klasik; renk temaları Klasik görsellerini filtreyle kullanır, 3D renkleri var', () => {
     // SD9: 63 tema; ilk dördü eskisi gibi (Klasik + renk temaları).
     expect(DICE_THEMES.map((x) => x.id).slice(0, 4)).toEqual(['klasik', 'kemik', 'obsidyen', 'altin']);
-    expect(DICE_THEMES.length).toBe(63);
+    expect(DICE_THEMES.length).toBe(65); // 63 ham kimlik + Kemik + Obsidyen
     expect(DEFAULT_DICE_THEME).toBe('klasik');
     for (const id of ['kemik', 'obsidyen', 'altin']) {
       const th = diceThemeOf(id);

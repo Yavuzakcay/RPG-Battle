@@ -11,20 +11,38 @@ import seruven from '../../data/seruven.json';
 import yerlesim from '../../data/yerlesim.json';
 import { classes, races } from '../data';
 import { DICE_THEMES, diceCategoryOf, diceThemeOf } from '../ui/diceTheme';
-import { alwaysOpen, choiceOf, classOfCombatant, emptyStore, isUnlocked, monsterTheme, normalize, setChoice, themeForRoll, unlock, unlockHint, unlocksFromBattle, unlocksFromSeruven } from './diceUnlock';
+import { alwaysOpen, choiceOf, classOfCombatant, emptyStore, isUnlocked, mapTheme, monsterTheme, normalize, setChoice, themeForRoll, unlock, unlockHint, unlocksFromBattle, unlocksFromSeruven } from './diceUnlock';
 import type { BattleState, Combatant } from '../battle/types';
 
 const ids = new Set(gorseller.themes.map((x) => x.id));
 const E = esleme as unknown as { siniflar: Record<string, string>; irklar: Record<string, string>; dusmanlar: Array<{ tema: string; id?: string[]; tur?: string[] }>;
-  bolgeler: Record<string, string>; seruvenSayfalar: Record<string, string>; yerlesimler: Record<string, string>; oduller: Record<string, string>; hazineSirasi: string[]; esyalar: Record<string, string>; buyuler: Record<string, string> };
+  haritalar: Record<string, string>; bolgeler: Record<string, string>; seruvenSayfalar: Record<string, string>; yerlesimler: Record<string, string>; oduller: Record<string, string>; hazineSirasi: string[]; esyalar: Record<string, string>; buyuler: Record<string, string> };
+
+/** Kullanıcının ham dosya listesi (assets-ham/zarlar/zar-<kimlik>.jpg): tek gerçek kaynak. */
+const RAW63 = [
+  'altin', 'bronz', 'elmas', 'epoksi', 'gokkusagi', 'gumus', 'inci', 'oltu-tasi', 'safir', 'yakut', 'zumrut', 'klasik',
+  ...['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'].map((x) => `sinif-${x}`),
+  ...['celestial', 'dragonborn', 'dwarf', 'elf', 'gnome', 'goliath', 'halfling', 'human', 'orc', 'tiefling'].map((x) => `irk-${x}`),
+  ...['ada', 'bataklik', 'col', 'coral', 'cyberpunk', 'dag', 'dungeon', 'gemi', 'kale', 'magara', 'orman', 'sehir', 'space', 'taverna', 'volkan'].map((x) => `harita-${x}`),
+  ...['beholder', 'bosluk', 'couatl', 'dev', 'devoruer', 'ejderha', 'flumph', 'gibbering', 'iblis', 'illithid', 'lich', 'tarrasque'].map((x) => `dusman-${x}`),
+  'item-kum-saati', 'item-potion',
+];
+const mapIds = new Set(Object.values(import.meta.glob('../../harita/*/*.json', { eager: true }) as Record<string, { default?: { id?: string }; id?: string }>).map((m) => (m.default ?? m).id));
+/** Kaynağı SRD'de olmayan düşman temaları: kural boş, yalnız Game Master/test anahtarıyla açılır. */
+const NO_SRD = ['dusman-devoruer', 'dusman-flumph'];
 
 describe('SD9: temalar', () => {
-  it('63 tema; kimlik küçük harf/tire (dosya adı zar-<kimlik>.jpg); kategori sayıları 12/12/10/15/12/2', () => {
-    expect(gorseller.themes.length).toBe(63);
-    for (const x of gorseller.themes) expect(x.id, x.id).toMatch(/^[a-z0-9-]+$/);
+  it('63 ham kimlik + Kemik/Obsidyen (Kuyruk 17); uydurma kimlik yok; kimlik küçük harf/tire (dosya adı zar-<kimlik>.jpg)', () => {
+    expect(new Set(RAW63).size).toBe(63);
+    const have = gorseller.themes.map((x) => x.id);
+    expect([...have].sort()).toEqual([...RAW63, 'kemik', 'obsidyen'].sort());
+    for (const id of have) expect(id, id).toMatch(/^[a-z0-9-]+$/);
+    for (const gone of ['bakir', 'demir', 'kristal', 'mermer', 'ahsap', 'harita-buzul', 'harita-liman', 'dusman-vampir', 'esya-iksir', 'esya-kumsaati']) expect(have).not.toContain(gone);
+  });
+  it('kategori sayıları: malzeme 12 (+ Kemik, Obsidyen) / sınıf 12 / ırk 10 / harita 15 / düşman 12 / eşya 2', () => {
     const count: Record<string, number> = {};
     for (const x of DICE_THEMES) count[diceCategoryOf(x.id)] = (count[diceCategoryOf(x.id)] ?? 0) + 1;
-    expect(count).toEqual({ malzeme: 12, sinif: 12, irk: 10, harita: 15, dusman: 12, esya: 2 });
+    expect(count).toEqual({ malzeme: 14, sinif: 12, irk: 10, harita: 15, dusman: 12, esya: 2 });
   });
   it('görseli olmayan tema Klasik görselle çizilir, kendi 3D renkleri var', () => {
     const t = diceThemeOf('dusman-ejderha');
@@ -35,24 +53,31 @@ describe('SD9: temalar', () => {
     for (const c of classes) { const id = E.siniflar[c.id]; expect(ids.has(id as string), c.id).toBe(true); expect(alwaysOpen(id as string)).toBe(true); }
     for (const r of races) { const id = E.irklar[r.id]; expect(ids.has(id as string), r.id).toBe(true); expect(alwaysOpen(id as string)).toBe(true); }
   });
-  it('her eşleme geçerli tema kimliğine gider (düşman, bölge, sayfa, yerleşim, ödül, eşya, büyü)', () => {
-    const all = [...E.dusmanlar.map((r) => r.tema), ...Object.values(E.bolgeler), ...Object.values(E.seruvenSayfalar), ...Object.values(E.yerlesimler),
+  it('her eşleme geçerli tema kimliğine gider; her açılabilir tema bir yoldan açılır (SRD karşılığı olmayan iki düşman zarı hariç)', () => {
+    const all = [...E.dusmanlar.map((r) => r.tema), ...Object.values(E.haritalar), ...Object.values(E.bolgeler), ...Object.values(E.seruvenSayfalar), ...Object.values(E.yerlesimler),
       ...Object.values(E.oduller), ...E.hazineSirasi, ...Object.values(E.esyalar), ...Object.values(E.buyuler)];
     for (const id of all) expect(ids.has(id), id).toBe(true);
-    // her açılabilir tema bir yoldan açılabilir: 12 düşman, 15 harita, 11 malzeme (Klasik hariç), 2 eşya
-    const reach = new Set(all);
-    for (const x of gorseller.themes) if (!alwaysOpen(x.id)) expect(reach.has(x.id), x.id).toBe(true);
+    const reach = new Set(all.filter((id) => !NO_SRD.includes(id) || false));
+    for (const x of gorseller.themes) if (!alwaysOpen(x.id) && !NO_SRD.includes(x.id)) expect(reach.has(x.id), x.id).toBe(true);
+    for (const id of NO_SRD) expect(E.dusmanlar.find((r) => r.tema === id)?.id ?? []).toEqual([]);
   });
-  it('düşman kuralları gerçek canavarlara denk gelir; bölge/sayfa/yerleşim anahtarları gerçek', () => {
+  it('düşman kuralları gerçek canavarlara denk gelir; harita/bölge/sayfa/yerleşim/ödül anahtarları gerçek', () => {
     for (const r of E.dusmanlar) {
+      if (NO_SRD.includes(r.tema)) continue;
       const hits = Object.keys(types.types).filter((m) => r.id?.includes(m) || r.tur?.includes((types.types as Record<string, string>)[m] as string));
-      if (r.tema !== 'dusman-beholder' || hits.length) expect(hits.length, r.tema).toBeGreaterThan(0);
+      expect(hits.length, r.tema).toBeGreaterThan(0);
     }
-    expect(monsterTheme('young-red-dragon')).toBe('dusman-ejderha'); expect(monsterTheme('lich')).toBe('dusman-lich'); expect(monsterTheme('goblin-warrior')).toBeNull();
+    expect(monsterTheme('young-red-dragon')).toBe('dusman-ejderha'); expect(monsterTheme('lich')).toBe('dusman-lich');
+    expect(monsterTheme('shadow')).toBe('dusman-bosluk'); expect(monsterTheme('couatl')).toBe('dusman-couatl'); expect(monsterTheme('gibbering-mouther')).toBe('dusman-gibbering');
+    expect(monsterTheme('goblin-warrior')).toBeNull(); expect(monsterTheme('vampire')).toBeNull();
     const regions = new Set(bolgeler.bolgeler.map((b) => b.id));
     for (const b of Object.keys(E.bolgeler)) expect(regions.has(b), b).toBe(true);
+    for (const m of Object.keys(E.haritalar)) expect(mapIds.has(m), m).toBe(true);
+    expect(mapTheme('kasaba-han')).toBe('harita-taverna'); expect(mapTheme('ortamlar-diyari')).toBe('harita-space');
+    expect(mapTheme('orman', () => 'orman')).toBe('harita-orman'); expect(mapTheme('buzul-acik', () => 'buzul')).toBeNull();
     const pages = new Set(seruven.pages.map((p) => p.id));
     for (const p of Object.keys(E.seruvenSayfalar)) expect(pages.has(p), p).toBe(true);
+    expect(E.seruvenSayfalar.buzul).toBeUndefined(); expect(E.seruvenSayfalar['bati-kiyisi']).toBeUndefined();
     const places = new Set((yerlesim as unknown as { yerlesimler: Array<{ id: string }> }).yerlesimler.map((y) => y.id));
     for (const y of Object.keys(E.yerlesimler)) expect(places.has(y), y).toBe(true);
     const keys = new Set(seruven.pages.flatMap((p) => p.nodes.map((n) => `${p.id}/${n.id}`)));
@@ -60,7 +85,8 @@ describe('SD9: temalar', () => {
   });
   it('kilitli temanın ipucu var (TR/EN); açıklar için boş', () => {
     expect(unlockHint('dusman-ejderha', 'tr')).toContain('Ejderha'); expect(unlockHint('dusman-ejderha', 'en')).toContain('Dragon');
-    expect(unlockHint('esya-kumsaati', 'tr')).toContain('Time Stop'); expect(unlockHint('sinif-wizard', 'tr')).toBe(''); expect(unlockHint('klasik', 'en')).toBe('');
+    expect(unlockHint('item-kum-saati', 'tr')).toContain('Time Stop'); expect(unlockHint('sinif-wizard', 'tr')).toBe(''); expect(unlockHint('klasik', 'en')).toBe('');
+    for (const id of ['harita-space', 'harita-coral', 'harita-cyberpunk', 'dusman-devoruer']) { expect(unlockHint(id, 'tr'), id).not.toBe(''); expect(unlockHint(id, 'en'), id).not.toBe(''); }
   });
 });
 
@@ -84,6 +110,9 @@ describe('SD9: sahiplik', () => {
     expect(choiceOf({ ...s3, hepsiAcik: true }, 'c9', 'p')).toBe('irk');
     expect(isUnlocked({ ...s0, hepsiAcik: true }, 'dusman-lich', 'p')).toBe(true);
     expect(normalize({ profiller: { p: { acilan: { 'yok-tema': 1, 'dusman-lich': 1 } } } }).profiller.p?.acilan).toEqual({ 'dusman-lich': 1 });
+    // kaldırılmış kimlik (eski kayıt): açılan listede atılır, seçim sessizce Sınıfa düşer (hepsiAcik'te de)
+    const old = { ...emptyStore(), hepsiAcik: true, profiller: { p: { acilan: {}, secim: { c1: 'esya-iksir' }, yeni: ['dusman-vampir'] } } };
+    expect(choiceOf(old, 'c1', 'p')).toBe('sinif'); expect(normalize(old).profiller.p?.yeni).toEqual([]);
   });
 });
 
@@ -108,7 +137,7 @@ describe('SD9: atışın teması ve olay kancaları', () => {
     expect(unlocksFromBattle(state([w, d]), [], () => 'orman').sort()).toEqual(['dusman-ejderha', 'harita-orman']);
     expect(unlocksFromBattle(state([w, d], { winner: 'enemies' }), [], () => 'orman')).toEqual([]);
     const ev = [{ type: 'item_used', actorId: 'pc1', itemId: 'potion-of-healing', name: 'x', targetId: 'pc1', left: 0 }, { type: 'spell_cast', actorId: 'pc1', label: 'Time Stop', targetId: null, slotLevel: 9, note: '' }] as never;
-    expect(unlocksFromBattle(state([w], { status: 'active', winner: undefined }), ev).sort()).toEqual(['esya-iksir', 'esya-kumsaati']);
+    expect(unlocksFromBattle(state([w], { status: 'active', winner: undefined }), ev).sort()).toEqual(['item-kum-saati', 'item-potion']);
   });
   it('Serüven: kazanılan düğüm sayfa zarını, ödül ziyareti malzemeyi açar (tablo, sonra sıra)', () => {
     const none = () => false;
