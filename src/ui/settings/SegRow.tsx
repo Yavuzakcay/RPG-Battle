@@ -31,9 +31,9 @@ export function OnOffRow(props: { label: string; help?: string; value: boolean; 
   );
 }
 
-export function Fold(props: { title: string; help?: string; children: ReactNode; className?: string }) {
+export function Fold(props: { title: string; help?: string; children: ReactNode; className?: string; open?: boolean }) {
   return (
-    <details className={`set-fold ${props.className ?? ''}`}>
+    <details className={`set-fold ${props.className ?? ''}`} {...(props.open ? { open: true } : {})}>
       <summary>{props.title}</summary>
       {props.help ? <p className="mute">{props.help}</p> : null}
       {props.children}

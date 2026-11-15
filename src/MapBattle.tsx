@@ -101,6 +101,8 @@ import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionHint, actionTip } from './ui/actionHints';
 import { activeSpecialGroups, costOfKey, pageOf, spellGroups, splitMenu, visible, type MenuItem, type SpecialGroup } from './ui/actionMenu';
 import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
+import { enemyHpVis } from './oda/active';
+import { hpBand, hpBarFraction, hpPercent } from './oda/hp';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -183,6 +185,20 @@ import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf 
 import { MoralBar } from './ui/MoralBar';
 import { ResourceChip, iconed, plain, sharedIcons } from './ui/ResourceChip';
 
+/** Görev OD1: düşman HP görünürlüğü (oda ayarı). Savaş mantığı ve kayıt aynı; yalnız çizim. */
+const hpHiddenFor = (c: { side: string; civilian?: boolean }): boolean => c.side === 'enemies' && !c.civilian && enemyHpVis() !== 'tam';
+function enemyHpFraction(c: { side: string; civilian?: boolean; hp: number; maxHp: number }): number | null {
+  return hpHiddenFor(c) ? hpBarFraction(c.hp, c.maxHp, enemyHpVis()) : Math.max(0, c.hp / c.maxHp);
+}
+/** "HP 12/38" metnini oda ayarına göre gizler, etikete ya da yüzdeye çevirir. */
+function maskHp(text: string, c: { side: string; civilian?: boolean; hp: number; maxHp: number }): string {
+  if (!hpHiddenFor(c)) return text;
+  const mode = enemyHpVis();
+  const O = t().oda;
+  const repl = mode === 'gizli' ? O.hpHidden : mode === 'etiket' ? (O.band[hpBand(c.hp, c.maxHp)] ?? '') : `HP ${hpPercent(c.hp, c.maxHp)}%`;
+  return text.replace(/HP \d+\/\d+/, repl);
+}
+
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
 const HEX_H = VIEW.h / 7.5;
@@ -243,7 +259,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
         {framedBadge(c, 56, <AvatarBadge avatar={c.avatar} size={56} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} />)}
         <div>
           <strong>{displayName(c)}</strong>
-          <small>{c.civilian ? `${c.name} · ` : ''}{D.stats(c.hp, c.maxHp, c.ac, c.speed, c.fly)}</small>
+          <small>{c.civilian ? `${c.name} · ` : ''}{maskHp(D.stats(c.hp, c.maxHp, c.ac, c.speed, c.fly), c)}</small>
           {c.moralMax !== undefined && <MoralBar moral={c.moral ?? 0} max={c.moralMax} />}
           {c.effects?.some((e) => e.noCast) && <span className="armor-badge" title={D.untrainedArmorTip}>⚠ {D.untrainedArmor}</span>}
         </div>
@@ -2059,8 +2075,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     )}
                     {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
                     {/* Görev MB6b: binicinin HP çubuğu jetonunun üstünde (bineğinki altta kalır). */}
-                    <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r} height={8} className="hpbg" />
-                    <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
+                    {(() => {
+                      // Görev OD1: düşman HP görünürlüğü (oda ayarı; yalnız arayüz). Gizlide çubuk yok, etikette dört kademe.
+                      const f = enemyHpFraction(c);
+                      if (f === null) return null;
+                      return (<>
+                        <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r} height={8} className="hpbg" />
+                        <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r * f} height={8} className="hp" />
+                      </>);
+                    })()}
                     {/* Kuyruk K48: Moral çubuğu (tam mod; HP'nin altında, ayrı renk). */}
                     {c.moralMax !== undefined && !stack && (<>
                       <rect x={p.x - r} y={p.y + r + 12} width={2 * r} height={4} className="hpbg" />
@@ -2504,7 +2527,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
-                <strong>{B.targetHead(target.name, target.hp, target.maxHp, target.ac)}</strong>
+                <strong>{maskHp(B.targetHead(target.name, target.hp, target.maxHp, target.ac), target)}</strong>
                 {choices.map((ch) => (
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>

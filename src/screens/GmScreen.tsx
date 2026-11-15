@@ -42,6 +42,9 @@ import { goalsFromData } from '../battle/goals';
 import { SEFERLER } from '../journey/sefer';
 import { presetObjects } from '../battle/objects';
 import type { Goals } from '../battle/types';
+import type { ReactNode } from 'react';
+import type { Oda } from '../oda/model';
+import { joinRoom, leaveRoom } from '../oda/store';
 import { houseRuleDefaults, type HouseRuleId } from '../battle/houseRules';
 
 const BASE = import.meta.env.BASE_URL;
@@ -80,7 +83,12 @@ export function GmScreen(props: {
   initial?: { mapId?: string; variantId?: string; dragonWake?: DragonWakeMode; allMonsters?: boolean };
   /** Kuyruk 18 V4: "Sefer" listesinden seferi aç (yolculuk ekranı, bayraktan bağımsız). */
   onSefer?: (id: string) => void;
+  /** Görev OD1: oda düzenleyicisi. Verilirse zar modu, zorluk, çok altıgen ve harita mekanikleri odadan; parti odaya katılanlardan; yoksa Hızlı savaş (sade). */
+  room?: Oda; locked?: boolean; onRoomChange?: (fn: (o: Oda) => Oda) => void; roomPanel?: ReactNode; title?: string; backLabel?: string;
 }) {
+  const room = props.room;
+  const roomLocked = !!room && props.locked === true;
+  const rm = (fn: (o: Oda) => Oda) => props.onRoomChange?.(fn);
   const valid = props.characters.filter((c) => characterProblems(c).length === 0);
   // Ölü ya da 0 HP'deki karakter savaşa giremez (önce dinlenmeli); listede nedeniyle görünür.
   const ready = valid.filter((c) => statusBlock(c) === null);
@@ -88,7 +96,7 @@ export function GmScreen(props: {
   const tired = valid.filter((c) => !isRested(c.sheet, c.status) && !c.status?.dead);
   // Seçim yapılana kadar ilk dört hazır karakter (sonradan eklenenler de) partide.
   const [chosen, setParty] = useState<string[] | null>(null);
-  const party = chosen ?? ready.slice(0, Math.min(4, MAX_PARTY)).map((c) => c.id);
+  const party = room ? ready.filter((c) => room.parti.includes(c.id)).map((c) => c.id) : chosen ?? ready.slice(0, Math.min(4, MAX_PARTY)).map((c) => c.id);
   const partyFull = party.length >= MAX_PARTY;
   const [counts, setCounts] = useState<Record<string, number>>({ wolf: 2 });
   const [customs, setCustoms] = useState<Monster[]>([]);
@@ -134,17 +142,24 @@ export function GmScreen(props: {
   const [query, setQuery] = useState('');
   const [allMonsters, setAllMonsters] = useState(props.initial?.allMonsters ?? false);
   // Zar modu: fiziksel zarda inisiyatif zarları da burada, savaş kurulurken istenir.
-  const [diceMode, setDiceMode] = useState<DiceMode>('auto');
+  const [diceModeLocal, setDiceMode] = useState<DiceMode>('auto');
+  const diceMode: DiceMode = room ? room.ayarlar.zarModu : diceModeLocal;
   // Kuyruk 43: çok altıgenli büyük yaratıklar (deneysel, varsayılan kapalı).
-  const [multiHex, setMultiHex] = useState(false);
-  const [aiDiff, setAiDiff] = useState<{ party: AiDiff; enemies: AiDiff }>({ party: 'normal', enemies: 'normal' });
+  const [multiHexLocal, setMultiHexLocal] = useState(false);
+  const multiHex = room ? room.ayarlar.gelismis.cokAltigen : multiHexLocal;
+  const setMultiHex = (v: boolean) => (room ? rm((o) => ({ ...o, ayarlar: { ...o.ayarlar, gelismis: { ...o.ayarlar.gelismis, cokAltigen: v } } })) : setMultiHexLocal(v));
+  const [aiDiffLocal, setAiDiff] = useState<{ party: AiDiff; enemies: AiDiff }>({ party: 'normal', enemies: 'normal' });
+  const aiDiff = room ? room.ayarlar.zorluk : aiDiffLocal;
   // Görev K13B: ev kuralları (haritanın sefer bayrağıyla varsayılan; Game Master değiştirir).
   const [houseRules, setHouseRules] = useState<Record<HouseRuleId, boolean> | null>(null);
   // Kuyruk 24: harita mekaniği anahtarları ve parametreleri (harita ya da varyant değişince sıfırlanır).
-  const [ruleToggles, setRuleToggles] = useState<Record<string, boolean>>({});
-  const [ruleParams, setRuleParams] = useState<RuleParams>({});
+  const [ruleTogglesLocal, setRuleToggles] = useState<Record<string, boolean>>({});
+  const [ruleParamsLocal, setRuleParams] = useState<RuleParams>({});
+  // Odada harita mekaniği anahtarları odanın kaydında (kimlik başına; haritada olmayan kimlik savaşa yazılmaz).
+  const ruleToggles = room ? room.ayarlar.gelismis.ruleToggles : ruleTogglesLocal;
+  const ruleParams: RuleParams = room ? room.ayarlar.gelismis.ruleParams : ruleParamsLocal;
   // Harita değişince liste haritanın varsayılanına döner (sefer kuralları haritaya bağlı).
-  useEffect(() => { setHouseRules(null); setGoals(undefined); setGroupStates({}); setRuleToggles({}); setRuleParams({}); }, [mapId]);
+  useEffect(() => { setHouseRules(null); setGoals(undefined); setGroupStates({}); if (!room) { setRuleToggles({}); setRuleParams({}); } }, [mapId]);
   // Görev S4: grup durumları ve komşuları (boş = haritanın varsayılanı).
   const [groupStates, setGroupStates] = useState<GroupChoice>({});
   // Görev S3: hedefler (undefined = haritanın hazır hedefleri; null = hedefsiz, eski kural).
@@ -209,9 +224,11 @@ export function GmScreen(props: {
     <div className="menu-screen">
       <main className="app wide">
         <header>
-          <h1>{G.title}</h1>
-          <button className="ghost" onClick={props.onBack}>{L.common.home}</button>
+          <h1>{props.title ?? (room ? G.title : t().oda.quickTitle)}</h1>
+          <button className="ghost" onClick={props.onBack}>{props.backLabel ?? L.common.home}</button>
         </header>
+
+        {room && props.roomPanel}
 
         {props.onSefer && (
           <section className="panel gm-sefer">
@@ -227,6 +244,7 @@ export function GmScreen(props: {
 
         <section className="panel">
           <h2>{G.party(plan.party.length, MAX_PARTY)}</h2>
+          {room && <p className="mute">{t().oda.partyHelp}</p>}
           {ready.length === 0 && (
             <p className="empty-state">{G.partyEmpty}</p>
           )}
@@ -235,7 +253,9 @@ export function GmScreen(props: {
             {ready.map((c) => (
               <label key={c.id} className={`chip${party.includes(c.id) ? ' on' : ''}${partyFull && !party.includes(c.id) ? ' off' : ''}`}>
                 <input type="checkbox" checked={party.includes(c.id)} disabled={partyFull && !party.includes(c.id)}
-                  onChange={(e: { target: { checked: boolean } }) => setParty(e.target.checked ? (partyFull ? party : [...party, c.id]) : party.filter((x) => x !== c.id))} />
+                  onChange={(e: { target: { checked: boolean } }) => (room
+                    ? rm((o) => (e.target.checked ? joinRoom(o, c.id) : leaveRoom(o, c.id)))
+                    : setParty(e.target.checked ? (partyFull ? party : [...party, c.id]) : party.filter((x) => x !== c.id)))} />
                 {c.sheet.name} ({className(c.sheet.classId)} {c.sheet.level}){c.status ? ` · ${hpText(c)}` : ''}
               </label>
             ))}
@@ -494,13 +514,13 @@ export function GmScreen(props: {
         <section className="panel">
           {problems.length > 0 && <ul className="problems">{problems.map((p) => <li key={p}>{p}</li>)}</ul>}
           {regenFoes.length > 0 && <p className="warn regen-warn" role="note">{G.regenWarn(regenFoes.join(', '))}</p>}
-          <label className="dice-mode">{D.mode.label}{' '}
+          {!room && <label className="dice-mode">{D.mode.label}{' '}
             <select aria-label={D.mode.label} value={diceMode} onChange={(e: { target: { value: string } }) => setDiceMode(e.target.value as DiceMode)}>
               {DICE_MODES.map((m) => <option key={m} value={m}>{D.mode[m]}</option>)}
             </select>
-          </label>
-          {diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
-          <fieldset className="ai-difficulty"><legend>{G.aiDifficulty.label}</legend>
+          </label>}
+          {!room && diceMode !== 'auto' && <p className="mute">{D.mode.note}</p>}
+          {!room && <fieldset className="ai-difficulty"><legend>{G.aiDifficulty.label}</legend>
             {(['party', 'enemies'] as const).map((side) => (
               <label key={side}>{G.aiDifficulty[side]}{' '}
                 <select aria-label={`${G.aiDifficulty.label}: ${G.aiDifficulty[side]}`} value={aiDiff[side]} onChange={(e: { target: { value: string } }) => setAiDiff((d) => ({ ...d, [side]: e.target.value as AiDiff }))}>
@@ -508,20 +528,20 @@ export function GmScreen(props: {
                 </select>
               </label>
             ))}
-          </fieldset>
+          </fieldset>}
           <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
-          <RoomRules />
-          <Fold title={t().setupUi.advanced} help={t().setupUi.advancedHelp} className="gm-advanced">
+          {room && <Fold title={t().setupUi.advanced} help={t().setupUi.advancedHelp} className="gm-advanced"><fieldset className="oda-lock" disabled={roomLocked}>
           <label className="multihex-toggle" title={G.multiHex.note}>
             <input type="checkbox" checked={multiHex} onChange={(e: { target: { checked: boolean } }) => setMultiHex(e.target.checked)} /> {G.multiHex.label}
           </label>
           <small className="mute multihex-note">{G.multiHex.note}</small>
           <MapRulesPanel key={`${map.id}/${variant.id}`} mapId={map.id} variantId={variant.id} toggles={ruleToggles} params={ruleParams}
-            onChange={(tg, ps) => { setRuleToggles(tg); setRuleParams(ps); }} />
+            onChange={(tg, ps) => { if (room) rm((o) => ({ ...o, ayarlar: { ...o.ayarlar, gelismis: { ...o.ayarlar.gelismis, ruleToggles: tg, ruleParams: ps as typeof o.ayarlar.gelismis.ruleParams } } })); else { setRuleToggles(tg); setRuleParams(ps); } }} />
           <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules())} onChange={setHouseRules} />
           <GroupsPanel groups={map?.groups ?? []} value={groupStates} onChange={setGroupStates} />
-          </Fold>
-          <button className="cta" disabled={problems.length > 0}
+          </fieldset></Fold>}
+          {roomLocked && <p className="mute oda-lock-start">{t().oda.startLocked}</p>}
+          <button className="cta" disabled={problems.length > 0 || roomLocked}
             onClick={() => {
               // Masum görünümü tohumu bir kez seçilir: elle zar girilince kurulum aynı tohumla yeniden çalışır.
               const seed = Math.floor(Math.random() * 1e9);

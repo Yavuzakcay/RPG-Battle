@@ -92,7 +92,7 @@ function HomeSound() {
  * cam panel (kayıtlı savaş, Oyuncu, Game Master, Ayarlar; Kuyruk 18 H10: Durum düğmesi kaldırıldı); dar ekranda üst çubuk ve alta yapışık panel. Arka
  * plan görseline karartma ya da filtre konmaz; okunabilirlik cam panel ve metin gölgesiyle.
  */
-export function Home(props: { onPlayer: () => void; onGm: () => void; /** Kuyruk 18 H10: giriş ekranında Durum düğmesi yok (kullanılmaz). */ onStatus?: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; onSeruven?: () => void; resumeError?: string | null }) {
+export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev OD1: eski Game Master kurulumu, sade). */ onGm: () => void; /** Oda kur (Game Master); yoksa onGm. */ onRoomCreate?: () => void; onRoomJoin?: () => void; /** Kuyruk 18 H10: giriş ekranında Durum düğmesi yok (kullanılmaz). */ onStatus?: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; onSeruven?: () => void; resumeError?: string | null }) {
   const lang = useLang();
   const L = t();
   const H = L.home;
@@ -129,11 +129,24 @@ export function Home(props: { onPlayer: () => void; onGm: () => void; /** Kuyruk
               <span className="home-icon teal"><IconUser size={26} /></span>
               <span className="home-card-text"><strong>{H.player}</strong><span>{H.playerDesc}</span></span>
             </button>
-            <button type="button" className="role home-card gm" onClick={props.onGm}>
+            <button type="button" className="role home-card gm" onClick={props.onRoomCreate ?? props.onGm}>
               <span className="home-icon orange"><IconHexDie size={26} /></span>
-              <span className="home-card-text"><strong>{L.common.gm}</strong><span>{H.gmDesc}</span></span>
+              <span className="home-card-text"><strong>{H.roomCreate}</strong><span>{H.roomCreateDesc}</span></span>
             </button>
           </div>
+          {/* Görev OD1: Odaya katıl (oyuncu) ve Hızlı savaş (girişsiz, tek cihaz). */}
+          {props.onRoomJoin && (
+            <button type="button" className="home-card join" onClick={props.onRoomJoin}>
+              <span className="home-icon teal"><IconUser size={22} /></span>
+              <span className="home-card-text"><strong>{H.roomJoin}</strong><span>{H.roomJoinDesc}</span></span>
+            </button>
+          )}
+          {props.onRoomCreate && (
+            <button type="button" className="home-card quick" onClick={props.onGm}>
+              <span className="home-icon"><IconPlay size={22} /></span>
+              <span className="home-card-text"><strong>{H.quick}</strong><span>{H.quickDesc}</span></span>
+            </button>
+          )}
           {/* Kuyruk 31: Serüven (kıta sayfaları; Game Master gerekmez). */}
           {props.onSeruven && (
             <button type="button" className="home-card journey seruven" onClick={props.onSeruven}>

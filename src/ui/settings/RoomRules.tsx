@@ -1,6 +1,8 @@
 /**
  * SD8 (Ayarlar): "Oda kuralları" (Game Master kurulumu). Eskiden Ayarlar ekranındaki oda ayarları buraya taşındı; saklama
  * anahtarları ve varsayılanlar aynı (`app/features`, `carrySetting`, önizleme ayarı), yalnız yeri değişti.
+ * Görev OD1: `value`/`onChange` verilirse (Oda kur) kurallar odanın kaydında düzenlenir, genel saklamaya yazılmaz;
+ * verilmezse (Hızlı savaş yolu kalmadı; testler ve eski çağrılar) eski davranış: genel anahtarlara yazar/okur.
  */
 import { useState } from 'react';
 import { t } from '../../i18n';
@@ -9,8 +11,9 @@ import { CARRY_RULES, type CarryRule } from '../../rules/carry';
 import { saveCarryRule, storedCarryRule } from '../carrySetting';
 import { loadSettings, saveSettings, type PreviewSettings } from '../../app/discovery';
 import { Fold, OnOffRow, SegRow } from './SegRow';
+import type { OdaKurallar } from '../../oda/model';
 
-export function RoomRules() {
+export function RoomRules(props: { value?: OdaKurallar; onChange?: (k: OdaKurallar) => void; disabled?: boolean }) {
   const R = t().roomRules, U = t().settingsUi, K = t().carry;
   const [upper, setUpper] = useState(upperLevelsEnabled);
   const [carry, setCarry] = useState<CarryRule>(storedCarryRule);
@@ -18,21 +21,30 @@ export function RoomRules() {
   const [pv, setPv] = useState<PreviewSettings>(loadSettings);
   const [journey, setJourney] = useState(journeyEnabled);
   const setPvs = (p: Partial<PreviewSettings>) => { const n = { ...pv, ...p }; saveSettings(n); setPv(n); };
+  const v = props.value;
+  const set = (p: Partial<OdaKurallar>) => { if (v && props.onChange) props.onChange({ ...v, ...p }); };
+  // Oda kaydı verilmişse değer oradan, yoksa eski genel durumdan.
+  const cur = {
+    upper: v ? v.ustSeviye : upper, carry: v ? v.tasima : carry,
+    align: v ? { on: v.hizalanma, race: v.hizalanmaIrk, auto: v.hizalanmaYalnizOtomatik, moral: v.hizalanmaMoral } : align,
+    discovery: v ? v.kesif : pv.discovery, hints: v ? v.ipucu : pv.hints, journey: v ? v.yolculuk : journey,
+  };
+  const d = props.disabled;
   return (
-    <Fold title={R.title} help={R.help} className="room-rules-fold">
-      <OnOffRow label={R.upper} help={R.upperHelp} value={upper} on={U.on} off={U.off} onChange={(v) => { setUpperLevelsEnabled(v); setUpper(v); }} />
-      <SegRow label={R.carry} help={R.carryHelp[carry]} value={carry} options={CARRY_RULES.map((r) => ({ value: r, label: K.rule[r] ?? r }))} onChange={(v) => { saveCarryRule(v); setCarry(v); }} />
-      <OnOffRow label={R.align} help={R.alignHelp} value={align.on} on={U.on} off={U.off} onChange={(v) => { setAlignmentEnabled(v); setAlign({ ...align, on: v }); }} />
-      {align.on && (
+    <Fold title={R.title} help={R.help} className="room-rules-fold" open={v !== undefined}>
+      <OnOffRow label={R.upper} help={R.upperHelp} value={cur.upper} on={U.on} off={U.off} disabled={d} onChange={(x) => { if (v) set({ ustSeviye: x }); else { setUpperLevelsEnabled(x); setUpper(x); } }} />
+      <SegRow label={R.carry} help={R.carryHelp[cur.carry]} value={cur.carry} options={CARRY_RULES.map((r) => ({ value: r, label: K.rule[r] ?? r }))} onChange={(x) => { if (d) return; if (v) set({ tasima: x }); else { saveCarryRule(x); setCarry(x); } }} />
+      <OnOffRow label={R.align} help={R.alignHelp} value={cur.align.on} on={U.on} off={U.off} disabled={d} onChange={(x) => { if (v) set({ hizalanma: x }); else { setAlignmentEnabled(x); setAlign({ ...align, on: x }); } }} />
+      {cur.align.on && (
         <div className="set-sub">
-          <OnOffRow label={R.alignRace} value={align.race} on={U.on} off={U.off} onChange={(v) => { setAlignmentRace(v); setAlign({ ...align, race: v }); }} />
-          <OnOffRow label={R.alignAuto} value={align.auto} on={U.on} off={U.off} onChange={(v) => { setAlignmentAutoOnly(v); setAlign({ ...align, auto: v }); }} />
-          <OnOffRow label={R.alignMoral} value={align.moral} on={U.on} off={U.off} onChange={(v) => { setAlignmentMoralEnabled(v); setAlign({ ...align, moral: v }); }} />
+          <OnOffRow label={R.alignRace} value={cur.align.race} on={U.on} off={U.off} disabled={d} onChange={(x) => { if (v) set({ hizalanmaIrk: x }); else { setAlignmentRace(x); setAlign({ ...align, race: x }); } }} />
+          <OnOffRow label={R.alignAuto} value={cur.align.auto} on={U.on} off={U.off} disabled={d} onChange={(x) => { if (v) set({ hizalanmaYalnizOtomatik: x }); else { setAlignmentAutoOnly(x); setAlign({ ...align, auto: x }); } }} />
+          <OnOffRow label={R.alignMoral} value={cur.align.moral} on={U.on} off={U.off} disabled={d} onChange={(x) => { if (v) set({ hizalanmaMoral: x }); else { setAlignmentMoralEnabled(x); setAlign({ ...align, moral: x }); } }} />
         </div>
       )}
-      <OnOffRow label={R.discovery} help={R.discoveryHelp} value={pv.discovery} on={U.on} off={U.off} onChange={(v) => setPvs({ discovery: v })} />
-      <OnOffRow label={R.hints} help={R.hintsHelp} value={pv.hints} on={U.on} off={U.off} onChange={(v) => setPvs({ hints: v })} />
-      <OnOffRow label={R.journey} help={R.journeyHelp} value={journey} on={U.on} off={U.off} onChange={(v) => { setJourneyEnabled(v); setJourney(v); }} />
+      <OnOffRow label={R.discovery} help={R.discoveryHelp} value={cur.discovery} on={U.on} off={U.off} disabled={d} onChange={(x) => { if (v) set({ kesif: x }); else setPvs({ discovery: x }); }} />
+      <OnOffRow label={R.hints} help={R.hintsHelp} value={cur.hints} on={U.on} off={U.off} disabled={d} onChange={(x) => { if (v) set({ ipucu: x }); else setPvs({ hints: x }); }} />
+      <OnOffRow label={R.journey} help={R.journeyHelp} value={cur.journey} on={U.on} off={U.off} disabled={d} onChange={(x) => { if (v) set({ yolculuk: x }); else { setJourneyEnabled(x); setJourney(x); } }} />
     </Fold>
   );
 }

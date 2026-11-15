@@ -16,6 +16,7 @@ import { removeStaticSplash, splashEnabled, watchResume, type SplashKind } from 
 import { badgeChain, preloadImages } from './ui/Avatar';
 import { sheetAvatar } from './battle/avatar';
 import { t, useLang } from './i18n';
+import { setRoomOverlay } from './oda/active';
 import { useResolvedTheme } from './ui/theme';
 import { menuScene, useSceneRequest, useSoundBoot } from './ui/audio/sound';
 import { SCREEN_SOUND } from './ui/audio/soundPlan';
@@ -39,6 +40,8 @@ const Splash = lazy((): Promise<{ default: React.ComponentType<{ kind: SplashKin
 const importBuilder = () => import('./screens/Builder');
 const Builder = lazy(() => importBuilder().then((m) => ({ default: m.Builder })));
 // Ayarlar (dış içerik; Görev E1) ayrı parça.
+const OdaKur = lazy(() => import('./screens/OdaScreens').then((m) => ({ default: m.OdaKur })));
+const OdaKatil = lazy(() => import('./screens/OdaScreens').then((m) => ({ default: m.OdaKatil })));
 const SettingsScreen = lazy(() => import('./screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
 // Kuyruk 14 Y1: yolculuk (deneme; bayrak arkasında) ayrı parça.
 const JourneyScreen = lazy(() => import('./screens/JourneyScreen').then((m) => ({ default: m.JourneyScreen })));
@@ -52,7 +55,9 @@ type Screen =
   | { name: 'player' }
   | { name: 'builder'; character: SavedCharacter }
   | { name: 'gm' }
-  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string }
+  | { name: 'oda'; roomId?: string }
+  | { name: 'katil' }
+  | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string; /** Görev OD1: odadan kurulan savaş (oda kimliği). */ oda?: string }
   | { name: 'seruven'; result?: { final: BattleState; node: string } | null }
   | { name: 'journey'; result?: BattleState | null; preset?: string }
   | { name: 'status' }
@@ -137,8 +142,10 @@ function Loading(props: { error: string | null; text?: string }) {
 }
 
 function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen) => void }) {
-  const data = useMonsters(screen.name === 'gm' || screen.name === 'battle' || screen.name === 'journey' || screen.name === 'seruven');
+  const data = useMonsters(screen.name === 'gm' || screen.name === 'oda' || screen.name === 'battle' || screen.name === 'journey' || screen.name === 'seruven');
   const classInfo = useClassData();
+  // Görev OD1: oda kuralları yalnız oda ekranlarında ve odadan kurulan savaşta etkin; başka yerde genel (cihaz) ayarlar.
+  if (!(screen.name === 'oda' || screen.name === 'katil' || (screen.name === 'battle' && screen.oda))) setRoomOverlay(null);
   const [characters, setCharacters] = useState<SavedCharacter[]>(loadCharacters);
   // İlk ekranda (giriş) kayıtlı karakterlerin küçük jetonları boşta indirilir; Oyuncu listesi anında açılır.
   useEffect(() => {
@@ -186,7 +193,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
   if (screen.name !== 'home' && !classInfo.ready) return <Loading error={classInfo.error} text={t().common.loading} />;
   switch (screen.name) {
     case 'home':
-      return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })}
+      return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })} onRoomCreate={() => setScreen({ name: 'oda' })} onRoomJoin={() => setScreen({ name: 'katil' })}
         onStatus={() => setScreen({ name: 'status' })} onSettings={() => setScreen({ name: 'settings' })} resumeError={resumeError}
         {...(journeyEnabled() ? { onJourney: () => setScreen({ name: 'journey' }) } : {})}
         onSeruven={() => setScreen({ name: 'seruven' })}
@@ -214,6 +221,18 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       if (!data.ready) return <Loading error={data.error} />;
       return <GmScreen characters={characters} onBack={home} onStart={(session) => setScreen({ name: 'battle', session })}
         onUpdateCharacters={store} onSefer={(id) => setScreen({ name: 'journey', preset: id })} />;
+    case 'oda':
+      if (!data.ready) return <Loading error={data.error} />;
+      return <OdaKur characters={characters} onBack={home} roomId={screen.roomId} onStart={(session, oda) => setScreen({ name: 'battle', session, oda })}
+        onUpdateCharacters={store} onSefer={(id) => setScreen({ name: 'journey', preset: id })}
+        onResume={(oda) => {
+          void import('./app/battleSave').then(({ loadBattle }) => {
+            const r = loadBattle();
+            if (r.ok) { setResumeError(null); setScreen({ name: 'battle', session: r.session, restored: true, oda }); } else setResumeError(r.error);
+          });
+        }} />;
+    case 'katil':
+      return <OdaKatil characters={characters} onBack={home} />;
     case 'battle':
       if (!data.ready) return <Loading error={data.error} />;
       // Kuyruk 14 Y1: yolculuk savaşı biter; sonuç yolculuğa döner (karakter deposu değişmez).
@@ -225,6 +244,16 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       }
       if (screen.journey) return <Battle initial={screen.session} restored={false} exitLabel={t().journey.title}
         onExit={(final) => setScreen({ name: 'journey', result: final?.status === 'finished' ? final : null })} />;
+      if (screen.oda) {
+        const oda = screen.oda;
+        return <Battle initial={screen.session} restored={screen.restored === true} exitLabel={t().oda.back}
+          onExit={(final) => {
+            if (final?.status === 'finished') store(applyBattleResult(characters, final));
+            // Bitince oda ayarları açılır ve son savaş özeti yazılır; bitmediyse kayıtlı savaş için kilitli kalır.
+            void import('./oda/exit').then((m) => m.roomBattleExit(oda, final));
+            setScreen({ name: 'oda', roomId: oda });
+          }} />;
+      }
       return <Battle initial={screen.session} restored={screen.restored === true} exitLabel={t().battle.toSetup}
         onExit={(final) => {
           // Biten savaşta karakterlerin kalan HP'si, kaynakları ve slotları kaydedilir (dinlenmezse yaralı başlarlar).

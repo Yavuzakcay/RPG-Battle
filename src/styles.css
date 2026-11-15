@@ -1495,3 +1495,18 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .align-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
 .align-picker button { min-height: 52px; font-size: 13px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
 @media (max-width: 640px) { .align-picker { grid-template-columns: 1fr; } }
+
+/* Görev OD1: Oda kur / Odaya katıl. Renkler SD10: turuncu seçili/açık, gri kapalı/kilit, turkuaz yalnız eylem. */
+.oda-name { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: flex-end; }
+.oda-name label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+.oda-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.oda-card { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--idle-line); border-radius: 10px; }
+.oda-card-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 200px; }
+.oda-lock { border: 0; padding: 0; margin: 0; min-inline-size: 0; }
+.oda-lock:disabled { opacity: 0.6; }
+.oda-lock-note { margin: 10px 0; padding: 10px 12px; border-radius: 10px; background: var(--off); color: var(--off-ink); }
+.oda-rules-read { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 4px; }
+.oda-rules-read li b { color: var(--off-ink); }
+.oda-rules-read li.on b { color: var(--sel); }
+.oda-ready { cursor: default; }
+@media (max-width: 640px) { .oda-name { flex-direction: column; align-items: stretch; } }
