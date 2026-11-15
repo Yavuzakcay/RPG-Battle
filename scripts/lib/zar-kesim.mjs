@@ -21,18 +21,18 @@ const RELAXED = {
   spill: (r, g, b) => Math.min(r, b) - g >= 40 && Math.abs(r - b) <= 120,
 };
 
-/** Zemin maskesi (1 = zemin). `data`: RGB (3 kanal). */
+/** Zemin maskesi (1 = zemin). `data`: RGB (3 kanal). Sıcak döngü: piksel başına dizi ayırmaz. */
 export function background(data, w, h, cls) {
   const n = w * h;
   const bg = new Uint8Array(n);
-  const px = (i) => [data[i * 3], data[i * 3 + 1], data[i * 3 + 2]];
-  const stack = [];
-  const seed = (i) => { if (!bg[i] && cls.magenta(...px(i))) { bg[i] = 1; stack.push(i); } };
+  const stack = new Int32Array(n);
+  let sp = 0;
+  const seed = (i) => { if (!bg[i] && cls.magenta(data[i * 3], data[i * 3 + 1], data[i * 3 + 2])) { bg[i] = 1; stack[sp++] = i; } };
   for (let x = 0; x < w; x++) { seed(x); seed((h - 1) * w + x); }
   for (let y = 0; y < h; y++) { seed(y * w); seed(y * w + w - 1); }
-  for (let i = 0; i < n; i++) if (cls.pure(...px(i))) seed(i);
-  while (stack.length) {
-    const i = stack.pop(); const x = i % w, y = (i / w) | 0;
+  for (let i = 0; i < n; i++) if (cls.pure(data[i * 3], data[i * 3 + 1], data[i * 3 + 2])) seed(i);
+  while (sp) {
+    const i = stack[--sp]; const x = i % w, y = (i / w) | 0;
     if (x > 0) seed(i - 1); if (x < w - 1) seed(i + 1); if (y > 0) seed(i - w); if (y < h - 1) seed(i + w);
   }
   for (let pass = 0; pass < 2; pass++) {
@@ -41,7 +41,7 @@ export function background(data, w, h, cls) {
       if (bg[i]) continue;
       const x = i % w, y = (i / w) | 0;
       const near = (x > 0 && bg[i - 1]) || (x < w - 1 && bg[i + 1]) || (y > 0 && bg[i - w]) || (y < h - 1 && bg[i + w]);
-      if (near && cls.spill(...px(i))) add.push(i);
+      if (near && cls.spill(data[i * 3], data[i * 3 + 1], data[i * 3 + 2])) add.push(i);
     }
     for (const i of add) bg[i] = 1;
   }
@@ -51,34 +51,55 @@ export function background(data, w, h, cls) {
 /** 4-komşu bağlı bileşenler (`fg`: 1 = dolu). Dönen: etiketler (-1 boş) ve bileşen listesi. */
 export function components(fg, w, h) {
   const n = w * h; const comp = new Int32Array(n).fill(-1); const parts = [];
-  for (let s = 0; s < n; s++) {
-    if (!fg[s] || comp[s] >= 0) continue;
+  const q = new Int32Array(n);
+  for (let s0 = 0; s0 < n; s0++) {
+    if (!fg[s0] || comp[s0] >= 0) continue;
     const id = parts.length; const p = { id, count: 0, minX: w, minY: h, maxX: -1, maxY: -1 };
-    const q = [s]; comp[s] = id;
-    while (q.length) {
-      const i = q.pop(); const x = i % w, y = (i / w) | 0;
+    let sp = 0; q[sp++] = s0; comp[s0] = id;
+    while (sp) {
+      const i = q[--sp]; const x = i % w, y = (i / w) | 0;
       p.count++; if (x < p.minX) p.minX = x; if (x > p.maxX) p.maxX = x; if (y < p.minY) p.minY = y; if (y > p.maxY) p.maxY = y;
-      for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1]) if (j >= 0 && fg[j] && comp[j] < 0) { comp[j] = id; q.push(j); }
+      if (x > 0 && fg[i - 1] && comp[i - 1] < 0) { comp[i - 1] = id; q[sp++] = i - 1; }
+      if (x < w - 1 && fg[i + 1] && comp[i + 1] < 0) { comp[i + 1] = id; q[sp++] = i + 1; }
+      if (y > 0 && fg[i - w] && comp[i - w] < 0) { comp[i - w] = id; q[sp++] = i - w; }
+      if (y < h - 1 && fg[i + w] && comp[i + w] < 0) { comp[i + w] = id; q[sp++] = i + w; }
     }
     parts.push(p);
   }
   return { comp, parts };
 }
 
-const significant = (parts, frac = 0.05) => { const big = Math.max(0, ...parts.map((p) => p.count)); return parts.filter((p) => p.count >= big * frac); };
+const significant = (parts, frac = 0.05) => { let big = 0; for (const p of parts) if (p.count > big) big = p.count; return parts.filter((p) => p.count >= big * frac); };
 
-/** Ön planı `r` kez 4-komşu aşındırır. */
-export function erode(fg, w, h, r) {
-  let cur = fg;
-  for (let k = 0; k < r; k++) {
-    const next = new Uint8Array(cur.length);
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const i = y * w + x;
-      if (cur[i] && x > 0 && x < w - 1 && y > 0 && y < h - 1 && cur[i - 1] && cur[i + 1] && cur[i - w] && cur[i + w]) next[i] = 1;
-    }
-    cur = next;
+/** Ön planın zemine (ve çerçeve dışına) 4-komşu uzaklığı (L1); `r` kez aşındırma = uzaklık > r. İki geçişli, r'den bağımsız. */
+export function distanceMap(fg, w, h) {
+  const n = w * h; const INF = 65535; const d = new Uint16Array(n);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x;
+    if (!fg[i]) { d[i] = 0; continue; }
+    let v = INF;
+    if (x === 0 || y === 0) v = 1; // çerçeve dışı zemin sayılır
+    if (x > 0 && d[i - 1] + 1 < v) v = d[i - 1] + 1;
+    if (y > 0 && d[i - w] + 1 < v) v = d[i - w] + 1;
+    d[i] = v;
   }
-  return cur;
+  for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) {
+    const i = y * w + x;
+    if (!fg[i]) continue;
+    let v = d[i];
+    if (x === w - 1 || y === h - 1) v = Math.min(v, 1);
+    if (x < w - 1 && d[i + 1] + 1 < v) v = d[i + 1] + 1;
+    if (y < h - 1 && d[i + w] + 1 < v) v = d[i + w] + 1;
+    d[i] = v;
+  }
+  return d;
+}
+
+/** Ön planı `r` kez 4-komşu aşındırır (testlerde doğrudan; sıcak yolda `distanceMap` bir kez hesaplanır). */
+export function erode(fg, w, h, r) {
+  const d = distanceMap(fg, w, h); const out = new Uint8Array(fg.length);
+  for (let i = 0; i < out.length; i++) if (fg[i] && d[i] > r) out[i] = 1;
+  return out;
 }
 
 /** Çekirdek etiketlerini özgün ön planda (en yakın çekirdek) büyütür; çok kaynaklı BFS. */
@@ -89,7 +110,10 @@ export function grow(fg, seeds, w, h) {
     const next = [];
     for (const i of frontier) {
       const x = i % w, y = (i / w) | 0;
-      for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1]) if (j >= 0 && fg[j] && comp[j] < 0) { comp[j] = comp[i]; next.push(j); }
+      if (x > 0 && fg[i - 1] && comp[i - 1] < 0) { comp[i - 1] = comp[i]; next.push(i - 1); }
+      if (x < w - 1 && fg[i + 1] && comp[i + 1] < 0) { comp[i + 1] = comp[i]; next.push(i + 1); }
+      if (y > 0 && fg[i - w] && comp[i - w] < 0) { comp[i - w] = comp[i]; next.push(i - w); }
+      if (y < h - 1 && fg[i + w] && comp[i + w] < 0) { comp[i + w] = comp[i]; next.push(i + w); }
     }
     frontier = next;
   }
@@ -134,37 +158,41 @@ const plausible = (parts, w, h) => {
 /**
  * Sayfayı yedi zara böler. `opts`: { kutu: [[x0,y0,x1,y1] × 7] | undefined, sablon: [[a,b] × 7] | undefined, erodeMax }.
  * Dönen: { ok, method, kept (7 parça, soldan sağa), comp, bg, ... }. Başarısızsa ok=false (en iyi deneme `method: 'yok'`).
+ * `opts.onStep(ad)`: her ağır adımdan önce çağrılır (takılan adımı raporlamak için): zemin-temel, zemin-gevsek, bilesen, asindirma, buyutme, sablon.
  */
 export function segment(data, w, h, opts = {}) {
   const tried = [];
-  const strictBg = background(data, w, h, STRICT);
-  const relaxBg = background(data, w, h, RELAXED);
+  const step = opts.onStep ?? (() => {});
+  const memo = {};
+  const bgOf = (name) => { if (!memo[name]) { step(`zemin-${name === 'strict' ? 'temel' : 'gevsek'}`); memo[name] = background(data, w, h, name === 'strict' ? STRICT : RELAXED); } return memo[name]; };
   const fgOf = (bg) => Uint8Array.from(bg, (v) => (v ? 0 : 1));
   const plain = (bg) => { const fg = fgOf(bg); const { comp, parts } = components(fg, w, h); const kept = significant(parts); return { fg, comp, kept, parts }; };
   if (opts.kutu?.length === 7) {
-    const bg = relaxBg; const comp = new Int32Array(w * h).fill(-1);
+    const bg = bgOf('relax'); const comp = new Int32Array(w * h).fill(-1);
     opts.kutu.forEach(([x0, y0, x1, y1], k) => { for (let y = Math.max(0, y0); y <= Math.min(h - 1, y1); y++) for (let x = Math.max(0, x0); x <= Math.min(w - 1, x1); x++) { const i = y * w + x; if (!bg[i]) comp[i] = k; } });
     return finish('kutu', data, w, h, bg, comp, partsOf(comp, w, h), 'data/zar-kesim.json kutular');
   }
-  for (const [name, bg] of [['temel', strictBg], ['gevsek', relaxBg]]) {
-    const r = plain(bg); tried.push(`${name}: ${r.kept.length} bileşen`);
+  for (const [name, key] of [['temel', 'strict'], ['gevsek', 'relax']]) {
+    const bg = bgOf(key); step('bilesen'); const r = plain(bg); tried.push(`${name}: ${r.kept.length} bileşen`);
     if (r.kept.length === 7) { const keepIds = new Set(r.kept.map((p) => p.id)); const comp = Int32Array.from(r.comp, (v) => (keepIds.has(v) ? v : -1)); return finish(name, data, w, h, bg, comp, r.kept, tried.join('; ')); }
   }
-  for (const [name, bg] of [['asindirma', strictBg], ['gevsek+asindirma', relaxBg]]) {
-    const fg = fgOf(bg);
+  for (const [name, key] of [['asindirma', 'strict'], ['gevsek+asindirma', 'relax']]) {
+    const bg = bgOf(key); const fg = fgOf(bg);
+    step('asindirma'); const dist = distanceMap(fg, w, h);
     for (let r = 1; r <= (opts.erodeMax ?? ERODE_MAX); r++) {
-      const e = erode(fg, w, h, r); const { comp: ec, parts } = components(e, w, h); const sig = significant(parts, 0.08);
+      const e = new Uint8Array(fg.length); for (let i = 0; i < e.length; i++) if (fg[i] && dist[i] > r) e[i] = 1;
+      const { comp: ec, parts } = components(e, w, h); const sig = significant(parts, 0.08);
       if (parts.length === 0) break; // çekirdekler yok oldu
       if (sig.length === 7) {
         const ids = new Map(sig.map((p, k) => [p.id, k])); const seeds = Int32Array.from(ec, (v) => (ids.has(v) ? ids.get(v) : -1));
-        const comp = grow(fg, seeds, w, h);
+        step('buyutme'); const comp = grow(fg, seeds, w, h);
         return finish(name, data, w, h, bg, comp, partsOf(comp, w, h), `${tried.join('; ')}; ${name} r=${r}`);
       }
     }
     tried.push(`${name}: 7 çekirdek yok`);
   }
   // şablon: ön plan kutusunu oransal yedi şeride böl (`sablonYok`: ilk geçiş; şablon başarılı sayfalardan çıkarılır)
-  const fg = fgOf(relaxBg); const box = fgBox(fg, w, h);
+  step('sablon'); const relaxBg = bgOf('relax'); const fg = fgOf(relaxBg); const box = fgBox(fg, w, h);
   if (!opts.sablonYok && box.x1 > box.x0) {
     const sab = opts.sablon?.length === 7 ? opts.sablon : templateFrom([]);
     const comp = new Int32Array(w * h).fill(-1); const span = box.x1 - box.x0 + 1;
@@ -173,6 +201,6 @@ export function segment(data, w, h, opts = {}) {
     if (plausible(parts, w, h)) return finish('sablon', data, w, h, relaxBg, comp, parts, `${tried.join('; ')}; oransal şablon (gözle doğrula)`);
     tried.push('şablon: parçalar makul değil');
   }
-  const r = plain(strictBg);
+  const strictBg = bgOf('strict'); const r = plain(strictBg);
   return { ...finish('yok', data, w, h, strictBg, r.comp, r.kept, tried.join('; ')), ok: false };
 }
