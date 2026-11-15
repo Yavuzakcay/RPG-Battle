@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-05 — GH1: hedefte çıkış altıgenleri seçilemiyor (OD1C hatası düzeltmesi, Kuyruk KQ5; yalnız arayüz)
+
+- **Neden:** (1) Hazır "Kaç (doğu kenarı)" ön ayarı altıgenleri doldurduğu için hedef "tamamlanmış" sayılıyor ve haritadaki şerit hiç açılmıyordu (şerit yalnız bekleyen hedefte vardı): çıkış altıgenleri haritada görünmez ve düzenlenemezdi. (2) Şerit üst köşede küçük, yüzey/nesne araç çubuğuyla (`.gm-tool`, z-index 6) üst üste biniyordu; araç modları ayrı durumlardı (yüzey/nesne `mode`, hedef `goalPick`), tek tıklama sahibi tanımsızdı.
+- **Tek aktif araç modeli** (`src/ui/mapTools.ts`, saf): `activeTool`, `openGoalTool`/`openModeTool`, `hexOwner` (öncelik hedef > ağırlık > nesne > yüzey > yaratık), `toolbarShown`. Biri açılınca ötekiler kapanır; hedef aracı açıkken yüzey çubuğu gizli, nesne çubuğu yalnız "Nesne yerleştir" bağlama kipinde; GM menüsündeki Yüzey/Nesne düğmeleri hedef seçimini kapatır; yüzey kipi zorlansa bile dokunuş hedefe gider (regresyon testi).
+- **Şerit:** artık altıgen/nesne isteyen her hedefte (hazır ön ayar dahil; `hasMapGoals`, GmScreen taslağı bu durumda savaşa geçirir) açılır, ekranın üst ortasında, araç çubuğunun üstünde. Altıgen seçerken net başlık "Çıkış altıgenlerini seç: N seçildi" + Temizle + Bitti; hazır hedefte "Altıgenleri düzenle". Seçili altıgenler kalın turuncu çerçeve + ⚑ işaretiyle hemen çizilir (ön ayar uygulanır uygulanmaz haritada görünür; elle ekle/çıkar).
+- Test `src/ui/mapTools.test.ts` (araç modeli, regresyon, Kaç ön ayarı düzenleme). Doğrulama: typecheck, `od1*`/`mapTools`/`setup-ui` testleri, build, `check:harita` (kale-avlu). Gerçek tıklama (Playwright) kurulumu bulutta yok: arayüz testi saf yönlendirme düzeyinde; ekran görüntüsü alınamadı (kurulmuş savaş ve kayıtlı karakter gerekir).
+
 ## 2026-12-04 — CK1: karakter notları (Hikâye) ve karakter kâğıdı çıktısı (Kuyruk KQ4; savaşa ve kural sürümüne girmez)
 
 - **Hikâye alanı:** `SavedCharacter.hikaye?` (`src/rules/story.ts`): `gecmisHikayesi, kisilik, idealler, baglar, kusurlar, gorunum, notlar`; her biri serbest çok satırlı metin, en çok 4000 karakter (kalan sayaç), hazır tablo yok. Boş (yalnız boşluk) alan kayda, JSON dışa aktarmaya ve çıktıya yazılmaz (`cleanStory`; `saveCharacters`, `savableCharacter`). `CHARACTER_SAVE_VERSION` 2 → 3; eski kayıt alansız yüklenir (testli). Oluşturucuda yeni "Hikâye" adımı **özetten (Kaydet ekranı) hemen önce** (Alignment adımı yine en sonda, çakışmaz); boş bırakılırsa uyarı yok. Karakter listesinde "Notları düzenle" (tembel `NotesScreen`, sihirbazı açmaz).

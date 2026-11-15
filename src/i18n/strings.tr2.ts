@@ -134,6 +134,7 @@ export const TR_EXTRA = {
     band: { full: 'Sağlam', hurt: 'Yaralı', bloodied: 'Ağır yaralı', dying: 'Ölmek üzere', down: 'Yere düştü' } as Record<string, string>,
     /** Görev OD1C: hedeflerde altıgen ve nesne haritada seçilir. */
     goal: {
+      hexTitle: (n: number): string => `Çıkış altıgenlerini seç: ${n} seçildi`, clear: 'Temizle', editHex: 'Altıgenleri düzenle',
       pending: 'bekliyor', needHex: 'Haritada altıgen seç', needObject: 'Haritada nesne seç/yerleştir', afterMap: 'Haritaya girince nesne seç ya da yerleştir.',
       objectLater: 'Haritada seç / yerleştir', civilians: 'Masumlar', hexCount: (n: number): string => `${n} altıgen`, ready: 'hazır',
       stripTitle: 'Hedefleri tamamla', stripHelp: 'Bekleyen hedefler haritadan tamamlanır.', markHex: 'Altıgen işaretle', markDone: 'Bitti',

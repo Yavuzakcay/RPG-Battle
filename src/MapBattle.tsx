@@ -104,8 +104,9 @@ import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, o
 import { hpFraction, hpModeFor, maskHpText } from './ui/hpVisibility';
 import { SpellComps } from './ui/SpellComps';
 import { AGIRLIK, objectWeightLb } from './battle/nesneAgirlik';
-import { bindObject, pendingItems, resolveDraft, toggleHex, type GoalsDraft } from './oda/hedef';
+import { bindObject, clearHexes, hasMapGoals, isPending, needsOf, pendingItems, resolveDraft, toggleHex, type GoalsDraft } from './oda/hedef';
 import { withGoals } from './ui/goalSetup';
+import { hexOwner, openGoalTool, toolbarShown, type GoalPick } from './ui/mapTools';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -484,7 +485,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const [session, setSession] = useState<Session>(props.initial);
   // Görev OD1C: bekleyen hedefler (altıgen/nesne haritada seçilir). `goalPick`: şu an hangi hedef için hangi seçim açık.
   const [gd, setGd] = useState<GoalsDraft | null>(props.goalDraft ?? null);
-  const [goalPick, setGoalPick] = useState<{ id: string; how: 'hex' | 'obj' | 'place' } | null>(null);
+  const [goalPick, setGoalPick] = useState<GoalPick | null>(null);
   // Kuyruk KQ3 NA1: Game Master nesne ağırlığı kartı.
   const [weightEdit, setWeightEdit] = useState<string | null>(null);
   const [weightText, setWeightText] = useState('');
@@ -1193,7 +1194,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (longPressed.current) { longPressed.current = false; return; }
     // Görev S2: Game Master nesne yerleştirir/kaldırır (kurulumda da; zar yok).
     // Görev OD1C: bekleyen hedef için altıgen işaretle / nesne seç.
-    if (goalPick && gd && setup && goalPick.how !== 'place') {
+    // Kuyruk KQ5 GH1: dokunuşun sahibi tek aktif araç (`ui/mapTools.ts`); hedef aracı yüzey/nesne çubuğu açık olsa da önce gelir.
+    const owner = hexOwner({ mode, goalPick }, setup, typeof objectPick === 'string' ? objectPick : undefined);
+    if (goalPick && gd && (owner === 'goal-hex' || owner === 'goal-obj')) {
       if (goalPick.how === 'hex') { setGd(toggleHex(gd, goalPick.id, h)); return; }
       const ob = state.map?.objects?.find((o) => sameHex(o.at, h));
       if (!ob) { toast(t().oda.goal.noObjectHere); return; }
@@ -2001,7 +2004,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 )}
                 {/* Görev OD1C: kurulumda haritada işaretlenen hedef altıgenleri. */}
                 {setup && gd?.list.flatMap((g) => g.hexes ?? []).map((h) => (
-                  <polygon key={`gp${hexKey(h)}`} points={hexPoints(h, 0.9)} className="goal-pick-hex" />
+                  <g key={`gp${hexKey(h)}`} className="goal-pick-cell">
+                    <polygon points={hexPoints(h, 0.9)} className="goal-pick-hex" />
+                    <text x={hexCenter(h).x} y={hexCenter(h).y + 6} className="goal-pick-mark" textAnchor="middle">⚑</text>
+                  </g>
                 ))}
                 {/* Görev S3: hedef altıgenleri (ulaş/çıkış, yok edilecek/alınacak/korunacak nesne). */}
                 {goalHexes(state).map((h) => {
@@ -2240,7 +2246,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
 
         <div className="hud">
           {cam.big && <CameraHud cam={cam} state={state} alerts={alerts} />}
-          {mode === 'gmObject' && <ObjectTool pick={objectPick} onPick={setObjectPick} onClose={() => { setMode('idle'); setMenuOpen(true); setWeightEdit(null); }} />}
+          {toolbarShown({ mode, goalPick }, 'object') && <ObjectTool pick={objectPick} onPick={setObjectPick} onClose={() => { setMode('idle'); setMenuOpen(true); setWeightEdit(null); }} />}
           {weightEdit && (() => {
             const ob = state.map?.objects?.find((x) => x.id === weightEdit);
             if (!ob) return null;
@@ -2258,7 +2264,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               </div>
             );
           })()}
-          {mode === 'gmSurface' && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
+          {toolbarShown({ mode, goalPick }, 'surface') && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
           <div className="turn-strip" role="list" aria-label={B.order}>
             {(() => {
               // Kuyruk K58 G4: sıra şimdiki yaratıktan başlar; şimdiki + sonraki 5 (açılınca hepsi), durum simgeleri, konsantrasyon.
@@ -2313,11 +2319,11 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                     {B.gm.gate(gm.gate.state === 'closed')}
                   </button>
                 )}
-                {active && state.map && <button onClick={() => { reset(); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.surfaceTool.open}</button>}
+                {active && state.map && <button onClick={() => { reset(); setGoalPick(null); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.surfaceTool.open}</button>}
                 {active && (state.groups ?? []).filter((g) => g.state !== 'alarmed').map((g) => (
                   <button key={`al${g.id}`} onClick={() => { dice.play((rng) => dispatch(session, { type: 'alarm_group', groupId: g.id }, rng, GM_CONTEXT)); setMenuOpen(false); }}>{t().alarm.gm.alarm(g.id)}</button>
                 ))}
-                {(active || setup) && state.map && <button onClick={() => { reset(); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.objectTool.open}</button>}
+                {(active || setup) && state.map && <button onClick={() => { reset(); setGoalPick(null); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.objectTool.open}</button>}
                 {active && sleepingDragon(state) && (
                   <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>{B.gm.wake}</button>
                 )}
@@ -2975,24 +2981,34 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               {ruleOf(state, 'lairEruption') && <span className="goal">🌋 {B.boss.lair}</span>}
             </div>
           ))}
-          {setup && gd && pendingItems(gd).length > 0 && (() => {
+          {setup && gd && hasMapGoals(gd) && (() => {
             const Q = t().oda.goal;
             const G = t().goals;
+            const items = [
+              ...gd.list.filter((g) => { const n = needsOf(g); return n.hexes || n.object; }).map((g) => ({ id: g.id, kind: g.kind as string, needs: [...(needsOf(g).hexes ? ['hex' as const] : []), ...(needsOf(g).object ? ['object' as const] : [])], hexes: g.hexes?.length ?? 0, pending: isPending(g) })),
+              ...pendingItems(gd).filter((x) => x.kind === 'fail').map((x) => ({ id: x.id, kind: 'fail', needs: x.needs, hexes: 0, pending: true })),
+            ];
+            const left = pendingItems(gd).length;
+            const cur = goalPick ? items.find((x) => x.id === goalPick.id) : undefined;
+            const toggle = (id: string, how: GoalPick['how']) => { const next = openGoalTool({ mode, goalPick }, goalPick?.id === id && goalPick.how === how ? null : { id, how }); setMode(next.mode as Mode); setGoalPick(next.goalPick); if (next.goalPick) { setMenuOpen(false); setOptionsOpen(false); } };
             return (
-              <div className="goals-strip goal-setup-strip" aria-label={Q.stripTitle}>
-                <strong>{Q.stripTitle}</strong> <span className="mute">{Q.stripHelp}</span>
-                {pendingItems(gd).map((it) => (
-                  <span key={it.id} className="goal pending-goal">
-                    {it.kind === 'fail' ? Q.failObject : G.kind[it.kind]}{it.hexes ? ` (${Q.hexCount(it.hexes)})` : ''}
-                    {it.needs.includes('hex') && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'hex' ? 'on' : ''} onClick={() => { reset(); setGoalPick(goalPick?.id === it.id && goalPick.how === 'hex' ? null : { id: it.id, how: 'hex' }); }}>{Q.markHex}</button>}
-                    {it.needs.includes('object') && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'obj' ? 'on' : ''} onClick={() => { reset(); setGoalPick(goalPick?.id === it.id && goalPick.how === 'obj' ? null : { id: it.id, how: 'obj' }); }}>{Q.pickObject}</button>}
-                    {it.needs.includes('object') && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'place' ? 'on' : ''} onClick={() => { reset(); setGoalPick({ id: it.id, how: 'place' }); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{Q.placeObject}</button>}
+              <div className="goals-strip goal-setup-strip" aria-label={Q.stripTitle} data-testid="goal-strip">
+                {goalPick?.how === 'hex'
+                  ? <strong>{Q.hexTitle(cur?.hexes ?? 0)}</strong>
+                  : <><strong>{Q.stripTitle}</strong> <span className="mute">{left > 0 ? Q.warn(left) : Q.stripHelp}</span></>}
+                {items.map((it) => (
+                  <span key={it.id} className={`goal pending-goal${it.pending ? '' : ' ready'}`}>
+                    {it.kind === 'fail' ? Q.failObject : (G.kind as Record<string, string>)[it.kind]}{it.needs.includes('hex') ? ` (${Q.hexCount(it.hexes)})` : ''}
+                    {it.needs.includes('hex') && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'hex' ? 'on' : ''} onClick={() => toggle(it.id, 'hex')}>{it.hexes ? Q.editHex : Q.markHex}</button>}
+                    {it.needs.includes('object') && it.pending && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'obj' ? 'on' : ''} onClick={() => toggle(it.id, 'obj')}>{Q.pickObject}</button>}
+                    {it.needs.includes('object') && it.pending && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'place' ? 'on' : ''} onClick={() => toggle(it.id, 'place')}>{Q.placeObject}</button>}
                   </span>
                 ))}
                 {goalPick && (
                   <span className="goal-pick-note" role="status">
                     {goalPick.how === 'hex' ? Q.tapHex : goalPick.how === 'obj' ? Q.tapObject : Q.placeNote}
-                    {' '}<button type="button" onClick={() => { setGoalPick(null); if (goalPick.how === 'place') setMode('idle'); }}>{Q.markDone}</button>
+                    {goalPick.how === 'hex' && <button type="button" onClick={() => setGd(clearHexes(gd, goalPick.id))}>{Q.clear}</button>}
+                    {' '}<button type="button" className="cta" onClick={() => { const next = openGoalTool({ mode, goalPick }, null); setGoalPick(null); setMode(next.mode as Mode); }}>{Q.markDone}</button>
                   </span>
                 )}
               </div>

@@ -94,6 +94,12 @@ export function toggleHex(d: GoalsDraft, goalId: string, h: Offset): GoalsDraft 
   }) };
 }
 
+/** Kuyruk KQ5 GH1: hedefin seçili altıgenlerini temizler. */
+export const clearHexes = (d: GoalsDraft, goalId: string): GoalsDraft => ({ ...d, list: d.list.map((g) => { if (g.id !== goalId) return g; const { hexes: _h, ...rest } = g; return rest; }) });
+
+/** Haritada düzenlenebilen hedef var mı (altıgen ya da nesne isteyen; hazır "Kaç" ön ayarı da): savaş ekranı şeridi açılır. */
+export const hasMapGoals = (d: GoalsDraft | null | undefined): boolean => !!d && (d.list.some((g) => { const n = needsOf(g); return n.hexes || n.object; }) || (d.fail ?? []).some(failPending));
+
 /** Hedefe nesne bağlar (`fail:<i>` = i. başarısızlık koşulu). */
 export function bindObject(d: GoalsDraft, goalId: string, objectId: string): GoalsDraft {
   if (goalId.startsWith('fail:')) {

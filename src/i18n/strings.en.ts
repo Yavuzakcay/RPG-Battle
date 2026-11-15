@@ -90,6 +90,7 @@ export const en: Strings = {
     band: { full: 'Healthy', hurt: 'Wounded', bloodied: 'Badly wounded', dying: 'Near death', down: 'Down' } as Record<string, string>,
     /** Task OD1C: goal hexes and objects are picked on the map. */
     goal: {
+      hexTitle: (n: number): string => `Pick the exit hexes: ${n} selected`, clear: 'Clear', editHex: 'Edit hexes',
       pending: 'waiting', needHex: 'Pick hexes on the map', needObject: 'Pick or place an object on the map', afterMap: 'Once on the map, pick or place an object.',
       objectLater: 'Pick / place on the map', civilians: 'Civilians', hexCount: (n: number): string => `${n} hex${n === 1 ? '' : 'es'}`, ready: 'ready',
       stripTitle: 'Finish the goals', stripHelp: 'Waiting goals are finished on the map.', markHex: 'Mark hexes', markDone: 'Done',

@@ -41,7 +41,7 @@ import { GroupsPanel, type GroupChoice } from '../ui/gm/GroupsPanel';
 import { goalsFromData } from '../battle/goals';
 import { SEFERLER } from '../journey/sefer';
 import { presetObjects } from '../battle/objects';
-import { draftFromGoals, failPending, resetForMap, resolveDraft, type GoalsDraft } from '../oda/hedef';
+import { draftFromGoals, hasMapGoals, resetForMap, resolveDraft, type GoalsDraft } from '../oda/hedef';
 import type { ReactNode } from 'react';
 import type { Oda } from '../oda/model';
 import { joinRoom, leaveRoom } from '../oda/store';
@@ -555,7 +555,7 @@ export function GmScreen(props: {
               const seed = Math.floor(Math.random() * 1e9);
               const participants = planParticipants(plan);
               starting.current = participants;
-              pendingRef.current = resolved.pending.length || (goalDraft?.fail ?? []).some(failPending) ? goalDraft ?? undefined : undefined;
+              pendingRef.current = hasMapGoals(goalDraft) ? goalDraft ?? undefined : undefined;
               dice.play((rng) => createMapBattle(participants, { ...plan, civilianArtSeed: seed, diceMode, ruleToggles, ruleParams, houseRules: houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules()), ...(multiHex ? { multiHex: true } : {}), ...(aiDiff.party !== 'normal' || aiDiff.enemies !== 'normal' ? { yz: { zorluk: { ...(aiDiff.party !== 'normal' ? { party: aiDiff.party } : {}), ...(aiDiff.enemies !== 'normal' ? { enemies: aiDiff.enemies } : {}) } } } : {}), ...(resolved.goals !== undefined ? { goals: resolved.goals } : {}), ...(Object.keys(groupStates).length ? { groupStates } : {}) }, rng));
             }}>{G.setup}</button>
           {dice.pending && (
