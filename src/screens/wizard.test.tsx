@@ -54,13 +54,13 @@ describe('sihirbaz adımları ve eksikler', () => {
     expect(clearInvalidSubclass(fighter({ level: 3, subclassId: 'champion' })).cleared).toBeNull();
     expect(html(bad, 'character')).toContain('Kayıtlı alt sınıf (evoker) bu sınıfta bulunamadı');
   });
-  it('büyücü olmayan sınıfta Büyüler adımı yok (6 adım), büyücüde 7 adım (Görev K3: kimlik + tür + sınıf tek adım)', () => {
+  it('büyücü olmayan sınıfta Büyüler adımı yok (7 adım), büyücüde 8 adım (Görev K3: kimlik + tür + sınıf tek adım; CK1: Hikâye adımı)', () => {
     expect(wizardSteps(fighter().sheet)).not.toContain('spells');
-    expect(wizardSteps(fighter().sheet)).toHaveLength(6);
-    expect(wizardSteps(fighter({ classId: 'wizard' }).sheet)).toHaveLength(7);
+    expect(wizardSteps(fighter().sheet)).toHaveLength(7);
+    expect(wizardSteps(fighter({ classId: 'wizard' }).sheet)).toHaveLength(8);
     expect(wizardSteps(fighter().sheet)[0]).toBe('character');
-    expect(html(fighter(), 'character')).toContain('1 / 6 · Karakter');
-    expect(html(fighter({ classId: 'wizard' }), 'scores')).toContain('2 / 7 · Puanlar');
+    expect(html(fighter(), 'character')).toContain('1 / 7 · Karakter');
+    expect(html(fighter({ classId: 'wizard' }), 'scores')).toContain('2 / 8 · Puanlar');
   });
   it('geçmişten gelen beceri kilitli: sınıf düğmesi yok, tekrar seçilemez; sayaçlar', () => {
     const c = withSkills(fighter({}, { classSkills: ['perception'], otherSkills: ['athletics'] }));

@@ -4,6 +4,7 @@
  * SRD 5.2.1 "Character Creation": standart dizi 15, 14, 13, 12, 10, 8; point buy 27 puan,
  * skorlar 8–15, maliyet tablosu aşağıda. Ability bonusları geçmişten (+2/+1 veya +1/+1/+1).
  */
+import { cleanStory, type Hikaye } from './story';
 import ALT_SOY_GORUNUM from '../../data/alt-soy-gorunum.json';
 import type { Alignment } from './alignment';
 import { invocationKit, invocationProblems, invocationSlots, parseInvocation } from './invocations';
@@ -51,7 +52,9 @@ export interface SavedCharacter {
   zar?: string;
   /** SD8 eki: açılmış Alignment zarları (`hizalanma-<kare>`, tekrarsız); açılan zar kalıcıdır. */
   hizalanmaZarlar?: string[];
-  /** Kuyruk K51: karakter kayıt sürümü (yoksa 1; 2 = hizalanma alanı tanınır). */
+  /** Kuyruk KQ4 CK1: isteğe bağlı hikâye metinleri (boş alanlar yazılmaz); yoksa eski kayıt. */
+  hikaye?: Hikaye;
+  /** Kuyruk K51: karakter kayıt sürümü (yoksa 1; 2 = hizalanma alanı, 3 = hikâye alanı tanınır). */
   surum?: number;
   /**
    * Görev K17: oluşturucu taslağı; sınıf değişince eski sınıfın seçimleri burada sınıf kimliğiyle saklanır (eski sınıfa
@@ -307,14 +310,15 @@ export function switchClass(c: SavedCharacter, id: string, opts: { baseScores?: 
 
 /** Görev K17: kayda giden karakter: taslak alanı ve başka sınıfa ait seçimler yazılmaz. */
 export function savableCharacter(c: SavedCharacter): SavedCharacter {
-  const { classDrafts: _drafts, ...rest } = c;
-  return { ...rest, sheet: classScoped(c.sheet) };
+  const { classDrafts: _drafts, hikaye: story, ...rest } = c;
+  const hikaye = cleanStory(story);
+  return { ...rest, ...(hikaye ? { hikaye } : {}), sheet: classScoped(c.sheet) };
 }
 
 /** Formdaki bütün sorunlar (boşsa karakter kaydedilebilir ve savaşa girebilir). */
 /** Görev K1: sihirbazın adımları (oluşturucu ekranı; sorunlar adıma bağlanır). */
 /** Görev K3: kimlik, tür (soy) ve sınıf tek ilk adımda (`character`). */
-export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equipment' | 'spells' | 'summary' | 'alignment';
+export type BuilderStep = 'character' | 'scores' | 'skills' | 'progress' | 'equipment' | 'spells' | 'story' | 'summary' | 'alignment';
 export interface CharacterIssue { step: BuilderStep; text: string }
 
 /** Karakterin sorunları (kaydetmeyi engeller), her biri ilgili sihirbaz adımıyla. Kurallar `characterProblems` ile aynı. */

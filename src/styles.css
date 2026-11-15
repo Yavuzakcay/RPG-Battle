@@ -1543,3 +1543,8 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .align-log li.align-turn { border-left: 4px solid var(--sel); padding-left: 8px; margin: 4px 0; }
 .align-path { margin: 4px 0; font-size: 0.85rem; }
 .align-turn-form { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* Kuyruk KQ4 CK1: hikâye alanları. */
+.story-fields { display: grid; gap: 12px; }
+.story-field { display: flex; flex-direction: column; gap: 4px; }
+.story-field textarea { width: 100%; box-sizing: border-box; resize: vertical; font: inherit; }

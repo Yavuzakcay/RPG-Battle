@@ -57,6 +57,24 @@ export const en: Strings = {
     info: (lb: number, cls: string): string => `weight ${lb} lb (${cls})`, cls: { hafif: 'light', orta: 'medium', agir: 'heavy' } as Record<string, string>,
     carry: (free: number): string => `your free capacity is ${free} lb`, carryNo: 'you cannot carry it alone', carryYes: 'you can carry it', needPeople: (n: number): string => `${n} people needed`,
   },
+  /** Task KQ4 CK1: character story and character sheet. */
+  story: {
+    title: 'Story', intro: 'Write your character\'s story if you like. Everything is optional; a field you leave empty is not shown anywhere.',
+    fields: { gecmisHikayesi: 'Backstory', kisilik: 'Personality', idealler: 'Ideals', baglar: 'Bonds', kusurlar: 'Flaws', gorunum: 'Appearance', notlar: 'Notes' } as Record<string, string>,
+    hints: { gorunum: 'Height, age, eyes, hair… free text.' } as Record<string, string>,
+    left: (n: number): string => `${n} characters left`, notes: 'Edit notes', notesTitle: (name: string): string => `${name}: notes`, done: 'Save and return', cancel: 'Cancel',
+  },
+  sheet: {
+    button: 'Character sheet', title: 'Character sheet', close: 'Close', print: 'Print / PDF', png: 'Download PNG', json: 'Export JSON', share: 'Share', importJson: 'Import JSON',
+    page1: 'Page 1', page2: 'Page 2', level: (n: number): string => `Level ${n}`, background: 'Background', race: 'Species', klass: 'Class',
+    scores: 'Abilities', saves: 'Saving throws', skills: 'Skills', proficiency: 'Proficiency', ac: 'AC', hp: 'HP', speed: 'Speed', initiative: 'Initiative', passive: 'Passive Perception',
+    attacks: 'Weapons', atk: 'Attack', dmg: 'Damage', features: 'Features', spells: 'Spells', cantrips: 'Cantrips', slots: 'Slots', spellDc: 'Spell DC', spellAtk: 'Spell attack',
+    gear: 'Equipment', carry: (w: number, cap: number): string => `Load ${w} / ${cap} lb`, alignment: 'Alignment', story: 'Story', missing: 'Content missing', ft: 'ft', expertise: 'expertise', prof: 'proficient',
+    trOnly: 'Description available in Turkish only.', fileName: (n: string): string => `${n || 'character'}.json`,
+    importTitle: 'Import character', importCopy: 'Add as a copy', importFull: (max: number): string => `Party is full (at most ${max} characters).`,
+    importErrors: { json: 'The file could not be read: not valid JSON.', format: 'This is not a character file.', version: 'The file version is not supported.', fields: 'The character data is missing or broken.' } as Record<string, string>,
+    importOk: (name: string): string => `${name} added.`, depends: 'Note: if a subclass or external content is not loaded, the character shows "content missing".',
+  },
   /** Task OD1: local Create room / Join room, room settings, enemy HP visibility. */
   oda: {
     createTitle: 'Create room', joinTitle: 'Join room', quickTitle: 'Quick battle', rooms: 'Rooms',
@@ -356,7 +374,7 @@ export const en: Strings = {
       metamagicPlain: { careful: 'Careful Spell', distant: 'Distant Spell', empowered: 'Empowered Spell', extended: 'Extended Spell', heightened: 'Heightened Spell', quickened: 'Quickened Spell', seeking: 'Seeking Spell', subtle: 'Subtle Spell', transmuted: 'Transmuted Spell', twinned: 'Twinned Spell' } as Record<string, string>,
       stepCrash: 'Something went wrong in this step; press Back.',
       steps: { character: 'Character', scores: 'Scores', skills: 'Skills', progress: 'Progression', equipment: 'Equipment',
-        spells: 'Spells', summary: 'Summary', alignment: 'Alignment' } as Record<string, string>,
+        spells: 'Spells', story: 'Story', summary: 'Summary', alignment: 'Alignment' } as Record<string, string>,
       stepOf: (n: number, total: number, label: string) => `${n} / ${total} · ${label}`,
       back: 'Back', next: 'Next', save: 'Save', missing: (n: number) => `${n} missing`, missingTitle: 'Missing', noMissing: 'Nothing missing',
       goTo: (step: string) => `Go to ${step}`,

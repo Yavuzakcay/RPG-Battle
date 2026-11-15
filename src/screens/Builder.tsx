@@ -4,10 +4,11 @@
  * zırh, silah, eşya (her birinin bir satır özeti, ayrıntı üzerine gelince ya da seçilince); büyüler.
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
+import { StoryStep } from './builder/Story';
 import { SpellComps, componentsInfo } from '../ui/SpellComps';
 import { eligibleForms, shapeLimits } from '../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, LESSON_FEATS, parseInvocation } from '../rules/invocations';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { armor, classDataLoaded, classes, getClass, items, loadMonsters, monsters, monstersLoaded, races, spells, weapons } from '../data';
 import { classBlurb, featInfo, raceBlurb, raceTraitLines } from '../ui/descriptions';
 import { describeTr } from '../ui/trDesc';
@@ -62,6 +63,9 @@ import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
 import { ITEM_KINDS, ITEM_TIERS, itemKind, itemTier, type ItemKind, type ItemTier } from '../rules/itemCategory';
 
+// Kuyruk KQ4 CK1: karakter kâğıdı tembel parça.
+const SheetOverlay = lazy(() => import('./sheet/SheetOverlay'));
+
 /** SD3: ilk sırada görünen tür ve sınıf kartları (kalanı "Diğer" altında; `data/onerilen-baslangic.json`). */
 const RACE_FEATURED = onerilen.ozelTurler;
 const CLASS_FEATURED = onerilen.ozelSiniflar;
@@ -106,7 +110,8 @@ function mainAttack(sheet: CharacterSheet): string {
 export function wizardSteps(sheet: CharacterSheet): BuilderStep[] {
   const caster = getClass(sheet.classId).casting !== null || alternativeCantrips(sheet).options.length > 0
     || spellOptions(sheet.classId, sheet.level).length > 0;
-  const all: BuilderStep[] = ['character', 'scores', 'skills', 'progress', 'equipment', 'spells', 'summary'];
+  // Kuyruk KQ4 CK1: "Hikâye" adımı özetten (Kaydet ekranı) hemen önce; Alignment adımı yine en sonda.
+  const all: BuilderStep[] = ['character', 'scores', 'skills', 'progress', 'equipment', 'spells', 'story', 'summary'];
   const list = caster ? all : all.filter((x) => x !== 'spells');
   // Kuyruk K51: hizalanma ev kuralı açıkken son adım.
   return alignmentEnabled() ? [...list, 'alignment'] : list;
@@ -177,6 +182,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const [missingOpen, setMissingOpen] = useState(false);
   // SD3: Kaydet soluk (disabled) kalmaz; eksik varken dokununca nedeni söyler ve ilk eksik adıma götürür.
   const [saveHint, setSaveHint] = useState(false);
+  // Kuyruk KQ4 CK1: karakter kâğıdı (tembel parça) son ekranda.
+  const [sheetOpen, setSheetOpen] = useState(false);
   const go = (id: BuilderStep) => { setStepId(id); setVisited((v) => new Set([...v, id])); setMissingOpen(false); setSaveHint(false); };
   const issuesOf = (id: BuilderStep) => issues.filter((x) => x.step === id);
   // Sınıf değişince avatar beklemeden açılsın: bu tür ve görünümün bütün sınıf jetonları (küçük kopya) boşta indirilir.
@@ -232,6 +239,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             {current === 'progress' && <ProgressStep c={c} setC={setC} set={set} />}
             {current === 'equipment' && <EquipmentStep sheet={s} set={set} carryRule={carryRule} />}
             {current === 'spells' && <SpellsStep sheet={s} set={set} />}
+            {current === 'story' && <StoryStep c={c} setC={setC} />}
             {current === 'alignment' && <AlignmentStep c={c} setC={setC} initial={props.initial} />}
             </RecoProvider>
             </StepBoundary>
@@ -253,12 +261,14 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             )}
             <div className="wiz-nav">
               <button className="ghost" disabled={index === 0} onClick={() => go(steps[index - 1] as BuilderStep)}>{W.back}</button>
+              {isLast && <button type="button" className="ghost" onClick={() => setSheetOpen(true)}>{t().sheet.button}</button>}
               {!isLast
                 ? <button className="cta" onClick={() => go(steps[index + 1] as BuilderStep)}>{W.next}</button>
                 : <button className={`cta${problems.length > 0 ? ' soft' : ''}`} aria-disabled={problems.length > 0 || undefined}
                   onClick={() => (problems.length > 0 ? setSaveHint(true) : props.onSave(withAlignment(savableCharacter(final), props.initial)))}>{W.save}</button>}
             </div>
           </section>
+          {sheetOpen && <Suspense fallback={null}><SheetOverlay c={savableCharacter(final)} onClose={() => setSheetOpen(false)} /></Suspense>}
           <aside className="panel builder-summary wiz-side" aria-label={T.summary}>
             {current === 'character' && <TokenPreview sheet={s} size={200} className="wiz-preview-side" />}
             <h2>{T.summary}</h2>

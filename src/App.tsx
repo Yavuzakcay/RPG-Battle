@@ -43,6 +43,8 @@ const Builder = lazy(() => importBuilder().then((m) => ({ default: m.Builder }))
 // Ayarlar (dış içerik; Görev E1) ayrı parça.
 const OdaKur = lazy(() => import('./screens/OdaScreens').then((m) => ({ default: m.OdaKur })));
 const OdaKatil = lazy(() => import('./screens/OdaScreens').then((m) => ({ default: m.OdaKatil })));
+const NotesScreen = lazy(() => import('./screens/NotesScreen').then((m) => ({ default: m.NotesScreen })));
+const SheetOverlay = lazy(() => import('./screens/sheet/SheetOverlay'));
 const SettingsScreen = lazy(() => import('./screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
 // Kuyruk 14 Y1: yolculuk (deneme; bayrak arkasında) ayrı parça.
 const JourneyScreen = lazy(() => import('./screens/JourneyScreen').then((m) => ({ default: m.JourneyScreen })));
@@ -56,6 +58,7 @@ type Screen =
   | { name: 'player' }
   | { name: 'builder'; character: SavedCharacter; /** Görev OD1B: odaya katıl ekranından açıldı (oda kuralları oluşturucuda geçerli). */ oda?: { id: string; overlay: RoomOverlay } }
   | { name: 'gm' }
+  | { name: 'notes'; character: SavedCharacter }
   | { name: 'oda'; roomId?: string }
   | { name: 'katil'; roomId?: string }
   | { name: 'battle'; session: Session; restored?: boolean; journey?: boolean; seruven?: string; mapFilter?: string; /** Görev OD1: odadan kurulan savaş (oda kimliği). */ oda?: string; /** Görev OD1B: kayıttan devam eden savaşın HP görünürlüğü. */ hp?: HpVis; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler. */ goalDraft?: GoalsDraft }
@@ -160,6 +163,8 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     if (screen.name === 'player' && classInfo.ready) void importBuilder().catch(() => { /* Sihirbaza girilince yeniden denenir. */ });
   }, [screen.name, classInfo.ready]);
   const store = (list: SavedCharacter[]) => { setCharacters(list); saveCharacters(list); };
+  // Kuyruk KQ4 CK1: karakter kâğıdı penceresi (listeden).
+  const [sheetFor, setSheetFor] = useState<SavedCharacter | null>(null);
   const home = () => setScreen({ name: 'home' });
   const [resumeError, setResumeError] = useState<string | null>(null);
   // Eski kayıtlar: alt sınıf seviyesindeki karakterin alt sınıfı boşsa SRD'deki tek alt sınıf atanır ve bildirilir.
@@ -190,7 +195,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     </div>
   );
   const body = screenBody();
-  return <>{notice}{body}</>;
+  return <>{notice}{body}{sheetFor && <Suspense fallback={null}><SheetOverlay c={sheetFor} onClose={() => setSheetFor(null)} /></Suspense>}</>;
 
   function screenBody() {
   if (screen.name !== 'home' && !classInfo.ready) return <Loading error={classInfo.error} text={t().common.loading} />;
@@ -210,8 +215,13 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     case 'player':
       return <PlayerScreen characters={characters} onBack={home}
         onUpdate={(c) => store(characters.map((x) => (x.id === c.id ? c : x)))}
-        onEdit={(c) => setScreen({ name: 'builder', character: c })}
+        onEdit={(c) => setScreen({ name: 'builder', character: c })} onNotes={(c) => setScreen({ name: 'notes', character: c })}
+        onSheet={(c) => setSheetFor(c)} onAdd={(list) => store(list)}
         onDelete={(id) => store(characters.filter((c) => c.id !== id))} />;
+    case 'notes':
+      // Kuyruk KQ4 CK1: kısa notlar ekranı.
+      return <NotesScreen character={screen.character} onCancel={() => setScreen({ name: 'player' })}
+        onSave={(c) => { store(characters.map((x) => (x.id === c.id ? c : x))); setScreen({ name: 'player' }); }} />;
     case 'builder':
       // Görev SD3: yeni karakter (adsız, becerisiz) önerilen başlangıç değerleriyle açılır.
       return <Builder initial={screen.character} suggest={screen.character.sheet.name === '' && screen.character.classSkills.length === 0}

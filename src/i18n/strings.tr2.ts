@@ -101,6 +101,24 @@ export const TR_EXTRA = {
     info: (lb: number, cls: string): string => `ağırlık ${lb} lb (${cls})`, cls: { hafif: 'hafif', orta: 'orta', agir: 'ağır' } as Record<string, string>,
     carry: (free: number): string => `boş kapasiten ${free} lb`, carryNo: 'tek başına taşıyamazsın', carryYes: 'taşıyabilirsin', needPeople: (n: number): string => `${n} kişi gerekir`,
   },
+  /** Kuyruk KQ4 CK1: karakter hikâyesi ve karakter kâğıdı. */
+  story: {
+    title: 'Hikâye', intro: 'İstersen karakterinin hikâyesini yaz. Hepsi isteğe bağlı; boş bıraktığın alan hiçbir yerde görünmez.',
+    fields: { gecmisHikayesi: 'Geçmiş hikâyesi', kisilik: 'Kişilik', idealler: 'İdealler', baglar: 'Bağlar', kusurlar: 'Kusurlar', gorunum: 'Görünüm', notlar: 'Notlar' } as Record<string, string>,
+    hints: { gorunum: 'Boy, yaş, gözler, saç… serbest yaz.' } as Record<string, string>,
+    left: (n: number): string => `${n} karakter kaldı`, notes: 'Notları düzenle', notesTitle: (name: string): string => `${name}: notlar`, done: 'Kaydet ve dön', cancel: 'Vazgeç',
+  },
+  sheet: {
+    button: 'Karakter kâğıdı', title: 'Karakter kâğıdı', close: 'Kapat', print: 'Yazdır / PDF', png: 'PNG indir', json: 'JSON dışa aktar', share: 'Paylaş', importJson: 'JSON içe aktar',
+    page1: 'Sayfa 1', page2: 'Sayfa 2', level: (n: number): string => `Seviye ${n}`, background: 'Geçmiş', race: 'Tür', klass: 'Sınıf',
+    scores: 'Yetenekler', saves: 'Kurtarma atışları', skills: 'Beceriler', proficiency: 'Yeterlilik', ac: 'AC', hp: 'HP', speed: 'Hız', initiative: 'İnisiyatif', passive: 'Pasif Algı',
+    attacks: 'Silahlar', atk: 'Saldırı', dmg: 'Hasar', features: 'Özellikler', spells: 'Büyüler', cantrips: 'Cantrip', slots: 'Slotlar', spellDc: 'Büyü DC', spellAtk: 'Büyü saldırısı',
+    gear: 'Donanım', carry: (w: number, cap: number): string => `Yük ${w} / ${cap} lb`, alignment: 'Alignment', story: 'Hikâye', missing: 'İçerik eksik', ft: 'ft', expertise: 'uzmanlık', prof: 'yeterli',
+    trOnly: 'Açıklama yalnızca Türkçe.', fileName: (n: string): string => `${n || 'karakter'}.json`,
+    importTitle: 'Karakter içe aktar', importCopy: 'Kopya olarak ekle', importFull: (max: number): string => `Parti dolu (en çok ${max} karakter).`,
+    importErrors: { json: 'Dosya okunamadı: geçerli bir JSON değil.', format: 'Bu bir karakter dosyası değil.', version: 'Dosya sürümü desteklenmiyor.', fields: 'Karakter verisi eksik ya da bozuk.' } as Record<string, string>,
+    importOk: (name: string): string => `${name} eklendi.`, depends: 'Not: alt sınıf ya da dış içerik yüklü değilse karakterde "içerik eksik" görünür.',
+  },
   /** Görev OD1: yerel Oda kur / Odaya katıl, oda ayarları, düşman HP görünürlüğü. */
   oda: {
     createTitle: 'Oda kur', joinTitle: 'Odaya katıl', quickTitle: 'Hızlı savaş', rooms: 'Odalar',

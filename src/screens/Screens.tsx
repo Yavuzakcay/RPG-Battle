@@ -319,8 +319,11 @@ function MasteryDrills(props: { c: SavedCharacter; before: string[]; onUpdate: (
 export function PlayerScreen(props: {
   characters: SavedCharacter[]; onEdit: (c: SavedCharacter) => void; onDelete: (id: string) => void;
   onBack: () => void; onUpdate?: (c: SavedCharacter) => void;
+  /** Kuyruk KQ4 CK1: notlar, karakter kâğıdı ve JSON içe aktarma (listeyi günceller). */
+  onNotes?: (c: SavedCharacter) => void; onSheet?: (c: SavedCharacter) => void; onAdd?: (list: SavedCharacter[]) => void;
 }) {
   const full = props.characters.length >= MAX_PARTY;
+  const [imp, setImp] = useState<{ pending?: SavedCharacter; msg: string | null }>({ msg: null });
   const L = t();
   const [confirm, setConfirm] = useState<string | null>(null);
   return (
@@ -334,11 +337,37 @@ export function PlayerScreen(props: {
           <div className="gm-row">
             <button disabled={full} onClick={() => props.onEdit(newCharacter(newId()))}>{L.player.newCharacter}</button>
             <span className={`mute party-limit${full ? ' full' : ''}`}>{L.player.limit(props.characters.length, MAX_PARTY)}</span>
+            {props.onAdd && (
+              <label className="file-btn ghost">{L.sheet.importJson}
+                <input type="file" accept=".json,application/json" onChange={(e: { target: HTMLInputElement }) => {
+                  const f = e.target.files?.[0]; e.target.value = '';
+                  if (!f) return;
+                  void Promise.all([f.text(), import('./sheet/io')]).then(([text, io]) => {
+                    const r = io.parseCharacterFile(text);
+                    if (!r.ok) { setImp({ msg: L.sheet.importErrors[r.error] ?? r.error }); return; }
+                    const a = io.addImported(props.characters, r.character, false, newId);
+                    if (a.ok) { props.onAdd?.(a.list); setImp({ msg: L.sheet.importOk(a.added.sheet.name) }); }
+                    else if (a.error === 'full') setImp({ msg: L.sheet.importFull(MAX_PARTY) });
+                    else setImp({ pending: r.character, msg: L.sheet.importTitle });
+                  });
+                }} />
+              </label>
+            )}
           </div>
+          {imp.pending && (
+            <p className="warn" role="alert">{imp.pending.sheet.name}: ID
+              {' '}<button type="button" onClick={() => {
+                const p = imp.pending as SavedCharacter;
+                void import('./sheet/io').then((io) => { const a = io.addImported(props.characters, p, true, newId); if (a.ok) { props.onAdd?.(a.list); setImp({ msg: L.sheet.importOk(a.added.sheet.name) }); } else setImp({ msg: L.sheet.importFull(MAX_PARTY) }); });
+              }}>{L.sheet.importCopy}</button></p>
+          )}
+          {imp.msg && !imp.pending && <p className="mute" role="status">{imp.msg}</p>}
           {props.characters.length === 0 && <p className="empty-state">{L.player.empty}</p>}
           {props.characters.map((c) => (
             <CharacterCard key={c.id} c={c} rest={props.onUpdate ? <RestPanel c={c} onUpdate={props.onUpdate} /> : null}>
               <button onClick={() => props.onEdit(c)}>{L.common.edit}</button>
+              {props.onNotes && <button className="ghost" onClick={() => props.onNotes?.(c)}>{L.story.notes}</button>}
+              {props.onSheet && <button className="ghost" onClick={() => props.onSheet?.(c)}>{L.sheet.button}</button>}
               {confirm === c.id
                 ? <button className="danger" onClick={() => { props.onDelete(c.id); setConfirm(null); }}>{L.common.confirmDelete}</button>
                 : <button className="ghost" onClick={() => setConfirm(c.id)}>{L.common.delete}</button>}

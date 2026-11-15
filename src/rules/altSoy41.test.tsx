@@ -103,15 +103,15 @@ describe('hizalanma alt soy tablosu', () => {
     const base = { classId: 'fighter', backgroundId: 'soldier', raceId: 'dwarf' };
     const none = startContributions(base).find((x) => x.kaynak === 'irk')!;
     expect(none.id).toBe('dwarf');
-    const crag = startContributions({ ...base, lineageId: 'crag' }).filter((x) => x.kaynak === 'irk');
+    const crag = startContributions({ ...base, lineageId: 'crag' }, true, 1).filter((x) => x.kaynak === 'irk');
     expect(crag.length).toBe(1);
     expect(crag[0]).toMatchObject({ id: 'dwarf/crag', duzen: ALT['dwarf/crag']!.duzen, iyilik: ALT['dwarf/crag']!.iyilik });
     expect(startContributions({ ...base, lineageId: 'crag' }, false).some((x) => x.kaynak === 'irk')).toBe(false);
     expect(startContributions({ ...base, lineageId: 'yok-soy' }).find((x) => x.kaynak === 'irk')!.id).toBe('dwarf');
   });
   it('uç buildler alt soyla: toplam hesaplanır, ±50 içinde', () => {
-    const v = startValue(startContributions({ classId: 'rogue', backgroundId: 'criminal', subclassId: 'imza_infazci', raceId: 'tiefling', lineageId: 'abyssal' }));
-    expect(v).toEqual({ duzen: -45, iyilik: -50 });
+    const v = startValue(startContributions({ classId: 'rogue', backgroundId: 'criminal', subclassId: 'imza_infazci', raceId: 'tiefling', lineageId: 'abyssal' }, true, 1));
+    expect(v).toEqual({ duzen: -45, iyilik: -50 }); // SD12: tablo değerleri ×1 çarpanla (katkiCarpani yalnız yeni karakter hesabını ölçekler)
     expect(v.duzen).toBeGreaterThanOrEqual(-50);
   });
   it('Celestial: uyanış 3. seviyeden etkin; seçilince yeniden hesaplanır', () => {

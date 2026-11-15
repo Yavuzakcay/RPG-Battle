@@ -233,7 +233,7 @@ const tr = {
         quickened: 'Hızlandırılmış Büyü', seeking: 'Arayan Büyü', subtle: 'Sessiz Büyü', transmuted: 'Dönüştürülmüş Büyü', twinned: 'İkiz Büyü' } as Record<string, string>,
       stepCrash: 'Bu adımda bir sorun oluştu, Geri\'ye bas.',
       steps: { character: 'Karakter', scores: 'Puanlar', skills: 'Beceriler', progress: 'İlerleme', equipment: 'Donanım',
-        spells: 'Büyüler', summary: 'Özet', alignment: 'Alignment' } as Record<string, string>,
+        spells: 'Büyüler', story: 'Hikâye', summary: 'Özet', alignment: 'Alignment' } as Record<string, string>,
       stepOf: (n: number, total: number, label: string) => `${n} / ${total} · ${label}`,
       back: 'Geri', next: 'Devam', save: 'Kaydet', missing: (n: number) => `${n} eksik`, missingTitle: 'Eksikler', noMissing: 'Eksik yok',
       goTo: (step: string) => `${step} adımına git`,
