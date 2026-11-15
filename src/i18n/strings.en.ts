@@ -25,6 +25,16 @@ export const en: Strings = {
     mine: 'Basic dice', alignment: 'Alignment dice', rewards: 'Dice you earned',
     classDie: (n: string): string => `Class dice: ${n}`, raceDie: (n: string): string => `Race dice: ${n}`,
   },
+  setupUi: {
+    advanced: 'Advanced', advancedHelp: 'Most games never need these.', groupOn: 'Turn group on', groupOff: 'Turn group off',
+    familiarForm: 'Animal form', familiarType: 'Spirit type',
+    familiarKind: {
+      celestial: 'Celestial: A heavenly spirit. Tied to beings of light and goodness.',
+      fey: 'Fey: A spirit from the fey realm. Tied to beings of nature and magic.',
+      fiend: 'Fiend: A spirit from the lower planes. Tied to devils and demons.',
+    } as Record<string, string>,
+    familiarKindNote: 'The type only sets the creature\'s spirit type; it does not change its stats. Its power comes from the animal form (Spider, Hawk...).',
+  },
   roomRules: {
     title: 'Room rules', help: 'Chosen when you set up a room. Stays the same in every battle.',
     upper: 'Upper levels (6–20)', upperHelp: 'Characters can reach level 20.',

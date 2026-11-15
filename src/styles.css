@@ -504,8 +504,13 @@ li.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8p
 .civ-picker { position: absolute; left: 50%; bottom: 72px; transform: translateX(-50%); z-index: 6; max-width: calc(100% - 32px);
   background: rgba(15, 20, 26, 0.92); color: #fff; border: 2px solid #ffd400; border-radius: 12px; padding: 8px 10px; }
 .civ-picker strong { display: block; font-size: 14px; margin-bottom: 6px; }
-.familiar-picker { display: flex; flex-direction: column; gap: 6px; width: 300px; }
+.familiar-picker { display: flex; flex-direction: column; gap: 6px; width: min(320px, calc(100vw - 32px)); box-sizing: border-box; max-height: 70vh; overflow-y: auto; }
 .familiar-picker small { opacity: 0.85; }
+/* SD9: uzun karakter adı ve açıklamalar kırpılmaz, sarılır; etiketler menünün üstünde ayrı satır. */
+.familiar-picker strong, .familiar-picker small { white-space: normal; overflow-wrap: anywhere; }
+.familiar-picker .fx-stack { display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
+.familiar-picker .fx-stack select { max-width: 100%; width: 100%; min-height: 40px; }
+.familiar-picker .fx-label { font-size: 13px; font-weight: 600; }
 .civ-grid { display: grid; grid-template-columns: repeat(8, 72px); gap: 6px; overflow-x: auto; }
 .civ-grid button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; border-radius: 8px;
   background: rgba(255, 255, 255, 0.08); border: 2px solid transparent; color: #fff; font-size: 11px; line-height: 1.1; cursor: pointer; }
@@ -1440,3 +1445,10 @@ button.cta.soft { opacity: .65; }
 @media (max-width: 640px) { .dice-step-list button { flex: 1 1 100%; } }
 .set-seg button.on, .dice-step-list button.on { background: var(--acc, #e8b84a); color: #1b130b; border-color: transparent; font-weight: 700; }
 .set-seg button.ghost, .dice-step-list button.ghost { background: transparent; }
+/* SD9: kapalı katmanlarda (Oda kuralları, Gelişmiş, Ayarlar > Gelişmiş) açılır ok görünür. */
+.set-fold > summary::before, .settings-advanced > summary::before, .rule-group > summary::before { content: '▸'; display: inline-block; width: 1.2em; }
+.set-fold[open] > summary::before, .settings-advanced[open] > summary::before, .rule-group[open] > summary::before { content: '▾'; }
+.set-fold > summary::-webkit-details-marker, .settings-advanced > summary::-webkit-details-marker { display: none; }
+.rule-group { margin: 6px 0 6px 10px; }
+.rule-group > summary { cursor: pointer; font-weight: 600; min-height: 36px; display: flex; align-items: center; list-style: none; }
+.gm-advanced { margin: 8px 0; }

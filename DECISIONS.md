@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-22 — SD9: Game Master kurulum ekranı sadeleştirmesi + Find Familiar savaş öncesi paneli (yalnız arayüz; kural sürümü, kayıt sürümü, motor değişmedi)
+
+- **Denetim:** `harita/belgeler/SD9-KURULUM.md` (`node scripts/sd9-kurulum-tablo.mjs`: üst düzey satırlar, 23 ev kuralı, 113 harita mekaniği tek tabloda; ad, saklama, kim değiştirir, yer, kaldırma adayı). **Hiçbir satır kaldırılmadı**; 13 altyapı satırı "kaldırma adayı" diye işaretlendi (kullanıcı seçecek).
+- **Yeni düzen:** Üstte Zar modu, Yapay zekâ zorluğu (parti/düşman), Hedefler, "Oda kuralları" (SD8 katı), "Savaşı kur". "Gelişmiş" (kapalı): Çok altıgenli yaratıklar (deneysel), Ev kuralları, Harita mekanikleri, Uyuyan gruplar.
+- **Harita mekanikleri temalı gruplarda** (`data/kurulum-gruplari.json`, yalnız grup; kimlikler/varsayılanlar `data/kural-kontrol.json`'da aynı): Yüzey ve su tepkimeleri 21, Sınıf özellikleri 22, Yapay zekâ davranışları 6, Büyü ve görüş sistemleri 8, Harita (kalan, lav/derin su/gizli nesne…) 45, Diğer (altyapı) 11 — ilk ikisinin sayıları tabloda. Her grupta "Grubu aç / Grubu kapat" ve grup başına (açık/toplam) sayacı; haritaya özgü kurallar yalnız o haritada göründüğü için gruplar boşsa gizlenir. Grup düğmesi tek tek anahtarların yazdığı aynı `toggles` durumuna yazar; `controlState` varsayılana eşit değerleri zaten atar, savaş kaydına giden değerler değişmedi.
+- **Belirsiz okuma:** "Gelişmiş > Diğer" ayrı bir katman yerine Harita mekanikleri içindeki "Diğer (altyapı)" grubudur (aynı yol: Gelişmiş > Harita mekanikleri > Diğer). Uyuyan gruplar (alarm) tabloda belirtilmediği için Gelişmiş'e alındı.
+- **Find Familiar paneli:** başlık/açıklama dar ekranda sarılır, panel genişliği ekrana sığar (`min(320px, 100vw − 32px)`), uzun karakter adı kırpılmaz; "Hayvan biçimi" ve "Ruh türü" etiketleri menülerin üstünde ayrı satır; ruh türü seçenekleri ad İngilizce + Türkçe + kısa açıklama, menü altında tek satır not (metinler tembel `strings.tr2.ts`/`strings.en.ts` `setupUi`; ana parça 419,97 kB).
+- Ekran görüntüleri `docs/sd9/` (kurulum alt paneli önce/sonra, masaüstü + dar). Find Familiar panelinin ekran görüntüsü alınamadı: bulut ortamında partiye karakter yüklenemedi (kurulum ekranı "Önce karakter oluştur" gösterdi); panel CSS'i yalnız kodla ve testle doğrulandı.
+
 ## 2026-11-22 — HATA-FAMILIAR: kurulumda Find Familiar yeniden çağrısı birikiyordu, "Savaşı başlat" kilitleniyordu (Kuyruk KQ1; kural sürümü ve kayıt sürümü değişmedi)
 
 - **Kök neden:** Çağrı komutu doğruydu (`def.replace`: önceki familiar için `summon_vanished`), ama reducer kaybolan yaratığı `gone: true, pos: null` olarak **savaşçılarda bırakıyordu** (savaşta günlük adları için). Kurulumda bu artık kayıtlar `executeStartBattle`'ın "haritada olmayan = yerleşmemiş" denetimine takılıyordu (`c.pos === null`): her yeniden çağrı bir artık daha ekliyor, "Henüz yerleşmeyenler var: Spider, Spider…" sonsuza dek kalıyordu. Yerleşmemiş kayıt sayısı çağrı sayısıyla büyüdü (7 Spider + 3 Rat örneği); testle yeniden üretildi (`src/battle/hataFamiliar.test.ts`).

@@ -24,6 +24,17 @@ export const TR_EXTRA = {
     mine: 'Temel zarlar', alignment: 'Alignment zarları', rewards: 'Kazandığın zarlar',
     classDie: (n: string): string => `Sınıf zarı: ${n}`, raceDie: (n: string): string => `Irk zarı: ${n}`,
   },
+  /** SD9: Game Master kurulum ekranı sadeleştirmesi ve Find Familiar savaş öncesi paneli. */
+  setupUi: {
+    advanced: 'Gelişmiş', advancedHelp: 'Çoğu oyunda dokunman gerekmez.', groupOn: 'Grubu aç', groupOff: 'Grubu kapat',
+    familiarForm: 'Hayvan biçimi', familiarType: 'Ruh türü',
+    familiarKind: {
+      celestial: 'Celestial (Göksel): Göksel bir ruh. Işık ve iyilik varlıklarına bağlı.',
+      fey: 'Fey (Peri): Peri âleminden bir ruh. Doğa ve büyü varlıklarına bağlı.',
+      fiend: 'Fiend (İblis): Alt âlemlerden bir ruh. Şeytan ve iblis varlıklarına bağlı.',
+    } as Record<string, string>,
+    familiarKindNote: 'Tür yalnızca yaratığın ruh türünü belirler; statları değiştirmez. Gücü hayvan biçimi (Spider, Hawk...) belirler.',
+  },
   roomRules: {
     title: 'Oda kuralları', help: 'Oda kurarken seçilir. Her savaşta aynı kalır.',
     upper: 'Üst seviye (6–20)', upperHelp: 'Karakterler 20. seviyeye çıkabilir.',

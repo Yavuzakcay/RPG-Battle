@@ -3193,7 +3193,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             // Kuyruk MB6: kurulumda yapılan çağırmalar `summons.json` `setup` bayrağından (Phantom Steed 70+'da çağırma, döküm süresi 1 dakika ya da ritüel).
             const rituals = c && !c.summon && c.pos ? spells.filter((sp) => c.spellNames.includes(sp.name) && summonDef(sp.id)?.setup && mechanicsAt(state, sp).kind === 'summon') : [];
             if (!c || rituals.length === 0) return null;
-            const F = t().summons;
+            const F = t().summons, SU = t().setupUi;
             return (
               <div className="civ-picker familiar-picker" role="group" aria-label={F.familiar.title(c.name, rituals[0]?.name ?? '')}>
                 {rituals.map((ritual) => {
@@ -3205,18 +3205,21 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       <strong>{F.familiar.title(c.name, ritual.name)}</strong>
                       <small>{def.setupSlot ? F.familiar.noteSlot : def.mount ? F.familiar.noteMount : F.familiar.note}</small>
                       {(def.forms ?? []).length > 0 && (
-                        <label className="fx-choice">{F.familiar.form}{' '}
+                        <label className="fx-choice fx-stack"><span className="fx-label">{SU.familiarForm}</span>
                           <select value={form} onChange={(e: { target: { value: string } }) => setFamForm(e.target.value)}>
                             {(def.forms ?? []).map((f) => <option key={f} value={f}>{getMonster(f).name}</option>)}
                           </select>
                         </label>
                       )}
                       {def.choice && (
-                        <label className="fx-choice">{F.choice[def.choice.kind]}{' '}
-                          <select value={kind} onChange={(e: { target: { value: string } }) => setFamType(e.target.value)}>
-                            {def.choice.options.map((o) => <option key={o} value={o}>{F.choiceName[o] ?? o}</option>)}
-                          </select>
-                        </label>
+                        <>
+                          <label className="fx-choice fx-stack"><span className="fx-label">{def.choice.kind === 'creatureType' ? SU.familiarType : F.choice[def.choice.kind]}</span>
+                            <select value={kind} onChange={(e: { target: { value: string } }) => setFamType(e.target.value)}>
+                              {def.choice.options.map((o) => <option key={o} value={o}>{def.choice?.kind === 'creatureType' ? (SU.familiarKind[o] ?? F.choiceName[o] ?? o) : F.choiceName[o] ?? o}</option>)}
+                            </select>
+                          </label>
+                          {def.choice.kind === 'creatureType' && <small className="mute familiar-kind-note">{SU.familiarKindNote}</small>}
+                        </>
                       )}
                       <button className="cta" onClick={() => dice.play((rng) => dispatch(session, { type: 'cast_spell', actorId: c.id, spellName: ritual.name, ...(form ? { form } : {}), ...(kind ? { choice: kind } : {}) }, rng))}>
                         {F.familiar.cast(ritual.name)}

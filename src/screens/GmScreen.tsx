@@ -33,6 +33,7 @@ import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
 import { HouseRulesPanel } from '../ui/gm/HouseRulesPanel';
 import { RoomRules } from '../ui/settings/RoomRules';
+import { Fold } from '../ui/settings/SegRow';
 import { MapRulesPanel } from '../ui/gm/MapRulesPanel';
 import type { RuleParams } from '../battle/ruleControl';
 import { GoalsPanel } from '../ui/gm/GoalsPanel';
@@ -508,16 +509,18 @@ export function GmScreen(props: {
               </label>
             ))}
           </fieldset>
+          <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
+          <RoomRules />
+          <Fold title={t().setupUi.advanced} help={t().setupUi.advancedHelp} className="gm-advanced">
           <label className="multihex-toggle" title={G.multiHex.note}>
             <input type="checkbox" checked={multiHex} onChange={(e: { target: { checked: boolean } }) => setMultiHex(e.target.checked)} /> {G.multiHex.label}
           </label>
           <small className="mute multihex-note">{G.multiHex.note}</small>
-          <RoomRules />
           <MapRulesPanel key={`${map.id}/${variant.id}`} mapId={map.id} variantId={variant.id} toggles={ruleToggles} params={ruleParams}
             onChange={(tg, ps) => { setRuleToggles(tg); setRuleParams(ps); }} />
           <HouseRulesPanel value={houseRules ?? houseRuleDefaults(mapSefer, characterHouseRules())} onChange={setHouseRules} />
           <GroupsPanel groups={map?.groups ?? []} value={groupStates} onChange={setGroupStates} />
-          <GoalsPanel value={goals === undefined ? mapGoals : goals} mapGoals={mapGoals} objects={mapObjects} size={map?.size ?? { cols: 15, rows: 7 }} onChange={setGoals} />
+          </Fold>
           <button className="cta" disabled={problems.length > 0}
             onClick={() => {
               // Masum görünümü tohumu bir kez seçilir: elle zar girilince kurulum aynı tohumla yeniden çalışır.

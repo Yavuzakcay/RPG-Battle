@@ -7,6 +7,10 @@ import { useState } from 'react';
 import { controllableRules, validParam, WIND_DIRS, type RuleParams, type RuleParamSpec } from '../../battle/ruleControl';
 import type { MapRuleData } from '../../map/maps';
 import { getLang, t } from '../../i18n';
+import groups from '../../../data/kurulum-gruplari.json';
+
+const GROUPS = groups as unknown as { gruplar: Array<{ id: string; tr: string; en: string }>; kural: Record<string, string> };
+export const groupOf = (ruleId: string): string => GROUPS.kural[ruleId] ?? 'harita';
 
 export function MapRulesPanel(props: {
   mapId: string; variantId: string;
@@ -19,23 +23,41 @@ export function MapRulesPanel(props: {
   if (!list.length) return null;
   const on = (id: string, def: boolean) => props.toggles[id] ?? def;
   const count = list.filter(({ rule, spec }) => on(rule.id, spec.default !== false)).length;
+  const U = t().setupUi;
+  const setGroup = (ids: string[], value: boolean) => props.onChange({ ...props.toggles, ...Object.fromEntries(ids.map((id) => [id, value])) }, props.params);
+  const row = ({ rule, spec }: (typeof list)[number]) => {
+    const enabled = on(rule.id, spec.default !== false);
+    return (
+      <div key={rule.id} className="map-rule">
+        <label className="house-rule">
+          <input type="checkbox" checked={enabled} onChange={(e) => props.onChange({ ...props.toggles, [rule.id]: e.target.checked }, props.params)} />
+          {' '}{en ? spec.en : spec.tr}
+        </label>
+        {spec.params.map((ps) => (
+          <ParamInput key={ps.key} spec={ps} rule={rule} disabled={!enabled} en={en} value={props.params[rule.id]?.[ps.key]}
+            onChange={(v) => props.onChange(props.toggles, { ...props.params, [rule.id]: { ...props.params[rule.id], [ps.key]: v } })} dirName={M.dirs} />
+        ))}
+      </div>
+    );
+  };
+  // SD9: kurallar temalı gruplarda (data/kurulum-gruplari.json); grup başına aç/kapat. Varsayılanlar ve kayıt değerleri aynı.
   return (
     <details className="house-rules map-rules">
       <summary>{M.title(count, list.length)}</summary>
       <p className="mute">{M.note}</p>
-      {list.map(({ rule, spec }) => {
-        const enabled = on(rule.id, spec.default !== false);
+      {GROUPS.gruplar.map((g) => {
+        const items = list.filter((x) => groupOf(x.rule.id) === g.id);
+        if (items.length === 0) return null;
+        const n = items.filter(({ rule, spec }) => on(rule.id, spec.default !== false)).length;
         return (
-          <div key={rule.id} className="map-rule">
-            <label className="house-rule">
-              <input type="checkbox" checked={enabled} onChange={(e) => props.onChange({ ...props.toggles, [rule.id]: e.target.checked }, props.params)} />
-              {' '}{en ? spec.en : spec.tr}
-            </label>
-            {spec.params.map((ps) => (
-              <ParamInput key={ps.key} spec={ps} rule={rule} disabled={!enabled} en={en} value={props.params[rule.id]?.[ps.key]}
-                onChange={(v) => props.onChange(props.toggles, { ...props.params, [rule.id]: { ...props.params[rule.id], [ps.key]: v } })} dirName={M.dirs} />
-            ))}
-          </div>
+          <details key={g.id} className="rule-group">
+            <summary>{en ? g.en : g.tr} ({n}/{items.length})</summary>
+            <div className="set-btns">
+              <button type="button" className="ghost" onClick={() => setGroup(items.map((x) => x.rule.id), true)}>{U.groupOn}</button>
+              <button type="button" className="ghost" onClick={() => setGroup(items.map((x) => x.rule.id), false)}>{U.groupOff}</button>
+            </div>
+            {items.map(row)}
+          </details>
         );
       })}
     </details>
