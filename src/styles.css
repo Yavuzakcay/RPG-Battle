@@ -665,8 +665,18 @@ li.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8p
 
 /* Savaş sonu efekti (Görev U; ui/EndFx.tsx): tıklamayı yutmaz, kendiliğinden kaybolur. */
 /* Görev U3: savaş sonu başlık videosu (tam ekran, dokununca geçer). */
-.end-video { position: fixed; inset: 0; z-index: 60; background: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.end-video video, .end-video img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* SV1: iki kip. solid: eski tam ekran siyah zemin. blend: video savaş ekranının üstünde (screen: siyah → şeffaf) + hafif karartma. */
+.end-video.solid { position: fixed; inset: 0; z-index: 60; background: #000; display: flex; align-items: center; justify-content: center; }
+.end-video.solid .end-video-media { width: 100%; height: 100%; object-fit: contain; display: block; }
+.end-video-click { position: fixed; inset: 0; z-index: 63; cursor: pointer; background: transparent; }
+/* blend kipinde kök kutu oluşturmaz (display: contents): video arkadaki savaş ekranıyla karışabilsin. */
+.end-video.blend { display: contents; }
+.end-video-dim { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, var(--end-dim, 0.42)); pointer-events: none; animation: end-video-in var(--end-fade, 450ms) ease both; }
+.end-video.blend .end-video-media { position: fixed; inset: 0; z-index: 61; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: screen; pointer-events: none; animation: end-video-in var(--end-fade, 450ms) ease both; }
+.end-video.blend.leaving .end-video-dim, .end-video.blend.leaving .end-video-media { animation: end-video-out var(--end-fade, 450ms) ease both; }
+@keyframes end-video-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes end-video-out { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .end-video-dim, .end-video.blend .end-video-media { animation: none; } }
 .end-fx { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; }
 .end-fx-glow { position: absolute; inset: 0; opacity: 0; animation: endfx-glow 3.6s ease-out forwards; }
 .end-fx.victory .end-fx-glow { background: radial-gradient(circle at 50% 40%, rgba(255, 212, 0, 0.45), rgba(255, 212, 0, 0) 60%); }
