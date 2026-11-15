@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-03 — PB1: ana parça sınırı 420 → 450 kB (Kuyruk KQ4; kullanıcı kararı)
+
+- `data/paket-siniri.json` `anaParcaKb` 450 (başka değer aynı); `docs/BUNDLE.md` ve `CLAUDE.md` anlatımı güncellendi (geçmiş 440 → 500 → 420 → 450). Gerekçe: Oda, hedef ve ağırlık arayüzleri sınırı (419,83 kB) doldurdu. Yeni kod yine tembel parçalara girer; sınır tekrar yükseltilmez.
+
 ## 2026-12-02 — SV1: savaş sonu videosu savaş ekranının üstünde, şeffaf zeminde (Kuyruk KQ3; yalnız arayüz, kural sürümü değişmedi)
 
 - **İki kip** (`ui/endVideoPlan.ts` `endVideoMode`, `ui/EndVideo.tsx`): `blend` (varsayılan): video `mix-blend-mode: screen` (siyah → şeffaf), arkada `rgba(0,0,0,karartma)` katmanı, `gecisMs` yumuşak giriş ve (video bitince) çıkış; kök kutu `display: contents` (kendi yığın bağlamı oluşturmasın, video arkadaki savaş ekranıyla karışsın). `solid`: eski tam ekran siyah zemin; `mix-blend-mode` desteklenmiyorsa (`CSS.supports`) ya da Ayarlar "Efekt animasyonu" kapalıyken. Poster (hareketi azalt) ve video yüklenene dek görünen kare aynı kipte (`<img class="end-video-media">`). Zafer/bozgun ve TR/EN dört videoda aynı.
