@@ -62,7 +62,9 @@ describe('SD9: temalar', () => {
       ...Object.values(E.oduller), ...E.hazineSirasi, ...Object.values(E.esyalar), ...Object.values(E.buyuler)];
     for (const id of all) expect(ids.has(id), id).toBe(true);
     const reach = new Set(all.filter((id) => !NO_SRD.includes(id) || false));
-    for (const x of gorseller.themes) if (!alwaysOpen(x.id) && !NO_SRD.includes(x.id)) expect(reach.has(x.id), x.id).toBe(true);
+    // HS1: harita-space yalnız silinen Ortamlar Diyarı'na bağlıydı; bağlanacak harita yok (Deniz haritalarını kullanıcı bağlayacak) — tema kalır, açılma yolu henüz yok.
+    const NO_MAP = ['harita-space'];
+    for (const x of gorseller.themes) if (!alwaysOpen(x.id) && !NO_SRD.includes(x.id) && !NO_MAP.includes(x.id)) expect(reach.has(x.id), x.id).toBe(true);
     for (const id of NO_SRD) expect(E.dusmanlar.find((r) => r.tema === id)?.id ?? []).toEqual([]);
   });
   it('düşman kuralları gerçek canavarlara denk gelir; harita/bölge/sayfa/yerleşim/ödül anahtarları gerçek', () => {
@@ -77,7 +79,7 @@ describe('SD9: temalar', () => {
     const regions = new Set(bolgeler.bolgeler.map((b) => b.id));
     for (const b of Object.keys(E.bolgeler)) expect(regions.has(b), b).toBe(true);
     for (const m of Object.keys(E.haritalar)) expect(mapIds.has(m), m).toBe(true);
-    expect(mapTheme('kasaba-han')).toBe('harita-taverna'); expect(mapTheme('ortamlar-diyari')).toBe('harita-space');
+    expect(mapTheme('kasaba-han')).toBe('harita-taverna');
     expect(mapTheme('orman', () => 'orman')).toBe('harita-orman'); expect(mapTheme('buzul-acik', () => 'buzul')).toBeNull();
     const pages = new Set(seruven.pages.map((p) => p.id));
     for (const p of Object.keys(E.seruvenSayfalar)) expect(pages.has(p), p).toBe(true);

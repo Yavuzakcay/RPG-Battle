@@ -5,8 +5,7 @@
   "tema": "Bitkiler ve mantarlar",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Awakened Shrub",
   "crSayi": 0.0
@@ -18,8 +17,7 @@
   "ortam": [
    "ada",
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Baboon",
   "crSayi": 0.0
@@ -31,8 +29,7 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Badger",
   "crSayi": 0.0
@@ -46,8 +43,7 @@
    "dungeon",
    "orman",
    "orman-yolu",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Bat",
   "crSayi": 0.0
@@ -80,10 +76,8 @@
    "sehir-meydani",
    "taverna",
    "duz-zemin",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -114,8 +108,7 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Deer",
   "crSayi": 0.0
@@ -128,7 +121,6 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -165,7 +157,6 @@
    "dungeon",
    "volkan",
    "magara-genis",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -202,7 +193,6 @@
    "orman",
    "duz-zemin",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -221,11 +211,9 @@
   "tema": "Gölgeli ve ikiz yaratıklar",
   "ortam": [
    "dungeon",
-   "kale",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -277,7 +265,6 @@
    "dungeon",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -323,8 +310,7 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Owl",
   "crSayi": 0.0
@@ -372,11 +358,9 @@
   "ortam": [
    "orman",
    "sehir-meydani",
-   "kale",
    "orman-yolu",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -423,7 +407,6 @@
    "dungeon",
    "bataklik",
    "magara-genis",
-   "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
    "batak-kamp",
    "batak-kale",
@@ -454,8 +437,7 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Weasel",
   "crSayi": 0.0
@@ -471,7 +453,6 @@
    "sehir-meydani",
    "taverna",
    "orman-yolu",
-   "ortamlar-diyari",
    "derinlikler-magara-karakol",
    "orman-oduncu-kampi",
    "buzul-kamp",
@@ -543,7 +524,6 @@
    "taverna",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -569,7 +549,6 @@
    "orman",
    "col",
    "orman-yolu",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -599,7 +578,6 @@
    "taverna",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -618,8 +596,7 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Giant Weasel",
   "crSayi": 0.125
@@ -632,12 +609,10 @@
    "dungeon",
    "magara",
    "orman",
-   "kale",
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Goblin Minion",
   "crSayi": 0.125
@@ -653,10 +628,8 @@
    "hapishane-mudur-kulesi",
    "sehir-meydani",
    "taverna",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -679,7 +652,6 @@
    "dag",
    "volkan",
    "magara-genis",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -703,11 +675,9 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "kale",
    "duz-zemin",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -766,10 +736,8 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -822,7 +790,6 @@
    "dungeon",
    "ada",
    "magara-genis",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -841,7 +808,6 @@
    "orman",
    "ada",
    "orman-yolu",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -859,12 +825,10 @@
   "cr": "1/8",
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
-   "kale",
    "duz-zemin",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -883,12 +847,10 @@
   "tema": "Yapaylar (golem ve canlı eşya)",
   "ortam": [
    "dungeon",
-   "kale",
    "sehir-meydani",
    "taverna",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -910,7 +872,6 @@
    "duz-zemin",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -930,8 +891,7 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Blink Dog",
   "crSayi": 0.25
@@ -943,8 +903,7 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Boar",
   "crSayi": 0.25
@@ -958,7 +917,6 @@
    "ada",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -993,7 +951,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -1011,7 +968,6 @@
    "duz-zemin",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -1034,7 +990,6 @@
    "dag",
    "duz-zemin",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -1054,8 +1009,7 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Giant Bat",
   "crSayi": 0.25
@@ -1070,7 +1024,6 @@
    "orman",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari",
    "orman-heykel-magarasi"
   ],
   "ad": "Giant Centipede",
@@ -1119,8 +1072,7 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Giant Owl",
   "crSayi": 0.25
@@ -1155,7 +1107,6 @@
    "orman",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -1172,12 +1123,10 @@
    "dungeon",
    "magara",
    "orman",
-   "kale",
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari",
    "orman-ork-kampi",
    "dag-kopru",
    "dag-kayalik"
@@ -1192,8 +1141,7 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Grimlock",
   "crSayi": 0.25
@@ -1205,8 +1153,7 @@
   "ortam": [
    "orman",
    "ada",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Panther",
   "crSayi": 0.25
@@ -1218,10 +1165,8 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -1243,7 +1188,6 @@
    "ada",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -1282,10 +1226,8 @@
   "ortam": [
    "duz-zemin",
    "sehir-meydani",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -1304,12 +1246,10 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "magara",
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -1333,8 +1273,7 @@
    "orman",
    "dungeon",
    "orman-yolu",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Spider",
   "crSayi": 0.0
@@ -1346,7 +1285,6 @@
   "ortam": [
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-heykel-golu"
   ],
   "ad": "Sprite",
@@ -1360,7 +1298,6 @@
    "volkan",
    "bataklik",
    "ada",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -1380,11 +1317,9 @@
   "ortam": [
    "magara",
    "dungeon",
-   "kale",
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari",
    "orman-heykel-magarasi"
   ],
   "ad": "Swarm of Bats",
@@ -1416,12 +1351,10 @@
   "tema": "Sürüler",
   "ortam": [
    "orman",
-   "kale",
    "sehir-meydani",
    "orman-yolu",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -1443,7 +1376,6 @@
    "dungeon",
    "bataklik",
    "magara-genis",
-   "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
    "batak-kamp",
    "batak-kale",
@@ -1462,7 +1394,6 @@
    "dag",
    "duz-zemin",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-oduncu-kampi",
    "orman-ork-kampi",
    "orman-kemik-acikligi",
@@ -1485,11 +1416,9 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "bataklik",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "derinlikler-mezar-labirenti",
    "derinlikler-magara-karakol",
    "orman-kemik-acikligi",
@@ -1508,8 +1437,7 @@
   "ortam": [
    "ada",
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Ape",
   "crSayi": 0.5
@@ -1522,7 +1450,6 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-oduncu-kampi",
    "buzul-kamp",
    "buzul-kayalik",
@@ -1545,7 +1472,6 @@
    "duz-zemin",
    "col",
    "orman-yolu",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -1579,7 +1505,6 @@
    "magara",
    "dungeon",
    "magara-genis",
-   "ortamlar-diyari",
    "orman-heykel-magarasi"
   ],
   "ad": "Darkmantle",
@@ -1644,8 +1569,7 @@
   "ortam": [
    "orman",
    "ada",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Giant Wasp",
   "crSayi": 0.5
@@ -1659,7 +1583,6 @@
    "duz-zemin",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -1677,7 +1600,6 @@
    "magara",
    "bataklik",
    "magara-genis",
-   "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
    "batak-kamp",
    "batak-kale",
@@ -1693,12 +1615,10 @@
   "cr": "1/2",
   "tema": "Goblinoidler ve küçük ırklar",
   "ortam": [
-   "kale",
    "duz-zemin",
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "orman-ork-kampi",
    "buzul-kamp",
    "buzul-kayalik",
@@ -1737,7 +1657,6 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -1754,7 +1673,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -1782,8 +1700,7 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Rust Monster",
   "crSayi": 0.5
@@ -1806,8 +1723,7 @@
   "tema": "Periler ve doğa ruhları",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Satyr",
   "crSayi": 0.5
@@ -1823,7 +1739,6 @@
    "col",
    "ada",
    "orman-yolu",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -1861,11 +1776,9 @@
   "ortam": [
    "dungeon",
    "magara",
-   "kale",
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari",
    "derinlikler-mezar-labirenti",
    "orman-kemik-acikligi"
   ],
@@ -1879,8 +1792,7 @@
   "ortam": [
    "dungeon",
    "magara",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Swarm of Crawling Claws",
   "crSayi": 3.0
@@ -1896,7 +1808,6 @@
    "magara",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
    "batak-kamp",
    "batak-kale",
@@ -1938,11 +1849,9 @@
   "cr": "1/2",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "kale",
    "duz-zemin",
    "kale-avlu",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Warhorse",
   "crSayi": 0.5
@@ -1953,10 +1862,8 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "kale-avlu",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Warhorse Skeleton",
   "crSayi": 0.5
@@ -1970,7 +1877,6 @@
    "duz-zemin",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-ork-kampi",
    "buzul-kamp",
    "buzul-kayalik",
@@ -1990,12 +1896,10 @@
   "tema": "Yapaylar (golem ve canlı eşya)",
   "ortam": [
    "dungeon",
-   "kale",
    "sehir-meydani",
    "taverna",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -2030,7 +1934,6 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-oduncu-kampi",
    "buzul-kamp",
    "buzul-kayalik",
@@ -2053,12 +1956,10 @@
    "dungeon",
    "magara",
    "orman",
-   "kale",
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Bugbear Warrior",
   "crSayi": 1.0
@@ -2104,7 +2005,6 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-oduncu-kampi",
    "orman-ork-kampi",
    "orman-kemik-acikligi",
@@ -2128,7 +2028,6 @@
   "ortam": [
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-heykel-golu"
   ],
   "ad": "Dryad",
@@ -2142,11 +2041,9 @@
    "dungeon",
    "magara",
    "bataklik",
-   "kale",
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari",
    "derinlikler-magara-karakol",
    "derinlikler-mezar-labirenti",
    "orman-kemik-acikligi",
@@ -2168,7 +2065,6 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -2216,7 +2112,6 @@
    "dungeon",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
    "derinlikler-magara-karakol",
    "orman-kemik-acikligi",
@@ -2272,12 +2167,10 @@
    "dungeon",
    "magara",
    "orman",
-   "kale",
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari",
    "orman-ork-kampi"
   ],
   "ad": "Goblin Boss",
@@ -2311,7 +2204,6 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -2330,11 +2222,9 @@
   "tema": "Gölgeli ve ikiz yaratıklar",
   "ortam": [
    "dungeon",
-   "kale",
    "volkan",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -2367,7 +2257,6 @@
    "volkan",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -2382,11 +2271,9 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "bataklik",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "derinlikler-mezar-labirenti",
    "orman-kemik-acikligi",
    "batak-kamp",
@@ -2419,10 +2306,8 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "derinlikler-magara-karakol",
    "kale-onu",
    "kale-ic-avlu",
@@ -2459,8 +2344,7 @@
   "ortam": [
    "orman",
    "ada",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Tiger",
   "crSayi": 1.0
@@ -2476,7 +2360,6 @@
    "magara",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -2501,8 +2384,7 @@
    "ada",
    "orman",
    "duz-zemin",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Allosaurus",
   "crSayi": 2.0
@@ -2514,10 +2396,8 @@
   "ortam": [
    "dungeon",
    "sehir-meydani",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -2539,7 +2419,6 @@
    "duz-zemin",
    "col",
    "orman-yolu",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -2554,8 +2433,7 @@
   "tema": "Bitkiler ve mantarlar",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Awakened Tree",
   "crSayi": 2.0
@@ -2566,7 +2444,6 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -2587,7 +2464,6 @@
    "sehir-meydani",
    "taverna",
    "orman-yolu",
-   "ortamlar-diyari",
    "derinlikler-magara-karakol",
    "orman-oduncu-kampi",
    "buzul-kamp",
@@ -2617,10 +2493,8 @@
   "ortam": [
    "dag",
    "duz-zemin",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "orman-oduncu-kampi",
    "orman-ork-kampi",
    "buzul-kamp",
@@ -2668,8 +2542,7 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Centaur Trooper",
   "crSayi": 2.0
@@ -2683,7 +2556,6 @@
    "sehir-meydani",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -2709,7 +2581,6 @@
    "bataklik",
    "ada",
    "orman-yolu",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -2728,7 +2599,6 @@
    "dungeon",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari",
    "derinlikler-mantar-magarasi"
   ],
   "ad": "Ettercap",
@@ -2739,13 +2609,11 @@
   "cr": "2",
   "tema": "Yapaylar (golem ve canlı eşya)",
   "ortam": [
-   "kale",
    "dungeon",
    "dag",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -2773,8 +2641,7 @@
   "ortam": [
    "dungeon",
    "magara",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Gelatinous Cube",
   "crSayi": 2.0
@@ -2786,11 +2653,9 @@
   "ortam": [
    "dungeon",
    "magara",
-   "kale",
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "ortamlar-diyari",
    "derinlikler-mezar-labirenti",
    "orman-kemik-acikligi"
   ],
@@ -2803,8 +2668,7 @@
   "tema": "Hayvanlar (kara)",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Giant Boar",
   "crSayi": 2.0
@@ -2818,7 +2682,6 @@
    "ada",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-heykel-golu",
    "batak-kamp",
    "batak-kale",
@@ -2836,7 +2699,6 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -2857,8 +2719,7 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Gibbering Mouther",
   "crSayi": 2.0
@@ -2869,8 +2730,7 @@
   "tema": "Ejderhalar (yeşil)",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Green Dragon Wyrmling",
   "crSayi": 2.0
@@ -2883,7 +2743,6 @@
    "magara",
    "dungeon",
    "magara-genis",
-   "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
    "orman-heykel-magarasi"
   ],
@@ -2898,7 +2757,6 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -2946,11 +2804,9 @@
   "ortam": [
    "dungeon",
    "taverna",
-   "kale",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -2972,7 +2828,6 @@
    "col",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -2994,7 +2849,6 @@
    "magara",
    "bataklik",
    "magara-genis",
-   "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
    "orman-heykel-magarasi",
    "batak-kamp",
@@ -3016,7 +2870,6 @@
    "magara",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari",
    "orman-ork-kampi",
    "buzul-kamp",
    "buzul-kayalik",
@@ -3037,10 +2890,8 @@
   "ortam": [
    "dungeon",
    "bataklik",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -3058,7 +2909,6 @@
    "orman",
    "duz-zemin",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -3113,10 +2963,8 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -3157,7 +3005,6 @@
    "dag",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -3273,7 +3120,6 @@
    "bataklik",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-heykel-golu",
    "orman-kemik-acikligi",
    "batak-kamp",
@@ -3291,8 +3137,7 @@
   "ortam": [
    "ada",
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Ankylosaurus",
   "crSayi": 3.0
@@ -3306,7 +3151,6 @@
    "magara",
    "dungeon",
    "magara-genis",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -3322,7 +3166,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -3354,12 +3197,10 @@
    "dungeon",
    "magara",
    "orman",
-   "kale",
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Bugbear Stalker",
   "crSayi": 3.0
@@ -3371,11 +3212,9 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "kale",
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -3408,10 +3247,8 @@
   "tema": "Ejderhalar (altın)",
   "ortam": [
    "dag",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -3432,7 +3269,6 @@
    "bataklik",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-kemik-acikligi",
    "batak-kamp",
    "batak-kale",
@@ -3449,7 +3285,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -3464,11 +3299,9 @@
   "cr": "3",
   "tema": "Goblinoidler ve küçük ırklar",
   "ortam": [
-   "kale",
    "duz-zemin",
    "kale-avlu",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Hobgoblin Captain",
   "crSayi": 3.0
@@ -3494,10 +3327,8 @@
    "hapishane-mudur-kulesi",
    "sehir-meydani",
    "taverna",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -3543,7 +3374,6 @@
    "magara",
    "volkan",
    "magara-genis",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -3575,7 +3405,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -3592,7 +3421,6 @@
    "orman",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "orman-oduncu-kampi",
    "orman-kemik-acikligi",
    "buzul-kamp",
@@ -3617,7 +3445,6 @@
    "dungeon",
    "dag",
    "magara-genis",
-   "ortamlar-diyari",
    "derinlikler-mantar-magarasi",
    "buzul-kamp",
    "buzul-kayalik",
@@ -3637,11 +3464,9 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -3663,12 +3488,10 @@
    "hapishane-hucre-platformu",
    "hapishane-iskele",
    "hapishane-mudur-kulesi",
-   "kale",
    "duz-zemin",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -3690,7 +3513,6 @@
    "duz-zemin",
    "dag",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -3710,10 +3532,8 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "derinlikler-mezar-labirenti",
    "orman-kemik-acikligi"
   ],
@@ -3757,8 +3577,7 @@
   "ortam": [
    "dungeon",
    "magara",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Black Pudding",
   "crSayi": 4.0
@@ -3786,11 +3605,9 @@
   "ortam": [
    "ada",
    "orman",
-   "kale",
    "orman-yolu",
    "kale-avlu",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Couatl",
   "crSayi": 4.0
@@ -3821,7 +3638,6 @@
    "orman",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -3840,11 +3656,9 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -3864,10 +3678,8 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -3937,7 +3749,6 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4002,8 +3813,7 @@
   "ortam": [
    "orman",
    "duz-zemin",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Wereboar",
   "crSayi": 4.0
@@ -4017,7 +3827,6 @@
    "ada",
    "col",
    "orman-yolu",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -4053,7 +3862,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4096,7 +3904,6 @@
    "dungeon",
    "col",
    "magara-genis",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -4120,7 +3927,6 @@
   "ortam": [
    "volkan",
    "col",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4140,10 +3946,8 @@
   "tema": "Yapaylar (golem ve canlı eşya)",
   "ortam": [
    "dungeon",
-   "kale",
    "kale-avlu",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Flesh Golem",
   "crSayi": 5.0
@@ -4179,11 +3983,9 @@
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
    "sehir-meydani",
-   "kale",
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -4228,10 +4030,8 @@
    "volkan",
    "col",
    "dag",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4261,7 +4061,6 @@
    "duz-zemin",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -4283,7 +4082,6 @@
    "bataklik",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -4301,7 +4099,6 @@
    "magara",
    "bataklik",
    "magara-genis",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -4318,8 +4115,7 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Roper",
   "crSayi": 5.0
@@ -4330,7 +4126,6 @@
   "tema": "Elementaller ve ateş/hava yaratıkları",
   "ortam": [
    "volkan",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4348,7 +4143,6 @@
    "bataklik",
    "orman",
    "orman-yolu",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -4379,7 +4173,6 @@
    "magara",
    "orman-yolu",
    "magara-genis",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -4402,8 +4195,7 @@
   "tema": "Periler ve doğa ruhları",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Unicorn",
   "crSayi": 5.0
@@ -4414,11 +4206,9 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -4454,8 +4244,7 @@
   "tema": "Gelişmiş kurt-insanlar",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Werebear",
   "crSayi": 5.0
@@ -4466,11 +4255,9 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "bataklik",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -4488,7 +4275,6 @@
    "dag",
    "dungeon",
    "magara-genis",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -4509,7 +4295,6 @@
    "dag",
    "volkan",
    "col",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4537,8 +4322,7 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Drider",
   "crSayi": 6.0
@@ -4548,12 +4332,10 @@
   "cr": "6",
   "tema": "Gölgeli ve ikiz yaratıklar",
   "ortam": [
-   "kale",
    "sehir-meydani",
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -4571,13 +4353,11 @@
   "cr": "6",
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
-   "kale",
    "sehir-meydani",
    "taverna",
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -4642,7 +4422,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4659,7 +4438,6 @@
    "dag",
    "volkan",
    "col",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4728,11 +4506,9 @@
   "cr": "7",
   "tema": "Goblinoidler ve küçük ırklar",
   "ortam": [
-   "kale",
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -4751,11 +4527,9 @@
   "tema": "Yapaylar (golem ve canlı eşya)",
   "ortam": [
    "dungeon",
-   "kale",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -4776,7 +4550,6 @@
    "dag",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -4828,10 +4601,8 @@
   "ortam": [
    "sehir-meydani",
    "taverna",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -4851,7 +4622,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4867,8 +4637,7 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Cloaker",
   "crSayi": 8.0
@@ -4899,7 +4668,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -4932,7 +4700,6 @@
    "bataklik",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -4950,7 +4717,6 @@
    "orman",
    "bataklik",
    "orman-yolu",
-   "ortamlar-diyari",
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
@@ -4976,8 +4742,7 @@
   "tema": "Ejderhalar (yeşil)",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Young Green Dragon",
   "crSayi": 8.0
@@ -4989,7 +4754,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5004,11 +4768,9 @@
   "tema": "Yapaylar (golem ve canlı eşya)",
   "ortam": [
    "dungeon",
-   "kale",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -5046,7 +4808,6 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5070,7 +4831,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5085,8 +4845,7 @@
   "tema": "Bitkiler ve mantarlar",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Treant",
   "crSayi": 9.0
@@ -5132,8 +4891,7 @@
   "ortam": [
    "magara",
    "gemi",
-   "magara-genis",
-   "ortamlar-diyari"
+   "magara-genis"
   ],
   "ad": "Aboleth",
   "crSayi": 10.0
@@ -5143,12 +4901,10 @@
   "cr": "10",
   "tema": "Göksel varlıklar",
   "ortam": [
-   "kale",
    "sehir-meydani",
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -5175,12 +4931,10 @@
   "tema": "Canavarlar ve Underdark yaratıkları",
   "ortam": [
    "dungeon",
-   "kale",
    "magara",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Guardian Naga",
   "crSayi": 10.0
@@ -5191,12 +4945,10 @@
   "tema": "Yapaylar (golem ve canlı eşya)",
   "ortam": [
    "dungeon",
-   "kale",
    "magara",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Stone Golem",
   "crSayi": 10.0
@@ -5207,10 +4959,8 @@
   "tema": "Ejderhalar (altın)",
   "ortam": [
    "dag",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -5230,7 +4980,6 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5255,7 +5004,6 @@
    "dag",
    "magara",
    "magara-genis",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -5299,7 +5047,6 @@
   "ortam": [
    "volkan",
    "col",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5319,7 +5066,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5373,10 +5119,8 @@
   "ortam": [
    "col",
    "dungeon",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -5390,12 +5134,10 @@
   "cr": "12",
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
-   "kale",
    "sehir-meydani",
    "dungeon",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -5415,7 +5157,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5464,7 +5205,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5479,11 +5219,9 @@
   "tema": "Goblinoidler ve küçük ırklar",
   "ortam": [
    "sehir-meydani",
-   "kale",
    "col",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -5525,12 +5263,10 @@
   "cr": "13",
   "tema": "Ölüsüzler",
   "ortam": [
-   "kale",
    "dungeon",
    "sehir-meydani",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "kale-onu",
    "kale-ic-avlu",
    "kale-taht-salonu",
@@ -5583,7 +5319,6 @@
    "dag",
    "dungeon",
    "volkan",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5618,8 +5353,7 @@
   "tema": "Ejderhalar (yeşil)",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Adult Green Dragon",
   "crSayi": 15.0
@@ -5648,7 +5382,6 @@
    "col",
    "dungeon",
    "magara-genis",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -5697,11 +5430,9 @@
   "tema": "Yapaylar (golem ve canlı eşya)",
   "ortam": [
    "dungeon",
-   "kale",
    "volkan",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5717,7 +5448,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5731,12 +5461,10 @@
   "cr": "16",
   "tema": "Göksel varlıklar",
   "ortam": [
-   "kale",
    "sehir-meydani",
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -5763,10 +5491,8 @@
   "tema": "Ejderhalar (altın)",
   "ortam": [
    "dag",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -5786,7 +5512,6 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5821,10 +5546,8 @@
   "ortam": [
    "col",
    "dungeon",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
@@ -5840,7 +5563,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5889,7 +5611,6 @@
   "ortam": [
    "volkan",
    "dungeon",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -5936,10 +5657,8 @@
   "tema": "Ölüsüzler",
   "ortam": [
    "dungeon",
-   "kale",
    "kale-avlu",
-   "kale-baskini",
-   "ortamlar-diyari"
+   "kale-baskini"
   ],
   "ad": "Lich",
   "crSayi": 21.0
@@ -5949,12 +5668,10 @@
   "cr": "21",
   "tema": "Göksel varlıklar",
   "ortam": [
-   "kale",
    "sehir-meydani",
    "dag",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -5992,8 +5709,7 @@
   "tema": "Ejderhalar (yeşil)",
   "ortam": [
    "orman",
-   "orman-yolu",
-   "ortamlar-diyari"
+   "orman-yolu"
   ],
   "ad": "Ancient Green Dragon",
   "crSayi": 22.0
@@ -6048,10 +5764,8 @@
   "tema": "Ejderhalar (altın)",
   "ortam": [
    "dag",
-   "kale",
    "kale-avlu",
    "kale-baskini",
-   "ortamlar-diyari",
    "buzul-kamp",
    "buzul-kayalik",
    "buzul-acik",
@@ -6071,7 +5785,6 @@
   "ortam": [
    "volkan",
    "dag",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
@@ -6096,7 +5809,6 @@
    "duz-zemin",
    "volkan",
    "dag",
-   "ortamlar-diyari",
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",

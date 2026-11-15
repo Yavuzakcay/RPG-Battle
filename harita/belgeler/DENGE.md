@@ -2,6 +2,12 @@
 
 5. seviye 5 kişilik parti (Bor, Mira, Tavi, Sela, Kael), her senaryo 200 savaş, tohum 1–200, iki taraf da yapay zekâ ile. Komut: `npm run sim -- 200`. Hedef: parti galibiyeti %60–80. Canavar sayıları ve değerleri değiştirilmedi.
 
+## HS1 notu (2026-11-22): klasik Kale kaldırıldı, `kale` / `kale-gece` senaryoları Kale ve avlu'ya bağlandı
+
+- `data/sim-senaryolar.json` `kale` ve `kale-gece`: harita `kale` (15×7, gündüz/gece) → **`kale-avlu`** (31×17, gündüz; gece varyantı yok, `kale-gece` de gündüz). Senaryo kimlikleri ve düşman listeleri (`enemies.1…20`) **değişmedi**; `data/sim-a2.json`, `sim-boss.json`, K59 dumanı vb. aynı senaryo kimlikleriyle çalışır.
+- **Denge farkı ölçülmedi** (hafif doğrulama modu; tam ölçüm "Dungeondex öncesi tam test turu" görevine kalır). Harita 15×7'den 31×17'ye büyüdüğü için (mesafe, siper, başlangıç bölgeleri) Kale senaryolarının kazanma oranları eski tablodaki değerlerden farklı çıkacaktır; bu dosyadaki eski "Kale" satırları HS1 öncesi ölçümdür.
+- `dungeon-merdiven` senaryosu Yürüyen merdiven varyantına yönlendirildi (aynı zemin, ek `conveyor` kuralı).
+
 ## Kuyruk MB8: binek hattı denge ölçümü (2026-11-12; ölçüm, denge ayarı yok)
 
 Kural sürümü 74 (değişmedi). 5. seviye standart parti, 100 tohum, aynı tohumlar; partinin ilk üyesi savaş başında Warhorse'un üstünde (`src/sim/binekStart.ts` `mountedStart`; binicinin kim olduğu inisiyatif sırasına göre değişir). Komut: `npx vite-node src/sim/binekDengeRun.ts -- 100 col,kale,magara,orman --kip yok|bagimsiz|kontrollu`. Hedef parti kazanma %60–80. "Binek" sütunu: savaş sonunda at ayakta / binici hâlâ üstünde. Canavar verisi ve düşman listeleri değişmedi.

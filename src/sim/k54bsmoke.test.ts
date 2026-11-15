@@ -24,7 +24,7 @@ describe('K54b: imza alt sınıflı 12 sınıf × 3/7/11 duman testi (sürüm 27
       const pcs = [0, 1].map((i) => ({ ...combatantFromSheet(sheet, { id: `P${i}`, ownerId: 'p1' }), side: 'party' as const }));
       const foes = (level >= 7 ? ['ogre', 'owlbear', 'goblin-warrior'] : ['goblin-warrior', 'wolf', 'goblin-warrior']).map((m, i) => ({ ...combatantFromMonster(getMonster(m), { id: `O${i}`, name: m }), side: 'enemies' as const }));
       const rng = seeded(level * 54 + cls.id.length);
-      const session = createMapBattle([...pcs, ...foes], { mapId: 'ortamlar-diyari', variantId: 'gunduz', mirrored: false }, rng);
+      const session = createMapBattle([...pcs, ...foes], { mapId: 'kale-avlu', variantId: 'gunduz', mirrored: false }, rng);
       const state = { ...session.state, houseRules: { ...session.state.houseRules, ...RULES } };
       const r = execute(state, { type: 'start_battle' }, { playerId: 'gm', isGm: true }, rng);
       expect(r.ok, `${cls.id}/${level}`).toBe(true);

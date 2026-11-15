@@ -6,7 +6,7 @@
 - **Hedef görsel boyutu:** **2616 × 1668 px** (en-boy 1.568). Gemini başka boyut verirse oran aynı kalmalı (ör. 5232 × 3336); içe aktarma küçültür.
 - **Gemini'ye eklenecek görseller (bu sırayla):**
   1. Yerleşim: `harita/kale/onizleme/kale-avlu-izgarasiz.png` (düz renk; ızgaralı sürüm `kale-avlu-izgara.png` yalnızca senin kontrolün için).
-  2. Stil örneği: `public/maps/kale/kale-klasik.webp` (aynı oyunun Klasik harita görseli).
+  2. Stil örneği: `public/maps/kale/kale-avlu.webp` (aynı oyunun Kale ve avlu görseli).
 - **Tema:** Gündüz kale ve avlu: batıda çayır ve hendek, ortada kapılı sur, içeride taş döşeli avlu, köşede kule, doğuda kapalı odalar ve koridorlar. Merdiven ve kat yok.
 - Çıktıyı `assets-ham/harita/kale/kale-avlu.png` (ya da .jpg/.webp; tam üstten çizilmiş referans: `harita/kale/gorsel/kale-avlu.jpg`) olarak kaydedip `npm run harita-gorsel -- kale-avlu` çalıştırın.
 

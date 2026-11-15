@@ -458,7 +458,7 @@ const tr = {
     restNote: 'Karakterler son savaştaki durumlarıyla başlar; dinlenme "Oyuncu" ekranında ya da buradan.',
     blocked: { dead: 'öldü', down: '0 HP, dinlenmeli' } as Record<string, string>,
     map: 'Harita', variant: 'Varyant', darkness: 'Karanlık', objective: 'Masumları koru',
-    mapGroups: { classic: 'Klasik haritalar', wide: 'Geniş haritalar', vitrin: 'Test ve vitrin', sefer: 'Volkan Serüveni' },
+    mapGroups: { classic: 'Klasik haritalar', wide: 'Geniş haritalar', sefer: 'Volkan Serüveni' },
     // Kuyruk 21 D4: harita seçicinin bölge grupları (harita/_ortak/harita-bolgeleri.json kimlikleri).
     regions: { bataklik: 'Bataklık', buzul: 'Buzul', col: 'Çöl', dag: 'Dağ', deniz: 'Deniz', kale: 'Kale', orman: 'Orman', sehir: 'Şehir', yeralti: 'Yeraltı', volkan: 'Volkan', derinlikler: 'Derinlikler', yerlesim: 'Yerleşimler', vitrin: 'Test ve vitrin' } as Record<string, string>,
     region: 'Bölge', day: 'Gündüz', night: 'Gece', dayNight: 'Gündüz / Gece',
@@ -468,7 +468,6 @@ const tr = {
       'orman-yolu': { name: 'Orman yolu', desc: 'Kıvrılan bir yol, ortasında köprülü dere, iki yanda ağaçlık kuşak ve yol kenarında pusu noktaları; doğuda açık çayır.' },
       'kale-avlu': { name: 'Kale ve avlu', desc: 'Hendekle çevrili sur, batı kapısı, köşe kuleleri, avlu ve doğuda koridorlu, kapalı odalı iç bina.' },
       'kale-baskini': { name: 'Kale Baskını', desc: 'Serüven haritası: orman kenarından şafak baskını. Koğuşta uyuyan nöbetçiler, avluda devriye, mahzende fıçılar; iç kapıyı kır ya da doğu kulesine çık, alarm çalarsa 6 turun var.' },
-      'ortamlar-diyari': { name: 'Ortamlar Diyarı', desc: 'Test ve vitrin haritası: bütün zemin türleri sekiz bölgede (orman, bataklık, kale avlusu, dağ geçidi, kar ve buz, volkan, çöl harabesi, mağara), ortada her yüzey türüyle bir meydan. Denge ölçümlerine katılmaz.' },
       'orman': { name: 'Patika', desc: 'Klasik orman haritası (15×7): orman içinden geçen yol, dere ve kütük köprü.' },
       'volkan': { name: 'Lav Adaları', desc: 'Klasik volkan haritası (15×7): lav denizinde adacıklar, bazalt yükseltiler, patlama ve lav yükselmesi.' },
       'isinlanma-salonu': { name: 'Portal Salonu', desc: 'Volkan Serüveni: portalın açıldığı salon.' },

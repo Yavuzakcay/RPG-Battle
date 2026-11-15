@@ -7,7 +7,7 @@ import { SCENARIOS, simulate } from './balance';
 
 describe('K18b: yüzey etkileşimleri sim duman testi', () => {
   it('30 tohum (üç harita × 10): çökme yok', () => {
-    const want = ['ortamlar-diyari', 'orman-yolu', 'col'];
+    const want = ['kale-avlu', 'orman-yolu', 'col'];
     const list = want.map((id) => SCENARIOS.find((x) => x.map?.mapId === id)).filter((x) => !!x);
     expect(list.length).toBeGreaterThan(0);
     let runs = 0;

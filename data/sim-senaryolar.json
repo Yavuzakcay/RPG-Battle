@@ -417,10 +417,10 @@
   },
   {
    "id": "dungeon-merdiven",
-   "name": "Dungeon — Merdiven",
+   "name": "Dungeon — Merdiven (Yürüyen merdiven varyantı)",
    "map": {
     "mapId": "dungeon",
-    "variantId": "merdiven"
+    "variantId": "merdiven-yuruyen"
    },
    "enemies": {
     "1": {
@@ -501,9 +501,9 @@
   },
   {
    "id": "kale",
-   "name": "Kale — Gündüz",
+   "name": "Kale — Gündüz (Kale ve avlu)",
    "map": {
-    "mapId": "kale",
+    "mapId": "kale-avlu",
     "variantId": "gunduz"
    },
    "enemies": {
@@ -560,10 +560,10 @@
   },
   {
    "id": "kale-gece",
-   "name": "Kale — Gece",
+   "name": "Kale — Gece (Kale ve avlu; gece varyantı yok, gündüz)",
    "map": {
-    "mapId": "kale",
-    "variantId": "gece"
+    "mapId": "kale-avlu",
+    "variantId": "gunduz"
    },
    "enemies": {
     "1": {

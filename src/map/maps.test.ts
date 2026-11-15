@@ -51,13 +51,13 @@ describe('zemin kataloğu', () => {
 const PREFIXES: Record<string, string[]> = Object.fromEntries((regionData.bolgeler as Array<{ id: string; onekler?: string[] }>).map((b) => [b.id, b.onekler ?? []]));
 
 describe('harita yükleme ve doğrulama', () => {
-  it('58 harita da hatasız yüklenir ve görselleri var (12 Klasik + Görev H2\'nin 3 geniş haritası + Görev KB Kale Baskını + Kuyruk 16 K16B vitrin haritası + Kuyruk 18 V1 Volkan Seferi 4 haritası + Kuyruk 21 Derinlikler 4 haritası + Kuyruk 23 Orman paketi 4 haritası + Kuyruk 27 Çöl paketi 4 haritası + Kuyruk 29 Buzul, Dağ, Bataklık paketleri 12 haritası + Kuyruk 32 yeraltı nehri + Kuyruk 34a 6 yerleşim haritası + Kuyruk 35 kasaba seti 2 harita + Kuyruk 36 Hapishane Adası 4 haritası)', () => {
+  it('56 harita da hatasız (HS1: klasik Kale ve Ortamlar Diyarı silindi; eski sayı 58) yüklenir ve görselleri var (12 Klasik + Görev H2\'nin 3 geniş haritası + Görev KB Kale Baskını + Kuyruk 16 K16B vitrin haritası + Kuyruk 18 V1 Volkan Seferi 4 haritası + Kuyruk 21 Derinlikler 4 haritası + Kuyruk 23 Orman paketi 4 haritası + Kuyruk 27 Çöl paketi 4 haritası + Kuyruk 29 Buzul, Dağ, Bataklık paketleri 12 haritası + Kuyruk 32 yeraltı nehri + Kuyruk 34a 6 yerleşim haritası + Kuyruk 35 kasaba seti 2 harita + Kuyruk 36 Hapishane Adası 4 haritası)', () => {
     expect(maps.map((m) => m.id)).toEqual([
-      'ada', 'batak-adalar', 'batak-cukur', 'batak-kale', 'batak-kamp', 'bataklik', 'beyaz-sehir-dis-kapi', 'beyaz-sehir-saray-avlusu', 'buzul-acik', 'buzul-kamp', 'buzul-kayalik', 'buzul-tapinak', 'col', 'col-gemi-enkazi', 'col-kanyon-nehri', 'col-sutun-harabesi', 'col-vaha', 'dag', 'dag-karakol', 'dag-kayalik', 'dag-kopru', 'dag-nobetci', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti', 'dungeon', 'gemi', 'hapishane-dis-halka', 'hapishane-hucre-platformu', 'hapishane-iskele', 'hapishane-mudur-kulesi', 'isinlanma-salonu', 'kale', 'kale-avlu', 'kale-baskini', 'kale-ic-avlu', 'kale-onu', 'kale-taht-salonu', 'kanyon-koprusu', 'kasaba-demirci-tapinak', 'kasaba-han', 'kasaba-lagim', 'lav-tapinagi', 'magara', 'magara-genis', 'orman', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'orman-yolu', 'ortamlar-diyari', 'sehir-meydani', 'taverna', 'volkan', 'volkanik-demirhane', 'yeralti-nehri',
+      'ada', 'batak-adalar', 'batak-cukur', 'batak-kale', 'batak-kamp', 'bataklik', 'beyaz-sehir-dis-kapi', 'beyaz-sehir-saray-avlusu', 'buzul-acik', 'buzul-kamp', 'buzul-kayalik', 'buzul-tapinak', 'col', 'col-gemi-enkazi', 'col-kanyon-nehri', 'col-sutun-harabesi', 'col-vaha', 'dag', 'dag-karakol', 'dag-kayalik', 'dag-kopru', 'dag-nobetci', 'derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti', 'dungeon', 'gemi', 'hapishane-dis-halka', 'hapishane-hucre-platformu', 'hapishane-iskele', 'hapishane-mudur-kulesi', 'isinlanma-salonu', 'kale-avlu', 'kale-baskini', 'kale-ic-avlu', 'kale-onu', 'kale-taht-salonu', 'kanyon-koprusu', 'kasaba-demirci-tapinak', 'kasaba-han', 'kasaba-lagim', 'lav-tapinagi', 'magara', 'magara-genis', 'orman', 'orman-heykel-golu', 'orman-heykel-magarasi', 'orman-kemik-acikligi', 'orman-oduncu-kampi', 'orman-ork-kampi', 'orman-yolu', 'sehir-meydani', 'taverna', 'volkan', 'volkanik-demirhane', 'yeralti-nehri',
     ]);
     expect(maps.filter((m) => m.sefer === 'volkan').map((m) => m.id)).toEqual(['isinlanma-salonu', 'kanyon-koprusu', 'lav-tapinagi', 'volkanik-demirhane']);
     expect(maps.filter((m) => m.sefer === 'derinlikler').map((m) => m.id)).toEqual(['derinlikler-lav-salonu', 'derinlikler-magara-karakol', 'derinlikler-mantar-magarasi', 'derinlikler-mezar-labirenti']);
-    expect(maps.filter((m) => m.vitrin).map((m) => m.id)).toEqual(['ortamlar-diyari']);
+    expect(maps.filter((m) => m.vitrin)).toEqual([]); // HS1: Ortamlar Diyarı silindi, vitrin grubu boş
     for (const r of RAW_MAPS) expect(validateMap(r, { images: IMAGES })).toEqual([]);
     // Kuyruk 19 D1: her haritada bölge ve görsel adı ("<bolge>/<bolge>-<ad>", ASCII); kimlik değişmedi.
     for (const r of RAW_MAPS) { expect(r.bolge, r.id).toMatch(/^[a-z0-9-]+$/); expect(r.gorsel, r.id).toMatch(new RegExp(`^${r.bolge}/(${[r.bolge, ...(PREFIXES[r.bolge ?? ''] ?? [])].join('|')})-[a-z0-9-]+$`)); }
@@ -173,7 +173,7 @@ describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
   it('hazır başlangıç listelerinin sayıları', () => {
     const expected: Record<string, [number, number]> = {
       ada: [8, 11], bataklik: [10, 9], 'dag/kis': [12, 11], dag: [11, 12], dungeon: [13, 14], gemi: [17, 15],
-      kale: [15, 18], magara: [8, 8], orman: [14, 15], 'sehir-meydani': [9, 10], taverna: [11, 9],
+      magara: [8, 8], orman: [14, 15], 'sehir-meydani': [9, 10], taverna: [11, 9],
     };
     for (const [key, [p, e]] of Object.entries(expected)) {
       const [id, variantId] = key.split('/') as [string, string | undefined];
@@ -200,12 +200,18 @@ describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
     for (const h of m.startZones.players) expect(isSafeStart(tileAt(m, h))).toBe(true);
   });
   it('hazır listede hatalı altıgenler reddedilir', () => {
-    const unsafe = raw('kale');
-    unsafe.startZones.players.hexes = [[9, 1]]; // duvar, aralık dışı
+    // HS1: klasik Kale silindi; aynı denetimler Ada'nın hazır listesiyle.
+    const unsafe = raw('ada');
+    unsafe.startZones.players.hexes = [[99, 1]]; // harita dışı
     expect(validateMap(unsafe).some((e) => e.includes('aralığının veya haritanın dışında'))).toBe(true);
-    const wall = raw('kale');
-    wall.startZones.enemies.hexes = [[15, 2]]; // s duvar
-    expect(validateMap(wall).some((e) => e.includes('uygun değil ("s")'))).toBe(true);
+    const wall = raw('ada');
+    // Düşman sütun aralığında (9–14) başlangıç için uygun olmayan ilk altıgen.
+    let bad: [number, number, string] | null = null;
+    wall.tiles.forEach((line, r) => { for (let c = 8; c < 14 && !bad; c++) if (!isSafeStart(terrainOf(line[c] as string))) bad = [c + 1, r + 1, line[c] as string]; });
+    expect(bad).not.toBeNull();
+    const [bc, br, ch] = bad as unknown as [number, number, string];
+    wall.startZones.enemies.hexes = [[bc, br]];
+    expect(validateMap(wall).some((e) => e.includes(`uygun değil ("${ch}")`))).toBe(true);
     const dup = raw('ada');
     const first = dup.startZones.players.hexes?.[0] as number[];
     dup.startZones.players.hexes = [first, first];
@@ -223,9 +229,9 @@ describe('yeni haritalar (GOREV-YENI-HARITALAR.md)', () => {
     (bad.variants[1] as RawMap['variants'][number]).environmentId = 'yok';
     expect(validateMap(bad).some((e) => e.includes('varyantının ortamı bulunamadı'))).toBe(true);
   });
-  it('yeni kural kimlikleri JSON\'da duruyor (motor davranışı Adım 8)', () => {
+  it('yeni kural kimlikleri JSON\'da duruyor (motor davranışı Adım 8; HS1: `gate` kuralı yalnız silinen klasik Kale\'deydi, motor desteği fikstürle sınanır)', () => {
     const ids = new Set(maps.flatMap((m) => m.variants.flatMap((v) => v.rules.map((r) => r.id))));
-    for (const id of ['bog', 'deepWater', 'ice', 'cold', 'storm', 'darkness', 'trap', 'stealth', 'gate', 'crenel', 'objective']) {
+    for (const id of ['bog', 'deepWater', 'ice', 'cold', 'storm', 'darkness', 'trap', 'stealth', 'crenel', 'objective']) {
       expect(ids.has(id)).toBe(true);
     }
   });

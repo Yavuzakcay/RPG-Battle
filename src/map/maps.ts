@@ -445,7 +445,6 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     objects: (raw.objects ?? []).map((o) => ({ ...o, at: { col: o.at[0] - 1, row: o.at[1] - 1 } })),
     ...(raw.groups ? { groups: raw.groups.map(({ route, ...g }) => ({ ...g, hexes: g.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })), ...(route ? { route: route.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}) })) } : {}),
     ...(raw.surfaces?.length ? { surfaces: raw.surfaces.map((x) => ({ ...x, hexes: x.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) })) } : {}),
-    ...(raw.vitrin ? { vitrin: true } : {}),
     ...(raw.bolge ? { bolge: raw.bolge } : {}),
     ...(raw.gorsel ? { gorsel: raw.gorsel } : {}),
     ...(raw.sefer ? { sefer: raw.sefer } : {}),
@@ -521,7 +520,15 @@ export const maps: readonly BattleMap[] = RAW_MAPS.map((m) => loadMap(m));
  * aynalı hâli.
  */
 /** Eski harita kimlikleri (yeniden adlandırılan haritalar): eski kimlik yeni haritayı açar. */
-const MAP_ALIASES: Record<string, string> = { 'volkan-adalar': 'volkan' };
+const MAP_ALIASES: Record<string, string> = {
+  'volkan-adalar': 'volkan',
+  // HS1: silinen klasik Kale (15×7) eski kayıtlarda Kale ve avlu'yu açar; silinen Ortamlar Diyarı (test/vitrin) en yakın geniş harita Kale ve avlu'ya düşer.
+  'kale': 'kale-avlu',
+  'ortamlar-diyari': 'kale-avlu',
+};
+/** HS1: silinen varyantlar (harita kimliği/varyant → bugünkü varyant): Dungeon'un düz "Merdiven" varyantı Yürüyen merdiven'e eşlenir. */
+const VARIANT_ALIASES: Record<string, string> = { 'dungeon/merdiven': 'merdiven-yuruyen' };
+const variantOf = (mapId: string, variantId: string | undefined): string | undefined => (variantId ? VARIANT_ALIASES[`${mapId}/${variantId}`] ?? variantId : variantId);
 
 /**
  * Kayıttan ya da eski bir oturumdan gelen harita/varyant seçimini bugünkü kataloğa oturtur:
@@ -530,7 +537,8 @@ const MAP_ALIASES: Record<string, string> = { 'volkan-adalar': 'volkan' };
 export function resolveMapChoice(id: string, variantId?: string): { id: string; variantId: string } {
   const map = maps.find((m) => m.id === (MAP_ALIASES[id] ?? id)) ?? maps[0];
   if (!map) throw new Error('Harita kataloğu boş');
-  const variant = map.variants.find((v) => v.id === variantId) ?? map.variants[0];
+  const wanted = variantOf(map.id, variantId);
+  const variant = map.variants.find((v) => v.id === wanted) ?? map.variants[0];
   return { id: map.id, variantId: variant?.id ?? '' };
 }
 
@@ -539,7 +547,8 @@ export function getMap(id: string, opts: { mirrored?: boolean; variantId?: strin
   const found = maps.find((m) => m.id === id);
   if (!found) throw new Error(`Harita bulunamadı: "${id}"`);
   const raw = RAW_MAPS.find((m) => m.id === id) as RawMap;
-  const layout = opts.variantId && opts.variantId !== found.variantId ? build(raw, opts.variantId, false) : found;
+  const wanted = variantOf(id, opts.variantId);
+  const layout = wanted && wanted !== found.variantId ? build(raw, wanted, false) : found;
   return opts.mirrored ? mirrorMap(layout) : layout;
 }
 

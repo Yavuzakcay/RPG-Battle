@@ -28,7 +28,7 @@ describe('Y2: 3 zorluk × 12 sınıf × 3/7/11', () => {
       const pcs = [0, 1].map((i) => ({ ...combatantFromSheet(sheet, { id: `P${i}`, ownerId: 'p1' }), side: 'party' as const }));
       const foes = (level >= 7 ? ['ogre', 'owlbear', 'goblin-warrior'] : ['goblin-warrior', 'wolf', 'goblin-warrior']).map((m, i) => ({ ...combatantFromMonster(getMonster(m), { id: `O${i}`, name: m }), side: 'enemies' as const }));
       const rng = seeded(level * 53 + cls.id.length + diff.length);
-      const session = createMapBattle([...pcs, ...foes], { mapId: 'ortamlar-diyari', variantId: 'gunduz', mirrored: false }, rng);
+      const session = createMapBattle([...pcs, ...foes], { mapId: 'kale-avlu', variantId: 'gunduz', mirrored: false }, rng);
       const state: BattleState = { ...session.state, houseRules: { ...session.state.houseRules, ...ALL }, yz: { zorluk: { party: diff, enemies: diff } } };
       const r = execute(state, { type: 'start_battle' }, GM, rng);
       expect(r.ok, `${diff}/${cls.id}/${level}`).toBe(true);

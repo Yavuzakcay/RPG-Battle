@@ -1,10 +1,26 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { execute, replay, startBattle } from './index';
 import type { BattleEvent, BattleState, Combatant, Command } from './index';
 import type { Offset } from '../rules/hex';
 import { activeRules, inShade, litHexes, optionalRules } from './maprules';
 import { terrainOf } from '../map/terrain';
 import { GM, P1, mk, scripted, sword } from './fixtures';
+
+// HS1: eski `gate` harita kuralı (GM kapıyı kapatır/açar, kırılır) yalnız silinen klasik Kale'nin verisindeydi; motor desteği duruyor,
+// bu yüzden kural verisi bir fikstür haritasıyla sağlanır (gerçek bir haritanın verisi değişmedi).
+vi.mock('../map/maps', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../map/maps')>();
+  return {
+    ...real,
+    resolveMapChoice: (id: string, variantId?: string) => (id === 'kapi-fikstur' ? { id, variantId: real.resolveMapChoice('orman', variantId).variantId } : real.resolveMapChoice(id, variantId)),
+    getMap: (id: string, opts?: { mirrored?: boolean; variantId?: string }) => {
+      if (id !== 'kapi-fikstur') return real.getMap(id, opts);
+      const base = real.getMap('orman', opts);
+      const variants = base.variants.map((v) => ({ ...v, rules: [...v.rules, { id: 'gate', hex: [9, 4], state: 'open', ac: 15, hp: 30 }] }));
+      return { ...base, id, variants } as ReturnType<typeof real.getMap>;
+    },
+  };
+});
 
 const o = (col: number, row: number): Offset => ({ col, row });
 
@@ -317,7 +333,7 @@ describe('kale', () => {
   it('kapı: GM kapatır (geçilmez), açar; kapalı kapı kırılır (AC 15, HP 30)', () => {
     const gate = o(8, 3);
     const tiles = board('.', [[gate, 'o']]);
-    let s = field({ id: 'kale' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, tiles);
+    let s = field({ id: 'kapi-fikstur' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, tiles);
     expect(errorOf(execute(s, { type: 'gate', at: gate, open: false }, P1, scripted()))).toBe('Kapıyı yalnızca GM açıp kapatır.');
     s = ok(execute(s, { type: 'gate', at: gate, open: false }, GM, scripted())).state;
     expect(s.map?.tiles[3]?.[8]).toBe('O');
