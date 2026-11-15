@@ -10,7 +10,7 @@
  * Hesap yalnız olayın `hizalanmaEtki`sinden (günlük kaydının eksen puanları) türer; ayrı moral etkisi yok.
  */
 import cfg from '../../data/hizalanma.json';
-import { addEvent, addFree, bucketOf, type Alignment, type Axis, type ConscienceBook, type MoralReasonA } from './alignment';
+import { addEvent, addFree, bucketOf, turningPoint, type Alignment, type Axis, type ConscienceBook, type MoralReasonA } from './alignment';
 import { moralMaxFrom, moralNow, moralThird } from './moral';
 import { deriveStats, type CharacterSheet } from './stats';
 import type { CharacterStatus } from './characterRest';
@@ -75,6 +75,31 @@ export function applyAlignAct(a: Alignment, act: AlignAct, kim: string, zaman: s
   const delta = moral - ctx.moral;
   const gunluk = nedenler.length ? [...next.gunluk.slice(0, -1), { ...e, moral: { delta, nedenler } }] : next.gunluk;
   return { alignment: { ...next, gunluk, vicdan: book }, moral, delta, nedenler, changed: true };
+}
+
+/**
+ * Kuyruk AL2: Dönüm noktası + Moral bağı. Mevcut "yeni yol" kuralı aynen: etiket bir eksende eşiği aşarak değişirse tek seferlik Moral
+ * +`yeniYol` (eksen başına bir kez, `vicdan.yeniYol`); yeni sayı yok. Vicdan çatışması/iç huzur dönüm noktasında işlemez (olay puanı yok).
+ * `ctx` yoksa ya da `moralKapali` ise yalnız hizalanma.
+ */
+export function applyTurningPoint(a: Alignment, to: { duzen: number; iyilik: number }, baslik: string, gerekce: string, kim: string, zaman: string,
+  ctx: MoralCtx | null, moralKapali = false, gizli?: boolean): MoralResult {
+  const next = turningPoint(a, to, baslik, gerekce, kim, zaman, gizli);
+  const base = { alignment: next, moral: ctx?.moral ?? 0, delta: 0, nedenler: [] as MoralReasonA[], changed: true };
+  if (!ctx || moralKapali) return base;
+  const book: ConscienceBook = { ...(a.vicdan ?? {}) };
+  const yeni: Partial<Record<Axis, true>> = { ...(book.yeniYol ?? {}) };
+  let road = 0;
+  for (const ax of AXES) {
+    const before = a.kova?.[ax] ?? bucketOf(a[ax]);
+    if (next.kova && next.kova[ax] !== before && !yeni[ax]) { road += ALIGN_MORAL.yeniYol; yeni[ax] = true; }
+  }
+  if (!road) return base;
+  const moral = Math.min(ctx.max, ctx.moral + road);
+  const delta = moral - ctx.moral;
+  const last = next.gunluk[next.gunluk.length - 1]!;
+  const gunluk = [...next.gunluk.slice(0, -1), { ...last, moral: { delta, nedenler: ['yeniYol' as const] } }];
+  return { alignment: { ...next, gunluk, vicdan: { ...book, yeniYol: yeni } }, moral, delta, nedenler: ['yeniYol'], changed: true };
 }
 
 export { alignmentLongRest } from './alignmentRest';

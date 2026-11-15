@@ -1528,3 +1528,8 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .goal-setup-strip button.on { background: var(--sel); color: var(--sel-ink); border-color: var(--sel); }
 .goal-warn { color: var(--off-ink); background: var(--off); border-radius: 6px; padding: 2px 8px; font-size: 0.85rem; }
 .goal-list li.pending { opacity: 0.85; }
+
+/* Kuyruk AL2: dönüm noktası satırı ve etiket yolu (SD10: turuncu = vurgu). */
+.align-log li.align-turn { border-left: 4px solid var(--sel); padding-left: 8px; margin: 4px 0; }
+.align-path { margin: 4px 0; font-size: 0.85rem; }
+.align-turn-form { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }

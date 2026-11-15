@@ -3,7 +3,7 @@
  * açılır. Game Master "gizli" yaptıysa görünmez. Kuyruk K52: son kayıt Moral değiştirdiyse kısa bildirim ("Vicdan: Moral −1").
  */
 import { useState } from 'react';
-import { alignmentOf, labelOf, type Alignment } from '../rules/alignment';
+import { alignmentOf, labelOf, labelPath, type Alignment } from '../rules/alignment';
 import { AlignmentGrid } from './AlignmentGrid';
 import { getLang, t } from '../i18n';
 
@@ -20,6 +20,7 @@ export default function AlignmentBadge(props: { value: Alignment | undefined }) 
         ⚖ {labelOf(a, getLang())}
       </button>
       {note && <small className="align-note">{note}</small>}
+      {open && labelPath(a, getLang()).length > 0 && <small className="align-path">{H.path}: {labelPath(a, getLang()).join(' → ')}</small>}
       {open && <span className="align-pop"><AlignmentGrid value={a} start={a.baslangic} small /></span>}
     </span>
   );

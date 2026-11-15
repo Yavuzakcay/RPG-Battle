@@ -8,8 +8,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { createElement } from 'react';
 import {
   addEvent, addFree, alignmentLabel, alignmentOf, applyStartKind, bucketOf, gmRedetermine, labelOf, newAlignment, onSubclassChange,
-  rejectOptions, startContributions, startValue, toggleUndo, ALIGN_EVENTS,
+  rejectOptions, startContributions, startValue, toggleUndo, ALIGN_EVENTS, repeatFactor, turningPoint, correctValue, labelPath, lastAnchorIndex, type Alignment,
 } from './alignment';
+import { alignmentLongRest } from './alignmentRest';
 import backgrounds from '../../data/backgrounds.json';
 import { wizardSteps } from '../screens/Builder';
 import { setAlignmentEnabled } from '../app/features';
@@ -127,16 +128,67 @@ describe('günlük', () => {
     expect(a.duzen).toBe(10);
     expect(a.gunluk.at(-1)).toMatchObject({ tur: 'serbest', kim: 'gm', gerekce: 'deneme' });
   });
-  it('azalan getiri: aynı hazır olay art arda 3. kez yarı etki; serbest girişe uygulanmaz; araya başka olay girince sıfırlanır', () => {
-    const ev = ALIGN_EVENTS.find((e) => e.id === 'zulum')!;
+  it('AL2 tekrar azalımı: pencerede aynı olay 1. tam, 2. yarı, 3. çeyrek, 4+ etkisiz; serbest giriş muaf', () => {
     let a = newAlignment({ duzen: 0, iyilik: 0 }, 'otomatik');
-    a = addEvent(addEvent(addEvent(a, 'zulum', 'gm', Z), 'zulum', 'gm', Z), 'zulum', 'gm', Z);
-    expect(a.gunluk.map((e) => e.iyilik)).toEqual([ev.iyilik, ev.iyilik, -Math.ceil(Math.abs(ev.iyilik) / 2)]); // K52: Zorbalık −5 → −3 (yarım yukarı)
-    expect(a.gunluk.at(-1)?.yarim).toBe(true);
-    a = addEvent(addEvent(a, 'merhamet', 'gm', Z), 'zulum', 'gm', Z);
-    expect(a.gunluk.at(-1)?.yarim).toBeFalsy();
+    for (let i = 0; i < 5; i++) a = addEvent(a, 'zulum', 'gm', Z);
+    expect(a.gunluk.map((e) => e.iyilik)).toEqual([-5, -3, -2, 0, 0]);
+    expect(a.gunluk.map((e) => e.azalim)).toEqual([undefined, 0.5, 0.25, 0, 0]);
+    expect(a.gunluk[1]?.yarim).toBe(true);
+    expect(repeatFactor(a, 'zulum')).toBe(0);
+    expect(repeatFactor(a, 'merhamet')).toBe(1); // başka olay türü ayrı sayılır (art arda olmak gerekmez)
+    const mid = addEvent(addEvent(addEvent(newAlignment({ duzen: 0, iyilik: 0 }, 'otomatik'), 'zulum', 'gm', Z), 'merhamet', 'gm', Z), 'zulum', 'gm', Z);
+    expect(mid.gunluk.filter((e) => e.olay === 'zulum').map((e) => e.azalim)).toEqual([undefined, 0.5]);
     const b = addFree(addFree(addFree(newAlignment({ duzen: 0, iyilik: 0 }, 'otomatik'), 'iyilik', -4, 'x', 'gm', Z), 'iyilik', -4, 'x', 'gm', Z), 'iyilik', -4, 'x', 'gm', Z);
     expect(b.iyilik).toBe(-12);
+  });
+  it('AL2 uzun dinlenme sayacı sıfırlar; Geri al sayacı da geri alır; eski kayıt bozulmaz', () => {
+    let a = newAlignment({ duzen: 0, iyilik: 0 }, 'otomatik');
+    a = addEvent(addEvent(a, 'zulum', 'gm', Z), 'zulum', 'gm', Z);
+    expect(repeatFactor(a, 'zulum')).toBe(0.25);
+    const rested = alignmentLongRest({ hizalanma: a }).hizalanma as Alignment;
+    expect(repeatFactor(rested, 'zulum')).toBe(1);
+    expect(addEvent(rested, 'zulum', 'gm', Z).gunluk.at(-1)?.azalim).toBeUndefined();
+    // geri al: 2. kayıt geri alınınca sayaç 1'e iner
+    const undone = toggleUndo(a, a.gunluk[1]!.id);
+    expect(repeatFactor(undone, 'zulum')).toBe(0.5);
+    // eski kayıt (pencereBas yok, uzun günlük): ilk olay tam etkili, sayaç oradan başlar
+    const old: Alignment = { ...newAlignment({ duzen: 0, iyilik: 0 }, 'otomatik'), gunluk: Array.from({ length: 6 }, (_, i) => ({ id: `o${i}`, tur: 'olay' as const, kim: 'gm', olay: 'zulum', duzen: 0, iyilik: -5, gerekce: 'x', zaman: Z })) };
+    expect(repeatFactor(old, 'zulum')).toBe(1);
+    expect(addEvent(old, 'zulum', 'gm', Z).gunluk.at(-1)?.iyilik).toBe(-5);
+  });
+  it('AL2 dönüm noktası: ◆ kaydı, etiket geçmişi (yalnız etiket değişince), sayaç sıfırlanır; Düzelt geçmişe girmez', () => {
+    let a = newAlignment({ duzen: 25, iyilik: 25 }, 'otomatik'); // Lawful Good
+    a = addEvent(a, 'zulum', 'gm', Z);
+    expect(a.etiketGecmisi ?? []).toEqual([]); // etiket değişmedi
+    const t = turningPoint(a, { duzen: 0, iyilik: -30 }, 'İhanet', 'Yemini bozdu', 'gm', Z);
+    expect(t.duzen).toBe(0); expect(t.iyilik).toBe(-30);
+    const e = t.gunluk.at(-1)!;
+    expect(e.tur).toBe('donum');
+    expect(e.donum?.eski.kova).toEqual({ duzen: 'pos', iyilik: 'pos' });
+    expect(e.donum?.yeni.kova).toEqual({ duzen: 'neu', iyilik: 'neg' });
+    expect(e.gerekce).toContain('İhanet');
+    expect(t.etiketGecmisi?.length).toBe(1);
+    expect(labelPath(t, 'en')).toEqual(['Lawful Good', 'Neutral Evil']);
+    expect(repeatFactor(t, 'zulum')).toBe(1); // sayaç sıfırlandı
+    // aynı etiket içinde dönüm noktası geçmişe girmez
+    expect(turningPoint(t, { duzen: 0, iyilik: -40 }, 'Daha da', 'x', 'gm', Z).etiketGecmisi?.length).toBe(1);
+    // gizli
+    expect(turningPoint(a, { duzen: 0, iyilik: 0 }, 'B', 'g', 'gm', Z, true).gizli).toBe(true);
+    // Düzelt: değer değişir, günlüğe "düzelt", geçmiş ve sayaçlar aynı
+    const f = correctValue(t, { duzen: 0, iyilik: -10 }, 'gm', Z);
+    expect(f.iyilik).toBe(-10);
+    expect(f.gunluk.at(-1)?.tur).toBe('duzelt');
+    expect(f.etiketGecmisi?.length).toBe(1);
+    expect(f.pencereBas).toBe(t.pencereBas);
+    // dönüm noktasından önceki kayıt artık geri alınamaz (arayüz), son çapa dizini
+    expect(lastAnchorIndex(t)).toBe(t.gunluk.length - 1);
+  });
+  it('AL2 etiket geçmişi histerezisi korur: eşiğin hemen altına inince etiket geri dönmez', () => {
+    let a = newAlignment({ duzen: 0, iyilik: 18 }, 'otomatik'); // Good (≥17)
+    a = addFree(a, 'iyilik', -2, 'azaldı', 'gm', Z); // 16: histerezis (≥15) → hâlâ Good, geçmiş yok
+    expect(a.etiketGecmisi ?? []).toEqual([]);
+    a = addFree(a, 'iyilik', -2, 'daha azaldı', 'gm', Z); // 14 < 15 → Neutral
+    expect(a.etiketGecmisi?.length).toBe(1);
   });
   it('Game Master yeniden belirler: yeni başlangıç, günlük kaydı, değişimler korunur', () => {
     let a = addEvent(newAlignment({ duzen: 10, iyilik: 10 }, 'otomatik'), 'yardim', 'gm', Z);
@@ -223,5 +275,21 @@ describe('SD12: katkı çarpanı ve kare seçimi', () => {
     // Seçilen karenin zarı kayıtla açılır (SD8 kancası)
     const c = withAlignDice({ ...blankCharacter('x'), hizalanma: newAlignmentAt('neg', 'pos') });
     expect(c.hizalanmaZarlar).toEqual(['hizalanma-chaotic-good']);
+  });
+});
+
+describe('AL2 panel', () => {
+  it('Game Master paneli: Dönüm noktası + Düzelt düğmeleri, ◆ günlük satırı, yol haritası, tekrar çarpanı; çapadan önceki kayıtta Geri al yok', async () => {
+    const { AlignmentPanel } = await import('../ui/gm/AlignmentPanel');
+    const { demoCharacters } = await import('../screens/fixtures');
+    let a = newAlignment({ duzen: 25, iyilik: 25 }, 'otomatik');
+    a = addEvent(addEvent(a, 'zulum', 'gm', Z), 'zulum', 'gm', Z);
+    a = turningPoint(a, { duzen: 0, iyilik: -30 }, 'İhanet', 'Yemini bozdu', 'gm', Z);
+    const c = { ...demoCharacters()[0]!, hizalanma: a };
+    const html = renderToStaticMarkup(createElement(AlignmentPanel, { characters: [c], onUpdate: () => {} }));
+    expect(html).toContain('Dönüm noktası'); expect(html).toContain('Düzelt');
+    expect(html).toContain('◆ İhanet'); expect(html).toContain('Yol:'); expect(html).toContain('Lawful Good → Neutral Evil');
+    expect(html).not.toContain('×0.'); // dönüm noktası sayaçları sıfırladı
+    expect(html).not.toContain('Geri al');
   });
 });

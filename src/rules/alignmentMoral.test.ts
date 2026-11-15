@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { ALIGN_EVENTS, addEvent, newAlignment, type Alignment } from './alignment';
-import { alignmentLongRest, alignmentMoralOn, applyAlignAct, swingOf, type MoralCtx } from './alignmentMoral';
+import { alignmentLongRest, alignmentMoralOn, applyAlignAct, applyTurningPoint, swingOf, type MoralCtx } from './alignmentMoral';
 
 const Z = '2026-11-05T10:00:00.000Z';
 const ctx = (moral: number, max = 6, day = '2026-11-05'): MoralCtx => ({ moral, max, day });
@@ -118,6 +118,25 @@ describe('yeni yol ve savrulma', () => {
     expect(applyAlignAct(at(0, 0), ev('zulum'), 'gm', Z, ctx(4)).alignment.iyilik).toBe(-5);
     let a = at(0, 0);
     for (let i = 0; i < 3; i++) a = applyAlignAct(a, ev('zulum'), 'gm', Z, ctx(2)).alignment;
-    expect(a.gunluk.map((e) => e.iyilik)).toEqual([-8, -8, -5]); // 3.: yarı (−3) × 1.5 = −4.5 → −5
+    expect(a.gunluk.map((e) => e.iyilik)).toEqual([-8, -5, -3]); // AL2: 2. yarı (−3) × 1.5 = −4.5 → −5; 3. çeyrek (−2) × 1.5 = −3
+  });
+});
+
+describe('AL2 dönüm noktası ↔ Moral "yeni yol"', () => {
+  it('etiket eşiği aşarak değişirse mevcut yeni yol kuralıyla Moral +2, eksen başına bir kez; kapalıyken ya da etiket değişmezse yok', () => {
+    const a = at(25, 25);
+    const r = applyTurningPoint(a, { duzen: 25, iyilik: -30 }, 'İhanet', 'Yemini bozdu', 'gm', Z, ctx(3));
+    expect(r.nedenler).toEqual(['yeniYol']);
+    expect(r.delta).toBe(2); expect(r.moral).toBe(5);
+    expect(r.alignment.vicdan?.yeniYol).toEqual({ iyilik: true });
+    expect(r.alignment.gunluk.at(-1)?.moral).toEqual({ delta: 2, nedenler: ['yeniYol'] });
+    // aynı eksende ikinci dönüm noktası: yeni yol bir kez
+    const again = applyTurningPoint(r.alignment, { duzen: 25, iyilik: 30 }, 'Kurtuluş', 'Af', 'gm', Z, ctx(5));
+    expect(again.delta).toBe(0);
+    // bağ kapalı / Moral etkisi yok seçeneği
+    expect(applyTurningPoint(a, { duzen: 25, iyilik: -30 }, 'x', 'y', 'gm', Z, null).delta).toBe(0);
+    expect(applyTurningPoint(a, { duzen: 25, iyilik: -30 }, 'x', 'y', 'gm', Z, ctx(3), true).delta).toBe(0);
+    // etiket aynı kalırsa Moral yok
+    expect(applyTurningPoint(a, { duzen: 30, iyilik: 30 }, 'x', 'y', 'gm', Z, ctx(3)).delta).toBe(0);
   });
 });
