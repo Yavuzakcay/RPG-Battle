@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-11-25 — KAPI1: `gate` kuralı Kale ve avlu haritasına geri eklendi (Kuyruk KQ2; yalnız veri, kural/kayıt sürümü değişmedi)
+
+- HS1'de klasik Kale silinince eski `gate` harita kuralı hiçbir haritada kalmamıştı (motor desteği `mapcommands.ts` duruyordu; test sahte haritayla çalışıyordu). Veri biçimi git geçmişinden (`9b932f0^:harita/kale/kale-klasik.json`): `{"id":"gate","hex":[9,4],"state":"open","ac":15,"hp":30,"note":…}`.
+- `harita/kale/kale-avlu.json` gündüz varyantına `{"id":"gate","hex":[12,9],"state":"open","ac":15,"hp":30}` eklendi. **Koordinat gerekçesi:** klasik kapı sur sütunundaki açıklıktaydı (`o`, 1 tabanlı [9,4]); Kale ve avlu'da batı surunun açıklığı (`o`) 1 tabanlı sütun 12, satır 9'da, hendek köprüsünün (`p`) hemen doğusunda; kural altıgeni 1 tabanlı [sütun, satır] (`ruleHex`), yani 0 tabanlı (11, 8). Başka kapı (iç bina oda kapıları) kural değil, ayrı nesne.
+- `data/kural-kontrol.json` `gate` girdisi (parametresiz, varsayılan açık): Game Master kurulumunda "Harita" grubunda açılıp kapanır; kapalıyken kural yok sayılır. Kural sürümü (`surum`) yok: eski kayıt ve replay etkilenmez.
+- Test: `src/battle/maprules.test.ts` sahte harita yerine gerçek `kale-avlu` ile (kapat/aç/kır/kırık kapanmaz + kurulum anahtarında görünür). `check:harita -- kale-avlu` temiz. Denge ölçülmedi (kapı varsayılan açık).
+
 ## 2026-11-24 — SD9B: kurulum ekranından 7 altyapı anahtarı gizlendi (Kuyruk KQ2; yalnız arayüz)
 
 - SD9-KURULUM.md'deki 13 "kaldırma adayı" tek tek incelendi (tablo: `harita/belgeler/SD9-KURULUM.md` bölüm 5). Ölçüt: kapalıyken oyunu bozuyor mu.

@@ -6,21 +6,7 @@ import { activeRules, inShade, litHexes, optionalRules } from './maprules';
 import { terrainOf } from '../map/terrain';
 import { GM, P1, mk, scripted, sword } from './fixtures';
 
-// HS1: eski `gate` harita kuralı (GM kapıyı kapatır/açar, kırılır) yalnız silinen klasik Kale'nin verisindeydi; motor desteği duruyor,
-// bu yüzden kural verisi bir fikstür haritasıyla sağlanır (gerçek bir haritanın verisi değişmedi).
-vi.mock('../map/maps', async (importOriginal) => {
-  const real = await importOriginal<typeof import('../map/maps')>();
-  return {
-    ...real,
-    resolveMapChoice: (id: string, variantId?: string) => (id === 'kapi-fikstur' ? { id, variantId: real.resolveMapChoice('orman', variantId).variantId } : real.resolveMapChoice(id, variantId)),
-    getMap: (id: string, opts?: { mirrored?: boolean; variantId?: string }) => {
-      if (id !== 'kapi-fikstur') return real.getMap(id, opts);
-      const base = real.getMap('orman', opts);
-      const variants = base.variants.map((v) => ({ ...v, rules: [...v.rules, { id: 'gate', hex: [9, 4], state: 'open', ac: 15, hp: 30 }] }));
-      return { ...base, id, variants } as ReturnType<typeof real.getMap>;
-    },
-  };
-});
+// KAPI1: `gate` kuralı Kale ve avlu haritasının JSON'unda (batı kapısı, 1 tabanlı [12, 9]); test gerçek haritayla çalışır.
 
 const o = (col: number, row: number): Offset => ({ col, row });
 
@@ -331,20 +317,26 @@ describe('kale', () => {
     expect(ok(execute(same, { type: 'attack', actorId: 'A', targetId: 'B', option: bow }, P1, scripted([20, 15], [8, 1]))).events[0]).not.toHaveProperty('cover');
   });
   it('kapı: GM kapatır (geçilmez), açar; kapalı kapı kırılır (AC 15, HP 30)', () => {
-    const gate = o(8, 3);
-    const tiles = board('.', [[gate, 'o']]);
-    let s = field({ id: 'kapi-fikstur' }, [A(), B()], { A: o(7, 3), B: o(12, 3) }, tiles);
+    const gate = o(11, 8); // kuraldaki 1 tabanlı [12, 9]
+    const tiles = Array.from({ length: 17 }, (_, r) => '.'.repeat(31).split('').map((ch, c) => (r === 8 && c === 11 ? 'o' : ch)).join(''));
+    let s = field({ id: 'kale-avlu' }, [A(), B()], { A: o(10, 8), B: o(20, 8) }, tiles);
     expect(errorOf(execute(s, { type: 'gate', at: gate, open: false }, P1, scripted()))).toBe('Kapıyı yalnızca GM açıp kapatır.');
     s = ok(execute(s, { type: 'gate', at: gate, open: false }, GM, scripted())).state;
-    expect(s.map?.tiles[3]?.[8]).toBe('O');
+    expect(s.map?.tiles[8]?.[11]).toBe('O');
     expect(errorOf(execute(s, { type: 'move', actorId: 'A', to: gate }, P1, scripted()))).toContain('geçilmez');
     const big = { ...sword, damage: '10d6' };
     const hit = ok(execute(s, { type: 'attack_gate', actorId: 'A', at: gate, option: big }, P1, scripted([20, 15], ...Array.from({ length: 10 }, () => [6, 3] as [number, number]))));
-    expect(hit.state.map?.gates?.['8,3']).toEqual({ state: 'broken', hp: 0 });
-    expect(hit.state.map?.tiles[3]?.[8]).toBe('o');
+    expect(hit.state.map?.gates?.['11,8']).toEqual({ state: 'broken', hp: 0 });
+    expect(hit.state.map?.tiles[8]?.[11]).toBe('o');
     expect(errorOf(execute(hit.state, { type: 'gate', at: gate, open: false }, GM, scripted()))).toBe('Kapı kırık: kapanmaz.');
     const reopened = ok(execute(s, { type: 'gate', at: gate, open: true }, GM, scripted()));
-    expect(reopened.state.map?.tiles[3]?.[8]).toBe('o');
+    expect(reopened.state.map?.tiles[8]?.[11]).toBe('o');
+  });
+  it('kapı kuralı Kale ve avlu verisinde ve kurulum anahtarlarında; kapatılınca kapı yok', async () => {
+    const { controllableRules } = await import('../battle/ruleControl');
+    expect(controllableRules('kale-avlu', 'gunduz').map((x) => x.rule.id)).toContain('gate');
+    const s = field({ id: 'kale-avlu' }, [A(), B()], {}, board('.'));
+    expect(activeRules(s).map((r) => r.id)).toContain('gate');
   });
 });
 

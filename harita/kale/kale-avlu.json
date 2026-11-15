@@ -55,6 +55,17 @@
       "image": "maps/kale/kale-avlu.webp",
       "rules": [
         {
+          "id": "gate",
+          "hex": [
+            12,
+            9
+          ],
+          "state": "open",
+          "ac": 15,
+          "hp": 30,
+          "note": "Batı kapısı: Game Master kapıyı kapatabilir (engel olur); kapalı kapı kırılabilir."
+        },
+        {
           "id": "climb",
           "heightDiffCost": 2,
           "note": "Bir seviye yukarı çıkmak 2 altıgenlik hareket harcar (kule basamakları sayılır). Yüksekten saldıran avantaj alır."

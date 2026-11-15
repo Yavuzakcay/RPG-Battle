@@ -51,7 +51,7 @@ Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: SD9 a�
 | `hizalanmaMoral` | Hizalanma ↔ Moral bağı: vicdan çatışması, iç huzur, yeni yol, savrulma (hizalanma ve moralSistemi de açıkken; savaş hesabına girmez) | kapalı |  | Gelişmiş > Ev kuralları |
 | `hizalanma` | Hizalanma (Düzen/İyilik eksenleri, Game Master paneli ve günlük; savaş hesabına girmez) | kapalı |  | Gelişmiş > Ev kuralları |
 
-## 3. Harita mekanikleri (113; her haritada yalnız o haritayı ilgilendirenler görünür)
+## 3. Harita mekanikleri (114; her haritada yalnız o haritayı ilgilendirenler görünür)
 
 | Kimlik | Ad | Tür | Varsayılan | Grup | Kaldırma adayı |
 |---|---|---|---|---|---|
@@ -167,6 +167,7 @@ Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: SD9 a�
 | `ballista` | Balista (eylemle yükle, eylemle ateşle; uzak menzilde dezavantaj) | harita | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `frozenFall` | Donmuş şelale (kırılınca ya da eriyince ardındaki geçit açılır; ateş iki kat) | harita | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `coldExposure` | Dondurucu soğuk (SRD Extreme Cold, savaş ölçeği: her N turda CON save ya da 1 Exhaustion) | harita | kapalı | Harita (lav, derin su, gizli nesne…) |  |
+| `gate` | Kapı: Game Master kapıyı açıp kapatır (kapalı kapı engeldir, kırılabilir) | harita | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `sentinelNiche` | Heykelin gizli nişi (Algıyla bulunur ya da bulmaca açar; içinde sandık) | harita | açık | Harita (lav, derin su, gizli nesne…) |  |
 
 ## 4. Grup özeti
@@ -177,7 +178,7 @@ Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: SD9 a�
 | Sınıf özellikleri | 22 |
 | Yapay zekâ davranışları | 6 |
 | Büyü ve görüş sistemleri | 8 |
-| Harita (lav, derin su, gizli nesne…) | 45 |
+| Harita (lav, derin su, gizli nesne…) | 46 |
 | Diğer (altyapı) | 11 |
 
 Kaldırma adayı toplam: 13; SD9B'de kurulumdan gizlenen: 7; Gelişmiş > Diğer'de kalan: 6.

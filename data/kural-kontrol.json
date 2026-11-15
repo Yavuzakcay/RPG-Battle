@@ -177,6 +177,7 @@
     "frozenFall": { "surum": 12, "tr": "Donmuş şelale (kırılınca ya da eriyince ardındaki geçit açılır; ateş iki kat)", "en": "Frozen waterfall (break or melt it to open the passage behind; fire deals double)", "params": [] },
     "coldExposure": { "surum": 12, "default": false, "tr": "Dondurucu soğuk (SRD Extreme Cold, savaş ölçeği: her N turda CON save ya da 1 Exhaustion)", "en": "Extreme cold (SRD Extreme Cold, combat scale: every N rounds CON save or 1 Exhaustion)",
       "params": [ { "key": "startRound", "type": "int", "min": 1, "max": 20, "tr": "İlk tur", "en": "First round" }, { "key": "interval", "type": "int", "min": 1, "max": 10, "tr": "Aralık (tur)", "en": "Interval (rounds)" }, { "key": "dc", "type": "int", "min": 5, "max": 25, "tr": "CON DC", "en": "CON DC" } ] },
+    "gate": { "tr": "Kapı: Game Master kapıyı açıp kapatır (kapalı kapı engeldir, kırılabilir)", "en": "Gate: the Game Master opens and closes it (a closed gate blocks and can be broken)", "params": [] },
     "sentinelNiche": { "surum": 12, "tr": "Heykelin gizli nişi (Algıyla bulunur ya da bulmaca açar; içinde sandık)", "en": "Statue's hidden niche (found by Perception or opened by the puzzle; holds a chest)", "params": [] }
   }
 }
