@@ -10,7 +10,7 @@ import bolgeler from '../../harita/_ortak/harita-bolgeleri.json';
 import seruven from '../../data/seruven.json';
 import yerlesim from '../../data/yerlesim.json';
 import { classes, races } from '../data';
-import { DICE_THEMES, diceCategoryOf, diceThemeOf } from '../ui/diceTheme';
+import { DICE_THEMES, buildThemes, diceCategoryOf, diceThemeOf } from '../ui/diceTheme';
 import { LEGACY_IDS, alwaysOpen, choiceOf, classOfCombatant, emptyStore, isUnlocked, mapTheme, monsterTheme, normalize, setChoice, themeForRoll, unlock, unlockHint, unlocksFromBattle, unlocksFromSeruven } from './diceUnlock';
 import type { BattleState, Combatant } from '../battle/types';
 
@@ -47,8 +47,10 @@ describe('SD9: temalar', () => {
     expect(count).toEqual({ malzeme: 12, sinif: 12, irk: 10, harita: 15, dusman: 12, esya: 2, hizalanma: 9 });
   });
   it('görseli olmayan tema Klasik görselle çizilir, kendi 3D renkleri var', () => {
-    const t = diceThemeOf('dusman-ejderha');
-    expect(t.dice['20']?.image).toBe(diceThemeOf('klasik').dice['20']?.image);
+    // Hazır küme boş: gerçek setler üretilmiş olsa da (zar-mevcut.json) görseli olmayan tema klasik görselle çizilir.
+    const list = buildThemes(new Set());
+    const t = list.find((x) => x.id === 'dusman-ejderha')!;
+    expect(t.dice['20']?.image).toBe(list.find((x) => x.id === 'klasik')?.dice['20']?.image);
     expect(t.three?.body).toMatch(/^#/);
   });
   it('her sınıf ve her ırk için zar var (her zaman açık)', () => {

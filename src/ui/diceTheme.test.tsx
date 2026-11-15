@@ -34,6 +34,9 @@ describe('zar temaları', () => {
   });
 });
 
+/** Gerçek görsel setleri üretildikten sonra (zar-mevcut.json) da "set hazır değil" durumunu sınamak için boş hazır kümesiyle kurulan temalar. */
+const notReady = (id: string): DiceTheme => buildThemes(new Set()).find((x) => x.id === id) as DiceTheme;
+
 describe('SD9c: seçicide Oltu Taşı', () => {
   it('seçici malzeme grubunda Oltu Taşı kilitli görünür (ipucuyla); Kemik/Obsidyen yok; 3D renkleri tepsiyi çizer', () => {
     const html = renderToStaticMarkup(<DiceThemePicker charId="*" />);
@@ -41,7 +44,7 @@ describe('SD9c: seçicide Oltu Taşı', () => {
     expect(html).not.toContain('data-zar-tema="kemik"'); expect(html).not.toContain('data-zar-tema="obsidyen"'); expect(html).not.toMatch(/Obsidyen|Kemik/);
     const item = { id: 1, roll: { sides: 20, values: [17], bonus: 5 }, title: 'x', themeId: 'oltu-tasi' };
     const tray = renderToStaticMarkup(<DiceTray items={[item]} timings={{ spin: 0, show: 800 }} onDone={() => {}} onSkip={() => {}} theme={diceThemeOf('klasik')} />);
-    expect(tray).toContain('zarlar/klasik/d20.webp'); expect(tray).toMatch(/class="die-num"[^>]*>17</);
+    expect(tray).toMatch(/zarlar\/(klasik|oltu-tasi)\/d20\.webp/); expect(tray).toMatch(/class="die-num"[^>]*>17</);
   });
 });
 
@@ -50,7 +53,7 @@ describe('SD9c: Altın renk teması ve gerçek set', () => {
     expect(DICE_THEMES.length).toBe(72); // 63 ham + 9 Alignment yer tutucusu
     expect(DICE_THEMES.map((x) => x.id)).not.toContain('kemik'); expect(DICE_THEMES.map((x) => x.id)).not.toContain('obsidyen');
     expect(DEFAULT_DICE_THEME).toBe('klasik');
-    const gold = diceThemeOf('altin');
+    const gold = notReady('altin');
     expect(gold.dice['20']?.image).toBe(diceThemeOf('klasik').dice['20']?.image); expect(gold.filter).toBeTruthy(); expect(gold.three?.body).toMatch(/^#/);
     const ready = buildThemes(new Set(['altin', 'oltu-tasi'])).find((x) => x.id === 'altin') as DiceTheme;
     expect(ready.dice['20']?.image).toBe('zarlar/altin/d20.webp'); expect(ready.filter).toBeUndefined();
@@ -61,7 +64,7 @@ describe('SD9c: Altın renk teması ve gerçek set', () => {
   });
   it('tepside filtre görsele uygulanır; Klasik filtresiz', () => {
     const item = { id: 1, roll: { sides: 20, values: [17], bonus: 5 }, title: 'Mira — Saldırı' };
-    const gold = renderToStaticMarkup(<DiceTray items={[item]} timings={{ spin: 0, show: 800 }} onDone={() => {}} onSkip={() => {}} theme={diceThemeOf('altin')} />);
+    const gold = renderToStaticMarkup(<DiceTray items={[item]} timings={{ spin: 0, show: 800 }} onDone={() => {}} onSkip={() => {}} theme={notReady('altin')} />);
     expect(gold).toContain('filter:saturate');
     const classic = renderToStaticMarkup(<DiceTray items={[item]} timings={{ spin: 0, show: 800 }} onDone={() => {}} onSkip={() => {}} theme={diceThemeOf('klasik')} />);
     expect(classic).not.toContain('filter:');
