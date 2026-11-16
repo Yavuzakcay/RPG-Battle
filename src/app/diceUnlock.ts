@@ -141,7 +141,7 @@ export const mapTheme = (mapId: string | undefined, regionOf?: (mapId: string) =
 /** Oyuncu savaşçısının sınıfı (jeton görsel adından: `characters/<ırk>-<cinsiyet>-<sınıf>` ya da `avatars/<ırk>-<sınıf>-<cinsiyet>`). */
 export function classOfCombatant(c: Pick<Combatant, 'avatar'>): string | undefined {
   const src = c.avatar?.src ?? '';
-  const a = /(?:^|\/)[a-z]+-(?:male|female|erkek|kadin)-([a-z]+)\.[a-z]+$/.exec(src);
+  const a = /(?:^|\/)[a-z]+-(?:male|female|erkek|kadin)-([a-z]+)(?:-WZ-[AB]\d)?\.[a-z]+$/.exec(src); // WZ-BAGLA: wizard alt sınıf jetonu
   if (a) return a[1];
   const b = /(?:^|\/)[a-z]+-([a-z]+)-(?:male|female|erkek|kadin)\.[a-z]+$/.exec(src);
   return b?.[1];

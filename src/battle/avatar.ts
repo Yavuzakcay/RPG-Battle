@@ -6,6 +6,7 @@ import type { Monster } from '../data';
 import type { CharacterSheet } from '../rules/stats';
 import type { Avatar, TintSpec } from './types';
 import soyRenkleri from '../../data/soy-renkleri.json';
+import wizardJeton from '../../data/wizard-jeton.json';
 import { cultureSkinTone, hasSubclassWing, skinTint } from '../ui/lineageLook';
 
 /** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
@@ -88,6 +89,25 @@ export function characterTokenFile(raceId: string, gender: 'erkek' | 'kadin' | u
   return `${raceId}-${GENDER_FILE[gender ?? 'erkek']}-${classId}.webp`;
 }
 
+/** Görev WZ-BAGLA: eksik alt sınıf jetonları bir kez geliştirici günlüğüne (arayüz metni yok). */
+const wzMissing = new Set<string>();
+const WZ = wizardJeton as unknown as { sinif: string; maskeHazir: boolean; irklar: Record<string, string[]>; altSiniflar: Record<string, string> };
+/**
+ * Wizard alt sınıf jetonu (`<ırk>-<erkek|kadin>-wizard-<WZ-id>.webp`): ırk×cinsiyet jetonu üretilmişse, alt sınıf tabloda varsa ve
+ * (soy/ten boyası gerekiyorsa) maskeleri hazırsa dosya adı; yoksa undefined (sınıf-genel jeton kalır, eksik bir kez `console.warn`).
+ */
+export function wizardSubclassFile(raceId: string, gender: 'erkek' | 'kadin', subclassId: string | undefined, tinted: boolean): string | undefined {
+  if (!subclassId) return undefined;
+  const cell = WZ.altSiniflar[subclassId];
+  const why = !cell ? 'alt sınıf tabloda yok' : !WZ.irklar[raceId]?.includes(gender) ? 'ırk/cinsiyet jetonu yok' : tinted && !WZ.maskeHazir ? 'WZ ten/soy maskesi yok' : '';
+  if (why) {
+    const key = `${raceId}-${gender}-${subclassId}`;
+    if (!wzMissing.has(key)) { wzMissing.add(key); console.warn(`wizard-jeton eksik: ${key} (${why}); sınıf-genel jeton kullanılıyor.`); }
+    return undefined;
+  }
+  return `${raceId}-${gender}-wizard-${cell}.webp`;
+}
+
 /**
  * Karakter jetonu (pixel art, karşıdan çizili): `characters/` + `characterTokenFile`.
  * Cinsiyeti olmayan eski kayıtlar erkek (male). Yoksa eski `avatars/<ırk>-<sınıf>-<cinsiyet>.webp`,
@@ -95,9 +115,13 @@ export function characterTokenFile(raceId: string, gender: 'erkek' | 'kadin' | u
  */
 export function sheetAvatar(sheet: CharacterSheet): Avatar {
   const gender = sheet.gender ?? 'erkek';
+  const generic = `characters/${characterTokenFile(sheet.raceId, gender, sheet.classId)}`;
+  // WZ-BAGLA: Wizard alt sınıf jetonu (soy/ten boyası gerekiyorsa `maskeHazir` bayrağına bağlı); öncelik özel avatar > alt sınıf jetonu > genel.
+  const wz = !sheet.avatar && sheet.classId === WZ.sinif
+    ? wizardSubclassFile(sheet.raceId, gender, sheet.subclassId, !!(skinTint(sheet.raceId, cultureSkinTone(sheet.lineageId, sheet.skinTone, sheet.exileCulture)) ?? lineageTint(sheet.raceId, sheet.lineageId, gender))) : undefined;
   return {
-    src: sheet.avatar ?? `characters/${characterTokenFile(sheet.raceId, gender, sheet.classId)}`,
-    fallbacks: sheet.avatar ? [] : [`avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],
+    src: sheet.avatar ?? (wz ? `characters/${wz}` : generic),
+    fallbacks: sheet.avatar ? [] : [...(wz ? [generic] : []), `avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],
     bg: RACE_COLOR[sheet.raceId] ?? '#4a5560',
     label: CLASS_LABEL[sheet.classId] ?? sheet.classId.slice(0, 2),
     // Kuyruk AS1c: Human ten tonu ten maskesiyle (jetonun yalnız teni); diğer alt soylar soy rengiyle.

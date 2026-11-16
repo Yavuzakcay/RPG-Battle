@@ -11,7 +11,7 @@ const acilis = new Set(Object.keys(import.meta.glob('/public/acilis/*')).map((f)
 
 describe('küçük karakter jetonları', () => {
   it('her karakter jetonunun 96 px kopyası var (npm run karakter-kucuk)', () => {
-    expect(big.length).toBe(240);
+    expect(big.length).toBe(240 + 270); // 240 sınıf-genel + 270 Wizard alt sınıf jetonu (WZ-KESIM)
     expect(small).toEqual(big);
   });
   it('rozet 48 px ve altında önce küçük kopya, sonra asıl görsel; büyükte yalnızca asıl', () => {

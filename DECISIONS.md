@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-10 — WZ-BAGLA: Wizard alt sınıf jetonları oyuna bağlandı (yalnız görünüm; kural/kayıt sürümü değişmedi)
+
+- Tek tablo `data/wizard-jeton.json` (`altSiniflar`: alt sınıf kimliği → WZ hücresi; `irklar`: jetonu olan ırk×cinsiyet; `maskeHazir`; `cozulemeyen`). Çözücü `src/battle/avatar.ts` `wizardSubclassFile`, `sheetAvatar` içinde: karakter ekranları ve savaş jetonu aynı yoldan; kanat/`look`/ten/soy alanları aynen. Zincir: WZ jetonu → sınıf-genel jeton → eski `avatars/`. Eski jetonlar silinmedi; ana parçaya +≈1,3 kB (tablo küçük, senkron çözüm için statik).
+- Kimlikler: `evoker` (A1; varsayılan/fikstür), `imza_harita` (B7; `data/imza.json`), kalan 13 hücre `icerik-liste.txt`'teki paket kimlikleri (aldatma, anka, diriltme, harp, hattat, kehanet, kilic-sarkisi, serap, siginak, simya, tezahur, uzay-bukme, zamanalti `-ogretisi`). Çözülemeyen: yok. Paket kimliği değişirse yalnız bu tablo düzeltilir.
+- ⚠ Karar: WZ jetonlarının ten/soy maskesi yok (`npm run soy-maske` onları üretmiyor); `maskeHazir: false` iken ten ya da soy boyası gereken karakter (Human tonu, Elf/Tiefling/Goliath soyları vb.) sınıf-genel jetonda kalır, aksi hâlde boyama sessizce kaybolurdu. Maskeler üretilince bayrak `true` yapılır.
+- Eksikler (Dragonborn, tabloda olmayan alt sınıf, maskesiz boyalı karakter) bir kez `console.warn("wizard-jeton eksik: …")`; arayüz metni yok. Zar teması sınıf tespiti (`classOfCombatant`) WZ dosya adını tanır. 96 px kopyalar `public/characters/kucuk/`'a eklendi; `loading.test.ts` 240 → 510 (240 + 270).
+
 ## 2026-12-09 — WZ-KESIM: Wizard jeton sayfalarının kesimi (yalnız varlık; kural/kayıt sürümü değişmedi)
 
 - `scripts/wizard-kesim.py` (Pillow+numpy+scipy; ham sayfalar `origin/wip/karakter-ham` → `assets-ham/karakter/`, depoya girmez): 9 ırk × 2 cinsiyet × (A 8 + B 7) = 270 jeton → `public/characters/<irk>-<erkek|kadin>-wizard-WZ-<A1..A8|B1..B7>.webp` (256×256, figür 240 px, üst boşluk 8, ayak alt y=247). Ejderha doğumlu sayfa yok (atlandı). Gerçek alt sınıf kimlikleri sonra toplu doldurulur (yer tutucu WZ-id).
