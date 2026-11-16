@@ -11,6 +11,7 @@ import { wingFilterId } from './lineageLook';
 import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
 import { tintedReady, tintedUrl } from './tint';
+import { naturalLeft } from './tokenMirror';
 
 /**
  * Görev K8b: soy rengi varsa görselin boyalı kopyası (hazır olana dek asıl görsel). Yalnızca karakter jetonları
@@ -122,7 +123,7 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
   const shown = useTinted(src, avatar.tint);
   return (
     <span className={`avatar${src && !loaded ? ' skeleton' : ''}`} title={title}
-      style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? avatar.ring ?? 'transparent', fontSize: size * 0.4 }}>
+      style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? avatar.ring ?? 'transparent', fontSize: size * 0.4, ...(naturalLeft(src) ? { '--mirror': -1 } : {}) } as CSSProperties}>
       {src ? (
         <img key={src} src={shown ?? assetSrc(src)} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
           className={loaded ? undefined : 'pending'} style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}
@@ -206,7 +207,7 @@ export function AvatarCircle(props: {
         {avatar.ring && <ellipse cx={cx} cy={cy + r * 0.78} rx={r * 0.92} ry={r * 0.3} fill="none" stroke={avatar.ring} strokeWidth={Math.max(1.5, r * 0.09)} opacity={0.9} />}
         {/* Görev P0: ek paket yaratığının renk tonu; Kuyruk AS1c: alt soy görünümü `TokenFigure` içinde. */}
         <g className="breathe" style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}>
-          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={props.flip} look={avatar.look} flying={props.flying} ability={props.ability} />
+          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={(props.flip ?? false) !== naturalLeft(src)} look={avatar.look} flying={props.flying} ability={props.ability} />
         </g>
       </g>
     ) : (

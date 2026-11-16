@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-23 — KQ6-7: Gulyabani jetonları yatay aynalı (yalnız görünüm)
+
+- Gulyabani = Warlock alt sınıfı `gulyabani`, hücre WL-8 (uzun hücre): 18 jeton (`<ırk>-<cinsiyet>-warlock-WL-8.webp`); başka sınıfta gulyabani jetonu yok (Hortlak WL-4 ayrı alt sınıf, dokunulmadı). `data/jeton-ayna.json` `sinifHucre: ["warlock-WL-8"]`, çözücü `src/ui/tokenMirror.ts` `naturalLeft(src)` (kucuk/ dahil). Webp'ler yeniden yazılmadı: `AvatarCircle` `flip = (savaş yönü) XOR (doğal sol)` (`tokenFacing.ts` değişmedi; ayna jetonun doğal yönü, ek ters çevirme çıkmaz), `AvatarBadge` `--mirror: -1` CSS değişkeni (look ölçeğiyle `calc`). Kanat figürle birlikte aynalanır; ten/soy boyası kaynak yönünde uygulanıp aynalanır; hale gizleme dikdörtgeni simetrik. Önizleme `docs/sabah/gulyabani-ayna-onizleme.png`; test `src/ui/tokenMirror.test.tsx`.
+
 ## 2026-12-22 — KQ6-6: Halfling İnce/Kalın oranı (yalnız görünüm)
 
 - `data/alt-soy-gorunum.json`: `halfling/slender` oran 1×1 (yüklenen jeton İnce soyun görünümü), `halfling/sturdy` en ×1,10, boy ×0,90 (eskiden 0,94×1,05 ve 1,10×0,97). Ölçek demir noktası ayak çizgisi: yeni `ayak.yuzde` 0,965 (256 px jetonda y≈247; `lineageLook.ts` `FOOT_FRAC`): SVG jetonda `translate(cx, ayak)`, karakter ekranında CSS `transform-origin: 50% var(--look-foot)`; yatayda ortadan. Piksel sanatı: ölçekli SVG `<image>` ve `.look-frame .avatar img` `image-rendering: pixelated`. Savaşta jeton boyutu ve tıklama alanı değişmez (ölçek yalnız görsel grubunda). Rozet, savaş jetonu (TokenFigure) ve oluşturucu aynı çözücü. Testler `as1cGorunum`, `altSoy41`; önizleme `docs/sabah/halfling-oran-onizleme.png`.

@@ -217,7 +217,7 @@ input[type='number'] { width: 90px; }
 .avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid transparent;
   overflow: hidden; color: #fff; font-weight: 700; box-sizing: border-box; flex: none; }
 .avatar { position: relative; }
-.avatar img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.15s ease; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.15s ease; transform: scaleX(var(--mirror, 1)); }
 /* Görsel yüklenirken iskelet: zemin üstünde kayan parıltı; görsel gelince yumuşakça belirir. */
 .avatar img.pending { opacity: 0; position: absolute; }
 .avatar.skeleton { position: relative; overflow: hidden; }
@@ -1301,7 +1301,7 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 
 /* Kuyruk AS1a: alt soy görünümü (yalnızca görsel): renk filtresi, en-boy, Celestial hale gizleme, kanat katmanı. */
 .look-frame { position: relative; display: inline-block; vertical-align: middle; }
-.look-frame .avatar img { filter: var(--look-filter, none); transform: scale(var(--look-sx, 1), var(--look-sy, 1)); transform-origin: 50% var(--look-foot, 100%); image-rendering: pixelated; }
+.look-frame .avatar img { filter: var(--look-filter, none); transform: scale(calc(var(--look-sx, 1) * var(--mirror, 1)), var(--look-sy, 1)); transform-origin: 50% var(--look-foot, 100%); image-rendering: pixelated; }
 .look-frame.halo-hidden .avatar img { clip-path: inset(var(--halo-clip, 9.5%) 0 0 0); }
 .look-wing { position: absolute; pointer-events: none; z-index: 0; }
 .look-frame .avatar { position: relative; z-index: 1; }
