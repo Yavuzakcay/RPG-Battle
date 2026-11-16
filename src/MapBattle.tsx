@@ -1769,7 +1769,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
   const modeHint: Record<Mode, string> = {
     idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
-    spell: spell && freeHexAnyOn(state) && hexCastable(state, spell) ? B.hint.spellHex(spell.name) : B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
+    spell: spell && (spell.area || spell.mechanics.zone) ? B.hint.spellArea(spell.name) : spell && freeHexAnyOn(state) && hexCastable(state, spell) ? B.hint.spellHex(spell.name) : B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
     pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',

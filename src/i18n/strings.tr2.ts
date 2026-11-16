@@ -443,6 +443,7 @@ export const TR_EXTRA = {
       throwObject: 'Nesne fırlat: önce bitişik fıçı, sandık, taş gibi bir nesneye, sonra vurgulu hedef altıgene ya da yaratığa dokunun (eylem).',
       throwTarget: 'Nesne fırlat: vurgulu hedef altıgene ya da yaratığa dokunun (yaratık bir kez hasar alır, nesne yanına düşer).',
       attack: 'Saldır: parlayan bir hedefe dokunun.', spells: 'Bir büyü seçin.', spell: (s: string) => `${s}: parlayan bir hedefe dokunun.`,
+      spellArea: (s: string) => `${s}: nişan alacağın altıgene dokun (menzil ve görüş içinde; alan oraya kurulur).`,
       spellHex: (s: string) => `${s}: parlayan bir hedefe ya da menzil ve görüş içindeki herhangi bir altıgene dokunun (boş altıgende büyü boşa gider ya da zemini etkiler).`,
       aim: (s: string) => `${s}: hedef altıgene dokunun.`, pull: 'Çek: batmış müttefike dokunun.', help: 'Yardım: bitişik bir düşmana dokunun.', item: 'İksir: kendine ya da 5 ft içindeki bir dosta dokunun (bonus eylem).', distract: 'Dikkat dağıt: 30 ft içinde ses çıkaracağın altıgene dokunun (15 ft içindeki uyanık düşmanlar bir tur pasif Algıda −5).',
       erupt: 'Patlama: merkez altıgene dokunun.', followup: (s: string) => `${s}: parlayan bir hedefe dokunun.`,

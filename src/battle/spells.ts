@@ -699,7 +699,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   }
   // Kuyruk 24c: yanıcı haneye ateşli büyü (gres, yağ, ağ, yanıcı nesne; Game Master mekaniği `greaseFlammable`).
   // Kuyruk A6: elde tutulan alev (Produce Flame) yanıcı altıgene de fırlatılır ("a creature or an object").
-  if (!cmd.targetId && cmd.targetHex && state.map && (!repeat || m.held) && hexCastable(state, spell)) return executeFireHex(state, actor, cmd, spell, rng);
+  if (!cmd.targetId && cmd.targetHex && state.map && (!repeat || m.held) && hexCastable(state, spell)) return executeFireHex(state, actor, cmd, spell, rng, freeHexAnyOn(state) && m.damage ? damageExpr(m, actor, tierOf(actor), 0, spell.school, spell.name) : undefined);
   // Kuyruk K70 (sürüm 54): Disintegrate kuvvet yapısını (Wall of Force) hedef altıgeninden yok eder.
   if (!cmd.targetId && cmd.targetHex && state.map && !repeat && m.destroysForce?.length) return executeDestroyForce(state, actor, cmd, spell, m.destroysForce);
   let target: Combatant | undefined;

@@ -14,7 +14,10 @@ import { distance, hexKey, type Offset } from '../rules/hex';
 import { rollDice, rollTag, type Rng } from '../rules/dice';
 import type { Spell } from '../data';
 import { fail, finish, type CommandResult } from './common';
-import { sightBlockedBetween } from './cover';
+import { lineOfFire, sightBlockedBetween } from './cover';
+import { resolveAttack } from '../rules/attack';
+import { attackSources } from '../rules/conditions';
+import { combineModes, type ModeSource } from '../rules/modes';
 import { damageObjectEvents } from './objects';
 import { elementReactionEvents } from './surfaces';
 import { spendSlot } from './slots';
@@ -135,7 +138,7 @@ export function fireHexProblem(state: BattleState, actor: Combatant, spell: Spel
   return null;
 }
 
-export function executeFireHex(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng): CommandResult {
+export function executeFireHex(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, expr?: string): CommandResult {
   const at = cmd.targetHex as Offset;
   const why = fireHexProblem(state, actor, spell, at);
   if (why) return fail(why);
@@ -147,7 +150,7 @@ export function executeFireHex(state: BattleState, actor: Combatant, cmd: CastCo
   const objAt = (st: BattleState) => (st.map?.objects ?? []).find((o) => !o.carriedBy && hexKey(o.at) === hexKey(at) && (any ? o.hp > 0 : OBJECTS[o.kind]?.flammable));
   // Kuyruk 30 D3: tutuşacak bir şey yoksa ateş boş zemine düşer ve hemen söner (yalnızca suyla tepkime: buhar).
   const burns = element === 'fire' && flammableAt(state, at);
-  const dmgDice = spell.mechanics.damage ?? (any ? null : '1d10');
+  const dmgDice = any ? (expr || spell.mechanics.damage || null) : (spell.mechanics.damage ?? '1d10');
   const note = any
     ? `${hexLabel(at)} altıgenine ${objAt(state) ? 'isabet etti' : 'düştü'}`
     : burns ? `${hexLabel(at)} altıgeni tutuştu` : `${hexLabel(at)} altıgenine düştü ve söndü`;
@@ -161,7 +164,22 @@ export function executeFireHex(state: BattleState, actor: Combatant, cmd: CastCo
   if (element === 'fire') push(greaseIgniteEvents(s, [at], actor.id, rng));
   if (element) push(elementReactionEvents(s, element as 'fire' | 'cold' | 'lightning', [at], actor.id, spell.name, rng, any ? dmg : null, actor.spellSaveDc ?? 10, any));
   const obj = objAt(s);
-  if (obj) {
+  if (obj && any && spell.mechanics.kind === 'attack' && dmgDice) {
+    // FH1 düzeltmesi: saldırı büyüsü nesnenin AC'sine karşı isabet zarı atar (avantaj/dezavantaj, siper, kritik normal); isabette hasar zarı.
+    const def = OBJECTS[obj.kind];
+    const dummy = { ...actor, id: obj.id, pos: at, conditions: [], size: 'M' } as Combatant;
+    const lof = lineOfFire(s, actor, dummy);
+    const cover = lof.blocked ? 0 : lof.cover;
+    const lit = obj.outlined !== undefined && obj.outlined >= s.round;
+    const sources: ModeSource[] = [
+      ...attackSources({ attackerConditions: actor.conditions, targetConditions: [], attackerHeight: 0, targetHeight: 0, ranged: spell.rangeFt > 5, spell: true }),
+      ...(lit ? [{ effect: 'advantage' as const, reason: 'Faerie Fire' }] : []),
+    ];
+    const r = resolveAttack({ attackBonus: actor.spellAttack ?? 0, targetAc: def.ac + cover, mode: combineModes(sources), damage: dmgDice, autoCritical: false }, rollTag(rng, { by: actor.id }));
+    const roll = { d20: r.d20.kept, total: r.total, ac: def.ac + cover, hit: r.hit };
+    push(damageObjectEvents(s, obj, r.hit ? r.damage?.total ?? 0 : 0, element ?? 'force', actor.id, `${actor.name}: ${spell.name}`, rng, 0, roll));
+  } else if (obj) {
+    // Save ve otomatik isabet büyüsü: nesne save atmaz, hasar doğrudan; (sürüm 80: yalnız yanıcı nesne, eski zar sırası).
     const d = any ? dmg : rollDmg();
     if (d !== null) push(damageObjectEvents(s, obj, d, element ?? 'force', actor.id, `${actor.name}: ${spell.name}`, rng));
   }
