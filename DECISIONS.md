@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-24 — KQ6-9: Ortam genişletme (yalnız veri)
+
+- Önce envanter (`harita/belgeler/ortam-genisletme.md`): 57 haritanın 15'i < 30 canavar (Yeraltı Nehri 2, Hapishane 4–5, Derinlikler 6–9, Orman alt haritaları 6–13, Taverna 27). Daraltma yok; her harita için en çok 4 donör harita (`data/ortam-genisletme.json`), donör ortamındaki canavarlar hedefe de eklendi (`scripts/ortam-genislet.ts`, tek seferlik). Sonuç: en az 35 canavar (Mielikki Gölü'ne `ada` donörüyle yüzücüler dahil). `data/monsters.json` ve "Tüm canavarlar" değişmedi; test `src/data/ortamGenisletme.test.ts` (≥ 25).
+- Etki (ölçülmedi): bölge karşılaşma haritaları (`bolge-karsilasma.json`) genişleyenler arasında değil, `regionEncounter` aynı kalır; yalnız GM kurulum listeleri ve harita-ortam süzmesi genişler.
+
+## 2026-12-24 — KQ6-8: Yüzücü canavarlar suya girer (kural sürümü 82)
+
+- Neden: (1) `placeProblem` derin suyu (`w`) herkese kapatıyordu, Mielikki Gölü'nde Octopus kurulamıyordu; (2) su altıgeni yürüyene de yüzene de zorlu (maliyet 2); (3) `monsters.json`'da yüzme hızı yok (hız tek `speed`). Yüzücü listesi (`data/derin-su.json` `swimmers` + `swimmers66`) denetlendi: eksik yüzücü çıkmadı, yalnız hız verisi eksikti.
+- Çözüm (`yuzmeSurum.ts` `YUZME_VERSION` 82, `yuzme.ts`, `data/yuzme-hizi.json`; canavar verisine dokunulmadı): savaşçıda `swimFt`/`inWater` (reducer `syncWater`); yüzücü kurulumda su altıgenine konabilir (GM her su altıgeni, oyuncu/kurulum için düşman bölgesine bitişik su); suda su altıgeni (`w`,`n`,`R`) normal maliyet, hız max(yürüme, yüzme); derin su sınırı `canEnterVeryDeep`/`hasSwimSpeed` `swimFt`i sayar. 81 ve altı kayıt/replay aynen. ⚠ Yüzme hızı değerleri SRD'den hatırlanarak yazıldı; doğrulanmalı. Test `src/battle/yuzme.test.ts`.
+
 ## 2026-12-23 — KQ6-7: Gulyabani jetonları yatay aynalı (yalnız görünüm)
 
 - Gulyabani = Warlock alt sınıfı `gulyabani`, hücre WL-8 (uzun hücre): 18 jeton (`<ırk>-<cinsiyet>-warlock-WL-8.webp`); başka sınıfta gulyabani jetonu yok (Hortlak WL-4 ayrı alt sınıf, dokunulmadı). `data/jeton-ayna.json` `sinifHucre: ["warlock-WL-8"]`, çözücü `src/ui/tokenMirror.ts` `naturalLeft(src)` (kucuk/ dahil). Webp'ler yeniden yazılmadı: `AvatarCircle` `flip = (savaş yönü) XOR (doğal sol)` (`tokenFacing.ts` değişmedi; ayna jetonun doğal yönü, ek ters çevirme çıkmaz), `AvatarBadge` `--mirror: -1` CSS değişkeni (look ölçeğiyle `calc`). Kanat figürle birlikte aynalanır; ten/soy boyası kaynak yönünde uygulanıp aynalanır; hale gizleme dikdörtgeni simetrik. Önizleme `docs/sabah/gulyabani-ayna-onizleme.png`; test `src/ui/tokenMirror.test.tsx`.

@@ -8,7 +8,7 @@
    "orman-yolu"
   ],
   "ad": "Awakened Shrub",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "baboon",
@@ -17,10 +17,11 @@
   "ortam": [
    "ada",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "orman-heykel-golu"
   ],
   "ad": "Baboon",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "badger",
@@ -32,7 +33,7 @@
    "orman-yolu"
   ],
   "ad": "Badger",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "bat",
@@ -43,10 +44,16 @@
    "dungeon",
    "orman",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Bat",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "cat",
@@ -63,10 +70,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Cat",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "commoner",
@@ -85,10 +96,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Commoner",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "crab",
@@ -96,10 +111,11 @@
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
    "ada",
-   "gemi"
+   "gemi",
+   "orman-heykel-golu"
   ],
   "ad": "Crab",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "deer",
@@ -111,7 +127,7 @@
    "orman-yolu"
   ],
   "ad": "Deer",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "eagle",
@@ -131,7 +147,7 @@
    "dag-nobetci"
   ],
   "ad": "Eagle",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "frog",
@@ -143,10 +159,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Frog",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "giant-fire-beetle",
@@ -160,10 +177,16 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Giant Fire Beetle",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "goat",
@@ -182,7 +205,7 @@
    "dag-nobetci"
   ],
   "ad": "Goat",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "hawk",
@@ -203,7 +226,7 @@
    "dag-nobetci"
   ],
   "ad": "Hawk",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "homunculus",
@@ -221,10 +244,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Homunculus",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "hyena",
@@ -239,7 +267,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Hyena",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "jackal",
@@ -254,7 +282,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Jackal",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "lemure",
@@ -268,10 +296,16 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Lemure",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "lizard",
@@ -288,10 +322,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Lizard",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "octopus",
@@ -299,10 +334,11 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Octopus",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "owl",
@@ -313,7 +349,7 @@
    "orman-yolu"
   ],
   "ad": "Owl",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "piranha",
@@ -326,10 +362,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Piranha",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "rat",
@@ -346,10 +383,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Rat",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "raven",
@@ -368,10 +409,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Raven",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "scorpion",
@@ -385,7 +431,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Scorpion",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "seahorse",
@@ -393,10 +439,11 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Seahorse",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "shrieker-fungus",
@@ -411,10 +458,15 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Shrieker Fungus",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "vulture",
@@ -429,7 +481,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Vulture",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "weasel",
@@ -440,7 +492,7 @@
    "orman-yolu"
   ],
   "ad": "Weasel",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "bandit",
@@ -471,7 +523,16 @@
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
    "kasaba-lagim",
-   "hapishane-iskele"
+   "hapishane-iskele",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "derinlikler-lav-salonu",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Bandit",
   "crSayi": 0.125
@@ -535,7 +596,17 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Cultist",
   "crSayi": 0.125
@@ -552,7 +623,8 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "orman-heykel-golu"
   ],
   "ad": "Flying Snake",
   "crSayi": 0.125
@@ -563,7 +635,8 @@
   "tema": "Sürüngen, kurbağa, böcek, örümcek",
   "ortam": [
    "ada",
-   "gemi"
+   "gemi",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Crab",
   "crSayi": 0.125
@@ -585,7 +658,17 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Giant Rat",
   "crSayi": 0.125
@@ -612,7 +695,13 @@
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Goblin Minion",
   "crSayi": 0.125
@@ -663,7 +752,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Kobold Warrior",
   "crSayi": 0.125
@@ -685,7 +780,11 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Mastiff",
   "crSayi": 0.125
@@ -696,7 +795,8 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Merfolk Skirmisher",
   "crSayi": 0.125
@@ -724,7 +824,12 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Mule",
   "crSayi": 0.125
@@ -745,7 +850,11 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Noble",
   "crSayi": 0.125
@@ -756,10 +865,11 @@
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Pirate",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "pony",
@@ -775,7 +885,12 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Pony",
   "crSayi": 0.125
@@ -793,7 +908,14 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Stirge",
   "crSayi": 0.125
@@ -815,7 +937,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Venomous Snake",
   "crSayi": 0.125
@@ -836,7 +959,12 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Warrior Infantry",
   "crSayi": 0.125
@@ -858,7 +986,11 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Animated Flying Sword",
   "crSayi": 0.25
@@ -920,7 +1052,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Constrictor Snake",
   "crSayi": 0.25
@@ -939,7 +1072,12 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Draft Horse",
   "crSayi": 0.25
@@ -1009,7 +1147,13 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Giant Bat",
   "crSayi": 0.25
@@ -1024,7 +1168,12 @@
    "orman",
    "orman-yolu",
    "magara-genis",
-   "orman-heykel-magarasi"
+   "orman-heykel-magarasi",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Giant Centipede",
   "crSayi": 0.25
@@ -1041,7 +1190,11 @@
    "batak-kale",
    "batak-adalar",
    "batak-cukur",
-   "yeralti-nehri"
+   "yeralti-nehri",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi"
   ],
   "ad": "Giant Frog",
   "crSayi": 0.25
@@ -1061,7 +1214,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Lizard",
   "crSayi": 0.25
@@ -1092,7 +1246,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Venomous Snake",
   "crSayi": 0.25
@@ -1110,7 +1265,13 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Giant Wolf Spider",
   "crSayi": 0.25
@@ -1129,7 +1290,16 @@
    "kale-baskini",
    "orman-ork-kampi",
    "dag-kopru",
-   "dag-kayalik"
+   "dag-kayalik",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Goblin Warrior",
   "crSayi": 0.25
@@ -1141,7 +1311,13 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Grimlock",
   "crSayi": 0.25
@@ -1153,7 +1329,8 @@
   "ortam": [
    "orman",
    "ada",
-   "orman-yolu"
+   "orman-yolu",
+   "orman-heykel-golu"
   ],
   "ad": "Panther",
   "crSayi": 0.25
@@ -1174,7 +1351,11 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Priest Acolyte",
   "crSayi": 0.25
@@ -1195,7 +1376,8 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu"
   ],
   "ad": "Pseudodragon",
   "crSayi": 0.25
@@ -1214,7 +1396,8 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu"
   ],
   "ad": "Pteranodon",
   "crSayi": 0.25
@@ -1235,7 +1418,12 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Riding Horse",
   "crSayi": 0.25
@@ -1259,7 +1447,14 @@
    "orman-kemik-acikligi",
    "dag-nobetci",
    "buzul-tapinak",
-   "batak-kale"
+   "batak-kale",
+   "derinlikler-lav-salonu",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Skeleton",
   "crSayi": 0.25
@@ -1273,10 +1468,16 @@
    "orman",
    "dungeon",
    "orman-yolu",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Spider",
-  "crSayi": 0.0
+  "crSayi": 0
  },
  {
   "id": "sprite",
@@ -1285,7 +1486,12 @@
   "ortam": [
    "orman",
    "orman-yolu",
-   "orman-heykel-golu"
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Sprite",
   "crSayi": 0.25
@@ -1305,7 +1511,8 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Steam Mephit",
   "crSayi": 0.25
@@ -1320,7 +1527,12 @@
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "orman-heykel-magarasi"
+   "orman-heykel-magarasi",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Swarm of Bats",
   "crSayi": 0.25
@@ -1340,7 +1552,11 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Swarm of Rats",
   "crSayi": 0.25
@@ -1362,7 +1578,12 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Swarm of Ravens",
   "crSayi": 0.25
@@ -1380,7 +1601,12 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Violet Fungus",
   "crSayi": 0.25
@@ -1404,7 +1630,8 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu"
   ],
   "ad": "Wolf",
   "crSayi": 0.25,
@@ -1425,7 +1652,12 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi"
   ],
   "ad": "Zombie",
   "crSayi": 0.25
@@ -1437,7 +1669,8 @@
   "ortam": [
    "ada",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "orman-heykel-golu"
   ],
   "ad": "Ape",
   "crSayi": 0.5
@@ -1458,7 +1691,10 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Black Bear",
   "crSayi": 0.5
@@ -1492,7 +1728,11 @@
    "batak-kale",
    "batak-adalar",
    "batak-cukur",
-   "yeralti-nehri"
+   "yeralti-nehri",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi"
   ],
   "ad": "Crocodile",
   "crSayi": 0.5
@@ -1505,7 +1745,12 @@
    "magara",
    "dungeon",
    "magara-genis",
-   "orman-heykel-magarasi"
+   "orman-heykel-magarasi",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Darkmantle",
   "crSayi": 0.5
@@ -1557,7 +1802,8 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Seahorse",
   "crSayi": 0.5
@@ -1569,7 +1815,8 @@
   "ortam": [
    "orman",
    "ada",
-   "orman-yolu"
+   "orman-yolu",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Wasp",
   "crSayi": 0.5
@@ -1605,7 +1852,12 @@
    "batak-kale",
    "batak-adalar",
    "batak-cukur",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Gray Ooze",
   "crSayi": 0.5
@@ -1627,7 +1879,10 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Hobgoblin Warrior",
   "crSayi": 0.5
@@ -1661,7 +1916,10 @@
    "lav-tapinagi",
    "kanyon-koprusu",
    "volkanik-demirhane",
-   "derinlikler-lav-salonu"
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi"
   ],
   "ad": "Magma Mephit",
   "crSayi": 0.5
@@ -1677,7 +1935,10 @@
    "lav-tapinagi",
    "kanyon-koprusu",
    "volkanik-demirhane",
-   "derinlikler-lav-salonu"
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi"
   ],
   "ad": "Magmin",
   "crSayi": 0.5
@@ -1688,7 +1949,8 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Reef Shark",
   "crSayi": 0.5
@@ -1700,7 +1962,13 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Rust Monster",
   "crSayi": 0.5
@@ -1712,7 +1980,12 @@
   "ortam": [
    "gemi",
    "ada",
-   "orman-heykel-golu"
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Sahuagin Warrior",
   "crSayi": 0.5
@@ -1764,7 +2037,18 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "derinlikler-lav-salonu",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "taverna"
   ],
   "ad": "Scout",
   "crSayi": 0.5
@@ -1780,7 +2064,15 @@
    "magara-genis",
    "kale-baskini",
    "derinlikler-mezar-labirenti",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Shadow",
   "crSayi": 0.5
@@ -1792,10 +2084,16 @@
   "ortam": [
    "dungeon",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Swarm of Crawling Claws",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "swarm-of-insects",
@@ -1812,7 +2110,13 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "orman-heykel-golu",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Swarm of Insects",
   "crSayi": 0.5
@@ -1839,7 +2143,9 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "orman-heykel-golu",
+   "orman-kemik-acikligi"
   ],
   "ad": "Tough",
   "crSayi": 0.5
@@ -1885,7 +2191,10 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Worg",
   "crSayi": 0.5
@@ -1907,10 +2216,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Animated Armor",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "brass-dragon-wyrmling",
@@ -1924,7 +2237,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Brass Dragon Wyrmling",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "brown-bear",
@@ -1942,10 +2255,13 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Brown Bear",
-  "crSayi": 1.0,
+  "crSayi": 1,
   "kis": true
  },
  {
@@ -1959,10 +2275,16 @@
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Bugbear Warrior",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "copper-dragon-wyrmling",
@@ -1980,7 +2302,7 @@
    "dag-nobetci"
   ],
   "ad": "Copper Dragon Wyrmling",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "death-dog",
@@ -1995,7 +2317,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Death Dog",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "dire-wolf",
@@ -2015,10 +2337,11 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu"
   ],
   "ad": "Dire Wolf",
-  "crSayi": 1.0,
+  "crSayi": 1,
   "kis": true
  },
  {
@@ -2028,10 +2351,15 @@
   "ortam": [
    "orman",
    "orman-yolu",
-   "orman-heykel-golu"
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Dryad",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "ghoul",
@@ -2052,10 +2380,17 @@
    "batak-adalar",
    "batak-cukur",
    "dag-nobetci",
-   "buzul-tapinak"
+   "buzul-tapinak",
+   "derinlikler-lav-salonu",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Ghoul",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "giant-eagle",
@@ -2075,7 +2410,7 @@
    "dag-nobetci"
   ],
   "ad": "Giant Eagle",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "giant-hyena",
@@ -2089,7 +2424,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Giant Hyena",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "giant-octopus",
@@ -2097,10 +2432,11 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Octopus",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "giant-spider",
@@ -2115,10 +2451,16 @@
    "derinlikler-mantar-magarasi",
    "derinlikler-magara-karakol",
    "orman-kemik-acikligi",
-   "orman-heykel-magarasi"
+   "orman-heykel-magarasi",
+   "derinlikler-lav-salonu",
+   "derinlikler-mezar-labirenti",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "yeralti-nehri"
   ],
   "ad": "Giant Spider",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "giant-toad",
@@ -2131,10 +2473,15 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Giant Toad",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "giant-vulture",
@@ -2157,7 +2504,7 @@
    "dag-nobetci"
   ],
   "ad": "Giant Vulture",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "goblin-boss",
@@ -2171,10 +2518,19 @@
    "kale-avlu",
    "magara-genis",
    "kale-baskini",
-   "orman-ork-kampi"
+   "orman-ork-kampi",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Goblin Boss",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "harpy",
@@ -2191,10 +2547,11 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu"
   ],
   "ad": "Harpy",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "hippogriff",
@@ -2214,7 +2571,7 @@
    "dag-nobetci"
   ],
   "ad": "Hippogriff",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "imp",
@@ -2231,7 +2588,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Imp",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "lion",
@@ -2246,7 +2603,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Lion",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "quasit",
@@ -2260,10 +2617,16 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Quasit",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "specter",
@@ -2279,10 +2642,16 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi"
   ],
   "ad": "Specter",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "sphinx-of-wonder",
@@ -2297,7 +2666,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Sphinx of Wonder",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "spy",
@@ -2316,10 +2685,17 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "derinlikler-lav-salonu",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi"
   ],
   "ad": "Spy",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "swarm-of-piranhas",
@@ -2332,10 +2708,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Swarm of Piranhas",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "tiger",
@@ -2344,10 +2721,11 @@
   "ortam": [
    "orman",
    "ada",
-   "orman-yolu"
+   "orman-yolu",
+   "orman-heykel-golu"
   ],
   "ad": "Tiger",
-  "crSayi": 1.0
+  "crSayi": 1
  },
  {
   "id": "troll-limb",
@@ -2371,7 +2749,13 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Troll Limb",
   "crSayi": 0.5
@@ -2384,10 +2768,11 @@
    "ada",
    "orman",
    "duz-zemin",
-   "orman-yolu"
+   "orman-yolu",
+   "orman-heykel-golu"
   ],
   "ad": "Allosaurus",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "animated-rug-of-smothering",
@@ -2405,10 +2790,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Animated Rug of Smothering",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "ankheg",
@@ -2425,7 +2815,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Ankheg",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "awakened-tree",
@@ -2436,7 +2826,7 @@
    "orman-yolu"
   ],
   "ad": "Awakened Tree",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "azer-sentinel",
@@ -2448,10 +2838,13 @@
    "lav-tapinagi",
    "kanyon-koprusu",
    "volkanik-demirhane",
-   "derinlikler-lav-salonu"
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi"
   ],
   "ad": "Azer Sentinel",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "bandit-captain",
@@ -2481,10 +2874,20 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "derinlikler-lav-salonu",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Bandit Captain",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "berserker",
@@ -2504,10 +2907,12 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu",
+   "orman-kemik-acikligi"
   ],
   "ad": "Berserker",
-  "crSayi": 2.0,
+  "crSayi": 2,
   "kis": true
  },
  {
@@ -2522,7 +2927,7 @@
    "batak-cukur"
   ],
   "ad": "Black Dragon Wyrmling",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "bronze-dragon-wyrmling",
@@ -2530,10 +2935,11 @@
   "tema": "Ejderhalar (bronz)",
   "ortam": [
    "ada",
-   "gemi"
+   "gemi",
+   "orman-heykel-golu"
   ],
   "ad": "Bronze Dragon Wyrmling",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "centaur-trooper",
@@ -2545,7 +2951,7 @@
    "orman-yolu"
   ],
   "ad": "Centaur Trooper",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "cultist-fanatic",
@@ -2567,10 +2973,21 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri",
+   "taverna"
   ],
   "ad": "Cultist Fanatic",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "druid",
@@ -2584,10 +3001,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Druid",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "ettercap",
@@ -2599,10 +3017,15 @@
    "dungeon",
    "orman-yolu",
    "magara-genis",
-   "derinlikler-mantar-magarasi"
+   "derinlikler-mantar-magarasi",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Ettercap",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "gargoyle",
@@ -2629,10 +3052,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Gargoyle",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "gelatinous-cube",
@@ -2641,10 +3069,16 @@
   "ortam": [
    "dungeon",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Gelatinous Cube",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "ghast",
@@ -2657,10 +3091,18 @@
    "magara-genis",
    "kale-baskini",
    "derinlikler-mezar-labirenti",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Ghast",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "giant-boar",
@@ -2671,7 +3113,7 @@
    "orman-yolu"
   ],
   "ad": "Giant Boar",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "giant-constrictor-snake",
@@ -2686,10 +3128,15 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Giant Constrictor Snake",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "giant-elk",
@@ -2709,7 +3156,7 @@
    "dag-nobetci"
   ],
   "ad": "Giant Elk",
-  "crSayi": 2.0,
+  "crSayi": 2,
   "kis": true
  },
  {
@@ -2719,10 +3166,16 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Gibbering Mouther",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "green-dragon-wyrmling",
@@ -2733,7 +3186,7 @@
    "orman-yolu"
   ],
   "ad": "Green Dragon Wyrmling",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "grick",
@@ -2744,10 +3197,14 @@
    "dungeon",
    "magara-genis",
    "derinlikler-mantar-magarasi",
-   "orman-heykel-magarasi"
+   "orman-heykel-magarasi",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "yeralti-nehri"
   ],
   "ad": "Grick",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "griffon",
@@ -2767,7 +3224,7 @@
    "dag-nobetci"
   ],
   "ad": "Griffon",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "hunter-shark",
@@ -2775,10 +3232,11 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Hunter Shark",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "merrow",
@@ -2792,10 +3250,15 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Merrow",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "mimic",
@@ -2814,10 +3277,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Mimic",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "minotaur-skeleton",
@@ -2835,10 +3302,16 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Minotaur Skeleton",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "ochre-jelly",
@@ -2854,10 +3327,14 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "yeralti-nehri"
   ],
   "ad": "Ochre Jelly",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "ogre",
@@ -2878,10 +3355,19 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Ogre",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "ogre-zombie",
@@ -2898,7 +3384,7 @@
    "batak-cukur"
   ],
   "ad": "Ogre Zombie",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "pegasus",
@@ -2919,7 +3405,7 @@
    "dag-nobetci"
   ],
   "ad": "Pegasus",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "plesiosaurus",
@@ -2932,10 +3418,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Plesiosaurus",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "polar-bear",
@@ -2953,7 +3440,7 @@
    "dag-nobetci"
   ],
   "ad": "Polar Bear",
-  "crSayi": 2.0,
+  "crSayi": 2,
   "kis": true
  },
  {
@@ -2976,10 +3463,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Priest",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "rhinoceros",
@@ -2992,10 +3483,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "orman-heykel-golu"
   ],
   "ad": "Rhinoceros",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "saber-toothed-tiger",
@@ -3015,7 +3507,7 @@
    "dag-nobetci"
   ],
   "ad": "Saber Toothed Tiger",
-  "crSayi": 2.0,
+  "crSayi": 2,
   "kis": true
  },
  {
@@ -3029,10 +3521,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Sea Hag",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "silver-dragon-wyrmling",
@@ -3050,7 +3543,7 @@
    "dag-nobetci"
   ],
   "ad": "Silver Dragon Wyrmling",
-  "crSayi": 2.0,
+  "crSayi": 2,
   "kis": true
  },
  {
@@ -3071,7 +3564,7 @@
    "batak-cukur"
   ],
   "ad": "Swarm of Venomous Snakes",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "wererat",
@@ -3088,10 +3581,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Wererat",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "white-dragon-wyrmling",
@@ -3109,7 +3606,7 @@
    "dag-nobetci"
   ],
   "ad": "White Dragon Wyrmling",
-  "crSayi": 2.0,
+  "crSayi": 2,
   "kis": true
  },
  {
@@ -3125,10 +3622,14 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Will-o'-Wisp",
-  "crSayi": 2.0
+  "crSayi": 2
  },
  {
   "id": "ankylosaurus",
@@ -3137,10 +3638,11 @@
   "ortam": [
    "ada",
    "orman",
-   "orman-yolu"
+   "orman-yolu",
+   "orman-heykel-golu"
   ],
   "ad": "Ankylosaurus",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "basilisk",
@@ -3154,10 +3656,16 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Basilisk",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "bearded-devil",
@@ -3172,7 +3680,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Bearded Devil",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "blue-dragon-wyrmling",
@@ -3184,10 +3692,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "orman-heykel-golu"
   ],
   "ad": "Blue Dragon Wyrmling",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "bugbear-stalker",
@@ -3200,10 +3709,16 @@
    "orman-yolu",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Bugbear Stalker",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "doppelganger",
@@ -3222,10 +3737,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Doppelganger",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "giant-scorpion",
@@ -3239,7 +3758,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Giant Scorpion",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "gold-dragon-wyrmling",
@@ -3259,7 +3778,7 @@
    "dag-nobetci"
   ],
   "ad": "Gold Dragon Wyrmling",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "green-hag",
@@ -3273,10 +3792,13 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi"
   ],
   "ad": "Green Hag",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "hell-hound",
@@ -3289,10 +3811,13 @@
    "lav-tapinagi",
    "kanyon-koprusu",
    "volkanik-demirhane",
-   "derinlikler-lav-salonu"
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi"
   ],
   "ad": "Hell Hound",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "hobgoblin-captain",
@@ -3304,7 +3829,7 @@
    "kale-baskini"
   ],
   "ad": "Hobgoblin Captain",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "killer-whale",
@@ -3314,7 +3839,7 @@
    "gemi"
   ],
   "ad": "Killer Whale",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "knight",
@@ -3339,7 +3864,7 @@
    "kasaba-lagim"
   ],
   "ad": "Knight",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "manticore",
@@ -3363,7 +3888,7 @@
    "dag-nobetci"
   ],
   "ad": "Manticore",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "minotaur-of-baphomet",
@@ -3377,10 +3902,16 @@
    "isinlanma-salonu",
    "lav-tapinagi",
    "kanyon-koprusu",
-   "volkanik-demirhane"
+   "volkanik-demirhane",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Minotaur of Baphomet",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "mummy",
@@ -3393,10 +3924,13 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mantar-magarasi"
   ],
   "ad": "Mummy",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "nightmare",
@@ -3411,7 +3945,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Nightmare",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "owlbear",
@@ -3430,10 +3964,12 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu",
+   "orman-ork-kampi"
   ],
   "ad": "Owlbear",
-  "crSayi": 3.0,
+  "crSayi": 3,
   "kis": true
  },
  {
@@ -3453,10 +3989,15 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Phase Spider",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "vampire-familiar",
@@ -3474,10 +4015,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Vampire Familiar",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "warrior-veteran",
@@ -3499,10 +4045,11 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "taverna"
   ],
   "ad": "Warrior Veteran",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "werewolf",
@@ -3523,7 +4070,7 @@
    "dag-nobetci"
   ],
   "ad": "Werewolf",
-  "crSayi": 3.0,
+  "crSayi": 3,
   "kis": true
  },
  {
@@ -3535,10 +4082,16 @@
    "kale-avlu",
    "kale-baskini",
    "derinlikler-mezar-labirenti",
-   "orman-kemik-acikligi"
+   "orman-kemik-acikligi",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi"
   ],
   "ad": "Wight",
-  "crSayi": 3.0
+  "crSayi": 3
  },
  {
   "id": "winter-wolf",
@@ -3556,7 +4109,7 @@
    "dag-nobetci"
   ],
   "ad": "Winter Wolf",
-  "crSayi": 3.0,
+  "crSayi": 3,
   "kis": true
  },
  {
@@ -3565,10 +4118,11 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Archelon",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "black-pudding",
@@ -3577,10 +4131,16 @@
   "ortam": [
    "dungeon",
    "magara",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Black Pudding",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "chuul",
@@ -3593,10 +4153,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Chuul",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "couatl",
@@ -3607,10 +4168,11 @@
    "orman",
    "orman-yolu",
    "kale-avlu",
-   "kale-baskini"
+   "kale-baskini",
+   "orman-heykel-golu"
   ],
   "ad": "Couatl",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "elephant",
@@ -3623,10 +4185,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "orman-heykel-golu"
   ],
   "ad": "Elephant",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "ettin",
@@ -3645,10 +4208,16 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Ettin",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "ghost",
@@ -3666,10 +4235,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Ghost",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "guard-captain",
@@ -3687,10 +4261,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Guard Captain",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "hippopotamus",
@@ -3702,10 +4280,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Hippopotamus",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "incubus",
@@ -3722,10 +4301,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Incubus",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "lamia",
@@ -3740,7 +4323,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Lamia",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "red-dragon-wyrmling",
@@ -3763,7 +4346,7 @@
    "dag-nobetci"
   ],
   "ad": "Red Dragon Wyrmling",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "succubus",
@@ -3780,10 +4363,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Succubus",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "tough-boss",
@@ -3801,10 +4388,17 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "orman-heykel-golu",
+   "orman-oduncu-kampi",
+   "orman-kemik-acikligi"
   ],
   "ad": "Tough Boss",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "wereboar",
@@ -3816,7 +4410,7 @@
    "orman-yolu"
   ],
   "ad": "Wereboar",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "weretiger",
@@ -3830,10 +4424,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "orman-heykel-golu"
   ],
   "ad": "Weretiger",
-  "crSayi": 4.0
+  "crSayi": 4
  },
  {
   "id": "air-elemental",
@@ -3850,10 +4445,11 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu"
   ],
   "ad": "Air Elemental",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "barbed-devil",
@@ -3868,7 +4464,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Barbed Devil",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "bulette",
@@ -3892,7 +4488,7 @@
    "dag-nobetci"
   ],
   "ad": "Bulette",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "earth-elemental",
@@ -3915,10 +4511,16 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Earth Elemental",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "fire-elemental",
@@ -3935,10 +4537,13 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi"
   ],
   "ad": "Fire Elemental",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "flesh-golem",
@@ -3950,7 +4555,7 @@
    "kale-baskini"
   ],
   "ad": "Flesh Golem",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "giant-crocodile",
@@ -3962,10 +4567,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Crocodile",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "giant-shark",
@@ -3975,7 +4581,7 @@
    "gemi"
   ],
   "ad": "Giant Shark",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "gladiator",
@@ -3993,10 +4599,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Gladiator",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "gorgon",
@@ -4020,7 +4631,7 @@
    "dag-nobetci"
   ],
   "ad": "Gorgon",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "half-dragon",
@@ -4050,7 +4661,7 @@
    "dag-nobetci"
   ],
   "ad": "Half Dragon",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "hill-giant",
@@ -4071,7 +4682,7 @@
    "dag-nobetci"
   ],
   "ad": "Hill Giant",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "night-hag",
@@ -4085,10 +4696,16 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Night Hag",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "otyugh",
@@ -4103,10 +4720,16 @@
    "batak-kale",
    "batak-adalar",
    "batak-cukur",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Otyugh",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "roper",
@@ -4115,10 +4738,16 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Roper",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "salamander",
@@ -4130,10 +4759,13 @@
    "lav-tapinagi",
    "kanyon-koprusu",
    "volkanik-demirhane",
-   "derinlikler-lav-salonu"
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi"
   ],
   "ad": "Salamander",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "shambling-mound",
@@ -4149,7 +4781,7 @@
    "batak-cukur"
   ],
   "ad": "Shambling Mound",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "triceratops",
@@ -4157,10 +4789,11 @@
   "tema": "Dinozorlar",
   "ortam": [
    "ada",
-   "duz-zemin"
+   "duz-zemin",
+   "orman-heykel-golu"
   ],
   "ad": "Triceratops",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "troll",
@@ -4184,10 +4817,16 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Troll",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "unicorn",
@@ -4198,7 +4837,7 @@
    "orman-yolu"
   ],
   "ad": "Unicorn",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "vampire-spawn",
@@ -4216,10 +4855,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Vampire Spawn",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "water-elemental",
@@ -4233,10 +4877,15 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-oduncu-kampi",
+   "orman-ork-kampi",
+   "orman-kemik-acikligi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Water Elemental",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "werebear",
@@ -4247,7 +4896,7 @@
    "orman-yolu"
   ],
   "ad": "Werebear",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "wraith",
@@ -4264,7 +4913,7 @@
    "batak-cukur"
   ],
   "ad": "Wraith",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "xorn",
@@ -4282,10 +4931,16 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Xorn",
-  "crSayi": 5.0
+  "crSayi": 5
  },
  {
   "id": "chimera",
@@ -4313,7 +4968,7 @@
    "dag-nobetci"
   ],
   "ad": "Chimera",
-  "crSayi": 6.0
+  "crSayi": 6
  },
  {
   "id": "drider",
@@ -4322,10 +4977,16 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Drider",
-  "crSayi": 6.0
+  "crSayi": 6
  },
  {
   "id": "invisible-stalker",
@@ -4343,10 +5004,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Invisible Stalker",
-  "crSayi": 6.0
+  "crSayi": 6
  },
  {
   "id": "mage",
@@ -4365,10 +5031,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Mage",
-  "crSayi": 6.0
+  "crSayi": 6
  },
  {
   "id": "mammoth",
@@ -4386,7 +5056,7 @@
    "dag-nobetci"
   ],
   "ad": "Mammoth",
-  "crSayi": 6.0,
+  "crSayi": 6,
   "kis": true
  },
  {
@@ -4402,7 +5072,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Medusa",
-  "crSayi": 6.0
+  "crSayi": 6
  },
  {
   "id": "pirate-captain",
@@ -4410,10 +5080,11 @@
   "tema": "İnsan ve insansı askerler, haydutlar",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Pirate Captain",
-  "crSayi": 6.0
+  "crSayi": 6
  },
  {
   "id": "vrock",
@@ -4428,7 +5099,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Vrock",
-  "crSayi": 6.0
+  "crSayi": 6
  },
  {
   "id": "wyvern",
@@ -4456,7 +5127,7 @@
    "dag-nobetci"
   ],
   "ad": "Wyvern",
-  "crSayi": 6.0
+  "crSayi": 6
  },
  {
   "id": "young-brass-dragon",
@@ -4470,7 +5141,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Young Brass Dragon",
-  "crSayi": 6.0
+  "crSayi": 6
  },
  {
   "id": "young-white-dragon",
@@ -4488,7 +5159,7 @@
    "dag-nobetci"
   ],
   "ad": "Young White Dragon",
-  "crSayi": 6.0,
+  "crSayi": 6,
   "kis": true
  },
  {
@@ -4496,10 +5167,11 @@
   "cr": "7",
   "tema": "Hayvanlar (kara)",
   "ortam": [
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Giant Ape",
-  "crSayi": 7.0
+  "crSayi": 7
  },
  {
   "id": "oni",
@@ -4519,7 +5191,7 @@
    "dag-nobetci"
   ],
   "ad": "Oni",
-  "crSayi": 7.0
+  "crSayi": 7
  },
  {
   "id": "shield-guardian",
@@ -4537,10 +5209,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Shield Guardian",
-  "crSayi": 7.0
+  "crSayi": 7
  },
  {
   "id": "stone-giant",
@@ -4557,10 +5234,16 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Stone Giant",
-  "crSayi": 7.0
+  "crSayi": 7
  },
  {
   "id": "young-black-dragon",
@@ -4574,7 +5257,7 @@
    "batak-cukur"
   ],
   "ad": "Young Black Dragon",
-  "crSayi": 7.0
+  "crSayi": 7
  },
  {
   "id": "young-copper-dragon",
@@ -4592,7 +5275,7 @@
    "dag-nobetci"
   ],
   "ad": "Young Copper Dragon",
-  "crSayi": 7.0
+  "crSayi": 7
  },
  {
   "id": "assassin",
@@ -4610,10 +5293,14 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele"
   ],
   "ad": "Assassin",
-  "crSayi": 8.0
+  "crSayi": 8
  },
  {
   "id": "chain-devil",
@@ -4628,7 +5315,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Chain Devil",
-  "crSayi": 8.0
+  "crSayi": 8
  },
  {
   "id": "cloaker",
@@ -4637,10 +5324,16 @@
   "ortam": [
    "magara",
    "dungeon",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Cloaker",
-  "crSayi": 8.0
+  "crSayi": 8
  },
  {
   "id": "frost-giant",
@@ -4658,7 +5351,7 @@
    "dag-nobetci"
   ],
   "ad": "Frost Giant",
-  "crSayi": 8.0,
+  "crSayi": 8,
   "kis": true
  },
  {
@@ -4674,7 +5367,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Hezrou",
-  "crSayi": 8.0
+  "crSayi": 8
  },
  {
   "id": "hydra",
@@ -4686,10 +5379,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Hydra",
-  "crSayi": 8.0
+  "crSayi": 8
  },
  {
   "id": "spirit-naga",
@@ -4703,10 +5397,16 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Spirit Naga",
-  "crSayi": 8.0
+  "crSayi": 8
  },
  {
   "id": "tyrannosaurus-rex",
@@ -4720,10 +5420,11 @@
    "batak-kamp",
    "batak-kale",
    "batak-adalar",
-   "batak-cukur"
+   "batak-cukur",
+   "orman-heykel-golu"
   ],
   "ad": "Tyrannosaurus Rex",
-  "crSayi": 8.0
+  "crSayi": 8
  },
  {
   "id": "young-bronze-dragon",
@@ -4731,10 +5432,11 @@
   "tema": "Ejderhalar (bronz)",
   "ortam": [
    "ada",
-   "gemi"
+   "gemi",
+   "orman-heykel-golu"
   ],
   "ad": "Young Bronze Dragon",
-  "crSayi": 8.0
+  "crSayi": 8
  },
  {
   "id": "young-green-dragon",
@@ -4745,7 +5447,7 @@
    "orman-yolu"
   ],
   "ad": "Young Green Dragon",
-  "crSayi": 8.0
+  "crSayi": 8
  },
  {
   "id": "bone-devil",
@@ -4760,7 +5462,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Bone Devil",
-  "crSayi": 9.0
+  "crSayi": 9
  },
  {
   "id": "clay-golem",
@@ -4778,10 +5480,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Clay Golem",
-  "crSayi": 9.0
+  "crSayi": 9
  },
  {
   "id": "cloud-giant",
@@ -4799,7 +5506,7 @@
    "dag-nobetci"
   ],
   "ad": "Cloud Giant",
-  "crSayi": 9.0
+  "crSayi": 9
  },
  {
   "id": "fire-giant",
@@ -4822,7 +5529,7 @@
    "dag-nobetci"
   ],
   "ad": "Fire Giant",
-  "crSayi": 9.0
+  "crSayi": 9
  },
  {
   "id": "glabrezu",
@@ -4837,7 +5544,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Glabrezu",
-  "crSayi": 9.0
+  "crSayi": 9
  },
  {
   "id": "treant",
@@ -4848,7 +5555,7 @@
    "orman-yolu"
   ],
   "ad": "Treant",
-  "crSayi": 9.0
+  "crSayi": 9
  },
  {
   "id": "young-blue-dragon",
@@ -4860,10 +5567,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "orman-heykel-golu"
   ],
   "ad": "Young Blue Dragon",
-  "crSayi": 9.0
+  "crSayi": 9
  },
  {
   "id": "young-silver-dragon",
@@ -4881,7 +5589,7 @@
    "dag-nobetci"
   ],
   "ad": "Young Silver Dragon",
-  "crSayi": 9.0,
+  "crSayi": 9,
   "kis": true
  },
  {
@@ -4891,10 +5599,16 @@
   "ortam": [
    "magara",
    "gemi",
-   "magara-genis"
+   "magara-genis",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Aboleth",
-  "crSayi": 10.0
+  "crSayi": 10
  },
  {
   "id": "deva",
@@ -4920,10 +5634,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Deva",
-  "crSayi": 10.0
+  "crSayi": 10
  },
  {
   "id": "guardian-naga",
@@ -4934,10 +5653,16 @@
    "magara",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Guardian Naga",
-  "crSayi": 10.0
+  "crSayi": 10
  },
  {
   "id": "stone-golem",
@@ -4948,10 +5673,16 @@
    "magara",
    "kale-avlu",
    "magara-genis",
-   "kale-baskini"
+   "kale-baskini",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Stone Golem",
-  "crSayi": 10.0
+  "crSayi": 10
  },
  {
   "id": "young-gold-dragon",
@@ -4971,7 +5702,7 @@
    "dag-nobetci"
   ],
   "ad": "Young Gold Dragon",
-  "crSayi": 10.0
+  "crSayi": 10
  },
  {
   "id": "young-red-dragon",
@@ -4994,7 +5725,7 @@
    "dag-nobetci"
   ],
   "ad": "Young Red Dragon",
-  "crSayi": 10.0
+  "crSayi": 10
  },
  {
   "id": "behir",
@@ -5011,10 +5742,16 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Behir",
-  "crSayi": 11.0
+  "crSayi": 11
  },
  {
   "id": "djinni",
@@ -5035,10 +5772,11 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu"
   ],
   "ad": "Djinni",
-  "crSayi": 11.0
+  "crSayi": 11
  },
  {
   "id": "efreeti",
@@ -5057,7 +5795,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Efreeti",
-  "crSayi": 11.0
+  "crSayi": 11
  },
  {
   "id": "horned-devil",
@@ -5072,7 +5810,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Horned Devil",
-  "crSayi": 11.0
+  "crSayi": 11
  },
  {
   "id": "remorhaz",
@@ -5090,7 +5828,7 @@
    "dag-nobetci"
   ],
   "ad": "Remorhaz",
-  "crSayi": 11.0,
+  "crSayi": 11,
   "kis": true
  },
  {
@@ -5107,10 +5845,11 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu"
   ],
   "ad": "Roc",
-  "crSayi": 11.0
+  "crSayi": 11
  },
  {
   "id": "sphinx-of-lore",
@@ -5127,7 +5866,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Sphinx of Lore",
-  "crSayi": 11.0
+  "crSayi": 11
  },
  {
   "id": "archmage",
@@ -5145,10 +5884,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Archmage",
-  "crSayi": 12.0
+  "crSayi": 12
  },
  {
   "id": "erinyes",
@@ -5163,7 +5907,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Erinyes",
-  "crSayi": 12.0
+  "crSayi": 12
  },
  {
   "id": "adult-brass-dragon",
@@ -5177,7 +5921,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Adult Brass Dragon",
-  "crSayi": 13.0
+  "crSayi": 13
  },
  {
   "id": "adult-white-dragon",
@@ -5195,7 +5939,7 @@
    "dag-nobetci"
   ],
   "ad": "Adult White Dragon",
-  "crSayi": 13.0,
+  "crSayi": 13,
   "kis": true
  },
  {
@@ -5211,7 +5955,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Nalfeshnee",
-  "crSayi": 13.0
+  "crSayi": 13
  },
  {
   "id": "rakshasa",
@@ -5233,10 +5977,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Rakshasa",
-  "crSayi": 13.0
+  "crSayi": 13
  },
  {
   "id": "storm-giant",
@@ -5253,10 +6002,11 @@
    "dag-karakol",
    "dag-kayalik",
    "dag-kopru",
-   "dag-nobetci"
+   "dag-nobetci",
+   "orman-heykel-golu"
   ],
   "ad": "Storm Giant",
-  "crSayi": 13.0
+  "crSayi": 13
  },
  {
   "id": "vampire",
@@ -5274,10 +6024,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Vampire",
-  "crSayi": 13.0
+  "crSayi": 13
  },
  {
   "id": "adult-black-dragon",
@@ -5291,7 +6046,7 @@
    "batak-cukur"
   ],
   "ad": "Adult Black Dragon",
-  "crSayi": 14.0
+  "crSayi": 14
  },
  {
   "id": "adult-copper-dragon",
@@ -5309,7 +6064,7 @@
    "dag-nobetci"
   ],
   "ad": "Adult Copper Dragon",
-  "crSayi": 14.0
+  "crSayi": 14
  },
  {
   "id": "ice-devil",
@@ -5333,7 +6088,7 @@
    "dag-nobetci"
   ],
   "ad": "Ice Devil",
-  "crSayi": 14.0,
+  "crSayi": 14,
   "kis": true
  },
  {
@@ -5342,10 +6097,11 @@
   "tema": "Ejderhalar (bronz)",
   "ortam": [
    "ada",
-   "gemi"
+   "gemi",
+   "orman-heykel-golu"
   ],
   "ad": "Adult Bronze Dragon",
-  "crSayi": 15.0
+  "crSayi": 15
  },
  {
   "id": "adult-green-dragon",
@@ -5356,7 +6112,7 @@
    "orman-yolu"
   ],
   "ad": "Adult Green Dragon",
-  "crSayi": 15.0
+  "crSayi": 15
  },
  {
   "id": "mummy-lord",
@@ -5371,7 +6127,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Mummy Lord",
-  "crSayi": 15.0
+  "crSayi": 15
  },
  {
   "id": "purple-worm",
@@ -5385,10 +6141,16 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "derinlikler-lav-salonu",
+   "derinlikler-magara-karakol",
+   "derinlikler-mezar-labirenti",
+   "derinlikler-mantar-magarasi",
+   "orman-heykel-magarasi",
+   "yeralti-nehri"
   ],
   "ad": "Purple Worm",
-  "crSayi": 15.0
+  "crSayi": 15
  },
  {
   "id": "adult-blue-dragon",
@@ -5400,10 +6162,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "orman-heykel-golu"
   ],
   "ad": "Adult Blue Dragon",
-  "crSayi": 16.0
+  "crSayi": 16
  },
  {
   "id": "adult-silver-dragon",
@@ -5421,7 +6184,7 @@
    "dag-nobetci"
   ],
   "ad": "Adult Silver Dragon",
-  "crSayi": 16.0,
+  "crSayi": 16,
   "kis": true
  },
  {
@@ -5439,7 +6202,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Iron Golem",
-  "crSayi": 16.0
+  "crSayi": 16
  },
  {
   "id": "marilith",
@@ -5454,7 +6217,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Marilith",
-  "crSayi": 16.0
+  "crSayi": 16
  },
  {
   "id": "planetar",
@@ -5480,10 +6243,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Planetar",
-  "crSayi": 16.0
+  "crSayi": 16
  },
  {
   "id": "adult-gold-dragon",
@@ -5503,7 +6271,7 @@
    "dag-nobetci"
   ],
   "ad": "Adult Gold Dragon",
-  "crSayi": 17.0
+  "crSayi": 17
  },
  {
   "id": "adult-red-dragon",
@@ -5526,7 +6294,7 @@
    "dag-nobetci"
   ],
   "ad": "Adult Red Dragon",
-  "crSayi": 17.0
+  "crSayi": 17
  },
  {
   "id": "dragon-turtle",
@@ -5534,10 +6302,11 @@
   "tema": "Deniz canlıları",
   "ortam": [
    "gemi",
-   "ada"
+   "ada",
+   "orman-heykel-golu"
   ],
   "ad": "Dragon Turtle",
-  "crSayi": 17.0
+  "crSayi": 17
  },
  {
   "id": "sphinx-of-valor",
@@ -5554,7 +6323,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Sphinx of Valor",
-  "crSayi": 17.0
+  "crSayi": 17
  },
  {
   "id": "balor",
@@ -5569,7 +6338,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Balor",
-  "crSayi": 19.0
+  "crSayi": 19
  },
  {
   "id": "ancient-brass-dragon",
@@ -5583,7 +6352,7 @@
    "col-kanyon-nehri"
   ],
   "ad": "Ancient Brass Dragon",
-  "crSayi": 20.0
+  "crSayi": 20
  },
  {
   "id": "ancient-white-dragon",
@@ -5601,7 +6370,7 @@
    "dag-nobetci"
   ],
   "ad": "Ancient White Dragon",
-  "crSayi": 20.0,
+  "crSayi": 20,
   "kis": true
  },
  {
@@ -5617,7 +6386,7 @@
    "volkanik-demirhane"
   ],
   "ad": "Pit Fiend",
-  "crSayi": 20.0
+  "crSayi": 20
  },
  {
   "id": "ancient-black-dragon",
@@ -5631,7 +6400,7 @@
    "batak-cukur"
   ],
   "ad": "Ancient Black Dragon",
-  "crSayi": 21.0
+  "crSayi": 21
  },
  {
   "id": "ancient-copper-dragon",
@@ -5649,7 +6418,7 @@
    "dag-nobetci"
   ],
   "ad": "Ancient Copper Dragon",
-  "crSayi": 21.0
+  "crSayi": 21
  },
  {
   "id": "lich",
@@ -5661,7 +6430,7 @@
    "kale-baskini"
   ],
   "ad": "Lich",
-  "crSayi": 21.0
+  "crSayi": 21
  },
  {
   "id": "solar",
@@ -5687,10 +6456,15 @@
    "beyaz-sehir-dis-kapi",
    "beyaz-sehir-saray-avlusu",
    "kasaba-demirci-tapinak",
-   "kasaba-lagim"
+   "kasaba-lagim",
+   "hapishane-dis-halka",
+   "hapishane-hucre-platformu",
+   "hapishane-mudur-kulesi",
+   "hapishane-iskele",
+   "taverna"
   ],
   "ad": "Solar",
-  "crSayi": 21.0
+  "crSayi": 21
  },
  {
   "id": "ancient-bronze-dragon",
@@ -5698,10 +6472,11 @@
   "tema": "Ejderhalar (bronz)",
   "ortam": [
    "ada",
-   "gemi"
+   "gemi",
+   "orman-heykel-golu"
   ],
   "ad": "Ancient Bronze Dragon",
-  "crSayi": 22.0
+  "crSayi": 22
  },
  {
   "id": "ancient-green-dragon",
@@ -5712,7 +6487,7 @@
    "orman-yolu"
   ],
   "ad": "Ancient Green Dragon",
-  "crSayi": 22.0
+  "crSayi": 22
  },
  {
   "id": "ancient-blue-dragon",
@@ -5724,10 +6499,11 @@
    "col-gemi-enkazi",
    "col-sutun-harabesi",
    "col-vaha",
-   "col-kanyon-nehri"
+   "col-kanyon-nehri",
+   "orman-heykel-golu"
   ],
   "ad": "Ancient Blue Dragon",
-  "crSayi": 23.0
+  "crSayi": 23
  },
  {
   "id": "ancient-silver-dragon",
@@ -5745,7 +6521,7 @@
    "dag-nobetci"
   ],
   "ad": "Ancient Silver Dragon",
-  "crSayi": 23.0,
+  "crSayi": 23,
   "kis": true
  },
  {
@@ -5756,7 +6532,7 @@
    "gemi"
   ],
   "ad": "Kraken",
-  "crSayi": 23.0
+  "crSayi": 23
  },
  {
   "id": "ancient-gold-dragon",
@@ -5776,7 +6552,7 @@
    "dag-nobetci"
   ],
   "ad": "Ancient Gold Dragon",
-  "crSayi": 24.0
+  "crSayi": 24
  },
  {
   "id": "ancient-red-dragon",
@@ -5799,7 +6575,7 @@
    "dag-nobetci"
   ],
   "ad": "Ancient Red Dragon",
-  "crSayi": 24.0
+  "crSayi": 24
  },
  {
   "id": "tarrasque",
@@ -5823,6 +6599,6 @@
    "dag-nobetci"
   ],
   "ad": "Tarrasque",
-  "crSayi": 30.0
+  "crSayi": 30
  }
 ]
