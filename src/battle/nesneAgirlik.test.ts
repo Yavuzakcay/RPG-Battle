@@ -40,9 +40,9 @@ const take = (s: BattleState, actor: string, id: string) => err(s, { type: 'obje
 const fresh = (s: BattleState, id: string): BattleState => { const a = s.combatants[id] as Combatant; return { ...s, combatants: { ...s.combatants, [id]: { ...a, economy: { ...a.economy, interacted: false } } } }; };
 
 describe('NA1 kapasite', () => {
-  it('sürüm 80; STR 10 = 150 lb, STR 16 = 240 lb', () => {
+  it('sürüm 80+; STR 10 = 150 lb, STR 16 = 240 lb', () => {
     const s = arena();
-    expect(s.kuralSurumu).toBe(80);
+    expect(s.kuralSurumu).toBeGreaterThanOrEqual(80);
     expect(capacityOf(s.combatants.P0 as Combatant)).toBe(150);
     expect(capacityOf(s.combatants.P1 as Combatant)).toBe(240);
   });

@@ -31,6 +31,7 @@ import { freeCaptives } from './surfaceMix';
 import { solidBarrierAt } from './barriers';
 import { groundBound } from './flight';
 import { terrainSpellEvents } from './terrainSpell';
+import { freeHexVersionOn } from './freeHexSurum';
 import type { BattleEvent, BattleState, Side, SpellZone, SurfaceKind, SurfaceReaction } from './types';
 
 export const RESOLVER_VERSION = 26;
@@ -66,7 +67,7 @@ function gateOpen(s: BattleState, gates: Gate[]): boolean {
 
 /** Gelen etki: element dokunuşu ya da bu adımda oluşan yüzey/alan. */
 export type Incoming =
-  | { kind: 'element'; element: string; hexes: Offset[]; actorId: string; dc: number; damage: number | null; dice?: string; hitIds: string[]; label: string; genis?: boolean }
+  | { kind: 'element'; element: string; hexes: Offset[]; actorId: string; dc: number; damage: number | null; dice?: string; hitIds: string[]; label: string; genis?: boolean; serbest?: boolean }
   | { kind: 'zone'; zoneId: string; origin?: string };
 export interface HexResult { events: BattleEvent[]; reactions: string[]; chainLimited: boolean }
 
@@ -192,7 +193,8 @@ function applyRow(s0: BattleState, row: InteractionRow, it: Extract<Incoming, { 
     return out;
   }
   if (row.b.su || row.b.zemin) {
-    const tiles = row.b.zemin ? new Set((SURFACE_DATA as Record<string, unknown>)[row.b.zemin] as string[]) : null;
+    // FH1 (sürüm 81): hedefsiz altıgene atılan soğuk, doğal suyun (göl dahil) bütün su zeminini dondurur.
+    const tiles = row.b.zemin ? new Set([...((SURFACE_DATA as Record<string, unknown>)[row.b.zemin] as string[]), ...(it.serbest && row.b.zemin === 'freezeTiles' && freeHexVersionOn(s) ? ((SURFACE_DATA as Record<string, unknown>).waterTiles as string[]) : [])]) : null;
     const res = row.sonuc?.yuzey;
     const iced = res && row.sonuc?.yoksa ? keys(zonesOf(s).filter((z) => z.surface === res).flatMap((z) => z.hexes)) : new Set<string>();
     const hit = fresh(sorted(s, it.hexes.filter((h) => (tiles ? tiles.has(s.map?.tiles[h.row]?.[h.col] ?? '#') : isWater(s, h)) && !iced.has(hexKey(h)))));
@@ -349,7 +351,7 @@ export function previewHexEffects(state: BattleState, actorId: string, element: 
 
 registerResolver({
   on: hexResolverOn,
-  run: (s, element, hexes, actorId, label, rng, damage, dc) => resolveHexEffects(s, [{ kind: 'element', element, hexes, actorId, dc, damage, hitIds: [], label }], rng).events,
+  run: (s, element, hexes, actorId, label, rng, damage, dc, serbest) => resolveHexEffects(s, [{ kind: 'element', element, hexes, actorId, dc, damage, hitIds: [], label, ...(serbest ? { serbest: true } : {}) }], rng).events,
 });
 
 /** Olaylarda hasar alan yaratıklar (save, süren hasar, harita etkisi). */

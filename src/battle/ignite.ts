@@ -25,6 +25,7 @@ import { surfaceEvent } from './surfaces';
 import { triggerEvents, zoneHexes } from './zones';
 import { OBJECTS } from './objectData';
 import { groundBound } from './flight';
+import { freeHexVersionOn } from './freeHexSurum';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -104,6 +105,10 @@ export function greaseAfterEvents(next: BattleState, events: BattleEvent[], rng:
 export const fireHexSpell = (spell: Spell): boolean =>
   !spell.area && spell.mechanics.damageType === 'fire' && ['attack', 'auto', 'save'].includes(spell.mechanics.kind);
 
+/** FH1 (sürüm 81): her tek hedefli saldırı/otomatik isabet/save büyüsü (alansız; buff, iyileştirme, çağırma, alan değil) hedefsiz altıgene atılabilir. */
+export const freeHexSpell = (spell: Spell): boolean =>
+  !spell.area && !spell.mechanics.zone && ['attack', 'auto', 'save'].includes(spell.mechanics.kind);
+
 /**
  * Yanıcı haneye ateşli büyü (`cast_spell` + `targetHex`, `targetId` yok): menzil ve görüş yaratık hedefiyle aynı, isabet
  * zarı yok, hane tutuşur (gres, yağ, ağ, yanıcı nesne: nesneye büyünün hasar zarı). Slot ve eylem normal harcanır.
@@ -111,6 +116,12 @@ export const fireHexSpell = (spell: Spell): boolean =>
  */
 /** Kuyruk 30 D3: alan/atma etkileri her altıgene (Game Master anahtarı `freeHexTarget`, kural sürümü 10). */
 export const freeHexRule = (state: BattleState) => globalRule(state, 'freeHexTarget');
+
+/** FH1: bu savaşta her büyü hedefsiz altıgene atılabilir (sürüm 81+ ve anahtar açık). */
+export const freeHexAnyOn = (state: BattleState): boolean => freeHexVersionOn(state) && !!freeHexRule(state);
+
+/** Bu büyü bu savaşta hedefsiz altıgene atılabilir mi (sürüm 81+: her saldırı/save; öncesi: yalnız ateşli). */
+export const hexCastable = (state: BattleState, spell: Spell): boolean => (freeHexAnyOn(state) ? freeHexSpell(spell) : fireHexSpell(spell));
 
 /** Ateşli tek hedefli büyü bu altıgene atılabilir mi; değilse neden (menzil, görüş, tutuşacak bir şey). */
 export function fireHexProblem(state: BattleState, actor: Combatant, spell: Spell, at: Offset): string | null {
@@ -130,18 +141,34 @@ export function executeFireHex(state: BattleState, actor: Combatant, cmd: CastCo
   if (why) return fail(why);
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
   if (!slot.ok) return slot;
+  // FH1 (sürüm 81): her saldırı/save büyüsü; büyünün hasar türü altıgenin elementidir. Öncesi: yalnız ateş.
+  const any = freeHexAnyOn(state);
+  const element = any ? (spell.mechanics.damageType ?? null) : 'fire';
+  const objAt = (st: BattleState) => (st.map?.objects ?? []).find((o) => !o.carriedBy && hexKey(o.at) === hexKey(at) && (any ? o.hp > 0 : OBJECTS[o.kind]?.flammable));
   // Kuyruk 30 D3: tutuşacak bir şey yoksa ateş boş zemine düşer ve hemen söner (yalnızca suyla tepkime: buhar).
-  const burns = flammableAt(state, at);
+  const burns = element === 'fire' && flammableAt(state, at);
+  const dmgDice = spell.mechanics.damage ?? (any ? null : '1d10');
+  const note = any
+    ? `${hexLabel(at)} altıgenine ${objAt(state) ? 'isabet etti' : 'düştü'}`
+    : burns ? `${hexLabel(at)} altıgeni tutuştu` : `${hexLabel(at)} altıgenine düştü ve söndü`;
   const events: BattleEvent[] = [...slot.events,
-    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: burns ? `${hexLabel(at)} altıgeni tutuştu` : `${hexLabel(at)} altıgenine düştü ve söndü` }];
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note }];
   let s = applyEvents(state, events);
   const push = (evs: BattleEvent[]) => { events.push(...evs); s = applyEvents(s, evs); };
-  push(greaseIgniteEvents(s, [at], actor.id, rng));
-  push(elementReactionEvents(s, 'fire', [at], actor.id, spell.name, rng));
-  const obj = (s.map?.objects ?? []).find((o) => !o.carriedBy && hexKey(o.at) === hexKey(at) && OBJECTS[o.kind]?.flammable);
+  // Hasar zarı: sürüm 81+ bir kez ve her zaman (nesne hasarı, suda yıldırım); öncesi yalnızca yanıcı nesne varken (eski zar sırası aynen).
+  const rollDmg = () => (dmgDice ? rollDice(dmgDice, rollTag(rng, { kind: 'damage', by: actor.id })).total : null);
+  const dmg = any ? rollDmg() : null;
+  if (element === 'fire') push(greaseIgniteEvents(s, [at], actor.id, rng));
+  if (element) push(elementReactionEvents(s, element as 'fire' | 'cold' | 'lightning', [at], actor.id, spell.name, rng, any ? dmg : null, actor.spellSaveDc ?? 10, any));
+  const obj = objAt(s);
   if (obj) {
-    const dmg = rollDice(spell.mechanics.damage ?? '1d10', rollTag(rng, { kind: 'damage', by: actor.id }));
-    push(damageObjectEvents(s, obj, dmg.total, 'fire', actor.id, `${actor.name}: ${spell.name}`, rng));
+    const d = any ? dmg : rollDmg();
+    if (d !== null) push(damageObjectEvents(s, obj, d, element ?? 'force', actor.id, `${actor.name}: ${spell.name}`, rng));
+  }
+  // Hiçbir şey olmadıysa (yaratık/nesne/tepkime yok) günlükte açıkça "boşa gitti".
+  if (any && !obj && events.length === slot.events.length + 1) {
+    const i = slot.events.length;
+    events[i] = { ...(events[i] as Extract<BattleEvent, { type: 'spell_cast' }>), note: `${hexLabel(at)} altıgenine düştü: boşa gitti (hedef yok)` };
   }
   return finish(state, events);
 }

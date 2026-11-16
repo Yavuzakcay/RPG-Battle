@@ -115,7 +115,7 @@ import { brutalOptions, brutalReady, type BrutalBlow } from './battle/brutal';
 import { steedActions } from './battle/steed';
 import { ramTargets, steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
-import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
+import { fireHexProblem, fireHexSpell, freeHexAnyOn, freeHexRule, hexCastable } from './battle/ignite';
 import { globalRule } from './battle/ruleControl';
 import { pickArea } from './battle/areaAttack';
 import { climbLabel, climbTargets } from './battle/climb';
@@ -1054,7 +1054,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Kuyruk 30 D3: serbest altıgen hedefleme açıkken ateşli tek hedefli büyü menzil ve görüşteki her altıgene (boş zeminde söner).
   const freeFireKeys = useMemo(() => {
     const me = state.combatants[actorId];
-    if (!active || mode !== 'spell' || !spell || !fireHexSpell(spell) || !state.map || !me || !freeHexRule(state)) return new Set<string>();
+    if (!active || mode !== 'spell' || !spell || !hexCastable(state, spell) || !state.map || !me || !freeHexRule(state)) return new Set<string>();
     const out = new Set<string>();
     state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!fireHexProblem(state, me, spell, h)) out.add(hexKey(h)); }));
     return out;
@@ -1769,7 +1769,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
   const modeHint: Record<Mode, string> = {
     idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
-    spell: B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
+    spell: spell && freeHexAnyOn(state) && hexCastable(state, spell) ? B.hint.spellHex(spell.name) : B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
     pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',

@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-17 — FH1: hedefsiz altıgene büyü (kural sürümü 81; kayıt sürümü değişmedi)
+
+- Tasarım: yeni yol yok, `freeHexTarget` (K30) / `executeFireHex` (`ignite.ts`) genelleştirildi. Sürüm ≥ 81 (`src/battle/freeHexSurum.ts` `FREE_HEX_VERSION`) ve Game Master anahtarı `freeHexTarget` (varsayılan açık) açıkken her tek hedefli saldırı/otomatik isabet/save büyüsü (alansız, bölge büyüsü değil; buff/iyileştirme/çağırma hariç) `cast_spell.targetHex` ile menzil ve görüşteki her altıgene atılır (`hexCastable`). Alan büyüleri (koni, çizgi, küre, küp) eskisi gibi. 80 ve altı: yalnız ateşli büyü ve yanıcı altıgen (eski kayıt/replay aynen, ignite testleri sürüm 80'e sabitlendi).
+- Davranış: slot/eylem harcanır; altıgende yaratık varsa normal hedefleme (`withHexOccupant`: `targetId` atanır, isabet/save aynen); nesne varsa nesneye hasar (⚠ isabet zarı yok, hasar zarı tam; nesne save yapmaz); yoksa tek `spell_cast` notu "boşa gitti" (yeni olay türü yok). Büyünün hasar türü K55 çözücüsüne altıgen dokunuşu: ateş × su = buhar (doğal göl dahil, mevcut `su` eşleşmesi), ateş × çimen = tutuşma (K56 arazi tablosu), soğuk × su = buz, yıldırım × su = zincir; tablo satırı olmayan boşa gider. ⚠ Doğal derin su (`w`) yalnızca hedefsiz altıgen atışında donar (`Incoming.serbest`; `freezeTiles` verisi ve diğer soğuk atışlar değişmedi).
+- Yapay zekâ kullanmaz: alan dışı tek hedefli büyüde hep `targetId` verir, aday üretimi aynı. Arayüz: nişan modunda menzil/görüştaki tüm altıgenler seçilebilir (`hx aimable`), ipucu `hint.spellHex` (TR/EN): "parlayan bir hedefe ya da herhangi bir altıgene". Testler `src/battle/freeHex.test.ts`.
+
 ## 2026-12-16 — HS1 sonrası testler yeni duruma uyarlandı (klasik Kale geri gelmeyecek; yalnız test/veri, kural/kayıt sürümü değişmedi)
 
 - k71a/k71b: duvarlı açık harita 23 → 21 (`ONAYLI` betiğinde `kale` zaten yoktu), sur yüzeyi (kaba) 8 → 7 (kale çıktı, `kale-avlu` kendi kaydıyla), `kale` mapId'leri `kale-avlu`.

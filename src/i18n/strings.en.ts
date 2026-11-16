@@ -1074,6 +1074,7 @@ export const en: Strings = {
       throwObject: 'Throw object: tap an adjacent barrel, chest, rock or similar object, then a highlighted target hex or creature (action).',
       throwTarget: 'Throw object: tap a highlighted target hex or creature (the creature takes damage once, the object lands next to it).',
       attack: 'Attack: tap a glowing target.', spells: 'Pick a spell.', spell: (s: string) => `${s}: tap a glowing target.`,
+      spellHex: (s: string) => `${s}: tap a glowing target or any hex in range and sight (on an empty hex the spell is wasted or affects the ground).`,
       aim: (s: string) => `${s}: tap the target hex.`, pull: 'Pull: tap the sunken ally.', help: 'Help: tap an adjacent enemy.', item: 'Potion: tap yourself or an ally within 5 ft (bonus action).', distract: 'Distract: tap a hex within 30 ft to make a noise (awake enemies within 15 ft take −5 to passive Perception for a round).',
       erupt: 'Eruption: tap the center hex.', followup: (s: string) => `${s}: tap a glowing target.`,
       offhand: 'Off-hand attack: tap a glowing target.',

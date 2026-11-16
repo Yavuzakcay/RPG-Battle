@@ -39,7 +39,7 @@ import { paketSpellBonus, paketSpellTransform } from './paket/core';
 import { paketHealRoll } from './paket/p11';
 import { beaconMax } from './healMax';
 import { fireStored, paketCast } from './paket/p11cast';
-import { hexLabel, speedHexes } from './movement';
+import { hexLabel, occupantAt, speedHexes } from './movement';
 import type { Cover } from '../map/terrain';
 import { damageEffects } from './damage-effects';
 import { atSlot, fail, finish, isTargetable, upcastDiceCount, withinFiveFt, type CommandResult, damageProfile } from './common';
@@ -67,7 +67,7 @@ import { applyEvents } from './reduce';
 import { autoSucceedsType, heldFollow, mechanicsAt } from './spellVersion';
 import srdSpells from '../../data/srd/spells.json';
 import { executeZoneCast, movableZoneOf, shiftZoneEvents, silencedAt, zoneHexes } from './zones';
-import { executeFireHex, fireHexSpell } from './ignite';
+import { executeFireHex, freeHexAnyOn, freeHexSpell, hexCastable } from './ignite';
 import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
 import { affinityBonus, castWithMetamagic, empowerRolls, innateFor, POINTS } from './sorcerer';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
@@ -377,7 +377,17 @@ function executeMaplessAura(state: BattleState, actor: Combatant, cmd: CastComma
  * Büyü yapma. Counterspell (Görev R1): büyüyü görebilen bir düşmanın tepkisi varsa önce büyü zarsız denenir
  * (geçersiz komut boşa durdurulmasın), sonra tepki sorulur; durdurulursa eylem harcanır, slot harcanmaz.
  */
-export function executeCast(state: BattleState, actor0: Combatant, cmd: CastCommand, rng: Rng): CommandResult {
+/** FH1 (sürüm 81): hedefsiz altıgen komutunda altıgende yaratık varsa normal yaratık hedeflemesi (isabet/save aynen). */
+function withHexOccupant(state: BattleState, cmd: CastCommand): CastCommand {
+  if (cmd.targetId || cmd.targetIds?.length || !cmd.targetHex || !state.map || !freeHexAnyOn(state)) return cmd;
+  const sp = spells.find((x) => x.name === cmd.spellName);
+  if (!sp || !freeHexSpell(sp)) return cmd;
+  const occ = occupantAt(state, cmd.targetHex);
+  return occ && occ.hp > 0 ? { ...cmd, targetId: occ.id } : cmd;
+}
+
+export function executeCast(state: BattleState, actor0: Combatant, cmd0: CastCommand, rng: Rng): CommandResult {
+  const cmd = withHexOccupant(state, cmd0);
   // Kuyruk 19 (görev 3): 6.–9. seviye büyüler (anahtar spells69; Antimagic Field içinde büyü yok) ve Wish.
   const sp0 = spells.find((x) => x.name === cmd.spellName);
   const bad69 = sp0 ? spells69Problem(state, actor0, sp0) : null;
@@ -689,7 +699,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   }
   // Kuyruk 24c: yanıcı haneye ateşli büyü (gres, yağ, ağ, yanıcı nesne; Game Master mekaniği `greaseFlammable`).
   // Kuyruk A6: elde tutulan alev (Produce Flame) yanıcı altıgene de fırlatılır ("a creature or an object").
-  if (!cmd.targetId && cmd.targetHex && state.map && (!repeat || m.held) && fireHexSpell(spell)) return executeFireHex(state, actor, cmd, spell, rng);
+  if (!cmd.targetId && cmd.targetHex && state.map && (!repeat || m.held) && hexCastable(state, spell)) return executeFireHex(state, actor, cmd, spell, rng);
   // Kuyruk K70 (sürüm 54): Disintegrate kuvvet yapısını (Wall of Force) hedef altıgeninden yok eder.
   if (!cmd.targetId && cmd.targetHex && state.map && !repeat && m.destroysForce?.length) return executeDestroyForce(state, actor, cmd, spell, m.destroysForce);
   let target: Combatant | undefined;
