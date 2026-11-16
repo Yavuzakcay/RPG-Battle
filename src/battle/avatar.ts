@@ -7,6 +7,8 @@ import type { CharacterSheet } from '../rules/stats';
 import type { Avatar, TintSpec } from './types';
 import soyRenkleri from '../../data/soy-renkleri.json';
 import wizardJeton from '../../data/wizard-jeton.json';
+import warlockJeton from '../../data/warlock-jeton.json';
+import sorcererJeton from '../../data/sorcerer-jeton.json';
 import { cultureSkinTone, hasSubclassWing, skinTint } from '../ui/lineageLook';
 
 /** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
@@ -89,24 +91,34 @@ export function characterTokenFile(raceId: string, gender: 'erkek' | 'kadin' | u
   return `${raceId}-${GENDER_FILE[gender ?? 'erkek']}-${classId}.webp`;
 }
 
-/** Görev WZ-BAGLA: eksik alt sınıf jetonları bir kez geliştirici günlüğüne (arayüz metni yok). */
-const wzMissing = new Set<string>();
-const WZ = wizardJeton as unknown as { sinif: string; maskeHazir: boolean; irklar: Record<string, string[]>; altSiniflar: Record<string, string> };
+/** Görev WZ-BAGLA / BAGLA-3: eksik alt sınıf jetonları bir kez geliştirici günlüğüne (arayüz metni yok). */
+const subMissing = new Set<string>();
+interface SubTokenTable { sinif: string; maskeHazir: boolean; irklar: Record<string, string[]>; altSiniflar: Record<string, string> }
+/** Alt sınıf jetonu olan sınıflar (veri dosyası başına bir sınıf; yeni sınıf yalnız buraya + veri dosyası). */
+const SUB_TOKENS: Record<string, SubTokenTable> = {
+  wizard: wizardJeton as unknown as SubTokenTable,
+  warlock: warlockJeton as unknown as SubTokenTable,
+  sorcerer: sorcererJeton as unknown as SubTokenTable,
+};
 /**
- * Wizard alt sınıf jetonu (`<ırk>-<erkek|kadin>-wizard-<WZ-id>.webp`): ırk×cinsiyet jetonu üretilmişse, alt sınıf tabloda varsa ve
- * (soy/ten boyası gerekiyorsa) maskeleri hazırsa dosya adı; yoksa undefined (sınıf-genel jeton kalır, eksik bir kez `console.warn`).
+ * Alt sınıf jetonu (`<ırk>-<erkek|kadin>-<sınıf>-<hücre>.webp`): sınıfın tablosu varsa, ırk×cinsiyet jetonu üretilmişse, alt sınıf
+ * tabloda varsa ve (soy/ten boyası gerekiyorsa) maskeleri hazırsa dosya adı; yoksa undefined (sınıf-genel jeton kalır, eksik bir
+ * kez `console.warn`).
  */
-export function wizardSubclassFile(raceId: string, gender: 'erkek' | 'kadin', subclassId: string | undefined, tinted: boolean): string | undefined {
-  if (!subclassId) return undefined;
-  const cell = WZ.altSiniflar[subclassId];
-  const why = !cell ? 'alt sınıf tabloda yok' : !WZ.irklar[raceId]?.includes(gender) ? 'ırk/cinsiyet jetonu yok' : tinted && !WZ.maskeHazir ? 'WZ ten/soy maskesi yok' : '';
+export function subclassTokenFile(classId: string, raceId: string, gender: 'erkek' | 'kadin', subclassId: string | undefined, tinted: boolean): string | undefined {
+  const T = SUB_TOKENS[classId];
+  if (!T || !subclassId) return undefined;
+  const cell = T.altSiniflar[subclassId];
+  const why = !cell ? 'alt sınıf tabloda yok' : !T.irklar[raceId]?.includes(gender) ? 'ırk/cinsiyet jetonu yok' : tinted && !T.maskeHazir ? 'ten/soy maskesi yok' : '';
   if (why) {
     const key = `${raceId}-${gender}-${subclassId}`;
-    if (!wzMissing.has(key)) { wzMissing.add(key); console.warn(`wizard-jeton eksik: ${key} (${why}); sınıf-genel jeton kullanılıyor.`); }
+    if (!subMissing.has(`${classId}:${key}`)) { subMissing.add(`${classId}:${key}`); console.warn(`${classId}-jeton eksik: ${key} (${why}); sınıf-genel jeton kullanılıyor.`); }
     return undefined;
   }
-  return `${raceId}-${gender}-wizard-${cell}.webp`;
+  return `${raceId}-${gender}-${classId}-${cell}.webp`;
 }
+/** Eski ad (WZ-BAGLA testleri). */
+export const wizardSubclassFile = (raceId: string, gender: 'erkek' | 'kadin', subclassId: string | undefined, tinted: boolean) => subclassTokenFile('wizard', raceId, gender, subclassId, tinted);
 
 /**
  * Karakter jetonu (pixel art, karşıdan çizili): `characters/` + `characterTokenFile`.
@@ -116,9 +128,9 @@ export function wizardSubclassFile(raceId: string, gender: 'erkek' | 'kadin', su
 export function sheetAvatar(sheet: CharacterSheet): Avatar {
   const gender = sheet.gender ?? 'erkek';
   const generic = `characters/${characterTokenFile(sheet.raceId, gender, sheet.classId)}`;
-  // WZ-BAGLA: Wizard alt sınıf jetonu (soy/ten boyası gerekiyorsa `maskeHazir` bayrağına bağlı); öncelik özel avatar > alt sınıf jetonu > genel.
-  const wz = !sheet.avatar && sheet.classId === WZ.sinif
-    ? wizardSubclassFile(sheet.raceId, gender, sheet.subclassId, !!(skinTint(sheet.raceId, cultureSkinTone(sheet.lineageId, sheet.skinTone, sheet.exileCulture)) ?? lineageTint(sheet.raceId, sheet.lineageId, gender))) : undefined;
+  // WZ-BAGLA/BAGLA-3: Wizard/Warlock/Sorcerer alt sınıf jetonu (soy/ten boyası gerekiyorsa `maskeHazir` bayrağına bağlı); öncelik özel avatar > alt sınıf jetonu > genel.
+  const wz = !sheet.avatar
+    ? subclassTokenFile(sheet.classId, sheet.raceId, gender, sheet.subclassId, !!(skinTint(sheet.raceId, cultureSkinTone(sheet.lineageId, sheet.skinTone, sheet.exileCulture)) ?? lineageTint(sheet.raceId, sheet.lineageId, gender))) : undefined;
   return {
     src: sheet.avatar ?? (wz ? `characters/${wz}` : generic),
     fallbacks: sheet.avatar ? [] : [...(wz ? [generic] : []), `avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],

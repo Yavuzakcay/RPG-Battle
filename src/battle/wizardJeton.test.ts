@@ -1,8 +1,11 @@
 /** Görev WZ-BAGLA: Wizard alt sınıf jetonu çözümü, tablo bütünlüğü ve dosya varlığı. */
 import { describe, expect, it, vi } from 'vitest';
-import { sheetAvatar, wizardSubclassFile } from './avatar';
+import { sheetAvatar, subclassTokenFile, wizardSubclassFile } from './avatar';
 import { classOfCombatant } from '../app/diceUnlock';
 import tablo from '../../data/wizard-jeton.json';
+import warlock from '../../data/warlock-jeton.json';
+import sorcerer from '../../data/sorcerer-jeton.json';
+import imza from '../../data/imza.json';
 import type { CharacterSheet } from '../rules/stats';
 
 /** Jeton dosya adları (görsel içeriği okunmaz). */
@@ -43,5 +46,32 @@ describe('WZ-BAGLA çözüm', () => {
   it('zar teması: WZ jetonundan sınıf wizard', () => {
     expect(classOfCombatant({ avatar: { src: 'characters/dwarf-erkek-wizard-WZ-A1.webp' } } as never)).toBe('wizard');
     expect(classOfCombatant({ avatar: { src: 'characters/dwarf-male-fighter.webp' } } as never)).toBe('fighter');
+  });
+});
+
+describe('BAGLA-3 Warlock ve Sorcerer', () => {
+  const cells = (t: { altSiniflar: Record<string, string> }, pre: string, n: number) => ({ got: Object.values(t.altSiniflar).sort(), want: Array.from({ length: n }, (_, i) => `${pre}-${i + 1}`).sort() });
+  it('hücre tabloları: Warlock WL-1..11, Sorcerer SC-1..9, imza/fikstür kimlikleri gerçek', () => {
+    const w = cells(warlock, 'WL', 11); expect(w.got).toEqual(w.want);
+    const s = cells(sorcerer, 'SC', 9); expect(s.got).toEqual(s.want);
+    expect(warlock.altSiniflar).toMatchObject({ gulyabani: 'WL-8', imza_astrolog: 'WL-11', 'fiend-patron': 'WL-1' });
+    expect(sorcerer.altSiniflar).toMatchObject({ 'draconic-sorcery': 'SC-1', imza_dunganga: 'SC-9' });
+    const imzaIds = (imza as unknown as { altSiniflar: Array<{ id: string }> }).altSiniflar.map((x) => x.id);
+    for (const id of ['imza_harita', 'imza_astrolog', 'imza_dunganga']) expect(imzaIds).toContain(id);
+    expect(tablo.cozulemeyen).toEqual([]); expect(warlock.cozulemeyen).toEqual([]); expect(sorcerer.cozulemeyen).toEqual([]);
+  });
+  it('jeton dosyası yok (kesim yapılmadı): alt sınıf jetonu atanmaz, genel jeton kalır, eksik "<sınıf>-jeton eksik" yazılır', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(subclassTokenFile('warlock', 'dwarf', 'erkek', 'cin', false)).toBeUndefined();
+    expect(sheetAvatar(sheet({ classId: 'warlock', subclassId: 'cin' })).src).toBe('characters/dwarf-male-warlock.webp');
+    expect(sheetAvatar(sheet({ classId: 'sorcerer', subclassId: 'alevbaz' })).src).toBe('characters/dwarf-male-sorcerer.webp');
+    const msgs = warn.mock.calls.map((c) => String(c[0]));
+    expect(msgs.some((m) => m.startsWith('warlock-jeton eksik: dwarf-erkek-cin'))).toBe(true);
+    expect(msgs.some((m) => m.startsWith('sorcerer-jeton eksik: dwarf-erkek-alevbaz'))).toBe(true);
+    warn.mockRestore();
+  });
+  it('zar teması: WL/SC jeton adından sınıf', () => {
+    expect(classOfCombatant({ avatar: { src: 'characters/orc-kadin-warlock-WL-8.webp' } } as never)).toBe('warlock');
+    expect(classOfCombatant({ avatar: { src: 'characters/orc-erkek-sorcerer-SC-3.webp' } } as never)).toBe('sorcerer');
   });
 });

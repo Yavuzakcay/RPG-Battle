@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-11 — BAGLA-3: Warlock ve Sorcerer bağlaması, Wizard kimlik doğrulaması (yalnız görünüm; kural/kayıt sürümü değişmedi)
+
+- WL-KESIM ve SC-KESIM yapılamadı: Warlock/Sorcerer ham sayfaları `wip/karakter-ham`'da yok (yalnız wizard sayfaları var) ve o promptlar bu oturumda verilmedi. Jeton adı varsayımı: `<irk>-<erkek|kadin>-<warlock|sorcerer>-<WL-n|SC-n>.webp` (Wizard ile aynı biçim); kesim farklı ad üretirse yalnız `data/*-jeton.json` `irklar` ve bu ad kuralı güncellenir.
+- Çözücü genelleştirildi: `src/battle/avatar.ts` `subclassTokenFile(sınıf, …)` (tablolar `data/wizard-jeton.json`, `warlock-jeton.json`, `sorcerer-jeton.json`; `wizardSubclassFile` eski ad olarak kaldı). Zincir değişmedi: alt sınıf jetonu → sınıf-genel → eski `avatars/`. Zar teması sınıf tespiti WL/SC adlarını da tanır.
+- Kimlikler Türkçe adlarla doğrulandı, çözülemeyen yok: Wizard değişmedi (A1 evoker … B7 imza_harita); Warlock WL-1 fiend-patron (İblis Hamisi), cin, muhterem, hortlak, kargisci, kraken, melek, gulyabani (WL-8 dikey uzun hücre), paradoks, ruhsar, imza_astrolog (WL-11); Sorcerer SC-1 draconic-sorcery, alevbaz, ceren-urperten, ilahi-kan, lanetli, otonom-evren, paratoner, titan-kani, imza_dunganga (SC-9). Kaynak: fikstür, `data/imza.json`, `icerik-liste.txt`.
+- `irklar` Warlock/Sorcerer'de boş (jeton yok): bütün alt sınıf aramaları sınıf-genel jetonda kalır ve bir kez `console.warn("<sınıf>-jeton eksik: …")`. Wizard: Dragonborn boş.
+- Boyama (maske hâlâ yok, `maskeHazir: false`): boyası gereken karakter sınıf-genel jetonda kalır. Varsayılan ten/soy ile boyasız (alt sınıf jetonu çıkar): celestial; dwarf hepsi; elf wood-elf; gnome rock-gnome; goliath hill; halfling hepsi; human khadyrga, outwall; orc hepsi; tiefling infernal. Boyalı (yedek): dragonborn (jeton yok zaten) hepsi; elf drow, high-elf; gnome forest, subterranean; goliath cloud, fire, frost, stone, storm; human tenhausser, pure-city (varsayılan tonda; Human ton seçimine göre değişir); tiefling abyssal, chthonic, winged.
+- Jeton sayısı testi (510) değişmedi: yeni jeton eklenmedi. Ana parça 428,14 kB / sınır 450 kB (`data/paket-siniri.json`).
+
 ## 2026-12-10 — WZ-BAGLA: Wizard alt sınıf jetonları oyuna bağlandı (yalnız görünüm; kural/kayıt sürümü değişmedi)
 
 - Tek tablo `data/wizard-jeton.json` (`altSiniflar`: alt sınıf kimliği → WZ hücresi; `irklar`: jetonu olan ırk×cinsiyet; `maskeHazir`; `cozulemeyen`). Çözücü `src/battle/avatar.ts` `wizardSubclassFile`, `sheetAvatar` içinde: karakter ekranları ve savaş jetonu aynı yoldan; kanat/`look`/ten/soy alanları aynen. Zincir: WZ jetonu → sınıf-genel jeton → eski `avatars/`. Eski jetonlar silinmedi; ana parçaya +≈1,3 kB (tablo küçük, senkron çözüm için statik).
