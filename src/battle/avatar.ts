@@ -102,6 +102,9 @@ export function characterTokenFile(raceId: string, gender: 'erkek' | 'kadin' | u
 
 /** Görev WZ-BAGLA / BAGLA-3: eksik alt sınıf jetonları bir kez geliştirici günlüğüne (arayüz metni yok). */
 const subMissing = new Set<string>();
+let subWarn = true;
+/** Testlerde sahte alt sınıf kimlikleri günlüğü doldurmasın diye kapatılır (uygulamada hep açık; jeton testi açar). */
+export const setSubTokenWarnings = (on: boolean): void => { subWarn = on; };
 interface SubTokenTable { sinif: string; maskeHazir: boolean; irklar: Record<string, string[]>; altSiniflar: Record<string, string>; cinsiyet?: Record<string, 'erkek' | 'kadin'> }
 /** Alt sınıf jetonu olan sınıflar (veri dosyası başına bir sınıf; yeni sınıf yalnız buraya + veri dosyası). */
 const SUB_TOKENS: Record<string, SubTokenTable> = {
@@ -129,6 +132,7 @@ export function subclassTokenFile(classId: string, raceId: string, gender: 'erke
   const cell = T.altSiniflar[subclassId];
   const why = !cell ? 'alt sınıf tabloda yok' : T.cinsiyet?.[subclassId] && T.cinsiyet[subclassId] !== gender ? 'alt sınıf jetonu yalnız ' + T.cinsiyet[subclassId] + ' için' : !T.irklar[raceId]?.includes(gender) ? 'ırk/cinsiyet jetonu yok' : tinted && !T.maskeHazir ? 'ten/soy maskesi yok' : '';
   if (why) {
+    if (!subWarn) return undefined;
     const key = `${raceId}-${gender}-${subclassId}`;
     if (!subMissing.has(`${classId}:${key}`)) { subMissing.add(`${classId}:${key}`); console.warn(`${classId}-jeton eksik: ${key} (${why}); sınıf-genel jeton kullanılıyor.`); }
     return undefined;

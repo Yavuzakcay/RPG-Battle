@@ -1,6 +1,6 @@
 /** Görev WZ-BAGLA: Wizard alt sınıf jetonu çözümü, tablo bütünlüğü ve dosya varlığı. */
 import { describe, expect, it, vi } from 'vitest';
-import { sheetAvatar, subclassTokenFile, wizardSubclassFile } from './avatar';
+import { setSubTokenWarnings, sheetAvatar, subclassTokenFile, wizardSubclassFile } from './avatar';
 import { classOfCombatant } from '../app/diceUnlock';
 import tablo from '../../data/wizard-jeton.json';
 import warlock from '../../data/warlock-jeton.json';
@@ -36,11 +36,13 @@ describe('WZ-BAGLA çözüm', () => {
   });
   it('Dragonborn ve boyalı karakter (maske yok): genel jeton, eksik bir kez günlüğe', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    setSubTokenWarnings(true);
     expect(wizardSubclassFile('dragonborn', 'erkek', 'evoker', false)).toBeUndefined();
     expect(wizardSubclassFile('dragonborn', 'erkek', 'evoker', false)).toBeUndefined();
     expect(wizardSubclassFile('dwarf', 'erkek', 'evoker', true)).toBeUndefined();
     expect(warn.mock.calls.filter((c) => String(c[0]).includes('dragonborn-erkek-evoker'))).toHaveLength(1);
     expect(String(warn.mock.calls.at(-1)?.[0])).toContain('maskesi yok');
+    setSubTokenWarnings(false);
     warn.mockRestore();
   });
   it('zar teması: WZ jetonundan sınıf wizard', () => {
@@ -67,6 +69,7 @@ describe('BAGLA-3 Warlock ve Sorcerer', () => {
       for (const [race, gens] of Object.entries(t.irklar)) for (const g of gens) for (let i = 1; i <= n; i++) expect(files.has(`${race}-${g}-${cls}-${pre}-${i}.webp`), `${race}-${g}-${cls}-${pre}-${i}`).toBe(true);
     }
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    setSubTokenWarnings(true);
     expect(subclassTokenFile('warlock', 'dwarf', 'erkek', 'cin', false)).toBe('dwarf-erkek-warlock-WL-2.webp');
     expect(sheetAvatar(sheet({ classId: 'warlock', subclassId: 'cin' })).src).toBe('characters/dwarf-erkek-warlock-WL-2.webp');
     expect(sheetAvatar(sheet({ classId: 'sorcerer', subclassId: 'alevbaz', gender: 'kadin' })).src).toBe('characters/dwarf-kadin-sorcerer-SC-2.webp');
@@ -77,6 +80,7 @@ describe('BAGLA-3 Warlock ve Sorcerer', () => {
     expect(msgs.some((m) => m.startsWith('warlock-jeton eksik: dragonborn-erkek-cin'))).toBe(true);
     expect(msgs.some((m) => m.startsWith('sorcerer-jeton eksik: dwarf-erkek-bilinmeyen'))).toBe(true);
     expect(msgs.some((m) => m.includes('maskesi yok'))).toBe(true);
+    setSubTokenWarnings(false);
     warn.mockRestore();
   });
   it('zar teması: WL/SC jeton adından sınıf', () => {
@@ -112,6 +116,7 @@ describe('TOPLU-KESIM: 9 sınıf bağlaması', () => {
   });
   it('özel durumlar: Birlik/Barış aynı jeton, Pehlivan dev hali bağlı değil, Şampiyon genel, cinsiyet kuralları', () => {
     const w = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    setSubTokenWarnings(true);
     expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'imza_birlik', false)).toBe('dwarf-erkek-cleric-ID9.webp');
     expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'baris-alani', false)).toBe('dwarf-erkek-cleric-ID9.webp');
     expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'pehlivan', false)).toBe('dwarf-erkek-fighter-ID4.webp');
@@ -125,6 +130,7 @@ describe('TOPLU-KESIM: 9 sınıf bağlaması', () => {
     expect(subclassTokenFile('monk', 'dragonborn', 'erkek', 'astral-disiplini', false)).toBeUndefined();
     expect(subclassTokenFile('rogue', 'human', 'erkek', 'thief', true)).toBeUndefined(); // boyalı: maske yok
     expect(w.mock.calls.some((c) => String(c[0]).startsWith('monk-jeton eksik: dragonborn-erkek-astral-disiplini'))).toBe(true);
+    setSubTokenWarnings(false);
     w.mockRestore();
     expect(sheetAvatar(sheet({ classId: 'rogue', subclassId: 'dedektif' })).src).toBe('characters/dwarf-male-rogue.webp'.replace('male-rogue', 'erkek-rogue-ID2'));
   });
