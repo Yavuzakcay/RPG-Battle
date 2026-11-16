@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-09 — WZ-KESIM: Wizard jeton sayfalarının kesimi (yalnız varlık; kural/kayıt sürümü değişmedi)
+
+- `scripts/wizard-kesim.py` (Pillow+numpy+scipy; ham sayfalar `origin/wip/karakter-ham` → `assets-ham/karakter/`, depoya girmez): 9 ırk × 2 cinsiyet × (A 8 + B 7) = 270 jeton → `public/characters/<irk>-<erkek|kadin>-wizard-WZ-<A1..A8|B1..B7>.webp` (256×256, figür 240 px, üst boşluk 8, ayak alt y=247). Ejderha doğumlu sayfa yok (atlandı). Gerçek alt sınıf kimlikleri sonra toplu doldurulur (yer tutucu WZ-id).
+- Zemin hücre köşesinden okunur (yeşil/magenta; orc sayfaları tamamen magenta); yalnızca kenardan bağlı zemin anahtarlanır, içte kalan zemin delikleri sıkı toleransla; kenar sızıntısı kısılır. Ölçek sayfa (yama için dosya) başına tek; yatayda hücre merkezi 128 (taşarsa bbox merkezi). B8 boş doğrulandı, atıldı.
+- Yamalar asıl hücrenin yerine: `wizard-yama-1` → tiefling erkek A3, human erkek A3, celestial erkek B5, tiefling kadın A3; `wizard-yama-male-elf-b7` → elf erkek B7 (12–16 px zemin payıyla, kırpma yok). Eşleme `data/wizard-esleme/esleme-wizard-<irk>-<cinsiyet>.json`.
+- Doğrulama: her sayfa 8/7 jeton, boş hücre yok. Kenar taraması (saf zemin rengine < 110 uzaklık): kalıntı yalnız goliath erkek A8 ve human erkek B5'te; ikisi de büyü efektinin (magenta girdap, yeşil parıltı) gerçek rengi, silinmedi. Göz kontrolü: orc (erkek+kadın) ve yama jetonları kontrol sayfalarında temiz (`docs/sabah/wizard-kesim-kontrol.png`, `-orc.png`, `-yama.png`).
+- ⚠ Jetonlar henüz oyunda bağlı değil (yalnız varlık).
+
 ## 2026-12-08 — KH1: check:harita yeni menüye uyarlandı (yalnız betik + data-testid; kural/kayıt sürümü değişmedi)
 
 - Kök neden: OD1'den beri ana menüde Game Master girişi yok; betiğin `button.role >> nth=1` seçicisi artık "Oda kur"u tıklıyor, harita seçici hiç gelmediği için `[data-region]` 60 sn bekleyip düşüyordu (ısınma ve bütün haritalar).
