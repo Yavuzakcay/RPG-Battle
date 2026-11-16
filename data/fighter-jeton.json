@@ -1,0 +1,59 @@
+{
+ "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-fighter-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır.",
+ "sinif": "fighter",
+ "maskeHazir": false,
+ "irklar": {
+  "human": [
+   "erkek",
+   "kadin"
+  ],
+  "elf": [
+   "erkek",
+   "kadin"
+  ],
+  "dwarf": [
+   "erkek",
+   "kadin"
+  ],
+  "halfling": [
+   "erkek",
+   "kadin"
+  ],
+  "gnome": [
+   "erkek",
+   "kadin"
+  ],
+  "orc": [
+   "erkek",
+   "kadin"
+  ],
+  "tiefling": [
+   "erkek",
+   "kadin"
+  ],
+  "goliath": [
+   "erkek",
+   "kadin"
+  ],
+  "celestial": [
+   "erkek",
+   "kadin"
+  ]
+ },
+ "altSiniflar": {
+  "sahin-gozlu": "ID1",
+  "capkin-kavalye": "ID2",
+  "hissi-kablel": "ID3",
+  "pehlivan": "ID4",
+  "ninja": "ID6",
+  "cift-dikis": "ID7",
+  "samuray": "ID8",
+  "hokkabaz": "ID9",
+  "sancaktar": "ID10",
+  "imza_imparator": "ID11"
+ },
+ "cozulemeyen": [],
+ "cinsiyet": {
+  "imza_imparator": "erkek"
+ }
+}

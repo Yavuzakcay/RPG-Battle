@@ -1,0 +1,57 @@
+{
+ "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-monk-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır.",
+ "sinif": "monk",
+ "maskeHazir": false,
+ "irklar": {
+  "human": [
+   "erkek",
+   "kadin"
+  ],
+  "elf": [
+   "erkek",
+   "kadin"
+  ],
+  "dwarf": [
+   "erkek",
+   "kadin"
+  ],
+  "halfling": [
+   "erkek",
+   "kadin"
+  ],
+  "gnome": [
+   "erkek",
+   "kadin"
+  ],
+  "orc": [
+   "erkek",
+   "kadin"
+  ],
+  "tiefling": [
+   "erkek",
+   "kadin"
+  ],
+  "goliath": [
+   "erkek",
+   "kadin"
+  ],
+  "celestial": [
+   "erkek",
+   "kadin"
+  ]
+ },
+ "altSiniflar": {
+  "warrior-of-the-open-hand": "ID1",
+  "astral-disiplini": "ID2",
+  "ayyaslik-disiplini": "ID3",
+  "azizlik-disiplini": "ID4",
+  "ejderha-disiplini": "ID5",
+  "element-disiplini": "ID6",
+  "isik-disiplini": "ID7",
+  "karanlik-disiplini": "ID8",
+  "keskinlik-disiplini": "ID9",
+  "olumsuzluk-disiplini": "ID10",
+  "imza_bilge": "ID11"
+ },
+ "cozulemeyen": []
+}

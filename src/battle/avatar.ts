@@ -9,6 +9,15 @@ import soyRenkleri from '../../data/soy-renkleri.json';
 import wizardJeton from '../../data/wizard-jeton.json';
 import warlockJeton from '../../data/warlock-jeton.json';
 import sorcererJeton from '../../data/sorcerer-jeton.json';
+import barbarianJeton from '../../data/barbarian-jeton.json';
+import bardJeton from '../../data/bard-jeton.json';
+import clericJeton from '../../data/cleric-jeton.json';
+import druidJeton from '../../data/druid-jeton.json';
+import fighterJeton from '../../data/fighter-jeton.json';
+import monkJeton from '../../data/monk-jeton.json';
+import paladinJeton from '../../data/paladin-jeton.json';
+import rangerJeton from '../../data/ranger-jeton.json';
+import rogueJeton from '../../data/rogue-jeton.json';
 import { cultureSkinTone, hasSubclassWing, skinTint } from '../ui/lineageLook';
 
 /** DROW-PALET: `{ palet: "<anahtar>" }` soyun rengi ırk kaydındaki `paletler.<soy>`'dan, seçim `<anahtar>` alanından. */
@@ -93,12 +102,21 @@ export function characterTokenFile(raceId: string, gender: 'erkek' | 'kadin' | u
 
 /** Görev WZ-BAGLA / BAGLA-3: eksik alt sınıf jetonları bir kez geliştirici günlüğüne (arayüz metni yok). */
 const subMissing = new Set<string>();
-interface SubTokenTable { sinif: string; maskeHazir: boolean; irklar: Record<string, string[]>; altSiniflar: Record<string, string> }
+interface SubTokenTable { sinif: string; maskeHazir: boolean; irklar: Record<string, string[]>; altSiniflar: Record<string, string>; cinsiyet?: Record<string, 'erkek' | 'kadin'> }
 /** Alt sınıf jetonu olan sınıflar (veri dosyası başına bir sınıf; yeni sınıf yalnız buraya + veri dosyası). */
 const SUB_TOKENS: Record<string, SubTokenTable> = {
   wizard: wizardJeton as unknown as SubTokenTable,
   warlock: warlockJeton as unknown as SubTokenTable,
   sorcerer: sorcererJeton as unknown as SubTokenTable,
+  barbarian: barbarianJeton as unknown as SubTokenTable,
+  bard: bardJeton as unknown as SubTokenTable,
+  cleric: clericJeton as unknown as SubTokenTable,
+  druid: druidJeton as unknown as SubTokenTable,
+  fighter: fighterJeton as unknown as SubTokenTable,
+  monk: monkJeton as unknown as SubTokenTable,
+  paladin: paladinJeton as unknown as SubTokenTable,
+  ranger: rangerJeton as unknown as SubTokenTable,
+  rogue: rogueJeton as unknown as SubTokenTable,
 };
 /**
  * Alt sınıf jetonu (`<ırk>-<erkek|kadin>-<sınıf>-<hücre>.webp`): sınıfın tablosu varsa, ırk×cinsiyet jetonu üretilmişse, alt sınıf
@@ -109,7 +127,7 @@ export function subclassTokenFile(classId: string, raceId: string, gender: 'erke
   const T = SUB_TOKENS[classId];
   if (!T || !subclassId) return undefined;
   const cell = T.altSiniflar[subclassId];
-  const why = !cell ? 'alt sınıf tabloda yok' : !T.irklar[raceId]?.includes(gender) ? 'ırk/cinsiyet jetonu yok' : tinted && !T.maskeHazir ? 'ten/soy maskesi yok' : '';
+  const why = !cell ? 'alt sınıf tabloda yok' : T.cinsiyet?.[subclassId] && T.cinsiyet[subclassId] !== gender ? 'alt sınıf jetonu yalnız ' + T.cinsiyet[subclassId] + ' için' : !T.irklar[raceId]?.includes(gender) ? 'ırk/cinsiyet jetonu yok' : tinted && !T.maskeHazir ? 'ten/soy maskesi yok' : '';
   if (why) {
     const key = `${raceId}-${gender}-${subclassId}`;
     if (!subMissing.has(`${classId}:${key}`)) { subMissing.add(`${classId}:${key}`); console.warn(`${classId}-jeton eksik: ${key} (${why}); sınıf-genel jeton kullanılıyor.`); }

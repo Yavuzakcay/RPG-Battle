@@ -1,0 +1,55 @@
+{
+ "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-barbarian-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır.",
+ "sinif": "barbarian",
+ "maskeHazir": false,
+ "irklar": {
+  "human": [
+   "erkek",
+   "kadin"
+  ],
+  "elf": [
+   "erkek",
+   "kadin"
+  ],
+  "dwarf": [
+   "erkek",
+   "kadin"
+  ],
+  "halfling": [
+   "erkek",
+   "kadin"
+  ],
+  "gnome": [
+   "erkek",
+   "kadin"
+  ],
+  "orc": [
+   "erkek",
+   "kadin"
+  ],
+  "tiefling": [
+   "erkek",
+   "kadin"
+  ],
+  "goliath": [
+   "erkek",
+   "kadin"
+  ],
+  "celestial": [
+   "erkek",
+   "kadin"
+  ]
+ },
+ "altSiniflar": {
+  "varis-yolu": "ID1",
+  "element-yolu": "ID2",
+  "kaos-yolu": "ID3",
+  "saman-yolu": "ID4",
+  "ilkelligin-yolu": "ID5",
+  "vahset-yolu": "ID6",
+  "heybet-yolu": "ID7",
+  "path-of-the-berserker": "ID8",
+  "imza_geride_kalan": "ID9"
+ },
+ "cozulemeyen": []
+}

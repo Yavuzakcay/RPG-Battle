@@ -84,3 +84,51 @@ describe('BAGLA-3 Warlock ve Sorcerer', () => {
     expect(classOfCombatant({ avatar: { src: 'characters/orc-erkek-sorcerer-SC-3.webp' } } as never)).toBe('sorcerer');
   });
 });
+
+describe('TOPLU-KESIM: 9 sınıf bağlaması', () => {
+  const NINE = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue'] as const;
+  const tabs = import.meta.glob('../../data/{barbarian,bard,cleric,druid,fighter,monk,paladin,ranger,rogue}-jeton.json', { eager: true, import: 'default' }) as Record<string, { sinif: string; irklar: Record<string, string[]>; altSiniflar: Record<string, string>; cinsiyet?: Record<string, string> }>;
+  const sira = (import.meta.glob('../../data/jeton-hucre-sirasi.json', { eager: true, import: 'default' }) as Record<string, { siniflar: Record<string, Record<string, string>> }>)['../../data/jeton-hucre-sirasi.json']!;
+  const files = new Set(Object.keys(import.meta.glob('../../public/characters/*-ID*.webp', { query: '?url', import: 'default' })).map((p) => p.split('/').pop()));
+  const byClass = (c: string) => Object.values(tabs).find((t) => t.sinif === c)!;
+  const known = new Set<string>([...(imza as unknown as { altSiniflar: Array<{ id: string }> }).altSiniflar.map((x) => x.id), 'path-of-the-berserker', 'college-of-lore', 'life-domain', 'circle-of-the-land', 'warrior-of-the-open-hand', 'oath-of-devotion', 'hunter', 'thief', 'karadul-cemberi']);
+  it('her sınıf: hücreler sıradaki adlara uyar, kimlikler gerçek (imza/fikstür/Karadul/paket listesi), jeton dosyaları var', async () => {
+    const liste = (await import('../../icerik-liste.txt?raw')).default as string;
+    for (const l of liste.split('\n')) { const m = l.split('|').map((x) => x.trim()); if (m[2]) known.add(m[2]); }
+    for (const c of NINE) {
+      const t = byClass(c); const cells = Object.values(t.altSiniflar);
+      const max = Object.keys(sira.siniflar[c]!).length;
+      for (const [id, cell] of Object.entries(t.altSiniflar)) {
+        expect(known.has(id), `${c}:${id}`).toBe(true);
+        expect(Number(cell.slice(2)) >= 1 && Number(cell.slice(2)) <= max, `${c}:${cell}`).toBe(true);
+      }
+      expect(Object.keys(t.irklar)).not.toContain('dragonborn');
+      for (const [race, gens] of Object.entries(t.irklar)) for (const g of gens) for (const cell of new Set(cells)) {
+        const n = Number(cell.slice(2));
+        const blank = (c === 'druid' && g === 'erkek' && n === 8) || (c === 'fighter' && g === 'kadin' && n === 11);
+        if (!blank) expect(files.has(`${race}-${g}-${c}-${cell}.webp`), `${race}-${g}-${c}-${cell}`).toBe(true);
+      }
+    }
+  });
+  it('özel durumlar: Birlik/Barış aynı jeton, Pehlivan dev hali bağlı değil, Şampiyon genel, cinsiyet kuralları', () => {
+    const w = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'imza_birlik', false)).toBe('dwarf-erkek-cleric-ID9.webp');
+    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'baris-alani', false)).toBe('dwarf-erkek-cleric-ID9.webp');
+    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'pehlivan', false)).toBe('dwarf-erkek-fighter-ID4.webp');
+    expect(Object.values(byClass('fighter').altSiniflar)).not.toContain('ID5');
+    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'champion', false)).toBeUndefined();
+    expect(sheetAvatar(sheet({ classId: 'fighter', subclassId: 'champion' })).src).toBe('characters/dwarf-male-fighter.webp');
+    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'imza_imparator', false)).toBe('dwarf-erkek-fighter-ID11.webp');
+    expect(subclassTokenFile('fighter', 'dwarf', 'kadin', 'imza_imparator', false)).toBeUndefined();
+    expect(subclassTokenFile('druid', 'dwarf', 'kadin', 'karadul-cemberi', false)).toBe('dwarf-kadin-druid-ID8.webp');
+    expect(subclassTokenFile('druid', 'dwarf', 'erkek', 'karadul-cemberi', false)).toBeUndefined();
+    expect(subclassTokenFile('monk', 'dragonborn', 'erkek', 'astral-disiplini', false)).toBeUndefined();
+    expect(subclassTokenFile('rogue', 'human', 'erkek', 'thief', true)).toBeUndefined(); // boyalı: maske yok
+    expect(w.mock.calls.some((c) => String(c[0]).startsWith('monk-jeton eksik: dragonborn-erkek-astral-disiplini'))).toBe(true);
+    w.mockRestore();
+    expect(sheetAvatar(sheet({ classId: 'rogue', subclassId: 'dedektif' })).src).toBe('characters/dwarf-male-rogue.webp'.replace('male-rogue', 'erkek-rogue-ID2'));
+  });
+  it('zar teması: ID jetonundan sınıf', () => {
+    expect(classOfCombatant({ avatar: { src: 'characters/elf-kadin-paladin-ID7.webp' } } as never)).toBe('paladin');
+  });
+});

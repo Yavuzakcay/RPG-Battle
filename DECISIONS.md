@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-13 — BAGLA-9: 9 sınıfın alt sınıf jetonları oyuna bağlandı (yalnız görünüm; kural/kayıt sürümü değişmedi)
+
+- Warlock/Sorcerer ile aynı mekanizma, veriyle genişletildi: `data/<sınıf>-jeton.json` (barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue), `subclassTokenFile` (isteğe bağlı `cinsiyet` kısıtı eklendi: druid `karadul-cemberi` kadın, fighter `imza_imparator` erkek), zar teması sınıf tespiti `ID<n>` adlarını tanır. Kimlikler `icerik-liste.txt`, fikstür, `data/imza.json`, `data/karadul.json`'dan; uydurma kimlik yok, eşleşemeyen hücre yok. Tablo: `docs/sabah/bagla-9-sinif.md`.
+- Özel: Cleric `imza_birlik` ve eski `baris-alani` aynı jeton (ID9; Barış hücresi 3 ayrı kimlik almadı); Fighter hücre 5 (Pehlivan dev hali) bağlı değil, dosyası duruyor; Şampiyon sınıf-genel jeton. Boyası gereken karakter ve Dragonborn sınıf-genel jetonda (maske görevi sonra; Dragonborn `console.warn`). Seviye < 3 (gariban) bu görevde yok.
+- Doğrulama: karakter listesinde 9 örnek karakterle jetonların geldiği ekran görüntüsü alındı (`docs/sabah/bagla-9-sinif.png`; buluttaki "içerik eksik" notları `icerik/` olmamasından).
+
 ## 2026-12-12 — TOPLU-KESIM: 11 sınıfın alt sınıf jetonları (yalnız varlık + Warlock/Sorcerer bağlaması; kural/kayıt sürümü değişmedi)
 
 - `scripts/toplu-kesim.py` (ham sayfalar `origin/wip/karakter-ham` → `assets-ham/karakter/`, depoya girmez): warlock, sorcerer, barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue = 1890 jeton → `public/characters/<irk>-<erkek|kadin>-<sınıf>-<kod><n>.webp` (+ `kucuk/` 96 px). Kod: Warlock `WL-n`, Sorcerer `SC-n` (BAGLA-3 şablonu değişmedi), diğer 9 sınıf `ID<n>` (depoda önceki adlandırma yoktu). Dragonborn sayfası yok (warlock dragonborn ham sayfaları atlandı, 2 sayfa); wizard ve sınıf-genel jetonlara dokunulmadı. Hücre sırası `data/jeton-hucre-sirasi.json` (sınıf → n → TR ad; gerçek kimlikler sonra doldurulur).
