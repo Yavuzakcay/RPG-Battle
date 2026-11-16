@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-26 — KQ6-12: Celestial hale uygulandı (önceden hesaplı halesiz varyant)
+
+- Onaylı hale-v2 yöntemi 264 Celestial jetona uygulandı (`scripts/hale-uygula.py`, kaynak = bb36b76'daki jetonlar; sonuç `docs/sabah/hale-sonrasi.png`, ELLE `docs/sabah/hale-elle.md`). Gece Gözyaşı / Kırık Kanat için `public/characters/halesiz/<ad>.webp` (+ `kucuk/`): halka şekline ve baş korumasına göre silindi; baş kutusu alfa>0 sayısı aynı ve kalıntı ≤ 40 px şartı sağlanmayan jeton işlenmedi. Çalışma anında kırpma kalktı (`clipPath`/`halo-hidden`): `src/ui/haloVariant.ts` `haloFreeSrc` rozette (karakter listesi, küçük kopya dahil) ve savaş jetonunda aynı yoldan varyantı seçer, asıl jeton yedekte; maliyet yok.
+- Asıl jetona yalnız kesin "hale yok" jetonlarda hale çizilir (orijinal piksellere dokunmadan, yalnız alfa=0 yerlere): kararlar `data/hale-elle.json` (Barbarian ID1, Bard ID5: çiz; Barbarian ID2/ID4: dokunma; Paladin ID8, Warlock WL-3: Gemini düzeltmesi bekliyor, hale şimdilik görünür). Kesik halede asıl jetona dokunulmaz (kullanıcı kuralı: yalnız "yok"ta çiz). Otomatik tespit çift hale riskinde dar: başın üstünde herhangi bir opak piksel varsa "belirsiz" sayılır, çizilmez, `bekleyen` listesine "karar bekliyor" yazılır (elle `ciz` kararı eklenebilir). Üretici yeniden çalıştırılabilir (`--once <git sürümü>`).
+- Testler: `src/data/haleVaryant.test.ts` (264 jeton: halesiz dosya ya da bekleyen), `src/ui/as1cGorunum.test.tsx` (zincir, küçük kopya).
+
 ## 2026-12-25 — KQ6-11: Göle ateş/yıldırım: buhar görünmüyordu, zincir iz bırakmıyordu
 
 - **Gerçek tarayıcıda (Playwright, hızlı savaş, Mielikki Gölü, yeni savaş = sürüm 82):** Fire Bolt sığ (`n`) ve derin (`w`) göl altıgenine atılınca motor doğru çalışıyordu: `map.zones`'ta tek altıgenlik `steam` yüzeyi, günlükte "Fire Bolt: su buharlaştı", "Mira: Buhar alanı oluştu", Keşif Defteri notu, altıgende `yuzey-buhar` sprite'ı. Yani kapı (hexResolver, sürüm ≥ 26), `fire` etiketi, göl zemin etiketi ve tablo satırı eksik değildi. **Asıl neden çizim:** `data/yuzey-gorunum.json` `buhar` dolgusu %34, doku %40, gri-beyaz renk; turkuaz gölün üstünde okunmuyordu (artı 1 tur sürer, kamera atıştan sonra kayar). **Düzeltme:** dolgu %72, doku %85, beyaz renk ve kenar (yalnız görünüm).

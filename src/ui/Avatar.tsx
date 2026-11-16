@@ -3,8 +3,9 @@
  * tutucu). Görselin varlığı tarayıcıda yüklenerek anlaşılır ve önbelleğe alınır; böylece
  * dosya adı kuralına uyan bir görsel eklenince kod değişmeden görünür.
  */
-import { useEffect, useId, useState, type CSSProperties } from 'react';
-import { FOOT_FRAC, HALO_CLIP_PCT, lineageLook, wingBox, type WingLayerSpec } from './lineageLook';
+import { useEffect, useState, type CSSProperties } from 'react';
+import { FOOT_FRAC, lineageLook, wingBox, type WingLayerSpec } from './lineageLook';
+import { haloFreeSrc } from './haloVariant';
 import { useWingAnim } from './wingAnim';
 import { WingFilterDefs } from './WingFilter';
 import { wingFilterId } from './lineageLook';
@@ -68,18 +69,23 @@ export function useImageChain(srcs: string[]): string | null {
   return src;
 }
 
-const chainOf = (a: AvatarData, asleep = false) => [...(asleep && a.asleepSrc ? [a.asleepSrc] : []), a.src, ...(a.fallbacks ?? [])];
+/** KQ6-12: hale gizli uyanışta (Gece Gözyaşı, Kırık Kanat) Celestial jetonun halesiz varyantı (varsa), asıl jeton yedekte. */
+const freeOf = (a: AvatarData): string | null => (a.look && lineageLook(a.look).hideHalo ? haloFreeSrc(a.src) : null);
+const chainOf = (a: AvatarData, asleep = false) => [...(asleep && a.asleepSrc ? [a.asleepSrc] : []), ...(freeOf(a) ? [freeOf(a) as string] : []), a.src, ...(a.fallbacks ?? [])];
 
 /** Küçük rozetlerde karakter jetonunun 96 px kopyası (`public/characters/kucuk/`, `npm run karakter-kucuk`). */
 export function thumbOf(src: string): string | null {
+  const h = /^characters\/halesiz\/([^/]+\.webp)$/.exec(src);
+  if (h) return `characters/halesiz/kucuk/${h[1]}`;
   const m = /^characters\/([^/]+\.webp)$/.exec(src);
   return m ? `characters/kucuk/${m[1]}` : null;
 }
 
 /** Rozetin yedek zinciri: küçükse önce küçük kopya, sonra asıl görsel ve eski yollar. */
 export function badgeChain(a: AvatarData, size: number): string[] {
-  const thumb = size <= SMALL ? thumbOf(a.src) : null;
-  return [...(thumb ? [thumb] : []), ...chainOf(a)];
+  const thumb = size <= SMALL ? thumbOf(freeOf(a) ?? a.src) : null;
+  const thumb0 = size <= SMALL && freeOf(a) ? thumbOf(a.src) : null;
+  return [...(thumb ? [thumb] : []), ...chainOf(a).slice(0, freeOf(a) ? 1 : 0), ...(thumb0 ? [thumb0] : []), ...chainOf(a).slice(freeOf(a) ? 1 : 0)];
 }
 
 /** Bu boya kadar (CSS px) rozet küçük kopyayı kullanır (96 px = 2× yoğunluk). */
@@ -174,7 +180,6 @@ function WingImage(props: { wing: WingLayerSpec; wb: { x: number; y: number; wid
 export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; look?: AvatarData['look']; flying?: boolean; /** Karakter ekranları: uçma yeteneği olan karakter havada olmasa da kanatlı. */ ability?: boolean }) {
   const { cx, cy, w } = props;
   const lk = props.look ? lineageLook(props.look, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) }) : null;
-  const clipId = useId();
   const by = cy - w / 2 + w * FOOT_FRAC; // ayak çizgisi (ölçek demir noktası)
   const shape = lk && (lk.scaleX !== 1 || lk.scaleY !== 1) ? `translate(${cx} ${by}) scale(${lk.scaleX} ${lk.scaleY}) translate(${-cx} ${-by})` : undefined;
   const wing = lk?.wing;
@@ -182,8 +187,7 @@ export function TokenFigure(props: { href: string; cx: number; cy: number; w: nu
   return (
     <>
       {wing && wb && <WingImage wing={wing} wb={wb} flip={props.flip} cx={cx} />}
-      {lk?.hideHalo && <clipPath id={clipId}><rect x={cx - w / 2} y={cy - w / 2 + (w * HALO_CLIP_PCT) / 100} width={w} height={w} /></clipPath>}
-      <g transform={shape} clipPath={lk?.hideHalo ? `url(#${clipId})` : undefined}>
+      <g transform={shape}>
         <image href={props.href} x={cx - w / 2} y={cy - w / 2} width={w} height={w} preserveAspectRatio="xMidYMid slice"
           transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} style={{ ...(lk?.filter ? { filter: lk.filter } : {}), ...(shape ? { imageRendering: 'pixelated' as const } : {}) }} />
       </g>

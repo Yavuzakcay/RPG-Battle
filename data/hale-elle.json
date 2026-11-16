@@ -1,0 +1,335 @@
+{
+ "_not": "KQ6-12: elle hale kararları (anahtar = <sınıf>-<kod>, iki cinsiyete de uygulanır). karar: ciz (hale yok → kodla çiz; tespit 'tam' derse çizilmez), dokunma (sanattaki hale kalır, Gece Gözyaşı halesiz varyantı üretilmez), gemini (Gece Gözyaşı halesiz varyantı Gemini düzeltmesi bekliyor; hale şimdilik görünür). 'bekleyen' betik tarafından yazılır (karar bekliyor).",
+ "kararlar": {
+  "barbarian-ID1": {
+   "karar": "ciz",
+   "not": "kasklı jeton, sanatta hale yok"
+  },
+  "bard-ID5": {
+   "karar": "ciz",
+   "not": "şapkalı jeton, sanatta hale yok"
+  },
+  "barbarian-ID2": {
+   "karar": "dokunma",
+   "not": "hale sanatta var"
+  },
+  "barbarian-ID4": {
+   "karar": "dokunma",
+   "not": "hale sanatta var"
+  },
+  "paladin-ID8": {
+   "karar": "gemini",
+   "not": "Gemini düzeltmesi bekliyor (hale kaska değiyor)"
+  },
+  "warlock-WL-3": {
+   "karar": "gemini",
+   "not": "Gemini düzeltmesi bekliyor (hale başlığa değiyor)"
+  }
+ },
+ "bekleyen": {
+  "celestial-erkek-barbarian-ID2": {
+   "neden": "Gece Gözyaşı halesiz varyantı üretilemedi (hale sanatta var, silme güvenli değil)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-barbarian-ID3": {
+   "neden": "halka başa değiyor: 206 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-barbarian-ID4": {
+   "neden": "Gece Gözyaşı halesiz varyantı üretilemedi (hale sanatta var, silme güvenli değil)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-barbarian-ID7": {
+   "neden": "halka başa değiyor: 45 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-barbarian-ID8": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-barbarian-ID9": {
+   "neden": "halka başa değiyor: 42 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-bard-ID3": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-bard-ID9": {
+   "neden": "halka başa değiyor: 161 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-cleric-ID7": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-cleric-ID9": {
+   "neden": "halka başa değiyor: 172 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-fighter-ID10": {
+   "neden": "halka başa değiyor: 101 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-fighter-ID11": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-fighter-ID5": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-fighter-ID6": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-fighter-ID8": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-monk-ID1": {
+   "neden": "halka başa değiyor: 63 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-monk-ID2": {
+   "neden": "halka başa değiyor: 49 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-monk-ID6": {
+   "neden": "halka başa değiyor: 243 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-monk-ID9": {
+   "neden": "halka başa değiyor: 143 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-paladin-ID1": {
+   "neden": "halka başa değiyor: 56 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-paladin-ID10": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-paladin-ID2": {
+   "neden": "halka başa değiyor: 65 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-paladin-ID3": {
+   "neden": "halka başa değiyor: 43 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-paladin-ID6": {
+   "neden": "halka başa değiyor: 57 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-paladin-ID7": {
+   "neden": "halka başa değiyor: 59 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-paladin-ID8": {
+   "neden": "Gemini düzeltmesi bekliyor (hale kaska değiyor)",
+   "durum": "Gemini düzeltmesi bekliyor"
+  },
+  "celestial-erkek-ranger-ID1": {
+   "neden": "halka başa değiyor: 64 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-ranger-ID8": {
+   "neden": "halka başa değiyor: 42 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-rogue-ID3": {
+   "neden": "halka başa değiyor: 44 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-rogue-ID5": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-rogue-ID6": {
+   "neden": "halka başa değiyor: 51 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-rogue-ID7": {
+   "neden": "halka başa değiyor: 95 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-sorcerer-SC-5": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-sorcerer-SC-9": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-warlock-WL-10": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-erkek-warlock-WL-3": {
+   "neden": "Gemini düzeltmesi bekliyor (hale başlığa değiyor)",
+   "durum": "Gemini düzeltmesi bekliyor"
+  },
+  "celestial-erkek-warlock-WL-8": {
+   "neden": "halka başa değiyor: 89 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-female-bard": {
+   "neden": "halka başa değiyor: 49 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-female-wizard": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-barbarian-ID1": {
+   "neden": "halka başa değiyor: 185 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-barbarian-ID2": {
+   "neden": "Gece Gözyaşı halesiz varyantı üretilemedi (hale sanatta var, silme güvenli değil)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-barbarian-ID4": {
+   "neden": "Gece Gözyaşı halesiz varyantı üretilemedi (hale sanatta var, silme güvenli değil)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-barbarian-ID7": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-barbarian-ID8": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-bard-ID3": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-bard-ID7": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-bard-ID9": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-cleric-ID7": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID1": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID10": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID2": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID3": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID4": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID5": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID6": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID7": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID8": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-fighter-ID9": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-monk-ID10": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-monk-ID5": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-monk-ID6": {
+   "neden": "halka başa değiyor: 292 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-paladin-ID10": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-paladin-ID2": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-paladin-ID5": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-paladin-ID7": {
+   "neden": "halka başa değiyor: 41 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-paladin-ID8": {
+   "neden": "Gemini düzeltmesi bekliyor (hale kaska değiyor)",
+   "durum": "Gemini düzeltmesi bekliyor"
+  },
+  "celestial-kadin-rogue-ID10": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-rogue-ID8": {
+   "neden": "halka başa değiyor: 84 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-sorcerer-SC-5": {
+   "neden": "halka başa değiyor: 307 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-sorcerer-SC-9": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-warlock-WL-2": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-warlock-WL-3": {
+   "neden": "Gemini düzeltmesi bekliyor (hale başlığa değiyor)",
+   "durum": "Gemini düzeltmesi bekliyor"
+  },
+  "celestial-kadin-warlock-WL-4": {
+   "neden": "halka başa değiyor: 76 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-kadin-warlock-WL-5": {
+   "neden": "halka başa değiyor: 113 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-male-bard": {
+   "neden": "halka başa değiyor: 49 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor"
+  },
+  "celestial-male-wizard": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
+   "durum": "karar bekliyor"
+  }
+ }
+}

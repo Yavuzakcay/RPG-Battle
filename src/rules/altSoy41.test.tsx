@@ -246,7 +246,7 @@ describe('görünüm verisi', () => {
     const w = renderToStaticMarkup(<LookFrame sheet={{ raceId: 'tiefling', lineageId: 'winged' }} size={44}><i /></LookFrame>);
     expect(w).not.toContain('look-wing');
     const h = renderToStaticMarkup(<LookFrame sheet={{ raceId: 'celestial', celestialAwakening: 'gece-gozyasi', level: 3 }} size={44}><i /></LookFrame>);
-    expect(h).toContain('halo-hidden');
+    expect(h).not.toContain('halo-hidden'); // KQ6-12: kırpma sınıfı kalktı (halesiz varyant)
   });
 });
 

@@ -24,15 +24,21 @@ def gold_loose(a):
     s = d / (mx + 1e-9)
     return (a[..., 3] > 20) & (h >= 30) & (h <= 95) & (s > 0.12) & (mx > 0.5)
 
+def head_top_ref(a):
+    """Baş/şapka/kask üst kenarı: koyu kontur (opak, parlaklık < 0.35) ≥ 6 px olan ilk satır; halede koyu kontur yoktur."""
+    dark = (a[..., 3] > 200) & (a[..., :3].max(axis=2) < 90)
+    return next((y for y in range(N) if int(dark[y].sum()) >= 6), None)
+
 def find_hole_ring(a):
     """Kapalı halka: M = alfa>20 maskesinde içi boş (delik) ince geniş elips. → (delik maskesi, kanvasa değiyor mu) ya da None."""
-    M = a[..., 3] > 20
+    M = a[..., 3] > 100; tref = head_top_ref(a)      # delik: opak halkanın içi (yumuşak parıltı deliği doldurmasın)
     holes = ndi.binary_fill_holes(M) & ~M
     lab, _ = ndi.label(holes); best = None
     for i, sl in enumerate(ndi.find_objects(lab), 1):
         m = lab == i; area = int(m.sum())
         w = sl[1].stop - sl[1].start; h = sl[0].stop - sl[0].start
-        if area < 30 or w < 20 or h > 18 or w / max(h, 1) < 2.2 or (sl[0].start + sl[0].stop) / 2 > 90: continue
+        cym = (sl[0].start + sl[0].stop) / 2
+        if area < 30 or w < 20 or h > 18 or w / max(h, 1) < 2.2 or cym > 90 or (tref is not None and cym > tref + 2): continue   # halka başın ÜSTÜNDE (kask/şapka içi delik değil)
         if best is None or sl[0].start < best[1][0].start: best = (m, sl)
     return best
 
@@ -49,16 +55,18 @@ def analyse(a):
     top = next((y for y in range(N) if ht.runs(opened[y]) >= 18), int(np.where(opened.any(axis=1))[0][0]))
     opened = opened & (np.arange(N)[:, None] >= top - 2)               # baş satırının üstündeki kalın halka uçları kütle sayılıp korunmasın
     cols = np.where(opened[top:top + HEAD_H].any(axis=0))[0]
-    box = (int(cols.min()), max(0, top - 2), int(cols.max()) + 1, min(N, top + HEAD_H))
+    box = (int(cols.min()), top, int(cols.max()) + 1, min(N, top + HEAD_H))
     out.update(top=top, box=box, cx=int(round(np.where(opened[top:top + 12])[1].mean())))
     protect = dil(opened, 3); protect[box[3]:] = True
+    protect1 = dil(opened, 1); protect1[box[3]:] = True
+    pm = np.where(a[..., 3] < 180, protect1, protect)                    # yumuşak (alfa<180) halka pikselleri başa 1 px yaklaşabilir, opaklar 3 px
     bright = M & (mx > 0.45) & ~((a[..., 3] > 200) & (mx < 0.45))
     if hole:
         m, sl = hole; ys, xs = np.where(dil(m, 6) & M)
         touch = bool(ys.min() <= 0 or xs.min() <= 0 or xs.max() >= N - 1) if len(ys) else True
         ys0, xs0 = np.where(band & M)
         reg = np.zeros(solid.shape, bool); reg[max(0, ys0.min() - 10):ys0.max() + 11, max(0, xs0.min() - 14):xs0.max() + 15] = True
-        ring = reg & (a[..., 3] > 0) & ~protect & (bright | (a[..., 3] < 180)) & (np.arange(N)[:, None] <= top - 3)
+        ring = reg & (a[..., 3] > 0) & ~pm & (bright | (a[..., 3] < 180)) & (np.arange(N)[:, None] <= top - 1)
         w = sl[1].stop - sl[1].start; h = sl[0].stop - sl[0].start
         out.update(durum='kesik' if touch else 'tam', rm=ring, comp=m, perim=np.pi * np.sqrt(((w / 2 + 3) ** 2 + (h / 2 + 3) ** 2) / 2) * 2)
         return out
@@ -76,9 +84,37 @@ def analyse(a):
     if comp.sum() < 12: return out
     ys, xs = np.where(comp)                                           # yayın uç parçaları da halkadan: bbox'u genişleterek (başın üstü, koruma dışı)
     reg = np.zeros(solid.shape, bool); reg[max(0, ys.min() - 8):ys.max() + 9, max(0, xs.min() - 24):xs.max() + 25] = True
-    rm = reg & (a[..., 3] > 0) & ~protect & (bright | (a[..., 3] < 180)) & (np.arange(N)[:, None] <= top - 3)
-    out.update(durum='kesik', rm=rm, comp=comp, perim=perim)
+    rm = reg & (a[..., 3] > 0) & ~pm & (bright | (a[..., 3] < 180)) & (np.arange(N)[:, None] <= top - 1)
+    # Görsel kapanış: halka elipsinin açısal kapsaması ≥ %60 ve kanvas kenarına değmiyor → tam (alt yay saçın/kaskın arkasında kalmış olabilir)
+    pts = rm | comp; yy, xx = np.where(pts); frac = 0.0; touch = True
+    if len(yy):
+        y0, y1, x0, x1 = yy.min(), yy.max(), xx.min(), xx.max(); rx, ry = (x1 - x0) / 2, (y1 - y0) / 2
+        touch = bool(y0 <= 0 or x0 <= 0 or x1 >= N - 1)
+        if rx >= 8:
+            cxe, cye = (x0 + x1) / 2, (y0 + y1) / 2; dd = dil(pts, 2); hits = 0
+            for t in range(0, 360, 5):
+                px = int(round(cxe + rx * np.cos(np.radians(t)))); py = int(round(cye + max(ry, 1) * np.sin(np.radians(t))))
+                hits += int(0 <= px < N and 0 <= py < N and dd[py, px])
+            frac = hits / 72
+    out.update(durum='tam' if frac >= 0.6 and not touch else 'kesik', rm=rm, comp=comp, perim=perim, kapsama=round(frac, 2))
     return out
+
+def halo_candidates(a):
+    """Üst bölgede (satır < 70) parlak, ince, yatay uzun bileşen var mı: varsa hale olabilir (çift hale riski → 'yok' sayılmaz)."""
+    al = a[..., 3] > 20; mx = a[..., :3].max(axis=2) / 255.0
+    thin = al & ~ndi.binary_opening(a[..., 3] > 60, structure=disk(2)) & (mx > 0.55)
+    thin[70:] = False
+    lab, _ = ndi.label(dil(thin, 1))
+    for i, sl in enumerate(ndi.find_objects(lab), 1):
+        w = sl[1].stop - sl[1].start; h = sl[0].stop - sl[0].start
+        if w >= 18 and w / max(h, 1) >= 1.6 and int((thin & (lab == i)).sum()) >= 15: return True
+    return False
+
+def above_empty(a, d):
+    """Kesin 'yok': baş kütlesinin (açılmış opak kütle) üst kenarının üstünde, başa ±50 px içinde HİÇ opak piksel yok. Hale, tüy, hançer, parıltı: varsa belirsiz."""
+    if d['top'] is None: return False
+    x0, x1 = max(0, d['cx'] - 50), min(N, d['cx'] + 50); t = d['top']
+    return not bool((a[:max(0, t - 1), x0:x1, 3] > 30).any())
 
 def stray_above(a, d):
     """Başın üstünde, koruma dışında halka olmayan parlak artık var mı (çift hale riski → belirsiz)."""
@@ -93,13 +129,13 @@ def erase(a):
     if d['box'] is None: info.update(box_once=0, box_sonra=0, kalan=0); return a, info, d
     x0, y0, x1, y1 = d['box']; once = int((a[y0:y1, x0:x1, 3] > 0).sum())
     if d['durum'] == 'yok':
-        if stray_above(a, d): info['durum'] = 'belirsiz'; info['iptal'] = 'başın üstünde halka olabilecek artık var (çift hale riski)'
+        if halo_candidates(a) or stray_above(a, d) or not above_empty(a, d): info['durum'] = 'belirsiz'; info['iptal'] = 'başın üstünde halka olabilecek artık var (çift hale riski)'
         info.update(box_once=once, box_sonra=once, kalan=0); return a, info, d
     b = a.copy(); b[d['rm'], 3] = 0; sonra = int((b[y0:y1, x0:x1, 3] > 0).sum())
     expected = d['perim'] * 6
     if sonra != once: info['iptal'] = 'baş kutusu piksel sayısı değişti'
     elif info['silinen'] > 2 * expected + 30: info['iptal'] = f'silinen {info["silinen"]} >> beklenen {int(expected)}'
-    kalan = int((dil(d['comp'], 2) & (a[..., 3] > 0) & ~d['rm']).sum())
+    kalan = int((dil(d['comp'], 2) & (a[..., 3] >= 24) & ~d['rm']).sum())
     if not info['iptal'] and kalan > 40: info['iptal'] = f'halka başa değiyor: {kalan} px silinemedi (kalıntı)'
     info.update(box_once=once, box_sonra=sonra, kalan=kalan)
     return (a if info['iptal'] else b), info, d

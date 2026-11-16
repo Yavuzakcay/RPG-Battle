@@ -46,8 +46,8 @@ describe('savaş jetonu görünümü (Avatar.look, tek çözücü)', () => {
     expect(draw({ raceId: 'dwarf', lineageId: 'knoll' })).toContain('scale(1.04 1)');
     // Boyasız orijinal olmayan oran yok: Wood-elf, oransız.
     expect(draw({ raceId: 'elf', lineageId: 'wood-elf' })).not.toContain('scale(');
-    for (const aw of ['kirik-kanat', 'gece-gozyasi']) expect(draw({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: aw })).toContain('<clipPath');
-    expect(draw({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'parlayan-ruh' })).not.toContain('<clipPath');
+    // KQ6-12: çalışma anında kırpma yok; hale gizli uyanışlar `hideHalo` bayrağını korur, görsel önceden hesaplı halesiz varyanttan gelir.
+    for (const aw of ['kirik-kanat', 'gece-gozyasi', 'parlayan-ruh']) expect(draw({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: aw })).not.toContain('<clipPath');
     expect(draw({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'gece-gozyasi' })).toContain('brightness');
     // Görsel konumu/boyutu oransız soyla aynı.
     const img = (x: string) => /<image[^>]*x="([^"]+)"[^>]*y="([^"]+)"[^>]*width="([^"]+)"/.exec(x)?.slice(1).join(',');
@@ -326,5 +326,21 @@ describe('Human ten maskesi: yalnız ten boyanır (3 jeton × 3 ton)', () => {
     let cov = 0, v0 = 0, v1 = 0;
     for (let i = 0; i < n; i++) { cov += (L0[i]! - m0) * (L1[i]! - m1); v0 += (L0[i]! - m0) ** 2; v1 += (L1[i]! - m1) ** 2; }
     expect(cov / Math.sqrt(v0 * v1)).toBeGreaterThan(0.95);
+  });
+});
+
+describe('KQ6-12: halesiz Celestial jeton varyantı', () => {
+  it('hideHalo iken halesiz varyant (varsa) zincirin başında; hale gizli değilken ve bekleyen jetonda asıl jeton; küçük kopya halesiz/kucuk', async () => {
+    const { badgeChain, thumbOf } = await import('./Avatar');
+    const { haloFreeSrc } = await import('./haloVariant');
+    const base = sheetAvatar(sheet({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'gece-gozyasi', classId: 'bard', gender: 'erkek' }));
+    expect(base.src).toMatch(/^characters\/celestial-/);
+    const free = haloFreeSrc(base.src);
+    if (free) { expect(badgeChain(base, 96)[0]).toBe(free); expect(thumbOf(free)).toBe(free.replace('halesiz/', 'halesiz/kucuk/')); expect(badgeChain(base, 40)[0]).toBe(thumbOf(free)); }
+    const pr = sheetAvatar(sheet({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'parlayan-ruh', classId: 'bard', gender: 'erkek' }));
+    expect(badgeChain(pr, 96)).not.toContain(free ?? '__yok__');
+    // Elle karar bekleyen jetonda varyant üretilmez (hale görünür kalır).
+    expect(haloFreeSrc('characters/celestial-erkek-paladin-ID8.webp')).toBeNull();
+    expect(haloFreeSrc('characters/dwarf-erkek-bard-ID1.webp')).toBeNull();
   });
 });
