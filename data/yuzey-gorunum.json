@@ -8,7 +8,7 @@
     "buz": { "renk": "#9fd2e4", "kenar": "#eef8fb", "dolguOpak": 0.55, "kenarKalinlik": 2, "dokuOpak": 0.35, "anim": "yok" },
     "su": { "renk": "#4aa8d8", "kenar": "#cdeefa", "dolguOpak": 0.52, "kenarKalinlik": 2, "dokuOpak": 0.35, "anim": "nabiz" },
     "zehir": { "renk": "#9fb04a", "kenar": "#d6e48a", "dolguOpak": 0.42, "kenarKalinlik": 1.6, "dokuOpak": 0.4, "anim": "nabiz" },
-    "buhar": { "renk": "#d6dadc", "kenar": "#f4f6f7", "dolguOpak": 0.34, "kenarKalinlik": 1.4, "dokuOpak": 0.4, "anim": "nabiz" },
+    "buhar": { "renk": "#f1f4f5", "kenar": "#ffffff", "dolguOpak": 0.72, "kenarKalinlik": 2, "dokuOpak": 0.85, "anim": "nabiz" },
     "sis": { "renk": "#aebcbe", "kenar": "#e3ebec", "dolguOpak": 0.4, "kenarKalinlik": 1.4, "dokuOpak": 0.4, "anim": "nabiz" },
     "ag": { "renk": "#b8c2ad", "kenar": "#eef2e6", "dolguOpak": 0.3, "kenarKalinlik": 1.6, "dokuOpak": 0.5, "anim": "yok" }
   },

@@ -16,6 +16,7 @@
  * konsantrasyona bağlanır. Eski savaş (sürüm < 26) ya da anahtar kapalı: eski geçişler (`surfaces.ts`, `ignite.ts`,
  * `surfaceMix.ts`) aynen. Saf; `rng` enjekte; `dryRun` önizleme (yapay zekâ, K58 keşif defteri) aynı çözücüyü çalıştırır.
  */
+import { yuzmeOn } from './yuzmeSurum';
 import { touches } from './body';
 import table from '../../data/yuzey-etkilesimleri.json';
 import tags from '../../data/buyu-etiketleri.json';
@@ -189,7 +190,8 @@ function applyRow(s0: BattleState, row: InteractionRow, it: Extract<Incoming, { 
     const chain = waterChain(s, it.hexes);
     if (!chain.length) return [];
     const evs = burstEvents(s, chain, new Set(it.hitIds), it.dc, it.damage, it.dice ?? '1d8', 'lightning', it.actorId, `${it.label}: suda yıldırım`, rng, true);
-    if (evs.length) push([note(row, chain, it.actorId, it.label, done(chain)), ...evs]);
+    // KQ6-11 (sürüm 82): kurban olmasa da zincir günlüğe ve çizime yazılır (doğal gölde yıldırım hiçbir iz bırakmıyordu).
+    if (evs.length || yuzmeOn(s)) push([note(row, chain, it.actorId, it.label, done(chain)), ...evs]);
     return out;
   }
   if (row.b.su || row.b.zemin) {

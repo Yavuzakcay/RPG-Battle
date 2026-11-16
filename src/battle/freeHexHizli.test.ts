@@ -9,6 +9,7 @@ import { fireHexProblem, freeHexAnyOn } from './ignite';
 import { hexKey, type Offset } from '../rules/hex';
 import type { BattleState, Combatant } from './types';
 import { CURRENT_RULES } from './ruleVersion';
+import { surfaceStyle } from '../ui/sprites';
 
 function quick(mapId = 'orman-heykel-golu'): BattleState {
   const chars = demoCharacters();
@@ -70,5 +71,32 @@ describe('Hızlı savaşta hedefsiz altıgen (FH1 düzeltmesi)', () => {
     const s = quick(); const w = wizOf(s); const h = hexOf(s, '.', 'Guiding Bolt');
     const r = cast({ ...s, combatants: { ...s.combatants, [w.id]: { ...w, spellNames: [...w.spellNames, 'Guiding Bolt'] } } }, 'Guiding Bolt', h); if (!r.ok) throw new Error(r.error);
     expect((wizOf(r.state).spellSlots?.[0] ?? 0)).toBe((w.spellSlots?.[0] ?? 0) - 1);
+  });
+  it('KQ6-11 gerçek hızlı savaş haritasında: Fire Bolt sığ (n) ve derin (w) göle: buhar yüzeyi + günlük notu; yüzey çizimi okunur (dolgu ≥ 0,6)', () => {
+    for (const tile of ['n', 'w']) {
+      const s = quick(); const h = hexOf(s, tile);
+      const r = cast(s, 'Fire Bolt', h); if (!r.ok) throw new Error(r.error);
+      const z = (r.state.map?.zones ?? []).filter((x) => x.surface === 'steam');
+      expect(z.flatMap((x) => x.hexes).map(hexKey), tile).toEqual([hexKey(h)]);
+      expect(r.events.some((e) => e.type === 'surface_reacted' && /buhar|steam/i.test(JSON.stringify(e))), tile).toBe(true);
+    }
+    expect(surfaceStyle('buhar').dolguOpak).toBeGreaterThanOrEqual(0.6);
+    expect(surfaceStyle('buhar').dokuOpak).toBeGreaterThanOrEqual(0.6);
+  });
+  it('KQ6-11 yıldırım göle: bağlı su altıgenlerinde zincir (≤ 7) günlüğe yazılır, kurban olmasa da; sürüm 81 eski davranış', () => {
+    const s0 = quick(); const w = wizOf(s0);
+    const s = { ...s0, combatants: { ...s0.combatants, [w.id]: { ...w, spellNames: [...w.spellNames, 'Lightning Bolt'] } } } as BattleState;
+    const tiles = s.map?.tiles ?? []; let found = false;
+    for (let r = 0; r < tiles.length && !found; r++) for (let c = 0; c < (tiles[0]?.length ?? 0) && !found; c++) {
+      if (tiles[r]?.[c] !== 'w') continue;
+      const res = execute(s, { type: 'cast_spell', actorId: w.id, spellName: 'Lightning Bolt', targetHex: { col: c, row: r } } as never, contextFor(s, w.id), () => 0.5);
+      if (!res.ok) continue;
+      found = true;
+      const chain = res.events.find((e) => e.type === 'surface_reacted' && (e as { row?: string }).row === 'lightningWater') as { hexes: Offset[] } | undefined;
+      expect(chain, 'zincir notu').toBeTruthy(); expect(chain!.hexes.length).toBeGreaterThanOrEqual(1); expect(chain!.hexes.length).toBeLessThanOrEqual(7);
+      const old = execute({ ...s, kuralSurumu: 81 }, { type: 'cast_spell', actorId: w.id, spellName: 'Lightning Bolt', targetHex: { col: c, row: r } } as never, contextFor(s, w.id), () => 0.5);
+      if (old.ok) expect(old.events.some((e) => e.type === 'surface_reacted' && (e as { row?: string }).row === 'lightningWater')).toBe(false);
+    }
+    expect(found).toBe(true);
   });
 });

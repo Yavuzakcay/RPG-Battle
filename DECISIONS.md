@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-25 — KQ6-11: Göle ateş/yıldırım: buhar görünmüyordu, zincir iz bırakmıyordu
+
+- **Gerçek tarayıcıda (Playwright, hızlı savaş, Mielikki Gölü, yeni savaş = sürüm 82):** Fire Bolt sığ (`n`) ve derin (`w`) göl altıgenine atılınca motor doğru çalışıyordu: `map.zones`'ta tek altıgenlik `steam` yüzeyi, günlükte "Fire Bolt: su buharlaştı", "Mira: Buhar alanı oluştu", Keşif Defteri notu, altıgende `yuzey-buhar` sprite'ı. Yani kapı (hexResolver, sürüm ≥ 26), `fire` etiketi, göl zemin etiketi ve tablo satırı eksik değildi. **Asıl neden çizim:** `data/yuzey-gorunum.json` `buhar` dolgusu %34, doku %40, gri-beyaz renk; turkuaz gölün üstünde okunmuyordu (artı 1 tur sürer, kamera atıştan sonra kayar). **Düzeltme:** dolgu %72, doku %85, beyaz renk ve kenar (yalnız görünüm).
+- **Yıldırım göle:** `lightningWater` zinciri (ev kuralı `suYildirim`, varsayılan açık; en çok 7 bağlı su altıgeni, sudakilere DEX save'li hasar) yalnız kurban varsa olay üretiyordu; boş gölde hiçbir günlük/çizim izi yoktu. Sürüm ≥ 82: zincir notu (`surface_reacted`, `row: lightningWater`, `hexes` ≤ 7) kurban olmasa da yazılır (`hexResolver.ts`). 81 ve altı aynen. Soğuk: tek altıgen buz (FH1'den, testte).
+- Testler `src/battle/freeHexHizli.test.ts` (gerçek hızlı savaş yolu: `createMapBattle`, sığ + derin, günlük notu, stil okunurluğu, yıldırım zinciri ≤ 7, 81 eski davranış). Ekran görüntüsü `docs/sabah/buhar-goel-onceki-sonraki.png` (atıştan önce/sonra, aynı altıgen).
+
 ## 2026-12-25 — KQ6-10: Hale v2 önizlemesi (şekil temelli silme; UYGULANMADI)
 
 - Çift hale ve uçan kafa nedeni: eski tespit renk eşiğiydi (sarı saç = altın hale) ve çizim "yok" sayılan jetonda gerçekte var olan soluk (krem/pembe) halenin üstüne ikinci hale çiziyordu. `scripts/hale-v2.py`: halka şekli (içi boş ince elips ya da yay) bulunur, baş kütlesi (opak kütle açılması + baş satırı altı) korunur, yalnız korumanın dışındaki halka pikselleri silinir; baş kutusu alfa>0 sayısı değişirse ya da başa değen kalıntı > 40 px ise iptal → ELLE; başın üstünde halka olabilecek artık varsa ("belirsiz") hiç çizilmez. Çıktı `docs/sabah/hale-v2/` (4×, önce/sonra, sayılar `README.md`). Hiçbir jeton/oyun dosyası değişmedi.
