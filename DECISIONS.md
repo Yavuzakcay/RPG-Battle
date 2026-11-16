@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-21 — KQ6-5: Pehlivan ikinci (dev) form jetonu (yalnız görünüm)
+
+- Pehlivan = Fighter alt sınıfı `pehlivan` (hücre 4 normal, hücre 5 dev hali; 5 ayrı alt sınıf değil). `data/fighter-jeton.json` `formlar.pehlivan = { esik: 10, ikinci: "ID5", ikinciYok: [] }`; `subclassTokenFile(…, level)` seviye ≥ eşik ise ikinci form, `ikinciYok` listesindeki 'ırk-cinsiyet'te ya da seviye bilinmiyorsa 1. form, uyarı yok. `sheetAvatar` (liste rozeti, savaş jetonu, oluşturucu önizlemesi, Game Master kurulumu) seviyeyi geçirir; kayıtlı eski savaşlarda jeton savaşçıda sabit. Tablo `docs/sabah/pehlivan-formlar.md` (9 ırk × 2 cinsiyet 2. form var). Başka iki formlu alt sınıf yok. Test `wizardJeton.test.ts` (9 → 1. form, 10 ve 20 → 2. form, ikinci yoksa 1. form).
+
 ## 2026-12-20 — KQ6-4: Hızlı savaşta serbest altıgen (FH1 düzeltmesi; kural sürümü 81'de kaldı)
 
 - Kök neden: kural değil, tıklama. Hızlı savaş (createMapBattle) sürüm 81 ve `freeHexTarget` AÇIK başlıyor (anahtar ruleToggles'ta yoksa açık; Game Master paneli gerekmiyor; eski kayıt ≤ 80 eski davranış ve eski ipucu). Ama zemin efekt katmanındaki su deseni (`g.fx-water`, SVG yolları `pointer-events: auto`) altıgenlerin üstünde kalıp göl altıgenlerine tıklamayı yutuyordu (tarayıcıda `elementsFromPoint`: ilk eleman `path`, altıgen `polygon` değil): hiçbir su altıgeni seçilemiyordu. Düzeltme: `.fx-ground, .fx-ground * { pointer-events: none }` (`styles.css`). Playwright (Hızlı savaş → Mielikki Gölü → Mira → Fire Bolt → göl altıgeni): "Fire Bolt: su buharlaştı", `docs/sabah/hizli-savas-firebolt-goel.png`.

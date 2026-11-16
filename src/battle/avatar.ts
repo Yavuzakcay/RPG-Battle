@@ -105,7 +105,9 @@ const subMissing = new Set<string>();
 let subWarn = true;
 /** Testlerde sahte alt sınıf kimlikleri günlüğü doldurmasın diye kapatılır (uygulamada hep açık; jeton testi açar). */
 export const setSubTokenWarnings = (on: boolean): void => { subWarn = on; };
-interface SubTokenTable { sinif: string; irklar: Record<string, string[]>; altSiniflar: Record<string, string>; cinsiyet?: Record<string, 'erkek' | 'kadin'> }
+interface SubTokenTable { sinif: string; irklar: Record<string, string[]>; altSiniflar: Record<string, string>; cinsiyet?: Record<string, 'erkek' | 'kadin'>;
+  /** Seviyeye göre ikinci jeton formu: alt sınıf kimliği → { esik (seviye ≥), ikinci (hücre), ikinciYok ('ırk-cinsiyet' listesi) }. */
+  formlar?: Record<string, { esik: number; ikinci: string; ikinciYok?: string[] }> }
 /** Alt sınıf jetonu olan sınıflar (veri dosyası başına bir sınıf; yeni sınıf yalnız buraya + veri dosyası). */
 const SUB_TOKENS: Record<string, SubTokenTable> = {
   wizard: wizardJeton as unknown as SubTokenTable,
@@ -127,7 +129,7 @@ const SUB_TOKENS: Record<string, SubTokenTable> = {
  * hücre yoksa (sessiz; tabloda olmayan kimlik), alt sınıfın cinsiyet kısıtı uymuyorsa (sessiz; beklenen) ya da ırk×cinsiyet jetonu
  * yoksa (tek satır `console.warn("<sınıf>-jeton eksik: <ırk>-<cinsiyet>-<sınıf>-<hücre>")`, bir kez).
  */
-export function subclassTokenFile(classId: string, raceId: string, gender: 'erkek' | 'kadin', subclassId: string | undefined): string | undefined {
+export function subclassTokenFile(classId: string, raceId: string, gender: 'erkek' | 'kadin', subclassId: string | undefined, level?: number): string | undefined {
   const T = SUB_TOKENS[classId];
   if (!T || !subclassId) return undefined;
   const cell = T.altSiniflar[subclassId];
@@ -139,7 +141,10 @@ export function subclassTokenFile(classId: string, raceId: string, gender: 'erke
     if (subWarn && !subMissing.has(key)) { subMissing.add(key); console.warn(`${classId}-jeton eksik: ${key}`); }
     return undefined;
   }
-  return `${raceId}-${gender}-${classId}-${cell}.webp`;
+  // KQ6-5: seviyeye bağlı ikinci form (Pehlivan seviye ≥ 10: dev hali); ikinci form yoksa ya da seviye bilinmiyorsa 1. form (uyarı yok).
+  const f = T.formlar?.[subclassId];
+  const second = f && level !== undefined && level >= f.esik && !(f.ikinciYok ?? []).includes(`${raceId}-${gender}`) ? f.ikinci : undefined;
+  return `${raceId}-${gender}-${classId}-${second ?? cell}.webp`;
 }
 /** Eski ad (WZ-BAGLA testleri). */
 export const wizardSubclassFile = (raceId: string, gender: 'erkek' | 'kadin', subclassId: string | undefined) => subclassTokenFile('wizard', raceId, gender, subclassId);
@@ -153,7 +158,7 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
   const gender = sheet.gender ?? 'erkek';
   const generic = `characters/${characterTokenFile(sheet.raceId, gender, sheet.classId)}`;
   // WZ-BAGLA/BAGLA-3: Wizard/Warlock/Sorcerer alt sınıf jetonu (maske yoksa boyama uygulanmaz, jeton yine çıkar); öncelik özel avatar > alt sınıf jetonu > genel.
-  const wz = !sheet.avatar ? subclassTokenFile(sheet.classId, sheet.raceId, gender, sheet.subclassId) : undefined;
+  const wz = !sheet.avatar ? subclassTokenFile(sheet.classId, sheet.raceId, gender, sheet.subclassId, sheet.level) : undefined;
   return {
     src: sheet.avatar ?? (wz ? `characters/${wz}` : generic),
     fallbacks: sheet.avatar ? [] : [...(wz ? [generic] : []), `avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],

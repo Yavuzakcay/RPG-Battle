@@ -135,3 +135,30 @@ describe('TOPLU-KESIM: 9 sınıf bağlaması', () => {
     expect(classOfCombatant({ avatar: { src: 'characters/elf-kadin-paladin-ID7.webp' } } as never)).toBe('paladin');
   });
 });
+
+describe('KQ6-5: Pehlivan ikinci form (seviye eşiği veride)', () => {
+  const fighter = (level: number, extra: Record<string, unknown> = {}) => sheet({ classId: 'fighter', raceId: 'celestial', gender: 'erkek', subclassId: 'pehlivan', level, ...extra });
+  it('seviye 9 → 1. form (ID4); seviye 10 ve 20 → 2. form (ID5)', () => {
+    expect(sheetAvatar(fighter(9)).src).toBe('characters/celestial-erkek-fighter-ID4.webp');
+    expect(sheetAvatar(fighter(10)).src).toBe('characters/celestial-erkek-fighter-ID5.webp');
+    expect(sheetAvatar(fighter(20)).src).toBe('characters/celestial-erkek-fighter-ID5.webp');
+    expect(subclassTokenFile('fighter', 'dwarf', 'kadin', 'pehlivan', 12)).toBe('dwarf-kadin-fighter-ID5.webp');
+    expect(subclassTokenFile('fighter', 'dwarf', 'kadin', 'pehlivan')).toBe('dwarf-kadin-fighter-ID4.webp'); // seviye bilinmiyorsa 1. form
+  });
+  it('2. form yoksa (veri: ikinciYok) 1. forma döner, uyarı yok; başka alt sınıf iki formlu değil', async () => {
+    const tab = (await import('../../data/fighter-jeton.json')).default as unknown as { formlar: Record<string, { ikinciYok: string[] }> };
+    const keep = [...tab.formlar.pehlivan!.ikinciYok];
+    tab.formlar.pehlivan!.ikinciYok.push('dwarf-kadin');
+    const w = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      expect(subclassTokenFile('fighter', 'dwarf', 'kadin', 'pehlivan', 15)).toBe('dwarf-kadin-fighter-ID4.webp');
+      expect(w).not.toHaveBeenCalled();
+    } finally { tab.formlar.pehlivan!.ikinciYok.splice(0, tab.formlar.pehlivan!.ikinciYok.length, ...keep); w.mockRestore(); }
+    for (const t of [warlock, sorcerer, tablo]) expect((t as { formlar?: unknown }).formlar).toBeUndefined();
+    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'ninja', 20)).toBe('dwarf-erkek-fighter-ID6.webp');
+  });
+  it('ikinci form jetonları (ID5) her ırk × cinsiyet için dosya olarak var', () => {
+    const files = new Set(Object.keys(import.meta.glob('../../public/characters/*-fighter-ID5.webp', { query: '?url', import: 'default' })).map((p) => p.split('/').pop()));
+    for (const race of ['human', 'elf', 'dwarf', 'halfling', 'gnome', 'orc', 'tiefling', 'goliath', 'celestial']) for (const g of ['erkek', 'kadin']) expect(files.has(`${race}-${g}-fighter-ID5.webp`), `${race}-${g}`).toBe(true);
+  });
+});

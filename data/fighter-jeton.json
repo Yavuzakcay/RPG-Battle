@@ -1,5 +1,5 @@
 {
- "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-fighter-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır.",
+ "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-fighter-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır. KQ6-5: `formlar` = seviyeye göre ikinci jeton formu (alt sınıf kimliği → `esik` seviye ve üzeri `ikinci` hücre; `ikinciYok`: 'ırk-cinsiyet' listesi, o kombinasyonda 2. form yok → 1. form). Pehlivan: hücre 4 normal, hücre 5 dev hali, seviye ≥ 10.",
  "sinif": "fighter",
  "irklar": {
   "human": [
@@ -54,5 +54,12 @@
  "cozulemeyen": [],
  "cinsiyet": {
   "imza_imparator": "erkek"
+ },
+ "formlar": {
+  "pehlivan": {
+   "esik": 10,
+   "ikinci": "ID5",
+   "ikinciYok": []
+  }
  }
 }
