@@ -6,7 +6,7 @@
  */
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import { WingFilterDefs } from './WingFilter';
-import { HALO_CLIP_PCT, lineageLook, wingBox, wingFilterId, type LookSheet, type WingLayerSpec } from './lineageLook';
+import { FOOT_FRAC, HALO_CLIP_PCT, lineageLook, wingBox, wingFilterId, type LookSheet, type WingLayerSpec } from './lineageLook';
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -31,7 +31,7 @@ export function LookFrame(props: { sheet: LookSheet; size: number; flying?: bool
   const look = lineageLook(props.sheet, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) });
   const style = {
     width: props.size, height: props.size,
-    '--look-filter': look.filter || 'none', '--look-sx': look.scaleX, '--look-sy': look.scaleY, '--halo-clip': `${HALO_CLIP_PCT}%`,
+    '--look-filter': look.filter || 'none', '--look-sx': look.scaleX, '--look-sy': look.scaleY, '--look-foot': `${FOOT_FRAC * 100}%`, '--halo-clip': `${HALO_CLIP_PCT}%`,
   } as CSSProperties;
   return (
     <span className={`look-frame${look.hideHalo ? ' halo-hidden' : ''}`} style={style}>

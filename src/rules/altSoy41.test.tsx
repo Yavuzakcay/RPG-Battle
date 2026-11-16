@@ -207,11 +207,11 @@ describe('görünüm verisi', () => {
     for (const r of gorunum.maskesizIrklar) for (const l of races.find((x) => x.id === r)?.lineages ?? []) expect(keys, `${r}/${l.id}`).toContain(`${r}/${l.id}`);
     expect(keys).toContain('tiefling/winged');
   });
-  it('Halfling İnce/Kalın oranı; İnce daha dar ve uzun, Kalın daha geniş', () => {
+  it('Halfling İnce/Kalın oranı; İnce 1×1 (jetonun kendisi), Kalın daha geniş ve kısa', () => {
     const s = lineageLook({ raceId: 'halfling', lineageId: 'slender' });
     const t = lineageLook({ raceId: 'halfling', lineageId: 'sturdy' });
-    expect([s.scaleX, s.scaleY]).toEqual([0.94, 1.05]);
-    expect([t.scaleX, t.scaleY]).toEqual([1.1, 0.97]);
+    expect([s.scaleX, s.scaleY]).toEqual([1, 1]); // KQ6-6: yüklenen jeton İnce soyun görünümü
+    expect([t.scaleX, t.scaleY]).toEqual([1.1, 0.9]); // Kalın: boy ×0,90, en ×1,10 (ayak çizgisinden)
     expect(lineageLook({ raceId: 'orc', lineageId: 'glacier' }).filter).toContain('hue-rotate');
   });
   it('kanat slotları (Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn, alt sınıfa bağlı Melek): sprite bağlı; Tiefling ve Dragonborn yalnız havadayken', () => {

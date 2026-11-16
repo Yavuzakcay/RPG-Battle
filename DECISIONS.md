@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-22 — KQ6-6: Halfling İnce/Kalın oranı (yalnız görünüm)
+
+- `data/alt-soy-gorunum.json`: `halfling/slender` oran 1×1 (yüklenen jeton İnce soyun görünümü), `halfling/sturdy` en ×1,10, boy ×0,90 (eskiden 0,94×1,05 ve 1,10×0,97). Ölçek demir noktası ayak çizgisi: yeni `ayak.yuzde` 0,965 (256 px jetonda y≈247; `lineageLook.ts` `FOOT_FRAC`): SVG jetonda `translate(cx, ayak)`, karakter ekranında CSS `transform-origin: 50% var(--look-foot)`; yatayda ortadan. Piksel sanatı: ölçekli SVG `<image>` ve `.look-frame .avatar img` `image-rendering: pixelated`. Savaşta jeton boyutu ve tıklama alanı değişmez (ölçek yalnız görsel grubunda). Rozet, savaş jetonu (TokenFigure) ve oluşturucu aynı çözücü. Testler `as1cGorunum`, `altSoy41`; önizleme `docs/sabah/halfling-oran-onizleme.png`.
+
 ## 2026-12-21 — KQ6-5: Pehlivan ikinci (dev) form jetonu (yalnız görünüm)
 
 - Pehlivan = Fighter alt sınıfı `pehlivan` (hücre 4 normal, hücre 5 dev hali; 5 ayrı alt sınıf değil). `data/fighter-jeton.json` `formlar.pehlivan = { esik: 10, ikinci: "ID5", ikinciYok: [] }`; `subclassTokenFile(…, level)` seviye ≥ eşik ise ikinci form, `ikinciYok` listesindeki 'ırk-cinsiyet'te ya da seviye bilinmiyorsa 1. form, uyarı yok. `sheetAvatar` (liste rozeti, savaş jetonu, oluşturucu önizlemesi, Game Master kurulumu) seviyeyi geçirir; kayıtlı eski savaşlarda jeton savaşçıda sabit. Tablo `docs/sabah/pehlivan-formlar.md` (9 ırk × 2 cinsiyet 2. form var). Başka iki formlu alt sınıf yok. Test `wizardJeton.test.ts` (9 → 1. form, 10 ve 20 → 2. form, ikinci yoksa 1. form).

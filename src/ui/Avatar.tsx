@@ -4,7 +4,7 @@
  * dosya adı kuralına uyan bir görsel eklenince kod değişmeden görünür.
  */
 import { useEffect, useId, useState, type CSSProperties } from 'react';
-import { HALO_CLIP_PCT, lineageLook, wingBox, type WingLayerSpec } from './lineageLook';
+import { FOOT_FRAC, HALO_CLIP_PCT, lineageLook, wingBox, type WingLayerSpec } from './lineageLook';
 import { useWingAnim } from './wingAnim';
 import { WingFilterDefs } from './WingFilter';
 import { wingFilterId } from './lineageLook';
@@ -174,7 +174,7 @@ export function TokenFigure(props: { href: string; cx: number; cy: number; w: nu
   const { cx, cy, w } = props;
   const lk = props.look ? lineageLook(props.look, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) }) : null;
   const clipId = useId();
-  const by = cy + w / 2;
+  const by = cy - w / 2 + w * FOOT_FRAC; // ayak çizgisi (ölçek demir noktası)
   const shape = lk && (lk.scaleX !== 1 || lk.scaleY !== 1) ? `translate(${cx} ${by}) scale(${lk.scaleX} ${lk.scaleY}) translate(${-cx} ${-by})` : undefined;
   const wing = lk?.wing;
   const wb = wing ? wingBox(wing, cx, cy, w) : null;
@@ -184,7 +184,7 @@ export function TokenFigure(props: { href: string; cx: number; cy: number; w: nu
       {lk?.hideHalo && <clipPath id={clipId}><rect x={cx - w / 2} y={cy - w / 2 + (w * HALO_CLIP_PCT) / 100} width={w} height={w} /></clipPath>}
       <g transform={shape} clipPath={lk?.hideHalo ? `url(#${clipId})` : undefined}>
         <image href={props.href} x={cx - w / 2} y={cy - w / 2} width={w} height={w} preserveAspectRatio="xMidYMid slice"
-          transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} style={lk?.filter ? { filter: lk.filter } : undefined} />
+          transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} style={{ ...(lk?.filter ? { filter: lk.filter } : {}), ...(shape ? { imageRendering: 'pixelated' as const } : {}) }} />
       </g>
     </>
   );

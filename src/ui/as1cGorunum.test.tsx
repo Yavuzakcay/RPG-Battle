@@ -39,8 +39,10 @@ describe('savaş jetonu görünümü (Avatar.look, tek çözücü)', () => {
   it('SVG jetonda oran (en-boy), hale gizleme (clipPath) ve filtre uygulanır; hitbox/boyut aynı (image x,y,w,h değişmez)', () => {
     const draw = (patch: Partial<CharacterSheet>) => renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={sheetAvatar(sheet(patch)).look} /></svg>);
     const slender = draw({ raceId: 'halfling', lineageId: 'slender' });
-    expect(slender).toContain('scale(0.94 1.05)');
-    expect(draw({ raceId: 'halfling', lineageId: 'sturdy' })).toContain('scale(1.1 0.97)');
+    expect(slender).not.toContain('scale('); // KQ6-6: İnce oran 1×1, dönüşüm yok
+    const sturdy = draw({ raceId: 'halfling', lineageId: 'sturdy' });
+    expect(sturdy).toContain('scale(1.1 0.9)'); expect(sturdy).toContain('image-rendering:pixelated'); // ayak çizgisinden (y = 50 − 20 + 40·0,965), piksel sanatı bulanmaz
+    expect(sturdy).toContain('translate(50 68.6)');
     expect(draw({ raceId: 'dwarf', lineageId: 'knoll' })).toContain('scale(1.04 1)');
     // Boyasız orijinal olmayan oran yok: Wood-elf, oransız.
     expect(draw({ raceId: 'elf', lineageId: 'wood-elf' })).not.toContain('scale(');

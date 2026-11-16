@@ -39,6 +39,8 @@ const D = data as unknown as {
 export const AWAKENING_FROM = 3;
 export const AWAKENING_DEFAULT = 'parlayan-ruh';
 export const HALO_CLIP_PCT = D.hale.gizleUstYuzde;
+/** Oran ölçeklemesinin demir noktası: jeton yüksekliğinin bu oranı (ayak çizgisi, 256 px jetonda y≈247). */
+export const FOOT_FRAC: number = (D as unknown as { ayak?: { yuzde: number } }).ayak?.yuzde ?? 1;
 export const SKIN_TONES: SkinTone[] = D.ten.tonlar;
 export const DEFAULT_SKIN_TONE = D.ten.varsayilan;
 /** Kültür (alt soy) → seçilebilecek ten tonları (`ten.kulturTen`; Tenhausser Koyu, Khadyrga Orijinal, Saf Kent Altın, Sur Dışı üçü). */
