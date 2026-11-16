@@ -1,8 +1,45 @@
 {
- "note": "Görev WZ-BAGLA/BAGLA-3: warlock alt sınıfı → WL jetonu (public/characters/<irk>-<erkek|kadin>-warlock-<WL-id>.webp). altSiniflar: alt sınıf kimliği → hücre; kimlikler Türkçe adla doğrulandı (fiend-patron fikstür, imza_astrolog data/imza.json, kalanı icerik-liste.txt). Yeni kimlik/hücre yalnız burada değişir (kodda sabit yok). irklar: jetonu üretilmiş ırk×cinsiyet (yoksa alt sınıf jetonu atanmaz, geliştirici günlüğünde \"eksik\" yazılır). maskeHazir: jetonların ten/soy maskesi üretildi mi; false iken soy/ten boyası gereken karakter sınıf-genel jetonu kullanır. cozulemeyen: kimliği çözülemeyen hücre → kullanıcı yerelde altSiniflar'a ekler.",
+ "note": "Görev WZ-BAGLA/BAGLA-3/TOPLU-KESIM (jetonlar kesildi): warlock alt sınıfı → WL jetonu (public/characters/<irk>-<erkek|kadin>-warlock-<WL-id>.webp). altSiniflar: alt sınıf kimliği → hücre; kimlikler Türkçe adla doğrulandı (fiend-patron fikstür, imza_astrolog data/imza.json, kalanı icerik-liste.txt). Yeni kimlik/hücre yalnız burada değişir (kodda sabit yok). irklar: jetonu üretilmiş ırk×cinsiyet (yoksa alt sınıf jetonu atanmaz, geliştirici günlüğünde \"eksik\" yazılır). maskeHazir: jetonların ten/soy maskesi üretildi mi; false iken soy/ten boyası gereken karakter sınıf-genel jetonu kullanır. cozulemeyen: kimliği çözülemeyen hücre → kullanıcı yerelde altSiniflar'a ekler.",
  "sinif": "warlock",
  "maskeHazir": false,
- "irklar": {},
+ "irklar": {
+  "human": [
+   "erkek",
+   "kadin"
+  ],
+  "elf": [
+   "erkek",
+   "kadin"
+  ],
+  "dwarf": [
+   "erkek",
+   "kadin"
+  ],
+  "halfling": [
+   "erkek",
+   "kadin"
+  ],
+  "gnome": [
+   "erkek",
+   "kadin"
+  ],
+  "orc": [
+   "erkek",
+   "kadin"
+  ],
+  "tiefling": [
+   "erkek",
+   "kadin"
+  ],
+  "goliath": [
+   "erkek",
+   "kadin"
+  ],
+  "celestial": [
+   "erkek",
+   "kadin"
+  ]
+ },
  "altSiniflar": {
   "fiend-patron": "WL-1",
   "cin": "WL-2",

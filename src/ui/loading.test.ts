@@ -11,7 +11,7 @@ const acilis = new Set(Object.keys(import.meta.glob('/public/acilis/*')).map((f)
 
 describe('küçük karakter jetonları', () => {
   it('her karakter jetonunun 96 px kopyası var (npm run karakter-kucuk)', () => {
-    expect(big.length).toBe(240 + 270); // 240 sınıf-genel + 270 Wizard alt sınıf jetonu (WZ-KESIM)
+    expect(big.length).toBe(240 + 270 + 1890); // 240 sınıf-genel + 270 Wizard (WZ-KESIM) + 1890 alt sınıf jetonu (TOPLU-KESIM: warlock 198, sorcerer 162, barbarian/bard/cleric/ranger 162'şer, druid 135, fighter 189, monk 198, paladin 180, rogue 180)
     expect(small).toEqual(big);
   });
   it('rozet 48 px ve altında önce küçük kopya, sonra asıl görsel; büyükte yalnızca asıl', () => {

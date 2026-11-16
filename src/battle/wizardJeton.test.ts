@@ -60,14 +60,23 @@ describe('BAGLA-3 Warlock ve Sorcerer', () => {
     for (const id of ['imza_harita', 'imza_astrolog', 'imza_dunganga']) expect(imzaIds).toContain(id);
     expect(tablo.cozulemeyen).toEqual([]); expect(warlock.cozulemeyen).toEqual([]); expect(sorcerer.cozulemeyen).toEqual([]);
   });
-  it('jeton dosyası yok (kesim yapılmadı): alt sınıf jetonu atanmaz, genel jeton kalır, eksik "<sınıf>-jeton eksik" yazılır', () => {
+  it('jetonlar kesildi: dosyalar var, alt sınıf jetonu atanır; Dragonborn ve boyalı karakter genel jetonda, eksik "<sınıf>-jeton eksik" yazılır', () => {
+    const files = new Set(Object.keys(import.meta.glob('../../public/characters/*-warlock-WL-*.webp', { query: '?url', import: 'default' })).concat(Object.keys(import.meta.glob('../../public/characters/*-sorcerer-SC-*.webp', { query: '?url', import: 'default' }))).map((p) => p.split('/').pop()));
+    for (const [t, cls, pre, n] of [[warlock, 'warlock', 'WL', 11], [sorcerer, 'sorcerer', 'SC', 9]] as const) {
+      expect(Object.keys(t.irklar)).not.toContain('dragonborn');
+      for (const [race, gens] of Object.entries(t.irklar)) for (const g of gens) for (let i = 1; i <= n; i++) expect(files.has(`${race}-${g}-${cls}-${pre}-${i}.webp`), `${race}-${g}-${cls}-${pre}-${i}`).toBe(true);
+    }
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    expect(subclassTokenFile('warlock', 'dwarf', 'erkek', 'cin', false)).toBeUndefined();
-    expect(sheetAvatar(sheet({ classId: 'warlock', subclassId: 'cin' })).src).toBe('characters/dwarf-male-warlock.webp');
-    expect(sheetAvatar(sheet({ classId: 'sorcerer', subclassId: 'alevbaz' })).src).toBe('characters/dwarf-male-sorcerer.webp');
+    expect(subclassTokenFile('warlock', 'dwarf', 'erkek', 'cin', false)).toBe('dwarf-erkek-warlock-WL-2.webp');
+    expect(sheetAvatar(sheet({ classId: 'warlock', subclassId: 'cin' })).src).toBe('characters/dwarf-erkek-warlock-WL-2.webp');
+    expect(sheetAvatar(sheet({ classId: 'sorcerer', subclassId: 'alevbaz', gender: 'kadin' })).src).toBe('characters/dwarf-kadin-sorcerer-SC-2.webp');
+    expect(subclassTokenFile('warlock', 'dragonborn', 'erkek', 'cin', false)).toBeUndefined();
+    expect(subclassTokenFile('sorcerer', 'dwarf', 'erkek', 'bilinmeyen', false)).toBeUndefined();
+    expect(subclassTokenFile('warlock', 'dwarf', 'erkek', 'cin', true)).toBeUndefined();
     const msgs = warn.mock.calls.map((c) => String(c[0]));
-    expect(msgs.some((m) => m.startsWith('warlock-jeton eksik: dwarf-erkek-cin'))).toBe(true);
-    expect(msgs.some((m) => m.startsWith('sorcerer-jeton eksik: dwarf-erkek-alevbaz'))).toBe(true);
+    expect(msgs.some((m) => m.startsWith('warlock-jeton eksik: dragonborn-erkek-cin'))).toBe(true);
+    expect(msgs.some((m) => m.startsWith('sorcerer-jeton eksik: dwarf-erkek-bilinmeyen'))).toBe(true);
+    expect(msgs.some((m) => m.includes('maskesi yok'))).toBe(true);
     warn.mockRestore();
   });
   it('zar teması: WL/SC jeton adından sınıf', () => {

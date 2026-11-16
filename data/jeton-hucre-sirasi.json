@@ -1,0 +1,158 @@
+{
+ "note": "Görev TOPLU-KESIM: sınıf → hücre n → TR alt sınıf adı (sayfadaki görsel sıra; kullanıcı onaylı). Jeton dosyası public/characters/<irk>-<erkek|kadin>-<sınıf>-<kod><n>.webp; kod: warlock WL-, sorcerer SC-, ötekiler ID. Gerçek alt sınıf kimlikleri sonra bu sıraya göre doldurulur (Wizard: data/wizard-jeton.json). Uyarı: fighter hücre 4 ve 5 aynı alt sınıf (Pehlivan, 5 = dev/büyüme hali); druid erkek sayfalarında 8 (Karadul) boş; fighter kadın 11, paladin 11-12, rogue 11-12, monk 12 boş.",
+ "kodOnek": {
+  "warlock": "WL-",
+  "sorcerer": "SC-",
+  "barbarian": "ID",
+  "bard": "ID",
+  "cleric": "ID",
+  "druid": "ID",
+  "fighter": "ID",
+  "monk": "ID",
+  "paladin": "ID",
+  "ranger": "ID",
+  "rogue": "ID"
+ },
+ "siniflar": {
+  "warlock": {
+   "1": "İblis Hamisi",
+   "2": "Cin",
+   "3": "Muhterem",
+   "4": "Hortlak",
+   "5": "Kargışçı",
+   "6": "Kraken",
+   "7": "Melek",
+   "8": "Gulyabani",
+   "9": "Paradoks",
+   "10": "Ruhsar",
+   "11": "Astrolog"
+  },
+  "sorcerer": {
+   "1": "Ejderha Büyücülüğü",
+   "2": "Alevbaz",
+   "3": "Ceren Ürperten",
+   "4": "İlahi Kan",
+   "5": "Lanetli",
+   "6": "Otonom Evren",
+   "7": "Paratoner",
+   "8": "Titan Kanı",
+   "9": "Dunganga"
+  },
+  "barbarian": {
+   "1": "Varis",
+   "2": "Element",
+   "3": "Kaos",
+   "4": "Şaman",
+   "5": "İlkelliğin",
+   "6": "Vahşet",
+   "7": "Heybet",
+   "8": "Çılgın Savaşçı",
+   "9": "Geride Kalanın"
+  },
+  "bard": {
+   "1": "Bilgi",
+   "2": "Ağıt",
+   "3": "Akrobat",
+   "4": "Arzu",
+   "5": "Harp",
+   "6": "Hatip",
+   "7": "Islık",
+   "8": "Varoluş",
+   "9": "Şair"
+  },
+  "cleric": {
+   "1": "Yaşam",
+   "2": "Aydın",
+   "3": "Barış",
+   "4": "Demirci",
+   "5": "Fırtına",
+   "6": "Mezar",
+   "7": "Savaş",
+   "8": "Yakamoz",
+   "9": "Birlik Manastırı"
+  },
+  "druid": {
+   "1": "Toprak",
+   "2": "Anka",
+   "3": "Çağrı",
+   "4": "Çürüyüş",
+   "5": "Element",
+   "6": "Feza",
+   "7": "Uyku",
+   "8": "Karadul"
+  },
+  "fighter": {
+   "1": "Şahin Gözlü",
+   "2": "Çapkın Kavalye",
+   "3": "Hissi Kablel",
+   "4": "Pehlivan",
+   "5": "Pehlivan (dev/büyüme hali)",
+   "6": "Ninja",
+   "7": "Çift Dikiş",
+   "8": "Samuray",
+   "9": "Hokkabaz",
+   "10": "Sancaktar",
+   "11": "İmparator"
+  },
+  "monk": {
+   "1": "Açık El",
+   "2": "Astral",
+   "3": "Ayyaşlık",
+   "4": "Azizlik",
+   "5": "Ejderha",
+   "6": "Element",
+   "7": "Işık",
+   "8": "Karanlık",
+   "9": "Keskinlik",
+   "10": "Ölümsüzlük",
+   "11": "Yaşlı Bilge"
+  },
+  "paladin": {
+   "1": "Bağlılık",
+   "2": "Antik",
+   "3": "Asi/Yemin Bozan",
+   "4": "Biat",
+   "5": "Fetih",
+   "6": "İntikam",
+   "7": "Kefaret",
+   "8": "Muhafız",
+   "9": "Zafer",
+   "10": "Hızır"
+  },
+  "ranger": {
+   "1": "Avcı",
+   "2": "Avare",
+   "3": "Çoban",
+   "4": "Ejder Muhafızı",
+   "5": "İbliskıran",
+   "6": "İzci",
+   "7": "Kovancı",
+   "8": "Seyyah",
+   "9": "Çiftçi"
+  },
+  "rogue": {
+   "1": "Hırsız",
+   "2": "Dedektif",
+   "3": "İllüzyonist",
+   "4": "Kamufle",
+   "5": "Kaşif",
+   "6": "Psişik Hançerler",
+   "7": "Silahşör",
+   "8": "Suikastçı",
+   "9": "Taktisyen",
+   "10": "İnfazcı"
+  }
+ },
+ "bos": {
+  "druid": {
+   "erkek": [
+    8
+   ]
+  },
+  "fighter": {
+   "kadin": [
+    11
+   ]
+  }
+ }
+}
