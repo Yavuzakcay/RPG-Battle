@@ -1,7 +1,6 @@
 {
  "note": "Görev WZ-BAGLA/BAGLA-3/TOPLU-KESIM (jetonlar kesildi): sorcerer alt sınıfı → SC jetonu (public/characters/<irk>-<erkek|kadin>-sorcerer-<SC-id>.webp). altSiniflar: alt sınıf kimliği → hücre; kimlikler Türkçe adla doğrulandı (draconic-sorcery fikstür, imza_dunganga data/imza.json, kalanı icerik-liste.txt). Yeni kimlik/hücre yalnız burada değişir (kodda sabit yok). irklar: jetonu üretilmiş ırk×cinsiyet (yoksa alt sınıf jetonu atanmaz, geliştirici günlüğünde \"eksik\" yazılır). maskeHazir: jetonların ten/soy maskesi üretildi mi; false iken soy/ten boyası gereken karakter sınıf-genel jetonu kullanır. cozulemeyen: kimliği çözülemeyen hücre → kullanıcı yerelde altSiniflar'a ekler.",
  "sinif": "sorcerer",
- "maskeHazir": false,
  "irklar": {
   "human": [
    "erkek",

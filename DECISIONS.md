@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-14 — Jeton bağlama kuralı: maske yokluğu jetonu atlatmaz (yalnız görünüm; kural/kayıt sürümü değişmedi)
+
+- Kesilmiş ırk×cinsiyet×sınıf(×hücre) jetonu varsa her zaman bağlanır; ten/soy maskesi yoksa boyama yalnızca uygulanmaz (`tint.ts` maskesiz boyamada orijinal görseli bırakır), maskeler eklenince kendiliğinden devreye girer. `maskeHazir` bayrağı ve `tinted` parametresi kaldırıldı.
+- Cinsiyet kısıtı (İmparator erkek, Karadul kadın) sessiz; tabloda olmayan (sahte) alt sınıf kimliği sessiz; yalnız gerçekten jetonu olmayan kombinasyon (Dragonborn) tek satır `console.warn("<sınıf>-jeton eksik: <ırk>-<cinsiyet>-<sınıf>-<hücre>")`, bir kez.
+- Etki (ırk×soy×cinsiyet×alt sınıf kombinasyonu): 6902 bağlı, bunların 3332'si eskiden maske gerekçesiyle atlanırdı; cinsiyet kısıtından 78 (sessiz); gerçekten eksik 2380 (hepsi Dragonborn).
+
 ## 2026-12-13 — BAGLA-9: 9 sınıfın alt sınıf jetonları oyuna bağlandı (yalnız görünüm; kural/kayıt sürümü değişmedi)
 
 - Warlock/Sorcerer ile aynı mekanizma, veriyle genişletildi: `data/<sınıf>-jeton.json` (barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue), `subclassTokenFile` (isteğe bağlı `cinsiyet` kısıtı eklendi: druid `karadul-cemberi` kadın, fighter `imza_imparator` erkek), zar teması sınıf tespiti `ID<n>` adlarını tanır. Kimlikler `icerik-liste.txt`, fikstür, `data/imza.json`, `data/karadul.json`'dan; uydurma kimlik yok, eşleşemeyen hücre yok. Tablo: `docs/sabah/bagla-9-sinif.md`.

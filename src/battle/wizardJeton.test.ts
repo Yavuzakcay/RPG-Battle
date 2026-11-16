@@ -34,14 +34,14 @@ describe('WZ-BAGLA çözüm', () => {
     expect(sheetAvatar(sheet({ classId: 'fighter', subclassId: 'evoker' })).src).toBe('characters/dwarf-male-fighter.webp');
     expect(sheetAvatar(sheet({ subclassId: 'bilinmeyen' })).src).toBe('characters/dwarf-male-wizard.webp');
   });
-  it('Dragonborn ve boyalı karakter (maske yok): genel jeton, eksik bir kez günlüğe', () => {
+  it('Dragonborn: genel jeton, tek satır uyarı bir kez; boyalı/boyasız fark etmez (maske yoksa boyama uygulanmaz, jeton gelir)', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     setSubTokenWarnings(true);
-    expect(wizardSubclassFile('dragonborn', 'erkek', 'evoker', false)).toBeUndefined();
-    expect(wizardSubclassFile('dragonborn', 'erkek', 'evoker', false)).toBeUndefined();
-    expect(wizardSubclassFile('dwarf', 'erkek', 'evoker', true)).toBeUndefined();
-    expect(warn.mock.calls.filter((c) => String(c[0]).includes('dragonborn-erkek-evoker'))).toHaveLength(1);
-    expect(String(warn.mock.calls.at(-1)?.[0])).toContain('maskesi yok');
+    expect(wizardSubclassFile('dragonborn', 'erkek', 'evoker')).toBeUndefined();
+    expect(wizardSubclassFile('dragonborn', 'erkek', 'evoker')).toBeUndefined();
+    expect(wizardSubclassFile('elf', 'kadin', 'evoker')).toBe('elf-kadin-wizard-WZ-A1.webp'); // eskiden "maskesi yok" diye atlanırdı
+    expect(warn.mock.calls.filter((c) => String(c[0]) === 'wizard-jeton eksik: dragonborn-erkek-wizard-WZ-A1')).toHaveLength(1);
+    expect(warn).toHaveBeenCalledTimes(1);
     setSubTokenWarnings(false);
     warn.mockRestore();
   });
@@ -70,16 +70,13 @@ describe('BAGLA-3 Warlock ve Sorcerer', () => {
     }
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     setSubTokenWarnings(true);
-    expect(subclassTokenFile('warlock', 'dwarf', 'erkek', 'cin', false)).toBe('dwarf-erkek-warlock-WL-2.webp');
+    expect(subclassTokenFile('warlock', 'dwarf', 'erkek', 'cin')).toBe('dwarf-erkek-warlock-WL-2.webp');
     expect(sheetAvatar(sheet({ classId: 'warlock', subclassId: 'cin' })).src).toBe('characters/dwarf-erkek-warlock-WL-2.webp');
     expect(sheetAvatar(sheet({ classId: 'sorcerer', subclassId: 'alevbaz', gender: 'kadin' })).src).toBe('characters/dwarf-kadin-sorcerer-SC-2.webp');
-    expect(subclassTokenFile('warlock', 'dragonborn', 'erkek', 'cin', false)).toBeUndefined();
-    expect(subclassTokenFile('sorcerer', 'dwarf', 'erkek', 'bilinmeyen', false)).toBeUndefined();
-    expect(subclassTokenFile('warlock', 'dwarf', 'erkek', 'cin', true)).toBeUndefined();
+    expect(subclassTokenFile('warlock', 'dragonborn', 'erkek', 'cin')).toBeUndefined();
+    expect(subclassTokenFile('sorcerer', 'dwarf', 'erkek', 'bilinmeyen')).toBeUndefined(); // sahte kimlik: sessiz
     const msgs = warn.mock.calls.map((c) => String(c[0]));
-    expect(msgs.some((m) => m.startsWith('warlock-jeton eksik: dragonborn-erkek-cin'))).toBe(true);
-    expect(msgs.some((m) => m.startsWith('sorcerer-jeton eksik: dwarf-erkek-bilinmeyen'))).toBe(true);
-    expect(msgs.some((m) => m.includes('maskesi yok'))).toBe(true);
+    expect(msgs).toEqual(['warlock-jeton eksik: dragonborn-erkek-warlock-WL-2']);
     setSubTokenWarnings(false);
     warn.mockRestore();
   });
@@ -117,19 +114,19 @@ describe('TOPLU-KESIM: 9 sınıf bağlaması', () => {
   it('özel durumlar: Birlik/Barış aynı jeton, Pehlivan dev hali bağlı değil, Şampiyon genel, cinsiyet kuralları', () => {
     const w = vi.spyOn(console, 'warn').mockImplementation(() => {});
     setSubTokenWarnings(true);
-    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'imza_birlik', false)).toBe('dwarf-erkek-cleric-ID9.webp');
-    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'baris-alani', false)).toBe('dwarf-erkek-cleric-ID9.webp');
-    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'pehlivan', false)).toBe('dwarf-erkek-fighter-ID4.webp');
+    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'imza_birlik')).toBe('dwarf-erkek-cleric-ID9.webp');
+    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'baris-alani')).toBe('dwarf-erkek-cleric-ID9.webp');
+    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'pehlivan')).toBe('dwarf-erkek-fighter-ID4.webp');
     expect(Object.values(byClass('fighter').altSiniflar)).not.toContain('ID5');
-    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'champion', false)).toBeUndefined();
+    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'champion')).toBeUndefined();
     expect(sheetAvatar(sheet({ classId: 'fighter', subclassId: 'champion' })).src).toBe('characters/dwarf-male-fighter.webp');
-    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'imza_imparator', false)).toBe('dwarf-erkek-fighter-ID11.webp');
-    expect(subclassTokenFile('fighter', 'dwarf', 'kadin', 'imza_imparator', false)).toBeUndefined();
-    expect(subclassTokenFile('druid', 'dwarf', 'kadin', 'karadul-cemberi', false)).toBe('dwarf-kadin-druid-ID8.webp');
-    expect(subclassTokenFile('druid', 'dwarf', 'erkek', 'karadul-cemberi', false)).toBeUndefined();
-    expect(subclassTokenFile('monk', 'dragonborn', 'erkek', 'astral-disiplini', false)).toBeUndefined();
-    expect(subclassTokenFile('rogue', 'human', 'erkek', 'thief', true)).toBeUndefined(); // boyalı: maske yok
-    expect(w.mock.calls.some((c) => String(c[0]).startsWith('monk-jeton eksik: dragonborn-erkek-astral-disiplini'))).toBe(true);
+    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'imza_imparator')).toBe('dwarf-erkek-fighter-ID11.webp');
+    expect(subclassTokenFile('fighter', 'dwarf', 'kadin', 'imza_imparator')).toBeUndefined();
+    expect(subclassTokenFile('druid', 'dwarf', 'kadin', 'karadul-cemberi')).toBe('dwarf-kadin-druid-ID8.webp');
+    expect(subclassTokenFile('druid', 'dwarf', 'erkek', 'karadul-cemberi')).toBeUndefined();
+    expect(subclassTokenFile('monk', 'dragonborn', 'erkek', 'astral-disiplini')).toBeUndefined();
+    expect(subclassTokenFile('rogue', 'human', 'erkek', 'thief')).toBe('human-erkek-rogue-ID1.webp'); // boyalı ırk: maske yoksa da jeton gelir
+    expect(w.mock.calls.map((c) => String(c[0]))).toEqual(['monk-jeton eksik: dragonborn-erkek-monk-ID2']); // cinsiyet kısıtı sessiz, yalnız gerçek eksik
     setSubTokenWarnings(false);
     w.mockRestore();
     expect(sheetAvatar(sheet({ classId: 'rogue', subclassId: 'dedektif' })).src).toBe('characters/dwarf-male-rogue.webp'.replace('male-rogue', 'erkek-rogue-ID2'));

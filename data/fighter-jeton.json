@@ -1,7 +1,6 @@
 {
  "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-fighter-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır.",
  "sinif": "fighter",
- "maskeHazir": false,
  "irklar": {
   "human": [
    "erkek",
