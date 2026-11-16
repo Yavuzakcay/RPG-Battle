@@ -327,6 +327,201 @@ def check_images(cls, results):
         os.makedirs('docs/sabah/toplu-kesim', exist_ok=True)
         im.save(f'docs/sabah/toplu-kesim/{cls}-{gen}.jpg', quality=85)
 
+# ---------------------------------------------------------------------------------------------------------------------
+# İŞ 1: bağlı bileşen tabanlı kesim (`--yeni`); eski ızgara yöntemi (`process`) yedekte. Parametreler data/kesim-parametre.json.
+KP = json.load(open('data/kesim-parametre.json'))
+
+def nominal_cell(cx, cy, W, H, cls):
+    """Merkez noktasının hücresi (satır-sütun okuma sırası, 1 tabanlı); uzun hücre (warlock 8) sağ sütun 2.-3. satır."""
+    cols, rows = CLASSES[cls][0], CLASSES[cls][1]
+    c = min(cols - 1, int(cx / W * cols)); r = min(rows - 1, int(cy / H * rows))
+    if cls in TALL and c == cols - 1 and r == 2: r = 1
+    n = r * cols + c + 1
+    if cls in TALL:  # sıra: 1-4, 5-7 (satır 2), 8 (uzun), 9-11 (satır 3)
+        if r == 0: n = c + 1
+        elif r == 1: n = 5 + c if c < cols - 1 else 8
+        else: n = 9 + c
+    return n
+
+def key_sheet(a):
+    """Sayfa zemin anahtarı: saf yeşil/magenta'ya yakın büyük bölgeler (hücre zeminleri) silinir; figür içi küçük bölgeler kalır."""
+    p = KP['saf']; d = np.minimum(np.linalg.norm(a.astype(float) - np.array(p['yesil']), axis=2), np.linalg.norm(a.astype(float) - np.array(p['magenta']), axis=2))
+    near = d < KP['bgEsik']
+    lab, n = ndi.label(near)
+    bg = np.zeros(near.shape, bool)
+    if n:
+        sizes = ndi.sum(np.ones_like(lab), lab, index=range(1, n + 1))
+        big = [i for i, s_ in enumerate(sizes, 1) if s_ >= KP['bgMinAlan']]
+        bg = np.isin(lab, big)
+        # figür içinde kalan küçük zemin cepleri (kol-balta arası vb.): saf zemin rengine çok yakın ve yeterince büyükse zemindir
+        pocket = [i for i, s_ in enumerate(sizes, 1) if KP['cepMinAlan'] <= s_ < KP['bgMinAlan']]
+        if pocket:
+            tight = d < KP['cepEsik']
+            l2, n2 = ndi.label(tight)
+            s2 = ndi.sum(np.ones_like(l2), l2, index=range(1, n2 + 1)) if n2 else []
+            bg |= np.isin(l2, [i for i, s_ in enumerate(s2, 1) if s_ >= KP['cepMinAlan']])
+    return ~bg
+
+def drop_lines(fg):
+    L = KP['ciziOpenUzunluk']
+    ln = ndi.binary_opening(fg, structure=np.ones((1, L), bool)) | ndi.binary_opening(fg, structure=np.ones((L, 1), bool))
+    ln &= ~ndi.binary_dilation(ndi.binary_opening(fg, structure=np.ones((16, 16), bool)), iterations=3)
+    # yalnız koyu ince çizgiler (çizgi rengi): figür kılıç/asa gibi uzun ince parçaları renkli olduğundan kalır
+    return ln
+
+def trim_lines(rgba):
+    """Kutunun dış bandına (14 px) değen koyu ince uzun şeritler (ızgara çizgisi artığı) silinir."""
+    a = rgba.copy(); al = a[..., 3] > 0; dk = al & (a[..., :3].max(axis=2) < 80)
+    ln = ndi.binary_opening(dk, structure=np.ones((1, 40), bool)) | ndi.binary_opening(dk, structure=np.ones((40, 1), bool))
+    ln &= ~ndi.binary_dilation(ndi.binary_opening(dk, structure=np.ones((14, 14), bool)), iterations=3)
+    if not ln.any(): return a
+    lab, n = ndi.label(ln, structure=np.ones((3, 3)))
+    band = np.zeros_like(ln); band[:16] = band[-16:] = True; band[:, :16] = band[:, -16:] = True
+    hit = set(np.unique(lab[band & (lab > 0)]))
+    if hit: a[ndi.binary_dilation(np.isin(lab, list(hit)), iterations=2), 3] = 0
+    return a
+
+def sheet_kind(img, box, fg):
+    x0, y0, x1, y1 = box; pad = 12
+    sub = img[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad].astype(float); m = ~fg[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad]
+    if m.sum() < 50: return 'magenta'
+    med = np.median(sub[m], axis=0)
+    return 'green' if np.linalg.norm(med - np.array(KP['saf']['yesil'])) < np.linalg.norm(med - np.array(KP['saf']['magenta'])) else 'magenta'
+
+def peel(a, kind):
+    """Zemin renginde geniş hale/bant (yapay zekâ üretimi bulanık kenar): kenar pikselleri sayfanın zemin tonundaysa katman katman soyulur
+    (en çok `soyAdim` px; kenarlardan içeri yalnız zemin tonlu bağlı pikseller). Figürün kendi renkleri (zemin tonu olmayan) durur."""
+    al = a[..., 3] > 0
+    for _ in range(KP['soyAdim']):
+        edge = al & ~ndi.binary_erosion(al)
+        rgb = a[..., :3].astype(int)
+        ch = (np.minimum(rgb[..., 0], rgb[..., 2]) - rgb[..., 1]) if kind == 'magenta' else (rgb[..., 1] - np.maximum(rgb[..., 0], rgb[..., 2]))
+        kill = edge & (ch > KP['soyKroma'])
+        if not kill.any(): break
+        a[kill, 3] = 0; al = al & ~kill
+    return a
+
+def despill(rgba, kind='magenta'):
+    """Alfa kenarına 2 px içindeki zemin renkli sızıntıyı kısar, kenarı 1 px daraltır; figür içi renklere dokunmaz."""
+    a = peel(rgba.copy(), kind); al = a[..., 3] > 0
+    for _ in range(KP['alfaDaralt']):
+        er = ndi.binary_erosion(al); a[~er, 3] = 0; al = er
+    band = al & ~ndi.binary_erosion(al, iterations=KP['despillBant'])
+    rgb = a[..., :3].astype(int)
+    mag = (np.minimum(rgb[..., 0], rgb[..., 2]) - rgb[..., 1]) > KP['despillKroma']
+    grn = (rgb[..., 1] - np.maximum(rgb[..., 0], rgb[..., 2])) > KP['despillKroma']
+    m = band & mag
+    if m.any():
+        lim = rgb[..., 1] + KP['despillKroma']
+        a[..., 0] = np.where(m, np.minimum(rgb[..., 0], lim), a[..., 0]); a[..., 2] = np.where(m, np.minimum(rgb[..., 2], lim), a[..., 2])
+    g = band & grn
+    if g.any():
+        lim = np.maximum(rgb[..., 0], rgb[..., 2]) + KP['despillKroma']
+        a[..., 1] = np.where(g, np.minimum(rgb[..., 1], lim), a[..., 1])
+    # saf zemin rengine çok yakın kenar pikselleri saydamlaşır
+    near = (np.linalg.norm(a[..., :3].astype(float) - np.array(KP['saf']['yesil']), axis=2) < KP['saf']['yakinlik']) | (np.linalg.norm(a[..., :3].astype(float) - np.array(KP['saf']['magenta']), axis=2) < KP['saf']['yakinlik'])
+    a[band & near, 3] = 0
+    return a
+
+def components_of_sheet(path, cls):
+    """→ {hücre n: (RGBA tam sayfa boyutunda kırpılmış kutu, bbox, uyarı listesi)}; elle kontrol gerektirenler uyarıda 'ELLE'."""
+    img = np.asarray(Image.open(path).convert('RGB')); H, W = img.shape[:2]
+    fg = key_sheet(img)
+    lines = drop_lines(fg)
+    fg &= ~lines
+    fg = ndi.binary_opening(fg, iterations=1)
+    # ızgara çizgisi kırıntıları (kesik kesik ince şeritler): ince uzun küçük bileşenler atılır
+    l0, n0 = ndi.label(fg, structure=np.ones((3, 3)))
+    objs = ndi.find_objects(l0)
+    for i, sl in enumerate(objs, 1):
+        h_, w_ = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+        if min(h_, w_) <= KP['inceSerit'] and max(h_, w_) >= 20 and int((l0[sl] == i).sum()) < 3500: fg[sl] &= ~(l0[sl] == i)
+    # Büyük bileşenler (figürler) birbirine ASLA birleşmez; küçük parçalar (aksesuar, efekt, kılıç ucu) aynı hücredeki en yakın büyük
+    # figüre, aralarındaki uzaklık `birlestirPx` içindeyse eklenir (komşu hücrenin figürüne asla).
+    l0, n0 = ndi.label(fg, structure=np.ones((3, 3)))
+    objs = ndi.find_objects(l0)
+    info = {}
+    for i, sl in enumerate(objs, 1):
+        m = (l0[sl] == i)
+        area = int(m.sum())
+        if area < KP['kucukParca']: continue
+        ys, xs = np.where(m)
+        info[i] = {'sl': sl, 'm': m, 'area': area, 'cx': xs.mean() + sl[1].start, 'cy': ys.mean() + sl[0].start}
+        info[i]['n'] = nominal_cell(info[i]['cx'], info[i]['cy'], W, H, cls)
+    big = [i for i, c in info.items() if c['area'] >= KP['figurMinAlan']]
+    owner = {i: i for i in big}
+    for i, c in info.items():
+        if i in owner: continue
+        best, bd = None, 1e9
+        for j in big:
+            if info[j]['n'] != c['n']: continue
+            sj = info[j]['sl']; sc = c['sl']
+            dx = max(0, max(sj[1].start, sc[1].start) - min(sj[1].stop, sc[1].stop)); dy = max(0, max(sj[0].start, sc[0].start) - min(sj[0].stop, sc[0].stop))
+            if dx > KP['birlestirPx'] * 2 or dy > KP['birlestirPx'] * 2: continue
+            # gerçek en yakın piksel uzaklığı (kutu içinde)
+            y0 = min(sj[0].start, sc[0].start); y1 = max(sj[0].stop, sc[0].stop); x0 = min(sj[1].start, sc[1].start); x1 = max(sj[1].stop, sc[1].stop)
+            sub = l0[y0:y1, x0:x1]
+            dist = ndi.distance_transform_edt(sub != j)
+            d = float(dist[sub == i].min())
+            if d < bd: best, bd = j, d
+        if best is not None and bd <= KP['birlestirPx']: owner[i] = best
+    clusters = []
+    for j in big:
+        members = [info[i] for i, o in owner.items() if o == j]
+        for c in members: c['m'] = c['m']
+        clusters.append({'members': members, 'area': sum(c['area'] for c in members), 'n': info[j]['n'], 'cx': info[j]['cx'], 'cy': info[j]['cy']})
+    byn = {}
+    for c in clusters: byn.setdefault(c['n'], []).append(c)
+    out = {}
+    names = CLASSES[cls][3]
+    for n_, lst in byn.items():
+        lst.sort(key=lambda c: -c['area'])
+        main = lst[0]
+        warn = []
+        keep = list(main['members'])
+        for other in lst[1:]:  # aynı hücredeki ikinci büyük parça: figürden çok küçükse efekt/aksesuar (ruh, kanat, gölge), değilse iki figür
+            if other['area'] <= KP['ikinciOran'] * main['area']: keep += other['members']
+            else: warn.append(f"ELLE: hücrede iki büyük figür ({other['area']} / {main['area']} px)")
+        y0 = min(c['sl'][0].start for c in keep); y1 = max(c['sl'][0].stop for c in keep); x0 = min(c['sl'][1].start for c in keep); x1 = max(c['sl'][1].stop for c in keep)
+        rgba = np.zeros((y1 - y0, x1 - x0, 4), np.uint8); rgba[..., :3] = img[y0:y1, x0:x1]
+        for c in keep:
+            sl = c['sl']; mm = np.zeros((y1 - y0, x1 - x0), bool); mm[sl[0].start - y0:sl[0].stop - y0, sl[1].start - x0:sl[1].stop - x0] = c['m']
+            rgba[..., 3] |= (mm * 255).astype(np.uint8)
+        # iki hücreye taşan (temas eden) figür: kümenin yatay/dikey kapsamı iki nominal hücreyi geçiyorsa elle kontrol
+        cols, rows_ = CLASSES[cls][0], CLASSES[cls][1]
+        if (x1 - x0) > W / cols * (1 + KP['elleKontrol']['ikiHucreOran']) * 1.0 and cls not in TALL: warn.append('ELLE: figür bir hücre genişliğini aşıyor (temas/birleşme)')
+        # kümenin piksel kütlesi başka bir nominal hücreye de düşüyorsa (iki figür birleşmiş): elle kontrol
+        ysx, xsx = np.where(rgba[..., 3] > 0)
+        other = np.mean([nominal_cell(xsx[j] + x0, ysx[j] + y0, W, H, cls) != n_ for j in range(0, len(xsx), 7)]) if len(xsx) else 0
+        if other > KP['elleKontrol']['ikiHucreOran']: warn.append(f'ELLE: figür kütlesinin %{other * 100:.0f}\'i başka hücrede (iki figür temas ediyor)')
+        out[n_] = (despill(trim_lines(rgba), sheet_kind(img, (x0, y0, x1, y1), fg)), (x0, y0, x1, y1), warn)
+    return out
+
+def process_cc(job):
+    cls, path = job
+    m = re.match(rf'{cls}-(male|female|erkek|kadin)-([a-z]+)\.', os.path.basename(path))
+    gen, race = GEN[m.group(1)], m.group(2)
+    res = {'sinif': cls, 'irk': race, 'cinsiyet': gen, 'dosya': os.path.basename(path), 'kesilen': [], 'bos': [], 'uyari': [], 'elle': []}
+    if race not in RACES: res['atlandi'] = 'irk listesinde yok'; return res, {}
+    comps = components_of_sheet(path, cls)
+    names = CLASSES[cls][3]; blanks = CLASSES[cls][4].get(gen, [])
+    valid = {n: v for n, v in comps.items() if n <= len(names) and n not in blanks}
+    for n in range(1, len(names) + 1):
+        if n not in valid and n not in blanks: res['uyari'].append(f'hücre {n} figür bulunamadı')
+    for n, (rgba, bb, w) in valid.items():
+        if any(x.startswith('ELLE') for x in w): res['elle'].append((n, w[0]))
+    hmax = max(v[0].shape[0] for n, v in valid.items() if TALL.get(cls) != n); wmax = max(v[0].shape[1] for n, v in valid.items() if TALL.get(cls) != n)
+    scale = min(FIG_H / hmax, (SIZE - 4) / wmax); res['olcek'] = round(scale, 4)
+    toks = {}
+    for n, (rgba, bb, w) in valid.items():
+        if any(x.startswith('ELLE') for x in w): continue
+        sc = scale
+        if TALL.get(cls) == n: sc = min(FIG_H / rgba.shape[0], (SIZE - 4) / rgba.shape[1])
+        bb2 = bbox(rgba)
+        tok, nh, shifted = render(rgba, bb2, sc, rgba.shape[1] / 2)
+        toks[n] = tok; res['kesilen'].append(n)
+    return res, toks
+
 if __name__ == '__main__':
     only = [a for a in sys.argv[1:] if not a.startswith('--')] or list(CLASSES)
     os.makedirs(f'{OUT}/kucuk', exist_ok=True)

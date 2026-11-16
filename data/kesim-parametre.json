@@ -1,0 +1,35 @@
+{
+ "_not": "İŞ 1: bağlı bileşen tabanlı jeton kesimi (scripts/toplu-kesim.py --yeni). Piksel birimi kaynak sayfa pikselidir (≈2400 px sayfa).",
+ "bgEsik": 70,
+ "bgMinAlan": 2500,
+ "birlestirPx": 40,
+ "kucukParca": 120,
+ "figurMinAlan": 3000,
+ "ciziOpenUzunluk": 60,
+ "dokunanOran": 0.3,
+ "despillBant": 2,
+ "despillKroma": 55,
+ "alfaDaralt": 1,
+ "saf": {
+  "yesil": [
+   0,
+   255,
+   0
+  ],
+  "magenta": [
+   255,
+   0,
+   255
+  ],
+  "yakinlik": 100
+ },
+ "elleKontrol": {
+  "ikiHucreOran": 0.25
+ },
+ "soyAdim": 70,
+ "soyKroma": 45,
+ "inceSerit": 14,
+ "ikinciOran": 0.6,
+ "cepMinAlan": 80,
+ "cepEsik": 40
+}
