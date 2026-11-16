@@ -1,144 +1,101 @@
 {
-  "not": "Kuyruk AS1c + kanat bağlama: savaş jetonu kanat katmanı eşlemesi (yalnız görünüm). Katman jetonun ARKASINDA çizilir. Görünürlük: `herZaman: true` her zaman açık sprite ile; yoksa yalnız süzülürken/uçarken (isAirborne) `dosya`, havada değilken `dosyaKapali` (null ise katman yok). `dosya` null iken katman sessizce yok. Görsel: şeffaf WebP, sol+sağ kanat tek görselde, BEYAZ-GRİ taban; renk `filtre` / `renkFiltreleri` (CSS filter) ile verilir. Yerleşim (kanat başına ayarlanabilir): `capa` = [x, y] kanat KÖKÜ, görselin oranı olarak (0–1); `olcek` = kanat çifti genişliği / jeton genişliği; `omuz` = kanat kökünün jeton sprite yüksekliğinde tepeden oranı (≈ omuz yüksekliği); kök jetonun yatay merkezindedir. `enBoy` = görsel yüksekliği / genişliği. AYNALAMA YOK (Celestial kanadı asimetrik). `minSeviye`: slotun göründüğü en düşük karakter seviyesi. `altSinif` (isteğe bağlı): slotu alt sınıf kimliğine bağlar (örn. `melek`); karakterin seçili alt sınıfı bu kimlikse (ve alt sınıf kayıtta yüklüyse) slot, ırk/alt soy kanadının yerine geçer; alt sınıf seçili ya da yüklü değilse slot hiçbir etki yapmaz. Alan yoksa slot ırk/alt soy/Göksel Uyanış eşlemesiyle (`alt-soy-gorunum.json`) seçilir. SD5: `palet` ({golge, isik} hex) kanadı SVG filtresiyle parlaklık→renk eşler (opak kalır; renkli CSS `filter` yerine); `renkPaletleri` soy kimliğine göre (Dragonborn pul rengi); `esnet: true` görseli kutuya oransız oturtur (Melek kanadı daha yüksek, daha az yassı).",
-  "klasor": "kanat",
-  "slotlar": {
-    "tiefling-kanatli": {
-      "ad": {
-        "tr": "Kanatlı Tiefling kanadı",
-        "en": "Winged Tiefling wing"
-      },
-      "dosya": "tiefling-kanatli.webp",
-      "dosyaKapali": null,
-      "olcek": 1.45,
-      "capa": [
-        0.501,
-        0.708
-      ],
-      "enBoy": 0.3246,
-      "omuz": 0.46,
-      "palet": {
-        "golge": "#4b1d52",
-        "isik": "#b86aa8"
-      }
+ "not": "Kuyruk AS1c + kanat bağlama: savaş jetonu kanat katmanı eşlemesi (yalnız görünüm). Katman jetonun ARKASINDA çizilir. Görünürlük: `herZaman: true` her zaman açık sprite ile; yoksa yalnız süzülürken/uçarken (isAirborne) `dosya`, havada değilken `dosyaKapali` (null ise katman yok). `dosya` null iken katman sessizce yok. Görsel: şeffaf WebP, sol+sağ kanat tek görselde, BEYAZ-GRİ taban; renk `filtre` / `renkFiltreleri` (CSS filter) ile verilir. Yerleşim (kanat başına ayarlanabilir): `capa` = [x, y] kanat KÖKÜ, görselin oranı olarak (0–1); `olcek` = kanat çifti genişliği / jeton genişliği; `omuz` = kanat kökünün jeton sprite yüksekliğinde tepeden oranı (≈ omuz yüksekliği); kök jetonun yatay merkezindedir. `enBoy` = görsel yüksekliği / genişliği. AYNALAMA YOK (Celestial kanadı asimetrik). `minSeviye`: slotun göründüğü en düşük karakter seviyesi. `altSinif` (isteğe bağlı): slotu alt sınıf kimliğine bağlar (örn. `melek`); karakterin seçili alt sınıfı bu kimlikse (ve alt sınıf kayıtta yüklüyse) slot, ırk/alt soy kanadının yerine geçer; alt sınıf seçili ya da yüklü değilse slot hiçbir etki yapmaz. Alan yoksa slot ırk/alt soy/Göksel Uyanış eşlemesiyle (`alt-soy-gorunum.json`) seçilir. SD5: `palet` ({golge, isik} hex) kanadı SVG filtresiyle parlaklık→renk eşler (opak kalır; renkli CSS `filter` yerine); `renkPaletleri` soy kimliğine göre (Dragonborn pul rengi); `esnet: true` görseli kutuya oransız oturtur (Melek kanadı daha yüksek, daha az yassı). İş KQ6-3: Wizard Anka Öğretisi ve Warlock Melek alt sınıf bağlaması kaldırıldı (jeton sanatında Melek kanatları zaten var; Anka'nın alev topu sanatta); `public/kanat/melek-acik.webp` ve `public/efekt/efekt-kanat-anka.webp` dosyaları duruyor.",
+ "klasor": "kanat",
+ "slotlar": {
+  "tiefling-kanatli": {
+   "ad": {
+    "tr": "Kanatlı Tiefling kanadı",
+    "en": "Winged Tiefling wing"
+   },
+   "dosya": "tiefling-kanatli.webp",
+   "dosyaKapali": null,
+   "olcek": 1.45,
+   "capa": [
+    0.501,
+    0.708
+   ],
+   "enBoy": 0.3246,
+   "omuz": 0.46,
+   "palet": {
+    "golge": "#4b1d52",
+    "isik": "#b86aa8"
+   }
+  },
+  "celestial-kirik-kanat": {
+   "ad": {
+    "tr": "Celestial Kırık Kanat",
+    "en": "Celestial Broken Wing"
+   },
+   "dosya": "celestial-kirik-kanat.webp",
+   "dosyaKapali": null,
+   "minSeviye": 3,
+   "olcek": 1.45,
+   "filtre": "",
+   "capa": [
+    0.568,
+    0.438
+   ],
+   "enBoy": 0.734,
+   "omuz": 0.46,
+   "herZaman": true
+  },
+  "dragonborn": {
+   "ad": {
+    "tr": "Dragonborn Draconic Flight kanadı",
+    "en": "Dragonborn Draconic Flight wing"
+   },
+   "dosya": "dragonborn.webp",
+   "dosyaKapali": null,
+   "minSeviye": 5,
+   "olcek": 1.45,
+   "capa": [
+    0.5,
+    0.626
+   ],
+   "enBoy": 0.3659,
+   "omuz": 0.46,
+   "renkPaletleri": {
+    "black": {
+     "golge": "#2c363e",
+     "isik": "#767f86"
     },
-    "celestial-kirik-kanat": {
-      "ad": {
-        "tr": "Celestial Kırık Kanat",
-        "en": "Celestial Broken Wing"
-      },
-      "dosya": "celestial-kirik-kanat.webp",
-      "dosyaKapali": null,
-      "minSeviye": 3,
-      "olcek": 1.45,
-      "filtre": "",
-      "capa": [
-        0.568,
-        0.438
-      ],
-      "enBoy": 0.734,
-      "omuz": 0.46,
-      "herZaman": true
+    "blue": {
+     "golge": "#315b8f",
+     "isik": "#8ca8d6"
     },
-    "dragonborn": {
-      "ad": {
-        "tr": "Dragonborn Draconic Flight kanadı",
-        "en": "Dragonborn Draconic Flight wing"
-      },
-      "dosya": "dragonborn.webp",
-      "dosyaKapali": null,
-      "minSeviye": 5,
-      "olcek": 1.45,
-      "capa": [
-        0.5,
-        0.626
-      ],
-      "enBoy": 0.3659,
-      "omuz": 0.46,
-      "renkPaletleri": {
-        "black": {
-          "golge": "#2c363e",
-          "isik": "#767f86"
-        },
-        "blue": {
-          "golge": "#315b8f",
-          "isik": "#8ca8d6"
-        },
-        "brass": {
-          "golge": "#8d6d35",
-          "isik": "#d9ba8a"
-        },
-        "bronze": {
-          "golge": "#6b482a",
-          "isik": "#af8e73"
-        },
-        "copper": {
-          "golge": "#89502f",
-          "isik": "#ce987b"
-        },
-        "gold": {
-          "golge": "#967918",
-          "isik": "#e4c679"
-        },
-        "green": {
-          "golge": "#30583c",
-          "isik": "#7ea086"
-        },
-        "red": {
-          "golge": "#9c2c2d",
-          "isik": "#da7872"
-        },
-        "silver": {
-          "golge": "#5d8191",
-          "isik": "#b4d2df"
-        },
-        "white": {
-          "golge": "#a8acae",
-          "isik": "#e3e6e8"
-        }
-      }
+    "brass": {
+     "golge": "#8d6d35",
+     "isik": "#d9ba8a"
     },
-    "melek-acik": {
-      "ad": {
-        "tr": "Melek alt sınıfı açık kanadı",
-        "en": "Angel subclass open wing"
-      },
-      "altSinif": "melek",
-      "dosya": "melek-acik.webp",
-      "dosyaKapali": null,
-      "capa": [
-        0.5,
-        0.3
-      ],
-      "enBoy": 0.44,
-      "olcek": 1.2,
-      "omuz": 0.46,
-      "filtre": "",
-      "esnet": true
+    "bronze": {
+     "golge": "#6b482a",
+     "isik": "#af8e73"
     },
-    "anka-ogretisi": {
-      "ad": {
-        "tr": "Anka Öğretisi kanadı (animasyonlu)",
-        "en": "Phoenix Doctrine wing (animated)"
-      },
-      "altSinif": "anka-ogretisi",
-      "dosya": "efekt-kanat-anka.webp",
-      "dosyaKapali": null,
-      "sprite": {
-        "klasor": "efekt",
-        "sutun": 4,
-        "satir": 2,
-        "kareEn": 512,
-        "kareBoy": 382,
-        "kareMs": 100
-      },
-      "capa": [
-        0.5,
-        0.78
-      ],
-      "enBoy": 0.7461,
-      "olcek": 1.5,
-      "omuz": 0.46,
-      "filtre": ""
+    "copper": {
+     "golge": "#89502f",
+     "isik": "#ce987b"
+    },
+    "gold": {
+     "golge": "#967918",
+     "isik": "#e4c679"
+    },
+    "green": {
+     "golge": "#30583c",
+     "isik": "#7ea086"
+    },
+    "red": {
+     "golge": "#9c2c2d",
+     "isik": "#da7872"
+    },
+    "silver": {
+     "golge": "#5d8191",
+     "isik": "#b4d2df"
+    },
+    "white": {
+     "golge": "#a8acae",
+     "isik": "#e3e6e8"
     }
+   }
   }
+ }
 }

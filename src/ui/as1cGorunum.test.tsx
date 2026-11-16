@@ -2,7 +2,7 @@
  * Kuyruk AS1c: alt soy görünümünün savaş jetonuna taşınması (yalnız görünüm; kural sürümü 71 kalır), Human ten maskesi (ten dışı
  * pikseller hiçbir tonda değişmez), kanat katmanı (sprite yok/var, havada/değil).
  */
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import sharp from 'sharp';
 import { AvatarCircle, CharacterFigure, TokenFigure } from './Avatar';
@@ -18,6 +18,15 @@ import { LookFrame } from './LookFrame';
 import type { CharacterSheet } from '../rules/stats';
 
 const sheet = (patch: Partial<CharacterSheet>): CharacterSheet => ({ ...blankCharacter('as1c').sheet, name: 'Görünüm', ...patch });
+
+
+/**
+ * KQ6-3: Wizard Anka Öğretisi ve Warlock Melek kanat bağlaması veriden kaldırıldı (jeton sanatı kanatlı: Melek; Anka'nın alev topu sanatta).
+ * `altSinif` kanat slotu mekanizmasını sınayan testler eski girişleri YALNIZ bu blokta geçici ekler.
+ */
+const OLD_SLOTS = {"melek-acik": {"ad": {"tr": "Melek alt sınıfı açık kanadı", "en": "Angel subclass open wing"}, "altSinif": "melek", "dosya": "melek-acik.webp", "dosyaKapali": null, "capa": [0.5, 0.3], "enBoy": 0.44, "olcek": 1.2, "omuz": 0.46, "filtre": "", "esnet": true}, "anka-ogretisi": {"ad": {"tr": "Anka Öğretisi kanadı (animasyonlu)", "en": "Phoenix Doctrine wing (animated)"}, "altSinif": "anka-ogretisi", "dosya": "efekt-kanat-anka.webp", "dosyaKapali": null, "sprite": {"klasor": "efekt", "sutun": 4, "satir": 2, "kareEn": 512, "kareBoy": 382, "kareMs": 100}, "capa": [0.5, 0.78], "enBoy": 0.7461, "olcek": 1.5, "omuz": 0.46, "filtre": ""}};
+const injectOld = () => { Object.assign(kanat.slotlar as Record<string, unknown>, JSON.parse(JSON.stringify(OLD_SLOTS))); };
+const removeOld = () => { for (const k of Object.keys(OLD_SLOTS)) delete (kanat.slotlar as Record<string, unknown>)[k]; };
 
 describe('savaş jetonu görünümü (Avatar.look, tek çözücü)', () => {
   it('sürüm 71 değişmedi', () => { expect(CURRENT_RULES).toBeGreaterThanOrEqual(71); });
@@ -60,21 +69,23 @@ describe('kanat katmanı (bağlı)', () => {
   const s = kanat.slotlar as unknown as Record<string, Slot>;
   const svgOf = (raceId: string, lineageId: string | undefined, level: number, flying: boolean, awakening?: string) =>
     renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={sheetAvatar(sheet({ raceId, lineageId, level, ...(awakening ? { celestialAwakening: awakening } : {}) })).look} flying={flying} /></svg>);
-  it('eşleme: üç slot, dosyalar bağlı ve gerçekten var, çapa/oran/omuz veride, Dragonborn 10 renk filtresi', async () => {
-    expect(Object.keys(s).sort()).toEqual(['anka-ogretisi', 'celestial-kirik-kanat', 'dragonborn', 'melek-acik', 'tiefling-kanatli']);
-    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.568, 0.438], dragonborn: [0.5, 0.626], 'melek-acik': [0.5, 0.3] };
-    for (const [id, w] of Object.entries(s).filter(([k]) => k !== 'anka-ogretisi')) {
+  it('eşleme: üç slot (Anka ve Melek bağlaması KQ6-3 ile kaldırıldı), dosyalar bağlı ve gerçekten var, çapa/oran/omuz veride, Dragonborn 10 renk filtresi', async () => {
+    expect(Object.keys(s).sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']);
+    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.568, 0.438], dragonborn: [0.5, 0.626] };
+    for (const [id, w] of Object.entries(s)) {
       expect(w.dosya, id).toBe(`${id}.webp`);
       const meta = await sharp(`public/kanat/${w.dosya}`).metadata();
       expect(meta.hasAlpha, id).toBe(true);
       // SD5: Melek kanadı oransız (esnet) oturur; diğerlerinde en-boy görselinki.
       if (!(w as { esnet?: boolean }).esnet) expect(w.enBoy, id).toBeCloseTo(meta.height! / meta.width!, 3);
       expect(w.capa, id).toEqual(capa[id as keyof typeof capa]);
-      expect(w.olcek).toBeCloseTo(id === 'melek-acik' ? 1.2 : 1.45); expect(w.omuz).toBeCloseTo(0.46); expect(w.enBoy).toBeGreaterThan(0.2);
+      expect(w.olcek).toBeCloseTo(1.45); expect(w.omuz).toBeCloseTo(0.46); expect(w.enBoy).toBeGreaterThan(0.2);
     }
     expect(Object.keys((s.dragonborn as unknown as { renkPaletleri: Record<string, unknown> }).renkPaletleri).sort()).toEqual(['black', 'blue', 'brass', 'bronze', 'copper', 'gold', 'green', 'red', 'silver', 'white']);
   });
-  it('Anka Öğretisi: animasyonlu 4x2 sayfa, yalnız havada, kanat figürle aynalanır, ilk kare sabit (rozet)', async () => {
+  it('Anka Öğretisi (eski giriş geçici eklenir): animasyonlu 4x2 sayfa, yalnız havada, kanat figürle aynalanır, ilk kare sabit (rozet)', async () => {
+    injectOld();
+    try {
     const w = s['anka-ogretisi'] as unknown as { altSinif: string; dosya: string; sprite: { klasor: string; sutun: number; satir: number; kareEn: number; kareBoy: number }; enBoy: number };
     expect(w.altSinif).toBe('anka-ogretisi');
     const meta = await sharp(`public/${w.sprite.klasor}/${w.dosya}`).metadata();
@@ -88,6 +99,7 @@ describe('kanat katmanı (bağlı)', () => {
     const flipped = renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={look} flying flip /></svg>);
     expect(flipped).toContain('wing-sprite'); expect(flipped).toContain('scale(-1 1)');
     expect(renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={look} /></svg>)).not.toContain('wing-sprite');
+      } finally { removeOld(); }
   });
   it('görünürlük: Tiefling Kanatlı ve Dragonborn yalnız havada; Celestial Kırık Kanat her zaman', () => {
     expect(lineageLook({ raceId: 'tiefling', lineageId: 'winged' }, { flying: true }).wing).toMatchObject({ id: 'tiefling-kanatli', src: 'kanat/tiefling-kanatli.webp', open: true });
@@ -122,7 +134,23 @@ describe('kanat katmanı (bağlı)', () => {
   });
 });
 
-describe('alt sınıfa bağlı kanat slotu (altSinif)', () => {
+describe('KQ6-3: Anka ve Melek alt sınıf kanat bağlaması kaldırıldı', () => {
+  it('veride yok; Wizard Anka / Warlock Melek jetonunda (rozet ve savaş) kod katmanı kanat çıkmaz', () => {
+    const slots = kanat.slotlar as Record<string, { altSinif?: string }>;
+    expect(Object.values(slots).some((w) => w.altSinif)).toBe(false);
+    for (const [cls, sub] of [['wizard', 'anka-ogretisi'], ['warlock', 'melek']] as const) {
+      expect(wingSlotOfSubclass(sub)).toBeUndefined(); expect(hasSubclassWing(sub)).toBe(false);
+      for (const raceId of ['celestial', 'human']) {
+        const a = sheetAvatar(sheet({ raceId, classId: cls, subclassId: sub, level: 10 }));
+        expect(a.look?.subclassId).toBeUndefined();
+        expect(lineageLook({ raceId, classId: cls, subclassId: sub, level: 10 }, { flying: true, ability: true }).wing).toBeNull();
+      }
+    }
+  });
+});
+
+describe('alt sınıfa bağlı kanat slotu (altSinif; mekanizma, eski Melek/Anka girişleriyle)', () => {
+  beforeAll(injectOld); afterAll(removeOld);
   type Slot = { altSinif?: string; dosya: string | null; herZaman?: boolean };
   const s = kanat.slotlar as unknown as Record<string, Slot>;
   const FAKE = 'fiction-wing-sub';
@@ -183,6 +211,7 @@ describe('alt sınıfa bağlı kanat slotu (altSinif)', () => {
 });
 
 describe('karakter ekranlarında kanat (uçma yeteneği; havada olması gerekmez)', () => {
+  beforeAll(injectOld); afterAll(removeOld);
   const ab = (sh: Parameters<typeof lineageLook>[0]) => lineageLook(sh, { ability: true }).wing;
   it('uçma yeteneği olan karakter kanatlı: Tiefling Kanatlı, Dragonborn (5+), Celestial Kırık Kanat; yeteneği olmayan değil', () => {
     expect(ab({ raceId: 'tiefling', lineageId: 'winged', level: 1 })).toMatchObject({ id: 'tiefling-kanatli', open: true });

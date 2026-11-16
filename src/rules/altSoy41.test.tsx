@@ -215,7 +215,7 @@ describe('görünüm verisi', () => {
     expect(lineageLook({ raceId: 'orc', lineageId: 'glacier' }).filter).toContain('hue-rotate');
   });
   it('kanat slotları (Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn, alt sınıfa bağlı Melek): sprite bağlı; Tiefling ve Dragonborn yalnız havadayken', () => {
-    expect(WING_SLOTS.sort()).toEqual(['anka-ogretisi', 'celestial-kirik-kanat', 'dragonborn', 'melek-acik', 'tiefling-kanatli']);
+    expect(WING_SLOTS.sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']); // KQ6-3: Anka ve Melek bağlaması kaldırıldı
     for (const [race, lin] of [['tiefling', 'winged'], ['dragonborn', 'red']] as const) {
       expect(lineageLook({ raceId: race, lineageId: lin, level: 5 }, { flying: false }).wing).toBeNull();
       expect(lineageLook({ raceId: race, lineageId: lin, level: 5 }, { flying: true }).wing).not.toBeNull();

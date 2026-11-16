@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-19 — KQ6-3: Wizard Anka ve Warlock Melek kanat katmanı kaldırıldı (yalnız görünüm)
+
+- Doğrulama (jeton webp'si katman kapalıyken, `docs/sabah/kanat-jeton-sanati.png`): Melek jetonlarının (WL-7) sanatında kanatlar zaten var; oyunun `melek-acik` katmanı üstüne ikinci çift koyuyordu. Anka (WZ-A3) jetonunda sanatta kanat yok (alev topu var); kod katmanı `anka-ogretisi` (alev kanadı sprite'ı, yalnız havada) tek kanat kaynağıydı, istek gereği kaldırıldı.
+- `data/kanat-esleme.json`: `melek-acik` ve `anka-ogretisi` slotları (altSinif bağlamaları, bütün ırk/cinsiyetlerde) çıktı; kalan slotlar tiefling-kanatli, celestial-kirik-kanat, dragonborn. `public/kanat/melek-acik.webp` ve `public/efekt/efekt-kanat-anka.webp` duruyor. Çözücü (`lineageLook`, `wingSlotOfSubclass`) aynı: `altSinif` mekanizması testlerde eski girişleri geçici ekleyerek sınanıyor. Kanatlı başka ırk/soy (Tiefling Kanatlı, Dragonborn, Celestial Kırık Kanat) değişmedi. `as1cGorunum` ve `altSoy41` testleri güncellendi; rozet (`ability`) ve savaş (`sheetAvatar` look) kanat çıkmaz testi eklendi.
+
 ## 2026-12-18 — KESIM-1: sorunlu jetonlar bağlı bileşenle yeniden kesildi (yalnız varlık)
 
 - `scripts/toplu-kesim.py --yeni-uygula` (yöntem `components_of_sheet`, parametreler `data/kesim-parametre.json`): zemin anahtarı sayfa düzeyinde (saf yeşil/magenta'ya yakın büyük bölgeler + figür içi saf zemin cepleri), ızgara çizgisi/kırıntıları atılır, bileşenler hücre merkezine göre atanır. Büyük figürler birbirine birleşmez; küçük parçalar (efekt, duman, aksesuar) yalnızca AYNI hücrenin figürüne, uzaklık `birlestirPx` (40) içindeyse eklenir. Kural: figürle bağlı ya da merkezi o hücredeki parça figürün efektidir (kalır); merkezi başka hücrede olan, hücre sınırından taşan parça (komşu artığı) o jetona girmez. Despill yalnız alfa kenarına 2 px yakın, saf #00FF00/#FF00FF'ye yakın piksellerde, kenar 1 px daralır; sanatın yeşil/pembe/turuncu auralarına dokunulmaz (`soyAdim` 0).
