@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-16 — HS1 sonrası testler yeni duruma uyarlandı (klasik Kale geri gelmeyecek; yalnız test/veri, kural/kayıt sürümü değişmedi)
+
+- k71a/k71b: duvarlı açık harita 23 → 21 (`ONAYLI` betiğinde `kale` zaten yoktu), sur yüzeyi (kaba) 8 → 7 (kale çıktı, `kale-avlu` kendi kaydıyla), `kale` mapId'leri `kale-avlu`.
+- balance "en çok 9 düşman yeri": asıl suçlu kale değil, `dungeon-merdiven` senaryosu (HS1 düz Merdiven varyantını sildi, `merdiven-yuruyen` 9 yerli): 5. seviye listesi 12 → 9 düşman (ghast 4→3, wight 3→2, skeleton 2→1). Test mantığı ve canavar verisi değişmedi.
+- k67b meşale: Kale ve avlu'nun gece varyantı ve meşalesi yok; gerçek gece meşaleli kale haritası `kale-onu` (gece) kullanıldı, harita boyutu testte artık haritadan okunuyor. summonSmoke: `kale` senaryosu Kale ve avlu'da (31×17, 17 düşman) at 20 turda ulaşmıyor; aynı haritadaki `kale-avlu-garnizon` senaryosu.
+- Kale altın imzaları (13 regresyon dosyası, HS1: klasik Kale kaldırıldı): 1cfe61ee421e → 3c88f5773a11 (altSoy, binek, MB3, MB7, k62acik, k73b/c/e/f), a606f6daa274 → 0c2c44ef3b2c (MB2, MB5, k74), c9e5665a294a → fd4e5d12f069 (MB4); col/magara/orman imzaları aynı; sürüm eşitlikleri (74=73, 71=70 vb.) bozulmadı (testlerde yeşil).
+- content.test: `scripts/icerik-kontrol.ts` `STRINGS_TR.content` (satır 22) tembel TR parçasına (`strings.tr2.ts`, Kuyruk 34a) taşındığı için `T` tanımsızdı; `await loadTrExtra(); t().content`.
+- as2.test: yalnız yerel `icerik/` tam değilse (12 dosya ve 109 paket alt sınıfı) atlanır, eksikse konsola dosya ve alt sınıf sayısı yazılır (yerelde 97: SRD'nin 12 alt sınıfı dosyalarda yok).
+
 ## 2026-12-15 — Kırmızı test denetimi (jeton değişiklikleri temiz; NA1 kalıntıları düzeltildi)
 
 - Jeton commit'leri (4fd3778 WZ-KESIM … cf45611) hiçbir testi kırmadı: 10 şüpheli test dosyası 4fd3778~1'de, 987fc6d'de ve ef370ee'de aynı kırmızıydı.

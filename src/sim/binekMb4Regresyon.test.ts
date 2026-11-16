@@ -15,7 +15,8 @@ declare const process: { env: Record<string, string | undefined> };
 const SEEDS = Number(process.env.BINEK_MB4_TOHUM ?? 1);
 const IDS = ['col', 'kale', 'magara', 'orman'] as const;
 /** Sürüm 71 imzaları (`hash`): MB4 öncesi ağaçtan. */
-const ALTIN_1: Record<string, string> = { col: 'c3c285b62303', kale: 'c9e5665a294a', magara: '398894b22cf5', orman: 'b147dc655577' };
+const ALTIN_1: Record<string, string> = { col: 'c3c285b62303', kale: 'fd4e5d12f069', magara: '398894b22cf5', orman: 'b147dc655577' };
+// HS1: klasik Kale kaldırıldı, `kale` senaryosu Kale ve avlu'da (31×17) çalışıyor; kale imzası c9e5665a294a → fd4e5d12f069 (col/magara/orman aynı).
 const ALTIN_30: Record<string, string> = { col: '4ac81c7dc804', kale: 'b1bcc2fa6844', magara: 'e57c6df85501', orman: '82bdd9f06480' };
 
 afterEach(() => setDefaultRuleVersion(CURRENT_RULES));

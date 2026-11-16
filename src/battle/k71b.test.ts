@@ -73,7 +73,7 @@ describe('K71b yüzey ve DC (veri)', () => {
     expect(surfaceAt(field([A(), T()], { A: H(6), T: H(11) }, { objects: [eye] }), H(7))).toBeNull();
   });
   it('sur ezmesi: kale haritalarında duvar `s` kaba (DC 10), 30 ft; hapishane duvarı normal (DC 12)', () => {
-    const kale = field([A(), T()], { A: H(3), T: H(11) }, { mapId: 'kale', tiles: tilesWith(7) });
+    const kale = field([A(), T()], { A: H(3), T: H(11) }, { mapId: 'kale-avlu', tiles: tilesWith(7) });
     expect(dikeyOf(kale)?.yuzey).toEqual({ s: 'kaba' });
     expect(surfaceAt(kale, H(7))).toMatchObject({ sinif: 'kaba', dc: 10, topFt: 30 });
     const pr = field([A(), T()], { A: H(3), T: H(11) }, { mapId: 'hapishane-dis-halka', variantId: 'los', tiles: tilesWith(7) });
@@ -263,13 +263,13 @@ describe('K71b YZ tırmanma kuralı (K15)', () => {
   });
 });
 
-describe('K71b 23 haritanın dikey verisi (Görev 0)', () => {
+describe('K71b 21 haritanın dikey verisi (Görev 0; HS1: klasik Kale kaldırıldı, 23 → 21)', () => {
   const dik = (id: string) => maps.find((m) => m.id === id)?.variants[0]?.dikey;
-  it('betikteki ONAYLI tablosuyla aynı duvar boyu (kale 30, batak-kale 25, kasaba 15, ork kampı 10…)', () => {
+  it('betikteki ONAYLI tablosuyla aynı duvar boyu (kale-avlu 30, batak-kale 25, kasaba 15, ork kampı 10…)', () => {
     const table = Object.fromEntries([...k71Script.matchAll(/'([a-z0-9-]+)': _duvar\((\d+)/g)].map((m) => [m[1], Number(m[2])]));
-    expect(Object.keys(table)).toHaveLength(23);
+    expect(Object.keys(table)).toHaveLength(21);
     for (const [id, ft] of Object.entries(table)) expect([id, dik(id)?.harfFt]).toEqual([id, { s: ft, O: ft }]);
-    expect(dik('kale')?.harfFt?.s).toBe(30);
+    expect(dik('kale-avlu')?.harfFt?.s).toBe(30);
     expect(dik('batak-kale')?.harfFt?.s).toBe(25);
     expect(dik('orman-ork-kampi')?.harfFt?.s).toBe(10);
   });
@@ -279,11 +279,11 @@ describe('K71b 23 haritanın dikey verisi (Görev 0)', () => {
     expect(dik('kale-avlu')?.tavanBolge).toEqual([{ dikdortgen: [22, 4, 24, 6], ft: 15 }, { dikdortgen: [22, 10, 24, 12], ft: 15 }]);
     expect(dik('kale-ic-avlu')?.tavanBolge).toBeUndefined();
   });
-  it('sur yüzeyi (kaba) 8 kale/şehir haritasında', () => {
+  it('sur yüzeyi (kaba) 7 kale/şehir haritasında', () => {
     expect(maps.filter((m) => m.variants[0]?.dikey?.yuzey?.s === 'kaba').map((m) => m.id).sort()).toEqual(
-      ['batak-kale', 'beyaz-sehir-dis-kapi', 'beyaz-sehir-saray-avlusu', 'kale', 'kale-avlu', 'kale-baskini', 'kale-ic-avlu', 'kale-onu']);
+      ['batak-kale', 'beyaz-sehir-dis-kapi', 'beyaz-sehir-saray-avlusu', 'kale-avlu', 'kale-baskini', 'kale-ic-avlu', 'kale-onu']);
   });
   it('sürüm 55: haritanın dikey ezmesi okunmaz (duvar 20 ft)', () => {
-    expect(obstacleTopFt(field([A(), T()], { A: H(3), T: H(11) }, { ver: 55, mapId: 'kale', tiles: tilesWith(7) }), H(7))).toBe(20);
+    expect(obstacleTopFt(field([A(), T()], { A: H(3), T: H(11) }, { ver: 55, mapId: 'kale-avlu', tiles: tilesWith(7) }), H(7))).toBe(20);
   });
 });
