@@ -121,7 +121,8 @@ describe('A1 Görev 5: Nesne fırlat (oyuncu komutu)', () => {
     expect(JSON.stringify(replay([{ type: 'battle_started', state: s } as BattleEvent, ...r.events]))).toBe(JSON.stringify(r.state));
   });
   it('orta nesne 15 ft, hafif 30 ft; ağır nesne fırlatılmaz; bitişik olmayan nesne ve boş altıgen', () => {
-    const s = scene();
+    // NA1 (sürüm 80+): fırlatma mesafesi ağırlıktan (sandık 25 lb → 20 ft); bu test A1'in sınıf kuralını (sürüm 79) sınar.
+    const s = scene(undefined, 79);
     const table = objAt(s, o(2, 3))!;
     expect(execute(s, throwCmd(table.id, o(9, 3)), P1, mid).ok).toBe(false);
     expect(execute(s, throwCmd(objAt(s, o(4, 3))!.id, o(6, 3)), P1, mid).ok).toBe(false);

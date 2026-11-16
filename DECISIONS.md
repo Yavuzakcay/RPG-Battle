@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-15 — Kırmızı test denetimi (jeton değişiklikleri temiz; NA1 kalıntıları düzeltildi)
+
+- Jeton commit'leri (4fd3778 WZ-KESIM … cf45611) hiçbir testi kırmadı: 10 şüpheli test dosyası 4fd3778~1'de, 987fc6d'de ve ef370ee'de aynı kırmızıydı.
+- **HS1 (9b932f0, 2026-11-15) ile kırılanlar** (9b932f0~1'de hepsi yeşildi): k67b, k71a, k71b, altSoyRegresyon, balance, binekMb2Regresyon, summonSmoke (+ diğer sim regresyonları). Neden: HS1 klasik Kale haritasını (`harita/kale/kale-klasik.json`, id `kale`) bilerek sildi, `kale` kimliği `kale-avlu`'ya takma ad oldu (`MAP_ALIASES`) ve kale sim senaryoları Kale ve avlu'ya bağlandı ("denge ölçülmedi"). Harita sayısı 23 → 21 (k71: ONAYLI listesi `kale`yi hâlâ sayıyor); `kale` imzaları artık başka bir haritada çalıştığından altın imzalar ve "en çok 9 düşman yeri" kaydı. Harita içeriği değişmedi, kimlik farklı haritaya kaydı. Altın imzalar ve testler yeni değerlerle ezilmedi; HS1 sahibinin kararı bekliyor (testleri Kale ve avlu'ya göre güncelle ya da ONAYLI/imzaları yeniden üret).
+- **content.test.ts (check:icerik kurgusal paket):** 9b932f0'da yeşil, edcacc7 (OD1) ve sonrasında kırmızı; `icerik-kontrol.ts` `summary` okuyamıyor. Jeton işinden önce; dokunulmadı.
+- **NA1 (c6e25e5) ile kırılanlar, düzeltildi:** a1.test (fırlatma mesafesi sürüm 80'de ağırlıktan: sandık 25 lb → 20 ft; test A1 sınıf kuralını sınadığı için sürüm 79'a sabitlendi), aciklamalarTr (esya anahtarı `potions-of-healing` gerçek eşya kimliği değil: `potion-of-healing`; `ObjectCard.objectDescription` çoğul SRD kimliğine tekile düşer; nesneAgirlik testi aynı).
+- as2.test (yerelde): `icerik-liste.txt` 97 paket alt sınıfı gösteriyor = 109 − SRD'nin 12 alt sınıfı (sınıf başına tam 1 eksik, Barbarian 7/8: `path-of-the-berserker`). Yükleme hatası değil, yerel `icerik/ek-*.json` dosyalarında SRD 12'nin bulunmaması.
+- "Jeton eksik" uyarısı sahte/tabloda olmayan alt sınıf kimliklerinde (champion, evoker dışı, kivilcim-okulu…) zaten basılmıyor (cf45611); testlerde ayrıca kapalı.
+
 ## 2026-12-14 — Jeton bağlama kuralı: maske yokluğu jetonu atlatmaz (yalnız görünüm; kural/kayıt sürümü değişmedi)
 
 - Kesilmiş ırk×cinsiyet×sınıf(×hücre) jetonu varsa her zaman bağlanır; ten/soy maskesi yoksa boyama yalnızca uygulanmaz (`tint.ts` maskesiz boyamada orijinal görseli bırakır), maskeler eklenince kendiliğinden devreye girer. `maskeHazir` bayrağı ve `tinted` parametresi kaldırıldı.

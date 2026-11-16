@@ -16,7 +16,8 @@ const clampLb = (n: number): number => Math.min(AGIRLIK.maxLb, Math.max(AGIRLIK.
 /** Nesne türünün Türkçe açıklaması (yoksa undefined). */
 export function objectDescription(kind: MapObject['kind']): string | undefined {
   const id = OBJECTS[kind]?.srd?.split(':')[1];
-  return id ? trAciklama('esya', id) : undefined;
+  // SRD kimliği çoğul olabilir (potions-of-healing); eşya kaydı tekil (potion-of-healing).
+  return id ? trAciklama('esya', id) ?? trAciklama('esya', id.replace(/^potions-/, 'potion-')) : undefined;
 }
 
 export function ObjectCard(props: {

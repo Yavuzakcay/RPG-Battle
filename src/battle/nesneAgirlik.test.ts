@@ -179,7 +179,8 @@ describe('NA1 yeni nesne türleri ve kimlikler', () => {
     for (const k of ['potion', 'wand', 'amulet', 'ring'] as const) {
       const [file, id] = (OBJECTS[k].srd as string).split(':');
       expect(file).toBe('magic-items'); expect(mi.has(id as string), k).toBe(true);
-      expect((aciklamalar.esya as Record<string, string>)[id as string], `${k} Türkçe açıklama`).toBeTruthy();
+      const esya = aciklamalar.esya as Record<string, string>; // eşya kaydı tekil kimlikli (potion-of-healing); SRD kimliği çoğul olabilir
+      expect(esya[id as string] ?? esya[(id as string).replace(/^potions-/, 'potion-')], `${k} Türkçe açıklama`).toBeTruthy();
     }
   });
   it('srdIds kuralı: SRD karşılığı olmayan tür yalnız `dekor` işaretiyle; yinelenen srd yok', () => {
