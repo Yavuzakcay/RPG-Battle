@@ -522,7 +522,47 @@ def process_cc(job):
         toks[n] = tok; res['kesilen'].append(n)
     return res, toks
 
+def apply_new(old_scales):
+    """İŞ 1 uygulaması: denetimde işaretli (sınıf-hücreli) jetonlar yeni kesimle yeniden yazılır; ELLE/figürsüz hücrelerde eski jeton kalır.
+    Ölçek: sayfanın eski ölçeği (kardeşlerle tutarlı). Çıktı: data/kesim-yeniden.json (yeniden kesilen, elle, kapsam dışı)."""
+    den = json.load(open('/tmp/claude-0/s/denetim.json'))['sorunlu']
+    todo = {}
+    out = {'yeniden': [], 'elle': [], 'figursuz': [], 'kapsamDisi': []}
+    for name in den:
+        m = re.match(r'^([a-z]+)-(erkek|kadin)-([a-z]+)-(WL-|SC-|ID)(\d+)$', name)
+        if not m: out['kapsamDisi'].append(name + ' (' + ('wizard WZ ayrı betik' if '-WZ-' in name else 'sınıf-genel jeton, ham sayfa yok') + ')'); continue
+        race, gen, cls, pre, n = m.group(1), m.group(2), m.group(3), m.group(4), int(m.group(5))
+        todo.setdefault((cls, gen, race), []).append((name, n))
+    inv = {'erkek': 'male', 'kadin': 'female'}
+    for (cls, gen, race), items in sorted(todo.items()):
+        cand = [f'{RAW}/{cls}-{inv[gen]}-{race}.jpg', f'{RAW}/{cls}-{gen}-{race}.jpg']
+        path = next((c for c in cand if os.path.exists(c)), None)
+        if not path: out['kapsamDisi'].append(f'{cls}-{gen}-{race} (ham sayfa yok)'); continue
+        comps = components_of_sheet(path, cls)
+        sc0 = old_scales.get((cls, gen, race))
+        for name, n in items:
+            c = comps.get(n)
+            if c is None: out['figursuz'].append(f'{name}: yeni yöntem figür bulamadı, eski kaldı'); continue
+            rgba, bb, warn = c
+            if any(w.startswith('ELLE') for w in warn): out['elle'].append(f'{name}: {warn[0]}'); continue
+            r2 = bbox(rgba)
+            sc = sc0 or min(FIG_H / rgba.shape[0], (SIZE - 4) / rgba.shape[1])
+            if TALL.get(cls) == n: sc = min(FIG_H / rgba.shape[0], (SIZE - 4) / rgba.shape[1])
+            tok, nh, shifted = render(rgba, r2, min(sc, (SIZE - 4) / rgba.shape[1], 240 / rgba.shape[0] * 1.0), rgba.shape[1] / 2)
+            fn = f'{name}.webp'
+            tok.save(f'{OUT}/{fn}', 'WEBP', quality=92, alpha_quality=100, method=4)
+            tok.resize((96, 96), Image.LANCZOS).save(f'{OUT}/kucuk/{fn}', 'WEBP', quality=82, method=4)
+            out['yeniden'].append(name)
+    json.dump(out, open('data/kesim-yeniden.json', 'w'), ensure_ascii=False, indent=1)
+    return out
+
 if __name__ == '__main__':
+    if '--yeni-uygula' in sys.argv:
+        scales = {}
+        for f in glob.glob('/tmp/claude-0/s/toplu-*.json'):
+            for r in json.load(open(f)):
+                if 'olcek' in r: scales[(r['sinif'], r['cinsiyet'], r['irk'])] = r['olcek']
+        o = apply_new(scales); print({k: len(v) for k, v in o.items()}); sys.exit(0)
     only = [a for a in sys.argv[1:] if not a.startswith('--')] or list(CLASSES)
     os.makedirs(f'{OUT}/kucuk', exist_ok=True)
     for cls in only:

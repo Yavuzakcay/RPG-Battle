@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-18 — KESIM-1: sorunlu jetonlar bağlı bileşenle yeniden kesildi (yalnız varlık)
+
+- `scripts/toplu-kesim.py --yeni-uygula` (yöntem `components_of_sheet`, parametreler `data/kesim-parametre.json`): zemin anahtarı sayfa düzeyinde (saf yeşil/magenta'ya yakın büyük bölgeler + figür içi saf zemin cepleri), ızgara çizgisi/kırıntıları atılır, bileşenler hücre merkezine göre atanır. Büyük figürler birbirine birleşmez; küçük parçalar (efekt, duman, aksesuar) yalnızca AYNI hücrenin figürüne, uzaklık `birlestirPx` (40) içindeyse eklenir. Kural: figürle bağlı ya da merkezi o hücredeki parça figürün efektidir (kalır); merkezi başka hücrede olan, hücre sınırından taşan parça (komşu artığı) o jetona girmez. Despill yalnız alfa kenarına 2 px yakın, saf #00FF00/#FF00FF'ye yakın piksellerde, kenar 1 px daralır; sanatın yeşil/pembe/turuncu auralarına dokunulmaz (`soyAdim` 0).
+- Uygulama: denetimde (`scripts/kesim-denetim.py`, 125 sorunlu) işaretli sınıf-hücreli 90 jetondan 87'si yeniden yazıldı (+ kucuk/), eski ölçek korunarak; 3'ü ELLE (iki figür temas ediyor, eski jeton kaldı): celestial-kadin-barbarian-ID8, celestial-erkek-warlock-WL-8, celestial-kadin-warlock-WL-8 (Gulyabani uzun hücre). 35 jeton kapsam dışı (Wizard WZ, ayrı betik). Önce/sonra: `docs/sabah/kesim-sonrasi.png`; liste `data/kesim-yeniden.json`; test `src/data/karakterKesim.test.ts`.
+
 ## 2026-12-17 — FH1: hedefsiz altıgene büyü (kural sürümü 81; kayıt sürümü değişmedi)
 
 - Tasarım: yeni yol yok, `freeHexTarget` (K30) / `executeFireHex` (`ignite.ts`) genelleştirildi. Sürüm ≥ 81 (`src/battle/freeHexSurum.ts` `FREE_HEX_VERSION`) ve Game Master anahtarı `freeHexTarget` (varsayılan açık) açıkken her tek hedefli saldırı/otomatik isabet/save büyüsü (alansız, bölge büyüsü değil; buff/iyileştirme/çağırma hariç) `cast_spell.targetHex` ile menzil ve görüşteki her altıgene atılır (`hexCastable`). Alan büyüleri (koni, çizgi, küre, küp) eskisi gibi. 80 ve altı: yalnız ateşli büyü ve yanıcı altıgen (eski kayıt/replay aynen, ignite testleri sürüm 80'e sabitlendi).

@@ -21,12 +21,12 @@
    0,
    255
   ],
-  "yakinlik": 100
+  "yakinlik": 80
  },
  "elleKontrol": {
   "ikiHucreOran": 0.25
  },
- "soyAdim": 70,
+ "soyAdim": 0,
  "soyKroma": 45,
  "inceSerit": 14,
  "ikinciOran": 0.6,
