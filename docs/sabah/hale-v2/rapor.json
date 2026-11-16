@@ -1,0 +1,182 @@
+[
+ {
+  "ad": "celestial-erkek-barbarian-ID7",
+  "durum": "tam",
+  "silinen": 0,
+  "iptal": null,
+  "box_once": 4297,
+  "box_sonra": 4297,
+  "kalan": 0,
+  "mod": "cizim"
+ },
+ {
+  "ad": "celestial-erkek-druid-ID1",
+  "durum": "tam",
+  "silinen": 0,
+  "iptal": null,
+  "box_once": 7619,
+  "box_sonra": 7619,
+  "kalan": 1,
+  "mod": "cizim"
+ },
+ {
+  "ad": "celestial-erkek-barbarian-ID1",
+  "durum": "belirsiz",
+  "silinen": 0,
+  "iptal": "başın üstünde halka olabilecek artık var (çift hale riski)",
+  "box_once": 5254,
+  "box_sonra": 5254,
+  "kalan": 0,
+  "mod": "cizim"
+ },
+ {
+  "ad": "celestial-erkek-barbarian-ID3",
+  "durum": "tam",
+  "silinen": 0,
+  "iptal": null,
+  "box_once": 4533,
+  "box_sonra": 4533,
+  "kalan": 188,
+  "mod": "cizim"
+ },
+ {
+  "ad": "celestial-erkek-barbarian-ID2",
+  "durum": "kesik",
+  "silinen": 655,
+  "iptal": "halka başa değiyor: 47 px silinemedi (kalıntı)",
+  "box_once": 4271,
+  "box_sonra": 4271,
+  "kalan": 47,
+  "mod": "cizim"
+ },
+ {
+  "ad": "celestial-erkek-barbarian-ID4",
+  "durum": "belirsiz",
+  "silinen": 0,
+  "iptal": "başın üstünde halka olabilecek artık var (çift hale riski)",
+  "box_once": 6357,
+  "box_sonra": 6357,
+  "kalan": 0,
+  "mod": "cizim"
+ },
+ {
+  "ad": "celestial-erkek-barbarian-ID1",
+  "durum": "belirsiz",
+  "silinen": 0,
+  "iptal": "başın üstünde halka olabilecek artık var (çift hale riski)",
+  "box_once": 5254,
+  "box_sonra": 5254,
+  "kalan": 0,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-bard-ID5",
+  "durum": "belirsiz",
+  "silinen": 0,
+  "iptal": "başın üstünde halka olabilecek artık var (çift hale riski)",
+  "box_once": 4524,
+  "box_sonra": 4524,
+  "kalan": 0,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-cleric-ID3",
+  "durum": "tam",
+  "silinen": 682,
+  "iptal": null,
+  "box_once": 4678,
+  "box_sonra": 4678,
+  "kalan": 0,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-druid-ID7",
+  "durum": "tam",
+  "silinen": 658,
+  "iptal": null,
+  "box_once": 4338,
+  "box_sonra": 4338,
+  "kalan": 0,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-fighter-ID1",
+  "durum": "tam",
+  "silinen": 716,
+  "iptal": null,
+  "box_once": 5276,
+  "box_sonra": 5276,
+  "kalan": 0,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-monk-ID4",
+  "durum": "tam",
+  "silinen": 658,
+  "iptal": null,
+  "box_once": 3834,
+  "box_sonra": 3834,
+  "kalan": 0,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-paladin-ID8",
+  "durum": "kesik",
+  "silinen": 0,
+  "iptal": "halka başa değiyor: 69 px silinemedi (kalıntı)",
+  "box_once": 3551,
+  "box_sonra": 3551,
+  "kalan": 69,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-ranger-ID5",
+  "durum": "kesik",
+  "silinen": 410,
+  "iptal": null,
+  "box_once": 5101,
+  "box_sonra": 5101,
+  "kalan": 39,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-rogue-ID3",
+  "durum": "tam",
+  "silinen": 570,
+  "iptal": null,
+  "box_once": 6493,
+  "box_sonra": 6493,
+  "kalan": 38,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-sorcerer-SC-1",
+  "durum": "tam",
+  "silinen": 605,
+  "iptal": null,
+  "box_once": 5262,
+  "box_sonra": 5262,
+  "kalan": 0,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-warlock-WL-3",
+  "durum": "tam",
+  "silinen": 0,
+  "iptal": "halka başa değiyor: 125 px silinemedi (kalıntı)",
+  "box_once": 5769,
+  "box_sonra": 5769,
+  "kalan": 125,
+  "mod": "gece"
+ },
+ {
+  "ad": "celestial-erkek-wizard-WZ-A1",
+  "durum": "tam",
+  "silinen": 539,
+  "iptal": null,
+  "box_once": 4573,
+  "box_sonra": 4573,
+  "kalan": 0,
+  "mod": "gece"
+ }
+]

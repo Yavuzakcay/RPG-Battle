@@ -2,6 +2,10 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-25 — KQ6-10: Hale v2 önizlemesi (şekil temelli silme; UYGULANMADI)
+
+- Çift hale ve uçan kafa nedeni: eski tespit renk eşiğiydi (sarı saç = altın hale) ve çizim "yok" sayılan jetonda gerçekte var olan soluk (krem/pembe) halenin üstüne ikinci hale çiziyordu. `scripts/hale-v2.py`: halka şekli (içi boş ince elips ya da yay) bulunur, baş kütlesi (opak kütle açılması + baş satırı altı) korunur, yalnız korumanın dışındaki halka pikselleri silinir; baş kutusu alfa>0 sayısı değişirse ya da başa değen kalıntı > 40 px ise iptal → ELLE; başın üstünde halka olabilecek artık varsa ("belirsiz") hiç çizilmez. Çıktı `docs/sabah/hale-v2/` (4×, önce/sonra, sayılar `README.md`). Hiçbir jeton/oyun dosyası değişmedi.
+
 ## 2026-12-24 — KQ6-9: Ortam genişletme (yalnız veri)
 
 - Önce envanter (`harita/belgeler/ortam-genisletme.md`): 57 haritanın 15'i < 30 canavar (Yeraltı Nehri 2, Hapishane 4–5, Derinlikler 6–9, Orman alt haritaları 6–13, Taverna 27). Daraltma yok; her harita için en çok 4 donör harita (`data/ortam-genisletme.json`), donör ortamındaki canavarlar hedefe de eklendi (`scripts/ortam-genislet.ts`, tek seferlik). Sonuç: en az 35 canavar (Mielikki Gölü'ne `ada` donörüyle yüzücüler dahil). `data/monsters.json` ve "Tüm canavarlar" değişmedi; test `src/data/ortamGenisletme.test.ts` (≥ 25).
