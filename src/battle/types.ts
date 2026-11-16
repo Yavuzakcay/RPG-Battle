@@ -824,6 +824,9 @@ export interface Combatant {
   hp: number;
   maxHp: number;
   speed: number;
+  /** KQ6-8 (sürüm 82): yüzme hızı (ft; yüzücü canavar, data/yuzme-hizi.json) ve şu an suda mı (olaylardan türetilir). */
+  swimFt?: number;
+  inWater?: boolean;
   initiativeBonus: number;
   /** Savaş başında atılan initiative toplamı. */
   initiative: number;

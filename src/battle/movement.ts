@@ -27,6 +27,8 @@ import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBo
 import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
+import { yuzmeOn } from './yuzmeSurum';
+import { waterHexAt, swimTile } from './yuzme';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, hovers, isAirborne, spellJumpFt } from './flight';
@@ -102,12 +104,13 @@ export function occupantAt(state: BattleState, at: Offset, exceptId?: string, ba
  * GM'in yerleştirebileceği altıgen mi: harita içinde, engel, lav, derin su ve oyun alanı dışı değil.
  * (Doluluk ayrıca denetlenir.) Alev ve tuzak gibi tehlikeler GM'in kararıdır.
  */
-export function placeProblem(state: BattleState, at: Offset): string | null {
+export function placeProblem(state: BattleState, at: Offset, actor?: Pick<Combatant, 'swimFt'>): string | null {
   if (!isInside(at, sizeOf(state))) return 'Harita dışı.';
   const t = terrainAt(state, at);
   if (t.outOfBounds || t.movement === 'blocked') return `${hexLabel(at)} engel (${t.name}).`;
   if (t.movement === 'deadly') return `${hexLabel(at)} uygun değil (${t.name}).`;
-  if (t.rule === 'deepWater') return `${hexLabel(at)} su (${t.name}).`;
+  // KQ6-8 (sürüm 82): yüzücü canavar su altıgenine konabilir.
+  if (t.rule === 'deepWater' && !(actor?.swimFt && yuzmeOn(state))) return `${hexLabel(at)} su (${t.name}).`;
   return null;
 }
 
@@ -160,13 +163,15 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
   if (!ctx.isGm && !canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
   // Görev A6: çok altıgenli yaratığın bütün gövdesi geçerli altıgenlerde olmalı.
   for (const h of bodyAt(state, actor, at)) {
-    const why = placeProblem(state, h);
+    const why = placeProblem(state, h, actor);
     if (why) return fail(why);
   }
   if (!ctx.isGm) {
     const map = getMap(state.map.id, { mirrored: state.map.mirrored, variantId: state.map.variantId });
     const zone = actor.side === 'party' ? map.startZones.players : map.startZones.enemies;
-    if (!zone.some((h) => sameHex(h, at))) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
+    // KQ6-8 (sürüm 82): yüzücü canavar bölgeye bitişik su altıgenine de konabilir.
+    const swimNear = !!actor.swimFt && yuzmeOn(state) && waterHexAt(state, at) && zone.some((h) => distance(h, at) <= 1);
+    if (!zone.some((h) => sameHex(h, at)) && !swimNear) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
   }
   for (const h of bodyAt(state, actor, at)) {
     const other = occupantAt(state, h, actor.id);
@@ -341,6 +346,8 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
   const tooDeep = aloft ? () => false : deepWaterBlocks(state, actor);
   const walker = waterWalks(state, actor);
+  // KQ6-8 (sürüm 82): yüzücü canavar için su altıgenleri (derin, sığ, nehir) zorlu zemin değil.
+  const swimmer = !!actor.swimFt && yuzmeOn(state);
   const freeMove = !!actor.effects?.some((e) => e.freeMove || e.burrow);
   // Kuyruk K54b: Mevzi İşareti / Yol aç / Kuşbakışı Plan: korunan altıgende zor zemin yok.
   const ward = groundWardFn(state, actor);
@@ -436,7 +443,7 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
     const free = freeMove || (!!ward && ward(h));
-    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q')) || (plantWalk && plantChar(t0.char))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
+    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q')) || (plantWalk && plantChar(t0.char)) || (swimmer && swimTile(t0.char))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = (!!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null) || (squeeze && doorAt(h));
     const terrain = wall ? through : overTop || climbOver ? 1 : hov && t.movement === 'deadly' ? null : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);

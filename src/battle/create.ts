@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { swimSpeedOf } from './yuzme';
 import { withMonsterAbilities } from './monsterAbilities';
 import { globalRule } from './ruleControl';
 import { presetObjects } from './objects';
@@ -506,6 +507,7 @@ export function combatantFromMonster(
     hp: monster.hp,
     maxHp: monster.hp,
     speed: monster.speed,
+    ...(swimSpeedOf(monster.id) ? { swimFt: swimSpeedOf(monster.id) as number } : {}),
     initiativeBonus: mods.dex,
     initiative: 0,
     height: opts.height ?? 0,

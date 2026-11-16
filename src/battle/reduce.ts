@@ -25,6 +25,8 @@ import { wardedFrom } from './mind';
 import { k75On } from './k75Surum';
 import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type ConditionTimer, type DamageEffect } from './types';
 import { effectSpeedZero, flySpeed } from './flight';
+import { yuzmeOn } from './yuzmeSurum';
+import { waterHexAt } from './yuzme';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
 import { soyTeleportEnds } from './altSoySurum';
 
@@ -59,7 +61,7 @@ export function speedHexes(c: Combatant): number {
   const mult = free ? Math.max(1, mult0) : mult0;
   const bonus = (c.effects ?? []).reduce((n, e) => n + (free ? Math.max(0, e.speedFt ?? 0) : e.speedFt ?? 0), 0);
   // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) yaratık kazma hızıyla ilerler (işaret yalnız 64+ komutlarından gelir).
-  const base = c.burrowed && c.burrowFt ? c.burrowFt : fly > 0 ? fly : c.speed;
+  const base = c.burrowed && c.burrowFt ? c.burrowFt : fly > 0 ? fly : c.inWater && c.swimFt ? Math.max(c.speed, c.swimFt) : c.speed; // KQ6-8: suda yüzme hızı
   // Kuyruk KQ3 NA1: ortak taşımada (iki ya da daha çok taşıyıcı) hız yarıya (`data/nesne-agirlik.json`).
   const groupMult = c.groupCarry ? nesneAgirlik.grupHizCarpani : 1;
   const ft = Math.floor(Math.max(0, base + bonus - slowFeet(c) - exhaustionSpeedFt(c.exhaustion)) * mult * groupMult);
@@ -67,6 +69,14 @@ export function speedHexes(c: Combatant): number {
 }
 
 const sameAt = (a: Offset, b: Offset) => a.col === b.col && a.row === b.row;
+
+/** KQ6-8 (sürüm 82): yüzücü canavarın "suda" işareti konumundan türetilir (olaylar aynı → replay aynı). */
+function syncWater(state: BattleState, id: string): BattleState {
+  const c = state.combatants[id];
+  if (!c || !c.swimFt || !yuzmeOn(state)) return state;
+  const w = !!c.pos && waterHexAt(state, c.pos);
+  return (c.inWater ?? false) === w ? state : { ...state, combatants: { ...state.combatants, [id]: { ...c, inWater: w } } };
+}
 
 function withCombatant(state: BattleState, id: string, patch: Partial<Combatant>): BattleState {
   const current = state.combatants[id];
@@ -623,7 +633,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return binekMb2On(started) ? refreshControlledMounts(started, event.nextActorId, event.round) : started;
     }
     case 'placed':
-      return withCombatant(state, event.actorId, { pos: event.at });
+      return syncWater(withCombatant(state, event.actorId, { pos: event.at }), event.actorId);
     case 'dice_rolled':
     case 'distracted':
       return state;
@@ -638,8 +648,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       return { ...state, combatants: { ...state.combatants, [c.id]: withCivilianLook(c, event.gorselId) } };
     }
-    case 'combat_started':
-      return { ...state, status: 'active' };
+    case 'combat_started': {
+      let st: BattleState = { ...state, status: 'active' };
+      for (const c of Object.values(st.combatants)) if (c.swimFt) st = syncWater(st, c.id);
+      return st;
+    }
     case 'moved': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
@@ -648,6 +661,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       let moved = withCombatant(state, event.actorId, event.free
         ? { pos: last ?? c.pos, run, economy: { ...c.economy, shiftLeft: Math.max(0, (c.economy.shiftLeft ?? 0) - event.cost) } }
         : { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
+      moved = syncWater(moved, event.actorId);
       // Kuyruk 19: Resilient Sphere: taşınan küre taşıyanın bir arkasındaki altıgende kalır.
       const behind = event.path.length > 1 ? event.path[event.path.length - 2] : c.pos;
       for (const o of Object.values(state.combatants)) {
@@ -1306,10 +1320,10 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'teleported': {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
-      return withCombatant(state, c.id, { pos: event.to, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
+      return syncWater(withCombatant(state, c.id, { pos: event.to, ...(event.cost ? { movementUsed: c.movementUsed + event.cost } : {}),
         // Kuyruk AS1b (alt soy etkisi `teleportEnds`, Cloud): ışınlanınca turun kalan hareketi biter.
         ...(soyTeleportEnds(c) ? { movementUsed: Math.max(c.movementUsed + (event.cost ?? 0), speedHexes(c)) } : {}),
-        ...(event.stride ? { economy: { ...c.economy, treeStride: true } } : {}) });
+        ...(event.stride ? { economy: { ...c.economy, treeStride: true } } : {}) }), c.id);
     }
     case 'ability_recharge': {
       const c = state.combatants[event.actorId];
