@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-08 — KH1: check:harita yeni menüye uyarlandı (yalnız betik + data-testid; kural/kayıt sürümü değişmedi)
+
+- Kök neden: OD1'den beri ana menüde Game Master girişi yok; betiğin `button.role >> nth=1` seçicisi artık "Oda kur"u tıklıyor, harita seçici hiç gelmediği için `[data-region]` 60 sn bekleyip düşüyordu (ısınma ve bütün haritalar).
+- Çözüm: akış Ana menü → "Hızlı savaş" → harita seçici → "Savaşı kur" → "Savaşı başlat"; gizli haritalar kayıtlı savaşla "Kayıtlı savaşa devam et". Kırılgan sınıf/metin seçicileri yerine `data-testid` (`home-quick`, `home-resume`, `map-region`, `map-card`, `map-start`, `battle-start`, `battle-stage`); arayüz davranışı aynı.
+- Bir harita düşünce sıradakine geçilir (bir kez yeniden denenir); sonda "Denenen / geçen / düşen" ve düşenlerin ilk hatası yazılır. Sunucu betikte `createServer` (port 0, 127.0.0.1, base `/`) ile başlıyor, değişmedi.
+- Bu ortamda Playwright'ın kendi Chromium'u yok: `PW_CHROMIUM=/opt/pw-browsers/chromium` ile ada-gunes yerine geçerli kimliklerle buzul-acik (gündüz+gece), kale-avlu ve gizli yeralti-nehri geçti. Not: `ada-gunes` bir harita kimliği değil; kimlikler `harita/*/*.json` `id` alanında.
+
 ## 2026-12-07 — NU1: tek Nesne paneli ve nesne kartı (Kuyruk KQ5; yalnız arayüz, kural/kayıt sürümü değişmedi)
 
 - Araç çubuğu Yaratık / Nesne / Yüzey / Hedef; `src/ui/mapTools.ts` modeliyle yalnız biri etkin (GH1). Yüzey yalnız kurulumda etkin.

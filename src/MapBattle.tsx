@@ -1792,7 +1792,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
 
   return (
     <div className="mb-screen">
-      <div className="mb-stage" style={{ width: box.w, height: box.h }} {...cam.handlers}>
+      <div className="mb-stage" data-testid="battle-stage" style={{ width: box.w, height: box.h }} {...cam.handlers}>
         {/* Katmanlar: harita görseli, hareketli efektler (Adım 10c), altıgenler ve jetonlar. Görsel düz
             <img>: yüklenemez ya da çözülemezse ekranda yazar (kara ekran yerine). */}
         <WorldLayer cam={cam}>
@@ -3202,7 +3202,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             </div>
           )}
           {setup && gd && pendingItems(gd).length > 0 && <span className="goal-warn" role="status">{t().oda.goal.warn(pendingItems(gd).length)}</span>}
-          {setup && <button className="hud-cta" onClick={startBattle}>{B.start}</button>}
+          {setup && <button className="hud-cta" data-testid="battle-start" onClick={startBattle}>{B.start}</button>}
           {endVideo?.shown && state.status === 'finished' && (
             <Suspense fallback={null}>
               <EndVideo plan={endVideo.plan} label={B.endVideoSkip} stopJingle={leaveBattleEnd} onDone={() => setEndVideo(null)} />

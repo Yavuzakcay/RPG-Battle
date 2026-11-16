@@ -119,7 +119,7 @@ export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev O
         </header>
         <nav className="home2-panel" aria-label={H.actions}>
           {props.onResume && (
-            <button type="button" className="home-card resume" onClick={props.onResume}>
+            <button type="button" className="home-card resume" data-testid="home-resume" onClick={props.onResume}>
               <span className="home-icon"><IconPlay size={26} /></span>
               <span className="home-card-text"><strong>{H.resume}</strong>{summary && <span>{resumeLine(summary, mapName, lang)}</span>}</span>
             </button>
@@ -142,7 +142,7 @@ export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev O
             </button>
           )}
           {props.onRoomCreate && (
-            <button type="button" className="home-card quick" onClick={props.onGm}>
+            <button type="button" className="home-card quick" data-testid="home-quick" onClick={props.onGm}>
               <span className="home-icon"><IconPlay size={22} /></span>
               <span className="home-card-text"><strong>{H.quick}</strong><span>{H.quickDesc}</span></span>
             </button>

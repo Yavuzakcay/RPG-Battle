@@ -308,7 +308,7 @@ export function GmScreen(props: {
                 Gizli haritalar (`gizli`: yer tutucu görselli deneme haritaları, yalnızca başka haritadan girilen) listede yok. */}
             <div className="chips region-chips" role="radiogroup" aria-label={G.region}>
               {mapRegions(maps.filter((m) => pickerVisible(m, upperLevelsEnabled()))).map(({ id, list }) => (
-                <button key={id} type="button" data-region={id} role="radio" aria-checked={regionOf(map) === id} className={`chip${regionOf(map) === id ? ' on' : ''}`}
+                <button key={id} type="button" data-region={id} data-testid="map-region" role="radio" aria-checked={regionOf(map) === id} className={`chip${regionOf(map) === id ? ' on' : ''}`}
                   onClick={() => { const first = list[0]; if (first && regionOf(map) !== id) { setMapId(first.id); setVariantId(first.variants[0]?.id ?? ''); setOptions([]); } }}>
                   {G.regions[id] ?? id}
                 </button>
@@ -316,7 +316,7 @@ export function GmScreen(props: {
             </div>
             <div className="map-cards" role="radiogroup" aria-label={G.map}>
               {(mapRegions(maps.filter((m) => pickerVisible(m, upperLevelsEnabled()))).find((g) => g.id === regionOf(map))?.list ?? []).map((m) => (
-                <button key={m.id} type="button" data-map={m.id} role="radio" aria-checked={m.id === map.id} className={`map-card${m.id === map.id ? ' on' : ''}`}
+                <button key={m.id} type="button" data-map={m.id} data-testid="map-card" role="radio" aria-checked={m.id === map.id} className={`map-card${m.id === map.id ? ' on' : ''}`}
                   onClick={() => { setMapId(m.id); setVariantId(m.variants[0]?.id ?? ''); setOptions([]); }}>
                   <img loading="lazy" src={`${BASE}${m.variants[0]?.image ?? ''}`} alt="" />
                   <b>{G.mapInfo[m.id]?.name ?? m.name}</b>
@@ -549,7 +549,7 @@ export function GmScreen(props: {
           <GroupsPanel groups={map?.groups ?? []} value={groupStates} onChange={setGroupStates} />
           </fieldset></Fold>}
           {roomLocked && <p className="mute oda-lock-start">{t().oda.startLocked}</p>}
-          <button className="cta" disabled={problems.length > 0 || roomLocked}
+          <button className="cta" data-testid="map-start" disabled={problems.length > 0 || roomLocked}
             onClick={() => {
               // Masum görünümü tohumu bir kez seçilir: elle zar girilince kurulum aynı tohumla yeniden çalışır.
               const seed = Math.floor(Math.random() * 1e9);
