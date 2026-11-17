@@ -167,13 +167,6 @@
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 80 px değişir)",
    "karar": "dokunma"
   },
-  "celestial-erkek-paladin-ID10": {
-   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
-   "durum": "karar bekliyor",
-   "oneri": "c",
-   "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": "dokunma"
-  },
   "celestial-erkek-paladin-ID2": {
    "neden": "halka başa değiyor: 65 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
@@ -204,7 +197,8 @@
   },
   "celestial-erkek-paladin-ID8": {
    "neden": "Gemini düzeltmesi bekliyor (hale kaska değiyor)",
-   "durum": "Gemini düzeltmesi bekliyor"
+   "durum": "Gemini düzeltmesi bekliyor",
+   "karar": "gemini"
   },
   "celestial-erkek-ranger-ID1": {
    "neden": "halka başa değiyor: 64 px silinemedi (kalıntı)",
@@ -268,11 +262,12 @@
    "oneri": "c",
    "oneriNot": "koyu kontur yok: hale kütleye karışmış olabilir",
    "karar": "dokunma",
-   "karaNot": "Warlock WL-10 ayrı not: pale/beyaz hale buz saçına karışık, koyu kontur yok; otomatik tespit güvenilmez. Dokunulmadı, Gemini düzeltmesi/elle bakış gerekebilir."
+   "not": "Warlock WL-10 ayrı not: pale/beyaz hale buz saçına karışık, koyu kontur yok; otomatik tespit güvenilmez. Dokunulmadı, Gemini düzeltmesi/elle bakış gerekebilir."
   },
   "celestial-erkek-warlock-WL-3": {
    "neden": "Gemini düzeltmesi bekliyor (hale başlığa değiyor)",
-   "durum": "Gemini düzeltmesi bekliyor"
+   "durum": "Gemini düzeltmesi bekliyor",
+   "karar": "gemini"
   },
   "celestial-erkek-warlock-WL-8": {
    "neden": "halka başa değiyor: 89 px silinemedi (kalıntı)",
@@ -449,13 +444,6 @@
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
    "karar": "dokunma"
   },
-  "celestial-kadin-paladin-ID10": {
-   "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
-   "durum": "karar bekliyor",
-   "oneri": "c",
-   "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": "dokunma"
-  },
   "celestial-kadin-paladin-ID2": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
@@ -479,7 +467,8 @@
   },
   "celestial-kadin-paladin-ID8": {
    "neden": "Gemini düzeltmesi bekliyor (hale kaska değiyor)",
-   "durum": "Gemini düzeltmesi bekliyor"
+   "durum": "Gemini düzeltmesi bekliyor",
+   "karar": "gemini"
   },
   "celestial-kadin-rogue-ID10": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
@@ -518,7 +507,8 @@
   },
   "celestial-kadin-warlock-WL-3": {
    "neden": "Gemini düzeltmesi bekliyor (hale başlığa değiyor)",
-   "durum": "Gemini düzeltmesi bekliyor"
+   "durum": "Gemini düzeltmesi bekliyor",
+   "karar": "gemini"
   },
   "celestial-kadin-warlock-WL-4": {
    "neden": "halka başa değiyor: 76 px silinemedi (kalıntı)",
@@ -547,6 +537,81 @@
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
    "karar": "dokunma"
+  },
+  "celestial-erkek-barbarian-GR": {
+   "neden": "halka başa değiyor: 22 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-bard-GR": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-cleric-GR": {
+   "neden": "halka başa değiyor: 23 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-fighter-GR": {
+   "neden": "halka başa değiyor: 31 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-monk-GR": {
+   "neden": "halka başa değiyor: 43 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-paladin-GR": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-paladin-ID10": {
+   "neden": "halka başa değiyor: 19 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-ranger-GR": {
+   "neden": "halka başa değiyor: 19 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-sorcerer-GR": {
+   "neden": "halka başa değiyor: 44 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-warlock-GR": {
+   "neden": "halka başa değiyor: 34 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-erkek-wizard-GR": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-kadin-barbarian-GR": {
+   "neden": "başın üstünde halka olabilecek artık var (çift hale riski)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-kadin-paladin-GR": {
+   "neden": "halka başa değiyor: 96 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-kadin-paladin-ID10": {
+   "neden": "halka başa değiyor: 21 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
+  },
+  "celestial-kadin-sorcerer-GR": {
+   "neden": "halka başa değiyor: 53 px silinemedi (kalıntı)",
+   "durum": "karar bekliyor",
+   "karar": ""
   }
  },
  "_karar_notu": "KQ6-15: hale-oneri kararları. ertele: hale konumu betikle güvenilir değil (figürün en üst pikseline göre yerleştirme tüy/süs/şapkada kayıyor, başın üstünde boşluk bırakıyor); dokunma: asıl jeton olduğu gibi. Hiçbir jetona hale çizilmedi."

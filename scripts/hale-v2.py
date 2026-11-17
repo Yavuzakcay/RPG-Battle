@@ -11,6 +11,8 @@ from PIL import Image, ImageDraw, ImageFilter
 from scipy import ndimage as ndi
 spec = importlib.util.spec_from_file_location('ht', 'scripts/hale-tespit.py'); ht = importlib.util.module_from_spec(spec); spec.loader.exec_module(ht)
 N = 256; HEAD_H = 56
+KALAN_MAX = 40   # silme sonrası kalan hale pikseli sınırı (hale-yeni.py 12 kullanır)
+OPAQUE_R = 3   # opak halka pikselleri başa en çok bu kadar yaklaşabilir (hale-yeni.py 2 kullanır: baş sınırında kalan ince kalıntıyı da siler)
 
 def disk(r):
     y, x = np.ogrid[-r:r + 1, -r:r + 1]; return x * x + y * y <= r * r
@@ -57,8 +59,9 @@ def analyse(a):
     cols = np.where(opened[top:top + HEAD_H].any(axis=0))[0]
     box = (int(cols.min()), top, int(cols.max()) + 1, min(N, top + HEAD_H))
     out.update(top=top, box=box, cx=int(round(np.where(opened[top:top + 12])[1].mean())))
-    protect = dil(opened, 3); protect[box[3]:] = True
+    protect = dil(opened, OPAQUE_R); protect[box[3]:] = True
     protect1 = dil(opened, 1); protect1[box[3]:] = True
+    if OPAQUE_R < 3: protect[:max(0, top - 1)] = False; protect1[:max(0, top - 1)] = False     # koyu kontur satırının ≥ 2 px üstü baş değildir: halka kalıntısı burada silinebilir
     pm = np.where(a[..., 3] < 180, protect1, protect)                    # yumuşak (alfa<180) halka pikselleri başa 1 px yaklaşabilir, opaklar 3 px
     bright = M & (mx > 0.45) & ~((a[..., 3] > 200) & (mx < 0.45))
     if hole:
@@ -136,7 +139,7 @@ def erase(a):
     if sonra != once: info['iptal'] = 'baş kutusu piksel sayısı değişti'
     elif info['silinen'] > 2 * expected + 30: info['iptal'] = f'silinen {info["silinen"]} >> beklenen {int(expected)}'
     kalan = int((dil(d['comp'], 2) & (a[..., 3] >= 24) & ~d['rm']).sum())
-    if not info['iptal'] and kalan > 40: info['iptal'] = f'halka başa değiyor: {kalan} px silinemedi (kalıntı)'
+    if not info['iptal'] and kalan > KALAN_MAX: info['iptal'] = f'halka başa değiyor: {kalan} px silinemedi (kalıntı)'
     info.update(box_once=once, box_sonra=sonra, kalan=kalan)
     return (a if info['iptal'] else b), info, d
 

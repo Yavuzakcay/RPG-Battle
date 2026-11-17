@@ -4,17 +4,16 @@ import halesiz from '../../data/hale-halesiz.json';
 import elle from '../../data/hale-elle.json';
 
 const files = (g: Record<string, unknown>, strip: RegExp) => new Set(Object.keys(g).map((k) => k.replace(strip, '').split('/').pop() as string));
-// Gariban (-GR) jetonları seviye < 3 sınıf-genel; uyanış/hale gizleme yok, halesiz varyant gerekmez (KQ6-14).
-const main = new Set([...files(import.meta.glob('../../public/characters/celestial-*.webp'), /\.webp$/)].filter((n) => !n.endsWith('-GR')));
+const main = files(import.meta.glob('../../public/characters/celestial-*.webp'), /\.webp$/);
 const free = files(import.meta.glob('../../public/characters/halesiz/celestial-*.webp'), /\.webp$/);
 const small = files(import.meta.glob('../../public/characters/halesiz/kucuk/celestial-*.webp'), /\.webp$/);
 
 describe('halesiz Celestial varyantları (KQ6-12)', () => {
-  it('264 jeton: her biri halesiz varyanta (+ küçük kopya) sahip ya da bekleyen listesinde; ikisi birden değil', () => {
-    expect(main.size).toBe(264);
+  it('288 jeton (264 alt sınıf/genel + 24 Gariban -GR): her biri halesiz varyanta (+ küçük kopya) sahip ya da bekleyen listesinde; ikisi birden değil', () => {
+    expect(main.size).toBe(288);
     const hold = new Set(halesiz.bekleyen);
     for (const n of main) expect(free.has(n) !== hold.has(n), n).toBe(true);
-    expect(free.size + hold.size).toBe(264);
+    expect(free.size + hold.size).toBe(288);
     expect([...free].sort()).toEqual([...small].sort());
     for (const h of hold) expect(main.has(h), h).toBe(true);
   });

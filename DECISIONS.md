@@ -2,6 +2,12 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-28 — KQ6-16: Celestial hale ve anahtar sızıntısı temizliği, denetim sayfaları
+
+- **Anahtar sızıntısı** (`scripts/anahtar-sizinti.py`, liste `docs/sabah/anahtar-sizinti.md`): 498 yeni jeton tarandı. Saf #00FF00/#FF00FF'e yakın piksellerin çoğu sanatın kendi parçası (yeşil hayalet, alev, fener ışığı, rün çemberi, enerji küresi) olduğundan ölçüt "dış siluet pikseli yeşil/pembe baskın ama içerideki komşuları anahtar renginde değil" oldu: 24 jetonda 254 piksel bulundu ve silindi (en çok Dragonborn Barbarian ID1, Druid ID2, Gariban Celestial Sorcerer; 96 px kopyalar yeniden üretildi). Kalan yeşil/pembe bölgeler sanattır.
+- **Halesiz varyant** (`scripts/hale-yeni.py`; hale çizilmez, asıl jetona dokunulmaz): yeni/yenilenen Celestial jetonlar (24 Gariban `-GR` + Hızır Paladin ID10 ×2) için hale-v2 yöntemi; baş kutusu alfa>0 sayısı aynı ve kalıntı ≤ 12 px (eski sınır 40 px kalıntı çıtası bırakıyordu: dış kontur üstü ince çizgiler); baş kontur satırının ≥ 2 px üstünde koruma yok. 11 jeton halesiz üretildi, 15'i `data/hale-elle.json` bekleyen listesinde (karar bekliyor, hale görünür kalır). Hale çizilmedi. Kararlar `data/hale-elle.json`: 13 ertele, 57 dokunma (Warlock WL-10 ayrı `not`), Paladin ID8/Warlock WL-3 Gemini bekliyor, 15 yeni jeton karar bekliyor.
+- **Denetim** (`scripts/celestial-denetim.py`): `docs/sabah/celestial-denetim/<sınıf>.png` (256 px, satırda 8) ve `liste.csv` (hale var mı tahmini, kafa üstü boşluk px, hale-kafa merkez farkı px; tahminler şekil temelli, kesin değil). `src/data/haleVaryant.test.ts` 288 jeton (264 + 24 Gariban).
+
 ## 2026-12-27 — KQ6-14: Toplu kesim tek tur (52 sayfa, 498 jeton)
 
 - `scripts/toplu-kesim.py --yeni`: Dragonborn sınıf sayfaları (22), Wizard Dragonborn a/b (4), Gariban (20, 4×3, sınıf sırası), Hızır (2, 3×3) tek turda; Wizard Human 4 sayfa yalnız referans. Düzeltmeler: sayfa başına gerçek zemin tonu (`sheet_bg`), iki yanı zemin olan çerçeve çizgileri (`≥ 300 px`) kesim öncesi silinir (figürlerin birleşmesini önler; koyu pelerinli figürlerin içi silinmez), figürden ayrı nötr koyu çizgi kırıntıları figüre katılmaz, render sonrası tuval kenarındaki küçük koyu çubuk silinir. Sayfa başına ölçek (en yüksek figür 240; Wizard a+b ortak; Hızır = kardeş Paladin sayfasının ölçeği). Ayrıntı ve sayfa tablosu `docs/sabah/toplu-kesim-yeni.md`.
