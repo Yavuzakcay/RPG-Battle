@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-29 — KQ6-17: Hale alternatifleri ve silme denetimi (yalnız önizleme; oyuna bağlanmadı)
+
+- `scripts/hale-alternatif.py` → `docs/sabah/hale-alternatif.png`: 6 jetonda 4 tasarım (A ince altın halka, B çift ince halka, C alından yükselen ışık/yıldız, D kafa arkası yarım güneş), #F5D76E tonu, jeton boyutu ve 96 px, koyu zemin; yalnız alfa=0 piksellere çizilir. Taban halesiz varyant (Gariban Monk için gevşek hale-v2 silmesi; Warlock WL-7'de halesizde kalan halka için yalnız önizlemede elle temizlik). Konum/tasarım seçilmedi, `hale-konum.json` yazılmadı.
+- `scripts/hale-silme-denetim.py` → `docs/sabah/hale-silme-denetim.png` + `.csv`: 199 halesiz varyant, hale bölgesi (hale-oneri şekil maskesi + üst bölge, silmeden bağımsız) dışında > 3 px silinen **12 şüpheli**; hepsinde kırmızı (dışarıda silinen) pikseller hale halkasının uçları: baş/saç/şapka/kulak/kanat silinmemiş. Asıl bulgu: **42 halesiz varyantta hale kalıntısı kalmış** (şekil temelli tahmin; örn. Warlock WL-1/4/6/11, Paladin ID5, Rogue ID4, Warlock kadın WL-10): kalıntı ≤ 40 px kuralıyla üretilen eski varyantlar (KQ6-12) kısmi silinmiş. Çözüm kararı bekliyor (sınırı 12 px'e indirip yeniden üretmek ya da bekleyene almak).
+
 ## 2026-12-28 — KQ6-16: Celestial hale ve anahtar sızıntısı temizliği, denetim sayfaları
 
 - **Anahtar sızıntısı** (`scripts/anahtar-sizinti.py`, liste `docs/sabah/anahtar-sizinti.md`): 498 yeni jeton tarandı. Saf #00FF00/#FF00FF'e yakın piksellerin çoğu sanatın kendi parçası (yeşil hayalet, alev, fener ışığı, rün çemberi, enerji küresi) olduğundan ölçüt "dış siluet pikseli yeşil/pembe baskın ama içerideki komşuları anahtar renginde değil" oldu: 24 jetonda 254 piksel bulundu ve silindi (en çok Dragonborn Barbarian ID1, Druid ID2, Gariban Celestial Sorcerer; 96 px kopyalar yeniden üretildi). Kalan yeşil/pembe bölgeler sanattır.
