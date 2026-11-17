@@ -1,5 +1,5 @@
 {
- "_not": "KQ6-12/16/18: halesiz varyantı üretilemeyen Celestial jetonlar (hideHalo iken asıl jeton, hale görünür kalır). Üretici scripts/hale-uygula.py, hale-yeni.py, hale-guclu.py.",
+ "_not": "KQ6-12/16/18/19: sprite'ında sanat halesi kalan Celestial jetonlar (yıldız tacı çizilmez, hideHalo iken hale görünür). Üretici scripts/hale-uygula.py, hale-yeni.py, hale-guclu.py.",
  "bekleyen": [
   "celestial-erkek-barbarian-GR",
   "celestial-erkek-barbarian-ID2",
@@ -68,10 +68,15 @@
   "celestial-erkek-sorcerer-SC-8",
   "celestial-erkek-sorcerer-SC-9",
   "celestial-erkek-warlock-GR",
+  "celestial-erkek-warlock-WL-1",
   "celestial-erkek-warlock-WL-10",
   "celestial-erkek-warlock-WL-11",
+  "celestial-erkek-warlock-WL-2",
   "celestial-erkek-warlock-WL-3",
   "celestial-erkek-warlock-WL-4",
+  "celestial-erkek-warlock-WL-5",
+  "celestial-erkek-warlock-WL-6",
+  "celestial-erkek-warlock-WL-7",
   "celestial-erkek-warlock-WL-8",
   "celestial-erkek-warlock-WL-9",
   "celestial-erkek-wizard-GR",

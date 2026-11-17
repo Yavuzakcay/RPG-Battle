@@ -887,6 +887,31 @@
    "neden": "kalıntı (denetim ölçütü): hale tonlu 17 px (≤ 8 gerekir)",
    "durum": "Gemini'ye gidecek",
    "karar": "gemini"
+  },
+  "celestial-erkek-warlock-WL-1": {
+   "neden": "görsel inceleme (oyun önizlemesi): halesiz varyantta altın halka kalmış (kalın halka saça bitişik; otomatik denetim kaçırdı); asıl jeton (sanat halesi) geri alındı, taç çizilmez",
+   "durum": "Gemini'ye gidecek",
+   "karar": "gemini"
+  },
+  "celestial-erkek-warlock-WL-2": {
+   "neden": "görsel inceleme (oyun önizlemesi): halesiz varyantta altın halka kalmış (kalın halka saça bitişik; otomatik denetim kaçırdı); asıl jeton (sanat halesi) geri alındı, taç çizilmez",
+   "durum": "Gemini'ye gidecek",
+   "karar": "gemini"
+  },
+  "celestial-erkek-warlock-WL-5": {
+   "neden": "görsel inceleme (oyun önizlemesi): halesiz varyantta altın halka kalmış (kalın halka saça bitişik; otomatik denetim kaçırdı); asıl jeton (sanat halesi) geri alındı, taç çizilmez",
+   "durum": "Gemini'ye gidecek",
+   "karar": "gemini"
+  },
+  "celestial-erkek-warlock-WL-6": {
+   "neden": "görsel inceleme (oyun önizlemesi): halesiz varyantta altın halka kalmış (kalın halka saça bitişik; otomatik denetim kaçırdı); asıl jeton (sanat halesi) geri alındı, taç çizilmez",
+   "durum": "Gemini'ye gidecek",
+   "karar": "gemini"
+  },
+  "celestial-erkek-warlock-WL-7": {
+   "neden": "görsel inceleme (oyun önizlemesi): halesiz varyantta altın halka kalmış (kalın halka saça bitişik; otomatik denetim kaçırdı); asıl jeton (sanat halesi) geri alındı, taç çizilmez",
+   "durum": "Gemini'ye gidecek",
+   "karar": "gemini"
   }
  },
  "_karar_notu": "KQ6-15: hale-oneri kararları. ertele: hale konumu betikle güvenilir değil (figürün en üst pikseline göre yerleştirme tüy/süs/şapkada kayıyor, başın üstünde boşluk bırakıyor); dokunma: asıl jeton olduğu gibi. Hiçbir jetona hale çizilmedi."

@@ -329,18 +329,31 @@ describe('Human ten maskesi: yalnız ten boyanır (3 jeton × 3 ton)', () => {
   });
 });
 
-describe('KQ6-12: halesiz Celestial jeton varyantı', () => {
-  it('hideHalo iken halesiz varyant (varsa) zincirin başında; hale gizli değilken ve bekleyen jetonda asıl jeton; küçük kopya halesiz/kucuk', async () => {
-    const { badgeChain, thumbOf } = await import('./Avatar');
-    const { haloFreeSrc } = await import('./haloVariant');
-    const base = sheetAvatar(sheet({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'gece-gozyasi', classId: 'bard', gender: 'erkek' }));
-    expect(base.src).toMatch(/^characters\/celestial-/);
-    const free = haloFreeSrc(base.src);
-    if (free) { expect(badgeChain(base, 96)[0]).toBe(free); expect(thumbOf(free)).toBe(free.replace('halesiz/', 'halesiz/kucuk/')); expect(badgeChain(base, 40)[0]).toBe(thumbOf(free)); }
-    const pr = sheetAvatar(sheet({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'parlayan-ruh', classId: 'bard', gender: 'erkek' }));
-    expect(badgeChain(pr, 96)).not.toContain(free ?? '__yok__');
-    // Elle karar bekleyen jetonda varyant üretilmez (hale görünür kalır).
-    expect(haloFreeSrc('characters/celestial-erkek-paladin-ID8.webp')).toBeNull();
-    expect(haloFreeSrc('characters/dwarf-erkek-bard-ID1.webp')).toBeNull();
+describe('KQ6-19: Celestial yıldız tacı', () => {
+  it('taç yalnız hale gösteren uyanışlarda (Parlayan Ruh, seviye < 3) ve halesiz sprite\'ta; Gece Gözyaşı / Kırık Kanat ve bekleyen (sanat halesi kalan) jetonda yok', async () => {
+    const { crownSpec } = await import('./haloCrown');
+    const src = 'characters/celestial-erkek-fighter-ID1.webp';
+    const mk = (aw: string | undefined, level: number) => ({ raceId: 'celestial', celestialAwakening: aw, level } as never);
+    expect(crownSpec(src, mk('parlayan-ruh', 3))).not.toBeNull();
+    expect(crownSpec(src, mk(undefined, 2))).not.toBeNull();
+    expect(crownSpec(src, mk('gece-gozyasi', 3))).toBeNull();
+    expect(crownSpec(src, mk('kirik-kanat', 3))).toBeNull();
+    expect(crownSpec('characters/kucuk/celestial-erkek-fighter-ID1.webp', mk('parlayan-ruh', 3))).toEqual(crownSpec(src, mk('parlayan-ruh', 3)));
+    expect(crownSpec('characters/celestial-erkek-paladin-ID8.webp', mk('parlayan-ruh', 3))).toBeNull();      // sanat halesi kalan (Gemini bekliyor): taç yok
+    expect(crownSpec('characters/dwarf-erkek-bard-ID1.webp', { raceId: 'dwarf' } as never)).toBeNull();
+  });
+  it('rozet ve savaş jetonu aynı gövdeyi çizer; konum varsayılan + jeton ezmesi; hareketi azalt CSS\'i var', async () => {
+    const { crownSpec } = await import('./haloCrown');
+    const { StarCrownShape } = await import('./StarCrown');
+    const { AvatarBadge, AvatarCircle } = await import('./Avatar');
+    const a = sheetAvatar(sheet({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'parlayan-ruh', classId: 'fighter', gender: 'erkek' }));
+    const spec = crownSpec(a.src, a.look); expect(spec).not.toBeNull();
+    const body = renderToStaticMarkup(<svg><StarCrownShape /></svg>);
+    expect(body).toContain('sc-star'); expect((body.match(/<path/g) ?? []).length).toBe(10);        // 5 yıldız × (dış + iç)
+    const circle = renderToStaticMarkup(<svg><AvatarCircle avatar={a} cx={50} cy={50} r={30} eager /></svg>);
+    expect(circle).toContain('star-crown-g');
+    // @ts-expect-error uygulama tsconfig'inde node tipleri yok (testte dosya okunur)
+    const css = (await import('node:fs')).readFileSync('src/styles.css', 'utf8') as string;
+    expect(css).toMatch(/prefers-reduced-motion: reduce\) \{ \.sc-star \{ animation: none; \} \}/);
   });
 });

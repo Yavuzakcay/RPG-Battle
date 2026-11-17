@@ -5,7 +5,8 @@
  */
 import { useEffect, useState, type CSSProperties } from 'react';
 import { FOOT_FRAC, lineageLook, wingBox, type WingLayerSpec } from './lineageLook';
-import { haloFreeSrc } from './haloVariant';
+import { crownSpec, type CrownSpec } from './haloCrown';
+import { StarCrownLayer, StarCrownShape } from './StarCrown';
 import { useWingAnim } from './wingAnim';
 import { WingFilterDefs } from './WingFilter';
 import { wingFilterId } from './lineageLook';
@@ -69,23 +70,18 @@ export function useImageChain(srcs: string[]): string | null {
   return src;
 }
 
-/** KQ6-12: hale gizli uyanışta (Gece Gözyaşı, Kırık Kanat) Celestial jetonun halesiz varyantı (varsa), asıl jeton yedekte. */
-const freeOf = (a: AvatarData): string | null => (a.look && lineageLook(a.look).hideHalo ? haloFreeSrc(a.src) : null);
-const chainOf = (a: AvatarData, asleep = false) => [...(asleep && a.asleepSrc ? [a.asleepSrc] : []), ...(freeOf(a) ? [freeOf(a) as string] : []), a.src, ...(a.fallbacks ?? [])];
+const chainOf = (a: AvatarData, asleep = false) => [...(asleep && a.asleepSrc ? [a.asleepSrc] : []), a.src, ...(a.fallbacks ?? [])];
 
 /** Küçük rozetlerde karakter jetonunun 96 px kopyası (`public/characters/kucuk/`, `npm run karakter-kucuk`). */
 export function thumbOf(src: string): string | null {
-  const h = /^characters\/halesiz\/([^/]+\.webp)$/.exec(src);
-  if (h) return `characters/halesiz/kucuk/${h[1]}`;
   const m = /^characters\/([^/]+\.webp)$/.exec(src);
   return m ? `characters/kucuk/${m[1]}` : null;
 }
 
 /** Rozetin yedek zinciri: küçükse önce küçük kopya, sonra asıl görsel ve eski yollar. */
 export function badgeChain(a: AvatarData, size: number): string[] {
-  const thumb = size <= SMALL ? thumbOf(freeOf(a) ?? a.src) : null;
-  const thumb0 = size <= SMALL && freeOf(a) ? thumbOf(a.src) : null;
-  return [...(thumb ? [thumb] : []), ...chainOf(a).slice(0, freeOf(a) ? 1 : 0), ...(thumb0 ? [thumb0] : []), ...chainOf(a).slice(freeOf(a) ? 1 : 0)];
+  const thumb = size <= SMALL ? thumbOf(a.src) : null;
+  return [...(thumb ? [thumb] : []), ...chainOf(a)];
 }
 
 /** Bu boya kadar (CSS px) rozet küçük kopyayı kullanır (96 px = 2× yoğunluk). */
@@ -127,14 +123,19 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
   const src = chain[i] ?? null;
   const loaded = cur.loaded || (src !== null && cache.get(src) === true);
   const shown = useTinted(src, avatar.tint);
+  const crown = src ? crownSpec(src, avatar.look) : null;
   return (
-    <span className={`avatar${src && !loaded ? ' skeleton' : ''}`} title={title}
+    <span className={`avatar${src && !loaded ? ' skeleton' : ''}${crown ? ' has-crown' : ''}`} title={title}
       style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? avatar.ring ?? 'transparent', fontSize: size * 0.4, ...(naturalLeft(src) ? { '--mirror': -1 } : {}) } as CSSProperties}>
       {src ? (
-        <img key={src} src={shown ?? assetSrc(src)} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
-          className={loaded ? undefined : 'pending'} style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}
-          onLoad={() => { cache.set(src, true); setState({ key, i, loaded: true }); }}
-          onError={() => { cache.set(src, false); setState({ key, i: i + 1, loaded: false }); }} />
+        <>
+          <img key={src} src={shown ?? assetSrc(src)} alt="" width={size} height={size} loading={props.eager ? 'eager' : 'lazy'} decoding="async"
+            className={loaded ? undefined : 'pending'} style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}
+            onLoad={() => { cache.set(src, true); setState({ key, i, loaded: true }); }}
+            onError={() => { cache.set(src, false); setState({ key, i: i + 1, loaded: false }); }} />
+          {/* KQ6-19: Celestial yıldız tacı (savaş jetonuyla aynı çözücü `crownSpec` + aynı çizim `StarCrownShape`) */}
+          {crown && loaded && <StarCrownLayer crown={crown} />}
+        </>
       ) : avatar.label}
     </span>
   );
@@ -177,7 +178,7 @@ function WingImage(props: { wing: WingLayerSpec; wb: { x: number; y: number; wid
  * Kuyruk AS1c: jeton figürü (SVG): kanat katmanı (jetonun arkasında; `lineageLook`), alt soy oranı, Celestial hale gizleme ve
  * filtre. Yalnız çizim: `x/y/width/height` ve tıklama alanı aynı.
  */
-export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; look?: AvatarData['look']; flying?: boolean; /** Karakter ekranları: uçma yeteneği olan karakter havada olmasa da kanatlı. */ ability?: boolean }) {
+export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; crown?: CrownSpec | null; look?: AvatarData['look']; flying?: boolean; /** Karakter ekranları: uçma yeteneği olan karakter havada olmasa da kanatlı. */ ability?: boolean }) {
   const { cx, cy, w } = props;
   const lk = props.look ? lineageLook(props.look, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) }) : null;
   const by = cy - w / 2 + w * FOOT_FRAC; // ayak çizgisi (ölçek demir noktası)
@@ -190,6 +191,8 @@ export function TokenFigure(props: { href: string; cx: number; cy: number; w: nu
       <g transform={shape}>
         <image href={props.href} x={cx - w / 2} y={cy - w / 2} width={w} height={w} preserveAspectRatio="xMidYMid slice"
           transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} style={{ ...(lk?.filter ? { filter: lk.filter } : {}), ...(shape ? { imageRendering: 'pixelated' as const } : {}) }} />
+        {/* KQ6-19: Celestial yıldız tacı, sprite'ın üstünde (yön çevrilince x aynalanır) */}
+        {props.crown && <g className="star-crown-g" transform={`translate(${cx - w / 2 + (props.flip ? 256 - props.crown.x : props.crown.x) * (w / 256)} ${cy - w / 2 + props.crown.y * (w / 256)}) scale(${props.crown.olcek * (w / 256)})`}><StarCrownShape /></g>}
       </g>
     </>
   );
@@ -211,7 +214,7 @@ export function AvatarCircle(props: {
         {avatar.ring && <ellipse cx={cx} cy={cy + r * 0.78} rx={r * 0.92} ry={r * 0.3} fill="none" stroke={avatar.ring} strokeWidth={Math.max(1.5, r * 0.09)} opacity={0.9} />}
         {/* Görev P0: ek paket yaratığının renk tonu; Kuyruk AS1c: alt soy görünümü `TokenFigure` içinde. */}
         <g className="breathe" style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}>
-          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={(props.flip ?? false) !== naturalLeft(src)} look={avatar.look} flying={props.flying} ability={props.ability} />
+          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={(props.flip ?? false) !== naturalLeft(src)} crown={crownSpec(src, avatar.look)} look={avatar.look} flying={props.flying} ability={props.ability} />
         </g>
       </g>
     ) : (

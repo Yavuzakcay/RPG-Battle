@@ -1,0 +1,387 @@
+{
+ "_not": "KQ6-19: yıldız tacı konumu (jeton 256 px uzayında; x,y = başın/şapkanın üst orta noktası, olcek = tasarım ölçeği oranı). Üretici scripts/hale-konum.py. varsayilan: <sınıf>-<erkek|kadin>[-gr|-genel]; jeton: varsayılandan > 8 px sapanlar için ezme (anahtar = dosya adı, celestial- öneksiz).",
+ "varsayilan": {
+  "barbarian-erkek": {
+   "x": 116,
+   "y": 10,
+   "olcek": 1.25
+  },
+  "barbarian-kadin": {
+   "x": 142,
+   "y": 21,
+   "olcek": 1.14
+  },
+  "bard-erkek": {
+   "x": 108,
+   "y": 33,
+   "olcek": 1.02
+  },
+  "bard-kadin": {
+   "x": 123,
+   "y": 33,
+   "olcek": 1.15
+  },
+  "bard-kadin-gr": {
+   "x": 132,
+   "y": 32,
+   "olcek": 1.22
+  },
+  "cleric-erkek": {
+   "x": 128,
+   "y": 43,
+   "olcek": 0.95
+  },
+  "cleric-erkek-genel": {
+   "x": 122,
+   "y": 27,
+   "olcek": 1.08
+  },
+  "cleric-kadin": {
+   "x": 134,
+   "y": 35,
+   "olcek": 1.05
+  },
+  "cleric-kadin-genel": {
+   "x": 126,
+   "y": 26,
+   "olcek": 1.12
+  },
+  "cleric-kadin-gr": {
+   "x": 131,
+   "y": 36,
+   "olcek": 1.16
+  },
+  "druid-erkek": {
+   "x": 126,
+   "y": 29,
+   "olcek": 1.25
+  },
+  "druid-erkek-genel": {
+   "x": 113,
+   "y": 22,
+   "olcek": 1.25
+  },
+  "druid-kadin": {
+   "x": 128,
+   "y": 28,
+   "olcek": 1.1
+  },
+  "druid-kadin-genel": {
+   "x": 129,
+   "y": 26,
+   "olcek": 1.25
+  },
+  "druid-kadin-gr": {
+   "x": 122,
+   "y": 35,
+   "olcek": 1.14
+  },
+  "fighter-erkek": {
+   "x": 130,
+   "y": 31,
+   "olcek": 1.16
+  },
+  "fighter-erkek-genel": {
+   "x": 127,
+   "y": 23,
+   "olcek": 1.14
+  },
+  "fighter-kadin-genel": {
+   "x": 130,
+   "y": 25,
+   "olcek": 1.11
+  },
+  "fighter-kadin-gr": {
+   "x": 129,
+   "y": 36,
+   "olcek": 1.11
+  },
+  "monk-erkek": {
+   "x": 135,
+   "y": 24,
+   "olcek": 1.14
+  },
+  "monk-kadin": {
+   "x": 131,
+   "y": 29,
+   "olcek": 1.12
+  },
+  "monk-kadin-genel": {
+   "x": 124,
+   "y": 26,
+   "olcek": 1.11
+  },
+  "monk-kadin-gr": {
+   "x": 134,
+   "y": 35,
+   "olcek": 1.11
+  },
+  "paladin-erkek-genel": {
+   "x": 114,
+   "y": 23,
+   "olcek": 1.16
+  },
+  "paladin-kadin-genel": {
+   "x": 110,
+   "y": 25,
+   "olcek": 1.11
+  },
+  "ranger-erkek": {
+   "x": 126,
+   "y": 27,
+   "olcek": 1.15
+  },
+  "ranger-erkek-genel": {
+   "x": 118,
+   "y": 22,
+   "olcek": 1.16
+  },
+  "ranger-kadin": {
+   "x": 127,
+   "y": 25,
+   "olcek": 1.11
+  },
+  "ranger-kadin-genel": {
+   "x": 118,
+   "y": 22,
+   "olcek": 1.12
+  },
+  "ranger-kadin-gr": {
+   "x": 116,
+   "y": 36,
+   "olcek": 1.19
+  },
+  "rogue-erkek": {
+   "x": 132,
+   "y": 31,
+   "olcek": 1.25
+  },
+  "rogue-erkek-genel": {
+   "x": 123,
+   "y": 25,
+   "olcek": 1.2
+  },
+  "rogue-erkek-gr": {
+   "x": 116,
+   "y": 31,
+   "olcek": 1.19
+  },
+  "rogue-kadin": {
+   "x": 133,
+   "y": 35,
+   "olcek": 1.16
+  },
+  "rogue-kadin-genel": {
+   "x": 123,
+   "y": 25,
+   "olcek": 1.2
+  },
+  "rogue-kadin-gr": {
+   "x": 127,
+   "y": 38,
+   "olcek": 1.14
+  },
+  "sorcerer-erkek": {
+   "x": 124,
+   "y": 35,
+   "olcek": 1.12
+  },
+  "sorcerer-kadin": {
+   "x": 129,
+   "y": 32,
+   "olcek": 1.09
+  },
+  "sorcerer-kadin-genel": {
+   "x": 123,
+   "y": 26,
+   "olcek": 1.12
+  },
+  "warlock-kadin": {
+   "x": 130,
+   "y": 27,
+   "olcek": 1.17
+  },
+  "warlock-kadin-genel": {
+   "x": 127,
+   "y": 26,
+   "olcek": 1.12
+  },
+  "warlock-kadin-gr": {
+   "x": 130,
+   "y": 38,
+   "olcek": 1.14
+  },
+  "wizard-erkek": {
+   "x": 126,
+   "y": 29,
+   "olcek": 1.09
+  },
+  "wizard-kadin": {
+   "x": 127,
+   "y": 33,
+   "olcek": 1.11
+  },
+  "wizard-kadin-gr": {
+   "x": 100,
+   "y": 11,
+   "olcek": 1.0
+  }
+ },
+ "jeton": {
+  "erkek-bard-ID5": {
+   "x": 107,
+   "y": 14,
+   "olcek": 1.12
+  },
+  "erkek-bard-ID8": {
+   "x": 126,
+   "y": 33,
+   "olcek": 1.0
+  },
+  "erkek-cleric-ID1": {
+   "x": 128,
+   "y": 43,
+   "olcek": 1.25
+  },
+  "erkek-cleric-ID4": {
+   "x": 129,
+   "y": 28,
+   "olcek": 1.09
+  },
+  "erkek-cleric-ID5": {
+   "x": 135,
+   "y": 29,
+   "olcek": 0.95
+  },
+  "erkek-cleric-ID6": {
+   "x": 141,
+   "y": 35,
+   "olcek": 1.25
+  },
+  "erkek-druid-ID1": {
+   "x": 113,
+   "y": 28,
+   "olcek": 1.25
+  },
+  "erkek-druid-ID2": {
+   "x": 140,
+   "y": 32,
+   "olcek": 1.25
+  },
+  "erkek-druid-ID7": {
+   "x": 108,
+   "y": 29,
+   "olcek": 1.11
+  },
+  "erkek-fighter-ID7": {
+   "x": 153,
+   "y": 32,
+   "olcek": 1.25
+  },
+  "erkek-ranger-ID3": {
+   "x": 108,
+   "y": 32,
+   "olcek": 1.22
+  },
+  "erkek-sorcerer-SC-3": {
+   "x": 155,
+   "y": 35,
+   "olcek": 1.09
+  },
+  "erkek-wizard-WZ-A6": {
+   "x": 128,
+   "y": 41,
+   "olcek": 1.08
+  },
+  "kadin-bard-ID6": {
+   "x": 148,
+   "y": 33,
+   "olcek": 1.17
+  },
+  "kadin-cleric-ID5": {
+   "x": 134,
+   "y": 22,
+   "olcek": 1.12
+  },
+  "kadin-cleric-ID8": {
+   "x": 140,
+   "y": 24,
+   "olcek": 1.08
+  },
+  "kadin-druid-ID2": {
+   "x": 202,
+   "y": 15,
+   "olcek": 1.25
+  },
+  "kadin-druid-ID4": {
+   "x": 154,
+   "y": 34,
+   "olcek": 1.09
+  },
+  "kadin-druid-ID8": {
+   "x": 146,
+   "y": 25,
+   "olcek": 1.09
+  },
+  "kadin-ranger-ID1": {
+   "x": 110,
+   "y": 11,
+   "olcek": 0.95
+  },
+  "kadin-ranger-ID3": {
+   "x": 117,
+   "y": 26,
+   "olcek": 1.19
+  },
+  "kadin-ranger-ID4": {
+   "x": 140,
+   "y": 22,
+   "olcek": 1.25
+  },
+  "kadin-rogue-ID1": {
+   "x": 140,
+   "y": 46,
+   "olcek": 1.16
+  },
+  "kadin-rogue-ID2": {
+   "x": 133,
+   "y": 48,
+   "olcek": 1.16
+  },
+  "kadin-rogue-ID5": {
+   "x": 132,
+   "y": 25,
+   "olcek": 1.02
+  },
+  "kadin-sorcerer-SC-7": {
+   "x": 141,
+   "y": 31,
+   "olcek": 1.25
+  },
+  "kadin-warlock-WL-8": {
+   "x": 106,
+   "y": 20,
+   "olcek": 0.8
+  },
+  "kadin-wizard-WZ-A6": {
+   "x": 130,
+   "y": 43,
+   "olcek": 1.11
+  },
+  "kadin-wizard-WZ-B1": {
+   "x": 136,
+   "y": 30,
+   "olcek": 1.25
+  },
+  "kadin-wizard-WZ-B3": {
+   "x": 127,
+   "y": 43,
+   "olcek": 1.08
+  },
+  "kadin-wizard-WZ-B5": {
+   "x": 128,
+   "y": 46,
+   "olcek": 1.11
+  }
+ }
+}

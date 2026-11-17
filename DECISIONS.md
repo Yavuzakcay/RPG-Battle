@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-31 — KQ6-19: Celestial yıldız tacı (oyunda çizilir), halesiz sprite esas
+
+- **Tasarım** (alternatif C, ~1,6× büyük): merkez yıldız r 15, yanlarda r 7 ve r 5, ince ışık çizgileri, #F5D76E; 96 px kopyada yıldızlar ≥ 3 px; hafif yanıp sönme (`.sc-star`, CSS), hareketi azalt (`prefers-reduced-motion`) açıkken statik. **Tek çözücü** `src/ui/haloCrown.ts` `crownSpec` (rozet `AvatarBadge` ve savaş jetonu `AvatarCircle` → `TokenFigure` aynı çözücü ve aynı çizim `StarCrown.tsx`). Taç yalnız hale gösteren uyanışlarda (`lineageLook.hideHalo` yoksa) ve sprite'ı halesiz jetonlarda; Gece Gözyaşı/Kırık Kanat'ta hale de taç da yok.
+- **Konum** `data/hale-konum.json` (üretici `scripts/hale-konum.py`): sınıf+cinsiyet (Gariban `-gr`, genel jeton `-genel`) varsayılanı = başın/şapkanın üst orta noktası ortancası, yalnız > 8 px (x/y) ya da > 0,2 ölçek sapan jetonlarda (31) ezme; şapka/kask/taç jetonlarında y şapka üstündedir.
+- **Sprite**: 139 jetonun asıl dosyası halesiz sürümle değiştirildi (`public/characters/halesiz/` kalktı; haleli eski dosyalar git geçmişinde). Sanat halesi kalan 149 jeton (Gemini'ye gidecek 60, dokunma/ertele/karar bekliyor) taç ALMAZ; hale bu jetonlarda eskisi gibi sprite'ta görünür (kullanıcı "tüm Celestial halesiz" bekliyordu: halesiz üretilemeyenler Gemini düzeltmesi bekliyor). Önizleme sırasında 5 Warlock jetonunda (erkek WL-1/2/5/6/7) halesiz varyantta halka kaldığı görülüp geri alındı (otomatik kalıntı denetimi kalın/altın halkada saçla karışıyor: sınırlama).
+- Önizleme: `docs/sabah/hale-oyun-onizleme.png` (`onizleme-hale.html`, dev sunucusu; Fighter, Wizard, Rogue, Warlock, Cleric, Monk × kadın/erkek/Gariban; rozet 96 + karakter ekranı + savaş jetonu). `src/data/haleVaryant.test.ts`, `src/ui/as1cGorunum.test.tsx` güncellendi.
+
 ## 2026-12-30 — KQ6-18: Hale silme, güçlü yöntem (güvenlik ağıyla)
 
 - `scripts/hale-guclu.py`: kalıntılı/şüpheli halesiz varyantlar asıl jetondan yeniden üretilir: hale tohumu (hale-v2 ∪ hale-oneri ∪ mevcut silinenler), hale tonu (tohum çekirdeğinin ortanca rengi), tohum çevresinde (6 px) bağlı hale tonlu/yarı saydam pikseller silinir; baş konturunun ilk koyu satırından aşağısı, koyu kontur ve hale tonu olmayan her piksel korunur (baş/saç/şapka/kulak/kanat). Aynı ton bedende ≥ 120 px varsa (altın saç) yalnız tohum çevresi. Güvenlik ağı: silme sonrası şekil temelli + ton temelli kalıntı (≤ 8 px) denetimi; geçemeyen varyant ÜRETİLMEZ, halesiz dosyası kaldırılır, jeton "Gemini'ye gidecek" (`data/hale-elle.json` bekleyen, `docs/sabah/hale-gemini.csv`, 59 satır: 55 yeni + 4 eski Gemini bekleyen); hale çizilmez, silme gevşetilmez.
