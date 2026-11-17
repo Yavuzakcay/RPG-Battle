@@ -32,175 +32,175 @@
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-barbarian-ID3": {
    "neden": "halka başa değiyor: 206 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-barbarian-ID4": {
    "neden": "Gece Gözyaşı halesiz varyantı üretilemedi (hale sanatta var, silme güvenli değil)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 67 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-barbarian-ID7": {
    "neden": "halka başa değiyor: 45 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-barbarian-ID8": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-barbarian-ID9": {
    "neden": "halka başa değiyor: 42 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-bard-ID3": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 69 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-bard-ID9": {
    "neden": "halka başa değiyor: 161 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-cleric-ID7": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 106 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-cleric-ID9": {
    "neden": "halka başa değiyor: 172 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-fighter-ID10": {
    "neden": "halka başa değiyor: 101 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 100 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-fighter-ID11": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-fighter-ID5": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; fighter sınıfı ortalaması (5 jeton): rx 26, ry 7, renk #dbdf8f; en üst piksel y=9",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-erkek-fighter-ID6": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; fighter sınıfı ortalaması (5 jeton): rx 26, ry 7, renk #dbdf8f; en üst piksel y=44",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-erkek-fighter-ID8": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; fighter sınıfı ortalaması (5 jeton): rx 26, ry 7, renk #dbdf8f; en üst piksel y=18",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-erkek-monk-ID1": {
    "neden": "halka başa değiyor: 63 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 66 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-monk-ID2": {
    "neden": "halka başa değiyor: 49 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 59 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-monk-ID6": {
    "neden": "halka başa değiyor: 243 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 306 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-monk-ID9": {
    "neden": "halka başa değiyor: 143 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 53 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-paladin-ID1": {
    "neden": "halka başa değiyor: 56 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 80 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-paladin-ID10": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-paladin-ID2": {
    "neden": "halka başa değiyor: 65 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-paladin-ID3": {
    "neden": "halka başa değiyor: 43 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (141 px halka kalıntısı başa değiyor)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-paladin-ID6": {
    "neden": "halka başa değiyor: 57 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-paladin-ID7": {
    "neden": "halka başa değiyor: 59 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-paladin-ID8": {
    "neden": "Gemini düzeltmesi bekliyor (hale kaska değiyor)",
@@ -211,63 +211,64 @@
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 37 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-ranger-ID8": {
    "neden": "halka başa değiyor: 42 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-rogue-ID3": {
    "neden": "halka başa değiyor: 44 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (146 px halka kalıntısı başa değiyor)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-rogue-ID5": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 27 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-rogue-ID6": {
    "neden": "halka başa değiyor: 51 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-rogue-ID7": {
    "neden": "halka başa değiyor: 95 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 5 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-sorcerer-SC-5": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (456 px halka kalıntısı başa değiyor)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-erkek-sorcerer-SC-9": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; sorcerer sınıfı ortalaması (14 jeton): rx 26, ry 7, renk #e6e086; en üst piksel y=8",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-erkek-warlock-WL-10": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "koyu kontur yok: hale kütleye karışmış olabilir",
-   "karar": ""
+   "karar": "dokunma",
+   "karaNot": "Warlock WL-10 ayrı not: pale/beyaz hale buz saçına karışık, koyu kontur yok; otomatik tespit güvenilmez. Dokunulmadı, Gemini düzeltmesi/elle bakış gerekebilir."
   },
   "celestial-erkek-warlock-WL-3": {
    "neden": "Gemini düzeltmesi bekliyor (hale başlığa değiyor)",
@@ -278,203 +279,203 @@
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-female-bard": {
    "neden": "halka başa değiyor: 49 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 67 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-female-wizard": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-barbarian-ID1": {
    "neden": "halka başa değiyor: 185 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-barbarian-ID2": {
    "neden": "Gece Gözyaşı halesiz varyantı üretilemedi (hale sanatta var, silme güvenli değil)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-barbarian-ID4": {
    "neden": "Gece Gözyaşı halesiz varyantı üretilemedi (hale sanatta var, silme güvenli değil)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 114 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-barbarian-ID7": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (75 px halka kalıntısı başa değiyor)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-barbarian-ID8": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-bard-ID3": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-bard-ID7": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-bard-ID9": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-cleric-ID7": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (136 px halka kalıntısı başa değiyor)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-fighter-ID1": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-fighter-ID10": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; fighter sınıfı ortalaması (5 jeton): rx 26, ry 7, renk #dbdf8f; en üst piksel y=11",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-kadin-fighter-ID2": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; kardeş: erkek-fighter-ID2: rx 26, ry 6, renk #d9dc8f; en üst piksel y=12",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-kadin-fighter-ID3": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; kardeş: erkek-fighter-ID3: rx 26, ry 7, renk #dbe094; en üst piksel y=34",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-kadin-fighter-ID4": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; kardeş: erkek-fighter-ID4: rx 26, ry 7, renk #dcdf8b; en üst piksel y=34",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-kadin-fighter-ID5": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; fighter sınıfı ortalaması (5 jeton): rx 26, ry 7, renk #dbdf8f; en üst piksel y=24",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-kadin-fighter-ID6": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; fighter sınıfı ortalaması (5 jeton): rx 26, ry 7, renk #dbdf8f; en üst piksel y=39",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-kadin-fighter-ID7": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 8 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-fighter-ID8": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; fighter sınıfı ortalaması (5 jeton): rx 26, ry 7, renk #dbdf8f; en üst piksel y=18",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-kadin-fighter-ID9": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; kardeş: erkek-fighter-ID9: rx 27, ry 6, renk #d9d87e; en üst piksel y=29",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-kadin-monk-ID10": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-monk-ID5": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-monk-ID6": {
    "neden": "halka başa değiyor: 292 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-paladin-ID10": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-paladin-ID2": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 34 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-paladin-ID5": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-paladin-ID7": {
    "neden": "halka başa değiyor: 41 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-paladin-ID8": {
    "neden": "Gemini düzeltmesi bekliyor (hale kaska değiyor)",
@@ -485,35 +486,35 @@
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-rogue-ID8": {
    "neden": "halka başa değiyor: 84 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-sorcerer-SC-5": {
    "neden": "halka başa değiyor: 307 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-sorcerer-SC-9": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "b",
    "oneriNot": "hale yok; sorcerer sınıfı ortalaması (14 jeton): rx 26, ry 7, renk #e6e086; en üst piksel y=9",
-   "karar": ""
+   "karar": "ertele"
   },
   "celestial-kadin-warlock-WL-2": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-warlock-WL-3": {
    "neden": "Gemini düzeltmesi bekliyor (hale başlığa değiyor)",
@@ -524,28 +525,29 @@
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 34 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-kadin-warlock-WL-5": {
    "neden": "halka başa değiyor: 113 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-male-bard": {
    "neden": "halka başa değiyor: 49 px silinemedi (kalıntı)",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "hale var ama güvenli silme yok (baş kutusunda 61 px değişir)",
-   "karar": ""
+   "karar": "dokunma"
   },
   "celestial-male-wizard": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
    "oneri": "c",
    "oneriNot": "şekil belirsiz (halka benzeri parça var ama halka değil)",
-   "karar": ""
+   "karar": "dokunma"
   }
- }
+ },
+ "_karar_notu": "KQ6-15: hale-oneri kararları. ertele: hale konumu betikle güvenilir değil (figürün en üst pikseline göre yerleştirme tüy/süs/şapkada kayıyor, başın üstünde boşluk bırakıyor); dokunma: asıl jeton olduğu gibi. Hiçbir jetona hale çizilmedi."
 }
