@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-27 — KQ6-14: Toplu kesim tek tur (52 sayfa, 498 jeton)
+
+- `scripts/toplu-kesim.py --yeni`: Dragonborn sınıf sayfaları (22), Wizard Dragonborn a/b (4), Gariban (20, 4×3, sınıf sırası), Hızır (2, 3×3) tek turda; Wizard Human 4 sayfa yalnız referans. Düzeltmeler: sayfa başına gerçek zemin tonu (`sheet_bg`), iki yanı zemin olan çerçeve çizgileri (`≥ 300 px`) kesim öncesi silinir (figürlerin birleşmesini önler; koyu pelerinli figürlerin içi silinmez), figürden ayrı nötr koyu çizgi kırıntıları figüre katılmaz, render sonrası tuval kenarındaki küçük koyu çubuk silinir. Sayfa başına ölçek (en yüksek figür 240; Wizard a+b ortak; Hızır = kardeş Paladin sayfasının ölçeği). Ayrıntı ve sayfa tablosu `docs/sabah/toplu-kesim-yeni.md`.
+- Test güncellemeleri (gerekçe: veri sayısı): `src/ui/loading.test.ts` jeton sayısı 2400 → 2880 (+240 Gariban, +210 Dragonborn, +30 Wizard Dragonborn); `src/data/haleVaryant.test.ts` Gariban (`-GR`) jetonları 264'ün dışında (uyanış yok, halesiz varyant gerekmez). Kural sürümü 82, mekanik değişikliği yok.
+
 ## 2026-12-26 — KQ6-12: Celestial hale uygulandı (önceden hesaplı halesiz varyant)
 
 - Onaylı hale-v2 yöntemi 264 Celestial jetona uygulandı (`scripts/hale-uygula.py`, kaynak = bb36b76'daki jetonlar; sonuç `docs/sabah/hale-sonrasi.png`, ELLE `docs/sabah/hale-elle.md`). Gece Gözyaşı / Kırık Kanat için `public/characters/halesiz/<ad>.webp` (+ `kucuk/`): halka şekline ve baş korumasına göre silindi; baş kutusu alfa>0 sayısı aynı ve kalıntı ≤ 40 px şartı sağlanmayan jeton işlenmedi. Çalışma anında kırpma kalktı (`clipPath`/`halo-hidden`): `src/ui/haloVariant.ts` `haloFreeSrc` rozette (karakter listesi, küçük kopya dahil) ve savaş jetonunda aynı yoldan varyantı seçer, asıl jeton yedekte; maliyet yok.

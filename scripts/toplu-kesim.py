@@ -241,7 +241,19 @@ def render(rgba, bb, scale, cx):
     if left < 0 or left + nw > SIZE: left = round((SIZE - nw) / 2); shifted = True
     top = max(0, FOOT + 1 - nh)
     canvas = Image.new('RGBA', (SIZE, SIZE), (0, 0, 0, 0)); canvas.alpha_composite(im, (left, top))
-    return Image.fromarray(clean_edges(np.array(canvas)), 'RGBA'), nh, shifted
+    arr = clean_edges(np.array(canvas))
+    # KQ6-14: figürden ayrı, küçük, nötr koyu ve yatay uzun çubuk (ızgara çerçevesi kırıntısı) tuvalin alt/yan kenarındaysa silinir
+    lab, n_ = ndi.label(arr[..., 3] > 0, structure=np.ones((3, 3)))
+    if n_ > 1:
+        sizes = ndi.sum(np.ones_like(lab), lab, index=range(1, n_ + 1)); big = int(np.argmax(sizes)) + 1
+        for i, sl in enumerate(ndi.find_objects(lab), 1):
+            if i == big or sizes[i - 1] > 0.12 * sizes[big - 1]: continue
+            h_, w_ = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+            px_ = arr[sl][lab[sl] == i][:, :3].astype(int)
+            neutral = px_.max(axis=1).mean() < 75 and float((px_.max(axis=1) - px_.min(axis=1)).mean()) < 32
+            edge = sl[0].stop >= SIZE - 12 or sl[1].start <= 3 or sl[1].stop >= SIZE - 3
+            if neutral and edge and (w_ >= 2.2 * h_ or h_ >= 2.2 * w_): arr[sl][lab[sl] == i] = 0
+    return Image.fromarray(arr, 'RGBA'), nh, shifted
 
 def process(job):
     cls, path = job
@@ -331,9 +343,30 @@ def check_images(cls, results):
 # İŞ 1: bağlı bileşen tabanlı kesim (`--yeni`); eski ızgara yöntemi (`process`) yedekte. Parametreler data/kesim-parametre.json.
 KP = json.load(open('data/kesim-parametre.json'))
 
-def nominal_cell(cx, cy, W, H, cls):
-    """Merkez noktasının hücresi (satır-sütun okuma sırası, 1 tabanlı); uzun hücre (warlock 8) sağ sütun 2.-3. satır."""
+def detect_grid(img, cols, rows):
+    """Sayfadaki gerçek ızgara çizgileri (koyu sütun/satırlar) → (x sınırları, y sınırları); bulunamazsa None (orantılı bölme)."""
+    dark = img.max(axis=2) < 80
+    def bounds(frac, n, size):
+        ok = frac > 0.5; runs = []; st = None
+        for i, v in enumerate(ok):
+            if v and st is None: st = i
+            if not v and st is not None: runs.append((st + i) / 2); st = None
+        if st is not None: runs.append((st + len(ok)) / 2)
+        inner = [r_ for r_ in runs if size * 0.05 < r_ < size * 0.95]
+        merged = []
+        for r_ in inner:
+            if merged and r_ - merged[-1] < size / n * 0.3: continue
+            merged.append(r_)
+        return [0] + merged + [size] if len(merged) == n - 1 else None
+    xb = bounds(dark.mean(axis=0), cols, img.shape[1]); yb = bounds(dark.mean(axis=1), rows, img.shape[0])
+    return (xb, yb) if xb and yb else None
+
+def nominal_cell(cx, cy, W, H, cls, grid=None):
+    """Merkez noktasının hücresi (satır-sütun okuma sırası, 1 tabanlı); uzun hücre (warlock 8) sağ sütun 2.-3. satır. grid: gerçek ızgara sınırları."""
     cols, rows = CLASSES[cls][0], CLASSES[cls][1]
+    if grid and cls not in TALL:
+        c = max(0, min(cols - 1, int(np.searchsorted(grid[0], cx, side='right')) - 1)); r = max(0, min(rows - 1, int(np.searchsorted(grid[1], cy, side='right')) - 1))
+        return r * cols + c + 1
     c = min(cols - 1, int(cx / W * cols)); r = min(rows - 1, int(cy / H * rows))
     if cls in TALL and c == cols - 1 and r == 2: r = 1
     n = r * cols + c + 1
@@ -343,9 +376,22 @@ def nominal_cell(cx, cy, W, H, cls):
         else: n = 9 + c
     return n
 
-def key_sheet(a):
-    """Sayfa zemin anahtarı: saf yeşil/magenta'ya yakın büyük bölgeler (hücre zeminleri) silinir; figür içi küçük bölgeler kalır."""
-    p = KP['saf']; d = np.minimum(np.linalg.norm(a.astype(float) - np.array(p['yesil']), axis=2), np.linalg.norm(a.astype(float) - np.array(p['magenta']), axis=2))
+def sheet_bg(a):
+    """Sayfanın gerçek zemin rengi (sayfa başına; saf #00FF00/#FF00FF'ten sapmış yeşil/magenta): en sık görülen doygun yeşil/magenta ton."""
+    sm = a[::8, ::8].reshape(-1, 3).astype(int); q = sm // 16
+    keys, inv, counts = np.unique(q, axis=0, return_inverse=True, return_counts=True)
+    for k in np.argsort(-counts)[:8]:
+        col = np.median(sm[inv.ravel() == k], axis=0)
+        r, g, b = col
+        if g - max(r, b) > 60 or min(r, b) - g > 60: return col
+    return None
+
+def key_sheet(a, ref=None):
+    """Sayfa zemin anahtarı: saf yeşil/magenta (ve sayfanın kendi zemin tonu) yakınındaki büyük bölgeler (hücre zeminleri) silinir; figür içi küçük bölgeler kalır."""
+    p = KP['saf']; af = a.astype(float)
+    ds = [np.linalg.norm(af - np.array(p['yesil']), axis=2), np.linalg.norm(af - np.array(p['magenta']), axis=2)]
+    if ref is not None: ds.append(np.linalg.norm(af - np.array(ref, float), axis=2))
+    d = np.minimum.reduce(ds)
     near = d < KP['bgEsik']
     lab, n = ndi.label(near)
     bg = np.zeros(near.shape, bool)
@@ -423,12 +469,25 @@ def despill(rgba, kind='magenta'):
     a[band & near, 3] = 0
     return a
 
-def components_of_sheet(path, cls):
+def components_of_sheet(path, cls, force_cells=()):
     """→ {hücre n: (RGBA tam sayfa boyutunda kırpılmış kutu, bbox, uyarı listesi)}; elle kontrol gerektirenler uyarıda 'ELLE'."""
     img = np.asarray(Image.open(path).convert('RGB')); H, W = img.shape[:2]
-    fg = key_sheet(img)
+    grid = detect_grid(img, CLASSES[cls][0], CLASSES[cls][1]) if cls not in TALL else None
+    fg = key_sheet(img, sheet_bg(img))
     lines = drop_lines(fg)
     fg &= ~lines
+    # ızgara çerçeve çizgileri: çok uzun (≥ 300 px) koyu düz şeritler; yalnız İKİ YANI da zemin olanlar (iki hücre zemini arasındaki çizgi;
+    # siyah pelerin gibi figür içi koyu şeritlerin yanında figür vardır, silinmez)
+    dk_ = img.max(axis=2) < 90
+    llh = ndi.binary_opening(dk_, structure=np.ones((1, 300), bool)); llv = ndi.binary_opening(dk_, structure=np.ones((300, 1), bool))
+    if llh.any() or llv.any():
+        bgm = np.pad(~fg, 60, constant_values=True); Hh, Ww = fg.shape
+        up = bgm[0:Hh, 10:10 + Ww] if False else None
+        def side(dy, dx): return bgm[60 + dy:60 + dy + Hh, 60 + dx:60 + dx + Ww]
+        both_h = np.zeros_like(llh); both_v = np.zeros_like(llh)
+        for d_ in (16, 24, 32, 44, 56): both_h |= side(-d_, 0) & side(d_, 0); both_v |= side(0, -d_) & side(0, d_)
+        kill = ndi.binary_closing(llh & both_h, structure=np.ones((1, 241), bool)) & llh | ndi.binary_closing(llv & both_v, structure=np.ones((241, 1), bool)) & llv
+        if kill.any(): fg &= ~ndi.binary_dilation(kill, iterations=3)
     fg = ndi.binary_opening(fg, iterations=1)
     # ızgara çizgisi kırıntıları (kesik kesik ince şeritler): ince uzun küçük bileşenler atılır
     l0, n0 = ndi.label(fg, structure=np.ones((3, 3)))
@@ -447,7 +506,7 @@ def components_of_sheet(path, cls):
         if area < KP['kucukParca']: continue
         ys, xs = np.where(m)
         info[i] = {'sl': sl, 'm': m, 'area': area, 'cx': xs.mean() + sl[1].start, 'cy': ys.mean() + sl[0].start}
-        info[i]['n'] = nominal_cell(info[i]['cx'], info[i]['cy'], W, H, cls)
+        info[i]['n'] = nominal_cell(info[i]['cx'], info[i]['cy'], W, H, cls, grid)
     big = [i for i, c in info.items() if c['area'] >= KP['figurMinAlan']]
     owner = {i: i for i in big}
     for i, c in info.items():
@@ -480,8 +539,15 @@ def components_of_sheet(path, cls):
         warn = []
         keep = list(main['members'])
         for other in lst[1:]:  # aynı hücredeki ikinci büyük parça: figürden çok küçükse efekt/aksesuar (ruh, kanat, gölge), değilse iki figür
-            if other['area'] <= KP['ikinciOran'] * main['area']: keep += other['members']
+            if other['area'] <= KP['ikinciOran'] * main['area'] or n_ in force_cells: keep += other['members']
             else: warn.append(f"ELLE: hücrede iki büyük figür ({other['area']} / {main['area']} px)")
+        # ızgara çizgisi kırıntısı: nötr koyu, ince/uzun küçük parça (figürden ayrı) figüre katılmaz
+        def lineish(c):
+            if c['area'] >= 25000 or c is max(keep, key=lambda k_: k_['area']): return False
+            px_ = img[c['sl']][c['m']].astype(int)
+            neutral = px_.max(axis=1).mean() < 100 and float((px_.max(axis=1) - px_.min(axis=1)).mean()) < 30
+            return neutral and float(ndi.distance_transform_edt(np.pad(c["m"], 1)).max()) <= 36   # çizgi kalınlığı ≤ ~48 px
+        keep = [c for c in keep if not lineish(c)]
         y0 = min(c['sl'][0].start for c in keep); y1 = max(c['sl'][0].stop for c in keep); x0 = min(c['sl'][1].start for c in keep); x1 = max(c['sl'][1].stop for c in keep)
         rgba = np.zeros((y1 - y0, x1 - x0, 4), np.uint8); rgba[..., :3] = img[y0:y1, x0:x1]
         for c in keep:
@@ -489,10 +555,11 @@ def components_of_sheet(path, cls):
             rgba[..., 3] |= (mm * 255).astype(np.uint8)
         # iki hücreye taşan (temas eden) figür: kümenin yatay/dikey kapsamı iki nominal hücreyi geçiyorsa elle kontrol
         cols, rows_ = CLASSES[cls][0], CLASSES[cls][1]
-        if (x1 - x0) > W / cols * (1 + KP['elleKontrol']['ikiHucreOran']) * 1.0 and cls not in TALL: warn.append('ELLE: figür bir hücre genişliğini aşıyor (temas/birleşme)')
+        cw_ = (grid[0][(n_ - 1) % cols + 1] - grid[0][(n_ - 1) % cols]) if grid else W / cols
+        if (x1 - x0) > cw_ * (1 + KP['elleKontrol']['ikiHucreOran']) * 1.0 and cls not in TALL: warn.append('ELLE: figür bir hücre genişliğini aşıyor (temas/birleşme)')
         # kümenin piksel kütlesi başka bir nominal hücreye de düşüyorsa (iki figür birleşmiş): elle kontrol
         ysx, xsx = np.where(rgba[..., 3] > 0)
-        other = np.mean([nominal_cell(xsx[j] + x0, ysx[j] + y0, W, H, cls) != n_ for j in range(0, len(xsx), 7)]) if len(xsx) else 0
+        other = np.mean([nominal_cell(xsx[j] + x0, ysx[j] + y0, W, H, cls, grid) != n_ for j in range(0, len(xsx), 7)]) if len(xsx) else 0
         if other > KP['elleKontrol']['ikiHucreOran']: warn.append(f'ELLE: figür kütlesinin %{other * 100:.0f}\'i başka hücrede (iki figür temas ediyor)')
         out[n_] = (despill(trim_lines(rgba), sheet_kind(img, (x0, y0, x1, y1), fg)), (x0, y0, x1, y1), warn)
     return out
@@ -556,14 +623,134 @@ def apply_new(old_scales):
     json.dump(out, open('data/kesim-yeniden.json', 'w'), ensure_ascii=False, indent=1)
     return out
 
+# ---------------------------------------------------------------------------------------------------------------------
+# KQ6-14 TOPLU KESİM TEK TUR (`--yeni`): 52 sayfa (dragonborn sınıf, wizard dragonborn a/b, gariban, Hızır; wizard human yalnız referans).
+ORIG = list(CLASSES)
+GARIBAN = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard']
+CLASSES['wizard_a'] = (4, 2, 'WZ-A', ['Patlama', 'Aldatmaca', 'Anka', 'Diriliş', 'Savaş', 'Kâtip', 'Kehanet', 'Kılıç Şarkısı'], {})
+CLASSES['wizard_b'] = (4, 2, 'WZ-B', ['Seraplar', 'Sığınak', 'Simya', 'Tezahür', 'Uzay Bükücü', 'Zaman', 'Harita'], {'erkek': [], 'kadin': []})
+CLASSES['gariban'] = (4, 3, 'GR', [c.capitalize() for c in GARIBAN], {})
+CLASSES['hizir'] = (3, 3, '', [f'hücre {i}' for i in range(1, 10)], {})
+RACES10 = RACES + ['dragonborn']
+HIZIR = {'hizir-sayfa1': [('tiefling', 'erkek'), ('celestial', 'kadin'), ('dwarf', 'kadin'), ('elf', 'kadin'), ('gnome', 'kadin'), ('goliath', 'kadin'), ('halfling', 'kadin'), ('human', 'kadin'), ('orc', 'kadin')],
+         'hizir-sayfa2': [('tiefling', 'kadin'), ('celestial', 'erkek'), ('dwarf', 'erkek'), ('elf', 'erkek'), ('gnome', 'erkek'), ('goliath', 'erkek'), ('halfling', 'erkek'), ('human', 'erkek'), ('orc', 'erkek')]}
+INV = {'erkek': 'male', 'kadin': 'female'}
+
+def find_raw(stem):
+    c = sorted(glob.glob(f'{RAW}/{stem}.*'))
+    return c[0] if c else None
+
+def yeni_jobs():
+    """→ [(sayfa_adi, dosya, yerlesim, {hücre n: çıktı adı (uzantısız)}, olcek_grubu)] ve referans/eşleşmeyen listesi."""
+    jobs, ref = [], []
+    for cls in ORIG:                                  # 1) dragonborn sınıf sayfaları (22)
+        for g in ('female', 'male'):
+            f = find_raw(f'{cls}-{g}-dragonborn')
+            if not f: ref.append(f'{cls}-{g}-dragonborn (dosya yok)'); continue
+            names = CLASSES[cls][3]; pre = CLASSES[cls][2]
+            jobs.append((os.path.basename(f), f, cls, {n: f'dragonborn-{GEN[g]}-{cls}-{pre}{n}' for n in range(1, len(names) + 1) if n not in CLASSES[cls][4].get(GEN[g], [])}, f'dragonborn-{g}-{cls}'))
+    for g in ('female', 'male'):                      # 2) wizard dragonborn a/b (4)
+        for part in ('a', 'b'):
+            f = find_raw(f'wizard-{g}-dragonborn-{part}')
+            if not f: ref.append(f'wizard-{g}-dragonborn-{part} (dosya yok)'); continue
+            lay = f'wizard_{part}'; pre = CLASSES[lay][2]
+            jobs.append((os.path.basename(f), f, lay, {n: f'dragonborn-{GEN[g]}-wizard-{pre}{n}' for n in range(1, len(CLASSES[lay][3]) + 1)}, f'wizard-{g}-dragonborn'))
+    for race in RACES10:                              # 3) gariban (20)
+        for g in ('female', 'male'):
+            f = find_raw(f'gariban-{g}-{race}')
+            if not f: ref.append(f'gariban-{g}-{race} (dosya yok)'); continue
+            jobs.append((os.path.basename(f), f, 'gariban', {i + 1: f'{race}-{GEN[g]}-{GARIBAN[i]}-GR' for i in range(12)}, f'gariban-{g}-{race}'))
+    for stem, lst in HIZIR.items():                   # 4) Hızır (2): hücre -> <irk>-<cinsiyet>-paladin-ID10
+        f = find_raw(stem)
+        if not f: ref.append(f'{stem} (dosya yok)'); continue
+        jobs.append((os.path.basename(f), f, 'hizir', {i + 1: f'{r}-{g}-paladin-ID10' for i, (r, g) in enumerate(lst)}, stem))
+    for g in ('female', 'male'):                      # 5) wizard human: yalnız referans
+        for part in ('a', 'b'):
+            f = find_raw(f'wizard-{g}-human-{part}')
+            ref.append(f'{os.path.basename(f) if f else f"wizard-{g}-human-{part} (dosya yok)"}: yalnız referans, kesilmedi')
+    return jobs, ref
+
+def yeni_cut(job):
+    name, path, lay, names, group = job
+    res = {'dosya': name, 'yerlesim': lay, 'kesilen': [], 'elle': [], 'eksik': [], 'uyari': []}
+    try:
+        comps = components_of_sheet(path, lay)
+        forced = tuple(n for n, v in comps.items() if v[2] and v[2][0].startswith('ELLE: hücrede iki büyük figür'))   # figür + yanında süzülen parçalar (hançer vb.): birleştirilir, ELLE notuyla
+        if forced:
+            c2 = components_of_sheet(path, lay, force_cells=forced)
+            for n in forced: comps[n] = (c2[n][0], c2[n][1], [f'ELLE-birlestirildi: {comps[n][2][0]}'])
+    except Exception as e: res['hata'] = repr(e); return res, {}
+    want = list(names)
+    res['bulunan'] = sorted(comps)
+    return res, {n: comps[n] for n in comps}
+
+def yeni_main():
+    import time
+    jobs, ref = yeni_jobs()
+    only_ = [a for a in sys.argv[1:] if not a.startswith('--')]
+    if only_: jobs = [j for j in jobs if any(o in j[0] for o in only_)]   # örn. --yeni wizard-male
+    os.makedirs(f'{OUT}/kucuk', exist_ok=True); os.makedirs('docs/sabah/toplu-kesim-yeni', exist_ok=True)
+    t0 = time.time()
+    with Pool(4) as pool: outs = pool.map(yeni_cut, jobs, chunksize=1)
+    # Ölçek: sayfa başına (en yüksek/geniş normal figür 240); wizard a+b birlikte; Hızır = kardeş Paladin sayfasının ölçeği
+    scales = {}
+    grp = {}
+    for (job, (res, comps)) in zip(jobs, outs):
+        if 'hata' in res: continue
+        name, path, lay, names, group = job
+        valid = {n: v for n, v in comps.items() if n in names and not any(x.startswith('ELLE:') for x in v[2])}
+        if not valid: continue
+        norm = [n for n in valid if TALL.get(lay) != n]
+        h = max(valid[n][0].shape[0] for n in norm); w = max(valid[n][0].shape[1] for n in norm)
+        g_ = grp.setdefault(group, [0, 0]); g_[0] = max(g_[0], h); g_[1] = max(g_[1], w)
+    for k, (h, w) in grp.items(): scales[k] = min(FIG_H / h, (SIZE - 4) / w)
+    report = {'sayfalar': [], 'referans': ref}
+    for (job, (res, comps)) in zip(jobs, outs):
+        name, path, lay, names, group = job
+        if 'hata' in res: report['sayfalar'].append(res); continue
+        for n, stem in names.items():
+            c = comps.get(n)
+            if c is None: res['eksik'].append(n); continue
+            rgba, bb, warn = c
+            if any(x.startswith('ELLE:') for x in warn): res['elle'].append({'hucre': n, 'cikti': stem, 'neden': warn[0]}); continue
+            sc = scales[group]
+            if lay == 'hizir':   # kardeş Paladin sayfasının ölçeği (aynı ırk/cinsiyet), yükseklik 240'ı aşmaz
+                race, gen = stem.split('-')[0], stem.split('-')[1]
+                sib = find_raw(f'paladin-{INV[gen]}-{race}')
+                if sib:
+                    sc_ = components_of_sheet(sib, 'paladin'); vv = [v[0] for k_, v in sc_.items() if k_ <= 10 and not any(x.startswith('ELLE') for x in v[2])]
+                    if vv: sc = min(FIG_H / max(v.shape[0] for v in vv), (SIZE - 4) / max(v.shape[1] for v in vv))
+                sc = min(sc, FIG_H / rgba.shape[0], (SIZE - 4) / rgba.shape[1])
+            if TALL.get(lay) == n: sc = min(FIG_H / rgba.shape[0], (SIZE - 4) / rgba.shape[1])
+            tok, nh, shifted = render(rgba, bbox(rgba), sc, rgba.shape[1] / 2)
+            tok.save(f'{OUT}/{stem}.webp', 'WEBP', quality=92, alpha_quality=100, method=4)
+            tok.resize((96, 96), Image.LANCZOS).save(f'{OUT}/kucuk/{stem}.webp', 'WEBP', quality=82, method=4)
+            res['kesilen'].append({'hucre': n, 'cikti': stem, 'olcek': round(sc, 4), 'uyari': [w_ for w_ in warn]})
+        report['sayfalar'].append(res)
+        # kontak sayfası
+        px = 128; ks = res['kesilen']
+        if ks:
+            im = Image.new('RGB', (px * min(6, len(ks)), (px + 14) * ((len(ks) + 5) // 6)), (96, 100, 112)); d = ImageDraw.Draw(im)
+            for i, k_ in enumerate(ks):
+                t = Image.open(f"{OUT}/{k_['cikti']}.webp").convert('RGBA').resize((px, px), Image.LANCZOS)
+                ox, oy = (i % 6) * px, (i // 6) * (px + 14); im.paste(t, (ox, oy + 14), t); d.text((ox + 2, oy + 1), f"{k_['hucre']} {k_['cikti'][-22:]}", fill=(255, 255, 255))
+            im.save(f'docs/sabah/toplu-kesim-yeni/{os.path.splitext(name)[0]}.jpg', quality=85)
+    if only_: print('kısmi çalıştırma: rapor dosyası güncellenmedi'); [print(r['dosya'], len(r['kesilen'])) for r in report['sayfalar']]; return
+    json.dump(report, open('data/toplu-kesim-yeni-rapor.json', 'w'), ensure_ascii=False, indent=1)
+    kes = sum(len(r['kesilen']) for r in report['sayfalar']); el = sum(len(r['elle']) for r in report['sayfalar']); ek = sum(len(r['eksik']) for r in report['sayfalar'])
+    print(f'{len(jobs)} sayfa, {kes} jeton kesildi, {el} hücre ELLE (otomatik kesim güvenli değil), {ek} hücre figür bulunamadı, {time.time() - t0:.0f} sn')
+    for r in report['sayfalar']:
+        if r.get('hata') or r['elle'] or r['eksik']: print('  ', r['dosya'], r.get('hata', ''), 'ELLE', [(e['hucre'], e['neden'][:50]) for e in r['elle']], 'eksik', r['eksik'])
+
 if __name__ == '__main__':
+    if '--yeni' in sys.argv: yeni_main(); sys.exit(0)
     if '--yeni-uygula' in sys.argv:
         scales = {}
         for f in glob.glob('/tmp/claude-0/s/toplu-*.json'):
             for r in json.load(open(f)):
                 if 'olcek' in r: scales[(r['sinif'], r['cinsiyet'], r['irk'])] = r['olcek']
         o = apply_new(scales); print({k: len(v) for k, v in o.items()}); sys.exit(0)
-    only = [a for a in sys.argv[1:] if not a.startswith('--')] or list(CLASSES)
+    only = [a for a in sys.argv[1:] if not a.startswith('--')] or ORIG
     os.makedirs(f'{OUT}/kucuk', exist_ok=True)
     for cls in only:
         jobs = [(cls, p) for p in sorted(glob.glob(f'{RAW}/{cls}-*'))]

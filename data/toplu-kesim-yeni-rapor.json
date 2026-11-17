@@ -1,0 +1,4029 @@
+{
+ "sayfalar": [
+  {
+   "dosya": "warlock-female-dragonborn.jpg",
+   "yerlesim": "warlock",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-warlock-WL-1",
+     "olcek": 0.4255,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-warlock-WL-2",
+     "olcek": 0.4255,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-warlock-WL-3",
+     "olcek": 0.4255,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-warlock-WL-4",
+     "olcek": 0.4255,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-warlock-WL-5",
+     "olcek": 0.4255,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-warlock-WL-6",
+     "olcek": 0.4255,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-warlock-WL-7",
+     "olcek": 0.4255,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-warlock-WL-8",
+     "olcek": 0.2053,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-warlock-WL-9",
+     "olcek": 0.4255,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-kadin-warlock-WL-10",
+     "olcek": 0.4255,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "dragonborn-kadin-warlock-WL-11",
+     "olcek": 0.4255,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "dosya": "warlock-male-dragonborn.jpg",
+   "yerlesim": "warlock",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-warlock-WL-1",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-warlock-WL-2",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-warlock-WL-3",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-warlock-WL-4",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-warlock-WL-5",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-warlock-WL-6",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-warlock-WL-7",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-warlock-WL-8",
+     "olcek": 0.2034,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-warlock-WL-9",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-erkek-warlock-WL-10",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "dragonborn-erkek-warlock-WL-11",
+     "olcek": 0.4188,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "dosya": "sorcerer-female-dragonborn.png",
+   "yerlesim": "sorcerer",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-sorcerer-SC-1",
+     "olcek": 0.3604,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-sorcerer-SC-2",
+     "olcek": 0.3604,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-sorcerer-SC-3",
+     "olcek": 0.3604,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-sorcerer-SC-4",
+     "olcek": 0.3604,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-sorcerer-SC-5",
+     "olcek": 0.3604,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-sorcerer-SC-6",
+     "olcek": 0.3604,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-sorcerer-SC-7",
+     "olcek": 0.3604,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-sorcerer-SC-8",
+     "olcek": 0.3604,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-sorcerer-SC-9",
+     "olcek": 0.3604,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "sorcerer-male-dragonborn.jpg",
+   "yerlesim": "sorcerer",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-sorcerer-SC-1",
+     "olcek": 0.3675,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-sorcerer-SC-2",
+     "olcek": 0.3675,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-sorcerer-SC-3",
+     "olcek": 0.3675,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-sorcerer-SC-4",
+     "olcek": 0.3675,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-sorcerer-SC-5",
+     "olcek": 0.3675,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-sorcerer-SC-6",
+     "olcek": 0.3675,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-sorcerer-SC-7",
+     "olcek": 0.3675,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-sorcerer-SC-8",
+     "olcek": 0.3675,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-sorcerer-SC-9",
+     "olcek": 0.3675,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "barbarian-female-dragonborn.jpg",
+   "yerlesim": "barbarian",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-barbarian-ID1",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-barbarian-ID2",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-barbarian-ID3",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-barbarian-ID4",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-barbarian-ID5",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-barbarian-ID6",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-barbarian-ID7",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-barbarian-ID8",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-barbarian-ID9",
+     "olcek": 0.375,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "barbarian-male-dragonborn.jpg",
+   "yerlesim": "barbarian",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-barbarian-ID1",
+     "olcek": 0.3631,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-barbarian-ID2",
+     "olcek": 0.3631,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-barbarian-ID3",
+     "olcek": 0.3631,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-barbarian-ID4",
+     "olcek": 0.3631,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-barbarian-ID5",
+     "olcek": 0.3631,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-barbarian-ID6",
+     "olcek": 0.3631,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-barbarian-ID7",
+     "olcek": 0.3631,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-barbarian-ID8",
+     "olcek": 0.3631,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-barbarian-ID9",
+     "olcek": 0.3631,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "bard-female-dragonborn.jpg",
+   "yerlesim": "bard",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-bard-ID1",
+     "olcek": 0.355,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-bard-ID2",
+     "olcek": 0.355,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-bard-ID3",
+     "olcek": 0.355,
+     "uyari": [
+      "ELLE-birlestirildi: ELLE: hücrede iki büyük figür (38058 / 53670 px)"
+     ]
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-bard-ID4",
+     "olcek": 0.355,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-bard-ID5",
+     "olcek": 0.355,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-bard-ID6",
+     "olcek": 0.355,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-bard-ID7",
+     "olcek": 0.355,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-bard-ID8",
+     "olcek": 0.355,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-bard-ID9",
+     "olcek": 0.355,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "bard-male-dragonborn.jpg",
+   "yerlesim": "bard",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-bard-ID1",
+     "olcek": 0.3614,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-bard-ID2",
+     "olcek": 0.3614,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-bard-ID3",
+     "olcek": 0.3614,
+     "uyari": [
+      "ELLE-birlestirildi: ELLE: hücrede iki büyük figür (64631 / 67129 px)"
+     ]
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-bard-ID4",
+     "olcek": 0.3614,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-bard-ID5",
+     "olcek": 0.3614,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-bard-ID6",
+     "olcek": 0.3614,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-bard-ID7",
+     "olcek": 0.3614,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-bard-ID8",
+     "olcek": 0.3614,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-bard-ID9",
+     "olcek": 0.3614,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "cleric-female-dragonborn.jpg",
+   "yerlesim": "cleric",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-cleric-ID1",
+     "olcek": 0.3261,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-cleric-ID2",
+     "olcek": 0.3261,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-cleric-ID3",
+     "olcek": 0.3261,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-cleric-ID4",
+     "olcek": 0.3261,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-cleric-ID5",
+     "olcek": 0.3261,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-cleric-ID6",
+     "olcek": 0.3261,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-cleric-ID7",
+     "olcek": 0.3261,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-cleric-ID8",
+     "olcek": 0.3261,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-cleric-ID9",
+     "olcek": 0.3261,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "cleric-male-dragonborn.jpg",
+   "yerlesim": "cleric",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-cleric-ID1",
+     "olcek": 0.3587,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-cleric-ID2",
+     "olcek": 0.3587,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-cleric-ID3",
+     "olcek": 0.3587,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-cleric-ID4",
+     "olcek": 0.3587,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-cleric-ID5",
+     "olcek": 0.3587,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-cleric-ID6",
+     "olcek": 0.3587,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-cleric-ID7",
+     "olcek": 0.3587,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-cleric-ID8",
+     "olcek": 0.3587,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-cleric-ID9",
+     "olcek": 0.3587,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "druid-female-dragonborn.jpg",
+   "yerlesim": "druid",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-druid-ID1",
+     "olcek": 0.3301,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-druid-ID2",
+     "olcek": 0.3301,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-druid-ID3",
+     "olcek": 0.3301,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-druid-ID4",
+     "olcek": 0.3301,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-druid-ID5",
+     "olcek": 0.3301,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-druid-ID6",
+     "olcek": 0.3301,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-druid-ID7",
+     "olcek": 0.3301,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-druid-ID8",
+     "olcek": 0.3301,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "dosya": "druid-male-dragonborn.jpg",
+   "yerlesim": "druid",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-druid-ID1",
+     "olcek": 0.3448,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-druid-ID2",
+     "olcek": 0.3448,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-druid-ID3",
+     "olcek": 0.3448,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-druid-ID4",
+     "olcek": 0.3448,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-druid-ID5",
+     "olcek": 0.3448,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-druid-ID6",
+     "olcek": 0.3448,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-druid-ID7",
+     "olcek": 0.3448,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "dosya": "fighter-female-dragonborn.jpg",
+   "yerlesim": "fighter",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-fighter-ID1",
+     "olcek": 0.4233,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-fighter-ID2",
+     "olcek": 0.4233,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-fighter-ID3",
+     "olcek": 0.4233,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-fighter-ID4",
+     "olcek": 0.4233,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-fighter-ID5",
+     "olcek": 0.4233,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-fighter-ID6",
+     "olcek": 0.4233,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-fighter-ID7",
+     "olcek": 0.4233,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-fighter-ID8",
+     "olcek": 0.4233,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-fighter-ID9",
+     "olcek": 0.4233,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-kadin-fighter-ID10",
+     "olcek": 0.4233,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "dosya": "fighter-male-dragonborn.jpg",
+   "yerlesim": "fighter",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-fighter-ID1",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-fighter-ID2",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-fighter-ID3",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-fighter-ID4",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-fighter-ID5",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-fighter-ID6",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-fighter-ID7",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-fighter-ID8",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-fighter-ID9",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-erkek-fighter-ID10",
+     "olcek": 0.4248,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "dragonborn-erkek-fighter-ID11",
+     "olcek": 0.4248,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "dosya": "monk-female-dragonborn.jpg",
+   "yerlesim": "monk",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-monk-ID1",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-monk-ID2",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-monk-ID3",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-monk-ID4",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-monk-ID5",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-monk-ID6",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-monk-ID7",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-monk-ID8",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-monk-ID9",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-kadin-monk-ID10",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "dragonborn-kadin-monk-ID11",
+     "olcek": 0.4131,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "dosya": "monk-male-dragonborn.jpeg",
+   "yerlesim": "monk",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-monk-ID1",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-monk-ID2",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-monk-ID3",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-monk-ID4",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-monk-ID5",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-monk-ID6",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-monk-ID7",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-monk-ID8",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-monk-ID9",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-erkek-monk-ID10",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "dragonborn-erkek-monk-ID11",
+     "olcek": 0.4174,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "dosya": "paladin-female-dragonborn.png",
+   "yerlesim": "paladin",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-paladin-ID1",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-paladin-ID2",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-paladin-ID3",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-paladin-ID4",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-paladin-ID5",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-paladin-ID6",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-paladin-ID7",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-paladin-ID8",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-paladin-ID9",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-kadin-paladin-ID10",
+     "olcek": 0.4103,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "dosya": "paladin-male-dragonborn.png",
+   "yerlesim": "paladin",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-paladin-ID1",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-paladin-ID2",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-paladin-ID3",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-paladin-ID4",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-paladin-ID5",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-paladin-ID6",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-paladin-ID7",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-paladin-ID8",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-paladin-ID9",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-erkek-paladin-ID10",
+     "olcek": 0.411,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "dosya": "ranger-female-dragonborn.jpg",
+   "yerlesim": "ranger",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-ranger-ID1",
+     "olcek": 0.3692,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-ranger-ID2",
+     "olcek": 0.3692,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-ranger-ID3",
+     "olcek": 0.3692,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-ranger-ID4",
+     "olcek": 0.3692,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-ranger-ID5",
+     "olcek": 0.3692,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-ranger-ID6",
+     "olcek": 0.3692,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-ranger-ID7",
+     "olcek": 0.3692,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-ranger-ID8",
+     "olcek": 0.3692,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-ranger-ID9",
+     "olcek": 0.3692,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "ranger-male-dragonborn.jpg",
+   "yerlesim": "ranger",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-ranger-ID1",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-ranger-ID2",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-ranger-ID3",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-ranger-ID4",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-ranger-ID5",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-ranger-ID6",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-ranger-ID7",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-ranger-ID8",
+     "olcek": 0.375,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-ranger-ID9",
+     "olcek": 0.375,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "rogue-female-dragonborn.jpg",
+   "yerlesim": "rogue",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-rogue-ID1",
+     "olcek": 0.427,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-rogue-ID2",
+     "olcek": 0.427,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-rogue-ID3",
+     "olcek": 0.427,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-rogue-ID4",
+     "olcek": 0.427,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-rogue-ID5",
+     "olcek": 0.427,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-rogue-ID6",
+     "olcek": 0.427,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-rogue-ID7",
+     "olcek": 0.427,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-rogue-ID8",
+     "olcek": 0.427,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-rogue-ID9",
+     "olcek": 0.427,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-kadin-rogue-ID10",
+     "olcek": 0.427,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "dosya": "rogue-male-dragonborn.jpg",
+   "yerlesim": "rogue",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-rogue-ID1",
+     "olcek": 0.4196,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-rogue-ID2",
+     "olcek": 0.4196,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-rogue-ID3",
+     "olcek": 0.4196,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-rogue-ID4",
+     "olcek": 0.4196,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-rogue-ID5",
+     "olcek": 0.4196,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-rogue-ID6",
+     "olcek": 0.4196,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-rogue-ID7",
+     "olcek": 0.4196,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-rogue-ID8",
+     "olcek": 0.4196,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-rogue-ID9",
+     "olcek": 0.4196,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-erkek-rogue-ID10",
+     "olcek": 0.4196,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "dosya": "wizard-female-dragonborn-a.jpg",
+   "yerlesim": "wizard_a",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-wizard-WZ-A1",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-wizard-WZ-A2",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-wizard-WZ-A3",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-wizard-WZ-A4",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-wizard-WZ-A5",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-wizard-WZ-A6",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-wizard-WZ-A7",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-wizard-WZ-A8",
+     "olcek": 0.3419,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "dosya": "wizard-female-dragonborn-b.jpg",
+   "yerlesim": "wizard_b",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-wizard-WZ-B1",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-wizard-WZ-B2",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-wizard-WZ-B3",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-wizard-WZ-B4",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-wizard-WZ-B5",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-wizard-WZ-B6",
+     "olcek": 0.3419,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-wizard-WZ-B7",
+     "olcek": 0.3419,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "dosya": "wizard-male-dragonborn-a.jpg",
+   "yerlesim": "wizard_a",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-wizard-WZ-A1",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-wizard-WZ-A2",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-wizard-WZ-A3",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-wizard-WZ-A4",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-wizard-WZ-A5",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-wizard-WZ-A6",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-wizard-WZ-A7",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-wizard-WZ-A8",
+     "olcek": 0.3414,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "dosya": "wizard-male-dragonborn-b.jpg",
+   "yerlesim": "wizard_b",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-wizard-WZ-B1",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-wizard-WZ-B2",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-wizard-WZ-B3",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-wizard-WZ-B4",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-wizard-WZ-B5",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-wizard-WZ-B6",
+     "olcek": 0.3414,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-wizard-WZ-B7",
+     "olcek": 0.3414,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "dosya": "gariban-female-human.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "human-kadin-barbarian-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "human-kadin-bard-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "human-kadin-cleric-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "human-kadin-druid-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "human-kadin-fighter-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "human-kadin-monk-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "human-kadin-paladin-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "human-kadin-ranger-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "human-kadin-rogue-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "human-kadin-sorcerer-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "human-kadin-warlock-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "human-kadin-wizard-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-human.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "human-erkek-barbarian-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "human-erkek-bard-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "human-erkek-cleric-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "human-erkek-druid-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "human-erkek-fighter-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "human-erkek-monk-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "human-erkek-paladin-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "human-erkek-ranger-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "human-erkek-rogue-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "human-erkek-sorcerer-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "human-erkek-warlock-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "human-erkek-wizard-GR",
+     "olcek": 0.4145,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-female-elf.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "elf-kadin-barbarian-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "elf-kadin-bard-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "elf-kadin-cleric-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "elf-kadin-druid-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "elf-kadin-fighter-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "elf-kadin-monk-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "elf-kadin-paladin-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "elf-kadin-ranger-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "elf-kadin-rogue-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "elf-kadin-sorcerer-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "elf-kadin-warlock-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "elf-kadin-wizard-GR",
+     "olcek": 0.4225,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-elf.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "elf-erkek-barbarian-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "elf-erkek-bard-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "elf-erkek-cleric-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "elf-erkek-druid-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "elf-erkek-fighter-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "elf-erkek-monk-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "elf-erkek-paladin-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "elf-erkek-ranger-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "elf-erkek-rogue-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "elf-erkek-sorcerer-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "elf-erkek-warlock-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "elf-erkek-wizard-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-female-dwarf.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dwarf-kadin-barbarian-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dwarf-kadin-bard-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dwarf-kadin-cleric-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dwarf-kadin-druid-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dwarf-kadin-fighter-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dwarf-kadin-monk-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dwarf-kadin-paladin-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dwarf-kadin-ranger-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dwarf-kadin-rogue-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dwarf-kadin-sorcerer-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "dwarf-kadin-warlock-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "dwarf-kadin-wizard-GR",
+     "olcek": 0.4075,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-dwarf.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dwarf-erkek-barbarian-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dwarf-erkek-bard-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dwarf-erkek-cleric-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dwarf-erkek-druid-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dwarf-erkek-fighter-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dwarf-erkek-monk-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dwarf-erkek-paladin-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dwarf-erkek-ranger-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dwarf-erkek-rogue-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dwarf-erkek-sorcerer-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "dwarf-erkek-warlock-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "dwarf-erkek-wizard-GR",
+     "olcek": 0.4174,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-female-halfling.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "halfling-kadin-barbarian-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "halfling-kadin-bard-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "halfling-kadin-cleric-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "halfling-kadin-druid-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "halfling-kadin-fighter-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "halfling-kadin-monk-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "halfling-kadin-paladin-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "halfling-kadin-ranger-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "halfling-kadin-rogue-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "halfling-kadin-sorcerer-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "halfling-kadin-warlock-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "halfling-kadin-wizard-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-halfling.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "halfling-erkek-barbarian-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "halfling-erkek-bard-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "halfling-erkek-cleric-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "halfling-erkek-druid-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "halfling-erkek-fighter-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "halfling-erkek-monk-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "halfling-erkek-paladin-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "halfling-erkek-ranger-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "halfling-erkek-rogue-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "halfling-erkek-sorcerer-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "halfling-erkek-warlock-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "halfling-erkek-wizard-GR",
+     "olcek": 0.4131,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-female-gnome.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "gnome-kadin-barbarian-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "gnome-kadin-bard-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "gnome-kadin-cleric-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "gnome-kadin-druid-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "gnome-kadin-fighter-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "gnome-kadin-monk-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "gnome-kadin-paladin-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "gnome-kadin-ranger-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "gnome-kadin-rogue-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "gnome-kadin-sorcerer-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "gnome-kadin-warlock-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "gnome-kadin-wizard-GR",
+     "olcek": 0.4152,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-gnome.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "gnome-erkek-barbarian-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "gnome-erkek-bard-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "gnome-erkek-cleric-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "gnome-erkek-druid-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "gnome-erkek-fighter-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "gnome-erkek-monk-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "gnome-erkek-paladin-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "gnome-erkek-ranger-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "gnome-erkek-rogue-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "gnome-erkek-sorcerer-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "gnome-erkek-warlock-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "gnome-erkek-wizard-GR",
+     "olcek": 0.4286,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-female-orc.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "orc-kadin-barbarian-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "orc-kadin-bard-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "orc-kadin-cleric-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "orc-kadin-druid-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "orc-kadin-fighter-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "orc-kadin-monk-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "orc-kadin-paladin-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "orc-kadin-ranger-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "orc-kadin-rogue-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "orc-kadin-sorcerer-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "orc-kadin-warlock-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "orc-kadin-wizard-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-orc.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "orc-erkek-barbarian-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "orc-erkek-bard-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "orc-erkek-cleric-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "orc-erkek-druid-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "orc-erkek-fighter-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "orc-erkek-monk-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "orc-erkek-paladin-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "orc-erkek-ranger-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "orc-erkek-rogue-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "orc-erkek-sorcerer-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "orc-erkek-warlock-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "orc-erkek-wizard-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-female-tiefling.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "tiefling-kadin-barbarian-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "tiefling-kadin-bard-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "tiefling-kadin-cleric-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "tiefling-kadin-druid-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "tiefling-kadin-fighter-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "tiefling-kadin-monk-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "tiefling-kadin-paladin-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "tiefling-kadin-ranger-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "tiefling-kadin-rogue-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "tiefling-kadin-sorcerer-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "tiefling-kadin-warlock-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "tiefling-kadin-wizard-GR",
+     "olcek": 0.4103,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-tiefling.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "tiefling-erkek-barbarian-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "tiefling-erkek-bard-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "tiefling-erkek-cleric-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "tiefling-erkek-druid-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "tiefling-erkek-fighter-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "tiefling-erkek-monk-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "tiefling-erkek-paladin-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "tiefling-erkek-ranger-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "tiefling-erkek-rogue-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "tiefling-erkek-sorcerer-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "tiefling-erkek-warlock-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "tiefling-erkek-wizard-GR",
+     "olcek": 0.4124,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-female-goliath.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "goliath-kadin-barbarian-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "goliath-kadin-bard-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "goliath-kadin-cleric-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "goliath-kadin-druid-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "goliath-kadin-fighter-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "goliath-kadin-monk-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "goliath-kadin-paladin-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "goliath-kadin-ranger-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "goliath-kadin-rogue-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "goliath-kadin-sorcerer-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "goliath-kadin-warlock-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "goliath-kadin-wizard-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-goliath.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "goliath-erkek-barbarian-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "goliath-erkek-bard-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "goliath-erkek-cleric-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "goliath-erkek-druid-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "goliath-erkek-fighter-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "goliath-erkek-monk-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "goliath-erkek-paladin-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "goliath-erkek-ranger-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "goliath-erkek-rogue-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "goliath-erkek-sorcerer-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "goliath-erkek-warlock-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "goliath-erkek-wizard-GR",
+     "olcek": 0.3915,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-female-celestial.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "celestial-kadin-barbarian-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "celestial-kadin-bard-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "celestial-kadin-cleric-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "celestial-kadin-druid-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "celestial-kadin-fighter-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "celestial-kadin-monk-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "celestial-kadin-paladin-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "celestial-kadin-ranger-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "celestial-kadin-rogue-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "celestial-kadin-sorcerer-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "celestial-kadin-warlock-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "celestial-kadin-wizard-GR",
+     "olcek": 0.4188,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-celestial.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "celestial-erkek-barbarian-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "celestial-erkek-bard-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "celestial-erkek-cleric-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "celestial-erkek-druid-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "celestial-erkek-fighter-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "celestial-erkek-monk-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "celestial-erkek-paladin-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "celestial-erkek-ranger-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "celestial-erkek-rogue-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "celestial-erkek-sorcerer-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "celestial-erkek-warlock-GR",
+     "olcek": 0.411,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "celestial-erkek-wizard-GR",
+     "olcek": 0.411,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-female-dragonborn.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-kadin-barbarian-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-kadin-bard-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-kadin-cleric-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-kadin-druid-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-kadin-fighter-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-kadin-monk-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-kadin-paladin-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-kadin-ranger-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-kadin-rogue-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-kadin-sorcerer-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "dragonborn-kadin-warlock-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "dragonborn-kadin-wizard-GR",
+     "olcek": 0.4089,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "gariban-male-dragonborn.jpg",
+   "yerlesim": "gariban",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "dragonborn-erkek-barbarian-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "dragonborn-erkek-bard-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dragonborn-erkek-cleric-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "dragonborn-erkek-druid-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "dragonborn-erkek-fighter-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "dragonborn-erkek-monk-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "dragonborn-erkek-paladin-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "dragonborn-erkek-ranger-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "dragonborn-erkek-rogue-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 10,
+     "cikti": "dragonborn-erkek-sorcerer-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 11,
+     "cikti": "dragonborn-erkek-warlock-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    },
+    {
+     "hucre": 12,
+     "cikti": "dragonborn-erkek-wizard-GR",
+     "olcek": 0.4138,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "dosya": "hizir-sayfa1.jpg",
+   "yerlesim": "hizir",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "tiefling-erkek-paladin-ID10",
+     "olcek": 0.3709,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "celestial-kadin-paladin-ID10",
+     "olcek": 0.3664,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dwarf-kadin-paladin-ID10",
+     "olcek": 0.3797,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "elf-kadin-paladin-ID10",
+     "olcek": 0.3797,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "gnome-kadin-paladin-ID10",
+     "olcek": 0.3797,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "goliath-kadin-paladin-ID10",
+     "olcek": 0.3797,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "halfling-kadin-paladin-ID10",
+     "olcek": 0.378,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "human-kadin-paladin-ID10",
+     "olcek": 0.378,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "orc-kadin-paladin-ID10",
+     "olcek": 0.378,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "dosya": "hizir-sayfa2.jpg",
+   "yerlesim": "hizir",
+   "kesilen": [
+    {
+     "hucre": 1,
+     "cikti": "tiefling-kadin-paladin-ID10",
+     "olcek": 0.3715,
+     "uyari": []
+    },
+    {
+     "hucre": 2,
+     "cikti": "celestial-erkek-paladin-ID10",
+     "olcek": 0.367,
+     "uyari": []
+    },
+    {
+     "hucre": 3,
+     "cikti": "dwarf-erkek-paladin-ID10",
+     "olcek": 0.381,
+     "uyari": []
+    },
+    {
+     "hucre": 4,
+     "cikti": "elf-erkek-paladin-ID10",
+     "olcek": 0.3803,
+     "uyari": []
+    },
+    {
+     "hucre": 5,
+     "cikti": "gnome-erkek-paladin-ID10",
+     "olcek": 0.3803,
+     "uyari": []
+    },
+    {
+     "hucre": 6,
+     "cikti": "goliath-erkek-paladin-ID10",
+     "olcek": 0.3803,
+     "uyari": []
+    },
+    {
+     "hucre": 7,
+     "cikti": "halfling-erkek-paladin-ID10",
+     "olcek": 0.3791,
+     "uyari": []
+    },
+    {
+     "hucre": 8,
+     "cikti": "human-erkek-paladin-ID10",
+     "olcek": 0.3791,
+     "uyari": []
+    },
+    {
+     "hucre": 9,
+     "cikti": "orc-erkek-paladin-ID10",
+     "olcek": 0.3791,
+     "uyari": []
+    }
+   ],
+   "elle": [],
+   "eksik": [],
+   "uyari": [],
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ]
+  }
+ ],
+ "referans": [
+  "wizard-female-human-a.png: yalnız referans, kesilmedi",
+  "wizard-female-human-b.png: yalnız referans, kesilmedi",
+  "wizard-male-human-a.png: yalnız referans, kesilmedi",
+  "wizard-male-human-b.png: yalnız referans, kesilmedi"
+ ]
+}
