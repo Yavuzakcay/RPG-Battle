@@ -2,6 +2,11 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## 2026-12-30 — KQ6-18: Hale silme, güçlü yöntem (güvenlik ağıyla)
+
+- `scripts/hale-guclu.py`: kalıntılı/şüpheli halesiz varyantlar asıl jetondan yeniden üretilir: hale tohumu (hale-v2 ∪ hale-oneri ∪ mevcut silinenler), hale tonu (tohum çekirdeğinin ortanca rengi), tohum çevresinde (6 px) bağlı hale tonlu/yarı saydam pikseller silinir; baş konturunun ilk koyu satırından aşağısı, koyu kontur ve hale tonu olmayan her piksel korunur (baş/saç/şapka/kulak/kanat). Aynı ton bedende ≥ 120 px varsa (altın saç) yalnız tohum çevresi. Güvenlik ağı: silme sonrası şekil temelli + ton temelli kalıntı (≤ 8 px) denetimi; geçemeyen varyant ÜRETİLMEZ, halesiz dosyası kaldırılır, jeton "Gemini'ye gidecek" (`data/hale-elle.json` bekleyen, `docs/sabah/hale-gemini.csv`, 59 satır: 55 yeni + 4 eski Gemini bekleyen); hale çizilmez, silme gevşetilmez.
+- Denetim (`scripts/hale-silme-denetim2.py`, 288 jeton): 144 halesiz varyant temiz (hale dışı silinen ≤ 3 px, kalıntı yok), 144 jeton bekleyen (hale görünür kalır). Eski varyantların çoğu (≈ 100) ton temelli ölçütte kalıntılı çıktı (hale kalıntısı baş çizgisi üstünde ince çizgiler, bazılarında halenin tamamı); 76'sı yeniden üretildi, geri kalanı Gemini'ye gidecek. Yeni ölçüt altın saçlı jetonlarda saç ucunu hale kalıntısından ayıramaz: bu jetonlar güvenli tarafta Gemini listesinde (bir kısmı aslında temiz olabilir). `docs/sabah/hale-silme-denetim2.png`: kalıntılı/şüpheli varyant kalmadı notu; `.csv` 288 satır.
+
 ## 2026-12-29 — KQ6-17: Hale alternatifleri ve silme denetimi (yalnız önizleme; oyuna bağlanmadı)
 
 - `scripts/hale-alternatif.py` → `docs/sabah/hale-alternatif.png`: 6 jetonda 4 tasarım (A ince altın halka, B çift ince halka, C alından yükselen ışık/yıldız, D kafa arkası yarım güneş), #F5D76E tonu, jeton boyutu ve 96 px, koyu zemin; yalnız alfa=0 piksellere çizilir. Taban halesiz varyant (Gariban Monk için gevşek hale-v2 silmesi; Warlock WL-7'de halesizde kalan halka için yalnız önizlemede elle temizlik). Konum/tasarım seçilmedi, `hale-konum.json` yazılmadı.
