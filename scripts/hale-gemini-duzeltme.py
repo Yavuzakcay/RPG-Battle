@@ -9,7 +9,11 @@ NOT = {(1, 4): 'mavi gözler kalsın, alına yıldız eklensin', (1, 9): 'kırm�
 def git_img(ref, name):
     r = subprocess.run(['git', 'show', f'{ref}:{D}/{name}.webp'], capture_output=True)
     return Image.open(io.BytesIO(r.stdout)).convert('RGBA') if r.returncode == 0 and r.stdout else None
-rows = [r for r in csv.DictReader(open('docs/sabah/hale-gemini-eslesme.csv')) if int(r['hucre']) in SEL.get(int(r['sayfa']), [])]
+BASTAN = {(26, c) for c in range(5, 10)} | {(27, c) for c in (1, 2, 4, 5, 6)}   # erkek Celestial Warlock: baştan yapılacak
+SUPHELI = {(32, c) for c in range(1, 9)} | {(22, 9), (28, 7)}   # piksel ölçümüyle şimdiki dosyalar halesiz doğrulandı (docs/sabah/hale-kontrol/supheli-10.png)
+allrows = [r for r in csv.DictReader(open('docs/sabah/hale-gemini-eslesme.csv')) if int(r['hucre']) in SEL.get(int(r['sayfa']), [])]
+key = lambda r: (int(r['sayfa']), int(r['hucre']))
+rows = [r for r in allrows if key(r) not in BASTAN and key(r) not in SUPHELI]
 cls = lambda r: re.match(r'celestial-(?:erkek|kadin|male|female)-([a-z]+)', r['dosya']).group(1)
 rows.sort(key=lambda r: (cls(r), r['dosya']))
 NP = (len(rows) + 8) // 9
@@ -24,7 +28,10 @@ for p, items in enumerate(pages):
         big = img.resize((512, 512), Image.NEAREST); sheet.paste(big, ((c % 3) * 512, (c // 3) * 512), big)
         out.append((f'{p + 1:02d}', c + 1, r['dosya'], r['sayfa'], r['hucre'], r['durum'], kaynak, NOT.get((int(r['sayfa']), int(r['hucre'])), '')))
     sheet.save(f'docs/sabah/hale-gemini-duzeltme-sayfa-{p + 1:02d}.png')
+for r in allrows:
+    if key(r) in BASTAN: out.append(('', '', r['dosya'], r['sayfa'], r['hucre'], 'baştan-warlock', r['kaynak'], 'baştan yapılacak, halka düzeltmesine girmez'))
+    elif key(r) in SUPHELI: out.append(('', '', r['dosya'], r['sayfa'], r['hucre'], 'halesiz-doğrulandı', r['kaynak'], 'şimdiki dosya halesiz (hale px ölçümü + görsel); eski sayfadaki halka kaynak orijinaldeydi; pakete konmadı'))
 with open('docs/sabah/hale-gemini-duzeltme-eslesme.csv', 'w', newline='') as fh:
     w = csv.writer(fh); w.writerow(['yeni_sayfa', 'yeni_hucre', 'dosya', 'eski_sayfa', 'eski_hucre', 'durum', 'kaynak', 'not']); w.writerows(out)
-print(len(out), NP, [len(x) for x in pages])
+print(len(rows), NP, [len(x) for x in pages])
 for p in pages: print(collections.Counter(cls(r) for r in p).most_common(1))
