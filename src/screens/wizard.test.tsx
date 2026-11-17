@@ -93,11 +93,13 @@ describe('sihirbaz adımları ve eksikler', () => {
     expect(m).toContain('Yetenek puanı bonusu türden değil, geçmişten gelir.');
   });
   it('Görev K3: jeton önizlemesi tür, sınıf ve görünüm değişince değişir', () => {
-    const src = (p: Partial<SavedCharacter['sheet']>) => /class="token-preview wiz-preview-side"[\s\S]*?characters\/([a-z-]+\.webp)/.exec(html(fighter(p), 'character'))?.[1];
-    expect(src({})).toBe('human-male-fighter.webp');
-    expect(src({ raceId: 'elf', lineageId: 'drow' })).toBe('elf-male-fighter.webp');
-    expect(src({ classId: 'wizard' })).toBe('human-male-wizard.webp');
-    expect(src({ gender: 'kadin' })).toBe('human-female-fighter.webp');
+    const src = (p: Partial<SavedCharacter['sheet']>) => /class="token-preview wiz-preview-side"[\s\S]*?characters\/([A-Za-z0-9-]+\.webp)/.exec(html(fighter(p), 'character'))?.[1];
+    // KQ6: yeni karakter seviye 1 → Gariban (GR) jetonu; seviye 3+ alt sınıfsız → sınıf-genel jeton.
+    expect(src({})).toBe('human-erkek-fighter-GR.webp');
+    expect(src({ raceId: 'elf', lineageId: 'drow' })).toBe('elf-erkek-fighter-GR.webp');
+    expect(src({ classId: 'wizard' })).toBe('human-erkek-wizard-GR.webp');
+    expect(src({ gender: 'kadin' })).toBe('human-kadin-fighter-GR.webp');
+    expect(src({ level: 3 })).toBe('human-male-fighter.webp');
     expect(html(fighter(), 'character')).toContain('wiz-preview-mobile');
   });
   it('Görev K3: soy kartları özetiyle; seçilen Elf/Gnome/Goliath soyu özette görünür', () => {

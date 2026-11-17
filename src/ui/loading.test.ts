@@ -16,7 +16,7 @@ describe('küçük karakter jetonları', () => {
     expect(small).toEqual(big);
   });
   it('rozet 48 px ve altında önce küçük kopya, sonra asıl görsel; büyükte yalnızca asıl', () => {
-    const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'elf', classId: 'wizard', gender: 'kadin' });
+    const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: 'elf', classId: 'wizard', gender: 'kadin', level: 3 });
     expect(thumbOf(a.src)).toBe('characters/kucuk/elf-female-wizard.webp');
     expect(badgeChain(a, 44).slice(0, 2)).toEqual(['characters/kucuk/elf-female-wizard.webp', 'characters/elf-female-wizard.webp']);
     expect(badgeChain(a, 56)[0]).toBe('characters/elf-female-wizard.webp');

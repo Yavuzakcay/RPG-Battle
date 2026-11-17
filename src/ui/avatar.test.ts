@@ -22,7 +22,10 @@ describe('karakter jetonları', () => {
     expect(characterTokenFile('dwarf', undefined, 'fighter')).toBe('dwarf-male-fighter.webp');
   });
   it('jeton characters/ + bu ad; eski yol yedekte', () => {
-    const base = { ...blankCharacter('t').sheet, raceId: 'elf', classId: 'wizard' };
+    const base = { ...blankCharacter('t').sheet, raceId: 'elf', classId: 'wizard', level: 3 };
+    // KQ6: seviye < 3 Gariban (GR) jetonu; Celestial'de sınıf-genel jeton kalır.
+    expect(sheetAvatar({ ...base, level: 1, gender: 'kadin' }).src).toBe('characters/elf-kadin-wizard-GR.webp');
+    expect(sheetAvatar({ ...base, level: 1, gender: 'erkek', raceId: 'celestial' }).src).toBe('characters/celestial-male-wizard.webp');
     expect(sheetAvatar({ ...base, gender: 'kadin' })).toMatchObject({
       src: 'characters/elf-female-wizard.webp', fallbacks: ['avatars/elf-wizard-kadin.webp'],
     });

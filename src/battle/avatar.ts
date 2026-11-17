@@ -58,9 +58,12 @@ const genderKey = (g: Gender): 'male' | 'female' => (g === 'kadin' || g === 'fem
  * Görev K8b: ırk, soy ve cinsiyete göre jeton rengi; soyu olmayan ırkta ya da soy seçilmemişse undefined.
  * K19: cinsiyete özel kayıt (`byGender.<male|female>.lineages`) ırkın ortak kaydının önüne geçer (null: boyama yok).
  */
-export function lineageTint(raceId: string, lineageId: string | undefined, gender?: Gender): TintSpec | undefined {
+export function lineageTint(raceId: string, lineageId: string | undefined, gender?: Gender, beyazTaban = false): TintSpec | undefined {
   const race = TINTS[raceId];
   if (!race || !lineageId) return undefined;
+  // KQ6: beyaz taban jetonlar (Dragonborn alt sınıf/Gariban) kendi renk tablosundan (`lineagesAlt`: mutlak açıklıklı, maskeli).
+  const alt = beyazTaban ? (race as { lineagesAlt?: Lineages }).lineagesAlt : undefined;
+  if (alt && lineageId in alt) { const to = alt[lineageId]; return to ? { select: race.select, to: to as TintSpec['to'] } : undefined; }
   const own = race.byGender?.[genderKey(gender)]?.lineages;
   const to = own && lineageId in own ? own[lineageId] : race.lineages[lineageId];
   if (to && 'palet' in to) { const p = lineagePalette(raceId, lineageId); return p ? { select: race.select, to: p.to } : undefined; }
@@ -146,6 +149,15 @@ export function subclassTokenFile(classId: string, raceId: string, gender: 'erke
   const second = f && level !== undefined && level >= f.esik && !(f.ikinciYok ?? []).includes(`${raceId}-${gender}`) ? f.ikinci : undefined;
   return `${raceId}-${gender}-${classId}-${second ?? cell}.webp`;
 }
+/**
+ * Gariban (Kuyruk KQ6): alt sınıfı henüz olmayan (seviye < 3) karakterin jetonu `<ırk>-<erkek|kadin>-<sınıf>-GR.webp`. Her ırk×cinsiyet×sınıf için
+ * var (Celestial hariç: hale işi ayrı; sınıf-genel jeton kalır); ırk tablosunda (`irklar`) yoksa ya da sınıfın tablosu yoksa undefined.
+ */
+export function garibanTokenFile(classId: string, raceId: string, gender: 'erkek' | 'kadin', level?: number): string | undefined {
+  const T = SUB_TOKENS[classId];
+  if (!T || raceId === 'celestial' || (level ?? 1) >= 3 || !T.irklar[raceId]?.includes(gender)) return undefined;
+  return `${raceId}-${gender}-${classId}-GR.webp`;
+}
 /** Eski ad (WZ-BAGLA testleri). */
 export const wizardSubclassFile = (raceId: string, gender: 'erkek' | 'kadin', subclassId: string | undefined) => subclassTokenFile('wizard', raceId, gender, subclassId);
 
@@ -158,7 +170,9 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
   const gender = sheet.gender ?? 'erkek';
   const generic = `characters/${characterTokenFile(sheet.raceId, gender, sheet.classId)}`;
   // WZ-BAGLA/BAGLA-3: Wizard/Warlock/Sorcerer alt sınıf jetonu (maske yoksa boyama uygulanmaz, jeton yine çıkar); öncelik özel avatar > alt sınıf jetonu > genel.
-  const wz = !sheet.avatar ? subclassTokenFile(sheet.classId, sheet.raceId, gender, sheet.subclassId, sheet.level) : undefined;
+  // KQ6: seviye < 3 Gariban (GR) jetonu; seviye ≥ 3 alt sınıf jetonu; ikisi de yoksa sınıf-genel jeton.
+  const gr = !sheet.avatar ? garibanTokenFile(sheet.classId, sheet.raceId, gender, sheet.level) : undefined;
+  const wz = gr ?? (!sheet.avatar ? subclassTokenFile(sheet.classId, sheet.raceId, gender, sheet.subclassId, sheet.level) : undefined);
   return {
     src: sheet.avatar ?? (wz ? `characters/${wz}` : generic),
     fallbacks: sheet.avatar ? [] : [...(wz ? [generic] : []), `avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],
@@ -167,7 +181,7 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
     // Kuyruk AS1c: Human ten tonu ten maskesiyle (jetonun yalnız teni); diğer alt soylar soy rengiyle.
     ...((): Partial<Avatar> => {
       if (sheet.avatar) return {};
-      const tint = skinTint(sheet.raceId, cultureSkinTone(sheet.lineageId, sheet.skinTone, sheet.exileCulture)) ?? lineageTint(sheet.raceId, sheet.lineageId, gender);
+      const tint = skinTint(sheet.raceId, cultureSkinTone(sheet.lineageId, sheet.skinTone, sheet.exileCulture)) ?? lineageTint(sheet.raceId, sheet.lineageId, gender, !!wz && sheet.raceId === 'dragonborn');
       return tint ? { tint } : {};
     })(),
     // Kuyruk AS1c: alt soy görünümü (oran, hale, filtre, kanat) savaş jetonunda da aynı çözücüyle (`lineageLook`).

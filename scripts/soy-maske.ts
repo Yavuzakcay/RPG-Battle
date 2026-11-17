@@ -202,6 +202,40 @@ const only = args.find((x, i) => !x.startsWith('--') && !['--onizleme', '--maske
 const preview = args.includes('--onizleme') ? args[args.indexOf('--onizleme') + 1] : null;
 const sheets = args.includes('--maskeler');
 fs.mkdirSync(OUT, { recursive: true });
+// KQ6 bağlama: `--alt` alt sınıf ve Gariban jetonlarının (`<ırk>-<erkek|kadin>-<sınıf>-<kod>.webp`, Celestial hariç) ten maskesi.
+// Aynı otomatik yöntem; ırkın `maskAlt` ayarı (Dragonborn beyaz taban) varsa o, yoksa `mask`. Maskesi çıkmayan (kabuk/odun yüzlü, tam örtülü)
+// jeton boyanmaz: dosya yazılmaz, `data/soy-maske-alt-rapor.json`'a "yok" yazılır. Elle maske (`assets/soy-maske-el/`) bunların önüne geçer.
+if (args.includes('--alt')) {
+  const repFile = path.join(ROOT, 'data/soy-maske-alt-rapor.json');
+  const rep: Record<string, number> = fs.existsSync(repFile) ? JSON.parse(fs.readFileSync(repFile, 'utf8')).jetonlar : {};
+  const re = new RegExp(`^(${Object.keys(RACES).join('|')})-(erkek|kadin)-(${CLASSES.join('|')})-(.+)\\.webp$`);
+  const names = fs.readdirSync(CHAR).map((f) => re.exec(f)).filter((m): m is RegExpExecArray => !!m);
+  for (const m of names) {
+    const name = m[0].replace(/\.webp$/, ''), race = m[1]!, g = m[2] === 'erkek' ? 'male' : 'female';
+    if (only && only !== race) continue;
+    const r = RACES[race]!;
+    const base = (r as Race & { maskAlt?: MaskCfg }).maskAlt ?? r.mask;
+    const { data, W, H } = await raw(path.join(CHAR, `${name}.webp`));
+    const mask = skinMask(name, { ...base, ...(base.byGender?.[g]) }, data, W, H);
+    const out = path.join(OUT, `${name}.png`);
+    // Goliath: gri ten zırh/pelerin/hayaletle aynı renk; yalnız baş bölgesi (bbox'ın üst %30'u, generic jetonlardaki `head` kuralı).
+    if ((base as MaskCfg & { headOnly?: boolean }).headOnly) {
+      let y0 = H, y1 = 0; for (let i = 0; i < W * H; i++) if (data[i * 4 + 3]! >= 128) { const y = (i / W) | 0; y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+      const hy = y0 + (y1 - y0) * 0.3; for (let i = 0; i < W * H; i++) if (((i / W) | 0) > hy) mask[i] = 0;
+    }
+    // Güvenlik: maske jetonun opak alanının %40'ından büyükse (hayalet, tam örtülü, ten renginde kıyafet) boyanmaz.
+    let n = 0, opaque = 0; for (let i = 0; i < W * H; i++) { if (mask[i]) n++; if (data[i * 4 + 3]! >= 128) opaque++; }
+    if (n > opaque * 0.4) n = 0;
+    rep[name] = n;
+    if (n < 30) { fs.rmSync(out, { force: true }); continue; }
+    const buf = Buffer.alloc(W * H);
+    for (let i = 0; i < W * H; i++) buf[i] = mask[i] ? 255 : 0;
+    await sharp(buf, { raw: { width: W, height: H, channels: 1 } }).png({ palette: true, colours: 2, compressionLevel: 9 }).toFile(out);
+  }
+  fs.writeFileSync(repFile, JSON.stringify({ not: 'npm run soy-maske -- --alt: alt sınıf/Gariban jetonlarının otomatik ten maskesi piksel sayısı (< 30: maske yok, boyanmaz).', jetonlar: rep }, null, 1) + '\n');
+  console.log('alt maske', Object.keys(rep).length, 'jeton; maskesiz', Object.values(rep).filter((n) => n < 30).length);
+  process.exit(0);
+}
 // Görev K21: elle maskeler (assets/soy-maske-el/; yalnızca okunur) önce; ölçüm ve önizleme onları kullanır.
 const hand = await applyHandMasks(Object.keys(RACES).flatMap((r) => ['female', 'male'].flatMap((g) => CLASSES.map((c) => `${r}-${g}-${c}`))));
 // Görev K22: kafa kaplaması (kapsam veride); ölçüm kaplanmış kafayla yapılır.

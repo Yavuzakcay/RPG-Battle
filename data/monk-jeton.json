@@ -2,6 +2,7 @@
  "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-monk-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır.",
  "sinif": "monk",
  "irklar": {
+    "dragonborn": ["erkek", "kadin"],
   "human": [
    "erkek",
    "kadin"

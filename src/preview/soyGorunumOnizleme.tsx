@@ -11,6 +11,8 @@ import { CELESTIAL_AWAKENINGS } from './soyOnizlemeVeri';
 import type { Avatar } from '../battle';
 import type { TintSpec } from '../battle/types';
 import olcum from '../../data/soy-olcum.json';
+import { subclassTokenFile, garibanTokenFile } from '../battle/avatar';
+import jetonlar from './jetonTablolari';
 
 const mode = new URLSearchParams(location.search).get('m') ?? 'a';
 const CHANGED = new Set(['elf/drow', 'human/tenhausser', 'celestial/gece-gozyasi', 'goliath/stone', 'gnome/forest-gnome', 'orc/wildwood', 'halfling/sturdy']);
@@ -86,5 +88,42 @@ function PageB() {
     </div>
   );
 }
+// ?m=c&c=<sınıf>: oyundaki jeton görünümü: ırk × cinsiyet satırları, sütunlar Gariban (seviye 1) + alt sınıf hücreleri (seviye 3; Pehlivan dev hali seviye 10); eksik hücre boş.
+function PageC() {
+  const cls = new URLSearchParams(location.search).get('c') ?? 'fighter';
+  const T = jetonlar[cls]!;
+  const seen = new Set<string>(); const cols: Array<{ id: string; cell: string; level: number; label: string }> = [{ id: '', cell: 'GR', level: 1, label: 'Gariban' }];
+  for (const [id, cell] of Object.entries(T.altSiniflar)) if (!seen.has(cell)) { seen.add(cell); cols.push({ id, cell, level: 3, label: cell }); }
+  for (const [id, f] of Object.entries(T.formlar ?? {})) cols.push({ id, cell: f.ikinci, level: f.esik, label: `${f.ikinci} dev` });
+  const lin = (r: (typeof races)[number]) => (r.id === 'dragonborn' ? 'red' : (r.lineages ?? [])[0]?.id);
+  const S = 60;
+  return (
+    <div id="sayfa" style={{ background: '#1d2128', color: '#e8e4da', font: '11px system-ui', padding: 8, display: 'inline-block' }}>
+      <div style={{ fontWeight: 700, marginBottom: 6 }}>{cls}: oyundaki jeton görünümü (ırk × cinsiyet; sütun = Gariban / alt sınıf hücresi). Boş hücre = jeton yok ya da cinsiyet kısıtlı.</div>
+      <table style={{ borderCollapse: 'collapse' }}>
+        <thead><tr><th />{cols.map((c) => <th key={c.cell + c.level} style={{ font: '10px system-ui', color: '#aab' }}>{c.label}</th>)}</tr></thead>
+        <tbody>
+          {races.flatMap((r) => (['erkek', 'kadin'] as const).map((g) => (
+            <tr key={r.id + g}>
+              <td style={{ whiteSpace: 'nowrap', paddingRight: 6 }}>{r.id} {g === 'erkek' ? '♂' : '♀'}</td>
+              {cols.map((c) => {
+                const sh = { ...base, raceId: r.id, classId: cls, gender: g, level: c.level, ...(lin(r) ? { lineageId: lin(r) } : {}), ...(c.id ? { subclassId: c.id } : {}) } as Parameters<typeof sheetAvatar>[0];
+                const want = `${r.id}-${g}-${cls}-${c.cell}.webp`;
+                const a = sheetAvatar(sh);
+                const ok = a.src === `characters/${want}`;
+                void subclassTokenFile; void garibanTokenFile;
+                return (
+                  <td key={c.cell + c.level} style={{ width: S, height: S, background: ok ? 'transparent' : '#262b34', textAlign: 'center', border: '1px solid #2c323d' }}>
+                    {ok ? <LookFrame sheet={{ raceId: r.id, ...(lin(r) ? { lineageId: lin(r) } : {}), level: c.level, classId: cls, ...(c.id ? { subclassId: c.id } : {}) }} size={S} ability><AvatarBadge avatar={a} size={S} eager /></LookFrame> : <span style={{ color: '#555' }}>–</span>}
+                  </td>
+                );
+              })}
+            </tr>
+          )))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 const host = document.createElement('div'); host.style.cssText = 'position:fixed;left:0;top:0;z-index:99999'; document.body.appendChild(host);
-createRoot(host).render(mode === 'b' ? <PageB /> : <PageA />);
+createRoot(host).render(mode === 'b' ? <PageB /> : mode === 'c' ? <PageC /> : <PageA />);

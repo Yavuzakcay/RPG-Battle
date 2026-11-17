@@ -88,6 +88,19 @@
           }
         }
       },
+      "lineagesAlt": {
+          "black": { "lch": { "h": 262, "c": 6, "L": 26, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },
+          "blue": { "lch": { "h": 268, "c": 50, "L": 48, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },
+          "brass": { "lch": { "h": 85, "c": 46, "L": 62, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },
+          "bronze": { "lch": { "h": 58, "c": 38, "L": 42, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },
+          "copper": { "lch": { "h": 46, "c": 50, "L": 50, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },
+          "gold": { "lch": { "h": 90, "c": 66, "L": 74, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },
+          "green": { "lch": { "h": 142, "c": 42, "L": 46, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },
+          "red": { "lch": { "h": 30, "c": 60, "L": 44, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },
+          "silver": { "lch": { "h": 250, "c": 5, "L": 70, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },
+          "white": { "lch": { "h": 250, "c": 3, "L": 90, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } }
+        },
+        "maskAlt": { "L": [58, 100], "C": [0, 30], "h": [[0, 360]], "bright": 10, "th": 5.5 },
       "mask": {
         "L": [
           30,
@@ -523,6 +536,7 @@
           }
         }
       },
+      "maskAlt": { "L": [18, 96], "C": [3, 14], "h": [[160, 320]], "bright": 35, "th": 8, "headOnly": true },
       "mask": {
         "L": [
           18,

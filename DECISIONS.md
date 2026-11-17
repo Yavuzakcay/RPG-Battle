@@ -3,6 +3,15 @@
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
+
+## KQ6 bağlama: Celestial hariç jetonlar oyuna bağlandı, Dragonborn ve alt soy görünümleri (kural sürümü değişmedi)
+
+- Teşhis (`docs/sabah/baglama-eksik.csv`, `scripts/baglama-teshis.py`): jeton dosyaları eksik değildi; Dragonborn 12 sınıf tablosunun `irklar` listesinde yoktu (238 jeton çözülmüyordu), Gariban (GR, 240 dosya) hiçbir yerden çözülmüyordu, alt sınıf/Gariban jetonlarında (1584) ten maskesi olmadığı için Drow, Gnome, Goliath, Tiefling soy renkleri ve Human ten tonu uygulanmıyordu. Sonuç: `docs/sabah/baglama-eksik-sonra.csv`.
+- Bağlama: Dragonborn her sınıf tablosunda (`data/<sınıf>-jeton.json` `irklar`). Gariban: seviye < 3 `<ırk>-<cinsiyet>-<sınıf>-GR` (`garibanTokenFile`, Celestial hariç: hale işi Gemini'de), seviye ≥ 3 alt sınıf jetonu, o da yoksa sınıf-genel jeton. Gulyabani aynası, Anka/Melek kanat kaldırması ve Pehlivan dev hali (seviye ≥ 10) önceden vardı; Dragonborn'da da çalışır (testlerle).
+- Maskeler: `npm run soy-maske -- --alt` (Celestial hariç 6 ırk, 1584 jeton; aynı otomatik yöntem; Dragonborn beyaz taban için `maskAlt` L ≥ 58, düşük kroma, th 5,5; Goliath yalnız baş; maske opak alanın %40'ını aşarsa ya da < 30 pikselse maske yok = boyanmaz). Sonuç `data/soy-maske-alt-rapor.json`; maskesiz 39 jeton (kabuk/odun yüzlü Druid ID4, Rogue ID4 kostüm yüzü vb.) boyanmaz.
+- Dragonborn renkleri: beyaz taban jetonlar için ayrı tablo `soy-renkleri.json` `dragonborn.lineagesAlt` (10 renk, mutlak açıklıklı maskeli lch); eski sınıf-genel jeton eski tablodan. Kanat ayrı katman, beyaz taban (değişmedi).
+- Küçük kopyalar: 2880 jetonun hepsi güncel (son kaynak commit'inden sonra değişen yok), yeniden üretilmedi.
+
 ## Alt soy görünüm kararları: Drow yoğunluğu, Gece Gözyaşı gri, boyasız soylar (kural sürümü değişmedi)
 
 - Drow ten yoğunluğu Tenhausser'a çekildi, ton mor-mavi kaldı (birleştirme yok). Ölçüm (`scripts/soy-yogunluk.ts`, `data/soy-olcum.json` `paletler.yogunluk`): Drow eski çok açık ve sert (açıklık sapması 0,189 vs Tenhausser 0,092). Yeni: 7 durak L 22–52, `contrast` 0,35→0,12, `chromaKeep` 0,35→0,12 (A–D aynı oranla kaydırılmış). HSL doygunluğu mor-mavide doğal olarak düşük kalır; kroma (OKLCH c 0,083) ve açıklık sapması (0,097) eşitlendi.
