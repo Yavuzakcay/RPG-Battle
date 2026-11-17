@@ -8,13 +8,15 @@ import { crownSpec } from '../ui/haloCrown';
 import type { Avatar } from '../battle';
 
 const files = Object.keys(import.meta.glob('/public/characters/celestial-*.webp')).map((f) => f.split('/').pop() as string);
-const CLASSES = ['fighter', 'wizard', 'rogue', 'warlock', 'cleric', 'monk'];
+const CLASSES = ['paladin', 'fighter', 'wizard', 'rogue', 'warlock', 'cleric', 'monk'];
 const look = { raceId: 'celestial', celestialAwakening: 'parlayan-ruh', level: 3 };
 const avatarOf = (file: string): Avatar => ({ src: `characters/${file}`, bg: '#444', label: 'C', look });
 const hasCrown = (f: string) => crownSpec(`characters/${f}`, look) !== null;
 function pick(cls: string, kind: 'kadin' | 'erkek' | 'gr'): string | null {
   const gender = kind === 'gr' ? 'erkek' : kind;
   const list = files.filter((f) => f.startsWith(`celestial-${gender}-${cls}-`) && (kind === 'gr' ? f.endsWith('-GR.webp') : !f.endsWith('-GR.webp')));
+  const generic = files.find((f) => f === `celestial-${gender === 'kadin' ? 'female' : 'male'}-${cls}.webp`);
+  if (kind !== 'gr' && generic && hasCrown(generic)) return generic;
   return list.find(hasCrown) ?? (kind === 'gr' ? files.filter((f) => f.startsWith(`celestial-kadin-${cls}-GR`)).find(hasCrown) ?? null : null);
 }
 function Cell({ file, kind }: { file: string | null; kind: string }) {

@@ -8,6 +8,8 @@ import konum from '../../data/hale-konum.json';
 import bekleyen from '../../data/hale-halesiz.json';
 import { lineageLook, type LookSheet } from './lineageLook';
 
+/** Taç gövdesinin jeton uzayı çarpanı (`data/hale-konum.json` `tac.katsayi`). */
+export const CROWN_K: number = (konum as unknown as { tac: { katsayi: number } }).tac.katsayi;
 export interface CrownSpec { x: number; y: number; olcek: number }
 type Entry = { x: number; y: number; olcek: number };
 const HOLD = new Set<string>(bekleyen.bekleyen);

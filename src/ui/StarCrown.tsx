@@ -4,25 +4,31 @@
  * (`.sc-a/.sc-b`), hareketi azalt açıkken statik. Rozet (HTML `<svg>`) ve savaş jetonu (SVG `<g>`) aynı bileşeni kullanır.
  */
 import type { CSSProperties } from 'react';
-import type { CrownSpec } from './haloCrown';
+import { CROWN_K, type CrownSpec } from './haloCrown';
 
-const GOLD = '#F5D76E', LIGHT = '#FFF4B8', DEEP = '#E0B94A';
-const star = (r: number): string => { const w = r * 0.3; return `M0,${-r} L${w},${-w} L${r},0 L${w},${w} L0,${r} L${-w},${w} L${-r},0 L${-w},${-w} Z`; };
-const STARS: Array<{ x: number; y: number; r: number; c: 'sc-a' | 'sc-b' | 'sc-c' }> = [
-  { x: 0, y: -34, r: 15, c: 'sc-a' }, { x: -22, y: -24, r: 7, c: 'sc-b' }, { x: 22, y: -24, r: 7, c: 'sc-c' }, { x: -39, y: -14, r: 5, c: 'sc-c' }, { x: 39, y: -14, r: 5, c: 'sc-b' },
-];
+const GOLD = '#F5D76E', LIGHT = '#FFF4B8';
+/** Sparkle: yatay + dikey ince çizgi ve yarı uzunlukta soluk çapraz çizgiler (docs/sabah/hale-alternatif.png C). */
+function Sparkle({ x, y, r, c, col }: { x: number; y: number; r: number; c: 'sc-a' | 'sc-b' | 'sc-c'; col: string }) {
+  const h = r / 2;
+  return (
+    <g className={`sc-star ${c}`} transform={`translate(${x} ${y})`} stroke={col} strokeLinecap="round" fill="none">
+      <path d={`M${-r},0 H${r} M0,${-r} V${r}`} strokeWidth={1.1} />
+      <path d={`M${-h},${-h} L${h},${h} M${-h},${h} L${h},${-h}`} strokeWidth={0.9} opacity={0.67} />
+    </g>
+  );
+}
 
-/** Tek yerde çizilen taç gövdesi (yerel koordinat). */
+/**
+ * Tek yerde çizilen taç gövdesi (yerel koordinat; orijin başın/şapkanın üst orta noktası, y yukarı eksi, 256 px jeton uzayı × `data/hale-konum.json`
+ * `tac.katsayi`). Alternatif C: tabanı başa değen üç ince ışık çizgisi yukarı yükselir, üstünde büyük sparkle, yanlarda iki küçük çift.
+ */
 export function StarCrownShape() {
   return (
-    <g className="star-crown-body" shapeRendering="crispEdges">
-      {[-9, 0, 9].map((x) => <line key={x} x1={x} y1={-4} x2={x} y2={x === 0 ? -17 : -12} stroke={GOLD} strokeWidth={2} opacity={0.55} />)}
-      {STARS.map((s, i) => (
-        <g key={i} className={`sc-star ${s.c}`} transform={`translate(${s.x} ${s.y})`}>
-          <path d={star(s.r)} fill={GOLD} stroke={DEEP} strokeWidth={0.8} />
-          <path d={star(s.r * 0.5)} fill={LIGHT} />
-        </g>
-      ))}
+    <g className="star-crown-body" transform={`scale(${CROWN_K})`}>
+      {[[-5, -10], [0, -14], [5, -10]].map(([x, top]) => <line key={x} x1={x} y1={0} x2={x} y2={top} stroke={GOLD} strokeWidth={1.1} opacity={0.62} strokeLinecap="round" />)}
+      <Sparkle x={0} y={-12} r={6} c="sc-a" col={LIGHT} />
+      <Sparkle x={-10} y={-9} r={3} c="sc-b" col={GOLD} /><Sparkle x={10} y={-9} r={3} c="sc-c" col={GOLD} />
+      <Sparkle x={-19} y={-5} r={2} c="sc-c" col={GOLD} /><Sparkle x={19} y={-5} r={2} c="sc-b" col={GOLD} />
     </g>
   );
 }

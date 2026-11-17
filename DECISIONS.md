@@ -5,6 +5,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+
+## Celestial yıldız tacı: alternatif C birebir (kural sürümü değişmedi)
+
+- Seçilen tasarım C (`docs/sabah/hale-alternatif.png`, `scripts/hale-alternatif.py` `design('C')`): tabanı başın/şapkanın üst orta noktasına değen üç ince ışık çizgisi yukarı yükselir (orta daha uzun), üstünde büyük ince çizgili sparkle (yatay + dikey çizgi, soluk çaprazlar), yanlarda iki küçük çift; renk #F5D76E (merkez #FFF4B8). Eski çizim havada duran dolu elmas yıldızlardı.
+- Boyut: `data/hale-konum.json` `tac.katsayi` 2,8 (tasarım birimi → jeton 256 px uzayı; jeton başına `olcek` ile çarpılır); eski çizime göre toplam yaklaşık 1,5–1,8× büyük. Eski/yeni: `docs/sabah/hale-oyun-onizleme.png` ve `docs/sabah/hale-tac-yeni.png`.
+
 ## Dragonborn boyama: çarpma (multiply) filtresi, kanat paleti (kural sürümü değişmedi)
 
 - Kullanıcı kararı: Dragonborn beyaz taban jetonlarda maske yerine soy renginde çarpma filtresi (hue-rotate yok); doygun pikseller (pelerin, kumaş, dövme, efekt) muaf/kısmi (eşikler veride `lineagesAlt.<renk>.multiply` `muaf` 0,12, `tam` 0,28). White boyasız. Kod: `TintTarget` `multiply`, `multiplyPixels` (`src/ui/tint.ts`).
