@@ -469,7 +469,7 @@ def despill(rgba, kind='magenta'):
     a[band & near, 3] = 0
     return a
 
-def components_of_sheet(path, cls, force_cells=()):
+def components_of_sheet(path, cls, force_cells=(), protect=()):
     """→ {hücre n: (RGBA tam sayfa boyutunda kırpılmış kutu, bbox, uyarı listesi)}; elle kontrol gerektirenler uyarıda 'ELLE'."""
     img = np.asarray(Image.open(path).convert('RGB')); H, W = img.shape[:2]
     grid = detect_grid(img, CLASSES[cls][0], CLASSES[cls][1]) if cls not in TALL else None
@@ -487,6 +487,7 @@ def components_of_sheet(path, cls, force_cells=()):
         both_h = np.zeros_like(llh); both_v = np.zeros_like(llh)
         for d_ in (16, 24, 32, 44, 56): both_h |= side(-d_, 0) & side(d_, 0); both_v |= side(0, -d_) & side(0, d_)
         kill = ndi.binary_closing(llh & both_h, structure=np.ones((1, 241), bool)) & llh | ndi.binary_closing(llv & both_v, structure=np.ones((241, 1), bool)) & llv
+        for (px0, py0, px1, py1) in protect: kill[py0:py1, px0:px1] = False    # KQ6-20: kollar açık figür (siyah gövde bandı) çizgi sanılmasın: hücre içi korunur
         if kill.any(): fg &= ~ndi.binary_dilation(kill, iterations=3)
     fg = ndi.binary_opening(fg, iterations=1)
     # ızgara çizgisi kırıntıları (kesik kesik ince şeritler): ince uzun küçük bileşenler atılır
