@@ -260,5 +260,7 @@ for (const [race, r] of Object.entries(RACES)) {
   report[race] = rows;
   console.log(race, 'tamam');
 }
-if (!only) fs.writeFileSync(path.join(ROOT, 'data/soy-olcum.json'), JSON.stringify({ note: 'Görev K15: npm run soy-maske üretir. Her ırk/cinsiyet/sınıf jetonunda, her soyun boyamasından sonra ten maskesinin ortalama Lab rengi (L, a, b). Test (src/ui/tint.test.ts) soy çiftleri arası ΔE eşiğini bu dosyadan denetler. DROW-PALET: paletler: paletli soyların (elf/drow) her paletinin aynı ölçümü; races içindeki değer seçili palettir.', races: report, paletler: paletRows }, null, 1) + '\n');
+// Alt soy görünüm kararı: `paletler.yogunluk` (scripts/soy-yogunluk.ts yazar) yeniden üretimde korunur.
+const yogunluk = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'data/soy-olcum.json'), 'utf8')).paletler?.yogunluk; } catch { return undefined; } })();
+if (!only) fs.writeFileSync(path.join(ROOT, 'data/soy-olcum.json'), JSON.stringify({ note: 'Görev K15: npm run soy-maske üretir. Her ırk/cinsiyet/sınıf jetonunda, her soyun boyamasından sonra ten maskesinin ortalama Lab rengi (L, a, b). Test (src/ui/tint.test.ts) soy çiftleri arası ΔE eşiğini bu dosyadan denetler. DROW-PALET: paletler: paletli soyların (elf/drow) her paletinin aynı ölçümü; races içindeki değer seçili palettir.', races: report, paletler: { ...paletRows, ...(yogunluk ? { yogunluk } : {}) } }, null, 1) + '\n');
 if (preview) await import('./soy-onizleme').then((m) => m.default(preview));

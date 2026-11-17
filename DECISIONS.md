@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+
+## Alt soy görünüm kararları: Drow yoğunluğu, Gece Gözyaşı gri, boyasız soylar (kural sürümü değişmedi)
+
+- Drow ten yoğunluğu Tenhausser'a çekildi, ton mor-mavi kaldı (birleştirme yok). Ölçüm (`scripts/soy-yogunluk.ts`, `data/soy-olcum.json` `paletler.yogunluk`): Drow eski çok açık ve sert (açıklık sapması 0,189 vs Tenhausser 0,092). Yeni: 7 durak L 22–52, `contrast` 0,35→0,12, `chromaKeep` 0,35→0,12 (A–D aynı oranla kaydırılmış). HSL doygunluğu mor-mavide doğal olarak düşük kalır; kroma (OKLCH c 0,083) ve açıklık sapması (0,097) eşitlendi.
+- Celestial Gece Gözyaşı: `grayscale(1) contrast(1.12)` (ten, kıyafet, saç; hale yok).
+- Goliath Stone ve Gnome Forest boyasız (orijinal jeton); Orc Orman zaten orijinaldi, dokunulmadı. İki orijinal soyun ΔE testi muaf (aynı jeton).
+- Halfling Kalın: en 1,07, boy 0,93 (jeton aynı); İnce jetonun kendisi.
+- `soy-maske.ts` `paletler.yogunluk` anahtarını korur. Önizleme: `docs/sabah/alt-soy-onizleme.png`, `docs/sabah/drow-tenhausser-yogunluk.png` (`onizleme-soy.html?m=a|b`, yalnız geliştirme).
+
 ## 2026-12-31 — KQ6-19: Celestial yıldız tacı (oyunda çizilir), halesiz sprite esas
 
 - **Tasarım** (alternatif C, ~1,6× büyük): merkez yıldız r 15, yanlarda r 7 ve r 5, ince ışık çizgileri, #F5D76E; 96 px kopyada yıldızlar ≥ 3 px; hafif yanıp sönme (`.sc-star`, CSS), hareketi azalt (`prefers-reduced-motion`) açıkken statik. **Tek çözücü** `src/ui/haloCrown.ts` `crownSpec` (rozet `AvatarBadge` ve savaş jetonu `AvatarCircle` → `TokenFigure` aynı çözücü ve aynı çizim `StarCrown.tsx`). Taç yalnız hale gösteren uyanışlarda (`lineageLook.hideHalo` yoksa) ve sprite'ı halesiz jetonlarda; Gece Gözyaşı/Kırık Kanat'ta hale de taç da yok.

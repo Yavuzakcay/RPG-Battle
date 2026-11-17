@@ -23,7 +23,7 @@ const MIN_DELTA_E = 15;
  * Goliath Hill orijinal teni Cloud (ΔE 6,0–14,7) ve Stone (14,6–14,7) boyamalarına yakın. Bu çiftlerde alt sınır düşürüldü
  * (diğer bütün çiftler 15); ayrışma karar bekliyor (Cloud/Stone boyaması değişirse bu istisna kalkar).
  */
-const ORIGINAL_PAIR_MIN: Record<string, number> = { 'goliath:cloud/hill': 5.5, 'goliath:hill/stone': 14 };
+const ORIGINAL_PAIR_MIN: Record<string, number> = { 'goliath:cloud/hill': 5.5, 'goliath:cloud/stone': 5.5 };
 
 describe('soy → renk', () => {
   it('soyu olan her ırkın her soyu tabloda; Wood Elf boyamasız (klasik elf), diğerleri boyalı', () => {
@@ -64,7 +64,7 @@ describe('soy → renk', () => {
     // b < 0). En açık sınırı 55 → 60: yeni 7 duraklı skalanın vurgusu L 56 (K19 kuralı L ≈ 60).
     const drow = new Uint8ClampedArray([90, 60, 40, 255, 240, 200, 180, 255]);
     tintPixels(drow, lineageTint('elf', 'drow')!, new Uint8Array([1, 1]));
-    expect(rgbToLab(drow[0]!, drow[1]!, drow[2]!)[0]).toBeLessThan(20);
+    expect(rgbToLab(drow[0]!, drow[1]!, drow[2]!)[0]).toBeLessThan(30); // Drow yoğunluğu Tenhausser'a çekildi: en koyu durak L 22
     const hi = rgbToLab(drow[4]!, drow[5]!, drow[6]!);
     // SD8 (kullanıcı kararı): Dark Elf teni koyu mor-gri (D: koyu #4A4577, orta #7B72A8, açık #A79BC7); vurgu artık mor (a > 0, b < 0).
     expect(hi[0]).toBeLessThanOrEqual(76);
@@ -90,6 +90,8 @@ describe('soy → renk', () => {
         const ids = Object.keys(lins);
         for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
           const d = deltaE(lins[ids[i]!]!, lins[ids[j]!]!);
+          // Alt soy görünüm kararı: iki orijinal alt soy (Goliath Hill/Stone, Gnome Rock/Forest) aynı boyasız jetondur: ΔE 0 kararlıdır.
+          if (isOriginalLineage(`${race}/${ids[i]}`) && isOriginalLineage(`${race}/${ids[j]}`)) continue;
           const floor = ORIGINAL_PAIR_MIN[`${race}:${[ids[i], ids[j]].sort().join('/')}`] ?? MIN_DELTA_E;
           if (d < floor) low.push(`${name} ${ids[i]}/${ids[j]} ${d.toFixed(1)}`);
         }

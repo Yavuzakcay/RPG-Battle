@@ -68,7 +68,7 @@ Toplam: 41.
 
 ## Görünüm
 
-**Boyasız orijinal alt soylar** (AS1a-2 İş 3; `data/alt-soy-gorunum.json` `orijinal`): Elf Wood-elf, Dwarf Tepe, Halfling İnce/Kalın, Orc Orman, Celestial Parlayan Ruh, Human 4 kültür, Tiefling Infernal, Gnome Rock, Goliath Hill; filtre/tint/maske yok (yalnız oran).
+**Boyasız orijinal alt soylar** (AS1a-2 İş 3; `data/alt-soy-gorunum.json` `orijinal`): Elf Wood-elf, Dwarf Tepe, Halfling İnce/Kalın, Orc Orman, Celestial Parlayan Ruh, Human 4 kültür, Tiefling Infernal, Gnome Rock ve Forest, Goliath Hill ve Stone (15; yalnız oran). Alt soy görünüm kararı: Goliath Stone ve Gnome Forest boyasız oldu; Halfling İnce jetonun kendisi, Kalın aynı jetondan boy −%7, en +%7 (1,07 × 0,93); Celestial Gece Gözyaşı tam gri tonlu (`grayscale(1) contrast(1.12)`: ten, kıyafet, saç; hale yok); Drow ten yoğunluğu Tenhausser'a çekildi (Drow paletleri A–D: açıklık aralığı L 22–52, `contrast` 0,12, `chromaKeep` 0,12, mor-mavi ton korundu; ölçüm `data/soy-olcum.json` `paletler.yogunluk` eski/yeni, `npx vite-node scripts/soy-yogunluk.ts`; Tenhausser HSL s 0,441 / l 0,417, OKLCH c 0,084 / L 0,544; Drow D eski s 0,285 / l 0,611, c 0,063 / L 0,641, açıklık sapması 0,189; yeni s 0,249 / l 0,492, c 0,083 / L 0,528, sapma 0,097).
 
 Alt soylara ayrı çizim yoktur. `data/alt-soy-gorunum.json`: Dwarf/Orc için CSS renk filtresi (tint/maske tablosunda yeri yok); Tiefling Kanatlı ve Gnome Yeraltı `data/soy-renkleri.json` tint tablosunda; Halfling İnce/Kalın en-boy oranı; Celestial hale (Parlayan Ruh haleli, Kırık Kanat halesiz + kanat, Gece Gözyaşı halesiz + koyu filtre); üç kanat yuvası (Tiefling, Celestial Kırık Kanat, Dragonborn Draconic Flight; sprite yoksa efekt sistemindeki `efekt-kanat-*` şeridinin ilk karesi yer tutucu).
 

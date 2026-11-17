@@ -30,8 +30,8 @@
   "halfling/sturdy": {
    "orijinal": true,
    "oran": {
-    "en": 1.1,
-    "boy": 0.9
+    "en": 1.07,
+    "boy": 0.93
    }
   },
   "orc/glacier": {
@@ -69,6 +69,12 @@
   },
   "goliath/hill": {
    "orijinal": true
+  },
+  "goliath/stone": {
+   "orijinal": true
+  },
+  "gnome/forest-gnome": {
+   "orijinal": true
   }
  },
  "celestialUyanis": {
@@ -78,7 +84,7 @@
   },
   "gece-gozyasi": {
    "hale": false,
-   "filtre": "brightness(0.74) saturate(0.85) hue-rotate(12deg)"
+   "filtre": "grayscale(1) contrast(1.12)"
   },
   "kirik-kanat": {
    "hale": false,
@@ -176,7 +182,9 @@
   "human/outwall",
   "tiefling/infernal",
   "gnome/rock-gnome",
-  "goliath/hill"
+  "goliath/hill",
+  "goliath/stone",
+  "gnome/forest-gnome"
  ],
  "ayak": {
   "not": "Oran ölçeklemesinin demir noktası: jeton görselinde ayak çizgisinin yüksekliği (256 px jetonda y≈247). Ayaklar sabit kalır, yatayda ortadan.",

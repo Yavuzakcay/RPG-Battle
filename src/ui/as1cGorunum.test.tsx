@@ -41,14 +41,14 @@ describe('savaş jetonu görünümü (Avatar.look, tek çözücü)', () => {
     const slender = draw({ raceId: 'halfling', lineageId: 'slender' });
     expect(slender).not.toContain('scale('); // KQ6-6: İnce oran 1×1, dönüşüm yok
     const sturdy = draw({ raceId: 'halfling', lineageId: 'sturdy' });
-    expect(sturdy).toContain('scale(1.1 0.9)'); expect(sturdy).toContain('image-rendering:pixelated'); // ayak çizgisinden (y = 50 − 20 + 40·0,965), piksel sanatı bulanmaz
+    expect(sturdy).toContain('scale(1.07 0.93)'); expect(sturdy).toContain('image-rendering:pixelated'); // ayak çizgisinden (y = 50 − 20 + 40·0,965), piksel sanatı bulanmaz
     expect(sturdy).toContain('translate(50 68.6)');
     expect(draw({ raceId: 'dwarf', lineageId: 'knoll' })).toContain('scale(1.04 1)');
     // Boyasız orijinal olmayan oran yok: Wood-elf, oransız.
     expect(draw({ raceId: 'elf', lineageId: 'wood-elf' })).not.toContain('scale(');
     // KQ6-12: çalışma anında kırpma yok; hale gizli uyanışlar `hideHalo` bayrağını korur, görsel önceden hesaplı halesiz varyanttan gelir.
     for (const aw of ['kirik-kanat', 'gece-gozyasi', 'parlayan-ruh']) expect(draw({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: aw })).not.toContain('<clipPath');
-    expect(draw({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'gece-gozyasi' })).toContain('brightness');
+    expect(draw({ raceId: 'celestial', lineageId: undefined, level: 3, celestialAwakening: 'gece-gozyasi' })).toContain('grayscale(1)');
     // Görsel konumu/boyutu oransız soyla aynı.
     const img = (x: string) => /<image[^>]*x="([^"]+)"[^>]*y="([^"]+)"[^>]*width="([^"]+)"/.exec(x)?.slice(1).join(',');
     expect(img(slender)).toBe(img(draw({ raceId: 'halfling', lineageId: undefined })));

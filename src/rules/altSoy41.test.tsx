@@ -211,7 +211,7 @@ describe('görünüm verisi', () => {
     const s = lineageLook({ raceId: 'halfling', lineageId: 'slender' });
     const t = lineageLook({ raceId: 'halfling', lineageId: 'sturdy' });
     expect([s.scaleX, s.scaleY]).toEqual([1, 1]); // KQ6-6: yüklenen jeton İnce soyun görünümü
-    expect([t.scaleX, t.scaleY]).toEqual([1.1, 0.9]); // Kalın: boy ×0,90, en ×1,10 (ayak çizgisinden)
+    expect([t.scaleX, t.scaleY]).toEqual([1.07, 0.93]); // Kalın: boy ×0,90, en ×1,10 (ayak çizgisinden)
     expect(lineageLook({ raceId: 'orc', lineageId: 'glacier' }).filter).toContain('hue-rotate');
   });
   it('kanat slotları (Tiefling Kanatlı, Celestial Kırık Kanat, Dragonborn, alt sınıfa bağlı Melek): sprite bağlı; Tiefling ve Dragonborn yalnız havadayken', () => {
@@ -226,7 +226,7 @@ describe('görünüm verisi', () => {
     expect(at('parlayan-ruh')).toMatchObject({ hideHalo: false, wing: null, filter: '' });
     expect(at('kirik-kanat')).toMatchObject({ hideHalo: true, wing: { id: 'celestial-kirik-kanat' } });
     expect(at('gece-gozyasi').hideHalo).toBe(true);
-    expect(at('gece-gozyasi').filter).toContain('brightness');
+    expect(at('gece-gozyasi').filter).toContain('grayscale(1)'); // tam gri tonlu: ten, kıyafet, saç
     expect(at('kirik-kanat', 2)).toMatchObject({ hideHalo: false, wing: null });
     expect(awakeningLookIds().sort()).toEqual([...AWAKENING_OPTIONS].sort());
     expect(AWAKENING_FROM).toBe(CELESTIAL.awakening.minLevel);
@@ -252,11 +252,11 @@ describe('görünüm verisi', () => {
 
 describe('boyasız orijinal alt soylar (AS1a-2 İş 3)', () => {
   const ORIG = ['elf/wood-elf', 'dwarf/knoll', 'halfling/slender', 'halfling/sturdy', 'orc/wildwood', 'celestial/parlayan-ruh', 'human/tenhausser', 'human/khadyrga', 'human/pure-city', 'human/outwall',
-    'tiefling/infernal', 'gnome/rock-gnome', 'goliath/hill'];
-  const PAINTED = ['dragonborn/black', 'goliath/cloud', 'goliath/fire', 'goliath/frost', 'goliath/stone', 'goliath/storm', 'elf/drow', 'elf/high-elf', 'tiefling/abyssal', 'tiefling/chthonic', 'gnome/forest-gnome', 'gnome/subterranean',
+    'tiefling/infernal', 'gnome/rock-gnome', 'goliath/hill', 'goliath/stone', 'gnome/forest-gnome'];
+  const PAINTED = ['dragonborn/black', 'goliath/cloud', 'goliath/fire', 'goliath/frost', 'goliath/storm', 'elf/drow', 'elf/high-elf', 'tiefling/abyssal', 'tiefling/chthonic', 'gnome/subterranean',
     'celestial/gece-gozyasi', 'dwarf/crag', 'dwarf/undervault', 'orc/glacier', 'orc/fen'];
   const table = soyRenkleri.races as Record<string, { lineages: Record<string, unknown> }>;
-  it('liste tam: 13 orijinal; her ırkta (Dragonborn hariç) en az bir orijinal, Dragonborn\'da hiç yok', () => {
+  it('liste tam: 15 orijinal; her ırkta (Dragonborn hariç) en az bir orijinal, Dragonborn\'da hiç yok', () => {
     expect([...ORIGINAL_LINEAGES].sort()).toEqual([...ORIG].sort());
     for (const r of races) {
       const n = ids().filter((k) => k.startsWith(`${r.id}/`) && isOriginalLineage(k)).length;
