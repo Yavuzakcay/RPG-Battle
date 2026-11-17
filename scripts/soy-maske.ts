@@ -212,7 +212,7 @@ if (args.includes('--alt')) {
   const names = fs.readdirSync(CHAR).map((f) => re.exec(f)).filter((m): m is RegExpExecArray => !!m);
   for (const m of names) {
     const name = m[0].replace(/\.webp$/, ''), race = m[1]!, g = m[2] === 'erkek' ? 'male' : 'female';
-    if (only && only !== race) continue;
+    if ((only && only !== race) || race === 'dragonborn') continue; // Dragonborn: scripts/soy-maske-dragonborn.ts (yedek maske)
     const r = RACES[race]!;
     const base = (r as Race & { maskAlt?: MaskCfg }).maskAlt ?? r.mask;
     const { data, W, H } = await raw(path.join(CHAR, `${name}.webp`));

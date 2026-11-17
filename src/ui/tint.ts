@@ -38,6 +38,21 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 }
 
 /** Maske gerektiren (K15) boyama mı. */
+/** Dragonborn beyaz taban: doygunluğa göre ağırlıklı çarpma filtresi (maske yok, hue kaydırma yok). Değişen piksel sayısı. */
+export function multiplyPixels(data: Uint8ClampedArray, m: { renk: string; muaf: number; tam: number }): number {
+  const n = parseInt(m.renk.slice(1), 16), cr = ((n >> 16) & 255) / 255, cg = ((n >> 8) & 255) / 255, cb = (n & 255) / 255;
+  let changed = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3]! < 8) continue;
+    const r = data[i]!, g = data[i + 1]!, b = data[i + 2]!;
+    const sat = (Math.max(r, g, b) - Math.min(r, g, b)) / 255;
+    const w = sat <= m.muaf ? 1 : sat >= m.tam ? 0 : (m.tam - sat) / (m.tam - m.muaf);
+    if (w <= 0) continue;
+    data[i] = Math.round(r + (r * cr - r) * w); data[i + 1] = Math.round(g + (g * cg - g) * w); data[i + 2] = Math.round(b + (b * cb - b) * w);
+    changed++;
+  }
+  return changed;
+}
 export const maskedTint = (t: TintSpec) => 'lch' in t.to || 'gradient' in t.to;
 
 /**
@@ -48,6 +63,7 @@ export const maskedTint = (t: TintSpec) => 'lch' in t.to || 'gradient' in t.to;
  */
 export function tintPixels(data: Uint8ClampedArray, tint: TintSpec, mask?: Uint8Array, weights?: Uint8Array): number {
   const to = tint.to;
+  if ('multiply' in to) return multiplyPixels(data, to.multiply);
   if (weights) {
     const sel = new Uint8Array(weights.length);
     for (let p = 0; p < weights.length; p++) sel[p] = weights[p]! > 0 ? 1 : 0;

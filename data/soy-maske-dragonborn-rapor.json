@@ -1,0 +1,2109 @@
+{
+ "not": "scripts/soy-maske-dragonborn.ts: Dragonborn pul bölgesi maskesi (piksel sayıları; n < 30: maske yok).",
+ "jetonlar": {
+  "dragonborn-erkek-barbarian-GR": {
+   "opaque": 25670,
+   "n": 10207,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 15,
+   "drop": 85
+  },
+  "dragonborn-erkek-barbarian-ID1": {
+   "opaque": 35478,
+   "n": 10487,
+   "nHead": 1,
+   "nTail": 8,
+   "nHand": 28,
+   "drop": 48
+  },
+  "dragonborn-erkek-barbarian-ID2": {
+   "opaque": 25178,
+   "n": 9724,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 11,
+   "drop": 76
+  },
+  "dragonborn-erkek-barbarian-ID3": {
+   "opaque": 26701,
+   "n": 10786,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 45,
+   "drop": 110
+  },
+  "dragonborn-erkek-barbarian-ID4": {
+   "opaque": 32046,
+   "n": 10702,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 24,
+   "drop": 80
+  },
+  "dragonborn-erkek-barbarian-ID5": {
+   "opaque": 26336,
+   "n": 8234,
+   "nHead": 1,
+   "nTail": 16,
+   "nHand": 23,
+   "drop": 1482
+  },
+  "dragonborn-erkek-barbarian-ID6": {
+   "opaque": 25950,
+   "n": 10435,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 4,
+   "drop": 2085
+  },
+  "dragonborn-erkek-barbarian-ID7": {
+   "opaque": 29728,
+   "n": 13781,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 13,
+   "drop": 37
+  },
+  "dragonborn-erkek-barbarian-ID8": {
+   "opaque": 27476,
+   "n": 11401,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 26,
+   "drop": 50
+  },
+  "dragonborn-erkek-barbarian-ID9": {
+   "opaque": 27186,
+   "n": 6857,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 12,
+   "drop": 26
+  },
+  "dragonborn-erkek-bard-GR": {
+   "opaque": 23829,
+   "n": 7879,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 16,
+   "drop": 59
+  },
+  "dragonborn-erkek-bard-ID1": {
+   "opaque": 19110,
+   "n": 5344,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 7,
+   "drop": 30
+  },
+  "dragonborn-erkek-bard-ID2": {
+   "opaque": 18562,
+   "n": 4372,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 23,
+   "drop": 48
+  },
+  "dragonborn-erkek-bard-ID3": {
+   "opaque": 18034,
+   "n": 5808,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 4,
+   "drop": 5
+  },
+  "dragonborn-erkek-bard-ID4": {
+   "opaque": 21820,
+   "n": 6253,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 13,
+   "drop": 15
+  },
+  "dragonborn-erkek-bard-ID5": {
+   "opaque": 32880,
+   "n": 8392,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 9,
+   "drop": 35
+  },
+  "dragonborn-erkek-bard-ID6": {
+   "opaque": 20222,
+   "n": 5118,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 9,
+   "drop": 28
+  },
+  "dragonborn-erkek-bard-ID7": {
+   "opaque": 31894,
+   "n": 5522,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 11,
+   "drop": 14
+  },
+  "dragonborn-erkek-bard-ID8": {
+   "opaque": 20273,
+   "n": 5935,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 9,
+   "drop": 44
+  },
+  "dragonborn-erkek-bard-ID9": {
+   "opaque": 22841,
+   "n": 5537,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 29,
+   "drop": 86
+  },
+  "dragonborn-erkek-cleric-GR": {
+   "opaque": 25322,
+   "n": 8532,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 9,
+   "drop": 13
+  },
+  "dragonborn-erkek-cleric-ID1": {
+   "opaque": 32355,
+   "n": 6764,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 5,
+   "drop": 61
+  },
+  "dragonborn-erkek-cleric-ID2": {
+   "opaque": 22587,
+   "n": 5824,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 7,
+   "drop": 27
+  },
+  "dragonborn-erkek-cleric-ID3": {
+   "opaque": 20186,
+   "n": 6539,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 7,
+   "drop": 4794
+  },
+  "dragonborn-erkek-cleric-ID4": {
+   "opaque": 24487,
+   "n": 5706,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 6,
+   "drop": 38
+  },
+  "dragonborn-erkek-cleric-ID5": {
+   "opaque": 24332,
+   "n": 11410,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 12,
+   "drop": 1309
+  },
+  "dragonborn-erkek-cleric-ID6": {
+   "opaque": 27034,
+   "n": 2114,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 8,
+   "drop": 1467
+  },
+  "dragonborn-erkek-cleric-ID7": {
+   "opaque": 25094,
+   "n": 5717,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 26,
+   "drop": 34
+  },
+  "dragonborn-erkek-cleric-ID8": {
+   "opaque": 23973,
+   "n": 5854,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 2,
+   "drop": 19
+  },
+  "dragonborn-erkek-cleric-ID9": {
+   "opaque": 19982,
+   "n": 6562,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 3,
+   "drop": 1
+  },
+  "dragonborn-erkek-druid-GR": {
+   "opaque": 25060,
+   "n": 8714,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 4,
+   "drop": 973
+  },
+  "dragonborn-erkek-druid-ID1": {
+   "opaque": 26576,
+   "n": 4711,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 3,
+   "drop": 1107
+  },
+  "dragonborn-erkek-druid-ID2": {
+   "opaque": 26388,
+   "n": 6438,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 6,
+   "drop": 20
+  },
+  "dragonborn-erkek-druid-ID3": {
+   "opaque": 25014,
+   "n": 8109,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 13,
+   "drop": 54
+  },
+  "dragonborn-erkek-druid-ID4": {
+   "opaque": 25410,
+   "n": 800,
+   "nHead": 1,
+   "nTail": 0,
+   "nHand": 5,
+   "drop": 19
+  },
+  "dragonborn-erkek-druid-ID5": {
+   "opaque": 23813,
+   "n": 8532,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 22,
+   "drop": 1476
+  },
+  "dragonborn-erkek-druid-ID6": {
+   "opaque": 27980,
+   "n": 7765,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 1,
+   "drop": 57
+  },
+  "dragonborn-erkek-druid-ID7": {
+   "opaque": 23945,
+   "n": 7598,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 4,
+   "drop": 22
+  },
+  "dragonborn-erkek-fighter-GR": {
+   "opaque": 26347,
+   "n": 9341,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 13,
+   "drop": 38
+  },
+  "dragonborn-erkek-fighter-ID1": {
+   "opaque": 24905,
+   "n": 3823,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 7,
+   "drop": 2
+  },
+  "dragonborn-erkek-fighter-ID10": {
+   "opaque": 28464,
+   "n": 13748,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 22,
+   "drop": 28
+  },
+  "dragonborn-erkek-fighter-ID11": {
+   "opaque": 21427,
+   "n": 5313,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 18,
+   "drop": 21
+  },
+  "dragonborn-erkek-fighter-ID2": {
+   "opaque": 24820,
+   "n": 4961,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 7,
+   "drop": 1007
+  },
+  "dragonborn-erkek-fighter-ID3": {
+   "opaque": 20188,
+   "n": 7932,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 17,
+   "drop": 1114
+  },
+  "dragonborn-erkek-fighter-ID4": {
+   "opaque": 24694,
+   "n": 12116,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 4,
+   "drop": 11
+  },
+  "dragonborn-erkek-fighter-ID5": {
+   "opaque": 29554,
+   "n": 10079,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 2,
+   "drop": 18
+  },
+  "dragonborn-erkek-fighter-ID6": {
+   "opaque": 22384,
+   "n": 3647,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 3,
+   "drop": 5
+  },
+  "dragonborn-erkek-fighter-ID7": {
+   "opaque": 27943,
+   "n": 11464,
+   "nHead": 1,
+   "nTail": 8,
+   "nHand": 21,
+   "drop": 1036
+  },
+  "dragonborn-erkek-fighter-ID8": {
+   "opaque": 23581,
+   "n": 4867,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 9,
+   "drop": 45
+  },
+  "dragonborn-erkek-fighter-ID9": {
+   "opaque": 26446,
+   "n": 6045,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 8,
+   "drop": 54
+  },
+  "dragonborn-erkek-monk-GR": {
+   "opaque": 22208,
+   "n": 9758,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 4,
+   "drop": 17
+  },
+  "dragonborn-erkek-monk-ID1": {
+   "opaque": 27605,
+   "n": 5874,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 7,
+   "drop": 23
+  },
+  "dragonborn-erkek-monk-ID10": {
+   "opaque": 20345,
+   "n": 2290,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 16,
+   "drop": 45
+  },
+  "dragonborn-erkek-monk-ID11": {
+   "opaque": 27340,
+   "n": 7111,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 5,
+   "drop": 25
+  },
+  "dragonborn-erkek-monk-ID2": {
+   "opaque": 28985,
+   "n": 8129,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 17,
+   "drop": 1166
+  },
+  "dragonborn-erkek-monk-ID3": {
+   "opaque": 30636,
+   "n": 7117,
+   "nHead": 1,
+   "nTail": 8,
+   "nHand": 7,
+   "drop": 25
+  },
+  "dragonborn-erkek-monk-ID4": {
+   "opaque": 21389,
+   "n": 7002,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 7,
+   "drop": 7
+  },
+  "dragonborn-erkek-monk-ID5": {
+   "opaque": 24481,
+   "n": 5852,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 1,
+   "drop": 6
+  },
+  "dragonborn-erkek-monk-ID6": {
+   "opaque": 28479,
+   "n": 7624,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 5,
+   "drop": 12
+  },
+  "dragonborn-erkek-monk-ID7": {
+   "opaque": 27419,
+   "n": 6660,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 9,
+   "drop": 16
+  },
+  "dragonborn-erkek-monk-ID8": {
+   "opaque": 25532,
+   "n": 5975,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 4,
+   "drop": 11
+  },
+  "dragonborn-erkek-monk-ID9": {
+   "opaque": 20473,
+   "n": 9616,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 10,
+   "drop": 904
+  },
+  "dragonborn-erkek-paladin-GR": {
+   "opaque": 28108,
+   "n": 4398,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 5,
+   "drop": 2386
+  },
+  "dragonborn-erkek-paladin-ID1": {
+   "opaque": 28040,
+   "n": 4209,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 9,
+   "drop": 19
+  },
+  "dragonborn-erkek-paladin-ID10": {
+   "opaque": 26967,
+   "n": 11179,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 6,
+   "drop": 2413
+  },
+  "dragonborn-erkek-paladin-ID2": {
+   "opaque": 26358,
+   "n": 5284,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 14,
+   "drop": 84
+  },
+  "dragonborn-erkek-paladin-ID3": {
+   "opaque": 25450,
+   "n": 3464,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 7,
+   "drop": 18
+  },
+  "dragonborn-erkek-paladin-ID4": {
+   "opaque": 25151,
+   "n": 8925,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 35,
+   "drop": 63
+  },
+  "dragonborn-erkek-paladin-ID5": {
+   "opaque": 30771,
+   "n": 6736,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 8,
+   "drop": 31
+  },
+  "dragonborn-erkek-paladin-ID6": {
+   "opaque": 26850,
+   "n": 3971,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 11,
+   "drop": 25
+  },
+  "dragonborn-erkek-paladin-ID7": {
+   "opaque": 24811,
+   "n": 6806,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 14,
+   "drop": 36
+  },
+  "dragonborn-erkek-paladin-ID8": {
+   "opaque": 24763,
+   "n": 3904,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 8,
+   "drop": 21
+  },
+  "dragonborn-erkek-paladin-ID9": {
+   "opaque": 27072,
+   "n": 5326,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 17,
+   "drop": 16
+  },
+  "dragonborn-erkek-ranger-GR": {
+   "opaque": 26718,
+   "n": 4355,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 4,
+   "drop": 15
+  },
+  "dragonborn-erkek-ranger-ID1": {
+   "opaque": 24337,
+   "n": 6707,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 11,
+   "drop": 29
+  },
+  "dragonborn-erkek-ranger-ID2": {
+   "opaque": 24603,
+   "n": 7592,
+   "nHead": 1,
+   "nTail": 8,
+   "nHand": 27,
+   "drop": 87
+  },
+  "dragonborn-erkek-ranger-ID3": {
+   "opaque": 24200,
+   "n": 7060,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 22,
+   "drop": 59
+  },
+  "dragonborn-erkek-ranger-ID4": {
+   "opaque": 29200,
+   "n": 11378,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 9,
+   "drop": 1396
+  },
+  "dragonborn-erkek-ranger-ID5": {
+   "opaque": 24118,
+   "n": 8343,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 14,
+   "drop": 136
+  },
+  "dragonborn-erkek-ranger-ID6": {
+   "opaque": 25735,
+   "n": 8206,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 6,
+   "drop": 19
+  },
+  "dragonborn-erkek-ranger-ID7": {
+   "opaque": 23068,
+   "n": 7013,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 42,
+   "drop": 938
+  },
+  "dragonborn-erkek-ranger-ID8": {
+   "opaque": 26932,
+   "n": 7243,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 31,
+   "drop": 96
+  },
+  "dragonborn-erkek-ranger-ID9": {
+   "opaque": 26469,
+   "n": 6604,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 7,
+   "drop": 24
+  },
+  "dragonborn-erkek-rogue-GR": {
+   "opaque": 23589,
+   "n": 4171,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 6,
+   "drop": 14
+  },
+  "dragonborn-erkek-rogue-ID1": {
+   "opaque": 19171,
+   "n": 7431,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 3,
+   "drop": 9
+  },
+  "dragonborn-erkek-rogue-ID10": {
+   "opaque": 25451,
+   "n": 8027,
+   "nHead": 1,
+   "nTail": 9,
+   "nHand": 10,
+   "drop": 17
+  },
+  "dragonborn-erkek-rogue-ID2": {
+   "opaque": 22203,
+   "n": 6652,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 4,
+   "drop": 9
+  },
+  "dragonborn-erkek-rogue-ID3": {
+   "opaque": 24038,
+   "n": 6946,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 19,
+   "drop": 29
+  },
+  "dragonborn-erkek-rogue-ID4": {
+   "opaque": 26471,
+   "tohum": 0
+  },
+  "dragonborn-erkek-rogue-ID5": {
+   "opaque": 25406,
+   "n": 4763,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 5,
+   "drop": 18
+  },
+  "dragonborn-erkek-rogue-ID6": {
+   "opaque": 25180,
+   "n": 9312,
+   "nHead": 1,
+   "nTail": 8,
+   "nHand": 20,
+   "drop": 30
+  },
+  "dragonborn-erkek-rogue-ID7": {
+   "opaque": 27040,
+   "n": 3279,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 19,
+   "drop": 51
+  },
+  "dragonborn-erkek-rogue-ID8": {
+   "opaque": 25558,
+   "n": 9361,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 12,
+   "drop": 934
+  },
+  "dragonborn-erkek-rogue-ID9": {
+   "opaque": 24128,
+   "n": 6622,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 12,
+   "drop": 57
+  },
+  "dragonborn-erkek-sorcerer-GR": {
+   "opaque": 21739,
+   "n": 9622,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 3,
+   "drop": 13
+  },
+  "dragonborn-erkek-sorcerer-SC-1": {
+   "opaque": 28767,
+   "n": 6646,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 2,
+   "drop": 37
+  },
+  "dragonborn-erkek-sorcerer-SC-2": {
+   "opaque": 25126,
+   "n": 7459,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 3,
+   "drop": 9
+  },
+  "dragonborn-erkek-sorcerer-SC-3": {
+   "opaque": 21448,
+   "n": 8380,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 6,
+   "drop": 8
+  },
+  "dragonborn-erkek-sorcerer-SC-4": {
+   "opaque": 21681,
+   "n": 5604,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 8,
+   "drop": 1198
+  },
+  "dragonborn-erkek-sorcerer-SC-5": {
+   "opaque": 22168,
+   "n": 596,
+   "nHead": 1,
+   "nTail": 0,
+   "nHand": 4,
+   "drop": 14
+  },
+  "dragonborn-erkek-sorcerer-SC-6": {
+   "opaque": 23883,
+   "n": 6883,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 13,
+   "drop": 1230
+  },
+  "dragonborn-erkek-sorcerer-SC-7": {
+   "opaque": 19840,
+   "n": 7805,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 8,
+   "drop": 8
+  },
+  "dragonborn-erkek-sorcerer-SC-8": {
+   "opaque": 27779,
+   "n": 6446,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 0,
+   "drop": 2
+  },
+  "dragonborn-erkek-sorcerer-SC-9": {
+   "opaque": 24553,
+   "n": 2119,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 23,
+   "drop": 93
+  },
+  "dragonborn-erkek-warlock-GR": {
+   "opaque": 25140,
+   "n": 6657,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 6,
+   "drop": 42
+  },
+  "dragonborn-erkek-warlock-WL-1": {
+   "opaque": 29318,
+   "n": 7325,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 14,
+   "drop": 139
+  },
+  "dragonborn-erkek-warlock-WL-10": {
+   "opaque": 26322,
+   "n": 8354,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 7,
+   "drop": 6
+  },
+  "dragonborn-erkek-warlock-WL-11": {
+   "opaque": 23454,
+   "n": 8666,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 5,
+   "drop": 20
+  },
+  "dragonborn-erkek-warlock-WL-2": {
+   "opaque": 21070,
+   "n": 8143,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 3,
+   "drop": 0
+  },
+  "dragonborn-erkek-warlock-WL-3": {
+   "opaque": 27566,
+   "n": 4693,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 2,
+   "drop": 1
+  },
+  "dragonborn-erkek-warlock-WL-4": {
+   "opaque": 26722,
+   "n": 4340,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 17,
+   "drop": 4870
+  },
+  "dragonborn-erkek-warlock-WL-5": {
+   "opaque": 27062,
+   "n": 8175,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 4,
+   "drop": 0
+  },
+  "dragonborn-erkek-warlock-WL-6": {
+   "opaque": 26435,
+   "n": 6395,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 15,
+   "drop": 84
+  },
+  "dragonborn-erkek-warlock-WL-7": {
+   "opaque": 33930,
+   "n": 13300,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 5,
+   "drop": 2821
+  },
+  "dragonborn-erkek-warlock-WL-8": {
+   "opaque": 15557,
+   "n": 4741,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 1,
+   "drop": 19
+  },
+  "dragonborn-erkek-warlock-WL-9": {
+   "opaque": 24579,
+   "n": 9470,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 4,
+   "drop": 12
+  },
+  "dragonborn-erkek-wizard-GR": {
+   "opaque": 27448,
+   "n": 5454,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 2,
+   "drop": 15
+  },
+  "dragonborn-erkek-wizard-WZ-A1": {
+   "opaque": 25314,
+   "n": 6905,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 11,
+   "drop": 2386
+  },
+  "dragonborn-erkek-wizard-WZ-A2": {
+   "opaque": 22035,
+   "n": 6058,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 5,
+   "drop": 1148
+  },
+  "dragonborn-erkek-wizard-WZ-A3": {
+   "opaque": 23637,
+   "n": 4665,
+   "nHead": 1,
+   "nTail": 0,
+   "nHand": 4,
+   "drop": 31
+  },
+  "dragonborn-erkek-wizard-WZ-A4": {
+   "opaque": 27059,
+   "n": 4508,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 5,
+   "drop": 7
+  },
+  "dragonborn-erkek-wizard-WZ-A5": {
+   "opaque": 22527,
+   "n": 7663,
+   "nHead": 1,
+   "nTail": 8,
+   "nHand": 17,
+   "drop": 15
+  },
+  "dragonborn-erkek-wizard-WZ-A6": {
+   "opaque": 27556,
+   "n": 7432,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 12,
+   "drop": 2550
+  },
+  "dragonborn-erkek-wizard-WZ-A7": {
+   "opaque": 23041,
+   "n": 5611,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 4,
+   "drop": 14
+  },
+  "dragonborn-erkek-wizard-WZ-A8": {
+   "opaque": 22292,
+   "n": 5888,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 4,
+   "drop": 23
+  },
+  "dragonborn-erkek-wizard-WZ-B1": {
+   "opaque": 25486,
+   "n": 6259,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 11,
+   "drop": 23
+  },
+  "dragonborn-erkek-wizard-WZ-B2": {
+   "opaque": 26500,
+   "n": 5940,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 3,
+   "drop": 49
+  },
+  "dragonborn-erkek-wizard-WZ-B3": {
+   "opaque": 18077,
+   "n": 6138,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 9,
+   "drop": 57
+  },
+  "dragonborn-erkek-wizard-WZ-B4": {
+   "opaque": 24492,
+   "n": 6768,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 4,
+   "drop": 7
+  },
+  "dragonborn-erkek-wizard-WZ-B5": {
+   "opaque": 26550,
+   "n": 6913,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 19,
+   "drop": 112
+  },
+  "dragonborn-erkek-wizard-WZ-B6": {
+   "opaque": 22495,
+   "n": 7254,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 14,
+   "drop": 60
+  },
+  "dragonborn-erkek-wizard-WZ-B7": {
+   "opaque": 28817,
+   "n": 5202,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 12,
+   "drop": 79
+  },
+  "dragonborn-kadin-barbarian-GR": {
+   "opaque": 22573,
+   "n": 7965,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 23,
+   "drop": 17
+  },
+  "dragonborn-kadin-barbarian-ID1": {
+   "opaque": 33172,
+   "n": 6925,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 49,
+   "drop": 146
+  },
+  "dragonborn-kadin-barbarian-ID2": {
+   "opaque": 20805,
+   "n": 7122,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 9,
+   "drop": 34
+  },
+  "dragonborn-kadin-barbarian-ID3": {
+   "opaque": 21482,
+   "n": 7139,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 15,
+   "drop": 66
+  },
+  "dragonborn-kadin-barbarian-ID4": {
+   "opaque": 28514,
+   "n": 7642,
+   "nHead": 1,
+   "nTail": 9,
+   "nHand": 35,
+   "drop": 112
+  },
+  "dragonborn-kadin-barbarian-ID5": {
+   "opaque": 24984,
+   "n": 7258,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 38,
+   "drop": 113
+  },
+  "dragonborn-kadin-barbarian-ID6": {
+   "opaque": 20806,
+   "n": 6797,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 19,
+   "drop": 1240
+  },
+  "dragonborn-kadin-barbarian-ID7": {
+   "opaque": 24621,
+   "n": 7468,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 37,
+   "drop": 67
+  },
+  "dragonborn-kadin-barbarian-ID8": {
+   "opaque": 24421,
+   "n": 8479,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 25,
+   "drop": 68
+  },
+  "dragonborn-kadin-barbarian-ID9": {
+   "opaque": 24184,
+   "n": 5210,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 12,
+   "drop": 56
+  },
+  "dragonborn-kadin-bard-GR": {
+   "opaque": 22242,
+   "n": 4769,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 4,
+   "drop": 19
+  },
+  "dragonborn-kadin-bard-ID1": {
+   "opaque": 17451,
+   "n": 3796,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 9,
+   "drop": 11
+  },
+  "dragonborn-kadin-bard-ID2": {
+   "opaque": 19145,
+   "n": 4661,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 15,
+   "drop": 33
+  },
+  "dragonborn-kadin-bard-ID3": {
+   "opaque": 15702,
+   "n": 4930,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 6,
+   "drop": 12
+  },
+  "dragonborn-kadin-bard-ID4": {
+   "opaque": 20050,
+   "n": 4271,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 5,
+   "drop": 52
+  },
+  "dragonborn-kadin-bard-ID5": {
+   "opaque": 32186,
+   "n": 7481,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 8,
+   "drop": 28
+  },
+  "dragonborn-kadin-bard-ID6": {
+   "opaque": 19737,
+   "n": 4546,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 7,
+   "drop": 31
+  },
+  "dragonborn-kadin-bard-ID7": {
+   "opaque": 26292,
+   "n": 4620,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 12,
+   "drop": 60
+  },
+  "dragonborn-kadin-bard-ID8": {
+   "opaque": 20485,
+   "n": 4911,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 12,
+   "drop": 38
+  },
+  "dragonborn-kadin-bard-ID9": {
+   "opaque": 25191,
+   "n": 4507,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 13,
+   "drop": 70
+  },
+  "dragonborn-kadin-cleric-GR": {
+   "opaque": 23435,
+   "n": 5904,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 14,
+   "drop": 3194
+  },
+  "dragonborn-kadin-cleric-ID1": {
+   "opaque": 26755,
+   "n": 6307,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 9,
+   "drop": 2584
+  },
+  "dragonborn-kadin-cleric-ID2": {
+   "opaque": 18511,
+   "n": 4745,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 8,
+   "drop": 29
+  },
+  "dragonborn-kadin-cleric-ID3": {
+   "opaque": 19511,
+   "n": 6093,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 1,
+   "drop": 4402
+  },
+  "dragonborn-kadin-cleric-ID4": {
+   "opaque": 18772,
+   "n": 4487,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 6,
+   "drop": 43
+  },
+  "dragonborn-kadin-cleric-ID5": {
+   "opaque": 20558,
+   "n": 7043,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 19,
+   "drop": 881
+  },
+  "dragonborn-kadin-cleric-ID6": {
+   "opaque": 26019,
+   "n": 2050,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 11,
+   "drop": 59
+  },
+  "dragonborn-kadin-cleric-ID7": {
+   "opaque": 23099,
+   "n": 6339,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 25,
+   "drop": 77
+  },
+  "dragonborn-kadin-cleric-ID8": {
+   "opaque": 19093,
+   "n": 5142,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 9,
+   "drop": 20
+  },
+  "dragonborn-kadin-cleric-ID9": {
+   "opaque": 17213,
+   "n": 5469,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 3,
+   "drop": 1
+  },
+  "dragonborn-kadin-druid-GR": {
+   "opaque": 23553,
+   "n": 8174,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 6,
+   "drop": 7
+  },
+  "dragonborn-kadin-druid-ID1": {
+   "opaque": 21389,
+   "n": 4781,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 11,
+   "drop": 17
+  },
+  "dragonborn-kadin-druid-ID2": {
+   "opaque": 23516,
+   "n": 2929,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 2,
+   "drop": 14
+  },
+  "dragonborn-kadin-druid-ID3": {
+   "opaque": 22035,
+   "n": 4640,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 15,
+   "drop": 1174
+  },
+  "dragonborn-kadin-druid-ID4": {
+   "opaque": 22467,
+   "n": 177,
+   "nHead": 1,
+   "nTail": 0,
+   "nHand": 10,
+   "drop": 21
+  },
+  "dragonborn-kadin-druid-ID5": {
+   "opaque": 20795,
+   "n": 4338,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 6,
+   "drop": 904
+  },
+  "dragonborn-kadin-druid-ID6": {
+   "opaque": 26726,
+   "n": 4036,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 4,
+   "drop": 77
+  },
+  "dragonborn-kadin-druid-ID7": {
+   "opaque": 24159,
+   "n": 3889,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 11,
+   "drop": 27
+  },
+  "dragonborn-kadin-druid-ID8": {
+   "opaque": 18915,
+   "n": 4882,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 13,
+   "drop": 725
+  },
+  "dragonborn-kadin-fighter-GR": {
+   "opaque": 24392,
+   "n": 5934,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 15,
+   "drop": 69
+  },
+  "dragonborn-kadin-fighter-ID1": {
+   "opaque": 23809,
+   "n": 3674,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 7,
+   "drop": 3
+  },
+  "dragonborn-kadin-fighter-ID10": {
+   "opaque": 27068,
+   "n": 10726,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 17,
+   "drop": 66
+  },
+  "dragonborn-kadin-fighter-ID2": {
+   "opaque": 22010,
+   "n": 2961,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 11,
+   "drop": 1269
+  },
+  "dragonborn-kadin-fighter-ID3": {
+   "opaque": 22347,
+   "n": 6374,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 24,
+   "drop": 109
+  },
+  "dragonborn-kadin-fighter-ID4": {
+   "opaque": 22849,
+   "n": 7242,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 9,
+   "drop": 1200
+  },
+  "dragonborn-kadin-fighter-ID5": {
+   "opaque": 29648,
+   "n": 9588,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 5,
+   "drop": 24
+  },
+  "dragonborn-kadin-fighter-ID6": {
+   "opaque": 21041,
+   "n": 3367,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 6,
+   "drop": 27
+  },
+  "dragonborn-kadin-fighter-ID7": {
+   "opaque": 26654,
+   "n": 9459,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 32,
+   "drop": 94
+  },
+  "dragonborn-kadin-fighter-ID8": {
+   "opaque": 22704,
+   "n": 3655,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 12,
+   "drop": 80
+  },
+  "dragonborn-kadin-fighter-ID9": {
+   "opaque": 25727,
+   "n": 4231,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 7,
+   "drop": 41
+  },
+  "dragonborn-kadin-monk-GR": {
+   "opaque": 19599,
+   "n": 7281,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 18,
+   "drop": 110
+  },
+  "dragonborn-kadin-monk-ID1": {
+   "opaque": 27756,
+   "n": 5488,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 7,
+   "drop": 30
+  },
+  "dragonborn-kadin-monk-ID10": {
+   "opaque": 21929,
+   "n": 4988,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 12,
+   "drop": 54
+  },
+  "dragonborn-kadin-monk-ID11": {
+   "opaque": 26742,
+   "n": 5916,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 8,
+   "drop": 21
+  },
+  "dragonborn-kadin-monk-ID2": {
+   "opaque": 29385,
+   "n": 9640,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 9,
+   "drop": 1403
+  },
+  "dragonborn-kadin-monk-ID3": {
+   "opaque": 30206,
+   "n": 6157,
+   "nHead": 1,
+   "nTail": 8,
+   "nHand": 9,
+   "drop": 27
+  },
+  "dragonborn-kadin-monk-ID4": {
+   "opaque": 21410,
+   "n": 5130,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 15,
+   "drop": 30
+  },
+  "dragonborn-kadin-monk-ID5": {
+   "opaque": 23803,
+   "n": 3893,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 5,
+   "drop": 12
+  },
+  "dragonborn-kadin-monk-ID6": {
+   "opaque": 28613,
+   "n": 4900,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 12,
+   "drop": 37
+  },
+  "dragonborn-kadin-monk-ID7": {
+   "opaque": 26994,
+   "n": 5337,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 8,
+   "drop": 16
+  },
+  "dragonborn-kadin-monk-ID8": {
+   "opaque": 22022,
+   "n": 3026,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 7,
+   "drop": 42
+  },
+  "dragonborn-kadin-monk-ID9": {
+   "opaque": 19698,
+   "n": 5487,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 9,
+   "drop": 4289
+  },
+  "dragonborn-kadin-paladin-GR": {
+   "opaque": 26419,
+   "n": 5905,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 13,
+   "drop": 34
+  },
+  "dragonborn-kadin-paladin-ID1": {
+   "opaque": 26919,
+   "n": 2455,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 10,
+   "drop": 13
+  },
+  "dragonborn-kadin-paladin-ID10": {
+   "opaque": 29527,
+   "n": 10889,
+   "nHead": 1,
+   "nTail": 8,
+   "nHand": 9,
+   "drop": 2618
+  },
+  "dragonborn-kadin-paladin-ID2": {
+   "opaque": 25130,
+   "n": 3714,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 13,
+   "drop": 69
+  },
+  "dragonborn-kadin-paladin-ID3": {
+   "opaque": 24285,
+   "n": 1649,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 5,
+   "drop": 7
+  },
+  "dragonborn-kadin-paladin-ID4": {
+   "opaque": 25751,
+   "n": 5298,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 27,
+   "drop": 92
+  },
+  "dragonborn-kadin-paladin-ID5": {
+   "opaque": 28561,
+   "n": 3541,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 13,
+   "drop": 52
+  },
+  "dragonborn-kadin-paladin-ID6": {
+   "opaque": 25567,
+   "n": 2498,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 8,
+   "drop": 24
+  },
+  "dragonborn-kadin-paladin-ID7": {
+   "opaque": 23298,
+   "n": 3965,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 12,
+   "drop": 28
+  },
+  "dragonborn-kadin-paladin-ID8": {
+   "opaque": 23183,
+   "n": 1966,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 9,
+   "drop": 23
+  },
+  "dragonborn-kadin-paladin-ID9": {
+   "opaque": 26543,
+   "n": 3514,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 19,
+   "drop": 65
+  },
+  "dragonborn-kadin-ranger-GR": {
+   "opaque": 26276,
+   "n": 4801,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 6,
+   "drop": 8
+  },
+  "dragonborn-kadin-ranger-ID1": {
+   "opaque": 23102,
+   "n": 4692,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 12,
+   "drop": 27
+  },
+  "dragonborn-kadin-ranger-ID2": {
+   "opaque": 22893,
+   "n": 4652,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 26,
+   "drop": 91
+  },
+  "dragonborn-kadin-ranger-ID3": {
+   "opaque": 22208,
+   "n": 4470,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 13,
+   "drop": 17
+  },
+  "dragonborn-kadin-ranger-ID4": {
+   "opaque": 27173,
+   "n": 6866,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 15,
+   "drop": 3468
+  },
+  "dragonborn-kadin-ranger-ID5": {
+   "opaque": 21995,
+   "n": 5644,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 18,
+   "drop": 161
+  },
+  "dragonborn-kadin-ranger-ID6": {
+   "opaque": 23948,
+   "n": 5529,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 8,
+   "drop": 29
+  },
+  "dragonborn-kadin-ranger-ID7": {
+   "opaque": 21103,
+   "n": 5009,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 48,
+   "drop": 57
+  },
+  "dragonborn-kadin-ranger-ID8": {
+   "opaque": 24884,
+   "n": 4825,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 15,
+   "drop": 48
+  },
+  "dragonborn-kadin-ranger-ID9": {
+   "opaque": 23670,
+   "n": 5273,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 7,
+   "drop": 15
+  },
+  "dragonborn-kadin-rogue-GR": {
+   "opaque": 24193,
+   "n": 1765,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 6,
+   "drop": 18
+  },
+  "dragonborn-kadin-rogue-ID1": {
+   "opaque": 19234,
+   "n": 6621,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 7,
+   "drop": 42
+  },
+  "dragonborn-kadin-rogue-ID10": {
+   "opaque": 25369,
+   "n": 7414,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 14,
+   "drop": 16
+  },
+  "dragonborn-kadin-rogue-ID2": {
+   "opaque": 21041,
+   "n": 5431,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 11,
+   "drop": 64
+  },
+  "dragonborn-kadin-rogue-ID3": {
+   "opaque": 26219,
+   "n": 6850,
+   "nHead": 1,
+   "nTail": 9,
+   "nHand": 28,
+   "drop": 40
+  },
+  "dragonborn-kadin-rogue-ID4": {
+   "opaque": 28441,
+   "tohum": 0
+  },
+  "dragonborn-kadin-rogue-ID5": {
+   "opaque": 25945,
+   "n": 4139,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 4,
+   "drop": 28
+  },
+  "dragonborn-kadin-rogue-ID6": {
+   "opaque": 25066,
+   "n": 7773,
+   "nHead": 1,
+   "nTail": 9,
+   "nHand": 14,
+   "drop": 26
+  },
+  "dragonborn-kadin-rogue-ID7": {
+   "opaque": 27885,
+   "n": 3251,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 23,
+   "drop": 30
+  },
+  "dragonborn-kadin-rogue-ID8": {
+   "opaque": 25566,
+   "n": 9236,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 16,
+   "drop": 42
+  },
+  "dragonborn-kadin-rogue-ID9": {
+   "opaque": 24959,
+   "n": 6551,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 8,
+   "drop": 67
+  },
+  "dragonborn-kadin-sorcerer-GR": {
+   "opaque": 20366,
+   "n": 7279,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 2,
+   "drop": 10
+  },
+  "dragonborn-kadin-sorcerer-SC-1": {
+   "opaque": 26249,
+   "n": 5093,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 4,
+   "drop": 19
+  },
+  "dragonborn-kadin-sorcerer-SC-2": {
+   "opaque": 26585,
+   "n": 4556,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 3,
+   "drop": 26
+  },
+  "dragonborn-kadin-sorcerer-SC-3": {
+   "opaque": 21363,
+   "n": 6587,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 3,
+   "drop": 2
+  },
+  "dragonborn-kadin-sorcerer-SC-4": {
+   "opaque": 18917,
+   "n": 5143,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 16,
+   "drop": 896
+  },
+  "dragonborn-kadin-sorcerer-SC-5": {
+   "opaque": 24158,
+   "n": 447,
+   "nHead": 1,
+   "nTail": 0,
+   "nHand": 2,
+   "drop": 2
+  },
+  "dragonborn-kadin-sorcerer-SC-6": {
+   "opaque": 23294,
+   "n": 5831,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 8,
+   "drop": 1096
+  },
+  "dragonborn-kadin-sorcerer-SC-7": {
+   "opaque": 18929,
+   "n": 5515,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 8,
+   "drop": 31
+  },
+  "dragonborn-kadin-sorcerer-SC-8": {
+   "opaque": 25901,
+   "n": 4404,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 8,
+   "drop": 3
+  },
+  "dragonborn-kadin-sorcerer-SC-9": {
+   "opaque": 25405,
+   "n": 4380,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 4,
+   "drop": 5
+  },
+  "dragonborn-kadin-warlock-GR": {
+   "opaque": 25125,
+   "n": 6171,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 5,
+   "drop": 14
+  },
+  "dragonborn-kadin-warlock-WL-1": {
+   "opaque": 31141,
+   "n": 7312,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 9,
+   "drop": 77
+  },
+  "dragonborn-kadin-warlock-WL-10": {
+   "opaque": 30067,
+   "n": 10564,
+   "nHead": 1,
+   "nTail": 0,
+   "nHand": 10,
+   "drop": 1
+  },
+  "dragonborn-kadin-warlock-WL-11": {
+   "opaque": 22115,
+   "n": 6434,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 4,
+   "drop": 51
+  },
+  "dragonborn-kadin-warlock-WL-2": {
+   "opaque": 24439,
+   "n": 6789,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 2,
+   "drop": 1219
+  },
+  "dragonborn-kadin-warlock-WL-3": {
+   "opaque": 32761,
+   "n": 4082,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 3,
+   "drop": 17
+  },
+  "dragonborn-kadin-warlock-WL-4": {
+   "opaque": 25986,
+   "n": 5055,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 7,
+   "drop": 4922
+  },
+  "dragonborn-kadin-warlock-WL-5": {
+   "opaque": 27726,
+   "n": 8453,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 6,
+   "drop": 6
+  },
+  "dragonborn-kadin-warlock-WL-6": {
+   "opaque": 26990,
+   "n": 6768,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 30,
+   "drop": 99
+  },
+  "dragonborn-kadin-warlock-WL-7": {
+   "opaque": 34764,
+   "n": 14204,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 11,
+   "drop": 20
+  },
+  "dragonborn-kadin-warlock-WL-8": {
+   "opaque": 15638,
+   "n": 3370,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 4,
+   "drop": 5320
+  },
+  "dragonborn-kadin-warlock-WL-9": {
+   "opaque": 23811,
+   "n": 7119,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 3,
+   "drop": 17
+  },
+  "dragonborn-kadin-wizard-GR": {
+   "opaque": 26567,
+   "n": 4063,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 8,
+   "drop": 7
+  },
+  "dragonborn-kadin-wizard-WZ-A1": {
+   "opaque": 25542,
+   "n": 6430,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 9,
+   "drop": 1876
+  },
+  "dragonborn-kadin-wizard-WZ-A2": {
+   "opaque": 22172,
+   "n": 6077,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 4,
+   "drop": 890
+  },
+  "dragonborn-kadin-wizard-WZ-A3": {
+   "opaque": 25158,
+   "n": 4798,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 5,
+   "drop": 1014
+  },
+  "dragonborn-kadin-wizard-WZ-A4": {
+   "opaque": 27196,
+   "n": 4273,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 2,
+   "drop": 15
+  },
+  "dragonborn-kadin-wizard-WZ-A5": {
+   "opaque": 22306,
+   "n": 5965,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 25,
+   "drop": 30
+  },
+  "dragonborn-kadin-wizard-WZ-A6": {
+   "opaque": 27761,
+   "n": 6184,
+   "nHead": 1,
+   "nTail": 3,
+   "nHand": 23,
+   "drop": 1182
+  },
+  "dragonborn-kadin-wizard-WZ-A7": {
+   "opaque": 23131,
+   "n": 5133,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 5,
+   "drop": 20
+  },
+  "dragonborn-kadin-wizard-WZ-A8": {
+   "opaque": 22384,
+   "n": 5363,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 8,
+   "drop": 30
+  },
+  "dragonborn-kadin-wizard-WZ-B1": {
+   "opaque": 25851,
+   "n": 6301,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 10,
+   "drop": 41
+  },
+  "dragonborn-kadin-wizard-WZ-B2": {
+   "opaque": 26991,
+   "n": 5731,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 1,
+   "drop": 29
+  },
+  "dragonborn-kadin-wizard-WZ-B3": {
+   "opaque": 18228,
+   "n": 5853,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 10,
+   "drop": 72
+  },
+  "dragonborn-kadin-wizard-WZ-B4": {
+   "opaque": 24673,
+   "n": 6492,
+   "nHead": 1,
+   "nTail": 2,
+   "nHand": 6,
+   "drop": 9
+  },
+  "dragonborn-kadin-wizard-WZ-B5": {
+   "opaque": 27391,
+   "n": 8442,
+   "nHead": 1,
+   "nTail": 6,
+   "nHand": 29,
+   "drop": 66
+  },
+  "dragonborn-kadin-wizard-WZ-B6": {
+   "opaque": 23137,
+   "n": 7465,
+   "nHead": 1,
+   "nTail": 5,
+   "nHand": 15,
+   "drop": 78
+  },
+  "dragonborn-kadin-wizard-WZ-B7": {
+   "opaque": 29738,
+   "n": 4755,
+   "nHead": 1,
+   "nTail": 1,
+   "nHand": 18,
+   "drop": 76
+  }
+ }
+}

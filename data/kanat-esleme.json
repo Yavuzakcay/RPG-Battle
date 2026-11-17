@@ -56,40 +56,40 @@
    "omuz": 0.46,
    "renkPaletleri": {
     "black": {
-     "golge": "#2c363e",
-     "isik": "#767f86"
+     "golge": "#2e3037",
+     "isik": "#797d88"
     },
     "blue": {
-     "golge": "#315b8f",
-     "isik": "#8ca8d6"
+     "golge": "#304274",
+     "isik": "#7c9aec"
     },
     "brass": {
-     "golge": "#8d6d35",
-     "isik": "#d9ba8a"
+     "golge": "#6c592d",
+     "isik": "#e0c078"
     },
     "bronze": {
-     "golge": "#6b482a",
-     "isik": "#af8e73"
+     "golge": "#583d24",
+     "isik": "#be9269"
     },
     "copper": {
-     "golge": "#89502f",
-     "isik": "#ce987b"
+     "golge": "#70402c",
+     "isik": "#e59676"
     },
     "gold": {
-     "golge": "#967918",
-     "isik": "#e4c679"
+     "golge": "#7b661e",
+     "isik": "#f8d55f"
     },
     "green": {
-     "golge": "#30583c",
-     "isik": "#7ea086"
+     "golge": "#2c5834",
+     "isik": "#76be83"
     },
     "red": {
-     "golge": "#9c2c2d",
-     "isik": "#da7872"
+     "golge": "#722926",
+     "isik": "#e9716c"
     },
     "silver": {
-     "golge": "#5d8191",
-     "isik": "#b4d2df"
+     "golge": "#62656b",
+     "isik": "#cfd4dd"
     },
     "white": {
      "golge": "#a8acae",

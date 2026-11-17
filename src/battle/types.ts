@@ -686,6 +686,11 @@ export interface TintSpec {
   to: TintTarget;
 }
 export type TintTarget =
+  /**
+   * Dragonborn beyaz taban (KQ6): maskesiz çarpma (multiply) filtresi. Piksel `renk` ile çarpılır (gölge/ışık korunur); piksel
+   * doygunluğu (max−min)/255 `muaf` altındaysa tam, `tam` üstündeyse hiç (pelerin, kumaş, dövme, efekt) uygulanmaz, arası doğrusal.
+   */
+  | { multiply: { renk: string; muaf: number; tam: number } }
   | { h: number | null; s: number; l: number }
   /** Ton `h` (Lab derece), kroma `c`; orijinal ton/kroma sapmasının korunan payı; açıklık `L' = L·gain + dL`. */
   | { lch: { h: number; c: number; /** Kuyruk AS1c: hedef ortalama açıklık (verilirse `gain`/`dL` yerine; gölge/ışık sapması korunur). */ L?: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number; contrast?: number } }

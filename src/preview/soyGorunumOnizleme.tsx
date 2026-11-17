@@ -13,6 +13,7 @@ import type { TintSpec } from '../battle/types';
 import olcum from '../../data/soy-olcum.json';
 import { subclassTokenFile, garibanTokenFile } from '../battle/avatar';
 import jetonlar from './jetonTablolari';
+import { combos } from './soyGaleriListe';
 
 const mode = new URLSearchParams(location.search).get('m') ?? 'a';
 const CHANGED = new Set(['elf/drow', 'human/tenhausser', 'celestial/gece-gozyasi', 'goliath/stone', 'gnome/forest-gnome', 'orc/wildwood', 'halfling/sturdy']);
@@ -125,5 +126,46 @@ function PageC() {
     </div>
   );
 }
+// ?m=g&p=<sayfa> (20 jeton/sayfa, 5×4) ya da ?m=g&ids=3,17,... : alt soy galerisi, her hücrede etiket.
+function PageG() {
+  const q = new URLSearchParams(location.search);
+  const all = combos();
+  const ids = q.get('ids');
+  const list = ids ? ids.split(',').map((i) => all[Number(i)]!).filter(Boolean) : all.slice(Number(q.get('p') ?? 0) * 20, Number(q.get('p') ?? 0) * 20 + 20);
+  const S = 96;
+  return (
+    <div id="sayfa" style={{ background: '#1d2128', color: '#e8e4da', font: '9px/1.15 system-ui', padding: 6, display: 'inline-block' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(5, ${S + 10}px)`, gap: 4 }}>
+        {list.map((c) => {
+          const a = sheetAvatar(c.sheet);
+          return (
+            <div key={c.n} style={{ width: S + 10, textAlign: 'center' }}>
+              <LookFrame sheet={{ raceId: c.sheet.raceId, ...(c.sheet.lineageId ? { lineageId: c.sheet.lineageId } : {}), ...(c.sheet.skinTone ? { skinTone: c.sheet.skinTone } : {}), ...(c.sheet.celestialAwakening ? { celestialAwakening: c.sheet.celestialAwakening } : {}), level: c.level, classId: c.cls, ...(c.subId ? { subclassId: c.subId } : {}) }} size={S} ability><AvatarBadge avatar={a} size={S} eager /></LookFrame>
+              <div style={{ color: '#9fa6b5', wordBreak: 'break-all' }}>#{c.n} {c.race}·{c.lineage}</div>
+              <div>{c.gender === 'erkek' ? '♂' : '♀'} {c.cls} · {c.sub}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+// ?m=w: Dragonborn 10 renk, seviye 5 (Draconic Flight kanadı açık), gerçek çizim yolu (çarpma filtresi + kanat paleti).
+function PageW() {
+  const cols = ['black', 'blue', 'brass', 'bronze', 'copper', 'gold', 'green', 'red', 'silver', 'white'];
+  return (
+    <div id="sayfa" style={{ background: '#1d2128', color: '#e8e4da', font: '10px system-ui', padding: 8, display: 'inline-block' }}>
+      {(['erkek', 'kadin'] as const).map((g) => ['paladin', 'warlock'].map((cls) => (
+        <div key={g + cls} style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
+          {cols.map((c) => {
+            const sh = { ...base, raceId: 'dragonborn', classId: cls, gender: g, level: 5, lineageId: c, subclassId: cls === 'paladin' ? 'devotion' : 'cin' } as Parameters<typeof sheetAvatar>[0];
+            const a = sheetAvatar({ ...sh, subclassId: undefined });
+            return <div key={c} style={{ textAlign: 'center' }}><LookFrame sheet={{ raceId: 'dragonborn', lineageId: c, level: 5 }} size={110} ability><AvatarBadge avatar={a} size={110} eager /></LookFrame><div>{g[0]}·{cls}·{c}</div></div>;
+          })}
+        </div>
+      )))}
+    </div>
+  );
+}
 const host = document.createElement('div'); host.style.cssText = 'position:fixed;left:0;top:0;z-index:99999'; document.body.appendChild(host);
-createRoot(host).render(mode === 'b' ? <PageB /> : mode === 'c' ? <PageC /> : <PageA />);
+createRoot(host).render(mode === 'b' ? <PageB /> : mode === 'c' ? <PageC /> : mode === 'g' ? <PageG /> : mode === 'w' ? <PageW /> : <PageA />);

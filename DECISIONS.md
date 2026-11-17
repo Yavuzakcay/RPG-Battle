@@ -4,6 +4,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+
+## Dragonborn boyama: çarpma (multiply) filtresi, kanat paleti (kural sürümü değişmedi)
+
+- Kullanıcı kararı: Dragonborn beyaz taban jetonlarda maske yerine soy renginde çarpma filtresi (hue-rotate yok); doygun pikseller (pelerin, kumaş, dövme, efekt) muaf/kısmi (eşikler veride `lineagesAlt.<renk>.multiply` `muaf` 0,12, `tam` 0,28). White boyasız. Kod: `TintTarget` `multiply`, `multiplyPixels` (`src/ui/tint.ts`).
+- Maske yolu yedek: `lineagesAltMaske` (`lineageTint(..., 'maske')`), yeni pul bölgesi maskesi `scripts/soy-maske-dragonborn.ts` (elle düzeltme `data/soy-maske-dragonborn-el.json`, şimdilik boş). Karşılaştırma ve gerekçe `docs/sabah/dragonborn-teshis.md`.
+- Kanat katmanı paleti (`kanat-esleme.json` `renkPaletleri`) aynı renklerden türetildi. Dragonborn alt sınıfsız seviye ≥ 3 de beyaz taban Gariban jetonunu kullanır (eski insansı genel jeton yerine).
+
 ## KQ6 bağlama: Celestial hariç jetonlar oyuna bağlandı, Dragonborn ve alt soy görünümleri (kural sürümü değişmedi)
 
 - Teşhis (`docs/sabah/baglama-eksik.csv`, `scripts/baglama-teshis.py`): jeton dosyaları eksik değildi; Dragonborn 12 sınıf tablosunun `irklar` listesinde yoktu (238 jeton çözülmüyordu), Gariban (GR, 240 dosya) hiçbir yerden çözülmüyordu, alt sınıf/Gariban jetonlarında (1584) ten maskesi olmadığı için Drow, Gnome, Goliath, Tiefling soy renkleri ve Human ten tonu uygulanmıyordu. Sonuç: `docs/sabah/baglama-eksik-sonra.csv`.

@@ -58,11 +58,11 @@ const genderKey = (g: Gender): 'male' | 'female' => (g === 'kadin' || g === 'fem
  * Görev K8b: ırk, soy ve cinsiyete göre jeton rengi; soyu olmayan ırkta ya da soy seçilmemişse undefined.
  * K19: cinsiyete özel kayıt (`byGender.<male|female>.lineages`) ırkın ortak kaydının önüne geçer (null: boyama yok).
  */
-export function lineageTint(raceId: string, lineageId: string | undefined, gender?: Gender, beyazTaban = false): TintSpec | undefined {
+export function lineageTint(raceId: string, lineageId: string | undefined, gender?: Gender, beyazTaban: boolean | 'maske' = false): TintSpec | undefined {
   const race = TINTS[raceId];
   if (!race || !lineageId) return undefined;
   // KQ6: beyaz taban jetonlar (Dragonborn alt sınıf/Gariban) kendi renk tablosundan (`lineagesAlt`: mutlak açıklıklı, maskeli).
-  const alt = beyazTaban ? (race as { lineagesAlt?: Lineages }).lineagesAlt : undefined;
+  const alt = beyazTaban ? (race as { lineagesAlt?: Lineages; lineagesAltMaske?: Lineages })[beyazTaban === 'maske' ? 'lineagesAltMaske' : 'lineagesAlt'] : undefined;
   if (alt && lineageId in alt) { const to = alt[lineageId]; return to ? { select: race.select, to: to as TintSpec['to'] } : undefined; }
   const own = race.byGender?.[genderKey(gender)]?.lineages;
   const to = own && lineageId in own ? own[lineageId] : race.lineages[lineageId];
@@ -172,7 +172,9 @@ export function sheetAvatar(sheet: CharacterSheet): Avatar {
   // WZ-BAGLA/BAGLA-3: Wizard/Warlock/Sorcerer alt sınıf jetonu (maske yoksa boyama uygulanmaz, jeton yine çıkar); öncelik özel avatar > alt sınıf jetonu > genel.
   // KQ6: seviye < 3 Gariban (GR) jetonu; seviye ≥ 3 alt sınıf jetonu; ikisi de yoksa sınıf-genel jeton.
   const gr = !sheet.avatar ? garibanTokenFile(sheet.classId, sheet.raceId, gender, sheet.level) : undefined;
-  const wz = gr ?? (!sheet.avatar ? subclassTokenFile(sheet.classId, sheet.raceId, gender, sheet.subclassId, sheet.level) : undefined);
+  let wz = gr ?? (!sheet.avatar ? subclassTokenFile(sheet.classId, sheet.raceId, gender, sheet.subclassId, sheet.level) : undefined);
+  // Dragonborn: eski sınıf-genel jeton insansı çizimdir; alt sınıfsız seviye ≥ 3 de beyaz taban Gariban jetonunu kullanır.
+  if (!wz && !sheet.avatar && sheet.raceId === 'dragonborn') wz = garibanTokenFile(sheet.classId, sheet.raceId, gender, 1);
   return {
     src: sheet.avatar ?? (wz ? `characters/${wz}` : generic),
     fallbacks: sheet.avatar ? [] : [...(wz ? [generic] : []), `avatars/${sheet.raceId}-${sheet.classId}-${gender}.webp`],
