@@ -10,8 +10,13 @@ from scipy import ndimage as ndi
 D = 'public/characters'
 def disk(r):
     y, x = np.ogrid[-r:r + 1, -r:r + 1]; return x * x + y * y <= r * r
-def geom(a):
-    solid = ndi.binary_opening(a[..., 3] > 100, structure=disk(2))
+# Elle düzeltme: baş dışındaki yüksek parçalar (meşale alevi vb.) baş sayılmasın: jeton adı → (x_min, x_max) baş sütun aralığı
+XSINIR = {'kadin-druid-ID2': (0, 175)}
+
+def geom(a, xs_lim=None):
+    m0 = a[..., 3] > 100
+    if xs_lim: m0 = m0.copy(); m0[:, :xs_lim[0]] = False; m0[:, xs_lim[1]:] = False
+    solid = ndi.binary_opening(m0, structure=disk(2))
     lab, k = ndi.label(solid, structure=np.ones((3, 3)))
     big = lab == (1 + int(np.argmax(ndi.sum(solid, lab, range(1, k + 1)))))
     top = int(np.where(big.any(axis=1))[0][0])
@@ -27,7 +32,7 @@ def main():
     names = sorted(f[len('celestial-'):-5] for f in os.listdir(D) if f.startswith('celestial-') and f.endswith('.webp') and f[:-5] not in hold)
     g = {}
     for n in names:
-        a = np.array(Image.open(f'{D}/celestial-{n}.webp').convert('RGBA')); top, cx, hw = geom(a)
+        a = np.array(Image.open(f'{D}/celestial-{n}.webp').convert('RGBA')); top, cx, hw = geom(a, XSINIR.get(n))
         g[n] = (cx, top, float(np.clip(hw / 32, 0.8, 1.25)))
     groups = {}
     for n, v in g.items(): groups.setdefault(key_of(n), []).append(v)

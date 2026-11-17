@@ -62,9 +62,9 @@
    "olcek": 1.25
   },
   "druid-kadin": {
-   "x": 128,
-   "y": 28,
-   "olcek": 1.1
+   "x": 127,
+   "y": 30,
+   "olcek": 1.09
   },
   "druid-kadin-genel": {
    "x": 129,
@@ -307,11 +307,6 @@
    "x": 140,
    "y": 24,
    "olcek": 1.08
-  },
-  "kadin-druid-ID2": {
-   "x": 202,
-   "y": 15,
-   "olcek": 1.25
   },
   "kadin-druid-ID4": {
    "x": 154,
