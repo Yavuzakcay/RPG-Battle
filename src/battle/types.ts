@@ -793,6 +793,8 @@ export interface Combatant {
   nonmagicalResist?: string[];
   /** Kuyruk 19 (11–20): `featuresK19` açık ve savaşçının zar yolu özelliği var (Peerless Skill); `syncAuras` yazar. */
   k19Traits?: boolean;
+  /** Mekanik matris (kural sürümü 83+): durum bilmeyen yollar (`saveMode`) için sürüm işareti; `syncAuras` yazar. */
+  srd83?: true;
   /** Kuyruk 19 (Epic Boon): Improve Fate sahibi (60 ft; dost için ve düşman için), `syncAuras` yazar. */
   fateBy?: string;
   fateFoe?: string;

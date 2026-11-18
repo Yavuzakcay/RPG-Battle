@@ -18,6 +18,7 @@ import { auraDist, gap64, rangeGap } from './adjacency';
 import { gap } from './body';
 import { globalRule } from './ruleControl';
 import { ruleVersion } from './ruleVersion';
+import { matrisOn } from './matrisSurum';
 import { silencedAt, zoneSpecOf } from './zones';
 import { fateHolder, shadowyFormResist } from './boons';
 import type { BattleState, Combatant } from './types';
@@ -111,6 +112,8 @@ export function syncAuras(state: BattleState): BattleState {
   // Kuyruk A6 (sürüm 35): Silence içindeki yaratık Deafened sayılır, sözlü tepki büyüsü yapamaz (`silenced`).
   const anyPack = Object.values(state.combatants).some((p) => p.summon?.withOwner && !p.summon.gone);
   const anySilence = ruleVersion(state) >= 35 && !!state.map?.zones?.some((z) => zoneSpecOf(z)?.silence);
+  // Mekanik matris (sürüm 83+): durum bilmeyen save yolları için sürüm işareti (Restrained DEX dezavantajı, B01).
+  const m83 = matrisOn(state);
   for (const c of Object.values(state.combatants)) {
     const pkSans = anyPk ? paketSansOf(state, c) : [];
     const hush = anySilence && !!c.pos && !!silencedAt(state, c.pos);
@@ -134,9 +137,9 @@ export function syncAuras(state: BattleState): BattleState {
     if (JSON.stringify(c.burstBy) === JSON.stringify(burst) && (c.auraSave ?? 0) === want && c.countercharmBy === by && !!c.inspireFix === fix && !!c.inspireChain === chain && (c.auraResist ?? []).join() === life.join() && !!c.k19Traits === k19
       && c.fateBy === fateBy && c.fateFoe === fateFoe && (c.imzaWisSave ?? 0) === throne && (c.wardSave ?? 0) === ward && JSON.stringify(c.shoulderBy) === JSON.stringify(shoulder)
       && (c.auraImmune ?? []).join() === (core?.immune ?? []).join() && !!c.auraNoHeal === !!core?.noHeal && !!c.auraDeathDis === !!core?.deathDis && !!c.auraDeathAdv === !!core?.deathAdv
-      && JSON.stringify(c.pkSans ?? []) === JSON.stringify(pkSans) && !!c.auraSaveDis === sdis && !!c.silenced === hush && !!c.packStrAdv === pack) continue;
-    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, pkSans: _pk, auraSaveDis: _sd, silenced: _hu, packStrAdv: _pa, ...rest } = next.combatants[c.id] as Combatant;
-    next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
+      && JSON.stringify(c.pkSans ?? []) === JSON.stringify(pkSans) && !!c.auraSaveDis === sdis && !!c.silenced === hush && !!c.packStrAdv === pack && !!c.srd83 === m83) continue;
+    const { auraSave: _a, countercharmBy: _b, inspireFix: _c, inspireChain: _i, auraResist: _d, k19Traits: _e, fateBy: _f, fateFoe: _g, burstBy: _h, imzaWisSave: _j, auraImmune: _k, auraNoHeal: _l, auraDeathDis: _m, auraDeathAdv: _n, wardSave: _w, shoulderBy: _s, pkSans: _pk, auraSaveDis: _sd, silenced: _hu, packStrAdv: _pa, srd83: _m83, ...rest } = next.combatants[c.id] as Combatant;
+    next = { ...next, combatants: { ...next.combatants, [c.id]: { ...rest, ...(m83 ? { srd83: true } : {}), ...(want > 0 ? { auraSave: want } : {}), ...(by ? { countercharmBy: by } : {}),
       ...(fix ? { inspireFix: true } : {}), ...(chain ? { inspireChain: true } : {}), ...(life.length ? { auraResist: life } : {}), ...(k19 ? { k19Traits: true } : {}),
       ...(fateBy ? { fateBy } : {}), ...(fateFoe ? { fateFoe } : {}), ...(burst ? { burstBy: burst } : {}), ...(throne > 0 ? { imzaWisSave: throne } : {}), ...(ward > 0 ? { wardSave: ward } : {}), ...(shoulder ? { shoulderBy: shoulder } : {}), ...(pkSans.length ? { pkSans } : {}),
       ...(core?.immune.length ? { auraImmune: core.immune } : {}), ...(sdis ? { auraSaveDis: true } : {}), ...(hush ? { silenced: true } : {}), ...(pack ? { packStrAdv: true } : {}), ...(core?.noHeal ? { auraNoHeal: true } : {}), ...(core?.deathDis ? { auraDeathDis: true } : {}), ...(core?.deathAdv ? { auraDeathAdv: true } : {}) } as Combatant } };
