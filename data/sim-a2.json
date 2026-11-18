@@ -19,15 +19,14 @@
     "col": {
       "7": {
         "chimera": 1,
-        "manticore": 2,
+        "manticore": 3,
         "giant-scorpion": 1,
         "gnoll-warrior": 4
       },
       "9": {
         "wyvern": 2,
         "chimera": 1,
-        "giant-scorpion": 1,
-        "mummy": 2,
+        "mummy": 1,
         "gnoll-warrior": 4
       }
     },
@@ -66,7 +65,7 @@
     "orman": {
       "7": {
         "troll": 1,
-        "owlbear": 2,
+        "owlbear": 3,
         "werewolf": 2,
         "dire-wolf": 3
       },
@@ -74,7 +73,6 @@
         "troll": 1,
         "owlbear": 2,
         "werebear": 1,
-        "werewolf": 1,
         "dire-wolf": 3,
         "giant-spider": 2
       }

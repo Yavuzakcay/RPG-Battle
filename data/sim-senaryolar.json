@@ -48,8 +48,8 @@
      "scout": 1
     },
     "5": {
-     "giant-scorpion": 3,
-     "mummy": 3,
+     "giant-scorpion": 2,
+     "mummy": 2,
      "manticore": 2,
      "gnoll-warrior": 4,
      "giant-hyena": 1,
@@ -133,8 +133,8 @@
      "kobold-warrior": 2
     },
     "5": {
-     "wyvern": 2,
-     "magmin": 3
+     "wyvern": 1,
+     "magmin": 2
     }
    }
   },
@@ -349,7 +349,8 @@
      "ghoul": 1,
      "darkmantle": 1,
      "ettercap": 1,
-     "ogre": 2
+     "ogre": 1,
+     "grimlock": 1
     },
     "7": {
      "troll": 1,
@@ -459,10 +460,9 @@
      "skeleton": 3
     },
     "5": {
-     "wraith": 2,
      "ghast": 3,
-     "wight": 2,
-     "mummy": 1
+     "skeleton": 4,
+     "wight": 1
     },
     "7": {
      "ghast": 3,
@@ -508,22 +508,22 @@
    },
    "enemies": {
     "1": {
-     "goblin-warrior": 6,
+     "goblin-warrior": 4,
      "guard": 2
     },
     "3": {
      "hobgoblin-warrior": 3,
      "goblin-warrior": 3,
-     "bugbear-warrior": 2
+     "bugbear-warrior": 1
     },
     "5": {
-     "hobgoblin-warrior": 3,
+     "hobgoblin-warrior": 4,
      "goblin-warrior": 4,
      "hobgoblin-captain": 1,
      "bugbear-stalker": 1,
-     "berserker": 2,
+     "berserker": 3,
      "warrior-veteran": 2,
-     "bugbear-warrior": 1
+     "bugbear-warrior": 2
     },
     "7": {
      "gladiator": 1,
@@ -1190,8 +1190,7 @@
      "ettercap": 2,
      "giant-spider": 3,
      "violet-fungus": 2,
-     "shrieker-fungus": 1,
-     "phase-spider": 2
+     "shrieker-fungus": 1
     },
     "7": {
      "ettercap": 2,
@@ -1921,8 +1920,7 @@
      "guard": 2
     },
     "3": {
-     "guard": 3,
-     "bandit": 2
+     "guard": 3
     },
     "5": {
      "guard": 3,
@@ -1963,8 +1961,8 @@
      "guard": 2
     },
     "3": {
-     "guard": 2,
-     "bandit": 2
+     "guard": 1,
+     "bandit": 1
     },
     "5": {
      "guard": 3,
