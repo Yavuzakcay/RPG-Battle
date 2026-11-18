@@ -9,6 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## APK öncesi mekanik doğrulama matrisi (yalnız ölçüm; kod ve kural sürümü değişmedi)
+
+- Araç: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` → `harita/belgeler/MEKANIK-MATRIS.md` + `harita/belgeler/mekanik-matris.csv` (tek süreç, ≈5 sn; tek büyü/saldırı: `-- --buyu "Fireball" --hepsi`, `-- --saldiri "Longsword"`). Modüller `src/sim/matris/`: SRD kahini `srd.ts` (motor kodu kullanılmaz), SRD metninden elle okunan istisnalar `ozel.ts`, sahne `kurulum.ts` (düz 31×45, büyücü DC 18 / +10, hedef AC 15), kancalı zar `zar.ts`, bulgu kataloğu `rapor.ts`; duman testi `src/sim/mekanikMatris.test.ts`.
+- Kapsam: 339 büyü + 46 silah seçeneği (38 SRD silahı, fırlatma, Unarmed Strike) + 579 canavar saldırısı × bağlam (normal, direnç/zayıflık/bağışıklık, save başarılı/başarısız, yarım/¾ siper, avantaj/dezavantaj, kritik, Prone/Restrained/Invisible/Charmed/Frightened, konsantrasyon, yukarı slot, alan içi/dışı, dost ateşi, yüzey, Counterspell/Shield). Hasar zarları yüze bağlı sabit (⌊yüz/2⌋ + 1), zar ifadesi kanonik karşılaştırılır (motorun zar gruplamasından bağımsız). Ölçülmeyenler: canavar ek etkileri, Multiattack, sınıf özellikleri, sihirli eşya, çok altıgen, irtifa, `spell_followup` tekrarları.
+- Sonuç (kural sürümü 82): 6587 satır; doğru 6312 (%95,8), yanlış 235, çökme 9, uygulanmıyor 2, karar bekliyor 29. Kök nedenler B01–B20 (en büyükleri: Restrained DEX save dezavantajı yok 72 satır, alan büyülerinin yapım anı save'i 68, Invisible hedefe "görebildiğin" büyü 38), Ç01 Blowgun `1+2` zar ifadesi, U01 Irresistible Dance Charmed, U02 Control Water; her birinin nedeni ve önerisi raporda.
+- Düzeltme yapılmadı; kullanıcı onayı bekleniyor. Karar bekleyen okumalar: K01 Charmed büyücü büyüleyenine zararsız büyü yapabilir mi; K02 Spirit Guardians/Conjure Woodland Beings yapımda içerideki yaratığa save; K03 çağrılan silah/el/ruh saldırısında Prone uzaklığı kimden; K04 Conjure Elemental yakalandığı tur başında tekrar save.
+
 ## SRD 12 güvenlik ağı reddedildi (kullanıcı kararı)
 
 - Kullanıcı kararı: fikstürden seçiciye otomatik ekleme (güvenlik ağı) yapılmaz; SRD 12 alt sınıf yalnız `icerik/ek-<sınıf>.json` paketinden gelir, başka hiçbir yoldan seçim listesine girmez (mobil/APK'da `icerik/` yoksa SRD 12 görünmez; yalnız 12 bizim alt sınıf). Fikstür yalnız test-setup ve sim yolunda kalır. Kod değişmedi; `scripts/srd12-paket-ekle.ts` yerel paket dosyalarını tamamlamak için duruyor.

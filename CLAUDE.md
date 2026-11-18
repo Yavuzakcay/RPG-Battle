@@ -168,6 +168,7 @@ npm run sim:imza -- 100 --alt imza_ciftci [--seviye 7] [--senaryo col,orman]   #
 npm run sim:bolge -- 30 [--bolge buzul,dag] [--seviye 1,5,9,13,17,20] [--carpan 1]   # denge turu: bölge karşılaşma üreteci (data/bolge-karsilasma.json, src/journey/encounter.ts) × seviye
 npm run sim:liste -- 30 <senaryo> --seviye 15 [--liste '{"behir":1}'] [--parti-dv 0|60|120]   # denge turu: tek senaryo, verilen düşman listesi (ayar öncesi/sonrası)
 npm run sim:yz-sure -- 3 kale --parti buyucu   # Kuyruk Y2: yapay zekâ karar süresi (ort./p95 ms, ×4 telefon tahmini, aday/kuru çalıştırma sayısı, karar imzası)
+npx vite-node src/sim/mekanikMatris.ts -- --yaz   # APK öncesi mekanik doğrulama matrisi (339 büyü + silah + canavar saldırısı × bağlam; SRD kahini src/sim/matris/) → harita/belgeler/MEKANIK-MATRIS.md + mekanik-matris.csv; tek büyü: -- --buyu "Fireball" --hepsi
 npm run srd            # docs/SRD_CC_v5.2.1.pdf → data/srd/*.json (sınıf, alt sınıf, feat, tür, büyü, eşya, silah, zırh)
 npm run srd:buyu       # data/spells.json'u SRD ile eşitle, docs/BUYU-ESITLEME.md raporu (önce npm run srd)
 ```
