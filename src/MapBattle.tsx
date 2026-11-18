@@ -132,6 +132,7 @@ import { mechanicsAt, sigmayanNote } from './battle/spellVersion';
 import { breathOf } from './battle/breath';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
+import { RageFlames } from './ui/RageFlames';
 import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, outlineColor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
@@ -2063,7 +2064,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', c.unaware ? 'unaware' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
-                  c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
+                  c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), filters.includes('rage') && (!fxOn || reduceMotion) ? 'rage-still' : '', areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
                   loops.has(c.id) ? 'has-fx' : '', offLevel ? 'air-dim' : '', lift ? 'aloft' : '',
                   // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) ve batık jeton soluk/yarı saydam.
                   c.burrowed ? 'burrowed' : '', !c.burrowed && (c.altitudeFt ?? 0) < 0 && submerged(state, c) ? 'submerged' : ''].join(' ');
@@ -2082,6 +2083,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                       {/* Takım halkası yalnızca resimsiz (baş harfli) jetonda: resimli jetonda `.fig ~ .ring` gizler (Görev V2). */}
                       <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     </g>
+                    {filters.includes('rage') && c.hp > 0 && <RageFlames x={p.x} y={top} r={r * Math.max(1, scale)} />}
                     {c.unaware && <text x={p.x + r * 0.7} y={top + 6} className="unaware-mark" aria-hidden="true">?</text>}
                     {/* Görev E1: baygın jetonun üstünde yüzen Z (uyuyanın Zzz rozeti ayrı); animasyon ayarı/hareketi azalt kapatır. */}
                     {filters.includes('unconscious') && !c.asleep && (
