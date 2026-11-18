@@ -6,6 +6,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+
+## Alt sınıf seçici denetimi: Zebani (İblis Hamisi) bulunamadı, kök neden yerelde doğrulanacak (kod değişmedi)
+
+- Bu ortamda `icerik/` yok (depoya girmez, bağlı bilgisayar da yok), paket dosyaları okunamadı. Kod yolu denetlendi: `visibleSubclasses` yalnız `kaldirilan` (Barış Alanı) çıkarır, `genderVisible` yalnız `cinsiyet` alanlı iki kaydı (Karadul kadın, İmparator erkek) süzer, `subclassesOf` ve oluşturucu seçici ek süzgeç koymaz. Fikstürle (SRD 12) her SRD alt sınıfı, `fiend-patron` dahil, kendi sınıfının seçicisinde iki cinsiyette de görünüyor (test `src/content/seciciDenetimi.test.ts`). Yani kod yolunda Zebani'yi süzen bir şey yok; seçicide eksikse neden pakette (kayıt yok ya da kimlik/ad farkı) olmalı; bu henüz doğrulanmadı.
+- Denetim aracı: `npx vite-node scripts/alt-sinif-secici-denetimi.ts` → `harita/belgeler/ALT-SINIF-SECICI-DENETIMI.md` (sınıf başına paket/seçici sayısı, görünmeyenler ve nedeni, `icerik/` yüklü ve yok iki durum, ad/kimlik denetimi). `icerik/` olan makinede çalıştırılınca Durum B dolar.
+
 ## Celestial yıldız tacı: alternatif C birebir (kural sürümü değişmedi)
 
 - Seçilen tasarım C (`docs/sabah/hale-alternatif.png`, `scripts/hale-alternatif.py` `design('C')`): tabanı başın/şapkanın üst orta noktasına değen üç ince ışık çizgisi yukarı yükselir (orta daha uzun), üstünde büyük ince çizgili sparkle (yatay + dikey çizgi, soluk çaprazlar), yanlarda iki küçük çift; renk #F5D76E (merkez #FFF4B8). Eski çizim havada duran dolu elmas yıldızlardı.
