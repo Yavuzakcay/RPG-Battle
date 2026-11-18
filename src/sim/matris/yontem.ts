@@ -10,6 +10,14 @@ export const YONTEM = `## Yöntem
 - **Canavar saldırıları:** beklenen data/monsters.json'dan (saldırı bonusu, zar, tür; SRD metnindeki sabit hasar, "Advantage ile" alternatif zar) ve yukarıdaki kurallardan. Ek etkiler (rider) bu matriste ölçülmez.
 - **Sonuç sınıfları:** *doğru* = karşılaştırılan bütün alanlar eşit; *yanlış* = motor sonuç üretiyor ama değer SRD'den farklı ya da SRD'nin yasakladığını kabul ediyor; *çökme* = komut istisna fırlatıyor; *uygulanmıyor* = SRD etkisi motorda yok (savaş dışı işaretli ya da beklenen durum/etki hiç üretilmiyor); *karar bekliyor* = SRD metni iki türlü okunabiliyor (bulgu kaydında gerekçe).
 
+## Kahin ve ölçüm düzeltmeleri
+
+Kahin motoru haklı çıkarmak için değiştirilmez; her değişiklik SRD alıntısıyla ya da ölçümün kendisiyle gerekçelendirilir.
+
+- **Sabit hasarlı silah (Blowgun):** SRD 5.2.1 Damage Rolls: "Unless a rule says otherwise, you don't add your ability modifier to a fixed damage amount that doesn't use a roll, such as the damage of a Blowgun." İlk ölçümde kahin 1 + DEX bekliyordu (motor çöktüğü için karşılaştırılmamıştı); şimdi 1, zar yok, kritikte de 1.
+- **Save kipinin ölçümü:** \`save_resolved.mode\` alanı motorun 41 save yolunun 27'sinde sabit 'normal', kalanında yalnız ortam kipi (Restrained, Dodge, Haste gibi durum/etki kaynaklı avantaj-dezavantaj yazılmaz). Kip artık atılan zardan okunur: kancaya gelen d20 save isteğinin \`mode\` alanı (olaydaki zarlarla eşleşen istek). Beklenen değişmedi (SRD Restrained: "You have Disadvantage on Dexterity saving throws."). Bu değişiklik ilk ölçümdeki hiçbir satırın sonucunu değiştirmedi (sürüm 82 ölçümü: yalnız Ç01 farkı).
+- **Görünüm notu G01 (sonucu etkilemez, düzeltilmedi):** günlük save satırı zarları "19 / 3" diye gösterip kipi \`mode\` alanından "normal" yazıyor; durumdan gelen dezavantaj günlükte görünmüyor. Öneri: save olaylarına etkin kipi yazmak (41 yol; onay bekliyor).
+
 ## Kapsam ve sınırlar
 
 - 339 büyünün hepsi matriste; savaş dışı işaretli (ya da SRD'de 1 dakika ve üstü yapım süreli) büyüler tek satır: SRD etkisi savaşta anlamlıysa *uygulanmıyor*, değilse *doğru*.
@@ -17,5 +25,5 @@ export const YONTEM = `## Yöntem
 - Ölçülmeyenler: canavar saldırı ek etkileri (A2 envanteri ayrı), Multiattack, sınıf özellikleri (Sneak Attack, Rage…), sihirli eşyalar, çok altıgen gövde, irtifa/dikey, büyülerin sonraki turlardaki tekrarı (\`spell_followup\`), süren etkilerin sonraki zarlardaki sayısal katkısı (Bless +1d4 gibi: yalnız etkinin varlığı, süresi, konsantrasyon bağı ölçüldü), alan geometrisinin kenar altıgenleri (yalnız açıkça içeride/dışarıda konumlar).
 - Telekinesis'in STR save'i yapılandırılmış olay (\`save_resolved\`) yerine günlük notuyla kaydediliyor; yalnız durum sonucu karşılaştırıldı.
 - "Doğru" bir senaryonun doğru olduğunu söyler; bütün zar kombinasyonlarını değil.
-- Yeniden üretmek için: \`npx vite-node src/sim/mekanikMatris.ts -- --yaz\`; tek büyü/saldırı ayrıntısı: \`npx vite-node src/sim/mekanikMatris.ts -- --buyu "Fireball" --hepsi\`.
+- Yeniden üretmek için: \`npx vite-node src/sim/mekanikMatris.ts -- --yaz\`; tek büyü/saldırı ayrıntısı: \`npx vite-node src/sim/mekanikMatris.ts -- --buyu "Fireball" --hepsi\`; eski sürümle ölçüm: \`-- --kural-surumu 82\`; önce/sonra tablosuna aşama ekleme: \`-- --etiket "Grup 1 sonrası"\`.
 `;

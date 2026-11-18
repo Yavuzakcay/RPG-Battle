@@ -3,7 +3,7 @@
  * bağlanır. Katalogdaki `sonuc` satırın sonucunu yeniden sınıflandırabilir (yorum gerektiren kalemler "karar bekliyor").
  */
 import type { Satir, Sonuc } from './ortak';
-import { CURRENT_RULES } from '../../battle/ruleVersion';
+import { defaultRuleVersion } from '../../battle/create';
 
 export interface Bulgu {
   id: string;
@@ -13,7 +13,12 @@ export interface Bulgu {
   oneri: string;
   /** Satır bu bulguya mı ait. */
   eslesir: (r: Satir) => boolean;
+  /** Düzeltildiyse: hangi kural sürümüyle (ya da sürümsüz) ve kısa not. */
+  duzeltme?: { surum: number | 'sürümsüz'; not: string };
 }
+
+/** Bir ölçümün özeti (önce/sonra tablosu; `harita/belgeler/mekanik-matris-gecmis.json`). */
+export interface Ozet { etiket: string; surum: number; satir: number; sonuc: Record<Sonuc, number>; bulgu: Record<string, number> }
 
 const ad = (r: Satir, ...names: string[]) => names.some((n) => r.ad === n || r.ad.startsWith(`${n}:`));
 const bag = (r: Satir, s: string) => r.baglam.includes(s);
@@ -164,7 +169,34 @@ function tally(rows: Sinifli[]): Record<Sonuc, number> {
   return o;
 }
 
-export function markdown(rows: Sinifli[], ms: number): string {
+export function ozetOf(rows: Sinifli[], etiket: string, surum: number): Ozet {
+  const bulgu: Record<string, number> = {};
+  for (const r of rows) if (r.bulgu && r.sonuc !== 'doğru') bulgu[r.bulgu] = (bulgu[r.bulgu] ?? 0) + 1;
+  return { etiket, surum, satir: rows.length, sonuc: tally(rows), bulgu };
+}
+
+/** Önce/sonra: her ölçüm aşamasının sonuç sayıları ve bulgu başına doğru olmayan satır sayısı. */
+function gecmisTablosu(gecmis: Ozet[]): string[] {
+  if (!gecmis.length) return [];
+  const L: string[] = ['## Önce / sonra (düzeltme turları)', ''];
+  L.push('| Aşama | Sürüm | Satır | Doğru | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor | Doğru oranı |', '|---|---:|---:|---:|---:|---:|---:|---:|---:|');
+  for (const o of gecmis) {
+    L.push(`| ${o.etiket} | ${o.surum} | ${o.satir} | ${o.sonuc['doğru']} | ${o.sonuc['yanlış']} | ${o.sonuc['çökme']} | ${o.sonuc['uygulanmıyor']} | ${o.sonuc['karar bekliyor']} | ${pct(o.sonuc['doğru'], o.satir)} |`);
+  }
+  const ids = KATALOG.map((k) => k.id).filter((id) => gecmis.some((o) => (o.bulgu[id] ?? 0) > 0));
+  const extra = [...new Set(gecmis.flatMap((o) => Object.keys(o.bulgu)))].filter((id) => !ids.includes(id));
+  L.push('', 'Bulgu başına doğru olmayan satır (aşama sırasıyla):', '');
+  L.push(`| Bulgu | ${gecmis.map((o) => o.etiket).join(' | ')} | Düzeltme |`, `|---|${gecmis.map(() => '---:').join('|')}|---|`);
+  for (const id of [...ids, ...extra]) {
+    const k = KATALOG.find((x) => x.id === id);
+    const d = k?.duzeltme ? `${k.duzeltme.surum === 'sürümsüz' ? 'sürümsüz' : `sürüm ${k.duzeltme.surum}`}: ${k.duzeltme.not}` : '';
+    L.push(`| ${id} | ${gecmis.map((o) => o.bulgu[id] ?? 0).join(' | ')} | ${d} |`);
+  }
+  L.push('');
+  return L;
+}
+
+export function markdown(rows: Sinifli[], ms: number, gecmis: Ozet[] = []): string {
   const t = tally(rows);
   const total = rows.length;
   const L: string[] = [];
@@ -175,7 +207,7 @@ export function markdown(rows: Sinifli[], ms: number): string {
   const weapons = new Set(wRows.map((r) => r.ad));
   const attacks = new Set(mRows.map((r) => r.ad));
   L.push('# Mekanik doğrulama matrisi (APK öncesi)', '');
-  L.push(`Üretim: \`npx vite-node src/sim/mekanikMatris.ts -- --yaz\` (tek süreç, ≈${Math.round(ms / 1000)} sn). Kural sürümü ${CURRENT_RULES}. Mekaniğe dokunulmadı; yalnız ölçüm.`);
+  L.push(`Üretim: \`npx vite-node src/sim/mekanikMatris.ts -- --yaz\` (tek süreç, ≈${Math.round(ms / 1000)} sn). Kural sürümü ${defaultRuleVersion()}.`);
   L.push('Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virgülle ayrılmış; sütunlar: tür, büyü/saldırı, seviye, sınıflar, mekanik, bağlam, bağlam sınıfı, beklenen, gerçek, sonuç, bulgu, not).', '');
   L.push('## Özet', '');
   L.push(`- Toplam satır: **${total}** (büyü ${spellRows.length} satır / ${spells.size} büyü; silah ${wRows.length} satır / ${weapons.size} seçenek; canavar ${mRows.length} satır / ${attacks.size} saldırı).`);
@@ -189,6 +221,7 @@ export function markdown(rows: Sinifli[], ms: number): string {
     L.push(`| ${k} | ${rs.length} | ${x['doğru']} | ${x['yanlış']} | ${x['çökme']} | ${x['uygulanmıyor']} | ${x['karar bekliyor']} | ${pct(x['doğru'], rs.length)} |`);
   }
   L.push('');
+  L.push(...gecmisTablosu(gecmis));
   // Sınıflara göre yanlış dağılımı.
   L.push('## Yanlış dağılımı', '', '### Sınıflara göre (büyünün sınıf listesi; bir büyü birden çok sınıfta sayılır)', '');
   L.push('| Sınıf | Büyü satırı | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor | Yanlış oranı |', '|---|---:|---:|---:|---:|---:|---:|');
@@ -211,7 +244,8 @@ export function markdown(rows: Sinifli[], ms: number): string {
   L.push('');
   // Bulgular (öncelik: yanlış, çökme, uygulanmıyor, karar).
   L.push('## Bulgular (kök nedene göre; öncelik sırası: yanlış → çökme → uygulanmıyor → karar bekliyor)', '');
-  L.push('Düzeltme yapılmadı; öneriler onaydan sonra uygulanacak.', '');
+  const fixed = KATALOG.filter((k) => k.duzeltme);
+  L.push(fixed.length ? `Düzeltilen bulgular (${fixed.map((k) => k.id).join(', ')}) doğru olmayan satırı kalmadıysa aşağıda listelenmez; önce/sonra sayıları yukarıdaki tabloda.` : 'Düzeltme yapılmadı; öneriler onaydan sonra uygulanacak.', '');
   const order: Sonuc[] = ['yanlış', 'çökme', 'uygulanmıyor', 'karar bekliyor'];
   for (const s of order) {
     for (const k of KATALOG.filter((x) => x.sonuc === s)) {
@@ -259,10 +293,10 @@ export function markdown(rows: Sinifli[], ms: number): string {
   return L.join('\n');
 }
 
-export function yazRapor(rows: Satir[], ms = 0, fs?: { writeFileSync(p: string, d: string): void }, ek = ''): string[] {
+export function yazRapor(rows: Satir[], ms = 0, fs?: { writeFileSync(p: string, d: string): void }, ek = '', gecmis: Ozet[] = []): string[] {
   const s = siniflandir(rows);
   if (!fs) return [];
   fs.writeFileSync('harita/belgeler/mekanik-matris.csv', csv(s));
-  fs.writeFileSync('harita/belgeler/MEKANIK-MATRIS.md', `${markdown(s, ms)}\n${ek}`);
+  fs.writeFileSync('harita/belgeler/MEKANIK-MATRIS.md', `${markdown(s, ms, gecmis)}\n${ek}`);
   return ['harita/belgeler/MEKANIK-MATRIS.md', 'harita/belgeler/mekanik-matris.csv'];
 }

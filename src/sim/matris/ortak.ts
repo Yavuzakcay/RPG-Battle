@@ -115,12 +115,24 @@ export function run(state: BattleState, cmd: Command | Command[], ctx: CommandCo
     if (added.length) g.durum[id] = added;
     if (b.concentration && !a.concentration) g.konsBitti.push(id);
   }
+  // Save kipi zarın kendisinden: motorun `save_resolved.mode` alanı yalnız ortam kipini ya da sabit 'normal' yazar (41 yoldan
+  // 27'si sabit; günlük bulgusu G01), durumdan gelen avantaj/dezavantaj (Restrained, Dodge, Haste…) yalnız atılan zarda görünür.
+  // Kanca her d20 save isteğini (`kind: 'save'`, `by`, `mode`) kaydeder; olaydaki zarlarla eşleşen ilk istek kullanılır.
+  const saveReqs = log.filter((x) => x.sides === 20 && x.kind === 'save');
+  const used = new Set<number>();
+  const rolledMode = (target: string, d20: number[], fallback: Mode): Mode => {
+    if (!d20.length) return fallback;
+    const i = saveReqs.findIndex((x, k) => !used.has(k) && x.by === target && x.values.length === d20.length && x.values.every((v, j) => v === d20[j]));
+    if (i < 0) return fallback;
+    used.add(i);
+    return (saveReqs[i]?.mode ?? 'normal') as Mode;
+  };
   for (const e of r.events) {
     if (e.type === 'attack_resolved') {
       g.saldirilar.push({ hedef: e.targetId, kip: e.mode, dogal: e.natural, toplam: e.total, ac: e.targetAc, isabet: e.hit, kritik: e.critical, ham: e.rawDamage,
         uygulanan: e.appliedDamage, tur: e.damageType, ...(e.cover ? { siper: e.cover } : {}), ...(e.reacted ? { tepki: e.reacted.name } : {}) });
     } else if (e.type === 'save_resolved') {
-      g.saveler.push({ hedef: e.targetId, yetenek: e.ability, dc: e.dc, kip: e.mode, dogal: e.natural, basari: e.success, ham: e.rawDamage, uygulanan: e.appliedDamage,
+      g.saveler.push({ hedef: e.targetId, yetenek: e.ability, dc: e.dc, kip: rolledMode(e.targetId, e.d20, e.mode), dogal: e.natural, basari: e.success, ham: e.rawDamage, uygulanan: e.appliedDamage,
         tur: e.damageType, ...(e.secondary ? { ikincil: { tur: e.secondary.type, uygulanan: e.secondary.applied } } : {}), ...(e.cover ? { siper: e.cover } : {}), durumlar: e.conditionsAdded });
     } else if (e.type === 'slot_spent') {
       if (e.actorId === cmd0.actorId) g.slot.push(e.level);

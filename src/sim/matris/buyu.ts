@@ -6,7 +6,7 @@
 import { spells } from '../../data';
 import type { Spell } from '../../data/types';
 import { mechanicsAt } from '../../battle/spellVersion';
-import { CURRENT_RULES } from '../../battle/ruleVersion';
+import { defaultRuleVersion } from '../../battle/create';
 import { P1 } from '../../battle/fixtures';
 import type { BattleState, Combatant, Command } from '../../battle/types';
 import type { Offset } from '../../rules/hex';
@@ -19,7 +19,8 @@ import {
 import { D20_CRIT, D20_MISS, D20_NORMAL, SAVE_DIS_PROBE, SAVE_FAIL, SAVE_HALF_COVER, SAVE_OK, SAVE_TQ_COVER, exprTotal, kullan, plan, type D20, type Plan } from './zar';
 import { adjust, alan, ctxOf, fmt, kanon, kanonExpr, mode as modeOf, run, type Alan, type Gozlem, type Mode, type Satir, type Sonuc } from './ortak';
 
-const ST = { kuralSurumu: CURRENT_RULES };
+/** Ölçülen kural sürümü (`--kural-surumu N`; yoksa güncel): komut biçimi o sürümün büyü verisinden. */
+const ST = { get kuralSurumu(): number { return defaultRuleVersion(); } };
 const CLASS_TR: Record<string, string> = { Bard: 'Bard', Cleric: 'Cleric', Druid: 'Druid', Paladin: 'Paladin', Ranger: 'Ranger', Sorcerer: 'Sorcerer', Warlock: 'Warlock', Wizard: 'Wizard' };
 
 /** Kahinin yerleşimi: hedef (T), ikinci düşman (U), dost ateşi dostu, alan dışı düşman (Z), nişan. */
