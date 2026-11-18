@@ -4,11 +4,21 @@ import { getMonster } from '../data';
 import { getMap } from '../map/maps';
 import { seededRng } from '../rules/dice';
 import { encounterBudget } from '../rules/budget';
-import { ENCOUNTER_RULES, REGIONS, crXp, isLegendary, levelMultiplier, regionEncounter, regionMonsters } from './encounter';
+import { ENCOUNTER_RULES, REGIONS, crXp, isLegendary, levelMultiplier, regionEncounter, regionLevelFactor, regionMonsters } from './encounter';
 
 describe('bölge karşılaşma üreteci', () => {
   it('seviye çarpanı (Dungeondex öncesi denge turu, kullanıcı onaylı): 1 ×1,8, 5 ×1,5, 9 ×1,2, 13 ×0,8, diğerleri 1', () => {
     expect([1, 5, 9, 13, 17, 20].map(levelMultiplier)).toEqual([1.8, 1.5, 1.2, 0.8, 1, 1]);
+  });
+  it('bölge × seviye düzeltmesi (denge turu 2): yalnız ölçülen seviyelerde, 0,5–2 arasında; yoksa 1', () => {
+    const buzul = REGIONS.find((r) => r.id === 'buzul')!;
+    expect(regionLevelFactor(buzul, 3)).toBe(1);
+    expect(regionLevelFactor({ ...buzul, seviyeDuzeltme: undefined }, 5)).toBe(1);
+    for (const r of REGIONS) for (const [lv, f] of Object.entries(r.seviyeDuzeltme ?? {})) {
+      expect([1, 5, 9]).toContain(Number(lv));
+      expect(f).toBeGreaterThanOrEqual(0.5);
+      expect(f).toBeLessThanOrEqual(2);
+    }
   });
   it('yedi bölge; haritaları var; canavar havuzu dolu ve dışlananlar yok', () => {
     expect(REGIONS.map((r) => r.id)).toEqual(['buzul', 'dag', 'orman', 'col', 'bataklik', 'bati-kiyisi', 'volkan']);
@@ -24,7 +34,7 @@ describe('bölge karşılaşma üreteci', () => {
       const levels = Array(5).fill(lv);
       const e = regionEncounter(r, levels, seededRng(seed));
       const xp = Object.entries(e.enemies).reduce((n, [id, k]) => n + crXp(getMonster(id).cr) * k, 0);
-      expect(e.budget).toBe(Math.round(encounterBudget(levels, 'moderate') * r.carpan * levelMultiplier(lv)));
+      expect(e.budget).toBe(Math.round(encounterBudget(levels, 'moderate') * r.carpan * levelMultiplier(lv) * regionLevelFactor(r, lv)));
       expect(xp).toBe(e.xp);
       expect(xp).toBeLessThanOrEqual(e.budget);
       expect(Object.values(e.enemies).reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(ENCOUNTER_RULES.enCok);

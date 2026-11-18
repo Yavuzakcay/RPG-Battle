@@ -30,7 +30,8 @@
       },
       "kolay": {
         "mage": 1,
-        "knight": 2,
+        "knight": 1,
+        "warrior-veteran": 1,
         "guard": 2
       }
     },
@@ -62,8 +63,8 @@
         "magmin": 3
       },
       "kolay": {
-        "wyvern": 2,
-        "magmin": 1
+        "wyvern": 1,
+        "magmin": 3
       }
     }
   ]

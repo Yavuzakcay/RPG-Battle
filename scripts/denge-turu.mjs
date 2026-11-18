@@ -45,6 +45,13 @@ G.r1 = [
   ...G.a2.filter((j) => j.id.endsWith('-kolay')),
 ];
 G.r1b = [...only(G.ekstra, ['sim-L3-standart-kale'])];
+// Tur 2: boss Kolay (Kale, Volkan), hapishane zinciri, bölge × seviye düzeltmeleri (yalnız değişen hücreler), Kale 3. seviye.
+const R2_BOLGE = { buzul: '1,5,9', dag: '1,5,9', orman: '1', col: '1,5,9', bataklik: '5', 'bati-kiyisi': '1,5', volkan: '9' };
+G.r2 = [
+  ...only(G.boss, ['boss-kale-kolay', 'boss-volkan-kolay']), ...G.hapis.slice(0, 2),
+  ...Object.entries(R2_BOLGE).map(([r, l]) => ({ id: `bolge-${r}`, args: ['src/sim/bolgeRun.ts', '100', '--bolge', r, '--seviye', l] })),
+  ...only(G.ekstra, ['sim-L3-standart-kale']),
+];
 const groups = (opt('--grup', 'sim5,a2,boss,bolge,sim3,sim1,zincir,hapis,k59')).split(',');
 const jobs = groups.flatMap((g) => G[g] ?? []);
 if (argv.includes('--liste')) { console.log(jobs.length, jobs.map((j) => j.id).join('\n')); process.exit(0); }
