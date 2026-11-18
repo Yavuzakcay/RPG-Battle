@@ -52,6 +52,7 @@ G.r3 = [
   ...only(G.boss, ['boss-kale-kolay']),
   G.zincir[1],
 ];
+G.r3b = [G.zincir[0]]; // Kuzey yolu: ilk gün (Kale 3. seviye listesi tur 1'de sertleşti)
 G.r2 = [
   ...only(G.boss, ['boss-kale-kolay', 'boss-volkan-kolay']), ...G.hapis.slice(0, 2),
   ...Object.entries(R2_BOLGE).map(([r, l]) => ({ id: `bolge-${r}`, args: ['src/sim/bolgeRun.ts', '100', '--bolge', r, '--seviye', l] })),
