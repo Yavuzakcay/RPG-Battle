@@ -254,3 +254,14 @@ describe('B07: Ensnaring Strike — Large ve büyük hedef save\'i avantajlı (S
     });
   }
 });
+
+describe('B09: Arcane Sword hasarına büyü yeteneği değiştiricisi (SRD "4d12 plus your spellcasting ability modifier")', () => {
+  for (const [v, dmg] of [[83, 4 * 7 + 4], [82, 4 * 7]] as const) {
+    it(`${v}: isabette hasar ${dmg}`, () => {
+      const s = scene(v, [caster({ level: 17, spellNames: ['Arcane Sword'], spellSlots: [4, 3, 3, 3, 3, 2, 2, 1, 1] }), foe('T', { ac: 10 })]);
+      const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Arcane Sword', slotLevel: 7, targetId: 'T' } as Command, hooked({ one: 15, two: [15, 15] }));
+      expect(r.ok, r.error).toBe(true);
+      expect(100 - (r.state.combatants.T?.hp ?? 0)).toBe(dmg);
+    });
+  }
+});
