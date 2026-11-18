@@ -12,6 +12,7 @@
   "text": "dönen bıçak duvarı (100 ft uzun ya da 60 ft çaplı halka, 20 ft yüksek, 5 ft kalın): içinde, girince ya da tur sonunda DEX save 6d10 kuvvet (yarı), turda bir; üç çeyrek siper, zorlu arazi",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 100, "difficult": 2, "on": ["cast", "enter", "end"], "once": true, "save": "dex", "damage": "6d10", "damageType": "force", "half": true, "color": "#c9c9d6", "icon": "⚔"}},
    "kind": "save",
    "save": "dex",
    "damage": "6d10",
@@ -978,6 +979,7 @@
   "text": "120 ft, diken duvarı (60 ft uzun ya da 20 ft çaplı halka): oluşunca DEX save 7d8 delme (yarı); görüşü keser, içinden geçmek 4 kat hareket ve DEX save 7d8 kesme (yarı) (konsantrasyon); +1d8/slot",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 100, "difficult": 4, "obscured": "heavy", "on": ["cast", "enter", "end"], "once": true, "save": "dex", "damage": "7d8", "damageType": "slashing", "half": true, "castTrigger": {"damageType": "piercing"}, "color": "#4e7a3a", "icon": "🌿"}},
    "kind": "save",
    "save": "dex",
    "damage": "7d8",
@@ -1090,6 +1092,7 @@
   "text": "90 ft içinde 10 ft yarıçaplı, 40 ft yüksek ışık sütunu: içindeki her yaratığa ya iyileştirme 4d12 + büyü değiştiricisi ya da DEX save 6d12 ışık (yarı); sütun 30 ft taşınır (konsantrasyon); +1d12/slot",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 100, "on": ["cast", "enter", "end"], "once": true, "save": "dex", "damage": "6d12", "damageType": "radiant", "half": true, "targets": "all", "light": 0, "healAllies": "4d12", "color": "#fff1a8", "icon": "✨"}},
    "k73c": {
     "cylinderFt": 40
    },
@@ -2008,6 +2011,7 @@
   "text": "150 ft içinde 20 ft yarıçaplı köz bulutu (yoğun örtü): oluşunca, girince ve tur sonunda DEX save 10d8 ateş (yarı), turda bir; her tur 10 ft uzaklaşır (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 10, "obscured": "heavy", "on": ["cast", "enter", "end"], "once": true, "save": "dex", "damage": "10d8", "damageType": "fire", "half": true, "drift": 10, "color": "#d9622b", "icon": "🔥"}},
    "kind": "save",
    "save": "dex",
    "damage": "10d8",
@@ -2514,6 +2518,7 @@
   "text": "1 mil içinde 300 ft yarıçaplı fırtına bulutu: oluşunca CON save 2d6 gök gürültüsü ve Deafened; sonraki turlarda 4d6 asit yağmur, 6 hedefe DEX save 10d6 yıldırım (yarı), 2d6 ezme dolu, 1d6 soğuk; zorlu arazi, yoğun örtü (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+   "m83": {"zone": {"rounds": 10, "on": ["cast", "start"], "stages": true, "castTrigger": {"save": "con", "damage": "2d6", "damageType": "thunder", "conditions": ["Deafened"], "hold": "spell"}, "color": "#5a6b8c", "icon": "⛈"}},
    "kind": "save",
    "save": "con",
    "damage": "2d6",

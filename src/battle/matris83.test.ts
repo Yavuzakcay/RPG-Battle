@@ -160,3 +160,81 @@ describe('B03: Counterspell SRD akışı (CON save; başarısızlıkta büyü et
     expect(r82.state.combatants.T?.hp).toBe(0);
   });
 });
+
+describe('B05: alan büyülerinin yapım anı save\'i ve tetik zamanı (SRD metni)', () => {
+  const high = (spell: string, p: Partial<Combatant> = {}): Combatant => caster({ level: 17, spellNames: [spell], spellSlots: [4, 3, 3, 3, 3, 2, 2, 1, 1], ...p });
+  const at = (col: number, row: number) => ({ col, row });
+  const savesOn = (events: BattleEvent[], id: string) => events.filter((e): e is Extract<BattleEvent, { type: 'save_resolved' }> => e.type === 'save_resolved' && e.targetId === id);
+  it('Incendiary Cloud: 83 yapımda içerideki herkes DEX save atar (hasar bir kez atılır); 82 yapımda save yok', () => {
+    const parts = (): Combatant[] => [high('Incendiary Cloud'), foe('T', { pos: at(10, 5) }), foe('U', { pos: at(11, 5) })];
+    const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Incendiary Cloud', slotLevel: 8, targetHex: at(10, 5) } as Command;
+    const r83 = run(scene(83, parts()), cmd, hooked({ one: 1, two: [1, 1] }));
+    expect(r83.ok, r83.error).toBe(true);
+    const t = savesOn(r83.events, 'T'), u = savesOn(r83.events, 'U');
+    expect(t).toHaveLength(1);
+    expect(u).toHaveLength(1);
+    expect(t[0]?.ability).toBe('dex');
+    expect(t[0]?.damageType).toBe('fire');
+    expect(t[0]?.rawDamage).toBe(u[0]?.rawDamage);
+    expect(r83.state.combatants.T?.hp).toBe(100 - 50);
+    expect(savesOn(run(scene(82, parts()), cmd, hooked({ one: 1, two: [1, 1] })).events, 'T')).toHaveLength(0);
+  });
+  it('Incendiary Cloud 83: yarım siper (çıkış noktasıyla hedef arasında) DEX save\'ine +2', () => {
+    const parts = [high('Incendiary Cloud'), foe('T', { pos: at(10, 5) }), foe('U', { pos: at(10, 7) })];
+    const s = scene(83, parts);
+    const tiles = s.map!.tiles.map((r, i) => (i === 6 ? `${r.slice(0, 10)}d${r.slice(11)}` : r));
+    const r = run({ ...s, map: { ...s.map!, tiles } }, { type: 'cast_spell', actorId: 'A', spellName: 'Incendiary Cloud', slotLevel: 8, targetHex: at(10, 5) } as Command, hooked({ one: 16, two: [16, 16] }));
+    expect(r.ok, r.error).toBe(true);
+    const u = savesOn(r.events, 'U')[0];
+    expect(u?.cover).toBe(2);
+    expect(u?.total).toBe(18);
+    expect(u?.success).toBe(true);
+  });
+  it('Wall of Thorns 83: yapımda Piercing, sonra Slashing', () => {
+    const parts = [high('Wall of Thorns'), foe('T', { pos: at(10, 5) })];
+    const r = run(scene(83, parts), { type: 'cast_spell', actorId: 'A', spellName: 'Wall of Thorns', slotLevel: 6, targetHex: at(10, 5) } as Command, hooked({ one: 1, two: [1, 1] }));
+    expect(r.ok, r.error).toBe(true);
+    expect(savesOn(r.events, 'T')[0]?.damageType).toBe('piercing');
+    const zone = r.state.map?.zones?.find((z) => z.name === 'Wall of Thorns');
+    expect(zone?.spec?.damageType).toBe('slashing');
+    expect(zone?.spec?.on).toEqual(['cast', 'enter', 'end']);
+  });
+  it('Blade Barrier 83: tetikler yapım, giriş ve tur sonu (82: giriş ve tur başı)', () => {
+    const parts = (): Combatant[] => [high('Blade Barrier'), foe('T', { pos: at(10, 5) })];
+    const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Blade Barrier', slotLevel: 6, targetHex: at(10, 5) } as Command;
+    const r83 = run(scene(83, parts()), cmd, hooked({ one: 1, two: [1, 1] }));
+    expect(r83.ok, r83.error).toBe(true);
+    expect(savesOn(r83.events, 'T')[0]?.damageType).toBe('force');
+    expect(r83.state.map?.zones?.find((z) => z.name === 'Blade Barrier')?.spec?.on).toEqual(['cast', 'enter', 'end']);
+    expect(savesOn(run(scene(82, parts()), cmd, hooked({ one: 1, two: [1, 1] })).events, 'T')).toHaveLength(0);
+  });
+  it('Storm of Vengeance 83: bulutun altındaki herkes CON save; başarısızlıkta 2d6 Thunder ve büyü süresince Deafened', () => {
+    // Büyücü de bulutun altında: kendi CON save'ini geçer (yoksa hasarla konsantrasyonu bozulup Deafened biterdi).
+    const parts = [high('Storm of Vengeance', { saves: { str: 0, dex: 0, con: 30, int: 0, wis: 0, cha: 0 } }), foe('T', { pos: at(10, 5) })];
+    const r = run(scene(83, parts), { type: 'cast_spell', actorId: 'A', spellName: 'Storm of Vengeance', slotLevel: 9, targetHex: at(10, 5) } as Command, hooked({ one: 1, two: [1, 1] }));
+    expect(r.ok, r.error).toBe(true);
+    const t = savesOn(r.events, 'T')[0];
+    expect(t?.ability).toBe('con');
+    expect(t?.damageType).toBe('thunder');
+    expect(t?.rawDamage).toBe(8);
+    expect(r.state.combatants.T?.conditions).toContain('Deafened');
+    expect(r.state.combatants.T?.effects?.some((e) => e.grants?.includes('Deafened') && e.concentration === 'Storm of Vengeance')).toBe(true);
+    expect(savesOn(r.events, 'A')[0]?.success).toBe(true);
+  });
+  it('Storm of Vengeance 83: büyücünün kendi save hasarıyla konsantrasyonu bozulsa da bulutun altındaki diğerleri yine save atar (eşzamanlı)', () => {
+    const parts = [high('Storm of Vengeance'), foe('T', { pos: at(10, 5) })];
+    const r = run(scene(83, parts), { type: 'cast_spell', actorId: 'A', spellName: 'Storm of Vengeance', slotLevel: 9, targetHex: at(10, 5) } as Command, hooked({ one: 1, two: [1, 1] }));
+    expect(savesOn(r.events, 'A')).toHaveLength(1);
+    expect(savesOn(r.events, 'T')).toHaveLength(1);
+  });
+  it('Conjure Celestial 83: düşmana Searing Light (DEX save), dosta Healing Light (4d12 + büyü değiştiricisi)', () => {
+    const ally = mk('B', { ownerId: 'p1', hp: 10, maxHp: 100, pos: at(10, 6) });
+    const parts = [high('Conjure Celestial'), foe('T', { pos: at(10, 5) }), ally];
+    const r = run(scene(83, parts), { type: 'cast_spell', actorId: 'A', spellName: 'Conjure Celestial', slotLevel: 7, targetHex: at(10, 5) } as Command, hooked({ one: 1, two: [1, 1] }));
+    expect(r.ok, r.error).toBe(true);
+    expect(savesOn(r.events, 'T')[0]?.damageType).toBe('radiant');
+    const heal = r.events.find((e) => e.type === 'healed' && e.targetId === 'B') as Extract<BattleEvent, { type: 'healed' }> | undefined;
+    expect(heal?.amount).toBe(4 * 7 + 4);
+    expect(savesOn(r.events, 'B')).toHaveLength(0);
+  });
+});

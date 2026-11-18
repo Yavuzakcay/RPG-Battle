@@ -353,6 +353,8 @@ export interface SpellMechanics {
   k73c?: Partial<SpellMechanics>;
   /** Kuyruk MB7 (kural sürümü 70+): Phantom Steed çağırma (`data/summons.json` `phantom-steed`). */
   mb7?: Partial<SpellMechanics>;
+  /** Mekanik matris düzeltmeleri (kural sürümü 83+; harita/belgeler/MEKANIK-MATRIS.md): bloktaki alanlar üstüne yazılır. */
+  m83?: Partial<SpellMechanics>;
   /**
    * Kuyruk K73c (sürüm 64+, Görev 3): anlık silindir büyüsünün yüksekliği (ft; veride biçim küre). Havada merkezlenince
    * dairesi merkezde, silindir aşağı uzanır (`src/battle/airArea.ts`). Yerde merkezliyken kullanılmaz.
@@ -538,6 +540,13 @@ export interface SpellMechanics {
  * düşmanları). `move`: sonraki turlarda alan taşınır (`spell_followup`; maliyet ve ft).
  */
 export interface ZoneSpec {
+  /**
+   * Mekanik matris B05 (sürüm 83+): yapım anı (`on: 'cast'`) tetiğinin farkları; alan kuralının üstüne yazılır. Wall of Thorns
+   * yapımda Piercing (sonra Slashing), Storm of Vengeance yapımda CON save, 2d6 Thunder ve büyü süresince Deafened.
+   */
+  castTrigger?: Partial<Omit<ZoneSpec, 'castTrigger'>>;
+  /** Mekanik matris B05 (sürüm 83+, Conjure Celestial Healing Light): büyücünün tarafı save yerine bu zar + büyü değiştiricisi kadar iyileşir (yukarı slot zarı dahil). */
+  healAllies?: string;
   /** Kuyruk 19: Wall of Stone: altıgen başına kırılabilir panel (walls.ts); `permanent` konsantrasyon tam sürerse kalıcı. */
   panels?: boolean;
   /** Kuyruk K62 (sürüm 46): panel değerleri (Wall of Ice: AC 12, 30 HP; yoksa Wall of Stone 15/90), bağışık ve zayıf türler (zayıf = hasar iki kat). */
