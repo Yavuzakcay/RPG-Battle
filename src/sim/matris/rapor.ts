@@ -33,7 +33,8 @@ export const KATALOG: Bulgu[] = [
   { id: 'B02', sonuc: 'yanlış', baslik: '"Görebildiğin yaratık" isteyen büyüler Invisible hedefe yapılabiliyor',
     neden: 'SRD 5.2.1 Invisible: "You aren\'t affected by any effect that requires its target to be seen unless the effect\'s creator can somehow see you." Büyü metni "a creature (that) you can see" dediği hâlde motor Invisible hedefi kabul ediyor (görme yeteneği olmayan büyücüyle).',
     oneri: 'Büyü verisine SRD metninden "görme gerekir" bayrağı (ör. `seen: true`) ekleyip `castSpell`/`executeEffect`/`executeTrueStrike` hedef denetiminde Invisible hedefi, büyücü onu göremiyorsa (See Invisibility, Truesight, Blindsight menzili yoksa; `sight.ts` `sightConditions`/`truesightSees`) reddetmek.',
-    eslesir: (r) => kotu(r) && r.tur === 'büyü' && bag(r, 'hedef Invisible') && r.beklenen.startsWith('red') },
+    eslesir: (r) => kotu(r) && r.tur === 'büyü' && bag(r, 'hedef Invisible') && r.beklenen.startsWith('red'),
+    duzeltme: { surum: 83, not: 'görülmeyen hedef reddi, alanda görülmeyen etkilenmez (`data/gorme-gerekir.json`, `seenTargets.ts`)' } },
   { id: 'Ç01', sonuc: 'çökme', baslik: 'Blowgun her isabette istisna fırlatıyor ("Geçersiz zar ifadesi: \\"1+2\\"")',
     neden: 'Blowgun hasarı sabit "1"; `weaponAttackOptions` (src/battle/weapons.ts `optionFor`) DEX değiştiricisini "1+2" diye ekliyor, `parseDice` sabit+sabit ifadesini ayrıştıramıyor. Iskada zar atılmadığı için yalnız isabet/kritik bağlamları çöküyor.',
     oneri: '`optionFor` içinde zar sabitse tek sabit yaz; SRD Damage Rolls gereği sabit hasara yetenek değiştiricisi eklenmez ("you don\'t add your ability modifier to a fixed damage amount … such as the damage of a Blowgun"), büyülü silah bonusu eklenir.',
@@ -42,7 +43,8 @@ export const KATALOG: Bulgu[] = [
   { id: 'B03', sonuc: 'yanlış', baslik: 'Counterspell ile durdurulan 6.–9. seviye büyülerin etkisi yine uygulanıyor',
     neden: 'src/battle/spells.ts `executeCast`: `executeCastOver` Counterspell\'le durdurulmuş (slot harcanmamış) sonuç döndürse de `after69` kancası çalışıyor; Power Word Kill hasar veriyor, Power Word Stun etki koyuyor, Prismatic Spray, Mass Heal ve Reverse Gravity uygulanıyor.',
     oneri: '`executeCastWith` durdurmayı işaretlesin (ör. `countered: true`); `executeCast` bu durumda `after69` ve sonrası kancaları atlasın.',
-    eslesir: (r) => kotu(r) && bag(r, 'Counterspell') && ad(r, 'Power Word Kill', 'Power Word Stun', 'Prismatic Spray', 'Mass Heal', 'Reverse Gravity') },
+    eslesir: (r) => kotu(r) && bag(r, 'Counterspell') && ad(r, 'Power Word Kill', 'Power Word Stun', 'Prismatic Spray', 'Mass Heal', 'Reverse Gravity'),
+    duzeltme: { surum: 83, not: 'durdurulan büyüde yapım sonrası kancalar yok (`spell_cast.countered`); görünmez büyücüye Counterspell yok' } },
   { id: 'B04', sonuc: 'yanlış', baslik: 'Tepki büyüleri eylemle yapılabiliyor (Shield, Counterspell, Feather Fall, Hellish Rebuke)',
     neden: 'SRD: yapım süresi "Reaction, which you take when …". `cast_spell` komutu bunları eylemle kabul ediyor; slot harcanıyor, tetik olmadığı için etki yok (A0 bulgusu, hâlâ açık).',
     oneri: 'Büyü verisinde `castingTime: reaction` olanları `cast_spell` komutunda reddetmek (tepki akışı `reactions.ts` ayrı yoldan yapıyor).',
@@ -50,7 +52,9 @@ export const KATALOG: Bulgu[] = [
   { id: 'B05', sonuc: 'yanlış', baslik: 'Alan büyülerinin yapım anı save\'i eksik ya da tetik zamanı yanlış',
     neden: 'SRD: Incendiary Cloud "When the cloud appears … each creature in it makes a DEX save" ve giriş/tur sonu; veride `zone.on` = enter, end (cast yok). Wall of Thorns yapımda DEX 7d8 Piercing, giriş/tur sonunda 7d8 Slashing; veride yalnız enter. Blade Barrier yapımda save + giriş/tur sonu; veride enter, start. Conjure Celestial yapımda her yaratığa Searing Light (DEX 6d12) + giriş/tur sonu; veride enter, start. Storm of Vengeance belirince CON save, 2d6 Thunder + Deafened; veride yalnız aşamalı tur başı.',
     oneri: 'Büyü verisinde `zone.on` listelerini SRD\'ye çekmek (cast ekle; start → end), Wall of Thorns için yapım ve tetik hasar türlerini ayırmak, Storm of Vengeance\'a yapım anı save + Deafened eklemek.',
-    eslesir: (r) => kotu(r) && ad(r, 'Incendiary Cloud', 'Wall of Thorns', 'Blade Barrier', 'Conjure Celestial', 'Storm of Vengeance') },
+    // Yüzey satırları (alan tetiğinden gelen hasarın yüzey tablosuna girmemesi) B20'nin kök nedeni.
+    eslesir: (r) => kotu(r) && ad(r, 'Incendiary Cloud', 'Wall of Thorns', 'Blade Barrier', 'Conjure Celestial', 'Storm of Vengeance') && !bag(r, 'yüzey'),
+    duzeltme: { surum: 83, not: 'büyü verisinde `m83` bloğu; yapım anı tetiğinde siper, tek hasar zarı, eşzamanlı etki' } },
   { id: 'B06', sonuc: 'yanlış', baslik: 'Wall of Ice kesme hasarı save\'siz tam uygulanıyor',
     neden: 'SRD: duvarın kestiği yaratık itilir ve DEX save atar; başarıda yarı hasar. Motor 10d6 Cold\'u save olayı olmadan tam veriyor (`walls.ts` `cutDamage`).',
     oneri: '`cutDamage` yolunda DEX save (büyücünün DC\'si) ve başarıda yarı hasar; `save_resolved` olayı.',
@@ -110,7 +114,7 @@ export const KATALOG: Bulgu[] = [
   { id: 'B20', sonuc: 'yanlış', baslik: 'Alan (zone) yoluyla verilen ateş hasarı yüzey tablosuna girmiyor (Wall of Fire)',
     neden: 'Yüzey tablosunun `fireOil` satırı ateş hasarı değen yağı tutuşturur; `hexResolver.incomingOf` yalnız alan/isabet/save olaylarını okuyor, alan tetiğinin hasarını okumuyor.',
     oneri: '`incomingOf` alan tetiğinden (`zone_triggered` + hasar) element üretsin.',
-    eslesir: (r) => kotu(r) && ad(r, 'Wall of Fire') && bag(r, 'yüzey') },
+    eslesir: (r) => kotu(r) && ad(r, 'Wall of Fire', 'Incendiary Cloud', 'Wall of Thorns', 'Blade Barrier', 'Conjure Celestial', 'Storm of Vengeance') && bag(r, 'yüzey') },
   { id: 'U01', sonuc: 'uygulanmıyor', baslik: 'Irresistible Dance Charmed durumunu vermiyor',
     neden: 'SRD 5.2.1: başarısız save\'de hedef büyü süresince Charmed; dans etkileri Charmed iken. Motor dans etkisini uyguluyor ama Charmed durumu yok (Charmed\'a bağlı kurallar: büyüleyene saldıramama, Countercharm vb. işlemez).',
     oneri: 'Etkiye `grants: [\'Charmed\']`.',
@@ -170,6 +174,16 @@ function tally(rows: Sinifli[]): Record<Sonuc, number> {
   for (const r of rows) o[r.sonuc]++;
   return o;
 }
+
+/** Düzeltme turlarında bulunan, matris satırıyla ölçülmeyen yeni bulgular (onay bekliyor; düzeltilmedi). */
+export const YENI_BULGULAR: Array<{ id: string; baslik: string; neden: string; oneri: string }> = [
+  { id: 'G01', baslik: 'Save günlüğü durumdan gelen avantaj/dezavantajı göstermiyor (görünüm; sonucu etkilemez)',
+    neden: '`save_resolved.mode` motorun 41 save yolunun 27\'sinde sabit \'normal\', kalanında yalnız ortam kipi; Restrained, Dodge, Haste gibi kaynaklardan gelen kip yalnız atılan iki zarda görünür. Günlük "19 / 3 (normal)" yazar.',
+    oneri: 'Save olaylarına etkin kipi (`resolveSave`\'e giden `mode`) yazmak; günlük ve önizleme bunu okur.' },
+  { id: 'B21', baslik: 'Kayan bulut içine girdiği yaratığa save attırmıyor (Incendiary Cloud, Cloudkill)',
+    neden: 'SRD 5.2.1 Incendiary Cloud: "A creature must also make this save when the Sphere moves into its space" (Cloudkill benzer). `zoneDriftEvents` bulutu kaydırıyor (`zone_moved`) ama yeni kapladığı yaratıklar için tetik yok.',
+    oneri: 'Kayma sonrası yeni kaplanan altıgendeki yaratıklara `move` tetiği (turda bir kuralıyla), kural sürümü kapısıyla.' },
+];
 
 export function ozetOf(rows: Sinifli[], etiket: string, surum: number): Ozet {
   const bulgu: Record<string, number> = {};
@@ -261,6 +275,11 @@ export function markdown(rows: Sinifli[], ms: number, gecmis: Ozet[] = []): stri
       const ex = rs[0] as Sinifli;
       L.push(`- **Örnek:** ${ex.ad} — ${ex.baglam}: beklenen \`${ex.beklenen.slice(0, 160)}\`, gerçek \`${ex.gercek.slice(0, 160)}\``, '');
     }
+  }
+  if (YENI_BULGULAR.length) {
+    L.push('### Yeni bulgular (düzeltme turlarında bulundu; matris satırı yok; onay bekliyor)', '');
+    for (const b of YENI_BULGULAR) L.push(`- **${b.id} — ${b.baslik}.** ${b.neden} Öneri: ${b.oneri}`);
+    L.push('');
   }
   const rest = rows.filter((r) => r.sonuc !== 'doğru' && !r.bulgu);
   if (rest.length) {

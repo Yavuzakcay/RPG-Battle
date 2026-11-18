@@ -9,7 +9,7 @@ import { mechanicsAt } from '../../battle/spellVersion';
 import { defaultRuleVersion } from '../../battle/create';
 import { P1 } from '../../battle/fixtures';
 import type { BattleState, Combatant, Command } from '../../battle/types';
-import type { Offset } from '../../rules/hex';
+import { distance as hexDistance, type Offset } from '../../rules/hex';
 import { SRD_SPELLS, type SrdSpell } from './srd';
 import { OZEL, type Yapim } from './ozel';
 import {
@@ -180,7 +180,9 @@ export function runCtx(sp: Spell, s: SrdSpell, geo: Geo, c: Ctx, cmdBase: Partia
 
 const T0 = (g: Gozlem) => g.saldirilar.filter((x) => x.hedef === 'T');
 const S0 = (g: Gozlem, id = 'T') => g.saveler.find((x) => x.hedef === id);
-const etkilenen = (g: Gozlem) => [...new Set([...g.saveler.map((x) => x.hedef), ...g.saldirilar.map((x) => x.hedef)])].sort();
+// İyileşen de etkilenmiştir (Conjure Celestial: "For each creature you can see in the Cylinder, choose which of these
+// lights shines on it: Healing Light … Searing Light"; ölçüm düzeltmesi, eskiden yalnız save ve saldırı sayılıyordu).
+const etkilenen = (g: Gozlem) => [...new Set([...g.saveler.map((x) => x.hedef), ...g.saldirilar.map((x) => x.hedef), ...Object.keys(g.iyilesme)])].sort();
 const dmgZar = (g: Gozlem) => g.zarlar.filter((z) => z.kind === 'damage' || z.kind === undefined);
 
 /** Saldırı zarının beklenen sonucu (kip, doğal zar, toplam, AC, isabet, kritik). */
@@ -390,7 +392,10 @@ export function damageRows(sp: Spell, s0: SrdSpell, ov?: Yapim): Satir[] {
       const uPos = !geo.u ? null : pushed && geo.kind === 'self' && sp.area?.shape === 'line' ? hex(A_ROW + Math.max(2, geo.radius - 1)) : pushed ? { col: AX + 1, row: geo.t.row + 1 } : geo.u;
       out.push(runCtx(sp, s, geo, { ad: 'alan içi hedefler (2 içeride, 1 dışarıda)', kategori: 'alan',
         extra: [...(uPos ? [enemy('U', uPos, s.targetType ? { creatureType: s.targetType.toLowerCase() } : {})] : []), ...(geo.z ? [enemy('Z', geo.z)] : [])], p: { saves: { T: [SAVE_FAIL], U: [SAVE_FAIL], Z: [SAVE_FAIL] } },
-        bek: (g) => [alan('etkilenen', ['T', ...(geo.u ? ['U'] : [])].sort(), etkilenen(g)),
+        // Alan haritanın tamamını kaplıyorsa (Storm of Vengeance: "spreading to a radius of 300 feet … Each creature under
+        // the cloud when it appears"), büyücü A ve dost B de içeride (kahin düzeltmesi; harita 31×45 altıgen).
+        bek: (g) => [alan('etkilenen', ['T', ...(geo.u ? ['U'] : []), ...(sp.area && sp.area.origin === 'point' && sp.area.shape === 'sphere' && sp.area.targets === 'all' && geo.aim
+          ? (['A', 'B'] as const).filter((id) => hexDistance(id === 'A' ? hex(A_ROW) : hex(A_ROW, AX - 6), geo.aim as Offset) <= (sp.area?.sizeFt ?? 0) / 5) : [])].sort(), etkilenen(g)),
           ...(ps.length && geo.u ? [alan('U hasarı', dmgFor({ save: 'fail' }), g.hp.U ?? 0)] : [])] }, cmdBase, mech, cls('alan')));
       if (geo.ff) {
         out.push(runCtx(sp, s, geo, { ad: `dost ateşi (dost alanda; SRD: ${s.chooseTargets ? 'seçilen yaratıklar' : 'alandaki herkes'})`, kategori: 'alan',
