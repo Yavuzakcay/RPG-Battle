@@ -24,6 +24,7 @@ import { pickArea } from './areaAttack';
 import { timedCondition } from './durations';
 import { combatantFromMonster } from './create';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
+import { matrisOn } from './matrisSurum';
 
 type M = Spell['mechanics'] & {
   extraTargets?: number; extraWithinFt?: number; dustAtZero?: boolean; notBelowOne?: boolean; maxHpDrain?: boolean; cures?: string[];
@@ -77,8 +78,12 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
   // Chain Lightning: birincil hedefin 30 ft'indeki en çok 3 düşman (aynı DC) save yapar.
   if (m.extraTargets && target.id) {
     const first = cur.combatants[target.id];
+    // Mekanik matris B12 (sürüm 83+): SRD 5.2.1 "One additional bolt leaps from the first target to another target for each
+    // spell slot level above 6." Yapımın slot seviyesi `slot_spent` olayından. 82 ve altı: hep 3.
+    const castLevel = events.find((e): e is Extract<BattleEvent, { type: 'slot_spent' }> => e.type === 'slot_spent' && e.actorId === actor.id)?.level ?? spell.level;
+    const bolts = m.extraTargets + (matrisOn(before) ? Math.max(0, castLevel - spell.level) : 0);
     const others = first ? Object.values(cur.combatants).filter((c) => c.id !== first.id && c.id !== actor.id && c.side !== actor.side && c.hp > 0 && ft(first, c) <= (m.extraWithinFt ?? 30))
-      .slice(0, m.extraTargets) : [];
+      .slice(0, bolts) : [];
     const fake: Combatant = { ...actor, attacks: [{ name: spell.name, bonus: 0, damageDice: m.damage, damageType: m.damageType, save: { ability: m.save as 'dex', dc: actor.spellSaveDc ?? 15, halfOnSave: true }, repeat: 0, ranged: true, range: [600, 600], text: spell.name } as unknown as Combatant['attacks'][number]], rechargeUsed: [] };
     for (const o of others) { const r = monsterAttackEvents(cur, fake, o, 0, rng); if (r.ok) add(r.events); }
   }

@@ -265,3 +265,16 @@ describe('B09: Arcane Sword hasarına büyü yeteneği değiştiricisi (SRD "4d1
     });
   }
 });
+
+describe('B12: Chain Lightning yukarı slotta ek şimşek (SRD "One additional bolt … for each spell slot level above 6")', () => {
+  for (const [v, n] of [[83, 4], [82, 3]] as const) {
+    it(`${v}: 7. seviye slotla ilk hedef + ${n} sıçrama`, () => {
+      const foes = ['T', 'U', 'V', 'W', 'X'].map((id, i) => foe(id, { pos: { col: 8 + (i % 3), row: 4 + Math.floor(i / 3) * 2 } }));
+      const s = scene(v, [caster({ level: 17, spellNames: ['Chain Lightning'], spellSlots: [4, 3, 3, 3, 3, 2, 2, 1, 1] }), ...foes]);
+      const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Chain Lightning', slotLevel: 7, targetId: 'T' } as Command, hooked({ one: 1, two: [1, 1] }));
+      expect(r.ok, r.error).toBe(true);
+      const hit = ['T', 'U', 'V', 'W', 'X'].filter((id) => (r.state.combatants[id]?.hp ?? 100) < 100);
+      expect(hit).toHaveLength(1 + n);
+    });
+  }
+});
