@@ -7,15 +7,14 @@
       "senaryo": "k34-beyaz-sehir-saray-avlusu",
       "seviye": 5,
       "normal": {
-        "gladiator": 3,
-        "knight": 4,
+        "gladiator": 2,
+        "knight": 3,
         "warrior-veteran": 3
       },
       "kolay": {
         "gladiator": 2,
-        "knight": 4,
-        "warrior-veteran": 3,
-        "guard": 1
+        "knight": 2,
+        "warrior-veteran": 2
       }
     },
     {
@@ -24,16 +23,15 @@
       "senaryo": "k34-kale-taht-salonu",
       "seviye": 5,
       "normal": {
-        "mage": 2,
-        "knight": 3,
+        "mage": 1,
+        "knight": 1,
         "warrior-veteran": 2,
-        "guard": 1
+        "guard": 2
       },
       "kolay": {
-        "mage": 2,
+        "mage": 1,
         "knight": 2,
-        "warrior-veteran": 2,
-        "berserker": 1
+        "guard": 2
       }
     },
     {
@@ -43,14 +41,14 @@
       "seviye": 3,
       "normal": {
         "gladiator": 2,
-        "knight": 3,
+        "knight": 2,
         "warrior-veteran": 2,
         "guard": 1
       },
       "kolay": {
         "gladiator": 2,
-        "knight": 2,
-        "warrior-veteran": 2,
+        "knight": 1,
+        "warrior-veteran": 1,
         "guard": 2
       }
     },
@@ -60,11 +58,12 @@
       "senaryo": "volkan-ejder",
       "seviye": 5,
       "normal": {
-        "wyvern": 1,
-        "magmin": 2
+        "wyvern": 2,
+        "magmin": 3
       },
       "kolay": {
-        "wyvern": 1
+        "wyvern": 2,
+        "magmin": 1
       }
     }
   ]

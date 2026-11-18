@@ -7,8 +7,8 @@ import { encounterBudget } from '../rules/budget';
 import { ENCOUNTER_RULES, REGIONS, crXp, isLegendary, levelMultiplier, regionEncounter, regionMonsters } from './encounter';
 
 describe('bölge karşılaşma üreteci', () => {
-  it('seviye çarpanı (onaylı): 9 ×1,3, 13 ×0,8, diğerleri 1', () => {
-    expect([1, 5, 9, 13, 17, 20].map(levelMultiplier)).toEqual([1, 1, 1.3, 0.8, 1, 1]);
+  it('seviye çarpanı (Dungeondex öncesi denge turu, kullanıcı onaylı): 1 ×1,8, 5 ×1,5, 9 ×1,2, 13 ×0,8, diğerleri 1', () => {
+    expect([1, 5, 9, 13, 17, 20].map(levelMultiplier)).toEqual([1.8, 1.5, 1.2, 0.8, 1, 1]);
   });
   it('yedi bölge; haritaları var; canavar havuzu dolu ve dışlananlar yok', () => {
     expect(REGIONS.map((r) => r.id)).toEqual(['buzul', 'dag', 'orman', 'col', 'bataklik', 'bati-kiyisi', 'volkan']);
@@ -24,7 +24,7 @@ describe('bölge karşılaşma üreteci', () => {
       const levels = Array(5).fill(lv);
       const e = regionEncounter(r, levels, seededRng(seed));
       const xp = Object.entries(e.enemies).reduce((n, [id, k]) => n + crXp(getMonster(id).cr) * k, 0);
-      expect(e.budget).toBe(Math.round(encounterBudget(levels, 'moderate') * levelMultiplier(lv)));
+      expect(e.budget).toBe(Math.round(encounterBudget(levels, 'moderate') * r.carpan * levelMultiplier(lv)));
       expect(xp).toBe(e.xp);
       expect(xp).toBeLessThanOrEqual(e.budget);
       expect(Object.values(e.enemies).reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(ENCOUNTER_RULES.enCok);

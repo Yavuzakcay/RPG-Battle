@@ -4,14 +4,14 @@
  "haric": ["troll-limb", "vampire-familiar", "commoner", "noble"],
  "haricTema": ["Deniz canlıları"],
  "kurallar": { "liderCrEk": 0, "enCok": 6, "yardimciOran": 16, "altSinir": 0.75, "liderPay": 0.6, "efsaneviEnCok": 1 },
- "seviyeCarpani": { "9": 1.3, "13": 0.8 },
+ "seviyeCarpani": { "1": 1.8, "5": 1.5, "9": 1.2, "13": 0.8 },
  "bolgeler": [
-  { "id": "buzul", "ad": { "tr": "Buzul", "en": "Glacier" }, "harita": { "mapId": "buzul-acik", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "dag", "ad": { "tr": "Dağ", "en": "Mountain" }, "harita": { "mapId": "dag-karakol", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "orman", "ad": { "tr": "Orman", "en": "Forest" }, "harita": { "mapId": "orman", "variantId": "orman" }, "carpan": 1 },
-  { "id": "col", "ad": { "tr": "Çöl", "en": "Desert" }, "harita": { "mapId": "col-vaha", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "bataklik", "ad": { "tr": "Bataklık", "en": "Swamp" }, "harita": { "mapId": "batak-adalar", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "bati-kiyisi", "ad": { "tr": "Batı Kıyısı", "en": "West Coast" }, "harita": { "mapId": "kale-onu", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "volkan", "ad": { "tr": "Volkan", "en": "Volcano" }, "harita": { "mapId": "isinlanma-salonu", "variantId": "varsayilan" }, "carpan": 1 }
+  { "id": "buzul", "ad": { "tr": "Buzul", "en": "Glacier" }, "harita": { "mapId": "buzul-acik", "variantId": "gunduz" }, "carpan": 0.85 },
+  { "id": "dag", "ad": { "tr": "Dağ", "en": "Mountain" }, "harita": { "mapId": "dag-karakol", "variantId": "gunduz" }, "carpan": 0.9 },
+  { "id": "orman", "ad": { "tr": "Orman", "en": "Forest" }, "harita": { "mapId": "orman", "variantId": "orman" }, "carpan": 1.2 },
+  { "id": "col", "ad": { "tr": "Çöl", "en": "Desert" }, "harita": { "mapId": "col-vaha", "variantId": "gunduz" }, "carpan": 0.95 },
+  { "id": "bataklik", "ad": { "tr": "Bataklık", "en": "Swamp" }, "harita": { "mapId": "batak-adalar", "variantId": "gunduz" }, "carpan": 1.4 },
+  { "id": "bati-kiyisi", "ad": { "tr": "Batı Kıyısı", "en": "West Coast" }, "harita": { "mapId": "kale-onu", "variantId": "gunduz" }, "carpan": 0.95 },
+  { "id": "volkan", "ad": { "tr": "Volkan", "en": "Volcano" }, "harita": { "mapId": "isinlanma-salonu", "variantId": "varsayilan" }, "carpan": 0.85 }
  ]
 }

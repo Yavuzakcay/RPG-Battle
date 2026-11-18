@@ -48,8 +48,8 @@
      "scout": 1
     },
     "5": {
-     "giant-scorpion": 2,
-     "mummy": 2,
+     "giant-scorpion": 3,
+     "mummy": 3,
      "manticore": 2,
      "gnoll-warrior": 4,
      "giant-hyena": 1,
@@ -133,8 +133,8 @@
      "kobold-warrior": 2
     },
     "5": {
-     "wyvern": 1,
-     "magmin": 2
+     "wyvern": 2,
+     "magmin": 3
     }
    }
   },
@@ -349,8 +349,7 @@
      "ghoul": 1,
      "darkmantle": 1,
      "ettercap": 1,
-     "ogre": 1,
-     "grimlock": 1
+     "ogre": 2
     },
     "7": {
      "troll": 1,
@@ -508,22 +507,22 @@
    },
    "enemies": {
     "1": {
-     "goblin-warrior": 4,
+     "goblin-warrior": 6,
      "guard": 2
     },
     "3": {
      "hobgoblin-warrior": 3,
      "goblin-warrior": 3,
-     "bugbear-warrior": 1
+     "bugbear-warrior": 2
     },
     "5": {
-     "hobgoblin-warrior": 4,
+     "hobgoblin-warrior": 3,
      "goblin-warrior": 4,
      "hobgoblin-captain": 1,
      "bugbear-stalker": 1,
-     "berserker": 3,
+     "berserker": 2,
      "warrior-veteran": 2,
-     "bugbear-warrior": 2
+     "bugbear-warrior": 1
     },
     "7": {
      "gladiator": 1,
