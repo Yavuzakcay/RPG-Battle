@@ -1,0 +1,17 @@
+sayfa,hucre,dosya,irk,cinsiyet,temizlik
+01,1,human-erkek-barbarian-ID8.webp,human,erkek,magenta_px=0; despill_px=1511; kucuk_grup_px=0
+01,2,elf-erkek-barbarian-ID8.webp,elf,erkek,magenta_px=26; despill_px=44; kucuk_grup_px=0
+01,3,dwarf-erkek-barbarian-ID8.webp,dwarf,erkek,magenta_px=0; despill_px=5834; kucuk_grup_px=0
+01,4,halfling-erkek-barbarian-ID8.webp,halfling,erkek,ayiklanan_figur_px=8018; magenta_px=217; despill_px=23; kucuk_grup_px=0
+01,5,gnome-erkek-barbarian-ID8.webp,gnome,erkek,magenta_px=108; despill_px=66; kucuk_grup_px=0
+01,6,orc-erkek-barbarian-ID8.webp,orc,erkek,magenta_px=0; despill_px=4319; kucuk_grup_px=0
+01,7,tiefling-erkek-barbarian-ID8.webp,tiefling,erkek,magenta_px=0; despill_px=7312; kucuk_grup_px=0
+01,8,goliath-erkek-barbarian-ID8.webp,goliath,erkek,magenta_px=0; despill_px=2013; kucuk_grup_px=0
+02,1,human-kadin-barbarian-ID8.webp,human,kadin,magenta_px=0; despill_px=4922; kucuk_grup_px=0
+02,2,elf-kadin-barbarian-ID8.webp,elf,kadin,magenta_px=0; despill_px=3732; kucuk_grup_px=0
+02,3,dwarf-kadin-barbarian-ID8.webp,dwarf,kadin,magenta_px=0; despill_px=7470; kucuk_grup_px=0
+02,4,halfling-kadin-barbarian-ID8.webp,halfling,kadin,magenta_px=0; despill_px=580; kucuk_grup_px=0
+02,5,gnome-kadin-barbarian-ID8.webp,gnome,kadin,ayiklanan_figur_px=8971; magenta_px=0; despill_px=75; kucuk_grup_px=0
+02,6,orc-kadin-barbarian-ID8.webp,orc,kadin,magenta_px=1; despill_px=77; kucuk_grup_px=0
+02,7,tiefling-kadin-barbarian-ID8.webp,tiefling,kadin,magenta_px=0; despill_px=735; kucuk_grup_px=0
+02,8,goliath-kadin-barbarian-ID8.webp,goliath,kadin,magenta_px=0; despill_px=763; kucuk_grup_px=0
