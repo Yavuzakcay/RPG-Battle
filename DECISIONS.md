@@ -9,6 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Aura-sil v3: kaynak sayfadan yeniden kesim (onay bekliyor; Gemini'ye gidilmedi)
+
+- Aynı iş için önceden `aura-sil-v2-*` ve `aura-sil-karsilastirma.png` (jetondan türetilmiş, %4 boşluk) vardı; "üzerine yazma" gereği yeni dosyalar `-v3` adıyla: `docs/sabah/aura-sil-v3-sayfa-01/02.png`, `aura-sil-v3-eslesme.csv`, `aura-sil-v3-karsilastirma.png` (eski v1 | yeni v3). Üretici `scripts/aura-sil-v3.py`. v1 ve v2 dosyalarına dokunulmadı.
+- İki figürlü jetonlar Halfling erkek (sayfa 01 hücre 4) ve **Gnome kadın (sayfa 02 hücre 5)**; talepte "Halfling" yazan kadın hücre 5 sırayla Gnome'dur, düzeltilen o. Kadın Halfling (hücre 4) de komşu artığı attığı için aynı yöntemle yeniden kesildi.
+- Kaynak `barbarian-<male|female>-<ırk>.jpg` hücre 8 (Çılgın Savaşçı), hücre sınırı içinde kırpıldı, hücrenin kendi zemini örneklendi, en büyük bağlı grup (+ ≥ %12 ve kenara değmeyen parçalar) kaldı. 16 jetonun hepsine despill: kenar bandında zemin rengine yakın/zemin tonlu pikseller silindi, 1 px daraltıldı. Auralar (ateş, pembe sis) silinmedi: o Gemini adımının işi.
+- Sayfa: 1536², düz #FF00FF, hücre 512, figür en çok %80 kutuda (her kenarda ≥ %10 boşluk, assert), ayak %90 hizasında, 9. hücre boş. Not: Çılgın Savaşçı'nın bazı pembe aurası macenta zeminde zor seçilir; zemin istenen gibi bırakıldı.
+
 ## Gladyatör toplu sayfa hazırlığı: Sancaktar sayfaları (soru sorulmadı, en makul okuma)
 
 - Kaynak: `fighter-<male|female>-<ırk>.jpg` (uzak dal `wip/karakter-ham`), Sancaktar = 4×3 sırasında 10. hücre (satır 3, sütun 2). Üretici `scripts/gladyator-sayfa.py`; çıktı `docs/sabah/gladyator-sayfa/` (`sancaktar-erkek.png`, `sancaktar-kadin.png`, `sancaktar-dragonborn.png`, `eslesme.csv`); mevcut dosyaların üzerine yazmaz.
