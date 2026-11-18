@@ -292,3 +292,20 @@ describe('B17: Protection from Energy süresi 1 saat (SRD "Concentration, up to 
     });
   }
 });
+
+describe('U01: Irresistible Dance başarısız save\'de Charmed (SRD "On a failed save, the target has the Charmed condition … Disadvantage on Dexterity saving throws")', () => {
+  const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Irresistible Dance', slotLevel: 6, targetId: 'T' } as Command;
+  const parts = (): Combatant[] => [caster({ level: 17, spellNames: ['Irresistible Dance'], spellSlots: [4, 3, 3, 3, 3, 2, 2, 1, 1] }), foe('T')];
+  it('83: Charmed (büyüleyen büyücü), DEX save dezavantajı yalnız DEX', () => {
+    const r = run(scene(83, parts()), cmd, hooked({ one: 1, two: [1, 1] }));
+    expect(r.ok, r.error).toBe(true);
+    const t = r.state.combatants.T as Combatant;
+    expect(t.conditions).toContain('Charmed');
+    expect(saveMode('normal', t, 'dex')).toBe('disadvantage');
+    expect(saveMode('normal', t, 'wis')).toBe('normal');
+  });
+  it('82: eski davranış (Charmed yok)', () => {
+    const r = run(scene(82, parts()), cmd, hooked({ one: 1, two: [1, 1] }));
+    expect(r.state.combatants.T?.conditions).not.toContain('Charmed');
+  });
+});

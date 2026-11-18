@@ -599,6 +599,7 @@
   "text": "30 ft, WIS save: başarısızsa Charmed, yerinde dans eder; DEX save ve saldırılarında dezavantaj, ona saldırılar avantajlı; eylemle yeniden save (konsantrasyon, 1 dakika); başarılıysa bir tur dans",
   "concentration": true,
   "mechanics": {
+   "m83": {"conditions": ["Charmed"], "effect": {"targets": 1, "side": "enemy", "rounds": 10, "grants": ["Charmed"], "charm": true, "speedZero": true, "attackDis": {}, "saveDis": ["dex"], "attackedAdv": true, "repeatSave": true, "icon": "💃", "onSave": {"speedZero": true, "untilOwnTurnEnd": true, "icon": "💃"}}},
    "kind": "effect",
    "save": "wis",
    "effect": {
