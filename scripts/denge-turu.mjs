@@ -54,6 +54,8 @@ G.r3 = [
 ];
 // Son yeniden ölçüm: tur 1'de listesi değişen 5. seviye senaryolarının (Çöl, Kale, Mağara) standart olmayan sekiz partisi.
 G.son = G.sim5.filter((j) => /^sim-L5-(?!standart)[a-z]+-(col|kale|magara)$/.test(j.id));
+// Tur 3 bölge: yalnız tur 2'de bant dışı kalan üç hücre (Buzul 5, Dağ 1, Dağ 5).
+G.r3c = [['buzul', '5'], ['dag', '1'], ['dag', '5']].map(([r, l]) => ({ id: r === 'buzul' ? 'bolge-buzul' : `bolge-${r}-${l}`, args: ['src/sim/bolgeRun.ts', '100', '--bolge', r, '--seviye', l] }));
 G.r3b = [G.zincir[0]]; // Kuzey yolu: ilk gün (Kale 3. seviye listesi tur 1'de sertleşti)
 G.r2 = [
   ...only(G.boss, ['boss-kale-kolay', 'boss-volkan-kolay']), ...G.hapis.slice(0, 2),

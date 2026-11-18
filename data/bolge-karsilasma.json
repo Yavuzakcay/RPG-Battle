@@ -6,8 +6,8 @@
  "kurallar": { "liderCrEk": 0, "enCok": 6, "yardimciOran": 16, "altSinir": 0.75, "liderPay": 0.6, "efsaneviEnCok": 1 },
  "seviyeCarpani": { "1": 1.8, "5": 1.5, "9": 1.2, "13": 0.8 },
  "bolgeler": [
-  { "id": "buzul", "ad": { "tr": "Buzul", "en": "Glacier" }, "harita": { "mapId": "buzul-acik", "variantId": "gunduz" }, "carpan": 0.85, "seviyeDuzeltme": { "1": 1.24, "5": 1.36, "9": 0.84 } },
-  { "id": "dag", "ad": { "tr": "Dağ", "en": "Mountain" }, "harita": { "mapId": "dag-karakol", "variantId": "gunduz" }, "carpan": 0.9, "seviyeDuzeltme": { "1": 1.27, "5": 0.88, "9": 0.93 } },
+  { "id": "buzul", "ad": { "tr": "Buzul", "en": "Glacier" }, "harita": { "mapId": "buzul-acik", "variantId": "gunduz" }, "carpan": 0.85, "seviyeDuzeltme": { "1": 1.24, "5": 1.29, "9": 0.84 } },
+  { "id": "dag", "ad": { "tr": "Dağ", "en": "Mountain" }, "harita": { "mapId": "dag-karakol", "variantId": "gunduz" }, "carpan": 0.9, "seviyeDuzeltme": { "1": 1.17, "5": 0.93, "9": 0.93 } },
   { "id": "orman", "ad": { "tr": "Orman", "en": "Forest" }, "harita": { "mapId": "orman", "variantId": "orman" }, "carpan": 1.2, "seviyeDuzeltme": { "1": 1.08 } },
   { "id": "col", "ad": { "tr": "Çöl", "en": "Desert" }, "harita": { "mapId": "col-vaha", "variantId": "gunduz" }, "carpan": 0.95, "seviyeDuzeltme": { "1": 0.76, "5": 1.1, "9": 1.18 } },
   { "id": "bataklik", "ad": { "tr": "Bataklık", "en": "Swamp" }, "harita": { "mapId": "batak-adalar", "variantId": "gunduz" }, "carpan": 1.4, "seviyeDuzeltme": { "5": 0.74 } },
