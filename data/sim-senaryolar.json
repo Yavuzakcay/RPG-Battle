@@ -459,9 +459,10 @@
      "skeleton": 3
     },
     "5": {
+     "wraith": 2,
      "ghast": 3,
-     "skeleton": 4,
-     "wight": 1
+     "wight": 2,
+     "mummy": 1
     },
     "7": {
      "ghast": 3,
@@ -1189,7 +1190,8 @@
      "ettercap": 2,
      "giant-spider": 3,
      "violet-fungus": 2,
-     "shrieker-fungus": 1
+     "shrieker-fungus": 1,
+     "phase-spider": 2
     },
     "7": {
      "ettercap": 2,

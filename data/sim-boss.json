@@ -30,9 +30,8 @@
       },
       "kolay": {
         "mage": 1,
-        "knight": 1,
         "warrior-veteran": 1,
-        "guard": 2
+        "guard": 3
       }
     },
     {

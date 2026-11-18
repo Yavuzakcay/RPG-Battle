@@ -47,6 +47,11 @@ G.r1 = [
 G.r1b = [...only(G.ekstra, ['sim-L3-standart-kale'])];
 // Tur 2: boss Kolay (Kale, Volkan), hapishane zinciri, bölge × seviye düzeltmeleri (yalnız değişen hücreler), Kale 3. seviye.
 const R2_BOLGE = { buzul: '1,5,9', dag: '1,5,9', orman: '1', col: '1,5,9', bataklik: '5', 'bati-kiyisi': '1,5', volkan: '9' };
+// Tur 3: boss Kale Kolay (yeni liste), Derinlikler mantar zinciri (mantar + merdiven listeleri).
+G.r3 = [
+  ...only(G.boss, ['boss-kale-kolay']),
+  G.zincir[1],
+];
 G.r2 = [
   ...only(G.boss, ['boss-kale-kolay', 'boss-volkan-kolay']), ...G.hapis.slice(0, 2),
   ...Object.entries(R2_BOLGE).map(([r, l]) => ({ id: `bolge-${r}`, args: ['src/sim/bolgeRun.ts', '100', '--bolge', r, '--seviye', l] })),
