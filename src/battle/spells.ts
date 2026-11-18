@@ -1644,7 +1644,10 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
   const ss = spell.mechanics.smiteSave;
   let caught = true;
   if (ss && hit && hit.hp > 0) {
-    const big = ss.largeAdvantage && ['Large', 'Huge', 'Gargantuan'].includes(hit.size) ? 'advantage' : 'normal';
+    // Mekanik matris B07 (sürüm 83+): SRD 5.2.1 "A Large or larger creature has Advantage on this save." Boyut kodu
+    // L/H/G; eski karşılaştırma ('Large'…) hiç eşleşmiyordu (82 ve altı aynen: avantaj yok).
+    const bigSizes: string[] = matrisOn(state) ? ['L', 'H', 'G'] : ['Large', 'Huge', 'Gargantuan'];
+    const big = ss.largeAdvantage && bigSizes.includes(hit.size) ? 'advantage' : 'normal';
     const autoFail = (ss.ability === 'str' || ss.ability === 'dex') && autoFailsStrDexSave(hit.conditions);
     const dc = actor.spellSaveDc ?? 10;
     const save = resolveSave({ extra: saveDice(hit, ss.ability), modifier: hit.saves[ss.ability], dc, mode: saveMode(big, hit, ss.ability), autoFail }, rollTag(rng, { by: hit.id }));

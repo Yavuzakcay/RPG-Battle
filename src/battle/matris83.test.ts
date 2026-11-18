@@ -238,3 +238,19 @@ describe('B05: alan büyülerinin yapım anı save\'i ve tetik zamanı (SRD metn
     expect(savesOn(r.events, 'B')).toHaveLength(0);
   });
 });
+
+describe('B07: Ensnaring Strike — Large ve büyük hedef save\'i avantajlı (SRD "A Large or larger creature has Advantage on this save.")', () => {
+  for (const [v, mode] of [[83, 'advantage'], [82, 'normal']] as const) {
+    it(`${v}: Large hedefte STR save kipi ${mode}`, () => {
+      const ranger = caster({ spellNames: ['Ensnaring Strike'], weaponOptions: [{ label: 'Longsword', attackBonus: 9, damage: '1d8+4', damageType: 'slashing', ranged: false, spell: false, tag: 'longsword', reachFt: 5 }] });
+      const s = scene(v, [ranger, foe('T', { size: 'L', ac: 10 })]);
+      const a = s.combatants.A as Combatant;
+      const prepared = { ...s, combatants: { ...s.combatants, A: { ...a, economy: { ...a.economy, meleeHit: { targetId: 'T', critical: false } } } as Combatant } };
+      const r = run(prepared, { type: 'cast_spell', actorId: 'A', spellName: 'Ensnaring Strike', slotLevel: 1, targetId: 'T' } as Command, hooked({ one: 5, two: [5, 19] }));
+      expect(r.ok, r.error).toBe(true);
+      const sv = r.events.find((e) => e.type === 'save_resolved' && e.targetId === 'T') as Extract<BattleEvent, { type: 'save_resolved' }> | undefined;
+      expect(sv?.d20.length).toBe(mode === 'advantage' ? 2 : 1);
+      expect(sv?.success).toBe(mode === 'advantage');
+    });
+  }
+});
