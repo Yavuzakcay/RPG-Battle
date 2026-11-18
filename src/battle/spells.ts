@@ -5,6 +5,7 @@ import { possessedEffect, possessionEndEvents, possessionOn } from './possession
 import { possessorAt } from './possessionCore';
 import { canSeeTarget, truesightSees } from './sight';
 import { areaNeedsSight, unseenTargetProblem } from './seenTargets';
+import { matrisOn } from './matrisSurum';
 import { gazePos } from './chainPact';
 import { lifeBondEvents } from './steed';
 import { executeTerraform } from './terraform';
@@ -414,6 +415,9 @@ export function executeCast(state: BattleState, actor0: Combatant, cmd0: CastCom
   const actor00 = ic ? { ...actor0, ...(ic.dc !== undefined ? { spellSaveDc: ic.dc } : {}), ...(ic.attack !== undefined ? { spellAttack: ic.attack } : {}) } : actor0;
   const r0 = executeCastOver(state, actor00, cmd, rng);
   if (!r0.ok) return r0;
+  // Mekanik matris B03 (sürüm 83+): Counterspell'le durdurulan büyü "dissipates with no effect" (SRD 5.2.1): yapım
+  // sonrası kancalar (6.–9. seviye etkileri, şarj, Potent Spellcasting, Free Casting) çalışmaz. 82 ve altı aynen.
+  if (wasCountered(r0.events)) return r0;
   // Kuyruk 19 (görev 3): 6.–9. seviye büyü kancaları (Power Word, Mass Heal, Chain Lightning, Globe…).
   const ev69 = sp0 ? after69(state, r0.state, actor00, sp0, r0.events, { ...(cmd.targetId ? { id: cmd.targetId } : {}), ...(cmd.targetHex ? { hex: cmd.targetHex } : {}), ...(cmd.choice ? { choice: cmd.choice } : {}) }, rng) : null;
   const r1 = ev69 ? finish(state, ev69) : r0;
@@ -494,9 +498,14 @@ function breakOnSpellEvents(after: BattleState, cmd: CastCommand): BattleEvent[]
   return out;
 }
 
+/** Mekanik matris B03 (sürüm 83+; olay işareti yalnız 83+'da yazılır): yapım Counterspell'le durduruldu mu. */
+const wasCountered = (events: BattleEvent[]): boolean => events.some((e) => e.type === 'spell_cast' && e.countered === true);
+
 /** Kuyruk 19: Find Steed atının Life Bond'u (sahibe büyüyle gelen iyileşme ata da). */
 function withLifeBond(state: BattleState, cmd: CastCommand, r: CommandResult): CommandResult {
   if (!r.ok) return r;
+  // Mekanik matris B03 (sürüm 83+): durdurulan büyü etkisiz: "büyüyle biten" etki (Modify Memory) de bitmez.
+  if (wasCountered(r.events)) return r;
   const extra = [...lifeBondEvents(r.state, r.events, spells.find((s) => s.name === cmd.spellName)?.level ?? 0), ...breakOnSpellEvents(r.state, cmd)];
   return extra.length ? finish(state, [...r.events, ...extra]) : r;
 }
@@ -550,7 +559,7 @@ function executeCastWith(state: BattleState, actor: Combatant, cmd: CastCommand,
   const counter = counterspellCheck(state, actor, spell.name, spell.level, rng);
   if (counter.countered) {
     return finish(state, [...counter.events, { type: 'spell_cast', actorId: actor.id, targetId: cmd.targetId ?? null, label: spell.name, slotLevel: null,
-      note: 'Counterspell ile durduruldu: büyü boşa gitti, slot harcanmadı.' }]);
+      note: 'Counterspell ile durduruldu: büyü boşa gitti, slot harcanmadı.', ...(matrisOn(state) ? { countered: true as const } : {}) }]);
   }
   const before = applyEvents(state, counter.events);
   const r = castSpell(before, before.combatants[actor.id] as Combatant, cmd, spell, rng);

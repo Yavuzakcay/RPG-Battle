@@ -114,3 +114,49 @@ describe('B02: alan büyüsünde görülmeyen yaratık etkilenmez (Compulsion "e
     expect(saveOf(r82.events, 'U')).toBeDefined();
   });
 });
+
+describe('B03: Counterspell SRD akışı (CON save; başarısızlıkta büyü etkisiz, eylem boşa, slot harcanmaz)', () => {
+  const counter = (p: Partial<Combatant> = {}): Combatant => foe('K', { pos: { col: 8, row: 5 }, spellNames: ['Counterspell'], spellSlots: [0, 0, 2, 0, 0, 0, 0, 0, 0], spellSaveDc: 15,
+    reactions: [{ id: 'spells:counterspell', name: 'Counterspell', spell: 'Counterspell', kind: 'counterspell', save: 'con', rangeFt: 60 }] as never, ...p });
+  const bh: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Burning Hands', slotLevel: 1, targetHex: { col: 4, row: 5 } } as Command;
+  const parts = (k: Combatant = counter(), a: Partial<Combatant> = {}): Combatant[] => [caster({ spellNames: ['Burning Hands'], ...a }), foe('T'), k];
+  for (const v of [82, 83]) {
+    it(`${v}: büyücünün CON save'i başarısız → büyü etkisiz, eylem harcanır, büyücünün slotu harcanmaz; karşı büyücünün 3. seviye slotu ve tepkisi harcanır`, () => {
+      const r = run(scene(v, parts()), bh, hooked({ one: 1, two: [1, 1] }));
+      expect(r.ok, r.error).toBe(true);
+      const sv = r.events.find((e) => e.type === 'save_resolved' && e.targetId === 'A') as Extract<BattleEvent, { type: 'save_resolved' }> | undefined;
+      expect(sv?.ability).toBe('con');
+      expect(sv?.dc).toBe(15);
+      expect(sv?.success).toBe(false);
+      expect(saveOf(r.events, 'T')).toBeUndefined();
+      expect(r.state.combatants.T?.hp).toBe(100);
+      expect(r.state.combatants.A?.spellSlots[0]).toBe(4);
+      expect(r.state.combatants.A?.economy.action).toBe(true);
+      expect(r.state.combatants.K?.spellSlots[2]).toBe(1);
+      expect(r.events.some((e) => e.type === 'reaction_used' && e.actorId === 'K')).toBe(true);
+    });
+    it(`${v}: CON save başarılı → büyü işler, büyücünün slotu harcanır`, () => {
+      const r = run(scene(v, parts()), bh, hooked({ one: 20, two: [20, 20] }));
+      expect(r.ok, r.error).toBe(true);
+      expect(saveOf(r.events, 'T')).toBeDefined();
+      expect(r.state.combatants.A?.spellSlots[0]).toBe(3);
+      expect(r.state.combatants.K?.spellSlots[2]).toBe(1);
+    });
+  }
+  it('60 ft dışındaki ya da büyücüyü görmeyen karşı büyücü tepki vermez', () => {
+    const far = run(scene(83, parts(counter({ pos: { col: 16, row: 5 } }))), bh, hooked({ one: 1, two: [1, 1] }));
+    expect(far.events.some((e) => e.type === 'reaction_used')).toBe(false);
+    const unseen = run(scene(83, parts(counter(), { conditions: ['Invisible'] })), bh, hooked({ one: 1, two: [1, 1] }));
+    expect(unseen.events.some((e) => e.type === 'reaction_used')).toBe(false);
+  });
+  it('83: durdurulan Power Word Kill öldürmez (6.–9. seviye kancası çalışmaz); 82 eski davranış (öldürür)', () => {
+    const pwk: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Power Word Kill', slotLevel: 9, targetId: 'T' } as Command;
+    const p = (): Combatant[] => [caster({ level: 17, spellNames: ['Power Word Kill'], spellSlots: [4, 3, 3, 3, 3, 2, 2, 1, 1] }), foe('T', { hp: 50, maxHp: 50 }), counter()];
+    const r83 = run(scene(83, p()), pwk, hooked({ one: 1, two: [1, 1] }));
+    expect(r83.ok, r83.error).toBe(true);
+    expect(r83.state.combatants.T?.hp).toBe(50);
+    expect(r83.state.combatants.A?.spellSlots[8]).toBe(1);
+    const r82 = run(scene(82, p()), pwk, hooked({ one: 1, two: [1, 1] }));
+    expect(r82.state.combatants.T?.hp).toBe(0);
+  });
+});

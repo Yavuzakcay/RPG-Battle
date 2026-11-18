@@ -28,6 +28,8 @@ import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
 import { canSee, saveEffect } from './maprules';
+import { matrisOn } from './matrisSurum';
+import { canSeeTarget } from './sight';
 import { applyEvents } from './reduce';
 import { mirrorImageHit } from './mind';
 import { freeSpellResource } from '../rules/classFeatures';
@@ -662,6 +664,9 @@ export function counterspellCheck(state: BattleState, caster: Combatant, spellNa
     if (!canReact(r) || r.side === caster.side) continue;
     const spec = specsOf(r, ['counterspell']).find((s) => usable(r, s, 3));
     if (!spec || feetBetween(current, r, caster) > (spec.rangeFt ?? 60) || !sees(current, r, caster)) continue;
+    // Mekanik matris B03 (sürüm 83+): SRD 5.2.1 Counterspell "when you see a creature … casting a spell": görünmez büyücü
+    // (See Invisibility, açığa çıkma, Blindsight/Truesight yoksa) görülmez, tepki yok. 82 ve altı aynen.
+    if (matrisOn(current) && !canSeeTarget(current, r, caster)) continue;
     const o = option(r, spec, 3);
     // Öneri: slotlu büyüleri durdur (cantrip'e değmez).
     const answer = askReaction(rng, { reactorId: r.id, trigger: 'cast', sourceId: caster.id, info: { spell: spellName, level: spellLevel },
