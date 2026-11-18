@@ -9,6 +9,14 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Gladyatör toplu sayfa hazırlığı: Sancaktar sayfaları (soru sorulmadı, en makul okuma)
+
+- Kaynak: `fighter-<male|female>-<ırk>.jpg` (uzak dal `wip/karakter-ham`), Sancaktar = 4×3 sırasında 10. hücre (satır 3, sütun 2). Üretici `scripts/gladyator-sayfa.py`; çıktı `docs/sabah/gladyator-sayfa/` (`sancaktar-erkek.png`, `sancaktar-kadin.png`, `sancaktar-dragonborn.png`, `eslesme.csv`); mevcut dosyaların üzerine yazmaz.
+- "9 ırk, Dragonborn ve İnsan hariç" = Hızır sırası (Tiefling, Celestial, Dwarf, Elf, Gnome, Goliath, Halfling, Orc) → 8 ırk; 9. hücrenin dolu olması istendiği için dolgu olarak İnsan konuldu (CSV'de "dolgu" notu; kullanılmayabilir).
+- Zemin düz #00FF00; her hücrenin kendi zemin rengi kenardan örneklenip figür çıkarıldı (CSV `kaynak_zemin`), sayfada çizgi/ızgara yok. Hücre 640 px, figürün en uzun kenarı hücrenin %65'i, ortalı (her kenarda ≥ %17 boşluk).
+- Dragonborn 2 hücreli sayfa (erkek, kadın): "beyaz taban" beyaz gövdeli figür olarak okundu, Hızır sayfaları gibi macenta (#FF00FF) zemin (yeşilde beyaz/açık gövde halesi sorunlu).
+- Kaynak Goliath erkek hücresindeki küçük leke figür sayılmayıp atıldı.
+
 ## SRD 12 güvenlik ağı reddedildi (kullanıcı kararı)
 
 - Kullanıcı kararı: fikstürden seçiciye otomatik ekleme (güvenlik ağı) yapılmaz; SRD 12 alt sınıf yalnız `icerik/ek-<sınıf>.json` paketinden gelir, başka hiçbir yoldan seçim listesine girmez (mobil/APK'da `icerik/` yoksa SRD 12 görünmez; yalnız 12 bizim alt sınıf). Fikstür yalnız test-setup ve sim yolunda kalır. Kod değişmedi; `scripts/srd12-paket-ekle.ts` yerel paket dosyalarını tamamlamak için duruyor.
