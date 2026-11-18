@@ -9,6 +9,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Mekanik matris düzeltmeleri (kullanıcı onayı; kural sürümü 83)
+
+- Kural: sonucu değiştiren her düzeltme kural sürümü 83 ile kapılı (`src/battle/matrisSurum.ts` `MATRIS_VERSION`, `matrisOn`); 82 ve altı (eski kayıt ve replay) aynen. Salt çökme/veri düzeltmeleri sürümsüz olabilir. Her düzeltme ayrı commit; ilgili testler + 4 senaryolu hızlı regresyon (`src/sim/matrisRegresyon.test.ts`: 82 imzası düzeltme öncesi ağacın altınıyla aynı, 83 çökmesiz). Önce/sonra sayıları `harita/belgeler/MEKANIK-MATRIS.md` "Önce / sonra" tablosunda (`mekanik-matris-gecmis.json`).
+- Sürümsüz:
+  - Ç01 Blowgun çökmesi (`src/battle/weapons.ts` `withBonus`): sabit hasar ("1") tek sabit yazılır. SRD 5.2.1 Damage Rolls: "Unless a rule says otherwise, you don't add your ability modifier to a fixed damage amount that doesn't use a roll, such as the damage of a Blowgun." Hasar 1 (+ büyülü silah bonusu); eskiden "1+2" `parseDice`'ta istisnaydı, eski kayıtta bu saldırı hiç olay üretmemişti. Kahin de aynı alıntıyla düzeltildi (eskiden 1 + DEX bekliyordu; motor çöktüğü için hiç karşılaştırılmamıştı).
+
 ## APK öncesi mekanik doğrulama matrisi (yalnız ölçüm; kod ve kural sürümü değişmedi)
 
 - Araç: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` → `harita/belgeler/MEKANIK-MATRIS.md` + `harita/belgeler/mekanik-matris.csv` (tek süreç, ≈5 sn; tek büyü/saldırı: `-- --buyu "Fireball" --hepsi`, `-- --saldiri "Longsword"`). Modüller `src/sim/matris/`: SRD kahini `srd.ts` (motor kodu kullanılmaz), SRD metninden elle okunan istisnalar `ozel.ts`, sahne `kurulum.ts` (düz 31×45, büyücü DC 18 / +10, hedef AC 15), kancalı zar `zar.ts`, bulgu kataloğu `rapor.ts`; duman testi `src/sim/mekanikMatris.test.ts`.

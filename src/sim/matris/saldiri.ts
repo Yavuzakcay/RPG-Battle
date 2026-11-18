@@ -83,7 +83,9 @@ function weaponRows(only?: string[]): Satir[] {
     const ability = w.finesse ? Math.max(mods.str, mods.dex) : w.ranged ? mods.dex : mods.str;
     const bonus = ability + prof;
     const die = !ranged && w.versatileDie ? w.versatileDie : w.die;
-    const dmgExpr = ability === 0 ? die : `${die}${ability > 0 ? '+' : ''}${ability}`;
+    // SRD 5.2.1 Damage Rolls: "you don't add your ability modifier to a fixed damage amount that doesn't use a roll,
+    // such as the damage of a Blowgun." (Kahin düzeltmesi: eskiden 1 + DEX bekleniyordu; motor çöktüğü için hiç ölçülmemişti.)
+    const dmgExpr = /^\d+$/.test(die) || ability === 0 ? die : `${die}${ability > 0 ? '+' : ''}${ability}`;
     const name = `${w.name}${thrown ? ' (fırlatma)' : ''}`;
     const base = { tur: 'silah' as const, ad: name, seviye: '', siniflar: 'silah', mekanik: `${ranged ? 'menzilli' : 'yakın'}${w.finesse ? ', Finesse' : ''}${w.versatileDie ? ', Versatile' : ''}${w.heavy ? ', Heavy' : ''}${w.reach ? ', Reach' : ''}` };
     // Seçenek üretimi: SRD'den saldırı bonusu, hasar ifadesi, tür, erişim/menzil.
@@ -106,7 +108,8 @@ function weaponRows(only?: string[]): Satir[] {
       const a = atk(g, 'A', 'T')[0];
       const raw = e.isabet ? exprTotal(critExpr(dmgExpr, e.kritik)) : 0;
       return [alan('kip', e.kip, a?.kip), alan('doğal', e.dogal, a?.dogal), alan('toplam', e.dogal + bonus, a?.toplam), alan('AC', e.ac, a?.ac), alan('isabet', e.isabet, a?.isabet), alan('kritik', e.kritik, a?.kritik),
-        ...(zar ? [alan('zar', e.isabet ? kanonExpr([critExpr(dmgExpr, e.kritik)]) : 'yok', kanon(g.zarlar.filter((z) => z.kind === 'damage')))] : []),
+        // Zarsız sabit hasar (Blowgun) zar atmaz: SRD "a fixed damage amount that doesn't use a roll".
+        ...(zar ? [alan('zar', e.isabet && /d/.test(dmgExpr) ? kanonExpr([critExpr(dmgExpr, e.kritik)]) : 'yok', kanon(g.zarlar.filter((z) => z.kind === 'damage')))] : []),
         alan('hasar', e.isabet ? adjust(raw, w.type, prof2) : 0, g.hp.T ?? 0)];
     };
     out.push(go({ ad: 'normal (isabet)', kategori: 'yapım', p: { attack: D_HIT }, bek: (g) => fields(g, expAtk('normal', D_HIT, bonus, AC), {}, true) }));
