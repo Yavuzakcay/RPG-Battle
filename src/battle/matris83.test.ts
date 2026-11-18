@@ -278,3 +278,17 @@ describe('B12: Chain Lightning yukarı slotta ek şimşek (SRD "One additional b
     });
   }
 });
+
+describe('B17: Protection from Energy süresi 1 saat (SRD "Concentration, up to 1 hour")', () => {
+  for (const [v, rounds] of [[83, 600], [82, 100]] as const) {
+    it(`${v}: etki ${rounds} tur`, () => {
+      const ally = mk('B', { ownerId: 'p1', hp: 30, maxHp: 30, pos: { col: 3, row: 6 } });
+      const s = scene(v, [caster({ spellNames: ['Protection from Energy'] }), ally, foe('T')]);
+      const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Protection from Energy', slotLevel: 3, targetId: 'B', choice: 'fire' } as Command, hooked(PROBE));
+      expect(r.ok, r.error).toBe(true);
+      const e = r.state.combatants.B?.effects?.find((x) => x.name === 'Protection from Energy');
+      expect(e?.until).toBe(s.round + rounds - 1);
+      expect(e?.resist).toEqual(['fire']);
+    });
+  }
+});

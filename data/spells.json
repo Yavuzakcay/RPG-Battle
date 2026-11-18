@@ -2904,6 +2904,7 @@
     "concentration": true,
     "text": "bir hasar türüne resistance",
     "mechanics": {
+      "m83": {"effect": {"targets": 1, "side": "ally", "rounds": 600, "resist": "chosen", "choices": ["acid", "cold", "fire", "lightning", "thunder"], "icon": "🛡"}},
       "kind": "effect",
       "effect": {
         "targets": 1,
