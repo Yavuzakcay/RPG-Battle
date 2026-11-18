@@ -8,6 +8,11 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+
+## SRD 12 güvenlik ağı reddedildi (kullanıcı kararı)
+
+- Kullanıcı kararı: fikstürden seçiciye otomatik ekleme (güvenlik ağı) yapılmaz; SRD 12 alt sınıf yalnız `icerik/ek-<sınıf>.json` paketinden gelir, başka hiçbir yoldan seçim listesine girmez (mobil/APK'da `icerik/` yoksa SRD 12 görünmez; yalnız 12 bizim alt sınıf). Fikstür yalnız test-setup ve sim yolunda kalır. Kod değişmedi; `scripts/srd12-paket-ekle.ts` yerel paket dosyalarını tamamlamak için duruyor.
+
 ## SRD 12 paketi yerel icerik/'e ekleme betiği; uygulama güvenlik ağı önerisi (onay bekliyor)
 
 - Teşhis (kullanıcı): `icerik/` yüklüyken dış paket 97 kayıt (beklenen 109); eksik 12 = SRD 12 (sınıf başına bir; Warlock'ta Zebani). Kod yolunda süzgeç yoktu (önceki karar kaydı); kayıtlar pakette yok.
