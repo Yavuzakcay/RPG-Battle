@@ -10,6 +10,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+
+## Fighter alt sınıfı "Champion / Şampiyon" → "Gladiator / Gladyatör" (yalnız görünen ad)
+
+- Kimlik `champion`, SRD eşlemesi ve kayıtlar aynı. Değişen: fikstür kaydı (`src/rules/fixtures/srd-alt-siniflar.json` TR Gladyatör, EN Gladiator), `scripts/lib/srd12-paket.ts` ad tablosu, belge satırları (AS2-ENVANTER/FARKLAR) ve `subclass.test.ts` beklentisi. Ekran metinleri (`strings`) alt sınıf adı içermiyor, ad alt sınıf kaydından okunuyor (oluşturucu seçici, karakter kartı); özellik adlarındaki "Champion" geçen yorumlar SRD özellik/kaynak adı olduğu için kalır.
+- Uygulamada ad dış paketten geldiği için yerel `icerik/ek-fighter.json` da güncellenmeli (as2.test.ts paket ile fikstür EN adlarını karşılaştırır): `npx vite-node scripts/srd12-paket-ekle.ts --adlari-guncelle` (yedek alır; paketteki SRD kayıt adlarını tabloya eşitler).
+
 ## Çılgın Yol (Berserker) öfke efekti (yalnız görünüm; kural ve kayıt sürümü değişmedi)
 
 - Koşul: savaşçıda `frenzy` (alt sınıf özelliği, yalnız Berserker) ve `rage` etkin (`tokenFilters` → `rage`). Başka alt sınıfın Rage'inde ve Rage kapalıyken efekt yok. Rage bitince filtre kalkar (durumdan türetilir).

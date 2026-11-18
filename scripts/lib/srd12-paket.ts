@@ -7,7 +7,7 @@ import type { SubclassDef } from '../../src/data';
  */
 export const AD_TR: Record<string, string> = {
   'path-of-the-berserker': 'Berserker Yolu', 'college-of-lore': 'Kadim Bilgi Koleji', 'life-domain': 'Yaşam Alanı', 'circle-of-the-land': 'Toprak Çemberi',
-  'champion': 'Şampiyon', 'warrior-of-the-open-hand': 'Sadelik Disiplini', 'oath-of-devotion': 'Sadakat Yemini', 'hunter': 'Avcı', 'thief': 'Hırsız',
+  'champion': 'Gladyatör', 'warrior-of-the-open-hand': 'Sadelik Disiplini', 'oath-of-devotion': 'Sadakat Yemini', 'hunter': 'Avcı', 'thief': 'Hırsız',
   'draconic-sorcery': 'Pulkanat', 'fiend-patron': 'Zebani', 'evoker': 'Azap Öğretisi',
 };
 /** Alt ad (kayıt adı; seçicide görünmez, rol satırının başında): yalnız Warlock'ta kullanıcı kararı. */

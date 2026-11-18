@@ -1,5 +1,6 @@
 // SRD 5.2.1'in 12 alt sınıfını yerel `icerik/ek-<sınıf>.json` paketlerine ekler (idempotent; yalnız yerel dosyalar, `icerik/` gitignore).
-//   npx vite-node scripts/srd12-paket-ekle.ts [--kuru] [--klasor icerik]
+//   npx vite-node scripts/srd12-paket-ekle.ts [--kuru] [--klasor icerik] [--adlari-guncelle]
+// --adlari-guncelle: paketteki SRD kayıtlarının adını tabloya (TR: AD_TR, EN: fikstür) eşitler (örn. Champion/Şampiyon → Gladiator/Gladyatör).
 // Kaynak: src/rules/fixtures/srd-alt-siniflar.json (kimlikler aynı kalır, `srd` alanı çıkarılır). Türkçe ad: scripts/lib/srd12-paket.ts AD_TR
 // (AS2-FARKLAR / AS2-ENVANTER kitapçık adları); tabloda olmayan kimlik uydurulmaz, listelenip atlanır. Değişiklikten önce icerik/_yedek-<tarih>/.
 import fs from 'node:fs';
@@ -31,6 +32,15 @@ for (const s of (fixture as unknown as { subclasses: SubclassDef[] }).subclasses
 }
 if (unknownName.length) console.log(`\nAdı tabloda olmayan (atlandı, ad için sor): ${unknownName.join(', ')}`);
 if (skipped.length) console.log(`\nAtlanan: ${skipped.join('; ')}`);
+if (args.includes('--adlari-guncelle')) {
+  for (const s of (fixture as unknown as { subclasses: SubclassDef[] }).subclasses) {
+    const p = packs.get(`ek-${s.class}.json`); const rec = p?.json.subclasses.find((x) => x.id === s.id) as { name?: { tr: string; en: string } } | undefined;
+    const ad = AD_TR[s.id];
+    if (!p || !rec || !ad || (rec.name?.tr === ad && rec.name?.en === s.name.en)) continue;
+    console.log(`~ ${s.class}/${s.id}: "${rec.name?.tr}" / "${rec.name?.en}" → "${ad}" / "${s.name.en}"`);
+    rec.name = { tr: ad, en: s.name.en }; changed.add(`ek-${s.class}.json`);
+  }
+}
 if (!changed.size) { console.log('\nDeğişiklik yok.'); process.exit(0); }
 if (kuru) { console.log(`\n--kuru: ${changed.size} dosya değişecekti (${[...changed].join(', ')}).`); process.exit(0); }
 const backup = path.join(dir, `_yedek-${stamp}`); fs.mkdirSync(backup, { recursive: true });
