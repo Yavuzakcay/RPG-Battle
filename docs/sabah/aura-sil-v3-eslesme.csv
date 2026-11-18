@@ -1,0 +1,17 @@
+sayfa,hucre,dosya,irk,cinsiyet,kaynak_sayfa,kaynak_hucre,kaynak_zemin,atilan_komsu_px
+01,1,human-erkek-barbarian-ID8.webp,human,erkek,barbarian-male-human.jpg,hücre 8,#01FB04,288
+01,2,elf-erkek-barbarian-ID8.webp,elf,erkek,barbarian-male-elf.jpg,hücre 8,#00FF01,3322
+01,3,dwarf-erkek-barbarian-ID8.webp,dwarf,erkek,barbarian-male-dwarf.jpg,hücre 8,#03FC04,0
+01,4,halfling-erkek-barbarian-ID8.webp,halfling,erkek,barbarian-male-halfling.jpg,hücre 8,#00FF02,1223
+01,5,gnome-erkek-barbarian-ID8.webp,gnome,erkek,barbarian-male-gnome.jpg,hücre 8,#01FF03,1795
+01,6,orc-erkek-barbarian-ID8.webp,orc,erkek,barbarian-male-orc.jpg,hücre 8,#04F506,0
+01,7,tiefling-erkek-barbarian-ID8.webp,tiefling,erkek,barbarian-male-tiefling.jpg,hücre 8,#05F906,0
+01,8,goliath-erkek-barbarian-ID8.webp,goliath,erkek,barbarian-male-goliath.jpg,hücre 8,#02FD04,0
+02,1,human-kadin-barbarian-ID8.webp,human,kadin,barbarian-female-human.jpg,hücre 8,#07D21D,34
+02,2,elf-kadin-barbarian-ID8.webp,elf,kadin,barbarian-female-elf.jpg,hücre 8,#0FF509,0
+02,3,dwarf-kadin-barbarian-ID8.webp,dwarf,kadin,barbarian-female-dwarf.jpg,hücre 8,#16F016,0
+02,4,halfling-kadin-barbarian-ID8.webp,halfling,kadin,barbarian-female-halfling.jpg,hücre 8,#02E80A,1284
+02,5,gnome-kadin-barbarian-ID8.webp,gnome,kadin,barbarian-female-gnome.jpg,hücre 8,#02FC04,1857
+02,6,orc-kadin-barbarian-ID8.webp,orc,kadin,barbarian-female-orc.jpg,hücre 8,#01FF01,5524
+02,7,tiefling-kadin-barbarian-ID8.webp,tiefling,kadin,barbarian-female-tiefling.jpg,hücre 8,#02FD03,4033
+02,8,goliath-kadin-barbarian-ID8.webp,goliath,kadin,barbarian-female-goliath.jpg,hücre 8,#02F104,4674
