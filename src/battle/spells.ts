@@ -3,7 +3,8 @@ import { freeShapeArea } from './freeShape';
 import { homeSide } from './allegiance';
 import { possessedEffect, possessionEndEvents, possessionOn } from './possession';
 import { possessorAt } from './possessionCore';
-import { truesightSees } from './sight';
+import { canSeeTarget, truesightSees } from './sight';
+import { areaNeedsSight, unseenTargetProblem } from './seenTargets';
 import { gazePos } from './chainPact';
 import { lifeBondEvents } from './steed';
 import { executeTerraform } from './terraform';
@@ -219,7 +220,10 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const span = airFt && aim ? airSpanFt(area.sizeFt, cylinderHeightFt(m), airFt) : null;
   const atAlt = (c: Combatant) => (span && aim ? inAirSpan(state, c, aim, span)
     : pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : !spell.area || areaReachesAltitude(state, spell.area, c, fromFt));
-  const reached = pick.reached.filter((x) => !spared.has(x.c.id) && atAlt(x.c)).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
+  // Mekanik matris B02 (sürüm 83): "each creature … that you can see" alanında görülmeyen yaratık etkilenmez.
+  const sight = areaNeedsSight(state, spell);
+  if (sight && named && !canSeeTarget(state, actor, named)) return fail(`${spell.name}: hedefi görmen gerekir; ${named.name} görülmüyor.`);
+  const reached = pick.reached.filter((x) => !spared.has(x.c.id) && atAlt(x.c) && (!sight || canSeeTarget(state, actor, x.c))).map((x) => ({ c: x.c, lof: { blocked: false, cover: x.cover } }));
   if (named && !reached.some((x) => x.c.id === named.id)) {
     return fail(`${named.name} alanın dışında veya tam siper arkasında.`);
   }
@@ -504,6 +508,9 @@ function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand,
   const own = actor00.spellStats?.[spell0.name];
   const actor0 = own ? { ...actor00, spellSaveDc: own.dc, spellAttack: own.attack } : actor00;
   if (!actor0.spellNames.includes(spell0.name)) return fail('Bu büyüyü bilmiyor.');
+  // Mekanik matris B02 (sürüm 83): "a creature you can see" isteyen büyüde görülmeyen hedef seçilemez (SRD Invisible).
+  const unseen = unseenTargetProblem(state, actor0, spell0, cmd);
+  if (unseen) return fail(unseen);
   // Görev DRUID: Wild Shape biçiminde büyü yapılamaz (Beast Spells hariç; süren konsantrasyon bozulmaz).
   if (actor0.shape && !actor0.traits?.includes('beast-spells')) return fail('Wild Shape biçiminde büyü yapılamaz.');
   // Görev WARLOCK: yalnızca kendine slotsuz büyü (Armor of Shadows, Fiendish Vigor…): yukarı slot seçilmediyse.

@@ -72,3 +72,45 @@ describe('B01: Restrained hedefin DEX save\'i dezavantajlı (SRD 5.2.1 Restraine
     expect(sv82?.success).toBe(true);
   });
 });
+
+describe('B02: "a creature you can see" büyüleri görülmeyen hedefe yapılamaz (SRD 5.2.1 Invisible)', () => {
+  const sf: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Sacred Flame', targetId: 'T' } as Command;
+  it('83: Invisible hedefe Sacred Flame reddedilir; 82 kabul', () => {
+    const parts = (): Combatant[] => [caster({ spellNames: ['Sacred Flame'] }), foe('T', { conditions: ['Invisible'] })];
+    const r83 = run(scene(83, parts()), sf, hooked(PROBE));
+    expect(r83.ok).toBe(false);
+    expect(r83.error).toMatch(/görmen gerekir/);
+    expect(run(scene(82, parts()), sf, hooked(PROBE)).ok).toBe(true);
+  });
+  it('83: See Invisibility ile görülen, görünür ve açığa çıkmış hedef kabul; Blinded büyücü görünür hedefe yapamaz', () => {
+    const seer = caster({ spellNames: ['Sacred Flame'], effects: [{ id: 'see-invisibility', name: 'See Invisibility', sourceId: 'A', until: 99, seeInvisible: true } as never] });
+    expect(run(scene(83, [seer, foe('T', { conditions: ['Invisible'] })]), sf, hooked(PROBE)).ok).toBe(true);
+    expect(run(scene(83, [caster({ spellNames: ['Sacred Flame'] }), foe('T')]), sf, hooked(PROBE)).ok).toBe(true);
+    const lit = foe('T', { conditions: ['Invisible'], effects: [{ id: 'faerie-fire', name: 'Faerie Fire', sourceId: 'A', until: 99, revealed: true } as never] });
+    expect(run(scene(83, [caster({ spellNames: ['Sacred Flame'] }), lit]), sf, hooked(PROBE)).ok).toBe(true);
+    const blind = run(scene(83, [caster({ spellNames: ['Sacred Flame'], conditions: ['Blinded'] }), foe('T')]), sf, hooked(PROBE));
+    expect(blind.ok).toBe(false);
+  });
+  it('83: çok hedefli Bane\'de görülmeyen hedef varsa reddedilir; Healing Word görünmez dosta yapılamaz', () => {
+    const bane: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Bane', slotLevel: 1, targetIds: ['T', 'U'] } as Command;
+    const s = scene(83, [caster({ spellNames: ['Bane'] }), foe('T'), foe('U', { pos: { col: 5, row: 5 }, conditions: ['Invisible'] })]);
+    expect(run(s, bane, hooked(PROBE)).ok).toBe(false);
+    const hw: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Healing Word', slotLevel: 1, targetId: 'B' } as Command;
+    const ally = mk('B', { ownerId: 'p1', hp: 5, maxHp: 30, pos: { col: 3, row: 7 }, conditions: ['Invisible'] });
+    expect(run(scene(83, [caster({ spellNames: ['Healing Word'] }), ally, foe('T')]), hw, hooked(PROBE)).ok).toBe(false);
+    expect(run(scene(82, [caster({ spellNames: ['Healing Word'] }), ally, foe('T')]), hw, hooked(PROBE)).ok).toBe(true);
+  });
+});
+
+describe('B02: alan büyüsünde görülmeyen yaratık etkilenmez (Compulsion "each creature of your choice that you can see")', () => {
+  it('83: görünmez düşman save atmaz, görünür düşman atar; 82 ikisi de', () => {
+    const parts = (): Combatant[] => [caster({ spellNames: ['Compulsion'] }), foe('T'), foe('U', { pos: { col: 3, row: 7 }, conditions: ['Invisible'] })];
+    const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Compulsion', slotLevel: 4, targetHex: { col: 4, row: 5 } } as Command;
+    const r83 = run(scene(83, parts()), cmd, hooked(PROBE));
+    expect(r83.ok, r83.error).toBe(true);
+    expect(saveOf(r83.events, 'T')).toBeDefined();
+    expect(saveOf(r83.events, 'U')).toBeUndefined();
+    const r82 = run(scene(82, parts()), cmd, hooked(PROBE));
+    expect(saveOf(r82.events, 'U')).toBeDefined();
+  });
+});
