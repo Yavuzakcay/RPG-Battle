@@ -9,6 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Gladyatör sayfaları v2: 768 px hücre (Gemini için)
+
+- Çıktı `docs/sabah/gladyator-sayfa/v2/`: her cinsiyet 4 sayfa 1536×768 (Tiefling+Celestial, Dwarf+Elf, Gnome+Goliath, Halfling+Orc) + Dragonborn tek hücre 768×768 (macenta); `eslesme-v2.csv` (zemin, kaynak hücre, boyut, `ten_hex`). Üretici `scripts/gladyator-v2.py`. Mevcut dosyalara dokunulmadı.
+- Hücre görseli 640 px sayfalardan büyütmek yerine ham Fighter sayfasından (aynı kesim yöntemi) 768 hücreye doğrudan üretildi (çift yeniden örnekleme yok; Lanczos, alfa sert eşik: kenar keskin). Figür hücrenin %65'i ortalı, her kenarda ≥ %10 (assert). Hücre sırası/ırk eşleşmesi eski `eslesme.csv` ile aynı; 9. hücre İnsan atıldı (kullanıcı: İnsan sayfaları hazır), Dragonborn eski Dragonborn sayfasından cinsiyet başına ayrı sayfa.
+- Zemin: hücre başına orijinal örneklenmiş anahtar renk en yakın saf anahtara (#00FF00 ya da #FF00FF) oturtuldu (örnek `kaynak_zemin_ornek` sütununda); bu yüzden bazı hücreler (ör. Tiefling erkek, Elf erkek, Halfling erkek, Celestial kadın) macenta. Dragonborn #FF00FF.
+- `ten_hex`: eski sayfalarda elle seçilen yüz bölgesinden (28×28 px), zemin ve dış çizgi hariç, medyana yakın piksellerin ortalaması (kontrol görseli ile doğrulandı). Goliath/Dragonborn "pul" rengi gri-mavi/lavanta. Gölge, kaş ve göz payı yüzünden ± birkaç birim sapma olabilir; denetimde tolerans payı bırakın.
+
 ## Aura-sil v3: kaynak sayfadan yeniden kesim (onay bekliyor; Gemini'ye gidilmedi)
 
 - Aynı iş için önceden `aura-sil-v2-*` ve `aura-sil-karsilastirma.png` (jetondan türetilmiş, %4 boşluk) vardı; "üzerine yazma" gereği yeni dosyalar `-v3` adıyla: `docs/sabah/aura-sil-v3-sayfa-01/02.png`, `aura-sil-v3-eslesme.csv`, `aura-sil-v3-karsilastirma.png` (eski v1 | yeni v3). Üretici `scripts/aura-sil-v3.py`. v1 ve v2 dosyalarına dokunulmadı.

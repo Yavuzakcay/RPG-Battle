@@ -1,0 +1,19 @@
+sayfa,hucre,irk,cinsiyet,kaynak_hucre,zemin_hex,kaynak_zemin_ornek,hucre_boyutu,ten_hex,ten_ornek_px
+gladyator-erkek-01.png,1,tiefling,erkek,sancaktar-erkek.png hücre 1,#FF00FF,#FB00FD,768x768,#B23055,222
+gladyator-erkek-01.png,2,celestial,erkek,sancaktar-erkek.png hücre 2,#00FF00,#00FD03,768x768,#E7A771,253
+gladyator-erkek-02.png,1,dwarf,erkek,sancaktar-erkek.png hücre 3,#00FF00,#01FC04,768x768,#F9B388,485
+gladyator-erkek-02.png,2,elf,erkek,sancaktar-erkek.png hücre 4,#FF00FF,#FC01FB,768x768,#FCAD8A,321
+gladyator-erkek-03.png,1,gnome,erkek,sancaktar-erkek.png hücre 5,#00FF00,#02FD03,768x768,#FCB184,570
+gladyator-erkek-03.png,2,goliath,erkek,sancaktar-erkek.png hücre 6,#00FF00,#01FD03,768x768,#9DA0A9,342
+gladyator-erkek-04.png,1,halfling,erkek,sancaktar-erkek.png hücre 7,#FF00FF,#FB01FD,768x768,#FC9C7B,537
+gladyator-erkek-04.png,2,orc,erkek,sancaktar-erkek.png hücre 8,#00FF00,#00FD04,768x768,#7C8770,415
+gladyator-erkek-dragonborn.png,1,dragonborn,erkek,sancaktar-dragonborn.png hücre 1,#FF00FF,#03F703,768x768,#C5C6DE,335
+gladyator-kadin-01.png,1,tiefling,kadin,sancaktar-kadin.png hücre 1,#00FF00,#02F702,768x768,#AA365C,566
+gladyator-kadin-01.png,2,celestial,kadin,sancaktar-kadin.png hücre 2,#FF00FF,#FB00FD,768x768,#F1AB7F,411
+gladyator-kadin-02.png,1,dwarf,kadin,sancaktar-kadin.png hücre 3,#00FF00,#40D033,768x768,#FBA987,545
+gladyator-kadin-02.png,2,elf,kadin,sancaktar-kadin.png hücre 4,#00FF00,#02F802,768x768,#F5AD8E,705
+gladyator-kadin-03.png,1,gnome,kadin,sancaktar-kadin.png hücre 5,#00FF00,#01FD04,768x768,#FDB08A,513
+gladyator-kadin-03.png,2,goliath,kadin,sancaktar-kadin.png hücre 6,#00FF00,#00FC04,768x768,#ABB7C1,328
+gladyator-kadin-04.png,1,halfling,kadin,sancaktar-kadin.png hücre 7,#00FF00,#01F802,768x768,#F3A175,558
+gladyator-kadin-04.png,2,orc,kadin,sancaktar-kadin.png hücre 8,#00FF00,#00FD04,768x768,#85927D,520
+gladyator-kadin-dragonborn.png,1,dragonborn,kadin,sancaktar-dragonborn.png hücre 2,#FF00FF,#01FB03,768x768,#E3E3F7,322
