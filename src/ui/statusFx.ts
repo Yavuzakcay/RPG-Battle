@@ -91,7 +91,7 @@ export function beamFor(flags: Partial<Record<BeamKind, boolean>>): BeamKind | n
   return BEAM_PRIORITY.find((k) => flags[k]) ?? null;
 }
 
-export type TokenFilter = 'petrified' | 'invisible' | 'unconscious' | 'prone' | 'exhaustion' | 'spirit' | 'blinded' | 'outlined';
+export type TokenFilter = 'petrified' | 'invisible' | 'unconscious' | 'prone' | 'exhaustion' | 'spirit' | 'blinded' | 'outlined' | 'rage';
 
 /**
  * Jeton filtreleri (durum adları data/conditions.json'dan; yeni durum yok). Baygınlık: Unconscious ya da 0 HP'de
@@ -106,7 +106,7 @@ export function outlineColor(c: Partial<Pick<Combatant, 'effects'>>): string | n
   return null;
 }
 
-export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon' | 'exhaustion'> & Partial<Pick<Combatant, 'effects'>>): TokenFilter[] {
+export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon' | 'exhaustion'> & Partial<Pick<Combatant, 'effects' | 'rage' | 'frenzy'>>): TokenFilter[] {
   const out: TokenFilter[] = [];
   const has = (n: string) => c.conditions.includes(n);
   if (has('Petrified')) out.push('petrified');
@@ -118,6 +118,8 @@ export function tokenFilters(c: Pick<Combatant, 'conditions' | 'life' | 'summon'
   if ((c.exhaustion ?? 0) > 0 || c.conditions.some((n) => n.startsWith('Exhaustion'))) out.push('exhaustion');
   if (c.summon) out.push('spirit');
   if (outlineColor(c)) out.push('outlined');
+  // Çılgın Yol (Berserker, Frenzy): yalnız bu alt sınıfta ve Rage etkinken öfke efekti (yalnız görünüm; `frenzy` alt sınıf özelliğinden gelir).
+  if (c.frenzy && c.rage) out.push('rage');
   return out;
 }
 
@@ -138,6 +140,8 @@ export function filterStyle(filters: TokenFilter[], outline: string | null = nul
     if (f === 'prone') { shrink = 0.82; tilt = J.yatikDerece; }
     if (f === 'exhaustion') parts.push('saturate(0.45)', 'brightness(0.92)');
     if (f === 'spirit') { parts.push('grayscale(0.5)', 'sepia(0.4)', 'hue-rotate(170deg)', 'brightness(1.15)'); opacity = Math.min(opacity, 0.7); }
+    // Çılgın Yol öfkesi: koyu kırmızı-turuncu silüet konturu (renkler veriden; pembe/magenta yok). Sarsıntı ve alevler `.st-rage` CSS'i + MapBattle `rage-flames`.
+    if (f === 'rage') { const O = J.ofke; parts.push(`drop-shadow(0 0 1px ${O.kontur})`, `drop-shadow(0 0 4px ${O.parilti})`, 'saturate(1.12)'); }
     // Kuyruk E2: renkli kontur (Faerie Fire; jetonun silüetine ince parıltı).
     if (f === 'outlined') { const col = outline ?? Object.values(KONTUR)[0] ?? '#c58cff'; parts.push(`drop-shadow(0 0 2px ${col})`, `drop-shadow(0 0 3px ${col})`); }
   }

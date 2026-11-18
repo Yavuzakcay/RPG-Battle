@@ -322,6 +322,15 @@ input[type='number'] { width: 90px; }
 .air-hint { max-width: 200px; font-size: 11px; line-height: 1.3; padding: 4px 8px; border-radius: 8px; background: rgba(15, 20, 26, 0.85); }
 .token.air-dim { opacity: 0.4; pointer-events: none; }
 /* Kuyruk K73c: yer altındaki (kazan) jeton soluk, batık jeton yarı saydam ve mavimsi. */
+/* Çılgın Yol öfkesi (yalnız görünüm): tüm figür (silah dahil) kısa adımlı titrer, hafif yukarıda durur; alevler başın üstünde. */
+.token.st-rage .token-filter { animation: rage-shake .18s steps(2, jump-none) infinite; translate: 0 -1px; }
+.token.st-rage.rage-still .token-filter { animation: none; translate: 0 -1px; }
+@keyframes rage-shake { from { translate: -1.5px -1.8px; } to { translate: 1.5px -0.4px; } }
+.rage-flames .rf { transform-box: fill-box; transform-origin: 50% 100%; animation: rage-flame .5s steps(3) infinite alternate; }
+.rage-flames .rf-b { animation-duration: .42s; animation-delay: -.15s; } .rage-flames .rf-c { animation-duration: .6s; animation-delay: -.3s; }
+.token.rage-still .rage-flames .rf { animation: none; }
+@keyframes rage-flame { from { transform: scale(1, .82); opacity: .95; } to { transform: scale(.86, 1.12); opacity: .75; } }
+@media (prefers-reduced-motion: reduce) { .token.st-rage .token-filter, .rage-flames .rf { animation: none; } }
 .token.burrowed .token-filter { opacity: 0.35; filter: grayscale(0.6) sepia(0.4); }
 .token.submerged .token-filter { opacity: 0.6; filter: hue-rotate(160deg) saturate(0.7); }
 .air-shadow { fill: rgba(0, 0, 0, 0.38); }

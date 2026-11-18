@@ -22,7 +22,7 @@ tamamlanmış hâlidir. Kararlar `DECISIONS.md` (Görev AS2), kitapçık ↔ kay
 | Bard | 8 | 1 | 9 | `college-of-lore` → Kadim Bilgi Koleji | `imza_sair` |
 | Cleric | 7 (Barış hariç) | 1 | 8 | `life-domain` → Yaşam Alanı | `imza_birlik` (eski `baris-alani` buna yönlenir) |
 | Druid | 7 | 1 | 8 | `circle-of-the-land` → Toprak Çemberi | `karadul-cemberi` (yalnız kadın) |
-| Fighter | 10 | 1 | 11 | `champion` → Şampiyon | `imza_imparator` (yalnız erkek) |
+| Fighter | 10 | 1 | 11 | `champion` → Gladyatör | `imza_imparator` (yalnız erkek) |
 | Monk | 10 | 1 | 11 | `warrior-of-the-open-hand` → Sadelik Disiplini | `imza_bilge` |
 | Paladin | 9 | 1 | 10 | `oath-of-devotion` → Sadakat Yemini | `imza_hizir` |
 | Ranger | 8 | 1 | 9 | `hunter` → Avcı | `imza_ciftci` |

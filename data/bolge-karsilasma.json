@@ -1,17 +1,17 @@
 {
- "_aciklama": "Denge turu (2026-11-03): bölge karşılaşma üretecinin varsayılanları (K47 serbest gezinti karşılaşmaları bunu okuyacak). Düşmanlar bölge haritasının ortam listesinden (data/monster-ortamlari.json), SRD 5.2.1 XP bütçesiyle (data/butce.json) seçilir. 'harita' ölçüm/savaş haritasıdır (Serüven sayfasının ilk düğümü). 'carpan' bölge zorluk çarpanı (bütçe × çarpan; ölçümden sonra öneri olarak değişir, varsayılan 1). Kurallar: lider CR ≤ seviye + liderCrEk; düşman sayısı en çok enCok; yardımcı XP'si liderin en az 1/yardimciOran'ı; bütçenin en az altSinir'i dolmalı (bilgi). 'haric' ve 'haricTema' (karada yürüyemeyen deniz canlıları, savaşçı olmayanlar, parça yaratıklar) seçilmez. 'efsaneviEnCok': karşılaşmada en çok bu kadar efsanevi eylemli canavar (SRD 'Legendary Actions'). 'seviyeCarpani': seviye → bütçe çarpanı (yoksa 1; denge turu önerisi DECISIONS.md'de, kullanıcı onayıyla dolar).",
+ "_aciklama": "Denge turu (2026-11-03): bölge karşılaşma üretecinin varsayılanları (K47 serbest gezinti karşılaşmaları bunu okuyacak). Düşmanlar bölge haritasının ortam listesinden (data/monster-ortamlari.json), SRD 5.2.1 XP bütçesiyle (data/butce.json) seçilir. 'harita' ölçüm/savaş haritasıdır (Serüven sayfasının ilk düğümü). 'carpan' bölge zorluk çarpanı (bütçe × çarpan; ölçümden sonra öneri olarak değişir, varsayılan 1). Kurallar: lider CR ≤ seviye + liderCrEk; düşman sayısı en çok enCok; yardımcı XP'si liderin en az 1/yardimciOran'ı; bütçenin en az altSinir'i dolmalı (bilgi). 'haric' ve 'haricTema' (karada yürüyemeyen deniz canlıları, savaşçı olmayanlar, parça yaratıklar) seçilmez. 'efsaneviEnCok': karşılaşmada en çok bu kadar efsanevi eylemli canavar (SRD 'Legendary Actions'). 'seviyeCarpani': seviye → bütçe çarpanı (yoksa 1; denge turu önerisi DECISIONS.md'de, kullanıcı onayıyla dolar). 'seviyeDuzeltme' (bölgede, isteğe bağlı): seviye → o bölge × seviye hücresi için ek bütçe çarpanı (yoksa 1; Dungeondex öncesi denge turu, tur 2).",
  "zorluk": "moderate",
  "haric": ["troll-limb", "vampire-familiar", "commoner", "noble"],
  "haricTema": ["Deniz canlıları"],
  "kurallar": { "liderCrEk": 0, "enCok": 6, "yardimciOran": 16, "altSinir": 0.75, "liderPay": 0.6, "efsaneviEnCok": 1 },
- "seviyeCarpani": { "9": 1.3, "13": 0.8 },
+ "seviyeCarpani": { "1": 1.8, "5": 1.5, "9": 1.2, "13": 0.8 },
  "bolgeler": [
-  { "id": "buzul", "ad": { "tr": "Buzul", "en": "Glacier" }, "harita": { "mapId": "buzul-acik", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "dag", "ad": { "tr": "Dağ", "en": "Mountain" }, "harita": { "mapId": "dag-karakol", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "orman", "ad": { "tr": "Orman", "en": "Forest" }, "harita": { "mapId": "orman", "variantId": "orman" }, "carpan": 1 },
-  { "id": "col", "ad": { "tr": "Çöl", "en": "Desert" }, "harita": { "mapId": "col-vaha", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "bataklik", "ad": { "tr": "Bataklık", "en": "Swamp" }, "harita": { "mapId": "batak-adalar", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "bati-kiyisi", "ad": { "tr": "Batı Kıyısı", "en": "West Coast" }, "harita": { "mapId": "kale-onu", "variantId": "gunduz" }, "carpan": 1 },
-  { "id": "volkan", "ad": { "tr": "Volkan", "en": "Volcano" }, "harita": { "mapId": "isinlanma-salonu", "variantId": "varsayilan" }, "carpan": 1 }
+  { "id": "buzul", "ad": { "tr": "Buzul", "en": "Glacier" }, "harita": { "mapId": "buzul-acik", "variantId": "gunduz" }, "carpan": 0.85, "seviyeDuzeltme": { "1": 1.24, "5": 1.29, "9": 0.84 } },
+  { "id": "dag", "ad": { "tr": "Dağ", "en": "Mountain" }, "harita": { "mapId": "dag-karakol", "variantId": "gunduz" }, "carpan": 0.9, "seviyeDuzeltme": { "1": 1.17, "5": 0.93, "9": 0.93 } },
+  { "id": "orman", "ad": { "tr": "Orman", "en": "Forest" }, "harita": { "mapId": "orman", "variantId": "orman" }, "carpan": 1.2, "seviyeDuzeltme": { "1": 1.08 } },
+  { "id": "col", "ad": { "tr": "Çöl", "en": "Desert" }, "harita": { "mapId": "col-vaha", "variantId": "gunduz" }, "carpan": 0.95, "seviyeDuzeltme": { "1": 0.76, "5": 1.1, "9": 1.18 } },
+  { "id": "bataklik", "ad": { "tr": "Bataklık", "en": "Swamp" }, "harita": { "mapId": "batak-adalar", "variantId": "gunduz" }, "carpan": 1.4, "seviyeDuzeltme": { "5": 0.74 } },
+  { "id": "bati-kiyisi", "ad": { "tr": "Batı Kıyısı", "en": "West Coast" }, "harita": { "mapId": "kale-onu", "variantId": "gunduz" }, "carpan": 0.95, "seviyeDuzeltme": { "1": 0.89, "5": 1.07 } },
+  { "id": "volkan", "ad": { "tr": "Volkan", "en": "Volcano" }, "harita": { "mapId": "isinlanma-salonu", "variantId": "varsayilan" }, "carpan": 0.85, "seviyeDuzeltme": { "9": 1.22 } }
  ]
 }

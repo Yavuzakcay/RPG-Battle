@@ -1,0 +1,21 @@
+﻿yeni_sayfa,yeni_hucre,irk,cinsiyet,kaynak_dosya,not,kaynak_zemin
+sancaktar-erkek.png,1,tiefling,erkek,fighter-male-tiefling.jpg,sancaktar (hücre 10),#FB00FD
+sancaktar-erkek.png,2,celestial,erkek,fighter-male-celestial.jpg,sancaktar (hücre 10),#00FD03
+sancaktar-erkek.png,3,dwarf,erkek,fighter-male-dwarf.jpg,sancaktar (hücre 10),#01FC04
+sancaktar-erkek.png,4,elf,erkek,fighter-male-elf.jpg,sancaktar (hücre 10),#FC01FB
+sancaktar-erkek.png,5,gnome,erkek,fighter-male-gnome.jpg,sancaktar (hücre 10),#02FD03
+sancaktar-erkek.png,6,goliath,erkek,fighter-male-goliath.jpg,sancaktar (hücre 10),#01FD03
+sancaktar-erkek.png,7,halfling,erkek,fighter-male-halfling.jpg,sancaktar (hücre 10),#FB01FD
+sancaktar-erkek.png,8,orc,erkek,fighter-male-orc.jpg,sancaktar (hücre 10),#00FD04
+sancaktar-erkek.png,9,human,erkek,fighter-male-human.jpg,sancaktar (hücre 10) - dolgu: İnsan hariç tutulunca 9. hücre,#06FE03
+sancaktar-kadin.png,1,tiefling,kadin,fighter-female-tiefling.jpg,sancaktar (hücre 10),#02F702
+sancaktar-kadin.png,2,celestial,kadin,fighter-female-celestial.jpg,sancaktar (hücre 10),#FB00FD
+sancaktar-kadin.png,3,dwarf,kadin,fighter-female-dwarf.jpg,sancaktar (hücre 10),#40D033
+sancaktar-kadin.png,4,elf,kadin,fighter-female-elf.jpg,sancaktar (hücre 10),#02F802
+sancaktar-kadin.png,5,gnome,kadin,fighter-female-gnome.jpg,sancaktar (hücre 10),#01FD04
+sancaktar-kadin.png,6,goliath,kadin,fighter-female-goliath.jpg,sancaktar (hücre 10),#00FC04
+sancaktar-kadin.png,7,halfling,kadin,fighter-female-halfling.jpg,sancaktar (hücre 10),#01F802
+sancaktar-kadin.png,8,orc,kadin,fighter-female-orc.jpg,sancaktar (hücre 10),#00FD04
+sancaktar-kadin.png,9,human,kadin,fighter-female-human.jpg,sancaktar (hücre 10) - dolgu: İnsan hariç tutulunca 9. hücre,#08FC04
+sancaktar-dragonborn.png,1,dragonborn,erkek,fighter-male-dragonborn.jpg,sancaktar (hücre 10); zemin macenta (beyaz taban),#03F703
+sancaktar-dragonborn.png,2,dragonborn,kadin,fighter-female-dragonborn.jpg,sancaktar (hücre 10); zemin macenta (beyaz taban),#01FB03

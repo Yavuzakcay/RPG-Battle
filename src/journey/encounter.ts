@@ -4,7 +4,8 @@
  * (`data/monster-ortamlari.json`), SRD 5.2.1 XP bütçesiyle (`data/butce.json`) seçilir:
  * 1. Lider: CR ≤ seviye + `liderCrEk`, XP ≤ bütçe × `liderPay`; en yüksek XP'li üç adaydan biri.
  * 2. Yardımcılar: XP'si liderin en az 1/`yardimciOran`'ı, kalan bütçeye sığan türler; toplam en çok `enCok` düşman,
- *    en çok `efsaneviEnCok` efsanevi canavar. Bütçe seviyeye göre `seviyeCarpani` ile çarpılır (yoksa 1).
+ *    en çok `efsaneviEnCok` efsanevi canavar. Bütçe seviyeye göre `seviyeCarpani` ile, bölge × seviye hücresine göre
+ *    isteğe bağlı `seviyeDuzeltme` ile çarpılır (yoksa 1).
  */
 import data from '../../data/bolge-karsilasma.json';
 import butce from '../../data/butce.json';
@@ -19,6 +20,11 @@ export interface Region {
   harita: { mapId: string; variantId: string };
   /** Bölge zorluk çarpanı (bütçe × çarpan). */
   carpan: number;
+  /**
+   * Bölge × seviye düzeltmesi (bütçe × düzeltme; yoksa 1). İki etkenli çarpan (bölge × seviye) 21 hücreyi tek tek hedef
+   * bandına oturtamadığından (Dungeondex öncesi denge turu) ölçülen hücreler için isteğe bağlı; anahtar = seviye.
+   */
+  seviyeDuzeltme?: Record<string, number>;
 }
 interface Rules { liderCrEk: number; enCok: number; yardimciOran: number; altSinir: number; liderPay: number; efsaneviEnCok: number }
 
@@ -42,6 +48,9 @@ export function isLegendary(id: string): boolean {
 /** Seviye bütçe çarpanı (`seviyeCarpani`; yoksa 1). */
 export const levelMultiplier = (level: number): number => LEVEL_MULT[String(level)] ?? 1;
 
+/** Bölgenin seviyeye özgü düzeltmesi (`seviyeDuzeltme`; yoksa 1). */
+export const regionLevelFactor = (region: Region, level: number): number => region.seviyeDuzeltme?.[String(level)] ?? 1;
+
 export const regionById = (id: string): Region | undefined => REGIONS.find((r) => r.id === id);
 
 /** Bölge haritasına uyan canavarlar (XP'ye göre artan). */
@@ -62,7 +71,7 @@ const pick = <T>(list: readonly T[], rng: Rng): T => list[Math.min(list.length -
 export function regionEncounter(region: Region, levels: number[], rng: Rng, opts: { difficulty?: EncounterDifficulty; multiplier?: number; rules?: Partial<Rules> } = {}): Encounter {
   const rules = { ...ENCOUNTER_RULES, ...opts.rules };
   const level = Math.max(1, Math.round(levels.reduce((a, b) => a + b, 0) / Math.max(1, levels.length)));
-  const budget = Math.round(encounterBudget(levels, opts.difficulty ?? DEFAULT_DIFFICULTY) * region.carpan * levelMultiplier(level) * (opts.multiplier ?? 1));
+  const budget = Math.round(encounterBudget(levels, opts.difficulty ?? DEFAULT_DIFFICULTY) * region.carpan * levelMultiplier(level) * regionLevelFactor(region, level) * (opts.multiplier ?? 1));
   const pool = regionMonsters(region);
   if (pool.length === 0) return { enemies: {}, budget, xp: 0 };
   const leaders = pool.filter((m) => m.crSayi <= level + rules.liderCrEk && crXp(m.cr) <= budget * rules.liderPay);

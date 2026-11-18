@@ -15,6 +15,39 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - Kapsam: 339 büyü + 46 silah seçeneği (38 SRD silahı, fırlatma, Unarmed Strike) + 579 canavar saldırısı × bağlam (normal, direnç/zayıflık/bağışıklık, save başarılı/başarısız, yarım/¾ siper, avantaj/dezavantaj, kritik, Prone/Restrained/Invisible/Charmed/Frightened, konsantrasyon, yukarı slot, alan içi/dışı, dost ateşi, yüzey, Counterspell/Shield). Hasar zarları yüze bağlı sabit (⌊yüz/2⌋ + 1), zar ifadesi kanonik karşılaştırılır (motorun zar gruplamasından bağımsız). Ölçülmeyenler: canavar ek etkileri, Multiattack, sınıf özellikleri, sihirli eşya, çok altıgen, irtifa, `spell_followup` tekrarları.
 - Sonuç (kural sürümü 82): 6587 satır; doğru 6312 (%95,8), yanlış 235, çökme 9, uygulanmıyor 2, karar bekliyor 29. Kök nedenler B01–B20 (en büyükleri: Restrained DEX save dezavantajı yok 72 satır, alan büyülerinin yapım anı save'i 68, Invisible hedefe "görebildiğin" büyü 38), Ç01 Blowgun `1+2` zar ifadesi, U01 Irresistible Dance Charmed, U02 Control Water; her birinin nedeni ve önerisi raporda.
 - Düzeltme yapılmadı; kullanıcı onayı bekleniyor. Karar bekleyen okumalar: K01 Charmed büyücü büyüleyenine zararsız büyü yapabilir mi; K02 Spirit Guardians/Conjure Woodland Beings yapımda içerideki yaratığa save; K03 çağrılan silah/el/ruh saldırısında Prone uzaklığı kimden; K04 Conjure Elemental yakalandığı tur başında tekrar save.
+## Gladyatör sayfaları v2: 768 px hücre (Gemini için)
+
+- Çıktı `docs/sabah/gladyator-sayfa/v2/`: her cinsiyet 4 sayfa 1536×768 (Tiefling+Celestial, Dwarf+Elf, Gnome+Goliath, Halfling+Orc) + Dragonborn tek hücre 768×768 (macenta); `eslesme-v2.csv` (zemin, kaynak hücre, boyut, `ten_hex`). Üretici `scripts/gladyator-v2.py`. Mevcut dosyalara dokunulmadı.
+- Hücre görseli 640 px sayfalardan büyütmek yerine ham Fighter sayfasından (aynı kesim yöntemi) 768 hücreye doğrudan üretildi (çift yeniden örnekleme yok; Lanczos, alfa sert eşik: kenar keskin). Figür hücrenin %65'i ortalı, her kenarda ≥ %10 (assert). Hücre sırası/ırk eşleşmesi eski `eslesme.csv` ile aynı; 9. hücre İnsan atıldı (kullanıcı: İnsan sayfaları hazır), Dragonborn eski Dragonborn sayfasından cinsiyet başına ayrı sayfa.
+- Zemin: hücre başına orijinal örneklenmiş anahtar renk en yakın saf anahtara (#00FF00 ya da #FF00FF) oturtuldu (örnek `kaynak_zemin_ornek` sütununda); bu yüzden bazı hücreler (ör. Tiefling erkek, Elf erkek, Halfling erkek, Celestial kadın) macenta. Dragonborn #FF00FF.
+- `ten_hex`: eski sayfalarda elle seçilen yüz bölgesinden (28×28 px), zemin ve dış çizgi hariç, medyana yakın piksellerin ortalaması (kontrol görseli ile doğrulandı). Goliath/Dragonborn "pul" rengi gri-mavi/lavanta. Gölge, kaş ve göz payı yüzünden ± birkaç birim sapma olabilir; denetimde tolerans payı bırakın.
+
+## Aura-sil v3: kaynak sayfadan yeniden kesim (onay bekliyor; Gemini'ye gidilmedi)
+
+- Aynı iş için önceden `aura-sil-v2-*` ve `aura-sil-karsilastirma.png` (jetondan türetilmiş, %4 boşluk) vardı; "üzerine yazma" gereği yeni dosyalar `-v3` adıyla: `docs/sabah/aura-sil-v3-sayfa-01/02.png`, `aura-sil-v3-eslesme.csv`, `aura-sil-v3-karsilastirma.png` (eski v1 | yeni v3). Üretici `scripts/aura-sil-v3.py`. v1 ve v2 dosyalarına dokunulmadı.
+- İki figürlü jetonlar Halfling erkek (sayfa 01 hücre 4) ve **Gnome kadın (sayfa 02 hücre 5)**; talepte "Halfling" yazan kadın hücre 5 sırayla Gnome'dur, düzeltilen o. Kadın Halfling (hücre 4) de komşu artığı attığı için aynı yöntemle yeniden kesildi.
+- Kaynak `barbarian-<male|female>-<ırk>.jpg` hücre 8 (Çılgın Savaşçı), hücre sınırı içinde kırpıldı, hücrenin kendi zemini örneklendi, en büyük bağlı grup (+ ≥ %12 ve kenara değmeyen parçalar) kaldı. 16 jetonun hepsine despill: kenar bandında zemin rengine yakın/zemin tonlu pikseller silindi, 1 px daraltıldı. Auralar (ateş, pembe sis) silinmedi: o Gemini adımının işi.
+- Sayfa: 1536², düz #FF00FF, hücre 512, figür en çok %80 kutuda (her kenarda ≥ %10 boşluk, assert), ayak %90 hizasında, 9. hücre boş. Not: Çılgın Savaşçı'nın bazı pembe aurası macenta zeminde zor seçilir; zemin istenen gibi bırakıldı.
+
+## Gladyatör toplu sayfa hazırlığı: Sancaktar sayfaları (soru sorulmadı, en makul okuma)
+
+- Kaynak: `fighter-<male|female>-<ırk>.jpg` (uzak dal `wip/karakter-ham`), Sancaktar = 4×3 sırasında 10. hücre (satır 3, sütun 2). Üretici `scripts/gladyator-sayfa.py`; çıktı `docs/sabah/gladyator-sayfa/` (`sancaktar-erkek.png`, `sancaktar-kadin.png`, `sancaktar-dragonborn.png`, `eslesme.csv`); mevcut dosyaların üzerine yazmaz.
+- "9 ırk, Dragonborn ve İnsan hariç" = Hızır sırası (Tiefling, Celestial, Dwarf, Elf, Gnome, Goliath, Halfling, Orc) → 8 ırk; 9. hücrenin dolu olması istendiği için dolgu olarak İnsan konuldu (CSV'de "dolgu" notu; kullanılmayabilir).
+- Zemin düz #00FF00; her hücrenin kendi zemin rengi kenardan örneklenip figür çıkarıldı (CSV `kaynak_zemin`), sayfada çizgi/ızgara yok. Hücre 640 px, figürün en uzun kenarı hücrenin %65'i, ortalı (her kenarda ≥ %17 boşluk).
+- Dragonborn 2 hücreli sayfa (erkek, kadın): "beyaz taban" beyaz gövdeli figür olarak okundu, Hızır sayfaları gibi macenta (#FF00FF) zemin (yeşilde beyaz/açık gövde halesi sorunlu).
+- Kaynak Goliath erkek hücresindeki küçük leke figür sayılmayıp atıldı.
+
+
+## Fighter alt sınıfı "Champion / Şampiyon" → "Gladiator / Gladyatör" (yalnız görünen ad)
+
+- Kimlik `champion`, SRD eşlemesi ve kayıtlar aynı. Değişen: fikstür kaydı (`src/rules/fixtures/srd-alt-siniflar.json` TR Gladyatör, EN Gladiator), `scripts/lib/srd12-paket.ts` ad tablosu, belge satırları (AS2-ENVANTER/FARKLAR) ve `subclass.test.ts` beklentisi. Ekran metinleri (`strings`) alt sınıf adı içermiyor, ad alt sınıf kaydından okunuyor (oluşturucu seçici, karakter kartı); özellik adlarındaki "Champion" geçen yorumlar SRD özellik/kaynak adı olduğu için kalır.
+- Uygulamada ad dış paketten geldiği için yerel `icerik/ek-fighter.json` da güncellenmeli (as2.test.ts paket ile fikstür EN adlarını karşılaştırır): `npx vite-node scripts/srd12-paket-ekle.ts --adlari-guncelle` (yedek alır; paketteki SRD kayıt adlarını tabloya eşitler).
+
+## Çılgın Yol (Berserker) öfke efekti (yalnız görünüm; kural ve kayıt sürümü değişmedi)
+
+- Koşul: savaşçıda `frenzy` (alt sınıf özelliği, yalnız Berserker) ve `rage` etkin (`tokenFilters` → `rage`). Başka alt sınıfın Rage'inde ve Rage kapalıyken efekt yok. Rage bitince filtre kalkar (durumdan türetilir).
+- Çizim: mevcut jeton filtre sistemi (`filterStyle`): silüet konturu koyu kırmızı-turuncu (`data/efekt-baglama.json` `jeton.ofke`: kontur #9c1d0c, parıltı #e0561a; pembe/magenta yok), tüm figür (silah dahil) CSS `translate` ile kısa adımlı titrer (`.st-rage .token-filter`, `transform` niteliğiyle çakışmaz), başın üstünde üç alev dili (`src/ui/RageFlames.tsx`, savaş ekranı tembel parçasında). Efekt animasyonu kapalı ya da hareketi azalt açıkken `rage-still` tek sabit kare.
+- Not: Çılgın Yol (ID8) jetonlarının sprite'ında kendi ateş aurası pişmiş; aura silme çalışmasıyla (`docs/sabah/aura-sil-*`) temizlenince efekt daha okunaklı olur. Önizleme `docs/sabah/ofke-efekti-onizleme.png` (`onizleme-soy.html?m=r`).
 
 ## SRD 12 güvenlik ağı reddedildi (kullanıcı kararı)
 

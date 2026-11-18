@@ -30,7 +30,7 @@ describe('alt sınıf', () => {
   it('eski kayıt: alt sınıfı boş 3+ karaktere SRD alt sınıfı atanır ve bildirilir; diğerleri değişmez', () => {
     const list = [fighter(5), fighter(2), fighter(4, 'champion')];
     const m = migrateSubclasses(list);
-    expect(m.assigned).toEqual([{ name: 'Bor', subclass: 'Champion' }]);
+    expect(m.assigned).toEqual([{ name: 'Bor', subclass: 'Gladiator' }]);
     expect(m.list[0]?.sheet.subclassId).toBe('champion');
     expect(m.list[1]).toBe(list[1]);
     expect(m.list[2]).toBe(list[2]);
