@@ -14,6 +14,9 @@ import olcum from '../../data/soy-olcum.json';
 import { subclassTokenFile, garibanTokenFile } from '../battle/avatar';
 import jetonlar from './jetonTablolari';
 import { combos } from './soyGaleriListe';
+import { AvatarCircle } from '../ui/Avatar';
+import { RageFlames } from '../ui/RageFlames';
+import { filterStyle, tokenFilters } from '../ui/statusFx';
 
 const mode = new URLSearchParams(location.search).get('m') ?? 'a';
 const CHANGED = new Set(['elf/drow', 'human/tenhausser', 'celestial/gece-gozyasi', 'goliath/stone', 'gnome/forest-gnome', 'orc/wildwood', 'halfling/sturdy']);
@@ -167,5 +170,41 @@ function PageW() {
     </div>
   );
 }
+// ?m=r: Çılgın Yol öfke efekti: gerçek tokenFilters/filterStyle + RageFlames ile savaş jetonu görünümü (Berserker Rage kapalı/açık/açık+hareket azaltılmış, başka alt sınıf Rage açık).
+function PageR() {
+  const R = 44, S = 150;
+  const cases: Array<{ label: string; file: string; c: { frenzy?: boolean; rage?: { refreshed: boolean; added: string[] } | null }; still?: boolean }> = [
+    { label: 'Çılgın Yol, Rage KAPALI', file: 'human-erkek-barbarian-ID8', c: { frenzy: true } },
+    { label: 'Çılgın Yol, Rage AÇIK', file: 'human-erkek-barbarian-ID8', c: { frenzy: true, rage: { refreshed: false, added: [] } } },
+    { label: 'Çılgın Yol, Rage AÇIK (sabit kare)', file: 'human-erkek-barbarian-ID8', c: { frenzy: true, rage: { refreshed: false, added: [] } }, still: true },
+    { label: 'Başka alt sınıf (Varis), Rage AÇIK', file: 'human-erkek-barbarian-ID1', c: { rage: { refreshed: false, added: [] } } },
+    { label: 'Çılgın Yol kadın, Rage AÇIK', file: 'orc-kadin-barbarian-ID8', c: { frenzy: true, rage: { refreshed: false, added: [] } } },
+  ];
+  return (
+    <div id="sayfa" style={{ background: '#1d2128', color: '#e8e4da', font: '12px system-ui', padding: 10, display: 'inline-block' }}>
+      <div style={{ display: 'flex', gap: 14 }}>
+        {cases.map((k) => {
+          const base = { conditions: [] as string[], life: 'alive' as const, exhaustion: 0 };
+          const filters = tokenFilters({ ...base, ...k.c } as Parameters<typeof tokenFilters>[0]);
+          const look = filterStyle(filters, null);
+          const cx = S / 2, cy = S / 2 + 6, top = cy - R;
+          return (
+            <div key={k.label} style={{ textAlign: 'center' }}>
+              <svg width={S} height={S + 12} style={{ background: '#4f7a3a', borderRadius: 8 }}>
+                <g className={`token ally ${filters.map((f) => `st-${f}`).join(' ')}${k.still ? ' rage-still' : ''}`}>
+                  <g className="token-filter" style={look.filter ? { filter: look.filter } : undefined}>
+                    <AvatarCircle avatar={{ src: `characters/${k.file}.webp`, bg: '#4f7a3a', label: 'B' }} cx={cx} cy={cy} r={R} eager />
+                  </g>
+                  {filters.includes('rage') && <RageFlames x={cx} y={top} r={R} />}
+                </g>
+              </svg>
+              <div style={{ maxWidth: S }}>{k.label}<br /><span style={{ color: '#9fa6b5' }}>filtreler: {filters.join(', ') || '—'}</span></div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 const host = document.createElement('div'); host.style.cssText = 'position:fixed;left:0;top:0;z-index:99999'; document.body.appendChild(host);
-createRoot(host).render(mode === 'b' ? <PageB /> : mode === 'c' ? <PageC /> : mode === 'g' ? <PageG /> : mode === 'w' ? <PageW /> : <PageA />);
+createRoot(host).render(mode === 'b' ? <PageB /> : mode === 'c' ? <PageC /> : mode === 'g' ? <PageG /> : mode === 'w' ? <PageW /> : mode === 'r' ? <PageR /> : <PageA />);

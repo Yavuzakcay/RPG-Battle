@@ -9,6 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+
+## Çılgın Yol (Berserker) öfke efekti (yalnız görünüm; kural ve kayıt sürümü değişmedi)
+
+- Koşul: savaşçıda `frenzy` (alt sınıf özelliği, yalnız Berserker) ve `rage` etkin (`tokenFilters` → `rage`). Başka alt sınıfın Rage'inde ve Rage kapalıyken efekt yok. Rage bitince filtre kalkar (durumdan türetilir).
+- Çizim: mevcut jeton filtre sistemi (`filterStyle`): silüet konturu koyu kırmızı-turuncu (`data/efekt-baglama.json` `jeton.ofke`: kontur #9c1d0c, parıltı #e0561a; pembe/magenta yok), tüm figür (silah dahil) CSS `translate` ile kısa adımlı titrer (`.st-rage .token-filter`, `transform` niteliğiyle çakışmaz), başın üstünde üç alev dili (`src/ui/RageFlames.tsx`, savaş ekranı tembel parçasında). Efekt animasyonu kapalı ya da hareketi azalt açıkken `rage-still` tek sabit kare.
+- Not: Çılgın Yol (ID8) jetonlarının sprite'ında kendi ateş aurası pişmiş; aura silme çalışmasıyla (`docs/sabah/aura-sil-*`) temizlenince efekt daha okunaklı olur. Önizleme `docs/sabah/ofke-efekti-onizleme.png` (`onizleme-soy.html?m=r`).
+
 ## SRD 12 güvenlik ağı reddedildi (kullanıcı kararı)
 
 - Kullanıcı kararı: fikstürden seçiciye otomatik ekleme (güvenlik ağı) yapılmaz; SRD 12 alt sınıf yalnız `icerik/ek-<sınıf>.json` paketinden gelir, başka hiçbir yoldan seçim listesine girmez (mobil/APK'da `icerik/` yoksa SRD 12 görünmez; yalnız 12 bizim alt sınıf). Fikstür yalnız test-setup ve sim yolunda kalır. Kod değişmedi; `scripts/srd12-paket-ekle.ts` yerel paket dosyalarını tamamlamak için duruyor.
