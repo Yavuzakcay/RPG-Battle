@@ -422,10 +422,218 @@ def oncelik_rapor(L):
     lines += ['', f'Tek kaynaktan yazılan Celestial jeton: {tek}.']
     open('docs/sabah/celestial-oncelik.md', 'w').write('\n'.join(lines) + '\n')
 
+# ---------------------------------------------------------------------------------------------------------------- C) diğer düzeltme sayfaları
+def cut_bodies(path, want, near=0.55):
+    """Gövde + kopuk parçalar (hokkabaz bıçağı, kitap, taş, ay): en büyük `want` bileşen gövde; ≥ 25 px diğer parçalar en yakın gövdeye
+    (uzaklık ≤ near × gövde boyu) bağlanır, uzak/sahipsiz parçalar atılır. → okuma sırasında [(rgba, kutu, zemin)], uyarılar."""
+    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
+    lab, n = ndi.label(fg, structure=np.ones((3, 3)))
+    sz = ndi.sum(fg, lab, range(1, n + 1))
+    objs0 = ndi.find_objects(lab)
+    def frame(i):   # sayfa çerçevesi/ızgara: kutusu sayfanın yarısından büyük ve doluluğu düşük
+        sl = objs0[i - 1]; bh, bw = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+        return bh * bw > 0.25 * H * W and sz[i - 1] < 0.15 * bh * bw
+    sz = np.where([frame(i) for i in range(1, n + 1)], 0, sz); order = np.argsort(-sz)
+    bodies = [int(i) + 1 for i in order[:want]]
+    warn = []
+    if n < want or sz[order[want - 1]] < 0.25 * sz[order[0]]: warn.append(f'gövde sayısı belirsiz (en büyük {want} bileşen: {[int(sz[i]) for i in order[:want + 1]]})')
+    objs = ndi.find_objects(lab)
+    dist, owner = None, {}
+    # her pikselin en yakın gövdesi: gövdelere ayrı uzaklık dönüşümü (4× küçültülmüş ızgarada)
+    k = 4; small = lab[::k, ::k]
+    dts = [ndi.distance_transform_edt(small != b) * k for b in bodies]
+    hgt = {b: objs[b - 1][0].stop - objs[b - 1][0].start for b in bodies}
+    members = {b: [b] for b in bodies}
+    def lineish(i):   # ızgara/çerçeve çizgisi kırıntısı: ince, uzun, koyu-nötr
+        sl = objs[i - 1]; h_, w_ = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+        if min(h_, w_) > 14 or max(h_, w_) < 40: return False
+        px_ = a[sl][lab[sl] == i].astype(int)
+        return px_.max(axis=1).mean() < 110 and float((px_.max(axis=1) - px_.min(axis=1)).mean()) < 40
+    for i in range(1, n + 1):
+        if i in bodies or sz[i - 1] < 25: continue
+        if lineish(i): warn.append(f'çizgi kırıntısı atıldı ({objs[i - 1][1].start},{objs[i - 1][0].start})'); continue
+        sl = objs[i - 1]
+        if sl[0].start <= 2 or sl[1].start <= 2 or sl[0].stop >= H - 2 or sl[1].stop >= W - 2: continue   # sayfa çerçevesi / ayraç
+        y_, x_ = (sl[0].start + sl[0].stop) / 2, (sl[1].start + sl[1].stop) / 2
+        cy, cx = min(int(y_) // k, small.shape[0] - 1), min(int(x_) // k, small.shape[1] - 1)
+        ds = [dt[cy, cx] for dt in dts]
+        for j in np.argsort(ds):   # en yakın gövde; parça merkezi gövde kutusunun %25 genişletilmiş hâlinin içinde olmalı
+            b = bodies[j]; bs = objs[b - 1]; ph, pw = 0.25 * (bs[0].stop - bs[0].start), 0.25 * (bs[1].stop - bs[1].start)
+            if ds[j] > near * hgt[b]: break
+            if bs[0].start - ph <= y_ <= bs[0].stop + ph and bs[1].start - pw <= x_ <= bs[1].stop + pw: members[b].append(i); break
+    out = []
+    figs = []
+    for b in bodies:
+        m = np.isin(lab, members[b]); ys, xs = np.where(m)
+        figs.append((b, (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1), (np.mean(xs), np.mean(ys)), int(m.sum())))
+    for b, (x0, y0, x1, y1), _, _ in reading_order(figs, H):
+        m = np.isin(lab[y0:y1, x0:x1], members[b])
+        out.append((keyed_rgba(a[y0:y1, x0:x1], m), (x0, y0, x1, y1), cell_kind(a[y0:y1, x0:x1], m)))
+    return out, warn
+
+def cut_grid(path, rows, cols):
+    """Düzenli ızgaralı sayfa: bileşenler merkezlerinin düştüğü hücreye; hücrede en büyük bileşen gövde, aynı hücrenin ≥ 25 px parçaları onun;
+    sayfa kenarına değen ve çizgi benzeri (ince, koyu-nötr) parçalar atılır. → okuma sırasında [(rgba, kutu, zemin)], uyarılar."""
+    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
+    # ızgara ve çerçeve çizgileri (bilinen konum ± 14 px, koyu pikseller) önce silinir: figür çizgiye değse de çerçeveyle birleşmez
+    dark = a.max(axis=2) < 100; band = np.zeros_like(fg)
+    for c in range(cols + 1): x = round(c * W / cols); band[:, max(0, x - 14):x + 14] = True
+    for r in range(rows + 1): y = round(r * H / rows); band[max(0, y - 14):y + 14, :] = True
+    fg &= ~(band & dark)
+    lab, n = ndi.label(fg, structure=np.ones((3, 3))); objs = ndi.find_objects(lab); sz = ndi.sum(fg, lab, range(1, n + 1))
+    big = 0.01 * H * W
+    cells = {}
+    for i in range(1, n + 1):
+        sl = objs[i - 1]
+        if sz[i - 1] < 25: continue
+        if sz[i - 1] < big and (sl[0].start <= 2 or sl[1].start <= 2 or sl[0].stop >= H - 2 or sl[1].stop >= W - 2): continue
+        h_, w_ = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+        px_ = a[sl][lab[sl] == i].astype(int)
+        if min(h_, w_) <= 14 and max(h_, w_) >= 40 and px_.max(axis=1).mean() < 110: continue
+        ys, xs = np.where(lab[sl] == i); cy, cx = ys.mean() + sl[0].start, xs.mean() + sl[1].start
+        cells.setdefault((min(rows - 1, int(cy / H * rows)), min(cols - 1, int(cx / W * cols))), []).append(i)
+    out, warn = [], []
+    for r in range(rows):
+        for c in range(cols):
+            lst = cells.get((r, c))
+            if not lst: warn.append(f'hücre {r * cols + c + 1} boş'); out.append(None); continue
+            m = np.isin(lab, lst); ys, xs = np.where(m); x0, y0, x1, y1 = xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
+            mm = m[y0:y1, x0:x1]; out.append((keyed_rgba(a[y0:y1, x0:x1], mm), (x0, y0, x1, y1), cell_kind(a[y0:y1, x0:x1], mm)))
+    return out, warn
+
+def token_height(name):
+    f = f'public/characters/{name}.webp'
+    if not os.path.exists(f): return None
+    al = np.array(Image.open(f).convert('RGBA'))[..., 3] > 127; ys, _ = np.where(al)
+    return float(ys.max() - ys.min() + 1)
+
+def sim(tok, old):
+    """Görsel benzerlik (eşleştirme): iki jetonun 64 px küçültülmüş, ön-çarpımlı RGB farkı (küçük = benzer)."""
+    f = lambda x: np.array(Image.fromarray(x, 'RGBA').convert('RGBa').resize((64, 64), Image.BILINEAR)).astype(float)
+    a, b = f(tok), f(old); return float(np.abs(a - b).mean())
+
+BARD = [("bard-m-tiefling-dragonborn.png", [('tiefling', 'erkek'), ('dragonborn', 'erkek')]),
+        ("bard-f-halfling-orc-tiefling-dragonborn.png", [('human', 'kadin'), ('orc', 'kadin'), ('tiefling', 'kadin'), ('dragonborn', 'kadin')]),
+        ("kadin-5'li.jpg", [('celestial', 'kadin'), ('dwarf', 'kadin'), ('elf', 'kadin'), ('gnome', 'kadin'), ('goliath', 'kadin')]),
+        ("4'lü.jpg", [('human', 'erkek'), ('orc', 'erkek'), ('halfling', 'erkek'), ('halfling', 'kadin')]),
+        ("erkek-5'li.jpg", [('celestial', 'erkek'), ('dwarf', 'erkek'), ('elf', 'erkek'), ('gnome', 'erkek'), ('goliath', 'erkek')])]
+SORC_IZGARA = {'sorcerer-duzelt-A-sonuc.jpg': (2, 2), 'sorcerer-duzelt-B-sonuc.jpg': (2, 2), 'sorcerer-duzelt-C-sonuc.jpg': (3, 3)}
+SORC = [('sorcerer-duzelt-A-sonuc.jpg', 2, [('orc', 'erkek'), ('halfling', 'erkek'), ('human', 'kadin'), ('orc', 'kadin')]),
+        ('sorcerer-duzelt-B-sonuc.jpg', 3, [('celestial', 'kadin'), ('halfling', 'kadin'), ('human', 'kadin'), ('tiefling', 'kadin')]),
+        ('sorcerer-duzelt-C-sonuc.jpg', 9, [('goliath', 'erkek'), ('elf', 'erkek'), ('tiefling', 'erkek'), ('orc', 'erkek'),
+                                            ('dragonborn', 'kadin'), ('dwarf', 'kadin'), ('goliath', 'kadin'), ('human', 'kadin'), ('tiefling', 'kadin')])]
+
+def match(toks, names, margin=0.12):
+    """Macar eşleştirme (küçük boyutta kaba kuvvet yerine açgözlü + ikinci en iyi farkı): → {figür: ad}, belirsizler."""
+    olds = {nm: np.array(Image.open(f'public/characters/{nm}.webp').convert('RGBA')) for nm in names}
+    from itertools import permutations
+    C = np.array([[sim(t, olds[nm]) for nm in names] for t in toks])
+    if len(names) <= 9:
+        from scipy.optimize import linear_sum_assignment
+        r, c = linear_sum_assignment(C)
+    res, amb = {}, []
+    for i, j in zip(r, c):
+        res[i] = names[j]
+        alt = sorted(C[i]); second = alt[1] if len(alt) > 1 else alt[0] * 2
+        if (second - C[i, j]) / max(1e-6, second) < margin: amb.append((i, names[j], round(C[i, j], 1), round(second, 1)))
+    return res, amb, C
+
+# Sorcerer C: 1. ve 7. figür (kel kafatası yüzlü iki Goliath) görsel olarak ayırt edilemiyor (cinsiyet ipucu yok): uygulanmaz, docs/sabah/sorcerer-eslesme.md.
+SORC_BELIRSIZ = {('sorcerer-duzelt-C-sonuc.jpg', 1), ('sorcerer-duzelt-C-sonuc.jpg', 7)}
+BARB_SIRA = ['human', 'elf', 'dwarf', 'halfling', 'gnome', 'orc', 'tiefling', 'goliath']   # aura-sil v3 sayfa sırası (9. hücre boş)
+
+def moon_clean(rgba, kind):
+    """Ay parıltısı kalıntısı: gövde dışındaki parçalarda zemin tonuna çalan (yeşil/macenta) yarı parlak pikseller silinir; ayın kendisi (beyaz-mavi) kalır."""
+    a = rgba.copy(); rgb = a[..., :3].astype(int); al = a[..., 3] > 0
+    lab_, n = ndi.label(al, structure=np.ones((3, 3)))
+    if n < 1: return a, 0
+    sz = ndi.sum(al, lab_, range(1, n + 1)); body = lab_ == (1 + int(np.argmax(sz)))
+    tint = (rgb[..., 1] - np.maximum(rgb[..., 0], rgb[..., 2]) > 12) if kind == 'green' else (np.minimum(rgb[..., 0], rgb[..., 2]) - rgb[..., 1] > 40)
+    # aya bitişik (gövdeyle birleşmiş) parıltı: çok açık ve güçlü zemin tonlu pikseller, figürün üst %45'inde (zombi yüzü gibi soluk yeşil sanat eşiğin altında kalır)
+    strong = ((rgb[..., 1] - np.maximum(rgb[..., 0], rgb[..., 2]) > 40) if kind == 'green' else (np.minimum(rgb[..., 0], rgb[..., 2]) - rgb[..., 1] > 70)) & (rgb.max(-1) > 170)
+    ys, _ = np.where(al); top = np.zeros_like(al); top[:int(ys.min() + 0.45 * (ys.max() - ys.min()))] = True
+    m = al & ((~body & tint) | (strong & top))
+    a[m, 3] = 0
+    return a, int(m.sum())
+
+def sheet_scale(comps, cls):
+    ok = {n: v for n, v in comps.items() if n <= len(tk.CLASSES[cls][3]) and not any(x.startswith('ELLE') for x in v[2])}
+    norm = [n for n in ok if tk.TALL.get(cls) != n]
+    return min(tk.FIG_H / max(ok[n][0].shape[0] for n in norm), (SIZE - 4) / max(ok[n][0].shape[1] for n in norm)), ok
+
+def sibling_height(race, gen, cls, skip):
+    hs = []
+    for f in glob.glob(f'public/characters/{race}-{gen}-{cls}-ID*.webp'):
+        if re.search(rf'-{cls}-ID{skip}\.webp$', f): continue
+        h = token_height(os.path.basename(f)[:-5])
+        if h: hs.append(h)
+    return float(np.median(hs))
+
+def align_or_height(rgba, name, rep, min_iou=0.70):
+    """Eski jetonla aynı kompozisyon: alt gövde hizalaması (fit); uyum düşükse (yön değişmiş, sağa dönük vb.) eski figür boyuna göre ölçek."""
+    old_a = np.array(Image.open(f'public/characters/{name}.webp').convert('RGBA'))[..., 3] > 127
+    f = fit(rgba, old_a)
+    if f and f[3] >= min_iou:
+        tok = tk.clean_edges(resample(rgba, *f[:3]))
+        if tok[..., 3].any() and not (tok[0, :, 3].any() or tok[:, 0, 3].any() or tok[:, -1, 3].any()): rep.setdefault('hizalama', {})[name] = round(f[3], 3); return tok
+    rep.setdefault('boy_esleme', []).append(name)
+    return place_token(rgba, token_height(name))[0]
+
+def diger():
+    L = ledger(); rep = {'adim': 'diger', 'yazilan': [], 'ezilmedi': [], 'sayfalar': [], 'belirsiz': [], 'uyari': []}
+    old = lambda nm: np.array(Image.open(f'public/characters/{nm}.webp').convert('RGBA')) if os.path.exists(f'public/characters/{nm}.webp') else None
+    groups = {}
+    def put(group, name, tok, dosya, hucre):
+        b = old(name); write_token(L, name, Image.fromarray(tok, 'RGBA') if isinstance(tok, np.ndarray) else tok, 'diger', dosya, hucre, rep)
+        groups.setdefault(group, []).append((name.replace('-', ' ', 2)[:34], np.array(tok), b))
+    # 1) Bard hücre 3 (hokkabaz)
+    for f, lst in BARD:
+        out, warn = cut_bodies(f'{RAW}/{f}', len(lst))
+        rep['sayfalar'].append({'dosya': f, 'beklenen': len(lst), 'bulunan': len(out), 'zemin': [k for _, _, k in out], 'uyari': warn})
+        for i, ((rgba, bb, kind), (race, g)) in enumerate(zip(out, lst), 1):
+            name = f'{race}-{g}-bard-ID3'; put('bard', name, align_or_height(rgba, name, rep), f, i)
+    # 2) Sorcerer
+    for f, cell, lst in SORC:
+        out, warn = cut_grid(f'{RAW}/{f}', *SORC_IZGARA[f])
+        rep['sayfalar'].append({'dosya': f, 'beklenen': len(lst), 'bulunan': len(out), 'zemin': [k for _, _, k in out], 'uyari': warn})
+        for i, ((rgba, bb, kind), (race, g)) in enumerate(zip(out, lst), 1):
+            name = f'{race}-{g}-sorcerer-SC-{cell}'
+            if (f, i) in SORC_BELIRSIZ: rep['belirsiz'].append((f, i, name)); continue
+            if cell == 9:
+                rgba, nm_ = moon_clean(rgba, kind)
+                if nm_: rep['uyari'].append(f'{name}: ay parıltısı kalıntısı {nm_} px silindi')
+            put('sorcerer', name, align_or_height(rgba, name, rep), f, i)
+    # 3) tam sınıf sayfasından tek hücre (özgün hat ve sayfa ölçeği): Druid Tiefling hücre 4, Cleric erkek Tiefling hücre 9,
+    #    Celestial erkek Cleric (hale-gemini sayfa 06'nın yeniden yapılmışı; yalnız haleli hücreler 7 ve 9, halesiz-temiz dokunulmaz)
+    for f, cls, cells, race, g in [('druid-female-tiefling.jpg', 'druid', [4], 'tiefling', 'kadin'), ('druid-male-tiefling.jpg', 'druid', [4], 'tiefling', 'erkek'),
+                                   ('cleric-male-tiefling.jpg', 'cleric', [9], 'tiefling', 'erkek'), ('clerik-male-celestial.jpg', 'cleric', [7, 9], 'celestial', 'erkek'),
+                                   ('fighter-male-human.jpg', 'fighter', list(range(1, 12)), 'human', 'erkek'), ('fighter-female-human.jpg', 'fighter', list(range(1, 11)), 'human', 'kadin')]:
+        comps = tk.components_of_sheet(f'{RAW}/{f}', cls)
+        scale, ok = sheet_scale(comps, cls)
+        names = tk.CLASSES[cls][3]
+        pr = {'dosya': f, 'beklenen_hucre': len(names), 'bulunan': sorted(comps), 'elle': [(n, v[2][0]) for n, v in comps.items() if any(x.startswith('ELLE') for x in v[2])], 'yazilan_hucre': []}
+        for n in cells:
+            if n not in ok: rep['uyari'].append(f'{f} hücre {n}: figür yok ya da ELLE, uygulanmadı'); continue
+            rgba = ok[n][0]; sc = scale if tk.TALL.get(cls) != n else min(tk.FIG_H / rgba.shape[0], (SIZE - 4) / rgba.shape[1])
+            tok, nh, shifted = tk.render(rgba, tk.bbox(rgba), sc, rgba.shape[1] / 2)
+            put(cls if race != 'celestial' else 'cleric-celestial', f'{race}-{g}-{cls}-ID{n}', np.array(tok), f, n); pr['yazilan_hucre'].append(n)
+        rep['sayfalar'].append(pr)
+    # 4) Barbarian aurasız (Çılgın Yol hücre 8): ölçek = aynı ırk/cinsiyet Barbarian jetonlarının (ID8 hariç) ortanca boyu
+    for f, g in (('barbarian-female-aurasiz.jpg', 'kadin'), ('barbarian-male-aurasiz.jpg', 'erkek')):
+        out, warn = cut_bodies(f'{RAW}/{f}', 8)
+        rep['sayfalar'].append({'dosya': f, 'beklenen': 8, 'bulunan': len(out), 'zemin': [k for _, _, k in out], 'uyari': warn})
+        for i, ((rgba, bb, kind), race) in enumerate(zip(out, BARB_SIRA), 1):
+            name = f'{race}-{g}-barbarian-ID8'; tok, sc = place_token(rgba, sibling_height(race, g, 'barbarian', 8)); put('barbarian', name, tok, f, i)
+    save_ledger(L); hold_sync(L)
+    for k, it in groups.items(): contact(it, f'{DOC}/C-{k}.jpg', cols=5, title=f'C {k}: eski | yeni')
+    json.dump(rep, open(f'{DOC}/C-diger.json', 'w'), ensure_ascii=False, indent=1)
+    oncelik_rapor(L)
+    return rep
+
 if __name__ == '__main__':
     os.makedirs(f'{OUT}/kucuk', exist_ok=True)
     step = sys.argv[1] if len(sys.argv) > 1 else ''
-    fn = {'taban': taban, 'yeni': yeni, 'duzeltme': duzeltme, 'gladyator-onizleme': lambda: (gladyator_onizleme(), {'tamam': 1})[1]}.get(step)
+    fn = {'taban': taban, 'yeni': yeni, 'duzeltme': duzeltme, 'diger': diger, 'gladyator-onizleme': lambda: (gladyator_onizleme(), {'tamam': 1})[1]}.get(step)
     if not fn: sys.exit(__doc__)
     r = fn()
     print({k: (len(v) if isinstance(v, (list, dict)) else v) for k, v in r.items()})

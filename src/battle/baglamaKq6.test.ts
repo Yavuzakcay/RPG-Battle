@@ -39,7 +39,7 @@ describe('KQ6 bağlama', () => {
   });
   it('maskeler: bağlı her alt sınıf/Gariban jetonunun ten maskesi var ya da (kabuk/odun yüzü, tam örtülü) raporda "maskesiz"', () => {
     const rep = alt.jetonlar as Record<string, number>;
-    expect(Object.keys(rep).length).toBe(6 * 264);
+    expect(Object.keys(rep).length).toBe(6 * 264 + 10); // + 10 Gladyatör (CC 2026-11-19, fighter ID12; boyalı 5 ırk × 2 cinsiyet, Celestial/Dragonborn hariç)
     const dragon = (dragonRep as { jetonlar: Record<string, { n?: number }> }).jetonlar;
     for (const [name, n] of Object.entries(rep)) expect(MASKS.has(name), name).toBe(name.startsWith('dragonborn-') ? (dragon[name]?.n ?? 0) >= 30 : n >= 30);
     expect(Object.values(rep).filter((n) => n < 30).length).toBeLessThan(60);
