@@ -5412,6 +5412,81 @@
     "dosya": "celestial-kadin-rogue-ID3-duzeltme.jpg",
     "hucre": 1
    }
+  },
+  "celestial-erkek-wizard-WZ-B1": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "git:2360265b",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "git:2360265b",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-wizard-WZ-B2": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "git:2360265b",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "git:2360265b",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-wizard-WZ-B3": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "git:2360265b",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "git:2360265b",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-wizard-WZ-B4": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "git:2360265b",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "git:2360265b",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-wizard-WZ-B7": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "git:2360265b",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "git:2360265b",
+    "hucre": 1
+   }
   }
  }
 }

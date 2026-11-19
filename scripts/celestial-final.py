@@ -17,11 +17,7 @@ CLASSES = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin',
 CELL, LAB = 256, 18
 # Görsel kontrol (2026-11-19; 12 sınıf sayfası tam gözden geçirildi, işaretliler 2× büyütülerek): ölçümü düzelten karar. Yoksa ölçüm geçerli.
 GORSEL = {
-    'celestial-erkek-wizard-WZ-B1': ('haleli', 'altın halka başın üstünde (sayfa 30 yok, hiç işlenmedi)'),
-    'celestial-erkek-wizard-WZ-B2': ('haleli', 'altın halka başın üstünde (sayfa 30 yok)'),
-    'celestial-erkek-wizard-WZ-B3': ('haleli', 'altın halka başın üstünde (sayfa 30 yok)'),
-    'celestial-erkek-wizard-WZ-B4': ('haleli', 'altın halka başın üstünde (sayfa 30 yok)'),
-    'celestial-erkek-wizard-WZ-B7': ('haleli', 'altın halka başın üstünde (sayfa 30 yok)'),
+    'celestial-erkek-wizard-WZ-B1': ('halesiz', 'yanlış alarm: rüzgâr parçacıkları (2360265b halesiz uygulandı)'),
     'celestial-male-bard': ('halesiz', 'yanlış alarm: şapka tüyü'),
     'celestial-female-bard': ('halesiz', 'yanlış alarm: şapka tüyü'),
     'celestial-kadin-wizard-WZ-B1': ('halesiz', 'yanlış alarm: rüzgâr parçacıkları'),

@@ -335,9 +335,9 @@
    "olcek": 1.16
   },
   "wizard-erkek": {
-   "x": 126,
-   "y": 29,
-   "olcek": 1.09
+   "x": 127,
+   "y": 30,
+   "olcek": 1.08
   },
   "wizard-erkek-genel": {
    "x": 120,
@@ -640,6 +640,11 @@
    "x": 129,
    "y": 41,
    "olcek": 1.08
+  },
+  "erkek-wizard-WZ-B3": {
+   "x": 128,
+   "y": 43,
+   "olcek": 1.05
   },
   "kadin-barbarian-ID2": {
    "x": 131,

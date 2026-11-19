@@ -32,31 +32,6 @@
    "durum": "taç yok",
    "karar": "dokunma"
   },
-  "celestial-erkek-wizard-WZ-B1": {
-   "neden": "kalıntı: şekil var, hale tonlu 0 px (≤ 8 gerekir); halka baş çizgisine değiyor ya da baş/saç tonuyla karışık",
-   "durum": "Gemini'ye gidecek",
-   "karar": "gemini"
-  },
-  "celestial-erkek-wizard-WZ-B2": {
-   "neden": "kalıntı: şekil yok, hale tonlu 47 px (≤ 8 gerekir); halka baş çizgisine değiyor ya da baş/saç tonuyla karışık",
-   "durum": "Gemini'ye gidecek",
-   "karar": "gemini"
-  },
-  "celestial-erkek-wizard-WZ-B3": {
-   "neden": "kalıntı: şekil yok, hale tonlu 23 px (≤ 8 gerekir); halka baş çizgisine değiyor ya da baş/saç tonuyla karışık",
-   "durum": "Gemini'ye gidecek",
-   "karar": "gemini"
-  },
-  "celestial-erkek-wizard-WZ-B4": {
-   "neden": "kalıntı: şekil yok, hale tonlu 11 px (≤ 8 gerekir); halka baş çizgisine değiyor ya da baş/saç tonuyla karışık",
-   "durum": "Gemini'ye gidecek",
-   "karar": "gemini"
-  },
-  "celestial-erkek-wizard-WZ-B7": {
-   "neden": "kalıntı: şekil yok, hale tonlu 31 px (≤ 8 gerekir); halka baş çizgisine değiyor ya da baş/saç tonuyla karışık",
-   "durum": "Gemini'ye gidecek",
-   "karar": "gemini"
-  },
   "celestial-kadin-fighter-ID3": {
    "neden": "başın üstünde halka olabilecek artık var (çift hale riski): hale var mı belirsiz",
    "durum": "karar bekliyor",
