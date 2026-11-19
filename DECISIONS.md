@@ -9,6 +9,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## soy-maske tutarlılığı: rapor 144 sprite, bayat 8 Cleric ID9 maskesi yenilendi (2026-11-19; yalnız veri/test, kural ve kayıt sürümü değişmedi)
+
+- `data/soy-maske-rapor.json` 120 → 144: beklenen. Rapor sprite kümesi `soy-renkleri.json` `races` × cinsiyet × sınıf (`npm run soy-maske` ana döngüsü); Human, AS1c'de (2026-11-12) ten tonu maskesi için o tabloya girdi, rapor ise 2026-11-09'dan kalmıştı. Rapora yalnız 24 Human `oto` satırı eklendi (elle maske yok, çalışma anı davranışı aynı). `handMask.test.ts` sabit 120 yerine kümeyi veriden hesaplıyor (ırk × cinsiyet × sınıf, Human dahil), böylece ırk eklenince test sessizce bayatlamaz.
+- Bayat 8 `*-cleric-ID9` ten maskesi (elf-erkek, gnome ×2, goliath ×2, human ×2, tiefling-erkek) `npm run soy-maske -- --alt` ile yenilendi; baytları değişen yalnız bu 8 PNG ve alt-rapor'da bu 8 girdi. Halka (`split_ring`) ∩ ten maskesi sekizinde de 0 (önce de 0), ten ortalaması kayması ΔE 0,1–1,2; `maske-el` gerekmedi. Dragonborn pul maskeleri, diğer ırk maskeleri ve Dark Elf paleti değişmedi. Ayrıntı ve önce/sonra: `docs/sabah/cleric-id9-halka/maske-8.md`, ölçüm `scripts/cleric-id9-maske-olcum.py`.
+- Bilgi: hücreli jetonlar (`…-ID9`) için `maske-el` hattı bağlı değil (`applyHandMasks` yalnız 144 sınıf-genel sprite); ileride gerekirse kaynak kümesine eklenmeli. Otomatik maskenin eski davranışı: goliath-kadin kapsaması parça parça, human-erkek gövdede +174 px (krem gömlek); düzeltilmedi.
+
 ## Dragonborn eski maske yetimleri temizlendi (2026-11-19, kullanıcı onayı; yalnız betik/veri temizliği, kural ve kayıt sürümü değişmedi)
 
 - Kullanıcı onayı: 264 maske silme işinin yetimleri silinsin. Silinen: `scripts/soy-maske-dragonborn.ts` (eski üretici), `data/soy-maske-dragonborn-rapor.json`, `scripts/_db-hepsi.ts`, `scripts/dragonborn-teshis.ts`, `scripts/dragonborn-renk-sayfa.ts` (Dragonborn'a özel, çağıranı yok, pul v2'den beri etkisiz). Ayrıca yalnız Dragonborn'da olan `lineagesAltMaske` tablosu ve `lineageTint(…, 'maske')` seçeneği kaldırıldı (başka ırkta anahtar yok, çağıran kalmadı); `lineageTint` 4. parametresi artık `boolean`. Dragonborn yalnız pul hattında: `scripts/dragonborn-pul-maske.py` → `maske-pul/`.
