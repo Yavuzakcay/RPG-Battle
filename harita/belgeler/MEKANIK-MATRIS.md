@@ -6,15 +6,15 @@ Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virg
 ## Özet
 
 - Toplam satır: **6587** (büyü 1832 satır / 339 büyü; silah 670 satır / 46 seçenek; canavar 4085 satır / 579 saldırı).
-- Doğru oranı: **98.9%** (6514/6587); karar bekleyenler hariç 99.3%.
-- Sonuçlar: doğru 6514 · yanlış 43 · çökme 0 · uygulanmıyor 1 · karar bekliyor 29.
-- Kök nedene göre: 11 yanlış, 0 çökme, 1 uygulanmıyor, 4 karar bekleyen bulgu.
+- Doğru oranı: **99.5%** (6554/6587); karar bekleyenler hariç 99.9%.
+- Sonuçlar: doğru 6554 · yanlış 3 · çökme 0 · uygulanmıyor 1 · karar bekliyor 29.
+- Kök nedene göre: 2 yanlış, 0 çökme, 1 uygulanmıyor, 4 karar bekleyen bulgu.
 
 | Tür | Satır | Doğru | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor | Doğru oranı |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Büyü | 1832 | 1759 | 43 | 0 | 1 | 29 | 96.0% |
+| Büyü | 1832 | 1800 | 2 | 0 | 1 | 29 | 98.3% |
 | Silah | 670 | 670 | 0 | 0 | 0 | 0 | 100.0% |
-| Canavar | 4085 | 4085 | 0 | 0 | 0 | 0 | 100.0% |
+| Canavar | 4085 | 4084 | 1 | 0 | 0 | 0 | 100.0% |
 
 ## Önce / sonra (düzeltme turları)
 
@@ -24,38 +24,41 @@ Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virg
 | Kahin/ölçüm düzeltmesi, sürüm 82 | 82 | 6587 | 6321 | 235 | 0 | 2 | 29 | 96.0% |
 | Grup 1 sonrası (Ç01, B01, B02, B03, B05) | 83 | 6587 | 6501 | 55 | 0 | 2 | 29 | 98.7% |
 | Grup 2 sonrası (B07, B09, B11, B12, B17, B19, U01) | 83 | 6587 | 6514 | 43 | 0 | 1 | 29 | 98.9% |
+| Grup 3 sonrası (B04, B06, B08, B10, B13, B14, B15, B16, B18, B20) | 83 | 6587 | 6554 | 3 | 0 | 1 | 29 | 99.5% |
 
 Bulgu başına doğru olmayan satır (aşama sırasıyla):
 
-| Bulgu | İlk ölçüm (3116efd) | Kahin/ölçüm düzeltmesi, sürüm 82 | Grup 1 sonrası (Ç01, B01, B02, B03, B05) | Grup 2 sonrası (B07, B09, B11, B12, B17, B19, U01) | Düzeltme |
-|---|---:|---:|---:|---:|---|
-| B01 | 72 | 72 | 1 | 1 | sürüm 83: `saveMode` Restrained DEX dezavantajı (`srd83` işareti) |
-| B02 | 38 | 38 | 0 | 0 | sürüm 83: görülmeyen hedef reddi, alanda görülmeyen etkilenmez (`data/gorme-gerekir.json`, `seenTargets.ts`) |
-| Ç01 | 9 | 0 | 0 | 0 | sürümsüz: sabit hasar tek sabit, yetenek değiştiricisi yok (SRD Damage Rolls) |
-| B03 | 5 | 5 | 0 | 0 | sürüm 83: durdurulan büyüde yapım sonrası kancalar yok (`spell_cast.countered`); görünmez büyücüye Counterspell yok |
-| B04 | 4 | 4 | 4 | 4 |  |
-| B05 | 68 | 68 | 0 | 0 | sürüm 83: büyü verisinde `m83` bloğu; yapım anı tetiğinde siper, tek hasar zarı, eşzamanlı etki |
-| B06 | 10 | 10 | 10 | 10 |  |
-| B07 | 1 | 1 | 1 | 0 | sürüm 83: boyut kodu L/H/G ile karşılaştırma |
-| B08 | 2 | 2 | 2 | 2 |  |
-| B09 | 6 | 6 | 6 | 0 | sürüm 83: büyü verisinde `m83` `addCastingMod` |
-| B10 | 14 | 14 | 14 | 14 |  |
-| B11 | 1 | 1 | 0 | 0 | sürümsüz: yanlış bulgu: motor zaten yarı hasar veriyor; ölçüm hatası (ışın save'i `kind: save` etiketsiz), motor değişmedi |
-| B12 | 1 | 1 | 1 | 0 | sürüm 83: sıçrama 3 + (slot − 6) |
-| B13 | 3 | 3 | 3 | 3 |  |
-| B14 | 1 | 1 | 1 | 1 |  |
-| B15 | 1 | 1 | 1 | 1 |  |
-| B16 | 4 | 4 | 4 | 4 |  |
-| B17 | 1 | 1 | 1 | 0 | sürüm 83: büyü verisinde `m83` 600 tur |
-| B18 | 1 | 1 | 1 | 1 |  |
-| B19 | 3 | 3 | 3 | 0 | sürüm 83: `spell_cast.area.parts`, yüzey çözücüsü her türü ayrı işler |
-| B20 | 1 | 1 | 4 | 4 |  |
-| U01 | 1 | 1 | 1 | 0 | sürüm 83: büyü verisinde `m83` Charmed, yalnız DEX save dezavantajı |
-| U02 | 1 | 1 | 1 | 1 |  |
-| K01 | 20 | 20 | 20 | 20 |  |
-| K02 | 2 | 2 | 2 | 2 |  |
-| K03 | 3 | 3 | 3 | 3 |  |
-| K04 | 2 | 2 | 2 | 2 |  |
+| Bulgu | İlk ölçüm (3116efd) | Kahin/ölçüm düzeltmesi, sürüm 82 | Grup 1 sonrası (Ç01, B01, B02, B03, B05) | Grup 2 sonrası (B07, B09, B11, B12, B17, B19, U01) | Grup 3 sonrası (B04, B06, B08, B10, B13, B14, B15, B16, B18, B20) | Düzeltme |
+|---|---:|---:|---:|---:|---:|---|
+| B01 | 72 | 72 | 1 | 1 | 0 | sürüm 83: `saveMode` Restrained DEX dezavantajı (`srd83` işareti) |
+| B02 | 38 | 38 | 0 | 0 | 0 | sürüm 83: görülmeyen hedef reddi, alanda görülmeyen etkilenmez (`data/gorme-gerekir.json`, `seenTargets.ts`) |
+| Ç01 | 9 | 0 | 0 | 0 | 0 | sürümsüz: sabit hasar tek sabit, yetenek değiştiricisi yok (SRD Damage Rolls) |
+| B03 | 5 | 5 | 0 | 0 | 0 | sürüm 83: durdurulan büyüde yapım sonrası kancalar yok (`spell_cast.countered`); görünmez büyücüye Counterspell yok |
+| B04 | 4 | 4 | 4 | 4 | 0 | sürüm 83: `castingTime: reaction` büyüleri `cast_spell` komutunda reddedilir; tetik akışı (`reactions.ts`) aynen |
+| B05 | 68 | 68 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` bloğu; yapım anı tetiğinde siper, tek hasar zarı, eşzamanlı etki |
+| B06 | 10 | 10 | 10 | 10 | 0 | sürümsüz: yanlış bulgu: motor zaten DEX save ve yarı hasar veriyor (`saveEffect`); ölçüm hatası (save `map_effect.roll` ile, d20 etiketsiz), motor değişmedi |
+| B07 | 1 | 1 | 1 | 0 | 0 | sürüm 83: boyut kodu L/H/G ile karşılaştırma |
+| B08 | 2 | 2 | 2 | 2 | 0 | sürüm 83: büyü verisinde `m83` `ignoresCover`; DEX save'e siper eklenmez |
+| B09 | 6 | 6 | 6 | 0 | 0 | sürüm 83: büyü verisinde `m83` `addCastingMod` |
+| B10 | 14 | 14 | 14 | 14 | 0 | sürümsüz: arayüz: yapımda el etkisi seçici (`hand-cast-pick`); motor `cast_spell.choice` ile zaten uyguluyordu, arayüz ve ölçüm sormuyordu |
+| B22 | 0 | 0 | 0 | 0 | 2 |  |
+| B23 | 0 | 0 | 0 | 0 | 1 |  |
+| B11 | 1 | 1 | 0 | 0 | 0 | sürümsüz: yanlış bulgu: motor zaten yarı hasar veriyor; ölçüm hatası (ışın save'i `kind: save` etiketsiz), motor değişmedi |
+| B12 | 1 | 1 | 1 | 0 | 0 | sürüm 83: sıçrama 3 + (slot − 6) |
+| B13 | 3 | 3 | 3 | 3 | 0 | sürüm 83: büyü verisinde `m83` `allyAura`: büyücüde 30 ft yayılım, içindeki dostlar `syncAuras` ile yararlanır |
+| B14 | 1 | 1 | 1 | 1 | 0 | sürüm 83: büyü verisinde `m83` `areaTargets: enemies` |
+| B15 | 1 | 1 | 1 | 1 | 0 | sürüm 83: büyü verisinde `m83` `area83`: büyücü merkezli 30 ft yayılım, düşmanlar (`spellAreaAt`) |
+| B16 | 4 | 4 | 4 | 4 | 0 | sürüm 83: süren buyruk (`commandPersist`) büyü süresince; Mass Suggestion `m83` Charmed |
+| B17 | 1 | 1 | 1 | 0 | 0 | sürüm 83: büyü verisinde `m83` 600 tur |
+| B18 | 1 | 1 | 1 | 1 | 0 | sürüm 83: büyü verisinde `m83` `smiteReveal`: hedefe konsantrasyona bağlı `revealed` |
+| B19 | 3 | 3 | 3 | 0 | 0 | sürüm 83: `spell_cast.area.parts`, yüzey çözücüsü her türü ayrı işler |
+| B20 | 1 | 1 | 4 | 4 | 0 | sürüm 83: alan tetiği olaylarında `zoneId`, duvar kesmesi `wallCut`: `incomingOf` hasar türünde element üretir |
+| U01 | 1 | 1 | 1 | 0 | 0 | sürüm 83: büyü verisinde `m83` Charmed, yalnız DEX save dezavantajı |
+| U02 | 1 | 1 | 1 | 1 | 1 |  |
+| K01 | 20 | 20 | 20 | 20 | 22 |  |
+| K02 | 2 | 2 | 2 | 2 | 2 |  |
+| K03 | 3 | 3 | 3 | 3 | 3 |  |
+| K04 | 2 | 2 | 2 | 2 | 2 |  |
 
 ## Yanlış dağılımı
 
@@ -63,113 +66,50 @@ Bulgu başına doğru olmayan satır (aşama sırasıyla):
 
 | Sınıf | Büyü satırı | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor | Yanlış oranı |
 |---|---:|---:|---:|---:|---:|---:|
-| Bard | 502 | 4 | 0 | 0 | 18 | 0.8% |
-| Cleric | 428 | 6 | 0 | 1 | 6 | 1.4% |
-| Druid | 620 | 3 | 0 | 1 | 10 | 0.5% |
-| Paladin | 113 | 1 | 0 | 0 | 1 | 0.9% |
+| Bard | 502 | 0 | 0 | 0 | 18 | 0.0% |
+| Cleric | 428 | 0 | 0 | 1 | 6 | 0.0% |
+| Druid | 620 | 0 | 0 | 1 | 10 | 0.0% |
+| Paladin | 113 | 0 | 0 | 0 | 1 | 0.0% |
 | Ranger | 148 | 0 | 0 | 0 | 3 | 0.0% |
-| Sorcerer | 996 | 21 | 0 | 0 | 13 | 2.1% |
-| Warlock | 369 | 4 | 0 | 0 | 9 | 1.1% |
-| Wizard | 1165 | 33 | 0 | 1 | 21 | 2.8% |
+| Sorcerer | 996 | 2 | 0 | 0 | 13 | 0.2% |
+| Warlock | 369 | 0 | 0 | 0 | 9 | 0.0% |
+| Wizard | 1165 | 2 | 0 | 1 | 21 | 0.2% |
 | Silah (karakter) | 670 | 0 | 0 | 0 | 0 | 0.0% |
-| Canavar saldırısı | 4085 | 0 | 0 | 0 | 0 | 0.0% |
+| Canavar saldırısı | 4085 | 1 | 0 | 0 | 0 | 0.0% |
 
 ### Bağlam sınıfına göre
 
 | Bağlam sınıfı | Satır | Doğru | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor |
 |---|---:|---:|---:|---:|---:|---:|
-| alan | 96 | 92 | 3 | 0 | 0 | 1 |
-| durum | 1976 | 1942 | 9 | 0 | 0 | 25 |
-| hasar türü | 1384 | 1376 | 7 | 0 | 0 | 1 |
-| konsantrasyon | 157 | 155 | 2 | 0 | 0 | 0 |
-| saldırı zarı | 634 | 632 | 2 | 0 | 0 | 0 |
-| save | 233 | 232 | 1 | 0 | 0 | 0 |
-| siper | 216 | 214 | 2 | 0 | 0 | 0 |
-| tepki | 731 | 725 | 6 | 0 | 0 | 0 |
-| yapım | 1025 | 1017 | 5 | 0 | 1 | 2 |
+| alan | 96 | 95 | 0 | 0 | 0 | 1 |
+| durum | 1976 | 1949 | 2 | 0 | 0 | 25 |
+| hasar türü | 1384 | 1383 | 0 | 0 | 0 | 1 |
+| konsantrasyon | 157 | 157 | 0 | 0 | 0 | 0 |
+| saldırı zarı | 634 | 634 | 0 | 0 | 0 | 0 |
+| save | 233 | 233 | 0 | 0 | 0 | 0 |
+| siper | 216 | 216 | 0 | 0 | 0 | 0 |
+| tepki | 731 | 731 | 0 | 0 | 0 | 0 |
+| yapım | 1025 | 1021 | 1 | 0 | 1 | 2 |
 | yukarı slot | 107 | 107 | 0 | 0 | 0 | 0 |
-| yüzey | 28 | 22 | 6 | 0 | 0 | 0 |
+| yüzey | 28 | 28 | 0 | 0 | 0 | 0 |
 
 ## Bulgular (kök nedene göre; öncelik sırası: yanlış → çökme → uygulanmıyor → karar bekliyor)
 
-Düzeltilen bulgular (B01, B02, Ç01, B03, B05, B07, B09, B11, B12, B17, B19, U01) doğru olmayan satırı kalmadıysa aşağıda listelenmez; önce/sonra sayıları yukarıdaki tabloda.
+Düzeltilen bulgular (B01, B02, Ç01, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14, B15, B16, B17, B18, B19, B20, U01) doğru olmayan satırı kalmadıysa aşağıda listelenmez; önce/sonra sayıları yukarıdaki tabloda.
 
-### B01 — Restrained hedefin DEX save'i dezavantajlı atılmıyor (yanlış; 1 satır)
+### B22 — Arcane Hand yumruğu büyücünün Frightened/Charmed durumuna bakmıyor (düzeltme turunda bulundu; onay bekliyor) (yanlış; 2 satır)
 
-- **Neden:** SRD 5.2.1 Restrained: "You have Disadvantage on Dexterity saving throws." `saveMode` (src/battle/durations.ts) Restrained'ı hiç okumuyor; büyü, canavar nefesi ve alan save'lerinin hepsi normal kipte.
-- **Öneri:** `saveMode` içinde `ability === 'dex' && s.conditions.includes('Restrained')` → dezavantaj (yeni kural sürümüyle kapılı; eski kayıtlar aynı kalsın).
-- **Etkilenen (1):** Wall of Ice
-- **Örnek:** Wall of Ice — hedef Restrained (DEX save dezavantajı): beklenen `save=dex/18; kip=disadvantage; başarı=hayır; hasar=40; tür=cold; durum=yok`, gerçek `save=yok; kip=—; başarı=—; hasar=40; tür=yok; durum=yok`
-
-### B04 — Tepki büyüleri eylemle yapılabiliyor (Shield, Counterspell, Feather Fall, Hellish Rebuke) (yanlış; 4 satır)
-
-- **Neden:** SRD: yapım süresi "Reaction, which you take when …". `cast_spell` komutu bunları eylemle kabul ediyor; slot harcanıyor, tetik olmadığı için etki yok (A0 bulgusu, hâlâ açık).
-- **Öneri:** Büyü verisinde `castingTime: reaction` olanları `cast_spell` komutunda reddetmek (tepki akışı `reactions.ts` ayrı yoldan yapıyor).
-- **Etkilenen (4):** Feather Fall, Shield, Hellish Rebuke, Counterspell
-- **Örnek:** Feather Fall — eylemle yapım (SRD: yalnız tepki): beklenen `red (yapılamaz)`, gerçek `kabul edildi`
-
-### B06 — Wall of Ice kesme hasarı save'siz tam uygulanıyor (yanlış; 10 satır)
-
-- **Neden:** SRD: duvarın kestiği yaratık itilir ve DEX save atar; başarıda yarı hasar. Motor 10d6 Cold'u save olayı olmadan tam veriyor (`walls.ts` `cutDamage`).
-- **Öneri:** `cutDamage` yolunda DEX save (büyücünün DC'si) ve başarıda yarı hasar; `save_resolved` olayı.
-- **Etkilenen (1):** Wall of Ice
-- **Örnek:** Wall of Ice — normal (save başarısız): beklenen `save=dex/18; kip=normal; başarı=hayır; zar=10d6; hasar=40; tür=cold; durum=yok; slot=6; kons=Wall of Ice`, gerçek `save=yok; kip=—; başarı=—; zar=10d6; hasar=40; tür=yok; durum=yok; slot=6; kons=Wall of Ice`
-
-### B08 — Sacred Flame siperden yararlandırıyor (yanlış; 2 satır)
-
-- **Neden:** SRD: "The target gains no benefit from Half Cover or Three-Quarters Cover for this save." Motor DEX save'e +2/+5 ekliyor.
-- **Öneri:** Büyü verisine `ignoresCover` bayrağı; `castSpell` save yolunda `dexCover = 0`.
-- **Etkilenen (1):** Sacred Flame
-- **Örnek:** Sacred Flame — yarım siper (+2 DEX save; SRD: bu büyüde siper yok): beklenen `save=dex/18; kip=normal; başarı=hayır; hasar=20; tür=radiant; durum=yok`, gerçek `save=dex/18; kip=normal; başarı=evet; hasar=0; tür=radiant; durum=yok`
-
-### B10 — Arcane Hand yapımda etki uygulamıyor (yanlış; 14 satır)
-
-- **Neden:** SRD: "When you cast the spell and as a Bonus Action on your later turns, you can move the hand … and then cause one of the following effects" (Clenched Fist 5d8 Force…). Motor eli çağırıyor ama yapım anında etki yok.
-- **Öneri:** Çağrıdan hemen sonra bir el etkisi seçimi (yapım komutunda `choice` + hedef) ya da aynı turda bedava ilk etki.
+- **Neden:** SRD 5.2.1 Arcane Hand: "Clenched Fist. The hand strikes a target within 5 feet of it. Make a melee spell attack." Saldırı zarını büyücü atar; Frightened: "You have Disadvantage on ability checks and attack rolls while the source of fear is within line of sight"; Charmed: "You can't attack the charmer or target the charmer with damaging abilities or magical effects." `arcaneHand.ts` `handEffectEvents` saldırıyı elin kimliğiyle yapıyor (`api.strike(state, hand.id, …)`), büyücünün durumları okunmuyor.
+- **Öneri:** Yumrukta saldırganın durum kaynağı büyücü (Frightened dezavantajı, büyüleyeni hedefleme yasağı); kural sürümü kapısıyla.
 - **Etkilenen (1):** Arcane Hand
-- **Örnek:** Arcane Hand — normal (isabet): beklenen `ışın=1; kip=normal; doğal=8; AC=15; isabet=evet; kritik=hayır; zar=5d8; hasar=25; tür=force; slot=5; kons=Arcane Hand`, gerçek `ışın=0; kip=—; doğal=—; AC=—; isabet=—; kritik=—; zar=yok; hasar=0; tür=yok; slot=5; kons=Arcane Hand`
+- **Örnek:** Arcane Hand — büyücü Frightened (kaynak görüşte): beklenen `ışın=1; kip=disadvantage; doğal=2; AC=15; isabet=hayır; kritik=hayır; hasar=0; tür=—`, gerçek `ışın=1; kip=normal; doğal=8; AC=15; isabet=evet; kritik=hayır; hasar=25; tür=—`
 
-### B13 — Holy Aura dostlara yapılamıyor (yanlış; 3 satır)
+### B23 — Rust Monster Antennae metal taşımayan hedefe de save attırıyor (düzeltme turunda bulundu; onay bekliyor) (yanlış; 1 satır)
 
-- **Neden:** SRD: büyücüden 30 ft yayılım; seçilen yaratıklar yararlanır. Veride menzil 0 (Self) ve hedef dost listesi: motor her dostu "menzil dışında" reddediyor, yalnız büyücü etkilenebiliyor.
-- **Öneri:** Etkiyi 30 ft içindeki seçilen dostlara (menzil denetimi yayılım yarıçapıyla) uygulamak.
-- **Etkilenen (1):** Holy Aura
-- **Örnek:** Holy Aura — normal (dosta): beklenen `kabul`, gerçek `red: B: Hedef menzil dışında: 1 altıgen (5 ft), menzil 0 ft.`
-
-### B14 — Weird dostları da etkiliyor (yanlış; 1 satır)
-
-- **Neden:** SRD: "Each creature of your choice in a 30-foot-radius Sphere". Veride alan `targets: all`.
-- **Öneri:** Weird alanını `targets: enemies` (seçilen yaratıklar) yapmak.
-- **Etkilenen (1):** Weird
-- **Örnek:** Weird — dost ateşi (dost alanda; SRD: seçilen yaratıklar): beklenen `dost etkilendi=hayır`, gerçek `dost etkilendi=evet`
-
-### B15 — Compulsion alanı SRD menzilinden geniş (yanlış; 1 satır)
-
-- **Neden:** SRD: 30 ft menzilde, görülen ve seçilen yaratıklar. Motor 30 ft yarıçaplı küreyi büyücünün 15 ft önüne kuruyor; 45 ft'teki yaratık da etkileniyor.
-- **Öneri:** Compulsion'ı büyücü merkezli 30 ft yayılım (seçilen düşmanlar) olarak tanımlamak.
-- **Etkilenen (1):** Compulsion
-- **Örnek:** Compulsion — alan içi hedefler (2 içeride, 1 dışarıda): beklenen `etkilenen=T+U`, gerçek `etkilenen=T+U+Z`
-
-### B16 — Suggestion ve Mass Suggestion birkaç turda kendiliğinden bitiyor; Mass Suggestion Charmed vermiyor (yanlış; 4 satır)
-
-- **Neden:** SRD: Suggestion Konsantrasyon en çok 8 saat, Mass Suggestion 24 saat (büyücü ya da dostları hasar verene dek); her ikisi Charmed. Motorda etki `until` = yapım turu + 1 (komut etkisi `commandPersist` olsa da 4. turda etki yok); Mass Suggestion etkisinde `grants: Charmed` yok.
-- **Öneri:** Etkinin `until` değerini büyü süresinden almak (komut her tur yenilenebilir), Mass Suggestion'a `grants: ['Charmed']`.
-- **Etkilenen (2):** Suggestion, Mass Suggestion
-- **Örnek:** Suggestion — normal (save başarısız): beklenen `save=wis/18; kip=normal; başarı=hayır; durum=Charmed; süre=4800 tur; slot=2; kons=Suggestion`, gerçek `save=wis/18; kip=normal; başarı=hayır; durum=Charmed; süre=2 tur; slot=2; kons=Suggestion`
-
-### B18 — Shining Smite işaretli hedefin Invisible yararını kaldırmıyor (yanlış; 1 satır)
-
-- **Neden:** SRD: hedef "can't benefit from the Invisible condition"; işaretli Invisible hedefe saldırı avantajlı olmalı. Motor avantajı veriyor ama Invisible dezavantajını da sürdürüyor (sonuç normal).
-- **Öneri:** Shining Smite koruma/ışık etkisinde hedefe `revealed` (Faerie Fire gibi) koymak.
-- **Etkilenen (1):** Shining Smite
-- **Örnek:** Shining Smite — parlayan hedefe saldırı avantajlı, Invisible yararı yok: beklenen `sonraki saldırı kipi=advantage`, gerçek `sonraki saldırı kipi=normal`
-
-### B20 — Alan (zone) yoluyla verilen ateş hasarı yüzey tablosuna girmiyor (Wall of Fire) (yanlış; 4 satır)
-
-- **Neden:** Yüzey tablosunun `fireOil` satırı ateş hasarı değen yağı tutuşturur; `hexResolver.incomingOf` yalnız alan/isabet/save olaylarını okuyor, alan tetiğinin hasarını okumuyor.
-- **Öneri:** `incomingOf` alan tetiğinden (`zone_triggered` + hasar) element üretsin.
-- **Etkilenen (4):** Wall of Fire, Blade Barrier, Incendiary Cloud, Storm of Vengeance
-- **Örnek:** Wall of Fire — yüzey: hedef yağda (fire → fireOil): beklenen `tepkime=fireOil`, gerçek `tepkime=yok`
+- **Neden:** SRD 5.2.1 Rust Monster: "Antennae. The rust monster targets one nonmagical metal object—armor or a weapon—worn or carried by a creature within 5 feet of itself. Dexterity Saving Throw: DC 11, the creature with the object. Failure: The object takes a −1 penalty to the AC it offers (armor) or to its attack rolls (weapon)." `monsters.ts` → `reactions.ts` `corrodeEvents` hedefin metal silah/zırh taşıyıp taşımadığına bakmadan DEX save attırıyor; başarısızlıkta saldırı cezası metal silahı olmayana da konuyor, zırh AC cezası yok. B06 ölçüm düzeltmesiyle (harita save'leri `map_effect.roll` sayılıyor) görünür oldu; motor bu turda değişmedi.
+- **Öneri:** Hedef büyüsüz metal silah ya da zırh taşımıyorsa Antennae yapılamaz (YZ hedef seçmez); seçilen nesneye göre silah saldırı cezası ya da zırh AC cezası (−1, silah −5'te / zırh AC 10'da yok olur); kural sürümü kapısıyla.
+- **Etkilenen (1):** Rust Monster: Antennae
+- **Örnek:** Rust Monster: Antennae — metal nesnesi olmayan hedef (SRD: nesne hedefli): beklenen `hedef save=0; hasar=0`, gerçek `hedef save=1; hasar=0`
 
 ### U02 — Control Water savaş dışı işaretli (uygulanmıyor; 1 satır)
 
@@ -178,11 +118,11 @@ Düzeltilen bulgular (B01, B02, Ç01, B03, B05, B07, B09, B11, B12, B17, B19, U0
 - **Etkilenen (1):** Control Water
 - **Örnek:** Control Water — savaşta yapım: beklenen `savaşta etki (SRD: hasar/save/durum)`, gerçek `savaş dışı (Game Master notu)`
 
-### K01 — Charmed büyücü, büyüleyenine zarar vermeyen büyü yapabilir mi? (karar bekliyor; 20 satır)
+### K01 — Charmed büyücü, büyüleyenine zarar vermeyen büyü yapabilir mi? (karar bekliyor; 22 satır)
 
 - **Neden:** SRD 5.2.1 Charmed: "You can't attack the charmer or target the charmer with damaging abilities or magical effects." "damaging" sözcüğünün "magical effects"i de nitelediği okunursa zarar vermeyen büyüler (Hold Person, Bane, Charm Person…) serbest; motor hepsini reddediyor (katı okuma).
 - **Öneri:** Okuma kararı; katı okuma korunacaksa DECISIONS'a yazmak.
-- **Etkilenen (20):** Charm Person, Hideous Laughter, Bane, Slow, Bestow Curse, Levitate, Ray of Enfeeblement, Enlarge/Reduce, Animal Friendship, Calm Emotions, Phantasmal Force, Charm Monster, Banishment, Dominate Beast, Dominate Person, Resilient Sphere, Polymorph, Irresistible Dance, Dominate Monster, True Polymorph
+- **Etkilenen (22):** Charm Person, Hideous Laughter, Bane, Slow, Bestow Curse, Levitate, Ray of Enfeeblement, Enlarge/Reduce, Animal Friendship, Calm Emotions, Phantasmal Force, Suggestion, Charm Monster, Banishment, Dominate Beast, Dominate Person, Resilient Sphere, Polymorph, Irresistible Dance, Mass Suggestion, Dominate Monster, True Polymorph
 - **Örnek:** Charm Person — büyücü Charmed (hedef büyüleyen): beklenen `kabul`, gerçek `red: T: A büyülenmiş (Charmed): T hedef alınamaz.`
 
 ### K02 — Spirit Guardians ve Conjure Woodland Beings yapımda içerideki yaratığa save attırır mı? (karar bekliyor; 2 satır)
@@ -232,7 +172,7 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Antimagic Field | 8 | effect | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Antipathy/Sympathy | 8 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Arcane Eye | 4 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
-| Arcane Hand | 5 | summon | 16 | 2 | 14 | 0 | 0 | 0 | B10 |
+| Arcane Hand | 5 | summon | 16 | 14 | 2 | 0 | 0 | 0 | B22 |
 | Arcane Lock | 2 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Arcane Sword | 7 | attack | 16 | 15 | 0 | 0 | 0 | 1 | K03 |
 | Arcanist's Magic Aura | 2 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
@@ -247,7 +187,7 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Befuddlement | 8 | save | 13 | 13 | 0 | 0 | 0 | 0 |  |
 | Bestow Curse | 3 | effect | 5 | 4 | 0 | 0 | 0 | 1 | K01 |
 | Black Tentacles | 4 | save+alan(cube) | 17 | 17 | 0 | 0 | 0 | 0 |  |
-| Blade Barrier | 6 | save+alan(wall) | 18 | 17 | 1 | 0 | 0 | 0 | B20 |
+| Blade Barrier | 6 | save+alan(wall) | 18 | 18 | 0 | 0 | 0 | 0 |  |
 | Bless | 1 | effect | 4 | 4 | 0 | 0 | 0 | 0 |  |
 | Blight | 4 | save | 14 | 14 | 0 | 0 | 0 | 0 |  |
 | Blindness/Deafness | 2 | save | 9 | 9 | 0 | 0 | 0 | 0 |  |
@@ -270,7 +210,7 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Commune | 5 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Commune with Nature | 5 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Comprehend Languages | 1 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
-| Compulsion | 4 | save+alan(sphere) | 8 | 7 | 1 | 0 | 0 | 0 | B15 |
+| Compulsion | 4 | save+alan(sphere) | 8 | 8 | 0 | 0 | 0 | 0 |  |
 | Cone of Cold | 5 | save+alan(cone) | 15 | 15 | 0 | 0 | 0 | 0 |  |
 | Confusion | 4 | save+alan(sphere) | 8 | 8 | 0 | 0 | 0 | 0 |  |
 | Conjure Animals | 3 | summon+alan | 3 | 3 | 0 | 0 | 0 | 0 |  |
@@ -285,7 +225,7 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Continual Flame | 2 | effect | 2 | 2 | 0 | 0 | 0 | 0 |  |
 | Control Water | 4 | utility (savaş dışı) | 1 | 0 | 0 | 0 | 1 | 0 | U02 |
 | Control Weather | 8 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
-| Counterspell | 3 | utility | 1 | 0 | 1 | 0 | 0 | 0 | B04 |
+| Counterspell | 3 | utility | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Create Food and Water | 3 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Create or Destroy Water | 1 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Create Undead | 6 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
@@ -334,7 +274,7 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Faithful Hound | 4 | save+alan(sphere) | 2 | 2 | 0 | 0 | 0 | 0 |  |
 | False Life | 1 | effect | 2 | 2 | 0 | 0 | 0 | 0 |  |
 | Fear | 3 | save+alan(cone) | 8 | 8 | 0 | 0 | 0 | 0 |  |
-| Feather Fall | 1 | utility | 1 | 0 | 1 | 0 | 0 | 0 | B04 |
+| Feather Fall | 1 | utility | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Find Familiar | 1 | summon | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Find Steed | 2 | summon | 2 | 2 | 0 | 0 | 0 | 0 |  |
 | Find the Path | 6 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
@@ -380,14 +320,14 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Heal | 6 | heal | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Healing Word | 1 | heal | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Heat Metal | 2 | auto | 10 | 10 | 0 | 0 | 0 | 0 |  |
-| Hellish Rebuke | 1 | save | 4 | 3 | 1 | 0 | 0 | 0 | B04 |
+| Hellish Rebuke | 1 | save | 4 | 4 | 0 | 0 | 0 | 0 |  |
 | Heroes’ Feast | 6 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Heroism | 1 | effect | 5 | 5 | 0 | 0 | 0 | 0 |  |
 | Hex | 1 | mark | 8 | 8 | 0 | 0 | 0 | 0 |  |
 | Hideous Laughter | 1 | effect | 8 | 7 | 0 | 0 | 0 | 1 | K01 |
 | Hold Monster | 5 | save | 9 | 9 | 0 | 0 | 0 | 0 |  |
 | Hold Person | 2 | save | 9 | 9 | 0 | 0 | 0 | 0 |  |
-| Holy Aura | 8 | effect | 3 | 0 | 3 | 0 | 0 | 0 | B13 |
+| Holy Aura | 8 | effect | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Hunter's Mark | 1 | mark | 8 | 8 | 0 | 0 | 0 | 0 |  |
 | Hypnotic Pattern | 3 | save+alan(cube) | 9 | 9 | 0 | 0 | 0 | 0 |  |
 | Ice Knife | 1 | attack | 18 | 18 | 0 | 0 | 0 | 0 |  |
@@ -395,7 +335,7 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Identify | 1 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Illusory Script | 1 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Imprisonment | 9 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
-| Incendiary Cloud | 8 | save+alan(sphere) | 21 | 20 | 1 | 0 | 0 | 0 | B20 |
+| Incendiary Cloud | 8 | save+alan(sphere) | 21 | 21 | 0 | 0 | 0 | 0 |  |
 | Inflict Wounds | 1 | save | 14 | 14 | 0 | 0 | 0 | 0 |  |
 | Insect Plague | 5 | save+alan(sphere) | 19 | 19 | 0 | 0 | 0 | 0 |  |
 | Instant Summons | 6 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
@@ -424,7 +364,7 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Mass Cure Wounds | 5 | heal | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Mass Heal | 9 | utility | 2 | 2 | 0 | 0 | 0 | 0 |  |
 | Mass Healing Word | 3 | heal | 3 | 3 | 0 | 0 | 0 | 0 |  |
-| Mass Suggestion | 6 | effect | 5 | 3 | 1 | 0 | 0 | 1 | B16 |
+| Mass Suggestion | 6 | effect | 5 | 4 | 0 | 0 | 0 | 1 | K01 |
 | Maze | 8 | effect | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Meld into Stone | 3 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Mending | 0 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
@@ -480,7 +420,7 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Reverse Gravity | 7 | utility | 2 | 2 | 0 | 0 | 0 | 0 |  |
 | Revivify | 3 | revive | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Rope Trick | 2 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
-| Sacred Flame | 0 | save | 17 | 15 | 2 | 0 | 0 | 0 | B08 |
+| Sacred Flame | 0 | save | 17 | 17 | 0 | 0 | 0 | 0 |  |
 | Sanctuary | 1 | effect | 2 | 2 | 0 | 0 | 0 | 0 |  |
 | Scorching Ray | 2 | attack | 19 | 19 | 0 | 0 | 0 | 0 |  |
 | Scrying | 5 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
@@ -492,10 +432,10 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Sequester | 7 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Shapechange | 9 | effect | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Shatter | 2 | save+alan(sphere) | 15 | 15 | 0 | 0 | 0 | 0 |  |
-| Shield | 1 | utility | 1 | 0 | 1 | 0 | 0 | 0 | B04 |
+| Shield | 1 | utility | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Shield of Faith | 1 | buff | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Shillelagh | 0 | effect | 2 | 2 | 0 | 0 | 0 | 0 |  |
-| Shining Smite | 2 | smite | 10 | 9 | 1 | 0 | 0 | 0 | B18 |
+| Shining Smite | 2 | smite | 10 | 10 | 0 | 0 | 0 | 0 |  |
 | Shocking Grasp | 0 | attack | 18 | 18 | 0 | 0 | 0 | 0 |  |
 | Silence | 2 | zone+alan(sphere) | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Silent Image | 1 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
@@ -516,8 +456,8 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Stinking Cloud | 3 | save+alan(sphere) | 5 | 5 | 0 | 0 | 0 | 0 |  |
 | Stone Shape | 4 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Stoneskin | 4 | effect | 3 | 3 | 0 | 0 | 0 | 0 |  |
-| Storm of Vengeance | 9 | save+alan(sphere) | 14 | 13 | 1 | 0 | 0 | 0 | B20 |
-| Suggestion | 2 | effect | 6 | 4 | 1 | 0 | 0 | 1 | B16 |
+| Storm of Vengeance | 9 | save+alan(sphere) | 14 | 14 | 0 | 0 | 0 | 0 |  |
+| Suggestion | 2 | effect | 6 | 5 | 0 | 0 | 0 | 1 | K01 |
 | Summon Dragon | 5 | summon | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Sunbeam | 6 | save+alan(line) | 14 | 14 | 0 | 0 | 0 | 0 |  |
 | Sunburst | 8 | save+alan(sphere) | 13 | 13 | 0 | 0 | 0 | 0 |  |
@@ -542,16 +482,16 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Vampiric Touch | 3 | attack | 15 | 15 | 0 | 0 | 0 | 0 |  |
 | Vicious Mockery | 0 | save | 15 | 15 | 0 | 0 | 0 | 0 |  |
 | Vitriolic Sphere | 4 | save+alan(sphere) | 16 | 16 | 0 | 0 | 0 | 0 |  |
-| Wall of Fire | 4 | save+alan(wall) | 18 | 17 | 1 | 0 | 0 | 0 | B20 |
+| Wall of Fire | 4 | save+alan(wall) | 18 | 18 | 0 | 0 | 0 | 0 |  |
 | Wall of Force | 5 | zone+alan(wall) | 3 | 3 | 0 | 0 | 0 | 0 |  |
-| Wall of Ice | 6 | save+alan(wall) | 14 | 3 | 11 | 0 | 0 | 0 | B06 B01 |
+| Wall of Ice | 6 | save+alan(wall) | 14 | 14 | 0 | 0 | 0 | 0 |  |
 | Wall of Stone | 5 | zone+alan(wall) | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | Wall of Thorns | 6 | save+alan(wall) | 18 | 18 | 0 | 0 | 0 | 0 |  |
 | Warding Bond | 2 | effect | 2 | 2 | 0 | 0 | 0 | 0 |  |
 | Water Breathing | 3 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Water Walk | 3 | effect | 2 | 2 | 0 | 0 | 0 | 0 |  |
 | Web | 2 | save+alan(cube) | 5 | 5 | 0 | 0 | 0 | 0 |  |
-| Weird | 9 | save+alan(sphere) | 13 | 12 | 1 | 0 | 0 | 0 | B14 |
+| Weird | 9 | save+alan(sphere) | 13 | 13 | 0 | 0 | 0 | 0 |  |
 | Wind Walk | 6 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Wind Wall | 3 | zone+alan(wall) | 13 | 13 | 0 | 0 | 0 | 0 |  |
 | Wish | 9 | utility | 1 | 1 | 0 | 0 | 0 | 0 |  |
@@ -611,10 +551,11 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 
 ## Canavar saldırıları
 
-579 saldırının 579 tanesinin bütün bağlamları doğru. Sorunlu olanlar:
+579 saldırının 578 tanesinin bütün bağlamları doğru. Sorunlu olanlar:
 
 | Saldırı | Mekanik | Satır | ✗ | Bulgu |
 |---|---|---:|---:|---|
+| Rust Monster: Antennae | save (DEX 11) | 1 | 1 | B23 |
 
 ## Yöntem
 
@@ -635,8 +576,12 @@ Kahin motoru haklı çıkarmak için değiştirilmez; her değişiklik SRD alın
 - **Save kipinin ölçümü:** `save_resolved.mode` alanı motorun 41 save yolunun 27'sinde sabit 'normal', kalanında yalnız ortam kipi (Restrained, Dodge, Haste gibi durum/etki kaynaklı avantaj-dezavantaj yazılmaz). Kip artık atılan zardan okunur: kancaya gelen d20 save isteğinin `mode` alanı (olaydaki zarlarla eşleşen istek). Beklenen değişmedi (SRD Restrained: "You have Disadvantage on Dexterity saving throws."). Bu değişiklik ilk ölçümdeki hiçbir satırın sonucunu değiştirmedi (sürüm 82 ölçümü: yalnız Ç01 farkı).
 - **Etkilenen sayımı iyileşmeyi de içerir:** Conjure Celestial: "For each creature you can see in the Cylinder, choose which of these lights shines on it: Healing Light … Searing Light." Dost iyileştiyse etkilenmiştir (eskiden yalnız save ve saldırı sayılıyordu).
 - **Haritayı kaplayan küre (Storm of Vengeance):** "spreading to a radius of 300 feet. Each creature under the cloud when it appears must succeed on a Constitution saving throw". Kürenin yarıçapı içindeki büyücü ve dost da etkilenenlere girer (yalnız küre biçimli, herkesi etkileyen alanlarda; duvarlar hariç).
-- **B11 yanlış bulguydu (Prismatic Spray):** SRD Prismatic Rays: "Successful Save: Half as much damage." Motor zaten yarı hasar veriyor (`saveEffect` → `hurt(..., half = başarı)`); ışın save'i `kind: 'save'` etiketsiz atıldığı için kanca save planı veremiyor, d20 = 10 ile hep başarısız ölçülüyordu (G02). Başarı bağlamı büyücünün DC'si 10 iken ölçülür; motor değişmedi.
+- **B11 yanlış bulguydu (Prismatic Spray):** SRD Prismatic Rays: "Successful Save: Half as much damage." Motor zaten yarı hasar veriyor (`saveEffect` → `hurt(..., half = başarı)`); ışın save'i `kind: 'save'` etiketsiz atıldığı için kanca save planı veremiyor, d20 = 10 ile hep başarısız ölçülüyordu (G02). Motor değişmedi; ölçüm aşağıdaki `saveEtiketsiz` yoluyla.
 - **Haritayı kaplayan küre kuralının sınırı:** yalnız yarıçapı haritanın boyunu (45 altıgen) aşan kürede (Storm of Vengeance) uygulanır; serbest şekilli Fire Storm'da (veride 25 ft küre, seçilen altıgenler) uygulanmaz. Grup 1 ölçümü bu sınırla ve B11 ölçümüyle yeniden yapıldı (yanlış 57 → 55; iki satır kahin kaynaklıydı).
+- **Harita/özel save yolu ölçülüyor (B06 da yanlış bulguydu):** `saveEffect` save'i `save_resolved` yerine `map_effect.roll` ile yazar ve d20'yi `kind: 'save'` etiketsiz atar (G02). Matris artık `map_effect.roll` save'lerini save sayar; bu yoldan save atan büyülerde (Wall of Ice kesmesi, Prismatic Spray ışınları) kanca etiketsiz d20'yi save planıyla yanıtlar (`ozel.ts` `saveEtiketsiz`). SRD Wall of Ice: "the creature is pushed to one side of the wall … and makes a Dexterity saving throw, taking 10d6 Cold damage on a failed save or half as much damage on a successful one." Motor bunu zaten yapıyordu; motor değişmedi. Aynı ölçüm düzeltmesi Rust Monster Antennae'nin metal taşımayan hedefe de save attırdığını görünür kıldı (B23; ilk ölçümde save görünmediği için doğru sayılıyordu).
+- **Arcane Hand yapımda etki seçer (B10):** SRD 5.2.1: "When you cast the spell and as a Bonus Action on your later turns, you can move the hand up to 60 feet and then cause one of the following effects". Motor yapım komutundaki `choice` ile etkiyi zaten uyguluyordu; ne arayüz ne ölçüm `choice` gönderiyordu. Ölçüm artık yapımda Clenched Fist seçer ve eli hedefin yanına koyar (`ozel.ts` `elYeri`); beklenen değişmedi.
+- **Kendinden yayılım (Holy Aura, B13):** SRD 5.2.1: "Range: Self … you emit an aura in a 30-foot Emanation. While in the aura, creatures of your choice have Advantage on all saving throws". Komut artık hedefsiz (büyücü) gönderilir; dostun yararı yayılım kapsamından ölçülür (eski ölçüm dostu hedefliyordu, motorun eski hedef modeline göreydi). Kahin düzeltmesi: "when a Fiend or an Undead hits an affected creature with a melee attack roll, the attacker must succeed on a Constitution saving throw or have the Blinded condition" — Blinded saldırana konur; aurdaki dostta Blinded beklenmez (ilk ölçümde beklenmiyordu çünkü satır reddediliyordu).
+- **Sınıflandırma (3. grup):** Suggestion ve Mass Suggestion'ın "büyücü Charmed (hedef büyüleyen)" satırları önceki aşamalarda B16'ya sayılıyordu; zarar vermeyen büyünün büyüleyene yapılıp yapılamayacağı K01 kararı olduğu için K01'e bağlandı (K01 20 → 22; satır sonucu değişmedi, "karar bekliyor").
 - **Görünüm notu G01 (sonucu etkilemez, düzeltilmedi):** günlük save satırı zarları "19 / 3" diye gösterip kipi `mode` alanından "normal" yazıyor; durumdan gelen dezavantaj günlükte görünmüyor. Öneri: save olaylarına etkin kipi yazmak (41 yol; onay bekliyor).
 
 ## Kapsam ve sınırlar

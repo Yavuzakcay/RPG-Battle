@@ -145,5 +145,26 @@
    "B13": 3,
    "B14": 1
   }
+ },
+ {
+  "etiket": "Grup 3 sonrası (B04, B06, B08, B10, B13, B14, B15, B16, B18, B20)",
+  "surum": 83,
+  "satir": 6587,
+  "sonuc": {
+   "doğru": 6554,
+   "yanlış": 3,
+   "çökme": 0,
+   "uygulanmıyor": 1,
+   "karar bekliyor": 29
+  },
+  "bulgu": {
+   "K01": 22,
+   "K03": 3,
+   "K02": 2,
+   "B22": 2,
+   "K04": 2,
+   "U02": 1,
+   "B23": 1
+  }
  }
 ]
