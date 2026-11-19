@@ -43,11 +43,11 @@ Tablo `docs/sabah/celestial-oncelik.md`: 18 jetonda düzeltme tabanı, 2 jetonda
 - Barbarian ID8 erkek Celestial (düzeltme 02/1): notu "kırmızı aura tam olsun"; pembe aura Gemini sayfasında macenta zeminle birleştiği için anahtarda gidiyordu, kaynak jetondan geri kondu (7038 px).
 - Taban/düzeltme: her hücre kaynak jetona alt gövde hizalamasıyla oturtuldu (Gemini'nin hafif ölçek/kayması düzeltildi); anahtarla silinen mor/pembe sanat pikselleri (kapalı bölgede) kaynaktan kurtarıldı.
 - Sorcerer C: ay parıltısı kalıntısı silindi (ay kaldı).
-- Dragonborn Gladyatör beyaz pullu taban; oyunda çarpma filtresi, yedek pul maskesi üretildi (pul v2 boyaması yalnız önizleme betiğinde).
+- Dragonborn: uzak daldaki `e52d9dae` (pul deseni v2 oyuna bağlandı) ile birleştirildi; yeni/değişen 5 Dragonborn jetonunun (Gladyatör ×2, Bard ID3 ×2, Sorcerer SC-9 kadın) pul maskesi `python scripts/dragonborn-pul-maske.py` ile yeniden üretildi (251 maske, maskesiz 15 aynı).
 
 ## Doğrulama
 
-- `npm run typecheck`: temiz. `npm run build`: geçti, ana parça 448,27 kB (sınır 450).
-- İlgili testler (`src/ui`, `src/data`, `wizardJeton`, `baglamaKq6`): 629/629 geçti. Veri sayısı güncellenen testler: loading (+20), haleVaryant (288 → 290, bekleyen kontrolü defterden), as1cGorunum (taç yok listesi), wizardJeton (champion → ID12), baglamaKq6 (alt maske +10).
+- `npm run typecheck`: temiz. `npm run build`: geçti, ana parça 448,41 kB (sınır 450; birleştirmeden sonra).
+- İlgili testler (`src/ui`, `src/data`, `wizardJeton`, `baglamaKq6`): 629/629 geçti. Veri sayısı güncellenen testler: loading (+20), haleVaryant (288 → 290, bekleyen kontrolü defterden), as1cGorunum (taç yok listesi), wizardJeton (champion → ID12), baglamaKq6 (alt maske +10, pul maskeli Dragonborn 264 → 266).
 - `npm run check:harita` (PW_CHROMIUM=/opt/pw-browsers/chromium): 92/92 geçti.
 - `npm run check:ses`: bulutta çalıştırılmadı (CLAUDE.md: bulutta TimeoutError); **yerelde çalıştırılacak**. Ses dosyası/verisi değişmedi.

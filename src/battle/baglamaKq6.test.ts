@@ -59,7 +59,7 @@ describe('KQ6 bağlama', () => {
     expect(new Set(scaleLineages())).toEqual(new Set(COLORS));
     // pul maskesi: üretilen her jeton dosyası var, maskesiz liste ile birlikte 264 beyaz taban jetonun hepsini kapsar
     const dragon = [...FILES].filter((f) => /^dragonborn-(erkek|kadin)-/.test(f));
-    expect(dragon.length).toBe(264);
+    expect(dragon.length).toBe(266); // 264 + 2 Dragonborn Gladyatör (CC 2026-11-19, fighter ID12)
     const less = scaleMaskless();
     for (const f of dragon) expect(PUL.has(f) !== (f in less), f).toBe(true);
     expect(Object.keys(less).length).toBeLessThan(30);
