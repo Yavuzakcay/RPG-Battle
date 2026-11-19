@@ -912,6 +912,12 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   let leapsLeft = m.leap ? slotLevel ?? spell.level : 0;
   const struck = new Set<string>();
   let seekUsed = false;
+  // Mekanik matris K03 (kullanıcı kararı, sürüm 83): güç/kılıç/ruh saldırısında "saldıran 5 ft içinde" (Prone avantajı/
+  // dezavantajı, otomatik kritik) gücün kendi yerinden. SRD 5.2.1 Spiritual Weapon "make one melee spell attack against one
+  // creature within 5 feet of the force"; Arcane Sword "a target within 5 feet of the sword"; Conjure Fey "within 5 feet of it".
+  const forceAt = matrisOn(state) && m.lingering === 'weapon' ? (linger as { pos?: Offset }).pos : undefined;
+  const near5 = (t: Combatant): boolean => (forceAt ? withinFiveFt(current, { ...actor, pos: forceAt, altitudeFt: t.altitudeFt } as Combatant, t, true)
+    : withinFiveFt(current, actor, t, !rangedSpell));
   for (let r = 0; r < raysLeft; r++) {
     const t = current.combatants[curId];
     // Y2: 0 HP'de yenilenmeyi bekleyen yaratık (Troll) hedef olabilir: ateş/asit yenilenmeyi keser (Kuyruk 41b kuralı;
@@ -921,10 +927,11 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     const expr = damageExpr(m, actor, tier, upcast, spell.school, spell.name);
     let ev: BattleEvent;
     if (m.kind === 'attack') {
+      const sc = sightConditions(actor, t, current, !rangedSpell);
       const sources = [
         ...environmentSources(env, tag),
         ...attackSources({
-          ...sightConditions(actor, t, current, !rangedSpell), attackerSide: actor.side,
+          ...sc, ...(forceAt && sc.proneWithin5 !== undefined ? { proneWithin5: near5(t) } : {}), attackerSide: actor.side,
           ...attackHeights(current, actor, t), ranged: rangedSpell, spell: true,
           targetAsleep: t.asleep === true,
         }),
@@ -936,7 +943,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         ...(innateFor(current, actor, spell.name) ? [{ effect: 'advantage' as const, reason: 'Innate Sorcery' }] : []),
       ];
       const mode = combineModes(elusiveFilter(t, sources));
-      const attackInput = { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, withinFiveFt(current, actor, t, !rangedSpell)), extra: attackDice(actor) };
+      const attackInput = { attackBonus: actor.spellAttack ?? 0, targetAc: effectiveAc(current, t) + cover, mode, damage: expr, autoCritical: isAutoCritical(t.conditions, near5(t)), extra: attackDice(actor) };
       let res = resolveAttack(attackInput, rollTag(rng, { by: actor.id }));
       // Kuyruk 19 (srdK19): Greater Magic Resistance (büyü saldırıları kendiliğinden ıskalar), Reflective Carapace (menzilli büyü saldırısı etkilemez).
       if (t.traits?.includes('greater-magic-resistance') || (rangedSpell && t.traits?.includes('reflective-carapace'))) res = { ...res, hit: false, critical: false, damage: null };

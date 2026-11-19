@@ -582,3 +582,37 @@ describe('K02 (kullanıcı kararı, metne göre): Spirit Guardians yapımda save
     expect(saveOf((e2 as Extract<typeof e2, { ok: true }>).events, 'T')).toBeDefined();
   });
 });
+
+describe('K03 (kullanıcı kararı): güç/kılıç/ruh saldırısında Prone 5 ft gücün kendi yerinden (SRD Prone "An attack roll against you has Advantage if the attacker is within 5 feet of you. Otherwise, that attack roll has Disadvantage."; Spiritual Weapon "within 5 feet of the force")', () => {
+  const atk = (events: BattleEvent[]) => events.find((e): e is Extract<BattleEvent, { type: 'attack_resolved' }> => e.type === 'attack_resolved' && e.targetId === 'T');
+  const cast = (v: number, name: string, slot: number) => run(scene(v, [caster({ level: 17, spellNames: [name], spellSlots: [4, 3, 3, 3, 3, 2, 2, 1, 1] }), foe('T', { pos: { col: 9, row: 5 }, conditions: ['Prone'] })]),
+    { type: 'cast_spell', actorId: 'A', spellName: name, slotLevel: slot, targetId: 'T' } as Command, hooked({ one: 15, two: [15, 5] }));
+  for (const [name, slot] of [['Spiritual Weapon', 2], ['Arcane Sword', 7], ['Conjure Fey', 6]] as const) {
+    it(`${name}: 83 güç hedefin yanında (avantaj); 82 büyücünün uzaklığı (dezavantaj)`, () => {
+      const r83 = cast(83, name, slot);
+      expect(r83.ok, r83.error).toBe(true);
+      expect(atk(r83.events)?.mode).toBe('advantage');
+      expect(r83.state.combatants.A?.concentration?.pos).toBeDefined();
+      const r82 = cast(82, name, slot);
+      expect(r82.ok, r82.error).toBe(true);
+      expect(atk(r82.events)?.mode).toBe('disadvantage');
+    });
+  }
+  it('Spiritual Weapon sonraki turda (bonus eylem) güç hedefe yürüyüp vurur: 83 avantaj, 82 dezavantaj', () => {
+    for (const [v, mode] of [[83, 'advantage'], [82, 'disadvantage']] as const) {
+      const s = cast(v, 'Spiritual Weapon', 2).state;
+      const a = s.combatants.A as Combatant;
+      const later = { ...s, round: 2, combatants: { ...s.combatants, A: { ...a, economy: FRESH_ECONOMY } } };
+      const r = run(later, { type: 'spell_followup', actorId: 'A', targetId: 'T' } as Command, hooked({ one: 15, two: [15, 5] }));
+      expect(r.ok, r.error).toBe(true);
+      expect(atk(r.events)?.mode).toBe(mode);
+    }
+  });
+  it('Arcane Sword 83: sonraki turda kılıç en çok 30 ft taşınıp yanındakine saldırır (SRD "move the sword up to 30 feet … repeat the attack against a target within 5 feet of it")', () => {
+    const s0 = cast(83, 'Arcane Sword', 7).state;
+    const far = { ...s0, round: 2, combatants: { ...s0.combatants, A: { ...(s0.combatants.A as Combatant), economy: FRESH_ECONOMY }, T: { ...(s0.combatants.T as Combatant), pos: { col: 20, row: 5 } } } };
+    const r = run(far, { type: 'spell_followup', actorId: 'A', targetId: 'T' } as Command, hooked({ one: 15, two: [15, 5] }));
+    expect(r.ok).toBe(false);
+    expect(r.error).toMatch(/30 ft/);
+  });
+});

@@ -1069,7 +1069,7 @@
   "text": "90 ft, hayalet kılıç: yakın büyü saldırısı 4d12 + büyü değiştiricisi kuvvet; sonraki turlarda bonus eylemle 30 ft taşınıp yeniden saldırır (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
-   "m83": {"addCastingMod": true},
+   "m83": {"addCastingMod": true, "lingering": "weapon", "lingerMoveFt": 30, "repeat": null},
    "kind": "attack",
    "damage": "4d12",
    "damageType": "force",
