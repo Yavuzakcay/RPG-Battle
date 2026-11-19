@@ -216,10 +216,7 @@ function tally(rows: Sinifli[]): Record<Sonuc, number> {
 export const YENI_BULGULAR: Array<{ id: string; baslik: string; neden: string; oneri: string }> = [
   { id: 'G01', baslik: 'Save günlüğü durumdan gelen avantaj/dezavantajı göstermiyor (görünüm; sonucu etkilemez)',
     neden: '`save_resolved.mode` motorun 41 save yolunun 27\'sinde sabit \'normal\', kalanında yalnız ortam kipi; Restrained, Dodge, Haste gibi kaynaklardan gelen kip yalnız atılan iki zarda görünür. Günlük "19 / 3 (normal)" yazar.',
-    oneri: 'Save olaylarına etkin kipi (`resolveSave`\'e giden `mode`) yazmak; günlük ve önizleme bunu okur.' },
-  { id: 'G02', baslik: 'Harita/özel save zarları `kind: \'save\'` etiketi taşımıyor (görünüm/elle zar; sonucu etkilemez)',
-    neden: '`maprules.ts` `saveEffect` (`roll`) d20\'yi `rollTag(rng, { by, bonus })` ile atar, `kind` yok; zar kancası (elle zar istemi, matris) bunu save olarak tanımaz. Prismatic Spray ışınları, Reverse Gravity ve harita kuralı save\'leri bu yoldan.',
-    oneri: '`roll` içinde `kind` parametresini `rollTag`\'e geçirmek (kancasız Rng\'de etkisiz; elle zarda save olarak sorulur).' },
+    oneri: 'Save olaylarına etkin kipi (`resolveSave`\'e giden `mode`) yazmak; günlük ve önizleme bunu okur. Atlandı: motorda 64 ayrı `save_resolved` kurulumu var, her biri kendi kipini yazıyor; tek noktadan düzeltme `resolveSave` sonucunun olaya taşınmasını ve bütün kurulumların değişmesini gerektiriyor (küçük değil; sonuç değişmez, yalnız görünüm).' },
 ];
 
 export function ozetOf(rows: Sinifli[], etiket: string, surum: number): Ozet {

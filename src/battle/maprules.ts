@@ -139,7 +139,8 @@ function hurt(c: Combatant, hit: Hit, half: boolean, rng: Rng) {
 }
 
 function roll(c: Combatant, label: string, bonus: number, dc: number, mode: RollMode, rng: Rng, autoFail = false, extra: ExtraDie[] = [], kind: 'save' | 'check' = 'save') {
-  const d = rollD20(mode, rollTag(rng, { by: c.id, bonus }));
+  // G02: d20 save/kontrol etiketiyle (elle zar istemi ve zar kancası save olarak tanır; kancasız Rng'de etkisiz).
+  const d = rollD20(mode, rollTag(rng, { by: c.id, bonus, kind }));
   // Zar eklentisi (Bless/Bane save'e, Guidance seçilen beceriye; Görev R2).
   const total = d.kept + bonus + extrasTotal(rollExtras(extra, kind, rollTag(rng, { by: c.id })));
   return { label, dc, d20: d.rolls, natural: d.kept, total, success: !autoFail && total >= dc, mode };
