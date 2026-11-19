@@ -63,13 +63,13 @@
   "cleric": {
    "1": "Yaşam",
    "2": "Aydın",
-   "3": "Barış",
+   "3": "Birlik Manastırı 3–16. seviye (güvercinli genç rahip)",
    "4": "Demirci",
    "5": "Fırtına",
    "6": "Mezar",
    "7": "Savaş",
    "8": "Yakamoz",
-   "9": "Birlik Manastırı"
+   "9": "Birlik Manastırı 17+. seviye (yaşlı çay ustası)"
   },
   "druid": {
    "1": "Toprak",
@@ -92,7 +92,8 @@
    "8": "Samuray",
    "9": "Hokkabaz",
    "10": "Sancaktar",
-   "11": "İmparator"
+   "11": "İmparator",
+   "12": "Gladyatör (champion; ayrı sayfa gladiator-*.jpg, CC 2026-11-19)"
   },
   "monk": {
    "1": "Açık El",

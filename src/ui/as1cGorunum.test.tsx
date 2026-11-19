@@ -14,6 +14,7 @@ import { rgbToLab } from './color';
 import { CURRENT_RULES } from '../battle/ruleVersion';
 import kanat from '../../data/kanat-esleme.json';
 import soyRenkleri from '../../data/soy-renkleri.json';
+import haleBekleyen from '../../data/hale-halesiz.json';
 import { LookFrame } from './LookFrame';
 import type { CharacterSheet } from '../rules/stats';
 
@@ -339,7 +340,7 @@ describe('KQ6-19: Celestial yıldız tacı', () => {
     expect(crownSpec(src, mk('gece-gozyasi', 3))).toBeNull();
     expect(crownSpec(src, mk('kirik-kanat', 3))).toBeNull();
     expect(crownSpec('characters/kucuk/celestial-erkek-fighter-ID1.webp', mk('parlayan-ruh', 3))).toEqual(crownSpec(src, mk('parlayan-ruh', 3)));
-    expect(crownSpec('characters/celestial-erkek-paladin-ID8.webp', mk('parlayan-ruh', 3))).toBeNull();      // sanat halesi kalan (Gemini bekliyor): taç yok
+    for (const n of haleBekleyen.bekleyen) expect(crownSpec(`characters/${n}.webp`, mk('parlayan-ruh', 3)), n).toBeNull();      // sanat halesi kalan / taç yok kararı: taç yok
     expect(crownSpec('characters/dwarf-erkek-bard-ID1.webp', { raceId: 'dwarf' } as never)).toBeNull();
   });
   it('rozet ve savaş jetonu aynı gövdeyi çizer; konum varsayılan + jeton ezmesi; hareketi azalt CSS\'i var', async () => {

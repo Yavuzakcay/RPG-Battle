@@ -9,6 +9,71 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Ana parça sınırı 450 → 500 kB (2026-11-19, kullanıcı kararı 2026-11-18)
+
+Kullanıcı: "500 de sorun değil." `data/paket-siniri.json` `anaParcaKb` 450 → 500. Ana parça bu sırada ≈448 kB (450 sınırına 2 kB kalmıştı). KQ4 PB1'deki "sınır tekrar yükseltilmez" notu bu kararla kalktı; yeni kod yine tembel parçalara girer (ilke değişmedi), denetim `npm run build` sonunda `scripts/paket-siniri.mjs`. CLAUDE.md güncellendi.
+## Dragonborn pul: önceden boyanmayan 18 jeton "kör topal" boyandı (2026-11-19)
+
+- Kullanıcı kararı: pul rengi seçilince hiçbir şey değişmeyen jeton kalmasın. 18 jetonun 16'sında başta lavanta ten örneği yoktu (yeşil, siyah, gri, hayalet ten) ya da maske boştu; yeni yol `ornek` (elle ten rengi alanı) + `alan` (boyama çokgen/kutusu; renge yakın pikseller) `scripts/dragonborn-desen-v2.py` `_elle_ornek`. erkek-warlock-WL-8 (a): kapılı otomatik maske gövdenin %30'unu boyuyor, sargılara küçük taşma kabul (`kapi: true`).
+- Sonuç: (a) 1, (b) 12 (baş + kuyruk/eller), (c) 5 (yalnız baş/yüz: iki hayalet WL-10, erkek-druid-ID4, kadin-rogue-ID4, kadin-warlock-WL-8); boyanmayan kalmadı, `data/dragonborn-pul-kapali.json` boş. Siyah gölge (SC-5) ve hayalet gövdelerde baş alanı düz kesimle bitiyor (kör topal).
+- Başka maske değişmedi: cleric-ID9 jetonları başka commit'te değiştiği için üretici onların maskesini de yeniledi, geri alındı. Tablo `harita/belgeler/DRAGONBORN-PUL-KAPI.md`. Yalnız görünüm; kural ve kayıt sürümü değişmez.
+
+## Dragonborn pul v2 kapanışı: renk kapısı ve riskli jetonlar (2026-11-19)
+
+- Kullanıcı kararı (gözle inceleme bitti): pul yalnız maske içinde ve ejderha derisine yakın renkte. Yöntem `scripts/dragonborn-desen-v2.py` `renk_kapisi`: maske Lab renk bölgelerine ayrılır, bölge ortalaması baş ten örneğinden uzaksa (ton > 12°, kroma oranı 0,4–3 dışı, açık ve renksiz) boyanmaz; kapalı küçük delikler geri. Ayar `KAPI` (kopyası `data/dragonborn-pul.json` `kapi`).
+- Doğrulama etiketli veriyle (el yamalı 30 jeton): ten %95,8 korunur, taşmanın %36'sı kesilir. Sayısal önce/sonra ölçüsü kapıdan bağımsız `tasma_tahmini` (etiketle korelasyon 0,52, kaba gösterge).
+- 218 otomatik maskeli jetonun 187'sinde taşma tahmini azaldı, 19'unda aynı; 11'inde kötüleşti (baş bandı teni > %10 kesildi ya da tahmin arttı), eski maske korundu. Kapı uygulananlarda tahmin %5,6 → %3,9.
+- `data/dragonborn-pul-kapali.json`: kapıdan sonra da riskli kalan erkek-warlock-WL-8 (mumya sargıları) boyanmaz; maskesiz 17 → 18. El yamaları (`data/dragonborn-pul-duzeltme.json`, 33 jeton) değişmedi, kapı onlara uygulanmaz. Küçük silah ağzı, cep saati, duman sızıntıları kabul.
+- Rapor ve kapatılanlar listesi `harita/belgeler/DRAGONBORN-PUL-KAPI.md`. Yalnız görünüm; kural ve kayıt sürümü değişmez.
+
+## Birlik Manastırı jetonu seviyeye göre: 3–16 ID3, 17+ ID9 (2026-11-19, kullanıcı kararı; yalnız görünüm, kural ve kayıt sürümü değişmedi)
+
+- Cleric alt sınıfı Birlik Manastırı (`imza_birlik`, eski `baris-alani`) olan karakterde etkin seviye 3–16 hücre 3 (güvercinli genç rahip), 17 ve üstü hücre 9 (yaşlı çay ustası, halkalı). Seviye 17'ye çıkınca jeton kendiliğinden değişir, düşünce geri döner; 1–2. seviyede Gariban (GR) aynen.
+- Hazır mekanizma kullanıldı, kod değişmedi: KQ6-5'in seviyeye bağlı ikinci formu (`src/battle/avatar.ts` `subclassTokenFile`, Pehlivan ≥ 10 → ID5). `data/cleric-jeton.json`: `altSiniflar` `imza_birlik`/`baris-alani` ID9 → ID3, yeni `formlar` iki kimlik için `{ esik: 17, ikinci: "ID9", ikinciYok: [] }`. Seviye `sheet.level`'den: oluşturucu önizlemesi (`TokenPreview`), karakter kartı (`SheetView`), liste ve savaş jetonu (`create.ts`) aynı `sheetAvatar` yolundan. Alt sınıfsız ya da başka alt sınıfta davranış aynı.
+- Bağlama kayıtları: `data/jeton-hucre-sirasi.json` cleric hücre 3 ve 9 etiketleri seviye aralığıyla; `docs/sabah/bagla-9-sinif.md` cleric hücre 3 "bağlandı" (eski "bağlanmadı" satırı kalktı), hücre 9 ikinci form; `scripts/baglama-teshis.py` `formlar`'ın ikinci hücresini de bağlı jeton sayar (Cleric ID3 ve ID9 artık bağlanmayan listesinde değil). Önizleme galerisi (`src/preview/soyGaleriListe.ts`) ikinci formu "<kimlik> <eşik>+" diye bir kez gösterir (eskiden "dev"; aynı hücreli eski kimlik ikinci sütun açmaz).
+- Dosya denetimi: 10 ırk (9 + Dragonborn) × 2 cinsiyet için `public/characters/<ırk>-<cinsiyet>-cleric-ID3.webp` ve `-ID9.webp` ile `kucuk/` kopyaları var; eksik çift yok. Tiefling kadın ID9 dosyası var ama çizimi erkek görünüyor; yeni çizim ayrı görevde aynı adla gelecek, dosyaya ve veriye dokunulmadı (`ikinciYok` istisnası eklenmedi).
+- Testler: `src/screens/birlikJeton.test.tsx` (3–16/17+, eski kimlik, alt sınıfsız/başka alt sınıf, dosyalar, oluşturucu ve kart, eski kayıt, özellik adı). `src/battle/wizardJeton.test.ts`'te seviyesiz Birlik beklentisi ID9 → ID3 (kullanıcı kararı; seviye bilinmiyorsa 1. form) ve sınıf dosya denetimi `formlar` hücrelerini de kapsar.
+
+## Birlik Manastırı 17. seviye özelliği: "Barış Azizi" (2026-11-19, kullanıcı kararı; yalnız ad, kural ve kayıt sürümü değişmedi)
+
+- `imza_birlik` / `unbroken-union` özelliğinin adı TR "Barış Azizi", EN "Saint of Peace" (eski "Yıkılmaz Birlik" / "Unbroken Union"). Gerekçe: bütün Cleric alt sınıflarının 17. seviye özelliği "… Azizi" ile biter; ad kullanıcının kendi çevirisi. Kimlik, seviye (17), etki (havuz kurulurken `guard` = 2 × seviye; havuz 0'a düşecekken bir kez o canla ayakta kalır, sahibin kaynağı ve tepkisi harcanır, üyelerin Motivasyonu dolar; reducer `trackPools`), parametreler ve açıklama aynen. Eski Barış Azizi'nin %50 direnç etkisi geri gelmedi.
+- Ad `scripts/k50-imza-veri.py`'de değişti, `data/imza.json` yeniden üretildi (JSON farkı yalnız iki ad satırı). Üretici betik K59/G3'te veriye elle girilmiş beş değerle eşitlendi (Yüce Taht `sure: 1`, Zihin Fırlatma `kullan` focus 3, Yetişen Yol `sure: 1`, Tam Zamanında `menzilFt: 15`, Ninni ve Sepet `yz: kontrol` + `yzYaklas`); yeniden üretim bunları geri almıyor.
+- Adın geçtiği yerler: `data/imza.json` (kart ve oluşturucu adı veriden; savaş günlüğünde bu özelliğe ayrı ileti yok), `scripts/k50-imza-veri.py`, `docs/imza-alt-siniflar/imza-cleric-birlik-manastiri.md` ve `imza-alt-siniflar-tum.md`, `harita/belgeler/ALT-SINIF-GORSEL-TABLOSU.md` (tek satır), `harita/belgeler/DENGE.md` (iki satır), kod yorumları (`hpPool.ts`, `imza.ts`, `imzaBirlik.ts`, `types.ts`), test adları (`k54bBirlik.test.ts`, `k59etkilesim.test.ts`). `src/i18n/strings*.ts`'te geçmiyor. Eski görev belgesi (`docs/gorevler/kuyruk-49-test-bulgulari-1.md`) ve bu dosyadaki eski kararlar tarihsel kayıt olarak değişmedi.
+
+## Cleric hücre 3 etiketi: Barış → Birlik Manastırı (yalnız ad; kural ve kayıt sürümü değişmedi)
+
+- Kullanıcı: Barış Alanı zaten Birlik Manastırı. `data/jeton-hucre-sirasi.json` cleric hücre 3 etiketi "Barış" idi; "Birlik Manastırı (eski Barış Alanı çizimi; bağlı jeton ID9)" oldu. Görünen ad dönüşümü (`alt-sinif-gorunum.json` `istisnalar`, `eskiKimlik baris-alani → imza_birlik`) zaten vardı, değişmedi; paket listesindeki `baris-alani | Barış Alanı` satırı paketin kendi adı olduğu için kaldı.
+- Jeton bağı değişmedi: Birlik Manastırı (`imza_birlik`, `baris-alani`) ID9 (çaydanlıklı keşiş) jetonunu kullanır; ID3 (güvercinli beyaz cüppe) 20 jetonu dosyada, bağlanmamış alternatif çizim. Dosya adları değişmedi (kimlik kuralı).
+
+## CC toplu kesim ve yerleştirme (2026-11-19; yalnız görsel/veri, kural ve kayıt sürümü değişmedi)
+
+- **Kaynak:** `wip/karakter-ham` `assets-ham/eksikler/` (b345279d); yerelde `assets-ham/karakter/`, eski aynı adlı 15 ham sayfa `_eski/`. Dala dokunulmadı. Betik `scripts/cc-kesim.py` (taban, yeni, duzeltme, diger), rapor `docs/sabah/cc-kesim/RAPOR.md`.
+- **Öncelik kodda:** aynı jeton için düzeltme > yeni sayfa (C dahil) > taban; defter `data/cc-kesim-kaynak.json` her yazımı kaydeder, düşük öncelikli adım ezmez. Tablo `docs/sabah/celestial-oncelik.md`.
+- **Hale tabanı:** yalnız haleli + halesiz-supheli; `halesiz-doğrulandı` satırları (kadın Rogue ID3, kadın Warlock WL-8 ve sayfa 32) ve erkek Celestial Warlock dokunulmadı. Gemini hücresi kaynak jetona alt gövde IoU'suyla hizalanır; hale silinmemişse ya da uyum < 0,80 ise uygulanmaz. Sayfa 30 yok (kullanıcı: docs/sabah'taki kesik sayfa kullanılmaz); hücre 7 = düzeltme sayfa 03 figür 7 (WZ-B5).
+- **Düzeltme:** Gemini hücreleri yeniden dizmiş (3+3+1); figürler okuma sırasıyla eşleşmeye bağlandı. Sayfa 02 figür 7 eşleşmede yok, uygulanmadı. Barbarian ID8 erkek: "kırmızı aura tam olsun" notu, aura macenta zeminde kaybolduğu için kaynak jetondan geri kondu.
+- **Gladyatör:** kod `ID12` (Fighter 4×3'ün boş 12. hücresi), `fighter-jeton.json` `champion`; ölçek aynı ırk/cinsiyet Fighter jetonlarının ortanca boyu. Celestial Gladyatör halesiz (taç çizilir). Ten denetimi yalnız rapor (`ten-denetim.md`: Tiefling kadın belirgin koyu).
+- **Erkek Celestial Warlock WL-8 (Gulyabani):** halesiz geldi ama kullanıcı kararıyla taç çizilmez: bekleyen listesinde `durum: taç yok`.
+- **Sorcerer eşleşmesi gözle** (piksel benzerliği güvenilmez çıktı): `docs/sabah/sorcerer-eslesme.md`; C figür 1/7 (iki Goliath) belirsiz, uygulanmadı.
+- **Celestial Cleric sayfa 06 yenisi:** yalnız haleli hücreler (7, 9); halesiz-temiz 120 jeton kuralı gereği diğer 7 hücreye dokunulmadı.
+- **Ölçek kuralı:** tam sınıf sayfaları özgün hat ve sayfa ölçeği (Druid, Cleric, Human Fighter, Warlock); aynı kompozisyonlu yenilemeler (Bard, Sorcerer) eski jetona alt gövde hizalaması, olmazsa eski figür boyu; aurasız Barbarian ve Gladyatör kardeş jetonların ortanca boyu.
+- **Yan düzeltme:** `scripts/hale-konum.py` elle girilen `tac.katsayi` anahtarını siliyordu; artık korur.
+## Dragonborn pul maskesinde jeton başına elle düzeltme (2026-11-19)
+
+2. tur (kullanıcı listesi): 14 jeton daha (WL-7, SC-6, paladin-ID10/GR, barbarian-ID7/ID1, druid-ID5, WZ-A3, fighter-ID5, bard-ID8, SC-9) aynı yöntemle; erkek-cleric-ID5'te sol alttaki kuyruk geri açıldı. Silah ağızları, cep saatleri ve lamba dumanı bu turda yok. Toplam 33 jeton düzeltmede, maskesiz yine 17.
+
+Kullanıcının bildirdiği 19 jetonda pul deseni kıyafet/zırh/eşyaya taşıyordu. Otomatik yöntem (ten tonu) beyaz/lavanta kıyafeti tenden ayıramadığı için
+düzeltme veride ve jeton başına: `data/dragonborn-pul-duzeltme.json` (`yalniz`: maske yalnız bu kutu/çokgenlerde; `haric`: çıkarılır; `beyazKutu`:
+beyaz vurgu adayı yalnız burada; `bos`: maskesiz). Diğer jetonlara dokunulmadı. Hayalet Warlock WL-10 (iki cinsiyet) tende yer olmadığından artık boyanmaz
+(maskesiz 15 → 17). Benzer sızıntılı başka jetonlar yalnız listelendi (`docs/sabah/dragonborn-desen-v2/duzeltme/README.md`). Yalnız görünüm; kural/kayıt sürümü değişmez.
+
+## Dragonborn pul deseni v2 oyuna bağlandı (yalnız görünüm; kural ve kayıt sürümü değişmedi)
+
+- Kullanıcı kararı: v2 önizlemesi (6 jeton) onaylandı; 264 beyaz taban Dragonborn jetonunun hepsine uygulandı. Eski çarpma (`multiply`) filtresi bu jetonlarda kaldırıldı (siyah cübbe/pantolon renge kayıyordu); `data/soy-renkleri.json` `dragonborn.lineagesAlt.<soy>` artık `{ "pul": { "soy": "<soy>" } }`.
+- Maske: `public/characters/maske-pul/<jeton>.png`, `python scripts/dragonborn-pul-maske.py` (v2 yöntemi: ten tonu jetonun kendi başından, kapama, kapalı delik, boynuz/kontur/göz hariç, yavru ejderha başı göz kümesinden bulunup çıkarılır). 249 maske; 15 jetonda maske üretilemedi ya da boş (kostüm, ruh/iskelet biçimi, kapalı yüz): bunlar boyanmaz, beyaz kalır (`data/dragonborn-pul.json` `maskesiz`).
+- Boyama: `src/ui/scaleTint.ts` (tembel parça; ana parça 448,41 kB): parlaklığı koruyan ton + doygunluk (orta ton tablodan), pul dokusu ±5 L* (Gümüş/Beyaz koyulaştırma yönünde 0/−3/−6), karo 256 px jeton uzayında, küçük kopyada W/256 ölçekli. Renk tablosu v2'deki 10 soy aynen (Mavi #315C83, Beyaz #C8CFD9, Kırmızı orta #A91101).
+- Sızıntılar otomatik dışlanmadı (kullanıcı kontak sayfalarından elle inceleyecek): şüpheliler `docs/sabah/dragonborn-desen-v2/tam/` sınıf ve şüpheli sayfalarında kırmızı çerçeveli. Kanadın açık zar panelleri boyanmıyor (kabul); 64 px'te pul seçilmiyor (kabul).
+- Bilinen yan etki: `scripts/soy-maske.ts` ölçümü ve `soy-incele`/`soy-onizleme` sayfaları senkron `tintPixels` kullandığı için Dragonborn beyaz taban jetonları orada boyasız görünür (pul yalnız `tintedUrl` ve `scaleTint.scalePixels` ile çizilir).
+
 ## Goliath maske deliği ve Tiefling boynuz/kuyruk gölge yarısı (TG1; yalnız çizim, kural ve kayıt sürümü değişmedi)
 
 - **Goliath:** `races.goliath.temizlik` kaydı açıldı; TB1'in tek kod yolu (`fixSkinMask`), jeton başına yama yok, parametreler veride: `referans` 256, `delik` { `kapama` 1, `enCok` 12, `ekleOrani` 0,5 }, `kutu` { L 28–72, C 3–14, h 160–320° }. `temizlik.kutu` yeni isteğe bağlı alan: delik/kapama için ten renk kutusu (yoksa ırkın `mask` kutusu). **Neden dar:** Tiefling kaydı (ırk kutusu L 18–96, `enCok` 80) olduğu gibi Goliath'a açılsaydı kafa kaplamasız 277 jetonda 30 612 piksel eklenirdi; bunun 9 829'u çizgi mürekkebi/koyu çizgi (L < 28), 2 841'i göz akı/rün/parlama (L > 72) olurdu (TB1'de yakalanan "renk kutusu zırhı ve gözü boyuyor" hatası). Yeni ayar aynı 277 jetonda 14 746 piksel ekler (jeton başına medyan 43, p90 111, en çok 389; 13 jetonda 0); eklenen L < 28 ve L > 72 piksel **0**. Bağlam yalnız maske bağlamı: maskenin tamamen çevrelediği (kenara ulaşılamayan) ≤ 12 piksellik boşluk. **Vurgu ve gölge bandı Goliath'ta yok:** sıkı vurgu ölçütü bile (komşuların tamamı maskede, 1 px, L ≥ 72) 206 piksel/84 jeton yakalıyor ve 13'ü göz akı benzeri (L > 88, renksiz); yerel bağlam göz akı/rün parlamasından ayıramıyor (kalan açık). **Kafa kaplaması (K22/K23):** `basKaplama.govdeBoya: false` Paladin/Fighter/Cleric temel jetonlarında (6 dosya) onarım `bodyPaintOff` (`tint.ts`) ile atlanır; gövdeye soy rengi gitmez, kafa kaplaması yolu aynen (gerçek tarayıcıda 6 jeton × 256/96 px eski ve yeni bire bir aynı).

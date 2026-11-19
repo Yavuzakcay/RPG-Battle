@@ -695,6 +695,11 @@ export type TintTarget =
    * doygunluğu (max−min)/255 `muaf` altındaysa tam, `tam` üstündeyse hiç (pelerin, kumaş, dövme, efekt) uygulanmaz, arası doğrusal.
    */
   | { multiply: { renk: string; muaf: number; tam: number } }
+  /**
+   * Dragonborn pul deseni v2 (beyaz taban jetonlar): pul maskesi (`characters/maske-pul/`) üstünde parlaklığı koruyan ton + doygunluk ve
+   * L* oynamalı pul dokusu; ayar ve renk `data/dragonborn-pul.json` (`soy` anahtarı), çizim `src/ui/scaleTint.ts` (tembel).
+   */
+  | { pul: { soy: string } }
   | { h: number | null; s: number; l: number }
   /** Ton `h` (Lab derece), kroma `c`; orijinal ton/kroma sapmasının korunan payı; açıklık `L' = L·gain + dL`. */
   | { lch: { h: number; c: number; /** Kuyruk AS1c: hedef ortalama açıklık (verilirse `gain`/`dL` yerine; gölge/ışık sapması korunur). */ L?: number; hueKeep?: number; chromaKeep?: number; gain?: number; dL?: number; contrast?: number } }
@@ -1461,7 +1466,7 @@ export interface HpPool {
   max: number;
   label?: string;
   /**
-   * Kuyruk K54b: Yıkılmaz Birlik (Birlik Manastırı 17): havuz 0'a düşecekken bir kez `hp` ile ayakta kalır; sahibin
+   * Kuyruk K54b: Barış Azizi (Birlik Manastırı 17): havuz 0'a düşecekken bir kez `hp` ile ayakta kalır; sahibin
    * kaynağı (`resource`) ve tepkisi harcanır, üyelerin Motivasyonu dolar (reducer `trackPools`). Kullanılınca `held`.
    */
   guard?: { ownerId: string; hp: number; resource: string };

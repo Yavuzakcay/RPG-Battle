@@ -5,6 +5,7 @@
  * - Eski yol (High Elf): `select` ton aralığındaki pikseller HSL hedefine (K8b).
  * - Maskeli yol (K15): yalnızca sprite'ın ten maskesi (`public/characters/maske/<ad>.png`, `npm run soy-maske`);
  *   LCh'de ton ve kroma kaydırılır, açıklık farkları korunur (`lch`) ya da açıklık gradyan haritasına eşlenir (`gradient`).
+ * - Dragonborn pul deseni v2 (`pul`): ayrı pul maskesi `characters/maske-pul/`, boyama tembel `scaleTint.ts` (eski çarpma filtresinin yerine).
  * - Maske onarımı (çizim tarafı, dosyalar değişmez; tembel `maskClose.ts`): Human ve Dark Elf için SD5/SD6 temizliği (`skinCleanup`),
  *   Tiefling ve Goliath için TB1/TG1 onarımı (`skinFixFor`: maske deliği, Tiefling'de gölge bandı ve çevrelenmiş açık benek; ayar
  *   `soy-renkleri.json` `races.<ırk>.temizlik`).
@@ -58,7 +59,9 @@ export function multiplyPixels(data: Uint8ClampedArray, m: { renk: string; muaf:
   }
   return changed;
 }
-export const maskedTint = (t: TintSpec) => 'lch' in t.to || 'gradient' in t.to;
+export const maskedTint = (t: TintSpec) => 'lch' in t.to || 'gradient' in t.to || 'pul' in t.to;
+/** Dragonborn pul deseni v2 (`pul`): ayrı pul maskesi (`characters/maske-pul/`), boyama tembel `scaleTint.ts`'te. */
+export const scaleTinted = (t: TintSpec): t is TintSpec & { to: { pul: { soy: string } } } => 'pul' in t.to;
 
 /**
  * RGBA piksel dizisini yerinde boyar; değişen piksel sayısını döndürür. `mask` (piksel başına 0/1) maskeli yolda
@@ -69,6 +72,8 @@ export const maskedTint = (t: TintSpec) => 'lch' in t.to || 'gradient' in t.to;
 export function tintPixels(data: Uint8ClampedArray, tint: TintSpec, mask?: Uint8Array, weights?: Uint8Array): number {
   const to = tint.to;
   if ('multiply' in to) return multiplyPixels(data, to.multiply);
+  // Pul deseni piksel konumu ve tembel modül ister: yalnız `tintedUrl` (ya da doğrudan `scaleTint.scalePixels`) boyar.
+  if ('pul' in to) return 0;
   if (weights) {
     const sel = new Uint8Array(weights.length);
     for (let p = 0; p < weights.length; p++) sel[p] = weights[p]! > 0 ? 1 : 0;
@@ -181,9 +186,12 @@ export const handMasked = (name: string): boolean => (maskRapor as { sprites: Re
  * Görev K15: jetonun ten maskesi (aynı ad, `characters/maske/…png`; küçük kopyalarda da aynı maske ölçeklenir).
  * Görev K21: elle çizilmiş maske varsa önce o (`characters/maske-el/…png`, `assets/soy-maske-el/`'den doğrulanıp kopyalanır).
  */
-export const maskUrlFor = (url: string): string | null => {
+export const maskUrlFor = (url: string, tint?: TintSpec): string | null => {
   const m = url.match(/^(.*\/)?characters\/(?:kucuk\/)?([^/]+)\.webp$/);
-  return m ? `${m[1] ?? ''}characters/${handMasked(m[2] as string) ? 'maske-el' : 'maske'}/${m[2]}.png` : null;
+  if (!m) return null;
+  // Dragonborn pul deseni v2: kendi pul maskesi (yoksa yükleme başarısız, jeton boyanmaz).
+  if (tint && scaleTinted(tint)) return `${m[1] ?? ''}characters/maske-pul/${m[2]}.png`;
+  return `${m[1] ?? ''}characters/${handMasked(m[2] as string) ? 'maske-el' : 'maske'}/${m[2]}.png`;
 };
 
 const loadImage = (src: string) => new Promise<HTMLImageElement | null>((resolve) => {
@@ -205,10 +213,10 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
       if (typeof document === 'undefined' || typeof Image === 'undefined') return null;
       const img = await loadImage(url);
       if (!img) return null;
-      const maskSrc = maskedTint(tint) ? maskUrlFor(url) : null;
+      const maskSrc = maskedTint(tint) ? maskUrlFor(url, tint) : null;
       const maskImg = maskSrc ? await loadImage(maskSrc) : null;
       // Görev K22: kafa kaplaması (kapsamdaki Goliath jetonları; görsel yoksa eski yol, bit bit aynı).
-      const basSrc = maskSrc ? basUrlFor(url) : null;
+      const basSrc = maskSrc && !scaleTinted(tint) ? basUrlFor(url) : null;
       const basImg = basSrc ? await loadImage(basSrc) : null;
       if (maskedTint(tint) && !maskImg) return null;
       try {
@@ -250,6 +258,12 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
         // kafa kaplamasında (`bodyPaintOff`) onarım yok.
         const spr = spriteName(url) ?? '';
         const fix = skinFixFor(spr);
+        if (scaleTinted(tint)) {
+          // Dragonborn pul deseni v2: maske önceden temizlendi (onarım yok); boyama tembel parça.
+          if (mask) (await import('./scaleTint')).scalePixels(px.data, tint.to.pul.soy, mask, W, H);
+          ctx.putImageData(px, 0, 0);
+          return await new Promise<string | null>((resolve) => canvas.toBlob((blob) => resolve(blob ? URL.createObjectURL(blob) : null), 'image/png'));
+        }
         if ((mask || weights) && !bodyPaintOff(spr, !!overlay) && (fix || skinCleanup(spr, tint))) {
           // Ana parça küçük kalsın: maske temizliği tembel parça.
           const mc = await import('./maskClose');

@@ -813,7 +813,7 @@ Sıra (DENGE kuralı): YZ → eksik/planlı özellik → küçük sayısal ayar.
 | Harita Öğretisi (Wizard) | 7: −19, 11: −19, 15: −22, 20: −10 | Evokasyon'un hazır hasar büyüleri (Empowered Evocation, Overchannel) ↔ Harita'nın konum/zemin eylemleri; YZ zemin/duvarın değerini hasar gibi ölçmüyor | YZ'de duvar/zemin eyleminin "önlenen hasar" değeri (ayrı kuyruk); sayısal: Çizili Duvar HP'si ya da kullanım sayısı |
 | Dunganga (Sorcerer) | 3: −8, 7: −16, 11: −13, 15: −9, 20: −8 | Ejderha Büyücülüğü'nün Elemental Affinity hasarı ↔ Dunganga'nın kontrol eylemleri (30 ft); Sepet hasarla bozuluyor, dostlar sepetteki düşmana vuruyor | Ninni menzili 30 → 60 ft ya da Sepet'in hasarla bozulmaması (veri); YZ'de sepetteki hedefi atlama |
 | Yaşlı Bilge Disiplini (Monk) | 3: −5, 7: −5, 11: −21, 15: −20, 20: −12 | 11+ seviyede Açık El'in (Quivering Palm vb.) gücü; Zihin Gücü kiplerinin değeri düşük | 11+ özelliklerinin YZ kullanımı incelenmeli; sayısal: Zihin Gücü hasar zarı |
-| Birlik Manastırı (Cleric) | 7: −12, 11: −15, 20: −6 | Yaşam'ın iyileştirme ekleri ↔ Bağ/Havuz; havuz toplu hasarda erken bitebiliyor | Ortak Şifa seviyesi 8 → 6 ya da havuz koruması (Yıkılmaz Birlik) erken seviyede |
+| Birlik Manastırı (Cleric) | 7: −12, 11: −15, 20: −6 | Yaşam'ın iyileştirme ekleri ↔ Bağ/Havuz; havuz toplu hasarda erken bitebiliyor | Ortak Şifa seviyesi 8 → 6 ya da havuz koruması (Barış Azizi, eski adı Yıkılmaz Birlik) erken seviyede |
 | Şair Koleji (Bard) | 3: −11, 15: +8 | 3. sv Bilgi'nin Cutting Words tepkisi ↔ Mısra'nın Bardic Inspiration harcaması; 15'te Ölümsüz Dize güçlü | Mısra: Hiciv'in ilham harcamaması ya da zarın +1 adım büyümesi (3. sv) |
 | İmparator (Fighter) | 11: −9, 15: +27, 20: +17 | 15+ seviyede Ölümsüz Taht + Ferman zinciri çok güçlü (partiye avantaj aurası) | Ölümsüz Taht süresi 10 → 1 tur ya da yarıçap 30 → 15 ft (veri) |
 | Hızır Yemini (Paladin) | 3: +10, 11: +6, 20: +17 | 3. sv Tam Zamanında (yarı hasar + dost koruması); 20. sv Yetişen Yol + Mucize | Tam Zamanında hasar payı 0,5 → 0,75 (kodda sabit; veriye bağlanmalı), Yetişen Yol direnci kısıt |
@@ -1050,7 +1050,7 @@ Standart parti, 3. seviye, 30 tohum, ev kuralı `moralSistemi` açık (Moral tam
 
 ## Kuyruk K54b sonrası: Harita, Dunganga, Birlik, İnfazcı (2026-11-05)
 
-Aynı ölçüm (K50): `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`, kural sürümü 27, ev kuralı açık. SRD satırları yeniden ölçüldü, değişmedi. Sayı ayarı yapılmadı (K59). 7. seviyede K54b eklemelerinin bir kısmı yok: Çizili Duvar (10), Kuşbakışı Plan (14), Kâbus (14), Dunganga Çağrısı (18), Ortak Şifa (8), Yıkılmaz Birlik (17), Müdahale (9), Peşini Bırakmayan (13).
+Aynı ölçüm (K50): `npm run sim:imza -- 100 --alt <id> --seviye 7 --senaryo col,orman`, kural sürümü 27, ev kuralı açık. SRD satırları yeniden ölçüldü, değişmedi. Sayı ayarı yapılmadı (K59). 7. seviyede K54b eklemelerinin bir kısmı yok: Çizili Duvar (10), Kuşbakışı Plan (14), Kâbus (14), Dunganga Çağrısı (18), Ortak Şifa (8), Barış Azizi (17), Müdahale (9), Peşini Bırakmayan (13).
 
 | İmza | SRD | K50 (2. ölçüm) | K54b, YZ ipucu kısıtsız | K54b son | Sapma K50 → son | Durum |
 |---|---|---|---|---|---|---|

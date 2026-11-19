@@ -50,7 +50,8 @@ export function combos(): Combo[] {
     const cols: Array<{ cell: string; id?: string; level: number; label: string }> = [{ cell: 'GR', level: 1, label: 'Gariban' }];
     const seen = new Set<string>();
     for (const [id, cell] of Object.entries(T.altSiniflar)) if (!seen.has(cell)) { seen.add(cell); cols.push({ cell, id, level: 3, label: id }); }
-    for (const [id, f] of Object.entries(T.formlar ?? {})) cols.push({ cell: f.ikinci, id, level: f.esik, label: `${id} dev` });
+    // Seviyeye bağlı ikinci form (Pehlivan ID5, Birlik Manastırı ID9); aynı hücreyi paylaşan eski kimlik (baris-alani) bir kez.
+    for (const [id, f] of Object.entries(T.formlar ?? {})) if (!seen.has(`${f.ikinci}@${f.esik}`)) { seen.add(`${f.ikinci}@${f.esik}`); cols.push({ cell: f.ikinci, id, level: f.esik, label: `${id} ${f.esik}+` }); }
     for (const c of cols) {
       const sheet = { ...base, raceId: v.race, classId: cls, gender, level: c.level, ...(v.lineage ? { lineageId: v.lineage } : {}), ...(v.tone ? { skinTone: v.tone } : {}), ...(v.awakening ? { celestialAwakening: v.awakening } : {}), ...(c.id ? { subclassId: c.id } : {}) } as CharacterSheet;
       const token = sheetAvatar(sheet).src.replace('characters/', '');

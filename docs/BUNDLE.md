@@ -1,7 +1,7 @@
 # Paket bütçesi (Kuyruk K57)
 
 Ana parça (`dist/assets/index-*.js`, giriş ekranının yüklediği tek JavaScript dosyası) sınırı `data/paket-siniri.json`
-`anaParcaKb`; `npm run build` sonunda `scripts/paket-siniri.mjs` denetler. K57'de sınır **500 → 420 kB**; Kuyruk KQ4 PB1'de **420 → 450 kB** (geçmiş: 440 → 500 → 420 → 450). Yeni kod yine tembel parçalara girer; sınır tekrar yükseltilmez.
+`anaParcaKb`; `npm run build` sonunda `scripts/paket-siniri.mjs` denetler. K57'de sınır **500 → 420 kB**; Kuyruk KQ4 PB1'de **420 → 450 kB**; 2026-11-19 kullanıcı kararıyla (2026-11-18) **450 → 500 kB** (geçmiş: 440 → 500 → 420 → 450 → 500). Yeni kod yine tembel parçalara girer.
 
 | | Önce (main 459ef5d + K57 Görev 1–2) | Sonra |
 |---|---|---|

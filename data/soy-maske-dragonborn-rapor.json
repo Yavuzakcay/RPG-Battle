@@ -106,12 +106,12 @@
    "drop": 48
   },
   "dragonborn-erkek-bard-ID3": {
-   "opaque": 18034,
-   "n": 5808,
+   "opaque": 19420,
+   "n": 5569,
    "nHead": 1,
    "nTail": 3,
-   "nHand": 4,
-   "drop": 5
+   "nHand": 7,
+   "drop": 9
   },
   "dragonborn-erkek-bard-ID4": {
    "opaque": 21820,
@@ -1158,12 +1158,12 @@
    "drop": 33
   },
   "dragonborn-kadin-bard-ID3": {
-   "opaque": 15702,
-   "n": 4930,
+   "opaque": 15809,
+   "n": 4695,
    "nHead": 1,
    "nTail": 1,
-   "nHand": 6,
-   "drop": 12
+   "nHand": 7,
+   "drop": 24
   },
   "dragonborn-kadin-bard-ID4": {
    "opaque": 20050,
@@ -1874,12 +1874,12 @@
    "drop": 3
   },
   "dragonborn-kadin-sorcerer-SC-9": {
-   "opaque": 25405,
-   "n": 4380,
+   "opaque": 25869,
+   "n": 4247,
    "nHead": 1,
    "nTail": 3,
-   "nHand": 4,
-   "drop": 5
+   "nHand": 3,
+   "drop": 1
   },
   "dragonborn-kadin-warlock-GR": {
    "opaque": 25125,
@@ -2104,6 +2104,22 @@
    "nTail": 1,
    "nHand": 18,
    "drop": 76
+  },
+  "dragonborn-erkek-fighter-ID12": {
+   "opaque": 25025,
+   "n": 5007,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 14,
+   "drop": 48
+  },
+  "dragonborn-kadin-fighter-ID12": {
+   "opaque": 24579,
+   "n": 4700,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 16,
+   "drop": 74
   }
  }
 }

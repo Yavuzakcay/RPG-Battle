@@ -86,16 +86,16 @@ describe('BAGLA-3 Warlock ve Sorcerer', () => {
 
 describe('TOPLU-KESIM: 9 sınıf bağlaması', () => {
   const NINE = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue'] as const;
-  const tabs = import.meta.glob('../../data/{barbarian,bard,cleric,druid,fighter,monk,paladin,ranger,rogue}-jeton.json', { eager: true, import: 'default' }) as Record<string, { sinif: string; irklar: Record<string, string[]>; altSiniflar: Record<string, string>; cinsiyet?: Record<string, string> }>;
+  const tabs = import.meta.glob('../../data/{barbarian,bard,cleric,druid,fighter,monk,paladin,ranger,rogue}-jeton.json', { eager: true, import: 'default' }) as Record<string, { sinif: string; irklar: Record<string, string[]>; altSiniflar: Record<string, string>; cinsiyet?: Record<string, string>; formlar?: Record<string, { ikinci: string }> }>;
   const sira = (import.meta.glob('../../data/jeton-hucre-sirasi.json', { eager: true, import: 'default' }) as Record<string, { siniflar: Record<string, Record<string, string>> }>)['../../data/jeton-hucre-sirasi.json']!;
   const files = new Set(Object.keys(import.meta.glob('../../public/characters/*-ID*.webp', { query: '?url', import: 'default' })).map((p) => p.split('/').pop()));
   const byClass = (c: string) => Object.values(tabs).find((t) => t.sinif === c)!;
-  const known = new Set<string>([...(imza as unknown as { altSiniflar: Array<{ id: string }> }).altSiniflar.map((x) => x.id), 'path-of-the-berserker', 'college-of-lore', 'life-domain', 'circle-of-the-land', 'warrior-of-the-open-hand', 'oath-of-devotion', 'hunter', 'thief', 'karadul-cemberi']);
+  const known = new Set<string>([...(imza as unknown as { altSiniflar: Array<{ id: string }> }).altSiniflar.map((x) => x.id), 'path-of-the-berserker', 'college-of-lore', 'life-domain', 'circle-of-the-land', 'warrior-of-the-open-hand', 'oath-of-devotion', 'hunter', 'thief', 'champion', 'karadul-cemberi']);
   it('her sınıf: hücreler sıradaki adlara uyar, kimlikler gerçek (imza/fikstür/Karadul/paket listesi), jeton dosyaları var', async () => {
     const liste = (await import('../../icerik-liste.txt?raw')).default as string;
     for (const l of liste.split('\n')) { const m = l.split('|').map((x) => x.trim()); if (m[2]) known.add(m[2]); }
     for (const c of NINE) {
-      const t = byClass(c); const cells = Object.values(t.altSiniflar);
+      const t = byClass(c); const cells = [...Object.values(t.altSiniflar), ...Object.values(t.formlar ?? {}).map((f) => f.ikinci)];
       const max = Object.keys(sira.siniflar[c]!).length;
       for (const [id, cell] of Object.entries(t.altSiniflar)) {
         expect(known.has(id), `${c}:${id}`).toBe(true);
@@ -109,15 +109,18 @@ describe('TOPLU-KESIM: 9 sınıf bağlaması', () => {
       }
     }
   });
-  it('özel durumlar: Birlik/Barış aynı jeton, Pehlivan dev hali bağlı değil, Şampiyon genel, cinsiyet kuralları', () => {
+  it('özel durumlar: Birlik/Barış aynı jeton, Pehlivan dev hali bağlı değil, Gladyatör kendi jetonu, cinsiyet kuralları', () => {
     const w = vi.spyOn(console, 'warn').mockImplementation(() => {});
     setSubTokenWarnings(true);
-    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'imza_birlik')).toBe('dwarf-erkek-cleric-ID9.webp');
-    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'baris-alani')).toBe('dwarf-erkek-cleric-ID9.webp');
+    // 2026-11-19 (kullanıcı kararı): Birlik Manastırı 3–16 ID3, 17+ ID9 (`formlar`; ayrıntı src/screens/birlikJeton.test.tsx).
+    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'imza_birlik')).toBe('dwarf-erkek-cleric-ID3.webp');
+    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'baris-alani')).toBe('dwarf-erkek-cleric-ID3.webp');
+    expect(subclassTokenFile('cleric', 'dwarf', 'erkek', 'baris-alani', 17)).toBe('dwarf-erkek-cleric-ID9.webp');
     expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'pehlivan')).toBe('dwarf-erkek-fighter-ID4.webp');
     expect(Object.values(byClass('fighter').altSiniflar)).not.toContain('ID5');
-    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'champion')).toBeUndefined();
-    expect(sheetAvatar(sheet({ classId: 'fighter', subclassId: 'champion' })).src).toBe('characters/dwarf-male-fighter.webp');
+    // CC 2026-11-19: Gladyatör (champion) artık kendi jetonunu kullanır (ayrı sayfadan, kod ID12), sınıf-genel jeton değil.
+    expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'champion')).toBe('dwarf-erkek-fighter-ID12.webp');
+    expect(sheetAvatar(sheet({ classId: 'fighter', subclassId: 'champion' })).src).toBe('characters/dwarf-erkek-fighter-ID12.webp');
     expect(subclassTokenFile('fighter', 'dwarf', 'erkek', 'imza_imparator')).toBe('dwarf-erkek-fighter-ID11.webp');
     expect(subclassTokenFile('fighter', 'dwarf', 'kadin', 'imza_imparator')).toBeUndefined();
     expect(subclassTokenFile('druid', 'dwarf', 'kadin', 'karadul-cemberi')).toBe('dwarf-kadin-druid-ID8.webp');

@@ -41,7 +41,8 @@ def main():
     for n, (x, y, o) in g.items():
         d = var[key_of(n)]
         if abs(x - d['x']) > 8 or abs(y - d['y']) > 8 or abs(o - d['olcek']) > 0.2: jeton[n] = {'x': x, 'y': y, 'olcek': round(o, 2)}
-    out = {'_not': 'KQ6-19: yıldız tacı konumu (jeton 256 px uzayında; x,y = başın/şapkanın üst orta noktası, olcek = tasarım ölçeği oranı). Üretici scripts/hale-konum.py. varsayilan: <sınıf>-<erkek|kadin>[-gr|-genel]; jeton: varsayılandan > 8 px sapanlar için ezme (anahtar = dosya adı, celestial- öneksiz).', 'varsayilan': var, 'jeton': dict(sorted(jeton.items()))}
-    json.dump(out, open('data/hale-konum.json', 'w'), ensure_ascii=False, indent=1)
+    prev = json.load(open('data/hale-konum.json')) if os.path.exists('data/hale-konum.json') else {}
+    out = {'_not': 'KQ6-19: yıldız tacı konumu (jeton 256 px uzayında; x,y = başın/şapkanın üst orta noktası, olcek = tasarım ölçeği oranı). Üretici scripts/hale-konum.py. varsayilan: <sınıf>-<erkek|kadin>[-gr|-genel]; jeton: varsayılandan > 8 px sapanlar için ezme (anahtar = dosya adı, celestial- öneksiz).', 'tac': prev.get('tac', {'katsayi': 2.8}), 'varsayilan': var, 'jeton': dict(sorted(jeton.items()))}
+    json.dump(out, open('data/hale-konum.json', 'w'), ensure_ascii=False, indent=1)   # `tac` (elle) korunur
     print(len(names), 'jeton,', len(var), 'varsayılan grup,', len(jeton), 'ezme')
 if __name__ == '__main__': main()

@@ -24,14 +24,14 @@ Jeton dosyası: `public/characters/<irk>-<erkek|kadin>-<sınıf>-ID<n>.webp` (9 
 | bard | 9 | Şair | imza_sair | …-bard-ID9.webp | bağlandı |
 | cleric | 1 | Yaşam | life-domain | …-cleric-ID1.webp | bağlandı |
 | cleric | 2 | Aydın | aydin-alani | …-cleric-ID2.webp | bağlandı |
-| cleric | 3 | Barış | baris-alani → imza_birlik | …-cleric-ID3.webp | bağlanmadı: eski baris-alani kimliği Birlik Manastırı (ID9) jetonuna yönlenir; ayrı kimlik yok |
+| cleric | 3 | Birlik Manastırı (3–16. seviye) | imza_birlik, baris-alani (eski) | …-cleric-ID3.webp | bağlandı (2026-11-19: seviye 3–16; 17+ hücre 9, `formlar`) |
 | cleric | 4 | Demirci | demirci-alani | …-cleric-ID4.webp | bağlandı |
 | cleric | 5 | Fırtına | firtina-alani | …-cleric-ID5.webp | bağlandı |
 | cleric | 6 | Mezar | mezar-alani | …-cleric-ID6.webp | bağlandı |
 | cleric | 7 | Savaş | savas-alani | …-cleric-ID7.webp | bağlandı |
 | cleric | 8 | Yakamoz | yakamoz-alani | …-cleric-ID8.webp | bağlandı |
-| cleric | 9 | Birlik Manastırı | imza_birlik | …-cleric-ID9.webp | bağlandı |
-| cleric | 9 | Birlik Manastırı | baris-alani (eski) → imza_birlik | …-cleric-ID9.webp | bağlandı (iki kimlik aynı jeton) |
+| cleric | 9 | Birlik Manastırı (17+. seviye) | imza_birlik | …-cleric-ID9.webp | bağlandı (ikinci form: `data/cleric-jeton.json` `formlar` eşik 17) |
+| cleric | 9 | Birlik Manastırı (17+. seviye) | baris-alani (eski) → imza_birlik | …-cleric-ID9.webp | bağlandı (iki kimlik aynı jeton, aynı eşik) |
 | druid | 1 | Toprak | circle-of-the-land | …-druid-ID1.webp | bağlandı |
 | druid | 2 | Anka | anka-cemberi | …-druid-ID2.webp | bağlandı |
 | druid | 3 | Çağrı | cagri-cemberi | …-druid-ID3.webp | bağlandı |
