@@ -9,6 +9,10 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Taverna canavar listesi: KQ6-9 genişletmesinin yan etkisi (veri düzeltmesi)
+
+- `src/screens/setup-ui.test.tsx` ("Taverna: Giriş Seviye, Orta, Güçlü kademeleri; boss yok") KQ6-9'dan (7de5e080, ortam genişletme) beri kırmızıydı: Taverna `kasaba-han` donöründen bütün ortam listesini aldı (27 → 53), içinde CR 9+ yedi canavar vardı (Clay Golem, Deva, Archmage, Rakshasa, Vampire → Boss; Planetar, Solar → Efsanevi). Karar: amaç dışı. KQ6-9'un hedefi "her harita ≥ 25 canavar"dı (Taverna zaten 27); test Taverna'nın düşük seviye karşılaşma haritası olduğunu (boss kademesi yok) açıkça kodluyor ve genişletme bu testi çalıştırmadan uygulanmıştı. Test aynen kaldı; veri düzeltildi: `data/ortam-genisletme.json` `crTavan: { taverna: 8 }` (betik `scripts/ortam-genislet.ts` tavanı uygular), ilk uygulamada eklenen yedi CR 9+ canavardan "taverna" çıkarıldı (Taverna 46 canavar, en yüksek CR 8; genişletmeden önceki 27'nin hepsi duruyor). `data/monsters.json` değişmedi. Test `src/data/ortamGenisletme.test.ts` (CR tavanı); tablo `harita/belgeler/ortam-genisletme.md`.
+
 ## Mekanik matris düzeltmeleri (kullanıcı onayı; kural sürümü 83)
 
 - Kural: sonucu değiştiren her düzeltme kural sürümü 83 ile kapılı (`src/battle/matrisSurum.ts` `MATRIS_VERSION`, `matrisOn`); 82 ve altı (eski kayıt ve replay) aynen. Salt çökme/veri düzeltmeleri sürümsüz olabilir. Her düzeltme ayrı commit; ilgili testler + 4 senaryolu hızlı regresyon (`src/sim/matrisRegresyon.test.ts`: 82 imzası düzeltme öncesi ağacın altınıyla aynı, 83 çökmesiz). Önce/sonra sayıları `harita/belgeler/MEKANIK-MATRIS.md` "Önce / sonra" tablosunda (`mekanik-matris-gecmis.json`).

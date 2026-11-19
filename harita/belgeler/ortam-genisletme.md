@@ -1,6 +1,6 @@
 # Ortam genişletme (Kuyruk KQ6-9)
 
-Yalnız ortam eşlemesi (`data/monster-ortamlari.json`) genişledi; `data/monsters.json` değişmedi. Donör kuralları `data/ortam-genisletme.json` (harita başına en çok 4 donör harita; donör ortamındaki her canavar hedef haritaya da eklenir). "Tüm canavarlar" anahtarı aynen duruyor.
+Yalnız ortam eşlemesi (`data/monster-ortamlari.json`) genişledi; `data/monsters.json` değişmedi. Donör kuralları `data/ortam-genisletme.json` (harita başına en çok 4 donör harita; donör ortamındaki her canavar hedef haritaya da eklenir; `crTavan` haritasında tavanın üstündeki CR eklenmez: Taverna ≤ 8). "Tüm canavarlar" anahtarı aynen duruyor.
 
 | Kimlik | Ad | Bölge | Gizli | Önce | Sonra | Eklenen donörler |
 |---|---|---|---|---:|---:|---|
@@ -18,7 +18,7 @@ Yalnız ortam eşlemesi (`data/monster-ortamlari.json`) genişledi; `data/monste
 | orman-oduncu-kampi | Oduncu Kampı | orman |  | 10 ⚑ | 35 | orman-heykel-golu, orman-ork-kampi, orman-kemik-acikligi |
 | orman-ork-kampi | Ork Kampı | orman |  | 10 ⚑ | 35 | orman-heykel-golu, orman-oduncu-kampi, orman-kemik-acikligi |
 | orman-kemik-acikligi | Kemik Açıklığı | orman |  | 13 ⚑ | 35 | orman-heykel-golu, orman-oduncu-kampi, orman-ork-kampi |
-| taverna | Taverna | sehir |  | 27 ⚑ | 53 | kasaba-han |
+| taverna | Taverna | sehir |  | 27 ⚑ | 46 | kasaba-han |
 | gemi | Güverte | deniz |  | 32 | 32 |  |
 | volkan | Lav Adaları | volkan |  | 40 | 40 |  |
 | isinlanma-salonu | Portal Salonu | volkan |  | 46 | 46 |  |
