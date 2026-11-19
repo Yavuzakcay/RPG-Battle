@@ -9,6 +9,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Kuyruk A İş 3: Control Water girdap efekti importu atlandı (2026-11-20)
+
+- Kaynak "control-water" efekt sayfası bulut kapsayıcısında yok (`assets-ham/` depo dışı; yalnız `eksikler/` ve `karakter/` var). Talimat gereği iş atlandı.
+- Ayrıntı ve yeniden başlatma tarifi `harita/belgeler/KUYRUK-A-NOTLAR.md`.
+- Mevcut `efekt-zemin-girdap.webp` ile yer tutucu bağlama yapılmadı: görev yeni sayfanın importunu istiyor.
+
 ## Kuyruk A İş 2: kendi çiziminde kanatlı Dragonborn jetonunda ejderha kanadı yok (2026-11-20; yalnız görünüm)
 
 - 290 Dragonborn jetonunda siluet ölçümü (omuz üstünde iki dış yanın simetrik opak pikseli) ve ilk 140'ın gözle denetimiyle 4 jetonda kendi kanadı bulundu: erkek/kadın Cleric ID1 (Yaşam Alanı), erkek/kadın Warlock WL-7.
