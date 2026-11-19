@@ -124,9 +124,16 @@
    "yalniz": [
     [86, 41, 168, 117],
     [37, 107, 79, 136],
-    [179, 105, 220, 135]
+    [179, 105, 220, 135],
+    [
+     [30, 206],
+     [60, 216],
+     [95, 220],
+     [98, 234],
+     [35, 234]
+    ]
    ],
-   "neden": "pelerin, tabard ve zırh; baş ve eller"
+   "neden": "pelerin, tabard ve zırh; baş, eller, sol alttaki kuyruk (2. tur: geri açıldı)"
   },
   "dragonborn-kadin-cleric-ID5": {
    "yalniz": [
@@ -203,6 +210,233 @@
     [176, 85, 215, 150]
    ],
    "neden": "kılıç ağzı (çokgen) ve yavru ejderha kalıntısı"
+  },
+  "dragonborn-erkek-paladin-ID10": {
+   "yalniz": [
+    [
+     [122, 60],
+     [138, 49],
+     [160, 49],
+     [172, 58],
+     [181, 72],
+     [183, 92],
+     [178, 106],
+     [150, 110],
+     [118, 104],
+     [112, 94],
+     [114, 74]
+    ],
+    [25, 100, 61, 225]
+   ],
+   "beyazKutu": [
+    [
+     [122, 60],
+     [138, 49],
+     [160, 49],
+     [172, 58],
+     [181, 72],
+     [183, 92],
+     [178, 106],
+     [150, 110],
+     [118, 104],
+     [112, 94],
+     [114, 74]
+    ]
+   ],
+   "neden": "beyaz kukuleta, pelerin, zırh ve asa; yalnız yüz (kontur çokgeni) ve kuyruk"
+  },
+  "dragonborn-erkek-warlock-WL-7": {
+   "yalniz": [
+    [
+     [88, 20],
+     [182, 20],
+     [182, 104],
+     [150, 108],
+     [100, 106],
+     [88, 95]
+    ],
+    [
+     [136, 128],
+     [150, 124],
+     [166, 132],
+     [166, 160],
+     [140, 163],
+     [134, 145]
+    ],
+    [
+     [28, 208],
+     [45, 203],
+     [95, 190],
+     [102, 200],
+     [100, 230],
+     [32, 228]
+    ],
+    [90, 228, 116, 248],
+    [148, 230, 180, 246]
+   ],
+   "neden": "tüylü kanatlar ve beyaz cüppe; baş, eller, kuyruk, ayaklar"
+  },
+  "dragonborn-kadin-warlock-WL-7": {
+   "yalniz": [
+    [
+     [82, 18],
+     [176, 18],
+     [176, 100],
+     [150, 105],
+     [110, 103],
+     [100, 100],
+     [82, 98]
+    ],
+    [
+     [138, 128],
+     [150, 120],
+     [163, 128],
+     [163, 160],
+     [140, 162]
+    ],
+    [
+     [58, 172],
+     [88, 172],
+     [92, 232],
+     [58, 232]
+    ],
+    [166, 186, 198, 236],
+    [147, 232, 174, 244],
+    [92, 234, 112, 248]
+   ],
+   "neden": "tüylü kanatlar ve beyaz cüppe; baş, eller, kuyruk (iki parça), ayaklar"
+  },
+  "dragonborn-erkek-sorcerer-SC-6": {
+   "yalniz": [
+    [92, 58, 176, 114],
+    [102, 31, 163, 56],
+    [29, 128, 93, 225],
+    [84, 227, 112, 246],
+    [142, 216, 179, 240],
+    [80, 139, 102, 161],
+    [184, 139, 217, 158]
+   ],
+   "neden": "cüppe ve yaka; baş, eller, kuyruk, ayaklar"
+  },
+  "dragonborn-kadin-sorcerer-SC-6": {
+   "yalniz": [
+    [86, 42, 173, 93],
+    [116, 95, 173, 112],
+    [33, 143, 88, 217],
+    [89, 228, 111, 246],
+    [60, 128, 90, 156],
+    [183, 124, 213, 145]
+   ],
+   "neden": "cüppe ve yaka; baş, çene, eller, kuyruk, ayak"
+  },
+  "dragonborn-erkek-barbarian-ID7": {
+   "yalniz": [
+    [83, 28, 168, 106],
+    [89, 95, 153, 146],
+    [13, 91, 83, 218],
+    [151, 118, 174, 144],
+    [165, 120, 205, 155],
+    [65, 218, 98, 246]
+   ],
+   "haric": [
+    [52, 76, 101, 115],
+    [46, 119, 86, 147],
+    [49, 143, 84, 190],
+    [59, 113, 84, 121]
+   ],
+   "neden": "omuzluk, kolluk, dizlik, kemer ve çekiç başı; baş, çıplak göğüs, sağ kol ve el, kuyruk, ayak"
+  },
+  "dragonborn-kadin-barbarian-ID1": {
+   "yalniz": [
+    [91, 33, 182, 111],
+    [
+     [25, 128],
+     [45, 128],
+     [48, 150],
+     [50, 170],
+     [60, 188],
+     [75, 193],
+     [95, 195],
+     [95, 212],
+     [55, 212],
+     [30, 195],
+     [25, 160]
+    ],
+    [189, 111, 208, 124]
+   ],
+   "neden": "zırh ve kalkan; baş, kuyruk (çokgen), el"
+  },
+  "dragonborn-erkek-paladin-GR": {
+   "yalniz": [
+    [122, 82, 176, 114],
+    [128, 70, 145, 82],
+    [153, 68, 170, 82],
+    [27, 106, 88, 222],
+    [70, 155, 93, 190],
+    [182, 145, 202, 168]
+   ],
+   "neden": "miğfer; miğfer altındaki yüz, kuyruk, eller"
+  },
+  "dragonborn-kadin-wizard-WZ-A3": {
+   "haric": [
+    [96, 168, 157, 214],
+    [128, 139, 139, 155]
+   ],
+   "neden": "beyaz pantolon ve gömlek düğmesi"
+  },
+  "dragonborn-kadin-fighter-ID5": {
+   "haric": [
+    [103, 146, 176, 167]
+   ],
+   "neden": "kemer"
+  },
+  "dragonborn-erkek-druid-ID5": {
+   "yalniz": [
+    [96, 26, 181, 108],
+    [
+     [20, 128],
+     [52, 128],
+     [52, 150],
+     [45, 170],
+     [55, 190],
+     [75, 193],
+     [100, 185],
+     [102, 210],
+     [60, 218],
+     [20, 215]
+    ]
+   ],
+   "neden": "hortum alt gövde; baş ve kuyruk (çokgen)"
+  },
+  "dragonborn-kadin-druid-ID5": {
+   "yalniz": [
+    [86, 25, 163, 106],
+    [
+     [35, 150],
+     [60, 150],
+     [48, 170],
+     [55, 183],
+     [70, 187],
+     [92, 175],
+     [95, 190],
+     [85, 205],
+     [40, 210],
+     [35, 180]
+    ]
+   ],
+   "neden": "hortum alt gövde; baş ve kuyruk (çokgen)"
+  },
+  "dragonborn-kadin-bard-ID8": {
+   "haric": [
+    [182, 76, 212, 107]
+   ],
+   "neden": "omuzdaki beyaz kuş"
+  },
+  "dragonborn-kadin-sorcerer-SC-9": {
+   "haric": [
+    [117, 70, 190, 130]
+   ],
+   "neden": "veba maskesi (gaga ve göz bölgesi)"
   }
  }
 }

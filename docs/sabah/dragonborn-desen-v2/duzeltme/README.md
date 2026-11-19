@@ -4,7 +4,7 @@ Kaynak: `data/dragonborn-pul-duzeltme.json` (jeton başına `yalniz` / `haric` /
 Önizleme (oyun kodundan, 256 px): `npx vite-node scripts/dragonborn-pul-duzeltme-sayfa.ts <önceki-commit>` → `<jeton>.webp`
 (orijinal | önce Kırmızı | sonra Kırmızı | önce Mavi | sonra Mavi).
 
-Yalnız 19 jetonun maskesi değişti; diğer 245 jeton aynen.
+1. tur: 19 jeton; 2. tur: 14 jeton + erkek-cleric-ID5 (aşağıda). Diğer jetonların maskesi değişmedi.
 
 | Jeton | Çıkarılan | Yöntem |
 |---|---|---|
@@ -25,6 +25,27 @@ Yalnız 19 jetonun maskesi değişti; diğer 245 jeton aynen.
 
 Not: erkek-ranger-ID4'te de yavru ejderha kalıntısı vardı, aynı turda çıkarıldı. erkek-cleric-ID5'in sol alttaki pelerin kıvrımı
 kuyrukla karıştığı için boyanmıyor (kuyruk görünmüyorsa bu doğru).
+
+## 2. tur (14 jeton + erkek-cleric-ID5)
+
+Önizlemede "önce" = 1. tur sonrası (kullanıcı listesi). erkek-cleric-ID5'in önce/sonra görseli bu turla değişti (önce = 1. tur sonucu).
+
+| Jeton | Çıkarılan | Kalan |
+|---|---|---|
+| erkek-paladin-ID10 | kukuleta, pelerin, zırh, asa | yüz (kontur çokgeni), kuyruk |
+| erkek/kadin-warlock-WL-7 | tüylü kanatlar, beyaz cüppe | baş, eller, kuyruk, ayaklar |
+| erkek/kadin-sorcerer-SC-6 | cüppe, yaka | baş, eller, kuyruk, ayak(lar) |
+| erkek-barbarian-ID7 | omuzluk, kolluk, dizlik, kemer, çekiç başı | baş, çıplak göğüs, sağ kol ve el, kuyruk, ayak |
+| kadin-barbarian-ID1 | zırh, kalkan | baş, kuyruk (çokgen), el |
+| erkek-paladin-GR | miğfer | miğfer altındaki yüz, kuyruk, eller |
+| kadin-wizard-WZ-A3 | beyaz pantolon, gömlek düğmesi | dışlama kutusu |
+| kadin-fighter-ID5 | kemer | dışlama kutusu |
+| erkek/kadin-druid-ID5 | hortum alt gövde | baş, kuyruk (çokgen) |
+| kadin-bard-ID8 | omuzdaki kuş | dışlama kutusu |
+| kadin-sorcerer-SC-9 | veba maskesi (gaga, göz bölgesi) | baş yan dikenleri, kuyruk, eller, ayaklar |
+| erkek-cleric-ID5 | (1. turdaki gibi) | sol alttaki kuyruk geri açıldı |
+
+Bu turda yapılmayanlar (kullanıcı kararı): silah ağızları, cep saatleri, lamba dumanı.
 
 ## Benzer sızıntı görülen diğer jetonlar (uygulanmadı)
 

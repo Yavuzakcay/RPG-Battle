@@ -28,6 +28,8 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Yan düzeltme:** `scripts/hale-konum.py` elle girilen `tac.katsayi` anahtarını siliyordu; artık korur.
 ## Dragonborn pul maskesinde jeton başına elle düzeltme (2026-11-19)
 
+2. tur (kullanıcı listesi): 14 jeton daha (WL-7, SC-6, paladin-ID10/GR, barbarian-ID7/ID1, druid-ID5, WZ-A3, fighter-ID5, bard-ID8, SC-9) aynı yöntemle; erkek-cleric-ID5'te sol alttaki kuyruk geri açıldı. Silah ağızları, cep saatleri ve lamba dumanı bu turda yok. Toplam 33 jeton düzeltmede, maskesiz yine 17.
+
 Kullanıcının bildirdiği 19 jetonda pul deseni kıyafet/zırh/eşyaya taşıyordu. Otomatik yöntem (ten tonu) beyaz/lavanta kıyafeti tenden ayıramadığı için
 düzeltme veride ve jeton başına: `data/dragonborn-pul-duzeltme.json` (`yalniz`: maske yalnız bu kutu/çokgenlerde; `haric`: çıkarılır; `beyazKutu`:
 beyaz vurgu adayı yalnız burada; `bos`: maskesiz). Diğer jetonlara dokunulmadı. Hayalet Warlock WL-10 (iki cinsiyet) tende yer olmadığından artık boyanmaz
