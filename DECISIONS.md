@@ -9,6 +9,14 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Birlik Manastırı jetonu seviyeye göre: 3–16 ID3, 17+ ID9 (2026-11-19, kullanıcı kararı; yalnız görünüm, kural ve kayıt sürümü değişmedi)
+
+- Cleric alt sınıfı Birlik Manastırı (`imza_birlik`, eski `baris-alani`) olan karakterde etkin seviye 3–16 hücre 3 (güvercinli genç rahip), 17 ve üstü hücre 9 (yaşlı çay ustası, halkalı). Seviye 17'ye çıkınca jeton kendiliğinden değişir, düşünce geri döner; 1–2. seviyede Gariban (GR) aynen.
+- Hazır mekanizma kullanıldı, kod değişmedi: KQ6-5'in seviyeye bağlı ikinci formu (`src/battle/avatar.ts` `subclassTokenFile`, Pehlivan ≥ 10 → ID5). `data/cleric-jeton.json`: `altSiniflar` `imza_birlik`/`baris-alani` ID9 → ID3, yeni `formlar` iki kimlik için `{ esik: 17, ikinci: "ID9", ikinciYok: [] }`. Seviye `sheet.level`'den: oluşturucu önizlemesi (`TokenPreview`), karakter kartı (`SheetView`), liste ve savaş jetonu (`create.ts`) aynı `sheetAvatar` yolundan. Alt sınıfsız ya da başka alt sınıfta davranış aynı.
+- Bağlama kayıtları: `data/jeton-hucre-sirasi.json` cleric hücre 3 ve 9 etiketleri seviye aralığıyla; `docs/sabah/bagla-9-sinif.md` cleric hücre 3 "bağlandı" (eski "bağlanmadı" satırı kalktı), hücre 9 ikinci form; `scripts/baglama-teshis.py` `formlar`'ın ikinci hücresini de bağlı jeton sayar (Cleric ID3 ve ID9 artık bağlanmayan listesinde değil). Önizleme galerisi (`src/preview/soyGaleriListe.ts`) ikinci formu "<kimlik> <eşik>+" diye bir kez gösterir (eskiden "dev"; aynı hücreli eski kimlik ikinci sütun açmaz).
+- Dosya denetimi: 10 ırk (9 + Dragonborn) × 2 cinsiyet için `public/characters/<ırk>-<cinsiyet>-cleric-ID3.webp` ve `-ID9.webp` ile `kucuk/` kopyaları var; eksik çift yok. Tiefling kadın ID9 dosyası var ama çizimi erkek görünüyor; yeni çizim ayrı görevde aynı adla gelecek, dosyaya ve veriye dokunulmadı (`ikinciYok` istisnası eklenmedi).
+- Testler: `src/screens/birlikJeton.test.tsx` (3–16/17+, eski kimlik, alt sınıfsız/başka alt sınıf, dosyalar, oluşturucu ve kart, eski kayıt, özellik adı). `src/battle/wizardJeton.test.ts`'te seviyesiz Birlik beklentisi ID9 → ID3 (kullanıcı kararı; seviye bilinmiyorsa 1. form) ve sınıf dosya denetimi `formlar` hücrelerini de kapsar.
+
 ## Birlik Manastırı 17. seviye özelliği: "Barış Azizi" (2026-11-19, kullanıcı kararı; yalnız ad, kural ve kayıt sürümü değişmedi)
 
 - `imza_birlik` / `unbroken-union` özelliğinin adı TR "Barış Azizi", EN "Saint of Peace" (eski "Yıkılmaz Birlik" / "Unbroken Union"). Gerekçe: bütün Cleric alt sınıflarının 17. seviye özelliği "… Azizi" ile biter; ad kullanıcının kendi çevirisi. Kimlik, seviye (17), etki (havuz kurulurken `guard` = 2 × seviye; havuz 0'a düşecekken bir kez o canla ayakta kalır, sahibin kaynağı ve tepkisi harcanır, üyelerin Motivasyonu dolar; reducer `trackPools`), parametreler ve açıklama aynen. Eski Barış Azizi'nin %50 direnç etkisi geri gelmedi.

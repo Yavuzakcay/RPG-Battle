@@ -63,13 +63,13 @@
   "cleric": {
    "1": "Yaşam",
    "2": "Aydın",
-   "3": "Birlik Manastırı (eski Barış Alanı çizimi; bağlı jeton ID9)",
+   "3": "Birlik Manastırı 3–16. seviye (güvercinli genç rahip)",
    "4": "Demirci",
    "5": "Fırtına",
    "6": "Mezar",
    "7": "Savaş",
    "8": "Yakamoz",
-   "9": "Birlik Manastırı"
+   "9": "Birlik Manastırı 17+. seviye (yaşlı çay ustası)"
   },
   "druid": {
    "1": "Toprak",
