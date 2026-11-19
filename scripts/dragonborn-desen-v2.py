@@ -130,6 +130,52 @@ def mask_of(rgba, ayar=None):
     if 'haric' in ayar: paint &= ~_kutular(op.shape, ayar['haric'])
     return paint, {'tonH': round(h0, 1), 'tonC': round(c0, 1), 'tenL': round(l0, 1), 'boya': int(paint.sum()), 'atilan': int(dropped), 'yoldas': int(yoldas)}
 
+# ---- renk kapısı (pul v2 kapanışı): maskeyi renk bölgelerine ayırıp yalnız ejderha derisine yakın bölgeleri tutar ----
+KAPI = {'tol': 8, 'ton': 12, 'kAlt': 0.4, 'kUst': 3.0, 'parlakL': 5, 'parlakK': 0.5, 'delik': 160, 'basKayip': 0.10, 'kotulesme': 0.005}
+
+def _regions(mask, Lab, tol):
+    """Maske içi renk bölgeleri: 4-komşu, Lab farkı < tol olan pikseller birleşir (kontur çizgisi ve renk sınırı bölgeleri ayırır)."""
+    H, W = mask.shape; par = np.arange(H * W)
+    def f(x):
+        r = x
+        while par[r] != r: r = par[r]
+        while par[x] != r: par[x], x = r, par[x]
+        return r
+    for dy, dx in ((0, 1), (1, 0)):
+        a = mask[:H - dy, :W - dx] & mask[dy:, dx:] & (np.linalg.norm(Lab[:H - dy, :W - dx] - Lab[dy:, dx:], axis=-1) < tol)
+        for y, x in zip(*np.nonzero(a)):
+            p, q = f(y * W + x), f((y + dy) * W + x + dx)
+            if p != q: par[p] = q
+    lab = np.full((H, W), -1)
+    for y, x in zip(*np.nonzero(mask)): lab[y, x] = f(y * W + x)
+    return lab
+
+def renk_kapisi(rgba, info, m, k=KAPI):
+    """Bölge ortalama rengi ten örneğine (info: tonH/tonC/tenL) yakın değilse bölge maskeden çıkar: ton farkı > `ton`, kroma oranı
+    [`kAlt`, `kUst`] dışı ya da parlak (tenL + `parlakL` üstü) ve renksiz (kroma oranı < `parlakK`). Kapının açtığı, kalan maskeyle
+    çevrili ≤ `delik` px delikler (ten vurgusu) geri konur. 33 el yamalı jetonda (etiket) ten %96 korunur, taşmanın ~%36'sı kesilir."""
+    Lab = lab(rgba[..., :3].astype(float)); rl = _regions(m, Lab, k['tol']); keep = np.zeros_like(m)
+    for r in np.unique(rl[rl >= 0]):
+        q = rl == r; a = Lab[..., 1][q].mean(); b = Lab[..., 2][q].mean()
+        dh = abs(((np.degrees(np.arctan2(b, a)) + 360) % 360 - info['tonH'] + 180) % 360 - 180); c = np.hypot(a, b) / info['tonC']
+        dL = float(np.median(Lab[..., 0][q])) - info['tenL']
+        if dh <= k['ton'] and k['kAlt'] <= c <= k['kUst'] and not (dL > k['parlakL'] and c < k['parlakK']): keep |= q
+    for c in comps(m & ~keep):
+        cm = np.zeros_like(m); cm[c[:, 0], c[:, 1]] = True; ring = dil(cm) & ~cm
+        if len(c) <= k['delik'] and (keep[ring] | ~m[ring]).all() and keep[ring].mean() > 0.6: keep |= cm
+    return keep
+
+def tasma_tahmini(rgba, info, m):
+    """Bağımsız taşma tahmini (kapıdan ayrı ölçüt): baş bandı (figürün üst %30'u) dışında parlak renksiz (beyaz kumaş/metal: kroma
+    < 0,35 × ten kroması ve ten L*'ından açık) ya da ton dışı renkli (ton farkı > 20°, kroma > 3) maske piksellerinin oranı; ve baş
+    bandındaki maske pikseli sayısı (kapının ten kaybını ölçmek için). Etiketli 33 jetonda gerçek taşmayla korelasyon 0,52."""
+    Lab = lab(rgba[..., :3].astype(float)); C = np.hypot(Lab[..., 1], Lab[..., 2])
+    dh = np.abs(((np.degrees(np.arctan2(Lab[..., 2], Lab[..., 1])) + 360) % 360 - info['tonH'] + 180) % 360 - 180)
+    op = rgba[..., 3] >= 128; ys = np.nonzero(op)[0]; y0, y1 = ys.min(), ys.max()
+    head = np.zeros_like(op); head[y0:y0 + int((y1 - y0) * 0.3)] = True
+    bad = ((C < 0.35 * info['tonC']) & (Lab[..., 0] > info['tenL'])) | ((dh > 20) & (C > 3))
+    return float((m & bad & ~head).sum() / max(1, m.sum())), int((m & head).sum())
+
 def paint(rgba, m, cols, soy, t):
     L = lab(rgba[..., :3].astype(float)); Lm = float(np.median(L[..., 0][m]))
     Lt, Ct, Ht = renk.rgb2lch(cols['orta'])

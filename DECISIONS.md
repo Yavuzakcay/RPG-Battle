@@ -12,6 +12,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 ## Ana parça sınırı 450 → 500 kB (2026-11-19, kullanıcı kararı 2026-11-18)
 
 Kullanıcı: "500 de sorun değil." `data/paket-siniri.json` `anaParcaKb` 450 → 500. Ana parça bu sırada ≈448 kB (450 sınırına 2 kB kalmıştı). KQ4 PB1'deki "sınır tekrar yükseltilmez" notu bu kararla kalktı; yeni kod yine tembel parçalara girer (ilke değişmedi), denetim `npm run build` sonunda `scripts/paket-siniri.mjs`. CLAUDE.md güncellendi.
+## Dragonborn pul v2 kapanışı: renk kapısı ve riskli jetonlar (2026-11-19)
+
+- Kullanıcı kararı (gözle inceleme bitti): pul yalnız maske içinde ve ejderha derisine yakın renkte. Yöntem `scripts/dragonborn-desen-v2.py` `renk_kapisi`: maske Lab renk bölgelerine ayrılır, bölge ortalaması baş ten örneğinden uzaksa (ton > 12°, kroma oranı 0,4–3 dışı, açık ve renksiz) boyanmaz; kapalı küçük delikler geri. Ayar `KAPI` (kopyası `data/dragonborn-pul.json` `kapi`).
+- Doğrulama etiketli veriyle (el yamalı 30 jeton): ten %95,8 korunur, taşmanın %36'sı kesilir. Sayısal önce/sonra ölçüsü kapıdan bağımsız `tasma_tahmini` (etiketle korelasyon 0,52, kaba gösterge).
+- 218 otomatik maskeli jetonun 187'sinde taşma tahmini azaldı, 19'unda aynı; 11'inde kötüleşti (baş bandı teni > %10 kesildi ya da tahmin arttı), eski maske korundu. Kapı uygulananlarda tahmin %5,6 → %3,9.
+- `data/dragonborn-pul-kapali.json`: kapıdan sonra da riskli kalan erkek-warlock-WL-8 (mumya sargıları) boyanmaz; maskesiz 17 → 18. El yamaları (`data/dragonborn-pul-duzeltme.json`, 33 jeton) değişmedi, kapı onlara uygulanmaz. Küçük silah ağzı, cep saati, duman sızıntıları kabul.
+- Rapor ve kapatılanlar listesi `harita/belgeler/DRAGONBORN-PUL-KAPI.md`. Yalnız görünüm; kural ve kayıt sürümü değişmez.
 
 ## Birlik Manastırı jetonu seviyeye göre: 3–16 ID3, 17+ ID9 (2026-11-19, kullanıcı kararı; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 
