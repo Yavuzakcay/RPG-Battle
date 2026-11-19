@@ -103,7 +103,6 @@ Kaynak: D2'den kalan farklar (`harita/belgeler/SRD-VERI-DOGRULAMA.md` §9 ve §8
   - `efekt-baglama.json`'u ana parçadan çıkarmak (≈ 18 kB).
 - Ayrıntı `harita/belgeler/BUNDLE-ARTIS.md`.
 
-## Dragonborn kanadı: beyaz pençe ve uç kemikleri + pembe karışımlı zar: Kuyruk KW2/KW3 (2026-11-19, kullanıcı istekleri; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 ## Dungeondex Sınıflar kategorisi (Görev DX-S, 2026-11-20; yalnız arayüz ve açıklama verisi, kural ve kayıt sürümü değişmedi)
 
 - **Durum öncesi:** Dungeondex'te sınıf kategorisi yoktu. Invocation, Metamagic ve sınıf özelliği kayıtları da yoktu; sınıf yalnız alt sınıf kartında bağlantı olarak geçiyordu. Fighting Style'lar `feat` kategorisinde vardı (kategori "Fighting Style").
