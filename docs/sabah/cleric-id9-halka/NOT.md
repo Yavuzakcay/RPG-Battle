@@ -62,3 +62,15 @@ Boncuk çizgisi 256 px'te içe doğru 1 px kalınlaştı, halka tam opak (yumuş
 | dragonborn-kadin | 55 px | 35 → 37 | 141 → 198 | 0 |
 
 Dragonborn: halka kutusundaki baş pikselleri arasında pul maskesine düşen değişiklikler (yeniden birleştirmenin sıkıştırma farkı; erkek 19, kadın 15 px) yayımlı jetondaki değerine geri bırakıldı, pul maskesine dokunulmadı.
+
+## Pul maskesi kalın halkadan sonra (2026-11-19)
+
+`python scripts/dragonborn-pul-maske.py` (bütün Dragonborn jetonları; iki Cleric ID9 jetonu ne `dragonborn-pul-kapali.json`'da ne el düzeltmesinde, atlanmadı). Değişen dosyalar yalnız bu iki maske ve `harita/belgeler/DRAGONBORN-PUL-KAPI.md` satırları; diğer 264 maske aynı.
+Görüntü `pul-maske-kalin-halka.png` (jeton | maske pembe, halka ∩ maske yeşil: yok).
+
+| Jeton | Halka px (256) | Maske px (önce → sonra) | Değişen maske px | Pul ∩ halka |
+|---|---|---|---|---|
+| dragonborn-erkek-cleric-ID9 | 156 | 6262 → 5763 | 555 | **0** |
+| dragonborn-kadin-cleric-ID9 | 202 | 5134 → 4843 | 425 | **0** |
+
+Renk kapısı ikisinde de uygulandı ("kapı: taşma azaldı"; taşma tahmini erkek %6,8 → %3,4, kadın %6,7 → %5,7).
