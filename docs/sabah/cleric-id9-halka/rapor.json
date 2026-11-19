@@ -24,8 +24,8 @@
     190,
     80
    ],
-   "silinen_px": 1722,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 1722
   },
   "human-kadin-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -40,8 +40,8 @@
     191,
     69
    ],
-   "silinen_px": 1446,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 1446
   },
   "elf-erkek-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -56,8 +56,8 @@
     180,
     67
    ],
-   "silinen_px": 980,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 980
   },
   "elf-kadin-cleric-ID9": {
    "figur_olcek": 0.86,
@@ -73,8 +73,24 @@
     186,
     72
    ],
-   "silinen_px": 954,
-   "kip": "tam"
+   "kip": "tam (geri dönüş)",
+   "kucuk_halka_denemesi": {
+    "kip": "ornek",
+    "figur_olcek": 1.0,
+    "bas_tepe": 8,
+    "kafatasi_en": 58,
+    "halka_kutu": [
+     111,
+     -9,
+     139,
+     10
+    ],
+    "yatay_kayma_px": 0,
+    "boynuz_kesisim_px": 0,
+    "kirpik": true,
+    "gorunur_oran": 0.875
+   },
+   "silinen_px": 954
   },
   "dwarf-erkek-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -89,8 +105,8 @@
     179,
     67
    ],
-   "silinen_px": 1276,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 1276
   },
   "dwarf-kadin-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -105,8 +121,8 @@
     202,
     75
    ],
-   "silinen_px": 969,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 969
   },
   "orc-erkek-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -121,8 +137,8 @@
     181,
     73
    ],
-   "silinen_px": 1589,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 1589
   },
   "orc-kadin-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -137,8 +153,8 @@
     182,
     69
    ],
-   "silinen_px": 1717,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 1717
   },
   "gnome-erkek-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -153,8 +169,8 @@
     176,
     82
    ],
-   "silinen_px": 1038,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 1038
   },
   "gnome-kadin-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -169,8 +185,8 @@
     183,
     82
    ],
-   "silinen_px": 990,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 990
   },
   "goliath-erkek-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -185,8 +201,8 @@
     181,
     61
    ],
-   "silinen_px": 1228,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 1228
   },
   "goliath-kadin-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -201,8 +217,8 @@
     176,
     69
    ],
-   "silinen_px": 1494,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 1494
   },
   "halfling-erkek-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -217,8 +233,8 @@
     186,
     73
    ],
-   "silinen_px": 561,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 561
   },
   "halfling-kadin-cleric-ID9": {
    "figur_olcek": 1.0,
@@ -233,66 +249,86 @@
     189,
     79
    ],
-   "silinen_px": 1203,
-   "kip": "normal"
+   "kip": "normal",
+   "silinen_px": 1203
   },
   "tiefling-erkek-cleric-ID9": {
-   "figur_olcek": 0.82,
-   "bas_tepe": 77,
-   "bas_en": 59,
-   "olcek_ham": 1.157,
-   "olcek": 1.1,
-   "yukari_kayma_px": 37,
-   "kesisim_px": 0,
+   "kip": "ornek",
+   "figur_olcek": 1.0,
+   "bas_tepe": 40,
+   "kafatasi_en": 72,
    "halka_kutu": [
-    66,
-    11,
-    195,
-    85
+    114,
+    18,
+    149,
+    42
    ],
+   "yatay_kayma_px": 0,
+   "boynuz_kesisim_px": 2,
+   "kirpik": false,
+   "gorunur_oran": 0.973,
+   "silinen_px": 0
+  },
+  "tiefling-kadin-cleric-ID9": {
+   "kip": "ornek",
+   "figur_olcek": 1.0,
+   "bas_tepe": 29,
+   "kafatasi_en": 80,
+   "halka_kutu": [
+    105,
+    5,
+    143,
+    31
+   ],
+   "yatay_kayma_px": -8,
+   "boynuz_kesisim_px": 2,
+   "kirpik": false,
+   "gorunur_oran": 0.99,
    "silinen_px": 0,
-   "kip": "boynuz"
+   "yeni_cizim": {
+    "kaynak": "tiefling-kadin-cleric-ID9-yeni.jpg",
+    "hedef_boy": 232.0,
+    "olcek": 0.2318,
+    "yesil_px_kalan": 37
+   }
   },
   "dragonborn-erkek-cleric-ID9": {
-   "figur_olcek": 0.87,
-   "bas_tepe": 79,
-   "bas_en": 52,
-   "olcek_ham": 1.02,
-   "olcek": 1.02,
-   "yukari_kayma_px": 51,
-   "kesisim_px": 0,
+   "kip": "ornek",
+   "figur_olcek": 1.0,
+   "bas_tepe": 54,
+   "kafatasi_en": 59,
    "halka_kutu": [
-    76,
-    1,
-    195,
-    69
+    112,
+    37,
+    140,
+    56
    ],
+   "yatay_kayma_px": -5,
+   "boynuz_kesisim_px": 10,
+   "kirpik": false,
+   "gorunur_oran": 0.892,
    "silinen_px": 1017,
-   "kip": "boynuz",
    "pul_maske_kesisim_px": 0,
-   "halka_pul_maske_kesisim_px": "figür küçüldü"
+   "halka_pul_maske_kesisim_px": 0
   },
   "dragonborn-kadin-cleric-ID9": {
-   "figur_olcek": 0.92,
-   "bas_tepe": 66,
-   "bas_en": 60,
-   "olcek_ham": 1.176,
-   "olcek": 1.1,
-   "yukari_kayma_px": 20,
-   "kesisim_px": 0,
+   "kip": "ornek",
+   "figur_olcek": 1.0,
+   "bas_tepe": 49,
+   "kafatasi_en": 67,
    "halka_kutu": [
-    69,
-    17,
-    198,
-    91
+    109,
+    29,
+    141,
+    51
    ],
+   "yatay_kayma_px": -2,
+   "boynuz_kesisim_px": 3,
+   "kirpik": false,
+   "gorunur_oran": 0.97,
    "silinen_px": 796,
-   "kip": "boynuz",
    "pul_maske_kesisim_px": 0,
-   "halka_pul_maske_kesisim_px": "figür küçüldü"
+   "halka_pul_maske_kesisim_px": 0
   }
- },
- "haric": {
-  "tiefling-kadin-cleric-ID9": "çizim erkek karakter; kadın çizim Gemini ile yeniden üretilecek (kullanıcı, 2026-11-19)"
  }
 }

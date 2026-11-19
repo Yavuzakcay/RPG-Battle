@@ -86,7 +86,7 @@ OLCEK = (0.85, 1.10)   # ölçek sınırı: saç/kulak/boynuz eni yine şişirir
 
 BOYNUZLU = {'tiefling', 'dragonborn'}          # halka boynuz uçlarının üstüne: boncuklar boynuzla hiç kesişmez
 TAM = {'elf-kadin-cleric-ID9'}                 # boncuklar tam görünür: halka figürün hiçbir pikseliyle kesişmez
-HARIC = {'tiefling-kadin-cleric-ID9': 'çizim erkek karakter; kadın çizim Gemini ile yeniden üretilecek (kullanıcı, 2026-11-19)'}
+HARIC = {}   # 3. tur: Tiefling kadın ID9 yeni çizimle geri geldi
 KUCULT = [round(1 - 0.01 * i, 2) for i in range(0, 21)]   # 1,00 … 0,80: üstten sığmazsa figür ayak hizası sabit kalarak en az gereken kadar küçültülür
 
 def shrink(clean, f):
@@ -143,6 +143,48 @@ def compose(clean, rimg, x0, y0):
     can = Image.new('RGBA', (256, 256), (0, 0, 0, 0)); can.paste(rimg, (x0, y0), rimg)
     can.alpha_composite(Image.fromarray(clean, 'RGBA')); return np.array(can)
 
+# 2026-11-19 (3. tur): kullanıcı örnekleri (assets-ham/eksikler/halka-ornek-tiefling-erkek.png, -dragonborn-kadin.png; 1/4 indirgeme = jeton ölçeği)
+# ölçüldü: halka eni = kafatası eni × 0,48 (0,50 / 0,46), boy/en 0,68 (25/36, 21/31), alt kenar = baş tepesi + 2 (başın arkasına girer),
+# yatay merkez = baş merkezi + ırk payı × kafatası eni (Tiefling −0,035, Dragonborn −0,11). Figür küçültülmez.
+ORNEK = {'en': 0.48, 'boy_en': 0.68, 'alt': 2, 'x': {'tiefling': -0.035, 'dragonborn': -0.11, 'elf': 0.0}}
+YENI = {'tiefling-kadin-cleric-ID9': 'tiefling-kadin-cleric-ID9-yeni.jpg'}   # yeni çizim kaynağı (assets-ham/karakter/)
+
+def small_ring(clean, ring, race):
+    ht, cx, _, body = head(clean); sw = skull_width(body, ht, cx)
+    rw = max(8, round(sw * ORNEK['en'])); rh = max(5, round(rw * ORNEK['boy_en']))
+    rimg = Image.fromarray(ring, 'RGBA').convert('RGBa').resize((rw, rh), Image.LANCZOS).convert('RGBA')
+    ra_ = np.array(rimg); ra_[..., 3] = np.clip(ra_[..., 3].astype(int) * 2, 0, 255).astype(np.uint8)   # küçültmede incelen boncuklar örnekteki gibi tam parlaklıkta
+    rimg = Image.fromarray(ra_, 'RGBA')
+    xm = round(cx + ORNEK['x'].get(race, 0.0) * sw - rw / 2); y0 = ht + ORNEK['alt'] - rh
+    ra = np.array(rimg)[..., 3] > 40; ys_, xs_ = np.where(ra); horn = forbidden_of(clean, 'boynuz')
+    def mask_at(x0):
+        mk = np.zeros((256, 256), bool); yy, xx = ys_ + y0, xs_ + x0; ok = (yy >= 0) & (yy < 256) & (xx >= 0) & (xx < 256); mk[yy[ok], xx[ok]] = True; return mk
+    # boynuzlar halkanın iki yanında kalsın: ölçülen merkezin ±12 px içinde boynuz kesişimi en az olan yatay konum (eşitlikte ölçülene en yakın)
+    x0 = min(range(xm - 12, xm + 13), key=lambda x: (int((mask_at(x) & horn).sum()), abs(x - xm)))
+    out = compose(clean, rimg, x0, y0); rmask = mask_at(x0)
+    vis = rmask & ~(clean[..., 3] > 127)                # görünen halka pikselleri (başın önünde kalmayan)
+    info = {'kip': 'ornek', 'figur_olcek': 1.0, 'bas_tepe': int(ht), 'kafatasi_en': int(sw), 'halka_kutu': [x0, y0, x0 + rw, y0 + rh], 'yatay_kayma_px': int(x0 - xm),
+            'boynuz_kesisim_px': int((rmask & horn).sum()), 'kirpik': bool(y0 < 0 or x0 < 0 or x0 + rw > 256),
+            'gorunur_oran': round(float(vis.sum()) / max(1, int(rmask.sum())), 3)}
+    return out, info, rmask
+
+def new_token(name):
+    """Yeni çizim: yeşil anahtar (açık yeşil buhar ten/zemin değil, kalır), figür + buhar; ölçek = aynı ırk/cinsiyet Cleric ID1–ID8 ortanca boyu,
+    ayak tuvalin 247. satırında (diğer ID9'larla aynı)."""
+    import importlib.util as iu
+    sp = iu.spec_from_file_location('cc', 'scripts/cc-kesim.py'); cc = iu.module_from_spec(sp); sp.loader.exec_module(cc)
+    a = np.asarray(Image.open(f'assets-ham/karakter/{YENI[name]}').convert('RGB')); fg = cc.key_page(a)
+    lab, n = ndi.label(fg, structure=np.ones((3, 3))); sz = ndi.sum(fg, lab, range(1, n + 1)); H, W = fg.shape; objs = ndi.find_objects(lab)
+    keep = [i for i in range(1, n + 1) if sz[i - 1] >= 30 and not (objs[i - 1][0].start <= 1 or objs[i - 1][1].start <= 1 or objs[i - 1][0].stop >= H - 1 or objs[i - 1][1].stop >= W - 1)]
+    m = np.isin(lab, keep); ys, xs = np.where(m)
+    cell = cc.keyed_rgba(a[ys.min():ys.max() + 1, xs.min():xs.max() + 1], m[ys.min():ys.max() + 1, xs.min():xs.max() + 1])
+    race, g = name.split('-')[0], name.split('-')[1]
+    hs = []
+    for i in range(1, 9):
+        t = np.array(Image.open(f'{D}/{race}-{g}-cleric-ID{i}.webp').convert('RGBA'))[..., 3] > 127; yy, _ = np.where(t); hs.append(yy.max() - yy.min() + 1)
+    tok, sc = cc.place_token(cell, float(np.median(hs)))
+    return tok, {'kaynak': YENI[name], 'hedef_boy': float(np.median(hs)), 'olcek': sc, 'yesil_px_kalan': int(((tok[..., 1].astype(int) - np.maximum(tok[..., 0], tok[..., 2]).astype(int) > 120) & (tok[..., 3] > 0)).sum())}
+
 def main():
     os.makedirs(f'{OUT}/aday', exist_ok=True)
     ref = np.array(Image.open(f'{D}/human-erkek-cleric-ID9.webp').convert('RGBA'))
@@ -158,14 +200,21 @@ def main():
             n = f'{race}-{g}-cleric-ID9'
             if n in HARIC: rep['haric'] = {**rep.get('haric', {}), n: HARIC[n]}; continue
             a = np.array(Image.open(f'{D}/{n}.webp').convert('RGBA'))
-            _, clean, m = split_ring(a)
-            mode = 'boynuz' if race in BOYNUZLU else ('tam' if n in TAM else 'normal')
-            out, info = place(clean, ring, rb, rht, rcx, rhw, mode)
-            info['silinen_px'] = int(m.sum()); info['kip'] = mode
+            yeni = None
+            if n in YENI: tokn, yeni = new_token(n); clean, m = tokn, np.zeros(tokn.shape[:2], bool)   # yeni çizimde halka yok (sarı gözler silinmesin)
+            else: _, clean, m = split_ring(a)
+            if race in BOYNUZLU or n in TAM:
+                out, info, rmask = small_ring(clean, ring, race)
+                if n in TAM and (info['kirpik'] or info['gorunur_oran'] < 0.98):   # saç üstüne sığmadı: 2. turun 0,86 ölçekli önizlemesi kalır
+                    out, info2 = place(clean, ring, rb, rht, rcx, rhw, 'tam'); info = {**info2, 'kip': 'tam (geri dönüş)', 'kucuk_halka_denemesi': info}
+            else:
+                out, info = place(clean, ring, rb, rht, rcx, rhw, 'normal'); info['kip'] = 'normal'
+            info['silinen_px'] = int(m.sum())
+            if yeni: info['yeni_cizim'] = yeni
             pm = f'{D}/maske-pul/{n}.png'
             if race == 'dragonborn' and os.path.exists(pm):
                 mk = np.array(Image.open(pm).convert('L')) > 127; info['pul_maske_kesisim_px'] = int((mk & m).sum())
-                info['halka_pul_maske_kesisim_px'] = int((mk & (out[..., 3] > 0) & (np.abs(out.astype(int) - a.astype(int)).max(-1) > 0)).sum()) if info.get('figur_olcek', 1) == 1 else 'figür küçüldü'
+                info['halka_pul_maske_kesisim_px'] = int((mk & (np.abs(out.astype(int) - a.astype(int)).max(-1) > 0)).sum()) if info.get('figur_olcek', 1) == 1 else 'figür küçüldü'
             rep['jetonlar'][n] = info
             Image.fromarray(out, 'RGBA').save(f'{OUT}/aday/{n}.png')
             pairs.append((n, a, out))
@@ -180,7 +229,7 @@ def main():
         d.text((x + 4, y + 6), f'{n}   once | sonra', fill=(255, 255, 255))
     im.save(f'{OUT}/once-sonra-3x.png')
     for n, a, b in pairs:                              # boynuzlu ırklar ve elf kadın: 4× yakın (baş bölgesi)
-        if not (n.split('-')[0] in BOYNUZLU or n in TAM): continue
+        if not (n.split('-')[0] in BOYNUZLU or n in TAM or n in YENI): continue
         c = Image.new('RGBA', (2 * 640 + 24, 520 + 26), (52, 54, 60, 255)); d2 = ImageDraw.Draw(c)
         for j, t in enumerate((a, b)):
             c.alpha_composite(Image.fromarray(t, 'RGBA').crop((48, 0, 208, 130)).resize((640, 520), Image.NEAREST), (j * 664, 26))

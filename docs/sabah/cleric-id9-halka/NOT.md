@@ -1,29 +1,30 @@
-# Cleric ID9 halka önizlemesi: 2. tur (2026-11-19; jetonlara yazılmadı, onay bekliyor)
+# Cleric ID9 halka önizlemesi: 3. tur (2026-11-19; jetonlara yazılmadı, onay bekliyor)
 
-- `once-sonra-3x.png`: 17 jeton (Tiefling kadın ID9 hariç). 4× yakın: `yakin-4x-<jeton>.png` (Tiefling erkek, Dragonborn erkek/kadın, elf kadın).
-- Boynuzlu ırklar ve elf kadın: halka boynuz/saçla kesişmesin diye yukarı alındı; tuvale sığmadığı için figür küçüldü (ayak hizası sabit):
-  Tiefling erkek 0,82, elf kadın 0,86, Dragonborn erkek 0,87, Dragonborn kadın 0,92. Küçültmeden en iyi yerleşimde bile kesişim kalıyordu
-  (elf kadın 1096 px, Tiefling erkek 203, Dragonborn erkek 53, kadın 24). Diğer 13 jeton bir önceki önizlemeyle piksel piksel aynı.
-- **Onaylanırsa ek iş:** küçülen 4 jetonun maskeleri figürle hizalı kalmaz; ten maskesi (`npm run soy-maske -- --alt`) ve Dragonborn pul maskesi
-  (`python scripts/dragonborn-pul-maske.py`; bu iki jetonun `dragonborn-pul-duzeltme.json` kaydı yok) yeniden üretilmeli. Halka maskeye girmez
-  (sarı-yeşil, ten/pul tonu değil). Küçültme istenmezse alternatif: bu 4 jetonda halkayı kesişimi kabul ederek bırakmak.
+Kaynak: kullanıcı örnekleri `assets-ham/eksikler/halka-ornek-tiefling-erkek.png`, `halka-ornek-dragonborn-kadin.png` (1/4 indirgeme = jeton ölçeği).
+Ölçülen kural (`scripts/cleric-id9-halka.py` `ORNEK`): halka = insan erkek halka yayı; eni kafatası eni × 0,48 (örneklerde 0,50 / 0,46), boy/en 0,68,
+alt kenarı baş tepesinin 2 px altında (karakterin arkasında), yatay merkez baş merkezi + ırk payı (Tiefling −0,035, Dragonborn −0,11 × kafatası),
+sonra ±12 px içinde boynuz kesişimini en aza indiren konum. **Figür küçültülmedi** (ölçek 1,0, ayak hizası aynı). Küçültmede incelen boncukların
+alfası ×2 (örnekteki gibi tam parlak).
+
+| Jeton | Halka kutusu | Yatay düzeltme px | Boynuz kesişimi px | Görünen oran | Pul maskesi ∩ halka |
+|---|---|---|---|---|---|
+| tiefling-erkek-cleric-ID9 | [114, 18, 149, 42] | 0 | 2 | 0.973 | — |
+| tiefling-kadin-cleric-ID9 | [105, 5, 143, 31] | -8 | 2 | 0.99 | — |
+| dragonborn-erkek-cleric-ID9 | [112, 37, 140, 56] | -5 | 10 | 0.892 | 0 |
+| dragonborn-kadin-cleric-ID9 | [109, 29, 141, 51] | -2 | 3 | 0.97 | 0 |
+
+Boynuz kesişimi 2–8 px: halkanın iki ucundaki ince kuyruk pikselleri boynuz kenarına değiyor (boncuklar değil); 4× görüntülerde boynuzlar halkanın
+iki yanında. Dragonborn pul maskesiyle halka kesişimi 0 (eski halka silinen piksellerle de 0).
+
+- **Tiefling kadın ID9 yeni çizim** (`tiefling-kadin-cleric-ID9-yeni.jpg`): yeşil anahtarlandı, açık yeşil buhar korundu, ölçek = Tiefling kadın
+  Cleric ID1–ID8 ortanca boyu (232 px), ayak 247. satırda (diğer ID9'larla aynı). Eski jeton commit geçmişinde (`public/` değişmedi).
+  **Ten maskesi:** Tiefling'de var (`public/characters/maske/tiefling-kadin-cleric-ID9.png`, eski çizimden); onaylanıp jeton yazılınca
+  `npm run soy-maske -- --alt tiefling` ile yeniden üretilecek (şimdi public'e yazılmadığı için üretilmedi).
+- **Elf kadın:** küçük halka saç tepesinin üstüne sığmadı (saç tepesi 8. satırda; halka kutusu [111, -9, 139, 10], üstten kırpık, görünen oran
+  0.875). 2. turun 0,86 ölçekli önizlemesi kaldı (onaylanırsa ten maskesi yeniden üretilmeli).
+- **Diğer 12 jeton** (insan, elf erkek, cüce, ork, gnome, goliath, halfling): 2. turla piksel piksel aynı.
+- Görseller: `once-sonra-3x.png` (18 jeton), `yakin-4x-<jeton>.png` (Tiefling erkek/kadın, Dragonborn erkek/kadın, elf kadın).
 
 ## Tiefling kadın Cleric jetonları (`tiefling-kadin-cleric-kontak.png`)
 
-| Jeton | Çizim | Not |
-|---|---|---|
-| tiefling-female-cleric (genel) | kadın | zırh, kalkan, gürz |
-| ID1 Yaşam | kadın | kanatlı beyaz cüppe |
-| ID2 Aydın | kadın | güneş |
-| ID3 Barış (bağlı değil) | kadın | güvercinli açık mavi cüppe |
-| ID4 Demirci | kadın | çekiç |
-| ID5 Fırtına | kadın | zırh, şimşek |
-| ID6 Mezar | kadın | kafatası maskesi |
-| ID7 Savaş | kadın | zırh, kalkan |
-| ID8 Yakamoz | kadın | fener |
-| ID9 Birlik Manastırı | **erkek** (yaşlı, kel, gözlüklü) | çay seti; yanlış cinsiyet |
-| GR Gariban | kadın | kahverengi kaba cüppe, sopa |
-
-**Uygun kadın Birlik Manastırı çizimi yok:** hiçbir kadın jetonda çay seti yok. Temaya en yakınlar: ID3 (barışçıl manastır cüppesi, güvercin; ama
-çaydanlık/fincan yok, Barış Alanı çizimi) ve GR (kahverengi keşiş cüppesi; sopa taşıyor). İkisi de çay setini taşımıyor; Gemini'den yeniden üretim
-gerekli. Jeton kopyalanmadı, uydurulmadı.
+2. tur tespiti: genel, ID1–ID8, GR kadın; eski ID9 erkek (yaşlı kel çizim) → yeni çizimle değiştirilecek.
