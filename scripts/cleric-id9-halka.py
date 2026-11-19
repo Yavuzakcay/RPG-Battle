@@ -8,6 +8,9 @@ rapor.json. 9 ırk × 2 cinsiyet (Celestial hariç).
 2) Referans: human-erkek-cleric-ID9 halkası (aynı yöntemle ayrılan katman). Baş geometrisi: baş merkez sütununu kesen ilk geniş (≥ 10 px) koşu =
    baş tepesi (boynuz uçları yanlarda kaldığı için sayılmaz), baş genişliği = tepe + 14 satırdaki merkez koşu. Halka ölçek = hedef kafatası eni /
    referans kafatası eni (tepe + 6/10/14 satırlarının en darı; 0,85–1,10 arası sınırlı); konum referanstaki baş tepesine göre aynı oranla. Halka karakterin ARKASINDA (jeton halkanın üstüne bindirilir).
+2b) 2026-11-19 ek: Tiefling ve Dragonborn (BOYNUZLU) halka boynuz uçlarının üstüne alınır (boncuk ile kafatası dışındaki baş bölgesi gövdesi
+   kesişmez); elf kadın (TAM) boncukları tam görünür (halka figürün hiçbir pikseliyle kesişmez). Halka yukarı kaydırılır; tuvale sığmazsa figür ayak
+   hizası sabit kalarak 0,01 adımla en az gereken kadar küçültülür (en çok 0,80). Diğer ırklar değişmez. Tiefling kadın ID9 (çizim erkek) önizlemede yok.
 3) Dragonborn: pul maskesine dokunulmaz; silinen eski halka piksellerinin pul maskesiyle kesişimi raporlanır (beklenen 0)."""
 import json, os
 import numpy as np
@@ -81,6 +84,65 @@ def skull_width(body, ht, cx):
 
 OLCEK = (0.85, 1.10)   # ölçek sınırı: saç/kulak/boynuz eni yine şişirirse halka aşırı büyümesin
 
+BOYNUZLU = {'tiefling', 'dragonborn'}          # halka boynuz uçlarının üstüne: boncuklar boynuzla hiç kesişmez
+TAM = {'elf-kadin-cleric-ID9'}                 # boncuklar tam görünür: halka figürün hiçbir pikseliyle kesişmez
+HARIC = {'tiefling-kadin-cleric-ID9': 'çizim erkek karakter; kadın çizim Gemini ile yeniden üretilecek (kullanıcı, 2026-11-19)'}
+KUCULT = [round(1 - 0.01 * i, 2) for i in range(0, 21)]   # 1,00 … 0,80: üstten sığmazsa figür ayak hizası sabit kalarak en az gereken kadar küçültülür
+
+def shrink(clean, f):
+    if f == 1.0: return clean
+    al = clean[..., 3] > 0; ys, xs = np.where(al); foot, cxm = ys.max(), (xs.min() + xs.max()) / 2
+    im = Image.fromarray(clean, 'RGBA').convert('RGBa'); w = round(256 * f)
+    sm = im.resize((w, w), Image.LANCZOS).convert('RGBA')
+    can = Image.new('RGBA', (256, 256), (0, 0, 0, 0)); can.paste(sm, (round(cxm - cxm * f), round(foot - foot * f)), sm)
+    return np.array(can)
+
+def forbidden_of(clean, mode):
+    ht, cx, _, body = head(clean)
+    if mode == 'tam': return body
+    skull = np.zeros_like(body)                       # kafatası: baş tepesinden aşağı, merkez sütunu kesen koşu
+    for y in range(ht, min(256, ht + 60)):
+        row = body[y]; c = int(cx)
+        if not row[c]: continue
+        x0 = c
+        while x0 > 0 and row[x0 - 1]: x0 -= 1
+        x1 = c
+        while x1 < 255 and row[x1 + 1]: x1 += 1
+        skull[y, x0:x1 + 1] = True
+    zone = np.zeros_like(body); zone[:ht + 40] = True
+    return body & ~skull & zone                       # boynuz: baş bölgesinde kafatası dışındaki gövde
+
+def place(clean0, ring, rb, rht, rcx, rhw, mode):
+    best = None
+    for f in (KUCULT if mode != 'normal' else [1.0]):
+        clean = shrink(clean0, f)
+        ht, cx, _, body = head(clean); hw = skull_width(body, ht, cx)
+        sc_raw = hw / rhw; sc = float(np.clip(sc_raw, *OLCEK))
+        rw, rh = max(1, round(ring.shape[1] * sc)), max(1, round(ring.shape[0] * sc))
+        rimg = Image.fromarray(ring, 'RGBA').resize((rw, rh), Image.NEAREST); rmask = np.array(rimg)[..., 3] > 0
+        x0 = round(cx + ((rb[0] + rb[2]) / 2 - rcx) * sc - rw / 2); y_ideal = round(ht + (rb[1] - rht) * sc)
+        if mode == 'normal':
+            y0 = y_ideal; kayma = max(0, 1 - y0); y0 += kayma
+            info = {'figur_olcek': 1.0, 'bas_tepe': int(ht), 'bas_en': int(hw), 'olcek_ham': round(sc_raw, 3), 'olcek': round(sc, 3), 'asagi_kayma_px': int(kayma)}
+            return compose(clean, rimg, x0, y0), {**info, 'halka_kutu': [x0, y0, x0 + rw, y0 + rh]}
+        forb = forbidden_of(clean, mode)
+        for y0 in range(max(1, min(y_ideal, 256)), 0, -1):
+            can = np.zeros((256, 256), bool)
+            ys_, xs_ = np.where(rmask); yy, xx = ys_ + y0, xs_ + x0; ok = (yy >= 0) & (yy < 256) & (xx >= 0) & (xx < 256)
+            can[yy[ok], xx[ok]] = True
+            ov = int((can & forb).sum())
+            if best is None or ov < best[0]: best = (ov, f, y0, clean, rimg, x0, rw, rh, ht, hw, sc_raw, sc, y_ideal)
+            if ov == 0: break
+        if best[0] == 0: break
+    ov, f, y0, clean, rimg, x0, rw, rh, ht, hw, sc_raw, sc, y_ideal = best
+    info = {'figur_olcek': f, 'bas_tepe': int(ht), 'bas_en': int(hw), 'olcek_ham': round(sc_raw, 3), 'olcek': round(sc, 3),
+            'yukari_kayma_px': int(y_ideal - y0), 'kesisim_px': ov, 'halka_kutu': [x0, y0, x0 + rw, y0 + rh]}
+    return compose(clean, rimg, x0, y0), info
+
+def compose(clean, rimg, x0, y0):
+    can = Image.new('RGBA', (256, 256), (0, 0, 0, 0)); can.paste(rimg, (x0, y0), rimg)
+    can.alpha_composite(Image.fromarray(clean, 'RGBA')); return np.array(can)
+
 def main():
     os.makedirs(f'{OUT}/aday', exist_ok=True)
     ref = np.array(Image.open(f'{D}/human-erkek-cleric-ID9.webp').convert('RGBA'))
@@ -94,33 +156,35 @@ def main():
     for race in RACES:
         for g in ('erkek', 'kadin'):
             n = f'{race}-{g}-cleric-ID9'
+            if n in HARIC: rep['haric'] = {**rep.get('haric', {}), n: HARIC[n]}; continue
             a = np.array(Image.open(f'{D}/{n}.webp').convert('RGBA'))
             _, clean, m = split_ring(a)
-            ht, cx, _, body = head(clean); hw = skull_width(body, ht, cx)
-            sc_raw = hw / rhw; sc = float(np.clip(sc_raw, *OLCEK))
-            rw, rh = max(1, round(ring.shape[1] * sc)), max(1, round(ring.shape[0] * sc))
-            rimg = Image.fromarray(ring, 'RGBA').resize((rw, rh), Image.NEAREST)
-            x0 = round(cx + ((rb[0] + rb[2]) / 2 - rcx) * sc - rw / 2); y0 = round(ht + (rb[1] - rht) * sc)
-            kayma = max(0, 1 - y0); y0 += kayma   # tuvalin üstüne taşarsa halka aşağı kayar (başın arkasında kalır)
-            can = Image.new('RGBA', (256, 256), (0, 0, 0, 0)); can.paste(rimg, (x0, y0), rimg)
-            can.alpha_composite(Image.fromarray(clean, 'RGBA'))
-            out = np.array(can)
-            info = {'silinen_px': int(m.sum()), 'bas_tepe': int(ht), 'bas_en': int(hw), 'olcek_ham': round(sc_raw, 3), 'olcek': round(sc, 3), 'halka_kutu': [x0, y0, x0 + rw, y0 + rh],
-                    'asagi_kayma_px': int(kayma), 'kirpik': bool(y0 < 0 or x0 < 0 or x0 + rw > 256)}
-            pm = f'{D}/../characters/maske-pul/{n}.png'
+            mode = 'boynuz' if race in BOYNUZLU else ('tam' if n in TAM else 'normal')
+            out, info = place(clean, ring, rb, rht, rcx, rhw, mode)
+            info['silinen_px'] = int(m.sum()); info['kip'] = mode
+            pm = f'{D}/maske-pul/{n}.png'
             if race == 'dragonborn' and os.path.exists(pm):
                 mk = np.array(Image.open(pm).convert('L')) > 127; info['pul_maske_kesisim_px'] = int((mk & m).sum())
+                info['halka_pul_maske_kesisim_px'] = int((mk & (out[..., 3] > 0) & (np.abs(out.astype(int) - a.astype(int)).max(-1) > 0)).sum()) if info.get('figur_olcek', 1) == 1 else 'figür küçüldü'
             rep['jetonlar'][n] = info
             Image.fromarray(out, 'RGBA').save(f'{OUT}/aday/{n}.png')
             pairs.append((n, a, out))
+    for n in HARIC:
+        if os.path.exists(f'{OUT}/aday/{n}.png'): os.remove(f'{OUT}/aday/{n}.png')
     S = 3 * 256; cols = 3
-    im = Image.new('RGB', (cols * (2 * S + 24), 6 * (S + 30)), (52, 54, 60)); d = ImageDraw.Draw(im)
+    im = Image.new('RGB', (cols * (2 * S + 24), ((len(pairs) + cols - 1) // cols) * (S + 30)), (52, 54, 60)); d = ImageDraw.Draw(im)
     for i, (n, a, b) in enumerate(pairs):
         x, y = (i % cols) * (2 * S + 24), (i // cols) * (S + 30)
         for j, t in enumerate((a, b)):
             p = Image.fromarray(t, 'RGBA').resize((S, S), Image.NEAREST); im.paste(p, (x + j * S, y + 26), p)
         d.text((x + 4, y + 6), f'{n}   once | sonra', fill=(255, 255, 255))
     im.save(f'{OUT}/once-sonra-3x.png')
+    for n, a, b in pairs:                              # boynuzlu ırklar ve elf kadın: 4× yakın (baş bölgesi)
+        if not (n.split('-')[0] in BOYNUZLU or n in TAM): continue
+        c = Image.new('RGBA', (2 * 640 + 24, 520 + 26), (52, 54, 60, 255)); d2 = ImageDraw.Draw(c)
+        for j, t in enumerate((a, b)):
+            c.alpha_composite(Image.fromarray(t, 'RGBA').crop((48, 0, 208, 130)).resize((640, 520), Image.NEAREST), (j * 664, 26))
+        d2.text((6, 6), f'{n}   once | sonra (4x, bas bolgesi)', fill=(255, 255, 255)); c.convert('RGB').save(f'{OUT}/yakin-4x-{n}.png')
     json.dump(rep, open(f'{OUT}/rapor.json', 'w'), ensure_ascii=False, indent=1)
     print(json.dumps(rep['referans'])); [print(k, v) for k, v in rep['jetonlar'].items()]
 
