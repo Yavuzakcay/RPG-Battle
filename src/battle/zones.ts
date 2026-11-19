@@ -184,7 +184,7 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
     const adj = adjustDamage(d.total, dtype, profileIn(state, victim, spells.some((x) => x.id === z.spellId)));
     const fx = damageEffects(victim, adj.amount, dtype ?? '', false, rng);
     events.push({ type: 'effect_tick', targetId: victim.id, effectId: z.spellId, name: z.name, damageRolls: d.rolls, appliedDamage: adj.amount,
-      damageType: dtype ?? '', targetHpAfter: fx.hpAfter, effects: fx.effects });
+      damageType: dtype ?? '', targetHpAfter: fx.hpAfter, effects: fx.effects, ...(matrisOn(state) ? { zoneId: z.id } : {}) });
     return events;
   }
   const ability = spec.save;
@@ -207,6 +207,8 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
     damageRolls: d.rolls, rawDamage: d.total, appliedDamage: adj.amount, damageType: dtype ?? '', damageNote: adj.note,
     targetHpAfter: fx.hpAfter, effects: [...fx.effects, ...lose], conditionsAdded: plain, ...(save.extra ? { bonusDice: save.extra } : {}),
     ...(cover === 2 || cover === 5 ? { cover } : {}),
+    // Mekanik matris B20 (sürüm 83+): alan hasarı yüzey çözücüsüne (`hexResolver.ts` `incomingOf`).
+    ...(matrisOn(state) ? { zoneId: z.id } : {}),
   });
   events.push(...budgetEvents(state, z, spec, adj.amount));
   // Kuyruk A8 (Moonbeam, `revertShape`): başarısız save'de biçim değiştiren (Polymorph, Wild Shape) gerçek biçimine döner.

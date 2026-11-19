@@ -16,6 +16,7 @@
  * konsantrasyona bağlanır. Eski savaş (sürüm < 26) ya da anahtar kapalı: eski geçişler (`surfaces.ts`, `ignite.ts`,
  * `surfaceMix.ts`) aynen. Saf; `rng` enjekte; `dryRun` önizleme (yapay zekâ, K58 keşif defteri) aynı çözücüyü çalıştırır.
  */
+import { matrisOn } from './matrisSurum';
 import { yuzmeOn } from './yuzmeSurum';
 import { touches } from './body';
 import table from '../../data/yuzey-etkilesimleri.json';
@@ -322,6 +323,19 @@ export function incomingOf(next: BattleState, events: BattleEvent[]): Incoming[]
     } else if (e.type === 'attack_resolved' && e.hit) {
       const p = pos(e.targetId);
       if (p) out.push({ kind: 'element', element: e.damageType, hexes: [p], actorId: e.actorId, dc: next.combatants[e.actorId]?.spellSaveDc ?? 10, damage: e.rawDamage, hitIds: [e.targetId], label: e.label });
+    } else if ((e.type === 'save_resolved' || e.type === 'effect_tick') && e.zoneId && e.damageType && e.damageRolls.length) {
+      // Mekanik matris B20 (sürüm 83+; olayda `zoneId`): alan tetiğinin hasarı (Wall of Fire, Blade Barrier, Incendiary Cloud,
+      // Storm of Vengeance …) değdiği yaratığın altıgeninde hasar türünde element; tablonun bütün satırları (yalnız "geniş" değil).
+      const p = pos(e.targetId);
+      const z = next.map?.zones?.find((x) => x.id === e.zoneId);
+      const raw = e.type === 'save_resolved' ? e.rawDamage : e.damageRolls.reduce((n, x) => n + x, 0);
+      if (p) out.push({ kind: 'element', element: e.damageType, hexes: [p], actorId: e.type === 'save_resolved' ? e.actorId : z?.casterId ?? 'harita',
+        dc: e.type === 'save_resolved' ? e.dc : z?.dc ?? 10, damage: raw, hitIds: [e.targetId], label: e.type === 'save_resolved' ? e.label : e.name });
+    } else if (e.type === 'map_effect' && e.rule === 'wallCut' && e.damage?.type && matrisOn(next)) {
+      // Mekanik matris B20 (sürüm 83+): duvarın kestiği yaratığın hasarı (Wall of Ice: Cold) değdiği altıgende element.
+      const p = pos(e.targetId);
+      const z = next.map?.zones?.find((x) => x.name === e.text);
+      if (p) out.push({ kind: 'element', element: e.damage.type, hexes: [p], actorId: z?.casterId ?? 'harita', dc: z?.dc ?? 10, damage: null, hitIds: [e.targetId], label: e.text ?? e.damage.type });
     } else if (e.type === 'save_resolved' && e.damageType === 'fire' && e.appliedDamage > 0) {
       const p = pos(e.targetId);
       if (p) out.push({ kind: 'element', element: 'fire', hexes: [p], actorId: e.actorId, dc: e.dc, damage: null, hitIds: [], label: e.label, genis: true });

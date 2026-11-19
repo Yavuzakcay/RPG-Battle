@@ -503,3 +503,22 @@ describe('B18: Shining Smite hedefi Invisible\'dan yararlanamaz (SRD "Until the 
     expect(!!ended.state.combatants.T?.effects?.some((e) => e.revealed)).toBe(false);
   });
 });
+
+describe('B20: alan tetiğinin hasarı yüzey tablosuna girer (SRD Oil: ateşle tutuşur; Wall of Fire "each creature in its area makes a Dexterity saving throw, taking 5d8 Fire damage")', () => {
+  const wall = (v: number) => {
+    const s0 = scene(v, [caster({ level: 9, spellNames: ['Wall of Fire'] }), foe('T', { pos: { col: 7, row: 5 } })]);
+    const oiled = execute(s0, { type: 'place_surface', kind: 'oil', hexes: [{ col: 7, row: 5 }] } as Command, GM, hooked(PROBE));
+    expect(oiled.ok).toBe(true);
+    return run((oiled as Extract<typeof oiled, { ok: true }>).state, { type: 'cast_spell', actorId: 'A', spellName: 'Wall of Fire', slotLevel: 4, targetHex: { col: 7, row: 5 } } as Command, hooked({ one: 2, two: [2, 2] }));
+  };
+  for (const [v, lit] of [[83, true], [82, false]] as const) {
+    it(`${v}: duvarın yapım save'i yağdaki yaratığın altıgenini ${lit ? 'tutuşturur (fireOil)' : 'tutuşturmaz (eski: yalnız geniş dokunuş)'}`, () => {
+      const r = wall(v);
+      expect(r.ok, r.error).toBe(true);
+      const sv = saveOf(r.events, 'T');
+      expect(sv?.damageType).toBe('fire');
+      expect(!!sv?.zoneId).toBe(lit);
+      expect(r.events.some((e) => e.type === 'surface_reacted' && e.row === 'fireOil')).toBe(lit);
+    });
+  }
+});
