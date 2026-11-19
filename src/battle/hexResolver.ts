@@ -300,13 +300,20 @@ export function incomingOf(next: BattleState, events: BattleEvent[]): Incoming[]
     for (let i = from; i < events.length; i++) {
       const e = events[i] as BattleEvent;
       if (e.type === 'save_resolved' && e.damageType === type && e.damageRolls.length) return e.rawDamage;
+      // Mekanik matris B19 (yalnız 83+ olayında `parts` var): ikinci hasar türü save olayının `secondary` parçasında.
+      if (e.type === 'save_resolved' && e.secondary?.type === type && e.secondary.rolls.length) return e.secondary.raw;
       if (e.type === 'spell_cast' || e.type === 'area_used') break;
     }
     return null;
   };
   const pos = (id: string) => next.combatants[id]?.pos;
   events.forEach((e, i) => {
-    if (e.type === 'spell_cast' && e.area?.damageType) {
+    if (e.type === 'spell_cast' && e.area?.parts?.length) {
+      for (const p of e.area.parts) {
+        out.push({ kind: 'element', element: p.damageType, hexes: e.area.hexes, actorId: e.actorId, dc: e.area.dc ?? 10, damage: firstRaw(i + 1, p.damageType),
+          dice: p.dice, hitIds: e.area.targetIds ?? [], label: e.label });
+      }
+    } else if (e.type === 'spell_cast' && e.area?.damageType) {
       out.push({ kind: 'element', element: e.area.damageType, hexes: e.area.hexes, actorId: e.actorId, dc: e.area.dc ?? 10, damage: firstRaw(i + 1, e.area.damageType),
         ...(e.area.dice ? { dice: e.area.dice } : {}), hitIds: e.area.targetIds ?? [], label: e.label });
     } else if (e.type === 'area_used' && e.damageType) {

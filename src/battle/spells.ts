@@ -235,14 +235,19 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     ...(cloud && !repeat ? cloudZoneEvent(state, actor, spell, cloud, slot.slotLevel, storm) : [])];
   const upFt = airFt || pointAlt;
   const where = area.origin === 'point' && aim ? `, merkez ${hexLabel(aim)}${upFt ? ` (${upFt} ft yükseklikte)` : ''}` : '';
+  const splitParts = matrisOn(state) && m.split && m.split.length === 2 && globalRule(state, 'spellsK19')
+    ? m.split.map((p) => ({ damageType: p.type, dice: damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), (slot.slotLevel ?? spell.level) - spell.level, spell.school, spell.name) }))
+    : null;
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
     note: `Alan: ${fs ? `${pick.hexes.length} altıgen (serbest şekil)` : `${area.sizeFt} ft ${SHAPE_NAME[area.shape]}${where}`}; etkilenen: ${reached.map((x) => x.c.name).join(', ') || 'kimse'}.`,
     // Görev Y1: alanın altıgenleri ve hasar türü (yüzey tepkimeleri: tutuşma, buhar, donma, suda yıldırım).
     // Kuyruk K73c (sürüm 64+): yere değmeyen havadaki alan yerdeki yüzey/nesneye işlemez (altıgenler yalnız görsel: `airHexes`).
     area: { hexes: span && span.loFt > 0 ? [] : pick.hexes, ...(span && span.loFt > 0 ? { airHexes: pick.hexes } : {}),
-      ...(m.damageType ? { damageType: m.damageType } : {}), dc: actor.spellSaveDc ?? 10,
-      ...(m.damage ? { dice: m.damage } : {}), targetIds: reached.map((x) => x.c.id),
+      // Mekanik matris B19 (sürüm 83+): iki hasar türlü büyüde (Ice Storm, Flame Strike; `split`) alan kaydı parçaları yazar
+      // (eski tek tür/zar `damageType`/`dice` veri kalıntısıydı: Ice Storm 7d6 Cold, Flame Strike 10d6 Radiant).
+      ...(splitParts ? { parts: splitParts } : { ...(m.damageType ? { damageType: m.damageType } : {}), ...(m.damage ? { dice: m.damage } : {}) }),
+      dc: actor.spellSaveDc ?? 10, targetIds: reached.map((x) => x.c.id),
       // Kuyruk E2: yalnız görsel (reducer okumaz; replay aynı): şekil ve nişan (çizgi ışın, koni doku olarak çizilir).
       shape: area.shape, ...(aim ? { aim } : {}) },
   });

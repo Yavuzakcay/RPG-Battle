@@ -309,3 +309,25 @@ describe('U01: Irresistible Dance başarısız save\'de Charmed (SRD "On a faile
     expect(r.state.combatants.T?.conditions).not.toContain('Charmed');
   });
 });
+
+describe('B19: iki hasar türlü büyülerin alan kaydı (Flame Strike "5d6 Fire damage and 5d6 Radiant damage", Ice Storm "2d10 Bludgeoning damage and 4d6 Cold damage")', () => {
+  const oil = (st: BattleState, at: { col: number; row: number }): BattleState => ({ ...st, map: { ...st.map!, zones: [
+    { id: 'surface:oil:1', spellId: 'surface:oil', name: 'oil', casterId: 'harita', side: 'enemies', dc: 10, slotLevel: 0, hexes: [at], surface: 'oil' } as never] } });
+  const cast = (spell: string, slot: number, v: number) => {
+    const s = oil(scene(v, [caster({ level: 17, spellNames: [spell], spellSlots: [4, 3, 3, 3, 3, 2, 2, 1, 1] }), foe('T', { pos: { col: 10, row: 5 } })]), { col: 10, row: 5 });
+    return run(s, { type: 'cast_spell', actorId: 'A', spellName: spell, slotLevel: slot, targetHex: { col: 10, row: 5 } } as Command, hooked({ one: 1, two: [1, 1] }));
+  };
+  it('83: Flame Strike alan kaydı Fire + Radiant parçaları; yağ tutuşur (fireOil)', () => {
+    const r = cast('Flame Strike', 5, 83);
+    expect(r.ok, r.error).toBe(true);
+    const sc = r.events.find((e) => e.type === 'spell_cast' && e.area) as Extract<BattleEvent, { type: 'spell_cast' }> | undefined;
+    expect(sc?.area?.parts?.map((p) => p.damageType)).toEqual(['fire', 'radiant']);
+    expect(sc?.area?.damageType).toBeUndefined();
+    expect(r.events.some((e) => e.type === 'surface_reacted' && e.row === 'fireOil')).toBe(true);
+  });
+  it('82: eski alan kaydı (tek tür Radiant, parça yok)', () => {
+    const sc = cast('Flame Strike', 5, 82).events.find((e) => e.type === 'spell_cast' && e.area) as Extract<BattleEvent, { type: 'spell_cast' }> | undefined;
+    expect(sc?.area?.parts).toBeUndefined();
+    expect(sc?.area?.damageType).toBe('radiant');
+  });
+});

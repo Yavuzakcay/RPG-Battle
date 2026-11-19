@@ -2170,6 +2170,8 @@ export type BattleEvent =
       countered?: true;
       /** Görev Y1: alan büyüsünün altıgenleri, hasar türü, zorluk sınıfı, zarı ve etkilenenler (yüzey tepkimeleri). */
       area?: { hexes: Offset[]; /** Kuyruk K73c: yere değmeyen havadaki alanın altıgenleri (yalnız görsel). */ airHexes?: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[];
+        /** Mekanik matris B19 (sürüm 83+): iki hasar türlü büyünün parçaları (yüzey çözücüsü her türü ayrı işler). */
+        parts?: Array<{ damageType: string; dice: string }>;
         /** Kuyruk E2: yalnız görsel (efekt katmanı; reducer ve kurallar okumaz): alan şekli ve nişan altıgeni. */
         shape?: string; aim?: Offset } }
   /** Görev Y1: yüzey tepkimesi (yalnızca günlük; alan değişiklikleri `zone_*` olaylarında). */
