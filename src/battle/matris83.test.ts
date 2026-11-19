@@ -10,6 +10,7 @@ import { MATRIS_VERSION, matrisOn } from './matrisSurum';
 import { CURRENT_RULES } from './ruleVersion';
 import { saveMode } from './durations';
 import { wardSources } from './divine';
+import { sightConditions } from './sight';
 import type { DiceRequest, Rng } from '../rules/dice';
 import { FRESH_ECONOMY, type BattleEvent, type BattleState, type Combatant, type Command } from './types';
 
@@ -475,4 +476,30 @@ describe('B16: Suggestion ve Mass Suggestion süresince Charmed (SRD "have the C
       expect(!!e82?.grants?.includes('Charmed')).toBe(name === 'Suggestion');
     });
   }
+});
+
+describe('B18: Shining Smite hedefi Invisible\'dan yararlanamaz (SRD "Until the spell ends, the target sheds Bright Light in a 5-foot radius, attack rolls against it have Advantage, and it can\'t benefit from the Invisible condition.")', () => {
+  const smite = (v: number) => {
+    const s = scene(v, [caster({ spellNames: ['Shining Smite'] }), foe('T', { conditions: ['Invisible'] }), mk('B', { ownerId: 'p1', pos: { col: 4, row: 4 } })]);
+    const a = s.combatants.A as Combatant;
+    const prepared = { ...s, combatants: { ...s.combatants, A: { ...a, economy: { ...a.economy, meleeHit: { targetId: 'T', critical: false } } } as Combatant } };
+    return run(prepared, { type: 'cast_spell', actorId: 'A', spellName: 'Shining Smite', slotLevel: 2, targetId: 'T' } as Command, hooked(PROBE));
+  };
+  for (const [v, reveal] of [[83, true], [82, false]] as const) {
+    it(`${v}: sonraki saldırıda Invisible ${reveal ? 'işlemez' : 'işler (eski davranış)'}`, () => {
+      const r = smite(v);
+      expect(r.ok, r.error).toBe(true);
+      const t = r.state.combatants.T as Combatant;
+      expect(!!t.effects?.some((e) => e.revealed)).toBe(reveal);
+      expect(sightConditions(r.state.combatants.B as Combatant, t, r.state).targetConditions.includes('Invisible')).toBe(!reveal);
+    });
+  }
+  it('83: konsantrasyon bitince görünmezlik yararı geri gelir', () => {
+    const r = smite(83);
+    const a = r.state.combatants.A as Combatant;
+    const ended = run({ ...r.state, combatants: { ...r.state.combatants, A: { ...a, economy: FRESH_ECONOMY, spellNames: ['Shining Smite', 'Bless'] } } },
+      { type: 'cast_spell', actorId: 'A', spellName: 'Bless', slotLevel: 1, targetIds: ['A'] } as Command, hooked(PROBE));
+    expect(ended.ok, ended.error).toBe(true);
+    expect(!!ended.state.combatants.T?.effects?.some((e) => e.revealed)).toBe(false);
+  });
 });

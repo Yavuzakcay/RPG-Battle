@@ -365,6 +365,11 @@ export interface SpellMechanics {
    * creature of your choice that you can see within range": büyücü merkezli 30 ft yayılım). Okuma `spellAreaAt`.
    */
   area83?: NonNullable<Spell['area']>;
+  /**
+   * Mekanik matris B18 (yalnız `m83` bloğunda; Shining Smite): isabet alan hedef büyü sürdükçe Invisible'dan yararlanamaz
+   * ("it can't benefit from the Invisible condition"): hedefe konsantrasyona bağlı `revealed` etkisi.
+   */
+  smiteReveal?: boolean;
   /** Mekanik matris B08 (yalnız `m83` bloğunda; Sacred Flame): hedefin DEX save'ine siper bonusu eklenmez. */
   ignoresCover?: boolean;
   /**

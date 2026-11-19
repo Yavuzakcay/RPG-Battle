@@ -2098,6 +2098,7 @@
     "concentration": true,
     "text": "bonus, yakın dövüş isabetinden sonra +2d6 radiant; konsantrasyon boyunca hedefe saldırılar avantajlı",
     "mechanics": {
+      "m83": {"smiteReveal": true},
       "kind": "smite",
       "damage": "2d6",
       "damageType": "radiant",

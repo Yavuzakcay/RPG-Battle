@@ -1680,6 +1680,13 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
       ...(o.escape ? { escapeCheck: { dc: actor.spellSaveDc ?? 10, allyHelp: true } } : {}),
     } });
   }
+  // Mekanik matris B18 (sürüm 83, `m83` `smiteReveal`): Shining Smite "Until the spell ends, the target sheds Bright Light …,
+  // attack rolls against it have Advantage, and it can't benefit from the Invisible condition." Görünmezlik yararı
+  // konsantrasyon süresince kalkar (Faerie Fire'daki `revealed`; ışık ve avantaj koruma kaydında, `wardsOn`).
+  if (spell.mechanics.smiteReveal && hit && hit.hp > 0) {
+    events.push({ type: 'effect_added', targetId: target.id, effect: { id: `${spell.srd}:revealed`, name: spell.name, sourceId: actor.id,
+      until: state.round + 9, ...(spell.concentration ? { concentration: spell.name } : {}), revealed: true } });
+  }
   // Kuyruk 19 (11–20): Smite of Protection (Devotion 15): Divine Smite'tan sonra Paladin ve aurasındaki dostlar sonraki
   // turunun başına dek yarım siperli.
   if (spell.id === 'divine-smite' && actor.traits?.includes('smite-of-protection') && globalRule(state, 'featuresK19')) {
