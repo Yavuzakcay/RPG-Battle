@@ -89,7 +89,7 @@ Gerekçe: iki test, çalışma anında hiç istenmeyen eski `maske/dragonborn-*`
 
 - **24 sınıf-genel maske** (`maske/dragonborn-<male|female>-<sınıf>.png`): kullanıcı 24 sınıf-genel Dragonborn jetonuna ve `src/ui/avatar.test.ts`'e dokunulmamasını istedi; maskeleri `data/soy-maske-rapor.json` içinde 120 sprite arasında ve `npm run soy-maske` ana döngüsü onları yazıyor (`handMask.test.ts` 120 sayısını sınıyor). Çözücü bunları da hiç istemiyor (§2); ayrı bir karar konusu.
 - **Diğer ırkların `maske/` dosyaları (1416), `maske-pul/` (266), `maske-el/`:** kapsam dışı, dokunulmadı.
-- **Yetim kalan ama silinmeyen (bu görevin kapsamı değildi), onayınızı bekliyor:**
+- **Yetim kalan ama silinmeyen (bu görevin kapsamı değildi), onayınızı bekliyor** (KJ3'te onay gelip işlendi; sonuç §7.1'de):
   - `scripts/soy-maske-dragonborn.ts`: çalıştırılırsa 264 dosyayı geri üretir (npm betiği yok); emekli edilebilir.
   - 8 eski inceleme betiği (§1.1).
   - `data/soy-maske-dragonborn-rapor.json` (artık hiçbir test/kod okumuyor), `data/soy-maske-alt-rapor.json` içindeki 264 bayat Dragonborn girdisi (`baglamaKq6.test.ts:53` toplamı `6 * 264 + 10` diye sabitliyor), `data/soy-renkleri.json` `lineagesAltMaske`/`maskAlt` ve `lineageTint(…, 'maske')` seçeneği: eski yedek yol artık dosyasız.
@@ -104,6 +104,38 @@ git checkout <silme-commit>^ -- public/characters/maske/dragonborn-erkek-fighter
 ```
 
 Ya da `npx vite-node scripts/soy-maske-dragonborn.ts [jeton…]` ile jetondan yeniden üretilir (eskisiyle aynı bayt çıkması garanti değil).
+
+## 7.1 Devam: yetimlerin temizlenmesi (Kuyruk KJ3, kullanıcı onayı 2026-11-19)
+
+§6'daki yetimler için onay geldi. Her dosya silinmeden önce içe aktaran/çağıran var mı denetlendi (`rg`, betik içe aktarmaları, CLAUDE.md/DECISIONS başvuruları, son değişiklik tarihi, canlı üreticiyle deneme). Sonuç:
+
+| Öğe | Sonuç | Neden |
+|---|---|---|
+| `scripts/soy-maske-dragonborn.ts` | **silindi** | eski üretici; çağıranı yok (`soy-maske.ts`'te yalnız açıklama satırı vardı) |
+| `data/soy-maske-dragonborn-rapor.json` | **silindi** | okuyan kalmadı (test KJ2'de pul maskesine bağlanmıştı) |
+| `scripts/_db-hepsi.ts`, `scripts/dragonborn-teshis.ts`, `scripts/dragonborn-renk-sayfa.ts` | **silindi** | Dragonborn'a özel, çağıranı yok, son değişiklik 2026-11-17; `tintPixels` `pul` boyamada 0 piksel değiştirdiği için çıktıları zaten etkisizdi |
+| `lineagesAltMaske` (`data/soy-renkleri.json`, 10 kayıt) ve `lineageTint(…, 'maske')` seçeneği | **silindi** | yalnız `races.dragonborn` içinde var (tabloda başka ırkta anahtar yok); çağıranlar silinen betik ve bir test iddiasıydı (kaldırıldı); `lineageTint` 4. parametresi artık `boolean` |
+| `scripts/dragonborn-desen.py`, `scripts/dragonborn-desen-maske.py` | **kaldı** | canlı pul üreticisinin içe aktardığı modüller: `dragonborn-pul-maske.py` → `dragonborn-desen-v2.py` → `dragonborn-desen.py` → `dragonborn-desen-maske.py`. Negatif kontrol: ikisi olmadan üretici `FileNotFoundError` verir |
+| `scripts/soy-benek-teshis.py` | **kaldı** | `scripts/soy-golge-teshis.py` içe aktarıyor (TG1); CLAUDE.md ve DECISIONS'ta TB1/TG1 aracı olarak belgeli; Tiefling/Goliath/Elf/Orc'a hizmet ediyor, yalnız `--irk dragonborn` dalı eski |
+| `scripts/cc-ten-denetim.py` | **kaldı** | Tiefling/Goliath/Orc/Dragonborn Gladyatör denetimi, bugün (CC kesim adım 2) eklendi; çok ırklı |
+| `scripts/baglama-teshis.py` | **kaldı** | bütün ırkların jeton bağlama teşhisi; bugün başka bir oturumca `formlar` için güncellendi, DECISIONS'ta 2 kez geçiyor |
+
+**Düzeltme:** §1.1'de bu 8 betiğin hepsini "tek seferlik/eski inceleme betiği" diye anmıştım; 5'i için yanlıştı (içe aktarılan modüller ve bugün güncellenen çok ırklı araçlar). Üç çok ırklı aracın (`soy-benek-teshis.py`, `cc-ten-denetim.py`, `baglama-teshis.py`) Dragonborn dalı artık `maske/` bulamıyor (maskesiz ırk gibi ya da ton sezgisiyle işler); `maske-pul/`'a bağlamak ya da silmek ayrı karar.
+
+**Doğrulama (çözücü ve üreticiler):**
+- `dragonborn-pul-maske.py`, silmeler uygulanmış güncel `scripts/*.py` kümesiyle kum havuzunda (depo dışı) çalıştı: 266 `maske-pul/*.png` depodakilerle **bayt bayt aynı**, `data/dragonborn-pul.json` ve `DRAGONBORN-PUL-KAPI.md` aynı. (KJ2'deki iki Cleric ID9 farkı o arada başka oturumca yeniden üretilip işlendi.)
+- `npm run soy-maske` ve `npm run soy-maske -- --alt`: geçici `git worktree`'de (depo dışı, HEAD `08578ec`) çalıştırıldı. `package.json` zinciri tek komut (`vite-node scripts/soy-maske.ts`); Dragonborn betiğini hiç çağırmıyor, `--alt` döngüsü Dragonborn'u zaten atlıyor. Sonuç: `maske/` altında Dragonborn **hücreli** dosya üretilmedi (0); 24 sınıf-genel Dragonborn maskesi önceki baytlarla aynı yeniden yazıldı; diğer ırkların maskeleri değişmedi. Silmeler ve düzenlemeler uygulanıp iki komut yeniden koşulunca çıktı bir öncekiyle **özdeş** (1710 dosya, 0 fark): Dark Elf ve diğer ırklar etkilenmiyor.
+- Yan bulgular (Dragonborn ile ilgisiz, bu görevde dokunulmadı): (a) koşuda sekiz `*-cleric-ID9` maskesi depodakinden farklı çıktı (jeton görselleri Cleric ID9 halka işinde sonradan değişti; depodaki maskeler eski görselden); (b) `npm run soy-maske` `data/soy-maske-rapor.json`'u 120 yerine 144 sprite ile yazıyor (Human eklenir; depodaki dosya 2026-11-09'dan kalma), `src/ui/handMask.test.ts:34` 120 bekliyor: depoda `npm run soy-maske` çalıştırılırsa o test önce güncellenmeli.
+
+| Adım | Sonuç |
+|---|---|
+| `npm run typecheck` | temiz |
+| tint/bağlama/avatar/soy-maske testleri (`rg` ile bulunan 20 dosya, `scriptsWindows` dahil) | 20/20 geçti, 184 test |
+| `src/ui src/data src/screens src/app src/content src/rules` (tamamı) | 155 dosya geçti, 1 atlandı; 1223 test geçti, 4 atlandı |
+| `npm run build` | tamam; ana parça 448,07 kB / sınır 500 kB |
+| `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`) | çalışıyor (bu belge yazılırken bitmemişti) |
+
+Hâlâ karar bekleyenler: üç çok ırklı aracın Dragonborn dalı (maske-pul'a bağlama ya da silme), v1 modüllerinin (`dragonborn-desen*.py`) v2'ye taşınıp silinmesi (üretici bağımlılığı, ayrı refaktör), Dragonborn'un ölü `maskAlt` kaydı (`soy-renkleri.json`; onaylı listede yoktu).
 
 ## 8. Silinen dosyalar (264)
 

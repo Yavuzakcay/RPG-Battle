@@ -9,6 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Dragonborn eski maske yetimleri temizlendi (2026-11-19, kullanıcı onayı; yalnız betik/veri temizliği, kural ve kayıt sürümü değişmedi)
+
+- Kullanıcı onayı: 264 maske silme işinin yetimleri silinsin. Silinen: `scripts/soy-maske-dragonborn.ts` (eski üretici), `data/soy-maske-dragonborn-rapor.json`, `scripts/_db-hepsi.ts`, `scripts/dragonborn-teshis.ts`, `scripts/dragonborn-renk-sayfa.ts` (Dragonborn'a özel, çağıranı yok, pul v2'den beri etkisiz). Ayrıca yalnız Dragonborn'da olan `lineagesAltMaske` tablosu ve `lineageTint(…, 'maske')` seçeneği kaldırıldı (başka ırkta anahtar yok, çağıran kalmadı); `lineageTint` 4. parametresi artık `boolean`. Dragonborn yalnız pul hattında: `scripts/dragonborn-pul-maske.py` → `maske-pul/`.
+- `npm run soy-maske` zinciri Dragonborn betiğini ya da raporunu hiç çağırmıyordu (`--alt` döngüsü zaten Dragonborn'u atlıyor); yalnız iki bayat açıklama güncellendi. Geçici worktree'de `npm run soy-maske` ve `-- --alt` silme/düzenleme öncesi ve sonrası bayt bayt aynı çıktı verdi (Dragonborn hücreli maske 0, 24 sınıf-genel aynı, diğer ırklar ve Dark Elf değişmedi).
+- Kalan 5 "eski inceleme betiği" silinmedi, çünkü yetim değil: `dragonborn-desen.py` ve `dragonborn-desen-maske.py` canlı pul üreticisinin içe aktardığı modüller (onlarsız `dragonborn-pul-maske.py` FileNotFoundError verir; mevcut kümeyle 266 maske bayt bayt aynı üretiliyor); `soy-benek-teshis.py` `soy-golge-teshis.py` tarafından içe aktarılıyor ve CLAUDE.md'de belgeli (TB1/TG1, Tiefling/Goliath/Elf/Orc); `cc-ten-denetim.py` (Tiefling/Goliath/Orc/Dragonborn) ve `baglama-teshis.py` (bütün ırklar) bugün başka oturumlarca eklenmiş/güncellenmiş çok ırklı araçlar. Hepsinin Dragonborn dalı artık maskesiz görür; karar bekliyor (maske-pul'a bağlamak ya da silmek).
+- Dokunulmadı: 24 sınıf-genel Dragonborn maskesi ve jetonu, `avatar.test.ts`, diğer ırkların `maske/` dosyaları, `maske-pul/`. Dragonborn'un ölü `maskAlt` kaydı (`soy-renkleri.json`) onaylı listede olmadığı için kaldı.
+
 ## Eski Dragonborn ten maskeleri silindi: 264 dosya (2026-11-19, kullanıcı kararı; yalnız görünüm/veri, kural ve kayıt sürümü değişmedi)
 
 - Kullanıcı kararı: oyunda görünmeyecek dosyalar tutulmaz. `public/characters/maske/dragonborn-<erkek|kadin>-<sınıf>-<hücre>.png` (264, ≈236 kB) tek tek `git rm` ile silindi. Dragonborn beyaz taban jetonları `pul` boyamayla `maske-pul/` kullanıyor; eski `maske/` yedek yolunu (`lineageTint(…, 'maske')`, `lineagesAltMaske`) uygulama kodu çağırmıyordu.
