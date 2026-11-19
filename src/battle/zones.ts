@@ -77,7 +77,7 @@ const inZone = (state: BattleState, z: SpellZone, at: Offset | null, anchorAt?: 
   !!at && zoneHexes(state, z, anchorAt).some((h) => sameHex(h, at));
 
 /** Kuyruk 43: yaratığın `at` çapasındaki gövdesinin herhangi bir altıgeni alanda mı (tek altıgenlide `inZone`). */
-const bodyInZone = (state: BattleState, z: SpellZone, c: Combatant, at: Offset | null, anchorAt?: Offset | null): boolean =>
+export const bodyInZone = (state: BattleState, z: SpellZone, c: Combatant, at: Offset | null, anchorAt?: Offset | null): boolean =>
   !!at && bodyAt(state, c, at).some((h) => inZone(state, z, h, anchorAt))
   // Kuyruk S2 (sürüm 41): irtifası alanın tepesinin üstündeki yaratık alanda değil (silindir `heightFt`, yer alanı 0).
   && altitudeInZone(state, z, zoneSpecOf(z), c);
@@ -91,7 +91,7 @@ export function zonesAt(state: BattleState, at: Offset | null): SpellZone[] {
 }
 
 /** Alan bu yaratığı etkiler mi: ayakta, dokunulabilir, uçan değil (zemin), düşman koşulu, büyücü hariç koşulu. */
-function affects(state: BattleState, z: SpellZone, spec: ZoneSpec, c: Combatant): boolean {
+export function affects(state: BattleState, z: SpellZone, spec: ZoneSpec, c: Combatant): boolean {
   if (isWebZone(z) && c.effects?.some((e) => e.webWalker)) return false;
   if (!isTargetable(c) || c.hp <= 0 || isIntangible(c) || c.id === z.anchorId) return false;
   // Kuyruk U1a (sürüm 61+): süzülen (`hover`) zemin alanlarından etkilenir (lav, derin su, zemin alanı listesi).
@@ -235,8 +235,17 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
         ...(matrisOn(state) ? { skip: { round: state.round, turnIndex: state.turnIndex } } : {}) } } : {}),
     } });
   }
+  // Control Water girdabı (sürüm 84, `whirl`): başarısız save'de yakalanır (hız 0); kurtulma eylemle STR (Athletics) `escape`.
+  // Başarılı save yakalanmış olanı bırakmaz (yalnız yeniden yakalanmaz); etki konsantrasyonla ve alandan çıkınca biter (`girdap.ts`).
+  if (failed && spec.whirl && fx.hpAfter > 0 && !victim.effects?.some((e) => e.id === whirlEffectId(z))) {
+    events.push({ type: 'effect_added', targetId: victim.id, effect: { id: whirlEffectId(z), name: z.name, sourceId: z.casterId, speedZero: true,
+      escapeCheck: { dc: z.dc }, icon: spec.icon ?? '🌀', ...(z.concentration ? { concentration: z.concentration } : {}), ...(z.until !== undefined ? { until: z.until } : {}) } });
+  }
   return events;
 }
+
+/** Control Water girdabının yakalama etkisinin kimliği (alan başına). */
+export const whirlEffectId = (z: Pick<SpellZone, 'id'>): string => `girdap:${z.id}`;
 
 /** Olay üreticilerini sırayla uygular (her biri öncekinin sonucunu görür). */
 function chain(state: BattleState, makers: Array<(s: BattleState) => BattleEvent[]>): BattleEvent[] {
@@ -279,13 +288,24 @@ export function zoneStepEvents(state: BattleState, moverId: string, from: Offset
   return chain(state, makers);
 }
 
+/** Tur başı çekme kancaları (döngüsel içe aktarma olmasın diye kayıtla; Control Water girdabı `girdap.ts`). */
+type StartPull = (state: BattleState, c: Combatant, rng: Rng) => BattleEvent[];
+const START_PULL: StartPull[] = [];
+export const registerZoneStartPull = (h: StartPull): void => { START_PULL.push(h); };
+
 /** Tur başı ya da sonu: yaratığın bulunduğu alanların `start`/`end` tetiği. */
 export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 'end', rng: Rng): BattleEvent[] {
   const c0 = state.combatants[id];
   if (!c0?.pos || !state.map?.zones?.length) return [];
   // Kuyruk 19: girdap (Control Water): tur başında sudakiler merkeze çekilir; uzaklaşmak için Athletics (`escape`).
-  const pulled = phase === 'start' ? vortexPullEvents(state, c0) : [];
+  let pulled = phase === 'start' ? vortexPullEvents(state, c0) : [];
   if (pulled.length) state = applyEvents(state, pulled);
+  // Control Water girdabı (sürüm 84; `girdap.ts` kaydeder): alanın dışında, bandın içindeki yaratık merkeze çekilir (girişte tetik).
+  if (phase === 'start') for (const h of START_PULL) {
+    const me = state.combatants[id];
+    const evs = me ? h(state, me, rng) : [];
+    if (evs.length) { pulled = [...pulled, ...evs]; state = applyEvents(state, evs); }
+  }
   const c = state.combatants[id] as Combatant;
   if (!c.pos || !state.map) return pulled;
   const k19 = globalRule(state, 'spellsK19');
