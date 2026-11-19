@@ -9,6 +9,17 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Kuyruk A İş 1: ana parça artışı denetimi (2026-11-20; salt okunur)
+
+- 448,8 → 459,5 kB artışın (+10,6 kB; UTF-8 kodda +11 947 bayt) %82'si Dragonborn kanadından (KW1). En büyük kalem `data/dragonborn-kanat-kok.json` (9,7 kB); `Avatar.tsx` statik içe aktardığı için ana parçada.
+- Dungeondex giriş noktası ≈ 1,3 kB, WS87 metinleri 0,2 kB.
+- Girdap, D1/D2, `srd-duzeltme.json`, `strings.tr2`/`strings.en`, Dungeondex kataloğu ana parçada değil.
+- Öneriler (uygulanmadı):
+  - kanat kökü ve palet verisini tembel yüklemek (≈ 12,5 kB);
+  - kanat çizimini tembel bileşene almak (≈ 4–5 kB);
+  - `efekt-baglama.json`'u ana parçadan çıkarmak (≈ 18 kB).
+- Ayrıntı `harita/belgeler/BUNDLE-ARTIS.md`.
+
 ## Dragonborn kanadı: beyaz pençe ve uç kemikleri + pembe karışımlı zar: Kuyruk KW2/KW3 (2026-11-19, kullanıcı istekleri; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 ## Dungeondex Sınıflar kategorisi (Görev DX-S, 2026-11-20; yalnız arayüz ve açıklama verisi, kural ve kayıt sürümü değişmedi)
 
