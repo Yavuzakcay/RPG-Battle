@@ -9,6 +9,11 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Cleric hücre 3 etiketi: Barış → Birlik Manastırı (yalnız ad; kural ve kayıt sürümü değişmedi)
+
+- Kullanıcı: Barış Alanı zaten Birlik Manastırı. `data/jeton-hucre-sirasi.json` cleric hücre 3 etiketi "Barış" idi; "Birlik Manastırı (eski Barış Alanı çizimi; bağlı jeton ID9)" oldu. Görünen ad dönüşümü (`alt-sinif-gorunum.json` `istisnalar`, `eskiKimlik baris-alani → imza_birlik`) zaten vardı, değişmedi; paket listesindeki `baris-alani | Barış Alanı` satırı paketin kendi adı olduğu için kaldı.
+- Jeton bağı değişmedi: Birlik Manastırı (`imza_birlik`, `baris-alani`) ID9 (çaydanlıklı keşiş) jetonunu kullanır; ID3 (güvercinli beyaz cüppe) 20 jetonu dosyada, bağlanmamış alternatif çizim. Dosya adları değişmedi (kimlik kuralı).
+
 ## CC toplu kesim ve yerleştirme (2026-11-19; yalnız görsel/veri, kural ve kayıt sürümü değişmedi)
 
 - **Kaynak:** `wip/karakter-ham` `assets-ham/eksikler/` (b345279d); yerelde `assets-ham/karakter/`, eski aynı adlı 15 ham sayfa `_eski/`. Dala dokunulmadı. Betik `scripts/cc-kesim.py` (taban, yeni, duzeltme, diger), rapor `docs/sabah/cc-kesim/RAPOR.md`.
