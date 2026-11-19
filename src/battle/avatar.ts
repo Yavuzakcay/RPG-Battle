@@ -151,11 +151,11 @@ export function subclassTokenFile(classId: string, raceId: string, gender: 'erke
 }
 /**
  * Gariban (Kuyruk KQ6): alt sınıfı henüz olmayan (seviye < 3) karakterin jetonu `<ırk>-<erkek|kadin>-<sınıf>-GR.webp`. Her ırk×cinsiyet×sınıf için
- * var (Celestial hariç: hale işi ayrı; sınıf-genel jeton kalır); ırk tablosunda (`irklar`) yoksa ya da sınıfın tablosu yoksa undefined.
+ * var (Celestial dahil: hale işi bitti, Celestial GR jetonları halesiz; taç `haloCrown` ile); ırk tablosunda (`irklar`) yoksa ya da sınıfın tablosu yoksa undefined.
  */
 export function garibanTokenFile(classId: string, raceId: string, gender: 'erkek' | 'kadin', level?: number): string | undefined {
   const T = SUB_TOKENS[classId];
-  if (!T || raceId === 'celestial' || (level ?? 1) >= 3 || !T.irklar[raceId]?.includes(gender)) return undefined;
+  if (!T || (level ?? 1) >= 3 || !T.irklar[raceId]?.includes(gender)) return undefined;
   return `${raceId}-${gender}-${classId}-GR.webp`;
 }
 /** Eski ad (WZ-BAGLA testleri). */

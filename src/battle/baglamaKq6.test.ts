@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { blankCharacter } from '../rules/builder';
 import { garibanTokenFile, lineageTint, sheetAvatar, subclassTokenFile } from './avatar';
+import { crownSpec } from '../ui/haloCrown';
 import { naturalLeft } from '../ui/tokenMirror';
 import { maskedTint, maskUrlFor, scaleTinted, tintPixels } from '../ui/tint';
 import { scaleLineages, scaleMaskless, scalePixels } from '../ui/scaleTint';
@@ -22,9 +23,17 @@ describe('KQ6 bağlama', () => {
     expect(a.src).toBe('characters/dragonborn-kadin-rogue-ID1.webp');
     expect(FILES.has('dragonborn-kadin-rogue-ID1')).toBe(true);
   });
-  it('Gariban: seviye < 3 GR jetonu (Celestial hariç); seviye 3+ alt sınıfsız genel jeton', () => {
+  it('Gariban: seviye < 3 GR jetonu (Celestial dahil); seviye 3+ alt sınıfsız genel jeton', () => {
     expect(garibanTokenFile('fighter', 'elf', 'kadin', 2)).toBe('elf-kadin-fighter-GR.webp');
-    expect(garibanTokenFile('fighter', 'celestial', 'kadin', 1)).toBeUndefined();
+    // 2026-11-19: Celestial GR bağlandı (hale işi bitti; 24 jeton halesiz, taç konumu hale-konum.json `-gr` grubundan).
+    expect(garibanTokenFile('fighter', 'celestial', 'kadin', 1)).toBe('celestial-kadin-fighter-GR.webp');
+    for (const c of ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'])
+      for (const g of ['erkek', 'kadin'] as const) {
+        const f = garibanTokenFile(c, 'celestial', g, 1)!;
+        expect(FILES.has(f.replace('.webp', '')), f).toBe(true);
+        expect(sheetAvatar(sheet({ raceId: 'celestial', classId: c, gender: g, level: 2 })).src).toBe(`characters/${f}`);
+        expect(crownSpec(`characters/${f}`, { raceId: 'celestial', level: 1 } as never), f).not.toBeNull();
+      }
     expect(garibanTokenFile('fighter', 'elf', 'kadin', 3)).toBeUndefined();
     expect(sheetAvatar(sheet({ raceId: 'dragonborn', classId: 'monk', gender: 'erkek', level: 1 })).src).toBe('characters/dragonborn-erkek-monk-GR.webp');
     expect(sheetAvatar(sheet({ raceId: 'dragonborn', classId: 'monk', gender: 'erkek', level: 3 })).src).toBe('characters/dragonborn-erkek-monk-GR.webp'); // Dragonborn: eski insansı genel jeton yerine beyaz taban
