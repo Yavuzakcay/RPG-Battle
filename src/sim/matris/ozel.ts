@@ -40,6 +40,8 @@ export interface Ozel {
   buyucuEk?: Record<string, unknown>;
   /** Save yapılandırılmış olayla kaydedilmez (Telekinesis: günlük notu); yalnız durum karşılaştırılır. */
   saveGizli?: boolean;
+  /** Save `saveEffect` ile (`map_effect.roll`, d20 `kind` etiketsiz) atılır: kanca etiketsiz d20'yi save sayar (G02). */
+  saveEtiketsiz?: boolean;
   /** Komutta seçim (alan/çağrı büyüleri: element). */
   secim?: string;
   /** Siper bağlamı uygulanmaz (yer etkisi: Earthquake). */
@@ -74,7 +76,8 @@ export const OZEL: Record<string, Ozel> = {
   'wall-of-thorns': { yapim: { tur: 'save', save: 'dex', dmg: [p('7d8', 'piercing')], half: true }, tetik: { olay: 'end', save: 'dex', dmg: [p('7d8', 'slashing')], half: true } },
   'wind-wall': { yapim: { tur: 'save', save: 'str', dmg: [p('4d8', 'bludgeoning')], half: true } },
   'blade-barrier': { yapim: { tur: 'save', save: 'dex', dmg: [p('6d10', 'force')], half: true }, tetik: { olay: 'end', save: 'dex', dmg: [p('6d10', 'force')], half: true } },
-  'wall-of-ice': { yapim: { tur: 'save', save: 'dex', dmg: [p('10d6', 'cold')], half: true }, not: 'SRD: duvarın kestiği yaratık bir yana itilir ve save atar.' },
+  'wall-of-ice': { yapim: { tur: 'save', save: 'dex', dmg: [p('10d6', 'cold')], half: true }, saveEtiketsiz: true, not: 'SRD: duvarın kestiği yaratık bir yana itilir ve save atar.' },
+  'prismatic-spray': { saveEtiketsiz: true },
   'storm-of-vengeance': { yapim: { tur: 'save', save: 'con', dmg: [p('2d6', 'thunder')], conds: ['Deafened'] } },
   earthquake: { siperYok: true, yapim: { tur: 'save', save: 'dex', conds: ['Prone'] }, not: 'SRD: başarısız save Prone ve konsantrasyon bozulur (hasar yok).' },
   'black-tentacles': { yapim: { tur: 'save', save: 'str', dmg: [p('3d6', 'bludgeoning')], conds: ['Restrained'] }, tetik: { olay: 'end', save: 'str', dmg: [p('3d6', 'bludgeoning')], conds: ['Restrained'] } },

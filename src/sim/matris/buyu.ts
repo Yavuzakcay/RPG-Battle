@@ -156,7 +156,7 @@ export function runCtx(sp: Spell, s: SrdSpell, geo: Geo, c: Ctx, cmdBase: Partia
   const state0 = scene(parts0, c.tiles ?? flatTiles());
   const state = c.prep ? c.prep(state0) : state0;
   const cmd = c.main ?? ({ type: 'cast_spell', actorId: 'A', spellName: sp.name, ...cmdBase, ...c.cmd } as Command);
-  const g = run(state, [cmd, ...(c.post ?? [])], c.main ? ctxOf(state, (c.main as { actorId: string }).actorId) : P1, plan(c.p));
+  const g = run(state, [cmd, ...(c.post ?? [])], c.main ? ctxOf(state, (c.main as { actorId: string }).actorId) : P1, plan({ ...c.p, ...(OZEL[s.id]?.saveEtiketsiz ? { untaggedSave: true } : {}) }));
   const base: Omit<Satir, 'beklenen' | 'gercek' | 'sonuc' | 'not'> = {
     tur: 'büyü', ad: sp.name, seviye: String(sp.level), siniflar: s.raw.classes.map((x) => CLASS_TR[x] ?? x).join(', '), mekanik: mech, baglam: c.ad, kategori: c.kategori,
   };

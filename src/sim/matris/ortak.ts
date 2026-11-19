@@ -134,6 +134,11 @@ export function run(state: BattleState, cmd: Command | Command[], ctx: CommandCo
     } else if (e.type === 'save_resolved') {
       g.saveler.push({ hedef: e.targetId, yetenek: e.ability, dc: e.dc, kip: rolledMode(e.targetId, e.d20, e.mode), dogal: e.natural, basari: e.success, ham: e.rawDamage, uygulanan: e.appliedDamage,
         tur: e.damageType, ...(e.secondary ? { ikincil: { tur: e.secondary.type, uygulanan: e.secondary.applied } } : {}), ...(e.cover ? { siper: e.cover } : {}), durumlar: e.conditionsAdded });
+    } else if (e.type === 'map_effect' && e.roll && /save$/i.test(e.roll.label)) {
+      // Harita/özel save yolu (`maprules.ts` `saveEffect`: Wall of Ice kesmesi, Prismatic Spray ışınları, Reverse Gravity…):
+      // save `save_resolved` yerine `map_effect.roll` ile yazılır (ölçüm düzeltmesi; eskiden save hiç görülmüyordu).
+      g.saveler.push({ hedef: e.targetId, yetenek: e.roll.label.slice(0, 3).toLowerCase(), dc: e.roll.dc, kip: e.roll.mode, dogal: e.roll.natural, basari: e.roll.success,
+        ham: e.damage?.raw ?? 0, uygulanan: e.damage?.applied ?? 0, tur: e.damage?.type ?? '', durumlar: e.addCondition ? [e.addCondition] : [] });
     } else if (e.type === 'slot_spent') {
       if (e.actorId === cmd0.actorId) g.slot.push(e.level);
       (g.slotBy[e.actorId] ??= []).push(e.level);
