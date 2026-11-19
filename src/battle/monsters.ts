@@ -58,7 +58,7 @@ export function monsterAttackEvents(
   if (possWhy) return fail(`${atk.name}: ${possWhy}`);
   // Kuyruk 19 (srdK19): Rust Monster Antennae: metal silah aşınması (DEX save; `reactions.ts` `corrodeEvents`).
   if (globalRule(state, 'srdK19') && actor.monsterId === 'rust-monster' && atk.name === 'Antennae') {
-    return { ok: true, events: corrodeEvents(actor, target, atk.save?.dc ?? 11, rng) };
+    return { ok: true, events: corrodeEvents(actor, target, atk.save?.dc ?? 11, rng, state) };
   }
   // Kuyruk 19 (srdK19): Redirect Attack canavar saldırı zarlarında da (yer değiştiren dosta gider).
   if (!atk.save && !opportunity) {

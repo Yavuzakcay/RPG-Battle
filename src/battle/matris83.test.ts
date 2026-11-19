@@ -704,3 +704,34 @@ describe('B22: Arcane Hand yumruğu büyücünün Frightened/Charmed durumuna ba
     expect(r.error).toMatch(/büyülenmiş \(Charmed\)/);
   });
 });
+
+describe('B23: Rust Monster Antennae yalnız büyüsüz metal silah/zırha (SRD "The rust monster targets one nonmagical metal object—armor or a weapon—worn or carried by a creature within 5 feet of itself. … Failure: The object takes a −1 penalty to the AC it offers (armor) or to its attack rolls (weapon).")', () => {
+  const ant = (v: number, x: Partial<Combatant>) => {
+    const s = scene(v, [mk('R', { side: 'enemies', hp: 30, maxHp: 30, pos: { col: 4, row: 5 } }), mk('P', { ownerId: 'p1', hp: 40, maxHp: 40, ac: 16, pos: { col: 5, row: 5 }, ...x })]);
+    const r0 = s.combatants.R as Combatant;
+    const R = { ...r0, monsterId: 'rust-monster', attacks: [{ name: 'Antennae', save: { ability: 'dex', dc: 11 }, damage: 'The rust monster targets one nonmagical metal object' }] } as unknown as Combatant;
+    const st = { ...s, combatants: { ...s.combatants, R }, order: ['R', 'P'], turnIndex: 0 };
+    const x2 = execute(st, { type: 'monster_attack', actorId: 'R', targetId: 'P', attackIndex: 0 } as Command, GM, hooked({ one: 2, two: [2, 2] }));
+    return x2;
+  };
+  const saves = (x: ReturnType<typeof ant>) => (x.ok ? x.events.filter((e) => e.type === 'map_effect' && e.roll).length : -1);
+  it('metal taşımayan hedef: 83 save yok, 82 save', () => {
+    const r83 = ant(83, {});
+    expect(r83.ok, r83.ok ? '' : r83.error).toBe(true);
+    expect(saves(r83)).toBe(0);
+    expect(saves(ant(82, {}))).toBe(1);
+  });
+  it('83: yalnız metal zırh giyen hedefte başarısız save AC −1', () => {
+    const r = ant(83, { metalArmor: true } as Partial<Combatant>);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(saves(r)).toBe(1);
+    expect(r.state.combatants.P?.effects?.find((e) => e.id === 'corrode-ac:P')?.ac).toBe(-1);
+  });
+  it('83: metal silah tutan hedefte başarısız save saldırıya −1', () => {
+    const r = ant(83, { weaponOptions: [{ ...sword, weaponId: 'longsword' }] } as Partial<Combatant>);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.state.combatants.P?.effects?.find((e) => e.id === 'corrode:P')?.dice?.sign).toBe(-1);
+  });
+});
