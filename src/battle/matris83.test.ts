@@ -422,3 +422,19 @@ describe('B13: Holy Aura büyücüden 30 ft dost yayılımı (SRD "you emit an a
     expect(saveMode('normal', r.state.combatants.B as Combatant, 'wis')).toBe('normal');
   });
 });
+
+describe('B14: Weird yalnız seçilen yaratıkları etkiler (SRD "Each creature of your choice in a 30-foot-radius Sphere centered on a point within range makes a Wisdom saving throw")', () => {
+  const parts = (): Combatant[] => [caster({ level: 17, spellNames: ['Weird'], spellSlots: [4, 3, 3, 3, 3, 2, 2, 1, 1] }),
+    mk('B', { ownerId: 'p1', hp: 50, maxHp: 50, pos: { col: 7, row: 6 } }), foe('T', { pos: { col: 8, row: 5 } })];
+  const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Weird', slotLevel: 9, targetHex: { col: 8, row: 5 } } as Command;
+  for (const [v, ally] of [[83, false], [82, true]] as const) {
+    it(`${v}: alandaki dost ${ally ? 'etkilenir (eski davranış)' : 'etkilenmez'}, düşman etkilenir`, () => {
+      const r = run(scene(v, parts()), cmd, hooked({ one: 2, two: [2, 2] }));
+      expect(r.ok, r.error).toBe(true);
+      expect(!!saveOf(r.events, 'T')).toBe(true);
+      expect(!!saveOf(r.events, 'B')).toBe(ally);
+      expect((r.state.combatants.B?.hp ?? 0) < 50).toBe(ally);
+      expect(r.state.combatants.T?.hp).toBeLessThan(100);
+    });
+  }
+});

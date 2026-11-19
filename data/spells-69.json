@@ -2631,6 +2631,7 @@
   "text": "120 ft içinde 30 ft yarıçaplı kürede seçilen yaratıklar WIS save: başarısızsa 10d10 psişik ve Frightened, tur sonlarında yeniden save (başarısızsa 5d10 psişik); başarılıysa yarı hasar (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+   "m83": {"areaTargets": "enemies"},
    "kind": "save",
    "save": "wis",
    "damage": "10d10",

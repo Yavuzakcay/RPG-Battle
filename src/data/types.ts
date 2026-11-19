@@ -355,6 +355,11 @@ export interface SpellMechanics {
   mb7?: Partial<SpellMechanics>;
   /** Mekanik matris düzeltmeleri (kural sürümü 83+; harita/belgeler/MEKANIK-MATRIS.md): bloktaki alanlar üstüne yazılır. */
   m83?: Partial<SpellMechanics>;
+  /**
+   * Mekanik matris B14 (yalnız `m83` bloğunda; Weird): alan yalnız düşmanları etkiler ("Each creature of your choice in a
+   * 30-foot-radius Sphere"); büyünün `area.targets` alanını ezer.
+   */
+  areaTargets?: 'enemies';
   /** Mekanik matris B08 (yalnız `m83` bloğunda; Sacred Flame): hedefin DEX save'ine siper bonusu eklenmez. */
   ignoresCover?: boolean;
   /**

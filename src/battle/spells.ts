@@ -169,8 +169,9 @@ function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe:
  * siper eklenir. Hasar bütün hedefler için bir kez atılır (SRD 5.2.1 save'li etkiler).
  */
 function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false, label?: string): CommandResult {
-  const area = spell.area;
   const m = spell.mechanics;
+  // Mekanik matris B14 (sürüm 83, `m83` `areaTargets`; Weird "Each creature of your choice"): alan yalnız düşmanlara.
+  const area = m.areaTargets && spell.area ? { ...spell.area, targets: m.areaTargets } : spell.area;
   if (!area || !state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
