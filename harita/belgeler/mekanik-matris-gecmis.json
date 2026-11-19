@@ -170,10 +170,10 @@
  {
   "etiket": "Karşılaştırma: sürüm 82, son kahinle",
   "surum": 82,
-  "satir": 6587,
+  "satir": 6589,
   "sonuc": {
    "doğru": 6340,
-   "yanlış": 245,
+   "yanlış": 247,
    "çökme": 0,
    "uygulanmıyor": 2,
    "karar bekliyor": 0
@@ -192,6 +192,7 @@
    "B16": 2,
    "B19": 3,
    "B15": 1,
+   "B21": 2,
    "B20": 5,
    "B22": 2,
    "K04": 2,
@@ -221,6 +222,21 @@
    "B22": 2,
    "U02": 1,
    "B23": 1
+  }
+ },
+ {
+  "etiket": "Son ölçüm (B21, B22, B23, G02)",
+  "surum": 83,
+  "satir": 6589,
+  "sonuc": {
+   "doğru": 6588,
+   "yanlış": 0,
+   "çökme": 0,
+   "uygulanmıyor": 1,
+   "karar bekliyor": 0
+  },
+  "bulgu": {
+   "U02": 1
   }
  }
 ]
