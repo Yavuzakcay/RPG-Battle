@@ -3,6 +3,7 @@
 - public/characters/maske-pul/<jeton>.png: ikili maske (255 = boyanır), scripts/dragonborn-desen-v2.py `mask_of` ile aynı yöntem
   (ten tonu jetonun kendi başından, kapama, küçük bileşen atma, kapalı delik doldurma, yoldaş başı çıkarma; boynuz/kontur/göz hariç).
   Maske üretilemeyen ya da boş çıkan jetonun dosyası yazılmaz (o jeton boyanmaz, beyaz kalır).
+  Jeton başına elle düzeltme data/dragonborn-pul-duzeltme.json (`yalniz`/`haric`/`beyazKutu` alanları, `bos`); diğer jetonlar aynen.
 - data/dragonborn-pul.json: pul karosu (16×16 ton dizisi, v1 geometrisi, pul 8 px), L* modülasyonu, 10 soy renk tablosu
   (scripts/dragonborn-desen-renk.py; Kırmızı açık ton #E86343), maskesiz jeton listesi ve nedeni.
 Boyama oyunda: src/ui/scaleTint.ts (tembel parça)."""
@@ -16,16 +17,25 @@ def _mod(n):
 v2 = _mod('dragonborn-desen-v2'); renk = v2.renk; v1 = v2.v1
 OUT = os.path.join(ROOT, 'public/characters/maske-pul')
 DATA = os.path.join(ROOT, 'data/dragonborn-pul.json')
+DUZELTME = os.path.join(ROOT, 'data/dragonborn-pul-duzeltme.json')
 ASGARI_PX = 30
 
 if __name__ == '__main__':
     sys.stdout.reconfigure(encoding='utf-8')
     os.makedirs(OUT, exist_ok=True)
     names = v2.all_tokens(); bos = {}; boya = {}
+    duz = json.load(open(DUZELTME, encoding='utf-8'))['jetonlar']
+    bilinmeyen = set(duz) - {f'dragonborn-{n}' for n in names}
+    if bilinmeyen: raise SystemExit(f'düzeltmede bilinmeyen jeton: {sorted(bilinmeyen)}')
     for n in names:
-        rgba = np.array(Image.open(os.path.join(v2.CHAR, f'dragonborn-{n}.webp')).convert('RGBA'))
-        m, info = v2.mask_of(rgba)
         f = os.path.join(OUT, f'dragonborn-{n}.png')
+        ayar = duz.get(f'dragonborn-{n}')
+        if ayar and ayar.get('bos'):
+            bos[f'dragonborn-{n}'] = ayar['bos']
+            if os.path.exists(f): os.remove(f)
+            continue
+        rgba = np.array(Image.open(os.path.join(v2.CHAR, f'dragonborn-{n}.webp')).convert('RGBA'))
+        m, info = v2.mask_of(rgba, ayar)
         if m is None or int(m.sum()) < ASGARI_PX:
             bos[f'dragonborn-{n}'] = info.get('neden') or f'maske boş (< {ASGARI_PX} px)'
             if os.path.exists(f): os.remove(f)

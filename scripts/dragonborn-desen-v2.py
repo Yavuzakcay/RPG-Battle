@@ -88,7 +88,20 @@ def drop_companion(keep, rgba, L, C, y0, y1, head):
         dp = np.hypot(yy - pe[0], xx - pe[1]); out &= ~((dp < dh_) & (dp <= P['yoldasR']))
     return out, int(keep.sum() - out.sum())
 
-def mask_of(rgba):
+def _kutular(shape, kutular):
+    """Kutu [x0, y0, x1, y1] (uç hariç) ya da çokgen [[x, y], ...] listesi → ikili alan."""
+    m = np.zeros(shape, bool)
+    for k in kutular:
+        if isinstance(k[0], (list, tuple)):
+            im = Image.new('L', (shape[1], shape[0]), 0); ImageDraw.Draw(im).polygon([tuple(p) for p in k], fill=1); m |= np.array(im, bool)
+        else:
+            x0, y0, x1, y1 = k; m[y0:y1, x0:x1] = True
+    return m
+
+def mask_of(rgba, ayar=None):
+    """`ayar` (jeton başına düzeltme, data/dragonborn-pul-duzeltme.json): `P` eşik ezmesi, `beyazKutu` beyaz vurgu adayı yalnız bu
+    kutularda ([x0, y0, x1, y1], 256 px, uç hariç), `yalniz` sonuç yalnız bu kutularda, `haric` sonuçtan çıkarılan kutular. Yoksa davranış aynen."""
+    ayar = ayar or {}; P = {**globals()['P'], **ayar.get('P', {})}
     L = lab(rgba[..., :3].astype(float)); a, b = L[..., 1], L[..., 2]; C = np.hypot(a, b); h = (np.degrees(np.arctan2(b, a)) + 360) % 360
     op = rgba[..., 3] >= 128; ys, xs = np.nonzero(op); y0, y1, x0, x1 = ys.min(), ys.max(), xs.min(), xs.max()
     lav = op & (L[..., 0] > 55) & (a > 1) & (b < -1) & (h > 270) & (h < 345)
@@ -99,6 +112,7 @@ def mask_of(rgba):
     dh = np.abs((h - h0 + 180) % 360 - 180)
     skin = op & (L[..., 0] > P['konturL']) & (dh <= P['tonFark']) & (C >= c0 * P['cAlt']) & (C <= c0 * P['cUst'] + 3)
     white = op & (L[..., 0] > P['beyazL']) & (C < P['beyazC'])
+    if 'beyazKutu' in ayar: white &= _kutular(op.shape, ayar['beyazKutu'])
     cand = skin | white
     cand = ero(dil(cand)) & op                                    # 3×3 kapama
     keep = np.zeros_like(cand); dropped = 0
@@ -112,6 +126,8 @@ def mask_of(rgba):
     keep, yoldas = drop_companion(keep, rgba, L, C, y0, y1, s)
     warm = (b > 0) & ((C > P['sicakC']) | (L[..., 0] < P['sicakL']))   # göz, ağız (doygun sıcak), boynuz (sarımsı gri); dövme kenarındaki açık hale boyanır
     paint = keep & op & (L[..., 0] > P['konturL']) & ~warm & (C <= c0 * P['cUst'] + 6)
+    if 'yalniz' in ayar: paint &= _kutular(op.shape, ayar['yalniz'])
+    if 'haric' in ayar: paint &= ~_kutular(op.shape, ayar['haric'])
     return paint, {'tonH': round(h0, 1), 'tonC': round(c0, 1), 'tenL': round(l0, 1), 'boya': int(paint.sum()), 'atilan': int(dropped), 'yoldas': int(yoldas)}
 
 def paint(rgba, m, cols, soy, t):

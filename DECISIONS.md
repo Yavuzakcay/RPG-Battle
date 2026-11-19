@@ -21,6 +21,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Celestial Cleric sayfa 06 yenisi:** yalnız haleli hücreler (7, 9); halesiz-temiz 120 jeton kuralı gereği diğer 7 hücreye dokunulmadı.
 - **Ölçek kuralı:** tam sınıf sayfaları özgün hat ve sayfa ölçeği (Druid, Cleric, Human Fighter, Warlock); aynı kompozisyonlu yenilemeler (Bard, Sorcerer) eski jetona alt gövde hizalaması, olmazsa eski figür boyu; aurasız Barbarian ve Gladyatör kardeş jetonların ortanca boyu.
 - **Yan düzeltme:** `scripts/hale-konum.py` elle girilen `tac.katsayi` anahtarını siliyordu; artık korur.
+## Dragonborn pul maskesinde jeton başına elle düzeltme (2026-11-19)
+
+Kullanıcının bildirdiği 19 jetonda pul deseni kıyafet/zırh/eşyaya taşıyordu. Otomatik yöntem (ten tonu) beyaz/lavanta kıyafeti tenden ayıramadığı için
+düzeltme veride ve jeton başına: `data/dragonborn-pul-duzeltme.json` (`yalniz`: maske yalnız bu kutu/çokgenlerde; `haric`: çıkarılır; `beyazKutu`:
+beyaz vurgu adayı yalnız burada; `bos`: maskesiz). Diğer jetonlara dokunulmadı. Hayalet Warlock WL-10 (iki cinsiyet) tende yer olmadığından artık boyanmaz
+(maskesiz 15 → 17). Benzer sızıntılı başka jetonlar yalnız listelendi (`docs/sabah/dragonborn-desen-v2/duzeltme/README.md`). Yalnız görünüm; kural/kayıt sürümü değişmez.
+
 ## Dragonborn pul deseni v2 oyuna bağlandı (yalnız görünüm; kural ve kayıt sürümü değişmedi)
 
 - Kullanıcı kararı: v2 önizlemesi (6 jeton) onaylandı; 264 beyaz taban Dragonborn jetonunun hepsine uygulandı. Eski çarpma (`multiply`) filtresi bu jetonlarda kaldırıldı (siyah cübbe/pantolon renge kayıyordu); `data/soy-renkleri.json` `dragonborn.lineagesAlt.<soy>` artık `{ "pul": { "soy": "<soy>" } }`.

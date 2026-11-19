@@ -1,6 +1,6 @@
 {
  "jeton": 264,
- "boyanan": 249,
+ "boyanan": 247,
  "maskesiz": {
   "dragonborn-erkek-druid-ID4": "başta ten örneği yok",
   "dragonborn-erkek-monk-ID10": "maske boş (< 30 px)",
@@ -8,6 +8,7 @@
   "dragonborn-erkek-rogue-ID4": "başta ten örneği yok",
   "dragonborn-erkek-sorcerer-SC-3": "başta ten örneği yok",
   "dragonborn-erkek-sorcerer-SC-5": "başta ten örneği yok",
+  "dragonborn-erkek-warlock-WL-10": "hayalet gövde: ten yok (elle düzeltme)",
   "dragonborn-erkek-warlock-WL-4": "başta ten örneği yok",
   "dragonborn-kadin-cleric-ID6": "başta ten örneği yok",
   "dragonborn-kadin-druid-ID4": "başta ten örneği yok",
@@ -16,6 +17,7 @@
   "dragonborn-kadin-rogue-ID4": "başta ten örneği yok",
   "dragonborn-kadin-sorcerer-SC-3": "başta ten örneği yok",
   "dragonborn-kadin-sorcerer-SC-5": "başta ten örneği yok",
+  "dragonborn-kadin-warlock-WL-10": "hayalet gövde: ten yok (elle düzeltme)",
   "dragonborn-kadin-warlock-WL-8": "başta ten örneği yok"
  },
  "supheli": [
@@ -74,7 +76,8 @@
     "TD",
     "AB",
     "KP"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-erkek-cleric-ID5",
@@ -82,7 +85,8 @@
     "TD",
     "AB",
     "KP"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-erkek-cleric-ID6",
@@ -144,7 +148,8 @@
    "jeton": "dragonborn-erkek-monk-ID9",
    "kod": [
     "TD"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-erkek-paladin-ID2",
@@ -197,13 +202,15 @@
     "AB",
     "YO",
     "GI"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-erkek-rogue-ID3",
    "kod": [
     "TD"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-erkek-rogue-ID7",
@@ -222,7 +229,8 @@
    "kod": [
     "TD",
     "AB"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-erkek-warlock-WL-2",
@@ -246,7 +254,8 @@
    "jeton": "dragonborn-erkek-wizard-WZ-A1",
    "kod": [
     "TD"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-erkek-wizard-WZ-A3",
@@ -259,7 +268,8 @@
    "kod": [
     "TD",
     "AB"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-erkek-wizard-WZ-B5",
@@ -287,7 +297,8 @@
     "TD",
     "AB",
     "KP"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-barbarian-ID8",
@@ -323,13 +334,15 @@
    "jeton": "dragonborn-kadin-cleric-ID3",
    "kod": [
     "KP"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-cleric-ID5",
    "kod": [
     "TD"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-cleric-ID7",
@@ -369,7 +382,8 @@
    "jeton": "dragonborn-kadin-fighter-ID4",
    "kod": [
     "GI"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-fighter-ID7",
@@ -389,13 +403,15 @@
    "kod": [
     "TD",
     "AB"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-paladin-ID10",
    "kod": [
     "TD"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-paladin-ID2",
@@ -420,7 +436,8 @@
    "kod": [
     "AB",
     "YO"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-ranger-ID7",
@@ -432,7 +449,8 @@
    "jeton": "dragonborn-kadin-rogue-ID3",
    "kod": [
     "TD"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-sorcerer-SC-7",
@@ -451,7 +469,8 @@
    "kod": [
     "TD",
     "AB"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-warlock-WL-11",
@@ -481,7 +500,8 @@
    "jeton": "dragonborn-kadin-wizard-WZ-A1",
    "kod": [
     "TD"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-wizard-WZ-A3",
@@ -493,7 +513,8 @@
    "jeton": "dragonborn-kadin-wizard-WZ-A6",
    "kod": [
     "TD"
-   ]
+   ],
+   "duzeltildi": true
   },
   {
    "jeton": "dragonborn-kadin-wizard-WZ-B5",

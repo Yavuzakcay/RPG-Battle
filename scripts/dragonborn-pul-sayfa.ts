@@ -2,7 +2,8 @@
 // `npx vite-node scripts/dragonborn-pul-sayfa.ts`
 // Çıktı docs/sabah/dragonborn-desen-v2/tam/:
 //   sinif-<sınıf>.webp  satır = sınıfın jetonları (erkek + kadın), sütun = orijinal + 10 soy × (önce: eski çarpma filtresi | sonra: pul v2), 128 px
-//   supheli-NN.webp     şüpheli jetonlar (suphe.json kodları; hiçbiri dışlanmadı): orijinal | Kırmızı | Mavi | Beyaz, 256 px, kırmızı çerçeve
+//   supheli-NN.webp     şüpheli jetonlar (suphe.json kodları; hiçbiri dışlanmadı): orijinal | Kırmızı | Mavi | Beyaz, 256 px, kırmızı çerçeve;
+//                       data/dragonborn-pul-duzeltme.json'da elle düzeltilenler yeşil çerçeve + "düzeltildi" (kırmızı çerçeve yok)
 //   savas-64.webp       bütün jetonlar × 10 soy, 64 px (savaş boyutu)
 //   ozet.json           boyanan / maskesiz jeton sayısı
 import fs from 'node:fs';
@@ -20,6 +21,8 @@ const BG = { r: 44, g: 48, b: 58, alpha: 1 };
 const SINIF = ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'];
 const KOD: Record<string, string> = { TD: 'ten tonu dışı parça', AB: 'boyanmamış açık bölge', KP: 'küçük ayrık parçalar', YO: 'yoldaş çıkarıldı', GI: 'incelemede görülen sızıntı', MY: 'maske yok' };
 const GORULEN = new Set(['dragonborn-kadin-fighter-ID4', 'dragonborn-erkek-ranger-ID4']);
+const DUZ = JSON.parse(fs.readFileSync('data/dragonborn-pul-duzeltme.json', 'utf8')).jetonlar as Record<string, unknown>;
+const fixed = (n: string) => n in DUZ;
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const text = (w: number, h: number, s: string, color = '#e6e8ee', size = 12) =>
@@ -71,13 +74,14 @@ for (const cls of SINIF) {
   SOY.forEach((s, i) => comp.push({ input: text(2 * S, 18, `${AD[s]}: önce | sonra`), left: NAMEW + S + i * (2 * S + 8), top: 20 }));
   for (const [r, n] of rows.entries()) {
     const y = HEAD + r * (S + 6), k = codesOf(n);
-    comp.push({ input: text(NAMEW, S / 2 + 10, n.replace(/^dragonborn-/, ''), k.length ? '#f07070' : '#e6e8ee', 13), left: 0, top: y });
-    if (k.length) comp.push({ input: text(NAMEW, 22, k.join(','), '#f07070', 12), left: 0, top: y + S / 2 + 8 });
+    const kc = fixed(n) ? '#3cc864' : '#f07070';
+    comp.push({ input: text(NAMEW, S / 2 + 10, n.replace(/^dragonborn-/, ''), k.length ? kc : '#e6e8ee', 13), left: 0, top: y });
+    if (k.length) comp.push({ input: text(NAMEW, 22, k.join(',') + (fixed(n) ? ' düzeltildi' : ''), kc, 12), left: 0, top: y + S / 2 + 8 });
     comp.push({ input: await render(n, null, 'orijinal', S), left: NAMEW, top: y });
     for (const [i, s] of SOY.entries()) {
       const x = NAMEW + S + i * (2 * S + 8);
       comp.push({ input: await render(n, s, 'once', S), left: x, top: y }, { input: await render(n, s, 'sonra', S), left: x + S, top: y });
-      if (k.length) comp.push({ input: frame(S, S, k.includes('MY') ? '#9aa0aa' : '#eb3232', 2), left: x + S, top: y });
+      if (k.length) comp.push({ input: frame(S, S, fixed(n) ? '#3cc864' : k.includes('MY') ? '#9aa0aa' : '#eb3232', 2), left: x + S, top: y });
     }
   }
   await sharp({ create: { width: W, height: H, channels: 4, background: BG } }).composite(comp).webp({ quality: 90 }).toFile(path.join(OUT, `sinif-${cls}.webp`));
@@ -90,12 +94,12 @@ const Z = 256, PER = 12, cols = ['orijinal', 'red', 'blue', 'white'];
 for (let p = 0; p * PER < sus.length; p++) {
   const chunk = sus.slice(p * PER, p * PER + PER), half = Math.ceil(chunk.length / 2);
   const BW = 4 * Z + 30, W = 2 * BW, H = 30 + half * (Z + 26);
-  const comp: sharp.OverlayOptions[] = [{ input: text(W, 26, 'Şüpheli jetonlar (dışlanmadı, hepsi boyalı): orijinal | Kırmızı | Mavi | Beyaz. Kodlar: ' + Object.entries(KOD).map(([a, b]) => `${a} ${b}`).join('; '), '#e6e8ee', 13), left: 0, top: 0 }];
+  const comp: sharp.OverlayOptions[] = [{ input: text(W, 26, 'Şüpheli jetonlar (dışlanmadı): orijinal | Kırmızı | Mavi | Beyaz. Yeşil = elle düzeltildi. Kodlar: ' + Object.entries(KOD).map(([a, b]) => `${a} ${b}`).join('; '), '#e6e8ee', 13), left: 0, top: 0 }];
   for (const [i, n] of chunk.entries()) {
     const bx = Math.floor(i / half) * BW, y = 30 + (i % half) * (Z + 26), k = codesOf(n);
     for (const [c, s] of cols.entries()) comp.push({ input: await render(n, s === 'orijinal' ? null : s, s === 'orijinal' ? 'orijinal' : 'sonra', Z), left: bx + c * Z, top: y });
-    comp.push({ input: frame(4 * Z, Z, k.includes('MY') ? '#9aa0aa' : '#eb3232', 3), left: bx, top: y });
-    comp.push({ input: text(4 * Z, 22, `${n.replace(/^dragonborn-/, '')}  [${k.map((c) => `${c} ${KOD[c]}`).join('; ')}]`, '#f07070', 13), left: bx, top: y + Z + 2 });
+    comp.push({ input: frame(4 * Z, Z, fixed(n) ? '#3cc864' : k.includes('MY') ? '#9aa0aa' : '#eb3232', 3), left: bx, top: y });
+    comp.push({ input: text(4 * Z, 22, `${n.replace(/^dragonborn-/, '')}${fixed(n) ? '  DÜZELTİLDİ' : ''}  [${k.map((c) => `${c} ${KOD[c]}`).join('; ')}]`, fixed(n) ? '#3cc864' : '#f07070', 13), left: bx, top: y + Z + 2 });
   }
   await sharp({ create: { width: W, height: H, channels: 4, background: BG } }).composite(comp).webp({ quality: 90 }).toFile(path.join(OUT, `supheli-${String(p + 1).padStart(2, '0')}.webp`));
 }
@@ -113,6 +117,6 @@ for (let p = 0; p * PER < sus.length; p++) {
   }
   await sharp({ create: { width: W, height: H, channels: 4, background: BG } }).composite(comp).webp({ quality: 90 }).toFile(path.join(OUT, 'savas-64.webp'));
 }
-const ozet = { jeton: names.length, boyanan: names.length - Object.keys(less).length, maskesiz: less, supheli: sus.filter((n) => !(n in less)).map((n) => ({ jeton: n, kod: codesOf(n) })) };
+const ozet = { jeton: names.length, boyanan: names.length - Object.keys(less).length, maskesiz: less, supheli: sus.filter((n) => !(n in less) || fixed(n)).map((n) => ({ jeton: n, kod: codesOf(n).filter((c) => c !== 'MY'), ...(fixed(n) ? { duzeltildi: true } : {}) })) };
 fs.writeFileSync(path.join(OUT, 'ozet.json'), JSON.stringify(ozet, null, 1) + '\n');
 console.log('boyanan', ozet.boyanan, 'maskesiz', Object.keys(less).length, 'şüpheli (boyalı)', ozet.supheli.length);

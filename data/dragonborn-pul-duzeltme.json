@@ -1,0 +1,208 @@
+{
+ "not": "Dragonborn pul maskesi jeton başına elle düzeltme (scripts/dragonborn-pul-maske.py okur; scripts/dragonborn-desen-v2.py mask_of `ayar`). Koordinatlar 256 px jeton uzayında. `yalniz`: maske yalnız bu alanlarda; `haric`: bu alanlar çıkarılır; `beyazKutu`: beyaz vurgu adayı yalnız bu alanlarda; alan = kutu [x0, y0, x1, y1] (uç hariç) ya da çokgen [[x, y], ...]. `bos`: maske yazılmaz, jeton boyanmaz (neden maskesiz listesine). `neden`: çıkarılan kıyafet/eşya.",
+ "jetonlar": {
+  "dragonborn-kadin-paladin-ID10": {
+   "yalniz": [
+    [
+     [138, 41],
+     [166, 42],
+     [179, 60],
+     [179, 86],
+     [173, 101],
+     [150, 103],
+     [115, 99],
+     [107, 90],
+     [109, 64],
+     [124, 49]
+    ],
+    [88, 38, 101, 53],
+    [28, 120, 62, 232]
+   ],
+   "beyazKutu": [
+    [
+     [138, 41],
+     [166, 42],
+     [179, 60],
+     [179, 86],
+     [173, 101],
+     [150, 103],
+     [115, 99],
+     [107, 90],
+     [109, 64],
+     [124, 49]
+    ]
+   ],
+   "neden": "beyaz kukuleta, pelerin, zırh ve asa; yalnız yüz (kontur çokgeni), kulak ve kuyruk"
+  },
+  "dragonborn-erkek-monk-ID9": {
+   "beyazKutu": [
+    [90, 10, 180, 100]
+   ],
+   "neden": "beyaz gi; beyaz vurgu adayı yalnız başta"
+  },
+  "dragonborn-kadin-monk-ID9": {
+   "beyazKutu": [
+    [80, 10, 180, 100]
+   ],
+   "yalniz": [
+    [80, 10, 180, 100],
+    [
+     [122, 96],
+     [150, 96],
+     [140, 122],
+     [132, 122]
+    ],
+    [163, 138, 182, 166],
+    [20, 125, 62, 220],
+    [20, 160, 100, 220],
+    [78, 222, 102, 238],
+    [158, 222, 182, 240]
+   ],
+   "neden": "pembe-beyaz gi ve kuşak düğümü; baş, yaka açıklığı, yumruk, kuyruk, ayaklar"
+  },
+  "dragonborn-erkek-wizard-WZ-A1": {
+   "yalniz": [
+    [87, 23, 178, 108],
+    [102, 238, 118, 247],
+    [162, 238, 180, 243]
+   ],
+   "neden": "beyaz cüppe ve kol; baş ve ayaklar"
+  },
+  "dragonborn-kadin-wizard-WZ-A1": {
+   "yalniz": [
+    [93, 37, 180, 108],
+    [103, 239, 118, 247],
+    [163, 238, 181, 243]
+   ],
+   "neden": "beyaz cüppe ve kol; baş ve ayaklar"
+  },
+  "dragonborn-erkek-wizard-WZ-A6": {
+   "yalniz": [
+    [95, 21, 170, 99],
+    [37, 191, 92, 230],
+    [85, 233, 109, 246],
+    [185, 88, 207, 122],
+    [85, 134, 109, 154]
+   ],
+   "haric": [
+    [78, 185, 96, 206]
+   ],
+   "neden": "beyaz cüppe, pantolon ve çizme; baş, el, yumruk, kuyruk, ayak"
+  },
+  "dragonborn-kadin-wizard-WZ-A6": {
+   "yalniz": [
+    [86, 30, 170, 99],
+    [37, 193, 92, 230],
+    [85, 234, 110, 246],
+    [185, 88, 206, 122],
+    [85, 134, 109, 155]
+   ],
+   "haric": [
+    [78, 185, 96, 206]
+   ],
+   "neden": "beyaz cüppe, pantolon ve çizme; baş, el, yumruk, kuyruk, ayak"
+  },
+  "dragonborn-erkek-cleric-ID3": {
+   "yalniz": [
+    [69, 41, 163, 123],
+    [77, 235, 99, 247]
+   ],
+   "neden": "açık mavi cüppe ve pelerin; baş ve ayak"
+  },
+  "dragonborn-kadin-cleric-ID3": {
+   "yalniz": [
+    [87, 56, 170, 122],
+    [41, 144, 76, 233],
+    [88, 176, 107, 194],
+    [178, 130, 196, 147],
+    [91, 228, 112, 246],
+    [150, 232, 172, 246]
+   ],
+   "neden": "açık mavi elbise, pelerin ve güvercin; baş, kuyruk, eller, ayaklar"
+  },
+  "dragonborn-erkek-cleric-ID5": {
+   "yalniz": [
+    [86, 41, 168, 117],
+    [37, 107, 79, 136],
+    [179, 105, 220, 135]
+   ],
+   "neden": "pelerin, tabard ve zırh; baş ve eller"
+  },
+  "dragonborn-kadin-cleric-ID5": {
+   "yalniz": [
+    [84, 57, 165, 123],
+    [28, 152, 54, 222],
+    [66, 190, 91, 219]
+   ],
+   "neden": "pelerin kenarı ve zırh; baş ve kuyruk"
+  },
+  "dragonborn-kadin-barbarian-ID7": {
+   "yalniz": [
+    [93, 32, 186, 108],
+    [42, 134, 103, 213]
+   ],
+   "neden": "çekiç başı ve zırh; baş ve kuyruk"
+  },
+  "dragonborn-erkek-warlock-WL-10": {
+   "bos": "hayalet gövde: ten yok (elle düzeltme)",
+   "neden": "hayalet gövde: ten yok, maske yalnız dış ışıltı ve dumandaydı"
+  },
+  "dragonborn-kadin-warlock-WL-10": {
+   "bos": "hayalet gövde: ten yok (elle düzeltme)",
+   "neden": "hayalet gövde: ten yok, maske yalnız dış ışıltı ve dumandaydı"
+  },
+  "dragonborn-erkek-rogue-ID3": {
+   "yalniz": [
+    [88, 87, 174, 142],
+    [53, 162, 72, 186],
+    [195, 150, 212, 172],
+    [81, 173, 98, 212]
+   ],
+   "neden": "beyaz gömlek kolları ve kristaller; baş, eller, kuyruk ucu"
+  },
+  "dragonborn-kadin-rogue-ID3": {
+   "yalniz": [
+    [79, 85, 177, 145],
+    [25, 149, 92, 231],
+    [72, 239, 94, 248],
+    [146, 237, 174, 245],
+    [51, 165, 75, 187],
+    [195, 151, 213, 175]
+   ],
+   "haric": [
+    [68, 140, 106, 170]
+   ],
+   "neden": "beyaz gömlek kolları ve kristaller; baş, kuyruk, eller, ayaklar"
+  },
+  "dragonborn-kadin-fighter-ID4": {
+   "haric": [
+    [105, 152, 164, 167]
+   ],
+   "neden": "pantolon kemeri"
+  },
+  "dragonborn-erkek-ranger-ID4": {
+   "haric": [
+    [
+     [108, 172],
+     [118, 180],
+     [72, 236],
+     [60, 230]
+    ],
+    [176, 100, 200, 150]
+   ],
+   "neden": "kılıç ağzı (çokgen) ve yavru ejderha kalıntısı"
+  },
+  "dragonborn-kadin-ranger-ID4": {
+   "haric": [
+    [
+     [112, 165],
+     [124, 174],
+     [82, 238],
+     [70, 232]
+    ],
+    [176, 85, 215, 150]
+   ],
+   "neden": "kılıç ağzı (çokgen) ve yavru ejderha kalıntısı"
+  }
+ }
+}

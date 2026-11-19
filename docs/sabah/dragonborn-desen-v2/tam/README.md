@@ -56,3 +56,5 @@ Kemer ve kılıç ağzı türü sızıntıları ölçütler yakalamadığı içi
 - Üretim: `python scripts/dragonborn-pul-maske.py` (maske + veri).
 - Çizim: `src/ui/tint.ts` `tintedUrl` → tembel `src/ui/scaleTint.ts` `scalePixels`.
 - Küçük kopyada (96 px rozet) maske ve karo W/256 ölçekli.
+
+Şüpheli jetonların tam tablosu: `supheli-liste.md` (76 jeton; elle düzeltilen 19 jeton yeşil çerçeveli, `../duzeltme/`).
