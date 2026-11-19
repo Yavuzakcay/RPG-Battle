@@ -9,6 +9,19 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## CC toplu kesim ve yerleştirme (2026-11-19; yalnız görsel/veri, kural ve kayıt sürümü değişmedi)
+
+- **Kaynak:** `wip/karakter-ham` `assets-ham/eksikler/` (b345279d); yerelde `assets-ham/karakter/`, eski aynı adlı 15 ham sayfa `_eski/`. Dala dokunulmadı. Betik `scripts/cc-kesim.py` (taban, yeni, duzeltme, diger), rapor `docs/sabah/cc-kesim/RAPOR.md`.
+- **Öncelik kodda:** aynı jeton için düzeltme > yeni sayfa (C dahil) > taban; defter `data/cc-kesim-kaynak.json` her yazımı kaydeder, düşük öncelikli adım ezmez. Tablo `docs/sabah/celestial-oncelik.md`.
+- **Hale tabanı:** yalnız haleli + halesiz-supheli; `halesiz-doğrulandı` satırları (kadın Rogue ID3, kadın Warlock WL-8 ve sayfa 32) ve erkek Celestial Warlock dokunulmadı. Gemini hücresi kaynak jetona alt gövde IoU'suyla hizalanır; hale silinmemişse ya da uyum < 0,80 ise uygulanmaz. Sayfa 30 yok (kullanıcı: docs/sabah'taki kesik sayfa kullanılmaz); hücre 7 = düzeltme sayfa 03 figür 7 (WZ-B5).
+- **Düzeltme:** Gemini hücreleri yeniden dizmiş (3+3+1); figürler okuma sırasıyla eşleşmeye bağlandı. Sayfa 02 figür 7 eşleşmede yok, uygulanmadı. Barbarian ID8 erkek: "kırmızı aura tam olsun" notu, aura macenta zeminde kaybolduğu için kaynak jetondan geri kondu.
+- **Gladyatör:** kod `ID12` (Fighter 4×3'ün boş 12. hücresi), `fighter-jeton.json` `champion`; ölçek aynı ırk/cinsiyet Fighter jetonlarının ortanca boyu. Celestial Gladyatör halesiz (taç çizilir). Ten denetimi yalnız rapor (`ten-denetim.md`: Tiefling kadın belirgin koyu).
+- **Erkek Celestial Warlock WL-8 (Gulyabani):** halesiz geldi ama kullanıcı kararıyla taç çizilmez: bekleyen listesinde `durum: taç yok`.
+- **Sorcerer eşleşmesi gözle** (piksel benzerliği güvenilmez çıktı): `docs/sabah/sorcerer-eslesme.md`; C figür 1/7 (iki Goliath) belirsiz, uygulanmadı.
+- **Celestial Cleric sayfa 06 yenisi:** yalnız haleli hücreler (7, 9); halesiz-temiz 120 jeton kuralı gereği diğer 7 hücreye dokunulmadı.
+- **Ölçek kuralı:** tam sınıf sayfaları özgün hat ve sayfa ölçeği (Druid, Cleric, Human Fighter, Warlock); aynı kompozisyonlu yenilemeler (Bard, Sorcerer) eski jetona alt gövde hizalaması, olmazsa eski figür boyu; aurasız Barbarian ve Gladyatör kardeş jetonların ortanca boyu.
+- **Yan düzeltme:** `scripts/hale-konum.py` elle girilen `tac.katsayi` anahtarını siliyordu; artık korur.
+
 ## Goliath maske deliği ve Tiefling boynuz/kuyruk gölge yarısı (TG1; yalnız çizim, kural ve kayıt sürümü değişmedi)
 
 - **Goliath:** `races.goliath.temizlik` kaydı açıldı; TB1'in tek kod yolu (`fixSkinMask`), jeton başına yama yok, parametreler veride: `referans` 256, `delik` { `kapama` 1, `enCok` 12, `ekleOrani` 0,5 }, `kutu` { L 28–72, C 3–14, h 160–320° }. `temizlik.kutu` yeni isteğe bağlı alan: delik/kapama için ten renk kutusu (yoksa ırkın `mask` kutusu). **Neden dar:** Tiefling kaydı (ırk kutusu L 18–96, `enCok` 80) olduğu gibi Goliath'a açılsaydı kafa kaplamasız 277 jetonda 30 612 piksel eklenirdi; bunun 9 829'u çizgi mürekkebi/koyu çizgi (L < 28), 2 841'i göz akı/rün/parlama (L > 72) olurdu (TB1'de yakalanan "renk kutusu zırhı ve gözü boyuyor" hatası). Yeni ayar aynı 277 jetonda 14 746 piksel ekler (jeton başına medyan 43, p90 111, en çok 389; 13 jetonda 0); eklenen L < 28 ve L > 72 piksel **0**. Bağlam yalnız maske bağlamı: maskenin tamamen çevrelediği (kenara ulaşılamayan) ≤ 12 piksellik boşluk. **Vurgu ve gölge bandı Goliath'ta yok:** sıkı vurgu ölçütü bile (komşuların tamamı maskede, 1 px, L ≥ 72) 206 piksel/84 jeton yakalıyor ve 13'ü göz akı benzeri (L > 88, renksiz); yerel bağlam göz akı/rün parlamasından ayıramıyor (kalan açık). **Kafa kaplaması (K22/K23):** `basKaplama.govdeBoya: false` Paladin/Fighter/Cleric temel jetonlarında (6 dosya) onarım `bodyPaintOff` (`tint.ts`) ile atlanır; gövdeye soy rengi gitmez, kafa kaplaması yolu aynen (gerçek tarayıcıda 6 jeton × 256/96 px eski ve yeni bire bir aynı).
