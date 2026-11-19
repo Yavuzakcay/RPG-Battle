@@ -103,7 +103,8 @@ export function zoneRows(sp: Spell, s: SrdSpell): Satir[] {
   // B21: kayan bulut (Cloudkill, Incendiary Cloud). SRD 5.2.1: "A creature must also make this save when the Sphere moves
   // into its space … A creature makes this save only once per turn." Hedef bulutun hemen dışında, büyücüden uzak tarafta;
   // büyücünün sonraki turunun başında bulut 10 ft uzaklaşıp hedefin üstüne gelir: hedef bir save atar.
-  if (/moves into its space/i.test(s.raw.text) && geo.kind === 'point' && geo.aim && geo.radius) {
+  // Yalnız kendiliğinden kayan bulut ("moves 10 feet away from you … at the start of each of your turns"); Moonbeam'i büyücü taşır.
+  if (/moves into its space/i.test(s.raw.text) && /moves 10 feet away from you/i.test(s.raw.text) && geo.kind === 'point' && geo.aim && geo.radius) {
     const tPos = hex(geo.aim.row + geo.radius + 1);
     // Sıra yalnız A ve T: T'nin turu bitince sıra büyücüye döner (bulut onun tur başında kayar).
     rows.push(runCtx(sp, s, geo, { ad: 'kayan bulut hedefin üstüne gelir (büyücünün sonraki tur başı)', kategori: 'alan', tPos, prep: (st) => ({ ...st, order: ['A', 'T'] }),
