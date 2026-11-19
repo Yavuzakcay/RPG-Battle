@@ -26,7 +26,9 @@ for cls in CLASSES:
                 bound_gr = race != 'celestial' and g in T['irklar'].get(race, []) and os.environ.get('SONRA') == '1'
                 if not bound_gr: rows.append((race, cls, g, 'Gariban (GR)', ('Celestial: hale işi ayrı, bağlanmadı' if race == 'celestial' and os.environ.get('SONRA') == '1' else 'dosya var, oyunda hiçbir yerden çözülmüyor (eşleme yok)') + ('' if masked(gr) or race in ('orc', 'dwarf', 'halfling') else '; maske yok')))
                 elif not masked(gr) and race not in ('orc', 'dwarf', 'halfling'): rows.append((race, cls, g, 'Gariban (GR)', 'bağlı, ten/soy maskesi çıkmadı (boyanmaz: kabuk/örtülü/geniş alan)'))
-            for sub, cell in T['altSiniflar'].items():
+            # 2026-11-19: seviyeye bağlı ikinci form (`formlar`: Pehlivan ID5, Birlik Manastırı ID9) da bağlı jeton sayılır.
+            subs = list(T['altSiniflar'].items()) + [(sub, f['ikinci']) for sub, f in (T.get('formlar') or {}).items() if f'{race}-{g}' not in f.get('ikinciYok', [])]
+            for sub, cell in subs:
                 only = (T.get('cinsiyet') or {}).get(sub)
                 if only and only != g: continue
                 f = f'{race}-{g}-{cls}-{cell}'

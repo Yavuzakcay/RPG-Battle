@@ -1,5 +1,5 @@
 {
- "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-cleric-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır.",
+ "note": "TOPLU-KESIM bağlaması: alt sınıf kimliği → hücre (jeton <irk>-<cinsiyet>-cleric-<hücre>.webp). Hücre adları data/jeton-hucre-sirasi.json. maskeHazir false iken boyası gereken karakter sınıf-genel jetonda kalır. `formlar` = seviyeye göre ikinci jeton formu (fighter-jeton.json ile aynı biçim: `esik` seviye ve üzeri `ikinci` hücre; `ikinciYok`: 'ırk-cinsiyet' listesi → 1. form). Birlik Manastırı (2026-11-19, kullanıcı kararı): seviye 3–16 hücre 3 (güvercinli genç rahip), 17+ hücre 9 (yaşlı çay ustası).",
  "sinif": "cleric",
  "irklar": {
     "dragonborn": ["erkek", "kadin"],
@@ -48,8 +48,12 @@
   "mezar-alani": "ID6",
   "savas-alani": "ID7",
   "yakamoz-alani": "ID8",
-  "imza_birlik": "ID9",
-  "baris-alani": "ID9"
+  "imza_birlik": "ID3",
+  "baris-alani": "ID3"
+ },
+ "formlar": {
+  "imza_birlik": { "esik": 17, "ikinci": "ID9", "ikinciYok": [] },
+  "baris-alani": { "esik": 17, "ikinci": "ID9", "ikinciYok": [] }
  },
  "cozulemeyen": []
 }
