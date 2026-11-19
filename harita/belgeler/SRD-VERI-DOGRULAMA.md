@@ -5,6 +5,8 @@ Tarih: 2026-11-19 · Dal: `birlesik` · Kaynak: `docs/SRD_CC_v5.2.1.pdf` (364 sa
 Bu turda yalnızca ölçüm yapıldı ve rapor yazıldı. Mekaniğe, veriye ve teste dokunulmadı. Düzeltmeler onaydan sonra yapılacak.
 
 > **Güncelleme: D1 düzeltmeleri yapıldı (2026-11-19, kural sürümü 86).** Ayrıntı [§8](#8-d1-düzeltmeleri-kural-sürümü-86). CSV'ye her satırın D1 sonucunu gösteren `D1 (kural sürümü 86)` sütunu eklendi. Aşağıdaki §1–§7 denetim anını anlatır.
+>
+> **Güncelleme: D2 yapıldı (2026-11-19, kural sürümü 88).** Çağrı blokları ve savaş sırasında eklenen canavarlar: [§9](#9-d2-çağrı-blokları-ve-savaş-sırasında-eklenen-canavarlar-kural-sürümü-88). Denetim hatası düzeltmesi: Otherworldly Steed'in Life Bond'u ve bonus eylemleri motorda zaten vardı (§2.7 satırı yanlıştı).
 
 ## Özet
 
@@ -176,7 +178,7 @@ Adlar, DC, yeniden yüklenme, kullanım, zar, menzil, alan ve kurtarma yeteneği
 | draconic-spirit | duyu | Darkvision 60 | + **Blindsight 30** | 166 | yanlış (not "Duyu:" biçiminde değil, motor okumuyor) |
 | draconic-spirit | durum bağışıklığı | — | Charmed, Frightened, Poisoned | 166 | yanlış (`unsupported`) |
 | animated-object | duyu, bağışıklık | — | Blindsight 30; Poison, Psychic; Charmed, Exhaustion, Frightened, Paralyzed, Poisoned | 109 | yanlış |
-| otherworldly-steed | özellikler | yok | Life Bond; Fell Glare, Fey Step, Healing Touch (bonus eylem) | 131 | yanlış (CLAUDE.md "Bilinen eksikler"de anılıyor) |
+| otherworldly-steed | özellikler | yok (veride) | Life Bond; Fell Glare, Fey Step, Healing Touch (bonus eylem) | 131 | ~~yanlış~~ **denetim hatası** (D2'de görüldü): hepsi `src/battle/steed.ts`'te (Kuyruk 19, `featuresK19`); denetim yalnız veri dosyasına baktı |
 | arcane-hand | yetenek puanı, tür | 26/10/10/1/1/1, construct | yok (5.2.1'de el bir nesne) | 110 | PDF'te yok |
 | flaming-sphere, spirit-pack, elemental-spirit | stat bloğu | AC 10, HP 1… | yok (büyü alanı) | — | PDF'te yok (oyun soyutlaması) |
 
@@ -312,8 +314,8 @@ Denetim CSV'sinde: 72 "yanlış" satır düzeltildi (9'u bilinen), 6 "yanlış" 
 
 ### Kalan farklar (D1 kapsamı dışında, öneri)
 
-- **Çağrı blokları (CSV'de 6 "yanlış" satır):** Draconic Spirit'te yüzme 30, Blindsight 30 ve durum bağışıklıkları; Animated Object'te Blindsight 30 ve bağışıklıklar; Otherworldly Steed'te Life Bond ve üç bonus eylem; Find Familiar'da "CR 0 başka Beast" seçeneği.
-- **Aktarım (§6):** savaş kurulduktan sonra eklenen canavar (çağrı, takviye, kat değişimi) canavar özelliği ve yeteneği almıyor. `shapeStats` (Wild Shape, Polymorph) yalnız AC, hız, uçma, STR/DEX/CON ve saldırıları taşıyor. Polymorph'ta INT/WIS/CHA hedefte kalıyor. Monster hover verisi motorda okunmuyor.
+- **(D2'de kapandı, §9)** **Çağrı blokları (CSV'de 6 "yanlış" satır):** Draconic Spirit'te yüzme 30, Blindsight 30 ve durum bağışıklıkları; Animated Object'te Blindsight 30 ve bağışıklıklar; Otherworldly Steed'te Life Bond ve üç bonus eylem; Find Familiar'da "CR 0 başka Beast" seçeneği.
+- **Aktarım (§6):** ~~savaş kurulduktan sonra eklenen canavar (çağrı, takviye, kat değişimi) canavar özelliği ve yeteneği almıyor~~ (D2'de kapandı, §9). `shapeStats` (Wild Shape, Polymorph) yalnız AC, hız, uçma, STR/DEX/CON ve saldırıları taşıyor. Polymorph'ta INT/WIS/CHA hedefte kalıyor. Monster hover verisi motorda okunmuyor.
 - **Ek bulgu:** Barbed Devil ve Medusa'da plansız Multiattack (Game Master düğmesi ya da `srdK19` kapalı) "ya / ya da" seçeneklerini toplayıp 4 / 6 saldırı yapıyor. YZ planı doğru (2 / 3). Öneri: plansız yolda planın ilk seçeneği kullanılsın.
 - **Yaklaşık (bilerek):** Vampire Familiar "Charmed (except from its vampire master)" tam Charmed bağışıklığı sayıldı. Archmage "Charmed (with Mind Blank)" koşullu olduğu için uygulanmıyor (değişmedi).
 
@@ -343,3 +345,63 @@ Hizalama (1 satır, "oyunda alan yok") değişmedi: motor okumuyor.
   - yüzme hızı;
   - replay.
 - **Veri testi** `src/data/srdCanavar.test.ts`: 330 canavarda boyut, AC, HP, CR, beş hız, hover, dört duyu, yetenek puanları, kurtarmalar, beceriler, direnç, bağışıklık, zayıflık ve durum bağışıklığı SRD tablosuyla aynı; tür ve yüzme dosyaları da.
+
+## 9. D2: çağrı blokları ve savaş sırasında eklenen canavarlar (kural sürümü 88)
+
+Tarih: 2026-11-19. Kullanıcı kararı: SRD 5.2.1'i izle. Karar ayrıntısı DECISIONS.md'de ("SRD farkları D2").
+
+- **Kural sürümü 88** (`src/battle/srdD2Surum.ts` `SRD_D2_VERSION`). 87 Wild Shape görevinin (WS87), 85 boş.
+- **Eski değerler:** D1 katmanında (`data/srd-duzeltme.json`, kayıtta `surum: 88`). Yeni katman açılmadı.
+
+### Savaş sırasında canavar ekleyen yollar
+
+| # | Yol | Kod | ≤ 87: canavar özellikleri / yetenek pasifleri | 88 |
+|---:|---|---|---|---|
+| 1 | Savaş başı (Game Master kurulumu, simülasyon, Serüven, yolculuk) | `create.ts` `startBattle` → `withMonsterTraits`, `withMonsterAbilities` | var | aynı (canavar başı işlevler `monsterTraitSetup`, `monsterAbilitySetup`) |
+| 2 | Büyüyle çağrı, kurulum ritüeli dahil (Find Familiar, Animate Dead, Phantom Steed, Find Steed, Summon Dragon, Giant Insect, Animate Objects, Arcane Hand, Flaming Sphere, Conjure Animals/Elemental) | `summons.ts` `summonedEvent` | yok | var |
+| 3 | Paket çağrısı (ödünç canavar, arketip, eşya kancası) | `paket/index.ts` | yok | var |
+| 4 | Canavar yeteneğiyle çağrı (Animate Trees, Create Specter) | `monsterAbilities.ts` | yok | var (etkin yetenekleri bilerek yok: zincirleme çağrı olmaz) |
+| 5 | Finger of Death zombisi | `spells69.ts` | yok | var |
+| 6 | Orman boynuz takviyesi (`hornReinforce`) | `forest.ts` | yok | var |
+| 7 | Orman kemik yığını (`boneRise`) | `forest.ts` | yok | var |
+| 8 | Çöl kum pususu (`wormAmbush`) | `desert.ts` | yok | var |
+| 9 | Buz mühür pusu (`iceSeal`) | `wilds.ts` | yok | var |
+| 10 | Kat değişimi (`floorLink`, `floor_changed.added`) | `floors.ts` | yok | var (yeni katın haritasıyla; aura alanları kat olayından sonra) |
+| 11 | Uyuyan ejderha | `create.ts` | var (savaş başı geçişlerinden önce eklenir) | aynı |
+
+- **Zaten çalışanlar:** Multiattack planı ve etkin canavar yetenekleri çalışma anında `monsterId`'den okunuyordu; her yolda vardı. Görevin varsayımı bu noktada eksikti.
+- **Bilerek dışarıda kalanlar:**
+  - çağrılanın tepkileri (Görev R3 kararı);
+  - savaş sırasında Game Master'ın canavar ekleme komutu (yok; Game Master canavarı kurulumda ekler, o da 1. yol);
+  - alarm grupları (savaş başında üyeler);
+  - Polymorph (biçim savaşa eklenmez, yalnız saldırıları alınır; kapsam dışı).
+- **Tek giriş:** `src/battle/monsterSetup.ts` `setupMonster` (savaş başındaki iki canavar başı işlev), `lateMonster` (88 kapısı), `lateSummonEvents` (`summoned` olayı + aura `zone_created`). Savaş başı geçişleri aynı işlevleri, aynı sırayla çağırıyor; bu yüzden 87 ve altı bit bit aynı.
+
+### Çağrı blokları (`data/summons.json`)
+
+| Blok | Değişiklik | SRD | s. |
+|---|---|---|---:|
+| Draconic Spirit | yüzme 30 (`swimFt`); Blindsight 30 ve Charmed/Frightened/Poisoned bağışıklığı (`unsupported` notları, canavarla aynı biçim) | "Speed 30 ft., Fly 60 ft., Swim 30 ft." · "Immunities Charmed, Frightened, Poisoned" · "Senses Blindsight 30 ft., Darkvision 60 ft." | 166 |
+| Animated Object | Poison ve Psychic bağışıklığı (`immunities`); Blindsight 30; Charmed, Exhaustion, Frightened, Paralyzed, Poisoned bağışıklığı | "Immunities Poison, Psychic; Charmed, Exhaustion, Frightened, Paralyzed, Poisoned" · "Senses Blindsight 30 ft." | 109 |
+| Find Familiar | `forms` 11 → 24: SRD tablosundaki her CR 0 Beast (Baboon, Badger, Crab, Deer, Eagle, Giant Fire Beetle, Goat, Hyena, Jackal, Piranha, Scorpion, Seahorse, Vulture eklendi) | "Bat, Cat, Frog, … Weasel, or another Beast that has a Challenge Rating of 0" | 130 |
+| Otherworldly Steed | **değişmedi: denetim hatası.** Life Bond ve Fell Glare / Fey Step / Healing Touch `src/battle/steed.ts`'te (Kuyruk 19) zaten vardı. D1 denetimi yalnız veri dosyasına baktığı için "yanlış" saymıştı. D2'de önce kopya bir uygulama yazıldı, mevcut kod bulununca geri alındı. Test: Life Bond 87 ve 88'de bir kez tetikleniyor, bonus eylemler aynı. | — | 131 |
+| Animate Objects | SRD 5.2.1'de stat bloğu var (Animated Object, s. 109); blok Kuyruk 19'dan beri oyunda. D2 yalnız bağışıklık ve Blindsight'ı ekledi; boyut ve HP formülleri önceden doğruydu. | | 109 |
+| Flaming Sphere, Spirit Pack, Elemental Spirit, Arcane Hand | değişmedi (SRD'de stat bloğu yok; oyun soyutlaması) | | |
+
+Kalan fark: Draconic Spirit'in Shared Resistances'ı (çağıran bir direnç seçer) uygulanmıyor (`unsupported`).
+
+### Doğrulama
+
+- **Testler** `src/battle/srdD2.test.ts`:
+  - katman (5 kayıt);
+  - Find Familiar listesi SRD tablosundan;
+  - çağrı blokları;
+  - her ekleme yolu (Summon Dragon, Animate Objects, Find Familiar ritüeli, Animate Dead, Find Steed + Life Bond, Create Specter, Finger of Death, paket Staff of the Python, Orman kemik yığını, kum pususu, buz mühür, kat değişimi): 88'deki yaratık, 87'deki ham yaratığın `setupMonster`'dan geçmiş hâline eşit, 87'de kurulum yok, replay aynı.
+- **Mekanik matris** (`npx vite-node src/sim/mekanikMatris.ts -- --buyu "…" --kural-surumu 87|88`): Find Familiar, Find Steed, Summon Dragon, Animate Dead, Animate Objects, Giant Insect, Conjure Animals/Celestial/Elemental/Fey/Minor Elementals/Woodland Beings, Flaming Sphere, Arcane Hand ve Phantom Steed'in 91 satırı iki sürümde de doğru. Matris dosyaları yeniden yazılmadı.
+- **Hızlı regresyon** `src/sim/srdD2Regresyon.test.ts`: 5. seviye standart parti, savaş sırasında canavar eklenen dört senaryo.
+  - **Sürüm 87:** imzalar D2'den önceki ağacın (083e4b93) altınıyla aynı; 1 tohum 4/4, 3 tohum 4/4.
+  - **Sürüm 88, 3 tohum:**
+    - **Ork Kampı (`orman-ork`) değişti:** 4 boynuz takviyesi (Tough, Berserker) artık Bloodied pasifleri ve kaynaklarıyla geliyor.
+    - **Kemik Açıklığı (9 iskelet) ve Vaha (2 kum pususu):** canavarlar eklendi ve kuruldu, ama bu tohumlarda sonucu değiştirmedi (Poison/Exhaustion ya da yer altından geçiş devreye girmedi).
+    - **Mağara Karakolu:** yapay zekâ kat değiştirmediği için canavar eklenmedi (yol birim testte denetlendi).
+    - Zafer her senaryoda 3/3.

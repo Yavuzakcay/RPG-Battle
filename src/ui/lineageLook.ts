@@ -12,14 +12,13 @@ import { findSubclass } from '../rules/subclasses';
 
 /** Çözülmüş kanat katmanı (jetonun arkası): `src` o anki durumun görseli (`public/` altı yol), filtre renk için. */
 /** `capa`: kanat kökü görsel oranı; `omuz`: kökün jeton yüksekliğinde tepeden oranı; `enBoy`: görsel yüksekliği/genişliği. */
-export interface WingLayerSpec { id: string; src: string; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre: string; open: boolean; /** SD5: parlaklık→renk paleti (SVG filtresi; opak kalır). */ palet?: WingPalet; /** SD5: görsel kutuya oransız oturur. */ esnet?: boolean; /** Animasyonlu sayfa (4x2 vb.); yoksa tek görsel. */ sprite?: WingSprite; /** Gövdeye bağlı kanat (iki kanat ayrı, kökten; `wingRootParts`). */ kok?: WingRoot }
-export interface WingPalet { golge: string; isik: string; /** Orta durak (aralığın ortası); yoksa gölge–ışık ortası. */ orta?: string; /** Taban parlaklığının gerilen aralığı [alt, üst] (altı gölge, üstü ışık); yoksa [0, 1]. */ aralik?: [number, number] }
-/**
- * Gövdeye bağlı kanat (kullanıcı kararı 2026-11-20; `kanat-esleme.json` `kok`): sağ kanadın kökü görselde `gorsel`, jetonda merkezden `x`
- * sağa ve tepeden `y` aşağıda (jeton genişliği oranı); `olcek` iki kanatlı görselin genişliği / jeton genişliği; `aci` dışa/yukarı dönüş
- * (derece). Sol kanat sağın aynası. `duzeltme`: jeton adı ya da `<sınıf>-<cinsiyet>` başına alan ezmesi.
- */
-export interface WingRoot { gorsel: [number, number]; x: number; y: number; olcek: number; aci: number; duzeltme?: Record<string, Partial<Pick<WingRoot, 'x' | 'y' | 'olcek' | 'aci'>>> }
+export interface WingLayerSpec { id: string; src: string; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre: string; open: boolean; /** SD5: parlaklık→renk paleti (SVG filtresi; opak kalır). */ palet?: WingPalet; /** SD5: görsel kutuya oransız oturur. */ esnet?: boolean; /** Animasyonlu sayfa (4x2 vb.); yoksa tek görsel. */ sprite?: WingSprite; /** KW1: görsel TEK (sağ) kanat; iki yana ayna çizilir, kök gövdeye bağlanır (`wingPlacements`). */ ayna?: WingMirror }
+/** KW1: tek kanatlı slot. `dx`: kökün gövde merkezinden varsayılan uzaklığı (jeton genişliği oranı; jeton kök verisi yoksa), `aci`: kanadın kök etrafında dışa/yukarı dönüşü (derece). */
+export interface WingMirror { dx: number; aci: number }
+/** KW1: kanat kökü jeton uzayında (256 px): sol/sağ kök x'i; y verilmezse slotun `omuz` yüksekliği (`data/dragonborn-kanat-kok.json`). */
+export interface WingRoot { sol: number; sag: number; y?: number }
+/** `esik` (0–1, KW1): parlaklık eşiği; bunun altı gölge rengi, üstü eşikten ışık rengine gerilir (kanat görseli çok açık: palet tam aralığı kullansın). */
+export interface WingPalet { golge: string; isik: string; esik?: number }
 export interface WingSprite { sutun: number; satir: number; kareEn: number; kareBoy: number; kareMs: number }
 export interface SkinTone { id: string; ad: { tr: string; en: string }; /** Hedef ten rengi (hex); null: boyasız. */ renk: string | null; rozetRenk: string }
 export interface LookSheet { raceId: string; classId?: string; /** Seçili alt sınıf kimliği (`kanat-esleme.json` `altSinif` eşlemesi için). */ subclassId?: string; lineageId?: string; celestialAwakening?: string; level?: number; skinTone?: string }
@@ -90,7 +89,7 @@ export function pickCulture(sheet: { lineageId?: string; exileCulture?: string; 
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
-type WingSlotData = { kok?: WingRoot; altSinif?: string; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
+type WingSlotData = { altSinif?: string; ayna?: WingMirror; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
 const W = wings as unknown as { klasor: string; slotlar: Record<string, WingSlotData> };
 export const WING_SLOTS = Object.keys(W.slotlar);
 /** Kanat slotuna bağlı alt sınıf kimlikleri (`altSinif`) ve slotun kimliği. */
@@ -125,16 +124,52 @@ function wingLayer(id: string, level: number, flying: boolean, lineageId?: strin
   const filtre = [w.filtre, lineageId ? w.renkFiltreleri?.[lineageId] : undefined].filter(Boolean).join(' ');
   const { klasor: sk, ...sprite } = w.sprite ?? ({} as { klasor?: string });
   const palet = (lineageId ? w.renkPaletleri?.[lineageId] : undefined) ?? w.palet;
-  return { id, src: `${sk ?? W.klasor}/${file}`, olcek: w.olcek, omuz: w.omuz, capa: w.capa, enBoy: w.enBoy, filtre, open, ...(palet ? { palet } : {}), ...(w.esnet ? { esnet: true } : {}), ...(w.sprite ? { sprite: sprite as WingSprite } : {}), ...(w.kok ? { kok: w.kok } : {}) };
+  return { id, src: `${sk ?? W.klasor}/${file}`, olcek: w.olcek, omuz: w.omuz, capa: w.capa, enBoy: w.enBoy, filtre, open, ...(palet ? { palet } : {}), ...(w.esnet ? { esnet: true } : {}), ...(w.sprite ? { sprite: sprite as WingSprite } : {}), ...(w.ayna ? { ayna: w.ayna } : {}) };
 }
 
 /**
- * Kanat görselinin kutusu (jeton merkezi `cx,cy`, jeton genişliği `w` cinsinden, yukarı-sol köşe + boyut): kök (`capa`) jetonun
- * yatay merkezinde ve tepeden `omuz` yüksekliğinde. SVG jeton ve rozet aynı hesabı kullanır.
+ * Kanat görselinin kutusu (jeton merkezi `cx,cy`, jeton genişliği `w` cinsinden, yukarı-sol köşe + boyut): kök (`capa`) varsayılan olarak
+ * jetonun yatay merkezinde ve tepeden `omuz` yüksekliğinde; `at` (KW1) kökün yerini verir (jeton merkezi yerine gövdeye bağlı kök).
+ * SVG jeton ve rozet aynı hesabı kullanır.
  */
-export function wingBox(wing: WingLayerSpec, cx: number, cy: number, w: number): { x: number; y: number; width: number; height: number } {
+export function wingBox(wing: WingLayerSpec, cx: number, cy: number, w: number, at: { x?: number; y?: number } = {}): { x: number; y: number; width: number; height: number } {
   const width = w * wing.olcek, height = width * wing.enBoy;
-  return { x: cx - wing.capa[0] * width, y: cy - w / 2 + w * wing.omuz - wing.capa[1] * height, width, height };
+  const rx = at.x ?? cx, ry = at.y ?? cy - w / 2 + w * wing.omuz;
+  return { x: rx - wing.capa[0] * width, y: ry - wing.capa[1] * height, width, height };
+}
+
+/** Karakter jetonunun yerel uzayı (px): kök verisi (`WingRoot`) bu uzayda. */
+export const TOKEN_SPACE = 256;
+/** KW1: tek kanatlı slotun bir kanadı: kutu (dönmemiş), kök (`pivot`: döndürme ve ayna merkezi), dışa/yukarı dönüş ve sol için ayna. */
+export interface WingPlacement { side: 'sag' | 'sol'; x: number; y: number; width: number; height: number; pivot: { x: number; y: number }; angle: number; mirror: boolean }
+/**
+ * KW1: tek kanatlı slotun iki kanadı (sağ ve onun aynası olan sol), kökleri gövdeye bağlı: `root` verilirse jeton uzayındaki sol/sağ kök
+ * x'i (gövde siluetinin kenarının biraz içinde), yoksa slotun `ayna.dx` uzaklığı; kök yüksekliği `omuz`. Kanat jetonun ARKASINDA çizilir:
+ * kökün siluet içinde olması bağlantıyı garanti eder (içerideki kısım gizlenir, dışarı çıkan "sırttan çıkıyor" görünür).
+ */
+export function wingPlacements(wing: WingLayerSpec, cx: number, cy: number, w: number, root?: WingRoot | null): WingPlacement[] {
+  const m = wing.ayna;
+  if (!m) return [];
+  const k = w / TOKEN_SPACE, left = cx - w / 2;
+  const ry = root?.y !== undefined ? cy - w / 2 + root.y * k : cy - w / 2 + w * wing.omuz;
+  const sides: Array<['sag' | 'sol', number, boolean]> = [['sag', root ? left + root.sag * k : cx + m.dx * w, false], ['sol', root ? left + root.sol * k : cx - m.dx * w, true]];
+  return sides.map(([side, rx, mirror]) => ({ side, ...wingBox(wing, cx, cy, w, { x: rx, y: ry }), pivot: { x: rx, y: ry }, angle: m.aci, mirror }));
+}
+const r2 = (n: number): number => Math.round(n * 100) / 100;
+/** SVG dönüşümü: sağ kanat kökü etrafında saat yönünün tersine (dışa/yukarı) döner; sol kanat aynı dönüşün kök hizasında yatay aynasıdır. */
+export function placementTransform(p: WingPlacement): string {
+  const rot = `rotate(${r2(-p.angle)} ${r2(p.pivot.x)} ${r2(p.pivot.y)})`;
+  return p.mirror ? `translate(${r2(2 * p.pivot.x)} 0) scale(-1 1) ${rot}` : rot;
+}
+/** Dönmüş ve aynalanmış kanat kutusunun sınır kutusu (SVG kutusu, karakter ekranı kırpma payı). */
+export function placementBounds(p: WingPlacement): { x0: number; y0: number; x1: number; y1: number } {
+  const a = (-p.angle * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
+  const pts = [[p.x, p.y], [p.x + p.width, p.y], [p.x, p.y + p.height], [p.x + p.width, p.y + p.height]].map(([x, y]) => {
+    const dx = x! - p.pivot.x, dy = y! - p.pivot.y;
+    const rx = p.pivot.x + dx * c - dy * s, ry = p.pivot.y + dx * s + dy * c;
+    return [p.mirror ? 2 * p.pivot.x - rx : rx, ry] as const;
+  });
+  return { x0: Math.min(...pts.map((q) => q[0])), y0: Math.min(...pts.map((q) => q[1])), x1: Math.max(...pts.map((q) => q[0])), y1: Math.max(...pts.map((q) => q[1])) };
 }
 
 /**
@@ -187,60 +222,21 @@ export function skinTint(raceId: string, toneId: string | undefined): TintSpec |
   return { select, to: { lch: { h, c: Math.hypot(a, b), L, hueKeep: 0.3, chromaKeep: 0.5 } } };
 }
 
-/** SD5: palet filtresinin kimliği (aynı palet = aynı kimlik; tanım birden çok kez bulunsa da özdeş). */
-export const wingFilterId = (p: WingPalet): string => `wp-${p.golge.slice(1)}-${p.isik.slice(1)}${p.orta ? `-${p.orta.slice(1)}` : ''}${p.aralik ? `-${Math.round(p.aralik[0] * 100)}-${Math.round(p.aralik[1] * 100)}` : ''}`;
+/** SD5: palet filtresinin kimliği (aynı palet = aynı kimlik; tanım birden çok kez bulunsa da özdeş). `esik` (KW1) kimliğe girer. */
+export const wingFilterId = (p: WingPalet): string => `wp-${p.golge.slice(1)}-${p.isik.slice(1)}${p.esik ? `-e${Math.round(p.esik * 1000)}` : ''}`;
 const hexTable = (hex: string): [number, number, number] => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255) as [number, number, number];
 /** SD5: palet filtresinin SVG parametreleri: parlaklık (luma) gölge→ışık rengine eşlenir, alfa dokunulmaz. */
 export function wingFilterTables(p: WingPalet): { r: string; g: string; b: string } {
   const lo = hexTable(p.golge), hi = hexTable(p.isik);
-  // Eski paletler (Tiefling): iki duraklı doğrusal eşleme (aynen).
-  if (!p.orta && !p.aralik) {
-    const f = (i: number) => `${lo[i]!.toFixed(3)} ${hi[i]!.toFixed(3)}`;
-    return { r: f(0), g: f(1), b: f(2) };
-  }
-  // Dragonborn (2026-11-20): taban parlaklığı `aralik`a gerilir; gölge → orta → ışık (17 duraklı tablo, damarlar koyu kalır).
-  const mid = p.orta ? hexTable(p.orta) : ([0, 1, 2].map((i) => (lo[i]! + hi[i]!) / 2) as [number, number, number]);
-  const [a, b] = p.aralik ?? [0, 1];
-  const N = 17;
-  const at = (t: number, i: number): number => {
-    const u = Math.min(1, Math.max(0, (t - a) / Math.max(1e-6, b - a)));
-    return u < 0.5 ? lo[i]! + (mid[i]! - lo[i]!) * u * 2 : mid[i]! + (hi[i]! - mid[i]!) * (u - 0.5) * 2;
-  };
-  const f = (i: number) => Array.from({ length: N }, (_, k) => at(k / (N - 1), i).toFixed(3)).join(' ');
+  const f = (i: number) => `${lo[i]!.toFixed(3)} ${hi[i]!.toFixed(3)}`;
   return { r: f(0), g: f(1), b: f(2) };
 }
-
-/** Kök düzeltmesi: jeton adı (`dragonborn-erkek-fighter-ID12`) ya da `<sınıf>-<cinsiyet>` (cinsiyet male/female → erkek/kadin). */
-function rootFor(kok: WingRoot, tokenSrc?: string): WingRoot {
-  const stem = tokenSrc?.split('/').pop()?.replace(/\.[a-z]+$/, '');
-  const m = stem ? /^[a-z]+-(erkek|kadin|male|female)-([a-z]+)/.exec(stem) : null;
-  const g = m ? ({ male: 'erkek', female: 'kadin' } as Record<string, string>)[m[1]!] ?? m[1] : undefined;
-  const fix = (stem ? kok.duzeltme?.[stem] : undefined) ?? (m ? kok.duzeltme?.[`${m[2]}-${g}`] : undefined);
-  return fix ? { ...kok, ...fix } : kok;
-}
-
 /**
- * Gövdeye bağlı kanadın sağ yarısının yerleşimi (jeton merkezi `cx,cy`, genişlik `w`): iki kanatlı görselin kutusu (`x,y,width,height`;
- * yalnız sağ yarısı görünür), kök noktası (`rootX,rootY`) ve dönüş (`angle`, derece; SVG'de kök çevresinde). Sol kanat: `cx` çevresinde
- * ayna. SVG jeton ve rozet aynı hesabı kullanır.
+ * KW1: parlaklık (Rec.709 luma) matrisi: `esik` varsa (luma − esik) / (1 − esik) gerilir ve [0, 1]'e kırpılır (filtre çıkışı kırpar), böylece açık
+ * kanat görseli palet aralığının tamamını kullanır; yoksa SD5'teki düz luma.
  */
-export function wingRootLayout(kok0: WingRoot, enBoy: number, cx: number, cy: number, w: number, tokenSrc?: string):
-  { x: number; y: number; width: number; height: number; rootX: number; rootY: number; angle: number } {
-  const kok = rootFor(kok0, tokenSrc);
-  const width = w * kok.olcek, height = width * enBoy;
-  const rootX = cx + kok.x * w, rootY = cy - w / 2 + kok.y * w;
-  return { x: rootX - kok.gorsel[0] * width, y: rootY - kok.gorsel[1] * height, width, height, rootX, rootY, angle: -kok.aci };
-}
-
-/** Gövdeye bağlı iki kanadın kapsayan kutusu (dönüş dahil; sağ yarının köşeleri döndürülür, sol ayna). */
-export function wingRootBounds(kok: WingRoot, enBoy: number, cx: number, cy: number, w: number, tokenSrc?: string): { x: number; y: number; width: number; height: number } {
-  const L = wingRootLayout(kok, enBoy, cx, cy, w, tokenSrc);
-  const a = (L.angle * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
-  const pts = [[L.x + L.width / 2, L.y], [L.x + L.width, L.y], [L.x + L.width / 2, L.y + L.height], [L.x + L.width, L.y + L.height]].map(([px, py]) => {
-    const dx = px! - L.rootX, dy = py! - L.rootY;
-    return [L.rootX + dx * c - dy * s, L.rootY + dx * s + dy * c] as [number, number];
-  });
-  const xs = pts.flatMap(([px]) => [px, 2 * cx - px]), ys = pts.map(([, py]) => py);
-  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
+export function wingLumaMatrix(p: WingPalet): string {
+  const s = 1 / (1 - (p.esik ?? 0)), o = -(p.esik ?? 0) * s, f = (n: number) => +n.toFixed(4);
+  const row = `${f(0.2126 * s)} ${f(0.7152 * s)} ${f(0.0722 * s)} 0 ${f(o)}`;
+  return `${row}  ${row}  ${row}  0 0 0 1 0`;
 }

@@ -47,128 +47,69 @@
    "dosya": "dragonborn.webp",
    "dosyaKapali": null,
    "minSeviye": 5,
-   "olcek": 1.45,
+   "olcek": 0.6,
    "capa": [
-    0.5,
-    0.626
+    0.0577,
+    0.448
    ],
-   "enBoy": 0.3659,
-   "omuz": 0.46,
+   "enBoy": 0.7665,
+   "omuz": 0.4,
+   "ayna": {
+    "dx": 0.15,
+    "aci": 20
+   },
    "renkPaletleri": {
     "black": {
-     "golge": "#05050E",
-     "orta": "#2C2C35",
-     "isik": "#62626C",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#15151d",
+     "isik": "#484852",
+     "esik": 0.76
     },
     "blue": {
-     "golge": "#051E42",
-     "orta": "#254B6F",
-     "isik": "#5A87A4",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#002a48",
+     "isik": "#4c6c8f",
+     "esik": 0.76
     },
     "brass": {
-     "golge": "#604A00",
-     "orta": "#937836",
-     "isik": "#D5B570",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#6b540e",
+     "isik": "#bb9d57",
+     "esik": 0.76
     },
     "bronze": {
-     "golge": "#432000",
-     "orta": "#764A20",
-     "isik": "#B78457",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#4e2900",
+     "isik": "#9c6d45",
+     "esik": 0.76
     },
     "copper": {
-     "golge": "#501700",
-     "orta": "#894019",
-     "isik": "#CD7A4F",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#5e1e00",
+     "isik": "#b1643d",
+     "esik": 0.76
     },
     "gold": {
-     "golge": "#816300",
-     "orta": "#B8922D",
-     "isik": "#EEC465",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#876800",
+     "isik": "#dcb355",
+     "esik": 0.76
     },
     "green": {
-     "golge": "#00380B",
-     "orta": "#23672E",
-     "isik": "#61A466",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#00430f",
+     "isik": "#4d8c52",
+     "esik": 0.76
     },
     "red": {
-     "golge": "#400300",
-     "orta": "#8F0900",
-     "isik": "#CE5B32",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#5b0000",
+     "isik": "#ae3c1e",
+     "esik": 0.76
     },
     "silver": {
-     "golge": "#3A444D",
-     "orta": "#7A8591",
-     "isik": "#B6C0CA",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#576774",
+     "isik": "#a1b1c0",
+     "esik": 0.76
     },
     "white": {
-     "golge": "#A39A8B",
-     "orta": "#E6DECF",
-     "isik": "#FFFAF0",
-     "aralik": [
-      0.82,
-      1.0
-     ]
+     "golge": "#c4beb4",
+     "isik": "#f4ede4",
+     "esik": 0.76
     }
-   },
-   "kok": {
-    "_not": "Kanat gövdeye bağlı (kullanıcı kararı 2026-11-20, yalnız görünüm): taban görsel iki kanatlı; sağ kanat kökünden (görselin `gorsel` oranı: iç kenarın üst ucu) jetonun merkezinden `x` (jeton genişliği oranı) sağa, tepeden `y` (jeton yüksekliği oranı, omuz–dirsek bandı) aşağıya oturur; `olcek` = iki kanatlı görselin genişliği / jeton genişliği; `aci` derece dışa/yukarı dönüş (sağ kanat saat yönünün tersine). Sol kanat sağın aynası. Kanat gövdenin arkasında, zemin dairesinin önünde çizilir. `duzeltme`: jeton adı ya da `<sınıf>-<cinsiyet>` başına alan ezmesi (jeton adı önce).",
-    "gorsel": [
-     0.54,
-     0.46
-    ],
-    "x": 0.03,
-    "y": 0.44,
-    "olcek": 1.25,
-    "aci": 12,
-    "duzeltme": {
-     "dragonborn-erkek-wizard-WZ-B4": {
-      "y": 0.46
-     },
-     "dragonborn-male-bard": {
-      "y": 0.46
-     },
-     "dragonborn-male-warlock": {
-      "y": 0.46
-     }
-    }
-   },
-   "renkNot": "2026-11-20: soy paleti gövde pul rengine ayarlı (ölçüm: boyanmış jetonun pul maskesi ortalaması ↔ kanadın filtreli ortalaması, CIE76 ΔE; renkli soylar ≤ 1, Siyah 0,2 (gölge ucu koyu: zar damarları seçilir), Beyaz sıcak parlak beyaz (gövdeye 15,9), Gümüş soğuk gri-mavi; Beyaz–Gümüş kanat ΔE 32,6). `aralik`: taban parlaklığının gölge→orta→ışık tablosuna gerilen aralığı."
+   }
   }
  }
 }

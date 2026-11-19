@@ -69,8 +69,10 @@ describe('D1 katmanı (data/srd-duzeltme.json)', () => {
     expect(CURRENT_RULES).toBeGreaterThanOrEqual(SRD_D1_VERSION);
     expect(srdD1On({ kuralSurumu: 86 })).toBe(true);
     expect(srdD1On({ kuralSurumu: 85 })).toBe(false);
-    expect(SRD_DUZELTMELER).toHaveLength(77);
-    for (const d of SRD_DUZELTMELER) {
+    // Görev D2 (88) kayıtları aynı dosyada (`surum: 88`; src/battle/srdD2.test.ts denetler).
+    const D1 = SRD_DUZELTMELER.filter((d) => (d.surum ?? SRD_D1_VERSION) === SRD_D1_VERSION);
+    expect(D1).toHaveLength(77);
+    for (const d of D1) {
       expect(d.sayfa, `${d.kayit} sayfa`).toBeGreaterThanOrEqual(254);
       if (d.dosya === 'data/canavar-turleri.json') {
         expect((turler as { types: Record<string, string> }).types[d.kayit]).toBe(d.yeni);

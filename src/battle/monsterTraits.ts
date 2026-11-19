@@ -7,18 +7,19 @@
  *   dezavantajı), Illumination (ışık), Flyby (uçarken fırsat saldırısı almaz), Fire Aura (dokunana/başlayana 1d10
  *   Fire), Stench (5 ft'te tur başlayan CON save ya da Poisoned), Spider Climb, Ice Walk (buz/kar) / Web Walker (ağ).
  */
-import { getMonster, monsterSpells, spells } from '../data';
+import { getMonster, monsterSpells, spells, type Monster } from '../data';
 import { hasDarkness } from './maprules';
 import { monsterAt } from './srdD1';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
 
 const CONDS = ['Blinded', 'Charmed', 'Deafened', 'Exhaustion', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'];
 
-export function monsterTraitParts(state: BattleState, c: Combatant): { effects: ActiveEffect[]; traits: string[]; senses?: Combatant['senses']; zones: SpellZone[] } {
+/** `m0`: canavar kaydı (Görev D2: çağrı bloğu gibi `monsters.json`'da olmayan kayıt için); yoksa `getMonster(c.monsterId)`. */
+export function monsterTraitParts(state: BattleState, c: Combatant, m0?: Monster): { effects: ActiveEffect[]; traits: string[]; senses?: Combatant['senses']; zones: SpellZone[] } {
   const out = { effects: [] as ActiveEffect[], traits: [] as string[], zones: [] as SpellZone[] } as { effects: ActiveEffect[]; traits: string[]; senses?: Combatant['senses']; zones: SpellZone[] };
   if (!c.monsterId) return out;
   let m;
-  try { m = getMonster(c.monsterId); } catch { return out; }
+  try { m = m0 ?? getMonster(c.monsterId); } catch { return out; }
   // Görev D1: veri savaşın kural sürümünde (85 ve altı: eksik durum bağışıklığı notları SRD düzeltmesi öncesi gibi yok).
   m = monsterAt(m, state.kuralSurumu ?? 1);
   const u = (m.unsupported ?? []) as string[];
@@ -95,19 +96,32 @@ export function monsterSpellParts(c: Combatant): Partial<Combatant> | null {
   };
 }
 
+/**
+ * Tek canavarın özellik kurulumu (canavar özellikleri, duyular, auralar, canavar büyüleri). Savaş başında
+ * `withMonsterTraits`, Görev D2'den beri (sürüm 88) savaş sırasında eklenen canavarda `monsterSetup.ts` aynı işlevi kullanır.
+ */
+export function monsterTraitSetup(state: BattleState, c0: Combatant, m?: Monster): { c: Combatant; zones: SpellZone[] } {
+  let c = c0;
+  const p = monsterTraitParts(state, c, m);
+  const sp = monsterSpellParts(c);
+  if (sp) c = { ...c, ...sp };
+  return {
+    zones: p.zones,
+    c: !p.effects.length && !p.traits.length && !p.senses ? c : {
+      ...c, effects: [...(c.effects ?? []), ...p.effects], ...(p.traits.length ? { traits: [...new Set([...(c.traits ?? []), ...p.traits])] } : {}),
+      ...(p.senses ? { senses: p.senses } : {}),
+    },
+  };
+}
+
 /** Savaş başında bütün canavarlara (ve haritaya: auralar) uygulanır. */
 export function withMonsterTraits(state: BattleState): BattleState {
   const combatants: Record<string, Combatant> = {};
   const zones: SpellZone[] = [];
-  for (let [id, c] of Object.entries(state.combatants)) {
-    const p = monsterTraitParts(state, c);
-    zones.push(...p.zones);
-    const sp = monsterSpellParts(c);
-    if (sp) c = { ...c, ...sp };
-    combatants[id] = !p.effects.length && !p.traits.length && !p.senses ? c : {
-      ...c, effects: [...(c.effects ?? []), ...p.effects], ...(p.traits.length ? { traits: [...new Set([...(c.traits ?? []), ...p.traits])] } : {}),
-      ...(p.senses ? { senses: p.senses } : {}),
-    };
+  for (const [id, c] of Object.entries(state.combatants)) {
+    const r = monsterTraitSetup(state, c);
+    zones.push(...r.zones);
+    combatants[id] = r.c;
   }
   const map = state.map && zones.length ? { ...state.map, zones: [...(state.map.zones ?? []), ...zones] } : state.map;
   return { ...state, combatants, ...(map ? { map } : {}) };

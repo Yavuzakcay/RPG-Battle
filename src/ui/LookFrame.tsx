@@ -6,25 +6,16 @@
  */
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import { WingFilterDefs } from './WingFilter';
-import { WingRootParts } from './WingRootParts';
-import { raceColor } from '../battle/avatar';
+import { LookContext } from './lookContext';
 import { FOOT_FRAC, lineageLook, wingBox, wingFilterId, type LookSheet, type WingLayerSpec } from './lineageLook';
 
 const BASE = import.meta.env.BASE_URL;
 
 /** Kanat katmanı (rozet): sprite yüklenemezse sessizce gizlenir. */
-export function WingLayer(props: { wing: WingLayerSpec; size: number; tokenSrc?: string }) {
+export function WingLayer(props: { wing: WingLayerSpec; size: number }) {
   const { wing, size } = props;
   const [gone, setGone] = useState(false);
   if (gone) return null;
-  // 2026-11-20: gövdeye bağlı kanat (Dragonborn `kok`): iki kanat kökten, figürün arkasında, zemin dairesinin önünde.
-  if (wing.kok) {
-    return (
-      <svg className="look-wing look-wing-svg" width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ left: 0, top: 0 }} aria-hidden="true">
-        <WingRootParts wing={wing} href={`${BASE}${wing.src}`} cx={size / 2} cy={size / 2} w={size} tokenSrc={props.tokenSrc} />
-      </svg>
-    );
-  }
   const b = wingBox(wing, size / 2, size / 2, size);
   const sp = wing.sprite;
   const filter = wing.palet ? `url(#${wingFilterId(wing.palet)})` : wing.filtre || undefined;
@@ -37,19 +28,18 @@ export function WingLayer(props: { wing: WingLayerSpec; size: number; tokenSrc?:
 }
 
 /** `ability`: karakter ekranı (liste, oluşturucu önizlemesi): uçma yeteneği olan karakter havada olmasa da kanatlı görünür. */
-export function LookFrame(props: { sheet: LookSheet; size: number; flying?: boolean; ability?: boolean; /** Rozetin jetonu ve zemin rengi (kanat kökü düzeltmesi, kanatlı zemin). */ avatar?: { src?: string; bg?: string }; children: ReactNode }) {
+export function LookFrame(props: { sheet: LookSheet; size: number; flying?: boolean; ability?: boolean; children: ReactNode }) {
   const look = lineageLook(props.sheet, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) });
   const style = {
     width: props.size, height: props.size,
     '--look-filter': look.filter || 'none', '--look-sx': look.scaleX, '--look-sy': look.scaleY, '--look-foot': `${FOOT_FRAC * 100}%`,
   } as CSSProperties;
-  // Gövdeye bağlı kanat: zemin dairesi kanadın arkasında (rozetin kendi zemini saydam; CSS `.look-frame.winged`).
-  const rooted = !!look.wing?.kok;
+  // KW1: tek kanatlı slot (Dragonborn) kanadı rozetin içinde çizer (zemin dairesi ile figür arası): burada ayrı katman yok, görünüm bağlamla iner.
+  const inside = !!look.wing?.ayna;
   return (
-    <span className={`look-frame${rooted ? ' winged' : ''}`} style={style}>
-      {rooted && <span className="look-bg" style={{ background: props.avatar?.bg ?? raceColor(props.sheet.raceId) }} aria-hidden="true" />}
-      {look.wing && <WingLayer wing={look.wing} size={props.size} tokenSrc={props.avatar?.src} />}
-      {props.children}
+    <span className="look-frame" style={style}>
+      {look.wing && !inside && <WingLayer wing={look.wing} size={props.size} />}
+      {inside ? <LookContext.Provider value={look}>{props.children}</LookContext.Provider> : props.children}
     </span>
   );
 }

@@ -13,10 +13,11 @@ import { forcedMove, MOTION_VERSION } from './motion';
 import { ruleVersion } from './ruleVersion';
 import data from '../../data/canavar-yetenekleri.json';
 import { srdKayit } from './srdD1';
+import { lateSummonEvents } from './monsterSetup';
 import { srdD1On } from './srdD1Surum';
 import { turnKey } from './economy';
 import multiData from '../../data/multiattack.json';
-import { getMonster } from '../data';
+import { getMonster, type Monster } from '../data';
 import { distance, ring, type Offset } from '../rules/hex';
 import { rollDice, rollDie, rollTag, type Rng } from '../rules/dice';
 import { globalRule } from './ruleControl';
@@ -91,73 +92,86 @@ export function abilityReady(c: Combatant, a: MonsterAbility): boolean {
 
 // ------------------------------------------------------------------ savaş başı
 
+/**
+ * Tek canavarın yetenek kurulumu (pasifler, süren etki, auralar, kullanım kaynakları, günlük saldırılar). Savaş başında
+ * `withMonsterAbilities`, Görev D2'den beri (sürüm 88) savaş sırasında eklenen canavarda `monsterSetup.ts` aynı işlevi
+ * kullanır. `m0`: canavar kaydı (çağrı bloğu); yoksa `getMonster(c.monsterId)`.
+ */
+export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Monster): { c: Combatant; zones: SpellZone[] } {
+  const zones: SpellZone[] = [];
+  if (!on(state) || !c0.monsterId) return { c: c0, zones };
+  const dark = !!state.map && hasDarkness(state);
+  const id = c0.id;
+  const e: Entry = entryOf(c0, state) ?? {};
+  const c = { ...c0 };
+  const p = e.passive ?? {};
+  const fx: Partial<ActiveEffect> = {};
+  if (p.blurred) fx.attackedDis = true;
+  if ((p.lightSensitivity || p.sunlight) && state.map && !dark) { fx.attackDis = {}; if (p.sunlight) fx.checkDis = ['str', 'dex', 'con', 'int', 'wis', 'cha']; }
+  if (p.sunlightWeak && state.map && !dark) { fx.attackDis = {}; fx.saveDis = ['str', 'dex', 'con', 'int', 'wis', 'cha']; fx.checkDis = ['str', 'dex', 'con', 'int', 'wis', 'cha']; }
+  if (p.absorb) fx.absorb = p.absorb;
+  if (p.onDamage) fx.onDamageFx = p.onDamage;
+  if (p.greaterMagicResistance) fx.saveAdvAgainst = ['spell'];
+  if (p.jump) fx.jumpFt = p.jump.long;
+  if (p.bloodied) fx.bloodiedAdv = p.bloodied;
+  if (p.bloodFrenzy) fx.bloodFrenzy = true;
+  if (p.authority) fx.authority = p.authority.radiusFt;
+  if (p.passCreatures || p.swarm) fx.passCreatures = true;
+  // Burrow: yer altında ilerler (yaratıkların altından geçer, zorlu arazi yok); Earth Glide / Tunneler: taş ve kayanın içinden.
+  const burrow = ((m0: string[]) => m0.some((u) => /Burrow \d+ ft/.test(u)))(((() => { try { return (m0 ?? getMonster(c.monsterId as string)).unsupported ?? []; } catch { return []; } })()) as string[]);
+  // Burrow yalnızca hareketi etkiler (Freedom of Movement değil): yaratıkların altından geçer, zorlu arazi yok.
+  if (burrow) { fx.passCreatures = true; fx.burrow = true; }
+  if (p.earthGlide || p.tunneler) fx.phase = { difficult: false } as ActiveEffect['phase'];
+  if (p.swarm) fx.noHeal = true;
+  if (Object.keys(fx).length) c.effects = [...(c.effects ?? []), { ...fx, id: `srd19:${id}:passive`, name: c.name, sourceId: id } as ActiveEffect];
+  const traits = [...(p.traits ?? []), ...(p.siegeMonster ? ['siege-monster'] : []), ...(p.greaterMagicResistance ? ['greater-magic-resistance'] : []),
+    ...(p.reflectiveCarapace ? ['reflective-carapace'] : []), ...(p.corrosive ? ['corrosive-form'] : []), ...(p.mistyEscape ? ['misty-escape'] : []),
+    ...(p.abduct ? ['abduct'] : []), ...(p.earthGlide ? ['earth-glide'] : []), ...(p.berserk ? ['berserk'] : [])];
+  if (traits.length) c.traits = [...new Set([...(c.traits ?? []), ...traits])];
+  if (p.bonusGrant) c.bonusActions = [...new Set([...c.bonusActions, ...p.bonusGrant])];
+  if (p.heads) c.heads = p.heads;
+  if (p.transparent) c.hidden = { dc: p.transparent } as Combatant['hidden'];
+  const res: Record<string, number> = {};
+  for (const a of e.abilities ?? []) if (a.uses !== undefined) res[`mab:${a.id}`] = a.uses;
+  if (p.loathsomeLimbs) res['mab:loathsome-limbs'] = p.loathsomeLimbs.uses;
+  if (Object.keys(res).length) c.resources = { ...c.resources, ...res };
+  // SRD "1/Day" saldırıları (eski veride Recharge 6 yaklaşığı): savaşta bir kez (şarj olmaz).
+  let m; try { m = m0 ?? getMonster(c.monsterId as string); } catch { m = undefined; }
+  const daily = (m?.unsupported ?? []).filter((u: string) => /: 1\/Day \(Recharge 6 olarak\)/.test(u)).map((u: string) => u.split(':')[0]!.trim());
+  if (daily.length) c.attacks = c.attacks.map((a) => (daily.includes(a.name) ? { ...a, recharge: 7 } : a));
+  // "N/Day (Recharge X olarak)" N > 1 (Aboleth Dominate Mind 2/Day): savaşta N kez (kalan hak `mab:day:<ad>`).
+  for (const u of (m?.unsupported ?? []) as string[]) {
+    const mm = /^(.+?): (\d)\/Day \(Recharge \d olarak\)/.exec(u);
+    if (!mm || Number(mm[2]) < 2) continue;
+    c.attacks = c.attacks.map((a) => (a.name === mm[1] ? { ...a, recharge: 7 } : a));
+    c.resources = { ...c.resources, [`mab:day:${mm[1]}`]: Number(mm[2]) - 1 };
+  }
+  // SRD sabit hasar ("Hit: 1 Piercing damage"): eski verideki 1d2 yaklaşığı yerine sabit değer.
+  c.attacks = c.attacks.map((a) => { const k = /^(\d+) [A-Za-z]+ damage/.exec(a.text ?? ''); return k && /^1d2/.test(a.damageDice ?? '') ? { ...a, damageDice: k[1] } : a; });
+  if (p.roarSequence) {
+    const idx = p.roarSequence.map((n) => c.attacks.findIndex((a) => a.name === n));
+    c.attacks = c.attacks.map((a) => (p.roarSequence!.includes(a.name) ? { ...a, recharge: 7 } : a));
+    c.rechargeUsed = [...new Set([...c.rechargeUsed, ...idx.slice(1).filter((i) => i >= 0)])];
+    c.resources = { ...c.resources, 'mab:roar': 0 };
+  }
+  for (const au of p.auras ?? []) {
+    zones.push({ id: `srd19:${id}:${au.name}`, spellId: `srd19:${au.name}`, name: au.name, casterId: id, side: c.side, dc: au.dc ?? 0, slotLevel: 0, hexes: [],
+      anchorId: id, radius: Math.floor(au.radiusFt / 5),
+      spec: au.difficult ? { difficult: 2, targets: 'all', color: '#6b5a3a', icon: '🫧' }
+        : { on: au.on ?? ['start'], targets: au.targets ?? 'enemies', save: au.save, conditions: au.conditions, hold: 'turn', ...(au.gibbering ? { gibbering: true } : {}), color: '#5b3a6b', icon: '😱' } } as SpellZone);
+  }
+  return { c, zones };
+}
+
 /** Savaş başında pasifler: bonus eylem seçenekleri, işaretler, süren etki, auralar, kullanım kaynakları. */
 export function withMonsterAbilities(state: BattleState): BattleState {
   if (!on(state)) return state;
   const combatants: Record<string, Combatant> = {};
   const zones: SpellZone[] = [];
-  const dark = !!state.map && hasDarkness(state);
   for (const [id, c0] of Object.entries(state.combatants)) {
-    if (!c0.monsterId) { combatants[id] = c0; continue; }
-    const e: Entry = entryOf(c0, state) ?? {};
-    const c = { ...c0 };
-    const p = e.passive ?? {};
-    const fx: Partial<ActiveEffect> = {};
-    if (p.blurred) fx.attackedDis = true;
-    if ((p.lightSensitivity || p.sunlight) && state.map && !dark) { fx.attackDis = {}; if (p.sunlight) fx.checkDis = ['str', 'dex', 'con', 'int', 'wis', 'cha']; }
-    if (p.sunlightWeak && state.map && !dark) { fx.attackDis = {}; fx.saveDis = ['str', 'dex', 'con', 'int', 'wis', 'cha']; fx.checkDis = ['str', 'dex', 'con', 'int', 'wis', 'cha']; }
-    if (p.absorb) fx.absorb = p.absorb;
-    if (p.onDamage) fx.onDamageFx = p.onDamage;
-    if (p.greaterMagicResistance) fx.saveAdvAgainst = ['spell'];
-    if (p.jump) fx.jumpFt = p.jump.long;
-    if (p.bloodied) fx.bloodiedAdv = p.bloodied;
-    if (p.bloodFrenzy) fx.bloodFrenzy = true;
-    if (p.authority) fx.authority = p.authority.radiusFt;
-    if (p.passCreatures || p.swarm) fx.passCreatures = true;
-    // Burrow: yer altında ilerler (yaratıkların altından geçer, zorlu arazi yok); Earth Glide / Tunneler: taş ve kayanın içinden.
-    const burrow = ((m0: string[]) => m0.some((u) => /Burrow \d+ ft/.test(u)))(((() => { try { return getMonster(c.monsterId as string).unsupported ?? []; } catch { return []; } })()) as string[]);
-    // Burrow yalnızca hareketi etkiler (Freedom of Movement değil): yaratıkların altından geçer, zorlu arazi yok.
-    if (burrow) { fx.passCreatures = true; fx.burrow = true; }
-    if (p.earthGlide || p.tunneler) fx.phase = { difficult: false } as ActiveEffect['phase'];
-    if (p.swarm) fx.noHeal = true;
-    if (Object.keys(fx).length) c.effects = [...(c.effects ?? []), { ...fx, id: `srd19:${id}:passive`, name: c.name, sourceId: id } as ActiveEffect];
-    const traits = [...(p.traits ?? []), ...(p.siegeMonster ? ['siege-monster'] : []), ...(p.greaterMagicResistance ? ['greater-magic-resistance'] : []),
-      ...(p.reflectiveCarapace ? ['reflective-carapace'] : []), ...(p.corrosive ? ['corrosive-form'] : []), ...(p.mistyEscape ? ['misty-escape'] : []),
-      ...(p.abduct ? ['abduct'] : []), ...(p.earthGlide ? ['earth-glide'] : []), ...(p.berserk ? ['berserk'] : [])];
-    if (traits.length) c.traits = [...new Set([...(c.traits ?? []), ...traits])];
-    if (p.bonusGrant) c.bonusActions = [...new Set([...c.bonusActions, ...p.bonusGrant])];
-    if (p.heads) c.heads = p.heads;
-    if (p.transparent) c.hidden = { dc: p.transparent } as Combatant['hidden'];
-    const res: Record<string, number> = {};
-    for (const a of e.abilities ?? []) if (a.uses !== undefined) res[`mab:${a.id}`] = a.uses;
-    if (p.loathsomeLimbs) res['mab:loathsome-limbs'] = p.loathsomeLimbs.uses;
-    if (Object.keys(res).length) c.resources = { ...c.resources, ...res };
-    // SRD "1/Day" saldırıları (eski veride Recharge 6 yaklaşığı): savaşta bir kez (şarj olmaz).
-    let m; try { m = getMonster(c.monsterId as string); } catch { m = undefined; }
-    const daily = (m?.unsupported ?? []).filter((u: string) => /: 1\/Day \(Recharge 6 olarak\)/.test(u)).map((u: string) => u.split(':')[0]!.trim());
-    if (daily.length) c.attacks = c.attacks.map((a) => (daily.includes(a.name) ? { ...a, recharge: 7 } : a));
-    // "N/Day (Recharge X olarak)" N > 1 (Aboleth Dominate Mind 2/Day): savaşta N kez (kalan hak `mab:day:<ad>`).
-    for (const u of (m?.unsupported ?? []) as string[]) {
-      const mm = /^(.+?): (\d)\/Day \(Recharge \d olarak\)/.exec(u);
-      if (!mm || Number(mm[2]) < 2) continue;
-      c.attacks = c.attacks.map((a) => (a.name === mm[1] ? { ...a, recharge: 7 } : a));
-      c.resources = { ...c.resources, [`mab:day:${mm[1]}`]: Number(mm[2]) - 1 };
-    }
-    // SRD sabit hasar ("Hit: 1 Piercing damage"): eski verideki 1d2 yaklaşığı yerine sabit değer.
-    c.attacks = c.attacks.map((a) => { const k = /^(\d+) [A-Za-z]+ damage/.exec(a.text ?? ''); return k && /^1d2/.test(a.damageDice ?? '') ? { ...a, damageDice: k[1] } : a; });
-    if (p.roarSequence) {
-      const idx = p.roarSequence.map((n) => c.attacks.findIndex((a) => a.name === n));
-      c.attacks = c.attacks.map((a) => (p.roarSequence!.includes(a.name) ? { ...a, recharge: 7 } : a));
-      c.rechargeUsed = [...new Set([...c.rechargeUsed, ...idx.slice(1).filter((i) => i >= 0)])];
-      c.resources = { ...c.resources, 'mab:roar': 0 };
-    }
-    for (const au of p.auras ?? []) {
-      zones.push({ id: `srd19:${id}:${au.name}`, spellId: `srd19:${au.name}`, name: au.name, casterId: id, side: c.side, dc: au.dc ?? 0, slotLevel: 0, hexes: [],
-        anchorId: id, radius: Math.floor(au.radiusFt / 5),
-        spec: au.difficult ? { difficult: 2, targets: 'all', color: '#6b5a3a', icon: '🫧' }
-          : { on: au.on ?? ['start'], targets: au.targets ?? 'enemies', save: au.save, conditions: au.conditions, hold: 'turn', ...(au.gibbering ? { gibbering: true } : {}), color: '#5b3a6b', icon: '😱' } } as SpellZone);
-    }
-    combatants[id] = c;
+    const r = monsterAbilitySetup(state, c0);
+    combatants[id] = r.c;
+    zones.push(...r.zones);
   }
   const map = state.map && zones.length ? { ...state.map, zones: [...(state.map.zones ?? []), ...zones] } : state.map;
   return { ...state, combatants, ...(map ? { map } : {}) };
@@ -459,7 +473,8 @@ function summonEvents(state: BattleState, actor: Combatant, a: MonsterAbility): 
     const kept = a.onlyAttacks ? base.attacks.filter((x) => a.onlyAttacks?.includes(x.name)) : base.attacks;
     const c: Combatant = { ...base, ...(a.onlyAttacks && kept.length ? { attacks: kept } : {}), side: actor.side, pos: spots[k] as Offset, initiative: actor.initiative,
       summon: { by: actor.id, spellId: `mab:${a.id}`, spell: a.en, level: 0, turn: 'after-owner' } };
-    out.push({ type: 'summoned', ownerId: actor.id, spell: a.en, combatant: c, index: idx + k });
+    // Görev D2 (88+): çağrılan savaş başındaki gibi canavar özellikleri ve pasifleriyle (etkin yetenekleri yok: `abilitiesOf` `mab:`).
+    out.push(...lateSummonEvents(state, { type: 'summoned', ownerId: actor.id, spell: a.en, combatant: c, index: idx + k }));
   }
   return out;
 }

@@ -74,7 +74,11 @@ describe('kanat katmanı (bağlı)', () => {
     renderToStaticMarkup(<svg><TokenFigure href="x.webp" cx={50} cy={50} w={40} look={sheetAvatar(sheet({ raceId, lineageId, level, ...(awakening ? { celestialAwakening: awakening } : {}) })).look} flying={flying} /></svg>);
   it('eşleme: üç slot (Anka ve Melek bağlaması KQ6-3 ile kaldırıldı), dosyalar bağlı ve gerçekten var, çapa/oran/omuz veride, Dragonborn 10 renk filtresi', async () => {
     expect(Object.keys(s).sort()).toEqual(['celestial-kirik-kanat', 'dragonborn', 'tiefling-kanatli']);
-    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.568, 0.438], dragonborn: [0.5, 0.626] };
+    // KW1: Dragonborn görseli TEK (sağ) kanat (`ayna`: iki yana ayna, kök gövdeye bağlı): çapa kanadın kökü (omuz eklemi), `olcek` tek kanadın jeton genişliğine oranı,
+    // `omuz` kökün jeton yüksekliğindeki yeri (omuz–dirsek bandı). Diğer iki slot kanat çifti: çapa jetonun yatay merkezinde, çift genişliği 1.45, omuz 0.46.
+    const capa = { 'tiefling-kanatli': [0.501, 0.708], 'celestial-kirik-kanat': [0.568, 0.438], dragonborn: [0.0577, 0.448] };
+    const olcek = { 'tiefling-kanatli': 1.45, 'celestial-kirik-kanat': 1.45, dragonborn: 0.6 } as Record<string, number>;
+    const omuz = { 'tiefling-kanatli': 0.46, 'celestial-kirik-kanat': 0.46, dragonborn: 0.4 } as Record<string, number>;
     for (const [id, w] of Object.entries(s)) {
       expect(w.dosya, id).toBe(`${id}.webp`);
       const meta = await sharp(`public/kanat/${w.dosya}`).metadata();
@@ -82,8 +86,10 @@ describe('kanat katmanı (bağlı)', () => {
       // SD5: Melek kanadı oransız (esnet) oturur; diğerlerinde en-boy görselinki.
       if (!(w as { esnet?: boolean }).esnet) expect(w.enBoy, id).toBeCloseTo(meta.height! / meta.width!, 3);
       expect(w.capa, id).toEqual(capa[id as keyof typeof capa]);
-      expect(w.olcek).toBeCloseTo(1.45); expect(w.omuz).toBeCloseTo(0.46); expect(w.enBoy).toBeGreaterThan(0.2);
+      expect(w.olcek, id).toBeCloseTo(olcek[id]!); expect(w.omuz, id).toBeCloseTo(omuz[id]!); expect(w.enBoy).toBeGreaterThan(0.2);
     }
+    expect((s.dragonborn as unknown as { ayna: unknown }).ayna).toEqual({ dx: 0.15, aci: 20 });
+    expect(s['tiefling-kanatli'] as unknown as { ayna?: unknown }).not.toHaveProperty('ayna');
     expect(Object.keys((s.dragonborn as unknown as { renkPaletleri: Record<string, unknown> }).renkPaletleri).sort()).toEqual(['black', 'blue', 'brass', 'bronze', 'copper', 'gold', 'green', 'red', 'silver', 'white']);
   });
   it('Anka Öğretisi (eski giriş geçici eklenir): animasyonlu 4x2 sayfa, yalnız havada, kanat figürle aynalanır, ilk kare sabit (rozet)', async () => {
