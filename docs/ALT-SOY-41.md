@@ -78,7 +78,7 @@ Ten tonu kültürden bağımsız ayrı seçimdir (`skinTone`); her kültür üç
 
 ### Savaş jetonu ve kanat katmanı (AS1c)
 
-Alt soy görünümü (oran, hale gizleme, koyu filtre, kanat katmanı) savaş jetonunda da `lineageLook` ile uygulanır. Kanat katmanı: `data/kanat-esleme.json` + `public/kanat/` (şimdilik boş; `dosya: null` iken katman yok); jetonun arkasında, yalnız havadayken açık sprite; şart: kare, şeffaf PNG/WebP, BEYAZ taban, renk CSS filtreyle (Dragonborn 10 renk).
+Alt soy görünümü (oran, hale gizleme, koyu filtre, kanat katmanı) savaş jetonunda da `lineageLook` ile uygulanır. Kanat katmanı: `data/kanat-esleme.json` + `public/kanat/` (şimdilik boş; `dosya: null` iken katman yok); jetonun arkasında, yalnız havadayken açık sprite; şart: kare, şeffaf PNG/WebP, BEYAZ taban, renk CSS filtreyle (Dragonborn 10 renk). KW1: Dragonborn kanadı tek (sağ) kanat + ayna, kökü gövde siluetinde omuz hizasında, rozette zemin dairesi ile figür arasında, rengi gövdeye uyumlu (ayrıntı `public/kanat/README.md`).
 
 ## AS1b sonrasına kalanlar
 

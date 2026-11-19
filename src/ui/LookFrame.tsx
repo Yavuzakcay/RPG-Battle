@@ -6,6 +6,7 @@
  */
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import { WingFilterDefs } from './WingFilter';
+import { LookContext } from './lookContext';
 import { FOOT_FRAC, lineageLook, wingBox, wingFilterId, type LookSheet, type WingLayerSpec } from './lineageLook';
 
 const BASE = import.meta.env.BASE_URL;
@@ -33,10 +34,12 @@ export function LookFrame(props: { sheet: LookSheet; size: number; flying?: bool
     width: props.size, height: props.size,
     '--look-filter': look.filter || 'none', '--look-sx': look.scaleX, '--look-sy': look.scaleY, '--look-foot': `${FOOT_FRAC * 100}%`,
   } as CSSProperties;
+  // KW1: tek kanatlı slot (Dragonborn) kanadı rozetin içinde çizer (zemin dairesi ile figür arası): burada ayrı katman yok, görünüm bağlamla iner.
+  const inside = !!look.wing?.ayna;
   return (
     <span className="look-frame" style={style}>
-      {look.wing && <WingLayer wing={look.wing} size={props.size} />}
-      {props.children}
+      {look.wing && !inside && <WingLayer wing={look.wing} size={props.size} />}
+      {inside ? <LookContext.Provider value={look}>{props.children}</LookContext.Provider> : props.children}
     </span>
   );
 }
