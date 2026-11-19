@@ -9,6 +9,17 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Dungeondex, Türkçe sürüm (2026-11-20; yalnız arayüz, kural ve kayıt sürümü değişmedi)
+
+- Tasarım ve envanter `harita/belgeler/DUNGEONDEX-TASARIM.md` (ilk commit, salt okunur). Ekran tembel parça `src/screens/Dungeondex.tsx` (+ `dungeondex.css`), katalog `src/dungeondex/catalog.ts`; ana menüde "Dungeondex" düğmesi (Ayarlar'ın yanında). Ana parça 448,6 kB.
+- Kapsam (kullanıcı kararı): büyü 339, eşya 449 (319 sihirli + 80 donanım + 38 silah + 12 zırh), canavar 330, tür 10, alt soy 41 (38 + 3 Celestial Göksel Uyanış), alt sınıf (yüklü olanların hepsi; < 120 ise "içerik eksik" notu, çökmez), feat 17, geçmiş 12, durum 15 (14 + Exhaustion) + "Lisanslar ve atıf".
+- Kimlikler mevcut SRD kimlikleri. Durumların Türkçe açıklaması yoktu: `data/aciklamalar-tr.json` `durum` (kimlik = SRD durum adının küçük harfi; `AciklamaTuru` `durum`). Canavarların Türkçe açıklaması yok (330 eksik): kartta Türkçe özet satırı + stat + "Türkçe açıklama henüz yok".
+- SD4 ad kuralı; SRD İngilizce ham metni (`text`, `raw`) kullanılmaz; kaynak sayfa gösterilmez. Açıklama dil anahtarlı (`DexText` tr/en/ui): `data/aciklamalar-en.json` aynı yapıyla eklenince (`import.meta.glob`) kod değişmeden EN metni gelir; yoksa EN arayüzde Türkçe metin + "Description available in Turkish only" notu.
+- Arama TR/EN ad, aksan duyarsız; süzgeçler büyü seviye/okul/sınıf, canavar CR kademesi/tür, eşya türü, alt sınıf sınıfı, alt soy türü, feat kategorisi (en çok 6 görünür, fazlası katta). Sabitler `data/dungeondex.json` (sayfa 40, CR kademeleri, büyü sınıf kodları, durum adları).
+- Bağlantılar yalnız veridekiler: büyü → sınıf listesi ve uyguladığı durum, canavar → büyüleri (`canavar-buyuleri.json`) ve durum bağışıklıkları; canavar ortamı (harita adları, gizli harita yok) ve teması etiket; tür ↔ alt soy; geçmiş ↔ köken feat'i; durum → onu uygulayan büyüler; eşya → yüklü büyüler.
+- Lisans sayfası `NOTICE` metnini değiştirmeden gösterir (ilk satır depo adı atlanır), uygulama adı `APP_NAME`; "D&D" yalnız mekanik kaynağını anlatırken.
+- Mobil: tek sütun (kategori → liste → kart, büyük Geri düğmesi), ≥ 760 px iki sütun. Uzun listeler 40'lık sayfa ("Daha fazla göster"). Test `src/dungeondex/dungeondex.test.tsx`; görüntüler `docs/sabah/dungeondex/`.
+
 ## Dragonborn kanadı gövdeye bağlı + palet uyumu (2026-11-20, kullanıcı kararı; yalnız görünüm, kural sürümü yok)
 
 - **Sorun:** rozet (`LookFrame` + `AvatarBadge`) kanadı zemin dairesinin de arkasına çiziyordu; daire kökleri örttüğü için kanatlar dairenin iki yanında kopuk ve yüzer gibi duruyordu. Taban görsel beyaz ve parlaklığı dar (%80–99) olduğundan iki uçlu palet hep açık uca düşüyor, kanat soluk/pastel çıkıyordu (Siyah gri).

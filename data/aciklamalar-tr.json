@@ -1,5 +1,5 @@
 {
- "_aciklama": "Görev SD4: oluşturucu ve savaş kartlarında gösterilen Türkçe açıklamalar (kimlik = SRD kimliği; ad İngilizce kalır, açıklama Türkçe). buyu: büyü kimliği → ne yapar (mekanik `text` kısaltmasının yerine kartta bu görünür; `text` ortam kuralı için olduğu gibi kalır). esya: eşya kimliği → ne işe yarar (etki özeti olmayan eşyalar). tur: `<tür>/<özellik>` SRD tür özelliği. yetenek: `<sınıf>:<özellik>` sınıf özelliği. altsinif: `<sınıf>/<alt sınıf>:<özellik>`. invocation: Invocation kimliği. SRD'den üretilen data/srd/*.json elle düzenlenmez; bu ayrı dosya. Doğrulama src/data/aciklamalarTr.test.ts. EN arayüzde yoksa 'açıklama yalnız Türkçe' notu gösterilir.",
+ "_aciklama": "Görev SD4: oluşturucu ve savaş kartlarında gösterilen Türkçe açıklamalar (kimlik = SRD kimliği; ad İngilizce kalır, açıklama Türkçe). buyu: büyü kimliği → ne yapar (mekanik `text` kısaltmasının yerine kartta bu görünür; `text` ortam kuralı için olduğu gibi kalır). esya: eşya kimliği → ne işe yarar (etki özeti olmayan eşyalar). tur: `<tür>/<özellik>` SRD tür özelliği. yetenek: `<sınıf>:<özellik>` sınıf özelliği. altsinif: `<sınıf>/<alt sınıf>:<özellik>`. invocation: Invocation kimliği. SRD'den üretilen data/srd/*.json elle düzenlenmez; bu ayrı dosya. Doğrulama src/data/aciklamalarTr.test.ts. EN arayüzde yoksa 'açıklama yalnız Türkçe' notu gösterilir. durum: SRD durum adı küçük harfle (blinded … unconscious, exhaustion) → kısa Türkçe kural özeti (Dungeondex).",
  "buyu": {
   "acid-splash": "60 ft içinde 5 ft yarıçaplı asit balonu patlatırsın. Alandaki herkes DEX kurtarma zarını geçemezse 1d6 asit hasarı alır; birkaç yakın düşmanı vurmak için iyi.",
   "chill-touch": "Dokunma mesafesinde büyü saldırısı yaparsın. İsabet ederse 1d10 nekrotik hasar verir; hedef bir sonraki turunun sonuna kadar can (HP) kazanamaz.",
@@ -579,5 +579,22 @@
   "control-water/flood": "Alandaki durgun suyun seviyesi 20 ft'e kadar yükselir; büyük su kütlesinde alanı boydan boya geçen 20 ft'lik dalga olur, Huge ve küçük taşıtları sürükler (%25 alabora). Savaşta etkisi yok, Game Master anlatır.",
   "control-water/part": "Alandaki su ikiye ayrılır, alan boyunca bir hendek açılır ve su iki yanda duvar olur; etki bitince hendek bir tur içinde yeniden dolar. Savaşta etkisi yok, Game Master anlatır.",
   "control-water/redirect": "Alandaki akan su seçtiğin yöne akar (engelin ya da duvarın üstünden bile); alandan çıkınca araziye göre akar. Seçim değişene ya da büyü bitene dek sürer. Savaşta etkisi yok, Game Master anlatır."
+ },
+ "durum": {
+  "blinded": "Göremezsin; görme gerektiren her kontrolü otomatik başaramazsın. Sana yapılan saldırılar avantajlı, senin saldırıların dezavantajlıdır.",
+  "charmed": "Seni büyüleyene saldıramaz, onu zararlı yetenek ya da büyüyle hedef alamazsın. Büyüleyen, seninle sosyal etkileşim kontrollerinde avantajlıdır.",
+  "deafened": "Duyamazsın; duyma gerektiren her kontrolü otomatik başaramazsın.",
+  "frightened": "Korkunun kaynağı görüş hattındayken kontrol ve saldırı zarlarında dezavantajlısın; kaynağa isteyerek yaklaşamazsın.",
+  "grappled": "Hızın 0 olur ve artamaz. Seni yakalayan dışındaki hedeflere saldırıda dezavantajlısın; yakalayan seni hareket ederken sürükleyebilir.",
+  "incapacitated": "Eylem, bonus eylem ve tepki yapamazsın; konsantrasyonun kesilir, konuşamazsın. İnisiyatifte dezavantajlısın.",
+  "invisible": "Görülmezsin: inisiyatifte avantajlısın, seni göremeyenin saldırıları sana dezavantajlı, senin saldırıların avantajlıdır.",
+  "paralyzed": "Etkisizsin ve hızın 0 olur. Güç ve Çeviklik kurtarma zarlarını otomatik başaramazsın; sana saldırılar avantajlı, 5 ft içinden isabet kritiktir.",
+  "petrified": "Taşa dönersin: etkisizsin, hızın 0, ağırlığın on katı. Bütün hasara dirençlisin, zehir ve Poisoned sana işlemez; sana saldırılar avantajlıdır.",
+  "poisoned": "Saldırı zarlarında ve yetenek kontrollerinde dezavantajlısın.",
+  "prone": "Yerdesin: yalnız sürünebilirsin, kalkmak hızının yarısına mal olur. Saldırıların dezavantajlı; sana 5 ft içinden saldırı avantajlı, uzaktan dezavantajlıdır.",
+  "restrained": "Hızın 0 olur. Saldırıların ve Çeviklik kurtarma zarların dezavantajlı, sana yapılan saldırılar avantajlıdır.",
+  "stunned": "Etkisizsin. Güç ve Çeviklik kurtarma zarlarını otomatik başaramazsın; sana yapılan saldırılar avantajlıdır.",
+  "unconscious": "Bilincin yoktur: etkisizsin, yere düşersin, elindekini bırakırsın. Güç ve Çeviklik kurtarmaları otomatik başarısız; 5 ft içinden isabet kritiktir.",
+  "exhaustion": "Kademeli bitkinlik (1–6): her kademe d20 Testlerine −2 ve hıza −5 ft getirir; 6. kademede ölürsün. Uzun dinlenme bir kademe azaltır."
  }
 }
