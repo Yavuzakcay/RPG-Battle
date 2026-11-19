@@ -1,3 +1,4 @@
+import type { SaveWhy } from './durations';
 import type { Ability } from '../rules/abilities';
 import type { Height } from '../rules/conditions';
 import type { DamageNote } from '../rules/damage';
@@ -2072,6 +2073,8 @@ export type BattleEvent =
       bonusDice?: RolledExtra[];
       /** Mekanik matris B20 (sürüm 83+): alan tetiğinin save'i (yüzey çözücüsü değdiği altıgende element üretir). */
       zoneId?: string;
+      /** G01 (yalnız görünüm): save kipinin kaynakları (durum, süren etki, özellik); reducer yok sayar (`saveWhy.ts`). */
+      modeWhy?: SaveWhy[];
     }
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number; /** Kuyruk P11: iyileştirme zarları (ve paket değişikliği). */ rolls?: number[]; changed?: string }
   /** Kuyruk 19: savaşta HP zarı harcandı (Lifedrinker). */
