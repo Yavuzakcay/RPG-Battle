@@ -766,6 +766,28 @@ export function zoneDriftEvents(state: BattleState, casterId: string): BattleEve
   return out;
 }
 
+/**
+ * Mekanik matris B21 (sürüm 83): kayan bulut (Cloudkill, Incendiary Cloud; `drift`) yeni kapladığı yaratığa save attırır.
+ * SRD 5.2.1: "A creature must also make this save when the Sphere moves into its space and when it enters the Sphere or
+ * ends its turn there. A creature makes this save only once per turn." Giriş tetiği (`enter`) olan alanlarda; turda bir
+ * kez kuralı alanın `once` kaydıyla (`triggerEvents`).
+ */
+export function zoneDriftEnterEvents(before: BattleState, after: BattleState, moved: readonly BattleEvent[], rng: Rng): BattleEvent[] {
+  if (!matrisOn(after)) return [];
+  const makers: Array<(s: BattleState) => BattleEvent[]> = [];
+  for (const e of moved) {
+    if (e.type !== 'zone_moved') continue;
+    const z0 = before.map?.zones?.find((x) => x.id === e.zoneId);
+    const z1 = liveZone(after, e.zoneId);
+    if (!z0 || !z1 || !zoneSpecOf(z1)?.on?.includes('enter')) continue;
+    for (const c of Object.values(after.combatants)) {
+      if (!c.pos || bodyInZone(before, z0, c, c.pos) || !bodyInZone(after, z1, c, c.pos)) continue;
+      makers.push((s) => { const live = liveZone(s, z1.id); return live ? triggerEvents(s, live, c.id, rng) : []; });
+    }
+  }
+  return chain(after, makers);
+}
+
 /** Kuyruk A7: alanla örtüşen, en çok `maxLevel` seviyedeki büyülerin ışıkları (etki, alan, nesne) kalkar. */
 function dispelLightEvents(state: BattleState, hexes: Offset[], maxLevel: number): BattleEvent[] {
   const inArea = (h: Offset) => hexes.some((x) => sameHex(x, h));

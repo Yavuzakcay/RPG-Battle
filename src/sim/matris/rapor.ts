@@ -50,6 +50,11 @@ export const KATALOG: Bulgu[] = [
     oneri: 'Büyü verisinde `castingTime: reaction` olanları `cast_spell` komutunda reddetmek (tepki akışı `reactions.ts` ayrı yoldan yapıyor).',
     eslesir: (r) => kotu(r) && bag(r, 'eylemle yapım'),
     duzeltme: { surum: 83, not: '`castingTime: reaction` büyüleri `cast_spell` komutunda reddedilir; tetik akışı (`reactions.ts`) aynen' } },
+  { id: 'B21', sonuc: 'yanlış', baslik: 'Kayan bulut içine girdiği yaratığa save attırmıyor (Cloudkill, Incendiary Cloud)',
+    neden: 'SRD 5.2.1 Cloudkill/Incendiary Cloud: "A creature must also make this save when the Sphere moves into its space and when it enters the Sphere or ends its turn there. A creature makes this save only once per turn." `zoneDriftEvents` bulutu kaydırıyor (`zone_moved`) ama yeni kapladığı yaratıklar için tetik yok.',
+    oneri: 'Kayma sonrası yeni kaplanan yaratıklara giriş tetiği (turda bir kez), kural sürümü kapısıyla.',
+    eslesir: (r) => kotu(r) && bag(r, 'kayan bulut'),
+    duzeltme: { surum: 83, not: '`zones.ts` `zoneDriftEnterEvents`: kayınca yeni kaplanan yaratığa giriş tetiği (`once`)' } },
   { id: 'B05', sonuc: 'yanlış', baslik: 'Alan büyülerinin yapım anı save\'i eksik ya da tetik zamanı yanlış',
     neden: 'SRD: Incendiary Cloud "When the cloud appears … each creature in it makes a DEX save" ve giriş/tur sonu; veride `zone.on` = enter, end (cast yok). Wall of Thorns yapımda DEX 7d8 Piercing, giriş/tur sonunda 7d8 Slashing; veride yalnız enter. Blade Barrier yapımda save + giriş/tur sonu; veride enter, start. Conjure Celestial yapımda her yaratığa Searing Light (DEX 6d12) + giriş/tur sonu; veride enter, start. Storm of Vengeance belirince CON save, 2d6 Thunder + Deafened; veride yalnız aşamalı tur başı.',
     oneri: 'Büyü verisinde `zone.on` listelerini SRD\'ye çekmek (cast ekle; start → end), Wall of Thorns için yapım ve tetik hasar türlerini ayırmak, Storm of Vengeance\'a yapım anı save + Deafened eklemek.',
@@ -213,9 +218,6 @@ export const YENI_BULGULAR: Array<{ id: string; baslik: string; neden: string; o
   { id: 'G02', baslik: 'Harita/özel save zarları `kind: \'save\'` etiketi taşımıyor (görünüm/elle zar; sonucu etkilemez)',
     neden: '`maprules.ts` `saveEffect` (`roll`) d20\'yi `rollTag(rng, { by, bonus })` ile atar, `kind` yok; zar kancası (elle zar istemi, matris) bunu save olarak tanımaz. Prismatic Spray ışınları, Reverse Gravity ve harita kuralı save\'leri bu yoldan.',
     oneri: '`roll` içinde `kind` parametresini `rollTag`\'e geçirmek (kancasız Rng\'de etkisiz; elle zarda save olarak sorulur).' },
-  { id: 'B21', baslik: 'Kayan bulut içine girdiği yaratığa save attırmıyor (Incendiary Cloud, Cloudkill)',
-    neden: 'SRD 5.2.1 Incendiary Cloud: "A creature must also make this save when the Sphere moves into its space" (Cloudkill benzer). `zoneDriftEvents` bulutu kaydırıyor (`zone_moved`) ama yeni kapladığı yaratıklar için tetik yok.',
-    oneri: 'Kayma sonrası yeni kaplanan altıgendeki yaratıklara `move` tetiği (turda bir kuralıyla), kural sürümü kapısıyla.' },
 ];
 
 export function ozetOf(rows: Sinifli[], etiket: string, surum: number): Ozet {

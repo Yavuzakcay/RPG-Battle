@@ -645,3 +645,28 @@ describe('K04 (kullanıcı kararı: metne göre): Conjure Elemental tutsağı ya
     expect(dmgOn(t3.events, 'T')).toBe(4);
   });
 });
+
+describe('B21: kayan bulut yeni kapladığı yaratığa save attırır (SRD Cloudkill "A creature must also make this save when the Sphere moves into its space … only once per turn")', () => {
+  const play = (v: number) => {
+    let s = scene(v, [caster({ spellNames: ['Cloudkill'] }), foe('T', { pos: { col: 16, row: 5 } })]);
+    s = { ...s, order: ['A', 'T'] };
+    const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Cloudkill', slotLevel: 5, targetHex: { col: 11, row: 5 } } as Command, hooked({ one: 2, two: [2, 2] }));
+    expect(r.ok, r.error).toBe(true);
+    expect(saveOf(r.events, 'T')).toBeUndefined();
+    const e1 = execute(r.state, { type: 'end_turn', actorId: 'A' } as Command, P1, hooked({ one: 2, two: [2, 2] }));
+    const s1 = (e1 as Extract<typeof e1, { ok: true }>).state;
+    const e2 = execute(s1, { type: 'end_turn', actorId: 'T' } as Command, GM, hooked({ one: 2, two: [2, 2] }));
+    expect(e2.ok).toBe(true);
+    return (e2 as Extract<typeof e2, { ok: true }>).events;
+  };
+  it('83: büyücünün tur başında bulut 10 ft kayıp hedefi kaplar, hedef bir save atar', () => {
+    const ev = play(83);
+    expect(ev.some((e) => e.type === 'zone_moved')).toBe(true);
+    expect(ev.filter((e) => e.type === 'save_resolved' && e.targetId === 'T')).toHaveLength(1);
+  });
+  it('82: eski davranış (kayma var, save yok)', () => {
+    const ev = play(82);
+    expect(ev.some((e) => e.type === 'zone_moved')).toBe(true);
+    expect(saveOf(ev, 'T')).toBeUndefined();
+  });
+});
