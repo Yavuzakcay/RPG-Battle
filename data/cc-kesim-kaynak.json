@@ -1,0 +1,2195 @@
+{
+ "_not": "scripts/cc-kesim.py: jeton kimliği → yazan kaynak geçmişi; öncelik düzeltme > yeni sayfa > taban.",
+ "jetonlar": {
+  "celestial-male-barbarian": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-01.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-01.png",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-barbarian-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-01.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-01.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-barbarian-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-01.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-01.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-barbarian-ID4": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-01.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-01.png",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-barbarian-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-01.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-01.png",
+    "hucre": 6
+   }
+  },
+  "celestial-erkek-barbarian-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-01.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-01.png",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-barbarian-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-01.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-01.png",
+    "hucre": 8
+   }
+  },
+  "celestial-erkek-barbarian-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-01.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-01.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-barbarian-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-02.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-02.png",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-barbarian-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-02.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-02.png",
+    "hucre": 2
+   }
+  },
+  "celestial-female-barbarian": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-02.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-02.png",
+    "hucre": 3
+   }
+  },
+  "celestial-kadin-barbarian-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-02.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-02.png",
+    "hucre": 4
+   }
+  },
+  "celestial-kadin-barbarian-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-02.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-02.png",
+    "hucre": 5
+   }
+  },
+  "celestial-kadin-barbarian-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-02.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-02.png",
+    "hucre": 6
+   }
+  },
+  "celestial-kadin-barbarian-ID4": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-02.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-02.png",
+    "hucre": 7
+   }
+  },
+  "celestial-kadin-barbarian-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-03.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-03.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-barbarian-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-03.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-03.png",
+    "hucre": 2
+   }
+  },
+  "celestial-kadin-barbarian-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-03.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-03.png",
+    "hucre": 4
+   }
+  },
+  "celestial-male-bard": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-03.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-03.png",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-bard-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-03.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-03.png",
+    "hucre": 8
+   }
+  },
+  "celestial-erkek-bard-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-04.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-04.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-bard-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-04.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-04.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-bard-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-04.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-04.png",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-bard-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-04.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-04.png",
+    "hucre": 6
+   }
+  },
+  "celestial-female-bard": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-04.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-04.png",
+    "hucre": 7
+   }
+  },
+  "celestial-kadin-bard-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-05.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-05.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-bard-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-05.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-05.png",
+    "hucre": 5
+   }
+  },
+  "celestial-kadin-bard-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-05.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-05.png",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-cleric-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-06.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-06.png",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-06.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-06.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-cleric-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-07.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-07.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-cleric-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-07.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-07.png",
+    "hucre": 3
+   }
+  },
+  "celestial-kadin-cleric-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-07.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-07.png",
+    "hucre": 4
+   }
+  },
+  "celestial-kadin-cleric-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-07.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-07.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-druid-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-08.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-08.png",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-druid-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-09.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-09.png",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-druid-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-09.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-09.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-fighter-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-10.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-10.png",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-fighter-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-11.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-11.png",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-fighter-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-11.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-11.png",
+    "hucre": 2
+   }
+  },
+  "celestial-erkek-fighter-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-11.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-11.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-fighter-ID10": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-11.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-11.png",
+    "hucre": 6
+   }
+  },
+  "celestial-erkek-fighter-ID11": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-11.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-11.png",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-fighter-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-11.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-11.png",
+    "hucre": 8
+   }
+  },
+  "celestial-kadin-fighter-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-12.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-12.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-fighter-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-12.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-12.png",
+    "hucre": 2
+   }
+  },
+  "celestial-kadin-fighter-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-12.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-12.png",
+    "hucre": 5
+   }
+  },
+  "celestial-kadin-fighter-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-12.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-12.png",
+    "hucre": 6
+   }
+  },
+  "celestial-kadin-fighter-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-12.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-12.png",
+    "hucre": 7
+   }
+  },
+  "celestial-kadin-fighter-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-12.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-12.png",
+    "hucre": 8
+   }
+  },
+  "celestial-kadin-fighter-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-12.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-12.png",
+    "hucre": 9
+   }
+  },
+  "celestial-kadin-fighter-ID10": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-13.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-13.png",
+    "hucre": 1
+   }
+  },
+  "celestial-male-monk": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-13.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-13.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-monk-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-13.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-13.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-monk-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-13.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-13.png",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-monk-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-13.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-13.png",
+    "hucre": 6
+   }
+  },
+  "celestial-erkek-monk-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-13.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-13.png",
+    "hucre": 8
+   }
+  },
+  "celestial-erkek-monk-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-13.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-13.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-monk-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-14.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-14.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-monk-ID10": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-14.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-14.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-monk-ID11": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-14.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-14.png",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-monk-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-14.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-14.png",
+    "hucre": 6
+   }
+  },
+  "celestial-kadin-monk-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-14.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-14.png",
+    "hucre": 8
+   }
+  },
+  "celestial-kadin-monk-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-15.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-15.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-monk-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-15.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-15.png",
+    "hucre": 3
+   }
+  },
+  "celestial-kadin-monk-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-15.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-15.png",
+    "hucre": 4
+   }
+  },
+  "celestial-kadin-monk-ID10": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-15.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-15.png",
+    "hucre": 8
+   }
+  },
+  "celestial-kadin-monk-ID11": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-15.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-15.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-paladin-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-16.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-16.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-paladin-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-16.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-16.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-paladin-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-16.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-16.png",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-paladin-ID4": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-16.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-16.png",
+    "hucre": 6
+   }
+  },
+  "celestial-erkek-paladin-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-16.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-16.png",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-paladin-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-16.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-16.png",
+    "hucre": 8
+   }
+  },
+  "celestial-erkek-paladin-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-16.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-16.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-paladin-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-17.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-17.png",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-paladin-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-17.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-17.png",
+    "hucre": 2
+   }
+  },
+  "celestial-erkek-paladin-ID10": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-17.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-17.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-paladin-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-17.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-17.png",
+    "hucre": 4
+   }
+  },
+  "celestial-kadin-paladin-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-17.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-17.png",
+    "hucre": 6
+   }
+  },
+  "celestial-kadin-paladin-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-17.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-17.png",
+    "hucre": 7
+   }
+  },
+  "celestial-kadin-paladin-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-17.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-17.png",
+    "hucre": 8
+   }
+  },
+  "celestial-kadin-paladin-ID4": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-17.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-17.png",
+    "hucre": 9
+   }
+  },
+  "celestial-kadin-paladin-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-18.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-18.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-paladin-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-18.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-18.png",
+    "hucre": 2
+   }
+  },
+  "celestial-kadin-paladin-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-18.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-18.png",
+    "hucre": 3
+   }
+  },
+  "celestial-kadin-paladin-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-18.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-18.png",
+    "hucre": 4
+   }
+  },
+  "celestial-kadin-paladin-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-18.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-18.png",
+    "hucre": 5
+   }
+  },
+  "celestial-kadin-paladin-ID10": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-18.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-18.png",
+    "hucre": 6
+   }
+  },
+  "celestial-kadin-paladin-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-18.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-18.png",
+    "hucre": 7
+   }
+  },
+  "celestial-male-ranger": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-18.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-18.png",
+    "hucre": 8
+   }
+  },
+  "celestial-erkek-ranger-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-18.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-18.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-ranger-ID4": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-19.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-19.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-ranger-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-19.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-19.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-ranger-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-19.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-19.png",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-ranger-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-19.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-19.png",
+    "hucre": 6
+   }
+  },
+  "celestial-erkek-ranger-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-19.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-19.png",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-ranger-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-19.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-19.png",
+    "hucre": 9
+   }
+  },
+  "celestial-female-ranger": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-20.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-20.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-ranger-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-20.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-20.png",
+    "hucre": 3
+   }
+  },
+  "celestial-kadin-ranger-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-20.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-20.png",
+    "hucre": 4
+   }
+  },
+  "celestial-kadin-ranger-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-20.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-20.png",
+    "hucre": 6
+   }
+  },
+  "celestial-kadin-ranger-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-20.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-20.png",
+    "hucre": 7
+   }
+  },
+  "celestial-kadin-ranger-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-20.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-20.png",
+    "hucre": 8
+   }
+  },
+  "celestial-kadin-ranger-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-20.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-20.png",
+    "hucre": 9
+   }
+  },
+  "celestial-kadin-ranger-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-21.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-21.png",
+    "hucre": 2
+   }
+  },
+  "celestial-erkek-rogue-ID1": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-21.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-21.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-rogue-ID2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-21.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-21.png",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-rogue-ID4": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-21.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-21.png",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-rogue-ID5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-21.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-21.png",
+    "hucre": 8
+   }
+  },
+  "celestial-erkek-rogue-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-21.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-21.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-rogue-ID7": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-22.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-22.png",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-rogue-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-22.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-22.png",
+    "hucre": 2
+   }
+  },
+  "celestial-erkek-rogue-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-22.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-22.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-rogue-ID10": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-22.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-22.png",
+    "hucre": 4
+   }
+  },
+  "celestial-kadin-rogue-ID6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-23.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-23.png",
+    "hucre": 3
+   }
+  },
+  "celestial-kadin-rogue-ID8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-23.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-23.png",
+    "hucre": 5
+   }
+  },
+  "celestial-kadin-rogue-ID10": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-23.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-23.png",
+    "hucre": 7
+   }
+  },
+  "celestial-male-sorcerer": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-23.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-23.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-sorcerer-SC-2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-24.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-24.png",
+    "hucre": 2
+   }
+  },
+  "celestial-erkek-sorcerer-SC-3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-24.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-24.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-sorcerer-SC-4": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-24.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-24.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-sorcerer-SC-5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-24.png",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-24.png",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-sorcerer-SC-6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-24.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-24.png",
+    "hucre": 6
+   }
+  },
+  "celestial-erkek-sorcerer-SC-8": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-24.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-24.png",
+    "hucre": 8
+   }
+  },
+  "celestial-erkek-sorcerer-SC-9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-24.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-24.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-sorcerer-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-25.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-25.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-sorcerer-SC-5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-25.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-25.png",
+    "hucre": 7
+   }
+  },
+  "celestial-kadin-sorcerer-SC-9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-26.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-26.png",
+    "hucre": 2
+   }
+  },
+  "celestial-kadin-sorcerer-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-26.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-26.png",
+    "hucre": 3
+   }
+  },
+  "celestial-male-warlock": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-26.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-26.png",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-warlock-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-27.png",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-27.png",
+    "hucre": 7
+   }
+  },
+  "celestial-kadin-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-28.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-28.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-28.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-28.png",
+    "hucre": 2
+   }
+  },
+  "celestial-kadin-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-28.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-28.png",
+    "hucre": 3
+   }
+  },
+  "celestial-kadin-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-28.png",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-28.png",
+    "hucre": 4
+   }
+  },
+  "celestial-kadin-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-28.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-28.png",
+    "hucre": 8
+   }
+  },
+  "celestial-kadin-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-28.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-28.png",
+    "hucre": 9
+   }
+  },
+  "celestial-kadin-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-29.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-29.png",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-warlock-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-29.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-29.png",
+    "hucre": 2
+   }
+  },
+  "celestial-male-wizard": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-29.png",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-29.png",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-wizard-WZ-A3": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-29.png",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-29.png",
+    "hucre": 6
+   }
+  },
+  "celestial-erkek-wizard-WZ-A6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-29.png",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-29.png",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-wizard-GR": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-31.png",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-31.png",
+    "hucre": 1
+   }
+  },
+  "celestial-female-wizard": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-31.png",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-31.png",
+    "hucre": 2
+   }
+  },
+  "celestial-kadin-wizard-WZ-A6": {
+   "gecmis": [
+    {
+     "kaynak": "taban",
+     "dosya": "hale-gemini-sayfa-31.png",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "taban",
+    "dosya": "hale-gemini-sayfa-31.png",
+    "hucre": 8
+   }
+  }
+ }
+}

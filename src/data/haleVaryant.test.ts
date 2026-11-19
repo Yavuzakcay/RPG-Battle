@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import bekleyen from '../../data/hale-halesiz.json';
 import konum from '../../data/hale-konum.json';
 import elle from '../../data/hale-elle.json';
+import kaynak from '../../data/cc-kesim-kaynak.json';
 import { crownKey } from '../ui/haloCrown';
 
 const names = (g: Record<string, unknown>) => new Set(Object.keys(g).map((k) => k.replace(/\.webp$/, '').split('/').pop() as string));
@@ -25,9 +26,15 @@ describe('Celestial yıldız tacı verisi (KQ6-19)', () => {
     }
     for (const k of Object.keys(ovr)) expect(main.has(`celestial-${k}`), k).toBe(true);
   });
-  it('96 px kopyaları var; elle karar dosyası bekleyen listesiyle aynı; Paladin ID8 ve Warlock WL-3 Gemini bekliyor', () => {
+  it('96 px kopyaları var; elle karar dosyası bekleyen listesiyle aynı; CC kesimiyle halesiz gelen jeton bekleyen değil (taç yok kararı hariç)', () => {
     for (const n of main) expect(small.has(n), n).toBe(true);
     expect(Object.keys(elle.bekleyen).sort()).toEqual([...bekleyen.bekleyen].sort());
-    for (const n of ['celestial-erkek-paladin-ID8', 'celestial-erkek-warlock-WL-3']) expect(bekleyen.bekleyen).toContain(n);
+    // 2026-11-19 CC kesimi (scripts/cc-kesim.py): Gemini hale tabanı / yeni sayfa / düzeltme sayfasından yazılan Celestial jetonu halesizdir.
+    const jet = (kaynak as { jetonlar: Record<string, { kazanan?: unknown }> }).jetonlar;
+    const eb = elle.bekleyen as Record<string, { durum?: string }>;
+    for (const [n, j] of Object.entries(jet)) {
+      if (!n.startsWith('celestial-') || !j.kazanan) continue;
+      if (bekleyen.bekleyen.includes(n)) expect(eb[n]?.durum, n).toBe('taç yok');
+    }
   });
 });

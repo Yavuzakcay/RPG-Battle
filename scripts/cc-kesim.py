@@ -1,0 +1,255 @@
+#!/usr/bin/env python3
+"""CC toplu kesim ve yerleştirme (2026-11-19). Ham: assets-ham/karakter/ (wip/karakter-ham dalı assets-ham/eksikler/ → karakter/, eski aynı adlılar _eski/).
+Çalıştırma (sırayla; her adım ayrı commit):
+  python3 scripts/cc-kesim.py taban      # 1) Gemini hale sayfaları 01–32 (haleli + halesiz-supheli; erkek Celestial Warlock ve halesiz-doğrulandı hariç)
+  python3 scripts/cc-kesim.py yeni       # 2) Gladyatör (champion, fighter ID12) + Warlock sayfaları
+  python3 scripts/cc-kesim.py duzeltme   # 3) hale düzeltme sayfaları 01–03 (kesin yetkili)
+  python3 scripts/cc-kesim.py diger      # C) Bard, Sorcerer, Druid, Barbarian aurasız, Cleric, Human Fighter
+Öncelik kuralı (aynı jeton kimliği): düzeltme > yeni sayfa > taban (`ONCELIK`). Defter data/cc-kesim-kaynak.json her yazımı kaydeder;
+daha düşük öncelikli bir adım, daha yüksek öncelikli kaynağın yazdığı jetonu ezmez (adımlar hangi sırayla çalışırsa çalışsın).
+Çıktı: public/characters/<ad>.webp (+ kucuk/ 96 px), kontak sayfaları docs/sabah/cc-kesim/, rapor docs/sabah/cc-kesim/<adım>.json."""
+import csv, importlib.util, io, json, os, re, subprocess, sys
+import numpy as np
+from PIL import Image, ImageDraw
+from scipy import ndimage as ndi
+
+_s = importlib.util.spec_from_file_location('tk', 'scripts/toplu-kesim.py'); tk = importlib.util.module_from_spec(_s); _s.loader.exec_module(tk)
+RAW = 'assets-ham/karakter'
+KURU = os.environ.get('CC_KURU')   # deneme: çıktılar bu klasöre, defter ve belgeler de oraya
+OUT = f'{KURU}/characters' if KURU else 'public/characters'
+DOC = f'{KURU}/doc' if KURU else 'docs/sabah/cc-kesim'
+LEDGER = f'{KURU}/kaynak.json' if KURU else 'data/cc-kesim-kaynak.json'
+ONCELIK = {'taban': 1, 'yeni': 2, 'diger': 2, 'duzeltme': 3}
+SIZE = 256
+GREEN, MAGENTA = np.array([0, 255, 0], float), np.array([255, 0, 255], float)
+
+
+# ---------------------------------------------------------------------------------------------------------------- defter ve yazım
+def ledger():
+    return json.load(open(LEDGER)) if os.path.exists(LEDGER) else {'_not': 'scripts/cc-kesim.py: jeton kimliği → yazan kaynak geçmişi; öncelik düzeltme > yeni sayfa > taban.', 'jetonlar': {}}
+
+def write_token(L, name, img, kaynak, dosya, hucre, rep):
+    """Öncelik kuralı: kayıtlı kaynağın önceliği bu adımınkinden yüksekse yazmaz (çakışma raporlanır)."""
+    j = L['jetonlar'].setdefault(name, {'gecmis': []})
+    cur = j.get('kazanan')
+    if cur and ONCELIK[cur['kaynak']] > ONCELIK[kaynak]:
+        j['gecmis'].append({'kaynak': kaynak, 'dosya': dosya, 'hucre': hucre, 'sonuc': f'ezilmedi ({cur["kaynak"]} öncelikli)'})
+        rep['ezilmedi'].append(name); return False
+    img.save(f'{OUT}/{name}.webp', 'WEBP', quality=92, alpha_quality=100, method=4)
+    img.resize((96, 96), Image.LANCZOS).save(f'{OUT}/kucuk/{name}.webp', 'WEBP', quality=82, method=4)
+    j['gecmis'].append({'kaynak': kaynak, 'dosya': dosya, 'hucre': hucre, 'sonuc': 'yazıldı'})
+    j['kazanan'] = {'kaynak': kaynak, 'dosya': dosya, 'hucre': hucre}
+    rep['yazilan'].append(name); return True
+
+def save_ledger(L):
+    json.dump(L, open(LEDGER, 'w'), ensure_ascii=False, indent=1); open(LEDGER, 'a').write('\n')
+
+def git_token(ref, name):
+    r = subprocess.run(['git', 'show', f'{ref}:public/characters/{name}.webp'], capture_output=True)
+    return np.array(Image.open(io.BytesIO(r.stdout)).convert('RGBA')) if r.returncode == 0 and r.stdout else None
+
+
+# Taç kararı: Gemini/yeni sayfadan halesiz gelen Celestial jetonu bekleme listesinden çıkar (oyunda yıldız tacı çizilir).
+# TAC_YOK: halesiz gelse de taç çizilmeyecekler (kullanıcı: erkek Celestial Warlock Gulyabani altın tellerle olduğu gibi kalır, hale çizme).
+TAC_YOK = {'celestial-erkek-warlock-WL-8': 'Gulyabani: altın teller olduğu gibi, hale/taç çizilmez (kullanıcı, 2026-11-19)'}
+
+def hold_sync(L):
+    if KURU: return
+    hh = json.load(open('data/hale-halesiz.json')); he = json.load(open('data/hale-elle.json'))
+    free = {n for n, j in L['jetonlar'].items() if n.startswith('celestial-') and j.get('kazanan')}
+    keep = [n for n in hh['bekleyen'] if n not in free or n in TAC_YOK]
+    for n, why in TAC_YOK.items():
+        if n in free and n not in keep: keep.append(n)
+        if n in free: he['bekleyen'][n] = {'neden': why, 'durum': 'taç yok', 'karar': 'dokunma'}
+    hh['bekleyen'] = sorted(keep)
+    he['bekleyen'] = {k: v for k, v in sorted(he['bekleyen'].items()) if k in keep}
+    for f, d in (('data/hale-halesiz.json', hh), ('data/hale-elle.json', he)):
+        json.dump(d, open(f, 'w'), ensure_ascii=False, indent=1); open(f, 'a').write('\n')
+
+# ---------------------------------------------------------------------------------------------------------------- anahtar
+def key_page(a):
+    """Sayfa zemini (yeşil ve macenta karışık olabilir): saf anahtara ve sayfanın kendi tonlarına yakın büyük bölgeler. → fg maskesi."""
+    fg = tk.key_sheet(a, tk.sheet_bg(a))
+    return ndi.binary_opening(fg, iterations=1)
+
+def cell_kind(a, fg):
+    bg = a[~fg].astype(float)
+    if len(bg) < 50: return 'magenta'
+    med = np.median(bg, axis=0)
+    return 'green' if np.linalg.norm(med - GREEN) < np.linalg.norm(med - MAGENTA) else 'magenta'
+
+def keyed_rgba(a, fg):
+    rgba = np.dstack([a, (fg * 255).astype(np.uint8)])
+    return tk.despill(tk.trim_lines(rgba), cell_kind(a, fg))
+
+def figures(fg, min_frac=0.004, join=14):
+    """Sayfadaki figür kümeleri (yakın parçalar `join` px genişletmeyle birleşir) → [(maske, kutu, merkez)] büyükten küçüğe."""
+    lab, n = ndi.label(ndi.binary_dilation(fg, iterations=join))
+    if not n: return []
+    out = []
+    for i, sl in enumerate(ndi.find_objects(lab), 1):
+        m = (lab[sl] == i) & fg[sl]
+        if m.sum() < min_frac * fg.size: continue
+        ys, xs = np.where(m)
+        out.append((i, (sl[1].start, sl[0].start, sl[1].stop, sl[0].stop), (xs.mean() + sl[1].start, ys.mean() + sl[0].start), int(m.sum())))
+    return out, lab
+
+def reading_order(figs, H):
+    """Okuma sırası: satırlar merkez y'ye göre kümelenir (satır aralığı > %12 sayfa), satır içinde soldan sağa."""
+    figs = sorted(figs, key=lambda f: f[2][1]); rows = []
+    for f in figs:
+        if rows and abs(f[2][1] - np.mean([g[2][1] for g in rows[-1]])) < 0.12 * H: rows[-1].append(f)
+        else: rows.append([f])
+    return [f for r in rows for f in sorted(r, key=lambda g: g[2][0])]
+
+
+# ---------------------------------------------------------------------------------------------------------------- hizalama
+def lower_band(alpha, frac=0.35):
+    ys, xs = np.where(alpha)
+    if not len(ys): return alpha
+    top = int(ys.min() + frac * (ys.max() - ys.min()))
+    m = alpha.copy(); m[:top] = False; return m
+
+def resample(rgba, s, dx, dy, size=SIZE):
+    """rgba'yı s ile ölçekleyip (dx, dy) ötelemesiyle size×size tuvale koyar (LANCZOS, ön-çarpımlı alfa)."""
+    h, w = rgba.shape[:2]
+    nw, nh = max(1, round(w * s)), max(1, round(h * s))
+    im = Image.fromarray(rgba, 'RGBA').convert('RGBa').resize((nw, nh), Image.LANCZOS).convert('RGBA')
+    can = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    can.paste(im, (round(dx), round(dy)))
+    return np.array(can)
+
+def fit(new_rgba, ref_alpha):
+    """new_rgba (Gemini hücresi, yerel çözünürlük) → jeton uzayında (256) ref_alpha'ya (kaynak jeton) en iyi oturan ölçek/öteleme.
+    Ölçüt: alt gövde (figürün üst %35'i hariç: hale/baş değişikliği) IoU. → (s, dx, dy, iou)."""
+    na = new_rgba[..., 3] > 127
+    ys, xs = np.where(na); rys, rxs = np.where(ref_alpha)
+    if not len(ys) or not len(rys): return None
+    refL = lower_band(ref_alpha)
+    s0 = (rxs.max() - rxs.min() + 1) / (xs.max() - xs.min() + 1)
+    best = None
+    small = Image.fromarray((na * 255).astype(np.uint8))
+    for f in np.arange(0.90, 1.101, 0.01):
+        s = s0 * f
+        nw, nh = max(1, round(na.shape[1] * s)), max(1, round(na.shape[0] * s))
+        m = np.array(small.resize((nw, nh), Image.BILINEAR)) > 127
+        my, mx = np.where(m)
+        if not len(my): continue
+        # alt kenarı ve alt bandın yatay merkezini eşle, sonra ±3 px ara
+        mL = lower_band(m); ly, lx = np.where(mL); ry, rx = np.where(refL)
+        bx = rx.mean() - lx.mean(); by = rys.max() - my.max()
+        for ddx in range(-3, 4):
+            for ddy in range(-3, 4):
+                ox, oy = round(bx + ddx), round(by + ddy)
+                can = np.zeros_like(ref_alpha)
+                x0, y0 = max(0, ox), max(0, oy); x1, y1 = min(SIZE, ox + nw), min(SIZE, oy + nh)
+                if x1 <= x0 or y1 <= y0: continue
+                can[y0:y1, x0:x1] = m[y0 - oy:y1 - oy, x0 - ox:x1 - ox]
+                cL = can & (np.arange(SIZE)[:, None] >= int(rys.min() + 0.35 * (rys.max() - rys.min())))
+                iou = (cL & refL).sum() / max(1, (cL | refL).sum())
+                if best is None or iou > best[3]: best = (s, ox, oy, iou)
+    return best
+
+def rescue(tok, ref, tol=60):
+    """Kaynakta opak, yenide anahtarla silinmiş ama rengi kaynakla aynı pikseller (zemine yakın mor/pembe sanat): geri opak."""
+    t = tok.copy(); lost = (ref[..., 3] > 127) & (t[..., 3] < 64)
+    if not lost.any(): return t, 0
+    # yeni tuvalde bu piksellerin rengi yok (saydam); renk benzerliğini kaynak görüntünün ham hücresinden değil, komşu opak pikselden kuramayız:
+    # bu yüzden yalnız zemin anahtarına yakın OLMAYAN kaynak pikseller ve yeni figürün içinde kalanlar (kapalı delik) geri gelir.
+    inside = ndi.binary_fill_holes(t[..., 3] > 127)
+    src_rgb = ref[..., :3].astype(float)
+    keyish = (np.linalg.norm(src_rgb - MAGENTA, axis=2) < tol) | (np.linalg.norm(src_rgb - GREEN, axis=2) < tol)
+    m = lost & inside & ~keyish
+    t[m] = ref[m]
+    return t, int(m.sum())
+
+
+# ---------------------------------------------------------------------------------------------------------------- kontak sayfası
+def contact(items, path, px=128, cols=8, title=None):
+    """items: [(etiket, RGBA np ya da yol, (önce RGBA|None))]; önce varsa yan yana (önce | sonra)."""
+    if not items: return
+    pair = any(it[2] is not None for it in items)
+    cw = px * (2 if pair else 1) + 6
+    rows = (len(items) + cols - 1) // cols
+    im = Image.new('RGB', (cw * cols, (px + 16) * rows + (18 if title else 0)), (90, 94, 106)); d = ImageDraw.Draw(im)
+    if title: d.text((4, 3), title, fill=(255, 255, 255))
+    oy0 = 18 if title else 0
+    for i, (lab, a, b) in enumerate(items):
+        ox, oy = (i % cols) * cw, oy0 + (i // cols) * (px + 16)
+        imgs = ([b] if pair else []) + [a]
+        for j, x in enumerate(imgs):
+            if x is None: continue
+            t = Image.fromarray(x if isinstance(x, np.ndarray) else np.array(Image.open(x).convert('RGBA')), 'RGBA').resize((px, px), Image.LANCZOS)
+            im.paste(t, (ox + j * px, oy + 16), t)
+        d.text((ox + 2, oy + 2), lab[:34], fill=(255, 255, 255))
+    os.makedirs(os.path.dirname(path), exist_ok=True); im.save(path, quality=88)
+
+
+# ---------------------------------------------------------------------------------------------------------------- 1) taban
+ERKEK_WL = {('26', str(c)) for c in range(5, 10)} | {('27', str(c)) for c in range(1, 7)}
+
+def halo_removed(ref_alpha, tok_alpha):
+    """Kaynakta olup yenide olmayan, figürün üst %30'undaki opak piksel sayısı (hale silindi mi)."""
+    ys, _ = np.where(ref_alpha)
+    top = int(ys.min() + 0.30 * (ys.max() - ys.min()))
+    gone = ref_alpha & ~tok_alpha; gone[top:] = False
+    return int(gone.sum())
+
+def taban():
+    rows = list(csv.DictReader(open('docs/sabah/hale-gemini-eslesme.csv')))
+    duz = list(csv.DictReader(open('assets-ham/eksikler/hale-gemini-duzeltme-eslesme.csv', encoding='utf-8-sig')))
+    dogru = {r['dosya'][:-5] for r in duz if r['durum'] == 'halesiz-doğrulandı'}
+    L = ledger(); rep = {'adim': 'taban', 'yazilan': [], 'ezilmedi': [], 'atlanan': [], 'eksik_sayfa': [], 'hale_kaldi': [], 'uyum_dusuk': [], 'kurtarilan_px': {}}
+    items = []; pages = {}
+    for r in rows:
+        if r['durum'] not in ('haleli', 'halesiz-supheli'): continue
+        name = r['dosya'][:-5]
+        if (r['sayfa'], r['hucre']) in ERKEK_WL: rep['atlanan'].append((name, 'erkek Celestial Warlock: yeni sayfadan (adım 2)')); continue
+        if name in dogru: rep['atlanan'].append((name, 'halesiz-doğrulandı (düzeltme eşleşmesi): dokunulmadı')); continue
+        pages.setdefault(r['sayfa'], []).append(r)
+    for p, lst in sorted(pages.items()):
+        path = f'assets-ham/karakter/hale-gemini-sayfa-{p}.png'
+        if not os.path.exists(path):
+            for r in lst: rep['eksik_sayfa'].append((r['dosya'][:-5], f'sayfa {p} hücre {r["hucre"]}'))
+            continue
+        a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
+        for r in lst:
+            name = r['dosya'][:-5]; c = int(r['hucre']) - 1
+            x0, y0, x1, y1 = round((c % 3) * W / 3), round((c // 3) * H / 3), round((c % 3 + 1) * W / 3), round((c // 3 + 1) * H / 3)
+            cf = fg[y0:y1, x0:x1].copy()
+            # hücreye komşudan taşan parça yok sayılır: en büyük küme + ona yakın parçalar
+            lab, n = ndi.label(ndi.binary_dilation(cf, iterations=10))
+            if n:
+                sz = ndi.sum(cf, lab, range(1, n + 1)); keep = [i + 1 for i, v in enumerate(sz) if v >= 0.08 * sz.max()]
+                edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+                keep = [i for i in keep if i == int(np.argmax(sz)) + 1 or i not in edge]
+                cf &= np.isin(lab, keep)
+            cell = keyed_rgba(a[y0:y1, x0:x1], cf)
+            src = git_token(r['kaynak'].split(':')[1], name)
+            ref_a = src[..., 3] > 127
+            f = fit(cell, ref_a)
+            if f is None or f[3] < 0.80:
+                rep['uyum_dusuk'].append((name, round(f[3], 3) if f else None)); continue
+            s, dx, dy, iou = f
+            tok = resample(cell, s, dx, dy)
+            tok, nres = rescue(tok, src)
+            if nres: rep['kurtarilan_px'][name] = nres
+            tok = tk.clean_edges(tok)
+            gone = halo_removed(ref_a, tok[..., 3] > 127)
+            if r['durum'] == 'haleli' and gone < 25:
+                rep['hale_kaldi'].append((name, f'sayfa {p} hücre {r["hucre"]}', gone)); continue
+            write_token(L, name, Image.fromarray(tok, 'RGBA'), 'taban', f'hale-gemini-sayfa-{p}.png', int(r['hucre']), rep)
+            items.append((f'{p}/{r["hucre"]} {name[10:]} {iou:.2f}', tok, src))
+    save_ledger(L); hold_sync(L); os.makedirs(DOC, exist_ok=True)
+    contact(items, f'{DOC}/adim1-taban.jpg', title='Adım 1 hale tabanı: önce (git kaynak) | sonra')
+    json.dump(rep, open(f'{DOC}/adim1-taban.json', 'w'), ensure_ascii=False, indent=1)
+    return rep
+
+
+if __name__ == '__main__':
+    os.makedirs(f'{OUT}/kucuk', exist_ok=True)
+    step = sys.argv[1] if len(sys.argv) > 1 else ''
+    fn = {'taban': taban}.get(step)
+    if not fn: sys.exit(__doc__)
+    r = fn()
+    print({k: (len(v) if isinstance(v, (list, dict)) else v) for k, v in r.items()})
