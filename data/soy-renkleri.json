@@ -89,16 +89,16 @@
         }
       },
       "lineagesAlt": {
-          "black": { "multiply": { "renk": "#5b606e", "muaf": 0.12, "tam": 0.28 } },
-          "blue": { "multiply": { "renk": "#5f84e8", "muaf": 0.12, "tam": 0.28 } },
-          "brass": { "multiply": { "renk": "#d9b25a", "muaf": 0.12, "tam": 0.28 } },
-          "bronze": { "multiply": { "renk": "#b07a48", "muaf": 0.12, "tam": 0.28 } },
-          "copper": { "multiply": { "renk": "#df7f58", "muaf": 0.12, "tam": 0.28 } },
-          "gold": { "multiply": { "renk": "#f6cc3c", "muaf": 0.12, "tam": 0.28 } },
-          "green": { "multiply": { "renk": "#58b068", "muaf": 0.12, "tam": 0.28 } },
-          "red": { "multiply": { "renk": "#e4524c", "muaf": 0.12, "tam": 0.28 } },
-          "silver": { "multiply": { "renk": "#c4cad6", "muaf": 0.12, "tam": 0.28 } },
-          "white": { "multiply": { "renk": "#ffffff", "muaf": 0.12, "tam": 0.28 } }
+          "black": { "pul": { "soy": "black" } },
+          "blue": { "pul": { "soy": "blue" } },
+          "brass": { "pul": { "soy": "brass" } },
+          "bronze": { "pul": { "soy": "bronze" } },
+          "copper": { "pul": { "soy": "copper" } },
+          "gold": { "pul": { "soy": "gold" } },
+          "green": { "pul": { "soy": "green" } },
+          "red": { "pul": { "soy": "red" } },
+          "silver": { "pul": { "soy": "silver" } },
+          "white": { "pul": { "soy": "white" } }
         },
         "lineagesAltMaske": {
           "black": { "lch": { "h": 262, "c": 6, "L": 26, "hueKeep": 0, "chromaKeep": 0.25, "contrast": 1.15 } },

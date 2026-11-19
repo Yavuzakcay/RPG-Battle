@@ -1,0 +1,111 @@
+{
+ "not": "scripts/dragonborn-pul-maske.py üretir; elle düzenleme. Dragonborn beyaz taban jetonlarının pul boyaması (src/ui/scaleTint.ts): maske public/characters/maske-pul/<jeton>.png; renk yalnız `orta` tondan (ton + kroma), açıklık jetonun kendi gölgesinden (L* = orta L* + (piksel L* − maskenin L* ortancası)); kroma uç ışık/gölgede `kromaDusus` ölçeğinde en çok `kromaAlt` katına iner; pul dokusu karo tonuna göre L* oynaması (`mod`: koyu/orta/açık; `modKoyu` soylarında koyulaştırma yönünde). Karo 256 px jeton uzayında, küçük kopyada W/256 ölçekli. `acik`/`koyu` kayıt için (v2 boyamasında kullanılmaz).",
+ "karo": [
+  "2110012221100122",
+  "2101102221011022",
+  "2101101221011012",
+  "2011110220111102",
+  "0111111001111110",
+  "1111111111111111",
+  "0222211002222110",
+  "0122211001222110",
+  "0122211001222110",
+  "1022210110222101",
+  "1012210110122101",
+  "1102201111022011",
+  "1110011111100111",
+  "1111111111111111",
+  "2110022221100222",
+  "2110012221100122"
+ ],
+ "mod": [
+  -5,
+  0,
+  5
+ ],
+ "modKoyu": {
+  "silver": [
+   -6,
+   -3,
+   0
+  ],
+  "white": [
+   -6,
+   -3,
+   0
+  ]
+ },
+ "kromaDusus": 120,
+ "kromaAlt": 0.6,
+ "Lmin": 2,
+ "Lmax": 99,
+ "soylar": {
+  "blue": {
+   "acik": "#6698B8",
+   "orta": "#315C83",
+   "koyu": "#112F56"
+  },
+  "red": {
+   "acik": "#E86343",
+   "orta": "#A91101",
+   "koyu": "#5A0B02"
+  },
+  "black": {
+   "acik": "#70707B",
+   "orta": "#3A3A44",
+   "koyu": "#13131D"
+  },
+  "brass": {
+   "acik": "#EAC776",
+   "orta": "#A88A3C",
+   "koyu": "#755C06"
+  },
+  "bronze": {
+   "acik": "#CD9462",
+   "orta": "#8C5A2B",
+   "koyu": "#593001"
+  },
+  "copper": {
+   "acik": "#E6885A",
+   "orta": "#A24E24",
+   "koyu": "#692500"
+  },
+  "gold": {
+   "acik": "#FFD268",
+   "orta": "#C9A030",
+   "koyu": "#927100"
+  },
+  "green": {
+   "acik": "#6DB772",
+   "orta": "#2F7A3A",
+   "koyu": "#014B17"
+  },
+  "silver": {
+   "acik": "#CCD8E5",
+   "orta": "#8E9AA6",
+   "koyu": "#5F6B77"
+  },
+  "white": {
+   "acik": "#EFF6FF",
+   "orta": "#C8CFD9",
+   "koyu": "#969DA7"
+  }
+ },
+ "maskesiz": {
+  "dragonborn-erkek-druid-ID4": "başta ten örneği yok",
+  "dragonborn-erkek-monk-ID10": "maske boş (< 30 px)",
+  "dragonborn-erkek-rogue-GR": "maske boş (< 30 px)",
+  "dragonborn-erkek-rogue-ID4": "başta ten örneği yok",
+  "dragonborn-erkek-sorcerer-SC-3": "başta ten örneği yok",
+  "dragonborn-erkek-sorcerer-SC-5": "başta ten örneği yok",
+  "dragonborn-erkek-warlock-WL-4": "başta ten örneği yok",
+  "dragonborn-kadin-cleric-ID6": "başta ten örneği yok",
+  "dragonborn-kadin-druid-ID4": "başta ten örneği yok",
+  "dragonborn-kadin-fighter-ID8": "başta ten örneği yok",
+  "dragonborn-kadin-rogue-GR": "başta ten örneği yok",
+  "dragonborn-kadin-rogue-ID4": "başta ten örneği yok",
+  "dragonborn-kadin-sorcerer-SC-3": "başta ten örneği yok",
+  "dragonborn-kadin-sorcerer-SC-5": "başta ten örneği yok",
+  "dragonborn-kadin-warlock-WL-8": "başta ten örneği yok"
+ }
+}
