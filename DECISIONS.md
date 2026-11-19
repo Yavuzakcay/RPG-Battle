@@ -10,6 +10,41 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 ## Dragonborn kanadı: beyaz pençe ve uç kemikleri + pembe karışımlı zar: Kuyruk KW2/KW3 (2026-11-19, kullanıcı istekleri; yalnız görünüm, kural ve kayıt sürümü değişmedi)
+## Dungeondex Sınıflar kategorisi (Görev DX-S, 2026-11-20; yalnız arayüz ve açıklama verisi, kural ve kayıt sürümü değişmedi)
+
+- **Durum öncesi:** Dungeondex'te sınıf kategorisi yoktu. Invocation, Metamagic ve sınıf özelliği kayıtları da yoktu; sınıf yalnız alt sınıf kartında bağlantı olarak geçiyordu. Fighting Style'lar `feat` kategorisinde vardı (kategori "Fighting Style").
+- **Eklenen kategori `sinif`** (`data/dungeondex.json` sırası: Alt soylar ile Alt sınıflar arası). Toplam 50 kayıt: 12 sınıf, 28 Eldritch Invocation, 10 Metamagic.
+  - Kimlik mevcut kimlik: sınıf kimliği, `class-features.json` Invocation kimliği ve Metamagic anahtarı. Yeni kimlik açılmadı.
+  - Süzgeç "Kayıt türü": sınıf / Invocation / Metamagic.
+- **Sınıf kartı:**
+  - Ad İngilizce.
+  - Özet ve olgular: can zarı (`classes.json` `hitDie`) ve birincil yetenek. Birincil yetenek SRD sınıf tablosundaki "Primary Ability"den, yetenek kısaltmasına çevrilir; "or" → "ya da", "and" → "ve". Örnek: Fighter "Güç (STR) ya da Çeviklik (DEX)".
+  - Kurtarma yetkinlikleri, zırh eğitimi, silah yetkinliği (Rogue/Monk'ta özellikli savaş silahları), beceri seçimi, büyü türü.
+  - Seviye 1–20 özellik satırları SRD tablosundan (`data/srd/progression.json`; 258 satır, 185 benzersiz özellik). Kaynak sayfa gösterilmez.
+  - Sınıf seçenekleri satırları (Divine Order, Blessed Strikes, Primal Order, Elemental Fury) oluşturucunun seçenek metninden.
+  - Bağlantılar: o sınıfın alt sınıfları (alt sınıf süzgeci; yüklü 120'nin o sınıfa ait olanları) ve büyü sınıflarında büyü listesi. Ayrıca Fighter/Paladin/Ranger'da Fighting Style feat'leri, Warlock'ta Invocation, Sorcerer'da Metamagic, hepsinde Epic Boon feat'leri.
+- **Özellik açıklaması zinciri (karar):** oluşturucuyla aynı (`featureSummary`): önce `data/aciklamalar-tr.json` `yetenek` (`trAciklama`), yoksa `data/aciklamalar.json` `features.tr` (Görev K18'in elle yazılmış Türkçe kısa açıklamaları).
+  - Görev metni yalnız `trAciklama` diyordu. Bu kaynakta 2 kayıt var; 135 özelliğin Türkçe metni K18 dosyasında. İkisi de elle yazılmış Türkçe ve oluşturucuda zaten gösteriliyor.
+  - Yeni açıklama yazılmadı. Açıklaması olmayan satırda "Açıklama yok" çıkar.
+  - **Eksik:** 48 benzersiz özellik, 110 satır. Hepsi genel yer tutucu: `<sınıf>-subclass`, `ability-score-improvement`, `subclass-feature`, `epic-boon` (12 sınıf × 4). Bunların içeriği alt sınıf ve feat kartlarında, karttan bağlantıları var. Gerçek sınıf özelliğinde eksik 0.
+- **SRD ham metni yok:** `aciklamalar.json` `features.en` (SRD'nin ilk cümlesi) Dungeondex'te kullanılmaz. EN arayüzde Türkçe metin "yalnız Türkçe" notuyla çıkar (mevcut desen). `aciklamalar-en.json` gelirse aynı kimliklerle `en` dolar.
+- **Invocation ve Metamagic:**
+  - Invocation açıklaması `aciklamalar-tr.json` `invocation`, yoksa verideki Türkçe `note`; 28/28. Ön koşul Invocation'a ve Warlock'a bağlantı var; çalışma durumu etiketi oluşturucu lejantından.
+  - Metamagic açıklaması oluşturucunun arayüz metni (`builder.metamagicInfo`, TR/EN) ve bedeli (SP); 10/10.
+- **Metinler:** TR Dungeondex metinleri mevcut desende tembel `strings.tr2.ts` `dex` içinde (görev "strings.ts" diyordu; `dex` bölümü orada değil), EN `strings.en.ts`.
+- **Veri yükü:** `data/srd/classes.json` yalnız Dungeondex'in tembel `loadDexExtras` içinde, ayrı parça olarak yüklenir (yalnız "Primary Ability" alanı okunur). Ana parça değişmedi (459,46 kB / 500).
+- **Test:** `src/dungeondex/dungeondex.test.tsx`.
+  - Kategori sayısı 9'dan 10'a çıktı (yeni kategori).
+  - Yeni testler:
+    - 12 sınıf ve kimlikler;
+    - Invocation/Metamagic kimlikleri veriden;
+    - olgular ve özellik satırı sayısı SRD tablosuyla aynı;
+    - bağlantılar;
+    - açıklama kapsamı (eksikler yalnız genel yer tutucu);
+    - SRD sınıf metni ve sayfa numarası yok;
+    - EN başlık ve "yalnız Türkçe" notu.
+  - Ekran görüntüsü `docs/sabah/dungeondex/siniflar.webp`.
+## Dragonborn kanadı: beyaz pençe uçları + pembe karışımlı zar, iki hal: Kuyruk KW2 (2026-11-19, kullanıcı isteği; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 
 Gidiş: kullanıcı KW1 görüntüsüne daireler çizdi: pençe uçları boynuzlarla aynı beyazlıkta olsun, kanatların iç kısmı soy renginin pembeyle karışımı olsun ("sarı ise sarı ile pembe"); iki hal gösterilsin, ikisinde de pençe beyaz. İki hal gösterildi (A karışımsız, B pembe karışımlı). Kullanıcı seçti: "diğer seçeneği boşver, direkt pembe ile karışımı yap" (B); ayrıca kanadın en ucundaki kemik uçları da beyaz olsun (son daire). Ara denemelerde "direkt pembe" ifadesi yanlış okunup düz pembe (soydan bağımsız) ve pembe baskın karışım (0,7) yapıldı; ikisi de kullanıcının isteği olmadığı için atıldı (kodu geri alındı, commit'lenmedi). Sonuç: B + beyaz uç kemikleri. Görüntüler `docs/sabah/dragonborn-kanat/karisim-ozet.webp`, `karisim-tam.webp`.
 

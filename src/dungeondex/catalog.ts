@@ -11,14 +11,15 @@ import { backgrounds } from '../rules/backgrounds';
 import { subclassesOf } from '../rules/classFeatures';
 import { displayName } from '../rules/subclasses';
 import { armorDetail, itemSummary, weaponDetail } from '../ui/equipmentText';
-import { featInfo, masteryDescription } from '../ui/descriptions';
+import { featInfo, featureSummary, masteryDescription } from '../ui/descriptions';
+import { allInvocations } from '../rules/invocations';
 import { t, type Lang } from '../i18n';
 import cfg from '../../data/dungeondex.json';
 import srdSpecies from '../../data/srd/species.json';
 import altSoyMetin from '../../data/alt-soy-metin.json';
 import celestial from '../../data/celestial.json';
 
-export type DexCat = 'buyu' | 'esya' | 'canavar' | 'tur' | 'altsoy' | 'altsinif' | 'feat' | 'gecmis' | 'durum';
+export type DexCat = 'buyu' | 'esya' | 'canavar' | 'tur' | 'altsoy' | 'sinif' | 'altsinif' | 'feat' | 'gecmis' | 'durum';
 export const DEX_CATS = cfg.kategoriler as DexCat[];
 export const DEX_PAGE = cfg.sayfa;
 export const DEX_VISIBLE_FILTERS = cfg.gorunurSuzgec;
@@ -54,16 +55,19 @@ export interface DexExtras {
   mapNames: Record<string, string>;
   /** İsteğe bağlı İngilizce açıklamalar (`data/aciklamalar-en.json`; aynı tür → kimlik yapısı). */
   en: Record<string, Record<string, string>>;
+  /** Sınıf → SRD sınıf tablosunun "Primary Ability" değeri (İngilizce yetenek adları; kartta yetenek kısaltmasına çevrilir). */
+  classPrimary: Record<string, string>;
 }
 
 const EN_FILE = import.meta.glob<Record<string, Record<string, string>>>('../../data/aciklamalar-en.json', { import: 'default' });
 
 /** Canavar verisini ve ek tabloları yükler (hepsi uygulamaya gömülü; ağ yok). */
 export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
-  const [srd, types, sp, places, en] = await Promise.all([
+  const [srd, types, sp, places, en, srdClasses] = await Promise.all([
     import('../../data/srd/monsters.json'), import('../../data/canavar-turleri.json'), import('../../data/canavar-buyuleri.json'),
     import('../../data/monster-ortamlari.json'),
     Promise.all(Object.values(EN_FILE).map((l) => l())).then((x) => x[0] ?? {}),
+    import('../../data/srd/classes.json'),
   ]);
   const placeList = places.default as unknown as Array<{ id: string; tema?: string; ortam?: string[] }>;
   return {
@@ -72,6 +76,8 @@ export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
     monsterSpells: sp.default as unknown as DexExtras['monsterSpells'],
     monsterPlaces: Object.fromEntries(placeList.map((p) => [p.id, p])),
     en,
+    classPrimary: Object.fromEntries((srdClasses.default as unknown as { classes: Array<{ id: string; core: Record<string, string> }> }).classes
+      .map((c) => [c.id, c.core['Primary Ability'] ?? ''])),
   };
 }
 
@@ -259,6 +265,9 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
     })),
   ];
 
+  // Sınıflar (Görev DX-S): 12 sınıf kartı + sınıf seçenekleri (Eldritch Invocation, Metamagic) aynı kategoride.
+  const sinif = buildClasses(x, en);
+
   // Alt sınıflar (yüklü olanların hepsi: oyunun kendi + dış paket).
   const altsinif: DexEntry[] = classes.flatMap((c) => subclassesOf(c.id).map((s: SubclassDef): DexEntry => {
     const nm = displayName(s.name, c.id);
@@ -320,7 +329,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
 
   const sortAll = (l: DexEntry[]) => l.sort((a, b) => a.sort.localeCompare(b.sort, 'en'));
   return { buyu: sortAll(buyu), esya: sortAll(esya), canavar: sortAll(canavar), tur: sortAll(tur), altsoy: sortAll(altsoy),
-    altsinif: sortAll(altsinif), feat: sortAll(feat), gecmis: sortAll(gecmis), durum: sortAll(durum) };
+    sinif: sortAll(sinif), altsinif: sortAll(altsinif), feat: sortAll(feat), gecmis: sortAll(gecmis), durum: sortAll(durum) };
 }
 
 /** Kategorinin süzgeçleri (yalnız veride değeri olanlar). */
@@ -336,6 +345,7 @@ export function dexFilters(cat: DexCat, list: DexEntry[]): DexFilter[] {
   if (cat === 'buyu') out.push(mk('level', L.filter.level, (v) => (v === '0' ? L.cantrip : L.level(Number(v))), num), mk('school', L.filter.school, (v) => v), mk('cls', L.filter.cls, className));
   if (cat === 'canavar') out.push(mk('cr', L.filter.cr, (v) => `CR ${v}`, (a, b) => cfg.crKademeleri.findIndex((k) => k.id === a) - cfg.crKademeleri.findIndex((k) => k.id === b)), mk('type', L.filter.type, cap));
   if (cat === 'esya') out.push(mk('kind', L.filter.kind, (v) => L.itemKind[v] ?? v));
+  if (cat === 'sinif') out.push(mk('kind', L.filter.classKind, (v) => L.classKind[v] ?? v, (a, b) => CLASS_KINDS.indexOf(a) - CLASS_KINDS.indexOf(b)));
   if (cat === 'altsinif') out.push(mk('cls', L.filter.cls, className));
   if (cat === 'altsoy') out.push(mk('species', L.filter.species, (v) => races.find((r) => r.id === v)?.name ?? v));
   if (cat === 'feat') out.push(mk('category', L.filter.category, (v) => L.featCat[v] ?? v));
@@ -349,4 +359,89 @@ export function dexSearch(list: DexEntry[], query: string, sel: Record<string, s
     for (const [k, v] of Object.entries(sel)) if (v && !(e.f[k] ?? '').split('|').includes(v)) return false;
     return !q || fold(e.name).includes(q) || (!!e.alt && fold(e.alt).includes(q));
   });
+}
+
+/** Sınıf kategorisindeki kayıt türleri (süzgeç sırası). */
+export const CLASS_KINDS = ['class', 'invocation', 'metamagic'];
+const ABILITY_IDS: Record<string, string> = { strength: 'str', dexterity: 'dex', constitution: 'con', intelligence: 'int', wisdom: 'wis', charisma: 'cha' };
+
+/**
+ * Görev DX-S: sınıf kartları ve sınıf seçenekleri. Kimlik = sınıf kimliği / Invocation kimliği / Metamagic kimliği
+ * (`data/class-features.json`). Özellik adı İngilizce (SRD tablosu `data/srd/progression.json`), Türkçe açıklama
+ * oluşturucuyla aynı zincirden (`featureSummary`: `aciklamalar-tr.json` `yetenek`, yoksa `aciklamalar.json` `features.tr`);
+ * yoksa "açıklama yok". SRD'nin İngilizce özellik metni kullanılmaz.
+ */
+function buildClasses(x: DexExtras, en: (kind: string, id: string) => string | undefined): DexEntry[] {
+  const L = t().dex;
+  const B = t().builder;
+  const A = t().abilities;
+  const ab = (id: string) => A[id] ?? id.toUpperCase();
+  const primary = (raw: string): string => {
+    const ids = raw.split(/ or | and /).map((w) => ABILITY_IDS[w.trim().toLowerCase()]).filter((v): v is string => !!v);
+    return ids.map(ab).join(/ or /.test(raw) ? L.or : L.and);
+  };
+  const isCaster = (id: string) => spells.some((sp) => spellClassIds(sp).includes(id));
+  const out: DexEntry[] = classes.map((c) => {
+    const prog = classData.progression.find((p) => p.id === c.id);
+    const cx = c as unknown as { hitDie: number; saves: string[]; armorTraining: string[]; weaponProficiency: string; martialWeaponProperties: string[];
+      casting: { type: string; ability: string } | null; skillChoices?: { count: number; from: string[] | 'any' } };
+    const rows: DexRow[] = (prog?.rows ?? []).flatMap((r) => r.features.map((f): DexRow => {
+      const key = `${c.id}:${f.id}`;
+      const tr = featureSummary({ key, id: f.id, from: 'class' }, c.id, undefined, 'tr') || undefined;
+      return { name: f.name, level: r.level, text: tr ? { tr, en: en('yetenek', key) } : { ui: L.noFeatureDesc } };
+    }));
+    const options: DexRow[] = Object.entries(classData.mechanics.features).filter(([k, m]) => k.startsWith(`${c.id}:`) && m.options?.length)
+      .flatMap(([k, m]) => (m.options ?? []).map((o): DexRow => ({
+        name: prog?.rows.flatMap((r) => r.features).find((f) => `${c.id}:${f.id}` === k)?.name ?? k, text: { ui: B.featureOption[o.id] ?? o.id },
+      })));
+    const weapons = cx.weaponProficiency === 'martial' ? L.weaponProf.martial
+      : cx.martialWeaponProperties.length ? L.weaponProf.simplePlus(cx.martialWeaponProperties.map(cap).join(L.or)) : L.weaponProf.simple;
+    const progFeatures = new Set((prog?.rows ?? []).flatMap((r) => r.features.map((f) => f.id)));
+    const links: DexLink[] = [
+      { cat: 'altsinif', filter: ['cls', c.id], label: L.subclassesOf(c.name) },
+      ...(isCaster(c.id) ? [{ cat: 'buyu', filter: ['cls', c.id], label: L.spellsOf(c.name) } as DexLink] : []),
+      ...(progFeatures.has('fighting-style') ? [{ cat: 'feat', filter: ['category', 'Fighting Style'], label: L.fightingStyles } as DexLink] : []),
+      ...(progFeatures.has('eldritch-invocations') ? [{ cat: 'sinif', filter: ['kind', 'invocation'], label: L.classKind.invocation ?? '' } as DexLink] : []),
+      ...(progFeatures.has('metamagic') ? [{ cat: 'sinif', filter: ['kind', 'metamagic'], label: L.classKind.metamagic ?? '' } as DexLink] : []),
+      ...(progFeatures.has('epic-boon') ? [{ cat: 'feat', filter: ['category', 'Epic Boon'], label: L.featCat['Epic Boon'] ?? 'Epic Boon' } as DexLink] : []),
+    ];
+    return {
+      cat: 'sinif', id: c.id, name: c.name, header: L.classKind.class ?? '',
+      summary: { ui: L.classSummary(cx.hitDie, primary(x.classPrimary[c.id] ?? '')) },
+      facts: [
+        [L.fact.hitDie, `d${cx.hitDie}`],
+        ...(x.classPrimary[c.id] ? [[L.fact.primary, primary(x.classPrimary[c.id]!)] as [string, string]] : []),
+        [L.fact.saves, cx.saves.map(ab).join(', ')],
+        [L.fact.armorTraining, cx.armorTraining.length ? cx.armorTraining.map((a) => L.armorType[a] ?? a).join(', ') : L.none],
+        [L.fact.weaponProf, weapons],
+        ...(cx.skillChoices ? [[L.fact.skills, L.skillChoice(cx.skillChoices.count, Array.isArray(cx.skillChoices.from) ? cx.skillChoices.from.map((k) => t().skillNames[k] ?? k).join(', ') : L.anySkill)] as [string, string]] : []),
+        ...(cx.casting ? [[L.fact.spellcasting, `${L.castingType[cx.casting.type] ?? cx.casting.type} · ${ab(cx.casting.ability)}`] as [string, string]] : []),
+      ],
+      sections: [{ title: L.sec.classFeatures, rows }, ...(options.length ? [{ title: L.sec.classOptions, rows: options }] : [])],
+      links, tags: [], f: { kind: 'class' }, sort: `0${c.name}`,
+    };
+  });
+  const warlock = classes.find((c) => c.id === 'warlock');
+  for (const inv of allInvocations()) {
+    const note = (inv as unknown as { note?: string }).note;
+    const req = inv.requires ? allInvocations().find((v) => v.id === inv.requires) : undefined;
+    out.push({
+      cat: 'sinif', id: inv.id, name: inv.name, header: `${L.classKind.invocation} · ${warlock?.name ?? 'Warlock'} ${L.level(inv.minLevel)}`,
+      desc: trAciklama('invocation', inv.id) ?? note ? { tr: trAciklama('invocation', inv.id) ?? note, en: en('invocation', inv.id) } : undefined,
+      facts: [[L.fact.minLevel, L.level(inv.minLevel)], ...(inv.repeatable ? [[L.fact.repeatable, L.yes] as [string, string]] : [])],
+      sections: [], links: [{ cat: 'sinif', id: 'warlock', label: warlock?.name ?? 'Warlock' }, ...(req ? [{ cat: 'sinif', id: req.id, label: req.name } as DexLink] : [])],
+      tags: inv.status && inv.status !== 'ok' ? [B.legend[inv.status] ?? inv.status] : [], f: { kind: 'invocation' }, sort: `1${inv.name}`,
+    });
+  }
+  const sorcerer = classes.find((c) => c.id === 'sorcerer');
+  const mm = Object.values(classData.mechanics.features).find((m) => m.metamagic)?.metamagic;
+  for (const [id, cost] of Object.entries(mm?.costs ?? {})) {
+    out.push({
+      cat: 'sinif', id, name: B.metamagicName[id] ?? id, header: `${L.classKind.metamagic} · ${sorcerer?.name ?? 'Sorcerer'}`,
+      desc: B.metamagicInfo[id] ? { ui: B.metamagicInfo[id] } : undefined,
+      facts: [[L.fact.cost, B.metamagicCost(cost)]], sections: [],
+      links: [{ cat: 'sinif', id: 'sorcerer', label: sorcerer?.name ?? 'Sorcerer' }], tags: [], f: { kind: 'metamagic' }, sort: `2${B.metamagicName[id] ?? id}`,
+    });
+  }
+  return out;
 }

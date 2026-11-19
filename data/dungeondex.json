@@ -1,6 +1,6 @@
 {
   "_aciklama": "Dungeondex (yalnız arayüz; harita/belgeler/DUNGEONDEX-TASARIM.md): kategori sırası, sayfa boyu, görünür süzgeç sınırı (SD3: en çok 6), beklenen alt sınıf sayısı (yüklü olan azsa 'içerik eksik' notu), büyü sınıf kodları (data/spells*.json `classes`) ve canavar CR kademeleri. Durum kimlikleri SRD durum adının küçük harfi; açıklamalar data/aciklamalar-tr.json `durum`.",
-  "kategoriler": ["buyu", "esya", "canavar", "tur", "altsoy", "altsinif", "feat", "gecmis", "durum"],
+  "kategoriler": ["buyu", "esya", "canavar", "tur", "altsoy", "sinif", "altsinif", "feat", "gecmis", "durum"],
   "sayfa": 40,
   "gorunurSuzgec": 6,
   "altSinifBeklenen": 120,
