@@ -1,6 +1,7 @@
 /**
  * KW1: Dragonborn kanat önizleme sayfası (yalnız geliştirme; docs/sabah/dragonborn-kanat/). Gerçek oyun bileşenleriyle çizer.
  * ?m=ab: 10 soy × (Erkek Fighter Gladyatör, Kadın Wizard) × (256, 96 px rozet), önce/sonra karşılaştırması için aynı sayfa iki sürümde çekilir.
+ * ?m=ozet: Erkek Fighter Gladyatör, 10 soy, 256 px (iki hal karşılaştırması için kompakt; `katmanlar.zar.etkin` açık/kapalı iki kez çekilir).
  * ?m=hepsi: bütün Dragonborn jetonları (savaş jetonu çizimi, havada), kök kontrol sayfası. ?m=kok: 4 farklı sınıf/poz, kök işaretli.
  */
 import { createRoot } from 'react-dom/client';
@@ -102,6 +103,20 @@ function PageFigur() {
     </div>
   );
 }
+function PageOzet() {
+  return (
+    <div id="sayfa" style={{ background: '#1d2128', padding: 8, display: 'inline-block' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 360px)', gap: 4 }}>
+        {LINEAGES.map((l) => (
+          <div key={l} style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', height: 282, position: 'relative' }}>
+            <LookFrame sheet={{ raceId: 'dragonborn', lineageId: l, level: 5 }} size={256} ability><AvatarBadge avatar={sheetAvatar({ ...base, raceId: 'dragonborn', level: 5, lineageId: l, ...CHARS[0]!.sheet } as CharacterSheet)} size={256} eager /></LookFrame>
+            <div style={{ position: 'absolute', left: 6, top: 4, font: '700 13px system-ui', color: '#f5d76e', textTransform: 'capitalize' }}>{l}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 const KOK = (q.get('jeton') ?? 'dragonborn-erkek-bard-ID3,dragonborn-kadin-monk-ID2,dragonborn-erkek-fighter-ID12,dragonborn-erkek-sorcerer-SC-3').split(',');
 function PageKok() {
   return (
@@ -148,5 +163,6 @@ const host = document.createElement('div'); host.style.cssText = 'position:fixed
 if (mode === 'ab') createRoot(host).render(<PageAb />);
 else if (mode === 'hepsi') createRoot(host).render(<PageHepsi />);
 else if (mode === 'kok') createRoot(host).render(<PageKok />);
+else if (mode === 'ozet') createRoot(host).render(<PageOzet />);
 else if (mode === 'figur') createRoot(host).render(<PageFigur />);
 else if (mode === 'renk') void renkOlc(+(q.get('adim') ?? 5));

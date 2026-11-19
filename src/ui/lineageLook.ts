@@ -12,7 +12,9 @@ import { findSubclass } from '../rules/subclasses';
 
 /** Çözülmüş kanat katmanı (jetonun arkası): `src` o anki durumun görseli (`public/` altı yol), filtre renk için. */
 /** `capa`: kanat kökü görsel oranı; `omuz`: kökün jeton yüksekliğinde tepeden oranı; `enBoy`: görsel yüksekliği/genişliği. */
-export interface WingLayerSpec { id: string; src: string; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre: string; open: boolean; /** SD5: parlaklık→renk paleti (SVG filtresi; opak kalır). */ palet?: WingPalet; /** SD5: görsel kutuya oransız oturur. */ esnet?: boolean; /** Animasyonlu sayfa (4x2 vb.); yoksa tek görsel. */ sprite?: WingSprite; /** KW1: görsel TEK (sağ) kanat; iki yana ayna çizilir, kök gövdeye bağlanır (`wingPlacements`). */ ayna?: WingMirror }
+export interface WingLayerSpec { id: string; src: string; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre: string; open: boolean; /** SD5: parlaklık→renk paleti (SVG filtresi; opak kalır). */ palet?: WingPalet; /** SD5: görsel kutuya oransız oturur. */ esnet?: boolean; /** Animasyonlu sayfa (4x2 vb.); yoksa tek görsel. */ sprite?: WingSprite; /** KW1: görsel TEK (sağ) kanat; iki yana ayna çizilir, kök gövdeye bağlanır (`wingPlacements`). */ ayna?: WingMirror; /** KW2: taban görselin üstüne çizilen saydam katmanlar (zar: soy rengi + pembe karışımı, pençe: boynuz beyazı), her biri kendi paletiyle. */ katmanlar?: WingPart[] }
+/** KW2: kanat katmanı: `ad` bölge (zar, pence), `src` aynı boyutta saydam görsel (alfa = bölge ağırlığı), `palet` o katmanın parlaklık→renk paleti. */
+export interface WingPart { ad: 'zar' | 'pence'; src: string; palet: WingPalet }
 /** KW1: tek kanatlı slot. `dx`: kökün gövde merkezinden varsayılan uzaklığı (jeton genişliği oranı; jeton kök verisi yoksa), `aci`: kanadın kök etrafında dışa/yukarı dönüşü (derece). */
 export interface WingMirror { dx: number; aci: number }
 /** KW1: kanat kökü jeton uzayında (256 px): sol/sağ kök x'i; y verilmezse slotun `omuz` yüksekliği (`data/dragonborn-kanat-kok.json`). */
@@ -89,7 +91,7 @@ export function pickCulture(sheet: { lineageId?: string; exileCulture?: string; 
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
-type WingSlotData = { altSinif?: string; ayna?: WingMirror; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
+export type WingSlotData = { altSinif?: string; ayna?: WingMirror; /** KW2: tek kanat görselinin üstüne çizilen katmanlar (dosya aynı klasörde, aynı boyutta). `zar.etkin: false` pembe karışımlı zar katmanını kapatır (karşılaştırma); pençe her zaman. */ katmanlar?: { zar?: { dosya: string; etkin?: boolean }; pence?: { dosya: string; palet: WingPalet } }; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet & { zar?: WingPalet }>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
 const W = wings as unknown as { klasor: string; slotlar: Record<string, WingSlotData> };
 export const WING_SLOTS = Object.keys(W.slotlar);
 /** Kanat slotuna bağlı alt sınıf kimlikleri (`altSinif`) ve slotun kimliği. */
@@ -114,6 +116,19 @@ export const awakeningLookIds = (): string[] => Object.keys(D.celestialUyanis);
  * Kanat katmanı: slot karakter seviyesine uyuyorsa ve o durumun (`flying`: açık, değilse kapalı) görseli eşlemede varsa; görsel
  * dosyası tanımlı değilse (sprite henüz yok) katman yok.
  */
+/**
+ * KW2: slotun katmanları (taban görselin üstüne sırayla): zar (soyun paletindeki `zar` alt paleti varsa ve `katmanlar.zar.etkin` kapalı değilse) ve pençe
+ * (sabit boynuz beyazı paleti). Taban katman (kanat çerçevesi: kol ve ön kenar kemiği) soy renginde kalır.
+ */
+export function wingParts(slot: WingSlotData, folder: string, lineageId?: string): WingPart[] {
+  const k = slot.katmanlar;
+  if (!k) return [];
+  const out: WingPart[] = [];
+  const zar = lineageId ? slot.renkPaletleri?.[lineageId]?.zar : undefined;
+  if (k.zar && k.zar.etkin !== false && zar) out.push({ ad: 'zar', src: `${folder}/${k.zar.dosya}`, palet: zar });
+  if (k.pence) out.push({ ad: 'pence', src: `${folder}/${k.pence.dosya}`, palet: k.pence.palet });
+  return out;
+}
 function wingLayer(id: string, level: number, flying: boolean, lineageId?: string): WingLayerSpec | null {
   const w = W.slotlar[id];
   if (!w || (w.minSeviye ?? 1) > level) return null;
@@ -123,8 +138,10 @@ function wingLayer(id: string, level: number, flying: boolean, lineageId?: strin
   if (!file) return null;
   const filtre = [w.filtre, lineageId ? w.renkFiltreleri?.[lineageId] : undefined].filter(Boolean).join(' ');
   const { klasor: sk, ...sprite } = w.sprite ?? ({} as { klasor?: string });
-  const palet = (lineageId ? w.renkPaletleri?.[lineageId] : undefined) ?? w.palet;
-  return { id, src: `${sk ?? W.klasor}/${file}`, olcek: w.olcek, omuz: w.omuz, capa: w.capa, enBoy: w.enBoy, filtre, open, ...(palet ? { palet } : {}), ...(w.esnet ? { esnet: true } : {}), ...(w.sprite ? { sprite: sprite as WingSprite } : {}), ...(w.ayna ? { ayna: w.ayna } : {}) };
+  const lp = lineageId ? w.renkPaletleri?.[lineageId] : undefined;
+  const palet: WingPalet | undefined = lp ? { golge: lp.golge, isik: lp.isik, ...(lp.esik ? { esik: lp.esik } : {}) } : w.palet;
+  const katmanlar = wingParts(w, sk ?? W.klasor, lineageId);
+  return { id, src: `${sk ?? W.klasor}/${file}`, olcek: w.olcek, omuz: w.omuz, capa: w.capa, enBoy: w.enBoy, filtre, open, ...(palet ? { palet } : {}), ...(w.esnet ? { esnet: true } : {}), ...(w.sprite ? { sprite: sprite as WingSprite } : {}), ...(w.ayna ? { ayna: w.ayna } : {}), ...(katmanlar.length ? { katmanlar } : {}) };
 }
 
 /**
