@@ -25,7 +25,6 @@ const top = [
   ['Yapay zekâ zorluğu: Parti', '`yz.zorluk.party`', 'Game Master', 'Üstte'],
   ['Yapay zekâ zorluğu: Düşmanlar', '`yz.zorluk.enemies`', 'Game Master', 'Üstte'],
   ['Hedefler (haritanın hedefleri, özel hedef)', '`goals`', 'Game Master', 'Üstte'],
-  ['Oda kuralları: Üst seviye (6–20)', '`rpg-battle-deneysel.ustSeviye`', 'Game Master', 'Üstte (SD8 katı)'],
   ['Oda kuralları: Taşıma yükü', '`rpg-battle-tasima`', 'Game Master', 'Üstte (SD8 katı)'],
   ['Oda kuralları: Alignment (+3 alt seçenek)', '`rpg-battle-deneysel.hizalanma*`', 'Game Master', 'Üstte (SD8 katı)'],
   ['Oda kuralları: Keşif modu', '`rpg-battle-onizleme.discovery`', 'Game Master', 'Üstte (SD8 katı)'],

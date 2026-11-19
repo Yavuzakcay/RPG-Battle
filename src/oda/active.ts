@@ -8,7 +8,7 @@ export type HpVis = 'gizli' | 'etiket' | 'yuzde' | 'tam';
 export const HP_VIS: readonly HpVis[] = ['gizli', 'etiket', 'yuzde', 'tam'];
 
 export interface RoomOverlay {
-  /** `rpg-battle-deneysel` alanlarının odadaki karşılığı (ustSeviye, hizalanma*, yolculuk). */
+  /** `rpg-battle-deneysel` alanlarının odadaki karşılığı (hizalanma*, yolculuk). */
   deneysel: Record<string, boolean>;
   tasima?: string;
   kesif?: boolean;

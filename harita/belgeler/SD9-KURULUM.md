@@ -12,7 +12,6 @@ Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: SD9 a�
 | Yapay zekâ zorluğu: Parti | `yz.zorluk.party` | Game Master | Üstte |
 | Yapay zekâ zorluğu: Düşmanlar | `yz.zorluk.enemies` | Game Master | Üstte |
 | Hedefler (haritanın hedefleri, özel hedef) | `goals` | Game Master | Üstte |
-| Oda kuralları: Üst seviye (6–20) | `rpg-battle-deneysel.ustSeviye` | Game Master | Üstte (SD8 katı) |
 | Oda kuralları: Taşıma yükü | `rpg-battle-tasima` | Game Master | Üstte (SD8 katı) |
 | Oda kuralları: Alignment (+3 alt seçenek) | `rpg-battle-deneysel.hizalanma*` | Game Master | Üstte (SD8 katı) |
 | Oda kuralları: Keşif modu | `rpg-battle-onizleme.discovery` | Game Master | Üstte (SD8 katı) |
@@ -55,7 +54,7 @@ Kullanıcı kararı: "10 yaşında bir çocuk anlasın". Yalnız arayüz: SD9 a�
 
 | Kimlik | Ad | Tür | Varsayılan | Grup | Kaldırma adayı |
 |---|---|---|---|---|---|
-| `freeHexTarget` | Alan/atma etkileri her altıgene atılabilir (ateş büyüsü boş zemine düşünce söner) | global | açık | Diğer (altyapı) | **kaldırma adayı** (Diğer'de kaldı) |
+| `freeHexTarget` | Alan/atma etkileri ve (sürüm 81+) tek hedefli saldırı/save büyüleri hedefsiz her altıgene atılabilir (boş zeminde boşa gider, suya/çimene tepkime verir) | global | açık | Diğer (altyapı) | **kaldırma adayı** (Diğer'de kaldı) |
 | `waterSurfaceDecay` | Suda yüzey etkileri azalsın (gres/yağ her tur yarıya iner, alev söner) | global | açık | Yüzey ve su tepkimeleri |  |
 | `hiddenObjects` | Gizli nesneleri oyunculardan sakla (komşuya girince ya da pasif Algıyla bulunur) | global | açık | Harita (lav, derin su, gizli nesne…) |  |
 | `deepWaterLimit` | Çok derin su (kıyıdan uzak derin suya yalnızca yüzücü, suda yürüyen, uçan) | global | açık | Harita (lav, derin su, gizli nesne…) |  |

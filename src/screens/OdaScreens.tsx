@@ -12,10 +12,9 @@ import { RoomRules } from '../ui/settings/RoomRules';
 import { SegRow } from '../ui/settings/SegRow';
 import { DICE_MODES, type DiceMode } from '../rules/manualDice';
 import { HP_VIS, setRoomOverlay, type HpVis, type RoomOverlay } from '../oda/active';
-import { levelCap } from '../app/limits';
 import { overlayOf, rulesSummary, cleanName, ODA_AD_MAX, type AiDiff, type Oda, type OdaKurallar } from '../oda/model';
 import { createRoom, deleteRoom, isLocked, joinRoom, leaveRoom, loadRooms, renameRoom, saveRooms, unlockRoom, updateRoom } from '../oda/store';
-import { alignmentEnabled, journeyEnabled, upperLevelsEnabled } from '../app/features';
+import { alignmentEnabled, journeyEnabled } from '../app/features';
 import { storedCarryRule } from '../ui/carrySetting';
 import { loadSettings } from '../app/discovery';
 import { hasSavedBattle } from '../app/saveKey';
@@ -29,7 +28,7 @@ import type { GoalsDraft } from '../oda/hedef';
 export function globalRules(): OdaKurallar {
   const pv = loadSettings();
   return {
-    ustSeviye: upperLevelsEnabled(), tasima: storedCarryRule(), hizalanma: alignmentEnabled(), hizalanmaIrk: alignmentRace(),
+    tasima: storedCarryRule(), hizalanma: alignmentEnabled(), hizalanmaIrk: alignmentRace(),
     hizalanmaYalnizOtomatik: alignmentAutoOnly(), hizalanmaMoral: alignmentMoralEnabled(), kesif: pv.discovery, ipucu: pv.hints, yolculuk: journeyEnabled(),
   };
 }
@@ -184,7 +183,7 @@ export function OdaKur(props: {
 /** Oda kuralları salt okunur özet satırı. */
 function RulesReadOnly(props: { rules: OdaKurallar }) {
   const O = t().oda, R = t().roomRules, K = t().carry;
-  const label: Record<string, string> = { ustSeviye: R.upper, tasima: R.carry, hizalanma: R.align, kesif: R.discovery, ipucu: R.hints, yolculuk: R.journey };
+  const label: Record<string, string> = { tasima: R.carry, hizalanma: R.align, kesif: R.discovery, ipucu: R.hints, yolculuk: R.journey };
   return (
     <ul className="oda-rules-read" aria-label={O.joinRules}>
       {rulesSummary(props.rules).map((r) => (
@@ -236,7 +235,6 @@ export function OdaKatil(props: { characters: SavedCharacter[]; onBack: () => vo
             <section className="panel">
               <h2>{O.joinChars} <small className="mute">{O.joinCount(room.parti.filter((id) => valid.some((c) => c.id === id)).length, MAX_PARTY)}</small></h2>
               {props.onBuild && <div className="set-btns"><button type="button" className="cta" onClick={() => props.onBuild?.(room.id, overlayOf(room))}>{O.joinBuild}</button><small className="mute">{O.joinBuildHelp}</small></div>}
-              {room.ayarlar.kurallar.ustSeviye ? null : valid.filter((c) => c.sheet.level > levelCap(false)).map((c) => <p key={c.id} className="warn">{c.sheet.name}: {O.levelCapWarn(c.sheet.level, levelCap(false))}</p>)}
               {valid.length === 0 && <p className="empty-state">{O.joinNoChars}</p>}
               {full && <p className="mute">{O.joinFull(MAX_PARTY)}</p>}
               <ul className="oda-list">

@@ -9,6 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Seviye sınırı kalktı: her yerde 1–20, "Üst seviye (6–20)" anahtarı yok (2026-11-19)
+
+- Kullanıcı kararı: 5. seviye sınırı yalnız ilk aşama içindi. Tek sabit `LEVEL_CAP = 20` (`src/app/limits.ts`); `upperLevelsEnabled`, Oda kuralları satırı, oda kaydındaki `ustSeviye`, Serüven anahtarı `ustSeviye`, oluşturucunun "Bu odada Üst seviye kapalı" ve Odaya katıl'ın "5 üstü karakter" uyarıları kalktı.
+- Eski kayıt güvenliği: cihaz ayarındaki `ustSeviye` okunmaz ve sonraki yazmada düşer; eski oda kaydında bilinmeyen alan olarak atılır; eski Serüven kaydındaki `toggles.ustSeviye` yok sayılır (kayıt aynen yüklenir, 20'ye dek atlar). Savaş kuralı değişmediği için kural sürümü ve kayıt sürümleri artmadı.
+- Kuyruk 41b'nin `ustSeviyeGizli` gizlemesi (Üst seviye açıkken 1–5. seviye senaryosunu seçiciden ve Serüven'den saklama) anahtarla birlikte kalktı: alan silindi, içerik her zaman görünür (tek kullanan Kale Baskını zaten `gizli`). Gerekçe: anahtarsız durumda "her zaman gizli" içerik kaybettirir, "hiç gizleme" eski varsayılanla aynıdır.
+- 6+ "deneysel" uyarısı veriden aynen (`experimentalFrom`). Yeni karakter 1. seviyede başlar. Denge ölçülmedi; Serüven'de 6+ düğümlerin çoğu 5. seviye listesine düşüyor (denetim `harita/belgeler/SEVIYE-SINIRI-KALDIRMA.md`), denge turuna kaldı.
+
 ## Eski Dragonborn ten maskeleri silindi: 264 dosya (2026-11-19, kullanıcı kararı; yalnız görünüm/veri, kural ve kayıt sürümü değişmedi)
 
 - Kullanıcı kararı: oyunda görünmeyecek dosyalar tutulmaz. `public/characters/maske/dragonborn-<erkek|kadin>-<sınıf>-<hücre>.png` (264, ≈236 kB) tek tek `git rm` ile silindi. Dragonborn beyaz taban jetonları `pul` boyamayla `maske-pul/` kullanıyor; eski `maske/` yedek yolunu (`lineageTint(…, 'maske')`, `lineagesAltMaske`) uygulama kodu çağırmıyordu.
