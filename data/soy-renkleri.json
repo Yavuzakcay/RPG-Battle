@@ -257,6 +257,11 @@
         ],
         "bright": 20,
         "th": 7
+      },
+      "temizlik": {
+        "referans": 256,
+        "delik": { "kapama": 1, "enCok": 80, "ekleOrani": 0.5 },
+        "vurgu": { "L": 70, "boyut": 3, "cevre": 0.95 }
       }
     },
     "elf": {

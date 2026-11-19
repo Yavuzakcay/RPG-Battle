@@ -5,12 +5,16 @@
  * - Eski yol (High Elf): `select` ton aralığındaki pikseller HSL hedefine (K8b).
  * - Maskeli yol (K15): yalnızca sprite'ın ten maskesi (`public/characters/maske/<ad>.png`, `npm run soy-maske`);
  *   LCh'de ton ve kroma kaydırılır, açıklık farkları korunur (`lch`) ya da açıklık gradyan haritasına eşlenir (`gradient`).
+ * - Maske onarımı (çizim tarafı, dosyalar değişmez; tembel `maskClose.ts`): Human ve Dark Elf için SD5/SD6 temizliği (`skinCleanup`),
+ *   Tiefling için TB1 onarımı (`skinFixFor`: maske deliği + uç/kenar vurguları; ayar `soy-renkleri.json` `races.<ırk>.temizlik`).
  */
 import type { TintSpec } from '../battle/types';
 import { labToRgb, rgbToLab } from './color';
 import maskRapor from '../../data/soy-maske-rapor.json';
 import basData from '../../data/soy-bas.json';
+import soyRenkleri from '../../data/soy-renkleri.json';
 import { applyHeadOverlay, type Box } from './headOverlay';
+import type { SkinFixCfg } from './maskClose';
 
 /** Görev K22: jetonun kafa kaplaması (data/soy-bas.json; yoksa undefined). */
 export const headEntry = (name: string): { box: Box; govdeBoya?: false } | undefined => (basData as unknown as { sprites: Record<string, { box: Box; govdeBoya?: false }> }).sprites[name];
@@ -149,6 +153,16 @@ function maskedPixels(data: Uint8ClampedArray, tint: TintSpec, mask: Uint8Array)
 /** SD6: ten maskesi temizliği hangi jetonlara: Human (her kültür) ve Dark Elf (`elf-*`, gradyan paleti). */
 export const skinCleanup = (name: string, tint: TintSpec): boolean => /^human-/.test(name) || (/^elf-/.test(name) && 'gradient' in tint.to);
 
+/**
+ * TB1: ten maskesi onarımı ayarı (`data/soy-renkleri.json` `races.<ırk>.temizlik`; şimdilik Tiefling). Irk jeton adının ilk parçasıdır.
+ * Kaydı olmayan ırkta undefined: SD5/SD6 temizliği (`skinCleanup`) ya da hiçbir şey. Aynı adım maske + boyama için tek kod yoludur
+ * (`tintedUrl`); jeton başına yama yok, ayar ırk başına veride.
+ */
+export const skinFixFor = (name: string): SkinFixCfg | undefined => {
+  const r = (soyRenkleri.races as unknown as Record<string, { mask?: SkinFixCfg['mask']; temizlik?: SkinFixCfg['temizlik'] }>)[name.split('-')[0] ?? ''];
+  return r?.mask && r.temizlik ? { mask: r.mask, temizlik: r.temizlik } : undefined;
+};
+
 const done = new Map<string, string | null>();
 const waiting = new Map<string, Promise<string | null>>();
 export const tintKey = (url: string, tint: TintSpec) => `${url}|${JSON.stringify(tint)}`;
@@ -225,10 +239,13 @@ export function tintedUrl(url: string, tint: TintSpec): Promise<string | null> {
         const entry = spriteName(url) ? headEntry(spriteName(url) as string) : undefined;
         // SD5/SD6: ten maskesi delikleri ve kenar saçağı çizim tarafında temizlenir (`maskClose.ts`); dosyalar değişmez.
         // SD6: aynı temizlik Dark Elf (Drow gradyan paleti) jetonlarında da; diğer ırklar etkilenmez.
-        if ((mask || weights) && skinCleanup(spriteName(url) ?? '', tint)) {
-          // Ana parça küçük kalsın: delik kapatma tembel parça.
-          const { closeSkinHoles } = await import('./maskClose');
-          const closed = closeSkinHoles(px.data, mask, weights, W, H);
+        // TB1: ırkın `temizlik` kaydı varsa (Tiefling) onun onarımı (`fixSkinMask`: maske deliği + uç vurguları), yoksa SD5/SD6.
+        const spr = spriteName(url) ?? '';
+        const fix = skinFixFor(spr);
+        if ((mask || weights) && (fix || skinCleanup(spr, tint))) {
+          // Ana parça küçük kalsın: maske temizliği tembel parça.
+          const mc = await import('./maskClose');
+          const closed = fix ? mc.fixSkinMask(px.data, mask, weights, W, H, fix) : mc.closeSkinHoles(px.data, mask, weights, W, H);
           if (closed.mask) mask = closed.mask;
           if (closed.weights) weights = closed.weights;
         }

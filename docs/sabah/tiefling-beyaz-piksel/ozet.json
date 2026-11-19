@@ -1,0 +1,79 @@
+{
+  "jeton": 285,
+  "maskesiz": [
+    "tiefling-erkek-druid-ID4",
+    "tiefling-erkek-sorcerer-SC-5",
+    "tiefling-kadin-druid-ID4"
+  ],
+  "govde_px": 7073857,
+  "maske_px": 761875,
+  "yakin_beyaz_px": 113689,
+  "a": 0,
+  "b": 0,
+  "c": 0,
+  "d": 113689,
+  "delik_px": 99854,
+  "vurgu_px": 12,
+  "sonra_a": 0,
+  "sonra_c": 1,
+  "sonra_kalan_delik": 0,
+  "sonra_kalan_vurgu": 0,
+  "delik_jeton": 284,
+  "vurgu_jeton": 8,
+  "benekli_jeton_a": 0,
+  "benekli_jeton_c": 0,
+  "el_listesi_jeton": 1,
+  "el_listesi_bilesen": 1,
+  "en_kotu_10": [
+    [
+      "tiefling-erkek-barbarian-ID8",
+      1259,
+      0
+    ],
+    [
+      "tiefling-erkek-sorcerer-SC-1",
+      1182,
+      0
+    ],
+    [
+      "tiefling-kadin-warlock-WL-11",
+      1146,
+      0
+    ],
+    [
+      "tiefling-erkek-barbarian-ID7",
+      1021,
+      0
+    ],
+    [
+      "tiefling-kadin-bard-ID7",
+      999,
+      0
+    ],
+    [
+      "tiefling-erkek-barbarian-ID4",
+      985,
+      0
+    ],
+    [
+      "tiefling-kadin-barbarian-ID5",
+      971,
+      0
+    ],
+    [
+      "tiefling-erkek-fighter-ID4",
+      958,
+      3
+    ],
+    [
+      "tiefling-kadin-warlock-WL-5",
+      943,
+      0
+    ],
+    [
+      "tiefling-erkek-barbarian-GR",
+      923,
+      0
+    ]
+  ]
+}
