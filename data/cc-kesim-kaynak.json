@@ -4841,11 +4841,17 @@
      "dosya": "cleric-id9-halka/aday",
      "hucre": 9,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday + kalın halka",
+     "hucre": 9,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
     "kaynak": "duzeltme",
-    "dosya": "cleric-id9-halka/aday",
+    "dosya": "cleric-id9-halka/aday + kalın halka",
     "hucre": 9
    }
   },
@@ -5726,11 +5732,17 @@
      "dosya": "cleric-id9-halka/aday",
      "hucre": 9,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday + kalın halka",
+     "hucre": 9,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
     "kaynak": "duzeltme",
-    "dosya": "cleric-id9-halka/aday",
+    "dosya": "cleric-id9-halka/aday + kalın halka",
     "hucre": 9
    }
   },
@@ -5741,11 +5753,17 @@
      "dosya": "cleric-id9-halka/aday",
      "hucre": 9,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday + kalın halka",
+     "hucre": 9,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
     "kaynak": "duzeltme",
-    "dosya": "cleric-id9-halka/aday",
+    "dosya": "cleric-id9-halka/aday + kalın halka",
     "hucre": 9
    }
   }

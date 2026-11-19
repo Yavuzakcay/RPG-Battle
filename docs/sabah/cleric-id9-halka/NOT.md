@@ -49,3 +49,16 @@ iki yanında. Dragonborn pul maskesiyle halka kesişimi 0 (eski halka silinen pi
 | (karşılaştırma: human-erkek, büyük halka) | 804 px | 177 px | 42×22 | 174 |
 
 Halka üçünde de seçiliyor ama soluk (yarı saydam, tek piksellik çizgi); Dragonborn erkek en zayıfı. **Öneri (uygulanmadı):** küçük halkada boncuk kalınlığı 256 px'te 1 px artırılsın (≈ 2 → 3 px) ve alfa ×2 yerine tam opak yapılsın; bu 96 px'te çizgiyi ≈ 1 px tam opak yapar, halka pikselini yaklaşık 1,5–2 katına çıkarır. Halka boyu (en %48) değişmeden boynuz kesişimi aynı kalır.
+
+## Kalın halka (2026-11-19, öneri uygulandı)
+
+`python3 scripts/cleric-id9-kalin.py` (rapor `kalin.json`, görüntü `kalin-96px-once-sonra.png`: üst önce, alt sonra, 96 px kopyanın baş bölgesi 6×): Tiefling erkek, Dragonborn erkek ve kadın.
+Boncuk çizgisi 256 px'te içe doğru 1 px kalınlaştı, halka tam opak (yumuşak kenar atıldı). Halka kutusu ve yatay konum aynı; boynuz altına düşen yeni piksel eklenmedi, boynuz kesişimi aynı (2 / 10 / 3 px). Jetonda yalnız halka kutusu (±1 px) değişti.
+
+| Jeton | 256 px'te eklenen | 96 px halka px (önce → sonra) | 96 px ort. alfa (önce → sonra) | Pul ∩ halka |
+|---|---|---|---|---|
+| tiefling-erkek | 64 px | 33 → 43 | 139 → 193 | — |
+| dragonborn-erkek | 47 px | 22 → 30 | 134 → 195 | 0 |
+| dragonborn-kadin | 55 px | 35 → 37 | 141 → 198 | 0 |
+
+Dragonborn: halka kutusundaki baş pikselleri arasında pul maskesine düşen değişiklikler (yeniden birleştirmenin sıkıştırma farkı; erkek 19, kadın 15 px) yayımlı jetondaki değerine geri bırakıldı, pul maskesine dokunulmadı.

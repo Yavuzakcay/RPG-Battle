@@ -9,6 +9,10 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Ana parça sınırı 450 → 500 kB (2026-11-19, kullanıcı kararı 2026-11-18)
+
+Kullanıcı: "500 de sorun değil." `data/paket-siniri.json` `anaParcaKb` 450 → 500. Ana parça bu sırada ≈448 kB (450 sınırına 2 kB kalmıştı). KQ4 PB1'deki "sınır tekrar yükseltilmez" notu bu kararla kalktı; yeni kod yine tembel parçalara girer (ilke değişmedi), denetim `npm run build` sonunda `scripts/paket-siniri.mjs`. CLAUDE.md güncellendi.
+
 ## Birlik Manastırı jetonu seviyeye göre: 3–16 ID3, 17+ ID9 (2026-11-19, kullanıcı kararı; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 
 - Cleric alt sınıfı Birlik Manastırı (`imza_birlik`, eski `baris-alani`) olan karakterde etkin seviye 3–16 hücre 3 (güvercinli genç rahip), 17 ve üstü hücre 9 (yaşlı çay ustası, halkalı). Seviye 17'ye çıkınca jeton kendiliğinden değişir, düşünce geri döner; 1–2. seviyede Gariban (GR) aynen.
