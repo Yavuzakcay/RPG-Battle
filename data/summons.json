@@ -317,8 +317,8 @@
           }
         }
       ],
+      "sharedResistance": true,
       "unsupported": [
-        "Shared Resistances",
         "Duyu: Blindsight 30 ft",
         "Durum bağışıklığı: Charmed, Frightened, Poisoned"
       ],

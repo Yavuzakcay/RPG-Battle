@@ -96,6 +96,8 @@ interface CreatureDef {
   /** Görev D2 (88+): yüzme hızı (ft) ve hasar bağışıklıkları (Draconic Spirit, Animated Object). */
   swimFt?: number;
   immunities?: string[];
+  /** Görev D3 (89+): Shared Resistances (Draconic Spirit, SRD s. 166): büyücü seçilen hasar türüne direnç kazanır. */
+  sharedResistance?: boolean;
 }
 export interface SummonDef {
   srd: string;
@@ -347,7 +349,25 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
       cur = applyEvents(cur, [zone]);
     }
   }
+  events.push(...sharedResistanceEvents(state, actor, spell, def, choice, companionFree, events));
   return finish(state, events);
+}
+
+/**
+ * Görev D3 (sürüm 89): Shared Resistances (SRD s. 166): "choose one of its Resistances. You have Resistance to the chosen
+ * damage type until the spell ends." Büyünün tek hasar türü seçimi (nefesle aynı, ⚠ SRD iki ayrı seçim) büyücüye direnç
+ * olur; büyü bitene dek: konsantrasyonla (Dragon Companion'da konsantrasyonsuz 1 dakika). Veri sürüme göre
+ * (`sharedResistance` 89'da eklendi), 88 ve altı aynen.
+ */
+function sharedResistanceEvents(state: BattleState, actor: Combatant, spell: Spell, def: SummonDef, choice: string | undefined,
+  companionFree: boolean, events: BattleEvent[]): BattleEvent[] {
+  const creature = def.creature ? summonCreature(def.creature, state.kuralSurumu ?? 1) : undefined;
+  if (!creature?.sharedResistance || def.choice?.kind !== 'damageType' || !choice) return [];
+  if (!events.some((e) => e.type === 'summoned')) return [];
+  return [{ type: 'effect_added', targetId: actor.id, effect: {
+    id: `shared-resistance:${spell.id}`, name: 'Shared Resistances', sourceId: actor.id, resist: [choice], icon: '🐉',
+    ...(companionFree ? { until: state.round + 9 } : spell.concentration ? { concentration: spell.name } : {}),
+  } }];
 }
 
 /** Kuyruk 19: Animate Objects: seçilen boyuttan en çok, kalan bütçe Medium. */

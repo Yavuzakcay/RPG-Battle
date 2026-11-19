@@ -77,10 +77,12 @@ describe('D2 katmanı ve çağrı verisi (SRD 5.2.1)', () => {
       expect(d.dosya).toBe('data/summons.json');
       const [kind, id] = d.kayit.split('/') as ['summons' | 'creatures', string];
       const cur = raw[kind][id] as Record<string, unknown>;
-      expect(cur[d.alan], `${d.kayit} ${d.alan} yeni`).toEqual(d.yeni);
+      // Görev D3 (89): aynı alan sonra yine düzeltildiyse (Draconic Spirit `unsupported`) `yeni` 88 görünümünde.
+      const at88 = srdKayit(d.dosya, d.kayit, cur, NEW) as Record<string, unknown>;
+      expect(at88[d.alan], `${d.kayit} ${d.alan} yeni`).toEqual(d.yeni);
       const old = srdKayit(d.dosya, d.kayit, cur, OLD) as Record<string, unknown>;
       expect(old[d.alan] ?? null, `${d.kayit} ${d.alan} eski`).toEqual(d.eski);
-      expect(srdKayit(d.dosya, d.kayit, cur, NEW)).toBe(cur);
+      expect(srdKayit(d.dosya, d.kayit, cur, CURRENT_RULES)).toBe(cur);
       // D1 düzeltmeleri 86–87'de yeni, D2'ninkiler eski.
       expect(srdKayit(d.dosya, d.kayit, cur, 86)).toEqual(old);
     }

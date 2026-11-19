@@ -6,6 +6,8 @@ Bu turda yalnızca ölçüm yapıldı ve rapor yazıldı. Mekaniğe, veriye ve t
 
 > **Güncelleme: D1 düzeltmeleri yapıldı (2026-11-19, kural sürümü 86).** Ayrıntı [§8](#8-d1-düzeltmeleri-kural-sürümü-86). CSV'ye her satırın D1 sonucunu gösteren `D1 (kural sürümü 86)` sütunu eklendi. Aşağıdaki §1–§7 denetim anını anlatır.
 >
+> **Kapanış: D3 yapıldı (2026-11-19, kural sürümü 89).** D1, WS87, D2 ve D3 tek tabloda, açık kalan maddelerle: [Kapanış](#kapanış-d1-ws87-d2-d3-kural-sürümleri-8689). CSV'nin son sütunu `D1 / D2 / D3 sonucu`.
+>
 > **Güncelleme: D2 yapıldı (2026-11-19, kural sürümü 88).** Çağrı blokları ve savaş sırasında eklenen canavarlar: [§9](#9-d2-çağrı-blokları-ve-savaş-sırasında-eklenen-canavarlar-kural-sürümü-88). Denetim hatası düzeltmesi: Otherworldly Steed'in Life Bond'u ve bonus eylemleri motorda zaten vardı (§2.7 satırı yanlıştı).
 
 ## Özet
@@ -317,7 +319,7 @@ Denetim CSV'sinde: 72 "yanlış" satır düzeltildi (9'u bilinen), 6 "yanlış" 
 - **(D2'de kapandı, §9)** **Çağrı blokları (CSV'de 6 "yanlış" satır):** Draconic Spirit'te yüzme 30, Blindsight 30 ve durum bağışıklıkları; Animated Object'te Blindsight 30 ve bağışıklıklar; Otherworldly Steed'te Life Bond ve üç bonus eylem; Find Familiar'da "CR 0 başka Beast" seçeneği.
 - **Aktarım (§6):** ~~savaş kurulduktan sonra eklenen canavar (çağrı, takviye, kat değişimi) canavar özelliği ve yeteneği almıyor~~ (D2'de kapandı, §9). `shapeStats` (Wild Shape, Polymorph) yalnız AC, hız, uçma, STR/DEX/CON ve saldırıları taşıyor. Polymorph'ta INT/WIS/CHA hedefte kalıyor. Monster hover verisi motorda okunmuyor.
 - **Ek bulgu:** Barbed Devil ve Medusa'da plansız Multiattack (Game Master düğmesi ya da `srdK19` kapalı) "ya / ya da" seçeneklerini toplayıp 4 / 6 saldırı yapıyor. YZ planı doğru (2 / 3). Öneri: plansız yolda planın ilk seçeneği kullanılsın.
-- **Yaklaşık (bilerek):** Vampire Familiar "Charmed (except from its vampire master)" tam Charmed bağışıklığı sayıldı. Archmage "Charmed (with Mind Blank)" koşullu olduğu için uygulanmıyor (değişmedi).
+- **Yaklaşık (bilerek):** ~~Vampire Familiar "Charmed (except from its vampire master)" tam Charmed bağışıklığı sayıldı~~ (D3'te kapandı: efendi istisnası, Kapanış). Archmage "Charmed (with Mind Blank)" koşullu olduğu için uygulanmıyor (değişmedi).
 
 ### "PDF'te yok" 337 satırın özeti
 
@@ -388,7 +390,7 @@ Tarih: 2026-11-19. Kullanıcı kararı: SRD 5.2.1'i izle. Karar ayrıntısı DEC
 | Animate Objects | SRD 5.2.1'de stat bloğu var (Animated Object, s. 109); blok Kuyruk 19'dan beri oyunda. D2 yalnız bağışıklık ve Blindsight'ı ekledi; boyut ve HP formülleri önceden doğruydu. | | 109 |
 | Flaming Sphere, Spirit Pack, Elemental Spirit, Arcane Hand | değişmedi (SRD'de stat bloğu yok; oyun soyutlaması) | | |
 
-Kalan fark: Draconic Spirit'in Shared Resistances'ı (çağıran bir direnç seçer) uygulanmıyor (`unsupported`).
+Kalan fark: ~~Draconic Spirit'in Shared Resistances'ı (çağıran bir direnç seçer) uygulanmıyor (`unsupported`).~~ D3'te kapandı (kural sürümü 89, Kapanış).
 
 ### Doğrulama
 
@@ -405,3 +407,40 @@ Kalan fark: Draconic Spirit'in Shared Resistances'ı (çağıran bir direnç se�
     - **Kemik Açıklığı (9 iskelet) ve Vaha (2 kum pususu):** canavarlar eklendi ve kuruldu, ama bu tohumlarda sonucu değiştirmedi (Poison/Exhaustion ya da yer altından geçiş devreye girmedi).
     - **Mağara Karakolu:** yapay zekâ kat değiştirmediği için canavar eklenmedi (yol birim testte denetlendi).
     - Zafer her senaryoda 3/3.
+
+## Kapanış: D1, WS87, D2, D3 (kural sürümleri 86–89)
+
+Tarih: 2026-11-19. Kullanıcı kararı: SRD 5.2.1'i izle. Her değer PDF'ten okundu. Eski kayıt ve replay her sürümde eski kurallarla oynar: veri dosyaları SRD değerini tutar, eski değer `data/srd-duzeltme.json` katmanından (kayıtta `surum`; yoksa 86) okunur. Karar ayrıntıları DECISIONS.md'de ("SRD veri düzeltmeleri D1", "Druid Wild Shape ve Polymorph düzeltmeleri WS87", "SRD farkları D2", "SRD farkları D3").
+
+| Sürüm | Görev | Kapsam | Kapı | Eski değer | Hızlı regresyon (altın) |
+|---:|---|---|---|---|---|
+| 85 | — | boş (D1 Wild Shape'e ayırmıştı; iş 87'ye taşındı) | — | — | — |
+| 86 | D1 | SRD veri düzeltmeleri: 23 yaratık türü; 23 canavarda durum bağışıklığı notu; yetenek puanı ve kurtarma (Giant Centipede, beyaz ejderhalar, Bandit Captain); Elephant, Remorhaz, Purple Worm, Ice Mephit ve Cat değerleri; Giant Frog/Toad yutması (kurtarmasız, tur sonunda); Clay Golem Multiattack 2 (Hasten turunda 3); 7 yüzme hızı | `srdD1Surum.ts` `SRD_D1_VERSION`, `srdD1On` | 77 kayıt | `srdD1Regresyon.test.ts`: 85 = a26ef5c3 |
+| 87 | WS87 | Wild Shape ve Polymorph: seviye tablosu (s. 43), D1 türüyle uygun biçimler, biçimin yüzme hızı (Game Master anahtarı `bicimYuzme`), artık alınamayan seçili biçimler sayılmaz (kayıtta kalır), Wild Shape kurtarma yetkinliği ve stat bloğu kurtarması (`wildSaves`), Polymorph INT/WIS/CHA ve kurtarmalar biçimden; Barbed Devil/Medusa "ya … ya da" Multiattack seçenekleri | `wildShape87Surum.ts` `WS87_VERSION`, `ws87On` | katman yok (kural kodda) | `ws87Regresyon.test.ts`: 86 = 15ad4633 |
+| 88 | D2 | Savaş sırasında eklenen canavarlar (10 yol) savaş başındaki tek kurulumdan (`monsterSetup.ts`); çağrı blokları: Draconic Spirit yüzme 30, Blindsight 30, Charmed/Frightened/Poisoned; Animated Object Poison/Psychic, Blindsight 30, beş durum bağışıklığı; Find Familiar 24 biçim (CR 0 Beast) | `srdD2Surum.ts` `SRD_D2_VERSION`, `srdD2On` | 5 kayıt (`surum: 88`) | `srdD2Regresyon.test.ts`: 87 = 083e4b93 |
+| 89 | D3 | Draconic Spirit Shared Resistances (s. 166); süren etkinin verdiği durumlar durum bağışıklığına takılır, Vampire Familiar efendisinden Charmed olur (s. 334); Wild Shape becerileri (s. 43) ve Polymorph'ta stat bloğunun becerileri | `srdD3Surum.ts` `SRD_D3_VERSION`, `srdD3On` | 2 kayıt (`surum: 89`) + `data/srd-d3.json` | `srdD3Regresyon.test.ts`: 88 = 18d86fc8 |
+
+Her regresyonda eski sürümün imzası bir önceki ağacın altınıyla aynı (1 ve 3 tohum); yeni sürüm çökmeden oynar, farklar beklenen yollarda.
+
+### D3 ayrıntısı (kural sürümü 89)
+
+| Madde | Motorda önceden | 89 | s. |
+|---|---|---|---:|
+| Draconic Spirit Shared Resistances | yok (yalnız `unsupported` notu) | çağıran, büyünün hasar türü seçimine direnç; konsantrasyonla biter (Dragon Companion'da 1 dakika). ⚠ Nefes türüyle tek seçim | 166 |
+| Süren etkinin verdiği durum (`grants`) × durum bağışıklığı | denetlenmiyordu (Charm Person Charmed bağışığını büyülüyordu) | taşıyıcı durum (Charmed, Frightened) ya da bütün durumlar bağışıksa etki tutmaz; yoksa yalnız bağışık durum düşer | — |
+| Vampire Familiar "Charmed (except from its vampire master)" | tam Charmed bağışıklığı (D1) | aynı asıl taraftaki Vampire'dan Charmed olur (üç yolda kaynak bilgisiyle) | 334 |
+| Wild Shape becerileri | Druid'in beceri toplamları kalıyordu (eski DEX/STR) | yetkinlik biçimin değiştiricisiyle, stat bloğundaki yüksekse o; bırakınca eski | 43 |
+| Polymorph becerileri | hedefinkiler kalıyordu | stat bloğundan | 153 |
+
+### Açık kalan maddeler
+
+- **Shared Resistances seçimi:** SRD'de nefes türü ve paylaşılan direnç iki ayrı seçim; oyunda tek seçim (⚠ yaklaşık).
+- **Archmage** "Charmed (with Mind Blank)": koşullu bağışıklık uygulanmıyor (Mind Blank savaşta yok; SRD ile tutarlı).
+- **Monster hover:** veri doğru, motor (`flight.ts` `hovers`) yalnız etkilere bakıyor.
+- **Biçim aktarımı (§6 tablosunun Wild Shape ve Polymorph sütunları):** biçimin tırmanma ve kazma hızı, Darkvision/Blindsight/Tremorsense, direnç, hasar bağışıklığı/zayıflık, durum bağışıklığı, özellikler (Magic Resistance, Flyby, Spider Climb, Amphibious…), Pack Tactics ve canavar yetenekleri aktarılmıyor. Wild Shape'te yalnız kurtarmasız ve yeniden yüklenmesiz saldırılar. Yüzme (87), kurtarmalar (87) ve beceriler (89) kapandı.
+- **Polymorph'ta sınıf özellikleri** (Jack of All Trades `jack`) ve tırmanma kontrolü (`climbMod`) hedefinki kalıyor.
+- **Find Familiar:** dokunma büyüsünü taşıma ve görüş paylaşımı yok.
+- **"PDF'te yok" 337 satır:** SRD dışı oyun değerleri (ortam listeleri, jeton boyutu, oyun soyutlaması çağrı blokları) kullanıcı kararıyla değişmedi.
+- **Vampire Familiar istisnası:** yapay zekâ dostunu büyülemediği için simülasyonda tetiklenmez; Game Master ve ileride eklenecek yollar için.
+- **DECISIONS.md:** 49 ileri tarihli başlık değiştirilmedi; gerçek giriş tarihleri DECISIONS "SRD farkları D3" girdisinde.
+
