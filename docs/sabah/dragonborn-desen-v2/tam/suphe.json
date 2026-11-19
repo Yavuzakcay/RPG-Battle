@@ -1,0 +1,3280 @@
+{
+ "not": "scripts/dragonborn-desen-v2.py --tam: jeton başına şüphe kodları ve maske ölçümü. Kodlar: MY = maske yok (başta ten örneği bulunamadı; boyanmadı); TD = ten tonu dışı boyalı parça (kıyafet/eşya/diş olabilir); AB = boyanmamış açık bölge maskeye bitişik (kanat zarı/kıyafet olabilir); KP = çok sayıda küçük ayrık boyalı parça; YO = yoldaş (yavru ejderha) maskeden çıkarıldı; kalıntı olabilir; GI = 6 jetonluk incelemede görülen sızıntı (kemer, kılıç ağzı)",
+ "esikler": {
+  "tenDisiPx": 60,
+  "acikPx": 100,
+  "acikBilesen": 60,
+  "kucukAdet": 12,
+  "kucukPx": 25
+ },
+ "jetonlar": {
+  "erkek-barbarian-GR": {
+   "suphe": [],
+   "tenDisiPx": 45,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 290.7,
+   "tonC": 9.4,
+   "tenL": 83.1,
+   "boya": 10021,
+   "atilan": 67,
+   "yoldas": 0
+  },
+  "erkek-barbarian-ID1": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 70,
+   "acikPx": 83,
+   "kucukAdet": 7,
+   "tonH": 296.3,
+   "tonC": 7.3,
+   "tenL": 83.8,
+   "boya": 8528,
+   "atilan": 1878,
+   "yoldas": 0
+  },
+  "erkek-barbarian-ID2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 296.0,
+   "tonC": 7.4,
+   "tenL": 83.4,
+   "boya": 11188,
+   "atilan": 222,
+   "yoldas": 0
+  },
+  "erkek-barbarian-ID3": {
+   "suphe": [
+    "KP"
+   ],
+   "tenDisiPx": 55,
+   "acikPx": 0,
+   "kucukAdet": 13,
+   "tonH": 296.2,
+   "tonC": 7.3,
+   "tenL": 84.6,
+   "boya": 10089,
+   "atilan": 1081,
+   "yoldas": 0
+  },
+  "erkek-barbarian-ID4": {
+   "suphe": [
+    "AB"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 594,
+   "kucukAdet": 4,
+   "tonH": 295.6,
+   "tonC": 8.9,
+   "tenL": 83.4,
+   "boya": 8613,
+   "atilan": 833,
+   "yoldas": 0
+  },
+  "erkek-barbarian-ID5": {
+   "suphe": [],
+   "tenDisiPx": 25,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 293.0,
+   "tonC": 9.4,
+   "tenL": 83.6,
+   "boya": 6692,
+   "atilan": 593,
+   "yoldas": 0
+  },
+  "erkek-barbarian-ID6": {
+   "suphe": [
+    "KP"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 21,
+   "tonH": 293.3,
+   "tonC": 8.9,
+   "tenL": 82.8,
+   "boya": 14519,
+   "atilan": 175,
+   "yoldas": 0
+  },
+  "erkek-barbarian-ID7": {
+   "suphe": [
+    "KP"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 18,
+   "tonH": 291.8,
+   "tonC": 9.3,
+   "tenL": 83.4,
+   "boya": 15364,
+   "atilan": 733,
+   "yoldas": 0
+  },
+  "erkek-barbarian-ID8": {
+   "suphe": [
+    "TD",
+    "KP"
+   ],
+   "tenDisiPx": 293,
+   "acikPx": 0,
+   "kucukAdet": 17,
+   "tonH": 294.2,
+   "tonC": 8.8,
+   "tenL": 84.9,
+   "boya": 11244,
+   "atilan": 642,
+   "yoldas": 0
+  },
+  "erkek-barbarian-ID9": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 234,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 294.3,
+   "tonC": 8.6,
+   "tenL": 86.1,
+   "boya": 5986,
+   "atilan": 492,
+   "yoldas": 0
+  },
+  "erkek-bard-GR": {
+   "suphe": [],
+   "tenDisiPx": 36,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 290.7,
+   "tonC": 10.2,
+   "tenL": 82.5,
+   "boya": 7042,
+   "atilan": 162,
+   "yoldas": 0
+  },
+  "erkek-bard-ID1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 293.0,
+   "tonC": 11.4,
+   "tenL": 83.3,
+   "boya": 5901,
+   "atilan": 293,
+   "yoldas": 0
+  },
+  "erkek-bard-ID2": {
+   "suphe": [],
+   "tenDisiPx": 56,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 291.8,
+   "tonC": 11.4,
+   "tenL": 83.8,
+   "boya": 3404,
+   "atilan": 1040,
+   "yoldas": 0
+  },
+  "erkek-bard-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 292.9,
+   "tonC": 7.3,
+   "tenL": 88.8,
+   "boya": 4713,
+   "atilan": 331,
+   "yoldas": 0
+  },
+  "erkek-bard-ID4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 293.0,
+   "tonC": 11.6,
+   "tenL": 80.5,
+   "boya": 6388,
+   "atilan": 408,
+   "yoldas": 0
+  },
+  "erkek-bard-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 292.9,
+   "tonC": 14.5,
+   "tenL": 77.2,
+   "boya": 5467,
+   "atilan": 343,
+   "yoldas": 0
+  },
+  "erkek-bard-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 292.8,
+   "tonC": 11.6,
+   "tenL": 82.4,
+   "boya": 6001,
+   "atilan": 231,
+   "yoldas": 0
+  },
+  "erkek-bard-ID7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 9,
+   "tonH": 290.6,
+   "tonC": 18.3,
+   "tenL": 72.0,
+   "boya": 4967,
+   "atilan": 207,
+   "yoldas": 0
+  },
+  "erkek-bard-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 289.6,
+   "tonC": 13.5,
+   "tenL": 79.2,
+   "boya": 6327,
+   "atilan": 164,
+   "yoldas": 0
+  },
+  "erkek-bard-ID9": {
+   "suphe": [],
+   "tenDisiPx": 53,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 289.5,
+   "tonC": 15.5,
+   "tenL": 76.9,
+   "boya": 5272,
+   "atilan": 225,
+   "yoldas": 0
+  },
+  "erkek-cleric-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 290.7,
+   "tonC": 9.4,
+   "tenL": 82.9,
+   "boya": 8216,
+   "atilan": 124,
+   "yoldas": 0
+  },
+  "erkek-cleric-ID1": {
+   "suphe": [
+    "AB"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 111,
+   "kucukAdet": 3,
+   "tonH": 289.3,
+   "tonC": 11.5,
+   "tenL": 81.4,
+   "boya": 6332,
+   "atilan": 29,
+   "yoldas": 0
+  },
+  "erkek-cleric-ID2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 289.2,
+   "tonC": 11.1,
+   "tenL": 81.8,
+   "boya": 5237,
+   "atilan": 162,
+   "yoldas": 0
+  },
+  "erkek-cleric-ID3": {
+   "suphe": [
+    "TD",
+    "AB",
+    "KP"
+   ],
+   "tenDisiPx": 316,
+   "acikPx": 744,
+   "kucukAdet": 15,
+   "tonH": 289.2,
+   "tonC": 11.7,
+   "tenL": 81.6,
+   "boya": 7859,
+   "atilan": 1073,
+   "yoldas": 0
+  },
+  "erkek-cleric-ID4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 292.9,
+   "tonC": 12.6,
+   "tenL": 80.8,
+   "boya": 5422,
+   "atilan": 175,
+   "yoldas": 0
+  },
+  "erkek-cleric-ID5": {
+   "suphe": [
+    "TD",
+    "AB",
+    "KP"
+   ],
+   "tenDisiPx": 1308,
+   "acikPx": 332,
+   "kucukAdet": 41,
+   "tonH": 289.7,
+   "tonC": 11.6,
+   "tenL": 82.1,
+   "boya": 13289,
+   "atilan": 434,
+   "yoldas": 0
+  },
+  "erkek-cleric-ID6": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 194,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 298.2,
+   "tonC": 4.6,
+   "tenL": 58.9,
+   "boya": 1347,
+   "atilan": 373,
+   "yoldas": 0
+  },
+  "erkek-cleric-ID7": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 230,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 290.7,
+   "tonC": 9.0,
+   "tenL": 84.1,
+   "boya": 4771,
+   "atilan": 1354,
+   "yoldas": 0
+  },
+  "erkek-cleric-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 291.7,
+   "tonC": 10.5,
+   "tenL": 83.7,
+   "boya": 5518,
+   "atilan": 137,
+   "yoldas": 0
+  },
+  "erkek-cleric-ID9": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 291.7,
+   "tonC": 13.0,
+   "tenL": 81.0,
+   "boya": 6435,
+   "atilan": 40,
+   "yoldas": 0
+  },
+  "erkek-druid-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 290.7,
+   "tonC": 10.0,
+   "tenL": 85.0,
+   "boya": 10129,
+   "atilan": 52,
+   "yoldas": 0
+  },
+  "erkek-druid-ID1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 299.5,
+   "tonC": 9.6,
+   "tenL": 81.8,
+   "boya": 5366,
+   "atilan": 159,
+   "yoldas": 0
+  },
+  "erkek-druid-ID2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 297.9,
+   "tonC": 8.9,
+   "tenL": 85.2,
+   "boya": 5570,
+   "atilan": 1239,
+   "yoldas": 0
+  },
+  "erkek-druid-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 298.4,
+   "tonC": 8.9,
+   "tenL": 83.6,
+   "boya": 6754,
+   "atilan": 345,
+   "yoldas": 0
+  },
+  "erkek-druid-ID4": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "erkek-druid-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 298.6,
+   "tonC": 9.6,
+   "tenL": 84.2,
+   "boya": 9734,
+   "atilan": 210,
+   "yoldas": 0
+  },
+  "erkek-druid-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 300.1,
+   "tonC": 10.5,
+   "tenL": 84.5,
+   "boya": 7245,
+   "atilan": 388,
+   "yoldas": 0
+  },
+  "erkek-druid-ID7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 300.2,
+   "tonC": 10.7,
+   "tenL": 85.2,
+   "boya": 7473,
+   "atilan": 94,
+   "yoldas": 0
+  },
+  "erkek-fighter-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 290.9,
+   "tonC": 11.6,
+   "tenL": 82.4,
+   "boya": 9006,
+   "atilan": 395,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 289.3,
+   "tonC": 10.5,
+   "tenL": 80.9,
+   "boya": 3337,
+   "atilan": 247,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID10": {
+   "suphe": [],
+   "tenDisiPx": 56,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 290.8,
+   "tonC": 7.3,
+   "tenL": 89.7,
+   "boya": 5612,
+   "atilan": 681,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID11": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 436,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 289.5,
+   "tonC": 11.8,
+   "tenL": 80.2,
+   "boya": 4339,
+   "atilan": 204,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID2": {
+   "suphe": [
+    "TD",
+    "AB"
+   ],
+   "tenDisiPx": 184,
+   "acikPx": 421,
+   "kucukAdet": 5,
+   "tonH": 291.0,
+   "tonC": 14.1,
+   "tenL": 61.6,
+   "boya": 4093,
+   "atilan": 278,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 289.6,
+   "tonC": 10.0,
+   "tenL": 80.9,
+   "boya": 6502,
+   "atilan": 1074,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 289.0,
+   "tonC": 9.1,
+   "tenL": 85.2,
+   "boya": 13631,
+   "atilan": 31,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 288.9,
+   "tonC": 11.1,
+   "tenL": 81.0,
+   "boya": 14214,
+   "atilan": 104,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 288.6,
+   "tonC": 13.2,
+   "tenL": 75.1,
+   "boya": 2982,
+   "atilan": 254,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID7": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 508,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 287.9,
+   "tonC": 10.9,
+   "tenL": 83.0,
+   "boya": 6485,
+   "atilan": 1587,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 287.7,
+   "tonC": 16.5,
+   "tenL": 65.6,
+   "boya": 4560,
+   "atilan": 224,
+   "yoldas": 0
+  },
+  "erkek-fighter-ID9": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 103,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 290.7,
+   "tonC": 10.5,
+   "tenL": 82.5,
+   "boya": 5028,
+   "atilan": 400,
+   "yoldas": 0
+  },
+  "erkek-monk-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 291.3,
+   "tonC": 11.6,
+   "tenL": 81.7,
+   "boya": 9484,
+   "atilan": 48,
+   "yoldas": 0
+  },
+  "erkek-monk-ID1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 302.4,
+   "tonC": 8.2,
+   "tenL": 83.2,
+   "boya": 4884,
+   "atilan": 306,
+   "yoldas": 0
+  },
+  "erkek-monk-ID10": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 281.6,
+   "tonC": 8.6,
+   "tenL": 57.6,
+   "boya": 0,
+   "atilan": 2704,
+   "yoldas": 0
+  },
+  "erkek-monk-ID11": {
+   "suphe": [],
+   "tenDisiPx": 43,
+   "acikPx": 0,
+   "kucukAdet": 9,
+   "tonH": 307.3,
+   "tonC": 10.7,
+   "tenL": 80.4,
+   "boya": 6497,
+   "atilan": 181,
+   "yoldas": 0
+  },
+  "erkek-monk-ID2": {
+   "suphe": [
+    "TD",
+    "AB"
+   ],
+   "tenDisiPx": 136,
+   "acikPx": 393,
+   "kucukAdet": 2,
+   "tonH": 300.1,
+   "tonC": 8.2,
+   "tenL": 82.5,
+   "boya": 4137,
+   "atilan": 1032,
+   "yoldas": 0
+  },
+  "erkek-monk-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 301.5,
+   "tonC": 8.6,
+   "tenL": 82.7,
+   "boya": 5559,
+   "atilan": 101,
+   "yoldas": 0
+  },
+  "erkek-monk-ID4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 301.9,
+   "tonC": 8.6,
+   "tenL": 82.0,
+   "boya": 5649,
+   "atilan": 50,
+   "yoldas": 0
+  },
+  "erkek-monk-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 303.3,
+   "tonC": 8.6,
+   "tenL": 80.5,
+   "boya": 5100,
+   "atilan": 11,
+   "yoldas": 0
+  },
+  "erkek-monk-ID6": {
+   "suphe": [],
+   "tenDisiPx": 47,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 302.7,
+   "tonC": 8.1,
+   "tenL": 82.7,
+   "boya": 6993,
+   "atilan": 41,
+   "yoldas": 0
+  },
+  "erkek-monk-ID7": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 203,
+   "acikPx": 0,
+   "kucukAdet": 9,
+   "tonH": 303.2,
+   "tonC": 9.3,
+   "tenL": 80.5,
+   "boya": 5753,
+   "atilan": 108,
+   "yoldas": 0
+  },
+  "erkek-monk-ID8": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 253,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 302.6,
+   "tonC": 8.1,
+   "tenL": 83.5,
+   "boya": 5044,
+   "atilan": 122,
+   "yoldas": 0
+  },
+  "erkek-monk-ID9": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 1565,
+   "acikPx": 71,
+   "kucukAdet": 9,
+   "tonH": 307.7,
+   "tonC": 8.9,
+   "tenL": 83.4,
+   "boya": 7668,
+   "atilan": 1125,
+   "yoldas": 0
+  },
+  "erkek-paladin-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 286.6,
+   "tonC": 8.5,
+   "tenL": 67.0,
+   "boya": 6796,
+   "atilan": 313,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID1": {
+   "suphe": [],
+   "tenDisiPx": 55,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 298.9,
+   "tonC": 17.7,
+   "tenL": 80.0,
+   "boya": 5279,
+   "atilan": 73,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID10": {
+   "suphe": [],
+   "tenDisiPx": 40,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 297.5,
+   "tonC": 14.8,
+   "tenL": 83.6,
+   "boya": 19046,
+   "atilan": 73,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID2": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 230,
+   "acikPx": 60,
+   "kucukAdet": 3,
+   "tonH": 300.6,
+   "tonC": 13.4,
+   "tenL": 81.8,
+   "boya": 5242,
+   "atilan": 636,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 304.5,
+   "tonC": 14.1,
+   "tenL": 72.0,
+   "boya": 3509,
+   "atilan": 266,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID4": {
+   "suphe": [
+    "TD",
+    "AB"
+   ],
+   "tenDisiPx": 429,
+   "acikPx": 301,
+   "kucukAdet": 10,
+   "tonH": 299.8,
+   "tonC": 13.5,
+   "tenL": 83.2,
+   "boya": 7383,
+   "atilan": 1406,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID5": {
+   "suphe": [
+    "TD",
+    "AB"
+   ],
+   "tenDisiPx": 61,
+   "acikPx": 270,
+   "kucukAdet": 5,
+   "tonH": 297.9,
+   "tonC": 13.0,
+   "tenL": 84.1,
+   "boya": 5707,
+   "atilan": 476,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID6": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 255,
+   "acikPx": 0,
+   "kucukAdet": 10,
+   "tonH": 300.9,
+   "tonC": 16.6,
+   "tenL": 78.1,
+   "boya": 3953,
+   "atilan": 588,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID7": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 757,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 297.9,
+   "tonC": 13.5,
+   "tenL": 82.4,
+   "boya": 6492,
+   "atilan": 292,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID8": {
+   "suphe": [
+    "TD",
+    "AB"
+   ],
+   "tenDisiPx": 220,
+   "acikPx": 148,
+   "kucukAdet": 2,
+   "tonH": 324.4,
+   "tonC": 4.3,
+   "tenL": 65.9,
+   "boya": 410,
+   "atilan": 1074,
+   "yoldas": 0
+  },
+  "erkek-paladin-ID9": {
+   "suphe": [],
+   "tenDisiPx": 46,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 298.2,
+   "tonC": 16.4,
+   "tenL": 84.6,
+   "boya": 5636,
+   "atilan": 418,
+   "yoldas": 0
+  },
+  "erkek-ranger-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 291.5,
+   "tonC": 14.5,
+   "tenL": 80.7,
+   "boya": 4209,
+   "atilan": 39,
+   "yoldas": 0
+  },
+  "erkek-ranger-ID1": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 133,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 289.3,
+   "tonC": 12.9,
+   "tenL": 79.8,
+   "boya": 6104,
+   "atilan": 161,
+   "yoldas": 0
+  },
+  "erkek-ranger-ID2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 289.6,
+   "tonC": 11.0,
+   "tenL": 80.8,
+   "boya": 6236,
+   "atilan": 887,
+   "yoldas": 0
+  },
+  "erkek-ranger-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 287.3,
+   "tonC": 10.7,
+   "tenL": 81.1,
+   "boya": 6031,
+   "atilan": 126,
+   "yoldas": 0
+  },
+  "erkek-ranger-ID4": {
+   "suphe": [
+    "AB",
+    "YO",
+    "GI"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 927,
+   "kucukAdet": 10,
+   "tonH": 291.4,
+   "tonC": 10.7,
+   "tenL": 80.0,
+   "boya": 10239,
+   "atilan": 347,
+   "yoldas": 2284
+  },
+  "erkek-ranger-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 290.2,
+   "tonC": 9.8,
+   "tenL": 80.6,
+   "boya": 7810,
+   "atilan": 309,
+   "yoldas": 0
+  },
+  "erkek-ranger-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 290.6,
+   "tonC": 9.9,
+   "tenL": 80.8,
+   "boya": 7723,
+   "atilan": 170,
+   "yoldas": 0
+  },
+  "erkek-ranger-ID7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 291.7,
+   "tonC": 10.3,
+   "tenL": 80.8,
+   "boya": 6506,
+   "atilan": 1042,
+   "yoldas": 0
+  },
+  "erkek-ranger-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 291.5,
+   "tonC": 11.1,
+   "tenL": 81.0,
+   "boya": 6154,
+   "atilan": 139,
+   "yoldas": 0
+  },
+  "erkek-ranger-ID9": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 291.4,
+   "tonC": 12.2,
+   "tenL": 80.8,
+   "boya": 6816,
+   "atilan": 558,
+   "yoldas": 0
+  },
+  "erkek-rogue-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 317.3,
+   "tonC": 2.6,
+   "tenL": 64.7,
+   "boya": 0,
+   "atilan": 1106,
+   "yoldas": 0
+  },
+  "erkek-rogue-ID1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 290.0,
+   "tonC": 9.1,
+   "tenL": 83.1,
+   "boya": 6880,
+   "atilan": 181,
+   "yoldas": 0
+  },
+  "erkek-rogue-ID10": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 63,
+   "kucukAdet": 3,
+   "tonH": 291.3,
+   "tonC": 10.1,
+   "tenL": 82.4,
+   "boya": 8229,
+   "atilan": 546,
+   "yoldas": 0
+  },
+  "erkek-rogue-ID2": {
+   "suphe": [],
+   "tenDisiPx": 44,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 290.7,
+   "tonC": 10.2,
+   "tenL": 82.2,
+   "boya": 6027,
+   "atilan": 93,
+   "yoldas": 0
+  },
+  "erkek-rogue-ID3": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 871,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 297.2,
+   "tonC": 11.0,
+   "tenL": 72.4,
+   "boya": 5526,
+   "atilan": 614,
+   "yoldas": 0
+  },
+  "erkek-rogue-ID4": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "erkek-rogue-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 291.7,
+   "tonC": 12.9,
+   "tenL": 79.1,
+   "boya": 4361,
+   "atilan": 69,
+   "yoldas": 0
+  },
+  "erkek-rogue-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 62,
+   "kucukAdet": 5,
+   "tonH": 290.9,
+   "tonC": 9.8,
+   "tenL": 82.4,
+   "boya": 7916,
+   "atilan": 431,
+   "yoldas": 0
+  },
+  "erkek-rogue-ID7": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 311,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 315.5,
+   "tonC": 11.2,
+   "tenL": 68.6,
+   "boya": 1099,
+   "atilan": 731,
+   "yoldas": 0
+  },
+  "erkek-rogue-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 291.4,
+   "tonC": 10.6,
+   "tenL": 78.8,
+   "boya": 5717,
+   "atilan": 121,
+   "yoldas": 0
+  },
+  "erkek-rogue-ID9": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 290.7,
+   "tonC": 9.9,
+   "tenL": 82.4,
+   "boya": 6326,
+   "atilan": 280,
+   "yoldas": 0
+  },
+  "erkek-sorcerer-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 289.3,
+   "tonC": 10.5,
+   "tenL": 82.3,
+   "boya": 9374,
+   "atilan": 28,
+   "yoldas": 0
+  },
+  "erkek-sorcerer-SC-1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 293.9,
+   "tonC": 10.7,
+   "tenL": 82.6,
+   "boya": 6614,
+   "atilan": 51,
+   "yoldas": 0
+  },
+  "erkek-sorcerer-SC-2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 293.0,
+   "tonC": 10.2,
+   "tenL": 83.8,
+   "boya": 7136,
+   "atilan": 116,
+   "yoldas": 0
+  },
+  "erkek-sorcerer-SC-3": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "erkek-sorcerer-SC-4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 293.1,
+   "tonC": 11.3,
+   "tenL": 82.6,
+   "boya": 6732,
+   "atilan": 115,
+   "yoldas": 0
+  },
+  "erkek-sorcerer-SC-5": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "erkek-sorcerer-SC-6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 8,
+   "tonH": 293.2,
+   "tonC": 12.6,
+   "tenL": 80.7,
+   "boya": 8487,
+   "atilan": 756,
+   "yoldas": 0
+  },
+  "erkek-sorcerer-SC-7": {
+   "suphe": [
+    "AB"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 106,
+   "kucukAdet": 2,
+   "tonH": 290.9,
+   "tonC": 9.9,
+   "tenL": 84.7,
+   "boya": 7219,
+   "atilan": 105,
+   "yoldas": 0
+  },
+  "erkek-sorcerer-SC-8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 82,
+   "kucukAdet": 0,
+   "tonH": 291.2,
+   "tonC": 9.4,
+   "tenL": 85.6,
+   "boya": 5654,
+   "atilan": 136,
+   "yoldas": 0
+  },
+  "erkek-sorcerer-SC-9": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 291.5,
+   "tonC": 14.7,
+   "tenL": 71.6,
+   "boya": 2153,
+   "atilan": 1378,
+   "yoldas": 0
+  },
+  "erkek-warlock-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 289.2,
+   "tonC": 11.5,
+   "tenL": 80.9,
+   "boya": 6608,
+   "atilan": 312,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 287.4,
+   "tonC": 9.5,
+   "tenL": 73.8,
+   "boya": 6565,
+   "atilan": 833,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-10": {
+   "suphe": [
+    "TD",
+    "AB"
+   ],
+   "tenDisiPx": 219,
+   "acikPx": 1065,
+   "kucukAdet": 0,
+   "tonH": 289.4,
+   "tonC": 41.4,
+   "tenL": 65.0,
+   "boya": 4679,
+   "atilan": 1082,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-11": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 71,
+   "kucukAdet": 2,
+   "tonH": 295.6,
+   "tonC": 7.5,
+   "tenL": 85.2,
+   "boya": 8621,
+   "atilan": 108,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-2": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 708,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 287.1,
+   "tonC": 9.4,
+   "tenL": 74.4,
+   "boya": 7897,
+   "atilan": 300,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 291.7,
+   "tonC": 11.3,
+   "tenL": 71.3,
+   "boya": 4847,
+   "atilan": 1,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-4": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "erkek-warlock-WL-5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 287.4,
+   "tonC": 10.2,
+   "tenL": 74.8,
+   "boya": 7988,
+   "atilan": 19,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 67,
+   "kucukAdet": 1,
+   "tonH": 290.1,
+   "tonC": 8.7,
+   "tenL": 82.9,
+   "boya": 6133,
+   "atilan": 410,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 286.7,
+   "tonC": 10.3,
+   "tenL": 74.7,
+   "boya": 25751,
+   "atilan": 29,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-8": {
+   "suphe": [
+    "KP"
+   ],
+   "tenDisiPx": 38,
+   "acikPx": 0,
+   "kucukAdet": 37,
+   "tonH": 330.6,
+   "tonC": 4.3,
+   "tenL": 69.1,
+   "boya": 4995,
+   "atilan": 367,
+   "yoldas": 0
+  },
+  "erkek-warlock-WL-9": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 246,
+   "acikPx": 79,
+   "kucukAdet": 2,
+   "tonH": 290.2,
+   "tonC": 9.0,
+   "tenL": 74.6,
+   "boya": 8846,
+   "atilan": 49,
+   "yoldas": 0
+  },
+  "erkek-wizard-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 291.3,
+   "tonC": 17.2,
+   "tenL": 73.0,
+   "boya": 5273,
+   "atilan": 31,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-A1": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 2294,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 283.5,
+   "tonC": 11.1,
+   "tenL": 77.7,
+   "boya": 9168,
+   "atilan": 629,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-A2": {
+   "suphe": [],
+   "tenDisiPx": 25,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 282.5,
+   "tonC": 11.0,
+   "tenL": 77.6,
+   "boya": 5338,
+   "atilan": 2797,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-A3": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 140,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 284.3,
+   "tonC": 11.2,
+   "tenL": 79.0,
+   "boya": 3668,
+   "atilan": 1209,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-A4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 282.8,
+   "tonC": 11.4,
+   "tenL": 76.6,
+   "boya": 4424,
+   "atilan": 163,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-A5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 283.4,
+   "tonC": 10.7,
+   "tenL": 76.9,
+   "boya": 5154,
+   "atilan": 2247,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-A6": {
+   "suphe": [
+    "TD",
+    "AB"
+   ],
+   "tenDisiPx": 2671,
+   "acikPx": 180,
+   "kucukAdet": 2,
+   "tonH": 284.2,
+   "tonC": 11.1,
+   "tenL": 76.3,
+   "boya": 9443,
+   "atilan": 128,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-A7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 282.8,
+   "tonC": 10.5,
+   "tenL": 74.7,
+   "boya": 5645,
+   "atilan": 93,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-A8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 283.5,
+   "tonC": 10.6,
+   "tenL": 73.9,
+   "boya": 6028,
+   "atilan": 13,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-B1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 287.4,
+   "tonC": 10.5,
+   "tenL": 79.2,
+   "boya": 5788,
+   "atilan": 201,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-B2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 286.9,
+   "tonC": 10.1,
+   "tenL": 78.9,
+   "boya": 5361,
+   "atilan": 228,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-B3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 288.2,
+   "tonC": 9.7,
+   "tenL": 78.9,
+   "boya": 5684,
+   "atilan": 116,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-B4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 289.3,
+   "tonC": 10.5,
+   "tenL": 78.7,
+   "boya": 6250,
+   "atilan": 214,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-B5": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 226,
+   "acikPx": 61,
+   "kucukAdet": 2,
+   "tonH": 286.1,
+   "tonC": 10.8,
+   "tenL": 80.1,
+   "boya": 6844,
+   "atilan": 362,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-B6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 285.7,
+   "tonC": 10.6,
+   "tenL": 79.8,
+   "boya": 6483,
+   "atilan": 712,
+   "yoldas": 0
+  },
+  "erkek-wizard-WZ-B7": {
+   "suphe": [],
+   "tenDisiPx": 47,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 286.1,
+   "tonC": 10.7,
+   "tenL": 79.3,
+   "boya": 4104,
+   "atilan": 471,
+   "yoldas": 0
+  },
+  "kadin-barbarian-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 293.1,
+   "tonC": 10.9,
+   "tenL": 91.2,
+   "boya": 7537,
+   "atilan": 36,
+   "yoldas": 0
+  },
+  "kadin-barbarian-ID1": {
+   "suphe": [
+    "TD",
+    "AB",
+    "KP"
+   ],
+   "tenDisiPx": 104,
+   "acikPx": 208,
+   "kucukAdet": 25,
+   "tonH": 294.9,
+   "tonC": 12.0,
+   "tenL": 88.9,
+   "boya": 7566,
+   "atilan": 1491,
+   "yoldas": 0
+  },
+  "kadin-barbarian-ID2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 294.5,
+   "tonC": 12.0,
+   "tenL": 89.1,
+   "boya": 7554,
+   "atilan": 94,
+   "yoldas": 0
+  },
+  "kadin-barbarian-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 296.0,
+   "tonC": 12.6,
+   "tenL": 89.0,
+   "boya": 8149,
+   "atilan": 634,
+   "yoldas": 0
+  },
+  "kadin-barbarian-ID4": {
+   "suphe": [
+    "AB"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 1463,
+   "kucukAdet": 2,
+   "tonH": 294.3,
+   "tonC": 12.1,
+   "tenL": 88.7,
+   "boya": 6413,
+   "atilan": 565,
+   "yoldas": 0
+  },
+  "kadin-barbarian-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 295.1,
+   "tonC": 12.6,
+   "tenL": 88.5,
+   "boya": 6833,
+   "atilan": 495,
+   "yoldas": 0
+  },
+  "kadin-barbarian-ID6": {
+   "suphe": [],
+   "tenDisiPx": 44,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 295.2,
+   "tonC": 12.6,
+   "tenL": 88.6,
+   "boya": 9060,
+   "atilan": 532,
+   "yoldas": 0
+  },
+  "kadin-barbarian-ID7": {
+   "suphe": [
+    "TD",
+    "AB",
+    "KP"
+   ],
+   "tenDisiPx": 560,
+   "acikPx": 136,
+   "kucukAdet": 29,
+   "tonH": 294.1,
+   "tonC": 11.5,
+   "tenL": 87.8,
+   "boya": 8019,
+   "atilan": 995,
+   "yoldas": 0
+  },
+  "kadin-barbarian-ID8": {
+   "suphe": [
+    "AB"
+   ],
+   "tenDisiPx": 58,
+   "acikPx": 130,
+   "kucukAdet": 3,
+   "tonH": 294.0,
+   "tonC": 11.0,
+   "tenL": 87.8,
+   "boya": 7643,
+   "atilan": 903,
+   "yoldas": 0
+  },
+  "kadin-barbarian-ID9": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 88,
+   "acikPx": 0,
+   "kucukAdet": 9,
+   "tonH": 294.1,
+   "tonC": 11.5,
+   "tenL": 88.2,
+   "boya": 4714,
+   "atilan": 1104,
+   "yoldas": 0
+  },
+  "kadin-bard-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 293.1,
+   "tonC": 12.0,
+   "tenL": 89.9,
+   "boya": 5242,
+   "atilan": 16,
+   "yoldas": 0
+  },
+  "kadin-bard-ID1": {
+   "suphe": [],
+   "tenDisiPx": 29,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 292.7,
+   "tonC": 12.5,
+   "tenL": 90.0,
+   "boya": 4045,
+   "atilan": 12,
+   "yoldas": 0
+  },
+  "kadin-bard-ID2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 292.9,
+   "tonC": 13.0,
+   "tenL": 89.5,
+   "boya": 3746,
+   "atilan": 2631,
+   "yoldas": 0
+  },
+  "kadin-bard-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 292.8,
+   "tonC": 12.8,
+   "tenL": 88.9,
+   "boya": 4441,
+   "atilan": 157,
+   "yoldas": 0
+  },
+  "kadin-bard-ID4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 294.2,
+   "tonC": 15.6,
+   "tenL": 88.8,
+   "boya": 5166,
+   "atilan": 29,
+   "yoldas": 0
+  },
+  "kadin-bard-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 294.4,
+   "tonC": 15.7,
+   "tenL": 82.4,
+   "boya": 3560,
+   "atilan": 429,
+   "yoldas": 0
+  },
+  "kadin-bard-ID6": {
+   "suphe": [],
+   "tenDisiPx": 35,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 294.0,
+   "tonC": 15.6,
+   "tenL": 88.8,
+   "boya": 4668,
+   "atilan": 64,
+   "yoldas": 0
+  },
+  "kadin-bard-ID7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 296.5,
+   "tonC": 19.1,
+   "tenL": 74.6,
+   "boya": 4627,
+   "atilan": 195,
+   "yoldas": 0
+  },
+  "kadin-bard-ID8": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 379,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 296.8,
+   "tonC": 12.6,
+   "tenL": 88.3,
+   "boya": 4914,
+   "atilan": 273,
+   "yoldas": 0
+  },
+  "kadin-bard-ID9": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 296.2,
+   "tonC": 15.5,
+   "tenL": 80.6,
+   "boya": 4297,
+   "atilan": 508,
+   "yoldas": 0
+  },
+  "kadin-cleric-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 295.0,
+   "tonC": 11.9,
+   "tenL": 89.9,
+   "boya": 4871,
+   "atilan": 44,
+   "yoldas": 0
+  },
+  "kadin-cleric-ID1": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 64,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 289.1,
+   "tonC": 10.3,
+   "tenL": 88.7,
+   "boya": 4345,
+   "atilan": 2287,
+   "yoldas": 0
+  },
+  "kadin-cleric-ID2": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 523,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 289.5,
+   "tonC": 10.4,
+   "tenL": 88.8,
+   "boya": 4261,
+   "atilan": 297,
+   "yoldas": 0
+  },
+  "kadin-cleric-ID3": {
+   "suphe": [
+    "KP"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 16,
+   "tonH": 289.2,
+   "tonC": 9.9,
+   "tenL": 88.9,
+   "boya": 9046,
+   "atilan": 290,
+   "yoldas": 0
+  },
+  "kadin-cleric-ID4": {
+   "suphe": [],
+   "tenDisiPx": 23,
+   "acikPx": 0,
+   "kucukAdet": 9,
+   "tonH": 290.7,
+   "tonC": 10.0,
+   "tenL": 88.4,
+   "boya": 4350,
+   "atilan": 77,
+   "yoldas": 0
+  },
+  "kadin-cleric-ID5": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 1287,
+   "acikPx": 0,
+   "kucukAdet": 11,
+   "tonH": 289.6,
+   "tonC": 9.4,
+   "tenL": 89.0,
+   "boya": 5481,
+   "atilan": 1234,
+   "yoldas": 0
+  },
+  "kadin-cleric-ID6": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "kadin-cleric-ID7": {
+   "suphe": [
+    "TD",
+    "KP"
+   ],
+   "tenDisiPx": 721,
+   "acikPx": 0,
+   "kucukAdet": 19,
+   "tonH": 289.2,
+   "tonC": 9.1,
+   "tenL": 88.8,
+   "boya": 4783,
+   "atilan": 1083,
+   "yoldas": 0
+  },
+  "kadin-cleric-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 290.7,
+   "tonC": 10.0,
+   "tenL": 88.3,
+   "boya": 4645,
+   "atilan": 57,
+   "yoldas": 0
+  },
+  "kadin-cleric-ID9": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 288.7,
+   "tonC": 10.2,
+   "tenL": 88.3,
+   "boya": 5272,
+   "atilan": 56,
+   "yoldas": 0
+  },
+  "kadin-druid-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 294.1,
+   "tonC": 11.9,
+   "tenL": 90.9,
+   "boya": 8695,
+   "atilan": 25,
+   "yoldas": 0
+  },
+  "kadin-druid-ID1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 295.6,
+   "tonC": 16.8,
+   "tenL": 87.3,
+   "boya": 5306,
+   "atilan": 301,
+   "yoldas": 0
+  },
+  "kadin-druid-ID2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 296.2,
+   "tonC": 16.7,
+   "tenL": 86.8,
+   "boya": 4108,
+   "atilan": 1373,
+   "yoldas": 0
+  },
+  "kadin-druid-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 296.3,
+   "tonC": 17.3,
+   "tenL": 86.9,
+   "boya": 6341,
+   "atilan": 45,
+   "yoldas": 0
+  },
+  "kadin-druid-ID4": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "kadin-druid-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 297.5,
+   "tonC": 17.3,
+   "tenL": 88.2,
+   "boya": 7212,
+   "atilan": 159,
+   "yoldas": 0
+  },
+  "kadin-druid-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 297.7,
+   "tonC": 17.3,
+   "tenL": 87.8,
+   "boya": 4114,
+   "atilan": 535,
+   "yoldas": 0
+  },
+  "kadin-druid-ID7": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 297,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 297.2,
+   "tonC": 17.3,
+   "tenL": 88.3,
+   "boya": 4271,
+   "atilan": 153,
+   "yoldas": 0
+  },
+  "kadin-druid-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 297.9,
+   "tonC": 17.3,
+   "tenL": 88.2,
+   "boya": 6475,
+   "atilan": 325,
+   "yoldas": 0
+  },
+  "kadin-fighter-GR": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 205,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 291.7,
+   "tonC": 10.9,
+   "tenL": 91.1,
+   "boya": 6043,
+   "atilan": 289,
+   "yoldas": 0
+  },
+  "kadin-fighter-ID1": {
+   "suphe": [],
+   "tenDisiPx": 48,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 289.2,
+   "tonC": 12.2,
+   "tenL": 89.2,
+   "boya": 3285,
+   "atilan": 241,
+   "yoldas": 0
+  },
+  "kadin-fighter-ID10": {
+   "suphe": [
+    "TD",
+    "KP"
+   ],
+   "tenDisiPx": 80,
+   "acikPx": 0,
+   "kucukAdet": 13,
+   "tonH": 293.1,
+   "tonC": 11.5,
+   "tenL": 90.1,
+   "boya": 4722,
+   "atilan": 744,
+   "yoldas": 0
+  },
+  "kadin-fighter-ID2": {
+   "suphe": [],
+   "tenDisiPx": 27,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 291.7,
+   "tonC": 14.5,
+   "tenL": 80.7,
+   "boya": 2538,
+   "atilan": 398,
+   "yoldas": 0
+  },
+  "kadin-fighter-ID3": {
+   "suphe": [
+    "TD",
+    "AB",
+    "KP"
+   ],
+   "tenDisiPx": 185,
+   "acikPx": 357,
+   "kucukAdet": 14,
+   "tonH": 291.3,
+   "tonC": 12.5,
+   "tenL": 89.5,
+   "boya": 5865,
+   "atilan": 1942,
+   "yoldas": 0
+  },
+  "kadin-fighter-ID4": {
+   "suphe": [
+    "GI"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 290.8,
+   "tonC": 11.9,
+   "tenL": 90.7,
+   "boya": 9187,
+   "atilan": 203,
+   "yoldas": 0
+  },
+  "kadin-fighter-ID5": {
+   "suphe": [],
+   "tenDisiPx": 21,
+   "acikPx": 0,
+   "kucukAdet": 10,
+   "tonH": 294.1,
+   "tonC": 13.0,
+   "tenL": 90.4,
+   "boya": 11786,
+   "atilan": 108,
+   "yoldas": 0
+  },
+  "kadin-fighter-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 294.1,
+   "tonC": 17.0,
+   "tenL": 78.9,
+   "boya": 3521,
+   "atilan": 168,
+   "yoldas": 0
+  },
+  "kadin-fighter-ID7": {
+   "suphe": [
+    "AB",
+    "KP"
+   ],
+   "tenDisiPx": 53,
+   "acikPx": 115,
+   "kucukAdet": 22,
+   "tonH": 292.3,
+   "tonC": 12.5,
+   "tenL": 90.1,
+   "boya": 5853,
+   "atilan": 912,
+   "yoldas": 0
+  },
+  "kadin-fighter-ID8": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "kadin-fighter-ID9": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 228,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 292.7,
+   "tonC": 12.7,
+   "tenL": 88.3,
+   "boya": 4891,
+   "atilan": 313,
+   "yoldas": 0
+  },
+  "kadin-monk-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 292.9,
+   "tonC": 11.9,
+   "tenL": 90.8,
+   "boya": 6966,
+   "atilan": 21,
+   "yoldas": 0
+  },
+  "kadin-monk-ID1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 307.6,
+   "tonC": 17.2,
+   "tenL": 90.3,
+   "boya": 6077,
+   "atilan": 213,
+   "yoldas": 0
+  },
+  "kadin-monk-ID10": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 279.8,
+   "tonC": 9.7,
+   "tenL": 68.8,
+   "boya": 2715,
+   "atilan": 1951,
+   "yoldas": 0
+  },
+  "kadin-monk-ID11": {
+   "suphe": [],
+   "tenDisiPx": 18,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 309.7,
+   "tonC": 19.1,
+   "tenL": 88.7,
+   "boya": 7088,
+   "atilan": 13,
+   "yoldas": 0
+  },
+  "kadin-monk-ID2": {
+   "suphe": [],
+   "tenDisiPx": 23,
+   "acikPx": 0,
+   "kucukAdet": 9,
+   "tonH": 308.4,
+   "tonC": 16.9,
+   "tenL": 90.3,
+   "boya": 11284,
+   "atilan": 167,
+   "yoldas": 0
+  },
+  "kadin-monk-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 308.1,
+   "tonC": 17.2,
+   "tenL": 90.3,
+   "boya": 6681,
+   "atilan": 140,
+   "yoldas": 0
+  },
+  "kadin-monk-ID4": {
+   "suphe": [],
+   "tenDisiPx": 24,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 307.6,
+   "tonC": 17.4,
+   "tenL": 89.8,
+   "boya": 6904,
+   "atilan": 57,
+   "yoldas": 0
+  },
+  "kadin-monk-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 307.6,
+   "tonC": 17.5,
+   "tenL": 89.9,
+   "boya": 4871,
+   "atilan": 36,
+   "yoldas": 0
+  },
+  "kadin-monk-ID6": {
+   "suphe": [],
+   "tenDisiPx": 45,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 307.6,
+   "tonC": 18.1,
+   "tenL": 89.5,
+   "boya": 7898,
+   "atilan": 35,
+   "yoldas": 0
+  },
+  "kadin-monk-ID7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 306.6,
+   "tonC": 17.7,
+   "tenL": 89.8,
+   "boya": 5950,
+   "atilan": 109,
+   "yoldas": 0
+  },
+  "kadin-monk-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 307.5,
+   "tonC": 17.7,
+   "tenL": 89.7,
+   "boya": 4260,
+   "atilan": 121,
+   "yoldas": 0
+  },
+  "kadin-monk-ID9": {
+   "suphe": [
+    "TD",
+    "AB"
+   ],
+   "tenDisiPx": 468,
+   "acikPx": 519,
+   "kucukAdet": 7,
+   "tonH": 309.2,
+   "tonC": 18.6,
+   "tenL": 89.0,
+   "boya": 7570,
+   "atilan": 439,
+   "yoldas": 0
+  },
+  "kadin-paladin-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 294.2,
+   "tonC": 13.7,
+   "tenL": 83.2,
+   "boya": 4802,
+   "atilan": 419,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 298.8,
+   "tonC": 17.4,
+   "tenL": 88.1,
+   "boya": 3026,
+   "atilan": 165,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID10": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 963,
+   "acikPx": 0,
+   "kucukAdet": 9,
+   "tonH": 293.1,
+   "tonC": 9.4,
+   "tenL": 83.3,
+   "boya": 17476,
+   "atilan": 36,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID2": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 831,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 298.7,
+   "tonC": 16.9,
+   "tenL": 88.8,
+   "boya": 4152,
+   "atilan": 203,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 299.2,
+   "tonC": 13.0,
+   "tenL": 85.0,
+   "boya": 1426,
+   "atilan": 227,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID4": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 390,
+   "acikPx": 0,
+   "kucukAdet": 11,
+   "tonH": 298.3,
+   "tonC": 16.7,
+   "tenL": 89.4,
+   "boya": 4600,
+   "atilan": 1205,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 86,
+   "kucukAdet": 3,
+   "tonH": 302.0,
+   "tonC": 19.6,
+   "tenL": 87.4,
+   "boya": 3997,
+   "atilan": 664,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 301.4,
+   "tonC": 19.6,
+   "tenL": 79.1,
+   "boya": 3221,
+   "atilan": 931,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID7": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 213,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 302.1,
+   "tonC": 19.7,
+   "tenL": 87.4,
+   "boya": 4524,
+   "atilan": 495,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 320.6,
+   "tonC": 4.8,
+   "tenL": 67.1,
+   "boya": 751,
+   "atilan": 459,
+   "yoldas": 0
+  },
+  "kadin-paladin-ID9": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 299.9,
+   "tonC": 20.7,
+   "tenL": 87.2,
+   "boya": 4447,
+   "atilan": 531,
+   "yoldas": 0
+  },
+  "kadin-ranger-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 292.9,
+   "tonC": 12.5,
+   "tenL": 90.6,
+   "boya": 4759,
+   "atilan": 58,
+   "yoldas": 0
+  },
+  "kadin-ranger-ID1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 297.6,
+   "tonC": 13.2,
+   "tenL": 82.7,
+   "boya": 4407,
+   "atilan": 295,
+   "yoldas": 0
+  },
+  "kadin-ranger-ID2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 295.9,
+   "tonC": 11.9,
+   "tenL": 89.0,
+   "boya": 4169,
+   "atilan": 491,
+   "yoldas": 0
+  },
+  "kadin-ranger-ID3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 295.6,
+   "tonC": 10.9,
+   "tenL": 90.4,
+   "boya": 4269,
+   "atilan": 162,
+   "yoldas": 0
+  },
+  "kadin-ranger-ID4": {
+   "suphe": [
+    "AB",
+    "YO"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 712,
+   "kucukAdet": 9,
+   "tonH": 296.5,
+   "tonC": 10.4,
+   "tenL": 87.4,
+   "boya": 7778,
+   "atilan": 1544,
+   "yoldas": 1826
+  },
+  "kadin-ranger-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 10,
+   "tonH": 296.2,
+   "tonC": 9.4,
+   "tenL": 89.1,
+   "boya": 4314,
+   "atilan": 545,
+   "yoldas": 0
+  },
+  "kadin-ranger-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 295.4,
+   "tonC": 9.0,
+   "tenL": 89.1,
+   "boya": 4282,
+   "atilan": 311,
+   "yoldas": 0
+  },
+  "kadin-ranger-ID7": {
+   "suphe": [
+    "KP"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 18,
+   "tonH": 295.2,
+   "tonC": 12.4,
+   "tenL": 86.2,
+   "boya": 4935,
+   "atilan": 972,
+   "yoldas": 0
+  },
+  "kadin-ranger-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 294.2,
+   "tonC": 13.6,
+   "tenL": 88.3,
+   "boya": 5368,
+   "atilan": 76,
+   "yoldas": 0
+  },
+  "kadin-ranger-ID9": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 294.1,
+   "tonC": 14.3,
+   "tenL": 88.2,
+   "boya": 6054,
+   "atilan": 833,
+   "yoldas": 0
+  },
+  "kadin-rogue-GR": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "kadin-rogue-ID1": {
+   "suphe": [],
+   "tenDisiPx": 18,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 294.4,
+   "tonC": 10.0,
+   "tenL": 89.1,
+   "boya": 6384,
+   "atilan": 132,
+   "yoldas": 0
+  },
+  "kadin-rogue-ID10": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 293.2,
+   "tonC": 10.0,
+   "tenL": 88.0,
+   "boya": 8731,
+   "atilan": 85,
+   "yoldas": 0
+  },
+  "kadin-rogue-ID2": {
+   "suphe": [],
+   "tenDisiPx": 59,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 294.3,
+   "tonC": 10.0,
+   "tenL": 89.2,
+   "boya": 5707,
+   "atilan": 100,
+   "yoldas": 0
+  },
+  "kadin-rogue-ID3": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 1020,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 297.6,
+   "tonC": 13.0,
+   "tenL": 79.7,
+   "boya": 7251,
+   "atilan": 530,
+   "yoldas": 0
+  },
+  "kadin-rogue-ID4": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "kadin-rogue-ID5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 295.9,
+   "tonC": 15.0,
+   "tenL": 79.4,
+   "boya": 4333,
+   "atilan": 223,
+   "yoldas": 0
+  },
+  "kadin-rogue-ID6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 293.2,
+   "tonC": 10.5,
+   "tenL": 88.7,
+   "boya": 7642,
+   "atilan": 503,
+   "yoldas": 0
+  },
+  "kadin-rogue-ID7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 300.9,
+   "tonC": 12.9,
+   "tenL": 75.7,
+   "boya": 2680,
+   "atilan": 331,
+   "yoldas": 0
+  },
+  "kadin-rogue-ID8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 295.2,
+   "tonC": 14.7,
+   "tenL": 81.4,
+   "boya": 5507,
+   "atilan": 179,
+   "yoldas": 0
+  },
+  "kadin-rogue-ID9": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 294.2,
+   "tonC": 10.9,
+   "tenL": 89.1,
+   "boya": 6459,
+   "atilan": 109,
+   "yoldas": 0
+  },
+  "kadin-sorcerer-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 293.1,
+   "tonC": 11.4,
+   "tenL": 90.7,
+   "boya": 7394,
+   "atilan": 62,
+   "yoldas": 0
+  },
+  "kadin-sorcerer-SC-1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 294.9,
+   "tonC": 16.0,
+   "tenL": 89.4,
+   "boya": 5065,
+   "atilan": 304,
+   "yoldas": 0
+  },
+  "kadin-sorcerer-SC-2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 294.9,
+   "tonC": 16.7,
+   "tenL": 89.2,
+   "boya": 4588,
+   "atilan": 132,
+   "yoldas": 0
+  },
+  "kadin-sorcerer-SC-3": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "kadin-sorcerer-SC-4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 297.3,
+   "tonC": 15.7,
+   "tenL": 86.4,
+   "boya": 4128,
+   "atilan": 1248,
+   "yoldas": 0
+  },
+  "kadin-sorcerer-SC-5": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "kadin-sorcerer-SC-6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 292.9,
+   "tonC": 10.7,
+   "tenL": 89.5,
+   "boya": 7573,
+   "atilan": 603,
+   "yoldas": 0
+  },
+  "kadin-sorcerer-SC-7": {
+   "suphe": [
+    "KP"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 15,
+   "tonH": 294.2,
+   "tonC": 12.5,
+   "tenL": 89.5,
+   "boya": 5542,
+   "atilan": 287,
+   "yoldas": 0
+  },
+  "kadin-sorcerer-SC-8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 7,
+   "tonH": 294.1,
+   "tonC": 12.1,
+   "tenL": 89.4,
+   "boya": 4668,
+   "atilan": 102,
+   "yoldas": 0
+  },
+  "kadin-sorcerer-SC-9": {
+   "suphe": [
+    "KP"
+   ],
+   "tenDisiPx": 41,
+   "acikPx": 0,
+   "kucukAdet": 12,
+   "tonH": 296.3,
+   "tonC": 21.1,
+   "tenL": 63.3,
+   "boya": 4386,
+   "atilan": 152,
+   "yoldas": 0
+  },
+  "kadin-warlock-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 293.0,
+   "tonC": 11.0,
+   "tenL": 90.7,
+   "boya": 6283,
+   "atilan": 21,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-1": {
+   "suphe": [],
+   "tenDisiPx": 45,
+   "acikPx": 63,
+   "kucukAdet": 1,
+   "tonH": 297.5,
+   "tonC": 8.9,
+   "tenL": 87.7,
+   "boya": 6797,
+   "atilan": 421,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-10": {
+   "suphe": [
+    "TD",
+    "AB"
+   ],
+   "tenDisiPx": 5899,
+   "acikPx": 331,
+   "kucukAdet": 0,
+   "tonH": 291.4,
+   "tonC": 38.6,
+   "tenL": 66.1,
+   "boya": 5899,
+   "atilan": 2175,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-11": {
+   "suphe": [
+    "AB"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 136,
+   "kucukAdet": 1,
+   "tonH": 294.5,
+   "tonC": 10.3,
+   "tenL": 79.6,
+   "boya": 6074,
+   "atilan": 580,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-2": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 1294,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 293.1,
+   "tonC": 9.9,
+   "tenL": 81.3,
+   "boya": 7594,
+   "atilan": 273,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 297.1,
+   "tonC": 13.1,
+   "tenL": 71.8,
+   "boya": 3284,
+   "atilan": 1430,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-4": {
+   "suphe": [],
+   "tenDisiPx": 44,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 329.5,
+   "tonC": 4.2,
+   "tenL": 59.7,
+   "boya": 47,
+   "atilan": 1227,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 297.5,
+   "tonC": 9.4,
+   "tenL": 89.1,
+   "boya": 8505,
+   "atilan": 10,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 296.0,
+   "tonC": 9.0,
+   "tenL": 83.8,
+   "boya": 6224,
+   "atilan": 531,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-7": {
+   "suphe": [
+    "KP"
+   ],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 16,
+   "tonH": 295.6,
+   "tonC": 9.5,
+   "tenL": 82.3,
+   "boya": 23396,
+   "atilan": 44,
+   "yoldas": 0
+  },
+  "kadin-warlock-WL-8": {
+   "suphe": [
+    "MY"
+   ],
+   "neden": "başta ten örneği yok"
+  },
+  "kadin-warlock-WL-9": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 234,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 294.5,
+   "tonC": 10.0,
+   "tenL": 80.9,
+   "boya": 6890,
+   "atilan": 88,
+   "yoldas": 0
+  },
+  "kadin-wizard-GR": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 0,
+   "tonH": 299.6,
+   "tonC": 21.8,
+   "tenL": 69.2,
+   "boya": 4609,
+   "atilan": 8,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-A1": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 732,
+   "acikPx": 0,
+   "kucukAdet": 9,
+   "tonH": 289.2,
+   "tonC": 9.4,
+   "tenL": 87.5,
+   "boya": 8972,
+   "atilan": 620,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-A2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 289.7,
+   "tonC": 10.4,
+   "tenL": 85.7,
+   "boya": 5250,
+   "atilan": 2487,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-A3": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 1147,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 291.8,
+   "tonC": 9.9,
+   "tenL": 85.2,
+   "boya": 5449,
+   "atilan": 259,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-A4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 290.6,
+   "tonC": 9.0,
+   "tenL": 87.9,
+   "boya": 3850,
+   "atilan": 259,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-A5": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 286.7,
+   "tonC": 10.4,
+   "tenL": 89.6,
+   "boya": 4642,
+   "atilan": 2980,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-A6": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 3089,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 289.1,
+   "tonC": 10.3,
+   "tenL": 89.1,
+   "boya": 9525,
+   "atilan": 358,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-A7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 5,
+   "tonH": 289.3,
+   "tonC": 11.0,
+   "tenL": 87.3,
+   "boya": 5155,
+   "atilan": 168,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-A8": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 6,
+   "tonH": 289.1,
+   "tonC": 10.4,
+   "tenL": 88.4,
+   "boya": 5726,
+   "atilan": 106,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-B1": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 290.7,
+   "tonC": 9.4,
+   "tenL": 87.2,
+   "boya": 5670,
+   "atilan": 203,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-B2": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 290.7,
+   "tonC": 9.4,
+   "tenL": 86.1,
+   "boya": 5334,
+   "atilan": 58,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-B3": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 1,
+   "tonH": 290.8,
+   "tonC": 9.5,
+   "tenL": 84.4,
+   "boya": 5537,
+   "atilan": 124,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-B4": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 4,
+   "tonH": 291.5,
+   "tonC": 9.7,
+   "tenL": 83.9,
+   "boya": 6435,
+   "atilan": 22,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-B5": {
+   "suphe": [
+    "TD"
+   ],
+   "tenDisiPx": 238,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 290.9,
+   "tonC": 9.7,
+   "tenL": 84.5,
+   "boya": 6913,
+   "atilan": 420,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-B6": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 2,
+   "tonH": 290.8,
+   "tonC": 9.3,
+   "tenL": 85.0,
+   "boya": 6293,
+   "atilan": 414,
+   "yoldas": 0
+  },
+  "kadin-wizard-WZ-B7": {
+   "suphe": [],
+   "tenDisiPx": 0,
+   "acikPx": 0,
+   "kucukAdet": 3,
+   "tonH": 292.9,
+   "tonC": 9.4,
+   "tenL": 83.5,
+   "boya": 4102,
+   "atilan": 419,
+   "yoldas": 0
+  }
+ }
+}

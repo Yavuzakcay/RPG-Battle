@@ -16,3 +16,6 @@ assets-ham/
 
 # Kuyruk U1b: yerel paket envanteri (node scripts/u1b-envanter.mjs --yaz üretir).
 harita/belgeler/U1B-ENVANTER-YEREL.md
+
+# Python derleme önbelleği (scripts/*.py çalıştırılınca oluşur)
+__pycache__/

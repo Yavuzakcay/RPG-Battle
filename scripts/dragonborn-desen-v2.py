@@ -4,7 +4,9 @@ A) Maske: jetonun kendi başından ten tonu (Lab hue/kroma) örneklenir; tene ya
    kapalı delik doldurma (parlama). Boyanan yalnız açık/ten pikseli (koyu kontur, göz, ağız, sıcak/doygun piksel hariç); içeri çekme yok.
 B) Boyama: parlaklığı koruyan ton + doygunluk (Lab: L* tenin ortancasına göre farkıyla hedef orta tona taşınır, h/C hedefin).
 C) Doku: pul karosu (v1 geometrisi, pul 8 px) yalnız ±L* modülasyonu; Gümüş/Beyaz'da koyulaştırma yönünde.
-D) Önce (oyundaki çarpma filtresi) / sonra; 256 px ve 64/96 px; 6 jeton × 10 soy."""
+D) Önce (oyundaki çarpma filtresi) / sonra; 256 px ve 64/96 px; 6 jeton × 10 soy.
+`--tam`: 264 jeton × 10 soy kontak sayfaları (tam/<soy>-NN.webp, 4 sütun, 256 px, şüpheliler kırmızı çerçeve), tam/savas-64.webp, tam/suphe.json.
+Yoldaş (yavru ejderha) başı göz kümesinden bulunup maskeden çıkarılır (drop_companion)."""
 import importlib.util, json, os, sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -19,7 +21,7 @@ lab = v1.dm.lab
 
 JETONLAR = ['kadin-wizard-WZ-B1', 'erkek-fighter-ID4', 'erkek-barbarian-ID2', 'kadin-monk-ID1', 'erkek-ranger-ID4', 'kadin-fighter-ID4']
 SOYLAR = v1.SOYLAR; SOY_TR = v1.SOY_TR
-P = {'konturL': 42, 'tonFark': 16, 'cAlt': 0.3, 'cUst': 2.4, 'beyazL': 88, 'beyazC': 8, 'minBilesen': 40, 'bilesenL': 62, 'delik': 160,
+P = {'konturL': 42, 'tonFark': 16, 'cAlt': 0.3, 'cUst': 2.4, 'beyazL': 88, 'beyazC': 8, 'minBilesen': 40, 'bilesenL': 62, 'delik': 160, 'yoldasY': 0.3, 'yoldasUzak': 45, 'yoldasR': 45, 'gozHalka': 0.25,
      'sicakC': 14, 'sicakL': 88, 'mod': 5.0, 'modKoyu': {'gumus': (0.0, -3.0, -6.0), 'beyaz': (0.0, -3.0, -6.0)}}   # modKoyu: (açık, orta, koyu) L* farkı
 BG = np.array([44, 48, 58])
 
@@ -34,21 +36,57 @@ def _lab2rgb(L, a, b):
     return c * 255, ok
 
 def comps(m):
-    H, W = m.shape; lab_ = np.full(m.shape, -1, np.int32); out = []
-    for y0, x0 in zip(*np.nonzero(m)):
-        if lab_[y0, x0] >= 0: continue
-        st = [(y0, x0)]; lab_[y0, x0] = len(out); px = []
-        while st:
-            y, x = st.pop(); px.append((y, x))
-            for dy in (-1, 0, 1):
-                for dx in (-1, 0, 1):
-                    yy, xx = y + dy, x + dx
-                    if 0 <= yy < H and 0 <= xx < W and m[yy, xx] and lab_[yy, xx] < 0: lab_[yy, xx] = len(out); st.append((yy, xx))
-        out.append(np.array(px))
+    """8-bağlı bileşenler (satır parçaları + birleşim kümesi; saf numpy/Python, scipy gerektirmez). Her bileşen (N, 2) [y, x] dizisi."""
+    runs = []                                                     # (y, x0, x1) kapalı aralık
+    for y in range(m.shape[0]):
+        r = m[y].astype(np.int8); d = np.diff(np.concatenate([[0], r, [0]]))
+        st, en = np.nonzero(d == 1)[0], np.nonzero(d == -1)[0] - 1
+        runs.extend((y, a_, b_) for a_, b_ in zip(st, en))
+    par = list(range(len(runs)))
+    def find(i):
+        while par[i] != i: par[i] = par[par[i]]; i = par[i]
+        return i
+    prev, j = [], 0
+    for i, (y, a_, b_) in enumerate(runs):
+        if i and runs[i - 1][0] != y:
+            prev = [k for k in range(j, i) if runs[k][0] == y - 1]; j = i
+        elif i == 0: prev = []
+        for k in prev:
+            if runs[k][1] <= b_ + 1 and runs[k][2] >= a_ - 1:
+                ra, rb = find(i), find(k)
+                if ra != rb: par[ra] = rb
+    groups = {}
+    for i, (y, a_, b_) in enumerate(runs): groups.setdefault(find(i), []).append((y, a_, b_))
+    out = []
+    for g in groups.values():
+        ys = np.concatenate([np.full(b_ - a_ + 1, y) for y, a_, b_ in g]); xs = np.concatenate([np.arange(a_, b_ + 1) for y, a_, b_ in g])
+        out.append(np.stack([ys, xs], 1))
     return out
 
 def dil(m): p = np.pad(m, 1); return np.any([p[1 + dy:1 + dy + m.shape[0], 1 + dx:1 + dx + m.shape[1]] for dy in (-1, 0, 1) for dx in (-1, 0, 1)], 0)
 def ero(m): p = np.pad(m, 1, constant_values=True); return np.all([p[1 + dy:1 + dy + m.shape[0], 1 + dx:1 + dx + m.shape[1]] for dy in (-1, 0, 1) for dx in (-1, 0, 1)], 0)
+
+def fill_holes(m):
+    o = m.copy()
+    for c in comps(~m):
+        if not ((c[:, 0] == 0) | (c[:, 1] == 0) | (c[:, 0] == m.shape[0] - 1) | (c[:, 1] == m.shape[1] - 1)).any(): o[c[:, 0], c[:, 1]] = True
+    return o
+
+def drop_companion(keep, rgba, L, C, y0, y1, head):
+    """Yoldaş (yavru ejderha vb.): göz = küçük doygun sıcak küme (4–80 px), çevresinin en az `gozHalka` payı maske, figürün üst
+    `yoldasY` kısmında. Asıl başın ten örneği merkezinden `yoldasUzak` px'ten uzak göz yoldaşındır; o göze baş merkezinden daha yakın
+    ve en çok `yoldasR` px uzaktaki maske pikselleri çıkarılır. Çıkarılan piksel sayısı döner."""
+    eye = (rgba[..., 3] >= 128) & (L[..., 2] > 25) & (C > 35)
+    hc = np.argwhere(head).mean(0); pets = []
+    for c in comps(eye):
+        if not 4 <= len(c) <= 80 or (c[:, 0].mean() - y0) / (y1 - y0) > P['yoldasY']: continue
+        cm = np.zeros_like(keep); cm[c[:, 0], c[:, 1]] = True; ring = dil(dil(dil(cm))) & ~cm
+        if (keep & ring).sum() / ring.sum() >= P['gozHalka'] and np.hypot(*(c.mean(0) - hc)) > P['yoldasUzak']: pets.append(c.mean(0))
+    if not pets: return keep, 0
+    yy, xx = np.mgrid[:keep.shape[0], :keep.shape[1]]; dh_ = np.hypot(yy - hc[0], xx - hc[1]); out = keep.copy()
+    for pe in pets:
+        dp = np.hypot(yy - pe[0], xx - pe[1]); out &= ~((dp < dh_) & (dp <= P['yoldasR']))
+    return out, int(keep.sum() - out.sum())
 
 def mask_of(rgba):
     L = lab(rgba[..., :3].astype(float)); a, b = L[..., 1], L[..., 2]; C = np.hypot(a, b); h = (np.degrees(np.arctan2(b, a)) + 360) % 360
@@ -71,9 +109,10 @@ def mask_of(rgba):
     # kapalı delikler (dışarıdan ulaşılamayan, küçük) maskeye
     for c in comps(~keep):
         if len(c) <= P['delik'] and not ((c[:, 0] == 0) | (c[:, 1] == 0) | (c[:, 0] == 255) | (c[:, 1] == 255)).any(): keep[c[:, 0], c[:, 1]] = True
+    keep, yoldas = drop_companion(keep, rgba, L, C, y0, y1, s)
     warm = (b > 0) & ((C > P['sicakC']) | (L[..., 0] < P['sicakL']))   # göz, ağız (doygun sıcak), boynuz (sarımsı gri); dövme kenarındaki açık hale boyanır
     paint = keep & op & (L[..., 0] > P['konturL']) & ~warm & (C <= c0 * P['cUst'] + 6)
-    return paint, {'tonH': round(h0, 1), 'tonC': round(c0, 1), 'tenL': round(l0, 1), 'boya': int(paint.sum()), 'atilan': int(dropped)}
+    return paint, {'tonH': round(h0, 1), 'tonC': round(c0, 1), 'tenL': round(l0, 1), 'boya': int(paint.sum()), 'atilan': int(dropped), 'yoldas': int(yoldas)}
 
 def paint(rgba, m, cols, soy, t):
     L = lab(rgba[..., :3].astype(float)); Lm = float(np.median(L[..., 0][m]))
@@ -102,8 +141,74 @@ def on_bg(rgba, size=None):
     if size: im = im.resize((size, size), Image.LANCZOS)
     bg = Image.new('RGBA', im.size, tuple(BG) + (255,)); bg.alpha_composite(im); return bg.convert('RGB')
 
+# ---- tam üretim (`--tam`): 264 jeton × 10 soy, şüpheliler yalnız işaretlenir (hiçbir jeton dışarıda bırakılmaz) ----
+TAM = os.path.join(OUT, 'tam')
+SUPHE = {'tenDisiPx': 60, 'acikPx': 100, 'acikBilesen': 60, 'kucukAdet': 12, 'kucukPx': 25}
+SUPHE_AD = {'MY': 'maske yok (başta ten örneği bulunamadı; boyanmadı)', 'TD': 'ten tonu dışı boyalı parça (kıyafet/eşya/diş olabilir)',
+            'AB': 'boyanmamış açık bölge maskeye bitişik (kanat zarı/kıyafet olabilir)', 'KP': 'çok sayıda küçük ayrık boyalı parça',
+            'YO': 'yoldaş (yavru ejderha) maskeden çıkarıldı; kalıntı olabilir', 'GI': '6 jetonluk incelemede görülen sızıntı (kemer, kılıç ağzı)'}
+GORULEN = {'kadin-fighter-ID4': 'GI', 'erkek-ranger-ID4': 'GI'}   # v2 6 jeton incelemesi (README): yalnız işaret, maske değişmez
+
+def all_tokens():
+    return sorted(f[11:-5] for f in os.listdir(CHAR) if f.startswith('dragonborn-') and f.endswith('.webp') and ('-erkek-' in f or '-kadin-' in f))
+
+def suspects(rgba, m, info):
+    """Jeton başına şüphe kodları ve ölçüleri (yalnız rapor; maskeyi değiştirmez)."""
+    if m is None: return ['MY'], {}
+    L = lab(rgba[..., :3].astype(float)); a, b = L[..., 1], L[..., 2]; C = np.hypot(a, b); h = (np.degrees(np.arctan2(b, a)) + 360) % 360
+    inh = (np.abs((h - info['tonH'] + 180) % 360 - 180) <= P['tonFark']) & (C >= info['tonC'] * P['cAlt'])
+    cs = comps(m)
+    off = sum(len(c) for c in cs if len(c) >= 15 and inh[c[:, 0], c[:, 1]].mean() < 0.4)
+    small = sum(1 for c in cs if len(c) < SUPHE['kucukPx'])
+    light = (rgba[..., 3] >= 128) & ~m & (L[..., 0] > 70) & (C < 10) & (b <= 0); near = dil(dil(m))
+    unp = sum(len(c) for c in comps(light) if len(c) >= SUPHE['acikBilesen'] and near[c[:, 0], c[:, 1]].any())
+    k = []
+    if off >= SUPHE['tenDisiPx']: k.append('TD')
+    if unp >= SUPHE['acikPx']: k.append('AB')
+    if small >= SUPHE['kucukAdet']: k.append('KP')
+    if info.get('yoldas'): k.append('YO')
+    return k, {'tenDisiPx': int(off), 'acikPx': int(unp), 'kucukAdet': int(small)}
+
+def tam():
+    os.makedirs(TAM, exist_ok=True)
+    tab, _ = renk.table(); t = v1.tile(8); names = all_tokens(); data = {}
+    for n in names:
+        rgba = np.array(Image.open(os.path.join(CHAR, f'dragonborn-{n}.webp')).convert('RGBA')); m, info = mask_of(rgba)
+        k, olc = suspects(rgba, m, info)
+        if n in GORULEN: k.append(GORULEN[n])
+        data[n] = (rgba, m, info, k, olc)
+    C4, R8, CELL, NAME = 4, 8, 256, 22
+    for soy in SOYLAR:
+        for p0 in range(0, len(names), C4 * R8):
+            chunk = names[p0:p0 + C4 * R8]; rows = -(-len(chunk) // C4)
+            pg = Image.new('RGB', (C4 * CELL, rows * (CELL + NAME)), tuple(BG)); dr = ImageDraw.Draw(pg)
+            for i, n in enumerate(chunk):
+                rgba, m, info, k, _ = data[n]; x, y = (i % C4) * CELL, (i // C4) * (CELL + NAME)
+                pg.paste(on_bg(paint(rgba, m, tab[soy], soy, t) if m is not None else rgba), (x, y))
+                if k: dr.rectangle([x + 1, y + 1, x + CELL - 2, y + CELL - 2], outline=(235, 50, 50), width=3)
+                dr.text((x + 4, y + CELL + 3), n + ('  [' + ','.join(k) + ']' if k else ''), fill=(240, 110, 110) if k else (225, 228, 235), font=v1.FONT)
+            pg.save(os.path.join(TAM, f'{soy}-{p0 // (C4 * R8) + 1:02d}.webp'), quality=90, method=6)
+        print('soy', soy, flush=True)
+    # savaş boyutu (64 px): satır = jeton, sütun = orijinal + 10 soy; iki blok yan yana
+    S, NW, half = 64, 210, -(-len(names) // 2)
+    bw = NW + 11 * S + 20; pg = Image.new('RGB', (2 * bw, 24 + half * (S + 2)), tuple(BG)); dr = ImageDraw.Draw(pg)
+    for bl in range(2):
+        for c, hd in enumerate(['orijinal'] + [SOY_TR[x].split(' ')[0] for x in SOYLAR]): dr.text((bl * bw + NW + c * S + 2, 4), hd[:8], fill=(230, 232, 238), font=v1.FONT)
+    for i, n in enumerate(names):
+        rgba, m, info, k, _ = data[n]; bx, y = (i // half) * bw, 24 + (i % half) * (S + 2)
+        dr.text((bx + 4, y + 24), n + (' [' + ','.join(k) + ']' if k else ''), fill=(240, 110, 110) if k else (225, 228, 235), font=v1.FONT)
+        pg.paste(on_bg(rgba, S), (bx + NW, y))
+        for c, soy in enumerate(SOYLAR): pg.paste(on_bg(paint(rgba, m, tab[soy], soy, t) if m is not None else rgba, S), (bx + NW + (c + 1) * S, y))
+        if k: dr.rectangle([bx + NW, y, bx + NW + 11 * S - 1, y + S - 1], outline=(235, 50, 50), width=2)
+    pg.save(os.path.join(TAM, 'savas-64.webp'), quality=90, method=6)
+    rep = {n: {'suphe': k, **olc, **{kk: vv for kk, vv in info.items()}} for n, (_, _, info, k, olc) in data.items()}
+    json.dump({'not': 'scripts/dragonborn-desen-v2.py --tam: jeton başına şüphe kodları ve maske ölçümü. Kodlar: ' + '; '.join(f'{a} = {b}' for a, b in SUPHE_AD.items()),
+               'esikler': SUPHE, 'jetonlar': rep}, open(os.path.join(TAM, 'suphe.json'), 'w', encoding='utf-8', newline='\n'), ensure_ascii=False, indent=1)
+    print('şüpheli', sum(1 for v in rep.values() if v['suphe']), '/', len(rep))
+
 if __name__ == '__main__':
     sys.stdout.reconfigure(encoding='utf-8')
+    if '--tam' in sys.argv: tam(); sys.exit()
     os.makedirs(OUT, exist_ok=True)
     tab, _ = renk.table(); t = v1.tile(8)
     game = json.load(open(os.path.join(ROOT, 'data/soy-renkleri.json'), encoding='utf-8'))['races']['dragonborn']['lineagesAlt']
