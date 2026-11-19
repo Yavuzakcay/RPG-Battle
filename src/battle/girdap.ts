@@ -20,7 +20,8 @@ import { registerCommandEnd } from './turnHooks';
 import { girdapOn } from './girdapSurum';
 import { altitudeInZone } from './altitude';
 import { bodyAt } from './body';
-import { affects, bodyInZone, newZoneId, registerZoneStartPull, whirlEffectId, zoneSpecOf } from './zones';
+import { affects, bodyInZone, newZoneId, whirlEffectId, zoneSpecOf } from './zones';
+import { registerZoneStartPull } from './zoneHooks';
 import type { Spell, SpellMechanics, ZoneSpec } from '../data/types';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
 

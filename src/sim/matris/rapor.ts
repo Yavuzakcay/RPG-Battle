@@ -215,9 +215,9 @@ function tally(rows: Sinifli[]): Record<Sonuc, number> {
 
 /** Düzeltme turlarında bulunan, matris satırıyla ölçülmeyen yeni bulgular (onay bekliyor; düzeltilmedi). */
 export const YENI_BULGULAR: Array<{ id: string; baslik: string; neden: string; oneri: string }> = [
-  { id: 'G01', baslik: 'Save günlüğü durumdan gelen avantaj/dezavantajı göstermiyor (görünüm; sonucu etkilemez)',
-    neden: '`save_resolved.mode` motorun 41 save yolunun 27\'sinde sabit \'normal\', kalanında yalnız ortam kipi; Restrained, Dodge, Haste gibi kaynaklardan gelen kip yalnız atılan iki zarda görünür. Günlük "19 / 3 (normal)" yazar.',
-    oneri: 'Save olaylarına etkin kipi (`resolveSave`\'e giden `mode`) yazmak; günlük ve önizleme bunu okur. Atlandı: motorda 64 ayrı `save_resolved` kurulumu var, her biri kendi kipini yazıyor; tek noktadan düzeltme `resolveSave` sonucunun olaya taşınmasını ve bütün kurulumların değişmesini gerektiriyor (küçük değil; sonuç değişmez, yalnız görünüm).' },
+  { id: 'G01', baslik: 'Save günlüğü durumdan gelen avantaj/dezavantajı göstermiyordu (görünüm; sonucu etkilemez) — düzeltildi',
+    neden: '`save_resolved.mode` motorun 41 save yolunun 27\'sinde sabit \'normal\'; Restrained, Dodge, Haste gibi kaynaklardan gelen kip yalnız atılan iki zarda görünüyordu.',
+    oneri: 'Düzeltildi (2026-11-19, sürümsüz, yalnız görünüm): `saveMode` koşulları `saveModeWhy`\'a taşındı; komut sonunda save olaylarına `modeWhy` (`src/battle/saveWhy.ts`), günlükte açılır ayrıntıda tek satır ("Dezavantaj: Restrained (DEX save)") ve kip rozeti aynı kaynaktan. 64 kurulum değişmedi.' },
 ];
 
 export function ozetOf(rows: Sinifli[], etiket: string, surum: number): Ozet {
