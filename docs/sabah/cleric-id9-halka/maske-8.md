@@ -38,6 +38,16 @@ Dragonborn Cleric ID9 pul maskeleri (`maske-pul/`) bu görevde değişmedi.
 
 **Elle maske hattı (bilgi):** `applyHandMasks` yalnız 144 sınıf-genel sprite'ı (`<ırk>-<male|female>-<sınıf>`) tanır; hücreli jetonlar (`…-ID9`) için `maske-el` hattı bağlı değil (kaynak kümesine eklenmesi gerekir). Bu görevde gerekmedi.
 
+## Doğrulama
+
+| Adım | Sonuç |
+|---|---|
+| `npm run typecheck` | temiz |
+| handMask, tint, baglama dahil 20 test dosyası (jeton/ton/maske/soy-renkleri) | 20/20 geçti, 184 test |
+| `npm run build` | tamam; ana parça 448,80 kB / sınır 500 kB |
+| `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`) | çıkış kodu 0; `Denenen 92, geçen 92, düşen 0.` |
+| Değişen dosya denetimi (`git status`) | maske/ 8 PNG, `maske-pul/` 0, `maske-el/` 0, `bas/` 0; alt-rapor'da yalnız bu 8 girdi |
+
 ## Yeniden ölçmek
 
 ```bash
