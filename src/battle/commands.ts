@@ -131,7 +131,8 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
     // Beacon of Hope (Görev B1): ölüm save'i avantajlı.
     const survivor = hasTrait(c, 'survivor');
     // Kuyruk K53 S5: aura ölüm save dezavantajı; avantajla birlikte normal.
-    const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv) || !!c.auraDeathAdv;
+    // Mekanik matris B13 (sürüm 83+): Holy Aura "Advantage on all saving throws" ölüm save'ini de kapsar.
+    const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv) || !!c.auraDeathAdv || !!c.allyAura?.saveAdvAll;
     const rolledSave = rollD20(dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
     const natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
     let successes = c.deathSaves.successes;

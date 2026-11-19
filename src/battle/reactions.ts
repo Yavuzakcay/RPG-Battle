@@ -389,7 +389,9 @@ export function afterAttackReactions(state: BattleState, attackerId: string, tar
 function blindRetortEvents(state: BattleState, holderId: string, attackerId: string, rng: Rng): BattleEvent[] {
   const h = state.combatants[holderId];
   const a = state.combatants[attackerId];
-  const e = h?.effects?.find((x) => x.blindRetort);
+  // Mekanik matris B13 (sürüm 83+): Holy Aura yayılımındaki dost ("when a Fiend or an Undead hits an affected creature").
+  const aa = h?.allyAura?.blindRetort ? h.allyAura : undefined;
+  const e = h?.effects?.find((x) => x.blindRetort) ?? (aa ? { id: aa.srd, name: aa.name, sourceId: aa.by, blindRetort: aa.blindRetort } : undefined);
   if (!h || !a || !e?.blindRetort || a.hp <= 0 || !e.blindRetort.types.includes((a.creatureType ?? '').toLowerCase())) return [];
   const { dc } = e.blindRetort;
   const save = resolveSave({ extra: saveDice(a, 'con'), modifier: a.saves.con, dc, mode: saveMode('normal', a, 'con'), against: ['Blinded', 'spell'] }, rollTag(rng, { by: a.id }));

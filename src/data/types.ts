@@ -834,6 +834,11 @@ export interface EffectSpec {
   dashOnCast?: boolean;
   /** Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren bu türler CON save ya da Blinded. */
   blindRetort?: string[];
+  /**
+   * Mekanik matris B13 (yalnız `m83` bloğunda; Holy Aura): büyücüden yayılım. Etki büyücüde; yarıçap içindeki dostlar
+   * (kendisi dahil) yayılımda kaldıkça save avantajı, onlara saldırı dezavantajı ve yakın dövüş yansıması alır (`syncAuras`).
+   */
+  allyAura?: { radiusFt: number; saveAdvAll?: boolean; attackedDis?: boolean; blindRetort?: string[] };
   /** CILA: sözlü buyruk: hedef Deafened ise işlemez (Command, Suggestion). */
   needsHearing?: boolean;
   /** CILA: save'e sabit eklenti (yetenek → değer; Slow DEX −2). */

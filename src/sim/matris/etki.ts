@@ -47,8 +47,9 @@ export function effectRows(sp: Spell, s: SrdSpell): Satir[] {
   const tPos = hex(A_ROW + tDist);
   const geo: Geo = { kind: 'single', t: tPos, u: hex(A_ROW + tDist, AX + 1), ff: null, z: null, aim: null, coverT: null, bandRows: null, radius: 0 };
   const targetId = taraf === 'dost' ? 'B' : taraf === 'dusman' ? 'T' : 'A';
+  // Kendinden yayılım (Holy Aura; SRD "Range: Self"): komut büyücüye, yarar dostta (yayılım kapsamı).
   const cmdBase: Partial<Extract<Command, { type: 'cast_spell' }>> = {
-    ...(sp.area && taraf === 'dusman' ? { targetHex: tPos, targetIds: ['T'] } : { targetId }),
+    ...(sp.area && taraf === 'dusman' ? { targetHex: tPos, targetIds: ['T'] } : { targetId: o.yayilim ? 'A' : targetId }),
     ...(sp.level > 0 ? { slotLevel: sp.level } : {}),
     ...(s.id === 'enlarge-reduce' ? { choice: 'Reduce' } : {}),
   };
@@ -57,7 +58,9 @@ export function effectRows(sp: Spell, s: SrdSpell): Satir[] {
   const kons = s.concentration ? sp.name : null;
   const saveMode: Mode = o.saveAdv || s.saveAdvFighting ? 'advantage' : 'normal';
   const rows: Satir[] = [];
-  const conds = s.id === 'dispel-evil-and-good' ? [] : s.conditions;
+  // Holy Aura: "when a Fiend or an Undead hits an affected creature with a melee attack roll, the attacker must succeed on a
+  // Constitution saving throw or have the Blinded condition" — Blinded saldırana; aurdaki dost Blinded beklenmez.
+  const conds = s.id === 'dispel-evil-and-good' || o.durumHedefteDegil ? [] : s.conditions;
   const instant = s.rounds === 0;
   const cls = (k: string) => classify(sp, s, k);
   // Hedefin durum/etki gözlemi.
@@ -85,7 +88,9 @@ export function effectRows(sp: Spell, s: SrdSpell): Satir[] {
     rows.push(runCtx(sp, s, geo, { ad: `normal (${taraf === 'dost' ? 'dosta' : 'kendine'})`, kategori: 'yapım', bPos, noT: false, p: {},
       bek: (g) => [alan('etki', true, !!g.olaylar.some((e) => (e.type === 'effect_added' || e.type === 'buff_added' || e.type === 'temp_hp' || e.type === 'hp_boosted') && e.targetId === id)
         // Konsantrasyon hedefindeki koruma (Shield of Faith: `ward`) ya da büyücünün yürüyen alanı.
-        || g.after?.combatants.A?.concentration?.targetId === id || (id === 'A' && g.olaylar.some((e) => e.type === 'zone_created'))),
+        || g.after?.combatants.A?.concentration?.targetId === id || (id === 'A' && g.olaylar.some((e) => e.type === 'zone_created'))
+        // Kendinden yayılım: dost yayılımın içinde yararlanıyor (B13).
+        || (!!o.yayilim && g.after?.combatants[id]?.allyAura?.by === 'A')),
         ...base(g, id, true), alan('slot', slot, g.slot.length ? g.slot : null), alan('kons', kons, g.kons)] }, cmdBase, mech, cls('yapım')));
   }
   // Yukarı slot: ek hedef.

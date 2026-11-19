@@ -5,12 +5,13 @@
 import { describe, expect, it } from 'vitest';
 import { execute } from './commands';
 import { startBattle } from './create';
-import { mk, P1 } from './fixtures';
+import { GM, mk, P1, sword } from './fixtures';
 import { MATRIS_VERSION, matrisOn } from './matrisSurum';
 import { CURRENT_RULES } from './ruleVersion';
 import { saveMode } from './durations';
+import { wardSources } from './divine';
 import type { DiceRequest, Rng } from '../rules/dice';
-import type { BattleEvent, BattleState, Combatant, Command } from './types';
+import { FRESH_ECONOMY, type BattleEvent, type BattleState, type Combatant, type Command } from './types';
 
 type D20 = { one: number; two: [number, number] };
 /** Kancalı zar: d20 tek zarda `one`, çift zarda `two`; diğer zarlar ⌊yüz/2⌋ + 1. */
@@ -355,4 +356,69 @@ describe('B08: Sacred Flame siperden yararlandırmaz (SRD "The target gains no b
       expect(saveOf(r.events, 'T')?.success).toBe(ok);
     });
   }
+});
+
+describe('B13: Holy Aura büyücüden 30 ft dost yayılımı (SRD "you emit an aura in a 30-foot Emanation. While in the aura, creatures of your choice have Advantage on all saving throws, and other creatures have Disadvantage on attack rolls against them")', () => {
+  const ha: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Holy Aura', slotLevel: 8 } as Command;
+  const claw = { ...sword, label: 'Claw', attackBonus: 5, mastery: undefined };
+  const parts = (): Combatant[] => [
+    caster({ level: 15, spellNames: ['Holy Aura'], spellSlots: [4, 3, 3, 3, 2, 1, 1, 1, 0] }),
+    mk('B', { ownerId: 'p1', hp: 50, maxHp: 50, ac: 12, pos: { col: 5, row: 5 } }),
+    mk('C', { ownerId: 'p1', hp: 50, maxHp: 50, pos: { col: 13, row: 5 } }),
+    foe('T', { pos: { col: 6, row: 5 }, creatureType: 'fiend', attacks: [claw] as never }),
+  ];
+  it('83: yayılımdaki dost ve büyücü yararlanır; 30 ft dışındaki dost ve düşman yararlanmaz', () => {
+    const r = run(scene(83, parts()), ha, hooked(PROBE));
+    expect(r.ok, r.error).toBe(true);
+    const cs = r.state.combatants;
+    expect(cs.A?.allyAura?.by).toBe('A');
+    expect(cs.B?.allyAura).toMatchObject({ by: 'A', saveAdvAll: true, attackedDis: true });
+    expect(cs.C?.allyAura).toBeUndefined();
+    expect(cs.T?.allyAura).toBeUndefined();
+    expect(saveMode('normal', cs.B as Combatant, 'wis')).toBe('advantage');
+    expect(saveMode('normal', cs.T as Combatant, 'wis')).toBe('normal');
+    expect(wardSources(r.state, cs.T as Combatant, cs.B as Combatant, { melee: true }).some((x) => x.effect === 'disadvantage' && x.reason === 'Holy Aura')).toBe(true);
+  });
+  it('83: yayılım büyücüyle yürür (yaklaşılan dost yararlanır, uzaklaşılan yitirir)', () => {
+    const s = run(scene(83, parts()), ha, hooked(PROBE)).state;
+    const m = run(s, { type: 'move', actorId: 'A', to: { col: 3, row: 9 } } as Command, hooked(PROBE));
+    expect(m.ok, m.error).toBe(true);
+    expect(m.state.combatants.B?.allyAura?.by).toBe('A');
+    const far = { ...s, combatants: { ...s.combatants, B: { ...(s.combatants.B as Combatant), pos: { col: 11, row: 5 } } } };
+    const m2 = run(far, { type: 'move', actorId: 'A', to: { col: 5, row: 5 } } as Command, hooked(PROBE));
+    expect(m2.ok, m2.error).toBe(true);
+    expect(m2.state.combatants.B?.allyAura?.by).toBe('A');
+    expect(m2.state.combatants.C?.allyAura).toBeUndefined();
+  });
+  it('83: yakın dövüşte isabet ettiren Fiend CON save atar, başarısızsa Blinded', () => {
+    const s = run(scene(83, parts()), ha, hooked(PROBE)).state;
+    const tTurn = { ...s, turnIndex: s.order.indexOf('T') };
+    const x = execute(tTurn, { type: 'attack', actorId: 'T', targetId: 'B', option: claw } as unknown as Command, GM, hooked({ one: 2, two: [19, 18] }));
+    expect(x.ok, x.ok ? '' : x.error).toBe(true);
+    const r = x as Extract<typeof x, { ok: true }>;
+    const atk = r.events.find((e) => e.type === 'attack_resolved') as Extract<BattleEvent, { type: 'attack_resolved' }> | undefined;
+    expect(atk?.mode).toBe('disadvantage');
+    expect(saveOf(r.events, 'T')?.success).toBe(false);
+    expect(r.state.combatants.T?.effects?.some((e) => e.grants?.includes('Blinded'))).toBe(true);
+  });
+  it('83: konsantrasyon bitince (başka konsantrasyon büyüsü) yararlar kalkar', () => {
+    const p0 = parts();
+    p0[0] = { ...(p0[0] as Combatant), spellNames: ['Holy Aura', 'Bless'] };
+    const s = run(scene(83, p0), ha, hooked(PROBE)).state;
+    expect(s.combatants.B?.allyAura?.by).toBe('A');
+    const fresh = { ...s, combatants: { ...s.combatants, A: { ...(s.combatants.A as Combatant), economy: FRESH_ECONOMY } } };
+    const r = run(fresh, { type: 'cast_spell', actorId: 'A', spellName: 'Bless', slotLevel: 1, targetIds: ['A'] } as Command, hooked(PROBE));
+    expect(r.ok, r.error).toBe(true);
+    expect(r.state.combatants.A?.effects?.some((e) => e.id === 'spells:holy-aura')).toBe(false);
+    expect(r.state.combatants.B?.allyAura).toBeUndefined();
+    expect(r.state.combatants.A?.allyAura).toBeUndefined();
+  });
+  it('82: eski davranış (etki yalnız büyücüde, dost yararlanmaz)', () => {
+    const r = run(scene(82, parts()), ha, hooked(PROBE));
+    expect(r.ok, r.error).toBe(true);
+    expect(r.state.combatants.B?.allyAura).toBeUndefined();
+    expect(r.state.combatants.A?.allyAura).toBeUndefined();
+    expect(r.state.combatants.A?.effects?.some((e) => e.id === 'spells:holy-aura' && e.saveAdv?.length === 6)).toBe(true);
+    expect(saveMode('normal', r.state.combatants.B as Combatant, 'wis')).toBe('normal');
+  });
 });

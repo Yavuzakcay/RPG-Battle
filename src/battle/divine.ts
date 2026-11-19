@@ -301,6 +301,8 @@ export function wardSources(state: BattleState, attacker: Combatant, target: Com
   // Ray of Enfeeblement: başarısız save'de yalnızca STR tabanlı = yakın dövüş, başarılı save'de bir sonraki saldırı).
   // Kuyruk A4: Blur'u Blindsight/Truesight menzilindeki saldıran yok sayar.
   for (const e of target.effects ?? []) if (e.attackedDis && !(e.sensesPierce && senseSees(state, attacker, target))) out.push({ effect: 'disadvantage', reason: e.name });
+  // Mekanik matris B13 (sürüm 83+, `syncAuras`): Holy Aura yayılımındaki dosta "other creatures have Disadvantage on attack rolls against them".
+  if (target.allyAura?.attackedDis) out.push({ effect: 'disadvantage', reason: target.allyAura.name });
   // Görev B4: işaretli hedefe saldırı avantajlı (Faerie Fire).
   // Kuyruk A7 (Faerie Fire, `attackedAdvSee`): yalnızca hedefi gören saldırana (Blinded değil, karanlıkta görüyor).
   const sees = () => !attacker.conditions.includes('Blinded') && canSee(state, attacker, target);

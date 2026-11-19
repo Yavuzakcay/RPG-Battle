@@ -61,6 +61,13 @@ export interface Ozel {
   not?: string;
   /** Hedef tarafı (etki büyüleri; SRD: istekli/dost ya da düşman). */
   taraf?: 'dost' | 'dusman' | 'kendi';
+  /**
+   * Kendinden yayılım (Range: Self, Emanation; "creatures of your choice … While in the aura"): komut hedefsiz (büyücü),
+   * dostun yararı yayılım kapsamından ölçülür (`allyAura`, B13).
+   */
+  yayilim?: boolean;
+  /** SRD metnindeki durum hedefe değil başka yaratığa konur (Holy Aura: Blinded saldıran Fiend/Undead'e). */
+  durumHedefteDegil?: boolean;
   /** Save savaşta avantajlı ("does so with Advantage if you or your allies are fighting it"). */
   saveAdv?: boolean;
 }
@@ -147,5 +154,5 @@ export const OZEL: Record<string, Ozel> = {
   haste: { taraf: 'dost' }, fly: { taraf: 'dost' }, invisibility: { taraf: 'dost' }, 'greater-invisibility': { taraf: 'dost' },
   'enlarge-reduce': { taraf: 'dusman', not: 'Reduce düşmana (CON save); Enlarge istekli dosta.' },
   levitate: { taraf: 'dusman' }, polymorph: { taraf: 'dusman' }, 'resilient-sphere': { taraf: 'dusman' },
-  'gaseous-form': { taraf: 'dost' }, sanctuary: { taraf: 'dost' }, 'beacon-of-hope': { taraf: 'dost' }, 'holy-aura': { taraf: 'dost' },
+  'gaseous-form': { taraf: 'dost' }, sanctuary: { taraf: 'dost' }, 'beacon-of-hope': { taraf: 'dost' }, 'holy-aura': { taraf: 'dost', yayilim: true, durumHedefteDegil: true },
 };

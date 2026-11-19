@@ -1839,6 +1839,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     // Kuyruk A4 (Expeditious Retreat): süresince bonus eylemle Dash.
     ...(spec.bonusGrant ? { bonusGrant: spec.bonusGrant } : {}),
     ...(spec.blindRetort ? { blindRetort: { types: spec.blindRetort, dc } } : {}),
+    // Mekanik matris B13 (yalnız `m83` verisinde; Holy Aura): büyücüden dost yayılımı.
+    ...(spec.allyAura ? { allyAura: { radiusFt: spec.allyAura.radiusFt, ...(spec.allyAura.saveAdvAll ? { saveAdvAll: true as const } : {}),
+      ...(spec.allyAura.attackedDis ? { attackedDis: true as const } : {}), ...(spec.allyAura.blindRetort ? { blindRetort: { types: spec.allyAura.blindRetort, dc } } : {}) } } : {}),
     // Kuyruk A6: veride olduğu gibi yazılan alanlar.
     ...(spec.raw ? rawEffect(spec.raw, actor, dc) : {}),
     // Kuyruk A7 (Dragon's Breath, `breathGrant`): dokunulan dosta nefes (seçilen tür, yukarı slot zarı, büyücünün DC'si).

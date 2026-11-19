@@ -381,6 +381,8 @@ export interface ActiveEffect {
   sensesPierce?: boolean;
   /** Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren bu türdeki yaratık CON save ya da Blinded. */
   blindRetort?: { types: string[]; dc: number };
+  /** Mekanik matris B13 (sürüm 83+, Holy Aura): büyücüden dost yayılımı (yarıçap içindekiler `Combatant.allyAura` alır). */
+  allyAura?: { radiusFt: number; saveAdvAll?: true; attackedDis?: true; blindRetort?: { types: string[]; dc: number } };
   /** Kuyruk 19: tur başında save (Conjure Elemental tutsağı): başarısızsa hasar, başarılıysa biter. */
   startSave?: { ability: Ability; dc: number; dice: string; type: string };
   /** Kuyruk 19: Gift of the Protectors (kaynak warlock) ve Gaze of Two Minds (bağlı dost). */
@@ -746,6 +748,11 @@ export interface Combatant {
   auraDeathDis?: true;
   /** Kuyruk K54: aura ölüm save avantajı (Dar Gün Aurası). */
   auraDeathAdv?: true;
+  /**
+   * Mekanik matris B13 (sürüm 83+; reducer sonu `syncAuras`): bu yaratığı kapsayan dost yayılımı (Holy Aura): kaynak
+   * büyücü, etki kimliği ve adı, save avantajı (ölüm save'i dahil), ona saldırı dezavantajı, yakın dövüş yansıması.
+   */
+  allyAura?: { by: string; srd: string; name: string; saveAdvAll?: true; attackedDis?: true; blindRetort?: { types: string[]; dc: number } };
   /** Kuyruk K54b: Mevzi İşareti altıgeninde kurtulma bonusu (reducer sonu `syncAuras`). */
   wardSave?: number;
   /** Kuyruk K54b: Omuz Ver: başarısız kurtulmaya bonus verebilecek bağlı dost (reducer sonu `syncAuras`). */

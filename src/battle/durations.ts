@@ -133,7 +133,7 @@ export function dodgeActive(conds: string[]): boolean {
 }
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
-export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean; srd83?: true;
+export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean; srd83?: true; allyAura?: { saveAdvAll?: true };
   effects?: Array<{ saveDisVs?: Array<{ damage?: string; condition?: string }>; saveDisVsGenis?: true; saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
 
 /**
@@ -155,6 +155,8 @@ export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: A
     // Kuyruk 19 (SRD canavar yetenekleri): Bloodied Frenzy (Bloodied'da save avantajı), Aura of Authority.
     || (!!s.effects?.some((e) => e.bloodiedAdv?.save) && s.hp !== undefined && s.hp <= (s.maxHp ?? 0) / 2)
     || !!s.authorityAdv
+    // Mekanik matris B13 (sürüm 83+, `syncAuras`): Holy Aura "creatures of your choice have Advantage on all saving throws".
+    || !!s.allyAura?.saveAdvAll
     // Kuyruk P10: ek paket `isaret.kurtulmaAvantaji` (kaynak işaretliyse, işaretleyenin kurtulması avantajlı).
     || (!!(s as { id?: string }).id && !!source?.effects?.some((e) => e.pkSaveAdvFor === (s as { id?: string }).id));
   // Görev B1: süren etkinin save dezavantajı (Reduce, Ray of Enfeeblement: STR).

@@ -1955,6 +1955,7 @@
   "text": "30 ft yayılım: seçilen yaratıklar bütün save'lerde avantajlı, onlara saldırılar dezavantajlı; onları yakın dövüşte vuran Fiend ya da Undead CON save, başarısızsa Blinded (konsantrasyon, 1 dakika)",
   "concentration": true,
   "mechanics": {
+   "m83": {"effect": {"targets": 1, "side": "ally", "self": true, "rounds": 10, "icon": "😇", "allyAura": {"radiusFt": 30, "saveAdvAll": true, "attackedDis": true, "blindRetort": ["fiend", "undead"]}}, "approx": ""},
    "kind": "effect",
    "effect": {
     "targets": 8,
