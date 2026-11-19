@@ -51,7 +51,7 @@ import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
 import { monsters, spells } from '../data';
 import { availableForms } from './druid';
-import { costsFrom, distance, hexKey, neighbors, offsetToAxial, sameHex, type Offset } from '../rules/hex';
+import { costsFrom, distance, hexKey, neighbors, offsetToAxial, sameHex, withinRange, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, meleeOf, spellOf } from './features';
 import { standUpProblem } from './grapple';
@@ -108,6 +108,7 @@ import { climbs, fliesOrHovers, flySpeed, groundBound, isAirborne } from './flig
 import { altitudeCapFt, altitudeOf, climbCapFt, climbingAloft, wallHex } from './altitude';
 import { legendaryOf } from './boss';
 import { bodyAt, bodyOf, gap, touchesHexes } from './body';
+import { whirlpoolCast, whirlpoolSize } from './girdap';
 import { footprintDistance } from '../rules/footprint';
 import { globalRule } from './ruleControl';
 import { teleportHexes } from './teleport';
@@ -536,6 +537,32 @@ function zoneSpell(state: BattleState, actor: Combatant, foes: Combatant[]): Com
       const loose = !!state.yz?.deprem && s.id === 'earthquake' && enemies >= 2;
       if (worth && (friends === 0 || loose) && (!best || enemies > best.foes)) best = { cmd, foes: enemies };
     }
+  }
+  return best?.cmd ?? null;
+}
+
+/**
+ * Control Water girdabı (kural sürümü 84, anahtar açıkken; `k84:girdap`): en çok düşmanı kapsayan, alanda dost (kendisi dahil,
+ * masumlar) olmayan düşmanın altıgeni; motorun seçeceği en düşük slotun yarıçapıyla. En az iki düşman ya da 20+ HP'li tek düşman.
+ * Değer önceliği `kuralOnceligi['k84:girdap']`.
+ */
+function whirlpoolCommand(state: BattleState, actor: Combatant, foes: Combatant[]): Command | null {
+  if (!state.map || !actor.pos) return null;
+  const sp = castable(actor).find((x) => whirlpoolCast(state, x));
+  if (!sp) return null;
+  const level = actor.spellSlots.findIndex((n, i) => n > 0 && i + 1 >= sp.level) + 1;
+  if (level <= 0) return null;
+  const { radius } = whirlpoolSize(sp, level);
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  let best: { cmd: Command; n: number } | null = null;
+  for (const f of foes) {
+    if (!f.pos) continue;
+    const hexes = withinRange(f.pos, radius, size);
+    const inside = Object.values(state.combatants).filter((c) => c.hp > 0 && c.pos && !c.summon?.intangible && !c.offFloor && touchesHexes(state, c, hexes));
+    const enemies = inside.filter((c) => c.side !== actor.side && !c.civilian).length;
+    if (inside.some((c) => c.side === actor.side || c.civilian) || !(enemies >= 2 || f.hp >= 20)) continue;
+    const cmd: Command = { type: 'cast_spell', actorId: actor.id, spellName: sp.name, targetId: f.id };
+    if ((!best || enemies > best.n) && tryCmd(state, actor, cmd).ok) best = { cmd, n: enemies };
   }
   return best?.cmd ?? null;
 }
@@ -3377,6 +3404,7 @@ registerAction({ id: 'k65:firtina', rule: true, kind: 'damage', note: 'Fire Stor
 registerAction({ id: 'k64:ele-gecir', rule: true, kind: 'control', note: 'Ghost Possession: 5 ft içindeki geçerli Humanoid hedefi ele geçir', gen: (s, a, h) => (a.monsterId && !a.summon ? [possessCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:boncuk', rule: true, kind: 'control', note: 'Delayed Blast Fireball: boncuğu düşmanların üstüne koy', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [beadSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'k62:kafes', rule: true, kind: 'control', note: 'Forcecage: güçlü düşmanı kutuya kapat', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [cageSpell(s, a, h.foes)] : []) });
+registerAction({ id: 'k84:girdap', rule: true, kind: 'control', note: 'Control Water girdabı: en çok düşmanı kapsayan, dostsuz düşman altıgeni', gen: (s, a, h) => (a.spellNames.length && !a.summon ? [whirlpoolCommand(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:zemin', rule: true, kind: 'control', note: 'kalıcı zemin büyüsü (Entangle, Web, Spike Growth…)', gen: (s, a, h) => (partyBranch(a) || (a.spellNames.length && !a.summon) ? [zoneSpell(s, a, h.foes)] : []) });
 registerAction({ id: 'eski:nefes', rule: true, kind: 'damage', note: 'Dragonborn nefesi', gen: (s, a, h) => (partyBranch(a) ? [breathWeapon(s, a, h.foes)] : []) });
 registerAction({

@@ -9,6 +9,7 @@ import { matrisOn } from './matrisSurum';
 import { gazePos } from './chainPact';
 import { lifeBondEvents } from './steed';
 import { executeTerraform } from './terraform';
+import { executeWhirlpool, whirlpoolCast } from './girdap';
 import { executeTelekinesis, telekinesisOn } from './telekinesis';
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
@@ -630,6 +631,9 @@ function stormBonusOn(state: BattleState, actor: Combatant, spell: Spell, repeat
 const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6', 43], ['k61', 44], ['k62', 46], ['k63', 47], ['k64', 48], ['k65', 49], ['k66', 50], ['k67', 51], ['k68', 52], ['k70', 54], ['y1', 55], ['k73c', 64], ['mb7', 70], ['m83', 83]] as const;
 
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
+  // Control Water girdabı (kural sürümü 84, anahtar `controlWaterWhirlpool`): hedef yaratığın altıgeninde girdap alanı
+  // (`girdap.ts`); anahtar kapalıyken ve 83 ve altında eski yol (`spellsK19` su girdabı).
+  if (!repeat && whirlpoolCast(state, spell0)) return executeWhirlpool(state, actor, cmd, spell0);
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
   const spell = spell0.mechanics.upgrade && globalRule(state, 'spellsK19')
     ? { ...spell0, mechanics: { ...spell0.mechanics, ...spell0.mechanics.upgrade, upgrade: undefined } } : spell0;

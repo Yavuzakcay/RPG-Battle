@@ -27,6 +27,7 @@ import { mountActions, mountBadge, moverFor, ridersOnTop, riderStack, setupMount
 import { sizeRank } from './battle/forced';
 import { eldritchSmiteProblem } from './battle/warlock';
 import { availableForms, wildShapeFeature } from './battle/druid';
+import { whirlpoolCast } from './battle/girdap';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
@@ -1290,7 +1291,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       // Kuyruk MB6: havada inme: seçilen irtifa bineğinkinden farklıysa `toFt` gönderilir (yalnız uçabilen).
       const cmd = cmd0.type === 'dismount' && dismountOpts.picker && dismountFt !== null && dismountFt !== dismountOpts.defaultFt ? { ...cmd0, toFt: dismountFt } : cmd0;
       // Kuyruk 19: Control Water biçimi; Stone Shape kapıda mühür.
-      const mode2 = cmd.type === 'cast_spell' ? spell?.mechanics.upgrade?.terraform?.mode : undefined;
+      const mode2 = cmd.type === 'cast_spell' && !(spell && whirlpoolCast(state, spell)) ? spell?.mechanics.upgrade?.terraform?.mode : undefined;
       const choice = mode2 === 'controlWater' ? choicePick ?? 'whirlpool' : mode2 === 'stoneShape' && state.map?.tiles[h.row]?.[h.col] === 'O' ? 'seal'
         : cmd.type === 'cast_spell' && spell && mechanicsAt(state, spell).zone?.cage ? choicePick ?? 'box' : null;
       run(choice && cmd.type === 'cast_spell' ? { ...cmd, choice } : cmd);
@@ -2421,7 +2422,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               {mode === 'pickHex' && pickHexCmd?.dismount && (
                 <Suspense fallback={null}><DismountPicker options={dismountOpts} value={dismountFt ?? dismountOpts.defaultFt} onPick={setDismountFt} /></Suspense>
               )}
-              {mode === 'pickHex' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' && (
+              {mode === 'pickHex' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' && !whirlpoolCast(state, spell) && (
                 <div className="slot-picker" role="radiogroup" aria-label={N.choicePick}>
                   <small>{N.choicePick}</small>
                   {(['whirlpool', 'flood', 'part'] as const).map((x) => (
@@ -2560,6 +2561,12 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                       }
                       else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }
                       else if (kind === 'teleport') { setSpell(sp); setMode('teleport'); }
+                      // Control Water girdabı (kural sürümü 84, anahtar `controlWaterWhirlpool`): yaratığın altıgeni seçilir (yalnız geçerli
+                      // altıgenler parlar); seçilen slot gider (yarıçap ve zar slotla büyür).
+                      else if (whirlpoolCast(state, sp)) {
+                        setSpell(sp); setChoicePick(null);
+                        setPickHexCmd({ make: (h) => ({ type: 'cast_spell', actorId, spellName: sp.name, targetHex: h, ...slotFields(slotPick) }) }); setMode('pickHex');
+                      }
                       // Kuyruk 19: harita dönüştüren büyüler (Passwall, Stone Shape, Control Water): altıgen seçimi.
                       else if (sp.mechanics.upgrade?.terraform && globalRule(state, 'spellsK19')) {
                         setSpell(sp); setChoicePick(sp.mechanics.upgrade.terraform.mode === 'controlWater' ? 'whirlpool' : null);

@@ -55,14 +55,13 @@ describe('KQ6 bağlama', () => {
     for (const [name, n] of Object.entries(rep)) expect(name.startsWith('dragonborn-') ? PUL.has(name) : MASKS.has(name), name).toBe(name.startsWith('dragonborn-') ? true : n >= 30);
     expect(Object.values(rep).filter((n) => n < 30).length).toBeLessThan(60);
   });
-  it('Dragonborn beyaz taban: 10 renk pul deseni v2 (pul maskesi, eski çarpma filtresi yok), birbirinden ayrı; maske tablosu yedek', () => {
+  it('Dragonborn beyaz taban: 10 renk pul deseni v2 (pul maskesi; eski çarpma filtresi ve eski maske yedeği yok), birbirinden ayrı', () => {
     const seen = new Set<string>();
     for (const c of COLORS) {
       const t = lineageTint('dragonborn', c, 'kadin', true)!;
       expect(t.to, c).toEqual({ pul: { soy: c } });
       expect(maskedTint(t) && scaleTinted(t), c).toBe(true);
       seen.add(JSON.stringify(t.to));
-      expect(maskedTint(lineageTint('dragonborn', c, 'kadin', 'maske')!), c).toBe(true);
     }
     expect(seen.size).toBe(10);
     expect(new Set(scaleLineages())).toEqual(new Set(COLORS));

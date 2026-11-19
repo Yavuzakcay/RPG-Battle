@@ -9,6 +9,7 @@
 import { adjacent3D, k73bOn } from './adjacency';
 import { saveDice } from './effectDice';
 import effectsJson from '../../data/condition-effects.json';
+import classFeatureData from '../../data/class-features.json';
 import type { Ability } from '../rules/abilities';
 import { resolveSave } from '../rules/attack';
 import { rollTag, type Rng, type RollMode } from '../rules/dice';
@@ -134,43 +135,65 @@ export function dodgeActive(conds: string[]): boolean {
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
 export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean; srd83?: true; allyAura?: { saveAdvAll?: true };
-  effects?: Array<{ saveDisVs?: Array<{ damage?: string; condition?: string }>; saveDisVsGenis?: true; saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
+  effects?: Array<{ name?: string; saveDisVs?: Array<{ damage?: string; condition?: string }>; saveDisVsGenis?: true; saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
+
+/**
+ * G01 (yalnız görünüm): save kipinin bir kaynağı. `key` `data/neden-metinleri.json` `saveKipi` anahtarı; `name` kaynağın adı
+ * (durum, süren etki, özellik). Olaya `save_resolved.modeWhy` olarak yazılır (reducer yok sayar; `annotateSaveWhy`).
+ */
+export interface SaveWhy { kip: 'adv' | 'dis'; key: string; name?: string }
+
+/** Avantajlı save özelliğinin adı (`stat: saveAdvantage`; yalnız Danger Sense DEX): veriden. */
+const SAVE_ADV_FEATURES: Array<{ name: string; abilities: Ability[] }> = Object.entries((classFeatureData as { features: Record<string, { stat?: string; abilities?: Ability[] }> }).features)
+  .filter(([, f]) => f.stat === 'saveAdvantage').map(([k, f]) => ({ name: (k.split(':')[1] ?? k).split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '), abilities: f.abilities ?? [] }));
 
 /**
  * Kurtarma zarı kipi: Kaçın etkinse DEX save'leri avantajlı; Danger Sense gibi avantajlı save'ler (Incapacitated
- * değilken); Rage sürerken STR save'leri avantajlı. Eski çağrılar yalnızca durum listesi verebilir.
+ * değilken); Rage sürerken STR save'leri avantajlı. Eski çağrılar yalnızca durum listesi verebilir. G01: kaynakları da
+ * döndürür (`saveModeWhy`; `saveMode` aynı hesabın kipi).
  */
-export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: { creatureType?: string; paket?: { ozellikler: Array<{ ilkeller: Array<Record<string, unknown>> }> }; effects?: Array<{ pkSaveAdvFor?: string }> }, ctx?: SaveCtx): RollMode {
+export function saveModeWhy(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: SaveSource, ctx?: SaveCtx): { mode: RollMode; why: SaveWhy[] } {
   const s: SaveSubject = Array.isArray(who) ? { conditions: who } : who;
+  const why: SaveWhy[] = [];
+  const A = (key: string, name?: string) => { why.push({ kip: 'adv', key, ...(name ? { name } : {}) }); };
+  const D = (key: string, name?: string) => { why.push({ kip: 'dis', key, ...(name ? { name } : {}) }); };
+  const fx = s.effects ?? [];
   // Kuyruk 19 (11–20): Holy Nimbus: Fiend/Undead etkilerine save avantajı (kaynağı bilinen save'lerde).
   const vs = source?.creatureType?.toLowerCase();
-  const adv = (!!vs && !!s.effects?.some((e) => e.saveAdvVs?.includes(vs)))
-    || (ability === 'dex' && dodgeActive(s.conditions))
-    || (!!s.saveAdvantage?.includes(ability) && !isIncapacitated(s.conditions))
-    || (ability === 'str' && !!s.rage && s.rageStrAdvantage === true)
-    // Kuyruk A6 (Conjure Animals; `syncAuras`): sürünün 5 ft içinde STR save avantajı.
-    || (ability === 'str' && !!s.packStrAdv)
-    // Görev B1: süren etkilerin save avantajı (Haste DEX, Beacon of Hope WIS, Gaseous Form, Enlarge STR).
-    || !!s.effects?.some((e) => e.saveAdv?.includes(ability))
-    // Kuyruk 19 (SRD canavar yetenekleri): Bloodied Frenzy (Bloodied'da save avantajı), Aura of Authority.
-    || (!!s.effects?.some((e) => e.bloodiedAdv?.save) && s.hp !== undefined && s.hp <= (s.maxHp ?? 0) / 2)
-    || !!s.authorityAdv
-    // Mekanik matris B13 (sürüm 83+, `syncAuras`): Holy Aura "creatures of your choice have Advantage on all saving throws".
-    || !!s.allyAura?.saveAdvAll
-    // Kuyruk P10: ek paket `isaret.kurtulmaAvantaji` (kaynak işaretliyse, işaretleyenin kurtulması avantajlı).
-    || (!!(s as { id?: string }).id && !!source?.effects?.some((e) => e.pkSaveAdvFor === (s as { id?: string }).id));
+  if (vs) for (const e of fx) if (e.saveAdvVs?.includes(vs)) A('vsType', e.name);
+  if (ability === 'dex' && dodgeActive(s.conditions)) A('dodge');
+  if (s.saveAdvantage?.includes(ability) && !isIncapacitated(s.conditions)) A('feature', SAVE_ADV_FEATURES.find((f) => f.abilities.includes(ability))?.name);
+  if (ability === 'str' && !!s.rage && s.rageStrAdvantage === true) A('rage');
+  // Kuyruk A6 (Conjure Animals; `syncAuras`): sürünün 5 ft içinde STR save avantajı.
+  if (ability === 'str' && s.packStrAdv) A('pack');
+  // Görev B1: süren etkilerin save avantajı (Haste DEX, Beacon of Hope WIS, Gaseous Form, Enlarge STR).
+  for (const e of fx) if (e.saveAdv?.includes(ability)) A('effect', e.name);
+  // Kuyruk 19 (SRD canavar yetenekleri): Bloodied Frenzy (Bloodied'da save avantajı), Aura of Authority.
+  if (s.hp !== undefined && s.hp <= (s.maxHp ?? 0) / 2) for (const e of fx) if (e.bloodiedAdv?.save) A('bloodied', e.name);
+  if (s.authorityAdv) A('authority');
+  // Mekanik matris B13 (sürüm 83+, `syncAuras`): Holy Aura "creatures of your choice have Advantage on all saving throws".
+  if (s.allyAura?.saveAdvAll) A('holyAura');
+  // Kuyruk P10: ek paket `isaret.kurtulmaAvantaji` (kaynak işaretliyse, işaretleyenin kurtulması avantajlı).
+  const sid = (s as { id?: string }).id;
+  if (sid && source?.effects?.some((e) => e.pkSaveAdvFor === sid)) A('pkMark');
   // Görev B1: süren etkinin save dezavantajı (Reduce, Ray of Enfeeblement: STR).
   // Kuyruk AS1b (sürüm 71+ alt soy etkisi): hasar türü / durum bağlamlı kurtarma dezavantajı (`saveDisVs`).
-  const dis = !!s.auraSaveDis || saveDisVs(s.effects, ctx) || !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage'))
-    // Mekanik matris B01 (sürüm 83+, `srd83` işareti): SRD 5.2.1 Restrained "You have Disadvantage on Dexterity saving throws."
-    || (ability === 'dex' && !!s.srd83 && s.conditions.includes('Restrained'))
-    // Görev P6: ek paket `buyuDegisimi.kurtulmaDezavantaji` (kaynağın büyüleri ve alan etkileri; koşulsuz pasif).
-    || !!source?.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'buyuDegisimi' && p.kurtulmaDezavantaji === true && !p.kosul));
+  if (s.auraSaveDis) D('aura');
+  for (const e of fx) if (saveDisVs([e], ctx)) D('lineage', e.name);
+  for (const e of fx) if (e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage')) D('effect', e.name);
+  // Mekanik matris B01 (sürüm 83+, `srd83` işareti): SRD 5.2.1 Restrained "You have Disadvantage on Dexterity saving throws."
+  if (ability === 'dex' && !!s.srd83 && s.conditions.includes('Restrained')) D('condition', 'Restrained');
+  // Görev P6: ek paket `buyuDegisimi.kurtulmaDezavantaji` (kaynağın büyüleri ve alan etkileri; koşulsuz pasif).
+  if (source?.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'buyuDegisimi' && p.kurtulmaDezavantaji === true && !p.kosul))) D('pkSpell');
   // Kuyruk K54c: Yıldız Falı (Uğurlu): ilk kurtulma zarı avantajlı.
-  const adv2 = !!s.effects?.some((e) => e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'advantage');
+  for (const e of fx) if (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'advantage') A('effect', e.name);
   // Avantaj ve dezavantaj (tabanla birlikte) birbirini götürür (SRD).
-  const anyAdv = base === 'advantage' || adv || adv2, anyDis = base === 'disadvantage' || dis;
-  return anyAdv && anyDis ? 'normal' : anyAdv ? 'advantage' : anyDis ? 'disadvantage' : 'normal';
+  const anyAdv = base === 'advantage' || why.some((w) => w.kip === 'adv'), anyDis = base === 'disadvantage' || why.some((w) => w.kip === 'dis');
+  return { mode: anyAdv && anyDis ? 'normal' : anyAdv ? 'advantage' : anyDis ? 'disadvantage' : 'normal', why };
+}
+type SaveSource = { creatureType?: string; paket?: { ozellikler: Array<{ ilkeller: Array<Record<string, unknown>> }> }; effects?: Array<{ pkSaveAdvFor?: string }> };
+export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: Ability, source?: SaveSource, ctx?: SaveCtx): RollMode {
+  return saveModeWhy(base, who, ability, source, ctx).mode;
 }
 
 /** Kaçın: eylem; sonraki turunun başına dek. */

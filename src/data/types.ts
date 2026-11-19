@@ -356,6 +356,12 @@ export interface SpellMechanics {
   /** Mekanik matris düzeltmeleri (kural sürümü 83+; harita/belgeler/MEKANIK-MATRIS.md): bloktaki alanlar üstüne yazılır. */
   m83?: Partial<SpellMechanics>;
   /**
+   * Control Water girdabı (kural sürümü 84, Game Master anahtarı `controlWaterWhirlpool`; `src/battle/girdap.ts`): anahtar açıkken
+   * yapım bu bloğun girdabıyla (`whirlpool`); kapalıyken ve 83 ve altında eski mekanik (`upgrade`, `spellsK19`).
+   */
+  k84?: Partial<SpellMechanics>;
+  whirlpool?: boolean;
+  /**
    * Mekanik matris B14 (yalnız `m83` bloğunda; Weird): alan yalnız düşmanları etkiler ("Each creature of your choice in a
    * 30-foot-radius Sphere"); büyünün `area.targets` alanını ezer.
    */
@@ -656,6 +662,11 @@ export interface ZoneSpec {
   resist?: string[];
   /** Kuyruk 19: girdap (Control Water): tur başında alandaki sudakileri merkeze `pull` altıgen çeker; uzaklaşmak için Athletics. */
   vortex?: { pull: number };
+  /**
+   * Control Water girdabı (kural sürümü 84): alanın `band` altıgen ötesine kadar (dışındakiler) tur başında merkeze `pullFt`
+   * çekilir; başarısız save'de yakalanır (hız 0, kurtulma eylemle Athletics `escape`). `src/battle/girdap.ts`.
+   */
+  whirl?: { band: number; pullFt: number };
   /** Kuyruk A6 (Gust of Wind): başarısız save'de büyücüden bu kadar ft itme; büyücüye yaklaşan adım bu kat maliyet. */
   push?: number;
   costToward?: number;

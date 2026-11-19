@@ -735,6 +735,9 @@ export const en: Strings = {
     saveRoll: (ab: string, d20: string, mode: string, total: number, cover: number, dc: number, ok: boolean) =>
       `${ab} saving throw ${d20}${mode}, total ${total}${cover ? ` (incl. cover +${cover})` : ''} / DC ${dc}: ${ok ? 'success' : 'failure'}`,
     conditionsAdded: (list: string) => `condition: ${list}`,
+    /** G01: reason for the saving throw's mode (one line in the expandable detail). */
+    saveWhy: (kind: 'adv' | 'dis' | 'cancel', names: string, ab: string) =>
+      `${kind === 'adv' ? 'Advantage' : kind === 'dis' ? 'Disadvantage' : 'Advantage and disadvantage cancel out'}: ${names} (${ab} save)`,
     healed: (a: string, b: string, label: string, n: number) => `${a} → ${b}: ${label}, healed ${n} HP.`,
     slotSpent: (a: string, lvl: number, left: number) => `${a}: level ${lvl} slot spent (${left} left).`,
     dodge: (a: string) => `${a} dodges: until the start of their next turn attackers have disadvantage and DEX saves have advantage.`,

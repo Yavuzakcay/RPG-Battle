@@ -8,6 +8,8 @@ import { checkHandMask, maskSources } from './handMask';
 import { handMasked, maskUrlFor, tintPixels } from './tint';
 import { lineageTint } from '../battle/avatar';
 import rapor from '../../data/soy-maske-rapor.json';
+import soyRenkleri from '../../data/soy-renkleri.json';
+import { classes } from '../data';
 import yollar from '../../scripts/soy-maske-yollar.ts?raw';
 import maskeBetik from '../../scripts/soy-maske.ts?raw';
 import elBetik from '../../scripts/soy-maske-el.ts?raw';
@@ -31,7 +33,10 @@ describe('elle maske', () => {
   it('öncelik: geçerli elle maske varsa el, yoksa otomatik; çalışma anı yolu buna göre', () => {
     expect(maskSources(['a-male-x', 'b-female-y'], ['b-female-y'])).toEqual({ 'a-male-x': 'oto', 'b-female-y': 'el' });
     const sprites = (rapor as { sprites: Record<string, string> }).sprites;
-    expect(Object.keys(sprites)).toHaveLength(120);
+    // KJ4: rapor kapsamı veriden (sabit sayı yok): `npm run soy-maske` ana döngüsüyle aynı küme = soy-renkleri.json'daki her ırk
+    // (Human dahil: AS1c ten maskesi, 2026-11-12) × cinsiyet × sınıf. Eski sabit 120, Human eklenmeden önceki raporun sayısıydı (6 × 2 × 12 = 144).
+    const beklenen = Object.keys(soyRenkleri.races).flatMap((r) => ['female', 'male'].flatMap((g) => classes.map((c) => `${r}-${g}-${c.id}`)));
+    expect(Object.keys(sprites).sort()).toEqual(beklenen.sort());
     for (const [name, src] of Object.entries(sprites)) {
       expect(handMasked(name)).toBe(src === 'el');
       expect(maskUrlFor(`characters/${name}.webp`)).toBe(`characters/${src === 'el' ? 'maske-el' : 'maske'}/${name}.png`);

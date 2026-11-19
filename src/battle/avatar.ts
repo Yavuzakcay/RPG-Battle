@@ -58,11 +58,12 @@ const genderKey = (g: Gender): 'male' | 'female' => (g === 'kadin' || g === 'fem
  * Görev K8b: ırk, soy ve cinsiyete göre jeton rengi; soyu olmayan ırkta ya da soy seçilmemişse undefined.
  * K19: cinsiyete özel kayıt (`byGender.<male|female>.lineages`) ırkın ortak kaydının önüne geçer (null: boyama yok).
  */
-export function lineageTint(raceId: string, lineageId: string | undefined, gender?: Gender, beyazTaban: boolean | 'maske' = false): TintSpec | undefined {
+export function lineageTint(raceId: string, lineageId: string | undefined, gender?: Gender, beyazTaban = false): TintSpec | undefined {
   const race = TINTS[raceId];
   if (!race || !lineageId) return undefined;
-  // KQ6: beyaz taban jetonlar (Dragonborn alt sınıf/Gariban) kendi renk tablosundan (`lineagesAlt`: mutlak açıklıklı, maskeli).
-  const alt = beyazTaban ? (race as { lineagesAlt?: Lineages; lineagesAltMaske?: Lineages })[beyazTaban === 'maske' ? 'lineagesAltMaske' : 'lineagesAlt'] : undefined;
+  // KQ6: beyaz taban jetonlar (Dragonborn alt sınıf/Gariban) kendi renk tablosundan (`lineagesAlt`: pul deseni v2, maske `maske-pul/`).
+  // KJ3: eski `lineagesAltMaske` yedek yolu (`'maske'` seçeneği, `maske/dragonborn-*` maskeleri) kaldırıldı; Dragonborn yalnız pul hattı.
+  const alt = beyazTaban ? (race as { lineagesAlt?: Lineages }).lineagesAlt : undefined;
   if (alt && lineageId in alt) { const to = alt[lineageId]; return to ? { select: race.select, to: to as TintSpec['to'] } : undefined; }
   const own = race.byGender?.[genderKey(gender)]?.lineages;
   const to = own && lineageId in own ? own[lineageId] : race.lineages[lineageId];

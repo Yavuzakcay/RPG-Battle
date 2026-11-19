@@ -214,6 +214,9 @@ export const TR_EXTRA = {
     saveRoll: (ab: string, d20: string, mode: string, total: number, cover: number, dc: number, ok: boolean) =>
       `${ab} kurtarma zarı ${d20}${mode}, toplam ${total}${cover ? ` (siper +${cover} dahil)` : ''} / DC ${dc}: ${ok ? 'başarılı' : 'başarısız'}`,
     conditionsAdded: (list: string) => `durum: ${list}`,
+    /** G01: save kipinin nedeni (açılır ayrıntıda tek satır). */
+    saveWhy: (kind: 'adv' | 'dis' | 'cancel', names: string, ab: string) =>
+      `${kind === 'adv' ? 'Avantaj' : kind === 'dis' ? 'Dezavantaj' : 'Avantaj ve dezavantaj birbirini götürdü'}: ${names} (${ab} save)`,
     healed: (a: string, b: string, label: string, n: number) => `${a} → ${b}: ${label}, ${n} HP iyileşti.`,
     slotSpent: (a: string, lvl: number, left: number) => `${a}: ${lvl}. seviye slot harcandı (kalan ${left}).`,
     dodge: (a: string) => `${a} kaçınıyor: sonraki turunun başına dek saldıranlar dezavantajlı, DEX kurtarma zarları avantajlı.`,
