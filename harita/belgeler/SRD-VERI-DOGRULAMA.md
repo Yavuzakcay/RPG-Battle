@@ -1,0 +1,273 @@
+# SRD veri doğrulama turu (salt okunur)
+
+Tarih: 2026-11-19 · Dal: `birlesik` · Kaynak: `docs/SRD_CC_v5.2.1.pdf` (364 sayfa) · Satır satır sonuç: [`srd-veri-dogrulama.csv`](srd-veri-dogrulama.csv)
+
+Bu turda yalnızca ölçüm yapıldı ve rapor yazıldı. Mekaniğe, veriye ve teste dokunulmadı. Düzeltmeler onaydan sonra yapılacak.
+
+## Özet
+
+| Dosya | doğru | yanlış | yanlış (bilinen, düzeltiliyor) | PDF'te yok | oyunda alan yok |
+|---|---:|---:|---:|---:|---:|
+| `data/monsters.json` | 7078 | 30 | 0 | 0 | 1 |
+| `data/canavar-turleri.json` | 307 | 19 | 4 | 0 | 0 |
+| `data/yuzme-hizi.json` | 56 | 2 | 5 | 0 | 0 |
+| `data/derin-su.json` | 63 | 0 | 0 | 0 | 0 |
+| `data/canavar-yetenekleri.json` | 222 | 11 | 0 | 4 | 0 |
+| `data/multiattack.json` | 95 | 1 | 0 | 0 | 0 |
+| `data/summons.json` | 18 | 6 | 0 | 2 | 0 |
+| `data/monster-ortamlari.json` | 330 | 0 | 0 | 330 | 0 |
+| `data/efsanevi.json` | 30 | 0 | 0 | 0 | 0 |
+| `data/binek.json` | 1 | 0 | 0 | 0 | 0 |
+| `data/ele-gecirme.json` | 1 | 0 | 0 | 0 | 0 |
+| `data/token-sizes.json` | 0 | 0 | 0 | 1 | 0 |
+| **Toplam** | **8201** | **69** | **9** | **337** | **1** |
+
+Sayım birimi kayıt × alandır. `monsters.json` için canavar başına 22 alan sayıldı: boyut, AC, HP, beş hız, hover, dört duyu, yetenek puanları, kurtarmalar, beceriler, CR, direnç, hasar bağışıklığı, zayıflık, durum bağışıklığı ve Multiattack metni. `monster-ortamlari.json`'da her kaydın CR'si doğrulandı (330 doğru); tema ve ortam ise PDF'te yok (330).
+
+**Bilinenler (yeni bulgu sayılmadı, "bilinen, düzeltiliyor" diye işaretli):**
+- Giant Eagle, Giant Owl, Giant Elk (Celestial) ve Death Dog (Monstrosity) türleri.
+- `yuzme-hizi.json`'daki Reef Shark, Giant Venomous Snake, Archelon, Giant Shark ve Polar Bear hızları.
+- Yüzme hızının `shapeStats`'a aktarılmaması.
+
+**Yeni bulguların en önemlileri:**
+1. **Yaratık türü:** 19 kayıt daha yanlış. Specter, Wight ve Wraith Undead sayılmıyor; Barbed Devil, Bone Devil ve Night Hag Fiend sayılmıyor; Efreeti Fiend sanılıyor; goblinoidler Humanoid sanılıyor (SRD'de Fey); Hill Giant Fey sanılıyor. 12 yanlış kayıt dosyada "PDF'ten okundu" diye işaretli, yani `temadan` listesi dışındaki kayıtlar da güvenilir değil.
+2. **Durum bağışıklığı:** 23 canavarda SRD'deki durum bağışıklığı veride yok. Hepsi, SRD `Immunities` satırında `;` olmayan (yalnız durum içeren) bloklar; 6 sürü de bunlara dahil.
+3. **Yetenek puanı:** Giant Centipede'in STR/INT değerleri 10/10 (SRD 5/1), Adult White Dragon'ın CON'u 10 (SRD 22), Young White Dragon'ın INT'i 10 (SRD 6). Bandit Captain'da WIS kurtarma yetkinliği eksik.
+4. **Canavar yetenekleri:** Elephant Trample (DC 12 → 16, 2d10+4 → 2d10+6), Remorhaz Swallow (DC 17 → 19, ateş 5d6 → 3d6), Purple Worm Swallow (DEX → STR), Giant Frog ve Giant Toad Swallow (SRD'de kurtarma yok), Ice Mephit Death Burst (2d6 → 2d4), Cat atlaması.
+5. **Yüzme hızı:** Dragon Turtle (40 → 50) ve Gibbering Mouther (10 → 20). Not: `monsters.json`'daki "Hız: Swim N ft" notları 330 kayıtta da doğru. Hatalar yalnız bellekten yazılan `yuzme-hizi.json`'da.
+6. **Aktarım:** Savaş kurulduktan sonra çağrılan yaratıklara (Find Familiar, Animate Dead, Phantom Steed, Find Steed, Summon Dragon…) canavar özellikleri (durum bağışıklığı, tırmanma, Magic Resistance, Flyby, Spider Climb…) ve canavar yetenekleri işlenmiyor. Ayrıntı §6'da.
+
+## Yöntem
+
+- PDF `pdfplumber` ile her sayfa ortadan iki sütuna kırpılarak sütun sütun okundu. Böylece iki sütunlu düzenin karışması önlendi.
+- 336 stat bloğu ayrıştırıldı: 330 canavar, ayrıca Animated Object, Otherworldly Steed, Giant Insect, Draconic Spirit ve iki eşya bloğu. Oyundaki 330 canavarın hepsi PDF'te adıyla bulundu.
+- Hiçbir değer bellekten yazılmadı. Ayrıştırıcının "yanlış" ya da "kontrol" dediği her satır PDF metninde ayrıca okundu; sayfa numarası CSV'nin `SRD sayfası` sütununda.
+- Ayrıştırıcının sınırları elle çözüldü:
+  - Likantropların biçime bağlı hızı ("40 ft. (bear form only)") not olarak yazıldı.
+  - Swarm of Insects'in "Climb or Fly 20 ft. (GM's choice)" hızında oyunun uçmayı seçmesi doğru sayıldı.
+  - Spy'ın "Sleight of Hand" becerisi ilk geçişte yanlış okunmuştu; düzeltildi.
+  - Archmage'in "Charmed (with Mind Blank)" bağışıklığı koşullu olduğu için motorun bunu uygulamaması doğru sayıldı.
+- **PDF yazım hatası:** Young White Dragon'ın INT kurtarması "2" diye işaretsiz basılmış (değiştirici −2). Oyundaki INT 10 büyük olasılıkla bu satırın yanlış okunmasından geliyor.
+- Saldırı bonusu ve hasar zarları bu turun kapsamında değil. Onlar MEKANIK-MATRIS saldırı denetiminde (`src/sim/matris/saldiri.ts`).
+
+## 1. Kalıp taraması (`data/`, `src/`)
+
+| Kalıp | Eşleşen dosya | Veri kökenli (kapsamda) | Kapsam dışı |
+|---|---:|---|---|
+| bellekten | 3 | `data/yuzme-hizi.json` `_not`: "BELLEKTEN yazıldı (⚠ doğrulanmalı)", 63 kayıt | `src/ui/audio/engine.ts` (ses belleği), `src/ui/Avatar.tsx` (önbellek) |
+| temadan | 3 | `data/canavar-turleri.json` `_aciklama` + `temadan` dizisi, 67 kayıt | `src/ui/dice3d/Dice3D.tsx`, `src/ui/diceTheme.ts` (zar teması) |
+| doğrulanmalı | 1 | `data/yuzme-hizi.json` | — |
+| okunamadı | 3 | `data/canavar-turleri.json` | arayüz hata metinleri (`strings.tr2.ts`, `journeySave.ts`) |
+| tahmin | 17 | yok (SRD verisi değil) | `data/cr-tahmini.json` (özel canavar CR formülü), harita etiket konumu, YZ hasar tahmini, kod yorumları |
+| yaklaşık | 39 | yok (SRD verisi değil) | kural yaklaşıkları: `condition-effects.json` `approx` (14), `spells.json` (63), `spells-69.json` (5), `items.json` `weightApprox` (15, ağırlık), `canavar-ekleri-a2.json`; kod yorumları |
+| TODO | 0 | — | — |
+
+Kural yaklaşıkları (`approx`), SRD'den okunmuş ama savaş modelinde basitleştirilmiş kurallardır; değerleri bellekten ya da temadan değildir. Bu tur onları sınamadı.
+
+## 2. Yanlış bulunanlar
+
+### 2.1 Yaratık türü (`data/canavar-turleri.json`)
+
+`temadan` listesindeki 67 kaydın 11'i yanlış (4'ü bilinen). PDF'ten okunduğu yazan 263 kaydın 12'si yanlış (1'i bilinen); bu 12 kayıt büyük olasılıkla komşu stat bloğunun tür satırı okunarak kaymış.
+
+| Kayıt | Oyun | SRD | s. | Kaynak notu | Savaştaki etki |
+|---|---|---|---:|---|---|
+| specter | celestial | **undead** | 327 | PDF | Turn Undead etkilemiyor, Divine Smite +1d8 eksik |
+| wight | dragon | **undead** | 341 | PDF | Turn Undead, Divine Smite, PfEG/Magic Circle/Hallow |
+| wraith | monstrosity | **undead** | 342 | PDF | Turn Undead, Divine Smite, PfEG/Magic Circle/Hallow |
+| barbed-devil | monstrosity | **fiend** | 262 | PDF | Divine Smite +1d8 eksik, koruma büyüleri korumuyor |
+| bone-devil | dragon | **fiend** | 267 | PDF | Divine Smite +1d8 eksik, koruma büyüleri korumuyor |
+| night-hag | fey | **fiend** | 311 | temadan | Divine Smite +1d8 eksik |
+| efreeti | fiend | **elemental** | 283 | PDF | Divine Smite +1d8 yanlışlıkla ekleniyor |
+| goblin-warrior | humanoid | **fey** | 290 | temadan | PfEG korumuyor; Charm Person, Dominate Person ve Ghost Possession yanlışlıkla etkiliyor |
+| goblin-minion | humanoid | **fey** | 290 | temadan | aynı |
+| hobgoblin-captain | humanoid | **fey** | 299 | temadan | aynı |
+| hill-giant | fey | **giant** | 298 | PDF | PfEG, Magic Circle ve Hallow yanlışlıkla koruyor |
+| pegasus | monstrosity | **celestial** | 313 | temadan | PfEG, Magic Circle ve Hallow korumuyor |
+| guardian-naga | monstrosity | **celestial** | 296 | temadan | aynı |
+| invisible-stalker | monstrosity | **elemental** | 301 | temadan | aynı |
+| chuul | monstrosity | **aberration** | 273 | temadan | PfEG, Dispel Evil and Good ve Hallow korumuyor |
+| otyugh | monstrosity | **aberration** | 313 | PDF | aynı |
+| copper-dragon-wyrmling | monstrosity | **dragon** | 275 | PDF | düşük (Dragon türüne bakan kural yok denecek kadar az) |
+| ancient-red-dragon | monstrosity | **dragon** | 319 | PDF | düşük |
+| gray-ooze | dragon | **ooze** | 293 | PDF | düşük |
+| giant-eagle | beast | celestial | 350 | PDF | *bilinen* |
+| giant-owl | beast | celestial | 352 | temadan | *bilinen* |
+| giant-elk | beast | celestial | 351 | temadan | *bilinen* |
+| death-dog | beast | monstrosity | 279 | temadan | *bilinen* |
+
+Hobgoblin Warrior, Bugbear Warrior/Stalker ve diğer goblinoidler veride zaten `fey`; doğru.
+
+### 2.2 Yüzme hızı (`data/yuzme-hizi.json`, bellekten)
+
+| Kayıt | Oyun (ft) | SRD (ft) | s. | Durum |
+|---|---:|---:|---:|---|
+| dragon-turtle | 40 | **50** | 281 | yeni |
+| gibbering-mouther | 10 | **20** | 288 | yeni (oyunda suda yürüme hızıyla aynı, yüzme hızı etkisiz kalıyor) |
+| archelon | 40 | 80 | 344 | bilinen |
+| giant-shark | 50 | 60 | 353 | bilinen |
+| giant-venomous-snake | 30 | 40 | 354 | bilinen |
+| polar-bear | 30 | 40 | 359 | bilinen |
+| reef-shark | 40 | 30 | 360 | bilinen |
+
+Kalan 56 değer doğru ve SRD'de yüzme hızı olan her canavar listede var (eksik yok). `derin-su.json` `swimmers` ∪ `swimmers66` (63 kayıt) SRD'deki yüzücü kümesiyle birebir aynı.
+
+### 2.3 Yetenek puanı ve kurtarma (`data/monsters.json`)
+
+| Kayıt | Alan | Oyun | SRD | s. |
+|---|---|---|---|---:|
+| giant-centipede | STR / INT | 10 / 10 (kurtarma +0 / +0) | **5 / 1** (−3 / −5) | 349–350 (blok sayfa sonunda bölünmüş; varsayılan 10 kalmış) |
+| adult-white-dragon | CON | 10 (kurtarma +0) | **22** (+6) | 340 |
+| young-white-dragon | INT | 10 (kurtarma +0) | **6** (−2; PDF'te "2" işaretsiz basılmış) | 340 |
+| bandit-captain | WIS kurtarma | +0 | **+2** (yetkin) | 261 |
+
+HP değerleri bu kayıtlarda doğru. Hatalar yalnız değiştiricileri bozuyor: kurtarmalar, yetenek kontrolleri ve `strScore` (atlama, itme). Wild Shape ya da Polymorph'la Giant Centipede biçimine giren yaratık da STR +0 alıyor.
+
+### 2.4 Durum bağışıklığı eksik (`data/monsters.json` `unsupported` "Durum bağışıklığı:" notu)
+
+Motor bu notu `src/battle/monsterTraits.ts`'ten okuyor (`srdK19` açıkken). Aşağıdaki 23 canavarda not hiç yok, dolayısıyla bu durumlar onlara uygulanabiliyor. Ortak neden: SRD `Immunities` satırı yalnız durum içeriyor ya da hasar ile durum `;` ile ayrılmamış; üretici bunları atlamış.
+
+| Kayıt | SRD durum bağışıklığı | s. |
+|---|---|---:|
+| swarm-of-bats, swarm-of-insects | Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned | 361 |
+| swarm-of-piranhas, swarm-of-rats, swarm-of-ravens, swarm-of-venomous-snakes | aynı | 362 |
+| death-dog, ettin, hydra | Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious | 279, 284, 300 |
+| gray-ooze | Blinded, Charmed, Deafened, Exhaustion, Frightened, Grappled, Prone, Restrained | 293 |
+| shrieker-fungus, violet-fungus | Blinded, Charmed, Deafened, Frightened | 286 |
+| deva, planetar | Charmed, Exhaustion, Frightened | 279, 315 |
+| rakshasa | Charmed, Frightened | 317 |
+| gorgon | Exhaustion, Petrified | 292 |
+| cockatrice | Petrified | 275 |
+| gibbering-mouther | Prone | 288 |
+| doppelganger, night-hag, vampire-familiar | Charmed (Vampire Familiar: "except from its vampire master") | 280, 311, 334 |
+| knight, cloaker | Frightened | 302, 274 |
+
+Etki örnekleri: sürüler yakalanıp yere düşürülebiliyor ve sersemletilebiliyor; Hydra ve Ettin kör edilip bayıltılabiliyor; Cockatrice ve Gorgon taşlaşabiliyor; Deva ve Planetar büyülenebiliyor.
+
+### 2.5 Canavar yetenekleri (`data/canavar-yetenekleri.json`)
+
+Adlar, DC, yeniden yüklenme, kullanım, zar, menzil, alan ve kurtarma yeteneği PDF metnindeki paragrafla karşılaştırıldı: 222 değer doğru. Eylem ve bonus eylem ayrımı da SRD bölümleriyle aynı (frog/toad Leap hariç).
+
+| Kayıt | Alan | Oyun | SRD | s. | Sonuç |
+|---|---|---|---|---:|---|
+| elephant | Trample DC / hasar | 12 / 2d10+4 | **16 / 2d10+6** | 348 | yanlış |
+| remorhaz | Swallow DC / ateş zarı | 17 / 5d6 | **19 / 3d6** (asit 3d6 + ateş 3d6) | 319 | yanlış |
+| purple-worm | Swallow kurtarması | DEX | **STR** (DC 19) | 316 | yanlış |
+| giant-frog | Swallow | STR DC 11 kurtarma | **kurtarma yok**: tuttuğu Small hedefi yutar; 2d4 Acid sonraki turunun sonunda, ölmezse kusar | 351 | yanlış |
+| giant-toad | Swallow | STR DC 13 kurtarma | **kurtarma yok**: tuttuğu Medium hedefi yutar; her tur sonu 3d6 Acid | 354 | yanlış |
+| ice-mephit | Death Burst zarı | 2d6 | **2d4** Cold | 307 | yanlış |
+| cat | jump.long | 10 ft | Jumper: mesafe STR yerine DEX'ten (DEX 15 → koşarak 15 ft, durarak 7 ft) | 346 | yanlış |
+| giant-frog, giant-toad | Leap (bonus eylem, 20 ft) | var | SRD'de bonus eylem yok; pasif Standing Leap (Long 20 / High 10 ft) | 351, 354 | PDF'te yok |
+| giant-toad | Swallow escapeDc | 13 | yok (yalnız kurbağa ölünce 5 ft hareketle çıkılır) | 354 | PDF'te yok |
+| frost-giant | War Cry rangeFt | 60 | menzil yok ("can see or hear it") | 285 | PDF'te yok |
+
+### 2.6 Multiattack (`data/multiattack.json`, `monsters.json` metni)
+
+178 Multiattack metni ve 96 planın 95'i SRD ile aynı. Tek yanlış: **clay-golem** planı her turda 3 Slam veriyor; SRD'ye göre 2 Slam, yalnız o tur Hasten kullandıysa 3 (s. 274).
+
+### 2.7 Çağrı ve familiar verisi (`data/summons.json`)
+
+| Kayıt | Alan | Oyun | SRD | s. | Sonuç |
+|---|---|---|---|---:|---|
+| find-familiar | forms | 11 adlandırılmış biçim | aynı 11 biçim + "or another Beast that has a CR of 0" | 130 | doğru; CR 0 seçeneği eksik (Baboon, Badger, Crab, Deer, Eagle, Giant Fire Beetle, Goat, Hyena, Jackal, Piranha, Scorpion, Seahorse, Vulture) |
+| draconic-spirit | hız | 30, uçma 60 | + **Swim 30** | 166 | yanlış (veride `unsupported` olarak biliniyor) |
+| draconic-spirit | duyu | Darkvision 60 | + **Blindsight 30** | 166 | yanlış (not "Duyu:" biçiminde değil, motor okumuyor) |
+| draconic-spirit | durum bağışıklığı | — | Charmed, Frightened, Poisoned | 166 | yanlış (`unsupported`) |
+| animated-object | duyu, bağışıklık | — | Blindsight 30; Poison, Psychic; Charmed, Exhaustion, Frightened, Paralyzed, Poisoned | 109 | yanlış |
+| otherworldly-steed | özellikler | yok | Life Bond; Fell Glare, Fey Step, Healing Touch (bonus eylem) | 131 | yanlış (CLAUDE.md "Bilinen eksikler"de anılıyor) |
+| arcane-hand | yetenek puanı, tür | 26/10/10/1/1/1, construct | yok (5.2.1'de el bir nesne) | 110 | PDF'te yok |
+| flaming-sphere, spirit-pack, elemental-spirit | stat bloğu | AC 10, HP 1… | yok (büyü alanı) | — | PDF'te yok (oyun soyutlaması) |
+
+Doğru bulunanlar: Otherworldly Steed (AC/HP formülü, hız, yetenek puanları, Slam), Draconic Spirit (AC/HP, direnç, yetenek puanları, saldırılar), Giant Insect (AC/HP, hız, yetenek puanları, saldırılar), Animated Object (AC, HP, hız, yetenek puanları, Slam), Arcane Hand (AC 20, HP = büyücünün en çok HP'si, 5d8 Force), Animate Dead biçimleri, Phantom Steed (Riding Horse, 100 ft).
+
+## 3. PDF'te yok
+
+- **`monster-ortamlari.json` tema/ortam (330 kayıt):** SRD 5.2.1 stat bloklarında yaşam alanı yok; bunlar oyun tasarımı. CR alanı 330 kayıtta doğru.
+- **`token-sizes.json`:** yalnız görsel ölçek (SRD yalnız boyut alanını verir: 2,5 / 5 / 5 / 10 / 15 / 20 ft).
+- **Canavar yetenekleri:** Frost Giant War Cry 60 ft menzili, Giant Toad yutma kaçış DC'si, Giant Frog/Toad "Leap" bonus eylemi.
+- **Çağrılar:** Arcane Hand yetenek puanları ve türü; Flaming Sphere, Conjure Animals ve Conjure Elemental yaratık blokları.
+- **Oyunda alan yok:** hizalama (330 kaydın hiçbirinde tutulmuyor; motor okumuyor, koruma büyüleri türe bakıyor).
+
+## 4. Temiz çıkan alanlar
+
+- `monsters.json` (330 kayıt): boyut, AC, HP, yürüme ve uçma hızı, hover, "Hız:" notlarındaki tırmanma/yüzme/kazma, darkvision, blindsight/tremorsense/truesight, CR, beceriler, direnç, hasar bağışıklığı ve zayıflık hepsi doğru. §2.3 ve §2.4 dışında yanlış yok.
+- `derin-su.json` yüzücü listeleri: 63/63.
+- `efsanevi.json`: 30 canavarın kullanım sayısı ve eylem adları stat bloğuyla aynı.
+- `binek.json` `egitimli`: SRD "Mounts and Other Animals" tablosuyla aynı 8 hayvan (s. 100). "Eğitimli" yorumu oyuna ait.
+- `ele-gecirme.json` ghost: Humanoid, 5 ft, bonus eylemle bırakma, 5 ft içinde belirme (s. 289).
+
+## 5. Savaşta kullanım zinciri
+
+| Yanlış alan | Okuyan kod | Bozulan kural |
+|---|---|---|
+| Yaratık türü (`canavar-turleri.json`) | `create.ts` `combatantFromMonster` → `creatureType`; `druid.ts` / `polymorph.ts` / `karadul.ts` `TYPES` | Divine Smite (`divine.ts`, Fiend/Undead +1d8); Protection from Evil and Good (`mind.ts`, `divine.ts`); Dispel Evil and Good; Magic Circle / Hallow (`possessionCore.ts`, `movement.ts`); Turn Undead (`cleric.ts`); Dismissal (`spells.ts`); `onlyTypes` büyüleri (Charm Person, Dominate Person: Humanoid; Animal Friendship, Dominate Beast: Beast); Ghost Possession (`possession.ts`, Humanoid); Wild Shape ve Polymorph biçim listesi (Beast); YZ (`ai.ts`: Turn Undead hedefi, Humanoid hedefli büyüler) |
+| Yüzme hızı (`yuzme-hizi.json`) | `yuzme.ts` `swimSpeedOf` → `swimFt` | suda hareket hızı (`reduce.ts` max(yürüme, yüzme)), derin su yerleşimi (`movement.ts`); kural sürümü 82+ |
+| Yetenek puanı ve kurtarma | `combatantFromMonster` `modifiers`, `saves`, `strScore` | kurtarma zarları (büyü, alan, durum), yetenek kontrolleri (kaçış, itme, atlama), Wild Shape / Polymorph STR/DEX/CON |
+| Durum bağışıklığı notu | `monsterTraits.ts` `monsterTraitParts` → `immune` etkisi (`srdK19`) | reducer `immuneTo` bu durumları süzmüyor: Grappled, Prone, Stunned, Charmed, Frightened, Petrified vb. uygulanıyor; YZ hedef seçimi de buna göre |
+| Canavar yetenekleri | `monsterAbilities.ts` (`srdK19`, savaş başında `withMonsterAbilities`) | Trample, Swallow, Death Burst kurtarma DC'si ve hasarı; Frog/Toad bonus eylemle bedava atlama |
+| Multiattack (clay-golem) | Multiattack planı (`multiattack.plan`) | Clay Golem her turda bir fazla Slam |
+| Çağrı blokları | `summons.ts` `creatureMonster` → `combatantFromMonster` | Draconic Spirit yüzemez, Blindsight'ı yok, büyülenebilir/korkutulabilir; Animated Object'in bağışıklığı ve duyusu yok |
+
+Arayüzde de etkisi var:
+- Oluşturucunun Wild Shape biçim listesi (`src/screens/builder/Features.tsx` → `eligibleForms`) Giant Eagle/Owl/Elk ve Death Dog'u yanlışlıkla sunuyor.
+- Savaş menüsünde Charm Person, Dominate Person, Animal Friendship ve Dominate Beast'in hedef geçerliliği (`spells.ts` `onlyTypes`) türden geliyor; goblinoidler hedef olarak geçerli görünüyor.
+
+## 6. Biçim ve çağrı aktarım zinciri
+
+Kaynak kod: `druid.ts` `shapeStats` + reducer `shape_changed` (yalnız ac, speed, fly, size, modifiers, saves, weaponOptions, attacksPerAction, avatar; Polymorph'ta ayrıca attacks ve multiattack), `polymorph.ts`, `summons.ts` `summonedEvent` / `creatureMonster`, `create.ts` `combatantFromMonster`, `monsterTraits.ts` `withMonsterTraits` (yalnız `createMapBattle` içinde, `create.ts:101/800`).
+
+✓ aktarılıyor · ✗ aktarılmıyor · — uygulanmaz
+
+| Alan | Savaş başındaki canavar (referans) | Wild Shape (`shapeStats`) | Polymorph | Find Familiar · Animate Dead · Phantom Steed (`monsters.json` biçimi, sonradan) | Find Steed · Summon Dragon · Giant Insect · Animate Objects (`summons.json` bloğu) | Conjure Animals / Elemental · Flaming Sphere |
+|---|---|---|---|---|---|---|
+| Yürüme | ✓ | ✓ | ✓ | ✓ (Phantom Steed 100) | ✓ | ✓ (soyut) |
+| Uçma | ✓ | ✓ | ✓ | ✓ | ✓ (seviye/biçim koşullu) | — |
+| Hover | ✗ veri doğru, motor okumuyor | ✗ | ✗ | ✗ | — | — |
+| Yüzme | ✓ `swimFt` + `gift-of-the-depths` | ✗ *bilinen* | ✗ | ◐ `swimFt` var, `gift-of-the-depths` yok | ✗ (Draconic Spirit 30) | — |
+| Tırmanma | ✓ (`monsterTraits` climb) | ✗ | ✗ | ✗ | ✓ Giant Insect `climber` | — |
+| Kazma | ✓ `burrowFt` | ✗ | ✗ | ✓ | — | — |
+| Darkvision | ✓ | ✗ (druidinki kalır) | ✗ | ✓ | ✓ | — |
+| Blindsight / Tremorsense / Truesight | ✓ | ✗ | ✗ | ✓ (`monsterSenses`) | ✗ (Draconic Spirit, Animated Object) | — |
+| Direnç | ✓ | ✗ | ✗ | ✓ | ✓ (Draconic Spirit) | — |
+| Hasar bağışıklığı / zayıflık | ✓ | ✗ | ✗ | ✓ | ✗ (Animated Object Poison, Psychic) | — |
+| Durum bağışıklığı | ✓ (`monsterTraits`) | ✗ | ✗ | ✗ (`withMonsterTraits` yalnız savaş başında) | ✗ | — |
+| Özellikler (Magic Resistance, Flyby, Spider Climb, Web Walker, Sunlight Sensitivity, Amphibious) | ✓ | ✗ | ✗ | ✗ (ör. Owl Flyby, Spider Web Walker) | ✗ (Life Bond) | — |
+| Pack Tactics, phase, Undead Fortitude, regeneration | ✓ | ✗ | ✗ | ✓ (`combatantFromMonster`) | — | — |
+| Canavar yetenekleri (`canavar-yetenekleri.json`) | ✓ (`withMonsterAbilities`) | ✗ | ✗ | ✗ | ✗ (Steed bonus eylemleri) | — |
+| STR / DEX / CON | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| INT / WIS / CHA | ✓ | ✓ korunur (SRD doğru) | ✗ hedefinki kalıyor (SRD: biçimden) | ✓ | ✓ | — |
+| Kurtarmalar | ✓ | ◐ STR/DEX/CON biçim değiştiricisi; SRD "yüksek olan" | ◐ INT/WIS/CHA hedefinki | ✓ | ✓ (değiştirici = SRD) | — |
+| Beceriler | ✓ | ✗ (SRD: biçimin yetkinlikleri eklenir, yüksek olan) | ✗ | ✓ | — | — |
+| AC / HP | ✓ | ✓ AC; HP korunur + geçici HP (SRD doğru) | ✓ AC; geçici HP = biçimin HP'si (SRD doğru) | ✓ | ✓ formül | soyut |
+| Boyut | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Tür | ✓ | ✓ korunur (SRD doğru) | ✓ korunur (5.2.1 doğru) | ✓ familiar seçimi; Animate Dead undead | ✓ seçim / `creatureType` | — |
+| Saldırılar / Multiattack | ✓ | ◐ yalnız kurtarmasız, yeniden yüklenmesiz saldırılar | ✓ | familiar saldıramaz (SRD doğru) | ✓ | ✓ |
+
+Aktarım zincirindeki ana açıklar (yeni):
+1. **Sonradan eklenen canavar, canavar özelliği almıyor.** `withMonsterTraits` ve `withMonsterAbilities` yalnız savaş kurulurken (`createMapBattle`) çalışıyor. Şunlar `combatantFromMonster` ile sonradan eklenip durum bağışıklığı, tırmanma, Flyby, Spider Climb, Web Walker, Magic Resistance ve canavar yeteneklerini almıyor:
+   - kurulumda ritüelle çağrılan familiar, Animate Dead ve Phantom Steed;
+   - savaş içinde gelenler: Orman takviyesi ve kemik yığını Skeleton'ları (`forest.ts`), kum solucanı (`desert.ts`), mühür canavarları (`wilds.ts`), kat değişiminde gelenler (`floors.ts`), Animate Trees (`monsterAbilities.ts`), Finger of Death zombisi (`spells69.ts`).
+
+   Etki örnekleri: Zombie ve Skeleton Poisoned olabiliyor (veride "Durum bağışıklığı: Exhaustion, Poisoned" var); Owl familiar Flyby'a rağmen fırsat saldırısı yiyor; Spider, Lizard, Rat ve Cat familiar tırmanamıyor.
+2. **`creatureMonster` bazı alanları taşımıyor:** `immunities`, durum bağışıklığı, Blindsight (yalnız "Duyu:" biçimi okunuyor) ve yüzme. `swimSpeedOf` yalnız `monsters.json` kimliklerini tanıyor.
+3. **`shapeStats` (Wild Shape, Polymorph, ele geçirme bedeni) yalnız AC, yürüme ve uçma hızı, boyut, STR/DEX/CON, kurtarmalar ve saldırıları taşıyor.** SRD 5.2.1 Wild Shape'te tür, HP, INT/WIS/CHA, sınıf özellikleri ve feat dışındaki her şey biçimden gelir: tırmanma, kazma, duyular, direnç/bağışıklık, özellikler, beceriler (yüksek olan). Yüzme hızı açığı biliniyor.
+4. **Polymorph'ta INT/WIS/CHA ve ilgili kurtarmalar/beceriler hedefinkiler kalıyor.** SRD 5.2.1'e göre bunlar biçimin bloğundan gelir; yalnız hizalama, kişilik, tür, HP ve HD korunur.
+5. **Monster hover verisi doğru ama motorda okunmuyor:** `flight.ts` `hovers` yalnız etkilere bakıyor.
+
+## 7. Düzeltme önerileri (öncelik sırasıyla, onay bekliyor)
+
+Savaşı doğrudan etkileyenler önce:
+
+1. **`canavar-turleri.json`'u PDF'ten baştan üret** ve `temadan` listesini kaldır. Bu tur doğrulanmış SRD tür kümesini çıkardı (sayfa numaralı). Bilinen 4 kayda ek olarak 19 kayıt değişir. En kritikleri Undead (Specter, Wight, Wraith) ve Fiend (Barbed Devil, Bone Devil, Night Hag; Efreeti'nin Fiend'den çıkması): Turn Undead, Divine Smite ve koruma büyülerini doğrudan bozuyorlar. Bir test, türü PDF'ten üretilmiş bir tabloyla karşılaştırmalı.
+2. **23 canavara "Durum bağışıklığı:" notu** (`monsters.json` `unsupported`). Kök neden üreticide: `;` içermeyen `Immunities` satırını durum olarak ayırmıyor. Üretici düzeltilip yeniden çalıştırılmalı.
+3. **Yetenek puanları:** Giant Centipede STR 5 / INT 1, Adult White Dragon CON 22, Young White Dragon INT 6 (kurtarma −2), Bandit Captain WIS kurtarma +2.
+4. **`canavar-yetenekleri.json`:** Elephant Trample DC 16 / 2d10+6; Remorhaz Swallow DC 19 / ateş 3d6; Purple Worm Swallow STR; Ice Mephit Death Burst 2d4; Giant Frog/Toad Swallow kurtarmasız. Giant Frog/Toad "Leap" bonus eylemi kaldırılıp yerine pasif Standing Leap gelmeli (karar). Cat atlaması DEX'ten hesaplanmalı.
+5. **`yuzme-hizi.json`:** Dragon Turtle 50, Gibbering Mouther 20 (+ bilinen 5). Öneri: elle tutmak yerine `monsters.json` "Hız: Swim N ft" notlarından türetilsin (bu notlar 330 kayıtta doğru), bir test de ikisinin eşitliğini denetlesin.
+6. **Çağrı ve takviye aktarımı:** savaş kurulduktan sonra eklenen her canavara (çağrı, takviye, kat değişimi) `monsterTraitParts` ve canavar yeteneklerini uygula; tek giriş noktası `combatantFromMonster` sonrası olabilir. `CreatureDef`'e `immunities`, durum bağışıklığı, `senses` ve `swimFt` ekle (Draconic Spirit, Animated Object).
+7. **Wild Shape ve Polymorph aktarımı** (`shapeStats` + `ShapePrev`): tırmanma, kazma, yüzme (bilinen), duyular, direnç/bağışıklık/zayıflık, durum bağışıklığı, özellikler ve beceriler; Polymorph'ta INT/WIS/CHA.
+8. **Clay Golem Multiattack:** 2 Slam, Hasten kullanılan turda 3.
+9. **Find Familiar'a "CR 0 Beast" seçeneği** (13 biçim); Otherworldly Steed'in Life Bond ve bonus eylemleri.
+10. **PDF'te olmayan oyun değerleri (karar):** Frost Giant War Cry 60 ft, Giant Toad kaçış DC'si, Arcane Hand yetenek puanları ve türü.
+11. **Bilgi:** monster hover verisi doğru ama motor okumuyor; ayrı bir görev olabilir.
+
+**Kural sürümü notu:** 1–8. maddeler savaş sonucunu değiştirir. Eski kayıtların ve replay'in aynı sonucu vermesi için kural sürümüne bağlanmaları gerekebilir. `monsters.json` düzeltmeleri denge amaçlı değil, SRD'ye uyum; CLAUDE.md'deki "denge için değiştirme" yasağına girmiyor, ama bu kararı onaylaman gerekiyor.
