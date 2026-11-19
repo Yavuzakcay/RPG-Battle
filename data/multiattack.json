@@ -1101,10 +1101,14 @@
   "heads": true
  },
  "clay-golem": {
-  "total": 3,
+  "total": 2,
   "names": [
    "Slam"
   ],
+  "ifUsed": {
+   "ability": "hasten",
+   "total": 3
+  },
   "max": {
    "Slam": 3
   }

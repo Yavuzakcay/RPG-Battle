@@ -23,7 +23,7 @@ for m in ms:
                 return a
         return None
     main, *rest = re.split(r'(?<=\.) (?=It can|The [a-z ]+ can|[A-Z])', text)
-    plan = {'total': 0, 'names': [], 'extra': [], 'replace': []}
+    plan = {'total': 0, 'names': [], 'extra': [], 'replace': [], 'ifUsed': None}
     mx = {}
     anycomb = 'any combination' in main
     # "makes two Claw attacks and one Bite attack" / "makes two attacks, using A or B"
@@ -50,6 +50,12 @@ for m in ms:
             a = known(nm)
             if a and a not in plan['names']:
                 plan['names'].append(a)
+    # Görev D1 (kural sürümü 86): "makes two Slam attacks, or it makes three Slam attacks if it used Hasten this turn"
+    # (Clay Golem, SRD s. 274): taban sayı ilk bölümden, yetenek kullanıldığı turda `ifUsed.total` (eskiden hep 3).
+    iu = re.match(r'(.*?), or it makes (one|two|three|four|five|six) .+? attacks? if it used ([A-Z][\w ]*?) this turn', main)
+    if iu:
+        plan['total'] = sum(NUM[n] for n in re.findall(r'\b(one|two|three|four|five|six) ', iu.group(1)))
+        plan['ifUsed'] = {'ability': iu.group(3).strip().lower().replace(' ', '-'), 'total': NUM[iu.group(2)]}
     if 'as many Bite attacks as it has heads' in main:
         plan.update({'total': 5, 'names': ['Bite'], 'heads': True})
     for u in re.findall(r'(?:and |, and |it )uses? (?:either )?([A-Z][^.]*?)(?: if available)?(?: twice)?(?:\.|$|, and)', main):

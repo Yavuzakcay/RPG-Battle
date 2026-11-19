@@ -4,6 +4,8 @@ Tarih: 2026-11-19 · Dal: `birlesik` · Kaynak: `docs/SRD_CC_v5.2.1.pdf` (364 sa
 
 Bu turda yalnızca ölçüm yapıldı ve rapor yazıldı. Mekaniğe, veriye ve teste dokunulmadı. Düzeltmeler onaydan sonra yapılacak.
 
+> **Güncelleme: D1 düzeltmeleri yapıldı (2026-11-19, kural sürümü 86).** Ayrıntı [§8](#8-d1-düzeltmeleri-kural-sürümü-86). CSV'ye her satırın D1 sonucunu gösteren `D1 (kural sürümü 86)` sütunu eklendi. Aşağıdaki §1–§7 denetim anını anlatır.
+
 ## Özet
 
 | Dosya | doğru | yanlış | yanlış (bilinen, düzeltiliyor) | PDF'te yok | oyunda alan yok |
@@ -271,3 +273,73 @@ Savaşı doğrudan etkileyenler önce:
 11. **Bilgi:** monster hover verisi doğru ama motor okumuyor; ayrı bir görev olabilir.
 
 **Kural sürümü notu:** 1–8. maddeler savaş sonucunu değiştirir. Eski kayıtların ve replay'in aynı sonucu vermesi için kural sürümüne bağlanmaları gerekebilir. `monsters.json` düzeltmeleri denge amaçlı değil, SRD'ye uyum; CLAUDE.md'deki "denge için değiştirme" yasağına girmiyor, ama bu kararı onaylaman gerekiyor.
+
+## 8. D1 düzeltmeleri (kural sürümü 86)
+
+Tarih: 2026-11-19. Kullanıcı kararları (2026-11-19):
+1. Düzeltmeler SRD'ye uyum içindir, denge değildir.
+2. PDF'te karşılığı olmayan oyun değerleri değişmez; aşağıda "SRD dışı oyun değeri" olarak listelenir.
+3. Savaş sonucunu değiştiren her düzeltme kural sürümüne bağlıdır.
+
+Karar ve uygulama ayrıntısı DECISIONS.md'de ("SRD veri düzeltmeleri D1").
+
+- **Yeni kural sürümü: 86** (`src/battle/srdD1Surum.ts` `SRD_D1_VERSION`). 84 ve 85 başka görevlere ayrıldı (Control Water, Wild Shape); o anda depodaki en yüksek sürüm 83'tü.
+- **Uygulama:** veri dosyaları artık SRD değerini tutuyor. 85 ve altı savaşlar eski değerleri `data/srd-duzeltme.json`'dan okuyor: 77 kayıt, her biri dosya, kayıt, alan, eski, yeni ve sayfa ile.
+- **Kaynak:** her değer PDF'ten. `scripts/srd-canavar.mjs` (`npm run srd:canavar`) 330 stat bloğunu `data/srd/monsters.json`'a çıkarıyor. Denetim turundaki bağımsız Python ayrıştırması ile 330 canavar × 15 alanda 0 fark var.
+
+### Düzeltilenler (grup grup)
+
+| Grup | Kayıt | Ayrıntı |
+|---|---:|---|
+| Yaratık türü (`canavar-turleri.json`) | 23 | 19 yeni + 4 bilinen. Dosya artık `npm run srd:canavar` ile üretiliyor ve `temadan` listesi kalktı. "PDF'ten" işaretli 263 kaydın hepsi yeniden doğrulandı: 12'si yanlıştı, düzeldi. |
+| Durum bağışıklığı (`monsters.json` "Durum bağışıklığı:" notu) | 23 canavar | Kök neden: `;` içermeyen SRD `Immunities` satırı atlanmış. `monsters.json`'un üreticisi depoda yok. Kalıcı koruma: SRD çıkarıcısı bu satırı sözcüklerden ayırıyor, `src/data/srdCanavar.test.ts` 330 canavarın notunu SRD ile karşılaştırıyor. |
+| Yetenek puanı / kurtarma (`monsters.json`) | 4 canavar, 5 alan | Giant Centipede STR 5 / INT 1; Adult White Dragon CON 22; Young White Dragon INT 6 (PDF'teki işaretsiz "2" kurtarma değiştirici −2 alındı); Bandit Captain WIS kurtarması +2. |
+| Canavar yetenekleri (`canavar-yetenekleri.json`, üretici `k19-canavar-yetenek.py`) | 7 canavar, 16 alan | Elephant Trample DC 16 / 2d10+6; Remorhaz yutma DC 19 / ateş 3d6; Purple Worm yutma STR; Giant Frog yutma kurtarmasız, yalnız Small, sonraki turunun sonunda 2d4, ölmezse kusar; Giant Toad yutma kurtarmasız, her tur sonunda 3d6; Ice Mephit Death Burst 2d4; Cat Jumper DEX 15 → 15 ft. |
+| Multiattack (`multiattack.json`, üretici `k19-multiattack.py`; `monsters.json`) | 1 canavar, 3 alan | Clay Golem 2 Slam, Hasten turunda 3 (`ifUsed`). `monsters.json` Slam tekrarı 5 → 2: plansız Multiattack düğmesi 5 Slam yapıyordu. |
+| Yüzme hızı (`yuzme-hizi.json`) | 7 | 2 yeni + 5 bilinen. "Bellekten yazıldı" notu kalktı, kayıt başına sayfa eklendi. Dosya `npm run srd:canavar` ile üretiliyor. |
+
+Denetim CSV'sinde: 72 "yanlış" satır düzeltildi (9'u bilinen), 6 "yanlış" satır kaldı (çağrı blokları, aşağıda). Raporun 25 şüphelisi (§2.5) kapandı: 11'i düzeltildi, 10'u zaten doğruydu, 4'ü SRD dışı oyun değeri olarak kaldı.
+
+### SRD dışı oyun değerleri (değişmedi, kullanıcı kararı 2)
+
+| Dosya | Kayıt | Değer | SRD |
+|---|---|---|---|
+| `canavar-yetenekleri.json` | frost-giant War Cry | `rangeFt` 60 | menzil yok ("can see or hear it") |
+| `canavar-yetenekleri.json` | giant-frog, giant-toad | Leap bonus eylemi (20 ft) | pasif Standing Leap |
+| `canavar-yetenekleri.json` | giant-frog, giant-toad | `escapeDc` 11 / 13 | kusma DC'si yok. `escapeDamage` 0 olduğu için motorda etkisiz |
+| `summons.json` | arcane-hand | STR 26 … CHA 1, `creatureType` construct | 5.2.1'de el bir nesne, stat bloğu yok |
+| `summons.json` | flaming-sphere, spirit-pack, elemental-spirit | AC 10, HP 1, hız, yetenekler | büyü alanı; SRD stat bloğu vermez |
+
+### Kalan farklar (D1 kapsamı dışında, öneri)
+
+- **Çağrı blokları (CSV'de 6 "yanlış" satır):** Draconic Spirit'te yüzme 30, Blindsight 30 ve durum bağışıklıkları; Animated Object'te Blindsight 30 ve bağışıklıklar; Otherworldly Steed'te Life Bond ve üç bonus eylem; Find Familiar'da "CR 0 başka Beast" seçeneği.
+- **Aktarım (§6):** savaş kurulduktan sonra eklenen canavar (çağrı, takviye, kat değişimi) canavar özelliği ve yeteneği almıyor. `shapeStats` (Wild Shape, Polymorph) yalnız AC, hız, uçma, STR/DEX/CON ve saldırıları taşıyor. Polymorph'ta INT/WIS/CHA hedefte kalıyor. Monster hover verisi motorda okunmuyor.
+- **Ek bulgu:** Barbed Devil ve Medusa'da plansız Multiattack (Game Master düğmesi ya da `srdK19` kapalı) "ya / ya da" seçeneklerini toplayıp 4 / 6 saldırı yapıyor. YZ planı doğru (2 / 3). Öneri: plansız yolda planın ilk seçeneği kullanılsın.
+- **Yaklaşık (bilerek):** Vampire Familiar "Charmed (except from its vampire master)" tam Charmed bağışıklığı sayıldı. Archmage "Charmed (with Mind Blank)" koşullu olduğu için uygulanmıyor (değişmedi).
+
+### "PDF'te yok" 337 satırın özeti
+
+| Satır | Ne |
+|---:|---|
+| 330 | `monster-ortamlari.json` tema ve ortam: SRD 5.2.1 stat bloğunda yaşam alanı yok. Oyun tasarımı (Game Master düşman seçicisinin süzgeci, bölge karşılaşma üreteci). CR alanı 330/330 doğru. |
+| 1 | `token-sizes.json`: jeton görsel ölçeği (mekanik tek altıgen). |
+| 4 | `canavar-yetenekleri.json`: Frost Giant War Cry menzili, Giant Toad kusma DC'si, Giant Frog ve Giant Toad Leap bonus eylemi. |
+| 2 | `summons.json`: Arcane Hand puan ve türü; Flaming Sphere, Spirit Pack ve Elemental Spirit soyut blokları. |
+
+Hizalama (1 satır, "oyunda alan yok") değişmedi: motor okumuyor.
+
+### Doğrulama
+
+- **Hızlı regresyon** `src/sim/srdD1Regresyon.test.ts`: 5. seviye standart parti, dört senaryo (Çöl, Kale, Mağara, Orman), D1'in dokunduğu canavarlarla (Death Dog, Giant Centipede, goblinoidler, Bandit Captain, Wight, Specter, Gray Ooze, sürüler, Cockatrice, Giant Frog/Toad).
+  - **Sürüm 85:** imzalar D1'den önceki ağaçta (a26ef5c3) ölçülen altınla aynı; 1 tohum 4/4, 3 tohum 4/4.
+  - **Sürüm 86:** çökmesiz. 3 tohumda Mağara imzası farklı (Specter/Wight Undead), Çöl, Kale ve Orman aynı (değişen değerler bu tohumlarda tetiklenmedi). Zafer 3/3 her senaryoda.
+  - **Kurulum durumu:** 86'da D1 değerlerinin simülasyonda etkin olduğu ayrıca denetlendi (tür, bağışıklık, puan, kurtarma).
+- **Birim testleri** `src/battle/srdD1.test.ts`:
+  - katman tutarlılığı (77 kaydın her biri: veride yeni, 85 görünümünde eski);
+  - tür (Turn Undead Specter'i 86'da döndürüyor, 85'te "Undead yok"; Wild Shape ve Polymorph biçim listeleri);
+  - durum bağışıklığı (reducer süzüyor);
+  - puan, kurtarma ve geri alma (idempotent);
+  - yetenekler (Trample DC, yutma kurtarmasız / tur sonu / kusma, Clay Golem 2 → Hasten 3, 85'te 5);
+  - yüzme hızı;
+  - replay.
+- **Veri testi** `src/data/srdCanavar.test.ts`: 330 canavarda boyut, AC, HP, CR, beş hız, hover, dört duyu, yetenek puanları, kurtarmalar, beceriler, direnç, bağışıklık, zayıflık ve durum bağışıklığı SRD tablosuyla aynı; tür ve yüzme dosyaları da.

@@ -31,6 +31,8 @@ import { distance, type Offset } from '../rules/hex';
 import { executeMonsterArea, monsterAreaEvents } from './areaAttack';
 import type { BattleEvent, BattleState, Combatant, MultiStep } from './types';
 import multiData from '../../data/multiattack.json';
+import { srdKayit } from './srdD1';
+import { turnKey } from './economy';
 import { a2AreaDamage, withA2Extras } from './ridersA2';
 import { castWithoutAction } from './castHook';
 import { possessSpecOf, possessionProblem, possessionStartEvents } from './possession';
@@ -274,16 +276,24 @@ export function executeMonsterAttack(
 export interface MultiSpec {
   total: number; names?: string[]; max?: Record<string, number>; extra?: string[]; extraTwice?: boolean;
   replace?: Array<{ name?: string; spell?: string; level?: number; cost: number }>; heads?: boolean;
+  /** Görev D1 (86+): bu tur yetenek (`mab:<ability>`) kullanıldıysa saldırı sayısı `total` (Clay Golem Hasten). */
+  ifUsed?: { ability: string; total: number };
 }
 export function multiSpecOf(state: BattleState, actor: Combatant): MultiSpec | null {
   if (!actor.monsterId || !globalRule(state, 'srdK19')) return null;
-  return ((multiData as Record<string, unknown>)[actor.monsterId] as MultiSpec | undefined) ?? null;
+  // Görev D1: plan savaşın kural sürümünde (85 ve altı: Clay Golem hep 3).
+  const rec = (multiData as Record<string, unknown>)[actor.monsterId] as MultiSpec | undefined;
+  return rec ? srdKayit('data/multiattack.json', actor.monsterId, rec, state.kuralSurumu ?? 1) : null;
 }
-/** Hydra: Multiattack'taki ısırık sayısı baş sayısı kadar (Multiple Heads; savaşçıda `heads`). */
-export const multiTotal = (spec: MultiSpec, actor: Combatant): number => (spec.heads ? actor.heads ?? spec.total : spec.total);
+/** Görev D1: koşullu yetenek (Hasten) bu tur kullanıldı mı (`trait_turn` `mab:<ability>`). */
+const ifUsedNow = (spec: MultiSpec, actor: Combatant, state?: BattleState): boolean =>
+  !!spec.ifUsed && !!state && actor.traitTurns?.[`mab:${spec.ifUsed.ability}`] === turnKey(state);
+/** Hydra: Multiattack'taki ısırık sayısı baş sayısı kadar (Multiple Heads; savaşçıda `heads`). Görev D1: Hasten turunda `ifUsed.total`. */
+export const multiTotal = (spec: MultiSpec, actor: Combatant, state?: BattleState): number =>
+  (spec.heads ? actor.heads ?? spec.total : ifUsedNow(spec, actor, state) ? (spec.ifUsed as { total: number }).total : spec.total);
 
 /** Planın SRD kurallarına uygunluğu (hata metni ya da null). */
-export function multiPlanProblem(spec: MultiSpec, actor: Combatant, plan: MultiStep[]): string | null {
+export function multiPlanProblem(spec: MultiSpec, actor: Combatant, plan: MultiStep[], state?: BattleState): string | null {
   let used = 0;
   const per: Record<string, number> = {};
   const extras: Record<string, number> = {};
@@ -310,13 +320,13 @@ export function multiPlanProblem(spec: MultiSpec, actor: Combatant, plan: MultiS
     }
     return `${st.attack ?? st.spell ?? '?'} bu yaratığın Multiattack'ında yok.`;
   }
-  if (used > multiTotal(spec, actor)) return `Multiattack en çok ${multiTotal(spec, actor)} saldırı.`;
+  if (used > multiTotal(spec, actor, state)) return `Multiattack en çok ${multiTotal(spec, actor, state)} saldırı.`;
   return null;
 }
 
 /** Planı adım adım yürütür (her adım ayrı hedef; saldıran düşerse durur). */
 function executeMultiPlan(state: BattleState, actor: Combatant, targetId: string, plan: MultiStep[], spec: MultiSpec, rng: Rng): CommandResult {
-  const bad = multiPlanProblem(spec, actor, plan);
+  const bad = multiPlanProblem(spec, actor, plan, state);
   if (bad) return fail(bad);
   const events: BattleEvent[] = [];
   let current = state;
@@ -356,10 +366,14 @@ export function executeMultiattack(state: BattleState, actor: Combatant, targetI
   if ('ok' in first) return first;
   const events: BattleEvent[] = [];
   let current = state;
+  // Görev D1 (86+): plansız Multiattack'ta da Hasten turunda ek saldırı (Clay Golem: 2 → 3).
+  const sp = multiSpecOf(state, actor);
+  const plus = sp && ifUsedNow(sp, actor, state) ? (sp.ifUsed as { total: number }).total - sp.total : 0;
+  const plusAt = plus > 0 ? actor.attacks.findIndex((a) => a.name === sp?.names?.[0]) : -1;
   for (let i = 0; i < actor.attacks.length; i++) {
     const atk = actor.attacks[i];
     if (!atk || atk.recharge) continue;
-    for (let k = 0; k < atk.repeat; k++) {
+    for (let k = 0; k < atk.repeat + (i === plusAt ? plus : 0); k++) {
       const t = current.combatants[targetId];
       // Tepkiyle (Hellish Rebuke, Retaliation) düşen saldıran devam edemez.
       if ((current.combatants[actor.id]?.hp ?? 0) <= 0) break;

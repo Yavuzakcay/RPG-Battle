@@ -1630,7 +1630,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     // Görev DRUID: Wild Shape (biçim başına bir düğme; biçimdeyken bırak) ve Wild Resurgence.
     ...(wildShapeFeature(actor) ? (actor.shape
       ? [{ key: 'shape-off', label: N.shapeOff(actor.shape.name), reason: why({ type: 'wild_shape', actorId }) ?? undefined, act: () => run({ type: 'wild_shape', actorId }) }]
-      : availableForms(monsters, actor).map((m) => ({ key: `shape-${m.id}`, label: N.shapeOn(m.name, m.cr),
+      : availableForms(monsters, actor, state.kuralSurumu ?? 1).map((m) => ({ key: `shape-${m.id}`, label: N.shapeOn(m.name, m.cr),
         reason: why({ type: 'wild_shape', actorId, form: m.id }) ?? undefined, act: () => run({ type: 'wild_shape', actorId, form: m.id }) }))) : []),
     ...(actor.traits?.includes('wild-resurgence') ? [
       { key: 'resurge-shape', label: N.resurgeShape, reason: why({ type: 'wild_resurgence', actorId, mode: 'toShape' }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'toShape' }) },

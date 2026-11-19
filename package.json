@@ -51,6 +51,7 @@
     "karakter-kes": "node scripts/karakter-kes.mjs",
     "srd": "node scripts/srd-ayristir.mjs",
     "srd:buyu": "node scripts/srd-buyu-esitle.mjs",
+    "srd:canavar": "node scripts/srd-canavar.mjs",
     "ses": "node scripts/ses.mjs",
     "ses:yer-tutucu": "node scripts/ses-yer-tutucu.mjs",
     "check:ses": "node scripts/ses-kontrol.mjs",

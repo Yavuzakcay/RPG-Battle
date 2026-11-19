@@ -19,7 +19,7 @@ import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { distance, type Offset } from '../rules/hex';
 import { adjustDamage, halfDamage } from '../rules/damage';
 import { applyHealing } from '../rules/damage';
-import creatureTypes from '../../data/canavar-turleri.json';
+import { creatureTypeAt, monsterAt } from './srdD1';
 import { fail, finish, type CommandResult } from './common';
 import { damageEffects } from './damage-effects';
 import { saveDice } from './effectDice';
@@ -28,7 +28,6 @@ import { monsterAvatar } from './avatar';
 import { turnKey } from './economy';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type ShapeStats, type UsableFeature } from './types';
 
-const TYPES = creatureTypes.types as Record<string, string>;
 const crValue = (cr: string) => (cr.includes('/') ? Number(cr.split('/')[0]) / Number(cr.split('/')[1]) : Number(cr));
 
 /** Wild Shape özelliği (yoksa undefined). */
@@ -42,11 +41,11 @@ export function shapeLimits(f: UsableFeature, level: number): { known: number; m
   return row ? { known: row[0], maxCr: crValue(row[1]), fly: row[2] } : null;
 }
 
-/** Bu seviyede alınabilen Beast biçimleri (SRD canavarlarından). */
-export function eligibleForms(monsters: Monster[], f: UsableFeature, level: number): Monster[] {
+/** Bu seviyede alınabilen Beast biçimleri (SRD canavarlarından). Görev D1: `v` kural sürümü (yoksa güncel tür). */
+export function eligibleForms(monsters: Monster[], f: UsableFeature, level: number, v?: number): Monster[] {
   const lim = shapeLimits(f, level);
   if (!lim) return [];
-  return monsters.filter((m) => TYPES[m.id] === 'beast' && crValue(m.cr) <= lim.maxCr && (lim.fly || !m.fly));
+  return monsters.filter((m) => creatureTypeAt(m.id, v) === 'beast' && crValue(m.cr) <= lim.maxCr && (lim.fly || !m.fly));
 }
 
 /** Biçimin savaş değerleri (olaya yazılır; reducer bunları uygular). */
@@ -72,7 +71,7 @@ export function wildShapeProblem(state: BattleState, actor: Combatant, form: str
   if (form === undefined) return actor.shape ? null : 'Biçimde değilsin.';
   if (isIncapacitated(actor.conditions)) return 'Incapacitated iken biçim değiştirilemez.';
   if (f.resource && resourceLeft(actor, f.resource) <= 0) return `${f.name}: kullanım kalmadı.`;
-  const m = eligibleForms(monsters, f, actor.level).find((x) => x.id === form);
+  const m = eligibleForms(monsters, f, actor.level, state.kuralSurumu ?? 1).find((x) => x.id === form);
   if (!m) return 'Bu biçim bu seviyede alınamaz.';
   if (actor.wildShapeForms?.length && !actor.wildShapeForms.includes(form)) return 'Bu biçim bilinen biçimlerin arasında değil.';
   return null;
@@ -80,7 +79,8 @@ export function wildShapeProblem(state: BattleState, actor: Combatant, form: str
 
 /** `wild_shape`: biçime gir (`form`) ya da bırak (`form` yok). Eylem ekonomisi `economy.ts`'te (bonus eylem). */
 export function executeWildShape(state: BattleState, actor: Combatant, form: string | undefined): CommandResult {
-  const monsters = form ? [getMonster(form)].filter((x): x is Monster => !!x) : [];
+  // Görev D1: biçimin değerleri savaşın kural sürümündeki veriden (85 ve altı: SRD düzeltmesi öncesi).
+  const monsters = form ? [getMonster(form)].filter((x): x is Monster => !!x).map((m) => monsterAt(m, state.kuralSurumu ?? 1)) : [];
   const why = wildShapeProblem(state, actor, form, monsters);
   if (why) return fail(why);
   if (form === undefined) return finish(state, [{ type: 'shape_changed', actorId: actor.id, stats: null, reason: 'bıraktı' }]);
@@ -187,11 +187,11 @@ export function evergreenEvents(c: Combatant): BattleEvent[] {
 }
 
 /** Savaşta seçilebilen biçimler: bilinen biçimler (karakterde seçildiyse) ya da uygun olanlardan en yüksek CR'li ilk N. */
-export function availableForms(monsters: Monster[], c: Combatant): Monster[] {
+export function availableForms(monsters: Monster[], c: Combatant, v?: number): Monster[] {
   const f = wildShapeFeature(c);
   const lim = f ? shapeLimits(f, c.level) : null;
   if (!f || !lim) return [];
-  const all = eligibleForms(monsters, f, c.level);
+  const all = eligibleForms(monsters, f, c.level, v);
   if (c.wildShapeForms?.length) return all.filter((m) => c.wildShapeForms?.includes(m.id));
   return [...all].sort((a, b) => crValue(b.cr) - crValue(a.cr) || b.hp - a.hp).slice(0, lim.known);
 }

@@ -509,7 +509,7 @@ function summonEvents(state: BattleState, c: Ctx): BattleEvent[] | string {
     let n = 1;
     while (cur.combatants[`${a.id}-cagri${n}`]) n++;
     const id = `${a.id}-cagri${n}`;
-    const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${a.name})`, height: a.height });
+    const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${a.name})`, height: a.height, kuralSurumu: state.kuralSurumu ?? 1 });
     const initiative = own ? rollDie(20, rollTag(c.rng, { kind: 'initiative', by: id, bonus: abilityModifier(monster.abilities.dex) })) + abilityModifier(monster.abilities.dex) : a.initiative;
     const summon: SummonInfo = {
       by: a.id, spellId, spell: nameOf(c), turn: own ? 'own' : 'after-owner', level: a.level, ...(conc ? { concentration: true } : {}),

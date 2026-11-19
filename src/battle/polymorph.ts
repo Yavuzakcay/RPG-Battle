@@ -5,23 +5,22 @@
  * hâline döner (`shapeCleanup`). Biçim seçimi `choice` (Beast kimliği); verilmezse düşmana en zayıf (en az HP), dosta
  * sınır içindeki en güçlü (CR, sonra HP) Beast.
  */
-import creatureTypes from '../../data/canavar-turleri.json';
 import { monsters, type Monster } from '../data';
 import { combatantFromMonster } from './create';
 import { shapeStats } from './druid';
+import { creatureTypeAt, monsterAt } from './srdD1';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
-const TYPES = creatureTypes.types as Record<string, string>;
 const crValue = (cr: string | number): number => (typeof cr === 'number' ? cr : cr.includes('/') ? Number(cr.split('/')[0]) / Number(cr.split('/')[1]) : Number(cr));
 
-/** Hedefin alabileceği Beast biçimleri (CR sınırı). */
-export function polymorphForms(target: Combatant): Monster[] {
+/** Hedefin alabileceği Beast biçimleri (CR sınırı). Görev D1: `v` kural sürümü (yoksa güncel tür). */
+export function polymorphForms(target: Combatant, v?: number): Monster[] {
   const limit = target.monsterId ? crValue(monsters.find((m) => m.id === target.monsterId)?.cr ?? 0) : target.level;
-  return monsters.filter((m) => TYPES[m.id] === 'beast' && crValue(m.cr) <= limit);
+  return monsters.filter((m) => creatureTypeAt(m.id, v) === 'beast' && crValue(m.cr) <= limit).map((m) => monsterAt(m, v));
 }
 
-export function polymorphForm(caster: Combatant, target: Combatant, choice?: string): Monster | undefined {
-  const forms = polymorphForms(target);
+export function polymorphForm(caster: Combatant, target: Combatant, choice?: string, v?: number): Monster | undefined {
+  const forms = polymorphForms(target, v);
   const chosen = choice ? forms.find((m) => m.id === choice) : undefined;
   if (chosen) return chosen;
   const hostile = target.side !== caster.side;
@@ -29,11 +28,11 @@ export function polymorphForm(caster: Combatant, target: Combatant, choice?: str
 }
 
 export function polymorphEvents(state: BattleState, caster: Combatant, target: Combatant, choice?: string): BattleEvent[] {
-  const m = polymorphForm(caster, target, choice);
+  const m = polymorphForm(caster, target, choice, state.kuralSurumu ?? 1);
   if (!m) return [];
   // Kuyruk 19 (Golem Immutable Form; srdK19): şekil değiştirmez.
   if (target.traits?.includes('immutable-form')) return [{ type: 'map_note', text: `${target.name}: Immutable Form (şekil değiştirmez).` }];
-  const beast = combatantFromMonster(m, { id: `${target.id}:poly`, name: m.name });
+  const beast = combatantFromMonster(m, { id: `${target.id}:poly`, name: m.name, kuralSurumu: state.kuralSurumu ?? 1 });
   const base = target.shape ? { ...target, ...target.shape.prev } : target;
   const stats = { ...shapeStats(m, base), polymorph: true, attacks: beast.attacks, multiattack: beast.multiattack };
   void state;

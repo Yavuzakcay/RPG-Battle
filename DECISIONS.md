@@ -9,6 +9,37 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## SRD veri düzeltmeleri D1: kural sürümü 86 (2026-11-19, kullanıcı kararları 2026-11-19)
+
+Kaynak: `harita/belgeler/SRD-VERI-DOGRULAMA.md` (denetim + §8 D1 sonucu) ve `srd-veri-dogrulama.csv` (`D1 (kural sürümü 86)` sütunu). Kullanıcı kararları: (1) düzeltmeler SRD uyumu içindir, denge değildir; CLAUDE.md'deki "denge için değiştirme" yasağına girmez. (2) PDF'te karşılığı olmayan oyun değerleri değişmez, "SRD dışı oyun değeri" olarak listelenir. (3) Savaş sonucunu değiştiren düzeltmeler kural sürümüne bağlanır. Her değer PDF'ten doğrulandı (sayfa `data/srd-duzeltme.json`'da); bellekten değer yok.
+
+- **Sürüm numarası 86.** Depodaki en yüksek sürüm 83'tü. 84 (Control Water) ve 85 (Wild Shape) başka sekmelere ayrılmıştı; çakışmasın diye 86 alındı. Push öncesi uzak dalda 86 alınmışsa bir üste taşınır. Tek sabit `src/battle/srdD1Surum.ts` `SRD_D1_VERSION`, `srdD1On`.
+- **Uygulama yolu (karar).** Veri dosyaları yeni (SRD) değerleri tutar; 85 ve altı eski değerleri `data/srd-duzeltme.json` katmanından okur (77 kayıt: dosya, kayıt, alan yolu, eski, yeni, sayfa; `src/battle/srdD1.ts`: `srdKayit`, `monsterAt`, `creatureTypeAt`, `swimSpeedAt`).
+  - **Neden bu yön (veri doğru, katman eski):** sürüm bilmeyen yollar doğru veriyi görür (oluşturucunun Wild Shape listesi, arayüz, zar kilidi). Üreticiler (`k19-canavar-yetenek.py`, `k19-multiattack.py`, yeni `srd-canavar.mjs`) yeniden çalışınca hata geri gelmez. Tersi (veri eski, katman yeni) oluşturucuyu yanlış bırakırdı.
+  - **Neden en az dosya:** tüketicilere tek tek sürüm koşulu yazmak yerine okuma noktaları sürüme bağlandı:
+    - `combatantFromMonster` (`kuralSurumu`, yoksa `defaultRuleVersion()`, `combatantFromSheet` ile aynı desen);
+    - `startBattle` `srdD1Revert`: savaşçılar `startBattle`'dan önce kurulduğu için 85 ve altında D1 alanlarını eski değere çeker. Alan güncel veriyle aynı değilse dokunmaz, idempotent;
+    - savaş içinde canavar ekleyen 10 yer savaşın sürümünü geçirir (çağrı, takviye, kat, kum solucanı, mühür, Animate Trees, Finger of Death, paket çağrısı, Polymorph);
+    - tür okuyan Wild Shape `eligibleForms`/`availableForms`, Polymorph `polymorphForms` ve Karadul `typeOf`;
+    - `monsterTraits` (durum bağışıklığı notu), `monsterAbilities` `entryOf`, `monsters.ts` `multiSpecOf`.
+- **Replay.** `battle_started` ve `summoned` olayları savaşçıyı tam taşır; eski kayıtlar veri değişikliğinden bağımsız aynı oynar. Kapı, devam eden eski savaştaki yeni komutlar (çağırma, Wild Shape, yetenek, Multiattack) ve `--kural-surumu 85` simülasyonu için. Kayıt sürümü değişmedi: Clay Golem'in Hasten işareti var olan `trait_turn` olayı (`mab:hasten`); yutma etkisindeki yeni alanlar (`at`, `disgorge`, `since`) isteğe bağlı.
+- **Köken dürüstlüğü.** `data/canavar-turleri.json` ve `data/yuzme-hizi.json` artık `scripts/srd-canavar.mjs` (`npm run srd:canavar`, mevcut `scripts/srd/pdf.mjs` sütun okuyucusu) ile `data/srd/monsters.json`'dan üretilir. `temadan` listesi ve "bellekten yazıldı, doğrulanmalı" notu kalktı; yüzmede kayıt başına sayfa var. Denetimin bağımsız Python ayrıştırması (pdfplumber) ile Node çıkarıcı (pdfjs) 330 canavar × 15 alanda 0 fark verdi. `src/data/srdCanavar.test.ts` 330 canavarın türünü, yüzmesini, boyut/AC/HP/CR'ini, hızlarını, duyularını, puanlarını, kurtarmalarını, becerilerini, direnç/bağışıklık/zayıflığını ve durum bağışıklığı notunu SRD tablosuyla karşılaştırır.
+- **Durum bağışıklığı üretici hatası.** `monsters.json`'un `unsupported` notlarının üreticisi depoda yok (yalnız veri). Kök neden: SRD `Immunities` satırında `;` yoksa (yalnız durum ya da sürü) durumlar atlanmış. 23 canavara not eklendi. Kalıcı koruma: çıkarıcı `;` yoksa sözcüklerden ayırır, veri testi notları SRD ile karşılaştırır.
+- **En makul kararlar (soru sorulmadı):**
+  - Young White Dragon INT kurtarması PDF'te işaretsiz "2"; değiştirici −2 alındı (ejderhalarda INT yetkinliği yok, öteki renklerle tutarlı). Çıkarıcı raporuna da yazılır.
+  - Vampire Familiar "Charmed (except from its vampire master)": tam Charmed bağışıklığı. İstisna modellenmedi; vampir efendisinin onu büyülemesi savaşta pratikte yok.
+  - Giant Frog: yalnız Small ya da küçük (`maxSize: 'S'`; eski `small` Medium'u da alıyordu), kurtarmasız; yutulduğu turdan sonraki ilk tur sonunda 2d4 Acid, ölmezse kusar ve Prone (`disgorge`, `since`). Giant Toad: Medium ya da küçük, kurtarmasız, her tur sonunda 3d6 (`at: 'end'`). Tarrasque/Behir/Remorhaz/Purple Worm tur başında (değişmedi).
+  - Cat: SRD Jumper "jump distance … using its Dexterity" → DEX 15 = 15 ft uzun atlama (`jump.long`; eskiden sabit 10).
+  - Clay Golem: plan `total` 2 + `ifUsed: { ability: 'hasten', total: 3 }`; Hasten kullanılınca `trait_turn` `mab:hasten`. `monsters.json` Slam `repeat` 5 → 2 (plansız Game Master Multiattack düğmesi 5 Slam yapıyordu); plansız yolda Hasten turunda +1 Slam.
+  - Wild Shape oluşturucu listesi güncel türle; Giant Eagle/Owl/Elk ve Death Dog artık Beast değil. Eski kayıtlı karakterin `wildShapeForms`'unda kalırsa 86+ savaşta bu biçime girilemez; karakter verisine dokunulmadı (Wild Shape sekmesiyle birleşince bakılmalı).
+  - Zar kilidi (`src/app/diceUnlock.ts`, tür bazlı, savaş dışı profil) güncel türü kullanır.
+- **SRD dışı oyun değerleri (kullanıcı kararı 2, değişmedi):** Frost Giant War Cry 60 ft; Giant Frog/Toad Leap bonus eylemi; Giant Frog/Toad `escapeDc` (motorda etkisiz); Arcane Hand yetenek puanları ve Construct türü; Flaming Sphere, Spirit Pack ve Elemental Spirit soyut blokları.
+- **Kalan farklar (D1 kapsamı dışı, öneri SRD-VERI-DOGRULAMA.md §8):** çağrı blokları (Draconic Spirit, Animated Object, Otherworldly Steed, Find Familiar CR 0); sonradan eklenen canavara canavar özelliği ve yeteneği; `shapeStats` aktarımı; Polymorph INT/WIS/CHA; hover. Ek bulgu: Barbed Devil ve Medusa plansız Multiattack "ya / ya da" seçeneklerini toplayıp 4 / 6 saldırı yapıyor.
+- **Testler.** Veriye bağlı beklenti değişiklikleri:
+  - `src/battle/a2abilities.test.ts` Giant Frog yutma testi hedefi Small (SRD s. 351 "Small or smaller");
+  - `src/battle/g6.test.ts` ve `src/battle/ruleVersion.test.ts` güncel sürüm 86.
+  - Yeni testler: `src/battle/srdD1.test.ts` (14), `src/data/srdCanavar.test.ts` (6), `src/sim/srdD1Regresyon.test.ts` (5).
+
 ## Eski Dragonborn ten maskeleri silindi: 264 dosya (2026-11-19, kullanıcı kararı; yalnız görünüm/veri, kural ve kayıt sürümü değişmedi)
 
 - Kullanıcı kararı: oyunda görünmeyecek dosyalar tutulmaz. `public/characters/maske/dragonborn-<erkek|kadin>-<sınıf>-<hücre>.png` (264, ≈236 kB) tek tek `git rm` ile silindi. Dragonborn beyaz taban jetonları `pul` boyamayla `maske-pul/` kullanıyor; eski `maske/` yedek yolunu (`lineageTint(…, 'maske')`, `lineagesAltMaske`) uygulama kodu çağırmıyordu.
