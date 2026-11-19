@@ -668,6 +668,7 @@
   "rangeFt": 60,
   "text": "60 ft içinde 12 yaratık WIS save, başarısızsa Charmed ve öneriyi uygular (24 saat; hasar alınca biter); yukarı slotla 10/30/366 gün",
   "mechanics": {
+   "m83": {"effect": {"targets": 12, "side": "enemy", "rounds": 14400, "grants": ["Charmed"], "command": ["halt", "flee", "approach", "drop"], "charm": true, "needsHearing": true, "icon": "🗣", "choices": ["halt", "flee", "approach", "drop"], "commandPersist": true, "breakOnDamage": "casterSide", "variants": {"drop": {"command": null, "commandPersist": null, "disarmed": true, "icon": "🗡"}}}},
    "kind": "effect",
    "save": "wis",
    "effect": {

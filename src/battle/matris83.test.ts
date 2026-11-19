@@ -454,3 +454,25 @@ describe('B15: Compulsion büyücü merkezli 30 ft (SRD "Range: 30 feet … Each
     expect(['T', 'U', 'Z', 'B'].map((id) => !!saveOf(r.events, id))).toEqual([true, true, true, false]);
   });
 });
+
+describe('B16: Suggestion ve Mass Suggestion süresince Charmed (SRD "have the Charmed condition for the duration or until you or your allies deal damage to the target")', () => {
+  const sug = (v: number, name: string, slot: number) => {
+    const parts: Combatant[] = [caster({ level: 13, spellNames: [name], spellSlots: [4, 3, 3, 3, 2, 1, 1, 0, 0] }), foe('T', { pos: { col: 6, row: 5 } })];
+    return run(scene(v, parts), { type: 'cast_spell', actorId: 'A', spellName: name, slotLevel: slot, targetId: 'T', targetIds: ['T'], choice: 'halt' } as Command, hooked({ one: 2, two: [2, 2] }));
+  };
+  for (const [name, slot, rounds] of [['Suggestion', 2, 4800], ['Mass Suggestion', 6, 14400]] as const) {
+    it(`${name}: 83 süre ${rounds} tur ve Charmed; 82 eski (yapım turu + 1)`, () => {
+      const r83 = sug(83, name, slot);
+      expect(r83.ok, r83.error).toBe(true);
+      const e83 = r83.state.combatants.T?.effects?.find((e) => e.id === `spells:${name.toLowerCase().replace(' ', '-')}`);
+      expect(e83?.until).toBe(rounds);
+      expect(e83?.grants).toContain('Charmed');
+      expect(e83?.commandPersist).toBe(true);
+      const r82 = sug(82, name, slot);
+      expect(r82.ok, r82.error).toBe(true);
+      const e82 = r82.state.combatants.T?.effects?.find((e) => e.id === `spells:${name.toLowerCase().replace(' ', '-')}`);
+      expect(e82?.until).toBe(2);
+      expect(!!e82?.grants?.includes('Charmed')).toBe(name === 'Suggestion');
+    });
+  }
+});

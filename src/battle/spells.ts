@@ -1892,7 +1892,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
         + (m.upcast?.hp ?? 0) * Math.max(0, slotLevel - spell.level);
       added.push({ type: 'temp_hp', targetId: t.id, amount: roll, label: spell.name });
     }
-    else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command ? { until: state.round + 1 } : {}),
+    // Mekanik matris B16 (sürüm 83): süren buyruk (`commandPersist`: Suggestion, Mass Suggestion) büyünün süresince
+    // ("Charmed condition for the duration"); yalnız tek turluk buyruk (Command) yapım turu + 1'de biter.
+    else added.push({ type: 'effect_added', targetId: t.id, effect: { ...effect, ...(spec.command && !(spec.commandPersist && matrisOn(state)) ? { until: state.round + 1 } : {}),
       // Kuyruk 19: Banishment: yerli olmayan tam sürede geri dönmez.
       ...(spec.banished && globalRule(state, 'spellsK19') && EXTRAPLANAR.includes(t.creatureType ?? '') ? { banishForever: true } : {}),
       // Mage Armor: AC tabanı 13 + hedefin DEX değiştiricisi.

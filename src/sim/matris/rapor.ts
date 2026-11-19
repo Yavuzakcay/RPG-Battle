@@ -113,7 +113,9 @@ export const KATALOG: Bulgu[] = [
   { id: 'B16', sonuc: 'yanlış', baslik: 'Suggestion ve Mass Suggestion birkaç turda kendiliğinden bitiyor; Mass Suggestion Charmed vermiyor',
     neden: 'SRD: Suggestion Konsantrasyon en çok 8 saat, Mass Suggestion 24 saat (büyücü ya da dostları hasar verene dek); her ikisi Charmed. Motorda etki `until` = yapım turu + 1 (komut etkisi `commandPersist` olsa da 4. turda etki yok); Mass Suggestion etkisinde `grants: Charmed` yok.',
     oneri: 'Etkinin `until` değerini büyü süresinden almak (komut her tur yenilenebilir), Mass Suggestion\'a `grants: [\'Charmed\']`.',
-    eslesir: (r) => kotu(r) && ad(r, 'Suggestion', 'Mass Suggestion') && !bag(r, 'Invisible') },
+    // "büyücü Charmed" satırları K01 kararına ait.
+    eslesir: (r) => kotu(r) && ad(r, 'Suggestion', 'Mass Suggestion') && !bag(r, 'Invisible') && !bag(r, 'büyücü Charmed'),
+    duzeltme: { surum: 83, not: 'süren buyruk (`commandPersist`) büyü süresince; Mass Suggestion `m83` Charmed' } },
   { id: 'B17', sonuc: 'yanlış', baslik: 'Protection from Energy süresi 10 dakika',
     neden: 'SRD: Konsantrasyon, en çok 1 saat (600 tur). Veride `rounds: 100`.',
     oneri: 'data/spells.json Protection from Energy `effect.rounds: 600`.',
