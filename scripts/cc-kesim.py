@@ -630,10 +630,50 @@ def diger():
     oncelik_rapor(L)
     return rep
 
+# ---------------------------------------------------------------------------------------------------------------- tek jeton düzeltmesi (baş + ayak hizası)
+TEK = {'celestial-kadin-rogue-ID3': 'celestial-kadin-rogue-ID3-duzeltme.jpg'}   # 2026-11-19: şapka tepesindeki ince sarı çizgi (hale kalıntısı)
+
+def head_feet(rgba):
+    """Gövde (en büyük bileşen) üzerinde baş tepesi = koyu kontur (parlaklık < 90) ≥ 6 px olan ilk satır (şapka üstündeki ince açık çizgi sayılmaz),
+    ayak = gövdenin son satırı, yatay merkez = baş tepesinden 12 satırın ortalaması."""
+    al = rgba[..., 3] > 127
+    lab, n = ndi.label(al, structure=np.ones((3, 3))); sz = ndi.sum(al, lab, range(1, n + 1)); body = lab == (1 + int(np.argmax(sz)))
+    dark = body & (rgba[..., :3].max(axis=2) < 90)
+    top = next(y for y in range(body.shape[0]) if dark[y].sum() >= 6)
+    ys, _ = np.where(body); feet = int(ys.max())
+    cx = float(np.where(body[top:top + 12])[1].mean())
+    return top, feet, cx
+
+def tek():
+    L = ledger(); rep = {'adim': 'tek', 'yazilan': [], 'ezilmedi': [], 'olcu': {}}
+    items = []
+    for name, f in TEK.items():
+        a = np.asarray(Image.open(f'{RAW}/{f}').convert('RGB')); fg = key_page(a)
+        lab, n = ndi.label(fg, structure=np.ones((3, 3))); sz = ndi.sum(fg, lab, range(1, n + 1))
+        H, W = fg.shape; objs = ndi.find_objects(lab)
+        keep = [i for i in range(1, n + 1) if sz[i - 1] >= 30 and not (objs[i - 1][0].start <= 1 or objs[i - 1][1].start <= 1 or objs[i - 1][0].stop >= H - 1 or objs[i - 1][1].stop >= W - 1)]
+        m = np.isin(lab, keep); ys, xs = np.where(m)
+        y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+        cell = keyed_rgba(a[y0:y1, x0:x1], m[y0:y1, x0:x1])
+        old = np.array(Image.open(f'public/characters/{name}.webp').convert('RGBA'))
+        ot, of, ocx = head_feet(old); nt, nf, ncx = head_feet(cell)
+        sc = (of - ot) / (nf - nt)
+        dx, dy = ocx - ncx * sc, ot - nt * sc
+        tok = tk.clean_edges(resample(cell, sc, dx, dy))
+        t2, f2, c2 = head_feet(tok)
+        rep['olcu'][name] = {'eski': {'bas': ot, 'ayak': of, 'x': round(ocx, 1)}, 'yeni': {'bas': t2, 'ayak': f2, 'x': round(c2, 1)}, 'olcek': round(sc, 4),
+                             'kenar': bool(tok[0, :, 3].any() or tok[-1, :, 3].any() or tok[:, 0, 3].any() or tok[:, -1, 3].any())}
+        write_token(L, name, Image.fromarray(tok, 'RGBA'), 'duzeltme', f, 1, rep)
+        items.append((name, tok, old))
+    save_ledger(L); hold_sync(L)
+    if not KURU: oncelik_rapor(L)
+    os.makedirs(DOC, exist_ok=True); json.dump(rep, open(f'{DOC}/tek-duzeltme.json', 'w'), ensure_ascii=False, indent=1)
+    return rep
+
 if __name__ == '__main__':
     os.makedirs(f'{OUT}/kucuk', exist_ok=True)
     step = sys.argv[1] if len(sys.argv) > 1 else ''
-    fn = {'taban': taban, 'yeni': yeni, 'duzeltme': duzeltme, 'diger': diger, 'gladyator-onizleme': lambda: (gladyator_onizleme(), {'tamam': 1})[1]}.get(step)
+    fn = {'taban': taban, 'yeni': yeni, 'duzeltme': duzeltme, 'diger': diger, 'tek': tek, 'gladyator-onizleme': lambda: (gladyator_onizleme(), {'tamam': 1})[1]}.get(step)
     if not fn: sys.exit(__doc__)
     r = fn()
     print({k: (len(v) if isinstance(v, (list, dict)) else v) for k, v in r.items()})

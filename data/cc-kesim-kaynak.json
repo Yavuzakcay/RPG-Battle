@@ -5397,6 +5397,21 @@
     "dosya": "barbarian-male-aurasiz.jpg",
     "hucre": 8
    }
+  },
+  "celestial-kadin-rogue-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "celestial-kadin-rogue-ID3-duzeltme.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "celestial-kadin-rogue-ID3-duzeltme.jpg",
+    "hucre": 1
+   }
   }
  }
 }

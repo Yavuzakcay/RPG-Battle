@@ -261,7 +261,7 @@
   },
   "rogue-kadin": {
    "x": 132,
-   "y": 33,
+   "y": 34,
    "olcek": 1.16
   },
   "rogue-kadin-genel": {
@@ -820,6 +820,16 @@
    "x": 133,
    "y": 48,
    "olcek": 1.16
+  },
+  "kadin-rogue-ID5": {
+   "x": 132,
+   "y": 25,
+   "olcek": 1.02
+  },
+  "kadin-rogue-ID8": {
+   "x": 125,
+   "y": 25,
+   "olcek": 1.11
   },
   "kadin-sorcerer-SC-7": {
    "x": 141,

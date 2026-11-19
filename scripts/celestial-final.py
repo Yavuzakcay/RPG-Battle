@@ -26,7 +26,6 @@ GORSEL = {
     'celestial-female-bard': ('halesiz', 'yanlış alarm: şapka tüyü'),
     'celestial-kadin-wizard-WZ-B1': ('halesiz', 'yanlış alarm: rüzgâr parçacıkları'),
     'celestial-erkek-warlock-WL-8': ('halesiz', 'yanlış alarm: Gulyabani saç telleri (taç yok kararı ayrı)'),
-    'celestial-kadin-rogue-ID3': ('belirsiz', 'silindir şapkanın tepesinde ince sarı çizgi: hale kalıntısı olabilir (halesiz-doğrulandı, dokunulmamıştı)'),
 }
 
 def order(n):

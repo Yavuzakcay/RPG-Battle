@@ -3029,17 +3029,17 @@
   "gorsel": ""
  },
  {
-  "sonuc": "belirsiz",
-  "skor": 0.8,
+  "sonuc": "halesiz",
+  "skor": 0.0,
   "yontem": "halka",
-  "olcu": "en 44, boy 3, kalinlik 1.0, doluluk 0.32, ic_saydam 0.0, ust_saydam 1.0, kapsama 1.0, ust_yay 1.0, px 42, y 32, ust 19",
+  "olcu": "",
   "jeton": "celestial-kadin-rogue-ID3",
   "sinif": "rogue",
   "cinsiyet": "kadin",
-  "kaynak": "CC öncesi (değişmedi)",
+  "kaynak": "duzeltme (celestial-kadin-rogue-ID3-duzeltme.jpg / 1)",
   "tac": "çizilir",
-  "olcum": "haleli",
-  "gorsel": "silindir şapkanın tepesinde ince sarı çizgi: hale kalıntısı olabilir (halesiz-doğrulandı, dokunulmamıştı)"
+  "olcum": "halesiz",
+  "gorsel": ""
  },
  {
   "sonuc": "halesiz",

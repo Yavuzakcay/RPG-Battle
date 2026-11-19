@@ -27,4 +27,4 @@ Kural (`scripts/cc-kesim.py` `ONCELIK`, `write_token`): aynı jeton kimliği iç
 | celestial-kadin-warlock-WL-3 | taban → duzeltme | duzeltme | hale-gemini-duzeltme-sayfa-03.jpg / 6 |
 | celestial-kadin-warlock-WL-4 | taban → duzeltme | duzeltme | hale-gemini-duzeltme-sayfa-01.jpg / 7 |
 
-Tek kaynaktan yazılan Celestial jeton: 140.
+Tek kaynaktan yazılan Celestial jeton: 141.
