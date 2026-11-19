@@ -37,7 +37,7 @@ describe('Canavar özellik ve eylem açıklamaları', () => {
     const covered = Object.entries(L).filter(([, l]) => l.some((e) => TR[e.anahtar]));
     for (const [id, l] of covered) for (const e of l) expect(TR[e.anahtar], `${id}: ${e.anahtar}`).toBeTruthy();
     console.log(`canavar açıklaması: ${Object.keys(TR).length}/${ALL.length} kayıt, ${covered.length}/330 canavar`);
-    // TAM_KAPSAM (son partide açılır): expect(Object.keys(TR).length).toBe(ALL.length);
+    expect(Object.keys(TR).length).toBe(ALL.length);
   });
   it('sayısal tutarlılık: saldırının zarı, isabet bonusu ve kurtarma DC\'si açıklamada', () => {
     const bad: string[] = [];

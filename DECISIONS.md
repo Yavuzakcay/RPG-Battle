@@ -9,6 +9,25 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Kuyruk A İş 4: canavar özellik ve eylemlerinin Türkçe açıklamaları (2026-11-20; yalnız içerik verisi)
+
+- **Kaynak:** SRD 5.2.1 PDF'i, s. 254–364. Yeni üretici `scripts/srd-canavar-ozellik.mjs`, mevcut PDF okuyucusuyla (`scripts/srd/pdf.mjs`) stat bloklarından özellik ve eylemleri ayrıştırır. Tür trait/action/bonus/reaction/legendary; ad İngilizce.
+- **Çıktı:**
+  - `data/canavar-ozellik.json`: liste ve sıra; İngilizce SRD metni depoya girmez.
+  - Açıklamalar `data/aciklamalar-tr.json` yeni `canavar` bölümünde. Anahtar `<canavar>/<tür>:<ad-slug>`.
+- **Kapsam: 1318 kayıt, 330/330 canavar.** Dungeondex canavar kartında yeni "Özellikler ve eylemler" bölümü (ad, tür etiketi, Türkçe açıklama). "Türkçe açıklama henüz yok" notu yalnız eksik satırda çıkar.
+- **Ayrıştırma düzeltmesi:** ilk sürüm, adla noktası ayrı parça olan 24 eylemi önceki kaydın içine katıyordu (renkli ejderhaların nefesleri, Brown Bear, Elephant Gore, Lightning Absorption, Unicorn Magic Resistance). Bu yüzden 1294 değil 1318 kayıt var. Etkilenen 23 canavar ayrı bir düzeltme partisinde yeniden yazıldı.
+- **Yöntem:** CR gruplarına bölündü (0–1/4, 1/2–1, 2–3, 4–6, 7–11, 12+ ve düzeltme partisi); parti başına commit. Her kayıt PDF'ten çıkarılan özgün metinden Türkçe özet olarak yazıldı; bellekten değer yok.
+- **Sayısal tutarlılık denetimi:**
+  - Yazım sırasında betikle: zar ifadesi, DC, saldırı bonusu ve ft değerleri İngilizce metinle karşılaştırıldı; her partide 0 sorun.
+  - Depoda test: `data/monsters.json` saldırı alanlarıyla zar, bonus ve DC eşleşmesi. SRD'de zarsız sabit hasar varsa oyun verisinin `1d2` yaklaşıklaması yerine sabit sayı aranır.
+- **Kural:** SD4 uygulandı: durum, büyü ve eylem adları İngilizce; hasar türleri Türkçe; yetenekler STR/DEX/… kısaltmasıyla; GM yerine "Game Master".
+- **Test ve uzunluk:**
+  - Uzunluk sınırı canavar bölümünde 560 karakter (genel sınır 240): Engulf, Swallow gibi eylemler zar, DC ve mesafe korunarak daha uzun. Mevcut `aciklamalarTr.test.ts` buna göre güncellendi.
+  - Testler: `src/dungeondex/canavarAciklama.test.ts`.
+  - Ekran görüntüsü `docs/sabah/dungeondex/canavar-kart.webp`.
+- **Boyut:** `aciklamalar-tr.json` `loadClassData` ile tembel yüklendiği için açıklamalar o parçaya girdi (≈ +200 kB ham metin, karakter ekranları açılırken bir kez). Ana parça değişmedi. Ayrı tembel dosyaya taşımak gerekirse küçük bir iştir (öneri).
+
 ## Kuyruk A İş 3: Control Water girdap efekti importu atlandı (2026-11-20)
 
 - Kaynak "control-water" efekt sayfası bulut kapsayıcısında yok (`assets-ham/` depo dışı; yalnız `eksikler/` ve `karakter/` var). Talimat gereği iş atlandı.
