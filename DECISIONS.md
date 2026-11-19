@@ -44,6 +44,13 @@ Kaynak: `harita/belgeler/SRD-VERI-DOGRULAMA.md` (denetim + §8 D1 sonucu) ve `sr
   - Tam `npm test` birleştirmeden önce: 454 dosya geçti, 2 atlandı; 5169 test geçti, 11 atlandı (843 sn). Birleştirmeden (84 girdabı) sonra ilgili 21 dosya (196 test) ve regresyon yeniden geçti.
   - Hızlı regresyon (Çöl, Kale, Mağara, Orman × 1 ve 3 tohum): sürüm 85 imzaları D1 öncesi ağacın (a26ef5c3) altınıyla aynı; 86'da 3 tohumda Mağara farklı (Specter/Wight Undead), diğerleri aynı (değişen değer tetiklenmedi; kurulumda 86 değerlerinin etkin olduğu ayrıca denetlendi).
   - `npm run check:harita` 92/92 (bulutta `PW_CHROMIUM=/opt/pw-browsers/chromium`; projenin Playwright'ı önceden kurulu tarayıcı sürümünü bulamıyor). `check:ses` gerekmedi (ses değişmedi). Denge ölçümü yapılmadı (denge turu ayrı).
+## Serüven 6–20 seviye düşman seçimi (2026-11-19)
+
+- Sorun: listesi olmayan seviyede 5. seviye listesi (6+ seviyede 1110 hücrenin 1085'i). Yeni sıra (`src/journey/seruvenEnemies.ts`, yalnız 6+ seviye, yalnız Serüven): el yazması tam liste → en yakın alt 6+ liste (8 → 7, 12 → 11; 5'e inmez) → sıradan düğümde ve haritanın ortam havuzu varsa bölge karşılaşma üreteci (`regionEncounter`, sözde bölge = senaryonun haritası, çarpan 1, parti seviyesi × savaşabilen üye sayısı) → 5. seviye. Sonuç: 5. seviye yedeği 1085 → 320 hücre; kalanlar özel savaşlar.
+- Özel savaşlar (boss düğümü ve `data/sim-boss.json` senaryoları, sefer düğümleri, Hapishane, Büyük suç, koridor) üreteç almaz: hedef/grup/bayrak tasarımları el yazması listeye göre; yalnız alt liste kuralı.
+- Savaş kuralı değil: GM anahtarı ve kural sürümü yok. 1–5. seviye ve simülasyon (`enemiesAt`) değişmedi. Liste deterministik (Serüven kimliği + düğüm + seviye tohumu). Kayıtlı savaş eski düşmanlarla sürer (olay günlüğü); 6+ seviyede kazanılan düğümün XP'si savaştaki düşmanlardan, böylece eski kayıt da doğru XP alır.
+- Tablo `harita/belgeler/SERUVEN-YUKSEK-SEVIYE.md` (`npx vite-node scripts/seruven-yuksek-seviye.ts`). Denge ölçülmedi.
+
 ## Control Water dört seçenek (2026-11-19, kullanıcı kararı; uzak daldaki girdabın üstüne, kural sürümü değişmedi)
 
 Uzak daldaki Control Water girdabı (sürüm 84, `controlWaterWhirlpool`) ve G01 (`modeWhy`) aynen kaldı; bu sekmenin aynı görev için yaptığı ikinci uygulama birleştirilmedi (yerel yedek dal `yedek-controlwater-yerel`, itilmedi). Üstüne taşınanlar:

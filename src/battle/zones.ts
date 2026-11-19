@@ -53,6 +53,8 @@ import { concentrationEvent, spendSlot } from './slots';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
 import { airCenterProblem, airSpanFt, cylinderHeightFt, inZoneAir } from './airArea';
 import { k73cOn } from './k73cSurum';
+// Tur başı çekme kancaları (Control Water girdabı `girdap.ts` kaydeder) yaprak modülde: döngüsel ilklendirme sırası sorun olmasın.
+import { START_PULL } from './zoneHooks';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -287,11 +289,6 @@ export function zoneStepEvents(state: BattleState, moverId: string, from: Offset
   }
   return chain(state, makers);
 }
-
-/** Tur başı çekme kancaları (döngüsel içe aktarma olmasın diye kayıtla; Control Water girdabı `girdap.ts`). */
-type StartPull = (state: BattleState, c: Combatant, rng: Rng) => BattleEvent[];
-const START_PULL: StartPull[] = [];
-export const registerZoneStartPull = (h: StartPull): void => { START_PULL.push(h); };
 
 /** Tur başı ya da sonu: yaratığın bulunduğu alanların `start`/`end` tetiği. */
 export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 'end', rng: Rng): BattleEvent[] {
