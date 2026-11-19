@@ -1,0 +1,3152 @@
+{
+ "dragonborn-erkek-barbarian-GR": {
+  "m0": 10207,
+  "boynuzAyiklanan": 973,
+  "kontur": 93,
+  "kirinti": 32,
+  "son": 6983,
+  "tenLab": [
+   81.7,
+   4.1,
+   -10.2
+  ]
+ },
+ "dragonborn-erkek-barbarian-ID1": {
+  "m0": 10487,
+  "boynuzAyiklanan": 711,
+  "kontur": 368,
+  "kirinti": 171,
+  "son": 5485,
+  "tenLab": [
+   80.8,
+   2.9,
+   -7.9
+  ]
+ },
+ "dragonborn-erkek-barbarian-ID2": {
+  "m0": 9724,
+  "boynuzAyiklanan": 586,
+  "kontur": 130,
+  "kirinti": 26,
+  "son": 6772,
+  "tenLab": [
+   83.4,
+   3.3,
+   -7.7
+  ]
+ },
+ "dragonborn-erkek-barbarian-ID3": {
+  "m0": 10786,
+  "boynuzAyiklanan": 408,
+  "kontur": 253,
+  "kirinti": 102,
+  "son": 6698,
+  "tenLab": [
+   81.6,
+   4.0,
+   -8.8
+  ]
+ },
+ "dragonborn-erkek-barbarian-ID4": {
+  "m0": 10702,
+  "boynuzAyiklanan": 2488,
+  "kontur": 168,
+  "kirinti": 54,
+  "son": 4947,
+  "tenLab": [
+   83.3,
+   2.8,
+   -7.5
+  ]
+ },
+ "dragonborn-erkek-barbarian-ID5": {
+  "m0": 8234,
+  "boynuzAyiklanan": 2254,
+  "kontur": 188,
+  "kirinti": 41,
+  "son": 3878,
+  "tenLab": [
+   82.3,
+   3.7,
+   -7.9
+  ]
+ },
+ "dragonborn-erkek-barbarian-ID6": {
+  "m0": 10435,
+  "boynuzAyiklanan": 724,
+  "kontur": 180,
+  "kirinti": 39,
+  "son": 7099,
+  "tenLab": [
+   81.5,
+   4.1,
+   -9.4
+  ]
+ },
+ "dragonborn-erkek-barbarian-ID7": {
+  "m0": 13781,
+  "boynuzAyiklanan": 201,
+  "kontur": 600,
+  "kirinti": 161,
+  "son": 8305,
+  "tenLab": [
+   79.1,
+   3.8,
+   -10.3
+  ]
+ },
+ "dragonborn-erkek-barbarian-ID8": {
+  "m0": 11401,
+  "boynuzAyiklanan": 1533,
+  "kontur": 240,
+  "kirinti": 96,
+  "son": 6233,
+  "tenLab": [
+   80.2,
+   3.7,
+   -8.7
+  ]
+ },
+ "dragonborn-erkek-barbarian-ID9": {
+  "m0": 6857,
+  "boynuzAyiklanan": 985,
+  "kontur": 149,
+  "kirinti": 54,
+  "son": 3899,
+  "tenLab": [
+   80.1,
+   3.7,
+   -8.9
+  ]
+ },
+ "dragonborn-erkek-bard-GR": {
+  "m0": 7879,
+  "boynuzAyiklanan": 980,
+  "kontur": 86,
+  "kirinti": 38,
+  "son": 5202,
+  "tenLab": [
+   82.1,
+   4.3,
+   -10.7
+  ]
+ },
+ "dragonborn-erkek-bard-ID1": {
+  "m0": 5344,
+  "boynuzAyiklanan": 439,
+  "kontur": 40,
+  "kirinti": 5,
+  "son": 3564,
+  "tenLab": [
+   83.3,
+   4.7,
+   -10.7
+  ]
+ },
+ "dragonborn-erkek-bard-ID2": {
+  "m0": 4372,
+  "boynuzAyiklanan": 736,
+  "kontur": 131,
+  "kirinti": 14,
+  "son": 2553,
+  "tenLab": [
+   78.0,
+   4.1,
+   -10.2
+  ]
+ },
+ "dragonborn-erkek-bard-ID3": {
+  "m0": 5808,
+  "boynuzAyiklanan": 1016,
+  "kontur": 81,
+  "kirinti": 28,
+  "son": 3316,
+  "tenLab": [
+   80.8,
+   4.3,
+   -10.2
+  ]
+ },
+ "dragonborn-erkek-bard-ID4": {
+  "m0": 6253,
+  "boynuzAyiklanan": 633,
+  "kontur": 119,
+  "kirinti": 57,
+  "son": 3691,
+  "tenLab": [
+   79.9,
+   4.5,
+   -10.4
+  ]
+ },
+ "dragonborn-erkek-bard-ID5": {
+  "m0": 8392,
+  "boynuzAyiklanan": 3560,
+  "kontur": 162,
+  "kirinti": 27,
+  "son": 3357,
+  "tenLab": [
+   79.7,
+   5.0,
+   -11.5
+  ]
+ },
+ "dragonborn-erkek-bard-ID6": {
+  "m0": 5118,
+  "boynuzAyiklanan": 67,
+  "kontur": 73,
+  "kirinti": 19,
+  "son": 3691,
+  "tenLab": [
+   82.0,
+   4.9,
+   -11.8
+  ]
+ },
+ "dragonborn-erkek-bard-ID7": {
+  "m0": 5522,
+  "boynuzAyiklanan": 1478,
+  "kontur": 133,
+  "kirinti": 20,
+  "son": 2414,
+  "tenLab": [
+   76.5,
+   4.8,
+   -11.4
+  ]
+ },
+ "dragonborn-erkek-bard-ID8": {
+  "m0": 5935,
+  "boynuzAyiklanan": 411,
+  "kontur": 95,
+  "kirinti": 27,
+  "son": 3768,
+  "tenLab": [
+   81.5,
+   4.2,
+   -11.3
+  ]
+ },
+ "dragonborn-erkek-bard-ID9": {
+  "m0": 5537,
+  "boynuzAyiklanan": 1268,
+  "kontur": 78,
+  "kirinti": 53,
+  "son": 2851,
+  "tenLab": [
+   78.7,
+   4.6,
+   -12.1
+  ]
+ },
+ "dragonborn-erkek-cleric-GR": {
+  "m0": 8532,
+  "boynuzAyiklanan": 723,
+  "kontur": 85,
+  "kirinti": 9,
+  "son": 6181,
+  "tenLab": [
+   82.3,
+   4.0,
+   -10.2
+  ]
+ },
+ "dragonborn-erkek-cleric-ID1": {
+  "m0": 6764,
+  "boynuzAyiklanan": 506,
+  "kontur": 172,
+  "kirinti": 4,
+  "son": 4667,
+  "tenLab": [
+   81.0,
+   4.6,
+   -11.3
+  ]
+ },
+ "dragonborn-erkek-cleric-ID2": {
+  "m0": 5824,
+  "boynuzAyiklanan": 753,
+  "kontur": 110,
+  "kirinti": 11,
+  "son": 3848,
+  "tenLab": [
+   82.0,
+   4.1,
+   -11.0
+  ]
+ },
+ "dragonborn-erkek-cleric-ID3": {
+  "m0": 6539,
+  "boynuzAyiklanan": 321,
+  "kontur": 165,
+  "kirinti": 72,
+  "son": 3951,
+  "tenLab": [
+   83.6,
+   2.3,
+   -10.6
+  ]
+ },
+ "dragonborn-erkek-cleric-ID4": {
+  "m0": 5706,
+  "boynuzAyiklanan": 412,
+  "kontur": 157,
+  "kirinti": 22,
+  "son": 3834,
+  "tenLab": [
+   79.8,
+   5.3,
+   -12.3
+  ]
+ },
+ "dragonborn-erkek-cleric-ID5": {
+  "m0": 11410,
+  "boynuzAyiklanan": 689,
+  "kontur": 455,
+  "kirinti": 127,
+  "son": 6297,
+  "tenLab": [
+   83.3,
+   1.9,
+   -8.8
+  ]
+ },
+ "dragonborn-erkek-cleric-ID6": {
+  "m0": 2114,
+  "boynuzAyiklanan": 2057,
+  "kontur": 83,
+  "kirinti": 2,
+  "son": 0,
+  "tenLab": [
+   59.1,
+   0.9,
+   -0.5
+  ]
+ },
+ "dragonborn-erkek-cleric-ID7": {
+  "m0": 5717,
+  "boynuzAyiklanan": 949,
+  "kontur": 183,
+  "kirinti": 111,
+  "son": 2415,
+  "tenLab": [
+   79.4,
+   2.7,
+   -8.5
+  ]
+ },
+ "dragonborn-erkek-cleric-ID8": {
+  "m0": 5854,
+  "boynuzAyiklanan": 500,
+  "kontur": 129,
+  "kirinti": 23,
+  "son": 3637,
+  "tenLab": [
+   81.8,
+   3.9,
+   -10.0
+  ]
+ },
+ "dragonborn-erkek-cleric-ID9": {
+  "m0": 6562,
+  "boynuzAyiklanan": 467,
+  "kontur": 150,
+  "kirinti": 20,
+  "son": 4369,
+  "tenLab": [
+   81.8,
+   4.6,
+   -11.1
+  ]
+ },
+ "dragonborn-erkek-druid-GR": {
+  "m0": 8714,
+  "boynuzAyiklanan": 76,
+  "kontur": 76,
+  "kirinti": 20,
+  "son": 6850,
+  "tenLab": [
+   82.2,
+   4.2,
+   -11.1
+  ]
+ },
+ "dragonborn-erkek-druid-ID1": {
+  "m0": 4711,
+  "boynuzAyiklanan": 61,
+  "kontur": 86,
+  "kirinti": 12,
+  "son": 3444,
+  "tenLab": [
+   83.0,
+   6.0,
+   -10.6
+  ]
+ },
+ "dragonborn-erkek-druid-ID2": {
+  "m0": 6438,
+  "boynuzAyiklanan": 509,
+  "kontur": 111,
+  "kirinti": 52,
+  "son": 4251,
+  "tenLab": [
+   83.2,
+   5.4,
+   -9.2
+  ]
+ },
+ "dragonborn-erkek-druid-ID3": {
+  "m0": 8109,
+  "boynuzAyiklanan": 1309,
+  "kontur": 138,
+  "kirinti": 14,
+  "son": 5067,
+  "tenLab": [
+   81.9,
+   5.5,
+   -9.3
+  ]
+ },
+ "dragonborn-erkek-druid-ID4": {
+  "m0": 800,
+  "boynuzAyiklanan": 800,
+  "kontur": 5,
+  "kirinti": 0,
+  "son": 0,
+  "tenLab": [
+   65.7,
+   -0.5,
+   17.0
+  ]
+ },
+ "dragonborn-erkek-druid-ID5": {
+  "m0": 8532,
+  "boynuzAyiklanan": 2253,
+  "kontur": 63,
+  "kirinti": 12,
+  "son": 4775,
+  "tenLab": [
+   81.7,
+   5.5,
+   -9.3
+  ]
+ },
+ "dragonborn-erkek-druid-ID6": {
+  "m0": 7765,
+  "boynuzAyiklanan": 628,
+  "kontur": 138,
+  "kirinti": 62,
+  "son": 5222,
+  "tenLab": [
+   80.3,
+   6.3,
+   -11.4
+  ]
+ },
+ "dragonborn-erkek-druid-ID7": {
+  "m0": 7598,
+  "boynuzAyiklanan": 539,
+  "kontur": 109,
+  "kirinti": 28,
+  "son": 5380,
+  "tenLab": [
+   80.1,
+   6.2,
+   -11.6
+  ]
+ },
+ "dragonborn-erkek-fighter-GR": {
+  "m0": 9341,
+  "boynuzAyiklanan": 769,
+  "kontur": 92,
+  "kirinti": 41,
+  "son": 6409,
+  "tenLab": [
+   81.3,
+   3.7,
+   -11.1
+  ]
+ },
+ "dragonborn-erkek-fighter-ID1": {
+  "m0": 3823,
+  "boynuzAyiklanan": 446,
+  "kontur": 72,
+  "kirinti": 22,
+  "son": 2284,
+  "tenLab": [
+   80.5,
+   3.1,
+   -9.0
+  ]
+ },
+ "dragonborn-erkek-fighter-ID10": {
+  "m0": 13748,
+  "boynuzAyiklanan": 7656,
+  "kontur": 142,
+  "kirinti": 22,
+  "son": 4172,
+  "tenLab": [
+   78.8,
+   3.0,
+   -10.4
+  ]
+ },
+ "dragonborn-erkek-fighter-ID11": {
+  "m0": 5313,
+  "boynuzAyiklanan": 725,
+  "kontur": 110,
+  "kirinti": 8,
+  "son": 3160,
+  "tenLab": [
+   79.2,
+   3.2,
+   -10.6
+  ]
+ },
+ "dragonborn-erkek-fighter-ID2": {
+  "m0": 4961,
+  "boynuzAyiklanan": 634,
+  "kontur": 136,
+  "kirinti": 53,
+  "son": 2546,
+  "tenLab": [
+   77.6,
+   2.6,
+   -8.6
+  ]
+ },
+ "dragonborn-erkek-fighter-ID3": {
+  "m0": 7932,
+  "boynuzAyiklanan": 694,
+  "kontur": 259,
+  "kirinti": 34,
+  "son": 4919,
+  "tenLab": [
+   77.5,
+   2.6,
+   -9.0
+  ]
+ },
+ "dragonborn-erkek-fighter-ID4": {
+  "m0": 12116,
+  "boynuzAyiklanan": 673,
+  "kontur": 196,
+  "kirinti": 13,
+  "son": 8807,
+  "tenLab": [
+   80.0,
+   3.5,
+   -9.3
+  ]
+ },
+ "dragonborn-erkek-fighter-ID5": {
+  "m0": 10079,
+  "boynuzAyiklanan": 673,
+  "kontur": 197,
+  "kirinti": 22,
+  "son": 6711,
+  "tenLab": [
+   80.0,
+   4.3,
+   -10.1
+  ]
+ },
+ "dragonborn-erkek-fighter-ID6": {
+  "m0": 3647,
+  "boynuzAyiklanan": 677,
+  "kontur": 26,
+  "kirinti": 44,
+  "son": 1974,
+  "tenLab": [
+   80.5,
+   3.2,
+   -8.8
+  ]
+ },
+ "dragonborn-erkek-fighter-ID7": {
+  "m0": 11464,
+  "boynuzAyiklanan": 595,
+  "kontur": 147,
+  "kirinti": 95,
+  "son": 7749,
+  "tenLab": [
+   78.5,
+   0.1,
+   -14.5
+  ]
+ },
+ "dragonborn-erkek-fighter-ID8": {
+  "m0": 4867,
+  "boynuzAyiklanan": 397,
+  "kontur": 83,
+  "kirinti": 11,
+  "son": 3077,
+  "tenLab": [
+   79.5,
+   3.8,
+   -10.1
+  ]
+ },
+ "dragonborn-erkek-fighter-ID9": {
+  "m0": 6045,
+  "boynuzAyiklanan": 962,
+  "kontur": 133,
+  "kirinti": 6,
+  "son": 3776,
+  "tenLab": [
+   79.3,
+   3.3,
+   -10.0
+  ]
+ },
+ "dragonborn-erkek-monk-GR": {
+  "m0": 9758,
+  "boynuzAyiklanan": 737,
+  "kontur": 104,
+  "kirinti": 12,
+  "son": 7033,
+  "tenLab": [
+   82.1,
+   4.3,
+   -11.2
+  ]
+ },
+ "dragonborn-erkek-monk-ID1": {
+  "m0": 5874,
+  "boynuzAyiklanan": 672,
+  "kontur": 106,
+  "kirinti": 45,
+  "son": 3752,
+  "tenLab": [
+   84.6,
+   5.0,
+   -6.0
+  ]
+ },
+ "dragonborn-erkek-monk-ID10": {
+  "m0": 2290,
+  "boynuzAyiklanan": 333,
+  "kontur": 35,
+  "kirinti": 17,
+  "son": 955,
+  "tenLab": [
+   54.5,
+   0.7,
+   -7.1
+  ]
+ },
+ "dragonborn-erkek-monk-ID11": {
+  "m0": 7111,
+  "boynuzAyiklanan": 718,
+  "kontur": 278,
+  "kirinti": 29,
+  "son": 4160,
+  "tenLab": [
+   77.1,
+   7.0,
+   -8.5
+  ]
+ },
+ "dragonborn-erkek-monk-ID2": {
+  "m0": 8129,
+  "boynuzAyiklanan": 578,
+  "kontur": 94,
+  "kirinti": 8,
+  "son": 5170,
+  "tenLab": [
+   87.7,
+   2.5,
+   -6.6
+  ]
+ },
+ "dragonborn-erkek-monk-ID3": {
+  "m0": 7117,
+  "boynuzAyiklanan": 973,
+  "kontur": 116,
+  "kirinti": 36,
+  "son": 4240,
+  "tenLab": [
+   79.4,
+   6.0,
+   -6.7
+  ]
+ },
+ "dragonborn-erkek-monk-ID4": {
+  "m0": 7002,
+  "boynuzAyiklanan": 831,
+  "kontur": 114,
+  "kirinti": 18,
+  "son": 4631,
+  "tenLab": [
+   80.2,
+   5.7,
+   -6.7
+  ]
+ },
+ "dragonborn-erkek-monk-ID5": {
+  "m0": 5852,
+  "boynuzAyiklanan": 736,
+  "kontur": 81,
+  "kirinti": 1,
+  "son": 3718,
+  "tenLab": [
+   80.9,
+   5.6,
+   -7.0
+  ]
+ },
+ "dragonborn-erkek-monk-ID6": {
+  "m0": 7624,
+  "boynuzAyiklanan": 891,
+  "kontur": 156,
+  "kirinti": 57,
+  "son": 4600,
+  "tenLab": [
+   82.0,
+   5.5,
+   -6.8
+  ]
+ },
+ "dragonborn-erkek-monk-ID7": {
+  "m0": 6660,
+  "boynuzAyiklanan": 837,
+  "kontur": 161,
+  "kirinti": 42,
+  "son": 4330,
+  "tenLab": [
+   80.6,
+   5.7,
+   -7.3
+  ]
+ },
+ "dragonborn-erkek-monk-ID8": {
+  "m0": 5975,
+  "boynuzAyiklanan": 800,
+  "kontur": 149,
+  "kirinti": 29,
+  "son": 3678,
+  "tenLab": [
+   81.7,
+   5.1,
+   -6.8
+  ]
+ },
+ "dragonborn-erkek-monk-ID9": {
+  "m0": 9616,
+  "boynuzAyiklanan": 3253,
+  "kontur": 225,
+  "kirinti": 49,
+  "son": 4016,
+  "tenLab": [
+   82.6,
+   5.0,
+   -4.7
+  ]
+ },
+ "dragonborn-erkek-paladin-GR": {
+  "m0": 4398,
+  "boynuzAyiklanan": 50,
+  "kontur": 74,
+  "kirinti": 41,
+  "son": 2878,
+  "tenLab": [
+   83.0,
+   3.2,
+   -9.0
+  ]
+ },
+ "dragonborn-erkek-paladin-ID1": {
+  "m0": 4209,
+  "boynuzAyiklanan": 57,
+  "kontur": 37,
+  "kirinti": 6,
+  "son": 2945,
+  "tenLab": [
+   84.8,
+   6.9,
+   -13.2
+  ]
+ },
+ "dragonborn-erkek-paladin-ID10": {
+  "m0": 11179,
+  "boynuzAyiklanan": 1498,
+  "kontur": 566,
+  "kirinti": 93,
+  "son": 5390,
+  "tenLab": [
+   85.3,
+   3.8,
+   -10.1
+  ]
+ },
+ "dragonborn-erkek-paladin-ID2": {
+  "m0": 5284,
+  "boynuzAyiklanan": 370,
+  "kontur": 48,
+  "kirinti": 42,
+  "son": 3162,
+  "tenLab": [
+   86.3,
+   5.8,
+   -11.2
+  ]
+ },
+ "dragonborn-erkek-paladin-ID3": {
+  "m0": 3464,
+  "boynuzAyiklanan": 298,
+  "kontur": 66,
+  "kirinti": 7,
+  "son": 2265,
+  "tenLab": [
+   82.4,
+   6.4,
+   -12.6
+  ]
+ },
+ "dragonborn-erkek-paladin-ID4": {
+  "m0": 8925,
+  "boynuzAyiklanan": 792,
+  "kontur": 115,
+  "kirinti": 154,
+  "son": 4800,
+  "tenLab": [
+   89.0,
+   4.5,
+   -11.0
+  ]
+ },
+ "dragonborn-erkek-paladin-ID5": {
+  "m0": 6736,
+  "boynuzAyiklanan": 921,
+  "kontur": 150,
+  "kirinti": 46,
+  "son": 3875,
+  "tenLab": [
+   85.5,
+   4.8,
+   -10.0
+  ]
+ },
+ "dragonborn-erkek-paladin-ID6": {
+  "m0": 3971,
+  "boynuzAyiklanan": 583,
+  "kontur": 92,
+  "kirinti": 47,
+  "son": 1988,
+  "tenLab": [
+   82.7,
+   6.0,
+   -11.2
+  ]
+ },
+ "dragonborn-erkek-paladin-ID7": {
+  "m0": 6806,
+  "boynuzAyiklanan": 1200,
+  "kontur": 92,
+  "kirinti": 67,
+  "son": 3670,
+  "tenLab": [
+   86.5,
+   4.9,
+   -9.2
+  ]
+ },
+ "dragonborn-erkek-paladin-ID8": {
+  "m0": 3904,
+  "boynuzAyiklanan": 702,
+  "kontur": 64,
+  "kirinti": 53,
+  "son": 1850,
+  "tenLab": [
+   85.5,
+   6.2,
+   -10.2
+  ]
+ },
+ "dragonborn-erkek-paladin-ID9": {
+  "m0": 5326,
+  "boynuzAyiklanan": 330,
+  "kontur": 66,
+  "kirinti": 26,
+  "son": 3490,
+  "tenLab": [
+   86.3,
+   6.9,
+   -13.1
+  ]
+ },
+ "dragonborn-erkek-ranger-GR": {
+  "m0": 4355,
+  "boynuzAyiklanan": 285,
+  "kontur": 54,
+  "kirinti": 2,
+  "son": 3160,
+  "tenLab": [
+   82.4,
+   4.3,
+   -11.4
+  ]
+ },
+ "dragonborn-erkek-ranger-ID1": {
+  "m0": 6707,
+  "boynuzAyiklanan": 803,
+  "kontur": 148,
+  "kirinti": 61,
+  "son": 4269,
+  "tenLab": [
+   81.8,
+   3.5,
+   -9.9
+  ]
+ },
+ "dragonborn-erkek-ranger-ID2": {
+  "m0": 7592,
+  "boynuzAyiklanan": 1045,
+  "kontur": 188,
+  "kirinti": 36,
+  "son": 4503,
+  "tenLab": [
+   81.2,
+   3.2,
+   -9.0
+  ]
+ },
+ "dragonborn-erkek-ranger-ID3": {
+  "m0": 7060,
+  "boynuzAyiklanan": 1148,
+  "kontur": 93,
+  "kirinti": 25,
+  "son": 4341,
+  "tenLab": [
+   82.5,
+   3.0,
+   -9.1
+  ]
+ },
+ "dragonborn-erkek-ranger-ID4": {
+  "m0": 11378,
+  "boynuzAyiklanan": 920,
+  "kontur": 511,
+  "kirinti": 124,
+  "son": 6280,
+  "tenLab": [
+   79.7,
+   2.6,
+   -7.8
+  ]
+ },
+ "dragonborn-erkek-ranger-ID5": {
+  "m0": 8343,
+  "boynuzAyiklanan": 887,
+  "kontur": 138,
+  "kirinti": 49,
+  "son": 5318,
+  "tenLab": [
+   81.6,
+   3.1,
+   -7.8
+  ]
+ },
+ "dragonborn-erkek-ranger-ID6": {
+  "m0": 8206,
+  "boynuzAyiklanan": 709,
+  "kontur": 102,
+  "kirinti": 38,
+  "son": 5623,
+  "tenLab": [
+   82.2,
+   3.0,
+   -7.9
+  ]
+ },
+ "dragonborn-erkek-ranger-ID7": {
+  "m0": 7013,
+  "boynuzAyiklanan": 467,
+  "kontur": 241,
+  "kirinti": 26,
+  "son": 4157,
+  "tenLab": [
+   80.4,
+   3.6,
+   -9.8
+  ]
+ },
+ "dragonborn-erkek-ranger-ID8": {
+  "m0": 7243,
+  "boynuzAyiklanan": 1215,
+  "kontur": 232,
+  "kirinti": 6,
+  "son": 4293,
+  "tenLab": [
+   80.8,
+   3.9,
+   -10.3
+  ]
+ },
+ "dragonborn-erkek-ranger-ID9": {
+  "m0": 6604,
+  "boynuzAyiklanan": 246,
+  "kontur": 136,
+  "kirinti": 34,
+  "son": 4362,
+  "tenLab": [
+   81.4,
+   3.5,
+   -9.2
+  ]
+ },
+ "dragonborn-erkek-rogue-GR": {
+  "m0": 4171,
+  "boynuzAyiklanan": 737,
+  "kontur": 54,
+  "kirinti": 17,
+  "son": 2179,
+  "tenLab": [
+   81.0,
+   3.9,
+   -10.1
+  ]
+ },
+ "dragonborn-erkek-rogue-ID1": {
+  "m0": 7431,
+  "boynuzAyiklanan": 935,
+  "kontur": 118,
+  "kirinti": 33,
+  "son": 4457,
+  "tenLab": [
+   84.3,
+   2.9,
+   -7.5
+  ]
+ },
+ "dragonborn-erkek-rogue-ID10": {
+  "m0": 8027,
+  "boynuzAyiklanan": 946,
+  "kontur": 45,
+  "kirinti": 80,
+  "son": 4722,
+  "tenLab": [
+   83.6,
+   2.6,
+   -7.5
+  ]
+ },
+ "dragonborn-erkek-rogue-ID2": {
+  "m0": 6652,
+  "boynuzAyiklanan": 849,
+  "kontur": 98,
+  "kirinti": 19,
+  "son": 4217,
+  "tenLab": [
+   84.0,
+   3.0,
+   -7.6
+  ]
+ },
+ "dragonborn-erkek-rogue-ID3": {
+  "m0": 6946,
+  "boynuzAyiklanan": 1472,
+  "kontur": 117,
+  "kirinti": 118,
+  "son": 2660,
+  "tenLab": [
+   82.4,
+   2.8,
+   -7.7
+  ]
+ },
+ "dragonborn-erkek-rogue-ID4": {
+  "neden": "maske yok"
+ },
+ "dragonborn-erkek-rogue-ID5": {
+  "m0": 4763,
+  "boynuzAyiklanan": 602,
+  "kontur": 73,
+  "kirinti": 9,
+  "son": 2969,
+  "tenLab": [
+   82.4,
+   4.0,
+   -9.8
+  ]
+ },
+ "dragonborn-erkek-rogue-ID6": {
+  "m0": 9312,
+  "boynuzAyiklanan": 1116,
+  "kontur": 164,
+  "kirinti": 50,
+  "son": 5394,
+  "tenLab": [
+   82.9,
+   3.0,
+   -7.4
+  ]
+ },
+ "dragonborn-erkek-rogue-ID7": {
+  "m0": 3279,
+  "boynuzAyiklanan": 864,
+  "kontur": 14,
+  "kirinti": 65,
+  "son": 1070,
+  "tenLab": [
+   80.5,
+   3.0,
+   -8.3
+  ]
+ },
+ "dragonborn-erkek-rogue-ID8": {
+  "m0": 9361,
+  "boynuzAyiklanan": 3926,
+  "kontur": 105,
+  "kirinti": 46,
+  "son": 3905,
+  "tenLab": [
+   82.4,
+   3.8,
+   -9.1
+  ]
+ },
+ "dragonborn-erkek-rogue-ID9": {
+  "m0": 6622,
+  "boynuzAyiklanan": 771,
+  "kontur": 109,
+  "kirinti": 31,
+  "son": 4142,
+  "tenLab": [
+   83.0,
+   3.4,
+   -8.6
+  ]
+ },
+ "dragonborn-erkek-sorcerer-GR": {
+  "m0": 9622,
+  "boynuzAyiklanan": 630,
+  "kontur": 176,
+  "kirinti": 11,
+  "son": 6868,
+  "tenLab": [
+   81.2,
+   4.0,
+   -11.1
+  ]
+ },
+ "dragonborn-erkek-sorcerer-SC-1": {
+  "m0": 6646,
+  "boynuzAyiklanan": 551,
+  "kontur": 83,
+  "kirinti": 24,
+  "son": 4564,
+  "tenLab": [
+   82.7,
+   5.3,
+   -11.4
+  ]
+ },
+ "dragonborn-erkek-sorcerer-SC-2": {
+  "m0": 7459,
+  "boynuzAyiklanan": 581,
+  "kontur": 174,
+  "kirinti": 24,
+  "son": 4978,
+  "tenLab": [
+   81.9,
+   5.7,
+   -12.3
+  ]
+ },
+ "dragonborn-erkek-sorcerer-SC-3": {
+  "m0": 8380,
+  "boynuzAyiklanan": 5745,
+  "kontur": 133,
+  "kirinti": 130,
+  "son": 265,
+  "tenLab": [
+   79.5,
+   -3.7,
+   -0.9
+  ]
+ },
+ "dragonborn-erkek-sorcerer-SC-4": {
+  "m0": 5604,
+  "boynuzAyiklanan": 143,
+  "kontur": 199,
+  "kirinti": 31,
+  "son": 3569,
+  "tenLab": [
+   81.3,
+   5.6,
+   -11.9
+  ]
+ },
+ "dragonborn-erkek-sorcerer-SC-5": {
+  "m0": 596,
+  "boynuzAyiklanan": 113,
+  "kontur": 0,
+  "kirinti": 20,
+  "son": 108,
+  "tenLab": [
+   99.2,
+   0.0,
+   -0.7
+  ]
+ },
+ "dragonborn-erkek-sorcerer-SC-6": {
+  "m0": 6883,
+  "boynuzAyiklanan": 34,
+  "kontur": 165,
+  "kirinti": 26,
+  "son": 4481,
+  "tenLab": [
+   79.4,
+   5.8,
+   -13.8
+  ]
+ },
+ "dragonborn-erkek-sorcerer-SC-7": {
+  "m0": 7805,
+  "boynuzAyiklanan": 835,
+  "kontur": 186,
+  "kirinti": 37,
+  "son": 4960,
+  "tenLab": [
+   82.1,
+   4.3,
+   -10.3
+  ]
+ },
+ "dragonborn-erkek-sorcerer-SC-8": {
+  "m0": 6446,
+  "boynuzAyiklanan": 779,
+  "kontur": 139,
+  "kirinti": 11,
+  "son": 4256,
+  "tenLab": [
+   82.2,
+   4.3,
+   -10.1
+  ]
+ },
+ "dragonborn-erkek-sorcerer-SC-9": {
+  "m0": 2119,
+  "boynuzAyiklanan": 1815,
+  "kontur": 68,
+  "kirinti": 0,
+  "son": 26,
+  "tenLab": [
+   64.2,
+   0.9,
+   -5.5
+  ]
+ },
+ "dragonborn-erkek-warlock-GR": {
+  "m0": 6657,
+  "boynuzAyiklanan": 953,
+  "kontur": 41,
+  "kirinti": 15,
+  "son": 4252,
+  "tenLab": [
+   84.1,
+   3.3,
+   -9.0
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-1": {
+  "m0": 7325,
+  "boynuzAyiklanan": 227,
+  "kontur": 206,
+  "kirinti": 41,
+  "son": 4907,
+  "tenLab": [
+   83.0,
+   1.1,
+   -7.0
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-10": {
+  "m0": 8354,
+  "boynuzAyiklanan": 19,
+  "kontur": 0,
+  "kirinti": 8,
+  "son": 7332,
+  "tenLab": [
+   94.6,
+   -8.6,
+   -7.6
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-11": {
+  "m0": 8666,
+  "boynuzAyiklanan": 369,
+  "kontur": 177,
+  "kirinti": 46,
+  "son": 5777,
+  "tenLab": [
+   85.2,
+   3.2,
+   -8.4
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-2": {
+  "m0": 8143,
+  "boynuzAyiklanan": 204,
+  "kontur": 175,
+  "kirinti": 45,
+  "son": 5514,
+  "tenLab": [
+   83.4,
+   1.0,
+   -7.2
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-3": {
+  "m0": 4693,
+  "boynuzAyiklanan": 146,
+  "kontur": 156,
+  "kirinti": 40,
+  "son": 2702,
+  "tenLab": [
+   72.8,
+   3.4,
+   -10.6
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-4": {
+  "m0": 4340,
+  "boynuzAyiklanan": 4329,
+  "kontur": 102,
+  "kirinti": 0,
+  "son": 0,
+  "tenLab": [
+   59.5,
+   -1.3,
+   0.4
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-5": {
+  "m0": 8175,
+  "boynuzAyiklanan": 220,
+  "kontur": 171,
+  "kirinti": 49,
+  "son": 5665,
+  "tenLab": [
+   85.8,
+   1.1,
+   -6.7
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-6": {
+  "m0": 6395,
+  "boynuzAyiklanan": 233,
+  "kontur": 171,
+  "kirinti": 38,
+  "son": 3884,
+  "tenLab": [
+   84.0,
+   2.5,
+   -8.4
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-7": {
+  "m0": 13300,
+  "boynuzAyiklanan": 255,
+  "kontur": 464,
+  "kirinti": 64,
+  "son": 8898,
+  "tenLab": [
+   84.1,
+   2.1,
+   -8.9
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-8": {
+  "m0": 4741,
+  "boynuzAyiklanan": 2387,
+  "kontur": 464,
+  "kirinti": 101,
+  "son": 30,
+  "tenLab": [
+   65.7,
+   4.6,
+   -1.4
+  ]
+ },
+ "dragonborn-erkek-warlock-WL-9": {
+  "m0": 9470,
+  "boynuzAyiklanan": 675,
+  "kontur": 308,
+  "kirinti": 43,
+  "son": 6164,
+  "tenLab": [
+   84.3,
+   1.3,
+   -7.6
+  ]
+ },
+ "dragonborn-erkek-wizard-GR": {
+  "m0": 5454,
+  "boynuzAyiklanan": 363,
+  "kontur": 80,
+  "kirinti": 20,
+  "son": 3773,
+  "tenLab": [
+   80.7,
+   4.8,
+   -12.4
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-A1": {
+  "m0": 6905,
+  "boynuzAyiklanan": 955,
+  "kontur": 140,
+  "kirinti": 62,
+  "son": 3534,
+  "tenLab": [
+   87.4,
+   0.3,
+   -6.3
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-A2": {
+  "m0": 6058,
+  "boynuzAyiklanan": 306,
+  "kontur": 113,
+  "kirinti": 46,
+  "son": 3934,
+  "tenLab": [
+   82.1,
+   1.2,
+   -8.8
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-A3": {
+  "m0": 4665,
+  "boynuzAyiklanan": 872,
+  "kontur": 95,
+  "kirinti": 16,
+  "son": 2560,
+  "tenLab": [
+   89.4,
+   0.3,
+   -5.5
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-A4": {
+  "m0": 4508,
+  "boynuzAyiklanan": 270,
+  "kontur": 94,
+  "kirinti": 14,
+  "son": 2936,
+  "tenLab": [
+   86.8,
+   0.7,
+   -7.6
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-A5": {
+  "m0": 7663,
+  "boynuzAyiklanan": 452,
+  "kontur": 187,
+  "kirinti": 72,
+  "son": 4364,
+  "tenLab": [
+   76.6,
+   0.1,
+   -8.2
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-A6": {
+  "m0": 7432,
+  "boynuzAyiklanan": 1126,
+  "kontur": 172,
+  "kirinti": 64,
+  "son": 3711,
+  "tenLab": [
+   85.2,
+   0.6,
+   -6.6
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-A7": {
+  "m0": 5611,
+  "boynuzAyiklanan": 488,
+  "kontur": 168,
+  "kirinti": 44,
+  "son": 3072,
+  "tenLab": [
+   83.6,
+   0.9,
+   -7.9
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-A8": {
+  "m0": 5888,
+  "boynuzAyiklanan": 245,
+  "kontur": 181,
+  "kirinti": 34,
+  "son": 3677,
+  "tenLab": [
+   86.2,
+   0.6,
+   -7.6
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-B1": {
+  "m0": 6259,
+  "boynuzAyiklanan": 519,
+  "kontur": 107,
+  "kirinti": 43,
+  "son": 3969,
+  "tenLab": [
+   82.1,
+   2.1,
+   -9.0
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-B2": {
+  "m0": 5940,
+  "boynuzAyiklanan": 764,
+  "kontur": 53,
+  "kirinti": 1,
+  "son": 3996,
+  "tenLab": [
+   81.1,
+   2.1,
+   -8.0
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-B3": {
+  "m0": 6138,
+  "boynuzAyiklanan": 746,
+  "kontur": 64,
+  "kirinti": 35,
+  "son": 3856,
+  "tenLab": [
+   81.9,
+   2.1,
+   -7.9
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-B4": {
+  "m0": 6768,
+  "boynuzAyiklanan": 699,
+  "kontur": 119,
+  "kirinti": 33,
+  "son": 4330,
+  "tenLab": [
+   80.9,
+   2.3,
+   -8.9
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-B5": {
+  "m0": 6913,
+  "boynuzAyiklanan": 327,
+  "kontur": 89,
+  "kirinti": 64,
+  "son": 4429,
+  "tenLab": [
+   83.5,
+   2.6,
+   -7.9
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-B6": {
+  "m0": 7254,
+  "boynuzAyiklanan": 675,
+  "kontur": 123,
+  "kirinti": 82,
+  "son": 4519,
+  "tenLab": [
+   81.5,
+   2.1,
+   -9.1
+  ]
+ },
+ "dragonborn-erkek-wizard-WZ-B7": {
+  "m0": 5202,
+  "boynuzAyiklanan": 782,
+  "kontur": 156,
+  "kirinti": 30,
+  "son": 3062,
+  "tenLab": [
+   80.6,
+   2.3,
+   -8.8
+  ]
+ },
+ "dragonborn-kadin-barbarian-GR": {
+  "m0": 7965,
+  "boynuzAyiklanan": 1558,
+  "kontur": 85,
+  "kirinti": 4,
+  "son": 4585,
+  "tenLab": [
+   89.9,
+   4.6,
+   -10.3
+  ]
+ },
+ "dragonborn-kadin-barbarian-ID1": {
+  "m0": 6925,
+  "boynuzAyiklanan": 1038,
+  "kontur": 81,
+  "kirinti": 92,
+  "son": 3284,
+  "tenLab": [
+   86.0,
+   4.6,
+   -10.7
+  ]
+ },
+ "dragonborn-kadin-barbarian-ID2": {
+  "m0": 7122,
+  "boynuzAyiklanan": 889,
+  "kontur": 27,
+  "kirinti": 26,
+  "son": 4308,
+  "tenLab": [
+   87.5,
+   5.4,
+   -11.9
+  ]
+ },
+ "dragonborn-kadin-barbarian-ID3": {
+  "m0": 7139,
+  "boynuzAyiklanan": 651,
+  "kontur": 68,
+  "kirinti": 40,
+  "son": 4008,
+  "tenLab": [
+   85.4,
+   6.0,
+   -12.5
+  ]
+ },
+ "dragonborn-kadin-barbarian-ID4": {
+  "m0": 7642,
+  "boynuzAyiklanan": 1955,
+  "kontur": 156,
+  "kirinti": 54,
+  "son": 3689,
+  "tenLab": [
+   85.2,
+   5.2,
+   -11.2
+  ]
+ },
+ "dragonborn-kadin-barbarian-ID5": {
+  "m0": 7258,
+  "boynuzAyiklanan": 2065,
+  "kontur": 112,
+  "kirinti": 61,
+  "son": 3212,
+  "tenLab": [
+   88.2,
+   4.9,
+   -10.2
+  ]
+ },
+ "dragonborn-kadin-barbarian-ID6": {
+  "m0": 6797,
+  "boynuzAyiklanan": 547,
+  "kontur": 56,
+  "kirinti": 60,
+  "son": 3961,
+  "tenLab": [
+   84.1,
+   6.0,
+   -12.5
+  ]
+ },
+ "dragonborn-kadin-barbarian-ID7": {
+  "m0": 7468,
+  "boynuzAyiklanan": 27,
+  "kontur": 141,
+  "kirinti": 157,
+  "son": 3842,
+  "tenLab": [
+   82.1,
+   4.3,
+   -11.6
+  ]
+ },
+ "dragonborn-kadin-barbarian-ID8": {
+  "m0": 8479,
+  "boynuzAyiklanan": 1568,
+  "kontur": 176,
+  "kirinti": 32,
+  "son": 4567,
+  "tenLab": [
+   82.1,
+   5.2,
+   -11.5
+  ]
+ },
+ "dragonborn-kadin-barbarian-ID9": {
+  "m0": 5210,
+  "boynuzAyiklanan": 901,
+  "kontur": 72,
+  "kirinti": 29,
+  "son": 2740,
+  "tenLab": [
+   86.5,
+   5.1,
+   -11.1
+  ]
+ },
+ "dragonborn-kadin-bard-GR": {
+  "m0": 4769,
+  "boynuzAyiklanan": 140,
+  "kontur": 75,
+  "kirinti": 20,
+  "son": 3327,
+  "tenLab": [
+   89.7,
+   4.8,
+   -11.1
+  ]
+ },
+ "dragonborn-kadin-bard-ID1": {
+  "m0": 3796,
+  "boynuzAyiklanan": 439,
+  "kontur": 40,
+  "kirinti": 38,
+  "son": 2176,
+  "tenLab": [
+   89.6,
+   4.5,
+   -11.3
+  ]
+ },
+ "dragonborn-kadin-bard-ID2": {
+  "m0": 4661,
+  "boynuzAyiklanan": 763,
+  "kontur": 128,
+  "kirinti": 27,
+  "son": 2371,
+  "tenLab": [
+   84.4,
+   4.2,
+   -10.8
+  ]
+ },
+ "dragonborn-kadin-bard-ID3": {
+  "m0": 4930,
+  "boynuzAyiklanan": 729,
+  "kontur": 76,
+  "kirinti": 29,
+  "son": 2790,
+  "tenLab": [
+   83.8,
+   4.9,
+   -12.1
+  ]
+ },
+ "dragonborn-kadin-bard-ID4": {
+  "m0": 4271,
+  "boynuzAyiklanan": 303,
+  "kontur": 125,
+  "kirinti": 13,
+  "son": 2542,
+  "tenLab": [
+   85.9,
+   6.5,
+   -14.3
+  ]
+ },
+ "dragonborn-kadin-bard-ID5": {
+  "m0": 7481,
+  "boynuzAyiklanan": 4063,
+  "kontur": 192,
+  "kirinti": 18,
+  "son": 2120,
+  "tenLab": [
+   81.0,
+   6.4,
+   -14.3
+  ]
+ },
+ "dragonborn-kadin-bard-ID6": {
+  "m0": 4546,
+  "boynuzAyiklanan": 348,
+  "kontur": 94,
+  "kirinti": 21,
+  "son": 2772,
+  "tenLab": [
+   84.4,
+   6.5,
+   -14.6
+  ]
+ },
+ "dragonborn-kadin-bard-ID7": {
+  "m0": 4620,
+  "boynuzAyiklanan": 1220,
+  "kontur": 138,
+  "kirinti": 32,
+  "son": 1785,
+  "tenLab": [
+   80.8,
+   6.5,
+   -13.4
+  ]
+ },
+ "dragonborn-kadin-bard-ID8": {
+  "m0": 4911,
+  "boynuzAyiklanan": 699,
+  "kontur": 111,
+  "kirinti": 42,
+  "son": 2672,
+  "tenLab": [
+   87.4,
+   5.6,
+   -11.7
+  ]
+ },
+ "dragonborn-kadin-bard-ID9": {
+  "m0": 4507,
+  "boynuzAyiklanan": 985,
+  "kontur": 108,
+  "kirinti": 46,
+  "son": 2102,
+  "tenLab": [
+   84.0,
+   6.2,
+   -12.5
+  ]
+ },
+ "dragonborn-kadin-cleric-GR": {
+  "m0": 5904,
+  "boynuzAyiklanan": 1673,
+  "kontur": 45,
+  "kirinti": 18,
+  "son": 3092,
+  "tenLab": [
+   89.3,
+   5.1,
+   -11.1
+  ]
+ },
+ "dragonborn-kadin-cleric-ID1": {
+  "m0": 6307,
+  "boynuzAyiklanan": 3270,
+  "kontur": 149,
+  "kirinti": 36,
+  "son": 1936,
+  "tenLab": [
+   85.2,
+   3.4,
+   -8.7
+  ]
+ },
+ "dragonborn-kadin-cleric-ID2": {
+  "m0": 4745,
+  "boynuzAyiklanan": 889,
+  "kontur": 111,
+  "kirinti": 37,
+  "son": 2571,
+  "tenLab": [
+   85.7,
+   3.3,
+   -8.9
+  ]
+ },
+ "dragonborn-kadin-cleric-ID3": {
+  "m0": 6093,
+  "boynuzAyiklanan": 487,
+  "kontur": 209,
+  "kirinti": 125,
+  "son": 3325,
+  "tenLab": [
+   83.1,
+   2.6,
+   -12.4
+  ]
+ },
+ "dragonborn-kadin-cleric-ID4": {
+  "m0": 4487,
+  "boynuzAyiklanan": 489,
+  "kontur": 96,
+  "kirinti": 26,
+  "son": 2676,
+  "tenLab": [
+   86.6,
+   3.4,
+   -8.6
+  ]
+ },
+ "dragonborn-kadin-cleric-ID5": {
+  "m0": 7043,
+  "boynuzAyiklanan": 2381,
+  "kontur": 110,
+  "kirinti": 52,
+  "son": 2676,
+  "tenLab": [
+   83.8,
+   2.1,
+   -7.5
+  ]
+ },
+ "dragonborn-kadin-cleric-ID6": {
+  "m0": 2050,
+  "boynuzAyiklanan": 1849,
+  "kontur": 97,
+  "kirinti": 0,
+  "son": 0,
+  "tenLab": [
+   59.0,
+   0.0,
+   -1.3
+  ]
+ },
+ "dragonborn-kadin-cleric-ID7": {
+  "m0": 6339,
+  "boynuzAyiklanan": 2032,
+  "kontur": 262,
+  "kirinti": 54,
+  "son": 2297,
+  "tenLab": [
+   81.9,
+   1.9,
+   -7.5
+  ]
+ },
+ "dragonborn-kadin-cleric-ID8": {
+  "m0": 5142,
+  "boynuzAyiklanan": 910,
+  "kontur": 122,
+  "kirinti": 8,
+  "son": 2691,
+  "tenLab": [
+   85.0,
+   2.8,
+   -8.5
+  ]
+ },
+ "dragonborn-kadin-cleric-ID9": {
+  "m0": 5469,
+  "boynuzAyiklanan": 724,
+  "kontur": 68,
+  "kirinti": 9,
+  "son": 3298,
+  "tenLab": [
+   87.7,
+   3.1,
+   -8.9
+  ]
+ },
+ "dragonborn-kadin-druid-GR": {
+  "m0": 8174,
+  "boynuzAyiklanan": 851,
+  "kontur": 48,
+  "kirinti": 22,
+  "son": 5283,
+  "tenLab": [
+   88.2,
+   4.9,
+   -11.0
+  ]
+ },
+ "dragonborn-kadin-druid-ID1": {
+  "m0": 4781,
+  "boynuzAyiklanan": 662,
+  "kontur": 68,
+  "kirinti": 53,
+  "son": 2450,
+  "tenLab": [
+   85.7,
+   6.9,
+   -14.7
+  ]
+ },
+ "dragonborn-kadin-druid-ID2": {
+  "m0": 2929,
+  "boynuzAyiklanan": 426,
+  "kontur": 6,
+  "kirinti": 28,
+  "son": 1447,
+  "tenLab": [
+   87.8,
+   6.9,
+   -14.3
+  ]
+ },
+ "dragonborn-kadin-druid-ID3": {
+  "m0": 4640,
+  "boynuzAyiklanan": 1341,
+  "kontur": 49,
+  "kirinti": 50,
+  "son": 1731,
+  "tenLab": [
+   87.8,
+   6.7,
+   -13.4
+  ]
+ },
+ "dragonborn-kadin-druid-ID4": {
+  "m0": 177,
+  "boynuzAyiklanan": 170,
+  "kontur": 0,
+  "kirinti": 0,
+  "son": 0,
+  "tenLab": [
+   64.7,
+   11.8,
+   10.9
+  ]
+ },
+ "dragonborn-kadin-druid-ID5": {
+  "m0": 4338,
+  "boynuzAyiklanan": 665,
+  "kontur": 30,
+  "kirinti": 56,
+  "son": 2186,
+  "tenLab": [
+   84.0,
+   7.3,
+   -14.5
+  ]
+ },
+ "dragonborn-kadin-druid-ID6": {
+  "m0": 4036,
+  "boynuzAyiklanan": 460,
+  "kontur": 100,
+  "kirinti": 63,
+  "son": 2010,
+  "tenLab": [
+   84.3,
+   7.8,
+   -15.5
+  ]
+ },
+ "dragonborn-kadin-druid-ID7": {
+  "m0": 3889,
+  "boynuzAyiklanan": 512,
+  "kontur": 59,
+  "kirinti": 7,
+  "son": 2206,
+  "tenLab": [
+   85.4,
+   7.5,
+   -15.5
+  ]
+ },
+ "dragonborn-kadin-druid-ID8": {
+  "m0": 4882,
+  "boynuzAyiklanan": 486,
+  "kontur": 97,
+  "kirinti": 38,
+  "son": 2487,
+  "tenLab": [
+   85.5,
+   7.5,
+   -14.8
+  ]
+ },
+ "dragonborn-kadin-fighter-GR": {
+  "m0": 5934,
+  "boynuzAyiklanan": 560,
+  "kontur": 151,
+  "kirinti": 35,
+  "son": 3700,
+  "tenLab": [
+   86.1,
+   5.1,
+   -11.3
+  ]
+ },
+ "dragonborn-kadin-fighter-ID1": {
+  "m0": 3674,
+  "boynuzAyiklanan": 639,
+  "kontur": 37,
+  "kirinti": 16,
+  "son": 1997,
+  "tenLab": [
+   87.3,
+   4.3,
+   -11.4
+  ]
+ },
+ "dragonborn-kadin-fighter-ID10": {
+  "m0": 10726,
+  "boynuzAyiklanan": 7889,
+  "kontur": 29,
+  "kirinti": 26,
+  "son": 1568,
+  "tenLab": [
+   89.9,
+   4.4,
+   -11.0
+  ]
+ },
+ "dragonborn-kadin-fighter-ID2": {
+  "m0": 2961,
+  "boynuzAyiklanan": 588,
+  "kontur": 66,
+  "kirinti": 1,
+  "son": 1693,
+  "tenLab": [
+   88.2,
+   4.5,
+   -12.2
+  ]
+ },
+ "dragonborn-kadin-fighter-ID3": {
+  "m0": 6374,
+  "boynuzAyiklanan": 719,
+  "kontur": 129,
+  "kirinti": 58,
+  "son": 3485,
+  "tenLab": [
+   85.1,
+   4.0,
+   -10.8
+  ]
+ },
+ "dragonborn-kadin-fighter-ID4": {
+  "m0": 7242,
+  "boynuzAyiklanan": 395,
+  "kontur": 115,
+  "kirinti": 37,
+  "son": 4629,
+  "tenLab": [
+   87.8,
+   5.0,
+   -12.1
+  ]
+ },
+ "dragonborn-kadin-fighter-ID5": {
+  "m0": 9588,
+  "boynuzAyiklanan": 784,
+  "kontur": 92,
+  "kirinti": 18,
+  "son": 6039,
+  "tenLab": [
+   88.1,
+   6.0,
+   -11.4
+  ]
+ },
+ "dragonborn-kadin-fighter-ID6": {
+  "m0": 3367,
+  "boynuzAyiklanan": 358,
+  "kontur": 68,
+  "kirinti": 13,
+  "son": 1991,
+  "tenLab": [
+   85.4,
+   5.6,
+   -12.7
+  ]
+ },
+ "dragonborn-kadin-fighter-ID7": {
+  "m0": 9459,
+  "boynuzAyiklanan": 580,
+  "kontur": 149,
+  "kirinti": 41,
+  "son": 6169,
+  "tenLab": [
+   79.7,
+   -1.2,
+   -18.0
+  ]
+ },
+ "dragonborn-kadin-fighter-ID8": {
+  "m0": 3655,
+  "boynuzAyiklanan": 691,
+  "kontur": 47,
+  "kirinti": 11,
+  "son": 1933,
+  "tenLab": [
+   87.3,
+   5.1,
+   -11.4
+  ]
+ },
+ "dragonborn-kadin-fighter-ID9": {
+  "m0": 4231,
+  "boynuzAyiklanan": 458,
+  "kontur": 44,
+  "kirinti": 12,
+  "son": 2624,
+  "tenLab": [
+   86.6,
+   5.2,
+   -12.3
+  ]
+ },
+ "dragonborn-kadin-monk-GR": {
+  "m0": 7281,
+  "boynuzAyiklanan": 1110,
+  "kontur": 177,
+  "kirinti": 22,
+  "son": 4249,
+  "tenLab": [
+   87.3,
+   4.7,
+   -11.0
+  ]
+ },
+ "dragonborn-kadin-monk-ID1": {
+  "m0": 5488,
+  "boynuzAyiklanan": 644,
+  "kontur": 130,
+  "kirinti": 19,
+  "son": 3072,
+  "tenLab": [
+   90.6,
+   9.8,
+   -11.8
+  ]
+ },
+ "dragonborn-kadin-monk-ID10": {
+  "m0": 4988,
+  "boynuzAyiklanan": 561,
+  "kontur": 136,
+  "kirinti": 46,
+  "son": 2613,
+  "tenLab": [
+   66.3,
+   -0.2,
+   -9.2
+  ]
+ },
+ "dragonborn-kadin-monk-ID11": {
+  "m0": 5916,
+  "boynuzAyiklanan": 582,
+  "kontur": 121,
+  "kirinti": 55,
+  "son": 3408,
+  "tenLab": [
+   89.4,
+   11.9,
+   -14.0
+  ]
+ },
+ "dragonborn-kadin-monk-ID2": {
+  "m0": 9640,
+  "boynuzAyiklanan": 744,
+  "kontur": 310,
+  "kirinti": 74,
+  "son": 5673,
+  "tenLab": [
+   90.5,
+   9.7,
+   -11.6
+  ]
+ },
+ "dragonborn-kadin-monk-ID3": {
+  "m0": 6157,
+  "boynuzAyiklanan": 857,
+  "kontur": 162,
+  "kirinti": 94,
+  "son": 3045,
+  "tenLab": [
+   90.3,
+   10.2,
+   -12.8
+  ]
+ },
+ "dragonborn-kadin-monk-ID4": {
+  "m0": 5130,
+  "boynuzAyiklanan": 555,
+  "kontur": 55,
+  "kirinti": 33,
+  "son": 2907,
+  "tenLab": [
+   89.6,
+   10.6,
+   -13.3
+  ]
+ },
+ "dragonborn-kadin-monk-ID5": {
+  "m0": 3893,
+  "boynuzAyiklanan": 513,
+  "kontur": 20,
+  "kirinti": 32,
+  "son": 2146,
+  "tenLab": [
+   89.4,
+   11.1,
+   -14.0
+  ]
+ },
+ "dragonborn-kadin-monk-ID6": {
+  "m0": 4900,
+  "boynuzAyiklanan": 565,
+  "kontur": 63,
+  "kirinti": 82,
+  "son": 2098,
+  "tenLab": [
+   89.9,
+   10.1,
+   -12.7
+  ]
+ },
+ "dragonborn-kadin-monk-ID7": {
+  "m0": 5337,
+  "boynuzAyiklanan": 525,
+  "kontur": 114,
+  "kirinti": 42,
+  "son": 3170,
+  "tenLab": [
+   89.9,
+   10.1,
+   -13.3
+  ]
+ },
+ "dragonborn-kadin-monk-ID8": {
+  "m0": 3026,
+  "boynuzAyiklanan": 597,
+  "kontur": 40,
+  "kirinti": 52,
+  "son": 1155,
+  "tenLab": [
+   89.6,
+   10.1,
+   -12.9
+  ]
+ },
+ "dragonborn-kadin-monk-ID9": {
+  "m0": 5487,
+  "boynuzAyiklanan": 683,
+  "kontur": 47,
+  "kirinti": 37,
+  "son": 3111,
+  "tenLab": [
+   89.5,
+   10.8,
+   -11.9
+  ]
+ },
+ "dragonborn-kadin-paladin-GR": {
+  "m0": 5905,
+  "boynuzAyiklanan": 1338,
+  "kontur": 103,
+  "kirinti": 47,
+  "son": 2791,
+  "tenLab": [
+   80.6,
+   4.2,
+   -9.9
+  ]
+ },
+ "dragonborn-kadin-paladin-ID1": {
+  "m0": 2455,
+  "boynuzAyiklanan": 81,
+  "kontur": 8,
+  "kirinti": 20,
+  "son": 1492,
+  "tenLab": [
+   90.0,
+   8.2,
+   -14.4
+  ]
+ },
+ "dragonborn-kadin-paladin-ID10": {
+  "m0": 10889,
+  "boynuzAyiklanan": 1442,
+  "kontur": 481,
+  "kirinti": 107,
+  "son": 4977,
+  "tenLab": [
+   88.2,
+   2.3,
+   -8.2
+  ]
+ },
+ "dragonborn-kadin-paladin-ID2": {
+  "m0": 3714,
+  "boynuzAyiklanan": 364,
+  "kontur": 35,
+  "kirinti": 66,
+  "son": 1840,
+  "tenLab": [
+   90.1,
+   6.9,
+   -13.4
+  ]
+ },
+ "dragonborn-kadin-paladin-ID3": {
+  "m0": 1649,
+  "boynuzAyiklanan": 589,
+  "kontur": 2,
+  "kirinti": 3,
+  "son": 541,
+  "tenLab": [
+   88.9,
+   6.4,
+   -11.5
+  ]
+ },
+ "dragonborn-kadin-paladin-ID4": {
+  "m0": 5298,
+  "boynuzAyiklanan": 751,
+  "kontur": 104,
+  "kirinti": 121,
+  "son": 2147,
+  "tenLab": [
+   90.3,
+   5.8,
+   -12.9
+  ]
+ },
+ "dragonborn-kadin-paladin-ID5": {
+  "m0": 3541,
+  "boynuzAyiklanan": 581,
+  "kontur": 5,
+  "kirinti": 20,
+  "son": 1647,
+  "tenLab": [
+   88.4,
+   9.1,
+   -14.7
+  ]
+ },
+ "dragonborn-kadin-paladin-ID6": {
+  "m0": 2498,
+  "boynuzAyiklanan": 393,
+  "kontur": 6,
+  "kirinti": 32,
+  "son": 1066,
+  "tenLab": [
+   88.2,
+   9.1,
+   -14.8
+  ]
+ },
+ "dragonborn-kadin-paladin-ID7": {
+  "m0": 3965,
+  "boynuzAyiklanan": 636,
+  "kontur": 7,
+  "kirinti": 43,
+  "son": 1906,
+  "tenLab": [
+   88.6,
+   8.4,
+   -13.8
+  ]
+ },
+ "dragonborn-kadin-paladin-ID8": {
+  "m0": 1966,
+  "boynuzAyiklanan": 488,
+  "kontur": 0,
+  "kirinti": 33,
+  "son": 514,
+  "tenLab": [
+   87.5,
+   6.7,
+   -10.1
+  ]
+ },
+ "dragonborn-kadin-paladin-ID9": {
+  "m0": 3514,
+  "boynuzAyiklanan": 242,
+  "kontur": 29,
+  "kirinti": 62,
+  "son": 1859,
+  "tenLab": [
+   87.9,
+   9.4,
+   -16.8
+  ]
+ },
+ "dragonborn-kadin-ranger-GR": {
+  "m0": 4801,
+  "boynuzAyiklanan": 242,
+  "kontur": 159,
+  "kirinti": 23,
+  "son": 3029,
+  "tenLab": [
+   84.5,
+   5.6,
+   -12.3
+  ]
+ },
+ "dragonborn-kadin-ranger-ID1": {
+  "m0": 4692,
+  "boynuzAyiklanan": 799,
+  "kontur": 41,
+  "kirinti": 68,
+  "son": 2390,
+  "tenLab": [
+   88.7,
+   4.3,
+   -9.9
+  ]
+ },
+ "dragonborn-kadin-ranger-ID2": {
+  "m0": 4652,
+  "boynuzAyiklanan": 892,
+  "kontur": 77,
+  "kirinti": 29,
+  "son": 2499,
+  "tenLab": [
+   89.0,
+   4.0,
+   -9.0
+  ]
+ },
+ "dragonborn-kadin-ranger-ID3": {
+  "m0": 4470,
+  "boynuzAyiklanan": 340,
+  "kontur": 37,
+  "kirinti": 50,
+  "son": 2704,
+  "tenLab": [
+   89.9,
+   4.6,
+   -10.0
+  ]
+ },
+ "dragonborn-kadin-ranger-ID4": {
+  "m0": 6866,
+  "boynuzAyiklanan": 609,
+  "kontur": 259,
+  "kirinti": 40,
+  "son": 3665,
+  "tenLab": [
+   84.7,
+   4.6,
+   -10.0
+  ]
+ },
+ "dragonborn-kadin-ranger-ID5": {
+  "m0": 5644,
+  "boynuzAyiklanan": 771,
+  "kontur": 124,
+  "kirinti": 46,
+  "son": 2823,
+  "tenLab": [
+   85.7,
+   4.0,
+   -7.8
+  ]
+ },
+ "dragonborn-kadin-ranger-ID6": {
+  "m0": 5529,
+  "boynuzAyiklanan": 606,
+  "kontur": 83,
+  "kirinti": 55,
+  "son": 3062,
+  "tenLab": [
+   86.6,
+   4.6,
+   -8.6
+  ]
+ },
+ "dragonborn-kadin-ranger-ID7": {
+  "m0": 5009,
+  "boynuzAyiklanan": 804,
+  "kontur": 155,
+  "kirinti": 61,
+  "son": 2234,
+  "tenLab": [
+   86.5,
+   4.6,
+   -10.8
+  ]
+ },
+ "dragonborn-kadin-ranger-ID8": {
+  "m0": 4825,
+  "boynuzAyiklanan": 631,
+  "kontur": 64,
+  "kirinti": 65,
+  "son": 2348,
+  "tenLab": [
+   87.0,
+   5.3,
+   -12.1
+  ]
+ },
+ "dragonborn-kadin-ranger-ID9": {
+  "m0": 5273,
+  "boynuzAyiklanan": 308,
+  "kontur": 95,
+  "kirinti": 36,
+  "son": 3188,
+  "tenLab": [
+   88.4,
+   5.1,
+   -11.8
+  ]
+ },
+ "dragonborn-kadin-rogue-GR": {
+  "m0": 1765,
+  "boynuzAyiklanan": 680,
+  "kontur": 13,
+  "kirinti": 24,
+  "son": 459,
+  "tenLab": [
+   77.0,
+   6.4,
+   -12.7
+  ]
+ },
+ "dragonborn-kadin-rogue-ID1": {
+  "m0": 6621,
+  "boynuzAyiklanan": 902,
+  "kontur": 59,
+  "kirinti": 30,
+  "son": 3773,
+  "tenLab": [
+   88.1,
+   4.1,
+   -8.7
+  ]
+ },
+ "dragonborn-kadin-rogue-ID10": {
+  "m0": 7414,
+  "boynuzAyiklanan": 1006,
+  "kontur": 50,
+  "kirinti": 73,
+  "son": 3768,
+  "tenLab": [
+   85.5,
+   4.3,
+   -9.1
+  ]
+ },
+ "dragonborn-kadin-rogue-ID2": {
+  "m0": 5431,
+  "boynuzAyiklanan": 595,
+  "kontur": 58,
+  "kirinti": 25,
+  "son": 3337,
+  "tenLab": [
+   89.1,
+   4.2,
+   -9.1
+  ]
+ },
+ "dragonborn-kadin-rogue-ID3": {
+  "m0": 6850,
+  "boynuzAyiklanan": 992,
+  "kontur": 44,
+  "kirinti": 141,
+  "son": 3115,
+  "tenLab": [
+   87.5,
+   4.2,
+   -8.8
+  ]
+ },
+ "dragonborn-kadin-rogue-ID4": {
+  "neden": "maske yok"
+ },
+ "dragonborn-kadin-rogue-ID5": {
+  "m0": 4139,
+  "boynuzAyiklanan": 420,
+  "kontur": 15,
+  "kirinti": 19,
+  "son": 2556,
+  "tenLab": [
+   89.3,
+   4.5,
+   -10.1
+  ]
+ },
+ "dragonborn-kadin-rogue-ID6": {
+  "m0": 7773,
+  "boynuzAyiklanan": 1069,
+  "kontur": 44,
+  "kirinti": 126,
+  "son": 4219,
+  "tenLab": [
+   87.7,
+   4.6,
+   -9.3
+  ]
+ },
+ "dragonborn-kadin-rogue-ID7": {
+  "m0": 3251,
+  "boynuzAyiklanan": 804,
+  "kontur": 23,
+  "kirinti": 54,
+  "son": 1194,
+  "tenLab": [
+   85.1,
+   4.3,
+   -9.7
+  ]
+ },
+ "dragonborn-kadin-rogue-ID8": {
+  "m0": 9236,
+  "boynuzAyiklanan": 4543,
+  "kontur": 73,
+  "kirinti": 18,
+  "son": 3277,
+  "tenLab": [
+   86.1,
+   5.0,
+   -11.1
+  ]
+ },
+ "dragonborn-kadin-rogue-ID9": {
+  "m0": 6551,
+  "boynuzAyiklanan": 999,
+  "kontur": 83,
+  "kirinti": 11,
+  "son": 3634,
+  "tenLab": [
+   88.0,
+   4.8,
+   -9.8
+  ]
+ },
+ "dragonborn-kadin-sorcerer-GR": {
+  "m0": 7279,
+  "boynuzAyiklanan": 573,
+  "kontur": 126,
+  "kirinti": 18,
+  "son": 4688,
+  "tenLab": [
+   87.2,
+   5.2,
+   -11.2
+  ]
+ },
+ "dragonborn-kadin-sorcerer-SC-1": {
+  "m0": 5093,
+  "boynuzAyiklanan": 745,
+  "kontur": 80,
+  "kirinti": 53,
+  "son": 2820,
+  "tenLab": [
+   88.7,
+   6.2,
+   -13.8
+  ]
+ },
+ "dragonborn-kadin-sorcerer-SC-2": {
+  "m0": 4556,
+  "boynuzAyiklanan": 759,
+  "kontur": 57,
+  "kirinti": 17,
+  "son": 2559,
+  "tenLab": [
+   88.7,
+   6.4,
+   -14.3
+  ]
+ },
+ "dragonborn-kadin-sorcerer-SC-3": {
+  "m0": 6587,
+  "boynuzAyiklanan": 22,
+  "kontur": 3,
+  "kirinti": 22,
+  "son": 5361,
+  "tenLab": [
+   74.7,
+   -12.4,
+   -9.5
+  ]
+ },
+ "dragonborn-kadin-sorcerer-SC-4": {
+  "m0": 5143,
+  "boynuzAyiklanan": 1790,
+  "kontur": 81,
+  "kirinti": 26,
+  "son": 2120,
+  "tenLab": [
+   88.1,
+   6.6,
+   -13.2
+  ]
+ },
+ "dragonborn-kadin-sorcerer-SC-5": {
+  "m0": 447,
+  "boynuzAyiklanan": 128,
+  "kontur": 0,
+  "kirinti": 3,
+  "son": 88,
+  "tenLab": [
+   99.1,
+   0.0,
+   -0.2
+  ]
+ },
+ "dragonborn-kadin-sorcerer-SC-6": {
+  "m0": 5831,
+  "boynuzAyiklanan": 576,
+  "kontur": 104,
+  "kirinti": 98,
+  "son": 3123,
+  "tenLab": [
+   86.1,
+   3.9,
+   -9.8
+  ]
+ },
+ "dragonborn-kadin-sorcerer-SC-7": {
+  "m0": 5515,
+  "boynuzAyiklanan": 871,
+  "kontur": 99,
+  "kirinti": 59,
+  "son": 2759,
+  "tenLab": [
+   86.2,
+   5.3,
+   -11.4
+  ]
+ },
+ "dragonborn-kadin-sorcerer-SC-8": {
+  "m0": 4404,
+  "boynuzAyiklanan": 478,
+  "kontur": 63,
+  "kirinti": 40,
+  "son": 2581,
+  "tenLab": [
+   88.7,
+   5.5,
+   -11.4
+  ]
+ },
+ "dragonborn-kadin-sorcerer-SC-9": {
+  "m0": 4380,
+  "boynuzAyiklanan": 684,
+  "kontur": 105,
+  "kirinti": 25,
+  "son": 1980,
+  "tenLab": [
+   85.0,
+   2.8,
+   -8.8
+  ]
+ },
+ "dragonborn-kadin-warlock-GR": {
+  "m0": 6171,
+  "boynuzAyiklanan": 899,
+  "kontur": 86,
+  "kirinti": 45,
+  "son": 3451,
+  "tenLab": [
+   88.7,
+   5.1,
+   -11.0
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-1": {
+  "m0": 7312,
+  "boynuzAyiklanan": 353,
+  "kontur": 116,
+  "kirinti": 46,
+  "son": 4883,
+  "tenLab": [
+   85.6,
+   3.9,
+   -7.7
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-10": {
+  "m0": 10564,
+  "boynuzAyiklanan": 9,
+  "kontur": 0,
+  "kirinti": 36,
+  "son": 9072,
+  "tenLab": [
+   88.5,
+   -7.2,
+   -14.0
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-11": {
+  "m0": 6434,
+  "boynuzAyiklanan": 279,
+  "kontur": 130,
+  "kirinti": 87,
+  "son": 4093,
+  "tenLab": [
+   83.8,
+   3.0,
+   -8.6
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-2": {
+  "m0": 6789,
+  "boynuzAyiklanan": 250,
+  "kontur": 133,
+  "kirinti": 26,
+  "son": 4505,
+  "tenLab": [
+   86.3,
+   3.1,
+   -7.7
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-3": {
+  "m0": 4082,
+  "boynuzAyiklanan": 337,
+  "kontur": 122,
+  "kirinti": 48,
+  "son": 2183,
+  "tenLab": [
+   76.5,
+   4.5,
+   -9.0
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-4": {
+  "m0": 5055,
+  "boynuzAyiklanan": 4857,
+  "kontur": 108,
+  "kirinti": 0,
+  "son": 0,
+  "tenLab": [
+   59.5,
+   2.5,
+   0.3
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-5": {
+  "m0": 8453,
+  "boynuzAyiklanan": 7,
+  "kontur": 214,
+  "kirinti": 42,
+  "son": 6197,
+  "tenLab": [
+   85.1,
+   4.9,
+   -10.1
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-6": {
+  "m0": 6768,
+  "boynuzAyiklanan": 200,
+  "kontur": 179,
+  "kirinti": 39,
+  "son": 4264,
+  "tenLab": [
+   86.4,
+   3.1,
+   -8.0
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-7": {
+  "m0": 14204,
+  "boynuzAyiklanan": 442,
+  "kontur": 471,
+  "kirinti": 84,
+  "son": 8305,
+  "tenLab": [
+   82.2,
+   4.3,
+   -10.2
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-8": {
+  "m0": 3370,
+  "boynuzAyiklanan": 3328,
+  "kontur": 144,
+  "kirinti": 0,
+  "son": 0,
+  "tenLab": [
+   70.8,
+   4.5,
+   0.9
+  ]
+ },
+ "dragonborn-kadin-warlock-WL-9": {
+  "m0": 7119,
+  "boynuzAyiklanan": 305,
+  "kontur": 222,
+  "kirinti": 72,
+  "son": 4514,
+  "tenLab": [
+   85.7,
+   2.5,
+   -8.0
+  ]
+ },
+ "dragonborn-kadin-wizard-GR": {
+  "m0": 4063,
+  "boynuzAyiklanan": 287,
+  "kontur": 62,
+  "kirinti": 57,
+  "son": 2438,
+  "tenLab": [
+   85.7,
+   5.6,
+   -11.5
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-A1": {
+  "m0": 6430,
+  "boynuzAyiklanan": 662,
+  "kontur": 129,
+  "kirinti": 39,
+  "son": 3622,
+  "tenLab": [
+   85.9,
+   2.7,
+   -8.9
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-A2": {
+  "m0": 6077,
+  "boynuzAyiklanan": 521,
+  "kontur": 68,
+  "kirinti": 45,
+  "son": 3967,
+  "tenLab": [
+   80.9,
+   3.4,
+   -10.8
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-A3": {
+  "m0": 4798,
+  "boynuzAyiklanan": 633,
+  "kontur": 64,
+  "kirinti": 10,
+  "son": 2957,
+  "tenLab": [
+   87.7,
+   3.3,
+   -8.8
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-A4": {
+  "m0": 4273,
+  "boynuzAyiklanan": 667,
+  "kontur": 54,
+  "kirinti": 12,
+  "son": 2514,
+  "tenLab": [
+   87.9,
+   2.7,
+   -8.0
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-A5": {
+  "m0": 5965,
+  "boynuzAyiklanan": 722,
+  "kontur": 70,
+  "kirinti": 73,
+  "son": 3147,
+  "tenLab": [
+   80.4,
+   2.7,
+   -9.8
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-A6": {
+  "m0": 6184,
+  "boynuzAyiklanan": 736,
+  "kontur": 73,
+  "kirinti": 99,
+  "son": 3017,
+  "tenLab": [
+   83.8,
+   3.3,
+   -9.9
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-A7": {
+  "m0": 5133,
+  "boynuzAyiklanan": 687,
+  "kontur": 75,
+  "kirinti": 32,
+  "son": 2816,
+  "tenLab": [
+   85.0,
+   3.8,
+   -11.1
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-A8": {
+  "m0": 5363,
+  "boynuzAyiklanan": 62,
+  "kontur": 104,
+  "kirinti": 24,
+  "son": 3690,
+  "tenLab": [
+   84.7,
+   4.0,
+   -12.2
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-B1": {
+  "m0": 6301,
+  "boynuzAyiklanan": 625,
+  "kontur": 97,
+  "kirinti": 55,
+  "son": 3769,
+  "tenLab": [
+   85.0,
+   2.7,
+   -9.1
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-B2": {
+  "m0": 5731,
+  "boynuzAyiklanan": 768,
+  "kontur": 43,
+  "kirinti": 17,
+  "son": 3786,
+  "tenLab": [
+   84.5,
+   2.5,
+   -7.9
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-B3": {
+  "m0": 5853,
+  "boynuzAyiklanan": 734,
+  "kontur": 52,
+  "kirinti": 32,
+  "son": 3606,
+  "tenLab": [
+   85.6,
+   2.5,
+   -7.7
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-B4": {
+  "m0": 6492,
+  "boynuzAyiklanan": 638,
+  "kontur": 71,
+  "kirinti": 42,
+  "son": 4123,
+  "tenLab": [
+   82.6,
+   3.0,
+   -8.9
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-B5": {
+  "m0": 8442,
+  "boynuzAyiklanan": 905,
+  "kontur": 66,
+  "kirinti": 89,
+  "son": 4798,
+  "tenLab": [
+   85.8,
+   4.0,
+   -8.1
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-B6": {
+  "m0": 7465,
+  "boynuzAyiklanan": 758,
+  "kontur": 138,
+  "kirinti": 55,
+  "son": 4477,
+  "tenLab": [
+   83.0,
+   2.7,
+   -9.8
+  ]
+ },
+ "dragonborn-kadin-wizard-WZ-B7": {
+  "m0": 4755,
+  "boynuzAyiklanan": 643,
+  "kontur": 73,
+  "kirinti": 24,
+  "son": 2777,
+  "tenLab": [
+   85.2,
+   3.3,
+   -7.9
+  ]
+ }
+}
