@@ -1,0 +1,287 @@
+{
+ "referans": {
+  "bas_tepe": 39,
+  "bas_merkez": 132.0,
+  "bas_en": 51,
+  "halka_kutu": [
+   73,
+   13,
+   190,
+   80
+  ]
+ },
+ "jetonlar": {
+  "human-erkek-cleric-ID9": {
+   "silinen_px": 1722,
+   "bas_tepe": 39,
+   "bas_en": 51,
+   "olcek_ham": 1.0,
+   "olcek": 1.0,
+   "halka_kutu": [
+    73,
+    13,
+    190,
+    80
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "human-kadin-cleric-ID9": {
+   "silinen_px": 1446,
+   "bas_tepe": 30,
+   "bas_en": 49,
+   "olcek_ham": 0.961,
+   "olcek": 0.961,
+   "halka_kutu": [
+    79,
+    5,
+    191,
+    69
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "elf-erkek-cleric-ID9": {
+   "silinen_px": 980,
+   "bas_tepe": 28,
+   "bas_en": 49,
+   "olcek_ham": 0.961,
+   "olcek": 0.961,
+   "halka_kutu": [
+    68,
+    3,
+    180,
+    67
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "elf-kadin-cleric-ID9": {
+   "silinen_px": 954,
+   "bas_tepe": 8,
+   "bas_en": 58,
+   "olcek_ham": 1.137,
+   "olcek": 1.1,
+   "halka_kutu": [
+    60,
+    1,
+    189,
+    75
+   ],
+   "asagi_kayma_px": 22,
+   "kirpik": false
+  },
+  "dwarf-erkek-cleric-ID9": {
+   "silinen_px": 1276,
+   "bas_tepe": 32,
+   "bas_en": 42,
+   "olcek_ham": 0.824,
+   "olcek": 0.85,
+   "halka_kutu": [
+    80,
+    10,
+    179,
+    67
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "dwarf-kadin-cleric-ID9": {
+   "silinen_px": 969,
+   "bas_tepe": 20,
+   "bas_en": 62,
+   "olcek_ham": 1.216,
+   "olcek": 1.1,
+   "halka_kutu": [
+    73,
+    1,
+    202,
+    75
+   ],
+   "asagi_kayma_px": 10,
+   "kirpik": false
+  },
+  "orc-erkek-cleric-ID9": {
+   "silinen_px": 1589,
+   "bas_tepe": 38,
+   "bas_en": 43,
+   "olcek_ham": 0.843,
+   "olcek": 0.85,
+   "halka_kutu": [
+    82,
+    16,
+    181,
+    73
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "orc-kadin-cleric-ID9": {
+   "silinen_px": 1717,
+   "bas_tepe": 33,
+   "bas_en": 45,
+   "olcek_ham": 0.882,
+   "olcek": 0.882,
+   "halka_kutu": [
+    79,
+    10,
+    182,
+    69
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "gnome-erkek-cleric-ID9": {
+   "silinen_px": 1038,
+   "bas_tepe": 44,
+   "bas_en": 47,
+   "olcek_ham": 0.922,
+   "olcek": 0.922,
+   "halka_kutu": [
+    68,
+    20,
+    176,
+    82
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "gnome-kadin-cleric-ID9": {
+   "silinen_px": 990,
+   "bas_tepe": 44,
+   "bas_en": 47,
+   "olcek_ham": 0.922,
+   "olcek": 0.922,
+   "halka_kutu": [
+    75,
+    20,
+    183,
+    82
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "goliath-erkek-cleric-ID9": {
+   "silinen_px": 1228,
+   "bas_tepe": 26,
+   "bas_en": 38,
+   "olcek_ham": 0.745,
+   "olcek": 0.85,
+   "halka_kutu": [
+    82,
+    4,
+    181,
+    61
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "goliath-kadin-cleric-ID9": {
+   "silinen_px": 1494,
+   "bas_tepe": 34,
+   "bas_en": 42,
+   "olcek_ham": 0.824,
+   "olcek": 0.85,
+   "halka_kutu": [
+    77,
+    12,
+    176,
+    69
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "halfling-erkek-cleric-ID9": {
+   "silinen_px": 561,
+   "bas_tepe": 34,
+   "bas_en": 48,
+   "olcek_ham": 0.941,
+   "olcek": 0.941,
+   "halka_kutu": [
+    76,
+    10,
+    186,
+    73
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "halfling-kadin-cleric-ID9": {
+   "silinen_px": 1203,
+   "bas_tepe": 38,
+   "bas_en": 51,
+   "olcek_ham": 1.0,
+   "olcek": 1.0,
+   "halka_kutu": [
+    72,
+    12,
+    189,
+    79
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "tiefling-erkek-cleric-ID9": {
+   "silinen_px": 0,
+   "bas_tepe": 40,
+   "bas_en": 72,
+   "olcek_ham": 1.412,
+   "olcek": 1.1,
+   "halka_kutu": [
+    69,
+    11,
+    198,
+    85
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "tiefling-kadin-cleric-ID9": {
+   "silinen_px": 1000,
+   "bas_tepe": 40,
+   "bas_en": 102,
+   "olcek_ham": 2.0,
+   "olcek": 1.1,
+   "halka_kutu": [
+    88,
+    11,
+    217,
+    85
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false
+  },
+  "dragonborn-erkek-cleric-ID9": {
+   "silinen_px": 1017,
+   "bas_tepe": 54,
+   "bas_en": 59,
+   "olcek_ham": 1.157,
+   "olcek": 1.1,
+   "halka_kutu": [
+    72,
+    25,
+    201,
+    99
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false,
+   "pul_maske_kesisim_px": 0
+  },
+  "dragonborn-kadin-cleric-ID9": {
+   "silinen_px": 796,
+   "bas_tepe": 49,
+   "bas_en": 67,
+   "olcek_ham": 1.314,
+   "olcek": 1.1,
+   "halka_kutu": [
+    69,
+    20,
+    198,
+    94
+   ],
+   "asagi_kayma_px": 0,
+   "kirpik": false,
+   "pul_maske_kesisim_px": 0
+  }
+ }
+}
