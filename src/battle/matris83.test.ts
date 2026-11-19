@@ -552,3 +552,33 @@ describe('K01 (kullanıcı kararı): büyülenen, büyüleyenine yalnız saldır
     expect(r.ok, r.error).toBe(true);
   });
 });
+
+describe('K02 (kullanıcı kararı, metne göre): Spirit Guardians yapımda save attırmaz (SRD "whenever the Emanation enters a creature\'s space and whenever a creature enters the Emanation or ends its turn there")', () => {
+  const sg = (v: number) => run(scene(v, [caster({ spellNames: ['Spirit Guardians'] }), foe('T', { pos: { col: 4, row: 5 } }), foe('U', { pos: { col: 9, row: 5 } })]),
+    { type: 'cast_spell', actorId: 'A', spellName: 'Spirit Guardians', slotLevel: 3 } as Command, hooked({ one: 2, two: [2, 2] }));
+  it('83: yapımda içerideki düşman save atmaz; 82 atar', () => {
+    const r83 = sg(83);
+    expect(r83.ok, r83.error).toBe(true);
+    expect(r83.state.combatants.A?.concentration?.spell).toBe('Spirit Guardians');
+    expect(saveOf(r83.events, 'T')).toBeUndefined();
+    const r82 = sg(82);
+    expect(r82.ok, r82.error).toBe(true);
+    expect(saveOf(r82.events, 'T')).toBeDefined();
+  });
+  it('83: yayılım büyücüyle yürüyüp düşmanın alanına girince save (içerideki için yeniden değil)', () => {
+    const r = run(sg(83).state, { type: 'move', actorId: 'A', to: { col: 6, row: 5 } } as Command, hooked({ one: 2, two: [2, 2] }));
+    expect(r.ok, r.error).toBe(true);
+    expect(saveOf(r.events, 'U')).toBeDefined();
+    expect(saveOf(r.events, 'T')).toBeUndefined();
+  });
+  it('83: düşman turunu yayılımın içinde bitirince save', () => {
+    const s = sg(83).state;
+    const e1 = execute(s, { type: 'end_turn', actorId: 'A' } as Command, P1, hooked({ one: 2, two: [2, 2] }));
+    expect(e1.ok).toBe(true);
+    const s1 = (e1 as Extract<typeof e1, { ok: true }>).state;
+    const tTurn = { ...s1, turnIndex: s1.order.indexOf('T') };
+    const e2 = execute(tTurn, { type: 'end_turn', actorId: 'T' } as Command, GM, hooked({ one: 2, two: [2, 2] }));
+    expect(e2.ok).toBe(true);
+    expect(saveOf((e2 as Extract<typeof e2, { ok: true }>).events, 'T')).toBeDefined();
+  });
+});

@@ -112,9 +112,12 @@ export const OZEL: Record<string, Ozel> = {
   'conjure-animals': { bitisik: true, yapim: { tur: 'yok' }, not: 'SRD: sürü yaklaşınca/girince/tur sonunda DEX save 3d10 Slashing (büyücü seçer).' },
   'conjure-elemental': { bitisik: true, secim: 'fire', yapim: { tur: 'yok' }, tetik: { olay: 'start', save: 'dex', dmg: [p('8d8', 'fire')], conds: ['Restrained'] },
     not: 'SRD: tutsak sonraki turlarının başında save yineler (4d8); yakalandığı turda değil.' },
-  'conjure-woodland-beings': { karar: 'SRD: "Emanation bir yaratığın alanına girdiğinde" — yapımda içerideki yaratıkların save atıp atmadığı yoruma açık.',
+  // K02 (kullanıcı kararı: save zamanı metne göre): "Whenever the Emanation enters the space of a creature you can see and
+  // whenever a creature you can see enters the Emanation or ends its turn there" — yapım cümlesi yok, yapımda save yok.
+  'conjure-woodland-beings': { yapim: { tur: 'yok' }, not: 'K02: yapımda save yok; giriş, yayılımın girişi ve tur sonu.',
     tetik: { olay: 'end', save: 'wis', dmg: [p('5d8', 'force')], half: true } },
-  'spirit-guardians': { karar: 'SRD 5.2.1: "whenever the Emanation enters a creature\'s space" — yapımda içerideki yaratığın save atıp atmadığı yoruma açık (motor: atar).',
+  // K02: "whenever the Emanation enters a creature's space and whenever a creature enters the Emanation or ends its turn there".
+  'spirit-guardians': { yapim: { tur: 'yok' }, not: 'K02: yapımda save yok; giriş, yayılımın girişi ve tur sonu.',
     tetik: { olay: 'end', save: 'wis', dmg: [p('3d8', 'radiant')], half: true } },
   // --- Yapımda saldırı (çağrı/güç) ---
   'spiritual-weapon': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('1d8', 'force')], addMod: true } },
