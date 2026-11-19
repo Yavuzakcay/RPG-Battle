@@ -62,53 +62,124 @@
     "black": {
      "golge": "#15151d",
      "isik": "#484852",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#312229",
+      "isik": "#69575f",
+      "esik": 0.76
+     }
     },
     "blue": {
      "golge": "#002a48",
      "isik": "#4c6c8f",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#383244",
+      "isik": "#7e768b",
+      "esik": 0.76
+     }
     },
     "brass": {
      "golge": "#6b540e",
      "isik": "#bb9d57",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#7c553b",
+      "isik": "#cd9f81",
+      "esik": 0.76
+     }
     },
     "bronze": {
      "golge": "#4e2900",
      "isik": "#9c6d45",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#5b3426",
+      "isik": "#a97a69",
+      "esik": 0.76
+     }
     },
     "copper": {
      "golge": "#5e1e00",
      "isik": "#b1643d",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#652f24",
+      "isik": "#b57667",
+      "esik": 0.76
+     }
     },
     "gold": {
      "golge": "#876800",
      "isik": "#dcb355",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#966540",
+      "isik": "#eab189",
+      "esik": 0.76
+     }
     },
     "green": {
      "golge": "#00430f",
      "isik": "#4d8c52",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#40462e",
+      "isik": "#888e73",
+      "esik": 0.76
+     }
     },
     "red": {
      "golge": "#5b0000",
      "isik": "#ae3c1e",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#5c1b16",
+      "isik": "#ac6055",
+      "esik": 0.76
+     }
     },
     "silver": {
      "golge": "#576774",
      "isik": "#a1b1c0",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#7b6470",
+      "isik": "#c8aebb",
+      "esik": 0.76
+     }
     },
     "white": {
      "golge": "#c4beb4",
      "isik": "#f4ede4",
-     "esik": 0.76
+     "esik": 0.76,
+     "zar": {
+      "golge": "#eaafb1",
+      "isik": "#ffdee0",
+      "esik": 0.76
+     }
     }
+   },
+   "katmanlar": {
+    "zar": {
+     "dosya": "dragonborn-zar.webp",
+     "etkin": true
+    },
+    "pence": {
+     "dosya": "dragonborn-pence.webp",
+     "palet": {
+      "golge": "#999590",
+      "isik": "#f0ede8",
+      "esik": 0.639
+     }
+    }
+   },
+   "pembe": {
+    "L": 75,
+    "a": 30,
+    "b": 4,
+    "ab": 0.5,
+    "aciklik": 0.15
    }
   }
  }

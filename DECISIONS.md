@@ -90,6 +90,52 @@ Kaynak: D2'den kalan farklar (`harita/belgeler/SRD-VERI-DOGRULAMA.md` §9 ve §8
   - `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`): denenen 92, geçen 92.
   - `npm run check:ses`: ilk denemede `pickMap` `[data-region]` 30 sn zaman aşımı. Neden bulut değil, betik: ana menüde `button.role` (2.) OD1'den beri "Oda kur"u açıyor; KH1 `check:harita`'yı `home-quick`'e uyarlamış, `check:ses`'i değil. **Yan düzeltme:** `scripts/ses-kontrol.mjs` hızlı savaş kartıyla (`[data-testid="home-quick"]`) giriyor; bulutta 15/15 tamam. CLAUDE.md'deki "bulutta TimeoutError" notu bu yüzdendi olabilir; kural kullanıcınındır, değiştirilmedi.
   - Hızlı regresyonlar: D3 (yukarıda) 88 = altın; D1/D2/WS87 regresyonları tam `npm test` içinde yeşil (85/86/87 altınları değişmedi).
+## Dragonborn kanadı: beyaz pençe ve uç kemikleri + pembe karışımlı zar: Kuyruk KW2/KW3 (2026-11-19, kullanıcı istekleri; yalnız görünüm, kural ve kayıt sürümü değişmedi)
+## Dungeondex Sınıflar kategorisi (Görev DX-S, 2026-11-20; yalnız arayüz ve açıklama verisi, kural ve kayıt sürümü değişmedi)
+
+- **Durum öncesi:** Dungeondex'te sınıf kategorisi yoktu. Invocation, Metamagic ve sınıf özelliği kayıtları da yoktu; sınıf yalnız alt sınıf kartında bağlantı olarak geçiyordu. Fighting Style'lar `feat` kategorisinde vardı (kategori "Fighting Style").
+- **Eklenen kategori `sinif`** (`data/dungeondex.json` sırası: Alt soylar ile Alt sınıflar arası). Toplam 50 kayıt: 12 sınıf, 28 Eldritch Invocation, 10 Metamagic.
+  - Kimlik mevcut kimlik: sınıf kimliği, `class-features.json` Invocation kimliği ve Metamagic anahtarı. Yeni kimlik açılmadı.
+  - Süzgeç "Kayıt türü": sınıf / Invocation / Metamagic.
+- **Sınıf kartı:**
+  - Ad İngilizce.
+  - Özet ve olgular: can zarı (`classes.json` `hitDie`) ve birincil yetenek. Birincil yetenek SRD sınıf tablosundaki "Primary Ability"den, yetenek kısaltmasına çevrilir; "or" → "ya da", "and" → "ve". Örnek: Fighter "Güç (STR) ya da Çeviklik (DEX)".
+  - Kurtarma yetkinlikleri, zırh eğitimi, silah yetkinliği (Rogue/Monk'ta özellikli savaş silahları), beceri seçimi, büyü türü.
+  - Seviye 1–20 özellik satırları SRD tablosundan (`data/srd/progression.json`; 258 satır, 185 benzersiz özellik). Kaynak sayfa gösterilmez.
+  - Sınıf seçenekleri satırları (Divine Order, Blessed Strikes, Primal Order, Elemental Fury) oluşturucunun seçenek metninden.
+  - Bağlantılar: o sınıfın alt sınıfları (alt sınıf süzgeci; yüklü 120'nin o sınıfa ait olanları) ve büyü sınıflarında büyü listesi. Ayrıca Fighter/Paladin/Ranger'da Fighting Style feat'leri, Warlock'ta Invocation, Sorcerer'da Metamagic, hepsinde Epic Boon feat'leri.
+- **Özellik açıklaması zinciri (karar):** oluşturucuyla aynı (`featureSummary`): önce `data/aciklamalar-tr.json` `yetenek` (`trAciklama`), yoksa `data/aciklamalar.json` `features.tr` (Görev K18'in elle yazılmış Türkçe kısa açıklamaları).
+  - Görev metni yalnız `trAciklama` diyordu. Bu kaynakta 2 kayıt var; 135 özelliğin Türkçe metni K18 dosyasında. İkisi de elle yazılmış Türkçe ve oluşturucuda zaten gösteriliyor.
+  - Yeni açıklama yazılmadı. Açıklaması olmayan satırda "Açıklama yok" çıkar.
+  - **Eksik:** 48 benzersiz özellik, 110 satır. Hepsi genel yer tutucu: `<sınıf>-subclass`, `ability-score-improvement`, `subclass-feature`, `epic-boon` (12 sınıf × 4). Bunların içeriği alt sınıf ve feat kartlarında, karttan bağlantıları var. Gerçek sınıf özelliğinde eksik 0.
+- **SRD ham metni yok:** `aciklamalar.json` `features.en` (SRD'nin ilk cümlesi) Dungeondex'te kullanılmaz. EN arayüzde Türkçe metin "yalnız Türkçe" notuyla çıkar (mevcut desen). `aciklamalar-en.json` gelirse aynı kimliklerle `en` dolar.
+- **Invocation ve Metamagic:**
+  - Invocation açıklaması `aciklamalar-tr.json` `invocation`, yoksa verideki Türkçe `note`; 28/28. Ön koşul Invocation'a ve Warlock'a bağlantı var; çalışma durumu etiketi oluşturucu lejantından.
+  - Metamagic açıklaması oluşturucunun arayüz metni (`builder.metamagicInfo`, TR/EN) ve bedeli (SP); 10/10.
+- **Metinler:** TR Dungeondex metinleri mevcut desende tembel `strings.tr2.ts` `dex` içinde (görev "strings.ts" diyordu; `dex` bölümü orada değil), EN `strings.en.ts`.
+- **Veri yükü:** `data/srd/classes.json` yalnız Dungeondex'in tembel `loadDexExtras` içinde, ayrı parça olarak yüklenir (yalnız "Primary Ability" alanı okunur). Ana parça değişmedi (459,46 kB / 500).
+- **Test:** `src/dungeondex/dungeondex.test.tsx`.
+  - Kategori sayısı 9'dan 10'a çıktı (yeni kategori).
+  - Yeni testler:
+    - 12 sınıf ve kimlikler;
+    - Invocation/Metamagic kimlikleri veriden;
+    - olgular ve özellik satırı sayısı SRD tablosuyla aynı;
+    - bağlantılar;
+    - açıklama kapsamı (eksikler yalnız genel yer tutucu);
+    - SRD sınıf metni ve sayfa numarası yok;
+    - EN başlık ve "yalnız Türkçe" notu.
+  - Ekran görüntüsü `docs/sabah/dungeondex/siniflar.webp`.
+## Dragonborn kanadı: beyaz pençe uçları + pembe karışımlı zar, iki hal: Kuyruk KW2 (2026-11-19, kullanıcı isteği; yalnız görünüm, kural ve kayıt sürümü değişmedi)
+
+Gidiş: kullanıcı KW1 görüntüsüne daireler çizdi: pençe uçları boynuzlarla aynı beyazlıkta olsun, kanatların iç kısmı soy renginin pembeyle karışımı olsun ("sarı ise sarı ile pembe"); iki hal gösterilsin, ikisinde de pençe beyaz. İki hal gösterildi (A karışımsız, B pembe karışımlı). Kullanıcı seçti: "diğer seçeneği boşver, direkt pembe ile karışımı yap" (B); ayrıca kanadın en ucundaki kemik uçları da beyaz olsun (son daire). Ara denemelerde "direkt pembe" ifadesi yanlış okunup düz pembe (soydan bağımsız) ve pembe baskın karışım (0,7) yapıldı; ikisi de kullanıcının isteği olmadığı için atıldı (kodu geri alındı, commit'lenmedi). Sonuç: B + beyaz uç kemikleri. Görüntüler `docs/sabah/dragonborn-kanat/karisim-ozet.webp`, `karisim-tam.webp`.
+
+- **Katman yaklaşımı (karar).** Taban görsel (`dragonborn.webp`: kol, el bileği düğümü, ön kenar kemiği) aynen kalır, soy renginde; üstüne aynı boyutta iki saydam katman (`dragonborn-zar.webp`, `dragonborn-pence.webp`; RGB = taban parlaklığı, alfa = bölge ağırlığı, kenarlar Gauss ile yumuşak). Her kanat bir `<g>` (kutu, dönüş, ayna) içinde taban → zar → pençe, her katman kendi palet filtresiyle (`WingPart`, `wingParts`, `WingPairImage`). Seçenekler: tek görselde kanal kodlu bölge + çok adımlı SVG filtre grafiği (kırılgan, tarayıcı farkı riski), `<mask>` (görsel başına ek eleman) ya da soy başına hazır boyalı görseller (10 × katman). Üç `<image>` en basit ve her ortamda (SVG jeton, HTML rozet) aynı çıktıyı verdi; ek dosya ≈ 24 KB. Savaş jetonu ölçeği, kök, katman sırası (kanat figürün arkasında), palet kimliği kuralları değişmedi.
+- **Bölgeler (karar).** Elle çokgenler (`scripts/dragonborn-kanat-katman.py`, 364×279 kanat görseli, kontrast gerili ızgara üzerinde okundu). Pençe katmanı (beyaz, 1282 piksel, üç bölge): büyük kanca (kol düğümünün üstü), ön kenardaki küçük pençe, kanadın en ucundaki kemik ucu (ön kenar kemiğinin parlak düğümü + sivri uç). Çerçeve (soy renginde): kol + el bileği düğümü (çokgen) + ön kenar kemiği (üst kenardan 16 px, x < 326, pençe artık pikselleri atlanarak). Zar: kalan alan. Otomatik kemik tespiti (bant geçiren çıkıntı) gürültülü çıktı, elle tarif tercih edildi. İnce parmak kemikleri zar bölgesinde kaldı (pembe karışımlı, parlaklık gölgesiyle seçilir; ayrıntılı çerçeve istenirse çokgen eklenir).
+- **Beyaz pençe (karar): boynuz beyazı ölçüldü.** 24 Gariban jetonunun boyanmamış baş bölgesi (pul maskesi dışı, L > 68, kroma < 10; 12,7 bin piksel): RGB (202, 199, 194), Lab (80,4 / 0,2 / 2,8). Pençe paleti sabit (soydan bağımsız): gölge `#999590`, ışık `#f0ede8`, eşik 0,639 (uç kemiği eklenince 0,682'den); pençe ortalaması Lab (80,4 / 0,3 / 2,9).
+- **Pembe karışımı (karar).** Soyun taban paletiyle zar bölgesinin ortalaması, Lab'da pembeyle (75, 30, 4) karıştırılır: a*, b* yarı yarıya (`pembe.ab` 0,5), açıklık %15 (`pembe.aciklik`); pembenin kroması açıklık oranıyla ölçeklenir (koyu soylarda koyu pembe, 0,5–1). Zar paleti bu hedef ortalamaya aynı yayılımla çözülür (`scripts/dragonborn-kanat-palet.ts`, `renkPaletleri.<soy>.zar`). Zar ortalaması (karışımsız → karışımlı, Lab): Black (23,2 / 2,3 / −5,8) → (31,2 / 8,8 / −1,8); Blue (35,2 / −1,8 / −22,8) → (41,5 / 7,2 / −10,2); Brass (56,4 / 2,1 / 40,9) → (59,4 / 12,9 / 21,9); Bronze → (45,9 / 15,9 / 16,4); Copper → (46,2 / 22,9 / 18,2); Gold (65,2 / 3,9 / 53,7) → (66,8 / 15,6 / 28,5) şeftali-somon; Green (43,2 / −33,2 / 24,8) → (48,2 / −7,2 / 13,6) soluk hakî; Red → (39,7 / 29,6 / 19,4); Silver → (64,2 / 11,5 / −3,2); White (88,4 / 0,7 / 5,4) → (86,4 / 15,0 / 4,6) açık pembe. Karışım literal (yeşil + pembe gibi tamamlayıcıya yakın renkler solar); oranlar (`pembe` verisi) tek yerde.
+- **Eski hal anahtarı.** `data/kanat-esleme.json` `dragonborn.katmanlar.zar.etkin: false` zarı soy renginde bırakır (pençe ve uç kemikleri yine beyaz); varsayılan `true`.
+- **Testler.** `src/ui/kanatKatman.test.tsx` (8 test): katman çözümü (zar soya özgü pembe karışımlı palet, pençe tek palet; `etkin: false`; katmansız slot), SVG ve rozet sırası (taban → zar → pençe, pençe figürden önce, 7 `<image>`), filtre tanımları, katman görselleri (aynı boyut; pençe yalnız üç yerde: kanca, küçük pençe, uç kemiği; zar pençeye boya vermez; zar tabanın %70–92'si), pençe rengi (boynuz ortalaması ± 3, kroma < 6), zar pembe karışımı (her soyda pembeye ≥ 5 yaklaşır, açıklık ≤ 10 oynar, kayma ΔE ≥ 8, White ↔ Silver zar ≥ 12). KW1 testleri değişmeden geçer.
+- **Bilinen sınırlar.** Alttaki üç parmak ucu taban renginde (daire içinde değildi; istenirse çokgen eklenir). KW1'in "kanat–gövde ΔE" ölçütü yalnız taban palet (çerçeve, soy rengi) için geçerli; karışımlı zar gövdeden uzaklaşır. Kanat başına 3 `<image>`: uçan jeton sayısı az, ek yük ihmal edilebilir.
 
 ## Dragonborn kanadı gövdeye bağlandı + palet uyumu: Kuyruk KW1 (2026-11-19; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 

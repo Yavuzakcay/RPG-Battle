@@ -38,6 +38,7 @@ const tr = {
     day: 'gündüz', night: 'gece', round: (n: number) => `${n}. tur`,
     version: (v: string) => `Sürüm ${v} · SRD 5.2.1 kurallarına dayanır`,
     tools: 'Görünüm ve ses', actions: 'Ana menü',
+    dex: 'Dungeondex', dexDesc: 'Büyü, eşya, canavar ve kural kayıtları (çevrimdışı)',
   },
   sound: {
     button: 'Ses', title: 'Ses', channel: { master: 'Ana ses', ambient: 'Ortam', music: 'Müzik', effects: 'Efekt' } as Record<string, string>,
