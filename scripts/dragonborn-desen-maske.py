@@ -68,6 +68,7 @@ def mask_of(name):
     return rgba, m2, info
 
 if __name__ == '__main__':
+    sys.stdout.reconfigure(encoding='utf-8')   # Windows konsolu (cp1254) Δ, → gibi karakterleri yazamaz
     # inceleme sayfaları: maske macenta bindirme
     names = tokens(); S = 128; per = 12
     os.makedirs(os.path.join(OUT, 'inceleme'), exist_ok=True)
@@ -87,5 +88,5 @@ if __name__ == '__main__':
             x, y = (i % per) * S, (i // per) * (S + 12)
             sheet.paste(t, (x, y)); d.text((x + 2, y + S), f'{p + i}:{n[11:]}', fill=(220, 220, 220))
         sheet.quantize(256, dither=Image.Dither.NONE).save(os.path.join(OUT, 'inceleme', f'maske-{p // 72 + 1}.png'), optimize=True)
-    json.dump(rep, open(os.path.join(OUT, 'inceleme', 'maske-olcum.json'), 'w'), ensure_ascii=False, indent=1)
+    json.dump(rep, open(os.path.join(OUT, 'inceleme', 'maske-olcum.json'), 'w', encoding='utf-8', newline='\n'), ensure_ascii=False, indent=1)
     print(len(names))

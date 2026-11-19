@@ -70,9 +70,10 @@ def table():
     return out, (round(dUp, 1), round(dDn, 1), round(kUp, 2), round(kDn, 2))
 
 if __name__ == '__main__':
+    sys.stdout.reconfigure(encoding='utf-8')   # Windows konsolu (cp1254) Δ, → gibi karakterleri yazamaz
     t, ref = table()
     os.makedirs(OUT, exist_ok=True)
     json.dump({'not': 'scripts/dragonborn-desen-renk.py: mavi referans ΔL* (açık, koyu) ve kroma oranları ' + str(ref), 'soylar': t},
-              open(os.path.join(OUT, 'renk-tablosu.json'), 'w'), ensure_ascii=False, indent=1)
+              open(os.path.join(OUT, 'renk-tablosu.json'), 'w', encoding='utf-8', newline='\n'), ensure_ascii=False, indent=1)
     for k, v in t.items(): print(k, v['acik'], v['orta'], v['koyu'], v['dL'], v.get('baslangic'), v['not'])
     print('ref', ref)

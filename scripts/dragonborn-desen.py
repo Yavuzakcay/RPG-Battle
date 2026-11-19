@@ -65,8 +65,12 @@ SOYLAR = ['siyah', 'mavi', 'pirinc', 'bronz', 'bakir', 'altin', 'yesil', 'kirmiz
 SOY_TR = {'siyah': 'Siyah (Black)', 'mavi': 'Mavi (Blue)', 'pirinc': 'Pirinç (Brass)', 'bronz': 'Bronz (Bronze)', 'bakir': 'Bakır (Copper)',
           'altin': 'Altın (Gold)', 'yesil': 'Yeşil (Green)', 'kirmizi': 'Kırmızı (Red)', 'gumus': 'Gümüş (Silver)', 'beyaz': 'Beyaz (White)'}
 BG = (44, 48, 58)
-try: FONT = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 13)
-except OSError: FONT = ImageFont.load_default()
+def _font():
+    for f in ('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 'DejaVuSans.ttf', 'arial.ttf', 'segoeui.ttf'):   # Linux, Windows
+        try: return ImageFont.truetype(f, 13)
+        except OSError: pass
+    return ImageFont.load_default()
+FONT = _font()
 
 def label(im, txt, xy, fill=(230, 232, 238)): ImageDraw.Draw(im).text(xy, txt, fill=fill, font=FONT)
 
@@ -89,6 +93,7 @@ def layer_for(t, cols, H=256, Wd=256):
     return np.tile(c, (ry, rx, 1))[:H, :Wd]
 
 if __name__ == '__main__':
+    sys.stdout.reconfigure(encoding='utf-8')   # Windows konsolu (cp1254) Δ, → gibi karakterleri yazamaz
     os.makedirs(OUT, exist_ok=True)
     tab, ref = renk.table()
     tiles = {k: tile(W) for k, W in SECENEK.items()}
@@ -188,5 +193,5 @@ if __name__ == '__main__':
         rep[n[11:]] = {'uygulandi': bool(m is not None and m.sum() >= 30 and n not in REDDET), 'neden': REDDET.get(n) or info.get('neden'),
                        **{k: v for k, v in info.items() if k != 'neden'}}
     json.dump({'not': 'scripts/dragonborn-desen.py: jeton başına desen uygulama durumu ve maske ölçümü (piksel, 256 px).', 'jetonlar': rep},
-              open(os.path.join(OUT, 'jeton-durumu.json'), 'w'), ensure_ascii=False, indent=1)
+              open(os.path.join(OUT, 'jeton-durumu.json'), 'w', encoding='utf-8', newline='\n'), ensure_ascii=False, indent=1)
     print('uygulanan', sum(v['uygulandi'] for v in rep.values()), '/', len(rep))
