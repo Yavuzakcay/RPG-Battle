@@ -58,3 +58,5 @@ Kemer ve kılıç ağzı türü sızıntıları ölçütler yakalamadığı içi
 - Küçük kopyada (96 px rozet) maske ve karo W/256 ölçekli.
 
 Şüpheli jetonların tam tablosu: `supheli-liste.md` (76 jeton; elle düzeltilen 19 jeton yeşil çerçeveli, `../duzeltme/`).
+
+Renk kapısı (pul v2 kapanışı): sayfalar kapı sonrası maskelerle; yöntem, önce/sonra taşma ölçümü ve kapatılan jetonlar `harita/belgeler/DRAGONBORN-PUL-KAPI.md`.
