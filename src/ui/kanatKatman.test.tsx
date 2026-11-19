@@ -1,6 +1,6 @@
 /**
  * KW2 (yalnız görünüm; kural sürümü değişmez): Dragonborn kanadının iki ek katmanı. Taban görsel (kol ve ön kenar kemiği: soy renginde) üstüne
- * `zar` (kanat zarı: soy rengi + pembe karışımı) ve `pence` (pençe uçları: boynuz beyazı) saydam katmanları çizilir (`public/kanat/dragonborn-zar.webp`,
+ * `zar` (kanat zarı: soy rengi + pembe karışımı) ve `pence` (iki pençe ucu + kanat ucundaki kemik ucu: boynuz beyazı) saydam katmanları çizilir (`public/kanat/dragonborn-zar.webp`,
  * `dragonborn-pence.webp`, üretici `scripts/dragonborn-kanat-katman.py`; paletler `scripts/dragonborn-kanat-palet.ts`). `katmanlar.zar.etkin: false`
  * karışımsız hal (karşılaştırma); pençe iki halde de beyaz.
  */
@@ -87,18 +87,18 @@ describe('KW2 çizim: taban → zar → pençe, her kanatta aynı kutu ve dönü
 });
 
 describe('KW2 katman görselleri', () => {
-  it('zar ve pençe taban görselle aynı boyutta; pençe yalnız iki üst çıkıntıda (büyük kanca + küçük pençe), zar pençeye boya vermez', async () => {
+  it('zar ve pençe taban görselle aynı boyutta; pençe yalnız üç yerde (büyük kanca, küçük pençe, kanat ucu kemiği), zar pençeye boya vermez', async () => {
     const base = await layer('dragonborn.webp'), zar = await layer('dragonborn-zar.webp'), pence = await layer('dragonborn-pence.webp');
     expect([zar.w, zar.h, pence.w, pence.h]).toEqual([base.w, base.h, base.w, base.h]);
-    let c1 = 0, c2 = 0, diger = 0, zarPencede = 0;
+    let c1 = 0, c2 = 0, c3 = 0, diger = 0, zarPencede = 0;
     for (let y = 0; y < base.h; y++) for (let x = 0; x < base.w; x++) {
       const i = y * base.w + x;
       if (pence.alpha[i]! > 128) {
-        if (x >= 120 && x <= 170 && y <= 28) c1++; else if (x >= 250 && x <= 290 && y <= 40) c2++; else diger++;
+        if (x >= 120 && x <= 170 && y <= 28) c1++; else if (x >= 250 && x <= 290 && y <= 40) c2++; else if (x >= 322 && y >= 58 && y <= 96) c3++; else diger++;
         if (zar.alpha[i]! > 8) zarPencede++;
       }
     }
-    expect(c1).toBeGreaterThan(300); expect(c2).toBeGreaterThan(60); expect(diger).toBe(0); expect(zarPencede).toBe(0);
+    expect(c1).toBeGreaterThan(300); expect(c2).toBeGreaterThan(60); expect(c3).toBeGreaterThan(200); expect(diger).toBe(0); expect(zarPencede).toBe(0);
     // zar büyük bölge (kanat zarı), çerçeve (kol, ön kenar) dışarıda: taban alfasının %70–90'ı
     const nb = base.alpha.filter((v) => v > 128).length, nz = zar.alpha.filter((v) => v > 128).length;
     expect(nz / nb).toBeGreaterThan(0.7); expect(nz / nb).toBeLessThan(0.92);
