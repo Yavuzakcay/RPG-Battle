@@ -9,6 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Serüven 6–20 seviye düşman seçimi (2026-11-19)
+
+- Sorun: listesi olmayan seviyede 5. seviye listesi (6+ seviyede 1110 hücrenin 1085'i). Yeni sıra (`src/journey/seruvenEnemies.ts`, yalnız 6+ seviye, yalnız Serüven): el yazması tam liste → en yakın alt 6+ liste (8 → 7, 12 → 11; 5'e inmez) → sıradan düğümde ve haritanın ortam havuzu varsa bölge karşılaşma üreteci (`regionEncounter`, sözde bölge = senaryonun haritası, çarpan 1, parti seviyesi × savaşabilen üye sayısı) → 5. seviye. Sonuç: 5. seviye yedeği 1085 → 320 hücre; kalanlar özel savaşlar.
+- Özel savaşlar (boss düğümü ve `data/sim-boss.json` senaryoları, sefer düğümleri, Hapishane, Büyük suç, koridor) üreteç almaz: hedef/grup/bayrak tasarımları el yazması listeye göre; yalnız alt liste kuralı.
+- Savaş kuralı değil: GM anahtarı ve kural sürümü yok. 1–5. seviye ve simülasyon (`enemiesAt`) değişmedi. Liste deterministik (Serüven kimliği + düğüm + seviye tohumu). Kayıtlı savaş eski düşmanlarla sürer (olay günlüğü); 6+ seviyede kazanılan düğümün XP'si savaştaki düşmanlardan, böylece eski kayıt da doğru XP alır.
+- Tablo `harita/belgeler/SERUVEN-YUKSEK-SEVIYE.md` (`npx vite-node scripts/seruven-yuksek-seviye.ts`). Denge ölçülmedi.
+
 ## Seviye sınırı kalktı: her yerde 1–20, "Üst seviye (6–20)" anahtarı yok (2026-11-19)
 
 - Kullanıcı kararı: 5. seviye sınırı yalnız ilk aşama içindi. Tek sabit `LEVEL_CAP = 20` (`src/app/limits.ts`); `upperLevelsEnabled`, Oda kuralları satırı, oda kaydındaki `ustSeviye`, Serüven anahtarı `ustSeviye`, oluşturucunun "Bu odada Üst seviye kapalı" ve Odaya katıl'ın "5 üstü karakter" uyarıları kalktı.
