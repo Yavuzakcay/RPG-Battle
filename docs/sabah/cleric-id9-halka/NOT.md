@@ -28,3 +28,24 @@ iki yanında. Dragonborn pul maskesiyle halka kesişimi 0 (eski halka silinen pi
 ## Tiefling kadın Cleric jetonları (`tiefling-kadin-cleric-kontak.png`)
 
 2. tur tespiti: genel, ID1–ID8, GR kadın; eski ID9 erkek (yaşlı kel çizim) → yeni çizimle değiştirilecek.
+
+## Yazıldı (2026-11-19, onaylı)
+
+`python3 scripts/cleric-id9-yaz.py`: `aday/` içindeki 18 jeton `public/characters/` ve 96 px kopyaları `kucuk/` altına yazıldı (defter önceliği `duzeltme`).
+
+- Dragonborn erkek: başın çevresindeki sönük yeşil kırıntılar silindi (395 px; yalnız baş bölgesi, halka kutusu ve buhar hariç).
+- Elf kadın: büyük halkalı 0,86 ölçekli önizleme. Tiefling kadın: yeni çizim. İkisinin ten maskesi `npm run soy-maske -- --alt` ile yeniden üretildi (elf 2424 → 1887 px, tiefling 2574 → 3438 px). Toplu çalıştırmanın değiştirdiği kapsam dışı 8 ID9 maskesi ve rapor satırları eski hâline döndürüldü.
+- Dragonborn pul maskesi ∩ halka: erkek 0 (halka 81 px), kadın 0 (halka 112 px).
+
+## 96 px rozette halka görünürlüğü
+
+Ölçüm: baş üstündeki sarı boncuk pikselleri (alfa > 60). Görüntü `kucuk-96px-3x.png`.
+
+| Jeton | 256 px halka | 96 px halka | 96 px kutu | ort. alfa |
+|---|---|---|---|---|
+| tiefling-erkek | 136 px | 33 px | 13×8 | 139 |
+| dragonborn-erkek | 87 px | 22 px | 10×6 | 134 |
+| dragonborn-kadin | 125 px | 35 px | 21×11 | 141 |
+| (karşılaştırma: human-erkek, büyük halka) | 804 px | 177 px | 42×22 | 174 |
+
+Halka üçünde de seçiliyor ama soluk (yarı saydam, tek piksellik çizgi); Dragonborn erkek en zayıfı. **Öneri (uygulanmadı):** küçük halkada boncuk kalınlığı 256 px'te 1 px artırılsın (≈ 2 → 3 px) ve alfa ×2 yerine tam opak yapılsın; bu 96 px'te çizgiyi ≈ 1 px tam opak yapar, halka pikselini yaklaşık 1,5–2 katına çıkarır. Halka boyu (en %48) değişmeden boynuz kesişimi aynı kalır.

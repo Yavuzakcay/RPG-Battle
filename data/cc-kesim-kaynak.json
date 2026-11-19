@@ -4835,11 +4835,17 @@
      "dosya": "cleric-male-tiefling.jpg",
      "hucre": 9,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "diger",
-    "dosya": "cleric-male-tiefling.jpg",
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
     "hucre": 9
    }
   },
@@ -5486,6 +5492,261 @@
     "kaynak": "duzeltme",
     "dosya": "git:2360265b",
     "hucre": 1
+   }
+  },
+  "human-erkek-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "human-kadin-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "elf-erkek-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "elf-kadin-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "dwarf-erkek-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "dwarf-kadin-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "orc-erkek-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "orc-kadin-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "gnome-erkek-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "gnome-kadin-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "goliath-erkek-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "goliath-kadin-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "halfling-erkek-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "halfling-kadin-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "tiefling-kadin-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "tiefling-kadin-cleric-ID9-yeni.jpg + halka",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "tiefling-kadin-cleric-ID9-yeni.jpg + halka",
+    "hucre": 9
+   }
+  },
+  "dragonborn-erkek-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
+   }
+  },
+  "dragonborn-kadin-cleric-ID9": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "cleric-id9-halka/aday",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "cleric-id9-halka/aday",
+    "hucre": 9
    }
   }
  }
