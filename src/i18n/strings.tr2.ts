@@ -163,7 +163,6 @@ export const TR_EXTRA = {
     startLocked: 'Savaş sürerken yeni savaş kurulamaz. Önce "Yeni savaş için aç".',
     joinPick: 'Odanı seç', joinChars: 'Karakterini seç', joinReady: 'Hazır', joinLeave: 'Ayrıl', joinAdd: 'Katıl',
     joinBuild: 'Karakter oluştur', joinBuildHelp: 'Odanın kuralları oluşturucuda geçerli olur.',
-    levelCapWarn: (lvl: number, cap: number): string => `Bu odada Üst seviye kapalı: en çok ${cap}. seviye. Karakterin ${lvl}. seviyede; silinmedi, ama bu odada oynatmadan önce Game Master Üst seviyeyi açmalı.`,
     joinNoChars: 'Kayıtlı karakter yok. Önce Oyuncu ekranından bir karakter oluştur.',
     joinFull: (max: number): string => `Parti dolu (${max}).`, joinCount: (n: number, max: number): string => `Hazır: ${n}/${max}`,
     joinRules: 'Oda kuralları (yalnız okunur)', joinWait: 'Savaşı Game Master kurar.',
@@ -172,7 +171,6 @@ export const TR_EXTRA = {
   },
   roomRules: {
     title: 'Oda kuralları', help: 'Oda kurarken seçilir. Her savaşta aynı kalır.',
-    upper: 'Üst seviye (6–20)', upperHelp: 'Karakterler 20. seviyeye çıkabilir.',
     carry: 'Taşıma yükü', carryHelp: { off: 'Ağırlık gösterilir, sınır yok.', srd: 'Güç × 15 lb üstü taşınamaz.', tiered: 'Ağırlaştıkça yavaşlar.' } as Record<string, string>,
     align: 'Alignment', alignHelp: 'Karakterin iyilik ve düzen eğilimi (ev kuralı).', alignRace: 'Irk ve kültür katkısı', alignAuto: 'Yalnız otomatik değişsin', alignMoral: 'Moral ile bağlantı',
     discovery: 'Keşif modu', discoveryHelp: 'Tepkimeler ilk görülünce öğrenilir.', hints: 'İpucu rozetleri', hintsHelp: 'Bilinmeyen tepkime olabilecek hedefte "?" görünür.',

@@ -145,8 +145,6 @@ export interface RawMap {
   gizli?: boolean;
   /** 2026-11-03: JSON yerinde aynalandı (tarih); eski kayıtların çizim göçü `migrateFlippedMaps`. */
   yonCevrildi?: string;
-  /** Kuyruk 41b: yalnızca 1–5. seviye senaryosu: "Üst seviye" açıkken seçicide ve Serüven listesinde gizli. */
-  ustSeviyeGizli?: boolean;
   vitrin?: boolean;
   /**
    * Kuyruk 26: yükseklik katmanı: `tiles` ile aynı boyutta, satır satır her altıgenin tamsayı seviyesi (−3..+8; bir seviye
@@ -226,8 +224,6 @@ export interface BattleMap {
   sefer?: string;
   /** Kuyruk 25: seçicide gizli (yer tutucu görselli deneme haritası; ya da yalnızca başka haritadan girilen). Harita silinmez. */
   gizli?: boolean;
-  /** Kuyruk 41b: "Üst seviye" açıkken seçicide ve Serüven listesinde gizli (yalnızca 1–5. seviye senaryosu). */
-  ustSeviyeGizli?: boolean;
   /** Kuyruk 26: yükseklik katmanı (satır → sütun → seviye; aynalı haritada aynalı). */
   heights?: number[][];
   /** Kuyruk 26: rampa altıgenleri (0 tabanlı). */
@@ -449,7 +445,6 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     ...(raw.gorsel ? { gorsel: raw.gorsel } : {}),
     ...(raw.sefer ? { sefer: raw.sefer } : {}),
     ...(raw.gizli ? { gizli: true } : {}),
-    ...(raw.ustSeviyeGizli ? { ustSeviyeGizli: true } : {}),
     ...(raw.heights ? { heights: raw.heights.map((row) => [...row]) } : {}),
     ...(raw.ramps?.length ? { ramps: raw.ramps.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}),
     ...(raw.goals ? { goals: {
@@ -561,6 +556,5 @@ export function environmentFor(map: BattleMap, variantId: string): string {
 export const variantLabel = (v: Pick<MapVariant, 'name' | 'nameEn'>, lang: 'tr' | 'en'): string =>
   lang === 'en' && v.nameEn ? v.nameEn : v.name;
 
-/** Kuyruk 41b: harita seçicide görünür mü (gizli değil; "Üst seviye" açıkken 1–5. seviye senaryosu da gizli). */
-export const pickerVisible = (m: Pick<BattleMap, 'gizli' | 'ustSeviyeGizli'>, upperLevels: boolean): boolean =>
-  !m.gizli && !(upperLevels && m.ustSeviyeGizli);
+/** Harita seçicide görünür mü (gizli değil). 2026-11-19: Kuyruk 41b'nin "Üst seviye" gizlemesi (`ustSeviyeGizli`) anahtarla kalktı. */
+export const pickerVisible = (m: Pick<BattleMap, 'gizli'>): boolean => !m.gizli;

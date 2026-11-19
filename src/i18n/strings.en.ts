@@ -119,7 +119,6 @@ export const en: Strings = {
     startLocked: 'You cannot set up a new battle while one is going on. Use "Open for a new battle" first.',
     joinPick: 'Pick your room', joinChars: 'Pick your character', joinReady: 'Ready', joinLeave: 'Leave', joinAdd: 'Join',
     joinBuild: 'Build a character', joinBuildHelp: 'The room rules apply in the builder.',
-    levelCapWarn: (lvl: number, cap: number): string => `Upper levels are off in this room: level ${cap} at most. Your character is level ${lvl}; it was not deleted, but the Game Master must turn on Upper levels before it plays in this room.`,
     joinNoChars: 'No saved characters. Build one in the Player screen first.',
     joinFull: (max: number): string => `Party is full (${max}).`, joinCount: (n: number, max: number): string => `Ready: ${n}/${max}`,
     joinRules: 'Room rules (read only)', joinWait: 'The Game Master sets up the battle.',
@@ -128,7 +127,6 @@ export const en: Strings = {
   },
   roomRules: {
     title: 'Room rules', help: 'Chosen when you set up a room. Stays the same in every battle.',
-    upper: 'Upper levels (6–20)', upperHelp: 'Characters can reach level 20.',
     carry: 'Carrying load', carryHelp: { off: 'Weight is shown, no limit.', srd: 'Cannot carry over Strength × 15 lb.', tiered: 'You slow down as you get heavier.' } as Record<string, string>,
     align: 'Alignment', alignHelp: 'A character\'s good/evil and law/chaos lean (house rule).', alignRace: 'Race and culture bonus', alignAuto: 'Automatic changes only', alignMoral: 'Link to Morale',
     discovery: 'Discovery mode', discoveryHelp: 'Reactions are learned the first time you see them.', hints: 'Hint badges', hintsHelp: 'A "?" shows on targets that may react in an unknown way.',
@@ -965,7 +963,6 @@ export const en: Strings = {
   journey: {
     menu: 'Journey (beta)', menuDesc: 'The main mode without a Game Master: alone or with a party, play battles along a route with a persistent party state.',
     celestialFlag: 'Game Master: Celestial ancestry (house rule)', celestialNote: 'An original ancestry outside SRD 5.2.1 (Fallen). When on, it can be chosen in the builder and new battles use Healing Touch, Light and Celestial Awakening; when off, Celestial characters play with darkvision and resistances only.',
-    upperFlag: 'Game Master: Upper levels (6–20)', upperNote: 'When on, character creation and Adventure level-ups go up to level 20; when off, 5. Older higher-level characters are kept.',
     title: 'Journey (beta)', flag: 'Experimental: Journey', flagNote: 'Shows the "Journey (beta)" entry on the main menu. Saved separately.',
     newTitle: 'New journey', route: 'Route', party: 'Party', difficulty: 'Difficulty', progression: 'Progression',
     diff: { kolay: 'Easy', normal: 'Normal', zor: 'Hard' }, prog: { milestone: 'Milestone', xp: 'XP' },

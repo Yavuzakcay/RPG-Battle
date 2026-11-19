@@ -3,7 +3,7 @@ import { describe, expect, it, beforeEach } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { SettingsScreen } from './SettingsScreen';
 import { RoomRules } from '../ui/settings/RoomRules';
-import { setUpperLevelsEnabled, upperLevelsEnabled } from '../app/features';
+import { alignmentEnabled, setAlignmentEnabled } from '../app/features';
 import { loadSettings, saveSettings } from '../app/discovery';
 import { storedCarryRule } from '../ui/carrySetting';
 
@@ -24,12 +24,13 @@ describe('SD8 Ayarlar', () => {
     expect(html).not.toMatch(/<details[^>]* open/);
   });
   it('Oda kuralları: Game Master kurulumu ayarları eski saklama anahtarlarına yazar/okur', () => {
-    expect(upperLevelsEnabled()).toBe(false);
+    expect(alignmentEnabled()).toBe(false);
     const html = renderToStaticMarkup(<RoomRules />);
-    for (const s of ['Oda kuralları', 'Üst seviye (6–20)', 'Taşıma yükü', 'Alignment', 'Keşif modu', 'İpucu rozetleri', 'Yolculuk (deneme)']) expect(html).toContain(s);
-    setUpperLevelsEnabled(true);
-    expect(upperLevelsEnabled()).toBe(true);
-    expect(JSON.parse(localStorage.getItem('rpg-battle-deneysel') ?? '{}').ustSeviye).toBe(true);
+    for (const s of ['Oda kuralları', 'Taşıma yükü', 'Alignment', 'Keşif modu', 'İpucu rozetleri', 'Yolculuk (deneme)']) expect(html).toContain(s);
+    expect(html).not.toContain('Üst seviye'); // 2026-11-19: anahtar kalktı
+    setAlignmentEnabled(true);
+    expect(alignmentEnabled()).toBe(true);
+    expect(JSON.parse(localStorage.getItem('rpg-battle-deneysel') ?? '{}').hizalanma).toBe(true);
     saveSettings({ ...loadSettings(), discovery: false });
     expect(JSON.parse(localStorage.getItem('rpg-battle-onizleme') ?? '{}').discovery).toBe(false);
     expect(storedCarryRule()).toBeTruthy();

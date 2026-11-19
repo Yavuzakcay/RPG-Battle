@@ -4,6 +4,7 @@
  * SRD 5.2.1 "Character Creation": standart dizi 15, 14, 13, 12, 10, 8; point buy 27 puan,
  * skorlar 8–15, maliyet tablosu aşağıda. Ability bonusları geçmişten (+2/+1 veya +1/+1/+1).
  */
+import { LEVEL_CAP } from '../app/limits';
 import { cleanStory, type Hikaye } from './story';
 import ALT_SOY_GORUNUM from '../../data/alt-soy-gorunum.json';
 import type { Alignment } from './alignment';
@@ -334,7 +335,7 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   const race = races.find((r) => r.id === s.raceId);
   if (!race) push(I().raceMissing);
   if (!classes.some((k) => k.id === s.classId)) push(I().classMissing);
-  if (!Number.isInteger(s.level) || s.level < 1 || s.level > 20) push(I().levelRange);
+  if (!Number.isInteger(s.level) || s.level < 1 || s.level > LEVEL_CAP) push(I().levelRange);
   if (race?.lineages && race.lineages.length > 0 && !race.lineageOptional && !race.lineages.some((l) => l.id === s.lineageId)) {
     push(I().lineageMissing(race.name));
   }
@@ -350,7 +351,7 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   }
   step = 'skills';
   if (classes.some((k) => k.id === s.classId)) {
-    const level = Number.isInteger(s.level) && s.level >= 1 && s.level <= 20 ? s.level : 1;
+    const level = Number.isInteger(s.level) && s.level >= 1 && s.level <= LEVEL_CAP ? s.level : 1;
     const skillProblem = classSkillProblem(s.classId, c.classSkills, classKit(s.classId, level, s.subclassId).extraClassSkills);
     if (skillProblem) push(I().classSkills(skillProblem));
   }
@@ -372,7 +373,7 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   }
   for (const w of s.weapons ?? []) if (!weapons.some((x) => x.name === w.name)) push(I().weaponUnknown(w.name));
   step = 'spells';
-  if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= 20) {
+  if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= LEVEL_CAP) {
     const alt = alternativeCantrips(s);
     const own = new Set(spellOptions(s.classId, s.level));
     const allowed = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alt.options]);

@@ -21,7 +21,6 @@ const AI_DIFFS: readonly AiDiff[] = ['kolay', 'normal', 'usta'];
 
 /** Oda kuralları: `app/features`, `carrySetting` ve önizleme ayarlarının odadaki kopyası (aynı varsayılanlar). */
 export interface OdaKurallar {
-  ustSeviye: boolean;
   tasima: CarryRule;
   hizalanma: boolean;
   hizalanmaIrk: boolean;
@@ -70,7 +69,7 @@ export interface Oda {
 
 /** Oda kurallarının varsayılanı: cihazın o anki genel değerleri (çağıran verir; model saf kalır). */
 export const DEFAULT_KURALLAR: OdaKurallar = {
-  ustSeviye: false, tasima: DEFAULT_CARRY_RULE, hizalanma: false, hizalanmaIrk: true, hizalanmaYalnizOtomatik: false, hizalanmaMoral: false,
+  tasima: DEFAULT_CARRY_RULE, hizalanma: false, hizalanmaIrk: true, hizalanmaYalnizOtomatik: false, hizalanmaMoral: false,
   kesif: true, ipucu: true, yolculuk: false,
 };
 
@@ -109,7 +108,7 @@ export function normalizeRoom(raw: unknown): Oda | null {
       zarModu: pick(a.zarModu, DICE_MODES, 'auto'), hpGorunurluk: pick(a.hpGorunurluk, HP_VIS, 'tam'),
       zorluk: { party: pick(z.party, AI_DIFFS, 'normal'), enemies: pick(z.enemies, AI_DIFFS, 'normal') },
       kurallar: {
-        ustSeviye: bool(k.ustSeviye, d.ustSeviye), tasima: pick(k.tasima, CARRY_RULES, d.tasima), hizalanma: bool(k.hizalanma, d.hizalanma),
+        tasima: pick(k.tasima, CARRY_RULES, d.tasima), hizalanma: bool(k.hizalanma, d.hizalanma),
         hizalanmaIrk: bool(k.hizalanmaIrk, d.hizalanmaIrk), hizalanmaYalnizOtomatik: bool(k.hizalanmaYalnizOtomatik, d.hizalanmaYalnizOtomatik),
         hizalanmaMoral: bool(k.hizalanmaMoral, d.hizalanmaMoral), kesif: bool(k.kesif, d.kesif), ipucu: bool(k.ipucu, d.ipucu), yolculuk: bool(k.yolculuk, d.yolculuk),
       },
@@ -129,7 +128,7 @@ export function normalizeRoom(raw: unknown): Oda | null {
 export function overlayOf(o: Oda): RoomOverlay {
   const k = o.ayarlar.kurallar;
   return {
-    deneysel: { ustSeviye: k.ustSeviye, hizalanma: k.hizalanma, hizalanmaIrk: k.hizalanmaIrk, hizalanmaYalnizOtomatik: k.hizalanmaYalnizOtomatik, hizalanmaMoral: k.hizalanmaMoral, yolculuk: k.yolculuk },
+    deneysel: { hizalanma: k.hizalanma, hizalanmaIrk: k.hizalanmaIrk, hizalanmaYalnizOtomatik: k.hizalanmaYalnizOtomatik, hizalanmaMoral: k.hizalanmaMoral, yolculuk: k.yolculuk },
     tasima: k.tasima, kesif: k.kesif, ipucu: k.ipucu, hp: o.ayarlar.hpGorunurluk,
   };
 }
@@ -137,7 +136,7 @@ export function overlayOf(o: Oda): RoomOverlay {
 /** Odaya katıl ekranındaki salt okunur özet satırları: [ad, açık mı ya da değer]. */
 export function rulesSummary(k: OdaKurallar): Array<{ id: keyof OdaKurallar; value: boolean | CarryRule }> {
   return [
-    { id: 'ustSeviye', value: k.ustSeviye }, { id: 'tasima', value: k.tasima }, { id: 'hizalanma', value: k.hizalanma },
+    { id: 'tasima', value: k.tasima }, { id: 'hizalanma', value: k.hizalanma },
     { id: 'kesif', value: k.kesif }, { id: 'ipucu', value: k.ipucu }, { id: 'yolculuk', value: k.yolculuk },
   ];
 }

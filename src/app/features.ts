@@ -5,7 +5,12 @@ const KEY = 'rpg-battle-deneysel';
 
 /** Cihazın kendi saklanan değerleri (yazma bunun üstünden; oda örtüsü yazılmaz). */
 function stored(): Record<string, boolean> {
-  try { return JSON.parse(localStorage.getItem(KEY) ?? '{}') as Record<string, boolean>; } catch { return {}; }
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) ?? '{}') as Record<string, boolean>;
+    // 2026-11-19: "Üst seviye" anahtarı kalktı; eski kayıttaki `ustSeviye` okunmaz ve sonraki yazmada düşer.
+    if (o && typeof o === 'object' && 'ustSeviye' in o) { const { ustSeviye: _eski, ...rest } = o; return rest; }
+    return o;
+  } catch { return {}; }
 }
 /** Okuma: etkin oda varsa kuralları onun değerleriyle (Görev OD1), yoksa cihazın değerleri. */
 function read(): Record<string, boolean> {
@@ -18,13 +23,6 @@ export const journeyEnabled = (): boolean => read().yolculuk === true;
 
 export function setJourneyEnabled(on: boolean): void {
   try { localStorage.setItem(KEY, JSON.stringify({ ...stored(), yolculuk: on })); } catch { /* depolama yok */ }
-}
-
-/** Kuyruk 38: "Üst seviye (6–20)" (Game Master; varsayılan kapalı): oluşturucu ve ilerleme 20. seviyeye dek (Kuyruk 19; önce 10). */
-export const upperLevelsEnabled = (): boolean => read().ustSeviye === true;
-
-export function setUpperLevelsEnabled(on: boolean): void {
-  try { localStorage.setItem(KEY, JSON.stringify({ ...stored(), ustSeviye: on })); } catch { /* depolama yok */ }
 }
 
 /** Kuyruk K20: Celestial (Düşmüş) ırkı ev kuralı (Game Master; varsayılan kapalı): oluşturucuda seçilir, yeni savaşlarda `celestialIrki` açık gelir. */

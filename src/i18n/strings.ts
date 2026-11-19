@@ -615,7 +615,6 @@ const tr = {
   journey: {
     menu: 'Yolculuk (deneme)', menuDesc: 'Game Master gerektirmeyen ana mod: tek başına ya da partiyle, savaşları kalıcı parti durumuyla bir rotada oynayın.',
     celestialFlag: 'Game Master: Celestial ırkı (ev kuralı)', celestialNote: 'SRD 5.2.1 dışı özgün ırk (Düşmüş). Açıkken oluşturucuda seçilir ve yeni savaşlarda Şifa Eli, Light ve Göksel Uyanış çalışır; kapalıyken Celestial karakterler yalnızca karanlık görüş ve dirençle oynar.',
-    upperFlag: 'Game Master: Üst seviye (6–20)', upperNote: 'Açıkken karakter oluşturma ve Serüven seviye atlaması 20. seviyeye dek; kapalıyken 5. Daha yüksek seviyeli eski karakterler korunur.',
     title: 'Yolculuk (deneme)', flag: 'Deneysel: Yolculuk', flagNote: 'Ana menüde "Yolculuk (deneme)" girişini açar. Kayıt ayrı tutulur.',
     newTitle: 'Yeni yolculuk', route: 'Güzergâh', party: 'Parti', difficulty: 'Zorluk', progression: 'İlerleme',
     diff: { kolay: 'Kolay', normal: 'Normal', zor: 'Zor' }, prog: { milestone: 'Kilometre taşı', xp: 'XP' },

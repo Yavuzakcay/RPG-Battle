@@ -19,6 +19,17 @@ Uzak daldaki Control Water girdabı (sürüm 84, `controlWaterWhirlpool`) ve G01
 - **Matris:** Control Water 14 → 18 satır (kaçış başarılı, üç savaş dışı seçenek), hepsi doğru; Polymorph 6 satır doğru.
 - **G01 ek testleri** (`girdapSecenek.test.ts`): girdabın STR save'inde süren etki (Enlarge/Reduce) kaynaklı kip nedeni, Incapacitated'ta Danger Sense yazılmaz, Gnomish Cunning/Danger Sense EN satırı. Danger Sense, Gnomish Cunning, Haste/Reduce uzak dalda zaten vardı (`g01SaveWhy.test.ts`).
 - Wild Shape: uzak dalda Wild Shape işi yok (sürüm 84'te); bu sekmede Wild Shape planı yapılmamıştı, iş başlatılmadı.
+## Seviye sınırı kalktı: her yerde 1–20, "Üst seviye (6–20)" anahtarı yok (2026-11-19)
+
+- Kullanıcı kararı: 5. seviye sınırı yalnız ilk aşama içindi. Tek sabit `LEVEL_CAP = 20` (`src/app/limits.ts`); `upperLevelsEnabled`, Oda kuralları satırı, oda kaydındaki `ustSeviye`, Serüven anahtarı `ustSeviye`, oluşturucunun "Bu odada Üst seviye kapalı" ve Odaya katıl'ın "5 üstü karakter" uyarıları kalktı.
+- Eski kayıt güvenliği: cihaz ayarındaki `ustSeviye` okunmaz ve sonraki yazmada düşer; eski oda kaydında bilinmeyen alan olarak atılır; eski Serüven kaydındaki `toggles.ustSeviye` yok sayılır (kayıt aynen yüklenir, 20'ye dek atlar). Savaş kuralı değişmediği için kural sürümü ve kayıt sürümleri artmadı.
+- Kuyruk 41b'nin `ustSeviyeGizli` gizlemesi (Üst seviye açıkken 1–5. seviye senaryosunu seçiciden ve Serüven'den saklama) anahtarla birlikte kalktı: alan silindi, içerik her zaman görünür (tek kullanan Kale Baskını zaten `gizli`). Gerekçe: anahtarsız durumda "her zaman gizli" içerik kaybettirir, "hiç gizleme" eski varsayılanla aynıdır.
+- 6+ "deneysel" uyarısı veriden aynen (`experimentalFrom`). Yeni karakter 1. seviyede başlar. Denge ölçülmedi; Serüven'de 6+ düğümlerin çoğu 5. seviye listesine düşüyor (denetim `harita/belgeler/SEVIYE-SINIRI-KALDIRMA.md`), denge turuna kaldı.
+## soy-maske tutarlılığı: rapor 144 sprite, bayat 8 Cleric ID9 maskesi yenilendi (2026-11-19; yalnız veri/test, kural ve kayıt sürümü değişmedi)
+
+- `data/soy-maske-rapor.json` 120 → 144: beklenen. Rapor sprite kümesi `soy-renkleri.json` `races` × cinsiyet × sınıf (`npm run soy-maske` ana döngüsü); Human, AS1c'de (2026-11-12) ten tonu maskesi için o tabloya girdi, rapor ise 2026-11-09'dan kalmıştı. Rapora yalnız 24 Human `oto` satırı eklendi (elle maske yok, çalışma anı davranışı aynı). `handMask.test.ts` sabit 120 yerine kümeyi veriden hesaplıyor (ırk × cinsiyet × sınıf, Human dahil), böylece ırk eklenince test sessizce bayatlamaz.
+- Bayat 8 `*-cleric-ID9` ten maskesi (elf-erkek, gnome ×2, goliath ×2, human ×2, tiefling-erkek) `npm run soy-maske -- --alt` ile yenilendi; baytları değişen yalnız bu 8 PNG ve alt-rapor'da bu 8 girdi. Halka (`split_ring`) ∩ ten maskesi sekizinde de 0 (önce de 0), ten ortalaması kayması ΔE 0,1–1,2; `maske-el` gerekmedi. Dragonborn pul maskeleri, diğer ırk maskeleri ve Dark Elf paleti değişmedi. Ayrıntı ve önce/sonra: `docs/sabah/cleric-id9-halka/maske-8.md`, ölçüm `scripts/cleric-id9-maske-olcum.py`.
+- Bilgi: hücreli jetonlar (`…-ID9`) için `maske-el` hattı bağlı değil (`applyHandMasks` yalnız 144 sınıf-genel sprite); ileride gerekirse kaynak kümesine eklenmeli. Otomatik maskenin eski davranışı: goliath-kadin kapsaması parça parça, human-erkek gövdede +174 px (krem gömlek); düzeltilmedi.
 
 ## Dragonborn eski maske yetimleri temizlendi (2026-11-19, kullanıcı onayı; yalnız betik/veri temizliği, kural ve kayıt sürümü değişmedi)
 
