@@ -9,6 +9,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Birlik Manastırı 17. seviye özelliği: "Barış Azizi" (2026-11-19, kullanıcı kararı; yalnız ad, kural ve kayıt sürümü değişmedi)
+
+- `imza_birlik` / `unbroken-union` özelliğinin adı TR "Barış Azizi", EN "Saint of Peace" (eski "Yıkılmaz Birlik" / "Unbroken Union"). Gerekçe: bütün Cleric alt sınıflarının 17. seviye özelliği "… Azizi" ile biter; ad kullanıcının kendi çevirisi. Kimlik, seviye (17), etki (havuz kurulurken `guard` = 2 × seviye; havuz 0'a düşecekken bir kez o canla ayakta kalır, sahibin kaynağı ve tepkisi harcanır, üyelerin Motivasyonu dolar; reducer `trackPools`), parametreler ve açıklama aynen. Eski Barış Azizi'nin %50 direnç etkisi geri gelmedi.
+- Ad `scripts/k50-imza-veri.py`'de değişti, `data/imza.json` yeniden üretildi (JSON farkı yalnız iki ad satırı). Üretici betik K59/G3'te veriye elle girilmiş beş değerle eşitlendi (Yüce Taht `sure: 1`, Zihin Fırlatma `kullan` focus 3, Yetişen Yol `sure: 1`, Tam Zamanında `menzilFt: 15`, Ninni ve Sepet `yz: kontrol` + `yzYaklas`); yeniden üretim bunları geri almıyor.
+- Adın geçtiği yerler: `data/imza.json` (kart ve oluşturucu adı veriden; savaş günlüğünde bu özelliğe ayrı ileti yok), `scripts/k50-imza-veri.py`, `docs/imza-alt-siniflar/imza-cleric-birlik-manastiri.md` ve `imza-alt-siniflar-tum.md`, `harita/belgeler/ALT-SINIF-GORSEL-TABLOSU.md` (tek satır), `harita/belgeler/DENGE.md` (iki satır), kod yorumları (`hpPool.ts`, `imza.ts`, `imzaBirlik.ts`, `types.ts`), test adları (`k54bBirlik.test.ts`, `k59etkilesim.test.ts`). `src/i18n/strings*.ts`'te geçmiyor. Eski görev belgesi (`docs/gorevler/kuyruk-49-test-bulgulari-1.md`) ve bu dosyadaki eski kararlar tarihsel kayıt olarak değişmedi.
+
 ## Cleric hücre 3 etiketi: Barış → Birlik Manastırı (yalnız ad; kural ve kayıt sürümü değişmedi)
 
 - Kullanıcı: Barış Alanı zaten Birlik Manastırı. `data/jeton-hucre-sirasi.json` cleric hücre 3 etiketi "Barış" idi; "Birlik Manastırı (eski Barış Alanı çizimi; bağlı jeton ID9)" oldu. Görünen ad dönüşümü (`alt-sinif-gorunum.json` `istisnalar`, `eskiKimlik baris-alani → imza_birlik`) zaten vardı, değişmedi; paket listesindeki `baris-alani | Barış Alanı` satırı paketin kendi adı olduğu için kaldı.

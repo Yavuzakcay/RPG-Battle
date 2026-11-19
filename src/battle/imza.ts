@@ -302,7 +302,7 @@ export function executeImza(state: BattleState, actor: Combatant, f: UsableFeatu
     if (ids.length < 2) return fail('Havuz için en az iki bağlı ve havuzsuz dost gerekir.');
     const max = ids.reduce((n, id) => n + (state.combatants[id]?.maxHp ?? 0), 0);
     const hp = Math.min(max, ids.reduce((n, id) => n + (state.combatants[id]?.hp ?? 0), 0));
-    // Kuyruk K54b: Yıkılmaz Birlik (17) koruması havuzla birlikte kurulur.
+    // Kuyruk K54b: Barış Azizi (17) koruması havuzla birlikte kurulur.
     const guard = unbrokenGuard(state, actor);
     return finish(state, [...events, { type: 'hp_pool_created', poolId: `imza-birlik-${actor.id}`, memberIds: ids, hp, max, label: spec.ad, ...(guard ? { guard } : {}) }]);
   }

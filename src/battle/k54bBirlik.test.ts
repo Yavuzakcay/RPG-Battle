@@ -1,6 +1,6 @@
 /**
  * Kuyruk K54b G3: Birlik Manastırı (kural sürümü 27): Omuz Ver (başarısız kurtulmaya bağlı dosttan +WIS, tepki),
- * Ortak Şifa (diğer bağlılara WIS can), Yıkılmaz Birlik (havuz 0'da bir kez ayakta); sürüm 26'da yok; YZ Bağ ve Teselli.
+ * Ortak Şifa (diğer bağlılara WIS can), Barış Azizi (havuz 0'da bir kez ayakta); sürüm 26'da yok; YZ Bağ ve Teselli.
  */
 import { describe, it, expect } from 'vitest';
 import { kitArena, o, mid } from './k54bKit';
@@ -47,7 +47,7 @@ describe('K54b Birlik Manastırı', () => {
     old.do(old.use('forge-bond'));
     expect(commandEndHookEvents(old.state, applyEvents(old.state, [heal]), [heal], { type: 'cast_spell', actorId: 'A', spellName: 'x', targetId: 'C' } as never, mid, applyEvents)).toEqual([]);
   });
-  it('Yıkılmaz Birlik (17): havuz 0\'a düşecekken 2 × seviye canla kalır, bir kez', () => {
+  it('Barış Azizi (17): havuz 0\'a düşecekken 2 × seviye canla kalır, bir kez', () => {
     const r = B(17);
     r.do(r.use('forge-bond'));
     r.fresh();

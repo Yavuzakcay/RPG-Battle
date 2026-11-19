@@ -1466,7 +1466,7 @@ export interface HpPool {
   max: number;
   label?: string;
   /**
-   * Kuyruk K54b: Yıkılmaz Birlik (Birlik Manastırı 17): havuz 0'a düşecekken bir kez `hp` ile ayakta kalır; sahibin
+   * Kuyruk K54b: Barış Azizi (Birlik Manastırı 17): havuz 0'a düşecekken bir kez `hp` ile ayakta kalır; sahibin
    * kaynağı (`resource`) ve tepkisi harcanır, üyelerin Motivasyonu dolar (reducer `trackPools`). Kullanılınca `held`.
    */
   guard?: { ownerId: string; hp: number; resource: string };
