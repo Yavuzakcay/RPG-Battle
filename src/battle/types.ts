@@ -384,7 +384,9 @@ export interface ActiveEffect {
   /** Mekanik matris B13 (sürüm 83+, Holy Aura): büyücüden dost yayılımı (yarıçap içindekiler `Combatant.allyAura` alır). */
   allyAura?: { radiusFt: number; saveAdvAll?: true; attackedDis?: true; blindRetort?: { types: string[]; dc: number } };
   /** Kuyruk 19: tur başında save (Conjure Elemental tutsağı): başarısızsa hasar, başarılıysa biter. */
-  startSave?: { ability: Ability; dc: number; dice: string; type: string };
+  startSave?: { ability: Ability; dc: number; dice: string; type: string;
+    /** Mekanik matris K04 (sürüm 83): yakalandığı tur; o turun başında tekrar save yok ("At the start of each of its turns, the Restrained target repeats the save"). */
+    skip?: { round: number; turnIndex: number } };
   /** Kuyruk 19: Gift of the Protectors (kaynak warlock) ve Gaze of Two Minds (bağlı dost). */
   giftOf?: string;
   gazeAt?: string;

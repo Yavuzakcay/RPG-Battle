@@ -164,10 +164,11 @@ export const KATALOG: Bulgu[] = [
     oneri: 'Prone ve otomatik kritik 5 ft denetimi güç/kılıç/ruh altıgeninden (kural sürümü kapısıyla).',
     eslesir: (r) => kotu(r) && bag(r, 'hedef Prone (yakın: avantaj)') && ad(r, 'Spiritual Weapon', 'Arcane Sword', 'Conjure Fey'),
     duzeltme: { surum: 83, not: 'kullanıcı kararı: Prone ve otomatik kritik 5 ft gücün yerinden; Arcane Sword `m83` güç modeli (`lingering: weapon`, 30 ft)' } },
-  { id: 'K04', sonuc: 'karar bekliyor', baslik: 'Conjure Elemental: yakalandığı tur başında tutsak tekrar save\'i de atar mı?',
-    neden: 'SRD: yaratık ruhun 5 ft içinde turuna başlayınca save (8d8 + Restrained); "At the start of each of its turns, the Restrained target repeats the save" (4d8). Motor aynı tur başında ikisini de uyguluyor (12d8).',
-    oneri: 'Okuma kararı; tekrarın sonraki turdan başlaması daha muhafazakâr.',
-    eslesir: (r) => kotu(r) && ad(r, 'Conjure Elemental') && bag(r, 'tetik') },
+  { id: 'K04', sonuc: 'yanlış', baslik: 'Conjure Elemental tutsağı yakalandığı tur başında tekrar save\'i de atıyor (karar: metne göre atmaz)',
+    neden: 'SRD 5.2.1 Conjure Elemental: "Whenever a creature you can see enters the spirit\'s space or starts its turn within 5 feet of the spirit, you can force that creature to make a Dexterity saving throw … On failed save, the target takes 8d8 damage … and the target has the Restrained condition until the spell ends. At the start of each of its turns, the Restrained target repeats the save." Kullanıcı kararı (K04): metne göre; yakalandığı turun başında henüz Restrained değildi, ilk tekrar sonraki turunda. Motor (82) aynı tur başında ikisini de uyguluyor (8d8 + 4d8).',
+    oneri: 'Yakalandığı turun başında tekrar save\'i atlamak (kural sürümü kapısıyla).',
+    eslesir: (r) => kotu(r) && ad(r, 'Conjure Elemental') && bag(r, 'tetik'),
+    duzeltme: { surum: 83, not: 'kullanıcı kararı: yakalama etkisinde `startSave.skip` (yakalandığı tur); ilk tekrar sonraki turda' } },
 ];
 
 const CSV_COLS: Array<[keyof Satir | 'bulgu', string]> = [

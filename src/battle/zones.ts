@@ -229,7 +229,10 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
       // CILA: kurtulma eylemle STR (Athletics) kontrolü (`escape` komutu); tur sonu save'i yok.
       ...(spec.escape && !(spec.captive && globalRule(state, 'spellsK19')) ? { escapeCheck: { dc: z.dc } } : {}),
       // Kuyruk 19: tutsağın tur başı save'i (başarısızsa 4d8, başarılıysa kurtulur).
-      ...(spec.captive && globalRule(state, 'spellsK19') ? { startSave: { ability: spec.save, dc: z.dc, dice: spec.captive.repeatDice, type: dtype ?? 'force' } } : {}),
+      // Mekanik matris K04 (kullanıcı kararı: metne göre, sürüm 83): tekrar save'i "Restrained hedef" atar; yakalandığı turun
+      // başında henüz Restrained değildi, ilk tekrar sonraki turunun başında.
+      ...(spec.captive && globalRule(state, 'spellsK19') ? { startSave: { ability: spec.save, dc: z.dc, dice: spec.captive.repeatDice, type: dtype ?? 'force',
+        ...(matrisOn(state) ? { skip: { round: state.round, turnIndex: state.turnIndex } } : {}) } } : {}),
     } });
   }
   return events;

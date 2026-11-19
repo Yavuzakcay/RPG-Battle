@@ -616,3 +616,32 @@ describe('K03 (kullanıcı kararı): güç/kılıç/ruh saldırısında Prone 5 
     expect(r.error).toMatch(/30 ft/);
   });
 });
+
+describe('K04 (kullanıcı kararı: metne göre): Conjure Elemental tutsağı yakalandığı tur başında tekrar save atmaz (SRD "At the start of each of its turns, the Restrained target repeats the save.")', () => {
+  const setup = (v: number) => {
+    const s = scene(v, [caster({ level: 9, spellNames: ['Conjure Elemental'] }), foe('T', { pos: { col: 7, row: 5 } })]);
+    const r = run(s, { type: 'cast_spell', actorId: 'A', spellName: 'Conjure Elemental', slotLevel: 5, choice: 'fire', targetHex: { col: 6, row: 5 } } as Command, hooked({ one: 2, two: [2, 2] }));
+    expect(r.ok, r.error).toBe(true);
+    return r.state;
+  };
+  const turn = (s: BattleState, id: string) => {
+    const x = execute(s, { type: 'end_turn', actorId: id } as Command, id === 'A' ? P1 : GM, hooked({ one: 2, two: [2, 2] }));
+    expect(x.ok, x.ok ? '' : x.error).toBe(true);
+    return x as Extract<typeof x, { ok: true }>;
+  };
+  const dmgOn = (events: BattleEvent[], id: string) => events.reduce((n, e) => n + ((e.type === 'save_resolved' || e.type === 'effect_tick') && e.targetId === id ? e.damageRolls.length : 0), 0);
+  for (const [v, dice] of [[83, 8], [82, 12]] as const) {
+    it(`${v}: yakalandığı tur başında ${dice} zar (${v === 83 ? 'yalnız 8d8' : '8d8 + 4d8, eski'})`, () => {
+      const t1 = turn(setup(v), 'A');
+      expect(t1.state.combatants.T?.conditions).toContain('Restrained');
+      expect(dmgOn(t1.events, 'T')).toBe(dice);
+    });
+  }
+  it('83: sonraki turunun başında tekrar save (4d8)', () => {
+    const t1 = turn(setup(83), 'A');
+    const t2 = turn(t1.state, 'T');
+    const t3 = turn(t2.state, 'A');
+    expect(t3.events.some((e) => e.type === 'effect_tick' && e.targetId === 'T' && !!e.save)).toBe(true);
+    expect(dmgOn(t3.events, 'T')).toBe(4);
+  });
+});
