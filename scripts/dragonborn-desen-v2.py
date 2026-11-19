@@ -98,10 +98,28 @@ def _kutular(shape, kutular):
             x0, y0, x1, y1 = k; m[y0:y1, x0:x1] = True
     return m
 
+def _elle_ornek(rgba, ayar):
+    """Kör topal maske (başta lavanta ten örneği olmayan jetonlar): `ornek` alanlarının ortanca Lab rengi ten sayılır; `alan` içinde
+    a*b* farkı < `renkFark` (varsayılan 14) ve L* farkı < `parlakFark` (varsayılan 35) olan opak pikseller boyanır; 3×3 kapama, < 12 px
+    bileşen atılır. Kontur ve göz/ağız gibi renge uzak pikseller kendiliğinden dışarıda kalır."""
+    op = rgba[..., 3] >= 128; Lab = lab(rgba[..., :3].astype(float))
+    s = _kutular(op.shape, ayar['ornek']) & op
+    if s.sum() < 10: return None, {'neden': 'ten örneği alanı boş'}
+    ref = np.median(Lab[s], 0)
+    dab = np.hypot(Lab[..., 1] - ref[1], Lab[..., 2] - ref[2]); dL = np.abs(Lab[..., 0] - ref[0])
+    alan = _kutular(op.shape, ayar['alan']) & op
+    m = alan & (dab < ayar.get('renkFark', 14)) & (dL < ayar.get('parlakFark', 35))
+    m = ero(dil(m)) & alan & (dL < ayar.get('parlakFark', 35))
+    for c in comps(m):
+        if len(c) < 12: m[c[:, 0], c[:, 1]] = False
+    C = float(np.hypot(ref[1], ref[2]))
+    return m, {'tonH': round(float((np.degrees(np.arctan2(ref[2], ref[1])) + 360) % 360), 1), 'tonC': round(C, 1), 'tenL': round(float(ref[0]), 1), 'boya': int(m.sum())}
+
 def mask_of(rgba, ayar=None):
     """`ayar` (jeton başına düzeltme, data/dragonborn-pul-duzeltme.json): `P` eşik ezmesi, `beyazKutu` beyaz vurgu adayı yalnız bu
     kutularda ([x0, y0, x1, y1], 256 px, uç hariç), `yalniz` sonuç yalnız bu kutularda, `haric` sonuçtan çıkarılan kutular. Yoksa davranış aynen."""
     ayar = ayar or {}; P = {**globals()['P'], **ayar.get('P', {})}
+    if 'ornek' in ayar: return _elle_ornek(rgba, ayar)
     L = lab(rgba[..., :3].astype(float)); a, b = L[..., 1], L[..., 2]; C = np.hypot(a, b); h = (np.degrees(np.arctan2(b, a)) + 360) % 360
     op = rgba[..., 3] >= 128; ys, xs = np.nonzero(op); y0, y1, x0, x1 = ys.min(), ys.max(), xs.min(), xs.max()
     lav = op & (L[..., 0] > 55) & (a > 1) & (b < -1) & (h > 270) & (h < 345)

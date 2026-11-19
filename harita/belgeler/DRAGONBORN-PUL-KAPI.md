@@ -12,17 +12,43 @@
 
 ## Sonuç
 
-- Dragonborn jetonu: 266; el yamalı: 33 (dokunulmadı); otomatik maskeli: 218.
-- Kapı uygulandı: **187** jetonda taşma tahmini azaldı, **19** jetonda aynı kaldı (yalnız ten tonuna uzak küçük bölgeler çıktı); eski maske korundu (kötüleşti): **11**; kapatıldı (beyaz kalır): **1**.
-- Kapı uygulanan jetonlarda taşma tahmini (piksel ağırlıklı) %5,6 → %3,9.
+- Dragonborn jetonu: 266; el yamalı: 31 (kapı uygulanmaz); kör topal (önceden boyanmayan): 18; otomatik maskeli (kapı ölçümü): 217.
+- Kapı uygulandı: **187** jetonda taşma tahmini azaldı, **19** jetonda aynı kaldı (yalnız ten tonuna uzak küçük bölgeler çıktı); eski maske korundu (kötüleşti): **11**; kapatıldı (beyaz kalır): **0**.
+- Kapı uygulanan jetonlarda taşma tahmini (piksel ağırlıklı) %5,5 → %3,8.
 
 ## Kapatılan jetonlar (boyanmaz, beyaz kalır)
 
 | Jeton | Neden | Kaynak |
 |---|---|---|
-| erkek-warlock-WL-10 | hayalet gövde: ten yok (elle düzeltme) | el yaması (`bos`) |
-| kadin-warlock-WL-10 | hayalet gövde: ten yok (elle düzeltme) | el yaması (`bos`) |
-| erkek-warlock-WL-8 | mumya sargıları gövdenin tamamını örtüyor; maske sargılara taşıyor, renk kapısı başı da kesiyor (baş kaybı %27) | `data/dragonborn-pul-kapali.json` |
+
+## Kör topal: önceden boyanmayan jetonlar (kullanıcı kararı "kör topal boyansın")
+
+Seçenek: (a) kapılı/eski otomatik maske gövdenin %60'ından azını boyuyorsa o; (b) yalnız baş, eller ve kuyruk (`alan` çokgen/kutu); (c) yalnız baş/yüz. Başta lavanta ten örneği olmayan jetonlarda ten rengi elle seçilen `ornek` alanından alınır, `alan` içinde bu renge yakın pikseller boyanır (`scripts/dragonborn-desen-v2.py` `_elle_ornek`). Önce/sonra kontak sayfaları `docs/sabah/dragonborn-desen-v2/kor-topal/` (`npx vite-node scripts/dragonborn-pul-kortopal-sayfa.ts <ref>`).
+
+Toplam 18: (a) 1, (b) 12, (c) 5; boyanmayan kalmadı.
+
+| Jeton | Seçenek | Boyanan bölge |
+|---|---|---|
+| erkek-druid-ID4 | c | yeşil-kahve ten, başta lavanta yok; gövde kök/kabuk: yalnız baş |
+| erkek-monk-ID10 | b | gri ten; baş, kuyruk, sağ el (sargılı el/ayak hariç) |
+| erkek-rogue-GR | b | koyu kukuleta; beyaz çene, kuyruk, el |
+| erkek-rogue-ID4 | b | yeşil ten, yaprak kıyafet; baş ve kuyruk |
+| erkek-sorcerer-SC-3 | b | solgun ten; baş, kuyruk, eller, ayaklar |
+| erkek-sorcerer-SC-5 | b | siyah gölge gövde; baş ve kuyruk |
+| erkek-warlock-WL-10 | c | hayalet gövde; yalnız baş |
+| erkek-warlock-WL-4 | b | zombi; baş ve eller (pelerin hariç) |
+| erkek-warlock-WL-8 | a | kapılı otomatik maske (gövdenin %30u, %60 sınırının altında); sargılara küçük taşma kabul |
+| kadin-cleric-ID6 | b | kukuleta ve cüppe; yüz, kuyruk, eller |
+| kadin-druid-ID4 | b | yeşil ten, kabuk gövde; baş ve el |
+| kadin-fighter-ID8 | b | samuray zırhı, başta miğfer; yüz, kuyruk, el |
+| kadin-rogue-GR | b | koyu kukuleta; beyaz çene ve kuyruk |
+| kadin-rogue-ID4 | c | yaprak örtü; yalnız yüz |
+| kadin-sorcerer-SC-3 | b | hayaletimsi ten; baş ve kuyruk |
+| kadin-sorcerer-SC-5 | b | siyah gölge gövde; baş ve kuyruk |
+| kadin-warlock-WL-10 | c | hayalet gövde; yalnız baş |
+| kadin-warlock-WL-8 | c | zombi, elbise tenle aynı renkte; yalnız baş ve boyun |
+
+Not: erkek/kadin-cleric-ID9 jeton görseli kör topal görevinden önce başka bir commit'te değişti; maskeleri o görevde yeniden üretilmedi (önceki maske korundu), aşağıdaki ölçüm yeni görselden.
 
 ## Jeton başına ölçüm (otomatik maskeli jetonlar)
 
@@ -54,7 +80,7 @@
 | erkek-cleric-ID6 | 1347 → 1093 | %13,9 → %2,5 | %100 | eski maske (kötüleşti) |
 | erkek-cleric-ID7 | 4771 → 4270 | %9,6 → %4,0 | %8 | kapı: taşma azaldı |
 | erkek-cleric-ID8 | 5518 → 5330 | %8,6 → %6,7 | %1 | kapı: taşma azaldı |
-| erkek-cleric-ID9 | 6435 → 6262 | %8,7 → %7,6 | %2 | kapı: taşma azaldı |
+| erkek-cleric-ID9 | 6268 → 5924 | %6,5 → %3,4 | %2 | kapı: taşma azaldı |
 | erkek-druid-GR | 10129 → 10028 | %2,9 → %2,8 | %2 | kapı: taşma azaldı |
 | erkek-druid-ID1 | 5366 → 5295 | %1,0 → %1,0 | %3 | kapı: taşma aynı |
 | erkek-druid-ID2 | 5570 → 5492 | %0,4 → %0,4 | %3 | kapı: taşma aynı |
@@ -124,7 +150,6 @@
 | erkek-warlock-WL-3 | 4847 → 4456 | %9,8 → %7,6 | %2 | kapı: taşma azaldı |
 | erkek-warlock-WL-5 | 7988 → 7417 | %15,1 → %13,6 | %4 | kapı: taşma azaldı |
 | erkek-warlock-WL-6 | 6133 → 5937 | %4,8 → %4,7 | %4 | kapı: taşma azaldı |
-| erkek-warlock-WL-8 | 4995 → 3392 | %13,4 → %7,5 | %27 | kapalı |
 | erkek-warlock-WL-9 | 8846 → 3266 | %21,2 → %19,7 | %92 | eski maske (kötüleşti) |
 | erkek-wizard-GR | 5273 → 5210 | %10,5 → %9,9 | %0 | kapı: taşma azaldı |
 | erkek-wizard-WZ-A2 | 5338 → 5155 | %4,3 → %4,4 | %6 | kapı: taşma aynı |
@@ -163,7 +188,7 @@
 | kadin-cleric-ID4 | 4350 → 4191 | %5,2 → %4,1 | %1 | kapı: taşma azaldı |
 | kadin-cleric-ID7 | 4783 → 3857 | %15,9 → %4,0 | %4 | kapı: taşma azaldı |
 | kadin-cleric-ID8 | 4645 → 4497 | %5,1 → %4,2 | %1 | kapı: taşma azaldı |
-| kadin-cleric-ID9 | 5272 → 5134 | %5,0 → %4,4 | %2 | kapı: taşma azaldı |
+| kadin-cleric-ID9 | 5125 → 5000 | %6,2 → %5,5 | %2 | kapı: taşma azaldı |
 | kadin-druid-GR | 8695 → 8542 | %3,3 → %3,0 | %1 | kapı: taşma azaldı |
 | kadin-druid-ID1 | 5306 → 5210 | %2,7 → %1,8 | %1 | kapı: taşma azaldı |
 | kadin-druid-ID2 | 4108 → 4053 | %1,9 → %1,9 | %1 | kapı: taşma azaldı |

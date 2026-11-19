@@ -91,26 +91,7 @@
    "koyu": "#969DA7"
   }
  },
- "maskesiz": {
-  "dragonborn-erkek-druid-ID4": "başta ten örneği yok",
-  "dragonborn-erkek-monk-ID10": "maske boş (< 30 px)",
-  "dragonborn-erkek-rogue-GR": "maske boş (< 30 px)",
-  "dragonborn-erkek-rogue-ID4": "başta ten örneği yok",
-  "dragonborn-erkek-sorcerer-SC-3": "başta ten örneği yok",
-  "dragonborn-erkek-sorcerer-SC-5": "başta ten örneği yok",
-  "dragonborn-erkek-warlock-WL-10": "hayalet gövde: ten yok (elle düzeltme)",
-  "dragonborn-erkek-warlock-WL-4": "başta ten örneği yok",
-  "dragonborn-erkek-warlock-WL-8": "riskli: mumya sargıları gövdenin tamamını örtüyor; maske sargılara taşıyor, renk kapısı başı da kesiyor (baş kaybı %27)",
-  "dragonborn-kadin-cleric-ID6": "başta ten örneği yok",
-  "dragonborn-kadin-druid-ID4": "başta ten örneği yok",
-  "dragonborn-kadin-fighter-ID8": "başta ten örneği yok",
-  "dragonborn-kadin-rogue-GR": "başta ten örneği yok",
-  "dragonborn-kadin-rogue-ID4": "başta ten örneği yok",
-  "dragonborn-kadin-sorcerer-SC-3": "başta ten örneği yok",
-  "dragonborn-kadin-sorcerer-SC-5": "başta ten örneği yok",
-  "dragonborn-kadin-warlock-WL-10": "hayalet gövde: ten yok (elle düzeltme)",
-  "dragonborn-kadin-warlock-WL-8": "başta ten örneği yok"
- },
+ "maskesiz": {},
  "kapi": {
   "tol": 8,
   "ton": 12,

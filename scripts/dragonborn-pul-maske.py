@@ -46,7 +46,8 @@ def rapor(olcum, duz, kapali, toplam):
          'fazla azalırsa (ten kesiliyor) o jetonda eski maske korunur.',
          '- `data/dragonborn-pul-duzeltme.json` el yamalı jetonlara kapı uygulanmaz (maskeleri aynen).', '',
          '## Sonuç', '',
-         f'- Dragonborn jetonu: {toplam}; el yamalı: {len(duz)} (dokunulmadı); otomatik maskeli: {len(olcum)}.',
+         f"- Dragonborn jetonu: {toplam}; el yamalı: {sum(1 for a in duz.values() if not a.get('secenek'))} (kapı uygulanmaz); kör topal (önceden boyanmayan): "
+         f"{sum(1 for a in duz.values() if a.get('secenek'))}; otomatik maskeli (kapı ölçümü): {len(olcum)}.",
          f"- Kapı uygulandı: **{say.get('kapı: taşma azaldı', 0)}** jetonda taşma tahmini azaldı, **{say.get('kapı: taşma aynı', 0)}** jetonda aynı kaldı "
          f"(yalnız ten tonuna uzak küçük bölgeler çıktı); eski maske korundu (kötüleşti): **{say.get('eski maske (kötüleşti)', 0)}**; "
          f"kapatıldı (beyaz kalır): **{say.get('kapalı', 0)}**.",
@@ -55,6 +56,19 @@ def rapor(olcum, duz, kapali, toplam):
     for n, a in duz.items():
         if a.get('bos'): L.append(f"| {n[11:]} | {a['bos']} | el yaması (`bos`) |")
     for n, why in kapali.items(): L.append(f'| {n[11:]} | {why} | `data/dragonborn-pul-kapali.json` |')
+    kt = {n: a for n, a in duz.items() if a.get('secenek')}
+    if kt:
+        say = {k: sum(1 for a in kt.values() if a['secenek'] == k) for k in 'abc'}
+        L += ['', '## Kör topal: önceden boyanmayan jetonlar (kullanıcı kararı "kör topal boyansın")', '',
+              'Seçenek: (a) kapılı/eski otomatik maske gövdenin %60\'ından azını boyuyorsa o; (b) yalnız baş, eller ve kuyruk (`alan` çokgen/kutu);'
+              ' (c) yalnız baş/yüz. Başta lavanta ten örneği olmayan jetonlarda ten rengi elle seçilen `ornek` alanından alınır, `alan` içinde'
+              ' bu renge yakın pikseller boyanır (`scripts/dragonborn-desen-v2.py` `_elle_ornek`). Önce/sonra kontak sayfaları'
+              ' `docs/sabah/dragonborn-desen-v2/kor-topal/` (`npx vite-node scripts/dragonborn-pul-kortopal-sayfa.ts <ref>`).', '',
+              f"Toplam {len(kt)}: (a) {say['a']}, (b) {say['b']}, (c) {say['c']}; boyanmayan kalmadı.", '',
+              '| Jeton | Seçenek | Boyanan bölge |', '|---|---|---|']
+        for n, a in sorted(kt.items()):
+            L.append(f"| {n[11:]} | {a['secenek']} | {a['neden'].split(': ', 1)[-1]} |")
+    L += ['', 'Not: erkek/kadin-cleric-ID9 jeton görseli kör topal görevinden önce başka bir commit\'te değişti; maskeleri o görevde yeniden üretilmedi (önceki maske korundu), aşağıdaki ölçüm yeni görselden.']
     L += ['', '## Jeton başına ölçüm (otomatik maskeli jetonlar)', '', '| Jeton | Maske px önce → sonra | Taşma tahmini önce → sonra | Baş bandı kaybı | Karar |', '|---|---|---|---|---|']
     for n, v in sorted(olcum.items()):
         L.append(f"| {n} | {v['px0']} → {v['px1']} | %{v['p0'] * 100:.1f} → %{v['p1'] * 100:.1f} | %{v['basKayip'] * 100:.0f} | {v['karar']} |")
@@ -80,6 +94,7 @@ if __name__ == '__main__':
             continue
         rgba = np.array(Image.open(os.path.join(v2.CHAR, f'dragonborn-{n}.webp')).convert('RGBA'))
         m, info = v2.mask_of(rgba, ayar)
+        if ayar and ayar.get('kapi') and m is not None: m = v2.renk_kapisi(rgba, info, m)
         if not ayar and m is not None and int(m.sum()) >= ASGARI_PX:
             g = v2.renk_kapisi(rgba, info, m)
             p0, h0 = v2.tasma_tahmini(rgba, info, m); p1, h1 = v2.tasma_tahmini(rgba, info, g)

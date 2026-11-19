@@ -12,6 +12,12 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 ## Ana parça sınırı 450 → 500 kB (2026-11-19, kullanıcı kararı 2026-11-18)
 
 Kullanıcı: "500 de sorun değil." `data/paket-siniri.json` `anaParcaKb` 450 → 500. Ana parça bu sırada ≈448 kB (450 sınırına 2 kB kalmıştı). KQ4 PB1'deki "sınır tekrar yükseltilmez" notu bu kararla kalktı; yeni kod yine tembel parçalara girer (ilke değişmedi), denetim `npm run build` sonunda `scripts/paket-siniri.mjs`. CLAUDE.md güncellendi.
+## Dragonborn pul: önceden boyanmayan 18 jeton "kör topal" boyandı (2026-11-19)
+
+- Kullanıcı kararı: pul rengi seçilince hiçbir şey değişmeyen jeton kalmasın. 18 jetonun 16'sında başta lavanta ten örneği yoktu (yeşil, siyah, gri, hayalet ten) ya da maske boştu; yeni yol `ornek` (elle ten rengi alanı) + `alan` (boyama çokgen/kutusu; renge yakın pikseller) `scripts/dragonborn-desen-v2.py` `_elle_ornek`. erkek-warlock-WL-8 (a): kapılı otomatik maske gövdenin %30'unu boyuyor, sargılara küçük taşma kabul (`kapi: true`).
+- Sonuç: (a) 1, (b) 12 (baş + kuyruk/eller), (c) 5 (yalnız baş/yüz: iki hayalet WL-10, erkek-druid-ID4, kadin-rogue-ID4, kadin-warlock-WL-8); boyanmayan kalmadı, `data/dragonborn-pul-kapali.json` boş. Siyah gölge (SC-5) ve hayalet gövdelerde baş alanı düz kesimle bitiyor (kör topal).
+- Başka maske değişmedi: cleric-ID9 jetonları başka commit'te değiştiği için üretici onların maskesini de yeniledi, geri alındı. Tablo `harita/belgeler/DRAGONBORN-PUL-KAPI.md`. Yalnız görünüm; kural ve kayıt sürümü değişmez.
+
 ## Dragonborn pul v2 kapanışı: renk kapısı ve riskli jetonlar (2026-11-19)
 
 - Kullanıcı kararı (gözle inceleme bitti): pul yalnız maske içinde ve ejderha derisine yakın renkte. Yöntem `scripts/dragonborn-desen-v2.py` `renk_kapisi`: maske Lab renk bölgelerine ayrılır, bölge ortalaması baş ten örneğinden uzaksa (ton > 12°, kroma oranı 0,4–3 dışı, açık ve renksiz) boyanmaz; kapalı küçük delikler geri. Ayar `KAPI` (kopyası `data/dragonborn-pul.json` `kapi`).

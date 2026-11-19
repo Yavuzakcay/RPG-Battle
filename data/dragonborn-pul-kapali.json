@@ -1,6 +1,4 @@
 {
  "not": "Dragonborn pul v2: renk kapısından sonra da kıyafete/sargıya taşma riski yüksek kalan jetonlar; maske yazılmaz, jeton beyaz kalır (scripts/dragonborn-pul-maske.py okur; listenin ve ölçümlerin raporu harita/belgeler/DRAGONBORN-PUL-KAPI.md). El yamaları data/dragonborn-pul-duzeltme.json'da.",
- "jetonlar": {
-  "dragonborn-erkek-warlock-WL-8": "mumya sargıları gövdenin tamamını örtüyor; maske sargılara taşıyor, renk kapısı başı da kesiyor (baş kaybı %27)"
- }
+ "jetonlar": {}
 }

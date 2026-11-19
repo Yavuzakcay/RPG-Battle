@@ -1,5 +1,5 @@
 {
- "not": "Dragonborn pul maskesi jeton başına elle düzeltme (scripts/dragonborn-pul-maske.py okur; scripts/dragonborn-desen-v2.py mask_of `ayar`). Koordinatlar 256 px jeton uzayında. `yalniz`: maske yalnız bu alanlarda; `haric`: bu alanlar çıkarılır; `beyazKutu`: beyaz vurgu adayı yalnız bu alanlarda; alan = kutu [x0, y0, x1, y1] (uç hariç) ya da çokgen [[x, y], ...]. `bos`: maske yazılmaz, jeton boyanmaz (neden maskesiz listesine). `neden`: çıkarılan kıyafet/eşya.",
+ "not": "Dragonborn pul maskesi jeton başına elle düzeltme (scripts/dragonborn-pul-maske.py okur; scripts/dragonborn-desen-v2.py mask_of `ayar`). Koordinatlar 256 px jeton uzayında. `yalniz`: maske yalnız bu alanlarda; `haric`: bu alanlar çıkarılır; `beyazKutu`: beyaz vurgu adayı yalnız bu alanlarda; alan = kutu [x0, y0, x1, y1] (uç hariç) ya da çokgen [[x, y], ...]. `bos`: maske yazılmaz, jeton boyanmaz (neden maskesiz listesine). `neden`: çıkarılan kıyafet/eşya. `ornek` + `alan`: başta lavanta ten örneği olmayan jetonlarda ten rengi `ornek` alanından, boyama `alan` içinde renge yakın piksellerde (`renkFark` a*b*, `parlakFark` L*). `kapi`: otomatik maske + renk kapısı. `secenek`: kör topal görevindeki a/b/c.",
  "jetonlar": {
   "dragonborn-kadin-paladin-ID10": {
    "yalniz": [
@@ -151,12 +151,24 @@
    "neden": "çekiç başı ve zırh; baş ve kuyruk"
   },
   "dragonborn-erkek-warlock-WL-10": {
-   "bos": "hayalet gövde: ten yok (elle düzeltme)",
-   "neden": "hayalet gövde: ten yok, maske yalnız dış ışıltı ve dumandaydı"
+   "ornek": [
+    [110, 60, 130, 80]
+   ],
+   "alan": [
+    [75, 10, 185, 118]
+   ],
+   "secenek": "c",
+   "neden": "kör topal (c): hayalet gövde; yalnız baş"
   },
   "dragonborn-kadin-warlock-WL-10": {
-   "bos": "hayalet gövde: ten yok (elle düzeltme)",
-   "neden": "hayalet gövde: ten yok, maske yalnız dış ışıltı ve dumandaydı"
+   "ornek": [
+    [130, 50, 150, 70]
+   ],
+   "alan": [
+    [80, 10, 185, 112]
+   ],
+   "secenek": "c",
+   "neden": "kör topal (c): hayalet gövde; yalnız baş"
   },
   "dragonborn-erkek-rogue-ID3": {
    "yalniz": [
@@ -437,6 +449,293 @@
     [117, 70, 190, 130]
    ],
    "neden": "veba maskesi (gaga ve göz bölgesi)"
+  },
+  "dragonborn-erkek-druid-ID4": {
+   "ornek": [
+    [140, 65, 165, 85]
+   ],
+   "alan": [
+    [95, 22, 188, 124]
+   ],
+   "secenek": "c",
+   "neden": "kör topal (c): yeşil-kahve ten, başta lavanta yok; gövde kök/kabuk: yalnız baş"
+  },
+  "dragonborn-erkek-monk-ID10": {
+   "ornek": [
+    [150, 65, 170, 85]
+   ],
+   "alan": [
+    [105, 15, 192, 112],
+    [
+     [50, 128],
+     [75, 122],
+     [100, 160],
+     [112, 175],
+     [105, 198],
+     [70, 192],
+     [52, 160]
+    ],
+    [190, 150, 212, 188]
+   ],
+   "secenek": "b",
+   "neden": "kör topal (b): gri ten; baş, kuyruk, sağ el (sargılı el/ayak hariç)"
+  },
+  "dragonborn-erkek-rogue-GR": {
+   "ornek": [
+    [35, 140, 50, 180]
+   ],
+   "alan": [
+    [100, 85, 190, 125],
+    [
+     [28, 105],
+     [45, 100],
+     [50, 140],
+     [60, 195],
+     [85, 200],
+     [100, 190],
+     [110, 215],
+     [65, 222],
+     [30, 200],
+     [25, 150]
+    ],
+    [78, 165, 102, 196]
+   ],
+   "secenek": "b",
+   "neden": "kör topal (b): koyu kukuleta; beyaz çene, kuyruk, el"
+  },
+  "dragonborn-erkek-rogue-ID4": {
+   "ornek": [
+    [140, 105, 160, 115]
+   ],
+   "alan": [
+    [
+     [100, 55],
+     [150, 55],
+     [188, 85],
+     [188, 128],
+     [140, 130],
+     [92, 120],
+     [92, 80]
+    ],
+    [
+     [15, 110],
+     [40, 110],
+     [50, 160],
+     [60, 200],
+     [55, 218],
+     [25, 210],
+     [15, 160]
+    ]
+   ],
+   "renkFark": 9,
+   "secenek": "b",
+   "neden": "kör topal (b): yeşil ten, yaprak kıyafet; baş ve kuyruk"
+  },
+  "dragonborn-erkek-sorcerer-SC-3": {
+   "ornek": [
+    [45, 130, 58, 170]
+   ],
+   "alan": [
+    [90, 15, 190, 130],
+    [
+     [38, 108],
+     [60, 108],
+     [65, 150],
+     [80, 175],
+     [100, 195],
+     [95, 225],
+     [60, 215],
+     [40, 180]
+    ],
+    [82, 165, 106, 195],
+    [150, 165, 172, 195],
+    [100, 210, 150, 230]
+   ],
+   "secenek": "b",
+   "neden": "kör topal (b): solgun ten; baş, kuyruk, eller, ayaklar"
+  },
+  "dragonborn-erkek-sorcerer-SC-5": {
+   "ornek": [
+    [100, 60, 120, 80]
+   ],
+   "alan": [
+    [
+     [85, 15],
+     [195, 15],
+     [198, 122],
+     [125, 124],
+     [100, 112],
+     [85, 100]
+    ],
+    [
+     [15, 120],
+     [60, 115],
+     [80, 175],
+     [60, 200],
+     [20, 195]
+    ]
+   ],
+   "renkFark": 10,
+   "parlakFark": 12,
+   "secenek": "b",
+   "neden": "kör topal (b): siyah gölge gövde; baş ve kuyruk"
+  },
+  "dragonborn-erkek-warlock-WL-4": {
+   "ornek": [
+    [100, 80, 115, 95]
+   ],
+   "alan": [
+    [85, 18, 182, 108],
+    [66, 162, 96, 194],
+    [172, 150, 202, 182]
+   ],
+   "renkFark": 8,
+   "secenek": "b",
+   "neden": "kör topal (b): zombi; baş ve eller (pelerin hariç)"
+  },
+  "dragonborn-kadin-cleric-ID6": {
+   "ornek": [
+    [130, 100, 150, 110]
+   ],
+   "alan": [
+    [92, 60, 172, 118],
+    [70, 165, 102, 195],
+    [168, 145, 188, 172],
+    [38, 140, 56, 186]
+   ],
+   "secenek": "b",
+   "neden": "kör topal (b): kukuleta ve cüppe; yüz, kuyruk, eller"
+  },
+  "dragonborn-kadin-druid-ID4": {
+   "ornek": [
+    [105, 70, 125, 85]
+   ],
+   "alan": [
+    [82, 18, 172, 112],
+    [168, 135, 190, 165]
+   ],
+   "secenek": "b",
+   "neden": "kör topal (b): yeşil ten, kabuk gövde; baş ve el"
+  },
+  "dragonborn-kadin-fighter-ID8": {
+   "ornek": [
+    [150, 100, 165, 115]
+   ],
+   "alan": [
+    [112, 78, 182, 138],
+    [
+     [25, 140],
+     [55, 140],
+     [60, 175],
+     [90, 200],
+     [95, 215],
+     [45, 218],
+     [25, 180]
+    ],
+    [148, 148, 172, 175]
+   ],
+   "secenek": "b",
+   "neden": "kör topal (b): samuray zırhı, başta miğfer; yüz, kuyruk, el"
+  },
+  "dragonborn-kadin-rogue-GR": {
+   "ornek": [
+    [35, 165, 46, 195]
+   ],
+   "alan": [
+    [85, 78, 168, 118],
+    [
+     [20, 130],
+     [45, 130],
+     [55, 180],
+     [75, 210],
+     [45, 218],
+     [20, 180]
+    ]
+   ],
+   "secenek": "b",
+   "neden": "kör topal (b): koyu kukuleta; beyaz çene ve kuyruk"
+  },
+  "dragonborn-kadin-rogue-ID4": {
+   "ornek": [
+    [140, 100, 155, 112]
+   ],
+   "alan": [
+    [112, 78, 172, 122]
+   ],
+   "renkFark": 10,
+   "secenek": "c",
+   "neden": "kör topal (c): yaprak örtü; yalnız yüz"
+  },
+  "dragonborn-kadin-sorcerer-SC-3": {
+   "ornek": [
+    [130, 70, 150, 90]
+   ],
+   "alan": [
+    [85, 15, 190, 128],
+    [
+     [20, 120],
+     [50, 115],
+     [65, 150],
+     [70, 200],
+     [30, 200],
+     [20, 160]
+    ]
+   ],
+   "secenek": "b",
+   "neden": "kör topal (b): hayaletimsi ten; baş ve kuyruk"
+  },
+  "dragonborn-kadin-sorcerer-SC-5": {
+   "ornek": [
+    [90, 55, 110, 75]
+   ],
+   "alan": [
+    [
+     [70, 15],
+     [200, 15],
+     [200, 118],
+     [120, 122],
+     [90, 110],
+     [70, 100]
+    ],
+    [
+     [10, 130],
+     [60, 125],
+     [75, 180],
+     [50, 200],
+     [10, 195]
+    ]
+   ],
+   "renkFark": 10,
+   "parlakFark": 12,
+   "secenek": "b",
+   "neden": "kör topal (b): siyah gölge gövde; baş ve kuyruk"
+  },
+  "dragonborn-kadin-warlock-WL-8": {
+   "ornek": [
+    [90, 30, 100, 40]
+   ],
+   "alan": [
+    [82, 8, 148, 66],
+    [
+     [85, 165],
+     [112, 165],
+     [112, 212],
+     [85, 212]
+    ],
+    [
+     [155, 160],
+     [182, 160],
+     [182, 212],
+     [155, 212]
+    ]
+   ],
+   "secenek": "c",
+   "neden": "kör topal (c): zombi, elbise tenle aynı renkte; yalnız baş ve boyun"
+  },
+  "dragonborn-erkek-warlock-WL-8": {
+   "kapi": true,
+   "secenek": "a",
+   "neden": "kör topal (a): kapılı otomatik maske (gövdenin %30u, %60 sınırının altında); sargılara küçük taşma kabul"
   }
  }
 }
