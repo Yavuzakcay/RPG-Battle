@@ -51,6 +51,7 @@ const JourneyScreen = lazy(() => import('./screens/JourneyScreen').then((m) => (
 // Kuyruk 31: Serüven (kıta sayfaları) ayrı parça.
 const SeruvenScreen = lazy(() => import('./screens/SeruvenScreen').then((m) => ({ default: m.SeruvenScreen })));
 // K46: Harita Keşfi (`#dunya`): dünya haritası sissiz, Game Master ve geliştirme için (ayrı tembel parça).
+const Dungeondex = lazy(() => import('./screens/Dungeondex').then((m) => ({ default: m.Dungeondex })));
 const WorldMapViewer = lazy(() => import('./ui/world/WorldMapViewer'));
 
 type Screen =
@@ -65,7 +66,8 @@ type Screen =
   | { name: 'seruven'; result?: { final: BattleState; node: string } | null }
   | { name: 'journey'; result?: BattleState | null; preset?: string }
   | { name: 'status' }
-  | { name: 'settings' };
+  | { name: 'settings' }
+  | { name: 'dex' };
 
 /** Üst seviye: giriş ekranı, oyuncu ve GM rolleri, haritalı savaş ve durum. */
 export default function App() {
@@ -204,7 +206,7 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
       return <Home onPlayer={() => setScreen({ name: 'player' })} onGm={() => setScreen({ name: 'gm' })} onRoomCreate={() => setScreen({ name: 'oda' })} onRoomJoin={() => setScreen({ name: 'katil' })}
         onStatus={() => setScreen({ name: 'status' })} onSettings={() => setScreen({ name: 'settings' })} resumeError={resumeError}
         {...(journeyEnabled() ? { onJourney: () => setScreen({ name: 'journey' }) } : {})}
-        onSeruven={() => setScreen({ name: 'seruven' })}
+        onSeruven={() => setScreen({ name: 'seruven' })} onDex={() => setScreen({ name: 'dex' })}
         onResume={hasSavedBattle() ? () => {
           // Kayıt yükleme (olayları oynatan motor) ayrı parçada: giriş ekranı onu beklemez.
           void import('./app/battleSave').then(({ loadBattle }) => {
@@ -287,6 +289,8 @@ function Screens({ screen, setScreen }: { screen: Screen; setScreen: (s: Screen)
     case 'settings':
       // İçerik değişince karakter listesi yeniden çizilir ("içerik eksik" rozetleri).
       return <SettingsScreen onBack={home} onChanged={() => setCharacters((c) => [...c])} />;
+    case 'dex':
+      return <Dungeondex onBack={home} />;
   }
   }
 }

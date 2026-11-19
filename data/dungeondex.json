@@ -1,0 +1,24 @@
+{
+  "_aciklama": "Dungeondex (yalnız arayüz; harita/belgeler/DUNGEONDEX-TASARIM.md): kategori sırası, sayfa boyu, görünür süzgeç sınırı (SD3: en çok 6), beklenen alt sınıf sayısı (yüklü olan azsa 'içerik eksik' notu), büyü sınıf kodları (data/spells*.json `classes`) ve canavar CR kademeleri. Durum kimlikleri SRD durum adının küçük harfi; açıklamalar data/aciklamalar-tr.json `durum`.",
+  "kategoriler": ["buyu", "esya", "canavar", "tur", "altsoy", "altsinif", "feat", "gecmis", "durum"],
+  "sayfa": 40,
+  "gorunurSuzgec": 6,
+  "altSinifBeklenen": 120,
+  "buyuSiniflari": { "Brd": "bard", "Clr": "cleric", "Drd": "druid", "Pal": "paladin", "Rgr": "ranger", "Sor": "sorcerer", "Wlk": "warlock", "Wiz": "wizard" },
+  "durumlar": [
+    { "id": "blinded", "ad": "Blinded" }, { "id": "charmed", "ad": "Charmed" }, { "id": "deafened", "ad": "Deafened" },
+    { "id": "exhaustion", "ad": "Exhaustion" }, { "id": "frightened", "ad": "Frightened" }, { "id": "grappled", "ad": "Grappled" },
+    { "id": "incapacitated", "ad": "Incapacitated" }, { "id": "invisible", "ad": "Invisible" }, { "id": "paralyzed", "ad": "Paralyzed" },
+    { "id": "petrified", "ad": "Petrified" }, { "id": "poisoned", "ad": "Poisoned" }, { "id": "prone", "ad": "Prone" },
+    { "id": "restrained", "ad": "Restrained" }, { "id": "stunned", "ad": "Stunned" }, { "id": "unconscious", "ad": "Unconscious" }
+  ],
+  "durumTr": {
+    "blinded": "Kör", "charmed": "Büyülenmiş", "deafened": "Sağır", "exhaustion": "Bitkinlik", "frightened": "Korkmuş", "grappled": "Yakalanmış",
+    "incapacitated": "Etkisiz", "invisible": "Görünmez", "paralyzed": "Felçli", "petrified": "Taşlaşmış", "poisoned": "Zehirlenmiş", "prone": "Yerde",
+    "restrained": "Bağlı", "stunned": "Sersemlemiş", "unconscious": "Baygın"
+  },
+  "crKademeleri": [
+    { "id": "0-1", "min": 0, "max": 1 }, { "id": "2-4", "min": 2, "max": 4 }, { "id": "5-10", "min": 5, "max": 10 },
+    { "id": "11-16", "min": 11, "max": 16 }, { "id": "17+", "min": 17, "max": 99 }
+  ]
+}

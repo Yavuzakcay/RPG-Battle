@@ -24,7 +24,7 @@ import { MAX_PARTY } from '../app/limits';
 import { CharacterFigure } from '../ui/Avatar';
 import { useTheme } from '../ui/theme';
 import { SoundPanel } from '../ui/SoundPanel';
-import { IconAuto, IconGear, IconHexDie, IconMoon, IconPlay, IconSound, IconSun, IconUser } from '../ui/icons';
+import { IconAuto, IconBook, IconGear, IconHexDie, IconMoon, IconPlay, IconSound, IconSun, IconUser } from '../ui/icons';
 import { savedBattleSummary, type SaveSummary } from '../app/saveKey';
 import { version as appVersion } from '../../package.json';
 import { LANGS, setLang, t, useLang } from '../i18n';
@@ -92,7 +92,7 @@ function HomeSound() {
  * cam panel (kayıtlı savaş, Oyuncu, Game Master, Ayarlar; Kuyruk 18 H10: Durum düğmesi kaldırıldı); dar ekranda üst çubuk ve alta yapışık panel. Arka
  * plan görseline karartma ya da filtre konmaz; okunabilirlik cam panel ve metin gölgesiyle.
  */
-export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev OD1: eski Game Master kurulumu, sade). */ onGm: () => void; /** Oda kur (Game Master); yoksa onGm. */ onRoomCreate?: () => void; onRoomJoin?: () => void; /** Kuyruk 18 H10: giriş ekranında Durum düğmesi yok (kullanılmaz). */ onStatus?: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; onSeruven?: () => void; resumeError?: string | null }) {
+export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev OD1: eski Game Master kurulumu, sade). */ onGm: () => void; /** Oda kur (Game Master); yoksa onGm. */ onRoomCreate?: () => void; onRoomJoin?: () => void; /** Kuyruk 18 H10: giriş ekranında Durum düğmesi yok (kullanılmaz). */ onStatus?: () => void; onSettings?: () => void; onResume?: () => void; onJourney?: () => void; onSeruven?: () => void; /** Dungeondex (tembel ekran). */ onDex?: () => void; resumeError?: string | null }) {
   const lang = useLang();
   const L = t();
   const H = L.home;
@@ -162,6 +162,7 @@ export function Home(props: { onPlayer: () => void; /** Hızlı savaş (Görev O
             </button>
           )}
           <div className="home2-secondary">
+            {props.onDex && <button type="button" className="home-sec" data-testid="home-dex" onClick={props.onDex} title={H.dexDesc}><IconBook size={20} />{H.dex}</button>}
             {props.onSettings && <button type="button" className="home-sec" onClick={props.onSettings}><IconGear size={20} />{H.settings}</button>}
           </div>
           {props.resumeError && <p className="error">{props.resumeError}</p>}
