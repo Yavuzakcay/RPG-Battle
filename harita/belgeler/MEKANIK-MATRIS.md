@@ -1,6 +1,6 @@
 # Mekanik doğrulama matrisi (APK öncesi)
 
-Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈5 sn). Kural sürümü 84.
+Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈8 sn). Kural sürümü 84.
 Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virgülle ayrılmış; sütunlar: tür, büyü/saldırı, seviye, sınıflar, mekanik, bağlam, bağlam sınıfı, beklenen, gerçek, sonuç, bulgu, not).
 
 ## Özet
@@ -104,7 +104,7 @@ Düzeltilen bulgular (B01, B02, Ç01, B03, B04, B21, B05, B06, B07, B08, B09, B1
 
 ### Yeni bulgular (düzeltme turlarında bulundu; matris satırı yok; onay bekliyor)
 
-- **G01 — Save günlüğü durumdan gelen avantaj/dezavantajı göstermiyor (görünüm; sonucu etkilemez).** `save_resolved.mode` motorun 41 save yolunun 27'sinde sabit 'normal', kalanında yalnız ortam kipi; Restrained, Dodge, Haste gibi kaynaklardan gelen kip yalnız atılan iki zarda görünür. Günlük "19 / 3 (normal)" yazar. Öneri: Save olaylarına etkin kipi (`resolveSave`'e giden `mode`) yazmak; günlük ve önizleme bunu okur. Atlandı: motorda 64 ayrı `save_resolved` kurulumu var, her biri kendi kipini yazıyor; tek noktadan düzeltme `resolveSave` sonucunun olaya taşınmasını ve bütün kurulumların değişmesini gerektiriyor (küçük değil; sonuç değişmez, yalnız görünüm).
+- **G01 — Save günlüğü durumdan gelen avantaj/dezavantajı göstermiyordu (görünüm; sonucu etkilemez) — düzeltildi.** `save_resolved.mode` motorun 41 save yolunun 27'sinde sabit 'normal'; Restrained, Dodge, Haste gibi kaynaklardan gelen kip yalnız atılan iki zarda görünüyordu. Öneri: Düzeltildi (2026-11-19, sürümsüz, yalnız görünüm): `saveMode` koşulları `saveModeWhy`'a taşındı; komut sonunda save olaylarına `modeWhy` (`src/battle/saveWhy.ts`), günlükte açılır ayrıntıda tek satır ("Dezavantaj: Restrained (DEX save)") ve kip rozeti aynı kaynaktan. 64 kurulum değişmedi.
 
 ## Büyü matrisi (büyü başına)
 
@@ -538,7 +538,7 @@ Kahin motoru haklı çıkarmak için değiştirilmez; her değişiklik SRD alın
 - **K01 kararı (kahin):** SRD 5.2.1 Charmed: "You can't attack the charmer or target the charmer with damaging abilities or magical effects." Kullanıcı kararı: yalnız saldırı ve zarar veren yetenek/büyü yasak; zarar vermeyen büyüler serbest. Kahin: saldırı zarlı büyü her zaman red; diğerleri SRD metninde hasar ifadesi varsa red, yoksa kabul (`srd.ts` `zararVerir`). Eskiden etki büyülerinin bu satırları "karar bekliyor", save büyülerininki (Hold Person, Blindness/Deafness, Command, Eyebite, Flesh to Stone, Hold Monster) koşulsuz "red" bekliyordu; ikisi de karara çekildi.
 - **K02 kararı (kahin):** Spirit Guardians "whenever the Emanation enters a creature's space and whenever a creature enters the Emanation or ends its turn there"; Conjure Woodland Beings aynı kalıp; yapım cümlesi yok. Kullanıcı kararı: save zamanı metne göre. Kahin yapımda hedefe etki beklemez (`ozel.ts` `yapim: { tur: 'yok' }`; eskiden "karar bekliyor").
 - **Karşılaştırma satırı (sürüm 82, son kahinle):** aynı son kahin ve ölçümle eski kurallar (`--kural-surumu 82`): önce/sonra farkının yalnız motor düzeltmelerinden geldiğini gösterir (82: yanlış 245, 83: 3). İlk ölçümden (235) farkı kahin/ölçüm düzeltmeleri ve K01–K04 kararları: karar bekleyen 29 satır karara göre doğru/yanlış sayılır; B22/B23 yeni bulgu satırları.
-- **Görünüm notu G01 (sonucu etkilemez, düzeltilmedi):** günlük save satırı zarları "19 / 3" diye gösterip kipi `mode` alanından "normal" yazıyor; durumdan gelen dezavantaj günlükte görünmüyor. Öneri: save olaylarına etkin kipi yazmak (41 yol; onay bekliyor).
+- **Görünüm notu G01 (sonucu etkilemez; 2026-11-19 düzeltildi):** günlük save satırı kipi eskiden `mode` alanından "normal" yazıyordu; artık save olaylarındaki `modeWhy` ile kip rozeti ve neden satırı ("Dezavantaj: Restrained (DEX save)") gösteriliyor. Matris kipi yine atılan zardan ölçer.
 
 ## Kapsam ve sınırlar
 
