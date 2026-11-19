@@ -1,5 +1,5 @@
 {
- "_not": "Görev D1 (kural sürümü 86, `src/battle/srdD1Surum.ts` `SRD_D1_VERSION`): SRD 5.2.1 veri düzeltmeleri. Veri dosyaları yeni (SRD) değerleri tutar; bu dosya her düzeltmenin eski değerini (85 ve altı savaşlar ve replay aynı sonucu versin diye; `src/battle/srdD1.ts`), yenisini ve SRD sayfasını (docs/SRD_CC_v5.2.1.pdf, stat bloğunun başladığı sayfa) tutar. `alan` yol: nokta alt alan, `[x]` dizide `id`/`name` = x olan nesne ya da x ile başlayan metin; `eski: null` = alan yoktu (eski sürümde silinir). Kaynak: harita/belgeler/SRD-VERI-DOGRULAMA.md; test src/data/srdCanavar.test.ts yenilerin veriyle aynı olduğunu denetler.",
+ "_not": "Görev D1 (kural sürümü 86, `src/battle/srdD1Surum.ts` `SRD_D1_VERSION`): SRD 5.2.1 veri düzeltmeleri. Veri dosyaları yeni (SRD) değerleri tutar; bu dosya her düzeltmenin eski değerini (85 ve altı savaşlar ve replay aynı sonucu versin diye; `src/battle/srdD1.ts`), yenisini ve SRD sayfasını (docs/SRD_CC_v5.2.1.pdf, stat bloğunun başladığı sayfa) tutar. `alan` yol: nokta alt alan, `[x]` dizide `id`/`name` = x olan nesne ya da x ile başlayan metin; `eski: null` = alan yoktu (eski sürümde silinir). Kaynak: harita/belgeler/SRD-VERI-DOGRULAMA.md; test src/data/srdCanavar.test.ts yenilerin veriyle aynı olduğunu denetler. Görev D2 (kural sürümü 88, `src/battle/srdD2Surum.ts`): kayıtta `surum: 88` = eski değer 88'den önce; çağrı verisi `data/summons.json` (kayıt `summons/<büyü>`, `creatures/<yaratık>`).",
  "surum": 86,
  "kayitlar": [
   {
@@ -653,6 +653,106 @@
     "total": 3
    },
    "sayfa": 274
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "summons/find-familiar",
+   "alan": "forms",
+   "eski": [
+    "bat",
+    "cat",
+    "frog",
+    "hawk",
+    "lizard",
+    "octopus",
+    "owl",
+    "rat",
+    "raven",
+    "spider",
+    "weasel"
+   ],
+   "yeni": [
+    "bat",
+    "cat",
+    "frog",
+    "hawk",
+    "lizard",
+    "octopus",
+    "owl",
+    "rat",
+    "raven",
+    "spider",
+    "weasel",
+    "baboon",
+    "badger",
+    "crab",
+    "deer",
+    "eagle",
+    "giant-fire-beetle",
+    "goat",
+    "hyena",
+    "jackal",
+    "piranha",
+    "scorpion",
+    "seahorse",
+    "vulture"
+   ],
+   "sayfa": 130,
+   "surum": 88,
+   "not": "SRD \"or another Beast that has a Challenge Rating of 0\": 13 biçim eklendi (SRD tablosunda CR 0 Beast)"
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/draconic-spirit",
+   "alan": "unsupported",
+   "eski": [
+    "Shared Resistances",
+    "durum bağışıklıkları (Charmed, Frightened, Poisoned)",
+    "Blindsight",
+    "yüzme hızı"
+   ],
+   "yeni": [
+    "Shared Resistances",
+    "Duyu: Blindsight 30 ft",
+    "Durum bağışıklığı: Charmed, Frightened, Poisoned"
+   ],
+   "sayfa": 166,
+   "surum": 88,
+   "not": "Blindsight ve durum bağışıklığı motorun okuduğu \"Duyu:\"/\"Durum bağışıklığı:\" notlarıyla; Shared Resistances uygulanmıyor (kalan fark)"
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/draconic-spirit",
+   "alan": "swimFt",
+   "eski": null,
+   "yeni": 30,
+   "sayfa": 166,
+   "surum": 88,
+   "not": "Speed 30 ft., Fly 60 ft., Swim 30 ft."
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/animated-object",
+   "alan": "immunities",
+   "eski": null,
+   "yeni": [
+    "poison",
+    "psychic"
+   ],
+   "sayfa": 109,
+   "surum": 88
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/animated-object",
+   "alan": "unsupported",
+   "eski": null,
+   "yeni": [
+    "Duyu: Blindsight 30 ft",
+    "Durum bağışıklığı: Charmed, Exhaustion, Frightened, Paralyzed, Poisoned"
+   ],
+   "sayfa": 109,
+   "surum": 88
   }
  ]
 }

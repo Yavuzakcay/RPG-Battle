@@ -14,6 +14,35 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - `src/app/modulBaslatma.test.ts` "battle/features başlatma hatasız" `6a1e524` (Control Water girdabı, kural sürümü 84) ile kırıldı: `TypeError: registerZoneStartPull is not a function` (`girdap.ts:122`, yığın `spells.ts` → `girdap.ts`). Döngü zones → … → spells → girdap → zones: `girdap.ts` modül değerlendirilirken kayıt işlevini çağırıyor, `zones.ts` henüz değerlendirilmemiş (`export const` ok işlevi). Tarayıcıda da aynı: `battle/features` ilk giriş olunca `ReferenceError: Cannot access 'registerZoneStartPull' before initialization`; uygulamanın bugünkü açılış sırasında (zones önce) görünmüyordu, check:harita geçiyordu. Gizli sıra hatası, yükleme sırası değişince çökme.
 - Düzeltme: defter yaprak modül `src/battle/zoneHooks.ts`'e (yalnız tür içe aktarır); `girdap.ts` oradan kaydeder, `zones.ts` oradan okur. Aynı düzeltmeyi başka bir oturum eşzamanlı yaptı (`060be98`); birleştirmede onun `zoneHooks.ts`/`zones.ts`/`girdap.ts` sürümü alındı (aynı yaklaşım). Davranış ve kural sürümü aynı; test gevşetilmedi.
 
+## SRD farkları D2: çağrı blokları ve savaş sırasında eklenen canavarlar, kural sürümü 88 (2026-11-19, kullanıcı kararı 2026-11-19)
+
+Kaynak: `harita/belgeler/SRD-VERI-DOGRULAMA.md` §8 "Kalan farklar" ve `srd-veri-dogrulama.csv`. Kullanıcı kararı: SRD 5.2.1'i izle; soru sorulmadı. Her değer PDF'ten (sayfa `data/srd-duzeltme.json` ve rapor §9). Kapsam dışı (başka sekme): Wild Shape/Polymorph biçim aktarımı, tür ve yüzme verisi (D1), Barbed Devil/Medusa Multiattack düğmesi.
+
+- **Sürüm 88.** Depoda en yüksek sürüm 86'ydı; 85 ve 87 Wild Shape görevine ayrıldı, bu yüzden 88 (`src/battle/srdD2Surum.ts` `SRD_D2_VERSION`, `srdD2On`).
+- **Tek giriş (karar).** Savaş başındaki `withMonsterTraits` ve `withMonsterAbilities` canavar başı işlevlere ayrıldı (`monsterTraitSetup`, `monsterAbilitySetup`; davranış ve sıra aynı, 87 ve altı bit bit aynı). Savaş sırasında canavar ekleyen 10 yol (büyüyle çağrı ve kurulum ritüeli, paket çağrısı, canavar yeteneğiyle çağrı, Finger of Death zombisi, Orman takviyesi ve kemik yığını, kum pususu, buz mühür, kat değişimi) 88+'da `src/battle/monsterSetup.ts` `lateSummonEvents` / `lateMonster` ile aynı işlevlerden geçer; aura alanları `zone_created`. Envanter tablosu rapor §9'da.
+  - **Neden yeni olay türü yok:** kurulmuş yaratık `summoned` ya da `floor_changed.added` içinde taşınır. Kayıt sürümü değişmedi, replay olaydan aynı.
+  - Çağrı bloğu (`monsters.json`'da olmayan) kendi kaydıyla kurulur (`setupMonster(…, m)`); paket ödünç canavarı da öyle.
+- **Görevin varsayımı:** Multiattack planı ve etkin canavar yetenekleri her yolda zaten vardı (çalışma anında `monsterId`). Eksik olan canavar özellikleri (durum bağışıklığı, Magic Resistance, tırmanma, Flyby, canavar büyüleri, auralar) ve yetenek pasifleriydi (kullanım kaynakları, Bloodied, günlük saldırılar, Death Burst işareti…).
+- **Bilerek dışarıda:**
+  - çağrılanın tepkileri (Görev R3 kararı);
+  - canavar yeteneğiyle çağrılanın etkin yetenekleri (zincirleme çağrı olmaz);
+  - savaş sırasında Game Master'ın canavar ekleme komutu (yok; kurulumda eklenen savaş başı yolundan geçer);
+  - Polymorph (biçim savaşa eklenmez).
+- **Çağrı blokları** (`data/summons.json`; eski değerler D1 katmanında `surum: 88`, kayıt `summons/<büyü>` / `creatures/<yaratık>`; `summonDef`/`summonCreature` sürüme göre; yeni katman açılmadı, `srdKayit` kayıt başına sürüm alır):
+  - **Draconic Spirit** (s. 166): yüzme 30, Blindsight 30, Charmed/Frightened/Poisoned. Notlar canavarla aynı biçimde (`Duyu:`, `Durum bağışıklığı:`), aynı kod okur. Shared Resistances uygulanmıyor (kalan fark).
+  - **Animated Object** (s. 109): Poison/Psychic, Blindsight 30, beş durum bağışıklığı. Animate Objects'in stat bloğu SRD'de var ve Kuyruk 19'dan beri oyunda; boyut ve HP doğruydu.
+  - **Find Familiar** (s. 130): SRD "or another Beast that has a Challenge Rating of 0" → `forms` 24, SRD tablosundaki her CR 0 Beast.
+  - **Soyut bloklar** (Flaming Sphere, Spirit Pack, Elemental Spirit, Arcane Hand) değişmedi.
+- **Denetim hatası (Otherworldly Steed).** D1 raporu Life Bond ve Fell Glare / Fey Step / Healing Touch'ı "yok" saymıştı. Hepsi `src/battle/steed.ts`'te (Kuyruk 19, `featuresK19`) vardı; denetim yalnız veri dosyasına bakmıştı. D2'de önce veri + yetenek motoru + komut sonu kancasıyla ikinci bir uygulama yazıldı; mevcut kod bulununca geri alındı (Life Bond iki kez tetiklenirdi). Rapor, CSV ve CLAUDE.md "Bilinen eksikler" düzeltildi. Test: Life Bond 87 ve 88'de bir kez, bonus eylemler aynı.
+- **Testler:**
+  - `src/battle/srdD2.test.ts` (16): katman, Find Familiar listesi SRD tablosundan, bloklar, her ekleme yolu için "88'deki yaratık = 87'deki ham yaratığın `setupMonster`'dan geçmiş hâli", 87'de kurulum yok, replay.
+  - `src/battle/srdD1.test.ts` D1 kayıtlarını ayrı sayar (77).
+  - Güncel sürüm beklentileri 88 (`g6.test.ts`, `ruleVersion.test.ts`).
+- **Mekanik matris:** çağırma büyülerinin 91 satırı 87 ve 88'de doğru; dosyalar yeniden yazılmadı (başka sekme de üretiyor).
+- **Hızlı regresyon** (`src/sim/srdD2Regresyon.test.ts`; Ork Kampı, Kemik Açıklığı, Vaha, Mağara Karakolu × 1 ve 3 tohum):
+  - 87 imzaları D2 öncesi ağacın (083e4b93) altınıyla aynı.
+  - 88'de yalnız Ork Kampı değişti (takviyeler pasifleriyle). Kemik ve Vaha'da canavarlar eklendi ama sonuç değişmedi; Karakol'da yapay zekâ kat değiştirmedi.
+
 ## SRD veri düzeltmeleri D1: kural sürümü 86 (2026-11-19, kullanıcı kararları 2026-11-19)
 
 Kaynak: `harita/belgeler/SRD-VERI-DOGRULAMA.md` (denetim + §8 D1 sonucu) ve `srd-veri-dogrulama.csv` (`D1 (kural sürümü 86)` sütunu). Kullanıcı kararları: (1) düzeltmeler SRD uyumu içindir, denge değildir; CLAUDE.md'deki "denge için değiştirme" yasağına girmez. (2) PDF'te karşılığı olmayan oyun değerleri değişmez, "SRD dışı oyun değeri" olarak listelenir. (3) Savaş sonucunu değiştiren düzeltmeler kural sürümüne bağlanır. Her değer PDF'ten doğrulandı (sayfa `data/srd-duzeltme.json`'da); bellekten değer yok.

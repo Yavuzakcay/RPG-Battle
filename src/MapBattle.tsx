@@ -3369,7 +3369,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             return (
               <div className="civ-picker familiar-picker" role="group" aria-label={F.familiar.title(c.name, rituals[0]?.name ?? '')}>
                 {rituals.map((ritual) => {
-                  const def = summonDef(ritual.id) as NonNullable<ReturnType<typeof summonDef>>;
+                  const def = summonDef(ritual.id, state.kuralSurumu ?? 1) as NonNullable<ReturnType<typeof summonDef>>;
                   const form = famForm && def.forms?.includes(famForm) ? famForm : def.forms?.[0] ?? '';
                   const kind = famType && def.choice?.options.includes(famType) ? famType : def.choice?.options[0] ?? '';
                   return (
