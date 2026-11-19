@@ -46,6 +46,15 @@ export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
   );
 }
 
+/**
+ * Görev B3: büyülenen (`charm` etkisi; Charm Person, Suggestion…) büyüleyene saldıramaz/onu hedef alamaz. Aura of Devotion
+ * içinde ve Calm Emotions bastırmasında (Kuyruk S1) yasak işlemez. `checkReach` ve Arcane Hand yumruğu (B22) ortak.
+ */
+export function charmedAgainst(state: BattleState, attacker: Combatant, target: Combatant): boolean {
+  return !!attacker.effects?.some((e) => e.charm && e.sourceId === target.id) && !inProtectiveAura(state, attacker, 'aura-of-devotion')
+    && !attacker.effects?.some((e) => e.suppressed?.some((x) => x.condition === 'Charmed'));
+}
+
 const feetText = (hexes: number) => `${hexes} altıgen (${hexes * 5} ft)`;
 
 export interface Targeting {
@@ -72,9 +81,7 @@ export function checkReach(
   // Görev B3: büyülenen (Charm Person, Animal Friendship, Suggestion) büyüleyene saldıramaz ve onu hedef alamaz.
   // Kuyruk A6 (Calm Emotions): kayıtsız yaratık büyücünün tarafına saldırmaz.
   if (attacker.effects?.some((e) => e.indifferentTo && e.indifferentTo === target.side)) return fail(`${attacker.name} kayıtsız (Calm Emotions): ${target.name} hedef alınamaz.`);
-  if (attacker.effects?.some((e) => e.charm && e.sourceId === target.id) && !inProtectiveAura(state, attacker, 'aura-of-devotion')
-    // Kuyruk S1: Calm Emotions altında bastırılmış büyülenme.
-    && !attacker.effects.some((e) => e.suppressed?.some((x) => x.condition === 'Charmed'))
+  if (charmedAgainst(state, attacker, target)
     // Mekanik matris K01 (kullanıcı kararı, sürüm 83): SRD 5.2.1 Charmed "You can't attack the charmer or target the charmer
     // with damaging abilities or magical effects." Yalnız saldırı ve zarar veren etki yasak; zarar vermeyen büyü serbest.
     && !(reach.kind === 'effect' && reach.harmless && matrisOn(state))) return fail(`${attacker.name} büyülenmiş (Charmed): ${target.name} hedef alınamaz.`);

@@ -7,6 +7,8 @@
  * oyuncusu yönetir (düşman tarafında Game Master). Kaybolma `summonCleanup` ile her komuttan sonra olay olarak yazılır:
  * 0 HP, konsantrasyonun bitmesi, sahibin ölümü (at), süre; aynı büyü yeniden yapılınca önceki yaratık gider.
  */
+import { charmedAgainst } from './range';
+import { matrisOn } from './matrisSurum';
 import { mechanicsAt } from './spellVersion';
 import { OBJECTS } from './objectData';
 import { surfaceEvent } from './surfaces';
@@ -280,6 +282,9 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   if (state.map && !actor.pos) return fail('Önce çağıranı yerleştir.');
   const choice = cmd.choice ?? def.choice?.options[0];
   if (def.choice && choice && !def.choice.options.includes(choice)) return fail(`Geçersiz seçim: ${choice}.`);
+  // Mekanik matris B22 (sürüm 83): yapımda Clenched Fist büyüleyene yöneltilemez (SRD Charmed "You can't attack the charmer").
+  const fistAt = def.handK19 && cmd.choice === 'fist' && cmd.targetId ? state.combatants[cmd.targetId] : undefined;
+  if (fistAt && matrisOn(state) && charmedAgainst(state, actor, fistAt)) return fail(`${actor.name} büyülenmiş (Charmed): ${fistAt.name} hedef alınamaz.`);
   const form = def.forms ? cmd.form ?? def.forms[0] : undefined;
   const chain = spell.id === 'find-familiar' && chainOn(state) && !!actor.traits?.includes('pact-of-the-chain');
   if (def.forms && form && !def.forms.includes(form) && !(chain && CHAIN_FORMS.includes(form))) return fail(`Geçersiz familiar biçimi: ${form}.`);

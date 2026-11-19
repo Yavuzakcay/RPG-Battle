@@ -670,3 +670,37 @@ describe('B21: kayan bulut yeni kapladığı yaratığa save attırır (SRD Clou
     expect(saveOf(ev, 'T')).toBeUndefined();
   });
 });
+
+describe('B22: Arcane Hand yumruğu büyücünün Frightened/Charmed durumuna bakar (SRD "Clenched Fist. The hand strikes a target within 5 feet of it. Make a melee spell attack.")', () => {
+  const fear = { conditions: ['Frightened'], effects: [{ id: 'test:fear', name: 'Fear', sourceId: 'F', until: 99, grants: ['Frightened'] }] } as Partial<Combatant>;
+  const charm = { conditions: ['Charmed'], effects: [{ id: 'test:charm', name: 'Charm Person', sourceId: 'T', until: 99, charm: true, grants: ['Charmed'] }] } as Partial<Combatant>;
+  const cast = (v: number, x: Partial<Combatant>) => run(scene(v, [caster({ level: 13, spellNames: ['Arcane Hand'], spellSlots: [4, 3, 3, 3, 2, 1, 1, 0, 0], ...x }),
+    foe('T', { pos: { col: 8, row: 5 } }), foe('F', { pos: { col: 12, row: 5 } })]),
+  { type: 'cast_spell', actorId: 'A', spellName: 'Arcane Hand', slotLevel: 5, targetHex: { col: 7, row: 5 }, choice: 'fist', targetId: 'T' } as Command, hooked({ one: 15, two: [15, 4] }));
+  const atk = (events: BattleEvent[]) => events.find((e): e is Extract<BattleEvent, { type: 'attack_resolved' }> => e.type === 'attack_resolved' && e.targetId === 'T');
+  it('büyücü Frightened (kaynak görüşte): 83 yumruk dezavantajlı, 82 normal', () => {
+    const r83 = cast(83, fear);
+    expect(r83.ok, r83.error).toBe(true);
+    expect(atk(r83.events)?.mode).toBe('disadvantage');
+    const r82 = cast(82, fear);
+    expect(r82.ok, r82.error).toBe(true);
+    expect(atk(r82.events)?.mode).toBe('normal');
+  });
+  it('büyücü Charmed (hedef büyüleyen): 83 yapımda yumruk reddedilir, 82 vurur', () => {
+    const r83 = cast(83, charm);
+    expect(r83.ok).toBe(false);
+    expect(r83.error).toMatch(/büyülenmiş \(Charmed\)/);
+    const r82 = cast(82, charm);
+    expect(r82.ok, r82.error).toBe(true);
+    expect(atk(r82.events)).toBeDefined();
+  });
+  it('83: sonraki turda bonus eylemle yumruk da büyüleyene yöneltilemez', () => {
+    const s = cast(83, {}).state;
+    const a = s.combatants.A as Combatant;
+    const later = { ...s, round: 2, combatants: { ...s.combatants, A: { ...a, ...charm, economy: FRESH_ECONOMY } as Combatant } };
+    const hand = Object.values(later.combatants).find((c) => c.summon?.hand) as Combatant;
+    const r = run(later, { type: 'summon_move', actorId: 'A', to: hand.pos, ramId: 'T', hand: 'fist' } as unknown as Command, hooked({ one: 15, two: [15, 4] }));
+    expect(r.ok).toBe(false);
+    expect(r.error).toMatch(/büyülenmiş \(Charmed\)/);
+  });
+});
