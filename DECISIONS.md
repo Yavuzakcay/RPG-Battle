@@ -77,6 +77,7 @@ Kaynak: D2'den kalan farklar (`harita/belgeler/SRD-VERI-DOGRULAMA.md` §9 ve §8
 | SD8 | 2026-11-21 | 2026-11-16 (`5e18f421`) |
 | Zar kesicisi takılması | 2026-11-20 | 2026-11-16 (`5e18f421`) |
 
+  - **Push öncesi birleştirmede** gelen Dungeondex DX-S başlığı da ileri tarihli (2026-11-20; ilk commit cfdacf5f, 2026-11-19). Aynı birleştirmede uzak daldaki bir önceki birleştirmenin (d62926d2) bıraktığı kalıntı onarıldı: KW2/KW3 başlığı gövdesiz kalmış, gövdesi eski KW2 başlığının altına düşmüştü (gövde 00ccdcea'daki KW3 metniyle birebir); yetim başlık silindi, eski başlık KW2/KW3 başlığıyla değiştirildi, içerik aynı.
   - **Sıra dışı başlıklar** (en yeni üstte kuralına aykırı, değiştirilmedi): KQ6-19 (12-31) 11-18 tarihli başlıkların altında; AS2 ve SD4 (11-13) 11-12 tarihlilerin altında; K57-KALDIR (11-12) U1b'nin (11-11) altında; Dragonborn kanadı (11-20 yazılı) KW1'in (11-19) altında.
 - **4. Wild Shape becerileri (SRD s. 43).** Metin: "You also retain your skill and saving throw proficiencies and use your Proficiency Bonus for them, in addition to gaining the proficiencies of the creature. If a skill or saving throw modifier in the Beast's stat block is higher than yours, use the one in the stat block." Düşük maliyetle karşılandı (89+): biçimde `skills` (`druid.ts` `wildSkills`): Druid'in yetkin olduğu becerinin değiştirici üstü eki (yetkinlik, uzmanlık) biçimin değiştiricisine eklenir, stat bloğundaki beceri yüksekse o; yetkin olunmayan beceri biçimin değiştiricisinden (`skillBonus`). Bırakınca eski beceriler (`ShapePrev.skills`). Kurtarmalar WS87'de (`wildSaves`) aynı kuralla yapılmıştı.
   - **Polymorph (karar, aynı kapı):** SRD "game statistics … are replaced by the stat block"; beceriler stat bloğundan (yetkin olunmayan biçimin değiştiricisinden). WS87 INT/WIS/CHA ve kurtarmaları zaten biçimden alıyordu; beceriler eksik kalmıştı.
@@ -86,11 +87,11 @@ Kaynak: D2'den kalan farklar (`harita/belgeler/SRD-VERI-DOGRULAMA.md` §9 ve §8
 - **Birleşik doğrulama (D1 + WS87 + D2 + D3):**
   - `npm test` tam: 467 dosya / 5281 test geçti; koşullu atlanan 2 dosya (11 test): `src/content/as2.test.ts` (yerel `icerik/` yok, bulut kopyası) ve `src/sim/k73dOlcum.test.ts` (yalnız `K73D_TOHUM` verilince çalışan denge ölçümü). Kırmızı yok.
   - Mekanik matris yeniden üretildi (`npx vite-node src/sim/mekanikMatris.ts -- --yaz`): 6606 satır, sürüm 89, 6606 doğru (yalnız başlıktaki sürüm 87 → 89 değişti).
-  - `npm run typecheck` temiz; `npm run build` tamam, ana parça 458,51 kB / 500 kB (KW1 sonrası 458,28; D3 +0,23 kB: `srdD3.ts` + `data/srd-d3.json` reducer'la ana parçada).
+  - `npm run typecheck` temiz; `npm run build` tamam, ana parça 458,51 kB / 500 kB (KW1 sonrası 458,28; D3 +0,23 kB: `srdD3.ts` + `data/srd-d3.json` reducer'la ana parçada). Push öncesi birleştirmeden (Dungeondex, kanat) sonra 460,82 kB; birleşik ağaçta typecheck, build, gelen testler (`dungeondex.test.tsx`, `kanatKatman.test.tsx`) ve D3/sürüm/i18n testleri geçti (8 dosya, 128 test).
   - `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`): denenen 92, geçen 92.
   - `npm run check:ses`: ilk denemede `pickMap` `[data-region]` 30 sn zaman aşımı. Neden bulut değil, betik: ana menüde `button.role` (2.) OD1'den beri "Oda kur"u açıyor; KH1 `check:harita`'yı `home-quick`'e uyarlamış, `check:ses`'i değil. **Yan düzeltme:** `scripts/ses-kontrol.mjs` hızlı savaş kartıyla (`[data-testid="home-quick"]`) giriyor; bulutta 15/15 tamam. CLAUDE.md'deki "bulutta TimeoutError" notu bu yüzdendi olabilir; kural kullanıcınındır, değiştirilmedi.
   - Hızlı regresyonlar: D3 (yukarıda) 88 = altın; D1/D2/WS87 regresyonları tam `npm test` içinde yeşil (85/86/87 altınları değişmedi).
-## Dragonborn kanadı: beyaz pençe ve uç kemikleri + pembe karışımlı zar: Kuyruk KW2/KW3 (2026-11-19, kullanıcı istekleri; yalnız görünüm, kural ve kayıt sürümü değişmedi)
+
 ## Dungeondex Sınıflar kategorisi (Görev DX-S, 2026-11-20; yalnız arayüz ve açıklama verisi, kural ve kayıt sürümü değişmedi)
 
 - **Durum öncesi:** Dungeondex'te sınıf kategorisi yoktu. Invocation, Metamagic ve sınıf özelliği kayıtları da yoktu; sınıf yalnız alt sınıf kartında bağlantı olarak geçiyordu. Fighting Style'lar `feat` kategorisinde vardı (kategori "Fighting Style").
@@ -125,7 +126,7 @@ Kaynak: D2'den kalan farklar (`harita/belgeler/SRD-VERI-DOGRULAMA.md` §9 ve §8
     - SRD sınıf metni ve sayfa numarası yok;
     - EN başlık ve "yalnız Türkçe" notu.
   - Ekran görüntüsü `docs/sabah/dungeondex/siniflar.webp`.
-## Dragonborn kanadı: beyaz pençe uçları + pembe karışımlı zar, iki hal: Kuyruk KW2 (2026-11-19, kullanıcı isteği; yalnız görünüm, kural ve kayıt sürümü değişmedi)
+## Dragonborn kanadı: beyaz pençe ve uç kemikleri + pembe karışımlı zar: Kuyruk KW2/KW3 (2026-11-19, kullanıcı istekleri; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 
 Gidiş: kullanıcı KW1 görüntüsüne daireler çizdi: pençe uçları boynuzlarla aynı beyazlıkta olsun, kanatların iç kısmı soy renginin pembeyle karışımı olsun ("sarı ise sarı ile pembe"); iki hal gösterilsin, ikisinde de pençe beyaz. İki hal gösterildi (A karışımsız, B pembe karışımlı). Kullanıcı seçti: "diğer seçeneği boşver, direkt pembe ile karışımı yap" (B); ayrıca kanadın en ucundaki kemik uçları da beyaz olsun (son daire). Ara denemelerde "direkt pembe" ifadesi yanlış okunup düz pembe (soydan bağımsız) ve pembe baskın karışım (0,7) yapıldı; ikisi de kullanıcının isteği olmadığı için atıldı (kodu geri alındı, commit'lenmedi). Sonuç: B + beyaz uç kemikleri. Görüntüler `docs/sabah/dragonborn-kanat/karisim-ozet.webp`, `karisim-tam.webp`.
 
