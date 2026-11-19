@@ -9,6 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Kuyruk A İş 2: kendi çiziminde kanatlı Dragonborn jetonunda ejderha kanadı yok (2026-11-20; yalnız görünüm)
+
+- 290 Dragonborn jetonunda siluet ölçümü (omuz üstünde iki dış yanın simetrik opak pikseli) ve ilk 140'ın gözle denetimiyle 4 jetonda kendi kanadı bulundu: erkek/kadın Cleric ID1 (Yaşam Alanı), erkek/kadın Warlock WL-7.
+- Liste veride: `data/kanat-esleme.json` `slotlar.dragonborn.kanatsiz` (jeton dosya adı, slot başına; kodda sabit yok). Tek yardımcı `ownWingToken`; rozet, savaş jetonu (Draconic Flight uçuşu dahil) ve karakter figürü onu kullanır.
+- Kuşkulu: Ranger ID4 (iki cinsiyet; kanatlı ejderha yoldaşı, kendi kanadı yok). Listeye alınmadı, gözle onay bekliyor.
+- Liste `harita/belgeler/DRAGONBORN-KENDI-KANAT.md`; test `src/ui/kanatKendi.test.tsx`; görüntü `docs/sabah/dragonborn-kanat/kendi-kanat-once-sonra.webp`.
+
 ## Kuyruk A İş 1: ana parça artışı denetimi (2026-11-20; salt okunur)
 
 - 448,8 → 459,5 kB artışın (+10,6 kB; UTF-8 kodda +11 947 bayt) %82'si Dragonborn kanadından (KW1). En büyük kalem `data/dragonborn-kanat-kok.json` (9,7 kB); `Avatar.tsx` statik içe aktardığı için ana parçada.

@@ -91,9 +91,19 @@ export function pickCulture(sheet: { lineageId?: string; exileCulture?: string; 
 /** Kuyruk AS1a-2: boyasız ORİJİNAL jetonla gelen alt soylar (`<ırk>/<alt soy>`; filtre/tint/maske yok, yalnız oran). */
 export const ORIGINAL_LINEAGES: string[] = D.orijinal;
 export const isOriginalLineage = (key: string): boolean => D.orijinal.includes(key);
-export type WingSlotData = { altSinif?: string; ayna?: WingMirror; /** KW2: tek kanat görselinin üstüne çizilen katmanlar (dosya aynı klasörde, aynı boyutta). `zar.etkin: false` pembe karışımlı zar katmanını kapatır (karşılaştırma); pençe her zaman. */ katmanlar?: { zar?: { dosya: string; etkin?: boolean }; pence?: { dosya: string; palet: WingPalet } }; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet & { zar?: WingPalet }>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
+export type WingSlotData = { altSinif?: string; /** Kuyruk A İş 2: kendi çiziminde kanadı olan jetonlar (dosya adı, uzantısız); bu slotun kanadı çizilmez. */ kanatsiz?: string[]; ayna?: WingMirror; /** KW2: tek kanat görselinin üstüne çizilen katmanlar (dosya aynı klasörde, aynı boyutta). `zar.etkin: false` pembe karışımlı zar katmanını kapatır (karşılaştırma); pençe her zaman. */ katmanlar?: { zar?: { dosya: string; etkin?: boolean }; pence?: { dosya: string; palet: WingPalet } }; palet?: WingPalet; renkPaletleri?: Record<string, WingPalet & { zar?: WingPalet }>; esnet?: boolean; sprite?: WingSprite & { klasor?: string }; dosya: string | null; dosyaKapali: string | null; minSeviye?: number; herZaman?: boolean; olcek: number; omuz: number; capa: [number, number]; enBoy: number; filtre?: string; renkFiltreleri?: Record<string, string> };
 const W = wings as unknown as { klasor: string; slotlar: Record<string, WingSlotData> };
 export const WING_SLOTS = Object.keys(W.slotlar);
+/** Jeton yolundan dosya adı (klasör ve uzantı olmadan; `characters/kucuk/x.webp` → `x`). */
+const tokenBase = (src: string): string => src.replace(/[?#].*$/, '').replace(/^.*\//, '').replace(/\.[a-z0-9]+$/i, '');
+/**
+ * Kuyruk A İş 2: jeton kendi çiziminde kanatlıysa (`kanatsiz` listesi, slot başına) kanat katmanı yok. Yalnız görünüm; liste
+ * veride (`data/kanat-esleme.json`), kodda sabit yok.
+ */
+export function ownWingToken(wing: Pick<WingLayerSpec, 'id'> | null | undefined, src: string | null | undefined): boolean {
+  if (!wing || !src) return false;
+  return !!W.slotlar[wing.id]?.kanatsiz?.includes(tokenBase(src));
+}
 /** Kanat slotuna bağlı alt sınıf kimlikleri (`altSinif`) ve slotun kimliği. */
 export const wingSlotOfSubclass = (subclassId: string | undefined): string | undefined =>
   subclassId ? Object.keys(W.slotlar).find((id) => W.slotlar[id]?.altSinif === subclassId) : undefined;
