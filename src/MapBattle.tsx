@@ -88,7 +88,6 @@ import {
   featureTeleportHexes, offCombatOnly, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, waterChoices, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { SECENEK_ADI } from './battle/girdapSurum';
-import { trAciklama } from './data';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { destroyForceProblem, effectTargetCount, strideSpellOf } from './battle/spells';
 import { wishCandidates } from './battle/spells69';
@@ -99,7 +98,7 @@ import { facesLeft as tokenFacesLeft } from './ui/tokenFacing';
 import { isAirborne } from './battle/flight';
 import { LookFrame } from './ui/LookFrame';
 /** Kuyruk AS1c: alt soyu olan oyuncu karakterinin rozetine alt soy görünümü (oran, hale, filtre, kanat); diğerleri aynen. */
-const framedBadge = (c: Combatant, size: number, node: ReactNode): ReactNode => (c.avatar.look ? <LookFrame sheet={c.avatar.look} size={size} flying={isAirborne(c)}>{node}</LookFrame> : node);
+const framedBadge = (c: Combatant, size: number, node: ReactNode): ReactNode => (c.avatar.look ? <LookFrame sheet={c.avatar.look} size={size} flying={isAirborne(c)} avatar={c.avatar}>{node}</LookFrame> : node);
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionHint, actionTip } from './ui/actionHints';
 import { activeSpecialGroups, costOfKey, pageOf, spellGroups, splitMenu, visible, type MenuItem, type SpecialGroup } from './ui/actionMenu';
@@ -2433,7 +2432,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                   {waterChoices(state, spell).map((x) => (
                     <button key={x} role="radio" aria-checked={x === (choicePick ?? 'whirlpool')} className={x === (choicePick ?? 'whirlpool') ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>{SECENEK_ADI[x] ?? x}</button>
                   ))}
-                  <small className="why-line">{((k) => (getLang() === 'tr' ? trAciklama('buyuSecenek', k) : t().log.gmOptionText[k]))(`${spell.id}/${choicePick ?? 'whirlpool'}`)}</small>
+                  <small className="why-line">{t().log.gmOptionText(`${spell.id}/${choicePick ?? 'whirlpool'}`)}</small>
                 </div>
               )}
               {mode === 'pickHex' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' && !whirlpoolCast(state, spell) && (

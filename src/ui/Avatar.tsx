@@ -4,12 +4,13 @@
  * dosya adı kuralına uyan bir görsel eklenince kod değişmeden görünür.
  */
 import { useEffect, useState, type CSSProperties } from 'react';
-import { FOOT_FRAC, lineageLook, wingBox, type WingLayerSpec } from './lineageLook';
+import { FOOT_FRAC, lineageLook, wingBox, wingRootBounds, type WingLayerSpec } from './lineageLook';
 import { crownSpec, type CrownSpec } from './haloCrown';
 import { StarCrownLayer, StarCrownShape } from './StarCrown';
 import { useWingAnim } from './wingAnim';
 import { WingFilterDefs } from './WingFilter';
 import { wingFilterId } from './lineageLook';
+import { WingRootParts } from './WingRootParts';
 import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
 import { tintedReady, tintedUrl } from './tint';
@@ -178,7 +179,7 @@ function WingImage(props: { wing: WingLayerSpec; wb: { x: number; y: number; wid
  * Kuyruk AS1c: jeton figürü (SVG): kanat katmanı (jetonun arkasında; `lineageLook`), alt soy oranı, Celestial hale gizleme ve
  * filtre. Yalnız çizim: `x/y/width/height` ve tıklama alanı aynı.
  */
-export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; crown?: CrownSpec | null; look?: AvatarData['look']; flying?: boolean; /** Karakter ekranları: uçma yeteneği olan karakter havada olmasa da kanatlı. */ ability?: boolean }) {
+export function TokenFigure(props: { href: string; /** Boyanmamış jeton yolu (kanat kökü düzeltmesi jeton adından). */ tokenSrc?: string; cx: number; cy: number; w: number; flip?: boolean; crown?: CrownSpec | null; look?: AvatarData['look']; flying?: boolean; /** Karakter ekranları: uçma yeteneği olan karakter havada olmasa da kanatlı. */ ability?: boolean }) {
   const { cx, cy, w } = props;
   const lk = props.look ? lineageLook(props.look, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) }) : null;
   const by = cy - w / 2 + w * FOOT_FRAC; // ayak çizgisi (ölçek demir noktası)
@@ -187,7 +188,9 @@ export function TokenFigure(props: { href: string; cx: number; cy: number; w: nu
   const wb = wing ? wingBox(wing, cx, cy, w) : null;
   return (
     <>
-      {wing && wb && <WingImage wing={wing} wb={wb} flip={props.flip} cx={cx} />}
+      {/* 2026-11-20: gövdeye bağlı kanat (Dragonborn `kok`): iki kanat kökten, figürün arkasında; diğerleri eski çift görsel. */}
+      {wing?.kok ? <WingRootParts wing={wing} href={assetSrc(wing.src)} cx={cx} cy={cy} w={w} tokenSrc={props.tokenSrc} />
+        : wing && wb && <WingImage wing={wing} wb={wb} flip={props.flip} cx={cx} />}
       <g transform={shape}>
         <image href={props.href} x={cx - w / 2} y={cy - w / 2} width={w} height={w} preserveAspectRatio="xMidYMid slice"
           transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} style={{ ...(lk?.filter ? { filter: lk.filter } : {}), ...(shape ? { imageRendering: 'pixelated' as const } : {}) }} />
@@ -214,7 +217,7 @@ export function AvatarCircle(props: {
         {avatar.ring && <ellipse cx={cx} cy={cy + r * 0.78} rx={r * 0.92} ry={r * 0.3} fill="none" stroke={avatar.ring} strokeWidth={Math.max(1.5, r * 0.09)} opacity={0.9} />}
         {/* Görev P0: ek paket yaratığının renk tonu; Kuyruk AS1c: alt soy görünümü `TokenFigure` içinde. */}
         <g className="breathe" style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}>
-          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={(props.flip ?? false) !== naturalLeft(src)} crown={crownSpec(src, avatar.look)} look={avatar.look} flying={props.flying} ability={props.ability} />
+          <TokenFigure href={shown ?? assetSrc(src)} tokenSrc={src} cx={cx} cy={cy} w={w} flip={(props.flip ?? false) !== naturalLeft(src)} crown={crownSpec(src, avatar.look)} look={avatar.look} flying={props.flying} ability={props.ability} />
         </g>
       </g>
     ) : (
@@ -234,7 +237,7 @@ export function AvatarCircle(props: {
 export function CharacterFigure(props: { avatar: AvatarData; size: number; title?: string }) {
   const { avatar, size } = props;
   const lk = avatar.look ? lineageLook(avatar.look, { ability: true }) : null;
-  const wb = lk?.wing ? wingBox(lk.wing, size / 2, size / 2, size) : null;
+  const wb = lk?.wing ? (lk.wing.kok ? wingRootBounds(lk.wing.kok, lk.wing.enBoy, size / 2, size / 2, size, avatar.src) : wingBox(lk.wing, size / 2, size / 2, size)) : null;
   const pad = Math.max(2, size * 0.06);
   const x0 = Math.min(0, wb?.x ?? 0) - pad, y0 = Math.min(0, wb?.y ?? 0) - pad;
   const x1 = Math.max(size, wb ? wb.x + wb.width : 0) + pad, y1 = Math.max(size, wb ? wb.y + wb.height : 0) + pad;

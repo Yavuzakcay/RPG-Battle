@@ -663,6 +663,15 @@
    "Tail",
    "Hurl Flame"
   ],
+  "secenekler": [
+   {
+    "Claws": 1,
+    "Tail": 1
+   },
+   {
+    "Hurl Flame": 2
+   }
+  ],
   "max": {
    "Claws": 1,
    "Tail": 1,
@@ -766,6 +775,15 @@
    "Claw",
    "Snake Hair",
    "Poison Ray"
+  ],
+  "secenekler": [
+   {
+    "Claw": 2,
+    "Snake Hair": 1
+   },
+   {
+    "Poison Ray": 3
+   }
   ],
   "max": {
    "Claw": 2,

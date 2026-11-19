@@ -7,7 +7,7 @@
  */
 import { monsters, type Monster } from '../data';
 import { combatantFromMonster } from './create';
-import { shapeStats } from './druid';
+import { shapeOptsAt, shapeStats } from './druid';
 import { creatureTypeAt, monsterAt } from './srdD1';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
@@ -34,7 +34,8 @@ export function polymorphEvents(state: BattleState, caster: Combatant, target: C
   if (target.traits?.includes('immutable-form')) return [{ type: 'map_note', text: `${target.name}: Immutable Form (şekil değiştirmez).` }];
   const beast = combatantFromMonster(m, { id: `${target.id}:poly`, name: m.name, kuralSurumu: state.kuralSurumu ?? 1 });
   const base = target.shape ? { ...target, ...target.shape.prev } : target;
-  const stats = { ...shapeStats(m, base), polymorph: true, attacks: beast.attacks, multiattack: beast.multiattack };
-  void state;
+  // Kural sürümü 87 (SRD 5.2.1 s.153): bütün oyun değerleri biçimin stat bloğundan (INT/WIS/CHA, kurtarmalar); anahtar
+  // `bicimYuzme` açıksa biçimin yüzme hızı.
+  const stats = { ...shapeStats(m, base, shapeOptsAt(state, m, 'poly')), polymorph: true, attacks: beast.attacks, multiattack: beast.multiattack };
   return [{ type: 'shape_changed', actorId: target.id, stats }, { type: 'temp_hp', targetId: target.id, amount: m.hp, label: `Polymorph (${m.name})` }];
 }

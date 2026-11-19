@@ -2,7 +2,7 @@
  * Görev D2 (kural sürümü 88): savaş sırasında eklenen canavarlar savaş başındakiyle aynı kurulumdan geçer (`monsterSetup.ts`:
  * canavar özellikleri ve yetenekleri) ve çağrı blokları SRD 5.2.1'e göre (`data/summons.json`; eski değerler
  * `data/srd-duzeltme.json` `surum: 88`). Tek sabit; yaprak modül. 87 ve altı (eski kayıt, replay) aynen.
- * 85 ve 87 Wild Shape görevine ayrıldı.
+ * 87 Wild Shape (WS87); 85 boş.
  */
 import type { BattleState } from './types';
 

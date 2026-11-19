@@ -9,6 +9,48 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Dragonborn kanadı gövdeye bağlı + palet uyumu (2026-11-20, kullanıcı kararı; yalnız görünüm, kural sürümü yok)
+
+- **Sorun:** rozet (`LookFrame` + `AvatarBadge`) kanadı zemin dairesinin de arkasına çiziyordu; daire kökleri örttüğü için kanatlar dairenin iki yanında kopuk ve yüzer gibi duruyordu. Taban görsel beyaz ve parlaklığı dar (%80–99) olduğundan iki uçlu palet hep açık uca düşüyor, kanat soluk/pastel çıkıyordu (Siyah gri).
+- **Kök (veri, `kanat-esleme.json` `dragonborn.kok`):** taban görselde sağ kanadın kökü iç kenarın üst ucu (`gorsel` [0,54, 0,46]); jetonda merkezden `x` 0,03 genişlik sağa, tepeden `y` 0,44 (omuz–dirsek bandı), `olcek` 1,25 (iki kanatlı görselin genişliği / jeton), `aci` 12° dışa/yukarı. Sol kanat sağın aynası (sağ yarı kırpılıp jeton merkezinde aynalanır; `src/ui/WingRootParts.tsx`, ortak hesap `lineageLook.ts` `wingRootLayout`/`wingRootBounds`).
+- **Katman sırası, seçenek (a):** jeton görselleri şeffaf figür, daire görselin parçası değil (rozet arka planı). Kanatlı rozette `LookFrame` zemin dairesini kendisi en alta çizer (`.look-bg`, ırk rengi ya da rozetin `bg`'si), kanat ortada, rozetin kendi zemini saydam, figür üstte (`.look-frame.winged`). Kök gövdenin arkasında kalır, siluetin dışına taşan kanat görünür; kanat figürün önüne geçmez. Savaş jetonu ve karakter listesi (SVG: `TokenFigure`, `CharacterFigure`) zaten daire çizmiyor: aynı kök hesabıyla figürün arkasında; savaşta yalnız havadayken (kural aynı). (b) seçeneği (kanadı üste çizip figür maskesiyle kırpma) gerekmedi: aynalanan jetonlarda maske de aynalanmalıydı.
+- **Kontak denetimi:** 290 Dragonborn jetonunun (266 alt sınıf + 24 sınıf-genel) siluet profilinde kök iki tarafta da gövdenin içinde (3 px pay): tek global konumla 287; kalan üçü (sınıf-genel Bard ve Warlock erkek, `dragonborn-erkek-wizard-WZ-B4`) o satırda kol boşluğuna denk geldiği için jeton adına göre `y` 0,46 düzeltmesi (`duzeltme`; jeton adı önce, sonra `<sınıf>-<cinsiyet>`). Kontak sayfası `docs/sabah/dragonborn-kanat/kontak.webp` (266 jeton, 96 px).
+- **Palet (soy başına veride):** gölge → orta → ışık üç duraklı tablo, taban parlaklığı `aralik` [0,82, 1] arasına gerilir (17 duraklı `feComponentTransfer`; eski Tiefling paleti iki duraklı aynen). Renkler gövde pul ortalamasına ayarlandı (boyanmış jetonun pul maskesi ortalaması ↔ kanadın filtreli ortalaması, CIE76): renkli soylarda ΔE ≤ 0,5, Siyah 0,2 (gölge ucu çok koyu, zar damarları seçilir), Beyaz sıcak parlak beyaz (gövdeye 15,9 ≤ 20), Gümüş soğuk gri-mavi; Beyaz–Gümüş kanat ΔE 32,6 (≥ 12).
+- **Not:** kendi sanatında kanat olan birkaç jetonda (ör. Dragonborn Cleric Yaşam, ID1: melek kanadı) Draconic Flight kanadı da çizilir (eskiden de öyleydi); istenirse jeton adına göre kanatsız listesi eklenebilir.
+- **Boyut:** ana parça 448,7 → 452,7 kB (`LookFrame` ana parçada; sınır 500 kB).
+- Görüntüler: `docs/sabah/dragonborn-kanat/once-sonra.webp` (10 soy × Erkek Fighter (Gladyatör) / Kadın Wizard, 256 ve 96 px; 4 farklı sınıf/poz kök kontrolü ve SVG savaş jetonu yolu), `kontak.webp`. Testler `src/ui/wingRoot.test.tsx`.
+
+## Druid Wild Shape ve Polymorph düzeltmeleri WS87: kural sürümü 87 (2026-11-19, kullanıcı kararı 2026-11-19: SRD 5.2.1'i izle)
+
+Kaynak: SRD 5.2.1 PDF (`docs/SRD_CC_v5.2.1.pdf`): Wild Shape s.43 ("Rules While Shape-Shifted"), Polymorph s.153, Barbed Devil s.262, Medusa s.306; değerler PDF'ten okundu, bellekten değer yok. D1'in (86) tür ve yüzme verisi yalnız kullanıldı, yeniden düzeltilmedi (`creatureTypeAt`, `swimSpeedAt`, `monsterAt`).
+
+- **Sürüm 87.** Tek sabit `src/battle/wildShape87Surum.ts` (`WS87_VERSION`, `ws87On`, `bicimYuzmeOn`). 85 boş kaldı: D1 85'i bu göreve ayırmıştı; yerel 85 denemesi (tür + yüzme verisi) D1 ile örtüştüğü için atıldı, kalan iş 87'ye taşındı. 86 savaşında 85 kuralı yok; eski kayıtlar 86'dan bu yana değişmez.
+- **Biçimin yüzme hızı (Game Master anahtarı `bicimYuzme`, sürüm 87, varsayılan açık).** `shapeStats` biçimin SRD yüzme hızını `swimFt` olarak yazar (yüzmeyen biçim 0); Polymorph aynı anahtarla (`shapeOptsAt`). Reducer `shape_changed` yüzme hızını uygular, bırakınca eskisine döner (`ShapePrev.swimFt`) ve "suda" işaretini hemen eşler (`syncWater`). Böylece biçimdeki Druid suda yüzme hızıyla ilerler ve çok derin suya girer (`canEnterVeryDeep` zaten `swimFt` + sürüm 82'ye bakıyordu). Anahtar kapalıyken ya da 86 ve altında olayda alan yok: eski davranış.
+  - Karar: biçimi derin suda bırakan Druid suda kalır (zorla çıkarma yok; SRD'de yok). Yalnız giriş kuralı yüzme hızına bakar.
+- **Geçersiz seçili biçimler (karar).** Seviye düşünce (CR/uçuş sınırı) ya da D1 tür düzeltmesiyle (Giant Eagle, Giant Owl, Giant Elk Celestial; Death Dog Monstrosity) artık alınamayan seçili biçimler **kayıttan silinmez**, yalnız sayılmaz (`validKnownForms`): 87'de savaşta kullanılmaz, bilinen biçim denetimi onları saymaz; geçerli seçim kalmadıysa seçimsiz gibi en güçlü uygun biçimler. 86 ve altında eski davranış (geçersiz seçim tek başına kaldıysa hiç biçim yok). Seviye geri gelince yine geçerli. Oluşturucuda bu biçimler sayaca girmez, en üstte "artık uygun değil (türü Beast değil / bu seviyede alınamaz); sayılmaz" notuyla görünür, dokunulunca listeden çıkar. Kartta yürüme ve uçmanın yanında yüzme hızı da var.
+- **Eski kayıt taraması.** Depodaki kayıtlı Druid'lerde (`data/sim-partiler.json` `yara`, sim partileri, fikstürler, `docs/ornek-paket/`) seçili biçim listesi yok: hepsi otomatik seçim. Otomatik seçim 86'da D1 türünü zaten kullanıyordu, bu yüzden sim partileri etkilenmez. Etkilenebilecek tek durum oyuncunun cihazındaki kayıt: 8+ seviyede Giant Eagle, Giant Owl ya da Death Dog seçmiş Druid (2–7. seviyede bunlar zaten alınamıyordu). Bu biçimler artık "uygun değil" görünür, kayıtta kalır. Giant Elk CR 2 olduğu için hiçbir seviyede seçilemiyordu.
+- **SRD aktarım farkları (PDF'e göre).**
+  - Wild Shape (s.43): oyun değerleri biçimin stat bloğundan. Korunanlar: yaratık türü, HP, Hit Dice, INT/WIS/CHA, sınıf özellikleri, diller, feat'ler, beceri ve kurtarma yetkinlikleri (yaratığınkine ek olarak, kendi yeterlilik bonusuyla). Stat bloğundaki beceri/kurtarma yüksekse o kullanılır. Geçici HP = Druid seviyesi.
+    - **Fark, 87'de düzeltildi:** fiziksel kurtarmalar düz değiştiriciydi. Druid'in yetkinliği (örn. Resilient CON) düşüyor, stat bloğu kurtarması yok sayılıyordu. Şimdi biçimin değiştiricisi + Druid'in o kurtarmadaki eki (yetkinlik ve diğer ekler), stat bloğu yüksekse o (`wildSaves`). Örnek: Crocodile CON +1 → +3. INT/WIS/CHA kurtarmaları da stat bloğu yüksekse ondan (T-Rex WIS +4).
+    - Diğer ekler eşya/özellikten gelebilir; çoğunlukla takılı kalan eşya olduğu için korunur (⚠ yorum).
+    - Yaratık türü, HP ve geçici HP zaten doğruydu.
+    - **Dokunulmadı:** beceri yetkinlikleri. Biçimin beceri bonusları modelde yok, savaş içi beceri kontrolleri Druid'inkiyle kalır. Belirsiz değil, kapsam dışı.
+  - Polymorph (s.153): bütün oyun değerleri biçimin stat bloğundan. Yalnız hizalanma, kişilik, yaratık türü, HP ve Hit Dice korunur. Geçici HP = biçimin HP'si; konuşamaz, büyü yapamaz.
+    - **Fark, 87'de düzeltildi:** INT/WIS/CHA ve kurtarmalar hedefin kendisinden kalıyordu (Wild Shape kuralı). Şimdi biçimden (`{ ...değiştiriciler, ...stat bloğu kurtarmaları }`).
+    - Büyü yasağı zaten vardı (biçimde büyü yok).
+- **Bonus: Multiattack seçenekleri (87).** SRD'de Barbed Devil "one Claws attack and one Tail attack, or two Hurl Flame attacks", Medusa "two Claw attacks and one Snake Hair attack, or three Poison Ray attacks".
+  - Game Master'ın plansız düğmesi bütün saldırıları topluyordu: Barbed Devil 4, Medusa 6.
+  - Düzeltme Clay Golem gibi plan verisiyle: `scripts/k19-multiattack.py` "…, or it makes …" kalıbından `secenekler` üretir (`data/multiattack.json`'da yalnız bu iki canavar).
+  - 87'de plansız düğme tek seçeneği yapar: saldırıları hedefe ulaşan ilk seçenek (bitişikte yakın, uzakta menzilli), hiçbiri ulaşmıyorsa ilki (`multiOptionChoice`). `srdK19`'dan bağımsız.
+  - Plan tek seçeneğe sığmalı: Claws + Hurl Flame karışımı reddedilir (`multiPlanProblem`).
+  - 86 ve altında eski sayım.
+- **Doğrulama.**
+  - Testler: `src/battle/wildShape87.test.ts` (14), Karadul testi (`karadul.test.ts`: 3/4/8. seviyede Wild Shape yok, örümcek biçimi 86 = 87).
+  - Hızlı regresyon `src/sim/ws87Regresyon.test.ts`: `k18-druid` partisi, col/kale/magara, Barbed Devil ve Medusa. 86 imzası 15ad4633 ağacının altınıyla aynı (1 ve 3 tohum); 87 çökmesiz, imzası farklı.
+  - Matris: Polymorph 6/6, Protection from Evil and Good 3/3 doğru.
+  - Denge ölçümü yapılmadı.
+  - Ekran görüntüsü: `docs/sabah/wildshape-87/once.webp`, `sonra.webp`.
+- **Yan düzeltme (aynı commit, kural dışı).** Control Water (84) işinden kalan i18n yapı hatası: EN `log.gmOptionText` anahtarlı tabloydu, TR'de boş nesneydi. Bu yüzden `strings.test.ts` "TR ve EN aynı anahtarlar" testi kırmızıydı. Artık iki dilde de işlev: TR `data/aciklamalar-tr.json` `buyuSecenek` (SD4), EN `GM_OPTION_EN`. Günlük ve kart dil ayrımı yapmadan `t().log.gmOptionText(key)` çağırır.
 ## Modül başlatma: girdap kancası yaprak modüle (2026-11-19)
 
 - `src/app/modulBaslatma.test.ts` "battle/features başlatma hatasız" `6a1e524` (Control Water girdabı, kural sürümü 84) ile kırıldı: `TypeError: registerZoneStartPull is not a function` (`girdap.ts:122`, yığın `spells.ts` → `girdap.ts`). Döngü zones → … → spells → girdap → zones: `girdap.ts` modül değerlendirilirken kayıt işlevini çağırıyor, `zones.ts` henüz değerlendirilmemiş (`export const` ok işlevi). Tarayıcıda da aynı: `battle/features` ilk giriş olunca `ReferenceError: Cannot access 'registerZoneStartPull' before initialization`; uygulamanın bugünkü açılış sırasında (zones önce) görünmüyordu, check:harita geçiyordu. Gizli sıra hatası, yükleme sırası değişince çökme.
@@ -18,7 +60,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 Kaynak: `harita/belgeler/SRD-VERI-DOGRULAMA.md` §8 "Kalan farklar" ve `srd-veri-dogrulama.csv`. Kullanıcı kararı: SRD 5.2.1'i izle; soru sorulmadı. Her değer PDF'ten (sayfa `data/srd-duzeltme.json` ve rapor §9). Kapsam dışı (başka sekme): Wild Shape/Polymorph biçim aktarımı, tür ve yüzme verisi (D1), Barbed Devil/Medusa Multiattack düğmesi.
 
-- **Sürüm 88.** Depoda en yüksek sürüm 86'ydı; 85 ve 87 Wild Shape görevine ayrıldı, bu yüzden 88 (`src/battle/srdD2Surum.ts` `SRD_D2_VERSION`, `srdD2On`).
+- **Sürüm 88.** Depoda en yüksek sürüm 86'ydı; 85 ve 87 Wild Shape görevine ayrılmıştı, bu yüzden 88. Push öncesi birleştirmede 87 (WS87) geldi, 85 boş kaldı (`src/battle/srdD2Surum.ts` `SRD_D2_VERSION`, `srdD2On`).
 - **Tek giriş (karar).** Savaş başındaki `withMonsterTraits` ve `withMonsterAbilities` canavar başı işlevlere ayrıldı (`monsterTraitSetup`, `monsterAbilitySetup`; davranış ve sıra aynı, 87 ve altı bit bit aynı). Savaş sırasında canavar ekleyen 10 yol (büyüyle çağrı ve kurulum ritüeli, paket çağrısı, canavar yeteneğiyle çağrı, Finger of Death zombisi, Orman takviyesi ve kemik yığını, kum pususu, buz mühür, kat değişimi) 88+'da `src/battle/monsterSetup.ts` `lateSummonEvents` / `lateMonster` ile aynı işlevlerden geçer; aura alanları `zone_created`. Envanter tablosu rapor §9'da.
   - **Neden yeni olay türü yok:** kurulmuş yaratık `summoned` ya da `floor_changed.added` içinde taşınır. Kayıt sürümü değişmedi, replay olaydan aynı.
   - Çağrı bloğu (`monsters.json`'da olmayan) kendi kaydıyla kurulur (`setupMonster(…, m)`); paket ödünç canavarı da öyle.

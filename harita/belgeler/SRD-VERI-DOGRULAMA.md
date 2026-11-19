@@ -350,7 +350,7 @@ Hizalama (1 satır, "oyunda alan yok") değişmedi: motor okumuyor.
 
 Tarih: 2026-11-19. Kullanıcı kararı: SRD 5.2.1'i izle. Karar ayrıntısı DECISIONS.md'de ("SRD farkları D2").
 
-- **Kural sürümü 88** (`src/battle/srdD2Surum.ts` `SRD_D2_VERSION`). 85 ve 87 Wild Shape görevine ayrıldı.
+- **Kural sürümü 88** (`src/battle/srdD2Surum.ts` `SRD_D2_VERSION`). 87 Wild Shape görevinin (WS87), 85 boş.
 - **Eski değerler:** D1 katmanında (`data/srd-duzeltme.json`, kayıtta `surum: 88`). Yeni katman açılmadı.
 
 ### Savaş sırasında canavar ekleyen yollar
