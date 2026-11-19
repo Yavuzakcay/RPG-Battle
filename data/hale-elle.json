@@ -27,13 +27,6 @@
   }
  },
  "bekleyen": {
-  "celestial-erkek-rogue-ID3": {
-   "neden": "halka başa değiyor: 44 px silinemedi (kalıntı)",
-   "durum": "karar bekliyor",
-   "oneri": "c",
-   "oneriNot": "hale var ama güvenli silme yok (146 px halka kalıntısı başa değiyor)",
-   "karar": "dokunma"
-  },
   "celestial-erkek-warlock-WL-8": {
    "neden": "Gulyabani: altın teller olduğu gibi, hale/taç çizilmez (kullanıcı, 2026-11-19)",
    "durum": "taç yok",
@@ -56,11 +49,6 @@
   },
   "celestial-erkek-wizard-WZ-B4": {
    "neden": "kalıntı: şekil yok, hale tonlu 11 px (≤ 8 gerekir); halka baş çizgisine değiyor ya da baş/saç tonuyla karışık",
-   "durum": "Gemini'ye gidecek",
-   "karar": "gemini"
-  },
-  "celestial-erkek-wizard-WZ-B5": {
-   "neden": "kalıntı: şekil var, hale tonlu 0 px (≤ 8 gerekir); halka baş çizgisine değiyor ya da baş/saç tonuyla karışık",
    "durum": "Gemini'ye gidecek",
    "karar": "gemini"
   },

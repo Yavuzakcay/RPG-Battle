@@ -126,11 +126,12 @@ def fit(new_rgba, ref_alpha):
     ys, xs = np.where(na); rys, rxs = np.where(ref_alpha)
     if not len(ys) or not len(rys): return None
     refL = lower_band(ref_alpha)
-    s0 = (rxs.max() - rxs.min() + 1) / (xs.max() - xs.min() + 1)
+    # ölçek adayları: genişlik oranı ve alt gövde (üst %35 hariç) yükseklik oranı; her birinin ±%15'i taranır
+    ny0 = ys.min() + 0.35 * (ys.max() - ys.min()); ry0 = rys.min() + 0.35 * (rys.max() - rys.min())
+    s_w = (rxs.max() - rxs.min() + 1) / (xs.max() - xs.min() + 1); s_h = (rys.max() - ry0 + 1) / (ys.max() - ny0 + 1)
     best = None
     small = Image.fromarray((na * 255).astype(np.uint8))
-    for f in np.arange(0.90, 1.101, 0.01):
-        s = s0 * f
+    for s in sorted({round(b * f, 4) for b in (s_w, s_h) for f in np.arange(0.85, 1.151, 0.01)}):
         nw, nh = max(1, round(na.shape[1] * s)), max(1, round(na.shape[0] * s))
         m = np.array(small.resize((nw, nh), Image.BILINEAR)) > 127
         my, mx = np.where(m)
@@ -344,10 +345,87 @@ def gladyator_onizleme():
             x = src.width + 20 + i * 266; im.paste(t, (x, 40), t); dr.text((x, 14), f'{race}-{gen}-fighter-{GLAD_KOD}', fill=(255, 255, 255))
         im.save(f'{d}/{os.path.splitext(os.path.basename(path))[0]}.jpg', quality=88)
 
+# ---------------------------------------------------------------------------------------------------------------- 3) düzeltme
+# Eşleşme dışı ek hücre: kullanıcı notu (2026-11-19) "sayfa 30 hücre 7 düzeltme sayfa 03'ten gelir" → sayfa 03'ün 7. figürü.
+DUZ_EK = {('03', 7): ('celestial-erkek-wizard-WZ-B5', '2151397', 'kullanıcı notu: eski sayfa 30 hücre 7')}
+
+# Düzeltme notu "kırmızı aura tam olsun" (eşleşme CSV'si): Gemini sayfasında pembe aura macenta zeminle birleştiği için anahtarda gider;
+# aura kaynak jetondan geri konur (yalnız yeni figürün dışında kalan, aura tonundaki kaynak pikseller; altın hale tonu girmez).
+AURA_KORU = {'celestial-erkek-barbarian-ID8': ((300, 360), (0, 20))}
+
+def aura_back(tok, src, hues):
+    t = tok.copy(); rgb = src[..., :3].astype(float) / 255
+    mx, mn = rgb.max(-1), rgb.min(-1); d = mx - mn + 1e-9
+    h = np.where(mx == rgb[..., 0], (60 * (rgb[..., 1] - rgb[..., 2]) / d) % 360, np.where(mx == rgb[..., 1], 60 * (rgb[..., 2] - rgb[..., 0]) / d + 120, 60 * (rgb[..., 0] - rgb[..., 1]) / d + 240))
+    sat = d / (mx + 1e-9)
+    hue_ok = np.zeros(h.shape, bool)
+    for lo, hi in hues: hue_ok |= (h >= lo) & (h <= hi)
+    m = (src[..., 3] > 16) & (t[..., 3] < 16) & hue_ok & (sat > 0.35) & (mx > 0.35)
+    t[m] = src[m]
+    return t, int(m.sum())
+
+def duzeltme():
+    rows = list(csv.DictReader(open('assets-ham/eksikler/hale-gemini-duzeltme-eslesme.csv', encoding='utf-8-sig')))
+    L = ledger(); rep = {'adim': 'duzeltme', 'yazilan': [], 'ezilmedi': [], 'dokunulmadi': [], 'eslesmeyen_hucre': [], 'hale_kaldi': [], 'uyum_dusuk': [], 'sayfalar': [], 'kurtarilan_px': {}}
+    want = {}
+    for r in rows:
+        if not r['yeni_sayfa']: rep['dokunulmadi'].append((r['dosya'][:-5], r['durum'])); continue
+        want[(r['yeni_sayfa'], int(r['yeni_hucre']))] = (r['dosya'][:-5], r['kaynak'].split(':')[1], f"eski {r['eski_sayfa']}/{r['eski_hucre']}")
+    want.update(DUZ_EK)
+    items = []
+    for p in ('01', '02', '03'):
+        path = f'{RAW}/hale-gemini-duzeltme-sayfa-{p}.jpg'
+        a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
+        figs, lab = figures(fg, min_frac=0.008, join=16)
+        order = reading_order(figs, H)
+        rep['sayfalar'].append({'sayfa': p, 'figur': len(order), 'eslesen': sum(1 for k in want if k[0] == p)})
+        for n, f in enumerate(order, 1):
+            i, (x0, y0, x1, y1), _, _ = f
+            if (p, n) not in want: rep['eslesmeyen_hucre'].append(f'düzeltme sayfa {p} figür {n} (kutu {x0},{y0},{x1},{y1}): eşleşmede yok, uygulanmadı'); continue
+            name, ref, note = want[(p, n)]
+            m = (lab[y0:y1, x0:x1] == i) & fg[y0:y1, x0:x1]
+            cell = keyed_rgba(a[y0:y1, x0:x1], m)
+            src = git_token(ref, name); ref_a = src[..., 3] > 127
+            ft = fit(cell, ref_a)
+            if ft is None or ft[3] < (0.65 if name in AURA_KORU else 0.75): rep['uyum_dusuk'].append((name, f'sayfa {p} figür {n}', round(ft[3], 3) if ft else None)); continue
+            sc, dx, dy, iou = ft
+            tok = resample(cell, sc, dx, dy); tok, nres = rescue(tok, src)
+            if nres: rep['kurtarilan_px'][name] = nres
+            tok = tk.clean_edges(tok)
+            gone = halo_removed(ref_a, tok[..., 3] > 127)
+            if gone < 25: rep['hale_kaldi'].append((name, f'sayfa {p} figür {n}', gone)); continue
+            if name in AURA_KORU:
+                tok, na_ = aura_back(tok, src, AURA_KORU[name]); rep.setdefault('aura_geri_px', {})[name] = na_
+            write_token(L, name, Image.fromarray(tok, 'RGBA'), 'duzeltme', f'hale-gemini-duzeltme-sayfa-{p}.jpg', n, rep)
+            items.append((f'D{p}/{n} {name[10:]} {iou:.2f}', tok, src))
+        for k in want:
+            if k[0] == p and k[1] > len(order): rep['eslesmeyen_hucre'].append(f'düzeltme sayfa {p} hücre {k[1]} ({want[k][0]}): figür bulunamadı')
+    save_ledger(L); hold_sync(L)
+    contact(items, f'{DOC}/adim3-duzeltme.jpg', cols=5, title='Adım 3 düzeltme: önce (git kaynak) | sonra')
+    json.dump(rep, open(f'{DOC}/adim3-duzeltme.json', 'w'), ensure_ascii=False, indent=1)
+    oncelik_rapor(L)
+    return rep
+
+def oncelik_rapor(L):
+    """docs/sabah/celestial-oncelik.md: birden çok kaynağın yazdığı (ya da yazmaya çalıştığı) Celestial jetonlar ve kazanan."""
+    if KURU: return
+    lines = ['# Celestial jeton öncelik raporu (CC 2026-11-19)', '', 'Kural (`scripts/cc-kesim.py` `ONCELIK`, `write_token`): aynı jeton kimliği için **düzeltme > yeni sayfa > taban**. '
+             'Defter `data/cc-kesim-kaynak.json`. Aşağıda yalnız birden fazla kaynağın dokunduğu Celestial jetonlar.', '',
+             '| Jeton | Kaynaklar (sırayla) | Kazanan | Kazanan dosya / hücre |', '|---|---|---|---|']
+    tek = 0
+    for n, j in sorted(L['jetonlar'].items()):
+        if not n.startswith('celestial-'): continue
+        ks = [g['kaynak'] for g in j['gecmis']]
+        if len(set(ks)) < 2: tek += 1; continue
+        w = j['kazanan']
+        lines.append(f"| {n} | {' → '.join(ks)} | {w['kaynak']} | {w['dosya']} / {w['hucre']} |")
+    lines += ['', f'Tek kaynaktan yazılan Celestial jeton: {tek}.']
+    open('docs/sabah/celestial-oncelik.md', 'w').write('\n'.join(lines) + '\n')
+
 if __name__ == '__main__':
     os.makedirs(f'{OUT}/kucuk', exist_ok=True)
     step = sys.argv[1] if len(sys.argv) > 1 else ''
-    fn = {'taban': taban, 'yeni': yeni, 'gladyator-onizleme': lambda: (gladyator_onizleme(), {'tamam': 1})[1]}.get(step)
+    fn = {'taban': taban, 'yeni': yeni, 'duzeltme': duzeltme, 'gladyator-onizleme': lambda: (gladyator_onizleme(), {'tamam': 1})[1]}.get(step)
     if not fn: sys.exit(__doc__)
     r = fn()
     print({k: (len(v) if isinstance(v, (list, dict)) else v) for k, v in r.items()})

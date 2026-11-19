@@ -157,7 +157,7 @@
   "monk-erkek": {
    "x": 134,
    "y": 24,
-   "olcek": 1.12
+   "olcek": 1.14
   },
   "monk-erkek-genel": {
    "x": 118,
@@ -172,7 +172,7 @@
   "monk-kadin": {
    "x": 132,
    "y": 27,
-   "olcek": 1.12
+   "olcek": 1.11
   },
   "monk-kadin-genel": {
    "x": 124,
@@ -246,7 +246,7 @@
   },
   "rogue-erkek": {
    "x": 137,
-   "y": 24,
+   "y": 30,
    "olcek": 1.23
   },
   "rogue-erkek-genel": {
@@ -321,7 +321,7 @@
   },
   "warlock-kadin": {
    "x": 130,
-   "y": 26,
+   "y": 25,
    "olcek": 1.17
   },
   "warlock-kadin-genel": {
@@ -335,7 +335,7 @@
    "olcek": 1.16
   },
   "wizard-erkek": {
-   "x": 127,
+   "x": 126,
    "y": 29,
    "olcek": 1.09
   },
@@ -372,9 +372,9 @@
    "olcek": 1.25
   },
   "erkek-barbarian-ID3": {
-   "x": 106,
-   "y": 31,
-   "olcek": 1.09
+   "x": 103,
+   "y": 27,
+   "olcek": 1.0
   },
   "erkek-barbarian-ID4": {
    "x": 121,
@@ -390,6 +390,11 @@
    "x": 146,
    "y": 27,
    "olcek": 1.08
+  },
+  "erkek-barbarian-ID8": {
+   "x": 129,
+   "y": 17,
+   "olcek": 1.25
   },
   "erkek-barbarian-ID9": {
    "x": 155,
@@ -467,7 +472,7 @@
    "olcek": 1.11
   },
   "erkek-fighter-ID10": {
-   "x": 174,
+   "x": 215,
    "y": 10,
    "olcek": 1.25
   },
@@ -511,14 +516,9 @@
    "y": 32,
    "olcek": 1.12
   },
-  "erkek-monk-ID11": {
-   "x": 131,
-   "y": 9,
-   "olcek": 0.8
-  },
   "erkek-monk-ID9": {
-   "x": 123,
-   "y": 7,
+   "x": 110,
+   "y": 9,
    "olcek": 0.8
   },
   "erkek-paladin-ID1": {
@@ -537,8 +537,8 @@
    "olcek": 1.25
   },
   "erkek-paladin-ID8": {
-   "x": 125,
-   "y": 7,
+   "x": 124,
+   "y": 9,
    "olcek": 0.8
   },
   "erkek-paladin-ID9": {
@@ -566,6 +566,11 @@
    "y": 42,
    "olcek": 1.23
   },
+  "erkek-rogue-ID10": {
+   "x": 156,
+   "y": 27,
+   "olcek": 1.25
+  },
   "erkek-rogue-ID4": {
    "x": 137,
    "y": 43,
@@ -573,23 +578,18 @@
   },
   "erkek-rogue-ID5": {
    "x": 135,
-   "y": 12,
+   "y": 13,
    "olcek": 1.0
   },
   "erkek-rogue-ID7": {
-   "x": 139,
-   "y": 13,
-   "olcek": 1.16
+   "x": 140,
+   "y": 18,
+   "olcek": 1.17
   },
   "erkek-rogue-ID8": {
    "x": 128,
    "y": 24,
    "olcek": 1.08
-  },
-  "erkek-rogue-ID9": {
-   "x": 128,
-   "y": 23,
-   "olcek": 0.81
   },
   "erkek-sorcerer-SC-1": {
    "x": 119,
@@ -753,8 +753,8 @@
   },
   "kadin-monk-ID10": {
    "x": 134,
-   "y": 10,
-   "olcek": 1.12
+   "y": 17,
+   "olcek": 1.03
   },
   "kadin-monk-ID11": {
    "x": 122,
@@ -762,19 +762,14 @@
    "olcek": 1.25
   },
   "kadin-monk-ID3": {
-   "x": 136,
-   "y": 10,
-   "olcek": 1.03
+   "x": 116,
+   "y": 3,
+   "olcek": 0.8
   },
   "kadin-monk-ID5": {
-   "x": 129,
-   "y": 15,
+   "x": 134,
+   "y": 16,
    "olcek": 1.25
-  },
-  "kadin-paladin-ID1": {
-   "x": 120,
-   "y": 13,
-   "olcek": 1.02
   },
   "kadin-paladin-ID10": {
    "x": 120,
@@ -835,11 +830,6 @@
    "x": 130,
    "y": 0,
    "olcek": 1.22
-  },
-  "kadin-warlock-WL-10": {
-   "x": 128,
-   "y": 10,
-   "olcek": 0.8
   },
   "kadin-warlock-WL-2": {
    "x": 120,

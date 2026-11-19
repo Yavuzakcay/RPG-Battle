@@ -1,13 +1,11 @@
 {
  "_not": "KQ6-12/16/18/19: sprite'ında sanat halesi kalan Celestial jetonlar (yıldız tacı çizilmez, hideHalo iken hale görünür). Üretici scripts/hale-uygula.py, hale-yeni.py, hale-guclu.py.",
  "bekleyen": [
-  "celestial-erkek-rogue-ID3",
   "celestial-erkek-warlock-WL-8",
   "celestial-erkek-wizard-WZ-B1",
   "celestial-erkek-wizard-WZ-B2",
   "celestial-erkek-wizard-WZ-B3",
   "celestial-erkek-wizard-WZ-B4",
-  "celestial-erkek-wizard-WZ-B5",
   "celestial-erkek-wizard-WZ-B7",
   "celestial-kadin-fighter-ID3",
   "celestial-kadin-fighter-ID4"

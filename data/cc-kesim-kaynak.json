@@ -38,12 +38,18 @@
      "dosya": "hale-gemini-sayfa-01.png",
      "hucre": 4,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-01.png",
-    "hucre": 4
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+    "hucre": 1
    }
   },
   "celestial-erkek-barbarian-ID4": {
@@ -113,12 +119,18 @@
      "dosya": "hale-gemini-sayfa-01.png",
      "hucre": 9,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-01.png",
-    "hucre": 9
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+    "hucre": 1
    }
   },
   "celestial-erkek-barbarian-ID9": {
@@ -623,12 +635,18 @@
      "dosya": "hale-gemini-sayfa-11.png",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-11.png",
-    "hucre": 6
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+    "hucre": 1
    }
   },
   "celestial-erkek-fighter-ID11": {
@@ -878,12 +896,18 @@
      "dosya": "hale-gemini-sayfa-14.png",
      "hucre": 3,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-14.png",
-    "hucre": 3
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+    "hucre": 2
    }
   },
   "celestial-erkek-monk-ID10": {
@@ -908,12 +932,18 @@
      "dosya": "hale-gemini-sayfa-14.png",
      "hucre": 5,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-14.png",
-    "hucre": 5
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+    "hucre": 2
    }
   },
   "celestial-erkek-monk-GR": {
@@ -953,12 +983,18 @@
      "dosya": "hale-gemini-sayfa-15.png",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-15.png",
-    "hucre": 1
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+    "hucre": 3
    }
   },
   "celestial-kadin-monk-ID5": {
@@ -968,11 +1004,17 @@
      "dosya": "hale-gemini-sayfa-15.png",
      "hucre": 3,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-15.png",
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
     "hucre": 3
    }
   },
@@ -998,12 +1040,18 @@
      "dosya": "hale-gemini-sayfa-15.png",
      "hucre": 8,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-15.png",
-    "hucre": 8
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+    "hucre": 2
    }
   },
   "celestial-kadin-monk-ID11": {
@@ -1133,12 +1181,18 @@
      "dosya": "hale-gemini-sayfa-17.png",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-17.png",
-    "hucre": 1
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+    "hucre": 3
    }
   },
   "celestial-erkek-paladin-ID9": {
@@ -1193,12 +1247,18 @@
      "dosya": "hale-gemini-sayfa-17.png",
      "hucre": 6,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-17.png",
-    "hucre": 6
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+    "hucre": 4
    }
   },
   "celestial-kadin-paladin-ID2": {
@@ -1643,12 +1703,18 @@
      "dosya": "hale-gemini-sayfa-21.png",
      "hucre": 8,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-21.png",
-    "hucre": 8
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+    "hucre": 5
    }
   },
   "celestial-erkek-rogue-ID6": {
@@ -1673,12 +1739,18 @@
      "dosya": "hale-gemini-sayfa-22.png",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-22.png",
-    "hucre": 1
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+    "hucre": 5
    }
   },
   "celestial-erkek-rogue-ID8": {
@@ -1703,12 +1775,18 @@
      "dosya": "hale-gemini-sayfa-22.png",
      "hucre": 3,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-22.png",
-    "hucre": 3
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+    "hucre": 5
    }
   },
   "celestial-erkek-rogue-ID10": {
@@ -1718,11 +1796,17 @@
      "dosya": "hale-gemini-sayfa-22.png",
      "hucre": 4,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-22.png",
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
     "hucre": 4
    }
   },
@@ -1988,12 +2072,18 @@
      "dosya": "hale-gemini-sayfa-28.png",
      "hucre": 1,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-28.png",
-    "hucre": 1
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-02.jpg",
+    "hucre": 6
    }
   },
   "celestial-kadin-warlock-WL-3": {
@@ -2003,12 +2093,18 @@
      "dosya": "hale-gemini-sayfa-28.png",
      "hucre": 2,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-28.png",
-    "hucre": 2
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+    "hucre": 6
    }
   },
   "celestial-kadin-warlock-WL-4": {
@@ -2018,12 +2114,18 @@
      "dosya": "hale-gemini-sayfa-28.png",
      "hucre": 3,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-28.png",
-    "hucre": 3
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+    "hucre": 7
    }
   },
   "celestial-kadin-warlock-WL-5": {
@@ -2063,12 +2165,18 @@
      "dosya": "hale-gemini-sayfa-28.png",
      "hucre": 9,
      "sonuc": "yazıldı"
+    },
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
     }
    ],
    "kazanan": {
-    "kaynak": "taban",
-    "dosya": "hale-gemini-sayfa-28.png",
-    "hucre": 9
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-01.jpg",
+    "hucre": 6
    }
   },
   "celestial-kadin-warlock-WL-11": {
@@ -4139,6 +4247,36 @@
     "kaynak": "yeni",
     "dosya": "warlock-male-tiefling.jpg",
     "hucre": 11
+   }
+  },
+  "celestial-erkek-rogue-ID3": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-wizard-WZ-B5": {
+   "gecmis": [
+    {
+     "kaynak": "duzeltme",
+     "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "duzeltme",
+    "dosya": "hale-gemini-duzeltme-sayfa-03.jpg",
+    "hucre": 7
    }
   }
  }
