@@ -63,3 +63,19 @@ python3 scripts/dragonborn-kanat-tek.py                   # tek kanat görseli (
 python3 scripts/dragonborn-kanat-kok.py                   # data/dragonborn-kanat-kok.json
 npx vite-node scripts/dragonborn-kanat-palet.ts --yaz     # data/kanat-esleme.json renkPaletleri
 ```
+
+## KW2: beyaz pençe uçları + pembe karışımlı zar (iki hal)
+
+Kullanıcı isteği (ekran görüntüsünde daire içine alınan kısımlar): pençe uçları boynuzlarla aynı beyazlıkta, kanatların iç kısmı soy renginin pembeyle karışımı ("sarı ise sarı ile pembe"); iki hal gösterilip seçilecek, ikisinde de pençe beyaz.
+
+| Dosya | İçerik |
+|---|---|
+| `iki-hal-ozet.webp` | A (karışımsız) üstte, B (pembe karışımlı) altta: Erkek Fighter Gladyatör, 10 soy, 256 px |
+| `iki-hal.webp` | A \| B: 10 soy × (Erkek Fighter Gladyatör, Kadın Wizard) × (256, 96 px) |
+
+- **A: karışımsız.** `katmanlar.zar.etkin: false`: kanat soy renginde, pençe uçları beyaz.
+- **B: pembe karışımlı (varsayılan, `etkin: true`).** Kol ve ön kenar kemiği soy renginde, zar soy rengi + pembe. Pembe Lab (75, 30, 4); renk (a*, b*) yarı yarıya (`ab` 0,5), açıklık %15 (`aciklik`) pembeye kaydırılır, pembenin kroması açıklıkla ölçeklenir (koyu soylarda koyu pembe). Sarı (Gold): zar (65,2 / 3,9 / 53,7) → (66,8 / 15,6 / 28,5) şeftali-somon; Beyaz → açık pembe; Siyah → koyu mor-gri; Mavi → toz mor; Yeşil → soluk hakî. Seçim için tek satır: `data/kanat-esleme.json` `dragonborn.katmanlar.zar.etkin`.
+- **Bölgeler** (`scripts/dragonborn-kanat-katman.py`, kanat görseli 364×279): pençe = büyük kanca (kol düğümünün üstü, kullanıcının kırmızı dairesi) + ön kenardaki küçük pençe (turuncu daire), 779 piksel; çerçeve = kol + el bileği düğümü (çokgen) + ön kenar kemiği (üst kenardan 16 px); zar = kalan. İnce parmak kemikleri zar bölgesinde kalır (pembe karışımlı, parlaklık gölgesiyle seçilir).
+- **Paletler.** Pençe: gölge `#999590`, ışık `#f0ede8`, eşik 0,682, ortalama Lab (80,4 / 0,3 / 2,9) = boynuz ortalaması (24 Gariban jetonunda boyanmamış boynuz pikselleri, 12,7 bin piksel). Zar: soy başına `renkPaletleri.<soy>.zar` (golge, isik, esik 0,76; aynı yayılım).
+- Kapsam dışı (yalnız daire içindekiler yapıldı): alttaki üç parmak ucu ve dış uç sivrisi taban renginde kaldı; beyaz istenirse `PENCE` çokgenlerine eklenir.
+

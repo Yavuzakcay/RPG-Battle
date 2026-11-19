@@ -4,7 +4,7 @@
  * dosya adı kuralına uyan bir görsel eklenince kod değişmeden görünür.
  */
 import { useContext, useEffect, useState, type CSSProperties } from 'react';
-import { FOOT_FRAC, TOKEN_SPACE, lineageLook, placementBounds, placementTransform, wingBox, wingPlacements, type WingLayerSpec, type WingRoot } from './lineageLook';
+import { FOOT_FRAC, TOKEN_SPACE, lineageLook, placementBounds, placementTransform, wingBox, wingPlacements, type WingLayerSpec, type WingPalet, type WingRoot } from './lineageLook';
 import { LookContext } from './lookContext';
 import { wingRoot } from './wingRoot';
 import { crownSpec, type CrownSpec } from './haloCrown';
@@ -187,16 +187,23 @@ function WingImage(props: { wing: WingLayerSpec; wb: { x: number; y: number; wid
  */
 function WingPairImage(props: { wing: WingLayerSpec; cx: number; cy: number; w: number; root?: WingRoot | null; flip?: boolean; shape?: string }) {
   const { wing, cx, cy, w } = props;
-  const filter = wing.palet ? `url(#${wingFilterId(wing.palet)})` : wing.filtre || undefined;
-  const style = filter ? { filter } : undefined;
+  const filterOf = (p?: WingPalet) => (p ? { filter: `url(#${wingFilterId(p)})` } : undefined);
+  const base = wing.palet ? filterOf(wing.palet) : wing.filtre ? { filter: wing.filtre } : undefined;
   const r2 = (n: number) => Math.round(n * 100) / 100;
   const inner = (
     <g transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} aria-hidden="true">
       {wing.palet && <WingFilterDefs palet={wing.palet} />}
-      {wingPlacements(wing, cx, cy, w, props.root).map((p) => (
-        <image key={p.side} className="look-wing" data-wing={wing.id} data-side={p.side} href={assetSrc(wing.src)} x={r2(p.x)} y={r2(p.y)} width={r2(p.width)} height={r2(p.height)}
-          preserveAspectRatio="xMidYMid meet" transform={placementTransform(p)} style={style} />
-      ))}
+      {wing.katmanlar?.map((k) => <WingFilterDefs key={k.ad} palet={k.palet} />)}
+      {wingPlacements(wing, cx, cy, w, props.root).map((p) => {
+        const box = { x: r2(p.x), y: r2(p.y), width: r2(p.width), height: r2(p.height), preserveAspectRatio: 'xMidYMid meet' as const };
+        // KW2: taban görsel (kanat çerçevesi, soy rengi), üstünde zar (soy + pembe karışımı) ve pençe (boynuz beyazı) katmanları; üçü aynı kutu ve dönüşte.
+        return (
+          <g key={p.side} data-wing={wing.id} data-side={p.side} transform={placementTransform(p)}>
+            <image className="look-wing" href={assetSrc(wing.src)} {...box} style={base} />
+            {wing.katmanlar?.map((k) => <image key={k.ad} className="look-wing" data-part={k.ad} href={assetSrc(k.src)} {...box} style={filterOf(k.palet)} />)}
+          </g>
+        );
+      })}
     </g>
   );
   return props.shape ? <g transform={props.shape}>{inner}</g> : inner;
