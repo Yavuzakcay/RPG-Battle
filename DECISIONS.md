@@ -9,6 +9,11 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Modül başlatma: girdap kancası yaprak modüle (2026-11-19)
+
+- `src/app/modulBaslatma.test.ts` "battle/features başlatma hatasız" `6a1e524` (Control Water girdabı, kural sürümü 84) ile kırıldı: `TypeError: registerZoneStartPull is not a function` (`girdap.ts:122`, yığın `spells.ts` → `girdap.ts`). Döngü zones → … → spells → girdap → zones: `girdap.ts` modül değerlendirilirken kayıt işlevini çağırıyor, `zones.ts` henüz değerlendirilmemiş (`export const` ok işlevi). Tarayıcıda da aynı: `battle/features` ilk giriş olunca `ReferenceError: Cannot access 'registerZoneStartPull' before initialization`; uygulamanın bugünkü açılış sırasında (zones önce) görünmüyordu, check:harita geçiyordu. Gizli sıra hatası, yükleme sırası değişince çökme.
+- Düzeltme: defter yaprak modül `src/battle/zoneHooks.ts`'e (yalnız tür içe aktarır); `girdap.ts` oradan kaydeder, `zones.ts` oradan okur (`zoneStartPulls`) ve eski adı yeniden dışa aktarır. Davranış ve kural sürümü aynı; test gevşetilmedi.
+
 ## Serüven 6–20 seviye düşman seçimi (2026-11-19)
 
 - Sorun: listesi olmayan seviyede 5. seviye listesi (6+ seviyede 1110 hücrenin 1085'i). Yeni sıra (`src/journey/seruvenEnemies.ts`, yalnız 6+ seviye, yalnız Serüven): el yazması tam liste → en yakın alt 6+ liste (8 → 7, 12 → 11; 5'e inmez) → sıradan düğümde ve haritanın ortam havuzu varsa bölge karşılaşma üreteci (`regionEncounter`, sözde bölge = senaryonun haritası, çarpan 1, parti seviyesi × savaşabilen üye sayısı) → 5. seviye. Sonuç: 5. seviye yedeği 1085 → 320 hücre; kalanlar özel savaşlar.

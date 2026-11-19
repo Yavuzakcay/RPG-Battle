@@ -11,6 +11,7 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
+import { zoneStartPulls } from './zoneHooks';
 import { isPlantZone, soyPlantWalker } from './altSoySurum';
 import { freeShapeFor, freeShapeProblem, pathProblem } from './freeShape';
 import { cageOpenEvents, cageStepBlocked, castCageHexes } from './forcecage';
@@ -288,10 +289,8 @@ export function zoneStepEvents(state: BattleState, moverId: string, from: Offset
   return chain(state, makers);
 }
 
-/** Tur başı çekme kancaları (döngüsel içe aktarma olmasın diye kayıtla; Control Water girdabı `girdap.ts`). */
-type StartPull = (state: BattleState, c: Combatant, rng: Rng) => BattleEvent[];
-const START_PULL: StartPull[] = [];
-export const registerZoneStartPull = (h: StartPull): void => { START_PULL.push(h); };
+/** Tur başı çekme kancaları: defter yaprak modülde (`zoneHooks.ts`; döngüsel içe aktarmada başlatma sırası). Eski adla dışa aktarım. */
+export { registerZoneStartPull } from './zoneHooks';
 
 /** Tur başı ya da sonu: yaratığın bulunduğu alanların `start`/`end` tetiği. */
 export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 'end', rng: Rng): BattleEvent[] {
@@ -301,7 +300,7 @@ export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 
   let pulled = phase === 'start' ? vortexPullEvents(state, c0) : [];
   if (pulled.length) state = applyEvents(state, pulled);
   // Control Water girdabı (sürüm 84; `girdap.ts` kaydeder): alanın dışında, bandın içindeki yaratık merkeze çekilir (girişte tetik).
-  if (phase === 'start') for (const h of START_PULL) {
+  if (phase === 'start') for (const h of zoneStartPulls()) {
     const me = state.combatants[id];
     const evs = me ? h(state, me, rng) : [];
     if (evs.length) { pulled = [...pulled, ...evs]; state = applyEvents(state, evs); }

@@ -22,7 +22,8 @@ import { trAciklama } from '../data';
 import { altitudeInZone } from './altitude';
 import { bodyAt } from './body';
 import { occupantAt } from './movement';
-import { affects, bodyInZone, newZoneId, registerZoneStartPull, whirlEffectId, zoneSpecOf } from './zones';
+import { affects, bodyInZone, newZoneId, whirlEffectId, zoneSpecOf } from './zones';
+import { registerZoneStartPull } from './zoneHooks';
 import type { Spell, SpellMechanics, ZoneSpec } from '../data/types';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
 
