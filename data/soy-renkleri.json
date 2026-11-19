@@ -261,6 +261,7 @@
       "temizlik": {
         "referans": 256,
         "delik": { "kapama": 1, "enCok": 80, "ekleOrani": 0.5 },
+        "golge": { "ton": 26, "tonKomsu": 12, "kroma": [15, 70], "Lalt": 18, "Lust": 6, "kalinlik": 8, "temas": 3, "kontur": 0.6, "enCok": 900, "kromaKomsu": 32 },
         "vurgu": { "L": 70, "boyut": 3, "cevre": 0.95 }
       }
     },
@@ -571,6 +572,11 @@
         ],
         "bright": 35,
         "th": 8
+      },
+      "temizlik": {
+        "referans": 256,
+        "kutu": { "L": [28, 72], "C": [3, 14], "h": [[160, 320]] },
+        "delik": { "kapama": 1, "enCok": 12, "ekleOrani": 0.5 }
       },
       "byGender": {
         "female": {

@@ -21,6 +21,7 @@ Genişletilmiş sayım (asıl görünür kusur): delik_px = maske boşluğundaki
 import argparse
 import csv
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -177,12 +178,17 @@ def skin_box(rgba, mcfg):
 
 # ───────── TB1 onarımı (src/ui/maskClose.ts fixSkinMask'ın numpy portu) ─────────
 def scaled(T, W):
+    """TS `skinFixParams` ile aynı ölçekleme (s = W / referans): uzunluklar s ile, alanlar s² ile; hepsi en az 1."""
     s = W / T['referans']
-    d, v = T['delik'], T['vurgu']
+    d, v, g = T['delik'], T.get('vurgu'), T.get('golge')
     rnd = lambda x: int(np.floor(x + 0.5))   # JS Math.round
     one = lambda x: max(1, x)
-    return dict(kapama=one(rnd(d['kapama'] * s)), enCok=one(rnd(d['enCok'] * s * s)), ekleOrani=d['ekleOrani'],
-                L=v['L'], boyut=one(rnd(v['boyut'] * s * s)), cevre=v['cevre'])
+    P = dict(kapama=one(rnd(d['kapama'] * s)), enCok=one(rnd(d['enCok'] * s * s)), ekleOrani=d['ekleOrani'])
+    P['golge'] = dict(ton=g['ton'], tonKomsu=g['tonKomsu'], kromaAlt=g['kroma'][0], kromaUst=g['kroma'][1], Lalt=g['Lalt'], Lust=g['Lust'],
+                      kalinlik=one(int(np.ceil(g['kalinlik'] * s))), temas=one(rnd(g['temas'] * s)), kontur=g['kontur'], enCok=one(rnd(g['enCok'] * s * s)),
+                      kromaKomsu=g.get('kromaKomsu', 0)) if g else None
+    P['vurgu'] = dict(L=v['L'], boyut=one(rnd(v['boyut'] * s * s)), cevre=v['cevre']) if v else None
+    return P
 
 
 def hole_zone(M0, P):
@@ -199,10 +205,62 @@ def hole_zone(M0, P):
     return enc, gap
 
 
-def fix_mask(rgba, M0, mcfg, T):
-    """Döner: (yeni maske, eklenen delik H, eklenen çevrelenmiş açık benek K)."""
+def hue_of(a, b):
+    return (np.degrees(np.arctan2(b, a)) + 360) % 360
+
+
+def grow_shadow(rgba, M1, G, L, a, b):
+    """TG1 gölge bandı (TS `growShadow` portu). L, a, b: Lab (alfa < 10 pikselde 0). Döner: eklenen pikseller."""
+    body, vis = rgba[..., 3] >= 128, rgba[..., 3] >= 10
+    sel = M1 & vis
+    add = np.zeros_like(M1)
+    if not sel.any():
+        return add
+    h0 = math.degrees(math.atan2(b[sel].sum(), a[sel].sum())) % 360
+    Lm = L[sel].mean()
+    C = np.hypot(a, b)
+    dh = np.abs((hue_of(a, b) - h0 + 180) % 360 - 180)
+    ink = ~body | (L < G['Lalt'])
+    cand = body & ~M1 & (L >= G['Lalt']) & (L <= Lm + G['Lust']) & (C >= G['kromaAlt']) & (C <= G['kromaUst']) & (dh <= G['ton'])
+    dist = ndi.distance_transform_cdt(~M1, metric='chessboard')
+    lab_c, _ = ndi.label(cand, structure=S8)
+    Hh, Ww = M1.shape
+    for i, sl in enumerate(ndi.find_objects(lab_c), 1):
+        y0, y1, x0, x1 = max(0, sl[0].start - 1), min(Hh, sl[0].stop + 1), max(0, sl[1].start - 1), min(Ww, sl[1].stop + 1)
+        comp = lab_c[y0:y1, x0:x1] == i
+        if comp.sum() > G['enCok']:
+            continue
+        d = dist[y0:y1, x0:x1]
+        if int(d[comp].max()) > G['kalinlik'] or int((comp & (d == 1)).sum()) < G['temas']:
+            continue
+        ring = dilate(comp, 1) & ~comp
+        adj = ring & M1[y0:y1, x0:x1]
+        if not adj.any():
+            continue
+        aa, bb = a[y0:y1, x0:x1], b[y0:y1, x0:x1]
+        ref = math.degrees(math.atan2(bb[adj].sum(), aa[adj].sum())) % 360
+        ch = math.degrees(math.atan2(bb[comp].sum(), aa[comp].sum())) % 360
+        if abs((ch - ref + 180) % 360 - 180) > G['tonKomsu']:
+            continue
+        if float(np.hypot(aa[adj], bb[adj]).mean()) < G.get('kromaKomsu', 0):   # bitişik maske doygun ten değil (zırh, cüppe, saç kenarı)
+            continue
+        out = ring & ~M1[y0:y1, x0:x1]
+        tot = int(out.sum())
+        if tot and float((out & ink[y0:y1, x0:x1]).sum()) / tot < G['kontur']:
+            continue
+        add[y0:y1, x0:x1] |= comp
+    return add
+
+
+def fix_mask(rgba, M0, mcfg, T, golge=True):
+    """TS `fixSkinMask` portu (ikili maske yolu). Döner: (yeni maske, eklenen delik H, eklenen çevrelenmiş açık benek K); gölge bandı
+    eklentisi G = yeni & ~M0 & ~H & ~K. `golge=False`: gölge adımını atla (TB1 sayımları)."""
     P = scaled(T, rgba.shape[1])
-    ok, L, _ = skin_box(rgba, mcfg)
+    box = T.get('kutu') or mcfg
+    ok, L, _ = skin_box(rgba, box)
+    vis = rgba[..., 3] >= 10
+    lab = rgb_to_lab(rgba[..., :3].astype(float))
+    La, Aa, Ba = (np.where(vis, lab[..., k], 0.0) for k in range(3))
     body = rgba[..., 3] >= 128
     # 1) delik: önce 1 px kapama boşluğu (yalnız ten kutusu; ince yapı sınırı), sonra kapanmış maskenin çevrelediği küçük delikler
     gap = erode(dilate(M0, P['kapama']), P['kapama']) & ~M0 & ok
@@ -215,19 +273,23 @@ def fix_mask(rgba, M0, mcfg, T):
                 enc |= lab_e == i
     M1 = Ma | (enc & ok)
     H = M1 & ~M0
-    # 2) vurgu: maskenin tamamen çevrelediği 1–3 px açık benek (komşu gövde piksellerinin >= cevre payı maskede)
-    lab_b, nb = ndi.label((L >= P['L']) & body & ~M1, structure=S8)
+    # 2) gölge bandı (yalnız ikili maske)
+    M2 = M1 | grow_shadow(rgba, M1, P['golge'], La, Aa, Ba) if (P['golge'] and golge) else M1
+    # 3) vurgu: maskenin tamamen çevrelediği 1–3 px açık benek (komşu gövde piksellerinin >= cevre payı maskede); kayıt yoksa yok
     K = np.zeros_like(M0)
-    Hh, Ww = M0.shape
-    for i, sl in enumerate(ndi.find_objects(lab_b), 1):
-        y0, y1, x0, x1 = max(0, sl[0].start - 2), min(Hh, sl[0].stop + 2), max(0, sl[1].start - 2), min(Ww, sl[1].stop + 2)
-        comp = lab_b[y0:y1, x0:x1] == i
-        if comp.sum() > P['boyut']:
-            continue
-        r1 = dilate(comp, 1) & ~comp & body[y0:y1, x0:x1]
-        if r1.sum() > 0 and float((r1 & M1[y0:y1, x0:x1]).sum()) / r1.sum() >= P['cevre']:
-            K[y0:y1, x0:x1] |= comp
-    return M1 | K, H, K
+    V = P['vurgu']
+    if V:
+        lab_b, nb = ndi.label((L >= V['L']) & body & ~M2, structure=S8)
+        Hh, Ww = M0.shape
+        for i, sl in enumerate(ndi.find_objects(lab_b), 1):
+            y0, y1, x0, x1 = max(0, sl[0].start - 2), min(Hh, sl[0].stop + 2), max(0, sl[1].start - 2), min(Ww, sl[1].stop + 2)
+            comp = lab_b[y0:y1, x0:x1] == i
+            if comp.sum() > V['boyut']:
+                continue
+            r1 = dilate(comp, 1) & ~comp & body[y0:y1, x0:x1]
+            if r1.sum() > 0 and float((r1 & M2[y0:y1, x0:x1]).sum()) / r1.sum() >= V['cevre']:
+                K[y0:y1, x0:x1] |= comp
+    return M2 | K, H, K
 
 
 def close_skin_holes(rgba, M):
@@ -373,10 +435,10 @@ def tiefling(cikti, gorsel):
         body = rgba[..., 3] >= 128
         inside = body & (ndi.distance_transform_edt(body) >= EDGE_PX)
         before, _ = classify(rgba, M0, mcfg, P, tints, inside)
-        M1, H, K = fix_mask(rgba, M0, mcfg, T)
+        M1, H, K = fix_mask(rgba, M0, mcfg, T, golge=False)   # TB1 sayımları: gölge bandı (TG1) dışarıda
         after, cs = classify(rgba, M1, mcfg, P, tints, inside)
         # kalan: düzeltme sonrası aynı kuralın tekrar bulacağı delik/vurgu (0 beklenir) ve elle liste (kaynakta beyaz, maske dışı)
-        M2, H2, K2 = fix_mask(rgba, M1, mcfg, T)
+        M2, H2, K2 = fix_mask(rgba, M1, mcfg, T, golge=False)
         for (sz, cx, cy, x0, y0, x1, y1, skf, nm) in cs:
             manual.append(dict(jeton=name, x=cx, y=cy, bbox=f'{x0},{y0}-{x1},{y1}', boyut_px=sz, halka_ten_payi=skf, maskeye_uzaklik_px=nm))
         rows.append(dict(jeton=name, govde_px=int(body.sum()), maske_px=int(M0.sum()), yakin_beyaz_px=before['yakin_beyaz'],
@@ -407,7 +469,7 @@ def tiefling(cikti, gorsel):
         soy = 'abyssal'
         def sayfa(ad, r):
             rgba, M0 = load_token(r['jeton']), load_mask(r['jeton'])
-            M1, H, K = fix_mask(rgba, M0, mcfg, T)
+            M1, H, K = fix_mask(rgba, M0, mcfg, T, golge=False)
             en_kotu_sayfa(cikti / ad, r['jeton'], rgba, M0, M1, H, K, tints[soy], soy)
         for i, r in enumerate(en_kotu[:gorsel], 1):
             sayfa(f'en-kotu-{i:02d}-{r["jeton"]}.png', r)
@@ -431,7 +493,7 @@ def diger(irk, cikti):
         n, _ = classify(rgba, M, mcfg if M is not None else None, P, tints)
         H = K = 0
         if M is not None and mcfg:
-            _, h, k = fix_mask(rgba, M, mcfg, T)
+            _, h, k = fix_mask(rgba, M, mcfg, T, golge=False)
             H, K = int(h.sum()), int(k.sum())
         rows.append(dict(irk=irk, jeton=name, maske='yok' if M is None else 'var', govde_px=int(body.sum()), maske_px=0 if M is None else int(M.sum()),
                          yakin_beyaz_px=n['yakin_beyaz'], a_maske_deligi_px=n['a'], b_maskede_boyanmamis_px=n['b'], b_en_kotu_soy=n['b_soy'],
