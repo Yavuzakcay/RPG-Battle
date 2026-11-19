@@ -6,7 +6,7 @@
 import type { Spell } from '../../data/types';
 import type { Combatant, Command } from '../../battle/types';
 import type { Offset } from '../../rules/hex';
-import type { SrdSpell } from './srd';
+import { zararVerir, type SrdSpell } from './srd';
 import { OZEL } from './ozel';
 import { A_ROW, AX, ally, enemy, hex } from './kurulum';
 import { SAVE_DIS_PROBE, SAVE_FAIL, SAVE_OK, type D20 } from './zar';
@@ -105,9 +105,12 @@ export function effectRows(sp: Spell, s: SrdSpell): Satir[] {
       p: { saves: { T: [SAVE_FAIL], U: [SAVE_FAIL] } }, refuse: true, not: 'SRD: ek hedef yalnız yukarı slotta.', bek: () => [] }, cmdBase, mech, cls('yukarı slot')));
   }
   if (taraf === 'dusman' && s.save && geo.kind === 'single') {
-    rows.push(runCtx(sp, s, geo, { ad: 'büyücü Charmed (hedef büyüleyen)', kategori: 'durum', bPos, casterX: charmedBy('T'), p: { saves: { T: [SAVE_FAIL] } },
-      bek: (g) => [alan('kabul', 'karar', g.kabul ? 'kabul' : 'red')] }, cmdBase, mech,
-      () => ({ sonuc: 'karar bekliyor', not: 'SRD 5.2.1 Charmed: büyüleyen "damaging abilities or magical effects" ile hedeflenemez; zarar vermeyen büyünün yasak olup olmadığı yoruma açık.' })));
+    // K01 (kullanıcı kararı): SRD 5.2.1 Charmed "You can't attack the charmer or target the charmer with damaging abilities or
+    // magical effects." Yalnız zarar veren büyü yasak; zarar vermeyen büyü (Hold Person, Bane…) büyüleyene yapılabilir.
+    const harm = zararVerir(s);
+    rows.push(runCtx(sp, s, geo, { ad: 'büyücü Charmed (hedef büyüleyen)', kategori: 'durum', bPos, casterX: charmedBy('T'), p: { saves: { T: [SAVE_FAIL] } }, refuse: harm,
+      not: harm ? 'SRD 5.2.1 Charmed: büyüleyen zarar veren etkiyle hedeflenemez.' : 'K01: zarar vermeyen büyü büyüleyene yapılabilir (SRD 5.2.1 Charmed).',
+      bek: (g) => { const v = g.saveler.find((x) => x.hedef === 'T'); return harm ? [] : [alan('save', `${s.save}/18`, v ? `${v.yetenek}/${v.dc}` : 'yok')]; } }, cmdBase, mech, cls('durum')));
   }
   rows.push(...counterRows(sp, s, geo, cmdBase, mech, cls, [], undefined, bPos));
   if (s.concentration) rows.push(concSwapRow(sp, s, geo, cmdBase, mech, [], false, undefined, bPos));

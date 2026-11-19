@@ -522,3 +522,33 @@ describe('B20: alan tetiğinin hasarı yüzey tablosuna girer (SRD Oil: ateşle 
     });
   }
 });
+
+describe('K01 (kullanıcı kararı): büyülenen, büyüleyenine yalnız saldıramaz ve zarar veren etkiyle hedefleyemez (SRD "You can\'t attack the charmer or target the charmer with damaging abilities or magical effects.")', () => {
+  const charmed = { conditions: ['Charmed'], effects: [{ id: 'test:charm', name: 'Charm Person', sourceId: 'T', until: 99, charm: true, grants: ['Charmed'] }] } as Partial<Combatant>;
+  const cast = (v: number, name: string, extra: Partial<Command> = {}) => {
+    // Dokunma büyüsü (Bestow Curse) için hedef bitişikte.
+    const s = scene(v, [caster({ spellNames: [name], spellSlots: [4, 3, 3, 3, 1, 0, 0, 0, 0], ...charmed }), foe('T', { pos: { col: name === 'Bestow Curse' ? 4 : 5, row: 5 } })]);
+    return run(s, { type: 'cast_spell', actorId: 'A', spellName: name, targetId: 'T', ...extra } as Command, hooked({ one: 2, two: [2, 2] }));
+  };
+  for (const [name, slot] of [['Hold Person', 2], ['Bane', 1], ['Command', 1]] as const) {
+    it(`${name}: zarar vermez — 83 kabul, 82 red`, () => {
+      const extra = { slotLevel: slot, ...(name === 'Bane' ? { targetIds: ['T'] } : {}), ...(name === 'Command' ? { choice: 'halt' } : {}) } as Partial<Command>;
+      const r83 = cast(83, name, extra);
+      expect(r83.ok, r83.error).toBe(true);
+      const r82 = cast(82, name, extra);
+      expect(r82.ok).toBe(false);
+      expect(r82.error).toMatch(/büyülenmiş \(Charmed\)/);
+    });
+  }
+  for (const [name, extra] of [['Fire Bolt', {}], ['Dissonant Whispers', { slotLevel: 1 }], ['Phantasmal Force', { slotLevel: 2 }], ['Bestow Curse', { slotLevel: 3, choice: 'damage' }]] as const) {
+    it(`${name}: saldırı ya da zarar veren etki — 83 de red`, () => {
+      const r = cast(83, name, extra as Partial<Command>);
+      expect(r.ok).toBe(false);
+      expect(r.error).toMatch(/büyülenmiş \(Charmed\)/);
+    });
+  }
+  it('Bestow Curse zararsız seçenekle (STR) 83 kabul', () => {
+    const r = cast(83, 'Bestow Curse', { slotLevel: 3, choice: 'str' } as Partial<Command>);
+    expect(r.ok, r.error).toBe(true);
+  });
+});

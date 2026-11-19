@@ -29,7 +29,7 @@ import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
 import { formatDice, parseDice, rollD20, rollDie, rollDice, rollTag, type Rng } from '../rules/dice';
 import { resolveAttack, resolveSave } from '../rules/attack';
 import { combineModes, environmentSources, invertMode, type ModeSource } from '../rules/modes';
-import { checkReach, spellReach } from './range';
+import { checkReach, spellHarms, spellReach } from './range';
 import { attackHeights, sightBlockedBetween } from './cover';
 import { AXIAL_DIRECTIONS, distance, hexKey, neighbors, offsetToAxial, type Offset } from '../rules/hex';
 import { hasDarkness, inShadowAt, litHexes, ruleOf } from './maprules';
@@ -1741,7 +1741,9 @@ function executeEffect(state: BattleState, actor: Combatant, cmd: CastCommand, s
     if (spec.noArmor && t.armored) return fail(`${t.name} zırh giyiyor: ${spell.name} yapılamaz.`);
     if (spec.needsHearing && (t.conditions.includes('Deafened') || t.silenced)) return fail(`${t.name} sağır (Deafened): ${spell.name} duyulmaz.`);
     if (t.id !== actor.id) {
-      const r = checkReach(state, actor, t, spellReach(spell, actor));
+      // Mekanik matris K01 (sürüm 83): seçenekli büyüde zarar seçilen seçenekten (Bestow Curse: hasar seçeneği zarar verir).
+      const reach0 = spellReach(spell, actor);
+      const r = checkReach(state, actor, t, reach0.kind === 'effect' ? { ...reach0, harmless: !spellHarms({ ...m, effect: spec }) } : reach0);
       if (!r.ok) return fail(`${t.name}: ${r.error}`);
     }
     targets.push(t);

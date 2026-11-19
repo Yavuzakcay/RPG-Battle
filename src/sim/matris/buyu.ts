@@ -10,7 +10,7 @@ import { defaultRuleVersion } from '../../battle/create';
 import { P1 } from '../../battle/fixtures';
 import type { BattleState, Combatant, Command } from '../../battle/types';
 import { distance as hexDistance, type Offset } from '../../rules/hex';
-import { SRD_SPELLS, type SrdSpell } from './srd';
+import { SRD_SPELLS, zararVerir, type SrdSpell } from './srd';
 import { OZEL, type Yapim } from './ozel';
 import {
   A_ROW, AX, CASTER_DC, CASTER_MOD, ROWS, TARGET_AC, ally, band, caster, charmedBy, concentrating, counterCaster, enemy, flatTiles,
@@ -366,8 +366,12 @@ export function damageRows(sp: Spell, s0: SrdSpell, ov?: Yapim): Satir[] {
     if (geo.kind === 'single') {
       out.push(runCtx(sp, s, geo, { ad: 'hedef Invisible', kategori: 'durum', targetX: { conditions: ['Invisible'] }, p: { saves: { T: [SAVE_DIS_PROBE] } }, refuse: s.needsSight,
         not: s.needsSight ? 'SRD: hedef "görebildiğin" yaratık olmalı.' : undefined, bek: (g) => saveFields(g, expSave(sm, SAVE_DIS_PROBE, 0)) }, cmdBase, mech, cls('durum')));
-      out.push(runCtx(sp, s, geo, { ad: 'büyücü Charmed (hedef büyüleyen)', kategori: 'durum', casterX: charmedBy('T'), p: { saves: { T: [SAVE_FAIL] } }, refuse: true,
-        not: 'SRD 5.2.1 Charmed: büyüleyen zarar veren büyüyle hedeflenemez.', bek: () => [] }, cmdBase, mech, cls('durum')));
+      // K01 (kullanıcı kararı): yalnız zarar veren büyü büyüleyene yapılamaz (SRD 5.2.1 Charmed "target the charmer with damaging
+      // abilities or magical effects"); zarar vermeyen save büyüsü (Hold Person, Blindness/Deafness, Eyebite…) yapılabilir.
+      const harm = zararVerir(s);
+      out.push(runCtx(sp, s, geo, { ad: 'büyücü Charmed (hedef büyüleyen)', kategori: 'durum', casterX: charmedBy('T'), p: { saves: { T: [SAVE_FAIL] } }, refuse: harm,
+        not: harm ? 'SRD 5.2.1 Charmed: büyüleyen zarar veren büyüyle hedeflenemez.' : 'K01: zarar vermeyen büyü büyüleyene yapılabilir (SRD 5.2.1 Charmed).',
+        bek: (g) => (harm ? [] : saveFields(g, expSave(sm, SAVE_FAIL, 0))) }, cmdBase, mech, cls('durum')));
     }
     out.push(runCtx(sp, s, geo, { ad: 'büyücü Frightened (save etkilenmez)', kategori: 'durum', casterX: frightenedBy('F'), extra: [enemy('F', hex(A_ROW, AX + 8))], p: { saves: { T: [SAVE_DIS_PROBE] } },
       bek: (g) => saveFields(g, expSave(sm, SAVE_DIS_PROBE, 0)) }, cmdBase, mech, cls('durum')));

@@ -247,6 +247,13 @@ export function parseSpell(raw: SrdSpellRaw): SrdSpell {
   };
 }
 
+/**
+ * K01 (kullanıcı kararı; SRD 5.2.1 Charmed: "You can't attack the charmer or target the charmer with damaging abilities or
+ * magical effects."): büyü metni hedefe hasar veriyor mu (metindeki hasar ifadeleri). Saldırı zarlı büyü ayrıca hep yasak;
+ * zarar vermeyen büyü (Hold Person, Bane, Command…) büyüleyene yapılabilir.
+ */
+export const zararVerir = (s: SrdSpell): boolean => s.allDamage.length > 0;
+
 export const SRD_SPELLS: SrdSpell[] = (srdSpells as { spells: SrdSpellRaw[] }).spells.map(parseSpell);
 export const srdSpell = (id: string): SrdSpell | undefined => SRD_SPELLS.find((s) => s.id === id);
 
