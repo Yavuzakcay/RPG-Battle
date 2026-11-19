@@ -40,6 +40,10 @@ Kaynak: SRD 5.2.1 PDF (`docs/SRD_CC_v5.2.1.pdf`): Wild Shape s.43 ("Rules While 
   - Denge ölçümü yapılmadı.
   - Ekran görüntüsü: `docs/sabah/wildshape-87/once.webp`, `sonra.webp`.
 - **Yan düzeltme (aynı commit, kural dışı).** Control Water (84) işinden kalan i18n yapı hatası: EN `log.gmOptionText` anahtarlı tabloydu, TR'de boş nesneydi. Bu yüzden `strings.test.ts` "TR ve EN aynı anahtarlar" testi kırmızıydı. Artık iki dilde de işlev: TR `data/aciklamalar-tr.json` `buyuSecenek` (SD4), EN `GM_OPTION_EN`. Günlük ve kart dil ayrımı yapmadan `t().log.gmOptionText(key)` çağırır.
+## Modül başlatma: girdap kancası yaprak modüle (2026-11-19)
+
+- `src/app/modulBaslatma.test.ts` "battle/features başlatma hatasız" `6a1e524` (Control Water girdabı, kural sürümü 84) ile kırıldı: `TypeError: registerZoneStartPull is not a function` (`girdap.ts:122`, yığın `spells.ts` → `girdap.ts`). Döngü zones → … → spells → girdap → zones: `girdap.ts` modül değerlendirilirken kayıt işlevini çağırıyor, `zones.ts` henüz değerlendirilmemiş (`export const` ok işlevi). Tarayıcıda da aynı: `battle/features` ilk giriş olunca `ReferenceError: Cannot access 'registerZoneStartPull' before initialization`; uygulamanın bugünkü açılış sırasında (zones önce) görünmüyordu, check:harita geçiyordu. Gizli sıra hatası, yükleme sırası değişince çökme.
+- Düzeltme: defter yaprak modül `src/battle/zoneHooks.ts`'e (yalnız tür içe aktarır); `girdap.ts` oradan kaydeder, `zones.ts` oradan okur. Aynı düzeltmeyi başka bir oturum eşzamanlı yaptı (`060be98`); birleştirmede onun `zoneHooks.ts`/`zones.ts`/`girdap.ts` sürümü alındı (aynı yaklaşım). Davranış ve kural sürümü aynı; test gevşetilmedi.
 
 ## SRD veri düzeltmeleri D1: kural sürümü 86 (2026-11-19, kullanıcı kararları 2026-11-19)
 
