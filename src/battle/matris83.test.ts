@@ -331,3 +331,16 @@ describe('B19: iki hasar türlü büyülerin alan kaydı (Flame Strike "5d6 Fire
     expect(sc?.area?.damageType).toBe('radiant');
   });
 });
+
+describe('B04: tepki büyüleri komutla (eylemle) yapılamaz (SRD "Casting Time: Reaction, which you take when …")', () => {
+  for (const name of ['Shield', 'Counterspell', 'Feather Fall', 'Hellish Rebuke']) {
+    it(`${name}: 83 red, slot harcanmaz; 82 eski davranış (kabul)`, () => {
+      const parts = (): Combatant[] => [caster({ spellNames: [name] }), foe('T')];
+      const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: name, slotLevel: name === 'Counterspell' ? 3 : 1, targetId: 'T' } as Command;
+      const r83 = run(scene(83, parts()), cmd, hooked(PROBE));
+      expect(r83.ok).toBe(false);
+      expect(r83.error).toMatch(/tepki büyüsüdür/);
+      expect(run(scene(82, parts()), cmd, hooked(PROBE)).ok).toBe(true);
+    });
+  }
+});

@@ -522,6 +522,10 @@ function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand,
   const own = actor00.spellStats?.[spell0.name];
   const actor0 = own ? { ...actor00, spellSaveDc: own.dc, spellAttack: own.attack } : actor00;
   if (!actor0.spellNames.includes(spell0.name)) return fail('Bu büyüyü bilmiyor.');
+  // Mekanik matris B04 (sürüm 83): tepki büyüsü (Shield, Counterspell, Feather Fall, Hellish Rebuke) yalnız tetiğiyle,
+  // tepki sisteminden yapılır (SRD 5.2.1 "Casting Time: Reaction, which you take when …"); komutla yapılınca eskiden
+  // slot harcayıp etkisiz kalıyordu. 82 ve altı aynen.
+  if (matrisOn(state) && spell0.castingTime === 'reaction') return fail(`${spell0.name} tepki büyüsüdür: yalnız tetiklenince (tepki olarak) yapılır.`);
   // Mekanik matris B02 (sürüm 83): "a creature you can see" isteyen büyüde görülmeyen hedef seçilemez (SRD Invisible).
   const unseen = unseenTargetProblem(state, actor0, spell0, cmd);
   if (unseen) return fail(unseen);
