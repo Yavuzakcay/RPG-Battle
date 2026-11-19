@@ -1,6 +1,6 @@
 # Kullanılmayan jeton adayları (KJ1, salt rapor)
 
-`public/characters/` altında **hiçbir yere bağlı olmayan** jeton dosyalarının listesi. **Hiçbir dosya silinmedi, taşınmadı, yeniden adlandırılmadı; jeton, maske, JSON ve kod değişmedi** (yalnız bu klasör eklendi). Kaynak: `birlesik` @ `c6095ad`.
+`public/characters/` altında **hiçbir yere bağlı olmayan** jeton dosyalarının listesi. **Hiçbir dosya silinmedi, taşınmadı, yeniden adlandırılmadı; jeton, maske, JSON ve kod değişmedi** (yalnız bu klasör eklendi). Hesaplandığı durum: `origin/birlesik` @ `6a1b6d8`.
 
 Yeniden üretim (depo kökünden):
 
@@ -13,141 +13,84 @@ python docs/sabah/kullanilmayan-jetonlar/betik/uret.py
 
 | Ölçü | Sayı |
 |---|---:|
-| Toplam jeton (`public/characters/*.webp`) | **2880** |
+| Toplam jeton (`public/characters/*.webp`) | **2900** |
 | – sınıf-genel (`<ırk>-<male\|female>-<sınıf>`) | 240 |
-| – alt sınıf / Gariban hücresi (`<ırk>-<erkek\|kadin>-<sınıf>-<hücre>`) | 2640 |
-| Çözücüde **bağlı** (gerçek kod çalıştırılarak) | 2836 |
-| – karakter jetonu olarak seçilen (ana yol) | 2812 |
+| – alt sınıf / Gariban hücresi (`<ırk>-<erkek\|kadin>-<sınıf>-<hücre>`) | 2660 |
+| Çözücüde **bağlı** (gerçek kod çalıştırılarak) | **2900** |
+| – karakter jetonu olarak seçilen (ana yol) | 2876 |
 | – yalnız yedek zinciri / Builder önyüklemesi (zayıf bağ) | 24 |
-| Çözücüde bağlı değil ama **kullanıcı kararıyla bağlı sayılan** (Cleric ID3) | 20 |
-| **Bağlı sayılan toplam** | **2856** |
-| **Aday** (hiçbir yere bağlı değil) | **24** |
+| Kullanıcı kararıyla bağlı sayılan, çözücüde bağlı olmayan (Cleric ID3/ID9) | 0 |
+| **Aday** (hiçbir yere bağlı değil) | **0** |
 | – kesin aday | **0** |
-| – riskli aday (Celestial Gariban `-GR`) | 24 |
-| Zayıf bağlı, aday değil (Dragonborn sınıf-genel; yalnız yedek zinciri + önyükleme) | 24 |
+| – riskli aday | **0** |
+| Zayıf bağlı, aday değil (Dragonborn sınıf-genel) | 24 |
 | Kırık bağ (çözücü `characters/` çözümü, dosyası olmayan) | **0** |
-| Kırık bağ (metinde adı geçen ama dosyası olmayan jeton adı; 2447 farklı ad) | **0** |
+| Kırık bağ (metinde adı geçen ama dosyası olmayan jeton adı; 2498 farklı ad) | **0** (+ 2 ad yalnız önek/kalıp, §8) |
 | (Bilgi) eski `avatars/` yedek yolu: son halka, dizin yok | 240 yol |
-| Küçük kopya (`kucuk/`, 96 px) | 2880 (jetonla bire bir; eksik 0, yetim 0) |
-| Ten maskesi (`maske/`) | 1692 (6 ırk; yetim 0); bağlı jetonda maske eksik: 36 (hepsi bilinçli, px < 30) |
+| Küçük kopya (`kucuk/`, 96 px) | 2900 (jetonla bire bir; eksik 0, yetim 0) |
+| Ten maskesi (`maske/`) | 1704 (yetim 0) |
+| Pul maskesi (`maske-pul/`, Dragonborn) | 266 (yetim 0) |
 | Elle maske (`maske-el/`) | 0 dosya |
-| `maske-pul/` | dizin yok; `data/dragonborn-pul-duzeltme.json`: dosya yok |
 | Kafa kaplaması (`bas/`) | 6 (yetim 0) |
-| Yetim maske / yetim küçük kopya (jetonu olmayan) | **0 / 0** |
+| Bağlı jetonda beklenen maskenin eksik olduğu | 34 |
+| **Yetim maske / yetim küçük kopya** (jetonu olmayan) | **0 / 0** |
 
-**Sonuç.** Çözücü yolu 44 dosyayı bağsız buldu: Celestial Gariban `-GR` ×24 ve Cleric ID3 ×20. Cleric ID3 isteğiniz üzerine bağlı sayıldı. Kalan 24 Celestial `-GR` jetonunun hiçbiri çözücüye bağlı değil, ama **bilinçli bağlanmamış** ("hale işi Gemini'de", `DECISIONS.md:155`) ve test, hale/taç verisi ve önizleme koduyla iç içe: bu yüzden hepsi **riskli**, **kesin aday yok**. Başka hiçbir sınıf, ırk, cinsiyet ya da seviye kombinasyonu bağsız jeton bırakmıyor.
+**Sonuç: aday yok.** `6a1b6d8` durumunda 2900 jetonun 2900'i çözücüde bağlı; iki bağımsız yol da aynı sonucu veriyor (§2). Bağsız dosya yok, kırık bağ yok, yetim maske/kopya yok. Silinecek aday listesi **boş**; bu yüzden 2. aşama için onaylanacak dosya çıkmadı.
+
+Yöntem sınaması: aynı tarama bu raporun ilk hesabında (`c6095ad`, 2880 jeton) **44 bağsız dosya** bulmuştu: Celestial Gariban `-GR` ×24 ve Cleric ID3 ×20. İkisi de ben raporu yazarken başka oturumlarca bağlandı (`74e32da` Celestial Gariban bağlandı, `5cc08c1` Birlik Manastırı `formlar`: 3–16 ID3, 17+ ID9); tarama birleşen son duruma göre yeniden çalıştırıldı ve 0 çıktı (`kontak-2.png`, `kontak-3.png`).
 
 | Sınıf | Toplam | Bağlı sayılan | Aday |
 |---|---:|---:|---:|
-| barbarian | 220 | 218 | 2 |
-| bard | 220 | 218 | 2 |
-| cleric | 220 | 218 | 2 |
-| druid | 190 | 188 | 2 |
-| fighter | 250 | 248 | 2 |
-| monk | 260 | 258 | 2 |
-| paladin | 240 | 238 | 2 |
-| ranger | 220 | 218 | 2 |
-| rogue | 240 | 238 | 2 |
-| sorcerer | 220 | 218 | 2 |
-| warlock | 260 | 258 | 2 |
-| wizard | 340 | 338 | 2 |
+| barbarian | 220 | 220 | 0 |
+| bard | 220 | 220 | 0 |
+| cleric | 220 | 220 | 0 |
+| druid | 190 | 190 | 0 |
+| fighter | 270 | 270 | 0 |
+| monk | 260 | 260 | 0 |
+| paladin | 240 | 240 | 0 |
+| ranger | 220 | 220 | 0 |
+| rogue | 240 | 240 | 0 |
+| sorcerer | 220 | 220 | 0 |
+| warlock | 260 | 260 | 0 |
+| wizard | 340 | 340 | 0 |
 
 ## 1. Yöntem
 
 **"Bağlı"** = jeton şu yollardan biriyle oyunda ya da test/üretimde kullanılıyor: alt sınıf jeton tabloları (`data/*-jeton.json`, `formlar`, `imza.json`, paket alt sınıflarının eşlemeleri), ırk × sınıf × cinsiyet varsayılanları ve Builder önerisi, soy/ten eşlemeleri, `import.meta.glob`/addan türetilen yollar, elle yazılmış adlar. Hedef: hiçbirine bağlı olmayanlar.
 
-**1. yol: çözücü taraması** (`betik/coz.ts`, `npx vite-node`; dosya adı eşleştirmesi yok). `src/battle/avatar.ts` `sheetAvatar` gerçekten çalıştırıldı: 10 ırk × 2 cinsiyet × 12 sınıf × (120 alt sınıf kimliği + alt sınıfsız + bilinmeyen kimlik) × seviye 1–20 = **585.600** çağrı; her sınıf her alt sınıf kimliğiyle çaprazlandı (yanlış sınıfın kimliği çözülmemeli). Üstüne 236.160 doğrudan `subclassTokenFile`/`garibanTokenFile` çağrısı (seviye eşikleri 1, 2, 3, 9, 10, 16, 17, 20: `formlar` ikinci hücreleri dahil) ve çözücü dışında addan kurulan girişler: Builder'ın sınıf jetonu ön yüklemesi (`characterTokenFile`, `src/screens/Builder.tsx:191`) ve Hapishane mahkûm kıyafeti (`src/app/seruvenBattle.ts:235`, sınıf `monk`). Birleşim = bağlı küme: **2836** jeton (`bagli-kume.tsv`: jeton başına ana/yedek/genel çözülme sayısı, seviye aralığı, ilk örnek kombinasyon). Alt sınıf kimlikleri 12 jeton tablosundan ve `imza.json`'dan toplandı (120; paket klasörü `icerik/` bu depoda yok, ama paket alt sınıflarının jeton eşlemeleri zaten bu tablolarda). `formlar` yalnız Fighter Pehlivan'da var (ID5, seviye ≥ 10); Cleric tablosunda `formlar` yok.
+**1. yol: çözücü taraması** (`betik/coz.ts`, `npx vite-node`; dosya adı eşleştirmesi yok). `src/battle/avatar.ts` `sheetAvatar` gerçekten çalıştırıldı: 10 ırk × 2 cinsiyet × 12 sınıf × (121 alt sınıf kimliği + alt sınıfsız + bilinmeyen kimlik) × seviye 1–20 = **590.400** çağrı; her sınıf her alt sınıf kimliğiyle çaprazlandı (yanlış sınıfın kimliği çözülmemeli). Üstüne 238.080 doğrudan `subclassTokenFile`/`garibanTokenFile` çağrısı (seviye eşikleri 1, 2, 3, 9, 10, 16, 17, 20: `formlar` ikinci hücreleri dahil) ve çözücü dışında addan kurulan girişler: Builder'ın sınıf jetonu ön yüklemesi (`characterTokenFile`, `src/screens/Builder.tsx:191`) ve Hapishane mahkûm kıyafeti (`src/app/seruvenBattle.ts:235`, sınıf `monk`). Birleşim = bağlı küme: **2900** jeton (`bagli-kume.tsv`: jeton başına ana/yedek/genel çözülme sayısı, seviye aralığı, ilk örnek kombinasyon). Alt sınıf kimlikleri 12 jeton tablosundan ve `imza.json`'dan toplandı (121; paket klasörü `icerik/` bu depoda yok, ama paket alt sınıflarının jeton eşlemeleri zaten bu tablolarda). `formlar`: Fighter Pehlivan (ID4 → ID5, seviye ≥ 10) ve Cleric Birlik Manastırı / Barış Alanı (ID3 → ID9, seviye ≥ 17).
 
-**2. yol: tablo yeniden kurulumu + `rg`** (`betik/uret.py`). (a) Çözücü koduna bakmadan `data/*-jeton.json` tablolarından erişim kümesi yeniden hesaplandı (`irklar` × cinsiyet kısıtı × `altSiniflar` hücreleri + `formlar` ikinci hücreleri + Gariban (Celestial hariç) + ırk × cinsiyet × sınıf varsayılanı): **2836** jeton. (b) `rg` ile `src`, `data`, `scripts`, `tests`, `docs` vb. bütün metin dosyalarında jeton adı kalıbı (`<ırk>-<cinsiyet>-<sınıf>[-<hücre>]`) tarandı: **2447** farklı ad, 8.049 eşleşme. Dağılım (dosya türüne göre farklı ad): kod 3, test 75, betik 26, veri tablosu 23, üretim raporu (`*-rapor.json`, `soy-olcum.json`, `hale-*.json`, `kesim-yeniden.json`) 1983, belge 1837. Üretim raporları ve belgeler her dosyayı listelediği için jetonu **bağlamaz**; yalnız kod, test, betik ve veri tablolarında aynen geçen ad "elle yazılmış ad" kanıtı sayıldı.
+**2. yol: tablo yeniden kurulumu + `rg`** (`betik/uret.py`). (a) Çözücü koduna bakmadan `data/*-jeton.json` tablolarından erişim kümesi yeniden hesaplandı (`irklar` × cinsiyet kısıtı × `altSiniflar` hücreleri + `formlar` ikinci hücreleri + Gariban + ırk × cinsiyet × sınıf varsayılanı): **2900** jeton. (b) `rg` ile `src`, `data`, `scripts`, `tests`, `docs` vb. bütün metin dosyalarında jeton adı kalıbı (`<ırk>-<cinsiyet>-<sınıf>[-<hücre>]`) tarandı: **2498** farklı ad, 9.858 eşleşme. Dağılım (dosya türüne göre farklı ad): kod 3, test 84, betik 48, veri tablosu 23, üretim raporu (`*-rapor.json`, `soy-olcum.json`, `hale-*.json`, `kesim-yeniden.json`, `cc-kesim-kaynak.json`, `dragonborn-pul-duzeltme.json`) 2058, belge 1956. Üretim raporları ve belgeler her dosyayı listelediği için jetonu **bağlamaz**; yalnız kod, test, betik ve veri tablolarında aynen geçen ad "elle yazılmış ad" kanıtı sayıldı. `maske-pul/`, soy maskeleri ve kafa kaplaması jetonu bağlamaz, yalnız maske dosyalarının sahibini gösterir (§7).
 
 ## 2. Doğrulama: iki bağımsız yol
 
-| Yol | Bağlı | Bağsız (ham) | Cleric ID3/ID9 kararı sonrası aday |
+| Yol | Bağlı | Bağsız (ham) | Aday |
 |---|---:|---:|---:|
-| 1. çözücü taraması (gerçek kod) | 2836 | 44 | **24** |
-| 2a. tablolardan yeniden kurulum (kod yok) | 2836 | 44 | **24** |
-| 2b. 2a + `rg`: kod/test/betik/veri tablosunda adı aynen geçen jeton bağlı sayılırsa | – | – | **23** |
+| 1. çözücü taraması (gerçek kod) | 2900 | 0 | **0** |
+| 2a. tablolardan yeniden kurulum (kod yok) | 2900 | 0 | **0** |
+| 2b. 2a + `rg`: kod/test/betik/veri tablosunda adı aynen geçen jeton bağlı sayılırsa | – | – | **0** |
 
-Fark: 1. yol ile 2a **aynı kümeyi** veriyor (çözücüde olup tabloda olmayan 0, tabloda olup çözücüde olmayan 0; aday kümeleri özdeş: evet). 2b'de 1 jeton daha düşüyor: `celestial-erkek-monk-GR.webp` (`scripts/hale-alternatif.py`). Bu adın aynen geçtiği yer bir üretim betiği (Gariban örnek listesi), oyun yolu değil; çözücüye göre aday olmaya devam ediyor, yalnız "elle yazılmış ad" riski taşıyor (§4).
-Kırık bağ taraması: çözücü 0 (585.600 çözümün hiçbiri dosyasız jeton üretmiyor); metin taraması 0 (kod, test, betik, veri tablosu, rapor, belge: adı geçen 2447 jetonun hepsi diskte var).
+Fark: **yok**. 1. yol ile 2a aynı kümeyi veriyor (çözücüde olup tabloda olmayan 0, tabloda olup çözücüde olmayan 0; aday kümeleri özdeş); `rg` adı geçen ek bağlantı bulmadı (2b = 0).
 
-## 3. Aday tablosu (çözücüde hiçbir yola bağlı değil: 24)
+Yöntemin duyarlılığı (aynı üç yol, `c6095ad` durumunda): çözücü 2836 bağlı / 44 bağsız, tablo yeniden kurulumu 2836 / 44, `rg` adı taraması 23 aday (tek fark `celestial-erkek-monk-GR`: `scripts/hale-alternatif.py` içinde elle yazılmış ad). Bağsız 44 dosya: Celestial Gariban `-GR` ×24 (`garibanTokenFile` Celestial'ı dışlıyordu) ve Cleric ID3 ×20 (`cleric-jeton.json`'da hiçbir alt sınıf ID3'e bağlı değildi). Bunlar `74e32da` (`garibanTokenFile` Celestial dahil) ve `5cc08c1` (Cleric `formlar`) ile bağlandı; güncel sonuç aşağıdaki gibi.
 
-Hepsi **Celestial Gariban** (`celestial-<erkek|kadin>-<sınıf>-GR`). Bağlı olmama nedeni hepsinde aynı: `garibanTokenFile` Celestial'ı özellikle dışlıyor (`src/battle/avatar.ts:158`); seviye < 3 Celestial karakter sınıf-genel jeton kullanıyor. "En yakın bağlı kardeş": aynı ırk-cinsiyet-sınıfta çözücünün kullandığı hücreler ve L1–2'de Gariban yerine kullanılan sınıf-genel jeton. Kontrol sayfası: `kontak-1.png`.
+Kırık bağ taraması: çözücü 0 (590.400 çözümün hiçbiri dosyasız jeton üretmiyor); metin taraması 0 (adı geçen 2498 jeton adından 2 tanesi diskte yok ama ikisi de önek/kalıp kullanımı, §8; gerisi diskte var).
 
-| Dosya | Neden bağlı değil; en yakın bağlı kardeş | 96 px | maske / maske-el / maske-pul | Yama ve kayıtlar (`data/`) | Ham kaynak (bilgi) |
-|---|---|:---:|:---:|---|---|
-| `celestial-erkek-barbarian-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-barbarian.webp`; hücreler: ID1–ID9 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 1 |
-| `celestial-erkek-bard-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-bard.webp`; hücreler: ID1–ID9 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 2 |
-| `celestial-erkek-cleric-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-cleric.webp`; hücreler: ID1–ID2, ID4–ID9 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 3 |
-| `celestial-erkek-druid-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-druid.webp`; hücreler: ID1–ID7 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 4 |
-| `celestial-erkek-fighter-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-fighter.webp`; hücreler: ID1–ID11 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 5 |
-| `celestial-erkek-monk-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-monk.webp`; hücreler: ID1–ID11 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 6 |
-| `celestial-erkek-paladin-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-paladin.webp`; hücreler: ID1–ID10 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 7 |
-| `celestial-erkek-ranger-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-ranger.webp`; hücreler: ID1–ID9 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 8 |
-| `celestial-erkek-rogue-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-rogue.webp`; hücreler: ID1–ID10 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `rogue-erkek-gr`) | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 9 |
-| `celestial-erkek-sorcerer-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-sorcerer.webp`; hücreler: SC-1–SC-9 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 10 |
-| `celestial-erkek-warlock-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-warlock.webp`; hücreler: WL-1–WL-11 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 11 |
-| `celestial-erkek-wizard-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-male-wizard.webp`; hücreler: WZ-A1–WZ-A8, WZ-B1–WZ-B7 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-male-celestial.jpg` hücre 12 |
-| `celestial-kadin-barbarian-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-barbarian.webp`; hücreler: ID1–ID9 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 1 |
-| `celestial-kadin-bard-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-bard.webp`; hücreler: ID1–ID9 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `bard-kadin-gr`) | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 2 |
-| `celestial-kadin-cleric-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-cleric.webp`; hücreler: ID1–ID2, ID4–ID9 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `cleric-kadin-gr`) | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 3 |
-| `celestial-kadin-druid-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-druid.webp`; hücreler: ID1–ID8 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `druid-kadin-gr`) | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 4 |
-| `celestial-kadin-fighter-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-fighter.webp`; hücreler: ID1–ID10 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `fighter-kadin-gr`) | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 5 |
-| `celestial-kadin-monk-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-monk.webp`; hücreler: ID1–ID11 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `monk-kadin-gr`) | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 6 |
-| `celestial-kadin-paladin-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-paladin.webp`; hücreler: ID1–ID10 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 7 |
-| `celestial-kadin-ranger-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-ranger.webp`; hücreler: ID1–ID9 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `ranger-kadin-gr`) | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 8 |
-| `celestial-kadin-rogue-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-rogue.webp`; hücreler: ID1–ID10 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `rogue-kadin-gr`) | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 9 |
-| `celestial-kadin-sorcerer-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-sorcerer.webp`; hücreler: SC-1–SC-9 | var | yok / yok / dizin yok | hale-elle, hale-halesiz, toplu-kesim-yeni-rapor | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 10 |
-| `celestial-kadin-warlock-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-warlock.webp`; hücreler: WL-1–WL-11 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `warlock-kadin-gr`) | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 11 |
-| `celestial-kadin-wizard-GR.webp` | Celestial Gariban dışlanmış; L1–2: `celestial-female-wizard.webp`; hücreler: WZ-A1–WZ-A8, WZ-B1–WZ-B7 | var | yok / yok / dizin yok | toplu-kesim-yeni-rapor, hale-konum (taç konumu `wizard-kadin-gr`) | `assets-ham/karakter/gariban-female-celestial.jpg` hücre 12 |
+## 3. Aday tablosu
 
-Celestial ırkının ten maskesi yok (ırk CSS filtresi ve hale/taç ile görünür), bu yüzden `maske` sütunu "yok" beklenen durum. 96 px kopyaların hepsi var.
+**Boş.** Çözücüde hiçbir yola bağlı olmayan jeton yok; aday tablosu, riskli ve kesin aday listeleri (§4, §5) boş. En zayıf bağlı jetonlar §6'da ayrı gösteriliyor (aday değil).
 
-## 4. Riskli adaylar (24 adayın hepsi)
+## 4. Riskli adaylar
 
-Aşağıdaki risklerden en az birini taşıyan aday "kesin" listesine alınmaz; §3'teki 24 adayın hepsi hepsini taşıyor (tek istisna son satır):
-
-| Risk türü | Kapsadığı aday | Kanıt |
-|---|---:|---|
-| Bilinçli bağlanmamış, bağlama bekleyen iş | 24 | `DECISIONS.md:155`, `src/preview/soyGaleriListe.ts:58`, `DECISIONS.md:188` |
-| Kodda dinamik yolla ulaşılabilir (geliştirme önizlemesi) | 24 | `src/preview/haleOnizleme.tsx:10` (`import.meta.glob`) |
-| Test fikstürü | 24 | `src/data/haleVaryant.test.ts:15`, `src/ui/loading.test.ts:15` |
-| Soy / ten / hale varyantı | 24 | `src/ui/haloCrown.ts`, `data/hale-konum.json`, `data/hale-halesiz.json`, `data/hale-elle.json` |
-| Elle yazılmış dosya adı | 1 | `celestial-erkek-monk-GR` ← `scripts/hale-alternatif.py:15` |
-
-1. **Bilinçli bağlanmamış, bağlama bekleyen iş.** `DECISIONS.md:155`: "Gariban … `garibanTokenFile`, Celestial hariç: hale işi Gemini'de"; `src/preview/soyGaleriListe.ts:58`: "Celestial Gariban bağlı değil". `DECISIONS.md:188`: 24 Gariban `-GR` (+ 2 Hızır Paladin ID10) için halesiz varyant yöntemi (`scripts/hale-yeni.py:20`) uygulandı; 10 Gariban jetonun taç konumu `data/hale-konum.json` varsayılanlarında hazır, 14 tanesi `data/hale-halesiz.json` bekleyen listesinde (sanat halesi kalan: taç çizilmez, Gemini/karar bekliyor).
-2. **Kodda dinamik yolla ulaşılabilir.** `src/preview/haleOnizleme.tsx:10` `import.meta.glob('/public/characters/celestial-*.webp')` bütün Celestial jetonları (Gariban dahil) listeliyor; yalnız geliştirme önizleme sayfası, oyun yolu değil.
-3. **Test fikstürü.** `src/data/haleVaryant.test.ts:15` Celestial jeton sayısını **288** bekliyor (264 + 24 Gariban) ve 96 px kopyalarının hepsini; bekleyen listelerinde adı geçen Gariban jetonlar diskte olmalı. `src/ui/loading.test.ts:15` toplam jeton sayısını (2880) ve küçük kopya eşitliğini sınıyor.
-4. **Soy/ten varyantı.** Celestial uyanış görünümleri (Gece Gözyaşı gri filtre, Kırık Kanat, yıldız tacı) bu ırkın bütün jetonlarına uygulanıyor (`src/ui/haloCrown.ts`, `lineageLook`); `data/hale-elle.json` kararları ve `scripts/hale-*.py` üretim hattı Gariban jetonlarını kapsıyor.
-5. **Elle yazılmış ad.** `celestial-erkek-monk-GR` adı `scripts/hale-alternatif.py:15` içinde aynen geçiyor (hale alternatif önizlemesi, üretim betiği; oyun yolu değil).
+Yok (aday yok). Risk ölçütleri: kodda dinamik yolla ulaşılabilir görünen (`import.meta.glob`), soy/ten varyantı olan, test fikstürü olan jetonlar kesin listesine alınmazdı.
 
 ## 5. Kesin adaylar
 
-**Yok.** Çözücüde bağsız çıkan 44 dosyanın 24'ü (Celestial Gariban) yukarıdaki risklerin hepsini taşıyor, 20'si (Cleric ID3) isteğiniz üzerine bağlı sayıldı. Emin olamadığım hiçbir dosyayı "kesin" listesine koymadım.
+**Yok.** Emin olamadığım hiçbir dosyayı "kesin" listesine koymadım.
 
-## 6. Çözücüde bağlı olmayan, kullanıcı kararıyla bağlı sayılanlar: Cleric ID3 (20) ve ID9 (20)
+## 6. Zayıf bağlı (aday değil): Dragonborn sınıf-genel jetonlar (24)
 
-`cleric-jeton.json` hücreleri: life-domain→ID1, aydin-alani→ID2, demirci-alani→ID4, firtina-alani→ID5, mezar-alani→ID6, savas-alani→ID7, yakamoz-alani→ID8, imza_birlik→ID9, baris-alani→ID9; `formlar` yok. `jeton-hucre-sirasi.json`: hücre 3 = **Barış** (kaldırılan Barış Alanı; `baris-alani` eski kimliği `imza_birlik` ile birlikte ID9'a yönleniyor), hücre 9 = **Birlik Manastırı**. Sonuç: **ID9** ×20 çözücüde bağlı (Birlik/Barış), **ID3** ×20 hiçbir kimliğe bağlı değil. İsteğiniz üzerine ikisi de bağlı sayıldı ve aday listesine alınmadı. (Cleric `formlar` ile 17+ için ID9 eşlemesi henüz veride yok; eklenirse ID3 çözücüde de bağlı olur.) Kontrol sayfası: `kontak-2.png`.
-
-| Irk | ID3 erkek | ID3 kadın | 96 px / maske (erkek, kadın) |
-|---|---|---|---|
-| celestial | `celestial-erkek-cleric-ID3.webp` | `celestial-kadin-cleric-ID3.webp` | var/yok, var/yok |
-| dragonborn | `dragonborn-erkek-cleric-ID3.webp` | `dragonborn-kadin-cleric-ID3.webp` | var/var, var/var |
-| dwarf | `dwarf-erkek-cleric-ID3.webp` | `dwarf-kadin-cleric-ID3.webp` | var/yok, var/yok |
-| elf | `elf-erkek-cleric-ID3.webp` | `elf-kadin-cleric-ID3.webp` | var/var, var/var |
-| gnome | `gnome-erkek-cleric-ID3.webp` | `gnome-kadin-cleric-ID3.webp` | var/var, var/var |
-| goliath | `goliath-erkek-cleric-ID3.webp` | `goliath-kadin-cleric-ID3.webp` | var/var, var/var |
-| halfling | `halfling-erkek-cleric-ID3.webp` | `halfling-kadin-cleric-ID3.webp` | var/yok, var/yok |
-| human | `human-erkek-cleric-ID3.webp` | `human-kadin-cleric-ID3.webp` | var/var, var/var |
-| orc | `orc-erkek-cleric-ID3.webp` | `orc-kadin-cleric-ID3.webp` | var/yok, var/yok |
-| tiefling | `tiefling-erkek-cleric-ID3.webp` | `tiefling-kadin-cleric-ID3.webp` | var/var, var/var |
-
-Ham kaynak: `assets-ham/karakter/cleric-<male|female>-<ırk>.jpg` hücre 3 (20/20 dosya bulundu).
-
-## 7. Zayıf bağlı (aday değil): Dragonborn sınıf-genel jetonlar (24)
-
-`sheetAvatar` Dragonborn için her zaman Gariban/alt sınıf jetonu seçiyor (`src/battle/avatar.ts:177`, "eski insansı genel jeton yerine"); sınıf-genel jeton yalnız yedek zincirinde (ilk görsel yüklenemezse) ve Builder'ın sınıf ön yüklemesinde (`kucuk/` kopyaları indirilir ama gösterilmez) çözülüyor. Tanımınıza göre **bağlı** (ırk × sınıf × cinsiyet varsayılanı + test fikstürü: `src/ui/avatar.test.ts:46` 240 sınıf-genel jetonun hepsinin var olmasını bekliyor), bu yüzden aday değil; 2. aşamada karar vermeniz için ayrı gösteriyorum. Kontrol sayfası: `kontak-3.png`.
+`sheetAvatar` Dragonborn için her zaman Gariban/alt sınıf jetonu seçiyor (`src/battle/avatar.ts:177`, "eski insansı genel jeton yerine"); sınıf-genel jeton yalnız yedek zincirinde (ilk görsel yüklenemezse) ve Builder'ın sınıf ön yüklemesinde (`kucuk/` kopyaları indirilir ama gösterilmez) çözülüyor. Tanımınıza göre **bağlı** (ırk × sınıf × cinsiyet varsayılanı + test fikstürü: `src/ui/avatar.test.ts:46` 240 sınıf-genel jetonun hepsinin var olmasını bekliyor), bu yüzden aday değil; 2. aşamada isterseniz karar vermeniz için ayrı gösteriyorum. Kontrol sayfası: `kontak-1.png`.
 
 | Sınıf | Erkek | Kadın |
 |---|---|---|
@@ -164,70 +107,63 @@ Ham kaynak: `assets-ham/karakter/cleric-<male|female>-<ırk>.jpg` hücre 3 (20/2
 | warlock | `dragonborn-male-warlock.webp` | `dragonborn-female-warlock.webp` |
 | wizard | `dragonborn-male-wizard.webp` | `dragonborn-female-wizard.webp` |
 
-Hepsinin 96 px kopyası (24/24) ve ten maskesi (24/24) var; kayıtlar: `soy-maske-rapor`, `soy-olcum`, `soy-renkleri` (maskFix). Ham kaynak: `assets-ham/karakter/` içinde bu jetonlara ait ayrı dosya bulunamadı (eski genel set).
+Hepsinin 96 px kopyası (24/24) ve ten maskesi (24/24; pul maskesi yok: genel jetonlar beyaz taban değil) var; kayıtlar: `soy-maske-rapor`, `soy-olcum`, `soy-renkleri` (maskFix). Ham kaynak: `data/cc-kesim-kaynak.json` ve `assets-ham/karakter/` içinde bu jetonlara ait kayıt/dosya bulunamadı (eski genel set).
 
-## 8. Maske ve küçük kopya envanteri
+## 7. Maske ve küçük kopya envanteri
 
-- **Küçük kopya (`public/characters/kucuk/`)**: 2880 dosya, jeton kümesiyle birebir aynı; bağlı jetonda eksik 0, yetim 0. Aday 24 jetonun hepsinin kopyası var.
-- **Ten maskesi (`maske/`)**: 1692 dosya: dragonborn 286, elf 280, gnome 278, goliath 283, human 280, tiefling 285. Yetim maske 0. Celestial, Dwarf, Halfling, Orc maskesiz ırklar.
+- **Küçük kopya (`public/characters/kucuk/`)**: 2900 dosya, jeton kümesiyle birebir aynı; bağlı jetonda eksik 0, yetim 0.
+- **Ten maskesi (`maske/`)**: 1704 dosya: dragonborn 288, elf 281, gnome 280, goliath 285, human 283, tiefling 287. Yetim maske 0.
+- **Pul maskesi (`maske-pul/`)**: 266 dosya (Dragonborn beyaz taban jetonları: 266 hücre jetonunun 266'i); yetim 0. Veri: `data/dragonborn-pul.json`, `data/dragonborn-pul-duzeltme.json` (49 jeton yaması), `data/dragonborn-pul-kapali.json` (0 jeton).
 - **Elle maske (`maske-el/`)**: 0 dosya (`data/soy-maske-rapor.json` `sprites` içinde "el" yok); yetim 0.
-- **`maske-pul/`**: dizin yok; **`data/dragonborn-pul-duzeltme.json`**: dosya yok (depoda hiçbir yerde başvurusu da yok; Dragonborn pul çalışması `docs/sabah/dragonborn-desen*` altında).
 - **Kafa kaplaması (`bas/`)**: 6 dosya (`data/soy-bas.json`: Goliath Paladin/Fighter/Cleric temel jetonları), hepsinin sahibi jeton var.
 
-### Bağlı jetonda maske eksik (36; hepsi bilinçli)
+### Bağlı jetonda beklenen maske eksik (34)
 
-Ten maskesi olan 6 ırkın 1728 jetonundan 36'sında maske dosyası yok. Hepsinin otomatik maske piksel sayısı 30'un altında (`data/soy-maske-alt-rapor.json`; Dragonborn'da `data/soy-maske-dragonborn-rapor.json` tohum 0; "maske yok = boyanmaz", `DECISIONS.md` KQ6); `src/battle/baglamaKq6.test.ts:42-45` bunu sınıyor. Jeton yine çözülüyor, yalnız soy rengi/ten tonu uygulanmıyor.
+Beklenen maske: Goliath/Tiefling/Elf/Human/Gnome ve Dragonborn sınıf-genel için `maske/`, Dragonborn hücre jetonları için `maske-pul/`. Eksikler:
 
-| Hücre | Jeton (px) |
+| Hücre | Jeton (maske türü: px) |
 |---|---|
-| cleric-ID6 | gnome-erkek: 11 |
-| druid-ID4 | tiefling-erkek: 4, tiefling-kadin: 0 |
-| fighter-ID4 | human-erkek: 0 |
-| fighter-ID5 | goliath-kadin: 2 |
-| monk-ID10 | elf-erkek: 3, elf-kadin: 0, gnome-kadin: 0, human-kadin: 0 |
-| paladin-ID3 | elf-erkek: 3, elf-kadin: 0, gnome-erkek: 0, gnome-kadin: 0, human-erkek: 14, human-kadin: 0 |
-| paladin-ID8 | gnome-erkek: 25, goliath-erkek: 0, goliath-kadin: 0 |
-| rogue-ID4 | dragonborn-erkek: 0, dragonborn-kadin: 0 |
-| sorcerer-SC-5 | elf-erkek: 0, elf-kadin: 0, gnome-erkek: 0, gnome-kadin: 0, human-erkek: 5, tiefling-erkek: 7 |
-| sorcerer-SC-9 | gnome-erkek: 0, human-erkek: 0 |
-| warlock-WL-10 | elf-erkek: 0, elf-kadin: 0, gnome-erkek: 0, gnome-kadin: 0, human-erkek: 0, human-kadin: 0 |
-| warlock-WL-4 | goliath-kadin: 4 |
-| warlock-WL-8 | goliath-kadin: 0 |
+| cleric-ID6 | gnome-erkek (maske: 11) |
+| druid-ID4 | tiefling-erkek (maske: 0), tiefling-kadin (maske: 0) |
+| fighter-ID5 | goliath-kadin (maske: 2) |
+| monk-ID10 | elf-erkek (maske: 3), elf-kadin (maske: 0), gnome-kadin (maske: 0), human-kadin (maske: 0) |
+| paladin-ID3 | elf-erkek (maske: 3), elf-kadin (maske: 0), gnome-erkek (maske: 0), gnome-kadin (maske: 0), human-erkek (maske: 14), human-kadin (maske: 0) |
+| paladin-ID8 | gnome-erkek (maske: 25), goliath-erkek (maske: 0), goliath-kadin (maske: 0) |
+| sorcerer-SC-5 | elf-erkek (maske: 0), elf-kadin (maske: 0), gnome-erkek (maske: 0), gnome-kadin (maske: 0), human-erkek (maske: 5), tiefling-erkek (maske: 7) |
+| sorcerer-SC-9 | elf-erkek (maske: 7), gnome-erkek (maske: 0), human-erkek (maske: 0) |
+| warlock-WL-10 | elf-erkek (maske: 0), elf-kadin (maske: 0), gnome-erkek (maske: 0), gnome-kadin (maske: 0), human-erkek (maske: 0), human-kadin (maske: 0) |
+| warlock-WL-4 | goliath-kadin (maske: 4) |
+| warlock-WL-8 | goliath-kadin (maske: 0) |
 
-## 9. Kırık bağlar
+Karşılığı veride: `data/soy-maske-alt-rapor.json` otomatik maske piksel sayısı 30'un altındaysa "maske yok = boyanmaz" (`DECISIONS.md` KQ6; `src/battle/baglamaKq6.test.ts` sınıyor); eksiklerin hepsi bu ölçütte (hepsi 30'un altında). Jeton yine çözülüyor, yalnız soy rengi/ten tonu uygulanmıyor.
 
-- Çözücü: **0**. 585.600 çağrının hiçbiri `public/characters/` altında olmayan bir dosyaya çözülmüyor.
-- Metin referansı: **0**. Adı geçen 2447 jeton adının hepsi diskte var.
+### Bilgi: yetim olmayan ama çalışma anında okunmuyor görünen maskeler
+
+Dragonborn beyaz taban jetonları artık `pul` boyamasıyla `maske-pul/` kullanıyor (`src/ui/tint.ts` `maskUrlFor`). Eski `maske/dragonborn-<cinsiyet>-<sınıf>-<hücre>.png` dosyalarının (264 adet) çalışma anındaki tek okuyucusu `lineageTint(…, 'maske')` yolu (`lineagesAltMaske`); bunu yalnız `scripts/dragonborn-renk-sayfa.ts` çağırıyor, `src` içinde çağıran yok. Jetonları olduğu için **yetim değiller** ve silme listesine alınmadı; yalnız bilgi.
+
+## 8. Kırık bağlar
+
+- Çözücü: **0**. 590.400 çağrının hiçbiri `public/characters/` altında olmayan bir dosyaya çözülmüyor.
+- Metin referansı: **0**. Adı geçen 2498 jeton adından 2 tanesi diskte yok, ama ikisi de dosya adı değil önek/kalıp: `celestial-erkek-wizard` (scripts/celestial-final.py, scripts/celestial-wzb-ara.py, scripts/wzb-halesiz.py); `tiefling-kadin-cleric` (docs/sabah/cleric-id9-halka/NOT.md) (örn. `celestial-erkek-wizard-WZ-{c}` biçimli f-string, belge başlığındaki `…-kontak.png` adı). Gerisi diskte var.
 - Bilgi: `sheetAvatar` yedek zincirinin son halkası eski `avatars/<ırk>-<sınıf>-<cinsiyet>.webp` yolu; 240 yol, `public/avatars/` dizini yok. Bilinçli son yedek (ardından baş harfli rozet; `src/ui/avatar.test.ts:36`), kırık bağ sayılmadı.
 
-## 10. Ham kaynaklar (yalnız bilgi; silme listesinde değil)
+## 9. Ham kaynaklar (yalnız bilgi; silme listesinde değil)
 
-`assets-ham/karakter/` (284 dosya, depo dışı/`.gitignore`). Aday jetonların ham sayfaları (hücre sırası `data/jeton-hucre-sirasi.json` ve `data/toplu-kesim-yeni-rapor.json`):
+Aday olmadığı için ham kaynağı listelenecek jeton yok. İleride aday çıkarsa: `data/cc-kesim-kaynak.json` (374/2900 jeton için kaynak geçmişi: kaynak, dosya, hücre) ve `assets-ham/karakter/` (284 dosya, depo dışı/`.gitignore`; `gariban-<male|female>-<ırk>.jpg` hücre 1–12 = barbarian … wizard, `<sınıf>-<male|female>-<ırk>.jpg` hücre = ID/WL/SC numarası; sıra `data/jeton-hucre-sirasi.json`, kesim kaydı `data/toplu-kesim-yeni-rapor.json`). Zayıf bağlı Dragonborn sınıf-genel jetonların ham kaynağı bu kayıtlarda yok.
 
-| Aday grubu | Ham sayfa | Hücre |
-|---|---|---|
-| Celestial Gariban erkek (12 jeton) | `assets-ham/karakter/gariban-male-celestial.jpg` | 1–12 (barbarian … wizard, alfabetik) |
-| Celestial Gariban kadın (12 jeton) | `assets-ham/karakter/gariban-female-celestial.jpg` | 1–12 (barbarian … wizard, alfabetik) |
-| Cleric ID3 (20 jeton, bağlı sayıldı) | `assets-ham/karakter/cleric-<male\|female>-<ırk>.jpg` | 3 (Barış) |
+## 10. 2. aşama için notlar
 
-## 11. 2. aşama için notlar (silme etkisi; şimdi bir şey yapılmadı)
+Aday listesi boş: **silinecek dosya yok**, 96 px kopya/maske tarafında yetim yok. Yalnız isterseniz Dragonborn sınıf-genel jetonlar (§6) konuşulabilir; silinirse şunlar etkilenir: `src/ui/avatar.test.ts:46-48` (240 sınıf-genel jetonun var olması), `src/ui/loading.test.ts:15` (toplam jeton sayısı ve `small == big`), `data/soy-renkleri.json` maskFix kayıtları, `data/soy-maske-rapor.json`, `data/soy-olcum.json`; Builder ön yüklemesi (`Builder.tsx:191`) ve yedek zinciri bu dosyaları artık bulamaz (zararsız: görsel yüklenemezse bir sonraki halka).
 
-Bir jeton silinirse aynı listeyle 96 px kopyası (`kucuk/`), varsa maskesi ve `data/` kayıtları da gider; ayrıca şu testler/veriler güncellenmeli:
-
-- `src/ui/loading.test.ts:15`: toplam jeton sayısı (2880) ve `small == big` eşitliği.
-- Celestial Gariban silinirse: `src/data/haleVaryant.test.ts:15-20` (288 jeton, bekleyen listeleri: 14 Gariban adı `data/hale-halesiz.json` ve `data/hale-elle.json` bekleyen listelerinde), `data/hale-konum.json` taç konumları, `data/toplu-kesim-yeni-rapor.json`, `docs/sabah/celestial-denetim/`, `scripts/hale-alternatif.py:15`.
-- Dragonborn sınıf-genel silinirse: `src/ui/avatar.test.ts:46-48` (240 genel jeton), `data/soy-renkleri.json` maskFix kayıtları, `data/soy-maske-rapor.json`, `data/soy-olcum.json`; Builder ön yüklemesi (`Builder.tsx:191`) ve yedek zinciri bu dosyaları artık bulamaz (zararsız: görsel yüklenemezse bir sonraki halka).
-- Cleric ID3: bağlı sayıldı, silinmez; `formlar` eklenince çözücü de bağlayacak.
-
-## 12. Dosyalar
+## 11. Dosyalar
 
 | Dosya | İçerik |
 |---|---|
 | `liste.md` | Bu rapor |
-| `kontak-1.png` | Aday (riskli) 24 jeton, 8 sütun |
-| `kontak-2.png` | Cleric ID3 20 jeton (bağlı sayıldı, bilgi) |
-| `kontak-3.png` | Dragonborn sınıf-genel 24 jeton (zayıf bağlı, bilgi) |
-| `adaylar.csv` | Aday, kararla bağlı ve zayıf bağlı jetonların ayrıntıları (neden, kardeş, kopya, maske, kayıt, ham kaynak) |
-| `bagli-kume.tsv` | Çözücünün bağladığı 2836 jeton: ana/yedek/genel çözülme sayısı, seviye aralığı, ilk örnek kombinasyon |
+| `kontak-1.png` | Zayıf bağlı Dragonborn sınıf-genel 24 jeton (aday değil), 8 sütun |
+| `kontak-2.png` | Bilgi: ilk taramada bağsız çıkıp sonradan bağlanan Celestial Gariban 24 jeton |
+| `kontak-3.png` | Bilgi: ilk taramada bağsız çıkıp sonradan bağlanan Cleric ID3 20 jeton |
+| `adaylar.csv` | Aday ve zayıf bağlı jetonların ayrıntıları (neden, kardeş, kopya, maske, kayıt, ham kaynak) |
+| `bagli-kume.tsv` | Çözücünün bağladığı 2900 jeton: ana/yedek/genel çözülme sayısı, seviye aralığı, ilk örnek kombinasyon |
 | `coz-ozet.json` | Çözücü taraması özeti (çağrı sayıları, alt sınıf kimlikleri, `avatars/` yedek yolları) |
 | `betik/coz.ts`, `betik/uret.py` | Yeniden üretim betikleri (yalnız okur) |

@@ -1,7 +1,7 @@
 {
- "sheetAvatarCagri": 585600,
- "dogrudanCagri": 236160,
- "altSinifKimligi": 120,
+ "sheetAvatarCagri": 590400,
+ "dogrudanCagri": 238080,
+ "altSinifKimligi": 121,
  "altSinifListesi": [
   "agit-koleji",
   "akrobat-koleji",
@@ -22,6 +22,7 @@
   "cagri-cemberi",
   "capkin-kavalye",
   "ceren-urperten",
+  "champion",
   "cift-dikis",
   "cin",
   "circle-of-the-land",
@@ -124,7 +125,7 @@
   "zafer-yemini",
   "zamanalti-ogretisi"
  ],
- "baglananJeton": 2836,
+ "baglananJeton": 2900,
  "diskteOlmayanCozum": [],
  "digerYedekYol": [
   "avatars/celestial-barbarian-erkek.webp",
