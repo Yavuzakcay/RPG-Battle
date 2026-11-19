@@ -80,7 +80,7 @@ Not: erkek/kadin-cleric-ID9 jeton görseli kör topal görevinden önce başka b
 | erkek-cleric-ID6 | 1347 → 1093 | %13,9 → %2,5 | %100 | eski maske (kötüleşti) |
 | erkek-cleric-ID7 | 4771 → 4270 | %9,6 → %4,0 | %8 | kapı: taşma azaldı |
 | erkek-cleric-ID8 | 5518 → 5330 | %8,6 → %6,7 | %1 | kapı: taşma azaldı |
-| erkek-cleric-ID9 | 6268 → 5924 | %6,5 → %3,4 | %2 | kapı: taşma azaldı |
+| erkek-cleric-ID9 | 6113 → 5763 | %6,8 → %3,4 | %2 | kapı: taşma azaldı |
 | erkek-druid-GR | 10129 → 10028 | %2,9 → %2,8 | %2 | kapı: taşma azaldı |
 | erkek-druid-ID1 | 5366 → 5295 | %1,0 → %1,0 | %3 | kapı: taşma aynı |
 | erkek-druid-ID2 | 5570 → 5492 | %0,4 → %0,4 | %3 | kapı: taşma aynı |
@@ -188,7 +188,7 @@ Not: erkek/kadin-cleric-ID9 jeton görseli kör topal görevinden önce başka b
 | kadin-cleric-ID4 | 4350 → 4191 | %5,2 → %4,1 | %1 | kapı: taşma azaldı |
 | kadin-cleric-ID7 | 4783 → 3857 | %15,9 → %4,0 | %4 | kapı: taşma azaldı |
 | kadin-cleric-ID8 | 4645 → 4497 | %5,1 → %4,2 | %1 | kapı: taşma azaldı |
-| kadin-cleric-ID9 | 5125 → 5000 | %6,2 → %5,5 | %2 | kapı: taşma azaldı |
+| kadin-cleric-ID9 | 5021 → 4843 | %6,7 → %5,7 | %2 | kapı: taşma azaldı |
 | kadin-druid-GR | 8695 → 8542 | %3,3 → %3,0 | %1 | kapı: taşma azaldı |
 | kadin-druid-ID1 | 5306 → 5210 | %2,7 → %1,8 | %1 | kapı: taşma azaldı |
 | kadin-druid-ID2 | 4108 → 4053 | %1,9 → %1,9 | %1 | kapı: taşma azaldı |
