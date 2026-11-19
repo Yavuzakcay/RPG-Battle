@@ -12,6 +12,8 @@ import { axialToOffset, distance, isInside, offsetToAxial, withinRange, type Off
 import { pickArea, type AreaPick, type AreaTargetSpec } from '../battle/areaAttack';
 import { mechanicsAt } from '../battle/spellVersion';
 import { ruleVersion } from '../battle/ruleVersion';
+import { whirlpoolCast } from '../battle/girdap';
+import { GIRDAP_SECENEK } from '../battle/girdapSurum';
 import { contextFor } from './session';
 import { attackChoices, isAreaSpell, type AttackChoice } from './mapView';
 import { teleportHexes } from '../battle/teleport';
@@ -154,6 +156,15 @@ export function slotChoices(actor: Combatant, spell: Spell): number[] {
 const COMBAT_ARMS = ['upgrade', 'combatIfCast', 'k64', 'mb7', 'revive', 'zone', 'effect', 'teleport', 'summon', 'healTargets'];
 export const offCombatOnly = (spell: Spell, m: SpellMechanics = spell.mechanics): boolean =>
   !!m.offCombat && !spell.area && !COMBAT_ARMS.some((k) => (m as unknown as Record<string, unknown>)[k] !== undefined);
+
+/**
+ * Control Water seçim menüsü: girdap savaşta açıkken (sürüm 84 + `controlWaterWhirlpool`) dört seçenek (Whirlpool savaşta, diğer
+ * üçü Game Master notu); yoksa Kuyruk 19 arazi dönüştürmesinin üçü. Control Water değilse boş.
+ */
+export function waterChoices(state: Pick<BattleState, 'map' | 'kuralSurumu'>, spell: Spell): string[] {
+  if (whirlpoolCast(state, spell)) return [...GIRDAP_SECENEK];
+  return spell.mechanics.upgrade?.terraform?.mode === 'controlWater' ? ['whirlpool', 'flood', 'part'] : [];
+}
 
 /** Büyü slotu var mı (cantrip her zaman). */
 export function hasSlotFor(actor: Combatant, spell: Spell): boolean {

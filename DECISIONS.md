@@ -9,6 +9,17 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Control Water dört seçenek (2026-11-19, kullanıcı kararı; uzak daldaki girdabın üstüne, kural sürümü değişmedi)
+
+Uzak daldaki Control Water girdabı (sürüm 84, `controlWaterWhirlpool`) ve G01 (`modeWhy`) aynen kaldı; bu sekmenin aynı görev için yaptığı ikinci uygulama birleştirilmedi (yerel yedek dal `yedek-controlwater-yerel`, itilmedi). Üstüne taşınanlar:
+
+- **Dört seçenek:** menüde Whirlpool, Flood, Part Water, Redirect Flow (`ui/hud.ts` `waterChoices`, adlar İngilizce `girdapSurum.ts` `SECENEK_ADI`). Girdap uzak daldaki mekanikle; diğer üçü `girdap.ts` `executeWaterOption`: slot ve konsantrasyon büyünün kuralıyla harcanır, alan ve etki yok, günlükte Game Master notu (`map_note.secenekNotu`; TR `data/aciklamalar-tr.json` yeni tablo `buyuSecenek`, EN `strings.en.ts` `log.gmOptionText`; metinler SRD 5.2.1 s. 119–120'den) ve seçim menüsünün altında seçeneğin notu. Kural sürümü artmadı: 84 kayıtlarında girdap dışı `choice` yoktu (arayüz ve yapay zekâ seçim göndermiyordu), olaylar aynı oynar.
+- **Düzeltme:** arayüz girdabı yalnız `targetHex` ile gönderiyordu, motor `targetId` bekliyordu (arayüzden girdap "hedef seç" hatasıyla reddediliyordu). `executeWhirlpool` artık altıgendeki yaratığı hedef alır.
+- **SRD denetimi (PDF s. 120):** "The whirlpool is 5 feet wide at the base, up to 50 feet wide at the top, and 25 feet tall." Uzak daldaki sınırlar metinle uyumlu: yarıçap en çok 5 altıgen (25 ft = 50 ft tepe genişliğinin yarısı), uçan yaratık 25 ft irtifaya kadar (girdabın yüksekliği). Değiştirilmedi.
+- **Matris:** Control Water 14 → 18 satır (kaçış başarılı, üç savaş dışı seçenek), hepsi doğru; Polymorph 6 satır doğru.
+- **G01 ek testleri** (`girdapSecenek.test.ts`): girdabın STR save'inde süren etki (Enlarge/Reduce) kaynaklı kip nedeni, Incapacitated'ta Danger Sense yazılmaz, Gnomish Cunning/Danger Sense EN satırı. Danger Sense, Gnomish Cunning, Haste/Reduce uzak dalda zaten vardı (`g01SaveWhy.test.ts`).
+- Wild Shape: uzak dalda Wild Shape işi yok (sürüm 84'te); bu sekmede Wild Shape planı yapılmamıştı, iş başlatılmadı.
+
 ## Dragonborn eski maske yetimleri temizlendi (2026-11-19, kullanıcı onayı; yalnız betik/veri temizliği, kural ve kayıt sürümü değişmedi)
 
 - Kullanıcı onayı: 264 maske silme işinin yetimleri silinsin. Silinen: `scripts/soy-maske-dragonborn.ts` (eski üretici), `data/soy-maske-dragonborn-rapor.json`, `scripts/_db-hepsi.ts`, `scripts/dragonborn-teshis.ts`, `scripts/dragonborn-renk-sayfa.ts` (Dragonborn'a özel, çağıranı yok, pul v2'den beri etkisiz). Ayrıca yalnız Dragonborn'da olan `lineagesAltMaske` tablosu ve `lineageTint(…, 'maske')` seçeneği kaldırıldı (başka ırkta anahtar yok, çağıran kalmadı); `lineageTint` 4. parametresi artık `boolean`. Dragonborn yalnız pul hattında: `scripts/dragonborn-pul-maske.py` → `maske-pul/`.

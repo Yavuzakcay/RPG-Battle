@@ -238,5 +238,18 @@
   "bulgu": {
    "U02": 1
   }
+ },
+ {
+  "etiket": "Control Water dört seçenek (+4 satır)",
+  "surum": 84,
+  "satir": 6606,
+  "sonuc": {
+   "doğru": 6606,
+   "yanlış": 0,
+   "çökme": 0,
+   "uygulanmıyor": 0,
+   "karar bekliyor": 0
+  },
+  "bulgu": {}
  }
 ]
