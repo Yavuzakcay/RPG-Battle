@@ -46,6 +46,8 @@
    },
    "dosya": "dragonborn.webp",
    "dosyaKapali": null,
+   "kanatsizNot": "Kuyruk A İş 2: kendi çiziminde kanat bulunan jetonlar (dosya adı, uzantısız); bu jetonlarda ejderha kanadı hiç çizilmez (rozet, savaş jetonu, karakter figürü, Draconic Flight uçuşu dahil). Tespit: siluet ölçümü + kontak sayfası (harita/belgeler/DRAGONBORN-KENDI-KANAT.md).",
+   "kanatsiz": ["dragonborn-erkek-cleric-ID1", "dragonborn-kadin-cleric-ID1", "dragonborn-erkek-warlock-WL-7", "dragonborn-kadin-warlock-WL-7"],
    "minSeviye": 5,
    "olcek": 0.6,
    "capa": [

@@ -55,6 +55,8 @@ export interface DexExtras {
   mapNames: Record<string, string>;
   /** İsteğe bağlı İngilizce açıklamalar (`data/aciklamalar-en.json`; aynı tür → kimlik yapısı). */
   en: Record<string, Record<string, string>>;
+  /** Kuyruk A İş 4: canavar → özellik/eylem listesi (`data/canavar-ozellik.json`; ad İngilizce, tür, sıra). */
+  monsterFeatures: Record<string, Array<{ anahtar: string; ad: string; tur: string }>>;
   /** Sınıf → SRD sınıf tablosunun "Primary Ability" değeri (İngilizce yetenek adları; kartta yetenek kısaltmasına çevrilir). */
   classPrimary: Record<string, string>;
 }
@@ -69,6 +71,7 @@ export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
     Promise.all(Object.values(EN_FILE).map((l) => l())).then((x) => x[0] ?? {}),
     import('../../data/srd/classes.json'),
   ]);
+  const feats = await import('../../data/canavar-ozellik.json');
   const placeList = places.default as unknown as Array<{ id: string; tema?: string; ortam?: string[] }>;
   return {
     srdMonsters: (srd.default as unknown as { monsters: DexExtras['srdMonsters'] }).monsters,
@@ -76,6 +79,7 @@ export async function loadDexExtras(): Promise<Omit<DexExtras, 'mapNames'>> {
     monsterSpells: sp.default as unknown as DexExtras['monsterSpells'],
     monsterPlaces: Object.fromEntries(placeList.map((p) => [p.id, p])),
     en,
+    monsterFeatures: (feats.default as unknown as { canavarlar: DexExtras['monsterFeatures'] }).canavarlar,
     classPrimary: Object.fromEntries((srdClasses.default as unknown as { classes: Array<{ id: string; core: Record<string, string> }> }).classes
       .map((c) => [c.id, c.core['Primary Ability'] ?? ''])),
   };
@@ -206,7 +210,11 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
         ...(m.darkvision ? [[L.fact.darkvision, L.ft(m.darkvision)] as [string, string]] : []),
         ...(m.attacks?.length ? [[L.fact.attacks, m.attacks.map((a) => a.name).join(', ')] as [string, string]] : []),
       ],
-      sections: [],
+      // Kuyruk A İş 4: özellik ve eylemler (ad İngilizce, açıklama Türkçe `aciklamalar-tr.json` `canavar`); eksikte "henüz yok".
+      sections: (x.monsterFeatures[m.id] ?? []).length ? [{ title: L.sec.monsterFeatures, rows: (x.monsterFeatures[m.id] ?? []).map((ft): DexRow => {
+        const tr = trAciklama('canavar', ft.anahtar);
+        return { name: ft.ad, tag: L.monsterKind[ft.tur] ?? ft.tur, text: tr ? { tr, en: en('canavar', ft.anahtar) } : { ui: L.noDesc } };
+      }) }] : [],
       links: [
         ...immune.map((c): DexLink => ({ cat: 'durum', id: c, label: L.immuneTo(condName(c)) })),
         ...monsterSpellIds(m.id).map((s): DexLink => ({ cat: 'buyu', id: s.id, label: s.name })),

@@ -47,6 +47,37 @@ Soru sorulmadı. Her kural PDF'ten okundu (`docs/SRD_CC_v5.2.1.pdf`, `pdftotext 
 - **Kalanlar (yapılmadı, ileride):** biçimin aurası (`setupMonster` alanları; uygun Beast'lerde aura yok, alanlar biçime aktarılmaz); arayüz canavar yeteneği düğmesi göstermiyor (canavarlarda da yok; motor ve yapay zekâ kullanır); Druid yapay zekâsı biçime yalnız slotu bitince girer (simülasyonda kısa savaşlarda hiç girmiyor); biçimdeki eşya (s. 43 "Objects") yok; yüzücü listesi (`derin-su.json` `swimmers66`) canavarın kendi kimliğiyle kalır.
 - **Doğrulama.** Testler `src/battle/shape91.test.ts` (Wolf, Giant Spider, Brown Bear, Crocodile, Swarm of Rats aktarımı; Giant Eagle artık uygun değil (SRD 5.2.1: Celestial); biçimden biçime ve geri yükleme; Polymorph canavar hedef, Multiattack planı ve yetenekler biçimin kimliğiyle; geçici HP; Hover; Mind Blank; replay), Karadul 86–91 karşılaştırması `karadul.test.ts`. Mekanik matris 91'de 6606/6606 doğru (Polymorph ve True Polymorph satırları dahil; Wild Shape büyü/saldırı satırı değil). Hızlı regresyon `src/sim/shape91Regresyon.test.ts` (4 senaryo × 1 ve 3 tohum): 89 imzaları altınla aynı; 91'de Orman (Druid), Mağara (Hover'lı Specter), Kale 89'la aynı, Çöl (slotsuz başlayan Druid, biçime giriyor) değişti (1 tohum `ec9b82fb4cb3`, 3 tohum `2e1cd5e14ca6`; zafer 1/1 ve 3/3 aynı). Denge ölçümü yapılmadı.
 
+## Kuyruk A İş 4: canavar özellik ve eylemlerinin Türkçe açıklamaları (2026-11-20; yalnız içerik verisi)
+
+- **Kaynak:** SRD 5.2.1 PDF'i, s. 254–364. Yeni üretici `scripts/srd-canavar-ozellik.mjs`, mevcut PDF okuyucusuyla (`scripts/srd/pdf.mjs`) stat bloklarından özellik ve eylemleri ayrıştırır. Tür trait/action/bonus/reaction/legendary; ad İngilizce.
+- **Çıktı:**
+  - `data/canavar-ozellik.json`: liste ve sıra; İngilizce SRD metni depoya girmez.
+  - Açıklamalar `data/aciklamalar-tr.json` yeni `canavar` bölümünde. Anahtar `<canavar>/<tür>:<ad-slug>`.
+- **Kapsam: 1318 kayıt, 330/330 canavar.** Dungeondex canavar kartında yeni "Özellikler ve eylemler" bölümü (ad, tür etiketi, Türkçe açıklama). "Türkçe açıklama henüz yok" notu yalnız eksik satırda çıkar.
+- **Ayrıştırma düzeltmesi:** ilk sürüm, adla noktası ayrı parça olan 24 eylemi önceki kaydın içine katıyordu (renkli ejderhaların nefesleri, Brown Bear, Elephant Gore, Lightning Absorption, Unicorn Magic Resistance). Bu yüzden 1294 değil 1318 kayıt var. Etkilenen 23 canavar ayrı bir düzeltme partisinde yeniden yazıldı.
+- **Yöntem:** CR gruplarına bölündü (0–1/4, 1/2–1, 2–3, 4–6, 7–11, 12+ ve düzeltme partisi); parti başına commit. Her kayıt PDF'ten çıkarılan özgün metinden Türkçe özet olarak yazıldı; bellekten değer yok.
+- **Sayısal tutarlılık denetimi:**
+  - Yazım sırasında betikle: zar ifadesi, DC, saldırı bonusu ve ft değerleri İngilizce metinle karşılaştırıldı; her partide 0 sorun.
+  - Depoda test: `data/monsters.json` saldırı alanlarıyla zar, bonus ve DC eşleşmesi. SRD'de zarsız sabit hasar varsa oyun verisinin `1d2` yaklaşıklaması yerine sabit sayı aranır.
+- **Kural:** SD4 uygulandı: durum, büyü ve eylem adları İngilizce; hasar türleri Türkçe; yetenekler STR/DEX/… kısaltmasıyla; GM yerine "Game Master".
+- **Test ve uzunluk:**
+  - Uzunluk sınırı canavar bölümünde 560 karakter (genel sınır 240): Engulf, Swallow gibi eylemler zar, DC ve mesafe korunarak daha uzun. Mevcut `aciklamalarTr.test.ts` buna göre güncellendi.
+  - Testler: `src/dungeondex/canavarAciklama.test.ts`.
+  - Ekran görüntüsü `docs/sabah/dungeondex/canavar-kart.webp`.
+- **Boyut:** `aciklamalar-tr.json` `loadClassData` ile tembel yüklendiği için açıklamalar o parçaya girdi (≈ +200 kB ham metin, karakter ekranları açılırken bir kez). Ana parça değişmedi. Ayrı tembel dosyaya taşımak gerekirse küçük bir iştir (öneri).
+
+## Kuyruk A İş 3: Control Water girdap efekti importu atlandı (2026-11-20)
+
+- Kaynak "control-water" efekt sayfası bulut kapsayıcısında yok (`assets-ham/` depo dışı; yalnız `eksikler/` ve `karakter/` var). Talimat gereği iş atlandı.
+- Ayrıntı ve yeniden başlatma tarifi `harita/belgeler/KUYRUK-A-NOTLAR.md`.
+- Mevcut `efekt-zemin-girdap.webp` ile yer tutucu bağlama yapılmadı: görev yeni sayfanın importunu istiyor.
+
+## Kuyruk A İş 2: kendi çiziminde kanatlı Dragonborn jetonunda ejderha kanadı yok (2026-11-20; yalnız görünüm)
+
+- 290 Dragonborn jetonunda siluet ölçümü (omuz üstünde iki dış yanın simetrik opak pikseli) ve ilk 140'ın gözle denetimiyle 4 jetonda kendi kanadı bulundu: erkek/kadın Cleric ID1 (Yaşam Alanı), erkek/kadın Warlock WL-7.
+- Liste veride: `data/kanat-esleme.json` `slotlar.dragonborn.kanatsiz` (jeton dosya adı, slot başına; kodda sabit yok). Tek yardımcı `ownWingToken`; rozet, savaş jetonu (Draconic Flight uçuşu dahil) ve karakter figürü onu kullanır.
+- Kuşkulu: Ranger ID4 (iki cinsiyet; kanatlı ejderha yoldaşı, kendi kanadı yok). Listeye alınmadı, gözle onay bekliyor.
+- Liste `harita/belgeler/DRAGONBORN-KENDI-KANAT.md`; test `src/ui/kanatKendi.test.tsx`; görüntü `docs/sabah/dragonborn-kanat/kendi-kanat-once-sonra.webp`.
 ## SRD farkları D3 (kapanış): kural sürümü 89 (2026-11-19, kullanıcı kararı 2026-11-19: SRD 5.2.1'i izle)
 
 Kaynak: D2'den kalan farklar (`harita/belgeler/SRD-VERI-DOGRULAMA.md` §9 ve §8 "Kalan farklar"). Soru sorulmadı; her değer PDF'ten okundu, her maddede önce motorda karşılık arandı (D2'deki Otherworldly Steed denetim hatası tekrarlanmasın diye). Kapanış tablosu (86/87/88/89) raporun "Kapanış" bölümünde.

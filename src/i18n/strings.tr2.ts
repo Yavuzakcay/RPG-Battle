@@ -793,7 +793,7 @@ export const TR_EXTRA = {
       abilityBonus: 'Yetenek artışı', skills: 'Beceriler', tool: 'Alet',
       hitDie: 'Can zarı', primary: 'Birincil yetenek', saves: 'Kurtarma yetkinlikleri', armorTraining: 'Zırh eğitimi', weaponProf: 'Silah yetkinliği',
       spellcasting: 'Büyü', minLevel: 'En düşük seviye', cost: 'Bedel' },
-    sec: { features: 'Özellikler', traits: 'Tür özellikleri', links: 'İlgili kayıtlar', places: 'Ortamlar', desc: 'Açıklama', buff: 'Artı', debuff: 'Eksi', classFeatures: 'Seviye 1–20 sınıf özellikleri', classOptions: 'Sınıf seçenekleri' },
+    sec: { features: 'Özellikler', traits: 'Tür özellikleri', links: 'İlgili kayıtlar', places: 'Ortamlar', desc: 'Açıklama', buff: 'Artı', debuff: 'Eksi', classFeatures: 'Seviye 1–20 sınıf özellikleri', classOptions: 'Sınıf seçenekleri', monsterFeatures: 'Özellikler ve eylemler' },
     status: { calisir: 'çalışır', kismi: 'kısmi', planli: 'planlı', hikaye: 'hikâye', calismiyor: 'çalışmıyor' } as Record<string, string>,
     noDesc: 'Türkçe açıklama henüz yok.',
     monsterSummary: (size: string, type: string, cr: string, ac: number, hp: number) => `${size} ${type}; CR ${cr}, AC ${ac}, ${hp} HP.`,
@@ -810,5 +810,6 @@ export const TR_EXTRA = {
     skillChoice: (n: number, list: string) => `${n} seçim: ${list}`,
     castingType: { full: 'Tam büyücü', half: 'Yarı büyücü', pact: 'Pact Magic' } as Record<string, string>,
     fightingStyles: 'Fighting Style feat\'leri',
+    monsterKind: { trait: 'Özellik', action: 'Eylem', bonus: 'Bonus eylem', reaction: 'Tepki', legendary: 'Efsanevi eylem' } as Record<string, string>,
   },
 };
