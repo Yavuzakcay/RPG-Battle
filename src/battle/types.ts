@@ -93,6 +93,8 @@ export interface ActiveEffect {
   reduce?: { die: string; types: string[]; spent?: boolean };
   tempHp?: number;
   immune?: string[];
+  /** Görev D3 (89+): `immune` istisnası: durum → efendi canavarın kimliği (Vampire Familiar: efendisinden Charmed olur). */
+  immuneExcept?: Record<string, string>;
   /** Kuyruk S1 (Calm Emotions): bastırılan durumlar; etki bitince reducer geri yazar (`timer`: süreli olanın sayacı, bastırıldığı turdan bu yana geçen tur düşülür; `by`: veren etki sürüyorsa). */
   /** Kuyruk S1 (Suggestion "bırak"): silahını bıraktı (silahla saldıramaz). */
   disarmed?: boolean;
@@ -1567,10 +1569,12 @@ export interface ShapeStats {
   multiattack?: boolean;
   /** Kural sürümü 87 + `bicimYuzme`: biçimin yüzme hızı (ft; 0 = yüzme hızı yok). Alan yoksa yaratığın yüzme hızı değişmez. */
   swimFt?: number;
+  /** Görev D3 (89+): biçimdeki beceri bonusları (Wild Shape: kendi yetkinliğin biçimin değiştiricisiyle, stat bloğundaki yüksekse o; Polymorph: stat bloğu). Alan yoksa beceriler değişmez. */
+  skills?: Combatant['skills'];
 }
 /** Biçimden önceki (bırakınca dönen) değerler. */
 export type ShapePrev = Pick<Combatant, 'ac' | 'speed' | 'fly' | 'size' | 'modifiers' | 'saves' | 'weaponOptions' | 'attacksPerAction' | 'avatar'>
-  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt'>>;
+  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt' | 'skills'>>;
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
 export interface ExtraDamage {

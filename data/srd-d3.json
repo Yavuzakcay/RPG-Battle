@@ -1,0 +1,7 @@
+{
+  "_not": "Görev D3 (kural sürümü 89; SRD 5.2.1) sabitleri. `tasiyiciDurumlar`: süren etkinin taşıdığı ana durum; hedef buna bağışıksa etkinin bütünü tutmaz (Charm Person, Hypnotic Pattern, Fear…); diğer durumlarda yalnız bağışık olunan durum düşer (yutmada Blinded bağışığı yine Restrained). `efendiIstisnasi`: canavar → durum → efendi canavarın kimliği: bu durum bağışıklığı aynı asıl taraftaki efendiden gelen duruma işlemez (Vampire Familiar s. 334 \"Charmed (except from its vampire master)\").",
+  "tasiyiciDurumlar": ["Charmed", "Frightened"],
+  "efendiIstisnasi": {
+    "vampire-familiar": { "Charmed": "vampire" }
+  }
+}

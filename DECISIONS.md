@@ -9,6 +9,88 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## SRD farkları D3 (kapanış): kural sürümü 89 (2026-11-19, kullanıcı kararı 2026-11-19: SRD 5.2.1'i izle)
+
+Kaynak: D2'den kalan farklar (`harita/belgeler/SRD-VERI-DOGRULAMA.md` §9 ve §8 "Kalan farklar"). Soru sorulmadı; her değer PDF'ten okundu, her maddede önce motorda karşılık arandı (D2'deki Otherworldly Steed denetim hatası tekrarlanmasın diye). Kapanış tablosu (86/87/88/89) raporun "Kapanış" bölümünde.
+
+- **Sürüm 89** (`src/battle/srdD3Surum.ts` `SRD_D3_VERSION`, `srdD3On`). 88 ve altı (eski kayıt, replay, `--kural-surumu 88`) bit bit aynı: hızlı regresyon 88 imzaları D3 öncesi ağacın (18d86fc8) altınıyla aynı. Kayıt sürümü değişmedi (yeni olay türü yok; direnç `effect_added`, beceriler `shape_changed` içinde).
+- **1. Draconic Spirit Shared Resistances (SRD s. 166).** Motorda yoktu (yalnız `unsupported` notu; `grep` ile doğrulandı). Metin: "When you summon the spirit, choose one of its Resistances. You have Resistance to the chosen damage type until the spell ends." Çağıran, büyünün hasar türü seçimine (`cast_spell.choice`) direnç kazanır; süren etki `shared-resistance:summon-dragon` (`resist`), büyünün konsantrasyonuna bağlı; Dragon Companion'da (konsantrasyonsuz) 1 dakika (`until`). Yeniden çağırınca yeni seçim eskisinin yerine.
+  - **⚠ Yaklaşık (karar):** SRD'de nefes türü ("your choice when you cast the spell") ile paylaşılan direnç iki ayrı seçim; oyunda tek seçim ikisine birden (arayüzde ikinci seçici yok, iki seçim çoğu zaman aynı türdür). İleride ayrı seçim istenirse `cast_spell`'e ikinci alan eklenir.
+  - Veri: `data/summons.json` `creatures/draconic-spirit` `sharedResistance: true`, `unsupported`'tan "Shared Resistances" çıktı; eski değerler katmanda (`data/srd-duzeltme.json` `surum: 89`, 2 kayıt). Katman artık aynı alanın birden çok sürümdeki düzeltmesini yeniden eskiye geri sarıyor (`srdD1.ts` `srdKayit`; Draconic Spirit `unsupported` 88 ve 89'da düzeltildi).
+- **2. Vampire Familiar "Charmed (except from its vampire master)" (SRD s. 334).** Metin açık; modellendi.
+  - **Önce bulunan açık (karar: 89'da düzeltildi):** süren etkinin verdiği durumlar (`effect_added` `grants`: Charm Person, Hypnotic Pattern, Fear, Suggestion, Dominate…) durum bağışıklığını hiç denetlemiyordu; deneme: Charmed bağışığı Vampire Familiar Charm Person'la Charmed oluyordu. Bağışıklık yalnız `save_resolved` ve `condition_changed` yollarındaydı. Bu açık kapanmadan istisna anlamsızdı (Vampire'ın Charm'ı Charm Person etkisi).
+  - **Kural (89+, `srdD3.ts` `grantsAfterImmunity`):** taşıyıcı durum (Charmed, Frightened; `data/srd-d3.json` `tasiyiciDurumlar`) bağışıksa ya da etkinin bütün durumları bağışıksa etki hiç tutmaz (Protection from Evil and Good'un mevcut davranışıyla aynı); yoksa yalnız bağışık durum düşer, etki kalır (yutmada Blinded bağışığı yine Restrained; Hideous Laughter'da Prone bağışığı yalnız Incapacitated). Gerekçe: SRD'de Charm/Fear etkilerinin geri kalanı ("while Charmed…", "while Frightened…") duruma bağlı; yutma ve Hideous Laughter'da durumlar bağımsız.
+  - **İstisna:** efendi = aynı asıl taraftaki (`homeSide`) `vampire` canavarı (`data/srd-d3.json` `efendiIstisnasi`, bağışıklık etkisinde `immuneExcept`; `monsterTraits.ts` 89+'da yazar). Üç yolun hepsinde kaynak bilgisiyle (`effectImmune`: `effect_added` kaynağı, `save_resolved.actorId`, `condition_changed.sourceId`/`timer.sourceId`). Karşı taraftaki Vampire efendi sayılmaz. Pratikte YZ dostunu büyülemez; istisna Game Master ve gelecekteki yollar için.
+  - **⚠ Etki alanı:** bağışıklık denetimi bütün canavarların durum bağışıklıklarına uygulanır (Undead/Construct'a Charm/Fear tutmaz). Hızlı regresyonda yalnız Mağara × büyücü partisi 89'da değişti (3 tohum; zafer 3/3 aynı).
+- **3. DECISIONS.md çakışma işaretleri.** Yalnız bir işaret kalmıştı: K57-KALDIR başlığının üstündeki `<<<<<<< HEAD` (6a1a4dc birleştirmesinden; `=======` ve `>>>>>>>` daha önce silinmişti). Silindi; içerik aynı. Belgede satır başı çakışma işareti yok. U1b ve K57 notlarındaki işaret adları (tırnak içinde) içerik olarak kaldı.
+  - **İleri tarihli başlıklar (düzeltme listesi).** Bugünden (2026-11-19) ileri tarih taşıyan 49 başlık var; başlıklar değiştirilmedi (tarih içerikte geçiyor, başka belgeler başlıkla anıyor). Gerçek tarih: başlığın DECISIONS.md'de ilk görüldüğü commit (`git log --full-history -S`; 5e18f421 öncesi geçmiş yok, çoğu orada görünüyor). KQ2–KQ6 dizisi ardışık "gün" numarasıyla yazılmış.
+
+| Başlık | Yazılı tarih | İlk commit |
+|---|---|---|
+| Dragonborn kanadı gövdeye bağlı + palet uyumu | 2026-11-20 | 2026-11-19 (`f9e32618`) |
+| KQ6-19 | 2026-12-31 | 2026-11-17 (`d58f314f`) |
+| KQ6-18 | 2026-12-30 | 2026-11-17 (`21513975`) |
+| KQ6-17 | 2026-12-29 | 2026-11-17 (`4bbe3377`) |
+| KQ6-16 | 2026-12-28 | 2026-11-17 (`2c48a5b2`) |
+| KQ6-14 | 2026-12-27 | 2026-11-17 (`e6b1fc3a`) |
+| KQ6-12 | 2026-12-26 | 2026-11-16 (`2360265b`) |
+| KQ6-11 | 2026-12-25 | 2026-11-16 (`fc8eb139`) |
+| KQ6-10 | 2026-12-25 | 2026-11-16 (`bb36b76d`) |
+| KQ6-9 | 2026-12-24 | 2026-11-16 (`7de5e080`) |
+| KQ6-8 | 2026-12-24 | 2026-11-16 (`7de5e080`) |
+| KQ6-7 | 2026-12-23 | 2026-11-16 (`0ee9286c`) |
+| KQ6-6 | 2026-12-22 | 2026-11-16 (`61ba35c8`) |
+| KQ6-5 | 2026-12-21 | 2026-11-16 (`f3823e9d`) |
+| KQ6-4 | 2026-12-20 | 2026-11-16 (`57afbf54`) |
+| KQ6-3 | 2026-12-19 | 2026-11-16 (`a33577fa`) |
+| KESIM-1 | 2026-12-18 | 2026-11-16 (`636d4136`) |
+| FH1 | 2026-12-17 | 2026-11-16 (`5e18f421`) |
+| HS1 sonrası testler yeni duruma uyarlandı | 2026-12-16 | 2026-11-16 (`5e18f421`) |
+| Kırmızı test denetimi | 2026-12-15 | 2026-11-16 (`5e18f421`) |
+| Jeton bağlama kuralı | 2026-12-14 | 2026-11-16 (`5e18f421`) |
+| BAGLA-9 | 2026-12-13 | 2026-11-16 (`5e18f421`) |
+| TOPLU-KESIM | 2026-12-12 | 2026-11-16 (`5e18f421`) |
+| BAGLA-3 | 2026-12-11 | 2026-11-16 (`5e18f421`) |
+| WZ-BAGLA | 2026-12-10 | 2026-11-16 (`5e18f421`) |
+| WZ-KESIM | 2026-12-09 | 2026-11-16 (`5e18f421`) |
+| KH1 | 2026-12-08 | 2026-11-16 (`5e18f421`) |
+| NU1 | 2026-12-07 | 2026-11-16 (`5e18f421`) |
+| YZ1 | 2026-12-06 | 2026-11-16 (`5e18f421`) |
+| GH1 | 2026-12-05 | 2026-11-16 (`5e18f421`) |
+| CK1 | 2026-12-04 | 2026-11-16 (`5e18f421`) |
+| PB1 | 2026-12-03 | 2026-11-16 (`5e18f421`) |
+| SV1 | 2026-12-02 | 2026-11-16 (`5e18f421`) |
+| AL2 | 2026-12-01 | 2026-11-16 (`5e18f421`) |
+| NA1 | 2026-11-30 | 2026-11-16 (`5e18f421`) |
+| OD1C | 2026-11-29 | 2026-11-16 (`5e18f421`) |
+| OD1B | 2026-11-28 | 2026-11-16 (`5e18f421`) |
+| SD13 | 2026-11-27 | 2026-11-16 (`5e18f421`) |
+| OD1 | 2026-11-26 | 2026-11-16 (`5e18f421`) |
+| KAPI1 | 2026-11-25 | 2026-11-16 (`5e18f421`) |
+| SD9B | 2026-11-24 | 2026-11-16 (`5e18f421`) |
+| SD12 | 2026-11-23 | 2026-11-16 (`5e18f421`) |
+| SD11 | 2026-11-23 | 2026-11-16 (`5e18f421`) |
+| SD10 | 2026-11-23 | 2026-11-16 (`5e18f421`) |
+| HS1 | 2026-11-22 | 2026-11-16 (`5e18f421`) |
+| SD9 | 2026-11-22 | 2026-11-16 (`5e18f421`) |
+| HATA-FAMILIAR | 2026-11-22 | 2026-11-16 (`5e18f421`) |
+| SD8 | 2026-11-21 | 2026-11-16 (`5e18f421`) |
+| Zar kesicisi takılması | 2026-11-20 | 2026-11-16 (`5e18f421`) |
+
+  - **Sıra dışı başlıklar** (en yeni üstte kuralına aykırı, değiştirilmedi): KQ6-19 (12-31) 11-18 tarihli başlıkların altında; AS2 ve SD4 (11-13) 11-12 tarihlilerin altında; K57-KALDIR (11-12) U1b'nin (11-11) altında; Dragonborn kanadı (11-20 yazılı) KW1'in (11-19) altında.
+- **4. Wild Shape becerileri (SRD s. 43).** Metin: "You also retain your skill and saving throw proficiencies and use your Proficiency Bonus for them, in addition to gaining the proficiencies of the creature. If a skill or saving throw modifier in the Beast's stat block is higher than yours, use the one in the stat block." Düşük maliyetle karşılandı (89+): biçimde `skills` (`druid.ts` `wildSkills`): Druid'in yetkin olduğu becerinin değiştirici üstü eki (yetkinlik, uzmanlık) biçimin değiştiricisine eklenir, stat bloğundaki beceri yüksekse o; yetkin olunmayan beceri biçimin değiştiricisinden (`skillBonus`). Bırakınca eski beceriler (`ShapePrev.skills`). Kurtarmalar WS87'de (`wildSaves`) aynı kuralla yapılmıştı.
+  - **Polymorph (karar, aynı kapı):** SRD "game statistics … are replaced by the stat block"; beceriler stat bloğundan (yetkin olunmayan biçimin değiştiricisinden). WS87 INT/WIS/CHA ve kurtarmaları zaten biçimden alıyordu; beceriler eksik kalmıştı.
+  - **Kapsam dışı:** Jack of All Trades gibi sınıf özelliklerinin Polymorph'ta düşmesi (`jack` alanı kalır), tırmanma kontrolü (`climbMod` Druid'inki).
+- **Testler** `src/battle/srdD3.test.ts` (10): katman sırası (87/88/89), Shared Resistances (89 var, 88 yok, konsantrasyonla biter, yeniden çağrı), bağışıklık kuralı, Charm Person (89 tutmaz, 88 tutar), Hideous Laughter (Prone bağışığı), efendi istisnası (üç kaynak, iki yol), Wild Shape ve Polymorph becerileri, replay. `src/battle/srdD2.test.ts` katman testi: `yeni` artık 88 görünümünde karşılaştırılıyor (Draconic Spirit `unsupported` 89'da yine değişti), güncel değer `CURRENT_RULES` görünümünde. Sürüm testleri (`g6`, `ruleVersion`) 89.
+- **Hızlı regresyon** `src/sim/srdD3Regresyon.test.ts` (5. seviye; Orman × Druid, Mağara × büyücü, Kale × ozan, Çöl × standart; sabit düşman listeleri): 88 imzaları 18d86fc8 altınıyla aynı (1 tohum 4/4, 3 tohum 4/4). 89: 1 tohumda 4/4 = 88; 3 tohumda Mağara × büyücü farklı (Undead'e etki bağışıklığı), diğer üçü = 88; zafer her yerde aynı.
+- **Birleşik doğrulama (D1 + WS87 + D2 + D3):**
+  - `npm test` tam: 467 dosya / 5281 test geçti; koşullu atlanan 2 dosya (11 test): `src/content/as2.test.ts` (yerel `icerik/` yok, bulut kopyası) ve `src/sim/k73dOlcum.test.ts` (yalnız `K73D_TOHUM` verilince çalışan denge ölçümü). Kırmızı yok.
+  - Mekanik matris yeniden üretildi (`npx vite-node src/sim/mekanikMatris.ts -- --yaz`): 6606 satır, sürüm 89, 6606 doğru (yalnız başlıktaki sürüm 87 → 89 değişti).
+  - `npm run typecheck` temiz; `npm run build` tamam, ana parça 458,51 kB / 500 kB (KW1 sonrası 458,28; D3 +0,23 kB: `srdD3.ts` + `data/srd-d3.json` reducer'la ana parçada).
+  - `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`): denenen 92, geçen 92.
+  - `npm run check:ses`: ilk denemede `pickMap` `[data-region]` 30 sn zaman aşımı. Neden bulut değil, betik: ana menüde `button.role` (2.) OD1'den beri "Oda kur"u açıyor; KH1 `check:harita`'yı `home-quick`'e uyarlamış, `check:ses`'i değil. **Yan düzeltme:** `scripts/ses-kontrol.mjs` hızlı savaş kartıyla (`[data-testid="home-quick"]`) giriyor; bulutta 15/15 tamam. CLAUDE.md'deki "bulutta TimeoutError" notu bu yüzdendi olabilir; kural kullanıcınındır, değiştirilmedi.
+  - Hızlı regresyonlar: D3 (yukarıda) 88 = altın; D1/D2/WS87 regresyonları tam `npm test` içinde yeşil (85/86/87 altınları değişmedi).
+
 ## Dragonborn kanadı gövdeye bağlandı + palet uyumu: Kuyruk KW1 (2026-11-19; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 
 Sorun (kullanıcı ekran görüntüsü, Siyah Dragonborn Gladyatör): kanat çifti jeton ortasından çiziliyordu ve rozette bütün zemin dairesi kanadın üstündeydi; kanatlar dairenin iki yanında gövdeden kopuk, soluk gri-pastel duruyordu. Görseller `docs/sabah/dragonborn-kanat/` (`once-sonra.webp`, `kok-kontrol.webp`, `kontak-290.webp`, `README.md`). Kullanıcı kararı: soru sorulmadan en makul karar. Kök yüksekliği geri bildirimle ayarlandı: ilk 0,44; "biraz daha omuz hizasına çekelim" yanlış yönde (aşağı) okundu (0,47 → 0,50); kullanıcı düzeltti: "biraz daha yukarı al, %10 kadar" → 0,40.
@@ -52,7 +134,7 @@ Kaynak: SRD 5.2.1 PDF (`docs/SRD_CC_v5.2.1.pdf`): Wild Shape s.43 ("Rules While 
     - **Fark, 87'de düzeltildi:** fiziksel kurtarmalar düz değiştiriciydi. Druid'in yetkinliği (örn. Resilient CON) düşüyor, stat bloğu kurtarması yok sayılıyordu. Şimdi biçimin değiştiricisi + Druid'in o kurtarmadaki eki (yetkinlik ve diğer ekler), stat bloğu yüksekse o (`wildSaves`). Örnek: Crocodile CON +1 → +3. INT/WIS/CHA kurtarmaları da stat bloğu yüksekse ondan (T-Rex WIS +4).
     - Diğer ekler eşya/özellikten gelebilir; çoğunlukla takılı kalan eşya olduğu için korunur (⚠ yorum).
     - Yaratık türü, HP ve geçici HP zaten doğruydu.
-    - **Dokunulmadı:** beceri yetkinlikleri. Biçimin beceri bonusları modelde yok, savaş içi beceri kontrolleri Druid'inkiyle kalır. Belirsiz değil, kapsam dışı.
+    - **Dokunulmadı:** beceri yetkinlikleri. Biçimin beceri bonusları modelde yok, savaş içi beceri kontrolleri Druid'inkiyle kalır. Belirsiz değil, kapsam dışı. (Sonra: D3'te, kural sürümü 89, yapıldı: `wildSkills`.)
   - Polymorph (s.153): bütün oyun değerleri biçimin stat bloğundan. Yalnız hizalanma, kişilik, yaratık türü, HP ve Hit Dice korunur. Geçici HP = biçimin HP'si; konuşamaz, büyü yapamaz.
     - **Fark, 87'de düzeltildi:** INT/WIS/CHA ve kurtarmalar hedefin kendisinden kalıyordu (Wild Shape kuralı). Şimdi biçimden (`{ ...değiştiriciler, ...stat bloğu kurtarmaları }`).
     - Büyü yasağı zaten vardı (biçimde büyü yok).
@@ -1294,7 +1376,6 @@ Yeni komut, olay, ilkel ya da ev kuralı yok; her mekanik değişiklik `k75On` (
 - **Eksik yol adayları** (paket görülünce kesinleşecek): Yakamoz'un loş/karanlık şartı (`KOSULLAR`'da ışık koşulu yok → yalnız metinde), Ejderha Disiplini'nin Step of the Wind'e bağlanması (ilkelde Focus kancası yok → yedek: ayrı Ki bedelli bonus eylem), Paratoner dostla paylaşım (`ucus` yalnız kendine).
 - **Not:** bu dosyanın başındaki `<<<<<<< HEAD … >>>>>>> origin/wip/binek-plan` çakışma işaretleri önceki birleştirmeden (6a1a4dc) kalmış; bu iş çözmedi (K57-KALDIR ve BINEK-PLAN girdileri ikisi de korunmalı).
 
-<<<<<<< HEAD
 ## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)
 
 - **Karar (kullanıcı):** K57 mekanik donması (2026-11-06, `docs/MEKANIK-DONMA.md`) tamamen kaldırıldı. Belge tarihsel kayıt olarak kalır; ev kuralı varsayılan tablosu başvuru olarak geçerli.

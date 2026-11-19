@@ -1,6 +1,6 @@
 # Mekanik doğrulama matrisi (APK öncesi)
 
-Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈6 sn). Kural sürümü 87.
+Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈5 sn). Kural sürümü 89.
 Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virgülle ayrılmış; sütunlar: tür, büyü/saldırı, seviye, sınıflar, mekanik, bağlam, bağlam sınıfı, beklenen, gerçek, sonuç, bulgu, not).
 
 ## Özet

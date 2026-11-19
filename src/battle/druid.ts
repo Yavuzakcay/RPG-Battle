@@ -21,6 +21,8 @@ import { adjustDamage, halfDamage } from '../rules/damage';
 import { applyHealing } from '../rules/damage';
 import { creatureTypeAt, monsterAt, swimSpeedAt } from './srdD1';
 import { bicimYuzmeOn, WS87_VERSION, ws87On } from './wildShape87Surum';
+import { srdD3On } from './srdD3Surum';
+import { SKILLS, type Skill } from '../rules/skills';
 import { CURRENT_RULES } from './ruleVersion';
 import { fail, finish, type CommandResult } from './common';
 import { damageEffects } from './damage-effects';
@@ -55,7 +57,7 @@ export function eligibleForms(monsters: Monster[], f: UsableFeature, level: numb
  * yazılmaz). `srd87`: SRD 5.2.1 aktarımı: `wild` (s.43: INT/WIS/CHA korunur; kurtarma yetkinliği ve diğer kurtarma ekleri
  * korunur, stat bloğundaki kurtarma yüksekse o), `poly` (s.153: bütün yetenekler ve kurtarmalar biçimin stat bloğundan).
  */
-export interface ShapeOpts { swimFt?: number; srd87?: 'wild' | 'poly' }
+export interface ShapeOpts { swimFt?: number; srd87?: 'wild' | 'poly'; /** Görev D3 (89+): beceriler biçime göre (`wildSkills`). */ srd89?: boolean }
 
 /**
  * Kural sürümü 87: seçili biçimlerden bu seviyede hâlâ alınabilenler (CR, uçuş, Beast türü sürümde). Geçersizler kayıtta
@@ -86,7 +88,28 @@ export function shapeStats(m: Monster, druid: Combatant, o: ShapeOpts = {}): Sha
     weaponOptions: attacks, attacksPerAction: Math.max(1, multi),
     avatar: monsterAvatar(m),
     ...(o.swimFt !== undefined ? { swimFt: o.swimFt } : {}),
+    ...(o.srd89 && o.srd87 ? { skills: o.srd87 === 'poly' ? { ...(m.skills ?? {}) } : wildSkills(m, druid, mods) } : {}),
   };
+}
+
+/**
+ * Görev D3 (sürüm 89; SRD 5.2.1 s. 43): "You also retain your skill ... proficiencies and use your Proficiency Bonus for
+ * them, in addition to gaining the proficiencies of the creature. If a skill ... modifier in the Beast's stat block is higher
+ * than yours, use the one in the stat block." Druid'in yetkin olduğu becerinin yetenek değiştiricisinin üstündeki eki
+ * (yetkinlik, uzmanlık) biçimin değiştiricisine eklenir; stat bloğundaki beceri yüksekse o. Yetkin olunmayan beceri yine
+ * biçimin değiştiricisinden (`skillBonus`).
+ */
+function wildSkills(m: Monster, druid: Combatant, mods: Combatant['modifiers']): Combatant['skills'] {
+  // Biçimdeyken yeni biçim: Druid'in kendi değerleri `shape.prev`'te (önceki biçimin becerileri yetkinlik sayılmaz).
+  const own = druid.shape?.prev.skills ?? druid.skills;
+  const ownMods = druid.shape?.prev.modifiers ?? druid.modifiers;
+  const out: Combatant['skills'] = {};
+  for (const k of Object.keys(own) as Skill[]) {
+    const v = own[k];
+    if (v !== undefined) out[k] = mods[SKILLS[k].ability] + (v - ownMods[SKILLS[k].ability]);
+  }
+  for (const [k, v] of Object.entries(m.skills ?? {}) as Array<[Skill, number]>) out[k] = Math.max(out[k] ?? -Infinity, v);
+  return out;
 }
 
 /**
@@ -105,7 +128,8 @@ function wildSaves(m: Monster, druid: Combatant, mods: Combatant['modifiers']): 
 /** Savaşın kural sürümüne göre biçim seçenekleri (87+: SRD aktarımı, anahtar açıksa yüzme hızı). */
 export function shapeOptsAt(state: BattleState, m: Monster, kind: 'wild' | 'poly'): ShapeOpts {
   if (!ws87On(state)) return {};
-  return { srd87: kind, ...(bicimYuzmeOn(state) ? { swimFt: swimSpeedAt(m.id, state.kuralSurumu ?? 1) ?? 0 } : {}) };
+  return { srd87: kind, ...(bicimYuzmeOn(state) ? { swimFt: swimSpeedAt(m.id, state.kuralSurumu ?? 1) ?? 0 } : {}),
+    ...(srdD3On(state) ? { srd89: true } : {}) };
 }
 
 export function wildShapeProblem(state: BattleState, actor: Combatant, form: string | undefined, monsters: Monster[]): string | null {
