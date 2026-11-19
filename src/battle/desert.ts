@@ -25,6 +25,7 @@ import { forcedMoveEvents, pushOutcome } from './forced';
 import { WIND_VEC, windDir } from './forest';
 import { downwind } from './wilds';
 import type { BattleEvent, BattleState, Combatant } from './types';
+import { lateSummonEvents } from './monsterSetup';
 
 const num = (v: unknown, d: number): number => (typeof v === 'number' ? v : d);
 const str = (v: unknown, d: string): string => (typeof v === 'string' ? v : d);
@@ -141,7 +142,8 @@ function wormEvents(state: BattleState, r: Record<string, unknown>, rng: Rng): B
   const mon = getMonster(str(r.monster, 'ankheg'));
   const worm = { ...combatantFromMonster(mon, { id: WORM_ID, name: `${mon.name} (kumdan)`, kuralSurumu: state.kuralSurumu ?? 1 }), side: 'enemies' as const, pos: spot, initiative: 0 };
   out.push({ type: 'map_note', text: sense.roll?.success ? `${target.name} titreşimi sezdi: kumdan çıkan yaratıktan sıçrayıp kurtuldu!` : `Kumdan bir yaratık fırladı ve ${target.name} hedefini yakaladı!` },
-    { type: 'summoned', ownerId: 'harita', spell: 'Kum pususu', combatant: worm, index: s.order.length });
+    // Görev D2 (88+): savaş başındaki gibi canavar özellikleri ve yetenekleri (Ankheg).
+    ...lateSummonEvents(applyEvents(state, out), { type: 'summoned', ownerId: 'harita', spell: 'Kum pususu', combatant: worm, index: s.order.length }));
   if (!sense.roll?.success) {
     out.push({ type: 'grappled', targetId: target.id, by: WORM_ID, escapeDc: num(r.escapeDc, 13), restrained: false, label: `${mon.name} kavradı` });
   }

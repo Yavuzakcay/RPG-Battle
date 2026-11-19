@@ -968,6 +968,8 @@ p.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8px
 .feature-legend .feature.missing { border-style: dashed; color: var(--mute); }
 .form-pick .form-card { display: inline-flex; align-items: center; gap: 6px; text-align: left; }
 .form-pick .form-card small { display: block; font-size: 11px; }
+.form-pick .form-card.stale { opacity: 0.6; border-style: dashed; }
+.form-pick .form-card.stale small { color: var(--enemy); }
 
 /* Görev K20: İlerleme adımı: köken feat'i kutusu, feat kartları, Skilled beceri seçimi, adım hata sınırı. */
 .origin-box { border: 1px solid var(--border, #4a4f5c); border-radius: 12px; padding: 12px 14px; margin: 8px 0 16px; background: rgba(127, 208, 203, 0.06); }

@@ -25,6 +25,7 @@ import { timedCondition } from './durations';
 import { combatantFromMonster } from './create';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types';
 import { matrisOn } from './matrisSurum';
+import { lateSummonEvents } from './monsterSetup';
 
 type M = Spell['mechanics'] & {
   extraTargets?: number; extraWithinFt?: number; dustAtZero?: boolean; notBelowOne?: boolean; maxHpDrain?: boolean; cures?: string[];
@@ -97,7 +98,8 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
     const t = cur.combatants[e.targetId];
     if (!t || t.creatureType !== 'humanoid' || !t.pos) continue;
     const z = combatantFromMonster(getMonster('zombie'), { id: `${t.id}-zombie`, name: `Zombi (${t.name})`, kuralSurumu: cur.kuralSurumu ?? 1 });
-    add([{ type: 'summoned', ownerId: actor.id, spell: spell.name, combatant: { ...z, side: actor.side, pos: t.pos, initiative: actor.initiative, summon: { by: actor.id, spellId: spell.id, spell: spell.name, level: spell.level, turn: 'after-owner' } }, index: cur.order.indexOf(actor.id) + 1 }]);
+    // Görev D2 (88+): zombi savaş başındaki gibi canavar özellikleri ve yetenekleriyle (Zombie: Exhaustion/Poisoned bağışıklığı).
+    add(lateSummonEvents(cur, { type: 'summoned', ownerId: actor.id, spell: spell.name, combatant: { ...z, side: actor.side, pos: t.pos, initiative: actor.initiative, summon: { by: actor.id, spellId: spell.id, spell: spell.name, level: spell.level, turn: 'after-owner' } }, index: cur.order.indexOf(actor.id) + 1 }));
   }
   // Heal ve Power Word Heal: durumlar biter.
   if (m.cures && m.kind === 'heal') for (const e of [...out]) if (e.type === 'healed') {

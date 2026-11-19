@@ -897,7 +897,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const base = c.shape?.prev ?? { ac: c.ac, speed: c.speed, fly: c.fly, size: c.size, modifiers: c.modifiers, saves: c.saves,
         weaponOptions: c.weaponOptions, attacksPerAction: c.attacksPerAction, avatar: c.avatar,
         // Kuyruk 18 H2: Polymorph canavar saldırılarını da değiştirir.
-        ...(event.stats?.attacks ? { attacks: c.attacks, multiattack: c.multiattack } : {}) };
+        ...(event.stats?.attacks ? { attacks: c.attacks, multiattack: c.multiattack } : {}),
+        // Kural sürümü 87 (`bicimYuzme`): biçimin yüzme hızı; bırakınca eski yüzme hızı.
+        ...(event.stats && 'swimFt' in event.stats ? { swimFt: c.swimFt } : {}) };
       if (!event.stats) {
         // Kuyruk K48: Örümcek Biçimi bitince biçim canı (geçici HP) da gider.
         const { shape: _s, ...rest0 } = c;
@@ -905,9 +907,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         return withCombatant({ ...state, combatants: { ...state.combatants, [c.id]: rest as Combatant } }, c.id, base);
       }
       const s = event.stats;
-      return withCombatant(state, c.id, { shape: { ...s, prev: base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
+      const shaped = withCombatant(state, c.id, { shape: { ...s, prev: base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
         saves: s.saves, weaponOptions: s.weaponOptions, attacksPerAction: s.attacksPerAction, avatar: s.avatar,
-        ...(s.attacks ? { attacks: s.attacks, multiattack: !!s.multiattack } : {}) });
+        ...(s.attacks ? { attacks: s.attacks, multiattack: !!s.multiattack } : {}),
+        ...('swimFt' in s ? { swimFt: s.swimFt || undefined } : {}) });
+      // Kural sürümü 87: yüzen biçim sudaysa "suda" işareti hemen (yüzme hızı ve çok derin su).
+      return 'swimFt' in s ? syncWater(shaped, c.id) : shaped;
     }
     case 'trait_turn': {
       const c = state.combatants[event.actorId];

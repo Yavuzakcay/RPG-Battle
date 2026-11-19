@@ -88,7 +88,6 @@ import {
   featureTeleportHexes, offCombatOnly, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, waterChoices, type AreaAct, type Box, type Point,
 } from './ui/hud';
 import { SECENEK_ADI } from './battle/girdapSurum';
-import { trAciklama } from './data';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { destroyForceProblem, effectTargetCount, strideSpellOf } from './battle/spells';
 import { wishCandidates } from './battle/spells69';
@@ -2433,7 +2432,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                   {waterChoices(state, spell).map((x) => (
                     <button key={x} role="radio" aria-checked={x === (choicePick ?? 'whirlpool')} className={x === (choicePick ?? 'whirlpool') ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>{SECENEK_ADI[x] ?? x}</button>
                   ))}
-                  <small className="why-line">{((k) => (getLang() === 'tr' ? trAciklama('buyuSecenek', k) : t().log.gmOptionText[k]))(`${spell.id}/${choicePick ?? 'whirlpool'}`)}</small>
+                  <small className="why-line">{t().log.gmOptionText(`${spell.id}/${choicePick ?? 'whirlpool'}`)}</small>
                 </div>
               )}
               {mode === 'pickHex' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' && !whirlpoolCast(state, spell) && (
@@ -3369,7 +3368,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             return (
               <div className="civ-picker familiar-picker" role="group" aria-label={F.familiar.title(c.name, rituals[0]?.name ?? '')}>
                 {rituals.map((ritual) => {
-                  const def = summonDef(ritual.id) as NonNullable<ReturnType<typeof summonDef>>;
+                  const def = summonDef(ritual.id, state.kuralSurumu ?? 1) as NonNullable<ReturnType<typeof summonDef>>;
                   const form = famForm && def.forms?.includes(famForm) ? famForm : def.forms?.[0] ?? '';
                   const kind = famType && def.choice?.options.includes(famType) ? famType : def.choice?.options[0] ?? '';
                   return (

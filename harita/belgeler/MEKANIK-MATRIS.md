@@ -1,6 +1,6 @@
 # Mekanik doğrulama matrisi (APK öncesi)
 
-Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈8 sn). Kural sürümü 84.
+Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈6 sn). Kural sürümü 87.
 Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virgülle ayrılmış; sütunlar: tür, büyü/saldırı, seviye, sınıflar, mekanik, bağlam, bağlam sınıfı, beklenen, gerçek, sonuç, bulgu, not).
 
 ## Özet
@@ -29,41 +29,42 @@ Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virg
 | Kararlar sonrası (K01, K02, K03, K04) | 83 | 6587 | 6583 | 3 | 0 | 1 | 0 | 99.9% |
 | Son ölçüm (B21, B22, B23, G02) | 83 | 6589 | 6588 | 0 | 0 | 1 | 0 | 100.0% |
 | Control Water dört seçenek (+4 satır) | 84 | 6606 | 6606 | 0 | 0 | 0 | 0 | 100.0% |
+| WS87 Wild Shape (sürüm 87) | 87 | 6606 | 6606 | 0 | 0 | 0 | 0 | 100.0% |
 
 Bulgu başına doğru olmayan satır (aşama sırasıyla):
 
-| Bulgu | İlk ölçüm (3116efd) | Kahin/ölçüm düzeltmesi, sürüm 82 | Grup 1 sonrası (Ç01, B01, B02, B03, B05) | Grup 2 sonrası (B07, B09, B11, B12, B17, B19, U01) | Grup 3 sonrası (B04, B06, B08, B10, B13, B14, B15, B16, B18, B20) | Karşılaştırma: sürüm 82, son kahinle | Kararlar sonrası (K01, K02, K03, K04) | Son ölçüm (B21, B22, B23, G02) | Control Water dört seçenek (+4 satır) | Düzeltme |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| B01 | 72 | 72 | 1 | 1 | 0 | 72 | 0 | 0 | 0 | sürüm 83: `saveMode` Restrained DEX dezavantajı (`srd83` işareti) |
-| B02 | 38 | 38 | 0 | 0 | 0 | 38 | 0 | 0 | 0 | sürüm 83: görülmeyen hedef reddi, alanda görülmeyen etkilenmez (`data/gorme-gerekir.json`, `seenTargets.ts`) |
-| Ç01 | 9 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | sürümsüz: sabit hasar tek sabit, yetenek değiştiricisi yok (SRD Damage Rolls) |
-| B03 | 5 | 5 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | sürüm 83: durdurulan büyüde yapım sonrası kancalar yok (`spell_cast.countered`); görünmez büyücüye Counterspell yok |
-| B04 | 4 | 4 | 4 | 4 | 0 | 4 | 0 | 0 | 0 | sürüm 83: `castingTime: reaction` büyüleri `cast_spell` komutunda reddedilir; tetik akışı (`reactions.ts`) aynen |
-| B21 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | sürüm 83: `zones.ts` `zoneDriftEnterEvents`: kayınca yeni kaplanan yaratığa giriş tetiği (`once`) |
-| B05 | 68 | 68 | 0 | 0 | 0 | 65 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` bloğu; yapım anı tetiğinde siper, tek hasar zarı, eşzamanlı etki |
-| B06 | 10 | 10 | 10 | 10 | 0 | 0 | 0 | 0 | 0 | sürümsüz: yanlış bulgu: motor zaten DEX save ve yarı hasar veriyor (`saveEffect`); ölçüm hatası (save `map_effect.roll` ile, d20 etiketsiz), motor değişmedi |
-| B07 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | sürüm 83: boyut kodu L/H/G ile karşılaştırma |
-| B08 | 2 | 2 | 2 | 2 | 0 | 2 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `ignoresCover`; DEX save'e siper eklenmez |
-| B09 | 6 | 6 | 6 | 0 | 0 | 6 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `addCastingMod` |
-| B10 | 14 | 14 | 14 | 14 | 0 | 0 | 0 | 0 | 0 | sürümsüz: arayüz: yapımda el etkisi seçici (`hand-cast-pick`); motor `cast_spell.choice` ile zaten uyguluyordu, arayüz ve ölçüm sormuyordu |
-| B22 | 0 | 0 | 0 | 0 | 2 | 2 | 2 | 0 | 0 | sürüm 83: yumrukta büyücünün Charmed yasağı ve Frightened dezavantajı (`arcaneHand.ts`, `range.ts` `charmedAgainst`) |
-| B23 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | sürüm 83: metal silah/zırh yoksa save yok (tepki de harcanmaz); silah yoksa ceza metal zırhın AC'sine (`reactions.ts` `corrodeEvents`) |
-| B11 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | sürümsüz: yanlış bulgu: motor zaten yarı hasar veriyor; ölçüm hatası (ışın save'i `kind: save` etiketsiz), motor değişmedi |
-| B12 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | sürüm 83: sıçrama 3 + (slot − 6) |
-| B13 | 3 | 3 | 3 | 3 | 0 | 1 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `allyAura`: büyücüde 30 ft yayılım, içindeki dostlar `syncAuras` ile yararlanır |
-| B14 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `areaTargets: enemies` |
-| B15 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `area83`: büyücü merkezli 30 ft yayılım, düşmanlar (`spellAreaAt`) |
-| B16 | 4 | 4 | 4 | 4 | 0 | 2 | 0 | 0 | 0 | sürüm 83: süren buyruk (`commandPersist`) büyü süresince; Mass Suggestion `m83` Charmed |
-| B17 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` 600 tur |
-| B18 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `smiteReveal`: hedefe konsantrasyona bağlı `revealed` |
-| B19 | 3 | 3 | 3 | 0 | 0 | 3 | 0 | 0 | 0 | sürüm 83: `spell_cast.area.parts`, yüzey çözücüsü her türü ayrı işler |
-| B20 | 1 | 1 | 4 | 4 | 0 | 5 | 0 | 0 | 0 | sürüm 83: alan tetiği olaylarında `zoneId`, duvar kesmesi `wallCut`: `incomingOf` hasar türünde element üretir |
-| U01 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` Charmed, yalnız DEX save dezavantajı |
-| U02 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 0 | sürüm 84: kullanıcı kararı (2026-11-19): girdap alanı hedef yaratığın altıgeninde (su gerekmez), slotla büyür, STR save, yakalanma, çekme; Game Master anahtarı `controlWaterWhirlpool` (`girdap.ts`); taşkın/hendek/akış savaş dışı |
-| K01 | 20 | 20 | 20 | 20 | 22 | 26 | 0 | 0 | 0 | sürüm 83: kullanıcı kararı: `spellHarms` zarar vermeyen büyüyü ayırır, `checkReach` 83'te yasaklamaz |
-| K02 | 2 | 2 | 2 | 2 | 2 | 2 | 0 | 0 | 0 | sürüm 83: kullanıcı kararı: `executeAreaCast` yayılım büyüsünde yapım anı save'i yok (`auraQuiet`) |
-| K03 | 3 | 3 | 3 | 3 | 3 | 3 | 0 | 0 | 0 | sürüm 83: kullanıcı kararı: Prone ve otomatik kritik 5 ft gücün yerinden; Arcane Sword `m83` güç modeli (`lingering: weapon`, 30 ft) |
-| K04 | 2 | 2 | 2 | 2 | 2 | 2 | 0 | 0 | 0 | sürüm 83: kullanıcı kararı: yakalama etkisinde `startSave.skip` (yakalandığı tur); ilk tekrar sonraki turda |
+| Bulgu | İlk ölçüm (3116efd) | Kahin/ölçüm düzeltmesi, sürüm 82 | Grup 1 sonrası (Ç01, B01, B02, B03, B05) | Grup 2 sonrası (B07, B09, B11, B12, B17, B19, U01) | Grup 3 sonrası (B04, B06, B08, B10, B13, B14, B15, B16, B18, B20) | Karşılaştırma: sürüm 82, son kahinle | Kararlar sonrası (K01, K02, K03, K04) | Son ölçüm (B21, B22, B23, G02) | Control Water dört seçenek (+4 satır) | WS87 Wild Shape (sürüm 87) | Düzeltme |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| B01 | 72 | 72 | 1 | 1 | 0 | 72 | 0 | 0 | 0 | 0 | sürüm 83: `saveMode` Restrained DEX dezavantajı (`srd83` işareti) |
+| B02 | 38 | 38 | 0 | 0 | 0 | 38 | 0 | 0 | 0 | 0 | sürüm 83: görülmeyen hedef reddi, alanda görülmeyen etkilenmez (`data/gorme-gerekir.json`, `seenTargets.ts`) |
+| Ç01 | 9 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | sürümsüz: sabit hasar tek sabit, yetenek değiştiricisi yok (SRD Damage Rolls) |
+| B03 | 5 | 5 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | sürüm 83: durdurulan büyüde yapım sonrası kancalar yok (`spell_cast.countered`); görünmez büyücüye Counterspell yok |
+| B04 | 4 | 4 | 4 | 4 | 0 | 4 | 0 | 0 | 0 | 0 | sürüm 83: `castingTime: reaction` büyüleri `cast_spell` komutunda reddedilir; tetik akışı (`reactions.ts`) aynen |
+| B21 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | sürüm 83: `zones.ts` `zoneDriftEnterEvents`: kayınca yeni kaplanan yaratığa giriş tetiği (`once`) |
+| B05 | 68 | 68 | 0 | 0 | 0 | 65 | 0 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` bloğu; yapım anı tetiğinde siper, tek hasar zarı, eşzamanlı etki |
+| B06 | 10 | 10 | 10 | 10 | 0 | 0 | 0 | 0 | 0 | 0 | sürümsüz: yanlış bulgu: motor zaten DEX save ve yarı hasar veriyor (`saveEffect`); ölçüm hatası (save `map_effect.roll` ile, d20 etiketsiz), motor değişmedi |
+| B07 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | sürüm 83: boyut kodu L/H/G ile karşılaştırma |
+| B08 | 2 | 2 | 2 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `ignoresCover`; DEX save'e siper eklenmez |
+| B09 | 6 | 6 | 6 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `addCastingMod` |
+| B10 | 14 | 14 | 14 | 14 | 0 | 0 | 0 | 0 | 0 | 0 | sürümsüz: arayüz: yapımda el etkisi seçici (`hand-cast-pick`); motor `cast_spell.choice` ile zaten uyguluyordu, arayüz ve ölçüm sormuyordu |
+| B22 | 0 | 0 | 0 | 0 | 2 | 2 | 2 | 0 | 0 | 0 | sürüm 83: yumrukta büyücünün Charmed yasağı ve Frightened dezavantajı (`arcaneHand.ts`, `range.ts` `charmedAgainst`) |
+| B23 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | sürüm 83: metal silah/zırh yoksa save yok (tepki de harcanmaz); silah yoksa ceza metal zırhın AC'sine (`reactions.ts` `corrodeEvents`) |
+| B11 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | sürümsüz: yanlış bulgu: motor zaten yarı hasar veriyor; ölçüm hatası (ışın save'i `kind: save` etiketsiz), motor değişmedi |
+| B12 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | sürüm 83: sıçrama 3 + (slot − 6) |
+| B13 | 3 | 3 | 3 | 3 | 0 | 1 | 0 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `allyAura`: büyücüde 30 ft yayılım, içindeki dostlar `syncAuras` ile yararlanır |
+| B14 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `areaTargets: enemies` |
+| B15 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `area83`: büyücü merkezli 30 ft yayılım, düşmanlar (`spellAreaAt`) |
+| B16 | 4 | 4 | 4 | 4 | 0 | 2 | 0 | 0 | 0 | 0 | sürüm 83: süren buyruk (`commandPersist`) büyü süresince; Mass Suggestion `m83` Charmed |
+| B17 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` 600 tur |
+| B18 | 1 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` `smiteReveal`: hedefe konsantrasyona bağlı `revealed` |
+| B19 | 3 | 3 | 3 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | sürüm 83: `spell_cast.area.parts`, yüzey çözücüsü her türü ayrı işler |
+| B20 | 1 | 1 | 4 | 4 | 0 | 5 | 0 | 0 | 0 | 0 | sürüm 83: alan tetiği olaylarında `zoneId`, duvar kesmesi `wallCut`: `incomingOf` hasar türünde element üretir |
+| U01 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | sürüm 83: büyü verisinde `m83` Charmed, yalnız DEX save dezavantajı |
+| U02 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 0 | 0 | sürüm 84: kullanıcı kararı (2026-11-19): girdap alanı hedef yaratığın altıgeninde (su gerekmez), slotla büyür, STR save, yakalanma, çekme; Game Master anahtarı `controlWaterWhirlpool` (`girdap.ts`); taşkın/hendek/akış savaş dışı |
+| K01 | 20 | 20 | 20 | 20 | 22 | 26 | 0 | 0 | 0 | 0 | sürüm 83: kullanıcı kararı: `spellHarms` zarar vermeyen büyüyü ayırır, `checkReach` 83'te yasaklamaz |
+| K02 | 2 | 2 | 2 | 2 | 2 | 2 | 0 | 0 | 0 | 0 | sürüm 83: kullanıcı kararı: `executeAreaCast` yayılım büyüsünde yapım anı save'i yok (`auraQuiet`) |
+| K03 | 3 | 3 | 3 | 3 | 3 | 3 | 0 | 0 | 0 | 0 | sürüm 83: kullanıcı kararı: Prone ve otomatik kritik 5 ft gücün yerinden; Arcane Sword `m83` güç modeli (`lingering: weapon`, 30 ft) |
+| K04 | 2 | 2 | 2 | 2 | 2 | 2 | 0 | 0 | 0 | 0 | sürüm 83: kullanıcı kararı: yakalama etkisinde `startSave.skip` (yakalandığı tur); ilk tekrar sonraki turda |
 
 ## Yanlış dağılımı
 
