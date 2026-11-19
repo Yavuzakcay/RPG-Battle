@@ -9,6 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Eski Dragonborn ten maskeleri silindi: 264 dosya (2026-11-19, kullanıcı kararı; yalnız görünüm/veri, kural ve kayıt sürümü değişmedi)
+
+- Kullanıcı kararı: oyunda görünmeyecek dosyalar tutulmaz. `public/characters/maske/dragonborn-<erkek|kadin>-<sınıf>-<hücre>.png` (264, ≈236 kB) tek tek `git rm` ile silindi. Dragonborn beyaz taban jetonları `pul` boyamayla `maske-pul/` kullanıyor; eski `maske/` yedek yolunu (`lineageTint(…, 'maske')`, `lineagesAltMaske`) uygulama kodu çağırmıyordu.
+- Denetim (`docs/sabah/kullanilmayan-jetonlar/dragonborn-eski-maske-silinen.md`): çözücü 649.440 `sheetAvatar` çağrısında eski maskeyi 0 kez istedi; `scripts/dragonborn-pul-maske.py` `maske/` olmadan ve olarak 266 pul maskesini bayt bayt aynı üretti. Okuyan yalnız iki test (dosya varlığı bekliyordu) ve 8 eski inceleme betiği (maske yokken çökmeden devam eder; betikler değişmedi).
+- Testler `src/ui/tint.test.ts` ve `src/battle/baglamaKq6.test.ts` oyunun gerçekte kullandığı pul maskesine bağlandı (`maskUrlFor(a.src, a.tint)`, `PUL`); `soy-maske-dragonborn-rapor.json` artık okunmuyor.
+- Bırakıldı: 24 sınıf-genel Dragonborn maskesi (kullanıcı: sınıf-genel jetonlara ve `avatar.test.ts`'e dokunma), diğer ırkların `maske/` (1416), `maske-pul/` (266). Karar bekleyen yetimler: `scripts/soy-maske-dragonborn.ts` (çalışırsa dosyaları geri üretir), 8 eski inceleme betiği, `data/soy-maske-dragonborn-rapor.json`, `lineagesAltMaske`.
+
 ## Ana parça sınırı 450 → 500 kB (2026-11-19, kullanıcı kararı 2026-11-18)
 
 Kullanıcı: "500 de sorun değil." `data/paket-siniri.json` `anaParcaKb` 450 → 500. Ana parça bu sırada ≈448 kB (450 sınırına 2 kB kalmıştı). KQ4 PB1'deki "sınır tekrar yükseltilmez" notu bu kararla kalktı; yeni kod yine tembel parçalara girer (ilke değişmedi), denetim `npm run build` sonunda `scripts/paket-siniri.mjs`. CLAUDE.md güncellendi.

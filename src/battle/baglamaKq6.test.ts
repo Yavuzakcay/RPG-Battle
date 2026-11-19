@@ -7,7 +7,6 @@ import { naturalLeft } from '../ui/tokenMirror';
 import { maskedTint, maskUrlFor, scaleTinted, tintPixels } from '../ui/tint';
 import { scaleLineages, scaleMaskless, scalePixels } from '../ui/scaleTint';
 import alt from '../../data/soy-maske-alt-rapor.json';
-import dragonRep from '../../data/soy-maske-dragonborn-rapor.json';
 import fighter from '../../data/fighter-jeton.json';
 
 const MASKS = new Set(Object.keys(import.meta.glob('/public/characters/maske/*.png')).map((f) => f.split('/').pop()!.replace('.png', '')));
@@ -51,8 +50,9 @@ describe('KQ6 bağlama', () => {
   it('maskeler: bağlı her alt sınıf/Gariban jetonunun ten maskesi var ya da (kabuk/odun yüzü, tam örtülü) raporda "maskesiz"', () => {
     const rep = alt.jetonlar as Record<string, number>;
     expect(Object.keys(rep).length).toBe(6 * 264 + 10); // + 10 Gladyatör (CC 2026-11-19, fighter ID12; boyalı 5 ırk × 2 cinsiyet, Celestial/Dragonborn hariç)
-    const dragon = (dragonRep as { jetonlar: Record<string, { n?: number }> }).jetonlar;
-    for (const [name, n] of Object.entries(rep)) expect(MASKS.has(name), name).toBe(name.startsWith('dragonborn-') ? (dragon[name]?.n ?? 0) >= 30 : n >= 30);
+    // KJ2: Dragonborn beyaz taban jetonlarının ten maskesi pul maskesidir (`maske-pul/`, 266 jetonun hepsinde var; kapsam aşağıdaki testte);
+    // oyunun hiç istemediği eski `maske/dragonborn-<erkek|kadin>-*` yedek maskeleri silindi. Diğer ırklar: `maske/` + rapor piksel sayısı.
+    for (const [name, n] of Object.entries(rep)) expect(name.startsWith('dragonborn-') ? PUL.has(name) : MASKS.has(name), name).toBe(name.startsWith('dragonborn-') ? true : n >= 30);
     expect(Object.values(rep).filter((n) => n < 30).length).toBeLessThan(60);
   });
   it('Dragonborn beyaz taban: 10 renk pul deseni v2 (pul maskesi, eski çarpma filtresi yok), birbirinden ayrı; maske tablosu yedek', () => {
