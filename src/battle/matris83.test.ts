@@ -344,3 +344,15 @@ describe('B04: tepki büyüleri komutla (eylemle) yapılamaz (SRD "Casting Time:
     });
   }
 });
+
+describe('B08: Sacred Flame siperden yararlandırmaz (SRD "The target gains no benefit from Half Cover or Three-Quarters Cover for this save.")', () => {
+  for (const [v, ok] of [[83, false], [82, true]] as const) {
+    it(`${v}: yarım siperdeki hedefin DEX save'i ${ok ? '+2 ile geçer' : 'siper bonusu almaz'}`, () => {
+      const s = scene(v, [caster({ spellNames: ['Sacred Flame'], pos: { col: 3, row: 5 } }), foe('T', { pos: { col: 7, row: 5 } })]);
+      const tiles = s.map!.tiles.map((r, i) => (i === 5 ? `${r.slice(0, 5)}d${r.slice(6)}` : r));
+      const r = run({ ...s, map: { ...s.map!, tiles } }, { type: 'cast_spell', actorId: 'A', spellName: 'Sacred Flame', targetId: 'T' } as Command, hooked({ one: 13, two: [13, 13] }));
+      expect(r.ok, r.error).toBe(true);
+      expect(saveOf(r.events, 'T')?.success).toBe(ok);
+    });
+  }
+});

@@ -355,6 +355,8 @@ export interface SpellMechanics {
   mb7?: Partial<SpellMechanics>;
   /** Mekanik matris düzeltmeleri (kural sürümü 83+; harita/belgeler/MEKANIK-MATRIS.md): bloktaki alanlar üstüne yazılır. */
   m83?: Partial<SpellMechanics>;
+  /** Mekanik matris B08 (yalnız `m83` bloğunda; Sacred Flame): hedefin DEX save'ine siper bonusu eklenmez. */
+  ignoresCover?: boolean;
   /**
    * Kuyruk K73c (sürüm 64+, Görev 3): anlık silindir büyüsünün yüksekliği (ft; veride biçim küre). Havada merkezlenince
    * dairesi merkezde, silindir aşağı uzanır (`src/battle/airArea.ts`). Yerde merkezliyken kullanılmaz.

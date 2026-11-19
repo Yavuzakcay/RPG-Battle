@@ -168,6 +168,7 @@
     "rangeFt": 60,
     "text": "DEX save, 1d8 radiant",
     "mechanics": {
+      "m83": {"ignoresCover": true},
       "kind": "save",
       "damage": "1d8",
       "damageType": "radiant",

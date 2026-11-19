@@ -834,7 +834,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     // Kuyruk 19: bazı türler save'i otomatik kaçırır (Blight: Plant; anahtar `spellsK19`).
     const typeFail = !!m.autoFailTypes?.length && globalRule(state, 'spellsK19') && m.autoFailTypes.includes((target.creatureType ?? '').toLowerCase());
     const autoFail = typeFail || ((ability === 'str' || ability === 'dex') && autoFailsStrDexSave(target.conditions));
-    const dexCover = ability === 'dex' ? cover : 0;
+    // Mekanik matris B08 (sürüm 83+, `ignoresCover`; Sacred Flame): "The target gains no benefit from Half Cover or
+    // Three-Quarters Cover for this save." 82 ve altı: siper eklenir (aynen).
+    const dexCover = ability === 'dex' && !m.ignoresCover ? cover : 0;
     // Kuyruk K70 (sürüm 54): türü save'i otomatik başaran (Flesh to Stone: Construct).
     const typeOk = autoSucceedsType(m.autoSuccessTypes, target);
     const save = resolveSave({ ...((m.illusion && truesightSees(state, target, actor)) || typeOk ? { autoSuccess: true } : {}), extra: saveDice(target, ability), modifier: target.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0,
