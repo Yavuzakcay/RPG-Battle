@@ -254,6 +254,7 @@ export function markdown(rows: Sinifli[], ms: number, gecmis: Ozet[] = []): stri
   const spellRows = rows.filter((r) => r.tur === 'büyü');
   const wRows = rows.filter((r) => r.tur === 'silah');
   const mRows = rows.filter((r) => r.tur === 'canavar');
+  const eRows = rows.filter((r) => r.tur === 'eylem');
   const spells = new Set(spellRows.map((r) => r.ad));
   const weapons = new Set(wRows.map((r) => r.ad));
   const attacks = new Set(mRows.map((r) => r.ad));
@@ -267,7 +268,7 @@ export function markdown(rows: Sinifli[], ms: number, gecmis: Ozet[] = []): stri
   const kok = KATALOG.filter((k) => rows.some((r) => r.bulgu === k.id && r.sonuc !== 'doğru'));
   L.push(`- Kök nedene göre: ${kok.filter((k) => k.sonuc === 'yanlış').length} yanlış, ${kok.filter((k) => k.sonuc === 'çökme').length} çökme, ${kok.filter((k) => k.sonuc === 'uygulanmıyor').length} uygulanmıyor, ${kok.filter((k) => k.sonuc === 'karar bekliyor').length} karar bekleyen bulgu.`, '');
   L.push('| Tür | Satır | Doğru | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor | Doğru oranı |', '|---|---:|---:|---:|---:|---:|---:|---:|');
-  for (const [k, rs] of [['Büyü', spellRows], ['Silah', wRows], ['Canavar', mRows]] as Array<[string, Sinifli[]]>) {
+  for (const [k, rs] of [['Büyü', spellRows], ['Silah', wRows], ['Canavar', mRows], ['Eylem (Ready)', eRows]] as Array<[string, Sinifli[]]>) {
     const x = tally(rs);
     L.push(`| ${k} | ${rs.length} | ${x['doğru']} | ${x['yanlış']} | ${x['çökme']} | ${x['uygulanmıyor']} | ${x['karar bekliyor']} | ${pct(x['doğru'], rs.length)} |`);
   }
@@ -323,6 +324,12 @@ export function markdown(rows: Sinifli[], ms: number, gecmis: Ozet[] = []): stri
     L.push('');
   }
   // Büyü tablosu.
+  if (eRows.length) {
+    L.push('## Eylemler: Hazırla (Ready)', '', 'SRD 5.2.1 s.186–187; kural sürümü 89 (`src/sim/matris/hazirla.ts`).', '');
+    L.push('| Bağlam | Beklenen | Gerçek | Sonuç |', '|---|---|---|---|');
+    for (const r of eRows) L.push(`| ${r.baglam} | ${r.beklenen} | ${r.gercek.replace(/\|/g, '/')} | ${r.sonuc} |`);
+    L.push('');
+  }
   L.push('## Büyü matrisi (büyü başına)', '');
   L.push('Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliyor. Bağlamların ayrıntısı CSV\'de.', '');
   L.push('| Büyü | Sv | Mekanik | Satır | ✓ | ✗ | ‼ | ∅ | ? | Bulgu |', '|---|---:|---|---:|---:|---:|---:|---:|---:|---|');

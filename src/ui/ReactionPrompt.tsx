@@ -6,7 +6,14 @@
 import { useEffect, useRef } from 'react';
 import type { BattleState } from '../battle';
 import type { ReactionAnswer, ReactionRequest } from '../rules/reactionChoice';
-import { t } from '../i18n';
+import { getLang, t } from '../i18n';
+import hazirla from '../../data/hazirla.json';
+
+/** Motor tetik adını Türkçe verir (`ready.ts`); arayüz dilinde göster. */
+function readyTriggerLabel(tr: string): string {
+  const d = (hazirla.tetikler as Array<{ ad: { tr: string; en: string } }>).find((x) => x.ad.tr === tr);
+  return d ? d.ad[getLang() === 'en' ? 'en' : 'tr'] : tr;
+}
 
 /** İstemin başlığı ve tetik satırı (saf; testlerde de kullanılır). */
 export function reactionAskText(req: ReactionRequest, state: BattleState): { title: string; line: string } {
@@ -19,8 +26,10 @@ export function reactionAskText(req: ReactionRequest, state: BattleState): { tit
       : req.trigger === 'cast' ? T.cast?.(n(req.sourceId), i.spell ?? '', i.level ?? 0)
         : req.trigger === 'fall' ? T.fall?.(n(req.sourceId), i.feet ?? 0)
           : req.trigger === 'choice' ? R.choiceLine(i.label ?? '')
+            // Hazırla (Ready, sürüm 89): tetik adı `info.label`.
+            : req.trigger === 'ready' ? R.readyLine(n(req.sourceId), readyTriggerLabel(i.label ?? ''))
             : T[req.trigger]?.(n(req.sourceId));
-  return { title: req.trigger === 'choice' ? R.choiceTitle(n(req.reactorId)) : R.title(n(req.reactorId)), line: line ?? '' };
+  return { title: req.trigger === 'choice' ? R.choiceTitle(n(req.reactorId)) : req.trigger === 'ready' ? R.readyTitle(n(req.reactorId)) : R.title(n(req.reactorId)), line: line ?? '' };
 }
 
 /** Düğmeler: seçimsiz seçenek bir düğme, seçimli seçenekte her seçim bir düğme (slot seviyesi ya da hedef adı). */

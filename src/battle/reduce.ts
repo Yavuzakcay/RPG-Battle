@@ -660,7 +660,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const run = c.pos ? runAfter(c.pos, event.path, c.run) : null;
       let moved = withCombatant(state, event.actorId, event.free
         ? { pos: last ?? c.pos, run, economy: { ...c.economy, shiftLeft: Math.max(0, (c.economy.shiftLeft ?? 0) - event.cost) } }
-        : { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
+        // Hazırla (Ready, sürüm 89): tepkiyle hareket turun hareketinden düşmez.
+        : event.reaction ? { pos: last ?? c.pos, run } : { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
       moved = syncWater(moved, event.actorId);
       // Kuyruk 19: Resilient Sphere: taşınan küre taşıyanın bir arkasındaki altıgende kalır.
       const behind = event.path.length > 1 ? event.path[event.path.length - 2] : c.pos;
@@ -721,6 +722,20 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
       return withCombatant(state, c.id, { economy: { ...c.economy, action: false, attacksLeft: 0, hasted: true, hasteUsed: true },
         ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
+    }
+    case 'readied': {
+      // Hazırla (Ready, sürüm 89): hazırlık kurulur (bir anda bir tane).
+      if (!state.combatants[event.actorId]) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      return withCombatant(state, event.actorId, { readied: event.readied });
+    }
+    case 'ready_released':
+    case 'ready_lapsed': {
+      // Hazırlık biter; tutulan büyünün konsantrasyonu (`ready:<büyü>`) da (salınan konsantrasyonlu büyü kendi konsantrasyonunu
+      // ardından kurar: tek konsantrasyon).
+      const c = state.combatants[event.actorId];
+      if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
+      const held = c.concentration?.spell.startsWith('ready:') ? endConcentration(state, c.id) : state;
+      return withCombatant(held, c.id, { readied: undefined });
     }
     case 'reaction_used': {
       // Tepki hakkı harcanır (Görev R1): kendi turunun başında yenilenir (turn_ended).

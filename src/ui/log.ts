@@ -9,6 +9,7 @@ import { skillLabel } from '../rules/skills';
 import { terrainOf } from '../map/terrain';
 import { getLang, t } from '../i18n';
 import { spells } from '../data';
+import hazirla from '../../data/hazirla.json';
 import { SECENEK_ADI } from '../battle/girdapSurum';
 import { hpModeFor, hpPhrase } from './hpVisibility';
 import terrainTable from '../../data/arazi-buyu-etkileri.json';
@@ -57,6 +58,12 @@ function riderPart(state: BattleState, actorId: string, label: string, rider: st
   const spec = riderOf(state.combatants[actorId]?.monsterId, label);
   if (!spec) return L.riderNone(rider);
   return spec.unsupported ? L.riderPartial(spec.unsupported, spec.text ?? '') : null;
+}
+
+/** Hazırla tetiğinin görünen adı (`data/hazirla.json`, dile göre). */
+export function readyTriggerName(id: string): string {
+  const d = (hazirla.tetikler as Array<{ id: string; ad: { tr: string; en: string } }>).find((x) => x.id === id);
+  return d ? d.ad[getLang() === 'en' ? 'en' : 'tr'] : id;
 }
 
 export function describeEvent(event: BattleEvent, state: BattleState): string {
@@ -252,6 +259,17 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.aiRoleSet(n(event.targetId), event.role);
     case 'exhaustion_changed':
       return L.exhaustion(n(event.targetId), event.level);
+    // Hazırla (Ready, sürüm 89).
+    case 'readied': {
+      const r = event.readied.response;
+      const resp = r.kind === 'attack' ? L.readyResp.attack(r.option?.label ?? state.combatants[event.actorId]?.attacks[r.attackIndex ?? 0]?.name ?? '?')
+        : r.kind === 'move' ? L.readyResp.move : L.readyResp.spell(r.spellName);
+      return L.readied(n(event.actorId), readyTriggerName(event.readied.trigger), resp);
+    }
+    case 'ready_released':
+      return L.readyReleased(n(event.actorId), readyTriggerName(event.trigger));
+    case 'ready_lapsed':
+      return L.readyLapsed(n(event.actorId), L.readyWhy[event.reason] ?? event.reason);
     case 'summon_steered':
       return L.summonSteered(n(event.summonId));
     case 'haste_action':

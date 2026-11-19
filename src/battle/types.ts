@@ -733,7 +733,17 @@ export interface Avatar {
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */
+/** Hazırla (Ready, sürüm 89) yanıtı: tek saldırı (silah seçeneği ya da canavar saldırısı), hareket ya da hazırlanan büyü. */
+export type ReadyResponse =
+  | { kind: 'attack'; option?: AttackOption; attackIndex?: number }
+  | { kind: 'move'; to: Offset }
+  /** `slotLevel` hazırlarken harcanan slot (cantrip'te null). */
+  | { kind: 'spell'; spellName: string; slotLevel?: number | null };
+/** Kurulmuş hazırlık (`readied` olayı). Tutulan büyünün konsantrasyon adı `ready:<büyü>`. */
+export interface ReadiedAction { trigger: string; sourceId?: string; hex?: Offset; response: ReadyResponse; round: number }
 export interface Combatant {
+  /** Hazırla (Ready, sürüm 89): kurulmuş hazırlık (bir anda bir tane; tetikte ya da sonraki tur başında biter). */
+  readied?: ReadiedAction;
   /** Kuyruk KQ3 NA1 (sürüm 80): taşıma kapasitesi (lb; STR × 15 × boyut), kendi yükü (lb) ve ortak taşıma (hız yarıya). */
   carryCapLb?: number; carryUsedLb?: number; groupCarry?: boolean;
   id: string;
@@ -1685,6 +1695,8 @@ export type Command =
        * kaynak bir azalır; büyü kendi seviyesinde ve Magic eylemiyle yapılır (SRD 5.2.1).
        */
       free?: boolean;
+      /** Hazırla (Ready, sürüm 89): tutulan büyünün salınması (iç komut; slot hazırlarken harcandı, sıra dışı). Dışarıdan gönderilemez. */
+      fromReady?: boolean;
       /** K11: Transmuted Spell'in hedef türü. */
       transmute?: string;
       /** Kuyruk 19 (11–20): Overchannel (Evoker 14): hasar zarları en yüksek. */
@@ -1740,6 +1752,12 @@ export type Command =
   | { type: 'shove'; actorId: string; targetId: string; effect: 'push' | 'prone' }
   /** Kaçın (Dodge): sonraki turunun başına dek saldıranlar dezavantajlı, DEX save'leri avantajlı. */
   | { type: 'dodge'; actorId: string }
+  /**
+   * Hazırla (Ready; SRD 5.2.1 s.186–187, kural sürümü 89): eylem harcanır; seçilen algılanabilir tetik (`data/hazirla.json`)
+   * olunca tepkiyle yanıt (tek saldırı, hızın kadar hareket ya da hazırlanan büyü), en geç sonraki turunun başına dek.
+   * `sourceId` yalnız bu yaratık tetikler; `hex` "altıgene girer" tetiğinin altıgeni.
+   */
+  | { type: 'ready'; actorId: string; trigger: string; sourceId?: string; hex?: Offset; response: ReadyResponse }
   /** Ayağa kalk (Prone kalkar, hızın yarısı harcanır). */
   | { type: 'stand_up'; actorId: string }
   /** Yakalamadan kaçmaya çalış (eylem; Athletics ya da Acrobatics vs kaçış DC'si). */
@@ -1816,6 +1834,12 @@ export type BattleEvent =
   | { type: 'haste_action'; actorId: string; first?: boolean }
   /** CILA: sahibi çağrısını bonus eylemle taşıyor (çağrının bu turdaki hareketi sıfırlanır). */
   | { type: 'summon_steered'; summonId: string }
+  /** Hazırla (Ready, sürüm 89; kayıt sürümü 24): hazırlık kuruldu (büyüde slot ve tutma konsantrasyonu ayrı olaylar). */
+  | { type: 'readied'; actorId: string; readied: ReadiedAction; label: string }
+  /** Hazırlanan eylem tetikle salındı (tepki ayrıca `reaction_used`; ardından yanıtın kendi olayları). */
+  | { type: 'ready_released'; actorId: string; sourceId?: string; trigger: string; label: string }
+  /** Hazırlık bitti: sonraki tur başı, tutma konsantrasyonu bozuldu, Incapacitated, düştü ya da haritadan ayrıldı. */
+  | { type: 'ready_lapsed'; actorId: string; reason: 'turnStart' | 'concentration' | 'incapacitated' | 'died' | 'gone'; label: string }
   | {
       type: 'attack_resolved';
       /** Kuyruk 18 H3: Brutal Strike etkisi (avantajdan vazgeçildi; isabette +1d10). */
@@ -1860,6 +1884,8 @@ export type BattleEvent =
       frenzyTurn?: string;
       /** Fırsat saldırısı (tepki). */
       opportunity?: boolean;
+      /** Hazırla (Ready, sürüm 89): hazırlanan saldırı (tepkiyle, tek saldırı). */
+      ready?: boolean;
       /** Yakın dövüş silah saldırısı (smite büyülerinin tetiği; Görev P-Paladin). */
       melee?: boolean;
       /** Monk silahı ya da Unarmed Strike (Stunning Strike tetiği; Görev P-Monk). */
@@ -1950,7 +1976,8 @@ export type BattleEvent =
   /** Yol başlangıcı hariç girilen altıgenler; maliyet altıgen cinsinden. */
   | { type: 'mounted'; actorId: string; mountId: string; cost: number; /** Kuyruk MB2 (74+): kontrollü binek. */ control?: 'kontrollu' }
   | { type: 'dismounted'; actorId: string; at: Offset; cost: number; /** Kuyruk MB1 (68+): binekten düşerek (günlük). */ fell?: true; /** Kuyruk MB3 (69+): havada iniş irtifası (ft; yoksa irtifa değişmez). */ toFt?: number }
-  | { type: 'moved'; actorId: string; path: Offset[]; cost: number; /** Kuyruk 19: serbest kayma (`shiftLeft`'ten düşer). */ free?: boolean }
+  | { type: 'moved'; actorId: string; path: Offset[]; cost: number; /** Kuyruk 19: serbest kayma (`shiftLeft`'ten düşer). */ free?: boolean;
+      /** Hazırla (Ready, sürüm 89): tepkiyle yapılan hareket; turun hareketinden düşmez (SRD 5.2.1 s.186). */ reaction?: boolean }
   | { type: 'shift_granted'; actorId: string; hexes: number }
   | { type: 'initiative_swapped'; actorId: string; allyId: string }
   /** Uzun atlama: aradaki `gap` altıgen atlandı, `cost` hareketten düştü. */

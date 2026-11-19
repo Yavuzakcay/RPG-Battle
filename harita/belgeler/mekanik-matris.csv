@@ -6605,3 +6605,12 @@ canavar,Marilith: Pact Blade,CR 16,canavar,yakın saldırı,hedefte Shield (+5 A
 canavar,Marilith: Constrict,CR 16,canavar,save (STR 17),save başarısız,yapım,save=str/17; başarı=hayır; taban hasar=16; tür=bludgeoning,save=str/17; başarı=hayır; taban hasar=16; tür=bludgeoning,doğru,,
 canavar,Marilith: Constrict,CR 16,canavar,save (STR 17),save başarılı (hasar yok),save,save=str/17; başarı=evet; taban hasar=0; tür=bludgeoning,save=str/17; başarı=evet; taban hasar=0; tür=bludgeoning,doğru,,
 canavar,Marilith: Constrict,CR 16,canavar,save (STR 17),hedef direnç (bludgeoning),hasar türü,save=str/17; başarı=hayır; taban hasar=8; tür=bludgeoning,save=str/17; başarı=hayır; taban hasar=8; tür=bludgeoning,doğru,,
+eylem,Ready (Hazırla),,,ready,düşman erişime girer → saldırı,tepki,"tek saldırı, tepki ready","tek saldırı, tepki ready",doğru,,SRD 5.2.1 s.186–187 Ready
+eylem,Ready (Hazırla),,,ready,Extra Attack (2 saldırı) varken,saldırı zarı,1,1,doğru,,SRD 5.2.1 s.186–187 Ready
+eylem,Ready (Hazırla),,,ready,hareket yanıtı,tepki,"hareket tepkiyle, turun hareketi değişmedi","hareket tepkiyle, turun hareketi değişmedi",doğru,,SRD 5.2.1 s.186–187 Ready
+eylem,Ready (Hazırla),,,ready,büyü hazırlanınca slot,yukarı slot,"1. seviye slot 4 → 3, konsantrasyon ready:Guiding Bolt","1. seviye slot 4 → 3, konsantrasyon ready:Guiding Bolt",doğru,,SRD 5.2.1 s.186–187 Ready
+eylem,Ready (Hazırla),,,ready,tetik gelmezse (sonraki tur başı),konsantrasyon,"slot 3 (geri gelmedi), konsantrasyon yok, hazırlık bitti","slot 3 (geri gelmedi), konsantrasyon yok, hazırlık bitti",doğru,,SRD 5.2.1 s.186–187 Ready
+eylem,Ready (Hazırla),,,ready,tutma konsantrasyonu bozulur,konsantrasyon,tetiklenmez,tetiklenmez,doğru,,SRD 5.2.1 s.186–187 Ready
+eylem,Ready (Hazırla),,,ready,döküm süresi tepki olan büyü (Shield),yapım,red,red,doğru,,SRD 5.2.1 s.186–187 Ready
+eylem,Ready (Hazırla),,,ready,fırsat saldırısı ile aynı tepki,tepki,leave,leave,doğru,,SRD 5.2.1 s.186–187 Ready
+eylem,Ready (Hazırla),,,ready,kural sürümü 88,yapım,red,red,doğru,,SRD 5.2.1 s.186–187 Ready

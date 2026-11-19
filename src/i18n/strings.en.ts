@@ -16,6 +16,17 @@ const GM_OPTION_EN: Record<string, string> = {
 };
 
 export const en: Strings = {
+  readyUi: {
+    menu: 'Ready', title: 'Ready', trigger: 'Trigger', who: 'Who triggers', anyEnemy: 'Any enemy',
+    response: 'Response', attack: 'One attack', move: 'Move', spell: 'Spell', weapon: 'Attack', slot: 'Slot',
+    pickHex: 'Pick the trigger hex on the map', pickTo: 'Pick the destination hex on the map', hexSet: (l: string) => `Selected: ${l}`, unset: 'not set',
+    confirm: 'Ready', cancel: 'Cancel', pickHint: 'Tap a hex on the map.',
+    holds: 'Uses your action; holds your reaction until the start of your next turn. You are asked when the trigger occurs (per the reaction setting).',
+    slotWarn: 'The spell slot is spent now; it does not come back if the trigger never occurs.',
+    concWarn: 'Holding the spell requires Concentration; if your concentration breaks, the spell dissipates without effect.',
+    concEnds: (s: string) => `Your current concentration (${s}) ends.`,
+    noSpells: 'No spell with a casting time of an action to ready.', target: 'The target is chosen when it is released.',
+  },
   camera: { label: 'Camera', zoomIn: 'Zoom in', zoomOut: 'Zoom out', overview: 'Show all (view only)', follow: 'Follow the creature whose turn it is', minimap: 'Minimap: tap to go there', goEvent: 'Go to off-screen event' },
   lang: { name: 'English', label: 'Language', tr: 'Türkçe', en: 'English' },
   settingsUi: {
@@ -789,6 +800,11 @@ export const en: Strings = {
     healed: (a: string, b: string, label: string, n: number) => `${a} → ${b}: ${label}, healed ${n} HP.`,
     slotSpent: (a: string, lvl: number, left: number) => `${a}: level ${lvl} slot spent (${left} left).`,
     dodge: (a: string) => `${a} dodges: until the start of their next turn attackers have disadvantage and DEX saves have advantage.`,
+    readied: (a: string, trig: string, resp: string) => `${a} readies: ${trig} → ${resp}. Holds the reaction until the start of their next turn.`,
+    readyReleased: (a: string, trig: string) => `${a} uses the readied action (${trig}).`,
+    readyLapsed: (a: string, why: string) => `${a}: readied action ends (${why}).`,
+    readyWhy: { turnStart: 'their next turn started', concentration: 'concentration broke, the held spell dissipates', incapacitated: 'incapacitated', died: 'went down', gone: 'left the map' } as Record<string, string>,
+    readyResp: { attack: (w: string) => `one attack (${w})`, move: 'move', spell: (sp: string) => `spell (${sp})` },
     help: (reason: string, target: string) => `${reason}: their side's first attack against ${target} has advantage.`,
     timerSave: (ab: string, dc: number) => `; ends on a ${ab} DC ${dc} save at the end of each turn`,
     timerTurn: (owner: string | null, start: boolean) => ` (until the ${start ? 'start' : 'end'} of ${owner ? `${owner}'s` : 'their'} next turn)`,
@@ -1276,6 +1292,7 @@ export const en: Strings = {
     area: 'Breath or area attack (cone, line, emanation): pick the direction or centre; everyone in the area (allies too) makes a saving throw. The preview shows how many enemies and allies will be hit.',
     hide: 'Hide in a hiding spot (green dashed outline) with a Stealth check: beat 15 and the passive Perception of enemies who can see you. Not possible next to an enemy; at night, unlit spots give advantage. Your attacks while hidden have advantage.',
     shove: 'Push an adjacent enemy 5 ft or knock it prone (Athletics contest). Uses one of your attacks.',
+    ready: 'Ready: pick a trigger and a response (one attack, move up to your Speed or a spell with a casting time of an action). When the trigger occurs you respond with your reaction; it ends at the start of your next turn. Uses your action.',
     dodge: 'Dodge: until the start of your next turn attackers have disadvantage against you and your DEX saves have advantage. Uses your action; useless if you are incapacitated or your speed is 0.',
     distract: 'Distract: make a noise at a hex within 30 ft (a stone, a bowl); awake enemies within 15 ft of it take −5 to passive Perception until the end of their next turn (hiding and alarms). Uses your action.',
     help: 'Help: pick an adjacent enemy; until the start of your next turn your side\'s first attack against it has advantage. Uses your action.',
@@ -1417,7 +1434,7 @@ export const en: Strings = {
       incapacitated: 'Incapacitated: no action, Bonus Action or Reaction; Concentration is broken',
       broken: 'Broken (Morale 0): cannot move or act; attacks against it have Advantage; an ally can rally it',
       bleeding: 'Bleeding', restrained: 'Restrained', charmed: 'Charmed', frightened: 'Frightened',
-      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', mounted: 'Riding (on a mount)', ridden: 'Has a rider', hovering: 'Hovering (off the ground)', burrowed: 'Underground (burrowing): can\'t be targeted', invisible: 'Invisible', deafened: 'Deafened' },
+      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', mounted: 'Riding (on a mount)', ridden: 'Has a rider', hovering: 'Hovering (off the ground)', burrowed: 'Underground (burrowing): can\'t be targeted', invisible: 'Invisible', deafened: 'Deafened', readied: 'Readied: holding their reaction' },
     outcome: { crit: 'Critical', hit: 'Hit', miss: 'Miss', saved: 'Saved', failed: 'Failed', resisted: 'Resisted', prone: 'Knocked down',
       pushed: 'Pushed', escaped: 'Escaped', stuck: 'Still held', success: 'Success', failure: 'Failure', jumped: 'Jumped', burned: 'Burned', fell: 'Fell' },
   },
@@ -1493,6 +1510,8 @@ export const en: Strings = {
     choiceTitle: (who: string): string => `Choice: ${who}`,
     choiceLine: (label: string): string => `${label}: pick one.`,
     noChoice: 'Skip',
+    readyTitle: (who: string) => `Use the readied action? (${who})`,
+    readyLine: (src: string, trig: string) => `${src}: ${trig}.`,
     suggested: 'suggested',
     no: 'Don\'t use',
     policy: {
