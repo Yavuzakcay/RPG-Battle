@@ -81,7 +81,7 @@ Gerekçe: iki test, çalışma anında hiç istenmeyen eski `maske/dragonborn-*`
 | jeton/ton/maskeyle ilgili 18 test dosyası (`rg` ile bulundu) | 18/18 geçti, 154 test |
 | `src/ui src/data src/screens src/app src/content` (tamamı) | 123 dosya geçti, 1 atlandı; 930 test geçti, 4 atlandı |
 | `npm run build` | tamam; ana parça 448,80 kB / sınır 500 kB |
-| `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`) | çalışıyor (bu belge yazılırken bitmemişti) |
+| `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`) | çıkış kodu 0; 92 harita/varyant "tamam", 0 başarısız. Son satır: `Denenen 92, geçen 92, düşen 0.` |
 | Çözücü (§2) | eski hücreli istek 0 |
 | Tam `npm test` | çalıştırılmadı (yalnız görünüm varlığı silindi; CLAUDE.md hafif doğrulama modu) |
 
