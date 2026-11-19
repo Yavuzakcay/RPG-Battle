@@ -98,7 +98,7 @@ import { facesLeft as tokenFacesLeft } from './ui/tokenFacing';
 import { isAirborne } from './battle/flight';
 import { LookFrame } from './ui/LookFrame';
 /** Kuyruk AS1c: alt soyu olan oyuncu karakterinin rozetine alt soy görünümü (oran, hale, filtre, kanat); diğerleri aynen. */
-const framedBadge = (c: Combatant, size: number, node: ReactNode): ReactNode => (c.avatar.look ? <LookFrame sheet={c.avatar.look} size={size} flying={isAirborne(c)}>{node}</LookFrame> : node);
+const framedBadge = (c: Combatant, size: number, node: ReactNode): ReactNode => (c.avatar.look ? <LookFrame sheet={c.avatar.look} size={size} flying={isAirborne(c)} avatar={c.avatar}>{node}</LookFrame> : node);
 import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionHint, actionTip } from './ui/actionHints';
 import { activeSpecialGroups, costOfKey, pageOf, spellGroups, splitMenu, visible, type MenuItem, type SpecialGroup } from './ui/actionMenu';

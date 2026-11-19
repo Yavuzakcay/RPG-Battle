@@ -86,6 +86,8 @@ const RACE_COLOR: Record<string, string> = {
   celestial: '#b8932a', dragonborn: '#a84330', dwarf: '#8a5a2b', elf: '#3f8f4f', gnome: '#7a4fa0',
   goliath: '#5f6f7c', halfling: '#c27436', human: '#3d6fa8', orc: '#4f7a2a', tiefling: '#8c2f5a',
 };
+/** Irkın rozet zemin rengi (kanatlı rozette `LookFrame` daireyi kanadın arkasına kendisi çizer). */
+export const raceColor = (raceId: string): string => RACE_COLOR[raceId] ?? '#4a5560';
 /** Yer tutucu yazısı: sınıfın kısa adı. */
 const CLASS_LABEL: Record<string, string> = {
   barbarian: 'Bb', bard: 'Bd', cleric: 'Cl', druid: 'Dr', fighter: 'Fi', monk: 'Mo', paladin: 'Pa',
