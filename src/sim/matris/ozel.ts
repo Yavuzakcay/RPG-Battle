@@ -42,6 +42,8 @@ export interface Ozel {
   saveGizli?: boolean;
   /** Save `saveEffect` ile (`map_effect.roll`, d20 `kind` etiketsiz) atılır: kanca etiketsiz d20'yi save sayar (G02). */
   saveEtiketsiz?: boolean;
+  /** Çağrılan el/silah hedefin bitişiğinde belirir (komutta `targetHex`: hedefin büyücü tarafındaki komşusu). */
+  elYeri?: boolean;
   /** Komutta seçim (alan/çağrı büyüleri: element). */
   secim?: string;
   /** Siper bağlamı uygulanmaz (yer etkisi: Earthquake). */
@@ -110,7 +112,9 @@ export const OZEL: Record<string, Ozel> = {
   // --- Yapımda saldırı (çağrı/güç) ---
   'spiritual-weapon': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('1d8', 'force')], addMod: true } },
   'arcane-sword': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('4d12', 'force')], addMod: true } },
-  'arcane-hand': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('5d8', 'force')] }, not: 'SRD: yapımda el taşınıp bir etki (Clenched Fist: 5d8 Force) uygulanabilir.' },
+  // Komut: el hedefin bitişiğinde (büyücü tarafı) belirir ve Clenched Fist seçilir (arayüz B10'dan beri sorar; SRD "When you
+  // cast the spell … you can move the hand up to 60 feet and then cause one of the following effects").
+  'arcane-hand': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('5d8', 'force')], choice: 'fist' }, elYeri: true, not: 'SRD: yapımda el taşınıp bir etki (Clenched Fist: 5d8 Force) uygulanabilir.' },
   'conjure-fey': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('3d12', 'psychic')], addMod: true, conds: ['Frightened'] } },
   // --- Sonraki Magic eylemiyle saldıran ---
   'produce-flame': { yapim: { tur: 'yok' }, not: 'SRD: alev elde belirir; fırlatmak ayrı Magic eylemi (yapım Bonus Action).' },

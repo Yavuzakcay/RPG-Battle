@@ -235,6 +235,7 @@ export function damageRows(sp: Spell, s0: SrdSpell, ov?: Yapim): Satir[] {
     { col: o.col - 1, row: o.row + (o.col % 2 ? 1 : -1) }, { col: o.col + 1, row: o.row + (o.col % 2 ? 1 : -1) }];
   const cmdBase: Partial<Extract<Command, { type: 'cast_spell' }>> = {
     ...(geo.kind === 'single' ? { targetId: 'T' } : geo.aim ? { targetHex: geo.aim } : {}),
+    ...(OZEL[s.id]?.elYeri && geo.kind === 'single' ? { targetHex: { col: geo.t.col, row: geo.t.row - 1 } } : {}),
     ...(m.freeShape && geo.aim ? { targetHexes: ring(geo.aim) } : {}),
     ...(sp.level > 0 ? { slotLevel: sp.level } : {}),
     ...(choice ? { choice } : {}),

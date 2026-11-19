@@ -1297,7 +1297,15 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       return;
     }
     if (mode === 'summon' && spell) {
-      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) });
+      if (!summonKeys.has(hexKey(h))) return;
+      // Mekanik matris B10: Arcane Hand yapımda da etki seçer (SRD "When you cast the spell … cause one of the following
+      // effects"): seçilen etki ve elin 5 ft içindeki düşman (Interposing Hand hedefsiz). Motor bunu destekliyordu, arayüz sormuyordu.
+      // Seçici "Ez"i göstermez (yalnız taşımada): gösterilenle gönderilen aynı olsun diye Ez → Clenched Fist.
+      const handFx = summonDef(spell.id)?.handK19 && globalRule(state, 'spellsK19') ? (handPick === 'crush' ? 'fist' : handPick) : null;
+      const near = handFx && handFx !== 'interpose' ? Object.values(state.combatants)
+        .filter((c) => c.side !== actor?.side && !c.civilian && c.hp > 0 && c.pos && distance(c.pos, h) === 1).sort((a, b) => a.hp - b.hp)[0] : undefined;
+      run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h,
+        ...(handFx ? { choice: handFx, ...(near ? { targetId: near.id } : {}) } : choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) });
       return;
     }
     // CILA: çağrıyı bonus eylemle taşı (Flaming Sphere bitişik düşmana çarpar).
@@ -2428,6 +2436,13 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                     <button key={x} role="radio" aria-checked={x === choicePick} className={x === choicePick ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>{N.water[x]}</button>
                   ))}
                 </div>
+              )}
+              {mode === 'summon' && spell && summonDef(spell.id)?.handK19 && globalRule(state, 'spellsK19') && (
+                <label className="fx-choice" data-testid="hand-cast-pick">{' '}
+                  <select value={handPick === 'crush' ? 'fist' : handPick} onChange={(e: { target: { value: string } }) => setHandPick(e.target.value as typeof handPick)}>
+                    {(['fist', 'force', 'grasp', 'interpose'] as const).map((x) => <option key={x} value={x}>{B.hint.hand[x]}</option>)}
+                  </select>
+                </label>
               )}
               {mode === 'steer' && actor && steerableSummon(state, actor)?.summon?.hand && (
                 <label className="fx-choice">{' '}
