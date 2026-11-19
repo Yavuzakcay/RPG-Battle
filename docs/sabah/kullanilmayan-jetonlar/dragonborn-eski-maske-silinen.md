@@ -133,7 +133,7 @@ Ya da `npx vite-node scripts/soy-maske-dragonborn.ts [jeton…]` ile jetondan ye
 | tint/bağlama/avatar/soy-maske testleri (`rg` ile bulunan 20 dosya, `scriptsWindows` dahil) | 20/20 geçti, 184 test |
 | `src/ui src/data src/screens src/app src/content src/rules` (tamamı) | 155 dosya geçti, 1 atlandı; 1223 test geçti, 4 atlandı |
 | `npm run build` | tamam; ana parça 448,07 kB / sınır 500 kB |
-| `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`) | çalışıyor (bu belge yazılırken bitmemişti) |
+| `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`) | çıkış kodu 0; 92 harita/varyant "tamam", 0 başarısız. Son satır: `Denenen 92, geçen 92, düşen 0.` |
 
 Hâlâ karar bekleyenler: üç çok ırklı aracın Dragonborn dalı (maske-pul'a bağlama ya da silme), v1 modüllerinin (`dragonborn-desen*.py`) v2'ye taşınıp silinmesi (üretici bağımlılığı, ayrı refaktör), Dragonborn'un ölü `maskAlt` kaydı (`soy-renkleri.json`; onaylı listede yoktu).
 
