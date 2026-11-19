@@ -1,0 +1,505 @@
+{
+ "jeton": 264,
+ "boyanan": 249,
+ "maskesiz": {
+  "dragonborn-erkek-druid-ID4": "başta ten örneği yok",
+  "dragonborn-erkek-monk-ID10": "maske boş (< 30 px)",
+  "dragonborn-erkek-rogue-GR": "maske boş (< 30 px)",
+  "dragonborn-erkek-rogue-ID4": "başta ten örneği yok",
+  "dragonborn-erkek-sorcerer-SC-3": "başta ten örneği yok",
+  "dragonborn-erkek-sorcerer-SC-5": "başta ten örneği yok",
+  "dragonborn-erkek-warlock-WL-4": "başta ten örneği yok",
+  "dragonborn-kadin-cleric-ID6": "başta ten örneği yok",
+  "dragonborn-kadin-druid-ID4": "başta ten örneği yok",
+  "dragonborn-kadin-fighter-ID8": "başta ten örneği yok",
+  "dragonborn-kadin-rogue-GR": "başta ten örneği yok",
+  "dragonborn-kadin-rogue-ID4": "başta ten örneği yok",
+  "dragonborn-kadin-sorcerer-SC-3": "başta ten örneği yok",
+  "dragonborn-kadin-sorcerer-SC-5": "başta ten örneği yok",
+  "dragonborn-kadin-warlock-WL-8": "başta ten örneği yok"
+ },
+ "supheli": [
+  {
+   "jeton": "dragonborn-erkek-barbarian-ID1",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-barbarian-ID3",
+   "kod": [
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-barbarian-ID4",
+   "kod": [
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-barbarian-ID6",
+   "kod": [
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-barbarian-ID7",
+   "kod": [
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-barbarian-ID8",
+   "kod": [
+    "TD",
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-barbarian-ID9",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-cleric-ID1",
+   "kod": [
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-cleric-ID3",
+   "kod": [
+    "TD",
+    "AB",
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-cleric-ID5",
+   "kod": [
+    "TD",
+    "AB",
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-cleric-ID6",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-cleric-ID7",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-fighter-ID11",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-fighter-ID2",
+   "kod": [
+    "TD",
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-fighter-ID7",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-fighter-ID9",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-monk-ID2",
+   "kod": [
+    "TD",
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-monk-ID7",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-monk-ID8",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-monk-ID9",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-ID2",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-ID4",
+   "kod": [
+    "TD",
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-ID5",
+   "kod": [
+    "TD",
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-ID6",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-ID7",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-paladin-ID8",
+   "kod": [
+    "TD",
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-ranger-ID1",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-ranger-ID4",
+   "kod": [
+    "AB",
+    "YO",
+    "GI"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-rogue-ID3",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-rogue-ID7",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-sorcerer-SC-7",
+   "kod": [
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-warlock-WL-10",
+   "kod": [
+    "TD",
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-warlock-WL-2",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-warlock-WL-8",
+   "kod": [
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-warlock-WL-9",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-wizard-WZ-A1",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-wizard-WZ-A3",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-wizard-WZ-A6",
+   "kod": [
+    "TD",
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-erkek-wizard-WZ-B5",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-barbarian-ID1",
+   "kod": [
+    "TD",
+    "AB",
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-barbarian-ID4",
+   "kod": [
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-barbarian-ID7",
+   "kod": [
+    "TD",
+    "AB",
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-barbarian-ID8",
+   "kod": [
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-barbarian-ID9",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-bard-ID8",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-cleric-ID1",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-cleric-ID2",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-cleric-ID3",
+   "kod": [
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-cleric-ID5",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-cleric-ID7",
+   "kod": [
+    "TD",
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-druid-ID7",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-fighter-GR",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-fighter-ID10",
+   "kod": [
+    "TD",
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-fighter-ID3",
+   "kod": [
+    "TD",
+    "AB",
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-fighter-ID4",
+   "kod": [
+    "GI"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-fighter-ID7",
+   "kod": [
+    "AB",
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-fighter-ID9",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-monk-ID9",
+   "kod": [
+    "TD",
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-paladin-ID10",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-paladin-ID2",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-paladin-ID4",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-paladin-ID7",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-ranger-ID4",
+   "kod": [
+    "AB",
+    "YO"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-ranger-ID7",
+   "kod": [
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-rogue-ID3",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-sorcerer-SC-7",
+   "kod": [
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-sorcerer-SC-9",
+   "kod": [
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-warlock-WL-10",
+   "kod": [
+    "TD",
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-warlock-WL-11",
+   "kod": [
+    "AB"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-warlock-WL-2",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-warlock-WL-7",
+   "kod": [
+    "KP"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-warlock-WL-9",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-wizard-WZ-A1",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-wizard-WZ-A3",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-wizard-WZ-A6",
+   "kod": [
+    "TD"
+   ]
+  },
+  {
+   "jeton": "dragonborn-kadin-wizard-WZ-B5",
+   "kod": [
+    "TD"
+   ]
+  }
+ ]
+}

@@ -21,6 +21,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - **Celestial Cleric sayfa 06 yenisi:** yalnız haleli hücreler (7, 9); halesiz-temiz 120 jeton kuralı gereği diğer 7 hücreye dokunulmadı.
 - **Ölçek kuralı:** tam sınıf sayfaları özgün hat ve sayfa ölçeği (Druid, Cleric, Human Fighter, Warlock); aynı kompozisyonlu yenilemeler (Bard, Sorcerer) eski jetona alt gövde hizalaması, olmazsa eski figür boyu; aurasız Barbarian ve Gladyatör kardeş jetonların ortanca boyu.
 - **Yan düzeltme:** `scripts/hale-konum.py` elle girilen `tac.katsayi` anahtarını siliyordu; artık korur.
+## Dragonborn pul deseni v2 oyuna bağlandı (yalnız görünüm; kural ve kayıt sürümü değişmedi)
+
+- Kullanıcı kararı: v2 önizlemesi (6 jeton) onaylandı; 264 beyaz taban Dragonborn jetonunun hepsine uygulandı. Eski çarpma (`multiply`) filtresi bu jetonlarda kaldırıldı (siyah cübbe/pantolon renge kayıyordu); `data/soy-renkleri.json` `dragonborn.lineagesAlt.<soy>` artık `{ "pul": { "soy": "<soy>" } }`.
+- Maske: `public/characters/maske-pul/<jeton>.png`, `python scripts/dragonborn-pul-maske.py` (v2 yöntemi: ten tonu jetonun kendi başından, kapama, kapalı delik, boynuz/kontur/göz hariç, yavru ejderha başı göz kümesinden bulunup çıkarılır). 249 maske; 15 jetonda maske üretilemedi ya da boş (kostüm, ruh/iskelet biçimi, kapalı yüz): bunlar boyanmaz, beyaz kalır (`data/dragonborn-pul.json` `maskesiz`).
+- Boyama: `src/ui/scaleTint.ts` (tembel parça; ana parça 448,41 kB): parlaklığı koruyan ton + doygunluk (orta ton tablodan), pul dokusu ±5 L* (Gümüş/Beyaz koyulaştırma yönünde 0/−3/−6), karo 256 px jeton uzayında, küçük kopyada W/256 ölçekli. Renk tablosu v2'deki 10 soy aynen (Mavi #315C83, Beyaz #C8CFD9, Kırmızı orta #A91101).
+- Sızıntılar otomatik dışlanmadı (kullanıcı kontak sayfalarından elle inceleyecek): şüpheliler `docs/sabah/dragonborn-desen-v2/tam/` sınıf ve şüpheli sayfalarında kırmızı çerçeveli. Kanadın açık zar panelleri boyanmıyor (kabul); 64 px'te pul seçilmiyor (kabul).
+- Bilinen yan etki: `scripts/soy-maske.ts` ölçümü ve `soy-incele`/`soy-onizleme` sayfaları senkron `tintPixels` kullandığı için Dragonborn beyaz taban jetonları orada boyasız görünür (pul yalnız `tintedUrl` ve `scaleTint.scalePixels` ile çizilir).
 
 ## Goliath maske deliği ve Tiefling boynuz/kuyruk gölge yarısı (TG1; yalnız çizim, kural ve kayıt sürümü değişmedi)
 
