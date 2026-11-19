@@ -26,9 +26,9 @@ import { carryLoad, type CarryLoad, type CarryRule } from '../rules/carry';
 import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import karadulData from '../../data/karadul.json';
-import { UPPER_LEVEL_CAP, levelCap } from '../app/limits';
+import { LEVEL_CAP } from '../app/limits';
 import { roomOverlay } from '../oda/active';
-import { alignmentAutoOnly, alignmentEnabled, alignmentRace, upperLevelsEnabled } from '../app/features';
+import { alignmentAutoOnly, alignmentEnabled, alignmentRace } from '../app/features';
 import { AlignmentGrid } from '../ui/AlignmentGrid';
 import { DiceStep } from '../ui/DiceStep';
 import { RecoBar, RecoProvider, RecoTag, useRecoSets } from './builder/Reco';
@@ -439,15 +439,13 @@ function IdentityStep({ c, setC, set, suggest }: StepProps) {
     // SD3: dokunulmamış öneriler (büyüler, yetenek artışı) yeni seviyeye göre yenilenir.
     return suggest ? reSuggestAfterLevel(x, next) : next;
   });
-  // Görev OD1B: oda bağlamında (Odaya katıl) seviye sınırı odanın "Üst seviye" kuralından; cihaz bağlamında hep 1–20 (K49).
-  const roomCap = roomOverlay() ? levelCap(upperLevelsEnabled()) : UPPER_LEVEL_CAP;
   return (
     <div className="form-row wiz-identity">
       <label>{T.name} <input value={s.name} maxLength={40} onChange={(e: { target: { value: string } }) => set({ name: e.target.value })} /></label>
       <label>{T.level}
         <select value={s.level} onChange={(e: { target: { value: string } }) => setLevel(Number(e.target.value))}>
-          {/* Kuyruk K49: oluşturucuda her zaman 1–20 (Serüven ilerlemesi ayrıca `ustSeviye` ile sınırlı). */}
-          {Array.from({ length: Math.max(roomCap, s.level) }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+          {/* 2026-11-19: seviye sınırı her yerde 1–20 (Üst seviye anahtarı kalktı). */}
+          {Array.from({ length: Math.max(LEVEL_CAP, s.level) }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
         </select>
       </label>
       <span className="seg" role="radiogroup" aria-label={T.avatar}>
@@ -456,7 +454,6 @@ function IdentityStep({ c, setC, set, suggest }: StepProps) {
             onClick={() => set({ gender: g })}>{g === 'erkek' ? T.male : T.female}</button>
         ))}
       </span>
-      {s.level > roomCap && <p className="warn">{t().oda.levelCapWarn(s.level, roomCap)}</p>}
       {s.level >= experimentalFrom(s.classId, s.subclassId) && <p className="warn">{T.experimental(experimentalFrom(s.classId, s.subclassId))}</p>}
       {/* Kuyruk K49: 11+ seviyede henüz olmayan özellikler küçük notla (seçim kısıtlanmaz). */}
       {s.level >= 11 && missingFeatures(s.classId, s.level, s.subclassId).filter((f) => f.level >= 11).length > 0 && (

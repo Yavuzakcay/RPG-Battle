@@ -8,6 +8,8 @@ import type { Offset } from '../rules/hex';
 import { skillLabel } from '../rules/skills';
 import { terrainOf } from '../map/terrain';
 import { getLang, t } from '../i18n';
+import { spells, trAciklama } from '../data';
+import { SECENEK_ADI } from '../battle/girdapSurum';
 import { hpModeFor, hpPhrase } from './hpVisibility';
 import terrainTable from '../../data/arazi-buyu-etkileri.json';
 import { saveWhyParts } from './reasons';
@@ -293,6 +295,13 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'lava_warning':
       return L.lavaWarning(event.hexes.length);
     case 'map_note':
+      // Control Water (sürüm 84): savaş dışı seçeneğin Game Master notu dile göre (Türkçe veri, İngilizce metin tablosu).
+      if (event.secenekNotu) {
+        const key = `${event.secenekNotu.spell}/${event.secenekNotu.choice}`;
+        const note = getLang() === 'tr' ? trAciklama('buyuSecenek', key) : L.gmOptionText[key];
+        const sp = spells.find((x) => x.id === event.secenekNotu!.spell);
+        if (note && sp) return L.gmOption(sp.name, SECENEK_ADI[event.secenekNotu.choice] ?? event.secenekNotu.choice, note);
+      }
       return event.text;
     case 'ability_recharge':
       return event.used ? '' : L.abilityRecharge(n(event.actorId), event.abilityId, event.d6 ?? 0, !!event.recharged);

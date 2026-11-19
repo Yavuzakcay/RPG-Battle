@@ -77,5 +77,31 @@ export function girdapRows(sp: Spell, s: SrdSpell): Satir[] {
     },
     not: NOT,
   }, {}, MECH, () => ({ sonuc: 'yanlış', not: 'Kaçış kullanıcı kararından farklı.' })));
+  // Kaçış başarılı: STR +9, kontrol zarı 10 → 19 ≥ 18; yakalanma biter.
+  rows.push(runCtx(sp, s, g0, {
+    ad: 'kaçış: Athletics (d20 10 + 9) büyü DC\'sine (18) karşı başarılı', kategori: 'durum', noB: true,
+    targetX: { modifiers: { str: 9, dex: 0, con: 0, int: 0, wis: 0, cha: 0 } },
+    cmd: { targetId: 'T', slotLevel: 4 }, post: [END_A, { type: 'escape', actorId: 'T' } as Command], p: { saveDefault: SAVE_FAIL },
+    bek: (g) => {
+      const esc = g.olaylar.find((e) => e.type === 'grapple_escape');
+      return [alan('kaçış başarısı', true, esc?.type === 'grapple_escape' ? esc.success : null),
+        alan('yakalanma sürer', false, (g.after?.combatants.T?.effects ?? []).some((e) => e.id.startsWith('girdap:')))];
+    },
+    not: NOT,
+  }, {}, MECH, () => ({ sonuc: 'yanlış', not: 'Kaçış kullanıcı kararından farklı.' })));
+  // Girdap dışı seçenekler (kullanıcı kararı 2026-11-19; SRD 5.2.1 Flood, Part Water, Redirect Flow: savaşta mekanik etki yok):
+  // büyü yapılır (slot, konsantrasyon), alan ve hasar yok, Game Master notu (`map_note.secenekNotu`).
+  for (const choice of ['flood', 'part', 'redirect']) {
+    rows.push(runCtx(sp, s, g0, {
+      ad: `seçenek ${choice}: savaş dışı (Game Master notu)`, kategori: 'yapım', noB: true,
+      cmd: { targetHex: hex(A_ROW + 4, AX + 2), slotLevel: 4, choice }, p: {},
+      bek: (g) => {
+        const n = g.olaylar.find((e) => e.type === 'map_note' && !!e.secenekNotu);
+        return [alan('alan', 'yok', (g.after?.map?.zones ?? []).length ? 'var' : 'yok'), alan('hasar', 0, g.hp.T ?? 0), alan('slot', [4], g.slot),
+          alan('konsantrasyon', sp.name, g.kons), alan('Game Master notu', choice, n?.type === 'map_note' ? n.secenekNotu?.choice ?? null : null)];
+      },
+      not: 'Kullanıcı kararı: girdap dışı seçenek yalnız Game Master notu (SRD 5.2.1 metninden).',
+    }, {}, 'utility (savaş dışı seçenek)', () => ({ sonuc: 'yanlış', not: 'Seçenek notu kullanıcı kararından farklı.' })));
+  }
   return rows;
 }

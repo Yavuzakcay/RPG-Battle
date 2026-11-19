@@ -85,8 +85,10 @@ import {
 } from './ui/mapView';
 import {
   areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaFreeShape, areaPathRules, areaPointCount, areaWallPath, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
-  featureTeleportHexes, offCombatOnly, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
+  featureTeleportHexes, offCombatOnly, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, waterChoices, type AreaAct, type Box, type Point,
 } from './ui/hud';
+import { SECENEK_ADI } from './battle/girdapSurum';
+import { trAciklama } from './data';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { destroyForceProblem, effectTargetCount, strideSpellOf } from './battle/spells';
 import { wishCandidates } from './battle/spells69';
@@ -1294,7 +1296,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       const mode2 = cmd.type === 'cast_spell' && !(spell && whirlpoolCast(state, spell)) ? spell?.mechanics.upgrade?.terraform?.mode : undefined;
       const choice = mode2 === 'controlWater' ? choicePick ?? 'whirlpool' : mode2 === 'stoneShape' && state.map?.tiles[h.row]?.[h.col] === 'O' ? 'seal'
         : cmd.type === 'cast_spell' && spell && mechanicsAt(state, spell).zone?.cage ? choicePick ?? 'box' : null;
-      run(choice && cmd.type === 'cast_spell' ? { ...cmd, choice } : cmd);
+      // Control Water (sürüm 84): girdap dışı seçenek (Flood, Part Water, Redirect Flow) yalnız Game Master notu.
+      const water = cmd.type === 'cast_spell' && spell && whirlpoolCast(state, spell) && choicePick && choicePick !== 'whirlpool' ? choicePick : null;
+      run((choice ?? water) && cmd.type === 'cast_spell' ? { ...cmd, choice: (choice ?? water) as string } : cmd);
       return;
     }
     if (mode === 'summon' && spell) {
@@ -1411,7 +1415,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       : active && mode === 'steer' && state.combatants[actorId] ? [...steerHexes(state, state.combatants[actorId] as Combatant),
         ...((s) => (s?.summon?.hand && s.pos ? [s.pos] : []))(steerableSummon(state, state.combatants[actorId] as Combatant))].map(hexKey)
       : active && mode === 'followHex' ? hexFollowKeys(state, actorId)
-      : active && mode === 'pickHex' && pickHexCmd ? hexTryKeys(state, actorId, (h) => ((c) => (c.type === 'cast_spell' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' ? { ...c, choice: choicePick ?? 'whirlpool' } : c.type === 'cast_spell' && spell && mechanicsAt(state, spell).zone?.cage ? { ...c, choice: choicePick ?? 'box' } : c))(pickHexCmd.make(h)))
+      : active && mode === 'pickHex' && pickHexCmd ? hexTryKeys(state, actorId, (h) => ((c) => (c.type === 'cast_spell' && spell && whirlpoolCast(state, spell) ? (choicePick && choicePick !== 'whirlpool' ? { ...c, choice: choicePick } : c) : c.type === 'cast_spell' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' ? { ...c, choice: choicePick ?? 'whirlpool' } : c.type === 'cast_spell' && spell && mechanicsAt(state, spell).zone?.cage ? { ...c, choice: choicePick ?? 'box' } : c))(pickHexCmd.make(h)))
       : active && mode === 'shift' && state.combatants[actorId] ? shiftHexes(state, state.combatants[actorId] as Combatant).filter((h) => !occupantAt(state, h, actorId)).map(hexKey)
       : active && mode === 'sphere' ? hexTryKeys(state, actorId, (h) => ({ type: 'sphere_roll', actorId, to: h })) : []),
     [state, active, mode, spell, actorId, choicePick, featureKey, pickHexCmd]);
@@ -2422,6 +2426,16 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               {mode === 'pickHex' && pickHexCmd?.dismount && (
                 <Suspense fallback={null}><DismountPicker options={dismountOpts} value={dismountFt ?? dismountOpts.defaultFt} onPick={setDismountFt} /></Suspense>
               )}
+              {/* Control Water (sürüm 84): dört seçenek; girdap savaşta, diğer üçü seçilince kartta ve günlükte Game Master notu. */}
+              {mode === 'pickHex' && spell && whirlpoolCast(state, spell) && (
+                <div className="slot-picker" role="radiogroup" aria-label={N.choicePick} data-testid="water-choices">
+                  <small>{N.choicePick}</small>
+                  {waterChoices(state, spell).map((x) => (
+                    <button key={x} role="radio" aria-checked={x === (choicePick ?? 'whirlpool')} className={x === (choicePick ?? 'whirlpool') ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>{SECENEK_ADI[x] ?? x}</button>
+                  ))}
+                  <small className="why-line">{((k) => (getLang() === 'tr' ? trAciklama('buyuSecenek', k) : t().log.gmOptionText[k]))(`${spell.id}/${choicePick ?? 'whirlpool'}`)}</small>
+                </div>
+              )}
               {mode === 'pickHex' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' && !whirlpoolCast(state, spell) && (
                 <div className="slot-picker" role="radiogroup" aria-label={N.choicePick}>
                   <small>{N.choicePick}</small>
@@ -2564,7 +2578,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                       // Control Water girdabı (kural sürümü 84, anahtar `controlWaterWhirlpool`): yaratığın altıgeni seçilir (yalnız geçerli
                       // altıgenler parlar); seçilen slot gider (yarıçap ve zar slotla büyür).
                       else if (whirlpoolCast(state, sp)) {
-                        setSpell(sp); setChoicePick(null);
+                        setSpell(sp); setChoicePick('whirlpool');
                         setPickHexCmd({ make: (h) => ({ type: 'cast_spell', actorId, spellName: sp.name, targetHex: h, ...slotFields(slotPick) }) }); setMode('pickHex');
                       }
                       // Kuyruk 19: harita dönüştüren büyüler (Passwall, Stone Shape, Control Water): altıgen seçimi.

@@ -5,7 +5,7 @@ import { DEFAULT_KURALLAR, ODA_KEY, defaultAyarlar, newRoom, normalizeRoom, over
 import { createRoom, deleteRoom, isLocked, joinRoom, leaveRoom, loadRooms, lockRoom, renameRoom, saveRooms, unlockRoom, updateRoom } from '../oda/store';
 import { enemyHpVis, roomOverlay, setRoomOverlay } from '../oda/active';
 import { hpBand, hpBarFraction, hpPercent } from '../oda/hp';
-import { alignmentEnabled, upperLevelsEnabled, setUpperLevelsEnabled } from '../app/features';
+import { alignmentEnabled, setAlignmentEnabled } from '../app/features';
 import { storedCarryRule } from '../ui/carrySetting';
 import { loadSettings } from '../app/discovery';
 import { MAX_PARTY } from '../app/limits';
@@ -27,9 +27,11 @@ afterEach(() => { setRoomOverlay(null); });
 
 describe('OD1 model ve saklama', () => {
   it('yeni oda: davet kodu boş, kural kopyası, kilitsiz, parti boş; ayrı anahtar', () => {
-    const r = newRoom('a', '  Masa  ', '2026-11-15T10:00:00Z', { ...DEFAULT_KURALLAR, ustSeviye: true }, 'Ayşe');
+    const r = newRoom('a', '  Masa  ', '2026-11-15T10:00:00Z', { ...DEFAULT_KURALLAR, hizalanma: true }, 'Ayşe');
     expect(r).toMatchObject({ id: 'a', kod: '', ad: 'Masa', gmAdi: 'Ayşe', parti: [], kilit: null, surum: 1 });
-    expect(r.ayarlar.kurallar.ustSeviye).toBe(true);
+    expect(r.ayarlar.kurallar.hizalanma).toBe(true);
+    // 2026-11-19: "Üst seviye" anahtarı kalktı; yeni odada yazılmaz.
+    expect('ustSeviye' in r.ayarlar.kurallar).toBe(false);
     expect(r.ayarlar).toMatchObject({ zarModu: 'auto', hpGorunurluk: 'tam', zorluk: { party: 'normal', enemies: 'normal' } });
     expect(ODA_KEY).toBe('rpg-battle-oda');
   });
@@ -76,20 +78,18 @@ describe('OD1 model ve saklama', () => {
 
 describe('OD1 kural örtüsü (cihaz ayarına yazılmaz)', () => {
   it('oda etkinken kurallar odadan okunur; kapanınca cihazın değerleri aynen', () => {
-    setUpperLevelsEnabled(false);
-    const r = newRoom('a', 'A', 'now', { ...DEFAULT_KURALLAR, ustSeviye: true, hizalanma: true, tasima: 'tiered', kesif: false, ipucu: false });
+    setAlignmentEnabled(false);
+    const r = newRoom('a', 'A', 'now', { ...DEFAULT_KURALLAR, hizalanma: true, tasima: 'tiered', kesif: false, ipucu: false });
     setRoomOverlay(overlayOf(r));
-    expect(upperLevelsEnabled()).toBe(true);
     expect(alignmentEnabled()).toBe(true);
     expect(storedCarryRule()).toBe('tiered');
     expect(loadSettings()).toMatchObject({ discovery: false, hints: false });
     expect(enemyHpVis()).toBe('tam');
     setRoomOverlay(null);
-    expect(upperLevelsEnabled()).toBe(false);
     expect(alignmentEnabled()).toBe(false);
     expect(storedCarryRule()).toBe('srd');
     expect(loadSettings()).toMatchObject({ discovery: true, hints: true });
-    expect(localStorage.getItem('rpg-battle-deneysel')).toBe(JSON.stringify({ ustSeviye: false }));
+    expect(localStorage.getItem('rpg-battle-deneysel')).toBe(JSON.stringify({ hizalanma: false }));
     expect(roomOverlay()).toBeNull();
   });
   it('düşman HP görünürlüğü odadan', () => {
@@ -97,8 +97,8 @@ describe('OD1 kural örtüsü (cihaz ayarına yazılmaz)', () => {
     setRoomOverlay(overlayOf({ ...r, ayarlar: { ...r.ayarlar, hpGorunurluk: 'gizli' } }));
     expect(enemyHpVis()).toBe('gizli');
   });
-  it('oda kural özeti altı satır', () => {
-    expect(rulesSummary(DEFAULT_KURALLAR).map((x) => x.id)).toEqual(['ustSeviye', 'tasima', 'hizalanma', 'kesif', 'ipucu', 'yolculuk']);
+  it('oda kural özeti beş satır (Üst seviye kalktı)', () => {
+    expect(rulesSummary(DEFAULT_KURALLAR).map((x) => x.id)).toEqual(['tasima', 'hizalanma', 'kesif', 'ipucu', 'yolculuk']);
   });
 });
 
@@ -138,15 +138,15 @@ describe('OD1 ekranlar', () => {
     expect(on).toContain('Savaşa dön');
     const off = renderToStaticMarkup(<RoomPanel room={r} locked={false} onChange={() => {}} onRename={() => {}} onUnlock={() => {}} />);
     expect(off).not.toContain('Bu savaş için kilitli');
-    for (const s of ['Zar modu', 'Düşman HP görünürlüğü', 'Gizli', 'Etiket', 'Yüzde', 'Tam', 'Oda kuralları', 'Üst seviye (6–20)', 'Taşıma yükü', 'Yapay zekâ zorluğu']) expect(off).toContain(s);
+    for (const s of ['Zar modu', 'Düşman HP görünürlüğü', 'Gizli', 'Etiket', 'Yüzde', 'Tam', 'Oda kuralları', 'Taşıma yükü', 'Yapay zekâ zorluğu']) expect(off).toContain(s);
   });
   it('Odaya katıl: oda seçilince kurallar salt okunur özet, karakter listesi ve Hazır', () => {
     const chars = demoCharacters();
-    let r = newRoom('a', 'Masa', 'now', { ...DEFAULT_KURALLAR, ustSeviye: true });
+    let r = newRoom('a', 'Masa', 'now', { ...DEFAULT_KURALLAR, hizalanma: true });
     r = joinRoom(r, chars[0]?.id ?? '');
     saveRooms([r]);
     const html = renderToStaticMarkup(<OdaKatil characters={chars} onBack={() => {}} roomId="a" />);
-    for (const s of ['Oda kuralları (yalnız okunur)', 'Üst seviye (6–20)', 'açık', 'Karakterini seç', 'Hazır', 'Ayrıl', 'Katıl']) expect(html).toContain(s);
+    for (const s of ['Oda kuralları (yalnız okunur)', 'Alignment', 'açık', 'Karakterini seç', 'Hazır', 'Ayrıl', 'Katıl']) expect(html).toContain(s);
     expect(html).not.toContain('role="radiogroup"'); // oyuncu kural değiştiremez
   });
   it('Ana menü: Oda kur, Odaya katıl, Hızlı savaş', () => {

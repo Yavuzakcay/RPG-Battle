@@ -9,6 +9,22 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Control Water dört seçenek (2026-11-19, kullanıcı kararı; uzak daldaki girdabın üstüne, kural sürümü değişmedi)
+
+Uzak daldaki Control Water girdabı (sürüm 84, `controlWaterWhirlpool`) ve G01 (`modeWhy`) aynen kaldı; bu sekmenin aynı görev için yaptığı ikinci uygulama birleştirilmedi (yerel yedek dal `yedek-controlwater-yerel`, itilmedi). Üstüne taşınanlar:
+
+- **Dört seçenek:** menüde Whirlpool, Flood, Part Water, Redirect Flow (`ui/hud.ts` `waterChoices`, adlar İngilizce `girdapSurum.ts` `SECENEK_ADI`). Girdap uzak daldaki mekanikle; diğer üçü `girdap.ts` `executeWaterOption`: slot ve konsantrasyon büyünün kuralıyla harcanır, alan ve etki yok, günlükte Game Master notu (`map_note.secenekNotu`; TR `data/aciklamalar-tr.json` yeni tablo `buyuSecenek`, EN `strings.en.ts` `log.gmOptionText`; metinler SRD 5.2.1 s. 119–120'den) ve seçim menüsünün altında seçeneğin notu. Kural sürümü artmadı: 84 kayıtlarında girdap dışı `choice` yoktu (arayüz ve yapay zekâ seçim göndermiyordu), olaylar aynı oynar.
+- **Düzeltme:** arayüz girdabı yalnız `targetHex` ile gönderiyordu, motor `targetId` bekliyordu (arayüzden girdap "hedef seç" hatasıyla reddediliyordu). `executeWhirlpool` artık altıgendeki yaratığı hedef alır.
+- **SRD denetimi (PDF s. 120):** "The whirlpool is 5 feet wide at the base, up to 50 feet wide at the top, and 25 feet tall." Uzak daldaki sınırlar metinle uyumlu: yarıçap en çok 5 altıgen (25 ft = 50 ft tepe genişliğinin yarısı), uçan yaratık 25 ft irtifaya kadar (girdabın yüksekliği). Değiştirilmedi.
+- **Matris:** Control Water 14 → 18 satır (kaçış başarılı, üç savaş dışı seçenek), hepsi doğru; Polymorph 6 satır doğru.
+- **G01 ek testleri** (`girdapSecenek.test.ts`): girdabın STR save'inde süren etki (Enlarge/Reduce) kaynaklı kip nedeni, Incapacitated'ta Danger Sense yazılmaz, Gnomish Cunning/Danger Sense EN satırı. Danger Sense, Gnomish Cunning, Haste/Reduce uzak dalda zaten vardı (`g01SaveWhy.test.ts`).
+- Wild Shape: uzak dalda Wild Shape işi yok (sürüm 84'te); bu sekmede Wild Shape planı yapılmamıştı, iş başlatılmadı.
+## Seviye sınırı kalktı: her yerde 1–20, "Üst seviye (6–20)" anahtarı yok (2026-11-19)
+
+- Kullanıcı kararı: 5. seviye sınırı yalnız ilk aşama içindi. Tek sabit `LEVEL_CAP = 20` (`src/app/limits.ts`); `upperLevelsEnabled`, Oda kuralları satırı, oda kaydındaki `ustSeviye`, Serüven anahtarı `ustSeviye`, oluşturucunun "Bu odada Üst seviye kapalı" ve Odaya katıl'ın "5 üstü karakter" uyarıları kalktı.
+- Eski kayıt güvenliği: cihaz ayarındaki `ustSeviye` okunmaz ve sonraki yazmada düşer; eski oda kaydında bilinmeyen alan olarak atılır; eski Serüven kaydındaki `toggles.ustSeviye` yok sayılır (kayıt aynen yüklenir, 20'ye dek atlar). Savaş kuralı değişmediği için kural sürümü ve kayıt sürümleri artmadı.
+- Kuyruk 41b'nin `ustSeviyeGizli` gizlemesi (Üst seviye açıkken 1–5. seviye senaryosunu seçiciden ve Serüven'den saklama) anahtarla birlikte kalktı: alan silindi, içerik her zaman görünür (tek kullanan Kale Baskını zaten `gizli`). Gerekçe: anahtarsız durumda "her zaman gizli" içerik kaybettirir, "hiç gizleme" eski varsayılanla aynıdır.
+- 6+ "deneysel" uyarısı veriden aynen (`experimentalFrom`). Yeni karakter 1. seviyede başlar. Denge ölçülmedi; Serüven'de 6+ düğümlerin çoğu 5. seviye listesine düşüyor (denetim `harita/belgeler/SEVIYE-SINIRI-KALDIRMA.md`), denge turuna kaldı.
 ## soy-maske tutarlılığı: rapor 144 sprite, bayat 8 Cleric ID9 maskesi yenilendi (2026-11-19; yalnız veri/test, kural ve kayıt sürümü değişmedi)
 
 - `data/soy-maske-rapor.json` 120 → 144: beklenen. Rapor sprite kümesi `soy-renkleri.json` `races` × cinsiyet × sınıf (`npm run soy-maske` ana döngüsü); Human, AS1c'de (2026-11-12) ten tonu maskesi için o tabloya girdi, rapor ise 2026-11-09'dan kalmıştı. Rapora yalnız 24 Human `oto` satırı eklendi (elle maske yok, çalışma anı davranışı aynı). `handMask.test.ts` sabit 120 yerine kümeyi veriden hesaplıyor (ırk × cinsiyet × sınıf, Human dahil), böylece ırk eklenince test sessizce bayatlamaz.

@@ -6,7 +6,7 @@ import { describeEvent } from '../ui/log';
 import { logEntries } from '../ui/logEntries';
 import { hpFraction, hpModeFor, maskHpText } from '../ui/hpVisibility';
 import { setBattleHpVis, setRoomOverlay } from '../oda/active';
-import { DEFAULT_KURALLAR, newRoom, overlayOf } from '../oda/model';
+import { DEFAULT_KURALLAR, newRoom, normalizeRoom, overlayOf } from '../oda/model';
 import { restoreSession, serializeSession } from '../app/battleSave';
 import { SCENARIOS, seeded } from '../sim/balance';
 import { createMapBattle } from '../app/setup';
@@ -20,7 +20,7 @@ import { Builder } from './Builder';
 import { newCharacter } from '../rules/builder';
 import { OdaKatil } from './OdaScreens';
 import { saveRooms } from '../oda/store';
-import { alignmentEnabled, upperLevelsEnabled } from '../app/features';
+import { alignmentEnabled } from '../app/features';
 
 function memoryStorage(): Storage {
   const m = new Map<string, string>();
@@ -112,22 +112,24 @@ describe('OD1B oluşturucu oda bağlamı', () => {
     expect(html).toContain('<option value="20"');
     expect(html).not.toContain('Üst seviye kapalı');
   });
-  it('oda: Üst seviye kapalıysa seçenek 5\'e iner, mevcut yüksek seviye korunur ve uyarılır', () => {
-    setRoomOverlay(overlayOf(newRoom('a', 'A', 'now', { ...DEFAULT_KURALLAR, ustSeviye: false })));
+  // 2026-11-19: "Üst seviye" anahtarı kalktı: oda bağlamında da her zaman 1–20, uyarı yok.
+  it('oda bağlamında da 1–20; eski oda kaydındaki ustSeviye: false sınırlamaz', () => {
+    const eski = normalizeRoom({ ...newRoom('a', 'A', 'now'), ayarlar: { ...newRoom('a', 'A', 'now').ayarlar, kurallar: { ...DEFAULT_KURALLAR, ustSeviye: false } } });
+    expect(eski && 'ustSeviye' in eski.ayarlar.kurallar).toBe(false);
+    setRoomOverlay(overlayOf(eski!));
     const html = build();
-    expect(html).not.toContain('<option value="20"');
+    expect(html).toContain('<option value="20"');
     expect(html).toContain('<option value="7"');
-    expect(html).toContain('Bu odada Üst seviye kapalı');
+    expect(html).not.toContain('Üst seviye kapalı');
   });
-  it('oda Üst seviye açık: 20; kurallar cihaz anahtarına yazılmaz', () => {
-    setRoomOverlay(overlayOf(newRoom('a', 'A', 'now', { ...DEFAULT_KURALLAR, ustSeviye: true, hizalanma: true })));
-    expect(upperLevelsEnabled()).toBe(true); expect(alignmentEnabled()).toBe(true);
+  it('oda kuralları cihaz anahtarına yazılmaz', () => {
+    setRoomOverlay(overlayOf(newRoom('a', 'A', 'now', { ...DEFAULT_KURALLAR, hizalanma: true })));
+    expect(alignmentEnabled()).toBe(true);
     expect(build()).toContain('<option value="20"');
     setRoomOverlay(null);
-    expect(upperLevelsEnabled()).toBe(false);
     expect(localStorage.getItem('rpg-battle-deneysel')).toBeNull();
   });
-  it('Odaya katıl: Karakter oluştur düğmesi ve 5 üstü karakter uyarısı (Üst seviye kapalı)', () => {
+  it('Odaya katıl: Karakter oluştur düğmesi', () => {
     saveRooms([newRoom('a', 'Masa', 'now')]);
     const html = renderToStaticMarkup(createElement(OdaKatil, { characters: [], onBack: () => {}, roomId: 'a', onBuild: () => {} }));
     expect(html).toContain('Karakter oluştur');
