@@ -8,7 +8,7 @@ import { deriveStats } from './stats';
 import { advancementSlots } from './advancement';
 import { classKit } from './classFeatures';
 import { budgetPerCharacter, encounterBudget } from './budget';
-import { LEVEL_CAP, UPPER_LEVEL_CAP, levelCap } from '../app/limits';
+import { LEVEL_CAP } from '../app/limits';
 import { nextLevelXp } from '../journey/engine';
 import { executeSeruven } from '../journey/seruven';
 import { partyAt } from '../sim/balance';
@@ -59,19 +59,20 @@ describe('seviye 6–10 tabloları (SRD 5.2.1)', () => {
   });
 });
 
-describe('seviye sınırı ve Üst seviye anahtarı', () => {
-  // Kuyruk 19: Üst seviye tavanı 10 → 20 (SRD'nin tamamı; kullanıcı kararı).
-  it('sınır 5, Üst seviye açıkken 20', () => {
-    expect([LEVEL_CAP, UPPER_LEVEL_CAP, levelCap(false), levelCap(true)]).toEqual([5, 20, 5, 20]);
+describe('seviye sınırı (anahtarsız, 2026-11-19)', () => {
+  // Kullanıcı kararı 2026-11-19: 5. seviye sınırı ve "Üst seviye" anahtarı kalktı; tek sabit 20.
+  it('sınır her zaman 20', () => {
+    expect(LEVEL_CAP).toBe(20);
   });
-  it('Serüven: 5. seviyede atlama yalnızca Üst seviye açıkken; 20\'de durur', () => {
+  it('Serüven: 5. seviyeden anahtarsız atlanır; 20\'de durur; eski ustSeviye: false kaydı engellemez', () => {
     const party = partyAt(5).map((sh, i) => ({ id: `p${i + 1}`, name: sh.name, sheet: sh }));
     const r = executeSeruven(null, { type: 'start', id: 's', seed: 1, party, toggles: { irkBaslangic: false } });
     if (!r.ok) throw new Error(r.error);
     const rich = { ...r.state, xp: 999999 };
     expect(rich.level).toBe(5);
-    expect(executeSeruven(rich, { type: 'level_up' }).ok).toBe(false);
-    const up = { ...rich, toggles: { ...rich.toggles, ustSeviye: true } };
+    expect(executeSeruven(rich, { type: 'level_up' }).ok).toBe(true);
+    // Eski Serüven kaydında kalan `ustSeviye: false` yok sayılır.
+    const up = { ...rich, toggles: { ...rich.toggles, ustSeviye: false } };
     const six = executeSeruven(up, { type: 'level_up' });
     expect(six.ok && six.state.level).toBe(6);
     expect(executeSeruven({ ...up, level: 10 }, { type: 'level_up' }).ok).toBe(true);

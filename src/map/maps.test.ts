@@ -299,19 +299,16 @@ describe('varyant adları (görünen ad, kimlik değişmez)', () => {
   });
 });
 
-describe('Kuyruk 41b: Üst seviyede gizlenen 1–5. seviye senaryosu', () => {
-  it('Kale Baskını ustSeviyeGizli; seçici görünürlüğü anahtara bağlı', async () => {
+describe('2026-11-19: Üst seviye anahtarı kalktı (Kuyruk 41b gizlemesi yok)', () => {
+  it('seçici görünürlüğü yalnız `gizli`den; Kale Baskını kaydında ustSeviyeGizli yok', async () => {
     const { getMap, pickerVisible } = await import('./maps');
-    expect(getMap('kale-baskini').ustSeviyeGizli).toBe(true);
-    expect(pickerVisible({ ustSeviyeGizli: true }, false)).toBe(true);
-    expect(pickerVisible({ ustSeviyeGizli: true }, true)).toBe(false);
-    expect(pickerVisible({ gizli: true }, false)).toBe(false);
-    expect(pickerVisible({}, true)).toBe(true);
+    expect('ustSeviyeGizli' in getMap('kale-baskini')).toBe(false);
+    expect(pickerVisible({ gizli: true })).toBe(false);
+    expect(pickerVisible({})).toBe(true);
   });
-  it('Serüven: ustSeviyeGizli düğüm Üst seviye anahtarı açıkken görünmez', async () => {
+  it('Serüven: eski kayıttaki ustSeviye anahtarı düğüm görünürlüğünü etkilemez', async () => {
     const { nodeVisible } = await import('../journey/seruven');
-    const node = { id: 'x', ustSeviyeGizli: true } as never;
-    expect(nodeVisible({ flags: [], toggles: {} }, node)).toBe(true);
-    expect(nodeVisible({ flags: [], toggles: { ustSeviye: true } }, node)).toBe(false);
+    const node = { id: 'x' } as never;
+    expect(nodeVisible({ flags: [], toggles: { ustSeviye: true } }, node)).toBe(true);
   });
 });

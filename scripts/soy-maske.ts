@@ -203,7 +203,7 @@ const preview = args.includes('--onizleme') ? args[args.indexOf('--onizleme') + 
 const sheets = args.includes('--maskeler');
 fs.mkdirSync(OUT, { recursive: true });
 // KQ6 bağlama: `--alt` alt sınıf ve Gariban jetonlarının (`<ırk>-<erkek|kadin>-<sınıf>-<kod>.webp`, Celestial hariç) ten maskesi.
-// Aynı otomatik yöntem; ırkın `maskAlt` ayarı (Dragonborn beyaz taban) varsa o, yoksa `mask`. Maskesi çıkmayan (kabuk/odun yüzlü, tam örtülü)
+// Aynı otomatik yöntem; ırkın `maskAlt` ayarı (Goliath: yalnız baş) varsa o, yoksa `mask`. Maskesi çıkmayan (kabuk/odun yüzlü, tam örtülü)
 // jeton boyanmaz: dosya yazılmaz, `data/soy-maske-alt-rapor.json`'a "yok" yazılır. Elle maske (`assets/soy-maske-el/`) bunların önüne geçer.
 if (args.includes('--alt')) {
   const repFile = path.join(ROOT, 'data/soy-maske-alt-rapor.json');
@@ -212,7 +212,7 @@ if (args.includes('--alt')) {
   const names = fs.readdirSync(CHAR).map((f) => re.exec(f)).filter((m): m is RegExpExecArray => !!m);
   for (const m of names) {
     const name = m[0].replace(/\.webp$/, ''), race = m[1]!, g = m[2] === 'erkek' ? 'male' : 'female';
-    if ((only && only !== race) || race === 'dragonborn') continue; // Dragonborn: scripts/soy-maske-dragonborn.ts (yedek maske)
+    if ((only && only !== race) || race === 'dragonborn') continue; // Dragonborn: yalnız pul hattı (scripts/dragonborn-pul-maske.py → maske-pul/); eski yedek maske (KJ2/KJ3) yok
     const r = RACES[race]!;
     const base = (r as Race & { maskAlt?: MaskCfg }).maskAlt ?? r.mask;
     const { data, W, H } = await raw(path.join(CHAR, `${name}.webp`));

@@ -2,6 +2,10 @@
 
 Kaynak: SRD 5.2.1 Gameplay Toolbox, Combat Encounters, "XP Budget per Character" (`data/butce.json`, `src/rules/budget.ts`).
 
+> 2026-11-19 (kullanıcı kararı): "Üst seviye (6–20)" anahtarı ve 5. seviye sınırı kalktı; oluşturucu ve Serüven her zaman 1–20
+> (`LEVEL_CAP` 20, `src/app/limits.ts`). Bütçe zaten 1–20 tanımlı (`budgetPerCharacter` 20'ye kırpar); bu belgedeki 6–10 tablosu
+> Kuyruk 38'in Aşama 2 dökümü olarak kalır. 6+ seviye denge turu ayrı görev.
+
 ## Karakter başına XP bütçesi (6–10)
 
 | Seviye | Low | Moderate | High | 4 kişilik parti, Moderate |

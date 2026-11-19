@@ -283,7 +283,7 @@ Tarih: 2026-11-19. Kullanıcı kararları (2026-11-19):
 
 Karar ve uygulama ayrıntısı DECISIONS.md'de ("SRD veri düzeltmeleri D1").
 
-- **Yeni kural sürümü: 86** (`src/battle/srdD1Surum.ts` `SRD_D1_VERSION`). 84 ve 85 başka görevlere ayrıldı (Control Water, Wild Shape); o anda depodaki en yüksek sürüm 83'tü.
+- **Yeni kural sürümü: 86** (`src/battle/srdD1Surum.ts` `SRD_D1_VERSION`). Başlarken depodaki en yüksek sürüm 83'tü; 84 (Control Water girdabı, birleştirmede geldi) ve 85 (Wild Shape) başka görevlere ayrılmıştı.
 - **Uygulama:** veri dosyaları artık SRD değerini tutuyor. 85 ve altı savaşlar eski değerleri `data/srd-duzeltme.json`'dan okuyor: 77 kayıt, her biri dosya, kayıt, alan, eski, yeni ve sayfa ile.
 - **Kaynak:** her değer PDF'ten. `scripts/srd-canavar.mjs` (`npm run srd:canavar`) 330 stat bloğunu `data/srd/monsters.json`'a çıkarıyor. Denetim turundaki bağımsız Python ayrıştırması ile 330 canavar × 15 alanda 0 fark var.
 

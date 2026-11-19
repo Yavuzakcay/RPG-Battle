@@ -17,7 +17,7 @@ import { armor } from '../data';
 import { skillBonus, type Skill } from '../rules/skills';
 import type { JourneyMember, JourneyStop } from './types';
 import { gorevById, irkBaslangic, urunById, satisFiyati, yerlesimById, yerlesimHarita, YERLESIM } from '../yerlesim/yerlesim';
-import { levelCap } from '../app/limits';
+import { LEVEL_CAP } from '../app/limits';
 import { HAPIS, dragBack, nonlethal, sucById, wakeUp, type HapisDurum } from './hapishane';
 import { moralDeltas, moralStatuses, reviveCaster, revivedStatus, type MoralReason } from './moral';
 import { MORAL } from '../rules/moral';
@@ -28,7 +28,6 @@ export interface SeruvenNode {
   /** Gece için ayrı senaryo (yoksa haritanın `gece` varyantı). */ gece?: string;
   /** Sefer düğümü `<sefer>:<düğüm>` (data/seferler.json). */ sefer?: string;
   /** Kuyruk 32: keşif bayrağıyla açılan gizli düğüm (bayrak yokken görünmez; ör. Heykel Mağarası). */ bayrak?: string;
-  /** Kuyruk 41b: yalnızca 1–5. seviye senaryosu; "Üst seviye" (ustSeviye) açıkken görünmez. */ ustSeviyeGizli?: boolean;
   /** Kuyruk 33: yerleşim düğümü (K34'te dolacak kart verisinin kimliği): savaşsız, "Yakında", yolu kapatmaz (geçilmiş sayılır). */ yerlesim?: string;
   /** Kuyruk 33: haritası olmayan düğümün görünen adı. */ ad?: { tr: string; en: string };
   /**
@@ -284,8 +283,8 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       return hapisCommand(state, page, cmd);
     case 'level_up': {
       if (!toggleOn(state, 'seviyeAtlama')) return fail('Serüven seviye atlama kapalı.');
-      // Kuyruk 38: seviye sınırı 5; "Üst seviye" açıkken 20 (Kuyruk 19; önce 10).
-      if (state.level >= levelCap(toggleOn(state, 'ustSeviye'))) return fail('Seviye sınırına ulaşıldı.');
+      // 2026-11-19: seviye sınırı her zaman 20 (eski "ustSeviye" anahtarı kalktı; eski kayıtta varsa yok sayılır).
+      if (state.level >= LEVEL_CAP) return fail('Seviye sınırına ulaşıldı.');
       const need = levelXp(state.level);
       if (need === null || state.xp < need) return fail('XP eşiği aşılmadı.');
       return done(state, [{ type: 'seruven_leveled', level: state.level + 1 }]);
@@ -431,12 +430,9 @@ export function pageOrder(): SeruvenPage[] {
 }
 
 /** Kuyruk 32: bayraklı düğüm bayrak bulunana dek görünmez. */
-/**
- * Düğüm görünür mü: bayraklı alt düğüm bayrak alınınca; Kuyruk 41b: `ustSeviyeGizli` düğüm (yalnızca 1–5. seviye
- * senaryosu, ör. Kale Baskını haritası) "Üst seviye" anahtarı açıkken gizli.
- */
+/** Düğüm görünür mü: bayraklı alt düğüm bayrak alınınca (2026-11-19: Kuyruk 41b `ustSeviyeGizli` "Üst seviye" anahtarıyla kalktı). */
 export const nodeVisible = (s: Pick<SeruvenState, 'flags' | 'toggles'>, node: SeruvenNode): boolean =>
-  (!node.bayrak || s.flags.includes(node.bayrak)) && !(node.ustSeviyeGizli && toggleOn(s, 'ustSeviye'));
+  (!node.bayrak || s.flags.includes(node.bayrak));
 
 /** Bir sonraki seviyenin XP eşiği (yolculuk kuralları; SRD 5.2.1). */
 export const levelXp = (level: number): number | null => nextLevelXp(level);

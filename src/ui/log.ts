@@ -8,8 +8,11 @@ import type { Offset } from '../rules/hex';
 import { skillLabel } from '../rules/skills';
 import { terrainOf } from '../map/terrain';
 import { getLang, t } from '../i18n';
+import { spells, trAciklama } from '../data';
+import { SECENEK_ADI } from '../battle/girdapSurum';
 import { hpModeFor, hpPhrase } from './hpVisibility';
 import terrainTable from '../../data/arazi-buyu-etkileri.json';
+import { saveWhyParts } from './reasons';
 
 const TERRAIN_TEXT = terrainTable.satirlar as Array<{ id: string; tr: string; en: string }>;
 
@@ -96,8 +99,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'save_resolved': {
       const ab = event.ability.toUpperCase();
       const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.label}`];
+      // G01: kipin kaynağı varsa (`modeWhy`) kip rozeti ondan (motorun `mode` alanı çoğu yolda sabit 'normal'); yoksa eskisi gibi.
+      const why = saveWhyParts(event.modeWhy, getLang());
+      const shown = why ? (why.kind === 'adv' ? 'advantage' : why.kind === 'dis' ? 'disadvantage' : 'normal') : event.mode;
       parts.push(event.natural === null ? L.saveAuto(ab)
-        : L.saveRoll(ab, event.d20.join(' / '), mode(event.mode), event.total ?? 0, event.cover ?? 0, event.dc, event.success));
+        : L.saveRoll(ab, event.d20.join(' / '), mode(shown), event.total ?? 0, event.cover ?? 0, event.dc, event.success));
+      if (why && event.natural !== null) parts.push(L.saveWhy(why.kind, why.names, ab));
       if (event.rawDamage > 0) parts.push(hid(event.targetId) ? phrase(event.targetId, event.targetHpAfter) : damagePart(event.damageRolls, event.rawDamage, event.secondary ? event.appliedDamage - event.secondary.applied : event.appliedDamage, event.damageType, event.damageNote));
       // Kuyruk 19: ikinci hasar türü (Ice Storm, Flame Strike).
       if (event.secondary && event.secondary.raw > 0 && !hid(event.targetId)) parts.push(damagePart(event.secondary.rolls, event.secondary.raw, event.secondary.applied, event.secondary.type, event.secondary.note));
@@ -288,6 +295,13 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'lava_warning':
       return L.lavaWarning(event.hexes.length);
     case 'map_note':
+      // Control Water (sürüm 84): savaş dışı seçeneğin Game Master notu dile göre (Türkçe veri, İngilizce metin tablosu).
+      if (event.secenekNotu) {
+        const key = `${event.secenekNotu.spell}/${event.secenekNotu.choice}`;
+        const note = getLang() === 'tr' ? trAciklama('buyuSecenek', key) : L.gmOptionText[key];
+        const sp = spells.find((x) => x.id === event.secenekNotu!.spell);
+        if (note && sp) return L.gmOption(sp.name, SECENEK_ADI[event.secenekNotu.choice] ?? event.secenekNotu.choice, note);
+      }
       return event.text;
     case 'ability_recharge':
       return event.used ? '' : L.abilityRecharge(n(event.actorId), event.abilityId, event.d6 ?? 0, !!event.recharged);

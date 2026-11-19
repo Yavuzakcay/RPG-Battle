@@ -119,7 +119,6 @@ export const en: Strings = {
     startLocked: 'You cannot set up a new battle while one is going on. Use "Open for a new battle" first.',
     joinPick: 'Pick your room', joinChars: 'Pick your character', joinReady: 'Ready', joinLeave: 'Leave', joinAdd: 'Join',
     joinBuild: 'Build a character', joinBuildHelp: 'The room rules apply in the builder.',
-    levelCapWarn: (lvl: number, cap: number): string => `Upper levels are off in this room: level ${cap} at most. Your character is level ${lvl}; it was not deleted, but the Game Master must turn on Upper levels before it plays in this room.`,
     joinNoChars: 'No saved characters. Build one in the Player screen first.',
     joinFull: (max: number): string => `Party is full (${max}).`, joinCount: (n: number, max: number): string => `Ready: ${n}/${max}`,
     joinRules: 'Room rules (read only)', joinWait: 'The Game Master sets up the battle.',
@@ -128,7 +127,6 @@ export const en: Strings = {
   },
   roomRules: {
     title: 'Room rules', help: 'Chosen when you set up a room. Stays the same in every battle.',
-    upper: 'Upper levels (6–20)', upperHelp: 'Characters can reach level 20.',
     carry: 'Carrying load', carryHelp: { off: 'Weight is shown, no limit.', srd: 'Cannot carry over Strength × 15 lb.', tiered: 'You slow down as you get heavier.' } as Record<string, string>,
     align: 'Alignment', alignHelp: 'A character\'s good/evil and law/chaos lean (house rule).', alignRace: 'Race and culture bonus', alignAuto: 'Automatic changes only', alignMoral: 'Link to Morale',
     discovery: 'Discovery mode', discoveryHelp: 'Reactions are learned the first time you see them.', hints: 'Hint badges', hintsHelp: 'A "?" shows on targets that may react in an unknown way.',
@@ -704,6 +702,13 @@ export const en: Strings = {
     mountDetail: { mount: (name: string): string => `Mount: ${name}`, down: (name: string): string => `${name} dropped (0 HP): the rider dismounts without a save`, prone: 'Rider is Prone', cost: (ft: number): string => `Movement spent: ${ft} ft`, alt: (ft: number): string => `Landing altitude: ${ft} ft`, rider: (name: string): string => `Rider: ${name}` },
     turnSummary: (name: string, hits: number, attacks: number, dmg: number, heal: number, saves: number): string => `Turn summary · ${name}: ${attacks ? `${attacks} attack${attacks === 1 ? '' : 's'}, ${hits} hit${hits === 1 ? '' : 's'}` : 'no attacks'}${saves ? `, forced ${saves} save${saves === 1 ? '' : 's'}` : ''}, ${dmg} damage${heal ? `, ${heal} healing` : ''}`,
     summaryToggle: 'Turn summary', expandHint: 'Tap for details',
+    gmOption: (spell: string, option: string, note: string): string => `Game Master note — ${spell} (${option}): ${note}`,
+    gmOptionText: {
+      'control-water/whirlpool': 'A whirlpool on the target creature\'s hex (house rule: no water needed). Strength save on entering and at turn start; on a failure damage and caught (Athletics to break free), on a success half damage.',
+      'control-water/flood': 'Standing water in the area rises by up to 20 feet; in a large body of water a 20-foot wave crosses the area, carrying Huge or smaller vehicles (25% capsize). No combat effect; the Game Master narrates.',
+      'control-water/part': 'The water in the area parts and a trench crosses the area, the water forming a wall to either side; when the effect ends the trench refills over the next round. No combat effect; the Game Master narrates.',
+      'control-water/redirect': 'Flowing water in the area moves in the direction you choose, even over obstacles or up walls; beyond the area it resumes its normal flow. No combat effect; the Game Master narrates.',
+    } as Record<string, string>,
     hex: (col: number, row: number) => `column ${col}, row ${row}`,
     note: { immune: 'immune', vulnerable: 'vulnerable ×2', resistant: 'resistant ½', absorbed: 'absorbed (heals)' } as Record<string, string>,
     mode: { advantage: ' (advantage)', disadvantage: ' (disadvantage)', normal: '' } as Record<string, string>,
@@ -737,6 +742,9 @@ export const en: Strings = {
     saveRoll: (ab: string, d20: string, mode: string, total: number, cover: number, dc: number, ok: boolean) =>
       `${ab} saving throw ${d20}${mode}, total ${total}${cover ? ` (incl. cover +${cover})` : ''} / DC ${dc}: ${ok ? 'success' : 'failure'}`,
     conditionsAdded: (list: string) => `condition: ${list}`,
+    /** G01: reason for the saving throw's mode (one line in the expandable detail). */
+    saveWhy: (kind: 'adv' | 'dis' | 'cancel', names: string, ab: string) =>
+      `${kind === 'adv' ? 'Advantage' : kind === 'dis' ? 'Disadvantage' : 'Advantage and disadvantage cancel out'}: ${names} (${ab} save)`,
     healed: (a: string, b: string, label: string, n: number) => `${a} → ${b}: ${label}, healed ${n} HP.`,
     slotSpent: (a: string, lvl: number, left: number) => `${a}: level ${lvl} slot spent (${left} left).`,
     dodge: (a: string) => `${a} dodges: until the start of their next turn attackers have disadvantage and DEX saves have advantage.`,
@@ -955,7 +963,6 @@ export const en: Strings = {
   journey: {
     menu: 'Journey (beta)', menuDesc: 'The main mode without a Game Master: alone or with a party, play battles along a route with a persistent party state.',
     celestialFlag: 'Game Master: Celestial ancestry (house rule)', celestialNote: 'An original ancestry outside SRD 5.2.1 (Fallen). When on, it can be chosen in the builder and new battles use Healing Touch, Light and Celestial Awakening; when off, Celestial characters play with darkvision and resistances only.',
-    upperFlag: 'Game Master: Upper levels (6–20)', upperNote: 'When on, character creation and Adventure level-ups go up to level 20; when off, 5. Older higher-level characters are kept.',
     title: 'Journey (beta)', flag: 'Experimental: Journey', flagNote: 'Shows the "Journey (beta)" entry on the main menu. Saved separately.',
     newTitle: 'New journey', route: 'Route', party: 'Party', difficulty: 'Difficulty', progression: 'Progression',
     diff: { kolay: 'Easy', normal: 'Normal', zor: 'Hard' }, prog: { milestone: 'Milestone', xp: 'XP' },
