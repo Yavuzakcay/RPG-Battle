@@ -2104,6 +2104,22 @@
    "nTail": 1,
    "nHand": 18,
    "drop": 76
+  },
+  "dragonborn-erkek-fighter-ID12": {
+   "opaque": 25025,
+   "n": 5007,
+   "nHead": 1,
+   "nTail": 4,
+   "nHand": 14,
+   "drop": 48
+  },
+  "dragonborn-kadin-fighter-ID12": {
+   "opaque": 24579,
+   "n": 4700,
+   "nHead": 1,
+   "nTail": 7,
+   "nHand": 16,
+   "drop": 74
   }
  }
 }

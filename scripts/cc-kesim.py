@@ -8,7 +8,7 @@
 Öncelik kuralı (aynı jeton kimliği): düzeltme > yeni sayfa > taban (`ONCELIK`). Defter data/cc-kesim-kaynak.json her yazımı kaydeder;
 daha düşük öncelikli bir adım, daha yüksek öncelikli kaynağın yazdığı jetonu ezmez (adımlar hangi sırayla çalışırsa çalışsın).
 Çıktı: public/characters/<ad>.webp (+ kucuk/ 96 px), kontak sayfaları docs/sabah/cc-kesim/, rapor docs/sabah/cc-kesim/<adım>.json."""
-import csv, importlib.util, io, json, os, re, subprocess, sys
+import csv, glob, importlib.util, io, json, os, re, subprocess, sys
 import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
@@ -246,10 +246,108 @@ def taban():
     return rep
 
 
+# ---------------------------------------------------------------------------------------------------------------- 2) yeni sayfalar
+GEN = {'female': 'kadin', 'male': 'erkek'}
+GLAD_KOD = 'ID12'   # Gladyatör (champion): Fighter 4×3 sayfasının boş 12. hücresinin kodu; data/fighter-jeton.json altSiniflar.champion
+
+def body_height(race, gen, cls='fighter', codes=('ID1', 'ID2', 'ID3', 'ID4', 'ID6', 'ID7', 'ID8', 'ID9')):
+    hs = []
+    for c in codes:
+        f = f'public/characters/{race}-{gen}-{cls}-{c}.webp'
+        if os.path.exists(f):
+            a = np.array(Image.open(f).convert('RGBA'))[..., 3] > 127; ys, _ = np.where(a)
+            if len(ys): hs.append(ys.max() - ys.min() + 1)
+    return float(np.median(hs)) if hs else tk.FIG_H
+
+def cut_figures(path, want):
+    """Hücreleri otomatik bulur (elle ızgara yok): zemin anahtarı + figür kümeleri, okuma sırası. → [(rgba, kutu)], uyarılar."""
+    a = np.asarray(Image.open(path).convert('RGB')); H, W = a.shape[:2]; fg = key_page(a)
+    figs, lab = figures(fg, min_frac=0.02, join=18)
+    warn = []
+    if len(figs) != want: warn.append(f'{len(figs)} figür bulundu, beklenen {want}')
+    out = []
+    for f in reading_order(figs, H):
+        i, (x0, y0, x1, y1), _, _ = f
+        m = (lab[y0:y1, x0:x1] == i) & fg[y0:y1, x0:x1]
+        # ayak şeridi / kenar lekesi: en büyük bağlı bileşen + ona yakın (≤ 12 px) parçalar
+        l2, n2 = ndi.label(m, structure=np.ones((3, 3)))
+        if n2 > 1:
+            sz = ndi.sum(m, l2, range(1, n2 + 1)); big = l2 == (1 + int(np.argmax(sz)))
+            near = ndi.binary_dilation(big, iterations=12)
+            keep = [k for k in range(1, n2 + 1) if (near & (l2 == k)).any() and sz[k - 1] >= 30]
+            m = np.isin(l2, keep)
+        touch = x0 <= 1 or y0 <= 1 or x1 >= W - 1 or y1 >= H - 1
+        if touch: warn.append(f'figür sayfa kenarına değiyor ({x0},{y0},{x1},{y1})')
+        out.append((keyed_rgba(a[y0:y1, x0:x1], m), (x0, y0, x1, y1), cell_kind(a[y0:y1, x0:x1], m)))
+    return out, warn
+
+def place_token(rgba, target_h):
+    bb = tk.bbox(rgba)
+    h, w = bb[3] - bb[1], bb[2] - bb[0]
+    sc = min(target_h / h, (SIZE - 4) / w)
+    tok, nh, shifted = tk.render(rgba, bb, sc, (bb[0] + bb[2]) / 2)
+    return np.array(tok), round(sc, 4)
+
+def yeni():
+    L = ledger(); rep = {'adim': 'yeni', 'yazilan': [], 'ezilmedi': [], 'sayfalar': [], 'eksik': []}
+    items = []
+    # A) Gladyatör
+    for path in sorted(glob.glob(f'{RAW}/gladiator-*.jpg')):
+        m = re.match(r'gladiator-([a-z-]+)-(female|male)\.jpg$', os.path.basename(path)); races = m.group(1).split('-'); gen = GEN[m.group(2)]
+        figs, warn = cut_figures(path, len(races))
+        pr = {'dosya': os.path.basename(path), 'beklenen': len(races), 'bulunan': len(figs), 'zemin': [k for _, _, k in figs], 'uyari': warn, 'jeton': []}
+        if len(figs) != len(races): rep['eksik'].append((pr['dosya'], warn)); rep['sayfalar'].append(pr); continue
+        for race, (rgba, bb, kind) in zip(races, figs):
+            name = f'{race}-{gen}-fighter-{GLAD_KOD}'
+            tok, sc = place_token(rgba, body_height(race, gen))
+            src = f'public/characters/{race}-{gen}-fighter-ID1.webp'
+            write_token(L, name, Image.fromarray(tok, 'RGBA'), 'yeni', pr['dosya'], races.index(race) + 1, rep)
+            pr['jeton'].append({'ad': name, 'olcek': sc}); items.append((f'G {race} {gen}', tok, np.array(Image.open(src).convert('RGBA')) if os.path.exists(src) else None))
+        rep['sayfalar'].append(pr)
+    contact(items, f'{DOC}/adim2-gladyator.jpg', cols=5, title='Adım 2 Gladyatör: Fighter ID1 (ölçek referansı) | yeni ID12')
+    # B) Warlock (eski aynı adlı sayfalar assets-ham/karakter/_eski/)
+    witems = []
+    for path in sorted(glob.glob('assets-ham/eksikler/warlock-*.jpg')):
+        m = re.match(r'warlock-(female|male)-([a-z]+)\.jpg$', os.path.basename(path)); gen, race = GEN[m.group(1)], m.group(2)
+        comps = tk.components_of_sheet(f'{RAW}/{os.path.basename(path)}', 'warlock')
+        names = tk.CLASSES['warlock'][3]
+        valid = {n: v for n, v in comps.items() if n <= len(names)}
+        pr = {'dosya': os.path.basename(path), 'beklenen': len(names), 'bulunan': len(valid), 'eksik': [n for n in range(1, len(names) + 1) if n not in valid],
+              'elle': [(n, v[2][0]) for n, v in valid.items() if any(x.startswith('ELLE') for x in v[2])], 'jeton': []}
+        ok = {n: v for n, v in valid.items() if not any(x.startswith('ELLE') for x in v[2])}
+        norm = [n for n in ok if tk.TALL.get('warlock') != n]
+        hmax = max(ok[n][0].shape[0] for n in norm); wmax = max(ok[n][0].shape[1] for n in norm)
+        scale = min(tk.FIG_H / hmax, (SIZE - 4) / wmax)
+        for n, (rgba, bb, w) in sorted(ok.items()):
+            sc = scale if n in norm else min(tk.FIG_H / rgba.shape[0], (SIZE - 4) / rgba.shape[1])
+            tok, nh, shifted = tk.render(rgba, tk.bbox(rgba), sc, rgba.shape[1] / 2)
+            name = f'{race}-{gen}-warlock-WL-{n}'
+            old = f'public/characters/{name}.webp'; before = np.array(Image.open(old).convert('RGBA')) if os.path.exists(old) else None
+            write_token(L, name, tok, 'yeni', pr['dosya'], n, rep)
+            pr['jeton'].append(name); witems.append((f'{race}-{gen} WL-{n}', np.array(tok), before))
+        rep['sayfalar'].append(pr)
+    contact(witems, f'{DOC}/adim2-warlock.jpg', cols=6, title='Adım 2 Warlock: eski | yeni')
+    save_ledger(L); hold_sync(L)
+    json.dump(rep, open(f'{DOC}/adim2-yeni.json', 'w'), ensure_ascii=False, indent=1)
+    return rep
+
+
+def gladyator_onizleme():
+    """docs/sabah/gladyator-sayfa/kesim-onizleme/<kaynak>.jpg: solda kaynak sayfa (yükseklik 300), sağda kesilen jetonlar (256, koyu zemin)."""
+    d = 'docs/sabah/gladyator-sayfa/kesim-onizleme'; os.makedirs(d, exist_ok=True)
+    for path in sorted(glob.glob(f'{RAW}/gladiator-*.jpg')):
+        m = re.match(r'gladiator-([a-z-]+)-(female|male)\.jpg$', os.path.basename(path)); races = m.group(1).split('-'); gen = GEN[m.group(2)]
+        src = Image.open(path).convert('RGB'); src = src.resize((round(src.width * 300 / src.height), 300))
+        im = Image.new('RGB', (src.width + 20 + 266 * len(races), 320), (54, 58, 66)); im.paste(src, (0, 10)); dr = ImageDraw.Draw(im)
+        for i, race in enumerate(races):
+            t = Image.open(f'public/characters/{race}-{gen}-fighter-{GLAD_KOD}.webp').convert('RGBA')
+            x = src.width + 20 + i * 266; im.paste(t, (x, 40), t); dr.text((x, 14), f'{race}-{gen}-fighter-{GLAD_KOD}', fill=(255, 255, 255))
+        im.save(f'{d}/{os.path.splitext(os.path.basename(path))[0]}.jpg', quality=88)
+
 if __name__ == '__main__':
     os.makedirs(f'{OUT}/kucuk', exist_ok=True)
     step = sys.argv[1] if len(sys.argv) > 1 else ''
-    fn = {'taban': taban}.get(step)
+    fn = {'taban': taban, 'yeni': yeni, 'gladyator-onizleme': lambda: (gladyator_onizleme(), {'tamam': 1})[1]}.get(step)
     if not fn: sys.exit(__doc__)
     r = fn()
     print({k: (len(v) if isinstance(v, (list, dict)) else v) for k, v in r.items()})

@@ -13,12 +13,12 @@ const halesizDir = names(import.meta.glob('../../public/characters/halesiz/*.web
 
 describe('Celestial yıldız tacı verisi (KQ6-19)', () => {
   it('288 jeton: halesiz sprite ya da bekleyen; her halesiz jetonun konumu (varsayılan grup ya da jeton kaydı) var; eski halesiz klasörü kalktı', () => {
-    expect(main.size).toBe(288);
+    expect(main.size).toBe(290); // 288 + 2 Celestial Gladyatör (CC 2026-11-19, fighter ID12)
     expect(halesizDir.size).toBe(0);
     const hold = new Set(bekleyen.bekleyen);
     for (const h of hold) expect(main.has(h), h).toBe(true);
     const free = [...main].filter((n) => !hold.has(n));
-    expect(free.length + hold.size).toBe(288);
+    expect(free.length + hold.size).toBe(290);
     const def = konum.varsayilan as Record<string, { x: number; y: number; olcek: number }>; const ovr = konum.jeton as Record<string, unknown>;
     for (const n of free) {
       const name = n.replace(/^celestial-/, ''); const k = crownKey(name);

@@ -2190,6 +2190,1956 @@
     "dosya": "hale-gemini-sayfa-31.png",
     "hucre": 8
    }
+  },
+  "dragonborn-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-dragonborn-female.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-dragonborn-female.jpg",
+    "hucre": 1
+   }
+  },
+  "dragonborn-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-dragonborn-male.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-dragonborn-male.jpg",
+    "hucre": 1
+   }
+  },
+  "dwarf-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-dwarf-elf-female.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-dwarf-elf-female.jpg",
+    "hucre": 1
+   }
+  },
+  "elf-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-dwarf-elf-female.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-dwarf-elf-female.jpg",
+    "hucre": 2
+   }
+  },
+  "dwarf-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-dwarf-elf-male.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-dwarf-elf-male.jpg",
+    "hucre": 1
+   }
+  },
+  "elf-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-dwarf-elf-male.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-dwarf-elf-male.jpg",
+    "hucre": 2
+   }
+  },
+  "gnome-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-gnome-goliath-female.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-gnome-goliath-female.jpg",
+    "hucre": 1
+   }
+  },
+  "goliath-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-gnome-goliath-female.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-gnome-goliath-female.jpg",
+    "hucre": 2
+   }
+  },
+  "gnome-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-gnome-goliath-male.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-gnome-goliath-male.jpg",
+    "hucre": 1
+   }
+  },
+  "goliath-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-gnome-goliath-male.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-gnome-goliath-male.jpg",
+    "hucre": 2
+   }
+  },
+  "halfling-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-halfling-female.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-halfling-female.jpg",
+    "hucre": 1
+   }
+  },
+  "halfling-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-halfling-orc-male.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-halfling-orc-male.jpg",
+    "hucre": 1
+   }
+  },
+  "orc-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-halfling-orc-male.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-halfling-orc-male.jpg",
+    "hucre": 2
+   }
+  },
+  "human-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-human-female.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-human-female.jpg",
+    "hucre": 1
+   }
+  },
+  "human-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-human-male.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-human-male.jpg",
+    "hucre": 1
+   }
+  },
+  "orc-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-orc-female.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-orc-female.jpg",
+    "hucre": 1
+   }
+  },
+  "tiefling-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-tiefling-celestial-female.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-tiefling-celestial-female.jpg",
+    "hucre": 1
+   }
+  },
+  "celestial-kadin-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-tiefling-celestial-female.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-tiefling-celestial-female.jpg",
+    "hucre": 2
+   }
+  },
+  "tiefling-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-tiefling-celestial-male.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-tiefling-celestial-male.jpg",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-fighter-ID12": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "gladiator-tiefling-celestial-male.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "gladiator-tiefling-celestial-male.jpg",
+    "hucre": 2
+   }
+  },
+  "dwarf-kadin-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 1
+   }
+  },
+  "dwarf-kadin-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 2
+   }
+  },
+  "dwarf-kadin-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 3
+   }
+  },
+  "dwarf-kadin-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 4
+   }
+  },
+  "dwarf-kadin-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 5
+   }
+  },
+  "dwarf-kadin-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 6
+   }
+  },
+  "dwarf-kadin-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 7
+   }
+  },
+  "dwarf-kadin-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 8
+   }
+  },
+  "dwarf-kadin-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 9
+   }
+  },
+  "dwarf-kadin-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 10
+   }
+  },
+  "dwarf-kadin-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-dwarf.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-dwarf.jpg",
+    "hucre": 11
+   }
+  },
+  "elf-kadin-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 1
+   }
+  },
+  "elf-kadin-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 2
+   }
+  },
+  "elf-kadin-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 3
+   }
+  },
+  "elf-kadin-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 4
+   }
+  },
+  "elf-kadin-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 5
+   }
+  },
+  "elf-kadin-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 6
+   }
+  },
+  "elf-kadin-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 7
+   }
+  },
+  "elf-kadin-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 8
+   }
+  },
+  "elf-kadin-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 9
+   }
+  },
+  "elf-kadin-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 10
+   }
+  },
+  "elf-kadin-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-elf.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-elf.jpg",
+    "hucre": 11
+   }
+  },
+  "human-kadin-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 1
+   }
+  },
+  "human-kadin-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 2
+   }
+  },
+  "human-kadin-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 3
+   }
+  },
+  "human-kadin-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 4
+   }
+  },
+  "human-kadin-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 5
+   }
+  },
+  "human-kadin-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 6
+   }
+  },
+  "human-kadin-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 7
+   }
+  },
+  "human-kadin-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 8
+   }
+  },
+  "human-kadin-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 9
+   }
+  },
+  "human-kadin-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 10
+   }
+  },
+  "human-kadin-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-human.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-human.jpg",
+    "hucre": 11
+   }
+  },
+  "tiefling-kadin-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 1
+   }
+  },
+  "tiefling-kadin-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 2
+   }
+  },
+  "tiefling-kadin-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 3
+   }
+  },
+  "tiefling-kadin-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 4
+   }
+  },
+  "tiefling-kadin-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 5
+   }
+  },
+  "tiefling-kadin-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 6
+   }
+  },
+  "tiefling-kadin-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 7
+   }
+  },
+  "tiefling-kadin-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 8
+   }
+  },
+  "tiefling-kadin-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 9
+   }
+  },
+  "tiefling-kadin-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 10
+   }
+  },
+  "tiefling-kadin-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-female-tiefling.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-female-tiefling.jpg",
+    "hucre": 11
+   }
+  },
+  "celestial-erkek-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 1
+   }
+  },
+  "celestial-erkek-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 2
+   }
+  },
+  "celestial-erkek-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 3
+   }
+  },
+  "celestial-erkek-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 4
+   }
+  },
+  "celestial-erkek-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 5
+   }
+  },
+  "celestial-erkek-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 6
+   }
+  },
+  "celestial-erkek-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 7
+   }
+  },
+  "celestial-erkek-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 8
+   }
+  },
+  "celestial-erkek-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 9
+   }
+  },
+  "celestial-erkek-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 10
+   }
+  },
+  "celestial-erkek-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-celestial.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-celestial.jpg",
+    "hucre": 11
+   }
+  },
+  "dwarf-erkek-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 1
+   }
+  },
+  "dwarf-erkek-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 2
+   }
+  },
+  "dwarf-erkek-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 3
+   }
+  },
+  "dwarf-erkek-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 4
+   }
+  },
+  "dwarf-erkek-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 5
+   }
+  },
+  "dwarf-erkek-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 6
+   }
+  },
+  "dwarf-erkek-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 7
+   }
+  },
+  "dwarf-erkek-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 8
+   }
+  },
+  "dwarf-erkek-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 9
+   }
+  },
+  "dwarf-erkek-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 10
+   }
+  },
+  "dwarf-erkek-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-dwarf.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-dwarf.jpg",
+    "hucre": 11
+   }
+  },
+  "elf-erkek-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 1
+   }
+  },
+  "elf-erkek-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 2
+   }
+  },
+  "elf-erkek-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 3
+   }
+  },
+  "elf-erkek-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 4
+   }
+  },
+  "elf-erkek-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 5
+   }
+  },
+  "elf-erkek-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 6
+   }
+  },
+  "elf-erkek-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 7
+   }
+  },
+  "elf-erkek-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 8
+   }
+  },
+  "elf-erkek-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 9
+   }
+  },
+  "elf-erkek-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 10
+   }
+  },
+  "elf-erkek-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-elf.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-elf.jpg",
+    "hucre": 11
+   }
+  },
+  "gnome-erkek-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 1
+   }
+  },
+  "gnome-erkek-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 2
+   }
+  },
+  "gnome-erkek-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 3
+   }
+  },
+  "gnome-erkek-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 4
+   }
+  },
+  "gnome-erkek-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 5
+   }
+  },
+  "gnome-erkek-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 6
+   }
+  },
+  "gnome-erkek-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 7
+   }
+  },
+  "gnome-erkek-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 8
+   }
+  },
+  "gnome-erkek-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 9
+   }
+  },
+  "gnome-erkek-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 10
+   }
+  },
+  "gnome-erkek-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-gnome.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-gnome.jpg",
+    "hucre": 11
+   }
+  },
+  "human-erkek-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 1
+   }
+  },
+  "human-erkek-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 2
+   }
+  },
+  "human-erkek-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 3
+   }
+  },
+  "human-erkek-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 4
+   }
+  },
+  "human-erkek-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 5
+   }
+  },
+  "human-erkek-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 6
+   }
+  },
+  "human-erkek-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 7
+   }
+  },
+  "human-erkek-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 8
+   }
+  },
+  "human-erkek-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 9
+   }
+  },
+  "human-erkek-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 10
+   }
+  },
+  "human-erkek-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-human.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-human.jpg",
+    "hucre": 11
+   }
+  },
+  "tiefling-erkek-warlock-WL-1": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 1,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 1
+   }
+  },
+  "tiefling-erkek-warlock-WL-2": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 2,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 2
+   }
+  },
+  "tiefling-erkek-warlock-WL-3": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 3,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 3
+   }
+  },
+  "tiefling-erkek-warlock-WL-4": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 4,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 4
+   }
+  },
+  "tiefling-erkek-warlock-WL-5": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 5,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 5
+   }
+  },
+  "tiefling-erkek-warlock-WL-6": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 6,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 6
+   }
+  },
+  "tiefling-erkek-warlock-WL-7": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 7,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 7
+   }
+  },
+  "tiefling-erkek-warlock-WL-8": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 8,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 8
+   }
+  },
+  "tiefling-erkek-warlock-WL-9": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 9,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 9
+   }
+  },
+  "tiefling-erkek-warlock-WL-10": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 10,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 10
+   }
+  },
+  "tiefling-erkek-warlock-WL-11": {
+   "gecmis": [
+    {
+     "kaynak": "yeni",
+     "dosya": "warlock-male-tiefling.jpg",
+     "hucre": 11,
+     "sonuc": "yazıldı"
+    }
+   ],
+   "kazanan": {
+    "kaynak": "yeni",
+    "dosya": "warlock-male-tiefling.jpg",
+    "hucre": 11
+   }
   }
  }
 }
