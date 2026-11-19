@@ -12,6 +12,10 @@
 import { forcedMove, MOTION_VERSION } from './motion';
 import { ruleVersion } from './ruleVersion';
 import data from '../../data/canavar-yetenekleri.json';
+import { srdKayit } from './srdD1';
+import { srdD1On } from './srdD1Surum';
+import { turnKey } from './economy';
+import multiData from '../../data/multiattack.json';
 import { getMonster } from '../data';
 import { distance, ring, type Offset } from '../rules/hex';
 import { rollDice, rollDie, rollTag, type Rng } from '../rules/dice';
@@ -40,6 +44,8 @@ export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
   attackBonus?: number; trample?: boolean; grappleDc?: number; untilEscape?: boolean; attackAdv?: boolean; grants?: string[];
   breakOnAct?: boolean; concentration?: boolean; light?: number; toggle?: boolean; healDice?: string; pullFt?: number;
   monster?: string; count?: number; onlyAttacks?: string[]; fromCorpse?: boolean; noRepeat?: boolean; spells?: string[]; ally?: boolean; twice?: boolean;
+  /** Görev D1 (yutma): en büyük yutulabilen boyut (`small`'ın yerine), hasar zamanı, kusma (Giant Frog). */
+  maxSize?: 'T' | 'S' | 'M' | 'L' | 'H'; at?: 'start' | 'end'; disgorge?: boolean;
   adjacent?: boolean; dice2?: string; type2?: string; type?: string; escapeDamage?: number; escapeDc?: number; small?: boolean; nearTree?: boolean;
 }
 interface Aura { name: string; radiusFt: number; save?: 'wis' | 'con' | 'dex'; dc?: number; conditions?: string[]; on?: Array<'start'>; targets?: 'enemies' | 'all'; difficult?: boolean; gibbering?: boolean }
@@ -60,6 +66,8 @@ type Entry = { abilities?: MonsterAbility[]; passive?: MonsterPassive };
 const DATA = data as unknown as Record<string, Entry>;
 
 const on = (s: BattleState) => !!globalRule(s, 'srdK19');
+/** Görev D1: Multiattack'ı "bu tur kullandıysa" koşuluna bağlı yetenekler (`<canavar>:<yetenek>`; data/multiattack.json `ifUsed`). */
+const IF_USED = new Set(Object.entries(multiData as Record<string, { ifUsed?: { ability: string } }>).flatMap(([id, m]) => (m && typeof m === 'object' && m.ifUsed ? [`${id}:${m.ifUsed.ability}`] : [])));
 const isIncapacitatedNow = (c: Combatant) => c.conditions.some((x) => ['Incapacitated', 'Stunned', 'Paralyzed', 'Unconscious', 'Petrified'].includes(x));
 /** Sabit hasar zarı için ("N" ifadesi zar atmaz). */
 const rngZero: Rng = () => 0;
@@ -68,10 +76,12 @@ const foesOf = (s: BattleState, c: Combatant) =>
   Object.values(s.combatants).filter((o) => o.side !== c.side && !o.civilian && o.hp > 0 && o.pos && isTargetable(o) && canSee(s, c, o))
     .sort((x, y) => distance(hexOf(x), hexOf(c)) - distance(hexOf(y), hexOf(c)));
 
-export const entryOf = (c: Combatant): Entry | undefined => (c.monsterId ? DATA[c.monsterId] : undefined);
-export const passiveOf = (s: BattleState, c: Combatant): MonsterPassive | undefined => (on(s) ? entryOf(c)?.passive : undefined);
+/** Görev D1: kayıt savaşın kural sürümünde (85 ve altı: SRD düzeltmesi öncesi değerler, `data/srd-duzeltme.json`). */
+export const entryOf = (c: Combatant, s?: Pick<BattleState, 'kuralSurumu'>): Entry | undefined =>
+  (c.monsterId ? srdKayit('data/canavar-yetenekleri.json', c.monsterId, DATA[c.monsterId], s ? s.kuralSurumu ?? 1 : undefined) : undefined);
+export const passiveOf = (s: BattleState, c: Combatant): MonsterPassive | undefined => (on(s) ? entryOf(c, s)?.passive : undefined);
 // Yetenekle çağrılan yaratığın (Animate Trees ağacı) özel yeteneği yok (SRD: yalnızca Slam); zincirleme çağırma olmaz.
-export const abilitiesOf = (s: BattleState, c: Combatant): MonsterAbility[] => (on(s) && !c.summon?.spellId.startsWith('mab:') ? entryOf(c)?.abilities ?? [] : []);
+export const abilitiesOf = (s: BattleState, c: Combatant): MonsterAbility[] => (on(s) && !c.summon?.spellId.startsWith('mab:') ? entryOf(c, s)?.abilities ?? [] : []);
 
 /** Kullanılabilir mi (kullanım hakkı, şarj). */
 export function abilityReady(c: Combatant, a: MonsterAbility): boolean {
@@ -89,7 +99,7 @@ export function withMonsterAbilities(state: BattleState): BattleState {
   const dark = !!state.map && hasDarkness(state);
   for (const [id, c0] of Object.entries(state.combatants)) {
     if (!c0.monsterId) { combatants[id] = c0; continue; }
-    const e: Entry = entryOf(c0) ?? {};
+    const e: Entry = entryOf(c0, state) ?? {};
     const c = { ...c0 };
     const p = e.passive ?? {};
     const fx: Partial<ActiveEffect> = {};
@@ -165,6 +175,8 @@ export function executeMonsterAbility(state: BattleState, actor: Combatant, abil
   const cost: BattleEvent[] = [];
   if (a.uses !== undefined) cost.push({ type: 'feature_used', actorId: actor.id, feature: `mab:${a.id}`, remaining: (actor.resources[`mab:${a.id}`] ?? a.uses) - 1 });
   if (a.recharge !== undefined) cost.push({ type: 'ability_recharge', actorId: actor.id, abilityId: a.id, used: true });
+  // Görev D1 (86+): Multiattack'ı bu tur kullanıma bağlı yetenek (Clay Golem Hasten) turun işaretini bırakır.
+  if (srdD1On(state) && IF_USED.has(`${actor.monsterId}:${a.id}`)) cost.push({ type: 'trait_turn', actorId: actor.id, trait: `mab:${a.id}`, key: turnKey(state) });
   return finish(state, [...cost, { type: 'map_note', text: `${actor.name}: ${a.tr} (${a.en}).` }, ...events]);
 }
 
@@ -399,15 +411,23 @@ function treeStride(state: BattleState, actor: Combatant, a: MonsterAbility, foe
  */
 function swallowEvents(state: BattleState, actor: Combatant, a: MonsterAbility, rng: Rng): BattleEvent[] {
   const big = a.small ? ['L', 'H', 'G'] : ['H', 'G'];
-  const t = Object.values(state.combatants).find((c) => c.hp > 0 && c.side !== actor.side && c.grapple?.by === actor.id && !big.includes(c.size ?? 'M')
+  const fits = (sz: string | undefined) => (a.maxSize ? SIZE_ORDER.indexOf(sz ?? 'M') <= SIZE_ORDER.indexOf(a.maxSize) : !big.includes(sz ?? 'M'));
+  const t = Object.values(state.combatants).find((c) => c.hp > 0 && c.side !== actor.side && c.grapple?.by === actor.id && fits(c.size)
     && !c.effects?.some((e) => e.swallowedBy));
   if (!t) return [];
-  const ev = saveEffect(t, 'srdK19', a.tr, a.save as 'str', a.dc ?? 15, rng);
-  if (!(ev.type === 'map_effect' && ev.roll && !ev.roll.success)) return [ev];
-  return [ev, { type: 'map_effect', rule: 'srdK19', targetId: t.id, text: `${a.tr}: yutuldu`, removeCondition: 'Grappled' },
+  // Görev D1 (86+ veri): kurtarmasız yutma (Giant Frog/Toad SRD: "swallows a … target it is grappling").
+  const pre: BattleEvent[] = [];
+  if (a.save) {
+    const ev = saveEffect(t, 'srdK19', a.tr, a.save as 'str', a.dc ?? 15, rng);
+    if (!(ev.type === 'map_effect' && ev.roll && !ev.roll.success)) return [ev];
+    pre.push(ev);
+  }
+  return [...pre, { type: 'map_effect', rule: 'srdK19', targetId: t.id, text: `${a.tr}: yutuldu`, removeCondition: 'Grappled' },
     { type: 'effect_added', targetId: t.id, effect: { id: `swallow:${actor.id}:${t.id}`, name: `${a.tr} (${actor.name})`, sourceId: actor.id, swallowedBy: actor.id,
-      grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: a.dice ?? '2d6', type: a.type ?? 'acid', ...(a.dice2 ? { dice2: a.dice2, type2: a.type2 } : {}), escapeDamage: a.escapeDamage ?? 30, escapeDc: a.escapeDc ?? 15 } } as ActiveEffect }];
+      grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: a.dice ?? '2d6', type: a.type ?? 'acid', ...(a.dice2 ? { dice2: a.dice2, type2: a.type2 } : {}), escapeDamage: a.escapeDamage ?? 30, escapeDc: a.escapeDc ?? 15,
+        ...(a.at ? { at: a.at } : {}), ...(a.disgorge ? { disgorge: true, since: state.round } : {}) } } as ActiveEffect }];
 }
+const SIZE_ORDER = ['T', 'S', 'M', 'L', 'H', 'G'];
 
 /** Çağırma (Animate Trees, Create Specter): SRD stat bloğuyla yeni savaşçı, sahibinin hemen ardından oynar. */
 function summonEvents(state: BattleState, actor: Combatant, a: MonsterAbility): BattleEvent[] {
@@ -435,7 +455,7 @@ function summonEvents(state: BattleState, actor: Combatant, a: MonsterAbility): 
     // Y2: aynı turda ikinci çağrı (Loathsome Limbs iki tur sonunda) aynı kimliği üretmesin (sıra kilitlenirdi).
     let id = `${actor.id}-${a.id}-${state.round}-${k}`;
     for (let n = 2; state.combatants[id] || state.order.includes(id); n++) id = `${actor.id}-${a.id}-${state.round}-${k}-${n}`;
-    const base = combatantFromMonster(getMonster(a.monster), { id, name: `${getMonster(a.monster).name} (${actor.name})` });
+    const base = combatantFromMonster(getMonster(a.monster), { id, name: `${getMonster(a.monster).name} (${actor.name})`, kuralSurumu: state.kuralSurumu ?? 1 });
     const kept = a.onlyAttacks ? base.attacks.filter((x) => a.onlyAttacks?.includes(x.name)) : base.attacks;
     const c: Combatant = { ...base, ...(a.onlyAttacks && kept.length ? { attacks: kept } : {}), side: actor.side, pos: spots[k] as Offset, initiative: actor.initiative,
       summon: { by: actor.id, spellId: `mab:${a.id}`, spell: a.en, level: 0, turn: 'after-owner' } };
@@ -481,13 +501,20 @@ export function monsterTurnEvents(state: BattleState, c: Combatant, when: 'start
       if (grow > 0 && c.hp < c.maxHp) out.push({ type: 'healed', actorId: c.id, targetId: c.id, label: 'Multiple Heads', amount: Math.min(20, c.maxHp - c.hp), targetHpAfter: Math.min(c.maxHp, c.hp + 20) });
     }
   }
-  // Yutulanlar: yutanın tur başında hasar.
-  if (when === 'start' && c.hp > 0) {
+  // Yutulanlar: yutanın tur başında hasar (Görev D1, 86+ veri: `at: 'end'` tur sonunda; Giant Frog `disgorge`: yutulduğu
+  // turdan sonraki ilk tur sonunda bir kez, ölmezse kusulur ve Prone).
+  if (c.hp > 0) {
     for (const o of Object.values(state.combatants)) {
-      const sw = o.effects?.find((e) => e.swallowedBy === c.id)?.swallow;
-      if (!sw || o.hp <= 0) continue;
-      out.push(damageEffect(o, 'srdK19', `${c.name}: mide`, { dice: sw.dice, type: sw.type }, rng));
-      if (sw.dice2) out.push(damageEffect(o, 'srdK19', `${c.name}: mide`, { dice: sw.dice2, type: sw.type2 ?? 'fire' }, rng));
+      const sw0 = o.effects?.find((e) => e.swallowedBy === c.id);
+      const sw = sw0?.swallow;
+      if (!sw0 || !sw || o.hp <= 0 || (sw.at ?? 'start') !== when) continue;
+      if (sw.disgorge && state.round <= (sw.since ?? 0)) continue;
+      const dmg: BattleEvent[] = [damageEffect(o, 'srdK19', `${c.name}: mide`, { dice: sw.dice, type: sw.type }, rng)];
+      if (sw.dice2) dmg.push(damageEffect(o, 'srdK19', `${c.name}: mide`, { dice: sw.dice2, type: sw.type2 ?? 'fire' }, rng));
+      out.push(...dmg);
+      if (sw.disgorge && (applyEvents(state, dmg).combatants[o.id]?.hp ?? 0) > 0) {
+        out.push({ type: 'effect_ended', targetId: o.id, effectId: sw0.id, name: sw0.name, reason: 'expired' }, { type: 'map_effect', rule: 'srdK19', targetId: o.id, text: 'Kusuldu (Prone)', addCondition: 'Prone' });
+      }
     }
   }
   return out;

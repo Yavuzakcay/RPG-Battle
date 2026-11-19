@@ -9,6 +9,7 @@
  */
 import { getMonster, monsterSpells, spells } from '../data';
 import { hasDarkness } from './maprules';
+import { monsterAt } from './srdD1';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
 
 const CONDS = ['Blinded', 'Charmed', 'Deafened', 'Exhaustion', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'];
@@ -18,6 +19,8 @@ export function monsterTraitParts(state: BattleState, c: Combatant): { effects: 
   if (!c.monsterId) return out;
   let m;
   try { m = getMonster(c.monsterId); } catch { return out; }
+  // Görev D1: veri savaşın kural sürümünde (85 ve altı: eksik durum bağışıklığı notları SRD düzeltmesi öncesi gibi yok).
+  m = monsterAt(m, state.kuralSurumu ?? 1);
   const u = (m.unsupported ?? []) as string[];
   const fx: Partial<ActiveEffect> = {};
   for (const s of u) {

@@ -1061,7 +1061,7 @@ function multiPlanCommand(state: BattleState, actor: Combatant, foes: Combatant[
   const inReach = (n: string, f: Combatant) => { const a = ready(n); return !!a && !a.area && reachOk(state, actor, f, atkReach(a)).ok; };
   const visible = new Set(foes.map((f) => f.id));
   const steps: MultiStep[] = [];
-  let left = multiTotal(spec, actor);
+  let left = multiTotal(spec, actor, state);
   for (const r of spec.replace ?? []) {
     if (r.cost > left) continue;
     const a = r.name ? ready(r.name) : undefined;
@@ -2040,7 +2040,7 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev DRUID (basit kural): slotu kalmamış ve konsantre olmayan Druid bonus eylemle en güçlü bilinen biçime girer.
   if (!actor.economy.bonus && !actor.shape && !actor.concentration && foesOf(state, actor).length > 0 && actor.spellSlots.every((n) => n <= 0)) {
-    const form = availableForms(monsters, actor)[0];
+    const form = availableForms(monsters, actor, state.kuralSurumu ?? 1)[0];
     const cmd: Command | null = form ? { type: 'wild_shape', actorId, form: form.id } : null;
     if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
   }

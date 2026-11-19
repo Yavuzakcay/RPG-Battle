@@ -364,7 +364,8 @@ export interface ActiveEffect {
   attackAdv?: boolean;
   berserk?: boolean;
   swallowedBy?: string;
-  swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number };
+  /** Görev D1 (86+): `at` hasar yutanın tur başında (varsayılan) ya da sonunda; `disgorge` + `since` (Giant Frog): yutulduğu turdan sonraki ilk tur sonunda hasar, ölmezse kusulur. */
+  swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number; at?: 'start' | 'end'; disgorge?: boolean; since?: number };
   noHeal?: boolean;
   /** Kuyruk 19 (Corrosive Form): silah başına birikmiş saldırı cezası. */
   corroded?: Record<string, number>;

@@ -349,7 +349,7 @@ function reinforceEvents(state: BattleState): BattleEvent[] {
     const at = nearestSolid(s, tent.at, '');
     if (!at) continue;
     const mon = getMonster(list[idx % list.length] as string);
-    const c = { ...combatantFromMonster(mon, { id: `takviye-${idx + 1}`, name: `${mon.name} (takviye ${idx + 1})` }), side: 'enemies' as const, pos: at, initiative: 0 };
+    const c = { ...combatantFromMonster(mon, { id: `takviye-${idx + 1}`, name: `${mon.name} (takviye ${idx + 1})`, kuralSurumu: state.kuralSurumu ?? 1 }), side: 'enemies' as const, pos: at, initiative: 0 };
     const ev: BattleEvent = { type: 'summoned', ownerId: 'harita', spell: 'Alarm boynuzu', combatant: c, index: s.order.length };
     out.push(ev); s = applyEvents(s, [ev]);
   }
@@ -372,7 +372,7 @@ function boneEvents(state: BattleState): BattleEvent[] {
     n++;
     const evs: BattleEvent[] = [{ type: 'object_removed', objectId: p.id }];
     if (at) {
-      const c = { ...combatantFromMonster(mon, { id: `kemik-${n}`, name: `${mon.name} (kemik yığını ${n})` }), side: 'enemies' as const, pos: at, initiative: 0 };
+      const c = { ...combatantFromMonster(mon, { id: `kemik-${n}`, name: `${mon.name} (kemik yığını ${n})`, kuralSurumu: state.kuralSurumu ?? 1 }), side: 'enemies' as const, pos: at, initiative: 0 };
       evs.push({ type: 'summoned', ownerId: 'harita', spell: 'Kemik yığını', combatant: c, index: s.order.length });
     }
     out.push(...evs); s = applyEvents(s, evs);

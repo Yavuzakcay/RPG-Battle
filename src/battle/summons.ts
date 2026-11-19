@@ -369,7 +369,7 @@ function summonedEvent(current: BattleState, actor: Combatant, spell: Spell, def
   const k19 = !!globalRule(current, 'spellsK19');
   const monster = form ? getMonster(form) : creatureMonster(def.creature ?? spell.id, summonCreature(def.creature ?? '') as CreatureDef, actor, level, choice, k19, sizeKey);
   // Tepkileri alınmaz (hayvan biçiminin ya da canavar verisinin tepkisi yok sayılır).
-  const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${actor.name})`, height: actor.height });
+  const { reactions: _r, reactionUses: _u, ...base } = combatantFromMonster(monster, { id, name: `${monster.name} (${actor.name})`, height: actor.height, kuralSurumu: current.kuralSurumu ?? 1 });
   const own = def.turn === 'own';
   const initiative = own
     ? rollDie(20, rollTag(rng, { kind: 'initiative', by: id, bonus: abilityModifier(monster.abilities.dex) })) + abilityModifier(monster.abilities.dex)

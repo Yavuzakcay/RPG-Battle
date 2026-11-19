@@ -139,7 +139,7 @@ function wormEvents(state: BattleState, r: Record<string, unknown>, rng: Rng): B
     ?? nearestSolid(s, target.pos as Offset, target.id);
   if (!spot) return out;
   const mon = getMonster(str(r.monster, 'ankheg'));
-  const worm = { ...combatantFromMonster(mon, { id: WORM_ID, name: `${mon.name} (kumdan)` }), side: 'enemies' as const, pos: spot, initiative: 0 };
+  const worm = { ...combatantFromMonster(mon, { id: WORM_ID, name: `${mon.name} (kumdan)`, kuralSurumu: state.kuralSurumu ?? 1 }), side: 'enemies' as const, pos: spot, initiative: 0 };
   out.push({ type: 'map_note', text: sense.roll?.success ? `${target.name} titreşimi sezdi: kumdan çıkan yaratıktan sıçrayıp kurtuldu!` : `Kumdan bir yaratık fırladı ve ${target.name} hedefini yakaladı!` },
     { type: 'summoned', ownerId: 'harita', spell: 'Kum pususu', combatant: worm, index: s.order.length });
   if (!sense.roll?.success) {

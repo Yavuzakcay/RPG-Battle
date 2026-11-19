@@ -96,7 +96,7 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
   if (m.riseZombie) for (const e of [...out]) if (e.type === 'save_resolved' && e.targetHpAfter === 0) {
     const t = cur.combatants[e.targetId];
     if (!t || t.creatureType !== 'humanoid' || !t.pos) continue;
-    const z = combatantFromMonster(getMonster('zombie'), { id: `${t.id}-zombie`, name: `Zombi (${t.name})` });
+    const z = combatantFromMonster(getMonster('zombie'), { id: `${t.id}-zombie`, name: `Zombi (${t.name})`, kuralSurumu: cur.kuralSurumu ?? 1 });
     add([{ type: 'summoned', ownerId: actor.id, spell: spell.name, combatant: { ...z, side: actor.side, pos: t.pos, initiative: actor.initiative, summon: { by: actor.id, spellId: spell.id, spell: spell.name, level: spell.level, turn: 'after-owner' } }, index: cur.order.indexOf(actor.id) + 1 }]);
   }
   // Heal ve Power Word Heal: durumlar biter.

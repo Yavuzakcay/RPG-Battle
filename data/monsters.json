@@ -390,7 +390,8 @@
     "darkvision": 0,
     "saves": {
       "str": 4,
-      "dex": 5
+      "dex": 5,
+      "wis": 2
     },
     "skills": {
       "athletics": 4,
@@ -2161,7 +2162,7 @@
       "str": 18,
       "dex": 10,
       "con": 18,
-      "int": 10,
+      "int": 6,
       "wis": 11,
       "cha": 12
     },
@@ -2970,7 +2971,7 @@
     "abilities": {
       "str": 22,
       "dex": 10,
-      "con": 10,
+      "con": 22,
       "int": 8,
       "wis": 12,
       "cha": 12
@@ -4967,6 +4968,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Duyu: Blindsight 60 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Trait: Swarm"
@@ -5025,6 +5027,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Trait: Swarm"
     ]
   },
@@ -5110,7 +5113,10 @@
         "reachFt": 5
       }
     ],
-    "traits": "Uçma 40 ft"
+    "traits": "Uçma 40 ft",
+    "unsupported": [
+      "Durum bağışıklığı: Petrified"
+    ]
   },
   {
     "id": "darkmantle",
@@ -5566,6 +5572,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Duyu: Blindsight 30 ft",
       "Trait: Spider Climb",
       "Trait: Swarm"
@@ -6697,6 +6704,7 @@
     ],
     "traits": "Aberrant Ground, Gibbering",
     "unsupported": [
+      "Durum bağışıklığı: Prone",
       "Hız: Swim 20 ft (yalnızca yürüme/uçma kullanılır)",
       "Trait: Aberrant Ground",
       "Trait: Gibbering"
@@ -7208,6 +7216,7 @@
     ],
     "traits": "Multiattack: The doppelganger makes two Slam attacks and uses Unsettling Visage if available.",
     "unsupported": [
+      "Durum bağışıklığı: Charmed",
       "Eylem: Read Thoughts",
       "Bonus eylem: Shape-Shift",
       "Multiattack (kısmi): The doppelganger makes two Slam attacks and uses Unsettling Visage if available."
@@ -7374,6 +7383,7 @@
     ],
     "traits": "Multiattack: The knight makes two attacks, using Greatsword or Heavy Crossbow in any combination.",
     "unsupported": [
+      "Durum bağışıklığı: Frightened",
       "Tepki: Parry",
       "Multiattack (kısmi, ilk saldırı tekrarlanır): The knight makes two attacks, using Greatsword or Heavy Crossbow in any combination."
     ]
@@ -7592,6 +7602,7 @@
       "necrotic"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed",
       "Hız: Climb 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Trait: Vampiric Connection",
       "Bonus eylem: Deathless Agility"
@@ -8771,6 +8782,7 @@
     ],
     "traits": "",
     "unsupported": [
+      "Durum bağışıklığı: Exhaustion, Petrified",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Bonus eylem: Trample"
     ]
@@ -9905,6 +9917,7 @@
     ],
     "traits": "Uçma 40 ft. Light Sensitivity. Multiattack: The cloaker makes one Attach attack and two Tail attacks.",
     "unsupported": [
+      "Durum bağışıklığı: Frightened",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
       "Trait: Light Sensitivity",
       "Bonus eylem: Moan",
@@ -10419,6 +10432,7 @@
       "radiant"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Exhaustion, Frightened",
       "Hover",
       "Trait: Exalted Restoration",
       "Trait: Magic Resistance",
@@ -11163,6 +11177,7 @@
       "piercing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened",
       "Duyu: Truesight 60 ft",
       "Trait: Greater Magic Resistance",
       "Trait: Fiendish Restoration",
@@ -11577,6 +11592,7 @@
       "radiant"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Exhaustion, Frightened",
       "Hover",
       "Duyu: Truesight 120 ft",
       "Boyut Large: tek hex (çok hex'li boyut yok)",
@@ -13050,6 +13066,7 @@
     ],
     "traits": "",
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened",
       "Duyu: Blindsight 30 ft",
       "Tepki: Shriek",
       "Saldırı yok: basit karşılık \"Vuruş\" eklendi"
@@ -13769,10 +13786,10 @@
     "hp": 9,
     "speed": 30,
     "abilities": {
-      "str": 10,
+      "str": 5,
       "dex": 14,
       "con": 12,
-      "int": 10,
+      "int": 1,
       "wis": 7,
       "cha": 3
     },
@@ -14102,6 +14119,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Hız: Climb 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Trait: Swarm"
     ]
@@ -14137,6 +14155,7 @@
     ],
     "traits": "Multiattack: The fungus makes two Rotting Touch attacks.",
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened",
       "Duyu: Blindsight 30 ft"
     ]
   },
@@ -14334,6 +14353,7 @@
       "fire"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Exhaustion, Frightened, Grappled, Prone, Restrained",
       "Hız: Climb 10 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 60 ft",
       "Trait: Amorphous",
@@ -14840,7 +14860,10 @@
         "repeat": 2
       }
     ],
-    "traits": "Multiattack: The death dog makes two Bite attacks."
+    "traits": "Multiattack: The death dog makes two Bite attacks.",
+    "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious"
+    ]
   },
   {
     "id": "dire-wolf",
@@ -15033,6 +15056,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Hız: Swim 40 ft (yalnızca yürüme/uçma kullanılır)",
       "Trait: Swarm",
       "Trait: Water Breathing"
@@ -15981,6 +16005,7 @@
       "slashing"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed, Frightened, Grappled, Paralyzed, Petrified, Prone, Restrained, Stunned",
       "Hız: Swim 30 ft (yalnızca yürüme/uçma kullanılır)",
       "Duyu: Blindsight 10 ft",
       "Trait: Swarm"
@@ -16568,6 +16593,7 @@
     ],
     "traits": "Multiattack: The ettin makes one Battleaxe attack and one Morningstar attack.",
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious",
       "Boyut Large: tek hex (çok hex'li boyut yok)"
     ]
   },
@@ -16901,6 +16927,7 @@
       "fire"
     ],
     "unsupported": [
+      "Durum bağışıklığı: Charmed",
       "Trait: Coven Magic",
       "Trait: Magic Resistance",
       "Trait: Soul Bag",
@@ -17545,6 +17572,7 @@
     ],
     "traits": "Hold Breath, Multiple Heads, Reactive Heads. Multiattack: The hydra makes as many Bite attacks as it has heads.",
     "unsupported": [
+      "Durum bağışıklığı: Blinded, Charmed, Deafened, Frightened, Stunned, Unconscious",
       "Hız: Swim 40 ft (yalnızca yürüme/uçma kullanılır)",
       "Boyut Huge: tek hex (çok hex'li boyut yok)",
       "Trait: Hold Breath",
@@ -17634,7 +17662,7 @@
         "rider": "+ 1d12 acid , and the target’s Hit Point maximum decreases by an amount equal to the Acid damage taken.",
         "ranged": false,
         "reachFt": 5,
-        "repeat": 5
+        "repeat": 2
       }
     ],
     "traits": "Acid Absorption, Berserk, Immutable Form, Magic Resistance. Multiattack: The golem makes two Slam attacks, or it makes three Slam attacks if it used Hasten this turn.",

@@ -11,7 +11,6 @@
  *   Zorlu arazi birikmez: altıgen maliyeti alanların ve zeminin en büyüğü.
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
-import { zoneStartPulls } from './zoneHooks';
 import { isPlantZone, soyPlantWalker } from './altSoySurum';
 import { freeShapeFor, freeShapeProblem, pathProblem } from './freeShape';
 import { cageOpenEvents, cageStepBlocked, castCageHexes } from './forcecage';
@@ -54,6 +53,8 @@ import { concentrationEvent, spendSlot } from './slots';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
 import { airCenterProblem, airSpanFt, cylinderHeightFt, inZoneAir } from './airArea';
 import { k73cOn } from './k73cSurum';
+// Tur başı çekme kancaları (Control Water girdabı `girdap.ts` kaydeder) yaprak modülde: döngüsel ilklendirme sırası sorun olmasın.
+import { START_PULL } from './zoneHooks';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
 
@@ -289,9 +290,6 @@ export function zoneStepEvents(state: BattleState, moverId: string, from: Offset
   return chain(state, makers);
 }
 
-/** Tur başı çekme kancaları: defter yaprak modülde (`zoneHooks.ts`; döngüsel içe aktarmada başlatma sırası). Eski adla dışa aktarım. */
-export { registerZoneStartPull } from './zoneHooks';
-
 /** Tur başı ya da sonu: yaratığın bulunduğu alanların `start`/`end` tetiği. */
 export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 'end', rng: Rng): BattleEvent[] {
   const c0 = state.combatants[id];
@@ -300,7 +298,7 @@ export function zoneTurnEvents(state: BattleState, id: string, phase: 'start' | 
   let pulled = phase === 'start' ? vortexPullEvents(state, c0) : [];
   if (pulled.length) state = applyEvents(state, pulled);
   // Control Water girdabı (sürüm 84; `girdap.ts` kaydeder): alanın dışında, bandın içindeki yaratık merkeze çekilir (girişte tetik).
-  if (phase === 'start') for (const h of zoneStartPulls()) {
+  if (phase === 'start') for (const h of START_PULL) {
     const me = state.combatants[id];
     const evs = me ? h(state, me, rng) : [];
     if (evs.length) { pulled = [...pulled, ...evs]; state = applyEvents(state, evs); }

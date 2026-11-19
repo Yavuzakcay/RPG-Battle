@@ -88,7 +88,7 @@ export function executeChangeFloor(state: BattleState, actor: Combatant, rng: Rn
       const mon = getMonster(id);
       for (let k = 0; k < count; k++) {
         n += 1;
-        const c = combatantFromMonster(mon, { id: `kat-${link.to}-${n}`, name: `${mon.name} ${n}` });
+        const c = combatantFromMonster(mon, { id: `kat-${link.to}-${n}`, name: `${mon.name} ${n}`, kuralSurumu: state.kuralSurumu ?? 1 });
         const roll = rollD20('normal', rollTag(rng, { kind: 'initiative', by: c.id }));
         added.push({ ...c, side: 'enemies', initiative: roll.kept + c.modifiers.dex, pos: pool[n - 1] ?? null });
       }
