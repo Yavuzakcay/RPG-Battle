@@ -15,7 +15,8 @@ import gorunum from '../../data/alt-soy-gorunum.json';
 import { isOriginalLineage } from './lineageLook';
 
 const files = new Set(Object.keys(import.meta.glob('/public/characters/*.webp')).map((f) => f.replace('/public/', '')));
-const masks = new Set(Object.keys(import.meta.glob('/public/characters/maske/*.png')).map((f) => f.replace('/public/', '')));
+// KJ2: ten maskesi = `maske/` (otomatik) ya da Dragonborn beyaz taban pul maskesi `maske-pul/` (eski `maske/dragonborn-<erkek|kadin>-*` yedekleri silindi).
+const masks = new Set(Object.keys({ ...import.meta.glob('/public/characters/maske/*.png'), ...import.meta.glob('/public/characters/maske-pul/*.png') }).map((f) => f.replace('/public/', '')));
 /** Görev K15: soy çiftleri arası en küçük ten rengi farkı (CIE76 ΔE, ortalama Lab). */
 const MIN_DELTA_E = 15;
 /**
@@ -44,7 +45,8 @@ describe('soy → renk', () => {
       for (const k of classes) for (const gender of ['erkek', 'kadin'] as const) {
         const a = sheetAvatar({ ...blankCharacter('t').sheet, raceId: r.id, classId: k.id, gender, ...(lineageId ? { lineageId } : {}) });
         expect(files.has(a.src), a.src).toBe(true);
-        if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src) ?? ''), `${a.src} maske`).toBe(true);
+        // Oyunun gerçekte isteyeceği maske: boyama türüne göre (`pul` → `maske-pul/`, diğerleri `maske/`).
+        if (lineageId && !gorunum.maskesizIrklar.includes(r.id)) expect(masks.has(maskUrlFor(a.src, a.tint) ?? ''), `${a.src} maske`).toBe(true);
       }
     }
     expect(maskUrlFor('/base/characters/kucuk/goliath-male-fighter.webp')).toBe('/base/characters/maske/goliath-male-fighter.png');
