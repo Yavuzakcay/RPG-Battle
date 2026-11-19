@@ -9,3 +9,7 @@ export const GIRDAP_VERSION = 84;
 /** Girdap savaşta açık mı (sürüm ≥ 84 ve anahtar açık; `globalRule` anahtarın `surum`'una da bakar). */
 export const girdapOn = (s: Pick<BattleState, 'kuralSurumu' | 'map'>): boolean =>
   (s.kuralSurumu ?? 1) >= GIRDAP_VERSION && !!globalRule(s, 'controlWaterWhirlpool');
+
+/** Control Water seçenekleri ve SRD (İngilizce) adları; menü ve günlük (SD4: seçenek adları İngilizce). Girdap dışındakiler savaş dışı. */
+export const GIRDAP_SECENEK = ['whirlpool', 'flood', 'part', 'redirect'] as const;
+export const SECENEK_ADI: Record<string, string> = { whirlpool: 'Whirlpool', flood: 'Flood', part: 'Part Water', redirect: 'Redirect Flow' };

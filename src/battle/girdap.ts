@@ -17,9 +17,11 @@ import { sightBlockedBetween } from './cover';
 import { forcedMove } from './motion';
 import { concentrationEvent, spendSlot } from './slots';
 import { registerCommandEnd } from './turnHooks';
-import { girdapOn } from './girdapSurum';
+import { girdapOn, SECENEK_ADI } from './girdapSurum';
+import { trAciklama } from '../data';
 import { altitudeInZone } from './altitude';
 import { bodyAt } from './body';
+import { occupantAt } from './movement';
 import { affects, bodyInZone, newZoneId, registerZoneStartPull, whirlEffectId, zoneSpecOf } from './zones';
 import type { Spell, SpellMechanics, ZoneSpec } from '../data/types';
 import type { BattleEvent, BattleState, Combatant, Command, SpellZone } from './types';
@@ -57,7 +59,8 @@ export function whirlpoolSpec(spell: Pick<Spell, 'mechanics'>): ZoneSpec {
 /** Yapım: hedef yaratığın (ya da altıgendeki yaratığın) yerinde girdap alanı. */
 export function executeWhirlpool(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
   if (!state.map || !actor.pos) return fail(`${spell.name} yalnızca haritalı savaşta.`);
-  const target = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
+  // Arayüz altıgen seçer (`targetHex`): altıgendeki yaratık hedeftir (2026-11-19 düzeltmesi; önce yalnız `targetId`).
+  const target = cmd.targetId ? state.combatants[cmd.targetId] : cmd.targetHex ? occupantAt(state, cmd.targetHex) ?? undefined : undefined;
   if (!target?.pos || target.hp <= 0 || target.offFloor) return fail('Girdap bir yaratığın altıgenine açılır: hedef seç.');
   const at = target.pos;
   if (distance(actor.pos, at) * 5 > spell.rangeFt) return fail(`Menzil dışında (en çok ${spell.rangeFt} ft).`);
@@ -78,6 +81,26 @@ export function executeWhirlpool(state: BattleState, actor: Combatant, cmd: Cast
   };
   events.push({ type: 'zone_created', zone });
   return finish(state, events);
+}
+
+/**
+ * Girdap dışı seçenek (Flood, Part Water, Redirect Flow; kullanıcı kararı 2026-11-19): büyü yapılır (slot ve konsantrasyon
+ * büyünün kuralıyla) ama savaşta etki yok; günlükte ve kartta seçeneğin SRD 5.2.1 karşılığı Game Master notu
+ * (`map_note.secenekNotu`; Türkçe `data/aciklamalar-tr.json` `buyuSecenek`, İngilizce `strings.en.ts` `log.gmOptionText`).
+ * Hedef yok; altıgen seçildiyse menzil denetlenir.
+ */
+export function executeWaterOption(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell): CommandResult {
+  const choice = cmd.choice ?? '';
+  if (!SECENEK_ADI[choice] || choice === 'whirlpool') return fail(`Bilinmeyen seçenek: ${choice}.`);
+  if (cmd.targetHex && actor.pos && distance(actor.pos, cmd.targetHex) * 5 > spell.rangeFt) return fail(`Menzil dışında (en çok ${spell.rangeFt} ft).`);
+  const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);
+  if (!slot.ok) return slot;
+  const level = slot.slotLevel ?? spell.level;
+  const ad = SECENEK_ADI[choice];
+  const note = trAciklama('buyuSecenek', `${spell.id}/${choice}`) ?? '';
+  return finish(state, [...slot.events, ...concentrationEvent(state, actor, spell, level, {}),
+    { type: 'spell_cast', actorId: actor.id, targetId: null, label: spell.name, slotLevel: slot.slotLevel, note: `${spell.name} (${ad}): savaş dışı` },
+    { type: 'map_note', text: `Game Master notu — ${spell.name} (${ad}): ${note}`, secenekNotu: { spell: spell.id, choice } }]);
 }
 
 /** Yaratığın gövdesinin girdap merkezine en yakın uzaklığı (altıgen). */

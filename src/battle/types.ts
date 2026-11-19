@@ -2029,7 +2029,9 @@ export type BattleEvent =
       /** Kuyruk 29 K28b: çığın geleceği tur (0: geldi). */
       avalancheRound?: number; floodRound?: number;
       /** Görev K26: ince buz çatırdadı (uyarı; sonraki girişte kırılır). */
-      crackIce?: Offset }
+      crackIce?: Offset;
+      /** Control Water (sürüm 84): savaş dışı seçeneğin Game Master notu (günlük metni dile göre; `text` Türkçe yedek). */
+      secenekNotu?: { spell: string; choice: string } }
   | { type: 'disengaged'; actorId: string }
   /** Beceri kontrolü; `reason` kontrolü doğuran kural (ör. "bataklık"). */
   | {

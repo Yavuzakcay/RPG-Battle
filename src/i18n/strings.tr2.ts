@@ -181,6 +181,9 @@ export const TR_EXTRA = {
     /** Kuyruk K58 G3: tur özeti. */
     turnSummary: (name: string, hits: number, attacks: number, dmg: number, heal: number, saves: number): string => `Tur özeti · ${name}: ${attacks ? `${attacks} saldırı, ${hits} isabet` : 'saldırı yok'}${saves ? `, ${saves} kurtulma zorladı` : ''}, ${dmg} hasar${heal ? `, ${heal} iyileştirme` : ''}`,
     summaryToggle: 'Tur özeti', expandHint: 'Ayrıntı için dokun',
+    /** Control Water (sürüm 84): savaş dışı seçeneğin Game Master notu; Türkçe metin `data/aciklamalar-tr.json` `buyuSecenek`. */
+    gmOption: (spell: string, option: string, note: string): string => `Game Master notu — ${spell} (${option}): ${note}`,
+    gmOptionText: {} as Record<string, string>,
     hex: (col: number, row: number) => `sütun ${col}, satır ${row}`,
     note: { immune: 'bağışık', vulnerable: 'zayıflık ×2', resistant: 'direnç ½', absorbed: 'emildi (iyileştirdi)' } as Record<string, string>,
     mode: { advantage: ' (avantaj)', disadvantage: ' (dezavantaj)', normal: '' } as Record<string, string>,

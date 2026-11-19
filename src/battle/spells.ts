@@ -9,7 +9,7 @@ import { matrisOn } from './matrisSurum';
 import { gazePos } from './chainPact';
 import { lifeBondEvents } from './steed';
 import { executeTerraform } from './terraform';
-import { executeWhirlpool, whirlpoolCast } from './girdap';
+import { executeWaterOption, executeWhirlpool, whirlpoolCast } from './girdap';
 import { executeTelekinesis, telekinesisOn } from './telekinesis';
 import { disperseEvents } from './surfaceMix';
 import { polymorphEvents } from './polymorph';
@@ -633,7 +633,8 @@ const LATER = [['a6', 35], ['a7', 36], ['a8', 37], ['s1', 40], ['s2', 41], ['g6'
 function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell0: Spell, rng: Rng, repeat = false): CommandResult {
   // Control Water girdabı (kural sürümü 84, anahtar `controlWaterWhirlpool`): hedef yaratığın altıgeninde girdap alanı
   // (`girdap.ts`); anahtar kapalıyken ve 83 ve altında eski yol (`spellsK19` su girdabı).
-  if (!repeat && whirlpoolCast(state, spell0)) return executeWhirlpool(state, actor, cmd, spell0);
+  // Dört seçenek (kullanıcı kararı 2026-11-19): `choice` girdap dışıysa (Flood, Part Water, Redirect Flow) etki yok, Game Master notu.
+  if (!repeat && whirlpoolCast(state, spell0)) return cmd.choice && cmd.choice !== 'whirlpool' ? executeWaterOption(state, actor, cmd, spell0) : executeWhirlpool(state, actor, cmd, spell0);
   // Kuyruk 19: tam SRD hâli (`upgrade`; anahtar `spellsK19`): eski sürümde eski mekanik.
   const spell = spell0.mechanics.upgrade && globalRule(state, 'spellsK19')
     ? { ...spell0, mechanics: { ...spell0.mechanics, ...spell0.mechanics.upgrade, upgrade: undefined } } : spell0;

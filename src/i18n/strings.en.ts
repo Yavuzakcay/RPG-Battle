@@ -702,6 +702,13 @@ export const en: Strings = {
     mountDetail: { mount: (name: string): string => `Mount: ${name}`, down: (name: string): string => `${name} dropped (0 HP): the rider dismounts without a save`, prone: 'Rider is Prone', cost: (ft: number): string => `Movement spent: ${ft} ft`, alt: (ft: number): string => `Landing altitude: ${ft} ft`, rider: (name: string): string => `Rider: ${name}` },
     turnSummary: (name: string, hits: number, attacks: number, dmg: number, heal: number, saves: number): string => `Turn summary · ${name}: ${attacks ? `${attacks} attack${attacks === 1 ? '' : 's'}, ${hits} hit${hits === 1 ? '' : 's'}` : 'no attacks'}${saves ? `, forced ${saves} save${saves === 1 ? '' : 's'}` : ''}, ${dmg} damage${heal ? `, ${heal} healing` : ''}`,
     summaryToggle: 'Turn summary', expandHint: 'Tap for details',
+    gmOption: (spell: string, option: string, note: string): string => `Game Master note — ${spell} (${option}): ${note}`,
+    gmOptionText: {
+      'control-water/whirlpool': 'A whirlpool on the target creature\'s hex (house rule: no water needed). Strength save on entering and at turn start; on a failure damage and caught (Athletics to break free), on a success half damage.',
+      'control-water/flood': 'Standing water in the area rises by up to 20 feet; in a large body of water a 20-foot wave crosses the area, carrying Huge or smaller vehicles (25% capsize). No combat effect; the Game Master narrates.',
+      'control-water/part': 'The water in the area parts and a trench crosses the area, the water forming a wall to either side; when the effect ends the trench refills over the next round. No combat effect; the Game Master narrates.',
+      'control-water/redirect': 'Flowing water in the area moves in the direction you choose, even over obstacles or up walls; beyond the area it resumes its normal flow. No combat effect; the Game Master narrates.',
+    } as Record<string, string>,
     hex: (col: number, row: number) => `column ${col}, row ${row}`,
     note: { immune: 'immune', vulnerable: 'vulnerable ×2', resistant: 'resistant ½', absorbed: 'absorbed (heals)' } as Record<string, string>,
     mode: { advantage: ' (advantage)', disadvantage: ' (disadvantage)', normal: '' } as Record<string, string>,

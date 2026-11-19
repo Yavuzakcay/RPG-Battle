@@ -573,5 +573,11 @@
   "eldritch-mind": "Konsantrasyonu korumak için attığın CON kurtarma zarlarında avantajın olur; büyülerin kolay bozulmaz.",
   "master-of-myriad-forms": "En az 5. seviye Warlock iken Alter Self büyüsünü kendine büyü yuvası harcamadan yapabilirsin; görünüşünü ve bedenini değiştirirsin.",
   "otherworldly-leap": "En az 2. seviye Warlock iken Jump büyüsünü kendine büyü yuvası harcamadan yapabilirsin; zıplama mesafen üç katına çıkar."
+ },
+ "buyuSecenek": {
+  "control-water/whirlpool": "Hedef yaratığın altıgeninde girdap (ev kuralı: su gerekmez). Girişte ve tur başında STR save; başarısızlıkta hasar ve yakalanma (Athletics ile kurtulma), başarıda yarı hasar.",
+  "control-water/flood": "Alandaki durgun suyun seviyesi 20 ft'e kadar yükselir; büyük su kütlesinde alanı boydan boya geçen 20 ft'lik dalga olur, Huge ve küçük taşıtları sürükler (%25 alabora). Savaşta etkisi yok, Game Master anlatır.",
+  "control-water/part": "Alandaki su ikiye ayrılır, alan boyunca bir hendek açılır ve su iki yanda duvar olur; etki bitince hendek bir tur içinde yeniden dolar. Savaşta etkisi yok, Game Master anlatır.",
+  "control-water/redirect": "Alandaki akan su seçtiğin yöne akar (engelin ya da duvarın üstünden bile); alandan çıkınca araziye göre akar. Seçim değişene ya da büyü bitene dek sürer. Savaşta etkisi yok, Game Master anlatır."
  }
 }

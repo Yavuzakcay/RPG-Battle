@@ -16,6 +16,16 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 - Savaş kuralı değil: GM anahtarı ve kural sürümü yok. 1–5. seviye ve simülasyon (`enemiesAt`) değişmedi. Liste deterministik (Serüven kimliği + düğüm + seviye tohumu). Kayıtlı savaş eski düşmanlarla sürer (olay günlüğü); 6+ seviyede kazanılan düğümün XP'si savaştaki düşmanlardan, böylece eski kayıt da doğru XP alır.
 - Tablo `harita/belgeler/SERUVEN-YUKSEK-SEVIYE.md` (`npx vite-node scripts/seruven-yuksek-seviye.ts`). Denge ölçülmedi.
 
+## Control Water dört seçenek (2026-11-19, kullanıcı kararı; uzak daldaki girdabın üstüne, kural sürümü değişmedi)
+
+Uzak daldaki Control Water girdabı (sürüm 84, `controlWaterWhirlpool`) ve G01 (`modeWhy`) aynen kaldı; bu sekmenin aynı görev için yaptığı ikinci uygulama birleştirilmedi (yerel yedek dal `yedek-controlwater-yerel`, itilmedi). Üstüne taşınanlar:
+
+- **Dört seçenek:** menüde Whirlpool, Flood, Part Water, Redirect Flow (`ui/hud.ts` `waterChoices`, adlar İngilizce `girdapSurum.ts` `SECENEK_ADI`). Girdap uzak daldaki mekanikle; diğer üçü `girdap.ts` `executeWaterOption`: slot ve konsantrasyon büyünün kuralıyla harcanır, alan ve etki yok, günlükte Game Master notu (`map_note.secenekNotu`; TR `data/aciklamalar-tr.json` yeni tablo `buyuSecenek`, EN `strings.en.ts` `log.gmOptionText`; metinler SRD 5.2.1 s. 119–120'den) ve seçim menüsünün altında seçeneğin notu. Kural sürümü artmadı: 84 kayıtlarında girdap dışı `choice` yoktu (arayüz ve yapay zekâ seçim göndermiyordu), olaylar aynı oynar.
+- **Düzeltme:** arayüz girdabı yalnız `targetHex` ile gönderiyordu, motor `targetId` bekliyordu (arayüzden girdap "hedef seç" hatasıyla reddediliyordu). `executeWhirlpool` artık altıgendeki yaratığı hedef alır.
+- **SRD denetimi (PDF s. 120):** "The whirlpool is 5 feet wide at the base, up to 50 feet wide at the top, and 25 feet tall." Uzak daldaki sınırlar metinle uyumlu: yarıçap en çok 5 altıgen (25 ft = 50 ft tepe genişliğinin yarısı), uçan yaratık 25 ft irtifaya kadar (girdabın yüksekliği). Değiştirilmedi.
+- **Matris:** Control Water 14 → 18 satır (kaçış başarılı, üç savaş dışı seçenek), hepsi doğru; Polymorph 6 satır doğru.
+- **G01 ek testleri** (`girdapSecenek.test.ts`): girdabın STR save'inde süren etki (Enlarge/Reduce) kaynaklı kip nedeni, Incapacitated'ta Danger Sense yazılmaz, Gnomish Cunning/Danger Sense EN satırı. Danger Sense, Gnomish Cunning, Haste/Reduce uzak dalda zaten vardı (`g01SaveWhy.test.ts`).
+- Wild Shape: uzak dalda Wild Shape işi yok (sürüm 84'te); bu sekmede Wild Shape planı yapılmamıştı, iş başlatılmadı.
 ## Seviye sınırı kalktı: her yerde 1–20, "Üst seviye (6–20)" anahtarı yok (2026-11-19)
 
 - Kullanıcı kararı: 5. seviye sınırı yalnız ilk aşama içindi. Tek sabit `LEVEL_CAP = 20` (`src/app/limits.ts`); `upperLevelsEnabled`, Oda kuralları satırı, oda kaydındaki `ustSeviye`, Serüven anahtarı `ustSeviye`, oluşturucunun "Bu odada Üst seviye kapalı" ve Odaya katıl'ın "5 üstü karakter" uyarıları kalktı.
