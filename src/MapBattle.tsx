@@ -517,7 +517,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (session.state.status !== 'setup') saveBattle(session);
   }, [session.state.round, session.state.status]);
   const [mode, setMode] = useState<Mode>('idle');
-  // Hazırla (Ready, sürüm 89): panel taslağı ve haritadan seçilen alan.
+  // Hazırla (Ready, sürüm 90): panel taslağı ve haritadan seçilen alan.
   const [readyDraft, setReadyDraft] = useState<ReadyDraft>(READY_DRAFT);
   const [readyPick, setReadyPick] = useState<'hex' | 'to'>('hex');
   // Kuyruk 43: seçilen sarf eşyası (iksir).
@@ -1553,7 +1553,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
         ?? (reach.shove === 0 ? Y.noShoveTarget : undefined),
       act: () => { reset(); setMode('shove'); setMenuOpen(false); } },
     { key: 'dodge', label: N.dodge, reason: why({ type: 'dodge', actorId }) ?? undefined, act: () => run({ type: 'dodge', actorId }) },
-    // Hazırla (Ready, sürüm 89; SRD 5.2.1 s.186–187): tetik + yanıt paneli.
+    // Hazırla (Ready, sürüm 90; SRD 5.2.1 s.186–187): tetik + yanıt paneli.
     ...(state.map && readyOn(state) ? [{ key: 'ready', label: t().readyUi.menu,
       reason: why({ type: 'ready', actorId, trigger: READY_DRAFT.trigger, response: { kind: 'move', to: actor.pos ?? { col: 0, row: 0 } } }) ?? undefined,
       act: () => { reset(); setReadyDraft({ ...READY_DRAFT, ...(actor.weaponOptions[0] ? { weapon: actor.weaponOptions[0].label } : actor.attacks.length ? { attackIndex: 0 } : {}) }); setMode('ready'); setMenuOpen(false); } }] : []),

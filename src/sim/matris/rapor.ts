@@ -325,7 +325,7 @@ export function markdown(rows: Sinifli[], ms: number, gecmis: Ozet[] = []): stri
   }
   // Büyü tablosu.
   if (eRows.length) {
-    L.push('## Eylemler: Hazırla (Ready)', '', 'SRD 5.2.1 s.186–187; kural sürümü 89 (`src/sim/matris/hazirla.ts`).', '');
+    L.push('## Eylemler: Hazırla (Ready)', '', 'SRD 5.2.1 s.186–187; kural sürümü 90 (`src/sim/matris/hazirla.ts`).', '');
     L.push('| Bağlam | Beklenen | Gerçek | Sonuç |', '|---|---|---|---|');
     for (const r of eRows) L.push(`| ${r.baglam} | ${r.beklenen} | ${r.gercek.replace(/\|/g, '/')} | ${r.sonuc} |`);
     L.push('');

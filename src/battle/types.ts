@@ -93,6 +93,8 @@ export interface ActiveEffect {
   reduce?: { die: string; types: string[]; spent?: boolean };
   tempHp?: number;
   immune?: string[];
+  /** Görev D3 (89+): `immune` istisnası: durum → efendi canavarın kimliği (Vampire Familiar: efendisinden Charmed olur). */
+  immuneExcept?: Record<string, string>;
   /** Kuyruk S1 (Calm Emotions): bastırılan durumlar; etki bitince reducer geri yazar (`timer`: süreli olanın sayacı, bastırıldığı turdan bu yana geçen tur düşülür; `by`: veren etki sürüyorsa). */
   /** Kuyruk S1 (Suggestion "bırak"): silahını bıraktı (silahla saldıramaz). */
   disarmed?: boolean;
@@ -733,7 +735,7 @@ export interface Avatar {
 }
 
 /** Savaştaki bir yaratık (karakter veya düşman). */
-/** Hazırla (Ready, sürüm 89) yanıtı: tek saldırı (silah seçeneği ya da canavar saldırısı), hareket ya da hazırlanan büyü. */
+/** Hazırla (Ready, sürüm 90) yanıtı: tek saldırı (silah seçeneği ya da canavar saldırısı), hareket ya da hazırlanan büyü. */
 export type ReadyResponse =
   | { kind: 'attack'; option?: AttackOption; attackIndex?: number }
   | { kind: 'move'; to: Offset }
@@ -742,7 +744,7 @@ export type ReadyResponse =
 /** Kurulmuş hazırlık (`readied` olayı). Tutulan büyünün konsantrasyon adı `ready:<büyü>`. */
 export interface ReadiedAction { trigger: string; sourceId?: string; hex?: Offset; response: ReadyResponse; round: number }
 export interface Combatant {
-  /** Hazırla (Ready, sürüm 89): kurulmuş hazırlık (bir anda bir tane; tetikte ya da sonraki tur başında biter). */
+  /** Hazırla (Ready, sürüm 90): kurulmuş hazırlık (bir anda bir tane; tetikte ya da sonraki tur başında biter). */
   readied?: ReadiedAction;
   /** Kuyruk KQ3 NA1 (sürüm 80): taşıma kapasitesi (lb; STR × 15 × boyut), kendi yükü (lb) ve ortak taşıma (hız yarıya). */
   carryCapLb?: number; carryUsedLb?: number; groupCarry?: boolean;
@@ -1577,10 +1579,12 @@ export interface ShapeStats {
   multiattack?: boolean;
   /** Kural sürümü 87 + `bicimYuzme`: biçimin yüzme hızı (ft; 0 = yüzme hızı yok). Alan yoksa yaratığın yüzme hızı değişmez. */
   swimFt?: number;
+  /** Görev D3 (89+): biçimdeki beceri bonusları (Wild Shape: kendi yetkinliğin biçimin değiştiricisiyle, stat bloğundaki yüksekse o; Polymorph: stat bloğu). Alan yoksa beceriler değişmez. */
+  skills?: Combatant['skills'];
 }
 /** Biçimden önceki (bırakınca dönen) değerler. */
 export type ShapePrev = Pick<Combatant, 'ac' | 'speed' | 'fly' | 'size' | 'modifiers' | 'saves' | 'weaponOptions' | 'attacksPerAction' | 'avatar'>
-  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt'>>;
+  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt' | 'skills'>>;
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
 export interface ExtraDamage {
@@ -1695,7 +1699,7 @@ export type Command =
        * kaynak bir azalır; büyü kendi seviyesinde ve Magic eylemiyle yapılır (SRD 5.2.1).
        */
       free?: boolean;
-      /** Hazırla (Ready, sürüm 89): tutulan büyünün salınması (iç komut; slot hazırlarken harcandı, sıra dışı). Dışarıdan gönderilemez. */
+      /** Hazırla (Ready, sürüm 90): tutulan büyünün salınması (iç komut; slot hazırlarken harcandı, sıra dışı). Dışarıdan gönderilemez. */
       fromReady?: boolean;
       /** K11: Transmuted Spell'in hedef türü. */
       transmute?: string;
@@ -1753,7 +1757,7 @@ export type Command =
   /** Kaçın (Dodge): sonraki turunun başına dek saldıranlar dezavantajlı, DEX save'leri avantajlı. */
   | { type: 'dodge'; actorId: string }
   /**
-   * Hazırla (Ready; SRD 5.2.1 s.186–187, kural sürümü 89): eylem harcanır; seçilen algılanabilir tetik (`data/hazirla.json`)
+   * Hazırla (Ready; SRD 5.2.1 s.186–187, kural sürümü 90): eylem harcanır; seçilen algılanabilir tetik (`data/hazirla.json`)
    * olunca tepkiyle yanıt (tek saldırı, hızın kadar hareket ya da hazırlanan büyü), en geç sonraki turunun başına dek.
    * `sourceId` yalnız bu yaratık tetikler; `hex` "altıgene girer" tetiğinin altıgeni.
    */
@@ -1834,7 +1838,7 @@ export type BattleEvent =
   | { type: 'haste_action'; actorId: string; first?: boolean }
   /** CILA: sahibi çağrısını bonus eylemle taşıyor (çağrının bu turdaki hareketi sıfırlanır). */
   | { type: 'summon_steered'; summonId: string }
-  /** Hazırla (Ready, sürüm 89; kayıt sürümü 24): hazırlık kuruldu (büyüde slot ve tutma konsantrasyonu ayrı olaylar). */
+  /** Hazırla (Ready, sürüm 90; kayıt sürümü 24): hazırlık kuruldu (büyüde slot ve tutma konsantrasyonu ayrı olaylar). */
   | { type: 'readied'; actorId: string; readied: ReadiedAction; label: string }
   /** Hazırlanan eylem tetikle salındı (tepki ayrıca `reaction_used`; ardından yanıtın kendi olayları). */
   | { type: 'ready_released'; actorId: string; sourceId?: string; trigger: string; label: string }
@@ -1884,7 +1888,7 @@ export type BattleEvent =
       frenzyTurn?: string;
       /** Fırsat saldırısı (tepki). */
       opportunity?: boolean;
-      /** Hazırla (Ready, sürüm 89): hazırlanan saldırı (tepkiyle, tek saldırı). */
+      /** Hazırla (Ready, sürüm 90): hazırlanan saldırı (tepkiyle, tek saldırı). */
       ready?: boolean;
       /** Yakın dövüş silah saldırısı (smite büyülerinin tetiği; Görev P-Paladin). */
       melee?: boolean;
@@ -1977,7 +1981,7 @@ export type BattleEvent =
   | { type: 'mounted'; actorId: string; mountId: string; cost: number; /** Kuyruk MB2 (74+): kontrollü binek. */ control?: 'kontrollu' }
   | { type: 'dismounted'; actorId: string; at: Offset; cost: number; /** Kuyruk MB1 (68+): binekten düşerek (günlük). */ fell?: true; /** Kuyruk MB3 (69+): havada iniş irtifası (ft; yoksa irtifa değişmez). */ toFt?: number }
   | { type: 'moved'; actorId: string; path: Offset[]; cost: number; /** Kuyruk 19: serbest kayma (`shiftLeft`'ten düşer). */ free?: boolean;
-      /** Hazırla (Ready, sürüm 89): tepkiyle yapılan hareket; turun hareketinden düşmez (SRD 5.2.1 s.186). */ reaction?: boolean }
+      /** Hazırla (Ready, sürüm 90): tepkiyle yapılan hareket; turun hareketinden düşmez (SRD 5.2.1 s.186). */ reaction?: boolean }
   | { type: 'shift_granted'; actorId: string; hexes: number }
   | { type: 'initiative_swapped'; actorId: string; allyId: string }
   /** Uzun atlama: aradaki `gap` altıgen atlandı, `cost` hareketten düştü. */

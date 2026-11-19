@@ -1,5 +1,5 @@
 /**
- * Mekanik matris: Hazırla (Ready) eylemi satırları (SRD 5.2.1 s.186–187; kural sürümü 89, `src/battle/ready.ts`).
+ * Mekanik matris: Hazırla (Ready) eylemi satırları (SRD 5.2.1 s.186–187; kural sürümü 90, `src/battle/ready.ts`).
  * Her satır küçük bir sahnede komutları sırayla çalıştırır, beklenen SRD sonucunu motorun olaylarıyla karşılaştırır.
  */
 import { execute } from '../../battle/commands';
@@ -90,8 +90,8 @@ export function hazirlaSatirlari(): Satir[] {
       const r = play(base({}, hex(3)), [ready({ kind: 'attack', option: bow }, 'hareket-eder'), endA, moveB(9)]);
       return r.error ?? of(r.events, 'reaction_used').filter((e) => e.actorId === 'A').map((e) => e.trigger).join('+');
     }),
-    row('kural sürümü 88', 'yapım', 'red', () => {
-      const r = play({ ...base(), kuralSurumu: 88 }, [ready({ kind: 'attack', option: sword })]);
+    row('kural sürümü 89', 'yapım', 'red', () => {
+      const r = play({ ...base(), kuralSurumu: 89 }, [ready({ kind: 'attack', option: sword })]);
       return r.error ? 'red' : 'kabul';
     }),
   ];

@@ -1,5 +1,5 @@
 /**
- * Hazırla (Ready) eylemi, SRD 5.2.1 s.186–187 (kural sürümü 89; `readySurum.ts`). Yan etkisiz.
+ * Hazırla (Ready) eylemi, SRD 5.2.1 s.186–187 (kural sürümü 90; `readySurum.ts`). Yan etkisiz.
  *
  * - Komut `ready`: kendi turunda eylem (`economy.ts`). Algılanabilir bir tetik (`data/hazirla.json`) ve yanıt seçilir:
  *   tek saldırı (Extra Attack yalnız kendi turunda: s.48), hızın kadar hareket ya da hazırlanan büyü.
@@ -62,7 +62,7 @@ const responseLabel = (r: ReadyResponse): string =>
 
 /** Hazırlığın neden kurulamadığı (yoksa null): sürüm, harita, tetik, yanıt. Kapılar (sıra, eylem, Incapacitated, binek, beden) `commands.ts`'te. */
 export function readyProblem(state: BattleState, actor: Combatant, cmd: Extract<Command, { type: 'ready' }>): string | null {
-  if (!readyOn(state)) return 'Hazırla bu kural sürümünde yok (sürüm 89 ve üstü).';
+  if (!readyOn(state)) return 'Hazırla bu kural sürümünde yok (sürüm 90 ve üstü).';
   if (!state.map || !actor.pos) return 'Hazırla yalnızca haritalı savaşta.';
   if (actor.offFloor) return `${actor.name} haritada değil: hazırlanamaz.`;
   if (actor.readied) return 'Zaten hazırlanmış bir eylem var.';

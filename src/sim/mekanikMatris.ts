@@ -32,7 +32,7 @@ const t0 = Date.now();
 const rows = [
   ...(onlyAtk && !only ? [] : tumBuyuSatirlari(only)),
   ...(only && !onlyAtk ? [] : saldiriSatirlari(onlyAtk)),
-  // Hazırla (Ready, sürüm 89): eylem satırları (SRD 5.2.1 s.186–187).
+  // Hazırla (Ready, sürüm 90): eylem satırları (SRD 5.2.1 s.186–187).
   ...(only || onlyAtk ? [] : hazirlaSatirlari()),
 ];
 const ms = Date.now() - t0;

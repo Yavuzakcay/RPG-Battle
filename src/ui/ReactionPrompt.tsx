@@ -26,7 +26,7 @@ export function reactionAskText(req: ReactionRequest, state: BattleState): { tit
       : req.trigger === 'cast' ? T.cast?.(n(req.sourceId), i.spell ?? '', i.level ?? 0)
         : req.trigger === 'fall' ? T.fall?.(n(req.sourceId), i.feet ?? 0)
           : req.trigger === 'choice' ? R.choiceLine(i.label ?? '')
-            // Hazırla (Ready, sürüm 89): tetik adı `info.label`.
+            // Hazırla (Ready, sürüm 90): tetik adı `info.label`.
             : req.trigger === 'ready' ? R.readyLine(n(req.sourceId), readyTriggerLabel(i.label ?? ''))
             : T[req.trigger]?.(n(req.sourceId));
   return { title: req.trigger === 'choice' ? R.choiceTitle(n(req.reactorId)) : req.trigger === 'ready' ? R.readyTitle(n(req.reactorId)) : R.title(n(req.reactorId)), line: line ?? '' };

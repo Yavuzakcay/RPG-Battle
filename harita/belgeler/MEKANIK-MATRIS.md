@@ -1,6 +1,6 @@
 # Mekanik doğrulama matrisi (APK öncesi)
 
-Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈4 sn). Kural sürümü 89.
+Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈4 sn). Kural sürümü 90.
 Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virgülle ayrılmış; sütunlar: tür, büyü/saldırı, seviye, sınıflar, mekanik, bağlam, bağlam sınıfı, beklenen, gerçek, sonuç, bulgu, not).
 
 ## Özet
@@ -110,7 +110,7 @@ Düzeltilen bulgular (B01, B02, Ç01, B03, B04, B21, B05, B06, B07, B08, B09, B1
 
 ## Eylemler: Hazırla (Ready)
 
-SRD 5.2.1 s.186–187; kural sürümü 89 (`src/sim/matris/hazirla.ts`).
+SRD 5.2.1 s.186–187; kural sürümü 90 (`src/sim/matris/hazirla.ts`).
 
 | Bağlam | Beklenen | Gerçek | Sonuç |
 |---|---|---|---|
@@ -122,7 +122,7 @@ SRD 5.2.1 s.186–187; kural sürümü 89 (`src/sim/matris/hazirla.ts`).
 | tutma konsantrasyonu bozulur | tetiklenmez | tetiklenmez | doğru |
 | döküm süresi tepki olan büyü (Shield) | red | red | doğru |
 | fırsat saldırısı ile aynı tepki | leave | leave | doğru |
-| kural sürümü 88 | red | red | doğru |
+| kural sürümü 89 | red | red | doğru |
 
 ## Büyü matrisi (büyü başına)
 

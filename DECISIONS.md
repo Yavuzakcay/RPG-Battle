@@ -9,11 +9,13 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
-## Hazırla (Ready) eylemi: kural sürümü 89, kayıt sürümü 24 (2026-11-20; kullanıcı kararı: SRD'de olup eksik olan eklenir, uydurma yok)
+## Hazırla (Ready) eylemi: kural sürümü 90, kayıt sürümü 24 (2026-11-20; kullanıcı kararı: SRD'de olup eksik olan eklenir, uydurma yok)
+
+Sürüm notu: Ready ilk olarak 89 olarak yazıldı; birleştirmede paralel Görev D3 89'u almıştı, Ready 90'a taşındı (kod, veri, testler ve regresyon altını D3 dahil ağaçta 61610a31: 89 = altın, 90 = 89).
 
 Kaynak SRD 5.2.1 s.186–187 "Ready [Action]"; Extra Attack s.48 ("Attack eylemini **kendi turunda** aldığında"). Durum denetimi `harita/belgeler/READY-DURUM.md`. R1 (saldırı/hareket) ve R2 (büyü) birlikte; R3 (yapay zekânın kullanması) yok.
 
-- **Komut ve olaylar:** `ready { trigger, sourceId?, hex?, response }` kendi turunda eylem (`economy.ts`). Olaylar `readied`, `ready_released`, `ready_lapsed` (kayıt sürümü 23 → 24; 3–23 yüklenmeye devam). Savaşçıda `readied` (bir anda bir tane). Sürüm < 89'da komut reddedilir, kancalar hiçbir şey yapmaz (`readySurum.ts` `readyOn`).
+- **Komut ve olaylar:** `ready { trigger, sourceId?, hex?, response }` kendi turunda eylem (`economy.ts`). Olaylar `readied`, `ready_released`, `ready_lapsed` (kayıt sürümü 23 → 24; 3–23 yüklenmeye devam). Savaşçıda `readied` (bir anda bir tane). Sürüm < 90'da komut reddedilir, kancalar hiçbir şey yapmaz (`readySurum.ts` `readyOn`).
 - **Tetikler veride** (`data/hazirla.json`; kodda yalnız olay türleri ve koşullar): düşman erişimime / seçtiğim altıgene / 30 ft içime girerse (yürürken her adımdan sonra, `registerAfterStep`), düşman saldırırsa / dostuma / bana saldırırsa (saldırı çözüldükten sonra, `registerAfterAttack`), düşman büyü yaparsa ve hareketini bitirirse (komut sonu, `registerCommandEnd`). Hepsinde "algılanabilir" (s.186): tetikleyeni görmek (`hiddenTo`/`canSee`). Tetikleyen karşı taraftan; `sourceId` verilirse yalnız o yaratık. SRD örnekleri ("If the goblin steps next to me…") erişim ve altıgen tetikleri.
 - **Tetik bittikten hemen sonra** (s.186): erişime girme adımdan sonra (fırsat saldırısı adımdan önce), saldırı çözüldükten sonra, büyü ve hareket komut sonunda.
 - **Tepki:** fırsat saldırısıyla aynı hak (`canReact`/`reactionUsed`, `reaction_used.trigger = 'ready'`); sıralama: önce tetiklenen harcar (aynı adımda fırsat saldırısı önce gelir). Karar `askReaction` (oyuncu Sor/Her zaman/Asla; kancasız Rng önerisi "kullan"). Reddedilirse tetik yok sayılır, hazırlık sürer (s.186 "or ignore the trigger"); tepki harcanmaz.
@@ -21,20 +23,163 @@ Kaynak SRD 5.2.1 s.186–187 "Ready [Action]"; Extra Attack s.48 ("Attack eylemi
 - **Büyü (R2):** döküm süresi eylem olmalı (Shield, bonus eylem büyüleri reddedilir). Slot hazırlarken harcanır ve tetik gelmezse geri gelmez (arayüz yazar); hazırlama turda bir slotlu büyü kuralına sayılır (`slotTurn`). Tutmak konsantrasyon ister: konsantrasyon adı `ready:<büyü>` (var olan konsantrasyon biter, arayüz uyarır); bozulursa (CON save, Incapacitated) büyü etkisiz dağılır (`ready_lapsed concentration`). Hedef salınırken seçilir (kullanıcı kararı; tepki sorusunun seçimleri: geçerli yaratıklar, alanlı büyüde merkez/yön o yaratığın altıgeni; hedefsiz yapılabilen büyüde seçim yok). Salma iç komut `cast_spell.fromReady` (sıra/eylem dışı, slot yeniden düşmez); dışarıdan gönderilirse reddedilir. Konsantrasyonlu büyü salınınca kendi konsantrasyonu tutmanın yerini alır (tek konsantrasyon). ⚠ Counterspell ve büyü kancaları salma anında değerlendirilir (büyünün etkisi o an doğar; SRD büyünün hazırlarken "normal yapıldığını" söylüyor; hazırlarken hedef bilinmediği için).
 - **Bitiş:** sonraki turunun başında (`ready_lapsed turnStart`), düşünce, haritadan ayrılınca, Incapacitated olunca (tepki yapamaz).
 - **Kapılar:** Incapacitated hazırlayamaz (`checkActor`); Time Stop sürerken başkasının hazırlığı tetiklenmez ("no time passes for other creatures"); ele geçirilmiş beden ve bedendeki ele geçiren hazırlayamaz (beden Incapacitated: tepki yok; `possessionCommandProblem`); kontrollü binek hazırlayamaz (yalnız Dash/Disengage/Dodge, `controlledCommandProblem`); Wild Shape biçiminde büyü hazırlanamaz (Beast Spells hariç), saldırı ve hareket hazırlanır; Rage'de büyü hazırlanamaz; haritasız savaşta yok.
-- **Yapay zekâ Ready kullanmaz** (R3 ayrı görev); düşman tarafında Game Master elle kullanır. Hızlı regresyon (`src/sim/readyRegresyon.test.ts`, 4 senaryo × 3 tohum): 88 imzası Ready öncesi ağaçla (57c6b7a2) aynı, 89 = 88.
+- **Yapay zekâ Ready kullanmaz** (R3 ayrı görev); düşman tarafında Game Master elle kullanır. Hızlı regresyon (`src/sim/readyRegresyon.test.ts`, 4 senaryo × 3 tohum): 89 imzası Ready öncesi ağaçla (61610a31) aynı, 90 = 89.
 - **Arayüz:** Özel ▸ Diğer ▸ "Hazırla" paneli (`src/ui/ReadyPanel.tsx`: tetik, kim tetikler, yanıt, haritadan altıgen seçimi, büyüde slot/konsantrasyon uyarısı), jeton rozeti ⏳, günlük satırları, tepki sorusu "Hazırlanan eylemi uygula?". Motor hata metinleri yalnız Türkçe (bilinen eksik). Görüntü `docs/sabah/ready/hazirla.png`.
 - **Kapsam dışı (SRD'de var, bu turda yok):** Dash/Disengage/Dodge/Help/Hide/eşya kullanımı gibi diğer eylemlerin hazırlanması; hazırlanan yanıtın serbest metinli tetiği (yalnız veri listesindeki tetikler).
 
 ## Dungeondex, Türkçe sürüm (2026-11-20; yalnız arayüz, kural ve kayıt sürümü değişmedi)
+## Kuyruk A İş 3: Control Water girdap efekti importu atlandı (2026-11-20)
 
-- Tasarım ve envanter `harita/belgeler/DUNGEONDEX-TASARIM.md` (ilk commit, salt okunur). Ekran tembel parça `src/screens/Dungeondex.tsx` (+ `dungeondex.css`), katalog `src/dungeondex/catalog.ts`; ana menüde "Dungeondex" düğmesi (Ayarlar'ın yanında). Ana parça 448,6 kB.
-- Kapsam (kullanıcı kararı): büyü 339, eşya 449 (319 sihirli + 80 donanım + 38 silah + 12 zırh), canavar 330, tür 10, alt soy 41 (38 + 3 Celestial Göksel Uyanış), alt sınıf (yüklü olanların hepsi; < 120 ise "içerik eksik" notu, çökmez), feat 17, geçmiş 12, durum 15 (14 + Exhaustion) + "Lisanslar ve atıf".
-- Kimlikler mevcut SRD kimlikleri. Durumların Türkçe açıklaması yoktu: `data/aciklamalar-tr.json` `durum` (kimlik = SRD durum adının küçük harfi; `AciklamaTuru` `durum`). Canavarların Türkçe açıklaması yok (330 eksik): kartta Türkçe özet satırı + stat + "Türkçe açıklama henüz yok".
-- SD4 ad kuralı; SRD İngilizce ham metni (`text`, `raw`) kullanılmaz; kaynak sayfa gösterilmez. Açıklama dil anahtarlı (`DexText` tr/en/ui): `data/aciklamalar-en.json` aynı yapıyla eklenince (`import.meta.glob`) kod değişmeden EN metni gelir; yoksa EN arayüzde Türkçe metin + "Description available in Turkish only" notu.
-- Arama TR/EN ad, aksan duyarsız; süzgeçler büyü seviye/okul/sınıf, canavar CR kademesi/tür, eşya türü, alt sınıf sınıfı, alt soy türü, feat kategorisi (en çok 6 görünür, fazlası katta). Sabitler `data/dungeondex.json` (sayfa 40, CR kademeleri, büyü sınıf kodları, durum adları).
-- Bağlantılar yalnız veridekiler: büyü → sınıf listesi ve uyguladığı durum, canavar → büyüleri (`canavar-buyuleri.json`) ve durum bağışıklıkları; canavar ortamı (harita adları, gizli harita yok) ve teması etiket; tür ↔ alt soy; geçmiş ↔ köken feat'i; durum → onu uygulayan büyüler; eşya → yüklü büyüler.
-- Lisans sayfası `NOTICE` metnini değiştirmeden gösterir (ilk satır depo adı atlanır), uygulama adı `APP_NAME`; "D&D" yalnız mekanik kaynağını anlatırken.
-- Mobil: tek sütun (kategori → liste → kart, büyük Geri düğmesi), ≥ 760 px iki sütun. Uzun listeler 40'lık sayfa ("Daha fazla göster"). Test `src/dungeondex/dungeondex.test.tsx`; görüntüler `docs/sabah/dungeondex/`.
+- Kaynak "control-water" efekt sayfası bulut kapsayıcısında yok (`assets-ham/` depo dışı; yalnız `eksikler/` ve `karakter/` var). Talimat gereği iş atlandı.
+- Ayrıntı ve yeniden başlatma tarifi `harita/belgeler/KUYRUK-A-NOTLAR.md`.
+- Mevcut `efekt-zemin-girdap.webp` ile yer tutucu bağlama yapılmadı: görev yeni sayfanın importunu istiyor.
+
+## Kuyruk A İş 2: kendi çiziminde kanatlı Dragonborn jetonunda ejderha kanadı yok (2026-11-20; yalnız görünüm)
+
+- 290 Dragonborn jetonunda siluet ölçümü (omuz üstünde iki dış yanın simetrik opak pikseli) ve ilk 140'ın gözle denetimiyle 4 jetonda kendi kanadı bulundu: erkek/kadın Cleric ID1 (Yaşam Alanı), erkek/kadın Warlock WL-7.
+- Liste veride: `data/kanat-esleme.json` `slotlar.dragonborn.kanatsiz` (jeton dosya adı, slot başına; kodda sabit yok). Tek yardımcı `ownWingToken`; rozet, savaş jetonu (Draconic Flight uçuşu dahil) ve karakter figürü onu kullanır.
+- Kuşkulu: Ranger ID4 (iki cinsiyet; kanatlı ejderha yoldaşı, kendi kanadı yok). Listeye alınmadı, gözle onay bekliyor.
+- Liste `harita/belgeler/DRAGONBORN-KENDI-KANAT.md`; test `src/ui/kanatKendi.test.tsx`; görüntü `docs/sabah/dragonborn-kanat/kendi-kanat-once-sonra.webp`.
+## SRD farkları D3 (kapanış): kural sürümü 89 (2026-11-19, kullanıcı kararı 2026-11-19: SRD 5.2.1'i izle)
+
+Kaynak: D2'den kalan farklar (`harita/belgeler/SRD-VERI-DOGRULAMA.md` §9 ve §8 "Kalan farklar"). Soru sorulmadı; her değer PDF'ten okundu, her maddede önce motorda karşılık arandı (D2'deki Otherworldly Steed denetim hatası tekrarlanmasın diye). Kapanış tablosu (86/87/88/89) raporun "Kapanış" bölümünde.
+
+- **Sürüm 89** (`src/battle/srdD3Surum.ts` `SRD_D3_VERSION`, `srdD3On`). 88 ve altı (eski kayıt, replay, `--kural-surumu 88`) bit bit aynı: hızlı regresyon 88 imzaları D3 öncesi ağacın (18d86fc8) altınıyla aynı. Kayıt sürümü değişmedi (yeni olay türü yok; direnç `effect_added`, beceriler `shape_changed` içinde).
+- **1. Draconic Spirit Shared Resistances (SRD s. 166).** Motorda yoktu (yalnız `unsupported` notu; `grep` ile doğrulandı). Metin: "When you summon the spirit, choose one of its Resistances. You have Resistance to the chosen damage type until the spell ends." Çağıran, büyünün hasar türü seçimine (`cast_spell.choice`) direnç kazanır; süren etki `shared-resistance:summon-dragon` (`resist`), büyünün konsantrasyonuna bağlı; Dragon Companion'da (konsantrasyonsuz) 1 dakika (`until`). Yeniden çağırınca yeni seçim eskisinin yerine.
+  - **⚠ Yaklaşık (karar):** SRD'de nefes türü ("your choice when you cast the spell") ile paylaşılan direnç iki ayrı seçim; oyunda tek seçim ikisine birden (arayüzde ikinci seçici yok, iki seçim çoğu zaman aynı türdür). İleride ayrı seçim istenirse `cast_spell`'e ikinci alan eklenir.
+  - Veri: `data/summons.json` `creatures/draconic-spirit` `sharedResistance: true`, `unsupported`'tan "Shared Resistances" çıktı; eski değerler katmanda (`data/srd-duzeltme.json` `surum: 89`, 2 kayıt). Katman artık aynı alanın birden çok sürümdeki düzeltmesini yeniden eskiye geri sarıyor (`srdD1.ts` `srdKayit`; Draconic Spirit `unsupported` 88 ve 89'da düzeltildi).
+- **2. Vampire Familiar "Charmed (except from its vampire master)" (SRD s. 334).** Metin açık; modellendi.
+  - **Önce bulunan açık (karar: 89'da düzeltildi):** süren etkinin verdiği durumlar (`effect_added` `grants`: Charm Person, Hypnotic Pattern, Fear, Suggestion, Dominate…) durum bağışıklığını hiç denetlemiyordu; deneme: Charmed bağışığı Vampire Familiar Charm Person'la Charmed oluyordu. Bağışıklık yalnız `save_resolved` ve `condition_changed` yollarındaydı. Bu açık kapanmadan istisna anlamsızdı (Vampire'ın Charm'ı Charm Person etkisi).
+  - **Kural (89+, `srdD3.ts` `grantsAfterImmunity`):** taşıyıcı durum (Charmed, Frightened; `data/srd-d3.json` `tasiyiciDurumlar`) bağışıksa ya da etkinin bütün durumları bağışıksa etki hiç tutmaz (Protection from Evil and Good'un mevcut davranışıyla aynı); yoksa yalnız bağışık durum düşer, etki kalır (yutmada Blinded bağışığı yine Restrained; Hideous Laughter'da Prone bağışığı yalnız Incapacitated). Gerekçe: SRD'de Charm/Fear etkilerinin geri kalanı ("while Charmed…", "while Frightened…") duruma bağlı; yutma ve Hideous Laughter'da durumlar bağımsız.
+  - **İstisna:** efendi = aynı asıl taraftaki (`homeSide`) `vampire` canavarı (`data/srd-d3.json` `efendiIstisnasi`, bağışıklık etkisinde `immuneExcept`; `monsterTraits.ts` 89+'da yazar). Üç yolun hepsinde kaynak bilgisiyle (`effectImmune`: `effect_added` kaynağı, `save_resolved.actorId`, `condition_changed.sourceId`/`timer.sourceId`). Karşı taraftaki Vampire efendi sayılmaz. Pratikte YZ dostunu büyülemez; istisna Game Master ve gelecekteki yollar için.
+  - **⚠ Etki alanı:** bağışıklık denetimi bütün canavarların durum bağışıklıklarına uygulanır (Undead/Construct'a Charm/Fear tutmaz). Hızlı regresyonda yalnız Mağara × büyücü partisi 89'da değişti (3 tohum; zafer 3/3 aynı).
+- **3. DECISIONS.md çakışma işaretleri.** Yalnız bir işaret kalmıştı: K57-KALDIR başlığının üstündeki `<<<<<<< HEAD` (6a1a4dc birleştirmesinden; `=======` ve `>>>>>>>` daha önce silinmişti). Silindi; içerik aynı. Belgede satır başı çakışma işareti yok. U1b ve K57 notlarındaki işaret adları (tırnak içinde) içerik olarak kaldı.
+  - **İleri tarihli başlıklar (düzeltme listesi).** Bugünden (2026-11-19) ileri tarih taşıyan 49 başlık var; başlıklar değiştirilmedi (tarih içerikte geçiyor, başka belgeler başlıkla anıyor). Gerçek tarih: başlığın DECISIONS.md'de ilk görüldüğü commit (`git log --full-history -S`; 5e18f421 öncesi geçmiş yok, çoğu orada görünüyor). KQ2–KQ6 dizisi ardışık "gün" numarasıyla yazılmış.
+
+| Başlık | Yazılı tarih | İlk commit |
+|---|---|---|
+| Dragonborn kanadı gövdeye bağlı + palet uyumu | 2026-11-20 | 2026-11-19 (`f9e32618`) |
+| KQ6-19 | 2026-12-31 | 2026-11-17 (`d58f314f`) |
+| KQ6-18 | 2026-12-30 | 2026-11-17 (`21513975`) |
+| KQ6-17 | 2026-12-29 | 2026-11-17 (`4bbe3377`) |
+| KQ6-16 | 2026-12-28 | 2026-11-17 (`2c48a5b2`) |
+| KQ6-14 | 2026-12-27 | 2026-11-17 (`e6b1fc3a`) |
+| KQ6-12 | 2026-12-26 | 2026-11-16 (`2360265b`) |
+| KQ6-11 | 2026-12-25 | 2026-11-16 (`fc8eb139`) |
+| KQ6-10 | 2026-12-25 | 2026-11-16 (`bb36b76d`) |
+| KQ6-9 | 2026-12-24 | 2026-11-16 (`7de5e080`) |
+| KQ6-8 | 2026-12-24 | 2026-11-16 (`7de5e080`) |
+| KQ6-7 | 2026-12-23 | 2026-11-16 (`0ee9286c`) |
+| KQ6-6 | 2026-12-22 | 2026-11-16 (`61ba35c8`) |
+| KQ6-5 | 2026-12-21 | 2026-11-16 (`f3823e9d`) |
+| KQ6-4 | 2026-12-20 | 2026-11-16 (`57afbf54`) |
+| KQ6-3 | 2026-12-19 | 2026-11-16 (`a33577fa`) |
+| KESIM-1 | 2026-12-18 | 2026-11-16 (`636d4136`) |
+| FH1 | 2026-12-17 | 2026-11-16 (`5e18f421`) |
+| HS1 sonrası testler yeni duruma uyarlandı | 2026-12-16 | 2026-11-16 (`5e18f421`) |
+| Kırmızı test denetimi | 2026-12-15 | 2026-11-16 (`5e18f421`) |
+| Jeton bağlama kuralı | 2026-12-14 | 2026-11-16 (`5e18f421`) |
+| BAGLA-9 | 2026-12-13 | 2026-11-16 (`5e18f421`) |
+| TOPLU-KESIM | 2026-12-12 | 2026-11-16 (`5e18f421`) |
+| BAGLA-3 | 2026-12-11 | 2026-11-16 (`5e18f421`) |
+| WZ-BAGLA | 2026-12-10 | 2026-11-16 (`5e18f421`) |
+| WZ-KESIM | 2026-12-09 | 2026-11-16 (`5e18f421`) |
+| KH1 | 2026-12-08 | 2026-11-16 (`5e18f421`) |
+| NU1 | 2026-12-07 | 2026-11-16 (`5e18f421`) |
+| YZ1 | 2026-12-06 | 2026-11-16 (`5e18f421`) |
+| GH1 | 2026-12-05 | 2026-11-16 (`5e18f421`) |
+| CK1 | 2026-12-04 | 2026-11-16 (`5e18f421`) |
+| PB1 | 2026-12-03 | 2026-11-16 (`5e18f421`) |
+| SV1 | 2026-12-02 | 2026-11-16 (`5e18f421`) |
+| AL2 | 2026-12-01 | 2026-11-16 (`5e18f421`) |
+| NA1 | 2026-11-30 | 2026-11-16 (`5e18f421`) |
+| OD1C | 2026-11-29 | 2026-11-16 (`5e18f421`) |
+| OD1B | 2026-11-28 | 2026-11-16 (`5e18f421`) |
+| SD13 | 2026-11-27 | 2026-11-16 (`5e18f421`) |
+| OD1 | 2026-11-26 | 2026-11-16 (`5e18f421`) |
+| KAPI1 | 2026-11-25 | 2026-11-16 (`5e18f421`) |
+| SD9B | 2026-11-24 | 2026-11-16 (`5e18f421`) |
+| SD12 | 2026-11-23 | 2026-11-16 (`5e18f421`) |
+| SD11 | 2026-11-23 | 2026-11-16 (`5e18f421`) |
+| SD10 | 2026-11-23 | 2026-11-16 (`5e18f421`) |
+| HS1 | 2026-11-22 | 2026-11-16 (`5e18f421`) |
+| SD9 | 2026-11-22 | 2026-11-16 (`5e18f421`) |
+| HATA-FAMILIAR | 2026-11-22 | 2026-11-16 (`5e18f421`) |
+| SD8 | 2026-11-21 | 2026-11-16 (`5e18f421`) |
+| Zar kesicisi takılması | 2026-11-20 | 2026-11-16 (`5e18f421`) |
+
+  - **Push öncesi birleştirmede** gelen Dungeondex DX-S başlığı da ileri tarihli (2026-11-20; ilk commit cfdacf5f, 2026-11-19). Aynı birleştirmede uzak daldaki bir önceki birleştirmenin (d62926d2) bıraktığı kalıntı onarıldı: KW2/KW3 başlığı gövdesiz kalmış, gövdesi eski KW2 başlığının altına düşmüştü (gövde 00ccdcea'daki KW3 metniyle birebir); yetim başlık silindi, eski başlık KW2/KW3 başlığıyla değiştirildi, içerik aynı.
+  - **Sıra dışı başlıklar** (en yeni üstte kuralına aykırı, değiştirilmedi): KQ6-19 (12-31) 11-18 tarihli başlıkların altında; AS2 ve SD4 (11-13) 11-12 tarihlilerin altında; K57-KALDIR (11-12) U1b'nin (11-11) altında; Dragonborn kanadı (11-20 yazılı) KW1'in (11-19) altında.
+- **4. Wild Shape becerileri (SRD s. 43).** Metin: "You also retain your skill and saving throw proficiencies and use your Proficiency Bonus for them, in addition to gaining the proficiencies of the creature. If a skill or saving throw modifier in the Beast's stat block is higher than yours, use the one in the stat block." Düşük maliyetle karşılandı (89+): biçimde `skills` (`druid.ts` `wildSkills`): Druid'in yetkin olduğu becerinin değiştirici üstü eki (yetkinlik, uzmanlık) biçimin değiştiricisine eklenir, stat bloğundaki beceri yüksekse o; yetkin olunmayan beceri biçimin değiştiricisinden (`skillBonus`). Bırakınca eski beceriler (`ShapePrev.skills`). Kurtarmalar WS87'de (`wildSaves`) aynı kuralla yapılmıştı.
+  - **Polymorph (karar, aynı kapı):** SRD "game statistics … are replaced by the stat block"; beceriler stat bloğundan (yetkin olunmayan biçimin değiştiricisinden). WS87 INT/WIS/CHA ve kurtarmaları zaten biçimden alıyordu; beceriler eksik kalmıştı.
+  - **Kapsam dışı:** Jack of All Trades gibi sınıf özelliklerinin Polymorph'ta düşmesi (`jack` alanı kalır), tırmanma kontrolü (`climbMod` Druid'inki).
+- **Testler** `src/battle/srdD3.test.ts` (10): katman sırası (87/88/89), Shared Resistances (89 var, 88 yok, konsantrasyonla biter, yeniden çağrı), bağışıklık kuralı, Charm Person (89 tutmaz, 88 tutar), Hideous Laughter (Prone bağışığı), efendi istisnası (üç kaynak, iki yol), Wild Shape ve Polymorph becerileri, replay. `src/battle/srdD2.test.ts` katman testi: `yeni` artık 88 görünümünde karşılaştırılıyor (Draconic Spirit `unsupported` 89'da yine değişti), güncel değer `CURRENT_RULES` görünümünde. Sürüm testleri (`g6`, `ruleVersion`) 89.
+- **Hızlı regresyon** `src/sim/srdD3Regresyon.test.ts` (5. seviye; Orman × Druid, Mağara × büyücü, Kale × ozan, Çöl × standart; sabit düşman listeleri): 88 imzaları 18d86fc8 altınıyla aynı (1 tohum 4/4, 3 tohum 4/4). 89: 1 tohumda 4/4 = 88; 3 tohumda Mağara × büyücü farklı (Undead'e etki bağışıklığı), diğer üçü = 88; zafer her yerde aynı.
+- **Birleşik doğrulama (D1 + WS87 + D2 + D3):**
+  - `npm test` tam: 467 dosya / 5281 test geçti; koşullu atlanan 2 dosya (11 test): `src/content/as2.test.ts` (yerel `icerik/` yok, bulut kopyası) ve `src/sim/k73dOlcum.test.ts` (yalnız `K73D_TOHUM` verilince çalışan denge ölçümü). Kırmızı yok.
+  - Mekanik matris yeniden üretildi (`npx vite-node src/sim/mekanikMatris.ts -- --yaz`): 6606 satır, sürüm 89, 6606 doğru (yalnız başlıktaki sürüm 87 → 89 değişti).
+  - `npm run typecheck` temiz; `npm run build` tamam, ana parça 458,51 kB / 500 kB (KW1 sonrası 458,28; D3 +0,23 kB: `srdD3.ts` + `data/srd-d3.json` reducer'la ana parçada). Push öncesi birleştirmeden (Dungeondex, kanat) sonra 460,82 kB; birleşik ağaçta typecheck, build, gelen testler (`dungeondex.test.tsx`, `kanatKatman.test.tsx`) ve D3/sürüm/i18n testleri geçti (8 dosya, 128 test).
+  - `npm run check:harita` (`PW_CHROMIUM=/opt/pw-browsers/chromium`): denenen 92, geçen 92.
+  - `npm run check:ses`: ilk denemede `pickMap` `[data-region]` 30 sn zaman aşımı. Neden bulut değil, betik: ana menüde `button.role` (2.) OD1'den beri "Oda kur"u açıyor; KH1 `check:harita`'yı `home-quick`'e uyarlamış, `check:ses`'i değil. **Yan düzeltme:** `scripts/ses-kontrol.mjs` hızlı savaş kartıyla (`[data-testid="home-quick"]`) giriyor; bulutta 15/15 tamam. CLAUDE.md'deki "bulutta TimeoutError" notu bu yüzdendi olabilir; kural kullanıcınındır, değiştirilmedi.
+  - Hızlı regresyonlar: D3 (yukarıda) 88 = altın; D1/D2/WS87 regresyonları tam `npm test` içinde yeşil (85/86/87 altınları değişmedi).
+
+## Kuyruk A İş 1: ana parça artışı denetimi (2026-11-20; salt okunur)
+
+- 448,8 → 459,5 kB artışın (+10,6 kB; UTF-8 kodda +11 947 bayt) %82'si Dragonborn kanadından (KW1). En büyük kalem `data/dragonborn-kanat-kok.json` (9,7 kB); `Avatar.tsx` statik içe aktardığı için ana parçada.
+- Dungeondex giriş noktası ≈ 1,3 kB, WS87 metinleri 0,2 kB.
+- Girdap, D1/D2, `srd-duzeltme.json`, `strings.tr2`/`strings.en`, Dungeondex kataloğu ana parçada değil.
+- Öneriler (uygulanmadı):
+  - kanat kökü ve palet verisini tembel yüklemek (≈ 12,5 kB);
+  - kanat çizimini tembel bileşene almak (≈ 4–5 kB);
+  - `efekt-baglama.json`'u ana parçadan çıkarmak (≈ 18 kB).
+- Ayrıntı `harita/belgeler/BUNDLE-ARTIS.md`.
+
+## Dungeondex Sınıflar kategorisi (Görev DX-S, 2026-11-20; yalnız arayüz ve açıklama verisi, kural ve kayıt sürümü değişmedi)
+
+- **Durum öncesi:** Dungeondex'te sınıf kategorisi yoktu. Invocation, Metamagic ve sınıf özelliği kayıtları da yoktu; sınıf yalnız alt sınıf kartında bağlantı olarak geçiyordu. Fighting Style'lar `feat` kategorisinde vardı (kategori "Fighting Style").
+- **Eklenen kategori `sinif`** (`data/dungeondex.json` sırası: Alt soylar ile Alt sınıflar arası). Toplam 50 kayıt: 12 sınıf, 28 Eldritch Invocation, 10 Metamagic.
+  - Kimlik mevcut kimlik: sınıf kimliği, `class-features.json` Invocation kimliği ve Metamagic anahtarı. Yeni kimlik açılmadı.
+  - Süzgeç "Kayıt türü": sınıf / Invocation / Metamagic.
+- **Sınıf kartı:**
+  - Ad İngilizce.
+  - Özet ve olgular: can zarı (`classes.json` `hitDie`) ve birincil yetenek. Birincil yetenek SRD sınıf tablosundaki "Primary Ability"den, yetenek kısaltmasına çevrilir; "or" → "ya da", "and" → "ve". Örnek: Fighter "Güç (STR) ya da Çeviklik (DEX)".
+  - Kurtarma yetkinlikleri, zırh eğitimi, silah yetkinliği (Rogue/Monk'ta özellikli savaş silahları), beceri seçimi, büyü türü.
+  - Seviye 1–20 özellik satırları SRD tablosundan (`data/srd/progression.json`; 258 satır, 185 benzersiz özellik). Kaynak sayfa gösterilmez.
+  - Sınıf seçenekleri satırları (Divine Order, Blessed Strikes, Primal Order, Elemental Fury) oluşturucunun seçenek metninden.
+  - Bağlantılar: o sınıfın alt sınıfları (alt sınıf süzgeci; yüklü 120'nin o sınıfa ait olanları) ve büyü sınıflarında büyü listesi. Ayrıca Fighter/Paladin/Ranger'da Fighting Style feat'leri, Warlock'ta Invocation, Sorcerer'da Metamagic, hepsinde Epic Boon feat'leri.
+- **Özellik açıklaması zinciri (karar):** oluşturucuyla aynı (`featureSummary`): önce `data/aciklamalar-tr.json` `yetenek` (`trAciklama`), yoksa `data/aciklamalar.json` `features.tr` (Görev K18'in elle yazılmış Türkçe kısa açıklamaları).
+  - Görev metni yalnız `trAciklama` diyordu. Bu kaynakta 2 kayıt var; 135 özelliğin Türkçe metni K18 dosyasında. İkisi de elle yazılmış Türkçe ve oluşturucuda zaten gösteriliyor.
+  - Yeni açıklama yazılmadı. Açıklaması olmayan satırda "Açıklama yok" çıkar.
+  - **Eksik:** 48 benzersiz özellik, 110 satır. Hepsi genel yer tutucu: `<sınıf>-subclass`, `ability-score-improvement`, `subclass-feature`, `epic-boon` (12 sınıf × 4). Bunların içeriği alt sınıf ve feat kartlarında, karttan bağlantıları var. Gerçek sınıf özelliğinde eksik 0.
+- **SRD ham metni yok:** `aciklamalar.json` `features.en` (SRD'nin ilk cümlesi) Dungeondex'te kullanılmaz. EN arayüzde Türkçe metin "yalnız Türkçe" notuyla çıkar (mevcut desen). `aciklamalar-en.json` gelirse aynı kimliklerle `en` dolar.
+- **Invocation ve Metamagic:**
+  - Invocation açıklaması `aciklamalar-tr.json` `invocation`, yoksa verideki Türkçe `note`; 28/28. Ön koşul Invocation'a ve Warlock'a bağlantı var; çalışma durumu etiketi oluşturucu lejantından.
+  - Metamagic açıklaması oluşturucunun arayüz metni (`builder.metamagicInfo`, TR/EN) ve bedeli (SP); 10/10.
+- **Metinler:** TR Dungeondex metinleri mevcut desende tembel `strings.tr2.ts` `dex` içinde (görev "strings.ts" diyordu; `dex` bölümü orada değil), EN `strings.en.ts`.
+- **Veri yükü:** `data/srd/classes.json` yalnız Dungeondex'in tembel `loadDexExtras` içinde, ayrı parça olarak yüklenir (yalnız "Primary Ability" alanı okunur). Ana parça değişmedi (459,46 kB / 500).
+- **Test:** `src/dungeondex/dungeondex.test.tsx`.
+  - Kategori sayısı 9'dan 10'a çıktı (yeni kategori).
+  - Yeni testler:
+    - 12 sınıf ve kimlikler;
+    - Invocation/Metamagic kimlikleri veriden;
+    - olgular ve özellik satırı sayısı SRD tablosuyla aynı;
+    - bağlantılar;
+    - açıklama kapsamı (eksikler yalnız genel yer tutucu);
+    - SRD sınıf metni ve sayfa numarası yok;
+    - EN başlık ve "yalnız Türkçe" notu.
+  - Ekran görüntüsü `docs/sabah/dungeondex/siniflar.webp`.
+## Dragonborn kanadı: beyaz pençe ve uç kemikleri + pembe karışımlı zar: Kuyruk KW2/KW3 (2026-11-19, kullanıcı istekleri; yalnız görünüm, kural ve kayıt sürümü değişmedi)
+
+Gidiş: kullanıcı KW1 görüntüsüne daireler çizdi: pençe uçları boynuzlarla aynı beyazlıkta olsun, kanatların iç kısmı soy renginin pembeyle karışımı olsun ("sarı ise sarı ile pembe"); iki hal gösterilsin, ikisinde de pençe beyaz. İki hal gösterildi (A karışımsız, B pembe karışımlı). Kullanıcı seçti: "diğer seçeneği boşver, direkt pembe ile karışımı yap" (B); ayrıca kanadın en ucundaki kemik uçları da beyaz olsun (son daire). Ara denemelerde "direkt pembe" ifadesi yanlış okunup düz pembe (soydan bağımsız) ve pembe baskın karışım (0,7) yapıldı; ikisi de kullanıcının isteği olmadığı için atıldı (kodu geri alındı, commit'lenmedi). Sonuç: B + beyaz uç kemikleri. Görüntüler `docs/sabah/dragonborn-kanat/karisim-ozet.webp`, `karisim-tam.webp`.
+
+- **Katman yaklaşımı (karar).** Taban görsel (`dragonborn.webp`: kol, el bileği düğümü, ön kenar kemiği) aynen kalır, soy renginde; üstüne aynı boyutta iki saydam katman (`dragonborn-zar.webp`, `dragonborn-pence.webp`; RGB = taban parlaklığı, alfa = bölge ağırlığı, kenarlar Gauss ile yumuşak). Her kanat bir `<g>` (kutu, dönüş, ayna) içinde taban → zar → pençe, her katman kendi palet filtresiyle (`WingPart`, `wingParts`, `WingPairImage`). Seçenekler: tek görselde kanal kodlu bölge + çok adımlı SVG filtre grafiği (kırılgan, tarayıcı farkı riski), `<mask>` (görsel başına ek eleman) ya da soy başına hazır boyalı görseller (10 × katman). Üç `<image>` en basit ve her ortamda (SVG jeton, HTML rozet) aynı çıktıyı verdi; ek dosya ≈ 24 KB. Savaş jetonu ölçeği, kök, katman sırası (kanat figürün arkasında), palet kimliği kuralları değişmedi.
+- **Bölgeler (karar).** Elle çokgenler (`scripts/dragonborn-kanat-katman.py`, 364×279 kanat görseli, kontrast gerili ızgara üzerinde okundu). Pençe katmanı (beyaz, 1282 piksel, üç bölge): büyük kanca (kol düğümünün üstü), ön kenardaki küçük pençe, kanadın en ucundaki kemik ucu (ön kenar kemiğinin parlak düğümü + sivri uç). Çerçeve (soy renginde): kol + el bileği düğümü (çokgen) + ön kenar kemiği (üst kenardan 16 px, x < 326, pençe artık pikselleri atlanarak). Zar: kalan alan. Otomatik kemik tespiti (bant geçiren çıkıntı) gürültülü çıktı, elle tarif tercih edildi. İnce parmak kemikleri zar bölgesinde kaldı (pembe karışımlı, parlaklık gölgesiyle seçilir; ayrıntılı çerçeve istenirse çokgen eklenir).
+- **Beyaz pençe (karar): boynuz beyazı ölçüldü.** 24 Gariban jetonunun boyanmamış baş bölgesi (pul maskesi dışı, L > 68, kroma < 10; 12,7 bin piksel): RGB (202, 199, 194), Lab (80,4 / 0,2 / 2,8). Pençe paleti sabit (soydan bağımsız): gölge `#999590`, ışık `#f0ede8`, eşik 0,639 (uç kemiği eklenince 0,682'den); pençe ortalaması Lab (80,4 / 0,3 / 2,9).
+- **Pembe karışımı (karar).** Soyun taban paletiyle zar bölgesinin ortalaması, Lab'da pembeyle (75, 30, 4) karıştırılır: a*, b* yarı yarıya (`pembe.ab` 0,5), açıklık %15 (`pembe.aciklik`); pembenin kroması açıklık oranıyla ölçeklenir (koyu soylarda koyu pembe, 0,5–1). Zar paleti bu hedef ortalamaya aynı yayılımla çözülür (`scripts/dragonborn-kanat-palet.ts`, `renkPaletleri.<soy>.zar`). Zar ortalaması (karışımsız → karışımlı, Lab): Black (23,2 / 2,3 / −5,8) → (31,2 / 8,8 / −1,8); Blue (35,2 / −1,8 / −22,8) → (41,5 / 7,2 / −10,2); Brass (56,4 / 2,1 / 40,9) → (59,4 / 12,9 / 21,9); Bronze → (45,9 / 15,9 / 16,4); Copper → (46,2 / 22,9 / 18,2); Gold (65,2 / 3,9 / 53,7) → (66,8 / 15,6 / 28,5) şeftali-somon; Green (43,2 / −33,2 / 24,8) → (48,2 / −7,2 / 13,6) soluk hakî; Red → (39,7 / 29,6 / 19,4); Silver → (64,2 / 11,5 / −3,2); White (88,4 / 0,7 / 5,4) → (86,4 / 15,0 / 4,6) açık pembe. Karışım literal (yeşil + pembe gibi tamamlayıcıya yakın renkler solar); oranlar (`pembe` verisi) tek yerde.
+- **Eski hal anahtarı.** `data/kanat-esleme.json` `dragonborn.katmanlar.zar.etkin: false` zarı soy renginde bırakır (pençe ve uç kemikleri yine beyaz); varsayılan `true`.
+- **Testler.** `src/ui/kanatKatman.test.tsx` (8 test): katman çözümü (zar soya özgü pembe karışımlı palet, pençe tek palet; `etkin: false`; katmansız slot), SVG ve rozet sırası (taban → zar → pençe, pençe figürden önce, 7 `<image>`), filtre tanımları, katman görselleri (aynı boyut; pençe yalnız üç yerde: kanca, küçük pençe, uç kemiği; zar pençeye boya vermez; zar tabanın %70–92'si), pençe rengi (boynuz ortalaması ± 3, kroma < 6), zar pembe karışımı (her soyda pembeye ≥ 5 yaklaşır, açıklık ≤ 10 oynar, kayma ΔE ≥ 8, White ↔ Silver zar ≥ 12). KW1 testleri değişmeden geçer.
+- **Bilinen sınırlar.** Alttaki üç parmak ucu taban renginde (daire içinde değildi; istenirse çokgen eklenir). KW1'in "kanat–gövde ΔE" ölçütü yalnız taban palet (çerçeve, soy rengi) için geçerli; karışımlı zar gövdeden uzaklaşır. Kanat başına 3 `<image>`: uçan jeton sayısı az, ek yük ihmal edilebilir.
+
 ## Dragonborn kanadı gövdeye bağlandı + palet uyumu: Kuyruk KW1 (2026-11-19; yalnız görünüm, kural ve kayıt sürümü değişmedi)
 
 Sorun (kullanıcı ekran görüntüsü, Siyah Dragonborn Gladyatör): kanat çifti jeton ortasından çiziliyordu ve rozette bütün zemin dairesi kanadın üstündeydi; kanatlar dairenin iki yanında gövdeden kopuk, soluk gri-pastel duruyordu. Görseller `docs/sabah/dragonborn-kanat/` (`once-sonra.webp`, `kok-kontrol.webp`, `kontak-290.webp`, `README.md`). Kullanıcı kararı: soru sorulmadan en makul karar. Kök yüksekliği geri bildirimle ayarlandı: ilk 0,44; "biraz daha omuz hizasına çekelim" yanlış yönde (aşağı) okundu (0,47 → 0,50); kullanıcı düzeltti: "biraz daha yukarı al, %10 kadar" → 0,40.
@@ -78,7 +223,7 @@ Kaynak: SRD 5.2.1 PDF (`docs/SRD_CC_v5.2.1.pdf`): Wild Shape s.43 ("Rules While 
     - **Fark, 87'de düzeltildi:** fiziksel kurtarmalar düz değiştiriciydi. Druid'in yetkinliği (örn. Resilient CON) düşüyor, stat bloğu kurtarması yok sayılıyordu. Şimdi biçimin değiştiricisi + Druid'in o kurtarmadaki eki (yetkinlik ve diğer ekler), stat bloğu yüksekse o (`wildSaves`). Örnek: Crocodile CON +1 → +3. INT/WIS/CHA kurtarmaları da stat bloğu yüksekse ondan (T-Rex WIS +4).
     - Diğer ekler eşya/özellikten gelebilir; çoğunlukla takılı kalan eşya olduğu için korunur (⚠ yorum).
     - Yaratık türü, HP ve geçici HP zaten doğruydu.
-    - **Dokunulmadı:** beceri yetkinlikleri. Biçimin beceri bonusları modelde yok, savaş içi beceri kontrolleri Druid'inkiyle kalır. Belirsiz değil, kapsam dışı.
+    - **Dokunulmadı:** beceri yetkinlikleri. Biçimin beceri bonusları modelde yok, savaş içi beceri kontrolleri Druid'inkiyle kalır. Belirsiz değil, kapsam dışı. (Sonra: D3'te, kural sürümü 89, yapıldı: `wildSkills`.)
   - Polymorph (s.153): bütün oyun değerleri biçimin stat bloğundan. Yalnız hizalanma, kişilik, yaratık türü, HP ve Hit Dice korunur. Geçici HP = biçimin HP'si; konuşamaz, büyü yapamaz.
     - **Fark, 87'de düzeltildi:** INT/WIS/CHA ve kurtarmalar hedefin kendisinden kalıyordu (Wild Shape kuralı). Şimdi biçimden (`{ ...değiştiriciler, ...stat bloğu kurtarmaları }`).
     - Büyü yasağı zaten vardı (biçimde büyü yok).
@@ -1320,7 +1465,6 @@ Yeni komut, olay, ilkel ya da ev kuralı yok; her mekanik değişiklik `k75On` (
 - **Eksik yol adayları** (paket görülünce kesinleşecek): Yakamoz'un loş/karanlık şartı (`KOSULLAR`'da ışık koşulu yok → yalnız metinde), Ejderha Disiplini'nin Step of the Wind'e bağlanması (ilkelde Focus kancası yok → yedek: ayrı Ki bedelli bonus eylem), Paratoner dostla paylaşım (`ucus` yalnız kendine).
 - **Not:** bu dosyanın başındaki `<<<<<<< HEAD … >>>>>>> origin/wip/binek-plan` çakışma işaretleri önceki birleştirmeden (6a1a4dc) kalmış; bu iş çözmedi (K57-KALDIR ve BINEK-PLAN girdileri ikisi de korunmalı).
 
-<<<<<<< HEAD
 ## 2026-11-12 — Kuyruk K57-KALDIR: mekanik donması kaldırıldı (yalnız belge; kod, veri, kural sürümü değişmedi)
 
 - **Karar (kullanıcı):** K57 mekanik donması (2026-11-06, `docs/MEKANIK-DONMA.md`) tamamen kaldırıldı. Belge tarihsel kayıt olarak kalır; ev kuralı varsayılan tablosu başvuru olarak geçerli.

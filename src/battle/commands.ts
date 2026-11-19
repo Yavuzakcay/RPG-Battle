@@ -782,7 +782,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   }
   if (cmd.type === 'attack_gate') return executeAttackGate(state, actor, cmd.at, cmd.option, rng);
   if (cmd.type === 'dodge') return executeDodge(state, actor);
-  // Hazırla (Ready, sürüm 89; SRD 5.2.1 s.186–187).
+  // Hazırla (Ready, sürüm 90; SRD 5.2.1 s.186–187).
   if (cmd.type === 'ready') return executeReady(state, actor, cmd);
   if (cmd.type === 'help') return executeHelp(state, actor, cmd.targetId, rng);
   if (cmd.type === 'distract') return executeDistract(state, actor, cmd.at);
@@ -1074,5 +1074,5 @@ function controlledGate(state: BattleState, cmd: Command, ctx: CommandContext, o
   return { ctx: m.side === 'enemies' || m.civilian ? { ...ctx, isGm: true } : { ...ctx, playerId: m.ownerId ?? ctx.playerId } };
 }
 
-// Hazırla (Ready, sürüm 89): tutulan büyü salınırken iç komut (sıra ve eylem ekonomisi dışında; slot hazırlarken harcandı).
+// Hazırla (Ready, sürüm 90): tutulan büyü salınırken iç komut (sıra ve eylem ekonomisi dışında; slot hazırlarken harcandı).
 registerReadyCast((s, cmd, rng) => executeCommand(s, cmd, { isGm: true, playerId: s.combatants[cmd.actorId]?.ownerId ?? null }, rng));

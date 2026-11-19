@@ -23,12 +23,12 @@ alt sınıf fikstürü). Yerelde `icerik/` ile alt sınıf sayısı 120 olur.
 | Canavar | 330 | `data/monsters.json` `id` = `data/srd/monsters.json` | yok (SRD stat bloğu; `traits` notları karışık) → kartta Türkçe özet satırı üretilir | 0 (yalnız üretilen özet) | 330 düz açıklama |
 | Tür (species) | 10 (9 SRD + Celestial) | `data/races.json` `id` (= `data/srd/species.json`) | tür özellikleri `aciklamalar-tr.json` `tur` (41 SRD özelliği), Celestial `data/celestial.json` `ozellikler[].metin.tr` | 10 | 0 |
 | Alt soy | 41 = 38 tür soyu + 3 Celestial Göksel Uyanış | `races.json` `lineages[].id` (`<tür>/<soy>`), `celestial.json` `awakening.secenekler` | `lineages[].summary.tr` + `data/alt-soy-metin.json` buff/debuff `tr`; uyanış `metin.tr` + `debuff.tr` | 41 | 0 |
-| Sınıf | 12 | `data/classes.json` | sınıf özellikleri `aciklamalar.json` `features.tr` / `aciklamalar-tr.json` `yetenek` (Dungeondex'te alt sınıf kartının bağlantısı olarak) | — | — |
+| Sınıf (Görev DX-S) | 12 sınıf + 28 Invocation + 10 Metamagic = 50 | `data/classes.json`, `data/srd/progression.json` (özellik satırı), `class-features.json` (Invocation, Metamagic) | özellik: `aciklamalar-tr.json` `yetenek` (2), yoksa `aciklamalar.json` `features.tr` (135); Invocation `aciklamalar-tr.json` `invocation` ya da `note`; Metamagic arayüz metni `builder.metamagicInfo` | 137/185 benzersiz özellik | 48 genel yer tutucu (alt sınıf seçimi, ASI, alt sınıf özelliği, Epic Boon) × 12 sınıf; kartta "Açıklama yok" |
 | Alt sınıf | 120 (yerel; bulutta 24 = 12 fikstür + 12 bizim) | `SubclassDef.id` (`subclassesOf`) | `features[].description.tr` ya da `aciklamalar-tr.json` `altsinif` | 130/130 özellik (bulut) | 0 |
 | Feat | 17 | `data/srd/feats.json` `id` | `aciklamalar.json` `feats.tr` {what, example} | 17 | 0 |
 | Geçmiş | 12 (4 SRD + 8 özgün) | `data/backgrounds.json` `id` | `summary.tr` | 12 | 0 |
 | Durum (conditions) | 15 (14 `data/conditions.json` + Exhaustion) | SRD durum adı küçük harf (`blinded`…, `exhaustion`) | yoktu → bu görevde `aciklamalar-tr.json` `durum` (15 kısa Türkçe kural özeti) | 15 | 0 |
-| Invocation | 28 | `class-features.json` `invocations[].id` | `note` / `aciklamalar-tr.json` `invocation` | 28 | 0 (Dungeondex kapsamında değil, sonraki tur) |
+| Invocation | 28 | `class-features.json` `invocations[].id` | `note` / `aciklamalar-tr.json` `invocation` | 28 | 0 (Görev DX-S: Sınıflar kategorisinde) |
 | Yüzey/zemin | 7 yüzey + zemin etiketleri | `data/yuzeyler.json`, `data/zemin-etiketleri.json` | arayüz metinleri | — | kapsam dışı (kullanıcı kararı 2026-11-20) |
 
 Notlar:
@@ -48,7 +48,8 @@ Giriş: ana menüde "Dungeondex" kartı → tembel `src/screens/Dungeondex.tsx`.
 │ [ Ara (TR / EN ad) …                     ]   │
 │ Kategoriler:                                  │
 │  Büyüler 339 · Eşyalar 449 · Canavarlar 330  │
-│  Türler 10 · Alt soylar 41 · Alt sınıflar 120│
+│  Türler 10 · Alt soylar 41 · Sınıflar 50     │
+│  Alt sınıflar 120                            │
 │  Feat'ler 17 · Geçmişler 12 · Durumlar 15    │
 │  Lisanslar ve atıf                           │
 └───────────────────────────────────────────────┘

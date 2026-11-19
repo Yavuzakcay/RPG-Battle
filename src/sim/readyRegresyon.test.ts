@@ -1,7 +1,7 @@
 /**
- * Hazırla (Ready, kural sürümü 89) hızlı regresyonu: yapay zekâ Ready kullanmadığı için dört senaryoda (5. seviye standart
- * parti: Çöl, Kale, Mağara, Orman) sürüm 88 imzası Ready'den önceki ağacın (57c6b7a2) altınıyla aynı, sürüm 89 imzası da
- * 88 ile aynı kalır. Tohum varsayılan 3 (PowerShell: `$env:READY_TOHUM=3; npx vitest run src/sim/readyRegresyon.test.ts`).
+ * Hazırla (Ready, kural sürümü 90) hızlı regresyonu: yapay zekâ Ready kullanmadığı için dört senaryoda (5. seviye standart
+ * parti: Çöl, Kale, Mağara, Orman) sürüm 89 imzası Ready'den önceki ağacın (61610a31, D3 dahil) altınıyla aynı, sürüm 90
+ * imzası da 89 ile aynı kalır. Tohum varsayılan 3 (PowerShell: `$env:READY_TOHUM=3; npx vitest run src/sim/readyRegresyon.test.ts`).
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { setDefaultRuleVersion } from '../battle/create';
@@ -20,7 +20,7 @@ const PIN: Record<string, Record<string, number>> = {
   magara: { troll: 1, 'giant-spider': 2, ghoul: 1, darkmantle: 1, ettercap: 1, ogre: 1, grimlock: 1 },
   orman: { owlbear: 2, werewolf: 2, 'giant-spider': 3, 'dire-wolf': 3, ettercap: 2, wolf: 2 },
 };
-/** Sürüm 88 imzaları, Ready'den önceki ağaçta (57c6b7a2) ölçüldü. */
+/** Sürüm 89 imzaları, Ready'den önceki ağaçta (61610a31, D3 dahil) ölçüldü. */
 const ALTIN: Record<number, Record<string, string>> = {
   3: { col: 'f58c92da8e79', kale: '4a3018937d08', magara: '93f6fb84f80e', orman: '775b0aa5b151' },
 };
@@ -57,17 +57,17 @@ function signature(id: string, seeds: number, ver: number): { sig: string; wins:
   return { sig: hash(text), wins };
 }
 
-describe('Ready regresyon: sürüm 88 altınla aynı; 89 = 88 (yapay zekâ Ready kullanmaz)', () => {
+describe('Ready regresyon: sürüm 89 altınla aynı; 90 = 89 (yapay zekâ Ready kullanmaz)', () => {
   for (const id of IDS) {
     it(`${id}: ${SEEDS} tohum`, () => {
       const gold = ALTIN[SEEDS]?.[id];
-      const v88 = signature(id, SEEDS, 88);
-      console.log(`READY_IMZA ${id} ${SEEDS} 88 ${v88.sig} zafer ${v88.wins}/${SEEDS}`);
-      if (gold) expect(v88.sig, `${id} 88`).toBe(gold);
-      if (CURRENT_RULES >= 89) {
-        const v89 = signature(id, SEEDS, 89);
-        console.log(`READY_IMZA ${id} ${SEEDS} 89 ${v89.sig} zafer ${v89.wins}/${SEEDS}`);
-        expect(v89.sig, `${id} 89 = 88`).toBe(v88.sig);
+      const v89 = signature(id, SEEDS, 89);
+      console.log(`READY_IMZA ${id} ${SEEDS} 89 ${v89.sig} zafer ${v89.wins}/${SEEDS}`);
+      if (gold) expect(v89.sig, `${id} 89`).toBe(gold);
+      if (CURRENT_RULES >= 90) {
+        const v90 = signature(id, SEEDS, 90);
+        console.log(`READY_IMZA ${id} ${SEEDS} 90 ${v90.sig} zafer ${v90.wins}/${SEEDS}`);
+        expect(v90.sig, `${id} 90 = 89`).toBe(v89.sig);
       }
     }, 1_800_000);
   }

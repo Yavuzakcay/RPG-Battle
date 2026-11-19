@@ -10,6 +10,8 @@
 import { getMonster, monsterSpells, spells, type Monster } from '../data';
 import { hasDarkness } from './maprules';
 import { monsterAt } from './srdD1';
+import { masterExceptions } from './srdD3';
+import { srdD3On } from './srdD3Surum';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
 
 const CONDS = ['Blinded', 'Charmed', 'Deafened', 'Exhaustion', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'];
@@ -48,6 +50,12 @@ export function monsterTraitParts(state: BattleState, c: Combatant, m0?: Monster
         spec: stench ? { on: ['start'], targets: 'enemies', save: 'con', conditions: ['Poisoned'], hold: 'turn', color: '#7a8f3a', icon: '🤢' }
           : { on: ['start', 'enter'], once: true, targets: 'enemies', damageType: 'fire', color: '#ff7a33', icon: '🔥' } });
     }
+  }
+  // Görev D3 (89+): efendi istisnası (Vampire Familiar: efendisi Vampire'dan Charmed olur; `data/srd-d3.json`).
+  const except = srdD3On(state) && fx.immune?.length ? masterExceptions(c.monsterId) : undefined;
+  if (except) {
+    const own = Object.fromEntries(Object.entries(except).filter(([k]) => fx.immune?.includes(k)));
+    if (Object.keys(own).length) fx.immuneExcept = own;
   }
   if (Object.keys(fx).length) out.effects.push({ ...fx, id: `srd19:${c.id}:traits`, name: m.name, sourceId: c.id } as ActiveEffect);
   return out;

@@ -247,7 +247,7 @@ export function executeAirMove(state: BattleState, actor: Combatant, to: Offset,
   const setAlt = (s: BattleState, ft: number) => applyEvents(s, [{ type: 'altitude_changed', targetId: actor.id, altitudeFt: ft, label: '' }]);
   const walked: Step[] = [];
   let prev: AirNode = { hex: from, level: l0 };
-  // Hazırla (Ready, sürüm 89): yürüyüş sırasında hazırlanan hareketle yola giren düşmanın hücresinden geçilmez (movement.ts ile aynı).
+  // Hazırla (Ready, sürüm 90): yürüyüş sırasında hazırlanan hareketle yola giren düşmanın hücresinden geçilmez (movement.ts ile aynı).
   let readyMoved = false;
   for (const step of plan.path) {
     if (readyMoved && !sameHex(step.hex, prev.hex)) {

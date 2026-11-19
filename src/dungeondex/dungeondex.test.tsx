@@ -10,9 +10,12 @@ import { subclassesOf } from '../rules/classFeatures';
 import { looksEnglish } from '../data/aciklamaDil';
 import { setLang, t } from '../i18n';
 import { APP_NAME } from '../app/appName';
-import { buildDex, dexFilters, dexSearch, loadDexExtras, shownText, CONDITION_IDS, DEX_CATS, DEX_VISIBLE_FILTERS, type DexCat, type DexEntry, type DexExtras } from './catalog';
+import { buildDex, dexFilters, dexSearch, loadDexExtras, shownText, CLASS_KINDS, CONDITION_IDS, DEX_CATS, DEX_VISIBLE_FILTERS, type DexCat, type DexEntry, type DexExtras } from './catalog';
 import { Dungeondex, type DexView } from '../screens/Dungeondex';
 import srdMonsters from '../../data/srd/monsters.json';
+import srdClasses from '../../data/srd/classes.json';
+import { allInvocations } from '../rules/invocations';
+import { classData } from '../data';
 import notice from '../../NOTICE?raw';
 
 let extras: Omit<DexExtras, 'mapNames'>;
@@ -27,7 +30,8 @@ const html = (initial: DexView) => renderToStaticMarkup(<Dungeondex onBack={() =
 
 describe('Dungeondex kataloğu', () => {
   it('kategori sayıları ve kimlikler mevcut kayıtlarla aynı', () => {
-    expect(DEX_CATS).toHaveLength(9);
+    // Görev DX-S: Sınıflar kategorisi eklendi (9 → 10).
+    expect(DEX_CATS).toHaveLength(10);
     expect(dex.buyu.map((e) => e.id).sort()).toEqual(spells.map((s) => s.id).sort());
     expect(dex.buyu).toHaveLength(339);
     expect(dex.canavar).toHaveLength(330);
@@ -111,5 +115,78 @@ describe('Dungeondex ekranı', () => {
     const m = html({ cat: 'altsinif', id: null });
     if (dex.altsinif.length < 120) expect(m).toContain('İçerik eksik');
     else expect(m).not.toContain('İçerik eksik');
+  });
+});
+
+describe('Dungeondex: Sınıflar kategorisi (Görev DX-S)', () => {
+  beforeAll(() => { setLang('tr'); dex = buildDex({ ...extras, mapNames: {} }); });
+  const kind = (k: string) => dex.sinif.filter((e) => e.f.kind === k);
+  it('12 sınıf + Eldritch Invocation + Metamagic kayıtları; kimlikler veriden', () => {
+    expect(kind('class')).toHaveLength(12);
+    expect(kind('class').map((e) => e.id).sort()).toEqual(classes.map((c) => c.id).sort());
+    expect(kind('invocation').map((e) => e.id).sort()).toEqual(allInvocations().map((v) => v.id).sort());
+    const mm = Object.values(classData.mechanics.features).find((m) => m.metamagic)?.metamagic;
+    expect(kind('metamagic').map((e) => e.id).sort()).toEqual(Object.keys(mm?.costs ?? {}).sort());
+    expect(dex.sinif).toHaveLength(12 + allInvocations().length + Object.keys(mm?.costs ?? {}).length);
+    expect(dexFilters('sinif', dex.sinif).map((f) => f.key)).toEqual(['kind']);
+    expect(dexFilters('sinif', dex.sinif)[0]!.options.map((o) => o.value)).toEqual(CLASS_KINDS);
+  });
+  it('sınıf kartı: zar, birincil yetenek, kurtarma, zırh/silah; seviye 1–20 özellikleri SRD tablosundan; bağlantılar', () => {
+    const b = dex.sinif.find((e) => e.id === 'barbarian')!;
+    const facts = Object.fromEntries(b.facts);
+    expect(facts['Can zarı']).toBe('d12');
+    expect(facts['Birincil yetenek']).toBe('Güç (STR)');
+    expect(facts['Kurtarma yetkinlikleri']).toBe('Güç (STR), Dayanıklılık (CON)');
+    expect(dex.sinif.find((e) => e.id === 'fighter')!.facts.find(([k]) => k === 'Birincil yetenek')?.[1]).toBe('Güç (STR) ya da Çeviklik (DEX)');
+    for (const c of classData.progression) {
+      const e = dex.sinif.find((x) => x.id === c.id)!;
+      const rows = e.sections[0]!.rows;
+      expect(rows.length, c.id).toBe(c.rows.reduce((n, r) => n + r.features.length, 0));
+      expect(Math.max(...rows.map((r) => r.level ?? 0)), c.id).toBe(20);
+      expect(e.links.some((l) => l.cat === 'altsinif' && l.filter?.[1] === c.id), c.id).toBe(true);
+    }
+    expect(dex.sinif.find((e) => e.id === 'wizard')!.links.some((l) => l.cat === 'buyu')).toBe(true);
+    expect(b.links.some((l) => l.cat === 'buyu')).toBe(false);
+    expect(dex.sinif.find((e) => e.id === 'fighter')!.links.some((l) => l.cat === 'feat' && l.filter?.[1] === 'Fighting Style')).toBe(true);
+    expect(dex.sinif.find((e) => e.id === 'warlock')!.links.some((l) => l.filter?.[1] === 'invocation')).toBe(true);
+    expect(dex.sinif.find((e) => e.id === 'sorcerer')!.links.some((l) => l.filter?.[1] === 'metamagic')).toBe(true);
+    // Bağlantılı alt sınıflar: süzgeç o sınıfın yüklü alt sınıflarının hepsini verir.
+    expect(dexSearch(dex.altsinif, '', { cls: 'warlock' }).map((e) => e.id).sort()).toEqual(subclassesOf('warlock').map((s) => s.id).sort());
+  });
+  it('açıklama kapsamı: her özellik satırında Türkçe açıklama ya da "Açıklama yok"; eksikler yalnız genel yer tutucular', () => {
+    const missing: string[] = [];
+    for (const e of kind('class')) for (const r of e.sections[0]!.rows) {
+      expect(r.text?.tr ?? r.text?.ui, `${e.id}/${r.name}`).toBeTruthy();
+      if (!r.text?.tr) missing.push(`${e.id}/${r.name}`);
+    }
+    // 12 sınıf × (alt sınıf seçimi, Ability Score Improvement, alt sınıf özelliği, Epic Boon) = 48; bunlar kartta "Açıklama yok".
+    const generic = /Subclass$|Ability Score Improvement|Subclass feature|Epic Boon/;
+    expect(missing.filter((m) => !generic.test(m))).toEqual([]);
+    console.log(`DX-S sınıf özelliği açıklaması yok: ${missing.length} satır, ${new Set(missing).size} benzersiz özellik`);
+    for (const e of kind('invocation')) expect(e.desc?.tr, e.id).toBeTruthy();
+    for (const e of kind('metamagic')) expect(e.desc?.ui, e.id).toBeTruthy();
+  });
+  it('SRD İngilizce ham metni ve sayfa numarası yok', () => {
+    const raw = (srdClasses.classes as Array<{ features: Array<{ text?: string }>; source: { page: number } }>).flatMap((c) => c.features.map((f) => f.text ?? ''))
+      .filter((x) => x.length > 30).map((x) => x.slice(0, 40));
+    const all = JSON.stringify(dex.sinif);
+    for (const r of raw) expect(all.includes(r), r).toBe(false);
+    expect(all).not.toMatch(/"(page|source|srdPage)"/);
+    for (const e of dex.sinif) for (const d of [e.desc, e.summary, ...e.sections.flatMap((s) => s.rows.map((r) => r.text))]) {
+      if (d?.tr) expect(looksEnglish(d.tr), `${e.id} İngilizce`).toBe(false);
+    }
+    const m = html({ cat: 'sinif', id: 'barbarian' });
+    expect(m).toContain('Rage');
+    expect(m).not.toMatch(/s\. ?\d{2,3}\b|page \d/i);
+  });
+  it('EN arayüz: başlıklar İngilizce, Türkçe açıklama "yalnız Türkçe" notuyla', () => {
+    setLang('en');
+    try {
+      dex = buildDex({ ...extras, mapNames: {} });
+      const m = html({ cat: 'sinif', id: 'barbarian' });
+      expect(m).toContain('Hit Point Die');
+      expect(m).toContain(t().common.descTrOnly);
+      expect(m).toContain('Classes');
+    } finally { setLang('tr'); dex = buildDex({ ...extras, mapNames: {} }); }
   });
 });

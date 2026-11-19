@@ -22,6 +22,8 @@ import { terrainOf } from '../map/terrain';
 import { defaultCivilianLook, withCivilianLook } from './civilianLooks';
 import { slowFeet, tickMarks } from './marks';
 import { wardedFrom } from './mind';
+import { effectImmune, grantsAfterImmunity } from './srdD3';
+import { srdD3On } from './srdD3Surum';
 import { k75On } from './k75Surum';
 import { FRESH_ECONOMY, resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type ConditionTimer, type DamageEffect } from './types';
 import { effectSpeedZero, flySpeed } from './flight';
@@ -156,7 +158,8 @@ function dropBrokenConcentration(state: BattleState): BattleState {
 }
 
 /** Etkiyle bu duruma bağışık mı (Heroism: Frightened; Görev R2). */
-const immuneTo = (c: Combatant, condition: string, state?: BattleState) => (c.effects ?? []).some((e) => e.immune?.includes(condition))
+// Görev D3 (89+): kaynak verilirse efendi istisnası (Vampire Familiar; `srdD3.ts`); istisnasız bağışıklıkta aynı sonuç.
+const immuneTo = (c: Combatant, condition: string, state?: BattleState, sourceId?: string) => effectImmune(state, c, condition, sourceId)
   // Kuyruk 18 H3: Nature's Ward (Circle of the Land 10): Poisoned bağışıklığı (anahtar naturesWard, kural sürümü 14).
   || (condition === 'Poisoned' && !!c.traits?.includes('natures-ward') && !!state && !!globalRule(state, 'naturesWard'));
 
@@ -660,7 +663,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const run = c.pos ? runAfter(c.pos, event.path, c.run) : null;
       let moved = withCombatant(state, event.actorId, event.free
         ? { pos: last ?? c.pos, run, economy: { ...c.economy, shiftLeft: Math.max(0, (c.economy.shiftLeft ?? 0) - event.cost) } }
-        // Hazırla (Ready, sürüm 89): tepkiyle hareket turun hareketinden düşmez.
+        // Hazırla (Ready, sürüm 90): tepkiyle hareket turun hareketinden düşmez.
         : event.reaction ? { pos: last ?? c.pos, run } : { pos: last ?? c.pos, movementUsed: c.movementUsed + event.cost, run });
       moved = syncWater(moved, event.actorId);
       // Kuyruk 19: Resilient Sphere: taşınan küre taşıyanın bir arkasındaki altıgende kalır.
@@ -724,7 +727,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         ...(once ? { effects: (c.effects ?? []).filter((e) => !e.extraActionOnce) } : {}) });
     }
     case 'readied': {
-      // Hazırla (Ready, sürüm 89): hazırlık kurulur (bir anda bir tane).
+      // Hazırla (Ready, sürüm 90): hazırlık kurulur (bir anda bir tane).
       if (!state.combatants[event.actorId]) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       return withCombatant(state, event.actorId, { readied: event.readied });
     }
@@ -758,9 +761,16 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       // Görev B3: Protection from Evil and Good: korunan türlerden gelen Charmed/Frightened veren etki tutmaz.
       if ((event.effect.grants ?? []).some((g) => wardedFrom(state, c.id, event.effect.sourceId, g))) return state;
-      const effects = [...(c.effects ?? []).filter((e) => e.id !== event.effect.id), event.effect];
+      // Görev D3 (89+): verdiği durum bağışıklığa takılır (taşıyıcı Charmed/Frightened ya da hepsi bağışıksa etki tutmaz).
+      let effect = event.effect;
+      if (srdD3On(state) && effect.grants?.length) {
+        const kept = grantsAfterImmunity(effect.grants, (g) => immuneTo(c, g, state, effect.sourceId));
+        if (!kept) return state;
+        if (kept !== effect.grants) effect = { ...effect, grants: kept };
+      }
+      const effects = [...(c.effects ?? []).filter((e) => e.id !== effect.id), effect];
       // Görev S1: etkinin verdiği durumlar (Invisibility → Invisible) etki sürdükçe.
-      const grants = (event.effect.grants ?? []).filter((g) => !c.conditions.includes(g));
+      const grants = (effect.grants ?? []).filter((g) => !c.conditions.includes(g));
       return withCombatant(state, c.id, { effects, ...(grants.length ? { conditions: [...c.conditions, ...grants] } : {}) });
     }
     case 'effect_ended': {
@@ -914,7 +924,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         // Kuyruk 18 H2: Polymorph canavar saldırılarını da değiştirir.
         ...(event.stats?.attacks ? { attacks: c.attacks, multiattack: c.multiattack } : {}),
         // Kural sürümü 87 (`bicimYuzme`): biçimin yüzme hızı; bırakınca eski yüzme hızı.
-        ...(event.stats && 'swimFt' in event.stats ? { swimFt: c.swimFt } : {}) };
+        ...(event.stats && 'swimFt' in event.stats ? { swimFt: c.swimFt } : {}),
+        // Görev D3 (89+): biçimin beceri bonusları; bırakınca eskileri.
+        ...(event.stats?.skills ? { skills: c.skills } : {}) };
       if (!event.stats) {
         // Kuyruk K48: Örümcek Biçimi bitince biçim canı (geçici HP) da gider.
         const { shape: _s, ...rest0 } = c;
@@ -925,7 +937,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const shaped = withCombatant(state, c.id, { shape: { ...s, prev: base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
         saves: s.saves, weaponOptions: s.weaponOptions, attacksPerAction: s.attacksPerAction, avatar: s.avatar,
         ...(s.attacks ? { attacks: s.attacks, multiattack: !!s.multiattack } : {}),
-        ...('swimFt' in s ? { swimFt: s.swimFt || undefined } : {}) });
+        ...('swimFt' in s ? { swimFt: s.swimFt || undefined } : {}), ...(s.skills ? { skills: s.skills } : {}) });
       // Kural sürümü 87: yüzen biçim sudaysa "suda" işareti hemen (yüzme hızı ve çok derin su).
       return 'swimFt' in s ? syncWater(shaped, c.id) : shaped;
     }
@@ -950,7 +962,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'save_resolved': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
-      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x, state) && !wardedFrom(state, c.id, event.actorId, x))];
+      const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x, state, event.actorId) && !wardedFrom(state, c.id, event.actorId, x))];
       let next = withCombatant(state, event.targetId, { hp: event.targetHpAfter, conditions });
       for (const x of event.conditionsAdded) next = linkCondition(next, event.actorId, event.label, event.targetId, x);
       const caster = next.combatants[event.actorId];
@@ -1041,7 +1053,7 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const has = c.conditions.includes(event.condition);
       // Bağışıklık (Heroism: Frightened): durum eklenmez.
-      if (event.present && !has && immuneTo(c, event.condition, state)) return state;
+      if (event.present && !has && immuneTo(c, event.condition, state, event.sourceId ?? event.timer?.sourceId)) return state;
       // Kuyruk K75 (79+): süreli Charmed/Frightened da korumaya (Protection from Evil and Good, Magic Circle, Hallow, aura) takılır.
       if (event.present && !has && k75On(state) && wardedFrom(state, c.id, event.sourceId ?? event.timer?.sourceId, event.condition)) return state;
       const conditions = event.present

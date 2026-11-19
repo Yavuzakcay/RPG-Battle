@@ -542,7 +542,7 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   let prev = from;
   let current = state;
   const down = () => ((current.combatants[actor.id] as Combatant).hp <= 0);
-  // Hazırla (Ready, sürüm 89): yürüyüş sırasında hazırlanan hareketle yola giren yaratık: önceden bulunan yol artık dolu
+  // Hazırla (Ready, sürüm 90): yürüyüş sırasında hazırlanan hareketle yola giren yaratık: önceden bulunan yol artık dolu
   // altıgenden geçemez (düşman) ya da orada bitemez (dost); yürüyüş bir önceki altıgende durur.
   let readyMoved = false;
   for (const [i, step] of path.path.entries()) {

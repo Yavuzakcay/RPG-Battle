@@ -1,5 +1,5 @@
 /**
- * Hazırla (Ready) eylemi, SRD 5.2.1 s.186–187 (kural sürümü 89; `ready.ts`): tetik türleri, saldırı/hareket/büyü yanıtı,
+ * Hazırla (Ready) eylemi, SRD 5.2.1 s.186–187 (kural sürümü 90; `ready.ts`): tetik türleri, saldırı/hareket/büyü yanıtı,
  * slot harcanması ve geri gelmemesi, tutma konsantrasyonunun bozulması, tepki çakışması (fırsat saldırısı), kapılar
  * (Incapacitated, Time Stop, ele geçirme, kontrollü binek, Wild Shape), sürüm kapısı, replay ve kayıt sürümü 24.
  */
@@ -46,14 +46,14 @@ const A = (s: BattleState) => s.combatants.A as Combatant;
 const caster: Partial<Combatant> = { spellNames: ['Fire Bolt', 'Guiding Bolt', 'Bless'], spellSlots: [2, 0, 0, 0, 0, 0, 0, 0, 0], spellAttack: 7, spellSaveDc: 15 };
 
 describe('Hazırla: veri ve sürüm', () => {
-  it('kural sürümü 89 ve tetikler veride (en az dört olay türü)', () => {
-    expect(READY_VERSION).toBe(89);
+  it('kural sürümü 90 ve tetikler veride (en az dört olay türü)', () => {
+    expect(READY_VERSION).toBe(90);
     expect(CURRENT_RULES).toBeGreaterThanOrEqual(READY_VERSION);
     expect(new Set(READY_TRIGGERS.map((t) => t.olay))).toEqual(new Set(['adim', 'saldiri', 'buyu', 'hareketBitti']));
   });
-  it('sürüm 88 ve altında komut reddedilir; kayıt sürümü 24 ve 23 yüklenir', () => {
-    const s = { ...field({ A: o(3, 3), B: o(8, 3), C: o(2, 5) }), kuralSurumu: 88 };
-    expect(err(ready(s, { trigger: 'saldirir', response: { kind: 'attack', option: sword } }))).toMatch(/89/);
+  it('sürüm 89 ve altında komut reddedilir; kayıt sürümü 24 ve 23 yüklenir', () => {
+    const s = { ...field({ A: o(3, 3), B: o(8, 3), C: o(2, 5) }), kuralSurumu: 89 };
+    expect(err(ready(s, { trigger: 'saldirir', response: { kind: 'attack', option: sword } }))).toMatch(/90/);
     expect(SAVE_VERSION).toBe(24);
     expect(LOADABLE_VERSIONS).toContain(23);
     expect(LOADABLE_VERSIONS).toContain(24);

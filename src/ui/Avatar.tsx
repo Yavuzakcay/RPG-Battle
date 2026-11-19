@@ -4,14 +4,14 @@
  * dosya adı kuralına uyan bir görsel eklenince kod değişmeden görünür.
  */
 import { useContext, useEffect, useState, type CSSProperties } from 'react';
-import { FOOT_FRAC, TOKEN_SPACE, lineageLook, placementBounds, placementTransform, wingBox, wingPlacements, type WingLayerSpec, type WingRoot } from './lineageLook';
+import { FOOT_FRAC, TOKEN_SPACE, lineageLook, placementBounds, placementTransform, wingBox, wingPlacements, type WingLayerSpec, type WingPalet, type WingRoot } from './lineageLook';
 import { LookContext } from './lookContext';
 import { wingRoot } from './wingRoot';
 import { crownSpec, type CrownSpec } from './haloCrown';
 import { StarCrownLayer, StarCrownShape } from './StarCrown';
 import { useWingAnim } from './wingAnim';
 import { WingFilterDefs } from './WingFilter';
-import { wingFilterId } from './lineageLook';
+import { ownWingToken, wingFilterId } from './lineageLook';
 import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
 import { tintedReady, tintedUrl } from './tint';
@@ -128,7 +128,8 @@ export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: st
   const crown = src ? crownSpec(src, avatar.look) : null;
   // KW1: tek kanatlı slot (Dragonborn) `LookFrame` içinde: kanat rozetin içinde, zemin dairesi ile figür arasında (figürün arkasından çıkar, daire dışına taşar).
   const look = useContext(LookContext);
-  const wing = src && look?.wing?.ayna ? look.wing : null;
+  // Kuyruk A İş 2: kendi çiziminde kanatlı jetonda ejderha kanadı yok.
+  const wing = src && look?.wing?.ayna && !ownWingToken(look.wing, src) ? look.wing : null;
   return (
     <span className={`avatar${src && !loaded ? ' skeleton' : ''}${crown ? ' has-crown' : ''}${wing ? ' has-wing' : ''}`} title={title}
       style={{ width: size, height: size, background: avatar.bg, borderColor: ring ?? avatar.ring ?? 'transparent', fontSize: size * 0.4, ...(naturalLeft(src) ? { '--mirror': -1 } : {}) } as CSSProperties}>
@@ -187,16 +188,23 @@ function WingImage(props: { wing: WingLayerSpec; wb: { x: number; y: number; wid
  */
 function WingPairImage(props: { wing: WingLayerSpec; cx: number; cy: number; w: number; root?: WingRoot | null; flip?: boolean; shape?: string }) {
   const { wing, cx, cy, w } = props;
-  const filter = wing.palet ? `url(#${wingFilterId(wing.palet)})` : wing.filtre || undefined;
-  const style = filter ? { filter } : undefined;
+  const filterOf = (p?: WingPalet) => (p ? { filter: `url(#${wingFilterId(p)})` } : undefined);
+  const base = wing.palet ? filterOf(wing.palet) : wing.filtre ? { filter: wing.filtre } : undefined;
   const r2 = (n: number) => Math.round(n * 100) / 100;
   const inner = (
     <g transform={props.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} aria-hidden="true">
       {wing.palet && <WingFilterDefs palet={wing.palet} />}
-      {wingPlacements(wing, cx, cy, w, props.root).map((p) => (
-        <image key={p.side} className="look-wing" data-wing={wing.id} data-side={p.side} href={assetSrc(wing.src)} x={r2(p.x)} y={r2(p.y)} width={r2(p.width)} height={r2(p.height)}
-          preserveAspectRatio="xMidYMid meet" transform={placementTransform(p)} style={style} />
-      ))}
+      {wing.katmanlar?.map((k) => <WingFilterDefs key={k.ad} palet={k.palet} />)}
+      {wingPlacements(wing, cx, cy, w, props.root).map((p) => {
+        const box = { x: r2(p.x), y: r2(p.y), width: r2(p.width), height: r2(p.height), preserveAspectRatio: 'xMidYMid meet' as const };
+        // KW2: taban görsel (kanat çerçevesi, soy rengi), üstünde zar (soy + pembe karışımı) ve pençe (boynuz beyazı) katmanları; üçü aynı kutu ve dönüşte.
+        return (
+          <g key={p.side} data-wing={wing.id} data-side={p.side} transform={placementTransform(p)}>
+            <image className="look-wing" href={assetSrc(wing.src)} {...box} style={base} />
+            {wing.katmanlar?.map((k) => <image key={k.ad} className="look-wing" data-part={k.ad} href={assetSrc(k.src)} {...box} style={filterOf(k.palet)} />)}
+          </g>
+        );
+      })}
     </g>
   );
   return props.shape ? <g transform={props.shape}>{inner}</g> : inner;
@@ -205,12 +213,12 @@ function WingPairImage(props: { wing: WingLayerSpec; cx: number; cy: number; w: 
  * Kuyruk AS1c: jeton figürü (SVG): kanat katmanı (jetonun arkasında; `lineageLook`), alt soy oranı, Celestial hale gizleme ve
  * filtre. Yalnız çizim: `x/y/width/height` ve tıklama alanı aynı. KW1: `wingRoot` tek kanatlı slotta kanat kökü (jeton uzayı).
  */
-export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; crown?: CrownSpec | null; look?: AvatarData['look']; flying?: boolean; /** Karakter ekranları: uçma yeteneği olan karakter havada olmasa da kanatlı. */ ability?: boolean; /** KW1: tek kanatlı slotta kanat kökü (`wingRoot`); yoksa slot varsayılanı. */ wingRoot?: WingRoot | null }) {
+export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; crown?: CrownSpec | null; look?: AvatarData['look']; flying?: boolean; /** Karakter ekranları: uçma yeteneği olan karakter havada olmasa da kanatlı. */ ability?: boolean; /** KW1: tek kanatlı slotta kanat kökü (`wingRoot`); yoksa slot varsayılanı. */ wingRoot?: WingRoot | null; /** Kuyruk A İş 2: jetonun dosya yolu (kendi çiziminde kanatlıysa kanat yok; `href` boyanmış blob olabilir). */ src?: string }) {
   const { cx, cy, w } = props;
   const lk = props.look ? lineageLook(props.look, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) }) : null;
   const by = cy - w / 2 + w * FOOT_FRAC; // ayak çizgisi (ölçek demir noktası)
   const shape = lk && (lk.scaleX !== 1 || lk.scaleY !== 1) ? `translate(${cx} ${by}) scale(${lk.scaleX} ${lk.scaleY}) translate(${-cx} ${-by})` : undefined;
-  const wing = lk?.wing;
+  const wing = lk?.wing && !ownWingToken(lk.wing, props.src ?? props.href) ? lk.wing : null;
   const wb = wing && !wing.ayna ? wingBox(wing, cx, cy, w) : null;
   return (
     <>
@@ -242,7 +250,7 @@ export function AvatarCircle(props: {
         {avatar.ring && <ellipse cx={cx} cy={cy + r * 0.78} rx={r * 0.92} ry={r * 0.3} fill="none" stroke={avatar.ring} strokeWidth={Math.max(1.5, r * 0.09)} opacity={0.9} />}
         {/* Görev P0: ek paket yaratığının renk tonu; Kuyruk AS1c: alt soy görünümü `TokenFigure` içinde. */}
         <g className="breathe" style={avatar.hue ? { filter: `hue-rotate(${avatar.hue}deg)` } : undefined}>
-          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={(props.flip ?? false) !== naturalLeft(src)} crown={crownSpec(src, avatar.look)} look={avatar.look} flying={props.flying} ability={props.ability} wingRoot={wingRoot(src, avatar.look)} />
+          <TokenFigure href={shown ?? assetSrc(src)} cx={cx} cy={cy} w={w} flip={(props.flip ?? false) !== naturalLeft(src)} crown={crownSpec(src, avatar.look)} look={avatar.look} flying={props.flying} ability={props.ability} wingRoot={wingRoot(src, avatar.look)} src={src} />
         </g>
       </g>
     ) : (
@@ -269,7 +277,7 @@ function wingExtent(wing: WingLayerSpec, size: number): { x: number; y: number; 
 export function CharacterFigure(props: { avatar: AvatarData; size: number; title?: string }) {
   const { avatar, size } = props;
   const lk = avatar.look ? lineageLook(avatar.look, { ability: true }) : null;
-  const wb = lk?.wing ? wingExtent(lk.wing, size) : null;
+  const wb = lk?.wing && !ownWingToken(lk.wing, avatar.src) ? wingExtent(lk.wing, size) : null;
   const pad = Math.max(2, size * 0.06);
   const x0 = Math.min(0, wb?.x ?? 0) - pad, y0 = Math.min(0, wb?.y ?? 0) - pad;
   const x1 = Math.max(size, wb ? wb.x + wb.width : 0) + pad, y1 = Math.max(size, wb ? wb.y + wb.height : 0) + pad;

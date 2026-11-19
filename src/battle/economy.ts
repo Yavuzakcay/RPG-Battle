@@ -253,7 +253,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Kuyruk K68a (sürüm 52): enkazdan Freedom of Movement ile kurtulmak eylem değil (5 ft hareket).
       if (cmd.type === 'escape' && ruleVersion(state) >= 52 && actor.effects?.some((e) => e.freeMove) && actor.effects?.some((e) => e.pinned)) return { ok: true, event: null };
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
-    // Hazırla (Ready, sürüm 89): eylem (SRD 5.2.1 s.186).
+    // Hazırla (Ready, sürüm 90): eylem (SRD 5.2.1 s.186).
     case 'ready': {
       // Hazırlanan slotlu büyü hazırlarken normal yapılır (SRD 5.2.1 s.186): turda bir slotlu büyü kuralına sayılır.
       const sp = cmd.response.kind === 'spell' ? spells.find((x) => x.name === (cmd.response as { spellName: string }).spellName) : undefined;

@@ -7,7 +7,8 @@
  * `alan` yolu: nokta alt alan (`abilities.str`), `[x]` dizide `id`/`name` = x olan nesne ya da x ile başlayan metin
  * (`attacks[Slam].repeat`, `unsupported[Durum bağışıklığı:]`); `eski: null` = alan eski veride yoktu (silinir).
  * Görev D2 (kural sürümü 88): kayıt başına `surum` (yoksa 86): eski değer sürüm < `surum` savaşta okunur; çağrı verisi
- * (`data/summons.json`, kayıt `summons/<büyü>` ya da `creatures/<yaratık>`) aynı katmanda.
+ * (`data/summons.json`, kayıt `summons/<büyü>` ya da `creatures/<yaratık>`) aynı katmanda. Görev D3 (89): aynı alan birden çok
+ * sürümde düzeltildiyse kayıtlar yeniden eskiye uygulanır (her kaydın `eski`'si bir önceki sürümün değeri).
  */
 import katman from '../../data/srd-duzeltme.json';
 import turler from '../../data/canavar-turleri.json';
@@ -73,7 +74,9 @@ export function srdKayit<T>(dosya: string, kayit: string, cur: T, v: number | un
   const hit = per.get(key);
   if (hit !== undefined) return hit as T;
   const copy = structuredClone(cur) as unknown as Record<string, unknown>;
-  for (const d of list) setPath(copy, parse(d.alan), d.eski);
+  // Görev D3 (sürüm 89): aynı alanın birden çok sürümde düzeltmesi: yeniden eskiye geri sarılır (en eski değer kalır).
+  const srt = [...list].sort((a, b) => (b.surum ?? SRD_D1_VERSION) - (a.surum ?? SRD_D1_VERSION));
+  for (const d of srt) setPath(copy, parse(d.alan), d.eski);
   per.set(key, copy);
   cache.set(cur as object, per);
   return copy as unknown as T;

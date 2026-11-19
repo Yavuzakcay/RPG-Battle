@@ -8,7 +8,7 @@ import { trAciklama } from '../data';
 const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg: 'barut fıçısı', chest: 'sandık', table: 'masa', door: 'kapı', brazier: 'mangal' };
 
 export const TR_EXTRA = {
-  /** Hazırla (Ready) paneli (kural sürümü 89; `src/ui/ReadyPanel.tsx`). */
+  /** Hazırla (Ready) paneli (kural sürümü 90; `src/ui/ReadyPanel.tsx`). */
   readyUi: {
     menu: 'Hazırla', title: 'Hazırla (Ready)', trigger: 'Tetik', who: 'Kim tetikler', anyEnemy: 'Herhangi bir düşman',
     response: 'Yanıt', attack: 'Tek saldırı', move: 'Hareket', spell: 'Büyü', weapon: 'Saldırı', slot: 'Slot',
@@ -788,14 +788,14 @@ export const TR_EXTRA = {
   dex: {
     title: 'Dungeondex', back: 'Geri', search: 'Ara (Türkçe ya da İngilizce ad)', categories: 'Kategoriler', loading: 'Yükleniyor…',
     error: 'Dungeondex verisi yüklenemedi.',
-    cat: { buyu: 'Büyüler', esya: 'Eşyalar', canavar: 'Canavarlar', tur: 'Türler', altsoy: 'Alt soylar', altsinif: 'Alt sınıflar', feat: "Feat'ler", gecmis: 'Geçmişler', durum: 'Durumlar' } as Record<string, string>,
+    cat: { buyu: 'Büyüler', esya: 'Eşyalar', canavar: 'Canavarlar', tur: 'Türler', altsoy: 'Alt soylar', sinif: 'Sınıflar', altsinif: 'Alt sınıflar', feat: "Feat'ler", gecmis: 'Geçmişler', durum: 'Durumlar' } as Record<string, string>,
     license: 'Lisanslar ve atıf',
     licenseIntro: (app: string) => `${app}, aşağıdaki kaynaktan mekanik ve kural malzemesi içerir. Atıf metni NOTICE dosyasından olduğu gibi gösterilir:`,
     licenseNote: 'Kurallar Dungeons & Dragons 5. sürümünün SRD 5.2.1 metnine dayanır; D&D adı yalnız mekaniğin kaynağını belirtmek için anılır. Bu uygulama Wizards of the Coast ürünü değildir, onunla bağlantılı ya da onun onayladığı bir ürün değildir.',
     licenseLink: 'Lisans: Creative Commons Attribution 4.0 International (CC-BY-4.0)',
     count: (n: number) => `${n} kayıt`, empty: 'Eşleşen kayıt yok.', more: (n: number) => `Daha fazla göster (${n} kaldı)`,
     all: 'Tümü', moreFilters: (n: number) => `Diğer süzgeçler (${n})`, clear: 'Temizle', pick: 'Soldan bir kayıt seç.',
-    filter: { level: 'Seviye', school: 'Okul', cls: 'Sınıf', cr: 'CR', type: 'Tür', kind: 'Eşya türü', species: 'Tür', category: 'Kategori' },
+    filter: { level: 'Seviye', school: 'Okul', cls: 'Sınıf', cr: 'CR', type: 'Tür', kind: 'Eşya türü', species: 'Tür', category: 'Kategori', classKind: 'Kayıt türü' },
     cantrip: 'Cantrip', level: (n: number) => `${n}. seviye`, ft: (n: number) => `${n} ft`, lb: (n: number) => `${n} lb`,
     self: 'Kendi', touch: 'Dokunma', yes: 'Evet', disadvantage: 'dezavantaj',
     itemKind: { magic: 'Sihirli eşya', gear: 'Donanım', weapon: 'Silah', armor: 'Zırh' } as Record<string, string>,
@@ -808,8 +808,10 @@ export const TR_EXTRA = {
     fact: { casting: 'Yapım süresi', range: 'Menzil', conc: 'Konsantrasyon', area: 'Alan', ac: 'AC', hp: 'HP', speed: 'Hız', alignment: 'Alignment',
       abilities: 'Yetenekler', darkvision: 'Karanlık görüş', attacks: 'Saldırılar', size: 'Boyut', resist: 'Direnç', damage: 'Hasar', mastery: 'Ustalık',
       weight: 'Ağırlık', attune: 'Uyumlanma', charges: 'Yük', strength: 'Güç şartı', stealth: 'Gizlen', repeatable: 'Tekrar alınabilir',
-      abilityBonus: 'Yetenek artışı', skills: 'Beceriler', tool: 'Alet' },
-    sec: { features: 'Özellikler', traits: 'Tür özellikleri', links: 'İlgili kayıtlar', places: 'Ortamlar', desc: 'Açıklama', buff: 'Artı', debuff: 'Eksi' },
+      abilityBonus: 'Yetenek artışı', skills: 'Beceriler', tool: 'Alet',
+      hitDie: 'Can zarı', primary: 'Birincil yetenek', saves: 'Kurtarma yetkinlikleri', armorTraining: 'Zırh eğitimi', weaponProf: 'Silah yetkinliği',
+      spellcasting: 'Büyü', minLevel: 'En düşük seviye', cost: 'Bedel' },
+    sec: { features: 'Özellikler', traits: 'Tür özellikleri', links: 'İlgili kayıtlar', places: 'Ortamlar', desc: 'Açıklama', buff: 'Artı', debuff: 'Eksi', classFeatures: 'Seviye 1–20 sınıf özellikleri', classOptions: 'Sınıf seçenekleri' },
     status: { calisir: 'çalışır', kismi: 'kısmi', planli: 'planlı', hikaye: 'hikâye', calismiyor: 'çalışmıyor' } as Record<string, string>,
     noDesc: 'Türkçe açıklama henüz yok.',
     monsterSummary: (size: string, type: string, cr: string, ac: number, hp: number) => `${size} ${type}; CR ${cr}, AC ${ac}, ${hp} HP.`,
@@ -818,5 +820,13 @@ export const TR_EXTRA = {
     women: 'yalnız kadın', men: 'yalnız erkek', lineageOf: (r: string) => `${r} alt soyu`, awakening: (lvl: number) => `Celestial Göksel Uyanış · ${lvl}. seviyeden`,
     spellsOf: (c: string) => `${c} büyüleri`, subclassesOf: (c: string) => `${c} alt sınıfları`, immuneTo: (c: string) => `Bağışık: ${c}`,
     levelShort: (n: number) => `${n}. sv`,
+    /** Görev DX-S: Sınıflar kategorisi. */
+    classKind: { class: 'Sınıf', invocation: 'Eldritch Invocation', metamagic: 'Metamagic' } as Record<string, string>,
+    classSummary: (die: number, primary: string) => `Can zarı d${die}${primary ? `; birincil yetenek ${primary}` : ''}.`,
+    or: ' ya da ', and: ' ve ', anySkill: 'herhangi bir beceri', none: 'yok', noFeatureDesc: 'Açıklama yok.',
+    weaponProf: { simple: 'Basit silahlar', martial: 'Basit ve savaş silahları', simplePlus: (props: string) => `Basit silahlar; ${props} özellikli savaş silahları` },
+    skillChoice: (n: number, list: string) => `${n} seçim: ${list}`,
+    castingType: { full: 'Tam büyücü', half: 'Yarı büyücü', pact: 'Pact Magic' } as Record<string, string>,
+    fightingStyles: 'Fighting Style feat\'leri',
   },
 };

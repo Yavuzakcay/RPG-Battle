@@ -753,6 +753,33 @@
    ],
    "sayfa": 109,
    "surum": 88
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/draconic-spirit",
+   "alan": "sharedResistance",
+   "eski": null,
+   "yeni": true,
+   "sayfa": 166,
+   "surum": 89,
+   "not": "Shared Resistances: \"choose one of its Resistances. You have Resistance to the chosen damage type until the spell ends.\" Büyücüye seçilen türe direnç (büyünün tek hasar türü seçimi; `summons.ts` `executeSummon`)"
+  },
+  {
+   "dosya": "data/summons.json",
+   "kayit": "creatures/draconic-spirit",
+   "alan": "unsupported",
+   "eski": [
+    "Shared Resistances",
+    "Duyu: Blindsight 30 ft",
+    "Durum bağışıklığı: Charmed, Frightened, Poisoned"
+   ],
+   "yeni": [
+    "Duyu: Blindsight 30 ft",
+    "Durum bağışıklığı: Charmed, Frightened, Poisoned"
+   ],
+   "sayfa": 166,
+   "surum": 89,
+   "not": "Shared Resistances uygulandı, kalan fark notundan çıktı"
   }
  ]
 }

@@ -28,7 +28,7 @@ export { SAVE_KEY, hasSavedBattle };
  * Görev P0). 7: sınıf kaynakları kimlik → sayı kaydı (`resources`: yalnızca sahip olunan kaynaklar,
  * `feature_used.feature` kaynak kimliği; Görev N) ve savaşa yaralı başlayan karakterler (başlangıç HP/kaynak/slot). 6: gizlenme olayında gözcü (`hide_attempted.watcherId`), bitişikteki düşmanın fark etmesi (`revealed`). 5: zar kaydı (`dice_rolled` olayı: atılan ve elle girilen zarlar) ve `state.diceMode`. 4: masum görünümü (`civilian_art` olayı, `gorselId`). 3: yakalama, ayağa kalkma, süreli hasar (`grappled`, `grapple_ended`, `grapple_escape`, `stood_up`). 2: süreli durumlar (`conditionTimers`, `condition_timer/save/ended` olayları),
  * Kaçın ve Yardım. 22: Kuyruk 41b/43 olayları (`distracted`, `item_used`, `death_ward` hasar etkisi, Legendary Resistance kilidi). 21: doğaçlama silah (`object_changed.arm`) ve anahtar/doğaçlama silah nesneleri (Kuyruk 36). 20: geçmiş (savaşçıda `backgroundId`, Magic Initiate büyüleri `spellNames`'te; Görev G1). 19: büyü alanları (`zone_created`, `zone_moved`, `zone_triggered`, `zone_ended` olayları; haritada `zones`; Görev B2).
- * 24: Hazırla (Ready; `readied`, `ready_released`, `ready_lapsed` olayları, `moved.reaction`, `attack_resolved.ready`, savaşçıda `readied`; kural sürümü 89).
+ * 24: Hazırla (Ready; `readied`, `ready_released`, `ready_lapsed` olayları, `moved.reaction`, `attack_resolved.ready`, savaşçıda `readied`; kural sürümü 90).
  * Eski sürümler oynatılmaz: "yüklenemedi".
  */
 export const SAVE_VERSION = 24;

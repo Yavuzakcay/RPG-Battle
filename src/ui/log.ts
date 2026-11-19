@@ -259,7 +259,7 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
       return L.aiRoleSet(n(event.targetId), event.role);
     case 'exhaustion_changed':
       return L.exhaustion(n(event.targetId), event.level);
-    // Hazırla (Ready, sürüm 89).
+    // Hazırla (Ready, sürüm 90).
     case 'readied': {
       const r = event.readied.response;
       const resp = r.kind === 'attack' ? L.readyResp.attack(r.option?.label ?? state.combatants[event.actorId]?.attacks[r.attackIndex ?? 0]?.name ?? '?')

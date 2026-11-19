@@ -1,5 +1,5 @@
 /**
- * Hazırla (Ready) paneli (kural sürümü 89; SRD 5.2.1 s.186–187): tetik (veriden, `data/hazirla.json`), isteğe bağlı
+ * Hazırla (Ready) paneli (kural sürümü 90; SRD 5.2.1 s.186–187): tetik (veriden, `data/hazirla.json`), isteğe bağlı
  * tetikleyen yaratık, yanıt (tek saldırı / hareket / eylem süreli büyü) ve onay. Altıgen gereken seçimler (tetik
  * altıgeni, hareket varışı) haritadan (`onPickHex`). Büyüde slotun hemen harcandığı ve konsantrasyon uyarısı açıkça
  * yazılır. Yalnız komut kurar; motor `ready.ts` doğrular. Savaş ekranı parçasında (tembel).
