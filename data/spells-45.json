@@ -611,6 +611,7 @@
     },
     "text": "30 ft, WIS save; başarısız düşman her tur uzaklaşır (tur sonu save)",
     "mechanics": {
+      "m83": {"area83": {"shape": "emanation", "sizeFt": 30, "origin": "self", "targets": "enemies"}},
       "kind": "save",
       "save": "wis",
       "conditions": [

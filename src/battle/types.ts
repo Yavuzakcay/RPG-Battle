@@ -381,8 +381,12 @@ export interface ActiveEffect {
   sensesPierce?: boolean;
   /** Kuyruk A4 (Holy Aura): yakın dövüşle isabet ettiren bu türdeki yaratık CON save ya da Blinded. */
   blindRetort?: { types: string[]; dc: number };
+  /** Mekanik matris B13 (sürüm 83+, Holy Aura): büyücüden dost yayılımı (yarıçap içindekiler `Combatant.allyAura` alır). */
+  allyAura?: { radiusFt: number; saveAdvAll?: true; attackedDis?: true; blindRetort?: { types: string[]; dc: number } };
   /** Kuyruk 19: tur başında save (Conjure Elemental tutsağı): başarısızsa hasar, başarılıysa biter. */
-  startSave?: { ability: Ability; dc: number; dice: string; type: string };
+  startSave?: { ability: Ability; dc: number; dice: string; type: string;
+    /** Mekanik matris K04 (sürüm 83): yakalandığı tur; o turun başında tekrar save yok ("At the start of each of its turns, the Restrained target repeats the save"). */
+    skip?: { round: number; turnIndex: number } };
   /** Kuyruk 19: Gift of the Protectors (kaynak warlock) ve Gaze of Two Minds (bağlı dost). */
   giftOf?: string;
   gazeAt?: string;
@@ -746,6 +750,11 @@ export interface Combatant {
   auraDeathDis?: true;
   /** Kuyruk K54: aura ölüm save avantajı (Dar Gün Aurası). */
   auraDeathAdv?: true;
+  /**
+   * Mekanik matris B13 (sürüm 83+; reducer sonu `syncAuras`): bu yaratığı kapsayan dost yayılımı (Holy Aura): kaynak
+   * büyücü, etki kimliği ve adı, save avantajı (ölüm save'i dahil), ona saldırı dezavantajı, yakın dövüş yansıması.
+   */
+  allyAura?: { by: string; srd: string; name: string; saveAdvAll?: true; attackedDis?: true; blindRetort?: { types: string[]; dc: number } };
   /** Kuyruk K54b: Mevzi İşareti altıgeninde kurtulma bonusu (reducer sonu `syncAuras`). */
   wardSave?: number;
   /** Kuyruk K54b: Omuz Ver: başarısız kurtulmaya bonus verebilecek bağlı dost (reducer sonu `syncAuras`). */
@@ -793,6 +802,8 @@ export interface Combatant {
   nonmagicalResist?: string[];
   /** Kuyruk 19 (11–20): `featuresK19` açık ve savaşçının zar yolu özelliği var (Peerless Skill); `syncAuras` yazar. */
   k19Traits?: boolean;
+  /** Mekanik matris (kural sürümü 83+): durum bilmeyen yollar (`saveMode`) için sürüm işareti; `syncAuras` yazar. */
+  srd83?: true;
   /** Kuyruk 19 (Epic Boon): Improve Fate sahibi (60 ft; dost için ve düşman için), `syncAuras` yazar. */
   fateBy?: string;
   fateFoe?: string;
@@ -1890,6 +1901,8 @@ export type BattleEvent =
       type: 'effect_tick'; targetId: string; effectId: string; name: string; damageRolls: number[]; appliedDamage: number;
       damageType: string; targetHpAfter: number; effects: DamageEffect[];
       save?: { ability: Ability; dc: number; d20: number[]; total: number; success: boolean; extra?: RolledExtra[] };
+      /** Mekanik matris B20 (sürüm 83+): alan tetiğinin hasarı (yüzey çözücüsü değdiği altıgende element üretir). */
+      zoneId?: string;
     }
   /** Komut (Command): sırası gelen yaratık turunu kaybetti (Grovel: önce yere düşer). */
   | { type: 'turn_lost'; actorId: string; label: string; command: CommandWord }
@@ -2052,6 +2065,8 @@ export type BattleEvent =
       aura?: { casterId: string; turn: string };
       /** Save zarının eklenti zarları (Bless, Bane; Görev R2; `total` dahil). */
       bonusDice?: RolledExtra[];
+      /** Mekanik matris B20 (sürüm 83+): alan tetiğinin save'i (yüzey çözücüsü değdiği altıgende element üretir). */
+      zoneId?: string;
     }
   | { type: 'healed'; actorId: string; targetId: string; label: string; amount: number; targetHpAfter: number; /** Kuyruk P11: iyileştirme zarları (ve paket değişikliği). */ rolls?: number[]; changed?: string }
   /** Kuyruk 19: savaşta HP zarı harcandı (Lifedrinker). */
@@ -2164,8 +2179,12 @@ export type BattleEvent =
   /** Konsantrasyon büyüsü taşındı: işaretin yeni hedefi veya gücün yeni altıgeni. */
   | { type: 'concentration_moved'; actorId: string; targetId?: string; pos?: Offset }
   | { type: 'spell_cast'; actorId: string; targetId: string | null; label: string; slotLevel: number | null; note: string;
+      /** Mekanik matris B03 (sürüm 83+): Counterspell'le durduruldu (yapım sonrası kancalar çalışmaz). */
+      countered?: true;
       /** Görev Y1: alan büyüsünün altıgenleri, hasar türü, zorluk sınıfı, zarı ve etkilenenler (yüzey tepkimeleri). */
       area?: { hexes: Offset[]; /** Kuyruk K73c: yere değmeyen havadaki alanın altıgenleri (yalnız görsel). */ airHexes?: Offset[]; damageType?: string; dc?: number; dice?: string; targetIds?: string[];
+        /** Mekanik matris B19 (sürüm 83+): iki hasar türlü büyünün parçaları (yüzey çözücüsü her türü ayrı işler). */
+        parts?: Array<{ damageType: string; dice: string }>;
         /** Kuyruk E2: yalnız görsel (efekt katmanı; reducer ve kurallar okumaz): alan şekli ve nişan altıgeni. */
         shape?: string; aim?: Offset } }
   /** Görev Y1: yüzey tepkimesi (yalnızca günlük; alan değişiklikleri `zone_*` olaylarında). */

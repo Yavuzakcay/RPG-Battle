@@ -6,7 +6,7 @@
 import type { Spell } from '../../data/types';
 import type { Combatant, Command } from '../../battle/types';
 import type { Offset } from '../../rules/hex';
-import type { SrdSpell } from './srd';
+import { zararVerir, type SrdSpell } from './srd';
 import { OZEL } from './ozel';
 import { A_ROW, AX, ally, enemy, hex } from './kurulum';
 import { SAVE_DIS_PROBE, SAVE_FAIL, SAVE_OK, type D20 } from './zar';
@@ -47,8 +47,9 @@ export function effectRows(sp: Spell, s: SrdSpell): Satir[] {
   const tPos = hex(A_ROW + tDist);
   const geo: Geo = { kind: 'single', t: tPos, u: hex(A_ROW + tDist, AX + 1), ff: null, z: null, aim: null, coverT: null, bandRows: null, radius: 0 };
   const targetId = taraf === 'dost' ? 'B' : taraf === 'dusman' ? 'T' : 'A';
+  // Kendinden yayılım (Holy Aura; SRD "Range: Self"): komut büyücüye, yarar dostta (yayılım kapsamı).
   const cmdBase: Partial<Extract<Command, { type: 'cast_spell' }>> = {
-    ...(sp.area && taraf === 'dusman' ? { targetHex: tPos, targetIds: ['T'] } : { targetId }),
+    ...(sp.area && taraf === 'dusman' ? { targetHex: tPos, targetIds: ['T'] } : { targetId: o.yayilim ? 'A' : targetId }),
     ...(sp.level > 0 ? { slotLevel: sp.level } : {}),
     ...(s.id === 'enlarge-reduce' ? { choice: 'Reduce' } : {}),
   };
@@ -57,7 +58,9 @@ export function effectRows(sp: Spell, s: SrdSpell): Satir[] {
   const kons = s.concentration ? sp.name : null;
   const saveMode: Mode = o.saveAdv || s.saveAdvFighting ? 'advantage' : 'normal';
   const rows: Satir[] = [];
-  const conds = s.id === 'dispel-evil-and-good' ? [] : s.conditions;
+  // Holy Aura: "when a Fiend or an Undead hits an affected creature with a melee attack roll, the attacker must succeed on a
+  // Constitution saving throw or have the Blinded condition" — Blinded saldırana; aurdaki dost Blinded beklenmez.
+  const conds = s.id === 'dispel-evil-and-good' || o.durumHedefteDegil ? [] : s.conditions;
   const instant = s.rounds === 0;
   const cls = (k: string) => classify(sp, s, k);
   // Hedefin durum/etki gözlemi.
@@ -85,7 +88,9 @@ export function effectRows(sp: Spell, s: SrdSpell): Satir[] {
     rows.push(runCtx(sp, s, geo, { ad: `normal (${taraf === 'dost' ? 'dosta' : 'kendine'})`, kategori: 'yapım', bPos, noT: false, p: {},
       bek: (g) => [alan('etki', true, !!g.olaylar.some((e) => (e.type === 'effect_added' || e.type === 'buff_added' || e.type === 'temp_hp' || e.type === 'hp_boosted') && e.targetId === id)
         // Konsantrasyon hedefindeki koruma (Shield of Faith: `ward`) ya da büyücünün yürüyen alanı.
-        || g.after?.combatants.A?.concentration?.targetId === id || (id === 'A' && g.olaylar.some((e) => e.type === 'zone_created'))),
+        || g.after?.combatants.A?.concentration?.targetId === id || (id === 'A' && g.olaylar.some((e) => e.type === 'zone_created'))
+        // Kendinden yayılım: dost yayılımın içinde yararlanıyor (B13).
+        || (!!o.yayilim && g.after?.combatants[id]?.allyAura?.by === 'A')),
         ...base(g, id, true), alan('slot', slot, g.slot.length ? g.slot : null), alan('kons', kons, g.kons)] }, cmdBase, mech, cls('yapım')));
   }
   // Yukarı slot: ek hedef.
@@ -100,9 +105,12 @@ export function effectRows(sp: Spell, s: SrdSpell): Satir[] {
       p: { saves: { T: [SAVE_FAIL], U: [SAVE_FAIL] } }, refuse: true, not: 'SRD: ek hedef yalnız yukarı slotta.', bek: () => [] }, cmdBase, mech, cls('yukarı slot')));
   }
   if (taraf === 'dusman' && s.save && geo.kind === 'single') {
-    rows.push(runCtx(sp, s, geo, { ad: 'büyücü Charmed (hedef büyüleyen)', kategori: 'durum', bPos, casterX: charmedBy('T'), p: { saves: { T: [SAVE_FAIL] } },
-      bek: (g) => [alan('kabul', 'karar', g.kabul ? 'kabul' : 'red')] }, cmdBase, mech,
-      () => ({ sonuc: 'karar bekliyor', not: 'SRD 5.2.1 Charmed: büyüleyen "damaging abilities or magical effects" ile hedeflenemez; zarar vermeyen büyünün yasak olup olmadığı yoruma açık.' })));
+    // K01 (kullanıcı kararı): SRD 5.2.1 Charmed "You can't attack the charmer or target the charmer with damaging abilities or
+    // magical effects." Yalnız zarar veren büyü yasak; zarar vermeyen büyü (Hold Person, Bane…) büyüleyene yapılabilir.
+    const harm = zararVerir(s);
+    rows.push(runCtx(sp, s, geo, { ad: 'büyücü Charmed (hedef büyüleyen)', kategori: 'durum', bPos, casterX: charmedBy('T'), p: { saves: { T: [SAVE_FAIL] } }, refuse: harm,
+      not: harm ? 'SRD 5.2.1 Charmed: büyüleyen zarar veren etkiyle hedeflenemez.' : 'K01: zarar vermeyen büyü büyüleyene yapılabilir (SRD 5.2.1 Charmed).',
+      bek: (g) => { const v = g.saveler.find((x) => x.hedef === 'T'); return harm ? [] : [alan('save', `${s.save}/18`, v ? `${v.yetenek}/${v.dc}` : 'yok')]; } }, cmdBase, mech, cls('durum')));
   }
   rows.push(...counterRows(sp, s, geo, cmdBase, mech, cls, [], undefined, bPos));
   if (s.concentration) rows.push(concSwapRow(sp, s, geo, cmdBase, mech, [], false, undefined, bPos));

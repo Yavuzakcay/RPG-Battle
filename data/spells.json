@@ -168,6 +168,7 @@
     "rangeFt": 60,
     "text": "DEX save, 1d8 radiant",
     "mechanics": {
+      "m83": {"ignoresCover": true},
       "kind": "save",
       "damage": "1d8",
       "damageType": "radiant",
@@ -2097,6 +2098,7 @@
     "concentration": true,
     "text": "bonus, yakın dövüş isabetinden sonra +2d6 radiant; konsantrasyon boyunca hedefe saldırılar avantajlı",
     "mechanics": {
+      "m83": {"smiteReveal": true},
       "kind": "smite",
       "damage": "2d6",
       "damageType": "radiant",
@@ -2904,6 +2906,7 @@
     "concentration": true,
     "text": "bir hasar türüne resistance",
     "mechanics": {
+      "m83": {"effect": {"targets": 1, "side": "ally", "rounds": 600, "resist": "chosen", "choices": ["acid", "cold", "fire", "lightning", "thunder"], "icon": "🛡"}},
       "kind": "effect",
       "effect": {
         "targets": 1,

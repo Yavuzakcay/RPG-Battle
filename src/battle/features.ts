@@ -26,6 +26,7 @@ import { knowsWhere } from './sight';
 import { featuresOn, shiftGrant } from './shift';
 import { gap } from './body';
 import { adjacent3D, k73bOn, separated } from './adjacency';
+import { matrisOn } from './matrisSurum';
 import { sightConditions } from './sight';
 import { attackDice, saveDice } from './effectDice';
 import { saveMode } from './durations';
@@ -715,10 +716,14 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   }
   const m = spell.mechanics;
   const env = getEnvironment(state.environmentId);
+  // Mekanik matris K03 (kullanıcı kararı, sürüm 83): Prone'un "saldıran 5 ft içinde" ölçüsü gücün yeni yerinden (SRD
+  // "move the force up to 20 feet and repeat the attack against a creature within 5 feet of it").
+  const sc = sightConditions(actor, target, state, true);
+  const forceAt = matrisOn(state) && sc.proneWithin5 !== undefined ? weaponHexNear(state, target, conc.pos) : undefined;
   const sources = [
     ...environmentSources(env, `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase()),
     ...attackSources({
-      ...sightConditions(actor, target, state, true), attackerSide: actor.side,
+      ...sc, ...(forceAt ? { proneWithin5: withinFiveFt(state, { ...actor, pos: forceAt, altitudeFt: target.altitudeFt } as Combatant, target, true) } : {}), attackerSide: actor.side,
       attackerHeight: heightOf(state, target), targetHeight: heightOf(state, target), ranged: false, spell: true,
       targetAsleep: target.asleep === true,
     }),

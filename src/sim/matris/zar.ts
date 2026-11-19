@@ -52,6 +52,11 @@ export interface Plan {
   saveDefault: D20;
   /** Tepki kararı: `null` kullanma; yoksa öneriyi (kuralsız: kullanma). */
   react?: (req: ReactionRequest) => ReactionAnswer;
+  /**
+   * Etiketsiz d20'yi save say (`kind` yok, `by` var): `saveEffect` save zarını `kind: 'save'` olmadan atar (görünüm bulgusu
+   * G02). Yalnız bu yoldan save atan büyülerin bağlamlarında açılır (`ozel.ts` `saveEtiketsiz`).
+   */
+  untaggedSave?: boolean;
 }
 
 /** Tepkiyi kullan: verilen yaratığın ilk seçeneği (seçimi varsa ilk seçim: en düşük slot). */
@@ -64,7 +69,7 @@ export const kullan = (reactorId: string) => (q: ReactionRequest): ReactionAnswe
 export interface Logged extends DiceRequest { values: number[] }
 
 export function plan(p: Partial<Plan> = {}): Plan {
-  return { attack: p.attack ?? D20_NORMAL, saves: p.saves ?? {}, saveDefault: p.saveDefault ?? { one: 10, two: [10, 10] }, ...(p.react ? { react: p.react } : {}) };
+  return { attack: p.attack ?? D20_NORMAL, saves: p.saves ?? {}, saveDefault: p.saveDefault ?? { one: 10, two: [10, 10] }, ...(p.react ? { react: p.react } : {}), ...(p.untaggedSave ? { untaggedSave: true } : {}) };
 }
 
 /** Seçim istemlerinde (tetik `choice`) motorun önerisi; tepkilerde plan kararı (yoksa kullanma). */
@@ -78,7 +83,7 @@ export function makeRng(p: Plan, log: Logged[]): Rng {
   const f = (() => 0.5) as Rng & { dice?: (r: DiceRequest) => number[]; react?: (r: ReactionRequest) => ReactionAnswer };
   f.dice = (req: DiceRequest) => {
     let values: number[];
-    if (req.sides === 20 && (req.kind === 'attack' || req.kind === 'save')) {
+    if (req.sides === 20 && (req.kind === 'attack' || req.kind === 'save' || (p.untaggedSave && req.kind === undefined && !!req.by))) {
       let d: D20;
       if (req.kind === 'attack') d = p.attack;
       else {

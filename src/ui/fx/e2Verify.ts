@@ -102,6 +102,9 @@ const ATTEMPTS: Array<(s: BattleState) => Partial<Command>> = [
   () => ({}),
   () => ({ targetHex: o(9, 4) }),
   () => ({ targetHexes: [POS.B!, o(12, 5)] }),
+  // Büyücüden uzak nokta (kural sürümü 83, B05: bulut belirince içindeki herkes save atar; büyücü 20 ft'lik bulutun içinde
+  // kalırsa kendi hasarıyla konsantrasyonu bozulup bulut biter: Incendiary Cloud).
+  () => ({ targetHex: o(12, 5) }),
 ];
 
 export interface Verdict { id: string; ok: boolean; how: string; expected: string[]; got?: string[] }

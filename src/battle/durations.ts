@@ -133,7 +133,7 @@ export function dodgeActive(conds: string[]): boolean {
 }
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
-export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean;
+export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean; srd83?: true; allyAura?: { saveAdvAll?: true };
   effects?: Array<{ saveDisVs?: Array<{ damage?: string; condition?: string }>; saveDisVsGenis?: true; saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
 
 /**
@@ -155,11 +155,15 @@ export function saveMode(base: RollMode, who: string[] | SaveSubject, ability: A
     // Kuyruk 19 (SRD canavar yetenekleri): Bloodied Frenzy (Bloodied'da save avantajı), Aura of Authority.
     || (!!s.effects?.some((e) => e.bloodiedAdv?.save) && s.hp !== undefined && s.hp <= (s.maxHp ?? 0) / 2)
     || !!s.authorityAdv
+    // Mekanik matris B13 (sürüm 83+, `syncAuras`): Holy Aura "creatures of your choice have Advantage on all saving throws".
+    || !!s.allyAura?.saveAdvAll
     // Kuyruk P10: ek paket `isaret.kurtulmaAvantaji` (kaynak işaretliyse, işaretleyenin kurtulması avantajlı).
     || (!!(s as { id?: string }).id && !!source?.effects?.some((e) => e.pkSaveAdvFor === (s as { id?: string }).id));
   // Görev B1: süren etkinin save dezavantajı (Reduce, Ray of Enfeeblement: STR).
   // Kuyruk AS1b (sürüm 71+ alt soy etkisi): hasar türü / durum bağlamlı kurtarma dezavantajı (`saveDisVs`).
   const dis = !!s.auraSaveDis || saveDisVs(s.effects, ctx) || !!s.effects?.some((e) => e.saveDis?.includes(ability) || e.saveDisAll || (e.firstRoll?.on.includes('save') && e.firstRoll.mode === 'disadvantage'))
+    // Mekanik matris B01 (sürüm 83+, `srd83` işareti): SRD 5.2.1 Restrained "You have Disadvantage on Dexterity saving throws."
+    || (ability === 'dex' && !!s.srd83 && s.conditions.includes('Restrained'))
     // Görev P6: ek paket `buyuDegisimi.kurtulmaDezavantaji` (kaynağın büyüleri ve alan etkileri; koşulsuz pasif).
     || !!source?.paket?.ozellikler.some((f) => f.ilkeller.some((p) => p.tur === 'buyuDegisimi' && p.kurtulmaDezavantaji === true && !p.kosul));
   // Kuyruk K54c: Yıldız Falı (Uğurlu): ilk kurtulma zarı avantajlı.

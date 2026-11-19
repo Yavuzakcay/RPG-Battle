@@ -1,6 +1,10 @@
 {
  "_aciklama": "Kuyruk KQ6-9: ortam GENİŞLETME (daraltma yok). Her harita için en çok 4 'donör' harita; donör ortamındaki her canavar hedef haritanın ortam listesine de eklenir. `npx vite-node scripts/ortam-genislet.ts` data/monster-ortamlari.json'a uygular (idempotent; data/monsters.json'a dokunmaz). Tablo harita/belgeler/ortam-genisletme.md.",
  "hedefEnAz": 25,
+ "crTavan": {
+  "_aciklama": "Hedef haritaya donörden en çok bu CR'deki canavarlar eklenir. Taverna düşük seviye karşılaşma haritası (Giriş/Orta/Güçlü; GM kurulum testi `src/screens/setup-ui.test.tsx`): ilk uygulamada kasaba-han donöründen gelen CR 9+ yedi canavar (Clay Golem, Deva, Archmage, Rakshasa, Vampire, Planetar, Solar) çıkarıldı.",
+  "taverna": 8
+ },
  "istisna": [],
  "donorler": {
   "hapishane-dis-halka": [

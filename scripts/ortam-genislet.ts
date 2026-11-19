@@ -9,7 +9,9 @@ import { maps } from '../src/map/maps';
 
 interface Env { id: string; ad: string; cr: string; ortam: string[] }
 const confPath = 'data/ortam-genisletme.json';
-const conf = JSON.parse(readFileSync(confPath, 'utf8')) as { donorler: Record<string, string[]>; hedefEnAz: number; uygulandi?: boolean };
+const conf = JSON.parse(readFileSync(confPath, 'utf8')) as { donorler: Record<string, string[]>; hedefEnAz: number; uygulandi?: boolean; crTavan?: Record<string, number | string> };
+/** "1/4" → 0.25. */
+const crNum = (cr: string): number => { const [a, b] = cr.split('/').map(Number); return b ? (a as number) / b : (a as number); };
 const envs = JSON.parse(readFileSync('data/monster-ortamlari.json', 'utf8')) as Env[];
 const argv = process.argv.slice(2);
 const tableOnly = argv.includes('--tablo');
@@ -22,7 +24,9 @@ if (!tableOnly) {
     if (!maps.some((m) => m.id === mapId)) throw new Error(`bilinmeyen harita ${mapId}`);
     if (donors.length > 4) throw new Error(`${mapId}: en çok 4 donör`);
     const src = new Set(base.filter((e) => donors.some((d) => e.ortam.includes(d))).map((e) => e.id));
-    for (const e of envs) if (src.has(e.id) && !e.ortam.includes(mapId)) e.ortam.push(mapId);
+    // CR tavanı (`crTavan`; Taverna: boss kademesi yok).
+    const cap = typeof conf.crTavan?.[mapId] === 'number' ? conf.crTavan[mapId] as number : Infinity;
+    for (const e of envs) if (src.has(e.id) && !e.ortam.includes(mapId) && crNum(e.cr) <= cap) e.ortam.push(mapId);
   }
   writeFileSync('data/monster-ortamlari.json', JSON.stringify(envs, null, 1) + '\n');
   writeFileSync(confPath, JSON.stringify({ ...conf, uygulandi: true }, null, 1) + '\n');
@@ -34,7 +38,7 @@ const rows = maps.map((m) => ({ m, a: n(old, m.id), b: n(envs, m.id) })).sort((x
 const md = [
   '# Ortam genişletme (Kuyruk KQ6-9)',
   '',
-  'Yalnız ortam eşlemesi (`data/monster-ortamlari.json`) genişledi; `data/monsters.json` değişmedi. Donör kuralları `data/ortam-genisletme.json` (harita başına en çok 4 donör harita; donör ortamındaki her canavar hedef haritaya da eklenir). "Tüm canavarlar" anahtarı aynen duruyor.',
+  'Yalnız ortam eşlemesi (`data/monster-ortamlari.json`) genişledi; `data/monsters.json` değişmedi. Donör kuralları `data/ortam-genisletme.json` (harita başına en çok 4 donör harita; donör ortamındaki her canavar hedef haritaya da eklenir; `crTavan` haritasında tavanın üstündeki CR eklenmez: Taverna ≤ 8). "Tüm canavarlar" anahtarı aynen duruyor.',
   '',
   '| Kimlik | Ad | Bölge | Gizli | Önce | Sonra | Eklenen donörler |',
   '|---|---|---|---|---:|---:|---|',

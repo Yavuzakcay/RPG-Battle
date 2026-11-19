@@ -6,11 +6,11 @@
 import { spells } from '../../data';
 import type { Spell } from '../../data/types';
 import { mechanicsAt } from '../../battle/spellVersion';
-import { CURRENT_RULES } from '../../battle/ruleVersion';
+import { defaultRuleVersion } from '../../battle/create';
 import { P1 } from '../../battle/fixtures';
 import type { BattleState, Combatant, Command } from '../../battle/types';
-import type { Offset } from '../../rules/hex';
-import { SRD_SPELLS, type SrdSpell } from './srd';
+import { distance as hexDistance, type Offset } from '../../rules/hex';
+import { SRD_SPELLS, zararVerir, type SrdSpell } from './srd';
 import { OZEL, type Yapim } from './ozel';
 import {
   A_ROW, AX, CASTER_DC, CASTER_MOD, ROWS, TARGET_AC, ally, band, caster, charmedBy, concentrating, counterCaster, enemy, flatTiles,
@@ -19,7 +19,8 @@ import {
 import { D20_CRIT, D20_MISS, D20_NORMAL, SAVE_DIS_PROBE, SAVE_FAIL, SAVE_HALF_COVER, SAVE_OK, SAVE_TQ_COVER, exprTotal, kullan, plan, type D20, type Plan } from './zar';
 import { adjust, alan, ctxOf, fmt, kanon, kanonExpr, mode as modeOf, run, type Alan, type Gozlem, type Mode, type Satir, type Sonuc } from './ortak';
 
-const ST = { kuralSurumu: CURRENT_RULES };
+/** Ölçülen kural sürümü (`--kural-surumu N`; yoksa güncel): komut biçimi o sürümün büyü verisinden. */
+const ST = { get kuralSurumu(): number { return defaultRuleVersion(); } };
 const CLASS_TR: Record<string, string> = { Bard: 'Bard', Cleric: 'Cleric', Druid: 'Druid', Paladin: 'Paladin', Ranger: 'Ranger', Sorcerer: 'Sorcerer', Warlock: 'Warlock', Wizard: 'Wizard' };
 
 /** Kahinin yerleşimi: hedef (T), ikinci düşman (U), dost ateşi dostu, alan dışı düşman (Z), nişan. */
@@ -155,7 +156,7 @@ export function runCtx(sp: Spell, s: SrdSpell, geo: Geo, c: Ctx, cmdBase: Partia
   const state0 = scene(parts0, c.tiles ?? flatTiles());
   const state = c.prep ? c.prep(state0) : state0;
   const cmd = c.main ?? ({ type: 'cast_spell', actorId: 'A', spellName: sp.name, ...cmdBase, ...c.cmd } as Command);
-  const g = run(state, [cmd, ...(c.post ?? [])], c.main ? ctxOf(state, (c.main as { actorId: string }).actorId) : P1, plan(c.p));
+  const g = run(state, [cmd, ...(c.post ?? [])], c.main ? ctxOf(state, (c.main as { actorId: string }).actorId) : P1, plan({ ...c.p, ...(OZEL[s.id]?.saveEtiketsiz ? { untaggedSave: true } : {}) }));
   const base: Omit<Satir, 'beklenen' | 'gercek' | 'sonuc' | 'not'> = {
     tur: 'büyü', ad: sp.name, seviye: String(sp.level), siniflar: s.raw.classes.map((x) => CLASS_TR[x] ?? x).join(', '), mekanik: mech, baglam: c.ad, kategori: c.kategori,
   };
@@ -179,7 +180,9 @@ export function runCtx(sp: Spell, s: SrdSpell, geo: Geo, c: Ctx, cmdBase: Partia
 
 const T0 = (g: Gozlem) => g.saldirilar.filter((x) => x.hedef === 'T');
 const S0 = (g: Gozlem, id = 'T') => g.saveler.find((x) => x.hedef === id);
-const etkilenen = (g: Gozlem) => [...new Set([...g.saveler.map((x) => x.hedef), ...g.saldirilar.map((x) => x.hedef)])].sort();
+// İyileşen de etkilenmiştir (Conjure Celestial: "For each creature you can see in the Cylinder, choose which of these
+// lights shines on it: Healing Light … Searing Light"; ölçüm düzeltmesi, eskiden yalnız save ve saldırı sayılıyordu).
+const etkilenen = (g: Gozlem) => [...new Set([...g.saveler.map((x) => x.hedef), ...g.saldirilar.map((x) => x.hedef), ...Object.keys(g.iyilesme)])].sort();
 const dmgZar = (g: Gozlem) => g.zarlar.filter((z) => z.kind === 'damage' || z.kind === undefined);
 
 /** Saldırı zarının beklenen sonucu (kip, doğal zar, toplam, AC, isabet, kritik). */
@@ -232,6 +235,7 @@ export function damageRows(sp: Spell, s0: SrdSpell, ov?: Yapim): Satir[] {
     { col: o.col - 1, row: o.row + (o.col % 2 ? 1 : -1) }, { col: o.col + 1, row: o.row + (o.col % 2 ? 1 : -1) }];
   const cmdBase: Partial<Extract<Command, { type: 'cast_spell' }>> = {
     ...(geo.kind === 'single' ? { targetId: 'T' } : geo.aim ? { targetHex: geo.aim } : {}),
+    ...(OZEL[s.id]?.elYeri && geo.kind === 'single' ? { targetHex: { col: geo.t.col, row: geo.t.row - 1 } } : {}),
     ...(m.freeShape && geo.aim ? { targetHexes: ring(geo.aim) } : {}),
     ...(sp.level > 0 ? { slotLevel: sp.level } : {}),
     ...(choice ? { choice } : {}),
@@ -362,8 +366,12 @@ export function damageRows(sp: Spell, s0: SrdSpell, ov?: Yapim): Satir[] {
     if (geo.kind === 'single') {
       out.push(runCtx(sp, s, geo, { ad: 'hedef Invisible', kategori: 'durum', targetX: { conditions: ['Invisible'] }, p: { saves: { T: [SAVE_DIS_PROBE] } }, refuse: s.needsSight,
         not: s.needsSight ? 'SRD: hedef "görebildiğin" yaratık olmalı.' : undefined, bek: (g) => saveFields(g, expSave(sm, SAVE_DIS_PROBE, 0)) }, cmdBase, mech, cls('durum')));
-      out.push(runCtx(sp, s, geo, { ad: 'büyücü Charmed (hedef büyüleyen)', kategori: 'durum', casterX: charmedBy('T'), p: { saves: { T: [SAVE_FAIL] } }, refuse: true,
-        not: 'SRD 5.2.1 Charmed: büyüleyen zarar veren büyüyle hedeflenemez.', bek: () => [] }, cmdBase, mech, cls('durum')));
+      // K01 (kullanıcı kararı): yalnız zarar veren büyü büyüleyene yapılamaz (SRD 5.2.1 Charmed "target the charmer with damaging
+      // abilities or magical effects"); zarar vermeyen save büyüsü (Hold Person, Blindness/Deafness, Eyebite…) yapılabilir.
+      const harm = zararVerir(s);
+      out.push(runCtx(sp, s, geo, { ad: 'büyücü Charmed (hedef büyüleyen)', kategori: 'durum', casterX: charmedBy('T'), p: { saves: { T: [SAVE_FAIL] } }, refuse: harm,
+        not: harm ? 'SRD 5.2.1 Charmed: büyüleyen zarar veren büyüyle hedeflenemez.' : 'K01: zarar vermeyen büyü büyüleyene yapılabilir (SRD 5.2.1 Charmed).',
+        bek: (g) => (harm ? [] : saveFields(g, expSave(sm, SAVE_FAIL, 0))) }, cmdBase, mech, cls('durum')));
     }
     out.push(runCtx(sp, s, geo, { ad: 'büyücü Frightened (save etkilenmez)', kategori: 'durum', casterX: frightenedBy('F'), extra: [enemy('F', hex(A_ROW, AX + 8))], p: { saves: { T: [SAVE_DIS_PROBE] } },
       bek: (g) => saveFields(g, expSave(sm, SAVE_DIS_PROBE, 0)) }, cmdBase, mech, cls('durum')));
@@ -389,7 +397,10 @@ export function damageRows(sp: Spell, s0: SrdSpell, ov?: Yapim): Satir[] {
       const uPos = !geo.u ? null : pushed && geo.kind === 'self' && sp.area?.shape === 'line' ? hex(A_ROW + Math.max(2, geo.radius - 1)) : pushed ? { col: AX + 1, row: geo.t.row + 1 } : geo.u;
       out.push(runCtx(sp, s, geo, { ad: 'alan içi hedefler (2 içeride, 1 dışarıda)', kategori: 'alan',
         extra: [...(uPos ? [enemy('U', uPos, s.targetType ? { creatureType: s.targetType.toLowerCase() } : {})] : []), ...(geo.z ? [enemy('Z', geo.z)] : [])], p: { saves: { T: [SAVE_FAIL], U: [SAVE_FAIL], Z: [SAVE_FAIL] } },
-        bek: (g) => [alan('etkilenen', ['T', ...(geo.u ? ['U'] : [])].sort(), etkilenen(g)),
+        // Alan haritanın tamamını kaplıyorsa (Storm of Vengeance: "spreading to a radius of 300 feet … Each creature under
+        // the cloud when it appears"), büyücü A ve dost B de içeride (kahin düzeltmesi; harita 31×45 altıgen).
+        bek: (g) => [alan('etkilenen', ['T', ...(geo.u ? ['U'] : []), ...(sp.area && sp.area.origin === 'point' && sp.area.shape === 'sphere' && sp.area.targets === 'all' && sp.area.sizeFt / 5 >= ROWS && geo.aim
+          ? (['A', 'B'] as const).filter((id) => hexDistance(id === 'A' ? hex(A_ROW) : hex(A_ROW, AX - 6), geo.aim as Offset) <= (sp.area?.sizeFt ?? 0) / 5) : [])].sort(), etkilenen(g)),
           ...(ps.length && geo.u ? [alan('U hasarı', dmgFor({ save: 'fail' }), g.hp.U ?? 0)] : [])] }, cmdBase, mech, cls('alan')));
       if (geo.ff) {
         out.push(runCtx(sp, s, geo, { ad: `dost ateşi (dost alanda; SRD: ${s.chooseTargets ? 'seçilen yaratıklar' : 'alandaki herkes'})`, kategori: 'alan',

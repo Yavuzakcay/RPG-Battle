@@ -275,6 +275,8 @@ export function special69Rows(sp: Spell, s: SrdSpell): Satir[] {
     const acid = exprTotal('12d6');
     rows.push(runCtx(sp, s, geo, { ad: 'ışın d8=5 (Blue, 12d6 cold; save başarısız)', kategori: 'yapım', tPos: hex(A_ROW + 1), p: { saves: { T: [SAVE_FAIL] } },
       bek: (g) => [alan('hasar', acid, g.hp.T ?? 0)] }, { targetHex: hex(A_ROW + 1), slotLevel: 7 }, mech, cls('yapım')));
+    // Ölçüm düzeltmesi: ışın save'i `saveEffect` (maprules.ts) ile `kind: 'save'` etiketi olmadan atılır; kanca bu büyüde
+    // etiketsiz d20'yi save sayar (`ozel.ts` `saveEtiketsiz`). Beklenen değişmedi (yarı).
     rows.push(runCtx(sp, s, geo, { ad: 'ışın d8=5 (Blue; save başarılı, SRD: yarı)', kategori: 'save', tPos: hex(A_ROW + 1), p: { saves: { T: [SAVE_OK] } },
       bek: (g) => [alan('hasar', Math.floor(acid / 2), g.hp.T ?? 0)] }, { targetHex: hex(A_ROW + 1), slotLevel: 7 }, mech, cls('save')));
   } else if (s.id === 'power-word-heal') {

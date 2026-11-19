@@ -40,6 +40,10 @@ export interface Ozel {
   buyucuEk?: Record<string, unknown>;
   /** Save yapılandırılmış olayla kaydedilmez (Telekinesis: günlük notu); yalnız durum karşılaştırılır. */
   saveGizli?: boolean;
+  /** Save `saveEffect` ile (`map_effect.roll`, d20 `kind` etiketsiz) atılır: kanca etiketsiz d20'yi save sayar (G02). */
+  saveEtiketsiz?: boolean;
+  /** Çağrılan el/silah hedefin bitişiğinde belirir (komutta `targetHex`: hedefin büyücü tarafındaki komşusu). */
+  elYeri?: boolean;
   /** Komutta seçim (alan/çağrı büyüleri: element). */
   secim?: string;
   /** Siper bağlamı uygulanmaz (yer etkisi: Earthquake). */
@@ -57,6 +61,13 @@ export interface Ozel {
   not?: string;
   /** Hedef tarafı (etki büyüleri; SRD: istekli/dost ya da düşman). */
   taraf?: 'dost' | 'dusman' | 'kendi';
+  /**
+   * Kendinden yayılım (Range: Self, Emanation; "creatures of your choice … While in the aura"): komut hedefsiz (büyücü),
+   * dostun yararı yayılım kapsamından ölçülür (`allyAura`, B13).
+   */
+  yayilim?: boolean;
+  /** SRD metnindeki durum hedefe değil başka yaratığa konur (Holy Aura: Blinded saldıran Fiend/Undead'e). */
+  durumHedefteDegil?: boolean;
   /** Save savaşta avantajlı ("does so with Advantage if you or your allies are fighting it"). */
   saveAdv?: boolean;
 }
@@ -74,7 +85,8 @@ export const OZEL: Record<string, Ozel> = {
   'wall-of-thorns': { yapim: { tur: 'save', save: 'dex', dmg: [p('7d8', 'piercing')], half: true }, tetik: { olay: 'end', save: 'dex', dmg: [p('7d8', 'slashing')], half: true } },
   'wind-wall': { yapim: { tur: 'save', save: 'str', dmg: [p('4d8', 'bludgeoning')], half: true } },
   'blade-barrier': { yapim: { tur: 'save', save: 'dex', dmg: [p('6d10', 'force')], half: true }, tetik: { olay: 'end', save: 'dex', dmg: [p('6d10', 'force')], half: true } },
-  'wall-of-ice': { yapim: { tur: 'save', save: 'dex', dmg: [p('10d6', 'cold')], half: true }, not: 'SRD: duvarın kestiği yaratık bir yana itilir ve save atar.' },
+  'wall-of-ice': { yapim: { tur: 'save', save: 'dex', dmg: [p('10d6', 'cold')], half: true }, saveEtiketsiz: true, not: 'SRD: duvarın kestiği yaratık bir yana itilir ve save atar.' },
+  'prismatic-spray': { saveEtiketsiz: true },
   'storm-of-vengeance': { yapim: { tur: 'save', save: 'con', dmg: [p('2d6', 'thunder')], conds: ['Deafened'] } },
   earthquake: { siperYok: true, yapim: { tur: 'save', save: 'dex', conds: ['Prone'] }, not: 'SRD: başarısız save Prone ve konsantrasyon bozulur (hasar yok).' },
   'black-tentacles': { yapim: { tur: 'save', save: 'str', dmg: [p('3d6', 'bludgeoning')], conds: ['Restrained'] }, tetik: { olay: 'end', save: 'str', dmg: [p('3d6', 'bludgeoning')], conds: ['Restrained'] } },
@@ -100,14 +112,19 @@ export const OZEL: Record<string, Ozel> = {
   'conjure-animals': { bitisik: true, yapim: { tur: 'yok' }, not: 'SRD: sürü yaklaşınca/girince/tur sonunda DEX save 3d10 Slashing (büyücü seçer).' },
   'conjure-elemental': { bitisik: true, secim: 'fire', yapim: { tur: 'yok' }, tetik: { olay: 'start', save: 'dex', dmg: [p('8d8', 'fire')], conds: ['Restrained'] },
     not: 'SRD: tutsak sonraki turlarının başında save yineler (4d8); yakalandığı turda değil.' },
-  'conjure-woodland-beings': { karar: 'SRD: "Emanation bir yaratığın alanına girdiğinde" — yapımda içerideki yaratıkların save atıp atmadığı yoruma açık.',
+  // K02 (kullanıcı kararı: save zamanı metne göre): "Whenever the Emanation enters the space of a creature you can see and
+  // whenever a creature you can see enters the Emanation or ends its turn there" — yapım cümlesi yok, yapımda save yok.
+  'conjure-woodland-beings': { yapim: { tur: 'yok' }, not: 'K02: yapımda save yok; giriş, yayılımın girişi ve tur sonu.',
     tetik: { olay: 'end', save: 'wis', dmg: [p('5d8', 'force')], half: true } },
-  'spirit-guardians': { karar: 'SRD 5.2.1: "whenever the Emanation enters a creature\'s space" — yapımda içerideki yaratığın save atıp atmadığı yoruma açık (motor: atar).',
+  // K02: "whenever the Emanation enters a creature's space and whenever a creature enters the Emanation or ends its turn there".
+  'spirit-guardians': { yapim: { tur: 'yok' }, not: 'K02: yapımda save yok; giriş, yayılımın girişi ve tur sonu.',
     tetik: { olay: 'end', save: 'wis', dmg: [p('3d8', 'radiant')], half: true } },
   // --- Yapımda saldırı (çağrı/güç) ---
   'spiritual-weapon': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('1d8', 'force')], addMod: true } },
   'arcane-sword': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('4d12', 'force')], addMod: true } },
-  'arcane-hand': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('5d8', 'force')] }, not: 'SRD: yapımda el taşınıp bir etki (Clenched Fist: 5d8 Force) uygulanabilir.' },
+  // Komut: el hedefin bitişiğinde (büyücü tarafı) belirir ve Clenched Fist seçilir (arayüz B10'dan beri sorar; SRD "When you
+  // cast the spell … you can move the hand up to 60 feet and then cause one of the following effects").
+  'arcane-hand': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('5d8', 'force')], choice: 'fist' }, elYeri: true, not: 'SRD: yapımda el taşınıp bir etki (Clenched Fist: 5d8 Force) uygulanabilir.' },
   'conjure-fey': { yapim: { tur: 'attack', attack: 'melee', dmg: [p('3d12', 'psychic')], addMod: true, conds: ['Frightened'] } },
   // --- Sonraki Magic eylemiyle saldıran ---
   'produce-flame': { yapim: { tur: 'yok' }, not: 'SRD: alev elde belirir; fırlatmak ayrı Magic eylemi (yapım Bonus Action).' },
@@ -140,5 +157,5 @@ export const OZEL: Record<string, Ozel> = {
   haste: { taraf: 'dost' }, fly: { taraf: 'dost' }, invisibility: { taraf: 'dost' }, 'greater-invisibility': { taraf: 'dost' },
   'enlarge-reduce': { taraf: 'dusman', not: 'Reduce düşmana (CON save); Enlarge istekli dosta.' },
   levitate: { taraf: 'dusman' }, polymorph: { taraf: 'dusman' }, 'resilient-sphere': { taraf: 'dusman' },
-  'gaseous-form': { taraf: 'dost' }, sanctuary: { taraf: 'dost' }, 'beacon-of-hope': { taraf: 'dost' }, 'holy-aura': { taraf: 'dost' },
+  'gaseous-form': { taraf: 'dost' }, sanctuary: { taraf: 'dost' }, 'beacon-of-hope': { taraf: 'dost' }, 'holy-aura': { taraf: 'dost', yayilim: true, durumHedefteDegil: true },
 };

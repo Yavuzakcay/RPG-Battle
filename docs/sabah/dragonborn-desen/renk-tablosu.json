@@ -1,0 +1,317 @@
+{
+ "not": "scripts/dragonborn-desen-renk.py: mavi referans ΔL* (açık, koyu) ve kroma oranları (22.8, 18.4, 0.88, 1.03)",
+ "soylar": {
+  "mavi": {
+   "acik": "#6698B8",
+   "orta": "#315C83",
+   "koyu": "#112F56",
+   "not": "kullanıcı değeri (sabit)",
+   "Lab": {
+    "acik": [
+     60.6,
+     23.3,
+     249.7
+    ],
+    "orta": [
+     37.7,
+     26.4,
+     265.3
+    ],
+    "koyu": [
+     19.3,
+     27.2,
+     279.4
+    ]
+   },
+   "dL": [
+    22.8,
+    18.4
+   ],
+   "soy": "blue"
+  },
+  "kirmizi": {
+   "acik": "#D4412B",
+   "orta": "#A91101",
+   "koyu": "#5A0B02",
+   "not": "kullanıcı değeri (sabit)",
+   "Lab": {
+    "acik": [
+     49.4,
+     72.3,
+     38.8
+    ],
+    "orta": [
+     35.7,
+     75.0,
+     41.0
+    ],
+    "koyu": [
+     17.5,
+     43.0,
+     37.2
+    ]
+   },
+   "dL": [
+    13.8,
+    18.1
+   ],
+   "soy": "red"
+  },
+  "siyah": {
+   "acik": "#70707B",
+   "orta": "#3A3A44",
+   "koyu": "#13131D",
+   "baslangic": {
+    "acik": "#5C5C68",
+    "koyu": "#1E1E25"
+   },
+   "not": "",
+   "Lab": {
+    "acik": [
+     47.6,
+     6.5,
+     291.1
+    ],
+    "orta": [
+     24.8,
+     6.6,
+     291.6
+    ],
+    "koyu": [
+     6.3,
+     7.3,
+     291.2
+    ]
+   },
+   "dL": [
+    22.8,
+    18.5
+   ],
+   "soy": "black"
+  },
+  "pirinc": {
+   "acik": "#EAC776",
+   "orta": "#A88A3C",
+   "koyu": "#755C06",
+   "baslangic": {
+    "acik": "#D0B25C",
+    "koyu": "#5E4A1C"
+   },
+   "not": "",
+   "Lab": {
+    "acik": [
+     81.6,
+     44.9,
+     87.1
+    ],
+    "orta": [
+     58.8,
+     45.0,
+     87.1
+    ],
+    "koyu": [
+     40.3,
+     46.3,
+     87.1
+    ]
+   },
+   "dL": [
+    22.8,
+    18.5
+   ],
+   "soy": "brass"
+  },
+  "bronz": {
+   "acik": "#CD9462",
+   "orta": "#8C5A2B",
+   "koyu": "#593001",
+   "baslangic": {
+    "acik": "#B8814A",
+    "koyu": "#4A2D12"
+   },
+   "not": "",
+   "Lab": {
+    "acik": [
+     65.8,
+     38.2,
+     65.6
+    ],
+    "orta": [
+     42.9,
+     38.3,
+     65.4
+    ],
+    "koyu": [
+     24.4,
+     37.2,
+     65.8
+    ]
+   },
+   "dL": [
+    22.9,
+    18.4
+   ],
+   "soy": "bronze"
+  },
+  "bakir": {
+   "acik": "#E6885A",
+   "orta": "#A24E24",
+   "koyu": "#692500",
+   "baslangic": {
+    "acik": "#CC7440",
+    "koyu": "#5A2810"
+   },
+   "not": "",
+   "Lab": {
+    "acik": [
+     65.9,
+     50.9,
+     51.4
+    ],
+    "orta": [
+     43.1,
+     50.9,
+     51.3
+    ],
+    "koyu": [
+     24.7,
+     45.8,
+     51.0
+    ]
+   },
+   "dL": [
+    22.7,
+    18.4
+   ],
+   "soy": "copper"
+  },
+  "altin": {
+   "acik": "#FFD268",
+   "orta": "#C9A030",
+   "koyu": "#927100",
+   "baslangic": {
+    "acik": "#E8C85A",
+    "koyu": "#7A5E14"
+   },
+   "not": "açık L* 91 → 86 (kroma korunsun diye)",
+   "Lab": {
+    "acik": [
+     86.2,
+     57.6,
+     85.9
+    ],
+    "orta": [
+     67.9,
+     60.5,
+     85.9
+    ],
+    "koyu": [
+     49.4,
+     55.9,
+     85.9
+    ]
+   },
+   "dL": [
+    18.3,
+    18.5
+   ],
+   "soy": "gold"
+  },
+  "yesil": {
+   "acik": "#6DB772",
+   "orta": "#2F7A3A",
+   "koyu": "#014B17",
+   "baslangic": {
+    "acik": "#58A862",
+    "koyu": "#17421E"
+   },
+   "not": "",
+   "Lab": {
+    "acik": [
+     68.3,
+     46.8,
+     143.2
+    ],
+    "orta": [
+     45.4,
+     47.0,
+     143.2
+    ],
+    "koyu": [
+     27.0,
+     41.3,
+     143.4
+    ]
+   },
+   "dL": [
+    22.9,
+    18.4
+   ],
+   "soy": "green"
+  },
+  "gumus": {
+   "acik": "#CCD8E5",
+   "orta": "#8E9AA6",
+   "koyu": "#5F6B77",
+   "baslangic": {
+    "acik": "#C0CAD4",
+    "koyu": "#4E5964"
+   },
+   "not": "",
+   "Lab": {
+    "acik": [
+     85.8,
+     7.9,
+     259.1
+    ],
+    "orta": [
+     63.0,
+     7.9,
+     257.4
+    ],
+    "koyu": [
+     44.6,
+     8.4,
+     258.2
+    ]
+   },
+   "dL": [
+    22.8,
+    18.4
+   ],
+   "soy": "silver"
+  },
+  "beyaz": {
+   "acik": "#EFF6FF",
+   "orta": "#C8CFD9",
+   "koyu": "#969DA7",
+   "baslangic": {
+    "acik": "#F0F4F8",
+    "koyu": "#7C8696"
+   },
+   "not": "açık L* 97 → 96 (kroma korunsun diye); açık L* 106 → 97 (tavan; aralık daraldı)",
+   "Lab": {
+    "acik": [
+     96.6,
+     5.2,
+     262.8
+    ],
+    "orta": [
+     82.9,
+     5.8,
+     265.4
+    ],
+    "koyu": [
+     64.5,
+     6.1,
+     265.7
+    ]
+   },
+   "dL": [
+    13.7,
+    18.4
+   ],
+   "soy": "white"
+  }
+ }
+}

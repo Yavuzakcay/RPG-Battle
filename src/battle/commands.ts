@@ -72,7 +72,7 @@ import { effectTurnEndEvents, effectTurnStartEvents } from './effects';
 import { soyTurnStartEvents } from './soyEtki';
 import { celestialTurnEndEvents, celestialTurnStartEvents } from './celestial';
 import { glideTurnEndEvents, glideTurnStartEvents } from './flightPrim';
-import { casterEndZoneEvents, casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
+import { casterEndZoneEvents, casterTurnZoneEvents, movableZoneOf, repelPushEvents, zoneDriftEnterEvents, zoneDriftEvents, zoneTurnEvents } from './zones';
 import { bondEvents, curseSpellEvents, sanctuaryCheck } from './wards';
 import { askChoice } from '../rules/choice';
 // Kuyruk S1: büyücüye bağlı alanlar (komut sonu kancası).
@@ -131,7 +131,8 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
     // Beacon of Hope (Görev B1): ölüm save'i avantajlı.
     const survivor = hasTrait(c, 'survivor');
     // Kuyruk K53 S5: aura ölüm save dezavantajı; avantajla birlikte normal.
-    const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv) || !!c.auraDeathAdv;
+    // Mekanik matris B13 (sürüm 83+): Holy Aura "Advantage on all saving throws" ölüm save'ini de kapsar.
+    const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv) || !!c.auraDeathAdv || !!c.allyAura?.saveAdvAll;
     const rolledSave = rollD20(dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
     const natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
     let successes = c.deathSaves.successes;
@@ -1020,8 +1021,11 @@ function turnStartChain(state: BattleState, id: string, rng: Rng): { events: Bat
   // Süren etkiler (Görev R2): geçici HP (Heroism), süregelen hasar ve save (Searing Smite), Command.
   // Büyü alanında tur başlatmak (Görev B2: Web, Sleet Storm, Stinking Cloud).
   // Kuyruk 19: büyücünün turunun başında ondan uzaklaşan bulut (Cloudkill).
+  const preDrift = cur;
   const drift = [...zoneDriftEvents(cur, id)];
   push(drift);
+  // Mekanik matris B21 (sürüm 83): kayan bulut yeni kapladığı yaratığa save attırır ("when the Sphere moves into its space").
+  push(zoneDriftEnterEvents(preDrift, cur, drift, rng));
   // Kuyruk 19: büyücünün tur başı alanı (Faithful Hound ısırığı).
   const bite = casterTurnZoneEvents(cur, id, rng);
   push(bite);

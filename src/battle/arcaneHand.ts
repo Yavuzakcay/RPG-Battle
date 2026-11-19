@@ -16,6 +16,9 @@ import { saveMode } from './durations';
 import { saveDice } from './effectDice';
 import { pushAwayEvents } from './forced';
 import { strikeApi } from './reactions';
+import { matrisOn } from './matrisSurum';
+import { charmedAgainst } from './range';
+import { frightenedNow } from './ruleVersion';
 import { applyEvents } from './reduce';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
@@ -41,7 +44,19 @@ export function handEffectEvents(state: BattleState, owner: Combatant, hand: Com
   const mod = owner.spellMod;
   if (effect === 'fist') {
     const api = strikeApi();
-    return api ? [...out, ...api.strike(state, hand.id, t.id, rng, 'Clenched Fist')] : 'Saldırı yok.';
+    if (!api) return 'Saldırı yok.';
+    // Mekanik matris B22 (sürüm 83): SRD 5.2.1 "Clenched Fist. The hand strikes a target within 5 feet of it. Make a melee
+    // spell attack." Saldırıyı büyücü yapar: Charmed "You can't attack the charmer", Frightened "Disadvantage on … attack
+    // rolls while the source of fear is within line of sight" (görüş büyücüden). Elin kendi yeri (5 ft, Prone) aynen.
+    let probe = state;
+    if (matrisOn(state)) {
+      if (charmedAgainst(state, owner, t)) return `${owner.name} büyülenmiş (Charmed): ${t.name} hedef alınamaz.`;
+      if (frightenedNow(state, owner)) {
+        probe = { ...state, combatants: { ...state.combatants, [hand.id]: { ...hand, effects: [...(hand.effects ?? []),
+          { id: 'arcane-hand:frightened', name: `Frightened (${owner.name})`, sourceId: owner.id, attackDis: {} }] } } };
+      }
+    }
+    return [...out, ...api.strike(probe, hand.id, t.id, rng, 'Clenched Fist')];
   }
   if (t.size === 'G') return 'Gargantuan yaratık etkilenmez.';
   if (effect === 'crush') {

@@ -15,6 +15,8 @@ import { isPlantZone, soyPlantWalker } from './altSoySurum';
 import { freeShapeFor, freeShapeProblem, pathProblem } from './freeShape';
 import { cageOpenEvents, cageStepBlocked, castCageHexes } from './forcecage';
 import { healRoll } from './healMax';
+import { coverFrom } from './cover';
+import { matrisOn } from './matrisSurum';
 import { groundWarded, groundZone } from './groundWard';
 import { barriersOn, passesBarrier } from './barriers';
 import { fireSideHexes, wallOpenEvents } from './walls';
@@ -137,8 +139,15 @@ function budgetEvents(state: BattleState, z: SpellZone, spec: ZoneSpec, amount: 
   return out;
 }
 
-export function triggerEvents(state: BattleState, z: SpellZone, victimId: string, rng: Rng): BattleEvent[] {
-  const spec = zoneSpecOf(z);
+/**
+ * Mekanik matris B05 (sürüm 83+) yapım anı tetiği seçenekleri: DEX save'ine çıkış noktasından siper bonusu (SRD Cover) ve
+ * aynı anda save atan yaratıklar için bir kez atılmış hasar (SRD "Damage against Multiple Targets").
+ */
+export interface TriggerOpts { cover?: number; rolled?: { rolls: number[]; total: number } }
+
+export function triggerEvents(state: BattleState, z: SpellZone, victimId: string, rng: Rng, override?: ZoneSpec, opts?: TriggerOpts): BattleEvent[] {
+  // Mekanik matris B05 (sürüm 83+): yapım anı tetiğinin kendi kuralı (`castTrigger`; yalnız 83+ büyü verisinde).
+  const spec = override ?? zoneSpecOf(z);
   const victim = state.combatants[victimId];
   if (!spec || !victim || !affects(state, z, spec, victim)) return [];
   const turn = turnKey(state);
@@ -155,22 +164,35 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
     if (n > 0) events.push({ type: 'healed', actorId: z.casterId, targetId: victim.id, label: z.name, amount: n, targetHpAfter: victim.hp + n });
     return events;
   }
+  // Mekanik matris B05 (sürüm 83+, Conjure Celestial Healing Light): büyücünün tarafı iyileşir (zar + büyü değiştiricisi).
+  if (spec.healAllies && victim.side === z.side && matrisOn(state)) {
+    if (victim.life === 'dead') return events;
+    const caster = state.combatants[z.casterId];
+    const spell = spellById(z.spellId);
+    const hd = parseDice(spec.healAllies);
+    const up = spell ? upcastDiceCount(spell.mechanics, z.slotLevel - spell.level) : 0;
+    const amount = healRoll(state, victim, formatDice(hd.count + up, hd.sides, hd.bonus + (caster?.spellMod ?? 0)), rng, z.casterId);
+    const n = Math.max(0, Math.min(amount, victim.maxHp - victim.hp));
+    if (n > 0) events.push({ type: 'healed', actorId: z.casterId, targetId: victim.id, label: z.name, amount: n, targetHpAfter: victim.hp + n });
+    return events;
+  }
   const expr = zoneDamage(z, spec);
   const dtype = z.damageType ?? spec.damageType;
   if (!spec.save) {
     if (!expr) return events;
-    const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId }));
+    const d = opts?.rolled ?? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId }));
     const adj = adjustDamage(d.total, dtype, profileIn(state, victim, spells.some((x) => x.id === z.spellId)));
     const fx = damageEffects(victim, adj.amount, dtype ?? '', false, rng);
     events.push({ type: 'effect_tick', targetId: victim.id, effectId: z.spellId, name: z.name, damageRolls: d.rolls, appliedDamage: adj.amount,
-      damageType: dtype ?? '', targetHpAfter: fx.hpAfter, effects: fx.effects });
+      damageType: dtype ?? '', targetHpAfter: fx.hpAfter, effects: fx.effects, ...(matrisOn(state) ? { zoneId: z.id } : {}) });
     return events;
   }
   const ability = spec.save;
   const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(victim.conditions);
-  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability], dc: z.dc, mode: saveMode('normal', victim, ability, state.combatants[z.casterId], { ...(dtype ? { damage: dtype } : {}), against: spec.conditions }), autoFail },
+  const cover = ability === 'dex' ? opts?.cover ?? 0 : 0;
+  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability] + cover, dc: z.dc, mode: saveMode('normal', victim, ability, state.combatants[z.casterId], { ...(dtype ? { damage: dtype } : {}), against: spec.conditions }), autoFail },
     rollTag(rng, { by: victim.id }));
-  const d = expr ? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId })) : { rolls: [] as number[], total: 0 };
+  const d = expr ? opts?.rolled ?? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId })) : { rolls: [] as number[], total: 0 };
   const amount = expr ? saveDamage(victim, ability, save.success, d.total, !!spec.half) : 0;
   const adj = amount > 0 ? adjustDamage(amount, dtype, profileIn(state, victim, spells.some((x) => x.id === z.spellId))) : { amount: 0, note: null };
   const fx = damageEffects(victim, adj.amount, dtype ?? '', false, rng);
@@ -184,6 +206,9 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
     d20: save.d20?.rolls ?? [], natural: save.d20?.kept ?? null, total: save.total, success: save.success,
     damageRolls: d.rolls, rawDamage: d.total, appliedDamage: adj.amount, damageType: dtype ?? '', damageNote: adj.note,
     targetHpAfter: fx.hpAfter, effects: [...fx.effects, ...lose], conditionsAdded: plain, ...(save.extra ? { bonusDice: save.extra } : {}),
+    ...(cover === 2 || cover === 5 ? { cover } : {}),
+    // Mekanik matris B20 (sürüm 83+): alan hasarı yüzey çözücüsüne (`hexResolver.ts` `incomingOf`).
+    ...(matrisOn(state) ? { zoneId: z.id } : {}),
   });
   events.push(...budgetEvents(state, z, spec, adj.amount));
   // Kuyruk A8 (Moonbeam, `revertShape`): başarısız save'de biçim değiştiren (Polymorph, Wild Shape) gerçek biçimine döner.
@@ -204,7 +229,10 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
       // CILA: kurtulma eylemle STR (Athletics) kontrolü (`escape` komutu); tur sonu save'i yok.
       ...(spec.escape && !(spec.captive && globalRule(state, 'spellsK19')) ? { escapeCheck: { dc: z.dc } } : {}),
       // Kuyruk 19: tutsağın tur başı save'i (başarısızsa 4d8, başarılıysa kurtulur).
-      ...(spec.captive && globalRule(state, 'spellsK19') ? { startSave: { ability: spec.save, dc: z.dc, dice: spec.captive.repeatDice, type: dtype ?? 'force' } } : {}),
+      // Mekanik matris K04 (kullanıcı kararı: metne göre, sürüm 83): tekrar save'i "Restrained hedef" atar; yakalandığı turun
+      // başında henüz Restrained değildi, ilk tekrar sonraki turunun başında.
+      ...(spec.captive && globalRule(state, 'spellsK19') ? { startSave: { ability: spec.save, dc: z.dc, dice: spec.captive.repeatDice, type: dtype ?? 'force',
+        ...(matrisOn(state) ? { skip: { round: state.round, turnIndex: state.turnIndex } } : {}) } } : {}),
     } });
   }
   return events;
@@ -678,7 +706,22 @@ export function executeZoneCast(state: BattleState, actor: Combatant, cmd: CastC
     const inside = Object.values(current.combatants).filter((c) => c.pos && bodyAt(current, c, c.pos).some((b) => hexes.some((h) => sameHex(h, b)))
       // Kuyruk S2 (sürüm 41): alanın tepesinin üstündeki uçan etkilenmez.
       && altitudeInZone(current, zone, zoneSpecOf(zone), c));
-    events.push(...chain(current, inside.map((c) => (s: BattleState) => { const live = liveZone(s, zone.id); return live ? triggerEvents(s, live, c.id, rng) : []; })));
+    const castSpec = spec.castTrigger ? { ...spec, ...spec.castTrigger } : undefined;
+    // Mekanik matris B05 (sürüm 83+): noktadan çıkan alanda (küre, silindir, küp) DEX save'ine çıkış noktasından siper;
+    // tam siper arkasındaki etkilenmez (SRD Cover; alan büyüleriyle aynı `coverFrom`). Aynı anda save atanlar için hasar
+    // bir kez atılır (SRD 5.2.1 "Damage against Multiple Targets"). 82 ve altı aynen.
+    const m83 = matrisOn(state);
+    const origin = m83 && !existing && spell.area?.origin === 'point' && spell.area.shape !== 'wall' && aim ? aim : null;
+    const lofs = new Map(inside.map((c) => [c.id, origin ? coverFrom(current, origin, c, [actor.id]) : null]));
+    const victims = inside.filter((c) => !lofs.get(c.id)?.blocked);
+    const s1 = castSpec ?? spec;
+    const expr1 = m83 && s1.damage ? zoneDamage(zone, s1) : null;
+    const rolled = expr1 ? rollDice(expr1, rollTag(rng, { kind: 'damage', by: actor.id })) : undefined;
+    events.push(...chain(current, victims.map((c) => (s: BattleState) => {
+      // 83+: yapım anı etkisi eşzamanlı; büyücünün kendi save hasarıyla konsantrasyonu bozulsa da diğerleri yine etkilenir.
+      const live = liveZone(s, zone.id) ?? (m83 ? zone : undefined);
+      return live ? triggerEvents(s, live, c.id, rng, castSpec, m83 ? { cover: lofs.get(c.id)?.cover ?? 0, ...(rolled ? { rolled } : {}) } : undefined) : [];
+    })));
   }
   return finish(state, events);
 }
@@ -721,6 +764,28 @@ export function zoneDriftEvents(state: BattleState, casterId: string): BattleEve
     out.push(moved.length ? { type: 'zone_moved', zoneId: z.id, hexes: moved } : { type: 'zone_ended', zoneId: z.id, name: z.name, reason: 'expired' });
   }
   return out;
+}
+
+/**
+ * Mekanik matris B21 (sürüm 83): kayan bulut (Cloudkill, Incendiary Cloud; `drift`) yeni kapladığı yaratığa save attırır.
+ * SRD 5.2.1: "A creature must also make this save when the Sphere moves into its space and when it enters the Sphere or
+ * ends its turn there. A creature makes this save only once per turn." Giriş tetiği (`enter`) olan alanlarda; turda bir
+ * kez kuralı alanın `once` kaydıyla (`triggerEvents`).
+ */
+export function zoneDriftEnterEvents(before: BattleState, after: BattleState, moved: readonly BattleEvent[], rng: Rng): BattleEvent[] {
+  if (!matrisOn(after)) return [];
+  const makers: Array<(s: BattleState) => BattleEvent[]> = [];
+  for (const e of moved) {
+    if (e.type !== 'zone_moved') continue;
+    const z0 = before.map?.zones?.find((x) => x.id === e.zoneId);
+    const z1 = liveZone(after, e.zoneId);
+    if (!z0 || !z1 || !zoneSpecOf(z1)?.on?.includes('enter')) continue;
+    for (const c of Object.values(after.combatants)) {
+      if (!c.pos || bodyInZone(before, z0, c, c.pos) || !bodyInZone(after, z1, c, c.pos)) continue;
+      makers.push((s) => { const live = liveZone(s, z1.id); return live ? triggerEvents(s, live, c.id, rng) : []; });
+    }
+  }
+  return chain(after, makers);
 }
 
 /** Kuyruk A7: alanla örtüşen, en çok `maxLevel` seviyedeki büyülerin ışıkları (etki, alan, nesne) kalkar. */
