@@ -1,18 +1,18 @@
 # Mekanik doğrulama matrisi (APK öncesi)
 
-Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈15 sn). Kural sürümü 83.
+Üretim: `npx vite-node src/sim/mekanikMatris.ts -- --yaz` (tek süreç, ≈7 sn). Kural sürümü 84.
 Satır satır sonuçlar: [`mekanik-matris.csv`](mekanik-matris.csv) (UTF-8, virgülle ayrılmış; sütunlar: tür, büyü/saldırı, seviye, sınıflar, mekanik, bağlam, bağlam sınıfı, beklenen, gerçek, sonuç, bulgu, not).
 
 ## Özet
 
-- Toplam satır: **6589** (büyü 1834 satır / 339 büyü; silah 670 satır / 46 seçenek; canavar 4085 satır / 579 saldırı).
-- Doğru oranı: **100.0%** (6588/6589); karar bekleyenler hariç 100.0%.
-- Sonuçlar: doğru 6588 · yanlış 0 · çökme 0 · uygulanmıyor 1 · karar bekliyor 0.
-- Kök nedene göre: 0 yanlış, 0 çökme, 1 uygulanmıyor, 0 karar bekleyen bulgu.
+- Toplam satır: **6602** (büyü 1847 satır / 339 büyü; silah 670 satır / 46 seçenek; canavar 4085 satır / 579 saldırı).
+- Doğru oranı: **100.0%** (6602/6602); karar bekleyenler hariç 100.0%.
+- Sonuçlar: doğru 6602 · yanlış 0 · çökme 0 · uygulanmıyor 0 · karar bekliyor 0.
+- Kök nedene göre: 0 yanlış, 0 çökme, 0 uygulanmıyor, 0 karar bekleyen bulgu.
 
 | Tür | Satır | Doğru | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor | Doğru oranı |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Büyü | 1834 | 1833 | 0 | 0 | 1 | 0 | 99.9% |
+| Büyü | 1847 | 1847 | 0 | 0 | 0 | 0 | 100.0% |
 | Silah | 670 | 670 | 0 | 0 | 0 | 0 | 100.0% |
 | Canavar | 4085 | 4085 | 0 | 0 | 0 | 0 | 100.0% |
 
@@ -58,7 +58,7 @@ Bulgu başına doğru olmayan satır (aşama sırasıyla):
 | B19 | 3 | 3 | 3 | 0 | 0 | 3 | 0 | 0 | sürüm 83: `spell_cast.area.parts`, yüzey çözücüsü her türü ayrı işler |
 | B20 | 1 | 1 | 4 | 4 | 0 | 5 | 0 | 0 | sürüm 83: alan tetiği olaylarında `zoneId`, duvar kesmesi `wallCut`: `incomingOf` hasar türünde element üretir |
 | U01 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | sürüm 83: büyü verisinde `m83` Charmed, yalnız DEX save dezavantajı |
-| U02 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |  |
+| U02 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | sürüm 84: kullanıcı kararı (2026-11-19): girdap alanı hedef yaratığın altıgeninde (su gerekmez), slotla büyür, STR save, yakalanma, çekme; Game Master anahtarı `controlWaterWhirlpool` (`girdap.ts`); taşkın/hendek/akış savaş dışı |
 | K01 | 20 | 20 | 20 | 20 | 22 | 26 | 0 | 0 | sürüm 83: kullanıcı kararı: `spellHarms` zarar vermeyen büyüyü ayırır, `checkReach` 83'te yasaklamaz |
 | K02 | 2 | 2 | 2 | 2 | 2 | 2 | 0 | 0 | sürüm 83: kullanıcı kararı: `executeAreaCast` yayılım büyüsünde yapım anı save'i yok (`auraQuiet`) |
 | K03 | 3 | 3 | 3 | 3 | 3 | 3 | 0 | 0 | sürüm 83: kullanıcı kararı: Prone ve otomatik kritik 5 ft gücün yerinden; Arcane Sword `m83` güç modeli (`lingering: weapon`, 30 ft) |
@@ -71,13 +71,13 @@ Bulgu başına doğru olmayan satır (aşama sırasıyla):
 | Sınıf | Büyü satırı | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor | Yanlış oranı |
 |---|---:|---:|---:|---:|---:|---:|
 | Bard | 502 | 0 | 0 | 0 | 0 | 0.0% |
-| Cleric | 428 | 0 | 0 | 1 | 0 | 0.0% |
-| Druid | 621 | 0 | 0 | 1 | 0 | 0.0% |
+| Cleric | 441 | 0 | 0 | 0 | 0 | 0.0% |
+| Druid | 634 | 0 | 0 | 0 | 0 | 0.0% |
 | Paladin | 113 | 0 | 0 | 0 | 0 | 0.0% |
 | Ranger | 148 | 0 | 0 | 0 | 0 | 0.0% |
 | Sorcerer | 998 | 0 | 0 | 0 | 0 | 0.0% |
 | Warlock | 369 | 0 | 0 | 0 | 0 | 0.0% |
-| Wizard | 1167 | 0 | 0 | 1 | 0 | 0.0% |
+| Wizard | 1180 | 0 | 0 | 0 | 0 | 0.0% |
 | Silah (karakter) | 670 | 0 | 0 | 0 | 0 | 0.0% |
 | Canavar saldırısı | 4085 | 0 | 0 | 0 | 0 | 0.0% |
 
@@ -85,28 +85,21 @@ Bulgu başına doğru olmayan satır (aşama sırasıyla):
 
 | Bağlam sınıfı | Satır | Doğru | Yanlış | Çökme | Uygulanmıyor | Karar bekliyor |
 |---|---:|---:|---:|---:|---:|---:|
-| alan | 98 | 98 | 0 | 0 | 0 | 0 |
-| durum | 1976 | 1976 | 0 | 0 | 0 | 0 |
+| alan | 99 | 99 | 0 | 0 | 0 | 0 |
+| durum | 1977 | 1977 | 0 | 0 | 0 | 0 |
 | hasar türü | 1384 | 1384 | 0 | 0 | 0 | 0 |
 | konsantrasyon | 157 | 157 | 0 | 0 | 0 | 0 |
 | saldırı zarı | 634 | 634 | 0 | 0 | 0 | 0 |
-| save | 233 | 233 | 0 | 0 | 0 | 0 |
+| save | 239 | 239 | 0 | 0 | 0 | 0 |
 | siper | 216 | 216 | 0 | 0 | 0 | 0 |
 | tepki | 731 | 731 | 0 | 0 | 0 | 0 |
-| yapım | 1025 | 1024 | 0 | 0 | 1 | 0 |
-| yukarı slot | 107 | 107 | 0 | 0 | 0 | 0 |
+| yapım | 1024 | 1024 | 0 | 0 | 0 | 0 |
+| yukarı slot | 113 | 113 | 0 | 0 | 0 | 0 |
 | yüzey | 28 | 28 | 0 | 0 | 0 | 0 |
 
 ## Bulgular (kök nedene göre; öncelik sırası: yanlış → çökme → uygulanmıyor → karar bekliyor)
 
-Düzeltilen bulgular (B01, B02, Ç01, B03, B04, B21, B05, B06, B07, B08, B09, B10, B22, B23, B11, B12, B13, B14, B15, B16, B17, B18, B19, B20, U01, K01, K02, K03, K04) doğru olmayan satırı kalmadıysa aşağıda listelenmez; önce/sonra sayıları yukarıdaki tabloda.
-
-### U02 — Control Water savaş dışı işaretli (uygulanmıyor; 1 satır)
-
-- **Neden:** SRD: Action, konsantrasyon; girdap seçeneği 2d8 Bludgeoning ve STR save. Oyunda savaş dışı (Game Master notu).
-- **Öneri:** Kapsam kararı: girdabı alan olarak eklemek ya da savaş dışı kalmasını DECISIONS'a yazmak.
-- **Etkilenen (1):** Control Water
-- **Örnek:** Control Water — savaşta yapım: beklenen `savaşta etki (SRD: hasar/save/durum)`, gerçek `savaş dışı (Game Master notu)`
+Düzeltilen bulgular (B01, B02, Ç01, B03, B04, B21, B05, B06, B07, B08, B09, B10, B22, B23, B11, B12, B13, B14, B15, B16, B17, B18, B19, B20, U01, U02, K01, K02, K03, K04) doğru olmayan satırı kalmadıysa aşağıda listelenmez; önce/sonra sayıları yukarıdaki tabloda.
 
 ### Yeni bulgular (düzeltme turlarında bulundu; matris satırı yok; onay bekliyor)
 
@@ -183,7 +176,7 @@ Sembol: ✓ doğru, ✗ yanlış, ‼ çökme, ∅ uygulanmıyor, ? karar bekliy
 | Contagion | 5 | save | 12 | 12 | 0 | 0 | 0 | 0 |  |
 | Contingency | 6 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Continual Flame | 2 | effect | 2 | 2 | 0 | 0 | 0 | 0 |  |
-| Control Water | 4 | utility (savaş dışı) | 1 | 0 | 0 | 0 | 1 | 0 | U02 |
+| Control Water | 4 | girdap (alan, sürüm 84) | 14 | 14 | 0 | 0 | 0 | 0 |  |
 | Control Weather | 8 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Counterspell | 3 | utility | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | Create Food and Water | 3 | utility (savaş dışı) | 1 | 1 | 0 | 0 | 0 | 0 |  |

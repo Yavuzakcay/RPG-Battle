@@ -6,6 +6,7 @@
 import { spells } from '../data';
 import type { Spell, SpellMechanics } from '../data/types';
 import { ruleVersion } from './ruleVersion';
+import { girdapOn } from './girdapSurum';
 import type { BattleState, Combatant } from './types';
 
 export function mechanicsAt(state: Pick<BattleState, 'kuralSurumu'>, spell: Spell): SpellMechanics {
@@ -30,6 +31,8 @@ export function mechanicsAt(state: Pick<BattleState, 'kuralSurumu'>, spell: Spel
   if (m.k73c && ruleVersion(state) >= 64) m = { ...m, ...m.k73c, k73c: undefined };
   if (m.mb7 && ruleVersion(state) >= 70) m = { ...m, ...m.mb7, mb7: undefined };
   if (m.m83 && ruleVersion(state) >= 83) m = { ...m, ...m.m83, m83: undefined };
+  // Control Water girdabı (sürüm 84): yalnız Game Master anahtarı açıkken (`girdapOn`; haritasız okumada kapalı sayılır).
+  if (m.k84 && ruleVersion(state) >= 84 && 'map' in state && girdapOn(state as Pick<BattleState, 'kuralSurumu' | 'map'>)) m = { ...m, ...m.k84, k84: undefined };
   return m;
 }
 

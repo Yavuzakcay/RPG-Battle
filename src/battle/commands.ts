@@ -3,6 +3,7 @@
  * Sonuç olarak olaylar üretir. Bu kod "yetkili" tarafta (GM'in cihazı veya sunucu) çalışır.
  */
 import { executeJumpDown } from './drop';
+import { annotateSaveWhy } from './saveWhy';
 import { executeAirMove } from './airMove';
 import { beadAfterEvents, beadTurnEndEvents, executeBeadTouch } from './bead';
 import { distance } from '../rules/hex';
@@ -333,6 +334,8 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
     const won = moraleAfterEvents(state, next, events);
     if (won.length) { next = applyEvents(next, won); events = [...events, ...won]; }
   }
+  // G01 (yalnız görünüm): save olaylarına kipin kaynakları (`modeWhy`; reducer yok sayar, replay ve kayıt sürümü aynı).
+  events = annotateSaveWhy(state, next, events);
   return { ok: true, state: next, events };
 }
 

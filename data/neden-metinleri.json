@@ -148,5 +148,23 @@
     {"kalip": "^Bu büyü slotsuz yapılamaz", "tr": "Bu büyü slotsuz yapılamaz (kullanım hakkın kalmadı ya da büyü listende değil). Bir slot harca ya da başka bir büyü seç.", "en": "This spell cannot be cast without a slot (no uses left, or it is not on your list). Spend a slot or pick another spell."},
     {"kalip": "^Action Surge'ün ek eylemiyle büyü yapılamaz\\.$", "tr": "Action Surge'ün ek eylemiyle büyü yapılamaz. Ek eylemi saldırı, Dash gibi bir eylemle kullan.", "en": "You cannot cast a spell with Action Surge's extra action. Use it for an attack, Dash or a similar action."},
     {"kalip": "^(.+) bonus eylemle yapılamaz\\.$", "tr": "$1 bonus eylemle yapılamaz; eylemle yap.", "en": "$1 cannot be done as a bonus action; use your action."}
-  ]
+  ],
+  "saveKipi": {
+    "_aciklama": "G01 (yalnız görünüm): save zarının avantaj/dezavantaj kaynakları (motor `src/battle/durations.ts` `saveModeWhy` anahtarı; olayda `save_resolved.modeWhy`). {ad}: kaynağın adı (durum, süren etki, özellik); adı olmayan kaynakta metin.",
+    "condition": { "tr": "{ad}", "en": "{ad}" },
+    "effect": { "tr": "{ad}", "en": "{ad}" },
+    "feature": { "tr": "{ad}", "en": "{ad}" },
+    "lineage": { "tr": "{ad} (soy)", "en": "{ad} (lineage)" },
+    "vsType": { "tr": "{ad} (bu türün etkisine karşı)", "en": "{ad} (against this creature type)" },
+    "bloodied": { "tr": "{ad} (Bloodied)", "en": "{ad} (Bloodied)" },
+    "dodge": { "tr": "Kaçın", "en": "Dodge" },
+    "rage": { "tr": "Rage", "en": "Rage" },
+    "pack": { "tr": "Sürü (Conjure Animals)", "en": "Pack (Conjure Animals)" },
+    "authority": { "tr": "Aura of Authority", "en": "Aura of Authority" },
+    "holyAura": { "tr": "Holy Aura", "en": "Holy Aura" },
+    "pkMark": { "tr": "İşaretleyenin işareti (ek paket)", "en": "Marker's mark (add-on)" },
+    "aura": { "tr": "Düşman aurası", "en": "Enemy aura" },
+    "pkSpell": { "tr": "Büyücünün özelliği (ek paket)", "en": "Caster's feature (add-on)" },
+    "bilinmeyen": { "tr": "Bilinmeyen kaynak", "en": "Unknown source" }
+  }
 }

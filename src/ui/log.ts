@@ -10,6 +10,7 @@ import { terrainOf } from '../map/terrain';
 import { getLang, t } from '../i18n';
 import { hpModeFor, hpPhrase } from './hpVisibility';
 import terrainTable from '../../data/arazi-buyu-etkileri.json';
+import { saveWhyParts } from './reasons';
 
 const TERRAIN_TEXT = terrainTable.satirlar as Array<{ id: string; tr: string; en: string }>;
 
@@ -96,8 +97,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'save_resolved': {
       const ab = event.ability.toUpperCase();
       const parts = [`${n(event.actorId)} → ${n(event.targetId)}: ${event.label}`];
+      // G01: kipin kaynağı varsa (`modeWhy`) kip rozeti ondan (motorun `mode` alanı çoğu yolda sabit 'normal'); yoksa eskisi gibi.
+      const why = saveWhyParts(event.modeWhy, getLang());
+      const shown = why ? (why.kind === 'adv' ? 'advantage' : why.kind === 'dis' ? 'disadvantage' : 'normal') : event.mode;
       parts.push(event.natural === null ? L.saveAuto(ab)
-        : L.saveRoll(ab, event.d20.join(' / '), mode(event.mode), event.total ?? 0, event.cover ?? 0, event.dc, event.success));
+        : L.saveRoll(ab, event.d20.join(' / '), mode(shown), event.total ?? 0, event.cover ?? 0, event.dc, event.success));
+      if (why && event.natural !== null) parts.push(L.saveWhy(why.kind, why.names, ab));
       if (event.rawDamage > 0) parts.push(hid(event.targetId) ? phrase(event.targetId, event.targetHpAfter) : damagePart(event.damageRolls, event.rawDamage, event.secondary ? event.appliedDamage - event.secondary.applied : event.appliedDamage, event.damageType, event.damageNote));
       // Kuyruk 19: ikinci hasar türü (Ice Storm, Flame Strike).
       if (event.secondary && event.secondary.raw > 0 && !hid(event.targetId)) parts.push(damagePart(event.secondary.rolls, event.secondary.raw, event.secondary.applied, event.secondary.type, event.secondary.note));

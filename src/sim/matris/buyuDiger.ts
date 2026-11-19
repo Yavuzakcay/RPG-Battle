@@ -6,6 +6,7 @@ import type { Spell } from '../../data/types';
 import type { SrdSpell } from './srd';
 import type { Satir } from './ortak';
 import { OZEL } from './ozel';
+import { girdapRows } from './girdap';
 import { mechOf } from './buyu';
 import { zoneRows } from './alanBuyu';
 import { effectRows } from './etki';
@@ -14,6 +15,8 @@ import { dispelRows, markRows, offRows, reactionSpellRows, restoreRows, smiteRow
 export function otherRows(sp: Spell, s: SrdSpell, core: (sp: Spell, s: SrdSpell) => Satir[]): Satir[] {
   const m = mechOf(sp);
   const o = OZEL[s.id];
+  // Control Water girdabı (kural sürümü 84): kendi satırları (slot 4–9 × save, çekme, kaçış).
+  if (sp.mechanics.k84?.whirlpool) return girdapRows(sp, s);
   if (m.offCombat) return offRows(sp, s);
   if (s.cast === 'reaction') return reactionSpellRows(sp, s);
   if (s.cast === 'long') return offRows(sp, s);
