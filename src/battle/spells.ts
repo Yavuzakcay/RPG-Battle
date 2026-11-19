@@ -66,7 +66,7 @@ import { auraSave, hitExtras, weaponAttackEvents, weaponHexNear } from './featur
 import { effectiveAc, smiteEvents, smiteProblem, wardSources } from './divine';
 import { pushAwayEvents } from './forced';
 import { applyEvents } from './reduce';
-import { autoSucceedsType, heldFollow, mechanicsAt } from './spellVersion';
+import { areaOfMechanics, autoSucceedsType, heldFollow, mechanicsAt } from './spellVersion';
 import srdSpells from '../../data/srd/spells.json';
 import { executeZoneCast, movableZoneOf, shiftZoneEvents, silencedAt, zoneHexes } from './zones';
 import { executeFireHex, freeHexAnyOn, freeHexSpell, hexCastable } from './ignite';
@@ -170,8 +170,9 @@ function failEffectEvent(state: BattleState, actor: Combatant, spell: Spell, fe:
  */
 function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand, spell: Spell, rng: Rng, repeat = false, label?: string): CommandResult {
   const m = spell.mechanics;
-  // Mekanik matris B14 (sürüm 83, `m83` `areaTargets`; Weird "Each creature of your choice"): alan yalnız düşmanlara.
-  const area = m.areaTargets && spell.area ? { ...spell.area, targets: m.areaTargets } : spell.area;
+  // Mekanik matris B14/B15 (sürüm 83, `m83` `areaTargets`/`area83`): Weird yalnız düşmanlara; Compulsion büyücü merkezli
+  // 30 ft yayılım ("Range: 30 feet … Each creature of your choice that you can see within range").
+  const area = areaOfMechanics(m, spell.area);
   if (!area || !state.map || !actor.pos) return fail('Alan büyüsü yalnızca haritalı savaşta.');
   const named = cmd.targetId ? state.combatants[cmd.targetId] : undefined;
   if (cmd.targetId && !named) return fail('Hedef bulunamadı.');
@@ -221,7 +222,7 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   // Kuyruk K73c (sürüm 64+): havadaki merkezin dikey aralığı (prizma düzeyleri, mutlak yükseklik).
   const span = airFt && aim ? airSpanFt(area.sizeFt, cylinderHeightFt(m), airFt) : null;
   const atAlt = (c: Combatant) => (span && aim ? inAirSpan(state, c, aim, span)
-    : pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : !spell.area || areaReachesAltitude(state, spell.area, c, fromFt));
+    : pointAlt ? Math.abs(altitudeOf(c) - pointAlt) <= area.sizeFt : areaReachesAltitude(state, area, c, fromFt));
   // Mekanik matris B02 (sürüm 83): "each creature … that you can see" alanında görülmeyen yaratık etkilenmez.
   const sight = areaNeedsSight(state, spell);
   if (sight && named && !canSeeTarget(state, actor, named)) return fail(`${spell.name}: hedefi görmen gerekir; ${named.name} görülmüyor.`);

@@ -128,7 +128,7 @@ import { hasStandData, katlarOf } from './battle/stand';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
 import { seesTrueForm, truesightRange } from './battle/sight';
-import { mechanicsAt, sigmayanNote } from './battle/spellVersion';
+import { mechanicsAt, sigmayanNote, spellAreaAt } from './battle/spellVersion';
 import { breathOf } from './battle/breath';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
@@ -2540,7 +2540,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                       if (barred) return;
                       // Kuyruk 19: Telekinesis iki adımda (hedef, sonra varış altıgeni ya da havaya kaldır).
                       if (kind === 'area' && sp.mechanics.telekinesis && state.kuralSurumu !== undefined && state.kuralSurumu >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(false); setMode('tk'); }
-                      else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setMode('aim'); }
+                      else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: { ...sp, area: spellAreaAt(state, sp) } }); setAimHex(null); setAimPts([]); setMode('aim'); }
                       // Kuyruk K65c (sürüm 49): panelli duvarlar ortak alan seçicisinde (düz, yay, halka, serbest panel yolu).
                       else if (kind === 'target' && sp.area && mechanicsAt(state, sp).pathRules) { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setWallShape('path'); setMode('aim'); }
                       // Kuyruk K67b (sürüm 51): Dancing Lights ortak alan seçicisinde (dört ışık / birleşik biçim).

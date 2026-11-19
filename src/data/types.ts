@@ -360,6 +360,11 @@ export interface SpellMechanics {
    * 30-foot-radius Sphere"); büyünün `area.targets` alanını ezer.
    */
   areaTargets?: 'enemies';
+  /**
+   * Mekanik matris B15 (yalnız `m83` bloğunda; Compulsion): büyünün alan tanımını ezer (SRD "Range: 30 feet … Each
+   * creature of your choice that you can see within range": büyücü merkezli 30 ft yayılım). Okuma `spellAreaAt`.
+   */
+  area83?: NonNullable<Spell['area']>;
   /** Mekanik matris B08 (yalnız `m83` bloğunda; Sacred Flame): hedefin DEX save'ine siper bonusu eklenmez. */
   ignoresCover?: boolean;
   /**

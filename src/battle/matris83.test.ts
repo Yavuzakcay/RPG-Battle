@@ -438,3 +438,19 @@ describe('B14: Weird yalnız seçilen yaratıkları etkiler (SRD "Each creature 
     });
   }
 });
+
+describe('B15: Compulsion büyücü merkezli 30 ft (SRD "Range: 30 feet … Each creature of your choice that you can see within range must succeed on a Wisdom saving throw or have the Charmed condition")', () => {
+  const parts = (): Combatant[] => [caster({ spellNames: ['Compulsion'], pos: { col: 10, row: 5 } }),
+    foe('T', { pos: { col: 12, row: 5 } }), foe('U', { pos: { col: 8, row: 5 } }), foe('Z', { pos: { col: 17, row: 5 } }), mk('B', { ownerId: 'p1', pos: { col: 11, row: 6 } })];
+  const cmd: Command = { type: 'cast_spell', actorId: 'A', spellName: 'Compulsion', slotLevel: 4, targetHex: { col: 11, row: 5 } } as Command;
+  it('83: 30 ft içindeki düşmanlar save atar; 35 ft\'teki ve dost atmaz', () => {
+    const r = run(scene(83, parts()), cmd, hooked(PROBE));
+    expect(r.ok, r.error).toBe(true);
+    expect(['T', 'U', 'Z', 'B'].map((id) => !!saveOf(r.events, id))).toEqual([true, true, false, false]);
+  });
+  it('82: eski küre büyücünün bitişiğinden 30 ft (35 ft\'teki de atar)', () => {
+    const r = run(scene(82, parts()), cmd, hooked(PROBE));
+    expect(r.ok, r.error).toBe(true);
+    expect(['T', 'U', 'Z', 'B'].map((id) => !!saveOf(r.events, id))).toEqual([true, true, true, false]);
+  });
+});

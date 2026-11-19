@@ -33,6 +33,19 @@ export function mechanicsAt(state: Pick<BattleState, 'kuralSurumu'>, spell: Spel
   return m;
 }
 
+/**
+ * Mekanik matris B14/B15 (sürüm 83): büyünün o savaştaki alan tanımı (`m83` `area83` biçimi ezer, `areaTargets` hedef
+ * süzgecini ezer). Büyü yapımı ve arayüzün nişan kipi aynı tanımı okur.
+ */
+export function spellAreaAt(state: Pick<BattleState, 'kuralSurumu'>, spell: Spell): Spell['area'] {
+  return areaOfMechanics(mechanicsAt(state, spell), spell.area);
+}
+/** Birleşmiş mekanikten alan (yapım yolu: `castSpell` blokları zaten birleştirdi). */
+export function areaOfMechanics(m: SpellMechanics, area: Spell['area']): Spell['area'] {
+  const a = m.area83 ?? area;
+  return a && m.areaTargets ? { ...a, targets: m.areaTargets } : a;
+}
+
 /** Kuyruk A6: sürüm 35+ savaşta büyünün sığmayan parçasının Game Master notu (yoksa null). */
 export function sigmayanNote(state: Pick<BattleState, 'kuralSurumu'>, spell: Spell): string | null {
   if (ruleVersion(state) < 35) return null;
