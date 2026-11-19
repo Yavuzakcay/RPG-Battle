@@ -251,5 +251,18 @@
    "karar bekliyor": 0
   },
   "bulgu": {}
+ },
+ {
+  "etiket": "WS87 Wild Shape (sürüm 87)",
+  "surum": 87,
+  "satir": 6606,
+  "sonuc": {
+   "doğru": 6606,
+   "yanlış": 0,
+   "çökme": 0,
+   "uygulanmıyor": 0,
+   "karar bekliyor": 0
+  },
+  "bulgu": {}
  }
 ]

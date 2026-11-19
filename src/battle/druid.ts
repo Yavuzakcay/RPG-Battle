@@ -19,7 +19,9 @@ import { rollDice, rollTag, type Rng } from '../rules/dice';
 import { distance, type Offset } from '../rules/hex';
 import { adjustDamage, halfDamage } from '../rules/damage';
 import { applyHealing } from '../rules/damage';
-import { creatureTypeAt, monsterAt } from './srdD1';
+import { creatureTypeAt, monsterAt, swimSpeedAt } from './srdD1';
+import { bicimYuzmeOn, WS87_VERSION, ws87On } from './wildShape87Surum';
+import { CURRENT_RULES } from './ruleVersion';
 import { fail, finish, type CommandResult } from './common';
 import { damageEffects } from './damage-effects';
 import { saveDice } from './effectDice';
@@ -48,8 +50,25 @@ export function eligibleForms(monsters: Monster[], f: UsableFeature, level: numb
   return monsters.filter((m) => creatureTypeAt(m.id, v) === 'beast' && crValue(m.cr) <= lim.maxCr && (lim.fly || !m.fly));
 }
 
+/**
+ * Biçim değerlerinin seçenekleri (kural sürümü 87, Görev WS87). `swimFt`: biçimin yüzme hızı (`bicimYuzme`; verilmezse alan
+ * yazılmaz). `srd87`: SRD 5.2.1 aktarımı: `wild` (s.43: INT/WIS/CHA korunur; kurtarma yetkinliği ve diğer kurtarma ekleri
+ * korunur, stat bloğundaki kurtarma yüksekse o), `poly` (s.153: bütün yetenekler ve kurtarmalar biçimin stat bloğundan).
+ */
+export interface ShapeOpts { swimFt?: number; srd87?: 'wild' | 'poly' }
+
+/**
+ * Kural sürümü 87: seçili biçimlerden bu seviyede hâlâ alınabilenler (CR, uçuş, Beast türü sürümde). Geçersizler kayıtta
+ * kalır, yalnız sayılmaz; seviye geri gelince yine geçerli. Oluşturucu `v` vermez (güncel tür).
+ */
+export function validKnownForms(ids: string[] | undefined, f: UsableFeature, level: number, v?: number): string[] {
+  if (!ids?.length) return [];
+  const ok = new Set(eligibleForms(ids.map((id) => getMonster(id)).filter((x): x is Monster => !!x), f, level, v).map((m) => m.id));
+  return ids.filter((id) => ok.has(id));
+}
+
 /** Biçimin savaş değerleri (olaya yazılır; reducer bunları uygular). */
-export function shapeStats(m: Monster, druid: Combatant): ShapeStats {
+export function shapeStats(m: Monster, druid: Combatant, o: ShapeOpts = {}): ShapeStats {
   const mod = (n: number) => Math.floor((n - 10) / 2);
   const attacks: AttackOption[] = m.attacks.filter((a) => a.damageDice && !a.save && !a.recharge).map((a) => ({
     label: `${a.name} (${m.name})`, attackBonus: a.bonus, damage: a.damageDice as string, damageType: a.damageType ?? 'bludgeoning',
@@ -57,12 +76,36 @@ export function shapeStats(m: Monster, druid: Combatant): ShapeStats {
     tag: `${m.name} ${a.name} ${a.damageType ?? ''}`.toLowerCase(), weaponId: `beast:${m.id}`, beast: { monster: m.id, attack: a.name },
   }));
   const multi = m.multiattack ? m.attacks.filter((a) => !a.recharge).reduce((n, a) => n + (a.repeat ?? 0), 0) : 1;
-  const mods = { ...druid.modifiers, str: mod(m.abilities.str), dex: mod(m.abilities.dex), con: mod(m.abilities.con) };
+  const beastMods = { str: mod(m.abilities.str), dex: mod(m.abilities.dex), con: mod(m.abilities.con),
+    int: mod(m.abilities.int), wis: mod(m.abilities.wis), cha: mod(m.abilities.cha) };
+  const mods = o.srd87 === 'poly' ? beastMods : { ...druid.modifiers, str: beastMods.str, dex: beastMods.dex, con: beastMods.con };
   return {
     form: m.id, name: m.name, ac: m.ac, speed: m.speed, fly: m.fly ?? 0, size: m.size ?? druid.size, modifiers: mods,
-    saves: { ...druid.saves, str: mods.str, dex: mods.dex, con: mods.con }, weaponOptions: attacks, attacksPerAction: Math.max(1, multi),
+    saves: o.srd87 === 'poly' ? { ...beastMods, ...m.saves } : o.srd87 === 'wild' ? wildSaves(m, druid, mods)
+      : { ...druid.saves, str: mods.str, dex: mods.dex, con: mods.con },
+    weaponOptions: attacks, attacksPerAction: Math.max(1, multi),
     avatar: monsterAvatar(m),
+    ...(o.swimFt !== undefined ? { swimFt: o.swimFt } : {}),
   };
+}
+
+/**
+ * SRD 5.2.1 s.43: kurtarma yetkinlikleri korunur (yaratığın yetkinliğinin üstüne), stat bloğundaki kurtarma yüksekse o.
+ * Druid'in yetenek değiştiricisinin üstündeki kurtarma eki (yetkinlik, eşya, özellik) biçimin değiştiricisine eklenir.
+ */
+function wildSaves(m: Monster, druid: Combatant, mods: Combatant['modifiers']): Combatant['saves'] {
+  const out = { ...druid.saves };
+  for (const a of ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const) {
+    const own = mods[a] + (druid.saves[a] - druid.modifiers[a]);
+    out[a] = Math.max(own, m.saves?.[a] ?? -Infinity);
+  }
+  return out;
+}
+
+/** Savaşın kural sürümüne göre biçim seçenekleri (87+: SRD aktarımı, anahtar açıksa yüzme hızı). */
+export function shapeOptsAt(state: BattleState, m: Monster, kind: 'wild' | 'poly'): ShapeOpts {
+  if (!ws87On(state)) return {};
+  return { srd87: kind, ...(bicimYuzmeOn(state) ? { swimFt: swimSpeedAt(m.id, state.kuralSurumu ?? 1) ?? 0 } : {}) };
 }
 
 export function wildShapeProblem(state: BattleState, actor: Combatant, form: string | undefined, monsters: Monster[]): string | null {
@@ -73,7 +116,9 @@ export function wildShapeProblem(state: BattleState, actor: Combatant, form: str
   if (f.resource && resourceLeft(actor, f.resource) <= 0) return `${f.name}: kullanım kalmadı.`;
   const m = eligibleForms(monsters, f, actor.level, state.kuralSurumu ?? 1).find((x) => x.id === form);
   if (!m) return 'Bu biçim bu seviyede alınamaz.';
-  if (actor.wildShapeForms?.length && !actor.wildShapeForms.includes(form)) return 'Bu biçim bilinen biçimlerin arasında değil.';
+  // Kural sürümü 87: seviyede artık alınamayan ya da Beast olmayan seçili biçimler yok sayılır (kayıtta kalır).
+  const known = ws87On(state) ? validKnownForms(actor.wildShapeForms, f, actor.level, state.kuralSurumu ?? 1) : actor.wildShapeForms ?? [];
+  if (known.length && !known.includes(form)) return 'Bu biçim bilinen biçimlerin arasında değil.';
   return null;
 }
 
@@ -85,7 +130,7 @@ export function executeWildShape(state: BattleState, actor: Combatant, form: str
   if (why) return fail(why);
   if (form === undefined) return finish(state, [{ type: 'shape_changed', actorId: actor.id, stats: null, reason: 'bıraktı' }]);
   const f = wildShapeFeature(actor) as UsableFeature;
-  const stats = shapeStats(monsters[0] as Monster, actor.shape ? { ...actor, ...actor.shape.prev } : actor);
+  const stats = shapeStats(monsters[0] as Monster, actor.shape ? { ...actor, ...actor.shape.prev } : actor, shapeOptsAt(state, monsters[0] as Monster, 'wild'));
   const events: BattleEvent[] = [];
   if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
   events.push({ type: 'shape_changed', actorId: actor.id, stats });
@@ -192,6 +237,8 @@ export function availableForms(monsters: Monster[], c: Combatant, v?: number): M
   const lim = f ? shapeLimits(f, c.level) : null;
   if (!f || !lim) return [];
   const all = eligibleForms(monsters, f, c.level, v);
-  if (c.wildShapeForms?.length) return all.filter((m) => c.wildShapeForms?.includes(m.id));
+  // Kural sürümü 87: geçersiz seçili biçimler sayılmaz; geçerli seçim kalmadıysa seçimsiz gibi en güçlüleri.
+  const chosen = all.filter((m) => c.wildShapeForms?.includes(m.id));
+  if (c.wildShapeForms?.length && (chosen.length || (v ?? CURRENT_RULES) < WS87_VERSION)) return chosen;
   return [...all].sort((a, b) => crValue(b.cr) - crValue(a.cr) || b.hp - a.hp).slice(0, lim.known);
 }

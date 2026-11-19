@@ -7,6 +7,14 @@ import type { Strings } from './strings';
 
 const OBJ_EN: Record<string, string> = { oilBarrel: 'oil barrel', powderKeg: 'powder keg', chest: 'chest', table: 'table', door: 'door', brazier: 'brazier' };
 
+/** Control Water seçeneklerinin İngilizce Game Master notu (anahtar `<büyü>/<seçenek>`). */
+const GM_OPTION_EN: Record<string, string> = {
+  'control-water/whirlpool': 'A whirlpool on the target creature\'s hex (house rule: no water needed). Strength save on entering and at turn start; on a failure damage and caught (Athletics to break free), on a success half damage.',
+  'control-water/flood': 'Standing water in the area rises by up to 20 feet; in a large body of water a 20-foot wave crosses the area, carrying Huge or smaller vehicles (25% capsize). No combat effect; the Game Master narrates.',
+  'control-water/part': 'The water in the area parts and a trench crosses the area, the water forming a wall to either side; when the effect ends the trench refills over the next round. No combat effect; the Game Master narrates.',
+  'control-water/redirect': 'Flowing water in the area moves in the direction you choose, even over obstacles or up walls; beyond the area it resumes its normal flow. No combat effect; the Game Master narrates.',
+};
+
 export const en: Strings = {
   camera: { label: 'Camera', zoomIn: 'Zoom in', zoomOut: 'Zoom out', overview: 'Show all (view only)', follow: 'Follow the creature whose turn it is', minimap: 'Minimap: tap to go there', goEvent: 'Go to off-screen event' },
   lang: { name: 'English', label: 'Language', tr: 'Türkçe', en: 'English' },
@@ -281,7 +289,9 @@ export const en: Strings = {
     formPick: (n: number, k: number) => `Wild Shape forms: up to ${n} (${k}/${n}; if empty, the strongest are used)`,
     formTitle: 'Known Wild Shape forms', formCount: (n: number, k: number) => `(${k}/${n} chosen)`,
     formAuto: 'Tap to choose. If you leave it empty, the strongest eligible forms are picked automatically in battle.', formLoading: 'Loading beasts…',
-    formFly: 'fly',
+    formFly: 'fly', formSwim: 'swim',
+    formStale: (notBeast: boolean) => `no longer eligible (${notBeast ? 'not a Beast' : 'not available at this level'}); not counted`,
+    formStaleTip: 'Kept in the save but not usable in battle; valid again when the level returns. Tap to remove it.',
     legend: { ok: 'works in combat', partial: 'partly works', none: 'no combat effect (out of combat)', missing: 'not in the game yet' } as Record<string, string>, invocationOffCombat: 'out of combat, Game Master note',
     invocationNone: 'no effect in game', pactWeapon: 'Pact weapon',
     metamagicCost: (n: number) => `${n} SP`,
@@ -703,12 +713,8 @@ export const en: Strings = {
     turnSummary: (name: string, hits: number, attacks: number, dmg: number, heal: number, saves: number): string => `Turn summary · ${name}: ${attacks ? `${attacks} attack${attacks === 1 ? '' : 's'}, ${hits} hit${hits === 1 ? '' : 's'}` : 'no attacks'}${saves ? `, forced ${saves} save${saves === 1 ? '' : 's'}` : ''}, ${dmg} damage${heal ? `, ${heal} healing` : ''}`,
     summaryToggle: 'Turn summary', expandHint: 'Tap for details',
     gmOption: (spell: string, option: string, note: string): string => `Game Master note — ${spell} (${option}): ${note}`,
-    gmOptionText: {
-      'control-water/whirlpool': 'A whirlpool on the target creature\'s hex (house rule: no water needed). Strength save on entering and at turn start; on a failure damage and caught (Athletics to break free), on a success half damage.',
-      'control-water/flood': 'Standing water in the area rises by up to 20 feet; in a large body of water a 20-foot wave crosses the area, carrying Huge or smaller vehicles (25% capsize). No combat effect; the Game Master narrates.',
-      'control-water/part': 'The water in the area parts and a trench crosses the area, the water forming a wall to either side; when the effect ends the trench refills over the next round. No combat effect; the Game Master narrates.',
-      'control-water/redirect': 'Flowing water in the area moves in the direction you choose, even over obstacles or up walls; beyond the area it resumes its normal flow. No combat effect; the Game Master narrates.',
-    } as Record<string, string>,
+    /** Control Water (sürüm 84): savaş dışı seçeneğin İngilizce notu (TR tarafı `data/aciklamalar-tr.json` `buyuSecenek`). */
+    gmOptionText: (key: string): string => GM_OPTION_EN[key] ?? '',
     hex: (col: number, row: number) => `column ${col}, row ${row}`,
     note: { immune: 'immune', vulnerable: 'vulnerable ×2', resistant: 'resistant ½', absorbed: 'absorbed (heals)' } as Record<string, string>,
     mode: { advantage: ' (advantage)', disadvantage: ' (disadvantage)', normal: '' } as Record<string, string>,

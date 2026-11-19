@@ -56,6 +56,22 @@ for m in ms:
     if iu:
         plan['total'] = sum(NUM[n] for n in re.findall(r'\b(one|two|three|four|five|six) ', iu.group(1)))
         plan['ifUsed'] = {'ability': iu.group(3).strip().lower().replace(' ', '-'), 'total': NUM[iu.group(2)]}
+    # Görev WS87 (kural sürümü 87): "makes one Claws attack and one Tail attack, or it makes two Hurl Flame attacks"
+    # (Barbed Devil s. 262, Medusa s. 306): iki ayrı bileşim; `secenekler` ad → sayı. Motor 87+'da plansız Multiattack'ta
+    # bir seçeneği, planda yalnız tek seçeneğe sığan bileşimi kabul eder (eskiden ikisinin toplamı / karışımı).
+    alt = re.match(r'.*?\bmakes (.+?), or it makes (.+?)\.?$', main)
+    if alt and 'if it used' not in main and 'any combination' not in main:
+        groups = []
+        for part in alt.groups():
+            g = {}
+            for n, name in re.findall(r'(one|two|three|four|five|six) ([A-Z][\w’\'-]*(?: [A-Z][\w’\'-]*)*) attacks?', part):
+                a = known(name)
+                if a:
+                    g[a] = g.get(a, 0) + NUM[n]
+            if g:
+                groups.append(g)
+        if len(groups) == 2:
+            plan['secenekler'] = groups
     if 'as many Bite attacks as it has heads' in main:
         plan.update({'total': 5, 'names': ['Bite'], 'heads': True})
     for u in re.findall(r'(?:and |, and |it )uses? (?:either )?([A-Z][^.]*?)(?: if available)?(?: twice)?(?:\.|$|, and)', main):

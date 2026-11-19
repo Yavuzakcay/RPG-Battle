@@ -33,6 +33,7 @@ import type { BattleEvent, BattleState, Combatant, MultiStep } from './types';
 import multiData from '../../data/multiattack.json';
 import { srdKayit } from './srdD1';
 import { turnKey } from './economy';
+import { ws87On } from './wildShape87Surum';
 import { a2AreaDamage, withA2Extras } from './ridersA2';
 import { castWithoutAction } from './castHook';
 import { possessSpecOf, possessionProblem, possessionStartEvents } from './possession';
@@ -278,12 +279,24 @@ export interface MultiSpec {
   replace?: Array<{ name?: string; spell?: string; level?: number; cost: number }>; heads?: boolean;
   /** Görev D1 (86+): bu tur yetenek (`mab:<ability>`) kullanıldıysa saldırı sayısı `total` (Clay Golem Hasten). */
   ifUsed?: { ability: string; total: number };
+  /**
+   * Görev WS87 (87+): "ya … ya da …" Multiattack'ı (Barbed Devil, Medusa): iki ayrı bileşim, ad → sayı. Plansız düğme
+   * yalnız bir seçeneği yapar, plan tek seçeneğe sığmalı. 86 ve altında yok sayılır (eski: hepsi / karışım).
+   */
+  secenekler?: Array<Record<string, number>>;
 }
 export function multiSpecOf(state: BattleState, actor: Combatant): MultiSpec | null {
   if (!actor.monsterId || !globalRule(state, 'srdK19')) return null;
   // Görev D1: plan savaşın kural sürümünde (85 ve altı: Clay Golem hep 3).
   const rec = (multiData as Record<string, unknown>)[actor.monsterId] as MultiSpec | undefined;
-  return rec ? srdKayit('data/multiattack.json', actor.monsterId, rec, state.kuralSurumu ?? 1) : null;
+  const at = rec ? srdKayit('data/multiattack.json', actor.monsterId, rec, state.kuralSurumu ?? 1) : null;
+  if (at?.secenekler && !ws87On(state)) { const { secenekler: _s, ...rest } = at; return rest; }
+  return at;
+}
+/** Görev WS87 (87+): Multiattack seçenekleri (`srdK19`'dan bağımsız: plansız düğme SRD sayısını yapar). */
+export function multiOptionsAt(state: BattleState, actor: Combatant): Array<Record<string, number>> | null {
+  if (!actor.monsterId || !ws87On(state)) return null;
+  return ((multiData as Record<string, unknown>)[actor.monsterId] as MultiSpec | undefined)?.secenekler ?? null;
 }
 /** Görev D1: koşullu yetenek (Hasten) bu tur kullanıldı mı (`trait_turn` `mab:<ability>`). */
 const ifUsedNow = (spec: MultiSpec, actor: Combatant, state?: BattleState): boolean =>
@@ -321,6 +334,10 @@ export function multiPlanProblem(spec: MultiSpec, actor: Combatant, plan: MultiS
     return `${st.attack ?? st.spell ?? '?'} bu yaratığın Multiattack'ında yok.`;
   }
   if (used > multiTotal(spec, actor, state)) return `Multiattack en çok ${multiTotal(spec, actor, state)} saldırı.`;
+  // Görev WS87 (87+): seçenekli Multiattack'ta bileşim tek seçeneğe sığmalı (Claws + Hurl Flame karışımı yok).
+  if (spec.secenekler && !spec.secenekler.some((o) => Object.entries(per).every(([n, k]) => k <= (o[n] ?? 0)))) {
+    return `Multiattack seçeneklerinden birini seç: ${spec.secenekler.map((o) => Object.entries(o).map(([n, k]) => `${k}× ${n}`).join(' + ')).join(' ya da ')}.`;
+  }
   return null;
 }
 
@@ -358,6 +375,17 @@ function executeMultiPlan(state: BattleState, actor: Combatant, targetId: string
   return finish(state, events);
 }
 
+/** Plansız Multiattack'ın seçeneği (87+; seçenek yoksa null): hedefe saldırıları ulaşan ilk seçenek, yoksa ilki. */
+export function multiOptionChoice(state: BattleState, actor: Combatant, target: Combatant | undefined): Record<string, number> | null {
+  const opts = multiOptionsAt(state, actor);
+  if (!opts?.length) return null;
+  const reaches = (o: Record<string, number>) => !!target && Object.keys(o).every((n) => {
+    const a = actor.attacks.find((x) => x.name === n);
+    return !!a && (!!a.area || checkReach(state, actor, target, monsterAttackReach(a)).ok);
+  });
+  return opts.find(reaches) ?? opts[0] ?? null;
+}
+
 export function executeMultiattack(state: BattleState, actor: Combatant, targetId: string, rng: Rng, plan?: MultiStep[]): CommandResult {
   if (!actor.multiattack) return fail('Bu yaratığın Multiattack\'ı yok.');
   const spec = plan?.length ? multiSpecOf(state, actor) : null;
@@ -370,10 +398,14 @@ export function executeMultiattack(state: BattleState, actor: Combatant, targetI
   const sp = multiSpecOf(state, actor);
   const plus = sp && ifUsedNow(sp, actor, state) ? (sp.ifUsed as { total: number }).total - sp.total : 0;
   const plusAt = plus > 0 ? actor.attacks.findIndex((a) => a.name === sp?.names?.[0]) : -1;
+  // Görev WS87 (87+): "ya … ya da …" Multiattack'ta tek seçenek (Barbed Devil 4 → 2, Medusa 6 → 3): hedefe hepsi ulaşan
+  // ilk seçenek, yoksa ilk seçenek.
+  const opt = multiOptionChoice(state, actor, first);
   for (let i = 0; i < actor.attacks.length; i++) {
     const atk = actor.attacks[i];
     if (!atk || atk.recharge) continue;
-    for (let k = 0; k < atk.repeat + (i === plusAt ? plus : 0); k++) {
+    const times = opt ? opt[atk.name] ?? 0 : atk.repeat + (i === plusAt ? plus : 0);
+    for (let k = 0; k < times; k++) {
       const t = current.combatants[targetId];
       // Tepkiyle (Hellish Rebuke, Retaliation) düşen saldıran devam edemez.
       if ((current.combatants[actor.id]?.hp ?? 0) <= 0) break;

@@ -3,6 +3,7 @@
  * `src/i18n/index.ts` `loadTrExtra` ilk çizimden önce yükleyip `STRINGS_TR`'ye ekler (davranış aynı).
  */
 import { whyTable } from '../ui/reasons';
+import { trAciklama } from '../data';
 /** Görev S2: nesne adları (günlük). */
 const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg: 'barut fıçısı', chest: 'sandık', table: 'masa', door: 'kapı', brazier: 'mangal' };
 
@@ -183,7 +184,7 @@ export const TR_EXTRA = {
     summaryToggle: 'Tur özeti', expandHint: 'Ayrıntı için dokun',
     /** Control Water (sürüm 84): savaş dışı seçeneğin Game Master notu; Türkçe metin `data/aciklamalar-tr.json` `buyuSecenek`. */
     gmOption: (spell: string, option: string, note: string): string => `Game Master notu — ${spell} (${option}): ${note}`,
-    gmOptionText: {} as Record<string, string>,
+    gmOptionText: (key: string): string => trAciklama('buyuSecenek', key) ?? '',
     hex: (col: number, row: number) => `sütun ${col}, satır ${row}`,
     note: { immune: 'bağışık', vulnerable: 'zayıflık ×2', resistant: 'direnç ½', absorbed: 'emildi (iyileştirdi)' } as Record<string, string>,
     mode: { advantage: ' (avantaj)', disadvantage: ' (dezavantaj)', normal: '' } as Record<string, string>,

@@ -9,6 +9,38 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Druid Wild Shape ve Polymorph düzeltmeleri WS87: kural sürümü 87 (2026-11-19, kullanıcı kararı 2026-11-19: SRD 5.2.1'i izle)
+
+Kaynak: SRD 5.2.1 PDF (`docs/SRD_CC_v5.2.1.pdf`): Wild Shape s.43 ("Rules While Shape-Shifted"), Polymorph s.153, Barbed Devil s.262, Medusa s.306; değerler PDF'ten okundu, bellekten değer yok. D1'in (86) tür ve yüzme verisi yalnız kullanıldı, yeniden düzeltilmedi (`creatureTypeAt`, `swimSpeedAt`, `monsterAt`).
+
+- **Sürüm 87.** Tek sabit `src/battle/wildShape87Surum.ts` (`WS87_VERSION`, `ws87On`, `bicimYuzmeOn`). 85 boş kaldı: D1 85'i bu göreve ayırmıştı; yerel 85 denemesi (tür + yüzme verisi) D1 ile örtüştüğü için atıldı, kalan iş 87'ye taşındı. 86 savaşında 85 kuralı yok; eski kayıtlar 86'dan bu yana değişmez.
+- **Biçimin yüzme hızı (Game Master anahtarı `bicimYuzme`, sürüm 87, varsayılan açık).** `shapeStats` biçimin SRD yüzme hızını `swimFt` olarak yazar (yüzmeyen biçim 0); Polymorph aynı anahtarla (`shapeOptsAt`). Reducer `shape_changed` yüzme hızını uygular, bırakınca eskisine döner (`ShapePrev.swimFt`) ve "suda" işaretini hemen eşler (`syncWater`). Böylece biçimdeki Druid suda yüzme hızıyla ilerler ve çok derin suya girer (`canEnterVeryDeep` zaten `swimFt` + sürüm 82'ye bakıyordu). Anahtar kapalıyken ya da 86 ve altında olayda alan yok: eski davranış.
+  - Karar: biçimi derin suda bırakan Druid suda kalır (zorla çıkarma yok; SRD'de yok). Yalnız giriş kuralı yüzme hızına bakar.
+- **Geçersiz seçili biçimler (karar).** Seviye düşünce (CR/uçuş sınırı) ya da D1 tür düzeltmesiyle (Giant Eagle, Giant Owl, Giant Elk Celestial; Death Dog Monstrosity) artık alınamayan seçili biçimler **kayıttan silinmez**, yalnız sayılmaz (`validKnownForms`): 87'de savaşta kullanılmaz, bilinen biçim denetimi onları saymaz; geçerli seçim kalmadıysa seçimsiz gibi en güçlü uygun biçimler. 86 ve altında eski davranış (geçersiz seçim tek başına kaldıysa hiç biçim yok). Seviye geri gelince yine geçerli. Oluşturucuda bu biçimler sayaca girmez, en üstte "artık uygun değil (türü Beast değil / bu seviyede alınamaz); sayılmaz" notuyla görünür, dokunulunca listeden çıkar. Kartta yürüme ve uçmanın yanında yüzme hızı da var.
+- **Eski kayıt taraması.** Depodaki kayıtlı Druid'lerde (`data/sim-partiler.json` `yara`, sim partileri, fikstürler, `docs/ornek-paket/`) seçili biçim listesi yok: hepsi otomatik seçim. Otomatik seçim 86'da D1 türünü zaten kullanıyordu, bu yüzden sim partileri etkilenmez. Etkilenebilecek tek durum oyuncunun cihazındaki kayıt: 8+ seviyede Giant Eagle, Giant Owl ya da Death Dog seçmiş Druid (2–7. seviyede bunlar zaten alınamıyordu). Bu biçimler artık "uygun değil" görünür, kayıtta kalır. Giant Elk CR 2 olduğu için hiçbir seviyede seçilemiyordu.
+- **SRD aktarım farkları (PDF'e göre).**
+  - Wild Shape (s.43): oyun değerleri biçimin stat bloğundan. Korunanlar: yaratık türü, HP, Hit Dice, INT/WIS/CHA, sınıf özellikleri, diller, feat'ler, beceri ve kurtarma yetkinlikleri (yaratığınkine ek olarak, kendi yeterlilik bonusuyla). Stat bloğundaki beceri/kurtarma yüksekse o kullanılır. Geçici HP = Druid seviyesi.
+    - **Fark, 87'de düzeltildi:** fiziksel kurtarmalar düz değiştiriciydi. Druid'in yetkinliği (örn. Resilient CON) düşüyor, stat bloğu kurtarması yok sayılıyordu. Şimdi biçimin değiştiricisi + Druid'in o kurtarmadaki eki (yetkinlik ve diğer ekler), stat bloğu yüksekse o (`wildSaves`). Örnek: Crocodile CON +1 → +3. INT/WIS/CHA kurtarmaları da stat bloğu yüksekse ondan (T-Rex WIS +4).
+    - Diğer ekler eşya/özellikten gelebilir; çoğunlukla takılı kalan eşya olduğu için korunur (⚠ yorum).
+    - Yaratık türü, HP ve geçici HP zaten doğruydu.
+    - **Dokunulmadı:** beceri yetkinlikleri. Biçimin beceri bonusları modelde yok, savaş içi beceri kontrolleri Druid'inkiyle kalır. Belirsiz değil, kapsam dışı.
+  - Polymorph (s.153): bütün oyun değerleri biçimin stat bloğundan. Yalnız hizalanma, kişilik, yaratık türü, HP ve Hit Dice korunur. Geçici HP = biçimin HP'si; konuşamaz, büyü yapamaz.
+    - **Fark, 87'de düzeltildi:** INT/WIS/CHA ve kurtarmalar hedefin kendisinden kalıyordu (Wild Shape kuralı). Şimdi biçimden (`{ ...değiştiriciler, ...stat bloğu kurtarmaları }`).
+    - Büyü yasağı zaten vardı (biçimde büyü yok).
+- **Bonus: Multiattack seçenekleri (87).** SRD'de Barbed Devil "one Claws attack and one Tail attack, or two Hurl Flame attacks", Medusa "two Claw attacks and one Snake Hair attack, or three Poison Ray attacks".
+  - Game Master'ın plansız düğmesi bütün saldırıları topluyordu: Barbed Devil 4, Medusa 6.
+  - Düzeltme Clay Golem gibi plan verisiyle: `scripts/k19-multiattack.py` "…, or it makes …" kalıbından `secenekler` üretir (`data/multiattack.json`'da yalnız bu iki canavar).
+  - 87'de plansız düğme tek seçeneği yapar: saldırıları hedefe ulaşan ilk seçenek (bitişikte yakın, uzakta menzilli), hiçbiri ulaşmıyorsa ilki (`multiOptionChoice`). `srdK19`'dan bağımsız.
+  - Plan tek seçeneğe sığmalı: Claws + Hurl Flame karışımı reddedilir (`multiPlanProblem`).
+  - 86 ve altında eski sayım.
+- **Doğrulama.**
+  - Testler: `src/battle/wildShape87.test.ts` (14), Karadul testi (`karadul.test.ts`: 3/4/8. seviyede Wild Shape yok, örümcek biçimi 86 = 87).
+  - Hızlı regresyon `src/sim/ws87Regresyon.test.ts`: `k18-druid` partisi, col/kale/magara, Barbed Devil ve Medusa. 86 imzası 15ad4633 ağacının altınıyla aynı (1 ve 3 tohum); 87 çökmesiz, imzası farklı.
+  - Matris: Polymorph 6/6, Protection from Evil and Good 3/3 doğru.
+  - Denge ölçümü yapılmadı.
+  - Ekran görüntüsü: `docs/sabah/wildshape-87/once.webp`, `sonra.webp`.
+- **Yan düzeltme (aynı commit, kural dışı).** Control Water (84) işinden kalan i18n yapı hatası: EN `log.gmOptionText` anahtarlı tabloydu, TR'de boş nesneydi. Bu yüzden `strings.test.ts` "TR ve EN aynı anahtarlar" testi kırmızıydı. Artık iki dilde de işlev: TR `data/aciklamalar-tr.json` `buyuSecenek` (SD4), EN `GM_OPTION_EN`. Günlük ve kart dil ayrımı yapmadan `t().log.gmOptionText(key)` çağırır.
+
 ## SRD veri düzeltmeleri D1: kural sürümü 86 (2026-11-19, kullanıcı kararları 2026-11-19)
 
 Kaynak: `harita/belgeler/SRD-VERI-DOGRULAMA.md` (denetim + §8 D1 sonucu) ve `srd-veri-dogrulama.csv` (`D1 (kural sürümü 86)` sütunu). Kullanıcı kararları: (1) düzeltmeler SRD uyumu içindir, denge değildir; CLAUDE.md'deki "denge için değiştirme" yasağına girmez. (2) PDF'te karşılığı olmayan oyun değerleri değişmez, "SRD dışı oyun değeri" olarak listelenir. (3) Savaş sonucunu değiştiren düzeltmeler kural sürümüne bağlanır. Her değer PDF'ten doğrulandı (sayfa `data/srd-duzeltme.json`'da); bellekten değer yok.

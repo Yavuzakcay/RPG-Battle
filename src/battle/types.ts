@@ -1565,10 +1565,12 @@ export interface ShapeStats {
   possession?: boolean;
   attacks?: CombatantAttack[];
   multiattack?: boolean;
+  /** Kural sürümü 87 + `bicimYuzme`: biçimin yüzme hızı (ft; 0 = yüzme hızı yok). Alan yoksa yaratığın yüzme hızı değişmez. */
+  swimFt?: number;
 }
 /** Biçimden önceki (bırakınca dönen) değerler. */
 export type ShapePrev = Pick<Combatant, 'ac' | 'speed' | 'fly' | 'size' | 'modifiers' | 'saves' | 'weaponOptions' | 'attacksPerAction' | 'avatar'>
-  & Partial<Pick<Combatant, 'attacks' | 'multiattack'>>;
+  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt'>>;
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
 export interface ExtraDamage {
