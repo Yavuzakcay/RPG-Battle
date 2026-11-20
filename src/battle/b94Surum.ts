@@ -7,3 +7,6 @@ import type { BattleState } from './types';
 
 export const B94_VERSION = 94;
 export const b94On = (s: Pick<BattleState, 'kuralSurumu'> | undefined): boolean => (s?.kuralSurumu ?? 1) >= B94_VERSION;
+
+/** Görev B94 (Horde Breaker): saldırı etiketinin silah kökü ("Javelin (fırlatma)" → "Javelin"). */
+export const weaponBase = (label: string): string => label.replace(/\s*\(.*\)\s*$/, '');

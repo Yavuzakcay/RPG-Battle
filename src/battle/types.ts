@@ -543,6 +543,9 @@ export interface Economy {
   meleeHit?: { targetId: string; critical: boolean; martialArts?: boolean; pact?: boolean; /** Görev B95-B (97+): Unarmed Strike / Monk silahı isabeti (zırh şartı yok). */ unarmed?: boolean; monkWeapon?: boolean };
   /** Görev F: bu tur son saldırılan yaratık (Horde Breaker). */
   lastTargetId?: string;
+  /** Görev B94 (sürüm 94+, Horde Breaker): bu tur kendi turunda saldırılan yaratıklar ve son saldırının silahı (etiketin kökü). */
+  attackedIds?: string[];
+  lastWeapon?: string;
   /** Flurry of Blows'tan kalan Unarmed Strike sayısı (Görev P-Monk). */
   flurryLeft?: number;
   /** Bu tur Stunning Strike denendi (turda bir kez). */

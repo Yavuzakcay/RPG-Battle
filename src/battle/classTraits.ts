@@ -4,6 +4,7 @@
  * yok. Saf; saldırı, save ve hareket kodu buradan sorar. SRD 5.2.1.
  */
 import { sinif97On } from './sinif97Surum';
+import { b94On, weaponBase } from './b94Surum';
 import { featuresOn, shiftGrant } from './shift';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
@@ -183,13 +184,18 @@ export function colossusDice(state: BattleState, actor: Combatant, target: Comba
 export const markDie = (actor: Combatant, expr: string): string => (hasTrait(actor, 'foe-slayer') ? expr.replace(/d6\b/, 'd10') : expr);
 
 /** Horde Breaker'ın hedefi olabilir mi: bu tur saldırılan bir yaratığın 5 ft yakınında, ondan farklı. */
-export function hordeProblem(state: BattleState, actor: Combatant, target: Combatant): string | null {
+export function hordeProblem(state: BattleState, actor: Combatant, target: Combatant, option?: AttackOption): string | null {
   if (!hasTrait(actor, 'horde-breaker')) return 'Horde Breaker yok.';
   if (usedThisTurn(state, actor, 'horde-breaker')) return 'Horde Breaker bu tur kullanıldı.';
   const first = actor.economy.lastTargetId ? state.combatants[actor.economy.lastTargetId] : undefined;
   if (!first) return 'Önce bu tur bir yaratığa silahla saldırmalısın.';
   if (first.id === target.id) return 'Horde Breaker başka bir yaratığa yapılır.';
   if (state.map && (!first.pos || !target.pos || distance(first.pos, target.pos) > 1)) return `${target.name}, ${first.name}'in 5 ft yakınında değil.`;
+  // Görev B94 (sürüm 94+, SRD 5.2.1 Hunter's Prey: "a different creature … that you haven't attacked this turn" ve "the same weapon").
+  if (b94On(state)) {
+    if (actor.economy.attackedIds?.includes(target.id)) return `${target.name} bu tur zaten saldırıya uğradı.`;
+    if (option && actor.economy.lastWeapon && weaponBase(option.label) !== actor.economy.lastWeapon) return `Horde Breaker aynı silahla (${actor.economy.lastWeapon}).`;
+  }
   return null;
 }
 

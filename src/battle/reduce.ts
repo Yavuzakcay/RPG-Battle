@@ -2,7 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
-import { b94On } from './b94Surum';
+import { b94On, weaponBase } from './b94Surum';
 import { sourceDown } from './sourceDown';
 import nesneAgirlik from '../../data/nesne-agirlik.json';
 import { BOON_TURN_REFILL } from './boons';
@@ -584,7 +584,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         next = withCombatant(next, att.id, {
           ...(event.traitTurns ? { traitTurns: { ...att.traitTurns, ...event.traitTurns } } : {}),
           ...(event.steadyAim ? { steadyAim: undefined } : {}),
-          ...(!event.opportunity && state.order[state.turnIndex] === att.id ? { economy: { ...att.economy, lastTargetId: event.targetId } } : {}),
+          ...(!event.opportunity && state.order[state.turnIndex] === att.id ? { economy: { ...att.economy, lastTargetId: event.targetId,
+            // Görev B94 (94+): Horde Breaker'ın "bu tur saldırmadığın" ve "aynı silah" şartları.
+            ...(b94On(state) ? { attackedIds: [...new Set([...(att.economy.attackedIds ?? []), event.targetId])], lastWeapon: weaponBase(event.label) } : {}) } } : {}),
         });
       }
       next = refreshRage(next, event.actorId, event.targetId);
