@@ -12,7 +12,7 @@ import {
   buildDex, dexFilters, dexSearch, loadDexExtras, shownText, DEX_CATS, DEX_PAGE, DEX_SUBCLASS_EXPECTED, DEX_VISIBLE_FILTERS,
   type DexCat, type DexEntry, type DexExtras, type DexLink, type DexText,
 } from '../dungeondex/catalog';
-import { BookFrame, DexCover, useCover } from '../dungeondex/book/Book';
+import { BookFrame, DexCover, PlateText, useCover } from '../dungeondex/book/Book';
 import { bookData } from '../dungeondex/book/kitapData';
 import { storedDexCover } from '../ui/dexCoverSetting';
 import { IconBook } from '../ui/icons';
@@ -147,7 +147,7 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
           <div className={`ddk-book${phase !== 'open' ? ' ddk-entering' : ''}`}>
             <BookFrame
               vitrine={<Vitrine entry={entry} />}
-              strip={entry ? <><strong>{entry.name}</strong><em>{L.cat[entry.cat]}</em></> : <strong>{title}</strong>}
+              strip={entry ? <PlateText key={entry.id} name={entry.name} tag={L.cat[entry.cat]} /> : <PlateText key={title} name={title ?? L.title} />}
               nav={
                 <nav className="ddk-pagenav" aria-label={L.title}>
                   <button type="button" className="dex-back" onClick={back} aria-label={L.back}>← {view.cat && !view.id && !trail.length ? L.toc : L.back}</button>

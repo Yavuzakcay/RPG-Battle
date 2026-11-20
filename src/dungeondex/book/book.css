@@ -34,7 +34,12 @@
 .ddk-vitrin-ph svg { width: 34cqmin; height: 34cqmin; }
 .ddk-serit { display: flex; align-items: center; justify-content: center; gap: 0.6em; padding: 0 3%; overflow: hidden; container-type: size;
   color: var(--ddk-krem); font-size: clamp(11px, 42cqh, 22px); white-space: nowrap; }
-.ddk-serit strong { overflow: hidden; text-overflow: ellipsis; }
+.ddk-serit { padding: 0 3%; }
+.ddk-plate { display: flex; align-items: center; justify-content: center; gap: 0.5em; min-width: 0; max-width: 100%; line-height: 1.15; }
+.ddk-plate strong { white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ddk-plate[data-lines="2"] strong { white-space: normal; text-align: center; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.ddk-plate-cut strong { overflow: hidden; text-overflow: ellipsis; }
+.ddk-plate:not([data-tag="1"]) em { display: none; }
 .ddk-serit em { font-style: normal; font-size: 0.72em; color: var(--ddk-bakir2); border: 1px solid var(--ddk-bakir); border-radius: 999px; padding: 0 0.5em; flex: 0 0 auto; }
 .ddk-page { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
 /* Krem sayfa: koyu mürekkep (kart bileşenleri değişmez, yalnız renk değişkenleri). */
