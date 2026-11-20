@@ -185,6 +185,12 @@ Sıra etkiye göre. "Sürüm" sütunu: savaş davranışı değişiyorsa **günc
 
 **A) Sürümsüz (yapıldı).** `data/secim-degisim.json`'a `rogue` kaydı eklendi; Serüven'de "Seçimler" düğmesi çıkar ve B93'ün ortak yardımcısıyla (`src/rules/levelChoices.ts`, `set_choices`) seçim yapılır. Yeni seçimler (alt sınıf 3. seviyede, ASI/feat ve Epic Boon yuvaları, yeni Weapon Mastery hakkı; 6. seviye Expertise, SRD 5.2.1 s. 61; uzun dinlenmede bütün ustalıklar değişir, s. 62 "change the kinds of weapons you chose") yalnız eklenir; eksik seçim varken düğme "Seçimler (seçim bekliyor)" olur (`pendingChoices`). Serüven'de alt sınıf **otomatik atanmaz**: seçim kipinde (Builder `choices`) boş alt sınıf açılışta da olsa eksik sayılır, Kaydet onu ister. Seçim kipine Weapon Mastery seçicisi eklendi (donanım adımı bu kipte yok). Test: `src/rules/levelChoices.test.ts` "Görev B95 (A)", `src/screens/b95Secim.test.tsx`.
 
-**B) Sürümlü (bekliyor).** Kapı: `birlesik`'te kural sürümü 95 ve 96 yok (güncel 94); Uncanny Dodge'un yalnız görülen saldırgana, Second-Story Work atlaması (gerçek etkiyle test), Steady Aim sonrası hız 0'da Withdraw/Tactical Shift kayması, fırlatılan Javelin'in Sneak Attack almaması, Cunning Strike'ın yan el/fırsat saldırısı/Ready'de seçilmesi yapılmadı.
+**B) Sürümlü (yapıldı, kural sürümü 97 `SINIF97_VERSION`; 96 ve altı eski davranış).**
+- Uncanny Dodge (A19; SRD 5.2.1 s. 63 "an attacker that you can see"): görünmez saldırganda ve Blinded Rogue'da kullanılmaz, tepki harcanmaz (`canSeeTarget`).
+- Second-Story Work Jumper (A34; bizim Thief metni): gerçek Thief'e özellik kimliğinden `jumper-dex` işareti (`data/ozellik-isaret.json`; paket verisi değişmedi), 97+'da atlama DEX skoruyla. Eski elle işaretli test (`k19feat3.test.ts`) gerçek işarete çevrildi; uçtan uca `b95rogue.test.ts`.
+- Steady Aim (s. 62 "your Speed is 0 until the end of the current turn"): sonrasında Withdraw ve Tactical Shift kayması 0 (`economy.speedZero`).
+- Sneak Attack (s. 61–62 "a Finesse or a Ranged weapon"): fırlatılan Javelin (ve Finesse olmayan diğer yakın dövüş silahları) Sneak Attack almaz.
+- Cunning Strike (A14; s. 63): yan el saldırısında (`offhand_attack.cunning`), fırsat saldırısında (tepki sorusunda tek seçenekli "Opportunity Attack + Cunning Strike (…)") ve Ready'de (`ReadyResponse.cunning`, Ready paneli) seçilir. Horde Breaker yolu bu görevde değil.
+- Test: `src/battle/b95rogue.test.ts`.
 
 **C) Ertelendi, karar gerekli.** Stroke of Luck (SRD 5.2.1 s. 63) oyuncuya sorulsun mu ve 20'ye çevrilen saldırı kritik sayılsın mı (s. 6 "Rolling 20" yorumu); yapay zekânın Cunning Strike seçeneklerini kullanması (s. 63; YZ davranışı denge değiştirir, denge turuna kalır).

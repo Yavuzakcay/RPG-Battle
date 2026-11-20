@@ -5,7 +5,9 @@
  * yazılır. Yalnız komut kurar; motor `ready.ts` doğrular. Savaş ekranı parçasında (tembel).
  */
 import { spells } from '../data';
-import type { BattleState, Combatant, Command } from '../battle';
+import type { BattleState, Combatant, Command, CunningOption } from '../battle';
+import { cunningOptions } from '../battle/classTraits';
+import { sinif97On } from '../battle/sinif97Surum';
 import type { Offset } from '../rules/hex';
 import { READY_TRIGGERS, readyProblem } from '../battle/ready';
 import { getLang, t } from '../i18n';
@@ -14,6 +16,8 @@ export interface ReadyDraft {
   trigger: string; sourceId?: string; hex?: Offset;
   kind: 'attack' | 'move' | 'spell';
   weapon?: string; attackIndex?: number; to?: Offset;
+  /** Görev B95-B (97+): hazırlanan silah saldırısının Cunning Strike seçenekleri. */
+  cunning?: CunningOption[];
   spellName?: string; slotLevel?: number;
 }
 export const READY_DRAFT: ReadyDraft = { trigger: READY_TRIGGERS[0]?.id ?? 'erisime-girer', kind: 'attack' };
@@ -28,7 +32,7 @@ export function readyCommand(actor: Combatant, d: ReadyDraft): Extract<Command, 
   const base = { type: 'ready' as const, actorId: actor.id, trigger: d.trigger, ...(d.sourceId ? { sourceId: d.sourceId } : {}), ...(d.hex ? { hex: d.hex } : {}) };
   if (d.kind === 'attack') {
     const option = actor.weaponOptions.find((o) => o.label === d.weapon);
-    if (option) return { ...base, response: { kind: 'attack', option } };
+    if (option) return { ...base, response: { kind: 'attack', option, ...(d.cunning?.length ? { cunning: d.cunning } : {}) } };
     if (d.attackIndex !== undefined) return { ...base, response: { kind: 'attack', attackIndex: d.attackIndex } };
     return null;
   }
@@ -88,6 +92,16 @@ export function ReadyPanel(props: {
             {monsterAttacks.map(({ a, i }) => <option key={`#${i}`} value={`#${i}`}>{a.name}</option>)}
           </select>
         </label>
+      )}
+      {/* Görev B95-B (97+): hazırlanan saldırıda Cunning Strike (Sneak Attack verirse). */}
+      {d.kind === 'attack' && d.weapon && sinif97On(state) && cunningOptions(actor).max > 0 && (
+        <fieldset className="cunning-picks">
+          <legend>{t().battle.label.cunning}</legend>
+          {cunningOptions(actor).options.map((o) => (
+            <label key={o}><input type="checkbox" checked={(d.cunning ?? []).includes(o)}
+              onChange={(e) => set({ cunning: e.target.checked ? [...(d.cunning ?? []), o].slice(-cunningOptions(actor).max) : (d.cunning ?? []).filter((x) => x !== o) })} /> {t().battle.label.cunningName[o] ?? o}</label>
+          ))}
+        </fieldset>
       )}
       {d.kind === 'move' && (
         <button type="button" className="ghost" onClick={() => props.onPickHex('to')}>{U.pickTo} · {d.to ? U.hexSet(props.hexLabel(d.to)) : U.unset}</button>

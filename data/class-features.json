@@ -1231,6 +1231,11 @@
     "ranger:favored-enemy": {
       "type": "resource",
       "status": "ok",
+      "alwaysPrepared": {
+        "1": [
+          "Hunter's Mark"
+        ]
+      },
       "resource": "favoredEnemy",
       "note": "Hunter's Mark kullanım sayısınca slotsuz"
     },

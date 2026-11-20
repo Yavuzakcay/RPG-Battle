@@ -6,7 +6,7 @@
  * kapalı gövde/kanat, açık kanat katlanma pozu, CSS d20; stiller index.html'deki `splash.css`), yeni resim yok.
  * Görsel üretilmemişse (`null`) kapak ve kitap çerçevesiz düz düzenle çizilir.
  */
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { t } from '../../i18n';
 import { CLOSED_BODY, CLOSED_WINGS, closedStyle, dieHtml, eyePoints, layerFile, layerStyle } from '../../ui/splashLogic';
 import { reducedMotion } from '../../ui/effectsSetting';
@@ -99,7 +99,7 @@ export function DexCover(props: { phase: CoverPhase; onOpen: () => void; counts:
   const vars = {
     '--ar': String(c.aspect), '--wing-at': ms(A.kanatGecikmeMs), '--wing-ms': ms(A.kanatMs), '--cwing-out': ms(A.kapaliKanatSonMs),
     '--swap-at': ms(A.kanatGecikmeMs + A.kanatMs), '--swap-ms': ms(A.govdeGecisMs), '--turn-ms': ms(A.kapakMs), '--turn-deg': `${A.kapakAci}deg`,
-    '--fade-ms': ms(A.solmaMs), '--pulse-ms': ms(A.nabizMs),
+    '--fade-ms': ms(A.solmaMs), '--pulse-ms': ms(A.nabizMs), ...(d?.zemin ? { '--deri': d.zemin } : {}),
   } as CSSProperties;
   return (
     <div className={`ddk-cover ddk-${props.phase}${d ? ' ddk-has-img' : ' ddk-no-img'}${hidden ? ' ddk-paused' : ''}${motion === 'reduced' ? ' ddk-static' : ''}`} style={vars}
@@ -135,8 +135,12 @@ export function useFrameKind(): FrameKind {
   return kind;
 }
 
-/** Açık kitap: vitrin penceresi, vitrin altı isim şeridi ve sağ (mobilde alt) sayfa; sayfa güvenli alanda kayar. */
-export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: ReactNode; className?: string }) {
+/**
+ * Açık kitap: vitrin penceresi, vitrin altı isim plakası ve sağ (mobilde alt) parşömen sayfa; sayfa güvenli alanda kayar.
+ * Tasarımda liste/arama/sekme yeri yok: içindekiler (kategoriler, arama, liste) ve gezinme (geri, önceki/sonraki)
+ * parşömenin içinde (`nav` üstte yapışık), kitabın dışında çubuk yok.
+ */
+export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: ReactNode; nav?: ReactNode; className?: string }) {
   const kind = useFrameKind();
   const d = kind === 'duz' ? null : bookData()[kind];
   if (!d) {
@@ -144,7 +148,7 @@ export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: R
       <div className={`ddk-frame ddk-duz ${props.className ?? ''}`} data-frame="duz">
         <div className="ddk-vitrin">{props.vitrine}</div>
         <div className="ddk-serit">{props.strip}</div>
-        <div className="ddk-page">{props.page}</div>
+        <div className="ddk-page">{props.nav}{props.page}</div>
       </div>
     );
   }
@@ -154,8 +158,68 @@ export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: R
         <img className="ddk-frame-img" src={`${BASE}${d.file}`} alt="" draggable={false} />
         <div className="ddk-vitrin" style={boxStyle(d.vitrin)}>{props.vitrine}</div>
         <div className="ddk-serit" style={boxStyle(stripBox(d))}>{props.strip}</div>
-        <div className="ddk-page" style={boxStyle(d.guvenli)}>{props.page}</div>
+        <div className="ddk-page" style={boxStyle(d.guvenli)}>{props.nav}{props.page}</div>
       </div>
     </div>
+  );
+}
+
+/** Plaka yazısının en küçük okunur boyutu (px); altına inilmez, sonra etiket düşer, en son üç nokta. */
+export const PLATE_MIN_PX = 11;
+/** Kategori etiketi bu boyutun altında gizlenir. */
+export const PLATE_TAG_MIN_PX = 14;
+/** Plakanın iç ölçüsü (dolgu hariç). */
+function inner(box: HTMLElement): { w: number; h: number } {
+  const cs = getComputedStyle(box);
+  return { w: box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight), h: box.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) };
+}
+type PlateFit = { px: number | null; tag: boolean; lines: 1 | 2; cut: boolean };
+
+/**
+ * İsim plakası yazısı: ad plakaya sığana dek küçülür (CSS'teki en büyük boyuttan `PLATE_MIN_PX`'e); sığmazsa önce
+ * kategori etiketi gizlenir, sonra plaka yüksekliği elveriyorsa iki satır, en son tek satırda üç nokta (tam ad `title`'da).
+ * Ölçü: adın doğal eni (`scrollWidth`, tek satır) + etiket eni ≤ plakanın iç eni; satır yüksekliği × satır ≤ iç yükseklik.
+ */
+export function PlateText(props: { name: string; tag?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [fit, setFit] = useState<PlateFit>({ px: null, tag: true, lines: 1, cut: false });
+  useLayoutEffect(() => {
+    const el = ref.current, box = el?.parentElement;
+    if (!el || !box) return;
+    const name = el.querySelector('strong') as HTMLElement | null, tag = el.querySelector('em') as HTMLElement | null;
+    if (!name) return;
+    const run = () => {
+      el.style.fontSize = '';
+      el.dataset.lines = '1'; el.dataset.cut = ''; el.dataset.tag = '1';
+      const max = parseFloat(getComputedStyle(el).fontSize) || 18;
+      const { w, h } = inner(box);
+      const lineH = (px: number) => px * 1.15;
+      const fits = (px: number, withTag: boolean, lines: 1 | 2): boolean => {
+        el.style.fontSize = `${px}px`;
+        el.dataset.tag = withTag ? '1' : '';
+        const tagW = withTag && tag ? tag.offsetWidth + px * 0.5 : 0;
+        if (lines === 1) return name.scrollWidth <= name.clientWidth + 0.5 && name.scrollWidth + tagW <= w + 0.5 && lineH(px) <= h + 1;
+        // iki satır: adın doğal eni iki satıra bölünebilmeli (kaba ölçü, sözcük sınırı payıyla) ve yükseklik yetmeli
+        return name.scrollWidth <= (w - tagW) * 1.8 && lineH(px) * 2 <= h + 1;
+      };
+      const tries: Array<[boolean, 1 | 2]> = props.tag ? [[true, 1], [false, 1], [false, 2]] : [[false, 1], [false, 2]];
+      for (const [withTag, lines] of tries) {
+        // etiketle en çok PLATE_TAG_MIN_PX'e kadar küçülür; daha küçüğü gerekiyorsa etiket düşer, ad büyük kalır
+        for (let px = max; px >= (withTag ? Math.max(PLATE_MIN_PX, PLATE_TAG_MIN_PX) : PLATE_MIN_PX); px -= 0.5) {
+          if (fits(px, withTag, lines)) { setFit({ px, tag: withTag, lines, cut: false }); return; }
+        }
+      }
+      setFit({ px: PLATE_MIN_PX, tag: false, lines: 1, cut: true });
+    };
+    run();
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(run);
+    ro?.observe(box);
+    return () => ro?.disconnect();
+  }, [props.name, props.tag]);
+  return (
+    <span ref={ref} className={`ddk-plate${fit.cut ? ' ddk-plate-cut' : ''}`} data-tag={fit.tag ? '1' : ''} data-cut={fit.cut ? '1' : ''} data-lines={fit.lines}
+      style={fit.px ? { fontSize: `${fit.px}px` } : undefined} title={props.name}>
+      <strong>{props.name}</strong>{props.tag && <em>{props.tag}</em>}
+    </span>
   );
 }

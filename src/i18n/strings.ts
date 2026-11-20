@@ -762,6 +762,7 @@ const tr = {
       turnStart: (src: string): string => `${src} turuna başlıyor.`,
       miss: (src: string): string => `${src} sana vuramadı.`,
       ally: (src: string, label: string): string => `${src}: ${label}`,
+      inspire: (label: string, total: number, need: number): string => `${label}: zar sonucu ${total}, gereken ${need}. İlham zarını kullan?`,
     } as Record<string, (...a: never[]) => string>,
     slot: (n: number): string => `${n}. seviye slot`,
     /** Görev Z2: Cutting Words zarın uygulanacağı yer (zar atılmadan seçilir). */

@@ -7,7 +7,7 @@ import { acilis } from '../../../data/logo.json';
 import type { Box, Pt } from './measure';
 
 interface Img { file: string; width: number; height: number; aspect: number }
-export type CoverData = Img & { pencere: Box; altigen: Pt[]; ustSerit: Box | null; altSerit: Box | null; toka: Pt | null };
+export type CoverData = Img & { zemin?: string; pencere: Box; altigen: Pt[]; ustSerit: Box | null; altSerit: Box | null; toka: Pt | null };
 export type SpreadData = Img & { vitrin: Box; serit: Box | null; sayfa: Box; guvenli: Box; mentese?: Box | null };
 export interface BookData { kapak: CoverData | null; genis: SpreadData | null; mobil: SpreadData | null }
 export type FrameKind = 'genis' | 'mobil' | 'duz';

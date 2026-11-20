@@ -607,7 +607,7 @@
         ],
         "spellNames": [
           "Cure Wounds",
-          "Hunter's Mark",
+          "Alarm",
           "Entangle",
           "Spike Growth",
           "Barkskin",
@@ -647,13 +647,13 @@
         "1": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark"
+            "Alarm"
           ]
         },
         "3": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark",
+            "Alarm",
             "Entangle",
             "Longstrider"
           ]
@@ -1176,7 +1176,7 @@
         ],
         "spellNames": [
           "Cure Wounds",
-          "Hunter's Mark",
+          "Alarm",
           "Entangle",
           "Spike Growth",
           "Magic Weapon",
@@ -1219,13 +1219,13 @@
         "1": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark"
+            "Alarm"
           ]
         },
         "3": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark",
+            "Alarm",
             "Entangle",
             "Longstrider"
           ]
@@ -1233,7 +1233,7 @@
         "7": {
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark",
+            "Alarm",
             "Entangle",
             "Spike Growth",
             "Magic Weapon",
@@ -1266,7 +1266,7 @@
           ],
           "spellNames": [
             "Cure Wounds",
-            "Hunter's Mark",
+            "Alarm",
             "Entangle",
             "Spike Growth",
             "Magic Weapon",

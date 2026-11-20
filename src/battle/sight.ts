@@ -8,6 +8,7 @@ import { withinFiveFt } from './common';
 import { frightenedNow, grappleAttackRule, srdConditions } from './ruleVersion';
 import { globalRule } from './ruleControl';
 import { distance } from '../rules/hex';
+import { genel96On } from './genel96Surum';
 import type { BattleState, Combatant } from './types';
 
 const revealed = (c: Combatant) => c.effects?.some((e) => e.revealed) ?? false;
@@ -69,7 +70,8 @@ export function senseSees(state: Pick<BattleState, 'map' | 'kuralSurumu'> | unde
   // Kuyruk K63: gerçek görüş menzili tek yerde (`truesightRange`; Boon, Witch Sight, canavar duyusu, True Seeing, paket `algi`).
   const ts = truesightRange(state, observer);
   // Kuyruk 19 (Dwarf Stonecunning): süreli Tremorsense (yerdeki yaratıklar).
-  const tremor = !isAirborne(target) ? Math.max(0, ...(observer.effects ?? []).map((e) => e.tremorsense ?? 0)) : 0;
+  // GENEL96 H10 (sürüm 96+; SRD 5.2.1 s. 190 Tremorsense "doesn't count as a form of sight"): görme sayılmaz.
+  const tremor = !isAirborne(target) && !genel96On(state) ? Math.max(0, ...(observer.effects ?? []).map((e) => e.tremorsense ?? 0)) : 0;
   const blind = observer.senses && globalRule(state, 'specialSenses') ? observer.senses.blindsight ?? 0 : 0;
   const ft = Math.max(blind, ts, feral, tremor);
   return ft > 0 && distance(observer.pos, target.pos) * 5 <= ft;

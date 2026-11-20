@@ -81,7 +81,7 @@ Tarih: 2026-11-20. Yalnız denetim: kod, veri ve test değişmedi. Emin olunmaya
 | A19 | Foe Slayer: HM zarı d10 | `markDie` d6 → d10; seviye 19'da d6 | tam | `classTraits.ts:182`; `classTraits.test.ts:279-282`; probe | Görev F |
 | A20 | Hunter's Lore: işaretli yaratığın bağışıklık/direnç/zaafını bilirsin | HM yapılınca günlüğe `Hunter's Lore — hedef: …` notu (anahtar `featuresK19`); sürekli bilgi yok (hedef kartında gösterim doğrulanmadı) | tam (günlük) | `src/battle/spells.ts:809-815` | 4546 |
 | A21 | Colossus Slayer: HP'si eksik hedefe turda bir +1d8 | `colossusDice`: `hp < maxHp`, turda bir; silah silahı türünde | tam | `classTraits.ts:176-180`; `classTraits.test.ts:247-256` | Görev F |
-| A22 | Horde Breaker: turda bir, aynı silahla, 5 ft içindeki **farklı ve bu tur saldırmadığın** yaratığa | Ayrı komut `horde_breaker`: bu tur saldırılan yaratığın 5 ft yakınında farklı hedef, turda bir. **"Saldırmadığın" ve "aynı silah" şartı yok** (probe: önceden saldırılmış B'ye kabul; Shortsword'dan sonra Longbow kabul) | kısmi **[YENİ, hata]** | `classTraits.ts:185-194`; probe | 6297 |
+| A22 | Horde Breaker: turda bir, aynı silahla, 5 ft içindeki **farklı ve bu tur saldırmadığın** yaratığa | Ayrı komut `horde_breaker`: bu tur saldırılan yaratığın 5 ft yakınında farklı hedef, turda bir. **"Saldırmadığın" ve "aynı silah" şartı yok** (probe: önceden saldırılmış B'ye kabul; Shortsword'dan sonra Longbow kabul) | **düzeldi (B94)** ← kısmi **[YENİ, hata]** | `classTraits.ts:185-194`; probe | 6297 |
 | A23 | Escape the Horde: fırsat saldırıları ona dezavantajlı | `traitSources` `opportunity` bağlamında dezavantaj | tam | `classTraits.ts:39`; `classTraits.test.ts:270-277` | Görev F |
 | A24 | Multiattack Defense: onu vuran yaratığın bu turdaki diğer saldırıları dezavantajlı | İsabette `mdefense` işareti saldırana, tur sonuna dek; ıskada yok | tam | `classTraits.ts:66-69`; `classTraits.test.ts` | Görev F |
 | A25 | Superior Hunter's Prey: HM hasarı turda bir, ilk hedefin 30 ft yakınında görülen **farklı** yaratığa | Turda bir; 30 ft (probe: 5 ft'teki E1'e verildi, 45 ft'teki E2'ye verilmedi); aynı zar ve tür; ikinci hedef **otomatik** (en düşük HP'li düşman), oyuncu seçimi yok | kısmi | `classTraits.ts:158-173`; probe | 4512 |
@@ -97,7 +97,7 @@ Tarih: 2026-11-20. Yalnız denetim: kod, veri ve test değişmedi. Emin olunmaya
 |---|---|---|---|---|---|
 | B1 | Hazırlanan sayı tablodan (2…15) | `spellLimits('ranger', L).prepared` 20/20 SRD ile aynı; cantrip 0 | tam | probe | K6 |
 | B2 | Büyüler slot seviyesine uygun olmalı | `maxLevel` ve "Hazırlanan büyü fazla (7 / 6)" denetimi çalışıyor (probe) | tam | `builder.ts:147-153, 167-180`; probe | K6 |
-| B3 | **Hunter's Mark her zaman hazır; sayıya girmez** (s. 58) | Savaşta otomatik eklenir ama oluşturucu `kit.alwaysPrepared` dışında: seçici HM'yi normal büyü olarak gösterir; seçilirse sayıya girer (probe: HM+5 = 6/6); `recommendedSpells` seviye 1'de HM seçer (probe: `["Hunter's Mark","Cure Wounds"]`) | kısmi **[YENİ, hata]** | `Builder.tsx:1044,1071`; `builderDefaults.ts:72-88`; `data/onerilen-baslangic.json:265`; probe | 6904 |
+| B3 | **Hunter's Mark her zaman hazır; sayıya girmez** (s. 58) | Savaşta otomatik eklenir ama oluşturucu `kit.alwaysPrepared` dışında: seçici HM'yi normal büyü olarak gösterir; seçilirse sayıya girer (probe: HM+5 = 6/6); `recommendedSpells` seviye 1'de HM seçer (probe: `["Hunter's Mark","Cure Wounds"]`) | **düzeldi (B94)** ← kısmi **[YENİ, hata]** | `Builder.tsx:1044,1071`; `builderDefaults.ts:72-88`; `data/onerilen-baslangic.json:265`; probe | 6904 |
 | B4 | Çekirdek: d10, STR/DEX save, Martial, Light/Medium/Shield, 3 beceri / 8 | `data/classes.json` birebir aynı | tam | veri karşılaştırması | — |
 | B5 | Weapon Mastery 2 tür; uzun dinlenmede değişir | Oluşturucu sayıyı `weaponMastery.count` ile sınırlar; seçimler `weaponMasteries`; Serüven'de değişim yok (C3) | tam (oluşturucu) | `builder.ts:281-289`; `mastery.ts:47-64`; probe | P0 |
 | B6 | Expertise: Deft Explorer (2) bir beceride, 9. seviyede iki daha (toplam 3) | `kit.expertise` 0, 1 (2.–8.), 3 (9+) (probe); sayı aşımı "expertiseMax" uyarısı | tam | `builder.ts:424-428`; probe | 6569 (eski) |
@@ -125,7 +125,7 @@ Tarih: 2026-11-20. Yalnız denetim: kod, veri ve test değişmedi. Emin olunmaya
 | D1 | Hunter's Mark | YZ konsantrasyonsuz ve hedefe saldırabiliyorsa HM yapar (ilk komut `cast_spell` HM, probe), işaret düşünce bonus eylemle taşır | tam | `ai.ts:1549-1576`; probe | Görev F |
 | D2 | Horde Breaker ve Extra Attack | Probe: HM, attack, `horde_breaker`, move, attack, end_turn; iki saldırı | tam | `ai.ts:1634-1647`; probe | 6297 |
 | D3 | Colossus Slayer, Precise Hunter, Foe Slayer | Pasif, YZ ayrıca bir şey yapmaz | tam | `classTraits.ts` | — |
-| D4 | **Tireless ve Nature's Veil kullanımı** | YZ kullanmıyor: `ai.ts`'te bu kaynakları anan kod yok; probe: seviye 14, HP 15/124 → komut dizisi HM, Cure Wounds, end_turn | yok **[YENİ]** | probe; `grep` (ai.ts, ai/*.ts) | — |
+| D4 | **Tireless ve Nature's Veil kullanımı** | YZ kullanmıyor: `ai.ts`'te bu kaynakları anan kod yok; probe: seviye 14, HP 15/124 → komut dizisi HM, Cure Wounds, end_turn | **düzeldi (B94)** ← yok **[YENİ]** | probe; `grep` (ai.ts, ai/*.ts) | — |
 | D5 | Superior Hunter's Defense kararı | Öneri yalnız ağır isabette (HP ¼-⅓ ya da öldürücü) | bilinçli sapma | `reactions.ts:208`; DECISIONS 6440 | 6440 |
 | D6 | Druidic Warrior cantrip'lerinin YZ kullanımı | YZ cantrip'lerini genel büyü mantığıyla seçer; Ranger'a özgü doğrulama yapılmadı (uygun bir testte Produce Flame `spell_followup` yolu kullanıldı) | tam | probe (elle komutla) | — |
 
@@ -172,3 +172,15 @@ Görev B94 (2026-11-20). Sürüm sütunu: "94" = kural sürümü 94 (`B94_VERSIO
 |---|---|---|---|
 | C3 | Uzun dinlenmede ustalıklar, 1 hazır büyü, Hunter's Prey/Defensive Tactics Serüven'de (`set_choices`) | sürümsüz | levelChoices.test.ts |
 | C4 | Serüven seviye atlamada yeni hazır büyü, Expertise, Fighting Style (değişim seviyede 1) eklenir | sürümsüz | levelChoices.test.ts |
+| B3 | Hunter's Mark Favored Enemy verisinde her zaman hazır (`ranger:favored-enemy` `alwaysPrepared`): seçicide gizli, öneri listesi seçmez, listede kalmışsa hazır sayısına girmez (`spellCounts` her zaman hazırları saymaz). `sim-partiler.json` Ranger listelerinde Hunter's Mark yerine savaş dışı Alarm (savaş davranışı aynı kalsın) | sürümsüz | b94ranger.test.ts |
+| A22 | Bu tur saldırılmış yaratığa ve son saldırıdan başka silahla red (`economy.attackedIds`, `lastWeapon`; `hordeProblem`) | 94 | b94ranger.test.ts |
+| A26 | Kısmi kalır: tepki 94+'ta save'li büyü hasarında (alan ve tek hedef) ve otomatik isabetli büyüde (Magic Missile) de; süren hasar, büyü alanı/aura, harita mekaniği ve düşme hasarında hâlâ yok (ortak hasar girişi olmadığından her yol ayrı; ertelendi) | 94 | b94ranger.test.ts |
+| D4 | YZ Nature's Veil (canı yarının altında, 30 ft'te düşman, bonus eylem) ve Tireless (canı üçte birin altında, geçici HP yok) kullanır (`ai/b94.ts` `rangerChoice94`; etki türünden) | 94 | b94ranger.test.ts |
+
+## B98 ek görev
+
+Görev B98 (2026-11-20; kural sürümü 98 `B98_VERSION`, 97 ve altı eski davranışta; ayrıntı DECISIONS.md "B98").
+
+| Satır | Şimdi | Sürüm |
+|---|---|---|
+| E1 | Düzeldi: TR menü/ipucu adları SRD İngilizce (Tireless, Nature's Veil, Steady Aim, Horde Breaker; SD4) | sürümsüz |

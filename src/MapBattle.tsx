@@ -5,6 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
+import { sinif97On } from './battle/sinif97Surum';
 import { activePossession, possessedEffect } from './battle/possessionCore';
 import { setupWardOf } from './battle/possession';
 import { freeAddProblem, freeRemoveProblem, freeShapeOf, pathAddProblem } from './battle/freeShape';
@@ -218,7 +219,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj' | 'special' | 'ready' | 'readyHex';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'stabilize' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj' | 'special' | 'ready' | 'readyHex';
 
 /**
  * Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). Görev D: telefon dikeyde (`portrait`) sahne harita
@@ -809,17 +810,20 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const actor = diMode && actorReal ? anyListActor(state, actorReal) ?? actorReal : actorReal;
   // Görev F: saldırı balonunda seçilen Cunning Strike seçenekleri (tur değişince sıfırlanır) ve Horde Breaker silahı.
   const [cunningPicks, setCunningPicks] = useState<CunningOption[]>([]);
-  useEffect(() => { setCunningPicks([]); setBrutalPicks([]); }, [actorId, state.round]);
+  useEffect(() => { setCunningPicks([]); setBrutalPicks([]); setTacticalPick(''); }, [actorId, state.round]);
   // Kuyruk 19: Push ustalığı isteğe bağlı (anahtar `pushChoice`): seçim saldırı seçeneğine yazılır.
   const [pushPick, setPushPick] = useState<'auto' | 'push' | 'skip'>('auto');
   // Kuyruk 19: Brutal Strike seçimi (oyuncu): yok ya da etki(ler).
   const [brutalPicks, setBrutalPicks] = useState<BrutalBlow[]>([]);
+  // Görev B95-B: Tactical Master (Fighter 9, SRD 5.2.1 s. 48): ustalıklı silahta bu saldırı için Push/Sap/Slow.
+  const [tacticalPick, setTacticalPick] = useState<'' | 'push' | 'sap' | 'slow'>('');
   // Kuyruk 19: seçimli tek hedefli büyü (Blindness/Deafness, Sorcerous Burst): seçim komuta.
   const withChoice = (cmd: Command): Command => (cmd.type === 'cast_spell' && choicePick && spell && cmd.spellName === spell.name
     && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? spell.mechanics.abilityChoices ?? []).includes(choicePick) ? { ...cmd, choice: choicePick } : cmd);
   const withCunning = (cmd: Command): Command => {
     let out = cmd.type === 'attack' && cunningPicks.length > 0 ? { ...cmd, cunning: cunningPicks } : cmd;
     if (out.type === 'attack' && pushPick !== 'auto' && out.option.mastery === 'push') out = { ...out, option: { ...out.option, pushChoice: pushPick } };
+    if (out.type === 'attack' && tacticalPick && out.option.mastery && actor?.traits?.includes('tactical-master')) out = { ...out, mastery: tacticalPick };
     if (out.type === 'attack' && brutalPicks.length && actor && brutalReady(state, actor, out.option)) out = { ...out, brutal: brutalPicks[0], ...(brutalPicks[1] ? { brutal2: brutalPicks[1] } : {}) };
     // Kuyruk 19: Grappler'ın Punch and Grab'i Unarmed Strike'ta kendiliğinden (motor turda bir kez uygular).
     if (out.type === 'attack' && out.option.weaponId === 'unarmed-strike' && actor?.traits?.includes('grappler')) out = { ...out, grab: true };
@@ -1072,6 +1076,12 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       // Yardım: bitişik düşmanlar (motorda denenerek).
       return new Set(Object.values(state.combatants)
         .filter((c) => c.id !== actorId && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
+    if (mode === 'stabilize') {
+      // GENEL96 A15 (SRD 5.2.1 s. 18 Stabilizing): ölmekte olan yaratıklar (motorda denenerek).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => c.id !== actorId && c.life === 'dying' && execute(state, { type: 'stabilize', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
     if (mode === 'steer' && actor && !steerableSummon(state, actor)?.summon?.hand) return new Set(ramTargets(state, actor).map((c) => c.id));
@@ -1474,8 +1484,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
+    if (mode === 'stabilize' && glowing.has(c.id)) run({ type: 'stabilize', actorId, targetId: c.id });
     if (mode === 'item' && itemPick && glowing.has(c.id)) run({ type: 'use_item', actorId, itemId: itemPick, targetId: c.id });
-    if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id });
+    // Görev B95-B (97+): yan el saldırısında da seçili Cunning Strike seçenekleri (motor eski sürümde yok sayar).
+    if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id, ...(cunningPicks.length && sinif97On(state) ? { cunning: cunningPicks } : {}) });
     if (mode === 'horde' && glowing.has(c.id)) { const option = hordeOption(c.id); if (option) run({ type: 'horde_breaker', actorId, targetId: c.id, option }); }
     if (mode === 'strike' && glowing.has(c.id)) run({ type: 'bonus_strike', actorId, targetId: c.id, technique: 'topple' });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
@@ -1526,7 +1538,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   };
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
-  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature', 'strike', 'effect', 'horde'].includes(mode);
+  const targeting = active && ['attack', 'spell', 'shove', 'help', 'stabilize', 'followup', 'pull', 'offhand', 'feature', 'strike', 'effect', 'horde'].includes(mode);
   const pickHexes = new Set(targeting ? [...[...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }), ...fireKeys, ...forceKeys] : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
@@ -1582,7 +1594,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Menzildeki uygun hedefler (motorda zarsız denenerek); menü açıkken hesaplanır.
   const menuShown = active && !!actor && menuOpen && mode === 'idle' && !optionsOpen;
   const reach = useMemo(() => {
-    const none = { attack: 0, shove: 0, help: 0, followup: 0 };
+    const none = { attack: 0, shove: 0, help: 0, stabilize: 0, followup: 0 };
     if (!menuShown || !actor) return none;
     const ctx = contextFor(state, actorId);
     const tryOn = (cmd: (id: string) => Command, own = false) => Object.values(state.combatants)
@@ -1591,6 +1603,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       attack: attackTargets(state, actorId).length,
       shove: tryOn((id) => ({ type: 'shove', actorId, targetId: id, effect: 'prone' })),
       help: tryOn((id) => ({ type: 'help', actorId, targetId: id })),
+      stabilize: Object.values(state.combatants).some((c) => c.life === 'dying') ? tryOn((id) => ({ type: 'stabilize', actorId, targetId: id }), true) : 0,
       followup: actor.concentration || actor.effects?.some((e) => e.held) ? tryOn((id) => ({ type: 'spell_followup', actorId, targetId: id }), true) : 0,
     };
   }, [state, actorId, menuShown]);
@@ -1653,6 +1666,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       act: () => { reset(); setReadyDraft({ ...READY_DRAFT, ...(actor.weaponOptions[0] ? { weapon: actor.weaponOptions[0].label } : actor.attacks.length ? { attackIndex: 0 } : {}) }); setMode('ready'); setMenuOpen(false); } }] : []),
     { key: 'help', label: N.help, reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? Y.noAdjEnemy : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
+    // GENEL96 A15 (SRD 5.2.1 s. 18): ölmekte olanı stabilize et (eylem, DC 10 WIS (Medicine)); yalnız ölmekte olan varken.
+    ...(Object.values(state.combatants).some((c) => c.life === 'dying') ? [{ key: 'stabilize', label: N.stabilize,
+      reason: reach.stabilize === 0 ? Y.noDying : undefined,
+      act: () => { reset(); setMode('stabilize'); setMenuOpen(false); } }] : []),
     // Kuyruk 43: sarf eşyaları (iksir; bonus eylem, kendine ya da 5 ft içindeki dosta).
     ...consumablesOf(actor).map((it) => ({ key: `item-${it.id}`, label: N.item(it.name, it.count),
       reason: why({ type: 'use_item', actorId, itemId: it.id, targetId: actorId }) ?? undefined,
@@ -1690,8 +1707,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     ...(actor.effects?.some((e) => e.extraAction) ? [{ key: 'haste', label: N.haste,
       reason: actor.economy.hasteUsed ? Y.hasteUsed : !actor.economy.action || actor.economy.attacksLeft > 0 ? Y.surgeFirst : undefined,
       act: () => run({ type: 'haste_action', actorId }) }] : []),
+    // Görev B95-B: Tactical Shift'li Fighter tam canda da Second Wind'i kaymak için kullanabilir (SRD 5.2.1 s. 48).
     ...(hasFeature('secondWind') ? [{ key: 'wind', label: N.wind,
-      reason: resourceLeft(actor, 'secondWind') <= 0 ? Y.windNone : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp ? Y.hpFull : undefined),
+      reason: resourceLeft(actor, 'secondWind') <= 0 ? Y.windNone : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp && !actor.traits?.includes('tactical-shift') ? Y.hpFull : undefined),
       act: () => run({ type: 'second_wind', actorId }) }] : []),
     // Barbarian: Rage (bonus eylem; sürüyorsa bir tur uzatır) ve Reckless Attack (turun ilk saldırısından önce).
     ...(actor.rageDamage ? [{ key: 'rage', label: actor.rage ? N.rageExtend : N.rage,
@@ -1903,7 +1921,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     spell: spell && (spell.area || spell.mechanics.zone) ? B.hint.spellArea(spell.name) : spell && freeHexAnyOn(state) && hexCastable(state, spell) ? B.hint.spellHex(spell.name) : B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
     ready: t().readyUi.title, readyHex: t().readyUi.pickHint,
-    pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
+    pull: B.hint.pull, help: B.hint.help, stabilize: B.hint.stabilize, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
     teleport: spell ? B.hint.teleport(spell.name, spell.mechanics.teleport?.rangeFt ?? 0)
@@ -2821,6 +2839,14 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                     {brutalOptions(actor).blows.map((b) => (
                       <label key={b}><input type="checkbox" checked={brutalPicks.includes(b)}
                         onChange={(e: { target: { checked: boolean } }) => setBrutalPicks((p) => (e.target.checked ? [...p, b].slice(-brutalOptions(actor).max) : p.filter((x) => x !== b)))} /> {N.brutalName[b] ?? b}</label>
+                    ))}
+                  </fieldset>
+                )}
+                {mode === 'attack' && actor && actor.traits?.includes('tactical-master') && globalRule(state, 'tacticalMaster') && actor.weaponOptions.some((o) => o.mastery) && (
+                  <fieldset className="cunning-picks">
+                    <legend>{N.tacticalPick}</legend>
+                    {(['', 'push', 'sap', 'slow'] as const).map((k) => (
+                      <label key={k || 'own'}><input type="radio" name="tactical-pick" checked={tacticalPick === k} onChange={() => setTacticalPick(k)} /> {N.tacticalOpt[k || 'own']}</label>
                     ))}
                   </fieldset>
                 )}

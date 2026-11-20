@@ -8,7 +8,8 @@ import { adjacent3D, k73bOn, separated } from './adjacency';
 import { cageBoxBlock } from './forcecage';
 import { inProtectiveAura } from './ruleVersion';
 import { matrisOn } from './matrisSurum';
-import { knowsWhere } from './sight';
+import { canSeeTarget, knowsWhere } from './sight';
+import { genel96On } from './genel96Surum';
 import { rangeBonusFt } from './heights';
 import { stormRangeBonusFt } from './desert';
 import { againstStrongWind } from './forest';
@@ -39,10 +40,14 @@ export type Reach =
 export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
   if (!c.pos) return false;
   const pos = c.pos;
+  const g96 = genel96On(state);
   return Object.values(state.combatants).some(
     (o) => o.side !== c.side && o.pos !== null && isTargetable(o) && o.hp > 0 && !isIncapacitated(o.conditions) && !isIntangible(o)
       // Kuyruk K73b (sürüm 63+): 3B bitişiklik (hemen üstteki/altındaki aynı altıgende de; döşeme keser).
-      && (k73bOn(state) ? adjacent3D(state, c, o) : gap(state, { ...c, pos }, o) === 1 && reachFt(state, c, o, 5) <= 5),
+      && (k73bOn(state) ? adjacent3D(state, c, o) : gap(state, { ...c, pos }, o) === 1 && reachFt(state, c, o, 5) <= 5)
+      // GENEL96 C8 (sürüm 96+; SRD 5.2.1 s. 15 "within 5 feet of an enemy who can see you"): seni göremeyen (Blinded,
+      // görünmezliğini göremeyen) düşman dezavantaj vermez.
+      && (!g96 || canSeeTarget(state, o, c)),
   );
 }
 

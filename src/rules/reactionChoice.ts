@@ -26,7 +26,9 @@ export type ReactionTrigger = 'hit' | 'targeted' | 'leave' | 'cast' | 'damaged' 
   /** Kuyruk S1: tepki değil, büyünün seçim istemi (`rules/choice.ts`). */
   | 'choice'
   /** Hazırla (Ready, sürüm 90): hazırlanan eylemin tetiği (SRD 5.2.1 s.186). */
-  | 'ready';
+  | 'ready'
+  /** Görev B98: Bardic Inspiration zarını kullanma kararı (başarısız d20 sonrası; tepki harcanmaz). */
+  | 'inspire';
 
 export interface ReactionRequest {
   /** Tepkiyi verecek yaratık. */

@@ -184,3 +184,12 @@ Görev B94 (2026-11-20). Sürüm sütunu: "94" = kural sürümü 94 (`B94_VERSIO
 | B3 | Başlangıç önerisine Sickle eklendi (`onerilen-baslangic.json`); paket/kit/GP oyunda genel olarak yok (SD3) | sürümsüz | - |
 | D2 | Kısmi: YZ Land's Aid (0 HP dost önce, yoksa ≥2 düşman kümesi) ve Nature's Sanctuary (yarı canın altında kendisi/bitişik dost, 30 ft'te düşman) kullanır (`ai/b94.ts` `druidChoice94`, 94+). Wild Resurgence ve Wild Companion YZ'si ertelendi (slot ↔ biçim ekonomisi denge kararı) | 94 | b94druid.test.ts |
 | E2 | EN özetler (Primal Order, Elemental Fury, Improved Elemental Fury, Archdruid) ve TR Archdruid (Nature Magician) bilgi veren metne çevrildi (`data/aciklamalar.json`) | sürümsüz | - |
+
+## B98 ek görev
+
+Görev B98 (2026-11-20; kural sürümü 98 `B98_VERSION`, 97 ve altı eski davranışta; ayrıntı DECISIONS.md "B98").
+
+| Satır | Şimdi | Sürüm |
+|---|---|---|
+| B8 / B2 | Ertelendi: Magician'ın Arcana/Nature bonusu ve alet yetkinliği; beceri/alet kontrol sistemi yok, savaşsız dungeon fikriyle birlikte | — |
+| E1 | Düzeldi: TR menü adları SRD İngilizce (Land's Aid, Nature's Sanctuary, Wild Resurgence, Nature Magician, Wild Shape; SD4) | sürümsüz |

@@ -134,8 +134,8 @@ export function dodgeActive(conds: string[]): boolean {
 }
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
-export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean; srd83?: true; allyAura?: { saveAdvAll?: true };
-  effects?: Array<{ name?: string; saveDisVs?: Array<{ damage?: string; condition?: string }>; saveDisVsGenis?: true; saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
+export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean; srd83?: true; srd96?: true; allyAura?: { saveAdvAll?: true };
+  effects?: Array<{ name?: string; saveDisVs?: Array<{ damage?: string; condition?: string }>; saveDisVsGenis?: true; saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> }; speedZero?: boolean }> };
 
 /**
  * G01 (yalnız görünüm): save kipinin bir kaynağı. `key` `data/neden-metinleri.json` `saveKipi` anahtarı; `name` kaynağın adı
@@ -161,7 +161,8 @@ export function saveModeWhy(base: RollMode, who: string[] | SaveSubject, ability
   // Kuyruk 19 (11–20): Holy Nimbus: Fiend/Undead etkilerine save avantajı (kaynağı bilinen save'lerde).
   const vs = source?.creatureType?.toLowerCase();
   if (vs) for (const e of fx) if (e.saveAdvVs?.includes(vs)) A('vsType', e.name);
-  if (ability === 'dex' && dodgeActive(s.conditions)) A('dodge');
+  // GENEL96 A11 (sürüm 96+, `srd96`): etkiden gelen hız 0 Kaçın'ın DEX save avantajını da kaldırır (SRD 5.2.1 s. 181).
+  if (ability === 'dex' && dodgeActive(s.conditions) && !(s.srd96 && s.effects?.some((e) => e.speedZero))) A('dodge');
   if (s.saveAdvantage?.includes(ability) && !isIncapacitated(s.conditions)) A('feature', SAVE_ADV_FEATURES.find((f) => f.abilities.includes(ability))?.name);
   if (ability === 'str' && !!s.rage && s.rageStrAdvantage === true) A('rage');
   // Kuyruk A6 (Conjure Animals; `syncAuras`): sürünün 5 ft içinde STR save avantajı.
@@ -230,6 +231,7 @@ export function executeHelp(state: BattleState, actor: Combatant, targetId: stri
   // Haritasız savaşta mesafe yok (yakın dövüş menzilinde sayılır).
   if (state.map && (!actor.pos || !target.pos || !near5(state, actor, target))) return fail('Hedef düşman bitişik olmalı.');
   const spec: Spec = { condition: helpMark(actor.side), owner: 'source', end: 'turnStart' };
+  // GENEL96: etiketin sonu `genel96.ts` `HELP_LABEL` (yardım edenin kendisi yararlanmaz; Stunning Strike ayrı).
   return finish(state, [timedCondition(state, target.id, spec, actor.id, `${actor.name}: Yardım`)]);
 }
 

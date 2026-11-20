@@ -192,8 +192,11 @@ describe('damage', () => {
     expect(adjustDamage(9, 'fire', { vulnerabilities: ['fire'] })).toEqual({ amount: 18, note: 'vulnerable' });
     expect(adjustDamage(9, 'fire', { immunities: ['fire'] })).toEqual({ amount: 0, note: 'immune' });
   });
-  it('öncelik: bağışıklık, sonra zayıflık, sonra direnç', () => {
+  it('öncelik: bağışıklık; direnç + zayıflık SRD 5.2.1 s. 17 sırasıyla (önce direnç, sonra zayıflık: 10 → 5 → 10)', () => {
     expect(adjustDamage(10, 'fire', { immunities: ['fire'], vulnerabilities: ['fire'] }).amount).toBe(0);
+    // GENEL96 (sürüm 96+, `srdOrder`): SRD sırası. Eski beklenti 20 yanlıştı (zayıflık direnci yok sayıyordu).
+    expect(adjustDamage(10, 'fire', { vulnerabilities: ['fire'], resistances: ['fire'], srdOrder: true }).amount).toBe(10);
+    // 95 ve altı (eski kayıt/replay): işaretsiz profil eski davranışı korur.
     expect(adjustDamage(10, 'fire', { vulnerabilities: ['fire'], resistances: ['fire'] }).amount).toBe(20);
   });
   it('tür boşsa veya eşleşmezse hasar değişmez, büyük harf ve boşluk önemsiz', () => {

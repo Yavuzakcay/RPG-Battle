@@ -9,7 +9,9 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { sinif97On } from './sinif97Surum';
 import { b94On } from './b94Surum';
+import { b98On } from './b98Surum';
 import { soyFeatureProblem } from './soyEtki';
 import { adjacent3D, k73bOn } from './adjacency';
 import { circleAttackDis } from './possessionCore';
@@ -101,7 +103,8 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   if (e.kind === 'healPool') {
     const target = cmd.targetId ? state.combatants[cmd.targetId] : actor;
     if (!target) return 'Hedef bulunamadı.';
-    if (target.side !== actor.side) return 'Yalnızca kendine ya da bir dostuna.';
+    // Görev B98 (sürüm 98+, SRD 5.2.1 s. 53 "touch a creature (which could be yourself)"): herhangi bir yaratık; tür istisnası yok.
+    if (target.side !== actor.side && !b98On(state)) return 'Yalnızca kendine ya da bir dostuna.';
     if (target.life === 'dead') return `${target.name} öldü.`;
     if (e.touch && !touching(state, actor, target)) return 'Dokunmak için bitişik olmalısın.';
     const amount = cmd.amount ?? 0;
@@ -302,11 +305,13 @@ const curesOf = (actor: Combatant, base: string[]): string[] =>
   actor.traits?.includes('restoring-touch') ? [...new Set([...base, 'Blinded', 'Charmed', 'Deafened', 'Frightened', 'Paralyzed', 'Stunned'])] : base;
 
 /** Hedefin AC'si (koruma etkileri dahil). */
-export function effectiveAc(state: BattleState, target: Combatant): number {
+export function effectiveAc(state: BattleState, target: Combatant, attacker?: Combatant): number {
   // Shield (Görev R1): sonraki turunun başına dek işaret.
   const shield = Math.max(0, ...(target.marks ?? []).filter((m) => m.kind === 'shield').map((m) => m.ac ?? 0));
   // Görev S1: süren etkilerden AC tabanı (Barkskin, Mage Armor) ve eklenti (Haste, Slow).
-  const fx = target.effects ?? [];
+  // Görev B95-B (97+, SRD 5.2.1 s. 30 Sundering Blow "another creature"): tek kullanımlık eklenti, kaynağının kendi saldırısına işlemez.
+  const own97 = !!attacker && sinif97On(state);
+  const fx = (target.effects ?? []).filter((e) => !(own97 && e.consumeOnAttacked && e.sourceId === attacker!.id));
   const base = Math.max(target.ac, ...fx.map((e) => e.acMin ?? 0));
   return base + shield + fx.reduce((n, e) => n + (e.ac ?? 0), 0) + wardsOn(state, target).reduce((n, w) => n + (w.ward?.ac ?? 0), 0);
 }

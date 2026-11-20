@@ -29,6 +29,7 @@ import { attackHeights } from './cover';
 import { isUnderwater } from './maprules';
 import { distance, type Offset } from '../rules/hex';
 import { executeMonsterArea, monsterAreaEvents } from './areaAttack';
+import { attackCtx96 } from './genel96';
 import type { BattleEvent, BattleState, Combatant, MultiStep } from './types';
 import multiData from '../../data/multiattack.json';
 import { srdKayit } from './srdD1';
@@ -140,7 +141,7 @@ export function monsterAttackEvents(
     const sources = [
       ...environmentSources(env, tag, { weapon: true, ranged: atk.ranged }),
       ...attackSources({
-        ...sightConditions(actor, target, state, !atk.ranged), attackerSide: actor.side,
+        ...sightConditions(actor, target, state, !atk.ranged), ...attackCtx96(state, actor, target),
         ...attackHeights(state, actor, target), ranged: atk.ranged, spell: false,
         packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
       }),
