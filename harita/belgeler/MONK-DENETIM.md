@@ -188,6 +188,11 @@ Probe'larla denenip **doğru** bulunan davranışlar (regresyon için not): Mart
 
 **A) Sürümsüz (yapıldı).** `data/secim-degisim.json`'a `monk` kaydı eklendi; Serüven'de "Seçimler" düğmesi çıkar ve B93'ün ortak yardımcısıyla (`src/rules/levelChoices.ts`, `set_choices`) seçim yapılır. Yeni seçimler (alt sınıf 3. seviyede, ASI/feat ve Epic Boon yuvaları; Monk'ta Weapon Mastery yok ve değişen seçim yok, kayıt boş: SRD 5.2.1 s. 49–52) yalnız eklenir; eksik seçim varken düğme "Seçimler (seçim bekliyor)" olur (`pendingChoices`). Serüven'de alt sınıf **otomatik atanmaz**: seçim kipinde (Builder `choices`) boş alt sınıf açılışta da olsa eksik sayılır, Kaydet onu ister. Seçim kipine Weapon Mastery seçicisi eklendi (donanım adımı bu kipte yok). Test: `src/rules/levelChoices.test.ts` "Görev B95 (A)", `src/screens/b95Secim.test.tsx`.
 
-**B) Sürümlü (bekliyor).** Kapı: `birlesik`'te kural sürümü 95 ve 96 yok (güncel 94); Stunning Strike başarılı save'de hız yarılanması ve zırhlı Monk'un Unarmed Strike sonrası Stunning Strike'ı, Self-Restoration'ın tek durum kaldırması, Quivering Palm'ın yalnız Unarmed Strike isabetiyle kurulması (bizim alt sınıf metni), Superior Defense'in 10 tur sürmesi yapılmadı.
+**B) Sürümlü (yapıldı, kural sürümü 97 `SINIF97_VERSION`; 96 ve altı eski davranış).**
+- Stunning Strike (A22, A23; SRD 5.2.1 s. 51): başarılı save'de hedefin hızı Monk'un sonraki turunun başına dek yarı (`speedMult: 0.5`, `untilSourceTurn`); tetik "Monk silahı ya da Unarmed Strike" isabeti, zırh şartı yok (`meleeHit.unarmed`/`monkWeapon`): zırhlı Monk Unarmed Strike'tan sonra kullanabilir.
+- Self-Restoration (A27; s. 52 "remove one"): tur sonunda yalnız bir durum kalkar (listedeki ilk: Charmed, Frightened, Poisoned; oyuncu seçimi yok, yaklaşık).
+- Quivering Palm (A36; bizim alt sınıf metni "Unarmed Strike isabetinde"): Monk silahı isabeti titreşim kurmaz.
+- Superior Defense (A31; s. 52 "1 minute"): tam 10 tur.
+- Test: `src/battle/b95monk.test.ts`.
 
 **C) Ertelendi, karar gerekli.** Monk silahı dışında silah taşırken bonus vuruş modeli (SRD 5.2.1 s. 50 Martial Arts); yapay zekânın Patient Defense, Step of the Wind (s. 50), Wholeness of Body, Superior Defense (s. 52) ve Quivering Palm (bizim alt sınıf) kullanması (YZ davranışı denge değiştirir, denge turuna kalır).

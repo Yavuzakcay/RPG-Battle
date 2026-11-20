@@ -64,7 +64,7 @@ function payment(actor: Combatant, f: UsableFeature): { resource: string; cost: 
  */
 export function apexCost(state: BattleState, actor: Combatant, f: UsableFeature): 'action' | 'bonus' | 'free' {
   const e = f.effect;
-  if (e.kind === 'quiveringPalm') return quiveringOf(state, actor).length > 0 && !actor.economy.meleeHit?.martialArts ? 'action' : 'free';
+  if (e.kind === 'quiveringPalm') return quiveringOf(state, actor).length > 0 && !palmHit(actor) ? 'action' : 'free';
   if (e.kind === 'sanctuary') return sanctuaryOf(state, actor, f.key) ? 'bonus' : 'action';
   return f.type;
 }
@@ -83,7 +83,7 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
   }
   if (e.kind === 'quiveringPalm') {
     const hit = actor.economy.meleeHit;
-    if (hit?.martialArts) {
+    if (palmHit(actor)) {
       if (resourceLeft(actor, f.resource ?? '') < e.cost) return `${e.cost} Focus gerekli.`;
       return null;
     }
@@ -191,7 +191,7 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
   }
   if (e.kind === 'quiveringPalm') {
     const hit = actor.economy.meleeHit;
-    if (hit?.martialArts) {
+    if (hit && palmHit(actor)) {
       const t = state.combatants[hit.targetId];
       if (!t || t.hp <= 0) return fail('Hedef bulunamadı.');
       const dc = actor.stunning?.dc ?? 8 + actor.proficiency + actor.modifiers.wis;
@@ -334,4 +334,10 @@ export function overchannelAfter(state: BattleState, actor: Combatant, slotLevel
       damageType: 'necrotic', targetHpAfter: fx.hpAfter, effects: fx.effects });
   }
   return events;
+}
+
+/** Quivering Palm'ı kuran isabet: 97+ (Görev B95-B, bizim alt sınıf metni "Unarmed Strike isabetinde") yalnız Unarmed Strike; eskide Martial Arts isabeti. */
+function palmHit(actor: Combatant): boolean {
+  const hit = actor.economy.meleeHit;
+  return actor.sinif97 ? !!hit?.unarmed : !!hit?.martialArts;
 }

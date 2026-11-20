@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { SINIF97_VERSION } from './sinif97Surum';
 import srdSpells from '../../data/srd/spells.json';
 import { B94_VERSION } from './b94Surum';
 import { WS92_VERSION } from './ws92Surum';
@@ -833,6 +834,8 @@ export function startBattle(
   // Görev B94 (A2, sürüm 94+): Aura of Protection'ın Paladin'e kendi bonusu sheet'ten çıkar, aura yolundan (`auraSaveOf`)
   // gelir: Incapacitated/0 HP iken sürmez (SRD 5.2.1 s. 55).
   if (rules >= B94_VERSION) participants = participants.map(unbakeOwnAura);
+  // Görev B95-B (97+): durum görmeyen sınıf yardımcıları (Relentless Rage…) için savaşçı işareti.
+  if (rules >= SINIF97_VERSION) participants = participants.map((p) => ({ ...p, sinif97: true }));
   // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 Natural Recovery: "a spell … from your Circle Spells feature"): seçili arazinin dışındaki
   // daire büyüleri slotsuz yapılmaz. 93 ve altı savaşta eski liste (`freeSpellsPre94` geri eklenir).
   participants = participants.map((p) => {

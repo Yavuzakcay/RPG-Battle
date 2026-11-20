@@ -23,7 +23,7 @@
  */
 import { TRANSMUTE_TYPES } from './sorcerer';
 import { buyucu93On } from './buyucu93Surum';
-import { druidChoice94, paladinChoice94, rangerChoice94 } from './ai/b94';
+import { B94_KINDS, druidChoice94, paladinChoice94, rangerChoice94 } from './ai/b94';
 import { ws92On } from './ws92Surum';
 import { limitsOn, liftPlan } from './nesneAgirlik';
 import { canAirMove } from './airMove';
@@ -2078,10 +2078,14 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev B94 (94+, basit kurallar): Land's Aid, Nature's Sanctuary.
   {
-    const foes94 = foesOf(state, actor);
-    const ok94 = (c: Command) => tryCmd(state, actor, c).ok;
-    const cmd = druidChoice94(state, actor, foes94, canAct, ok94) ?? paladinChoice94(state, actor, foes94, canAct, ok94) ?? rangerChoice94(state, actor, foes94, canAct, ok94);
-    if (cmd) return cmd;
+    // Yalnız ilgili özelliği olan savaşçıda (YZ süresi): düşman listesi ve denemeler gereksiz yere hesaplanmaz.
+    const kinds94 = new Set<string>((actor.features ?? []).map((f) => f.effect.kind));
+    if (B94_KINDS.some((k) => kinds94.has(k))) {
+      const foes94 = foesOf(state, actor);
+      const ok94 = (c: Command) => tryCmd(state, actor, c).ok;
+      const cmd = druidChoice94(state, actor, foes94, canAct, ok94) ?? paladinChoice94(state, actor, foes94, canAct, ok94) ?? rangerChoice94(state, actor, foes94, canAct, ok94);
+      if (cmd) return cmd;
+    }
   }
   // Kuyruk S1: Plane Shift ile geri çekilme (son çare).
   if (canAct) {

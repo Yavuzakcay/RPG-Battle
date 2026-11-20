@@ -13,6 +13,8 @@
  * - Time Stop sürerken başkasının hazırlığı tetiklenmez ("no time passes for other creatures").
  * - Yapay zekâ Ready kullanmaz (bu sürümde).
  */
+import { sinif97On } from './sinif97Surum';
+import { cunningProblem } from './classTraits';
 import { spells } from '../data';
 import hazirla from '../../data/hazirla.json';
 import { distance, isInside, sameHex, type Offset } from '../rules/hex';
@@ -84,6 +86,12 @@ export function readyProblem(state: BattleState, actor: Combatant, cmd: Extract<
       if (!a || a.save || !a.damageDice) return 'Bu saldırı hazırlanamaz.';
     }
     if (actor.effects?.some((e) => e.noAttack)) return 'Bu durumda saldırı hazırlanamaz.';
+    // Görev B95-B (97+): hazırlanan saldırının Cunning Strike seçenekleri (Sneak Attack verirse uygulanır).
+    if (r.cunning?.length) {
+      if (!sinif97On(state) || !r.option) return 'Bu saldırıda Cunning Strike hazırlanamaz.';
+      const bad = cunningProblem(actor, r.cunning);
+      if (bad) return bad;
+    }
   } else if (r.kind === 'move') {
     if (!isInside(r.to, size) || sameHex(r.to, actor.pos)) return 'Hareket hedefini seç.';
   } else {
@@ -106,7 +114,7 @@ export function executeReady(state: BattleState, actor: Combatant, cmd: Extract<
   let response: ReadyResponse = cmd.response;
   if (response.kind === 'attack' && response.option) {
     const own = actor.weaponOptions.find((o) => o.label === (response as { option: AttackOption }).option.label) as AttackOption;
-    response = { kind: 'attack', option: own };
+    response = { kind: 'attack', option: own, ...(response.cunning?.length ? { cunning: response.cunning } : {}) };
   }
   if (response.kind === 'spell') {
     const sp = spells.find((s) => s.name === (response as { spellName: string }).spellName)!;
@@ -249,7 +257,8 @@ function release(state: BattleState, c: Combatant, ev: Trigger, rng: Rng): Battl
   const resp = r.response;
   if (resp.kind === 'attack') {
     const target = s1.combatants[answer.choice ?? ''] as Combatant;
-    const res = resp.option ? weaponAttackEvents(s1, me, target, resp.option, rng, true) : monsterAttackEvents(s1, me, target, resp.attackIndex ?? 0, rng, true);
+    const cun = resp.cunning?.length && sinif97On(s1) && !cunningProblem(me, resp.cunning) ? { cunning: resp.cunning } : {};
+    const res = resp.option ? weaponAttackEvents(s1, me, target, resp.option, rng, true, false, cun) : monsterAttackEvents(s1, me, target, resp.attackIndex ?? 0, rng, true);
     if (!res.ok) return [];
     return [...head, ...res.events.map((e) => {
       if (e.type !== 'attack_resolved' || e.actorId !== c.id) return e;

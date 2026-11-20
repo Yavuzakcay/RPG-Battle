@@ -17,7 +17,8 @@ export const featuresOn = (state: BattleState) => !!globalRule(state, 'featuresK
 /** Yarı hız kadar serbest kayma hakkı (anahtar kapalıyken eski yaklaşım: Disengage). */
 export function shiftGrant(state: BattleState, actor: Combatant): BattleEvent {
   if (!featuresOn(state)) return { type: 'disengaged', actorId: actor.id };
-  return { type: 'shift_granted', actorId: actor.id, hexes: Math.floor(speedHexes(actor) / 2) };
+  // Görev B95-B (97+): Steady Aim'den sonra hız 0: yarı hız 0 (SRD 5.2.1 s. 62–63 Withdraw, s. 48 Tactical Shift).
+  return { type: 'shift_granted', actorId: actor.id, hexes: actor.economy.speedZero ? 0 : Math.floor(speedHexes(actor) / 2) };
 }
 
 /** Serbest kaymayla gidilebilecek altıgenler. */

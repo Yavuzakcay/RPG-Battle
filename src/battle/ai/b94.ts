@@ -9,6 +9,8 @@ import { b94On } from '../b94Surum';
 import { resourceLeft, type BattleState, type Combatant, type Command, type UsableFeature } from '../types';
 
 type Ok = (c: Command) => boolean;
+/** Bu modülün baktığı özellik etkisi türleri (ai.ts ön süzgeci). */
+export const B94_KINDS = ['landsAid', 'sanctuary', 'nimbus', 'abjure', 'healPool', 'condition', 'tempHp'];
 const ftBetween = (a: Offset, b: Offset) => distance(a, b) * 5;
 const usable = (actor: Combatant, f: UsableFeature) => !f.resource || resourceLeft(actor, f.resource) > 0;
 

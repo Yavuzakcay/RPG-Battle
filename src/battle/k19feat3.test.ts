@@ -31,10 +31,12 @@ describe('Kuyruk 19: Remarkable Athlete', () => {
 });
 
 describe('Kuyruk 19: Thief', () => {
-  it('Second-Story Work (Jumper): DEX skoruyla atlama; sürüm 15\'te STR', () => {
-    const c = mk('A', { traits: ['second-story-work'], strScore: 8, dexScore: 18 });
-    expect(jumpRangeFeet(c, true, arena(16, {}))).toBe(18);
-    expect(jumpRangeFeet(c, true, arena(15, {}))).toBe(8);
+  it('Second-Story Work (Jumper): gerçek Thief işareti (`jumper-dex`, Görev B95-B) 97+ DEX skoruyla; 96 ve altında STR', () => {
+    // Eskiden test `second-story-work` işaretini elle veriyordu; gerçek Thief bu işareti hiç almıyordu (ROGUE-DENETIM A34).
+    // Gerçek sayfayla uçtan uca: `b95rogue.test.ts` "Second-Story Work".
+    const c = mk('A', { traits: ['jumper-dex'], strScore: 8, dexScore: 18 });
+    expect(jumpRangeFeet(c, true, arena(97, {}))).toBe(18);
+    expect(jumpRangeFeet(c, true, arena(96, {}))).toBe(8);
   });
 });
 

@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { sinif97On } from './sinif97Surum';
 import { getMonster } from '../data';
 import { formMonsterId } from './shapeMonsterCore';
 import { plantChar, soyPlantWalker } from './altSoySurum';
@@ -704,7 +705,9 @@ export function jumpRangeFeet(c: Combatant, running: boolean, state?: Pick<Battl
   // Görev WS92 (92+): canavar Jumper'ı (Cat) mesafeyi DEX skoruyla belirler; Standing Leap koşusuz da, Running Leap yalnız koşarak `long` ft.
   const leap = leapOf(c);
   const score = leap?.dex ? c.dexScore ?? monsterDex(c) ?? c.strScore
-    : state && c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19') ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
+    : state && ((c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19'))
+      // Görev B95-B (97+, bizim Thief metni "Jumper: … Dexterity rather than your Strength"): gerçek Thief'in işareti (`jumper-dex`).
+      || (c.traits?.includes('jumper-dex') && sinif97On(state))) ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
   const base = running ? score : Math.floor(score / 2);
   return leap?.long && (running || !leap.running) ? Math.max(base, leap.long) : base;
 }

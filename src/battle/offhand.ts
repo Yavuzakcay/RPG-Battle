@@ -7,17 +7,23 @@
 import { fail, finish, type CommandResult } from './common';
 import { offhandProblem } from './economy';
 import { weaponAttackEvents } from './features';
-import type { BattleState, Combatant } from './types';
+import type { BattleState, Combatant, CunningOption } from './types';
+import { cunningProblem } from './classTraits';
+import { sinif97On } from './sinif97Surum';
 import type { Rng } from '../rules/dice';
 
 export { offhandProblem } from './economy';
 
-export function executeOffhandAttack(state: BattleState, actor: Combatant, targetId: string, rng: Rng): CommandResult {
+export function executeOffhandAttack(state: BattleState, actor: Combatant, targetId: string, rng: Rng, cunning?: CunningOption[]): CommandResult {
   const why = offhandProblem(actor);
   if (why) return fail(why);
   const target = state.combatants[targetId];
   if (!target) return fail('Hedef bulunamadı.');
-  const r = weaponAttackEvents(state, actor, target, actor.offHandOption as NonNullable<Combatant['offHandOption']>, rng);
+  // Görev B95-B (97+, SRD 5.2.1 s. 63 Cunning Strike "When you deal Sneak Attack damage"): yan el saldırısında da seçilir.
+  const picks = sinif97On(state) ? cunning ?? [] : [];
+  const bad = cunningProblem(actor, picks);
+  if (bad) return fail(bad);
+  const r = weaponAttackEvents(state, actor, target, actor.offHandOption as NonNullable<Combatant['offHandOption']>, rng, false, false, picks.length ? { cunning: picks } : {});
   if (!r.ok) return r;
   return finish(state, r.events);
 }
