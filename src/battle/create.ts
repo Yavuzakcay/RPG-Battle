@@ -315,6 +315,8 @@ function combatantFromSheetBase(
     modifiers: d.modifiers,
     // Kuyruk 39: Aura of Protection (Paladin 6; kısmi): kendi save'lerine CHA değiştiricisi (en az +1).
     saves: kit.traits.includes('aura-of-protection') ? Object.fromEntries(Object.entries(d.saves).map(([k, v]) => [k, v + Math.max(1, d.modifiers.cha)])) as typeof d.saves : d.saves,
+    // Görev WS92: eşyalardan gelen kurtarma eki (Wild Shape biçiminde eşya kaynaşır: biçimde düşülür).
+    ...(d.itemSaveBonus ? { itemSaveBonus: d.itemSaveBonus } : {}),
     skills: d.skills,
     ...(d.jack ? { jack: d.jack } : {}),
     // Görev DRUID: bilinen Wild Shape biçimleri (seçilmediyse uygun bütün biçimler).

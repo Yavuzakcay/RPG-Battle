@@ -14,6 +14,14 @@ Tek kural sürümü 92 (`src/battle/ws92Surum.ts`); 91 ve altı kayıt/replay es
   - Kusulan/serbest kalan yutanın bitişiğindeki ilk boş altıgene konur (satır/sütun sırası; deterministik). Wild Shape/Polymorph biçimi biten ya da değişen yutan yutulanı bırakır, Prone (⚠ SRD'de yazmıyor; kusmayla aynı sonuç).
   - Günlük satırları TR/EN (`log.swallow`), jetonda "👄 Yutuldu" rozeti, midedeki jeton yutanın üstünde küçük ve soluk (`ui/swallowUi.ts`, yalnız görünüm).
   - Yapay zekâ: yakaladığı hedefi olan kurbağa Swallow'u seçiyor (yoklandı; önceki denetimdeki "YZ seçmiyor" bulgusu bugün geçerli değil).
+- **2. Wild Shape çekirdeği** (s. 42–43; denetimdeki kısmi/yok satırlar):
+  - Geçici HP, 0 HP/Incapacitated bitişi ve taşan hasar, bonus eylem giriş/çıkış, kullanım/dinlenme, Beast Shapes (2: CR 1/4 uçuşsuz, 4: CR 1/2 uçuşsuz, 8: CR 1 uçan) zaten SRD'deydi (denetim "tam"); dokunulmadı. ⚠ SRD 5.2.1 tablosunda yüzme kısıtı yok (2014 kuralıydı), eklenmedi.
+  - Objects (A44): eşya biçime kaynaşır: AC'nin yanında kurtarma eki de (`itemSaveBonus`, karakterden) biçimde düşer; "giyilir" seçeneği yok (GM kararı gerektirir).
+  - Beast Spells (B12): biçimde bedeli yazılı ya da tükenen malzemeli büyü reddedilir.
+  - Wild Companion (B4): slot ya da Wild Shape kullanımıyla çağrılan familiar Fey.
+  - Wild Resurgence (B6): savaşta kazanılan slot karaktere yazılır (`partyStatus.ts`: üst sınır savaş başındaki kalan değil, tablonun en çoğu; Nature Magician ve Font of Magic slotları da). Savaş dışı durum, kural sürümü gerektirmez.
+  - Yapay zekâ (C9, C10): seçili biçimler arasında en güçlüsü (CR, sonra HP); biçimin geçici HP'si bitmiş ve slotu olan (Beast Spells'siz) druid bonus eylemle döner.
+  - Bilinçli (kullanıcı kararı): süre sayacı yok, biçim ve geçici HP savaş sonunda biter (A11, C11). Ertelendi: `multiHex` gövde sığması (A46). WS91'in tür direnci kararı (A29 ⚠) değişmedi.
 
 ## Ranger ID4 Dragonborn: kontur halkası (erkek) ve çene maskesi (kadın) (2026-11-20; yalnız görünüm, mekanik/kural/kayıt sürümü yok)
 

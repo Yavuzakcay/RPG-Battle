@@ -979,6 +979,8 @@ export interface Combatant {
   modifiers: Scores;
   /** Save bonusları. */
   saves: Scores;
+  /** Görev WS92: kurtarmalara eşyalardan gelen toplam ek (karakterde; Wild Shape biçiminde düşülür, 92+). */
+  itemSaveBonus?: number;
   /** Yetkin olunan becerilerin bonusları; olmayanınki ability modifier'ı (`skillBonus`). */
   skills: Partial<Record<Skill, number>>;
   /** Tırmanma kontrolü bonusu (STR veya DEX modifier'ının yükseği). */

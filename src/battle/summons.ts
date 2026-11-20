@@ -7,6 +7,7 @@
  * oyuncusu yönetir (düşman tarafında Game Master). Kaybolma `summonCleanup` ile her komuttan sonra olay olarak yazılır:
  * 0 HP, konsantrasyonun bitmesi, sahibin ölümü (at), süre; aynı büyü yeniden yapılınca önceki yaratık gider.
  */
+import { ws92On } from './ws92Surum';
 import { charmedAgainst } from './range';
 import { matrisOn } from './matrisSurum';
 import { mechanicsAt } from './spellVersion';
@@ -333,7 +334,9 @@ export function executeSummon(state: BattleState, actor: Combatant, cmd: CastCom
   for (let k = 0; k < sizes.length; k++) {
     const place = k === 0 ? at : summonHexNear(cur, actor, def, state.multiHex && ruleVersion(state) >= 53 ? summonSizeOf(cur, def, form, sizes[k]) : undefined);
     if (state.map && !place) break;
-    const evs = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng, sizes[k], companionFree);
+    const evs0 = summonedEvent(cur, actor, spell, def, level, choice, form, place, rng, sizes[k], companionFree);
+    // Görev WS92 (92+; SRD s. 42 Wild Companion): Wild Companion'la (slot ya da Wild Shape kullanımı) çağrılan familiar Fey.
+    const evs = paid && ws92On(state) ? evs0.map((e) => (e.type === 'summoned' ? { ...e, combatant: { ...e.combatant, creatureType: 'fey' } } : e)) : evs0;
     const ev = evs[0] as BattleEvent;
     events.push(...evs);
     cur = applyEvents(cur, evs);

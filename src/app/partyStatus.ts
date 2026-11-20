@@ -47,7 +47,9 @@ export function applyBattleResult(characters: SavedCharacter[], state: BattleSta
       hp: Math.max(0, c.hp),
       hitDiceSpent: c.hitDice ? Math.max(prev.hitDiceSpent, ch.sheet.level - c.hitDice.left) : prev.hitDiceSpent,
       resources: Object.fromEntries(Object.keys(prev.resources).map((id) => [id, c.resources[id] ?? 0])),
-      slots: prev.slots.map((n, i) => Math.min(n, c.spellSlots[i] ?? 0)),
+      // Görev WS92: savaşta kazanılan slot (Wild Resurgence, Nature Magician, Font of Magic) karaktere yazılır; üst sınır
+      // tablonun en çoğu (`slotMax`). Eskiden savaş başındaki kalan slot üst sınırdı (kazanılan slot savaş sonunda kayboluyordu).
+      slots: prev.slots.map((n, i) => Math.min(prev.slotMax?.[i] ?? n, c.spellSlots[i] ?? 0)),
       ...(prev.slotMax ? { slotMax: prev.slotMax } : {}),
       ...(prev.resourceMax ? { resourceMax: prev.resourceMax } : {}),
       ...(prev.hpMax !== undefined ? { hpMax: prev.hpMax } : {}),

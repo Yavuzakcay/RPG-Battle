@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { ws92On } from './ws92Surum';
 import { limitsOn, liftPlan } from './nesneAgirlik';
 import { canAirMove } from './airMove';
 import { bandGap, bandOf, cellsOn, heightLevels, levelOf, levelToFt } from './cells';
@@ -50,7 +51,7 @@ import { breathOf } from './breath';
 import { isIncapacitated } from '../rules/conditions';
 import { adjustDamage } from '../rules/damage';
 import { monsters, spells } from '../data';
-import { availableForms } from './druid';
+import { availableForms, wildShapeFeature } from './druid';
 import { costsFrom, distance, hexKey, neighbors, offsetToAxial, sameHex, withinRange, type Offset } from '../rules/hex';
 import { execute } from './commands';
 import { canSneak, meleeOf, spellOf } from './features';
@@ -2040,9 +2041,19 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   }
   // Görev DRUID (basit kural): slotu kalmamış ve konsantre olmayan Druid bonus eylemle en güçlü bilinen biçime girer.
   if (!actor.economy.bonus && !actor.shape && !actor.concentration && foesOf(state, actor).length > 0 && actor.spellSlots.every((n) => n <= 0)) {
-    const form = availableForms(monsters, actor, state.kuralSurumu ?? 1)[0];
+    const forms = availableForms(monsters, actor, state.kuralSurumu ?? 1);
+    const crNum = (cr: string): number => (cr.includes('/') ? Number(cr.split('/')[0]) / Number(cr.split('/')[1]) : Number(cr));
+    // Görev WS92 (92+): seçili biçimler arasında da en güçlüsü (CR, sonra HP); eskiden veri sırasındaki ilki.
+    const form = (ws92On(state) ? [...forms].sort((a, b) => crNum(b.cr) - crNum(a.cr) || b.hp - a.hp) : forms)[0];
     const cmd: Command | null = form ? { type: 'wild_shape', actorId, form: form.id } : null;
     if (cmd && tryCmd(state, actor, cmd).ok) return cmd;
+  }
+  // Görev WS92 (92+, basit kural): Wild Shape biçimindeki Druid, biçimin geçici HP'si bitmiş ve slotu varken (Beast Spells
+  // yoksa) bonus eylemle normal hâline döner (büyüyle devam etsin).
+  if (ws92On(state) && !actor.economy.bonus && actor.shape && !actor.shape.polymorph && !actor.shape.possession && (actor.tempHp ?? 0) <= 0
+    && actor.spellSlots.some((n) => n > 0) && !actor.traits?.includes('beast-spells') && wildShapeFeature(actor)) {
+    const cmd: Command = { type: 'wild_shape', actorId };
+    if (tryCmd(state, actor, cmd).ok) return cmd;
   }
   // Görev BARD (basit kural): bonus eylemle Bardic Inspiration; en çok saldıran, zarı olmayan, menzildeki dosta.
   if (!actor.economy.bonus && foesOf(state, actor).length > 0) {
