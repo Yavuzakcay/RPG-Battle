@@ -703,6 +703,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.attacksLeft !== undefined) economy.attacksLeft = event.attacksLeft;
       else if (event.kind === 'action') economy.attacksLeft = 0;
       if (event.slotTurn !== undefined) economy.slotTurn = event.slotTurn;
+      if (event.leveled) economy.leveledCast = true;
+      if (event.quickened) economy.quickened = true;
       if (event.light) economy.lightAttack = true;
       if (event.offhand) economy.offhandUsed = true;
       if (event.flurryLeft !== undefined) economy.flurryLeft = event.flurryLeft;
@@ -970,7 +972,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) return state;
       const slots = [...c.spellSlots];
       slots[event.level - 1] = (slots[event.level - 1] ?? 0) + 1;
-      return withCombatant(state, event.actorId, { spellSlots: slots });
+      // Görev B93: yaratılan slotlar sayılır (savaş sonunda tablonun üstüne çıkabilir; uzun dinlenmede kaybolur).
+      if (!event.extra) return withCombatant(state, event.actorId, { spellSlots: slots });
+      const created = [...(c.createdSlots ?? [])];
+      created[event.level - 1] = (created[event.level - 1] ?? 0) + 1;
+      return withCombatant(state, event.actorId, { spellSlots: slots, createdSlots: created });
     }
     case 'slot_spent': {
       const c = state.combatants[event.actorId];

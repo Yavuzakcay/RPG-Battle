@@ -463,7 +463,11 @@ export function executeCast(state: BattleState, actor0: Combatant, cmd0: CastCom
     return w && w.spells.includes(cmd.spellName) && e.type === 'feature_used'
       ? [{ type: 'feature_used' as const, actorId: actor00.id, feature: `${e.feature}:bekle`, remaining: rollDice(w.dice, rollTag(rng, { by: actor00.id })).total }] : [];
   }) : [];
-  const extra = [...waitEv, ...(dealt ? potentTempHpEvents(r.state, actor00.id, cmd.spellName) : []),
+  // Görev B93 (sürüm 93+, Extended Spell s. 67): "advantage on any saving throw you make to maintain Concentration on that spell".
+  const conc = r.state.combatants[actor00.id]?.concentration;
+  const extEv: BattleEvent[] = buyucu93On(state) && cmd.metamagic?.includes('extended') && conc?.spell === cmd.spellName
+    ? [{ type: 'effect_added', targetId: actor00.id, effect: { id: `mm-extended:${cmd.spellName}`, name: 'Extended Spell', sourceId: actor00.id, concentration: cmd.spellName, concAdv: true } }] : [];
+  const extra = [...waitEv, ...extEv, ...(dealt ? potentTempHpEvents(r.state, actor00.id, cmd.spellName) : []),
     ...freeCastingEvents(r.state, actor00.id, r.events, () => rollDice('1d4', rollTag(rng, { by: actor00.id })).total)];
   return extra.length ? finish(state, [...r.events, ...extra]) : r;
 }

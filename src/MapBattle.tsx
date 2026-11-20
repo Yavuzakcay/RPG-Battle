@@ -1025,7 +1025,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const glowingRaw = useMemo(() => {
     if (!active) return new Set<string>();
     if (mode === 'attack') return new Set(attackTargets(state, actorId));
-    if (mode === 'spell' && spell) return new Set(spellTargets(viewState, actorId, spell.name));
+    if (mode === 'spell' && spell) return new Set(spellTargets(viewState, actorId, spell.name, mmPick));
     if (mode === 'effect' && spell) return new Set(effectTargets(state, actorId, spell));
     if (mode === 'shove') {
       // İtilebilecek bitişik hedefler (motorda zarsız denenerek: yere düşürme her zaman denenebilir).
@@ -1087,7 +1087,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     }
     return new Set<string>();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, active, actorId, mode, spell, featureKey]);
+  }, [state, active, actorId, mode, spell, featureKey, mmPick, viewState]);
   // Kuyruk 19 (madde 27): ölü ya da kaybolmuş düşman hiçbir kipte hedef işareti (kırmızı hüzme) almaz; motor bir komutu
   // kabul etse de (itme, yan el…). Dostlar dokunulmaz (Revivify ölü dosta).
   const glowing = useMemo(() => new Set([...glowingRaw].filter((id) => {
@@ -1160,19 +1160,19 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     // Kuyruk K68b (Call Lightning): şimşek noktası bulutun altında (dökümde büyücünün çevresinde 60 ft) ve menzilde.
     const cl = areaAct.kind === 'spell' ? mechanicsAt(state, areaAct.spell).cloud : undefined;
     if (cl && areaAct.kind === 'spell') {
-      const s = areaActSpec(me, areaAct);
+      const s = areaActSpec(me, areaAct, mmPick);
       const out = new Set<string>();
       const storm = stormSourceOf(state, me, mechanicsAt(state, areaAct.spell));
       if (s) state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!('ok' in pickArea(state, me, s.spec, s.rangeFt, h)) && !cloudPointProblem(state, me, areaAct.spell, cl, h, undefined, false, { storm })) out.add(hexKey(h)); }));
       return out;
     }
     if (!freeHexRule(state)) return null;
-    const s = areaActSpec(me, areaAct);
+    const s = areaActSpec(me, areaAct, mmPick);
     if (!s || s.spec.shape === 'emanation') return null;
     const out = new Set<string>();
     state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!('ok' in pickArea(state, me, s.spec, s.rangeFt, h))) out.add(hexKey(h)); }));
     return out;
-  }, [state, active, actorId, mode, areaAct, aimPts, choicePick]);
+  }, [state, active, actorId, mode, areaAct, aimPts, choicePick, mmPick]);
   // Seçili hedef öldü ya da kaldırıldıysa (Görev U) işareti kalmasın.
   useEffect(() => { if (targetId && !glowing.has(targetId)) setTargetId(null); }, [glowing, targetId]);
   // Alan önizlemesi motorla aynı (menzil, görüş, siper); yayılımda nişan gerekmez.
@@ -2952,7 +2952,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
           {active && actor && actorPx && mode === 'aim' && areaAct && (() => {
             // Alan önizlemesi (Görev R4): etkilenecek düşman/dost sayısı ve adları, yön okları, slot, onay.
             const A = t().area;
-            const sp = areaActSpec(actor, areaAct);
+            const sp = areaActSpec(actor, areaAct, mmPick);
             if (!sp) return null;
             const selfShape = sp.spec.origin === 'self' && sp.spec.shape !== 'emanation';
             const needAim = sp.spec.shape !== 'emanation';

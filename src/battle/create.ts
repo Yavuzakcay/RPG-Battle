@@ -446,7 +446,10 @@ function combatantFromSheetBase(
     ...((): Partial<Combatant> => {
       const code = cls.spellCode;
       const own = code ? (sheet.spellNames ?? []).filter((n) => spells.find((x) => x.name === n)?.classes.includes(code)) : [];
-      return own.length ? { classSpells: own } : {};
+      // Görev B93 (SRD 5.2.1 s. 65; kullanıcı onayı, K11 sapması kalktı): sınıf/alt sınıf özelliğinin her zaman hazır
+      // büyüleri (Draconic Spells) Sorcerer büyüsü sayılır; Innate Sorcery sürüm 93+'da bunlara da (`classSpellsAlways`).
+      const always = code ? kit.alwaysPrepared.filter((n) => !own.includes(n)) : [];
+      return { ...(own.length ? { classSpells: own } : {}), ...(own.length && always.length ? { classSpellsAlways: always } : {}) };
     })(),
     // Görev SORCERER: seçilen Metamagic seçenekleri ve bedelleri; Font of Magic puan tavanı.
     ...((): Partial<Combatant> => {

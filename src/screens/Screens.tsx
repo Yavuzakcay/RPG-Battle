@@ -12,7 +12,7 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { sheetAvatar } from '../battle/avatar';
 import { newCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
-import { currentStatus, fullStatus, isRested, longRestStatus, magicalCunningStatus, recoveryOptions, shortRestStatus } from '../rules/characterRest';
+import { currentStatus, fontOfMagicStatus, fullStatus, isRested, longRestStatus, magicalCunningStatus, recoveryOptions, shortRestStatus } from '../rules/characterRest';
 import { subclassMissing } from '../rules/subclasses';
 import { resourceDef } from '../rules/classFeatures';
 import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
@@ -276,6 +276,19 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
             setNote(R.shortDone(r.rolls.join(' + '), r.healed));
             props.onUpdate({ ...props.c, status: r.status });
           }}>{R.short}</button>
+          {((): JSX.Element | null => {
+            // Görev B93: Font of Magic savaş dışında (slot ↔ Sorcery Point; SRD 5.2.1 s. 66).
+            if (s.resources.sorceryPoints === undefined) return null;
+            const lv = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+            const toP = lv.filter((l) => fontOfMagicStatus(sheet, props.c.status, 'toPoints', l));
+            const toS = lv.filter((l) => fontOfMagicStatus(sheet, props.c.status, 'toSlot', l));
+            if (!toP.length && !toS.length) return null;
+            const use = (mode: 'toPoints' | 'toSlot', l: number) => { const st = fontOfMagicStatus(sheet, props.c.status, mode, l); if (st) { setNote(R.fontDone); props.onUpdate({ ...props.c, status: st }); } };
+            return <span className="rest-font">{R.font}
+              {toP.map((l) => <button key={`p${l}`} className="ghost" onClick={() => use('toPoints', l)}>{R.fontToPoints(l)}</button>)}
+              {toS.map((l) => <button key={`s${l}`} className="ghost" onClick={() => use('toSlot', l)}>{R.fontToSlot(l)}</button>)}
+            </span>;
+          })()}
           {((): JSX.Element | null => {
             // Görev WARLOCK: Magical Cunning (savaş dışı ayin; veride kaynak varsa).
             const mc = magicalCunningStatus(sheet, props.c.status);
