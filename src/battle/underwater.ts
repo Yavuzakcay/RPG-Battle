@@ -18,8 +18,9 @@ import { altitudeOf, fissureDepthAt } from './altitude';
 import { applyEvents } from './reduce';
 import { registerCommandEnd } from './turnHooks';
 import { k73cOn } from './k73cSurum';
-import { breathesWater, breathLimit, deepWaterHex, submerged } from './underwaterCore';
-import type { BattleEvent, BattleState } from './types';
+import { breathesWater, breathLimit, deepWaterHex, inWater, submerged, waterOnlyBreather } from './underwaterCore';
+import { ws92On } from './ws92Surum';
+import type { BattleEvent, BattleState, Combatant } from './types';
 
 export { DIVE_MAX_FT, SWIM_FACTOR, deepWaterHex, mapHasDeepWater, inWater, submerged, breathesWater, breathLimit } from './underwaterCore';
 
@@ -27,9 +28,15 @@ export { DIVE_MAX_FT, SWIM_FACTOR, deepWaterHex, mapHasDeepWater, inWater, subme
  * Tur sonu (kendi turunun): batık ve su solumayan yaratığın nefes sayacı; süre bitince her tur sonu 1 Exhaustion (boğulma
  * seviyesi sayılır).
  */
+/** Nefesini tutuyor mu: batık ve su solumayan; Görev WS92 (92+): yalnız su altında soluyan sudan dışarıda (karada). */
+function holdingBreath(state: BattleState, c: Combatant): boolean {
+  if (submerged(state, c) && !breathesWater(c)) return true;
+  return ws92On(state) && !!state.map && waterOnlyBreather(c) && !inWater(state, c);
+}
+
 export function breathTurnEndEvents(state: BattleState, id: string): BattleEvent[] {
   const c = state.combatants[id];
-  if (!c || c.hp <= 0 || !submerged(state, c) || breathesWater(c)) return [];
+  if (!c || c.hp <= 0 || !holdingBreath(state, c)) return [];
   const used = (c.mapStatus.breath ?? 0) + 1;
   const limit = breathLimit(c);
   if (used <= limit) return [{ type: 'map_effect', rule: 'suAlti', targetId: id, text: `nefesini tutuyor (${used}/${limit} tur)`, mapStatus: { breath: used } }];
@@ -43,7 +50,7 @@ export function breathRecoverEvents(state: BattleState): BattleEvent[] {
   const out: BattleEvent[] = [];
   for (const c of Object.values(state.combatants)) {
     if (!c.mapStatus.breath && !c.mapStatus.suffocation) continue;
-    if (submerged(state, c)) continue;
+    if (submerged(state, c) || holdingBreath(state, c)) continue;
     const suff = c.mapStatus.suffocation ?? 0;
     out.push({ type: 'map_effect', rule: 'suAlti', targetId: c.id, text: suff ? 'nefes aldı (boğulma bitti)' : 'nefes aldı', mapStatus: { breath: 0, suffocation: 0 } });
     if (suff && c.hp > 0) out.push({ type: 'exhaustion_changed', targetId: c.id, level: Math.max(0, (c.exhaustion ?? 0) - suff), reason: 'nefes aldı' });

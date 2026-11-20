@@ -25,7 +25,9 @@ import type { ActiveEffect, BattleEvent, BattleState, Combatant } from './types'
 import type { Ability } from '../rules/abilities';
 import { monsterAttackEvents } from './monsters';
 import { monsterAreaEvents, bestAim } from './areaAttack';
-import { checkReach, monsterAttackReach } from './range';
+import { checkReach, monsterAttackReach, optionReach } from './range';
+import { weaponAttackEvents } from './features';
+import { ws92On } from './ws92Surum';
 import { ring } from '../rules/hex';
 import { castWithoutAction } from './castHook';
 import { formMonsterId } from './shapeMonsterCore';
@@ -244,6 +246,9 @@ export function lairEvents(state: BattleState, rng: Rng): BattleEvent[] {
 // ------------------------------------------------------------------ Kuyruk 19: SRD efsanevi eylemleri
 
 const attackIndex = (b: Combatant, name?: string) => (name ? b.attacks.findIndex((x) => x.name === name) : -1);
+/** Görev WS92 (92+): biçimdeki savaşçının adlı saldırısının silah seçeneği (biçimin saldırı zarlı saldırıları; yoksa undefined). */
+const formOption = (s: BattleState, b: Combatant, name: string) =>
+  (ws92On(s) && b.shape ? b.weaponOptions.find((o) => o.beast?.attack === name) : undefined);
 /** Saldırı yakın dövüş mü (eski `strike` yolu yalnızca yakın dövüş için). */
 function meleeAttack(b: Combatant, name: string): boolean {
   const atk = b.attacks[attackIndex(b, name)];
@@ -258,6 +263,14 @@ function namedStrike(s: BattleState, b: Combatant, names: string[], foes: Combat
   for (const n of names) {
     const i = attackIndex(b, n);
     const atk = b.attacks[i];
+    // Görev WS92 (92+): Wild Shape/Polymorph biçiminde saldırı zarlı saldırı silah seçeneğinde (Giant Hyena Rampage: Bite).
+    const opt = !atk ? formOption(s, b, n) : undefined;
+    if (opt) {
+      const t = foes.find((f) => checkReach(s, b, f, optionReach(opt)).ok);
+      const r = t ? weaponAttackEvents(s, b, t, opt, rng) : null;
+      if (r?.ok && r.events.length) return r.events;
+      continue;
+    }
     if (!atk) continue;
     const t = foes.find((f) => checkReach(s, b, f, monsterAttackReach(atk)).ok);
     if (!t) continue;
@@ -283,7 +296,8 @@ export function k19Legendary(s: BattleState, b: Combatant, a: LegendaryAction, f
       }
     } else if (a.halfMove) {
       const mover = cur.combatants[b.id] as Combatant;
-      const near = foesOf(cur, mover).filter((f) => names.some((n) => { const k = mover.attacks[attackIndex(mover, n)]; return k && checkReach(cur, mover, f, monsterAttackReach(k)).ok; }));
+      const near = foesOf(cur, mover).filter((f) => names.some((n) => { const k = mover.attacks[attackIndex(mover, n)]; const o = !k ? formOption(cur, mover, n) : undefined;
+        return k ? checkReach(cur, mover, f, monsterAttackReach(k)).ok : !!o && checkReach(cur, mover, f, optionReach(o)).ok; }));
       if (!near.length) {
         pre = pounceMove(a.noOA ? { ...cur, combatants: { ...cur.combatants, [b.id]: { ...mover, economy: { ...mover.economy, disengaged: true } } } } : cur, mover, foes, rng);
         cur = applyEvents(cur, pre);

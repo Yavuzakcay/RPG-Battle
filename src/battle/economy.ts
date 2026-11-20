@@ -7,6 +7,8 @@
  * Komut başarılı olursa `action_used` olayı komutun olaylarının ardına eklenir; başarısız
  * komut hiçbir şey harcamaz.
  */
+import { ws92On } from './ws92Surum';
+import ws92Data from '../../data/ws92.json';
 import { heldFollow, mechanicsAt } from './spellVersion';
 import { breathOf } from './breath';
 import { abilitiesOf } from './monsterAbilities';
@@ -205,11 +207,15 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
         if (cmd.option.ammo && actor.ammo && (actor.ammo[cmd.option.ammo] ?? 0) <= 0) return fail(`Cephane bitti (${cmd.option.ammo}).`);
       }
       const loading = cmd.type === 'attack' && cmd.option.loading && globalRule(state, 'srdK19') ? { loadingFired: true } : {};
+      // Görev WS92 (92+; SRD Multiattack): biçimin bileşimi (Brown Bear: bir Bite, bir Claw); sayaç `economy.beastUsed`.
+      const comp = cmd.type === 'attack' ? beastComposition(state, actor, cmd.option.beast?.attack) : null;
+      if (comp?.problem && e.attacksLeft > 0) return fail(comp.problem);
+      const beast = comp ? { beast: comp.name } : {};
       if (e.attacksLeft > 0) {
-        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1, ...light, ...loading } };
+        return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: 'Attack', attacksLeft: e.attacksLeft - 1, ...light, ...loading, ...beast } };
       }
       const n = actionAttacks(actor, pact);
-      return spend(actor, 'action', 'Attack', { attacksLeft: n - 1, ...light, ...loading, ...(n > actor.attacksPerAction ? { pactOnly: true } : {}) });
+      return spend(actor, 'action', 'Attack', { attacksLeft: n - 1, ...light, ...loading, ...beast, ...(n > actor.attacksPerAction ? { pactOnly: true } : {}) });
     }
     case 'offhand_attack': {
       // Önce kuralın kendisi (daha anlamlı neden), sonra eylem ekonomisi.
@@ -240,6 +246,12 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       }
     }
       if (actor.attacks[cmd.attackIndex]?.bonusAction) return spend(actor, 'bonus', actor.attacks[cmd.attackIndex]?.name ?? 'Bonus saldırı');
+      // Görev WS92 (92+; Lion "can replace one attack with a use of Roar"): biçimde Attack eyleminin bir saldırısının yerine.
+      {
+        const swap = beastReplace(state, actor, actor.attacks[cmd.attackIndex]?.name);
+        if (swap && e.attacksLeft > 0) return { ok: true, event: { type: 'action_used', actorId: actor.id, kind: 'attack', what: swap, attacksLeft: e.attacksLeft - 1, beast: swap } };
+        if (swap && !e.action) return spend(actor, 'action', 'Attack', { attacksLeft: actionAttacks(actor, false) - 1, beast: swap });
+      }
       return spend(actor, 'action', ACTION_NAMES[cmd.type] ?? cmd.type);
     case 'multiattack':
     case 'search':
@@ -409,4 +421,23 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
     default:
       return { ok: true, event: null };
   }
+}
+
+/** Görev WS92 (92+): biçimin Multiattack bileşimi (`data/ws92.json` `bilesim`): saldırı adı ve sınır aşılırsa sorun metni. */
+function beastComposition(state: BattleState, actor: Combatant, attack: string | undefined): { name: string; problem: string | null } | null {
+  if (!attack || !actor.shape || !ws92On(state)) return null;
+  const rec = (ws92Data.bilesim as Record<string, { en: Record<string, number>; yerine?: string[] }>)[actor.shape.form];
+  if (!rec) return null;
+  const max = rec.en[attack];
+  const used = actor.economy.beastUsed?.[attack] ?? 0;
+  const why = max === undefined ? `Multiattack: ${attack} bu biçimin saldırıları arasında değil.` : used >= max
+    ? `Multiattack: ${Object.entries(rec.en).map(([k, v]) => `${v} ${k}`).join(' + ')} (bu eylemde ${attack} yapıldı).` : null;
+  return { name: attack, problem: why };
+}
+
+/** Görev WS92 (92+): biçimde saldırının yerine kullanılabilen eylem (Lion: Roar); değilse null. */
+function beastReplace(state: BattleState, actor: Combatant, name: string | undefined): string | null {
+  if (!name || !actor.shape || !ws92On(state)) return null;
+  const rec = (ws92Data.bilesim as Record<string, { yerine?: string[] }>)[actor.shape.form];
+  return rec?.yerine?.includes(name) && !Object.keys(actor.economy.beastUsed ?? {}).some((k) => rec.yerine?.includes(k)) ? name : null;
 }

@@ -10,6 +10,8 @@
  * - Hücum ("20+ ft düz koşup vurursa"): turdaki son düz koşu (`run`) en az o kadar ve hedef koşu
  *   yönünde bitişikse tutar.
  */
+import { formMonsterId } from './shapeMonsterCore';
+import { ws92On } from './ws92Surum';
 import { adjacent3D, k73bOn } from './adjacency';
 import { checkBase } from './ruleVersion';
 import { extrasTotal, rollExtras } from '../rules/attack';
@@ -160,7 +162,9 @@ function saveFails(target: Combatant, save: { ability: Ability; dc: number }, rn
  */
 export function riderConditionEvents(
   state: BattleState, actor: Combatant, target: Combatant, spec: RiderSpec | undefined, attackName: string, rng: Rng,
-  monsterId: string | undefined = actor.monsterId,
+  // Görev WS92 (92+): Wild Shape/Polymorph biçiminde biçimin kimliği (save'li ve alanlı biçim saldırılarının A2 ekleri;
+  // eskiden biçimde bu yollarda A2 eki aranmıyordu).
+  monsterId: string | undefined = ws92On(state) ? formMonsterId(actor) : actor.monsterId,
 ): BattleEvent[] {
   // Kuyruk A2 (sürüm 30+): veriyle bağlanan ekler (süre, itme/çekme, hız/eylem kısıtı, ikinci aşama, 0 HP…); 0 HP'de de.
   const a2 = a2Events(state, actor, target, attackName, rng, monsterId);

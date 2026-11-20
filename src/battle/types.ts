@@ -264,6 +264,8 @@ export interface ActiveEffect {
   /** Görev K9c: tırmanma hızı (Spider Climb; yükseklik maliyeti yok), büyülü zıplama menzili ft (Jump; turda bir). */
   climb?: boolean;
   jumpFt?: number;
+  /** Görev WS92 (92+): canavar atlama özelliği (Standing Leap, Running Leap, Jumper): uzun atlama en az `long` ft (`running`: yalnız koşarak), yerinde yüksek atlama `high` ft, mesafe DEX skoruyla (`dex`). */
+  leap?: { long?: number; high?: number; running?: boolean; dex?: boolean };
   /** Kuyruk 19: Compulsion: tur başında bu yönde (AXIAL_DIRECTIONS indeksi; yoksa büyücüden uzağa) yürür. */
   compel?: { dir?: number };
   /** Kuyruk 19: Freedom of Movement (zorlu arazi, büyülü hız düşürme yok; yüzme; 5 ft ile yakalamadan kurtulma). */
@@ -553,6 +555,8 @@ export interface Economy {
   fleetUsed?: boolean;
   apotheosisUsed?: boolean;
   loadingFired?: boolean;
+  /** Görev WS92 (92+): bu eylemde yapılan biçim saldırıları (ad → sayı; Multiattack bileşimi). */
+  beastUsed?: Record<string, number>;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -1597,6 +1601,8 @@ export interface ShapeStats {
    * canavar verisi aramaları (yetenek, ek etki, Multiattack planı) biçimin kimliğiyle (`formMonsterId`).
    */
   monster?: ShapeMonster;
+  /** Görev WS92 (92+): biçimin STR ve DEX skoru (atlama, taşıma/sürükleme); bırakınca eskileri. Alan yoksa skorlar değişmez. */
+  scores?: { str: number; dex: number };
 }
 /** Görev WS91: biçimin canavar parçası (son değerler). */
 export interface ShapeMonster {
@@ -1624,7 +1630,7 @@ export type ShapeMonsterPrev = Pick<Combatant, 'resistances' | 'immunities' | 'v
   & { effects: ActiveEffect[]; resources: Record<string, number | null> };
 /** Biçimden önceki (bırakınca dönen) değerler. */
 export type ShapePrev = Pick<Combatant, 'ac' | 'speed' | 'fly' | 'size' | 'modifiers' | 'saves' | 'weaponOptions' | 'attacksPerAction' | 'avatar'>
-  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt' | 'skills'>> & { mon?: ShapeMonsterPrev };
+  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt' | 'skills' | 'strScore' | 'dexScore' | 'carryCapLb'>> & { mon?: ShapeMonsterPrev };
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
 export interface ExtraDamage {
@@ -2065,6 +2071,8 @@ export type BattleEvent =
       fleet?: boolean; apotheosis?: boolean;
       /** Kuyruk 19 (SRD Loading): Loading silah bu eylemde ateşlendi. */
       loadingFired?: boolean;
+      /** Görev WS92 (92+): biçim Multiattack bileşimi: bu saldırının adı (eylem başına sayılır). */
+      beast?: string;
     }
   | { type: 'dashed'; actorId: string }
   /**

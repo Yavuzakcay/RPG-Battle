@@ -645,27 +645,37 @@ export const HIGH_JUMP = 'spell:jump-high';
  */
 export function highJumpReachFt(state: BattleState, c: Combatant): number {
   if (ruleVersion(state) < 52 || !usedThisTurn(state, c, HIGH_JUMP)) return 0;
-  return Math.min(spellJumpFt(c), altitudeCapFt(state, c));
+  // Görev WS92 (92+): Standing Leap'in yüksek atlaması (Frog 5, Giant Frog/Toad 10 ft) da yerinde zıplama erişimi.
+  return Math.min(Math.max(spellJumpFt(c), leapOf(c)?.high ?? 0), altitudeCapFt(state, c));
 }
+/** Görev WS92: yerinde zıplamanın hareket maliyeti (Jump büyüsü 10 ft; Standing Leap yüksek atlaması ft başına 1 ft). */
+const highJumpCost = (c: Combatant): number => (spellJumpFt(c) > 0 ? SPELL_JUMP_COST : Math.max(1, Math.ceil((leapOf(c)?.high ?? 0) / 5)));
 
 /** Yerinde yüksek zıplamanın sorunu (yoksa null): sürüm 52, katmansız harita, Jump etkisi, bu tur zıplanmamış, 10 ft hareket. */
 export function highJumpProblem(state: BattleState, actor: Combatant): string | null {
   if (ruleVersion(state) < 52) return 'Zaten bu altıgende.';
-  if (spellJumpFt(actor) <= 0) return 'Yerinde zıplamak için Jump etkisi gerekir.';
+  if (spellJumpFt(actor) <= 0 && !leapOf(actor)?.high) return 'Yerinde zıplamak için Jump etkisi gerekir.';
   if (layerActive(state)) return 'Yükseklik katmanlı haritada yüksek zıplama komşu yüksek altıgene yapılır.';
   if (isAirborne(actor)) return 'Havadayken zıplanmaz.';
   if (usedThisTurn(state, actor, SPELL_JUMP)) return 'Jump bu tur kullanıldı.';
   if (altitudeCapFt(state, actor) <= 0) return 'Tavan çok alçak.';
-  if (SPELL_JUMP_COST > speedHexes(actor) - actor.movementUsed) return 'Hareket yetmiyor.';
+  if (highJumpCost(actor) > speedHexes(actor) - actor.movementUsed) return 'Hareket yetmiyor.';
   return null;
 }
 
 /** Uzun atlama menzili (ft): koşarak STR skoru kadar, koşusuz yarısı (aşağı yuvarlanır). */
 export function jumpRangeFeet(c: Combatant, running: boolean, state?: Pick<BattleState, 'map' | 'kuralSurumu'>): number {
   // Kuyruk 19 (featuresK19): Thief'in Second-Story Work'ü (Jumper): atlama mesafesi DEX skoruyla da.
-  const score = state && c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19') ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
-  return running ? score : Math.floor(score / 2);
+  // Görev WS92 (92+): canavar Jumper'ı (Cat) mesafeyi DEX skoruyla belirler; Standing Leap koşusuz da, Running Leap yalnız koşarak `long` ft.
+  const leap = leapOf(c);
+  const score = leap?.dex ? c.dexScore ?? c.strScore
+    : state && c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19') ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
+  const base = running ? score : Math.floor(score / 2);
+  return leap?.long && (running || !leap.running) ? Math.max(base, leap.long) : base;
 }
+/** Görev WS92 (92+ etkisi): canavarın atlama özelliği (yoksa undefined). */
+export const leapOf = (c: Pick<Combatant, 'effects'>): NonNullable<Combatant['effects']>[number]['leap'] =>
+  c.effects?.find((e) => e.leap)?.leap;
 
 /**
  * Uzun atlama (5e). Menzil kanal genişliğiyle ölçülür: aradaki altıgen sayısı × 5 ft,
@@ -682,7 +692,9 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
     const why = highJumpProblem(state, actor);
     if (why) return fail(why);
     const t = turnKey(state);
-    return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap: 0, cost: SPELL_JUMP_COST, running: false, traitTurns: { [SPELL_JUMP]: t, [HIGH_JUMP]: t } }]);
+    // Görev WS92: Standing Leap (Jump etkisi yokken) Jump büyüsünün tur kaydını harcamaz.
+    const spell = spellJumpFt(actor) > 0;
+    return finish(state, [{ type: 'jumped', actorId: actor.id, from, to, gap: 0, cost: highJumpCost(actor), running: false, traitTurns: spell ? { [SPELL_JUMP]: t, [HIGH_JUMP]: t } : { [HIGH_JUMP]: t } }]);
   }
   // Görev A4: tasma: atlayarak da uzaklaşılmaz.
   if (leashBlocks(leashOf(state, actor), to, from)) return fail('Tasma: bağlı olduğu yaratıktan daha uzağa gidemez.');

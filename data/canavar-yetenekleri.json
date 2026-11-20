@@ -169,7 +169,8 @@
      "dash",
      "disengage"
     ],
-    "waterOnly": true
+    "waterOnly": true,
+    "swimDash": "full"
    }
   ]
  },
@@ -185,7 +186,8 @@
      "dash",
      "disengage"
     ],
-    "waterOnly": true
+    "waterOnly": true,
+    "swimDash": "half"
    }
   ]
  },

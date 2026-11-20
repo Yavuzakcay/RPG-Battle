@@ -44,13 +44,17 @@ export interface A2Spec {
   swallow?: { dice: string; type: string; escapeDamage: number; escapeDc: number; maxSize?: string; grappledOnly?: boolean; escapeCheck?: number };
   corrode?: { armor?: boolean; weapon?: boolean };
   tur: string;
+  /** Görev WS92: bu kural sürümünden itibaren (yoksa A2'den beri). */
+  surum?: number;
   not_?: string;
   kalan?: string;
 }
 export const A2_RIDERS = (data as unknown as { ekler: Record<string, A2Spec> }).ekler;
 
 export function a2Of(state: Pick<BattleState, 'kuralSurumu'>, monsterId: string | undefined, attackName: string): A2Spec | undefined {
-  return monsterId && ridersA2On(state) ? A2_RIDERS[`${monsterId}:${attackName}`] : undefined;
+  const a = monsterId && ridersA2On(state) ? A2_RIDERS[`${monsterId}:${attackName}`] : undefined;
+  // Görev WS92: sonradan eklenen ek, kaydındaki kural sürümünden önceki savaşta yok sayılır (`surum`).
+  return a && (a.surum ?? 0) > ruleVersion(state) ? undefined : a;
 }
 
 /** İsabette ek hasar (rider `extra`'sına eklenir); sürüm 30 altında aynen döner. */

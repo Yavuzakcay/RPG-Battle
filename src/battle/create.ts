@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { WS92_VERSION } from './ws92Surum';
 import { creatureTypeAt, hasSrdD1, monsterAt, swimSpeedAt } from './srdD1';
 import { SRD_D1_VERSION } from './srdD1Surum';
 import { withMonsterAbilities } from './monsterAbilities';
@@ -670,6 +671,24 @@ export function srdD1Revert(c: Combatant, v: number): Combatant {
   return out;
 }
 
+/** Görev WS92: canavar saldırılarının hasar zarı savaşın kural sürümündeki veriden (92'de "1d2" → "1" düzeltmesi geri alınır). */
+export function ws92DiceRevert(c: Combatant, v: number): Combatant {
+  if (v >= WS92_VERSION || !c.monsterId || !hasSrdD1(c.monsterId)) return c;
+  let m: Monster;
+  try { m = getMonster(c.monsterId); } catch { return c; }
+  const old = monsterAt(m, v);
+  if (old === m) return c;
+  let changed = false;
+  const attacks = c.attacks.map((a) => {
+    const now = m.attacks.find((x) => x.name === a.name)?.damageDice;
+    const was = old.attacks.find((x) => x.name === a.name)?.damageDice;
+    if (now === undefined || was === undefined || now === was || a.damageDice !== now) return a;
+    changed = true;
+    return { ...a, damageDice: was };
+  });
+  return changed ? { ...c, attacks } : c;
+}
+
 /** Korunacak masum (GM yönetir, silahsız, eylem yapmaz). Değerler haritanın `objective` kuralından. */
 export function civilianCombatant(index: number, stats: { hp: number; ac: number; speedHexes: number }, gorselId = defaultCivilianLook(index)): Combatant {
   const look = civilianLook(gorselId);
@@ -784,6 +803,8 @@ export function startBattle(
   const rules = opts.kuralSurumu ?? defaultRuleVersion();
   // Görev D1: sürüm < 86 savaşta canavarlar SRD düzeltmesi öncesi veriyle (eski kayıt/simülasyon aynı).
   if (rules < SRD_D1_VERSION) participants = participants.map((p) => srdD1Revert(p, rules));
+  // Görev WS92: 92'de düzeltilen saldırı zarı (sabit 1 hasar) daha eski kural sürümüyle başlayan savaşta eski değerle.
+  if (rules < WS92_VERSION) participants = participants.map((p) => ws92DiceRevert(p, rules));
   const rolled = participants.map((p) => {
     const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
     // Kuyruk 17 H: inisiyatif atılırken Incapacitated olan dezavantajlı atar (SRD 5.2.1 Incapacitated "Surprised");

@@ -7,6 +7,9 @@
  *   biten (Wild Shape/Polymorph) yutan yutulanı bırakır.
  * - Wild Shape çekirdeği (s. 42–43): biçimde eşyanın kurtarma eki düşer (Objects), Beast Spells malzeme istisnası, Wild
  *   Companion familiar'ı Fey, yapay zekâ en güçlü seçili biçimi seçer ve slot kazanınca biçimden çıkar.
+ * - Biçim özellikleri: STR/DEX skoru biçimden, Rampage biçimde, Illumination parlak + loş, atlama özellikleri doğal atlama
+ *   kuralıyla, Water Breathing karada nefes, Bubble Dash yalnız o hareket, Cacophony dezavantajları, sabit 1 hasar, Multiattack
+ *   bileşimi (Brown Bear, Lion).
  * 91 ve altı (eski kayıt, replay) aynen.
  */
 import type { BattleState } from './types';

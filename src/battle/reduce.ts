@@ -709,6 +709,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.loadingFired) economy.loadingFired = true;
       // Yeni eylem (Attack): önceki eylemin Loading atışı sayılmaz.
       if (event.kind === 'action' && !event.loadingFired) economy.loadingFired = false;
+      // Görev WS92 (92+): biçim Multiattack bileşimi: yeni eylemde sayaç sıfırlanır, saldırının adı sayılır.
+      if (event.kind === 'action') delete economy.beastUsed;
+      if (event.beast) economy.beastUsed = { ...(economy.beastUsed ?? {}), [event.beast]: (economy.beastUsed?.[event.beast] ?? 0) + 1 };
       // Kuyruk A6: önce alınan Haste eylemi kullanıldı: asıl eylem geri gelir (kısıtsız).
       if (event.kind === 'action' && economy.hasteFirst) { economy.action = false; economy.attacksLeft = 0; economy.hasted = false; economy.hasteFirst = false; }
       return withCombatant(state, event.actorId, { economy });
@@ -928,7 +931,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         // Kural sürümü 87 (`bicimYuzme`): biçimin yüzme hızı; bırakınca eski yüzme hızı.
         ...(event.stats && 'swimFt' in event.stats ? { swimFt: c.swimFt } : {}),
         // Görev D3 (89+): biçimin beceri bonusları; bırakınca eskileri.
-        ...(event.stats?.skills ? { skills: c.skills } : {}) };
+        ...(event.stats?.skills ? { skills: c.skills } : {}),
+        // Görev WS92 (92+): biçimin STR/DEX skoru ve taşıma kapasitesi (biçimde STR × 15 × boyuttan); bırakınca eskileri.
+        ...(event.stats?.scores ? { strScore: c.strScore, dexScore: c.dexScore, carryCapLb: c.carryCapLb } : {}) };
       // Görev WS91 (91+): önceki biçimin canavar parçası kaldırılır (asıl değerler `prev.mon`'dan), yenisi aşağıda uygulanır.
       const monPrev = c.shape?.prev.mon;
       const bare = c.shape?.monster && monPrev ? withoutMonsterPart(c, c.shape.monster, monPrev) : c;
@@ -945,7 +950,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const shaped = withCombatant(state1, c.id, { shape: { ...s, prev: mon ? { ...base, mon } : base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
         saves: s.saves, weaponOptions: s.weaponOptions, attacksPerAction: s.attacksPerAction, avatar: s.avatar,
         ...(s.attacks ? { attacks: s.attacks, multiattack: !!s.multiattack } : {}),
-        ...('swimFt' in s ? { swimFt: s.swimFt || undefined } : {}), ...(s.skills ? { skills: s.skills } : {}) });
+        ...('swimFt' in s ? { swimFt: s.swimFt || undefined } : {}), ...(s.skills ? { skills: s.skills } : {}),
+        ...(s.scores ? { strScore: s.scores.str, dexScore: s.scores.dex, carryCapLb: undefined } : {}) });
       // Kural sürümü 87: yüzen biçim sudaysa "suda" işareti hemen (yüzme hızı ve çok derin su).
       return 'swimFt' in s ? syncWater(shaped, c.id) : shaped;
     }

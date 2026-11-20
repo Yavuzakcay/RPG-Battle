@@ -18,7 +18,7 @@ import { srdD1On } from './srdD1Surum';
 import { turnKey } from './economy';
 import multiData from '../../data/multiattack.json';
 import { getMonster, type Monster } from '../data';
-import { distance, ring, type Offset } from '../rules/hex';
+import { costsFrom, distance, ring, type Offset } from '../rules/hex';
 import { rollDice, rollDie, rollTag, type Rng } from '../rules/dice';
 import { globalRule } from './ruleControl';
 import { canSee, damageEffect, hasDarkness, isUnderwater, saveEffect } from './maprules';
@@ -27,7 +27,7 @@ import { fail, finish, isTargetable, type CommandResult } from './common';
 import { castWithoutAction } from './castHook';
 import { k19Legendary, legendarySave, legendaryTeleport, pounceMove, type LegendaryAction } from './boss';
 import { executeHide } from './stealth';
-import { occupantAt, terrainAt } from './movement';
+import { executeMove, moveCostFn, occupantAt, terrainAt } from './movement';
 import { canReact, reactionUsable, reactionUsed, registerInk } from './reactions';
 import { retreatMove } from './boss';
 import { speedHexes } from './reduce';
@@ -36,6 +36,7 @@ import { combatantFromMonster } from './create';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
 import { formMonsterId } from './shapeMonsterCore';
 import { ws92On } from './ws92Surum';
+import ws92Data from '../../data/ws92.json';
 import { insideEffect } from './swallow92';
 
 export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
@@ -52,6 +53,8 @@ export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
   maxSize?: 'T' | 'S' | 'M' | 'L' | 'H'; at?: 'start' | 'end'; disgorge?: boolean;
   /** Görev WS92 (92+): midede yaratık varken kullanılamayan saldırılar (Bite); bir seferde tek yutulan (Giant Toad). */
   blocks?: string[]; single?: boolean;
+  /** Görev WS92 (92+): Bubble Dash: su altında yüzme hızı kadar (`full`) ya da yarısı (`half`) fırsat saldırısız hareket (yalnız bu hareket). */
+  swimDash?: 'full' | 'half';
   adjacent?: boolean; dice2?: string; type2?: string; type?: string; escapeDamage?: number; escapeDc?: number; small?: boolean; nearTree?: boolean;
 }
 interface Aura { name: string; radiusFt: number; save?: 'wis' | 'con' | 'dex'; dc?: number; conditions?: string[]; on?: Array<'start'>; targets?: 'enemies' | 'all'; difficult?: boolean; gibbering?: boolean }
@@ -118,7 +121,10 @@ export function monsterAbilitySetup(state: BattleState, c0: Combatant, m0?: Mons
   if (p.absorb) fx.absorb = p.absorb;
   if (p.onDamage) fx.onDamageFx = p.onDamage;
   if (p.greaterMagicResistance) fx.saveAdvAgainst = ['spell'];
-  if (p.jump) fx.jumpFt = p.jump.long;
+  // Görev WS92 (92+): atlama özellikleri Jump büyüsü modeli değil, doğal atlamanın kuralı (SRD Standing/Running Leap, Jumper; `data/ws92.json`).
+  const leap = ws92On(state) ? (ws92Data.atlama as Record<string, ActiveEffect['leap']>)[formMonsterId(c0) ?? c0.monsterId ?? ''] : undefined;
+  if (leap) fx.leap = leap;
+  else if (p.jump) fx.jumpFt = p.jump.long;
   if (p.bloodied) fx.bloodiedAdv = p.bloodied;
   if (p.bloodFrenzy) fx.bloodFrenzy = true;
   if (p.authority) fx.authority = p.authority.radiusFt;
@@ -291,6 +297,8 @@ export function abilityEvents(state: BattleState, actor: Combatant, a: MonsterAb
           .filter((h) => distance(h, hexOf(actor)) <= r && !occupantAt(state, h, actor.id) && terrainAt(state, h).movement === 'normal')[0];
         return spot && distance(hexOf(t), hexOf(actor)) > 1 ? [{ type: 'teleported', actorId: actor.id, from: hexOf(actor), to: spot, label: a.tr, cost: 2 }] : [];
       }
+      // Görev WS92 (92+; SRD Seahorse/Giant Seahorse Bubble Dash): yalnız bu hareket fırsat saldırısız, turun hareketinden düşmez.
+      if (a.swimDash && ws92On(state)) return swimDashEvents(state, actor, a.swimDash, foesOf(state, actor), targetHex, rng);
       const out: BattleEvent[] = [];
       const want = opt ? [opt] : a.grant ?? [];
       if (a.dimOnly && !(state.map && hasDarkness(state))) return [];
@@ -458,6 +466,35 @@ function swallowEvents(state: BattleState, actor: Combatant, a: MonsterAbility, 
         ...(v92 ? { inside: true, ...(a.blocks?.length ? { blocks: [...a.blocks] } : {}), ...(actor.shape ? { form: formMonsterId(actor) } : {}) } : {}) } } as ActiveEffect }];
 }
 const SIZE_ORDER = ['T', 'S', 'M', 'L', 'H', 'G'];
+
+/**
+ * Görev WS92: Bubble Dash: yüzme hızı (ya da yarısı) kadar fırsat saldırısız hareket. Hedef altıgen verildiyse oraya (bütçe
+ * içindeyse), yoksa düşmanlardan en uzak boş altıgene. Hareket turun hareketinden düşmez (`moved.free`).
+ */
+function swimDashEvents(state: BattleState, actor: Combatant, kind: 'full' | 'half', foes: Combatant[], to: Offset | undefined, rng: Rng): BattleEvent[] {
+  if (!state.map || !actor.pos || !actor.swimFt) return [];
+  const budget = Math.floor(actor.swimFt / 5 / (kind === 'half' ? 2 : 1));
+  if (budget <= 0) return [];
+  const size = { cols: state.map.tiles[0]?.length ?? 0, rows: state.map.tiles.length };
+  const costs = costsFrom(actor.pos, size, moveCostFn(state, actor), budget);
+  let dest: Offset | null = null;
+  if (to && costs.has(`${to.col},${to.row}`) && !occupantAt(state, to, actor.id)) dest = to;
+  else {
+    let best = -1;
+    for (const [key, cost] of costs) {
+      if (cost === 0) continue;
+      const [col, row] = key.split(',').map(Number) as [number, number];
+      const h = { col, row };
+      if (occupantAt(state, h, actor.id)) continue;
+      const d = foes.length ? Math.min(...foes.map((f) => distance(h, hexOf(f)))) : 0;
+      if (d > best) { best = d; dest = h; }
+    }
+  }
+  if (!dest) return [];
+  const mover = { ...actor, movementUsed: speedHexes(actor) - budget, economy: { ...actor.economy, disengaged: true } };
+  const r = executeMove({ ...state, combatants: { ...state.combatants, [actor.id]: mover } }, mover, dest, rng);
+  return r.ok ? r.events.map((e) => (e.type === 'moved' && e.actorId === actor.id ? { ...e, free: true } : e)) : [];
+}
 
 /** Çağırma (Animate Trees, Create Specter): SRD stat bloğuyla yeni savaşçı, sahibinin hemen ardından oynar. */
 function summonEvents(state: BattleState, actor: Combatant, a: MonsterAbility): BattleEvent[] {

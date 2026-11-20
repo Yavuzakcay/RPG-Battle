@@ -22,6 +22,17 @@ Tek kural sürümü 92 (`src/battle/ws92Surum.ts`); 91 ve altı kayıt/replay es
   - Wild Resurgence (B6): savaşta kazanılan slot karaktere yazılır (`partyStatus.ts`: üst sınır savaş başındaki kalan değil, tablonun en çoğu; Nature Magician ve Font of Magic slotları da). Savaş dışı durum, kural sürümü gerektirmez.
   - Yapay zekâ (C9, C10): seçili biçimler arasında en güçlüsü (CR, sonra HP); biçimin geçici HP'si bitmiş ve slotu olan (Beast Spells'siz) druid bonus eylemle döner.
   - Bilinçli (kullanıcı kararı): süre sayacı yok, biçim ve geçici HP savaş sonunda biter (A11, C11). Ertelendi: `multiHex` gövde sığması (A46). WS91'in tür direnci kararı (A29 ⚠) değişmedi.
+- **3. Biçim özellikleri** (WILD-SHAPE-BICIMLER-DENETIM.md; sabitler `data/ws92.json`):
+  - STR/DEX skoru biçimden (`shape_changed.stats.scores`; atlama, sürükleme; taşıma kapasitesi biçimin STR × 15 × boyut). Polymorph da aynı olayla.
+  - Rampage (Giant Hyena) biçimde: adlı saldırı biçimin silah seçeneğinden (`boss.ts` `formOption`).
+  - Illumination stat bloğundaki parlak + ek loş (Giant Fire Beetle, Azer, Nightmare 10 + 10; Will-o'-Wisp 20 + 20; Fire Elemental 30 + 30). Eskiden hepsi 30 ft parlak.
+  - Atlama özellikleri Jump büyüsü modeli değil doğal atlama: Running Leap yalnız koşarak (Lion, Saber-Toothed Tiger 25 ft), Standing Leap koşusuz da uzun atlama ve yerinde yüksek atlama erişimi (Frog 10/5, Giant Frog/Toad 20/10 ft; ft başına 1 ft hareket), Jumper mesafeyi DEX skoruyla (Cat). SRD dışı Leap bonus eylemine dokunulmadı.
+  - Water Breathing ("can breathe only underwater") olan yaratık sudan dışarıda nefes tutar (su altı nefes kuralının tersi; Water Breathing büyüsü kaldırır).
+  - Bubble Dash: Dash + Disengage değil, yalnız bu hareket fırsat saldırısız; Seahorse yüzme hızı, Giant Seahorse yarısı; turun hareketinden düşmez (`moved.free`).
+  - Cacophony: Deafened süresince saldırı ve yetenek kontrolü dezavantajlı (A2 eki; A2 kayıtlarına `surum` alanı: daha eski savaşta yok sayılır). Biçimin save'li ve alanlı saldırıları A2 eklerini biçimin kimliğiyle arar (eskiden aramıyordu).
+  - Sabit 1 hasar: `monsters.json` 21 saldırı "1d2" → "1" (SRD "Hit: 1 … damage"); eski değer `srd-duzeltme.json` (`surum` 92). Düşman canavarda srdK19 bunu zaten savaş başında yapıyordu; fark biçim seçeneklerinde.
+  - Multiattack bileşimi biçimde: Brown Bear bir Bite + bir Claw; Lion bir Rend'in yerine Roar (eylem başına sayaç `economy.beastUsed`, olayda `action_used.beast`).
+  - Ertelendi, karar gerekli: Swarm'ın başka yaratığın altıgeninde durması (doluluk modeli bir altıgende tek yaratık varsayıyor). Kullanıcı kararı: Swarm biçimi Wild Shape geçici HP'sini alır.
 
 ## Ranger ID4 Dragonborn: kontur halkası (erkek) ve çene maskesi (kadın) (2026-11-20; yalnız görünüm, mekanik/kural/kayıt sürümü yok)
 

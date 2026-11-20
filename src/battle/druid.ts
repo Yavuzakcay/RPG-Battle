@@ -92,6 +92,8 @@ export function shapeStats(m: Monster, druid: Combatant, o: ShapeOpts = {}): Sha
     avatar: monsterAvatar(m),
     ...(o.swimFt !== undefined ? { swimFt: o.swimFt } : {}),
     ...(o.srd89 && o.srd87 ? { skills: o.srd87 === 'poly' ? { ...(m.skills ?? {}) } : wildSkills(m, druid, mods) } : {}),
+    // Görev WS92 (92+): STR/DEX skoru biçimden (s. 43 "Game Statistics"; atlama, taşıma, sürükleme).
+    ...(o.ws92 ? { scores: { str: m.abilities.str, dex: m.abilities.dex } } : {}),
   };
 }
 
