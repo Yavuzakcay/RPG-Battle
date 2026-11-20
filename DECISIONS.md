@@ -9,6 +9,42 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 
 
+## Dungeondex prospektüsü, Aşama 1: eşyalar (2026-11-20; yalnız arayüz, kural ve kayıt sürümü aynı)
+
+Soru sorulmadı. Şablon ve kategori eşlemesi `harita/belgeler/DUNGEONDEX-PROSPEKTUS.md`'de.
+
+- **Bölümler sabit sırada:** Ne işe yarar, Nasıl kullanılır, Etken içerik, Riskler, Kimler kullanamaz, Maliyet ve ağırlık, Oyundaki durum.
+  - Satırsız bölüm üretilmez.
+  - "Oyundaki durum" her zaman rozetle görünür: savaşta çalışır / Game Master işler / savaş dışı / yalnız açıklama.
+- **Saf modül:** `src/dungeondex/prospektus/` (`esya.ts`, `types.ts`). Dil tablosu parametreyle gelir; React yok.
+- **Bileşen:** `ProspektusSections.tsx`, kabuğa bağlanmadı; kabuk görevi sağ sayfaya bağlayacak. Kabuk dosyalarına ve `data/aciklamalar-tr.json`'a dokunulmadı.
+- **Metinler** `dex.pro` altında, `strings.tr2.ts` (tembel TR parçası) + `strings.en.ts`. Dungeondex'in bütün TR metinleri zaten orada; ana parçaya girmez. Ana parça 461,55 kB.
+- **Veri** `data/prospektus/esya-{silah,zirh,donanim,sihirli}.json`, kategori başına ayrı dosya:
+  - Türkçe paragraflar `ne`/`nasil`/`risk`/`kimler`.
+  - SRD'den alınanlar: maliyet, ustalık, nadirlik, zırh giyme/çıkarma dakikası, AC'ye DEX ve üst sınırı. Bu alanları test `data/srd` ile karşılaştırır.
+  - Oyun verisinde maliyet ve nadirlik alanı yoktu.
+- **Kaynak:** `data/srd/*.json` (PDF'ten `npm run srd`). Kesik ya da tablolu metinler için `pdftotext` ile PDF okundu. Bellekten değer yok.
+  - Kaydın kendi alanında olmayan tablo sayıları (asa yük bedelleri, rastgele tablolar) yazılmadı; tablo özetlendi.
+- **Alchemist's fire:** oyun verisinin notu "yanma 1d4/tur, DC 10 DEX ile söndür". SRD Burning ise: tur başında 1d4 ateş; eylemle Prone olup yuvarlanınca, ıslanınca, batınca ya da havasız kalınca söner. Prospektüs SRD'yi yazar. Oyundaki söndürme kuralı değiştirilmedi (yeni mekanik yok).
+- **Oyun verisi ile SRD'nin ayrıştığı 23 kayıt:** paragraf SRD'yi yazar, "Etken içerik" oyun verisini gösterir. "Oyundaki durum" bölümüne `oyunFarki` notu ("Oyunda farklı") eklendi:
+  - Horn of Blasting: 5d6 / 5d8.
+  - Helm of Teleportation: Misty Step / Teleport.
+  - Wand of Web: DC 15 / 13.
+  - Staff of the Woodlands: 10 / 6 yük.
+  - Vicious Weapon: yalnız kritikte 7 / her isabette 2d6.
+  - Sword of Sharpness: 4d6 / 14 + Exhaustion.
+  - Sword of Wounding: 2d4 / 2d6.
+  - Ammunition of Slaying ve Dwarven Thrower: hasar türü / kuvvet.
+  - Eyes of the Eagle ve 13 Ring of Resistance: oyunda uyum var, SRD'de yok.
+  - Oyun verisi bu görevde düzeltilmedi (mekanik değişikliği, kural sürümü gerektirir); ayrı görev önerildi.
+- **Holy water:** oyun verisi `text` 2d6 diyor, `use` ve SRD 2d8. Kart `use`'u ve SRD'yi gösterir; `text` gösterilmez.
+- **Sayısal tutarlılık testi:** paragraftaki zar, `DC N`, `N ft`, `N GP/SP/CP` ve `±N` kaydın SRD ya da oyun alanlarında birebir olmalı. Paragraf İngilizce görünmemeli (`looksEnglish`). SRD ham cümlesi hiçbir satırda geçmemeli.
+- **Silah özellik açıklamaları** (`ozellik`: Heavy'de 13, Reach'te 5 ft) SRD Equipment > Weapons > Properties'ten. Kayıt alanında olmadıkları için sayı testi bunlara bakmaz; elle denetlendi.
+- **Ustalık sayıları** (Push 10 ft…) silah paragraflarına yazılmadı; ustalık kartı ayrı.
+- **Commit ayrımı:** paragraflar türe göre paralel yazıldı. Commit'ler silah+zırh, donanım ve sihirli eşya olarak ayrıldı. Test dosyası son commit'te: kapsam testi bütün türleri ister.
+- **Ekran görüntüsü:** `docs/sabah/dungeondex/prospektus-alchemists-fire.png`.
+- **Doğrulama:** typecheck, `src/dungeondex` testleri ve build yeşil. `check:harita` ve `check:ses` çalıştırılmadı: harita çizimi ve ses değişmedi (hafif doğrulama kuralı); `check:ses` bulutta çalışmaz.
+
 ## Wild Shape / Polymorph biçim aktarımı WS91: kural sürümü 91 (2026-11-19, kullanıcı kararı 2026-11-20: SRD'de olup eksik olan tamamlanır, uydurma yok)
 
 Soru sorulmadı. Her kural PDF'ten okundu (`docs/SRD_CC_v5.2.1.pdf`, `pdftotext -layout`): Wild Shape s. 42–43, Polymorph s. 153, "Flying"/"Hover" s. 183, Archmage s. 305, Mind Blank s. 149. Önce motorda karşılık arandı: canavar kurulumu için D2'nin tek girişi (`monsterSetup.ts` `setupMonster` = `monsterTraitSetup` + `monsterAbilitySetup`) yeniden kullanıldı, ikinci kopya yazılmadı.
