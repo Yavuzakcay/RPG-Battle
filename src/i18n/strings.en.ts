@@ -190,7 +190,7 @@ export const en: Strings = {
   },
   dex: {
     cover: { top: 'Dungeondex', tap: 'Tap to open', open: 'Dungeondex cover: tap to open', counts: (s: number, e: number, c: number) => `${s} spells · ${e} items · ${c} monsters` },
-    prev: 'Previous entry', next: 'Next entry', vitrine: 'Showcase',
+    toc: 'Contents', prev: 'Previous entry', next: 'Next entry', vitrine: 'Showcase',
     title: 'Dungeondex', back: 'Back', search: 'Search (English or Turkish name)', categories: 'Categories', loading: 'Loading…',
     error: 'Could not load the Dungeondex data.',
     cat: { buyu: 'Spells', esya: 'Items', canavar: 'Monsters', tur: 'Species', altsoy: 'Lineages', sinif: 'Classes', altsinif: 'Subclasses', feat: 'Feats', gecmis: 'Backgrounds', durum: 'Conditions' } as Record<string, string>,
@@ -1147,7 +1147,7 @@ export const en: Strings = {
     prevPage: 'Back to the previous page', raceStart: 'Start by ancestry (the first character\'s homeland)',
     // Görev WS92: Wild Shape known forms (SRD: replace one form after a Long Rest).
     forms: (n: number, max: number) => `Forms ${n}/${max}`, formsTitle: (name: string) => `${name}: Wild Shape forms`,
-    choices: 'Choices', choicesOpen: 'Choices (swap open)', choicesHelp: 'Level-up and long-rest choices: new picks any time; replacing an existing pick only as the class allows (on gaining a level / after a long rest).',
+    choices: 'Choices', choicesOpen: 'Choices (swap open)', choicesPending: 'Choices (pick needed)', choicesHelp: 'Level-up and long-rest choices: new picks any time; replacing an existing pick only as the class allows (on gaining a level / after a long rest).',
     formsFrom: 'Form to replace', formsTo: 'New form', formsAdd: 'Empty slot', formsGo: 'Replace', formsAddGo: 'Add',
     formsNote: 'Empty slots can be filled any time; with a full list one form can be replaced after a Long Rest. A form ends when the battle ends.',
     formsWait: 'A form was already replaced this rest: wait for the next Long Rest.',
@@ -1257,7 +1257,7 @@ export const en: Strings = {
     why: whyTable('en'),
     label: {
       move: 'Move', walk: 'Walk', dash: 'Dash', disengage: 'Disengage', back: '‹ Back', jump: 'Jump', attack: 'Attack', spell: 'Spell',
-      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', throwObject: 'Throw object', stand: 'Stand up', escapeGrapple: 'Try to escape',
+      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', stabilize: 'Stabilize', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', throwObject: 'Throw object', stand: 'Stand up', escapeGrapple: 'Try to escape',
       escape: 'Climb out', escapeSpell: 'Break free', pull: 'Pull', surge: 'Action Surge', haste: 'Haste action', steer: 'Move summon', wind: 'Second Wind', mark: 'Mark', weapon: 'Weapon', repeat: 'Continue spell', moveHex: 'Move by spell', commandSummons: 'Command creatures', famStrike: 'Familiar strikes', superiorDefense: 'Superior Defense', brutalPick: 'Brutal Strike', brutalName: { forceful: 'Forceful', hamstring: 'Hamstring', staggering: 'Staggering', sundering: 'Sundering' } as Record<string, string>, water: { whirlpool: 'Whirlpool', flood: 'Flood', part: 'Part Water', box: 'Box (10 ft, solid)', cage: 'Cage (20 ft, bars)' } as Record<string, string>, steed: { 'fell-glare': 'Fell Glare', 'fey-step': 'Fey Step', 'healing-touch': 'Healing Touch' } as Record<string, string>, iswap: 'Swap turn order', shift: (ft: number) => `Free shift (${ft} ft)`, famOrder: 'Order familiar to attack', gaze: 'Gaze of Two Minds', sphereRoll: 'Roll the sphere', sphereCarry: 'Pick up sphere', sphereDrop: 'Put down sphere', end: 'End turn',
       rage: 'Rage', rageExtend: 'Keep raging', reckless: 'Reckless', offhand: 'Off hand', offhandNick: 'Off hand',
       // SD2: every feature that can appear in the menu has a short plain name here (same keys as TR).
@@ -1283,7 +1283,7 @@ export const en: Strings = {
       floor: 'Take the stairs', steady: 'Steady Aim', horde: 'Horde Breaker', cunning: 'Cunning Strike',
       cunningName: { trip: 'Trip', withdraw: 'Withdraw', poison: 'Poison', daze: 'Daze', 'knock-out': 'Knock Out', obscure: 'Obscure' } as Record<string, string>,
       cunningHint: (max: number) => `Paid from Sneak Attack dice if it applies; at most ${max} options.`,
-      choicePick: 'Choice', pushPick: 'Push mastery', pushOpt: { auto: 'Push on last attack', push: 'Push on every hit', skip: 'Do not push' } as Record<string, string>,
+      choicePick: 'Choice', tacticalPick: 'Tactical Master', tacticalOpt: { own: 'Weapon\'s mastery', push: 'Push', sap: 'Sap', slow: 'Slow' } as Record<string, string>, pushPick: 'Push mastery', pushOpt: { auto: 'Push on last attack', push: 'Push on every hit', skip: 'Do not push' } as Record<string, string>,
       bonusStrike: 'Punch', flurryStrike: (n: number) => `Flurry of Blows (${n})`, stunning: 'Stunning Strike', eldritchSmite: 'Eldritch Smite',
       shapeOn: (name: string, _cr: string) => `Animal form: ${name}`, shapeOff: (_name: string) => 'Return to normal',
       mount: 'Mount', dismount: 'Dismount', natureMagician: (n: number, l: number) => `Refresh slot: level ${l} (${n} uses)`, resurgeShape: 'Slot → animal form use', resurgeSlot: 'Animal form use → slot',
@@ -1292,6 +1292,7 @@ export const en: Strings = {
     },
     hint: {
       special: 'Special: pick a group, then tap what you want to do.',
+      stabilize: 'Stabilize: tap a dying creature; DC 10 Wisdom (Medicine) check, uses your action.',
       steer: 'Tap a highlighted hex for the summon (the sphere rams an adjacent enemy).',
       object: 'Object: tap an adjacent door, table or brazier (open/close/unlock, tip over, spill coals).',
       throwObject: 'Throw object: tap an adjacent barrel, chest, rock or similar object, then a highlighted target hex or creature (action).',
@@ -1454,6 +1455,7 @@ export const en: Strings = {
     hide: 'Hide in a hiding spot (green dashed outline) with a Stealth check: beat 15 and the passive Perception of enemies who can see you. Not possible next to an enemy; at night, unlit spots give advantage. Your attacks while hidden have advantage.',
     shove: 'Push an adjacent enemy 5 ft or knock it prone (Athletics contest). Uses one of your attacks.',
     ready: 'Ready: pick a trigger and a response (one attack, move up to your Speed or a spell with a casting time of an action). When the trigger occurs you respond with your reaction; it ends at the start of your next turn. Uses your action.',
+    stabilize: 'Stabilize: a DC 10 Wisdom (Medicine) check makes a dying creature stable. Uses your action; shown only while someone is dying.',
     dodge: 'Dodge: until the start of your next turn attackers have disadvantage against you and your DEX saves have advantage. Uses your action; useless if you are incapacitated or your speed is 0.',
     distract: 'Distract: make a noise at a hex within 30 ft (a stone, a bowl); awake enemies within 15 ft of it take −5 to passive Perception until the end of their next turn (hiding and alarms). Uses your action.',
     help: 'Help: pick an adjacent enemy; until the start of your next turn your side\'s first attack against it has advantage. Uses your action.',

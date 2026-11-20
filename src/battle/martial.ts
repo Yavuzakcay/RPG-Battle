@@ -10,6 +10,7 @@
  *   Topple (DEX save, Prone).
  * - Uncanny Metabolism (savaş başında), Deflect Attacks (isabette), Slow Fall (düşmede) ilgili modüllerden çağrılır.
  */
+import { sinif97On } from './sinif97Surum';
 import { globalRule } from './ruleControl';
 import { turnKey } from './economy';
 import { saveDice } from './effectDice';
@@ -145,6 +146,10 @@ export function executeStunningStrike(state: BattleState, actor: Combatant, targ
   } else if (!target.conditions.includes(helpMark(actor.side))) {
     // Başarılı save: saldıranın sonraki turunun başına dek ona sonraki saldırı avantajlı (Yardım işaretiyle aynı).
     events.push(timedCondition(state, target.id, { condition: helpMark(actor.side), owner: 'source', end: 'turnStart' }, actor.id, 'Stunning Strike'));
+  }
+  // Görev B95-B (97+, SRD 5.2.1 s. 51): başarılı save'de hedefin hızı Monk'un sonraki turunun başına dek yarı.
+  if (r.success && sinif97On(state)) {
+    events.push({ type: 'effect_added', targetId: target.id, effect: { id: `stunning-slow-${actor.id}`, name: 'Stunning Strike', sourceId: actor.id, speedMult: 0.5, untilSourceTurn: true, until: state.round + 1 } });
   }
   return finish(state, events);
 }

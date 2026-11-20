@@ -12,6 +12,8 @@ import { isIncapacitated } from '../rules/conditions';
 import { distance, hexKey } from '../rules/hex';
 import { fail, finish, type CommandResult } from './common';
 import { ruleVersion } from './ruleVersion';
+import { genel96On } from './genel96Surum';
+import { economyCost } from './economy';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 export const handsOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(s) >= 41;
@@ -68,8 +70,16 @@ export function executePickUp(state: BattleState, actor: Combatant, objectId: st
   if (!actor.pos || distance(actor.pos, o.at) > 1) return fail('Eşyaya bitişik olmalısın.');
   const extra: BattleEvent[] = [];
   if (actor.economy.interacted) {
-    if (actor.economy.action) return fail('Bu tur nesne etkileşimini kullandın; eylemin de yok.');
-    extra.push({ type: 'action_used', actorId: actor.id, kind: 'action', what: 'Eşyayı al' } as BattleEvent);
+    // GENEL96 A33 (sürüm 96+; SRD 5.2.1 s. 13 "If you want to interact with a second object, you need to take the Utilize
+    // action"): ikinci etkileşim Utilize maliyet yolundan (Dazed, Slow, Stinking Cloud, Haste ek eylemi, Fast Hands).
+    if (genel96On(state)) {
+      const cost = economyCost(state, actor, { type: 'object_use', actorId: actor.id, objectId: o.id, action: 'unlock' });
+      if (!cost.ok) return fail(`Bu tur nesne etkileşimini kullandın; ikinci etkileşim Utilize ister: ${cost.error}`);
+      if (cost.event) extra.push({ ...cost.event, what: 'Eşyayı al (Utilize)' } as BattleEvent);
+    } else {
+      if (actor.economy.action) return fail('Bu tur nesne etkileşimini kullandın; eylemin de yok.');
+      extra.push({ type: 'action_used', actorId: actor.id, kind: 'action', what: 'Eşyayı al' } as BattleEvent);
+    }
   }
   return finish(state, [...extra, { type: 'item_picked', actorId: actor.id, objectId: o.id, label: 'yerden aldı' }]);
 }

@@ -202,10 +202,13 @@ function bookBonus(classId: string, level: number, subclassId?: string): { schoo
  * Seçimlerin sayıları: sınıfın kendi cantrip'leri (Blessed Warrior gibi seçenekten gelenler hariç), hazırlanan seviyeli
  * büyüler (her zaman hazır olanlar ve soy büyüleri `spellNames`'te değil), büyü kitabı (yoksa hazırlananlar kitapta sayılır).
  */
-export function spellCounts(s: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'advancements' | 'spellNames' | 'spellbook'>): { cantrips: number; prepared: number; book: string[] } {
+export function spellCounts(s: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'advancements' | 'spellNames' | 'spellbook'> & { featureChoices?: CharacterSheet['featureChoices'] }): { cantrips: number; prepared: number; book: string[] } {
   const alt = new Set(alternativeCantrips(s).options);
   const own = new Set(spellOptions(s.classId, 20));
-  const found = new Set(discoveredSpells(s));
+  // Görev B94 (SRD 5.2.1 "always prepared … doesn't count against the number of spells you can prepare"; Ranger s. 58
+  // Hunter's Mark): her zaman hazır büyü listede kalmış olsa da (eski kayıt) sayılmaz.
+  const always = classes.some((k) => k.id === s.classId) ? classKit(s.classId, s.level, s.subclassId, s.featureChoices).alwaysPrepared : [];
+  const found = new Set([...discoveredSpells(s), ...always]);
   const chosen = (s.spellNames ?? []).filter((n) => !found.has(n)).map((n) => spells.find((x) => x.name === n)).filter((x): x is NonNullable<typeof x> => !!x);
   const cantrips = chosen.filter((x) => x.level === 0 && (own.has(x.name) || !alt.has(x.name))).length;
   const leveled = chosen.filter((x) => x.level > 0).map((x) => x.name);

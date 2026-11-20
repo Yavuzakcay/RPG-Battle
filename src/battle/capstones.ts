@@ -5,6 +5,7 @@
  * - Perfect Focus (Monk 15): inisiyatifte Uncanny Metabolism kullanılmadıysa Focus 3 ya da azsa 4'e çıkar.
  * - Superior Defense (Monk 18): tur başında 3 Focus ile 1 dakika Force dışında bütün hasara direnç (`superior_defense`).
  */
+import { sinif97On } from './sinif97Surum';
 import { fail, finish, type CommandResult } from './common';
 import { resourceLeft, type BattleEvent, type BattleState, type Combatant } from './types';
 
@@ -24,7 +25,7 @@ export function capstoneStartEvents(c: Combatant, metabolized: boolean): BattleE
   return out;
 }
 
-/** Superior Defense: tur başında (henüz bir şey yapılmamışken) 3 Focus. */
+/** Superior Defense: tur başında (henüz bir şey yapılmamışken) 3 Focus. Görev B95-B (97+, SRD 5.2.1 s. 52 "1 minute"): tam 10 tur (`until` kuralı round + n − 1). */
 export function executeSuperiorDefense(state: BattleState, actor: Combatant): CommandResult {
   if (!actor.traits?.includes('superior-defense')) return fail('Superior Defense yok.');
   if (resourceLeft(actor, 'focus') < 3) return fail('3 Focus gerekir.');
@@ -32,7 +33,7 @@ export function executeSuperiorDefense(state: BattleState, actor: Combatant): Co
   if (actor.effects?.some((e) => e.id === 'superior-defense')) return fail('Zaten etkin.');
   return finish(state, [
     { type: 'feature_used', actorId: actor.id, feature: 'focus', remaining: resourceLeft(actor, 'focus') - 3 },
-    { type: 'effect_added', targetId: actor.id, effect: { id: 'superior-defense', name: 'Superior Defense', sourceId: actor.id, until: state.round + 10,
+    { type: 'effect_added', targetId: actor.id, effect: { id: 'superior-defense', name: 'Superior Defense', sourceId: actor.id, until: state.round + (sinif97On(state) ? 9 : 10),
       resist: DAMAGE_TYPES, breakOnIncapacitated: true, icon: '🛡' } },
   ]);
 }

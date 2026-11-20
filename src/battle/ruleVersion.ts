@@ -8,6 +8,7 @@ import { lineOfFire } from './cover';
 import { globalRule } from './ruleControl';
 import type { Skill } from '../rules/skills';
 import { soyCheckHook } from './altSoySurum';
+import { genel96On } from './genel96Surum';
 import type { BattleState, Combatant } from './types';
 
 export const CURRENT_RULES: number = data.surum;
@@ -73,6 +74,8 @@ export function checkBase(state: BattleState, c: Combatant, base: 'normal' | 'ad
   // Kuyruk AS1b (sürüm 71+ alt soy etkisi): beceri ve koşula (ışık, su, yerleşim) bağlı kontrol dezavantajı.
   const soyDis = !!skill && soyCheckHook(state, c, skill);
   const fear = srdConditions(state) && frightenedNow(state, c);
-  if (!soyDis && !fear) return base;
+  // GENEL96 B32 (sürüm 96+; SRD 5.2.1 s. 186 Poisoned "You have Disadvantage on attack rolls and ability checks").
+  const poisoned = genel96On(state) && c.conditions.includes('Poisoned');
+  if (!soyDis && !fear && !poisoned) return base;
   return base === 'advantage' ? 'normal' : 'disadvantage';
 }

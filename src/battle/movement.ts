@@ -1,4 +1,5 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { sinif97On } from './sinif97Surum';
 import { getMonster } from '../data';
 import { formMonsterId } from './shapeMonsterCore';
 import { plantChar, soyPlantWalker } from './altSoySurum';
@@ -6,6 +7,8 @@ import { afterStepEvents } from './turnHooks';
 import { groundWardFn } from './groundWard';
 import { solidBarrierAt } from './barriers';
 import { sizeRank } from './forced';
+import { genel96On } from './genel96Surum';
+import { rollSkillCheck } from './checks';
 import { interposeCost } from './arcaneHand';
 import { globalRule } from './ruleControl';
 import { spells } from '../data';
@@ -361,6 +364,7 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   const handsOut = Object.values(state.combatants).some((c) => c.effects?.some((e) => e.interpose));
   const phase = phaseOf(actor);
   const through = phase?.difficult ? 2 : 1;
+  const g96 = genel96On(state);
   const allyAt = new Set<string>();
   if (phase?.difficult) for (const c of Object.values(state.combatants)) if (c.pos !== null && c.id !== actor.id && c.side === actor.side && isTargetable(c) && fillsBand(state, c, moverBand)) allyAt.add(hexKey(c.pos));
   // Görev A4: tasma: merkezden yarıçap dışına uzaklaşan adım yok.
@@ -483,7 +487,12 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     const nimble = !!enemy && ((!!actor.traits?.includes('halfling-nimbleness') && sizeRank(enemy.size) > sizeRank(actor.size))
       // Kuyruk 19 (Swarm, Air/Water/Fire Form): yaratık altıgenlerinden geçer; sürünün altıgeninden de herkes geçer.
       || !!actor.effects?.some((e) => e.passCreatures) || !!enemy.effects?.some((e) => e.passCreatures && e.noHeal) || gas);
-    const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : isIncapacitated(enemy.conditions) ? Math.max(2, ground) : null;
+    // GENEL96 E23/E24 (sürüm 96+; SRD 5.2.1 s. 14 Moving around Other Creatures): Tiny düşmanın altıgeninden geçilir ve
+    // zorlu arazi değildir; iki boy büyük ya da küçük düşmanın altıgeninden zorlu arazi olarak geçilir. 95 ve altı: geçilmez.
+    const tinyPass = g96 && !!enemy && enemy.size === 'T';
+    const sizePass = g96 && !!enemy && Math.abs(sizeRank(enemy.size) - sizeRank(actor.size)) >= 2;
+    const cost = ground === null || !enemy ? ground : phase || nimble ? Math.max(through, ground) : tinyPass ? ground
+      : isIncapacitated(enemy.conditions) || sizePass ? Math.max(2, ground) : null;
     // Kuyruk 19 (stormRules): fırtınada uçmak iki kat hareket.
     const slow = (slowed(h) ? 2 : 1) * (dragging ? 2 : 1) * (crawling ? 2 : 1) * (stormFly ? 2 : 1);
     return cost === null ? null : cost * slow * (grip ? 2 : 1) * climbStep;
@@ -696,7 +705,9 @@ export function jumpRangeFeet(c: Combatant, running: boolean, state?: Pick<Battl
   // Görev WS92 (92+): canavar Jumper'ı (Cat) mesafeyi DEX skoruyla belirler; Standing Leap koşusuz da, Running Leap yalnız koşarak `long` ft.
   const leap = leapOf(c);
   const score = leap?.dex ? c.dexScore ?? monsterDex(c) ?? c.strScore
-    : state && c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19') ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
+    : state && ((c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19'))
+      // Görev B95-B (97+, bizim Thief metni "Jumper: … Dexterity rather than your Strength"): gerçek Thief'in işareti (`jumper-dex`).
+      || (c.traits?.includes('jumper-dex') && sinif97On(state))) ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
   const base = running ? score : Math.floor(score / 2);
   return leap?.long && (running || !leap.running) ? Math.max(base, leap.long) : base;
 }
@@ -809,7 +820,18 @@ export function executeJump(state: BattleState, actor: Combatant, to: Offset, rn
   const jumped: BattleEvent = useSpell
     ? { type: 'jumped', actorId: actor.id, from, to, gap, cost, running, traitTurns: { [SPELL_JUMP]: turnKey(state) } }
     : { type: 'jumped', actorId: actor.id, from, to, gap, cost, running };
-  return finish(state, [jumped, ...landingSlide(state, actor, jumped)]);
+  return finish(state, [jumped, ...landingSlide(state, actor, jumped), ...roughLanding(state, actor, landing, rng)]);
+}
+
+/**
+ * GENEL96 E11/F14 (sürüm 96+; SRD 5.2.1 s. 185 Long Jump "If you land in Difficult Terrain, you must succeed on a DC 10
+ * Dexterity (Acrobatics) check or have the Prone condition"): zorunlu kontrol (Game Master seçeneği değil). Uçan muaf.
+ */
+function roughLanding(state: BattleState, actor: Combatant, landing: { movement: string }, rng: Rng): BattleEvent[] {
+  if (!genel96On(state) || landing.movement !== 'difficult' || isAirborne(actor)) return [];
+  const check = rollSkillCheck(actor, 'acrobatics', 10, rng, 'Zorlu araziye iniş (Long Jump)', state);
+  if (check.type !== 'skill_checked' || check.success || actor.conditions.includes('Prone')) return [check];
+  return [check, { type: 'condition_changed', targetId: actor.id, condition: 'Prone', present: true, reason: 'zorlu araziye düştü' }];
 }
 
 /**

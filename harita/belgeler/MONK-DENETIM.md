@@ -183,3 +183,16 @@ Sıra etkiye göre. "Sürüm" sütunu: yeni kural sürümü gerekiyorsa **günce
 | K3 | **Otomatik harcamalar**: Disciplined Survivor her başarısız save'de Focus harcar, Uncanny Metabolism her savaş başında kendiliğinden | SRD "can"; oyuncuya sormak yeni istem akışı ister, ama Focus israfı oyuncu kararını yok sayar | Orta |
 
 Probe'larla denenip **doğru** bulunan davranışlar (regresyon için not): Martial Arts zarı, Focus, Unarmored Movement, Extra Attack, Deflect bonusu, Slow Fall ve Focus DC tabloları 20/20; Unarmored Defense (1 ve 20. seviye); kalkanla Martial Arts/Unarmored Defense/Movement kapanması; Grapple/Shove DEX DC'si; Focus'suz bonus Dash/Disengage; Flurry 9/10 = 2/3; Heightened Patient Defense geçici HP; Fleet Step'in Focus'lu Step of the Wind'i; Deflect Energy 12/13 farkı; menzilli saldırıda 0'a inen hasarın 60 ft içinde geri yöneltilmesi; Evasion (Stunned'da yarı); Disciplined Survivor save yetkinliği; Superior Defense'in Force hariç 12 türü; Open Hand Push 15 ft; ASI/Epic Boon yuvaları; Focus kısa dinlenmede, Metabolism ve Wholeness yalnız uzun dinlenmede dolar.
+
+## Görev B95 (2026-11-20)
+
+**A) Sürümsüz (yapıldı).** `data/secim-degisim.json`'a `monk` kaydı eklendi; Serüven'de "Seçimler" düğmesi çıkar ve B93'ün ortak yardımcısıyla (`src/rules/levelChoices.ts`, `set_choices`) seçim yapılır. Yeni seçimler (alt sınıf 3. seviyede, ASI/feat ve Epic Boon yuvaları; Monk'ta Weapon Mastery yok ve değişen seçim yok, kayıt boş: SRD 5.2.1 s. 49–52) yalnız eklenir; eksik seçim varken düğme "Seçimler (seçim bekliyor)" olur (`pendingChoices`). Serüven'de alt sınıf **otomatik atanmaz**: seçim kipinde (Builder `choices`) boş alt sınıf açılışta da olsa eksik sayılır, Kaydet onu ister. Seçim kipine Weapon Mastery seçicisi eklendi (donanım adımı bu kipte yok). Test: `src/rules/levelChoices.test.ts` "Görev B95 (A)", `src/screens/b95Secim.test.tsx`.
+
+**B) Sürümlü (yapıldı, kural sürümü 97 `SINIF97_VERSION`; 96 ve altı eski davranış).**
+- Stunning Strike (A22, A23; SRD 5.2.1 s. 51): başarılı save'de hedefin hızı Monk'un sonraki turunun başına dek yarı (`speedMult: 0.5`, `untilSourceTurn`); tetik "Monk silahı ya da Unarmed Strike" isabeti, zırh şartı yok (`meleeHit.unarmed`/`monkWeapon`): zırhlı Monk Unarmed Strike'tan sonra kullanabilir.
+- Self-Restoration (A27; s. 52 "remove one"): tur sonunda yalnız bir durum kalkar (listedeki ilk: Charmed, Frightened, Poisoned; oyuncu seçimi yok, yaklaşık).
+- Quivering Palm (A36; bizim alt sınıf metni "Unarmed Strike isabetinde"): Monk silahı isabeti titreşim kurmaz.
+- Superior Defense (A31; s. 52 "1 minute"): tam 10 tur.
+- Test: `src/battle/b95monk.test.ts`.
+
+**C) Ertelendi, karar gerekli.** Monk silahı dışında silah taşırken bonus vuruş modeli (SRD 5.2.1 s. 50 Martial Arts); yapay zekânın Patient Defense, Step of the Wind (s. 50), Wholeness of Body, Superior Defense (s. 52) ve Quivering Palm (bizim alt sınıf) kullanması (YZ davranışı denge değiştirir, denge turuna kalır).

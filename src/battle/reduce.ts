@@ -2,7 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
-import { b94On } from './b94Surum';
+import { b94On, weaponBase } from './b94Surum';
 import { sourceDown } from './sourceDown';
 import nesneAgirlik from '../../data/nesne-agirlik.json';
 import { BOON_TURN_REFILL } from './boons';
@@ -34,7 +34,10 @@ import { yuzmeOn } from './yuzmeSurum';
 import { waterHexAt } from './yuzme';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
 import { soyTeleportEnds } from './altSoySurum';
+import { sinif97On } from './sinif97Surum';
 import { monsterPrevOf, withMonsterPart, withoutMonsterPart } from './shapeMonsterCore';
+import { genel96On } from './genel96Surum';
+import { helpOnlySelf } from './genel96';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -165,7 +168,9 @@ function dropBrokenConcentration(state: BattleState): BattleState {
 // Görev D3 (89+): kaynak verilirse efendi istisnası (Vampire Familiar; `srdD3.ts`); istisnasız bağışıklıkta aynı sonuç.
 const immuneTo = (c: Combatant, condition: string, state?: BattleState, sourceId?: string) => effectImmune(state, c, condition, sourceId)
   // Kuyruk 18 H3: Nature's Ward (Circle of the Land 10): Poisoned bağışıklığı (anahtar naturesWard, kural sürümü 14).
-  || (condition === 'Poisoned' && !!c.traits?.includes('natures-ward') && !!state && !!globalRule(state, 'naturesWard'));
+  || (condition === 'Poisoned' && !!c.traits?.includes('natures-ward') && !!state && !!globalRule(state, 'naturesWard'))
+  // GENEL96 B29 (sürüm 96+; SRD 5.2.1 s. 186 Petrified "Poison Immunity. You have Immunity to the Poisoned condition").
+  || (condition === 'Poisoned' && !!state && genel96On(state) && c.conditions.includes('Petrified'));
 
 /**
  * Süren etkilerin bitişi (Görev R2): kaynağın o büyüdeki konsantrasyonu bittiyse, süresi geçtiyse (`until` < tur),
@@ -262,6 +267,10 @@ function consumeSingles(state: BattleState, event: BattleEvent): BattleState {
   if ((event.type === 'save_resolved' || event.type === 'condition_save') && next.combatants[event.targetId]?.effects?.some((e) => e.saveDisAll)) {
     next = dropEffects(next, event.targetId, (e) => !!e.saveDisAll);
   }
+  // Görev B95-B (97+, SRD 5.2.1 s. 30 Staggering Blow "the next saving throw it makes"): dezavantajlı atılan tur sonu tekrar
+  // save'i (`effect_tick`) ve ustalık save'i (Topple) de harcar.
+  const saver97 = sinif97On(state) && (event.type === 'effect_tick' || event.type === 'mastery_applied') && event.save ? event.targetId : undefined;
+  if (saver97 && next.combatants[saver97]?.effects?.some((e) => e.saveDisAll)) next = dropEffects(next, saver97, (e) => !!e.saveDisAll);
   // Kuyruk K54c: ilk zar etkisi (Yıldız Falı, Ölümsüz Taht) atılınca biter.
   if (event.type === 'attack_resolved' && next.combatants[event.actorId]?.effects?.some((e) => e.firstRoll?.on.includes('attack'))) {
     next = dropEffects(next, event.actorId, (e) => !!e.firstRoll?.on.includes('attack'));
@@ -377,7 +386,27 @@ function syncGroupCarry(state: BattleState, event: BattleEvent): BattleState {
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return syncGroupCarry(applyEventCore(state, event), event);
+  return syncGroupCarry(syncUnconsciousProne(state, applyEventCore(state, event)), event);
+}
+
+/**
+ * GENEL96 A2 (kural sürümü 96; SRD 5.2.1 s. 191 Unconscious "Inert. You have the Incapacitated and Prone conditions …
+ * When this condition ends, you remain Prone"): yeni Unconscious olan (ölmemiş) yaratık Prone da olur; Unconscious bitince
+ * Prone kalır. Prone'a bağışık olan hariç. "Elindekini düşür" kolu ertelendi (yapay zekâ yerden silah almıyor; DECISIONS GENEL96).
+ * 95 ve altı aynen.
+ */
+function syncUnconsciousProne(prev: BattleState, next: BattleState): BattleState {
+  if (prev.combatants === next.combatants || !genel96On(next)) return next;
+  let out = next;
+  for (const [id, c] of Object.entries(next.combatants)) {
+    if (c.life === 'dead' || c.conditions.includes('Prone') || !c.conditions.includes('Unconscious')) continue;
+    const before = prev.combatants[id];
+    if (before && before.conditions === c.conditions) continue;
+    if (before?.conditions.includes('Unconscious')) continue;
+    if (immuneTo(c, 'Prone', next)) continue;
+    out = withCombatant(out, id, { conditions: [...c.conditions, 'Prone'] });
+  }
+  return out;
 }
 
 function applyEventCore(state: BattleState, event: BattleEvent): BattleState {
@@ -531,7 +560,9 @@ function endRage(state: BattleState, id: string): BattleState {
 function dropBrokenRage(state: BattleState): BattleState {
   let next = state;
   for (const c of Object.values(state.combatants)) {
-    if (c.rage && (c.hp <= 0 || isIncapacitated(c.conditions))) next = endRage(next, c.id);
+    // Görev B95-B (97+): Persistent Rage (SRD 5.2.1 s. 30) yalnız Unconscious ile biter ("not just the Incapacitated condition").
+    const persistent = sinif97On(state) && !!c.traits?.includes('persistent-rage');
+    if (c.rage && (c.hp <= 0 || (persistent ? c.conditions.includes('Unconscious') : isIncapacitated(c.conditions)))) next = endRage(next, c.id);
   }
   return next;
 }
@@ -541,6 +572,9 @@ function refreshRage(state: BattleState, actorId: string, targetId: string): Bat
   const a = state.combatants[actorId];
   const t = state.combatants[targetId];
   if (!a?.rage || a.rage.refreshed || !t || t.side === a.side) return state;
+  // Görev B95-B (97+): SRD 5.2.1 s. 29 "If your Rage is still active on your next turn": yalnız Barbarian'ın kendi turunda
+  // (başkasının turundaki fırsat saldırısı, Retaliation uzatmaz).
+  if (sinif97On(state) && state.order[state.turnIndex] !== actorId) return state;
   return withCombatant(state, actorId, { rage: { ...a.rage, refreshed: true } });
 }
 
@@ -574,14 +608,16 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         next = withCombatant(next, att.id, {
           ...(event.traitTurns ? { traitTurns: { ...att.traitTurns, ...event.traitTurns } } : {}),
           ...(event.steadyAim ? { steadyAim: undefined } : {}),
-          ...(!event.opportunity && state.order[state.turnIndex] === att.id ? { economy: { ...att.economy, lastTargetId: event.targetId } } : {}),
+          ...(!event.opportunity && state.order[state.turnIndex] === att.id ? { economy: { ...att.economy, lastTargetId: event.targetId,
+            // Görev B94 (94+): Horde Breaker'ın "bu tur saldırmadığın" ve "aynı silah" şartları.
+            ...(b94On(state) ? { attackedIds: [...new Set([...(att.economy.attackedIds ?? []), event.targetId])], lastWeapon: weaponBase(event.label) } : {}) } } : {}),
         });
       }
       next = refreshRage(next, event.actorId, event.targetId);
       // Yakın dövüş silah isabeti: bu tur smite büyüleri bu hedefe yapılabilir.
       const hitter = next.combatants[event.actorId];
       if (event.melee && event.hit && hitter) {
-        next = withCombatant(next, hitter.id, { economy: { ...hitter.economy, meleeHit: { targetId: event.targetId, critical: event.critical, ...(event.martialArts ? { martialArts: true } : {}), ...(event.pact ? { pact: true } : {}) } } });
+        next = withCombatant(next, hitter.id, { economy: { ...hitter.economy, meleeHit: { targetId: event.targetId, critical: event.critical, ...(event.martialArts ? { martialArts: true } : {}), ...(event.pact ? { pact: true } : {}), ...(event.unarmed ? { unarmed: true } : {}), ...(event.monkWeapon ? { monkWeapon: true } : {}) } } });
       }
       // Deflect Attacks: tepki harcandı.
       const deflector = next.combatants[event.targetId];
@@ -590,7 +626,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const side = state.combatants[event.actorId]?.side;
       const target = next.combatants[event.targetId];
       const mark = side ? `Help:${side}` : '';
-      if (target && side && target.conditions.includes(mark)) {
+      // GENEL96 A13 (sürüm 96+): yardım edenin kendi saldırısı işareti harcamaz (yararlanmaz da).
+      const helper = state.combatants[event.actorId];
+      if (target && side && target.conditions.includes(mark) && !(helper && helpOnlySelf(state, helper, target))) {
         next = withCombatant(next, target.id, { conditions: target.conditions.filter((x) => x !== mark) });
       }
       return withEffects(withCombatant(next, event.targetId, { hp: event.targetHpAfter }), event.targetId, event.effects);
@@ -663,6 +701,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'combat_started': {
       let st: BattleState = { ...state, status: 'active' };
       for (const c of Object.values(st.combatants)) if (c.swimFt) st = syncWater(st, c.id);
+      // Görev B95-B (97+): Heroic Warrior (Champion, bizim sürüm: "tur başında") inisiyatifte ilk sıradakine 1. turunda da gelir
+      // (tur başı yenilemesi yalnız `turn_ended`'deydi).
+      const first = sinif97On(st) ? st.combatants[st.order[st.turnIndex] ?? ''] : undefined;
+      if (first?.traits?.includes('heroic-warrior') && globalRule(st, 'heroicWarrior') && resourceLeft(first, 'heroicInspiration') < 1) {
+        st = withCombatant(st, first.id, { resources: { ...first.resources, heroicInspiration: 1 } });
+      }
       return st;
     }
     case 'moved': {
@@ -991,6 +1035,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const conditions = [...c.conditions, ...event.conditionsAdded.filter((x) => !c.conditions.includes(x) && !immuneTo(c, x, state, event.actorId) && !wardedFrom(state, c.id, event.actorId, x))];
       let next = withCombatant(state, event.targetId, { hp: event.targetHpAfter, conditions });
+      // Görev B95-B (97+): düşmana save yaptırmak (Intimidating Presence…) Rage'i uzatır (SRD 5.2.1 s. 29).
+      if (sinif97On(state)) next = refreshRage(next, event.actorId, event.targetId);
       for (const x of event.conditionsAdded) next = linkCondition(next, event.actorId, event.label, event.targetId, x);
       const caster = next.combatants[event.actorId];
       if (event.aura && caster?.concentration) {
@@ -1066,8 +1112,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
           conditions: c.conditions.filter((x) => x !== 'Unconscious'),
         });
       }
+      // GENEL96 A1 (sürüm 96; SRD 5.2.1 s. 17 "When you become Stable or regain any Hit Points, reset both counts to zero"):
+      // ölüm save'iyle stabil olunca sayaçlar sıfırlanır; stabilken hasar alan 1 başarısızlıkla yeniden ölmekte (s. 18).
+      // 95 ve altı: sayaçlar olduğu gibi kalır.
+      const reset = event.outcome === 'stable' && genel96On(state);
       return withCombatant(state, event.actorId, {
-        deathSaves: { successes: event.successes, failures: event.failures },
+        deathSaves: reset ? { successes: 0, failures: 0 } : { successes: event.successes, failures: event.failures },
         life: event.outcome === 'dead' ? 'dead' : event.outcome === 'stable' ? 'stable' : 'dying',
       });
     }
@@ -1097,7 +1147,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const next = refreshRage(state, event.actorId, event.targetId);
-      return !event.success && event.effect === 'prone' && !c.conditions.includes('Prone')
+      // GENEL96 B4 (sürüm 96+; s. 184 Immunity): Prone'a bağışık hedef Shove ile yere düşmez.
+      const proneImmune = genel96On(state) && immuneTo(c, 'Prone', state, event.actorId);
+      return !event.success && event.effect === 'prone' && !c.conditions.includes('Prone') && !proneImmune
         ? withCombatant(next, event.targetId, { conditions: [...c.conditions, 'Prone'] })
         : next;
     }
@@ -1152,7 +1204,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.actorId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.actorId}`);
       // Hız 0: bu tur hareket kalmaz (Dash dahil; tur başında sıfırlanır).
-      return withCombatant(state, c.id, { steadyAim: event.turn, movementUsed: Math.max(c.movementUsed, 999) });
+      // Görev B95-B (97+, SRD 5.2.1 s. 62 "your Speed is 0 until the end of the current turn"): ekonomide işaret (kayma yarı hız = 0).
+      return withCombatant(state, c.id, { steadyAim: event.turn, movementUsed: Math.max(c.movementUsed, 999), ...(sinif97On(state) ? { economy: { ...c.economy, speedZero: true } } : {}) });
     }
     case 'extra_damage': {
       const c = state.combatants[event.actorId];
@@ -1174,7 +1227,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, event.actorId, { resources, economy });
     }
     case 'area_used':
-      return state;
+      // Görev B95-B (97+): düşmana save yaptıran alan (Dragonborn nefesi…) Rage'i uzatır (SRD 5.2.1 s. 29).
+      return sinif97On(state) ? event.targetIds.reduce((s, id) => refreshRage(s, event.actorId, id), state) : state;
     case 'surface_reacted': {
       // Kuyruk K55: zincirle çalışan ikililer turda bir kez (çözücü okur).
       if (!event.pairs?.length) return state;
@@ -1411,6 +1465,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'exhaustion_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      // GENEL96 B3 (sürüm 96+; SRD 5.2.1 s. 184 Immunity "it doesn't affect you in any way"): Exhaustion'a bağışık olan
+      // (ör. Zombie) seviye kazanmaz; azalma serbest. 95 ve altı: bağışıklığa bakılmaz.
+      if (genel96On(state) && event.level > (c.exhaustion ?? 0) && immuneTo(c, 'Exhaustion', state)) return state;
       // SRD 5.2.1: 6. seviyede ölür.
       if (event.level >= 6) return withCombatant(state, c.id, { exhaustion: event.level, hp: 0, life: 'dead', concentration: null });
       return withCombatant(state, c.id, { exhaustion: event.level });
@@ -1505,7 +1562,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       return withCombatant(state, c.id, { conditionTimers: (c.conditionTimers ?? []).map((t) => (t.condition === event.condition ? { ...t, count: event.count } : t)) });
     }
     case 'condition_save':
-      return state;
+      // Görev B95-B (97+): Grapple save'i yaptıran Rage'i uzatır (SRD 5.2.1 s. 29 "Force an enemy to make a saving throw").
+      return event.by && sinif97On(state) ? refreshRage(state, event.by, event.targetId) : state;
     case 'stood_up': {
       const c = state.combatants[event.actorId];
       if (!c) return state;

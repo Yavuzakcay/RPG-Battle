@@ -17,6 +17,7 @@
     "noIsland": { "tr": "Atlanabilecek ada yok.", "en": "No island to jump to." },
     "noShoveTarget": { "tr": "Bitişikte itilebilecek hedef yok.", "en": "No adjacent target to shove." },
     "noAdjEnemy": { "tr": "Bitişikte düşman yok.", "en": "No adjacent enemy." },
+    "noDying": { "tr": "Stabilize edilecek ölmekte olan yok.", "en": "No dying creature to stabilize." },
     "surgeUsed": { "tr": "Bu savaşta kullanıldı.", "en": "Already used this battle." },
     "surgeTurn": { "tr": "Bu tur zaten kullandın.", "en": "Already used this turn." },
     "surgeFirst": { "tr": "Önce eylemini kullan (Atılım ikinci bir eylem verir).", "en": "Use your action first (Action Surge grants a second one)." },

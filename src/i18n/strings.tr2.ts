@@ -465,7 +465,7 @@ export const TR_EXTRA = {
     why: whyTable('tr'),
     label: {
       move: 'Hareket', walk: 'Yürü', dash: 'Koş', disengage: 'Geri Çekil', back: '‹ Geri', jump: 'Atla', attack: 'Saldır', spell: 'Büyü',
-      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', throwObject: 'Nesne fırlat', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
+      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', stabilize: 'Stabilize et', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', throwObject: 'Nesne fırlat', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
       escape: 'Çık', escapeSpell: 'Kurtul', pull: 'Çek', surge: 'Atılım', haste: 'Hızlı eylem', steer: 'Çağrıyı taşı', wind: 'İkinci Soluk', mark: 'İşaret', weapon: 'Silah', repeat: 'Büyüyü sürdür', moveHex: 'Büyüyle taşı', commandSummons: 'Yaratıklara emret', famStrike: 'Yoldaş saldırsın', superiorDefense: 'Üstün Savunma', brutalPick: 'Brutal Strike', brutalName: { forceful: 'Forceful (it)', hamstring: 'Hamstring (yavaşlat)', staggering: 'Staggering (sarsıt)', sundering: 'Sundering (yar)' } as Record<string, string>, water: { whirlpool: 'Girdap', flood: 'Taşkın', part: 'Yarma', box: 'Kutu (10 ft, katı)', cage: 'Kafes (20 ft, parmaklık)' } as Record<string, string>, steed: { 'fell-glare': 'Korkunç Bakış (korkut)', 'fey-step': 'Peri Adımı (ışınlan)', 'healing-touch': 'Şifa Eli (iyileştir)' } as Record<string, string>, iswap: 'Sırayı değiş', shift: (ft: number) => `Serbest kay (${ft} ft)`, famOrder: 'Yoldaşa saldırı emri', gaze: 'İki Zihin Bakışı', sphereRoll: 'Küreyi yuvarla', sphereCarry: 'Küreyi kaldır', sphereDrop: 'Küreyi bırak', end: 'Turu bitir',
       rage: 'Öfke', rageExtend: 'Öfkeyi sürdür', reckless: 'Pervasız', offhand: 'Yan el', offhandNick: 'Yan el',
       // SD2: menüde çıkan her özellik için kısa düz Türkçe ad (ayrıntı üstüne gelince / ipucunda).
@@ -492,7 +492,7 @@ export const TR_EXTRA = {
       floor: 'Merdivenden geç', steady: 'Nişan Al', horde: 'Sürü Kırıcı', cunning: 'Kurnaz Vuruş',
       cunningName: { trip: 'Çelme (Trip)', withdraw: 'Sıyrıl (Withdraw)', poison: 'Zehirle (Poison)', daze: 'Sersemlet (Daze)', 'knock-out': 'Bayılt (Knock Out)', obscure: 'Kör Et (Obscure)' } as Record<string, string>,
       cunningHint: (max: number) => `Sneak Attack tutarsa zarından düşülür; en çok ${max} seçenek.`,
-      choicePick: 'Seçim', pushPick: 'Push ustalığı', pushOpt: { auto: 'Son saldırıda it', push: 'Her isabette it', skip: 'İtme' } as Record<string, string>,
+      choicePick: 'Seçim', tacticalPick: 'Tactical Master', tacticalOpt: { own: 'Silahın ustalığı', push: 'Push', sap: 'Sap', slow: 'Slow' } as Record<string, string>, pushPick: 'Push ustalığı', pushOpt: { auto: 'Son saldırıda it', push: 'Her isabette it', skip: 'İtme' } as Record<string, string>,
       bonusStrike: 'Yumruk atışı', flurryStrike: (n: number) => `Yumruk Yağmuru (${n})`, stunning: 'Sersemletici Vuruş', eldritchSmite: 'Karanlık Vuruş',
       shapeOn: (name: string, _cr: string) => `Hayvan formu: ${name}`, shapeOff: (_name: string) => 'Normal hâle dön',
       mount: 'Bineğe bin', dismount: 'Binekten in', natureMagician: (n: number, l: number) => `Slot yenile: ${l}. seviye (${n} hak)`, resurgeShape: 'Slot → hayvan formu hakkı', resurgeSlot: 'Hayvan formu hakkı → slot',
@@ -501,6 +501,7 @@ export const TR_EXTRA = {
     },
     hint: {
       special: 'Özel: bir grup seç, sonra yapmak istediğine dokun.',
+      stabilize: 'Stabilize et: ölmekte olan bir yaratığa dokun; DC 10 Bilgelik (Tıp) kontrolü, eylemini harcar.',
       steer: 'Çağrının gideceği vurgulu altıgene dokun (küre bitişik düşmana çarpar).',
       object: 'Nesne: bitişik kapı, masa ya da mangala dokunun (kapı aç/kapa/kilit, masayı devir, mangalı dök).',
       throwObject: 'Nesne fırlat: önce bitişik fıçı, sandık, taş gibi bir nesneye, sonra vurgulu hedef altıgene ya da yaratığa dokunun (eylem).',
@@ -674,6 +675,7 @@ export const TR_EXTRA = {
     hide: 'Saklanma bölgesinde (yeşil kesikli çerçeve) Stealth zarıyla gizlen: 15\'i ve seni gören düşmanların pasif Algısını geç. Yanında düşman varken olmaz; gece ışıksız yerde avantajlı. Gizliyken saldırın avantajlı olur.',
     shove: 'Bitişik düşmanı 5 ft it ya da yere düşür (Athletics karşılaştırması). Bir saldırı hakkını harcar.',
     ready: 'Hazırla (Ready): bir tetik ve yanıt seç (tek saldırı, hızın kadar hareket ya da eylem süreli büyü). Tetik olunca tepkinle yanıt verirsin; sonraki turunun başında biter. Eylemini harcar.',
+    stabilize: 'Stabilize et: ölmekte olan bir yaratığı DC 10 Bilgelik (Tıp) kontrolüyle stabil yapar. Eylemini harcar; yalnız ölmekte olan varken görünür.',
     dodge: 'Kaçın (Dodge): sonraki turunun başına dek sana saldıranlar dezavantajlı olur, DEX kurtarma zarların avantajlı. Eylemini harcar; etkisiz kalırsan ya da hızın 0 olursa işe yaramaz.',
     distract: 'Dikkat dağıt: 30 ft içindeki bir altıgene ses çıkar (taş, kase); oraya 15 ft yakın uyanık düşmanlar bir sonraki turlarının sonuna dek pasif Algıda −5 (gizlenme ve alarm). Eylemini harcar.',
     help: 'Yardım (Help): bitişik bir düşman seç; sonraki turunun başına dek tarafının o düşmana ilk saldırısı avantajlı olur. Eylemini harcar.',
@@ -835,7 +837,7 @@ export const TR_EXTRA = {
   /** Dungeondex (harita/belgeler/DUNGEONDEX-TASARIM.md; yalnız arayüz). */
   dex: {
     cover: { top: 'Dungeondex', tap: 'Dokun, aç', open: 'Dungeondex kapağı: dokun, aç', counts: (s: number, e: number, c: number) => `${s} büyü · ${e} eşya · ${c} canavar` },
-    prev: 'Önceki kayıt', next: 'Sonraki kayıt', vitrine: 'Vitrin',
+    toc: 'İçindekiler', prev: 'Önceki kayıt', next: 'Sonraki kayıt', vitrine: 'Vitrin',
     title: 'Dungeondex', back: 'Geri', search: 'Ara (Türkçe ya da İngilizce ad)', categories: 'Kategoriler', loading: 'Yükleniyor…',
     error: 'Dungeondex verisi yüklenemedi.',
     cat: { buyu: 'Büyüler', esya: 'Eşyalar', canavar: 'Canavarlar', tur: 'Türler', altsoy: 'Alt soylar', sinif: 'Sınıflar', altsinif: 'Alt sınıflar', feat: "Feat'ler", gecmis: 'Geçmişler', durum: 'Durumlar' } as Record<string, string>,

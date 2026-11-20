@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { SINIF97_VERSION } from './sinif97Surum';
 import srdSpells from '../../data/srd/spells.json';
 import { B94_VERSION } from './b94Surum';
 import { WS92_VERSION } from './ws92Surum';
@@ -37,6 +38,7 @@ import { monsterPhase } from './phase';
 import yuzeyler from '../../data/yuzeyler.json';
 import { CURRENT_RULES } from './ruleVersion';
 import { matrisOn } from './matrisSurum';
+import { genel96On } from './genel96Surum';
 import { ALT_SOY_VERSION } from './altSoySurum';
 import { soyEffects, soyFeatures, soyInitMod, withSoy } from './soyEtki';
 import { controlState, defaultRuleToggles } from './ruleControl';
@@ -832,6 +834,8 @@ export function startBattle(
   // Görev B94 (A2, sürüm 94+): Aura of Protection'ın Paladin'e kendi bonusu sheet'ten çıkar, aura yolundan (`auraSaveOf`)
   // gelir: Incapacitated/0 HP iken sürmez (SRD 5.2.1 s. 55).
   if (rules >= B94_VERSION) participants = participants.map(unbakeOwnAura);
+  // Görev B95-B (97+): durum görmeyen sınıf yardımcıları (Relentless Rage…) için savaşçı işareti.
+  if (rules >= SINIF97_VERSION) participants = participants.map((p) => ({ ...p, sinif97: true }));
   // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 Natural Recovery: "a spell … from your Circle Spells feature"): seçili arazinin dışındaki
   // daire büyüleri slotsuz yapılmaz. 93 ve altı savaşta eski liste (`freeSpellsPre94` geri eklenir).
   participants = participants.map((p) => {
@@ -889,7 +893,9 @@ export function startBattle(
   // Kuyruk K48: Moral tam modu (ev kuralı + sürüm 20): karakterlere havuz; kapalıysa kayıtlı Moral alanı silinir.
   const built = withPaket(withImza(withKaradul(withMorale(withSoy(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state)))))));
   // Mekanik matris (sürüm 83+): durum bilmeyen save yolları için sürüm işareti baştan (sonra `syncAuras` korur; replay aynı).
-  const final = matrisOn(built) ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, srd83: true as const }])) } : built;
+  const m83 = matrisOn(built);
+  const g96 = genel96On(built);
+  const final = m83 || g96 ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, ...(m83 ? { srd83: true as const } : {}), ...(g96 ? { srd96: true as const } : {}) }])) } : built;
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

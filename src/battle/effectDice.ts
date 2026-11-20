@@ -86,7 +86,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
     out.push({ label: 'Stroke of Luck', die: '20', sign: 1, reroll: 'twenty', resource: 'strokeOfLuck', holderId: c.id });
   }
   if (on === 'save' && traits.includes('indomitable') && resourceLeft(c, 'indomitable') > 0) {
-    out.push({ label: 'Indomitable', die: 'd20', sign: 1, reroll: 'd20', rerollBonus: c.level, resource: 'indomitable', holderId: c.id });
+    // Görev B95-B (97+): başarı imkânsızken seçilmez (kullanım harcanmaz; SRD 5.2.1 s. 48 "can").
+    out.push({ label: 'Indomitable', die: 'd20', sign: 1, reroll: 'd20', rerollBonus: c.level, resource: 'indomitable', holderId: c.id, ...(c.sinif97 ? { skipHopeless: true } : {}) });
   }
   // Görev WARLOCK: Dark One's Own Luck (Fiend): başarısız kontrol ya da save'e 1d10; tutarsa kullanım harcanır.
   if (on !== 'attack' && traits.includes('dark-ones-own-luck') && resourceLeft(c, 'darkOnesLuck') > 0) {

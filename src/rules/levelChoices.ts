@@ -8,7 +8,8 @@
 import data from '../../data/secim-degisim.json';
 import { spells } from '../data';
 import type { CharacterSheet } from './stats';
-import { isStyleChoice } from './advancement';
+import { advancementSlots, isStyleChoice } from './advancement';
+import { classKit, subclassesOf, subclassLevel } from './classFeatures';
 
 export type Allow = number | 'hepsi';
 export interface ChangeRule { seviye?: Allow; dinlenme?: Allow }
@@ -107,5 +108,24 @@ export function addUse(a: ChoiceUse, b: ChoiceUse): ChoiceUse {
     for (const [k, n] of Object.entries(b[w]!)) m[k] = (m[k] ?? 0) + n;
     out[w] = m;
   }
+  return out;
+}
+
+/** Görev B95 (A): seviye atlamada istenen eksik seçimlerin türü. */
+export type PendingChoice = 'subclassId' | 'advancements' | 'weaponMasteries' | 'expertise';
+
+/**
+ * Görev B95 (A): sayfada boş kalan, istenmesi gereken seçimler (sınıf adsız, sınıf ve seviye verisinden): alt sınıf
+ * seviyesine ulaşıp alt sınıfı boş (otomatik atanmaz), doldurulmamış ASI/feat/Epic Boon/Fighting Style yuvası, ustalık
+ * hakkından az seçim, Expertise hakkından az seçim. Saf.
+ */
+export function pendingChoices(s: CharacterSheet): PendingChoice[] {
+  const out: PendingChoice[] = [];
+  const at = subclassLevel(s.classId);
+  if (!s.subclassId && at !== null && s.level >= at && subclassesOf(s.classId).length > 0) out.push('subclassId');
+  if (advancementSlots(s.classId, s.level, s.subclassId).length > (s.advancements ?? []).length) out.push('advancements');
+  const kit = classKit(s.classId, s.level, s.subclassId);
+  if (kit.weaponMastery && (s.weaponMasteries ?? []).length < kit.weaponMastery.count) out.push('weaponMasteries');
+  if ((s.expertise ?? []).length < kit.expertise) out.push('expertise');
   return out;
 }

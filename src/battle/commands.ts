@@ -42,7 +42,7 @@ import { quakeTurnEndEvents } from './quake';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { DODGE, dotEvents, executeDodge, executeHelp, timedCondition, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
-import { ruleVersion, srdConditions } from './ruleVersion';
+import { checkBase, ruleVersion, srdConditions } from './ruleVersion';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
 import { playerThrowObject, throwObject } from './objectMotion';
@@ -53,7 +53,7 @@ import {
 } from './features';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
-import { executeHide, executeSearch, noticeEvents, revealEvent } from './stealth';
+import { executeHide, executeSearch, noticeEvents, revealEvent, attackRevealEvents } from './stealth';
 import { executeDistract } from './distract';
 import { executeUseItem } from './items';
 import { executeSkillCheck } from './checks';
@@ -114,8 +114,12 @@ import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
 import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
-import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
+import { resourceLeft, type BattleEvent, type BattleState, type Combatant, type Command, type CommandContext } from './types';
+import type { RolledExtra } from '../rules/attack';
 import { executeReady, registerReadyCast } from './ready';
+import { finishCheck } from './effectDice';
+import { checkMode } from '../rules/skills';
+import { genel96On } from './genel96Surum';
 
 export type { CommandResult } from './common';
 export { canControl, currentActorId } from './common';
@@ -137,8 +141,21 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
     // Kuyruk K53 S5: aura ölüm save dezavantajı; avantajla birlikte normal.
     // Mekanik matris B13 (sürüm 83+): Holy Aura "Advantage on all saving throws" ölüm save'ini de kapsar.
     const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv) || !!c.auraDeathAdv || !!c.allyAura?.saveAdvAll;
-    const rolledSave = rollD20(dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
-    const natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
+    const dsMode = dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal';
+    const rolledSave = rollD20(dsMode, rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+    let natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
+    // Bitkinlik (Görev S1): ölüm save'i de d20 Testi, −2 × seviye (doğal 20 ve 1 değişmez).
+    let bonus = -exhaustionD20Penalty(c.exhaustion);
+    // Görev B95-B (97+, SRD 5.2.1 s. 48 Indomitable "If you fail a saving throw"; ölüm save'i de save, s. 18): başarısız ölüm
+    // save'i Fighter seviyesi eklenerek yeniden atılır (kaynak `indomitable`; olayda `bonusDice` harcar).
+    let bonusDice: RolledExtra[] | undefined;
+    if (natural !== 20 && (natural === 1 || natural + bonus < 10) && c.sinif97 && c.traits?.includes('indomitable') && resourceLeft(c, 'indomitable') > 0) {
+      const again = rollD20(dsMode, rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+      const nat2 = survivor && again >= 18 ? 20 : again;
+      bonusDice = [{ label: 'Indomitable', die: 'd20', value: nat2 + c.level - natural, resource: 'indomitable', holderId: c.id }];
+      natural = nat2;
+      bonus += c.level;
+    }
     let successes = c.deathSaves.successes;
     let failures = c.deathSaves.failures;
     let outcome: 'success' | 'failure' | 'stable' | 'dead' | 'revived';
@@ -146,14 +163,13 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
       outcome = 'revived';
     } else {
       if (natural === 1) failures += 2;
-      // Bitkinlik (Görev S1): ölüm save'i de d20 Testi, −2 × seviye (doğal 20 ve 1 değişmez).
-      else if (natural - exhaustionD20Penalty(c.exhaustion) >= 10) successes += 1;
+      else if (natural + bonus >= 10) successes += 1;
       else failures += 1;
-      outcome = failures >= 3 ? 'dead' : successes >= 3 ? 'stable' : natural !== 1 && natural - exhaustionD20Penalty(c.exhaustion) >= 10 ? 'success' : 'failure';
+      outcome = failures >= 3 ? 'dead' : successes >= 3 ? 'stable' : natural !== 1 && natural + bonus >= 10 ? 'success' : 'failure';
     }
     events.push({
       type: 'death_save', actorId: c.id, natural,
-      successes: Math.min(3, successes), failures: Math.min(3, failures), outcome,
+      successes: Math.min(3, successes), failures: Math.min(3, failures), outcome, ...(bonusDice ? { bonusDice } : {}),
     });
   }
   // Heroic Rally (Survivor; Görev F): Bloodied (HP yarı ya da altı) ve ayaktaysa tur başında 5 + CON HP.
@@ -310,6 +326,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (morale.length) { next = applyEvents(next, morale); events = [...events, ...morale]; }
   const reveal = revealEvent(state, next, cmd);
   if (reveal) { next = applyEvents(next, [reveal]); events = [...events, reveal]; }
+  // GENEL96 C12 (sürüm 96+): saldırı zarı atan başka gizlenmişler (bonus vuruş, tepki, Ready, takip saldırısı).
+  const attackRevealed = attackRevealEvents(state, next, events, reveal ? (reveal as { actorId: string }).actorId : undefined);
+  if (attackRevealed.length) { next = applyEvents(next, attackRevealed); events = [...events, ...attackRevealed]; }
   // Kuyruk K54b: kayıtlı komut sonu kancaları (imza: Ortak Şifa, Peşini Bırakmayan).
   const hookedEnd = commandEndHookEvents(state, next, events, cmd, rng, applyEvents);
   if (hookedEnd.length) { next = applyEvents(next, hookedEnd); events = [...events, ...hookedEnd]; }
@@ -690,6 +709,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       return { ok: true, state: applyEvents(state, events), events };
     }
     const med = k19s ? actor.skills?.medicine ?? actor.modifiers.wis : actor.modifiers.wis;
+    // GENEL96 A16/F2/F12/B16 (sürüm 96+; SRD 5.2.1 s. 7: doğal 20/1 yalnız saldırı zarında otomatik; s. 18 Stabilizing DC 10
+    // WIS (Medicine)): ortak kontrol yolu (Frightened/Poisoned/alt soy kipi, Exhaustion ve eklenti zarları, ikinci şans).
+    if (genel96On(state)) {
+      const mode = checkMode(actor, 'medicine', checkBase(state, actor, 'normal', 'medicine'));
+      const r = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: med }));
+      const fin = finishCheck(actor, 'medicine', r.kept, med, 10, mode, rng);
+      events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: r.kept, success: fin.total >= 10 });
+      return { ok: true, state: applyEvents(state, events), events };
+    }
     const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: med }));
     const success = roll.kept === 20 || (roll.kept !== 1 && roll.kept + med >= 10);
     events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: roll.kept, success });
@@ -827,9 +855,12 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       change = { type: 'height_changed', actorId: actor.id, from, to, moved: true, check: null };
     } else {
       const dc = 12 + 3 * (to - from - 1);
-      const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.climbMod }));
-      const total = roll.kept + actor.climbMod;
-      const success = roll.kept === 20 || (roll.kept !== 1 && total >= dc);
+      // GENEL96 F2 (sürüm 96+; SRD 5.2.1 s. 7): yetenek kontrolünde doğal 20/1 otomatik değil; ortak kontrol kipi ve zarları.
+      const g96 = genel96On(state);
+      const mode = g96 ? checkMode(actor, 'athletics', checkBase(state, actor, 'normal', 'athletics')) : 'normal';
+      const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.climbMod }));
+      const total = g96 ? finishCheck(actor, 'athletics', roll.kept, actor.climbMod, dc, mode, rng).total : roll.kept + actor.climbMod;
+      const success = g96 ? total >= dc : roll.kept === 20 || (roll.kept !== 1 && total >= dc);
       change = { type: 'height_changed', actorId: actor.id, from, to, moved: success, check: { natural: roll.kept, total, dc } };
     }
     if (change.type === 'height_changed' && change.moved) {
@@ -846,7 +877,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return finish(state, events);
   }
 
-  if (cmd.type === 'offhand_attack') return executeOffhandAttack(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'offhand_attack') return executeOffhandAttack(state, actor, cmd.targetId, rng, cmd.cunning);
   // Görev F: Steady Aim ve Horde Breaker.
   if (cmd.type === 'steady_aim') {
     if (!hasTrait(actor, 'steady-aim')) return fail('Steady Aim yok.');
@@ -856,7 +887,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'horde_breaker') {
     const t = state.combatants[cmd.targetId];
     if (!t) return fail('Hedef bulunamadı.');
-    const why = hordeProblem(state, actor, t);
+    const why = hordeProblem(state, actor, t, cmd.option);
     if (why) return fail(why);
     const r = weaponAttackEvents(state, actor, t, cmd.option, rng, false, false, { traitTurns: { 'horde-breaker': turnKey(state) } });
     return r.ok ? finish(state, r.events) : r;

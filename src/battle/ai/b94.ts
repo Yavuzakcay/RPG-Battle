@@ -9,6 +9,8 @@ import { b94On } from '../b94Surum';
 import { resourceLeft, type BattleState, type Combatant, type Command, type UsableFeature } from '../types';
 
 type Ok = (c: Command) => boolean;
+/** Bu modülün baktığı özellik etkisi türleri (ai.ts ön süzgeci). */
+export const B94_KINDS = ['landsAid', 'sanctuary', 'nimbus', 'abjure', 'healPool', 'condition', 'tempHp'];
 const ftBetween = (a: Offset, b: Offset) => distance(a, b) * 5;
 const usable = (actor: Combatant, f: UsableFeature) => !f.resource || resourceLeft(actor, f.resource) > 0;
 
@@ -74,6 +76,28 @@ export function paladinChoice94(state: BattleState, actor: Combatant, foes: Comb
       const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: abjure.key };
       if (open.length >= 2 && ok(cmd)) return cmd;
     }
+  }
+  return null;
+}
+
+/**
+ * Görev B94 (94+, basit kurallar; etki türünden): Ranger.
+ * - Nature's Veil (`condition` Invisible, bonus eylem): canı yarının altında, Invisible değilken ve 30 ft içinde düşman varken.
+ * - Tireless (`tempHp`, eylem): canı üçte birin altında, geçici HP'si yokken (eylemi saldırı yerine harcar).
+ */
+export function rangerChoice94(state: BattleState, actor: Combatant, foes: Combatant[], canAct: boolean, ok: Ok): Command | null {
+  if (!b94On(state) || foes.length === 0 || actor.hp <= 0) return null;
+  const feats = actor.features ?? [];
+  const near = foes.some((c) => !state.map || (!!c.pos && !!actor.pos && ftBetween(c.pos, actor.pos) <= 30));
+  if (!actor.economy.bonus && actor.hp < actor.maxHp / 2 && near && !actor.conditions.includes('Invisible')) {
+    const veil = feats.find((f) => f.effect.kind === 'condition' && f.effect.condition === 'Invisible' && f.type === 'bonus' && usable(actor, f));
+    const cmd: Command | null = veil ? { type: 'use_feature', actorId: actor.id, feature: veil.key } : null;
+    if (cmd && ok(cmd)) return cmd;
+  }
+  if (canAct && actor.hp < actor.maxHp / 3 && (actor.tempHp ?? 0) <= 0) {
+    const tireless = feats.find((f) => f.effect.kind === 'tempHp' && usable(actor, f));
+    const cmd: Command | null = tireless ? { type: 'use_feature', actorId: actor.id, feature: tireless.key } : null;
+    if (cmd && ok(cmd)) return cmd;
   }
   return null;
 }

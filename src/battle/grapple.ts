@@ -38,13 +38,21 @@ const SIZES = ['T', 'S', 'M', 'L', 'H', 'G'] as const;
 /** Hedef boyut sınırına uyuyor mu ("Large or smaller"). */
 export const fitsSize = (target: Combatant, max?: string) => !max || SIZES.indexOf(target.size) <= SIZES.indexOf(max as (typeof SIZES)[number]);
 
-/** Ayağa kalkmanın maliyeti: hızın yarısı (altıgen, yukarı yuvarlanır). */
-export const standUpCost = (c: Combatant) => Math.ceil(Math.floor((flySpeed(c) > 0 ? flySpeed(c) : c.speed) / 5) / 2);
+/**
+ * Ayağa kalkmanın maliyeti: hızın yarısı (altıgen, yukarı yuvarlanır). GENEL96 E7/B33 (sürüm 96+, `srd96`; SRD 5.2.1
+ * s. 186 Prone "half your Speed (round down)"): şu anki hızdan (Exhaustion, Slow, Haste, Longstrider sayılır; Dash katı
+ * sayılmaz). 95 ve altı: temel hızdan.
+ */
+export const standUpCost = (c: Combatant) => (c.srd96
+  ? Math.ceil(Math.floor(speedHexes(c) / (1 + c.economy.dashes)) / 2)
+  : Math.ceil(Math.floor((flySpeed(c) > 0 ? flySpeed(c) : c.speed) / 5) / 2));
 
 /** Ayağa kalkabilir mi; değilse neden. */
 export function standUpProblem(c: Combatant): string | null {
   if (!c.conditions.includes('Prone')) return 'Yerde değil.';
   if (speedZero(c.conditions)) return 'Hızı 0 (Grappled, Restrained, Paralyzed…): ayağa kalkamaz.';
+  // GENEL96 (sürüm 96+): etkiden gelen hız 0'da da kalkılamaz (SRD 5.2.1 s. 186 "If your Speed is 0, you can't right yourself").
+  if (c.srd96 && speedHexes(c) === 0) return 'Hızı 0: ayağa kalkamaz.';
   if (c.movementUsed + standUpCost(c) > speedHexes(c)) return 'Ayağa kalkacak kadar hareket kalmadı (hızın yarısı gerekir).';
   return null;
 }

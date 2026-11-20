@@ -180,3 +180,17 @@ Sıra etkiye göre. "Sürüm" sütunu: savaş davranışı değişiyorsa **günc
 - **P4** (`zzTmpRogue4`): Steady Aim + Withdraw kayması (3 altıgen), Withdraw sonrası bonus Dash ve yine kayma.
 - **P5** (`zzTmpRogue5`): `economyCost` `object_use`: 2. seviye eylem, 3. seviye Thief bonus eylem (Fast Hands).
 - Probe ile **doğru** bulunanlar (regresyon notu): Sneak Attack tablosu ve koşulları, Expertise/Weapon Mastery/ASI/Epic Boon sayıları, Slippery Mind, Cunning Action, Steady Aim'in hız 0'ı, Cunning Strike DC'leri ve bedelleri, Trip (Huge'da etkisiz), Poison (kitle), Improved iki etki, Daze/Obscure süreleri, Knock Out'un hasarla bitmesi, Elusive'in üç durumu, Stroke of Luck kaynağı, Fast Hands Utilize, alt sınıf işaretlerinin seviyeleri.
+
+## Görev B95 (2026-11-20)
+
+**A) Sürümsüz (yapıldı).** `data/secim-degisim.json`'a `rogue` kaydı eklendi; Serüven'de "Seçimler" düğmesi çıkar ve B93'ün ortak yardımcısıyla (`src/rules/levelChoices.ts`, `set_choices`) seçim yapılır. Yeni seçimler (alt sınıf 3. seviyede, ASI/feat ve Epic Boon yuvaları, yeni Weapon Mastery hakkı; 6. seviye Expertise, SRD 5.2.1 s. 61; uzun dinlenmede bütün ustalıklar değişir, s. 62 "change the kinds of weapons you chose") yalnız eklenir; eksik seçim varken düğme "Seçimler (seçim bekliyor)" olur (`pendingChoices`). Serüven'de alt sınıf **otomatik atanmaz**: seçim kipinde (Builder `choices`) boş alt sınıf açılışta da olsa eksik sayılır, Kaydet onu ister. Seçim kipine Weapon Mastery seçicisi eklendi (donanım adımı bu kipte yok). Test: `src/rules/levelChoices.test.ts` "Görev B95 (A)", `src/screens/b95Secim.test.tsx`.
+
+**B) Sürümlü (yapıldı, kural sürümü 97 `SINIF97_VERSION`; 96 ve altı eski davranış).**
+- Uncanny Dodge (A19; SRD 5.2.1 s. 63 "an attacker that you can see"): görünmez saldırganda ve Blinded Rogue'da kullanılmaz, tepki harcanmaz (`canSeeTarget`).
+- Second-Story Work Jumper (A34; bizim Thief metni): gerçek Thief'e özellik kimliğinden `jumper-dex` işareti (`data/ozellik-isaret.json`; paket verisi değişmedi), 97+'da atlama DEX skoruyla. Eski elle işaretli test (`k19feat3.test.ts`) gerçek işarete çevrildi; uçtan uca `b95rogue.test.ts`.
+- Steady Aim (s. 62 "your Speed is 0 until the end of the current turn"): sonrasında Withdraw ve Tactical Shift kayması 0 (`economy.speedZero`).
+- Sneak Attack (s. 61–62 "a Finesse or a Ranged weapon"): fırlatılan Javelin (ve Finesse olmayan diğer yakın dövüş silahları) Sneak Attack almaz.
+- Cunning Strike (A14; s. 63): yan el saldırısında (`offhand_attack.cunning`), fırsat saldırısında (tepki sorusunda tek seçenekli "Opportunity Attack + Cunning Strike (…)") ve Ready'de (`ReadyResponse.cunning`, Ready paneli) seçilir. Horde Breaker yolu bu görevde değil.
+- Test: `src/battle/b95rogue.test.ts`.
+
+**C) Ertelendi, karar gerekli.** Stroke of Luck (SRD 5.2.1 s. 63) oyuncuya sorulsun mu ve 20'ye çevrilen saldırı kritik sayılsın mı (s. 6 "Rolling 20" yorumu); yapay zekânın Cunning Strike seçeneklerini kullanması (s. 63; YZ davranışı denge değiştirir, denge turuna kalır).
