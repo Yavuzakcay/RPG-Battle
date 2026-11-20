@@ -99,6 +99,22 @@ describe('Dungeondex ekranı', () => {
     expect(lic).toContain('Creative Commons Attribution 4.0');
     expect(lic).toContain(APP_NAME.replace('&', '&amp;'));
     expect(notice).toContain('SRD 5.2.1');
+    // Kitap kabuğunda lisans sayfasına iki yol: içindekiler görünümü ve sekme şeridi (her görünümde).
+    expect(m).toContain('dex-cat-lisans');
+    expect(html({ cat: 'buyu', id: 'fireball' })).toContain('dex-tab-lisans');
+    expect(lic).toContain(notice.split(/\r?\n/).slice(1).join('\n').trim().slice(0, 60));
+  });
+  it('alt sınıf kartı: prospektüs rol ve özellik satırlarını tekrarlamaz, durum sayımını ekler', () => {
+    const e = dex.altsinif[0]!;
+    const m = html({ cat: 'altsinif', id: e.id });
+    expect(m).toContain('data-testid="dex-card"');
+    expect(m).toContain('pro-durum');
+    expect(m).not.toContain('pro-ne');
+    expect(m).not.toContain('pro-etken');
+    // Prospektüs bloğu (kartın içinde) rolü ve özellik adlarını yazmaz; bunlar kartın kendi satırlarında.
+    const pro = m.slice(m.indexOf('<div class="pro">'), m.indexOf('</div>', m.indexOf('<div class="pro">')));
+    if (e.summary?.tr) expect(pro).not.toContain(e.summary.tr.replace(/&/g, '&amp;'));
+    for (const r of e.sections[0]!.rows) expect(pro).not.toContain(r.name.replace(/&/g, '&amp;'));
   });
   it('kayıt kartı: ad İngilizce, açıklama Türkçe, bağlantılar; EN arayüzde İngilizce açıklama', () => {
     const m = html({ cat: 'buyu', id: 'fireball' });
