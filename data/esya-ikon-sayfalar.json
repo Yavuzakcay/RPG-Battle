@@ -2477,10 +2477,7 @@
      "id": "dagger",
      "ad": "dagger"
     },
-    {
-     "id": "warhammer",
-     "ad": "warhammer"
-    },
+    null,
     null,
     null,
     null,
@@ -2503,6 +2500,17 @@
     {
      "id": "potion-of-supreme-healing",
      "ad": "potion-of-supreme-healing"
+    }
+   ]
+  },
+  {
+   "dosya": "duzeltme-10.jpg",
+   "kolon": 1,
+   "satir": 1,
+   "ogeler": [
+    {
+     "id": "warhammer",
+     "ad": "warhammer"
     }
    ]
   }

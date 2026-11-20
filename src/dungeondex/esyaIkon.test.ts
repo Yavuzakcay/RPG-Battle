@@ -71,6 +71,11 @@ describe('Eşya ikon hattı', () => {
     expect(b.cikti.get('ring-of-resistance-fire')).toMatchObject({ sayfa: 'f' });
     expect(b.kayitsiz).toEqual(['shield']);
   });
+  it('warhammer: son kaynağı duzeltme-10 (duzeltme-09 #2 boş)', () => {
+    const p = plan(manifest, () => true);
+    expect(p.son.get('warhammer')).toMatchObject({ sayfa: 'duzeltme-10', hucre: 1 });
+    expect(manifest.sayfalar.find((s) => s.dosya === 'duzeltme-09.jpg')!.ogeler[1]).toBeNull();
+  });
   it('manifest: glif sayfaları yoksayılır; her sayfanın öğesi hücre sayısını aşmaz; public/esya yalnız bağlanan oyun kayıtları', () => {
     expect(manifest.yoksay).toEqual(expect.arrayContaining(['glif-1', 'glif-2']));
     for (const s of manifest.sayfalar) expect(s.ogeler.length, s.dosya).toBeLessThanOrEqual(s.kolon * s.satir);
@@ -100,11 +105,12 @@ describe('Eşya ikon hattı', () => {
         });
       }
       if (HAM.has('duzeltme-09.jpg')) {
-        for (const id of ['dagger', 'warhammer', 'spyglass', 'potion-of-healing', 'potion-of-greater-healing', 'potion-of-superior-healing', 'potion-of-supreme-healing']) {
+        for (const id of ['dagger', 'spyglass', 'potion-of-healing', 'potion-of-greater-healing', 'potion-of-superior-healing', 'potion-of-supreme-healing']) {
           expect(cikti.get(id)?.sayfa, id).toBe('duzeltme-09');
           expect(ESYA.includes(`${id}.webp`) && KUCUK.has(`${id}.webp`), id).toBe(true);
         }
       }
+      if (HAM.has('duzeltme-10.jpg')) expect(cikti.get('warhammer')?.sayfa).toBe('duzeltme-10');
     }
     for (const f of ESYA) expect(oyun.has(f.replace(/\.webp$/, '')), f).toBe(true); // yalnız oyun kayıtları
   });

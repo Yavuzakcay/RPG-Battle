@@ -11,9 +11,9 @@ Manifest `data/esya-ikon-sayfalar.json`, ham sayfalar `assets-ham/esya/` (depo d
 
 ## Özet
 
-- İşlenen sayfa: 39 (yoksayılan: `zirh-donanim`, `duzeltme-1`, `pilot`, `glif-1`, `glif-2`).
+- İşlenen sayfa: 40 (yoksayılan: `zirh-donanim`, `duzeltme-1`, `pilot`, `glif-1`, `glif-2`).
 - Oyun eşya kaydı: 449 (sihirli 319 + donanım 80 + silah 38 + zırh 12); ikonlu **449**, ikonsuz **0**.
-- `public/esya/`: yalnız oyun kayıtları, 449 × 256 px + 449 × 96 px, toplam **9.1 MB** (256 px 7384 kB, 96 px 1885 kB). Ana parçaya girmez.
+- `public/esya/`: yalnız oyun kayıtları, 449 × 256 px + 449 × 96 px, toplam **9.0 MB** (256 px 7381 kB, 96 px 1884 kB). Ana parçaya girmez.
 - Varyant eşlendi **15**, eşleşmeyen **64**, belirsiz **0**; SRD üst kimliği kopyası **11** kimlik → 57 kayıt; kayıtsız (yazılmadı) **89** (64 eşleşmeyen varyant + 25 diğer).
 - Ezilen hücre: 68. `ayniGorsel` uygulanamayan: potions-of-healing: kaynak kimliğin hücresi yok (potion-of-healing kopyalanmadı).
 - Tam despill (cam içi yeşil ton): `potion-of-healing`, `potion-of-greater-healing`, `potion-of-superior-healing`, `potion-of-supreme-healing`.
