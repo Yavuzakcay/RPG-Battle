@@ -1,5 +1,5 @@
 {
-  "not": "Ortak simge setleri (glif; yalnız görünüm, kural/kayıt sürümü yok). Eşya ikonu değil: kart ve vitrinde kayıt başına resim yerine kullanılan ortak simgeler. Kaynak sayfalar `sayfalar[].kaynak` (4×4, macenta #FF00FF zemin, 16 yuvarlak madalyon; ad sırası hücre sırası: soldan sağa, yukarıdan aşağı). `npm run glif` keser (scripts/glif.mjs; kesim çekirdeği scripts/lib/madalyon.mjs, kaynak ikonlarıyla ortak; kenar tabanlı anahtar) → public/glif/<ad>.webp (boyutlar.buyuk) + public/glif/kucuk/<ad>.webp (boyutlar.kucuk), kontrol görseli harita/belgeler/GLIF-KONTROL/, kayıt `kesim` (betik yazar; elle düzenlenmez; kaydı olmayan simge çizilmez). `adlar`: simgenin ipucu adı (TR/EN). `okul`/`eylem`/`hasar`: veri değeri → simge. `metin`: açıklama metninde satır içi simge kalıpları (TR/EN; büyük/küçük harf ve Türkçe I/İ duyarsız; `sonra`: kalıptan sonra boşlukla gelmesi gereken sözcük başı, hasar bağlamı; `onek`: kalıp sözcük başı, devamı serbest; yoksa tam sözcük); simge kalıbın hemen önüne, paragraf başına aynı simge en çok `paragrafEnCok` kez.",
+  "not": "Ortak simge setleri (glif; yalnız görünüm, kural/kayıt sürümü yok). Eşya ikonu değil: kart ve vitrinde kayıt başına resim yerine kullanılan ortak simgeler. Kaynak sayfalar `sayfalar[].kaynak` (4×4, macenta #FF00FF zemin, 16 yuvarlak madalyon; ad sırası hücre sırası: soldan sağa, yukarıdan aşağı). `npm run glif` keser (scripts/glif.mjs; kesim çekirdeği scripts/lib/madalyon.mjs, kaynak ikonlarıyla ortak; kenar tabanlı anahtar) → public/glif/<ad>.webp (boyutlar.buyuk) + public/glif/kucuk/<ad>.webp (boyutlar.kucuk), kontrol görseli harita/belgeler/GLIF-KONTROL/, kayıt `kesim` (betik yazar; elle düzenlenmez; kaydı olmayan simge çizilmez). `adlar`: simgenin ipucu adı (TR/EN). `okul`/`eylem`/`hasar`: veri değeri → simge. `metin`: açıklama metninde satır içi simge kalıpları (TR/EN; büyük/küçük harf ve Türkçe I/İ duyarsız; `sonra`: kalıptan sonra boşlukla gelmesi gereken sözcük başı, hasar bağlamı; `onek`: kalıp sözcük başı, devamı serbest; yoksa tam sözcük; aynı simgenin TR ve EN kalıbı ayrı kayıt olabilir: `healing` TR önek `iyileş`, EN tam sözcük, \"health\" eşleşmez); simge kalıbın hemen önüne, paragraf başına aynı simge en çok `paragrafEnCok` kez.",
   "boyutlar": { "buyuk": 128, "kucuk": 48 },
   "goster": { "satirIci": 16, "baslik": 20, "cip": 16 },
   "sayfalar": [
@@ -78,7 +78,8 @@
       { "glif": "thunder", "tr": ["gök gürültüsü"], "en": ["thunder"], "sonra": ["hasar", "damage"] },
       { "glif": "temporary-hp", "tr": ["geçici can", "geçici canı", "geçici HP", "geçici Hit Point", "geçici Hit Points"], "en": ["Temporary Hit Points", "Temporary Hit Point", "Temporary HP"] },
       { "glif": "saving-throw", "tr": ["kurtarma zar"], "en": ["saving throw"], "onek": true },
-      { "glif": "healing", "tr": ["iyileş"], "en": ["heal"], "onek": true }
+      { "glif": "healing", "tr": ["iyileş"], "onek": true },
+      { "glif": "healing", "en": ["heal", "heals", "healed", "healing", "healer", "healers"] }
     ]
   },
   "kesim": {

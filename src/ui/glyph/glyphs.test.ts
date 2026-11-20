@@ -89,6 +89,14 @@ describe('glif: açıklama metninde satır içi simge', () => {
     expect(shown(glyphSegments(s, all))).toBe('DEX [saving-throw]kurtarma zarını atar; 2d4 [temporary-hp]geçici HP ve [temporary-hp]Temporary Hit Points. Dokunduğun dostu [healing]iyileştirirsin; [healing]heals 1d8. Geçici canavar yok.');
   });
 
+  it('iyileştirme kalıbı tek yerde, TR ve EN tutarlı: TR önek (iyileşir, iyileştirme), EN tam sözcük; "health" eşleşmez', () => {
+    const tr = 'Yara iyileşir; iyileştirme zarı. Hedef iyileştirmez.';
+    expect(shown(glyphSegments(tr, all))).toBe('Yara [healing]iyileşir; [healing]iyileştirme zarı. Hedef iyileştirmez.');
+    for (const w of ['heal', 'heals', 'healed', 'Healing', "Healer's"]) expect(shown(glyphSegments(`You ${w} it.`, all)), w).toBe(`You [healing]${w} it.`);
+    expect(shown(glyphSegments('Instant Health and health tips.', all))).toBe('Instant Health and health tips.');
+    expect(data.metin.kaliplar.filter((p) => p.glif === 'healing').map((p) => [Object.keys(p).filter((k) => k === 'tr' || k === 'en'), !!(p as { onek?: boolean }).onek]))
+      .toEqual([[['tr'], true], [['en'], false]]);
+  });
   it('paragraf başına aynı simge en çok 2 kez; yeni paragrafta yeniden', () => {
     const s = 'ateş hasarı, ateş hasarı, ateş hasarı ve soğuk hasarı\nateş hasarı';
     expect(shown(glyphSegments(s, all))).toBe('[fire]ateş hasarı, [fire]ateş hasarı, ateş hasarı ve [cold]soğuk hasarı\n[fire]ateş hasarı');
