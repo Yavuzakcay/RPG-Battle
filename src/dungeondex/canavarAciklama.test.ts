@@ -1,5 +1,5 @@
 /**
- * Kuyruk A İş 4: canavar özellik ve eylemlerinin Türkçe açıklamaları (`data/aciklamalar-tr.json` `canavar`; liste ve adlar
+ * Kuyruk A İş 4: canavar özellik ve eylemlerinin Türkçe açıklamaları (`data/aciklamalar-tr-canavar.json` `canavar`; liste ve adlar
  * `data/canavar-ozellik.json`, SRD 5.2.1 PDF'inden `scripts/srd-canavar-ozellik.mjs`). Kimlikler listede; kapsam; sayısal
  * tutarlılık (zar, saldırı bonusu, kurtarma DC'si `data/monsters.json` saldırı alanlarıyla); SRD İngilizce ham metni yok;
  * Dungeondex kartı açıklamayı okur, eksikte "henüz yok".
@@ -10,7 +10,7 @@ import { looksEnglish } from '../data/aciklamaDil';
 import { setLang } from '../i18n';
 import { buildDex, loadDexExtras, type DexEntry } from './catalog';
 import liste from '../../data/canavar-ozellik.json';
-import aciklama from '../../data/aciklamalar-tr.json';
+import aciklama from '../../data/aciklamalar-tr-canavar.json';
 
 const L = (liste as unknown as { canavarlar: Record<string, Array<{ anahtar: string; ad: string; tur: string }>> }).canavarlar;
 const TR = ((aciklama as unknown as Record<string, Record<string, string>>).canavar ?? {});

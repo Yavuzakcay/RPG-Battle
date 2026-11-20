@@ -174,6 +174,8 @@ const PreviewCard = lazy(() => import('./ui/preview/PreviewCard'));
 const SlotEffect = lazy(() => import('./ui/preview/SlotEffect'));
 import { movePreview, moveTap, type MovePreview } from './ui/preview/movePreview';
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
+import { readableScale, tokenReadability } from './ui/tokenReadability';
+import { abilitiesOf, abilityReady } from './battle/monsterAbilities';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
 import { ObjectPanel, type ObjectPick } from './ui/gm/ObjectPanel';
 import { ObjectCard } from './ui/gm/ObjectCard';
@@ -1135,6 +1137,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     return cam.big ? { x: (c.x - cam.cam.x) * cam.k, y: (c.y - cam.cam.y) * cam.k } : { x: (c.x / VIEW.w) * box.w, y: (c.y / VIEW.h) * box.h };
   };
   const tokenR = cam.big ? HEX_H * 0.36 * cam.k : HEX_H * 0.36 * (box.h / VIEW.h);
+  // Serüven öncesi (yalnız arayüz): dar ekranda jeton ölçeği alt sınırı, HP çubuğu ve rozet boyu ekran pikselinden (`tokenReadability`).
+  const readable = tokenReadability(cam.big ? cam.k : box.h / VIEW.h, TOKEN_R);
   // Görev H1: hedef/nişan seçerken seçili yaratık ve hedef ekranda kalsın (geniş haritada).
   useEffect(() => {
     const ps = [actor?.pos, targetId ? state.combatants[targetId]?.pos : null, aimHex].filter((x): x is Offset => !!x);
@@ -1755,6 +1759,19 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       if (left >= (-alt / 5) * 2 + 1) { reset(); setPickHexCmd({ make: (h) => ({ type: 'vertical_move', actorId, toFt: 0, to: h }), hint: B.k66.climbHint }); setMode('pickHex'); setMenuOpen(false); return; }
       run({ type: 'vertical_move', actorId, toFt: Math.min(-5, alt + Math.floor(left / 2) * 5) });
     } }] : []),
+    // Serüven öncesi (yalnız arayüz): canavar yetenekleri (`monster_ability`, mevcut komut): Wild Shape/Polymorph biçimi, çağrılan
+    // yaratık ve Game Master canavarı. Seçili düşman hedefse o, değilse motorun varsayılanı (en yakın görünen düşman); `grant`
+    // seçenekleri (Koş/Geri Çekil/Gizlen) ayrı düğme. Yetenek listesi motordan (`abilitiesOf`), hızlı eylem rozeti `cost`tan.
+    ...abilitiesOf(state, actor).flatMap((a) => {
+      const name = getLang() === 'en' ? a.en : a.tr;
+      const foe = targetId && state.combatants[targetId]?.side !== actor.side ? targetId : undefined;
+      const opts: Array<string | undefined> = a.kind === 'grant' && (a.grant?.length ?? 0) > 1 ? a.grant ?? [] : [undefined];
+      return opts.map((opt): Item => {
+        const cmd: Command = { type: 'monster_ability', actorId, abilityId: a.id, ...(foe ? { targetId: foe } : {}), ...(opt ? { option: opt } : {}) };
+        return { key: `mab-${a.id}${opt ? `-${opt}` : ''}`, label: N.mab(name, opt ? N.mabOpt[opt] ?? opt : undefined),
+          reason: !abilityReady(actor, a) ? N.mabNotReady : why(cmd) ?? undefined, ...(a.cost === 'bonus' ? { cost: 'bonus' as const } : {}), act: () => run(cmd) };
+      });
+    }),
     { key: 'end', label: N.end, act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   // Kuyruk K64a: ele geçirilmiş beden yalnızca ele geçirenin temel eylemlerini, bedendeki ele geçiren yalnızca bırakmayı görür.
@@ -1765,7 +1782,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const keep: Item[] = actor?.possessing ? mainItems.filter((i) => i.key === 'unpossess' || i.key === 'end')
     : actor && activePossession(actor) ? mainItems.filter((i) => POSS_KEYS.includes(i.key)) : mainItems;
   const featType = new Map((actor?.features ?? []).map((f) => [f.key, f.type] as const));
-  const menu = splitMenu(keep.map((i) => ({ ...i, cost: costOfKey(i.key, featType.get(i.key)) })));
+  const menu = splitMenu(keep.map((i) => ({ ...i, cost: i.cost ?? costOfKey(i.key, featType.get(i.key)) })));
   const moveAll: Item[] = [...moveItems.filter((i) => i.key !== 'back'), ...menu.move];
   const moveUsable = visible(moveAll);
   const specialGroups = activeSpecialGroups(menu);
@@ -1995,7 +2012,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
               .filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending))
               .map((c) => ({ c, view: tokenView(state, c, showHidden) }))
               .filter((x) => x.view !== 'invisible')
-              .map((x) => ({ ...x, id: x.c.id, pos: x.c.pos as Offset, y: hexCenter(x.c.pos as Offset).y, scale: tokenScale(x.c) }));
+              .map((x) => ({ ...x, id: x.c.id, pos: x.c.pos as Offset, y: hexCenter(x.c.pos as Offset).y, scale: readableScale(tokenScale(x.c), readable) }));
             // Aşağıdaki jeton üstte; büyük jeton komşusundaki küçüğü örtmez (drawOrder).
             // Kuyruk K71c: aynı yerde havadaki jeton yerdekinin üstünde çizilir (kararlı sıralama: yer sırası aynı).
             // Görev MB6b: binici bineğinden sonra (üstte) çizilir.
@@ -2149,14 +2166,14 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                       const f = enemyHpFraction(c);
                       if (f === null) return null;
                       return (<>
-                        <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r} height={8} className="hpbg" />
-                        <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r * f} height={8} className="hp" />
+                        <rect x={p.x - r} y={stack ? top - 3 - readable.hpH : p.y + r + 3} width={2 * r} height={readable.hpH} className="hpbg" />
+                        <rect x={p.x - r} y={stack ? top - 3 - readable.hpH : p.y + r + 3} width={2 * r * f} height={readable.hpH} className="hp" />
                       </>);
                     })()}
                     {/* Kuyruk K48: Moral çubuğu (tam mod; HP'nin altında, ayrı renk). */}
                     {c.moralMax !== undefined && !stack && (<>
-                      <rect x={p.x - r} y={p.y + r + 12} width={2 * r} height={4} className="hpbg" />
-                      <rect x={p.x - r} y={p.y + r + 12} width={2 * r * Math.max(0, (c.moral ?? 0) / Math.max(1, c.moralMax))} height={4} className="moral" />
+                      <rect x={p.x - r} y={p.y + r + 4 + readable.hpH} width={2 * r} height={readable.hpH / 2} className="hpbg" />
+                      <rect x={p.x - r} y={p.y + r + 4 + readable.hpH} width={2 * r * Math.max(0, (c.moral ?? 0) / Math.max(1, c.moralMax))} height={readable.hpH / 2} className="moral" />
                     </>)}
                     {(() => {
                       // Kuyruk A2: en çok 3 rozet (öncelik veriden), fazlası "+N".
@@ -2178,7 +2195,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                       if (mb) for (const x of all) if (x.key === 'mounted' || x.key === 'ridden') x.title = `${x.title} · ${B.mb6b.badge[mb]}`;
                       const { shown, more } = limitBadges(all);
                       return (
-                        <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
+                        <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})${readable.badge > 1 ? ` scale(${readable.badge.toFixed(2)})` : ''}`} aria-hidden="true">
                           {shown.map((s, i) => (s.img
                             // Görev E1: ikon görseli (bitkinlikte kum saati + seviye).
                             ? <g key={s.key}><title>{s.title}</title><image href={`${BASE}${s.img}`} x={-i * 20 - 11} y={-17} width={22} height={22} className="status-img" />

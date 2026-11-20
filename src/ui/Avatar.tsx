@@ -16,6 +16,7 @@ import type { Avatar as AvatarData } from '../battle';
 import type { TintSpec } from '../battle/types';
 import { tintedReady, tintedUrl } from './tint';
 import { naturalLeft } from './tokenMirror';
+import { useWingData } from './wingData';
 
 /**
  * Görev K8b: soy rengi varsa görselin boyalı kopyası (hazır olana dek asıl görsel). Yalnızca karakter jetonları
@@ -115,6 +116,7 @@ const preloading = new Set<string>();
  */
 export function AvatarBadge(props: { avatar: AvatarData; size: number; ring?: string; title?: string; eager?: boolean }) {
   const { avatar, size, ring, title } = props;
+  useWingData(); // Paket: kanat verisi tembel; yüklenince yeniden çiz.
   const chain = badgeChain(avatar, size);
   const key = chain.join('|');
   const [state, setState] = useState<{ key: string; i: number; loaded: boolean }>(() => ({ key, i: 0, loaded: false }));
@@ -215,6 +217,7 @@ function WingPairImage(props: { wing: WingLayerSpec; cx: number; cy: number; w: 
  */
 export function TokenFigure(props: { href: string; cx: number; cy: number; w: number; flip?: boolean; crown?: CrownSpec | null; look?: AvatarData['look']; flying?: boolean; /** Karakter ekranları: uçma yeteneği olan karakter havada olmasa da kanatlı. */ ability?: boolean; /** KW1: tek kanatlı slotta kanat kökü (`wingRoot`); yoksa slot varsayılanı. */ wingRoot?: WingRoot | null; /** Kuyruk A İş 2: jetonun dosya yolu (kendi çiziminde kanatlıysa kanat yok; `href` boyanmış blob olabilir). */ src?: string }) {
   const { cx, cy, w } = props;
+  useWingData();
   const lk = props.look ? lineageLook(props.look, { ...(props.flying ? { flying: true } : {}), ...(props.ability ? { ability: true } : {}) }) : null;
   const by = cy - w / 2 + w * FOOT_FRAC; // ayak çizgisi (ölçek demir noktası)
   const shape = lk && (lk.scaleX !== 1 || lk.scaleY !== 1) ? `translate(${cx} ${by}) scale(${lk.scaleX} ${lk.scaleY}) translate(${-cx} ${-by})` : undefined;
@@ -238,6 +241,7 @@ export function AvatarCircle(props: {
   avatar: AvatarData; cx: number; cy: number; r: number; asleep?: boolean; flip?: boolean; scale?: number; /** Kuyruk AS1c: havada (kanat katmanı açık sprite). */ flying?: boolean; ability?: boolean; /** Karakter ekranları: yüklenmesi beklenmeden ilk görseli çiz (yüklenemezse zincirdeki sıradaki, sonra baş harfler). */ eager?: boolean;
 }) {
   const { avatar, cx, cy, r } = props;
+  useWingData();
   const chain = chainOf(avatar, props.asleep === true);
   const chained = useImageChain(chain);
   const src = chained ?? (props.eager && cache.get(chain[0] ?? "") !== false ? chain[0] ?? null : null);
@@ -276,6 +280,7 @@ function wingExtent(wing: WingLayerSpec, size: number): { x: number; y: number; 
 }
 export function CharacterFigure(props: { avatar: AvatarData; size: number; title?: string }) {
   const { avatar, size } = props;
+  useWingData();
   const lk = avatar.look ? lineageLook(avatar.look, { ability: true }) : null;
   const wb = lk?.wing && !ownWingToken(lk.wing, avatar.src) ? wingExtent(lk.wing, size) : null;
   const pad = Math.max(2, size * 0.06);

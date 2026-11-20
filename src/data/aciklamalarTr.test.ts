@@ -11,8 +11,10 @@ import { describeTr } from '../ui/trDesc';
 import { setLang, t } from '../i18n';
 import srdSpecies from '../../data/srd/species.json';
 import data from '../../data/aciklamalar-tr.json';
+import canavarData from '../../data/aciklamalar-tr-canavar.json';
 
-const D = data as unknown as Record<string, Record<string, string>>;
+// Paket: canavar açıklamaları ayrı dosyada (yalnız Dungeondex tembel yükler); denetim ikisini birlikte tarar.
+const D: Record<string, Record<string, string>> = { ...(data as unknown as Record<string, Record<string, string>>), canavar: (canavarData as unknown as { canavar: Record<string, string> }).canavar };
 const traitIds = srdSpecies.species.flatMap((s) => s.traits.map((x) => `${s.id}/${x.id}`));
 
 describe('SD4 Türkçe açıklamalar', () => {
