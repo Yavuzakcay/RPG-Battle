@@ -6,10 +6,12 @@
  */
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  SERUVEN, TOGGLE_KEYS, bestSkill, executeSeruven, gateOpen, prevPage, levelXp, linkCrossable, linkFound, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
+  SERUVEN, TOGGLE_KEYS, bestSkill, executeSeruven, formSwapReady, memberForms, gateOpen, prevPage, levelXp, linkCrossable, linkFound, linkOpen, linksHere, nodeKey, nodeOpen, nodeStop, nodeVisible, pageById, pageOrder, toggleOn,
   type SeruvenCommand, type SeruvenEvent, type SeruvenNode, type SeruvenPage, type SeruvenState,
 } from '../journey/seruven';
 import { seferById } from '../journey/sefer';
+import { getMonster } from '../data';
+import type { JourneyMember } from '../journey/types';
 import { clearSeruven, loadSeruven, saveSeruven } from '../app/seruvenSave';
 import { isNight, prisonerLook, linkCrossCommand, linkSession, nightVariant, nodeJourney, hapisResultCommands, hapisSession, seruvenBattleSession, seruvenResultCommand, seruvenSkipCommand, sucResultCommand, sucSession, yerlesimCrossCommand, yerlesimSession } from '../app/seruvenBattle';
 import { YerlesimHub } from './YerlesimHub';
@@ -413,6 +415,7 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
             {m.status.moralOlum && <> <span className="moral-dead">{moralDeathText(m.name, getLang())}</span></>}
             {temple && <> <button type="button" className="ghost" disabled={state.gold < MORAL.dirilme.tapinakUcreti} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'tapinak' })}>{t().view.moral.reviveTemple(MORAL.dirilme.tapinakUcreti)}</button></>}
             {caster && <> <button type="button" className="ghost" disabled={state.gold < caster.gold} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'buyu' })}>{t().view.moral.reviveSpell(caster.spell, caster.gold)}</button></>}
+            {!m.status.dead && <FormSwap state={state} member={m} run={run} />}
           </span>;
         })}
         {state.tasma && <span className="journey-member" title={S.collarHelp}>⛓ {S.collarOn}</span>}
@@ -501,3 +504,43 @@ function LinkActions(props: { state: SeruvenState; run: (c: SeruvenCommand) => b
   );
 }
 
+
+/**
+ * Görev WS92 (SRD 5.2.1 s. 42 "Known Forms"): Druid üyenin Wild Shape biçim listesi: boş yere ekleme her zaman, dolu listede
+ * uzun dinlenmeden sonra bir biçim değişimi (motor `form_swap`). Druid değilse çizilmez.
+ */
+function FormSwap(props: { state: SeruvenState; member: JourneyMember; run: (c: SeruvenCommand) => boolean }) {
+  const S = t().seruven;
+  const lim = memberForms(props.member);
+  const [from, setFrom] = useState<string>('');
+  const [to, setTo] = useState<string>('');
+  if (!lim || !lim.options.length) return null;
+  const name = (id: string) => { try { return getMonster(id).name; } catch { return id; } };
+  const free = lim.current.length < lim.known;
+  const ready = formSwapReady(props.state, props.member.id);
+  const fromId = free && from === '' ? null : (lim.current.includes(from) ? from : free ? null : lim.current[0] ?? null);
+  const options = lim.options.filter((x) => !lim.current.includes(x));
+  const toId = options.includes(to) ? to : options[0] ?? '';
+  return (
+    <details className="form-swap">
+      <summary>{S.forms(lim.current.length, lim.known)}</summary>
+      <div role="group" aria-label={S.formsTitle(props.member.name)}>
+        <small className="mute">{lim.current.map(name).join(', ') || '—'}</small>
+        <label className="fx-choice fx-stack"><span className="fx-label">{S.formsFrom}</span>
+          <select value={fromId ?? ''} onChange={(e: { target: { value: string } }) => setFrom(e.target.value)}>
+            {free && <option value="">{S.formsAdd}</option>}
+            {lim.current.map((id) => <option key={id} value={id}>{name(id)}</option>)}
+          </select>
+        </label>
+        <label className="fx-choice fx-stack"><span className="fx-label">{S.formsTo}</span>
+          <select value={toId} onChange={(e: { target: { value: string } }) => setTo(e.target.value)}>
+            {options.map((id) => <option key={id} value={id}>{name(id)}</option>)}
+          </select>
+        </label>
+        <button type="button" className="ghost" disabled={!toId || (fromId !== null && !ready)}
+          onClick={() => props.run({ type: 'form_swap', memberId: props.member.id, from: fromId, to: toId })}>{fromId === null ? S.formsAddGo : S.formsGo}</button>
+        <small className="mute">{fromId !== null && !ready ? S.formsWait : S.formsNote}</small>
+      </div>
+    </details>
+  );
+}

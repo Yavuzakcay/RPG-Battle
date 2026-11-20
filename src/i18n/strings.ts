@@ -597,6 +597,11 @@ const tr = {
     hubType: { kale: 'kale', kasaba: 'kasaba', sehir: 'şehir' } as Record<string, string>, hubMaps: 'Haritalar', hubDoorHint: 'Kapı geçişi açık: sonraki haritaya kapı altıgenine yürüyerek geçilir.', hubShop: 'Dükkân', hubInn: 'Han', hubQuests: 'Görevler', hubLeave: 'Yerleşimden çık', hubEnter: 'Yerleşime gir',
     price: (n: number) => `${n} altın`, buy: 'Al', sell: (n: number) => `Sat (${n})`, innRest: (n: number) => (n ? `Uzun dinlenme (${n} altın)` : 'Uzun dinlenme'), questTake: 'Görevi al', questClaim: 'Ödülü al', questOpen: 'Sürüyor', questDone: 'Tamamlandı',
     prevPage: 'Önceki sayfaya dön', raceStart: 'Irka göre başlangıç (ilk karakterin yurdu)',
+    // Görev WS92: Wild Shape biçim listesi (SRD: uzun dinlenmede bir biçim değişir).
+    forms: (n: number, max: number) => `Biçimler ${n}/${max}`, formsTitle: (name: string) => `${name}: Wild Shape biçimleri`,
+    formsFrom: 'Çıkacak biçim', formsTo: 'Yeni biçim', formsAdd: 'Boş yere ekle', formsGo: 'Değiştir', formsAddGo: 'Ekle',
+    formsNote: 'Boş yere her zaman eklenir; dolu listede uzun dinlenmeden sonra bir biçim değişir. Biçim savaş sonunda biter.',
+    formsWait: 'Bu dinlenmede biçim değiştirildi: sonraki uzun dinlenmeyi bekle.',
     levelUp: (n: number) => `Seviye atla (${n})`, levelGm: 'Seviye atlama Game Master işi: Serüven kurallarını açın.', rest: 'Dinlen', enterCave: 'Mağaraya gir', testSection: 'Test', skipBattle: 'Savaşı kazanılmış say', skipped: '(atlandı)',
     jailNow: 'Hapse at (Hapishane Adası)', prisonTitle: 'Hapishane Adası', prisonNoRules: 'Hapishane kuralları kapalı: ekipman ve büyüler yerinde.',
     prisonConfiscated: (g: number, p: number, i: number) => `Emanette: ${g} altın, ${p} iksir, ${i} eşya ve ekipman (iskeledeki sandıkta).`,

@@ -780,6 +780,216 @@
    "sayfa": 166,
    "surum": 89,
    "not": "Shared Resistances uygulandı, kalan fark notundan çıktı"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "bat",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 345,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "hawk",
+   "alan": "attacks[Talons].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 355,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "homunculus",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 299,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "owl",
+   "alan": "attacks[Talons].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 358,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "raven",
+   "alan": "attacks[Beak].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 359,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "flying-snake",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 348,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "sprite",
+   "alan": "attacks[Enchanting Bow].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 329,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "awakened-shrub",
+   "alan": "attacks[Rake].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 260,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "badger",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 345,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "cat",
+   "alan": "attacks[Scratch].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 346,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "crab",
+   "alan": "attacks[Claw].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 347,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "frog",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 349,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "giant-fire-beetle",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 351,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "goat",
+   "alan": "attacks[Ram].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 355,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "lizard",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 357,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "octopus",
+   "alan": "attacks[Tentacles].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 358,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "piranha",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 358,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "rat",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 359,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "scorpion",
+   "alan": "attacks[Sting].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 360,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "spider",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 361,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
+  },
+  {
+   "dosya": "data/monsters.json",
+   "kayit": "weasel",
+   "alan": "attacks[Bite].damageDice",
+   "eski": "1d2",
+   "yeni": "1",
+   "sayfa": 364,
+   "surum": 92,
+   "not": "Görev WS92: SRD \"Hit: 1 … damage\" sabit 1 (eskiden 1d2 yaklaşımı)"
   }
  ]
 }

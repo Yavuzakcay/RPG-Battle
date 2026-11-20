@@ -63,6 +63,11 @@ export const TR_EXTRA = {
   setupUi: {
     advanced: 'Gelişmiş', advancedHelp: 'Çoğu oyunda dokunman gerekmez.', groupOn: 'Grubu aç', groupOff: 'Grubu kapat',
     familiarForm: 'Hayvan biçimi', familiarType: 'Ruh türü',
+    // Görev WS92: kurulumda Wild Shape biçiminde başlama.
+    wildStart: (n: string) => `${n}: biçimde başla`, wildStartForm: 'Biçim', wildStartGo: (f: string) => `Biçime gir: ${f}`,
+    wildStartNote: (left: number) => `Wild Shape kullanımı harcanır (kalan ${left}); biçim savaş sonunda biter.`,
+    wildStartIn: (f: string) => `Biçimde: ${f} (savaşta bonus eylemle normal hâle döner).`,
+    wildFormLine: (f: string, temp: number) => `Wild Shape biçimi: ${f}${temp > 0 ? ` · geçici HP ${temp}` : ''} · savaş sonunda biter`,
     familiarKind: {
       celestial: 'Celestial (Göksel): Göksel bir ruh. Işık ve iyilik varlıklarına bağlı.',
       fey: 'Fey (Peri): Peri âleminden bir ruh. Doğa ve büyü varlıklarına bağlı.',
@@ -418,6 +423,15 @@ export const TR_EXTRA = {
     stoodUp: (a: string, cost: number) => `${a} ayağa kalktı (hareketin ${cost} altıgeni).`,
     grappled: (a: string, by: string, label: string, dc: number, restrained: boolean) => `${a} yakalandı: ${by}, ${label} (kaçış DC ${dc}${restrained ? ', Restrained' : ''}).`,
     grappleEnded: (a: string, reason: string) => `${a}: yakalama bitti (${reason}).`,
+    // Görev WS92: yutma (Swallow) satırları.
+    swallow: {
+      swallowed: (a: string, by: string) => `${a}${by ? `, ${by} tarafından` : ''} yutuldu: Blinded, Restrained, dışarıdan Total Cover.`,
+      disgorged: (a: string) => `${a} kusuldu: dışarı çıktı, Prone.`,
+      regurgitated: (a: string) => `${a} kusuldu: dışarı çıktı, Prone.`,
+      released: (a: string) => `${a} serbest kaldı (yutanın biçimi bitti), Prone.`,
+      corpse: (a: string) => `Yutan öldü: ${a} artık Restrained değil; sonraki turunda cesetten çıkabilir.`,
+      exited: (a: string) => `${a} 5 ft hareketle cesetten çıktı, Prone.`,
+    } as Record<string, (a: string, by: string) => string>,
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} kaçmaya çalıştı: ${skill} zar ${d20}, toplam ${total} / DC ${dc}: ${ok ? 'kurtuldu' : 'kurtulamadı'}.`,
   },
   battle: {
@@ -808,7 +822,7 @@ export const TR_EXTRA = {
       incapacitated: 'Etkisiz (Incapacitated): eylem, bonus eylem ve tepki yok; konsantrasyon kesilir',
       broken: 'Çökmüş (Moral 0): hareket ve eylem yok; ona saldırı avantajlı; bir dost toparlayabilir',
       bleeding: 'Kanıyor', restrained: 'Bağlandı (Restrained)', charmed: 'Büyülendi (Charmed)', frightened: 'Korkuyor (Frightened)',
-      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', mounted: 'Biniyor (bineğin üstünde)', ridden: 'Üstünde binici var', hovering: 'Süzülüyor (yere değmez)', burrowed: 'Yer altında (kazarak): hedeflenemez', invisible: 'Görünmez (Invisible)', deafened: 'Sağır (Deafened)', readied: 'Hazır (Ready): tepkisini ayırdı' },
+      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', mounted: 'Biniyor (bineğin üstünde)', ridden: 'Üstünde binici var', swallowed: (by: string) => `Yutuldu (${by} midesinde)`, swallowing: (who: string) => `Yuttu: ${who}`, hovering: 'Süzülüyor (yere değmez)', burrowed: 'Yer altında (kazarak): hedeflenemez', invisible: 'Görünmez (Invisible)', deafened: 'Sağır (Deafened)', readied: 'Hazır (Ready): tepkisini ayırdı' },
     outcome: { crit: 'Kritik', hit: 'İsabet', miss: 'Iska', saved: 'Kurtardı', failed: 'Kurtaramadı', resisted: 'Direndi', prone: 'Yere düştü',
       pushed: 'İtildi', escaped: 'Kurtuldu', stuck: 'Kurtulamadı', success: 'Başarılı', failure: 'Başarısız', jumped: 'Atladı', burned: 'Yandı', fell: 'Düştü' },
   },

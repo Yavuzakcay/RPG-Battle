@@ -1,4 +1,6 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { ws92On } from './ws92Surum';
+import { spellComponents } from '../rules/spellComponents';
 import { freeShapeArea } from './freeShape';
 import { homeSide } from './allegiance';
 import { possessedEffect, possessionEndEvents, possessionOn } from './possession';
@@ -542,6 +544,11 @@ function executeCastAt(state: BattleState, actor00: Combatant, cmd: CastCommand,
   if (unseen) return fail(unseen);
   // Görev DRUID: Wild Shape biçiminde büyü yapılamaz (Beast Spells hariç; süren konsantrasyon bozulmaz).
   if (actor0.shape && !actor0.traits?.includes('beast-spells')) return fail('Wild Shape biçiminde büyü yapılamaz.');
+  // Görev WS92 (92+; SRD s. 43 Beast Spells): biçimde bedeli yazılı ya da tükenen malzemeli büyü yapılamaz.
+  if (actor0.shape && !actor0.shape.polymorph && ws92On(state)) {
+    const mat = spellComponents(spell0)?.material;
+    if (mat && (mat.gp !== undefined || mat.consumed)) return fail(`${spell0.name}: Wild Shape biçiminde bedelli ya da tükenen malzemeli büyü yapılamaz (Beast Spells).`);
+  }
   // Görev WARLOCK: yalnızca kendine slotsuz büyü (Armor of Shadows, Fiendish Vigor…): yukarı slot seçilmediyse.
   if (actor0.atWill?.[spell0.name] === 'self' && cmd.slotLevel === undefined && spell0.level > 0) {
     const ts = [...(cmd.targetIds ?? []), ...(cmd.targetId ? [cmd.targetId] : [])];

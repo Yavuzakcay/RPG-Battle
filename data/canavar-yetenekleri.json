@@ -169,7 +169,8 @@
      "dash",
      "disengage"
     ],
-    "waterOnly": true
+    "waterOnly": true,
+    "swimDash": "full"
    }
   ]
  },
@@ -185,7 +186,8 @@
      "dash",
      "disengage"
     ],
-    "waterOnly": true
+    "waterOnly": true,
+    "swimDash": "half"
    }
   ]
  },
@@ -361,7 +363,10 @@
     "escapeDc": 11,
     "maxSize": "S",
     "at": "end",
-    "disgorge": true
+    "disgorge": true,
+    "blocks": [
+     "Bite"
+    ]
    }
   ],
   "passive": {
@@ -391,7 +396,11 @@
     "escapeDamage": 0,
     "escapeDc": 13,
     "small": true,
-    "at": "end"
+    "at": "end",
+    "blocks": [
+     "Bite"
+    ],
+    "single": true
    }
   ],
   "passive": {

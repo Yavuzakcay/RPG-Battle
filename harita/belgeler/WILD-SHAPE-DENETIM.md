@@ -56,8 +56,8 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
 | A7 | En yüksek CR 1/4 / 1/2 / 1 | aynı tablo | tam | `druid.ts:53`; `druid.test.ts` "biçim sınırları SRD tablosundan…" | Görev DRUID |
 | A8 | Uçuş hızı olan biçim 8. seviyeden | `fly` sütunu | tam | `druid.ts:53`; `wildShape87.test.ts` "2/4/8 × uçan/yüzen" | WS87 |
 | A9 | Yalnız Beast stat blokları | `creatureTypeAt === 'beast'` (Giant Eagle 5.2.1'de Celestial, alınamaz) | tam | `druid.ts:53`; `shape91.test.ts` "Giant Eagle artık uygun değil"; D1 | D1, WS87 |
-| A10 | Uzun dinlenmede bilinen bir biçim değiştirilebilir | oluşturucuda her zaman, sınırsız değiştirilir | kısmi | `builder/Features.tsx:96–140` (`FormPicker`) | yok |
-| A11 | Süre: Druid seviyesinin yarısı kadar saat | sayaç yok | bilinen | `druid.ts:170–172` (yalnız 0 HP / Incapacitated) | yok |
+| A10 | Uzun dinlenmede bilinen bir biçim değiştirilebilir | WS92: Serüven'de parti çubuğundan (`form_swap`): boş yere ekleme her zaman, dolu listede uzun dinlenmeden sonra bir değişim; Serüven dışında oluşturucuda serbest (bilinçli: savaşlar arası karakter düzenleme) | tam | `builder/Features.tsx:96–140` (`FormPicker`) | yok |
+| A11 | Süre: Druid seviyesinin yarısı kadar saat | sayaç yok; biçim savaş sonunda biter (savaş saatlerden kısa) | bilinçli (kullanıcı kararı, WS92) | `druid.ts:170–172` (yalnız 0 HP / Incapacitated) | yok |
 | A12 | Biter: yeniden Wild Shape kullanınca | biçimden biçime geçiş, kullanım düşer | tam | `druid.ts:158`; `shape91.test.ts` "Brown Bear…ayıdan örümceğe"; D7 | WS91 |
 | A13 | Biter: Incapacitated | her komut sonunda | tam | `druid.ts:171`; `druid.test.ts` "Incapacitated olunca biçim biter"; D5 | Görev DRUID |
 | A14 | Biter: ölüm | 0 HP'de biter (Unconscious da Incapacitated) | tam | `druid.ts:171`; D4 | Görev DRUID |
@@ -84,15 +84,15 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
 | A35 | Multiattack | yalnız saldırı sayısı (bileşim serbest) | bilinen | `druid.ts:81`, `shapeMonster.ts:82` | WS91 tablosu |
 | A36 | Save'li / şarjlı eylemler (Web) | canavar saldırısı olarak | tam | `shapeMonster.ts:81`; D1 (Giant Spider Web) | WS91 |
 | A37 | Saldırı ekleri (Grappled, Prone, zehir) | canavar saldırısıyla aynı yol | tam | `features.ts:268`, `:394–400`; `druid.test.ts` "K13: biçim saldırısının ek etkileri…" | Görev DRUID (K13) |
-| A38 | Bonus eylemler ve yetenekler (Leap, Swallow) | motor ve YZ kullanır; arayüz düğmesi yok; yutma hataları | bilinen | `monsterAbilities.ts:82–86`; önceki denetim | WS91 "Kalanlar" |
+| A38 | Bonus eylemler ve yetenekler (Leap, Swallow) | motor ve YZ kullanır; arayüz Yetenek düğmesi (51f0b8cb); yutma WS92'de SRD'ye uydu | tam | `monsterAbilities.ts:82–86`; önceki denetim | WS91 "Kalanlar" |
 | A39 | Tepkiler | kendi + biçim | tam | `shapeMonster.ts:76` | WS91 |
 | A40 | Legendary eylemler | Beast stat bloklarında yok | kapsam dışı | — | — |
 | A41 | Büyü yapamaz | reddedilir | tam | `spells.ts:543–544`; D2 | Görev DRUID |
 | A42 | Biçim konsantrasyonu bozmaz, yapılmış büyüyü etkilemez | konsantrasyon ve alan sürer | tam | `spells.ts:543` (yorum); D3 | Görev DRUID |
 | A43 | Nesneleri biçimin uzuvlarıyla tutma | eşya kullanımı/bırakma/alma biçimde engellenmiyor | bilinen | `items.ts`, `heldItems.ts` (biçim denetimi yok) | WS91 "Kalanlar" |
-| A44 | Ekipman yere düşer, kaynaşır (etkisiz) ya da giyilir | AC biçimden (zırh ve AC'li eşya etkisiz = kaynaşma), ama eşyanın kurtarma eki korunuyor (Cloak of Protection gibi) | kısmi | `druid.ts:116–125` (yorum: "yetkinlik, eşya, özellik" eki korunur), `druid.ts:86` (AC) | yok (WS87 "diğer kurtarma ekleri korunur" diyor, eşya ayrımı yok) |
+| A44 | Ekipman yere düşer, kaynaşır (etkisiz) ya da giyilir | WS92 (92+): eşya kaynaşır: AC ve kurtarma eki (Cloak of Protection) biçimde işlemez, biçim bitince geri gelir; "giyilir" seçeneği yok (⚠ GM kararı) | tam | `druid.ts:116–125` (yorum: "yetkinlik, eşya, özellik" eki korunur), `druid.ts:86` (AC) | yok (WS87 "diğer kurtarma ekleri korunur" diyor, eşya ayrımı yok) |
 | A45 | Boyut ve haritada yer (multiHex kapalı) | tek altıgen | tam | `CLAUDE.md` "Görsel ile mekanik ayrı" | Görev A6 |
-| A46 | multiHex açıkken Large/Huge biçimin sığması | sığma denetimi yok: Brown Bear gövdesi dolu altıgenle çakıştı | yok | `druid.ts:136–167` (`bodyFitProblem` yok); D (çok altıgen) | yok |
+| A46 | multiHex açıkken Large/Huge biçimin sığması | sığma denetimi yok: Brown Bear gövdesi dolu altıgenle çakıştı; **ertelendi** (kullanıcı kararı, WS92) | yok | `druid.ts:136–167` (`bodyFitProblem` yok); D (çok altıgen) | yok |
 | A47 | Prone/Grappled biçim değişiminde sürer | koşullara dokunulmaz | tam | `reduce.ts:919–950` | — |
 
 ## B) Bağlı Druid özellikleri
@@ -102,15 +102,15 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
 | B1 | Primal Order Magician: ek cantrip, Arcana/Nature'a WIS (en az +1) | ek cantrip; kontrol bonusu savaş dışı | tam | `class-features.json:2187`; `druid.test.ts` "Primal Order: Warden… Magician…" | Görev DRUID |
 | B2 | Primal Order Warden: Martial silah, Medium zırh | aynen | tam | aynı test | Görev DRUID |
 | B3 | Wild Companion: Magic eylemi, slot ya da Wild Shape kullanımı, malzemesiz Find Familiar | savaşta Magic eylemi; "Slotsuz" = Wild Shape kullanımı (`featuresK19`) | tam | `economy.ts:84`, `:388–392`; `summons.ts:287` | Kuyruk 19 (DECISIONS ≈4548) |
-| B4 | Wild Companion familiar'ı Fey; uzun dinlenmede kaybolur | tür değişmez (canavar verisinin türü); kaybolma savaş dışı | yok (Fey) | `summons.ts:283–320` (tür yazılmıyor) | yok |
+| B4 | Wild Companion familiar'ı Fey; uzun dinlenmede kaybolur | WS92 (92+): slot ya da Wild Shape kullanımıyla çağrılan familiar Fey; kaybolma savaş dışı | tam | `summons.ts:283–320` (tür yazılmıyor) | yok |
 | B5 | Wild Resurgence: kullanım yokken slotla bir kullanım, turda bir, eylemsiz | aynen | tam | `druid.ts:197–205`; `druid.test.ts` "Wild Resurgence…" | Görev DRUID |
-| B6 | Wild Resurgence: kullanımla 1. seviye slot, uzun dinlenmede bir | savaşta aynen; harcanmayan slot savaş sonunda karaktere yazılmaz (kullanım harcanmış kalır) | kısmi | `druid.ts:206–210`; `partyStatus.ts:50` (`min`) | yok |
+| B6 | Wild Resurgence: kullanımla 1. seviye slot, uzun dinlenmede bir | savaşta aynen; WS92: harcanmayan slot savaş sonunda karaktere yazılır (üst sınır tablonun en çoğu) | tam | `druid.ts:206–210`; `partyStatus.ts:50` (`min`) | yok |
 | B7 | Elemental Fury: Potent Spellcasting (Druid cantrip hasarına WIS) | aynen | tam | `cleric.ts:231` | Görev DRUID |
 | B8 | Primal Strike: turda bir silah ya da Beast saldırısı isabetinde 1d8 Cold/Fire/Lightning/Thunder, isabette seçilir | otomatik: her isabette kullanılır, hedefe en iyi işleyen tür | bilinçli | `cleric.ts:233–244`; `druid.test.ts` "Primal Strike…(Beast saldırısı dahil)" | Görev DRUID |
 | B9 | Improved Elemental Fury: Potent Spellcasting'te +300 ft | `featuresK19` | tam | `range.ts:188–190` | Kuyruk 19 |
 | B10 | Improved Elemental Fury: Primal Strike 2d8 | aynen | tam | `cleric.ts:240` | Görev DRUID |
 | B11 | Beast Spells: biçimde büyü | `beast-spells` işareti büyü yasağını kaldırır | tam | `spells.ts:544` | Görev DRUID |
-| B12 | Beast Spells istisnası: bedeli yazılı ya da tüketilen malzemeli büyü yapılamaz | istisna yok: 18. sv kurt biçiminde Stoneskin yapıldı | yok | `spells.ts:544`; D2 | yok |
+| B12 | Beast Spells istisnası: bedeli yazılı ya da tüketilen malzemeli büyü yapılamaz | WS92 (92+): biçimde reddedilir (`spellComponents` `gp`/`consumed`) | tam | `spells.ts:544`; D2 | yok |
 | B13 | Archdruid Evergreen Wild Shape: inisiyatifte kullanım yoksa bir kullanım | savaş başında | tam | `commands.ts:402`, `druid.ts:256–260`; D (Evergreen) | Görev DRUID |
 | B14 | Archdruid Nature Magician: kullanımları tek slota (2 seviye/kullanım), uzun dinlenmede bir, eylemsiz | `featuresK19` | tam | `druid.ts:185–194` | Kuyruk 19 (DECISIONS ≈4486) |
 | B15 | Archdruid Longevity (yavaş yaşlanma; listedeki "Timeless Body" 5.2.1'de bu adla) | mekanik yok | kapsam dışı | — | — |
@@ -124,15 +124,15 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
 |---|---|---|---|---|---|
 | C1 | Oluşturucuda bilinen biçim seçimi | sayı/CR/uçuş/tür sınırlı, "artık uygun değil" notu, yüzme hızı, TR/EN | tam | `builder/Features.tsx:96–140`; `strings.ts:127`, `:203`; `strings.en.ts:411`, `:487` | WS87 |
 | C2 | Seçim yoksa | savaşta en yüksek CR'li N biçim | tam | `druid.ts:262–272` | Görev DRUID |
-| C3 | Savaş kurulumunda başlangıç biçimi | yok (Game Master kurulumunda alan yok) | yok | `app/setup.ts`, `GmScreen.tsx` (karşılık yok) | yok |
+| C3 | Savaş kurulumunda başlangıç biçimi | WS92 (92+): kurulumda "biçimde başla" (Game Master ve Serüven kurulumu; kullanım harcanır, kurulumda çıkış yok) | tam | `app/setup.ts`, `GmScreen.tsx` (karşılık yok) | yok |
 | C4 | Arayüzde giriş/çıkış | "Hayvan formu: X" / "Normal hâle dön" düğmeleri | tam | `MapBattle.tsx:1648–1651`; `strings.tr2.ts:478`, `strings.en.ts:1203` | Görev DRUID |
-| C5 | Biçim kartı | ayrı kart yok; jeton biçimin, çekmecede AC/hız biçiminki | kısmi | `druid.ts:90` (`avatar`), `MapBattle.tsx` `Drawer` | yok |
+| C5 | Biçim kartı | jeton biçimin; WS92: çekmecede "Wild Shape biçimi: X · geçici HP N · savaş sonunda biter" satırı (TR/EN) | tam | `druid.ts:90` (`avatar`), `MapBattle.tsx` `Drawer` | yok |
 | C6 | Günlük satırları | girdi / döndü (nedenle), TR/EN | tam | `log.ts:152`; `strings.tr2.ts:320`, `strings.en.ts:936` | Görev DRUID |
 | C7 | Replay ve kayıt | biçim değerleri olayda; replay veriden bağımsız; kayıt sürümü değişmedi | tam | `druid.test.ts` (`r.replays()`), `shape91.test.ts` replay | WS91 |
 | C8 | Yapay zekâ biçime girişi | yalnız slotu bitince, konsantre değilken | bilinen | `ai.ts:2041–2046` | Görev DRUID, WS91 "Kalanlar" |
-| C9 | Yapay zekânın biçim seçimi | seçili biçim varsa veri sırasındaki ilki (en güçlüsü değil); seçim yoksa en güçlü | kısmi | `druid.ts:269–271`, `ai.ts:2043` | Görev DRUID ("en güçlü bilinen biçime girer" yalnız seçimsizde doğru) |
-| C10 | Yapay zekânın biçimden çıkması | hiç çıkmaz (biçimsiz `wild_shape` adayı yok) | yok | `ai.ts:2041–2046` | yok |
-| C11 | Savaş sonrası | kullanımlar ve HP karaktere yazılır; biçim ve geçici HP yazılmaz (SRD'de biçim saatlerce sürer) | kısmi | `partyStatus.ts:40–58`; D10 | yok |
+| C9 | Yapay zekânın biçim seçimi | WS92 (92+): seçili biçimler arasında da en güçlüsü (CR, sonra HP) | tam | `druid.ts:269–271`, `ai.ts:2043` | Görev DRUID ("en güçlü bilinen biçime girer" yalnız seçimsizde doğru) |
+| C10 | Yapay zekânın biçimden çıkması | WS92 (92+): biçimin geçici HP'si bitmiş, slotu olan (Beast Spells'siz) druid bonus eylemle döner | tam | `ai.ts:2041–2046` | yok |
+| C11 | Savaş sonrası | kullanımlar, HP ve Wild Resurgence slotu karaktere yazılır; biçim ve geçici HP savaş sonunda biter | bilinçli (kullanıcı kararı, WS92) | `partyStatus.ts:40–58`; D10 | yok |
 
 ## D) Senaryo sonuçları
 
@@ -160,17 +160,12 @@ Geçici test dosyasıyla gerçek motorda çalıştırıldı; dosya silindi.
 
 ## Bilinen (önceki denetim; burada açılmadı)
 
-- **Yutma (Swallow):**
-  - yutulan hedefte Total Cover yok;
-  - yutan, yutarken Bite kullanabiliyor;
-  - yapay zekâ Swallow'u seçmiyor;
-  - yutan ölünce yutulan otomatik Prone çıkıyor;
-  - yutulan kendi altıgeninde kalıyor ve `grapple` alanı dolu kalıyor.
-- **Süre:** Wild Shape süresi tutulmuyor (A11).
+- **Yutma (Swallow): düzeldi (WS92, sürüm 92).** Total Cover, yutarken Bite yasağı, ceset çıkışı (5 ft + Prone), yutulan midede yutanla taşınır, `grapple` alanı temizlenir; yapay zekâ Swallow'u seçiyor (yoklandı). Ayrıntı DECISIONS WS92.
+- **Süre:** Wild Shape süresi tutulmuyor (A11); WS92 kullanıcı kararı: biçim savaş sonunda biter, sayaç yok.
 - **Multiattack:** bileşim yok, yalnız saldırı sayısı (A35).
 - **Arayüz:** canavar yeteneği düğmesi yok (A38).
 - **Eşya:** biçimdeki eşya modeli (Objects) yok (A43).
-- **Yapay zekâ:** biçime yalnız slotu bitince giriyor (C8).
+- **Yapay zekâ:** biçime yalnız slotu bitince giriyor (C8); WS92'de en güçlü biçimi seçiyor ve slot kazanınca çıkıyor (C9, C10).
 
 ## Düzeltme önerileri (yalnız yeni bulgular)
 

@@ -13,6 +13,7 @@ import type { Cover, TerrainType } from '../map/terrain';
 import { distance, line, sameHex, type Offset } from '../rules/hex';
 import { bodyOf, covers, isMultiHex, isMultiHex53 } from './body';
 import { isTargetable } from './common';
+import { insideBlocks } from './swallow92';
 import { solidWallAt, terrainAt } from './movement';
 import { combatHeightAt, heightAt, heightCombatRule, heightSightBlock, heightSightRule, highGroundK8, k72On, katmanOn, layerActive, ledgeCover } from './heights';
 import { ALT, altitudeOf, bodyHeightFt, ceilingFt, eyeFt } from './altitude';
@@ -283,6 +284,8 @@ const withGranted = (state: BattleState, target: Combatant, r: LineOfFire): Line
   !r.blocked && r.cover < 2 && grantedHalfCover(state, target) ? { ...r, cover: 2 } : r;
 
 export function lineOfFire(state: BattleState, attacker: Combatant, target: Combatant): LineOfFire {
+  // Görev WS92 (92+ işareti): mide Total Cover; içerideki yalnız yutanını görür.
+  if (insideBlocks(attacker, target)) return { blocked: true, blockedBy: 'mide', cover: 0 };
   return withGranted(state, target, lineOfFireRaw(state, attacker, target));
 }
 

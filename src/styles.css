@@ -469,6 +469,8 @@ li.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8p
 
 /* Uyuyan ejderha: büyük jeton (görsel; tıklama yalnızca kendi altıgeninde) ve Zzz rozeti. */
 .token.asleep .ring { stroke-dasharray: 10 6; opacity: 0.85; }
+/* Görev WS92: yutanın midesindeki yaratık (küçük, soluk; yalnız görünüm). */
+.token.swallowed { opacity: 0.6; }
 .token .zzz rect { fill: rgba(20, 24, 48, 0.85); stroke: #9fb4ff; stroke-width: 2; }
 .token .zzz text { fill: #dfe6ff; font-size: 18px; font-weight: 700; text-anchor: middle; font-style: italic; }
 .wake-notes { margin: 4px 0 8px; padding-left: 18px; font-size: 0.9em; }
@@ -1697,3 +1699,8 @@ input[type="range"]:disabled { accent-color: var(--off); }
 .pt-body .dice-prompt { max-width: none; box-shadow: none; }
 .mb-screen.portrait .hud-corner.tr.info-box { left: 6px; right: 56px; max-width: none; }
 .pt-body .economy-extra { justify-content: flex-start; }
+
+/* Görev WS92: Serüven'de Wild Shape biçim listesi (parti çubuğu). */
+.form-swap > div { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-top: 4px; }
+.form-swap > div > small { flex-basis: 100%; }
+.form-swap .fx-choice { display: inline-flex; gap: 6px; align-items: center; }

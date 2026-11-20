@@ -7,6 +7,8 @@
  *   dezavantajı), Illumination (ışık), Flyby (uçarken fırsat saldırısı almaz), Fire Aura (dokunana/başlayana 1d10
  *   Fire), Stench (5 ft'te tur başlayan CON save ya da Poisoned), Spider Climb, Ice Walk (buz/kar) / Web Walker (ağ).
  */
+import { ws92On } from './ws92Surum';
+import ws92Data from '../../data/ws92.json';
 import { getMonster, monsterSpells, spells, type Monster } from '../data';
 import { hasDarkness } from './maprules';
 import { monsterAt } from './srdD1';
@@ -43,7 +45,12 @@ export function monsterTraitParts(state: BattleState, c: Combatant, m0?: Monster
     else if (s === 'Trait: Sunlight Sensitivity' && state.map && !hasDarkness(state)) fx.attackDis = {};
     // Kuyruk A7: karanlık haritada güneş ışığına (Daylight) girince (sürüm 36+, `divine.ts` wardSources).
     else if (s === 'Trait: Sunlight Sensitivity' && state.map) out.traits.push('sunlight-sensitive');
-    else if (s === 'Trait: Illumination') fx.light = 6;
+    // Görev WS92 (92+; SRD "Bright Light in a N-foot radius and Dim Light for an additional N feet"): parlak + ek loş
+    // stat bloğundan (`data/ws92.json`). 91 ve altı: hepsinde 30 ft parlak.
+    else if (s === 'Trait: Illumination') {
+      const il = (ws92Data.illumination as Record<string, number[]>)[m.id];
+      Object.assign(fx, ws92On(state) && il ? { light: il[0], lightDim: il[1] } : { light: 6 });
+    }
     else if (s === 'Trait: Flyby') out.traits.push('flyby');
     // SRD: Web Walker yalnızca ağların, Ice Walk yalnızca buz/karın hareket kısıtını kaldırır (Freedom of Movement değil).
     else if (s === 'Trait: Web Walker') fx.webWalker = true;

@@ -264,6 +264,8 @@ export interface ActiveEffect {
   /** Görev K9c: tırmanma hızı (Spider Climb; yükseklik maliyeti yok), büyülü zıplama menzili ft (Jump; turda bir). */
   climb?: boolean;
   jumpFt?: number;
+  /** Görev WS92 (92+): canavar atlama özelliği (Standing Leap, Running Leap, Jumper): uzun atlama en az `long` ft (`running`: yalnız koşarak), yerinde yüksek atlama `high` ft, mesafe DEX skoruyla (`dex`). */
+  leap?: { long?: number; high?: number; running?: boolean; dex?: boolean };
   /** Kuyruk 19: Compulsion: tur başında bu yönde (AXIAL_DIRECTIONS indeksi; yoksa büyücüden uzağa) yürür. */
   compel?: { dir?: number };
   /** Kuyruk 19: Freedom of Movement (zorlu arazi, büyülü hız düşürme yok; yüzme; 5 ft ile yakalamadan kurtulma). */
@@ -367,7 +369,15 @@ export interface ActiveEffect {
   berserk?: boolean;
   swallowedBy?: string;
   /** Görev D1 (86+): `at` hasar yutanın tur başında (varsayılan) ya da sonunda; `disgorge` + `since` (Giant Frog): yutulduğu turdan sonraki ilk tur sonunda hasar, ölmezse kusulur. */
-  swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number; at?: 'start' | 'end'; disgorge?: boolean; since?: number };
+  swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number; at?: 'start' | 'end'; disgorge?: boolean; since?: number;
+    /** Görev WS92 (92+): yutulan midede (konum yutanınki, hücre kaplamaz, dışarıdan Total Cover). */
+    inside?: boolean;
+    /** Görev WS92 (92+): yutan bu saldırıları kullanamaz (Giant Frog/Toad: Bite). */
+    blocks?: string[];
+    /** Görev WS92 (92+): yutan öldü; yutulan Restrained değil, sonraki turunda 5 ft hareketle cesetten çıkar. */
+    corpse?: boolean;
+    /** Görev WS92 (92+): yutarken yutanın biçimi (Wild Shape/Polymorph canavar kimliği); biçim değişince yutulan çıkar. */
+    form?: string };
   noHeal?: boolean;
   /** Kuyruk 19 (Corrosive Form): silah başına birikmiş saldırı cezası. */
   corroded?: Record<string, number>;
@@ -545,6 +555,8 @@ export interface Economy {
   fleetUsed?: boolean;
   apotheosisUsed?: boolean;
   loadingFired?: boolean;
+  /** Görev WS92 (92+): bu eylemde yapılan biçim saldırıları (ad → sayı; Multiattack bileşimi). */
+  beastUsed?: Record<string, number>;
 }
 
 export const FRESH_ECONOMY: Economy = {
@@ -971,6 +983,8 @@ export interface Combatant {
   modifiers: Scores;
   /** Save bonusları. */
   saves: Scores;
+  /** Görev WS92: kurtarmalara eşyalardan gelen toplam ek (karakterde; Wild Shape biçiminde düşülür, 92+). */
+  itemSaveBonus?: number;
   /** Yetkin olunan becerilerin bonusları; olmayanınki ability modifier'ı (`skillBonus`). */
   skills: Partial<Record<Skill, number>>;
   /** Tırmanma kontrolü bonusu (STR veya DEX modifier'ının yükseği). */
@@ -1587,6 +1601,8 @@ export interface ShapeStats {
    * canavar verisi aramaları (yetenek, ek etki, Multiattack planı) biçimin kimliğiyle (`formMonsterId`).
    */
   monster?: ShapeMonster;
+  /** Görev WS92 (92+): biçimin STR ve DEX skoru (atlama, taşıma/sürükleme); bırakınca eskileri. Alan yoksa skorlar değişmez. */
+  scores?: { str: number; dex: number };
 }
 /** Görev WS91: biçimin canavar parçası (son değerler). */
 export interface ShapeMonster {
@@ -1614,7 +1630,7 @@ export type ShapeMonsterPrev = Pick<Combatant, 'resistances' | 'immunities' | 'v
   & { effects: ActiveEffect[]; resources: Record<string, number | null> };
 /** Biçimden önceki (bırakınca dönen) değerler. */
 export type ShapePrev = Pick<Combatant, 'ac' | 'speed' | 'fly' | 'size' | 'modifiers' | 'saves' | 'weaponOptions' | 'attacksPerAction' | 'avatar'>
-  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt' | 'skills'>> & { mon?: ShapeMonsterPrev };
+  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt' | 'skills' | 'strScore' | 'dexScore' | 'carryCapLb'>> & { mon?: ShapeMonsterPrev };
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
 export interface ExtraDamage {
@@ -2055,6 +2071,8 @@ export type BattleEvent =
       fleet?: boolean; apotheosis?: boolean;
       /** Kuyruk 19 (SRD Loading): Loading silah bu eylemde ateşlendi. */
       loadingFired?: boolean;
+      /** Görev WS92 (92+): biçim Multiattack bileşimi: bu saldırının adı (eylem başına sayılır). */
+      beast?: string;
     }
   | { type: 'dashed'; actorId: string }
   /**
@@ -2082,6 +2100,8 @@ export type BattleEvent =
       burnMove?: number;
       /** Kuyruk K72 (sürüm 60+): çöken kat döşemesi altıgenleri ("katId|sütun,satır"). */
       katCokuk?: string[];
+      /** Görev WS92 (92+): yutma günlük satırı (TR/EN metin anahtarı; `text` yedek). */
+      swallowLog?: 'swallowed' | 'disgorged' | 'released' | 'corpse' | 'exited' | 'regurgitated';
     }
   /** Harita altıgeni değişti (lav yükselmesi). */
   | { type: 'tile_changed'; at: Offset; to: string }

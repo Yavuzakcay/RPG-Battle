@@ -64,5 +64,24 @@ export function breathesWater(c: Combatant): boolean {
   return b;
 }
 
+const waterOnly = new Map<string, boolean>();
+/**
+ * Görev WS92: yalnız su altında soluyan (SRD "Water Breathing. The X can breathe only underwater": Octopus, Piranha, Seahorse,
+ * Reef Shark…; Amphibious değil). Wild Shape/Polymorph biçiminde biçimin notu; Water Breathing büyüsü ("havayı da solur") kaldırır.
+ */
+export function waterOnlyBreather(c: Combatant): boolean {
+  if (c.effects?.some((e) => e.id.includes('water-breathing'))) return false;
+  const id = formMonsterId(c);
+  if (!id) return false;
+  let b = waterOnly.get(id);
+  if (b === undefined) {
+    let notes: string[] = [];
+    try { notes = getMonster(id).unsupported ?? []; } catch { notes = []; }
+    b = notes.includes('Trait: Water Breathing');
+    waterOnly.set(id, b);
+  }
+  return b;
+}
+
 /** Nefes tutma süresi (tur): (1 + CON) dakika, en az 30 sn. */
 export const breathLimit = (c: Combatant): number => Math.max(W.enAzTur, (1 + c.modifiers.con) * W.dakikaTur);

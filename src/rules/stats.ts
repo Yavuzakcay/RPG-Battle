@@ -102,6 +102,8 @@ export interface DerivedStats {
   jack: number;
   /** Her ability için save bonusu (proficiency ve item bonusları dahil). */
   saves: Scores;
+  /** Görev WS92: kurtarmalara eşyalardan gelen toplam ek (Wild Shape biçiminde eşya kaynaşır, ek düşer). */
+  itemSaveBonus?: number;
   saveProficiencies: Ability[];
   /** Yetkin olunan becerilerin bonusları; listede olmayanın bonusu ability modifier'ıdır. */
   skills: Partial<Record<Skill, number>>;
@@ -347,6 +349,7 @@ export function deriveStats(sheet: CharacterSheet): DerivedStats {
     initiative: modifiers.dex + (feats.initiativeProficiency ? prof : jack),
     jack,
     saves,
+    ...(saveBonus ? { itemSaveBonus: saveBonus } : {}),
     saveProficiencies: [...cls.saves, ...kit.saveProficiencies.filter((a) => !cls.saves.includes(a))],
     skills: withSoySkills(skillTable(modifiers, prof, subclassSkills(sheet), sheet.expertise ?? []), modifiers, jack, soyEtki?.beceri),
     spellSaveDc: cls.casting ? 8 + prof + castMod : null,

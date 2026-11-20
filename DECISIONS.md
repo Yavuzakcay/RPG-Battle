@@ -2,6 +2,42 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev WS92: Wild Shape, biçim özellikleri ve Swallow SRD 5.2.1 uyumu (2026-11-20; kural sürümü 92 `WS92_VERSION`)
+
+Tek kural sürümü 92 (`src/battle/ws92Surum.ts`); 91 ve altı kayıt/replay eski davranışta. Kayıt sürümü değişmedi (yeni alanlar isteğe bağlı: `map_effect.swallowLog`, `swallow.inside/blocks/corpse/form`).
+
+- **1. Swallow** (Giant Frog s. 351, Giant Toad s. 354; aynı yol bütün yutanlarda, Kraken/Gelatinous Cube ek yolu dahil):
+  - Yutulan midede (`src/battle/swallow92.ts`): konumu her olaydan sonra yutanınki (reducer `syncSwallowed`), hücre kaplamaz ve dışarıdan hedef alınmaz (`isTargetable`; alanlar, auralar, saldırılar), içeriden yalnız yutanını görür (`lineOfFire` "mide"). Bu, SRD "Total Cover against attacks and other effects outside" ile yutulanın yutanla taşınmasını tek kuralla verir.
+  - Yutunca yakalama gerçekten biter (`grapple_ended`; eskiden `grapple` alanı dolu kalıyordu).
+  - Yutan midede yaratık varken `blocks` saldırısını kullanamaz (Giant Frog/Toad: Bite; biçimdeki druid de). Giant Toad bir seferde tek yaratık (`single`).
+  - Yutan ölünce yutulan Restrained değil (Blinded ve Total Cover sürer: cesette); kendi turunun başında 5 ft hareketle (`burnMove`) cesetten Prone çıkar. ⚠ Çıkış kendiliğinden (SRD "can escape"; savaşta kalmak için gerekçe yok).
+  - Kusulan/serbest kalan yutanın bitişiğindeki ilk boş altıgene konur (satır/sütun sırası; deterministik). Wild Shape/Polymorph biçimi biten ya da değişen yutan yutulanı bırakır, Prone (⚠ SRD'de yazmıyor; kusmayla aynı sonuç).
+  - Günlük satırları TR/EN (`log.swallow`), jetonda "👄 Yutuldu" rozeti, midedeki jeton yutanın üstünde küçük ve soluk (`ui/swallowUi.ts`, yalnız görünüm).
+  - Yapay zekâ: yakaladığı hedefi olan kurbağa Swallow'u seçiyor (yoklandı; önceki denetimdeki "YZ seçmiyor" bulgusu bugün geçerli değil).
+- **2. Wild Shape çekirdeği** (s. 42–43; denetimdeki kısmi/yok satırlar):
+  - Geçici HP, 0 HP/Incapacitated bitişi ve taşan hasar, bonus eylem giriş/çıkış, kullanım/dinlenme, Beast Shapes (2: CR 1/4 uçuşsuz, 4: CR 1/2 uçuşsuz, 8: CR 1 uçan) zaten SRD'deydi (denetim "tam"); dokunulmadı. ⚠ SRD 5.2.1 tablosunda yüzme kısıtı yok (2014 kuralıydı), eklenmedi.
+  - Objects (A44): eşya biçime kaynaşır: AC'nin yanında kurtarma eki de (`itemSaveBonus`, karakterden) biçimde düşer; "giyilir" seçeneği yok (GM kararı gerektirir).
+  - Beast Spells (B12): biçimde bedeli yazılı ya da tükenen malzemeli büyü reddedilir.
+  - Wild Companion (B4): slot ya da Wild Shape kullanımıyla çağrılan familiar Fey.
+  - Wild Resurgence (B6): savaşta kazanılan slot karaktere yazılır (`partyStatus.ts`: üst sınır savaş başındaki kalan değil, tablonun en çoğu; Nature Magician ve Font of Magic slotları da). Savaş dışı durum, kural sürümü gerektirmez.
+  - Yapay zekâ (C9, C10): seçili biçimler arasında en güçlüsü (CR, sonra HP); biçimin geçici HP'si bitmiş ve slotu olan (Beast Spells'siz) druid bonus eylemle döner.
+  - Bilinçli (kullanıcı kararı): süre sayacı yok, biçim ve geçici HP savaş sonunda biter (A11, C11). Ertelendi: `multiHex` gövde sığması (A46). WS91'in tür direnci kararı (A29 ⚠) değişmedi.
+- **3. Biçim özellikleri** (WILD-SHAPE-BICIMLER-DENETIM.md; sabitler `data/ws92.json`):
+  - STR/DEX skoru biçimden (`shape_changed.stats.scores`; atlama, sürükleme; taşıma kapasitesi biçimin STR × 15 × boyut). Polymorph da aynı olayla.
+  - Rampage (Giant Hyena) biçimde: adlı saldırı biçimin silah seçeneğinden (`boss.ts` `formOption`).
+  - Illumination stat bloğundaki parlak + ek loş (Giant Fire Beetle, Azer, Nightmare 10 + 10; Will-o'-Wisp 20 + 20; Fire Elemental 30 + 30). Eskiden hepsi 30 ft parlak.
+  - Atlama özellikleri Jump büyüsü modeli değil doğal atlama: Running Leap yalnız koşarak (Lion, Saber-Toothed Tiger 25 ft), Standing Leap koşusuz da uzun atlama ve yerinde yüksek atlama erişimi (Frog 10/5, Giant Frog/Toad 20/10 ft; ft başına 1 ft hareket), Jumper mesafeyi DEX skoruyla (Cat). SRD dışı Leap bonus eylemine dokunulmadı.
+  - Water Breathing ("can breathe only underwater") olan yaratık sudan dışarıda nefes tutar (su altı nefes kuralının tersi; Water Breathing büyüsü kaldırır).
+  - Bubble Dash: Dash + Disengage değil, yalnız bu hareket fırsat saldırısız; Seahorse yüzme hızı, Giant Seahorse yarısı; turun hareketinden düşmez (`moved.free`).
+  - Cacophony: Deafened süresince saldırı ve yetenek kontrolü dezavantajlı (A2 eki; A2 kayıtlarına `surum` alanı: daha eski savaşta yok sayılır). Biçimin save'li ve alanlı saldırıları A2 eklerini biçimin kimliğiyle arar (eskiden aramıyordu).
+  - Sabit 1 hasar: `monsters.json` 21 saldırı "1d2" → "1" (SRD "Hit: 1 … damage"); eski değer `srd-duzeltme.json` (`surum` 92). Düşman canavarda srdK19 bunu zaten savaş başında yapıyordu; fark biçim seçeneklerinde.
+  - Multiattack bileşimi biçimde: Brown Bear bir Bite + bir Claw; Lion bir Rend'in yerine Roar (eylem başına sayaç `economy.beastUsed`, olayda `action_used.beast`).
+  - Ertelendi, karar gerekli: Swarm'ın başka yaratığın altıgeninde durması (doluluk modeli bir altıgende tek yaratık varsayıyor). Kullanıcı kararı: Swarm biçimi Wild Shape geçici HP'sini alır.
+- **4. Serüven ve kurulum akışı** (TR/EN; ekran görüntüsü `harita/belgeler/WS92-SERUVEN-BICIM.png`):
+  - Kurulumda "biçimde başla" (92+; `wild_shape` kurulum durumunda): Game Master kurulumu ve Serüven savaş kurulumu aynı yol. Kullanım harcanır, Druid seviyesi kadar geçici HP (SRD biçim saatlerce sürer: savaştan önce girilmiş sayılır). Kurulumda çıkış yok (kullanım iadesiyle geçici HP sömürülmesin); savaşta bonus eylemle.
+  - Serüven parti çubuğunda Druid üyeye "Biçimler N/M" (`form_swap`): boş yere biçim eklemek her zaman (Serüven seviye atlaması yeni yer açar), dolu listede uzun dinlenmeden sonra bir değişim (SRD "Whenever you finish a Long Rest, you can replace one of your known forms"; sayaç `formSwaps` dinlenme sayısına bağlı). Serüven dışında oluşturucu serbest kalır (savaşlar arası karakter düzenlemesi, diğer sınıflarla aynı).
+  - Savaş sonunda biçim biter (kullanıcı kararı): karaktere asıl HP, kullanımlar ve kazanılan slot yazılır; geçici HP ve biçim yazılmaz. Çekmecede biçim satırı bunu söyler.
+
 ## Ranger ID4 Dragonborn: kontur halkası (erkek) ve çene maskesi (kadın) (2026-11-20; yalnız görünüm, mekanik/kural/kayıt sürümü yok)
 
 - **Erkek:** önceki görevde kalan, macenta artığı üçgeninin çevresindeki 22 koyu mor geçiş pikseli (opak, L* 14–42, kroma > 35, macenta ton; x 102–111, y 87–95) komşu kontur renginin ortalamasına çekildi: #220230 (L* 5,4). Komşu kontur = bu 22 pikselin 8 komşusu olan, opak, L* < 15 pikseller (32 piksel; L* 6,1 ± 3,9). Ham jeton kayıpsız (`exact`) yazıldı, yalnız 22 piksel değişti (doğrulandı); küçük kopya yalnız bu jeton için `karakter-kucuk` parametreleriyle yeniden üretildi. Pul maskesi `--jeton` ile yeniden üretildi, bayt bayt aynı (22 piksel kontur eşiğinin altında, zaten boyanmıyordu). Yedek: oturum karalama klasörü `yedek-ham-2/` ve git geçmişi.

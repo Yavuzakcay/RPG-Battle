@@ -23,6 +23,8 @@ import { metamagicProblem, TRANSMUTE_TYPES } from './battle/sorcerer';
 import { overchannelProblem } from './battle/apex';
 import { mountProblem } from './battle/mounted';
 import { dismountOptions } from './ui/dismountOptions';
+import { swallowedOnTop, swallowedStack } from './ui/swallowUi';
+import { ws92On } from './battle/ws92Surum';
 import { mountActions, mountBadge, moverFor, ridersOnTop, riderStack, setupMountCandidates, stripMountOf } from './ui/mountUi';
 import { sizeRank } from './battle/forced';
 import { eldritchSmiteProblem } from './battle/warlock';
@@ -291,6 +293,8 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
       </div>
       {c.asleep && <p><b>{D.asleep}</b> {D.asleepText}</p>}
       {c.summon && <p>{t().summons.ownedBy(props.state.combatants[c.summon.by]?.name ?? c.summon.by, c.summon.spell)}</p>}
+      {/* Görev WS92: Wild Shape biçimi, kalan geçici HP; biçim savaş sonunda biter. */}
+      {c.shape && !c.shape.polymorph && !c.shape.possession && !c.shape.spider && <p className="mount-line">{t().setupUi.wildFormLine(c.shape.name, c.tempHp ?? 0)}</p>}
       {/* Görev MB6b: binek/binici satırı ve kontrol kipi. */}
       {(() => { const mb = mountBadge(props.state, c); if (!mb) return null; const M = t().battle.mb6b;
         const other = c.riding ? props.state.combatants[c.riding] : c.rider ? props.state.combatants[c.rider] : undefined;
@@ -581,6 +585,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const [handPick, setHandPick] = useState<'fist' | 'force' | 'grasp' | 'crush' | 'interpose'>('fist');
   // Kurulumda Find Familiar biçimi ve türü (Görev R3).
   const [famForm, setFamForm] = useState<string | null>(null);
+  // Görev WS92: kurulumda "biçimde başla" seçimi.
+  const [startForm, setStartForm] = useState<string | null>(null);
   const [famType, setFamType] = useState<string | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
   // İyileştirme havuzu (Lay On Hands) kipinde seçili özellik; komut eksik HP kadar (havuz yettiğince), tam sağlıklıysa
@@ -2079,7 +2085,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
             // Aşağıdaki jeton üstte; büyük jeton komşusundaki küçüğü örtmez (drawOrder).
             // Kuyruk K71c: aynı yerde havadaki jeton yerdekinin üstünde çizilir (kararlı sıralama: yer sırası aynı).
             // Görev MB6b: binici bineğinden sonra (üstte) çizilir.
-            const ordered = ridersOnTop(state, cellsOn(state) ? [...drawOrder(shown)].sort((a, b) => (a.c.altitudeFt ?? 0) - (b.c.altitudeFt ?? 0)) : drawOrder(shown));
+            const ordered = swallowedOnTop(ridersOnTop(state, cellsOn(state) ? [...drawOrder(shown)].sort((a, b) => (a.c.altitudeFt ?? 0) - (b.c.altitudeFt ?? 0)) : drawOrder(shown)));
             const r = TOKEN_R;
             // Sürekli durum efektleri (Görev V, V2): jeton başına tek efekt (çoklu durumda sırayla), ekranda en çok sekiz
             // animasyon; efekt ayarı kapalıysa yok; tek seferlik hasar efekti oynarken o jetonun döngüsü duraklar.
@@ -2155,7 +2161,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 // Kuyruk K71c (sürüm 58+): havadaki jeton irtifasıyla orantılı yukarıda, yerde gölgesi; Hava görünümünde seçili
                 // düzeyde olmayan jeton soluk ve dokunulmaz.
                 // Görev MB6b: binici bineğinin üstünde küçük ve yukarıda (yığın; mekanik tek altıgen motordan).
-                const stack = riderStack(state, c);
+                const stack = riderStack(state, c) ?? swallowedStack(c);
                 const scale = stack ? scale0 * stack.scale : scale0;
                 const p0 = tokenCenter(state, c);
                 const lift = airLift(c);
@@ -2168,7 +2174,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', c.unaware ? 'unaware' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
-                  c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), filters.includes('rage') && (!fxOn || reduceMotion) ? 'rage-still' : '', areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
+                  c.hp <= 0 ? 'down' : '', swallowedStack(c) ? 'swallowed' : '', ...filters.map((f) => `st-${f}`), filters.includes('rage') && (!fxOn || reduceMotion) ? 'rage-still' : '', areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
                   loops.has(c.id) ? 'has-fx' : '', offLevel ? 'air-dim' : '', lift ? 'aloft' : '',
                   // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) ve batık jeton soluk/yarı saydam.
                   c.burrowed ? 'burrowed' : '', !c.burrowed && (c.altitudeFt ?? 0) < 0 && submerged(state, c) ? 'submerged' : ''].join(' ');
@@ -3522,6 +3528,33 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                     </div>
                   );
                 })}
+              </div>
+            );
+          })()}
+
+          {setup && selected && ws92On(state) && (() => {
+            // Görev WS92: kurulumda Wild Shape biçiminde başla (kullanım harcanır; biçim savaş sonunda biter).
+            const c = state.combatants[selected];
+            const f = c && !c.summon && c.pos ? wildShapeFeature(c) : undefined;
+            if (!c || !f) return null;
+            const SU = t().setupUi;
+            if (c.shape) return <div className="civ-picker familiar-picker" role="group" aria-label={SU.wildStart(c.name)}><small>{SU.wildStartIn(c.shape.name)}</small></div>;
+            const forms = availableForms(monsters, c, state.kuralSurumu ?? 1);
+            const left = f.resource ? resourceLeft(c, f.resource) : 0;
+            if (!forms.length || left <= 0) return null;
+            const pick = forms.find((m) => m.id === startForm) ?? forms[0]!;
+            return (
+              <div className="civ-picker familiar-picker" role="group" aria-label={SU.wildStart(c.name)}>
+                <div className="setup-summon">
+                  <strong>{SU.wildStart(c.name)}</strong>
+                  <small>{SU.wildStartNote(left)}</small>
+                  <label className="fx-choice fx-stack"><span className="fx-label">{SU.wildStartForm}</span>
+                    <select value={pick.id} onChange={(e: { target: { value: string } }) => setStartForm(e.target.value)}>
+                      {forms.map((m) => <option key={m.id} value={m.id}>{m.name} (CR {m.cr})</option>)}
+                    </select>
+                  </label>
+                  <button className="cta" onClick={() => dice.play((rng) => dispatch(session, { type: 'wild_shape', actorId: c.id, form: pick.id }, rng))}>{SU.wildStartGo(pick.name)}</button>
+                </div>
               </div>
             );
           })()}

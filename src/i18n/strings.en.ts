@@ -67,6 +67,11 @@ export const en: Strings = {
   setupUi: {
     advanced: 'Advanced', advancedHelp: 'Most games never need these.', groupOn: 'Turn group on', groupOff: 'Turn group off',
     familiarForm: 'Animal form', familiarType: 'Spirit type',
+    // Görev WS92: start the battle in a Wild Shape form.
+    wildStart: (n: string) => `${n}: start in a beast form`, wildStartForm: 'Form', wildStartGo: (f: string) => `Assume form: ${f}`,
+    wildStartNote: (left: number) => `Spends a Wild Shape use (${left} left); the form ends when the battle ends.`,
+    wildStartIn: (f: string) => `In form: ${f} (return to normal in battle with a Bonus Action).`,
+    wildFormLine: (f: string, temp: number) => `Wild Shape form: ${f}${temp > 0 ? ` · ${temp} temporary HP` : ''} · ends when the battle ends`,
     familiarKind: {
       celestial: 'Celestial: A heavenly spirit. Tied to beings of light and goodness.',
       fey: 'Fey: A spirit from the fey realm. Tied to beings of nature and magic.',
@@ -1041,6 +1046,15 @@ export const en: Strings = {
     stoodUp: (a: string, cost: number) => `${a} stood up (${cost} hexes of movement).`,
     grappled: (a: string, by: string, label: string, dc: number, restrained: boolean) => `${a} is grappled: ${by}, ${label} (escape DC ${dc}${restrained ? ', Restrained' : ''}).`,
     grappleEnded: (a: string, reason: string) => `${a}: grapple ended (${reason}).`,
+    // Görev WS92: swallow lines.
+    swallow: {
+      swallowed: (a: string, by: string) => `${a} is swallowed${by ? ` by ${by}` : ''}: Blinded, Restrained, Total Cover from outside.`,
+      disgorged: (a: string) => `${a} is disgorged and exits Prone.`,
+      regurgitated: (a: string) => `${a} is regurgitated and exits Prone.`,
+      released: (a: string) => `${a} is released (the swallower's form ended), Prone.`,
+      corpse: (a: string) => `The swallower died: ${a} is no longer Restrained and can escape from the corpse next turn.`,
+      exited: (a: string) => `${a} escapes from the corpse using 5 feet of movement, Prone.`,
+    } as Record<string, (a: string, by: string) => string>,
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} tried to escape: ${skill} roll ${d20}, total ${total} / DC ${dc}: ${ok ? 'escaped' : 'failed'}.`,
   },
   alarm: {
@@ -1079,6 +1093,11 @@ export const en: Strings = {
     hubType: { kale: 'castle', kasaba: 'town', sehir: 'city' } as Record<string, string>, hubMaps: 'Maps', hubDoorHint: 'Door travel is on: walk to a door hex to reach the next map.', hubShop: 'Shop', hubInn: 'Inn', hubQuests: 'Quests', hubLeave: 'Leave the settlement', hubEnter: 'Enter the settlement',
     price: (n: number) => `${n} gold`, buy: 'Buy', sell: (n: number) => `Sell (${n})`, innRest: (n: number) => (n ? `Long rest (${n} gold)` : 'Long rest'), questTake: 'Take the quest', questClaim: 'Claim the reward', questOpen: 'In progress', questDone: 'Done',
     prevPage: 'Back to the previous page', raceStart: 'Start by ancestry (the first character\'s homeland)',
+    // Görev WS92: Wild Shape known forms (SRD: replace one form after a Long Rest).
+    forms: (n: number, max: number) => `Forms ${n}/${max}`, formsTitle: (name: string) => `${name}: Wild Shape forms`,
+    formsFrom: 'Form to replace', formsTo: 'New form', formsAdd: 'Empty slot', formsGo: 'Replace', formsAddGo: 'Add',
+    formsNote: 'Empty slots can be filled any time; with a full list one form can be replaced after a Long Rest. A form ends when the battle ends.',
+    formsWait: 'A form was already replaced this rest: wait for the next Long Rest.',
     levelUp: (n: number) => `Level up (${n})`, levelGm: 'Levelling up is the Game Master\'s call: open the adventure rules.', rest: 'Rest', enterCave: 'Enter the cave', testSection: 'Test', skipBattle: 'Count battle as won', skipped: '(skipped)',
     jailNow: 'Throw in jail (Prison Island)', prisonTitle: 'Prison Island', prisonNoRules: 'Prison rules off: gear and spells intact.',
     prisonConfiscated: (g: number, p: number, i: number) => `Confiscated: ${g} gold, ${p} potions, ${i} items and your gear (in the chest at the dock).`,
@@ -1521,7 +1540,7 @@ export const en: Strings = {
       incapacitated: 'Incapacitated: no action, Bonus Action or Reaction; Concentration is broken',
       broken: 'Broken (Morale 0): cannot move or act; attacks against it have Advantage; an ally can rally it',
       bleeding: 'Bleeding', restrained: 'Restrained', charmed: 'Charmed', frightened: 'Frightened',
-      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', mounted: 'Riding (on a mount)', ridden: 'Has a rider', hovering: 'Hovering (off the ground)', burrowed: 'Underground (burrowing): can\'t be targeted', invisible: 'Invisible', deafened: 'Deafened', readied: 'Readied: holding their reaction' },
+      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', mounted: 'Riding (on a mount)', ridden: 'Has a rider', swallowed: (by: string) => `Swallowed (inside ${by})`, swallowing: (who: string) => `Has swallowed: ${who}`, hovering: 'Hovering (off the ground)', burrowed: 'Underground (burrowing): can\'t be targeted', invisible: 'Invisible', deafened: 'Deafened', readied: 'Readied: holding their reaction' },
     outcome: { crit: 'Critical', hit: 'Hit', miss: 'Miss', saved: 'Saved', failed: 'Failed', resisted: 'Resisted', prone: 'Knocked down',
       pushed: 'Pushed', escaped: 'Escaped', stuck: 'Still held', success: 'Success', failure: 'Failure', jumped: 'Jumped', burned: 'Burned', fell: 'Fell' },
   },

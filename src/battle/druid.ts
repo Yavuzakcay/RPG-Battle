@@ -22,6 +22,7 @@ import { applyHealing } from '../rules/damage';
 import { creatureTypeAt, monsterAt, swimSpeedAt } from './srdD1';
 import { bicimYuzmeOn, WS87_VERSION, ws87On } from './wildShape87Surum';
 import { srdD3On } from './srdD3Surum';
+import { ws92On } from './ws92Surum';
 import { shapeMonsterPart } from './shapeMonster';
 import { SKILLS, type Skill } from '../rules/skills';
 import { CURRENT_RULES } from './ruleVersion';
@@ -58,7 +59,8 @@ export function eligibleForms(monsters: Monster[], f: UsableFeature, level: numb
  * yazılmaz). `srd87`: SRD 5.2.1 aktarımı: `wild` (s.43: INT/WIS/CHA korunur; kurtarma yetkinliği ve diğer kurtarma ekleri
  * korunur, stat bloğundaki kurtarma yüksekse o), `poly` (s.153: bütün yetenekler ve kurtarmalar biçimin stat bloğundan).
  */
-export interface ShapeOpts { swimFt?: number; srd87?: 'wild' | 'poly'; /** Görev D3 (89+): beceriler biçime göre (`wildSkills`). */ srd89?: boolean }
+export interface ShapeOpts { swimFt?: number; srd87?: 'wild' | 'poly'; /** Görev D3 (89+): beceriler biçime göre (`wildSkills`). */ srd89?: boolean;
+  /** Görev WS92 (92+): eşya kaynaşır (kurtarma eki düşer; s. 43 "Objects"), biçimin STR/DEX skoru. */ ws92?: boolean }
 
 /**
  * Kural sürümü 87: seçili biçimlerden bu seviyede hâlâ alınabilenler (CR, uçuş, Beast türü sürümde). Geçersizler kayıtta
@@ -84,12 +86,14 @@ export function shapeStats(m: Monster, druid: Combatant, o: ShapeOpts = {}): Sha
   const mods = o.srd87 === 'poly' ? beastMods : { ...druid.modifiers, str: beastMods.str, dex: beastMods.dex, con: beastMods.con };
   return {
     form: m.id, name: m.name, ac: m.ac, speed: m.speed, fly: m.fly ?? 0, size: m.size ?? druid.size, modifiers: mods,
-    saves: o.srd87 === 'poly' ? { ...beastMods, ...m.saves } : o.srd87 === 'wild' ? wildSaves(m, druid, mods)
+    saves: o.srd87 === 'poly' ? { ...beastMods, ...m.saves } : o.srd87 === 'wild' ? wildSaves(m, druid, mods, !!o.ws92)
       : { ...druid.saves, str: mods.str, dex: mods.dex, con: mods.con },
     weaponOptions: attacks, attacksPerAction: Math.max(1, multi),
     avatar: monsterAvatar(m),
     ...(o.swimFt !== undefined ? { swimFt: o.swimFt } : {}),
     ...(o.srd89 && o.srd87 ? { skills: o.srd87 === 'poly' ? { ...(m.skills ?? {}) } : wildSkills(m, druid, mods) } : {}),
+    // Görev WS92 (92+): STR/DEX skoru biçimden (s. 43 "Game Statistics"; atlama, taşıma, sürükleme).
+    ...(o.ws92 ? { scores: { str: m.abilities.str, dex: m.abilities.dex } } : {}),
   };
 }
 
@@ -117,10 +121,12 @@ function wildSkills(m: Monster, druid: Combatant, mods: Combatant['modifiers']):
  * SRD 5.2.1 s.43: kurtarma yetkinlikleri korunur (yaratığın yetkinliğinin üstüne), stat bloğundaki kurtarma yüksekse o.
  * Druid'in yetenek değiştiricisinin üstündeki kurtarma eki (yetkinlik, eşya, özellik) biçimin değiştiricisine eklenir.
  */
-function wildSaves(m: Monster, druid: Combatant, mods: Combatant['modifiers']): Combatant['saves'] {
+function wildSaves(m: Monster, druid: Combatant, mods: Combatant['modifiers'], ws92 = false): Combatant['saves'] {
   const out = { ...druid.saves };
+  // Görev WS92 (92+; s. 43 "Objects"): eşya biçime kaynaşır (AC gibi kurtarma eki de işlemez; ⚠ "giyilir" seçeneği yok).
+  const item = ws92 ? druid.itemSaveBonus ?? 0 : 0;
   for (const a of ['str', 'dex', 'con', 'int', 'wis', 'cha'] as const) {
-    const own = mods[a] + (druid.saves[a] - druid.modifiers[a]);
+    const own = mods[a] + (druid.saves[a] - druid.modifiers[a]) - item;
     out[a] = Math.max(own, m.saves?.[a] ?? -Infinity);
   }
   return out;
@@ -130,7 +136,7 @@ function wildSaves(m: Monster, druid: Combatant, mods: Combatant['modifiers']): 
 export function shapeOptsAt(state: BattleState, m: Monster, kind: 'wild' | 'poly'): ShapeOpts {
   if (!ws87On(state)) return {};
   return { srd87: kind, ...(bicimYuzmeOn(state) ? { swimFt: swimSpeedAt(m.id, state.kuralSurumu ?? 1) ?? 0 } : {}),
-    ...(srdD3On(state) ? { srd89: true } : {}) };
+    ...(srdD3On(state) ? { srd89: true } : {}), ...(ws92On(state) ? { ws92: true } : {}) };
 }
 
 export function wildShapeProblem(state: BattleState, actor: Combatant, form: string | undefined, monsters: Monster[]): string | null {

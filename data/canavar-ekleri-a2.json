@@ -911,6 +911,24 @@
    },
    "tur": "ozel",
    "not_": "Tutuşur: tur başında 1d4 fire, ardından DEX DC 10 ile söner (yaklaşım: SRD Burning)."
+  },
+  "swarm-of-ravens:Cacophony": {
+   "effect": {
+    "name": "Deafened (Cacophony)",
+    "attackDis": {},
+    "checkDis": [
+     "str",
+     "dex",
+     "con",
+     "int",
+     "wis",
+     "cha"
+    ],
+    "sure": "sourceTurnStart"
+   },
+   "surum": 92,
+   "tur": "sureli",
+   "not_": "Görev WS92 (92+; SRD s. 362 Swarm of Ravens): \"While Deafened, the target also has Disadvantage on ability checks and attack rolls\"; Deafened'la aynı süre (sürünün sonraki tur başına dek)."
   }
  }
 }

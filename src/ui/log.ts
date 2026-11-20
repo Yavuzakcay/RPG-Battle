@@ -288,6 +288,12 @@ export function describeEvent(event: BattleEvent, state: BattleState): string {
     case 'shift_granted':
       return L.shiftGranted(n(event.actorId), event.hexes * 5);
     case 'map_effect': {
+      // Görev WS92: yutma satırları TR/EN metinden (yutan, yutma etkisinin kaynağı).
+      if (event.swallowLog) {
+        const by = state.combatants[event.targetId]?.effects?.find((e) => e.swallowedBy)?.swallowedBy;
+        const f = L.swallow?.[event.swallowLog];
+        if (f) return f(n(event.targetId), by ? n(by) : '');
+      }
       const parts = [`${n(event.targetId)}: ${event.text}`];
       if (event.roll) {
         const r = event.roll;

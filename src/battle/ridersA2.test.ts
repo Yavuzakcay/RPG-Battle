@@ -56,7 +56,8 @@ describe('A2 veri', () => {
     const riders = allRiders();
     for (const k of Object.keys(A2_RIDERS)) {
       expect(riders[k], k).toBeDefined();
-      expect(['yok', 'kısmen'], k).toContain(riders[k]!.status);
+      // Görev WS92 (`surum` 92): üretilmiş kaydı "uygulandı" görünüp SRD ek cümlesi eksik olan saldırılar (Cacophony) da.
+      if (!A2_RIDERS[k]!.surum) expect(['yok', 'kısmen'], k).toContain(riders[k]!.status);
     }
     expect(a2Of({ kuralSurumu: 29 }, 'satyr', 'Hooves')).toBeUndefined();
     expect(a2Of({ kuralSurumu: 30 }, 'satyr', 'Hooves')?.push).toEqual({ mode: 'push', ft: 10, maxSize: 'M' });

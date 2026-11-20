@@ -101,7 +101,9 @@ describe('Su koşullu (3): Bubble Dash, Aquatic Charge', () => {
     it(id, () => {
       const s = arena(id, { tiles: water });
       const r = ok(use(s, 'bubble-dash'));
-      expect(r.events.some((e) => e.type === 'dashed')).toBe(true);
+      // Görev WS92 (92+; SRD): Dash + Disengage değil, yüzme hızı (Giant Seahorse yarısı) kadar fırsat saldırısız hareket.
+      expect(r.events.some((e) => e.type === 'moved' && !!e.free)).toBe(true);
+      expect(r.events.some((e) => e.type === 'dashed')).toBe(false);
       expect(use(arena(id), 'bubble-dash').ok).toBe(false);
     });
   }
