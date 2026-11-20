@@ -675,6 +675,7 @@ export const TR_EXTRA = {
     hide: 'Saklanma bölgesinde (yeşil kesikli çerçeve) Stealth zarıyla gizlen: 15\'i ve seni gören düşmanların pasif Algısını geç. Yanında düşman varken olmaz; gece ışıksız yerde avantajlı. Gizliyken saldırın avantajlı olur.',
     shove: 'Bitişik düşmanı 5 ft it ya da yere düşür (Athletics karşılaştırması). Bir saldırı hakkını harcar.',
     ready: 'Hazırla (Ready): bir tetik ve yanıt seç (tek saldırı, hızın kadar hareket ya da eylem süreli büyü). Tetik olunca tepkinle yanıt verirsin; sonraki turunun başında biter. Eylemini harcar.',
+    stabilize: 'Stabilize et: ölmekte olan bir yaratığı DC 10 Bilgelik (Tıp) kontrolüyle stabil yapar. Eylemini harcar; yalnız ölmekte olan varken görünür.',
     dodge: 'Kaçın (Dodge): sonraki turunun başına dek sana saldıranlar dezavantajlı olur, DEX kurtarma zarların avantajlı. Eylemini harcar; etkisiz kalırsan ya da hızın 0 olursa işe yaramaz.',
     distract: 'Dikkat dağıt: 30 ft içindeki bir altıgene ses çıkar (taş, kase); oraya 15 ft yakın uyanık düşmanlar bir sonraki turlarının sonuna dek pasif Algıda −5 (gizlenme ve alarm). Eylemini harcar.',
     help: 'Yardım (Help): bitişik bir düşman seç; sonraki turunun başına dek tarafının o düşmana ilk saldırısı avantajlı olur. Eylemini harcar.',

@@ -231,6 +231,7 @@ export function executeHelp(state: BattleState, actor: Combatant, targetId: stri
   // Haritasız savaşta mesafe yok (yakın dövüş menzilinde sayılır).
   if (state.map && (!actor.pos || !target.pos || !near5(state, actor, target))) return fail('Hedef düşman bitişik olmalı.');
   const spec: Spec = { condition: helpMark(actor.side), owner: 'source', end: 'turnStart' };
+  // GENEL96: etiketin sonu `genel96.ts` `HELP_LABEL` (yardım edenin kendisi yararlanmaz; Stunning Strike ayrı).
   return finish(state, [timedCondition(state, target.id, spec, actor.id, `${actor.name}: Yardım`)]);
 }
 

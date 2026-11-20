@@ -1455,6 +1455,7 @@ export const en: Strings = {
     hide: 'Hide in a hiding spot (green dashed outline) with a Stealth check: beat 15 and the passive Perception of enemies who can see you. Not possible next to an enemy; at night, unlit spots give advantage. Your attacks while hidden have advantage.',
     shove: 'Push an adjacent enemy 5 ft or knock it prone (Athletics contest). Uses one of your attacks.',
     ready: 'Ready: pick a trigger and a response (one attack, move up to your Speed or a spell with a casting time of an action). When the trigger occurs you respond with your reaction; it ends at the start of your next turn. Uses your action.',
+    stabilize: 'Stabilize: a DC 10 Wisdom (Medicine) check makes a dying creature stable. Uses your action; shown only while someone is dying.',
     dodge: 'Dodge: until the start of your next turn attackers have disadvantage against you and your DEX saves have advantage. Uses your action; useless if you are incapacitated or your speed is 0.',
     distract: 'Distract: make a noise at a hex within 30 ft (a stone, a bowl); awake enemies within 15 ft of it take −5 to passive Perception until the end of their next turn (hiding and alarms). Uses your action.',
     help: 'Help: pick an adjacent enemy; until the start of your next turn your side\'s first attack against it has advantage. Uses your action.',

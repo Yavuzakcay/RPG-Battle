@@ -6,6 +6,9 @@ import { effectSpeedZero } from './flight';
 import { genel96On } from './genel96Surum';
 import type { BattleState, Combatant } from './types';
 
+/** `executeHelp` zamanlayıcı etiketinin sonu (durations.ts ile aynı). */
+export const HELP_LABEL = ': Yardım';
+
 /**
  * SRD 5.2.1 s. 182–183 Help "… one of your allies has Advantage …": hedefteki Yardım işaretlerinin hepsi saldıranın
  * kendisinden geldiyse saldıran yararlanmaz (`attackerSide` verilmez; işaret de kalkmaz).
@@ -14,8 +17,10 @@ export function helpOnlySelf(state: BattleState, attacker: Pick<Combatant, 'id' 
   if (!genel96On(state)) return false;
   const mark = `Help:${attacker.side}`;
   if (!target.conditions.includes(mark)) return false;
-  const src = (target.conditionTimers ?? []).filter((t) => t.condition === mark).map((t) => t.sourceId);
-  return src.length > 0 && src.every((s) => s === attacker.id);
+  // Yalnız Yardım eyleminin işareti (`executeHelp` etiketi "<ad>: Yardım"); Stunning Strike aynı işareti kullanır ve SRD'de
+  // ("the next attack roll made against the creature") Monk'un kendi saldırısı da yararlanır.
+  const timers = (target.conditionTimers ?? []).filter((t) => t.condition === mark);
+  return timers.length > 0 && timers.every((t) => t.sourceId === attacker.id && t.label.endsWith(HELP_LABEL));
 }
 
 /**
