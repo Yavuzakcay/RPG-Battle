@@ -17,7 +17,8 @@ import { bookData } from '../dungeondex/book/kitapData';
 import { storedDexCover } from '../ui/dexCoverSetting';
 import { IconBook } from '../ui/icons';
 import { GlyphBadges, GlyphText } from '../ui/glyph/Glyph';
-import { buyuProspektus, esyaProspektus, featProspektus, type ProSection } from '../dungeondex/prospektus';
+import { altSinifProspektus, buyuProspektus, esyaProspektus, featProspektus, type ProSection } from '../dungeondex/prospektus';
+import { subclassesOf } from '../rules/classFeatures';
 import { ProspektusSections } from '../dungeondex/prospektus/ProspektusSections';
 import './dungeondex.css';
 
@@ -215,13 +216,16 @@ function Text(props: { d: DexText | undefined; className?: string }) {
 }
 
 /**
- * Prospektüs bölümleri (kabuğun sağ sayfası): kimliği prospektüs verisiyle aynı olan eşya, büyü ve feat; diğerlerinde yok.
+ * Prospektüs bölümleri (kabuğun sağ sayfası): kimliği prospektüs verisiyle aynı olan eşya, büyü ve feat; alt sınıfta yüklü
+ * alt sınıf verisinden yalnız kartta olmayan bölümler (durum sayımı, yerine geçtiği; rol ve özellik satırları kartta); diğerlerinde yok.
  * EN arayüzde yalnız Türkçe yazılmış satırlar gösterilmez (`spellDescriptionShown` ile aynı kural: EN karşılığı yoksa gizli);
  * veri satırları ve durum rozeti kalır.
  */
 function proSections(e: DexEntry, lang: Lang): ProSection[] | null {
   const P = t().dex.pro;
-  const s = e.cat === 'esya' ? esyaProspektus(e.id, P, lang) : e.cat === 'buyu' ? buyuProspektus(e.id, P, lang) : e.cat === 'feat' ? featProspektus(e.id, P, lang) : null;
+  const sub = e.cat === 'altsinif' ? subclassesOf(e.f.cls ?? '').find((x) => x.id === e.id) : undefined;
+  const s = e.cat === 'esya' ? esyaProspektus(e.id, P, lang) : e.cat === 'buyu' ? buyuProspektus(e.id, P, lang) : e.cat === 'feat' ? featProspektus(e.id, P, lang)
+    : sub ? altSinifProspektus(sub, P, lang) : null;
   return s && lang === 'en' ? s.map((x) => ({ ...x, rows: x.rows.filter((r) => !r.trOnly) })) : s;
 }
 
