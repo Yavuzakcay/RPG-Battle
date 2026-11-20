@@ -350,6 +350,8 @@ function combatantFromSheetBase(
     ...((): Partial<Combatant> => {
       // Kuyruk 41b: Divine Intervention gibi listeli kaynak, bilinen uygun büyülere slotsuz kullanım bağlar (feat önce).
       const free = { ...featFreeSpells(sheet) };
+      // Görev B94: `alwaysPreparedOnly` listede her zaman hazır olmayan eşleşmeler (93 ve altı savaşta geri eklenir).
+      const legacy: Record<string, string> = {};
       for (const id of Object.keys(resources)) {
         const list = resourceDef(id)?.freeSpellList;
         if (!list) continue;
@@ -366,11 +368,12 @@ function combatantFromSheetBase(
             && (list.names ? list.names.includes(sp.name) : sp.classes.some((c) => list.classes.includes(c)))) || list.extraNames?.includes(sp.name))) {
             // Kuyruk 18 H3: `perLevel` (Spell Mastery 1, Signature Spells 2): seviye başına ilk N bilinen büyü.
             if (list.perLevel !== undefined && (taken[sp.level] ?? 0) >= list.perLevel) continue;
+            if (list.alwaysPreparedOnly && !kit.alwaysPrepared.includes(sp.name)) { if (free[n] === undefined && legacy[n] === undefined) legacy[n] = id; continue; }
             if (free[n] === undefined) { free[n] = id; taken[sp.level] = (taken[sp.level] ?? 0) + 1; }
           }
         }
       }
-      return Object.keys(free).length ? { freeSpells: free } : {};
+      return { ...(Object.keys(free).length ? { freeSpells: free } : {}), ...(Object.keys(legacy).length ? { freeSpellsPre94: legacy } : {}) };
     })(),
     // F1: Magic Initiate büyüleri feat'in yeteneğiyle (sınıf büyüsü olarak da biliniyorsa sınıfınki geçerli).
     ...((): Partial<Combatant> => {
@@ -829,6 +832,13 @@ export function startBattle(
   // Görev B94 (A2, sürüm 94+): Aura of Protection'ın Paladin'e kendi bonusu sheet'ten çıkar, aura yolundan (`auraSaveOf`)
   // gelir: Incapacitated/0 HP iken sürmez (SRD 5.2.1 s. 55).
   if (rules >= B94_VERSION) participants = participants.map(unbakeOwnAura);
+  // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 Natural Recovery: "a spell … from your Circle Spells feature"): seçili arazinin dışındaki
+  // daire büyüleri slotsuz yapılmaz. 93 ve altı savaşta eski liste (`freeSpellsPre94` geri eklenir).
+  participants = participants.map((p) => {
+    if (!p.freeSpellsPre94) return p;
+    const { freeSpellsPre94: old, ...rest } = p;
+    return rules >= B94_VERSION ? rest as Combatant : { ...rest, freeSpells: { ...old, ...(p.freeSpells ?? {}) } } as Combatant;
+  });
   const rolled = participants.map((p) => {
     const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
     // Kuyruk 17 H: inisiyatif atılırken Incapacitated olan dezavantajlı atar (SRD 5.2.1 Incapacitated "Surprised");
