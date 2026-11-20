@@ -617,7 +617,7 @@ const tr = {
     prevPage: 'Önceki sayfaya dön', raceStart: 'Irka göre başlangıç (ilk karakterin yurdu)',
     // Görev WS92: Wild Shape biçim listesi (SRD: uzun dinlenmede bir biçim değişir).
     forms: (n: number, max: number) => `Biçimler ${n}/${max}`, formsTitle: (name: string) => `${name}: Wild Shape biçimleri`,
-    choices: 'Seçimler', choicesOpen: 'Seçimler (değişim açık)', choicesHelp: 'Seviye atlama ve uzun dinlenme seçimleri: yeni seçim her zaman; var olan seçimi değiştirmek sınıfın izin verdiği yerde (seviye atlayınca / uzun dinlenmeden sonra).',
+    choices: 'Seçimler', choicesOpen: 'Seçimler (değişim açık)', choicesPending: 'Seçimler (seçim bekliyor)', choicesHelp: 'Seviye atlama ve uzun dinlenme seçimleri: yeni seçim her zaman; var olan seçimi değiştirmek sınıfın izin verdiği yerde (seviye atlayınca / uzun dinlenmeden sonra).',
     formsFrom: 'Çıkacak biçim', formsTo: 'Yeni biçim', formsAdd: 'Boş yere ekle', formsGo: 'Değiştir', formsAddGo: 'Ekle',
     formsNote: 'Boş yere her zaman eklenir; dolu listede uzun dinlenmeden sonra bir biçim değişir. Biçim savaş sonunda biter.',
     formsWait: 'Bu dinlenmede biçim değiştirildi: sonraki uzun dinlenmeyi bekle.',
