@@ -113,8 +113,8 @@ Tarih: 2026-11-20. Yalnız denetim: kod, veri ve test değişmedi. Emin olunmaya
 |---|---|---|---|---|---|
 | C1 | Favored Enemy, Tireless, Nature's Veil: uzun dinlenmede tamamı döner, kısa dinlenmede dönmez | Üçünün `recharge.long: all`, kısa yok | tam | `class-features.json:51-62, 296-322` | 6902 |
 | C2 | Tireless: kısa dinlenmeden sonra Exhaustion −1 (10. seviye) | `tirelessAfter` (`characterRest.ts:126-139`); 9. seviyede azaltmaz | tam | `k18h3.test.ts:226-231` | 4648 |
-| C3 | Weapon Mastery türünü, Hunter's Prey/Defensive Tactics seçimini (kısa/uzun) ve bir hazır büyüyü (uzun) dinlenmede değiştir | Yalnız karakter listesinde oluşturucuyla (kayıt kopyası); Serüven ve yolculukta dinlenme düğmesi bu seçimleri sunmuyor | kısmi **[bilinen, genel]** | `src/rules/characterRest.ts`; `seruven.ts` (kod okuması) | 4971 |
-| C4 | Seviye atlayınca yeni hazır büyü, Expertise (9), Fighting Style, Deft Explorer, Weapon Mastery, alt sınıf seçimleri | Serüven `seruven_leveled` yalnız `sheet.level` artırır; yeni seçim istemi yok; özellikler otomatik (varsayılan Hunter's Prey, Defensive Tactics), alt sınıf eksikse varsayılan atanır; yeni hazır büyü eklenmez | kısmi **[bilinen]** | `src/journey/seruven.ts:290, 397` | 4971 (M4 "Karar bekleyen") |
+| C3 | Weapon Mastery türünü, Hunter's Prey/Defensive Tactics seçimini (kısa/uzun) ve bir hazır büyüyü (uzun) dinlenmede değiştir | Yalnız karakter listesinde oluşturucuyla (kayıt kopyası); Serüven ve yolculukta dinlenme düğmesi bu seçimleri sunmuyor | **düzeldi (B94)** ← kısmi **[bilinen, genel]** | `src/rules/characterRest.ts`; `seruven.ts` (kod okuması) | 4971 |
+| C4 | Seviye atlayınca yeni hazır büyü, Expertise (9), Fighting Style, Deft Explorer, Weapon Mastery, alt sınıf seçimleri | Serüven `seruven_leveled` yalnız `sheet.level` artırır; yeni seçim istemi yok; özellikler otomatik (varsayılan Hunter's Prey, Defensive Tactics), alt sınıf eksikse varsayılan atanır; yeni hazır büyü eklenmez | **düzeldi (B94)** ← kısmi **[bilinen]** | `src/journey/seruven.ts:290, 397` | 4971 (M4 "Karar bekleyen") |
 | C5 | Seviye atlayınca Favored Enemy 2 → 3 gibi artan en çok değer | K10: kaynak en çok + harcanan; yeni hak seviye atlamada eklenir. Doğrudan Ranger Serüven testi yok | tam (dolaylı) | `characterRest.ts`; DECISIONS K10 | 4621, 6003 (eski) |
 | C6 | Savaş sonrası Hunter's Mark kullanımı, Tireless/Veil kalanı karakterde kalır | Genel kaynak taşıma; Ranger kaynakları için Serüven'de uçtan uca doğrulama yapılmadı | doğrulanmadı | — | K10 |
 
@@ -163,3 +163,12 @@ Sıra etkiye göre. "Sürüm" sütunu: yeni kural sürümü gerekiyorsa **günce
 | K1 | **Serüven seviye atlama seçimleri** (C3, C4; **bilinen**, DECISIONS 4971 M4): yeni hazır büyü, 9. seviye Expertise, Fighting Style, Weapon Mastery, uzun dinlenmede hazırlık/ustalık değişimi, Hunter's Prey/Defensive Tactics değişimi | Serüven akışına seçim ekranı eklemek ürün kararı (tüm sınıflara ortak; Warlock/Cleric denetimleri aynı konuyu işaretledi) | Büyük (1–2 gün, sınıf başına değil ortak) |
 
 Probe'larla denenip **doğru** bulunan davranışlar (regresyon için not): Favored Enemy 20/20 tablo ve slotsuz yapım; Hunter's Mark bonus eylem, kritik zarı, büyü saldırısında ek hasar, işaret taşıma ve hedef ölünce konsantrasyonun sürmesi; Foe Slayer d10; Precise Hunter avantajı (silah ve büyü saldırısı); Relentless Hunter 12/13 farkı; Nature's Veil süresi ve kaynak sayısı; Tireless geçici HP ve kullanım sayısı; Feral Senses 30 ft sınırı; Superior Hunter's Prey 30 ft ve turda bir; Superior Hunter's Defense ağır isabette yarılama ve tür direnci; Roving +10 ft (Heavy zırhta yok); hazır sayısı, slot, Expertise ve Extra Attack tabloları 20/20; Ranger büyü listesi 48/48.
+
+## B94 düzeltmeleri
+
+Görev B94 (2026-11-20). Sürüm sütunu: "94" = kural sürümü 94 (`B94_VERSION`), 93 ve altı eski davranışta; "sürümsüz" = veri/arayüz/oluşturucu/metin.
+
+| Satır | Şimdi | Sürüm | Test |
+|---|---|---|---|
+| C3 | Uzun dinlenmede ustalıklar, 1 hazır büyü, Hunter's Prey/Defensive Tactics Serüven'de (`set_choices`) | sürümsüz | levelChoices.test.ts |
+| C4 | Serüven seviye atlamada yeni hazır büyü, Expertise, Fighting Style (değişim seviyede 1) eklenir | sürümsüz | levelChoices.test.ts |

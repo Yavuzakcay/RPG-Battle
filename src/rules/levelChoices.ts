@@ -8,6 +8,7 @@
 import data from '../../data/secim-degisim.json';
 import { spells } from '../data';
 import type { CharacterSheet } from './stats';
+import { isStyleChoice } from './advancement';
 
 export type Allow = number | 'hepsi';
 export interface ChangeRule { seviye?: Allow; dinlenme?: Allow }
@@ -58,7 +59,11 @@ export function changeCounts(before: CharacterSheet, after: CharacterSheet): Rec
   put('cantrip', removed((before.spellNames ?? []).filter((n) => levelOf(n) === 0), (after.spellNames ?? []).filter((n) => levelOf(n) === 0)));
   put('hazir', removed((before.spellNames ?? []).filter((n) => levelOf(n) > 0), (after.spellNames ?? []).filter((n) => levelOf(n) > 0)));
   for (const f of ['spellbook', 'invocations', 'metamagic', 'expertise', 'weaponMasteries'] as const) put(f, removed(before[f] as string[] | undefined, after[f] as string[] | undefined));
-  put('advancements', removed(before.advancements, after.advancements, (x) => JSON.stringify(x)));
+  // Görev B94: Fighting Style yuvası (feat ya da Blessed/Druidic Warrior) ayrı anahtar `stil`; diğer yuvalar `advancements`.
+  const style = (a: CharacterSheet['advancements']) => (a ?? []).filter((x) => isStyleChoice(x.featId));
+  const other = (a: CharacterSheet['advancements']) => (a ?? []).filter((x) => !isStyleChoice(x.featId));
+  put('stil', removed(style(before.advancements), style(after.advancements), (x) => JSON.stringify(x)));
+  put('advancements', removed(other(before.advancements), other(after.advancements), (x) => JSON.stringify(x)));
   for (const f of ['subclassId', 'pactWeapon'] as const) put(f, before[f] !== undefined && before[f] !== '' && before[f] !== after[f] ? 1 : 0);
   for (const [k, v] of Object.entries(before.featureChoices ?? {})) put(`secenek:${k}`, after.featureChoices?.[k] !== v ? 1 : 0);
   return out;

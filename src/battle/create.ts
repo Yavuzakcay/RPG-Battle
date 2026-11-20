@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { B94_VERSION } from './b94Surum';
 import { WS92_VERSION } from './ws92Surum';
 import { creatureTypeAt, hasSrdD1, monsterAt, swimSpeedAt } from './srdD1';
 import { SRD_D1_VERSION } from './srdD1Surum';
@@ -690,6 +691,13 @@ export function ws92DiceRevert(c: Combatant, v: number): Combatant {
 }
 
 /** Korunacak masum (GM yönetir, silahsız, eylem yapmaz). Değerler haritanın `objective` kuralından. */
+/** Görev B94 (A2): `combatantFromSheet`'in save'lere yazdığı kendi aura bonusunu çıkarır (işaret `auraOwnLive`). */
+export function unbakeOwnAura(c: Combatant): Combatant {
+  if (!c.traits?.includes('aura-of-protection') || c.auraOwnLive) return c;
+  const b = Math.max(1, c.modifiers.cha);
+  return { ...c, auraOwnLive: true, saves: Object.fromEntries(Object.entries(c.saves).map(([k, v]) => [k, v - b])) as Combatant['saves'] };
+}
+
 export function civilianCombatant(index: number, stats: { hp: number; ac: number; speedHexes: number }, gorselId = defaultCivilianLook(index)): Combatant {
   const look = civilianLook(gorselId);
   return {
@@ -805,6 +813,9 @@ export function startBattle(
   if (rules < SRD_D1_VERSION) participants = participants.map((p) => srdD1Revert(p, rules));
   // Görev WS92: 92'de düzeltilen saldırı zarı (sabit 1 hasar) daha eski kural sürümüyle başlayan savaşta eski değerle.
   if (rules < WS92_VERSION) participants = participants.map((p) => ws92DiceRevert(p, rules));
+  // Görev B94 (A2, sürüm 94+): Aura of Protection'ın Paladin'e kendi bonusu sheet'ten çıkar, aura yolundan (`auraSaveOf`)
+  // gelir: Incapacitated/0 HP iken sürmez (SRD 5.2.1 s. 55).
+  if (rules >= B94_VERSION) participants = participants.map(unbakeOwnAura);
   const rolled = participants.map((p) => {
     const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
     // Kuyruk 17 H: inisiyatif atılırken Incapacitated olan dezavantajlı atar (SRD 5.2.1 Incapacitated "Surprised");

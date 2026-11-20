@@ -27,6 +27,7 @@ import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
 import { saveDice } from './effectDice';
 import { globalRule } from './ruleControl';
+import { b94On } from './b94Surum';
 import { resourceLeft, type ActiveEffect, type BattleEvent, type BattleState, type Combatant, type UsableFeature } from './types';
 
 type Use = { feature: string; targetId?: string; to?: Offset };
@@ -166,6 +167,8 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
         dc: 0, slotLevel: 0, hexes: [], anchorId: actor.id, radius: Math.round(e.radiusFt / 5), until,
         damage: String(Math.max(0, actor.modifiers.cha + actor.proficiency)),
         spec: { on: ['start'], targets: 'enemies', damageType: 'radiant', color: '#ffe680', icon: '☀' },
+        // Görev B94 (A2, sürüm 94+): Aura of Protection'a bağlı; Paladin Incapacitated/0 HP iken durur (`sourceDown`).
+        ...(b94On(state) ? { pausedIfCasterDown: true } : {}),
       } });
     }
     return finish(state, events);
@@ -237,6 +240,8 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
       id: `feature:${f.key}:${actor.id}:${state.round}`, spellId: `feature:${f.key}`, name: f.name, casterId: actor.id, side: actor.side,
       dc: 0, slotLevel: 0, hexes, center: to, until: state.round + e.rounds - 1,
       spec: { coverFor: 'allies', resist: wardOf(actor), color: '#5fbf5f', icon: '🌿' },
+      // Görev B94 (A2, sürüm 94+): "until you have the Incapacitated condition or die" (`sourceDown`).
+      ...(b94On(state) ? { endsIfCasterDown: true } : {}),
     } });
     return finish(state, events);
   }

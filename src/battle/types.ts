@@ -771,6 +771,8 @@ export interface Combatant {
   allegiance?: { side: Side; ownerId: string | null };
   /** Kuyruk 18 H3: yakındaki dost Paladin'in Aura of Protection save bonusu (reducer `syncAuras` yazar). */
   auraSave?: number;
+  /** Görev B94 (A2, sürüm 94+): Aura of Protection'ın kendi bonusu save'lerde yazılı değil; `auraSaveOf` (yaşarken) ekler. */
+  auraOwnLive?: boolean;
   /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
   imza?: string;
   /** Y1 G2: yapay zekâ rolü (Game Master `set_ai_role`; yoksa veriden türetilir, `ai/evaluate.ts`). */
@@ -1305,6 +1307,10 @@ export type ObjectAction = 'open' | 'close' | 'unlock' | 'tip' | 'knock' | 'take
  */
 export interface SpellZone {
   id: string;
+  /** Görev B94 (A2, sürüm 94+): büyücü Incapacitated olunca ya da ölünce alan biter (Nature's Sanctuary; `sourceDown`). */
+  endsIfCasterDown?: boolean;
+  /** Görev B94 (A2, sürüm 94+): büyücü Incapacitated/0 HP iken alan tetiklenmez, ışığı ve yararı durur (Holy Nimbus). */
+  pausedIfCasterDown?: boolean;
   /** Kuyruk S2 (sürüm 41): bu taraftan gizli alan (Spike Growth); `seenBy` fark edenler. `visibleTo`: yalnız bunlara görünür (Phantasmal Force). */
   hiddenFrom?: Side;
   seenBy?: string[];

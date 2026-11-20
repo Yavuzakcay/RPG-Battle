@@ -2,6 +2,14 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev B94: Bard, Druid, Paladin, Ranger denetim düzeltmeleri (2026-11-20; kural sürümü 94 `B94_VERSION`)
+
+Tek kural sürümü 94 (`src/battle/b94Surum.ts`, `b94On`); 93 ve altı kayıt/replay eski davranışta. Kaynak: `harita/belgeler/{BARD,DRUID,PALADIN,RANGER}-DENETIM.md` (düzelen satırlarda "B94" notu: sürümlü / sürümsüz). İlke (kullanıcı kararı): SRD'ye aykırı ve temeli bozmayan her şey SRD'ye; alt sınıflarda ölçüt bizim sürüm (fikstür/paket kaydı, AS2-FARKLAR), yalnız kayıt metni ile motorun uyuşmadığı yer düzeltildi; "bilinçli sapma" satırlarına dokunulmadı; "Karar gerekli" maddeleri yapılmadı. Kayıt sürümü değişmedi (yeni alanlar isteğe bağlı).
+
+- **A. Ortak**
+  - A1 (sürümsüz; Serüven/oluşturucu): B93'ün ortak yardımcısına (`src/rules/levelChoices.ts`, `data/secim-degisim.json`) dört sınıf bağlandı: Bard seviyede 1 cantrip + 1 hazır büyü (Magical Secrets/Discoveries dahil), Druid seviyede 1 cantrip + uzun dinlenmede hazır listenin hepsi ve Circle of the Land arazisi, Ranger/Paladin uzun dinlenmede 1 hazır büyü ve bütün Weapon Mastery'ler, seviyede Fighting Style ve bir Blessed/Druidic Warrior cantrip'i, Ranger Hunter's Prey/Defensive Tactics dinlenmede. Expertise ve Primal Order/Elemental Fury yalnız eklenir. Yardımcıya sınıf adsız yeni anahtar `stil` (advancements'ta Fighting Style yuvası seçimi: feat ya da yuvanın seçeneği; diğer yuvalar `advancements`, değişmez).
+  - A2 (sürümlü): "Incapacitated ya da ölünce biten/duran etki" tek yardımcıda `src/battle/sourceDown.ts` (`sourceDown`: yok, ölü, 0 HP ya da Incapacitated içeren durum). Bağlı: B93 Turn Undead (`endsIfSourceDown`, aynı koşul), Nature's Sanctuary (alan `endsIfCasterDown`: biter), Holy Nimbus (alan `pausedIfCasterDown`: Paladin düşmüşken tetiklenmez, kalkınca sürer; Aura of Protection'a bağlı olduğu için bitmez), Aura of Protection: 94+ savaşta Paladin'in kendi bonusu save'lerden çıkarılır (`create.ts` `unbakeOwnAura`, işaret `auraOwnLive`) ve aura yolundan gelir (`auras.ts` `ownAuraOf`; Incapacitated/0 HP iken 0); anahtar `auraOfProtection` kapalıyken de kendi bonusu (eski toplamla aynı). Karakter sayfası gösterimi (`combatantFromSheet`) değişmedi.
+
 ## Görev B93: Cleric, Sorcerer, Wizard, Warlock denetim düzeltmeleri (2026-11-20; kural sürümü 93 `BUYUCU93_VERSION`)
 
 Tek kural sürümü 93 (`src/battle/buyucu93Surum.ts`); 92 ve altı kayıt/replay eski davranışta. Kaynak: `harita/belgeler/{CLERIC,SORCERER,WIZARD,WARLOCK}-DENETIM.md` (her satırda "B93" notu: sürümlü / sürümsüz). İlke (kullanıcı kararı): SRD'ye aykırı ve temeli bozmayan her şey SRD'ye; alt sınıflarda ölçüt bizim sürüm (AS2-FARKLAR), alt sınıf satırları SRD'ye çevrilmedi.

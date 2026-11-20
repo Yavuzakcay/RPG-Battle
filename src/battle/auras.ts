@@ -17,6 +17,8 @@ import { isIncapacitated } from '../rules/conditions';
 import { auraDist, gap64, rangeGap } from './adjacency';
 import { gap } from './body';
 import { globalRule } from './ruleControl';
+import { b94On } from './b94Surum';
+import { sourceDown } from './sourceDown';
 import { ruleVersion } from './ruleVersion';
 import { matrisOn } from './matrisSurum';
 import { silencedAt, zoneSpecOf } from './zones';
@@ -29,8 +31,26 @@ const K19_SYNC = ['peerless-skill', 'improved-primal-strike', 'improved-blessed-
 const radiusOf = (p: Combatant): number => ((p.level ?? 0) >= 18 ? 6 : 2);
 const bonusOf = (p: Combatant): number => Math.max(1, p.modifiers.cha);
 
+/**
+ * Görev B94 (A2, sürüm 94+): Paladin'in kendi aurası (save'lere yazılmadıysa, `auraOwnLive`): Incapacitated/0 HP iken 0
+ * (`sourceDown`). Sürüm < 94'te işaretli savaşçıda eski davranış (her zaman).
+ */
+export function ownAuraOf(state: BattleState, c: Combatant): number {
+  if (!c.auraOwnLive || !c.traits?.includes(TRAIT)) return 0;
+  return b94On(state) && sourceDown(c) ? 0 : bonusOf(c);
+}
+
 /** Savaşçının bu durumdaki aura bonusu (kendi bonusu sheet'te sayılan Paladin için yalnızca fazlası). */
 export function auraSaveOf(state: BattleState, c: Combatant): number {
+  // Görev B94: kendi bonusu save'lerde yazılı değilse burada (dostların aurasıyla en büyüğü).
+  if (c.auraOwnLive) return Math.max(ownAuraOf(state, c), othersAura(state, c));
+  if (c.hp <= 0 || !c.pos) return 0;
+  const own = c.traits?.includes(TRAIT) ? bonusOf(c) : 0;
+  return Math.max(0, othersAura(state, c) - own);
+}
+
+/** Başka Paladin'lerin aurasından gelen en büyük bonus. */
+function othersAura(state: BattleState, c: Combatant): number {
   if (c.hp <= 0 || !c.pos) return 0;
   let best = 0;
   for (const p of Object.values(state.combatants)) {
@@ -39,8 +59,7 @@ export function auraSaveOf(state: BattleState, c: Combatant): number {
     if (auraDist(state, p, c) > radiusOf(p)) continue;
     best = Math.max(best, bonusOf(p));
   }
-  const own = c.traits?.includes(TRAIT) ? bonusOf(c) : 0;
-  return Math.max(0, best - own);
+  return best;
 }
 
 /**
@@ -144,7 +163,9 @@ export function syncAuras(state: BattleState): BattleState {
     const hush = anySilence && !!c.pos && !!silencedAt(state, c.pos);
     const pack = anyPack && Object.values(state.combatants).some((p) => p.summon?.withOwner && p.summon.by === c.id && !p.summon.gone && p.hp > 0 && gap(state, p, c) <= 1);
     const core = anyCore ? passiveAuraOf(state, c) : null;
-    const want = Math.max(on ? auraSaveOf(state, c) : 0, core?.saveBonus ?? 0);
+    // Görev B94: save'lere yazılmamış kendi aurası anahtar kapalıyken de (eskiden sheet'te; kapalıyken yalnız kendi bonusu).
+    const mine = ownAuraOf(state, c);
+    const want = mine > 0 ? mine + Math.max(on ? auraSaveOf(state, c) - mine : 0, core?.saveBonus ?? 0) : Math.max(on ? auraSaveOf(state, c) : 0, core?.saveBonus ?? 0);
     const throne = anyImza ? imzaAuraBonus(state, c, 'wis') : 0;
     // Kuyruk K54b: Mevzi İşareti altıgeninde kurtulma bonusu.
     const ward = anyWard ? groundWardSave(state, c) : 0;

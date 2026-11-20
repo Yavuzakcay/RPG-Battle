@@ -106,7 +106,7 @@ Doğrulananlar (regresyon notu): tablo (cantrip, hazırlanan, slot, Wild Shape s
 | A27 | Nature's Ward (10.): Poisoned bağışıklığı + seçili arazinin direnci (Arid Fire, Polar Cold, Temperate Lightning, Tropical Poison) (s. 46) | 10'da direnç (probe: Tropical → poison; 9'da yok), Poisoned: 10'da uygulanmaz, 9'da uygulanır (probe); bağışıklık anahtarı `naturesWard` (sürüm 14+) | tam | probe; `classFeatures.ts:302`, `reduce.ts:165` | DECISIONS 5802; K18 H3 |
 | A28 | Nature's Sanctuary (14.): Magic eylemi, Wild Shape kullanımı, 120 ft içinde 15 ft küp, 1 dk; **sen ve müttefikler** yarım siper; müttefikler Ward direnci alır (s. 46) | Eylem + `wildShape` −1, 120 ft, süre `until = round + 9` (10 tur); alan `coverFor: allies` + `resist` (Land türü işaretinden); probe: alan oluştu, direnç `lightning` | tam | probe; `apex.ts:111–120,227–240`; `cover.ts:279`; `auras.ts:70` | DECISIONS 4508 |
 | A29 | Nature's Sanctuary: 15 ft küp | Merkez + 6 komşu = 7 altıgen (yaklaşık) | bilinçli sapma | probe: `hexes: 7` | DECISIONS 4508 |
-| A30 | Nature's Sanctuary: **Incapacitated olunca ya da ölünce biter** (s. 46) | Yok: alan yalnız süreyle biter. Probe: Druid Incapacitated + olay sonrası alan hâlâ var | yok **[hata, YENİ]** | probe | — (CLERIC-DENETIM A14 ile aynı eksik) |
+| A30 | Nature's Sanctuary: **Incapacitated olunca ya da ölünce biter** (s. 46) | Yok: alan yalnız süreyle biter. Probe: Druid Incapacitated + olay sonrası alan hâlâ var | **düzeldi (B94)** ← yok **[hata, YENİ]** | probe | — (CLERIC-DENETIM A14 ile aynı eksik) |
 | A31 | Nature's Sanctuary: bonus eylemle 60 ft taşı, **Druid'in 120 ft içindeki** zemine (s. 46) | Bonus eylem harcar (probe: ikinci taşıma "Bonus eylem bu tur kullanıldı"), ≤ 60 ft denetimi var; yeni merkezin Druid'e 120 ft içinde olması **denetlenmiyor** (`apex.ts:112–117` yalnız eski merkeze 60 ft) | kısmi **[YENİ]** (düşük) | kod okuması + probe (menzil ihlali sahnesi kurulamadı: harita 70 ft) | DECISIONS 4508 |
 
 ## C) Dinlenme, Serüven ve kayıt
@@ -116,9 +116,9 @@ Doğrulananlar (regresyon notu): tablo (cantrip, hazırlanan, slot, Wild Shape s
 | C1 | Wild Shape kullanımı: kısa dinlenmede 1, uzun dinlenmede hepsi (s. 42) — Land's Aid, Sanctuary, Wild Companion bu kaynağı harcar | `recharge short 1 / long all` | tam | probe: `rechargeResources` kısa 0→1, uzun 0→4 | — |
 | C2 | Wild Resurgence, Natural Recovery (iki kaynak), Nature Magician: Long Rest'te yenilenir (s. 43, 46) | Uzun dinlenmede dolar, kısa dinlenmede dolmaz | tam | probe: kısa → hepsi 0, uzun → hepsi tam | — |
 | C3 | Serüven kısa dinlenme düğümünde Natural Recovery | `short_rest` → `shortRestStatus` (kaynak + slot geri kazanımı aynı yol) | tam (kod okuması) | `src/journey/engine.ts:126` | — |
-| C4 | Seviye atlayınca yeni cantrip/hazır büyü, ASI/feat, Elemental Fury seçimi, alt sınıf (3.) | Serüven `level_up` yalnız `seruven_leveled`: `sheet.level`'ı artırır; seçim adımı yok. Hazırlanan sayısı tablodan artar ama liste büyümez; seçilmemiş seçimler varsayılana düşer (Warden, Primal Strike, Temperate) | kısmi **[bilinen]** | `src/journey/seruven.ts:284–290,397`; Wizard C8 ile aynı | DECISIONS 4971 (M4 "Karar bekleyen") |
-| C5 | Uzun dinlenmeden sonra hazır büyü ve cantrip değiştirme (s. 41–42) — Serüven | Serüven'de karakter düzenlenmez (parti = seçim anındaki `sheet` kopyası); düzenleme yalnız karakter ekranında | yok **[bilinen]** | `src/journey/seruven.ts:225`, `SeruvenScreen.tsx:169` (Wizard C7 ile aynı) | DECISIONS 4971 |
-| C6 | Circle of the Land: **her Long Rest'te** arazi türünü yeniden seç (s. 46) | Seçim oluşturucuda sabit (`featureChoices`); dinlenmede seçici yok; Nature's Ward direnci ve Sanctuary direnci arazi işaretinden | bilinçli sapma | `srd-alt-siniflar.json:356` notu: "uzun dinlenmede değişim = düzenleme" | DECISIONS 5802 |
+| C4 | Seviye atlayınca yeni cantrip/hazır büyü, ASI/feat, Elemental Fury seçimi, alt sınıf (3.) | Serüven `level_up` yalnız `seruven_leveled`: `sheet.level`'ı artırır; seçim adımı yok. Hazırlanan sayısı tablodan artar ama liste büyümez; seçilmemiş seçimler varsayılana düşer (Warden, Primal Strike, Temperate) | **düzeldi (B94)** ← kısmi **[bilinen]** | `src/journey/seruven.ts:284–290,397`; Wizard C8 ile aynı | DECISIONS 4971 (M4 "Karar bekleyen") |
+| C5 | Uzun dinlenmeden sonra hazır büyü ve cantrip değiştirme (s. 41–42) — Serüven | Serüven'de karakter düzenlenmez (parti = seçim anındaki `sheet` kopyası); düzenleme yalnız karakter ekranında | **düzeldi (B94)** ← yok **[bilinen]** | `src/journey/seruven.ts:225`, `SeruvenScreen.tsx:169` (Wizard C7 ile aynı) | DECISIONS 4971 |
+| C6 | Circle of the Land: **her Long Rest'te** arazi türünü yeniden seç (s. 46) | Seçim oluşturucuda sabit (`featureChoices`); dinlenmede seçici yok; Nature's Ward direnci ve Sanctuary direnci arazi işaretinden | **düzeldi (B94)** ← bilinçli sapma | `srd-alt-siniflar.json:356` notu: "uzun dinlenmede değişim = düzenleme" | DECISIONS 5802 |
 | C7 | Wild Companion familiar'ı Long Rest'te kaybolur (s. 43) | Familiar savaş süresince var; Long Rest'e geçişte savaş dışı | bilinçli sapma | `class-features.json:2210` notu | DECISIONS 4556 |
 | C8 | Savaş sonrası kaynak/slot karakterde kalır; Wild Resurgence/Nature Magician'la yaratılan slotun kaydı | Kaynaklar `status.resources`'ta (K10: en çok + harcanan). Yaratılan slotun (`slot_created`) savaş sonu karaktere nasıl yazıldığı **doğrulanmadı** | tam (kaynaklar, kod okuması) / slot **doğrulanmadı** | `characterRest.ts` (K10) | DECISIONS 4621 |
 | C9 | Kaydet/yükle: yeni olay türü yok (`wild_resurgence` komutu `feature_used`/`slot_created`/`slot_spent` üretir); kayıt sürümü gerekmedi | Kaydet-yükle turu bu denetimde denenmedi | doğrulanmadı | — | — |
@@ -163,3 +163,14 @@ Sıra etkiye göre. "Sürüm" sütunundaki "güncel sürümün bir fazlası, tek
 
 - **Serüven'de seviye atlama ve uzun dinlenmede seçim değişimi** (C4, C5, C6; **[bilinen]** DECISIONS 4971 M4): hazırlanan büyü/cantrip, Elemental Fury, Circle arazisi, Primal Order. Serüven mimarisi parti = `sheet` kopyası; çözüm Serüven'de karakter düzenleme politikası ister. Bütün büyücü sınıflarını (Wizard C7/C8, Warlock C1) aynı anda etkiler.
 - **Magician'ın Arcana/Nature bonusu** (B8) ve **araç yetkinlikleri** (B2): oyunda beceri/araç kontrolü sistemi yok; uygulamak yeni alt sistem demektir, bu yüzden düzeltme önerisine alınmadı.
+
+## B94 düzeltmeleri
+
+Görev B94 (2026-11-20). Sürüm sütunu: "94" = kural sürümü 94 (`B94_VERSION`), 93 ve altı eski davranışta; "sürümsüz" = veri/arayüz/oluşturucu/metin.
+
+| Satır | Şimdi | Sürüm | Test |
+|---|---|---|---|
+| A30 | Alan Druid Incapacitated olunca ya da ölünce biter (`endsIfCasterDown`, `sourceDown`) | 94 | b94ortak.test.ts |
+| C4 | Serüven seviye atlamada yeni cantrip/hazır büyü/seçim eklenir; seviyede 1 cantrip değişimi | sürümsüz | levelChoices.test.ts |
+| C5 | Uzun dinlenmeden sonra hazır listenin hepsi Serüven'de değişir (`set_choices`) | sürümsüz | levelChoices.test.ts |
+| C6 | Circle of the Land arazisi uzun dinlenmeden sonra Serüven'de değişir (`secenek :circle-of-the-land-spells`) | sürümsüz | levelChoices.test.ts |
