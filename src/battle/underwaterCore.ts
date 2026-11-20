@@ -21,6 +21,7 @@ import { isAirborne } from './flight';
 import { k73cOn } from './k73cSurum';
 import type { Offset } from '../rules/hex';
 import type { BattleState, Combatant } from './types';
+import { formMonsterId } from './shapeMonsterCore';
 
 const W = (dikeyData as unknown as { suAlti: { derinlikFt: number; yuzmeCarpani: number; dakikaTur: number; enAzTur: number; soluyanNotlar: string[] } }).suAlti;
 export const DIVE_MAX_FT = W.derinlikFt;
@@ -50,13 +51,15 @@ const breathers = new Map<string, boolean>();
 /** Su soluyor mu: canavar notunda Water Breathing / Amphibious / Hold Breath (savaş boyu yeter), ya da `waterBreathing` etkisi. */
 export function breathesWater(c: Combatant): boolean {
   if (c.effects?.some((e) => e.id.includes('water-breathing'))) return true;
-  if (!c.monsterId) return false;
-  let b = breathers.get(c.monsterId);
+  // Görev WS91: Wild Shape/Polymorph biçiminde biçimin notu.
+  const id = formMonsterId(c);
+  if (!id) return false;
+  let b = breathers.get(id);
   if (b === undefined) {
     let notes: string[] = [];
-    try { notes = getMonster(c.monsterId).unsupported ?? []; } catch { notes = []; }
+    try { notes = getMonster(id).unsupported ?? []; } catch { notes = []; }
     b = notes.some((u) => W.soluyanNotlar.some((n) => u.includes(n)));
-    breathers.set(c.monsterId, b);
+    breathers.set(id, b);
   }
   return b;
 }

@@ -1,0 +1,78 @@
+{
+ "note": "Görev WZ-BAGLA/BAGLA-3: kimlikler Türkçe adlarla yeniden doğrulandı (değişiklik yok); Wizard alt sınıfı → WZ jetonu (public/characters/<irk>-<erkek|kadin>-wizard-<WZ-id>.webp). altSiniflar: alt sınıf kimliği → hücre; kimlik kaynağı: evoker (varsayılan/fikstür), imza_harita (data/imza.json), ötekiler icerik-liste.txt (dış paket kimlikleri). Yeni kimlik/hücre yalnız burada değişir (kodda sabit yok). irklar: jetonu üretilmiş ırk×cinsiyet (Dragonborn yok: boş kalır, geliştirici günlüğünde \"eksik\" yazılır). maskeHazir: WZ jetonlarının ten/soy maskesi üretildi mi; false iken soy/ten boyası gereken karakter sınıf-genel jetonu kullanır (boyama bozulmasın). cozulemeyen: kimliği çözülemeyen hücre → kullanıcı yerelde yukarıdaki altSiniflar'a ekler.",
+ "sinif": "wizard",
+ "irklar": {
+    "dragonborn": ["erkek", "kadin"],
+  "celestial": [
+   "erkek",
+   "kadin"
+  ],
+  "dwarf": [
+   "erkek",
+   "kadin"
+  ],
+  "elf": [
+   "erkek",
+   "kadin"
+  ],
+  "gnome": [
+   "erkek",
+   "kadin"
+  ],
+  "goliath": [
+   "erkek",
+   "kadin"
+  ],
+  "halfling": [
+   "erkek",
+   "kadin"
+  ],
+  "human": [
+   "erkek",
+   "kadin"
+  ],
+  "orc": [
+   "erkek",
+   "kadin"
+  ],
+  "tiefling": [
+   "erkek",
+   "kadin"
+  ]
+ },
+ "altSiniflar": {
+  "evoker": "WZ-A1",
+  "aldatma-ogretisi": "WZ-A2",
+  "anka-ogretisi": "WZ-A3",
+  "diriltme-ogretisi": "WZ-A4",
+  "harp-ogretisi": "WZ-A5",
+  "hattat-ogretisi": "WZ-A6",
+  "kehanet-ogretisi": "WZ-A7",
+  "kilic-sarkisi-ogretisi": "WZ-A8",
+  "serap-ogretisi": "WZ-B1",
+  "siginak-ogretisi": "WZ-B2",
+  "simya-ogretisi": "WZ-B3",
+  "tezahur-ogretisi": "WZ-B4",
+  "uzay-bukme-ogretisi": "WZ-B5",
+  "zamanalti-ogretisi": "WZ-B6",
+  "imza_harita": "WZ-B7"
+ },
+ "hucreAdi": {
+  "WZ-A1": "Evokasyon Ustası (BLAST)",
+  "WZ-A2": "Aldatma (DECEPTION)",
+  "WZ-A3": "Anka (PHOENIX)",
+  "WZ-A4": "Diriltme (REVIVAL)",
+  "WZ-A5": "Harp (WAR)",
+  "WZ-A6": "Hattat (SCRIBE)",
+  "WZ-A7": "Kehanet (PROPHECY)",
+  "WZ-A8": "Kılıç Şarkısı (SWORD-SONG)",
+  "WZ-B1": "Serap (MIRAGE)",
+  "WZ-B2": "Sığınak (SANCTUARY)",
+  "WZ-B3": "Simya (ALCHEMY)",
+  "WZ-B4": "Tezahür (MANIFESTATION)",
+  "WZ-B5": "Uzay Bükme (SPACE-BENDING)",
+  "WZ-B6": "Zamanaltı (TIME)",
+  "WZ-B7": "Harita Öğretisi (MAP, imza)"
+ },
+ "cozulemeyen": []
+}

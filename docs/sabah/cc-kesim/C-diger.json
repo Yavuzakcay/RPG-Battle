@@ -1,0 +1,412 @@
+{
+ "adim": "diger",
+ "yazilan": [
+  "tiefling-erkek-bard-ID3",
+  "dragonborn-erkek-bard-ID3",
+  "human-kadin-bard-ID3",
+  "orc-kadin-bard-ID3",
+  "tiefling-kadin-bard-ID3",
+  "dragonborn-kadin-bard-ID3",
+  "celestial-kadin-bard-ID3",
+  "dwarf-kadin-bard-ID3",
+  "elf-kadin-bard-ID3",
+  "gnome-kadin-bard-ID3",
+  "goliath-kadin-bard-ID3",
+  "human-erkek-bard-ID3",
+  "orc-erkek-bard-ID3",
+  "halfling-erkek-bard-ID3",
+  "halfling-kadin-bard-ID3",
+  "celestial-erkek-bard-ID3",
+  "dwarf-erkek-bard-ID3",
+  "elf-erkek-bard-ID3",
+  "gnome-erkek-bard-ID3",
+  "goliath-erkek-bard-ID3",
+  "orc-erkek-sorcerer-SC-2",
+  "halfling-erkek-sorcerer-SC-2",
+  "human-kadin-sorcerer-SC-2",
+  "orc-kadin-sorcerer-SC-2",
+  "celestial-kadin-sorcerer-SC-3",
+  "halfling-kadin-sorcerer-SC-3",
+  "human-kadin-sorcerer-SC-3",
+  "tiefling-kadin-sorcerer-SC-3",
+  "elf-erkek-sorcerer-SC-9",
+  "tiefling-erkek-sorcerer-SC-9",
+  "orc-erkek-sorcerer-SC-9",
+  "dragonborn-kadin-sorcerer-SC-9",
+  "dwarf-kadin-sorcerer-SC-9",
+  "human-kadin-sorcerer-SC-9",
+  "tiefling-kadin-sorcerer-SC-9",
+  "tiefling-kadin-druid-ID4",
+  "tiefling-erkek-druid-ID4",
+  "tiefling-erkek-cleric-ID9",
+  "celestial-erkek-cleric-ID7",
+  "celestial-erkek-cleric-ID9",
+  "human-erkek-fighter-ID1",
+  "human-erkek-fighter-ID2",
+  "human-erkek-fighter-ID3",
+  "human-erkek-fighter-ID4",
+  "human-erkek-fighter-ID5",
+  "human-erkek-fighter-ID6",
+  "human-erkek-fighter-ID7",
+  "human-erkek-fighter-ID8",
+  "human-erkek-fighter-ID9",
+  "human-erkek-fighter-ID10",
+  "human-erkek-fighter-ID11",
+  "human-kadin-fighter-ID1",
+  "human-kadin-fighter-ID2",
+  "human-kadin-fighter-ID3",
+  "human-kadin-fighter-ID4",
+  "human-kadin-fighter-ID5",
+  "human-kadin-fighter-ID6",
+  "human-kadin-fighter-ID7",
+  "human-kadin-fighter-ID8",
+  "human-kadin-fighter-ID9",
+  "human-kadin-fighter-ID10",
+  "human-kadin-barbarian-ID8",
+  "elf-kadin-barbarian-ID8",
+  "dwarf-kadin-barbarian-ID8",
+  "halfling-kadin-barbarian-ID8",
+  "gnome-kadin-barbarian-ID8",
+  "orc-kadin-barbarian-ID8",
+  "tiefling-kadin-barbarian-ID8",
+  "goliath-kadin-barbarian-ID8",
+  "human-erkek-barbarian-ID8",
+  "elf-erkek-barbarian-ID8",
+  "dwarf-erkek-barbarian-ID8",
+  "halfling-erkek-barbarian-ID8",
+  "gnome-erkek-barbarian-ID8",
+  "orc-erkek-barbarian-ID8",
+  "tiefling-erkek-barbarian-ID8",
+  "goliath-erkek-barbarian-ID8"
+ ],
+ "ezilmedi": [],
+ "sayfalar": [
+  {
+   "dosya": "bard-m-tiefling-dragonborn.png",
+   "beklenen": 2,
+   "bulunan": 2,
+   "zemin": [
+    "green",
+    "green"
+   ],
+   "uyari": []
+  },
+  {
+   "dosya": "bard-f-halfling-orc-tiefling-dragonborn.png",
+   "beklenen": 4,
+   "bulunan": 4,
+   "zemin": [
+    "green",
+    "green",
+    "green",
+    "green"
+   ],
+   "uyari": []
+  },
+  {
+   "dosya": "kadin-5'li.jpg",
+   "beklenen": 5,
+   "bulunan": 5,
+   "zemin": [
+    "green",
+    "green",
+    "green",
+    "green",
+    "green"
+   ],
+   "uyari": []
+  },
+  {
+   "dosya": "4'lü.jpg",
+   "beklenen": 4,
+   "bulunan": 4,
+   "zemin": [
+    "green",
+    "green",
+    "green",
+    "green"
+   ],
+   "uyari": []
+  },
+  {
+   "dosya": "erkek-5'li.jpg",
+   "beklenen": 5,
+   "bulunan": 5,
+   "zemin": [
+    "green",
+    "green",
+    "green",
+    "green",
+    "green"
+   ],
+   "uyari": []
+  },
+  {
+   "dosya": "sorcerer-duzelt-A-sonuc.jpg",
+   "beklenen": 4,
+   "bulunan": 4,
+   "zemin": [
+    "magenta",
+    "green",
+    "green",
+    "magenta"
+   ],
+   "uyari": []
+  },
+  {
+   "dosya": "sorcerer-duzelt-B-sonuc.jpg",
+   "beklenen": 4,
+   "bulunan": 4,
+   "zemin": [
+    "green",
+    "green",
+    "green",
+    "green"
+   ],
+   "uyari": []
+  },
+  {
+   "dosya": "sorcerer-duzelt-C-sonuc.jpg",
+   "beklenen": 9,
+   "bulunan": 9,
+   "zemin": [
+    "green",
+    "green",
+    "green",
+    "magenta",
+    "green",
+    "green",
+    "green",
+    "green",
+    "green"
+   ],
+   "uyari": []
+  },
+  {
+   "dosya": "druid-female-tiefling.jpg",
+   "beklenen_hucre": 8,
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "elle": [],
+   "yazilan_hucre": [
+    4
+   ]
+  },
+  {
+   "dosya": "druid-male-tiefling.jpg",
+   "beklenen_hucre": 8,
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "elle": [],
+   "yazilan_hucre": [
+    4
+   ]
+  },
+  {
+   "dosya": "cleric-male-tiefling.jpg",
+   "beklenen_hucre": 9,
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "elle": [],
+   "yazilan_hucre": [
+    9
+   ]
+  },
+  {
+   "dosya": "clerik-male-celestial.jpg",
+   "beklenen_hucre": 9,
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "elle": [],
+   "yazilan_hucre": [
+    7,
+    9
+   ]
+  },
+  {
+   "dosya": "fighter-male-human.jpg",
+   "beklenen_hucre": 11,
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "elle": [],
+   "yazilan_hucre": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "dosya": "fighter-female-human.jpg",
+   "beklenen_hucre": 11,
+   "bulunan": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "elle": [],
+   "yazilan_hucre": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "dosya": "barbarian-female-aurasiz.jpg",
+   "beklenen": 8,
+   "bulunan": 8,
+   "zemin": [
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta"
+   ],
+   "uyari": []
+  },
+  {
+   "dosya": "barbarian-male-aurasiz.jpg",
+   "beklenen": 8,
+   "bulunan": 8,
+   "zemin": [
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta",
+    "magenta"
+   ],
+   "uyari": []
+  }
+ ],
+ "belirsiz": [
+  [
+   "sorcerer-duzelt-C-sonuc.jpg",
+   1,
+   "goliath-erkek-sorcerer-SC-9"
+  ],
+  [
+   "sorcerer-duzelt-C-sonuc.jpg",
+   7,
+   "goliath-kadin-sorcerer-SC-9"
+  ]
+ ],
+ "uyari": [
+  "elf-erkek-sorcerer-SC-9: ay parıltısı kalıntısı 4225 px silindi",
+  "tiefling-erkek-sorcerer-SC-9: ay parıltısı kalıntısı 1117 px silindi",
+  "orc-erkek-sorcerer-SC-9: ay parıltısı kalıntısı 879 px silindi",
+  "dragonborn-kadin-sorcerer-SC-9: ay parıltısı kalıntısı 1518 px silindi",
+  "dwarf-kadin-sorcerer-SC-9: ay parıltısı kalıntısı 1741 px silindi",
+  "human-kadin-sorcerer-SC-9: ay parıltısı kalıntısı 1228 px silindi",
+  "tiefling-kadin-sorcerer-SC-9: ay parıltısı kalıntısı 959 px silindi"
+ ],
+ "boy_esleme": [
+  "tiefling-erkek-bard-ID3",
+  "halfling-erkek-bard-ID3",
+  "elf-erkek-bard-ID3",
+  "dragonborn-kadin-sorcerer-SC-9",
+  "human-kadin-sorcerer-SC-9"
+ ],
+ "hizalama": {
+  "dragonborn-erkek-bard-ID3": 0.905,
+  "human-kadin-bard-ID3": 0.979,
+  "orc-kadin-bard-ID3": 0.847,
+  "tiefling-kadin-bard-ID3": 0.756,
+  "dragonborn-kadin-bard-ID3": 0.972,
+  "celestial-kadin-bard-ID3": 0.895,
+  "dwarf-kadin-bard-ID3": 0.933,
+  "elf-kadin-bard-ID3": 0.918,
+  "gnome-kadin-bard-ID3": 0.964,
+  "goliath-kadin-bard-ID3": 0.867,
+  "human-erkek-bard-ID3": 0.742,
+  "orc-erkek-bard-ID3": 0.772,
+  "halfling-kadin-bard-ID3": 0.764,
+  "celestial-erkek-bard-ID3": 0.898,
+  "dwarf-erkek-bard-ID3": 0.9,
+  "gnome-erkek-bard-ID3": 0.96,
+  "goliath-erkek-bard-ID3": 0.942,
+  "orc-erkek-sorcerer-SC-2": 0.712,
+  "halfling-erkek-sorcerer-SC-2": 0.819,
+  "human-kadin-sorcerer-SC-2": 0.764,
+  "orc-kadin-sorcerer-SC-2": 0.986,
+  "celestial-kadin-sorcerer-SC-3": 0.937,
+  "halfling-kadin-sorcerer-SC-3": 0.794,
+  "human-kadin-sorcerer-SC-3": 0.885,
+  "tiefling-kadin-sorcerer-SC-3": 0.952,
+  "elf-erkek-sorcerer-SC-9": 0.865,
+  "tiefling-erkek-sorcerer-SC-9": 0.967,
+  "orc-erkek-sorcerer-SC-9": 0.979,
+  "dwarf-kadin-sorcerer-SC-9": 0.797,
+  "tiefling-kadin-sorcerer-SC-9": 0.981
+ }
+}

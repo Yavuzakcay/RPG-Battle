@@ -1,0 +1,60 @@
+/* Dungeondex (tembel parça). Mobil önce: tek sütun; ≥ 760 px liste + kart iki sütun. */
+.menu-screen .app.dex { max-width: 1100px; }
+.dex-top { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 10px; background: var(--panel); padding: 8px 10px; border-radius: 12px; }
+.dex-top h1 { margin: 0; font-size: 20px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dex-back { min-height: 48px; min-width: 48px; font-weight: 600; }
+.dex-cats { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
+.dex-cat { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 56px; text-align: left; background: var(--card); }
+.dex-cat span { color: var(--mute); font-size: 14px; }
+.dex-license-btn { border-style: dashed; }
+.dex-body { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 10px; }
+.dex-list, .dex-card { background: var(--panel); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.dex-search { width: 100%; min-height: 48px; font: inherit; font-size: 16px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+.dex-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: flex-end; }
+.dex-filter { display: grid; gap: 2px; font-size: 13px; color: var(--mute); flex: 1 1 120px; }
+.dex-filter select { min-height: 44px; font: inherit; font-size: 15px; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 4px 8px; }
+.dex-fold { flex-basis: 100%; }
+.dex-fold summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; }
+.dex-count { margin: 8px 0 4px; font-size: 13px; }
+.dex-note { background: var(--card); border-left: 4px solid var(--acc); padding: 8px 10px; border-radius: 8px; margin: 8px 0; font-size: 14px; }
+.dex-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.dex-row { width: 100%; min-height: 52px; display: grid; grid-template-columns: 1fr; text-align: left; gap: 2px; padding: 8px 12px; }
+.dex-row em { font-style: normal; color: var(--mute); font-size: 13px; }
+.dex-row span { color: var(--mute); font-size: 13px; }
+.dex-row.on { border-color: var(--acc); box-shadow: inset 4px 0 0 var(--acc); }
+.dex-more { width: 100%; margin-top: 8px; min-height: 48px; }
+.dex-card h2 { margin: 2px 0 0; font-size: 22px; }
+.dex-alt { margin: 0; color: var(--mute); }
+.dex-header { margin: 4px 0 6px; font-weight: 600; color: var(--acc); }
+.dex-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.dex-tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); margin-left: 6px; }
+.dex-tags .dex-tag { margin-left: 0; }
+.dex-summary { font-weight: 600; }
+.dex-desc, .dex-summary, .dex-extra { line-height: 1.5; }
+/* Görev EN-ACIKLAMA: SRD İngilizce metni paragraflı ("\n"); paragraf sonları korunur. */
+.dex-card p { white-space: pre-line; }
+.dex-extra { font-style: italic; color: var(--mute); }
+.dex-tronly { color: var(--mute); font-size: 13px; font-style: italic; }
+.dex-facts { display: grid; grid-template-columns: 1fr; gap: 4px 12px; margin: 8px 0; }
+.dex-facts div { display: flex; gap: 8px; border-bottom: 1px solid var(--line); padding: 4px 0; }
+.dex-facts dt { color: var(--mute); min-width: 110px; }
+.dex-facts dd { margin: 0; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.dex-sec ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.dex-sec li p { margin: 2px 0 0; line-height: 1.45; }
+.dex-lvl { color: var(--mute); font-weight: 400; }
+.dex-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.dex-link { min-height: 44px; }
+.dex-license blockquote { margin: 10px 0; padding: 10px 12px; border-left: 4px solid var(--acc); background: var(--card); border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.dex-pick { display: none; }
+/* Mobil: kart açıkken liste gizlenir (geri düğmesi listeye döner). */
+.dex-has-card .dex-list { display: none; }
+.dex-split:not(.dex-has-card) .dex-card-pane { display: none; }
+@media (min-width: 760px) {
+  .dex-cats { grid-template-columns: repeat(2, 1fr); }
+  .dex-split .dex-body { grid-template-columns: minmax(300px, 380px) 1fr; align-items: start; }
+  .dex-has-card .dex-list, .dex-split:not(.dex-has-card) .dex-card-pane { display: block; }
+  .dex-card-pane { position: sticky; top: 72px; max-height: calc(100vh - 84px); overflow-y: auto; }
+  .dex-pick { display: block; background: var(--panel); border-radius: 12px; padding: 14px; }
+  .dex-facts { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 1000px) { .dex-cats { grid-template-columns: repeat(3, 1fr); } }

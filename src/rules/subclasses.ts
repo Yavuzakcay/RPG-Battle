@@ -102,3 +102,6 @@ export const subclassLabel = (name0: LocalText, lang: 'tr' | 'en', classId?: str
   const name = displayName(name0, classId);
   return lang === 'tr' && name.tr && name.en && name.tr !== name.en ? `${name.tr} (${name.en})` : textOf(name, lang);
 };
+
+/** SD5: oyuncu ekranında alt sınıf adı, parantezli ek (İngilizce ad, durum etiketi) olmadan. */
+export const subclassPlainName = (name0: LocalText, lang: 'tr' | 'en', classId?: string): string => textOf(displayName(name0, classId), lang);

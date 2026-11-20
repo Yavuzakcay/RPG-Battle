@@ -129,7 +129,7 @@ export interface RawMap {
   /** Görev K13B: sefer haritası: açtığı ev kuralları (`data/ev-kurallari.json`, `sefer: true` olanlar). */
   seferKurallari?: string[];
   /** Görev S2: hazır nesne yerleşimi (1 tabanlı [sütun, satır]; Game Master kurulumda değiştirir). */
-  objects?: Array<{ id?: string; kind: string; at: [number, number]; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string; /** Kuyruk K68a: yapı yüksekliği ezmesi (ft). */ yukseklikFt?: number }>;
+  objects?: Array<{ id?: string; kind: string; at: [number, number]; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string; /** Kuyruk K68a: yapı yüksekliği ezmesi (ft). */ yukseklikFt?: number; /** Kuyruk KQ3 NA1: ağırlık ezmesi (lb). */ agirlikLb?: number }>;
   /** Görev S4: uyuyan/habersiz grup alanları (1 tabanlı altıgenler; durum asleep|calm|alarmed; komşular). */
   groups?: Array<{ id: string; state?: 'asleep' | 'calm' | 'alarmed'; hexes: Array<[number, number]>; links?: string[]; route?: Array<[number, number]>; pause?: number }>;
   /** Görev S3: hazır hedefler (1 tabanlı altıgenler; `battle/types` `Goals` biçimi). */
@@ -145,8 +145,6 @@ export interface RawMap {
   gizli?: boolean;
   /** 2026-11-03: JSON yerinde aynalandı (tarih); eski kayıtların çizim göçü `migrateFlippedMaps`. */
   yonCevrildi?: string;
-  /** Kuyruk 41b: yalnızca 1–5. seviye senaryosu: "Üst seviye" açıkken seçicide ve Serüven listesinde gizli. */
-  ustSeviyeGizli?: boolean;
   vitrin?: boolean;
   /**
    * Kuyruk 26: yükseklik katmanı: `tiles` ile aynı boyutta, satır satır her altıgenin tamsayı seviyesi (−3..+8; bir seviye
@@ -209,7 +207,7 @@ export interface BattleMap {
   /** Görev K13B: sefer haritasının açtığı ev kuralları (Klasik haritalarda boş). */
   seferKurallari: string[];
   /** Görev S2: hazır nesneler (0 tabanlı; aynalı haritada aynalı). */
-  objects: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string }>;
+  objects: Array<{ id?: string; kind: string; at: Offset; state?: string; lockDc?: number; gizli?: boolean; bulDc?: number; flag?: string; agirlikLb?: number }>;
   /** Görev S3: hazır hedefler (0 tabanlı; aynalı haritada aynalı). */
   goals?: MapGoals;
   /** Görev S4: grup alanları (0 tabanlı; aynalı haritada aynalı). */
@@ -226,8 +224,6 @@ export interface BattleMap {
   sefer?: string;
   /** Kuyruk 25: seçicide gizli (yer tutucu görselli deneme haritası; ya da yalnızca başka haritadan girilen). Harita silinmez. */
   gizli?: boolean;
-  /** Kuyruk 41b: "Üst seviye" açıkken seçicide ve Serüven listesinde gizli (yalnızca 1–5. seviye senaryosu). */
-  ustSeviyeGizli?: boolean;
   /** Kuyruk 26: yükseklik katmanı (satır → sütun → seviye; aynalı haritada aynalı). */
   heights?: number[][];
   /** Kuyruk 26: rampa altıgenleri (0 tabanlı). */
@@ -445,12 +441,10 @@ function build(base: RawMap, variantId: string | undefined, mirrored: boolean): 
     objects: (raw.objects ?? []).map((o) => ({ ...o, at: { col: o.at[0] - 1, row: o.at[1] - 1 } })),
     ...(raw.groups ? { groups: raw.groups.map(({ route, ...g }) => ({ ...g, hexes: g.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })), ...(route ? { route: route.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}) })) } : {}),
     ...(raw.surfaces?.length ? { surfaces: raw.surfaces.map((x) => ({ ...x, hexes: x.hexes.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) })) } : {}),
-    ...(raw.vitrin ? { vitrin: true } : {}),
     ...(raw.bolge ? { bolge: raw.bolge } : {}),
     ...(raw.gorsel ? { gorsel: raw.gorsel } : {}),
     ...(raw.sefer ? { sefer: raw.sefer } : {}),
     ...(raw.gizli ? { gizli: true } : {}),
-    ...(raw.ustSeviyeGizli ? { ustSeviyeGizli: true } : {}),
     ...(raw.heights ? { heights: raw.heights.map((row) => [...row]) } : {}),
     ...(raw.ramps?.length ? { ramps: raw.ramps.map((h): Offset => ({ col: h[0] - 1, row: h[1] - 1 })) } : {}),
     ...(raw.goals ? { goals: {
@@ -521,7 +515,15 @@ export const maps: readonly BattleMap[] = RAW_MAPS.map((m) => loadMap(m));
  * aynalı hâli.
  */
 /** Eski harita kimlikleri (yeniden adlandırılan haritalar): eski kimlik yeni haritayı açar. */
-const MAP_ALIASES: Record<string, string> = { 'volkan-adalar': 'volkan' };
+const MAP_ALIASES: Record<string, string> = {
+  'volkan-adalar': 'volkan',
+  // HS1: silinen klasik Kale (15×7) eski kayıtlarda Kale ve avlu'yu açar; silinen Ortamlar Diyarı (test/vitrin) en yakın geniş harita Kale ve avlu'ya düşer.
+  'kale': 'kale-avlu',
+  'ortamlar-diyari': 'kale-avlu',
+};
+/** HS1: silinen varyantlar (harita kimliği/varyant → bugünkü varyant): Dungeon'un düz "Merdiven" varyantı Yürüyen merdiven'e eşlenir. */
+const VARIANT_ALIASES: Record<string, string> = { 'dungeon/merdiven': 'merdiven-yuruyen' };
+const variantOf = (mapId: string, variantId: string | undefined): string | undefined => (variantId ? VARIANT_ALIASES[`${mapId}/${variantId}`] ?? variantId : variantId);
 
 /**
  * Kayıttan ya da eski bir oturumdan gelen harita/varyant seçimini bugünkü kataloğa oturtur:
@@ -530,7 +532,8 @@ const MAP_ALIASES: Record<string, string> = { 'volkan-adalar': 'volkan' };
 export function resolveMapChoice(id: string, variantId?: string): { id: string; variantId: string } {
   const map = maps.find((m) => m.id === (MAP_ALIASES[id] ?? id)) ?? maps[0];
   if (!map) throw new Error('Harita kataloğu boş');
-  const variant = map.variants.find((v) => v.id === variantId) ?? map.variants[0];
+  const wanted = variantOf(map.id, variantId);
+  const variant = map.variants.find((v) => v.id === wanted) ?? map.variants[0];
   return { id: map.id, variantId: variant?.id ?? '' };
 }
 
@@ -539,7 +542,8 @@ export function getMap(id: string, opts: { mirrored?: boolean; variantId?: strin
   const found = maps.find((m) => m.id === id);
   if (!found) throw new Error(`Harita bulunamadı: "${id}"`);
   const raw = RAW_MAPS.find((m) => m.id === id) as RawMap;
-  const layout = opts.variantId && opts.variantId !== found.variantId ? build(raw, opts.variantId, false) : found;
+  const wanted = variantOf(id, opts.variantId);
+  const layout = wanted && wanted !== found.variantId ? build(raw, wanted, false) : found;
   return opts.mirrored ? mirrorMap(layout) : layout;
 }
 
@@ -552,6 +556,5 @@ export function environmentFor(map: BattleMap, variantId: string): string {
 export const variantLabel = (v: Pick<MapVariant, 'name' | 'nameEn'>, lang: 'tr' | 'en'): string =>
   lang === 'en' && v.nameEn ? v.nameEn : v.name;
 
-/** Kuyruk 41b: harita seçicide görünür mü (gizli değil; "Üst seviye" açıkken 1–5. seviye senaryosu da gizli). */
-export const pickerVisible = (m: Pick<BattleMap, 'gizli' | 'ustSeviyeGizli'>, upperLevels: boolean): boolean =>
-  !m.gizli && !(upperLevels && m.ustSeviyeGizli);
+/** Harita seçicide görünür mü (gizli değil). 2026-11-19: Kuyruk 41b'nin "Üst seviye" gizlemesi (`ustSeviyeGizli`) anahtarla kalktı. */
+export const pickerVisible = (m: Pick<BattleMap, 'gizli'>): boolean => !m.gizli;

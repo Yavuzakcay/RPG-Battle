@@ -183,14 +183,15 @@ describe('K67b harita ışıkları', () => {
     return { brighter, dim };
   };
   // Kuyruk K67c (kullanıcı kararı): meşale ve mangal 10 ft parlak + 5 ft loş (2 + 1 altıgen; SRD 20 + 20 ft'ten sapma).
-  it('meşale (Kale gece): sürüm 51 10 ft parlak + 5 ft loş; parlak alan sürüm 50 ile aynı, yalnız loş halka eklenir', () => {
-    const s51 = onMap('kale', 'gece', 51);
-    const s50 = onMap('kale', 'gece', 50);
+  it('meşale (Kale önü gece; HS1: klasik Kale kaldırıldı, Kale ve avlunun gece varyantı yok): sürüm 51 10 ft parlak + 5 ft loş; parlak alan sürüm 50 ile aynı, yalnız loş halka eklenir', () => {
+    const s51 = onMap('kale-onu', 'gece', 51);
+    const s50 = onMap('kale-onu', 'gece', 50);
     const d = diff(s51, s50);
     expect(d.brighter).toBe(0);
     expect(d.dim).toBeGreaterThan(0);
     // Loş halka yalnız parlak alanın bir altıgen dışı: her loş altıgenin bir komşusu parlak; karanlık altıgen kalır.
-    const levels = [...Array(7).keys()].flatMap((row) => [...Array(15).keys()].map((col) => ({ col, row, lv: lightLevelAt(s51, { col, row }) })));
+    const rows = s51.map?.tiles.length ?? 0, cols = s51.map?.tiles[0]?.length ?? 0;
+    const levels = [...Array(rows).keys()].flatMap((row) => [...Array(cols).keys()].map((col) => ({ col, row, lv: lightLevelAt(s51, { col, row }) })));
     expect(levels.some((x) => x.lv === 'dark')).toBe(true);
     for (const x of levels.filter((y) => y.lv === 'dim')) expect(levels.some((y) => y.lv === 'bright' && distance(y, x) === 1)).toBe(true);
     expect([...litHexes(s50)].every((k) => lightLevelAt(s51, { col: Number(k.split(',')[0]), row: Number(k.split(',')[1]) }) === 'bright')).toBe(true);

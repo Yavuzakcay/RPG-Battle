@@ -1,4 +1,6 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import { creatureTypeAt, hasSrdD1, monsterAt, swimSpeedAt } from './srdD1';
+import { SRD_D1_VERSION } from './srdD1Surum';
 import { withMonsterAbilities } from './monsterAbilities';
 import { globalRule } from './ruleControl';
 import { presetObjects } from './objects';
@@ -29,9 +31,9 @@ import { itemBag, mergeBags, paketBag } from './paket/bag';
 import { paketInitAdv, withPaket } from './paket/core';
 import { withMonsterTraits } from './monsterTraits';
 import { monsterPhase } from './phase';
-import creatureTypes from '../../data/canavar-turleri.json';
 import yuzeyler from '../../data/yuzeyler.json';
 import { CURRENT_RULES } from './ruleVersion';
+import { matrisOn } from './matrisSurum';
 import { ALT_SOY_VERSION } from './altSoySurum';
 import { soyEffects, soyFeatures, soyInitMod, withSoy } from './soyEtki';
 import { controlState, defaultRuleToggles } from './ruleControl';
@@ -263,6 +265,8 @@ function combatantFromSheetBase(
     hp: d.maxHp,
     maxHp: d.maxHp,
     speed: Math.max(0, d.speed - carrySpeedPenalty(load.level, carryRule)),
+    // Kuyruk KQ3 NA1: nesne taşıma kapasitesi (boyut ve Powerful Build dahil) ve kendi yükü.
+    carryCapLb: load.capacity, carryUsedLb: load.weight,
     ...(load.level !== 'ok' ? { load: load.level } : {}),
     ...((): Partial<Combatant> => {
       // Görev WARLOCK: savaştan önce yapılmış sayılan büyü (Armor of Shadows: zırhsızsa Mage Armor; 8 saat).
@@ -484,9 +488,14 @@ export function monsterSenses(monster: Pick<Monster, 'unsupported'>): Combatant[
 }
 
 export function combatantFromMonster(
-  monster: Monster,
-  opts: { id: string; name?: string; height?: Height },
+  monster0: Monster,
+  /** Görev D1: `kuralSurumu` (yoksa yeni savaşın sürümü `defaultRuleVersion()`): < 86'da SRD düzeltmesi öncesi veri. */
+  opts: { id: string; name?: string; height?: Height; kuralSurumu?: number },
 ): Combatant {
+  const v = opts.kuralSurumu ?? defaultRuleVersion();
+  const monster = monsterAt(monster0, v);
+  const type = creatureTypeAt(monster.id, v);
+  const swimFt = swimSpeedAt(monster.id, v);
   const mods = {} as Scores;
   for (const a of ABILITIES) mods[a as Ability] = abilityModifier(monster.abilities[a]);
   const who = { skills: monster.skills ?? {}, modifiers: mods };
@@ -494,8 +503,8 @@ export function combatantFromMonster(
     id: opts.id,
     monsterId: monster.id,
     ...(monster.egitimli ? { egitimli: true as const } : {}),
-    // SRD yaratık türü (Divine Smite, Protection from Evil and Good; data/canavar-turleri.json).
-    ...((creatureTypes.types as Record<string, string>)[monster.id] ? { creatureType: (creatureTypes.types as Record<string, string>)[monster.id] } : {}),
+    // SRD yaratık türü (Divine Smite, Protection from Evil and Good; data/canavar-turleri.json; Görev D1: sürüme göre).
+    ...(type ? { creatureType: type } : {}),
     name: opts.name ?? monster.name,
     avatar: monsterAvatar(monster),
     side: 'enemies',
@@ -504,6 +513,7 @@ export function combatantFromMonster(
     hp: monster.hp,
     maxHp: monster.hp,
     speed: monster.speed,
+    ...(swimFt ? { swimFt } : {}),
     initiativeBonus: mods.dex,
     initiative: 0,
     height: opts.height ?? 0,
@@ -632,6 +642,32 @@ export interface MapChoice {
   ruleParams?: Record<string, Record<string, number | string>>;
 }
 
+/**
+ * Görev D1 (kural sürümü 86): canavar savaşçısını sürümün verisine çeker. Savaşçılar `startBattle`'dan önce kurulur
+ * (Game Master ekranı, simülasyon, testler); sürüm < 86 savaşta güncel veriden kurulmuş savaşçının SRD düzeltmesi geçen
+ * alanları (tür, değiştiriciler, kurtarmalar, STR puanı, tırmanma değiştiricisi, yüzme hızı, saldırı tekrarı) eski
+ * değerlere döner. Alan güncel veriyle aynı değilse (çağrı seçimi, sonradan değişiklik) dokunulmaz; tekrar çağrılabilir.
+ */
+export function srdD1Revert(c: Combatant, v: number): Combatant {
+  if (v >= SRD_D1_VERSION || !c.monsterId || !hasSrdD1(c.monsterId)) return c;
+  let m: Monster;
+  try { m = getMonster(c.monsterId); } catch { return c; }
+  const now = combatantFromMonster(m, { id: c.id, kuralSurumu: SRD_D1_VERSION });
+  const old = combatantFromMonster(m, { id: c.id, kuralSurumu: v });
+  const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+  const out: Combatant = { ...c };
+  for (const k of ['creatureType', 'modifiers', 'saves', 'strScore', 'climbMod', 'swimFt'] as const) {
+    if (same(c[k], now[k]) && !same(now[k], old[k])) {
+      if (old[k] === undefined) delete out[k];
+      else (out as unknown as Record<string, unknown>)[k] = old[k];
+    }
+  }
+  if (c.attacks.length === now.attacks.length) {
+    out.attacks = c.attacks.map((a, i) => (a.repeat === now.attacks[i]?.repeat && old.attacks[i] && old.attacks[i]!.repeat !== a.repeat ? { ...a, repeat: old.attacks[i]!.repeat } : a));
+  }
+  return out;
+}
+
 /** Korunacak masum (GM yönetir, silahsız, eylem yapmaz). Değerler haritanın `objective` kuralından. */
 export function civilianCombatant(index: number, stats: { hp: number; ac: number; speedHexes: number }, gorselId = defaultCivilianLook(index)): Combatant {
   const look = civilianLook(gorselId);
@@ -689,6 +725,7 @@ export function startBattle(
   participants: Combatant[],
   rng: Rng,
   opts: { map?: MapChoice; diceMode?: DiceMode; multiHex?: boolean; /** Kuyruk K58 G5: yapay zekâ zorluğu (kayıtta). */ yz?: BattleState['yz']; yuzeyEtkilesimi?: boolean; kuralSurumu?: number; houseRules?: Record<string, boolean>; goals?: Goals | null; groupStates?: Record<string, { state?: GroupState; links?: string[] }>;
+    /** Kuyruk KQ3 NA1: Taşıma yükü oda kuralı (nesne ağırlığı sınırı; kapalı ya da yoksa sınır yok). */ tasima?: 'off' | 'srd' | 'tiered';
     /** Kuyruk 31: Serüven savaşı: bitince keşfe devam ve çıkış altıgenleri. */ explore?: { exits: Offset[] } } = {},
 ): { state: BattleState; events: BattleEvent[] } {
   let map: MapState | undefined;
@@ -743,6 +780,8 @@ export function startBattle(
   }
   // Remarkable Athlete (Champion; Görev F): inisiyatifte avantaj.
   const rules = opts.kuralSurumu ?? defaultRuleVersion();
+  // Görev D1: sürüm < 86 savaşta canavarlar SRD düzeltmesi öncesi veriyle (eski kayıt/simülasyon aynı).
+  if (rules < SRD_D1_VERSION) participants = participants.map((p) => srdD1Revert(p, rules));
   const rolled = participants.map((p) => {
     const tag = rollTag(rng, { kind: 'initiative', by: p.id, bonus: p.initiativeBonus });
     // Kuyruk 17 H: inisiyatif atılırken Incapacitated olan dezavantajlı atar (SRD 5.2.1 Incapacitated "Surprised");
@@ -785,12 +824,15 @@ export function startBattle(
     ...(opts.houseRules ? { houseRules: { ...opts.houseRules } } : {}),
     // Görev S3: hedefler: Game Master'ın listesi (null = hedefsiz), yoksa haritanın hazır hedefleri.
     ...(goals ? { goals } : {}),
+    ...(opts.tasima ? { tasima: opts.tasima } : {}),
     // Görev S4: uyuyan/habersiz gruplar (üyeler savaş başında, `groups_formed`).
     ...(groups ? { groups } : {}),
   };
   // Kuyruk 24: Orman mekaniklerinin savaş başı kısmı (alarm grupları, kütük siperi, nehir; kural sürümü 3 ve Game Master anahtarı).
   // Kuyruk K48: Moral tam modu (ev kuralı + sürüm 20): karakterlere havuz; kapalıysa kayıtlı Moral alanı silinir.
-  const final = withPaket(withImza(withKaradul(withMorale(withSoy(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state)))))));
+  const built = withPaket(withImza(withKaradul(withMorale(withSoy(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state)))))));
+  // Mekanik matris (sürüm 83+): durum bilmeyen save yolları için sürüm işareti baştan (sonra `syncAuras` korur; replay aynı).
+  const final = matrisOn(built) ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, srd83: true as const }])) } : built;
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

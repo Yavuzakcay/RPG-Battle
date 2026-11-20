@@ -4,9 +4,9 @@
  * kenar altıgenlerinin yaması (komşusu alanda olmayan) daha küçük ve yarı saydam, taban bulanık söner. Maske
  * denendi, animasyonla her tıkta yeniden hesaplandığı için kare süresini ≈2,4 katına çıkarıyordu (DECISIONS.md). Animasyon yalnızca CSS (görsel; motor, replay, kayıt yok).
  */
-import { useMemo, type CSSProperties } from 'react';
+import { useId, useMemo, type CSSProperties } from 'react';
 import { neighbors, type Offset } from '../rules/hex';
-import { priorityOf, surfaceOwners, type ZoneLook, type ZonePatch } from './sprites';
+import { SURFACE_ANIM, priorityOf, surfaceOwners, type ZoneLook, type ZonePatch } from './sprites';
 
 /**
  * Ortak tık (1/6 sn): bütün yüzey animasyonları adımlı ve adımları aynı anlara hizalı (faz tık katı). Böylece harita
@@ -68,97 +68,43 @@ interface LayerProps {
 
 const corners = (pts: string): Array<[number, number]> => pts.trim().split(/\s+/).map((p) => p.split(',').map(Number) as [number, number]);
 
-/** Tuval kullanılamıyorsa (test ortamı, eski tarayıcı) null: taban SVG çokgenleriyle çizilir (kenar geçişi yok). */
-function canvasOk(): boolean {
-  if (typeof document === 'undefined' || typeof navigator === 'undefined' || /jsdom/i.test(navigator.userAgent)) return false;
-  return true;
-}
-
 interface Owned { item: SurfaceItem; hexes: Offset[] }
 
-/**
- * Taban katmanı tuvalde bir kez çizilir (yalnızca yüzeyler değişince; imza değişmedikçe önbellekten). Sıra: (1) bütün
- * türlerin dışa taşan yumuşak halesi (sınırın 0,1–0,25 altıgen dışına, bulanık), (2) her türün sahip olduğu altıgenlerin
- * birleşimi tek yol olarak (dikiş yok; sıvı/katıda tam opak), (3) sıvı/katıda sınırın hemen içinde 1 px kenar çizgisi.
- * Hale en altta: komşu türün dolgusu onu örter, türler birbirine binmez.
- */
-function drawBase(owned: readonly Owned[], ownerOf: Map<string, string>, hexPoints: LayerProps['hexPoints'], hexCenter: LayerProps['hexCenter'], hexW: number): { href: string; x: number; y: number; w: number; h: number } | null {
-  if (!canvasOk()) return null;
-  const all = owned.flatMap((o) => o.hexes.map((h) => corners(hexPoints(h, 1))));
-  if (!all.length) return null;
-  const pad = hexW * 0.35;
-  const xs = all.flat().map((c) => c[0]); const ys = all.flat().map((c) => c[1]);
-  const x0 = Math.min(...xs) - pad, y0 = Math.min(...ys) - pad;
-  const W = Math.max(...xs) + pad - x0, H = Math.max(...ys) + pad - y0;
-  const k = Math.min(1, 2048 / Math.max(W, H));
-  const cv = document.createElement('canvas');
-  cv.width = Math.ceil(W * k); cv.height = Math.ceil(H * k);
-  const ctx = cv.getContext('2d');
-  if (!ctx) return null;
-  ctx.setTransform(k, 0, 0, k, -x0 * k, -y0 * k);
-  const path = (hexes: readonly Offset[], scale: number) => {
-    ctx.beginPath();
-    for (const h of hexes) {
-      const cs = corners(hexPoints(h, scale));
-      cs.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
-      ctx.closePath();
-    }
-  };
-  const isEdge = (o: Owned, h: Offset) => neighbors(h).some((n) => ownerOf.get(keyOf(n)) !== o.item.id);
-  // 1) Hale: sınır altıgenleri büyütülmüş ve bulanık, düşük opaklıkta.
-  const blur = 'filter' in ctx;
-  for (const o of owned) {
-    const edge = o.hexes.filter((h) => isEdge(o, h));
-    if (!edge.length) continue;
-    ctx.fillStyle = o.item.look.color;
-    if (blur) ctx.filter = `blur(${Math.max(1, hexW * 0.05 * k)}px)`;
-    ctx.globalAlpha = o.item.look.baseAlpha * 0.45; path(edge, 1.25); ctx.fill();
-    ctx.globalAlpha = o.item.look.baseAlpha * 0.6; path(edge, 1.12); ctx.fill();
-    if (blur) ctx.filter = 'none';
-  }
-  // 2) Dolgu: tek yol (birleşim), dikişsiz.
-  for (const o of owned) {
-    ctx.globalAlpha = o.item.look.baseAlpha;
-    ctx.fillStyle = o.item.look.color;
-    path(o.hexes, 1.0); ctx.fill();
-  }
-  // 3) İç kenar çizgisi: komşusu başka sahipte olan kenar, merkeze doğru 1 px içeride.
-  ctx.globalAlpha = 0.9; ctx.lineWidth = 1.2 / k > 2 ? 2 : 1.2;
-  for (const o of owned) {
-    const line = o.item.look.solid ? o.item.look.edgeLine : null;
-    if (!line) continue;
-    ctx.strokeStyle = line;
-    ctx.beginPath();
-    for (const h of o.hexes) {
-      const c = hexCenter(h);
-      const cs = corners(hexPoints(h, 1));
-      const ns = neighbors(h).map((n) => ({ n, p: hexCenter(n) }));
-      cs.forEach((a, i) => {
-        const b = cs[(i + 1) % cs.length]!;
-        const mid = { x: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2 };
-        const across = { x: 2 * mid.x - c.x, y: 2 * mid.y - c.y };
-        const nb = ns.reduce((best, q) => (Math.hypot(q.p.x - across.x, q.p.y - across.y) < Math.hypot(best.p.x - across.x, best.p.y - across.y) ? q : best), ns[0]!);
-        const outside = !nb || Math.hypot(nb.p.x - across.x, nb.p.y - across.y) > hexW * 0.3 || ownerOf.get(keyOf(nb.n)) !== o.item.id;
-        if (!outside) return;
-        const inset = (pt: [number, number]): [number, number] => {
-          const d = Math.hypot(pt[0] - c.x, pt[1] - c.y) || 1;
-          return [pt[0] + (c.x - pt[0]) * (1.5 / d), pt[1] + (c.y - pt[1]) * (1.5 / d)];
-        };
-        const [ax, ay] = inset(a); const [bx, by] = inset(b);
-        ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
-      });
-    }
-    ctx.stroke();
-  }
-  return { href: cv.toDataURL('image/png'), x: x0, y: y0, w: W, h: H };
+/** Altıgenlerin birleşimi tek yol (dikiş yok): her altıgen kapalı bir alt yol; dolgu `nonzero`. */
+export function hexUnionPath(hexes: readonly Offset[], hexPoints: LayerProps['hexPoints']): string {
+  return hexes.map((h) => `M${corners(hexPoints(h, 1)).map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join('L')}Z`).join('');
 }
 
 /**
- * Kuyruk 16 K16A: bütün sprite'lı alanlar tek katmanda. Her altıgen yalnızca en yüksek öncelikli türe ait
- * (`surfaceOwners`); düşük öncelikli türün yaması o altıgene girmez. Taban önbellekli tuval (yalnızca yüzey değişince
- * yeniden üretilir); animasyon yalnızca yama katmanında (CSS, ortak 1/6 sn tık). Sıra: düşük öncelik altta.
+ * Yalnız DIŞ sınırın çizgisi: komşusu aynı alanda olmayan kenarlar (komşu aynı tür birleşiktir, aradaki çizgi yok).
+ * Çizgi kırpma yolunun içinde kalır (kenarda yarı kalınlık görünür), taşma olmaz.
+ */
+export function outerEdgePath(hexes: readonly Offset[], ownerOf: Map<string, string>, id: string, hexPoints: LayerProps['hexPoints'], hexCenter: LayerProps['hexCenter'], hexW: number): string {
+  let d = '';
+  for (const h of hexes) {
+    const c = hexCenter(h);
+    const cs = corners(hexPoints(h, 1));
+    const ns = neighbors(h).map((n) => ({ n, p: hexCenter(n) }));
+    cs.forEach((a, i) => {
+      const b = cs[(i + 1) % cs.length]!;
+      const mid = { x: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2 };
+      const across = { x: 2 * mid.x - c.x, y: 2 * mid.y - c.y };
+      const nb = ns.reduce((best, q) => (Math.hypot(q.p.x - across.x, q.p.y - across.y) < Math.hypot(best.p.x - across.x, best.p.y - across.y) ? q : best), ns[0]!);
+      const outside = !nb || Math.hypot(nb.p.x - across.x, nb.p.y - across.y) > hexW * 0.3 || ownerOf.get(keyOf(nb.n)) !== id;
+      if (outside) d += `M${a[0].toFixed(1)},${a[1].toFixed(1)}L${b[0].toFixed(1)},${b[1].toFixed(1)}`;
+    });
+  }
+  return d;
+}
+
+/**
+ * Kuyruk KQ5 YZ1: bütün yüzeyler tek katmanda, tür başına tek tutarlı görünüm (`data/yuzey-gorunum.json`). Her alan kendi
+ * altıgenlerinin birleşimine KIRPILIR (taşma yok; eski tuval hale/bulanıklık kalktı): yarı saydam düz dolgu, dış sınırda ince
+ * kenar çizgisi, mevcut sprite yalnız doku olarak düşük opaklıkta içeride (sprite yoksa düz dolgu yedeği). Her altıgen yalnızca en
+ * yüksek öncelikli türe ait (`surfaceOwners`). Animasyon CSS, adımlı (ortak TICK_MS); `animate` kapalıyken statik.
  */
 export function SurfaceLayer({ items, visible, animate, hexW, base, hexPoints, hexCenter }: LayerProps) {
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const sig = items.map((it) => `${it.id}:${it.look.kind}:${it.hexes.map(keyOf).join(';')}`).join('|');
   const { owned, ownerOf } = useMemo(() => {
     const ownerOf = surfaceOwners(items.map((it) => ({ id: it.id, kind: it.look.kind, hexes: it.hexes })));
@@ -169,33 +115,32 @@ export function SurfaceLayer({ items, visible, animate, hexW, base, hexPoints, h
     return { owned, ownerOf };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sig]);
-  const img = useMemo(() => drawBase(owned, ownerOf, hexPoints, hexCenter, hexW), [owned, ownerOf, hexPoints, hexCenter, hexW]);
-  const edgeOf = (o: Owned, h: Offset): EdgeKind => {
-    let kind: EdgeKind = 'none';
-    for (const n of neighbors(h)) {
-      const who = ownerOf.get(keyOf(n));
-      if (who === o.item.id) continue;
-      if (who) return 'other';
-      kind = 'empty';
-    }
-    return kind;
-  };
   return (
-    <g className="sprite-layer" aria-hidden="true">
-      {img
-        ? <image href={img.href} x={img.x} y={img.y} width={img.w} height={img.h} preserveAspectRatio="none" className="surface-base" />
-        : owned.map((o) => (
-          <g key={`b${o.item.id}`} fill={o.item.look.color} opacity={o.item.look.baseAlpha}>
-            {o.hexes.map((h) => <polygon key={keyOf(h)} points={hexPoints(h, 1.0)} />)}
-          </g>
-        ))}
-      {owned.map((o) => {
-        const w = hexW * o.item.look.scale;
+    <g className="sprite-layer surface-layer" aria-hidden="true">
+      {owned.map((o, i) => {
+        const look = o.item.look;
+        const st = look.style;
+        const clipId = `sz${uid}-${i}`;
+        const shape = hexUnionPath(o.hexes, hexPoints);
+        const edge = outerEdgePath(o.hexes, ownerOf, o.item.id, hexPoints, hexCenter, hexW);
+        const w = hexW * look.scale;
         const mine = new Set(o.hexes.map(keyOf));
-        const patches = o.item.look.patches.filter((p) => mine.has(keyOf(p.hex)) && (!visible || visible.has(keyOf(p.hex))));
+        const patches = st.dokuOpak > 0 ? look.patches.filter((p) => mine.has(keyOf(p.hex)) && (!visible || visible.has(keyOf(p.hex)))) : [];
+        const anim = animate && st.anim !== 'yok' ? ` anim-${st.anim}` : '';
+        const lo = st.anim === 'titrek' ? SURFACE_ANIM.titrekDusuk : SURFACE_ANIM.nabizDusuk;
         return (
-          <g key={o.item.id} className={`sprite-zone${o.item.look.soft ? ' soft' : ''} kind-${o.item.look.kind}`} data-zone={o.item.id} opacity={o.item.look.opacity}>
-            {patches.map((p) => <Patch key={keyOf(p.hex)} p={p} w={w} hexW={hexW} base={base} animate={animate} c={hexCenter(p.hex)} edge={edgeOf(o, p.hex)} />)}
+          <g key={o.item.id} className={`surface-zone kind-${look.kind}`} data-zone={o.item.id} data-clipped="true" style={{ mixBlendMode: st.karisim as CSSProperties['mixBlendMode'] }}>
+            <clipPath id={clipId}><path d={shape} /></clipPath>
+            <g clipPath={`url(#${clipId})`}>
+              <path d={shape} fill={st.renk} fillOpacity={st.dolguOpak} className={`surface-fill${anim}`}
+                style={{ ['--surf-lo' as string]: lo, animationDuration: `${SURFACE_ANIM.sureTik * TICK_MS}ms` }} />
+              {patches.length > 0 && (
+                <g className={`sprite-zone${look.soft ? ' soft' : ''} kind-${look.kind}`} opacity={st.dokuOpak}>
+                  {patches.map((p) => <Patch key={keyOf(p.hex)} p={p} w={w} hexW={hexW} base={base} animate={animate} c={hexCenter(p.hex)} edge="none" />)}
+                </g>
+              )}
+              {edge && <path d={edge} fill="none" stroke={st.kenar} strokeOpacity={st.kenarOpak} strokeWidth={st.kenarKalinlik * 2} strokeLinecap="round" className="surface-edge" />}
+            </g>
           </g>
         );
       })}

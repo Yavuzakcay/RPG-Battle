@@ -2,6 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import EndVideo from './EndVideo';
+import { endVideoMode } from './endVideoPlan';
 import { EndVideoGate, endVideoPlan, type EndVideoExit } from './endVideoPlan';
 import { storedEndVideo } from './endVideoSetting';
 import { BattleEndSound, liveFinish } from './audio/battleEnd';
@@ -72,5 +73,35 @@ describe('savaş sonu başlık videosu', () => {
       expect(files.has(`${n}.webm`), n).toBe(true);
       expect(files.has(`${n}-poster.jpg`), n).toBe(true);
     }
+  });
+  it('SV1: şeffaf kip: screen karışımı, karartma ve geçiş süresi veriden; tıklama katmanı; hareketi azalt posteri aynı kipte', () => {
+    const plan = endVideoPlan('victory', 'tr', on)!;
+    expect(plan.dim).toBe(cfg.karartma); expect(plan.dim).toBeGreaterThanOrEqual(0.35); expect(plan.dim).toBeLessThanOrEqual(0.5);
+    expect(plan.fadeMs).toBe(cfg.gecisMs);
+    const v = renderToStaticMarkup(<EndVideo plan={plan} label="x" mode="blend" onDone={() => {}} stopJingle={() => {}} />);
+    expect(v).toContain('end-video blend'); expect(v).toContain('data-mode="blend"');
+    expect(v).toContain('end-video-dim'); expect(v).toContain('end-video-media'); expect(v).toContain('end-video-click');
+    expect(v).toContain(`--end-dim:${cfg.karartma}`); expect(v).toContain(`--end-fade:${cfg.gecisMs}ms`);
+    for (const [lang, o] of [['tr', 'victory'], ['tr', 'defeat'], ['en', 'victory'], ['en', 'defeat']] as const) {
+      const h = renderToStaticMarkup(<EndVideo plan={endVideoPlan(o, lang, on)!} label="x" mode="blend" onDone={() => {}} stopJingle={() => {}} />);
+      expect(h).toContain('end-video blend');
+    }
+    const r = renderToStaticMarkup(<EndVideo plan={endVideoPlan('defeat', 'en', { enabled: true, reducedMotion: true })!} label="x" mode="blend" onDone={() => {}} stopJingle={() => {}} />);
+    expect(r).not.toContain('<video'); expect(r).toContain('end-video blend'); expect(r).toContain('<img class="end-video-media"');
+  });
+  it('SV1: yedek: blend desteklenmiyorsa ya da efekt animasyonu kapalıysa eski siyah zemin (solid, karartma katmanı yok)', () => {
+    expect(endVideoMode({ effects: true, supported: true })).toBe('blend');
+    expect(endVideoMode({ effects: true, supported: false })).toBe('solid');
+    expect(endVideoMode({ effects: false, supported: true })).toBe('solid');
+    const plan = endVideoPlan('victory', 'tr', on)!;
+    const s = renderToStaticMarkup(<EndVideo plan={plan} label="x" mode="solid" onDone={() => {}} stopJingle={() => {}} />);
+    expect(s).toContain('end-video solid'); expect(s).not.toContain('end-video-dim');
+    // test ortamında CSS.supports yok: otomatik kip de güvenli yedek
+    expect(renderToStaticMarkup(<EndVideo plan={plan} label="x" onDone={() => {}} stopJingle={() => {}} />)).toContain('end-video solid');
+  });
+  it('SV1: ses zamanlaması değişmedi (başlangıç fadeOutMs, ezgi +jingleAfterStartMs)', () => {
+    const plan = endVideoPlan('victory', 'tr', on)!;
+    expect(plan.startMs).toBe(SOUND.end.fadeOutMs);
+    expect(plan.jingleMs).toBe(SOUND.end.fadeOutMs + cfg.jingleAfterStartMs);
   });
 });

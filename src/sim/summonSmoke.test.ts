@@ -44,7 +44,8 @@ function fight(id: string, seed: number): { steedAttacks: number; summoned: bool
 
 describe('çağırma duman testi (Paladin, 5. seviye, Find Steed)', () => {
   afterAll(() => setPartyKind('standart'));
-  for (const id of ['col', 'orman', 'dungeon', 'kale']) {
+  // HS1: klasik Kale kaldırıldı; `kale` senaryosu artık Kale ve avlu'da (31×17, 17 düşman) ve at 20 turda düşmana ulaşmıyor: duman testi aynı haritadaki garnizon senaryosuyla.
+  for (const id of ['col', 'orman', 'dungeon', 'kale-avlu-garnizon']) {
     it(`${id}: at çağrılır, savaşır; replay aynı`, () => {
       setPartyKind('paladin');
       const runs = [1, 2, 3].map((seed) => fight(id, seed));

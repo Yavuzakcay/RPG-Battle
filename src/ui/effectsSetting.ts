@@ -5,6 +5,10 @@
 import { useState } from 'react';
 import type { EffectDensity } from '../map/effects';
 
+/** Ekranda aynı anda çalışan animasyonlu döngü efekti üst sınırı (telefon performansı). Paket: `statusFx.ts`'ten buraya
+ * taşındı (kanat animasyonu ana parçada `efekt-baglama.json`'u çekmesin); `statusFx` yeniden dışa aktarır. */
+export const MAX_ANIMATED = 8;
+
 const ON_KEY = 'rpg-battle-effects';
 const DENSITY_KEY = 'rpg-battle-effects-density';
 

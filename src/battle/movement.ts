@@ -27,6 +27,8 @@ import { burnEffect, enterHexEvents, isRiskyHex, mapEnterCost, ruleOf, stuckInBo
 import { islandOf, jumpPath, jumpRisk, lavaLine, lavaOver, rollJump } from './jumprisk';
 import { auraSlows, auraStepEvents, opportunityAttacks, withPos } from './features';
 import { deepWaterBlocks, isLiquidTile, waterWalks } from './deepWater';
+import { yuzmeOn } from './yuzmeSurum';
+import { waterHexAt, swimTile } from './yuzme';
 import type { Rng } from '../rules/dice';
 import type { BattleEvent, BattleState, Combatant, CommandContext } from './types';
 import { climbs, flySpeed, hovers, isAirborne, spellJumpFt } from './flight';
@@ -102,12 +104,13 @@ export function occupantAt(state: BattleState, at: Offset, exceptId?: string, ba
  * GM'in yerleştirebileceği altıgen mi: harita içinde, engel, lav, derin su ve oyun alanı dışı değil.
  * (Doluluk ayrıca denetlenir.) Alev ve tuzak gibi tehlikeler GM'in kararıdır.
  */
-export function placeProblem(state: BattleState, at: Offset): string | null {
+export function placeProblem(state: BattleState, at: Offset, actor?: Pick<Combatant, 'swimFt'>): string | null {
   if (!isInside(at, sizeOf(state))) return 'Harita dışı.';
   const t = terrainAt(state, at);
   if (t.outOfBounds || t.movement === 'blocked') return `${hexLabel(at)} engel (${t.name}).`;
   if (t.movement === 'deadly') return `${hexLabel(at)} uygun değil (${t.name}).`;
-  if (t.rule === 'deepWater') return `${hexLabel(at)} su (${t.name}).`;
+  // KQ6-8 (sürüm 82): yüzücü canavar su altıgenine konabilir.
+  if (t.rule === 'deepWater' && !(actor?.swimFt && yuzmeOn(state))) return `${hexLabel(at)} su (${t.name}).`;
   return null;
 }
 
@@ -160,13 +163,15 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
   if (!ctx.isGm && !canControl(actor, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
   // Görev A6: çok altıgenli yaratığın bütün gövdesi geçerli altıgenlerde olmalı.
   for (const h of bodyAt(state, actor, at)) {
-    const why = placeProblem(state, h);
+    const why = placeProblem(state, h, actor);
     if (why) return fail(why);
   }
   if (!ctx.isGm) {
     const map = getMap(state.map.id, { mirrored: state.map.mirrored, variantId: state.map.variantId });
     const zone = actor.side === 'party' ? map.startZones.players : map.startZones.enemies;
-    if (!zone.some((h) => sameHex(h, at))) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
+    // KQ6-8 (sürüm 82): yüzücü canavar bölgeye bitişik su altıgenine de konabilir.
+    const swimNear = !!actor.swimFt && yuzmeOn(state) && waterHexAt(state, at) && zone.some((h) => distance(h, at) <= 1);
+    if (!zone.some((h) => sameHex(h, at)) && !swimNear) return fail(`${hexLabel(at)} kendi başlangıç bölgende değil.`);
   }
   for (const h of bodyAt(state, actor, at)) {
     const other = occupantAt(state, h, actor.id);
@@ -179,7 +184,8 @@ export function executePlace(state: BattleState, actorId: string, at: Offset, ct
 export function executeStartBattle(state: BattleState, ctx: CommandContext): CommandResult {
   if (!ctx.isGm) return fail('Savaşı yalnızca GM başlatabilir.');
   if (state.status !== 'setup') return fail('Savaş zaten başladı.');
-  const missing = Object.values(state.combatants).filter((c) => c.pos === null);
+  // HATA-FAMILIAR: kaybolmuş çağrılar (eski kayıtlarda kalan artıklar) haritada olmadığı için yerleşmeyen sayılmaz.
+  const missing = Object.values(state.combatants).filter((c) => c.pos === null && !c.summon?.gone);
   if (missing.length > 0) return fail(`Henüz yerleşmeyenler var: ${missing.map((c) => c.name).join(', ')}.`);
   const events: BattleEvent[] = [{ type: 'combat_started' }];
   return { ok: true, state: applyEvents(state, events), events };
@@ -340,6 +346,8 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
   // Kuyruk 24d: çok derin su (kıyıdan eşikten uzak) yalnızca yüzücü, suda yürüyen ve uçan için (Game Master mekaniği).
   const tooDeep = aloft ? () => false : deepWaterBlocks(state, actor);
   const walker = waterWalks(state, actor);
+  // KQ6-8 (sürüm 82): yüzücü canavar için su altıgenleri (derin, sığ, nehir) zorlu zemin değil.
+  const swimmer = !!actor.swimFt && yuzmeOn(state);
   const freeMove = !!actor.effects?.some((e) => e.freeMove || e.burrow);
   // Kuyruk K54b: Mevzi İşareti / Yol aç / Kuşbakışı Plan: korunan altıgende zor zemin yok.
   const ward = groundWardFn(state, actor);
@@ -435,7 +443,7 @@ function hexCostFn(state: BattleState, actor: Combatant, dyn?: AltRef): (h: Offs
     // Kuyruk 19: Water Walk: sıvı zemin normal zemin gibi.
     // Kuyruk 19: Freedom of Movement: zorlu arazi etkilemez.
     const free = freeMove || (!!ward && ward(h));
-    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q')) || (plantWalk && plantChar(t0.char))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
+    const t = (walker && isLiquidTile(t0)) || ((free || (iceWalk && (t0.char === 'i' || t0.char === 'q')) || (plantWalk && plantChar(t0.char)) || (swimmer && swimTile(t0.char))) && t0.movement === 'difficult') ? { ...t0, movement: 'normal' as const, ...(walker && isLiquidTile(t0) ? { rule: undefined } : {}) } : t0;
     const wall = (!!phase && t.movement === 'blocked' && !t.outOfBounds && !t.flyersPass && enterCost(t, flying) === null) || (squeeze && doorAt(h));
     const terrain = wall ? through : overTop || climbOver ? 1 : hov && t.movement === 'deadly' ? null : enterCost(t, flying);
     const base0 = terrain === null || flying || wall || (walker && isLiquidTile(t0)) ? terrain : mapEnterCost(state, prev, h, terrain, climber || !!hstep);
@@ -534,7 +542,14 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   let prev = from;
   let current = state;
   const down = () => ((current.combatants[actor.id] as Combatant).hp <= 0);
-  for (const step of path.path) {
+  // Hazırla (Ready, sürüm 90): yürüyüş sırasında hazırlanan hareketle yola giren yaratık: önceden bulunan yol artık dolu
+  // altıgenden geçemez (düşman) ya da orada bitemez (dost); yürüyüş bir önceki altıgende durur.
+  let readyMoved = false;
+  for (const [i, step] of path.path.entries()) {
+    if (readyMoved) {
+      const occ = occupantAt(current, step, actor.id);
+      if (occ && (occ.side !== actor.side || i === path.path.length - 1)) break;
+    }
     const opportunity = opportunityAttacks(current, actor.id, { from: prev, to: step }, rng);
     effects.push(...opportunity);
     current = applyEvents(current, opportunity);
@@ -563,6 +578,7 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     current = applyEvents(current, formed);
     // Kuyruk P10 (sürüm 39): adım sonrası kancaları (ek paket `dusmanYaklasti`); hızı 0 olursa yürüyüş durur.
     const stepped = down() || ruleVersion(current) < 39 ? [] : afterStepEvents(current, actor.id, prev, rng);
+    if (stepped.some((e) => e.type === 'moved' && e.reaction)) readyMoved = true;
     effects.push(...stepped);
     current = applyEvents(current, stepped);
     prev = step;

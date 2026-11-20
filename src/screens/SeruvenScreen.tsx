@@ -47,6 +47,8 @@ import { dayOf, hourOfDay, nodeTapAction, openHubs, partyPos, passiveHints } fro
 import { WALK_RULES, findPath, hubsNearSea } from '../world/walk';
 import { REGION_TOGGLE, SWIM, arrivalRegion, type WorldRegion } from '../world/regions';
 import { RegionLoading } from '../ui/world/RegionLoading';
+import { NewDiceNotice } from '../ui/DiceThemePicker';
+import { isUnlocked, loadDiceStore, recordUnlocks, unlocksFromSeruven } from '../app/diceUnlock';
 const toolOn = () => { try { return location.hash.includes('dugum') || localStorage.getItem('rpg-battle-dugum') === '1'; } catch { return false; } };
 
 /** Düğümün görünen adı: sefer düğümünün adı ya da haritanın görünen adı. */
@@ -77,6 +79,8 @@ export function SeruvenScreen(props: {
     if (!r.ok) { setError(r.error); return false; }
     const next = cmd.type === 'start' ? r.events : [...events, ...r.events];
     setEvents(next); setState(r.state); setError(null); saveSeruven(next);
+    // SD9: açılma kancası: Serüven olaylarını DİNLER (düğüm tamamlama, yerleşim, ödül/hazine) → oyuncu profili (idempotent).
+    recordUnlocks(unlocksFromSeruven(r.events, (id) => isUnlocked(loadDiceStore(), id)));
     return true;
   };
   // Biten savaştan dönüş: sonuç bir kez yazılır.
@@ -139,11 +143,11 @@ export function SeruvenScreen(props: {
     if (ss) props.onBattle(ss, `yer:${map}`, yerFilter(next.state));
   };
   const onSuc = () => { const ss = sucSession(state, Math.random); if (ss) props.onBattle(ss, `suc:${state.suc?.asama ?? ''}`); };
-  return <PageView lastEvent={events[events.length - 1]} state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap} onSuc={onSuc}
+  return <><NewDiceNotice /><PageView lastEvent={events[events.length - 1]} state={state} run={run} error={error} onBack={props.onBack} onReset={reset} onMap={onMap} onSuc={onSuc}
     onBattle={(node) => {
       const s = node.startsWith('link:') ? linkSession(state, node.slice(5), Math.random) : seruvenBattleSession(state, node, Math.random);
       if (s) props.onBattle(s, state.hapis && !node.startsWith('link:') ? `hapis:${node}` : node);
-    }} />;
+    }} /></>;
 }
 
 function StartForm(props: { characters: SavedCharacter[]; onStart: (c: SeruvenCommand) => void; error: string | null }) {

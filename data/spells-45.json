@@ -611,6 +611,7 @@
     },
     "text": "30 ft, WIS save; başarısız düşman her tur uzaklaşır (tur sonu save)",
     "mechanics": {
+      "m83": {"area83": {"shape": "emanation", "sizeFt": 30, "origin": "self", "targets": "enemies"}},
       "kind": "save",
       "save": "wis",
       "conditions": [
@@ -1729,7 +1730,17 @@
           "icon": "🌀"
         }
       },
-      "k19": "Kuyruk 19 (spellsK19): savaş yönü uygulandı"
+      "k19": "Kuyruk 19 (spellsK19): savaş yönü uygulandı",
+      "k84": {
+        "whirlpool": true,
+        "offCombat": false,
+        "gmNoted": true,
+        "gmNote": "Savaşta yalnız girdap (hedef yaratığın altıgeninde, su gerekmez); taşkın, hendek ve akış yönlendirme savaş dışı, Game Master anlatır.",
+        "save": "str",
+        "damage": "2d8",
+        "damageType": "bludgeoning",
+        "upcast": { "dice": "1d8", "radiusFt": 5, "applied": true }
+      }
     },
     "school": "Transmutation",
     "srdPage": 119

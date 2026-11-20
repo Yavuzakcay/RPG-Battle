@@ -4,15 +4,17 @@
  * İngilizce SRD ham metni kalmaz; İngilizce arayüzde Türkçe metin yerine "yalnız Türkçe" notu çıkar.
  */
 import { describe, expect, it } from 'vitest';
-import { items, spells, classData, trAciklama } from './index';
+import { items, spells, classData, trAciklama, enDescriptions } from './index';
 import { looksEnglish } from './aciklamaDil';
 import { itemSummary } from '../ui/equipmentText';
 import { describeTr } from '../ui/trDesc';
 import { setLang, t } from '../i18n';
 import srdSpecies from '../../data/srd/species.json';
 import data from '../../data/aciklamalar-tr.json';
+import canavarData from '../../data/aciklamalar-tr-canavar.json';
 
-const D = data as unknown as Record<string, Record<string, string>>;
+// Paket: canavar açıklamaları ayrı dosyada (yalnız Dungeondex tembel yükler); denetim ikisini birlikte tarar.
+const D: Record<string, Record<string, string>> = { ...(data as unknown as Record<string, Record<string, string>>), canavar: (canavarData as unknown as { canavar: Record<string, string> }).canavar };
 const traitIds = srdSpecies.species.flatMap((s) => s.traits.map((x) => `${s.id}/${x.id}`));
 
 describe('SD4 Türkçe açıklamalar', () => {
@@ -36,7 +38,8 @@ describe('SD4 Türkçe açıklamalar', () => {
       if (tur.startsWith('_') || typeof tablo !== 'object') continue;
       for (const [id, text] of Object.entries(tablo)) {
         expect(text.length, `${tur}/${id} uzunluk`).toBeGreaterThan(10);
-        expect(text.length, `${tur}/${id} uzunluk`).toBeLessThanOrEqual(240);
+        // Kuyruk A İş 4: canavar eylemleri (Engulf, Swallow…) zar/DC/mesafe bilgisini korumak için daha uzun olabilir.
+        expect(text.length, `${tur}/${id} uzunluk`).toBeLessThanOrEqual(tur === 'canavar' ? 560 : 240);
         expect(text.includes('\n'), `${tur}/${id} satır`).toBe(false);
         expect(looksEnglish(text), `${tur}/${id} İngilizce`).toBe(false);
       }
@@ -46,15 +49,19 @@ describe('SD4 Türkçe açıklamalar', () => {
     const bad = items.filter((i) => looksEnglish(itemSummary(i))).map((i) => i.id);
     expect(bad).toEqual([]);
   });
-  it('İngilizce arayüzde Türkçe açıklama yerine kısa "yalnız Türkçe" notu; Türkçede açıklama', () => {
+  // Görev EN-ACIKLAMA: İngilizce arayüz artık data/aciklamalar-en.json'daki İngilizce açıklamayı gösterir; "yalnız Türkçe"
+  // notu yalnız EN karşılığı olmayan kayıtta (geriye uyum) kalır.
+  it('İngilizce arayüzde İngilizce açıklama, EN karşılığı yoksa "yalnız Türkçe" notu; Türkçede açıklama', () => {
     expect(trAciklama('buyu', 'fireball')).toMatch(/8d6/);
     setLang('tr');
     expect(describeTr('buyu', 'fireball')).toMatch(/8d6/);
     setLang('en');
+    const saved = enDescriptions.buyu.fireball;
     try {
+      expect(describeTr('buyu', 'fireball')).toMatch(/8d6 Fire damage/);
+      delete enDescriptions.buyu.fireball;
       expect(describeTr('buyu', 'fireball')).toBe(t().common.descTrOnly);
-      expect(describeTr('buyu', 'fireball')).not.toMatch(/8d6/);
       expect(describeTr('buyu', 'yok-boyle-buyu')).toBeUndefined();
-    } finally { setLang('tr'); }
+    } finally { enDescriptions.buyu.fireball = saved!; setLang('tr'); }
   });
 });

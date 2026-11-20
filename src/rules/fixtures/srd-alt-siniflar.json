@@ -557,8 +557,8 @@
    "class": "fighter",
    "srd": "subclasses:champion",
    "name": {
-    "tr": "Şampiyon",
-    "en": "Champion"
+    "tr": "Gladyatör",
+    "en": "Gladiator"
    },
    "role": {
     "tr": "Savaşta bedensel ustalığın peşinden gider",

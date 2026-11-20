@@ -27,12 +27,16 @@ import { mountActions, mountBadge, moverFor, ridersOnTop, riderStack, setupMount
 import { sizeRank } from './battle/forced';
 import { eldritchSmiteProblem } from './battle/warlock';
 import { availableForms, wildShapeFeature } from './battle/druid';
+import { whirlpoolCast } from './battle/girdap';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
-import { maps } from './map/maps';
+import { pickerLevels, usesShown } from './ui/slotInfo';
+import { getMap, maps } from './map/maps';
 import { economyBlock, freeCastResource, preferBonus } from './battle/economy';
+import { readyOn } from './battle/readySurum';
+import { READY_DRAFT, ReadyPanel, type ReadyDraft } from './ui/ReadyPanel';
 import { bodyAt, bodyOf, isMultiHex } from './battle/body';
 import { dimLightOn, optionalRules, ruleOf, stuckInBog } from './battle/maprules';
 import { standUpProblem } from './battle/grapple';
@@ -56,8 +60,10 @@ import { distance, hexKey, sameHex, type Offset } from './rules/hex';
 import { SKILLS, SKILL_IDS, skillBonus } from './rules/skills';
 import { GM_CONTEXT, contextFor, dispatch, type Session } from './ui/session';
 import { getLang, t, useLang } from './i18n';
-import { reasonOr, reasonText } from './ui/reasons';
+import { completeReason, reasonOr, reasonText } from './ui/reasons';
 /** Motor gerekçesi seçili dile (null kalır). */
+/** SD9: haritanın bölgesi (zar teması ve açılma); bulunamazsa yok. */
+const mapRegionOf = (id: string): string | undefined => { try { return getMap(id).bolge; } catch { return undefined; } };
 const loc = (m: string | null | undefined): string | null => (m ? reasonText(m, getLang()) : null);
 /** Devre dışı düğmenin gerekçe satırı. */
 const Why = ({ msg }: { msg: string | null | undefined }) => <small className="why-line">⊘ {reasonOr(msg, getLang())}</small>;
@@ -81,14 +87,16 @@ import {
 } from './ui/mapView';
 import {
   areaActCommand, areaActPreview, areaActSpec, areaExcludable, areaFreeShape, areaPathRules, areaPointCount, areaWallPath, areaAttacksOf, attackTargets, bubbleAt, directionAims, effectTargets, hasSlotFor, onceFree, isSpellChoice, radialLayout,
-  featureTeleportHexes, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, type AreaAct, type Box, type Point,
+  featureTeleportHexes, offCombatOnly, slotChoices, spellLightFt, spellMenu, spellTargets, summonHexes, teleportTargets, waterChoices, type AreaAct, type Box, type Point,
 } from './ui/hud';
+import { SECENEK_ADI } from './battle/girdapSurum';
 import { effectIcons, effectRows } from './ui/effectsView';
 import { destroyForceProblem, effectTargetCount, strideSpellOf } from './battle/spells';
 import { wishCandidates } from './battle/spells69';
 import { movableZoneOf } from './battle/zones';
 import { DANCE_COMBINED, danceAddProblem, danceMax } from './battle/danceLights';
 import { AvatarBadge, AvatarCircle } from './ui/Avatar';
+import { facesLeft as tokenFacesLeft } from './ui/tokenFacing';
 import { isAirborne } from './battle/flight';
 import { LookFrame } from './ui/LookFrame';
 /** Kuyruk AS1c: alt soyu olan oyuncu karakterinin rozetine alt soy görünümü (oran, hale, filtre, kanat); diğerleri aynen. */
@@ -97,6 +105,11 @@ import { drawOrder, tokenScale } from './ui/tokenSize';
 import { actionHint, actionTip } from './ui/actionHints';
 import { activeSpecialGroups, costOfKey, pageOf, spellGroups, splitMenu, visible, type MenuItem, type SpecialGroup } from './ui/actionMenu';
 import { EFFECT_SPRITES, FLOAT_ICON, OUTCOME_MS, FLOAT_STAGGER_MS, damageHits, outcomeMarks, spriteFor, statusIcons, type DamageHit, type OutcomeMark, type StatusIcon } from './ui/damageFloats';
+import { hpFraction, hpModeFor, maskHpText } from './ui/hpVisibility';
+import { SpellComps } from './ui/SpellComps';
+import { addDraftGoal, bindObject, clearHexes, hasMapGoals, isPending, needsOf, pendingItems, resolveDraft, toggleHex, type GoalsDraft } from './oda/hedef';
+import { withGoals } from './ui/goalSetup';
+import { activeTool, hexOwner, openGoalTool, toolbarShown, type ActiveTool, type GoalPick } from './ui/mapTools';
 import { hasSavedBattle, loadBattle, saveBattle } from './app/battleSave';
 import { ThemeButton } from './ui/theme';
 import { battleSummary } from './app/setup';
@@ -106,7 +119,7 @@ import { brutalOptions, brutalReady, type BrutalBlow } from './battle/brutal';
 import { steedActions } from './battle/steed';
 import { ramTargets, steerableSummon, steerHexes, summonDef } from './battle/summons';
 import { zoneHexes, zoneSpecOf } from './battle/zones';
-import { fireHexProblem, fireHexSpell, freeHexRule } from './battle/ignite';
+import { fireHexProblem, fireHexSpell, freeHexAnyOn, freeHexRule, hexCastable } from './battle/ignite';
 import { globalRule } from './battle/ruleControl';
 import { pickArea } from './battle/areaAttack';
 import { climbLabel, climbTargets } from './battle/climb';
@@ -119,10 +132,11 @@ import { hasStandData, katlarOf } from './battle/stand';
 import { climbDc, heightDelta, heightShowRule, levelFeet, rampEdges } from './battle/heights';
 import { getMonster, monsters, spells } from './data';
 import { seesTrueForm, truesightRange } from './battle/sight';
-import { mechanicsAt, sigmayanNote } from './battle/spellVersion';
+import { mechanicsAt, sigmayanNote, spellAreaAt } from './battle/spellVersion';
 import { breathOf } from './battle/breath';
 import { useEffectsDensity, useEffectsSetting, useSpriteAnimSetting } from './ui/effectsSetting';
 import { saveMapTint, storedMapTint } from './ui/mapTintSetting';
+import { RageFlames } from './ui/RageFlames';
 import { LOOP_SCALE, MAX_ANIMATED, ROTATE_MS, beamFor, limitBadges, filterStyle, loopEffectsFor, outlineColor, placeLoops, tokenFilters, type BeamKind } from './ui/statusFx';
 import { useDiceFlow } from './ui/diceFlow';
 import { DicePrompt } from './ui/DicePrompt';
@@ -130,7 +144,11 @@ import { ReactionPrompt } from './ui/ReactionPrompt';
 import { reactionDecider, useReactionPolicies } from './ui/reactionSetting';
 import { diceLead, diceSeenAtStart, diceTimings, diceTitle, keptIndex, liveDiceRolls, useDiceAnimSetting } from './ui/diceAnim';
 import type { TrayItem } from './ui/DiceTray';
-import { diceThemeName, useDiceThemeSetting } from './ui/diceTheme';
+import { diceThemeOf } from './ui/diceTheme';
+import { NewDiceNotice } from './ui/DiceThemePicker';
+import { loadDiceStore, recordUnlocks, themeForRoll, unlocksFromBattle } from './app/diceUnlock';
+import { resolveDice } from './app/diceOwn';
+import { loadCharacters } from './app/storage';
 import { dice3dAllowed } from './ui/dice3dSupport';
 import { emitDiceSound } from './ui/diceSound';
 import { battleSoundScene, leaveBattleEnd, playEndJingle, useSceneRequest } from './ui/audio/sound';
@@ -153,10 +171,15 @@ const FxGround = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.
 const EndVideo = lazy(() => import('./ui/EndVideo'));
 // Kuyruk K58: hamle önizleme kartı (tembel).
 const PreviewCard = lazy(() => import('./ui/preview/PreviewCard'));
+const SlotEffect = lazy(() => import('./ui/preview/SlotEffect'));
 import { movePreview, moveTap, type MovePreview } from './ui/preview/movePreview';
 import { CameraHud, WorldLayer, useMapCamera } from './ui/MapCamera';
+import { readableScale, tokenReadability } from './ui/tokenReadability';
+import { abilitiesOf, abilityReady } from './battle/monsterAbilities';
 import { SurfaceTool, type SurfacePick } from './ui/gm/SurfaceTool';
-import { ObjectTool, type ObjectPick } from './ui/gm/ObjectTool';
+import { ObjectPanel, type ObjectPick } from './ui/gm/ObjectPanel';
+import { ObjectCard } from './ui/gm/ObjectCard';
+import { nesneOn } from './battle/nesneSurum';
 import { castBarrierKind } from './battle/castBarrier';
 import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
 import { zoneShownTo } from './battle/hiddenZones';
@@ -172,7 +195,13 @@ import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 import { MoralBar } from './ui/MoralBar';
+import { DamageChip, GlyphBadges, GlyphText } from './ui/glyph/Glyph';
+import { glyphLabel } from './ui/glyph/glyphs';
 import { ResourceChip, iconed, plain, sharedIcons } from './ui/ResourceChip';
+
+/** Görev OD1B: düşman HP görünürlüğü tek çözücüden (`ui/hpVisibility`). */
+const enemyHpFraction = hpFraction;
+const maskHp = maskHpText;
 
 const BASE = import.meta.env.BASE_URL;
 const RATIO = VIEW.w / VIEW.h;
@@ -181,7 +210,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj' | 'special';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj' | 'special' | 'ready' | 'readyHex';
 
 /** Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). */
 function useStage(): Box {
@@ -234,7 +263,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
         {framedBadge(c, 56, <AvatarBadge avatar={c.avatar} size={56} ring={c.side === 'party' ? 'var(--party)' : 'var(--enemy)'} />)}
         <div>
           <strong>{displayName(c)}</strong>
-          <small>{c.civilian ? `${c.name} · ` : ''}{D.stats(c.hp, c.maxHp, c.ac, c.speed, c.fly)}</small>
+          <small>{c.civilian ? `${c.name} · ` : ''}{maskHp(D.stats(c.hp, c.maxHp, c.ac, c.speed, c.fly), c)}</small>
           {c.moralMax !== undefined && <MoralBar moral={c.moral ?? 0} max={c.moralMax} />}
           {c.effects?.some((e) => e.noCast) && <span className="armor-badge" title={D.untrainedArmorTip}>⚠ {D.untrainedArmor}</span>}
         </div>
@@ -254,11 +283,11 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
           <ul>{fxRows.map((r) => (
             <li key={r.key} className={r.harmful ? 'harmful' : 'helpful'}>
               <button type="button" onClick={() => setOpenFx((k) => (k === r.key ? null : r.key))} aria-expanded={openFx === r.key}>
-                <span aria-hidden="true">{r.icon}</span> {r.name}{r.detail ? <small> · {r.detail}</small> : null}
+                <span aria-hidden="true">{r.icon}</span> {r.name}<GlyphBadges list={r.glif} />{r.detail ? <small> · {r.detail}</small> : null}
               </button>
               {/* Kuyruk B2: betimleme mekanik metnin üstünde (yoksa hiçbir şey çizilmez). */}
-              {openFx === r.key && r.desc && <p className="fx-desc">{r.desc}</p>}
-              {openFx === r.key && r.text && <p className="fx-text">{r.text}</p>}
+              {openFx === r.key && r.desc && <p className="fx-desc"><GlyphText text={r.desc} /></p>}
+              {openFx === r.key && r.text && <p className="fx-text"><GlyphText text={r.text} /></p>}
             </li>
           ))}</ul>
         </div>
@@ -314,7 +343,7 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
       {c.concentration && <p>{D.concentration(c.concentration.spell)}</p>}
       {(plain(usableResources(c)).length > 0 || c.sneakAttackDice > 0) && (
         <p>{D.features([
-          ...plain(usableResources(c)).map(([id, n]) => `${resourceDef(id)?.name ?? id} ${n}`),
+          ...plain(usableResources(c)).map(([id, n]) => `${resourceDef(id)?.name ?? id}${usesShown(n) === null ? '' : ` ${n}`}`),
           c.sneakAttackDice > 0 ? `Sneak Attack ${c.sneakAttackDice}d6` : '',
         ].filter(Boolean).join(' · '))}</p>
       )}
@@ -336,11 +365,11 @@ const slotFields = (slot: number | null): { slotLevel?: number; free?: true } =>
 const withSlot = (cmd: Command, slot: number | null): Command =>
   (cmd.type === 'cast_spell' && slot !== null ? { ...cmd, ...slotFields(slot) } : cmd);
 
-/** Büyü seçenekleri: yukarı slot ve (Görev SORCERER) Metamagic. */
+/** Büyü seçenekleri: yukarı slot ve (Görev SORCERER) Metamagic. `cmdFor`: seçili slotla yapılacak komut (hedef seçiliyse; SD7 hedef başına satırlar). */
 function SpellOptions(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void;
-  mm: string[]; onMm: (ids: string[]) => void; tm: string; onTm: (t: string) => void; state: BattleState }) {
+  mm: string[]; onMm: (ids: string[]) => void; tm: string; onTm: (t: string) => void; state: BattleState; cmdFor?: (slot: number | null) => Command | null }) {
   return <>
-    <SlotPicker actor={props.actor} spell={props.spell} value={props.value} onChange={props.onChange} />
+    <SlotPicker actor={props.actor} spell={props.spell} value={props.value} onChange={props.onChange} state={props.state} cmdFor={props.cmdFor} />
     <MetamagicPicker actor={props.actor} spell={props.spell} value={props.mm} onChange={props.onMm} state={props.state} />
     {props.mm.includes('transmuted') && (
       <div className="slot-picker" role="radiogroup" aria-label={t().battle.transmuteTo}>
@@ -394,18 +423,25 @@ function MetamagicPicker(props: { actor: Combatant; spell: Spell; value: string[
   );
 }
 
+/** SD7: slot seçicinin (düğmeler + etki satırları) balonda ayıracağı yükseklik; seçici yoksa 0. */
+const pickerHeight = (actor: Combatant, spell: Spell): number =>
+  spell.level > 0 && (slotChoices(actor, spell).length > 1 || !!freeCastResource(actor, spell.name, undefined, true)) ? 250 : 0;
+
 /**
- * Yukarı slot seçimi: büyünün seviyesi ve üstündeki dolu slotlar. Motorun henüz uygulamadığı yukarı slot
- * etkisi (veride `upcast`, `applied` değil) açıkça yazılır.
+ * Slot seçimi (SD7): yalnız şu an kullanılabilen seviyeler (büyü seviyesi ve üstü, kalan slotu > 0), varsayılan en düşük; seçili düğme
+ * dolu vurgulu. Altında seçilen slotla atılacak zar tek satırda ve (hedef seçiliyse) hedef başına ne kadarının işleyeceği. Yukarı
+ * slotla güçlenmeyen büyüde yalnız en düşük slot. "Slotsuz" yalnız hakkı varken; sınırsız yer tutucu sayı görünmez.
  */
-function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void }) {
+function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | null; onChange: (n: number | null) => void; state?: BattleState; cmdFor?: (slot: number | null) => Command | null }) {
   const B = t().battle;
-  const levels = slotChoices(props.actor, props.spell);
+  const usable = slotChoices(props.actor, props.spell);
+  const levels = pickerLevels(usable, props.spell);
   // Kuyruk 43b: Divine Intervention gibi listeli kaynak kaldıysa "slotsuz" seçeneği (slot kalmış olsa da).
   const freeId = props.spell.level > 0 ? freeCastResource(props.actor, props.spell.name, undefined, true) : null;
-  if (props.spell.level === 0 || (levels.length < 2 && !freeId)) return null;
-  const current = props.value ?? levels[0];
-  const up = props.spell.mechanics.upcast;
+  if (props.spell.level === 0 || (usable.length < 2 && !freeId)) return null;
+  const valid = props.value === FREE_SLOT ? !!freeId : props.value !== null && levels.includes(props.value);
+  const current = valid ? (props.value as number) : (levels[0] ?? FREE_SLOT);
+  const effLevel = current === FREE_SLOT ? props.spell.level : current;
   return (
     <div className="slot-picker" role="radiogroup" aria-label={B.slotPick}>
       <small>{B.slotPick}</small>
@@ -415,10 +451,13 @@ function SlotPicker(props: { actor: Combatant; spell: Spell; value: number | nul
       ))}
       {freeId && (
         <button role="radio" aria-checked={current === FREE_SLOT} className={current === FREE_SLOT ? 'on' : 'ghost'} title={B.freeCastInfo}
-          onClick={() => props.onChange(current === FREE_SLOT ? null : FREE_SLOT)}>{B.freeCast(resourceLeft(props.actor, freeId))}</button>
+          onClick={() => props.onChange(current === FREE_SLOT ? null : FREE_SLOT)}>{B.freeCast(resourceDef(freeId)?.name ?? freeId, usesShown(resourceLeft(props.actor, freeId)))}</button>
       )}
-      {current !== undefined && current !== FREE_SLOT && current > props.spell.level && (
-        <small>{up?.applied ? B.upcastApplied(current - props.spell.level) : up ? B.upcastNotYet : B.upcastNone}</small>
+      {props.state && (
+        <Suspense fallback={null}>
+          <SlotEffect state={props.state} ctx={contextFor(props.state, props.actor.id)} spell={props.spell} slotLevel={effLevel} multi={usable.length > 1}
+            cmd={props.cmdFor ? props.cmdFor(current) : null} />
+        </Suspense>
       )}
     </div>
   );
@@ -451,9 +490,14 @@ const usableResources = (c: Combatant): Array<[string, number]> =>
   Object.entries(c.resources).filter(([id, n]) => n > 0 && resourceUsable(id));
 
 /** Haritalı savaş ekranı. `exitLabel` çıkış düğmesinin adı (kurulum ekranına dönüş). */
-export function Battle(props: { initial: Session; mapFilter?: string; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean }) {
+export function Battle(props: { initial: Session; /** Görev OD1C: haritada tamamlanacak bekleyen hedefler içeren taslak. */ goalDraft?: GoalsDraft; mapFilter?: string; onExit: (final?: BattleState) => void; exitLabel?: string; restored?: boolean }) {
   const box = useStage();
   const [session, setSession] = useState<Session>(props.initial);
+  // Görev OD1C: bekleyen hedefler (altıgen/nesne haritada seçilir). `goalPick`: şu an hangi hedef için hangi seçim açık.
+  const [gd, setGd] = useState<GoalsDraft | null>(props.goalDraft ?? null);
+  const [goalPick, setGoalPick] = useState<GoalPick | null>(null);
+  // Kuyruk KQ3 NA1: Game Master nesne ağırlığı kartı.
+  const [cardId, setCardId] = useState<string | null>(null);
   // Zar modu (Game Master kurulumda seçer): fiziksel zarda gereken zar istenir, adım aynı zarlarla yeniden çalışır.
   const isPlayer = (id: string) => { const c = session.state.combatants[id]; return !!c && c.side === 'party' && !c.civilian; };
   // Tepki ayarı (Görev R1): oyuncu karakterine sor / her zaman / asla; düşmanlar yapay zekâ / her zaman / asla.
@@ -461,7 +505,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const dice = useDiceFlow<Session>(session.state.diceMode ?? 'auto', isPlayer, setSession, Math.random, reactionDecider(policies, isPlayer));
   // Zar animasyonu: yalnızca canlı zarlar (kayıttan yüklenen oturumun eski zarları oynamaz), sırayla.
   const [diceAnim, cycleDiceAnim] = useDiceAnimSetting();
-  const [diceTheme, cycleDiceTheme] = useDiceThemeSetting();
+  // SD9: tema atışa göre (`themeForRoll`: oyuncu seçimi, düşman canavar zarı, harita bölge zarı); tepsinin varsayılanı Klasik.
+  const diceTheme = diceThemeOf('klasik');
   const [diceQueue, setDiceQueue] = useState<TrayItem[]>([]);
   // Kuyruk K71b: tırmanmaya başlama onayı (ilk dokunuş açıklar, ikincisi başlatır); anahtar aktör + harcanan hareket.
   const [climbArmed, setClimbArmed] = useState<string | null>(null);
@@ -476,6 +521,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (session.state.status !== 'setup') saveBattle(session);
   }, [session.state.round, session.state.status]);
   const [mode, setMode] = useState<Mode>('idle');
+  // Hazırla (Ready, sürüm 90): panel taslağı ve haritadan seçilen alan.
+  const [readyDraft, setReadyDraft] = useState<ReadyDraft>(READY_DRAFT);
+  const [readyPick, setReadyPick] = useState<'hex' | 'to'>('hex');
   // Kuyruk 43: seçilen sarf eşyası (iksir).
   const [itemPick, setItemPick] = useState<string | null>(null);
   const [spell, setSpell] = useState<Spell | null>(null);
@@ -595,7 +643,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Görev K13B: Game Master yüzey aracı (savaş ekranı).
   const [surfacePick, setSurfacePick] = useState<SurfacePick>('oil');
   // Görev S2: Game Master nesne aracı.
-  const [objectPick, setObjectPick] = useState<ObjectPick>({ kind: 'oilBarrel' });
+  const [objectPick, setObjectPick] = useState<ObjectPick>('inspect');
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [gateAim, setGateAim] = useState(false);
   const [artError, setArtError] = useState<string | null>(null);
@@ -846,8 +894,15 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       return () => window.clearTimeout(timer);
     }
     if (!timings || rolls.length === 0) return;
-    setDiceQueue((q) => [...q, ...rolls.map((roll) => ({ id: Math.random(), roll, title: diceTitle(roll, session.state) }))]);
+    // SD8 eki: oyuncunun zarı karakter kaydındaki seçimden (kayıt yoksa profil yedeği); yalnız görünüm.
+    const chars = loadCharacters(), dstore = loadDiceStore();
+    const charChoice = (ownerId: string) => { const ch = chars.find((x) => x.id === ownerId); return ch ? resolveDice(ch, dstore) : undefined; };
+    setDiceQueue((q) => [...q, ...rolls.map((roll) => ({ id: Math.random(), roll, title: diceTitle(roll, session.state), themeId: themeForRoll(roll.by, { state: session.state, store: dstore, regionOf: mapRegionOf, charChoice }) }))]);
   }, [session]);
+
+  // SD9: açılma kancası: savaş olaylarını DİNLER (yenilen düşman, bölge haritası, kullanılan eşya/büyü) ve oyuncu profiline yazar
+  // (idempotent; komut/reducer/olay biçimi değişmez, kayda ve replay'e girmez).
+  useEffect(() => { recordUnlocks(unlocksFromBattle(session.state, session.events, mapRegionOf)); }, [session.events.length, session.state.status]);
 
   // Sıra değişince menü yeniden açılır, kip sıfırlanır.
   // Görev B1 (kuyruk 14): Esc her seçim kipinden çıkar (hiçbir kipte kilitlenme yok).
@@ -1011,7 +1066,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Kuyruk 30 D3: serbest altıgen hedefleme açıkken ateşli tek hedefli büyü menzil ve görüşteki her altıgene (boş zeminde söner).
   const freeFireKeys = useMemo(() => {
     const me = state.combatants[actorId];
-    if (!active || mode !== 'spell' || !spell || !fireHexSpell(spell) || !state.map || !me || !freeHexRule(state)) return new Set<string>();
+    if (!active || mode !== 'spell' || !spell || !hexCastable(state, spell) || !state.map || !me || !freeHexRule(state)) return new Set<string>();
     const out = new Set<string>();
     state.map.tiles.forEach((row, r) => [...row].forEach((_, col) => { const h = { col, row: r }; if (!fireHexProblem(state, me, spell, h)) out.add(hexKey(h)); }));
     return out;
@@ -1084,6 +1139,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     return cam.big ? { x: (c.x - cam.cam.x) * cam.k, y: (c.y - cam.cam.y) * cam.k } : { x: (c.x / VIEW.w) * box.w, y: (c.y / VIEW.h) * box.h };
   };
   const tokenR = cam.big ? HEX_H * 0.36 * cam.k : HEX_H * 0.36 * (box.h / VIEW.h);
+  // Serüven öncesi (yalnız arayüz): dar ekranda jeton ölçeği alt sınırı, HP çubuğu ve rozet boyu ekran pikselinden (`tokenReadability`).
+  const readable = tokenReadability(cam.big ? cam.k : box.h / VIEW.h, TOKEN_R);
   // Görev H1: hedef/nişan seçerken seçili yaratık ve hedef ekranda kalsın (geniş haritada).
   useEffect(() => {
     const ps = [actor?.pos, targetId ? state.combatants[targetId]?.pos : null, aimHex].filter((x): x is Offset => !!x);
@@ -1100,7 +1157,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   }, [session.events.length, cam.big]);
 
   const toast = (text: string) => {
-    const item = { id: Math.random(), text, error: true };
+    const item = { id: Math.random(), text: completeReason(text, getLang()), error: true };
     setToasts((t) => [...t, item].slice(-3));
     window.setTimeout(() => setToasts((t) => t.filter((x) => x !== item)), TOAST_MS);
   };
@@ -1118,6 +1175,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     const cmd: Command = cmd0.type === 'cast_spell' && mmPick.length > 0
       ? { ...cmd0, ...(mm.length ? { metamagic: mm } : {}), ...(mmPick.includes('overchannel') ? { overchannel: true } : {}), ...(mmPick.includes('store') ? { store: true } : {}), ...(mm.includes('transmuted') ? { transmute: tmPick } : {}) } : cmd0;
     dice.play((rng) => dispatch(session, cmd, rng)); reset();
+  };
+  // Görev OD1C: başlatırken tamamlanan hedefler oturuma yazılır; tamamlanmayanlar yok sayılır ve günlüğe yazılır.
+  const startBattle = () => {
+    if (!gd) { run({ type: 'start_battle' }); return; }
+    const left = pendingItems(gd).length;
+    const patched = withGoals(session, resolveDraft(gd).goals ?? null, left > 0 ? t().oda.goal.ignored(left) : undefined);
+    dice.play((rng) => dispatch(patched, { type: 'start_battle' }, rng)); reset(); setGoalPick(null);
   };
   // Kurulum: GM herkesi yerleştirir (dokun-seç-dokun ya da sürükle-bırak); olay günlüğe girer.
   const placeAt = (id: string, at: Offset) => setSession((s) => dispatch(s, { type: 'place', actorId: id, at }, Math.random, GM_CONTEXT));
@@ -1143,12 +1207,39 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const onHex = (h: Offset) => {
     if (longPressed.current) { longPressed.current = false; return; }
     // Görev S2: Game Master nesne yerleştirir/kaldırır (kurulumda da; zar yok).
-    if (mode === 'gmObject') {
-      const next = dispatch(session, objectPick === 'remove' ? { type: 'place_object', at: h } : { type: 'place_object', kind: objectPick.kind, at: h, ...(objectPick.state ? { state: objectPick.state } : {}) }, Math.random, GM_CONTEXT);
-      if (next.error) toast(next.error); else setSession(next);
+    // Görev OD1C: bekleyen hedef için altıgen işaretle / nesne seç.
+    // Kuyruk KQ5 GH1: dokunuşun sahibi tek aktif araç (`ui/mapTools.ts`); hedef aracı yüzey/nesne çubuğu açık olsa da önce gelir.
+    const owner = hexOwner({ mode, goalPick }, setup, typeof objectPick === 'string' ? objectPick : undefined);
+    if (goalPick && gd && (owner === 'goal-hex' || owner === 'goal-obj')) {
+      if (goalPick.how === 'hex') { setGd(toggleHex(gd, goalPick.id, h)); return; }
+      const ob = state.map?.objects?.find((o) => sameHex(o.at, h));
+      if (!ob) { toast(t().oda.goal.noObjectHere); return; }
+      setGd(bindObject(gd, goalPick.id, ob.id)); setGoalPick(null); toast(t().oda.goal.boundObject(ob.id));
       return;
     }
-    if (setup) { if (selected) placeAt(selected, h); return; }
+    if (mode === 'gmObject' && objectPick === 'inspect') {
+      // Kuyruk KQ5 NU1: "İncele": dokunulan nesnenin kartı (ad, açıklama, ağırlık, kaldır, hedef yap).
+      const ob = state.map?.objects?.find((x) => sameHex(x.at, h) && !x.carriedBy);
+      if (!ob) { toast(t().na1.noObject); return; }
+      setCardId(ob.id);
+      return;
+    }
+    if (mode === 'gmObject') {
+      const had = new Set((state.map?.objects ?? []).map((o) => o.id));
+      const next = dispatch(session, objectPick === 'remove' || objectPick === 'inspect' ? { type: 'place_object', at: h } : { type: 'place_object', kind: objectPick.kind, at: h, ...(objectPick.state ? { state: objectPick.state } : {}) }, Math.random, GM_CONTEXT);
+      if (next.error) toast(next.error); else {
+        setSession(next);
+        // Görev OD1C: "Nesne yerleştir" ile koyulan yeni nesne bekleyen hedefe kendiliğinden bağlanır.
+        const fresh = (next.state.map?.objects ?? []).find((o) => !had.has(o.id));
+        if (goalPick?.how === 'place' && gd && fresh) { setGd(bindObject(gd, goalPick.id, fresh.id)); setGoalPick(null); setMode('idle'); toast(t().oda.goal.boundObject(fresh.id)); }
+      }
+      return;
+    }
+    if (setup) {
+      if (selected) placeAt(selected, h);
+      else { const ob = state.map?.objects?.find((x) => sameHex(x.at, h) && !x.carriedBy); if (ob) setCardId(ob.id); }
+      return;
+    }
     if (exploreOn && explorerId) {
       if (!movable.has(hexKey(h))) return;
       const next = dispatch(session, { type: 'explore_move', actorId: explorerId, to: h }, Math.random, contextFor(state, explorerId));
@@ -1212,14 +1303,24 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       // Kuyruk MB6: havada inme: seçilen irtifa bineğinkinden farklıysa `toFt` gönderilir (yalnız uçabilen).
       const cmd = cmd0.type === 'dismount' && dismountOpts.picker && dismountFt !== null && dismountFt !== dismountOpts.defaultFt ? { ...cmd0, toFt: dismountFt } : cmd0;
       // Kuyruk 19: Control Water biçimi; Stone Shape kapıda mühür.
-      const mode2 = cmd.type === 'cast_spell' ? spell?.mechanics.upgrade?.terraform?.mode : undefined;
+      const mode2 = cmd.type === 'cast_spell' && !(spell && whirlpoolCast(state, spell)) ? spell?.mechanics.upgrade?.terraform?.mode : undefined;
       const choice = mode2 === 'controlWater' ? choicePick ?? 'whirlpool' : mode2 === 'stoneShape' && state.map?.tiles[h.row]?.[h.col] === 'O' ? 'seal'
         : cmd.type === 'cast_spell' && spell && mechanicsAt(state, spell).zone?.cage ? choicePick ?? 'box' : null;
-      run(choice && cmd.type === 'cast_spell' ? { ...cmd, choice } : cmd);
+      // Control Water (sürüm 84): girdap dışı seçenek (Flood, Part Water, Redirect Flow) yalnız Game Master notu.
+      const water = cmd.type === 'cast_spell' && spell && whirlpoolCast(state, spell) && choicePick && choicePick !== 'whirlpool' ? choicePick : null;
+      run((choice ?? water) && cmd.type === 'cast_spell' ? { ...cmd, choice: (choice ?? water) as string } : cmd);
       return;
     }
     if (mode === 'summon' && spell) {
-      if (summonKeys.has(hexKey(h))) run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h, ...(choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) });
+      if (!summonKeys.has(hexKey(h))) return;
+      // Mekanik matris B10: Arcane Hand yapımda da etki seçer (SRD "When you cast the spell … cause one of the following
+      // effects"): seçilen etki ve elin 5 ft içindeki düşman (Interposing Hand hedefsiz). Motor bunu destekliyordu, arayüz sormuyordu.
+      // Seçici "Ez"i göstermez (yalnız taşımada): gösterilenle gönderilen aynı olsun diye Ez → Clenched Fist.
+      const handFx = summonDef(spell.id)?.handK19 && globalRule(state, 'spellsK19') ? (handPick === 'crush' ? 'fist' : handPick) : null;
+      const near = handFx && handFx !== 'interpose' ? Object.values(state.combatants)
+        .filter((c) => c.side !== actor?.side && !c.civilian && c.hp > 0 && c.pos && distance(c.pos, h) === 1).sort((a, b) => a.hp - b.hp)[0] : undefined;
+      run({ type: 'cast_spell', actorId, spellName: spell.name, targetHex: h,
+        ...(handFx ? { choice: handFx, ...(near ? { targetId: near.id } : {}) } : choicePick ? { choice: choicePick } : {}), ...slotFields(slotPick) });
       return;
     }
     // CILA: çağrıyı bonus eylemle taşı (Flaming Sphere bitişik düşmana çarpar).
@@ -1249,6 +1350,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     if (mode === 'erupt') { run({ type: 'map_trigger', rule: 'eruption', at: h }); return; }
     // Kuyruk 41b: Dikkat dağıt: menzildeki altıgene ses.
     if (mode === 'distract') { run({ type: 'distract', actorId, at: h }); return; }
+    // Hazırla (Ready): tetik altıgeni ya da hareket varışı.
+    if (mode === 'readyHex') { setReadyDraft((d) => ({ ...d, [readyPick]: h })); setMode('ready'); return; }
     if (mode === 'attack' && gm.gate && gm.gate.state === 'closed' && sameHex(gm.gate.at, h)) { setGateAim(true); return; }
     if (mode !== 'idle' && mode !== 'jump') return;
     const key = hexKey(h);
@@ -1324,7 +1427,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       : active && mode === 'steer' && state.combatants[actorId] ? [...steerHexes(state, state.combatants[actorId] as Combatant),
         ...((s) => (s?.summon?.hand && s.pos ? [s.pos] : []))(steerableSummon(state, state.combatants[actorId] as Combatant))].map(hexKey)
       : active && mode === 'followHex' ? hexFollowKeys(state, actorId)
-      : active && mode === 'pickHex' && pickHexCmd ? hexTryKeys(state, actorId, (h) => ((c) => (c.type === 'cast_spell' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' ? { ...c, choice: choicePick ?? 'whirlpool' } : c.type === 'cast_spell' && spell && mechanicsAt(state, spell).zone?.cage ? { ...c, choice: choicePick ?? 'box' } : c))(pickHexCmd.make(h)))
+      : active && mode === 'pickHex' && pickHexCmd ? hexTryKeys(state, actorId, (h) => ((c) => (c.type === 'cast_spell' && spell && whirlpoolCast(state, spell) ? (choicePick && choicePick !== 'whirlpool' ? { ...c, choice: choicePick } : c) : c.type === 'cast_spell' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' ? { ...c, choice: choicePick ?? 'whirlpool' } : c.type === 'cast_spell' && spell && mechanicsAt(state, spell).zone?.cage ? { ...c, choice: choicePick ?? 'box' } : c))(pickHexCmd.make(h)))
       : active && mode === 'shift' && state.combatants[actorId] ? shiftHexes(state, state.combatants[actorId] as Combatant).filter((h) => !occupantAt(state, h, actorId)).map(hexKey)
       : active && mode === 'sphere' ? hexTryKeys(state, actorId, (h) => ({ type: 'sphere_roll', actorId, to: h })) : []),
     [state, active, mode, spell, actorId, choicePick, featureKey, pickHexCmd]);
@@ -1332,12 +1435,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   // Riskli atlamalar (lav üstünden, `lavJump`): uyarı rengi ve onaylı önizleme.
   const jumpRisks = new Map(mode === 'jump' ? islandTargets.flatMap((t) => (t.risk ? [[hexKey(t.to), t.risk] as const] : [])) : []);
   // Canavar resimleri sağa bakar: en yakın karakter soldaysa jeton aynalanır (hep karakterlere dönük).
+  // Kuyruk K75b: parti da düşmana döner; tek saf işlev (`ui/tokenFacing.ts`), eşitlikte önceki yön korunur.
+  const facing = useRef(new Map<string, boolean>());
   const facesLeft = (c: Combatant) => {
-    if (!c.pos) return false;
-    const me = hexCenter(c.pos);
-    const pcs = Object.values(state.combatants).filter((x) => x.side === 'party' && !x.civilian && x.pos && x.hp > 0);
-    const near = pcs.sort((a, b) => distance(a.pos as Offset, c.pos as Offset) - distance(b.pos as Offset, c.pos as Offset))[0];
-    return near ? hexCenter(near.pos as Offset).x < me.x : me.x > cam.world.w / 2;
+    const f = tokenFacesLeft(state.combatants, c, cam.world.w, facing.current.get(c.id));
+    facing.current.set(c.id, f);
+    return f;
   };
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
@@ -1425,7 +1528,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       ?? ((cl) => (cl ? cloudCastProblem(state, actor as Combatant, sp, cl) : null))(mechanicsAt(state, sp).cloud);
     // Görev B1 (kuyruk 14): eğitimsiz zırh / sessizlik.
     const barred = castBarrierKind(state, actor as Combatant, sp);
-    return { slot, why, barred, usable: slot && why === null && barred === null && !sp.mechanics.unsupported };
+    // SD7: tamamen savaş dışı büyü (etkisi yok) savaş menüsünde görünmez.
+    const hidden = offCombatOnly(sp, mechanicsAt(state, sp));
+    // SD13: Sessizlik alanındaki sözlü büyü menüde gri satır (V vurgulu, nedeni yazılı); başka nedenle yapılamayan yine görünmez.
+    const base = slot && why === null && !sp.mechanics.unsupported && !hidden;
+    return { slot, why, barred, usable: base && barred === null, silenced: base && barred === 'silence' };
   };
   const spellReason = !actor ? undefined : !actor.spellNames.length ? Y.noCaster
     : spellMenu(actor).some(({ spell: sp }) => spellInfo(sp).usable) ? undefined : Y.noSpell;
@@ -1452,6 +1559,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
         ?? (reach.shove === 0 ? Y.noShoveTarget : undefined),
       act: () => { reset(); setMode('shove'); setMenuOpen(false); } },
     { key: 'dodge', label: N.dodge, reason: why({ type: 'dodge', actorId }) ?? undefined, act: () => run({ type: 'dodge', actorId }) },
+    // Hazırla (Ready, sürüm 90; SRD 5.2.1 s.186–187): tetik + yanıt paneli.
+    ...(state.map && readyOn(state) ? [{ key: 'ready', label: t().readyUi.menu,
+      reason: why({ type: 'ready', actorId, trigger: READY_DRAFT.trigger, response: { kind: 'move', to: actor.pos ?? { col: 0, row: 0 } } }) ?? undefined,
+      act: () => { reset(); setReadyDraft({ ...READY_DRAFT, ...(actor.weaponOptions[0] ? { weapon: actor.weaponOptions[0].label } : actor.attacks.length ? { attackIndex: 0 } : {}) }); setMode('ready'); setMenuOpen(false); } }] : []),
     { key: 'help', label: N.help, reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? Y.noAdjEnemy : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
     // Kuyruk 43: sarf eşyaları (iksir; bonus eylem, kendine ya da 5 ft içindeki dosta).
@@ -1540,7 +1651,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     // Görev DRUID: Wild Shape (biçim başına bir düğme; biçimdeyken bırak) ve Wild Resurgence.
     ...(wildShapeFeature(actor) ? (actor.shape
       ? [{ key: 'shape-off', label: N.shapeOff(actor.shape.name), reason: why({ type: 'wild_shape', actorId }) ?? undefined, act: () => run({ type: 'wild_shape', actorId }) }]
-      : availableForms(monsters, actor).map((m) => ({ key: `shape-${m.id}`, label: N.shapeOn(m.name, m.cr),
+      : availableForms(monsters, actor, state.kuralSurumu ?? 1).map((m) => ({ key: `shape-${m.id}`, label: N.shapeOn(m.name, m.cr),
         reason: why({ type: 'wild_shape', actorId, form: m.id }) ?? undefined, act: () => run({ type: 'wild_shape', actorId, form: m.id }) }))) : []),
     ...(actor.traits?.includes('wild-resurgence') ? [
       { key: 'resurge-shape', label: N.resurgeShape, reason: why({ type: 'wild_resurgence', actorId, mode: 'toShape' }) ?? undefined, act: () => run({ type: 'wild_resurgence', actorId, mode: 'toShape' }) },
@@ -1650,6 +1761,19 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
       if (left >= (-alt / 5) * 2 + 1) { reset(); setPickHexCmd({ make: (h) => ({ type: 'vertical_move', actorId, toFt: 0, to: h }), hint: B.k66.climbHint }); setMode('pickHex'); setMenuOpen(false); return; }
       run({ type: 'vertical_move', actorId, toFt: Math.min(-5, alt + Math.floor(left / 2) * 5) });
     } }] : []),
+    // Serüven öncesi (yalnız arayüz): canavar yetenekleri (`monster_ability`, mevcut komut): Wild Shape/Polymorph biçimi, çağrılan
+    // yaratık ve Game Master canavarı. Seçili düşman hedefse o, değilse motorun varsayılanı (en yakın görünen düşman); `grant`
+    // seçenekleri (Koş/Geri Çekil/Gizlen) ayrı düğme. Yetenek listesi motordan (`abilitiesOf`), hızlı eylem rozeti `cost`tan.
+    ...abilitiesOf(state, actor).flatMap((a) => {
+      const name = getLang() === 'en' ? a.en : a.tr;
+      const foe = targetId && state.combatants[targetId]?.side !== actor.side ? targetId : undefined;
+      const opts: Array<string | undefined> = a.kind === 'grant' && (a.grant?.length ?? 0) > 1 ? a.grant ?? [] : [undefined];
+      return opts.map((opt): Item => {
+        const cmd: Command = { type: 'monster_ability', actorId, abilityId: a.id, ...(foe ? { targetId: foe } : {}), ...(opt ? { option: opt } : {}) };
+        return { key: `mab-${a.id}${opt ? `-${opt}` : ''}`, label: N.mab(name, opt ? N.mabOpt[opt] ?? opt : undefined),
+          reason: !abilityReady(actor, a) ? N.mabNotReady : why(cmd) ?? undefined, ...(a.cost === 'bonus' ? { cost: 'bonus' as const } : {}), act: () => run(cmd) };
+      });
+    }),
     { key: 'end', label: N.end, act: () => run({ type: 'end_turn', actorId }) },
   ] : [];
   // Kuyruk K64a: ele geçirilmiş beden yalnızca ele geçirenin temel eylemlerini, bedendeki ele geçiren yalnızca bırakmayı görür.
@@ -1660,7 +1784,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
   const keep: Item[] = actor?.possessing ? mainItems.filter((i) => i.key === 'unpossess' || i.key === 'end')
     : actor && activePossession(actor) ? mainItems.filter((i) => POSS_KEYS.includes(i.key)) : mainItems;
   const featType = new Map((actor?.features ?? []).map((f) => [f.key, f.type] as const));
-  const menu = splitMenu(keep.map((i) => ({ ...i, cost: costOfKey(i.key, featType.get(i.key)) })));
+  const menu = splitMenu(keep.map((i) => ({ ...i, cost: i.cost ?? costOfKey(i.key, featType.get(i.key)) })));
   const moveAll: Item[] = [...moveItems.filter((i) => i.key !== 'back'), ...menu.move];
   const moveUsable = visible(moveAll);
   const specialGroups = activeSpecialGroups(menu);
@@ -1688,8 +1812,9 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
     .filter((ch) => (mode === 'spell' && spell ? ch.id === `s-${spell.name}` : !isSpellChoice(ch))) : [];
   const modeHint: Record<Mode, string> = {
     idle: '', gmSurface: B.gm.surfaceTool.hint, gmObject: B.gm.surfaceTool.hint, object: B.hint.object, attack: B.hint.attack, spells: B.hint.spells,
-    spell: B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
+    spell: spell && (spell.area || spell.mechanics.zone) ? B.hint.spellArea(spell.name) : spell && freeHexAnyOn(state) && hexCastable(state, spell) ? B.hint.spellHex(spell.name) : B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
+    ready: t().readyUi.title, readyHex: t().readyUi.pickHint,
     pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
@@ -1711,7 +1836,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
 
   return (
     <div className="mb-screen">
-      <div className="mb-stage" style={{ width: box.w, height: box.h }} {...cam.handlers}>
+      <div className="mb-stage" data-testid="battle-stage" style={{ width: box.w, height: box.h }} {...cam.handlers}>
         {/* Katmanlar: harita görseli, hareketli efektler (Adım 10c), altıgenler ve jetonlar. Görsel düz
             <img>: yüklenemez ya da çözülemezse ekranda yazar (kara ekran yerine). */}
         <WorldLayer cam={cam}>
@@ -1889,7 +2014,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               .filter((c) => c.pos && c.life !== 'dead' && (c.hp > 0 || c.life !== 'alive' || c.regenPending))
               .map((c) => ({ c, view: tokenView(state, c, showHidden) }))
               .filter((x) => x.view !== 'invisible')
-              .map((x) => ({ ...x, id: x.c.id, pos: x.c.pos as Offset, y: hexCenter(x.c.pos as Offset).y, scale: tokenScale(x.c) }));
+              .map((x) => ({ ...x, id: x.c.id, pos: x.c.pos as Offset, y: hexCenter(x.c.pos as Offset).y, scale: readableScale(tokenScale(x.c), readable) }));
             // Aşağıdaki jeton üstte; büyük jeton komşusundaki küçüğü örtmez (drawOrder).
             // Kuyruk K71c: aynı yerde havadaki jeton yerdekinin üstünde çizilir (kararlı sıralama: yer sırası aynı).
             // Görev MB6b: binici bineğinden sonra (üstte) çizilir.
@@ -1926,6 +2051,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {moveAim && actor && isMultiHex(state, actor) && (
                   <g key="bodyAim" className="body-base aim">{bodyAt(state, actor, moveAim.to).map((h) => <polygon key={hexKey(h)} points={hexPoints(h, 0.94)} />)}</g>
                 )}
+                {/* Görev OD1C: kurulumda haritada işaretlenen hedef altıgenleri. */}
+                {setup && gd?.list.flatMap((g) => g.hexes ?? []).map((h) => (
+                  <g key={`gp${hexKey(h)}`} className="goal-pick-cell">
+                    <polygon points={hexPoints(h, 0.9)} className="goal-pick-hex" />
+                    <text x={hexCenter(h).x} y={hexCenter(h).y + 6} className="goal-pick-mark" textAnchor="middle">⚑</text>
+                  </g>
+                ))}
                 {/* Görev S3: hedef altıgenleri (ulaş/çıkış, yok edilecek/alınacak/korunacak nesne). */}
                 {goalHexes(state).map((h) => {
                   const p = hexCenter(h);
@@ -1975,7 +2107,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 const cls = ['token', c.side, scale > 1 ? 'big' : '', scale < 1 ? 'tiny' : '', c.asleep ? 'asleep' : '', c.id === actorId && active ? 'turn' : '', c.id === targetId ? 'target' : '',
                   glowing.has(c.id) ? 'glow' : '', targeting && glowing.has(c.id) ? 'pickable' : '', targeting && !glowing.has(c.id) && c.id !== actorId ? 'dim' : '',
                   c.id === selected && setup ? 'selected' : '', view !== 'normal' ? 'hidden' : '', c.unaware ? 'unaware' : '', mode === 'effect' && picked.includes(c.id) ? 'picked' : '',
-                  c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
+                  c.hp <= 0 ? 'down' : '', ...filters.map((f) => `st-${f}`), filters.includes('rage') && (!fxOn || reduceMotion) ? 'rage-still' : '', areaFoes.has(c.id) ? 'in-area foe' : areaFriends.has(c.id) ? 'in-area friend' : '',
                   loops.has(c.id) ? 'has-fx' : '', offLevel ? 'air-dim' : '', lift ? 'aloft' : '',
                   // Kuyruk K73c (sürüm 64+): yer altındaki (kazan) ve batık jeton soluk/yarı saydam.
                   c.burrowed ? 'burrowed' : '', !c.burrowed && (c.altitudeFt ?? 0) < 0 && submerged(state, c) ? 'submerged' : ''].join(' ');
@@ -1990,10 +2122,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <g className="token-filter" style={look.filter || look.opacity < 1 ? { filter: look.filter || undefined, opacity: look.opacity } : undefined}
                       transform={look.shrink < 1 || look.tilt ? `translate(${p.x} ${p.y}) rotate(${look.tilt ?? 0}) scale(${look.shrink}) translate(${-p.x} ${-p.y})` : undefined}>
                       <AvatarCircle avatar={c.avatar} cx={p.x} cy={p.y} r={r} asleep={c.asleep === true}
-                        flip={c.side === 'enemies' && !c.civilian && facesLeft(c)} scale={scale} flying={isAirborne(c)} />
+                        flip={!c.civilian && facesLeft(c)} scale={scale} flying={isAirborne(c)} />
                       {/* Takım halkası yalnızca resimsiz (baş harfli) jetonda: resimli jetonda `.fig ~ .ring` gizler (Görev V2). */}
                       <circle cx={p.x} cy={p.y} r={r} className="ring" />
                     </g>
+                    {filters.includes('rage') && c.hp > 0 && <RageFlames x={p.x} y={top} r={r * Math.max(1, scale)} />}
                     {c.unaware && <text x={p.x + r * 0.7} y={top + 6} className="unaware-mark" aria-hidden="true">?</text>}
                     {/* Görev E1: baygın jetonun üstünde yüzen Z (uyuyanın Zzz rozeti ayrı); animasyon ayarı/hareketi azalt kapatır. */}
                     {filters.includes('unconscious') && !c.asleep && (
@@ -2030,12 +2163,19 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     )}
                     {/* HP çubuğu altıgenin altında sabit boyda (Tiny'de de okunur, Gargantuan'da komşuya taşmaz). */}
                     {/* Görev MB6b: binicinin HP çubuğu jetonunun üstünde (bineğinki altta kalır). */}
-                    <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r} height={8} className="hpbg" />
-                    <rect x={p.x - r} y={stack ? top - 11 : p.y + r + 3} width={2 * r * Math.max(0, c.hp / c.maxHp)} height={8} className="hp" />
+                    {(() => {
+                      // Görev OD1: düşman HP görünürlüğü (oda ayarı; yalnız arayüz). Gizlide çubuk yok, etikette dört kademe.
+                      const f = enemyHpFraction(c);
+                      if (f === null) return null;
+                      return (<>
+                        <rect x={p.x - r} y={stack ? top - 3 - readable.hpH : p.y + r + 3} width={2 * r} height={readable.hpH} className="hpbg" />
+                        <rect x={p.x - r} y={stack ? top - 3 - readable.hpH : p.y + r + 3} width={2 * r * f} height={readable.hpH} className="hp" />
+                      </>);
+                    })()}
                     {/* Kuyruk K48: Moral çubuğu (tam mod; HP'nin altında, ayrı renk). */}
                     {c.moralMax !== undefined && !stack && (<>
-                      <rect x={p.x - r} y={p.y + r + 12} width={2 * r} height={4} className="hpbg" />
-                      <rect x={p.x - r} y={p.y + r + 12} width={2 * r * Math.max(0, (c.moral ?? 0) / Math.max(1, c.moralMax))} height={4} className="moral" />
+                      <rect x={p.x - r} y={p.y + r + 4 + readable.hpH} width={2 * r} height={readable.hpH / 2} className="hpbg" />
+                      <rect x={p.x - r} y={p.y + r + 4 + readable.hpH} width={2 * r * Math.max(0, (c.moral ?? 0) / Math.max(1, c.moralMax))} height={readable.hpH / 2} className="moral" />
                     </>)}
                     {(() => {
                       // Kuyruk A2: en çok 3 rozet (öncelik veriden), fazlası "+N".
@@ -2057,7 +2197,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       if (mb) for (const x of all) if (x.key === 'mounted' || x.key === 'ridden') x.title = `${x.title} · ${B.mb6b.badge[mb]}`;
                       const { shown, more } = limitBadges(all);
                       return (
-                        <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})`} aria-hidden="true">
+                        <g className="status-icons" transform={`translate(${p.x - r * 0.62},${Math.max(30, Math.min(top + r * 0.4, p.y - r * 0.7))})${readable.badge > 1 ? ` scale(${readable.badge.toFixed(2)})` : ''}`} aria-hidden="true">
                           {shown.map((s, i) => (s.img
                             // Görev E1: ikon görseli (bitkinlikte kum saati + seviye).
                             ? <g key={s.key}><title>{s.title}</title><image href={`${BASE}${s.img}`} x={-i * 20 - 11} y={-17} width={22} height={22} className="status-img" />
@@ -2115,7 +2255,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 <g className={`dmg-float ${fl.kind}`} transform={`translate(${p.x},${top})`}>
                   <g className="dmg-anim" style={{ animationDelay: `${fl.delay}ms` }}>
                     {icon && <text className="dmg-icon" x={-14} y={0}>{icon}</text>}
-                    <text className="dmg-num" x={icon ? 10 : 0} y={0}>-{fl.amount}</text>
+                    <text className="dmg-num" x={icon ? 10 : 0} y={0}>{hpModeFor(c) ? '•' : `-${fl.amount}`}</text>
                   </g>
                 </g>
               </g>
@@ -2156,8 +2296,42 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
 
         <div className="hud">
           {cam.big && <CameraHud cam={cam} state={state} alerts={alerts} />}
-          {mode === 'gmObject' && <ObjectTool pick={objectPick} onPick={setObjectPick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
-          {mode === 'gmSurface' && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
+          {/* Kuyruk KQ5 NU1: tek Nesne paneli + nesne kartı + harita aracı anahtarı (Yaratık / Nesne / Yüzey / Hedef; yalnız biri etkin). */}
+          {state.map && (setup || mode === 'gmObject' || mode === 'gmSurface') && (() => {
+            const N = t().nu1;
+            const tool = activeTool({ mode, goalPick });
+            const pickGoal = () => {
+              const it = gd ? gd.list.find((g) => needsOf(g).hexes) ?? gd.list.find((g) => needsOf(g).object) : undefined;
+              if (!it || !gd) return;
+              const next = openGoalTool({ mode, goalPick }, { id: it.id, how: needsOf(it).hexes ? 'hex' : 'obj' });
+              setMode(next.mode as Mode); setGoalPick(next.goalPick); setMenuOpen(false); setOptionsOpen(false);
+            };
+            const btn = (id: ActiveTool, on: () => void, disabled = false, title?: string) => (
+              <button key={id} type="button" className={tool === id ? 'on' : ''} aria-pressed={tool === id} disabled={disabled} title={title} onClick={on}>{N.tools[id]}</button>
+            );
+            return (
+              <div className="map-tools" role="toolbar" aria-label={N.toolsLabel}>
+                {btn('creature', () => { reset(); setGoalPick(null); setCardId(null); })}
+                {btn('object', () => { reset(); setGoalPick(null); setMode('gmObject'); setObjectPick('inspect'); setMenuOpen(false); setOptionsOpen(false); })}
+                {btn('surface', () => { reset(); setGoalPick(null); setCardId(null); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }, !active, !active ? N.surfaceOnlyActive : undefined)}
+                {hasMapGoals(gd) && btn('goal', pickGoal)}
+              </div>
+            );
+          })()}
+          {toolbarShown({ mode, goalPick }, 'object') && <ObjectPanel pick={objectPick} onPick={(p) => { setObjectPick(p); setCardId(null); }} title={goalPick?.how === 'place' ? t().oda.goal.placeObject : undefined}
+            onClose={() => { setMode('idle'); setMenuOpen(true); setCardId(null); if (goalPick?.how === 'place') setGoalPick(null); }} />}
+          {cardId && (() => {
+            const ob = state.map?.objects?.find((x) => x.id === cardId);
+            if (!ob) return null;
+            return (
+              <ObjectCard obj={ob} weightOn={nesneOn(state)} {...(setup ? { goalKinds: ['protect', 'destroy', 'retrieve'] as Array<'protect' | 'destroy' | 'retrieve'> } : {})}
+                onWeight={(lb) => { const next = dispatch(session, { type: 'set_object_weight', objectId: ob.id, lb }, Math.random, GM_CONTEXT); if (next.error) toast(next.error); else setSession(next); }}
+                onRemove={() => { const next = dispatch(session, { type: 'place_object', at: ob.at }, Math.random, GM_CONTEXT); if (next.error) toast(next.error); else setSession(next); setCardId(null); }}
+                onGoal={(kind) => { setGd(addDraftGoal(gd, kind, { objectId: ob.id, ...(kind === 'protect' ? { wantsObject: true } : {}) })); toast(t().nu1.card.goalAdded(t().goals.kind[kind])); }}
+                onClose={() => setCardId(null)} />
+            );
+          })()}
+          {toolbarShown({ mode, goalPick }, 'surface') && <SurfaceTool pick={surfacePick} onPick={setSurfacePick} onClose={() => { setMode('idle'); setMenuOpen(true); }} />}
           <div className="turn-strip" role="list" aria-label={B.order}>
             {(() => {
               // Kuyruk K58 G4: sıra şimdiki yaratıktan başlar; şimdiki + sonraki 5 (açılınca hepsi), durum simgeleri, konsantrasyon.
@@ -2212,11 +2386,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     {B.gm.gate(gm.gate.state === 'closed')}
                   </button>
                 )}
-                {active && state.map && <button onClick={() => { reset(); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.surfaceTool.open}</button>}
+                {active && state.map && <button onClick={() => { reset(); setGoalPick(null); setMode('gmSurface'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.surfaceTool.open}</button>}
                 {active && (state.groups ?? []).filter((g) => g.state !== 'alarmed').map((g) => (
                   <button key={`al${g.id}`} onClick={() => { dice.play((rng) => dispatch(session, { type: 'alarm_group', groupId: g.id }, rng, GM_CONTEXT)); setMenuOpen(false); }}>{t().alarm.gm.alarm(g.id)}</button>
                 ))}
-                {(active || setup) && state.map && <button onClick={() => { reset(); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.objectTool.open}</button>}
+                {(active || setup) && state.map && <button onClick={() => { reset(); setGoalPick(null); setObjectPick('inspect'); setMode('gmObject'); setMenuOpen(false); setOptionsOpen(false); }}>{B.gm.objectTool.open}</button>}
                 {active && sleepingDragon(state) && (
                   <button onClick={() => { setConfirmWake(true); setOptionsOpen(false); }}>{B.gm.wake}</button>
                 )}
@@ -2241,7 +2415,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                 {ruleVersion(state) >= 41 && <button onClick={() => { setShowHiddenZones((v) => !v); setOptionsOpen(false); }}>{t().view.hiddenZones(showHiddenZones)}</button>}
                 <ThemeButton className="" />
                 <button onClick={cycleDiceAnim}>{t().dice.anim.label(t().dice.anim[diceAnim])}</button>
-                <button onClick={cycleDiceTheme}>{t().dice.themeLabel(diceThemeName(diceTheme, lang))}</button>
+                
                 <button onClick={() => cyclePolicy('player')}>{t().reactions.policy.player(t().reactions.policy[policies.player])}</button>
                 <button onClick={() => cyclePolicy('enemy')}>{t().reactions.policy.enemy(t().reactions.policy[policies.enemy])}</button>
                 {(variant?.effects?.length ?? 0) > 0 && (
@@ -2282,7 +2456,17 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               {mode === 'pickHex' && pickHexCmd?.dismount && (
                 <Suspense fallback={null}><DismountPicker options={dismountOpts} value={dismountFt ?? dismountOpts.defaultFt} onPick={setDismountFt} /></Suspense>
               )}
-              {mode === 'pickHex' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' && (
+              {/* Control Water (sürüm 84): dört seçenek; girdap savaşta, diğer üçü seçilince kartta ve günlükte Game Master notu. */}
+              {mode === 'pickHex' && spell && whirlpoolCast(state, spell) && (
+                <div className="slot-picker" role="radiogroup" aria-label={N.choicePick} data-testid="water-choices">
+                  <small>{N.choicePick}</small>
+                  {waterChoices(state, spell).map((x) => (
+                    <button key={x} role="radio" aria-checked={x === (choicePick ?? 'whirlpool')} className={x === (choicePick ?? 'whirlpool') ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>{SECENEK_ADI[x] ?? x}</button>
+                  ))}
+                  <small className="why-line">{t().log.gmOptionText(`${spell.id}/${choicePick ?? 'whirlpool'}`)}</small>
+                </div>
+              )}
+              {mode === 'pickHex' && spell?.mechanics.upgrade?.terraform?.mode === 'controlWater' && !whirlpoolCast(state, spell) && (
                 <div className="slot-picker" role="radiogroup" aria-label={N.choicePick}>
                   <small>{N.choicePick}</small>
                   {(['whirlpool', 'flood', 'part'] as const).map((x) => (
@@ -2297,6 +2481,13 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <button key={x} role="radio" aria-checked={x === choicePick} className={x === choicePick ? 'on' : 'ghost'} onClick={() => setChoicePick(x)}>{N.water[x]}</button>
                   ))}
                 </div>
+              )}
+              {mode === 'summon' && spell && summonDef(spell.id)?.handK19 && globalRule(state, 'spellsK19') && (
+                <label className="fx-choice" data-testid="hand-cast-pick">{' '}
+                  <select value={handPick === 'crush' ? 'fist' : handPick} onChange={(e: { target: { value: string } }) => setHandPick(e.target.value as typeof handPick)}>
+                    {(['fist', 'force', 'grasp', 'interpose'] as const).map((x) => <option key={x} value={x}>{B.hint.hand[x]}</option>)}
+                  </select>
+                </label>
               )}
               {mode === 'steer' && actor && steerableSummon(state, actor)?.summon?.hand && (
                 <label className="fx-choice">{' '}
@@ -2362,9 +2553,23 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             );
           })()}
 
+          {active && actor && actorPx && (mode === 'ready' || mode === 'readyHex') && (() => {
+            const size = { w: 280, h: Math.min(box.h - 16, mode === 'readyHex' ? 90 : 460) };
+            const at = bubbleAt(actorPx, size, box, tokenR + 8);
+            return (
+              <div className="bubble ready-bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h, overflowY: 'auto' }}>
+                {mode === 'readyHex'
+                  ? <><p>{t().readyUi.pickHint}</p><button type="button" className="ghost" onClick={() => setMode('ready')}>{t().readyUi.cancel}</button></>
+                  : <ReadyPanel state={state} actor={actor} draft={readyDraft} onDraft={setReadyDraft} hexLabel={hexLabel}
+                    blocked={economyBlock(state, actor, { type: 'ready', actorId, trigger: readyDraft.trigger, response: { kind: 'move', to: actor.pos ?? { col: 0, row: 0 } } })}
+                    onPickHex={(f) => { setReadyPick(f); setMode('readyHex'); }} onConfirm={(c) => { run(c); reset(); }} onCancel={reset} />}
+              </div>
+            );
+          })()}
+
           {active && actor && actorPx && mode === 'spells' && (() => {
-            // SD2: yalnız yapılabilen büyüler; sekmeler: Hile, 1. seviye, 2. seviye… (grup içi kaydırma serbest, ilk sekme varsayılan).
-            const usable = spellMenu(actor).filter(({ spell: sp }) => spellInfo(sp).usable);
+            // SD2: yalnız yapılabilen büyüler; sekmeler: Cantrip, 1. seviye, 2. seviye… (grup içi kaydırma serbest, ilk sekme varsayılan).
+            const usable = spellMenu(actor).filter(({ spell: sp }) => spellInfo(sp).usable || spellInfo(sp).silenced);
             const tabs = spellGroups(usable.map((e) => ({ ...e, level: e.spell.level })));
             const tabLevel = spellTab !== null && tabs.some((g) => g.level === spellTab) ? spellTab : tabs[0]?.level ?? 0;
             const list = tabs.find((g) => g.level === tabLevel)?.items ?? [];
@@ -2394,7 +2599,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       if (barred) return;
                       // Kuyruk 19: Telekinesis iki adımda (hedef, sonra varış altıgeni ya da havaya kaldır).
                       if (kind === 'area' && sp.mechanics.telekinesis && state.kuralSurumu !== undefined && state.kuralSurumu >= 16) { setSpell(sp); setTkTarget(null); setTkRepeat(false); setMode('tk'); }
-                      else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setMode('aim'); }
+                      else if (kind === 'area') { setSpell(sp); setAreaAct({ kind: 'spell', spell: { ...sp, area: spellAreaAt(state, sp) } }); setAimHex(null); setAimPts([]); setMode('aim'); }
                       // Kuyruk K65c (sürüm 49): panelli duvarlar ortak alan seçicisinde (düz, yay, halka, serbest panel yolu).
                       else if (kind === 'target' && sp.area && mechanicsAt(state, sp).pathRules) { setSpell(sp); setAreaAct({ kind: 'spell', spell: sp }); setAimHex(null); setAimPts([]); setWallShape('path'); setMode('aim'); }
                       // Kuyruk K67b (sürüm 51): Dancing Lights ortak alan seçicisinde (dört ışık / birleşik biçim).
@@ -2414,6 +2619,12 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       }
                       else if (kind === 'summon') { setSpell(sp); setChoicePick(summonDef(sp.id)?.choice?.options[0] ?? null); setMode('summon'); }
                       else if (kind === 'teleport') { setSpell(sp); setMode('teleport'); }
+                      // Control Water girdabı (kural sürümü 84, anahtar `controlWaterWhirlpool`): yaratığın altıgeni seçilir (yalnız geçerli
+                      // altıgenler parlar); seçilen slot gider (yarıçap ve zar slotla büyür).
+                      else if (whirlpoolCast(state, sp)) {
+                        setSpell(sp); setChoicePick('whirlpool');
+                        setPickHexCmd({ make: (h) => ({ type: 'cast_spell', actorId, spellName: sp.name, targetHex: h, ...slotFields(slotPick) }) }); setMode('pickHex');
+                      }
                       // Kuyruk 19: harita dönüştüren büyüler (Passwall, Stone Shape, Control Water): altıgen seçimi.
                       else if (sp.mechanics.upgrade?.terraform && globalRule(state, 'spellsK19')) {
                         setSpell(sp); setChoicePick(sp.mechanics.upgrade.terraform.mode === 'controlWater' ? 'whirlpool' : null);
@@ -2427,7 +2638,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       }
                       else run({ type: 'cast_spell', actorId, spellName: sp.name });
                     }}>
-                      <span>{sp.name}{sp.castingTime === 'bonus' && <i className="cost-badge" title={N.fast}>{N.fastMark}</i>}</span>
+                      <span>{sp.name}{sp.castingTime === 'bonus' && <i className="cost-badge" title={N.fast}>{N.fastMark}</i>}<SpellComps spell={sp} compact silenced={barred === 'silence'} /></span>
                       <small title={why ?? sigmayanNote(state, sp) ?? undefined}>{sigmayanNote(state, sp) && !barred ? <>{B.spellNote.gmNote} · </> : null}{barred ? B.spellNote.barred[barred] : sp.mechanics.unsupported ? B.spellNote.notWorking : <>{onceFree(actor, sp) && slot && !why ? `${B.spellNote.onceFree} · ` : ''}{!slot ? B.spellNote.noSlot : why ? loc(why) : sp.castingTime === 'reaction' ? B.spellNote.reaction : kind === 'area' ? (freeShapeOf(state, sp) ? B.k65.note(freeShapeOf(state, sp)?.maxHexes ?? 0) : B.spellNote.area(sp.area?.sizeFt ?? 0)) : mechanicsAt(state, sp).offCombat ? B.spellNote.offCombat : kind === 'self' ? B.spellNote.self : kind === 'summon' ? t().summons.spellNote(sp.rangeFt) : B.spellNote.range(sp.rangeFt)}{((lf) => (lf ? ` · ${B.k67.light(lf.bright, lf.dim)}` : ''))(spellLightFt(state, sp))}</>}</small>
                     </button>
                   );
@@ -2467,7 +2678,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
           })()}
 
           {active && target?.pos && (mode === 'attack' || mode === 'spell') && (() => {
-            const picker = mode === 'spell' && spell && actor && slotChoices(actor, spell).length > 1 ? 64 : 0;
+            const picker = mode === 'spell' && spell && actor ? pickerHeight(actor, spell) : 0;
             // Cunning Strike seçenekleri (Görev F): başlık + seçenek başına bir satır.
             const cunning = (mode === 'attack' && actor && cunningOptions(actor).max > 0 ? 64 + cunningOptions(actor).options.length * 36 : 0)
               + (mode === 'attack' && actor?.weaponOptions.some((o) => o.mastery === 'push') ? 64 + 3 * 36 : 0);
@@ -2475,7 +2686,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const at = bubbleAt(px(target.pos), size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
-                <strong>{B.targetHead(target.name, target.hp, target.maxHp, target.ac)}</strong>
+                <strong>{maskHp(B.targetHead(target.name, target.hp, target.maxHp, target.ac), target)}</strong>{spell && mode !== 'attack' && <SpellComps spell={spell} silenced={castBarrierKind(state, actor as Combatant, spell) === 'silence'} />}
                 {choices.map((ch) => (
                   <div className="choice" key={ch.id}>
                     <div><span>{ch.label}</span><small>{ch.detail}</small></div>
@@ -2494,7 +2705,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     ))}
                   </div>
                 )}
-                {mode === 'spell' && spell && actor && <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
+                {mode === 'spell' && spell && actor && <SpellOptions actor={actor} spell={spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state}
+                  cmdFor={(slot) => { const c0 = choices.find((x) => x.command)?.command; return c0 ? withOrigin(withSlot(withChoice(c0), slot)) : null; }} />}
                 {mode === 'attack' && actor && actor.traits?.includes('brutal-strike') && globalRule(state, 'brutalStrike') && (
                   <fieldset className="cunning-picks">
                     <legend>{N.brutalPick} <small>{N.cunningHint(brutalOptions(actor).max)}</small></legend>
@@ -2530,7 +2742,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const E = t().effects;
             const max = effectTargetCount(spell, slotPick ?? spell.level);
             const opts = spell.mechanics.effect?.choices ?? [];
-            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + (slotChoices(actor, spell).length > 1 ? 64 : 0)) };
+            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + pickerHeight(actor, spell)) };
             const at = bubbleAt(actorPx, size, box, tokenR + 8);
             const label = (o: string) => E.choiceName[o] ?? (SKILL_IDS.includes(o as never) ? SKILLS[o as keyof typeof SKILLS].name : o);
             return (
@@ -2557,11 +2769,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             const S = t().summons;
             const def = summonDef(spell.id);
             const opts = def?.choice?.options ?? [];
-            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + (slotChoices(actor, spell).length > 1 ? 64 : 0)) };
+            const size = { w: 250, h: Math.min(box.h - 16, 110 + (opts.length ? 40 : 0) + pickerHeight(actor, spell)) };
             const at = bubbleAt(actorPx, size, box, tokenR + 8);
             return (
               <div className="bubble" style={{ left: at.x, top: at.y, width: size.w, maxHeight: size.h }}>
-                <strong>{S.head(spell.name, def?.rangeFt ?? spell.rangeFt)}</strong>
+                <strong>{S.head(spell.name, def?.rangeFt ?? spell.rangeFt)}</strong><SpellComps spell={spell} silenced={castBarrierKind(state, actor, spell) === 'silence'} />
                 {summonKeys.size === 0 && <small>{castBarrierKind(state, actor, spell) ? B.spellNote.barred[castBarrierKind(state, actor, spell) as 'armor'] : S.noHex}</small>}
                 {opts.length > 0 && def?.choice && (
                   <label className="fx-choice">{S.choice[def.choice.kind]}{' '}
@@ -2655,7 +2867,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             if (!sp) return null;
             const selfShape = sp.spec.origin === 'self' && sp.spec.shape !== 'emanation';
             const needAim = sp.spec.shape !== 'emanation';
-            const picker = areaAct.kind === 'spell' && slotChoices(actor, areaAct.spell).length > 1 ? 64 : 0;
+            const picker = areaAct.kind === 'spell' ? pickerHeight(actor, areaAct.spell) : 0;
             const size = { w: 260, h: Math.min(box.h - 16, 150 + (selfShape ? 96 : 0) + picker + (areaFreeShape(state, areaAct, choicePick) ? (areaAct.kind === 'spell' && mechanicsAt(state, areaAct.spell).zone?.cage ? 100 : 56) : 0)
               + (areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? 130 : 0) + (areaAct.kind === 'spell' && airAimable(state, areaAct.spell, mechanicsAt(state, areaAct.spell)) ? 40 : 0)) };
             // Balon alanın ve jetonun üstünü kapatmasın: alanın ağırlık merkezinin karşı kenarına yaslanır.
@@ -2824,7 +3036,10 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <button type="button" onClick={() => setAirFt((v) => v + 5)} aria-label={B.k73c.up5}>+5</button>
                   </div>
                 )}
-                {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state} />}
+                {areaAct.kind === 'spell' && <SpellOptions actor={actor} spell={areaAct.spell} value={slotPick} onChange={setSlotPick} mm={mmPick} onMm={setMmPick} tm={tmPick} onTm={setTmPick} state={state}
+                  cmdFor={(slot) => (ready && !areaInfo?.error ? areaActCommand(actorId, areaAct, needAim ? aimHex : null, slot, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
+                    areaAct.kind === 'spell' && danceMax(state, areaAct.spell) ? (choicePick === DANCE_COMBINED ? DANCE_COMBINED : null) : areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage ? choicePick ?? 'box' : areaAct.kind === 'spell' && (areaAct.spell.mechanics.zone?.solid || areaAct.spell.mechanics.zone?.sideDamage) ? wallSide : null, multi > 1 ? aimPts : undefined,
+                    areaExcludable(state, areaAct) ? excluded : undefined, airFt) : null)} />}
                 {/* Kuyruk K65b: Forcecage'de önizleme kartı yok (hasar/durum yok, "etkisiz" yanıltır); içeride kalacaklar yukarıdaki listede. */}
                 {pvSet.on && ready && !areaInfo?.error && !(areaAct.kind === 'spell' && freeShape && mechanicsAt(state, areaAct.spell).zone?.cage) && <Suspense fallback={null}><PreviewCard state={state} ctx={contextFor(state, actorId)} disc={disc} settings={pvSet}
                   cmd={areaActCommand(actorId, areaAct, needAim ? aimHex : null, slotPick, wallShape === 'line' || wallShape === 'path' ? null : wallShape,
@@ -2870,6 +3085,39 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               {ruleOf(state, 'lairEruption') && <span className="goal">🌋 {B.boss.lair}</span>}
             </div>
           ))}
+          {setup && gd && hasMapGoals(gd) && (() => {
+            const Q = t().oda.goal;
+            const G = t().goals;
+            const items = [
+              ...gd.list.filter((g) => { const n = needsOf(g); return n.hexes || n.object; }).map((g) => ({ id: g.id, kind: g.kind as string, needs: [...(needsOf(g).hexes ? ['hex' as const] : []), ...(needsOf(g).object ? ['object' as const] : [])], hexes: g.hexes?.length ?? 0, pending: isPending(g) })),
+              ...pendingItems(gd).filter((x) => x.kind === 'fail').map((x) => ({ id: x.id, kind: 'fail', needs: x.needs, hexes: 0, pending: true })),
+            ];
+            const left = pendingItems(gd).length;
+            const cur = goalPick ? items.find((x) => x.id === goalPick.id) : undefined;
+            const toggle = (id: string, how: GoalPick['how']) => { const next = openGoalTool({ mode, goalPick }, goalPick?.id === id && goalPick.how === how ? null : { id, how }); setMode(next.mode as Mode); setGoalPick(next.goalPick); if (next.goalPick) { setMenuOpen(false); setOptionsOpen(false); } };
+            return (
+              <div className="goals-strip goal-setup-strip" aria-label={Q.stripTitle} data-testid="goal-strip">
+                {goalPick?.how === 'hex'
+                  ? <strong>{Q.hexTitle(cur?.hexes ?? 0)}</strong>
+                  : <><strong>{Q.stripTitle}</strong> <span className="mute">{left > 0 ? Q.warn(left) : Q.stripHelp}</span></>}
+                {items.map((it) => (
+                  <span key={it.id} className={`goal pending-goal${it.pending ? '' : ' ready'}`}>
+                    {it.kind === 'fail' ? Q.failObject : (G.kind as Record<string, string>)[it.kind]}{it.needs.includes('hex') ? ` (${Q.hexCount(it.hexes)})` : ''}
+                    {it.needs.includes('hex') && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'hex' ? 'on' : ''} onClick={() => toggle(it.id, 'hex')}>{it.hexes ? Q.editHex : Q.markHex}</button>}
+                    {it.needs.includes('object') && it.pending && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'obj' ? 'on' : ''} onClick={() => toggle(it.id, 'obj')}>{Q.pickObject}</button>}
+                    {it.needs.includes('object') && it.pending && <button type="button" className={goalPick?.id === it.id && goalPick.how === 'place' ? 'on' : ''} onClick={() => toggle(it.id, 'place')}>{Q.placeObject}</button>}
+                  </span>
+                ))}
+                {goalPick && (
+                  <span className="goal-pick-note" role="status">
+                    {goalPick.how === 'hex' ? Q.tapHex : goalPick.how === 'obj' ? Q.tapObject : Q.placeNote}
+                    {goalPick.how === 'hex' && <button type="button" onClick={() => setGd(clearHexes(gd, goalPick.id))}>{Q.clear}</button>}
+                    {' '}<button type="button" className="cta" onClick={() => { const next = openGoalTool({ mode, goalPick }, null); setGoalPick(null); setMode(next.mode as Mode); }}>{Q.markDone}</button>
+                  </span>
+                )}
+              </div>
+            );
+          })()}
           {state.goals && (state.goals.list.length > 0 || (state.goals.fail?.length ?? 0) > 0) && (
             <div className="goals-strip" aria-label={t().goals.title}>
               {state.goals.list.map((g) => {
@@ -3035,7 +3283,8 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
               {ruleVersion(state) >= 41 && groundItemsNear(state, actor).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(o.item ?? '')}</button>)}
             </div>
           )}
-          {setup && <button className="hud-cta" onClick={() => run({ type: 'start_battle' })}>{B.start}</button>}
+          {setup && gd && pendingItems(gd).length > 0 && <span className="goal-warn" role="status">{t().oda.goal.warn(pendingItems(gd).length)}</span>}
+          {setup && <button className="hud-cta" data-testid="battle-start" onClick={startBattle}>{B.start}</button>}
           {endVideo?.shown && state.status === 'finished' && (
             <Suspense fallback={null}>
               <EndVideo plan={endVideo.plan} label={B.endVideoSkip} stopJingle={leaveBattleEnd} onDone={() => setEndVideo(null)} />
@@ -3063,6 +3312,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                   {state.explore && <button onClick={() => setExploring(true)}>{B.explore.go}</button>}
                   <button onClick={() => props.onExit(session.state)}>{props.exitLabel ?? B.newBattle}</button>
                 </div>
+                <NewDiceNotice />
                 <table>
                   <thead><tr>{B.summary.cols.map((h) => <th key={h}>{h}</th>)}</tr></thead>
                   <tbody>
@@ -3098,7 +3348,7 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                     <li key={ln.key} className={`log-${ln.kind}${ln.detail.length ? ' expandable' : ''}${open ? ' open' : ''}`}
                       title={ln.detail.length && !open ? t().log.expandHint : undefined}
                       onClick={ln.detail.length ? () => setLogOpenRows((s) => { const n = new Set(s); if (n.has(ln.key)) n.delete(ln.key); else n.add(ln.key); return n; }) : undefined}>
-                      {ln.head}{ln.detail.length > 0 && !open && <span className="log-more"> ▸</span>}
+                      {ln.head}{ln.dtypes?.map((d) => <DamageChip key={d} type={d} label={glyphLabel(d, lang)} />)}{ln.detail.length > 0 && !open && <span className="log-more"> ▸</span>}
                       {open && <ul className="log-detail">{ln.detail.map((d, k) => <li key={k}>{d}</li>)}</ul>}
                     </li>
                   );
@@ -3159,11 +3409,11 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
             // Kuyruk MB6: kurulumda yapılan çağırmalar `summons.json` `setup` bayrağından (Phantom Steed 70+'da çağırma, döküm süresi 1 dakika ya da ritüel).
             const rituals = c && !c.summon && c.pos ? spells.filter((sp) => c.spellNames.includes(sp.name) && summonDef(sp.id)?.setup && mechanicsAt(state, sp).kind === 'summon') : [];
             if (!c || rituals.length === 0) return null;
-            const F = t().summons;
+            const F = t().summons, SU = t().setupUi;
             return (
               <div className="civ-picker familiar-picker" role="group" aria-label={F.familiar.title(c.name, rituals[0]?.name ?? '')}>
                 {rituals.map((ritual) => {
-                  const def = summonDef(ritual.id) as NonNullable<ReturnType<typeof summonDef>>;
+                  const def = summonDef(ritual.id, state.kuralSurumu ?? 1) as NonNullable<ReturnType<typeof summonDef>>;
                   const form = famForm && def.forms?.includes(famForm) ? famForm : def.forms?.[0] ?? '';
                   const kind = famType && def.choice?.options.includes(famType) ? famType : def.choice?.options[0] ?? '';
                   return (
@@ -3171,18 +3421,21 @@ export function Battle(props: { initial: Session; mapFilter?: string; onExit: (f
                       <strong>{F.familiar.title(c.name, ritual.name)}</strong>
                       <small>{def.setupSlot ? F.familiar.noteSlot : def.mount ? F.familiar.noteMount : F.familiar.note}</small>
                       {(def.forms ?? []).length > 0 && (
-                        <label className="fx-choice">{F.familiar.form}{' '}
+                        <label className="fx-choice fx-stack"><span className="fx-label">{SU.familiarForm}</span>
                           <select value={form} onChange={(e: { target: { value: string } }) => setFamForm(e.target.value)}>
                             {(def.forms ?? []).map((f) => <option key={f} value={f}>{getMonster(f).name}</option>)}
                           </select>
                         </label>
                       )}
                       {def.choice && (
-                        <label className="fx-choice">{F.choice[def.choice.kind]}{' '}
-                          <select value={kind} onChange={(e: { target: { value: string } }) => setFamType(e.target.value)}>
-                            {def.choice.options.map((o) => <option key={o} value={o}>{F.choiceName[o] ?? o}</option>)}
-                          </select>
-                        </label>
+                        <>
+                          <label className="fx-choice fx-stack"><span className="fx-label">{def.choice.kind === 'creatureType' ? SU.familiarType : F.choice[def.choice.kind]}</span>
+                            <select value={kind} onChange={(e: { target: { value: string } }) => setFamType(e.target.value)}>
+                              {def.choice.options.map((o) => <option key={o} value={o}>{def.choice?.kind === 'creatureType' ? (SU.familiarKind[o] ?? F.choiceName[o] ?? o) : F.choiceName[o] ?? o}</option>)}
+                            </select>
+                          </label>
+                          {def.choice.kind === 'creatureType' && <small className="mute familiar-kind-note">{SU.familiarKindNote}</small>}
+                        </>
                       )}
                       <button className="cta" onClick={() => dice.play((rng) => dispatch(session, { type: 'cast_spell', actorId: c.id, spellName: ritual.name, ...(form ? { form } : {}), ...(kind ? { choice: kind } : {}) }, rng))}>
                         {F.familiar.cast(ritual.name)}

@@ -13,6 +13,7 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
+import { heldMetal, wearsMetal } from './heldItems';
 import { spells } from '../data';
 import { chainResist } from './chainPact';
 import { gap } from './body';
@@ -28,6 +29,8 @@ import { heightOf } from './cover';
 import { damageEffects } from './damage-effects';
 import { saveMode, timedCondition } from './durations';
 import { canSee, saveEffect } from './maprules';
+import { matrisOn } from './matrisSurum';
+import { canSeeTarget } from './sight';
 import { applyEvents } from './reduce';
 import { mirrorImageHit } from './mind';
 import { freeSpellResource } from '../rules/classFeatures';
@@ -387,7 +390,9 @@ export function afterAttackReactions(state: BattleState, attackerId: string, tar
 function blindRetortEvents(state: BattleState, holderId: string, attackerId: string, rng: Rng): BattleEvent[] {
   const h = state.combatants[holderId];
   const a = state.combatants[attackerId];
-  const e = h?.effects?.find((x) => x.blindRetort);
+  // Mekanik matris B13 (sürüm 83+): Holy Aura yayılımındaki dost ("when a Fiend or an Undead hits an affected creature").
+  const aa = h?.allyAura?.blindRetort ? h.allyAura : undefined;
+  const e = h?.effects?.find((x) => x.blindRetort) ?? (aa ? { id: aa.srd, name: aa.name, sourceId: aa.by, blindRetort: aa.blindRetort } : undefined);
   if (!h || !a || !e?.blindRetort || a.hp <= 0 || !e.blindRetort.types.includes((a.creatureType ?? '').toLowerCase())) return [];
   const { dc } = e.blindRetort;
   const save = resolveSave({ extra: saveDice(a, 'con'), modifier: a.saves.con, dc, mode: saveMode('normal', a, 'con'), against: ['Blinded', 'spell'] }, rollTag(rng, { by: a.id }));
@@ -463,13 +468,31 @@ function antennaeReaction(state: BattleState, reactorId: string, attackerId: str
   if (!spec) return [];
   const answer = askReaction(rng, { reactorId: m.id, trigger: 'hit', sourceId: a.id, options: [{ id: spec.id, name: spec.name }], suggested: { option: spec.id } });
   if (answer?.option !== spec.id) return [];
-  return [reactionUsed(m, spec, 'hit', a.id), ...corrodeEvents(m, a, spec.dc ?? 11, rng)];
+  // Mekanik matris B23 (sürüm 83): metal silahı ya da zırhı olmayana tepki harcanmaz.
+  if (matrisOn(state) && !heldMetal(a).length && !wearsMetal(a)) return [];
+  return [reactionUsed(m, spec, 'hit', a.id), ...corrodeEvents(m, a, spec.dc ?? 11, rng, state)];
 }
 
 /** Rust Monster Antennae (eylem ya da tepki): DEX save; başarısızsa metal silahın saldırılarına −1 (en çok −5). */
-export function corrodeEvents(m: Combatant, t: Combatant, dc: number, rng: Rng): BattleEvent[] {
+export function corrodeEvents(m: Combatant, t: Combatant, dc: number, rng: Rng, state?: BattleState): BattleEvent[] {
+  // Mekanik matris B23 (sürüm 83): SRD 5.2.1 "Antennae. The rust monster targets one nonmagical metal object—armor or a
+  // weapon—worn or carried by a creature within 5 feet of itself. Dexterity Saving Throw: DC 11, the creature with the object.
+  // Failure: The object takes a −1 penalty to the AC it offers (armor) or to its attack rolls (weapon). Armor is destroyed
+  // if the penalty reduces its AC to 10". Metal nesne yoksa hedef de save de yok; silah yoksa ceza metal zırhın AC'sine.
+  const m83 = !!state && matrisOn(state);
+  const weapon = heldMetal(t).length > 0;
+  if (m83 && !weapon && !wearsMetal(t)) return [{ type: 'map_note', text: `${m.name}: Antennae — ${t.name} metal silah ya da zırh taşımıyor (etkisiz).` }];
   const ev = saveEffect(t, 'srdK19', `${m.name}: Antennae`, 'dex', dc, rng);
   const failed = ev.type === 'map_effect' && ev.roll && !ev.roll.success;
+  if (m83 && !weapon) {
+    if (!failed) return [ev];
+    // Zırh: AC'ye −1 birikir; AC 10'a inince zırh yok olur (ceza 10'un altına inmez).
+    const was = (t.effects ?? []).find((e) => e.id === `corrode-ac:${t.id}`);
+    const pen = Math.min(Math.max(0, t.ac - 10), -(was?.ac ?? 0) + 1);
+    if (pen <= -(was?.ac ?? 0)) return [ev];
+    return [ev, ...(was ? [{ type: 'effect_ended' as const, targetId: t.id, effectId: was.id, name: was.name, reason: 'expired' as const }] : []),
+      { type: 'effect_added' as const, targetId: t.id, effect: { id: `corrode-ac:${t.id}`, name: 'Paslanmış zırh', sourceId: m.id, ac: -pen, icon: '🦀' } }];
+  }
   const now = (t.effects ?? []).find((e) => e.id === `corrode:${t.id}`);
   const pen = Math.min(5, (now?.dice ? Number(now.dice.die) : 0) + 1);
   if (!failed || (now && pen === Number(now.dice?.die ?? 0))) return [ev];
@@ -662,6 +685,9 @@ export function counterspellCheck(state: BattleState, caster: Combatant, spellNa
     if (!canReact(r) || r.side === caster.side) continue;
     const spec = specsOf(r, ['counterspell']).find((s) => usable(r, s, 3));
     if (!spec || feetBetween(current, r, caster) > (spec.rangeFt ?? 60) || !sees(current, r, caster)) continue;
+    // Mekanik matris B03 (sürüm 83+): SRD 5.2.1 Counterspell "when you see a creature … casting a spell": görünmez büyücü
+    // (See Invisibility, açığa çıkma, Blindsight/Truesight yoksa) görülmez, tepki yok. 82 ve altı aynen.
+    if (matrisOn(current) && !canSeeTarget(current, r, caster)) continue;
     const o = option(r, spec, 3);
     // Öneri: slotlu büyüleri durdur (cantrip'e değmez).
     const answer = askReaction(rng, { reactorId: r.id, trigger: 'cast', sourceId: caster.id, info: { spell: spellName, level: spellLevel },

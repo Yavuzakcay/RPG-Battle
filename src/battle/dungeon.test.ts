@@ -44,60 +44,60 @@ const run = (s: BattleState, cmd: Parameters<typeof execute>[1], rng = scripted(
 const fx = (events: BattleEvent[], rule: string) => events.find((e): e is Extract<BattleEvent, { type: 'map_effect' }> => e.type === 'map_effect' && e.rule === rule);
 
 describe('Dungeon varyantları: veri', () => {
-  it('Koridor kaldı; Merdiven ve Hazine odası kendi zemini ve başlangıç bölgeleriyle yüklenir', () => {
+  it('Koridor kaldı; Yürüyen merdiven (HS1: düz Merdiven varyantı silindi) ve Hazine odası kendi zemini ve başlangıç bölgeleriyle yüklenir', () => {
     const raw = RAW_MAPS.find((m) => m.id === 'dungeon');
     // Kuyruk 21 D2b: yürüyen merdiven varyantı eklendi (merdivenin zemin geçersiz kılması; eski üçü aynı).
-    expect(raw?.variants.map((v) => v.id)).toEqual(['mesale', 'merdiven', 'merdiven-yuruyen', 'hazine']);
+    expect(raw?.variants.map((v) => v.id)).toEqual(['mesale', 'merdiven-yuruyen', 'hazine']);
     expect(validateMap(raw as NonNullable<typeof raw>)).toEqual([]);
-    const m = getMap('dungeon', { variantId: 'merdiven' });
+    const m = getMap('dungeon', { variantId: 'merdiven-yuruyen' });
     expect(m.tiles.join('')).toContain('y');
-    expect([m.startZones.players.length, m.startZones.enemies.length]).toEqual([14, 12]);
+    expect([m.startZones.players.length, m.startZones.enemies.length]).toEqual([14, 9]); // Yürüyen merdiven varyantının hazır listeleri (14 / 9)
     const h = getMap('dungeon', { variantId: 'hazine' });
     expect([h.startZones.players.length, h.startZones.enemies.length]).toEqual([12, 12]);
     // Aynalama varyantın zeminiyle: taraflar birbirinin aynalı altıgenlerini alır.
-    const mm = getMap('dungeon', { variantId: 'merdiven', mirrored: true });
+    const mm = getMap('dungeon', { variantId: 'merdiven-yuruyen', mirrored: true });
     expect(mm.tiles).toEqual(m.tiles.map((r) => [...r].reverse().join('')));
-    expect(mm.startZones.players.length).toBe(12);
+    expect(mm.startZones.players.length).toBe(9);
   });
   it('kural verisi: stairwellFall, stairShove, hiddenTrap, loot JSON\'da', () => {
     const v = (id: string) => getMap('dungeon').variants.find((x) => x.id === id);
-    expect(v('merdiven')?.rules.map((r) => r.id)).toEqual(['highGround', 'stairwellFall', 'stairShove']);
+    expect(v('merdiven-yuruyen')?.rules.map((r) => r.id)).toEqual(['highGround', 'stairwellFall', 'stairShove', 'conveyor']);
     expect(v('hazine')?.rules.map((r) => r.id)).toEqual(['trap', 'hiddenTrap', 'loot']);
-    expect(v('merdiven')?.rules.find((r) => r.id === 'stairwellFall')).toMatchObject({ damage: '2d6', landOn: 'l' });
+    expect(v('merdiven-yuruyen')?.rules.find((r) => r.id === 'stairwellFall')).toMatchObject({ damage: '2d6', landOn: 'l' });
   });
 });
 
 describe('Merdiven', () => {
   it('yüksek basamaktaki saldıran avantajlı (highGround: genel yükseklik kuralı)', () => {
-    const tiles = tilesOf('merdiven');
+    const tiles = tilesOf('merdiven-yuruyen');
     const y = (() => { for (let r = 0; r < 7; r++) for (let c = 0; c < 15; c++) if (at(tiles, o(c, r)) === 'y') return o(c, r); return o(0, 0); })();
-    const s = field('merdiven', { A: y, B: o(2, 4) });
+    const s = field('merdiven-yuruyen', { A: y, B: o(2, 4) });
     const src = attackSources({ attackerConditions: [], targetConditions: [], attackerHeight: heightOf(s, s.combatants.A as Combatant), targetHeight: heightOf(s, s.combatants.B as Combatant), ranged: true, spell: false });
     expect(src.map((x) => x.effect)).toEqual(['advantage']);
   });
   it('merdiven boşluğuna (u) itilen 2d6 + Prone, aynı odada en yakın alçak basamağa (l) yerleşir', () => {
-    const f = findShove('merdiven', (a, t, to) => to === 'u' && terrainOf(a).movement !== 'blocked' && terrainOf(t).movement !== 'blocked' && t !== 'u' && a !== 'u');
-    const s = field('merdiven', { A: f.a, B: f.t });
+    const f = findShove('merdiven-yuruyen', (a, t, to) => to === 'u' && terrainOf(a).movement !== 'blocked' && terrainOf(t).movement !== 'blocked' && t !== 'u' && a !== 'u');
+    const s = field('merdiven-yuruyen', { A: f.a, B: f.t });
     const out = pushOutcome(s, s.combatants.B as Combatant, f.t, f.to);
     expect(out).toMatchObject({ ok: true, kind: 'stairwell' });
     const r = run(s, { type: 'shove', actorId: 'A', targetId: 'B', effect: 'push' });
     const ev = fx(r.events, 'stairwellFall');
     expect(ev).toMatchObject({ text: 'merdiven boşluğuna düştü', damage: { rolls: [3, 3], type: 'bludgeoning' }, addCondition: 'Prone' });
     const pos = r.state.combatants.B?.pos as Offset;
-    expect(at(tilesOf('merdiven'), pos)).toBe('l');
+    expect(at(tilesOf('merdiven-yuruyen'), pos)).toBe('l');
     expect(r.state.combatants.B?.hp).toBe(24);
   });
   it('basamakta yüksekten alçağa itilen 1d4 yuvarlanır + Prone; yukarı basamağa itilebilir', () => {
-    const down = findShove('merdiven', (a, t, to) => terrainOf(t).stairs === true && terrainOf(to).stairs === true
+    const down = findShove('merdiven-yuruyen', (a, t, to) => terrainOf(t).stairs === true && terrainOf(to).stairs === true
       && terrainOf(t).height > terrainOf(to).height && terrainOf(a).movement !== 'blocked');
-    const s = field('merdiven', { A: down.a, B: down.t });
+    const s = field('merdiven-yuruyen', { A: down.a, B: down.t });
     expect(pushOutcome(s, s.combatants.B as Combatant, down.t, down.to)).toMatchObject({ ok: true, kind: 'tumble' });
     const r = run(s, { type: 'shove', actorId: 'A', targetId: 'B', effect: 'push' }, scripted([20, 2], [4, 3]));
     expect(fx(r.events, 'stairShove')).toMatchObject({ text: 'basamaktan yuvarlandı', damage: { rolls: [3] }, addCondition: 'Prone' });
     expect(r.events.some((e) => e.type === 'map_effect' && e.rule === 'fall')).toBe(false);
-    const up = findShove('merdiven', (a, t, to) => terrainOf(to).stairs === true && terrainOf(to).height > terrainOf(t).height
+    const up = findShove('merdiven-yuruyen', (a, t, to) => terrainOf(to).stairs === true && terrainOf(to).height > terrainOf(t).height
       && terrainOf(t).movement !== 'blocked' && terrainOf(a).movement !== 'blocked');
-    const u = field('merdiven', { A: up.a, B: up.t });
+    const u = field('merdiven-yuruyen', { A: up.a, B: up.t });
     expect(pushOutcome(u, u.combatants.B as Combatant, up.t, up.to)).toMatchObject({ ok: true, kind: 'move' });
   });
 });

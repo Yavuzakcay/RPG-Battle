@@ -31,6 +31,7 @@ import { surfaceEvent } from './surfaces';
 import { forcedMoveEvents, pushOutcome } from './forced';
 import { WIND_VEC, windDir } from './forest';
 import { avalancheSweep, avalancheWarnEvents, k26On } from './highlands';
+import { lateSummonEvents } from './monsterSetup';
 import type { BattleEvent, BattleState, Combatant, MapObject, ObjectAction } from './types';
 
 const num = (v: unknown, d: number): number => (typeof v === 'number' ? v : d);
@@ -313,9 +314,10 @@ export function wildsAfterEvents(before: BattleState, next: BattleState, events:
       for (let i = 1; i <= Math.max(1, num(seal.count, 2)); i++) {
         const at = nearestSolid(s, melted.at, '');
         if (!at) break;
-        const c = { ...combatantFromMonster(mon, { id: `muhur-${i}`, name: `${mon.name} (mühür ${i})` }), side: 'enemies' as const, pos: at, initiative: 0 };
-        const ev: BattleEvent = { type: 'summoned', ownerId: 'harita', spell: 'Buz mühür', combatant: c, index: s.order.length };
-        out.push(ev); s = applyEvents(s, [ev]);
+        const c = { ...combatantFromMonster(mon, { id: `muhur-${i}`, name: `${mon.name} (mühür ${i})`, kuralSurumu: next.kuralSurumu ?? 1 }), side: 'enemies' as const, pos: at, initiative: 0 };
+        // Görev D2 (88+): savaş başındaki gibi canavar özellikleri ve yetenekleri (Ice Mephit Death Burst).
+        const evs = lateSummonEvents(s, { type: 'summoned', ownerId: 'harita', spell: 'Buz mühür', combatant: c, index: s.order.length });
+        out.push(...evs); s = applyEvents(s, evs);
       }
     }
   }

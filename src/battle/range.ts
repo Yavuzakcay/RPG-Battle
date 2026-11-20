@@ -7,6 +7,7 @@ import { burrowTargetProblem } from './burrow';
 import { adjacent3D, k73bOn, separated } from './adjacency';
 import { cageBoxBlock } from './forcecage';
 import { inProtectiveAura } from './ruleVersion';
+import { matrisOn } from './matrisSurum';
 import { knowsWhere } from './sight';
 import { rangeBonusFt } from './heights';
 import { stormRangeBonusFt } from './desert';
@@ -32,7 +33,7 @@ export type Reach =
   /** Saldırı zarlı menzilli saldırı: normal menzil ötesi dezavantaj, uzun menzil ötesi yok. */
   | { kind: 'ranged'; normalFt: number; longFt: number; spell?: boolean; /** Kuyruk S2: saldırının adı (Wind Wall kuşatma mermisi). */ label?: string }
   /** Saldırı zarı olmayan etki (save'li büyü, nefes, iyileştirme): yalnızca menzil sınırı. */
-  | { kind: 'effect'; rangeFt: number };
+  | { kind: 'effect'; rangeFt: number; /** Mekanik matris K01 (sürüm 83): hedefe zarar vermeyen büyü (`spellHarms`). */ harmless?: boolean };
 
 /** Saldıranın yanında (1 altıgen) aksiyon yapabilen bir düşman var mı? */
 export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
@@ -43,6 +44,15 @@ export function enemyAdjacent(state: BattleState, c: Combatant): boolean {
       // Kuyruk K73b (sürüm 63+): 3B bitişiklik (hemen üstteki/altındaki aynı altıgende de; döşeme keser).
       && (k73bOn(state) ? adjacent3D(state, c, o) : gap(state, { ...c, pos }, o) === 1 && reachFt(state, c, o, 5) <= 5),
   );
+}
+
+/**
+ * Görev B3: büyülenen (`charm` etkisi; Charm Person, Suggestion…) büyüleyene saldıramaz/onu hedef alamaz. Aura of Devotion
+ * içinde ve Calm Emotions bastırmasında (Kuyruk S1) yasak işlemez. `checkReach` ve Arcane Hand yumruğu (B22) ortak.
+ */
+export function charmedAgainst(state: BattleState, attacker: Combatant, target: Combatant): boolean {
+  return !!attacker.effects?.some((e) => e.charm && e.sourceId === target.id) && !inProtectiveAura(state, attacker, 'aura-of-devotion')
+    && !attacker.effects?.some((e) => e.suppressed?.some((x) => x.condition === 'Charmed'));
 }
 
 const feetText = (hexes: number) => `${hexes} altıgen (${hexes * 5} ft)`;
@@ -71,9 +81,10 @@ export function checkReach(
   // Görev B3: büyülenen (Charm Person, Animal Friendship, Suggestion) büyüleyene saldıramaz ve onu hedef alamaz.
   // Kuyruk A6 (Calm Emotions): kayıtsız yaratık büyücünün tarafına saldırmaz.
   if (attacker.effects?.some((e) => e.indifferentTo && e.indifferentTo === target.side)) return fail(`${attacker.name} kayıtsız (Calm Emotions): ${target.name} hedef alınamaz.`);
-  if (attacker.effects?.some((e) => e.charm && e.sourceId === target.id) && !inProtectiveAura(state, attacker, 'aura-of-devotion')
-    // Kuyruk S1: Calm Emotions altında bastırılmış büyülenme.
-    && !attacker.effects.some((e) => e.suppressed?.some((x) => x.condition === 'Charmed'))) return fail(`${attacker.name} büyülenmiş (Charmed): ${target.name} hedef alınamaz.`);
+  if (charmedAgainst(state, attacker, target)
+    // Mekanik matris K01 (kullanıcı kararı, sürüm 83): SRD 5.2.1 Charmed "You can't attack the charmer or target the charmer
+    // with damaging abilities or magical effects." Yalnız saldırı ve zarar veren etki yasak; zarar vermeyen büyü serbest.
+    && !(reach.kind === 'effect' && reach.harmless && matrisOn(state))) return fail(`${attacker.name} büyülenmiş (Charmed): ${target.name} hedef alınamaz.`);
   if (target.hidden && target.side !== attacker.side && !knowsWhere(state, attacker, target)) {
     return fail(`${target.name} gizlenmiş: hedef alınamaz, önce Ara ile bulunmalı.`);
   }
@@ -147,14 +158,27 @@ export function monsterAttackReach(a: { save?: unknown; ranged: boolean; reachFt
  * Tek hedefli büyünün erişimi: menzili 5 ft'ten uzun saldırı büyüsü menzilli saldırıdır
  * (yanında düşman dezavantajı); diğerleri yalnızca menzil sınırı.
  */
-export function spellReach(spell: { rangeFt: number; level?: number; mechanics: { kind: string; lingering?: string } },
+export function spellReach(spell: { rangeFt: number; level?: number; mechanics: HarmMechanics & { lingering?: string } },
   caster?: { k19Traits?: boolean; traits?: string[] }): Reach {
   // Spiritual Weapon: güç menzil içinde belirip yanındakine yakın dövüş büyü saldırısı yapar.
   if (spell.mechanics.lingering === 'weapon') return { kind: 'melee', reachFt: spell.rangeFt + 5 };
   const range = spell.rangeFt + potentRangeFt(spell, caster);
   return spell.mechanics.kind === 'attack' && range > 5
     ? { kind: 'ranged', normalFt: range, longFt: range, spell: true }
-    : { kind: 'effect', rangeFt: range };
+    : { kind: 'effect', rangeFt: range, ...(spellHarms(spell.mechanics) ? {} : { harmless: true }) };
+}
+
+/** `spellHarms`'ın okuduğu mekanik alanları. */
+export type HarmMechanics = { kind: string; damage?: unknown; drain?: unknown; ongoing?: unknown; effect?: { curseDamage?: unknown; sourceTurnDamage?: unknown } };
+/**
+ * Mekanik matris K01 (kullanıcı kararı, sürüm 83): büyü hedefine zarar veriyor mu (SRD 5.2.1 Charmed: "target the charmer
+ * with damaging abilities or magical effects"). Saldırı büyüsü, otomatik isabet, işaret (Hex, Hunter's Mark: ek hasar),
+ * smite, hasar zarı, can emme, süregelen hasar ve hasar veren süren etki (Phantasmal Force, Bestow Curse hasar seçeneği)
+ * zarar verir; geri kalanı (Hold Person, Bane, Command, iyileştirme…) vermez.
+ */
+export function spellHarms(m: HarmMechanics): boolean {
+  return m.kind === 'attack' || m.kind === 'auto' || m.kind === 'mark' || m.kind === 'smite' || !!m.damage || !!m.drain || !!m.ongoing
+    || !!m.effect?.curseDamage || !!m.effect?.sourceTurnDamage;
 }
 
 /**

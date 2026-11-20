@@ -21,7 +21,7 @@ export function SoundPanel(props: { onClose?: () => void }) {
           <input id={`ses-${ch}`} type="range" min={0} max={100} step={1} value={Math.round(v.volume[ch] * 100)}
             disabled={v.muted[ch]} aria-valuetext={`${Math.round(v.volume[ch] * 100)}%`}
             onChange={(e: { target: { value: string } }) => set({ ...v, volume: { ...v.volume, [ch]: Number(e.target.value) / 100 } })} />
-          <button className={v.muted[ch] ? 'on' : 'ghost'} aria-pressed={v.muted[ch]}
+          <button className={v.muted[ch] ? 'off' : 'ghost'} aria-pressed={v.muted[ch]}
             onClick={() => set({ ...v, muted: { ...v.muted, [ch]: !v.muted[ch] } })}>{v.muted[ch] ? S.unmute : S.mute}</button>
         </div>
       ))}

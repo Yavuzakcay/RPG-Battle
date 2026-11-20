@@ -1,0 +1,7 @@
+{
+  "_aciklama": "SD9b: zar sayfası kesim ayarları (npm run zarlar). `incele`: --incele kipinde her zaman incelenen sayfalar (yedi zar ayrışmayanlar da otomatik eklenir). `kutular`: tema başına elle 7 dikdörtgen [x0, y0, x1, y1] (soldan sağa d4…d100; piksel, ham görsel boyutunda) — verilirse bölütleme yerine kullanılır. `sablon`: 7 × [başlangıç, bitiş] kesri (zar konumları, ön plan kutusu genişliğine oranla); boşsa başarılı sayfalardan hesaplanır. `erozyonMax`: aşındırma üst sınırı (piksel).",
+  "incele": ["dusman-iblis", "dusman-lich", "irk-celestial", "sinif-cleric", "sinif-druid", "sinif-paladin", "sinif-warlock"],
+  "kutular": {},
+  "sablon": null,
+  "erozyonMax": 60
+}

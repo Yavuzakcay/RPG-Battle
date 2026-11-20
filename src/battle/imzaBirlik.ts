@@ -5,7 +5,7 @@
  *   şans (`plus`; Burst of Ingenuity ile aynı yol).
  * - Ortak Şifa (8): rahip büyüyle bir Bağlı dostu iyileştirince diğer Bağlı dostlar WIS (en az 1) can kazanır; turda bir
  *   (havuz açıksa can havuza gider: `trackPools`).
- * - Yıkılmaz Birlik (17): havuz kurulurken `guard` (2 × seviye); havuz 0'a düşecekken bir kez ayakta (reducer
+ * - Barış Azizi (17): havuz kurulurken `guard` (2 × seviye); havuz 0'a düşecekken bir kez ayakta (reducer
  *   `trackPools`; kaynak + tepki). Bağ sayısının 6'ya çıkması yok (açık).
  * Saf.
  */
@@ -42,7 +42,7 @@ export function shoulderOf(state: BattleState, c: Combatant): Combatant['shoulde
 /** Hesap gerekir mi (savaşta Birlik rahibi var). */
 export const anyBirlik = (state: BattleState): boolean => ruleVersion(state) >= BIRLIK_VERSION && Object.values(state.combatants).some((c) => c.imza === 'imza_birlik');
 
-/** Yıkılmaz Birlik koruması (havuz kurulurken; 17. seviye, kaynak duruyorsa). */
+/** Barış Azizi koruması (havuz kurulurken; 17. seviye, kaynak duruyorsa). */
 export function unbrokenGuard(state: BattleState, cleric: Combatant): { ownerId: string; hp: number; resource: string } | undefined {
   const prm = pasif(state, cleric, 'unbroken-union')?.yikilmaz as { carpan: number; kaynak: string } | undefined;
   if (!prm || (cleric.resources[prm.kaynak] ?? 0) < 1) return undefined;

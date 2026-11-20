@@ -173,7 +173,7 @@ Ek paket ilkelleri (`src/content/ilkelSema.ts`) ve imza/SRD verisinden türetile
 | cleric | imza_birlik | vigil | Teselli Nöbeti | 3 | gecicCan, moralEtkisi | hazır | `koruma-kutsama (temp_hp; Kuyruk E2)`, `moral-yeniyol` | — |
 | cleric | imza_birlik | shared-vitality | Birlik Can Havuzu | 6 | ortakCan | eksik | — | `isaret-bag` |
 | cleric | imza_birlik | common-cure | Ortak Şifa | 8 | pasif | gerekmez | — | — |
-| cleric | imza_birlik | unbroken-union | Yıkılmaz Birlik | 17 | pasif | gerekmez | — | — |
+| cleric | imza_birlik | unbroken-union | Barış Azizi | 17 | pasif | gerekmez | — | — |
 | barbarian | imza_geride_kalan | wounded-heart | Yaralı Kalp | 3 | pasif | gerekmez | — | — |
 | barbarian | imza_geride_kalan | strength-of-the-worn | Yıpranmışlığın Gücü | 3 | pasif | gerekmez | — | — |
 | barbarian | imza_geride_kalan | standing-in-rage | Öfkeyle Ayakta | 3 | pasif | gerekmez | — | — |

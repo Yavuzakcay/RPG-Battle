@@ -15,7 +15,6 @@ Klasik kale, kale ve avlu, Kale Baskını seferi.
 
 | Kimlik | Ad (dosya tabanı) | Harita | Varyant |
 |---|---|---|---|
-| `kale` | `kale-klasik` | Kale | `gunduz`, `gece` |
 | `kale-avlu` | `kale-avlu` | Kale ve avlu | `gunduz` |
 | `kale-baskini` | `kale-baskini` | Kale Baskını | `gunduz` |
 
@@ -23,5 +22,3 @@ Klasik kale, kale ve avlu, Kale Baskını seferi.
 
 - `kale-avlu`
 - `kale-baskini`
-- `kale-klasik`
-- `kale-klasik-gece`

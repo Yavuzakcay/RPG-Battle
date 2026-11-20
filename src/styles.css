@@ -1,6 +1,8 @@
 :root {
   --bg: #e8edf0; --card: #f7f9fa; --ink: #1b2733; --mute: #566673; --line: #c3cfd6;
   --party: #2f6f73; --enemy: #8c2f39; --on: #fff;
+  /* SD10: açık/seçili/etkin = turuncu, kapalı/pasif = gri; oyunun her yerinde aynı. */
+  --sel: #e8892b; --sel-ink: #1b130b; --off: #8a959d; --off-ink: #10181e; --idle-line: #9aa7b0;
   font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--ink); background: var(--bg);
 }
@@ -10,11 +12,13 @@
   :root:not([data-theme="light"]) {
     --bg: #161e25; --card: #1f2a33; --ink: #e6ecf0; --mute: #97a8b4; --line: #33434f; --party: #6fb5b9; --enemy: #e0707b; --on: #161e25;
     --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
+    --sel: #f09a3e; --sel-ink: #1b130b; --off: #5b6a75; --off-ink: #e6ecf0; --idle-line: #566673;
   }
 }
 :root[data-theme="dark"] {
   --bg: #161e25; --card: #1f2a33; --ink: #e6ecf0; --mute: #97a8b4; --line: #33434f; --party: #6fb5b9; --enemy: #e0707b; --on: #161e25;
   --panel: rgba(31, 42, 51, 0.9); color-scheme: dark;
+  --sel: #f09a3e; --sel-ink: #1b130b; --off: #5b6a75; --off-ink: #e6ecf0; --idle-line: #566673;
 }
 /* Menü arka planı (public/acilis/): video veya poster, üstünde okunaklılık degradesi. */
 .menu-bg { position: fixed; inset: 0; z-index: 0; background: var(--bg); overflow: hidden; pointer-events: none; }
@@ -213,7 +217,7 @@ input[type='number'] { width: 90px; }
 .avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid transparent;
   overflow: hidden; color: #fff; font-weight: 700; box-sizing: border-box; flex: none; }
 .avatar { position: relative; }
-.avatar img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.15s ease; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.15s ease; transform: scaleX(var(--mirror, 1)); }
 /* Görsel yüklenirken iskelet: zemin üstünde kayan parıltı; görsel gelince yumuşakça belirir. */
 .avatar img.pending { opacity: 0; position: absolute; }
 .avatar.skeleton { position: relative; overflow: hidden; }
@@ -284,6 +288,22 @@ input[type='number'] { width: 90px; }
 .bubble > button:disabled { opacity: 0.45; }
 .bubble button:not(:disabled) { cursor: pointer; }
 .choice { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+/* Hazırla (Ready) paneli (src/ui/ReadyPanel.tsx). */
+.ready-panel { display: flex; flex-direction: column; gap: 6px; }
+.ready-panel h3 { margin: 0; color: #fff; font-size: 15px; }
+.ready-panel label { display: grid; gap: 2px; font-size: 12px; color: #b8c6cf; }
+.ready-panel select { width: 100%; box-sizing: border-box; min-height: 36px; font: inherit; font-size: 14px; color: #fff; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 8px; }
+.ready-panel select option { color: #111; }
+.ready-panel button { min-height: 36px; color: #fff; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.25); }
+.ready-panel button.on { background: rgba(80, 160, 200, 0.45); border-color: #8fd0ef; }
+.ready-panel .ready-kinds { display: flex; gap: 4px; border: 0; padding: 0; margin: 0; flex-wrap: wrap; }
+.ready-panel .ready-kinds legend { font-size: 12px; color: #b8c6cf; padding: 0; margin-bottom: 2px; }
+.ready-panel .ready-warn { margin: 0; font-size: 12px; color: #ffd27a; }
+.ready-panel .ready-holds, .ready-panel .ready-why { margin: 0; font-size: 12px; }
+.ready-panel .ready-why { color: #ff9c8a; }
+.ready-panel .ready-actions { display: flex; gap: 6px; }
+.ready-panel .ready-actions button { flex: 1; }
+.ready-panel button:disabled { opacity: 0.45; }
 .choice button { background: #c0392b; color: #fff; border: none; border-radius: 22px; font-weight: 700; padding: 0 14px; flex: none; }
 .choice button:disabled { background: #555; }
 .bubble > button:last-child:only-of-type { justify-content: center; background: #c0392b; border: none; font-weight: 700; }
@@ -318,6 +338,15 @@ input[type='number'] { width: 90px; }
 .air-hint { max-width: 200px; font-size: 11px; line-height: 1.3; padding: 4px 8px; border-radius: 8px; background: rgba(15, 20, 26, 0.85); }
 .token.air-dim { opacity: 0.4; pointer-events: none; }
 /* Kuyruk K73c: yer altındaki (kazan) jeton soluk, batık jeton yarı saydam ve mavimsi. */
+/* Çılgın Yol öfkesi (yalnız görünüm): tüm figür (silah dahil) kısa adımlı titrer, hafif yukarıda durur; alevler başın üstünde. */
+.token.st-rage .token-filter { animation: rage-shake .18s steps(2, jump-none) infinite; translate: 0 -1px; }
+.token.st-rage.rage-still .token-filter { animation: none; translate: 0 -1px; }
+@keyframes rage-shake { from { translate: -1.5px -1.8px; } to { translate: 1.5px -0.4px; } }
+.rage-flames .rf { transform-box: fill-box; transform-origin: 50% 100%; animation: rage-flame .5s steps(3) infinite alternate; }
+.rage-flames .rf-b { animation-duration: .42s; animation-delay: -.15s; } .rage-flames .rf-c { animation-duration: .6s; animation-delay: -.3s; }
+.token.rage-still .rage-flames .rf { animation: none; }
+@keyframes rage-flame { from { transform: scale(1, .82); opacity: .95; } to { transform: scale(.86, 1.12); opacity: .75; } }
+@media (prefers-reduced-motion: reduce) { .token.st-rage .token-filter, .rage-flames .rf { animation: none; } }
 .token.burrowed .token-filter { opacity: 0.35; filter: grayscale(0.6) sepia(0.4); }
 .token.submerged .token-filter { opacity: 0.6; filter: hue-rotate(160deg) saturate(0.7); }
 .air-shadow { fill: rgba(0, 0, 0, 0.38); }
@@ -504,8 +533,13 @@ li.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8p
 .civ-picker { position: absolute; left: 50%; bottom: 72px; transform: translateX(-50%); z-index: 6; max-width: calc(100% - 32px);
   background: rgba(15, 20, 26, 0.92); color: #fff; border: 2px solid #ffd400; border-radius: 12px; padding: 8px 10px; }
 .civ-picker strong { display: block; font-size: 14px; margin-bottom: 6px; }
-.familiar-picker { display: flex; flex-direction: column; gap: 6px; width: 300px; }
+.familiar-picker { display: flex; flex-direction: column; gap: 6px; width: min(320px, calc(100vw - 32px)); box-sizing: border-box; max-height: 70vh; overflow-y: auto; }
 .familiar-picker small { opacity: 0.85; }
+/* SD9: uzun karakter adı ve açıklamalar kırpılmaz, sarılır; etiketler menünün üstünde ayrı satır. */
+.familiar-picker strong, .familiar-picker small { white-space: normal; overflow-wrap: anywhere; }
+.familiar-picker .fx-stack { display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
+.familiar-picker .fx-stack select { max-width: 100%; width: 100%; min-height: 40px; }
+.familiar-picker .fx-label { font-size: 13px; font-weight: 600; }
 .civ-grid { display: grid; grid-template-columns: repeat(8, 72px); gap: 6px; overflow-x: auto; }
 .civ-grid button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; border-radius: 8px;
   background: rgba(255, 255, 255, 0.08); border: 2px solid transparent; color: #fff; font-size: 11px; line-height: 1.1; cursor: pointer; }
@@ -656,8 +690,18 @@ li.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8p
 
 /* Savaş sonu efekti (Görev U; ui/EndFx.tsx): tıklamayı yutmaz, kendiliğinden kaybolur. */
 /* Görev U3: savaş sonu başlık videosu (tam ekran, dokununca geçer). */
-.end-video { position: fixed; inset: 0; z-index: 60; background: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.end-video video, .end-video img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* SV1: iki kip. solid: eski tam ekran siyah zemin. blend: video savaş ekranının üstünde (screen: siyah → şeffaf) + hafif karartma. */
+.end-video.solid { position: fixed; inset: 0; z-index: 60; background: #000; display: flex; align-items: center; justify-content: center; }
+.end-video.solid .end-video-media { width: 100%; height: 100%; object-fit: contain; display: block; }
+.end-video-click { position: fixed; inset: 0; z-index: 63; cursor: pointer; background: transparent; }
+/* blend kipinde kök kutu oluşturmaz (display: contents): video arkadaki savaş ekranıyla karışabilsin. */
+.end-video.blend { display: contents; }
+.end-video-dim { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, var(--end-dim, 0.42)); pointer-events: none; animation: end-video-in var(--end-fade, 450ms) ease both; }
+.end-video.blend .end-video-media { position: fixed; inset: 0; z-index: 61; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: screen; pointer-events: none; animation: end-video-in var(--end-fade, 450ms) ease both; }
+.end-video.blend.leaving .end-video-dim, .end-video.blend.leaving .end-video-media { animation: end-video-out var(--end-fade, 450ms) ease both; }
+@keyframes end-video-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes end-video-out { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .end-video-dim, .end-video.blend .end-video-media { animation: none; } }
 .end-fx { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; }
 .end-fx-glow { position: absolute; inset: 0; opacity: 0; animation: endfx-glow 3.6s ease-out forwards; }
 .end-fx.victory .end-fx-glow { background: radial-gradient(circle at 50% 40%, rgba(255, 212, 0, 0.45), rgba(255, 212, 0, 0) 60%); }
@@ -940,6 +984,8 @@ p.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8px
 .feature-legend .feature.missing { border-style: dashed; color: var(--mute); }
 .form-pick .form-card { display: inline-flex; align-items: center; gap: 6px; text-align: left; }
 .form-pick .form-card small { display: block; font-size: 11px; }
+.form-pick .form-card.stale { opacity: 0.6; border-style: dashed; }
+.form-pick .form-card.stale small { color: var(--enemy); }
 
 /* Görev K20: İlerleme adımı: köken feat'i kutusu, feat kartları, Skilled beceri seçimi, adım hata sınırı. */
 .origin-box { border: 1px solid var(--border, #4a4f5c); border-radius: 12px; padding: 12px 14px; margin: 8px 0 16px; background: rgba(127, 208, 203, 0.06); }
@@ -1282,10 +1328,25 @@ body:has(.home-screen) .menu-bg-shade { display: none; }
 
 /* Kuyruk AS1a: alt soy görünümü (yalnızca görsel): renk filtresi, en-boy, Celestial hale gizleme, kanat katmanı. */
 .look-frame { position: relative; display: inline-block; vertical-align: middle; }
-.look-frame .avatar img { filter: var(--look-filter, none); transform: scale(var(--look-sx, 1), var(--look-sy, 1)); transform-origin: 50% 100%; }
-.look-frame.halo-hidden .avatar img { clip-path: inset(var(--halo-clip, 9.5%) 0 0 0); }
+.look-frame .avatar img { filter: var(--look-filter, none); transform: scale(calc(var(--look-sx, 1) * var(--mirror, 1)), var(--look-sy, 1)); transform-origin: 50% var(--look-foot, 100%); image-rendering: pixelated; }
 .look-wing { position: absolute; pointer-events: none; z-index: 0; }
 .look-frame .avatar { position: relative; z-index: 1; }
+/* KQ6-19: Celestial yıldız tacı (rozet katmanı; savaş jetonunda aynı gövde SVG içinde). Hafif yanıp sönme; hareketi azalt açıkken statik. */
+.avatar { position: relative; }
+.avatar.has-crown:not(.skeleton) { overflow: visible; }
+.avatar .star-crown { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; filter: drop-shadow(0 0 2px rgba(245, 215, 110, .75)); transform: scaleX(var(--mirror, 1)); }
+.look-frame .avatar .star-crown { transform: scale(calc(var(--look-sx, 1) * var(--mirror, 1)), var(--look-sy, 1)); transform-origin: 50% var(--look-foot, 100%); }
+/* KW1: tek kanatlı slot (Dragonborn): kanat rozetin içinde, zemin dairesi ile figür arasında; figür daireye kırpılır, kanat kökü figürün arkasında kalıp daire dışına taşar. */
+.avatar.has-wing:not(.skeleton) { overflow: visible; }
+.avatar.has-wing img { position: relative; z-index: 1; clip-path: circle(50%); }
+.avatar .badge-wings { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; transform: scaleX(var(--mirror, 1)); }
+.look-frame .avatar .badge-wings { transform: scale(calc(var(--look-sx, 1) * var(--mirror, 1)), var(--look-sy, 1)); transform-origin: 50% var(--look-foot, 100%); }
+.avatar.has-wing .star-crown { z-index: 2; }
+.star-crown-g { filter: drop-shadow(0 0 2px rgba(245, 215, 110, .75)); pointer-events: none; }
+.sc-star { transform-box: fill-box; transform-origin: center; animation: sc-twinkle 2.6s steps(5) infinite alternate; }
+.sc-star.sc-b { animation-delay: -.9s; } .sc-star.sc-c { animation-delay: -1.7s; }
+@keyframes sc-twinkle { from { opacity: 1; transform: scale(1); } to { opacity: .62; transform: scale(.82); } }
+@media (prefers-reduced-motion: reduce) { .sc-star { animation: none; } }
 .skin-tones { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 2px; }
 .skin-tone { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: inherit; cursor: pointer; }
 .skin-tone.on { border-color: var(--party); box-shadow: 0 0 0 1px var(--party); }
@@ -1368,3 +1429,199 @@ button.cta.soft { opacity: .65; }
 .setup-mount small { flex-basis: 100%; }
 .preview-card .pv-mount span { white-space: normal; }
 .pick-card.exile-card { min-height: 0; }
+
+/* Anka kanadı: 4x2 sayfa, 8 kare, adımlı döngü (süre satır içi; kapalıyken ilk kare sabit). */
+.wing-anim { animation: wing-sheet-8 800ms step-end infinite; }
+@keyframes wing-sheet-8 {
+  0% { transform: translate(0, 0); } 12.5% { transform: translate(-512px, 0); } 25% { transform: translate(-1024px, 0); } 37.5% { transform: translate(-1536px, 0); }
+  50% { transform: translate(0, -382px); } 62.5% { transform: translate(-512px, -382px); } 75% { transform: translate(-1024px, -382px); } 87.5% { transform: translate(-1536px, -382px); }
+}
+@media (prefers-reduced-motion: reduce) { .wing-anim { animation: none; } }
+
+.req-mark { color: #e06c6c; }
+.lineage-section { margin-top: 6px; }
+
+/* SD6: tür 5+5, sınıf 6+6 simetrik ızgara; her genişlikte aynı düzen, dar ekranda yazı küçülür, kart yükseklikleri eşit. */
+.race-grid, .class-grid { display: grid; gap: 6px; grid-auto-rows: 1fr; }
+.race-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.class-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.pick-card.race-card-small, .pick-card.class-card-small { min-height: 40px; align-items: center; justify-content: center; text-align: center; padding: 6px 2px; }
+.race-grid .pick-card b, .class-grid .pick-card b { overflow-wrap: normal; word-break: normal; font-size: clamp(8px, 2.5vw, 14px); line-height: 1.15; }
+
+/* SD7: slot seçici: seçili düğme dolu vurgulu, seçilmeyen çerçeveli; etki satırları altta; hata toast'ı tam metin. */
+.slot-picker button { border: 1px solid rgba(255, 255, 255, 0.35); background: transparent; color: #e6eef3; }
+.slot-picker button.on { background: var(--party); border-color: var(--party); color: #04202a; font-weight: 700; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35); }
+.slot-picker button.ghost:hover { border-color: var(--party); }
+.bubble .slot-effect { flex-basis: 100%; display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+.bubble .slot-effect small { flex-basis: auto; line-height: 1.3; overflow-wrap: anywhere; }
+.bubble .slot-effect .slot-effect-line { font-weight: 600; }
+.toast.error { display: block; -webkit-line-clamp: unset; max-width: 340px; overflow: visible; }
+.bubble > .slot-picker, .bubble > .preview-card, .bubble > .choice { flex-shrink: 0; }
+.bubble .slot-picker button[aria-checked="true"], .bubble .slot-picker button.on { background: var(--party); border-color: #fff; color: #04202a; font-weight: 700; }
+.bubble .slot-picker button[aria-checked="true"], .bubble .slot-picker button.on { background: #35d6c4; border-color: #fff; color: #04202a; }
+
+/* SD9: zar teması seçici (Ayarlar, karakter kartı) ve "Yeni zar" bildirimi. */
+.dice-picker { margin: 6px 0; font-size: 14px; }
+.dice-picker > summary { cursor: pointer; padding: 4px 0; }
+.dice-picker .dice-pick-main { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.dice-picker .dice-pick-group { border: 1px solid var(--line, rgba(0, 0, 0, 0.15)); border-radius: 8px; margin: 6px 0; padding: 4px 8px; }
+.dice-picker .dice-pick-group legend { font-size: 12px; color: var(--mute); padding: 0 4px; }
+.dice-picker .dice-pick-row { display: flex; flex-direction: column; align-items: flex-start; margin: 3px 0; }
+.dice-picker .dice-pick-row.locked button { opacity: 0.6; }
+.dice-picker .dice-pick-row small { color: var(--mute); font-size: 12px; margin-left: 6px; }
+.dice-picker button.on { border-color: var(--party); background: color-mix(in srgb, var(--party) 28%, transparent); font-weight: 700; }
+.dice-notice { margin: 4px 0; padding: 6px 10px; border-radius: 10px; background: linear-gradient(90deg, #6b3fa0, #b8860b); color: #fff; font-weight: 600; }
+.dice-notice button { margin-left: 8px; min-width: 28px; min-height: 24px; padding: 0 6px; color: #fff; border-color: rgba(255, 255, 255, 0.6); }
+.dice-all-open { display: block; margin: 6px 0; font-size: 13px; }
+
+/* SD8 (Ayarlar): sade ayar satırları. Etiket + tek cümle solda, seçenek düğmeleri sağda; dar ekranda tek sütun. */
+.set-panel { display: flex; flex-direction: column; gap: 4px; }
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; padding: 10px 0; border-bottom: 1px solid color-mix(in srgb, var(--fg, #fff) 12%, transparent); }
+.set-row:last-child { border-bottom: 0; }
+.set-row.disabled { opacity: 0.55; }
+.set-text { flex: 1 1 220px; min-width: 0; }
+.set-text p { margin: 2px 0 0; }
+.set-seg { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.set-seg button, .set-btns > * { min-height: 44px; min-width: 72px; }
+.set-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0; }
+.set-sub { margin-left: 14px; padding-left: 10px; border-left: 2px solid color-mix(in srgb, var(--fg, #fff) 18%, transparent); }
+.set-sound .sound-panel { flex: 1 1 260px; max-width: 420px; box-shadow: none; position: static; background: transparent; border: 0; padding: 0; }
+.set-sound .sound-panel > strong { display: none; }
+.set-fold > summary, .settings-advanced > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+.set-fold h3, .settings-advanced h3 { margin: 14px 0 4px; font-size: 1rem; }
+.room-rules-fold { margin: 8px 0; }
+@media (max-width: 640px) {
+  .set-row { flex-direction: column; align-items: stretch; gap: 6px; }
+  .set-text, .set-sound .sound-panel { flex: none; max-width: none; }
+  .set-seg { justify-content: flex-start; }
+  .set-seg button { flex: 1 1 auto; }
+}
+.dice-step-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.dice-step-list button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+@media (max-width: 640px) { .dice-step-list button { flex: 1 1 100%; } }
+.set-seg button.on, .dice-step-list button.on { background: var(--acc, #e8b84a); color: #1b130b; border-color: transparent; font-weight: 700; }
+.set-seg button.ghost, .dice-step-list button.ghost { background: transparent; }
+/* SD9: kapalı katmanlarda (Oda kuralları, Gelişmiş, Ayarlar > Gelişmiş) açılır ok görünür. */
+.set-fold > summary::before, .settings-advanced > summary::before, .rule-group > summary::before { content: '▸'; display: inline-block; width: 1.2em; }
+.set-fold[open] > summary::before, .settings-advanced[open] > summary::before, .rule-group[open] > summary::before { content: '▾'; }
+.set-fold > summary::-webkit-details-marker, .settings-advanced > summary::-webkit-details-marker { display: none; }
+.rule-group { margin: 6px 0 6px 10px; }
+.rule-group > summary { cursor: pointer; font-weight: 600; min-height: 36px; display: flex; align-items: center; list-style: none; }
+.gm-advanced { margin: 8px 0; }
+
+/* ================= SD10: açık/seçili = turuncu dolu, kapalı = gri dolu, seçilmeyen = nötr çerçeve (tek kaynak) =================
+   Teal çerçeve yalnız seçilebilir ama seçili olmayan nötr öğede ve eylem düğmelerinde kalır (button.ghost); seçili/seçilmemiş
+   anlamı taşıyan gruplarda nötr gri çerçeveye çevrilir. Dokunma hedefi ≥ 40 px korunur. */
+input[type="checkbox"], input[type="radio"], input[type="range"], progress { accent-color: var(--sel); }
+input[type="range"]:disabled { accent-color: var(--off); }
+.set-seg button.on, .set-seg button[aria-checked="true"], .wizard .seg button.on, .wizard .seg button[aria-checked="true"], .pick-card.on, .chip.on,
+.lang-switch button.on, .menu-tabs button.on, .value-chip.on, .metamagic-pick button.on, .dice-step-list button.on, .dice-picker button.on,
+.dice-pick-row button.on, .slot-picker button.on, .bubble .slot-picker button.on, .bubble .slot-picker button[aria-checked="true"], .gm-tool button.on,
+.home2 .home-lang button.on, .civ-grid button.on, .wall-shape button.on, .air-level.on, button.on[aria-pressed="true"], [role="radio"].on, [role="radio"][aria-checked="true"],
+.map-card.on, .skin-tone.on, .term-btn.on, .mastery-btn.on, .air-panel .hud-btn.on, .cam-controls .hud-btn.on,
+.hud-btn.on, .region-chip.on, .map-region.on, .tier-chip.on {
+  background: var(--sel); border-color: var(--sel); color: var(--sel-ink); font-weight: 700; box-shadow: none;
+}
+/* Kapalı (seçili "Kapalı"/susturulmuş) = gri dolu. */
+.set-seg button.off, .set-seg button.off[aria-checked], .dice-step-list button.off, button.off[aria-checked="true"], button.off[aria-pressed="true"], .sound-row button.off {
+  background: var(--off); border-color: var(--off); color: var(--off-ink); font-weight: 700;
+}
+/* Seçilmeyen taraf: nötr çerçeve. */
+.set-seg button.ghost, .dice-step-list button.ghost, .lang-switch button:not(.on), .wizard .seg button:not(.on), [role="radio"].ghost, .sound-row button.ghost,
+.dice-picker button.ghost, .dice-pick-row button.ghost {
+  background: transparent; border-color: var(--idle-line); color: var(--ink);
+}
+.set-seg button, .set-seg button.ghost { min-height: 44px; }
+.sound-row button { min-height: 40px; }
+/* Açık/seçili çiplerde okunur yazı (turuncu üstünde koyu), koyu temada da. */
+.on > small, .on .mute { color: inherit; }
+@media (forced-colors: active) { .set-seg button.on, [aria-checked="true"] { outline: 3px solid Highlight; } }
+/* SD11: oluşturucuda "Önerilen" etiketi ve bölüm düğmeleri. */
+.reco-tag { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; background: color-mix(in srgb, var(--sel) 22%, transparent); color: var(--ink); border: 1px solid var(--sel); vertical-align: middle; }
+.reco-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 6px 0 10px; }
+.reco-bar button { min-height: 40px; }
+
+/* SD10/SD11: seçili liste satırları turuncu çerçeve + hafif dolgu (tam dolgu yalnız düğme/çipte). */
+.eq-row.on, .spell-row.on, .asi-cell.on, .skill-row.on { border-color: var(--sel); background: color-mix(in srgb, var(--sel) 16%, var(--panel)); color: var(--ink); }
+/* SD12: Alignment başlangıç karesi seçici (3×3). */
+.align-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
+.align-picker button { min-height: 52px; font-size: 13px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+@media (max-width: 640px) { .align-picker { grid-template-columns: 1fr; } }
+
+/* Görev OD1: Oda kur / Odaya katıl. Renkler SD10: turuncu seçili/açık, gri kapalı/kilit, turkuaz yalnız eylem. */
+.oda-name { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: flex-end; }
+.oda-name label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+.oda-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.oda-card { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--idle-line); border-radius: 10px; }
+.oda-card-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 200px; }
+.oda-lock { border: 0; padding: 0; margin: 0; min-inline-size: 0; }
+.oda-lock:disabled { opacity: 0.6; }
+.oda-lock-note { margin: 10px 0; padding: 10px 12px; border-radius: 10px; background: var(--off); color: var(--off-ink); }
+.oda-rules-read { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 4px; }
+.oda-rules-read li b { color: var(--off-ink); }
+.oda-rules-read li.on b { color: var(--sel); }
+.oda-ready { cursor: default; }
+@media (max-width: 640px) { .oda-name { flex-direction: column; align-items: stretch; } }
+
+/* Görev SD13: büyü bileşen etiketleri (V/S/M). SD10: dolu = turuncu; olmayan gösterilmez; Sessizlikte V vurgulu (çerçeve). */
+.spell-comps { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 3px; margin-inline-start: 6px; vertical-align: middle; }
+.spell-comps .comp { font: inherit; font-size: 0.68rem; font-weight: 700; line-height: 1; padding: 2px 5px; min-width: 0; min-height: 0; border-radius: 4px; border: 1px solid var(--sel); background: var(--sel); color: var(--sel-ink); cursor: default; }
+.spell-comps button.comp { cursor: pointer; }
+.spell-comps.compact .comp { padding: 1px 3px; border: 0; }
+.spell-comps .comp.hot { background: transparent; color: var(--sel); outline: 2px solid var(--sel); }
+.spell-comps .comp-gp { font-style: normal; font-size: 0.75rem; color: var(--sel); }
+.spell-comps .comp-note { flex-basis: 100%; font-weight: 400; color: inherit; opacity: 0.85; }
+.spell-comps .comp-note.hot { font-weight: 700; }
+
+/* Görev OD1C: hedeflerde haritadan seçim. Turuncu = seçili/işaretli (SD10); eylem düğmeleri turkuaz. */
+.goal-pick-hex { fill: var(--sel); fill-opacity: 0.38; stroke: var(--sel); stroke-width: 5; pointer-events: none; }
+.goal-pick-mark { fill: #fff; font-size: 26px; font-weight: 700; paint-order: stroke; stroke: #000; stroke-width: 3px; pointer-events: none; }
+.goal-setup-strip { display: flex; flex-wrap: wrap; flex-direction: row; gap: 6px 10px; align-items: center; top: 8px; left: 50%; transform: translateX(-50%); z-index: 9; max-width: min(94%, 820px); }
+.goal-setup-strip .pending-goal.ready { opacity: 0.9; }
+.goal-setup-strip .pending-goal { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.goal-setup-strip button.on { background: var(--sel); color: var(--sel-ink); border-color: var(--sel); }
+.goal-warn { color: var(--off-ink); background: var(--off); border-radius: 6px; padding: 2px 8px; font-size: 0.85rem; }
+.goal-list li.pending { opacity: 0.85; }
+
+/* Kuyruk AL2: dönüm noktası satırı ve etiket yolu (SD10: turuncu = vurgu). */
+.align-log li.align-turn { border-left: 4px solid var(--sel); padding-left: 8px; margin: 4px 0; }
+.align-path { margin: 4px 0; font-size: 0.85rem; }
+.align-turn-form { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* Kuyruk KQ4 CK1: hikâye alanları. */
+.story-fields { display: grid; gap: 12px; }
+.story-field { display: flex; flex-direction: column; gap: 4px; }
+.story-field textarea { width: 100%; box-sizing: border-box; resize: vertical; font: inherit; }
+
+/* Kuyruk KQ5 YZ1: yüzey katmanı (data/yuzey-gorunum.json). Kırpılmış düz dolgu + dış kenar; adımlı animasyon (ortak 1/6 sn tık). */
+.surface-layer { pointer-events: none; }
+.surface-fill.anim-nabiz { animation-name: surf-nabiz; animation-timing-function: steps(6); animation-iteration-count: infinite; animation-direction: alternate; }
+.surface-fill.anim-titrek { animation-name: surf-titrek; animation-timing-function: steps(3); animation-iteration-count: infinite; animation-direction: alternate; }
+@keyframes surf-nabiz { from { opacity: 1; } to { opacity: var(--surf-lo, 0.78); } }
+@keyframes surf-titrek { from { opacity: 1; } to { opacity: var(--surf-lo, 0.7); } }
+.sprites-paused .surface-fill { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) { .surface-fill { animation: none !important; } }
+
+/* Kuyruk KQ5 NU1: harita aracı anahtarı, tek Nesne paneli ve nesne kartı. SD10: turuncu = etkin. */
+.map-tools { position: absolute; top: 8px; left: 8px; z-index: 8; display: flex; gap: 4px; padding: 4px; border-radius: 10px; background: rgba(15, 20, 26, 0.9); }
+.map-tools button { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; padding: 4px 10px; min-height: 34px; }
+.map-tools button.on { background: var(--sel); color: var(--sel-ink); border-color: var(--sel); font-weight: 700; }
+.map-tools button:disabled { opacity: 0.45; }
+.object-panel { max-width: min(96%, 820px); max-height: 56vh; overflow: auto; gap: 8px; }
+.object-search { flex: 1 1 160px; min-width: 120px; }
+.object-cats { display: flex; flex-wrap: wrap; gap: 4px; }
+.object-cats button.on, .object-card.on { background: var(--sel) !important; color: var(--sel-ink) !important; border-color: var(--sel) !important; }
+.object-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; width: 100%; }
+.object-card { display: flex; flex-direction: column; align-items: center; gap: 1px; text-align: center; padding: 6px 4px; min-height: 76px; }
+.object-card .oc-icon { font-size: 1.4rem; line-height: 1; }
+.object-card .oc-name { font-weight: 600; font-size: 0.85rem; }
+.object-card small { flex-basis: auto; font-size: 0.7rem; opacity: 0.85; }
+.object-card-panel { max-width: min(94%, 520px); gap: 6px; text-align: left; }
+.object-desc { margin: 0; flex-basis: 100%; font-size: 0.85rem; }
+.object-weight { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex-basis: 100%; }
+.object-weight input { width: 5.5em; }
+.object-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex-basis: 100%; }
+@media (max-width: 640px) { .map-tools { top: auto; bottom: 8px; } }
+
+/* Kuyruk KQ6-4: zemin efekt katmanı (su deseni, yüzey yamaları) altıgen tıklamasını yutmaz; Mielikki Gölü gibi su altıgenlerine dokunma çalışsın. */
+.fx-ground, .fx-ground * { pointer-events: none; }

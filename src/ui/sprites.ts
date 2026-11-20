@@ -6,6 +6,7 @@
  */
 import esleme from '../../data/sprite-esleme.json';
 import mevcut from '../../data/sprite-mevcut.json';
+import gorunum from '../../data/yuzey-gorunum.json';
 import type { Offset } from '../rules/hex';
 import type { SpellZone } from '../battle/types';
 
@@ -76,7 +77,17 @@ export function objectSprite(kind: string, h: Offset, have: ReadonlySet<string> 
 
 /** Alan çizimi: taban rengi, yumuşak taban, animasyon türü ve altıgen başına yama (varyant, dönüş, ayna, faz). */
 export interface ZonePatch { hex: Offset; name: string; rot: number; flip: boolean; phase: number; cycle: string[]; anim: SpriteAnim }
+/** Kuyruk KQ5 YZ1: tür başına yüzey stili (`data/yuzey-gorunum.json`). */
+export interface SurfaceStyle { renk: string; kenar: string; dolguOpak: number; kenarKalinlik: number; kenarOpak: number; karisim: string; dokuOpak: number; anim: 'nabiz' | 'titrek' | 'yok' }
+export const SURFACE_ANIM = gorunum.animasyon;
+export function surfaceStyle(kind: string): SurfaceStyle {
+  const g = gorunum as unknown as { varsayilan: SurfaceStyle; tur: Record<string, Partial<SurfaceStyle>> };
+  return { ...g.varsayilan, ...(g.tur[kind] ?? {}) };
+}
+
 export interface ZoneLook {
+  /** YZ1: tür stili (opaklık, kenar, karışım, doku opaklığı, animasyon). */
+  style: SurfaceStyle;
   color: string; soft: boolean; opacity: number; scale: number; anim: SpriteAnim; patches: ZonePatch[];
   /** Kuyruk 16 K16A: tür (öncelik), opak dolgu mu, taban opaklığı, iç kenar çizgisi. */
   kind: string; solid: boolean; baseAlpha: number; edgeLine: string | null;
@@ -86,9 +97,10 @@ export interface ZoneLook {
 export function zoneLook(z: Pick<SpellZone, 'surface' | 'spellId'>, hexes: readonly Offset[], have: ReadonlySet<string> = HAVE): ZoneLook | null {
   const entry = ZONES[zoneKey(z)];
   const list = variantsOf(entry, have);
-  if (!entry || !list.length) return null;
+  // YZ1: sprite yok/yüklenmediyse de eşlemesi olan yüzey düz renk dolguyla çizilir (yedek); eşlemesiz alan eski yer tutucuda.
+  if (!entry) return null;
   const anim = entry.anim ?? 'none';
-  const patches = hexes.map((hex) => {
+  const patches = list.length ? hexes.map((hex) => {
     const name = pickWeighted(list, hexHash(hex)) as string;
     const start = list.findIndex((v) => v.name === name);
     const own = list[start]?.anim ?? anim;
@@ -96,10 +108,11 @@ export function zoneLook(z: Pick<SpellZone, 'surface' | 'spellId'>, hexes: reado
     // Alev ve yükselen parçacık dik durur (yalnızca yatay ayna); diğerleri 60°'nin katı döner.
     const rot = own === 'flicker' || own === 'rise' ? 0 : (hexHash(hex, 1) % 6) * 60;
     return { hex, name, rot, flip: hexHash(hex, 2) % 2 === 1, phase: (hexHash(hex, 3) % 1000) / 1000, cycle, anim: own };
-  });
+  }) : [];
   const solid = entry.dolgu === 'opak';
+  const style = surfaceStyle(entry.tur ?? zoneKey(z));
   return {
-    color: entry.renk ?? '#99aabb', soft: !!entry.soft, opacity: entry.opacity ?? 1, scale: entry.scale ?? 1.5, anim, patches,
+    style, color: style.renk, soft: !!entry.soft, opacity: entry.opacity ?? 1, scale: entry.scale ?? 1.5, anim, patches,
     kind: entry.tur ?? zoneKey(z), solid, baseAlpha: entry.tabanOpak ?? (solid ? 1 : 0.45), edgeLine: entry.kenar ?? null,
   };
 }

@@ -1,0 +1,4 @@
+{
+  "_not": "KQ6-7: jetonun DOĞAL yönü sola bakıyorsa (yüklenen sanat sola dönük) çözücü yatay aynalar; savaş yönlendirmesi (src/ui/tokenFacing.ts: sprite'lar sağa bakar) bunun üstüne XOR'lanır, yani ayna jetonun doğal yönü olur ve ek ters çevirme çıkmaz. Dosyalar yeniden yazılmaz. Anahtar: jeton adının '<ırk>-<cinsiyet>-' sonrası kısmı (<sınıf>-<hücre kodu>). warlock-WL-8 = Gulyabani (alt sınıf kimliği gulyabani, uzun hücre).",
+  "sinifHucre": ["warlock-WL-8"]
+}

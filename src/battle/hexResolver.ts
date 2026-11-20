@@ -16,6 +16,8 @@
  * konsantrasyona bağlanır. Eski savaş (sürüm < 26) ya da anahtar kapalı: eski geçişler (`surfaces.ts`, `ignite.ts`,
  * `surfaceMix.ts`) aynen. Saf; `rng` enjekte; `dryRun` önizleme (yapay zekâ, K58 keşif defteri) aynı çözücüyü çalıştırır.
  */
+import { matrisOn } from './matrisSurum';
+import { yuzmeOn } from './yuzmeSurum';
 import { touches } from './body';
 import table from '../../data/yuzey-etkilesimleri.json';
 import tags from '../../data/buyu-etiketleri.json';
@@ -31,6 +33,7 @@ import { freeCaptives } from './surfaceMix';
 import { solidBarrierAt } from './barriers';
 import { groundBound } from './flight';
 import { terrainSpellEvents } from './terrainSpell';
+import { freeHexVersionOn } from './freeHexSurum';
 import type { BattleEvent, BattleState, Side, SpellZone, SurfaceKind, SurfaceReaction } from './types';
 
 export const RESOLVER_VERSION = 26;
@@ -66,7 +69,7 @@ function gateOpen(s: BattleState, gates: Gate[]): boolean {
 
 /** Gelen etki: element dokunuşu ya da bu adımda oluşan yüzey/alan. */
 export type Incoming =
-  | { kind: 'element'; element: string; hexes: Offset[]; actorId: string; dc: number; damage: number | null; dice?: string; hitIds: string[]; label: string; genis?: boolean }
+  | { kind: 'element'; element: string; hexes: Offset[]; actorId: string; dc: number; damage: number | null; dice?: string; hitIds: string[]; label: string; genis?: boolean; serbest?: boolean }
   | { kind: 'zone'; zoneId: string; origin?: string };
 export interface HexResult { events: BattleEvent[]; reactions: string[]; chainLimited: boolean }
 
@@ -188,11 +191,13 @@ function applyRow(s0: BattleState, row: InteractionRow, it: Extract<Incoming, { 
     const chain = waterChain(s, it.hexes);
     if (!chain.length) return [];
     const evs = burstEvents(s, chain, new Set(it.hitIds), it.dc, it.damage, it.dice ?? '1d8', 'lightning', it.actorId, `${it.label}: suda yıldırım`, rng, true);
-    if (evs.length) push([note(row, chain, it.actorId, it.label, done(chain)), ...evs]);
+    // KQ6-11 (sürüm 82): kurban olmasa da zincir günlüğe ve çizime yazılır (doğal gölde yıldırım hiçbir iz bırakmıyordu).
+    if (evs.length || yuzmeOn(s)) push([note(row, chain, it.actorId, it.label, done(chain)), ...evs]);
     return out;
   }
   if (row.b.su || row.b.zemin) {
-    const tiles = row.b.zemin ? new Set((SURFACE_DATA as Record<string, unknown>)[row.b.zemin] as string[]) : null;
+    // FH1 (sürüm 81): hedefsiz altıgene atılan soğuk, doğal suyun (göl dahil) bütün su zeminini dondurur.
+    const tiles = row.b.zemin ? new Set([...((SURFACE_DATA as Record<string, unknown>)[row.b.zemin] as string[]), ...(it.serbest && row.b.zemin === 'freezeTiles' && freeHexVersionOn(s) ? ((SURFACE_DATA as Record<string, unknown>).waterTiles as string[]) : [])]) : null;
     const res = row.sonuc?.yuzey;
     const iced = res && row.sonuc?.yoksa ? keys(zonesOf(s).filter((z) => z.surface === res).flatMap((z) => z.hexes)) : new Set<string>();
     const hit = fresh(sorted(s, it.hexes.filter((h) => (tiles ? tiles.has(s.map?.tiles[h.row]?.[h.col] ?? '#') : isWater(s, h)) && !iced.has(hexKey(h)))));
@@ -296,13 +301,20 @@ export function incomingOf(next: BattleState, events: BattleEvent[]): Incoming[]
     for (let i = from; i < events.length; i++) {
       const e = events[i] as BattleEvent;
       if (e.type === 'save_resolved' && e.damageType === type && e.damageRolls.length) return e.rawDamage;
+      // Mekanik matris B19 (yalnız 83+ olayında `parts` var): ikinci hasar türü save olayının `secondary` parçasında.
+      if (e.type === 'save_resolved' && e.secondary?.type === type && e.secondary.rolls.length) return e.secondary.raw;
       if (e.type === 'spell_cast' || e.type === 'area_used') break;
     }
     return null;
   };
   const pos = (id: string) => next.combatants[id]?.pos;
   events.forEach((e, i) => {
-    if (e.type === 'spell_cast' && e.area?.damageType) {
+    if (e.type === 'spell_cast' && e.area?.parts?.length) {
+      for (const p of e.area.parts) {
+        out.push({ kind: 'element', element: p.damageType, hexes: e.area.hexes, actorId: e.actorId, dc: e.area.dc ?? 10, damage: firstRaw(i + 1, p.damageType),
+          dice: p.dice, hitIds: e.area.targetIds ?? [], label: e.label });
+      }
+    } else if (e.type === 'spell_cast' && e.area?.damageType) {
       out.push({ kind: 'element', element: e.area.damageType, hexes: e.area.hexes, actorId: e.actorId, dc: e.area.dc ?? 10, damage: firstRaw(i + 1, e.area.damageType),
         ...(e.area.dice ? { dice: e.area.dice } : {}), hitIds: e.area.targetIds ?? [], label: e.label });
     } else if (e.type === 'area_used' && e.damageType) {
@@ -311,6 +323,19 @@ export function incomingOf(next: BattleState, events: BattleEvent[]): Incoming[]
     } else if (e.type === 'attack_resolved' && e.hit) {
       const p = pos(e.targetId);
       if (p) out.push({ kind: 'element', element: e.damageType, hexes: [p], actorId: e.actorId, dc: next.combatants[e.actorId]?.spellSaveDc ?? 10, damage: e.rawDamage, hitIds: [e.targetId], label: e.label });
+    } else if ((e.type === 'save_resolved' || e.type === 'effect_tick') && e.zoneId && e.damageType && e.damageRolls.length) {
+      // Mekanik matris B20 (sürüm 83+; olayda `zoneId`): alan tetiğinin hasarı (Wall of Fire, Blade Barrier, Incendiary Cloud,
+      // Storm of Vengeance …) değdiği yaratığın altıgeninde hasar türünde element; tablonun bütün satırları (yalnız "geniş" değil).
+      const p = pos(e.targetId);
+      const z = next.map?.zones?.find((x) => x.id === e.zoneId);
+      const raw = e.type === 'save_resolved' ? e.rawDamage : e.damageRolls.reduce((n, x) => n + x, 0);
+      if (p) out.push({ kind: 'element', element: e.damageType, hexes: [p], actorId: e.type === 'save_resolved' ? e.actorId : z?.casterId ?? 'harita',
+        dc: e.type === 'save_resolved' ? e.dc : z?.dc ?? 10, damage: raw, hitIds: [e.targetId], label: e.type === 'save_resolved' ? e.label : e.name });
+    } else if (e.type === 'map_effect' && e.rule === 'wallCut' && e.damage?.type && matrisOn(next)) {
+      // Mekanik matris B20 (sürüm 83+): duvarın kestiği yaratığın hasarı (Wall of Ice: Cold) değdiği altıgende element.
+      const p = pos(e.targetId);
+      const z = next.map?.zones?.find((x) => x.name === e.text);
+      if (p) out.push({ kind: 'element', element: e.damage.type, hexes: [p], actorId: z?.casterId ?? 'harita', dc: z?.dc ?? 10, damage: null, hitIds: [e.targetId], label: e.text ?? e.damage.type });
     } else if (e.type === 'save_resolved' && e.damageType === 'fire' && e.appliedDamage > 0) {
       const p = pos(e.targetId);
       if (p) out.push({ kind: 'element', element: 'fire', hexes: [p], actorId: e.actorId, dc: e.dc, damage: null, hitIds: [], label: e.label, genis: true });
@@ -349,7 +374,7 @@ export function previewHexEffects(state: BattleState, actorId: string, element: 
 
 registerResolver({
   on: hexResolverOn,
-  run: (s, element, hexes, actorId, label, rng, damage, dc) => resolveHexEffects(s, [{ kind: 'element', element, hexes, actorId, dc, damage, hitIds: [], label }], rng).events,
+  run: (s, element, hexes, actorId, label, rng, damage, dc, serbest) => resolveHexEffects(s, [{ kind: 'element', element, hexes, actorId, dc, damage, hitIds: [], label, ...(serbest ? { serbest: true } : {}) }], rng).events,
 });
 
 /** Olaylarda hasar alan yaratıklar (save, süren hasar, harita etkisi). */

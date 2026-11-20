@@ -1,0 +1,13 @@
+{
+  "not": "Mekanik matris B02 (kural sürümü 83): SRD 5.2.1 metninde hedefi \"a creature (that) you can see\" (görebildiğin yaratık) olan büyüler; liste src/sim/matris/srd.ts kahininin `needsSight` okumasından (büyü metninin ilk iki cümlesinde hedef + \"you can see\"; yer/nokta seçimi sayılmaz). SRD 5.2.1 Invisible: \"You aren't affected by any effect that requires its target to be seen unless the effect's creator can somehow see you.\" Blinded: \"You can't see\". `hedef`: seçilen hedef (targetId/targetIds; büyücünün kendisi hariç) görülmezse büyü yapılamaz. `birincil`: yalnız ilk hedef görülmeli (Chain Lightning'in sıçrayan hedefleri değil). `alan`: alandaki görülmeyen yaratık etkilenmez. Görme ölçütü saldırılarla aynı (`sight.ts` `canSeeTarget`: See Invisibility, açığa çıkma, Blindsight/Truesight menzili).",
+  "hedef": [
+    "animal-friendship", "bane", "banishment", "befuddlement", "blight", "blindness-deafness", "charm-monster", "charm-person",
+    "command", "disintegrate", "dissonant-whispers", "dominate-beast", "dominate-monster", "dominate-person", "enlarge-reduce",
+    "eyebite", "finger-of-death", "flesh-to-stone", "harm", "haste", "heal", "healing-word", "hex", "hideous-laughter",
+    "hold-monster", "hold-person", "hunters-mark", "irresistible-dance", "levitate", "magic-missile", "mass-heal",
+    "mass-healing-word", "mass-suggestion", "maze", "mind-spike", "phantasmal-force", "phantasmal-killer", "polymorph",
+    "power-word-heal", "power-word-kill", "power-word-stun", "sacred-flame", "suggestion", "true-polymorph", "vicious-mockery"
+  ],
+  "birincil": ["chain-lightning"],
+  "alan": ["compulsion", "conjure-celestial", "conjure-woodland-beings", "telekinesis"]
+}

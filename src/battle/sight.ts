@@ -98,6 +98,20 @@ export function knowsWhere(state: Pick<BattleState, 'map' | 'kuralSurumu'> & Par
 }
 
 /**
+ * Mekanik matris B02 (sürüm 83): `viewer`, `target`'ı görebiliyor mu ("a creature you can see" isteyen büyüler).
+ * Ölçüt saldırılarla aynı: Invisible hedef açığa çıkmışsa (`revealed`), görünmezi gören (See Invisibility) ya da
+ * Blindsight/Truesight menzilindeyse görülür; Blinded yaratık yalnız bu duyuların menzilinde görür (SRD 5.2.1 Blinded
+ * "You can't see"). Kendini her zaman görür.
+ */
+export function canSeeTarget(state: BattleState | undefined, viewer: Combatant, target: Combatant): boolean {
+  if (viewer.id === target.id) return true;
+  const sense = senseSees(state, viewer, target);
+  if (viewer.conditions.includes('Blinded') && !sense) return false;
+  if (!target.conditions.includes('Invisible')) return true;
+  return revealed(target) || seesInvisible(viewer) || sense;
+}
+
+/**
  * Saldırı bağlamı için saldıranın ve hedefin durumları (görünmezlik görülüyorsa Invisible yok sayılır). Kuyruk 16 K16E
  * (kural sürümü 2, `state` verilince): korku kaynağı görüş hattında değilse saldıranın Frightened'ı sayılmaz; Prone
  * hedefe saldırı saldıranın 5 ft içinde olup olmamasına göre (`proneWithin5`; saldırı türüne bakılmaz).

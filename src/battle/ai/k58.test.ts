@@ -16,13 +16,13 @@ import type { BattleEvent, Combatant } from '../types';
 describe('K58 yapay zekâ zorluğu ve rol', () => {
   it('kurulumdaki zorluk savaş durumunda ve başlangıç olayında (replay aynı)', () => {
     const foes = ['goblin-warrior', 'wolf'].map((m, i) => ({ ...combatantFromMonster(getMonster(m), { id: `O${i}`, name: m }), side: 'enemies' as const }));
-    const s = createMapBattle(foes, { mapId: 'ortamlar-diyari', variantId: 'gunduz', yz: { zorluk: { enemies: 'kolay', party: 'usta' } } }, seededRng(3));
+    const s = createMapBattle(foes, { mapId: 'kale-avlu', variantId: 'gunduz', yz: { zorluk: { enemies: 'kolay', party: 'usta' } } }, seededRng(3));
     expect(s.state.yz?.zorluk).toEqual({ enemies: 'kolay', party: 'usta' });
     const start = s.events.find((e): e is Extract<BattleEvent, { type: 'battle_started' }> => e.type === 'battle_started');
     expect(start?.state.yz?.zorluk?.enemies).toBe('kolay');
     expect(replay(s.events).yz).toEqual(s.state.yz);
     // Varsayılan: alan yok (Normal).
-    expect(createMapBattle(foes, { mapId: 'ortamlar-diyari', variantId: 'gunduz' }, seededRng(3)).state.yz).toBeUndefined();
+    expect(createMapBattle(foes, { mapId: 'kale-avlu', variantId: 'gunduz' }, seededRng(3)).state.yz).toBeUndefined();
   });
 
   it('rol: yalnız Game Master atar; atanan rol türetilenin yerine geçer, null geri alır', () => {

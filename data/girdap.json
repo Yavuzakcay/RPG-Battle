@@ -1,0 +1,14 @@
+{
+  "_not": "Control Water girdabı savaşta (kullanıcı kararı 2026-11-19; kural sürümü 84, Game Master anahtarı `controlWaterWhirlpool`; src/battle/girdap.ts). SRD 5.2.1 (s. 120, Whirlpool): 5 ft taban, en çok 50 ft tepe, 25 ft yükseklik; 25 ft içindeki sudakiler 10 ft çekilir; girişte ya da tur sonunda STR save, 2d8 Bludgeoning, başarıda yarı; uzaklaşmak eylem + STR (Athletics) büyü DC'sine karşı. Ev kuralı (⚠ SRD'den sapma): su gerekmez (yerdeki girdap), hedef yaratığın altıgeninde açılır, yarıçap ve zar slotla büyür (SRD'de yukarı slot yok), save girişte ve tur başında, başarısız save'de yakalanır (hız 0, kurtulma `escape`). Taban zar, hasar türü, save ve slot başına artış (zar +1d8, yarıçap +5 ft) büyü verisinde (`data/spells-45.json` control-water `k84`, `upcast`). Yarıçap üst sınırı SRD'nin 50 ft tepe genişliğinden (25 ft = 5 altıgen); çekme bandı haritalar küçük olduğu için 25 ft yerine 10 ft (2 altıgen).",
+  "tabanSlot": 4,
+  "tabanYaricap": 2,
+  "azamiYaricap": 5,
+  "yukseklikFt": 25,
+  "cekme": {
+    "bantAltigen": 2,
+    "ft": 10
+  },
+  "sureTur": 100,
+  "renk": "#3a7bd5",
+  "simge": "🌀"
+}

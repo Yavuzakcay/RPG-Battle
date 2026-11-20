@@ -4,9 +4,12 @@
  * zırh, silah, eşya (her birinin bir satır özeti, ayrıntı üzerine gelince ya da seçilince); büyüler.
  * Sağda (dar ekranda altta) anlamlı bir özet ve sorunlar canlı görünür.
  */
+import { StoryStep } from './builder/Story';
+import { SpellComps, componentsInfo } from '../ui/SpellComps';
+import { spellRitual } from '../rules/spellComponents';
 import { eligibleForms, shapeLimits } from '../battle/druid';
 import { eligibleCantrips, invocationKit, invocationSlots, LESSON_FEATS, parseInvocation } from '../rules/invocations';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { armor, classDataLoaded, classes, getClass, items, loadMonsters, monsters, monstersLoaded, races, spells, weapons } from '../data';
 import { classBlurb, featInfo, raceBlurb, raceTraitLines } from '../ui/descriptions';
 import { describeTr } from '../ui/trDesc';
@@ -24,13 +27,18 @@ import { carryLoad, type CarryLoad, type CarryRule } from '../rules/carry';
 import { storedCarryRule } from '../ui/carrySetting';
 import { MAX_ATTUNED, armorProficient, deriveStats, finalScores, type CharacterSheet, type DerivedStats } from '../rules/stats';
 import karadulData from '../../data/karadul.json';
-import { UPPER_LEVEL_CAP } from '../app/limits';
+import { LEVEL_CAP } from '../app/limits';
+import { roomOverlay } from '../oda/active';
 import { alignmentAutoOnly, alignmentEnabled, alignmentRace } from '../app/features';
 import { AlignmentGrid } from '../ui/AlignmentGrid';
-import { applyStartKind, newAlignment, onSubclassChange, rejectOptions, startContributions, startValue, type Alignment, type StartKind } from '../rules/alignment';
+import { DiceStep } from '../ui/DiceStep';
+import { RecoBar, RecoProvider, RecoTag, useRecoSets } from './builder/Reco';
+import { applyReco, clearReco } from './builderDefaults';
+import '../app/alignDiceHook';
+import { KATKI_CARPANI, newAlignment, newAlignmentAt, onSubclassChange, squareOf, startContributions, startValue, type Alignment, type Bucket } from '../rules/alignment';
 import { AWAKENING_OPTIONS, CELESTIAL, type AwakeningOption } from '../rules/celestialData';
 import { classKit, experimentalFrom, gainedFeatures, missingFeatures, subclassLevel, subclassesOf } from '../rules/classFeatures';
-import { findSubclass, genderVisible, isOtherClassSubclass, notWorkingCount, packExperimental, subclassLabel, subclassMissing } from '../rules/subclasses';
+import { findSubclass, genderVisible, isOtherClassSubclass, subclassMissing, subclassPlainName } from '../rules/subclasses';
 import { wishPickKey } from '../battle/paket/bag';
 import {
   ASI_FEAT, advancementSlots, asiCanRaise, asiPointsLeft, asiStep, scoresBeforeSlot, featById, featMechanic, featOptions, featEffects, featProblem, isStyleChoice, slotAlternativeById,
@@ -47,6 +55,8 @@ import { MI_LISTS, backgroundOf, backgroundSkills, backgrounds, bonusesOf, magic
 import { armorDetail, armorSummary, itemDetail, itemSummary, weaponDetail, weaponSummary } from '../ui/equipmentText';
 import { getLang, t } from '../i18n';
 import { Fold, InfoPop, InfoTip, toggle } from './builder/shared';
+import { GlyphBadges, GlyphText } from '../ui/glyph/Glyph';
+import { spellGlyphs } from '../ui/glyph/glyphs';
 import { recommendedAsi, reSuggestAfterBackground, reSuggestAfterLevel, reSuggestAfterClassSwitch, withRecommendedAsi, withSuggestions } from './builderDefaults';
 import onerilen from '../../data/onerilen-baslangic.json';
 import { EquipmentStep } from './builder/Equipment';
@@ -55,6 +65,9 @@ import { StepBoundary } from '../ui/StepBoundary';
 import { useDiceFlow } from '../ui/diceFlow';
 import { DicePrompt } from '../ui/DicePrompt';
 import { ITEM_KINDS, ITEM_TIERS, itemKind, itemTier, type ItemKind, type ItemTier } from '../rules/itemCategory';
+
+// Kuyruk KQ4 CK1: karakter kâğıdı tembel parça.
+const SheetOverlay = lazy(() => import('./sheet/SheetOverlay'));
 
 /** SD3: ilk sırada görünen tür ve sınıf kartları (kalanı "Diğer" altında; `data/onerilen-baslangic.json`). */
 const RACE_FEATURED = onerilen.ozelTurler;
@@ -100,7 +113,8 @@ function mainAttack(sheet: CharacterSheet): string {
 export function wizardSteps(sheet: CharacterSheet): BuilderStep[] {
   const caster = getClass(sheet.classId).casting !== null || alternativeCantrips(sheet).options.length > 0
     || spellOptions(sheet.classId, sheet.level).length > 0;
-  const all: BuilderStep[] = ['character', 'scores', 'skills', 'progress', 'equipment', 'spells', 'summary'];
+  // Kuyruk KQ4 CK1: "Hikâye" adımı özetten (Kaydet ekranı) hemen önce; Alignment adımı yine en sonda.
+  const all: BuilderStep[] = ['character', 'scores', 'skills', 'progress', 'equipment', 'spells', 'story', 'summary'];
   const list = caster ? all : all.filter((x) => x !== 'spells');
   // Kuyruk K51: hizalanma ev kuralı açıkken son adım.
   return alignmentEnabled() ? [...list, 'alignment'] : list;
@@ -130,6 +144,12 @@ export function clearInvalidSubclass(c: SavedCharacter): { character: SavedChara
  * yalnızca "Kaydet"i. Masaüstünde sağda özet paneli ve üstte adım çubuğu; mobilde üst başlık, ilerleme çubuğu ve alt
  * özet çubuğu. `step` (testler) başlangıç adımı.
  */
+/** Görev SD13: yalnız adı bilinen büyü satırlarında küçük bileşen grubu. */
+function NameComps(props: { name: string }) {
+  const sp = spells.find((x) => x.name === props.name);
+  return sp ? <SpellComps spell={sp} compact /> : null;
+}
+
 export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedCharacter) => void; onCancel: () => void; step?: BuilderStep;
   /** Görev SD3: yeni karakter: ad, beceri, geçmiş bonusu, donanım, büyü ve yetenek artışı önerileri hazır gelir. */ suggest?: boolean }) {
   const L = t();
@@ -165,6 +185,8 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const [missingOpen, setMissingOpen] = useState(false);
   // SD3: Kaydet soluk (disabled) kalmaz; eksik varken dokununca nedeni söyler ve ilk eksik adıma götürür.
   const [saveHint, setSaveHint] = useState(false);
+  // Kuyruk KQ4 CK1: karakter kâğıdı (tembel parça) son ekranda.
+  const [sheetOpen, setSheetOpen] = useState(false);
   const go = (id: BuilderStep) => { setStepId(id); setVisited((v) => new Set([...v, id])); setMissingOpen(false); setSaveHint(false); };
   const issuesOf = (id: BuilderStep) => issues.filter((x) => x.step === id);
   // Sınıf değişince avatar beklemeden açılsın: bu tür ve görünümün bütün sınıf jetonları (küçük kopya) boşta indirilir.
@@ -213,19 +235,25 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             <h2>{stepLabel(current)}</h2>
             <StepBoundary key={current} where={`sihirbaz:${current}`} context={{ step: current, classId: s.classId, raceId: s.raceId, lineageId: s.lineageId,
               subclassId: s.subclassId, level: s.level, originFeat: s.originFeat, backgroundId: s.backgroundId, backgroundBonuses: s.backgroundBonuses }}>
+            <RecoProvider value={{ c, setC, suggest: !!props.suggest }}>
             {current === 'character' && <CharacterStep c={c} setC={setC} set={set} suggest={props.suggest} />}
             {current === 'scores' && <ScoresStep c={c} setC={setC} set={set} />}
             {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} />}
             {current === 'progress' && <ProgressStep c={c} setC={setC} set={set} />}
             {current === 'equipment' && <EquipmentStep sheet={s} set={set} carryRule={carryRule} />}
             {current === 'spells' && <SpellsStep sheet={s} set={set} />}
+            {current === 'story' && <StoryStep c={c} setC={setC} />}
             {current === 'alignment' && <AlignmentStep c={c} setC={setC} initial={props.initial} />}
+            </RecoProvider>
             </StepBoundary>
             {current === 'summary' && (
               <div className="wiz-summary-step">
                 <SummaryBody final={final} derived={derived} raceName={raceName} />
+                <div className="reco-bar"><button type="button" className="ghost" onClick={() => setC((x) => applyReco(x, 'all'))}>{t().reco.all}</button><button type="button" className="ghost" onClick={() => setC((x) => clearReco(x, 'all'))}>{t().reco.clearAll}</button></div>
                 <h3>{W.missingTitle}</h3>
                 {issues.length > 0 ? <>{missingList}<p className="mute">{W.summaryHint}</p></> : <p className="ok">{T.ready}</p>}
+                {/* SD8 eki: zar seçimi son ekranda (Alignment ev kuralı açıkken Alignment adımında). */}
+                {!alignmentEnabled() && <DiceStep c={c} setC={setC} />}
               </div>
             )}
             {saveHint && issues.length > 0 && (
@@ -236,12 +264,14 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             )}
             <div className="wiz-nav">
               <button className="ghost" disabled={index === 0} onClick={() => go(steps[index - 1] as BuilderStep)}>{W.back}</button>
+              {isLast && <button type="button" className="ghost" onClick={() => setSheetOpen(true)}>{t().sheet.button}</button>}
               {!isLast
                 ? <button className="cta" onClick={() => go(steps[index + 1] as BuilderStep)}>{W.next}</button>
                 : <button className={`cta${problems.length > 0 ? ' soft' : ''}`} aria-disabled={problems.length > 0 || undefined}
                   onClick={() => (problems.length > 0 ? setSaveHint(true) : props.onSave(withAlignment(savableCharacter(final), props.initial)))}>{W.save}</button>}
             </div>
           </section>
+          {sheetOpen && <Suspense fallback={null}><SheetOverlay c={savableCharacter(final)} onClose={() => setSheetOpen(false)} /></Suspense>}
           <aside className="panel builder-summary wiz-side" aria-label={T.summary}>
             {current === 'character' && <TokenPreview sheet={s} size={200} className="wiz-preview-side" />}
             <h2>{T.summary}</h2>
@@ -275,29 +305,56 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
  */
 function withAlignment(ch: SavedCharacter, initial: SavedCharacter): SavedCharacter {
   if (!alignmentEnabled()) return ch;
-  const computed = startValue(startContributions(ch.sheet, alignmentRace()));
-  if (initial.hizalanma) return { ...ch, hizalanma: onSubclassChange(initial.hizalanma, computed, 'oluşturucu', new Date().toISOString()).alignment };
-  return { ...ch, hizalanma: ch.hizalanma ?? newAlignment(computed, 'otomatik') };
+  // SD12: eski karakter kendi çarpanıyla (yoksa 1) hesaplanır: değerlerine dokunulmaz; yeni karakter güncel çarpanla.
+  if (initial.hizalanma) {
+    const computed = startValue(startContributions(ch.sheet, alignmentRace(), initial.hizalanma.katkiCarpani ?? 1));
+    return { ...ch, hizalanma: onSubclassChange(initial.hizalanma, computed, 'oluşturucu', new Date().toISOString()).alignment };
+  }
+  // Yeni karakter: oyuncu kare seçtiyse o ('kare'), değilse güncel otomatik hesap.
+  if (ch.hizalanma?.baslangicTuru === 'kare' && !alignmentAutoOnly()) return ch;
+  return { ...ch, hizalanma: newAlignment(startValue(startContributions(ch.sheet, alignmentRace())), 'otomatik') };
 }
 
-/** Kuyruk K51: hizalanma son adımı (katkı dökümü, ızgara, Kabul et / Kabul etme ve üç geçiş seçeneği). */
+/** SD12: 9 kare seçici (satırlar Good/Neutral/Evil, sütunlar Lawful/Neutral/Chaotic): önerilen kare "Önerilen" etiketli, seçili turuncu. */
+export function AlignmentPicker(props: { rec: { d: Bucket; g: Bucket }; sel: { d: Bucket; g: Bucket }; locked: boolean; onPick: (d: Bucket, g: Bucket) => void }) {
+  const H = t().view.hizalanma;
+  const order: Bucket[] = ['pos', 'neu', 'neg'];
+  return (
+    <div className="align-picker" role="radiogroup" aria-label={H.pickTitle}>
+      {order.map((g, r) => order.map((d, c) => {
+        const on = props.sel.d === d && props.sel.g === g;
+        const isRec = props.rec.d === d && props.rec.g === g;
+        const label = d === 'neu' && g === 'neu' ? 'True Neutral' : `${H.cols[c]} ${H.rows[r]}`;
+        return (
+          <button key={`${r}${c}`} type="button" role="radio" aria-checked={on} disabled={props.locked && !on} className={on ? 'on' : 'ghost'} data-kare={`${d}-${g}`}
+            onClick={() => props.onPick(d, g)}>{label}{isRec ? <small className="reco-tag">{t().reco.tag}</small> : null}</button>
+        );
+      }))}
+    </div>
+  );
+}
+
+/** Kuyruk K51: hizalanma son adımı (katkı dökümü, ızgara). SD12: 9 kare seçici (kapalıyken yalnız otomatik: Game Master ayarı). */
 function AlignmentStep(props: { c: SavedCharacter; setC: (f: (x: SavedCharacter) => SavedCharacter) => void; initial: SavedCharacter }) {
   const H = t().view.hizalanma;
   const lang = getLang();
-  const list = startContributions(props.c.sheet, alignmentRace());
-  const computed = startValue(list);
   const old = props.initial.hizalanma;
-  const [rejecting, setRejecting] = useState(false);
-  const chosen: StartKind = props.c.hizalanma?.baslangicTuru ?? 'otomatik';
-  const choose = (k: StartKind) => props.setC((x) => ({ ...x, hizalanma: newAlignment(computed, k) }));
-  const opts = alignmentAutoOnly() ? [] : rejectOptions(computed);
+  const carpan = old?.katkiCarpani ?? KATKI_CARPANI; // eski karakter kendi çarpanıyla
+  const list = startContributions(props.c.sheet, alignmentRace(), carpan);
+  const computed = startValue(list);
+  const autoOnly = alignmentAutoOnly();
+  const picked = props.c.hizalanma?.baslangicTuru === 'kare' && !autoOnly ? props.c.hizalanma : undefined;
   const sorted = [...list.filter((x) => x.kaynak !== 'irk'), ...list.filter((x) => x.kaynak === 'irk')];
   const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
-  const shown: Alignment = old ? onSubclassChange(old, computed, '', '').alignment : props.c.hizalanma ?? newAlignment(computed, 'otomatik');
+  const auto = newAlignment(computed, 'otomatik', carpan);
+  const shown: Alignment = old ? onSubclassChange(old, computed, '', '').alignment : picked ?? auto;
+  const rec = squareOf(computed);
+  const sel = squareOf((old ?? picked ?? auto).baslangic);
+  const differs = !old && picked !== undefined && (sel.d !== rec.d || sel.g !== rec.g);
   return (
     <div className="align-step">
       <p className="mute">{H.intro}</p>
-      <AlignmentGrid value={shown} start={old ? old.baslangic : applyStartKind(chosen, computed)} label={shown} bars />
+      <AlignmentGrid value={shown} start={old ? old.baslangic : shown.baslangic} label={shown} bars />
       <table className="align-contrib"><tbody>
         {sorted.map((x) => (
           <tr key={`${x.kaynak}:${x.id}`}><td>{H.sources[x.kaynak]}: {x.gerekce[lang]}</td><td className="num">{H.law} {sign(x.duzen)} · {H.good} {sign(x.iyilik)}</td></tr>
@@ -310,19 +367,15 @@ function AlignmentStep(props: { c: SavedCharacter; setC: (f: (x: SavedCharacter)
           : H.suggested(computed.duzen, computed.iyilik)}</p>
       ) : (
         <>
-          <div className="align-actions">
-            <button type="button" className={chosen === 'otomatik' ? 'on' : ''} onClick={() => { setRejecting(false); choose('otomatik'); }}>{H.accept}</button>
-            {opts.length > 0 && <button type="button" className={chosen !== 'otomatik' ? 'on' : ''} onClick={() => setRejecting(true)}>{H.reject}</button>}
-          </div>
-          {(rejecting || chosen !== 'otomatik') && opts.length > 0 && (
-            <div className="align-actions">
-              {opts.map((k) => <button key={k} type="button" className={chosen === k ? 'on' : ''} onClick={() => choose(k)}>{H.options[k]}</button>)}
-            </div>
-          )}
-          {alignmentAutoOnly() && <p className="mute">{H.autoOnly}</p>}
-          <p className="mute">{H.chosen(H.kinds[chosen] ?? chosen)}</p>
+          <p className="mute">{autoOnly ? H.autoOnly : H.pickHelp}</p>
+          <AlignmentPicker rec={rec} sel={sel} locked={autoOnly}
+            onPick={(d, g) => props.setC((x) => ({ ...x, hizalanma: d === rec.d && g === rec.g ? newAlignment(computed, 'otomatik') : newAlignmentAt(d, g) }))} />
+          {!autoOnly && picked && <div className="align-actions"><button type="button" className="ghost" onClick={() => props.setC((x) => ({ ...x, hizalanma: newAlignment(computed, 'otomatik') }))}>{H.backAuto}</button></div>}
+          {differs && <p className="mute">{H.differs}</p>}
+          <p className="mute">{H.chosen(H.kinds[picked ? 'kare' : 'otomatik'] ?? '')}</p>
         </>
       )}
+      <DiceStep c={props.c} setC={props.setC} alignment={shown} />
     </div>
   );
 }
@@ -394,8 +447,8 @@ function IdentityStep({ c, setC, set, suggest }: StepProps) {
       <label>{T.name} <input value={s.name} maxLength={40} onChange={(e: { target: { value: string } }) => set({ name: e.target.value })} /></label>
       <label>{T.level}
         <select value={s.level} onChange={(e: { target: { value: string } }) => setLevel(Number(e.target.value))}>
-          {/* Kuyruk K49: oluşturucuda her zaman 1–20 (Serüven ilerlemesi ayrıca `ustSeviye` ile sınırlı). */}
-          {Array.from({ length: UPPER_LEVEL_CAP }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+          {/* 2026-11-19: seviye sınırı her yerde 1–20 (Üst seviye anahtarı kalktı). */}
+          {Array.from({ length: Math.max(LEVEL_CAP, s.level) }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
         </select>
       </label>
       <span className="seg" role="radiogroup" aria-label={T.avatar}>
@@ -414,8 +467,9 @@ function IdentityStep({ c, setC, set, suggest }: StepProps) {
 }
 
 /**
- * Tür (SD3): 6 öne çıkan tür kartı + "Diğer türler"; seçilen türün tek satırlık tanıtımı. Soy/kültür ve ten tonu
- * "Soy ve görünüm" altında katlı (varsayılan seçili); soy zorunlu ve boşsa açık gelir.
+ * Tür (SD5): bütün türler tek ızgarada (kartta yalnız ad; satır kırar, kaydırma yok). Soy/kültür kartları seçildiği anda
+ * jeton önizlemesini değiştirir (önizleme sayfanın ortak jetonu). Human'ın 4 kültürü; Sur Dışı'nda Sürgün seçimi zorunlu,
+ * ten tonu kültür/sürgün seçiminden kendiliğinden gelir (ayrı ten bölmesi yok). Kartlarda açıklama yok; yalnız artı/eksi satırları.
  */
 function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
   const T = t().builder;
@@ -424,26 +478,20 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
   const race = races.find((r) => r.id === s.raceId);
   const lineage = lineageOf(s);
   const abilities = lineageAbilityList(s);
-  const featured = races.filter((r) => RACE_FEATURED.includes(r.id));
-  const others = races.filter((r) => !RACE_FEATURED.includes(r.id));
   const card = (r: (typeof races)[number]) => (
-    <button key={r.id} className={`pick-card${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
-      onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id, exileCulture: undefined })}>
-      <b>{r.name}</b><small>{raceBlurb(r.id, lang)}</small>
+    <button key={r.id} className={`pick-card race-card-small${r.id === s.raceId ? ' on' : ''}`} aria-pressed={r.id === s.raceId}
+      onClick={() => set({ raceId: r.id, lineageId: r.lineages?.[0]?.id, exileCulture: undefined, ...(r.id === 'human' ? { skinTone: cultureSkinTone(r.lineages?.[0]?.id, s.skinTone) } : {}) })}>
+      <b>{r.name}</b>
     </button>
   );
   const hasLineage = !!race?.lineages && race.lineages.length > 0;
+  const exiles = exileOptions(s.lineageId);
   return (
     <>
-      <div className="card-grid">{featured.map(card)}</div>
-      {others.length > 0 && (
-        <Fold title={W.otherRaces(others.length)} open={others.some((r) => r.id === s.raceId)} className="race-more">
-          <div className="card-grid">{others.map(card)}</div>
-        </Fold>
-      )}
+      <div className="card-grid race-grid">{races.map(card)}</div>
       {race && (
         <div className="info-card race-card">
-          <p><b>{race.name}</b> {raceBlurb(race.id, lang)}
+          <p><b>{race.name}</b>
             <InfoPop text={[W.speed(raceSpeed(s)), raceDarkvision(s) ? W.darkvision(raceDarkvision(s)) : '',
               race.resistances?.length || lineage?.resistances.length ? W.resist([...new Set([...race.resistances, ...(lineage?.resistances ?? [])])].join(', ')) : '',
               race.evKurali ? [CELESTIAL.hikaye[lang], ...CELESTIAL.ozellikler.map((o) => `${o[lang]}: ${o.metin[lang]}`)].join('\n') : race.traits,
@@ -452,10 +500,10 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
         </div>
       )}
       {hasLineage && race && (
-        <Fold title={race.id === 'human' ? W.cultureTitle : W.lineageTitle} summary={lineage ? lineageName(lineage, lang) : W.noneShort}
-          open={!lineage && !race.lineageOptional} className="lineage-fold">
+        <section className="lineage-section" aria-label={race.id === 'human' ? W.cultureTitle : W.lineageTitle}>
+          <h4 className="lineage-title">{race.id === 'human' ? W.cultureTitle : W.lineageTitle}</h4>
           <p className="mute race-note">{W.raceBonusNote}</p>
-          {/* Görev K3: soy seçimi kartlarla; kartta yalnızca bu seçeneği ayıran özet. */}
+          {/* SD5: soy/kültür seçimi anında jeton önizlemesine yansır; kartta yalnız ad + artı/eksi özeti. */}
           <div className="card-grid lineage-grid" role="radiogroup" aria-label={W.lineageTitle}>
             {(race.lineages ?? []).map((l) => (
               <button key={l.id} role="radio" aria-checked={l.id === lineage?.id} className={`pick-card lineage-card${l.id === lineage?.id ? ' on' : ''}`}
@@ -467,41 +515,26 @@ function RaceStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Parti
           </div>
           {race.lineageOptional && !lineage && <p className="soft-warn">⚠ {W.lineageOptionalHint}</p>}
           {lineage && <LineageNotes raceId={race.id} lineage={lineage} />}
-          {race.id === 'human' && (
+          {race.id === 'human' && exiles.length > 0 && (
             <>
-              {/* Görev AS1b düzeltmesi: Sur Dışı'nda "Sürgün" seçimi (yalnız görünüm; buff/debuff Sur Dışı'nınki). */}
-              {exileOptions(s.lineageId).length > 0 && (
-                <>
-                  <h4 className="lineage-title">{W.exileTitle}</h4>
-                  <p className="mute race-note">{W.exileHelp}</p>
-                  <div className="card-grid lineage-grid exile-grid" role="radiogroup" aria-label={W.exileTitle}>
-                    {exileOptions(s.lineageId).map((id) => {
-                      const on = s.exileCulture === id;
-                      return (
-                        <button key={id} type="button" role="radio" aria-checked={on} className={`pick-card exile-card${on ? ' on' : ''}`} data-exile={id}
-                          onClick={() => set({ exileCulture: id, skinTone: cultureSkinTone(s.lineageId, s.skinTone, id) })}>
-                          <b>{exileName(id, lang)}</b>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-              <h4 className="lineage-title">{W.skinTitle}</h4>
-              {/* Ten tonu ayrı seçim; kültürün izin verdiği tonlar (`kulturTen`), tek tonlu kültürde kendiliğinden seçili. */}
-              <div className="skin-tones" role="radiogroup" aria-label={W.skinTitle}>
-                {tonesFor(s.lineageId, s.exileCulture).map((tone) => {
-                  const on = cultureSkinTone(s.lineageId, s.skinTone, s.exileCulture) === tone.id;
+              {/* Sur Dışı: Sürgün seçimi ZORUNLU (yalnız görünüm); seçim ten tonunu kendiliğinden belirler. */}
+              <h4 className="lineage-title">{W.exileTitle} <span className="req-mark" aria-hidden="true">*</span></h4>
+              <p className="mute race-note">{W.exileHelp}</p>
+              <div className="card-grid lineage-grid exile-grid" role="radiogroup" aria-label={W.exileTitle} aria-required="true">
+                {exiles.map((id) => {
+                  const on = s.exileCulture === id;
                   return (
-                    <button key={tone.id} type="button" role="radio" aria-checked={on} className={`skin-tone${on ? ' on' : ''}`} data-tone={tone.id} onClick={() => set({ skinTone: tone.id })}>
-                      <i style={{ background: tone.rozetRenk }} />{tone.ad[lang]}
+                    <button key={id} type="button" role="radio" aria-checked={on} className={`pick-card exile-card${on ? ' on' : ''}`} data-exile={id}
+                      onClick={() => set({ exileCulture: id, skinTone: cultureSkinTone(s.lineageId, s.skinTone, id) })}>
+                      <b>{exileName(id, lang)}</b>
                     </button>
                   );
                 })}
               </div>
+              {!s.exileCulture && <p className="soft-warn">⚠ {W.exileRequired}</p>}
             </>
           )}
-        </Fold>
+        </section>
       )}
       {race?.evKurali && (
         <>
@@ -594,6 +627,7 @@ function LineageAbilities(props: { list: LineageAbility[] }) {
  * alt sınıf (veride yoksa "Yakında") ve "Sınıf güçlerin" paneli.
  */
 function ClassStep({ c, setC, set, suggest }: StepProps) {
+  const reco = useRecoSets();
   const T = t().builder;
   const W = T.wiz;
   const lang = getLang();
@@ -611,41 +645,35 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
     const next = switchClass(x, id, x.method === 'standard' ? { baseScores: suggestedScores(id) } : {});
     return suggest ? reSuggestAfterClassSwitch(x, next) : next;
   });
-  const featured = classes.filter((k) => CLASS_FEATURED.includes(k.id));
-  const others = classes.filter((k) => !CLASS_FEATURED.includes(k.id));
   const card = (k: (typeof classes)[number]) => (
-    <button key={k.id} className={`pick-card${k.id === s.classId ? ' on' : ''}`} aria-pressed={k.id === s.classId} onClick={() => choose(k.id)}>
-      <b>{k.name}</b><small>{classBlurb(k.id, lang)}</small>
+    <button key={k.id} className={`pick-card class-card-small${k.id === s.classId ? ' on' : ''}`} aria-pressed={k.id === s.classId} onClick={() => choose(k.id)}>
+      <b>{k.name}</b>
     </button>
   );
   return (
     <>
-      <div className="card-grid">{featured.map(card)}</div>
-      {others.length > 0 && (
-        <Fold title={W.otherClasses(others.length)} open={others.some((k) => k.id === s.classId)} className="class-more">
-          <div className="card-grid">{others.map(card)}</div>
-        </Fold>
-      )}
+      <div className="card-grid class-grid">{classes.map(card)}</div>
       <p className="info-card">
-        <b>{cls.name}</b> {classBlurb(cls.id, lang)}
+        <b>{cls.name}</b>
         <InfoPop text={`${W.hitDie(cls.hitDie)} · ${W.saves(cls.saves.map((a) => a.toUpperCase()).join(', '))} · ${cls.casting ? W.castAbility(cls.casting.ability.toUpperCase()) : W.noCasting}${subLevel !== null ? ` · ${W.subclassAtLevel(subLevel)}` : ''}`} />
       </p>
       {subLevel !== null && subs.length === 0 && (
         <div className="coming-soon"><b>{W.comingSoon}</b><p>{W.comingSoonText}</p></div>
       )}
-      {subLevel !== null && subs.length > 0 && s.level >= subLevel && (
-        <label>{T.subclass}
+      {subLevel !== null && subs.length > 0 && s.level >= subLevel && (<>
+        <RecoBar part="class" />
+        <label>{T.subclass}{reco?.subclass && reco.subclass === s.subclassId ? <RecoTag show /> : null}
           <select value={s.subclassId ?? ''} onChange={(e: { target: { value: string } }) => set({ subclassId: e.target.value || undefined })}>
             <option value="">{T.subclassNone}</option>
-            {subs.map((x) => <option key={x.id} value={x.id}>{subclassLabel(x.name, getLang(), x.class)}{notWorkingCount(x) > 0 ? ` (${T.subclassNotWorking(notWorkingCount(x))})` : packExperimental(x) ? ` (${t().content.experimental})` : ''}</option>)}
+            {subs.map((x) => <option key={x.id} value={x.id}>{subclassPlainName(x.name, getLang(), x.class)}</option>)}
             {/* Kuyruk K49 B5: listeden kaldırılmış alt sınıfı seçili eski karakter açılır (seçimi görünür kalır). */}
             {!!s.subclassId && !subs.some((x) => x.id === s.subclassId) && !subclassMissing(s.classId, s.subclassId) && (
-              <option value={s.subclassId}>{subclassLabel(findSubclass(s.classId, s.subclassId)?.name ?? { tr: s.subclassId, en: s.subclassId }, getLang(), s.classId)}</option>
+              <option value={s.subclassId}>{subclassPlainName(findSubclass(s.classId, s.subclassId)?.name ?? { tr: s.subclassId, en: s.subclassId }, getLang(), s.classId)}</option>
             )}
             {subclassMissing(s.classId, s.subclassId) && <option value={s.subclassId}>{T.subclassMissing(s.subclassId ?? '')}</option>}
           </select>
         </label>
-      )}
+      </>)}
       {swap && <p className="warn">{T.karadulWarn} {T.karadulSwap(swap)}</p>}
       {subLevel !== null && subs.length > 0 && s.level < subLevel && <p className="mute">{T.subclass}: {T.subclassAt(subLevel)}</p>}
       <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={experimentalFrom(s.classId, s.subclassId)}
@@ -664,6 +692,7 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
  * iki kutu yer değiştirir. Puan satın almada −/+ ve kalan puan çubuğu. Geçmiş bonusu tek satır.
  */
 function ScoresStep({ c, setC, set }: StepProps) {
+  const recoB = useRecoSets();
   const T = t().builder;
   const W = T.wiz;
   const s = c.sheet;
@@ -792,6 +821,7 @@ function ScoresStep({ c, setC, set }: StepProps) {
             <b>{T.bgTitle}:</b> {pattern === '2-1' || pattern === '1-1-1' ? T.bgDone(patternText) : T.bgHelp}
             {bg && <> {W.bgOnly(bg.abilities.map((a) => abilityName(a)).join(', '))}</>}
           </p>
+          <RecoBar part="bonuses" />
           <div className="bonus-grid">
             {ABILITIES.filter((a) => !bg || bg.abilities.includes(a)).map((a) => {
               const bonus = bonuses[a] ?? 0;
@@ -800,7 +830,7 @@ function ScoresStep({ c, setC, set }: StepProps) {
                 <span key={a} className="stepper bg-bonus" aria-label={`${name}: ${T.bgTitle}`}>
                   <small className="step-tag">{a.toUpperCase()}</small>
                   <button aria-label={T.bgRemove(name)} disabled={bonus <= 0} onClick={() => setBonus(a, bonus - 1)}>−</button>
-                  <b className={bonus ? 'on' : ''}>{bonus ? `+${bonus}` : '0'}</b>
+                  <b className={bonus ? 'on' : ''}>{bonus ? `+${bonus}` : '0'}</b>{bonus > 0 && (recoB?.bonuses[a] ?? 0) === bonus ? <RecoTag show /> : null}
                   <button aria-label={T.bgAdd(name, bonus + 1)} disabled={!canRaiseBonus(bonuses, a)} onClick={() => setBonus(a, bonus + 1)}>+</button>
                 </span>
               );
@@ -873,6 +903,7 @@ function AsiSlotCard(props: { sheet: CharacterSheet; slot: AdvancementSlot; adva
  */
 function SkillsStep({ c, setC, set }: StepProps) {
   const W = t().builder.wiz;
+  const reco = useRecoSets();
   const s = c.sheet;
   const cls = getClass(s.classId);
   const kit = classKit(s.classId, s.level, s.subclassId);
@@ -889,8 +920,8 @@ function SkillsStep({ c, setC, set }: StepProps) {
   const otherFull = other.length >= otherMax;
   const pickClass = (k: Skill, on: boolean) => setC((x) => ({ ...x, classSkills: toggle(x.classSkills, k, on) }));
   const pickOther = (k: Skill, on: boolean) => setC((x) => ({ ...x, otherSkills: toggle(otherSkillsOf(x), k, on) }));
-  const line = (k: Skill, extra?: ReactNode) => (
-    <li key={k} className="skill-row on"><span className="skill-name">{skillName(k)} <small>{abil(k)}</small></span>{extra}</li>
+  const line = (k: Skill, extra?: ReactNode, rec?: boolean) => (
+    <li key={k} className="skill-row on"><span className="skill-name">{skillName(k)} <small>{abil(k)}</small><RecoTag show={!!rec} /></span>{extra}</li>
   );
   return (
     <>
@@ -899,6 +930,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
         {otherMax > 0 && <span>{bg ? W.countOther(other.length, otherMax) : W.countBackground(other.length, otherMax)}</span>}
         {kit.expertise > 0 && <span className={expertise.length === kit.expertise ? 'ok' : ''}>{W.countExpertise(expertise.length, kit.expertise)}</span>}
       </div>
+      <RecoBar part="skills" />
       <h3>{W.skillsChosen}</h3>
       <ul className="skill-list">
         {c.classSkills.map((k) => bgSkills.includes(k)
@@ -909,7 +941,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
               <button className="badge cls on conflict" aria-pressed={true} onClick={() => pickClass(k, false)}>⚠ {W.skillClass} ×</button>
             </li>
           )
-          : line(k, <button className="ghost eq-remove" aria-label={W.removeItem(skillName(k))} onClick={() => pickClass(k, false)}>×</button>))}
+          : line(k, <button className="ghost eq-remove" aria-label={W.removeItem(skillName(k))} onClick={() => pickClass(k, false)}>×</button>, !!reco?.skills.includes(k)))}
         {other.map((k) => line(k, <button className="ghost eq-remove" aria-label={W.removeItem(skillName(k))} onClick={() => pickOther(k, false)}>×</button>))}
       </ul>
       {c.classSkills.length + other.length === 0 && <p className="mute">{W.skillsNone}</p>}
@@ -920,7 +952,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
             const on = c.classSkills.includes(k);
             return (
               <button key={k} type="button" className={`chip${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && classFull}
-                title={!on && classFull ? W.limitFull(classMax) : undefined} onClick={() => pickClass(k, !on)}>{skillName(k)} <small>{abil(k)}</small></button>
+                title={!on && classFull ? W.limitFull(classMax) : undefined} onClick={() => pickClass(k, !on)}>{skillName(k)} <small>{abil(k)}</small>{on && reco?.skills.includes(k) ? <RecoTag show /> : null}</button>
             );
           })}
         </div>
@@ -970,7 +1002,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
 /** 6. Seviye ilerlemesi: köken feat'i (ayrı kutu, Skilled becerileri), ASI/feat yuvaları, Fighting Style. */
 function ProgressStep({ c, setC, set }: StepProps) {
   const [featMode, setFeatMode] = useState<Record<number, boolean>>({});
-  return <AdvancementPanel c={c} setC={setC} sheet={c.sheet} set={set} featMode={featMode} setFeatMode={(level, on) => setFeatMode((m) => ({ ...m, [level]: on }))} />;
+  return <><RecoBar part="asi" /><AdvancementPanel c={c} setC={setC} sheet={c.sheet} set={set} featMode={featMode} setFeatMode={(level, on) => setFeatMode((m) => ({ ...m, [level]: on }))} /></>;
 }
 
 /**
@@ -980,6 +1012,7 @@ function ProgressStep({ c, setC, set }: StepProps) {
  */
 function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Partial<CharacterSheet>) => void }) {
   const T = t().builder;
+  const reco = useRecoSets();
   const W = T.wiz;
   const kit = classKit(s.classId, s.level, s.subclassId);
   const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
@@ -1011,7 +1044,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
     if (!sp || kit.alwaysPrepared.includes(x.name)) return null;
     return (
       <li key={x.id} className={`spell-row${on ? ' on' : ''}`} title={sp.mechanics.unsupported ?? sp.mechanics.approx ?? undefined}>
-        <span className="spell-name">{x.name}<InfoPop text={describeTr('buyu', sp.id) ?? ''} />{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
+        <span className="spell-name">{x.name}<GlyphBadges list={spellGlyphs(sp, spellRitual(sp))} /><RecoTag show={on && !!reco?.spells.includes(x.name)} /><InfoPop text={`${describeTr('buyu', sp.id) ?? ''} ${componentsInfo(sp)}`.trim()} desc={describeTr('buyu', sp.id)} /><SpellComps spell={sp} />{sp.mechanics.unsupported ? <InfoTip text={T.spellNotWorking} /> : null}
           {/* Kuyruk MB7: güncel sürümde savaşta çalışan büyü (Phantom Steed `mb7`) savaş dışı sayılmaz. */}{(sp.mechanics.mb7?.offCombat ?? sp.mechanics.offCombat) ? <small className="tag-offcombat" title={T.spellOffCombatTip}>{T.spellOffCombat}</small> : null}</span>
         {book && x.level > 0 && (
           <button className={`badge book${inBook ? ' on' : ''}`} aria-pressed={inBook} disabled={!inBook && cnt.book.length >= (lim.spellbook ?? 0)}
@@ -1028,6 +1061,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
   };
   return (
     <>
+      <RecoBar part="spells" />
       <p className="counters">
         <span className={cnt.cantrips > lim.cantrips ? 'error' : cnt.cantrips === lim.cantrips ? 'ok' : ''}>{W.countCantrips(cnt.cantrips, lim.cantrips)}</span>
         <span className={cnt.prepared > lim.prepared ? 'error' : cnt.prepared === lim.prepared ? 'ok' : ''}>{W.countPrepared(cnt.prepared, lim.prepared)}</span>
@@ -1041,8 +1075,8 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
         {chosen.map((n) => {
           const sp = spells.find((x) => x.name === n);
           return (
-            <li key={n} className="eq-row on"><span className="eq-main"><b>{n}</b><small>{(sp?.level ?? 0) === 0 ? W.cantripGroup : W.levelGroup(sp?.level ?? 0)}</small></span>
-              {sp && <InfoPop text={describeTr('buyu', sp.id) ?? ''} />}
+            <li key={n} className="eq-row on"><span className="eq-main"><b>{n}{sp && <GlyphBadges list={spellGlyphs(sp, spellRitual(sp))} />}<RecoTag show={!!reco?.spells.includes(n)} /></b><small>{(sp?.level ?? 0) === 0 ? W.cantripGroup : W.levelGroup(sp?.level ?? 0)}</small></span>
+              {sp && <SpellComps spell={sp} compact />}{sp && <InfoPop text={`${describeTr('buyu', sp.id) ?? ''} ${componentsInfo(sp)}`.trim()} desc={describeTr('buyu', sp.id)} />}
               <button className="ghost eq-remove" aria-label={W.removeItem(n)} onClick={() => toggleSpell(n, false)}>×</button></li>
           );
         })}
@@ -1066,7 +1100,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
             <ul className="spell-list">{alt.map((n) => {
               const on = chosen.includes(n);
               return (
-                <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}</span>
+                <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}<NameComps name={n} /></span>
                   <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && altCount >= altKit.max} onClick={() => toggleSpell(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
               );
             })}</ul>
@@ -1080,7 +1114,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
               const lv = spells.find((x) => x.name === n)?.level ?? 0;
               const full = cap ? extraCount >= cap : lv === 0 ? cnt.cantrips >= lim.cantrips : cnt.prepared >= lim.prepared;
               return (
-                <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n} <small className="mute">{lv === 0 ? W.cantripGroup : W.levelGroup(lv)}</small></span>
+                <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n} <small className="mute">{lv === 0 ? W.cantripGroup : W.levelGroup(lv)}</small><NameComps name={n} /></span>
                   <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && full} onClick={() => toggleSpell(n, !on)}>{on ? W.spellPrepOn : W.spellPrepTag}</button></li>
               );
             })}</ul>
@@ -1199,7 +1233,7 @@ function MagicInitiatePicker({ sheet: s, set, list }: { sheet: CharacterSheet; s
       <ul className="spell-list">{opt.cantrips.map((n) => {
         const on = mi.cantrips.includes(n);
         return (
-          <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}</span>
+          <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}<NameComps name={n} /></span>
             <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && mi.cantrips.length >= 2}
               onClick={() => toggleCantrip(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
         );
@@ -1398,7 +1432,7 @@ function FeatCard(props: { id: string; selected?: boolean }) {
   return (
     <div className={`feat-card${props.selected ? ' selected' : ''}`}>
       <b>{f?.name ?? props.id}</b> {detail && <InfoPop text={detail} />}
-      {info ? <p>{info.what}</p> : lang === 'tr' && <p className="mute">{T.featNoTr}</p>}
+      {info ? <p><GlyphText text={info.what} /></p> : lang === 'tr' && <p className="mute">{T.featNoTr}</p>}
     </div>
   );
 }

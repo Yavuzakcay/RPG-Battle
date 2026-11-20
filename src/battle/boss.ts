@@ -28,6 +28,7 @@ import { monsterAreaEvents, bestAim } from './areaAttack';
 import { checkReach, monsterAttackReach } from './range';
 import { ring } from '../rules/hex';
 import { castWithoutAction } from './castHook';
+import { formMonsterId } from './shapeMonsterCore';
 export { registerLegendaryCaster } from './castHook';
 
 export interface LegendaryAction {
@@ -56,8 +57,10 @@ const DATA = data as unknown as { defaultUses: number; monsters: Record<string, 
 /** Savaşçının efsanevi eylemleri (anahtar kapalıysa, eski savaşta ya da boss değilse null). */
 export function legendaryOf(state: BattleState, c: Combatant): LegendarySpec | null {
   if (!globalRule(state, 'legendaryActions')) return null;
-  if (c.monsterId && DATA.monsters[c.monsterId]) {
-    const spec = DATA.monsters[c.monsterId] as LegendarySpec;
+  // Görev WS91: Polymorph biçimindeki canavarın efsanevi eylemleri yok (biçimin stat bloğu).
+  const id = formMonsterId(c);
+  if (id && DATA.monsters[id]) {
+    const spec = DATA.monsters[id] as LegendarySpec;
     return spec.k19 && !globalRule(state, 'srdK19') ? null : spec;
   }
   if (state.map?.dragon?.id === c.id) return DATA.yuva;

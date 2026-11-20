@@ -247,7 +247,13 @@ export function executeAirMove(state: BattleState, actor: Combatant, to: Offset,
   const setAlt = (s: BattleState, ft: number) => applyEvents(s, [{ type: 'altitude_changed', targetId: actor.id, altitudeFt: ft, label: '' }]);
   const walked: Step[] = [];
   let prev: AirNode = { hex: from, level: l0 };
+  // Hazırla (Ready, sürüm 90): yürüyüş sırasında hazırlanan hareketle yola giren düşmanın hücresinden geçilmez (movement.ts ile aynı).
+  let readyMoved = false;
   for (const step of plan.path) {
+    if (readyMoved && !sameHex(step.hex, prev.hex)) {
+      const occ = occupantAt(current, step.hex, actor.id);
+      if (occ && occ.side !== actor.side) break;
+    }
     const oa = opportunityAttacks(current, actor.id, { from: prev.hex, to: step.hex, fromAlt: levelToFt(prev.level), toAlt: levelToFt(step.level) }, rng);
     effects.push(...oa);
     current = applyEvents(current, oa);
@@ -268,6 +274,7 @@ export function executeAirMove(state: BattleState, actor: Combatant, to: Offset,
       const formed = down() ? [] : monsterStepEvents(current, actor.id, step.hex, rng);
       effects.push(...formed); current = applyEvents(current, formed);
       const stepped = down() ? [] : afterStepEvents(current, actor.id, prev.hex, rng);
+      if (stepped.some((e) => e.type === 'moved' && e.reaction)) readyMoved = true;
       effects.push(...stepped); current = applyEvents(current, stepped);
       stop = entered.stop || (stepped.length > 0 && speedHexes(current.combatants[actor.id] as Combatant) === 0);
     }

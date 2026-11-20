@@ -1,0 +1,21 @@
+/* Dungeondex prospektüsü (ProspektusSections): iki sütun geniş ekranda, tek sütun dar ekranda; yazı ≥ 14 px. */
+.pro { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin: 8px 0; font-size: 15px; }
+.pro-sec { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; min-width: 0; }
+.pro-ne, .pro-durum { grid-column: 1 / -1; }
+.pro-title { margin: 0 0 6px; font-size: 15px; font-weight: 700; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pro-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.pro-row { line-height: 1.45; overflow-wrap: anywhere; }
+.pro-kv { display: flex; gap: 8px; border-bottom: 1px solid var(--line); padding: 2px 0; }
+.pro-kv:last-child { border-bottom: 0; }
+.pro-label { color: var(--mute); min-width: 104px; flex: 0 0 auto; font-size: 14px; }
+.pro-tronly { color: var(--mute); font-size: 14px; font-style: italic; }
+.pro-badge { font-size: 14px; font-weight: 600; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); }
+.pro-badge-ok { background: #2f6f73; color: #fff; border-color: #2f6f73; }
+.pro-badge-gm { background: #e8892b; color: #1b130b; border-color: #e8892b; }
+.pro-badge-off, .pro-badge-none { background: var(--bg); color: var(--ink); }
+@media (max-width: 640px) {
+  .pro { grid-template-columns: 1fr; }
+  .pro-kv { flex-direction: column; gap: 0; }
+  .pro-label { min-width: 0; }
+}
+.pro-badge-part { background: #7fd0cb; color: #10181e; border-color: #7fd0cb; }
