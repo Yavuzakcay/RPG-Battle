@@ -19,3 +19,7 @@ harita/belgeler/U1B-ENVANTER-YEREL.md
 
 # Python derleme önbelleği (scripts/*.py çalıştırılınca oluşur)
 __pycache__/
+
+# Eşya ikon hattı: kontrol görselleri ve kontak sayfaları yerel çıktı (npm run esya-ikon -- --kontrol, npm run esya-ikon:rapor).
+harita/belgeler/ESYA-IKON-KONTROL/
+harita/belgeler/ESYA-IKON-KONTAK-*.png
