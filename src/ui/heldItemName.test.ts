@@ -3,7 +3,11 @@
  * Wild Shape biçimindeki druidin saldırı kimliği `beast:giant-frog` düğmede canavarın adıyla ("Giant Frog bırak").
  */
 import { afterEach, describe, expect, it } from 'vitest';
-import { heldItemName, groupName } from './heldItemName';
+import { droppableWeapons, heldItemName, groupName, isNaturalWeapon } from './heldItemName';
+import { shapeStats } from '../battle/druid';
+import { SPIDER_WEAPON } from '../battle/karadul';
+import { sword } from '../battle/fixtures';
+import { getMonster } from '../data';
 import { setLang, t } from '../i18n';
 import { describeEvent as lineText } from './log';
 import { startBattle } from '../battle/create';
@@ -66,5 +70,26 @@ describe('Görev D: okunur grup adı', () => {
     const ev = { type: 'group_alarmed', groupId: 'iskeleNobeti', reason: 'gürültü', round: 1, initiatives: {}, order: [], turnIndex: 0 } as unknown as BattleEvent;
     expect(lineText(ev, s)).toContain('İskele nöbeti');
     expect(lineText(ev, s)).not.toMatch(RAW);
+  });
+});
+
+describe('doğal/biçim silahı için bırak/al düğmesi yok', () => {
+  it('Wild Shape biçiminin saldırıları (motorun shapeStats seçenekleri) bırakılamaz; elde silah bırakılabilir', () => {
+    const druid = mk('A', { ownerId: 'p1', weaponOptions: [{ ...sword, weaponId: 'longsword' }] });
+    expect(droppableWeapons(druid)).toEqual(['longsword']);
+    const form = shapeStats(getMonster('giant-frog'), druid).weaponOptions;
+    expect(form.length).toBeGreaterThan(0);
+    expect(form.every((o) => o.weaponId?.startsWith('beast:'))).toBe(true);
+    expect(droppableWeapons({ ...druid, weaponOptions: form })).toEqual([]);
+    for (const o of form) expect(isNaturalWeapon(o.weaponId as string, form)).toBe(true);
+  });
+  it('Karadul Örümcek Biçimi ve beast seçeneği olan özel kimlik de doğal; yerdeki doğal kimlik "al" düğmesine çıkmaz', () => {
+    expect(isNaturalWeapon(SPIDER_WEAPON)).toBe(true);
+    expect(isNaturalWeapon('beast:wolf')).toBe(true);
+    expect(isNaturalWeapon('pk-x:yay', [{ weaponId: 'pk-x:yay', label: 'Yay', beast: { monster: 'wolf', attack: 'Bite' } }])).toBe(true);
+    expect(isNaturalWeapon('longsword')).toBe(false);
+    expect(isNaturalWeapon('pk-x:yay', [{ weaponId: 'pk-x:yay', label: 'Yay' }])).toBe(false);
+    const spider = mk('A', { ownerId: 'p1', weaponOptions: [{ ...sword, label: 'Örümcek', weaponId: SPIDER_WEAPON }] });
+    expect(droppableWeapons(spider)).toEqual([]);
   });
 });

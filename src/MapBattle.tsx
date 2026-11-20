@@ -33,7 +33,7 @@ import { whirlpoolCast } from './battle/girdap';
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { SHEET_BAR_H, TOP_STRIP_H, isPortraitPhone, portraitScaleScreen, sheetOpenFor, sheetOpenHeight, stageBox } from './ui/battleLayout';
-import { groupName, heldItemName } from './ui/heldItemName';
+import { droppableWeapons, groupName, heldItemName, isNaturalWeapon } from './ui/heldItemName';
 import type { Spell } from './data';
 import { resourceLeft, type AttackOption, type BattleState, type Combatant, type Command, type CunningOption } from './battle';
 import { resourceDef, resourceUsable } from './rules/classFeatures';
@@ -189,7 +189,7 @@ import { castBarrierKind } from './battle/castBarrier';
 import { burstSprite, objectSprite, zoneLook } from './ui/sprites';
 import { zoneShownTo } from './battle/hiddenZones';
 import { ruleVersion } from './battle/ruleVersion';
-import { heldWeapons, groundItemsNear } from './battle/heldItems';
+import { groundItemsNear } from './battle/heldItems';
 import { climbs, fliesOrHovers, flySpeed, hovers, ownFlyCapFt, spellJumpFt } from './battle/flight';
 import { SpriteBurst, SurfaceLayer, type SurfaceItem } from './ui/SpriteZone';
 import { failHit, goalHexes, goalStatus } from './battle/goals';
@@ -3362,7 +3362,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                   {(c.altitudeFt ?? 0) > 0 && <button className="hud-btn small" onClick={() => run({ type: 'vertical_move', actorId, targetId: c.id, toFt: (c.altitudeFt ?? 0) - 5 })}>{`${c.name} ${B.s2.down}`}</button>}
                 </span>
               ))}
-              {ruleVersion(state) >= 41 && !actor.shape?.possession && heldWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: heldWeapons(actor)[0] as string })}>{B.s2.drop(heldItemName(heldWeapons(actor)[0] as string, actor.weaponOptions))}</button>}
+              {/* Doğal/biçim silahı (Wild Shape `beast:`, Karadul) bırakılmaz: düğme gizli (`droppableWeapons`). */}
+              {ruleVersion(state) >= 41 && !actor.shape?.possession && droppableWeapons(actor)[0] && <button className="hud-btn small" onClick={() => run({ type: 'drop_item', actorId, item: droppableWeapons(actor)[0] as string })}>{B.s2.drop(heldItemName(droppableWeapons(actor)[0] as string, actor.weaponOptions))}</button>}
               {/* Kuyruk P11: saklı büyüyü ateşle (hedef: seçili hedef ya da kendisi). */}
               {actor.effects?.find((e) => e.storedSpell) && <button className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>{B.p11.fire(actor.effects.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>}
               {/* Kuyruk P12: büyü kitabını bırak / al; dostun mühürlü büyüsünü tetikle (dostun ekonomisi harcanmaz). */}
@@ -3373,7 +3374,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 <button key={`seal${c.id}`} className="hud-btn small" onClick={() => run({ type: 'spell_followup', actorId, sourceId: c.id, targetId: targetId ?? actorId, choice: 'sakli', ...(aimHex ? { targetHex: aimHex } : {}) })}>
                   {B.p12.allyFire(c.name, c.effects?.find((e) => e.storedSpell)?.storedSpell?.spellName ?? '')}</button>
               ))}
-              {ruleVersion(state) >= 41 && groundItemsNear(state, actor).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(heldItemName(o.item ?? ''))}</button>)}
+              {ruleVersion(state) >= 41 && groundItemsNear(state, actor).filter((o) => !isNaturalWeapon(o.item ?? '')).map((o) => <button key={o.id} className="hud-btn small" onClick={() => run({ type: 'pick_up', actorId, objectId: o.id })}>{B.s2.pick(heldItemName(o.item ?? ''))}</button>)}
             </div>
           )}
           </>, ptBody)}
