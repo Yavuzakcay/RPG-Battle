@@ -10,7 +10,7 @@ import { lineageOf } from './lineage';
 import { featResources } from './backgrounds';
 import { getClass } from '../data';
 import type { Rng } from './dice';
-import { classResources, depotStart, rechargeResources } from './classFeatures';
+import { classResources, depotStart, rechargeResources, resourceDef } from './classFeatures';
 import { longRest, shortRest, type RestState } from './rest';
 import { MAX_EXHAUSTION, exhaustionAfterLongRest } from './exhaustion';
 import { deriveStats, type CharacterSheet } from './stats';
@@ -84,7 +84,8 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
     hitDiceSpent: Math.min(sheet.level, Math.max(0, status.hitDiceSpent)),
     resources,
     slots: pactShift(full.slots, status) ?? full.slots.map((n, i) => (status.slotMax
-      ? Math.max(0, n - Math.max(0, (status.slotMax[i] ?? 0) - (status.slots[i] ?? 0)))
+      // Görev B93: tablonun üstündeki yaratılmış slot (Font of Magic) uzun dinlenmeye dek kalır.
+      ? Math.max(0, n - Math.max(0, (status.slotMax[i] ?? 0) - (status.slots[i] ?? 0))) + Math.max(0, (status.slots[i] ?? 0) - (status.slotMax[i] ?? 0))
       : Math.min(n, Math.max(0, status.slots[i] ?? n)))),
     slotMax: full.slots,
     resourceMax: { ...(full.resourceMax ?? full.resources) },
@@ -297,4 +298,24 @@ function pactShift(full: number[], status: CharacterStatus): number[] | null {
   if (now.length !== 1 || before.length !== 1 || now[0] === before[0]) return null;
   const spent = Math.max(0, (status.slotMax[before[0]!] ?? 0) - (status.slots[before[0]!] ?? 0));
   return full.map((n, i) => (i === now[0] ? Math.max(0, n - spent) : n));
+}
+
+/**
+ * Görev B93 (SRD 5.2.1 s. 66 Font of Magic, savaş dışı): slot → Sorcery Point (slot seviyesi kadar, tavanı aşmaz) ya da
+ * Sorcery Point → slot (bedel ve en düşük seviye veriden; yaratılan slot uzun dinlenmede kaybolur). Kullanılamıyorsa null.
+ */
+export function fontOfMagicStatus(sheet: CharacterSheet, status: CharacterStatus | undefined, mode: 'toPoints' | 'toSlot', level: number): CharacterStatus | null {
+  const s = currentStatus(sheet, status);
+  const points = s.resources.sorceryPoints;
+  if (s.dead || points === undefined) return null;
+  const max = (fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources).sorceryPoints ?? 0;
+  if (mode === 'toPoints') {
+    if ((s.slots[level - 1] ?? 0) <= 0 || points >= max) return null;
+    const slots = [...s.slots]; slots[level - 1] = (slots[level - 1] ?? 0) - 1;
+    return { ...s, slots, resources: { ...s.resources, sorceryPoints: Math.min(max, points + level) } };
+  }
+  const row = resourceDef('sorceryPoints')?.slotCost?.[String(level)];
+  if (!row || sheet.level < row[1] || points < row[0]) return null;
+  const slots = [...s.slots]; slots[level - 1] = (slots[level - 1] ?? 0) + 1;
+  return { ...s, slots, resources: { ...s.resources, sorceryPoints: points - row[0] } };
 }

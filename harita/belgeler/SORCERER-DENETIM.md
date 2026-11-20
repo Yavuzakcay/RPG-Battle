@@ -176,3 +176,17 @@ Geçici testler `src/zzprobe.test.ts` içinde yazıldı ve silindi (depoda yok).
 - D3 Elemental Affinity tek zara: **düzeldi** (sürümlü 93; `oneDieBonus.ts`; Scorching Ray +CHA bir kez).
 - M3 Empowered Spell Magic Missile'da: **düzeldi** (sürümlü 93; otomatik isabetli dart zarları da yeniden atılır, büyü başına en çok CHA zar).
 - S3 / S4 / M0 Serüven'de seviye atlama değişimi (cantrip, hazır büyü, Metamagic birer): **düzeldi** (sürümsüz; `levelChoices.ts`). Serüven dışı karakter ekranında serbest düzenleme bilinçli kaldı (K17).
+
+### E. Sorcerer
+
+- M2 Distant Spell arayüzde: **düzeldi** (sürümsüz arayüz: `spellTargets(..., metamagic)` motoru kuru çalıştırır, `areaActSpec(..., metamagic)` noktadan çıkan alanda menzili iki katına çıkarır). Kendinden çıkan alanda (Burning Hands, Cone of Cold…) Distant reddedilir (sürümlü 93; M12).
+- M6 Quickened Spell kısıtı: **düzeldi** (sürümlü 93; `economy.leveledCast` / `economy.quickened`: bu tur 1+ seviye büyü yapıldıysa Quickened olmaz, Quickened'dan sonra bu tur 1+ seviye büyü yapılamaz). Yapım süresi SRD kaydından: Mending, Creation, Clairvoyance, Teleportation Circle (1 dakika+) Quickened seçilemez (veri `castingTime` değişmedi).
+- M4 Extended Spell kapsamı: **düzeldi** (sürümlü 93; uygunluk SRD süresinden: dakika/saat/gün/dağıtılana dek; süre `effect`, `failEffect` ve kalıcı alan `zone.rounds`'ta ikiye katlanır, en çok 24 saat; konsantrasyon save'inde avantaj `mm-extended` etkisi `concAdv`). ⚠ Koşul zamanlayıcısıyla süren büyülerde (Hold Person: her tur save) 1 dakika tavanı ikiye katlanmadı (tekrar save zaten bitirir).
+- M3 / M12 Empowered: Magic Missile (A1) ve hasarsız büyüde ret: **düzeldi** (sürümlü 93).
+- D3 Elemental Affinity tek zara: A1 ile **düzeldi**.
+- F4 yaratılan slot savaş sonunda silinmiyor (tablonun üstünde de kalır, uzun dinlenmede kaybolur): **düzeldi** (savaşta `slot_created.extra` sürümlü 93 → `Combatant.createdSlots`; karakter durumu sürümsüz: `partyStatus`, `currentStatus`).
+- F5 Font of Magic savaş dışında: **düzeldi** (sürümsüz; karakter listesi dinlenme panelinde slot → puan, puan → slot; `fontOfMagicStatus`). Serüven dinlenme ekranında yok (ertelendi, düşük).
+- I2 / I3 Innate Sorcery ↔ Draconic Spells: **düzeldi** (sürümlü 93; kullanıcı onayı, K11 sapması kalktı: her zaman hazır sınıf/alt sınıf büyüleri `classSpellsAlways`, DC +1 ve saldırı avantajı).
+- D (YZ): Careful (alanda dosta hasar azalıyorsa), Transmuted (en az %25 hasar kazancı), Seeking (saldırı büyüsü; bedel yalnız ıskada), Empowered (1+ seviye hasar büyüsü) eklendi, puan yedeği 2 (sürümlü 93, `ai.ts` `withMetamagic93`). Ertelendi: Distant (hedef/menzil kararı), Extended (süre değeri ölçümü), Subtle (karşı büyü tehdidi), Font of Magic ve Dragon Wings/Companion (yapay zekâ kaynak yönetimi). DECISIONS'taki eski "Metamagic kullanmaz" notları güncellendi.
+- E metinler: Quickened kısıtı, Extended avantajı, Distant kendinden çıkan alan TR/EN.
+- **Dokunulmadı / ertelendi:** M1 Careful hedef seçimi (yalnız dost, otomatik; seçim arayüzü ayrı iş), M5 çok hedefte Heightened (bilinen), F2 tavanda slot → puan uyarısı (düşük), F6 Font of Magic seviye seçimi (savaşta; düşük), D5 slotlu Summon Dragon konsantrasyonsuz (alt sınıf; bizim metin ayrı inceleme), D4 Dragon Wings kapatma (alt sınıf, düşük), S2–S4/M0 serbest düzenleme (bilinçli; Serüven'de A2 ile kurallı).
