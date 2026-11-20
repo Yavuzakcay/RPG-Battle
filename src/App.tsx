@@ -12,6 +12,7 @@ import { newPendingLineages } from './app/lineageNotice';
 import { repairSlots } from './rules/characterRest';
 import type { Session } from './ui/session';
 import { MenuBackground } from './ui/MenuBackground';
+import { WingFilterHost } from './ui/WingFilter';
 import { removeStaticSplash, splashEnabled, watchResume, type SplashKind } from './ui/splashBoot';
 import { badgeChain, preloadImages } from './ui/Avatar';
 import { sheetAvatar } from './battle/avatar';
@@ -100,6 +101,8 @@ export default function App() {
   // Hareketli menü arka planı haritalı savaşta yok (performans).
   return (
     <>
+      {/* Kanat palet filtreleri bir kez, DOM'da en önce ve görünür bir SVG'de (Firefox display:none altındaki ilk kopyayı uygulamaz; WingFilter.tsx). */}
+      <WingFilterHost />
       {screen.name !== 'battle' && <MenuBackground />}
       <Suspense fallback={<Loading error={null} text={t().common.loading} />}>
         {worldOnly
