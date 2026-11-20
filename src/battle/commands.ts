@@ -114,7 +114,8 @@ import { applyEvents } from './reduce';
 import { goalEvents } from './goals';
 import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
-import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
+import { resourceLeft, type BattleEvent, type BattleState, type Combatant, type Command, type CommandContext } from './types';
+import type { RolledExtra } from '../rules/attack';
 import { executeReady, registerReadyCast } from './ready';
 
 export type { CommandResult } from './common';
@@ -137,8 +138,21 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
     // Kuyruk K53 S5: aura ölüm save dezavantajı; avantajla birlikte normal.
     // Mekanik matris B13 (sürüm 83+): Holy Aura "Advantage on all saving throws" ölüm save'ini de kapsar.
     const dsAdv = survivor || !!c.effects?.some((e) => e.deathSaveAdv) || !!c.auraDeathAdv || !!c.allyAura?.saveAdvAll;
-    const rolledSave = rollD20(dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal', rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
-    const natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
+    const dsMode = dsAdv && c.auraDeathDis ? 'normal' : dsAdv ? 'advantage' : c.auraDeathDis ? 'disadvantage' : 'normal';
+    const rolledSave = rollD20(dsMode, rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+    let natural = survivor && rolledSave >= 18 ? 20 : rolledSave;
+    // Bitkinlik (Görev S1): ölüm save'i de d20 Testi, −2 × seviye (doğal 20 ve 1 değişmez).
+    let bonus = -exhaustionD20Penalty(c.exhaustion);
+    // Görev B95-B (97+, SRD 5.2.1 s. 48 Indomitable "If you fail a saving throw"; ölüm save'i de save, s. 18): başarısız ölüm
+    // save'i Fighter seviyesi eklenerek yeniden atılır (kaynak `indomitable`; olayda `bonusDice` harcar).
+    let bonusDice: RolledExtra[] | undefined;
+    if (natural !== 20 && (natural === 1 || natural + bonus < 10) && c.sinif97 && c.traits?.includes('indomitable') && resourceLeft(c, 'indomitable') > 0) {
+      const again = rollD20(dsMode, rollTag(rng, { kind: 'deathSave', by: c.id })).kept;
+      const nat2 = survivor && again >= 18 ? 20 : again;
+      bonusDice = [{ label: 'Indomitable', die: 'd20', value: nat2 + c.level - natural, resource: 'indomitable', holderId: c.id }];
+      natural = nat2;
+      bonus += c.level;
+    }
     let successes = c.deathSaves.successes;
     let failures = c.deathSaves.failures;
     let outcome: 'success' | 'failure' | 'stable' | 'dead' | 'revived';
@@ -146,14 +160,13 @@ function startOfTurnEvents(c: Combatant, rng: Rng): BattleEvent[] {
       outcome = 'revived';
     } else {
       if (natural === 1) failures += 2;
-      // Bitkinlik (Görev S1): ölüm save'i de d20 Testi, −2 × seviye (doğal 20 ve 1 değişmez).
-      else if (natural - exhaustionD20Penalty(c.exhaustion) >= 10) successes += 1;
+      else if (natural + bonus >= 10) successes += 1;
       else failures += 1;
-      outcome = failures >= 3 ? 'dead' : successes >= 3 ? 'stable' : natural !== 1 && natural - exhaustionD20Penalty(c.exhaustion) >= 10 ? 'success' : 'failure';
+      outcome = failures >= 3 ? 'dead' : successes >= 3 ? 'stable' : natural !== 1 && natural + bonus >= 10 ? 'success' : 'failure';
     }
     events.push({
       type: 'death_save', actorId: c.id, natural,
-      successes: Math.min(3, successes), failures: Math.min(3, failures), outcome,
+      successes: Math.min(3, successes), failures: Math.min(3, failures), outcome, ...(bonusDice ? { bonusDice } : {}),
     });
   }
   // Heroic Rally (Survivor; Görev F): Bloodied (HP yarı ya da altı) ve ayaktaysa tur başında 5 + CON HP.
@@ -846,7 +859,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
     return finish(state, events);
   }
 
-  if (cmd.type === 'offhand_attack') return executeOffhandAttack(state, actor, cmd.targetId, rng);
+  if (cmd.type === 'offhand_attack') return executeOffhandAttack(state, actor, cmd.targetId, rng, cmd.cunning);
   // Görev F: Steady Aim ve Horde Breaker.
   if (cmd.type === 'steady_aim') {
     if (!hasTrait(actor, 'steady-aim')) return fail('Steady Aim yok.');

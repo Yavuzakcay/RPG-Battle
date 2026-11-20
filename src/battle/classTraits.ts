@@ -3,6 +3,7 @@
  * savaşçıda `traits` işaretiyle (veriden: `data/class-features.json` ve `data/subclasses.json` `trait`); kodda sınıf adı
  * yok. Saf; saldırı, save ve hareket kodu buradan sorar. SRD 5.2.1.
  */
+import { sinif97On } from './sinif97Surum';
 import { featuresOn, shiftGrant } from './shift';
 import { resolveSave } from '../rules/attack';
 import { autoFailsStrDexSave, isIncapacitated } from '../rules/conditions';
@@ -199,6 +200,8 @@ export const avgDice = (expr: string, rng: Rng): number => rollDice(expr, rng).t
 export function selfRestorationEvents(state: BattleState, id: string): BattleEvent[] {
   const c = state.combatants[id];
   if (!c || c.hp <= 0 || !hasTrait(c, 'self-restoration') || (state.kuralSurumu ?? 1) < 13) return [];
-  return ['Charmed', 'Frightened', 'Poisoned'].filter((x) => c.conditions.includes(x))
+  const on = ['Charmed', 'Frightened', 'Poisoned'].filter((x) => c.conditions.includes(x));
+  // Görev B95-B (97+, SRD 5.2.1 s. 52 "remove one of the following conditions"): tur sonunda yalnız biri (listedeki ilk).
+  return (sinif97On(state) ? on.slice(0, 1) : on)
     .map((condition): BattleEvent => ({ type: 'condition_ended', targetId: id, condition, reason: 'Self-Restoration' }));
 }

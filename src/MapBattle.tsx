@@ -5,6 +5,7 @@
  * karakter çekmecesi. Hareketli katman ve harita kuralları (Adım 8) henüz yok; animasyonlar
  * en sona bırakıldı (Adım 12).
  */
+import { sinif97On } from './battle/sinif97Surum';
 import { activePossession, possessedEffect } from './battle/possessionCore';
 import { setupWardOf } from './battle/possession';
 import { freeAddProblem, freeRemoveProblem, freeShapeOf, pathAddProblem } from './battle/freeShape';
@@ -809,17 +810,20 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   const actor = diMode && actorReal ? anyListActor(state, actorReal) ?? actorReal : actorReal;
   // Görev F: saldırı balonunda seçilen Cunning Strike seçenekleri (tur değişince sıfırlanır) ve Horde Breaker silahı.
   const [cunningPicks, setCunningPicks] = useState<CunningOption[]>([]);
-  useEffect(() => { setCunningPicks([]); setBrutalPicks([]); }, [actorId, state.round]);
+  useEffect(() => { setCunningPicks([]); setBrutalPicks([]); setTacticalPick(''); }, [actorId, state.round]);
   // Kuyruk 19: Push ustalığı isteğe bağlı (anahtar `pushChoice`): seçim saldırı seçeneğine yazılır.
   const [pushPick, setPushPick] = useState<'auto' | 'push' | 'skip'>('auto');
   // Kuyruk 19: Brutal Strike seçimi (oyuncu): yok ya da etki(ler).
   const [brutalPicks, setBrutalPicks] = useState<BrutalBlow[]>([]);
+  // Görev B95-B: Tactical Master (Fighter 9, SRD 5.2.1 s. 48): ustalıklı silahta bu saldırı için Push/Sap/Slow.
+  const [tacticalPick, setTacticalPick] = useState<'' | 'push' | 'sap' | 'slow'>('');
   // Kuyruk 19: seçimli tek hedefli büyü (Blindness/Deafness, Sorcerous Burst): seçim komuta.
   const withChoice = (cmd: Command): Command => (cmd.type === 'cast_spell' && choicePick && spell && cmd.spellName === spell.name
     && (spell.mechanics.conditionChoices ?? spell.mechanics.damageChoices ?? spell.mechanics.restoreChoices ?? spell.mechanics.abilityChoices ?? []).includes(choicePick) ? { ...cmd, choice: choicePick } : cmd);
   const withCunning = (cmd: Command): Command => {
     let out = cmd.type === 'attack' && cunningPicks.length > 0 ? { ...cmd, cunning: cunningPicks } : cmd;
     if (out.type === 'attack' && pushPick !== 'auto' && out.option.mastery === 'push') out = { ...out, option: { ...out.option, pushChoice: pushPick } };
+    if (out.type === 'attack' && tacticalPick && out.option.mastery && actor?.traits?.includes('tactical-master')) out = { ...out, mastery: tacticalPick };
     if (out.type === 'attack' && brutalPicks.length && actor && brutalReady(state, actor, out.option)) out = { ...out, brutal: brutalPicks[0], ...(brutalPicks[1] ? { brutal2: brutalPicks[1] } : {}) };
     // Kuyruk 19: Grappler'ın Punch and Grab'i Unarmed Strike'ta kendiliğinden (motor turda bir kez uygular).
     if (out.type === 'attack' && out.option.weaponId === 'unarmed-strike' && actor?.traits?.includes('grappler')) out = { ...out, grab: true };
@@ -1475,7 +1479,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
     if (mode === 'item' && itemPick && glowing.has(c.id)) run({ type: 'use_item', actorId, itemId: itemPick, targetId: c.id });
-    if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id });
+    // Görev B95-B (97+): yan el saldırısında da seçili Cunning Strike seçenekleri (motor eski sürümde yok sayar).
+    if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id, ...(cunningPicks.length && sinif97On(state) ? { cunning: cunningPicks } : {}) });
     if (mode === 'horde' && glowing.has(c.id)) { const option = hordeOption(c.id); if (option) run({ type: 'horde_breaker', actorId, targetId: c.id, option }); }
     if (mode === 'strike' && glowing.has(c.id)) run({ type: 'bonus_strike', actorId, targetId: c.id, technique: 'topple' });
     if (mode === 'followup' && glowing.has(c.id)) run({ type: 'spell_followup', actorId, targetId: c.id });
@@ -1690,8 +1695,9 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     ...(actor.effects?.some((e) => e.extraAction) ? [{ key: 'haste', label: N.haste,
       reason: actor.economy.hasteUsed ? Y.hasteUsed : !actor.economy.action || actor.economy.attacksLeft > 0 ? Y.surgeFirst : undefined,
       act: () => run({ type: 'haste_action', actorId }) }] : []),
+    // Görev B95-B: Tactical Shift'li Fighter tam canda da Second Wind'i kaymak için kullanabilir (SRD 5.2.1 s. 48).
     ...(hasFeature('secondWind') ? [{ key: 'wind', label: N.wind,
-      reason: resourceLeft(actor, 'secondWind') <= 0 ? Y.windNone : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp ? Y.hpFull : undefined),
+      reason: resourceLeft(actor, 'secondWind') <= 0 ? Y.windNone : why({ type: 'second_wind', actorId }) ?? (actor.hp >= actor.maxHp && !actor.traits?.includes('tactical-shift') ? Y.hpFull : undefined),
       act: () => run({ type: 'second_wind', actorId }) }] : []),
     // Barbarian: Rage (bonus eylem; sürüyorsa bir tur uzatır) ve Reckless Attack (turun ilk saldırısından önce).
     ...(actor.rageDamage ? [{ key: 'rage', label: actor.rage ? N.rageExtend : N.rage,
@@ -2821,6 +2827,14 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                     {brutalOptions(actor).blows.map((b) => (
                       <label key={b}><input type="checkbox" checked={brutalPicks.includes(b)}
                         onChange={(e: { target: { checked: boolean } }) => setBrutalPicks((p) => (e.target.checked ? [...p, b].slice(-brutalOptions(actor).max) : p.filter((x) => x !== b)))} /> {N.brutalName[b] ?? b}</label>
+                    ))}
+                  </fieldset>
+                )}
+                {mode === 'attack' && actor && actor.traits?.includes('tactical-master') && globalRule(state, 'tacticalMaster') && actor.weaponOptions.some((o) => o.mastery) && (
+                  <fieldset className="cunning-picks">
+                    <legend>{N.tacticalPick}</legend>
+                    {(['', 'push', 'sap', 'slow'] as const).map((k) => (
+                      <label key={k || 'own'}><input type="radio" name="tactical-pick" checked={tacticalPick === k} onChange={() => setTacticalPick(k)} /> {N.tacticalOpt[k || 'own']}</label>
                     ))}
                   </fieldset>
                 )}

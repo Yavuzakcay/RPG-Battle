@@ -8,7 +8,8 @@ export function stunningProblem(actor: Combatant, targetId: string | undefined):
   if (actor.economy.stunUsed) return 'Stunning Strike bu tur denendi (turda bir kez).';
   if (resourceLeft(actor, s.resource) < 1) return 'Focus Point kalmadı.';
   const hit = actor.economy.meleeHit;
-  if (!hit?.martialArts) return 'Önce bu tur Monk silahı ya da Unarmed Strike ile vurmalısın.';
+  // Görev B95-B (97+, SRD 5.2.1 s. 51): Monk silahı ya da Unarmed Strike isabeti; Martial Arts (zırhsızlık) şartı yok.
+  if (!(hit?.martialArts || (actor.sinif97 && (hit?.unarmed || hit?.monkWeapon)))) return 'Önce bu tur Monk silahı ya da Unarmed Strike ile vurmalısın.';
   if (targetId && hit.targetId !== targetId) return 'Yalnızca bu tur vurduğun hedefe.';
   return null;
 }

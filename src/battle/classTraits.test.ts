@@ -206,7 +206,8 @@ describe('Rogue: Steady Aim ve Cunning Strike', () => {
     const s = run(battle(rogue(5)), { type: 'steady_aim', actorId: 'A' }).state;
     const r = run(s, { type: 'attack', actorId: 'A', targetId: 'B', option: opt(s, 'Rapier'), cunning: ['withdraw'] }, pad([20, 15], [20, 15]));
     // Kuyruk 19 (sürüm 16, featuresK19): yaklaşık Disengage yerine yarı hızla serbest kayma bütçesi.
-    expect(r.events.some((e) => e.type === 'shift_granted' && e.hexes > 0)).toBe(true);
+    // Görev B95-B (97+, SRD 5.2.1 s. 62): Steady Aim'den sonra hız 0, yarı hız da 0 (96'da yarı hız: b95rogue.test.ts).
+    expect(r.events.some((e) => e.type === 'shift_granted' && e.hexes === 0)).toBe(true);
   });
   it('Sneak Attack yoksa Cunning Strike etkisiz (ıskalama)', () => {
     const s = battle(rogue(5), { ac: 30 });

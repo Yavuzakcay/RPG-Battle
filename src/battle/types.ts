@@ -540,7 +540,7 @@ export interface Economy {
   /** Bu tur yan el ek saldırısı yapıldı (turda bir kez). */
   offhandUsed?: boolean;
   /** Bu tur yakın dövüş silahıyla son vurduğu hedef (smite büyüleri; kritik vuruşta smite zarları iki kat). */
-  meleeHit?: { targetId: string; critical: boolean; martialArts?: boolean; pact?: boolean };
+  meleeHit?: { targetId: string; critical: boolean; martialArts?: boolean; pact?: boolean; /** Görev B95-B (97+): Unarmed Strike / Monk silahı isabeti (zırh şartı yok). */ unarmed?: boolean; monkWeapon?: boolean };
   /** Görev F: bu tur son saldırılan yaratık (Horde Breaker). */
   lastTargetId?: string;
   /** Flurry of Blows'tan kalan Unarmed Strike sayısı (Görev P-Monk). */
@@ -551,6 +551,8 @@ export interface Economy {
   treeStride?: boolean;
   /** Kuyruk 19: yarı hızla fırsat saldırısı almadan serbest kayma bütçesi (altıgen; Tactical Shift, Withdraw). */
   shiftLeft?: number;
+  /** Görev B95-B (97+): Steady Aim'den sonra bu tur hız 0 (Withdraw, Tactical Shift kayması 0). */
+  speedZero?: boolean;
   /** CILA (Haste): bu tur Haste'in ek eylemi alındı (`hasteUsed`); `hasted` o eylem sürerken (yalnızca tek saldırı, Dash, Disengage, Hide). */
   hasted?: boolean;
   hasteUsed?: boolean;
@@ -762,7 +764,7 @@ export interface Avatar {
 /** Savaştaki bir yaratık (karakter veya düşman). */
 /** Hazırla (Ready, sürüm 90) yanıtı: tek saldırı (silah seçeneği ya da canavar saldırısı), hareket ya da hazırlanan büyü. */
 export type ReadyResponse =
-  | { kind: 'attack'; option?: AttackOption; attackIndex?: number }
+  | { kind: 'attack'; option?: AttackOption; attackIndex?: number; /** Görev B95-B (97+): hazırlanan saldırının Cunning Strike seçenekleri. */ cunning?: CunningOption[] }
   | { kind: 'move'; to: Offset }
   /** `slotLevel` hazırlarken harcanan slot (cantrip'te null). */
   | { kind: 'spell'; spellName: string; slotLevel?: number | null };
@@ -784,6 +786,8 @@ export interface Combatant {
   auraSave?: number;
   /** Görev B94 (A2, sürüm 94+): Aura of Protection'ın kendi bonusu save'lerde yazılı değil; `auraSaveOf` (yaşarken) ekler. */
   auraOwnLive?: boolean;
+  /** Görev B95-B: savaş kural sürümü 97+ (durum görmeyen yardımcılar için; `createBattle` yazar). */
+  sinif97?: boolean;
   /** Görev B94: yalnız savaş kurulumuna dek (startBattle siler): 93 ve altı savaşta geri eklenecek eski slotsuz büyüler. */
   freeSpellsPre94?: Record<string, string>;
   /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
@@ -1852,7 +1856,7 @@ export type Command =
   /** Fighter: Second Wind (bonus eylem, 1d10 + seviye HP). */
   | { type: 'second_wind'; actorId: string }
   /** Yan el ek saldırısı (Light özelliği): Attack eyleminde Light silahla saldırdıktan sonra; Nick varsa eylemin içinde. */
-  | { type: 'offhand_attack'; actorId: string; targetId: string }
+  | { type: 'offhand_attack'; actorId: string; targetId: string; /** Görev B95-B (97+): Cunning Strike seçenekleri (Sneak Attack verirse). */ cunning?: CunningOption[] }
   /** Görev R4: Dragonborn Breath Weapon; Attack eyleminin bir saldırısının yerine; şekil (koni/çizgi) ve yön altıgeni. */
   | { type: 'breath_weapon'; actorId: string; shape: 'cone' | 'line'; targetHex: Offset }
   /** Rage (bonus eylem): başlatır ya da süren Rage'i bir tur daha uzatır. */
@@ -1967,6 +1971,9 @@ export type BattleEvent =
       melee?: boolean;
       /** Monk silahı ya da Unarmed Strike (Stunning Strike tetiği; Görev P-Monk). */
       martialArts?: boolean;
+      /** Görev B95-B (97+): Unarmed Strike isabeti / Monk silahı (basit yakın dövüş ya da Light martial) isabeti, Martial Arts'tan bağımsız. */
+      unarmed?: boolean;
+      monkWeapon?: boolean;
       /** Görev WARLOCK: pact silahıyla. */
       pact?: boolean;
       /** Kuyruk 19: harcanan cephane türü. */
@@ -2211,7 +2218,8 @@ export type BattleEvent =
   /** Süreli durum sayacı azaldı (`count` yeni değer). */
   | { type: 'condition_timer'; targetId: string; condition: string; count: number }
   /** "Save ends" kurtarma zarı (her kendi turunun sonunda). */
-  | { type: 'condition_save'; targetId: string; condition: string; ability: Ability; dc: number; d20: number[]; total: number; success: boolean; bonusDice?: RolledExtra[] }
+  | { type: 'condition_save'; targetId: string; condition: string; ability: Ability; dc: number; d20: number[]; total: number; success: boolean; bonusDice?: RolledExtra[];
+    /** Görev B95-B (97+): save'i yaptıran (Grapple); Rage uzatması için. */ by?: string }
   /** Süreli durum bitti (süre doldu, kurtarma başarılı, kullanıldı). */
   | { type: 'condition_ended'; targetId: string; condition: string; reason: string }
   /** Yere düşmüş savaşçı ayağa kalktı: hızının yarısı kadar hareket harcar (`cost` altıgen). */
@@ -2336,6 +2344,8 @@ export type BattleEvent =
       successes: number;
       failures: number;
       outcome: 'success' | 'failure' | 'stable' | 'dead' | 'revived';
+      /** Görev B95-B (97+): ikinci şans (Indomitable) yeniden atışı; kaynağı reducer harcar (`consumeSingles`). */
+      bonusDice?: RolledExtra[];
     }
   | { type: 'stabilized'; actorId: string; targetId: string; natural: number; success: boolean }
   | { type: 'recharge_used'; actorId: string; attackIndex: number }

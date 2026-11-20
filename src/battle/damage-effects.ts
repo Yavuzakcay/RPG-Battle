@@ -60,7 +60,9 @@ export function damageEffects(
 
   // Kuyruk 19: Relentless Rage (Barbarian 11): öfkedeyken 0 HP'ye düşen CON save (DC 10, her kullanımda +5; dinlenmede 10'a
   // döner: kaynak `relentlessRage` kalan kullanım, DC = 10 + 5 × harcanan). Başarıda HP 2 × Barbarian seviyesi.
-  if (hpAfter === 0 && target.hp > 0 && applied > 0 && target.rage && target.traits?.includes('relentless-rage')) {
+  // Görev B95-B (97+, SRD 5.2.1 s. 30 "…and don't die outright"): kalan HP'yi en büyük HP kadar aşan hasarda (anında ölüm) çalışmaz.
+  const outright = !!target.sinif97 && applied - target.hp >= target.maxHp;
+  if (hpAfter === 0 && target.hp > 0 && applied > 0 && target.rage && target.traits?.includes('relentless-rage') && !outright) {
     const used = 10 - Math.min(10, target.resources.relentlessRage ?? 10);
     const dc = 10 + 5 * used;
     // Kuyruk 19: Cloud of Insects (efsanevi eylem): konsantrasyon save'ine dezavantaj.

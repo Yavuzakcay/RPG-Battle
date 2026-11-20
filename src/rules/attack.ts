@@ -26,6 +26,8 @@ export interface ExtraDie {
   /** Kuyruk 19 (Halfling Luck): yalnızca doğal 1'de. */
   onNatural1?: boolean;
   rerollBonus?: number;
+  /** Görev B95-B (97+): `d20` yeniden atışı en iyi zarla (20) bile başarıya yetmiyorsa seçilmez (kaynak harcanmaz; Indomitable). */
+  skipHopeless?: boolean;
   resource?: string;
   /** Kuyruk 18 H3: yalnızca bu durumlara karşı save'de (Countercharm: Charmed, Frightened). */
   against?: string[];
@@ -85,7 +87,8 @@ export function secondChance(
   }
   // Kuyruk 19 (`plus`, Burst of Ingenuity): sabit ek yalnızca başarıya çevirecekse seçilir.
   const x = (extra ?? []).find((e) => e.reroll && !['floor', 'onSuccess', 'worse', 'set', 'natFloor', 'setSpoil', 'forceFail'].includes(e.reroll) && (!e.onNatural1 || fail.natural === 1) && (!e.against || e.against.some((c) => fail.against?.includes(c)))
-    && (e.reroll !== 'plus' || fail.total + (e.rerollBonus ?? 0) >= fail.need));
+    && (e.reroll !== 'plus' || fail.total + (e.rerollBonus ?? 0) >= fail.need)
+    && !(e.skipHopeless && fail.total - fail.natural + 20 + (e.rerollBonus ?? 0) < fail.need));
   if (!x) return null;
   // Görev BARD: tek kullanımlık etkinin zarı (Bardic Inspiration) atılınca etki biter (reducer: `single` + `effectId`).
   const base = { label: x.label, ...(x.holderId ? { holderId: x.holderId } : {}), ...(x.single && x.effectId ? { single: true, effectId: x.effectId } : {}) };

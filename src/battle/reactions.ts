@@ -13,6 +13,7 @@
  * Döngüsel içe aktarmayı önlemek için saldırı yapan tepkiler (Riposte, Retaliation) saldırıyı çağıranın verdiği
  * fonksiyonla yapar (`Strikes`).
  */
+import { sinif97On } from './sinif97Surum';
 import { heldMetal, wearsMetal } from './heldItems';
 import { spells } from '../data';
 import { chainResist } from './chainPact';
@@ -34,7 +35,7 @@ import { canSeeTarget } from './sight';
 import { applyEvents } from './reduce';
 import { mirrorImageHit } from './mind';
 import { freeSpellResource } from '../rules/classFeatures';
-import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
+import type { BattleEvent, BattleState, Combatant, CunningOption, ReactionSpec } from './types';
 import { globalRule } from './ruleControl';
 import { b94On } from './b94Surum';
 import { gap64 } from './adjacency';
@@ -262,7 +263,8 @@ function hitOptions(state: BattleState, ctx: HitContext): { specs: ReactionSpec[
     if (r.ranged && !ctx.ranged) continue;
     // Kritik vuruş AC'yle ıskalatılamaz (doğal 20 her zaman isabet).
     if ((r.kind === 'shield' || r.kind === 'parry') && !ctx.critical) specs.push(r);
-    else if (r.kind === 'halve' && ctx.damage > 0 && sees(state, t, ctx.attacker)) specs.push(r);
+    // Görev B95-B (97+, SRD 5.2.1 s. 62 Uncanny Dodge "an attacker that you can see"): görünmez saldırgan ve Blinded Rogue'da yok.
+    else if (r.kind === 'halve' && ctx.damage > 0 && sees(state, t, ctx.attacker) && (!sinif97On(state) || canSeeTarget(state, t, ctx.attacker))) specs.push(r);
     else if (r.kind === 'resist' && ctx.damage > 0) specs.push(r);
     else if (r.kind === 'deflect' && t.deflect && ctx.damage > 0 && (t.deflect.types.includes(ctx.damageType) || !!t.traits?.includes('deflect-energy'))) specs.push(r);
     else if (r.kind === 'reduce' && ctx.damage > 0 && (!r.types || r.types.includes(ctx.damageType))) specs.push(r);
@@ -893,7 +895,13 @@ export function reactionRechargeEvents(c: Combatant, rng: Rng): BattleEvent[] {
 // ---------------------------------------------------------------- fırsat saldırısı kararı
 
 /** Fırsat saldırısı yapılsın mı (oyuncuya sorulabilir; öneri: her zaman). */
-export function askOpportunity(o: Combatant, moverId: string, rng: Rng): boolean {
+export function askOpportunity(o: Combatant, moverId: string, rng: Rng, cunning: CunningOption[] = []): false | { cunning?: CunningOption[] } {
   const opt = { id: OPPORTUNITY, name: 'Opportunity Attack' };
-  return askReaction(rng, { reactorId: o.id, trigger: 'leave', sourceId: moverId, options: [opt], suggested: { option: OPPORTUNITY } }) !== null;
+  // Görev B95-B (97+, SRD 5.2.1 s. 63 Cunning Strike "When you deal Sneak Attack damage"): fırsat saldırısında da tek seçenekli
+  // Cunning Strike seçilebilir (`cunning`: çağıranın verdiği uygun seçenekler; öneri seçeneksiz, yapay zekânın seçimi ertelendi).
+  const extra = cunning.map((x) => ({ id: `${OPPORTUNITY}:cunning:${x}`, name: `Opportunity Attack + Cunning Strike (${x})` }));
+  const a = askReaction(rng, { reactorId: o.id, trigger: 'leave', sourceId: moverId, options: [opt, ...extra], suggested: { option: OPPORTUNITY } });
+  if (a === null) return false;
+  const pick = a.option.startsWith(`${OPPORTUNITY}:cunning:`) ? a.option.slice(`${OPPORTUNITY}:cunning:`.length) as CunningOption : null;
+  return pick ? { cunning: [pick] } : {};
 }

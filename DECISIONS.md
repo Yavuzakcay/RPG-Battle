@@ -2,6 +2,16 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev B95-B: Barbarian, Fighter, Monk, Rogue denetim düzeltmeleri (2026-11-20; kural sürümü 97 `SINIF97_VERSION`)
+
+Tek kural sürümü 97 (`src/battle/sinif97Surum.ts`, `sinif97On`; 95 Swarm ve 96 GENEL96 `birlesik`'te olduğu için 97). 96 ve altı kayıt/replay eski davranışta. Durum görmeyen yardımcılar için savaş kurulumunda savaşçı işareti `sinif97` (`createBattle`). Ayrıntı ve SRD sayfaları `harita/belgeler/{BARBARIAN,FIGHTER,MONK,ROGUE}-DENETIM.md` "Görev B95" bölümlerinde. Ölçüt SRD 5.2.1; alt sınıflarda bizim sürüm (fikstür metni). Kayıt sürümü değişmedi (yeni alanlar isteğe bağlı: `condition_save.by`, `death_save.bonusDice`, `attack_resolved.unarmed/monkWeapon`, `economy.speedZero`, `offhand_attack.cunning`, `ReadyResponse.cunning`).
+- **Barbarian:** Rage yalnız kendi turunda uzar, save yaptırmak (Grapple, Intimidating Presence, alan) uzatır; Persistent Rage yalnız Unconscious'ta biter; Relentless Rage anında ölümde çalışmaz; Sundering Blow +5 Barbarian'ın kendi saldırısına işlemez; Staggering Blow dezavantajı her save'de harcanır.
+- **Fighter:** Tactical Master seçici arayüzde (motor sürümsüz kabul ediyordu); Heroic Warrior inisiyatifte ilk sıradakine 1. turda; Indomitable ölüm save'inde ve başarı imkânsızken harcanmaz (`ExtraDie.skipHopeless`); Second Wind tam canda menüde (Tactical Shift).
+- **Monk:** Stunning Strike başarıda hız yarı, zırhlı Monk'ta da (Monk silahı/Unarmed Strike isabeti); Self-Restoration tur sonunda tek durum (listedeki ilk, yaklaşık: oyuncu seçimi yok); Quivering Palm yalnız Unarmed Strike; Superior Defense 10 tur.
+- **Rogue:** Uncanny Dodge görülen saldırgana; Second-Story Work Jumper (özellik kimliğinden işaret `data/ozellik-isaret.json`, paket verisi değişmeden); Steady Aim sonrası kayma 0; fırlatılan Javelin Sneak Attack almaz; Cunning Strike yan el, fırsat saldırısı (tepki seçeneği) ve Ready'de.
+- **Test değişiklikleri (veriye/sürüme bağlı beklenti):** `classTraits.test.ts` Withdraw (güncel sürümde Steady Aim sonrası kayma 0), `k17g2.test.ts` Self-Restoration (güncel sürümde tek durum), `k19feat3.test.ts` Jumper (elle işaret yerine gerçek `jumper-dex`), `g6`/`ruleVersion` güncel sürüm 97.
+- **Ertelendi, karar gerekli (C):** Stroke of Luck oyuncuya sorulsun mu ve 20'ye çevrilen saldırı kritik mi; Monk silahı dışında silah taşırken bonus vuruş modeli; yapay zekânın Intimidating Presence, Patient Defense, Step of the Wind, Wholeness of Body, Superior Defense, Quivering Palm, Cunning Strike ve Tactical Master kullanması (denge turuna).
+
 ## Görev B95 (A): Barbarian, Fighter, Monk, Rogue Serüven seçimleri (2026-11-20; sürümsüz, kural ve kayıt sürümü değişmedi)
 
 Kaynak: `harita/belgeler/{BARBARIAN,FIGHTER,MONK,ROGUE}-DENETIM.md` "Görev B95" bölümleri. Ölçüt SRD 5.2.1.
@@ -9,7 +19,7 @@ Kaynak: `harita/belgeler/{BARBARIAN,FIGHTER,MONK,ROGUE}-DENETIM.md` "Görev B95"
 - **Alt sınıf otomatik atanmaz (kullanıcı kararı):** Serüven'de alt sınıf seviyesine çıkan karakterin alt sınıfı boş kalır ve istenir: Builder seçim kipinde boş alt sınıf açılışta da olsa eksik sayılır (diğer açılış sorunları yine yok sayılır); `migrateSubclasses` yalnız karakter listesinde (eski kayıt) kalır. Eksik seçim (alt sınıf, boş yuva, ustalık, Expertise) varken "Seçimler" düğmesi öne çıkar (`pendingChoices`, sınıf adsız).
 - **Ustalık seçici seçim kipinde:** Serüven seçim kipinde donanım adımı yoktu; Ranger/Paladin'in (B94) ve yeni bağlanan sınıfların ustalık değişimi arayüzden yapılamıyordu. Karakter adımına hak kadar yuvalı seçici eklendi (`MasteryPick`); izin denetimi motorda (`set_choices`).
 - **Yaklaşık:** `stil` anahtarı Fighting Style yuvalarını birlikte sayar; Champion'ın Additional Fighting Style yuvası da seviye başına bir değişime girer.
-- **Bekleyen:** B (sürümlü düzeltmeler) `birlesik`'te kural sürümü 95 (Swarm) ve 96 (genel savaş düzeltmesi) olmadığı için yapılmadı. C maddeleri (Stroke of Luck sorusu ve kritik, Monk silahıyla bonus vuruş modeli, YZ'nin Intimidating Presence/Patient Defense/Step of the Wind/Wholeness of Body/Superior Defense/Quivering Palm/Cunning Strike kullanması) ertelendi, karar gerekli.
+- **Bekleyen:** B (sürümlü düzeltmeler) o sırada `birlesik`'te kural sürümü 95/96 olmadığı için bekledi; kapı açılınca B95-B (sürüm 97) olarak yapıldı (yukarıda). C maddeleri (Stroke of Luck sorusu ve kritik, Monk silahıyla bonus vuruş modeli, YZ'nin Intimidating Presence/Patient Defense/Step of the Wind/Wholeness of Body/Superior Defense/Quivering Palm/Cunning Strike kullanması) ertelendi, karar gerekli.
 - **Test değişikliği:** `levelChoices.test.ts` "bağlı olmayan sınıf" testi Fighter yerine bilinmeyen sınıf kimliğiyle (Fighter artık bağlı).
 
 ## GENEL-SAVAS-DENETIM düzeltmeleri, sürümsüz grup (2026-11-20; kural ve kayıt sürümü değişmedi)

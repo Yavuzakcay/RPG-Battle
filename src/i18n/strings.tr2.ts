@@ -492,7 +492,7 @@ export const TR_EXTRA = {
       floor: 'Merdivenden geç', steady: 'Nişan Al', horde: 'Sürü Kırıcı', cunning: 'Kurnaz Vuruş',
       cunningName: { trip: 'Çelme (Trip)', withdraw: 'Sıyrıl (Withdraw)', poison: 'Zehirle (Poison)', daze: 'Sersemlet (Daze)', 'knock-out': 'Bayılt (Knock Out)', obscure: 'Kör Et (Obscure)' } as Record<string, string>,
       cunningHint: (max: number) => `Sneak Attack tutarsa zarından düşülür; en çok ${max} seçenek.`,
-      choicePick: 'Seçim', pushPick: 'Push ustalığı', pushOpt: { auto: 'Son saldırıda it', push: 'Her isabette it', skip: 'İtme' } as Record<string, string>,
+      choicePick: 'Seçim', tacticalPick: 'Tactical Master', tacticalOpt: { own: 'Silahın ustalığı', push: 'Push', sap: 'Sap', slow: 'Slow' } as Record<string, string>, pushPick: 'Push ustalığı', pushOpt: { auto: 'Son saldırıda it', push: 'Her isabette it', skip: 'İtme' } as Record<string, string>,
       bonusStrike: 'Yumruk atışı', flurryStrike: (n: number) => `Yumruk Yağmuru (${n})`, stunning: 'Sersemletici Vuruş', eldritchSmite: 'Karanlık Vuruş',
       shapeOn: (name: string, _cr: string) => `Hayvan formu: ${name}`, shapeOff: (_name: string) => 'Normal hâle dön',
       mount: 'Bineğe bin', dismount: 'Binekten in', natureMagician: (n: number, l: number) => `Slot yenile: ${l}. seviye (${n} hak)`, resurgeShape: 'Slot → hayvan formu hakkı', resurgeSlot: 'Hayvan formu hakkı → slot',

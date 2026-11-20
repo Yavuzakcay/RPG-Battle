@@ -39,6 +39,7 @@ import { ruleVersion } from './ruleVersion';
 import { climbingAloft, fissureDepthAt } from './altitude';
 import { katlarOf, landingFt, slabBetween, standHeights, standingOn } from './stand';
 import { collisionDice, collisionOn, forcedMove, MOTION } from './motion';
+import { sinif97On } from './sinif97Surum';
 
 /** Bir yükseklik seviyesi kaç ft (tırmanma 2 altıgen = 10 ft). */
 export const LEVEL_FEET = 10;
@@ -276,7 +277,7 @@ export function executeGrapple(state: BattleState, actor: Combatant, targetId: s
   const dc = shoveDc(actor, state);
   const save = resolveSave({ extra: saveDice(target, ability), modifier: target.saves[ability], dc, mode: saveMode('normal', target, ability), autoFail: autoFailsStrDexSave(target.conditions) }, rollTag(rng, { by: target.id }));
   const events: BattleEvent[] = [{ type: 'condition_save', targetId, condition: 'Grappled', ability, dc, d20: save.d20?.rolls ?? [], total: save.total ?? 0, success: save.success,
-    ...(save.extra ? { bonusDice: save.extra } : {}) }];
+    ...(save.extra ? { bonusDice: save.extra } : {}), ...(sinif97On(state) ? { by: actor.id } : {}) }];
   if (!save.success) events.push({ type: 'grappled', targetId, by: actor.id, escapeDc: dc, restrained: false, label: 'Grapple' });
   return finish(state, events);
 }
