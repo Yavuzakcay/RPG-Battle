@@ -1581,10 +1581,40 @@ export interface ShapeStats {
   swimFt?: number;
   /** Görev D3 (89+): biçimdeki beceri bonusları (Wild Shape: kendi yetkinliğin biçimin değiştiricisiyle, stat bloğundaki yüksekse o; Polymorph: stat bloğu). Alan yoksa beceriler değişmez. */
   skills?: Combatant['skills'];
+  /**
+   * Görev WS91 (91+; yalnız Wild Shape ve Polymorph): stat bloğunun kalan oyun değerleri, savaş başındaki canavar kurulumunun
+   * geçişinden (`shapeMonster.ts`). Olayda son değerler; reducer uygular, bitince `prev.mon`'dan geri yükler. Alan varken
+   * canavar verisi aramaları (yetenek, ek etki, Multiattack planı) biçimin kimliğiyle (`formMonsterId`).
+   */
+  monster?: ShapeMonster;
 }
+/** Görev WS91: biçimin canavar parçası (son değerler). */
+export interface ShapeMonster {
+  resistances: string[];
+  immunities: string[];
+  vulnerabilities: string[];
+  darkvision: number;
+  senses?: Combatant['senses'];
+  packTactics: boolean;
+  traits: string[];
+  /** Biçimin canavar etkileri (`srd19:<id>:traits|passive`); `dropEffects` kimlikleri biçim süresince kalkar (geri gelir). */
+  effects: ActiveEffect[];
+  dropEffects: string[];
+  /** Biçim süresince yazılan kaynaklar (biçimin yetenek hakları; Polymorph'ta canavarın kendi hakları 0). */
+  resources: Record<string, number>;
+  burrowFt?: number;
+  phase?: PhaseSpec;
+  reactions?: ReactionSpec[];
+  reactionUses?: Record<string, number>;
+  bonusActions: Combatant['bonusActions'];
+}
+/** Görev WS91: biçimden önceki canavar parçası değerleri (`null` kaynak: önceden yoktu). */
+export type ShapeMonsterPrev = Pick<Combatant, 'resistances' | 'immunities' | 'vulnerabilities' | 'darkvision' | 'packTactics' | 'bonusActions'>
+  & Partial<Pick<Combatant, 'senses' | 'traits' | 'burrowFt' | 'phase' | 'reactions' | 'reactionUses'>>
+  & { effects: ActiveEffect[]; resources: Record<string, number | null> };
 /** Biçimden önceki (bırakınca dönen) değerler. */
 export type ShapePrev = Pick<Combatant, 'ac' | 'speed' | 'fly' | 'size' | 'modifiers' | 'saves' | 'weaponOptions' | 'attacksPerAction' | 'avatar'>
-  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt' | 'skills'>>;
+  & Partial<Pick<Combatant, 'attacks' | 'multiattack' | 'swimFt' | 'skills'>> & { mon?: ShapeMonsterPrev };
 
 /** İsabetteki ek hasar (Sneak Attack, Hunter's Mark). */
 export interface ExtraDamage {

@@ -189,7 +189,7 @@ export const en: Strings = {
       abilityBonus: 'Ability increase', skills: 'Skills', tool: 'Tool',
       hitDie: 'Hit Point Die', primary: 'Primary ability', saves: 'Saving throw proficiencies', armorTraining: 'Armor training', weaponProf: 'Weapon proficiencies',
       spellcasting: 'Spellcasting', minLevel: 'Minimum level', cost: 'Cost' },
-    sec: { features: 'Features', traits: 'Species traits', links: 'Related entries', places: 'Environments', desc: 'Description', buff: 'Boon', debuff: 'Drawback', classFeatures: 'Class features, levels 1–20', classOptions: 'Class options' },
+    sec: { features: 'Features', traits: 'Species traits', links: 'Related entries', places: 'Environments', desc: 'Description', buff: 'Boon', debuff: 'Drawback', classFeatures: 'Class features, levels 1–20', classOptions: 'Class options', monsterFeatures: 'Traits and actions' },
     status: { calisir: 'works', kismi: 'partial', planli: 'planned', hikaye: 'story', calismiyor: 'not working' } as Record<string, string>,
     noDesc: 'No Turkish description yet.',
     monsterSummary: (size: string, type: string, cr: string, ac: number, hp: number) => `${size} ${type}; CR ${cr}, AC ${ac}, ${hp} HP.`,
@@ -205,6 +205,7 @@ export const en: Strings = {
     skillChoice: (n: number, list: string) => `Choose ${n}: ${list}`,
     castingType: { full: 'Full caster', half: 'Half caster', pact: 'Pact Magic' } as Record<string, string>,
     fightingStyles: 'Fighting Style feats',
+    monsterKind: { trait: 'Trait', action: 'Action', bonus: 'Bonus action', reaction: 'Reaction', legendary: 'Legendary action' } as Record<string, string>,
   },
   home: {
     intro: 'Turn-based tactical battles on hex maps, using the D&D 5th edition rules (SRD 5.2.1). Players build their characters, the Game Master picks the map and the enemies and runs the fight, all on one device.',

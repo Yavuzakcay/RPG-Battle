@@ -71,8 +71,9 @@ export const spellDescriptionShown = (id: string, lang: Lang): string | undefine
  * `loadClassData` doldurur, yüklenene dek boş. EN arayüzde gösterilmez (yalnız Türkçe notu çıkar).
  */
 /** `buyuSecenek`: büyü seçeneğinin Game Master notu (anahtar `<büyü kimliği>/<seçenek>`; Control Water, sürüm 84). */
-export type AciklamaTuru = 'buyu' | 'esya' | 'tur' | 'yetenek' | 'altsinif' | 'invocation' | 'buyuSecenek' | 'durum';
-export const trDescriptions: Record<AciklamaTuru, Record<string, string>> = { buyu: {}, esya: {}, tur: {}, yetenek: {}, altsinif: {}, invocation: {}, buyuSecenek: {}, durum: {} };
+/** `canavar`: Kuyruk A İş 4, canavar özellik/eylemi (anahtar `<canavar>/<tür>:<ad-slug>`, liste `data/canavar-ozellik.json`). */
+export type AciklamaTuru = 'buyu' | 'esya' | 'tur' | 'yetenek' | 'altsinif' | 'invocation' | 'buyuSecenek' | 'durum' | 'canavar';
+export const trDescriptions: Record<AciklamaTuru, Record<string, string>> = { buyu: {}, esya: {}, tur: {}, yetenek: {}, altsinif: {}, invocation: {}, buyuSecenek: {}, durum: {}, canavar: {} };
 export const trAciklama = (tur: AciklamaTuru, id: string): string | undefined => trDescriptions[tur][id];
 let classLoading: Promise<void> | null = null;
 export const classDataLoaded = () => classData.progression.length > 0;

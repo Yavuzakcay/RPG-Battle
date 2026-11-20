@@ -11,7 +11,7 @@ Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
 ## Hazırla (Ready) eylemi: kural sürümü 90, kayıt sürümü 24 (2026-11-20; kullanıcı kararı: SRD'de olup eksik olan eklenir, uydurma yok)
 
-Sürüm notu: Ready ilk olarak 89 olarak yazıldı; birleştirmede paralel Görev D3 89'u almıştı, Ready 90'a taşındı (kod, veri, testler ve regresyon altını D3 dahil ağaçta 61610a31: 89 = altın, 90 = 89).
+Sürüm notu: Ready ilk olarak 89 olarak yazıldı; birleştirmede paralel Görev D3 89'u almıştı, Ready 90'a taşındı (WS91 90'ı Ready'ye ayırıp 91'i aldı; güncel sürüm 91) (kod, veri, testler ve regresyon altını D3 dahil ağaçta 61610a31: 89 = altın, 90 = 89).
 
 Kaynak SRD 5.2.1 s.186–187 "Ready [Action]"; Extra Attack s.48 ("Attack eylemini **kendi turunda** aldığında"). Durum denetimi `harita/belgeler/READY-DURUM.md`. R1 (saldırı/hareket) ve R2 (büyü) birlikte; R3 (yapay zekânın kullanması) yok.
 
@@ -28,6 +28,63 @@ Kaynak SRD 5.2.1 s.186–187 "Ready [Action]"; Extra Attack s.48 ("Attack eylemi
 - **Kapsam dışı (SRD'de var, bu turda yok):** Dash/Disengage/Dodge/Help/Hide/eşya kullanımı gibi diğer eylemlerin hazırlanması; hazırlanan yanıtın serbest metinli tetiği (yalnız veri listesindeki tetikler).
 
 ## Dungeondex, Türkçe sürüm (2026-11-20; yalnız arayüz, kural ve kayıt sürümü değişmedi)
+## Wild Shape / Polymorph biçim aktarımı WS91: kural sürümü 91 (2026-11-19, kullanıcı kararı 2026-11-20: SRD'de olup eksik olan tamamlanır, uydurma yok)
+
+Soru sorulmadı. Her kural PDF'ten okundu (`docs/SRD_CC_v5.2.1.pdf`, `pdftotext -layout`): Wild Shape s. 42–43, Polymorph s. 153, "Flying"/"Hover" s. 183, Archmage s. 305, Mind Blank s. 149. Önce motorda karşılık arandı: canavar kurulumu için D2'nin tek girişi (`monsterSetup.ts` `setupMonster` = `monsterTraitSetup` + `monsterAbilitySetup`) yeniden kullanıldı, ikinci kopya yazılmadı.
+
+- **Sürüm 91** (`src/battle/shape91Surum.ts` `SHAPE91_VERSION`, `shape91On`). 90 Ready (Hazırla) görevine ayrıldı; bu dalda 90 henüz yok, yeni savaş 91 alır. 89 ve altı (eski kayıt, replay, `--kural-surumu 89`) aynen: hızlı regresyonda 89 imzaları WS91 öncesi ağacın (f458a3fc) altınıyla aynı. Kayıt sürümü değişmedi (yeni olay türü yok; aktarım `shape_changed.stats.monster` içinde).
+- **SRD metni.** Wild Shape (s. 43): "Your game statistics are replaced by the Beast's stat block, but you retain your creature type; Hit Points; Hit Point Dice; Intelligence, Wisdom, and Charisma scores; class features; languages; and feats." Polymorph (s. 153): "The target's game statistics are replaced by the stat block of the chosen Beast, but the target retains its alignment, personality, creature type, Hit Points, and Hit Point Dice." … "These Temporary Hit Points vanish if any remain when the spell ends." … "it can't speak or cast spells."
+- **Aktarım tablosu** (önce = 87–89, sonra = 91; ikisi için de SRD "stat bloğu yerine geçer"):
+
+| Alan | 89'da | 91'de | Yol |
+|---|---|---|---|
+| AC, hız, uçuş, boyut, STR/DEX/CON (Polymorph'ta hepsi), kurtarmalar, beceriler, saldırı zarlı saldırılar, yüzme (`bicimYuzme`) | aktarılıyordu (WS87, D3) | aynen | `druid.ts` `shapeStats` |
+| Darkvision | aktarılmıyordu (Druid'in kendi değeri kalıyordu) | biçiminki | `shapeMonster.ts` |
+| Blindsight / Tremorsense / Truesight (`senses`) | yok | biçiminki | aynı |
+| Direnç / bağışıklık / zayıflık | yok | Wild Shape: kendi ∪ biçim ⚠; Polymorph: biçiminki | aynı |
+| Durum bağışıklığı, Magic Resistance, Sunlight Sensitivity, Illumination | yok | canavar özellik etkisi (`srd19:<id>:traits`) | `monsterTraitSetup` |
+| Tırmanma (Climb, Spider Climb), Web Walker, Ice Walk | yok | aynı etkiden (`climb`, `webWalker`, `iceWalker`) | aynı |
+| Kazma (`burrowFt` + yer altından geçiş) | yok | biçiminki | `combatantFromMonster` + `monsterAbilitySetup` |
+| Yüzme işareti (çok derin su) | `bicimYuzme` ile yüzme hızı | aynı anahtarla `gift-of-the-depths` de | aynı |
+| İşaretler: Flyby, Agile, Swarm, Bloodied Fury… ve pasifler (Leap, Running/Standing Leap uzunluğu, sürü: yaratıkların içinden geçer, iyileşmez) | yok | biçimden | `monsterAbilitySetup` |
+| Pack Tactics | yok | biçimin `packTactics` alanı | `combatantFromMonster` |
+| Canavar tepkileri (Ink Cloud…) | yok | Wild Shape: kendi + biçim; Polymorph (canavar hedef): biçiminki | `combatantFromMonster` |
+| Canavar yetenekleri (Swallow, Leap, Rampage, Trample, Bubble Dash) ve hakları | yok | biçimin kaydı (`formMonsterId`), haklar `mab:*` | `monsterAbilities.ts` `entryOf` |
+| Save'li / şarjlı eylemler (Giant Spider Web) | Wild Shape'te yoktu (yalnız saldırı zarlılar silah seçeneği) | Wild Shape'te canavar saldırısı (`attacks`, Multiattack yok); Polymorph'ta zaten vardı | `shapeMonsterPart` |
+| Ek etkiler (Charge, Pounce, Grappled, Prone…) | Wild Shape: silah seçeneğinde vardı (K13); Polymorph'ta canavarın kendi kimliğiyle aranıyordu (eşleşmiyordu) | biçimin kimliğiyle | `monsters.ts`, `areaAttack.ts` |
+| Multiattack planı, efsanevi eylemler, su soluma | canavarın kendi kimliği | biçimin kimliği | `monsters.ts` `multiSpecOf`, `boss.ts`, `underwaterCore.ts` |
+| Canavar hedefin kendi özellik etkileri, işaretleri, kaynakları (Legendary Resistance, yetenek ve büyü hakları) | Polymorph'ta kalıyordu | biçim süresince kalkar, bitince geri | `shapeMonsterCore.ts` |
+| Polymorph bitince kalan geçici HP | kalıyordu | gider (s. 153) | `reduce.ts` |
+
+- **Biçim bitince** her şey `shape.prev.mon`'dan geri gelir (`shapeMonsterCore.ts` `withoutMonsterPart`); biçimden biçime geçişte (ayı → örümcek) önceki biçimin değerleri önce kalkar. Biçim kurulumu olay anında yapılır, sonuç olaya yazılır (replay biçim verisinden bağımsız).
+- **⚠ Wild Shape'te direnç, bağışıklık, zayıflık ve işaretler birleşir (kendi ∪ biçim).** SRD sınıf özelliklerini ve feat'leri korur, tür özelliklerini korumaz; savaşçıda tür ve sınıf kaynaklı direnç (`raceResistances` + Nature's Ward `kit.resist`) ve işaretler tek listede, ayrılamıyor. Sınıf özelliğini kaybettirmemek için birleşim seçildi; tür direnci (ör. Dwarf Poison) biçimde de kalır. Darkvision ve özel duyular Druid'de yalnız türden gelir: biçiminkiyle değişir. Türden gelen süren etkiler (`species.ts`) de kalır (aynı nedenle).
+- **⚠ Polymorph oyuncu hedefte** sınıf işaretleri ve tepkileri kalır (eski davranış; SRD "game statistics replaced" sınıf özelliklerini de kapsar, ama oyuncunun sınıf işaretleri ayrılamıyor ve büyü zaten yapılamıyor). Canavar hedefte bütün canavar işaretleri, etkileri ve kaynakları kalkar.
+- **Yapamayacakları** (s. 43 "No Spellcasting", s. 153 "can't speak or cast spells"): büyü yasağı motorda zaten vardı (`spells.ts`: biçimde büyü yok, Beast Spells hariç); konuşma mekaniği yok. Kurallarla çakışma yok. Karadul Örümcek Biçimi (`spiderStats`) ve ele geçirme (`possession`) canavar parçası almaz; örümcek biçiminin olayı ve gir/bırak sonucu 86–89 ile aynı (test).
+- **3. madde: ikisi de bu görevde yapıldı (küçük ve SRD metniyle):**
+  - **Hover (s. 183):** "While flying, you fall if you have the Incapacitated or Prone condition or your Fly Speed is reduced to 0. You can stay aloft in those circumstances if you can hover." Veride 16 canavarda `Hover` notu vardı, motor okumuyordu. 91+: canavar özelliklerinde işaret `hover` (`monsterTraits.ts`), `altitude.ts` `staysUp` Prone/Incapacitated/hız 0'da düşürmez (0 HP'de düşer: Fly Speed "until you land, fall, or die"). Büyülerin süzülmesi (Fly değil; ör. Wind Walk) bu işarete bağlanmadı; U1a `hover` etkisi farklı anlam (yere değmez) ve aynen.
+  - **Archmage "Charmed (with Mind Blank)" (s. 305):** stat bloğunda Mind Blank "(cast before combat)"; Mind Blank (s. 149) Charmed ve Psychic bağışıklığı verir. Veri notu "Charmed (with Mind Blank)" bağışıklık listesine hiç girmiyordu. 91+: koşullu bağışıklık, koşulun büyüsü canavarın büyü kaydında "cast before combat" ise sayılır (`withSpell`; yalnız Archmage'de var). Psychic zaten bağışıktı.
+- **Kalanlar (yapılmadı, ileride):** biçimin aurası (`setupMonster` alanları; uygun Beast'lerde aura yok, alanlar biçime aktarılmaz); arayüz canavar yeteneği düğmesi göstermiyor (canavarlarda da yok; motor ve yapay zekâ kullanır); Druid yapay zekâsı biçime yalnız slotu bitince girer (simülasyonda kısa savaşlarda hiç girmiyor); biçimdeki eşya (s. 43 "Objects") yok; yüzücü listesi (`derin-su.json` `swimmers66`) canavarın kendi kimliğiyle kalır.
+- **Doğrulama.** Testler `src/battle/shape91.test.ts` (Wolf, Giant Spider, Brown Bear, Crocodile, Swarm of Rats aktarımı; Giant Eagle artık uygun değil (SRD 5.2.1: Celestial); biçimden biçime ve geri yükleme; Polymorph canavar hedef, Multiattack planı ve yetenekler biçimin kimliğiyle; geçici HP; Hover; Mind Blank; replay), Karadul 86–91 karşılaştırması `karadul.test.ts`. Mekanik matris 91'de 6606/6606 doğru (Polymorph ve True Polymorph satırları dahil; Wild Shape büyü/saldırı satırı değil). Hızlı regresyon `src/sim/shape91Regresyon.test.ts` (4 senaryo × 1 ve 3 tohum): 89 imzaları altınla aynı; 91'de Orman (Druid), Mağara (Hover'lı Specter), Kale 89'la aynı, Çöl (slotsuz başlayan Druid, biçime giriyor) değişti (1 tohum `ec9b82fb4cb3`, 3 tohum `2e1cd5e14ca6`; zafer 1/1 ve 3/3 aynı). Denge ölçümü yapılmadı.
+
+## Kuyruk A İş 4: canavar özellik ve eylemlerinin Türkçe açıklamaları (2026-11-20; yalnız içerik verisi)
+
+- **Kaynak:** SRD 5.2.1 PDF'i, s. 254–364. Yeni üretici `scripts/srd-canavar-ozellik.mjs`, mevcut PDF okuyucusuyla (`scripts/srd/pdf.mjs`) stat bloklarından özellik ve eylemleri ayrıştırır. Tür trait/action/bonus/reaction/legendary; ad İngilizce.
+- **Çıktı:**
+  - `data/canavar-ozellik.json`: liste ve sıra; İngilizce SRD metni depoya girmez.
+  - Açıklamalar `data/aciklamalar-tr.json` yeni `canavar` bölümünde. Anahtar `<canavar>/<tür>:<ad-slug>`.
+- **Kapsam: 1318 kayıt, 330/330 canavar.** Dungeondex canavar kartında yeni "Özellikler ve eylemler" bölümü (ad, tür etiketi, Türkçe açıklama). "Türkçe açıklama henüz yok" notu yalnız eksik satırda çıkar.
+- **Ayrıştırma düzeltmesi:** ilk sürüm, adla noktası ayrı parça olan 24 eylemi önceki kaydın içine katıyordu (renkli ejderhaların nefesleri, Brown Bear, Elephant Gore, Lightning Absorption, Unicorn Magic Resistance). Bu yüzden 1294 değil 1318 kayıt var. Etkilenen 23 canavar ayrı bir düzeltme partisinde yeniden yazıldı.
+- **Yöntem:** CR gruplarına bölündü (0–1/4, 1/2–1, 2–3, 4–6, 7–11, 12+ ve düzeltme partisi); parti başına commit. Her kayıt PDF'ten çıkarılan özgün metinden Türkçe özet olarak yazıldı; bellekten değer yok.
+- **Sayısal tutarlılık denetimi:**
+  - Yazım sırasında betikle: zar ifadesi, DC, saldırı bonusu ve ft değerleri İngilizce metinle karşılaştırıldı; her partide 0 sorun.
+  - Depoda test: `data/monsters.json` saldırı alanlarıyla zar, bonus ve DC eşleşmesi. SRD'de zarsız sabit hasar varsa oyun verisinin `1d2` yaklaşıklaması yerine sabit sayı aranır.
+- **Kural:** SD4 uygulandı: durum, büyü ve eylem adları İngilizce; hasar türleri Türkçe; yetenekler STR/DEX/… kısaltmasıyla; GM yerine "Game Master".
+- **Test ve uzunluk:**
+  - Uzunluk sınırı canavar bölümünde 560 karakter (genel sınır 240): Engulf, Swallow gibi eylemler zar, DC ve mesafe korunarak daha uzun. Mevcut `aciklamalarTr.test.ts` buna göre güncellendi.
+  - Testler: `src/dungeondex/canavarAciklama.test.ts`.
+  - Ekran görüntüsü `docs/sabah/dungeondex/canavar-kart.webp`.
+- **Boyut:** `aciklamalar-tr.json` `loadClassData` ile tembel yüklendiği için açıklamalar o parçaya girdi (≈ +200 kB ham metin, karakter ekranları açılırken bir kez). Ana parça değişmedi. Ayrı tembel dosyaya taşımak gerekirse küçük bir iştir (öneri).
+
 ## Kuyruk A İş 3: Control Water girdap efekti importu atlandı (2026-11-20)
 
 - Kaynak "control-water" efekt sayfası bulut kapsayıcısında yok (`assets-ham/` depo dışı; yalnız `eksikler/` ve `karakter/` var). Talimat gereği iş atlandı.

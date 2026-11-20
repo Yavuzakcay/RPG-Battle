@@ -99,6 +99,22 @@ describe('Karadul: oluşturucu ve sınıf özellikleri', () => {
     expect(e87).toBeDefined();
     expect(e87).toEqual(e86);
     expect(e87 && e87.type === 'shape_changed' && e87.stats && 'swimFt' in e87.stats).toBe(false);
+    // Görev WS91: biçim aktarımı yalnız Wild Shape ve Polymorph'ta; örümcek biçimi 86–89 ile aynı (canavar parçası yok),
+    // girip bırakınca savaşçı 89'dakiyle aynı.
+    for (const v of [88, 89, 91]) expect(shapeEv(v), String(v)).toEqual(e86);
+    const cycle = (v: number) => {
+      const r = arena(widow({ level: 8 }), { kuralSurumu: v });
+      r.do({ type: 'use_feature', actorId: 'A', feature: SPIDER_KEY });
+      const inForm = r.c('A');
+      r.fresh();
+      r.do({ type: 'use_feature', actorId: 'A', feature: SPIDER_KEY });
+      const { economy: _e, ...back } = r.c('A');
+      const { economy: _f, ...form } = inForm;
+      return { form, back };
+    };
+    const c89 = cycle(89), c91 = cycle(91);
+    expect(c91.form.shape?.monster).toBeUndefined();
+    expect(c91).toEqual(c89);
   });
 });
 

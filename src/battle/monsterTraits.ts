@@ -12,6 +12,7 @@ import { hasDarkness } from './maprules';
 import { monsterAt } from './srdD1';
 import { masterExceptions } from './srdD3';
 import { srdD3On } from './srdD3Surum';
+import { shape91On } from './shape91Surum';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
 
 const CONDS = ['Blinded', 'Charmed', 'Deafened', 'Exhaustion', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'];
@@ -27,7 +28,12 @@ export function monsterTraitParts(state: BattleState, c: Combatant, m0?: Monster
   const u = (m.unsupported ?? []) as string[];
   const fx: Partial<ActiveEffect> = {};
   for (const s of u) {
-    if (s.startsWith('Durum bağışıklığı:')) fx.immune = s.slice(18).split(',').map((x) => x.trim()).filter((x) => CONDS.includes(x));
+    // Görev WS91 (91+; SRD s. 305 Archmage "Charmed (with Mind Blank)"): koşullu bağışıklık, koşulun büyüsü stat bloğunda
+    // "cast before combat" yazılıysa savaşta geçerli (`beforeCombat`).
+    if (s.startsWith('Durum bağışıklığı:')) fx.immune = s.slice(18).split(',').map((x) => x.trim())
+      .map((x) => (shape91On(state) ? withSpell(x, c.monsterId as string) : x)).filter((x) => CONDS.includes(x));
+    // Görev WS91 (91+; SRD s. 183 "Flying", "Hover"): süzülen canavar Prone/Incapacitated/hız 0 iken düşmez (`altitude.ts`).
+    else if (s === 'Hover' && shape91On(state)) out.traits.push('hover');
     else if (s.startsWith('Hız: Climb') || s === 'Trait: Spider Climb') fx.climb = true;
     else if (s.startsWith('Hız: Swim')) out.traits.push('gift-of-the-depths');
     else if (s.startsWith('Duyu:')) {
@@ -62,6 +68,15 @@ export function monsterTraitParts(state: BattleState, c: Combatant, m0?: Monster
 }
 
 type SpellRef = { name: string; level?: number; note?: string };
+
+/** "Charmed (with Mind Blank)": büyü canavarın büyülerinde "cast before combat" ise "Charmed", değilse olduğu gibi (sayılmaz). */
+function withSpell(x: string, monsterId: string): string {
+  const m = /^(\w+) \(with (.+)\)$/.exec(x);
+  if (!m) return x;
+  const rec = monsterSpells[monsterId] as MonsterSpellRec | undefined;
+  const all = [...(rec?.spellcasting?.atWill ?? []), ...(rec?.spellcasting?.daily ?? []).flatMap((g) => g.spells)];
+  return all.some((r) => r.name === m[2] && r.note === 'cast before combat') ? (m[1] as string) : x;
+}
 type MonsterSpellRec = {
   spellcasting?: { ability: string; dc: number; attack?: number; atWill: SpellRef[]; daily: { uses: number; spells: SpellRef[] }[] };
   bonus?: { entry: string; uses?: number; spells: SpellRef[] }[];

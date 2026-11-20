@@ -22,6 +22,7 @@ import { applyHealing } from '../rules/damage';
 import { creatureTypeAt, monsterAt, swimSpeedAt } from './srdD1';
 import { bicimYuzmeOn, WS87_VERSION, ws87On } from './wildShape87Surum';
 import { srdD3On } from './srdD3Surum';
+import { shapeMonsterPart } from './shapeMonster';
 import { SKILLS, type Skill } from '../rules/skills';
 import { CURRENT_RULES } from './ruleVersion';
 import { fail, finish, type CommandResult } from './common';
@@ -154,7 +155,10 @@ export function executeWildShape(state: BattleState, actor: Combatant, form: str
   if (why) return fail(why);
   if (form === undefined) return finish(state, [{ type: 'shape_changed', actorId: actor.id, stats: null, reason: 'bıraktı' }]);
   const f = wildShapeFeature(actor) as UsableFeature;
-  const stats = shapeStats(monsters[0] as Monster, actor.shape ? { ...actor, ...actor.shape.prev } : actor, shapeOptsAt(state, monsters[0] as Monster, 'wild'));
+  const stats0 = shapeStats(monsters[0] as Monster, actor.shape ? { ...actor, ...actor.shape.prev } : actor, shapeOptsAt(state, monsters[0] as Monster, 'wild'));
+  // Görev WS91 (91+): stat bloğunun kalanı canavar kurulumunun geçişinden (`shapeMonster.ts`).
+  const mp = shapeMonsterPart(state, actor, monsters[0] as Monster, 'wild');
+  const stats: ShapeStats = mp ? { ...stats0, monster: mp.monster, attacks: mp.attacks, multiattack: false } : stats0;
   const events: BattleEvent[] = [];
   if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
   events.push({ type: 'shape_changed', actorId: actor.id, stats });

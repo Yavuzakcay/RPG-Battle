@@ -36,7 +36,8 @@ describe('SD4 Türkçe açıklamalar', () => {
       if (tur.startsWith('_') || typeof tablo !== 'object') continue;
       for (const [id, text] of Object.entries(tablo)) {
         expect(text.length, `${tur}/${id} uzunluk`).toBeGreaterThan(10);
-        expect(text.length, `${tur}/${id} uzunluk`).toBeLessThanOrEqual(240);
+        // Kuyruk A İş 4: canavar eylemleri (Engulf, Swallow…) zar/DC/mesafe bilgisini korumak için daha uzun olabilir.
+        expect(text.length, `${tur}/${id} uzunluk`).toBeLessThanOrEqual(tur === 'canavar' ? 560 : 240);
         expect(text.includes('\n'), `${tur}/${id} satır`).toBe(false);
         expect(looksEnglish(text), `${tur}/${id} İngilizce`).toBe(false);
       }
