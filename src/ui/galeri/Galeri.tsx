@@ -52,7 +52,12 @@ export function spriteOf(r: GaleriRec): FxSprite | null {
 const sheetOf = (g: Gorunum): CharacterSheet => ({ raceId: g.raceId, classId: g.classId ?? 'fighter', gender: g.gender ?? 'erkek', level: 5,
   ...(g.lineageId ? { lineageId: g.lineageId } : {}), ...(g.subclassId ? { subclassId: g.subclassId } : {}), ...(g.celestialAwakening ? { celestialAwakening: g.celestialAwakening } : {}) }) as unknown as CharacterSheet;
 
-function Visual({ r, animated }: { r: GaleriRec; animated: boolean }) {
+/** Dungeondex kaydının görsel eşlemesi (vitrin penceresi; Görev DD-Kitap2). */
+export function dexRecord(cat: string, id: string): GaleriRec | null {
+  return E.kategoriler[cat]?.[id] ?? null;
+}
+
+export function Visual({ r, animated }: { r: GaleriRec; animated: boolean }) {
   const sp = spriteOf(r);
   if (sp && sp.frames > 1) {
     return (

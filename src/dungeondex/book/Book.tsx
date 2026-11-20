@@ -99,7 +99,7 @@ export function DexCover(props: { phase: CoverPhase; onOpen: () => void; counts:
   const vars = {
     '--ar': String(c.aspect), '--wing-at': ms(A.kanatGecikmeMs), '--wing-ms': ms(A.kanatMs), '--cwing-out': ms(A.kapaliKanatSonMs),
     '--swap-at': ms(A.kanatGecikmeMs + A.kanatMs), '--swap-ms': ms(A.govdeGecisMs), '--turn-ms': ms(A.kapakMs), '--turn-deg': `${A.kapakAci}deg`,
-    '--fade-ms': ms(A.solmaMs), '--pulse-ms': ms(A.nabizMs),
+    '--fade-ms': ms(A.solmaMs), '--pulse-ms': ms(A.nabizMs), ...(d?.zemin ? { '--deri': d.zemin } : {}),
   } as CSSProperties;
   return (
     <div className={`ddk-cover ddk-${props.phase}${d ? ' ddk-has-img' : ' ddk-no-img'}${hidden ? ' ddk-paused' : ''}${motion === 'reduced' ? ' ddk-static' : ''}`} style={vars}
@@ -135,8 +135,12 @@ export function useFrameKind(): FrameKind {
   return kind;
 }
 
-/** Açık kitap: vitrin penceresi, vitrin altı isim şeridi ve sağ (mobilde alt) sayfa; sayfa güvenli alanda kayar. */
-export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: ReactNode; className?: string }) {
+/**
+ * Açık kitap: vitrin penceresi, vitrin altı isim plakası ve sağ (mobilde alt) parşömen sayfa; sayfa güvenli alanda kayar.
+ * Tasarımda liste/arama/sekme yeri yok: içindekiler (kategoriler, arama, liste) ve gezinme (geri, önceki/sonraki)
+ * parşömenin içinde (`nav` üstte yapışık), kitabın dışında çubuk yok.
+ */
+export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: ReactNode; nav?: ReactNode; className?: string }) {
   const kind = useFrameKind();
   const d = kind === 'duz' ? null : bookData()[kind];
   if (!d) {
@@ -144,7 +148,7 @@ export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: R
       <div className={`ddk-frame ddk-duz ${props.className ?? ''}`} data-frame="duz">
         <div className="ddk-vitrin">{props.vitrine}</div>
         <div className="ddk-serit">{props.strip}</div>
-        <div className="ddk-page">{props.page}</div>
+        <div className="ddk-page">{props.nav}{props.page}</div>
       </div>
     );
   }
@@ -154,7 +158,7 @@ export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: R
         <img className="ddk-frame-img" src={`${BASE}${d.file}`} alt="" draggable={false} />
         <div className="ddk-vitrin" style={boxStyle(d.vitrin)}>{props.vitrine}</div>
         <div className="ddk-serit" style={boxStyle(stripBox(d))}>{props.strip}</div>
-        <div className="ddk-page" style={boxStyle(d.guvenli)}>{props.page}</div>
+        <div className="ddk-page" style={boxStyle(d.guvenli)}>{props.nav}{props.page}</div>
       </div>
     </div>
   );

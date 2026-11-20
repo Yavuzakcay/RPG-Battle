@@ -27,7 +27,9 @@ describe('Dungeondex Kitap', () => {
   it('kapak kapalıyken açık kitap: sekmeler, vitrin, şerit, sayfada kart', () => {
     const m = renderToStaticMarkup(<Dungeondex onBack={() => {}} extras={extras} cover={false} initial={{ cat: 'canavar', id: 'goblin-warrior' }} />);
     expect(m).not.toContain('dex-cover');
-    expect(m).toContain('dex-tab-buyu');
+    expect(m).toContain('ddk-pagenav');
+    expect(m).toContain('dex-prev');
+    expect(m).not.toContain('ddk-bar');
     expect(m).toContain('ddk-vitrin');
     expect(m).toContain('ddk-serit');
     expect(m).toContain('data-testid="dex-card"');
