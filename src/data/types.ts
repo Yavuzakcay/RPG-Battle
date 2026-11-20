@@ -1207,7 +1207,13 @@ export interface FeatureMechanic {
   traits?: string[];
   /** Kuyruk 19: oluşturucuda seçilen büyüler (Spell Mastery, Signature Spells): `featureChoices['<özellik>/<slot>']`. */
   /** Kuyruk 19: `cls` sınıf listesi (varsayılan Wiz), `all` bütün sınıf listesinden (bilinmesi gerekmez; Mystic Arcanum), `minClassLevel` bu seviyeden. */
-  spellPicks?: Array<{ slot: string; level: number; cls?: string; all?: boolean; minClassLevel?: number }>;
+  /** Görev B93 (Ritual Adept): büyü kitabındaki SRD ritüel büyüleri hazırlanmadan ritüel olarak (kurulum). */
+  ritualFromBook?: boolean;
+  /** Görev B93 (Evocation Savant): büyü kitabına bu okuldan bedelsiz büyüler: `base` (en çok `maxBaseLevel`), alt sınıf seviyesinden sonra her yeni slot seviyesinde +1. */
+  spellbookBonus?: { school: string; base: number; maxBaseLevel: number; perNewSlotLevel: number };
+  spellPicks?: Array<{ slot: string; level: number; cls?: string; all?: boolean; minClassLevel?: number;
+    /** Görev B93: büyü kitabından seçilir ve her zaman hazırdır (hazır sayısına girmez; Spell Mastery, Signature Spells). */ fromBook?: boolean;
+    /** Görev B93: yalnız bu yapım süresindeki büyü (Spell Mastery: Action). */ castingTime?: string }>;
   /** Görev F: oyuncunun seçtiği seçenek (Hunter's Prey, Defensive Tactics): her biri bir işaret; `default` seçilmediyse. */
   options?: Array<{ id: string; trait: string; armor?: Array<'light' | 'medium' | 'heavy' | 'shield'>; martialWeapons?: boolean; cantrips?: number; resist?: string[];
     /** Görev DRUID: seçeneğe bağlı her zaman hazır büyüler (arazi) ve Nature's Ward direnci. */
@@ -1382,6 +1388,10 @@ export type FeatureEffect =
 export interface ResourceDef {
   /** Görev B93: bu büyüler bu kaynakla yapılınca kaynak zar kadar uzun dinlenme kullanılamaz (Greater Divine Intervention: Wish, 2d4). */
   wait?: { spells: string[]; dice: string };
+  /** Görev B93: kaynak yalnız özelliğin bu seçim yuvasındaki büyüye (Signature Spells: her büyüye ayrı kullanım). */
+  pickSlot?: string;
+  /** Görev B93: yalnız savaş dışında (dinlenmede) kullanılan kaynak: savaş ekranında gösterilmez (Arcane Recovery). */
+  outOfCombat?: boolean;
   name: string;
   /** Kaynağı veren özellik(ler): `sınıf:özellik`. */
   feature: string | string[];
@@ -1404,6 +1414,7 @@ export interface ResourceDef {
    * 5. seviyeye dek, tepki değil). `lastResort`: yalnızca büyünün seviyesinde ya da üstünde slot kalmadıysa harcanır.
    */
   freeSpellList?: { classes: string[]; /** Kuyruk 19: yalnızca bu adlar (Natural Recovery: daire büyüleri). */ names?: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean;
+    /** Görev B93: yalnız bu yapım süresindeki büyü (Spell Mastery: Action). */ castingTime?: string;
     /** Görev B93 (sürüm 93+, Divine Intervention): listedeki herhangi bir büyü, hazırlanmamış olsa da (oyuncu isteğiyle `cast_spell.free`). */ anyFromList?: boolean;
     /** Kuyruk 18 H3: seviye başına yalnızca bilinen ilk büyü (Spell Mastery, Signature Spells: seçim arayüzü yerine). */ perLevel?: number;
     /** Kuyruk 19: sınıf ve seviye sınırı dışında bu adlar da (Greater Divine Intervention: Wish). */ extraNames?: string[] };

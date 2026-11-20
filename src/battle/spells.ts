@@ -1036,8 +1036,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       }, rng) : null;
       const hit = hr ? hr.hit : res.hit;
       if (!hit) bonus = { extras: [] };
-      // Görev B1: ıskada yarı hasar (Acid Arrow).
-      const miss = !hit && m.halfOnMiss ? (() => {
+      // Görev B1: ıskada yarı hasar (Acid Arrow). Görev B93 (sürüm 93+): Potent Cantrip ıskalanan cantrip'te de yarı hasar,
+      // ek etki yok (ek etkiler yalnız isabette; bizim sürüm: "Hasar cantrip'in ıskalasa ya da save başarılı olsa da yarı hasar verir").
+      const miss = !hit && (m.halfOnMiss || (v93 && !!m.damage && potentCantrip(actor, spell))) ? (() => {
         const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
         const once = onceLeft; onceLeft = 0;
         const a = adjustDamage(Math.floor((d.total + once) / 2), m.damageType, profileIn(state, t, true));

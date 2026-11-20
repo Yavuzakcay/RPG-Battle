@@ -689,7 +689,7 @@ function ClassStep({ c, setC, set, suggest, lockClass }: StepProps & { /** Göre
       <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={experimentalFrom(s.classId, s.subclassId)}
         choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })}
         metamagic={s.metamagic ?? []} onMetamagic={(ids) => set({ metamagic: ids })}
-        invocations={s.invocations ?? []} onInvocations={(ids) => set({ invocations: ids })} known={s.spellNames ?? []}
+        invocations={s.invocations ?? []} onInvocations={(ids) => set({ invocations: ids })} known={s.spellNames ?? []} book={s.spellbook}
         weapons={(s.weapons ?? []).map((w) => w.name)} pactWeapon={s.pactWeapon} onPact={(w) => set({ pactWeapon: w })}
         forms={s.wildShapeForms ?? []} onForms={(ids) => set({ wildShapeForms: ids })} />
     </>
@@ -1027,7 +1027,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
   const reco = useRecoSets();
   const W = T.wiz;
   const kit = classKit(s.classId, s.level, s.subclassId);
-  const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
+  const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations, s.subclassId);
   const cnt = spellCounts(s);
   const chosen = s.spellNames ?? [];
   const list = classSpellList(s.classId);

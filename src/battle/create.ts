@@ -1,4 +1,5 @@
 /** Karakter formundan ve canavar şablonundan savaşçı oluşturma, savaşı başlatma. */
+import srdSpells from '../../data/srd/spells.json';
 import { WS92_VERSION } from './ws92Surum';
 import { creatureTypeAt, hasSrdD1, monsterAt, swimSpeedAt } from './srdD1';
 import { SRD_D1_VERSION } from './srdD1Surum';
@@ -246,7 +247,13 @@ function combatantFromSheetBase(
   // Kuyruk 19: Pact of the Tome ritüelleri (her zaman hazır).
   const known3 = [...known2, ...inv.rituals.filter((n) => !known2.includes(n))];
   // Kuyruk 19 (görev 3): Mystic Arcanum gibi bütün sınıf listesinden seçilen büyüler (seçilmezse savaşta işe yarayan ilk).
-  const known = [...known3, ...arcanumPicks(sheet).filter((n) => !known3.includes(n))];
+  const known4 = [...known3, ...arcanumPicks(sheet).filter((n) => !known3.includes(n))];
+  // Görev B93: kitaptan seçilen her zaman hazır büyüler (Spell Mastery, Signature Spells; `spellPicks[].fromBook`).
+  const known5 = [...known4, ...bookPicks(sheet).filter((n) => !known4.includes(n))];
+  // Görev B93: Ritual Adept: kitaptaki SRD ritüel büyüleri hazırlanmadan, yalnız ritüel olarak (`ritualOnly`).
+  const ritualOnly = gainedFeatures(sheet.classId, sheet.level, sheet.subclassId).some((f) => f.mechanic?.ritualFromBook)
+    ? (sheet.spellbook ?? []).filter((n) => !known5.includes(n) && srdRitual(n)) : [];
+  const known = [...known5, ...ritualOnly];
   // Soy büyülerinin yeteneği (SRD: INT, WIS ya da CHA, soy seçilirken): büyücü sınıfta sınıfın yeteneği, değilse en
   // yükseği (yaklaşık; DECISIONS.md, Görev K3).
   const castAbility = cls.casting?.ability
@@ -348,11 +355,13 @@ function combatantFromSheetBase(
         const taken: Record<number, number> = {};
         // Kuyruk 19: oluşturucuda seçilen büyüler (Spell Mastery, Signature Spells) önce; seçilmeyen seviyede ilk bilinen.
         const feat = resourceDef(id)?.feature;
-        const picks = Object.entries(sheet.featureChoices ?? {}).filter(([k]) => typeof feat === 'string' && k.startsWith(`${feat}/`)).map(([, v]) => v);
+        // Görev B93: `pickSlot`: kaynak yalnız o yuvadaki seçime (Signature Spells: her büyüye ayrı kullanım).
+        const slot = resourceDef(id)?.pickSlot;
+        const picks = Object.entries(sheet.featureChoices ?? {}).filter(([k]) => typeof feat === 'string' && (slot ? k === `${feat}/${slot}` : k.startsWith(`${feat}/`))).map(([, v]) => v);
         const pickedLevels = new Set(picks.map((n) => spells.find((x) => x.name === n)?.level));
         for (const n of [...picks.filter((x) => known.includes(x)), ...known.filter((x) => !pickedLevels.has(spells.find((y) => y.name === x)?.level))]) {
           const sp = spells.find((x) => x.name === n);
-          if (sp && ((sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
+          if (sp && (!list.castingTime || sp.castingTime === list.castingTime) && ((sp.level >= (list.minLevel ?? 1) && sp.level <= list.maxLevel && sp.castingTime !== 'reaction'
             && (list.names ? list.names.includes(sp.name) : sp.classes.some((c) => list.classes.includes(c)))) || list.extraNames?.includes(sp.name))) {
             // Kuyruk 18 H3: `perLevel` (Spell Mastery 1, Signature Spells 2): seviye başına ilk N bilinen büyü.
             if (list.perLevel !== undefined && (taken[sp.level] ?? 0) >= list.perLevel) continue;
@@ -369,6 +378,7 @@ function combatantFromSheetBase(
         .map(([n, ab]) => [n, { dc: 8 + d.proficiency + d.modifiers[ab], attack: d.proficiency + d.modifiers[ab] }]));
       return Object.keys(stats).length ? { spellStats: stats } : {};
     })(),
+    ...(ritualOnly.length ? { ritualOnly } : {}),
     casterTag: `${race.name} ${cls.name}`.toLowerCase(),
     attacks: [],
     multiattack: false,
@@ -857,6 +867,30 @@ export function startBattle(
   // Mekanik matris (sürüm 83+): durum bilmeyen save yolları için sürüm işareti baştan (sonra `syncAuras` korur; replay aynı).
   const final = matrisOn(built) ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, srd83: true as const }])) } : built;
   return { state: final, events: [{ type: 'battle_started', state: final }] };
+}
+
+/**
+ * Görev B93: `spellPicks` içinde `fromBook: true` olan seçimler (Spell Mastery, Signature Spells): büyü kitabındaki (eski
+ * kayıtta hazırlananlar) seçilen büyü her zaman hazır. Seçim yoksa ya da kitapta değilse eklenmez (kaynak hazırlanandan seçer).
+ */
+/** Görev B93: SRD kaydında Ritual etiketi olan büyü (veride `srd: "spells:<kimlik>"`). */
+function srdRitual(name: string): boolean {
+  const id = spells.find((x) => x.name === name)?.srd?.replace(/^spells:/, '');
+  return !!id && !!(srdSpells.spells as Array<{ id: string; ritual?: boolean }>).find((x) => x.id === id)?.ritual;
+}
+
+export function bookPicks(sheet: CharacterSheet): string[] {
+  const out: string[] = [];
+  const book = new Set([...(sheet.spellbook ?? []), ...(sheet.spellNames ?? [])]);
+  for (const f of gainedFeatures(sheet.classId, sheet.level, sheet.subclassId)) {
+    for (const p of f.mechanic?.spellPicks ?? []) {
+      if (!p.fromBook || sheet.level < (p.minClassLevel ?? 1)) continue;
+      const chosen = sheet.featureChoices?.[`${f.key}/${p.slot}`];
+      const sp = chosen ? spells.find((x) => x.name === chosen) : undefined;
+      if (sp && book.has(sp.name) && sp.level === p.level && sp.classes.includes(p.cls ?? 'Wiz') && (!p.castingTime || sp.castingTime === p.castingTime) && !out.includes(sp.name)) out.push(sp.name);
+    }
+  }
+  return out;
 }
 
 /** Kuyruk 19 (görev 3): `spellPicks` içinde `all: true` olan seçimler (Mystic Arcanum): seviye eşiğine ulaşılmışsa seçilen ya da ilk uygun büyü. */

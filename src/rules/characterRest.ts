@@ -113,15 +113,16 @@ function restState(sheet: CharacterSheet, s: CharacterStatus): RestState {
 export interface RestResult { status: CharacterStatus; rolls: number[]; healed: number }
 
 /** Kısa dinlenme: `dice` kadar HP zarı (kalan kadar) harcanır; kısa dinlenmede yenilenen kaynaklar dolar. */
-export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined, dice: number, rng: Rng): RestResult {
+export function shortRestStatus(sheet: CharacterSheet, status: CharacterStatus | undefined, dice: number, rng: Rng,
+  /** Görev B93: slot kurtarma seçimi (kaynak → slot seviyeleri; null: kullanma; yoksa otomatik, en yüksekten). */ recover?: Record<string, number[] | null>): RestResult {
   const s = currentStatus(sheet, status);
   if (s.dead) return { status: s, rolls: [], healed: 0 };
   const r0 = shortRest(restState(sheet, s), dice, rng);
   // Görev WIZARD: Arcane Recovery (kaynak `arcaneRecovery`, uzun dinlenmede bir kez): toplamı seviyenin yarısını (yukarı)
-  // aşmayan, 6. seviyenin altındaki slotlar en yüksekten başlayarak.
-  const recovery = arcaneRecovery(sheet, s.resources, r0.state.spellSlots);
+  // aşmayan, 6. seviyenin altındaki slotlar en yüksekten başlayarak. Görev B93: oyuncu seçer ya da ertelerse kullanılmaz.
+  const recovery = arcaneRecovery(sheet, s.resources, r0.state.spellSlots, 'arcaneRecovery', recover?.arcaneRecovery);
   // Görev DRUID: Natural Recovery (Circle of the Land) aynı kural, kendi kaynağıyla.
-  const natural = arcaneRecovery(sheet, s.resources, recovery.slots, 'naturalRecovery');
+  const natural = arcaneRecovery(sheet, s.resources, recovery.slots, 'naturalRecovery', recover?.naturalRecovery);
   const r = { ...r0, state: { ...r0.state, spellSlots: natural.slots } };
   const max = fullStatus(sheet).resourceMax ?? fullStatus(sheet).resources;
   return {
@@ -173,11 +174,21 @@ export function sorcerousRestoration(sheet: CharacterSheet, resources: Record<st
 }
 
 /** Görev WIZARD: Arcane Recovery'nin geri verdiği slotlar (kaynak yoksa ya da eksik slot yoksa aynı). */
-export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, number>, slots: number[], resource = 'arcaneRecovery'): { slots: number[]; used: boolean } {
-  if ((resources[resource] ?? 0) <= 0) return { slots, used: false };
+export function arcaneRecovery(sheet: CharacterSheet, resources: Record<string, number>, slots: number[], resource = 'arcaneRecovery',
+  pick?: number[] | null): { slots: number[]; used: boolean } {
+  if ((resources[resource] ?? 0) <= 0 || pick === null) return { slots, used: false };
   const max = deriveStats(sheet).spellSlots;
   let budget = Math.ceil(sheet.level / 2);
   const out = [...slots];
+  // Görev B93 (SRD 5.2.1 s. 78 "you can choose expended spell slots to recover"): seçilen seviyeler (bütçe, 6+ yok, eksik kadar).
+  if (pick) {
+    for (const lv of pick) {
+      if (lv < 1 || lv > 5 || lv > budget || (out[lv - 1] ?? 0) >= (max[lv - 1] ?? 0)) continue;
+      out[lv - 1] = (out[lv - 1] ?? 0) + 1; budget -= lv;
+    }
+    const used = out.some((n, i) => n !== slots[i]);
+    return { slots: used ? out : slots, used };
+  }
   for (let lv = 5; lv >= 1; lv--) {
     while (budget >= lv && (out[lv - 1] ?? 0) < (max[lv - 1] ?? 0)) { out[lv - 1] = (out[lv - 1] ?? 0) + 1; budget -= lv; }
   }
@@ -244,4 +255,30 @@ function waitedLongRest(resources: Record<string, number>, waits: Record<string,
     if (n - 1 > 0) { left[id] = n - 1; out[id] = 0; }
   }
   return { resources: out, ...(Object.keys(left).length ? { waits: left } : {}) };
+}
+
+/**
+ * Görev B93: Arcane Recovery / Natural Recovery seçenekleri: eksik slotlardan (6. seviye altı) bütçeye sığan, daha fazla slot
+ * eklenemeyen birleşimler (büyükten küçüğe; en çok 24). Kaynak yoksa ya da eksik slot yoksa boş.
+ */
+export function recoveryOptions(sheet: CharacterSheet, status: CharacterStatus | undefined, resource = 'arcaneRecovery'): number[][] {
+  const s = currentStatus(sheet, status);
+  if ((s.resources[resource] ?? 0) <= 0) return [];
+  const max = deriveStats(sheet).spellSlots;
+  const missing = [1, 2, 3, 4, 5].map((lv) => Math.max(0, (max[lv - 1] ?? 0) - (s.slots[lv - 1] ?? 0)));
+  const out: number[][] = [];
+  const walk = (lv: number, left: number, have: number[], miss: number[]) => {
+    if (out.length >= 24) return;
+    if (lv < 1) {
+      const more = [1, 2, 3, 4, 5].some((l) => l <= left && miss[l - 1]! > 0);
+      if (have.length && !more) out.push(have);
+      return;
+    }
+    for (let n = Math.min(miss[lv - 1]!, Math.floor(left / lv)); n >= 0; n--) {
+      const m2 = [...miss]; m2[lv - 1] = m2[lv - 1]! - n;
+      walk(lv - 1, left - n * lv, [...have, ...Array(n).fill(lv)], m2);
+    }
+  };
+  walk(5, Math.ceil(sheet.level / 2), [], missing);
+  return out;
 }

@@ -178,6 +178,7 @@ export function FeaturesPanel(props: {
   metamagic: string[]; onMetamagic: (ids: string[]) => void;
   /** Görev WARLOCK: Eldritch Invocations (tekrarlanabilende `kimlik:Cantrip`) ve pact silahı. */
   invocations: string[]; onInvocations: (ids: string[]) => void; known: string[];
+  /** Görev B93: büyü kitabı (Spell Mastery / Signature Spells seçimi kitaptan). */ book?: string[];
   weapons: string[]; pactWeapon?: string; onPact: (w: string) => void;
   /** Görev DRUID: bilinen Wild Shape biçimleri. */
   forms: string[]; onForms: (ids: string[]) => void;
@@ -222,7 +223,9 @@ export function FeaturesPanel(props: {
         })()}
         {/* Kuyruk 19: Spell Mastery / Signature Spells (bilinen Wizard büyüleri), Mystic Arcanum (bütün Warlock listesi, seviye eşiğiyle). */}
         {f.mechanic?.spellPicks?.filter((p) => props.level >= (p.minClassLevel ?? 1)).map((p) => {
-          const list = (p.all ? spells.map((x) => x.name) : props.known).filter((nm) => { const sp = spells.find((x) => x.name === nm); return sp?.level === p.level && sp.classes.includes(p.cls ?? 'Wiz'); });
+          // Görev B93: `fromBook`: büyü kitabından (her zaman hazır), `castingTime` (Spell Mastery: Action).
+          const pool = p.all ? spells.map((x) => x.name) : p.fromBook ? [...new Set([...(props.book ?? []), ...props.known])] : props.known;
+          const list = pool.filter((nm) => { const sp = spells.find((x) => x.name === nm); return sp?.level === p.level && sp.classes.includes(p.cls ?? 'Wiz') && (!p.castingTime || sp.castingTime === p.castingTime); });
           const key = `${f.key}/${p.slot}`;
           return <select key={key} aria-label={`${f.name} ${p.slot}`} value={props.choices[key] ?? ''}
             onChange={(e: { target: { value: string } }) => props.onChoose(key, e.target.value)}>
