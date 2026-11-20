@@ -26,12 +26,13 @@ describe('büyü betimlemesi (etki satırı)', () => {
     const s = setup('Düz', { C: { effects: [{ id: 'ozel:yok', name: 'Özel', sourceId: 'A', until: 5 }] } });
     expect('desc' in effectRows(s, s.combatants.C as Combatant)[0]!).toBe(false);
   });
-  it('EN modunda betimleme gizli (en metni yok, tr gösterilmez); en eklenirse görünür', () => {
+  // Görev EN-ACIKLAMA: 339 betimlemenin `en` alanı var; EN modunda o gösterilir. `en` yoksa gizli kalır (tr gösterilmez).
+  it('EN modunda betimlemenin en metni; en yoksa gizli (tr gösterilmez)', () => {
     setLang('en'); // EN tablosu test kurulumunda yüklü (src/test-setup.ts)
     expect(getLang()).toBe('en');
-    expect('desc' in rowOf(bless())).toBe(false);
     const saved = spellDescriptions.bless;
-    spellDescriptions.bless = { ...saved!, en: 'A divine light falls.' };
-    try { expect(rowOf(bless()).desc).toBe('A divine light falls.'); } finally { spellDescriptions.bless = saved!; }
+    expect(rowOf(bless()).desc).toBe(saved!.en);
+    spellDescriptions.bless = { tr: saved!.tr };
+    try { expect('desc' in rowOf(bless())).toBe(false); } finally { spellDescriptions.bless = saved!; }
   });
 });

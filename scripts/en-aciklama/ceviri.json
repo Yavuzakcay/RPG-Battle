@@ -1,0 +1,42 @@
+{
+ "_aciklama": "Görev EN-ACIKLAMA: SRD'de tek karşılığı olmayan açıklamaların elle İngilizce çevirisi (`ceviri`, tür → kimlik → metin; TR kaynağı data/aciklamalar-tr.json, sayı/zar/DC/süre birebir) ve oyunun SRD'den farklı çalıştığı kayıtların İngilizce notu (`farklar`, anahtar `<tür>/<kimlik>`; metnin sonuna \"Differs in game: …\" olarak eklenir). scripts/en-aciklama-uret.mjs okur; betik bu dosyayı hiç yazmaz.",
+ "ceviri": {
+  "esya": {
+   "armor-1": "You have a +1 bonus to Armor Class while wearing this armor. It is magic armor.",
+   "armor-2": "You have a +2 bonus to Armor Class while wearing this armor. It is magic armor.",
+   "armor-3": "You have a +3 bonus to Armor Class while wearing this armor. It is magic armor.",
+   "belt-of-cloud-giant-strength": "While wearing this belt, your Strength score is 27. It has no effect on you if your Strength is already 27 or higher. Requires attunement.",
+   "belt-of-fire-giant-strength": "While wearing this belt, your Strength score is 25. It has no effect on you if your Strength is already 25 or higher. Requires attunement.",
+   "belt-of-frost-giant-strength": "While wearing this belt, your Strength score is 23. It has no effect on you if your Strength is already 23 or higher. Requires attunement.",
+   "belt-of-hill-giant-strength": "While wearing this belt, your Strength score is 21. It has no effect on you if your Strength is already 21 or higher. Requires attunement.",
+   "belt-of-stone-giant-strength": "While wearing this belt, your Strength score is 23. It has no effect on you if your Strength is already 23 or higher. Requires attunement.",
+   "belt-of-storm-giant-strength": "While wearing this belt, your Strength score is 29. It has no effect on you if your Strength is already 29 or higher. Requires attunement.",
+   "poisoners-kit": "A kit of tools for brewing poisons and recognizing poisonous substances. Adventurers who want to make poison carry one.",
+   "potion-of-healing": "When you drink this potion, you regain 2d4 + 2 Hit Points. In combat it is drunk as a Bonus Action; you can drink it yourself or give it to an adjacent ally.",
+   "shield-1": "A magic Shield: while holding it, you have a +1 bonus to Armor Class in addition to the Shield's normal bonus.",
+   "shield-2": "A magic Shield: while holding it, you have a +2 bonus to Armor Class in addition to the Shield's normal bonus.",
+   "shield-3": "A magic Shield: while holding it, you have a +3 bonus to Armor Class in addition to the Shield's normal bonus."
+  },
+  "altsinif": {
+   "bard/imza_sair:pens-power": "At level 3, you gain proficiency in two more skills.",
+   "ranger/imza_ciftci:spore-hardened": "From level 7, you are unaffected by the Poisoned condition and by Poison damage; fungal spores have no effect on you."
+  },
+  "buyuSecenek": {
+   "control-water/whirlpool": "A whirlpool forms in the target creature's hex (house rule: no water needed). It makes a Strength saving throw when it enters and at the start of its turn; on a failure it takes damage and is grappled (escape with Athletics), on a success it takes half damage.",
+   "control-water/flood": "The level of standing water in the area rises by up to 20 feet; on a large body of water a 20-foot wave sweeps across the area and carries off Huge or smaller vehicles (25% chance to capsize). No effect in combat; the Game Master narrates it.",
+   "control-water/part": "The water in the area parts, opening a trench through the area with walls of water on both sides; when the effect ends, the trench refills within a round. No effect in combat; the Game Master narrates it.",
+   "control-water/redirect": "Flowing water in the area moves in a direction you choose (even over obstacles or walls); once it leaves the area, it flows according to the terrain. It lasts until you change the direction or the spell ends. No effect in combat; the Game Master narrates it."
+  }
+ },
+ "farklar": {
+  "buyu/ice-storm": "with the Game Master's SRD completion switch for spells turned off, or in battles saved before rule version 16, the spell rolls a single 7d6 Cold damage instead of 2d10 Bludgeoning plus 4d6 Cold damage.",
+  "buyu/flame-strike": "with the Game Master's SRD completion switch for spells turned off, or in battles saved before rule version 16, the spell rolls a single 10d6 Radiant damage instead of 5d6 Fire plus 5d6 Radiant damage.",
+  "buyu/meteor-swarm": "battles saved before rule version 37 use one Sphere instead of four.",
+  "buyu/bestow-curse": "on a failed save the cursed target loses its action for the turn instead of taking the Dodge action, and a level 7+ spell slot lasts 8 hours like a level 5 slot (a level 9 slot is not permanent).",
+  "esya/ammunition-of-slaying": "the extra damage is Piercing, not Force.",
+  "esya/sword-of-sharpness": "a critical hit deals an extra 4d6 Slashing damage instead of 14 Slashing damage and 1 Exhaustion level.",
+  "esya/sword-of-wounding": "the extra damage is 2d4 Necrotic instead of 2d6.",
+  "esya/vicious-weapon": "the extra damage is 7, and only on a critical hit, instead of 2d6 on every hit.",
+  "esya/alchemists-fire": "a burning target takes 1d4 Fire damage each turn and can put the fire out with a DC 10 Dexterity check."
+ }
+}

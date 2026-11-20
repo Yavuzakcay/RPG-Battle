@@ -31,6 +31,8 @@
 .dex-tags .dex-tag { margin-left: 0; }
 .dex-summary { font-weight: 600; }
 .dex-desc, .dex-summary, .dex-extra { line-height: 1.5; }
+/* Görev EN-ACIKLAMA: SRD İngilizce metni paragraflı ("\n"); paragraf sonları korunur. */
+.dex-card p { white-space: pre-line; }
 .dex-extra { font-style: italic; color: var(--mute); }
 .dex-tronly { color: var(--mute); font-size: 13px; font-style: italic; }
 .dex-facts { display: grid; grid-template-columns: 1fr; gap: 4px 12px; margin: 8px 0; }
