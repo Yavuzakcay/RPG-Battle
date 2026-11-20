@@ -114,7 +114,7 @@
     "contagion": {"kaynak":"efekt","ref":"efekt/efekt-alan-zehir.webp","durum":"var","ad":"Contagion","not":"alan-zehir","efekt":"alan-zehir"},
     "contingency": {"kaynak":"yedek","ref":"yedek:okul-abjuration","durum":"yedek","ad":"Contingency","not":"döküm görsel üretmiyor"},
     "continual-flame": {"kaynak":"yedek","ref":"yedek:okul-evocation","durum":"yedek","ad":"Continual Flame","not":"döküm görsel üretmiyor"},
-    "control-water": {"kaynak":"efekt","ref":"efekt/efekt-zemin-girdap.webp","durum":"var","ad":"Control Water","not":"zemin:zemin-girdap","efekt":"zemin-girdap"},
+    "control-water": {"kaynak":"efekt","ref":"efekt/efekt-zemin-girdap-sarmal.webp","durum":"var","ad":"Control Water","not":"zemin:zemin-girdap-sarmal","efekt":"zemin-girdap-sarmal"},
     "control-weather": {"kaynak":"yedek","ref":"yedek:okul-transmutation","durum":"yedek","ad":"Control Weather","not":"döküm görsel üretmiyor"},
     "counterspell": {"kaynak":"efekt","ref":"efekt/efekt-iptal-muhur.webp","durum":"var","ad":"Counterspell","not":"iptal-muhur","efekt":"iptal-muhur"},
     "create-food-and-water": {"kaynak":"yedek","ref":"yedek:okul-conjuration","durum":"yedek","ad":"Create Food and Water","not":"döküm görsel üretmiyor"},

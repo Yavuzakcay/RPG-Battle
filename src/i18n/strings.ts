@@ -561,6 +561,9 @@ const tr = {
     str: 'Güç (STR)', dex: 'Çeviklik (DEX)', con: 'Dayanıklılık (CON)', int: 'Zekâ (INT)', wis: 'Bilgelik (WIS)', cha: 'Karizma (CHA)',
   } as Record<string, string>,
   alarm: {
+    /** Görev D: harita gruplarının okunur adı (kimlik `groups[].id`; tabloda yoksa kimlik sözcüklere ayrılır). */
+    groupNames: { devriye: 'Devriye', iskeleNobeti: 'İskele nöbeti', kogus: 'Koğuş', kule: 'Kule', mudur: 'Müdür', nobet: 'Nöbet' } as Record<string, string>,
+    groupFallback: 'grup',
     state: { asleep: 'uyuyor', calm: 'habersiz', alarmed: 'alarmda' },
     formed: (parts: string) => `Gruplar: ${parts}.`,
     alarmed: (group: string, reason: string) => `Alarm! ${group} grubu uyandı (${reason}); inisiyatif dezavantajlı.`,
