@@ -1,0 +1,18 @@
+{
+  "note": "Görev SWARM95 (yalnız görünüm; mekaniğe, kural sürümüne, olay günlüğüne girmez): sürü jetonunun çevresinde dönen küçük parçacıklar (src/ui/SwarmMotes.tsx, tembel; plan src/ui/swarmView.ts). `turler`: canavar (ya da Wild Shape/Polymorph biçimi) kimliği → parçacık türü; listede olmayan ama SRD Swarm etkili savaşçı `varsayilan`. `sayi`: halka başına parçacık; `halka`: jeton yarıçapına oranla iç/dış halka; `turSn`: iç/dış halkanın bir tur süresi (dış ters yöne). `paylasimKaydir`: başka yaratıkla aynı altıgendeki sürü jetonunun yana kayması ve küçülmesi (jeton yarıçapına oranla). Efekt ayarı kapalıyken parçacık yok; hareketi azaltta tek sabit kare; ekranda en çok 8 animasyon (statusFx MAX_ANIMATED, durum döngüleriyle paylaşılır); sekme gizliyken durur.",
+  "sayi": 7,
+  "halka": [0.82, 1.14],
+  "turSn": [6, 4.6],
+  "paylasimKaydir": { "x": 0.46, "y": -0.28, "olcek": 0.72 },
+  "varsayilan": "bocek",
+  "turler": {
+    "swarm-of-bats": "kanat",
+    "swarm-of-ravens": "kanat",
+    "swarm-of-insects": "bocek",
+    "swarm-of-rats": "kemirgen",
+    "swarm-of-venomous-snakes": "kemirgen",
+    "swarm-of-crawling-claws": "kemirgen",
+    "swarm-of-piranhas": "balik"
+  },
+  "renk": { "kanat": "#2a2230", "bocek": "#3b3322", "kemirgen": "#4b3c31", "balik": "#3a5a6c" }
+}
