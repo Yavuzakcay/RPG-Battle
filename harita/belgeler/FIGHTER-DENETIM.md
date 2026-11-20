@@ -182,6 +182,12 @@ Probe'larla denenip **doğru** bulunan davranışlar (regresyon için not): Seco
 
 Not: `stil` anahtarı Fighting Style yuvalarını birlikte sayar; Champion'ın Additional Fighting Style yuvası da (bizim sürüm) seviye başına bir değişime girer (yaklaşık).
 
-**B) Sürümlü (bekliyor).** Kapı: `birlesik`'te kural sürümü 95 ve 96 yok (güncel 94); Tactical Master seçimi (arayüz/komut), Heroic Warrior'ın ilk turu, Indomitable'ın ölüm save'i ve boşa harcanmaması, Second Wind'in tam canda menüde açık olması yapılmadı.
+**B) Sürümlü (yapıldı, kural sürümü 97 `SINIF97_VERSION`; 96 ve altı eski davranış).**
+- Tactical Master (A12, E4; SRD 5.2.1 s. 48): saldırı balonunda Push/Sap/Slow seçici (`MapBattle.tsx` `tacticalPick` → komutun `mastery` alanı; motor zaten kabul ediyordu, sürümsüz). Yapay zekâ kullanmaz.
+- Heroic Warrior (A28; bizim Champion: tur başında): inisiyatifte ilk sıradaki Champion 1. turunda da Heroic Inspiration alır (`combat_started`).
+- Indomitable (A10, A11; s. 48 "If you fail a saving throw"): ölüm save'inde de (başarısız ölüm save'i + Fighter seviyesiyle yeniden; `death_save.bonusDice` kaynağı harcar); 20 + seviye bile yetmiyorsa seçilmez, kullanım harcanmaz (`ExtraDie.skipHopeless`).
+- Second Wind tam canda da menüde açık (Tactical Shift'li Fighter; E3, s. 48), sürümsüz arayüz.
+- Steady Aim'den sonra Tactical Shift kayması 0 (Rogue ile ortak `shiftGrant`; `economy.speedZero`).
+- Test: `src/battle/b95fighter.test.ts`.
 
 **C) Ertelendi, karar gerekli.** Yok (Fighter'a özgü C maddesi verilmedi).

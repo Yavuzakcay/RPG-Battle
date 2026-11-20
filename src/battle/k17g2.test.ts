@@ -34,7 +34,8 @@ describe('K17 G2: Monk', () => {
     const s = field([m, b], { M: o(2, 2), B: o(8, 2) });
     const r = execute(s, { type: 'end_turn', actorId: 'M' } as Command, P1, () => 0.5);
     if (!r.ok) throw new Error(r.error);
-    expect((r.state.combatants.M as Combatant).conditions).toEqual(['Prone']);
+    // Görev B95-B (97+, SRD 5.2.1 s. 52 "remove one"): güncel sürümde tur sonunda yalnız biri kalkar (96'da hepsi: b95monk.test.ts).
+    expect((r.state.combatants.M as Combatant).conditions).toEqual(['Poisoned', 'Prone']);
     const old = execute(field([m, b], { M: o(2, 2), B: o(8, 2) }, 12), { type: 'end_turn', actorId: 'M' } as Command, P1, () => 0.5);
     if (!old.ok) throw new Error(old.error);
     expect((old.state.combatants.M as Combatant).conditions).toEqual(expect.arrayContaining(['Frightened', 'Poisoned']));

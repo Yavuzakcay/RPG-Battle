@@ -1283,7 +1283,7 @@ export const en: Strings = {
       floor: 'Take the stairs', steady: 'Steady Aim', horde: 'Horde Breaker', cunning: 'Cunning Strike',
       cunningName: { trip: 'Trip', withdraw: 'Withdraw', poison: 'Poison', daze: 'Daze', 'knock-out': 'Knock Out', obscure: 'Obscure' } as Record<string, string>,
       cunningHint: (max: number) => `Paid from Sneak Attack dice if it applies; at most ${max} options.`,
-      choicePick: 'Choice', pushPick: 'Push mastery', pushOpt: { auto: 'Push on last attack', push: 'Push on every hit', skip: 'Do not push' } as Record<string, string>,
+      choicePick: 'Choice', tacticalPick: 'Tactical Master', tacticalOpt: { own: 'Weapon\'s mastery', push: 'Push', sap: 'Sap', slow: 'Slow' } as Record<string, string>, pushPick: 'Push mastery', pushOpt: { auto: 'Push on last attack', push: 'Push on every hit', skip: 'Do not push' } as Record<string, string>,
       bonusStrike: 'Punch', flurryStrike: (n: number) => `Flurry of Blows (${n})`, stunning: 'Stunning Strike', eldritchSmite: 'Eldritch Smite',
       shapeOn: (name: string, _cr: string) => `Animal form: ${name}`, shapeOff: (_name: string) => 'Return to normal',
       mount: 'Mount', dismount: 'Dismount', natureMagician: (n: number, l: number) => `Refresh slot: level ${l} (${n} uses)`, resurgeShape: 'Slot → animal form use', resurgeSlot: 'Animal form use → slot',

@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { sinif97On } from './sinif97Surum';
 import { b94On } from './b94Surum';
 import { soyFeatureProblem } from './soyEtki';
 import { adjacent3D, k73bOn } from './adjacency';
@@ -302,11 +303,13 @@ const curesOf = (actor: Combatant, base: string[]): string[] =>
   actor.traits?.includes('restoring-touch') ? [...new Set([...base, 'Blinded', 'Charmed', 'Deafened', 'Frightened', 'Paralyzed', 'Stunned'])] : base;
 
 /** Hedefin AC'si (koruma etkileri dahil). */
-export function effectiveAc(state: BattleState, target: Combatant): number {
+export function effectiveAc(state: BattleState, target: Combatant, attacker?: Combatant): number {
   // Shield (Görev R1): sonraki turunun başına dek işaret.
   const shield = Math.max(0, ...(target.marks ?? []).filter((m) => m.kind === 'shield').map((m) => m.ac ?? 0));
   // Görev S1: süren etkilerden AC tabanı (Barkskin, Mage Armor) ve eklenti (Haste, Slow).
-  const fx = target.effects ?? [];
+  // Görev B95-B (97+, SRD 5.2.1 s. 30 Sundering Blow "another creature"): tek kullanımlık eklenti, kaynağının kendi saldırısına işlemez.
+  const own97 = !!attacker && sinif97On(state);
+  const fx = (target.effects ?? []).filter((e) => !(own97 && e.consumeOnAttacked && e.sourceId === attacker!.id));
   const base = Math.max(target.ac, ...fx.map((e) => e.acMin ?? 0));
   return base + shield + fx.reduce((n, e) => n + (e.ac ?? 0), 0) + wardsOn(state, target).reduce((n, w) => n + (w.ward?.ac ?? 0), 0);
 }

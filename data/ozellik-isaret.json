@@ -1,0 +1,6 @@
+{
+  "_not": "Görev B95-B: sınıf/alt sınıf özelliği kimliğinden (SRD kimliği, anahtarın ':' sonrası) motorun tanıdığı ek işaret. Paket verisi (icerik/) değişmeden çalışır; işaretin etkisi kural sürümüyle kapılıdır. second-story-work → jumper-dex: Thief Second-Story Work'ün Jumper'ı (atlama mesafesi DEX skoruyla; 97+, src/battle/movement.ts jumpRangeFeet).",
+  "isaretler": {
+    "second-story-work": "jumper-dex"
+  }
+}
