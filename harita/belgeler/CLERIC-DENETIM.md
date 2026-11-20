@@ -149,3 +149,12 @@ Sıra etkiye göre. "Sürüm" sütunu: kural sürümü 79'dan sonra tek toplu s�
 | 12 | Test boşlukları (kalıcı teste çevrilecek probe'lar): Turn Undead bağışıklık/kaynak bitişi/OA ve Divine Strike, Mass Heal, Blessed Healer tam canlı hedef, DI hazırlanmamış, B7 sayım, C5 Serüven taşıma | — | — | 2 saat |
 
 Probe'larla denenip doğrulanan **doğru** davranışlar (regresyon için not): DI ile yapılan Cure Wounds'ta Disciple of Life yok; Preserve Life 0 HP'deki dosta işler; Sear Undead dirençte yarılanır; dost Undead Turn Undead'den etkilenmez; kısa dinlenme +1 Channel Divinity; Cleric listesi SRD ile birebir.
+
+## B93 düzeltmeleri (Görev B93, kural sürümü 93)
+
+"Sürümlü": savaş davranışı değişti, 92 ve altı kayıt/replay eski davranışta. "Sürümsüz": veri, arayüz, oluşturucu ya da Serüven.
+
+### A. Ortak
+
+- A17 Divine Strike yalnız kendi turunda: **düzeldi** (sürümlü 93; `cleric.ts` `divineStrikeHit`, Druid Primal Strike aynı kod; test `b93.test.ts` A3).
+- B7 / C5 seviye atlama ve dinlenmede seçim değişimi (Serüven): **düzeldi** (sürümsüz; `levelChoices.ts`, `data/secim-degisim.json`: cantrip seviye atlamada 1, hazır liste uzun dinlenmede hepsi; test `levelChoices.test.ts`).

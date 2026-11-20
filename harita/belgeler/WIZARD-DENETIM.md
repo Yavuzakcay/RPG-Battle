@@ -152,3 +152,12 @@ Etki = oyuncunun hissedeceği fark. "Kural sürümü" = hasar/sonuç değiştiğ
 | 11 | Kitap kopyalama ekonomisi (B10) ve dinlenme şartlı hazırlık değişimi (B11) için **karar** yaz: bilinçli kapsam dışı mı; DECISIONS'a tek satır | bilgi | hayır | 15 dk |
 
 Öneri sırası: 1–2 (kısa, sonucu değiştiren hatalar) → 3 (yüksek etki, karar gerekir) → 4 → 5–9. 1 ve 2 aynı kural sürümünde (80) birleştirilebilir.
+
+## B93 düzeltmeleri (Görev B93, kural sürümü 93)
+
+"Sürümlü": savaş davranışı değişti, 92 ve altı kayıt/replay eski davranışta. "Sürümsüz": veri, arayüz, oluşturucu ya da Serüven.
+
+### A. Ortak
+
+- A19 Empowered Evocation tek zara: **düzeldi** (sürümlü 93; `oneDieBonus.ts`; Magic Missile 3 dart +INT bir kez; test `b93.test.ts` A1).
+- C7 / C8 Serüven'de seviye atlama (kitap +2, hazır sayı, alt sınıf, ASI) ve uzun dinlenmede hazır liste: **düzeldi** (sürümsüz; `levelChoices.ts`: cantrip dinlenmede 1, hazır liste dinlenmede hepsi, Spell Mastery seçimi dinlenmede 1, kitap yalnız eklenir). Memorize Spell (kısa dinlenme) Serüven'de yok: **ertelendi** (Serüven'de kısa dinlenme seçim penceresi yok).

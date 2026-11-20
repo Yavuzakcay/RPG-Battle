@@ -151,7 +151,12 @@ function NameComps(props: { name: string }) {
 }
 
 export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedCharacter) => void; onCancel: () => void; step?: BuilderStep;
-  /** Görev SD3: yeni karakter: ad, beceri, geçmiş bonusu, donanım, büyü ve yetenek artışı önerileri hazır gelir. */ suggest?: boolean }) {
+  /** Görev SD3: yeni karakter: ad, beceri, geçmiş bonusu, donanım, büyü ve yetenek artışı önerileri hazır gelir. */ suggest?: boolean;
+  /**
+   * Görev B93 (A2): Serüven seviye atlama / uzun dinlenme seçimleri: yalnız sınıf güçleri ve alt sınıf, uzmanlık, ilerleme
+   * (ASI/feat) ve büyüler; sınıf, tür, skor, beceri ve donanım değişmez. Kaydet yalnız bu düzenlemenin yeni sorunlarına bakar
+   * (izin denetimi Serüven motorunda: `set_choices`).
+   */ choices?: boolean }) {
   const L = t();
   const T = L.builder;
   const W = T.wiz;
@@ -171,12 +176,17 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const final = withSkills(c);
   // Görev K5: taşıma kuralı (Ayarlar); SRD sınırında aşan karakter eksik.
   const carryRule = useMemo(() => storedCarryRule(), []);
-  const issues = characterIssues(final, { carryRule });
+  const allIssues = characterIssues(final, { carryRule });
+  // Görev B93: seçim kipinde açılıştaki sorunlar (sayfada tutulmayan sınıf becerileri gibi) sayılmaz.
+  const [baseIssues] = useState(() => (props.choices ? new Set(characterIssues(withSkills(boot.character), { carryRule: storedCarryRule() }).map((x) => x.text)) : null));
+  const issues = baseIssues ? allIssues.filter((x) => !baseIssues.has(x.text)) : allIssues;
   const problems = issues.map((x) => x.text);
   const derived = useMemo(() => {
     try { return deriveStats(final.sheet); } catch { return null; }
   }, [final.sheet]);
-  const steps = wizardSteps(s);
+  const steps = props.choices
+    ? wizardSteps(s).filter((x) => x === 'character' || x === 'progress' || x === 'spells' || x === 'summary' || (x === 'skills' && classKit(s.classId, s.level, s.subclassId).expertise > 0))
+    : wizardSteps(s);
   const [stepId, setStepId] = useState<BuilderStep>(props.step ?? 'character');
   const current = steps.includes(stepId) ? stepId : 'summary';
   const isLast = steps.indexOf(current) === steps.length - 1;
@@ -236,9 +246,9 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             <StepBoundary key={current} where={`sihirbaz:${current}`} context={{ step: current, classId: s.classId, raceId: s.raceId, lineageId: s.lineageId,
               subclassId: s.subclassId, level: s.level, originFeat: s.originFeat, backgroundId: s.backgroundId, backgroundBonuses: s.backgroundBonuses }}>
             <RecoProvider value={{ c, setC, suggest: !!props.suggest }}>
-            {current === 'character' && <CharacterStep c={c} setC={setC} set={set} suggest={props.suggest} />}
+            {current === 'character' && (props.choices ? <ClassStep c={c} setC={setC} set={set} lockClass /> : <CharacterStep c={c} setC={setC} set={set} suggest={props.suggest} />)}
             {current === 'scores' && <ScoresStep c={c} setC={setC} set={set} />}
-            {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} />}
+            {current === 'skills' && <SkillsStep c={c} setC={setC} set={set} expertiseOnly={props.choices} />}
             {current === 'progress' && <ProgressStep c={c} setC={setC} set={set} />}
             {current === 'equipment' && <EquipmentStep sheet={s} set={set} carryRule={carryRule} />}
             {current === 'spells' && <SpellsStep sheet={s} set={set} />}
@@ -249,7 +259,7 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
             {current === 'summary' && (
               <div className="wiz-summary-step">
                 <SummaryBody final={final} derived={derived} raceName={raceName} />
-                <div className="reco-bar"><button type="button" className="ghost" onClick={() => setC((x) => applyReco(x, 'all'))}>{t().reco.all}</button><button type="button" className="ghost" onClick={() => setC((x) => clearReco(x, 'all'))}>{t().reco.clearAll}</button></div>
+                {!props.choices && <div className="reco-bar"><button type="button" className="ghost" onClick={() => setC((x) => applyReco(x, 'all'))}>{t().reco.all}</button><button type="button" className="ghost" onClick={() => setC((x) => clearReco(x, 'all'))}>{t().reco.clearAll}</button></div>}
                 <h3>{W.missingTitle}</h3>
                 {issues.length > 0 ? <>{missingList}<p className="mute">{W.summaryHint}</p></> : <p className="ok">{T.ready}</p>}
                 {/* SD8 eki: zar seçimi son ekranda (Alignment ev kuralı açıkken Alignment adımında). */}
@@ -626,7 +636,7 @@ function LineageAbilities(props: { list: LineageAbility[] }) {
  * Sınıf (SD3): 6 öne çıkan sınıf kartı (kartta tek cümle) + "Diğer sınıflar"; zar/kurtarma gibi ayrıntılar ⓘ'de;
  * alt sınıf (veride yoksa "Yakında") ve "Sınıf güçlerin" paneli.
  */
-function ClassStep({ c, setC, set, suggest }: StepProps) {
+function ClassStep({ c, setC, set, suggest, lockClass }: StepProps & { /** Görev B93: Serüven seçim kipi (sınıf kartları yok). */ lockClass?: boolean }) {
   const reco = useRecoSets();
   const T = t().builder;
   const W = T.wiz;
@@ -652,7 +662,7 @@ function ClassStep({ c, setC, set, suggest }: StepProps) {
   );
   return (
     <>
-      <div className="card-grid class-grid">{classes.map(card)}</div>
+      {!lockClass && <div className="card-grid class-grid">{classes.map(card)}</div>}
       <p className="info-card">
         <b>{cls.name}</b>
         <InfoPop text={`${W.hitDie(cls.hitDie)} · ${W.saves(cls.saves.map((a) => a.toUpperCase()).join(', '))} · ${cls.casting ? W.castAbility(cls.casting.ability.toUpperCase()) : W.noCasting}${subLevel !== null ? ` · ${W.subclassAtLevel(subLevel)}` : ''}`} />
@@ -901,7 +911,7 @@ function AsiSlotCard(props: { sheet: CharacterSheet; slot: AdvancementSlot; adva
  * kalanlar kilitlenir ve nedeni söylenir. Kural aynı: sınıf becerisi sayısı sınıf tablosundan, geçmişin iki becerisi
  * kilitli, serbest hak 3 − 2, uzmanlık yalnız yetkin olunan becerilerde (Görev K20, G1).
  */
-function SkillsStep({ c, setC, set }: StepProps) {
+function SkillsStep({ c, setC, set, expertiseOnly }: StepProps & { /** Görev B93: Serüven seçim kipi (yalnız uzmanlık). */ expertiseOnly?: boolean }) {
   const W = t().builder.wiz;
   const reco = useRecoSets();
   const s = c.sheet;
@@ -930,6 +940,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
         {otherMax > 0 && <span>{bg ? W.countOther(other.length, otherMax) : W.countBackground(other.length, otherMax)}</span>}
         {kit.expertise > 0 && <span className={expertise.length === kit.expertise ? 'ok' : ''}>{W.countExpertise(expertise.length, kit.expertise)}</span>}
       </div>
+      {!expertiseOnly && <>
       <RecoBar part="skills" />
       <h3>{W.skillsChosen}</h3>
       <ul className="skill-list">
@@ -971,6 +982,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
           </div>
         </Fold>
       )}
+      </>}
       {kit.expertise > 0 && (
         <Fold title={W.skillsExpert} summary={W.countExpertise(expertise.length, kit.expertise)} open className="skills-expert">
           <p className="mute">{W.expertHelp}</p>
@@ -987,7 +999,7 @@ function SkillsStep({ c, setC, set }: StepProps) {
           </div>
         </Fold>
       )}
-      {bgSkills.length > 0 && bg && (
+      {!expertiseOnly && bgSkills.length > 0 && bg && (
         <>
           <h3>{W.skillsHave}</h3>
           <ul className="skill-list have">

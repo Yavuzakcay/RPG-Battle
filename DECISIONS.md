@@ -2,6 +2,15 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev B93: Cleric, Sorcerer, Wizard, Warlock denetim düzeltmeleri (2026-11-20; kural sürümü 93 `BUYUCU93_VERSION`)
+
+Tek kural sürümü 93 (`src/battle/buyucu93Surum.ts`); 92 ve altı kayıt/replay eski davranışta. Kaynak: `harita/belgeler/{CLERIC,SORCERER,WIZARD,WARLOCK}-DENETIM.md` (her satırda "B93" notu: sürümlü / sürümsüz). İlke (kullanıcı kararı): SRD'ye aykırı ve temeli bozmayan her şey SRD'ye; alt sınıflarda ölçüt bizim sürüm (AS2-FARKLAR), alt sınıf satırları SRD'ye çevrilmedi.
+
+- **A. Ortak**
+  - A1 (sürümlü): Empowered Evocation (+INT) ve Elemental Affinity (+CHA) "bir hasar zarına": tek yardımcı `src/battle/oneDieBonus.ts` (`oneDieBonus`, `usedOnce`); çok ışınlı/dartlı büyüde ilk hasar veren ışına/darta (ıskada yarı hasarlı büyüde o yarıya), iki parçalı büyüde (Flame Strike, Ice Storm) birinci parçaya. Tek zarlı büyüde sonuç aynı. Sorcerer `affinityBonus` buradan yeniden dışa verilir. Empowered Spell otomatik isabetli dartlarda da (Magic Missile; eskiden puan gidiyor, zar atılmıyordu) ve büyü başına en çok CHA zar (ışınlar arasında ortak; eskiden ışın başına CHA zar).
+  - A3 (sürümlü): Divine Strike ve Primal Strike yalnız kendi turunda (SRD "Once on each of your turns"); aynı kod, ikisine birden.
+  - A2 (sürümsüz; Serüven ve oluşturucu): Serüven seviye atlama ve uzun dinlenme seçimleri tek genel yardımcıyla (`src/rules/levelChoices.ts`; sınıf adı yok, kurallar `data/secim-degisim.json`): yeni seçim (sayı artışı) her zaman serbest; var olan seçimi çıkarmak/değiştirmek SRD metnindeki pencerede ve sayıda (seviye atlamada / uzun dinlenmeden sonra; 'hepsi' ya da sayı). Yazılmayan alan yalnız eklenir (Expertise, büyü kitabı, ASI geçmişi). Seçimin kendisi oluşturucu kurallarıyla (`characterIssues`; yeni sorun çıkmamalı; başka sınıfın seçimi reddedilir). Serüven komutu `set_choices`, olay `seruven_choices` (yalnız `CHOICE_FIELDS`; durumda `levelGained`, `choiceUse`), arayüz: parti şeridinde "Seçimler" → oluşturucunun seçim kipi (`Builder choices`: sınıf güçleri ve alt sınıf, uzmanlık, ilerleme, büyüler; sınıf/tür/skor/beceri değişmez). Şimdi bağlı: Cleric, Sorcerer, Wizard, Warlock; Bard, Druid, Ranger, Paladin sonraki görevde yalnız veri satırıyla bağlanır. ⚠ Seviye penceresi bir sonraki seviyeye dek açık kalır (SRD "whenever you gain a level": an'a bağlı değil, oyun kolaylığı). Wizard Memorize Spell (kısa dinlenme) Serüven'de yok (kısa dinlenme penceresi yok).
+
 ## Görev WS92: Wild Shape, biçim özellikleri ve Swallow SRD 5.2.1 uyumu (2026-11-20; kural sürümü 92 `WS92_VERSION`)
 
 Tek kural sürümü 92 (`src/battle/ws92Surum.ts`); 91 ve altı kayıt/replay eski davranışta. Kayıt sürümü değişmedi (yeni alanlar isteğe bağlı: `map_effect.swallowLog`, `swallow.inside/blocks/corpse/form`).

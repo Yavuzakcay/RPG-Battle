@@ -166,3 +166,13 @@ Sıra: etki / kural sürümü / tahmini iş. "Sürüm 80" = savaş motoru davran
 ## Geçici test notu
 
 Geçici testler `src/zzprobe.test.ts` içinde yazıldı ve silindi (depoda yok). Kapsam: SRD ↔ oyun büyü listesi karşılaştırması, 140 büyü × 10 seçenek uygunluk taraması, Quickened sıra senaryoları (4), Distant motor ↔ arayüz hedef listesi, Empowered zar isteği sayımı (5 büyü), Elemental Affinity çok ışın, Innate DC ve `classSpells`, yaratılan slotun savaş sonrası durumu, Apotheosis/Incarnate bileşimleri, Dragon Wings SP ödemesi, SP tavanında slot→SP, Twinned+Heightened. Tarama sayıları SRD metninden çıkarılmış sezgisel ölçütlere dayanır; tek tek büyü yargısı için SRD sayfasına bakılmalıdır.
+
+## B93 düzeltmeleri (Görev B93, kural sürümü 93)
+
+"Sürümlü": savaş davranışı değişti, 92 ve altı kayıt/replay eski davranışta. "Sürümsüz": veri, arayüz, oluşturucu ya da Serüven.
+
+### A. Ortak
+
+- D3 Elemental Affinity tek zara: **düzeldi** (sürümlü 93; `oneDieBonus.ts`; Scorching Ray +CHA bir kez).
+- M3 Empowered Spell Magic Missile'da: **düzeldi** (sürümlü 93; otomatik isabetli dart zarları da yeniden atılır, büyü başına en çok CHA zar).
+- S3 / S4 / M0 Serüven'de seviye atlama değişimi (cantrip, hazır büyü, Metamagic birer): **düzeldi** (sürümsüz; `levelChoices.ts`). Serüven dışı karakter ekranında serbest düzenleme bilinçli kaldı (K17).

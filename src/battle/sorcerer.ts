@@ -109,10 +109,17 @@ export function castWithMetamagic(state: BattleState, actor: Combatant, spell: S
   return { spell: s, actor: a, events };
 }
 
-/** Empowered Spell: hasar zarlarından ortalamanın altındaki en düşük CHA değiştiricisi kadarı (en az 1) yeniden atılır. */
-export function empowerRolls(actor: Combatant, rolls: number[], sides: number, rng: Rng): number[] {
+/** Empowered Spell'in yeniden atacağı zar sayısı (ortalamanın altındakiler, en çok `limit`). */
+export const empowerCount = (rolls: number[], sides: number, limit: number): number =>
+  Math.min(limit, rolls.filter((v) => v < (sides + 1) / 2).length);
+
+/**
+ * Empowered Spell: hasar zarlarından ortalamanın altındaki en düşük CHA değiştiricisi kadarı (en az 1) yeniden atılır.
+ * Görev B93 (sürüm 93+): çok ışınlı büyüde çağıran büyü başına kalan sayıyı `limit` ile verir.
+ */
+export function empowerRolls(actor: Combatant, rolls: number[], sides: number, rng: Rng, limit?: number): number[] {
   if (!actor.traits?.includes('mm-empowered')) return rolls;
-  const n = Math.max(1, actor.modifiers.cha);
+  const n = limit ?? Math.max(1, actor.modifiers.cha);
   const order = rolls.map((v, i) => ({ v, i })).filter((x) => x.v < (sides + 1) / 2).sort((a, b) => a.v - b.v).slice(0, n);
   const out = [...rolls];
   for (const { i } of order) out[i] = rollDie(sides, rollTag(rng, { kind: 'damage', by: actor.id }));
@@ -150,8 +157,7 @@ export function innateSorceryEvents(state: BattleState, actor: Combatant, key: s
   return [pay, { type: 'effect_added', targetId: actor.id, effect: { id: key, name, sourceId: actor.id, until: state.round + rounds - 1, icon: '✺' } }];
 }
 
-/** Elemental Affinity: büyünün hasar türü soyun türüyse CHA (bir kez). */
-export const affinityBonus = (actor: Combatant, type: string | undefined) =>
-  type && actor.traits?.includes(`affinity-${type}`) ? Math.max(0, actor.modifiers.cha) : 0;
+/** Elemental Affinity: büyünün hasar türü soyun türüyse CHA (tek zara; ortak yardımcı `oneDieBonus.ts`). */
+export { affinityBonus } from './oneDieBonus';
 
 export const spellByName = (name: string) => spells.find((s) => s.name === name);

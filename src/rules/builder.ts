@@ -533,6 +533,15 @@ export function withSkills(c0: SavedCharacter): SavedCharacter {
  * Görev G1: sihirbazdaki yeni karakter: boş karakter + varsayılan geçmiş (Fighter → Soldier). Geçmişsiz yalnızca eski
  * kayıtlar (ve testlerin `blankCharacter`'ı).
  */
+/**
+ * Görev B93 (A2): yalnız sayfası olan üyeden (Serüven partisi) oluşturucu kaydı: sınıf becerileri sayfanın becerilerinden
+ * geçmişinkiler düşülerek (kaynakları sayfada tutulmaz; seçim kipinde açılıştaki sorunlar sayılmaz).
+ */
+export function characterFromSheet(id: string, sheet: CharacterSheet): SavedCharacter {
+  const bg = backgroundSkills(sheet);
+  return { ...blankCharacter(id), sheet, classSkills: (sheet.skills ?? []).filter((k) => !bg.includes(k)), otherSkills: [] };
+}
+
 export function newCharacter(id: string): SavedCharacter {
   const c = blankCharacter(id);
   return { ...c, sheet: { ...c.sheet, backgroundId: 'soldier' } };

@@ -74,7 +74,9 @@ import srdSpells from '../../data/srd/spells.json';
 import { executeZoneCast, movableZoneOf, shiftZoneEvents, silencedAt, zoneHexes } from './zones';
 import { executeFireHex, freeHexAnyOn, freeHexSpell, hexCastable } from './ignite';
 import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
-import { affinityBonus, castWithMetamagic, empowerRolls, innateFor, POINTS } from './sorcerer';
+import { castWithMetamagic, empowerCount, empowerRolls, innateFor, POINTS } from './sorcerer';
+import { oneDieBonus, SKIP_ALL, usedOnce, type OnceSkip } from './oneDieBonus';
+import { buyucu93On } from './buyucu93Surum';
 import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
 import { resourceLeft } from './types';
 import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage, MapObject, SpellZone } from './types';
@@ -109,17 +111,16 @@ const schoolTwin = (actor: Combatant, spell: Spell): boolean => !!actor.pkTwinSc
 /** Görev WIZARD: Potent Cantrip (Evoker): save'li cantrip'te başarıda da yarı hasar. */
 const potentCantrip = (actor: Combatant, spell: Spell) => spell.level === 0 && !!actor.traits?.includes('potent-cantrip');
 
-function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0, school?: string, name?: string): string {
+function damageExpr(m: SpellMechanics, actor: Combatant, tier: number, upcast = 0, school?: string, name?: string, skip?: OnceSkip): string {
   const spec = parseDice(m.damage ?? '');
   const count = (m.scalesWithLevel ? spec.count * tier : spec.count) + upcastDiceCount(m, upcast);
   // A1: sabit yukarı slot eki (Heal: slot seviyesi başına +10).
   const upFlat = m.upcast?.applied && m.upcast.dice && upcast > 0 && parseDice(m.upcast.dice).count === 0 ? parseDice(m.upcast.dice).bonus * upcast : 0;
   // Görev CLERIC: Potent Spellcasting (cantrip hasarına WIS; iyileştirme ve zaten değiştiricili cantrip'ler hariç).
   const bonus = spec.bonus + upFlat + (m.addCastingMod ? actor.spellMod : 0) + (m.scalesWithLevel && !m.addCastingMod && m.kind !== 'heal' ? cantripBonus(actor) : 0)
-    // Görev WIZARD: Empowered Evocation (Evoker 10): Evocation büyüsünün hasarına INT (bir hasar zarına; burada toplama).
-    + (school === 'Evocation' && m.kind !== 'heal' && !!actor.traits?.includes('empowered-evocation') ? Math.max(0, actor.spellMod) : 0)
-    // Görev SORCERER: Elemental Affinity (Draconic): soyun hasar türündeki büyüye CHA.
-    + (m.kind !== 'heal' ? affinityBonus(actor, m.damageType) : 0)
+    // Görev WIZARD: Empowered Evocation (Evoker 10, +INT) ve Görev SORCERER: Elemental Affinity (Draconic, +CHA): bir hasar
+    // zarına. Görev B93 (sürüm 93+): çok zarlı/ışınlı büyüde çağıran `skip` ile yalnız bir zara bırakır (`oneDieBonus.ts`).
+    + oneDieBonus(actor, m, school, skip)
     // Görev P0: ek paket buyuDegisimi (hasar eklentisi).
     + (m.kind !== 'heal' && actor.paket ? paketSpellBonus(actor, m.damageType, school, name ? spells.find((s) => s.name === name)?.rangeFt : undefined, !!actor.paket.v42) : 0)
     // Görev WARLOCK: Agonizing Blast: seçilen cantrip'in hasar zarına (her ışına) büyü yeteneği.
@@ -248,7 +249,8 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const auraQuiet = m.lingering === 'aura' && !repeat && matrisOn(state);
   const hit = auraQuiet ? [] : reached;
   const splitParts = matrisOn(state) && m.split && m.split.length === 2 && globalRule(state, 'spellsK19')
-    ? m.split.map((p) => ({ damageType: p.type, dice: damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), (slot.slotLevel ?? spell.level) - spell.level, spell.school, spell.name) }))
+    ? m.split.map((p, i) => ({ damageType: p.type, dice: damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), (slot.slotLevel ?? spell.level) - spell.level, spell.school, spell.name,
+      i > 0 && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: m.split![0]!.type }, spell.school) : undefined) }))
     : null;
   events.push({
     type: 'spell_cast', actorId: actor.id, targetId: null, label: label ?? (repeat ? `${spell.name} (tekrar)` : spell.name), slotLevel: slot.slotLevel,
@@ -297,11 +299,13 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const upcast = (slot.slotLevel ?? spell.level) - spell.level;
   // Kuyruk 19: iki hasar türü (`split`; anahtar `spellsK19`): ana parça `damage`'ın yerine, ikinci parça ayrıca.
   const split = m.split && m.split.length === 2 && globalRule(state, 'spellsK19') ? m.split : null;
-  const partExpr = (p: { dice: string; type: string; upcast?: string }) => damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), upcast, spell.school, spell.name);
+  // Görev B93 (sürüm 93+): ikinci parçada, birinci parçaya eklenmiş tek-zar ekleri (Empowered Evocation, Elemental Affinity) atlanır.
+  const partExpr = (p: { dice: string; type: string; upcast?: string }, second = false) => damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), upcast, spell.school, spell.name,
+    second && split && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: split[0]!.type }, spell.school) : undefined);
   const damageType = split ? split[0]!.type : m.damageType;
   const damage = split ? spellDamageRoll(partExpr(split[0]!), actor, rng)
     : m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name), actor, rng) : { rolls: [] as number[], total: 0 };
-  const second = split ? { type: split[1]!.type, ...spellDamageRoll(partExpr(split[1]!), actor, rng) } : null;
+  const second = split ? { type: split[1]!.type, ...spellDamageRoll(partExpr(split[1]!, true), actor, rng) } : null;
   // Yayılım (Spirit Guardians): yapılınca içindekilere girer; yaratık turda bir kez save yapar.
   const aura = m.lingering === 'aura' ? { aura: { casterId: actor.id, turn: turnKey(state) } } : {};
   let current = applyEvents(state, events);
@@ -930,13 +934,25 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
   const forceAt = matrisOn(state) && m.lingering === 'weapon' ? (linger as { pos?: Offset }).pos : undefined;
   const near5 = (t: Combatant): boolean => (forceAt ? withinFiveFt(current, { ...actor, pos: forceAt, altitudeFt: t.altitudeFt } as Combatant, t, true)
     : withinFiveFt(current, actor, t, !rangedSpell));
+  // Görev B93 (sürüm 93+): Empowered Evocation / Elemental Affinity tek zara (ilk hasar veren ışına/darta); Empowered Spell
+  // büyü başına en çok CHA zar (ışınlar arasında ortak), otomatik isabetli dartlarda da (SRD 5.2.1 s. 66, 70, 82).
+  const v93 = buyucu93On(state);
+  let onceLeft = v93 ? oneDieBonus(actor, m, spell.school) : 0;
+  let empowerLeft = v93 && actor.traits?.includes('mm-empowered') ? Math.max(1, actor.modifiers.cha) : undefined;
+  const empower = (rolls: number[], sides: number): number[] => {
+    if (empowerLeft === undefined) return empowerRolls(actor, rolls, sides, rng);
+    const used = empowerCount(rolls, sides, empowerLeft);
+    const out = empowerRolls(actor, rolls, sides, rng, empowerLeft);
+    empowerLeft -= used;
+    return out;
+  };
   for (let r = 0; r < raysLeft; r++) {
     const t = current.combatants[curId];
     // Y2: 0 HP'de yenilenmeyi bekleyen yaratık (Troll) hedef olabilir: ateş/asit yenilenmeyi keser (Kuyruk 41b kuralı;
     // büyü saldırısı burada atılmadan bitiyordu, Mağara beraberlikleri).
     if (!t || (t.hp <= 0 && !t.regenPending)) break;
     struck.add(t.id);
-    const expr = damageExpr(m, actor, tier, upcast, spell.school, spell.name);
+    const expr = damageExpr(m, actor, tier, upcast, spell.school, spell.name, v93 ? SKIP_ALL : undefined);
     let ev: BattleEvent;
     if (m.kind === 'attack') {
       const sc = sightConditions(actor, t, current, !rangedSpell);
@@ -970,8 +986,10 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       // Görev SORCERER: Empowered Spell büyü saldırısının hasar zarlarında da.
       const sides = parseDice(expr).sides;
       const rolls0 = res.damage?.rolls ?? [];
-      const rolls1 = res.hit && actor.traits?.includes('mm-empowered') ? empowerRolls(actor, rolls0, sides, rng) : rolls0;
-      const raw = (res.damage?.total ?? 0) - rolls0.reduce((n, x) => n + x, 0) + rolls1.reduce((n, x) => n + x, 0);
+      const rolls1 = res.hit && actor.traits?.includes('mm-empowered') ? empower(rolls0, sides) : rolls0;
+      const once = res.hit && onceLeft > 0 ? onceLeft : 0;
+      if (once) onceLeft = 0;
+      const raw = (res.damage?.total ?? 0) - rolls0.reduce((n, x) => n + x, 0) + rolls1.reduce((n, x) => n + x, 0) + once;
       const adj = res.hit ? adjustDamage(raw, m.damageType, profileIn(state, t, true)) : { amount: 0, note: null };
       // Hunter's Mark: işaretli hedefe büyü saldırısı isabetinde de ek hasar.
       let bonus = res.hit ? hitExtras(current, actor, t, { mode, critical: res.critical }, rng) : { extras: [] as ExtraDamage[] };
@@ -995,8 +1013,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       // Görev B1: ıskada yarı hasar (Acid Arrow).
       const miss = !hit && m.halfOnMiss ? (() => {
         const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
-        const a = adjustDamage(Math.floor(d.total / 2), m.damageType, profileIn(state, t, true));
-        return { rolls: d.rolls, raw: Math.floor(d.total / 2), amount: a.amount, note: a.note };
+        const once = onceLeft; onceLeft = 0;
+        const a = adjustDamage(Math.floor((d.total + once) / 2), m.damageType, profileIn(state, t, true));
+        return { rolls: d.rolls, raw: Math.floor((d.total + once) / 2), amount: a.amount, note: a.note };
       })() : null;
       const total = hit ? hr?.damage ?? 0 : miss?.amount ?? 0;
       if (hr?.events.length) { events.push(...hr.events); current = applyEvents(current, hr.events); }
@@ -1013,7 +1032,11 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
         ...(res.extra ? { bonusDice: res.extra } : {}),
       };
     } else {
-      const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
+      const d0 = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
+      // Görev B93 (sürüm 93+): Empowered Spell dartın zarında da; tek-zar eki ilk darta.
+      const er = v93 && actor.traits?.includes('mm-empowered') ? empower(d0.rolls, parseDice(expr).sides) : d0.rolls;
+      const once = onceLeft; onceLeft = 0;
+      const d = { rolls: er, total: d0.total - d0.rolls.reduce((n, x) => n + x, 0) + er.reduce((n, x) => n + x, 0) + once };
       const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profileIn(state, t, true));
       const fx = damageEffects(t, adj.amount, m.damageType ?? '', false, rng);
       ev = {

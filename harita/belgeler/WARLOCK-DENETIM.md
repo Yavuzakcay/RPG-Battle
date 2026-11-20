@@ -158,3 +158,11 @@ En önemli bulgular:
 | 11 | Eski belge satırlarını güncelle (E7) | Düşük | — | Çok küçük |
 
 **Not.** #1 ve #2 için önce `src/battle/warlock.test.ts`'e başarısız olacak testler eklenmesi önerilir. Bu belge hiçbir kod, veri ya da testi değiştirmedi.
+
+## B93 düzeltmeleri (Görev B93, kural sürümü 93)
+
+"Sürümlü": savaş davranışı değişti, 92 ve altı kayıt/replay eski davranışta. "Sürümsüz": veri, arayüz, oluşturucu ya da Serüven.
+
+### A. Ortak
+
+- C1 Serüven seviye atlaması (Invocation, cantrip, hazır büyü, Mystic Arcanum birer değişim; yeni seçim serbest): **düzeldi** (sürümsüz; `levelChoices.ts`, Fiendish Resilience türü uzun dinlenmede değişir: C7 Serüven'de **düzeldi**).

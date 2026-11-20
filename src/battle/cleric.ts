@@ -1,4 +1,5 @@
 import { globalRule } from './ruleControl';
+import { buyucu93On } from './buyucu93Surum';
 import { possessorAt } from './possessionCore';
 import { ruleVersion } from './ruleVersion';
 import { healRoll } from './healMax';
@@ -236,6 +237,9 @@ export function divineStrikeHit(state: BattleState, actor: Combatant, target: Co
   // Görev DRUID: Primal Strike (Elemental Fury): aynı kalıp, Cold/Fire/Lightning/Thunder; silah ya da Beast biçimi saldırısı.
   const kind = has(actor, 'divine-strike') ? 'divine-strike' : has(actor, 'primal-strike') ? 'primal-strike' : null;
   if (!kind || option.spell || usedThisTurn(state, actor, kind)) return null;
+  // Görev B93 (sürüm 93+): SRD 5.2.1 "Once on each of your turns" (Divine Strike s. 38, Primal Strike s. 45): başkasının
+  // turundaki saldırıda (fırsat saldırısı, tepki) ek zar yok.
+  if (buyucu93On(state) && state.order[state.turnIndex] !== actor.id) return null;
   const divine = kind === 'divine-strike';
   const type = bestType(target, divine ? ['necrotic', 'radiant'] : ['cold', 'fire', 'lightning', 'thunder']);
   const twice = has(actor, divine ? 'improved-blessed-strikes' : 'improved-primal-strike');
