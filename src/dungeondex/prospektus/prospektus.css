@@ -18,3 +18,4 @@
   .pro-kv { flex-direction: column; gap: 0; }
   .pro-label { min-width: 0; }
 }
+.pro-badge-part { background: #7fd0cb; color: #10181e; border-color: #7fd0cb; }

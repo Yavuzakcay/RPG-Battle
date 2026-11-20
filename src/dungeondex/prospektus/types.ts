@@ -15,7 +15,7 @@ export interface ProRow {
   trOnly?: boolean;
 }
 
-export type ProTone = 'ok' | 'gm' | 'off' | 'none';
+export type ProTone = 'ok' | 'part' | 'gm' | 'off' | 'none';
 
 export interface ProSection {
   key: ProKey;
