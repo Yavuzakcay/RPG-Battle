@@ -5,6 +5,7 @@
 import nesneAgirlik from '../../data/nesne-agirlik.json';
 import { BOON_TURN_REFILL } from './boons';
 import { syncRiders } from './mounted';
+import { syncSwallowed } from './swallow92';
 import { binekOn } from './binekSurum';
 import { binekMb2On } from './binekMb2Surum';
 import { controlledNow } from './binekMb2';
@@ -375,7 +376,7 @@ export function applyEvent(state: BattleState, event: BattleEvent): BattleState 
 }
 
 function applyEventCore(state: BattleState, event: BattleEvent): BattleState {
-  return syncAuthority(syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)))), state));
+  return syncSwallowed(syncAuthority(syncRiders(syncDominatedReactions(syncAuras(syncAllegiance(trackPools(state, pruneZones(pruneEffects(pruneTimers(dropBrokenRage(dropBrokenConcentration(consumeSingles(breakOnAct(dropOnDamage(state, markDeaths(state, applyRaw(state, event)), event), event), event)))))), event)))), state)), state);
 }
 
 /**

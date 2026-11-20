@@ -7,6 +7,7 @@
  * (`swallowedBy`, monsterAbilities.ts) ve Corrosive Form cezası (`corroded`). Çağrı yeri `riderConditionEvents` (isabet,
  * tek hedefli save ve alan save'i yolları) ve hasar eklentisi için `withA2Extras`/`a2AreaDamage`. Saf.
  */
+import { ws92On } from './ws92Surum';
 import data from '../../data/canavar-ekleri-a2.json';
 import type { Ability } from '../rules/abilities';
 import { distance, type Offset } from '../rules/hex';
@@ -146,7 +147,9 @@ export function a2Events(state: BattleState, actor: Combatant, target: Combatant
     const s = a.swallow;
     if (target.grapple) out.push({ type: 'grapple_ended', targetId: target.id, reason: label });
     out.push({ type: 'effect_added', targetId: target.id, effect: { id: `swallow:${actor.id}:${target.id}`, name: `${attackName} (${actor.name})`, sourceId: actor.id, swallowedBy: actor.id,
-      grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: s.dice, type: s.type, escapeDamage: s.escapeDamage, escapeDc: s.escapeDc },
+      grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: s.dice, type: s.type, escapeDamage: s.escapeDamage, escapeDc: s.escapeDc,
+        // Görev WS92 (92+): yutulan midede (konum yutanınki, Total Cover).
+        ...(ws92On(state) ? { inside: true } : {}) },
       ...(s.escapeCheck ? { escapeCheck: { dc: s.escapeCheck } } : {}) } as ActiveEffect });
   }
   // Aşındırma: zırh AC −1 (AC 10'a dek) ya da silah saldırısı −1 (−5'e dek; Corrosive Form yolu).

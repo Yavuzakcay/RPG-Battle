@@ -35,6 +35,8 @@ import { timedCondition } from './durations';
 import { combatantFromMonster } from './create';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
 import { formMonsterId } from './shapeMonsterCore';
+import { ws92On } from './ws92Surum';
+import { insideEffect } from './swallow92';
 
 export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
   kind: LegendaryAction['kind'] | 'grant' | 'heal' | 'pull' | 'drop' | 'swallow' | 'summon' | 'ethereal';
@@ -48,6 +50,8 @@ export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
   monster?: string; count?: number; onlyAttacks?: string[]; fromCorpse?: boolean; noRepeat?: boolean; spells?: string[]; ally?: boolean; twice?: boolean;
   /** Görev D1 (yutma): en büyük yutulabilen boyut (`small`'ın yerine), hasar zamanı, kusma (Giant Frog). */
   maxSize?: 'T' | 'S' | 'M' | 'L' | 'H'; at?: 'start' | 'end'; disgorge?: boolean;
+  /** Görev WS92 (92+): midede yaratık varken kullanılamayan saldırılar (Bite); bir seferde tek yutulan (Giant Toad). */
+  blocks?: string[]; single?: boolean;
   adjacent?: boolean; dice2?: string; type2?: string; type?: string; escapeDamage?: number; escapeDc?: number; small?: boolean; nearTree?: boolean;
 }
 interface Aura { name: string; radiusFt: number; save?: 'wis' | 'con' | 'dex'; dc?: number; conditions?: string[]; on?: Array<'start'>; targets?: 'enemies' | 'all'; difficult?: boolean; gibbering?: boolean }
@@ -431,6 +435,9 @@ function swallowEvents(state: BattleState, actor: Combatant, a: MonsterAbility, 
   const t = Object.values(state.combatants).find((c) => c.hp > 0 && c.side !== actor.side && c.grapple?.by === actor.id && fits(c.size)
     && !c.effects?.some((e) => e.swallowedBy));
   if (!t) return [];
+  // Görev WS92 (92+): Giant Toad bir seferde tek yaratık yutar (midesi dolu: yetenek boşa gitmez, kullanılamaz).
+  const v92 = ws92On(state);
+  if (v92 && a.single && Object.values(state.combatants).some((c) => c.hp > 0 && insideEffect(c)?.swallowedBy === actor.id && !insideEffect(c)?.swallow?.corpse)) return [];
   // Görev D1 (86+ veri): kurtarmasız yutma (Giant Frog/Toad SRD: "swallows a … target it is grappling").
   const pre: BattleEvent[] = [];
   if (a.save) {
@@ -438,10 +445,17 @@ function swallowEvents(state: BattleState, actor: Combatant, a: MonsterAbility, 
     if (!(ev.type === 'map_effect' && ev.roll && !ev.roll.success)) return [ev];
     pre.push(ev);
   }
-  return [...pre, { type: 'map_effect', rule: 'srdK19', targetId: t.id, text: `${a.tr}: yutuldu`, removeCondition: 'Grappled' },
+  // Görev WS92 (92+): yakalama biter (`grapple` alanı da), yutulan midede (`inside`: konum yutanınki, Total Cover), yutan
+  // `blocks` saldırılarını kullanamaz, biçimi (Wild Shape/Polymorph) biterse bırakır (`form`).
+  const grab: BattleEvent[] = v92
+    ? [...(t.grapple ? [{ type: 'grapple_ended', targetId: t.id, reason: a.tr } as BattleEvent] : []),
+      { type: 'map_effect', rule: 'srdK19', targetId: t.id, text: `${a.tr}: ${actor.name} yuttu`, swallowLog: 'swallowed' }]
+    : [{ type: 'map_effect', rule: 'srdK19', targetId: t.id, text: `${a.tr}: yutuldu`, removeCondition: 'Grappled' }];
+  return [...pre, ...grab,
     { type: 'effect_added', targetId: t.id, effect: { id: `swallow:${actor.id}:${t.id}`, name: `${a.tr} (${actor.name})`, sourceId: actor.id, swallowedBy: actor.id,
       grants: ['Blinded', 'Restrained'], until: state.round + 6000, swallow: { dice: a.dice ?? '2d6', type: a.type ?? 'acid', ...(a.dice2 ? { dice2: a.dice2, type2: a.type2 } : {}), escapeDamage: a.escapeDamage ?? 30, escapeDc: a.escapeDc ?? 15,
-        ...(a.at ? { at: a.at } : {}), ...(a.disgorge ? { disgorge: true, since: state.round } : {}) } } as ActiveEffect }];
+        ...(a.at ? { at: a.at } : {}), ...(a.disgorge ? { disgorge: true, since: state.round } : {}),
+        ...(v92 ? { inside: true, ...(a.blocks?.length ? { blocks: [...a.blocks] } : {}), ...(actor.shape ? { form: formMonsterId(actor) } : {}) } : {}) } } as ActiveEffect }];
 }
 const SIZE_ORDER = ['T', 'S', 'M', 'L', 'H', 'G'];
 
@@ -518,6 +532,13 @@ export function monsterTurnEvents(state: BattleState, c: Combatant, when: 'start
       if (grow > 0 && c.hp < c.maxHp) out.push({ type: 'healed', actorId: c.id, targetId: c.id, label: 'Multiple Heads', amount: Math.min(20, c.maxHp - c.hp), targetHpAfter: Math.min(c.maxHp, c.hp + 20) });
     }
   }
+  // Görev WS92 (92+): yutanı ölmüş yutulan kendi turunun başında 5 ft hareketle cesetten Prone çıkar (SRD "can escape from
+  // the corpse using 5 feet of movement, exiting with the Prone condition"; ⚠ çıkış kendiliğinden).
+  const corpse = insideEffect(c);
+  if (when === 'start' && c.hp > 0 && corpse?.swallow?.corpse) {
+    out.push({ type: 'effect_ended', targetId: c.id, effectId: corpse.id, name: corpse.name, reason: 'expired' },
+      { type: 'map_effect', rule: 'srdK19', targetId: c.id, text: 'Cesetten çıktı (5 ft, Prone)', addCondition: 'Prone', burnMove: 1, swallowLog: 'exited' });
+  }
   // Yutulanlar: yutanın tur başında hasar (Görev D1, 86+ veri: `at: 'end'` tur sonunda; Giant Frog `disgorge`: yutulduğu
   // turdan sonraki ilk tur sonunda bir kez, ölmezse kusulur ve Prone).
   if (c.hp > 0) {
@@ -530,7 +551,7 @@ export function monsterTurnEvents(state: BattleState, c: Combatant, when: 'start
       if (sw.dice2) dmg.push(damageEffect(o, 'srdK19', `${c.name}: mide`, { dice: sw.dice2, type: sw.type2 ?? 'fire' }, rng));
       out.push(...dmg);
       if (sw.disgorge && (applyEvents(state, dmg).combatants[o.id]?.hp ?? 0) > 0) {
-        out.push({ type: 'effect_ended', targetId: o.id, effectId: sw0.id, name: sw0.name, reason: 'expired' }, { type: 'map_effect', rule: 'srdK19', targetId: o.id, text: 'Kusuldu (Prone)', addCondition: 'Prone' });
+        out.push({ type: 'effect_ended', targetId: o.id, effectId: sw0.id, name: sw0.name, reason: 'expired' }, { type: 'map_effect', rule: 'srdK19', targetId: o.id, text: 'Kusuldu (Prone)', addCondition: 'Prone', ...(sw.inside ? { swallowLog: 'disgorged' as const } : {}) });
       }
     }
   }
@@ -637,14 +658,25 @@ export function monsterAfterEvents(state: BattleState, rng: Rng, cmdEvents: Batt
   for (const o of Object.values(cur.combatants)) {
     const e = o.effects?.find((x) => x.swallowedBy);
     if (!e?.swallowedBy || !e.swallow) continue;
+    // Görev WS92 (92+): cesetteki yutulan kendi turunda çıkar (monsterTurnEvents).
+    if (e.swallow.corpse) continue;
     const by = cur.combatants[e.swallowedBy];
     const dead = !by || by.hp <= 0;
-    if (dead) {
+    if (dead && e.swallow.inside) {
+      // Görev WS92: yutan öldü; Restrained biter, Blinded ve Total Cover sürer (ceset), sonraki turunda çıkar.
+      out.push({ type: 'effect_ended', targetId: o.id, effectId: e.id, name: e.name, reason: 'expired' },
+        { type: 'effect_added', targetId: o.id, effect: { ...e, grants: ['Blinded'], swallow: { ...e.swallow, corpse: true } } as ActiveEffect },
+        { type: 'map_effect', rule: 'srdK19', targetId: o.id, text: 'Yutan öldü: Restrained değil, cesetten çıkabilir', swallowLog: 'corpse' });
+    } else if (e.swallow.inside && by && (e.swallow.form ?? '') !== (by.shape ? formMonsterId(by) ?? '' : '')) {
+      // Görev WS92: yutanın biçimi (Wild Shape/Polymorph) bitti ya da değişti: yutulan çıkar, Prone (⚠ SRD'de yazmıyor; kusma gibi).
+      out.push({ type: 'effect_ended', targetId: o.id, effectId: e.id, name: e.name, reason: 'expired' },
+        { type: 'map_effect', rule: 'srdK19', targetId: o.id, text: 'Yutanın biçimi bitti: serbest (Prone)', addCondition: 'Prone', swallowLog: 'released' });
+    } else if (dead) {
       out.push({ type: 'effect_ended', targetId: o.id, effectId: e.id, name: e.name, reason: 'expired' }, { type: 'map_effect', rule: 'srdK19', targetId: o.id, text: 'Yutulan dışarı çıktı (Prone)', addCondition: 'Prone' });
     } else if (e.swallow.escapeDamage > 0 && (by.headsTurnHp ?? by.maxHp) - by.hp >= e.swallow.escapeDamage && !by.effects?.some((x) => x.id === `srd19:${by.id}:regurgitated:${state.round}`)) {
       const ev = saveEffect(by, 'srdK19', 'Kusma (CON save)', 'con', e.swallow.escapeDc, rng);
       out.push(ev, { type: 'effect_added', targetId: by.id, effect: { id: `srd19:${by.id}:regurgitated:${state.round}`, name: 'Kusma denendi', sourceId: by.id, until: state.round } as ActiveEffect });
-      if (ev.type === 'map_effect' && ev.roll && !ev.roll.success) out.push({ type: 'effect_ended', targetId: o.id, effectId: e.id, name: e.name, reason: 'expired' }, { type: 'map_effect', rule: 'srdK19', targetId: o.id, text: 'Kusuldu (Prone)', addCondition: 'Prone' });
+      if (ev.type === 'map_effect' && ev.roll && !ev.roll.success) out.push({ type: 'effect_ended', targetId: o.id, effectId: e.id, name: e.name, reason: 'expired' }, { type: 'map_effect', rule: 'srdK19', targetId: o.id, text: 'Kusuldu (Prone)', addCondition: 'Prone', ...(e.swallow.inside ? { swallowLog: 'regurgitated' as const } : {}) });
     }
   }
   return out;

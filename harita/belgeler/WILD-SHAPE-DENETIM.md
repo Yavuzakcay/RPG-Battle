@@ -84,7 +84,7 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
 | A35 | Multiattack | yalnız saldırı sayısı (bileşim serbest) | bilinen | `druid.ts:81`, `shapeMonster.ts:82` | WS91 tablosu |
 | A36 | Save'li / şarjlı eylemler (Web) | canavar saldırısı olarak | tam | `shapeMonster.ts:81`; D1 (Giant Spider Web) | WS91 |
 | A37 | Saldırı ekleri (Grappled, Prone, zehir) | canavar saldırısıyla aynı yol | tam | `features.ts:268`, `:394–400`; `druid.test.ts` "K13: biçim saldırısının ek etkileri…" | Görev DRUID (K13) |
-| A38 | Bonus eylemler ve yetenekler (Leap, Swallow) | motor ve YZ kullanır; arayüz düğmesi yok; yutma hataları | bilinen | `monsterAbilities.ts:82–86`; önceki denetim | WS91 "Kalanlar" |
+| A38 | Bonus eylemler ve yetenekler (Leap, Swallow) | motor ve YZ kullanır; arayüz Yetenek düğmesi (51f0b8cb); yutma WS92'de SRD'ye uydu | tam | `monsterAbilities.ts:82–86`; önceki denetim | WS91 "Kalanlar" |
 | A39 | Tepkiler | kendi + biçim | tam | `shapeMonster.ts:76` | WS91 |
 | A40 | Legendary eylemler | Beast stat bloklarında yok | kapsam dışı | — | — |
 | A41 | Büyü yapamaz | reddedilir | tam | `spells.ts:543–544`; D2 | Görev DRUID |
@@ -160,12 +160,7 @@ Geçici test dosyasıyla gerçek motorda çalıştırıldı; dosya silindi.
 
 ## Bilinen (önceki denetim; burada açılmadı)
 
-- **Yutma (Swallow):**
-  - yutulan hedefte Total Cover yok;
-  - yutan, yutarken Bite kullanabiliyor;
-  - yapay zekâ Swallow'u seçmiyor;
-  - yutan ölünce yutulan otomatik Prone çıkıyor;
-  - yutulan kendi altıgeninde kalıyor ve `grapple` alanı dolu kalıyor.
+- **Yutma (Swallow): düzeldi (WS92, sürüm 92).** Total Cover, yutarken Bite yasağı, ceset çıkışı (5 ft + Prone), yutulan midede yutanla taşınır, `grapple` alanı temizlenir; yapay zekâ Swallow'u seçiyor (yoklandı). Ayrıntı DECISIONS WS92.
 - **Süre:** Wild Shape süresi tutulmuyor (A11).
 - **Multiattack:** bileşim yok, yalnız saldırı sayısı (A35).
 - **Arayüz:** canavar yeteneği düğmesi yok (A38).

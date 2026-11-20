@@ -104,6 +104,8 @@ export function isTargetable(c: Combatant): boolean {
   if (c.offFloor) return false;
   // Görev WIZARD: Blink ile Ethereal'deki yaratık hedef alınamaz.
   if (c.effects?.some((e) => e.ethereal)) return false;
+  // Görev WS92 (92+ işareti): yutanın midesindeki yaratık dışarıdan hedef alınmaz, hücre kaplamaz (Total Cover).
+  if (c.effects?.some((e) => e.swallowedBy && e.swallow?.inside)) return false;
   return c.hp > 0 || c.regenPending || c.life === 'dying' || c.life === 'stable';
 }
 

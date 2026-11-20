@@ -1041,6 +1041,15 @@ export const en: Strings = {
     stoodUp: (a: string, cost: number) => `${a} stood up (${cost} hexes of movement).`,
     grappled: (a: string, by: string, label: string, dc: number, restrained: boolean) => `${a} is grappled: ${by}, ${label} (escape DC ${dc}${restrained ? ', Restrained' : ''}).`,
     grappleEnded: (a: string, reason: string) => `${a}: grapple ended (${reason}).`,
+    // Görev WS92: swallow lines.
+    swallow: {
+      swallowed: (a: string, by: string) => `${a} is swallowed${by ? ` by ${by}` : ''}: Blinded, Restrained, Total Cover from outside.`,
+      disgorged: (a: string) => `${a} is disgorged and exits Prone.`,
+      regurgitated: (a: string) => `${a} is regurgitated and exits Prone.`,
+      released: (a: string) => `${a} is released (the swallower's form ended), Prone.`,
+      corpse: (a: string) => `The swallower died: ${a} is no longer Restrained and can escape from the corpse next turn.`,
+      exited: (a: string) => `${a} escapes from the corpse using 5 feet of movement, Prone.`,
+    } as Record<string, (a: string, by: string) => string>,
     grappleEscape: (a: string, skill: string, d20: string, total: number, dc: number, ok: boolean) => `${a} tried to escape: ${skill} roll ${d20}, total ${total} / DC ${dc}: ${ok ? 'escaped' : 'failed'}.`,
   },
   alarm: {
@@ -1517,7 +1526,7 @@ export const en: Strings = {
       incapacitated: 'Incapacitated: no action, Bonus Action or Reaction; Concentration is broken',
       broken: 'Broken (Morale 0): cannot move or act; attacks against it have Advantage; an ally can rally it',
       bleeding: 'Bleeding', restrained: 'Restrained', charmed: 'Charmed', frightened: 'Frightened',
-      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', mounted: 'Riding (on a mount)', ridden: 'Has a rider', hovering: 'Hovering (off the ground)', burrowed: 'Underground (burrowing): can\'t be targeted', invisible: 'Invisible', deafened: 'Deafened', readied: 'Readied: holding their reaction' },
+      exhaustion: (n: number) => `Exhaustion ${n}`, flying: 'Flying', mounted: 'Riding (on a mount)', ridden: 'Has a rider', swallowed: (by: string) => `Swallowed (inside ${by})`, swallowing: (who: string) => `Has swallowed: ${who}`, hovering: 'Hovering (off the ground)', burrowed: 'Underground (burrowing): can\'t be targeted', invisible: 'Invisible', deafened: 'Deafened', readied: 'Readied: holding their reaction' },
     outcome: { crit: 'Critical', hit: 'Hit', miss: 'Miss', saved: 'Saved', failed: 'Failed', resisted: 'Resisted', prone: 'Knocked down',
       pushed: 'Pushed', escaped: 'Escaped', stuck: 'Still held', success: 'Success', failure: 'Failure', jumped: 'Jumped', burned: 'Burned', fell: 'Fell' },
   },

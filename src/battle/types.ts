@@ -367,7 +367,15 @@ export interface ActiveEffect {
   berserk?: boolean;
   swallowedBy?: string;
   /** Görev D1 (86+): `at` hasar yutanın tur başında (varsayılan) ya da sonunda; `disgorge` + `since` (Giant Frog): yutulduğu turdan sonraki ilk tur sonunda hasar, ölmezse kusulur. */
-  swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number; at?: 'start' | 'end'; disgorge?: boolean; since?: number };
+  swallow?: { dice: string; type: string; dice2?: string; type2?: string; escapeDamage: number; escapeDc: number; at?: 'start' | 'end'; disgorge?: boolean; since?: number;
+    /** Görev WS92 (92+): yutulan midede (konum yutanınki, hücre kaplamaz, dışarıdan Total Cover). */
+    inside?: boolean;
+    /** Görev WS92 (92+): yutan bu saldırıları kullanamaz (Giant Frog/Toad: Bite). */
+    blocks?: string[];
+    /** Görev WS92 (92+): yutan öldü; yutulan Restrained değil, sonraki turunda 5 ft hareketle cesetten çıkar. */
+    corpse?: boolean;
+    /** Görev WS92 (92+): yutarken yutanın biçimi (Wild Shape/Polymorph canavar kimliği); biçim değişince yutulan çıkar. */
+    form?: string };
   noHeal?: boolean;
   /** Kuyruk 19 (Corrosive Form): silah başına birikmiş saldırı cezası. */
   corroded?: Record<string, number>;
@@ -2082,6 +2090,8 @@ export type BattleEvent =
       burnMove?: number;
       /** Kuyruk K72 (sürüm 60+): çöken kat döşemesi altıgenleri ("katId|sütun,satır"). */
       katCokuk?: string[];
+      /** Görev WS92 (92+): yutma günlük satırı (TR/EN metin anahtarı; `text` yedek). */
+      swallowLog?: 'swallowed' | 'disgorged' | 'released' | 'corpse' | 'exited' | 'regurgitated';
     }
   /** Harita altıgeni değişti (lav yükselmesi). */
   | { type: 'tile_changed'; at: Offset; to: string }

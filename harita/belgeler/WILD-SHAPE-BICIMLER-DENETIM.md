@@ -271,7 +271,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 | Amphibious | özellik | su altında soluma | tam | — | `underwaterCore.ts:51–65` |
 | Standing Leap | özellik | uzun atlama mesafesi ✓ (Jump büyüsü modeliyle: turda bir, 10 ft harcar); yüksek atlama yok ✗ | kısmi | — | `monsterAbilities.ts:117`, `movement.ts:703`; Y13 |
 | Bite | eylem | Grappled (kaçış DC 11) | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y17, Y16 |
-| Swallow | eylem | bilinen (önceki denetim: Total Cover, yutarken Bite, YZ, yutan ölünce Prone, `grapple` alanı); arayüzde Yetenek düğmesi var (G4) | kısmi | — | `monsterAbilities.ts:82–86`; önceki denetim |
+| Swallow | eylem | WS92 (sürüm 92): yutulan midede (konum yutanınki, Total Cover, yakalama biter), yutan Bite kullanamaz, ceset çıkışı 5 ft + Prone, kusulunca bitişikte Prone, biçim bitince bırakılır; YZ seçer; arayüzde Yetenek düğmesi (G4) | tam | — | `swallow92.ts`, `monsterAbilities.ts` `swallowEvents`; `ws92.test.ts` |
 
 #### Giant Lizard (`giant-lizard`): CR 1/4, Large, 40 ft, tırmanma, AC 12
 
@@ -511,7 +511,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 | Amphibious | özellik | su altında soluma | tam | — | `underwaterCore.ts:51–65` |
 | Standing Leap | özellik | uzun atlama mesafesi ✓ (Jump büyüsü modeliyle: turda bir, 10 ft harcar); yüksek atlama yok ✗ | kısmi | — | `monsterAbilities.ts:117`, `movement.ts:703`; Y13 |
 | Bite | eylem | ek 2d4 poison; Grappled (kaçış DC 12) | tam | — | `druid.ts:76–81`, `features.ts:268–269,306,400`; Y17, Y16 |
-| Swallow | eylem | bilinen (önceki denetim: Total Cover, yutarken Bite, YZ, yutan ölünce Prone, `grapple` alanı); arayüzde Yetenek düğmesi var (G4) | kısmi | — | `monsterAbilities.ts:82–86`; önceki denetim |
+| Swallow | eylem | WS92 (sürüm 92): yutulan midede (konum yutanınki, Total Cover, yakalama biter), yutan Bite kullanamaz, ceset çıkışı 5 ft + Prone, kusulunca bitişikte Prone, biçim bitince bırakılır; YZ seçer; arayüzde Yetenek düğmesi (G4) | tam | — | `swallow92.ts`, `monsterAbilities.ts` `swallowEvents`; `ws92.test.ts` |
 
 #### Lion (`lion`): CR 1, Large, 50 ft, AC 12
 
@@ -562,7 +562,7 @@ Ayrıca SRD dışı bonus yetenek Leap (20 ft sıçrama; kullanıcı kararı, DE
 | Ink Cloud | tepki | 2 | 2 |  |  |  |
 | Nimble Escape | bonus eylem | 2 | 2 |  |  |  |
 | Sting | eylem | 2 | 1 | 1 |  |  |
-| Swallow | eylem | 2 |  | 2 |  |  |
+| Swallow | eylem | 2 | 2 |  |  |  |
 | Tentacles | eylem | 2 | 1 | 1 |  |  |
 | Web Walker | özellik | 2 | 2 |  |  |  |
 | Beaks | eylem | 1 | 1 |  |  |  |
@@ -598,7 +598,7 @@ Bir kök nedeni düzeltmek kaç biçimi kapatır (savaşta etkili, tam olmayan; 
 | 4 | Swarm: altıgen paylaşımı ve geçici HP | 5 | swarm-of-bats, swarm-of-insects, swarm-of-piranhas, swarm-of-rats, swarm-of-ravens | yeni |
 | 5 | Atlama özellikleri Jump büyüsü modeliyle (koşu şartı, yüksek atlama, DEX) | 5 | cat, frog, giant-frog, giant-toad, lion | yeni |
 | 6 | Multiattack bileşimi | 2 | lion, brown-bear | bilinen |
-| 7 | Swallow | 2 | giant-frog, giant-toad | bilinen |
+| 7 | Swallow | 2 | giant-frog, giant-toad | **düzeldi (WS92)** |
 | 8 | Bubble Dash: tur boyu Disengage, Giant Seahorse'ta tam hız | 2 | seahorse, giant-seahorse | yeni |
 | 9 | Rampage biçimde çalışmıyor | 1 | giant-hyena | yeni (iki yol farkı) |
 | 10 | Illumination: loş ışık yok, parlak 30 ft | 1 | giant-fire-beetle | yeni |

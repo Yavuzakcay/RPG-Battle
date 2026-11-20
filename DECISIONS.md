@@ -2,6 +2,19 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev WS92: Wild Shape, biçim özellikleri ve Swallow SRD 5.2.1 uyumu (2026-11-20; kural sürümü 92 `WS92_VERSION`)
+
+Tek kural sürümü 92 (`src/battle/ws92Surum.ts`); 91 ve altı kayıt/replay eski davranışta. Kayıt sürümü değişmedi (yeni alanlar isteğe bağlı: `map_effect.swallowLog`, `swallow.inside/blocks/corpse/form`).
+
+- **1. Swallow** (Giant Frog s. 351, Giant Toad s. 354; aynı yol bütün yutanlarda, Kraken/Gelatinous Cube ek yolu dahil):
+  - Yutulan midede (`src/battle/swallow92.ts`): konumu her olaydan sonra yutanınki (reducer `syncSwallowed`), hücre kaplamaz ve dışarıdan hedef alınmaz (`isTargetable`; alanlar, auralar, saldırılar), içeriden yalnız yutanını görür (`lineOfFire` "mide"). Bu, SRD "Total Cover against attacks and other effects outside" ile yutulanın yutanla taşınmasını tek kuralla verir.
+  - Yutunca yakalama gerçekten biter (`grapple_ended`; eskiden `grapple` alanı dolu kalıyordu).
+  - Yutan midede yaratık varken `blocks` saldırısını kullanamaz (Giant Frog/Toad: Bite; biçimdeki druid de). Giant Toad bir seferde tek yaratık (`single`).
+  - Yutan ölünce yutulan Restrained değil (Blinded ve Total Cover sürer: cesette); kendi turunun başında 5 ft hareketle (`burnMove`) cesetten Prone çıkar. ⚠ Çıkış kendiliğinden (SRD "can escape"; savaşta kalmak için gerekçe yok).
+  - Kusulan/serbest kalan yutanın bitişiğindeki ilk boş altıgene konur (satır/sütun sırası; deterministik). Wild Shape/Polymorph biçimi biten ya da değişen yutan yutulanı bırakır, Prone (⚠ SRD'de yazmıyor; kusmayla aynı sonuç).
+  - Günlük satırları TR/EN (`log.swallow`), jetonda "👄 Yutuldu" rozeti, midedeki jeton yutanın üstünde küçük ve soluk (`ui/swallowUi.ts`, yalnız görünüm).
+  - Yapay zekâ: yakaladığı hedefi olan kurbağa Swallow'u seçiyor (yoklandı; önceki denetimdeki "YZ seçmiyor" bulgusu bugün geçerli değil).
+
 ## Ranger ID4 Dragonborn: kontur halkası (erkek) ve çene maskesi (kadın) (2026-11-20; yalnız görünüm, mekanik/kural/kayıt sürümü yok)
 
 - **Erkek:** önceki görevde kalan, macenta artığı üçgeninin çevresindeki 22 koyu mor geçiş pikseli (opak, L* 14–42, kroma > 35, macenta ton; x 102–111, y 87–95) komşu kontur renginin ortalamasına çekildi: #220230 (L* 5,4). Komşu kontur = bu 22 pikselin 8 komşusu olan, opak, L* < 15 pikseller (32 piksel; L* 6,1 ± 3,9). Ham jeton kayıpsız (`exact`) yazıldı, yalnız 22 piksel değişti (doğrulandı); küçük kopya yalnız bu jeton için `karakter-kucuk` parametreleriyle yeniden üretildi. Pul maskesi `--jeton` ile yeniden üretildi, bayt bayt aynı (22 piksel kontur eşiğinin altında, zaten boyanmıyordu). Yedek: oturum karalama klasörü `yedek-ham-2/` ve git geçmişi.
