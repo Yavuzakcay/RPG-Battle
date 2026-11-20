@@ -161,3 +161,16 @@ Etki = oyuncunun hissedeceği fark. "Kural sürümü" = hasar/sonuç değiştiğ
 
 - A19 Empowered Evocation tek zara: **düzeldi** (sürümlü 93; `oneDieBonus.ts`; Magic Missile 3 dart +INT bir kez; test `b93.test.ts` A1).
 - C7 / C8 Serüven'de seviye atlama (kitap +2, hazır sayı, alt sınıf, ASI) ve uzun dinlenmede hazır liste: **düzeldi** (sürümsüz; `levelChoices.ts`: cantrip dinlenmede 1, hazır liste dinlenmede hepsi, Spell Mastery seçimi dinlenmede 1, kitap yalnız eklenir). Memorize Spell (kısa dinlenme) Serüven'de yok: **ertelendi** (Serüven'de kısa dinlenme seçim penceresi yok).
+
+### C. Wizard
+
+- A17 Potent Cantrip ıskada yarı hasar: **düzeldi** (sürümlü 93; alt sınıf: bizim sürüm metni "ıskalasa ya da save başarılı olsa da yarı hasar"; ek etki yok).
+- A10 / E6 Ritual Adept: **düzeldi** (sürümsüz, kurulum: kitaptaki SRD Ritual etiketli büyüler hazırlanmadan bilinir, `Combatant.ritualOnly`: yalnız kurulumda ritüel; savaşta slotla yapılamaz; veri `ritualFromBook`).
+- A13 / B7 Spell Mastery ve Signature Spells büyü kitabından, her zaman hazır (hazır sayısına girmez): **düzeldi** (sürümsüz, oluşturucu + kurulum; `spellPicks[].fromBook`, `create.ts` `bookPicks`).
+- A14 Spell Mastery yalnız Action yapım süreli büyü: **düzeldi** (seçicide ve otomatik seçimde; `castingTime: action`).
+- A15 Signature Spells her büyüye ayrı kısa dinlenme kullanımı: **düzeldi** (kaynaklar `signatureSpells` / `signatureSpells2`, `ResourceDef.pickSlot`; savaş kurulumunda oluşur, kayıtlı savaşın durumu değişmez, bu yüzden kural sürümü gerekmedi).
+- B5 Evocation Savant: **düzeldi** (alt sınıf: bizim metin "Spellbook'una iki Evocation büyüsü ekler"; kitap sınırı 3. seviyede +2, her yeni slot seviyesinde +1, ek büyüler Evocation okulundan; `data/class-features.json` `wizard/evoker:evocation-savant` `spellbookBonus`; sürümsüz, oluşturucu). Not: alt sınıf anahtarı `class-features.json`'da varsa paketin mekaniğinin yerine geçer (`gainedFeatures`).
+- C2 / E5 Arcane Recovery isteğe bağlı ve slot seçimi: **düzeldi** (sürümsüz; karakter listesi dinlenme panelinde "Otomatik / Kullanma / Slot: 3 + 1…", `shortRestStatus(..., recover)`, `recoveryOptions`). Serüven ve yolculuk kısa dinlenmesi otomatik kaldı.
+- E4 Arcane Recovery çipi savaşta gizli: **düzeldi** (`ResourceDef.outOfCombat`). Spell Mastery "99" sayacı zaten gösterilmiyordu (`usesShown`).
+- E6 açıklama metinleri (TR): Arcane Recovery, Spell Mastery, Signature Spells davranışa göre güncellendi; Ritual Adept metni artık doğru.
+- **Ertelendi:** D2 YZ Overchannel (alt sınıf; bizim metinle motor uyumlu, yalnız YZ kararı; denge ölçümü gerektirir). A18 Sculpt Spells (sapma, kullanıcı kararı), A11 Animate Dead ritüel bayrağı (sapma), B10 kopyalama ekonomisi, B11/B12 serbest düzenleme (bilinçli; Serüven'de A2 ile kurallı), E3 slot seçici varsayılanı (düşük, ayrı arayüz işi).

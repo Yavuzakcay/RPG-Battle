@@ -12,7 +12,7 @@ import { storedCarryRule } from '../ui/carrySetting';
 import { sheetAvatar } from '../battle/avatar';
 import { newCharacter, characterProblems, type SavedCharacter } from '../rules/builder';
 import { deriveStats } from '../rules/stats';
-import { currentStatus, fullStatus, isRested, longRestStatus, magicalCunningStatus, shortRestStatus } from '../rules/characterRest';
+import { currentStatus, fullStatus, isRested, longRestStatus, magicalCunningStatus, recoveryOptions, shortRestStatus } from '../rules/characterRest';
 import { subclassMissing } from '../rules/subclasses';
 import { resourceDef } from '../rules/classFeatures';
 import { masteryOptions, masteryRight, masterySwapLimit, masterySwapProblem, masteryText, masteryWorks, weaponMasteryId } from '../rules/mastery';
@@ -225,6 +225,8 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
   const { sheet } = props.c;
   const [dice, setDice] = useState(1);
   const [note, setNote] = useState<string | null>(null);
+  // Görev B93: Arcane Recovery / Natural Recovery seçimi ('' otomatik, 'skip' kullanma, '3,2' slot seviyeleri).
+  const [recoverPick, setRecoverPick] = useState<Record<string, string>>({});
   /** Uzun dinlenmeden önceki ustalık seçimleri: dinlenmeden sonra silah talimiyle değiştirilebilir (SRD Weapon Mastery). */
   const [drills, setDrills] = useState<string[] | null>(null);
   let s;
@@ -258,8 +260,19 @@ export function RestPanel(props: { c: SavedCharacter; onUpdate: (c: SavedCharact
               <button aria-label="+" disabled={dice >= left} onClick={() => setDice(dice + 1)}>+</button>
             </span>
           </label>
+          {(['arcaneRecovery', 'naturalRecovery'] as const).map((id) => {
+            const opts = recoveryOptions(sheet, props.c.status, id);
+            if (!opts.length) return null;
+            return <label key={id} className="rest-recovery">{R.recovery(resourceDef(id)?.name ?? id)}
+              <select value={recoverPick[id] ?? ''} onChange={(e: { target: { value: string } }) => setRecoverPick((m) => ({ ...m, [id]: e.target.value }))}>
+                <option value="">{R.recoveryAuto}</option>
+                <option value="skip">{R.recoverySkip}</option>
+                {opts.map((o) => <option key={o.join(',')} value={o.join(',')}>{R.recoveryPick(o.join(' + '))}</option>)}
+              </select></label>;
+          })}
           <button onClick={() => {
-            const r = shortRestStatus(sheet, props.c.status, Math.min(dice, left), Math.random);
+            const recover = Object.fromEntries(Object.entries(recoverPick).filter(([, v]) => v !== '').map(([k, v]) => [k, v === 'skip' ? null : v.split(',').map(Number)]));
+            const r = shortRestStatus(sheet, props.c.status, Math.min(dice, left), Math.random, recover);
             setNote(R.shortDone(r.rolls.join(' + '), r.healed));
             props.onUpdate({ ...props.c, status: r.status });
           }}>{R.short}</button>

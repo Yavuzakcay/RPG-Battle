@@ -162,11 +162,22 @@ export function alternativeCantrips(s: Pick<CharacterSheet, 'classId' | 'level' 
   return { options, max: chosen.reduce((n, alt) => n + alt.cantrips, 0) };
 }
 
+/**
+ * Görev B93: Pact of the Tome'un cantrip'leri herhangi bir sınıfın listesinden (SRD 5.2.1 s. 74 "from any class's spell
+ * list"); sayı Invocation kitinden (`cantrips`, sınıf cantrip sınırına da eklenir). Başka listeden en çok bu kadar.
+ */
+export function tomeCantrips(s: Pick<CharacterSheet, 'classId' | 'level' | 'invocations'>): { options: string[]; max: number } {
+  const n = invocationKit(s.classId, s.level, s.invocations).cantrips;
+  return n > 0 ? { options: spells.filter((sp) => sp.level === 0).map((sp) => sp.name), max: n } : { options: [], max: 0 };
+}
+
 /** Görev K6: sınıfın bu seviyedeki büyü sınırları (SRD sınıf tablosu "Cantrips", "Prepared Spells"; Wizard büyü kitabı). */
-export interface SpellLimits { cantrips: number; prepared: number; maxLevel: number; spellbook: number | null }
-export function spellLimits(classId: string, level: number, choices?: Record<string, string>, invocations?: string[]): SpellLimits {
+export interface SpellLimits { cantrips: number; prepared: number; maxLevel: number; spellbook: number | null;
+  /** Görev B93 (Evocation Savant): kitabın bu okuldan olması gereken ek büyüleri. */ bookSchool?: { school: string; count: number } }
+export function spellLimits(classId: string, level: number, choices?: Record<string, string>, invocations?: string[], subclassId?: string): SpellLimits {
   const num = (v: number | string | null) => (typeof v === 'number' ? v : Number.parseInt(String(v ?? '0'), 10) || 0);
   const book = getClass(classId).spellbook;
+  const extra = bookBonus(classId, level, subclassId);
   return {
     // Görev CLERIC: Thaumaturge ek cantrip (seçenekli özellikten).
     cantrips: num(tableValue(classId, level, 'Cantrips')) + (num(tableValue(classId, level, 'Cantrips')) > 0 ? optionTraining(classId, choices).cantrips : 0)
@@ -174,8 +185,17 @@ export function spellLimits(classId: string, level: number, choices?: Record<str
       + invocationKit(classId, level, invocations).cantrips,
     prepared: num(tableValue(classId, level, 'Prepared Spells')),
     maxLevel: maxSpellLevel(classId, level),
-    spellbook: book ? book.initial + book.perLevel * (Math.max(1, level) - 1) : null,
+    spellbook: book ? book.initial + book.perLevel * (Math.max(1, level) - 1) + (extra?.count ?? 0) : null,
+    ...(book && extra ? { bookSchool: extra } : {}),
   };
+}
+
+/** Görev B93: alt sınıf özelliğinin bedelsiz kitap büyüleri (`spellbookBonus`; Evocation Savant). */
+function bookBonus(classId: string, level: number, subclassId?: string): { school: string; count: number } | null {
+  const f = subclassId ? gainedFeatures(classId, level, subclassId).find((x) => x.mechanic?.spellbookBonus) : undefined;
+  const b = f?.mechanic?.spellbookBonus;
+  if (!f || !b) return null;
+  return { school: b.school, count: b.base + b.perNewSlotLevel * Math.max(0, maxSpellLevel(classId, level) - maxSpellLevel(classId, f.level)) };
 }
 
 /**
@@ -247,7 +267,7 @@ const choiceClass = (key: string): string | null => {
  */
 export function classScoped(s: CharacterSheet): CharacterSheet {
   if (!classes.some((k) => k.id === s.classId)) return s;
-  const own = new Set([...spellOptions(s.classId, 20, s.subclassId), ...alternativeCantrips(s).options]);
+  const own = new Set([...spellOptions(s.classId, 20, s.subclassId), ...alternativeCantrips(s).options, ...tomeCantrips(s).options]);
   const out: CharacterSheet = { ...s };
   if (s.spellNames) out.spellNames = s.spellNames.filter((n) => own.has(n));
   if (s.spellbook) out.spellbook = s.spellbook.filter((n) => own.has(n));
@@ -268,7 +288,7 @@ export function classScoped(s: CharacterSheet): CharacterSheet {
  */
 export function fitRestored(s: CharacterSheet): CharacterSheet {
   const at = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alternativeCantrips(s).options]);
-  const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
+  const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations, s.subclassId);
   const byName = (n: string) => spells.find((x) => x.name === n);
   let cantrips = 0; let prepared = 0;
   let book = s.spellbook?.filter((n) => at.has(n));
@@ -388,7 +408,8 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= LEVEL_CAP) {
     const alt = alternativeCantrips(s);
     const own = new Set(spellOptions(s.classId, s.level));
-    const allowed = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alt.options]);
+    const tome = tomeCantrips(s);
+    const allowed = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alt.options, ...tome.options]);
     for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) push(I().spellNotAllowed(sp));
     // Kuyruk 18 H3: Magical Discoveries sınırı (başka listelerden en çok N büyü).
     const cap = discoveryCap(s.classId, s.level, s.subclassId);
@@ -399,13 +420,21 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     if (cap !== null && cap > 0 && off > cap) push(I().discoveryCap(cap, off));
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
     if (altChosen > alt.max) push(I().altCantripCap(alt.max, altChosen));
+    // Görev B93: Pact of the Tome: başka listeden cantrip en çok Tome sayısı kadar.
+    const tomeChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && !alt.options.includes(n) && tome.options.includes(n)).length;
+    if (tome.max > 0 && tomeChosen > tome.max) push(I().altCantripCap(tome.max, tomeChosen));
     // Görev K6: SRD tablosundaki sınırlar; fazla seçim sessizce ayıklanmaz, eksik olarak görünür.
-    const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
+    const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations, s.subclassId);
     const cnt = spellCounts(s);
     if (cnt.cantrips > lim.cantrips) push(I().cantripsOver(cnt.cantrips, lim.cantrips));
     if (cnt.prepared > lim.prepared) push(I().preparedOver(cnt.prepared, lim.prepared));
     if (lim.spellbook !== null) {
       if (cnt.book.length > lim.spellbook) push(I().bookOver(cnt.book.length, lim.spellbook));
+      // Görev B93 (Evocation Savant): ek büyüler okuldan; okul dışı büyüler temel sınırı aşamaz.
+      if (lim.bookSchool) {
+        const other = cnt.book.filter((n) => spells.find((x) => x.name === n)?.school !== lim.bookSchool!.school).length;
+        if (other > lim.spellbook - lim.bookSchool.count) push(I().bookSchool(lim.bookSchool.school, lim.bookSchool.count));
+      }
       for (const n of s.spellNames ?? []) {
         if ((spells.find((x) => x.name === n)?.level ?? 0) > 0 && !cnt.book.includes(n)) push(I().notInBook(n));
       }
@@ -422,7 +451,9 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     if (mm && picked.some((id) => mm.costs[id] === undefined)) push(I().metamagicUnknown);
     // Görev WARLOCK: Eldritch Invocations (sayı SRD tablosundan) ve pact silahı.
     invocationProblems(s.classId, s.level, s.invocations, s.spellNames ?? []).forEach(push);
-    if (invocationKit(s.classId, s.level, s.invocations).pactWeapon && !(s.weapons ?? []).some((w) => w.name === s.pactWeapon)) {
+    // Görev B93 (SRD 5.2.1 s. 74): pact silahı Simple ya da Martial Melee silah olmalı (menzilli silah uyarılır).
+    if (invocationKit(s.classId, s.level, s.invocations).pactWeapon && (!(s.weapons ?? []).some((w) => w.name === s.pactWeapon)
+      || !!weapons.find((w) => w.name === s.pactWeapon)?.ranged)) {
       push(I().pactBlade);
     }
     step = 'progress';

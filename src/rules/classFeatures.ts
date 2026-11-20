@@ -60,7 +60,8 @@ export function gainedFeatures(classId: string, level: number, subclassId?: stri
       const at = Math.max(f.level, p.subclassLevel);
       if (at > level) continue;
       const key = `${classId}/${sub.id}:${f.id}`;
-      out.push({ key, id: f.id, name: f.name.en, level: at, from: 'subclass', mechanic: packMechanic(f, at) });
+      // Görev B93: paket metni hikâye olup motorun veriyle uyguladığı alt sınıf özelliği (`data/class-features.json` anahtarı).
+      out.push({ key, id: f.id, name: f.name.en, level: at, from: 'subclass', mechanic: classData.mechanics.features[key] ?? packMechanic(f, at) });
     }
     // Kuyruk K48: alt sınıfın yerini aldığı sınıf özellikleri (Karadul: Wild Shape) ve onların kaynakları düşer.
     if (sub.replaces?.length) return out.filter((f) => !sub.replaces?.includes(f.key)).sort((a, b) => a.level - b.level);
@@ -358,7 +359,7 @@ export function classResources(classId: string, level: number, mods: Partial<Rec
 /** Kaynak savaşta bir eylemle kullanılabiliyor mu (özelliği uygulanıyor). */
 export function resourceUsable(id: string): boolean {
   const d = resourceDef(id);
-  if (!d) return false;
+  if (!d || d.outOfCombat) return false;
   if (d.race || d.feat) return true;
   return featureList(d).some((k) => {
     const m = classData.mechanics.features[k] ?? subclassMechanic(k);

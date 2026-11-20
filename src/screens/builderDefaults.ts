@@ -70,7 +70,7 @@ export function recommendedMasteries(sheet: CharacterSheet): string[] {
  * sayılarına kadar; her zaman hazır büyüler ve oyunda çalışmayanlar atlanır, erişilemeyen seviyeler seçilmez.
  */
 export function recommendedSpells(sheet: CharacterSheet): { spellNames: string[]; spellbook?: string[] } {
-  const lim = spellLimits(sheet.classId, sheet.level, sheet.featureChoices, sheet.invocations);
+  const lim = spellLimits(sheet.classId, sheet.level, sheet.featureChoices, sheet.invocations, sheet.subclassId);
   const kit = classKit(sheet.classId, sheet.level, sheet.subclassId);
   const prio = SPELL_PRIO[sheet.classId] ?? [];
   const rank = (n: string) => { const i = prio.indexOf(n); return i < 0 ? 1000 : i; };
