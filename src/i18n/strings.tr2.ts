@@ -8,6 +8,18 @@ import { trAciklama } from '../data';
 const OBJ_TR: Record<string, string> = { oilBarrel: 'yağ fıçısı', powderKeg: 'barut fıçısı', chest: 'sandık', table: 'masa', door: 'kapı', brazier: 'mangal' };
 
 export const TR_EXTRA = {
+  /** Hazırla (Ready) paneli (kural sürümü 90; `src/ui/ReadyPanel.tsx`). */
+  readyUi: {
+    menu: 'Hazırla', title: 'Hazırla (Ready)', trigger: 'Tetik', who: 'Kim tetikler', anyEnemy: 'Herhangi bir düşman',
+    response: 'Yanıt', attack: 'Tek saldırı', move: 'Hareket', spell: 'Büyü', weapon: 'Saldırı', slot: 'Slot',
+    pickHex: 'Tetik altıgenini haritada seç', pickTo: 'Varış altıgenini haritada seç', hexSet: (l: string) => `Seçili: ${l}`, unset: 'seçilmedi',
+    confirm: 'Hazırla', cancel: 'Vazgeç', pickHint: 'Haritada bir altıgene dokun.',
+    holds: 'Eylemini harcar; tepkini sonraki turunun başına dek ayırır. Tetik olunca sorulur (tepki ayarına göre).',
+    slotWarn: 'Slot şimdi harcanır; tetik gelmezse geri gelmez.',
+    concWarn: 'Büyüyü tutmak konsantrasyon ister; konsantrasyon bozulursa büyü etkisiz dağılır.',
+    concEnds: (s: string) => `Şu anki konsantrasyonun (${s}) biter.`,
+    noSpells: 'Hazırlanabilecek (eylem süreli) büyü yok.', target: 'Hedef salınırken seçilir.',
+  },
   /** SD8 (Ayarlar): sade Ayarlar ekranı, Gelişmiş katı ve Game Master kurulumundaki "Oda kuralları". */
   settingsUi: {
     language: 'Dil', sound: 'Ses', effects: 'Efekt animasyonu', effectsHelp: 'Haritadaki efektler hareket eder.', mapFx: 'Harita efektleri',
@@ -224,6 +236,11 @@ export const TR_EXTRA = {
     healed: (a: string, b: string, label: string, n: number) => `${a} → ${b}: ${label}, ${n} HP iyileşti.`,
     slotSpent: (a: string, lvl: number, left: number) => `${a}: ${lvl}. seviye slot harcandı (kalan ${left}).`,
     dodge: (a: string) => `${a} kaçınıyor: sonraki turunun başına dek saldıranlar dezavantajlı, DEX kurtarma zarları avantajlı.`,
+    readied: (a: string, trig: string, resp: string) => `${a} hazırlandı: ${trig} → ${resp}. Sonraki turunun başına dek tepkisini ayırır.`,
+    readyReleased: (a: string, trig: string) => `${a} hazırlanan eylemini kullanıyor (${trig}).`,
+    readyLapsed: (a: string, why: string) => `${a}: hazırlık bitti (${why}).`,
+    readyWhy: { turnStart: 'sonraki turu başladı', concentration: 'konsantrasyon bozuldu, tutulan büyü etkisiz dağıldı', incapacitated: 'etkisiz hâle geldi', died: 'düştü', gone: 'haritadan ayrıldı' } as Record<string, string>,
+    readyResp: { attack: (w: string) => `tek saldırı (${w})`, move: 'hareket', spell: (sp: string) => `büyü (${sp})` },
     help: (reason: string, target: string) => `${reason}: ${target} hedefine karşı tarafının ilk saldırısı avantajlı.`,
     timerSave: (ab: string, dc: number) => `; her tur sonunda ${ab} DC ${dc} ile kurtulur`,
     timerTurn: (owner: string | null, start: boolean) => ` (${owner ?? 'kendi'} sonraki turunun ${start ? 'başına' : 'sonuna'} dek)`,
@@ -611,6 +628,7 @@ export const TR_EXTRA = {
     area: 'Nefes ya da alan saldırısı (koni, çizgi, yayılım): yönü ya da merkezi seç; alandaki herkes (dostlar da) kurtarma zarı atar. Önizlemede etkilenecek düşman ve dost sayısı görünür.',
     hide: 'Saklanma bölgesinde (yeşil kesikli çerçeve) Stealth zarıyla gizlen: 15\'i ve seni gören düşmanların pasif Algısını geç. Yanında düşman varken olmaz; gece ışıksız yerde avantajlı. Gizliyken saldırın avantajlı olur.',
     shove: 'Bitişik düşmanı 5 ft it ya da yere düşür (Athletics karşılaştırması). Bir saldırı hakkını harcar.',
+    ready: 'Hazırla (Ready): bir tetik ve yanıt seç (tek saldırı, hızın kadar hareket ya da eylem süreli büyü). Tetik olunca tepkinle yanıt verirsin; sonraki turunun başında biter. Eylemini harcar.',
     dodge: 'Kaçın (Dodge): sonraki turunun başına dek sana saldıranlar dezavantajlı olur, DEX kurtarma zarların avantajlı. Eylemini harcar; etkisiz kalırsan ya da hızın 0 olursa işe yaramaz.',
     distract: 'Dikkat dağıt: 30 ft içindeki bir altıgene ses çıkar (taş, kase); oraya 15 ft yakın uyanık düşmanlar bir sonraki turlarının sonuna dek pasif Algıda −5 (gizlenme ve alarm). Eylemini harcar.',
     help: 'Yardım (Help): bitişik bir düşman seç; sonraki turunun başına dek tarafının o düşmana ilk saldırısı avantajlı olur. Eylemini harcar.',
@@ -761,7 +779,7 @@ export const TR_EXTRA = {
       incapacitated: 'Etkisiz (Incapacitated): eylem, bonus eylem ve tepki yok; konsantrasyon kesilir',
       broken: 'Çökmüş (Moral 0): hareket ve eylem yok; ona saldırı avantajlı; bir dost toparlayabilir',
       bleeding: 'Kanıyor', restrained: 'Bağlandı (Restrained)', charmed: 'Büyülendi (Charmed)', frightened: 'Korkuyor (Frightened)',
-      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', mounted: 'Biniyor (bineğin üstünde)', ridden: 'Üstünde binici var', hovering: 'Süzülüyor (yere değmez)', burrowed: 'Yer altında (kazarak): hedeflenemez', invisible: 'Görünmez (Invisible)', deafened: 'Sağır (Deafened)' },
+      exhaustion: (n: number) => `Bitkinlik ${n}`, flying: 'Uçuyor', mounted: 'Biniyor (bineğin üstünde)', ridden: 'Üstünde binici var', hovering: 'Süzülüyor (yere değmez)', burrowed: 'Yer altında (kazarak): hedeflenemez', invisible: 'Görünmez (Invisible)', deafened: 'Sağır (Deafened)', readied: 'Hazır (Ready): tepkisini ayırdı' },
     outcome: { crit: 'Kritik', hit: 'İsabet', miss: 'Iska', saved: 'Kurtardı', failed: 'Kurtaramadı', resisted: 'Direndi', prone: 'Yere düştü',
       pushed: 'İtildi', escaped: 'Kurtuldu', stuck: 'Kurtulamadı', success: 'Başarılı', failure: 'Başarısız', jumped: 'Atladı', burned: 'Yandı', fell: 'Düştü' },
   },

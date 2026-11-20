@@ -21,3 +21,17 @@ Kullanıcının koyduğu "control-water" efekt sayfası bu bulut kapsayıcısın
 - renk varyantları CSS `hue-rotate`.
 
 Mevcut `efekt-zemin-girdap.webp` yer tutucu olarak kullanılabilirdi, ama görev açıkça yeni sayfanın importunu istediği için uydurma bağlama yapılmadı.
+
+## Son doğrulama
+
+- Tam `npm test`: 471 dosya geçti, 2 atlandı; 5312 test geçti, 11 atlandı, 0 düştü.
+- `check:harita`: 92/92.
+- Ana parça 461,55 kB / 500 (İş 1 öncesi 459,46; +2 kB İş 2 yardımcısından).
+- `check:ses` çalıştırılmadı: ses değişmedi, bulutta zaman aşımı veriyor; yerelde çalıştırılacak.
+
+## Karar bekleyenler
+
+- İş 1: tembel yükleme önerileri (kanat kökü ve palet verisi ≈ 12,5 kB, `efekt-baglama.json` ≈ 18 kB) uygulanmadı.
+- İş 2: kuşkulu Ranger ID4 (iki cinsiyet; kanatlı ejderha yoldaşı) gözle onay bekliyor.
+- İş 3: "control-water" efekt sayfasının kapsayıcıya konması (yerelde `assets-ham/efekt/` ya da commit).
+- İş 4: canavar açıklamalarının `aciklamalar-tr.json` yerine ayrı tembel dosyaya taşınması (karakter ekranlarında yük ≈ +200 kB).

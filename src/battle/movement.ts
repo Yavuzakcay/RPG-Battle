@@ -542,7 +542,14 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
   let prev = from;
   let current = state;
   const down = () => ((current.combatants[actor.id] as Combatant).hp <= 0);
-  for (const step of path.path) {
+  // Hazırla (Ready, sürüm 90): yürüyüş sırasında hazırlanan hareketle yola giren yaratık: önceden bulunan yol artık dolu
+  // altıgenden geçemez (düşman) ya da orada bitemez (dost); yürüyüş bir önceki altıgende durur.
+  let readyMoved = false;
+  for (const [i, step] of path.path.entries()) {
+    if (readyMoved) {
+      const occ = occupantAt(current, step, actor.id);
+      if (occ && (occ.side !== actor.side || i === path.path.length - 1)) break;
+    }
     const opportunity = opportunityAttacks(current, actor.id, { from: prev, to: step }, rng);
     effects.push(...opportunity);
     current = applyEvents(current, opportunity);
@@ -571,6 +578,7 @@ export function executeMove(state: BattleState, actor: Combatant, to: Offset, rn
     current = applyEvents(current, formed);
     // Kuyruk P10 (sürüm 39): adım sonrası kancaları (ek paket `dusmanYaklasti`); hızı 0 olursa yürüyüş durur.
     const stepped = down() || ruleVersion(current) < 39 ? [] : afterStepEvents(current, actor.id, prev, rng);
+    if (stepped.some((e) => e.type === 'moved' && e.reaction)) readyMoved = true;
     effects.push(...stepped);
     current = applyEvents(current, stepped);
     prev = step;
