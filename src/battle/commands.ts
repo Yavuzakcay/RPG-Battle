@@ -32,6 +32,7 @@ import { executeHighlandsUse, highlandsAfterEvents, highlandsRoundEvents } from 
 import { desertRoundEvents } from './desert';
 import { lairEvents, legendaryEvents, legendaryRefreshEvents, registerLegendaryCaster } from './boss';
 import { swallowBlockedAttack } from './swallow92';
+import { ws92On } from './ws92Surum';
 import { anyTurnEndEvents, reactionTurnEndEvents, executeMonsterAbility, monsterAfterEvents, monsterTurnEvents, abilitiesOf } from './monsterAbilities';
 import { concealed } from './hiddenObjects';
 import { waterDecayEvents } from './waterDecay';
@@ -432,6 +433,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   // Görev OD1C: Game Master kurulumda da nesne yerleştirir (hedef nesnesi savaş öncesi haritaya konur; yeni olay yok).
   if (cmd.type === 'place_object' && state.status === 'setup') return executePlaceObject(state, cmd, ctx.isGm);
   if (cmd.type === 'set_object_weight' && state.status === 'setup') return executeSetObjectWeight(state, cmd, ctx.isGm);
+  // Görev WS92 (92+): kurulumda "biçimde başla": Wild Shape kullanımı harcanır, geçici HP (SRD biçim saatlerce sürer; savaştan
+  // önce girilmiş sayılır). Kurulumda biçimden çıkılmaz (kullanım iadesi yok); savaşta bonus eylemle çıkılır.
+  if (cmd.type === 'wild_shape' && state.status === 'setup' && ws92On(state)) {
+    const a = state.combatants[cmd.actorId];
+    if (!a) return fail('Savaşçı bulunamadı.');
+    if (!canControl(a, ctx)) return fail('Bu savaşçıyı yönetme yetkin yok.');
+    if (!cmd.form) return fail('Kurulumda biçimden çıkılmaz; savaşta bonus eylemle.');
+    return executeWildShape(state, a, cmd.form);
+  }
   if (state.status === 'setup') return fail('Savaş henüz başlamadı: önce herkes yerleşmeli ve GM başlatmalı.');
 
   if (cmd.type === 'set_condition') {

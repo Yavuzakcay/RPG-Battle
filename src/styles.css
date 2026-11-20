@@ -1627,3 +1627,7 @@ input[type="range"]:disabled { accent-color: var(--off); }
 
 /* Kuyruk KQ6-4: zemin efekt katmanı (su deseni, yüzey yamaları) altıgen tıklamasını yutmaz; Mielikki Gölü gibi su altıgenlerine dokunma çalışsın. */
 .fx-ground, .fx-ground * { pointer-events: none; }
+/* Görev WS92: Serüven'de Wild Shape biçim listesi (parti çubuğu). */
+.form-swap > div { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-top: 4px; }
+.form-swap > div > small { flex-basis: 100%; }
+.form-swap .fx-choice { display: inline-flex; gap: 6px; align-items: center; }

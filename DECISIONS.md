@@ -33,6 +33,10 @@ Tek kural sürümü 92 (`src/battle/ws92Surum.ts`); 91 ve altı kayıt/replay es
   - Sabit 1 hasar: `monsters.json` 21 saldırı "1d2" → "1" (SRD "Hit: 1 … damage"); eski değer `srd-duzeltme.json` (`surum` 92). Düşman canavarda srdK19 bunu zaten savaş başında yapıyordu; fark biçim seçeneklerinde.
   - Multiattack bileşimi biçimde: Brown Bear bir Bite + bir Claw; Lion bir Rend'in yerine Roar (eylem başına sayaç `economy.beastUsed`, olayda `action_used.beast`).
   - Ertelendi, karar gerekli: Swarm'ın başka yaratığın altıgeninde durması (doluluk modeli bir altıgende tek yaratık varsayıyor). Kullanıcı kararı: Swarm biçimi Wild Shape geçici HP'sini alır.
+- **4. Serüven ve kurulum akışı** (TR/EN; ekran görüntüsü `harita/belgeler/WS92-SERUVEN-BICIM.png`):
+  - Kurulumda "biçimde başla" (92+; `wild_shape` kurulum durumunda): Game Master kurulumu ve Serüven savaş kurulumu aynı yol. Kullanım harcanır, Druid seviyesi kadar geçici HP (SRD biçim saatlerce sürer: savaştan önce girilmiş sayılır). Kurulumda çıkış yok (kullanım iadesiyle geçici HP sömürülmesin); savaşta bonus eylemle.
+  - Serüven parti çubuğunda Druid üyeye "Biçimler N/M" (`form_swap`): boş yere biçim eklemek her zaman (Serüven seviye atlaması yeni yer açar), dolu listede uzun dinlenmeden sonra bir değişim (SRD "Whenever you finish a Long Rest, you can replace one of your known forms"; sayaç `formSwaps` dinlenme sayısına bağlı). Serüven dışında oluşturucu serbest kalır (savaşlar arası karakter düzenlemesi, diğer sınıflarla aynı).
+  - Savaş sonunda biçim biter (kullanıcı kararı): karaktere asıl HP, kullanımlar ve kazanılan slot yazılır; geçici HP ve biçim yazılmaz. Çekmecede biçim satırı bunu söyler.
 
 ## Ranger ID4 Dragonborn: kontur halkası (erkek) ve çene maskesi (kadın) (2026-11-20; yalnız görünüm, mekanik/kural/kayıt sürümü yok)
 

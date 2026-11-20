@@ -56,7 +56,7 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
 | A7 | En yüksek CR 1/4 / 1/2 / 1 | aynı tablo | tam | `druid.ts:53`; `druid.test.ts` "biçim sınırları SRD tablosundan…" | Görev DRUID |
 | A8 | Uçuş hızı olan biçim 8. seviyeden | `fly` sütunu | tam | `druid.ts:53`; `wildShape87.test.ts` "2/4/8 × uçan/yüzen" | WS87 |
 | A9 | Yalnız Beast stat blokları | `creatureTypeAt === 'beast'` (Giant Eagle 5.2.1'de Celestial, alınamaz) | tam | `druid.ts:53`; `shape91.test.ts` "Giant Eagle artık uygun değil"; D1 | D1, WS87 |
-| A10 | Uzun dinlenmede bilinen bir biçim değiştirilebilir | oluşturucuda her zaman, sınırsız değiştirilir | kısmi | `builder/Features.tsx:96–140` (`FormPicker`) | yok |
+| A10 | Uzun dinlenmede bilinen bir biçim değiştirilebilir | WS92: Serüven'de parti çubuğundan (`form_swap`): boş yere ekleme her zaman, dolu listede uzun dinlenmeden sonra bir değişim; Serüven dışında oluşturucuda serbest (bilinçli: savaşlar arası karakter düzenleme) | tam | `builder/Features.tsx:96–140` (`FormPicker`) | yok |
 | A11 | Süre: Druid seviyesinin yarısı kadar saat | sayaç yok; biçim savaş sonunda biter (savaş saatlerden kısa) | bilinçli (kullanıcı kararı, WS92) | `druid.ts:170–172` (yalnız 0 HP / Incapacitated) | yok |
 | A12 | Biter: yeniden Wild Shape kullanınca | biçimden biçime geçiş, kullanım düşer | tam | `druid.ts:158`; `shape91.test.ts` "Brown Bear…ayıdan örümceğe"; D7 | WS91 |
 | A13 | Biter: Incapacitated | her komut sonunda | tam | `druid.ts:171`; `druid.test.ts` "Incapacitated olunca biçim biter"; D5 | Görev DRUID |
@@ -124,9 +124,9 @@ Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, 
 |---|---|---|---|---|---|
 | C1 | Oluşturucuda bilinen biçim seçimi | sayı/CR/uçuş/tür sınırlı, "artık uygun değil" notu, yüzme hızı, TR/EN | tam | `builder/Features.tsx:96–140`; `strings.ts:127`, `:203`; `strings.en.ts:411`, `:487` | WS87 |
 | C2 | Seçim yoksa | savaşta en yüksek CR'li N biçim | tam | `druid.ts:262–272` | Görev DRUID |
-| C3 | Savaş kurulumunda başlangıç biçimi | yok (Game Master kurulumunda alan yok) | yok | `app/setup.ts`, `GmScreen.tsx` (karşılık yok) | yok |
+| C3 | Savaş kurulumunda başlangıç biçimi | WS92 (92+): kurulumda "biçimde başla" (Game Master ve Serüven kurulumu; kullanım harcanır, kurulumda çıkış yok) | tam | `app/setup.ts`, `GmScreen.tsx` (karşılık yok) | yok |
 | C4 | Arayüzde giriş/çıkış | "Hayvan formu: X" / "Normal hâle dön" düğmeleri | tam | `MapBattle.tsx:1648–1651`; `strings.tr2.ts:478`, `strings.en.ts:1203` | Görev DRUID |
-| C5 | Biçim kartı | ayrı kart yok; jeton biçimin, çekmecede AC/hız biçiminki | kısmi | `druid.ts:90` (`avatar`), `MapBattle.tsx` `Drawer` | yok |
+| C5 | Biçim kartı | jeton biçimin; WS92: çekmecede "Wild Shape biçimi: X · geçici HP N · savaş sonunda biter" satırı (TR/EN) | tam | `druid.ts:90` (`avatar`), `MapBattle.tsx` `Drawer` | yok |
 | C6 | Günlük satırları | girdi / döndü (nedenle), TR/EN | tam | `log.ts:152`; `strings.tr2.ts:320`, `strings.en.ts:936` | Görev DRUID |
 | C7 | Replay ve kayıt | biçim değerleri olayda; replay veriden bağımsız; kayıt sürümü değişmedi | tam | `druid.test.ts` (`r.replays()`), `shape91.test.ts` replay | WS91 |
 | C8 | Yapay zekâ biçime girişi | yalnız slotu bitince, konsantre değilken | bilinen | `ai.ts:2041–2046` | Görev DRUID, WS91 "Kalanlar" |

@@ -10,6 +10,7 @@
  * - Biçim özellikleri: STR/DEX skoru biçimden, Rampage biçimde, Illumination parlak + loş, atlama özellikleri doğal atlama
  *   kuralıyla, Water Breathing karada nefes, Bubble Dash yalnız o hareket, Cacophony dezavantajları, sabit 1 hasar, Multiattack
  *   bileşimi (Brown Bear, Lion).
+ * - Kurulumda "biçimde başla" (`wild_shape` kurulumda; Game Master ve Serüven kurulumu).
  * 91 ve altı (eski kayıt, replay) aynen.
  */
 import type { BattleState } from './types';

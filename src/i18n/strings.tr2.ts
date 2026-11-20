@@ -63,6 +63,11 @@ export const TR_EXTRA = {
   setupUi: {
     advanced: 'Gelişmiş', advancedHelp: 'Çoğu oyunda dokunman gerekmez.', groupOn: 'Grubu aç', groupOff: 'Grubu kapat',
     familiarForm: 'Hayvan biçimi', familiarType: 'Ruh türü',
+    // Görev WS92: kurulumda Wild Shape biçiminde başlama.
+    wildStart: (n: string) => `${n}: biçimde başla`, wildStartForm: 'Biçim', wildStartGo: (f: string) => `Biçime gir: ${f}`,
+    wildStartNote: (left: number) => `Wild Shape kullanımı harcanır (kalan ${left}); biçim savaş sonunda biter.`,
+    wildStartIn: (f: string) => `Biçimde: ${f} (savaşta bonus eylemle normal hâle döner).`,
+    wildFormLine: (f: string, temp: number) => `Wild Shape biçimi: ${f}${temp > 0 ? ` · geçici HP ${temp}` : ''} · savaş sonunda biter`,
     familiarKind: {
       celestial: 'Celestial (Göksel): Göksel bir ruh. Işık ve iyilik varlıklarına bağlı.',
       fey: 'Fey (Peri): Peri âleminden bir ruh. Doğa ve büyü varlıklarına bağlı.',

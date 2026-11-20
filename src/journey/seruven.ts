@@ -13,7 +13,9 @@ import type { CharacterSheet } from '../rules/stats';
 import { seferById, seferRoute } from './sefer';
 import { nextLevelXp } from './engine';
 import { combatantFromSheet } from '../battle/create';
-import { armor } from '../data';
+import { armor, monsters } from '../data';
+import { classKit } from '../rules/classFeatures';
+import { eligibleForms, shapeLimits } from '../battle/druid';
 import { skillBonus, type Skill } from '../rules/skills';
 import type { JourneyMember, JourneyStop } from './types';
 import { gorevById, irkBaslangic, urunById, satisFiyati, yerlesimById, yerlesimHarita, YERLESIM } from '../yerlesim/yerlesim';
@@ -81,6 +83,8 @@ export interface SeruvenState {
   result: 'won' | 'lost' | null;
   /** Kuyruk 32: uzun dinlenme sayısı (bağlantı sınavı yeniden denemesi), açılan bağlantılar, son başarısız denemedeki dinlenme sayısı. */
   rests?: number; links?: string[]; linkTry?: Record<string, number>;
+  /** Görev WS92: üye başına son Wild Shape biçim değişiminin yapıldığı dinlenme sayısı (uzun dinlenmede bir değişim). */
+  formSwaps?: Record<string, number>;
   /** Kuyruk 35: atlanan savaş düğümleri (`savaslariAtla` test anahtarı; "atlandı"). */
   skipped?: string[];
   /** Kuyruk 34b: ırka göre başlangıç sayfası (varsa sayfa geçişleri iki yönde serbest); bulunulan yerleşim; görevler. */
@@ -139,6 +143,11 @@ export type SeruvenCommand =
   | { type: 'tasma_cikar'; yol: 'altin' | 'hizmet' }
   /** Kuyruk K48: Moral: ölü üyeyi dirilt (yerleşim tapınağı altınla ya da partide diriltme büyüsü). */
   | { type: 'moral_dirilt'; memberId: string; yol: 'tapinak' | 'buyu' }
+  /**
+   * Görev WS92 (SRD 5.2.1 s. 42 "Known Forms"): Wild Shape biçim listesi: boş yere biçim eklenir (sınıra dek, her zaman);
+   * dolu listede bir biçim yenisiyle değişir (son uzun dinlenmeden beri bir kez).
+   */
+  | { type: 'form_swap'; memberId: string; from: string | null; to: string }
   /** K47: dünya haritasında yürü, hızlı seyahat (gemi/uçuş), yumuşak kilit kontrolü (`src/world/roam.ts`). */
   | RoamCommand;
 
@@ -161,6 +170,8 @@ export type SeruvenEvent =
   /** Kuyruk K48: diriltme (tapınak ya da büyü): durumlar (dirilen + büyücünün slotu) ve harcanan altın. */
   | { type: 'seruven_dirildi'; memberId: string; yol: 'tapinak' | 'buyu'; statuses: Record<string, CharacterStatus>; gold: number }
   | { type: 'seruven_leveled'; level: number }
+  /** Görev WS92: üyenin Wild Shape biçim listesi değişti (`swap`: değişim, dinlenme sayısına bağlanır). */
+  | { type: 'seruven_forms'; memberId: string; forms: string[]; swap: boolean }
   | { type: 'seruven_link_checked'; link: string; total: number; dc: number; success: boolean; by: string }
   | { type: 'seruven_link_crossed'; link: string; page: string; node: string; flags?: string[]; statuses?: Record<string, CharacterStatus> }
   | { type: 'seruven_yerlesim'; yerlesim: { id: string; map: string | null; from: string | null; seen: string[] } | null; statuses?: Record<string, CharacterStatus> }
@@ -336,6 +347,7 @@ export function executeSeruven(state: SeruvenState | null, cmd: SeruvenCommand):
       return done(state, evs);
     }
     case 'moral_dirilt': return moralRevive(state, cmd);
+    case 'form_swap': return formSwap(state, cmd);
     case 'world_walk': case 'fast_travel': case 'world_check': {
       const r = roamEvents(state, cmd, (k) => toggleOn(state, k), bestSkill, heavyArmorMember);
       return typeof r === 'string' ? fail(r) : done(state, r);
@@ -394,6 +406,8 @@ function reduceBase(s: SeruvenState | null, e: SeruvenEvent): SeruvenState | nul
     case 'seruven_rested': return { ...s, done: [...s.done, e.key], rests: (s.rests ?? 0) + 1, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_moral': return { ...s, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
     case 'seruven_dirildi': return { ...s, gold: s.gold - e.gold, party: s.party.map((m) => ({ ...m, status: e.statuses[m.id] ?? m.status })) };
+    case 'seruven_forms': return { ...s, party: s.party.map((m) => (m.id === e.memberId ? { ...m, sheet: { ...m.sheet, wildShapeForms: [...e.forms] } } : m)),
+      ...(e.swap ? { formSwaps: { ...(s.formSwaps ?? {}), [e.memberId]: s.rests ?? 0 } } : {}) };
     case 'seruven_leveled': return { ...s, level: e.level, party: s.party.map((m) => (m.sheet.level < e.level ? { ...m, sheet: { ...m.sheet, level: e.level } } : m)) };
     case 'seruven_link_checked': return e.success ? { ...s, links: [...new Set([...(s.links ?? []), e.link])] } : { ...s, linkTry: { ...(s.linkTry ?? {}), [e.link]: s.rests ?? 0 } };
     case 'seruven_yerlesim': return {
@@ -710,4 +724,32 @@ function moralRevive(state: SeruvenState, cmd: { memberId: string; yol: 'tapinak
 /** Kuyruk 36: düğüm haritasında kapı (0 tabanlı konum). */
 export function nodeKapiAt(node: SeruvenNode, pos: { col: number; row: number }): { to: string | null } | undefined {
   return node.kapilar?.find((k) => k.hexes.some(([c, r]) => c - 1 === pos.col && r - 1 === pos.row));
+}
+
+/** Görev WS92: üyenin Wild Shape biçim sınırı ve uygun biçimleri (Druid değilse null). */
+export function memberForms(m: Pick<JourneyMember, 'sheet'>): { known: number; options: string[]; current: string[] } | null {
+  const f = classKit(m.sheet.classId, m.sheet.level, m.sheet.subclassId).usable.find((u) => u.effect.kind === 'wildShape');
+  const lim = f ? shapeLimits(f, m.sheet.level) : null;
+  if (!f || !lim) return null;
+  const options = eligibleForms(monsters, f, m.sheet.level).map((x) => x.id);
+  return { known: lim.known, options, current: (m.sheet.wildShapeForms ?? []).filter((id) => options.includes(id)) };
+}
+
+/** Görev WS92: biçim değişimi bu dinlenmede yapılabilir mi (ilk uzun dinlenmeden sonra, dinlenme başına bir kez). */
+export const formSwapReady = (s: Pick<SeruvenState, 'rests' | 'formSwaps'>, memberId: string): boolean => (s.rests ?? 0) > (s.formSwaps?.[memberId] ?? 0);
+
+function formSwap(state: SeruvenState, cmd: Extract<SeruvenCommand, { type: 'form_swap' }>): SeruvenResult {
+  const m = state.party.find((x) => x.id === cmd.memberId);
+  if (!m) return fail('Üye yok.');
+  const lim = memberForms(m);
+  if (!lim) return fail('Wild Shape yok.');
+  if (!lim.options.includes(cmd.to)) return fail('Bu biçim bu seviyede alınamaz.');
+  if (lim.current.includes(cmd.to)) return fail('Bu biçim zaten biliniyor.');
+  if (cmd.from === null) {
+    if (lim.current.length >= lim.known) return fail(`Biçim listesi dolu (${lim.known}).`);
+    return done(state, [{ type: 'seruven_forms', memberId: m.id, forms: [...lim.current, cmd.to], swap: false }]);
+  }
+  if (!lim.current.includes(cmd.from)) return fail('Değiştirilecek biçim bilinmiyor.');
+  if (!formSwapReady(state, m.id)) return fail('Biçim değişimi uzun dinlenmeden sonra bir kez.');
+  return done(state, [{ type: 'seruven_forms', memberId: m.id, forms: lim.current.map((x) => (x === cmd.from ? cmd.to : x)), swap: true }]);
 }
