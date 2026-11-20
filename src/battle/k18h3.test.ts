@@ -240,9 +240,11 @@ describe('K18 H3: Fighter, Monk, Rogue, Druid, Ranger, Wizard eklemeleri', () =>
       spellNames: ['Magic Missile', 'Shield', 'Misty Step', 'Fireball', 'Lightning Bolt', 'Counterspell'], spellbook: ['Magic Missile', 'Shield', 'Misty Step', 'Fireball', 'Lightning Bolt', 'Counterspell'] };
     const w = combatantFromSheet(sheet, { id: 'W', ownerId: 'p1' });
     expect(w.freeSpells?.['Magic Missile']).toBe('spellMastery');
-    expect(w.freeSpells?.['Misty Step']).toBe('spellMastery');
+    // Görev B93 (SRD 5.2.1 s. 79): Spell Mastery yalnız yapım süresi Action olan büyüde (Misty Step bonus eylem);
+    // Signature Spells her büyüye ayrı kaynak (signatureSpells / signatureSpells2).
+    expect(w.freeSpells?.['Misty Step']).toBeUndefined();
     expect(w.freeSpells?.['Shield']).toBeUndefined();
     expect(w.freeSpells?.['Fireball']).toBe('signatureSpells');
-    expect(w.freeSpells?.['Lightning Bolt']).toBe('signatureSpells');
+    expect(w.freeSpells?.['Lightning Bolt']).toBe('signatureSpells2');
   });
 });

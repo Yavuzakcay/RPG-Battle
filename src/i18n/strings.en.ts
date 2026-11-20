@@ -385,7 +385,7 @@ export const en: Strings = {
     rest: {
       status: (hp: number, max: number, dice: number, level: number) => `Status: HP ${hp}/${max} · Hit Point Dice ${dice}/${level}`,
       resources: (list: string) => `Left: ${list}`, slots: (list: string) => `Slots: ${list}`,
-      rested: 'Rested.', dead: 'Dead (resting does not revive).', down: '0 HP: must rest before the next battle.',
+      rested: 'Rested.', dead: 'Dead (resting does not revive).', down: '0 HP: must rest before the next battle.', shortNeedsHp: 'A Short Rest needs at least 1 HP (take a Long Rest or heal first).',
       short: 'Short rest', long: 'Long rest', revive: 'Mark as revived',
       dice: 'Hit Point Dice to spend', spend: (n: number) => `Spend ${n} dice and rest`,
       shortDone: (rolls: string, healed: number) => `Short rest: ${rolls || 'no dice'} → +${healed} HP; short-rest resources refilled.`,
@@ -1147,7 +1147,7 @@ export const en: Strings = {
     prevPage: 'Back to the previous page', raceStart: 'Start by ancestry (the first character\'s homeland)',
     // Görev WS92: Wild Shape known forms (SRD: replace one form after a Long Rest).
     forms: (n: number, max: number) => `Forms ${n}/${max}`, formsTitle: (name: string) => `${name}: Wild Shape forms`,
-    choices: 'Choices', choicesOpen: 'Choices (swap open)', choicesHelp: 'Level-up and long-rest choices: new picks any time; replacing an existing pick only as the class allows (on gaining a level / after a long rest).',
+    choices: 'Choices', choicesOpen: 'Choices (swap open)', choicesPending: 'Choices (pick needed)', choicesHelp: 'Level-up and long-rest choices: new picks any time; replacing an existing pick only as the class allows (on gaining a level / after a long rest).',
     formsFrom: 'Form to replace', formsTo: 'New form', formsAdd: 'Empty slot', formsGo: 'Replace', formsAddGo: 'Add',
     formsNote: 'Empty slots can be filled any time; with a full list one form can be replaced after a Long Rest. A form ends when the battle ends.',
     formsWait: 'A form was already replaced this rest: wait for the next Long Rest.',

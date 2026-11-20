@@ -18,9 +18,10 @@ import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
   POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, tomeCantrips, assignScore, resetScores, suggestScores, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, discoveryCap, discoveredSpells, secretsOpen, pointBuyCost, spellCounts, usesStandardArray, spellLimits, spellOptions, suggestedScores,
-  classScoped, featSkillCount, normalizeFeatSkills, otherSkillsOf, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
+  classScoped, featSkillCount, needsSubclass, normalizeFeatSkills, otherSkillsOf, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
+import { I } from '../rules/issueText';
 import { SKILLS, SKILL_IDS, type Skill } from '../rules/skills';
 import { classSpellList, type ClassSpell } from '../rules/spellList';
 import { carryLoad, type CarryLoad, type CarryRule } from '../rules/carry';
@@ -179,7 +180,9 @@ export function Builder(props: { initial: SavedCharacter; onSave: (c: SavedChara
   const allIssues = characterIssues(final, { carryRule });
   // Görev B93: seçim kipinde açılıştaki sorunlar (sayfada tutulmayan sınıf becerileri gibi) sayılmaz.
   const [baseIssues] = useState(() => (props.choices ? new Set(characterIssues(withSkills(boot.character), { carryRule: storedCarryRule() }).map((x) => x.text)) : null));
-  const issues = baseIssues ? allIssues.filter((x) => !baseIssues.has(x.text)) : allIssues;
+  // Görev B95 (A): seçim kipinde eksik alt sınıf açılışta da olsa istenir (Serüven'de otomatik atanmaz).
+  const subNeed = props.choices && !s.subclassId && needsSubclass(s) ? I().subclassNeeded(subclassLevel(s.classId) ?? 0) : null;
+  const issues = baseIssues ? allIssues.filter((x) => !baseIssues.has(x.text) || x.text === subNeed) : allIssues;
   const problems = issues.map((x) => x.text);
   const derived = useMemo(() => {
     try { return deriveStats(final.sheet); } catch { return null; }
@@ -692,7 +695,40 @@ function ClassStep({ c, setC, set, suggest, lockClass }: StepProps & { /** Göre
         invocations={s.invocations ?? []} onInvocations={(ids) => set({ invocations: ids })} known={s.spellNames ?? []} book={s.spellbook}
         weapons={(s.weapons ?? []).map((w) => w.name)} pactWeapon={s.pactWeapon} onPact={(w) => set({ pactWeapon: w })}
         forms={s.wildShapeForms ?? []} onForms={(ids) => set({ wildShapeForms: ids })} />
+      {lockClass && <MasteryPick s={s} set={set} />}
     </>
+  );
+}
+
+/**
+ * Görev B95 (A): Serüven seçim kipinde Weapon Mastery seçimi (donanım adımı bu kipte yok). Yetkin olunan silahlardan,
+ * hak kadar yuva; değişimin izni Serüven motorunda (`set_choices`, `data/secim-degisim.json`).
+ */
+function MasteryPick({ s, set }: { s: CharacterSheet; set: (p: Partial<CharacterSheet>) => void }) {
+  const right = masteryRight(s);
+  if (!right) return null;
+  const W = t().builder.wiz;
+  const chosen = s.weaponMasteries ?? [];
+  const options = masteryOptions(s);
+  return (
+    <div className="eq-group mastery-pick">
+      <p className="counters"><b>{W.masteryWord}</b> <span className={chosen.length === right.count ? 'ok' : ''}>{W.masteryCount(chosen.length, right.count)}</span></p>
+      <div className="card-actions">
+        {Array.from({ length: right.count }, (_, i) => (
+          <select key={i} aria-label={t().player.rest.drillSlot(i + 1)} value={chosen[i] ?? ''} onChange={(e: { target: { value: string } }) => {
+            const copy = [...chosen];
+            copy[i] = e.target.value;
+            set({ weaponMasteries: copy.filter(Boolean) });
+          }}>
+            <option value="">—</option>
+            {options.filter((w) => w.id === chosen[i] || !chosen.includes(w.id)).map((w) => {
+              const m = weaponMasteryId(w.id);
+              return <option key={w.id} value={w.id}>{w.name} ({m ? masteryText(m)?.name ?? m : ''})</option>;
+            })}
+          </select>
+        ))}
+      </div>
+    </div>
   );
 }
 

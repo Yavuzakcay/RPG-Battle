@@ -2,7 +2,14 @@
 
 Tarih: 2026-11-20. Salt okunur denetim; ürün koduna dokunulmadı. Ağaç: `birlesik` `9e36356e` (güncel kural sürümü 87, kayıt sürümü `SAVE_VERSION` 23).
 
-## Sonuç
+> **Güncelleme 2026-11-20 (GENEL-SAVAS-DENETIM düzeltmeleri):** bu belge kural sürümü 87 anındaki durumu yazar ve **artık
+> geçerli değil**. Ready eylemi kural sürümü 90'dan beri var (kayıt sürümü 24): komut ve tepki tetiği `src/battle/ready.ts`,
+> veri `data/hazirla.json`, arayüz `src/ui/ReadyPanel.tsx`, testler `src/battle/ready.test.ts`, regresyon
+> `src/sim/readyRegresyon.test.ts`; kararlar DECISIONS.md "Hazırla (Ready) eylemi: kural sürümü 90". Kalan: yapay zekâ Ready
+> kullanmıyor (R3), yanıtlar yalnız tek saldırı / hareket / büyü (`harita/belgeler/GENEL-SAVAS-DENETIM.md` A23, A27). Aşağıdaki
+> metin geçmiş kaydı olarak korunuyor.
+
+## Sonuç (sürüm 87; eski)
 
 **Ready eylemi oyunda yok.** Ne komutu, ne olayı, ne arayüz düğmesi, ne tetik türü, ne yapay zekâsı, ne de testi var. Kaynaklarda yalnızca "yok" kaydı ve 2026-10-16 tarihli, uygulanmamış bir tasarım önerisi bulunuyor. CLAUDE.md "Bilinen eksikler" satırı ("Hazırla (Ready) eylemi | yok") doğru.
 

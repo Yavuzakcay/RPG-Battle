@@ -99,12 +99,14 @@ describe('Dungeondex prospektüsü: feat, tür özelliği, sınıf özelliği, a
     expect(rage.find((s) => s.key === 'durum')?.badge?.tone).toBe('ok');
   });
 
-  it('alt sınıf: yüklü her alt sınıf rol + özellik listesiyle; EN arayüzde verideki İngilizce metin', () => {
+  it('alt sınıf: yüklü her alt sınıf için kartı tekrar etmeyen prospektüs (rol ve özellik satırı yok, durum sayımı var)', () => {
     const L = t().dex.pro;
     expect(classData.subclasses.length).toBeGreaterThanOrEqual(12);
     for (const sc of classData.subclasses) {
       const secs = altSinifProspektus(sc, L, 'tr');
-      expect(secs.find((s) => s.key === 'etken')?.rows.length ?? 0, sc.id).toBe(sc.features.length);
+      expect(secs.some((s) => s.key === 'ne' || s.key === 'etken'), sc.id).toBe(false);
+      const durum = secs.find((s) => s.key === 'durum');
+      if (sc.features.length) expect(durum?.rows[0]?.text, sc.id).toMatch(/\d/);
       for (const s of secs) if (s.key !== 'durum') expect(s.rows.length, `${sc.id}/${s.key}`).toBeGreaterThan(0);
     }
   });

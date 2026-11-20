@@ -175,3 +175,13 @@ Probe'larla denenip **doğru** bulunan davranışlar (regresyon için not): Seco
 - **P3** (`zzTmpFighter3`, haritalı): silah seçenekleri (`mastery`, `weaponDamage`, `masteryDc`), Cleave (erişim dışı aday yok; bitişikte 6 hasar; aynı tur ikinci yok), Graze, Topple, Push (ilk/son saldırı, `pushChoice`), Tactical Master (L8/L9, Topple reddi, ustalıksız silah), Tactical Shift (3 altıgen, 4 altıgen red, sonra yürüyüş).
 - **P4** (`zzTmpFighter4`): YZ komut dizileri (L5 HP 15, L17, L9 HP 20).
 - **P5** (`zzTmpFighter5`): alt sınıfsız L5 Fighter (`critOn` 20), 7. seviyede Defense + Archery (AC 17), iki Defense (AC 17; oluşturucu `featOnce` kodu `advancement.ts:258`).
+
+## Görev B95 (2026-11-20)
+
+**A) Sürümsüz (yapıldı).** `data/secim-degisim.json`'a `fighter` kaydı eklendi; Serüven'de "Seçimler" düğmesi çıkar ve B93'ün ortak yardımcısıyla (`src/rules/levelChoices.ts`, `set_choices`) seçim yapılır. Yeni seçimler (alt sınıf 3. seviyede, ASI/feat ve Epic Boon yuvaları, yeni Weapon Mastery hakkı; seviyede Fighting Style değişimi, SRD 5.2.1 s. 47 "Whenever you gain a Fighter level, you can replace the feat"; uzun dinlenmede bir ustalık değişimi, s. 48) yalnız eklenir; eksik seçim varken düğme "Seçimler (seçim bekliyor)" olur (`pendingChoices`). Serüven'de alt sınıf **otomatik atanmaz**: seçim kipinde (Builder `choices`) boş alt sınıf açılışta da olsa eksik sayılır, Kaydet onu ister. Seçim kipine Weapon Mastery seçicisi eklendi (donanım adımı bu kipte yok). Test: `src/rules/levelChoices.test.ts` "Görev B95 (A)", `src/screens/b95Secim.test.tsx`.
+
+Not: `stil` anahtarı Fighting Style yuvalarını birlikte sayar; Champion'ın Additional Fighting Style yuvası da (bizim sürüm) seviye başına bir değişime girer (yaklaşık).
+
+**B) Sürümlü (bekliyor).** Kapı: `birlesik`'te kural sürümü 95 ve 96 yok (güncel 94); Tactical Master seçimi (arayüz/komut), Heroic Warrior'ın ilk turu, Indomitable'ın ölüm save'i ve boşa harcanmaması, Second Wind'in tam canda menüde açık olması yapılmadı.
+
+**C) Ertelendi, karar gerekli.** Yok (Fighter'a özgü C maddesi verilmedi).

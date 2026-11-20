@@ -2,6 +2,49 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Görev B95 (A): Barbarian, Fighter, Monk, Rogue Serüven seçimleri (2026-11-20; sürümsüz, kural ve kayıt sürümü değişmedi)
+
+Kaynak: `harita/belgeler/{BARBARIAN,FIGHTER,MONK,ROGUE}-DENETIM.md` "Görev B95" bölümleri. Ölçüt SRD 5.2.1.
+- **Bağlama (veri):** B93'ün ortak yardımcısı (`src/rules/levelChoices.ts`, `data/secim-degisim.json`); yeni yol yazılmadı. Barbarian uzun dinlenmede bir Weapon Mastery (s. 29), Fighter seviyede Fighting Style (s. 47) ve uzun dinlenmede bir ustalık (s. 48), Rogue uzun dinlenmede bütün ustalıklar (s. 62), Monk boş kayıt. Alt sınıf, ASI/feat, Epic Boon, Expertise (Rogue 6, s. 61) ve yeni ustalık hakkı yalnız eklenir. Artık on iki sınıfın hepsi bağlı.
+- **Alt sınıf otomatik atanmaz (kullanıcı kararı):** Serüven'de alt sınıf seviyesine çıkan karakterin alt sınıfı boş kalır ve istenir: Builder seçim kipinde boş alt sınıf açılışta da olsa eksik sayılır (diğer açılış sorunları yine yok sayılır); `migrateSubclasses` yalnız karakter listesinde (eski kayıt) kalır. Eksik seçim (alt sınıf, boş yuva, ustalık, Expertise) varken "Seçimler" düğmesi öne çıkar (`pendingChoices`, sınıf adsız).
+- **Ustalık seçici seçim kipinde:** Serüven seçim kipinde donanım adımı yoktu; Ranger/Paladin'in (B94) ve yeni bağlanan sınıfların ustalık değişimi arayüzden yapılamıyordu. Karakter adımına hak kadar yuvalı seçici eklendi (`MasteryPick`); izin denetimi motorda (`set_choices`).
+- **Yaklaşık:** `stil` anahtarı Fighting Style yuvalarını birlikte sayar; Champion'ın Additional Fighting Style yuvası da seviye başına bir değişime girer.
+- **Bekleyen:** B (sürümlü düzeltmeler) `birlesik`'te kural sürümü 95 (Swarm) ve 96 (genel savaş düzeltmesi) olmadığı için yapılmadı. C maddeleri (Stroke of Luck sorusu ve kritik, Monk silahıyla bonus vuruş modeli, YZ'nin Intimidating Presence/Patient Defense/Step of the Wind/Wholeness of Body/Superior Defense/Quivering Palm/Cunning Strike kullanması) ertelendi, karar gerekli.
+- **Test değişikliği:** `levelChoices.test.ts` "bağlı olmayan sınıf" testi Fighter yerine bilinmeyen sınıf kimliğiyle (Fighter artık bağlı).
+
+## GENEL-SAVAS-DENETIM düzeltmeleri, sürümsüz grup (2026-11-20; kural ve kayıt sürümü değişmedi)
+
+Kaynak `harita/belgeler/GENEL-SAVAS-DENETIM.md`. Kullanıcı kuralı: SRD 5.2.1 ölçüttür; oyun mekaniğini kökten bozan madde uygulanmaz,
+"ertelendi, karar gerekli" yazılır. Sürümlü grup (ölüm save'i, Unconscious + Prone, direnç/zayıflık, Poisoned, Petrified, gizlenme,
+Ready bayrakları, alan geçişi, stabilize) kapıyı bekliyor: `birlesik`'te kural sürümü 94 (Swarm 95 henüz yok).
+
+- **Dinlenme SRD 5.2.1'e (savaş dışı, `src/rules/rest.ts`, `src/rules/characterRest.ts`):**
+  - Uzun dinlenme harcanan **bütün** HP zarlarını geri verir (SRD s. 185 Long Rest "Regain All HP … all spent Hit Point Dice";
+    eskiden 2014 kuralı, yarısı en az 1). Denetim G5.
+  - Kısa dinlenmede HP zarı başına **en az 1 HP** (s. 187 Short Rest "minimum of 1 Hit Point"; eskiden en az 0). Denetim G2.
+  - 0 HP'de **kısa dinlenme başlamaz** (s. 187 "To start a Short Rest, you must have at least 1 Hit Point"): zar harcanmaz, kısa
+    dinlenme kaynakları dolmaz; karakter listesinde düğme kapalı, açıklama `player.rest.shortNeedsHp` (TR/EN). Yolculukta 0 HP üye kısa
+    dinlenmeden yararlanmaz. Denetim G1.
+  - **Ertelendi, karar gerekli:** 0 HP'de **uzun dinlenme** yasağı (s. 185 "To start a Long Rest, you must have at least 1 Hit
+    Point"; denetim G6, D21). Doğrudan uygulanırsa 0 HP'deki karakter kalıcı olarak 0'da kalır (savaş dışı iyileşme yolu yalnız
+    iksir/tapınak); Serüven `bozgundaYenidenDene` (bütün parti 0 HP → uzun dinlenme) ve Hapishane `dragBack` kırılır. SRD'nin kendi
+    çıkışı ("A Stable creature that isn't healed regains 1 Hit Point after 1d4 hours", s. 18) savaş sonunda ölmekte/stabil ayrımının
+    kayda yazılmasını (D21) ve savaş dışı zaman modelini ister; Kolay `reviveOneHp` ev kuralıyla birlikte karara bağlanmalı.
+  - Testler: `rest.test.ts` (zar başına en az 1, 0 HP, bütün HP zarları), `characterRest.test.ts` (uzun dinlenme `fullStatus`).
+    Beklentiler eski 2014 kuralını sabitliyordu; SRD 5.2.1 s. 185/187'ye göre güncellendi. Denge (`sim:zincir`) ölçülmedi (kullanıcı:
+    denge simülasyonu yok); kısa dinlenme ev kuralı sınırı (2) değişmedi.
+- **Yanlış atıf düzeltmesi:** aşağıdaki "Dinlenme" kararındaki "harcanan HP zarlarının yarısı geri gelir (SRD 5.2.1)" satırı yanlış
+  atıftı: o kural 2014 SRD'sinindir; SRD 5.2.1 s. 185 bütününü verir. Eski satır geçmiş kaydı olarak duruyor, bu karar onu geçersiz kılar.
+- **Long Jump notu düzeltmesi:** K68a'daki "⚠ Long Jump'ta Game Master seçenekleri (alçak engel DC 10 Athletics, zorlu araziye inişte
+  DC 10 Acrobatics) yok" satırında zorlu araziye iniş Game Master seçeneği **değil, zorunlu** kuraldır (SRD s. 185: "If you land in
+  Difficult Terrain, you must succeed on a DC 10 Dexterity (Acrobatics) check or have the Prone condition"); yalnız alçak engel
+  Game Master seçeneğidir. Uygulanması sürümlü (denetim E11/F14), sürümlü grupla.
+- **Eski belgeler:** `harita/belgeler/READY-DURUM.md` (sürüm 87 anı, "Ready yok") başına güncelleme notu; `Y1-ENVANTER.md` #13 Ready
+  satırı (mekanik sürüm 90'dan beri var, YZ kullanmıyor); `docs/SRD-DENETIM.md` "Durumlar (15)" tam → kısmi (`scripts/srd-denetim.ts`
+  ile yeniden üretildi; canavar durum bağışıklığı sayısı güncel veriden 75 → 98); `ENVANTER-DIGER.md` durum satırına güncelleme.
+- **Ertelenen, karar bekleyen (uygulanmadı):** `nightVision` varsayılanı ve `darkness` haritaları (H3, H4, H12), Knocking Out (D10),
+  yapay zekânın Dash yapmaması (A45; denge etkisi), 0 HP uzun dinlenme (G6/D21). Belgede "Karar gerekli" ve satırlarında işaretli.
+
 ## Görev SWARM95: SRD Swarm altıgen işgali + sürü parçacıkları (2026-11-20; kural sürümü 95 `SWARM95_VERSION`)
 
 Tek kural sürümü 95 (`src/battle/swarm95Surum.ts`, `swarm95On`); 94 ve altı kayıt/replay eski davranışta (sürü yaratıkların içinden geçer, başka yaratığın altıgeninde duramaz). Olay biçimi değişmedi, kayıt sürümü aynı. Ölçüt SRD 5.2.1 Swarm: "The swarm can occupy another creature's space and vice versa, and the swarm can move through any opening large enough for a Tiny …".
@@ -7056,7 +7099,7 @@ Mobil 390×844 (hazırlık 155 ms; kapalı göz 202.9,365.8 px, geniş göz 207.
   - Biten savaşta oyuncu karakterlerinin HP'si, kaynakları ve slotları kayıtlı karaktere yazılır. Sonraki savaş bu durumla başlar.
   - 0 HP'deki ya da ölü karakter partiye alınamaz. Ölü için "Diriltildi say" düğmesi var.
 - **Kısa dinlenme:** HP zarı harcanır (zar + CON); kısa dinlenmede yenilenen kaynaklar dolar; Warlock slotları dolar.
-- **Uzun dinlenme:** Her şey dolar; harcanan HP zarlarının yarısı geri gelir (SRD 5.2.1).
+- **Uzun dinlenme:** Her şey dolar; harcanan HP zarlarının yarısı geri gelir (SRD 5.2.1). ⚠ Yanlış atıf (2014 kuralı); 2026-11-20 "GENEL-SAVAS-DENETIM düzeltmeleri, sürümsüz grup" kararı: SRD 5.2.1 s. 185 bütün HP zarları.
 - **Arayüz:** Karakter listesi ve Game Master kurulumu ("Herkes uzun dinlensin").
 - **Kayıt sürümü 7:** kaynak kaydı biçimi. 3–7 yüklenir; eski üç alanlı kaynak nesnesi aynı okunur (test).
 
