@@ -59,6 +59,7 @@
     "check:icerik": "vite-node scripts/icerik-kontrol.ts",
     "paket-durum": "vite-node scripts/paket-durum.ts",
     "efekt-tablosu": "node scripts/buyu-efekt-tablosu.mjs",
+    "dd-gorsel": "vite-node scripts/dungeondex-gorsel-esleme.ts",
     "buyu-efekt-tablosu": "node scripts/buyu-efekt-tablosu.mjs"
   },
   "dependencies": {
