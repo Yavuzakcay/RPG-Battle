@@ -572,6 +572,7 @@
         "long": "all"
       },
       "freeSpellList": {
+        "alwaysPreparedOnly": true,
         "classes": [],
         "names": [
           "Blur",

@@ -1416,6 +1416,7 @@ export interface ResourceDef {
   freeSpellList?: { classes: string[]; /** Kuyruk 19: yalnızca bu adlar (Natural Recovery: daire büyüleri). */ names?: string[]; minLevel?: number; maxLevel: number; lastResort?: boolean;
     /** Görev B93: yalnız bu yapım süresindeki büyü (Spell Mastery: Action). */ castingTime?: string;
     /** Görev B93 (sürüm 93+, Divine Intervention): listedeki herhangi bir büyü, hazırlanmamış olsa da (oyuncu isteğiyle `cast_spell.free`). */ anyFromList?: boolean;
+    /** Görev B94 (sürüm 94+, Natural Recovery): `names` ile birlikte yalnız karakterin her zaman hazır büyüleri (seçili arazinin Circle Spells). */ alwaysPreparedOnly?: boolean;
     /** Kuyruk 18 H3: seviye başına yalnızca bilinen ilk büyü (Spell Mastery, Signature Spells: seçim arayüzü yerine). */ perLevel?: number;
     /** Kuyruk 19: sınıf ve seviye sınırı dışında bu adlar da (Greater Divine Intervention: Wish). */ extraNames?: string[] };
   /** Görev SORCERER: savaşta dönüştürmeyle bu kaynağın tavanı aşılmaz (Font of Magic: Sorcery Points). */

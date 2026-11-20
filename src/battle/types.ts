@@ -775,6 +775,8 @@ export interface Combatant {
   auraSave?: number;
   /** Görev B94 (A2, sürüm 94+): Aura of Protection'ın kendi bonusu save'lerde yazılı değil; `auraSaveOf` (yaşarken) ekler. */
   auraOwnLive?: boolean;
+  /** Görev B94: yalnız savaş kurulumuna dek (startBattle siler): 93 ve altı savaşta geri eklenecek eski slotsuz büyüler. */
+  freeSpellsPre94?: Record<string, string>;
   /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
   imza?: string;
   /** Y1 G2: yapay zekâ rolü (Game Master `set_ai_role`; yoksa veriden türetilir, `ai/evaluate.ts`). */

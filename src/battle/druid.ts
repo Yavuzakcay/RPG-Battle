@@ -9,6 +9,7 @@
  * - Land's Aid (`landsAid` etkisi): 60 ft içinde 10 ft küre, seçilen yaratıklar CON save, Necrotic; bir dost iyileşir.
  * Saf.
  */
+import { b94On } from './b94Surum';
 import { healRoll } from './healMax';
 import { globalRule } from './ruleControl';
 import { spiderOver } from './karadul';
@@ -249,7 +250,10 @@ export function executeLandsAid(state: BattleState, actor: Combatant, f: UsableF
       damageRolls: dmg.rolls, rawDamage: raw, appliedDamage: adj.amount, damageType: 'necrotic', damageNote: adj.note, targetHpAfter: fx.hpAfter,
       effects: fx.effects, conditionsAdded: [], ...(save.extra ? { bonusDice: save.extra } : {}) });
   }
-  const ally = living.filter((c) => c.side === actor.side && c.hp < c.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+  // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 "One creature of your choice in that area regains HP"): 0 HP'deki (ölmemiş) dost da
+  // iyileşir ve ayağa kalkar; en yaralı (0 HP önce).
+  const healable = b94On(state) ? Object.values(state.combatants).filter((c) => c.hp <= 0 && c.life !== 'dead' && !c.civilian && !c.summon?.gone && inside(c)) : [];
+  const ally = [...living, ...healable].filter((c) => c.side === actor.side && c.hp < c.maxHp).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
   if (ally) {
     const heal = healRoll(state, ally, `${n}d6`, rng, actor.id);
     const after = applyHealing(ally.hp, ally.maxHp, heal);
