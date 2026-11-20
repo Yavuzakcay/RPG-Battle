@@ -218,7 +218,7 @@ const LONG_PRESS_MS = 450;
 const TOAST_MS = 4000;
 const BUTTON = 56;
 
-type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj' | 'special' | 'ready' | 'readyHex';
+type Mode = 'idle' | 'gmSurface' | 'gmObject' | 'object' | 'attack' | 'spells' | 'areas' | 'spell' | 'aim' | 'pull' | 'erupt' | 'followup' | 'shove' | 'jump' | 'help' | 'stabilize' | 'offhand' | 'feature' | 'strike' | 'effect' | 'summon' | 'horde' | 'teleport' | 'steer' | 'distract' | 'item' | 'followHex' | 'tk' | 'sphere' | 'pick' | 'shift' | 'pickHex' | 'throwObj' | 'special' | 'ready' | 'readyHex';
 
 /**
  * Pencereye sığan, görsel oranını koruyan sahne boyutu (kaydırma yok). Görev D: telefon dikeyde (`portrait`) sahne harita
@@ -1074,6 +1074,12 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
         .filter((c) => c.id !== actorId && execute(state, { type: 'help', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
         .map((c) => c.id));
     }
+    if (mode === 'stabilize') {
+      // GENEL96 A15 (SRD 5.2.1 s. 18 Stabilizing): ölmekte olan yaratıklar (motorda denenerek).
+      return new Set(Object.values(state.combatants)
+        .filter((c) => c.id !== actorId && c.life === 'dying' && execute(state, { type: 'stabilize', actorId, targetId: c.id }, contextFor(state, actorId), () => 0.5).ok)
+        .map((c) => c.id));
+    }
     if (mode === 'steer' && actor && !steerableSummon(state, actor)?.summon?.hand) return new Set(ramTargets(state, actor).map((c) => c.id));
     if (mode === 'pick' && pickCmd) {
       return new Set(Object.values(state.combatants).filter((c) => execute(state, pickCmd.make(c.id), contextFor(state, actorId), () => 0.5).ok).map((c) => c.id));
@@ -1474,6 +1480,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
     if (mode === 'help' && glowing.has(c.id)) run({ type: 'help', actorId, targetId: c.id });
+    if (mode === 'stabilize' && glowing.has(c.id)) run({ type: 'stabilize', actorId, targetId: c.id });
     if (mode === 'item' && itemPick && glowing.has(c.id)) run({ type: 'use_item', actorId, itemId: itemPick, targetId: c.id });
     if (mode === 'offhand' && glowing.has(c.id)) run({ type: 'offhand_attack', actorId, targetId: c.id });
     if (mode === 'horde' && glowing.has(c.id)) { const option = hordeOption(c.id); if (option) run({ type: 'horde_breaker', actorId, targetId: c.id, option }); }
@@ -1526,7 +1533,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   };
   // Hedef seçimi (Görev F): seçilebilir hedefin altıgeni kırmızı dolgu ve yanıp sönen kalın çerçeve,
   // jetonunda nişangâh simgesi; seçilemeyenler soluk. Renk körü için kalınlık ve simge de ayırt eder.
-  const targeting = active && ['attack', 'spell', 'shove', 'help', 'followup', 'pull', 'offhand', 'feature', 'strike', 'effect', 'horde'].includes(mode);
+  const targeting = active && ['attack', 'spell', 'shove', 'help', 'stabilize', 'followup', 'pull', 'offhand', 'feature', 'strike', 'effect', 'horde'].includes(mode);
   const pickHexes = new Set(targeting ? [...[...glowing].flatMap((id) => { const p = state.combatants[id]?.pos; return p ? [hexKey(p)] : []; }), ...fireKeys, ...forceKeys] : []);
   const hexClass = (h: Offset) => {
     const k = hexKey(h);
@@ -1582,7 +1589,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
   // Menzildeki uygun hedefler (motorda zarsız denenerek); menü açıkken hesaplanır.
   const menuShown = active && !!actor && menuOpen && mode === 'idle' && !optionsOpen;
   const reach = useMemo(() => {
-    const none = { attack: 0, shove: 0, help: 0, followup: 0 };
+    const none = { attack: 0, shove: 0, help: 0, stabilize: 0, followup: 0 };
     if (!menuShown || !actor) return none;
     const ctx = contextFor(state, actorId);
     const tryOn = (cmd: (id: string) => Command, own = false) => Object.values(state.combatants)
@@ -1591,6 +1598,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       attack: attackTargets(state, actorId).length,
       shove: tryOn((id) => ({ type: 'shove', actorId, targetId: id, effect: 'prone' })),
       help: tryOn((id) => ({ type: 'help', actorId, targetId: id })),
+      stabilize: Object.values(state.combatants).some((c) => c.life === 'dying') ? tryOn((id) => ({ type: 'stabilize', actorId, targetId: id }), true) : 0,
       followup: actor.concentration || actor.effects?.some((e) => e.held) ? tryOn((id) => ({ type: 'spell_followup', actorId, targetId: id }), true) : 0,
     };
   }, [state, actorId, menuShown]);
@@ -1653,6 +1661,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       act: () => { reset(); setReadyDraft({ ...READY_DRAFT, ...(actor.weaponOptions[0] ? { weapon: actor.weaponOptions[0].label } : actor.attacks.length ? { attackIndex: 0 } : {}) }); setMode('ready'); setMenuOpen(false); } }] : []),
     { key: 'help', label: N.help, reason: why({ type: 'help', actorId, targetId: '' }) ?? (reach.help === 0 ? Y.noAdjEnemy : undefined),
       act: () => { reset(); setMode('help'); setMenuOpen(false); } },
+    // GENEL96 A15 (SRD 5.2.1 s. 18): ölmekte olanı stabilize et (eylem, DC 10 WIS (Medicine)); yalnız ölmekte olan varken.
+    ...(Object.values(state.combatants).some((c) => c.life === 'dying') ? [{ key: 'stabilize', label: N.stabilize,
+      reason: reach.stabilize === 0 ? Y.noDying : undefined,
+      act: () => { reset(); setMode('stabilize'); setMenuOpen(false); } }] : []),
     // Kuyruk 43: sarf eşyaları (iksir; bonus eylem, kendine ya da 5 ft içindeki dosta).
     ...consumablesOf(actor).map((it) => ({ key: `item-${it.id}`, label: N.item(it.name, it.count),
       reason: why({ type: 'use_item', actorId, itemId: it.id, targetId: actorId }) ?? undefined,
@@ -1903,7 +1915,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     spell: spell && (spell.area || spell.mechanics.zone) ? B.hint.spellArea(spell.name) : spell && freeHexAnyOn(state) && hexCastable(state, spell) ? B.hint.spellHex(spell.name) : B.hint.spell(spell?.name ?? ''), aim: areaFreeShape(state, areaAct, choicePick) ? B.k65.hint : B.hint.aim(actor && areaAct ? areaActSpec(actor, areaAct)?.label ?? '' : ''),
     areas: t().area.pickHint,
     ready: t().readyUi.title, readyHex: t().readyUi.pickHint,
-    pull: B.hint.pull, help: B.hint.help, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
+    pull: B.hint.pull, help: B.hint.help, stabilize: B.hint.stabilize, distract: B.hint.distract, item: B.hint.item, erupt: B.hint.erupt, offhand: B.hint.offhand, horde: B.hint.horde, feature: B.hint.feature, strike: B.hint.strike,
     effect: spell ? t().effects.hint(spell.name, effectTargetCount(spell, slotPick ?? spell.level)) : '',
     summon: spell ? t().summons.hint(spell.name) : '',
     teleport: spell ? B.hint.teleport(spell.name, spell.mechanics.teleport?.rangeFt ?? 0)

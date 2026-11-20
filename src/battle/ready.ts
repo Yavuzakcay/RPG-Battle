@@ -18,6 +18,7 @@ import hazirla from '../../data/hazirla.json';
 import { distance, isInside, sameHex, type Offset } from '../rules/hex';
 import { askReaction, type ReactionOption } from '../rules/reactionChoice';
 import { isIncapacitated } from '../rules/conditions';
+import { genel96On } from './genel96Surum';
 import type { Rng } from '../rules/dice';
 import { fail, finish, isTargetable, type CommandResult } from './common';
 import { turnKey } from './economy';
@@ -257,7 +258,12 @@ function release(state: BattleState, c: Combatant, ev: Trigger, rng: Rng): Battl
     })];
   }
   if (resp.kind === 'move') {
-    const res = executeMove(s1, { ...me, movementUsed: 0 }, resp.to, rng);
+    // GENEL96 A8/A25 (sürüm 96+; SRD 5.2.1 s. 181 Disengage/Dash "for the rest of the current turn", s. 186 Ready "move
+    // up to your Speed"): kendi turunda alınan Disengage ve Dash tepki hareketine taşınmaz (yalnız bu hesap; durum değişmez).
+    const g96 = genel96On(s1);
+    const mover: Combatant = g96 ? { ...me, movementUsed: 0, economy: { ...me.economy, disengaged: false, dashes: 0 } } : { ...me, movementUsed: 0 };
+    const sMove = g96 ? { ...s1, combatants: { ...s1.combatants, [c.id]: mover } } : s1;
+    const res = executeMove(sMove, mover, resp.to, rng);
     if (!res.ok) return [];
     return [...head, ...res.events.map((e) => (e.type === 'moved' && e.actorId === c.id ? { ...e, reaction: true } : e))];
   }

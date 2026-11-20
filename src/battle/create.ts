@@ -37,6 +37,7 @@ import { monsterPhase } from './phase';
 import yuzeyler from '../../data/yuzeyler.json';
 import { CURRENT_RULES } from './ruleVersion';
 import { matrisOn } from './matrisSurum';
+import { genel96On } from './genel96Surum';
 import { ALT_SOY_VERSION } from './altSoySurum';
 import { soyEffects, soyFeatures, soyInitMod, withSoy } from './soyEtki';
 import { controlState, defaultRuleToggles } from './ruleControl';
@@ -889,7 +890,9 @@ export function startBattle(
   // Kuyruk K48: Moral tam modu (ev kuralı + sürüm 20): karakterlere havuz; kapalıysa kayıtlı Moral alanı silinir.
   const built = withPaket(withImza(withKaradul(withMorale(withSoy(withCelestial(stripItemsWhenOff(map ? applyForestStart(state) : state)))))));
   // Mekanik matris (sürüm 83+): durum bilmeyen save yolları için sürüm işareti baştan (sonra `syncAuras` korur; replay aynı).
-  const final = matrisOn(built) ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, srd83: true as const }])) } : built;
+  const m83 = matrisOn(built);
+  const g96 = genel96On(built);
+  const final = m83 || g96 ? { ...built, combatants: Object.fromEntries(Object.entries(built.combatants).map(([k, c]) => [k, { ...c, ...(m83 ? { srd83: true as const } : {}), ...(g96 ? { srd96: true as const } : {}) }])) } : built;
   return { state: final, events: [{ type: 'battle_started', state: final }] };
 }
 

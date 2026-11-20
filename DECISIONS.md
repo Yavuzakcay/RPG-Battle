@@ -2,6 +2,54 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## GENEL96: genel savaş denetimi sürümlü düzeltmeleri (2026-11-20; kural sürümü 96 `GENEL96_VERSION`; kayıt sürümü değişmedi)
+
+Tek sabit `src/battle/genel96Surum.ts` (`GENEL96_VERSION` 96, `genel96On`); yardımcılar `src/battle/genel96.ts`. 95 ve altı
+(eski kayıt, replay, `--kural-surumu 95`) aynen. Yeni olay türü yok (`revealed`, `skill_checked`, `condition_changed` var olan
+olaylar): kayıt sürümü değişmedi. Durum bilmeyen yollar (hasar profili, kalkma maliyeti, save kipi) için savaşçıda sürüm işareti
+`srd96` (`srd83` deseni: savaş başında ve `syncAuras`). Kaynak `harita/belgeler/GENEL-SAVAS-DENETIM.md`; karar kuralı (kullanıcı):
+SRD 5.2.1 ölçüt, oyun mekaniğini kökten bozan madde ertelenir. Testler `src/battle/genel96.test.ts` (her madde 95 ↔ 96, replay).
+
+- **A1 ölüm save'i (D16; SRD s. 17 "reset to zero when you regain any Hit Points or become Stable", s. 18):** ölüm save'iyle
+  stabil olunca sayaçlar 0/0 (`reduce.ts` `death_save`); stabilken hasar 1 başarısızlıkla yeniden ölmekte (eski: üstüne eklenip ölüm).
+- **A2 Unconscious (B39–B41, D14; s. 191 "You have the Incapacitated and Prone conditions … When this condition ends, you remain
+  Prone"):** yeni Unconscious olan ölmemiş yaratık Prone da olur (`syncUnconsciousProne`, Prone bağışığı hariç); uzaktan saldırı
+  avantaj + dezavantaj = normal, 5 ft içi otomatik kritik aynen; uyanınca Prone kalır. **Ertelendi, karar gerekli:** "elindekini
+  düşür" kolu: yapay zekâ yerden silah almıyor (`pick_up` adayı yok); uyanan YZ yaratığı (Sleep vb.) savaş boyu silahsız kalır.
+- **A3 direnç + zayıflık (D8; s. 17 Order of Application):** önce direnç, sonra zayıflık (10 → 5 → 10; `adjustDamage` `srdOrder`,
+  `damageProfile`). `combat.test.ts` eski satırı 95 davranışı olarak kaldı, SRD satırı eklendi.
+- **A4 Poisoned ve pasif Algı (B32, F11; s. 186 Poisoned, Passive Perception):** Poisoned yetenek kontrollerinde dezavantaj
+  (`checkBase`); pasif Algı kontrol kipinden ±5 (görmeye dayalı hafif örtü/loş, alt soy, Poisoned, Frightened dezavantajı ve
+  Enhance Ability gibi avantaj tek kipte birleşir; eskiden yalnız −5'ler toplanıyordu).
+- **A5 bağışıklıklar (B28, B29, B3, B4; s. 184 Immunity "doesn't affect you in any way", s. 186 Petrified):** Petrified bütün
+  hasara direnç + Poisoned bağışıklığı; Exhaustion'a bağışık (Zombie vb.) seviye kazanmaz; Shove Prone'a bağışık hedefi düşürmez.
+- **A6 gizlenme (C12; s. 183 Hide, s. 14):** komut içinde saldırı zarı atan her gizlenmiş açığa çıkar (`attackRevealEvents`:
+  Martial Arts/Flurry `bonus_strike`, takip saldırısı, tepki ve Ready saldırısı).
+- **A7 Ready hareketi (A8, A25; s. 181 Disengage/Dash "the rest of the current turn", s. 186 Ready):** tepki hareketi kendi turunun
+  Disengage'ini ve Dash katını taşımaz (`ready.ts`, yalnız hareket hesabının kopyası). Genel "sırası olan mı" kuralı kontrollü bineği
+  (binicinin turunda bineğin Disengage'i) bozacağı için yalnız Ready yolunda.
+- **A8 alan geçişi (E23, E24; s. 14 Moving around Other Creatures):** Tiny düşmanın altıgeninden geçilir, zorlu değil; iki boy büyük
+  ya da küçük düşmanın altıgeni zorlu arazi olarak geçilir; dolu altıgende durulmaz (`moveCostFn`; YZ yol bulma aynı işlev).
+  E26 (başkasının alanında tur biterse Prone) ayrı (paylaşım oluşmuyor).
+- **A9 stabilize (A15, A16, F2, F12, B16, D18; s. 7, s. 18):** doğal 20/1 otomatik değil; ortak kontrol yolu (Frightened, Poisoned,
+  Exhaustion, eklenti zarları, ikinci şans). Haritasız yükseklik değiştirmede aynı. Arayüz: Eylem menüsünde "Stabilize et" (yalnız
+  ölmekte olan varken; TR/EN, ipucu ve neden metni `noDying`). Spare the Dying (D19; s. 163): herhangi bir 0 HP yaratık, cantrip
+  menzili 5/11/17. seviyede 30/60/120 ft. Stabilize menzili (karar 8) ve YZ'nin stabilize etmesi değişmedi.
+- **10 (diğer SRD çelişkileri):** Kaçın: kaçınan Blinded ise ya da hızı etkiden 0'sa saldırı dezavantajı ve (hız 0) DEX save
+  avantajı yok (A10, A11; s. 181); Yardım eden kendi saldırısında yararlanmaz, işaret dostuna kalır (A13, F19; s. 182–183); kalkma
+  şu anki hızın yarısı (Exhaustion/Slow/Haste sayılır), etkiden hız 0'da kalkılamaz (E7, B33; s. 186); Long Jump zorlu araziye
+  iniş DC 10 DEX (Acrobatics), başarısızsa Prone, zorunlu (E11, F14; s. 185); ikinci nesne etkileşimi (`pick_up`) Utilize maliyet
+  yolundan (A33; s. 13); menzilli saldırıda yanındaki düşman seni görebilmeli (C8; s. 15); Stonecunning Tremorsense'i görme sayılmaz
+  (H10; s. 190).
+- **Doğrulanmadı (uygulanmadı):** sürünme + zorlu arazi (E8; s. 180 "1 extra foot (2 extra feet in Difficult Terrain)": toplam 3 mü
+  4 mü iki okumaya açık).
+- **Ertelendi, karar gerekli:** el başına bir yakalama / boş el (C17: el modeli tek elli kalkan + yan el kombinasyonlarını
+  kısıtlar), serbest nesne etkileşimi tek bütçe (A32: Kale/sızma YZ kapı akışı), Dash ve hız bütçesinde yürüme/uçuş ayrımı (A7, E3:
+  hareket bütçesi modelinin değişmesi), sürüklemede Tiny/iki boy istisnası (B20), büyüsüz High Jump (E13/F15), başkasının
+  alanında tur sonu Prone (E26), Knocking Out (D10), `nightVision`/`darkness` (H3, H4, H12), YZ Dash (A45, denge), 0 HP uzun
+  dinlenme (G6/D21), "elindekini düşür" (A2).
+- Denge simülasyonu çalıştırılmadı (kullanıcı kararı). Veriye bağlı test güncellemeleri commit mesajında.
+
 ## GENEL-SAVAS-DENETIM düzeltmeleri, sürümsüz grup (2026-11-20; kural ve kayıt sürümü değişmedi)
 
 Kaynak `harita/belgeler/GENEL-SAVAS-DENETIM.md`. Kullanıcı kuralı: SRD 5.2.1 ölçüttür; oyun mekaniğini kökten bozan madde uygulanmaz,

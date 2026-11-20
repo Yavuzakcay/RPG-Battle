@@ -27,6 +27,8 @@ import { saveMode, spellTimerEvents } from './durations';
 import { getEnvironment, spells, type Spell, type SpellMechanics } from '../data';
 import { danceMax, danceMoveHexes } from './danceLights';
 import { ruleVersion } from './ruleVersion';
+import { attackCtx96 } from './genel96';
+import { genel96On } from './genel96Surum';
 import type { AreaShape } from '../rules/area';
 import { autoFailsStrDexSave, attackSources, isAutoCritical } from '../rules/conditions';
 import { adjustDamage, applyHealing, halfDamage } from '../rules/damage';
@@ -998,7 +1000,7 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const sources = [
         ...environmentSources(env, tag),
         ...attackSources({
-          ...sc, ...(forceAt && sc.proneWithin5 !== undefined ? { proneWithin5: near5(t) } : {}), attackerSide: actor.side,
+          ...sc, ...(forceAt && sc.proneWithin5 !== undefined ? { proneWithin5: near5(t) } : {}), ...attackCtx96(current, actor, t),
           ...attackHeights(current, actor, t), ranged: rangedSpell, spell: true,
           targetAsleep: t.asleep === true,
         }),
@@ -2042,7 +2044,10 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
     : m.revive === 'revive' ? Object.values(state.combatants).find((c) => c.side === actor.side && c.life === 'dead' && !c.summon && !c.civilian
       && withinMinute(state, c) && (!state.map || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) <= 1))) : undefined;
   if (!t) return fail(m.revive === 'revive' ? 'Dokunma menzilinde ölü dost yok.' : 'Hedef seçmelisin.');
-  if (t.side !== actor.side || t.civilian && t.side !== 'party') return fail(`${spell.name} yalnızca dostlara.`);
+  // GENEL96 D19 (sürüm 96+; SRD 5.2.1 s. 163 Spare the Dying "Choose a creature within range that has 0 Hit Points and
+  // isn't dead"; "The range doubles when you reach levels 5 (30 feet), 11 (60 feet), and 17 (120 feet)"): herhangi bir yaratık.
+  const spare96 = m.revive === 'stabilize' && genel96On(state);
+  if (!spare96 && (t.side !== actor.side || t.civilian && t.side !== 'party')) return fail(`${spell.name} yalnızca dostlara.`);
   if (t.summon) return fail(`${spell.name} çağrılmış yaratığa yapılmaz.`);
   let ev: BattleEvent;
   if (m.kind === 'cure' && m.restoreChoices && globalRule(state, 'spellsK19')) {
@@ -2077,7 +2082,8 @@ function executeRestore(state: BattleState, actor: Combatant, cmd: CastCommand, 
     ev = { type: 'life_restored', targetId: t.id, hpAfter: 1, life: 'alive', label: spell.name };
   }
   if (t.id !== actor.id) {
-    const r = checkReach(state, actor, { ...t, hp: Math.max(1, t.hp) }, spellReach(spell, actor));
+    const reachSpell = spare96 && spell.level === 0 ? { ...spell, rangeFt: spell.rangeFt * 2 ** ((actor.level >= 5 ? 1 : 0) + (actor.level >= 11 ? 1 : 0) + (actor.level >= 17 ? 1 : 0)) } : spell;
+    const r = checkReach(state, actor, { ...t, hp: Math.max(1, t.hp) }, spellReach(reachSpell, actor));
     if (!r.ok) return r;
   }
   const slot = spendSlot(actor, spell.level, cmd.slotLevel, spell.name, cmd.free);

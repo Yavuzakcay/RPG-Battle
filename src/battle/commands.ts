@@ -42,7 +42,7 @@ import { quakeTurnEndEvents } from './quake';
 import { dragEvents, executeEscapeGrapple, executeStandUp, grappleCleanup, needsStand, standUpEvents } from './grapple';
 import { DODGE, dotEvents, executeDodge, executeHelp, timedCondition, timerEvents } from './durations';
 import { MOVE_ONLY_COMMANDS, speedZero, type Height } from '../rules/conditions';
-import { ruleVersion, srdConditions } from './ruleVersion';
+import { checkBase, ruleVersion, srdConditions } from './ruleVersion';
 import { rollD20, rollDie, rollTag, type Rng } from '../rules/dice';
 import { civilianLook } from './civilianLooks';
 import { playerThrowObject, throwObject } from './objectMotion';
@@ -53,7 +53,7 @@ import {
 } from './features';
 import { executeMonsterAttack, executeMultiattack } from './monsters';
 import { executeJump, executeMove, executePlace, executeStartBattle } from './movement';
-import { executeHide, executeSearch, noticeEvents, revealEvent } from './stealth';
+import { executeHide, executeSearch, noticeEvents, revealEvent, attackRevealEvents } from './stealth';
 import { executeDistract } from './distract';
 import { executeUseItem } from './items';
 import { executeSkillCheck } from './checks';
@@ -116,6 +116,9 @@ import { executeRally, moraleAfterEvents, moraleStartEvents } from './morale';
 import { alarmEvents, executeAlarmGroup, formGroupsEvent, patrolEvents, patrolOf } from './alarm';
 import type { BattleEvent, BattleState, Combatant, Command, CommandContext } from './types';
 import { executeReady, registerReadyCast } from './ready';
+import { finishCheck } from './effectDice';
+import { checkMode } from '../rules/skills';
+import { genel96On } from './genel96Surum';
 
 export type { CommandResult } from './common';
 export { canControl, currentActorId } from './common';
@@ -310,6 +313,9 @@ export function execute(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (morale.length) { next = applyEvents(next, morale); events = [...events, ...morale]; }
   const reveal = revealEvent(state, next, cmd);
   if (reveal) { next = applyEvents(next, [reveal]); events = [...events, reveal]; }
+  // GENEL96 C12 (sürüm 96+): saldırı zarı atan başka gizlenmişler (bonus vuruş, tepki, Ready, takip saldırısı).
+  const attackRevealed = attackRevealEvents(state, next, events, reveal ? (reveal as { actorId: string }).actorId : undefined);
+  if (attackRevealed.length) { next = applyEvents(next, attackRevealed); events = [...events, ...attackRevealed]; }
   // Kuyruk K54b: kayıtlı komut sonu kancaları (imza: Ortak Şifa, Peşini Bırakmayan).
   const hookedEnd = commandEndHookEvents(state, next, events, cmd, rng, applyEvents);
   if (hookedEnd.length) { next = applyEvents(next, hookedEnd); events = [...events, ...hookedEnd]; }
@@ -690,6 +696,15 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       return { ok: true, state: applyEvents(state, events), events };
     }
     const med = k19s ? actor.skills?.medicine ?? actor.modifiers.wis : actor.modifiers.wis;
+    // GENEL96 A16/F2/F12/B16 (sürüm 96+; SRD 5.2.1 s. 7: doğal 20/1 yalnız saldırı zarında otomatik; s. 18 Stabilizing DC 10
+    // WIS (Medicine)): ortak kontrol yolu (Frightened/Poisoned/alt soy kipi, Exhaustion ve eklenti zarları, ikinci şans).
+    if (genel96On(state)) {
+      const mode = checkMode(actor, 'medicine', checkBase(state, actor, 'normal', 'medicine'));
+      const r = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: med }));
+      const fin = finishCheck(actor, 'medicine', r.kept, med, 10, mode, rng);
+      events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: r.kept, success: fin.total >= 10 });
+      return { ok: true, state: applyEvents(state, events), events };
+    }
     const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: med }));
     const success = roll.kept === 20 || (roll.kept !== 1 && roll.kept + med >= 10);
     events.push({ type: 'stabilized', actorId: actor.id, targetId: target.id, natural: roll.kept, success });
@@ -827,9 +842,12 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
       change = { type: 'height_changed', actorId: actor.id, from, to, moved: true, check: null };
     } else {
       const dc = 12 + 3 * (to - from - 1);
-      const roll = rollD20('normal', rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.climbMod }));
-      const total = roll.kept + actor.climbMod;
-      const success = roll.kept === 20 || (roll.kept !== 1 && total >= dc);
+      // GENEL96 F2 (sürüm 96+; SRD 5.2.1 s. 7): yetenek kontrolünde doğal 20/1 otomatik değil; ortak kontrol kipi ve zarları.
+      const g96 = genel96On(state);
+      const mode = g96 ? checkMode(actor, 'athletics', checkBase(state, actor, 'normal', 'athletics')) : 'normal';
+      const roll = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus: actor.climbMod }));
+      const total = g96 ? finishCheck(actor, 'athletics', roll.kept, actor.climbMod, dc, mode, rng).total : roll.kept + actor.climbMod;
+      const success = g96 ? total >= dc : roll.kept === 20 || (roll.kept !== 1 && total >= dc);
       change = { type: 'height_changed', actorId: actor.id, from, to, moved: success, check: { natural: roll.kept, total, dc } };
     }
     if (change.type === 'height_changed' && change.moved) {

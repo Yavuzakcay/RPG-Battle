@@ -465,7 +465,7 @@ export const TR_EXTRA = {
     why: whyTable('tr'),
     label: {
       move: 'Hareket', walk: 'Yürü', dash: 'Koş', disengage: 'Geri Çekil', back: '‹ Geri', jump: 'Atla', attack: 'Saldır', spell: 'Büyü',
-      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', throwObject: 'Nesne fırlat', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
+      hide: 'Gizlen', shove: 'İt', dodge: 'Kaçın', help: 'Yardım', stabilize: 'Stabilize et', distract: 'Dikkat dağıt', item: (name: string, n: number) => `${name} (${n})`, search: 'Ara', object: 'Nesne', throwObject: 'Nesne fırlat', stand: 'Kalk', escapeGrapple: 'Kaçmaya çalış',
       escape: 'Çık', escapeSpell: 'Kurtul', pull: 'Çek', surge: 'Atılım', haste: 'Hızlı eylem', steer: 'Çağrıyı taşı', wind: 'İkinci Soluk', mark: 'İşaret', weapon: 'Silah', repeat: 'Büyüyü sürdür', moveHex: 'Büyüyle taşı', commandSummons: 'Yaratıklara emret', famStrike: 'Yoldaş saldırsın', superiorDefense: 'Üstün Savunma', brutalPick: 'Brutal Strike', brutalName: { forceful: 'Forceful (it)', hamstring: 'Hamstring (yavaşlat)', staggering: 'Staggering (sarsıt)', sundering: 'Sundering (yar)' } as Record<string, string>, water: { whirlpool: 'Girdap', flood: 'Taşkın', part: 'Yarma', box: 'Kutu (10 ft, katı)', cage: 'Kafes (20 ft, parmaklık)' } as Record<string, string>, steed: { 'fell-glare': 'Korkunç Bakış (korkut)', 'fey-step': 'Peri Adımı (ışınlan)', 'healing-touch': 'Şifa Eli (iyileştir)' } as Record<string, string>, iswap: 'Sırayı değiş', shift: (ft: number) => `Serbest kay (${ft} ft)`, famOrder: 'Yoldaşa saldırı emri', gaze: 'İki Zihin Bakışı', sphereRoll: 'Küreyi yuvarla', sphereCarry: 'Küreyi kaldır', sphereDrop: 'Küreyi bırak', end: 'Turu bitir',
       rage: 'Öfke', rageExtend: 'Öfkeyi sürdür', reckless: 'Pervasız', offhand: 'Yan el', offhandNick: 'Yan el',
       // SD2: menüde çıkan her özellik için kısa düz Türkçe ad (ayrıntı üstüne gelince / ipucunda).
@@ -501,6 +501,7 @@ export const TR_EXTRA = {
     },
     hint: {
       special: 'Özel: bir grup seç, sonra yapmak istediğine dokun.',
+      stabilize: 'Stabilize et: ölmekte olan bir yaratığa dokun; DC 10 Bilgelik (Tıp) kontrolü, eylemini harcar.',
       steer: 'Çağrının gideceği vurgulu altıgene dokun (küre bitişik düşmana çarpar).',
       object: 'Nesne: bitişik kapı, masa ya da mangala dokunun (kapı aç/kapa/kilit, masayı devir, mangalı dök).',
       throwObject: 'Nesne fırlat: önce bitişik fıçı, sandık, taş gibi bir nesneye, sonra vurgulu hedef altıgene ya da yaratığa dokunun (eylem).',

@@ -134,8 +134,8 @@ export function dodgeActive(conds: string[]): boolean {
 }
 
 /** Kurtarma zarını yapan: durumları, avantajlı save'leri (Danger Sense) ve Rage (STR avantajı). */
-export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean; srd83?: true; allyAura?: { saveAdvAll?: true };
-  effects?: Array<{ name?: string; saveDisVs?: Array<{ damage?: string; condition?: string }>; saveDisVsGenis?: true; saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> } }> };
+export type SaveSubject = { conditions: string[]; saveAdvantage?: Ability[]; packStrAdv?: boolean; rage?: unknown; rageStrAdvantage?: boolean; hp?: number; maxHp?: number; authorityAdv?: boolean; auraSaveDis?: boolean; srd83?: true; srd96?: true; allyAura?: { saveAdvAll?: true };
+  effects?: Array<{ name?: string; saveDisVs?: Array<{ damage?: string; condition?: string }>; saveDisVsGenis?: true; saveAdv?: Ability[]; saveDis?: Ability[]; saveDisAll?: boolean; saveAdvVs?: string[]; bloodiedAdv?: { save?: boolean }; firstRoll?: { mode: 'advantage' | 'disadvantage'; on: Array<'attack' | 'save'> }; speedZero?: boolean }> };
 
 /**
  * G01 (yalnız görünüm): save kipinin bir kaynağı. `key` `data/neden-metinleri.json` `saveKipi` anahtarı; `name` kaynağın adı
@@ -161,7 +161,8 @@ export function saveModeWhy(base: RollMode, who: string[] | SaveSubject, ability
   // Kuyruk 19 (11–20): Holy Nimbus: Fiend/Undead etkilerine save avantajı (kaynağı bilinen save'lerde).
   const vs = source?.creatureType?.toLowerCase();
   if (vs) for (const e of fx) if (e.saveAdvVs?.includes(vs)) A('vsType', e.name);
-  if (ability === 'dex' && dodgeActive(s.conditions)) A('dodge');
+  // GENEL96 A11 (sürüm 96+, `srd96`): etkiden gelen hız 0 Kaçın'ın DEX save avantajını da kaldırır (SRD 5.2.1 s. 181).
+  if (ability === 'dex' && dodgeActive(s.conditions) && !(s.srd96 && s.effects?.some((e) => e.speedZero))) A('dodge');
   if (s.saveAdvantage?.includes(ability) && !isIncapacitated(s.conditions)) A('feature', SAVE_ADV_FEATURES.find((f) => f.abilities.includes(ability))?.name);
   if (ability === 'str' && !!s.rage && s.rageStrAdvantage === true) A('rage');
   // Kuyruk A6 (Conjure Animals; `syncAuras`): sürünün 5 ft içinde STR save avantajı.

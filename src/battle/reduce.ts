@@ -35,6 +35,8 @@ import { waterHexAt } from './yuzme';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
 import { soyTeleportEnds } from './altSoySurum';
 import { monsterPrevOf, withMonsterPart, withoutMonsterPart } from './shapeMonsterCore';
+import { genel96On } from './genel96Surum';
+import { helpOnlySelf } from './genel96';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -165,7 +167,9 @@ function dropBrokenConcentration(state: BattleState): BattleState {
 // Görev D3 (89+): kaynak verilirse efendi istisnası (Vampire Familiar; `srdD3.ts`); istisnasız bağışıklıkta aynı sonuç.
 const immuneTo = (c: Combatant, condition: string, state?: BattleState, sourceId?: string) => effectImmune(state, c, condition, sourceId)
   // Kuyruk 18 H3: Nature's Ward (Circle of the Land 10): Poisoned bağışıklığı (anahtar naturesWard, kural sürümü 14).
-  || (condition === 'Poisoned' && !!c.traits?.includes('natures-ward') && !!state && !!globalRule(state, 'naturesWard'));
+  || (condition === 'Poisoned' && !!c.traits?.includes('natures-ward') && !!state && !!globalRule(state, 'naturesWard'))
+  // GENEL96 B29 (sürüm 96+; SRD 5.2.1 s. 186 Petrified "Poison Immunity. You have Immunity to the Poisoned condition").
+  || (condition === 'Poisoned' && !!state && genel96On(state) && c.conditions.includes('Petrified'));
 
 /**
  * Süren etkilerin bitişi (Görev R2): kaynağın o büyüdeki konsantrasyonu bittiyse, süresi geçtiyse (`until` < tur),
@@ -377,7 +381,27 @@ function syncGroupCarry(state: BattleState, event: BattleEvent): BattleState {
 }
 
 export function applyEvent(state: BattleState, event: BattleEvent): BattleState {
-  return syncGroupCarry(applyEventCore(state, event), event);
+  return syncGroupCarry(syncUnconsciousProne(state, applyEventCore(state, event)), event);
+}
+
+/**
+ * GENEL96 A2 (kural sürümü 96; SRD 5.2.1 s. 191 Unconscious "Inert. You have the Incapacitated and Prone conditions …
+ * When this condition ends, you remain Prone"): yeni Unconscious olan (ölmemiş) yaratık Prone da olur; Unconscious bitince
+ * Prone kalır. Prone'a bağışık olan hariç. "Elindekini düşür" kolu ertelendi (yapay zekâ yerden silah almıyor; DECISIONS GENEL96).
+ * 95 ve altı aynen.
+ */
+function syncUnconsciousProne(prev: BattleState, next: BattleState): BattleState {
+  if (prev.combatants === next.combatants || !genel96On(next)) return next;
+  let out = next;
+  for (const [id, c] of Object.entries(next.combatants)) {
+    if (c.life === 'dead' || c.conditions.includes('Prone') || !c.conditions.includes('Unconscious')) continue;
+    const before = prev.combatants[id];
+    if (before && before.conditions === c.conditions) continue;
+    if (before?.conditions.includes('Unconscious')) continue;
+    if (immuneTo(c, 'Prone', next)) continue;
+    out = withCombatant(out, id, { conditions: [...c.conditions, 'Prone'] });
+  }
+  return out;
 }
 
 function applyEventCore(state: BattleState, event: BattleEvent): BattleState {
@@ -590,7 +614,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const side = state.combatants[event.actorId]?.side;
       const target = next.combatants[event.targetId];
       const mark = side ? `Help:${side}` : '';
-      if (target && side && target.conditions.includes(mark)) {
+      // GENEL96 A13 (sürüm 96+): yardım edenin kendi saldırısı işareti harcamaz (yararlanmaz da).
+      const helper = state.combatants[event.actorId];
+      if (target && side && target.conditions.includes(mark) && !(helper && helpOnlySelf(state, helper, target))) {
         next = withCombatant(next, target.id, { conditions: target.conditions.filter((x) => x !== mark) });
       }
       return withEffects(withCombatant(next, event.targetId, { hp: event.targetHpAfter }), event.targetId, event.effects);
@@ -1066,8 +1092,12 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
           conditions: c.conditions.filter((x) => x !== 'Unconscious'),
         });
       }
+      // GENEL96 A1 (sürüm 96; SRD 5.2.1 s. 17 "When you become Stable or regain any Hit Points, reset both counts to zero"):
+      // ölüm save'iyle stabil olunca sayaçlar sıfırlanır; stabilken hasar alan 1 başarısızlıkla yeniden ölmekte (s. 18).
+      // 95 ve altı: sayaçlar olduğu gibi kalır.
+      const reset = event.outcome === 'stable' && genel96On(state);
       return withCombatant(state, event.actorId, {
-        deathSaves: { successes: event.successes, failures: event.failures },
+        deathSaves: reset ? { successes: 0, failures: 0 } : { successes: event.successes, failures: event.failures },
         life: event.outcome === 'dead' ? 'dead' : event.outcome === 'stable' ? 'stable' : 'dying',
       });
     }
@@ -1097,7 +1127,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
       const next = refreshRage(state, event.actorId, event.targetId);
-      return !event.success && event.effect === 'prone' && !c.conditions.includes('Prone')
+      // GENEL96 B4 (sürüm 96+; s. 184 Immunity): Prone'a bağışık hedef Shove ile yere düşmez.
+      const proneImmune = genel96On(state) && immuneTo(c, 'Prone', state, event.actorId);
+      return !event.success && event.effect === 'prone' && !c.conditions.includes('Prone') && !proneImmune
         ? withCombatant(next, event.targetId, { conditions: [...c.conditions, 'Prone'] })
         : next;
     }
@@ -1411,6 +1443,9 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'exhaustion_changed': {
       const c = state.combatants[event.targetId];
       if (!c) throw new Error(`Savaşçı bulunamadı: ${event.targetId}`);
+      // GENEL96 B3 (sürüm 96+; SRD 5.2.1 s. 184 Immunity "it doesn't affect you in any way"): Exhaustion'a bağışık olan
+      // (ör. Zombie) seviye kazanmaz; azalma serbest. 95 ve altı: bağışıklığa bakılmaz.
+      if (genel96On(state) && event.level > (c.exhaustion ?? 0) && immuneTo(c, 'Exhaustion', state)) return state;
       // SRD 5.2.1: 6. seviyede ölür.
       if (event.level >= 6) return withCombatant(state, c.id, { exhaustion: event.level, hp: 0, life: 'dead', concentration: null });
       return withCombatant(state, c.id, { exhaustion: event.level });

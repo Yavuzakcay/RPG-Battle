@@ -21,6 +21,8 @@ export interface AttackContext {
   targetAsleep?: boolean;
   /** Saldıranın tarafı (Yardım işareti `Help:<taraf>` hedefteyse avantaj). */
   attackerSide?: string;
+  /** GENEL96 (sürüm 96+): kaçınan saldıranı göremiyor (Blinded) ya da hızı etkiden 0: Kaçın işlemez. */
+  dodgeVoid?: boolean;
   /**
    * Kuyruk 16 K16E (kural sürümü 2): Prone hedefe saldıran 5 ft içinde mi (SRD 5.2.1: içindeyse avantaj, değilse
    * dezavantaj). Yoksa eski kural (yakın dövüş avantaj, menzilli dezavantaj).
@@ -87,7 +89,7 @@ export function attackSources(ctx: AttackContext): ModeSource[] {
     out.push({ effect: 'advantage', reason: 'Hedef uyuyor (yakından)' });
   }
   // Kaçın (Dodge): hedef etkisiz değil ve hızı 0 değilse, görebildiği saldıran dezavantajlı.
-  if (ctx.targetConditions.includes('Dodge') && !isIncapacitated(ctx.targetConditions)
+  if (ctx.targetConditions.includes('Dodge') && !ctx.dodgeVoid && !isIncapacitated(ctx.targetConditions)
     && !ctx.targetConditions.some((c) => c === 'Grappled' || c === 'Restrained') && !ctx.attackerConditions.includes('Invisible')) {
     out.push({ effect: 'disadvantage', reason: 'Hedef kaçınıyor' });
   }

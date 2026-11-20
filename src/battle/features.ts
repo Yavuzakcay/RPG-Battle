@@ -77,6 +77,7 @@ import { applyEvents } from './reduce';
 import { damagePenalty } from './effects';
 import { resourceLeft, type AttackOption, type BattleEvent, type BattleState, type Combatant, type CunningOption, type ExtraDamage } from './types';
 import { hiddenTo } from './k74Surum';
+import { attackCtx96 } from './genel96';
 
 const profileOf = (c: Combatant) => damageProfile(c);
 
@@ -238,7 +239,7 @@ export function weaponAttackEvents(
   const sources = [
     ...environmentSources(env, option.tag, { weapon: true, ranged: option.ranged }),
     ...attackSources({
-      ...sightConditions(actor, target, state, !option.ranged), attackerSide: actor.side,
+      ...sightConditions(actor, target, state, !option.ranged), ...attackCtx96(state, actor, target),
       ...attackHeights(state, actor, target),
       ranged: option.ranged, spell: option.spell, packTactics: actor.packTactics && allyAlive, targetAsleep: target.asleep === true,
     }),
@@ -723,7 +724,7 @@ export function executeFollowup(state: BattleState, actor: Combatant, targetId: 
   const sources = [
     ...environmentSources(env, `${actor.casterTag} ${spell.name} ${spell.text}`.toLowerCase()),
     ...attackSources({
-      ...sc, ...(forceAt ? { proneWithin5: withinFiveFt(state, { ...actor, pos: forceAt, altitudeFt: target.altitudeFt } as Combatant, target, true) } : {}), attackerSide: actor.side,
+      ...sc, ...(forceAt ? { proneWithin5: withinFiveFt(state, { ...actor, pos: forceAt, altitudeFt: target.altitudeFt } as Combatant, target, true) } : {}), ...attackCtx96(state, actor, target),
       attackerHeight: heightOf(state, target), targetHeight: heightOf(state, target), ranged: false, spell: true,
       targetAsleep: target.asleep === true,
     }),

@@ -1257,7 +1257,7 @@ export const en: Strings = {
     why: whyTable('en'),
     label: {
       move: 'Move', walk: 'Walk', dash: 'Dash', disengage: 'Disengage', back: '‹ Back', jump: 'Jump', attack: 'Attack', spell: 'Spell',
-      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', throwObject: 'Throw object', stand: 'Stand up', escapeGrapple: 'Try to escape',
+      hide: 'Hide', shove: 'Shove', dodge: 'Dodge', help: 'Help', stabilize: 'Stabilize', distract: 'Distract', item: (name: string, n: number) => `${name} (${n})`, search: 'Search', object: 'Object', throwObject: 'Throw object', stand: 'Stand up', escapeGrapple: 'Try to escape',
       escape: 'Climb out', escapeSpell: 'Break free', pull: 'Pull', surge: 'Action Surge', haste: 'Haste action', steer: 'Move summon', wind: 'Second Wind', mark: 'Mark', weapon: 'Weapon', repeat: 'Continue spell', moveHex: 'Move by spell', commandSummons: 'Command creatures', famStrike: 'Familiar strikes', superiorDefense: 'Superior Defense', brutalPick: 'Brutal Strike', brutalName: { forceful: 'Forceful', hamstring: 'Hamstring', staggering: 'Staggering', sundering: 'Sundering' } as Record<string, string>, water: { whirlpool: 'Whirlpool', flood: 'Flood', part: 'Part Water', box: 'Box (10 ft, solid)', cage: 'Cage (20 ft, bars)' } as Record<string, string>, steed: { 'fell-glare': 'Fell Glare', 'fey-step': 'Fey Step', 'healing-touch': 'Healing Touch' } as Record<string, string>, iswap: 'Swap turn order', shift: (ft: number) => `Free shift (${ft} ft)`, famOrder: 'Order familiar to attack', gaze: 'Gaze of Two Minds', sphereRoll: 'Roll the sphere', sphereCarry: 'Pick up sphere', sphereDrop: 'Put down sphere', end: 'End turn',
       rage: 'Rage', rageExtend: 'Keep raging', reckless: 'Reckless', offhand: 'Off hand', offhandNick: 'Off hand',
       // SD2: every feature that can appear in the menu has a short plain name here (same keys as TR).
@@ -1292,6 +1292,7 @@ export const en: Strings = {
     },
     hint: {
       special: 'Special: pick a group, then tap what you want to do.',
+      stabilize: 'Stabilize: tap a dying creature; DC 10 Wisdom (Medicine) check, uses your action.',
       steer: 'Tap a highlighted hex for the summon (the sphere rams an adjacent enemy).',
       object: 'Object: tap an adjacent door, table or brazier (open/close/unlock, tip over, spill coals).',
       throwObject: 'Throw object: tap an adjacent barrel, chest, rock or similar object, then a highlighted target hex or creature (action).',
