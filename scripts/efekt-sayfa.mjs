@@ -122,7 +122,11 @@ export function crackPixel(r, g, b, p) {
   return { a, c: [0, 1, 2].map((i) => Math.round(p.darkC[i] * (1 - w) + p.glowC[i] * w)) };
 }
 
-function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, edge = 0, crack = null) {
+/**
+ * `keep` (Control Water girdabı, `renkKoru` listesi): renk ham kalır (alfaya bölünmez), alfa parlaklıktan × kazanç. Normal karışımlı
+ * zemin dokusunda koyu gölgeler açık zeminde de okunur (alfaya bölünen renk yalnız siyah üstündeki `screen` görünümünü korur).
+ */
+function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, edge = 0, crack = null, keep = false) {
   const cw = x1 - x0; const ch = y1 - y0;
   const out = Buffer.alloc(cw * ch * 4);
   let peak = 0;
@@ -141,9 +145,9 @@ function cellRgba(img, x0, y0, x1, y1, black = BLACK, opaque = false, gain = 1, 
       if (dEdge < edge) { const u = dEdge / edge; a *= u * u * (3 - 2 * u); }
     }
     if (a > peak) peak = a;
-    out[d] = a0 > 0 ? Math.min(255, Math.round(r / a0)) : 0;
-    out[d + 1] = a0 > 0 ? Math.min(255, Math.round(g / a0)) : 0;
-    out[d + 2] = a0 > 0 ? Math.min(255, Math.round(b / a0)) : 0;
+    out[d] = keep ? r : a0 > 0 ? Math.min(255, Math.round(r / a0)) : 0;
+    out[d + 1] = keep ? g : a0 > 0 ? Math.min(255, Math.round(g / a0)) : 0;
+    out[d + 2] = keep ? b : a0 > 0 ? Math.min(255, Math.round(b / a0)) : 0;
     out[d + 3] = Math.round(a * 255);
   }
   return { buf: out, w: cw, h: ch, peak };
@@ -165,7 +169,7 @@ export async function sliceSheet(file, spec, emptyThr = 0.04) {
     const result = {};
     for (let n = 0; n < spec.adlar.length; n++) {
       const ad = spec.adlar[n]; const f = flat[n];
-      const c = cellRgba(img, f.x[0], f.y[0], f.x[1], f.y[1], spec.siyah ?? BLACK, false, spec.kazanc?.[ad]?.['1'] ?? 1, spec.yumusat?.[ad] ?? spec.yumusat?.['*'] ?? 0);
+      const c = cellRgba(img, f.x[0], f.y[0], f.x[1], f.y[1], spec.siyah ?? BLACK, false, spec.kazanc?.[ad]?.['1'] ?? 1, spec.yumusat?.[ad] ?? spec.yumusat?.['*'] ?? 0, null, !!spec.renkKoru?.includes(ad));
       if (c.peak < emptyThr) throw new Error(`${report.file}: ${n + 1}. hücre (${ad}) boş`);
       const S = spec.boyutlar?.[ad] ?? spec.boyut;
       const frames = await animate(c, spec.canlandirma[ad], S, spec.kenarPayi ?? 1.45);

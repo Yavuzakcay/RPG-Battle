@@ -16,7 +16,8 @@ const Z = (B as unknown as { zemin: Record<string, string> }).zemin;
 
 describe('K75: zemin bağlamaları', () => {
   it('Control Water girdap alanı ve boncuk alanı bağlı sprite\'lar mevcut', () => {
-    expect(Z['control-water']).toBe('zemin-girdap');
+    // Control Water efekt sayfası: büyük alan halka girdap (küçük alan sarmal, girdap.test.ts).
+    expect(Z['control-water']).toBe('zemin-girdap-halka');
     expect(Z['delayed-blast-fireball']).toBe('zemin-lav');
     for (const n of [Z['control-water'], Z['delayed-blast-fireball']]) expect(FX[n!], n).toBeTruthy();
   });
@@ -33,8 +34,9 @@ describe('K75: zemin bağlamaları', () => {
     const base = field(spell('control-water'));
     const hexes = [{ col: 5, row: 5 }, { col: 6, row: 5 }];
     const withZone = (spellId: string): BattleState => ({ ...base, map: { ...base.map!, zones: [{ id: 'z1', spellId, name: 'Control Water', casterId: 'A', side: 'party', dc: 13, slotLevel: 4, hexes }] } as never });
-    expect(groundFx(withZone('control-water')).patches.some((p) => p.sprite.id === 'zemin-girdap')).toBe(true);
-    expect(groundFx(withZone('control-water:terrain')).patches.some((p) => p.sprite.id === 'zemin-girdap')).toBe(false);
+    // Control Water efekt sayfası: iki altıgenlik (küçük) alan sarmal girdabı çizer.
+    expect(groundFx(withZone('control-water')).patches.some((p) => p.sprite.id.startsWith('zemin-girdap-'))).toBe(true);
+    expect(groundFx(withZone('control-water:terrain')).patches.some((p) => p.sprite.id.startsWith('zemin-girdap'))).toBe(false);
   });
 });
 

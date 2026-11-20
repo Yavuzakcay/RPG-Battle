@@ -58,7 +58,8 @@
     "zaman": { "klasor": "efekt", "satir": 4, "sutun": 8, "kesim": "karanlik", "kare": "kare", "boyut": 160, "kareMs": 90, "tur": "zaman", "dongu": false,
       "adlar": ["zaman-kure", "zaman-girdap", "zaman-kadran", "zaman-kumsaati"] },
     "zemin-kutulari": { "klasor": "efekt", "satir": 8, "sutun": 4, "kesim": "karanlik", "kare": "kare", "boyut": 192, "kareMs": 180, "tur": "zemin", "dongu": true,
-      "adlar": ["zemin-lav", "zemin-spor", "zemin-diken", "zemin-girdap", "zemin-buz-run", "zemin-duman-halka", "zemin-bitki", "zemin-kara-halka"] },
+      "adlar": ["zemin-lav", "zemin-spor", "zemin-diken", "zemin-girdap", "zemin-buz-run", "zemin-duman-halka", "zemin-bitki", "zemin-kara-halka"],
+      "kullanilmiyor": ["zemin-girdap"] },
     "zemin-ek": { "klasor": "efekt", "satir": 6, "sutun": 4, "kesim": "karanlik", "kare": "kare", "boyut": 192, "kareMs": 180, "tur": "zemin", "dongu": true,
       "adlar": ["zemin-yag", "zemin-dikenli", "zemin-sulu-kar", "zemin-bocek", "zemin-su-eski", "zemin-dokunac"], "kullanilmiyor": ["zemin-su-eski"] },
     "isin-ek": { "klasor": "efekt", "satir": 4, "sutun": 4, "kesim": "esit", "kenar": 6, "kare": "serit", "boyut": 256, "kareMs": 90, "tur": "isin", "dongu": true,
@@ -106,6 +107,19 @@
         "rozet-olum-korumasi": {"tur": "halka", "kare": 5, "olcek": [0.8, 1.15]},
         "rozet-dans": {"tur": "donme", "kare": 6, "olcek": [0.97, 1.03], "genlik": 0.07, "dalga": 2.6, "salinim": 0.05},
         "rozet-akici-dil": {"tur": "nabiz", "kare": 5, "olcek": [0.85, 1.08]}
+      } },
+    "control-water": { "klasor": "efekt", "hucre": "efekt", "satir": 1, "sutun": 2, "kesim": "karanlik", "kenar": 0, "kare": "kare", "boyut": 320,
+      "boyutlar": { "zemin-girdap-sarmal": 256 }, "kareMs": 260, "tur": "zemin", "siyah": 16, "kenarPayi": 1.04,
+      "_not": "Control Water girdabı (yalnız görsel): solda halka girdap (ortası saydam delik) Whirlpool alanı, sağda içe sarmal küçük girdap (efekt-baglama.json zeminKucuk). `kenar`: dış kenardaki koyu bulanık şeritler (gövde dış yarıçapı ≈0,92, şeritler ≈0,98'e dek; kazanç 1,6 ile alfa ≈0,56, gövde ≈1) sönümlenir. `renkKoru`: renk ham, normal karışımda koyu gölgeler okunur. Dönüş açısı içeriğin kendine en çok benzediği açı (halka 5 kollu: 72°, sarmal 96°): döngünün son karesi ilk kareye sıradan bir adımla bağlanır.",
+      "adlar": ["zemin-girdap-halka", "zemin-girdap-sarmal"],
+      "yumusat": { "*": 6 }, "kazanc": { "zemin-girdap-halka": { "1": 1.6 }, "zemin-girdap-sarmal": { "1": 1.6 } },
+      "renkKoru": ["zemin-girdap-halka", "zemin-girdap-sarmal"],
+      "normal": ["zemin-girdap-halka", "zemin-girdap-sarmal"],
+      "donguler": { "zemin-girdap-halka": true, "zemin-girdap-sarmal": true },
+      "sabit": { "zemin-girdap-halka": 0, "zemin-girdap-sarmal": 0 },
+      "canlandirma": {
+        "zemin-girdap-halka": {"tur": "donme", "kare": 6, "olcek": [1, 1], "genlik": 0, "salinim": 0, "aci": -72, "merkez": [0.485, 0.493], "kenar": {"r": [0.86, 0.97], "alfa": [0.62, 0.92]}},
+        "zemin-girdap-sarmal": {"tur": "donme", "kare": 6, "olcek": [1, 1], "genlik": 0, "salinim": 0, "aci": -96, "merkez": [0.501, 0.509], "kenar": {"r": [0.8, 0.95], "alfa": [0.62, 0.92]}}
       } }
   }
 }
