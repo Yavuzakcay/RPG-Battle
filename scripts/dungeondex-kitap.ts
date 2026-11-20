@@ -15,13 +15,14 @@ const root = path.resolve(import.meta.dirname ?? path.dirname(new URL(import.met
 const RAW = path.join(root, 'assets-ham/dungeondex');
 const OUT = path.join(root, 'public/dungeondex');
 const DATA = path.join(root, 'data/dungeondex-kitap.json');
-const MAX_BYTES = 400_000;
+// Telefonda keskin (390 px × DPR 3 ≈ 1170 px), üç görsel toplamı 2 MB altında.
+const MAX_BYTES = 650_000;
 
 type Kind = 'kapak' | 'genis' | 'mobil';
 const SOURCES: Record<Kind, { src: string; out: string; width: number }> = {
-  kapak: { src: 'kapak', out: 'kapak.webp', width: 1100 },
-  genis: { src: 'cerceve-genis', out: 'cerceve-genis.webp', width: 1800 },
-  mobil: { src: 'cerceve-mobil', out: 'cerceve-mobil.webp', width: 1100 },
+  kapak: { src: 'kapak', out: 'kapak.webp', width: 1200 },
+  genis: { src: 'cerceve-genis', out: 'cerceve-genis.webp', width: 2400 },
+  mobil: { src: 'cerceve-mobil', out: 'cerceve-mobil.webp', width: 1200 },
 };
 
 function findRaw(base: string): string | null {
@@ -54,6 +55,21 @@ async function writeWebp(img: Raw, file: string, width: number): Promise<{ bytes
   }
 }
 
+/** Kapağın deri rengi: opak kenar bandındaki (sol ve sağ %4, orta yükseklik) piksellerin medyanı; ekran kenarlarını doldurur. */
+function edgeColor(img: Raw): string {
+  const vals: number[][] = [[], [], []];
+  const band = Math.max(2, Math.round(img.width * 0.04));
+  for (let y = Math.round(img.height * 0.25); y < img.height * 0.75; y += 2) {
+    for (const x0 of [0, img.width - band]) for (let x = x0; x < x0 + band; x += 2) {
+      const i = (y * img.width + x) * 4;
+      if (img.data[i + 3]! < 250) continue;
+      for (let c = 0; c < 3; c++) vals[c]!.push(img.data[i + c]!);
+    }
+  }
+  const med = (a: number[]) => { if (!a.length) return 26; a.sort((p, q) => p - q); return a[a.length >> 1]!; };
+  return '#' + vals.map((a) => med(a).toString(16).padStart(2, '0')).join('');
+}
+
 const data = JSON.parse(fs.readFileSync(DATA, 'utf8')) as Record<string, unknown> & { yontem?: Partial<MeasureOpts>; elle?: Partial<Record<Kind, Record<string, unknown>>> };
 const opts = { ...MEASURE_DEFAULTS, ...(data.yontem ?? {}) };
 fs.mkdirSync(OUT, { recursive: true });
@@ -70,7 +86,8 @@ for (const kind of Object.keys(SOURCES) as Kind[]) {
   const merged = { ...m, ...(data.elle?.[kind] ?? {}) };
   const problems = kind === 'kapak' ? coverProblems(merged as never, aspect) : spreadProblems(merged as never, aspect, kind);
   const out = await writeWebp(img, path.join(OUT, s.out), s.width);
-  data[kind] = { file: `dungeondex/${s.out}`, width: out.width, height: out.height, aspect: Math.round(aspect * 10000) / 10000, bytes: out.bytes, quality: out.quality, ...merged };
+  const zemin = kind === 'kapak' ? { zemin: edgeColor(img) } : {};
+  data[kind] = { file: `dungeondex/${s.out}`, width: out.width, height: out.height, aspect: Math.round(aspect * 10000) / 10000, bytes: out.bytes, quality: out.quality, ...zemin, ...merged };
   console.log(`${problems.length ? '!' : '✓'} ${s.src}: ${out.width}×${out.height}, ${(out.bytes / 1000).toFixed(1)} kB (q ${out.quality})`);
   for (const [k, v] of Object.entries(merged)) console.log(`   ${k}: ${JSON.stringify(v)}`);
   for (const p of problems) console.warn(`   ! ${p}`);

@@ -12,10 +12,11 @@ import {
   buildDex, dexFilters, dexSearch, loadDexExtras, shownText, DEX_CATS, DEX_PAGE, DEX_SUBCLASS_EXPECTED, DEX_VISIBLE_FILTERS,
   type DexCat, type DexEntry, type DexExtras, type DexLink, type DexText,
 } from '../dungeondex/catalog';
-import { BookFrame, DexCover, useCover } from '../dungeondex/book/Book';
+import { BookFrame, DexCover, PlateText, useCover } from '../dungeondex/book/Book';
 import { bookData } from '../dungeondex/book/kitapData';
 import { storedDexCover } from '../ui/dexCoverSetting';
 import { IconBook } from '../ui/icons';
+import { reducedMotion, useSpriteAnimSetting } from '../ui/effectsSetting';
 import { GlyphBadges, GlyphText } from '../ui/glyph/Glyph';
 import { buyuProspektus, esyaProspektus, featProspektus, type ProSection } from '../dungeondex/prospektus';
 import { ProspektusSections } from '../dungeondex/prospektus/ProspektusSections';
@@ -93,7 +94,7 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
 
   // Kitapta kayıt ya da kategori değişince sayfa başa döner (sayfa kendi içinde kayar).
   useEffect(() => { document.querySelector('.ddk-page')?.scrollTo?.(0, 0); }, [view.cat, view.id]);
-  const title = view.cat === 'lisans' ? L.license : view.cat ? L.cat[view.cat] : L.title;
+  const title = view.cat === 'lisans' ? L.license : view.cat ? L.cat[view.cat] : L.toc;
   const counts = dex ? L.cover.counts(dex.buyu.length, dex.esya.length, dex.canavar.length) : null;
   const idx = entry ? found.findIndex((e) => e.id === entry.id) : -1;
   const step = (d: number) => { const e = found[idx + d]; if (e) { setTrail([]); setView({ cat: view.cat, id: e.id }); } };
@@ -143,26 +144,21 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
     <div className="menu-screen dex-screen ddk-screen">
       {phase !== 'closed' && (
         <>
-          <header className="ddk-bar">
-            <button type="button" className="dex-back" onClick={back} aria-label={L.back}>← {L.back}</button>
-            <h1>{title}</h1>
-            <div className="ddk-nav">
-              <button type="button" data-testid="dex-prev" onClick={() => step(-1)} disabled={idx <= 0} aria-label={L.prev} title={L.prev}>‹</button>
-              <button type="button" data-testid="dex-next" onClick={() => step(1)} disabled={idx < 0 || idx >= found.length - 1} aria-label={L.next} title={L.next}>›</button>
-            </div>
-            {dex && (
-              <nav className="ddk-tabs" aria-label={L.categories}>
-                {[...DEX_CATS, 'lisans' as const].map((c) => (
-                  <button key={c} type="button" data-testid={`dex-tab-${c}`} className={view.cat === c ? 'on' : ''} aria-pressed={view.cat === c}
-                    onClick={() => openCat(c)}>{c === 'lisans' ? L.license : L.cat[c]}</button>
-                ))}
-              </nav>
-            )}
-          </header>
           <div className={`ddk-book${phase !== 'open' ? ' ddk-entering' : ''}`}>
             <BookFrame
               vitrine={<Vitrine entry={entry} />}
-              strip={entry ? <><strong>{entry.name}</strong><em>{L.cat[entry.cat]}</em></> : <strong>{title}</strong>}
+              strip={entry ? <PlateText key={entry.id} name={entry.name} tag={L.cat[entry.cat]} /> : <PlateText key={title} name={title ?? L.title} />}
+              nav={
+                <nav className="ddk-pagenav" aria-label={L.title}>
+                  <button type="button" className="dex-back" onClick={back} aria-label={L.back}>← {view.cat && !view.id && !trail.length ? L.toc : L.back}</button>
+                  {entry && (
+                    <span className="ddk-nav">
+                      <button type="button" data-testid="dex-prev" onClick={() => step(-1)} disabled={idx <= 0} aria-label={L.prev} title={L.prev}>‹</button>
+                      <button type="button" data-testid="dex-next" onClick={() => step(1)} disabled={idx >= found.length - 1} aria-label={L.next} title={L.next}>›</button>
+                    </span>
+                  )}
+                </nav>
+              }
               page={page} />
           </div>
         </>
@@ -172,14 +168,31 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
   );
 }
 
-/** Vitrin (Görev DD-Kitap; içerik sonraki görevde): canavarda jeton, diğerlerinde yer tutucu ikon. */
+/**
+ * Vitrin penceresi: canavarda jeton; diğer kategorilerde görsel eşlemesi (`data/dungeondex-gorsel-esleme.json`, galeriyle
+ * aynı çizim: büyüde efekt şeridi, eşya/feat/durumda glif, tür/sınıfta jeton). Eşleme galerinin tembel parçasıyla gelir.
+ */
 function Vitrine(props: { entry: DexEntry | null }) {
   const L = t().dex;
   const e = props.entry;
   const [broken, setBroken] = useState<string | null>(null);
+  const [gal, setGal] = useState<typeof import('../ui/galeri/Galeri') | null>(null);
+  const [spriteAnim] = useSpriteAnimSetting();
+  const want = !!e && e.cat !== 'canavar';
+  useEffect(() => {
+    if (!want || gal) return;
+    let live = true;
+    void import('../ui/galeri/Galeri').then((m) => { if (live) setGal(m); }).catch(() => {});
+    return () => { live = false; };
+  }, [want, gal]);
   const src = e?.cat === 'canavar' ? (monsters.find((m) => m.id === e.id)?.avatar ?? `monsters/${e.id}.webp`) : null;
   if (src && broken !== src) return <img src={`${BASE}${src}`} alt={e!.name} onError={() => setBroken(src)} />;
-  return <div className="ddk-vitrin-ph" aria-label={L.vitrine}><IconBook size={48} /><span>{e ? L.cat[e.cat] : L.title}</span></div>;
+  const rec = e && gal ? gal.dexRecord(e.cat, e.id) : null;
+  if (rec && gal) {
+    const animated = spriteAnim && !reducedMotion();
+    return <div className="ddk-vitrin-vis" role="img" aria-label={e!.name}><gal.Visual r={rec} animated={animated} /></div>;
+  }
+  return <div className="ddk-vitrin-ph" aria-label={L.vitrine}><IconBook size={48} /><span>{e ? L.cat[e.cat] : L.toc}</span></div>;
 }
 
 function Filters(props: { filters: ReturnType<typeof dexFilters>; sel: Record<string, string>; onChange: (s: Record<string, string>) => void }) {
