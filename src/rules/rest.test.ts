@@ -29,9 +29,13 @@ describe('kısa dinlenme', () => {
     expect(r.rolls.length).toBe(1);
     expect(r.state.hitDiceLeft).toBe(0);
   });
-  it('negatif CON modifier zar başına iyileştirmeyi 0\'ın altına indirmez', () => {
-    const r = shortRest({ ...base, conMod: -3 }, 1, rolls(8, 2));
-    expect(r.healed).toBe(0);
+  it('negatif CON modifier ile zar başına en az 1 HP (SRD 5.2.1 s. 187)', () => {
+    const r = shortRest({ ...base, hp: 10, conMod: -3 }, 1, rolls(8, 2));
+    expect(r.healed).toBe(1);
+  });
+  it('0 HP\'de kısa dinlenme başlamaz, zar harcanmaz (SRD 5.2.1 s. 187)', () => {
+    const r = shortRest({ ...base, hp: 0 }, 2, rolls(8, 8, 8));
+    expect(r).toMatchObject({ rolls: [], healed: 0, state: { hp: 0, hitDiceLeft: base.hitDiceLeft } });
   });
   it('büyü slotları yalnızca Pact Magic\'te yenilenir', () => {
     expect(shortRest(base, 0, rolls(8)).state.spellSlots).toEqual([1, 0, 0]);
@@ -45,9 +49,9 @@ describe('uzun dinlenme', () => {
     expect(r.hp).toBe(30);
     expect(r.spellSlots).toEqual([4, 3, 2]);
   });
-  it('harcanan hit die\'ların yarısı (en az 1) geri gelir, seviyeyi aşmaz', () => {
-    expect(longRest({ ...base, hitDiceLeft: 0 }).hitDiceLeft).toBe(2); // 5. seviye: yarısı 2
-    expect(longRest({ ...base, level: 1, hitDiceLeft: 0 }).hitDiceLeft).toBe(1); // en az 1
-    expect(longRest({ ...base, hitDiceLeft: 4 }).hitDiceLeft).toBe(5); // seviyeyi aşmaz
+  it('harcanan hit die\'ların tamamı geri gelir (SRD 5.2.1 s. 185), seviyeyi aşmaz', () => {
+    expect(longRest({ ...base, hitDiceLeft: 0 }).hitDiceLeft).toBe(5);
+    expect(longRest({ ...base, level: 1, hitDiceLeft: 0 }).hitDiceLeft).toBe(1);
+    expect(longRest({ ...base, hitDiceLeft: 4 }).hitDiceLeft).toBe(5);
   });
 });

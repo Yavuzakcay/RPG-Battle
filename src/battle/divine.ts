@@ -9,6 +9,7 @@
  *   Protection from Evil and Good (belli türlerin saldırıları dezavantajlı).
  * - Süren güçlendirmeler (`buffs`): Divine Favor (+1d4 radiant), Magic Weapon (+1), Sacred Weapon.
  */
+import { b94On } from './b94Surum';
 import { soyFeatureProblem } from './soyEtki';
 import { adjacent3D, k73bOn } from './adjacency';
 import { circleAttackDis } from './possessionCore';
@@ -114,6 +115,12 @@ export function featureProblem(state: BattleState, actor: Combatant, cmd: UseFea
   return null;
 }
 
+/** Görev B94: Sacred Weapon'ın silahı: seçilen (elde, yakın dövüş) ya da ilk yakın dövüş silahı; yoksa undefined. */
+export function sacredWeaponOf(actor: Combatant, choice?: string): string | undefined {
+  const ws = actor.weaponOptions.filter((o) => !o.ranged && !o.spell && o.weaponId && o.weaponId !== 'unarmed-strike' && o.tag !== 'unarmed');
+  return (choice && ws.some((o) => o.weaponId === choice) ? choice : ws[0]?.weaponId) ?? undefined;
+}
+
 /** Bir özelliğin süren güçlendirmesi (Sacred Weapon): yetenek bonusu en az `min`. */
 function featureBuff(actor: Combatant, f: UsableFeature, round: number): Buff | null {
   const e = f.effect;
@@ -139,7 +146,10 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
   if (e.kind === 'divineSense') {
     return finish(state, [
       ...(f.resource ? [{ type: 'feature_used' as const, actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 }] : []),
-      { type: 'effect_added', targetId: actor.id, effect: { id: 'divine-sense', name: f.name, sourceId: actor.id, until: state.round + e.rounds, senseTypes: { types: e.types, ft: e.rangeFt }, icon: '✨' } },
+      // Görev B94 (sürüm 94+, SRD 5.2.1 s. 55 "for the next 10 minutes or until you have the Incapacitated condition"): süre
+      // diğer etkiler gibi `rounds − 1` (eskiden bir tur fazla) ve Incapacitated olunca biter (`endsIfSourceDown`).
+      { type: 'effect_added', targetId: actor.id, effect: { id: 'divine-sense', name: f.name, sourceId: actor.id, until: state.round + e.rounds - (b94On(state) ? 1 : 0),
+        senseTypes: { types: e.types, ft: e.rangeFt }, icon: '✨', ...(b94On(state) ? { endsIfSourceDown: true } : {}) } },
     ]);
   }
   if (e.kind === 'landsAid') return rng ? executeLandsAid(state, actor, f, cmd.to, rng) : fail('Zar gerekli.');
@@ -195,12 +205,19 @@ export function executeUseFeature(state: BattleState, actor: Combatant, cmd: Use
     }
     return finish(state, events);
   }
-  const buff = featureBuff(actor, f, state.round) as Buff;
+  const buff0 = featureBuff(actor, f, state.round) as Buff;
+  // Görev B94 (sürüm 94+, SRD 5.2.1 s. 56 "imbue one Melee weapon that you are holding … ends if you aren't carrying the
+  // weapon"): güçlendirme tek silaha (komutun `choice`'u ya da ilk yakın dövüş silahı); silah bırakılınca biter.
+  const one = b94On(state) && buff0.meleeOnly ? sacredWeaponOf(actor, cmd.choice) : undefined;
+  const lit = buff0.radiant && globalRule(state, 'featuresK19');
+  const buff: Buff = one ? { ...buff0, enchantBy: one, endsOnDrop: lit ? { lightId: 'sacred-weapon-light' } : {} } : buff0;
   if (f.resource) events.push({ type: 'feature_used', actorId: actor.id, feature: f.resource, remaining: resourceLeft(actor, f.resource) - 1 });
   events.push({ type: 'buff_added', targetId: actor.id, buff });
   // Kuyruk 19 (featuresK19): Sacred Weapon'ın silahı 20 ft parlak + 20 ft loş ışık yayar (karanlık haritada `litHexes`; 8 altıgen).
-  if (buff.radiant && globalRule(state, 'featuresK19')) {
-    events.push({ type: 'effect_added', targetId: actor.id, effect: { id: 'sacred-weapon-light', name: `${f.name} (ışık)`, sourceId: actor.id, until: buff.until, light: 8 } });
+  // Görev B94 (94+, K67a loş ışık modeli): 4 altıgen parlak + 4 altıgen loş.
+  if (lit) {
+    events.push({ type: 'effect_added', targetId: actor.id, effect: { id: 'sacred-weapon-light', name: `${f.name} (ışık)`, sourceId: actor.id, until: buff.until,
+      ...(b94On(state) ? { light: 4, lightDim: 4 } : { light: 8 }) } });
   }
   return finish(state, events);
 }

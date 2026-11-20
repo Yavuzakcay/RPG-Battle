@@ -1,4 +1,5 @@
 import { globalRule } from './ruleControl';
+import { b94On } from './b94Surum';
 import { buyucu93On } from './buyucu93Surum';
 import { possessorAt } from './possessionCore';
 import { ruleVersion } from './ruleVersion';
@@ -177,6 +178,8 @@ export function executeClericFeature(state: BattleState, actor: Combatant, f: Us
       if (!save.success) {
         events.push({ type: 'effect_added', targetId: t.id, effect: {
           id: `${f.key}-${actor.id}`, name: f.name, sourceId: actor.id, until: state.round + e.rounds - 1, grants: e.conditions, breakOnDamage: true, icon: '🛡',
+          // Görev B94 (sürüm 94+, SRD 5.2.1 s. 55 "can do only one of the following on its turns: move, take an action, or take a Bonus Action").
+          ...(b94On(state) ? { oneEconomy: true } : {}),
         } });
       }
     }
