@@ -58,7 +58,8 @@ describe('sihirbaz', () => {
     const m = html(caster('wizard', 5, { spellNames: ['Fire Bolt', 'Magic Missile', 'Shield', 'Fireball'], spellbook: ['Magic Missile', 'Shield', 'Fireball', 'Sleep'] }));
     expect(m).toContain('Cantrip 1 / 4');
     expect(m).toContain('Hazırlanan 3 / 9');
-    expect(m).toContain('Büyü kitabı 4 / 14');
+    // Görev B93: Evoker 5: Evocation Savant kitaba +3 (3. seviyede 2, 3. seviye slotlar açılınca +1): 14 + 3.
+    expect(m).toContain('Büyü kitabı 4 / 17');
     expect(m).toContain('<h3>3. seviye</h3>');
     // SD3: erişilemeyen (4+) seviyeler ve oyunda olmayan büyüler listede gizlenir; tek satır ipucu kalır.
     expect(m).not.toContain('spell-group locked');

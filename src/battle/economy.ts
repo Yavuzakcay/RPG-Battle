@@ -400,6 +400,8 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Ritüel (1 saat; Find Familiar): savaşta yapılamaz, kurulumda yapılır (Görev R3).
       // Kuyruk 19 (featuresK19): Wild Companion: Find Familiar savaşta Magic eylemiyle (slot ya da Wild Shape).
       const companion = spell.name === 'Find Familiar' && !!actor.traits?.includes('wild-companion') && !!globalRule(state, 'featuresK19');
+      // Görev B93 (Ritual Adept): hazırlanmadan bilinen ritüel büyü yalnız kurulumda ritüel olarak.
+      if (actor.ritualOnly?.includes(spell.name)) return fail(`${spell.name} hazırlanmadı: yalnız ritüel olarak (kurulumda) yapılır.`);
       if (spell.castingTime === 'ritual' && !companion) return fail(`${spell.name} ritüeldir: savaştan önce (kurulumda) yapılır.`);
       if (companion) {
         if (cmd.free && !freeCastResource(actor, spell.name, undefined, true)) return fail('Wild Shape kullanımı kalmadı.');

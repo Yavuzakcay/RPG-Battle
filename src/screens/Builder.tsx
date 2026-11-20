@@ -17,7 +17,7 @@ import { characterTokenFile, monsterAvatar, sheetAvatar } from '../battle/avatar
 import { offHandAttackOption, weaponAttackOption } from '../battle/weapons';
 import { ABILITIES, abilityModifier, type Ability } from '../rules/abilities';
 import {
-  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, assignScore, resetScores, suggestScores, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, discoveryCap, pointBuyCost, spellCounts, usesStandardArray, spellLimits, spellOptions, suggestedScores,
+  POINT_BUY_BUDGET, STANDARD_ARRAY, alternativeCantrips, tomeCantrips, assignScore, resetScores, suggestScores, rollAbilityScores, rolledScores, backgroundPattern, canRaiseBonus, characterIssues, discoveryCap, pointBuyCost, spellCounts, usesStandardArray, spellLimits, spellOptions, suggestedScores,
   classScoped, featSkillCount, normalizeFeatSkills, otherSkillsOf, savableCharacter, switchClass, withSkills, type BuilderStep, type SavedCharacter,
 } from '../rules/builder';
 import { averageDamage } from '../rules/crEstimate';
@@ -689,7 +689,7 @@ function ClassStep({ c, setC, set, suggest, lockClass }: StepProps & { /** Göre
       <FeaturesPanel classId={s.classId} level={s.level} subclassId={s.subclassId} experimentalFrom={experimentalFrom(s.classId, s.subclassId)}
         choices={s.featureChoices ?? {}} onChoose={(key, value) => set({ featureChoices: { ...(s.featureChoices ?? {}), [key]: value } })}
         metamagic={s.metamagic ?? []} onMetamagic={(ids) => set({ metamagic: ids })}
-        invocations={s.invocations ?? []} onInvocations={(ids) => set({ invocations: ids })} known={s.spellNames ?? []}
+        invocations={s.invocations ?? []} onInvocations={(ids) => set({ invocations: ids })} known={s.spellNames ?? []} book={s.spellbook}
         weapons={(s.weapons ?? []).map((w) => w.name)} pactWeapon={s.pactWeapon} onPact={(w) => set({ pactWeapon: w })}
         forms={s.wildShapeForms ?? []} onForms={(ids) => set({ wildShapeForms: ids })} />
     </>
@@ -1027,7 +1027,7 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
   const reco = useRecoSets();
   const W = T.wiz;
   const kit = classKit(s.classId, s.level, s.subclassId);
-  const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations);
+  const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations, s.subclassId);
   const cnt = spellCounts(s);
   const chosen = s.spellNames ?? [];
   const list = classSpellList(s.classId);
@@ -1035,6 +1035,10 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
   const alt = altKit.options.filter((n) => !list.some((x) => x.name === n));
   // Kuyruk 30 D4: Blessed Warrior gibi seçenekten gelen cantrip'lerin sayacı ve sınırı (kendi listesinde olmayanlar).
   const altCount = chosen.filter((n) => alt.includes(n)).length;
+  // Görev B93: Pact of the Tome: her sınıfın listesinden cantrip (kendi listesinde olmayanlar ayrı bölümde, sayaçlı).
+  const tomeKit = tomeCantrips(s);
+  const tome = tomeKit.options.filter((n) => !list.some((x) => x.name === n) && !alt.includes(n));
+  const tomeCount = chosen.filter((n) => tome.includes(n)).length;
   // Kuyruk 18 H3: başka sınıf listeleri (Magical Discoveries: en çok `discoveryCap`; Magical Secrets: sınırsız).
   const ownNames = new Set(list.map((x) => x.name));
   const extra = spellOptions(s.classId, s.level, s.subclassId).filter((n) => !ownNames.has(n) && !alt.includes(n));
@@ -1114,6 +1118,18 @@ function SpellsStep({ sheet: s, set }: { sheet: CharacterSheet; set: (patch: Par
               return (
                 <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}<NameComps name={n} /></span>
                   <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && altCount >= altKit.max} onClick={() => toggleSpell(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
+              );
+            })}</ul>
+          </section>
+        )}
+        {tome.length > 0 && (
+          <section className="spell-group">
+            <h3>{W.tomeCantrips(tomeCount, tomeKit.max)}</h3>
+            <ul className="spell-list">{tome.map((n) => {
+              const on = chosen.includes(n);
+              return (
+                <li key={n} className={`spell-row${on ? ' on' : ''}`}><span className="spell-name">{n}<NameComps name={n} /></span>
+                  <button className={`badge prep${on ? ' on' : ''}`} aria-pressed={on} disabled={!on && (tomeCount >= tomeKit.max || cnt.cantrips >= lim.cantrips)} onClick={() => toggleSpell(n, !on)}>{on ? W.spellKnowOn : W.spellKnowTag}</button></li>
               );
             })}</ul>
           </section>

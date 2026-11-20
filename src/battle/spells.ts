@@ -81,6 +81,7 @@ import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } 
 import { resourceLeft } from './types';
 import { resourceDef } from '../rules/classFeatures';
 import { anyListResource } from './anyList';
+import { hurlEvents } from './apex';
 import type { ActiveEffect, AttackOption, CommandWord, BattleEvent, BattleState, Combatant, Command, ExtraDamage, MapObject, SpellZone } from './types';
 
 type CastCommand = Extract<Command, { type: 'cast_spell' }>;
@@ -1036,8 +1037,9 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       }, rng) : null;
       const hit = hr ? hr.hit : res.hit;
       if (!hit) bonus = { extras: [] };
-      // Görev B1: ıskada yarı hasar (Acid Arrow).
-      const miss = !hit && m.halfOnMiss ? (() => {
+      // Görev B1: ıskada yarı hasar (Acid Arrow). Görev B93 (sürüm 93+): Potent Cantrip ıskalanan cantrip'te de yarı hasar,
+      // ek etki yok (ek etkiler yalnız isabette; bizim sürüm: "Hasar cantrip'in ıskalasa ya da save başarılı olsa da yarı hasar verir").
+      const miss = !hit && (m.halfOnMiss || (v93 && !!m.damage && potentCantrip(actor, spell))) ? (() => {
         const d = rollDice(expr, rollTag(rng, { kind: 'damage', by: actor.id }));
         const once = onceLeft; onceLeft = 0;
         const a = adjustDamage(Math.floor((d.total + once) / 2), m.damageType, profileIn(state, t, true));
@@ -1080,6 +1082,14 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const after = afterHitEvents(current, actor, t.id, spell, ev.appliedDamage, rng, upcast);
       events.push(...after);
       current = applyEvents(current, after);
+      // Görev B93 (sürüm 93+): Hurl Through Hell büyü saldırısı isabetinde de (alt sınıf, bizim sürüm: "Saldırı isabetinde").
+      const ha = current.combatants[actor.id];
+      const ht = current.combatants[t.id];
+      if (v93 && m.kind === 'attack' && ha && ht) {
+        const hurl = hurlEvents(current, ha, ht, rng);
+        events.push(...hurl);
+        current = applyEvents(current, hurl);
+      }
       // Görev WARLOCK: Repelling Blast: isabette Large ve küçüğü düz geriye (her ışında).
       const push = actor.cantripMods?.[spell.name]?.pushFt;
       const hitT = current.combatants[t.id];

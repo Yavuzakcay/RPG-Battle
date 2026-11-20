@@ -218,6 +218,7 @@
     "arcaneRecovery": {
       "name": "Arcane Recovery",
       "feature": "wizard:arcane-recovery",
+      "outOfCombat": true,
       "uses": {
         "fixed": 1
       },
@@ -624,14 +625,16 @@
         ],
         "minLevel": 1,
         "maxLevel": 2,
-        "perLevel": 1
+        "perLevel": 1,
+        "castingTime": "action"
       }
     },
     "signatureSpells": {
       "name": "Signature Spells",
       "feature": "wizard:signature-spells",
+      "pickSlot": "a",
       "uses": {
-        "fixed": 2
+        "fixed": 1
       },
       "recharge": {
         "short": "all"
@@ -642,7 +645,26 @@
         ],
         "minLevel": 3,
         "maxLevel": 3,
-        "perLevel": 2
+        "perLevel": 1
+      }
+    },
+    "signatureSpells2": {
+      "name": "Signature Spells (2)",
+      "feature": "wizard:signature-spells",
+      "pickSlot": "b",
+      "uses": {
+        "fixed": 1
+      },
+      "recharge": {
+        "short": "all"
+      },
+      "freeSpellList": {
+        "classes": [
+          "Wiz"
+        ],
+        "minLevel": 3,
+        "maxLevel": 3,
+        "perLevel": 1
       }
     },
     "relentlessRage": {
@@ -1302,10 +1324,22 @@
       "status": "ok",
       "stat": "spellcasting"
     },
+    "wizard/evoker:evocation-savant": {
+      "type": "passive",
+      "status": "ok",
+      "spellbookBonus": {
+        "school": "Evocation",
+        "base": 2,
+        "maxBaseLevel": 2,
+        "perNewSlotLevel": 1
+      },
+      "note": "Görev B93 (alt sınıf; bizim sürüm 'Spellbook'una iki Evocation büyüsü ekler; her seviyede bir tane daha', EN metni: yeni slot seviyesine erişince +1): büyü kitabı sınırı 2 + (alt sınıf seviyesinden sonra açılan her slot seviyesi için 1) büyü artar; fazlası Evocation okulundan olmalı (oluşturucu denetler). Savaş dışı (kitap); savaşa yalnız hazırlananlar girer."
+    },
     "wizard:ritual-adept": {
       "type": "passive",
       "status": "ok",
-      "note": "Ritüel büyüler (Find Familiar…) kurulumda; ritüel döküm 10 dakika sürdüğü için savaşta yok (savaş dışı)"
+      "ritualFromBook": true,
+      "note": "Ritüel büyüler (Find Familiar…) kurulumda; ritüel döküm 10 dakika sürdüğü için savaşta yok (savaş dışı). Görev B93: büyü kitabındaki SRD ritüel büyüleri hazırlanmadan ritüel olarak (kurulumda Find Familiar, Phantom Steed); savaşta slotla yapılamaz (`ritualOnly`)."
     },
     "wizard:arcane-recovery": {
       "type": "passive",
@@ -1672,15 +1706,19 @@
       "type": "passive",
       "status": "ok",
       "resource": "spellMastery",
-      "note": "Kuyruk 19: oluşturucuda bir 1. ve bir 2. seviye Wizard büyüsü seçilir (seçilmezse hazırlanan ilk); seçilen büyüler en düşük seviyede slotsuz (99 kullanım = istenildiği kadar).",
+      "note": "Kuyruk 19: oluşturucuda bir 1. ve bir 2. seviye Wizard büyüsü seçilir; seçilen büyüler en düşük seviyede slotsuz (99 kullanım = istenildiği kadar). Görev B93: seçim büyü kitabından, yapım süresi Action olan büyüler; seçilenler her zaman hazır (hazır sayısına girmez); seçilmezse kitapta/hazırda o seviyedeki ilk Action büyüsü.",
       "spellPicks": [
         {
           "slot": "1",
-          "level": 1
+          "level": 1,
+          "fromBook": true,
+          "castingTime": "action"
         },
         {
           "slot": "2",
-          "level": 2
+          "level": 2,
+          "fromBook": true,
+          "castingTime": "action"
         }
       ]
     },
@@ -1688,15 +1726,17 @@
       "type": "passive",
       "status": "ok",
       "resource": "signatureSpells",
-      "note": "Kuyruk 19: oluşturucuda iki 3. seviye Wizard büyüsü seçilir (seçilmezse hazırlanan ilk ikisi); her zaman hazır, kısa dinlenmede dolan 2 slotsuz yapım (SRD: her büyü için birer; burada ortak 2).",
+      "note": "Kuyruk 19: oluşturucuda iki 3. seviye Wizard büyüsü seçilir (seçilmezse hazırlanan ilk ikisi). Görev B93: seçim büyü kitabından, ikisi de her zaman hazır; her büyünün kısa dinlenmede dolan ayrı slotsuz kullanımı (kaynaklar signatureSpells / signatureSpells2; SRD 5.2.1 s. 79).",
       "spellPicks": [
         {
           "slot": "a",
-          "level": 3
+          "level": 3,
+          "fromBook": true
         },
         {
           "slot": "b",
-          "level": 3
+          "level": 3,
+          "fromBook": true
         }
       ]
     },
