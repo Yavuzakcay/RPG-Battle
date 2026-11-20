@@ -190,7 +190,7 @@ export const en: Strings = {
   },
   dex: {
     cover: { top: 'Dungeondex', tap: 'Tap to open', open: 'Dungeondex cover: tap to open', counts: (s: number, e: number, c: number) => `${s} spells · ${e} items · ${c} monsters` },
-    prev: 'Previous entry', next: 'Next entry', vitrine: 'Showcase',
+    toc: 'Contents', prev: 'Previous entry', next: 'Next entry', vitrine: 'Showcase',
     title: 'Dungeondex', back: 'Back', search: 'Search (English or Turkish name)', categories: 'Categories', loading: 'Loading…',
     error: 'Could not load the Dungeondex data.',
     cat: { buyu: 'Spells', esya: 'Items', canavar: 'Monsters', tur: 'Species', altsoy: 'Lineages', sinif: 'Classes', altsinif: 'Subclasses', feat: 'Feats', gecmis: 'Backgrounds', durum: 'Conditions' } as Record<string, string>,
@@ -1147,7 +1147,7 @@ export const en: Strings = {
     prevPage: 'Back to the previous page', raceStart: 'Start by ancestry (the first character\'s homeland)',
     // Görev WS92: Wild Shape known forms (SRD: replace one form after a Long Rest).
     forms: (n: number, max: number) => `Forms ${n}/${max}`, formsTitle: (name: string) => `${name}: Wild Shape forms`,
-    choices: 'Choices', choicesOpen: 'Choices (swap open)', choicesHelp: 'Level-up and long-rest choices: new picks any time; replacing an existing pick only as the class allows (on gaining a level / after a long rest).',
+    choices: 'Choices', choicesOpen: 'Choices (swap open)', choicesPending: 'Choices (pick needed)', choicesHelp: 'Level-up and long-rest choices: new picks any time; replacing an existing pick only as the class allows (on gaining a level / after a long rest).',
     formsFrom: 'Form to replace', formsTo: 'New form', formsAdd: 'Empty slot', formsGo: 'Replace', formsAddGo: 'Add',
     formsNote: 'Empty slots can be filled any time; with a full list one form can be replaced after a Long Rest. A form ends when the battle ends.',
     formsWait: 'A form was already replaced this rest: wait for the next Long Rest.',

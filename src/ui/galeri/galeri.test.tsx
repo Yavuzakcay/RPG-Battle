@@ -24,7 +24,7 @@ describe('görsel galerisi', () => {
     const miss = filterRecords(all, '', true);
     expect(miss.length).toBeGreaterThan(0);
     expect(miss.every(([, r]) => r.durum !== 'var')).toBe(true);
-    expect(filterRecords(tabRecords('esya'), '', true)).toHaveLength(449);
+    expect(filterRecords(tabRecords('esya'), '', true)).toHaveLength(0); // 449 eşyanın hepsi ikonlu (public/esya)
   });
 
   it('efekt şeritleri çözülüyor (fxPlan kaydı ya da durum döngüsü)', () => {

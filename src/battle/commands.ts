@@ -874,7 +874,7 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (cmd.type === 'horde_breaker') {
     const t = state.combatants[cmd.targetId];
     if (!t) return fail('Hedef bulunamadı.');
-    const why = hordeProblem(state, actor, t);
+    const why = hordeProblem(state, actor, t, cmd.option);
     if (why) return fail(why);
     const r = weaponAttackEvents(state, actor, t, cmd.option, rng, false, false, { traitTurns: { 'horde-breaker': turnKey(state) } });
     return r.ok ? finish(state, r.events) : r;

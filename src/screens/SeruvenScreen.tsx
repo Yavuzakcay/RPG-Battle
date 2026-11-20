@@ -44,7 +44,7 @@ const BASE = import.meta.env.BASE_URL;
 const WorldMapViewer = lazy(() => import('../ui/world/WorldMapViewer'));
 // Görev B93 (A2): seçim kipindeki oluşturucu (tembel; ana parçaya girmez).
 const Builder = lazy(() => import('./Builder').then((m) => ({ default: m.Builder })));
-import { choicesBound, pickChoiceFields } from '../rules/levelChoices';
+import { choicesBound, pendingChoices, pickChoiceFields } from '../rules/levelChoices';
 import { characterFromSheet } from '../rules/builder';
 import { partyWorld, seruvenFog } from '../world/seruvenFog';
 import { daysToSurface, prisonSurfaced } from '../world/prison';
@@ -433,8 +433,9 @@ export function PageView(props: { state: SeruvenState; run: (c: SeruvenCommand) 
             {temple && <> <button type="button" className="ghost" disabled={state.gold < MORAL.dirilme.tapinakUcreti} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'tapinak' })}>{t().view.moral.reviveTemple(MORAL.dirilme.tapinakUcreti)}</button></>}
             {caster && <> <button type="button" className="ghost" disabled={state.gold < caster.gold} onClick={() => run({ type: 'moral_dirilt', memberId: m.id, yol: 'buyu' })}>{t().view.moral.reviveSpell(caster.spell, caster.gold)}</button></>}
             {!m.status.dead && <FormSwap state={state} member={m} run={run} />}
-            {!m.status.dead && choicesBound(m.sheet.classId) && <> <button type="button" className="ghost" title={S.choicesHelp} onClick={() => setEdit(m.id)}>
-              {choiceWindows(state).seviye || choiceWindows(state).dinlenme ? S.choicesOpen : S.choices}</button></>}
+            {/* Görev B95 (A): eksik seçim (alt sınıf, boş yuva, ustalık, Expertise) varsa düğme öne çıkar ve seçim ister. */}
+            {!m.status.dead && choicesBound(m.sheet.classId) && <> <button type="button" className={pendingChoices(m.sheet).length ? 'cta' : 'ghost'} title={S.choicesHelp} onClick={() => setEdit(m.id)}>
+              {pendingChoices(m.sheet).length ? S.choicesPending : choiceWindows(state).seviye || choiceWindows(state).dinlenme ? S.choicesOpen : S.choices}</button></>}
           </span>;
         })}
         {state.tasma && <span className="journey-member" title={S.collarHelp}>⛓ {S.collarOn}</span>}

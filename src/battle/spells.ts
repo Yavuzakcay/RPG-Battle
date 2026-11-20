@@ -80,7 +80,7 @@ import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
 import { castWithMetamagic, empowerCount, empowerRolls, innateFor, POINTS } from './sorcerer';
 import { oneDieBonus, SKIP_ALL, usedOnce, type OnceSkip } from './oneDieBonus';
 import { buyucu93On } from './buyucu93Surum';
-import { counterspellCheck, cuttingWordsDamage, damagedReactions, hitReactions, targetedReactions } from './reactions';
+import { counterspellCheck, cuttingWordsDamage, damagedReactions, hitReactions, hunterDefenseEvents, targetedReactions } from './reactions';
 import { resourceLeft } from './types';
 import { resourceDef } from '../rules/classFeatures';
 import { anyListResource } from './anyList';
@@ -333,7 +333,11 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
     const save = sleepOrSee ? { d20: null, total: null, success: true } as ReturnType<typeof resolveSave>
       : resolveSave({ extra: saveDice(t, ability), modifier: t.saves[ability] + dexCover, dc: actor.spellSaveDc ?? 0, mode: height ? 'disadvantage' : saveMode(mode, t, ability, actor, { damage: damageType, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? [])] }), autoFail, against: [...(m.conditions ?? []), ...(m.failEffect?.grants ?? []), 'spell'] }, rollTag(rng, { by: t.id }));
     const amount = saveDamage(t, ability, save.success, damage.total, !!m.halfOnSave || potentCantrip(actor, spell));
-    const adjusted = amount > 0 ? adjustDamage(amount, damageType, profileIn(state, t, true)) : { amount: 0, note: null };
+    // Görev B94 (sürüm 94+, Superior Hunter's Defense "when you take damage"): büyü alan hasarında da tepkiyle o türe direnç.
+    const shd = b94On(state) && amount > 0 ? hunterDefenseEvents(current, t, actor.id, damageType) : [];
+    if (shd.length) { events.push(...shd); current = applyEvents(current, shd); }
+    const prof94 = shd.length && damageType ? { ...profileIn(state, t, true), resistances: [...profileIn(state, t, true).resistances, damageType] } : profileIn(state, t, true);
+    const adjusted = amount > 0 ? adjustDamage(amount, damageType, prof94) : { amount: 0, note: null };
     const amount2 = second ? saveDamage(t, ability, save.success, second.total, !!m.halfOnSave) : 0;
     const adjusted2 = second && amount2 > 0 ? adjustDamage(amount2, second.type, profileIn(state, t, true)) : { amount: 0, note: null };
     const fx = damageEffects(t, adjusted.amount + adjusted2.amount, damageType ?? '', false, rng);
@@ -916,7 +920,11 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       rolls = d.rolls;
     }
     const amount = saveDamage(target, ability, save.success, raw, !!m.halfOnSave || potentCantrip(actor, spell));
-    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, profileIn(state, target, true)) : { amount: 0, note: null };
+    // Görev B94 (sürüm 94+): Superior Hunter's Defense save'li tek hedef büyü hasarında da.
+    const shd = b94On(state) && amount > 0 ? hunterDefenseEvents(applyEvents(state, events), target, actor.id, m.damageType) : [];
+    events.push(...shd);
+    const prof94 = shd.length && m.damageType ? { ...profileIn(state, target, true), resistances: [...profileIn(state, target, true).resistances, m.damageType] } : profileIn(state, target, true);
+    const adjusted = amount > 0 ? adjustDamage(amount, m.damageType, prof94) : { amount: 0, note: null };
     const fx = damageEffects(target, adjusted.amount, m.damageType ?? '', false, rng);
     const added = !save.success ? (m.conditions ?? []).filter((c) => !target.conditions.includes(c)) : [];
     events.push({
@@ -1079,7 +1087,13 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
       const er = v93 && actor.traits?.includes('mm-empowered') ? empower(d0.rolls, parseDice(expr).sides) : d0.rolls;
       const once = onceLeft; onceLeft = 0;
       const d = { rolls: er, total: d0.total - d0.rolls.reduce((n, x) => n + x, 0) + er.reduce((n, x) => n + x, 0) + once };
-      const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profileIn(state, t, true));
+      // Görev B94 (sürüm 94+): Superior Hunter's Defense otomatik isabetli büyüde (Magic Missile) de.
+      const shdA = b94On(state) && !guard?.blocked && d.total > 0 ? hunterDefenseEvents(current, t, actor.id, m.damageType) : [];
+      if (shdA.length) { events.push(...shdA); current = applyEvents(current, shdA); }
+      // Sonraki dartlar: aynı türe direnç bu tur sürer (etki `shd-<tür>`).
+      const shdOn = shdA.length > 0 || (b94On(state) && !!current.combatants[t.id]?.effects?.some((e) => e.id === `shd-${m.damageType}`));
+      const profA = shdOn && m.damageType ? { ...profileIn(state, t, true), resistances: [...profileIn(state, t, true).resistances, m.damageType] } : profileIn(state, t, true);
+      const adj = guard?.blocked ? { amount: 0, note: null } : adjustDamage(d.total, m.damageType, profA);
       const fx = damageEffects(t, adj.amount, m.damageType ?? '', false, rng);
       ev = {
         type: 'attack_resolved', actorId: actor.id, targetId: t.id, label: `${spell.name} (otomatik isabet)`,
