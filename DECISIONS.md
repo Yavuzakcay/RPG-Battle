@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Dungeondex Kitap kabuğu: prospektüs sağ sayfada, EN etiketleri (2026-11-20; yalnız arayüz, metin ve veri; kural ve kayıt sürümü değişmedi)
+
+- **Prospektüs bağlandı:** `ProspektusSections` kabuğun sağ sayfasındaki kartta, olgulardan sonra ve özellik bölümlerinden önce. Kimliği prospektüs verisiyle aynı olan eşya, büyü ve feat (`Dungeondex.tsx` `proSections`). Kartın mevcut içeriğine dokunulmadı; yalnız bağlama. Sınıf ve tür özellikleri kart içindeki satırlar, alt sınıf prospektüsü kartın özellik listesini tekrarlıyor: bağlanmadı (karar bekliyor).
+- **EN'de prospektüs:** yalnız Türkçe yazılmış satırlar (paragraflar, `trOnly`) EN arayüzde gösterilmez; veri satırları ve durum rozeti İngilizce. `spellDescriptionShown` ile aynı kural (EN karşılığı yoksa gizli; kart açıklaması `aciklamalar-en.json`'dan EN). Prospektüs paragraflarının çevirisi (≈1020 kayıt, ≈420 kB) yapılmadı.
+- **Canavar etiketleri EN:** tema `dex.monsterThemes` (Türkçe etiket anahtar; TR'de kendisi, EN'de 31 karşılık), harita adı `gm.mapInfo` (Game Master seçicisiyle aynı tablo; yoksa haritanın kendi adı). `mapInfo`'ya 11 harita eklendi (Bataklık, Dağ, Ada, Güverte, Şehir Meydanı, Taverna, Mağara, Dungeon, Lav Tapınağı, Kanyon Köprüsü, Volkanik Demirhane; kısa TR/EN açıklama haritanın notlarından). Kimlikler aynı.
+- **Test:** `src/dungeondex/dungeondex.test.tsx` "Kitap kabuğu" (TR prospektüs bölümleri, EN'de yalnız Türkçe satır yok, tema ve harita adı EN).
+
 ## Görev B93: Cleric, Sorcerer, Wizard, Warlock denetim düzeltmeleri (2026-11-20; kural sürümü 93 `BUYUCU93_VERSION`)
 
 Tek kural sürümü 93 (`src/battle/buyucu93Surum.ts`); 92 ve altı kayıt/replay eski davranışta. Kaynak: `harita/belgeler/{CLERIC,SORCERER,WIZARD,WARLOCK}-DENETIM.md` (her satırda "B93" notu: sürümlü / sürümsüz). İlke (kullanıcı kararı): SRD'ye aykırı ve temeli bozmayan her şey SRD'ye; alt sınıflarda ölçüt bizim sürüm (AS2-FARKLAR), alt sınıf satırları SRD'ye çevrilmedi.
