@@ -2,6 +2,7 @@
  * Olayları duruma uygular. Saf fonksiyondur: aynı olaylar aynı sırayla uygulanınca
  * her cihazda ve sunucuda tamamen aynı durum çıkar.
  */
+import { b94On } from './b94Surum';
 import { sourceDown } from './sourceDown';
 import nesneAgirlik from '../../data/nesne-agirlik.json';
 import { BOON_TURN_REFILL } from './boons';
@@ -703,6 +704,8 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (event.attacksLeft !== undefined) economy.attacksLeft = event.attacksLeft;
       else if (event.kind === 'action') economy.attacksLeft = 0;
       if (event.slotTurn !== undefined) economy.slotTurn = event.slotTurn;
+      if (event.leveled) economy.leveledCast = true;
+      if (event.quickened) economy.quickened = true;
       if (event.light) economy.lightAttack = true;
       if (event.offhand) economy.offhandUsed = true;
       if (event.flurryLeft !== undefined) economy.flurryLeft = event.flurryLeft;
@@ -970,7 +973,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
       if (!c) return state;
       const slots = [...c.spellSlots];
       slots[event.level - 1] = (slots[event.level - 1] ?? 0) + 1;
-      return withCombatant(state, event.actorId, { spellSlots: slots });
+      // Görev B93: yaratılan slotlar sayılır (savaş sonunda tablonun üstüne çıkabilir; uzun dinlenmede kaybolur).
+      if (!event.extra) return withCombatant(state, event.actorId, { spellSlots: slots });
+      const created = [...(c.createdSlots ?? [])];
+      created[event.level - 1] = (created[event.level - 1] ?? 0) + 1;
+      return withCombatant(state, event.actorId, { spellSlots: slots, createdSlots: created });
     }
     case 'slot_spent': {
       const c = state.combatants[event.actorId];
@@ -1411,7 +1418,11 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
     case 'item_dropped': {
       const c = state.combatants[event.actorId];
       if (!c) return state;
-      const next = withCombatant(state, c.id, { dropped: [...new Set([...(c.dropped ?? []), event.item])], weaponOptions: c.weaponOptions.filter((o) => o.weaponId !== event.item) });
+      // Görev B94 (Sacred Weapon): bırakılan silaha bağlı güçlendirme ve ışığı biter (yalnız 94+'ta yazılan `endsOnDrop`).
+      const gone = (c.buffs ?? []).filter((b) => b.endsOnDrop && b.enchantBy === event.item);
+      const lights = new Set(gone.map((b) => b.endsOnDrop?.lightId).filter(Boolean));
+      const next = withCombatant(state, c.id, { dropped: [...new Set([...(c.dropped ?? []), event.item])], weaponOptions: c.weaponOptions.filter((o) => o.weaponId !== event.item),
+        ...(gone.length ? { buffs: (c.buffs ?? []).filter((b) => !gone.includes(b)), ...(lights.size ? { effects: (c.effects ?? []).filter((e) => !lights.has(e.id)) } : {}) } : {}) });
       if (!event.objectId || !event.at || !next.map) return next;
       return { ...next, map: { ...next.map, objects: [...(next.map.objects ?? []), { id: event.objectId, kind: 'droppedItem', at: event.at, hp: 5, item: event.item, options: event.options ?? [] }] } };
     }

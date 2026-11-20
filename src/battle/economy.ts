@@ -165,6 +165,14 @@ export function actionAttacks(actor: Combatant, pact: boolean): number {
   return pact ? Math.max(actor.attacksPerAction, actor.pactAttacks ?? 0) : actor.attacksPerAction;
 }
 
+/** Görev B94 (Abjure Foes, `oneEconomy`): bu tur başka bir hak (hareket, eylem, bonus eylem) kullanıldı mı. */
+export function oneEconomyUsed(actor: Combatant, want: 'move' | 'action' | 'bonus'): boolean {
+  if (!actor.effects?.some((x) => x.oneEconomy)) return false;
+  const e = actor.economy;
+  return (want !== 'move' && actor.movementUsed > 0) || (want !== 'action' && !!e.action) || (want !== 'bonus' && !!e.bonus);
+}
+export const oneEconomyText = 'Korkmuş (Abjure Foes): bu tur yalnız hareket ya da eylem ya da bonus eylemden biri.';
+
 export function economyCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
   const cost = baseCost(state, actor, cmd);
   if (!cost.ok || cost.event?.type !== 'action_used') return cost;
@@ -179,6 +187,8 @@ export function economyCost(state: BattleState, actor: Combatant, cmd: Command):
   if ((cost.event.kind === 'action' || cost.event.kind === 'bonus') && actor.effects?.some((x) => x.noActBonus)) return fail('Zehirli bulutun etkisinde: bu tur eylem ve bonus eylem yapılamaz.');
   // Kuyruk 19: Confusion: bonus eylem yok.
   if (cost.event.kind === 'bonus' && actor.effects?.some((x) => x.noBonus)) return fail('Bu durumda bonus eylem yapılamaz (Confusion).');
+  // Görev B94 (Abjure Foes): yalnız hareket ya da eylem ya da bonus eylem.
+  if ((cost.event.kind === 'action' || cost.event.kind === 'bonus') && oneEconomyUsed(actor, cost.event.kind)) return fail(oneEconomyText);
   if (slowed && cost.event.kind === 'action' && e.bonus) return fail('Slow: bu tur bonus eylem kullanıldı, eylem yapılamaz.');
   if (slowed && cost.event.kind === 'bonus' && e.action) return fail('Slow: bu tur eylem kullanıldı, bonus eylem yapılamaz.');
   if (slowed && cost.event.kind === 'action' && cmd.type === 'attack') return { ok: true, event: { ...cost.event, attacksLeft: 0 } };
@@ -405,7 +415,7 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       if (spell.castingTime === 'ritual' && !companion) return fail(`${spell.name} ritüeldir: savaştan önce (kurulumda) yapılır.`);
       if (companion) {
         if (cmd.free && !freeCastResource(actor, spell.name, undefined, true)) return fail('Wild Shape kullanımı kalmadı.');
-        return spend(actor, 'action', spell.name, !cmd.free ? { slotTurn: turnKey(state) } : {});
+        return spend(actor, 'action', spell.name, { ...(!cmd.free ? { slotTurn: turnKey(state) } : {}), ...(buyucu93On(state) && spell.level > 0 ? { leveled: true } : {}) });
       }
       // Action Surge'ün verdiği eylem Magic eylemi olamaz (SRD 5.2.1).
       if (e.surged && spell.castingTime === 'action') return fail('Action Surge\'ün ek eylemiyle büyü yapılamaz.');
@@ -419,7 +429,14 @@ function baseCost(state: BattleState, actor: Combatant, cmd: Command): Cost {
       // Kuyruk 19: canavarın bonus eylem büyüsü (Divine Aid, Misty Step; kaynak `mspell-b:`) slotsuz yapımda bonus eylemle.
       const bonusSpell = cmd.slotLevel === undefined && !!actor.freeSpells?.[spell.name]?.startsWith('mspell-b:') && (actor.resources[actor.freeSpells[spell.name]!] ?? 0) > 0;
       const time = cmd.free ? 'action' : bonusSpell || (cmd.metamagic?.includes('quickened') && spell.castingTime === 'action') ? 'bonus' : spell.castingTime;
-      const cost = spend(actor, time as 'action' | 'bonus' | 'reaction', spell.name, usesSlot ? { slotTurn: key } : {});
+      // Görev B93 (sürüm 93+, SRD 5.2.1 s. 67 Quickened Spell): bu tur 1+ seviye büyü yapıldıysa Quickened olmaz; Quickened'dan
+      // sonra bu tur 1+ seviye büyü yapılamaz (`economy.leveledCast`, `economy.quickened`).
+      const quick = !!cmd.metamagic?.includes('quickened');
+      const v93 = buyucu93On(state);
+      if (v93 && quick && e.leveledCast) return fail('Quickened Spell: bu tur zaten 1. seviye ya da üstü büyü yapıldı.');
+      if (v93 && !quick && spell.level > 0 && e.quickened) return fail('Quickened Spell kullanıldı: bu tur 1. seviye ya da üstü büyü yapılamaz.');
+      const marks = { ...(v93 && spell.level > 0 ? { leveled: true } : {}), ...(v93 && quick ? { quickened: true } : {}) };
+      const cost = spend(actor, time as 'action' | 'bonus' | 'reaction', spell.name, { ...(usesSlot ? { slotTurn: key } : {}), ...marks });
       if (cost.ok && usesSlot && e.slotTurn === key) return fail('Bu tur zaten büyü slotu harcandı (turda bir slotlu büyü).');
       return cost;
     }

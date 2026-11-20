@@ -11,6 +11,7 @@
  * - `spellGlobe` / `antimagic` (Globe of Invulnerability, Antimagic Field: içerideki yaratıklar dışarıdan gelen büyüden
  *   etkilenmez; Antimagic içinde büyü yapılamaz).
  */
+import { b94On } from './b94Surum';
 import { buyucu93On } from './buyucu93Surum';
 import { healBonus, healSelfAfter } from './cleric';
 import { ruleVersion } from './ruleVersion';
@@ -62,7 +63,7 @@ function shielded(state: BattleState, caster: Combatant, target: Combatant, leve
 }
 
 /** Büyü sonrası olayları düzenler ve ekler (normal yol çalıştıktan sonra). */
-export function after69(before: BattleState, state: BattleState, actor: Combatant, spell: Spell, events: BattleEvent[], target: { id?: string; hex?: Offset; choice?: string }, rng: Rng): BattleEvent[] | null {
+export function after69(before: BattleState, state: BattleState, actor: Combatant, spell: Spell, events: BattleEvent[], target: { id?: string; hex?: Offset; choice?: string; ids?: string[] }, rng: Rng): BattleEvent[] | null {
   if (!on(before)) return null;
   const m = spell.mechanics as M;
   const slot = events.find((e) => e.type === 'spell_cast' || e.type === 'save_resolved') ? spell.level : spell.level;
@@ -113,7 +114,12 @@ export function after69(before: BattleState, state: BattleState, actor: Combatan
     add(powerWordEvents(cur, actor, t, m.powerWord, spell, rng));
     // Words of Creation (Bard 20): ilk hedefin 10 ft'indeki ikinci bir yaratık da hedef (aynı taraftan; en yakın).
     if (actor.traits?.includes('words-of-creation')) {
-      const second = Object.values(cur.combatants).filter((c) => c.id !== t.id && c.id !== actor.id && c.side === t.side && c.life !== 'dead' && ft(t, c) <= 10)
+      // Görev B94 (sürüm 94+, SRD 5.2.1 s. 33 "a second creature within 10 feet of the first target"): ikinci hedefi büyücü seçer
+      // (`targetIds`'in ilk hedeften başka elemanı; herhangi bir taraf); seçilmediyse eskisi gibi aynı taraftan en yakın.
+      const picked = b94On(before) ? (target.ids ?? []).find((id) => id !== t.id) : undefined;
+      const pc = picked ? cur.combatants[picked] : undefined;
+      const second = pc ? (pc.id !== actor.id && pc.life !== 'dead' && ft(t, pc) <= 10 ? pc : undefined)
+        : Object.values(cur.combatants).filter((c) => c.id !== t.id && c.id !== actor.id && c.side === t.side && c.life !== 'dead' && ft(t, c) <= 10)
         .sort((a, b) => ft(t, a) - ft(t, b))[0];
       if (second) add(powerWordEvents(cur, actor, second, m.powerWord, spell, rng));
     }

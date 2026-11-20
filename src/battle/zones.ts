@@ -12,6 +12,7 @@
  * - Dokunulamaz çağrılar (Flaming Sphere, ruh sürüsü) alanlardan etkilenmez.
  */
 import { sourceDown } from './sourceDown';
+import { b94On } from './b94Surum';
 import { isPlantZone, soyPlantWalker } from './altSoySurum';
 import { freeShapeFor, freeShapeProblem, pathProblem } from './freeShape';
 import { cageOpenEvents, cageStepBlocked, castCageHexes } from './forcecage';
@@ -193,7 +194,9 @@ export function triggerEvents(state: BattleState, z: SpellZone, victimId: string
   const ability = spec.save;
   const autoFail = (ability === 'str' || ability === 'dex') && autoFailsStrDexSave(victim.conditions);
   const cover = ability === 'dex' ? opts?.cover ?? 0 : 0;
-  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability] + cover, dc: z.dc, mode: saveMode('normal', victim, ability, state.combatants[z.casterId], { ...(dtype ? { damage: dtype } : {}), against: spec.conditions }), autoFail },
+  const save = resolveSave({ extra: saveDice(victim, ability), modifier: victim.saves[ability] + cover, dc: z.dc, mode: saveMode('normal', victim, ability, state.combatants[z.casterId], { ...(dtype ? { damage: dtype } : {}), against: spec.conditions }), autoFail,
+    // Görev B94 (sürüm 94+): Countercharm (ve benzeri `against` ikinci şansları) alan save'lerinde de (SRD 5.2.1 s. 33).
+    ...(b94On(state) && spec.conditions?.length ? { against: spec.conditions } : {}) },
     rollTag(rng, { by: victim.id }));
   const d = expr ? opts?.rolled ?? rollDice(expr, rollTag(rng, { kind: 'damage', by: z.casterId })) : { rolls: [] as number[], total: 0 };
   const amount = expr ? saveDamage(victim, ability, save.success, d.total, !!spec.half) : 0;

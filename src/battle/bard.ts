@@ -4,6 +4,8 @@
  * Inspiration (`font-of-inspiration`: kullanım yoksa slot), Superior Inspiration (`superior-inspiration`: savaş başı).
  * Cutting Words tepkisi `reactions.ts`'te. Saf.
  */
+import { b94On } from './b94Surum';
+import { canSee } from './maprules';
 import { distance } from '../rules/hex';
 import { ruleVersion } from './ruleVersion';
 import { resourceLeft, type BattleEvent, type BattleState, type Combatant, type UsableFeature } from './types';
@@ -36,6 +38,19 @@ function payment(actor: Combatant, f: UsableFeature, state?: Pick<BattleState, '
   return il?.kaynaksiz ? { type: 'map_note', text: `${actor.name}: ${f.name} kaynaksız (${il.zarBoyu ?? 'd6'})` } : null;
 }
 
+/** Görev B94: ilham ödenebiliyor mu (kullanım, Font of Inspiration ile slot ya da paket kaynaksız); arayüz düğmesi için. */
+export const inspirePayable = (state: Pick<BattleState, 'kuralSurumu'>, actor: Combatant, f: UsableFeature): boolean => !!payment(actor, f, state);
+
+/**
+ * Görev B94 (sürüm 94+, SRD 5.2.1 s. 31 "a creature … who can see or hear you"): hedef Bard'ı göremiyor (Blinded ya da
+ * görüş hattı yok) ve duyamıyorsa (Deafened ya da ikisinden biri Silence içinde) zar verilmez.
+ */
+function perceives(state: BattleState, t: Combatant, actor: Combatant): boolean {
+  const sees = !t.conditions.includes('Blinded') && (!state.map || canSee(state, t, actor));
+  const hears = !t.conditions.includes('Deafened') && !t.silenced && !actor.silenced;
+  return sees || hears;
+}
+
 export function inspireProblem(state: BattleState, actor: Combatant, f: UsableFeature, targetId: string | undefined): string | null {
   const e = f.effect;
   if (e.kind !== 'inspire') return null;
@@ -46,6 +61,7 @@ export function inspireProblem(state: BattleState, actor: Combatant, f: UsableFe
   if (t.side !== actor.side || t.hp <= 0) return 'Ayakta bir dost seçmelisin.';
   if (state.map && actor.pos && t.pos && distance(actor.pos, t.pos) * 5 > e.rangeFt) return `${e.rangeFt} ft içinde olmalı.`;
   if (t.effects?.some((x) => x.inspire)) return `${t.name} zaten bir Bardic Inspiration zarı taşıyor.`;
+  if (b94On(state) && !perceives(state, t, actor)) return `${t.name} seni göremiyor ve duyamıyor.`;
   return null;
 }
 

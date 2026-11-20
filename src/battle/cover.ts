@@ -8,6 +8,8 @@
  * Çizgi iki altıgenin tam sınırından geçerse iki yol da denenir ve saldıran için en iyisi
  * seçilir (SRD: saldıran en elverişli köşeyi seçer).
  */
+import { sourceDown } from './sourceDown';
+import { auraDist } from './adjacency';
 import { interposeCover } from './arcaneHand';
 import type { Cover, TerrainType } from '../map/terrain';
 import { distance, line, sameHex, type Offset } from '../rules/hex';
@@ -277,6 +279,9 @@ function better(a: LineOfFire, b: LineOfFire): LineOfFire {
  */
 function grantedHalfCover(state: BattleState, target: Combatant): boolean {
   if (target.effects?.some((e) => e.halfCover)) return true;
+  // Görev B94 (Smite of Protection, 94+): aurası açık (Incapacitated değil) dost Paladin'in yarıçapında.
+  if (target.pos && Object.values(state.combatants).some((p) => p.side === target.side && !sourceDown(p) && !!p.pos
+    && p.effects?.some((e) => e.coverAura !== undefined && (p.id === target.id || auraDist(state, p, target) <= (e.coverAura ?? 0))))) return true;
   return !!target.pos && !!state.map?.zones?.some((z) => z.spec?.coverFor === 'allies' && z.side === target.side
     && z.hexes.some((h) => sameHex(h, target.pos as Offset)));
 }

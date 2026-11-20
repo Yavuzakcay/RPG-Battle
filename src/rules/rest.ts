@@ -26,15 +26,20 @@ export interface ShortRestResult {
   healed: number;
 }
 
-/** Kısa dinlenme: istenen sayıda hit die harcanır, her biri hit die + CON modifier (en az 0) iyileştirir. */
+/**
+ * Kısa dinlenme: istenen sayıda hit die harcanır, her biri hit die + CON modifier iyileştirir.
+ * GENEL-SAVAS-DENETIM G2 (SRD 5.2.1 s. 187 Short Rest): zar başına "minimum of 1 Hit Point" (eskiden en az 0).
+ * G1 (s. 187): "To start a Short Rest, you must have at least 1 Hit Point": 0 HP'de dinlenme başlamaz (zar harcanmaz).
+ */
 export function shortRest(state: RestState, diceToSpend: number, rng: Rng = Math.random): ShortRestResult {
+  if (state.hp < 1) return { state: { ...state, spellSlots: [...state.spellSlots] }, rolls: [], healed: 0 };
   const count = Math.max(0, Math.min(diceToSpend, state.hitDiceLeft));
   const rolls: number[] = [];
   let hp = state.hp;
   for (let i = 0; i < count; i++) {
     const roll = rollDie(state.hitDie, rng);
     rolls.push(roll);
-    hp = Math.min(state.maxHp, hp + Math.max(0, roll + state.conMod));
+    hp = Math.min(state.maxHp, hp + Math.max(1, roll + state.conMod));
   }
   return {
     state: {
@@ -48,13 +53,16 @@ export function shortRest(state: RestState, diceToSpend: number, rng: Rng = Math
   };
 }
 
-/** Uzun dinlenme: tüm HP ve slotlar yenilenir, harcanan hit die'ların yarısı (en az 1) geri gelir. */
+/**
+ * Uzun dinlenme: tüm HP ve slotlar yenilenir, harcanan hit die'ların tamamı geri gelir.
+ * GENEL-SAVAS-DENETIM G5 (SRD 5.2.1 s. 185 Long Rest, "Regain All HP. You regain all lost Hit Points and all spent
+ * Hit Point Dice"); eskiden 2014 kuralı (yarısı, en az 1). 0 HP'de başlayamama (s. 185) ertelendi: denetim belgesi G6.
+ */
 export function longRest(state: RestState): RestState {
-  const regained = Math.max(1, Math.floor(state.level / 2));
   return {
     ...state,
     hp: state.maxHp,
-    hitDiceLeft: Math.min(state.level, state.hitDiceLeft + regained),
+    hitDiceLeft: state.level,
     spellSlots: [...state.maxSpellSlots],
   };
 }
