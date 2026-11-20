@@ -21,6 +21,7 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { druidChoice94 } from './ai/b94';
 import { ws92On } from './ws92Surum';
 import { limitsOn, liftPlan } from './nesneAgirlik';
 import { canAirMove } from './airMove';
@@ -2025,6 +2026,11 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Görev CLERIC (basit kurallar, veriden): Channel Divinity ve Sanctuary.
   {
     const cmd = clericChoice(state, actor, canAct);
+    if (cmd) return cmd;
+  }
+  // Görev B94 (94+, basit kurallar): Land's Aid, Nature's Sanctuary.
+  {
+    const cmd = druidChoice94(state, actor, foesOf(state, actor), canAct, (c) => tryCmd(state, actor, c).ok);
     if (cmd) return cmd;
   }
   // Kuyruk S1: Plane Shift ile geri çekilme (son çare).
