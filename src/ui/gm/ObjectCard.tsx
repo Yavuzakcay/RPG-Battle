@@ -9,6 +9,7 @@ import { AGIRLIK, objectWeightLb } from '../../battle/nesneAgirlik';
 import type { MapObject } from '../../battle/types';
 import { trAciklama } from '../../data';
 import { getLang, t } from '../../i18n';
+import { GlyphText } from '../glyph/Glyph';
 
 const step = (lb: number): number => (lb < 20 ? 0.5 : lb < 100 ? 5 : 25);
 const clampLb = (n: number): number => Math.min(AGIRLIK.maxLb, Math.max(AGIRLIK.minLb, Math.round(n * 10) / 10));
@@ -34,7 +35,7 @@ export function ObjectCard(props: {
   return (
     <div className="gm-tool object-card-panel" role="dialog" aria-label={def?.en ?? props.obj.kind}>
       <strong className="gm-tool-title">{def?.icon} {en ? def?.en : def?.tr} <small>{en ? def?.tr : def?.en}</small></strong>
-      <p className="object-desc">{desc ?? N.noDesc}</p>
+      <p className="object-desc">{desc ? <GlyphText text={desc} /> : N.noDesc}</p>
       {props.weightOn && (
         <div className="object-weight" role="group" aria-label={N.weight}>
           <span>{N.weight}</span>

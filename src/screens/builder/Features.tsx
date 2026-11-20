@@ -18,6 +18,8 @@ import { findSubclass } from '../../rules/subclasses';
 import { wishPickKey } from '../../battle/paket/bag';
 import { getLang, t } from '../../i18n';
 import { Fold, InfoPop, InfoTip } from './shared';
+import { GlyphBadges, GlyphText } from '../../ui/glyph/Glyph';
+import { actionGlyph } from '../../ui/glyph/glyphs';
 
 export function InvocationPicker(props: { classId: string; level: number; invocations: string[]; onInvocations: (ids: string[]) => void; known: string[];
   weapons: string[]; pactWeapon?: string; onPact: (w: string) => void }) {
@@ -195,11 +197,11 @@ export function FeaturesPanel(props: {
     return (
       <li key={f.key} className={`feature${f.mechanic?.story ? ' story' : ''}${soon ? ' soon' : ''}`}>
         <span className="feature-head">
-          <b>{f.name}</b> <small className="feature-lv">{W.featureLevel(f.level)}</small>
+          <b>{f.name}<GlyphBadges list={[actionGlyph(f.mechanic?.type)]} /></b> <small className="feature-lv">{W.featureLevel(f.level)}</small>
           {f.mechanic?.story && <span className="feature-tag">{T.storyTag}</span>}
           {soon && <span className="feature-tag soon">{W.soonTag}</span>}
         </span>
-        {sum && <small className="feature-sum">{sum}</small>}
+        {sum && <small className="feature-sum"><GlyphText text={sum} /></small>}
         {f.mechanic?.options && (
           <select aria-label={f.name} value={props.choices[f.key] ?? f.mechanic.default ?? f.mechanic.options[0]?.id}
             onChange={(e: { target: { value: string } }) => props.onChoose(f.key, e.target.value)}>

@@ -16,6 +16,7 @@ import { BookFrame, DexCover, useCover } from '../dungeondex/book/Book';
 import { bookData } from '../dungeondex/book/kitapData';
 import { storedDexCover } from '../ui/dexCoverSetting';
 import { IconBook } from '../ui/icons';
+import { GlyphBadges, GlyphText } from '../ui/glyph/Glyph';
 import './dungeondex.css';
 
 const BASE = import.meta.env.BASE_URL;
@@ -201,7 +202,9 @@ function Text(props: { d: DexText | undefined; className?: string }) {
   const lang = useLang();
   const s = shownText(props.d, lang);
   if (!s) return null;
-  return <p className={props.className}>{s.text}{s.trOnly && <span className="dex-tronly"> ({t().common.descTrOnly})</span>}</p>;
+  // Ortak simgeler (glif) yalnız açıklama metninde (tr/en); arayüz özeti (`ui`) ham SRD metnine düşebilir, dokunulmaz.
+  const desc = s.text === props.d?.tr || s.text === props.d?.en;
+  return <p className={props.className}>{desc ? <GlyphText text={s.text} /> : s.text}{s.trOnly && <span className="dex-tronly"> ({t().common.descTrOnly})</span>}</p>;
 }
 
 function Card(props: { entry: DexEntry; onLink: (l: DexLink) => void }) {
@@ -209,7 +212,7 @@ function Card(props: { entry: DexEntry; onLink: (l: DexLink) => void }) {
   const e = props.entry;
   return (
     <article className="dex-card" data-testid="dex-card" aria-label={e.name}>
-      <h2>{e.name}</h2>
+      <h2>{e.name}<GlyphBadges list={e.glif} /></h2>
       {e.alt && <p className="dex-alt">{e.alt}</p>}
       <p className="dex-header">{e.header}</p>
       {e.tags.length > 0 && <p className="dex-tags">{e.tags.map((x) => <span key={x} className="dex-tag">{x}</span>)}</p>}
@@ -225,7 +228,7 @@ function Card(props: { entry: DexEntry; onLink: (l: DexLink) => void }) {
           <ul>
             {s.rows.map((r, i) => (
               <li key={`${r.name}-${i}`}>
-                <strong>{r.level !== undefined && <span className="dex-lvl">{L.levelShort(r.level)} </span>}{r.name}</strong>
+                <strong>{r.level !== undefined && <span className="dex-lvl">{L.levelShort(r.level)} </span>}{r.name}<GlyphBadges list={[r.glif]} /></strong>
                 {r.tag && <span className="dex-tag">{r.tag}</span>}
                 <Text d={r.text} />
               </li>

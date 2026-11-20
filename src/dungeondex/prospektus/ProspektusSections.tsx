@@ -4,6 +4,7 @@
  */
 import { t } from '../../i18n';
 import type { ProSection } from './types';
+import { GlyphText } from '../../ui/glyph/Glyph';
 import './prospektus.css';
 
 export function ProspektusSections(props: { sections: ProSection[] }) {
@@ -23,7 +24,8 @@ export function ProspektusSections(props: { sections: ProSection[] }) {
                 <li key={i} className={r.label ? 'pro-row pro-kv' : 'pro-row pro-par'}>
                   {r.label && <span className="pro-label">{r.label}</span>}
                   <span className="pro-text">
-                    {r.text}
+                    {/* Ortak simgeler (glif) açıklama paragraflarında; "Oyundaki durum" (ham SRD/oyun farkı notu) aynen. */}
+                    {s.key === 'durum' ? r.text : <GlyphText text={r.text} />}
                     {r.trOnly && <span className="pro-tronly"> ({t().common.descTrOnly})</span>}
                   </span>
                 </li>

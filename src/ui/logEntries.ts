@@ -7,9 +7,10 @@
 import { t } from '../i18n';
 import type { BattleEvent, BattleState } from '../battle/types';
 import { describeEvent } from './log';
+import { hpModeFor } from './hpVisibility';
 
 export type LogKind = 'normal' | 'reaction' | 'surface' | 'moral' | 'summary' | 'round';
-export interface LogEntry { key: string; head: string; detail: string[]; kind: LogKind }
+export interface LogEntry { key: string; head: string; detail: string[]; kind: LogKind; /** Verilen hasarın türleri (çip, ortak simgeli). */ dtypes?: string[] }
 
 export function kindOf(e: BattleEvent): LogKind {
   if (e.type === 'reaction_used' || (e.type === 'attack_resolved' && (e.opportunity || !!e.reacted))) return 'reaction';
@@ -17,6 +18,15 @@ export function kindOf(e: BattleEvent): LogKind {
   if (e.type === 'moral_changed') return 'moral';
   if (e.type === 'turn_ended') return 'round';
   return 'normal';
+}
+
+/** Olayın verdiği hasarın türleri (hasar 0 ise boş): `damageType` ve ikinci tür (`secondary.type`). */
+export function eventDamageTypes(e: BattleEvent): string[] {
+  const x = e as { damageType?: unknown; secondary?: { type?: unknown; applied?: number }; appliedDamage?: number; applied?: number; damage?: number };
+  const out: string[] = [];
+  if ((x.appliedDamage ?? x.applied ?? x.damage ?? 0) > 0 && typeof x.damageType === 'string' && x.damageType && x.damageType !== 'none') out.push(x.damageType.toLowerCase());
+  if ((x.secondary?.applied ?? 0) > 0 && typeof x.secondary?.type === 'string') out.push(x.secondary.type.toLowerCase());
+  return [...new Set(out)];
 }
 
 /** Metni başlık + ayrıntıya böler ('. ' ayracı; sayılardaki nokta bölünmez). */
@@ -86,7 +96,10 @@ export function logEntries(events: BattleEvent[], state: BattleState, opts: { su
     const text = describeEvent(e, state);
     if (text) {
       const { head, detail } = splitLine(text);
-      out.push({ key: `e${i}`, head, detail: [...detail, ...mountDetail(events, i, e, state)], kind: kindOf(e) });
+      // Hasar türü çipi yalnız hasar metni görünürken (OD1B: gizli/etiket/yüzde kipindeki hedefte tür de gizli).
+      const tgt = (e as { targetId?: string }).targetId;
+      const dtypes = tgt && hpModeFor(state.combatants[tgt]) ? [] : eventDamageTypes(e);
+      out.push({ key: `e${i}`, head, detail: [...detail, ...mountDetail(events, i, e, state)], kind: kindOf(e), ...(dtypes.length ? { dtypes } : {}) });
     }
     if (e.type === 'turn_ended') {
       const x = tl.get(e.actorId);

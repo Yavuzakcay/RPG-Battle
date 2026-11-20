@@ -193,6 +193,8 @@ import { concealed, objectShown } from './battle/hiddenObjects';
 import { OBJECTS, objectAt } from './battle/objectData';
 import { hideBlockReason, hideCover, hideZones, revealPuff, tokenView, viewerOf } from './ui/stealthView';
 import { MoralBar } from './ui/MoralBar';
+import { DamageChip, GlyphBadges, GlyphText } from './ui/glyph/Glyph';
+import { glyphLabel } from './ui/glyph/glyphs';
 import { ResourceChip, iconed, plain, sharedIcons } from './ui/ResourceChip';
 
 /** Görev OD1B: düşman HP görünürlüğü tek çözücüden (`ui/hpVisibility`). */
@@ -279,11 +281,11 @@ function Drawer(props: { c: Combatant; state: BattleState; onClose: () => void; 
           <ul>{fxRows.map((r) => (
             <li key={r.key} className={r.harmful ? 'harmful' : 'helpful'}>
               <button type="button" onClick={() => setOpenFx((k) => (k === r.key ? null : r.key))} aria-expanded={openFx === r.key}>
-                <span aria-hidden="true">{r.icon}</span> {r.name}{r.detail ? <small> · {r.detail}</small> : null}
+                <span aria-hidden="true">{r.icon}</span> {r.name}<GlyphBadges list={r.glif} />{r.detail ? <small> · {r.detail}</small> : null}
               </button>
               {/* Kuyruk B2: betimleme mekanik metnin üstünde (yoksa hiçbir şey çizilmez). */}
-              {openFx === r.key && r.desc && <p className="fx-desc">{r.desc}</p>}
-              {openFx === r.key && r.text && <p className="fx-text">{r.text}</p>}
+              {openFx === r.key && r.desc && <p className="fx-desc"><GlyphText text={r.desc} /></p>}
+              {openFx === r.key && r.text && <p className="fx-text"><GlyphText text={r.text} /></p>}
             </li>
           ))}</ul>
         </div>
@@ -3329,7 +3331,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                     <li key={ln.key} className={`log-${ln.kind}${ln.detail.length ? ' expandable' : ''}${open ? ' open' : ''}`}
                       title={ln.detail.length && !open ? t().log.expandHint : undefined}
                       onClick={ln.detail.length ? () => setLogOpenRows((s) => { const n = new Set(s); if (n.has(ln.key)) n.delete(ln.key); else n.add(ln.key); return n; }) : undefined}>
-                      {ln.head}{ln.detail.length > 0 && !open && <span className="log-more"> ▸</span>}
+                      {ln.head}{ln.dtypes?.map((d) => <DamageChip key={d} type={d} label={glyphLabel(d, lang)} />)}{ln.detail.length > 0 && !open && <span className="log-more"> ▸</span>}
                       {open && <ul className="log-detail">{ln.detail.map((d, k) => <li key={k}>{d}</li>)}</ul>}
                     </li>
                   );

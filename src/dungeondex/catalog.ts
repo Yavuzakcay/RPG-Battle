@@ -13,6 +13,8 @@ import { displayName } from '../rules/subclasses';
 import { armorDetail, itemSummary, weaponDetail } from '../ui/equipmentText';
 import { featInfo, featureSummary, masteryDescription } from '../ui/descriptions';
 import { allInvocations } from '../rules/invocations';
+import { spellRitual } from '../rules/spellComponents';
+import { actionGlyph, itemGlyphs, spellGlyphs } from '../ui/glyph/glyphs';
 import { t, type Lang } from '../i18n';
 import cfg from '../../data/dungeondex.json';
 import srdSpecies from '../../data/srd/species.json';
@@ -31,13 +33,15 @@ export const CONDITION_IDS = cfg.durumlar.map((d) => d.id);
  * kimliklerle eklenince `en` dolar), `ui` arayüzün o dilde ürettiği özet (eşya etki özeti, silah/zırh satırı).
  */
 export interface DexText { tr?: string; en?: string; ui?: string }
-export interface DexRow { name: string; text?: DexText; tag?: string; level?: number }
+export interface DexRow { name: string; text?: DexText; tag?: string; level?: number; /** Ortak simge (glif): eylem türü. */ glif?: string }
 export interface DexLink { cat: DexCat; id?: string; filter?: [string, string]; label: string }
 export interface DexEntry {
   cat: DexCat; id: string; name: string; alt?: string; header: string;
   summary?: DexText; desc?: DexText; extra?: DexText;
   facts: Array<[string, string]>; sections: Array<{ title: string; rows: DexRow[] }>;
   links: DexLink[]; tags: string[];
+  /** Ortak simgeler (glif; yalnız görünüm): başlıkta adın yanında (büyüde okul + Concentration/Ritual, eşyada Attunement). */
+  glif?: string[];
   /** Süzgeç değerleri (anahtar → değer; çok değerli süzgeçte `|` ile). */
   f: Record<string, string>;
   /** Kimlik dışı sıralama anahtarı. */
@@ -143,6 +147,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
         ...conds.map((c): DexLink => ({ cat: 'durum', id: c, label: condName(c) })),
       ],
       tags: [], f: { level: String(s.level), school: s.school ?? '', cls: cls.join('|') }, sort: `${s.level}${s.name}`,
+      glif: spellGlyphs(s, spellRitual(s)),
     };
   });
 
@@ -160,7 +165,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
       ],
       sections: [],
       links: (i.spells ?? []).flatMap((s) => { const sp = spellsByName.get(spellKey(s.name)); return sp ? [{ cat: 'buyu' as const, id: sp.id, label: sp.name }] : []; }),
-      tags: [], f: { kind: itemKind(i) }, sort: i.name,
+      tags: [], f: { kind: itemKind(i) }, sort: i.name, glif: itemGlyphs(i),
     })),
     ...weapons.map((w): DexEntry => {
       const m = masteryOf(w);
@@ -213,7 +218,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
       // Kuyruk A İş 4: özellik ve eylemler (ad İngilizce, açıklama Türkçe `aciklamalar-tr.json` `canavar`); eksikte "henüz yok".
       sections: (x.monsterFeatures[m.id] ?? []).length ? [{ title: L.sec.monsterFeatures, rows: (x.monsterFeatures[m.id] ?? []).map((ft): DexRow => {
         const tr = trAciklama('canavar', ft.anahtar);
-        return { name: ft.ad, tag: L.monsterKind[ft.tur] ?? ft.tur, text: tr ? { tr, en: en('canavar', ft.anahtar) } : { ui: L.noDesc } };
+        return { name: ft.ad, tag: L.monsterKind[ft.tur] ?? ft.tur, glif: actionGlyph(ft.tur), text: tr ? { tr, en: en('canavar', ft.anahtar) } : { ui: L.noDesc } };
       }) }] : [],
       links: [
         ...immune.map((c): DexLink => ({ cat: 'durum', id: c, label: L.immuneTo(condName(c)) })),
@@ -285,7 +290,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
       summary: s.role ? { tr: s.role.tr, en: s.role.en } : undefined,
       facts: [],
       sections: [{ title: L.sec.features, rows: s.features.map((f) => ({
-        name: f.name.en || f.name.tr, level: f.level, tag: L.status[f.status] ?? f.status,
+        name: f.name.en || f.name.tr, level: f.level, tag: L.status[f.status] ?? f.status, glif: actionGlyph(f.effect?.type),
         text: { tr: trAciklama('altsinif', `${c.id}/${s.id}:${f.id}`) ?? f.description?.tr, en: en('altsinif', `${c.id}/${s.id}:${f.id}`) },
       })) }],
       links: [{ cat: 'altsinif', filter: ['cls', c.id], label: L.subclassesOf(c.name) }, { cat: 'buyu', filter: ['cls', c.id], label: L.spellsOf(c.name) }]
@@ -396,7 +401,7 @@ function buildClasses(x: DexExtras, en: (kind: string, id: string) => string | u
     const rows: DexRow[] = (prog?.rows ?? []).flatMap((r) => r.features.map((f): DexRow => {
       const key = `${c.id}:${f.id}`;
       const tr = featureSummary({ key, id: f.id, from: 'class' }, c.id, undefined, 'tr') || undefined;
-      return { name: f.name, level: r.level, text: tr ? { tr, en: en('yetenek', key) } : { ui: L.noFeatureDesc } };
+      return { name: f.name, level: r.level, glif: actionGlyph(classData.mechanics.features[key]?.type), text: tr ? { tr, en: en('yetenek', key) } : { ui: L.noFeatureDesc } };
     }));
     const options: DexRow[] = Object.entries(classData.mechanics.features).filter(([k, m]) => k.startsWith(`${c.id}:`) && m.options?.length)
       .flatMap(([k, m]) => (m.options ?? []).map((o): DexRow => ({

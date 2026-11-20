@@ -39,3 +39,10 @@ export function spellComponents(spell: { id: string; srd?: string }): SpellCompo
 export function spellsWithoutComponents(): string[] {
   return [...tableOf()].filter(([, c]) => !c.v && !c.s && !c.m).map(([id]) => id);
 }
+
+let rituals: Set<string> | null = null;
+/** Ortak simge setleri (glif; yalnız görünüm): büyü SRD'de ritüel olarak yapılabilir mi (`ritual`; oyun büyü verisinde bayrak yok). */
+export function spellRitual(spell: { id: string; srd?: string }): boolean {
+  if (!rituals) rituals = new Set((srd.spells as Array<{ id: string; ritual?: boolean }>).filter((x) => x.ritual).map((x) => x.id));
+  return rituals.has(spell.srd?.split(':')[1] ?? spell.id);
+}

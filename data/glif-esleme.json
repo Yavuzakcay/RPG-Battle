@@ -1,0 +1,85 @@
+{
+  "not": "Ortak simge setleri (glif; yalnız görünüm, kural/kayıt sürümü yok). Eşya ikonu değil: kart ve vitrinde kayıt başına resim yerine kullanılan ortak simgeler. Kaynak sayfalar `sayfalar[].kaynak` (4×4, macenta #FF00FF zemin, 16 yuvarlak madalyon; ad sırası hücre sırası: soldan sağa, yukarıdan aşağı). `npm run glif` keser (scripts/glif.mjs; kesim çekirdeği scripts/lib/madalyon.mjs, kaynak ikonlarıyla ortak; kenar tabanlı anahtar) → public/glif/<ad>.webp (boyutlar.buyuk) + public/glif/kucuk/<ad>.webp (boyutlar.kucuk), kontrol görseli harita/belgeler/GLIF-KONTROL/, kayıt `kesim` (betik yazar; elle düzenlenmez; kaydı olmayan simge çizilmez). `adlar`: simgenin ipucu adı (TR/EN). `okul`/`eylem`/`hasar`: veri değeri → simge. `metin`: açıklama metninde satır içi simge kalıpları (TR/EN; büyük/küçük harf ve Türkçe I/İ duyarsız; `sonra`: kalıptan sonra boşlukla gelmesi gereken sözcük başı, hasar bağlamı; `onek`: kalıp sözcük başı, devamı serbest; yoksa tam sözcük); simge kalıbın hemen önüne, paragraf başına aynı simge en çok `paragrafEnCok` kez.",
+  "boyutlar": { "buyuk": 128, "kucuk": 48 },
+  "goster": { "satirIci": 16, "baslik": 20, "cip": 16 },
+  "sayfalar": [
+    {
+      "kaynak": "assets-ham/esya/glif-1.jpg",
+      "izgara": [4, 4],
+      "adlar": ["abjuration", "conjuration", "divination", "enchantment", "evocation", "illusion", "necromancy", "transmutation", "action", "bonus-action", "reaction", "passive", "concentration", "ritual", "attunement", "cursed"]
+    },
+    {
+      "kaynak": "assets-ham/esya/glif-2.jpg",
+      "izgara": [4, 4],
+      "adlar": ["acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic", "piercing", "poison", "psychic", "radiant", "slashing", "thunder", "healing", "temporary-hp", "saving-throw"]
+    }
+  ],
+  "adlar": {
+    "abjuration": { "tr": "Abjuration", "en": "Abjuration" },
+    "conjuration": { "tr": "Conjuration", "en": "Conjuration" },
+    "divination": { "tr": "Divination", "en": "Divination" },
+    "enchantment": { "tr": "Enchantment", "en": "Enchantment" },
+    "evocation": { "tr": "Evocation", "en": "Evocation" },
+    "illusion": { "tr": "Illusion", "en": "Illusion" },
+    "necromancy": { "tr": "Necromancy", "en": "Necromancy" },
+    "transmutation": { "tr": "Transmutation", "en": "Transmutation" },
+    "action": { "tr": "Eylem", "en": "Action" },
+    "bonus-action": { "tr": "Bonus eylem", "en": "Bonus Action" },
+    "reaction": { "tr": "Tepki", "en": "Reaction" },
+    "passive": { "tr": "Pasif", "en": "Passive" },
+    "concentration": { "tr": "Konsantrasyon", "en": "Concentration" },
+    "ritual": { "tr": "Ritüel", "en": "Ritual" },
+    "attunement": { "tr": "Uyumlanma", "en": "Attunement" },
+    "cursed": { "tr": "Lanetli", "en": "Cursed" },
+    "acid": { "tr": "asit", "en": "acid" },
+    "bludgeoning": { "tr": "ezici", "en": "bludgeoning" },
+    "cold": { "tr": "soğuk", "en": "cold" },
+    "fire": { "tr": "ateş", "en": "fire" },
+    "force": { "tr": "kuvvet", "en": "force" },
+    "lightning": { "tr": "yıldırım", "en": "lightning" },
+    "necrotic": { "tr": "nekrotik", "en": "necrotic" },
+    "piercing": { "tr": "delici", "en": "piercing" },
+    "poison": { "tr": "zehir", "en": "poison" },
+    "psychic": { "tr": "psişik", "en": "psychic" },
+    "radiant": { "tr": "ışıltı", "en": "radiant" },
+    "slashing": { "tr": "kesici", "en": "slashing" },
+    "thunder": { "tr": "gök gürültüsü", "en": "thunder" },
+    "healing": { "tr": "İyileştirme", "en": "Healing" },
+    "temporary-hp": { "tr": "Geçici can", "en": "Temporary Hit Points" },
+    "saving-throw": { "tr": "Kurtarma zarı", "en": "Saving throw" }
+  },
+  "okul": {
+    "Abjuration": "abjuration", "Conjuration": "conjuration", "Divination": "divination", "Enchantment": "enchantment",
+    "Evocation": "evocation", "Illusion": "illusion", "Necromancy": "necromancy", "Transmutation": "transmutation"
+  },
+  "eylem": {
+    "not": "Sınıf özelliği türü (class-features.json `type`), canavar özellik/eylem türü (canavar-ozellik.json `tur`), büyü yapım süresi. free/resource/legendary için simge yok.",
+    "action": "action", "bonus": "bonus-action", "reaction": "reaction", "passive": "passive", "trait": "passive"
+  },
+  "hasar": {
+    "acid": "acid", "bludgeoning": "bludgeoning", "cold": "cold", "fire": "fire", "force": "force", "lightning": "lightning", "necrotic": "necrotic",
+    "piercing": "piercing", "poison": "poison", "psychic": "psychic", "radiant": "radiant", "slashing": "slashing", "thunder": "thunder"
+  },
+  "metin": {
+    "paragrafEnCok": 2,
+    "kaliplar": [
+      { "glif": "acid", "tr": ["asit"], "en": ["acid"], "sonra": ["hasar", "damage"] },
+      { "glif": "bludgeoning", "tr": ["ezici"], "en": ["bludgeoning"], "sonra": ["hasar", "damage"] },
+      { "glif": "cold", "tr": ["soğuk"], "en": ["cold"], "sonra": ["hasar", "damage"] },
+      { "glif": "fire", "tr": ["ateş"], "en": ["fire"], "sonra": ["hasar", "damage"] },
+      { "glif": "force", "tr": ["kuvvet"], "en": ["force"], "sonra": ["hasar", "damage"] },
+      { "glif": "lightning", "tr": ["yıldırım"], "en": ["lightning"], "sonra": ["hasar", "damage"] },
+      { "glif": "necrotic", "tr": ["nekrotik"], "en": ["necrotic"], "sonra": ["hasar", "damage"] },
+      { "glif": "piercing", "tr": ["delici"], "en": ["piercing"], "sonra": ["hasar", "damage"] },
+      { "glif": "poison", "tr": ["zehir"], "en": ["poison"], "sonra": ["hasar", "damage"] },
+      { "glif": "psychic", "tr": ["psişik"], "en": ["psychic"], "sonra": ["hasar", "damage"] },
+      { "glif": "radiant", "tr": ["ışıldayan", "ışıltı"], "en": ["radiant"], "sonra": ["hasar", "damage"] },
+      { "glif": "slashing", "tr": ["kesici"], "en": ["slashing"], "sonra": ["hasar", "damage"] },
+      { "glif": "thunder", "tr": ["gök gürültüsü"], "en": ["thunder"], "sonra": ["hasar", "damage"] },
+      { "glif": "temporary-hp", "tr": ["geçici can", "geçici canı", "geçici HP", "geçici Hit Point", "geçici Hit Points"], "en": ["Temporary Hit Points", "Temporary Hit Point", "Temporary HP"] },
+      { "glif": "saving-throw", "tr": ["kurtarma zar"], "en": ["saving throw"], "onek": true },
+      { "glif": "healing", "tr": ["iyileş"], "en": ["heal"], "onek": true }
+    ]
+  },
+  "kesim": {}
+}

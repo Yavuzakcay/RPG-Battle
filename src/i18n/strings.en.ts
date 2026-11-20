@@ -35,6 +35,7 @@ export const en: Strings = {
     video: 'End-of-battle video', videoHelp: 'A short video plays when a battle ends.',
     preview: 'Move preview', previewHelp: 'Shows the result before you confirm.', detail: 'Detail', short: 'Short', full: 'Full',
     dexCover: 'Cover animation', dexCoverHelp: 'The Dungeondex cover animates as it opens.',
+    glyphs: 'Description icons', glyphsHelp: 'School, action and damage type icons in descriptions.',
     city: 'City view', cityHelp: 'Towns show a top-down map.', tint: 'Map color', tintHelp: 'The battle map takes the settlement color.',
     book: 'Discovery Book', bookCount: (a: number, b: number) => `${a}/${b}`, bookOpen: 'Open', bookBack: 'Settings', bookEmpty: 'Nothing discovered yet.',
     advanced: 'Advanced', advancedHelp: 'Most players never need these.', packs: (n: number) => `Packs loaded: ${n}`,

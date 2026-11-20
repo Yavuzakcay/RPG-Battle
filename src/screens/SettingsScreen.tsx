@@ -12,6 +12,7 @@ import { textOf } from '../rules/subclasses';
 import { saveEndVideo, storedEndVideo } from '../ui/endVideoSetting';
 import { saveMapTint, storedMapTint } from '../ui/mapTintSetting';
 import { saveCityView, storedCityView } from '../ui/cityViewSetting';
+import { saveGlyphs, storedGlyphs } from '../ui/glyphSetting';
 import { saveDexCover, storedDexCover } from '../ui/dexCoverSetting';
 import { DiscoveryBackup, DiscoveryBook } from '../ui/preview/DiscoveryBook';
 import { counts, loadSettings as loadPv, loadStore, saveSettings as savePv, type PreviewSettings } from '../app/discovery';
@@ -38,6 +39,7 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
   const [video, setVideo] = useState<boolean>(storedEndVideo);
   const [tint, setTint] = useState<boolean>(storedMapTint);
   const [city, setCity] = useState<boolean>(storedCityView);
+  const [glyphs, setGlyphs] = useState<boolean>(storedGlyphs);
   const [dexCover, setDexCover] = useState<boolean>(storedDexCover);
   const [pv, setPv] = useState<PreviewSettings>(loadPv);
   const setPvs = (p: Partial<PreviewSettings>) => { const n = { ...pv, ...p }; savePv(n); setPv(n); };
@@ -77,6 +79,7 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
           <OnOffRow label={U.preview} help={U.previewHelp} value={pv.on} on={U.on} off={U.off} onChange={(on) => setPvs({ on })} />
           {pv.on && <SegRow label={U.detail} value={pv.detail} options={[{ value: 'kisa', label: U.short }, { value: 'tam', label: U.full }]} onChange={(detail) => setPvs({ detail })} />}
           <OnOffRow label={U.dexCover} help={U.dexCoverHelp} value={dexCover} on={U.on} off={U.off} onChange={(on) => { saveDexCover(on); setDexCover(on); }} />
+          <OnOffRow label={U.glyphs} help={U.glyphsHelp} value={glyphs} on={U.on} off={U.off} onChange={(on) => { saveGlyphs(on); setGlyphs(on); }} />
           <OnOffRow label={U.city} help={U.cityHelp} value={city} on={U.on} off={U.off} onChange={(on) => { saveCityView(on); setCity(on); }} />
           <OnOffRow label={U.tint} help={U.tintHelp} value={tint} on={U.on} off={U.off} onChange={(on) => { saveMapTint(on); setTint(on); }} />
           <div className="set-row">
