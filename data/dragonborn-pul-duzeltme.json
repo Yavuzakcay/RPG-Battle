@@ -224,7 +224,8 @@
     [176, 85, 215, 150],
     [[20, 28], [88, 28], [90, 46], [94, 66], [98, 79], [104, 89], [112, 98], [116, 104], [100, 108], [80, 113], [60, 122], [40, 126], [22, 134]]
    ],
-   "neden": "kılıç ağzı (çokgen), yavru ejderha kalıntısı ve yoldaş ejderin sol kanadı (çokgen; Ranger ID4: kanat yoldaşın, boyanmaz)"
+   "ekle": [[111, 77, 115, 78], [105, 78, 108, 79], [110, 78, 115, 81], [113, 81, 115, 84]],
+   "neden": "kılıç ağzı (çokgen), yavru ejderha kalıntısı ve yoldaş ejderin sol kanadı (çokgen; Ranger ID4: kanat yoldaşın, boyanmaz); ekle: çene altında maskenin kroma tavanına takılan 28 lavanta ten pikseli (x 105–114, y 77–83; her yanı boyalı maske deliği), kutular yalnız bu 28 piksel"
   },
   "dragonborn-erkek-paladin-ID10": {
    "yalniz": [

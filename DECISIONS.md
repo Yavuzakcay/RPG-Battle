@@ -2,6 +2,13 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Ranger ID4 Dragonborn: kontur halkası (erkek) ve çene maskesi (kadın) (2026-11-20; yalnız görünüm, mekanik/kural/kayıt sürümü yok)
+
+- **Erkek:** önceki görevde kalan, macenta artığı üçgeninin çevresindeki 22 koyu mor geçiş pikseli (opak, L* 14–42, kroma > 35, macenta ton; x 102–111, y 87–95) komşu kontur renginin ortalamasına çekildi: #220230 (L* 5,4). Komşu kontur = bu 22 pikselin 8 komşusu olan, opak, L* < 15 pikseller (32 piksel; L* 6,1 ± 3,9). Ham jeton kayıpsız (`exact`) yazıldı, yalnız 22 piksel değişti (doğrulandı); küçük kopya yalnız bu jeton için `karakter-kucuk` parametreleriyle yeniden üretildi. Pul maskesi `--jeton` ile yeniden üretildi, bayt bayt aynı (22 piksel kontur eşiğinin altında, zaten boyanmıyordu). Yedek: oturum karalama klasörü `yedek-ham-2/` ve git geçmişi.
+- **Kadın:** çene altında maskenin kroma tavanına takılan 28 lavanta ten pikseli (x 105–114, y 77–83; her yanı boyalı maske deliği) `data/dragonborn-pul-duzeltme.json` `ekle` ile maskeye eklendi. Dört kutu yalnız bu 28 pikseli kapsar; kanat çokgeni (sağ kenarı bu satırlarda x ≈ 98) ve yoldaş kutusu (x 176–215) ile kesişmez. `python scripts/dragonborn-pul-maske.py --jeton kadin-ranger-ID4`: maske 5001 → 5029, fark tam bu 28 piksel. Ham jeton değişmedi. Test `src/ui/rangerId4.test.ts`: kutular tam 28 pikseli verir ve hiçbiri `haric` alanında değil; yardımcının kanat içini ve yoldaş kutusunu gerçekten yakaladığı da sınanır. Önceki "kadında `ekle` yok" beklentisi bu karar nedeniyle değişti.
+- **Kontrol:** `harita/belgeler/RANGER-ID4-KONTROL.png` yeniden çekildi; fark yalnız iki Dragonborn satırında. Altında bu görevin yakın görüntüsü (ham, White, Silver, Black; önce/sonra), onun altında önceki 17 piksel paneli.
+- **Kalan (dokunulmadı):** kadın jetonda başta başka boyanmayan lavanta kümeler var (ör. x 103–110, y 62–70: 33 px; x 148–151, y 66–74: 20 px; toplam ≈ 137 px, 14 küme). Ten olup olmadıkları tek tek bakılmadan eklenmedi.
+
 ## Ortak simge setleri (glif): kesim hattı ve açıklamalara bağlama (2026-11-20; yalnız görünüm, kural/kayıt sürümü yok)
 
 - **Kaynak görseller yok (bekliyor):** `assets-ham/esya/glif-1.jpg`, `glif-2.jpg` bu ortamda ve hiçbir dalda yok (`assets-ham/` depo dışı). Hat, veri ve bağlama hazır; görseller gelince `npm run glif` keser, kayıt (`data/glif-esleme.json` `kesim`) ve dosyalar oluşur. Kesim kaydı olmayan simge hiçbir yerde çizilmez (kırık resim yok): şu an arayüz değişmedi. Hat sentetik 4×4 macenta sayfalarla denendi (içte macenta nokta korunur, dış pembe saçak silinir, adlar hücre sırasında); çıktılar silindi.
