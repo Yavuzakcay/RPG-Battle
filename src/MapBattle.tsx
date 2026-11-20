@@ -49,7 +49,7 @@ import { rageProblem, recklessProblem } from './battle/rage';
 import { CUNNING, cunningOptions, hasTrait, usedThisTurn } from './battle/classTraits';
 import { offhandProblem } from './battle/offhand';
 import { featureProblem } from './battle/divine';
-import { ilhamOf } from './battle/bard';
+import { ilhamOf, inspirePayable } from './battle/bard';
 import { loadSettings as loadPreviewSettings, loadStore as loadDiscovery, record as recordDiscovery, saveStore as saveDiscovery } from './app/discovery';
 import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive, isTargetable } from './battle/common';
@@ -1750,7 +1750,7 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       ? { key: f.key, label: N.featureName[f.key] ?? f.name,
         // Kuyruk K50: hedefli imza eylemi hedef seçilene dek yalnız kaynak denetlenir.
         // Kuyruk P11: paket `ilham.kaynaksiz` kaynak bitince de ilham verir.
-        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 && !(f.effect.kind === 'inspire' && ilhamOf(state, actor)?.kaynaksiz) ? Y.poolEmpty : undefined) ?? (featTargeted(f) ? undefined : why({ type: 'use_feature', actorId, feature: f.key })) ?? undefined,
+        reason: (f.resource && resourceLeft(actor, f.resource) <= 0 && !(f.effect.kind === 'inspire' && (ilhamOf(state, actor)?.kaynaksiz || inspirePayable(state, actor, f))) ? Y.poolEmpty : undefined) ?? (featTargeted(f) ? undefined : why({ type: 'use_feature', actorId, feature: f.key })) ?? undefined,
         act: () => { reset(); setFeatureKey(f.key); setMode('feature'); setMenuOpen(false); } }
       : { key: f.key, label: N.featureName[f.key] ?? f.name,
         reason: featHex(f) === 'hex' ? (f.resource && resourceLeft(actor, f.resource) <= 0 ? Y.poolEmpty : undefined)

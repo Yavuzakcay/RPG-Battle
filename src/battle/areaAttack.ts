@@ -34,7 +34,7 @@ import { attackEffect, saveMode, timedCondition } from './durations';
 import { saveDice } from './effectDice';
 import { riderConditionEvents } from './grapple';
 import { hexLabel, terrainAt } from './movement';
-import { damagedReactions, hunterDefenseEvents } from './reactions';
+import { cuttingWordsDamage, damagedReactions, hunterDefenseEvents } from './reactions';
 import { applyEvents } from './reduce';
 import { riderOf } from './riders';
 import type { BattleEvent, BattleState, Combatant } from './types';
@@ -119,8 +119,12 @@ export function areaSaveEvents(state: BattleState, actor: Combatant, pick0: Area
     // Görev Y1: yüzey tepkimeleri için hasar türü, zorluk sınıfı ve zar.
     ...(save.damageType ? { damageType: save.damageType } : {}), dc: save.dc, ...(save.damageDice ? { dice: save.damageDice } : {}),
   }];
-  const damage = save.damageDice && pick.reached.length > 0
+  const damage0 = save.damageDice && pick.reached.length > 0
     ? rollDice(save.damageDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
+  // Görev B94 (sürüm 94+): Cutting Words hasar zarından düşer (bir kez, bütün hedeflere).
+  const cw = cuttingWordsDamage(applyEvents(state, events), actor, damage0.total, pick.reached.map((x) => x.c), save.label, rng);
+  events.push(...cw.events);
+  const damage = { ...damage0, total: cw.total };
   let current = applyEvents(state, events);
   for (const { c, cover } of pick.reached) {
     const t = current.combatants[c.id];

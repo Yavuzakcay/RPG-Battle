@@ -153,7 +153,8 @@ describe('K18 H3: Magical Discoveries (Lore 6)', () => {
     expect(spellOptions('bard', 6)).not.toContain('Fireball');
     expect(spellOptions('bard', 5, 'college-of-lore')).not.toContain('Fireball');
     expect(discoveryCap('bard', 6, 'college-of-lore')).toBe(2);
-    expect(discoveryCap('bard', 10, 'college-of-lore')).toBeNull();
+    // Görev B94 (SRD 5.2.1 s. 35 "always have them prepared"): Magical Secrets varken de sınır 2 ve sayıya girmez (eskiden null).
+    expect(discoveryCap('bard', 10, 'college-of-lore')).toBe(2);
     const base = { ...newCharacter('lore').sheet, classId: 'bard', level: 6, subclassId: 'college-of-lore', spellNames: ['Fireball', 'Shield', 'Cure Wounds'] };
     expect(spellCounts(base).prepared).toBe(1);
     const three = { ...base, spellNames: [...base.spellNames, 'Haste'] };

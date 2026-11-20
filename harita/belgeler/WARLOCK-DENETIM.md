@@ -166,3 +166,16 @@ En önemli bulgular:
 ### A. Ortak
 
 - C1 Serüven seviye atlaması (Invocation, cantrip, hazır büyü, Mystic Arcanum birer değişim; yeni seçim serbest): **düzeldi** (sürümsüz; `levelChoices.ts`, Fiendish Resilience türü uzun dinlenmede değişir: C7 Serüven'de **düzeldi**).
+
+### D. Warlock
+
+- A7 / E5 Magical Cunning: **düzeldi** (sürümsüz, dinlenme: `min(harcanan, ⌈azami / 2⌉)`; TR/EN bildirim metni).
+- F5b Hurl Through Hell büyü saldırısı isabetinde de: **düzeldi** (sürümlü 93; alt sınıf: bizim metin "Saldırı isabetinde"). F5c slotla yenileme: **dokunulmadı** (alt sınıf, bizim sürüm metninde yok).
+- B6 Pact of the Tome cantrip'leri her sınıfın listesinden (en çok Tome sayısı kadar başka listeden; Agonizing/Repelling/Spear bunlara da): **düzeldi** (sürümsüz, oluşturucu; `tomeCantrips`, `classScoped`, büyü adımında ayrı bölüm).
+- E2 24 Invocation'ın TR açıklaması (`aciklamalar-tr.json` `invocation`, 28/28); ⓘ'de geliştirici notu (`note`) artık gösterilmez, EN arayüzde SD4 "yalnız Türkçe" notu: **düzeldi**.
+- B3b tekrarlanabilen Invocation'ı başka cantrip için ikinci kez alma ("+" düğmesi, her alım ayrı cantrip seçicisi): **düzeldi**.
+- E3 ön koşulu eksik Invocation düğmesinde neden ("Önce X seçilmeli."): **düzeldi**.
+- B8 menzilli pact silahı uyarısı: **düzeldi** (oluşturucu sorunu).
+- C9 seviye atlayınca Pact slot seviyesi değişirse harcanan sayısı taşınır: **düzeldi** (sürümsüz; `characterRest.ts` `pactShift`).
+- C1 / C7 Serüven: A2 ile (bkz. A).
+- **Ertelendi / dokunulmadı:** C6 Magical Cunning'i Serüven ve kurulum dinlenmesine taşımak (düşük; kısa dinlenme Pact slotlarını zaten doldurur), A22 Water Breathing sayacı (savaş dışı, etkisiz), D6 YZ slotsuz Invocation büyüleri (denenmedi, ayrı YZ ölçümü), F3 Dark One's Own Luck (alt sınıf; bizim metin "d10 eklersin", denge ölçümü gerektirir), bilinçli sapmalar (A3, A10, A11, A21, B5, B10, B12, C7 dışı, D5).

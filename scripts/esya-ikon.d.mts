@@ -1,0 +1,19 @@
+// scripts/esya-ikon.mjs saf parçalarının türleri (testler ve rapor içe aktarır).
+export interface Oge { id: string; ad?: string; kaynak?: string }
+export interface Sayfa { dosya: string; kolon: number; satir: number; hucre?: string; ogeler: Array<Oge | null> }
+export interface Manifest {
+  sayfalar: Sayfa[]; yoksay?: string[]; ayniGorsel?: Record<string, string[]>; hepsiniTut?: string[]; tamDespill?: string[];
+  yenidenUretilecek?: Record<string, string>; belirsiz?: unknown;
+}
+export interface Konum { sayfa: string; hucre: number; kaynakId: string; sira: number; kopya?: string }
+export interface Kayit { id: string; srd: string | null }
+export const BUYUK: number;
+export const KUCUK: number;
+export function dosyaAdi(id: string): string;
+export function sayfaAdi(dosya: string): string;
+export function hucreler(W: number, H: number, sayfa: Pick<Sayfa, 'kolon' | 'satir' | 'hucre'>): Array<{ x: number; y: number; w: number; h: number }>;
+export function plan(manifest: Manifest, varMi?: (dosya: string) => boolean): { son: Map<string, Konum>; ezilen: Array<[string, string, string]>; atlanan: string[]; etkisiz: string[] };
+export function oyunKayitlari(root?: string): Kayit[];
+export function varyantEsle(id: string, kayitlar: Kayit[]): { id?: string; belirsiz?: string[]; yok?: string };
+export function esle(manifest: Manifest, kayitlar: Kayit[]): { manifest: Manifest; varyant: Array<[string, string]>; eslesmeyen: Array<[string, string]>; belirsiz: Array<[string, string[]]> };
+export function bagla(son: Map<string, Konum>, kayitlar: Kayit[]): { cikti: Map<string, Konum>; ust: Array<[string, string[], string[]]>; kayitsiz: string[] };
