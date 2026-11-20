@@ -122,7 +122,8 @@ describe('SD3 Sınıf güçleri', () => {
     expect(m).toContain('Diğer güçler (');
     expect(m).not.toContain('feature-legend');
     expect(m).not.toContain('savaşta çalışır');
-    expect(m).toContain('<b>Extra Attack</b>');
+    // Glif rozeti (`glyph-badges`) adın `<b>` içinde, addan sonra durabilir: yalnız ad metni sınanır.
+    expect(m).toMatch(/<b>Extra Attack(?:<span class="glyph-badges">[^]*?<\/span>)?<\/b>/);
     expect(m).not.toContain('İngilizce adı');
     const list = gainedFeatures('fighter', 20, 'champion');
     const { main, rest } = splitFeatures(list, 'fighter', 'champion', 20);

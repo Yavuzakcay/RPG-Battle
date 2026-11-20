@@ -338,7 +338,8 @@ describe('P12 G8/G2: oluşturucu çizimi', () => {
   it('hikâye özelliği satırında "Hikâye" etiketi (eksik değil)', () => {
     const m = draw('rogue', 'masal-yolu', 3);
     // SD3: ad + seviye etiketi; "Hikâye" türü etiketi kalır, geliştirici durum metni (hikâye: savaş dışı) gösterilmez.
-    expect(m).toMatch(/anlati<\/b> <small class="feature-lv">3\. seviye<\/small><span class="feature-tag">Hikâye<\/span>/);
+    // Glif rozeti (`glyph-badges`) adın `<b>` içinde, addan sonra durabilir: yalnız ad, seviye ve Hikâye etiketi sınanır.
+    expect(m).toMatch(/<b>anlati(?:<span class="glyph-badges">[^]*?<\/span>)?<\/b> <small class="feature-lv">3\. seviye<\/small><span class="feature-tag">Hikâye<\/span>/);
     expect(m).not.toContain('hikâye: savaş dışı');
   });
   it('rastgele liste: 8 seçim kutusu, seçilen sayısı', () => {
