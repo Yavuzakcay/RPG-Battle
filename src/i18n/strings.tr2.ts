@@ -18,6 +18,26 @@ export const TR_EXTRA = {
     book: 'Keşif Defteri', bookCount: (a: number, b: number) => `${a}/${b}`, bookOpen: 'Aç', bookBack: 'Ayarlar', bookEmpty: 'Henüz keşfedilen yok.',
     advanced: 'Gelişmiş', advancedHelp: 'Çoğu oyuncunun buna dokunması gerekmez.', packs: (n: number) => `Yüklü paket: ${n}`,
     backup: 'Keşif Defteri yedeği',
+    /** Görsel envanter: geliştirici aracı (#galeri). */
+    dev: 'Geliştirici', gallery: 'Görsel galerisi', galleryHelp: 'Efekt, jeton ve ikonların envanteri; eksikler kırmızı çerçeveli.', galleryOpen: 'Aç',
+  },
+  /** Görsel envanter galerisi (#galeri; geliştirici aracı, tembel parça `src/ui/galeri/`). */
+  galeri: {
+    title: 'Görsel galerisi', close: 'Kapat', search: 'Ara', onlyMissing: 'Yalnız eksikler',
+    count: (n: number, v: number, g: number, y: number) => `${n} kayıt · özel ${v} · genel ${g} · yedek ${y}`,
+    more: (n: number) => `Daha fazla göster (+${n})`, empty: 'Kayıt yok.',
+    legend: { var: 'Kayda özel görsel', genel: 'Genel (paylaşılan) görsel', yedek: 'Yedek: görsel yok' } as Record<string, string>,
+    kaynak: { efekt: 'efekt', jeton: 'jeton', ikon: 'ikon', yedek: 'yedek glif' } as Record<string, string>,
+    anim: (n: number) => `Aynı anda en çok ${n} animasyon`, still: 'Hareketi azalt ya da efekt animasyonu kapalı: animasyon yok',
+    tabs: {
+      buyu: 'Büyü', esya: 'Eşya', canavar: 'Canavar', tur: 'Tür', altsoy: 'Alt soy', sinif: 'Sınıf', altsinif: 'Alt sınıf', feat: 'Feat', gecmis: 'Geçmiş',
+      durum: 'Durum', yuzey: 'Yüzey', nesne: 'Nesne', alan: 'Alan', zar: 'Zar', boyut: 'Boyut',
+    } as Record<string, string>,
+    size: {
+      intro: 'Jeton ölçeği yalnız görsel (data/token-sizes.json). Kesik çizgi: çok altıgenli boyut anahtarı açıkken gövde.',
+      off: 'Anahtar kapalı', on: 'Anahtar açık', hexes: (n: number) => `${n} altıgen`, scale: (s: string) => `ölçek ${s}`,
+      screen: 'Ekran', token: 'Medium jeton', badge: 'Rozet', hex: 'Altıgen eni',
+    },
   },
   /** SD8 eki: karakter oluşturucunun son ekranında zar seçimi (karakter başına). */
   diceStep: {

@@ -149,6 +149,7 @@ npm run karakter-kucuk # public/characters/*.webp → public/characters/kucuk/ (
 npm run zarlar         # assets-ham/zarlar/zar-<tema>.jpg → public/zarlar/<tema>/d4..d100.webp (zar temaları, data/zar-gorselleri.json)
 npm run ses            # assets-ham/ses/*.mp3 → public/ses/ (normalize, sessizlik kırpma, zar kliplerini bölme; ffmpeg) + data/ses-klipler.json
 npm run ses:yer-tutucu # zafer/yenilgi ezgisi yer tutucuları (ffmpeg sentezi) → assets-ham/ses/son-*.mp3; sonra npm run ses -- son-zafer son-yenilgi
+npm run dd-gorsel      # görsel envanter: data/dungeondex-gorsel-esleme.json (Dungeondex vitrini eşlemesi), harita/belgeler/GORSEL-ENVANTER.md, GORSEL-EKSIK.csv (büyüler gerçek motorla gözlenir; -- --kuru yazmaz); galeri #galeri (Ayarlar ▸ Gelişmiş ▸ Geliştirici)
 npm run paket-durum    # Kuyruk K58: icerik/ (ya da verilen klasör) → harita/belgeler/PAKET-DURUM.md (check:icerik sayıları; paket metni yazılmaz)
 npm run check:icerik   # icerik/ (ya da verilen klasör) dış içerik paketlerini doğrular: çakışma, eksik alan, bilinmeyen etki/ilkel (satır: alt-sinif/ozellik ilkeller[i].alan kod), seviye, alt sınıf başına çalışır/kısmi/çalışmıyor/planlı/hikâye, yedek jeton ve kısmi alan uyarıları
 npm run check:ses      # gerçek tarayıcıda ses akışı kontrolü (bağlam, önyükleme, otomatik oynatma, kanallar, sahneler, zar sesleri; Playwright)

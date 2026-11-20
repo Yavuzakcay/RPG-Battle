@@ -116,6 +116,12 @@ export function SettingsScreen(props: { onBack: () => void; onChanged?: () => vo
           ))}
           <h3>{U.backup}</h3>
           <DiscoveryBackup />
+          {/* Görsel envanter galerisi (geliştirici aracı; `#galeri`, App tembel parça). */}
+          <h3>{U.dev}</h3>
+          <div className="set-row">
+            <div className="set-text"><strong>{U.gallery}</strong><p className="mute">{U.galleryHelp}</p></div>
+            <div className="set-seg"><button type="button" className="ghost" onClick={() => { window.location.hash = '#galeri'; }}>{U.galleryOpen}</button></div>
+          </div>
         </Fold>
       </main>
     </div>

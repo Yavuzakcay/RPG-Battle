@@ -53,6 +53,8 @@ const SeruvenScreen = lazy(() => import('./screens/SeruvenScreen').then((m) => (
 // K46: Harita Keşfi (`#dunya`): dünya haritası sissiz, Game Master ve geliştirme için (ayrı tembel parça).
 const Dungeondex = lazy(() => import('./screens/Dungeondex').then((m) => ({ default: m.Dungeondex })));
 const WorldMapViewer = lazy(() => import('./ui/world/WorldMapViewer'));
+// Görsel envanter galerisi (`#galeri`; geliştirici aracı, Ayarlar ▸ Gelişmiş ▸ Geliştirici): ayrı tembel parça.
+const Galeri = lazy(() => import('./ui/galeri/Galeri'));
 
 type Screen =
   | { name: 'home' }
@@ -73,6 +75,12 @@ type Screen =
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
   const [worldOnly, setWorldOnly] = useState(() => window.location.hash === '#dunya');
+  const [galeri, setGaleri] = useState(() => window.location.hash === '#galeri');
+  useEffect(() => {
+    const on = () => setGaleri(window.location.hash === '#galeri');
+    window.addEventListener('hashchange', on);
+    return () => window.removeEventListener('hashchange', on);
+  }, []);
   // Açılış ekranı (Görev L, L2): soğuk açılışta tam (zar + logo), arka plandan dönüşte kısa; giriş ekranı altında
   // hemen hazırlanır. Kapalıysa index.html'deki statik kare hemen kalkar.
   const [splashOn] = useState(() => splashEnabled(window.location.search, (k) => localStorage.getItem(k)));
@@ -97,7 +105,9 @@ export default function App() {
         {worldOnly
           ? <WorldMapViewer exploreHubs fog={null} flags={[]} party={null} nodes={[]} prison={{ surfaced: true, days: 0 }} lang={lang === 'en' ? 'en' : 'tr'}
               onClose={() => { history.replaceState(null, '', window.location.pathname + window.location.search); setWorldOnly(false); }} />
-          : <Screens screen={screen} setScreen={setScreen} />}
+          : galeri
+            ? <Galeri onClose={() => { history.replaceState(null, '', window.location.pathname + window.location.search); setGaleri(false); }} />
+            : <Screens screen={screen} setScreen={setScreen} />}
       </Suspense>
       {splash && (
         <Suspense fallback={null}>

@@ -39,11 +39,11 @@ for (const [cat, list] of Object.entries(dex)) {
 }
 for (const list of [...Object.values(cats), ex.yuzey, ex.nesne, ex.alan, ex.zar]) for (const r of list) if (!L.resolves(r.ref)) problems.push(`${r.cat}/${r.id}: ref çözülmüyor (${r.ref})`);
 
-const rec = (r: L.GRow) => ({ kaynak: r.kaynak, ref: r.ref, durum: r.durum, ...(r.efekt ? { efekt: r.efekt } : {}), ...(r.nadirlikRengi ? { nadirlikRengi: r.nadirlikRengi } : {}),
+const rec = (r: L.GRow) => ({ kaynak: r.kaynak, ref: r.ref, durum: r.durum, ad: r.ad, ...(r.not ? { not: r.not.length > 160 ? `${r.not.slice(0, 157)}…` : r.not } : {}), ...(r.efekt ? { efekt: r.efekt } : {}), ...(r.nadirlikRengi ? { nadirlikRengi: r.nadirlikRengi } : {}),
   ...(r.gorunum ? { gorunum: r.gorunum } : {}), ...(r.glif ? { glif: r.glif } : {}) });
 const map = (list: L.GRow[]) => Object.fromEntries(list.map((r) => [r.id, rec(r)]));
 const json = {
-  _aciklama: 'npm run dd-gorsel üretir (scripts/dungeondex-gorsel-esleme.ts, kurallar scripts/lib/gorsel-envanter.ts); elle düzenlenmez. Kategori (Dungeondex kategorileri) → kimlik → { kaynak: efekt|jeton|ikon|yedek, ref: public/ yolu ya da yedek:<anahtar> (yedekler tablosu), durum: var (kayda özel) | genel (paylaşılan/aile görseli) | yedek (görsel yok, kategori glifi), efekt?: fxPlan FX kimliği ya da dongu:<durum şeridi>, nadirlikRengi?, gorunum?: jetonun alt soy/alt sınıf görünümü (sheetAvatar girdisi), glif? }. Büyüde görsel gerçek motorla dökülerek gözlenir (src/ui/fx/e2Verify.ts observeSpell). ek: yüzey, nesne, alan, zar (Dungeondex dışı). Belge harita/belgeler/GORSEL-ENVANTER.md.',
+  _aciklama: 'npm run dd-gorsel üretir (scripts/dungeondex-gorsel-esleme.ts, kurallar scripts/lib/gorsel-envanter.ts); elle düzenlenmez. Kategori (Dungeondex kategorileri) → kimlik → { kaynak: efekt|jeton|ikon|yedek, ref: public/ yolu ya da yedek:<anahtar> (yedekler tablosu), ad, not?, durum: var (kayda özel) | genel (paylaşılan/aile görseli) | yedek (görsel yok, kategori glifi), efekt?: fxPlan FX kimliği ya da dongu:<durum şeridi>, nadirlikRengi?, gorunum?: jetonun alt soy/alt sınıf görünümü (sheetAvatar girdisi), glif? }. Büyüde görsel gerçek motorla dökülerek gözlenir (src/ui/fx/e2Verify.ts observeSpell). ek: yüzey, nesne, alan, zar (Dungeondex dışı). Belge harita/belgeler/GORSEL-ENVANTER.md.',
   nadirlikRenkleri: L.NADIRLIK_RENKLERI,
   yedekler: L.YEDEKLER,
   kategoriler: Object.fromEntries(Object.entries(cats).map(([k, v]) => [k, map(v)])),

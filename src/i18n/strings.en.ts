@@ -27,6 +27,24 @@ export const en: Strings = {
     book: 'Discovery Book', bookCount: (a: number, b: number) => `${a}/${b}`, bookOpen: 'Open', bookBack: 'Settings', bookEmpty: 'Nothing discovered yet.',
     advanced: 'Advanced', advancedHelp: 'Most players never need these.', packs: (n: number) => `Packs loaded: ${n}`,
     backup: 'Discovery Book backup',
+    dev: 'Developer', gallery: 'Visual gallery', galleryHelp: 'Inventory of effects, tokens and icons; missing ones framed in red.', galleryOpen: 'Open',
+  },
+  galeri: {
+    title: 'Visual gallery', close: 'Close', search: 'Search', onlyMissing: 'Missing only',
+    count: (n: number, v: number, g: number, y: number) => `${n} entries · own ${v} · shared ${g} · fallback ${y}`,
+    more: (n: number) => `Show more (+${n})`, empty: 'No entries.',
+    legend: { var: 'Own visual', genel: 'Shared visual', yedek: 'Fallback: no visual' },
+    kaynak: { efekt: 'effect', jeton: 'token', ikon: 'icon', yedek: 'fallback glyph' },
+    anim: (n: number) => `At most ${n} animations at once`, still: 'Reduce motion or effect animation is off: no animation',
+    tabs: {
+      buyu: 'Spells', esya: 'Items', canavar: 'Monsters', tur: 'Species', altsoy: 'Lineages', sinif: 'Classes', altsinif: 'Subclasses', feat: 'Feats', gecmis: 'Backgrounds',
+      durum: 'Conditions', yuzey: 'Surfaces', nesne: 'Objects', alan: 'Areas', zar: 'Dice', boyut: 'Size',
+    },
+    size: {
+      intro: 'Token scale is visual only (data/token-sizes.json). Dashed: body when the multi-hex size switch is on.',
+      off: 'Switch off', on: 'Switch on', hexes: (n: number) => `${n} hexes`, scale: (s: string) => `scale ${s}`,
+      screen: 'Screen', token: 'Medium token', badge: 'Badge', hex: 'Hex width',
+    },
   },
   diceStep: {
     title: 'Your dice', intro: 'Which dice should this character roll in battle? Only the ones you have unlocked are listed.',
