@@ -251,6 +251,23 @@ export function skinTint(raceId: string, toneId: string | undefined): TintSpec |
 
 /** SD5: palet filtresinin kimliği (aynı palet = aynı kimlik; tanım birden çok kez bulunsa da özdeş). `esik` (KW1) kimliğe girer. */
 export const wingFilterId = (p: WingPalet): string => `wp-${p.golge.slice(1)}-${p.isik.slice(1)}${p.esik ? `-e${Math.round(p.esik * 1000)}` : ''}`;
+/**
+ * Bütün kanat palet filtrelerinin tekil listesi (kimliğe göre): slot paleti, soy paletleri (+ zar alt paleti) ve katman paletleri;
+ * `wingLayer`/`wingParts` hangi paleti üretirse o. `WingFilterHost` bunları uygulama kökünde bir kez tanımlar (WingFilter.tsx).
+ */
+export function allWingPalettes(): WingPalet[] {
+  const out = new Map<string, WingPalet>();
+  const add = (p?: WingPalet) => { if (p) out.set(wingFilterId(p), p); };
+  for (const w of Object.values(W.slotlar)) {
+    add(w.palet);
+    for (const lp of Object.values(w.renkPaletleri ?? {})) {
+      add({ golge: lp.golge, isik: lp.isik, ...(lp.esik ? { esik: lp.esik } : {}) });
+      add(lp.zar);
+    }
+    add(w.katmanlar?.pence?.palet);
+  }
+  return [...out.values()];
+}
 const hexTable = (hex: string): [number, number, number] => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255) as [number, number, number];
 /** SD5: palet filtresinin SVG parametreleri: parlaklık (luma) gölge→ışık rengine eşlenir, alfa dokunulmaz. */
 export function wingFilterTables(p: WingPalet): { r: string; g: string; b: string } {
