@@ -185,7 +185,7 @@ export const en: Strings = {
   dex: {
     cover: { top: 'Dungeondex', tap: 'Tap to open', open: 'Dungeondex cover: tap to open', counts: (s: number, e: number, c: number) => `${s} spells · ${e} items · ${c} monsters` },
     prev: 'Previous entry', next: 'Next entry', vitrine: 'Showcase',
-    title: 'Dungeondex', back: 'Back', search: 'Search (English or Turkish name)', categories: 'Categories', loading: 'Loading…',
+    title: 'Dungeondex', close: 'Close', search: 'Search (English or Turkish name)', categories: 'Categories', loading: 'Loading…',
     error: 'Could not load the Dungeondex data.',
     cat: { buyu: 'Spells', esya: 'Items', canavar: 'Monsters', tur: 'Species', altsoy: 'Lineages', sinif: 'Classes', altsinif: 'Subclasses', feat: 'Feats', gecmis: 'Backgrounds', durum: 'Conditions' } as Record<string, string>,
     license: 'Licenses and attribution',

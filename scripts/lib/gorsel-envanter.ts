@@ -8,6 +8,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { armor, classes, classData, items, monsters, races, spells, weapons } from '../../src/data';
 import type { Spell } from '../../src/data/types';
@@ -23,7 +24,7 @@ import { subclassesOf } from '../../src/rules/classFeatures';
 import { displayName } from '../../src/rules/subclasses';
 import { classify, mergedOf } from './buyu-durum.mjs';
 
-export const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..');
+export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const read = <T>(f: string): T => JSON.parse(fs.readFileSync(path.join(ROOT, f), 'utf8')) as T;
 const pub = (p: string) => fs.existsSync(path.join(ROOT, 'public', p));
 const ls = (d: string) => (fs.existsSync(path.join(ROOT, d)) ? fs.readdirSync(path.join(ROOT, d)) : []);

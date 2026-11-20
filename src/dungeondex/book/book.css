@@ -5,14 +5,17 @@
   --ddk-krem: #EBD9C3; --ddk-vitrin: #121214;
   position: relative; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; background: #1A1A1C; }
 
-/* Üst şerit: geri, başlık, kategori sekmeleri, önceki/sonraki (kitabın dışında). */
+/* Üst şerit: başlık, önceki/sonraki ve kapatma (sağda), kategori sekmeleri (alt satır; kitabın dışında). */
 .menu-screen .ddk-bar { border-radius: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 6px 10px; background: linear-gradient(#3A3A3F, #2B2B2E);
   border-bottom: 2px solid var(--ddk-bakir); }
 .menu-screen .ddk-bar h1 { margin: 0; font-size: 18px; color: var(--ddk-krem); flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ddk-bar button { min-height: 44px; min-width: 44px; background: #2B2B2E; color: var(--ddk-krem); border: 1px solid var(--ddk-bakir); border-radius: 10px; font-weight: 600; }
 .ddk-bar button:hover:not(:disabled) { border-color: var(--ddk-bakir2); color: #fff; }
 .ddk-bar button:disabled { opacity: 0.4; }
-.ddk-nav { display: flex; gap: 6px; }
+.ddk-nav { display: flex; gap: 6px; flex: 0 0 auto; margin-left: auto; }
+/* Kapatma (X): ‹ › düğmelerinin hemen sağında; başparmak erişimi için sağ üst, dokunma alanı 44 px. */
+.ddk-bar .ddk-close { display: inline-grid; place-items: center; padding: 0; border-color: var(--ddk-bakir2); }
+.ddk-bar .ddk-close svg { stroke: currentColor; }
 .ddk-tabs { order: 9; flex-basis: 100%; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
 .ddk-tabs button { flex: 0 0 auto; min-height: 36px; font-size: 14px; padding: 4px 12px; border-radius: 999px; font-weight: 500; }
 .ddk-tabs button.on { background: linear-gradient(#E07A2F, #C8651B); color: #1A1A1C; border-color: #E07A2F; }
@@ -43,12 +46,15 @@
 .ddk-frame.ddk-duz { position: absolute; inset: 8px; display: grid; gap: 8px; grid-template-rows: minmax(120px, 28%) auto minmax(0, 1fr); }
 .ddk-duz .ddk-vitrin { border-radius: 12px; }
 .ddk-duz .ddk-serit { min-height: 40px; background: linear-gradient(#3A3A3F, #2B2B2E); border: 1px solid var(--ddk-bakir); border-radius: 10px; font-size: 17px; container-type: normal; }
+.ddk-frame.ddk-duz.ddk-nostrip { grid-template-rows: minmax(120px, 28%) minmax(0, 1fr); }
 .ddk-duz .ddk-page { background: var(--panel); color: var(--ink); border-radius: 12px; padding: 4px; }
 @media (min-width: 700px) and (min-aspect-ratio: 1/1) {
   .ddk-frame.ddk-duz { grid-template-columns: minmax(240px, 38%) 1fr; grid-template-rows: 1fr auto; }
   .ddk-duz .ddk-vitrin { grid-column: 1; grid-row: 1; }
   .ddk-duz .ddk-serit { grid-column: 1; grid-row: 2; }
   .ddk-duz .ddk-page { grid-column: 2; grid-row: 1 / 3; }
+  .ddk-frame.ddk-duz.ddk-nostrip { grid-template-rows: 1fr; }
+  .ddk-duz.ddk-nostrip .ddk-page { grid-row: 1; }
 }
 
 /* Sayfa içinde mevcut Dungeondex düzeni tek sütun (liste ya da kart). */

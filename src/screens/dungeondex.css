@@ -2,7 +2,6 @@
 .menu-screen .app.dex { max-width: 1100px; }
 .dex-top { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 10px; background: var(--panel); padding: 8px 10px; border-radius: 12px; }
 .dex-top h1 { margin: 0; font-size: 20px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dex-back { min-height: 48px; min-width: 48px; font-weight: 600; }
 .dex-cats { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
 .dex-cat { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 56px; text-align: left; background: var(--card); }
 .dex-cat span { color: var(--mute); font-size: 14px; }

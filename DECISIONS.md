@@ -2,6 +2,21 @@
 
 Projede alınan içerik ve kural kararlarının kaydı. En yeni karar en üstte.
 
+## Dungeondex kapatma düğmesi (2026-11-20; yalnız arayüz, kural ve kayıt sürümü değişmedi)
+
+- Üst çubukta sol üstteki "← Geri" kalktı; sağ üstte ‹ › düğmelerinin hemen sağında X (`IconClose`, 44 px, erişilebilir ad `dex.close` Kapat/Close). Bütün sekmelerde aynı çubuk. X ve Esc eski Geri ile aynı adımı atar (`dexCloseStep`: bağlantı izi → kayıt → liste → ana sayfa → Dungeondex dışı; saf, test edilir).
+- Sol panel yalnız görsel: vitrin altındaki ad/tür şeridi kaldırıldı (`BookFrame` `strip` isteğe bağlı; verilmezse çizilmez, düz düzende ızgara iki satır; çerçeve görselindeki şerit bandı süs olarak kalır). Yer tutucu vitrinde kategori yazısı da kalktı (ad `aria-label`'da).
+
+## Eşya ikon hattı (2026-11-20; yalnız görsel, kural ve kayıt sürümü değişmedi)
+
+- `npm run esya-ikon` (`scripts/esya-ikon.mjs`, sharp): manifest `data/esya-ikon-sayfalar.json` + `assets-ham/esya/` (depo dışı) → `public/esya/<kimlik>.webp` (256) ve `public/esya/kucuk/` (96); varyant kimliğinde `/` → `--`. Zemin dört köşeden; kenardan taşkın dolgu, yarı saydam kenarda zeminden ayrıştırma (unmix) + 6 px despill; kapalı deliklerde yalnız zemine çok yakın yeşil silinir (cam iç hacmi kalır); en büyük bileşenin %6'sı altı atılır (`hepsiniTut` hariç). Hücre kırpımı her yöne %15 genişletilir, yalnız ağırlık merkezi asıl hücrede olan bileşen tutulur (silah-4 plate armor, donanım-05 çadır komşuya taşıyordu). Kırpma kutusu α > 48 (yaygın parıltı kuyruğu kesilir). `--kontrol` etiketli kontrol görselleri `harita/belgeler/ESYA-IKON-KONTROL/`.
+- `ayniGorsel` hedefin sonraki sayfadaki kendi hücresini ezmez (potion-of-healing duzeltme-7'de).
+- **Kimlik bağlama (kullanıcı kararı, onaydan sonra):** varyant kimliği `<ana>/<varyant>` oyunun açılmış kaydına kuralla eşlenir (`esle`/`varyantEsle`): adaylar `srd` kimliği `<ana>` olan ve kimliği farklı kayıtlar, kimliğinde `<varyant>` tire sınırlı parça olarak geçen tek aday seçilir (15 eşlendi: iyileştirme iksirleri, dev gücü iksiri ve kemeri). Tek aday yoksa eşleşmez (64: oyunda açılmamış varyantlar, ör. dragon-scale-mail, figurine, ioun-stone, enstrüman), birden çoksa belirsiz (0); ikisi de bağlanmaz. SRD üst kimliği (11, ör. `armor-of-resistance`, `weapon-1-2-or-3`) kendi varyant ikonu olmayan bütün açılmış kayıtlara kopyalanır (`bagla`, 57 kayıt). Oyunda kaydı olmayan kimlikler (alet/kit, enstrüman, `shield`, `thieves-tools`) ve eşleşmeyen varyantlar "kayıtsız": ikon üretilir ama `public/esya/`'ya yazılmaz; tam çalıştırma artık kaydı olmayan eski çıktıları siler. Sonuç: 449 oyun kaydının 444'ü ikonlu, ikonsuz `dagger`, `mace`, `light-crossbow`, `warhammer`, `lance` (yeni Gemini sayfası bekliyor).
+- **Temizlik:** cam içinden yeşil zemin görünen iksirlerde (duzeltme-7 #1–3) manifest `tamDespill` despill'i bütün nesneye uygular (cam nötr gri; yeşil nesnede kullanılmaz). varyant-1#4 (supreme iksir, arkada silah sapı) ve donanim-05#3 (dürbün, arkada balta ağzı) nesneye bitişik, bileşen/kırpmayla ayrılmıyor: manifest `yenidenUretilecek`. varyant-1#1 duzeltme-7#1 ile ezildiği için çıktıda yok. hammer-of-thunderbolts parıltısı kaldı (kullanıcı kararı).
+- **Dungeondex vitrini:** eşya kaydında `public/esya/<kimlik>.webp` gösterilir (yoksa yer tutucu); canavar jetonuyla aynı yol.
+- `scripts/lib/gorsel-envanter.ts` kök yolu `fileURLToPath` ile (Windows'ta `new URL().pathname` `D:\D:\…` veriyordu; `npm run dd-gorsel` yerelde çalışmıyordu).
+- **Tam test notu:** `src/content/as2.test.ts` yerelde düşüyor ("Champion" ≠ "Gladiator"): ilgisiz, yerel `icerik/` eski (git dışı `icerik/ek-fighter.json` fikstürdeki yeni adı taşımıyor); dokunulmadı.
+
 ## Görsel envanter + galeri (Dungeondex vitrini için görsel eşleme) (2026-11-20; yalnız görünüm, kural ve kayıt sürümü değişmedi, yeni mekanik ve görsel yok)
 
 - **Çıktılar:** `harita/belgeler/GORSEL-ENVANTER.md` (kategori başına var/genel/yedek, a–h bölümleri, "Eksik ve düzeltilecek"), `harita/belgeler/GORSEL-EKSIK.csv` (kategori, kimlik, tür, ne eksik, önerilen dosya adı; 715 satır), `data/dungeondex-gorsel-esleme.json`. Üçünü tek betik yazar: `npm run dd-gorsel` (`scripts/dungeondex-gorsel-esleme.ts`, kurallar `scripts/lib/gorsel-envanter.ts`, belge metni `scripts/lib/gorsel-belge.ts`; `-- --kuru` yazmadan denetler). Sayılar bellekten değil, çalıştırmadan.

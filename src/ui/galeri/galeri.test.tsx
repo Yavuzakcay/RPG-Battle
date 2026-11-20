@@ -24,7 +24,8 @@ describe('görsel galerisi', () => {
     const miss = filterRecords(all, '', true);
     expect(miss.length).toBeGreaterThan(0);
     expect(miss.every(([, r]) => r.durum !== 'var')).toBe(true);
-    expect(filterRecords(tabRecords('esya'), '', true)).toHaveLength(449);
+    // Eşya ikon hattından sonra (npm run esya-ikon + dd-gorsel) yalnız 5 silah ikonsuz: dagger, mace, light-crossbow, warhammer, lance.
+    expect(filterRecords(tabRecords('esya'), '', true).map(([id]) => id).sort()).toEqual(['dagger', 'lance', 'light-crossbow', 'mace', 'warhammer']);
   });
 
   it('efekt şeritleri çözülüyor (fxPlan kaydı ya da durum döngüsü)', () => {

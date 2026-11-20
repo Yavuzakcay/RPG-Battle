@@ -135,15 +135,18 @@ export function useFrameKind(): FrameKind {
   return kind;
 }
 
-/** Açık kitap: vitrin penceresi, vitrin altı isim şeridi ve sağ (mobilde alt) sayfa; sayfa güvenli alanda kayar. */
-export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: ReactNode; className?: string }) {
+/**
+ * Açık kitap: vitrin penceresi, isteğe bağlı vitrin altı şeridi ve sağ (mobilde alt) sayfa; sayfa güvenli alanda kayar. Şerit verilmezse
+ * çizilmez (Dungeondex: sol panel yalnız görsel; çerçeve görselindeki şerit bandı süs olarak kalır).
+ */
+export function BookFrame(props: { vitrine: ReactNode; strip?: ReactNode; page: ReactNode; className?: string }) {
   const kind = useFrameKind();
   const d = kind === 'duz' ? null : bookData()[kind];
   if (!d) {
     return (
-      <div className={`ddk-frame ddk-duz ${props.className ?? ''}`} data-frame="duz">
+      <div className={`ddk-frame ddk-duz${props.strip == null ? ' ddk-nostrip' : ''} ${props.className ?? ''}`} data-frame="duz">
         <div className="ddk-vitrin">{props.vitrine}</div>
-        <div className="ddk-serit">{props.strip}</div>
+        {props.strip != null && <div className="ddk-serit">{props.strip}</div>}
         <div className="ddk-page">{props.page}</div>
       </div>
     );
@@ -153,7 +156,7 @@ export function BookFrame(props: { vitrine: ReactNode; strip: ReactNode; page: R
       <div className={`ddk-frame ddk-img ddk-${kind}`} data-frame={kind} style={{ '--ar': String(d.aspect) } as CSSProperties}>
         <img className="ddk-frame-img" src={`${BASE}${d.file}`} alt="" draggable={false} />
         <div className="ddk-vitrin" style={boxStyle(d.vitrin)}>{props.vitrine}</div>
-        <div className="ddk-serit" style={boxStyle(stripBox(d))}>{props.strip}</div>
+        {props.strip != null && <div className="ddk-serit" style={boxStyle(stripBox(d))}>{props.strip}</div>}
         <div className="ddk-page" style={boxStyle(d.guvenli)}>{props.page}</div>
       </div>
     </div>

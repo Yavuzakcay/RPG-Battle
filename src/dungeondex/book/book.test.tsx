@@ -7,7 +7,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { loadMonsters } from '../../data';
 import { setLang, t } from '../../i18n';
 import { loadDexExtras, type DexExtras } from '../catalog';
-import { Dungeondex } from '../../screens/Dungeondex';
+import { Dungeondex, dexCloseStep } from '../../screens/Dungeondex';
 import { coverSteps } from './Book';
 import { BOOK_ANIM, logoStageIn } from './kitapData';
 
@@ -24,12 +24,12 @@ describe('Dungeondex Kitap', () => {
     expect(m).toContain('splash-kapali-kanat');
     expect(m).not.toContain('dex-cat-buyu');
   });
-  it('kapak kapalıyken açık kitap: sekmeler, vitrin, şerit, sayfada kart', () => {
+  it('kapak kapalıyken açık kitap: sekmeler, vitrin, sayfada kart; sol panel yalnız görsel (şerit yok)', () => {
     const m = renderToStaticMarkup(<Dungeondex onBack={() => {}} extras={extras} cover={false} initial={{ cat: 'canavar', id: 'goblin-warrior' }} />);
     expect(m).not.toContain('dex-cover');
     expect(m).toContain('dex-tab-buyu');
     expect(m).toContain('ddk-vitrin');
-    expect(m).toContain('ddk-serit');
+    expect(m).not.toContain('ddk-serit');
     expect(m).toContain('data-testid="dex-card"');
     expect(m).toContain('monsters/');
     setLang('en');
@@ -51,5 +51,32 @@ describe('Dungeondex Kitap', () => {
     expect(n(s.width!)).toBeGreaterThan(0.5);
     expect(n(s.left!) + n(s.width!) / 2).toBeGreaterThan(0.4);
     expect(n(s.left!) + n(s.width!) / 2).toBeLessThan(0.6);
+  });
+});
+
+describe('Dungeondex kapatma düğmesi', () => {
+  it('sağ üstte X (‹ › düğmelerinin hemen sağında), erişilebilir ad TR/EN, "Geri" yok', () => {
+    const m = renderToStaticMarkup(<Dungeondex onBack={() => {}} extras={extras} cover={false} initial={{ cat: 'buyu', id: 'fire-bolt' }} />);
+    const nav = /<div class="ddk-nav">(.*?)<\/div>/.exec(m)?.[1] ?? '';
+    expect(nav.indexOf('dex-prev')).toBeLessThan(nav.indexOf('dex-next'));
+    expect(nav.indexOf('dex-next')).toBeLessThan(nav.indexOf('dex-close'));
+    expect(nav).toContain('aria-label="Kapat"');
+    expect(m).not.toContain('dex-back');
+    expect(m).not.toContain('← ');
+    expect(m).not.toContain('>Geri<');
+    setLang('en');
+    try {
+      const e = renderToStaticMarkup(<Dungeondex onBack={() => {}} extras={extras} cover={false} initial={{ cat: 'canavar', id: 'goblin-warrior' }} />);
+      expect(e).toContain('data-testid="dex-close" aria-label="Close"');
+      expect(t().dex.close).toBe('Close');
+    } finally { setLang('tr'); }
+  });
+  it('X/Esc bir adım kapatır: bağlantı izi → kayıt → liste → ana sayfa → çıkış', () => {
+    const a = { cat: 'buyu' as const, id: 'fire-bolt' };
+    const b = { cat: 'canavar' as const, id: 'goblin-warrior' };
+    expect(dexCloseStep(b, [a])).toEqual({ view: a, trail: [] });
+    expect(dexCloseStep(a, [])).toEqual({ view: { cat: 'buyu', id: null }, trail: [] });
+    expect(dexCloseStep({ cat: 'buyu', id: null }, [])).toBe('category');
+    expect(dexCloseStep({ cat: null, id: null }, [])).toBe('exit');
   });
 });

@@ -3,7 +3,7 @@
  * kayıt kartı; "Lisanslar ve atıf" sayfası. Yalnız okur: savaşa, karakter kâğıdına ya da kayda dokunmaz. Mobilde tek
  * sütun (liste ya da kart), geniş ekranda iki sütun (liste + kart).
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { loadMonsters, monsters } from '../data';
 import { t, useLang } from '../i18n';
 import { APP_NAME } from '../app/appName';
@@ -15,7 +15,7 @@ import {
 import { BookFrame, DexCover, useCover } from '../dungeondex/book/Book';
 import { bookData } from '../dungeondex/book/kitapData';
 import { storedDexCover } from '../ui/dexCoverSetting';
-import { IconBook } from '../ui/icons';
+import { IconBook, IconClose } from '../ui/icons';
 import './dungeondex.css';
 
 const BASE = import.meta.env.BASE_URL;
@@ -24,6 +24,17 @@ const MAP_FILES = import.meta.glob<{ id: string; name: string; gizli?: boolean }
 
 export type DexView = { cat: DexCat | 'lisans' | null; id: string | null };
 type View = DexView;
+
+/**
+ * Kapatma (X ya da Esc) bir adım geri: bağlantıyla gelinen kayıttan önceki kayda, kayıttan listeye, kategoriden ana sayfaya, ana
+ * sayfadan Dungeondex'in dışına (`exit`). Saf: test edilir.
+ */
+export function dexCloseStep(view: View, trail: View[]): { view: View; trail: View[] } | 'category' | 'exit' {
+  if (trail.length) return { view: trail[trail.length - 1]!, trail: trail.slice(0, -1) };
+  if (view.id) return { view: { ...view, id: null }, trail };
+  if (view.cat) return 'category';
+  return 'exit';
+}
 
 export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek veri (yükleme atlanır). */ extras?: Omit<DexExtras, 'mapNames'>; /** Testler: başlangıç görünümü. */ initial?: DexView;
   /** Kapak (Görev DD-Kitap): verilmezse Ayarlar "Kapak animasyonu"; başlangıç görünümü verilince (testler) kapak yok. */ cover?: boolean }) {
@@ -77,11 +88,20 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
     setView({ cat: l.cat, id: l.id ?? null });
   };
   const back = () => {
-    if (trail.length) { const prev = trail[trail.length - 1]!; setTrail(trail.slice(0, -1)); setView(prev); return; }
-    if (view.id) { setView({ ...view, id: null }); return; }
-    if (view.cat) { openCat(null); return; }
-    props.onBack();
+    const s = dexCloseStep(view, trail);
+    if (s === 'exit') props.onBack();
+    else if (s === 'category') openCat(null);
+    else { setTrail(s.trail); setView(s.view); }
   };
+  // Esc = kapatma düğmesi (seçili kaydı kapatır, sonra kategoriyi, en sonda Dungeondex'i). Kapak açıkken dinlenmez.
+  const closeRef = useRef(back);
+  closeRef.current = back;
+  useEffect(() => {
+    if (phase !== 'open') return;
+    const onKey = (ev: KeyboardEvent) => { if (ev.key === 'Escape' && !ev.defaultPrevented) { ev.preventDefault(); closeRef.current(); } };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [phase]);
 
   // Kitapta kayıt ya da kategori değişince sayfa başa döner (sayfa kendi içinde kayar).
   useEffect(() => { document.querySelector('.ddk-page')?.scrollTo?.(0, 0); }, [view.cat, view.id]);
@@ -136,11 +156,11 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
       {phase !== 'closed' && (
         <>
           <header className="ddk-bar">
-            <button type="button" className="dex-back" onClick={back} aria-label={L.back}>← {L.back}</button>
             <h1>{title}</h1>
             <div className="ddk-nav">
               <button type="button" data-testid="dex-prev" onClick={() => step(-1)} disabled={idx <= 0} aria-label={L.prev} title={L.prev}>‹</button>
               <button type="button" data-testid="dex-next" onClick={() => step(1)} disabled={idx < 0 || idx >= found.length - 1} aria-label={L.next} title={L.next}>›</button>
+              <button type="button" className="ddk-close" data-testid="dex-close" onClick={back} aria-label={L.close} title={L.close}><IconClose size={22} /></button>
             </div>
             {dex && (
               <nav className="ddk-tabs" aria-label={L.categories}>
@@ -152,10 +172,7 @@ export function Dungeondex(props: { onBack: () => void; /** Testler: hazır ek v
             )}
           </header>
           <div className={`ddk-book${phase !== 'open' ? ' ddk-entering' : ''}`}>
-            <BookFrame
-              vitrine={<Vitrine entry={entry} />}
-              strip={entry ? <><strong>{entry.name}</strong><em>{L.cat[entry.cat]}</em></> : <strong>{title}</strong>}
-              page={page} />
+            <BookFrame vitrine={<Vitrine entry={entry} />} page={page} />
           </div>
         </>
       )}
@@ -169,9 +186,11 @@ function Vitrine(props: { entry: DexEntry | null }) {
   const L = t().dex;
   const e = props.entry;
   const [broken, setBroken] = useState<string | null>(null);
-  const src = e?.cat === 'canavar' ? (monsters.find((m) => m.id === e.id)?.avatar ?? `monsters/${e.id}.webp`) : null;
+  // Canavar jetonu; eşya ikonu `npm run esya-ikon` çıktısı (public/esya/<kimlik>.webp). Dosya yoksa yer tutucu.
+  const src = e?.cat === 'canavar' ? (monsters.find((m) => m.id === e.id)?.avatar ?? `monsters/${e.id}.webp`)
+    : e?.cat === 'esya' ? `esya/${e.id}.webp` : null;
   if (src && broken !== src) return <img src={`${BASE}${src}`} alt={e!.name} onError={() => setBroken(src)} />;
-  return <div className="ddk-vitrin-ph" aria-label={L.vitrine}><IconBook size={48} /><span>{e ? L.cat[e.cat] : L.title}</span></div>;
+  return <div className="ddk-vitrin-ph" role="img" aria-label={e ? e.name : L.vitrine}><IconBook size={48} /></div>;
 }
 
 function Filters(props: { filters: ReturnType<typeof dexFilters>; sel: Record<string, string>; onChange: (s: Record<string, string>) => void }) {

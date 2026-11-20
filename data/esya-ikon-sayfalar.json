@@ -1,0 +1,2509 @@
+{
+ "zemin": "kose-ornekle",
+ "not": "Sayfa sırası = uygulama sırası; sonraki sayfa öncekini ezer. kolon x satir hücre ızgarası, sol→sağ, yukarı→aşağı. duzeltme-4: 4 kolon x 3 satır, ilk 9 hücre. Dosya adları klasördeki gerçek adlardır (duzeltme-6/07 sıfırlı). Varyant kimliği biçimi <ana-kimlik>/<varyant>; dosya adında '/' yerine '--'. CC, oyun kayıtlarındaki gerçek varyant kimlikleriyle karşılaştırıp uyuşmazlığı raporlar.",
+ "sayfalar": [
+  {
+   "dosya": "sihirli-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "ammunition-1-2-or-3",
+     "ad": "Ammunition (+1/+2/+3, generic)"
+    },
+    {
+     "id": "ammunition-of-slaying",
+     "ad": "Ammunition of Slaying"
+    },
+    {
+     "id": "berserker-axe",
+     "ad": "Berserker Axe"
+    },
+    {
+     "id": "dagger-of-venom",
+     "ad": "Dagger of Venom"
+    },
+    {
+     "id": "dancing-sword",
+     "ad": "Dancing Sword"
+    },
+    {
+     "id": "defender",
+     "ad": "Defender"
+    },
+    {
+     "id": "dragon-slayer",
+     "ad": "Dragon Slayer"
+    },
+    {
+     "id": "dwarven-thrower",
+     "ad": "Dwarven Thrower"
+    },
+    {
+     "id": "energy-bow",
+     "ad": "Energy Bow"
+    },
+    {
+     "id": "flame-tongue",
+     "ad": "Flame Tongue"
+    },
+    {
+     "id": "frost-brand",
+     "ad": "Frost Brand"
+    },
+    {
+     "id": "giant-slayer",
+     "ad": "Giant Slayer"
+    },
+    {
+     "id": "hammer-of-thunderbolts",
+     "ad": "Hammer of Thunderbolts"
+    },
+    {
+     "id": "holy-avenger",
+     "ad": "Holy Avenger"
+    },
+    {
+     "id": "javelin-of-lightning",
+     "ad": "Javelin of Lightning"
+    },
+    {
+     "id": "luck-blade",
+     "ad": "Luck Blade"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-02.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "mace-of-disruption",
+     "ad": "Mace of Disruption"
+    },
+    {
+     "id": "mace-of-smiting",
+     "ad": "Mace of Smiting"
+    },
+    {
+     "id": "mace-of-terror",
+     "ad": "Mace of Terror"
+    },
+    {
+     "id": "nine-lives-stealer",
+     "ad": "Nine Lives Stealer"
+    },
+    {
+     "id": "oathbow",
+     "ad": "Oathbow"
+    },
+    {
+     "id": "quarterstaff-of-the-acrobat",
+     "ad": "Quarterstaff of the Acrobat"
+    },
+    {
+     "id": "scimitar-of-speed",
+     "ad": "Scimitar of Speed"
+    },
+    {
+     "id": "sun-blade",
+     "ad": "Sun Blade"
+    },
+    {
+     "id": "sword-of-life-stealing",
+     "ad": "Sword of Life Stealing"
+    },
+    {
+     "id": "sword-of-sharpness",
+     "ad": "Sword of Sharpness"
+    },
+    {
+     "id": "sword-of-wounding",
+     "ad": "Sword of Wounding"
+    },
+    {
+     "id": "thunderous-greatclub",
+     "ad": "Thunderous Greatclub"
+    },
+    {
+     "id": "trident-of-fish-command",
+     "ad": "Trident of Fish Command"
+    },
+    {
+     "id": "vicious-weapon",
+     "ad": "Vicious Weapon"
+    },
+    {
+     "id": "vorpal-sword",
+     "ad": "Vorpal Sword"
+    },
+    {
+     "id": "weapon-1-2-or-3",
+     "ad": "Weapon (+1/+2/+3, generic)"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-03.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "weapon-of-warning",
+     "ad": "Weapon of Warning"
+    },
+    {
+     "id": "adamantine-armor",
+     "ad": "Adamantine Armor"
+    },
+    {
+     "id": "animated-shield",
+     "ad": "Animated Shield"
+    },
+    {
+     "id": "armor-1-2-or-3",
+     "ad": "Armor (+1/+2/+3, generic)"
+    },
+    {
+     "id": "armor-of-invulnerability",
+     "ad": "Armor of Invulnerability"
+    },
+    {
+     "id": "armor-of-resistance",
+     "ad": "Armor of Resistance"
+    },
+    {
+     "id": "armor-of-vulnerability",
+     "ad": "Armor of Vulnerability"
+    },
+    {
+     "id": "arrow-catching-shield",
+     "ad": "Arrow-Catching Shield"
+    },
+    {
+     "id": "demon-armor",
+     "ad": "Demon Armor"
+    },
+    {
+     "id": "dragon-scale-mail",
+     "ad": "Dragon Scale Mail"
+    },
+    {
+     "id": "dwarven-plate",
+     "ad": "Dwarven Plate"
+    },
+    {
+     "id": "elven-chain",
+     "ad": "Elven Chain"
+    },
+    {
+     "id": "glamoured-studded-leather",
+     "ad": "Glamoured Studded Leather"
+    },
+    {
+     "id": "mithral-armor",
+     "ad": "Mithral Armor"
+    },
+    {
+     "id": "plate-armor-of-etherealness",
+     "ad": "Plate Armor of Etherealness"
+    },
+    {
+     "id": "sentinel-shield",
+     "ad": "Sentinel Shield"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-04.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "shield-1-2-or-3",
+     "ad": "Shield (+1/+2/+3, generic)"
+    },
+    {
+     "id": "shield-of-missile-attraction",
+     "ad": "Shield of Missile Attraction"
+    },
+    {
+     "id": "shield-of-the-cavalier",
+     "ad": "Shield of the Cavalier"
+    },
+    {
+     "id": "spellguard-shield",
+     "ad": "Spellguard Shield"
+    },
+    {
+     "id": "immovable-rod",
+     "ad": "Immovable Rod"
+    },
+    {
+     "id": "rod-of-absorption",
+     "ad": "Rod of Absorption"
+    },
+    {
+     "id": "rod-of-alertness",
+     "ad": "Rod of Alertness"
+    },
+    {
+     "id": "rod-of-lordly-might",
+     "ad": "Rod of Lordly Might"
+    },
+    {
+     "id": "rod-of-resurrection",
+     "ad": "Rod of Resurrection"
+    },
+    {
+     "id": "rod-of-rulership",
+     "ad": "Rod of Rulership"
+    },
+    {
+     "id": "rod-of-security",
+     "ad": "Rod of Security"
+    },
+    {
+     "id": "staff-of-charming",
+     "ad": "Staff of Charming"
+    },
+    {
+     "id": "staff-of-fire",
+     "ad": "Staff of Fire"
+    },
+    {
+     "id": "staff-of-frost",
+     "ad": "Staff of Frost"
+    },
+    {
+     "id": "staff-of-healing",
+     "ad": "Staff of Healing"
+    },
+    {
+     "id": "staff-of-power",
+     "ad": "Staff of Power"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-05.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "staff-of-striking",
+     "ad": "Staff of Striking"
+    },
+    {
+     "id": "staff-of-swarming-insects",
+     "ad": "Staff of Swarming Insects"
+    },
+    {
+     "id": "staff-of-the-magi",
+     "ad": "Staff of the Magi"
+    },
+    {
+     "id": "staff-of-the-python",
+     "ad": "Staff of the Python"
+    },
+    {
+     "id": "staff-of-the-woodlands",
+     "ad": "Staff of the Woodlands"
+    },
+    {
+     "id": "staff-of-thunder-and-lightning",
+     "ad": "Staff of Thunder and Lightning"
+    },
+    {
+     "id": "staff-of-withering",
+     "ad": "Staff of Withering"
+    },
+    {
+     "id": "wand-of-binding",
+     "ad": "Wand of Binding"
+    },
+    {
+     "id": "wand-of-enemy-detection",
+     "ad": "Wand of Enemy Detection"
+    },
+    {
+     "id": "wand-of-fear",
+     "ad": "Wand of Fear"
+    },
+    {
+     "id": "wand-of-fireballs",
+     "ad": "Wand of Fireballs"
+    },
+    {
+     "id": "wand-of-lightning-bolts",
+     "ad": "Wand of Lightning Bolts"
+    },
+    {
+     "id": "wand-of-magic-detection",
+     "ad": "Wand of Magic Detection"
+    },
+    {
+     "id": "wand-of-magic-missiles",
+     "ad": "Wand of Magic Missiles"
+    },
+    {
+     "id": "wand-of-paralysis",
+     "ad": "Wand of Paralysis"
+    },
+    {
+     "id": "wand-of-polymorph",
+     "ad": "Wand of Polymorph"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-06.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "wand-of-secrets",
+     "ad": "Wand of Secrets"
+    },
+    {
+     "id": "wand-of-the-war-mage-1-2-or-3",
+     "ad": "Wand of the War Mage (+1/+2/+3, generic)"
+    },
+    {
+     "id": "wand-of-web",
+     "ad": "Wand of Web"
+    },
+    {
+     "id": "wand-of-wonder",
+     "ad": "Wand of Wonder"
+    },
+    {
+     "id": "ring-of-animal-influence",
+     "ad": "Ring of Animal Influence"
+    },
+    {
+     "id": "ring-of-djinni-summoning",
+     "ad": "Ring of Djinni Summoning"
+    },
+    {
+     "id": "ring-of-elemental-command",
+     "ad": "Ring of Elemental Command"
+    },
+    {
+     "id": "ring-of-evasion",
+     "ad": "Ring of Evasion"
+    },
+    {
+     "id": "ring-of-feather-falling",
+     "ad": "Ring of Feather Falling"
+    },
+    {
+     "id": "ring-of-free-action",
+     "ad": "Ring of Free Action"
+    },
+    {
+     "id": "ring-of-invisibility",
+     "ad": "Ring of Invisibility"
+    },
+    {
+     "id": "ring-of-jumping",
+     "ad": "Ring of Jumping"
+    },
+    {
+     "id": "ring-of-mind-shielding",
+     "ad": "Ring of Mind Shielding"
+    },
+    {
+     "id": "ring-of-protection",
+     "ad": "Ring of Protection"
+    },
+    {
+     "id": "ring-of-regeneration",
+     "ad": "Ring of Regeneration"
+    },
+    {
+     "id": "ring-of-resistance",
+     "ad": "Ring of Resistance"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-07.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "ring-of-shooting-stars",
+     "ad": "Ring of Shooting Stars"
+    },
+    {
+     "id": "ring-of-spell-storing",
+     "ad": "Ring of Spell Storing"
+    },
+    {
+     "id": "ring-of-spell-turning",
+     "ad": "Ring of Spell Turning"
+    },
+    {
+     "id": "ring-of-swimming",
+     "ad": "Ring of Swimming"
+    },
+    {
+     "id": "ring-of-telekinesis",
+     "ad": "Ring of Telekinesis"
+    },
+    {
+     "id": "ring-of-the-ram",
+     "ad": "Ring of the Ram"
+    },
+    {
+     "id": "ring-of-three-wishes",
+     "ad": "Ring of Three Wishes"
+    },
+    {
+     "id": "ring-of-warmth",
+     "ad": "Ring of Warmth"
+    },
+    {
+     "id": "ring-of-water-walking",
+     "ad": "Ring of Water Walking"
+    },
+    {
+     "id": "ring-of-x-ray-vision",
+     "ad": "Ring of X-ray Vision"
+    },
+    {
+     "id": "elixir-of-health",
+     "ad": "Elixir of Health"
+    },
+    {
+     "id": "oil-of-etherealness",
+     "ad": "Oil of Etherealness"
+    },
+    {
+     "id": "oil-of-sharpness",
+     "ad": "Oil of Sharpness"
+    },
+    {
+     "id": "oil-of-slipperiness",
+     "ad": "Oil of Slipperiness"
+    },
+    {
+     "id": "philter-of-love",
+     "ad": "Philter of Love"
+    },
+    {
+     "id": "potion-of-animal-friendship",
+     "ad": "Potion of Animal Friendship"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-08.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "potion-of-clairvoyance",
+     "ad": "Potion of Clairvoyance"
+    },
+    {
+     "id": "potion-of-climbing",
+     "ad": "Potion of Climbing"
+    },
+    {
+     "id": "potion-of-diminution",
+     "ad": "Potion of Diminution"
+    },
+    {
+     "id": "potion-of-flying",
+     "ad": "Potion of Flying"
+    },
+    {
+     "id": "potion-of-gaseous-form",
+     "ad": "Potion of Gaseous Form"
+    },
+    {
+     "id": "potion-of-giant-strength",
+     "ad": "Potion of Giant Strength"
+    },
+    {
+     "id": "potion-of-growth",
+     "ad": "Potion of Growth"
+    },
+    {
+     "id": "potion-of-heroism",
+     "ad": "Potion of Heroism"
+    },
+    {
+     "id": "potion-of-invisibility",
+     "ad": "Potion of Invisibility"
+    },
+    {
+     "id": "potion-of-invulnerability",
+     "ad": "Potion of Invulnerability"
+    },
+    {
+     "id": "potion-of-longevity",
+     "ad": "Potion of Longevity"
+    },
+    {
+     "id": "potion-of-mind-reading",
+     "ad": "Potion of Mind Reading"
+    },
+    {
+     "id": "potion-of-poison",
+     "ad": "Potion of Poison"
+    },
+    {
+     "id": "potion-of-resistance",
+     "ad": "Potion of Resistance"
+    },
+    {
+     "id": "potion-of-speed",
+     "ad": "Potion of Speed"
+    },
+    {
+     "id": "potion-of-vitality",
+     "ad": "Potion of Vitality"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-09.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "potion-of-water-breathing",
+     "ad": "Potion of Water Breathing"
+    },
+    {
+     "id": "spell-scroll",
+     "ad": "Spell Scroll"
+    },
+    {
+     "id": "amulet-of-health",
+     "ad": "Amulet of Health"
+    },
+    {
+     "id": "amulet-of-proof-against-detection-and-location",
+     "ad": "Amulet of Proof against Detection and Location"
+    },
+    {
+     "id": "amulet-of-the-planes",
+     "ad": "Amulet of the Planes"
+    },
+    {
+     "id": "apparatus-of-the-crab",
+     "ad": "Apparatus of the Crab"
+    },
+    {
+     "id": "bag-of-beans",
+     "ad": "Bag of Beans"
+    },
+    {
+     "id": "bag-of-devouring",
+     "ad": "Bag of Devouring"
+    },
+    {
+     "id": "bag-of-holding",
+     "ad": "Bag of Holding"
+    },
+    {
+     "id": "bag-of-tricks",
+     "ad": "Bag of Tricks"
+    },
+    {
+     "id": "bead-of-force",
+     "ad": "Bead of Force"
+    },
+    {
+     "id": "bead-of-nourishment",
+     "ad": "Bead of Nourishment"
+    },
+    {
+     "id": "belt-of-dwarvenkind",
+     "ad": "Belt of Dwarvenkind"
+    },
+    {
+     "id": "belt-of-giant-strength",
+     "ad": "Belt of Giant Strength"
+    },
+    {
+     "id": "boots-of-elvenkind",
+     "ad": "Boots of Elvenkind"
+    },
+    {
+     "id": "boots-of-levitation",
+     "ad": "Boots of Levitation"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-10.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "boots-of-speed",
+     "ad": "Boots of Speed"
+    },
+    {
+     "id": "boots-of-striding-and-springing",
+     "ad": "Boots of Striding and Springing"
+    },
+    {
+     "id": "boots-of-the-winterlands",
+     "ad": "Boots of the Winterlands"
+    },
+    {
+     "id": "bowl-of-commanding-water-elementals",
+     "ad": "Bowl of Commanding Water Elementals"
+    },
+    {
+     "id": "bracers-of-archery",
+     "ad": "Bracers of Archery"
+    },
+    {
+     "id": "bracers-of-defense",
+     "ad": "Bracers of Defense"
+    },
+    {
+     "id": "brazier-of-commanding-fire-elementals",
+     "ad": "Brazier of Commanding Fire Elementals"
+    },
+    {
+     "id": "brooch-of-shielding",
+     "ad": "Brooch of Shielding"
+    },
+    {
+     "id": "broom-of-flying",
+     "ad": "Broom of Flying"
+    },
+    {
+     "id": "candle-of-invocation",
+     "ad": "Candle of Invocation"
+    },
+    {
+     "id": "cape-of-the-mountebank",
+     "ad": "Cape of the Mountebank"
+    },
+    {
+     "id": "carpet-of-flying",
+     "ad": "Carpet of Flying"
+    },
+    {
+     "id": "censer-of-controlling-air-elementals",
+     "ad": "Censer of Controlling Air Elementals"
+    },
+    {
+     "id": "chime-of-opening",
+     "ad": "Chime of Opening"
+    },
+    {
+     "id": "circlet-of-blasting",
+     "ad": "Circlet of Blasting"
+    },
+    {
+     "id": "cloak-of-arachnida",
+     "ad": "Cloak of Arachnida"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-11.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "cloak-of-displacement",
+     "ad": "Cloak of Displacement"
+    },
+    {
+     "id": "cloak-of-elvenkind",
+     "ad": "Cloak of Elvenkind"
+    },
+    {
+     "id": "cloak-of-invisibility",
+     "ad": "Cloak of Invisibility"
+    },
+    {
+     "id": "cloak-of-protection",
+     "ad": "Cloak of Protection"
+    },
+    {
+     "id": "cloak-of-the-bat",
+     "ad": "Cloak of the Bat"
+    },
+    {
+     "id": "cloak-of-the-manta-ray",
+     "ad": "Cloak of the Manta Ray"
+    },
+    {
+     "id": "crystal-ball",
+     "ad": "Crystal Ball"
+    },
+    {
+     "id": "cube-of-force",
+     "ad": "Cube of Force"
+    },
+    {
+     "id": "cubic-gate",
+     "ad": "Cubic Gate"
+    },
+    {
+     "id": "decanter-of-endless-water",
+     "ad": "Decanter of Endless Water"
+    },
+    {
+     "id": "deck-of-illusions",
+     "ad": "Deck of Illusions"
+    },
+    {
+     "id": "dimensional-shackles",
+     "ad": "Dimensional Shackles"
+    },
+    {
+     "id": "dragon-orb",
+     "ad": "Dragon Orb"
+    },
+    {
+     "id": "dust-of-disappearance",
+     "ad": "Dust of Disappearance"
+    },
+    {
+     "id": "dust-of-dryness",
+     "ad": "Dust of Dryness"
+    },
+    {
+     "id": "dust-of-sneezing-and-choking",
+     "ad": "Dust of Sneezing and Choking"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-12.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "efficient-quiver",
+     "ad": "Efficient Quiver"
+    },
+    {
+     "id": "efreeti-bottle",
+     "ad": "Efreeti Bottle"
+    },
+    {
+     "id": "elemental-gem",
+     "ad": "Elemental Gem"
+    },
+    {
+     "id": "eversmoking-bottle",
+     "ad": "Eversmoking Bottle"
+    },
+    {
+     "id": "eyes-of-charming",
+     "ad": "Eyes of Charming"
+    },
+    {
+     "id": "eyes-of-minute-seeing",
+     "ad": "Eyes of Minute Seeing"
+    },
+    {
+     "id": "eyes-of-the-eagle",
+     "ad": "Eyes of the Eagle"
+    },
+    {
+     "id": "feather-token",
+     "ad": "Feather Token"
+    },
+    {
+     "id": "figurine-of-wondrous-power",
+     "ad": "Figurine of Wondrous Power"
+    },
+    {
+     "id": "folding-boat",
+     "ad": "Folding Boat"
+    },
+    {
+     "id": "gauntlets-of-ogre-power",
+     "ad": "Gauntlets of Ogre Power"
+    },
+    {
+     "id": "gem-of-brightness",
+     "ad": "Gem of Brightness"
+    },
+    {
+     "id": "gem-of-seeing",
+     "ad": "Gem of Seeing"
+    },
+    {
+     "id": "gloves-of-missile-snaring",
+     "ad": "Gloves of Missile Snaring"
+    },
+    {
+     "id": "gloves-of-swimming-and-climbing",
+     "ad": "Gloves of Swimming and Climbing"
+    },
+    {
+     "id": "gloves-of-thievery",
+     "ad": "Gloves of Thievery"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-13.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "goggles-of-night",
+     "ad": "Goggles of Night"
+    },
+    {
+     "id": "handy-haversack",
+     "ad": "Handy Haversack"
+    },
+    {
+     "id": "hat-of-disguise",
+     "ad": "Hat of Disguise"
+    },
+    {
+     "id": "hat-of-many-spells",
+     "ad": "Hat of Many Spells"
+    },
+    {
+     "id": "headband-of-intellect",
+     "ad": "Headband of Intellect"
+    },
+    {
+     "id": "helm-of-brilliance",
+     "ad": "Helm of Brilliance"
+    },
+    {
+     "id": "helm-of-comprehending-languages",
+     "ad": "Helm of Comprehending Languages"
+    },
+    {
+     "id": "helm-of-telepathy",
+     "ad": "Helm of Telepathy"
+    },
+    {
+     "id": "helm-of-teleportation",
+     "ad": "Helm of Teleportation"
+    },
+    {
+     "id": "horn-of-blasting",
+     "ad": "Horn of Blasting"
+    },
+    {
+     "id": "horn-of-valhalla",
+     "ad": "Horn of Valhalla"
+    },
+    {
+     "id": "horseshoes-of-a-zephyr",
+     "ad": "Horseshoes of a Zephyr"
+    },
+    {
+     "id": "horseshoes-of-speed",
+     "ad": "Horseshoes of Speed"
+    },
+    {
+     "id": "instant-fortress",
+     "ad": "Instant Fortress"
+    },
+    {
+     "id": "ioun-stone",
+     "ad": "Ioun Stone"
+    },
+    {
+     "id": "iron-bands",
+     "ad": "Iron Bands"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-14.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "iron-flask",
+     "ad": "Iron Flask"
+    },
+    {
+     "id": "lantern-of-revealing",
+     "ad": "Lantern of Revealing"
+    },
+    {
+     "id": "mantle-of-spell-resistance",
+     "ad": "Mantle of Spell Resistance"
+    },
+    {
+     "id": "manual-of-bodily-health",
+     "ad": "Manual of Bodily Health"
+    },
+    {
+     "id": "manual-of-gainful-exercise",
+     "ad": "Manual of Gainful Exercise"
+    },
+    {
+     "id": "manual-of-golems",
+     "ad": "Manual of Golems"
+    },
+    {
+     "id": "manual-of-quickness-of-action",
+     "ad": "Manual of Quickness of Action"
+    },
+    {
+     "id": "marvelous-pigments",
+     "ad": "Marvelous Pigments"
+    },
+    {
+     "id": "medallion-of-thoughts",
+     "ad": "Medallion of Thoughts"
+    },
+    {
+     "id": "mirror-of-life-trapping",
+     "ad": "Mirror of Life Trapping"
+    },
+    {
+     "id": "mysterious-deck",
+     "ad": "Mysterious Deck"
+    },
+    {
+     "id": "necklace-of-adaptation",
+     "ad": "Necklace of Adaptation"
+    },
+    {
+     "id": "necklace-of-fireballs",
+     "ad": "Necklace of Fireballs"
+    },
+    {
+     "id": "necklace-of-prayer-beads",
+     "ad": "Necklace of Prayer Beads"
+    },
+    {
+     "id": "pearl-of-power",
+     "ad": "Pearl of Power"
+    },
+    {
+     "id": "periapt-of-health",
+     "ad": "Periapt of Health"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-15.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "periapt-of-proof-against-poison",
+     "ad": "Periapt of Proof against Poison"
+    },
+    {
+     "id": "periapt-of-wound-closure",
+     "ad": "Periapt of Wound Closure"
+    },
+    {
+     "id": "pipes-of-haunting",
+     "ad": "Pipes of Haunting"
+    },
+    {
+     "id": "pipes-of-the-sewers",
+     "ad": "Pipes of the Sewers"
+    },
+    {
+     "id": "portable-hole",
+     "ad": "Portable Hole"
+    },
+    {
+     "id": "robe-of-eyes",
+     "ad": "Robe of Eyes"
+    },
+    {
+     "id": "robe-of-scintillating-colors",
+     "ad": "Robe of Scintillating Colors"
+    },
+    {
+     "id": "robe-of-stars",
+     "ad": "Robe of Stars"
+    },
+    {
+     "id": "robe-of-the-archmagi",
+     "ad": "Robe of the Archmagi"
+    },
+    {
+     "id": "robe-of-useful-items",
+     "ad": "Robe of Useful Items"
+    },
+    {
+     "id": "rope-of-climbing",
+     "ad": "Rope of Climbing"
+    },
+    {
+     "id": "rope-of-entanglement",
+     "ad": "Rope of Entanglement"
+    },
+    {
+     "id": "scarab-of-protection",
+     "ad": "Scarab of Protection"
+    },
+    {
+     "id": "sending-stones",
+     "ad": "Sending Stones"
+    },
+    {
+     "id": "slippers-of-spider-climbing",
+     "ad": "Slippers of Spider Climbing"
+    },
+    {
+     "id": "sovereign-glue",
+     "ad": "Sovereign Glue"
+    }
+   ]
+  },
+  {
+   "dosya": "sihirli-16.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "sphere-of-annihilation",
+     "ad": "Sphere of Annihilation"
+    },
+    {
+     "id": "stone-of-controlling-earth-elementals",
+     "ad": "Stone of Controlling Earth Elementals"
+    },
+    {
+     "id": "stone-of-good-luck",
+     "ad": "Stone of Good Luck (Luckstone)"
+    },
+    {
+     "id": "talisman-of-pure-good",
+     "ad": "Talisman of Pure Good"
+    },
+    {
+     "id": "talisman-of-the-sphere",
+     "ad": "Talisman of the Sphere"
+    },
+    {
+     "id": "talisman-of-ultimate-evil",
+     "ad": "Talisman of Ultimate Evil"
+    },
+    {
+     "id": "tome-of-clear-thought",
+     "ad": "Tome of Clear Thought"
+    },
+    {
+     "id": "tome-of-leadership-and-influence",
+     "ad": "Tome of Leadership and Influence"
+    },
+    {
+     "id": "tome-of-understanding",
+     "ad": "Tome of Understanding"
+    },
+    {
+     "id": "universal-solvent",
+     "ad": "Universal Solvent"
+    },
+    {
+     "id": "well-of-many-worlds",
+     "ad": "Well of Many Worlds"
+    },
+    {
+     "id": "wind-fan",
+     "ad": "Wind Fan"
+    },
+    {
+     "id": "winged-boots",
+     "ad": "Winged Boots"
+    },
+    {
+     "id": "wings-of-flying",
+     "ad": "Wings of Flying"
+    }
+   ]
+  },
+  {
+   "dosya": "donanim-01.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "acid",
+     "ad": "Acid"
+    },
+    {
+     "id": "ammunition",
+     "ad": "Ammunition"
+    },
+    {
+     "id": "antitoxin",
+     "ad": "Antitoxin"
+    },
+    {
+     "id": "arcane-focus",
+     "ad": "Arcane Focus"
+    },
+    {
+     "id": "ball-bearings",
+     "ad": "Ball Bearings"
+    },
+    {
+     "id": "barrel",
+     "ad": "Barrel"
+    },
+    {
+     "id": "basket",
+     "ad": "Basket"
+    },
+    {
+     "id": "bell",
+     "ad": "Bell"
+    },
+    {
+     "id": "blanket",
+     "ad": "Blanket"
+    },
+    {
+     "id": "block-and-tackle",
+     "ad": "Block and Tackle"
+    },
+    {
+     "id": "book",
+     "ad": "Book"
+    },
+    {
+     "id": "bottle-glass",
+     "ad": "Bottle, Glass"
+    },
+    {
+     "id": "bucket",
+     "ad": "Bucket"
+    },
+    {
+     "id": "burglars-pack",
+     "ad": "Burglar’s Pack"
+    },
+    {
+     "id": "caltrops",
+     "ad": "Caltrops"
+    },
+    {
+     "id": "candle",
+     "ad": "Candle"
+    }
+   ]
+  },
+  {
+   "dosya": "donanim-02.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "case-crossbow-bolt",
+     "ad": "Case, Crossbow Bolt"
+    },
+    {
+     "id": "case-map-or-scroll",
+     "ad": "Case, Map or Scroll"
+    },
+    {
+     "id": "chain",
+     "ad": "Chain"
+    },
+    {
+     "id": "chest",
+     "ad": "Chest"
+    },
+    {
+     "id": "climbers-kit",
+     "ad": "Climber’s Kit"
+    },
+    {
+     "id": "clothes-fine",
+     "ad": "Clothes, Fine"
+    },
+    {
+     "id": "clothes-travelers",
+     "ad": "Clothes, Traveler’s"
+    },
+    {
+     "id": "component-pouch",
+     "ad": "Component Pouch"
+    },
+    {
+     "id": "costume",
+     "ad": "Costume"
+    },
+    {
+     "id": "crowbar",
+     "ad": "Crowbar"
+    },
+    {
+     "id": "diplomats-pack",
+     "ad": "Diplomat’s Pack"
+    },
+    {
+     "id": "druidic-focus",
+     "ad": "Druidic Focus"
+    },
+    {
+     "id": "dungeoneers-pack",
+     "ad": "Dungeoneer’s Pack"
+    },
+    {
+     "id": "entertainers-pack",
+     "ad": "Entertainer’s Pack"
+    },
+    {
+     "id": "explorers-pack",
+     "ad": "Explorer’s Pack"
+    },
+    {
+     "id": "flask",
+     "ad": "Flask"
+    }
+   ]
+  },
+  {
+   "dosya": "donanim-03.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "grappling-hook",
+     "ad": "Grappling Hook"
+    },
+    {
+     "id": "holy-water",
+     "ad": "Holy Water"
+    },
+    {
+     "id": "hunting-trap",
+     "ad": "Hunting Trap"
+    },
+    {
+     "id": "ink",
+     "ad": "Ink"
+    },
+    {
+     "id": "ink-pen",
+     "ad": "Ink Pen"
+    },
+    {
+     "id": "jug",
+     "ad": "Jug"
+    },
+    {
+     "id": "ladder",
+     "ad": "Ladder"
+    },
+    {
+     "id": "lamp",
+     "ad": "Lamp"
+    },
+    {
+     "id": "lantern-bullseye",
+     "ad": "Lantern, Bullseye"
+    },
+    {
+     "id": "lantern-hooded",
+     "ad": "Lantern, Hooded"
+    },
+    {
+     "id": "lock",
+     "ad": "Lock"
+    },
+    {
+     "id": "magnifying-glass",
+     "ad": "Magnifying Glass"
+    },
+    {
+     "id": "manacles",
+     "ad": "Manacles"
+    },
+    {
+     "id": "map",
+     "ad": "Map"
+    },
+    {
+     "id": "mirror",
+     "ad": "Mirror"
+    },
+    {
+     "id": "net",
+     "ad": "Net"
+    }
+   ]
+  },
+  {
+   "dosya": "donanim-04.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "oil",
+     "ad": "Oil"
+    },
+    {
+     "id": "paper",
+     "ad": "Paper"
+    },
+    {
+     "id": "parchment",
+     "ad": "Parchment"
+    },
+    {
+     "id": "perfume",
+     "ad": "Perfume"
+    },
+    {
+     "id": "poison-basic",
+     "ad": "Poison, Basic"
+    },
+    {
+     "id": "pole",
+     "ad": "Pole"
+    },
+    {
+     "id": "pot-iron",
+     "ad": "Pot, Iron"
+    },
+    {
+     "id": "pouch",
+     "ad": "Pouch"
+    },
+    {
+     "id": "priests-pack",
+     "ad": "Priest’s Pack"
+    },
+    {
+     "id": "quiver",
+     "ad": "Quiver"
+    },
+    {
+     "id": "ram-portable",
+     "ad": "Ram, Portable"
+    },
+    {
+     "id": "rations",
+     "ad": "Rations"
+    },
+    {
+     "id": "robe",
+     "ad": "Robe"
+    },
+    {
+     "id": "sack",
+     "ad": "Sack"
+    },
+    {
+     "id": "scholars-pack",
+     "ad": "Scholar’s Pack"
+    },
+    {
+     "id": "shovel",
+     "ad": "Shovel"
+    }
+   ]
+  },
+  {
+   "dosya": "donanim-05.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "signal-whistle",
+     "ad": "Signal Whistle"
+    },
+    {
+     "id": "spikes-iron",
+     "ad": "Spikes, Iron"
+    },
+    {
+     "id": "spyglass",
+     "ad": "Spyglass"
+    },
+    {
+     "id": "string",
+     "ad": "String"
+    },
+    {
+     "id": "tent",
+     "ad": "Tent"
+    },
+    {
+     "id": "tinderbox",
+     "ad": "Tinderbox"
+    },
+    {
+     "id": "vial",
+     "ad": "Vial"
+    },
+    {
+     "id": "alchemists-supplies",
+     "ad": "Alchemist’s Supplies"
+    },
+    {
+     "id": "brewers-supplies",
+     "ad": "Brewer’s Supplies"
+    },
+    {
+     "id": "calligraphers-supplies",
+     "ad": "Calligrapher’s Supplies"
+    },
+    {
+     "id": "carpenters-tools",
+     "ad": "Carpenter’s Tools"
+    },
+    {
+     "id": "cartographers-tools",
+     "ad": "Cartographer’s Tools"
+    },
+    {
+     "id": "cobblers-tools",
+     "ad": "Cobbler’s Tools"
+    },
+    {
+     "id": "cooks-utensils",
+     "ad": "Cook’s Utensils"
+    },
+    {
+     "id": "glassblowers-tools",
+     "ad": "Glassblower’s Tools"
+    },
+    {
+     "id": "jewelers-tools",
+     "ad": "Jeweler’s Tools"
+    }
+   ]
+  },
+  {
+   "dosya": "donanim-06.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "leatherworkers-tools",
+     "ad": "Leatherworker’s Tools"
+    },
+    {
+     "id": "masons-tools",
+     "ad": "Mason’s Tools"
+    },
+    {
+     "id": "painters-supplies",
+     "ad": "Painter’s Supplies"
+    },
+    {
+     "id": "potters-tools",
+     "ad": "Potter’s Tools"
+    },
+    {
+     "id": "smiths-tools",
+     "ad": "Smith’s Tools"
+    },
+    {
+     "id": "tinkers-tools",
+     "ad": "Tinker’s Tools"
+    },
+    {
+     "id": "weavers-tools",
+     "ad": "Weaver’s Tools"
+    },
+    {
+     "id": "woodcarvers-tools",
+     "ad": "Woodcarver’s Tools"
+    },
+    {
+     "id": "disguise-kit",
+     "ad": "Disguise Kit"
+    },
+    {
+     "id": "forgery-kit",
+     "ad": "Forgery Kit"
+    },
+    {
+     "id": "gaming-set",
+     "ad": "Gaming Set"
+    },
+    {
+     "id": "herbalism-kit",
+     "ad": "Herbalism Kit"
+    },
+    {
+     "id": "musical-instrument",
+     "ad": "Musical Instrument"
+    },
+    {
+     "id": "navigators-tools",
+     "ad": "Navigator’s Tools"
+    },
+    {
+     "id": "poisoners-kit",
+     "ad": "Poisoner’s Kit"
+    }
+   ]
+  },
+  {
+   "dosya": "varyant-1.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "potion-of-healing",
+     "ad": "potion-of-healing"
+    },
+    {
+     "id": "potions-of-healing/greater",
+     "ad": "potions-of-healing/greater"
+    },
+    {
+     "id": "potions-of-healing/superior",
+     "ad": "potions-of-healing/superior"
+    },
+    {
+     "id": "potions-of-healing/supreme",
+     "ad": "potions-of-healing/supreme"
+    },
+    {
+     "id": "potion-of-giant-strength/hill",
+     "ad": "potion-of-giant-strength/hill"
+    },
+    {
+     "id": "potion-of-giant-strength/frost",
+     "ad": "potion-of-giant-strength/frost"
+    },
+    {
+     "id": "potion-of-giant-strength/stone",
+     "ad": "potion-of-giant-strength/stone"
+    },
+    {
+     "id": "potion-of-giant-strength/fire",
+     "ad": "potion-of-giant-strength/fire"
+    },
+    {
+     "id": "potion-of-giant-strength/cloud",
+     "ad": "potion-of-giant-strength/cloud"
+    },
+    {
+     "id": "potion-of-giant-strength/storm",
+     "ad": "potion-of-giant-strength/storm"
+    },
+    {
+     "id": "elemental-gem/blue-sapphire",
+     "ad": "elemental-gem/blue-sapphire"
+    },
+    {
+     "id": "elemental-gem/yellow-diamond",
+     "ad": "elemental-gem/yellow-diamond"
+    },
+    {
+     "id": "elemental-gem/red-corundum",
+     "ad": "elemental-gem/red-corundum"
+    },
+    {
+     "id": "elemental-gem/emerald",
+     "ad": "elemental-gem/emerald"
+    },
+    {
+     "id": "bag-of-tricks/gray",
+     "ad": "bag-of-tricks/gray"
+    },
+    {
+     "id": "bag-of-tricks/rust",
+     "ad": "bag-of-tricks/rust"
+    }
+   ]
+  },
+  {
+   "dosya": "varyant-2.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "belt-of-giant-strength/hill",
+     "ad": "belt-of-giant-strength/hill"
+    },
+    {
+     "id": "belt-of-giant-strength/frost",
+     "ad": "belt-of-giant-strength/frost"
+    },
+    {
+     "id": "belt-of-giant-strength/stone",
+     "ad": "belt-of-giant-strength/stone"
+    },
+    {
+     "id": "belt-of-giant-strength/fire",
+     "ad": "belt-of-giant-strength/fire"
+    },
+    {
+     "id": "belt-of-giant-strength/cloud",
+     "ad": "belt-of-giant-strength/cloud"
+    },
+    {
+     "id": "belt-of-giant-strength/storm",
+     "ad": "belt-of-giant-strength/storm"
+    },
+    {
+     "id": "horn-of-valhalla/silver",
+     "ad": "horn-of-valhalla/silver"
+    },
+    {
+     "id": "horn-of-valhalla/brass",
+     "ad": "horn-of-valhalla/brass"
+    },
+    {
+     "id": "horn-of-valhalla/bronze",
+     "ad": "horn-of-valhalla/bronze"
+    },
+    {
+     "id": "horn-of-valhalla/iron",
+     "ad": "horn-of-valhalla/iron"
+    },
+    {
+     "id": "bag-of-tricks/tan",
+     "ad": "bag-of-tricks/tan"
+    },
+    {
+     "id": "ioun-stone/rose-prism",
+     "ad": "ioun-stone/rose-prism"
+    },
+    {
+     "id": "ioun-stone/indigo-sphere",
+     "ad": "ioun-stone/indigo-sphere"
+    },
+    {
+     "id": "ioun-stone/pearly-spindle",
+     "ad": "ioun-stone/pearly-spindle"
+    },
+    {
+     "id": "ioun-stone/scarlet-and-blue-sphere",
+     "ad": "ioun-stone/scarlet-and-blue-sphere"
+    },
+    {
+     "id": "ioun-stone/pale-prism",
+     "ad": "ioun-stone/pale-prism"
+    }
+   ]
+  },
+  {
+   "dosya": "varyant-3.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "figurine-of-wondrous-power/bronze-griffon",
+     "ad": "figurine-of-wondrous-power/bronze-griffon"
+    },
+    {
+     "id": "figurine-of-wondrous-power/ebony-fly",
+     "ad": "figurine-of-wondrous-power/ebony-fly"
+    },
+    {
+     "id": "figurine-of-wondrous-power/golden-lions",
+     "ad": "figurine-of-wondrous-power/golden-lions"
+    },
+    {
+     "id": "figurine-of-wondrous-power/ivory-goats",
+     "ad": "figurine-of-wondrous-power/ivory-goats"
+    },
+    {
+     "id": "figurine-of-wondrous-power/marble-elephant",
+     "ad": "figurine-of-wondrous-power/marble-elephant"
+    },
+    {
+     "id": "figurine-of-wondrous-power/obsidian-steed",
+     "ad": "figurine-of-wondrous-power/obsidian-steed"
+    },
+    {
+     "id": "figurine-of-wondrous-power/onyx-dog",
+     "ad": "figurine-of-wondrous-power/onyx-dog"
+    },
+    {
+     "id": "figurine-of-wondrous-power/serpentine-owl",
+     "ad": "figurine-of-wondrous-power/serpentine-owl"
+    },
+    {
+     "id": "dragon-scale-mail/black",
+     "ad": "dragon-scale-mail/black"
+    },
+    {
+     "id": "dragon-scale-mail/blue",
+     "ad": "dragon-scale-mail/blue"
+    },
+    {
+     "id": "dragon-scale-mail/brass",
+     "ad": "dragon-scale-mail/brass"
+    },
+    {
+     "id": "dragon-scale-mail/bronze",
+     "ad": "dragon-scale-mail/bronze"
+    },
+    {
+     "id": "dragon-scale-mail/copper",
+     "ad": "dragon-scale-mail/copper"
+    },
+    {
+     "id": "dragon-scale-mail/gold",
+     "ad": "dragon-scale-mail/gold"
+    },
+    {
+     "id": "dragon-scale-mail/green",
+     "ad": "dragon-scale-mail/green"
+    },
+    {
+     "id": "dragon-scale-mail/red",
+     "ad": "dragon-scale-mail/red"
+    }
+   ]
+  },
+  {
+   "dosya": "varyant-4.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "dragon-scale-mail/silver",
+     "ad": "dragon-scale-mail/silver"
+    },
+    {
+     "id": "dragon-scale-mail/white",
+     "ad": "dragon-scale-mail/white"
+    },
+    {
+     "id": "ammunition/arrows",
+     "ad": "ammunition/arrows"
+    },
+    {
+     "id": "ammunition/crossbow-bolts",
+     "ad": "ammunition/crossbow-bolts"
+    },
+    {
+     "id": "ammunition/sling-bullets",
+     "ad": "ammunition/sling-bullets"
+    },
+    {
+     "id": "ammunition/blowgun-needles",
+     "ad": "ammunition/blowgun-needles"
+    },
+    {
+     "id": "arcane-focus/crystal",
+     "ad": "arcane-focus/crystal"
+    },
+    {
+     "id": "arcane-focus/orb",
+     "ad": "arcane-focus/orb"
+    },
+    {
+     "id": "arcane-focus/rod",
+     "ad": "arcane-focus/rod"
+    },
+    {
+     "id": "arcane-focus/staff",
+     "ad": "arcane-focus/staff"
+    },
+    {
+     "id": "arcane-focus/wand",
+     "ad": "arcane-focus/wand"
+    },
+    {
+     "id": "druidic-focus/sprig-of-mistletoe",
+     "ad": "druidic-focus/sprig-of-mistletoe"
+    },
+    {
+     "id": "druidic-focus/totem",
+     "ad": "druidic-focus/totem"
+    },
+    {
+     "id": "druidic-focus/wooden-staff",
+     "ad": "druidic-focus/wooden-staff"
+    },
+    {
+     "id": "druidic-focus/yew-wand",
+     "ad": "druidic-focus/yew-wand"
+    },
+    {
+     "id": "holy-symbol/amulet",
+     "ad": "holy-symbol/amulet"
+    }
+   ]
+  },
+  {
+   "dosya": "varyant-5.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "holy-symbol/emblem",
+     "ad": "holy-symbol/emblem"
+    },
+    {
+     "id": "holy-symbol/reliquary",
+     "ad": "holy-symbol/reliquary"
+    },
+    {
+     "id": "gaming-set/dice",
+     "ad": "gaming-set/dice"
+    },
+    {
+     "id": "gaming-set/dragonchess",
+     "ad": "gaming-set/dragonchess"
+    },
+    {
+     "id": "gaming-set/playing-cards",
+     "ad": "gaming-set/playing-cards"
+    },
+    {
+     "id": "gaming-set/three-dragon-ante",
+     "ad": "gaming-set/three-dragon-ante"
+    },
+    {
+     "id": "musical-instrument/bagpipes",
+     "ad": "musical-instrument/bagpipes"
+    },
+    {
+     "id": "musical-instrument/drum",
+     "ad": "musical-instrument/drum"
+    },
+    {
+     "id": "musical-instrument/dulcimer",
+     "ad": "musical-instrument/dulcimer"
+    },
+    {
+     "id": "musical-instrument/flute",
+     "ad": "musical-instrument/flute"
+    },
+    {
+     "id": "musical-instrument/horn",
+     "ad": "musical-instrument/horn"
+    },
+    {
+     "id": "musical-instrument/lute",
+     "ad": "musical-instrument/lute"
+    },
+    {
+     "id": "musical-instrument/lyre",
+     "ad": "musical-instrument/lyre"
+    },
+    {
+     "id": "musical-instrument/pan-flute",
+     "ad": "musical-instrument/pan-flute"
+    },
+    {
+     "id": "musical-instrument/shawm",
+     "ad": "musical-instrument/shawm"
+    },
+    {
+     "id": "musical-instrument/viol",
+     "ad": "musical-instrument/viol"
+    }
+   ]
+  },
+  {
+   "dosya": "silah-1.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "club",
+     "ad": "club"
+    },
+    {
+     "id": "greatclub",
+     "ad": "greatclub"
+    },
+    {
+     "id": "handaxe",
+     "ad": "handaxe"
+    },
+    {
+     "id": "javelin",
+     "ad": "javelin"
+    },
+    null,
+    null,
+    {
+     "id": "quarterstaff",
+     "ad": "quarterstaff"
+    },
+    {
+     "id": "sickle",
+     "ad": "sickle"
+    },
+    {
+     "id": "spear",
+     "ad": "spear"
+    },
+    {
+     "id": "dart",
+     "ad": "dart"
+    },
+    null,
+    {
+     "id": "shortbow",
+     "ad": "shortbow"
+    },
+    {
+     "id": "sling",
+     "ad": "sling"
+    },
+    {
+     "id": "flail",
+     "ad": "flail"
+    },
+    {
+     "id": "glaive",
+     "ad": "glaive"
+    },
+    {
+     "id": "greataxe",
+     "ad": "greataxe"
+    }
+   ]
+  },
+  {
+   "dosya": "silah-2.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "greatsword",
+     "ad": "greatsword"
+    },
+    {
+     "id": "halberd",
+     "ad": "halberd"
+    },
+    null,
+    {
+     "id": "maul",
+     "ad": "maul"
+    },
+    {
+     "id": "morningstar",
+     "ad": "morningstar"
+    },
+    {
+     "id": "pike",
+     "ad": "pike"
+    },
+    {
+     "id": "rapier",
+     "ad": "rapier"
+    },
+    {
+     "id": "scimitar",
+     "ad": "scimitar"
+    },
+    {
+     "id": "shortsword",
+     "ad": "shortsword"
+    },
+    {
+     "id": "trident",
+     "ad": "trident"
+    },
+    {
+     "id": "war-pick",
+     "ad": "war-pick"
+    },
+    {
+     "id": "whip",
+     "ad": "whip"
+    },
+    null,
+    null,
+    {
+     "id": "musket",
+     "ad": "musket"
+    },
+    {
+     "id": "pistol",
+     "ad": "pistol"
+    }
+   ]
+  },
+  {
+   "dosya": "silah-3.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "blowgun",
+     "ad": "blowgun"
+    },
+    {
+     "id": "hand-crossbow",
+     "ad": "hand-crossbow"
+    },
+    {
+     "id": "heavy-crossbow",
+     "ad": "heavy-crossbow"
+    },
+    {
+     "id": "longbow",
+     "ad": "longbow"
+    },
+    {
+     "id": "musket",
+     "ad": "musket"
+    },
+    {
+     "id": "pistol",
+     "ad": "pistol"
+    },
+    {
+     "id": "padded-armor",
+     "ad": "padded-armor"
+    },
+    {
+     "id": "leather-armor",
+     "ad": "leather-armor"
+    },
+    {
+     "id": "studded-leather-armor",
+     "ad": "studded-leather-armor"
+    },
+    {
+     "id": "hide-armor",
+     "ad": "hide-armor"
+    },
+    {
+     "id": "chain-shirt",
+     "ad": "chain-shirt"
+    },
+    {
+     "id": "scale-mail",
+     "ad": "scale-mail"
+    },
+    {
+     "id": "breastplate",
+     "ad": "breastplate"
+    },
+    {
+     "id": "half-plate-armor",
+     "ad": "half-plate-armor"
+    },
+    {
+     "id": "ring-mail",
+     "ad": "ring-mail"
+    },
+    {
+     "id": "chain-mail",
+     "ad": "chain-mail"
+    }
+   ]
+  },
+  {
+   "dosya": "silah-4.jpg",
+   "kolon": 3,
+   "satir": 1,
+   "ogeler": [
+    {
+     "id": "splint-armor",
+     "ad": "splint-armor"
+    },
+    {
+     "id": "plate-armor",
+     "ad": "plate-armor"
+    },
+    {
+     "id": "shield",
+     "ad": "shield"
+    }
+   ]
+  },
+  {
+   "dosya": "duzeltme-2.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "bead-of-force",
+     "ad": "Bead of Force"
+    },
+    {
+     "id": "handy-haversack",
+     "ad": "Handy Haversack"
+    },
+    {
+     "id": "mithral-armor",
+     "ad": "Mithral Armor"
+    },
+    {
+     "id": "boots-of-levitation",
+     "ad": "Boots of Levitation"
+    },
+    {
+     "id": "potion-of-vitality",
+     "ad": "Potion of Vitality"
+    },
+    {
+     "id": "amulet-of-proof-against-detection-and-location",
+     "ad": "Amulet of Proof against Detection and Location"
+    },
+    {
+     "id": "amulet-of-the-planes",
+     "ad": "Amulet of the Planes"
+    },
+    {
+     "id": "talisman-of-ultimate-evil",
+     "ad": "Talisman of Ultimate Evil"
+    },
+    {
+     "id": "ring-of-invisibility",
+     "ad": "Ring of Invisibility"
+    },
+    {
+     "id": "potion-of-invisibility",
+     "ad": "Potion of Invisibility"
+    },
+    {
+     "id": "cloak-of-invisibility",
+     "ad": "Cloak of Invisibility"
+    },
+    {
+     "id": "sphere-of-annihilation",
+     "ad": "Sphere of Annihilation"
+    },
+    {
+     "id": "potion-of-animal-friendship",
+     "ad": "Potion of Animal Friendship"
+    },
+    {
+     "id": "potion-of-giant-strength",
+     "ad": "Potion of Giant Strength"
+    },
+    {
+     "id": "potion-of-diminution",
+     "ad": "Potion of Diminution"
+    },
+    {
+     "id": "wand-of-paralysis",
+     "ad": "Wand of Paralysis"
+    }
+   ]
+  },
+  {
+   "dosya": "duzeltme-3.jpg",
+   "kolon": 4,
+   "satir": 4,
+   "ogeler": [
+    {
+     "id": "wand-of-magic-detection",
+     "ad": "Wand of Magic Detection"
+    },
+    {
+     "id": "ring-of-water-walking",
+     "ad": "Ring of Water Walking"
+    },
+    {
+     "id": "staff-of-thunder-and-lightning",
+     "ad": "Staff of Thunder and Lightning"
+    },
+    {
+     "id": "rod-of-alertness",
+     "ad": "Rod of Alertness"
+    },
+    {
+     "id": "arrow-catching-shield",
+     "ad": "Arrow-Catching Shield"
+    },
+    {
+     "id": "ring-of-evasion",
+     "ad": "Ring of Evasion"
+    },
+    {
+     "id": "dragon-slayer",
+     "ad": "Dragon Slayer"
+    },
+    {
+     "id": "cubic-gate",
+     "ad": "Cubic Gate"
+    },
+    {
+     "id": "helm-of-comprehending-languages",
+     "ad": "Helm of Comprehending Languages"
+    },
+    {
+     "id": "staff-of-healing",
+     "ad": "Staff of Healing"
+    },
+    {
+     "id": "potion-of-heroism",
+     "ad": "Potion of Heroism"
+    },
+    {
+     "id": "potion-of-mind-reading",
+     "ad": "Potion of Mind Reading"
+    },
+    {
+     "id": "brooch-of-shielding",
+     "ad": "Brooch of Shielding"
+    },
+    {
+     "id": "ring-of-mind-shielding",
+     "ad": "Ring of Mind Shielding"
+    },
+    {
+     "id": "rod-of-security",
+     "ad": "Rod of Security"
+    },
+    {
+     "id": "vicious-weapon",
+     "ad": "Vicious Weapon"
+    }
+   ]
+  },
+  {
+   "dosya": "duzeltme-4.jpg",
+   "kolon": 4,
+   "satir": 3,
+   "ogeler": [
+    {
+     "id": "holy-water",
+     "ad": "Holy Water"
+    },
+    {
+     "id": "case-crossbow-bolt",
+     "ad": "Case, Crossbow Bolt"
+    },
+    {
+     "id": "glassblowers-tools",
+     "ad": "Glassblower’s Tools"
+    },
+    {
+     "id": "acid",
+     "ad": "Acid"
+    },
+    {
+     "id": "bottle-glass",
+     "ad": "Bottle, Glass"
+    },
+    {
+     "id": "lantern-hooded",
+     "ad": "Lantern, Hooded"
+    },
+    {
+     "id": "magnifying-glass",
+     "ad": "Magnifying Glass"
+    },
+    {
+     "id": "jewelers-tools",
+     "ad": "Jeweler’s Tools"
+    },
+    {
+     "id": "poison-basic",
+     "ad": "Poison, Basic"
+    }
+   ]
+  },
+  {
+   "dosya": "duzeltme-5.jpg",
+   "kolon": 3,
+   "satir": 2,
+   "ogeler": [
+    {
+     "id": "lantern-hooded",
+     "ad": "lantern-hooded"
+    },
+    {
+     "id": "efficient-quiver",
+     "ad": "efficient-quiver"
+    },
+    {
+     "id": "potion-of-animal-friendship",
+     "ad": "potion-of-animal-friendship"
+    },
+    {
+     "id": "potion-of-heroism",
+     "ad": "potion-of-heroism"
+    },
+    {
+     "id": "ring-of-free-action",
+     "ad": "ring-of-free-action"
+    },
+    {
+     "id": "wand-of-web",
+     "ad": "wand-of-web"
+    }
+   ]
+  },
+  {
+   "dosya": "duzeltme-6.jpg",
+   "kolon": 5,
+   "satir": 2,
+   "ogeler": [
+    {
+     "id": "potion-of-poison",
+     "ad": "potion-of-poison"
+    },
+    {
+     "id": "alchemists-fire",
+     "ad": "alchemists-fire"
+    },
+    {
+     "id": "backpack",
+     "ad": "backpack"
+    },
+    {
+     "id": "bedroll",
+     "ad": "bedroll"
+    },
+    {
+     "id": "healers-kit",
+     "ad": "healers-kit"
+    },
+    {
+     "id": "holy-symbol",
+     "ad": "holy-symbol"
+    },
+    {
+     "id": "rope",
+     "ad": "rope"
+    },
+    {
+     "id": "torch",
+     "ad": "torch"
+    },
+    {
+     "id": "waterskin",
+     "ad": "waterskin"
+    },
+    {
+     "id": "thieves-tools",
+     "ad": "thieves-tools"
+    }
+   ]
+  },
+  {
+   "dosya": "duzeltme-7.jpg",
+   "kolon": 3,
+   "satir": 3,
+   "ogeler": [
+    {
+     "id": "potion-of-healing",
+     "ad": "potion-of-healing"
+    },
+    {
+     "id": "potions-of-healing/greater",
+     "ad": "potions-of-healing/greater"
+    },
+    {
+     "id": "potions-of-healing/superior",
+     "ad": "potions-of-healing/superior"
+    },
+    {
+     "id": "belt-of-giant-strength/hill",
+     "ad": "belt-of-giant-strength/hill"
+    },
+    {
+     "id": "belt-of-giant-strength/frost",
+     "ad": "belt-of-giant-strength/frost"
+    },
+    {
+     "id": "belt-of-giant-strength/stone",
+     "ad": "belt-of-giant-strength/stone"
+    },
+    {
+     "id": "belt-of-giant-strength/fire",
+     "ad": "belt-of-giant-strength/fire"
+    },
+    {
+     "id": "belt-of-giant-strength/cloud",
+     "ad": "belt-of-giant-strength/cloud"
+    },
+    {
+     "id": "belt-of-giant-strength/storm",
+     "ad": "belt-of-giant-strength/storm"
+    }
+   ]
+  },
+  {
+   "dosya": "duzeltme-8.jpg",
+   "kolon": 3,
+   "satir": 2,
+   "ogeler": [
+    {
+     "id": "spear",
+     "ad": "spear"
+    },
+    {
+     "id": "light-hammer",
+     "ad": "light-hammer"
+    },
+    {
+     "id": "dart",
+     "ad": "dart"
+    },
+    {
+     "id": "longsword",
+     "ad": "longsword"
+    },
+    {
+     "id": "trident",
+     "ad": "trident"
+    },
+    {
+     "id": "war-pick",
+     "ad": "war-pick"
+    }
+   ],
+   "hucre": "kare ~667 px"
+  }
+ ],
+ "ayniGorsel": {
+  "crystal-ball": [
+   "crystal-ball-of-mind-reading",
+   "crystal-ball-of-telepathy",
+   "crystal-ball-of-true-seeing"
+  ],
+  "potions-of-healing": [
+   "potion-of-healing"
+  ],
+  "greataxe": [
+   "battleaxe"
+  ]
+ },
+ "hepsiniTut": [
+  "musical-instrument/dulcimer",
+  "ammunition/sling-bullets",
+  "musical-instrument/drum",
+  "musical-instrument/viol",
+  "hide-armor"
+ ],
+ "tamDespill": [
+  "potion-of-healing",
+  "potions-of-healing/greater",
+  "potions-of-healing/superior"
+ ],
+ "yenidenUretilecek": {
+  "varyant-1#4": "potions-of-healing/supreme: şişenin arkasında silah sapı; şişeye bitişik, bileşen ya da kırpmayla ayrılmıyor",
+  "donanim-05#3": "spyglass: dürbünün arkasında balta ağzı; dürbüne bitişik, bileşen ya da kırpmayla ayrılmıyor"
+ },
+ "yoksay": [
+  "zirh-donanim",
+  "duzeltme-1",
+  "pilot",
+  "glif-1",
+  "glif-2"
+ ],
+ "belirsiz": {
+  "duzeltme-5": "hücre 5 ring-of-free-action ve 6 wand-of-web tahmindir; 3 potion-of-animal-friendship (duzeltme-2'yi ezer)",
+  "silah-1#16": "çift ağızlı balta greataxe + battleaxe'a kopyalandı (battleaxe için ayrı ikon yok)",
+  "ikonsuz_beklenen": [
+   "mace",
+   "light-crossbow",
+   "lance"
+  ],
+  "duzeltme-8": "hücre 1 spear (silah-1 #9'u ezer), 3 dart, 4 longsword, 6 war-pick (silah-2 #11'i ezer)"
+ }
+}

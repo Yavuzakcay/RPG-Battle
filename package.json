@@ -35,6 +35,8 @@
     "masumlar": "node scripts/masumlar.mjs",
     "efektler": "node scripts/efektler.mjs",
     "kaynak-ikon": "node scripts/kaynak-ikon.mjs",
+    "esya-ikon": "node scripts/esya-ikon.mjs",
+    "esya-ikon:rapor": "vite-node scripts/esya-ikon-rapor.ts",
     "sprite-ice": "node scripts/sprite-ice.mjs",
     "acilis": "node scripts/acilis.mjs",
     "son-video": "node scripts/son-video.mjs",
