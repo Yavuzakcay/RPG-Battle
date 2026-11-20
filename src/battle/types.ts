@@ -1006,6 +1006,8 @@ export interface Combatant {
   spellAttack: number | null;
   /** Yapabildiği büyüler. */
   spellNames: string[];
+  /** Görev B93 (Ritual Adept): yalnız ritüel olarak (kurulumda) yapılabilen bilinen büyüler; savaşta slotla yapılamaz. */
+  ritualOnly?: string[];
   /** Kuyruk 19: canavar büyülerinin "level N version" seviyesi (slotsuz yapımda bu seviyede). */
   castLevels?: Record<string, number>;
   /** Kuyruk 19 (Hydra Multiple Heads): canlı baş sayısı, son turundan beri ölen baş, ateş hasarı aldı mı, turun başındaki HP. */
