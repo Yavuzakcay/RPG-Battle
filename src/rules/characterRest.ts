@@ -83,7 +83,7 @@ export function currentStatus(sheet: CharacterSheet, status?: CharacterStatus): 
     hp,
     hitDiceSpent: Math.min(sheet.level, Math.max(0, status.hitDiceSpent)),
     resources,
-    slots: full.slots.map((n, i) => (status.slotMax
+    slots: pactShift(full.slots, status) ?? full.slots.map((n, i) => (status.slotMax
       ? Math.max(0, n - Math.max(0, (status.slotMax[i] ?? 0) - (status.slots[i] ?? 0)))
       : Math.min(n, Math.max(0, status.slots[i] ?? n)))),
     slotMax: full.slots,
@@ -147,7 +147,7 @@ function tirelessAfter(sheet: CharacterSheet, exhaustion: number | undefined): n
 
 /**
  * Görev WARLOCK: Magical Cunning (kaynak `magicalCunning`, uzun dinlenmede bir kez; savaş dışı 1 dakikalık ayin):
- * harcanmış Pact slotlarının yarısı (yukarı) geri gelir. Kullanılamıyorsa null.
+ * harcanmış Pact slotlarından en çok azami slot sayısının yarısı (yukarı) kadarı geri gelir. Kullanılamıyorsa null.
  */
 export function magicalCunningStatus(sheet: CharacterSheet, status: CharacterStatus | undefined): CharacterStatus | null {
   const s = currentStatus(sheet, status);
@@ -159,7 +159,9 @@ export function magicalCunningStatus(sheet: CharacterSheet, status: CharacterSta
   const slots = [...s.slots];
   // Kuyruk 19 (11–20): Eldritch Master (Warlock 20): Magical Cunning bütün harcanmış Pact slotlarını geri verir.
   const master = gainedFeatures(sheet.classId, sheet.level, sheet.subclassId).some((f) => f.key === 'warlock:eldritch-master');
-  slots[i] = (slots[i] ?? 0) + (master ? spent : Math.ceil(spent / 2));
+  // Görev B93 (SRD 5.2.1 s. 72): "expended Pact Magic spell slots … equal to no more than half your maximum (round up)":
+  // harcananların en çok azami slotun yarısı (yukarı) kadarı (eskiden harcananın yarısı).
+  slots[i] = (slots[i] ?? 0) + (master ? spent : Math.min(spent, Math.ceil((max[i] ?? 0) / 2)));
   return { ...s, slots, resources: { ...s.resources, magicalCunning: 0 } };
 }
 
@@ -281,4 +283,18 @@ export function recoveryOptions(sheet: CharacterSheet, status: CharacterStatus |
   };
   walk(5, Math.ceil(sheet.level / 2), [], missing);
   return out;
+}
+
+/**
+ * Görev B93 (Warlock C9): tek seviyeli slot düzeninde (Pact Magic) seviye atlayınca slot seviyesi değişirse harcanan sayısı
+ * yeni seviyeye taşınır (eskiden eski indekste harcanan, yeni indekste dolu sayılıyordu). Durum bu düzende değilse null.
+ */
+function pactShift(full: number[], status: CharacterStatus): number[] | null {
+  if (!status.slotMax) return null;
+  const nz = (a: number[]) => a.map((n, i) => (n > 0 ? i : -1)).filter((i) => i >= 0);
+  const now = nz(full);
+  const before = nz(status.slotMax);
+  if (now.length !== 1 || before.length !== 1 || now[0] === before[0]) return null;
+  const spent = Math.max(0, (status.slotMax[before[0]!] ?? 0) - (status.slots[before[0]!] ?? 0));
+  return full.map((n, i) => (i === now[0] ? Math.max(0, n - spent) : n));
 }

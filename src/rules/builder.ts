@@ -162,6 +162,15 @@ export function alternativeCantrips(s: Pick<CharacterSheet, 'classId' | 'level' 
   return { options, max: chosen.reduce((n, alt) => n + alt.cantrips, 0) };
 }
 
+/**
+ * Görev B93: Pact of the Tome'un cantrip'leri herhangi bir sınıfın listesinden (SRD 5.2.1 s. 74 "from any class's spell
+ * list"); sayı Invocation kitinden (`cantrips`, sınıf cantrip sınırına da eklenir). Başka listeden en çok bu kadar.
+ */
+export function tomeCantrips(s: Pick<CharacterSheet, 'classId' | 'level' | 'invocations'>): { options: string[]; max: number } {
+  const n = invocationKit(s.classId, s.level, s.invocations).cantrips;
+  return n > 0 ? { options: spells.filter((sp) => sp.level === 0).map((sp) => sp.name), max: n } : { options: [], max: 0 };
+}
+
 /** Görev K6: sınıfın bu seviyedeki büyü sınırları (SRD sınıf tablosu "Cantrips", "Prepared Spells"; Wizard büyü kitabı). */
 export interface SpellLimits { cantrips: number; prepared: number; maxLevel: number; spellbook: number | null;
   /** Görev B93 (Evocation Savant): kitabın bu okuldan olması gereken ek büyüleri. */ bookSchool?: { school: string; count: number } }
@@ -246,7 +255,7 @@ const choiceClass = (key: string): string | null => {
  */
 export function classScoped(s: CharacterSheet): CharacterSheet {
   if (!classes.some((k) => k.id === s.classId)) return s;
-  const own = new Set([...spellOptions(s.classId, 20, s.subclassId), ...alternativeCantrips(s).options]);
+  const own = new Set([...spellOptions(s.classId, 20, s.subclassId), ...alternativeCantrips(s).options, ...tomeCantrips(s).options]);
   const out: CharacterSheet = { ...s };
   if (s.spellNames) out.spellNames = s.spellNames.filter((n) => own.has(n));
   if (s.spellbook) out.spellbook = s.spellbook.filter((n) => own.has(n));
@@ -387,7 +396,8 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
   if (classes.some((k) => k.id === s.classId) && s.level >= 1 && s.level <= LEVEL_CAP) {
     const alt = alternativeCantrips(s);
     const own = new Set(spellOptions(s.classId, s.level));
-    const allowed = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alt.options]);
+    const tome = tomeCantrips(s);
+    const allowed = new Set([...spellOptions(s.classId, s.level, s.subclassId), ...alt.options, ...tome.options]);
     for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) push(I().spellNotAllowed(sp));
     // Kuyruk 18 H3: Magical Discoveries sınırı (başka listelerden en çok N büyü).
     const cap = discoveryCap(s.classId, s.level, s.subclassId);
@@ -395,6 +405,9 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     if (cap !== null && cap > 0 && off > cap) push(I().discoveryCap(cap, off));
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
     if (altChosen > alt.max) push(I().altCantripCap(alt.max, altChosen));
+    // Görev B93: Pact of the Tome: başka listeden cantrip en çok Tome sayısı kadar.
+    const tomeChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && !alt.options.includes(n) && tome.options.includes(n)).length;
+    if (tome.max > 0 && tomeChosen > tome.max) push(I().altCantripCap(tome.max, tomeChosen));
     // Görev K6: SRD tablosundaki sınırlar; fazla seçim sessizce ayıklanmaz, eksik olarak görünür.
     const lim = spellLimits(s.classId, s.level, s.featureChoices, s.invocations, s.subclassId);
     const cnt = spellCounts(s);
@@ -423,7 +436,9 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     if (mm && picked.some((id) => mm.costs[id] === undefined)) push(I().metamagicUnknown);
     // Görev WARLOCK: Eldritch Invocations (sayı SRD tablosundan) ve pact silahı.
     invocationProblems(s.classId, s.level, s.invocations, s.spellNames ?? []).forEach(push);
-    if (invocationKit(s.classId, s.level, s.invocations).pactWeapon && !(s.weapons ?? []).some((w) => w.name === s.pactWeapon)) {
+    // Görev B93 (SRD 5.2.1 s. 74): pact silahı Simple ya da Martial Melee silah olmalı (menzilli silah uyarılır).
+    if (invocationKit(s.classId, s.level, s.invocations).pactWeapon && (!(s.weapons ?? []).some((w) => w.name === s.pactWeapon)
+      || !!weapons.find((w) => w.name === s.pactWeapon)?.ranged)) {
       push(I().pactBlade);
     }
     step = 'progress';
