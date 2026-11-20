@@ -653,3 +653,83 @@ Hepsi geçici testte, druid 20. seviye (Circle of the Land), hedef X (AC 10). Ku
 | Y16 | 75 saldırı × iki yol, aynı zarla, hedefin save'leri −10 | hepsi aynı; tek görünen fark Giant Centipede Poisoned: hedef druid Nature's Ward ile Poisoned'a bağışık (yöntem kaynaklı, gerçek fark değil) |
 | Y17 | Zehir ve yakalama ekleri biçimde (16 saldırı) | ek poison hasarları, Grappled (DC'ler SRD'deki gibi), Giant Centipede Poisoned tur başına dek |
 | Y18 | Lion biçimi `strScore` | 8 (druidin); düşman Lion 17 |
+
+## WS92 son yoklama (kural sürümü 92, 2026-11-20)
+
+Geçici test (`src/battle/zzWs92Yoklama.test.ts`, çalıştırıldı ve silindi): her biçim için 20. seviye Circle of the Land druidi (Elemental Fury: Potent Spellcasting, Primal Strike'ın ek zarı karşılaştırmayı bozmasın diye) biçime girdi; aynı canavar düşman olarak kuruldu. Karşılaştırılan alanlar: AC, hız, uçuş, yüzme, boyut, karanlık görüş, duyular, STR skoru, STR/DEX/CON değiştiricisi, uzun atlama (koşarak/durarak), taşıma kapasitesi, ışık (parlak/loş), düşmanın tepkileri ve canavar işaretleri (biçimde de var mı). Her saldırı iki yoldan aynı zarla (0,5) AC 5 ve kurtarmaları −10 olan hedefe atıldı; hedefin kaybettiği HP ve durumları karşılaştırıldı.
+
+İlk çalıştırmada tek gerçek fark: düşman Cat'in Jumper'ı DEX skoru yerine STR skoruyla (canavar savaşçısında `dexScore` yok); düzeltildi (`movement.ts` `monsterDex`, stat bloğundan). Druidin kendi direnci, kurtarma/beceri yetkinliği, HP'si ve sınıf işaretleri bilinçli farktır (WS91, SRD s. 43), karşılaştırmaya alınmadı.
+
+Biçim: 69. Alanlar ve saldırılar iki yolda aynı: 69. Saldırı: 75/75 aynı.
+
+| Biçim | CR | Saldırı | Alan farkı (biçim ≠ düşman) | Saldırı farkı (hasar:durumlar) |
+|---|---|---|---|---|
+| Ape | 1/2 | 2 | aynı | aynı |
+| Baboon | 0 | 1 | aynı | aynı |
+| Badger | 0 | 1 | aynı | aynı |
+| Bat | 0 | 1 | aynı | aynı |
+| Black Bear | 1/2 | 1 | aynı | aynı |
+| Blood Hawk | 1/8 | 1 | aynı | aynı |
+| Boar | 1/4 | 1 | aynı | aynı |
+| Brown Bear | 1 | 2 | aynı | aynı |
+| Camel | 1/8 | 1 | aynı | aynı |
+| Cat | 0 | 1 | aynı | aynı |
+| Constrictor Snake | 1/4 | 2 | aynı | aynı |
+| Crab | 0 | 1 | aynı | aynı |
+| Crocodile | 1/2 | 1 | aynı | aynı |
+| Deer | 0 | 1 | aynı | aynı |
+| Dire Wolf | 1 | 1 | aynı | aynı |
+| Draft Horse | 1/4 | 1 | aynı | aynı |
+| Eagle | 0 | 1 | aynı | aynı |
+| Elk | 1/4 | 1 | aynı | aynı |
+| Frog | 0 | 1 | aynı | aynı |
+| Giant Badger | 1/4 | 1 | aynı | aynı |
+| Giant Bat | 1/4 | 1 | aynı | aynı |
+| Giant Centipede | 1/4 | 1 | aynı | aynı |
+| Giant Crab | 1/8 | 1 | aynı | aynı |
+| Giant Fire Beetle | 0 | 1 | aynı | aynı |
+| Giant Frog | 1/4 | 1 | aynı | aynı |
+| Giant Goat | 1/2 | 1 | aynı | aynı |
+| Giant Hyena | 1 | 1 | aynı | aynı |
+| Giant Lizard | 1/4 | 1 | aynı | aynı |
+| Giant Octopus | 1 | 1 | aynı | aynı |
+| Giant Rat | 1/8 | 1 | aynı | aynı |
+| Giant Seahorse | 1/2 | 1 | aynı | aynı |
+| Giant Spider | 1 | 2 | aynı | aynı |
+| Giant Toad | 1 | 1 | aynı | aynı |
+| Giant Venomous Snake | 1/4 | 1 | aynı | aynı |
+| Giant Wasp | 1/2 | 1 | aynı | aynı |
+| Giant Weasel | 1/8 | 1 | aynı | aynı |
+| Giant Wolf Spider | 1/4 | 1 | aynı | aynı |
+| Goat | 0 | 1 | aynı | aynı |
+| Hawk | 0 | 1 | aynı | aynı |
+| Hyena | 0 | 1 | aynı | aynı |
+| Jackal | 0 | 1 | aynı | aynı |
+| Lion | 1 | 2 | aynı | aynı |
+| Lizard | 0 | 1 | aynı | aynı |
+| Mastiff | 1/8 | 1 | aynı | aynı |
+| Mule | 1/8 | 1 | aynı | aynı |
+| Octopus | 0 | 1 | aynı | aynı |
+| Owl | 0 | 1 | aynı | aynı |
+| Panther | 1/4 | 1 | aynı | aynı |
+| Piranha | 0 | 1 | aynı | aynı |
+| Pony | 1/8 | 1 | aynı | aynı |
+| Pteranodon | 1/4 | 1 | aynı | aynı |
+| Rat | 0 | 1 | aynı | aynı |
+| Raven | 0 | 1 | aynı | aynı |
+| Reef Shark | 1/2 | 1 | aynı | aynı |
+| Riding Horse | 1/4 | 1 | aynı | aynı |
+| Scorpion | 0 | 1 | aynı | aynı |
+| Seahorse | 0 | 1 | aynı | aynı |
+| Spider | 0 | 1 | aynı | aynı |
+| Swarm of Bats | 1/4 | 1 | aynı | aynı |
+| Swarm of Insects | 1/2 | 1 | aynı | aynı |
+| Swarm of Piranhas | 1 | 1 | aynı | aynı |
+| Swarm of Rats | 1/4 | 1 | aynı | aynı |
+| Swarm of Ravens | 1/4 | 2 | aynı | aynı |
+| Tiger | 1 | 1 | aynı | aynı |
+| Venomous Snake | 1/8 | 1 | aynı | aynı |
+| Vulture | 0 | 1 | aynı | aynı |
+| Warhorse | 1/2 | 1 | aynı | aynı |
+| Weasel | 0 | 1 | aynı | aynı |
+| Wolf | 1/4 | 1 | aynı | aynı |
