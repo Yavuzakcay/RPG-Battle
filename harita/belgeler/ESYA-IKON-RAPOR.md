@@ -7,31 +7,28 @@ Manifest `data/esya-ikon-sayfalar.json`, ham sayfalar `assets-ham/esya/` (depo d
 
 - **duzeltme-5**: hücre 5 ring-of-free-action ve 6 wand-of-web tahmindir; 3 potion-of-animal-friendship (duzeltme-2'yi ezer)
 - **silah-1#16**: çift ağızlı balta greataxe + battleaxe'a kopyalandı (battleaxe için ayrı ikon yok)
-- **ikonsuz_beklenen**: `mace`, `light-crossbow`, `lance`
 - **duzeltme-8**: hücre 1 spear (silah-1 #9'u ezer), 3 dart, 4 longsword, 6 war-pick (silah-2 #11'i ezer)
 
 ## Özet
 
-- İşlenen sayfa: 38 (yoksayılan: `zirh-donanim`, `duzeltme-1`, `pilot`, `glif-1`, `glif-2`).
-- Oyun eşya kaydı: 449 (sihirli 319 + donanım 80 + silah 38 + zırh 12); ikonlu **444**, ikonsuz **5**.
-- `public/esya/`: yalnız oyun kayıtları, 444 × 256 px + 444 × 96 px, toplam **9.0 MB** (256 px 7319 kB, 96 px 1868 kB). Ana parçaya girmez.
+- İşlenen sayfa: 39 (yoksayılan: `zirh-donanim`, `duzeltme-1`, `pilot`, `glif-1`, `glif-2`).
+- Oyun eşya kaydı: 449 (sihirli 319 + donanım 80 + silah 38 + zırh 12); ikonlu **449**, ikonsuz **0**.
+- `public/esya/`: yalnız oyun kayıtları, 449 × 256 px + 449 × 96 px, toplam **9.1 MB** (256 px 7384 kB, 96 px 1885 kB). Ana parçaya girmez.
 - Varyant eşlendi **15**, eşleşmeyen **64**, belirsiz **0**; SRD üst kimliği kopyası **11** kimlik → 57 kayıt; kayıtsız (yazılmadı) **89** (64 eşleşmeyen varyant + 25 diğer).
-- Ezilen hücre: 63. `ayniGorsel` uygulanamayan: potions-of-healing: kaynak kimliğin hücresi yok (potion-of-healing kopyalanmadı).
-- Tam despill (cam içi yeşil ton): `potion-of-healing`, `potions-of-healing/greater`, `potions-of-healing/superior`.
+- Ezilen hücre: 68. `ayniGorsel` uygulanamayan: potions-of-healing: kaynak kimliğin hücresi yok (potion-of-healing kopyalanmadı).
+- Tam despill (cam içi yeşil ton): `potion-of-healing`, `potion-of-greater-healing`, `potion-of-superior-healing`, `potion-of-supreme-healing`.
 
-## Yeniden üretilecek (2)
+## Yeniden üretilecek (açık 0 / 2)
 
-- **varyant-1#4** potions-of-healing/supreme: şişenin arkasında silah sapı; şişeye bitişik, bileşen ya da kırpmayla ayrılmıyor
-- **donanim-05#3** spyglass: dürbünün arkasında balta ağzı; dürbüne bitişik, bileşen ya da kırpmayla ayrılmıyor
+- **varyant-1#4** potions-of-healing/supreme: şişenin arkasında silah sapı; şişeye bitişik, bileşen ya da kırpmayla ayrılmıyor — **çözüldü**: duzeltme-09#10 ezer
+- **donanim-05#3** spyglass: dürbünün arkasında balta ağzı; dürbüne bitişik, bileşen ya da kırpmayla ayrılmıyor — **çözüldü**: duzeltme-09#6 ezer
 
-## İkonu olmayan oyun kayıtları (5)
+## İkonu olmayan oyun kayıtları (0)
 
 - **sihirli** (0): —
 - **donanım** (0): —
-- **silah** (5): `dagger`, `mace`, `light-crossbow`, `warhammer`, `lance`
+- **silah** (0): —
 - **zırh** (0): —
-
-Yeni Gemini sayfası bu liste için yazılacak.
 
 ## Varyant eşleme (15)
 
@@ -166,7 +163,7 @@ SRD dosyasında 258 kayıt var; oyun (`data/items.json` + `data/items-srd.json`)
 | `weapon-1-2-or-3` | `weapon-1`, `weapon-2`, `weapon-3` | 2 |
 | **Toplam** | | **61** |
 
-## Ezilen hücreler (63)
+## Ezilen hücreler (68)
 
 Sonraki sayfa öncekini ezer (manifest sırası).
 
@@ -233,6 +230,11 @@ Sonraki sayfa öncekini ezer (manifest sırası).
 - `dart`: silah-1#10 → duzeltme-8#3
 - `trident`: silah-2#10 → duzeltme-8#5
 - `war-pick`: silah-2#11 → duzeltme-8#6
+- `spyglass`: donanim-05#3 → duzeltme-09#6
+- `potion-of-healing`: duzeltme-7#1 → duzeltme-09#7
+- `potion-of-greater-healing`: duzeltme-7#2 → duzeltme-09#8
+- `potion-of-superior-healing`: duzeltme-7#3 → duzeltme-09#9
+- `potion-of-supreme-healing`: varyant-1#4 → duzeltme-09#10
 
 ## Kontak sayfaları (96 px)
 

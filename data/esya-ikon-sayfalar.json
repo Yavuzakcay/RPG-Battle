@@ -1929,7 +1929,10 @@
      "ad": "javelin"
     },
     null,
-    null,
+    {
+     "id": "mace",
+     "ad": "mace"
+    },
     {
      "id": "quarterstaff",
      "ad": "quarterstaff"
@@ -1946,7 +1949,10 @@
      "id": "dart",
      "ad": "dart"
     },
-    null,
+    {
+     "id": "light-crossbow",
+     "ad": "light-crossbow"
+    },
     {
      "id": "shortbow",
      "ad": "shortbow"
@@ -1982,7 +1988,10 @@
      "id": "halberd",
      "ad": "halberd"
     },
-    null,
+    {
+     "id": "lance",
+     "ad": "lance"
+    },
     {
      "id": "maul",
      "ad": "maul"
@@ -2458,6 +2467,44 @@
     }
    ],
    "hucre": "kare ~667 px"
+  },
+  {
+   "dosya": "duzeltme-09.jpg",
+   "kolon": 5,
+   "satir": 2,
+   "ogeler": [
+    {
+     "id": "dagger",
+     "ad": "dagger"
+    },
+    {
+     "id": "warhammer",
+     "ad": "warhammer"
+    },
+    null,
+    null,
+    null,
+    {
+     "id": "spyglass",
+     "ad": "spyglass"
+    },
+    {
+     "id": "potion-of-healing",
+     "ad": "potion-of-healing"
+    },
+    {
+     "id": "potion-of-greater-healing",
+     "ad": "potion-of-greater-healing"
+    },
+    {
+     "id": "potion-of-superior-healing",
+     "ad": "potion-of-superior-healing"
+    },
+    {
+     "id": "potion-of-supreme-healing",
+     "ad": "potion-of-supreme-healing"
+    }
+   ]
   }
  ],
  "ayniGorsel": {
@@ -2482,8 +2529,9 @@
  ],
  "tamDespill": [
   "potion-of-healing",
-  "potions-of-healing/greater",
-  "potions-of-healing/superior"
+  "potion-of-greater-healing",
+  "potion-of-superior-healing",
+  "potion-of-supreme-healing"
  ],
  "yenidenUretilecek": {
   "varyant-1#4": "potions-of-healing/supreme: şişenin arkasında silah sapı; şişeye bitişik, bileşen ya da kırpmayla ayrılmıyor",
@@ -2499,11 +2547,6 @@
  "belirsiz": {
   "duzeltme-5": "hücre 5 ring-of-free-action ve 6 wand-of-web tahmindir; 3 potion-of-animal-friendship (duzeltme-2'yi ezer)",
   "silah-1#16": "çift ağızlı balta greataxe + battleaxe'a kopyalandı (battleaxe için ayrı ikon yok)",
-  "ikonsuz_beklenen": [
-   "mace",
-   "light-crossbow",
-   "lance"
-  ],
   "duzeltme-8": "hücre 1 spear (silah-1 #9'u ezer), 3 dart, 4 longsword, 6 war-pick (silah-2 #11'i ezer)"
  }
 }

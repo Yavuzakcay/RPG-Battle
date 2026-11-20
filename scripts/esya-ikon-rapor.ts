@@ -89,15 +89,13 @@ ${Object.entries(belirsiz).map(([k, v]) => `- **${k}**: ${Array.isArray(v) ? v.m
 - Ezilen hücre: ${ezilen.length}. ${etkisiz.length ? `\`ayniGorsel\` uygulanamayan: ${etkisiz.join('; ')}.` : ''}
 - Tam despill (cam içi yeşil ton): ${liste(ham.tamDespill ?? [])}.
 
-## Yeniden üretilecek (${yeniden.length})
+## Yeniden üretilecek (açık ${yeniden.filter(([k]) => !ezilen.some(([, eski]: string[]) => eski === k)).length} / ${yeniden.length})
 
-${yeniden.length ? yeniden.map(([k, v]) => `- **${k}** ${v}`).join('\n') : '—'}
+${yeniden.length ? yeniden.map(([k, v]) => { const ez = ezilen.find(([, eski]: string[]) => eski === k); return `- **${k}** ${v}${ez ? ` — **çözüldü**: ${ez[2]} ezer` : ''}`; }).join('\n') : '—'}
 
 ## İkonu olmayan oyun kayıtları (${ikonsuz.length})
 
 ${['sihirli', 'donanım', 'silah', 'zırh'].map((t) => { const l = ikonsuz.filter((k) => k.tur === t); return `- **${t}** (${l.length}): ${liste(l.map((k) => k.id))}`; }).join('\n')}
-
-Yeni Gemini sayfası bu liste için yazılacak.
 
 ## Varyant eşleme (${es.varyant.length})
 

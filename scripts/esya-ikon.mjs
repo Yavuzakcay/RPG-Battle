@@ -200,13 +200,15 @@ export function anahtarla(rgb, w, h, zemin, hepsi = false, ic = { x0: 0, y0: 0, 
     out[i * 4] = clamp(r); out[i * 4 + 1] = clamp(g); out[i * 4 + 2] = clamp(b); out[i * 4 + 3] = Math.round(a * 255);
   }
   // Despill: zemine en çok despillPx uzaklıktaki opak/yarı opak piksellerde G ≤ max(R, B). `tamDespill` (manifest `tamDespill`):
-  // bütün nesnede (zemini içinden gösteren cam: yeşilimsi cam nötr olur; yeşil nesnede kullanılmaz).
+  // bütün nesnede (zemini içinden gösteren cam: yeşilimsi cam nötr olur; yeşil nesnede kullanılmaz) ve yarı saydam parıltı halesinde
+  // daha sıkı G ≤ (R + B) / 2: yeşil zemin üstüne çizilmiş altın/kırmızı hale ayrıştırmadan sonra G ≈ R sarı-yeşil kalıyordu.
   let bant = zeminMi;
   for (let k = 0; k < ESIK.despillPx; k++) bant = genislet(bant, w, h);
   for (let i = 0; i < n; i++) {
-    if ((!tamDespill && !bant[i]) || out[i * 4 + 3] === 0) continue;
-    const m = Math.max(out[i * 4], out[i * 4 + 2]);
-    if (out[i * 4 + 1] > m) out[i * 4 + 1] = m;
+    const a = out[i * 4 + 3];
+    if ((!tamDespill && !bant[i]) || a === 0) continue;
+    const m = tamDespill && zeminMi[i] && a < 255 ? (out[i * 4] + out[i * 4 + 2]) / 2 : Math.max(out[i * 4], out[i * 4 + 2]);
+    if (out[i * 4 + 1] > m) out[i * 4 + 1] = Math.round(m);
   }
   // Bileşenler (alfa ≥ 128, 8 komşu): en büyüğün %6'sı altı atılır; yarı saydam kenar yalnız tutulan bileşene 2 px yakınsa kalır.
   const maske = new Uint8Array(n);

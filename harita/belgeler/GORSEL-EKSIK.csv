@@ -177,11 +177,6 @@ buyu,wind-walk,savaş dışı büyü,görsel yok (savaş dışı; kartta okul gl
 buyu,wish,savaş büyüsü,savaşta görsel yok (döküm gözlenemedi),public/efekt/efekt-wish.webp
 buyu,word-of-recall,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/word-of-recall.webp
 buyu,zone-of-truth,savaş dışı büyü,görsel yok (savaş dışı; kartta okul glifi),public/buyu/zone-of-truth.webp
-esya,dagger,silah,ikon yok (tür yedeği: silah),public/esya/dagger.webp
-esya,mace,silah,ikon yok (tür yedeği: silah),public/esya/mace.webp
-esya,light-crossbow,silah,ikon yok (tür yedeği: silah),public/esya/light-crossbow.webp
-esya,warhammer,silah,ikon yok (tür yedeği: silah),public/esya/warhammer.webp
-esya,lance,silah,ikon yok (tür yedeği: silah),public/esya/lance.webp
 canavar,young-red-dragon,canavar L (ölçek 1.5),"kendi görseli yok (aynı görüntü: adult-red-dragon, ancient-red-dragon, red-dragon-wyrmling)",public/monsters/young-red-dragon.webp
 canavar,black-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-black-dragon, ancient-black-dragon, young-black-dragon)",public/monsters/black-dragon-wyrmling.webp
 canavar,blue-dragon-wyrmling,canavar M (ölçek 1),"kendi görseli yok (aynı görüntü: adult-blue-dragon, ancient-blue-dragon, young-blue-dragon)",public/monsters/blue-dragon-wyrmling.webp

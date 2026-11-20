@@ -9,7 +9,7 @@
 | Kategori | Kayıt | Var | Genel | Yedek | Kaynak (eşlemede) |
 |---|---|---|---|---|---|
 | Büyü | 339 | 161 | 66 | 112 | efekt 221, ikon 6, yedek 112 |
-| Eşya | 449 | 444 | 0 | 5 | ikon 444, yedek 5 |
+| Eşya | 449 | 449 | 0 | 0 | ikon 449 |
 | Canavar | 330 | 290 | 40 | 0 | jeton 330 |
 | Tür | 10 | 10 | 0 | 0 | jeton 10 |
 | Alt soy | 41 | 32 | 9 | 0 | jeton 41 |
@@ -22,9 +22,9 @@
 | Harita nesnesi | 34 | 2 | 0 | 32 | efekt 2, yedek 32 |
 | Büyü alanı (savaşta) | 36 | 30 | 1 | 5 | efekt 31, yedek 5 |
 | Zar teması | 72 | 63 | 0 | 9 | ikon 63, yedek 9 |
-| **Toplam** | **1534** | **1187** | **116** | **231** | |
+| **Toplam** | **1534** | **1192** | **116** | **226** | |
 
-Dungeondex denetimi: Dungeondex'in 1383 kaydının hepsi eşlemede, her `ref` çözülüyor (public/ dosyası ya da `yedekler` anahtarı): sorun 0. CSV 271 satır.
+Dungeondex denetimi: Dungeondex'in 1383 kaydının hepsi eşlemede, her `ref` çözülüyor (public/ dosyası ya da `yedekler` anahtarı): sorun 0. CSV 266 satır.
 
 ## Eksik ve düzeltilecek
 
@@ -513,14 +513,16 @@ Eşyanın hiçbir görseli yok: `src/ui/icons.tsx` yalnız ana menünün 10 SVG 
 | `esya/wind-fan.webp` |  | 1 |
 | `esya/winged-boots.webp` |  | 1 |
 | `esya/wings-of-flying.webp` |  | 1 |
-| `yedek:esya-silah` | ⚔ | 5 |
+| `esya/dagger.webp` |  | 1 |
 | `esya/handaxe.webp` |  | 1 |
 | `esya/javelin.webp` |  | 1 |
+| `esya/mace.webp` |  | 1 |
 | `esya/quarterstaff.webp` |  | 1 |
 | `esya/spear.webp` |  | 1 |
 | `esya/greatclub.webp` |  | 1 |
 | `esya/light-hammer.webp` |  | 1 |
 | `esya/sickle.webp` |  | 1 |
+| `esya/light-crossbow.webp` |  | 1 |
 | `esya/shortbow.webp` |  | 1 |
 | `esya/battleaxe.webp` |  | 1 |
 | `esya/flail.webp` |  | 1 |
@@ -535,6 +537,7 @@ Eşyanın hiçbir görseli yok: `src/ui/icons.tsx` yalnız ana menünün 10 SVG 
 | `esya/scimitar.webp` |  | 1 |
 | `esya/shortsword.webp` |  | 1 |
 | `esya/trident.webp` |  | 1 |
+| `esya/warhammer.webp` |  | 1 |
 | `esya/whip.webp` |  | 1 |
 | `esya/hand-crossbow.webp` |  | 1 |
 | `esya/heavy-crossbow.webp` |  | 1 |
@@ -542,6 +545,7 @@ Eşyanın hiçbir görseli yok: `src/ui/icons.tsx` yalnız ana menünün 10 SVG 
 | `esya/club.webp` |  | 1 |
 | `esya/dart.webp` |  | 1 |
 | `esya/sling.webp` |  | 1 |
+| `esya/lance.webp` |  | 1 |
 | `esya/pike.webp` |  | 1 |
 | `esya/war-pick.webp` |  | 1 |
 | `esya/blowgun.webp` |  | 1 |

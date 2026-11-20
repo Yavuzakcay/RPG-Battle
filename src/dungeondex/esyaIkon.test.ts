@@ -4,7 +4,7 @@
  * public/esya yalnız dosya adıyla denetlenir.
  */
 import { describe, expect, it } from 'vitest';
-import { bagla, dosyaAdi, esle, hucreler, oyunKayitlari, plan, varyantEsle, type Manifest } from '../../scripts/esya-ikon.mjs';
+import { bagla, dosyaAdi, esle, hucreler, oyunKayitlari, plan, sayfaAdi, varyantEsle, type Manifest } from '../../scripts/esya-ikon.mjs';
 import manifestJson from '../../data/esya-ikon-sayfalar.json';
 
 const manifest = manifestJson as unknown as Manifest;
@@ -12,6 +12,8 @@ const manifest = manifestJson as unknown as Manifest;
 const ad = (f: string) => f.slice(f.lastIndexOf('/') + 1);
 const ESYA = Object.keys(import.meta.glob('/public/esya/*.webp')).map(ad);
 const KUCUK = new Set(Object.keys(import.meta.glob('/public/esya/kucuk/*.webp')).map(ad));
+/** assets-ham/esya ham sayfa adları (yalnız ad; görsel açılmaz, depo dışı: CI'da boş). */
+const HAM = new Set(Object.keys(import.meta.glob('/assets-ham/esya/*.{jpg,png,webp}')).map(ad));
 
 describe('Eşya ikon hattı', () => {
   it('dosya adı: varyant kimliğinde / yerine --', () => {
@@ -72,15 +74,38 @@ describe('Eşya ikon hattı', () => {
   it('manifest: glif sayfaları yoksayılır; her sayfanın öğesi hücre sayısını aşmaz; public/esya yalnız bağlanan oyun kayıtları', () => {
     expect(manifest.yoksay).toEqual(expect.arrayContaining(['glif-1', 'glif-2']));
     for (const s of manifest.sayfalar) expect(s.ogeler.length, s.dosya).toBeLessThanOrEqual(s.kolon * s.satir);
-    if (!ESYA.length) return; // hat çalıştırılmamış (ham görseller depo dışı)
+    if (!ESYA.length) return; // hat çalıştırılmamış
     const kayitlar = oyunKayitlari();
-    const { cikti } = bagla(plan(esle(manifest, kayitlar).manifest, () => true).son, kayitlar);
     const oyun = new Set(kayitlar.map((k) => k.id));
-    for (const id of cikti.keys()) {
-      expect(ESYA.includes(`${dosyaAdi(id)}.webp`), id).toBe(true);
-      expect(KUCUK.has(`${dosyaAdi(id)}.webp`), id).toBe(true);
+    for (const f of ESYA) expect(KUCUK.has(f), f).toBe(true);
+    expect(KUCUK.size).toBe(ESYA.length);
+    // Tam karşılaştırma yalnız ham sayfalar yereldeyse (depo dışı); eksik sayfa hattaki gibi atlanır.
+    if (HAM.size) {
+      const { cikti } = bagla(plan(esle(manifest, kayitlar).manifest, (d: string) => HAM.has(d)).son, kayitlar);
+      for (const id of cikti.keys()) expect(ESYA.includes(`${dosyaAdi(id)}.webp`), id).toBe(true);
+      expect(ESYA.length).toBe(cikti.size);
+      // Dosyası olan her sayfa gerçekten işlenir: eksik diye atlanmaz ve her dolu hücresi ya kaydın son konumu ya da sonraki sayfaca ezilmiş.
+      const es = esle(manifest, kayitlar).manifest;
+      const p = plan(es, (d: string) => HAM.has(d));
+      const yoksay = new Set(manifest.yoksay ?? []);
+      for (const s of es.sayfalar) {
+        const ad = sayfaAdi(s.dosya);
+        if (!HAM.has(s.dosya) || yoksay.has(ad)) continue;
+        expect(p.atlanan, s.dosya).not.toContain(ad);
+        s.ogeler.forEach((o, i) => {
+          if (!o?.id) return;
+          const yer = `${ad}#${i + 1}`; const son = p.son.get(o.id);
+          const sonYer = son ? `${son.sayfa}#${son.hucre}` : '';
+          expect(sonYer === yer || p.ezilen.some(([id, eski]) => id === o.id && eski === yer), `${yer} ${o.id}`).toBe(true);
+        });
+      }
+      if (HAM.has('duzeltme-09.jpg')) {
+        for (const id of ['dagger', 'warhammer', 'spyglass', 'potion-of-healing', 'potion-of-greater-healing', 'potion-of-superior-healing', 'potion-of-supreme-healing']) {
+          expect(cikti.get(id)?.sayfa, id).toBe('duzeltme-09');
+          expect(ESYA.includes(`${id}.webp`) && KUCUK.has(`${id}.webp`), id).toBe(true);
+        }
+      }
     }
-    expect(ESYA.length).toBe(cikti.size);
     for (const f of ESYA) expect(oyun.has(f.replace(/\.webp$/, '')), f).toBe(true); // yalnız oyun kayıtları
   });
 });
