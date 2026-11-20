@@ -198,28 +198,40 @@ export function spellOptions(classId: string, level: number, subclassId?: string
   const max = maxSpellLevel(classId, level);
   // Kuyruk 39: Magical Secrets (veride `spellLists`): başka sınıfların listeleri de seçilebilir. Kuyruk 18 H3: alt sınıf
   // özelliğinin listeleri de (Magical Discoveries; sayı sınırı `discoveryCap`).
-  const lists = gainedFeatures(classId, level, subclassId).flatMap((f) => (f.mechanic as { spellLists?: string[] } | undefined)?.spellLists ?? []);
-  const codes = new Set([code, ...lists.map((id) => getClass(id).spellCode).filter((c): c is NonNullable<typeof c> => !!c)]);
-  return spells.filter((s) => s.classes.some((c) => codes.has(c)) && s.level <= max).map((s) => s.name);
+  const codesOf = (ids: string[]) => ids.map((id) => getClass(id).spellCode).filter((c): c is NonNullable<typeof c> => !!c);
+  const secret = new Set(codesOf(gainedFeatures(classId, level).flatMap((f) => (f.mechanic as { spellLists?: string[] } | undefined)?.spellLists ?? [])));
+  const found = new Set(codesOf(gainedFeatures(classId, level, subclassId).filter((f) => f.from !== 'class').flatMap((f) => (f.mechanic as { spellLists?: string[] } | undefined)?.spellLists ?? [])));
+  // Görev B94 (SRD 5.2.1 s. 33): Magical Secrets yalnız hazırlanan (1+ seviye) büyüleri genişletir; başka listeden cantrip
+  // yalnız alt sınıf listesiyle (Magical Discoveries "cantrip ya da slotu olan seviye").
+  return spells.filter((s) => s.level <= max && s.classes.some((c) => c === code || found.has(c) || (s.level > 0 && secret.has(c)))).map((s) => s.name);
 }
+
+/** Görev B94: sınıfın kendi özelliğiyle (Magical Secrets) başka listelerden hazırlanan büyü seçilebiliyor mu. */
+export const secretsOpen = (classId: string, level: number): boolean =>
+  gainedFeatures(classId, level).some((f) => (f.mechanic as { spellLists?: string[] } | undefined)?.spellLists?.length);
 
 /**
  * Kuyruk 18 H3: Magical Discoveries (Lore 6): başka listelerden seçilebilecek büyü sayısı (`discoveries`); bu büyüler
- * her zaman hazırdır (hazırlanan/cantrip sayısına girmez). Sınıfın kendi listeleri genişlerse (Magical Secrets) sınır
- * kalkar (null). Özellik yoksa 0.
+ * her zaman hazırdır (hazırlanan/cantrip sayısına girmez). Özellik yoksa 0. Görev B94 (SRD 5.2.1 s. 35 "always have them
+ * prepared"): Magical Secrets (10+) varken de sınır sürer ve büyüler sayıya girmez (eskiden null: sınır kalkıp hepsi sayıya
+ * giriyordu, Lore 10+'da 2 hazır büyü + 1 cantrip eksik kalıyordu).
  */
 export function discoveryCap(classId: string, level: number, subclassId?: string): number | null {
   const feats = gainedFeatures(classId, level, subclassId).map((f) => f.mechanic as { spellLists?: string[]; discoveries?: number } | undefined);
-  if (gainedFeatures(classId, level).some((f) => (f.mechanic as { spellLists?: string[] } | undefined)?.spellLists?.length)) return null;
   return feats.reduce((n, m) => n + (m?.discoveries ?? 0), 0);
 }
 
-/** Kuyruk 18 H3: seçilen, sınıfın kendi listesinde olmayan (Magical Discoveries) büyüler. */
+/**
+ * Kuyruk 18 H3: seçilen, sınıfın kendi listesinde olmayan (Magical Discoveries) büyüler. Görev B94: Magical Secrets varken
+ * başka listeden cantrip yalnız Discoveries olabilir, önce onlar; kalan hak sıradaki başka liste büyülerine (hangisinin
+ * Discoveries sayıldığı sonucu değiştirmez: her biri bir hazır büyü yerini boşaltır).
+ */
 export function discoveredSpells(s: Pick<CharacterSheet, 'classId' | 'level' | 'subclassId' | 'spellNames'>): string[] {
   const cap = discoveryCap(s.classId, s.level, s.subclassId);
   if (!cap) return [];
   const code = getClass(s.classId).spellCode;
-  return (s.spellNames ?? []).filter((n) => { const x = spells.find((y) => y.name === n); return !!x && !x.classes.some((c) => c === code); }).slice(0, cap);
+  const off = (s.spellNames ?? []).map((n) => spells.find((y) => y.name === n)).filter((x): x is NonNullable<typeof x> => !!x && !x.classes.some((c) => c === code));
+  return [...off.filter((x) => x.level === 0), ...off.filter((x) => x.level > 0)].slice(0, cap).map((x) => x.name);
 }
 
 /** Seçimin anahtarındaki sınıf (`druid:primal-order`, `druid/circle-of-the-land:...`); sınıf anahtarı değilse null. */
@@ -380,7 +392,10 @@ export function characterIssues(c0: SavedCharacter, opts: { carryRule?: CarryRul
     for (const sp of s.spellNames ?? []) if (!allowed.has(sp)) push(I().spellNotAllowed(sp));
     // Kuyruk 18 H3: Magical Discoveries sınırı (başka listelerden en çok N büyü).
     const cap = discoveryCap(s.classId, s.level, s.subclassId);
-    const off = (s.spellNames ?? []).filter((n) => !own.has(n) && !alt.options.includes(n) && allowed.has(n)).length;
+    // Görev B94: Magical Secrets (10+) varken başka listeden hazırlanan büyü serbest (sayıya girer); sınır yalnız cantrip'te.
+    const secrets = secretsOpen(s.classId, s.level);
+    const off = (s.spellNames ?? []).filter((n) => !own.has(n) && !alt.options.includes(n) && allowed.has(n)
+      && (!secrets || (spells.find((x) => x.name === n)?.level ?? 1) === 0)).length;
     if (cap !== null && cap > 0 && off > cap) push(I().discoveryCap(cap, off));
     const altChosen = (s.spellNames ?? []).filter((n) => !own.has(n) && alt.options.includes(n)).length;
     if (altChosen > alt.max) push(I().altCantripCap(alt.max, altChosen));

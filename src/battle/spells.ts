@@ -77,7 +77,7 @@ import { cantripBonus, healBonus, healDice, healSelfAfter } from './cleric';
 import { castWithMetamagic, empowerCount, empowerRolls, innateFor, POINTS } from './sorcerer';
 import { oneDieBonus, SKIP_ALL, usedOnce, type OnceSkip } from './oneDieBonus';
 import { buyucu93On } from './buyucu93Surum';
-import { counterspellCheck, damagedReactions, hitReactions, targetedReactions } from './reactions';
+import { counterspellCheck, cuttingWordsDamage, damagedReactions, hitReactions, targetedReactions } from './reactions';
 import { resourceLeft } from './types';
 import { resourceDef } from '../rules/classFeatures';
 import { anyListResource } from './anyList';
@@ -305,9 +305,13 @@ function executeAreaCast(state: BattleState, actor: Combatant, cmd: CastCommand,
   const partExpr = (p: { dice: string; type: string; upcast?: string }, second = false) => damageExpr({ ...m, damage: p.dice, damageType: p.type, upcast: p.upcast ? { dice: p.upcast, applied: true } : undefined }, actor, tierOf(actor), upcast, spell.school, spell.name,
     second && split && buyucu93On(state) ? usedOnce(actor, { kind: m.kind, damageType: split[0]!.type }, spell.school) : undefined);
   const damageType = split ? split[0]!.type : m.damageType;
-  const damage = split ? spellDamageRoll(partExpr(split[0]!), actor, rng)
+  const damage0 = split ? spellDamageRoll(partExpr(split[0]!), actor, rng)
     : m.damage ? spellDamageRoll(damageExpr(m, actor, tierOf(actor), upcast, spell.school, spell.name), actor, rng) : { rolls: [] as number[], total: 0 };
   const second = split ? { type: split[1]!.type, ...spellDamageRoll(partExpr(split[1]!, true), actor, rng) } : null;
+  // Görev B94 (sürüm 94+): Cutting Words hasar zarından düşer (bir kez, alandaki bütün hedeflere; iki parçalıda ilk parça).
+  const cwd = m.damage || split ? cuttingWordsDamage(applyEvents(state, events), actor, damage0.total, reached.map((x) => x.c), spell.name, rng) : { events: [], total: damage0.total };
+  events.push(...cwd.events);
+  const damage = { ...damage0, total: cwd.total };
   // Yayılım (Spirit Guardians): yapılınca içindekilere girer; yaratık turda bir kez save yapar.
   const aura = m.lingering === 'aura' ? { aura: { casterId: actor.id, turn: turnKey(state) } } : {};
   let current = applyEvents(state, events);
@@ -443,7 +447,7 @@ export function executeCast(state: BattleState, actor0: Combatant, cmd0: CastCom
   // sonrası kancalar (6.–9. seviye etkileri, şarj, Potent Spellcasting, Free Casting) çalışmaz. 82 ve altı aynen.
   if (wasCountered(r0.events)) return r0;
   // Kuyruk 19 (görev 3): 6.–9. seviye büyü kancaları (Power Word, Mass Heal, Chain Lightning, Globe…).
-  const ev69 = sp0 ? after69(state, r0.state, actor00, sp0, r0.events, { ...(cmd.targetId ? { id: cmd.targetId } : {}), ...(cmd.targetHex ? { hex: cmd.targetHex } : {}), ...(cmd.choice ? { choice: cmd.choice } : {}) }, rng) : null;
+  const ev69 = sp0 ? after69(state, r0.state, actor00, sp0, r0.events, { ...(cmd.targetId ? { id: cmd.targetId } : {}), ...(cmd.targetHex ? { hex: cmd.targetHex } : {}), ...(cmd.choice ? { choice: cmd.choice } : {}), ...(cmd.targetIds?.length ? { ids: cmd.targetIds } : {}) }, rng) : null;
   const r1 = ev69 ? finish(state, ev69) : r0;
   if (!r1.ok) return r1;
   // Kuyruk 19 (Thief 13 Use Magic Device; featuresK19): şarjlı eşyadan büyüde 1d6 = 6 ise şarj harcanmaz.
@@ -897,7 +901,10 @@ function castSpell(state: BattleState, actor: Combatant, cmd: CastCommand, spell
     let rolls: number[] = [];
     if (m.damage) {
       const d = spellDamageRoll(damageExpr(m, actor, tier, upcast, spell.school, spell.name), actor, rng);
-      raw = d.total;
+      // Görev B94 (sürüm 94+): Cutting Words hasar zarından düşer.
+      const cw = cuttingWordsDamage(applyEvents(state, events), actor, d.total, [target], spell.name, rng);
+      events.push(...cw.events);
+      raw = cw.total;
       rolls = d.rolls;
     }
     const amount = saveDamage(target, ability, save.success, raw, !!m.halfOnSave || potentCantrip(actor, spell));

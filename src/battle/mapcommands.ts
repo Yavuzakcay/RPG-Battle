@@ -3,6 +3,7 @@
  * herkes kırmaya çalışabilir).
  * Parametreler haritanın JSON'undan.
  */
+import { cuttingWordsCheck } from './reactions';
 import { checkBase, ruleVersion } from './ruleVersion';
 import { rollD20, rollTag, type Rng } from '../rules/dice';
 import { checkMode, skillBonus } from '../rules/skills';
@@ -42,9 +43,12 @@ export function executeEscape(state: BattleState, actor: Combatant, rng: Rng): C
     const bonus = skillBonus(actor, skill);
     const mode = checkMode(actor, skill, checkBase(state, actor, 'normal', skill));
     const d = rollD20(mode, rollTag(rng, { kind: 'check', by: actor.id, bonus }));
-    const { total, extra } = finishCheck(actor, skill, d.kept, bonus, dc, mode, rng);
+    const { total: total0, extra } = finishCheck(actor, skill, d.kept, bonus, dc, mode, rng);
+    // Görev B94 (sürüm 94+): Cutting Words başarılı kontrolü çevirebilir.
+    const cw = cuttingWordsCheck(state, actor, total0, dc, held.name, rng);
+    const total = cw.total;
     const success = total >= dc;
-    const events: BattleEvent[] = [{ type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
+    const events: BattleEvent[] = [...cw.events, { type: 'grapple_escape', actorId: actor.id, skill, d20: d.rolls, total, dc, success, ...(extra.length ? { bonusDice: extra } : {}) }];
     if (success) events.push({ type: 'effect_ended', targetId: actor.id, effectId: held.id, name: held.name, reason: 'save' });
     return { ok: true, state: applyEvents(state, events), events };
   }

@@ -36,6 +36,7 @@ import { mirrorImageHit } from './mind';
 import { freeSpellResource } from '../rules/classFeatures';
 import type { BattleEvent, BattleState, Combatant, ReactionSpec } from './types';
 import { globalRule } from './ruleControl';
+import { b94On } from './b94Surum';
 import { gap64 } from './adjacency';
 import { hiddenTo } from './k74Surum';
 
@@ -106,14 +107,80 @@ function slotLevels(c: Combatant, spec: ReactionSpec, min: number): number[] {
 }
 
 /** Tepkinin şu an kullanılabilirliği (havuz, Recharge, slot). */
-function usable(c: Combatant, spec: ReactionSpec, minSlot = 1): boolean {
+function usable(c: Combatant, spec: ReactionSpec, minSlot = 1, v94 = false): boolean {
   if (spec.pool && poolLeft(c, spec) <= 0) return false;
   if (spec.recharge && c.reactionSpent?.includes(spec.id)) return false;
-  if (spec.resource && (c.resources[spec.resource] ?? 0) <= 0) return false;
+  if (spec.resource && (c.resources[spec.resource] ?? 0) <= 0 && !fontPays(c, spec, v94)) return false;
   if (spec.spell && !spec.pool && !resourceOf(c, spec) && slotLevels(c, spec, minSlot).length === 0) return false;
   // Kuyruk A6 (sürüm 35): Silence içinde sözlü (V) bileşenli tepki büyüsü yapılamaz (Shield, Hellish Rebuke…).
   if (spec.spell && c.silenced && !spells.find((x) => x.name === spec.spell || x.srd === spec.spell || x.id === spec.spell)?.noVerbal) return false;
   return true;
+}
+
+/**
+ * Görev B94 (SRD 5.2.1 s. 32, Font of Inspiration: "expend a spell slot to regain one expended use", eylemsiz): kullanımı
+ * bitmiş Bard'ın Cutting Words'ü en düşük slotla ödenir. Yalnız 94+ savaşta (`v94`).
+ */
+const fontSlot = (c: Combatant): number => c.spellSlots.findIndex((n) => n > 0);
+function fontPays(c: Combatant, spec: ReactionSpec, v94: boolean): boolean {
+  return v94 && spec.kind === 'cutting' && !!spec.resource && (c.resources[spec.resource] ?? 0) <= 0 && !!c.traits?.includes('font-of-inspiration') && fontSlot(c) >= 0;
+}
+/** Cutting Words ödemesi: kullanım varsa onu, yoksa Font ile en düşük slot (kullanım geri gelir ve harcanır). */
+function cuttingPaid(c: Combatant, spec: ReactionSpec, trigger: ReactionTrigger, sourceId: string, v94: boolean): BattleEvent[] {
+  if (!fontPays(c, spec, v94)) return [reactionUsed(c, spec, trigger, sourceId)];
+  const i = fontSlot(c);
+  return [{ type: 'slot_spent', actorId: c.id, level: i + 1, remaining: (c.spellSlots[i] ?? 1) - 1 },
+    reactionUsed(c, spec, trigger, sourceId, { resource: { id: spec.resource as string, remaining: 0 } })];
+}
+
+/** Cutting Words'ü kullanabilecek Bard: `roller`ın karşı tarafında, 60 ft içinde, onu görüyor, tepkisi ve kullanımı (ya da Font) var. */
+function cuttingBards(state: BattleState, roller: Combatant): Array<{ bard: Combatant; spec: ReactionSpec; sides: number }> {
+  const v94 = b94On(state);
+  const out: Array<{ bard: Combatant; spec: ReactionSpec; sides: number }> = [];
+  for (const bard of Object.values(state.combatants)) {
+    if (bard.side === roller.side || bard.hp <= 0 || !canReact(bard)) continue;
+    const spec = (bard.reactions ?? []).find((r) => r.kind === 'cutting' && usable(bard, r, 1, v94));
+    const die = bard.features?.find((f) => f.effect.kind === 'inspire')?.effect;
+    if (!spec || !die || die.kind !== 'inspire' || !die.die) continue;
+    if (feetBetween(state, bard, roller) > (spec.rangeFt ?? 60) || !sees(state, bard, roller)) continue;
+    out.push({ bard, spec, sides: Number(die.die.split('d')[1] ?? 6) });
+  }
+  return out;
+}
+
+/**
+ * Görev B94 (sürüm 94+, SRD 5.2.1 s. 35 Cutting Words: "makes a damage roll"): saldırı dışı hasar zarı (save'li büyü ve alan,
+ * canavar nefesi). Hasar bir kez atılır, zar toplamından düşer (bütün hedeflere). Bard yalnız dostu etkilenecekken önerir.
+ */
+export function cuttingWordsDamage(state: BattleState, roller: Combatant, total: number, victims: Combatant[], label: string, rng: Rng): { events: BattleEvent[]; total: number } {
+  if (!b94On(state) || total <= 0) return { events: [], total };
+  for (const { bard, spec, sides } of cuttingBards(state, roller)) {
+    const allies = victims.filter((v) => v.side === bard.side && v.hp > 0);
+    if (!allies.length) continue;
+    const heavy = allies.some((v) => total >= Math.max(6, Math.ceil(v.hp / 3)) || total >= v.hp);
+    const answer = askReaction(rng, { reactorId: bard.id, trigger: 'hit', sourceId: roller.id, info: { label, total, ac: 0, damage: total },
+      options: [{ id: spec.id, name: spec.name }], suggested: heavy ? { option: spec.id } : null });
+    if (!answer || answer.option !== spec.id) continue;
+    const roll = rollDie(sides, rollTag(rng, { by: bard.id }));
+    return { events: [...cuttingPaid(bard, spec, 'hit', roller.id, true), { type: 'map_note', text: `${bard.name}: ${spec.name} −${roll} (${label})` }], total: Math.max(0, total - roll) };
+  }
+  return { events: [], total };
+}
+
+/**
+ * Görev B94 (sürüm 94+, Cutting Words: "succeeds on an ability check"): başarılı yetenek kontrolü (kaçış, beceri kontrolü).
+ * Zar kontrol toplamından düşer; öneri yalnız başarıyı çevirebilecekse.
+ */
+export function cuttingWordsCheck(state: BattleState, roller: Combatant, total: number, dc: number, label: string, rng: Rng): { events: BattleEvent[]; total: number } {
+  if (!b94On(state) || total < dc) return { events: [], total };
+  for (const { bard, spec, sides } of cuttingBards(state, roller)) {
+    const answer = askReaction(rng, { reactorId: bard.id, trigger: 'hit', sourceId: roller.id, info: { label, total, ac: dc, damage: 0 },
+      options: [{ id: spec.id, name: spec.name }], suggested: total - dc < Math.ceil(sides / 2) ? { option: spec.id } : null });
+    if (!answer || answer.option !== spec.id) continue;
+    const roll = rollDie(sides, rollTag(rng, { by: bard.id }));
+    return { events: [...cuttingPaid(bard, spec, 'hit', roller.id, true), { type: 'map_note', text: `${bard.name}: ${spec.name} −${roll} (${label})` }], total: total - roll };
+  }
+  return { events: [], total };
 }
 
 const specsOf = (c: Combatant, kinds: ReactionSpec['kind'][]): ReactionSpec[] =>
@@ -261,9 +328,10 @@ export function registerAllyHit(h: AllyHitHook): void { if (!allyHitHooks.includ
  */
 function cuttingWords(state: BattleState, ctx: HitContext, rng: Rng): { events: BattleEvent[]; hit: boolean; damage: number; reacted: HitOutcome['reacted'] } | null {
   const t = ctx.target;
+  const v94 = b94On(state);
   for (const bard of Object.values(state.combatants)) {
     if (bard.side !== t.side || bard.hp <= 0 || !canReact(bard)) continue;
-    const spec = (bard.reactions ?? []).find((r) => r.kind === 'cutting' && usable(bard, r));
+    const spec = (bard.reactions ?? []).find((r) => r.kind === 'cutting' && usable(bard, r, 1, v94));
     const die = bard.features?.find((f) => f.effect.kind === 'inspire')?.effect;
     if (!spec || !die || die.kind !== 'inspire' || !die.die) continue;
     if (feetBetween(state, bard, ctx.attacker) > (spec.rangeFt ?? 60) || !sees(state, bard, ctx.attacker)) continue;
@@ -280,7 +348,7 @@ function cuttingWords(state: BattleState, ctx: HitContext, rng: Rng): { events: 
     if (!answer || answer.option !== spec.id) continue;
     const mode = answer.choice === 'damage' || ctx.critical ? 'damage' : 'attack';
     const roll = rollDie(sides, rollTag(rng, { by: bard.id }));
-    const events: BattleEvent[] = [reactionUsed(bard, spec, 'hit', ctx.attacker.id)];
+    const events: BattleEvent[] = cuttingPaid(bard, spec, 'hit', ctx.attacker.id, v94);
     if (mode === 'attack') {
       if (ctx.total - roll < ctx.ac) return { events, hit: false, damage: 0, reacted: { name: spec.name, ac: roll } };
       return { events, hit: true, damage: ctx.damage, reacted: { name: spec.name, ac: roll } };
