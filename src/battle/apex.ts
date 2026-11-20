@@ -116,6 +116,8 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
     if (live) {
       const from = live.center ?? live.hexes[0];
       if (from && distance(from, cmd.to) * 5 > e.moveFt) return `Küp en çok ${e.moveFt} ft taşınır.`;
+      // Görev B94 (sürüm 94+, SRD 5.2.1 s. 46 "to a space within 120 feet of yourself"): yeni yer Druid'in menzilinde.
+      if (b94On(state) && (!actor.pos || distance(actor.pos, cmd.to) * 5 > e.rangeFt)) return `Menzil ${e.rangeFt} ft.`;
       return null;
     }
     if (!actor.pos || distance(actor.pos, cmd.to) * 5 > e.rangeFt) return `Menzil ${e.rangeFt} ft.`;

@@ -2,6 +2,8 @@
 
 Yalnız denetim: kod, veri, test ve DECISIONS.md değişmedi. Tarih 2026-11-20, kural sürümü 91 (güncel).
 
+**SWARM95 güncellemesi (kural sürümü 95, 2026-11-20):** Swarm biçimlerinde (Swarm of Rats/Bats/Ravens/Insects/Piranhas) altıgen işgali **tam**: sürü biçimindeki Druid (ve Polymorph'la sürüye dönen) başka yaratığın altıgeninde durur, başkası onun altıgeninde durur, kapı aralığından geçer; düşman sürüyle aynı kural (canavar kurulumunun tek girişi). Geçici HP korunur (WS92 kullanıcı kararı), biçim savaş sonunda biter, süre sayacı yok. Ayrıntı [WILD-SHAPE-BICIMLER-DENETIM.md](WILD-SHAPE-BICIMLER-DENETIM.md) ve DECISIONS SWARM95.
+
 **Kaynak.** Kurallar SRD metninden çıkarıldı: `data/srd/classes.json` (Druid özellikleri ve Druid Features tablosunun "Wild Shape" sütunu), `data/srd/subclasses.json` (Circle of the Land) ve `docs/SRD_CC_v5.2.1.pdf` (`pdftotext -layout`).
 
 | SRD bölümü | Sayfa |

@@ -102,6 +102,8 @@ export interface ActiveEffect {
   levitate?: boolean;
   shareSpace?: boolean;
   squeeze?: boolean;
+  /** Görev SWARM95 (95+): SRD Swarm: `shareSpace`/`squeeze` karşılıklı (sürünün altıgenine başkası da girip durur; `swarmShare.ts`). */
+  swarm?: boolean;
   bladeGone?: boolean;
   /** Kuyruk P11 (paket `buyuSakla`): bekleyen büyü (yapıldı, ateşlenmedi). */
   /** Kuyruk P11 (paket `koruma.itmeDirenci`): zorla harekete karşı avantajlı STR kurtulması. */
@@ -524,6 +526,9 @@ export interface Economy {
   surged: boolean;
   /** Son kez slotlu büyü yaptığı tur ("tur:sıra"); turda yalnızca bir slot harcanır. */
   slotTurn: string | null;
+  /** Görev B93 (Quickened Spell): bu tur 1+ seviye büyü yapıldı / Quickened Spell kullanıldı. */
+  leveledCast?: boolean;
+  quickened?: boolean;
   /** Bu tur Attack eylemiyle (yan el silahından farklı) bir Light silahla saldırdı: yan el ek saldırısı açılır (Görev P1). */
   lightAttack?: boolean;
   /** Bu tur yan el ek saldırısı yapıldı (turda bir kez). */
@@ -773,6 +778,8 @@ export interface Combatant {
   auraSave?: number;
   /** Görev B94 (A2, sürüm 94+): Aura of Protection'ın kendi bonusu save'lerde yazılı değil; `auraSaveOf` (yaşarken) ekler. */
   auraOwnLive?: boolean;
+  /** Görev B94: yalnız savaş kurulumuna dek (startBattle siler): 93 ve altı savaşta geri eklenecek eski slotsuz büyüler. */
+  freeSpellsPre94?: Record<string, string>;
   /** Kuyruk K50: imza alt sınıfı (`data/imza.json`; pasifler, saldırı kancası). */
   imza?: string;
   /** Y1 G2: yapay zekâ rolü (Game Master `set_ai_role`; yoksa veriden türetilir, `ai/evaluate.ts`). */
@@ -1058,6 +1065,10 @@ export interface Combatant {
   jack?: number;
   /** K11: sınıf büyüsü olarak seçilen büyüler (Innate Sorcery yalnızca bunlara; soy ve alt sınıf büyüleri değil). */
   classSpells?: string[];
+  /** Görev B93: sınıf/alt sınıf özelliğinin her zaman hazır büyüleri (Draconic Spells); sürüm 93+'da sınıf büyüsü sayılır. */
+  classSpellsAlways?: string[];
+  /** Görev B93: bu savaşta Font of Magic ile yaratılan slotlar (seviye başına; savaş sonunda karaktere taşınır). */
+  createdSlots?: number[];
   /** Seçilen Metamagic seçeneği → Sorcery Point bedeli (sınıf verisinden). */
   metamagic?: Record<string, number>;
   /** Sneak Attack zarı (d6 sayısı; haydut değilse 0). */
@@ -2003,7 +2014,7 @@ export type BattleEvent =
   | { type: 'turn_lost'; actorId: string; label: string; command: CommandWord }
   /** Görev CLERIC: Sanctuary save'i (saldıran WIS; başarısızsa saldırı ya da büyü boşa gider). */
   /** Görev SORCERER: Font of Magic ile yaratılan slot. */
-  | { type: 'slot_created'; actorId: string; level: number }
+  | { type: 'slot_created'; actorId: string; level: number; /** Görev B93: Font of Magic: tablonun üstünde kalabilir, uzun dinlenmede kaybolur. */ extra?: boolean }
   /** Görev DRUID: Wild Shape biçimi (değerleri olayda) ya da bırakma (`stats: null`). */
   | { type: 'shape_changed'; actorId: string; stats: ShapeStats | null; reason?: string }
   /** Turda bir kez kullanılan özellik işaretlendi (Wild Resurgence). */
@@ -2067,6 +2078,8 @@ export type BattleEvent =
   | {
       type: 'action_used'; actorId: string; kind: 'action' | 'bonus' | 'reaction' | 'attack'; what: string;
       attacksLeft?: number; slotTurn?: string;
+      /** Görev B93: bu yapım 1+ seviye büyü / Quickened Spell (bu tur kısıtı). */
+      leveled?: boolean; quickened?: boolean;
       /** Görev A5: ek bonus eylem harcandı (bonus eylem zaten kullanılmıştı). */
       extraBonus?: boolean;
       /** Kuyruk A6 (Conjure Animals): sürü sahibiyle taşındı (turda bir). */

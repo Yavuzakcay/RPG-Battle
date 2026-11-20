@@ -21,6 +21,9 @@
  * fırsat saldırısı yiyecek yürüyüşten önce bonus eylemle ayrılır (Cunning Action). Konsantre
  * olan büyücü yeni bir konsantrasyon büyüsü yapmaz.
  */
+import { TRANSMUTE_TYPES } from './sorcerer';
+import { buyucu93On } from './buyucu93Surum';
+import { druidChoice94 } from './ai/b94';
 import { ws92On } from './ws92Surum';
 import { limitsOn, liftPlan } from './nesneAgirlik';
 import { canAirMove } from './airMove';
@@ -1785,6 +1788,52 @@ export function chooseCommand(state: BattleState): Command {
 const HEIGHT_DMG = 3;
 const HEIGHT_FAIL = 0.15;
 function withMetamagic(state: BattleState, actor: Combatant, cmd: Command, end: Command): Command {
+  const c = withMetamagic0(state, actor, cmd, end);
+  return buyucu93On(state) ? withMetamagic93(state, actor, c) : c;
+}
+
+/**
+ * Görev B93 (sürüm 93+): yapay zekânın ek Metamagic seçimleri. Seçeneksiz yapımda Careful (alanda dosta hasar azalıyorsa,
+ * önizlemeyle) ya da Transmuted (hedef türe dirençli/bağışıksa, en çok hasar veren tür önizlemeyle, en az %25 kazanç);
+ * her yapımda Seeking (saldırı zarlı büyü; bedel yalnız ıskada) ve Empowered (hasar zarlı 1+ seviye büyü) puan yedeği
+ * (`MM_RESERVE`) kalıyorsa. Distant, Extended, Subtle ertelendi (hedef/menzil kararı, süre değeri, karşı büyü tehdidi).
+ */
+const MM_RESERVE = 2;
+function withMetamagic93(state: BattleState, actor: Combatant, cmd: Command): Command {
+  const mm = actor.metamagic;
+  if (!mm || cmd.type !== 'cast_spell') return cmd;
+  const spell = spellOf(cmd.spellName);
+  if (!spell) return cmd;
+  const m = mechanicsAt(state, spell);
+  let out: Extract<Command, { type: 'cast_spell' }> = cmd;
+  const spent = () => (out.metamagic ?? []).reduce((n, x) => n + (mm[x] ?? 0), 0);
+  const left = () => resourceLeft(actor, 'sorceryPoints') - spent();
+  const add = (id: string, extra: Partial<Extract<Command, { type: 'cast_spell' }>> = {}) => {
+    const next = { ...out, ...extra, metamagic: [...(out.metamagic ?? []), id] };
+    if (tryCmd(state, actor, next).ok) out = next;
+  };
+  const foeDmg = (p: ReturnType<typeof previewCommand>) => (p.ok ? p.targets.filter((t) => !t.ally && !t.self).reduce((n, t) => n + t.damage.avg, 0) : 0);
+  const allyDmg = (p: ReturnType<typeof previewCommand>) => (p.ok ? p.targets.filter((t) => t.ally || t.self).reduce((n, t) => n + t.damage.avg, 0) : 0);
+  const counted = (out.metamagic ?? []).filter((x) => x !== 'empowered' && x !== 'seeking').length;
+  if (counted === 0 && mm.careful !== undefined && left() >= mm.careful && spell.area && m.save) {
+    const base = previewCommand(state, out);
+    const c2 = { ...out, metamagic: [...(out.metamagic ?? []), 'careful'] };
+    if (allyDmg(base) > 0 && allyDmg(previewCommand(state, c2)) < allyDmg(base)) add('careful');
+  } else if (counted === 0 && mm.transmuted !== undefined && left() >= mm.transmuted && m.damageType && TRANSMUTE_TYPES.includes(m.damageType)) {
+    const base = foeDmg(previewCommand(state, out));
+    let best: { type: string; dmg: number } | null = null;
+    for (const ty of TRANSMUTE_TYPES.filter((x) => x !== m.damageType)) {
+      const d = foeDmg(previewCommand(state, { ...out, metamagic: [...(out.metamagic ?? []), 'transmuted'], transmute: ty }));
+      if (!best || d > best.dmg) best = { type: ty, dmg: d };
+    }
+    if (best && best.dmg >= base * 1.25 + 1) add('transmuted', { transmute: best.type });
+  }
+  if (m.kind === 'attack' && mm.seeking !== undefined && left() >= mm.seeking + MM_RESERVE) add('seeking');
+  if (spell.level >= 1 && (m.damage || m.split?.length) && mm.empowered !== undefined && left() >= mm.empowered + MM_RESERVE) add('empowered');
+  return out;
+}
+
+function withMetamagic0(state: BattleState, actor: Combatant, cmd: Command, end: Command): Command {
   const mm = actor.metamagic;
   if (!mm) return cmd;
   const points = resourceLeft(actor, 'sorceryPoints');
@@ -2025,6 +2074,11 @@ function decide(state: BattleState, actor: Combatant, end: Command): Command {
   // Görev CLERIC (basit kurallar, veriden): Channel Divinity ve Sanctuary.
   {
     const cmd = clericChoice(state, actor, canAct);
+    if (cmd) return cmd;
+  }
+  // Görev B94 (94+, basit kurallar): Land's Aid, Nature's Sanctuary.
+  {
+    const cmd = druidChoice94(state, actor, foesOf(state, actor), canAct, (c) => tryCmd(state, actor, c).ok);
     if (cmd) return cmd;
   }
   // Kuyruk S1: Plane Shift ile geri çekilme (son çare).
