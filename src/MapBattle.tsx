@@ -53,7 +53,8 @@ import { ilhamOf, inspirePayable } from './battle/bard';
 import { loadSettings as loadPreviewSettings, loadStore as loadDiscovery, record as recordDiscovery, saveStore as saveDiscovery } from './app/discovery';
 import { focusActionProblem, stunningProblem } from './battle/martial';
 import { civiliansAlive, isTargetable } from './battle/common';
-import { hexLabel, highJumpProblem, highJumpReachFt, occupantAt, speedHexes } from './battle/movement';
+import { hexLabel, highJumpProblem, highJumpReachFt, occupantAt, occupantsAt, speedHexes } from './battle/movement';
+import { SHARE_SHIFT, planMotes, swarmKind, type SwarmMote } from './ui/swarmView';
 import { altitudeCapFt, atCeiling, ceilingFt, climbingAloft, wallHex } from './battle/altitude';
 import { climbStartInfo, dexClimber, holdSurface } from './battle/climbing';
 import { bandOf, cellsOn, levelOf, levelToFt } from './battle/cells';
@@ -174,6 +175,8 @@ const EndFx = lazy(() => import('./ui/EndFx'));
 const FxShots = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.FxShots })));
 const FxGround = lazy(() => import('./ui/fx/FxLayer').then((m) => ({ default: m.FxGround })));
 const EndVideo = lazy(() => import('./ui/EndVideo'));
+// Görev SWARM95: sürü parçacıkları (yalnız görünüm, tembel parça).
+const SwarmMotes = lazy(() => import('./ui/SwarmMotes'));
 // Kuyruk K58: hamle önizleme kartı (tembel).
 const PreviewCard = lazy(() => import('./ui/preview/PreviewCard'));
 const SlotEffect = lazy(() => import('./ui/preview/SlotEffect'));
@@ -603,8 +606,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
     if (f?.effect.kind === 'divineSpark' || f?.effect.kind === 'inspire' || f?.effect.kind === 'leash' || f?.effect.kind === 'celestialHeal' || f?.effect.kind === 'karadulGaze' || (f && featTargeted(f))) return { type: 'use_feature', actorId: me.id, feature: f.key, targetId: c.id };
     const pool = f?.resource ? resourceLeft(me, f.resource) : 0;
     const missing = Math.max(0, c.maxHp - c.hp);
-    const cure = f?.effect.kind === 'healPool' && missing === 0 && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
-    return { type: 'use_feature', actorId: me.id, feature: featureKey ?? '', targetId: c.id, amount: Math.min(pool, missing), ...(cure ? { cure: true } : {}) };
+    // Görev B94 (PALADIN E1; SRD 5.2.1 s. 54): kaldırılabilir durum varsa aynı kullanımda temizle + kalan havuzla iyileştir.
+    const cure = f?.effect.kind === 'healPool' && pool >= f.effect.cureCost && f.effect.cures.some((x) => c.conditions.includes(x));
+    const cost = cure && f?.effect.kind === 'healPool' ? f.effect.cureCost : 0;
+    return { type: 'use_feature', actorId: me.id, feature: featureKey ?? '', targetId: c.id, amount: Math.min(pool - cost, missing), ...(cure ? { cure: true } : {}) };
   };
   // Kuyruk K54: yaratık + altıgen isteyen imza eylemi (Zihin Gücü: Fırlat): parlama denetimi kendi altıgeniyle,
   // hedefe tıklanınca altıgen seçimine geçer.
@@ -1463,6 +1468,8 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
       return;
     }
     if (c.id === actorId) { if (mode === 'idle') setMenuOpen((o) => !o); else reset(); return; }
+    // Görev SWARM95: yürünebilir (paylaşılabilir: SRD Swarm, Gaseous Form) altıgendeki jetona dokunmak oraya yürür.
+    if (mode === 'idle' && c.pos && movable.has(hexKey(c.pos))) { onHex(c.pos); return; }
     if (mode === 'feature' && glowing.has(c.id) && actor) featureGo(actor, c);
     if ((mode === 'attack' || mode === 'spell' || mode === 'shove') && glowing.has(c.id)) setTargetId(c.id);
     if (mode === 'pull' && glowing.has(c.id)) run({ type: 'pull', actorId, targetId: c.id });
@@ -2167,6 +2174,10 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 })}
               </g>
             );
+            // Görev SWARM95 (yalnız görünüm): başka yaratıkla aynı altıgendeki sürü jetonu yana kayar ve küçülür (ikisi de
+            // görünür ve dokunulur); sürü jetonlarının parçacık konumları çizim sırasında toplanır.
+            const swarmShared = (c: Combatant) => !!c.pos && swarmKind(c) !== null && occupantsAt(state, c.pos, c.id).length > 0;
+            const moteItems: Array<Omit<SwarmMote, 'animated'>> = [];
             return [
               ground,
               beams,
@@ -2175,11 +2186,14 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                 // düzeyde olmayan jeton soluk ve dokunulmaz.
                 // Görev MB6b: binici bineğinin üstünde küçük ve yukarıda (yığın; mekanik tek altıgen motordan).
                 const stack = riderStack(state, c) ?? swallowedStack(c);
-                const scale = stack ? scale0 * stack.scale : scale0;
+                const shared = !stack && swarmShared(c);
+                const scale = stack ? scale0 * stack.scale : shared ? scale0 * SHARE_SHIFT.olcek : scale0;
                 const p0 = tokenCenter(state, c);
                 const lift = airLift(c);
                 const p1 = lift ? { x: p0.x + TOKEN_R * 0.35, y: p0.y - lift } : p0;
-                const p = stack ? { x: p1.x, y: p1.y - r * stack.lift } : p1;
+                const p = stack ? { x: p1.x, y: p1.y - r * stack.lift } : shared ? { x: p1.x + r * SHARE_SHIFT.x, y: p1.y + r * SHARE_SHIFT.y } : p1;
+                const mk0 = c.hp > 0 && !c.summon?.gone && view === 'normal' ? swarmKind(c) : null;
+                if (mk0) moteItems.push({ id: c.id, x: p.x, y: p.y, r: r * Math.max(1, scale), kind: mk0 });
                 const offLevel = (airOn && !inLevel(c)) || (katFt !== null && (c.altitudeFt ?? 0) !== katFt);
                 // Jeton filtreleri (Görev V): taşlaşma, görünmezlik, baygınlık, yerde, bitkinlik, çağrılmış.
                 const filters = tokenFilters(c);
@@ -2296,15 +2310,20 @@ export function Battle(props: { initial: Session; /** Görev OD1C: haritada tama
                   </g>
                 );
               }),
+              <Suspense key="swarm-motes" fallback={null}>
+                <SwarmMotes motes={planMotes(moteItems, { enabled: fxOn, reduceMotion, budget: MAX_ANIMATED - fxShotInfo.count - loopAnimated.length - floats.length })} />
+              </Suspense>,
               // Tıklama alanları en üstte, her jetonun yalnızca kendi altıgeninde: büyük jeton komşuyu kapatmaz.
+              // Görev SWARM95: paylaşılan altıgende sürünün (kaymış, küçük) tıklama alanı en sonda (üstte).
               <g key="hits" className="token-hits">
-                {ordered.filter(({ c }) => !(airOn && !inLevel(c))).flatMap(({ c }) => bodyOf(state, c).map((h, i) => {
+                {[...ordered.filter(({ c }) => !(airOn && !inLevel(c)))].sort((a, b) => Number(swarmShared(a.c)) - Number(swarmShared(b.c))).flatMap(({ c }) => bodyOf(state, c).map((h, i) => {
                   // Görev A6: çok altıgenli gövdenin her altıgeni tıklanır (tek altıgenlide yalnızca kendi altıgeni).
                   // Kuyruk K71c: havadaki jetonun tıklama alanı kaldırılmış konumunda.
-                  const p = ((q, l) => ({ x: q.x + (l ? TOKEN_R * 0.35 : 0), y: q.y - l }))(hexCenter(h), airLift(c));
+                  const sh = !riderStack(state, c) && !swallowedStack(c) && swarmShared(c);
+                  const p = ((q, l) => ({ x: q.x + (l ? TOKEN_R * 0.35 : 0) + (sh ? r * SHARE_SHIFT.x : 0), y: q.y - l + (sh ? r * SHARE_SHIFT.y : 0) }))(hexCenter(h), airLift(c));
                   const pr = press(c.pos as Offset);
                   return (
-                    <circle key={i ? `${c.id}:${i}` : c.id} cx={p.x} cy={p.y} r={r} className={`hit${setup ? ' draggable' : ''}`} data-id={c.id} data-hex={hexKey(c.pos as Offset)}
+                    <circle key={i ? `${c.id}:${i}` : c.id} cx={p.x} cy={p.y} r={sh ? r * SHARE_SHIFT.olcek : r} className={`hit${setup ? ' draggable' : ''}`} data-id={c.id} data-hex={hexKey(c.pos as Offset)}
                       onClick={() => onToken(c)} {...pr}
                       onPointerDown={(e) => { pr.onPointerDown(); if (setup) { dragId.current = c.id; setSelected(c.id); (e.target as Element).releasePointerCapture?.(e.pointerId); } }} />
                   );

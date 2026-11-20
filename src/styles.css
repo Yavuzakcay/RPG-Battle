@@ -568,6 +568,14 @@ li.soft-warn { color: #9a7a3a; border-left: 3px dashed #c9a24d; padding-left: 8p
 .dmg-group, .fx-sprite, .fx-sprite image { pointer-events: none; }
 .fx-sprite image { image-rendering: pixelated; }
 @keyframes fx-play { from { transform: translateX(0); } to { transform: translateX(var(--shift)); } }
+/* Görev SWARM95: sürü jetonunun çevresinde dönen parçacıklar (yalnız görünüm; SwarmMotes.tsx). */
+.swarm-motes { opacity: 0.85; pointer-events: none; }
+.swarm-ring { animation: swarm-spin 6s linear infinite; transform-origin: 0 0; }
+.swarm-ring.rev { animation-direction: reverse; }
+.swarm-ring.still { animation: none; }
+.sprites-paused .swarm-ring { animation-play-state: paused !important; }
+@keyframes swarm-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .swarm-ring { animation: none; } }
 @media (prefers-reduced-motion: reduce) { .fx-sprite { display: none; } }
 
 /* Görev H: dil seçimi, donanım çipleri (ad + bir satır özet), geçmiş bonusu sayacı, özet maddeleri. */

@@ -89,20 +89,20 @@ export function sinifOzellikProspektus(id: string, L: ProStrings, lang: Lang): P
   return sections(S, L, m ? FEATURE_TONE[m.status] : undefined);
 }
 
-/** Alt sınıf prospektüsü: yüklü alt sınıf verisinden (rol, özellikler ve durum etiketleri; TR/EN metin veride). */
-export function altSinifProspektus(sc: SubclassDef, L: ProStrings, lang: Lang): ProSection[] {
+/**
+ * Alt sınıf prospektüsü: yalnız Dungeondex kartında olmayan bilgi. Kart rolü (özet), sınıfı/cinsiyeti (başlık, etiket) ve
+ * özellik listesini (seviye, ad, durum, açıklama) zaten gösterir; prospektüs bunları tekrar etmez. Kalan: yerine geçtiği
+ * sınıf özelliği (risk) ve özellik durumlarının sayımı + genel durum rozeti (durum).
+ */
+export function altSinifProspektus(sc: SubclassDef, L: ProStrings, _lang: Lang): ProSection[] {
   const F = L.feature;
-  const txt = (x: { tr: string; en: string }) => (lang === 'en' && x.en ? x.en : x.tr);
   const S: Record<ProKey, ProRow[]> = { ne: [], nasil: [], etken: [], risk: [], kimler: [], maliyet: [], durum: [] };
-  if (sc.role && txt(sc.role)) S.ne.push({ text: txt(sc.role), trOnly: (lang === 'en' && !sc.role.en) || undefined });
-  for (const f of [...sc.features].sort((a, b) => a.level - b.level)) {
-    const d = txt(f.description);
-    S.etken.push({ label: `${F.lvl(f.level)} · ${txt(f.name)}`, text: `${d}${f.status && f.status !== 'calisir' ? ` (${F.fstatus[f.status] ?? f.status})` : ''}`, trOnly: (lang === 'en' && !f.description.en) || undefined });
-  }
-  S.kimler.push(...row(F.cls, className(sc.class)));
-  if (sc.cinsiyet) S.kimler.push(...row(F.gender, F.gen[sc.cinsiyet]));
   if (sc.replaces?.length) S.risk.push(...row(F.replaces, sc.replaces.map((r) => (r.split(':')[1] ?? r).split('-').map((w) => w[0]!.toUpperCase() + w.slice(1)).join(' ')).join(', ')));
   const st = sc.features.map((f) => f.status);
+  const counts = new Map<string, number>();
+  for (const x of st) counts.set(x, (counts.get(x) ?? 0) + 1);
+  const summary = [...counts].map(([k, n]) => `${n} ${F.fstatus[k] ?? k}`).join(', ');
+  if (summary) S.durum.push(...row(F.features, summary));
   const tone: ProTone | undefined = !st.length ? undefined : st.every((s) => s === 'calisir') ? 'ok' : st.some((s) => s === 'calisir' || s === 'kismi') ? 'part' : 'none';
   return sections(S, L, tone);
 }

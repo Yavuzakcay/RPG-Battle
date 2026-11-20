@@ -25,10 +25,10 @@ describe('savaşlar arası durum ve dinlenme', () => {
     // Favored Enemy yalnızca uzun dinlenmede.
     expect(shortRestStatus(kael, { ...fullStatus(kael), resources: { favoredEnemy: 0 } }, 0, scripted()).status.resources.favoredEnemy).toBe(0);
   });
-  it('uzun dinlenme her şeyi doldurur, harcanan HP zarlarının yarısı geri gelir; ölü dirilmez', () => {
+  it('uzun dinlenme her şeyi doldurur, harcanan HP zarlarının tamamı geri gelir (SRD 5.2.1 s. 185); ölü dirilmez', () => {
     const spent: CharacterStatus = { hp: 1, hitDiceSpent: 4, resources: { actionSurge: 0, secondWind: 0 }, slots: [0, 0, 0, 0, 0, 0, 0, 0, 0] };
     const r = longRestStatus(bor, spent);
-    expect(r).toEqual({ ...fullStatus(bor), hitDiceSpent: 2 });
+    expect(r).toEqual(fullStatus(bor));
     expect(longRestStatus(bor, { ...spent, dead: true }).dead).toBe(true);
   });
   it('savaşa durumla başlanır; biten savaşın sonucu karaktere yazılır', () => {
