@@ -30,6 +30,8 @@ function secondChances(c: Combatant | undefined, on: 'attack' | 'save' | 'check'
     .map((e) => ({ label: e.name, die: e.inspire as string, sign: 1, reroll: 'onFail', single: true, effectId: e.id, holderId: c.id,
       // Kuyruk K48 (sürüm 19, `bardicInspirationChain`): önceki ikinci şans tutmazsa ilham zarı yine atılır.
       ...(c.inspireChain ? { chain: true } : {}),
+      // Görev B98 (sürüm 98+): taşıyan d20 sonucunu görünce karar verir (`syncAuras` → `inspireAsk`).
+      ...(c.inspireAsk ? { ask: true } : {}),
       // Kuyruk P11 (paket ilham iadesi).
       ...(e.inspireKeep ? { keepOnFail: e.inspireKeep, refundTo: e.sourceId, ...(e.inspireRes ? { refundRes: e.inspireRes } : {}) } : {}) }));
   // Kuyruk 43: Legendary Resistance (SRD 5.2.1; günde N): başarısız save'i başarıya çevirir; boss'un turları arasında en

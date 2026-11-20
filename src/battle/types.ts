@@ -789,6 +789,8 @@ export interface Combatant {
   auraSave?: number;
   /** Görev B94 (A2, sürüm 94+): Aura of Protection'ın kendi bonusu save'lerde yazılı değil; `auraSaveOf` (yaşarken) ekler. */
   auraOwnLive?: boolean;
+  /** Görev B98 (sürüm 98+): Bardic Inspiration zarı sorulur (`syncAuras` yazar). */
+  inspireAsk?: boolean;
   /** Görev B95-B: savaş kural sürümü 97+ (durum görmeyen yardımcılar için; `createBattle` yazar). */
   sinif97?: boolean;
   /** Görev B94: yalnız savaş kurulumuna dek (startBattle siler): 93 ve altı savaşta geri eklenecek eski slotsuz büyüler. */
@@ -1552,6 +1554,8 @@ export interface AttackOption {
   range?: [number, number];
   /** Kuyruk S2 (paket `silahFirlat`): fırlatılan silah saldırıdan sonra ele döner (elden çıkmaz). */
   returns?: boolean;
+  /** Görev B98: Thrown özelliğiyle fırlatılan Melee silah (SRD 5.2.1 s. 89 Thrown: "If the weapon is a Melee weapon"). */
+  meleeWeapon?: boolean;
   /** Ortam kurallarında anahtar kelime aramak için küçük harfli tarif. */
   tag: string;
   /** Saldırı zarındaki yetenek (Rage hasarı ve Reckless Attack: STR). */
@@ -1974,6 +1978,8 @@ export type BattleEvent =
       ready?: boolean;
       /** Yakın dövüş silah saldırısı (smite büyülerinin tetiği; Görev P-Paladin). */
       melee?: boolean;
+      /** Görev B98 (sürüm 98+): Thrown özelliğiyle fırlatılan Melee silah isabeti (Divine Smite ve smite büyüleri: "Melee weapon"). */
+      meleeWeapon?: boolean;
       /** Monk silahı ya da Unarmed Strike (Stunning Strike tetiği; Görev P-Monk). */
       martialArts?: boolean;
       /** Görev B95-B (97+): Unarmed Strike isabeti / Monk silahı (basit yakın dövüş ya da Light martial) isabeti, Martial Arts'tan bağımsız. */

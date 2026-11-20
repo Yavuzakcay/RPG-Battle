@@ -202,3 +202,14 @@ Görev B94 (2026-11-20). Sürüm sütunu: "94" = kural sürümü 94 (`B94_VERSIO
 | D6 | YZ bonus eylem boşken, kullanımı varken (5. seviye slot harcamaz) ve aurada düşman varken Holy Nimbus kullanır | 94 | b94paladin.test.ts |
 | E1 | Arayüz: kaldırılabilir durumu olan yaralı hedefe tek dokunuşta temizleme + kalan havuzla iyileştirme (`MapBattle.tsx` `featureCommand`); ipucu metni TR/EN güncellendi | sürümsüz | - |
 | E4 | Divine Sense, Abjure Foes, Holy Nimbus için TR/EN ipucu metni (`strings.tr2.ts`, `strings.en.ts`) | sürümsüz | - |
+
+## B98 ek görev
+
+Görev B98 (2026-11-20; kural sürümü 98 `B98_VERSION`, 97 ve altı eski davranışta; ayrıntı DECISIONS.md "B98").
+
+| Satır | Şimdi | Sürüm |
+|---|---|---|
+| A7 / K1 | Düzeldi (SRD alıntılı): fırlatılan Melee silah (Javelin) Divine Smite ve smite büyülerini açar (`meleeHit`), Radiant Strikes ekler. Thrown (s. 89) fırlatılan silahı "Melee weapon" olarak anar; koşul saldırı türü değil silah sınıfı. "Hemen sonra" yerine "bu tur" yaklaşımı aynen | 98 |
+| A20 | Radiant Strikes fırlatılan Melee silahta da (A7 ile) | 98 |
+| A4 / K3 | Düzeldi: Lay On Hands herhangi bir yaratığa (SRD 5.2.1 s. 53 "touch a creature"; Undead/Construct istisnası 5.2.1 metninde yok, uygulanmadı); yapay zekâ düşmanı iyileştirmez | 98 |
+| E3 | Düzeldi: TR menü/ipucu adları SRD İngilizce (Lay On Hands, Divine Sense, Abjure Foes, Holy Nimbus, Sacred Weapon; SD4) | sürümsüz |

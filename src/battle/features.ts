@@ -9,6 +9,7 @@
  * Haritasız savaşta konum yok: "yanında" ve "yayılımın içinde" aynı yükseklik bandı sayılır
  * (bkz. DECISIONS.md).
  */
+import { b98On } from './b98Surum';
 import { sinif97On } from './sinif97Surum';
 import { weapons as WEAPON_LIST } from '../data';
 import { binekOn } from './binekSurum';
@@ -181,7 +182,8 @@ export function hitExtras(
   // Kuyruk 19: `anyAttack` güçlendirme (Conjure Minor Elementals) büyü saldırısında da.
   for (const b of buffExtraDice(state, actor, w?.damageType ?? '', target)) if (b.anyAttack || (w && !w.spell)) add(b.label, b.expr, b.type);
   // Kuyruk 19: Radiant Strikes (Paladin 11): yakın dövüş silahı ya da Unarmed Strike isabetinde 1d8 Radiant.
-  if (w && !w.spell && !w.ranged && hasTrait(actor, 'radiant-strikes')) add('Radiant Strikes', '1d8', 'radiant');
+  // Görev B98 (sürüm 98+, SRD 5.2.1 s. 55 "attack roll using a Melee weapon"): fırlatılan Melee silahla da.
+  if (w && !w.spell && (!w.ranged || (b98On(state) && w.meleeWeapon)) && hasTrait(actor, 'radiant-strikes')) add('Radiant Strikes', '1d8', 'radiant');
   // Görev SORCERER: saldırının kendi ek zarı (True Strike).
   if (w?.hitExtra) add(w.hitExtra.label, w.hitExtra.expr, w.hitExtra.type);
   const c = actor.concentration;
@@ -377,6 +379,8 @@ export function weaponAttackEvents(
     ...(bonus.cunning ? { cunning: { options: bonus.cunning, dice: cunningCost(bonus.cunning) } } : {}),
     ...(opportunity ? { opportunity: true } : {}),
     ...(!option.ranged && !option.spell ? { melee: true } : {}),
+    // Görev B98 (sürüm 98+): fırlatılan Melee silah isabeti de smite'ı açar (reducer `meleeHit`).
+    ...(b98On(state) && option.ranged && option.meleeWeapon && !option.spell ? { meleeWeapon: true } : {}),
     ...(option.martialArts ? { martialArts: true } : {}),
     ...(sinif97On(state) && !option.ranged && !option.spell ? monkHitFlags(option) : {}),
     ...(option.pact ? { pact: true } : {}),

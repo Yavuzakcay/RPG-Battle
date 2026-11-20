@@ -28,6 +28,8 @@ export function reactionAskText(req: ReactionRequest, state: BattleState): { tit
           : req.trigger === 'choice' ? R.choiceLine(i.label ?? '')
             // Hazırla (Ready, sürüm 90): tetik adı `info.label`.
             : req.trigger === 'ready' ? R.readyLine(n(req.sourceId), readyTriggerLabel(i.label ?? ''))
+            // Görev B98: Bardic Inspiration zarını kullanma kararı (d20 sonucu ve gereken).
+            : req.trigger === 'inspire' ? T.inspire?.(i.label ?? '', i.total ?? 0, i.ac ?? 0)
             : T[req.trigger]?.(n(req.sourceId));
   return { title: req.trigger === 'choice' ? R.choiceTitle(n(req.reactorId)) : req.trigger === 'ready' ? R.readyTitle(n(req.reactorId)) : R.title(n(req.reactorId)), line: line ?? '' };
 }

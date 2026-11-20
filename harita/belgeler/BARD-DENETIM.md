@@ -178,3 +178,14 @@ Görev B94 (2026-11-20). Sürüm sütunu: "94" = kural sürümü 94 (`B94_VERSIO
 | B9 | `discoveryCap` 10+'da da 2; başka liste cantrip'leri önce Discoveries sayılır, kalan hak sıradaki başka liste büyüsüne; Magical Secrets büyüleri sayıya girer. `k18h3.test.ts` beklentisi null → 2 | sürümsüz | b94bard.test.ts |
 | B10 | Magical Secrets yalnız hazırlanan (1+) büyüleri açar; başka listeden cantrip yalnız Discoveries ile. "Yeni/değiştirilen" kısıtı Serüven'de seviye penceresiyle (A1), oluşturucuda serbest düzenleme (bilinçli sapma B11) | sürümsüz | b94bard.test.ts |
 | E2 | Savaş menüsü kullanım 0 iken Font ile slot varsa düğmeyi açık tutar (`inspirePayable`) | sürümsüz | b94bard.test.ts |
+
+## B98 ek görev
+
+Görev B98 (2026-11-20; kural sürümü 98 `B98_VERSION`, 97 ve altı eski davranışta; ayrıntı DECISIONS.md "B98").
+
+| Satır | Şimdi | Sürüm |
+|---|---|---|
+| A6 / K1 | Düzeldi: zarı taşıyan başarısız d20 sonucunu (toplam, gereken) görünce kullanıp kullanmayacağına karar verir (tetik `inspire`; yapay zekâ eski davranışla kullanır). "Bilinçli sapma" satırı yerine SRD davranışı | 98 |
+| C5 / K4 | Bilinçli sapma (kayıtlı, kullanıcı kararı): ilham zarı savaşlar arası taşınmaz | — |
+| B2 / K3 | Ertelendi: müzik aleti (alet) yetkinliği; beceri/alet kontrol sistemi yok, savaşsız dungeon fikriyle birlikte | — |
+| E1 | Düzeldi: TR menüde "İlham Ver" → Bardic Inspiration (SD4; EN "Inspire" → Bardic Inspiration) | sürümsüz |

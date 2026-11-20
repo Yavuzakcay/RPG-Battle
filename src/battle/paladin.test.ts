@@ -90,7 +90,9 @@ describe('Lay On Hands', () => {
     const s = battle(1, {}, {}, { hp: 4, maxHp: 20 });
     expect(err(s, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'C', amount: 6 })).toBe('Havuzda 5 puan var.');
     expect(err(s, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'A', amount: 2 })).toContain('tam sağlıklı');
-    expect(err(s, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'B', amount: 2 })).toContain('dostuna');
+    // Görev B98 (sürüm 98+, SRD 5.2.1 s. 53 "touch a creature"): düşmana da uygulanır (tam sağlıklı B reddedilir); 97'de yalnız dost.
+    expect(err(s, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'B', amount: 2 })).toContain('tam sağlıklı');
+    expect(err({ ...s, kuralSurumu: 97 }, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'B', amount: 2 })).toContain('dostuna');
     const far = advanceTo(setup('Düz', { A: { ...A(s), id: 'A' }, C: { hp: 4, maxHp: 20, height: 1 } }), 'A');
     expect(err(far, { type: 'use_feature', actorId: 'A', feature: LOH, targetId: 'C', amount: 2 })).toContain('bitişik');
   });
@@ -132,10 +134,13 @@ describe("Paladin's Smite ve Divine Smite", () => {
     expect(dmg && dmg.type === 'attack_resolved' ? dmg.damageRolls.length : 0).toBe(8);
     expect(err(s, { type: 'cast_spell', actorId: 'A', spellName: 'Divine Smite', targetId: 'C' })).toContain('vurduğun hedefe');
   });
-  it('menzilli isabet smite açmaz', () => {
-    let s = battle(2, {});
+  it('menzilli isabet smite açmaz (97); fırlatılan Melee silah (Javelin) 98+\'ta açar (SRD 5.2.1 Thrown: "If the weapon is a Melee weapon")', () => {
+    let s: BattleState = { ...battle(2, {}), kuralSurumu: 97 };
     s = run(s, { type: 'attack', actorId: 'A', targetId: 'B', option: opt(s, 'Javelin (fırlatma)') }, pad([20, 15], [6, 3])).state;
     expect(A(s).economy.meleeHit).toBeUndefined();
+    let n = battle(2, {});
+    n = run(n, { type: 'attack', actorId: 'A', targetId: 'B', option: opt(n, 'Javelin (fırlatma)') }, pad([20, 15], [6, 3])).state;
+    expect(A(n).economy.meleeHit?.targetId).toBe('B');
   });
 });
 

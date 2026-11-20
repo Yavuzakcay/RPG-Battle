@@ -50,6 +50,8 @@ function optionFor(sheet: CharacterSheet, weaponName: string, enchant: number, u
   const name = enchant > 0 ? `${weapon.name} +${enchant}` : weapon.name;
   return {
     label: use === 'thrown' ? `${name} (fırlatma)` : use === 'offhand' ? `${name} (yan el)` : name,
+    // Görev B98: fırlatılan Melee silah "Melee weapon" olarak kalır (davranışı yalnız 98+ okur).
+    ...(use === 'thrown' && !weapon.ranged ? { meleeWeapon: true } : {}),
     attackBonus: mod + (proficient ? d.proficiency : 0) + enchant + archery,
     damage: withBonus(dice, bonus),
     damageType: weapon.damageType,

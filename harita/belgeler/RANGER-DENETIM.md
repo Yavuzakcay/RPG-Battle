@@ -176,3 +176,11 @@ Görev B94 (2026-11-20). Sürüm sütunu: "94" = kural sürümü 94 (`B94_VERSIO
 | A22 | Bu tur saldırılmış yaratığa ve son saldırıdan başka silahla red (`economy.attackedIds`, `lastWeapon`; `hordeProblem`) | 94 | b94ranger.test.ts |
 | A26 | Kısmi kalır: tepki 94+'ta save'li büyü hasarında (alan ve tek hedef) ve otomatik isabetli büyüde (Magic Missile) de; süren hasar, büyü alanı/aura, harita mekaniği ve düşme hasarında hâlâ yok (ortak hasar girişi olmadığından her yol ayrı; ertelendi) | 94 | b94ranger.test.ts |
 | D4 | YZ Nature's Veil (canı yarının altında, 30 ft'te düşman, bonus eylem) ve Tireless (canı üçte birin altında, geçici HP yok) kullanır (`ai/b94.ts` `rangerChoice94`; etki türünden) | 94 | b94ranger.test.ts |
+
+## B98 ek görev
+
+Görev B98 (2026-11-20; kural sürümü 98 `B98_VERSION`, 97 ve altı eski davranışta; ayrıntı DECISIONS.md "B98").
+
+| Satır | Şimdi | Sürüm |
+|---|---|---|
+| E1 | Düzeldi: TR menü/ipucu adları SRD İngilizce (Tireless, Nature's Veil, Steady Aim, Horde Breaker; SD4) | sürümsüz |
