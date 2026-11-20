@@ -427,6 +427,18 @@ const tr = {
     mapSize: (c: number, r: number) => `${c}×${r} altıgen; ekran bir bölümünü gösterir, kalanı kaydırılır.`,
     /** Görev H2: geniş haritaların adı ve açıklaması (veri adı yerine bu kullanılır). */
     mapInfo: {
+      // Klasik ve sefer haritaları: görünen ad ve kısa açıklama (Dungeondex canavar ortamı ve seçici aynı tablodan).
+      'bataklik': { name: 'Bataklık', desc: 'Dört sağlam ada, aralarında kütük köprüler; sazlık ve kökler zorlu zemin, siper ve saklanma yeri.' },
+      'dag': { name: 'Dağ', desc: 'İki plato arasında kayalık bir zirve ve yamaçları; plato önündeki kayalık geçilmez.' },
+      'ada': { name: 'Ada', desc: 'İki kayalık kıyı arasında sığ su ve uzakta derin deniz.' },
+      'gemi': { name: 'Güverte', desc: 'Kıçtan başa uzanan güverte; güverteden itilen ya da düşen denize girer.' },
+      'sehir-meydani': { name: 'Şehir Meydanı', desc: 'Tezgâhlar, çeşme ve ağaçlar siper verir; sandık yığınlarından çatılara çıkılır.' },
+      'taverna': { name: 'Taverna', desc: 'Yükseltili merdiven, yakan şömine ve düşmanların girebileceği bir kapı.' },
+      'magara': { name: 'Mağara', desc: 'İki yan oda ve orta salon, dar geçitlerle bağlı; kristaller ışık verir.' },
+      'dungeon': { name: 'Dungeon', desc: 'Dar bir salon; nişler ve hücre kapısı pusu noktaları.' },
+      'lav-tapinagi': { name: 'Lav Tapınağı', desc: 'Lav havuzlu halka, yüksek taht odası ve terasta çıkış kapısı; okçular yüksekte.' },
+      'kanyon-koprusu': { name: 'Kanyon Köprüsü', desc: 'Lav nehrinin üstünde üç altıgen genişliğinde köprü, ortada rün çemberi, kuleler siper.' },
+      'volkanik-demirhane': { name: 'Volkanik Demirhane', desc: 'Kazanlı demirhane platformu, lav akıntısı, fıçılar ve yağ; çıkış lav gölündeki taş zincirinden.' },
       'orman-yolu': { name: 'Orman yolu', desc: 'Kıvrılan bir yol, ortasında köprülü dere, iki yanda ağaçlık kuşak ve yol kenarında pusu noktaları; doğuda açık çayır.' },
       'kale-avlu': { name: 'Kale ve avlu', desc: 'Hendekle çevrili sur, batı kapısı, köşe kuleleri, avlu ve doğuda koridorlu, kapalı odalı iç bina.' },
       'kale-baskini': { name: 'Kale Baskını', desc: 'Serüven haritası: orman kenarından şafak baskını. Koğuşta uyuyan nöbetçiler, avluda devriye, mahzende fıçılar; iç kapıyı kır ya da doğu kulesine çık, alarm çalarsa 6 turun var.' },

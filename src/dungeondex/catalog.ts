@@ -224,7 +224,7 @@ export function buildDex(x: DexExtras): Record<DexCat, DexEntry[]> {
         ...immune.map((c): DexLink => ({ cat: 'durum', id: c, label: L.immuneTo(condName(c)) })),
         ...monsterSpellIds(m.id).map((s): DexLink => ({ cat: 'buyu', id: s.id, label: s.name })),
       ],
-      tags: [...(place?.tema ? [place.tema] : []), ...(place?.ortam ?? []).flatMap((o) => (x.mapNames[o] ? [x.mapNames[o]!] : []))],
+      tags: [...(place?.tema ? [L.monsterThemes[place.tema] ?? place.tema] : []), ...(place?.ortam ?? []).flatMap((o) => (x.mapNames[o] ? [x.mapNames[o]!] : []))],
       f: { cr: crBand(m.cr), type }, sort: `${String(crNum(m.cr)).padStart(6, '0')}${m.name}`,
     };
   });
