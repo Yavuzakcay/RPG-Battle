@@ -34,6 +34,7 @@ import { speedHexes } from './reduce';
 import { timedCondition } from './durations';
 import { combatantFromMonster } from './create';
 import type { ActiveEffect, BattleEvent, BattleState, Combatant, SpellZone } from './types';
+import { formMonsterId } from './shapeMonsterCore';
 
 export interface MonsterAbility extends Omit<LegendaryAction, 'kind'> {
   kind: LegendaryAction['kind'] | 'grant' | 'heal' | 'pull' | 'drop' | 'swallow' | 'summon' | 'ethereal';
@@ -79,7 +80,8 @@ const foesOf = (s: BattleState, c: Combatant) =>
 
 /** Görev D1: kayıt savaşın kural sürümünde (85 ve altı: SRD düzeltmesi öncesi değerler, `data/srd-duzeltme.json`). */
 export const entryOf = (c: Combatant, s?: Pick<BattleState, 'kuralSurumu'>): Entry | undefined =>
-  (c.monsterId ? srdKayit('data/canavar-yetenekleri.json', c.monsterId, DATA[c.monsterId], s ? s.kuralSurumu ?? 1 : undefined) : undefined);
+  // Görev WS91: Wild Shape/Polymorph biçiminde biçimin kaydı (yetenekler ve pasifler).
+  ((id) => (id ? srdKayit('data/canavar-yetenekleri.json', id, DATA[id], s ? s.kuralSurumu ?? 1 : undefined) : undefined))(formMonsterId(c));
 export const passiveOf = (s: BattleState, c: Combatant): MonsterPassive | undefined => (on(s) ? entryOf(c, s)?.passive : undefined);
 // Yetenekle çağrılan yaratığın (Animate Trees ağacı) özel yeteneği yok (SRD: yalnızca Slam); zincirleme çağırma olmaz.
 export const abilitiesOf = (s: BattleState, c: Combatant): MonsterAbility[] => (on(s) && !c.summon?.spellId.startsWith('mab:') ? entryOf(c, s)?.abilities ?? [] : []);

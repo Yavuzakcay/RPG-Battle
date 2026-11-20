@@ -31,6 +31,7 @@ import { yuzmeOn } from './yuzmeSurum';
 import { waterHexAt } from './yuzme';
 import { exhaustionSpeedFt } from '../rules/exhaustion';
 import { soyTeleportEnds } from './altSoySurum';
+import { monsterPrevOf, withMonsterPart, withoutMonsterPart } from './shapeMonsterCore';
 
 /** Yürüyüşün sonundaki düz koşuyu bulur; önceki koşu aynı yönde sürüyorsa üstüne ekler. */
 function runAfter(start: Offset, path: Offset[], before: Combatant['run']): Combatant['run'] {
@@ -912,14 +913,20 @@ function applyRaw(state: BattleState, event: BattleEvent): BattleState {
         ...(event.stats && 'swimFt' in event.stats ? { swimFt: c.swimFt } : {}),
         // Görev D3 (89+): biçimin beceri bonusları; bırakınca eskileri.
         ...(event.stats?.skills ? { skills: c.skills } : {}) };
+      // Görev WS91 (91+): önceki biçimin canavar parçası kaldırılır (asıl değerler `prev.mon`'dan), yenisi aşağıda uygulanır.
+      const monPrev = c.shape?.prev.mon;
+      const bare = c.shape?.monster && monPrev ? withoutMonsterPart(c, c.shape.monster, monPrev) : c;
       if (!event.stats) {
-        // Kuyruk K48: Örümcek Biçimi bitince biçim canı (geçici HP) da gider.
-        const { shape: _s, ...rest0 } = c;
-        const rest = c.shape?.spider ? { ...rest0, tempHp: 0 } : rest0;
-        return withCombatant({ ...state, combatants: { ...state.combatants, [c.id]: rest as Combatant } }, c.id, base);
+        // Kuyruk K48: Örümcek Biçimi bitince biçim canı (geçici HP) da gider. Görev WS91 (s.153): Polymorph bitince kalan geçici HP gider.
+        const { shape: _s, ...rest0 } = bare;
+        const rest = c.shape?.spider || (c.shape?.polymorph && c.shape.monster) ? { ...rest0, tempHp: 0 } : rest0;
+        const { mon: _m, ...back } = base as typeof base & { mon?: unknown };
+        return withCombatant({ ...state, combatants: { ...state.combatants, [c.id]: rest as Combatant } }, c.id, back);
       }
       const s = event.stats;
-      const shaped = withCombatant(state, c.id, { shape: { ...s, prev: base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
+      const mon = s.monster ? monsterPrevOf(bare, s.monster, monPrev) : undefined;
+      const state1 = s.monster || bare !== c ? { ...state, combatants: { ...state.combatants, [c.id]: s.monster ? withMonsterPart(bare, s.monster) : bare } } : state;
+      const shaped = withCombatant(state1, c.id, { shape: { ...s, prev: mon ? { ...base, mon } : base }, ac: s.ac, speed: s.speed, fly: s.fly, size: s.size, modifiers: s.modifiers,
         saves: s.saves, weaponOptions: s.weaponOptions, attacksPerAction: s.attacksPerAction, avatar: s.avatar,
         ...(s.attacks ? { attacks: s.attacks, multiattack: !!s.multiattack } : {}),
         ...('swimFt' in s ? { swimFt: s.swimFt || undefined } : {}), ...(s.skills ? { skills: s.skills } : {}) });

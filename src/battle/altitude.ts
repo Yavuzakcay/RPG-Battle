@@ -46,6 +46,7 @@ import { bandSizeOf, fallOffSpot, riderStackFt, seatedRider, seatedRiderOf } fro
 import { binekMb3On } from './binekSurum';
 import { isTargetable } from './common';
 import dikeyData from '../../data/dikey.json';
+import { shape91On } from './shape91Surum';
 
 export const ALT = rules.irtifa;
 export const altitudeOn = (s: Pick<BattleState, 'kuralSurumu'>): boolean => ruleVersion(s) >= 41;
@@ -452,6 +453,8 @@ function staysUp(state: BattleState, c: Combatant): boolean {
   if (climbingAloft(c)) return climberHolds(state, c) || (climbOn(state) && !climbs(c, state) && dexClimberHolds(state, c));
   if (!isAirborne(c)) return false;
   if (flySpeed(c) <= 0) return !!c.effects?.some((e) => e.airborne);
+  // Görev WS91 (91+; SRD s. 183 "Flying": "You can stay aloft in those circumstances if you can hover"): Hover'lı canavar.
+  if (shape91On(state) && c.hp > 0 && c.traits?.includes('hover')) return true;
   return !c.conditions.includes('Prone') && !isIncapacitated(c.conditions) && !speedZero(c.conditions);
 }
 

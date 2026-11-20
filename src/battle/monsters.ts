@@ -39,6 +39,7 @@ import { castWithoutAction } from './castHook';
 import { possessSpecOf, possessionProblem, possessionStartEvents } from './possession';
 import { effectiveAc, wardSources } from './divine';
 import { afterAttackReactions, corrodeEvents, hitReactions, targetedHookReactions, targetedReactions, type HitOutcome } from './reactions';
+import { formMonsterId } from './shapeMonsterCore';
 
 
 /** Tek bir canavar saldırısını çözer ve olaylarını döndürür. */
@@ -60,7 +61,7 @@ export function monsterAttackEvents(
   const possWhy = poss ? possessionProblem(state, actor, target, poss) : null;
   if (possWhy) return fail(`${atk.name}: ${possWhy}`);
   // Kuyruk 19 (srdK19): Rust Monster Antennae: metal silah aşınması (DEX save; `reactions.ts` `corrodeEvents`).
-  if (globalRule(state, 'srdK19') && actor.monsterId === 'rust-monster' && atk.name === 'Antennae') {
+  if (globalRule(state, 'srdK19') && formMonsterId(actor) === 'rust-monster' && atk.name === 'Antennae') {
     return { ok: true, events: corrodeEvents(actor, target, atk.save?.dc ?? 11, rng, state) };
   }
   // Kuyruk 19 (srdK19): Redirect Attack canavar saldırı zarlarında da (yer değiştiren dosta gider).
@@ -99,7 +100,7 @@ export function monsterAttackEvents(
       rollTag(rng, { by: target.id }),
     );
     // Kuyruk A2 (sürüm 30+): hasarsız save saldırısına veriden hasar (Yarı-Ejderha nefesi).
-    const a2d = !atk.damageDice ? a2AreaDamage(state, actor.monsterId, atk.name) : undefined;
+    const a2d = !atk.damageDice ? a2AreaDamage(state, formMonsterId(actor), atk.name) : undefined;
     const sDice = atk.damageDice ?? a2d?.dice;
     const sType = atk.damageType ?? a2d?.type;
     const raw = sDice ? rollDice(sDice, rollTag(rng, { kind: 'damage', by: actor.id })) : { rolls: [] as number[], total: 0 };
@@ -117,12 +118,12 @@ export function monsterAttackEvents(
       ...(save.extra ? { bonusDice: save.extra } : {}),
     });
     // Süreli etki (Dreadful Glare, Stunning Screech…): save başarısızsa durum.
-    const effect = attackEffect(actor.monsterId, atk.name);
+    const effect = attackEffect(formMonsterId(actor), atk.name);
     if (effect && !save.success && fx.hpAfter > 0) events.push(timedCondition(state, target.id, effect, actor.id, `${actor.name}: ${atk.name}`));
     // Rider durum etkileri (Prone, yakalama, süreli durumlar; attack-riders.json): save başarısızsa.
-    if (!save.success) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, riderOf(actor.monsterId, atk.name), atk.name, rng));
+    if (!save.success) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, riderOf(formMonsterId(actor), atk.name), atk.name, rng));
     // Kuyruk 19: kalıcı azalmalar (Life Drain save başarısızsa).
-    if (!save.success) events.push(...drainEvents(state, actor, target, riderOf(actor.monsterId, atk.name), adj.amount, atk.damageType ?? '', [], atk.name, rng));
+    if (!save.success) events.push(...drainEvents(state, actor, target, riderOf(formMonsterId(actor), atk.name), adj.amount, atk.damageType ?? '', [], atk.name, rng));
     // Kuyruk K64a: ele geçirme (başarısızsa başlar, başarılıysa bağışıklık; SRD 24 saat = savaş sonuna dek).
     if (poss && fx.hpAfter > 0) events.push(...(save.success
       ? [{ type: 'possession_resisted', possessorId: actor.id, hostId: target.id, label: atk.name } as BattleEvent]
@@ -162,7 +163,7 @@ export function monsterAttackEvents(
     const targetAc = effectiveAc(state, target) + inReach.cover + (atk.ranged && k19i ? Math.max(0, ...(target.effects ?? []).map((e) => e.acRanged ?? 0)) : 0);
     // Ek etkiler (rider, data/attack-riders.json): koşulu tutarsa hasar ifadesi değişir (Bloodied sürü, avantajlı Chimera).
     // Kuyruk A2 (sürüm 30+): veriden ek hasar (Kültist +1 nekrotik, Yarı-Ejderha pençesi).
-    const spec = withA2Extras(state, riderOf(actor.monsterId, atk.name), actor.monsterId, atk.name);
+    const spec = withA2Extras(state, riderOf(formMonsterId(actor), atk.name), formMonsterId(actor), atk.name);
     const swap = riderReplace(spec, mode, actor, target);
     const dmgDice = swap?.dice ?? atk.damageDice;
     const dmgType0 = swap?.type ?? atk.damageType;
@@ -240,7 +241,7 @@ export function monsterAttackEvents(
     // Görev F: Multiattack Defense işareti (hedefe isabet eden bu tur diğer saldırılarında dezavantajlı).
     events.push(...afterAttackMarks(state, actor, target, hit));
     // Süreli etki (Wyvern zehri, Ghoul felci…): isabette, varsa hedefin kurtarma zarından sonra.
-    if (hit) events.push(...attackEffectEvents(state, actor, { ...target, hp: fx.hpAfter }, actor.monsterId, atk.name, rng));
+    if (hit) events.push(...attackEffectEvents(state, actor, { ...target, hp: fx.hpAfter }, formMonsterId(actor), atk.name, rng));
     // Rider durum etkileri (Prone, yakalama, hücum, süreli durumlar; attack-riders.json): isabette.
     if (hit) events.push(...riderConditionEvents(state, actor, { ...target, hp: fx.hpAfter }, spec, atk.name, rng));
   }
@@ -286,17 +287,20 @@ export interface MultiSpec {
   secenekler?: Array<Record<string, number>>;
 }
 export function multiSpecOf(state: BattleState, actor: Combatant): MultiSpec | null {
-  if (!actor.monsterId || !globalRule(state, 'srdK19')) return null;
+  // Görev WS91: biçimdeyken (Polymorph) biçimin planı.
+  const id = formMonsterId(actor);
+  if (!id || !globalRule(state, 'srdK19')) return null;
   // Görev D1: plan savaşın kural sürümünde (85 ve altı: Clay Golem hep 3).
-  const rec = (multiData as Record<string, unknown>)[actor.monsterId] as MultiSpec | undefined;
-  const at = rec ? srdKayit('data/multiattack.json', actor.monsterId, rec, state.kuralSurumu ?? 1) : null;
+  const rec = (multiData as Record<string, unknown>)[id] as MultiSpec | undefined;
+  const at = rec ? srdKayit('data/multiattack.json', id, rec, state.kuralSurumu ?? 1) : null;
   if (at?.secenekler && !ws87On(state)) { const { secenekler: _s, ...rest } = at; return rest; }
   return at;
 }
 /** Görev WS87 (87+): Multiattack seçenekleri (`srdK19`'dan bağımsız: plansız düğme SRD sayısını yapar). */
 export function multiOptionsAt(state: BattleState, actor: Combatant): Array<Record<string, number>> | null {
-  if (!actor.monsterId || !ws87On(state)) return null;
-  return ((multiData as Record<string, unknown>)[actor.monsterId] as MultiSpec | undefined)?.secenekler ?? null;
+  const id = formMonsterId(actor);
+  if (!id || !ws87On(state)) return null;
+  return ((multiData as Record<string, unknown>)[id] as MultiSpec | undefined)?.secenekler ?? null;
 }
 /** Görev D1: koşullu yetenek (Hasten) bu tur kullanıldı mı (`trait_turn` `mab:<ability>`). */
 const ifUsedNow = (spec: MultiSpec, actor: Combatant, state?: BattleState): boolean =>

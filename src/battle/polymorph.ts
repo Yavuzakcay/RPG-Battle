@@ -9,6 +9,7 @@ import { monsters, type Monster } from '../data';
 import { combatantFromMonster } from './create';
 import { shapeOptsAt, shapeStats } from './druid';
 import { creatureTypeAt, monsterAt } from './srdD1';
+import { shapeMonsterPart } from './shapeMonster';
 import type { BattleEvent, BattleState, Combatant } from './types';
 
 const crValue = (cr: string | number): number => (typeof cr === 'number' ? cr : cr.includes('/') ? Number(cr.split('/')[0]) / Number(cr.split('/')[1]) : Number(cr));
@@ -36,6 +37,9 @@ export function polymorphEvents(state: BattleState, caster: Combatant, target: C
   const base = target.shape ? { ...target, ...target.shape.prev } : target;
   // Kural sürümü 87 (SRD 5.2.1 s.153): bütün oyun değerleri biçimin stat bloğundan (INT/WIS/CHA, kurtarmalar); anahtar
   // `bicimYuzme` açıksa biçimin yüzme hızı.
-  const stats = { ...shapeStats(m, base, shapeOptsAt(state, m, 'poly')), polymorph: true, attacks: beast.attacks, multiattack: beast.multiattack };
+  // Görev WS91 (91+; s.153): stat bloğunun kalanı canavar kurulumunun geçişinden (`shapeMonster.ts`).
+  const mp = shapeMonsterPart(state, target, m, 'poly');
+  const stats = { ...shapeStats(m, base, shapeOptsAt(state, m, 'poly')), polymorph: true,
+    ...(mp ? { monster: mp.monster, attacks: mp.attacks, multiattack: mp.multiattack } : { attacks: beast.attacks, multiattack: beast.multiattack }) };
   return [{ type: 'shape_changed', actorId: target.id, stats }, { type: 'temp_hp', targetId: target.id, amount: m.hp, label: `Polymorph (${m.name})` }];
 }
