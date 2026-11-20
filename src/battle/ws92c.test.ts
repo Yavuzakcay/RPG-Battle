@@ -80,6 +80,11 @@ describe('WS92-3 atlama özellikleri', () => {
     expect(highJumpReachFt(j.state, j.state.combatants.A as Combatant)).toBe(5);
     expect(j.state.combatants.A!.movementUsed).toBe(1);
   });
+  it('düşman Cat Jumper da DEX skoruyla (canavar savaşçısında dexScore yok: stat bloğundan)', () => {
+    const cat = { ...combatantFromMonster(getMonster('cat'), { id: 'C', kuralSurumu: NEW }), side: 'enemies' as const };
+    const s = startBattle('ws92cat', 'd', [cat, mk('A', { ownerId: 'p1' })], MID, { kuralSurumu: NEW, map: { id: 'col' } } as never).state;
+    expect(jumpRangeFeet(s.combatants.C as Combatant, true)).toBe(getMonster('cat').abilities.dex);
+  });
   it('Cat Jumper: mesafe DEX skoruyla', () => {
     const s = arena(NEW, ['cat']);
     const a = ok(execute(s, { type: 'wild_shape', actorId: 'A', form: 'cat' } as Command, P1, MID)).state.combatants.A as Combatant;

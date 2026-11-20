@@ -37,6 +37,8 @@ Tek kural sürümü 92 (`src/battle/ws92Surum.ts`); 91 ve altı kayıt/replay es
   - Kurulumda "biçimde başla" (92+; `wild_shape` kurulum durumunda): Game Master kurulumu ve Serüven savaş kurulumu aynı yol. Kullanım harcanır, Druid seviyesi kadar geçici HP (SRD biçim saatlerce sürer: savaştan önce girilmiş sayılır). Kurulumda çıkış yok (kullanım iadesiyle geçici HP sömürülmesin); savaşta bonus eylemle.
   - Serüven parti çubuğunda Druid üyeye "Biçimler N/M" (`form_swap`): boş yere biçim eklemek her zaman (Serüven seviye atlaması yeni yer açar), dolu listede uzun dinlenmeden sonra bir değişim (SRD "Whenever you finish a Long Rest, you can replace one of your known forms"; sayaç `formSwaps` dinlenme sayısına bağlı). Serüven dışında oluşturucu serbest kalır (savaşlar arası karakter düzenlemesi, diğer sınıflarla aynı).
   - Savaş sonunda biçim biter (kullanıcı kararı): karaktere asıl HP, kullanımlar ve kazanılan slot yazılır; geçici HP ve biçim yazılmaz. Çekmecede biçim satırı bunu söyler.
+- **5. Son yoklama:** 69 biçim × druid biçimde ↔ düşman canavar: 69/69 alan aynı, 75/75 saldırı aynı (tablo WILD-SHAPE-BICIMLER-DENETIM.md "WS92 son yoklama"). Bulunan tek fark düzeltildi: düşman Cat'in Jumper'ı STR ile ölçülüyordu (canavar savaşçısında DEX skoru yok; stat bloğundan okunur).
+- Doğrulama notu: `src/screens/sd3.test.tsx` ve `src/battle/paket/p12.test.tsx` birer testi WS92'den önceki commit'te (0f340373) de kırık (oluşturucu çizimi; bu görevle ilgisiz).
 
 ## Ranger ID4 Dragonborn: kontur halkası (erkek) ve çene maskesi (kadın) (2026-11-20; yalnız görünüm, mekanik/kural/kayıt sürümü yok)
 

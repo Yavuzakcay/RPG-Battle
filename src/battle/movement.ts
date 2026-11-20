@@ -1,4 +1,6 @@
 /** Haritalı savaş: yerleştirme, savaşı başlatma ve yürüme. */
+import { getMonster } from '../data';
+import { formMonsterId } from './shapeMonsterCore';
 import { plantChar, soyPlantWalker } from './altSoySurum';
 import { afterStepEvents } from './turnHooks';
 import { groundWardFn } from './groundWard';
@@ -668,10 +670,16 @@ export function jumpRangeFeet(c: Combatant, running: boolean, state?: Pick<Battl
   // Kuyruk 19 (featuresK19): Thief'in Second-Story Work'ü (Jumper): atlama mesafesi DEX skoruyla da.
   // Görev WS92 (92+): canavar Jumper'ı (Cat) mesafeyi DEX skoruyla belirler; Standing Leap koşusuz da, Running Leap yalnız koşarak `long` ft.
   const leap = leapOf(c);
-  const score = leap?.dex ? c.dexScore ?? c.strScore
+  const score = leap?.dex ? c.dexScore ?? monsterDex(c) ?? c.strScore
     : state && c.traits?.includes('second-story-work') && globalRule(state, 'featuresK19') ? Math.max(c.strScore, c.dexScore ?? 0) : c.strScore;
   const base = running ? score : Math.floor(score / 2);
   return leap?.long && (running || !leap.running) ? Math.max(base, leap.long) : base;
+}
+/** Görev WS92: canavar savaşçısının DEX skoru (savaşçıda `dexScore` yalnız karakterde; canavarda stat bloğundan). */
+function monsterDex(c: Combatant): number | undefined {
+  const id = formMonsterId(c);
+  if (!id) return undefined;
+  try { return getMonster(id).abilities.dex; } catch { return undefined; }
 }
 /** Görev WS92 (92+ etkisi): canavarın atlama özelliği (yoksa undefined). */
 export const leapOf = (c: Pick<Combatant, 'effects'>): NonNullable<Combatant['effects']>[number]['leap'] =>
