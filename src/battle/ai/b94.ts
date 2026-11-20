@@ -41,3 +41,39 @@ export function druidChoice94(state: BattleState, actor: Combatant, foes: Combat
   }
   return null;
 }
+
+/**
+ * Görev B94 (94+, basit kurallar): Paladin.
+ * - Holy Nimbus (`nimbus`, bonus eylem): etkin değilken, kullanımı varken (YZ 5. seviye slot harcamaz) ve aurada düşman varken.
+ * - Abjure Foes (`abjure`, eylem): 60 ft içinde Frightened olmayan en az iki düşman.
+ * - Lay On Hands (`healPool`, durum temizleme): bitişik dostta (ya da kendinde) kaldırılabilir durum varken.
+ */
+export function paladinChoice94(state: BattleState, actor: Combatant, foes: Combatant[], canAct: boolean, ok: Ok): Command | null {
+  if (!b94On(state) || foes.length === 0) return null;
+  const feats = actor.features ?? [];
+  const within = (c: Combatant, ft: number) => !state.map || (!!c.pos && !!actor.pos && ftBetween(c.pos, actor.pos) <= ft);
+  if (!actor.economy.bonus) {
+    const nimbus = feats.find((f) => f.effect.kind === 'nimbus' && !!f.resource && resourceLeft(actor, f.resource) > 0);
+    if (nimbus && nimbus.effect.kind === 'nimbus' && !(actor.effects ?? []).some((e) => e.id === nimbus.key) && foes.some((c) => within(c, nimbus.effect.kind === 'nimbus' ? nimbus.effect.radiusFt : 30))) {
+      const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: nimbus.key };
+      if (ok(cmd)) return cmd;
+    }
+    const pool = feats.find((f) => f.effect.kind === 'healPool' && usable(actor, f));
+    if (pool && pool.effect.kind === 'healPool') {
+      const cures = pool.effect.cures;
+      const ally = Object.values(state.combatants).find((c) => c.side === actor.side && c.hp > 0 && !c.civilian && !c.summon
+        && (c.id === actor.id || (!!c.pos && !!actor.pos && distance(c.pos, actor.pos) <= 1)) && c.conditions.some((x) => cures.includes(x) && x !== 'Poisoned'));
+      const cmd: Command | null = ally ? { type: 'use_feature', actorId: actor.id, feature: pool.key, targetId: ally.id, amount: 0, cure: true } : null;
+      if (cmd && ok(cmd)) return cmd;
+    }
+  }
+  if (canAct) {
+    const abjure = feats.find((f) => f.effect.kind === 'abjure' && usable(actor, f));
+    if (abjure && abjure.effect.kind === 'abjure') {
+      const open = foes.filter((c) => within(c, abjure.effect.kind === 'abjure' ? abjure.effect.rangeFt : 60) && !c.conditions.includes('Frightened'));
+      const cmd: Command = { type: 'use_feature', actorId: actor.id, feature: abjure.key };
+      if (open.length >= 2 && ok(cmd)) return cmd;
+    }
+  }
+  return null;
+}

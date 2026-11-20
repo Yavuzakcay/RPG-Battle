@@ -57,7 +57,7 @@ import { executeHide, executeSearch, noticeEvents, revealEvent } from './stealth
 import { executeDistract } from './distract';
 import { executeUseItem } from './items';
 import { executeSkillCheck } from './checks';
-import { economyCost, isReactionSpell, turnKey } from './economy';
+import { economyCost, isReactionSpell, turnKey, oneEconomyText, oneEconomyUsed } from './economy';
 import { MAX_EXHAUSTION, exhaustionD20Penalty } from '../rules/exhaustion';
 import { cunningProblem, hasTrait, hordeProblem } from './classTraits';
 import { executeMapTrigger, roundStartMapEvents, turnEndMapEvents, turnStartMapEvents } from './maprules';
@@ -548,6 +548,8 @@ function executeCommand(state: BattleState, cmd: Command, ctx: CommandContext, r
   if (!checked.ok) return checked;
   const actor = checked.actor;
   // Kuyruk K64a: ele geçirilmiş beden yalnızca ele geçirenin eylemlerini yapar; bedendeki ele geçiren yalnızca bırakır.
+  // Görev B94 (Abjure Foes): eylem ya da bonus eylem kullanılmışsa hareket yok.
+  if (['move', 'jump', 'climb', 'shift_move', 'vertical_move', 'jump_down'].includes(cmd.type) && oneEconomyUsed(actor, 'move')) return fail(oneEconomyText);
   const possBlock = possessionCommandProblem(actor, cmd.type);
   if (possBlock) return fail(possBlock);
   if (cmd.type === 'possession_leave') return executePossessionLeave(state, actor.id, false, ctx);

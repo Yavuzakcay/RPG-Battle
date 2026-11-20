@@ -141,6 +141,8 @@ export interface ActiveEffect {
   breakOnIncapacitated?: boolean;
   /** Görev B93 (sürüm 93+, Turn Undead): kaynak Incapacitated olunca ya da ölünce (0 HP dahil) biter. */
   endsIfSourceDown?: boolean;
+  /** Görev B94 (sürüm 94+, Abjure Foes): turunda yalnız hareket ya da eylem ya da bonus eylemden biri (`economy.ts`, `commands.ts`). */
+  oneEconomy?: boolean;
   /** Kuyruk 19 (11–20): bu yaratık türlerinin etkilerine save'ler avantajlı (Holy Nimbus: fiend, undead). */
   saveAdvVs?: string[];
   /** Kuyruk 19 (sihirli eşyalar): bu durumlara/kaynaklara karşı save'ler avantajlı (`spell`: büyüler), hasar kırılganlığı, kritik vuruş normal sayılır, menzilli saldırıya AC, tur başı yenilenme, silah bonusu, STR skoru tabanı. */
@@ -159,6 +161,8 @@ export interface ActiveEffect {
   turnEndOf?: string;
   /** Kuyruk 19 (11–20): en az yarım siper (Smite of Protection). */
   halfCover?: boolean;
+  /** Görev B94 (sürüm 94+, Smite of Protection): taşıyanın bu yarıçaptaki (altıgen) dostları ve kendisi aurada kaldıkça yarım siperli. */
+  coverAura?: number;
   /** Kuyruk 19 (11–20): Quivering Palm titreşimi (koyan, DC, zar); koyan eylemle bitirir. */
   quivering?: { dc: number; dice: string; type: string };
   /** Görev B3: koyan (`sourceId`) tarafından büyülenmiş: ona saldıramaz, onu zararlı büyüyle hedefleyemez. */
@@ -488,6 +492,8 @@ export interface Buff {
   meleeOnly?: boolean;
   /** Kuyruk S1 (Magic Weapon): yalnızca bu silah (silah kimliği). */
   enchantBy?: string;
+  /** Görev B94 (sürüm 94+, Sacred Weapon): silah bırakılınca güçlendirme ve bu kimlikteki ışık etkisi biter. */
+  endsOnDrop?: { lightId?: string };
   /** Hasar Radiant olabilir: hedef silahın türüne dirençliyse Radiant seçilir. */
   radiant?: boolean;
   /** Kuyruk 19 (Conjure Minor Elementals): ek zar her saldırıda (büyü dahil), yalnızca bu menzildeki hedefe, seçilebilen türler. */

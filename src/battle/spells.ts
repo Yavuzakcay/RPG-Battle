@@ -1,4 +1,5 @@
 /** Büyü yapma: slot harcama, saldırı ve save büyüleri, iyileştirme, durumlar. */
+import { b94On } from './b94Surum';
 import { ws92On } from './ws92Surum';
 import { spellComponents } from '../rules/spellComponents';
 import { freeShapeArea } from './freeShape';
@@ -1785,6 +1786,12 @@ function executeSmite(state: BattleState, actor: Combatant, cmd: CastCommand, sp
   // turunun başına dek yarım siperli.
   if (spell.id === 'divine-smite' && actor.traits?.includes('smite-of-protection') && globalRule(state, 'featuresK19')) {
     const radius = (actor.level ?? 0) >= 18 ? 6 : 2;
+    // Görev B94 (sürüm 94+, s. 57 "while in your Aura of Protection"): siper aurada kaldıkça (sonradan giren de alır,
+    // çıkan kaybeder); Paladin'de tek etki `coverAura`, `cover.ts` `grantedHalfCover` okur.
+    if (b94On(state)) {
+      events.push({ type: 'effect_added', targetId: actor.id, effect: { id: 'smite-of-protection', name: 'Smite of Protection', sourceId: actor.id, untilSourceTurn: true, coverAura: radius, icon: '🛡' } });
+      return finish(state, events);
+    }
     for (const c of Object.values(state.combatants)) {
       if (c.side !== actor.side || c.hp <= 0 || (c.id !== actor.id && (!c.pos || !actor.pos || distance(c.pos, actor.pos) > radius))) continue;
       events.push({ type: 'effect_added', targetId: c.id, effect: { id: 'smite-of-protection', name: 'Smite of Protection', sourceId: actor.id, untilSourceTurn: true, halfCover: true, icon: '🛡' } });

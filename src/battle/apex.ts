@@ -76,7 +76,7 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
     if (!payment(actor, f)) return `${f.name}: kullanım kalmadı (Rage kullanımı da yok).`;
     return fearTargets(state, actor, e.rangeFt).length > 0 ? null : `${e.rangeFt} ft içinde görülen düşman yok.`;
   }
-  if (e.kind === 'nimbus') return payment(actor, f) ? null : `${f.name}: kullanım kalmadı.`;
+  if (e.kind === 'nimbus') return payment(actor, f) || nimbusSlot(state, actor) >= 0 ? null : `${f.name}: kullanım kalmadı.`;
   if (e.kind === 'wings') {
     if (actor.effects?.some((x) => x.id === f.key)) return 'Kanatlar zaten açık.';
     return payment(actor, f) ? null : `${f.name}: kullanım kalmadı (3 Sorcery Point da yok).`;
@@ -126,6 +126,10 @@ export function apexProblem(state: BattleState, actor: Combatant, f: UsableFeatu
   return null;
 }
 
+/** Görev B94: Holy Nimbus'u yenileyecek 5+ seviye slotun dizini (yoksa ya da sürüm < 94 ise −1). */
+const nimbusSlot = (state: BattleState, actor: Combatant): number =>
+  b94On(state) ? actor.spellSlots.findIndex((n, i) => i >= 4 && n > 0) : -1;
+
 const spend = (actor: Combatant, p: { resource: string; cost: number }): BattleEvent =>
   ({ type: 'feature_used', actorId: actor.id, feature: p.resource, remaining: resourceLeft(actor, p.resource) - p.cost });
 
@@ -158,7 +162,11 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
     return finish(state, events);
   }
   if (e.kind === 'nimbus') {
-    events.push(spend(actor, payment(actor, f) as { resource: string; cost: number }));
+    // Görev B94 (sürüm 94+, s. 57 "restore your use of it by expending a level 5 spell slot (no action required)"):
+    // kullanım yoksa 5. seviye (ya da üstü) slot harcanır.
+    const pay = payment(actor, f);
+    const slot = pay ? -1 : nimbusSlot(state, actor);
+    events.push(pay ? spend(actor, pay) : { type: 'slot_spent', actorId: actor.id, level: slot + 1, remaining: (actor.spellSlots[slot] ?? 1) - 1 });
     const until = state.round + e.rounds - 1;
     events.push({ type: 'effect_added', targetId: actor.id, effect: {
       id: f.key, name: f.name, sourceId: actor.id, until, saveAdvVs: e.types, light: e.light, icon: '☀',
@@ -168,7 +176,8 @@ export function executeApex(state: BattleState, actor: Combatant, f: UsableFeatu
         id: `feature:${f.key}:${actor.id}:${state.round}`, spellId: `feature:${f.key}`, name: f.name, casterId: actor.id, side: actor.side,
         dc: 0, slotLevel: 0, hexes: [], anchorId: actor.id, radius: Math.round(e.radiusFt / 5), until,
         damage: String(Math.max(0, actor.modifiers.cha + actor.proficiency)),
-        spec: { on: ['start'], targets: 'enemies', damageType: 'radiant', color: '#ffe680', icon: '☀' },
+        // Görev B94 (94+, "Bright Light that is sunlight"): alan güneş ışığı (Sunlight Sensitivity).
+        spec: { on: ['start'], targets: 'enemies', damageType: 'radiant', color: '#ffe680', icon: '☀', ...(b94On(state) ? { sunlight: true } : {}) },
         // Görev B94 (A2, sürüm 94+): Aura of Protection'a bağlı; Paladin Incapacitated/0 HP iken durur (`sourceDown`).
         ...(b94On(state) ? { pausedIfCasterDown: true } : {}),
       } });
